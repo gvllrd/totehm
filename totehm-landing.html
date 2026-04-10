@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOTEHM — get Higher</title>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Montserrat:ital,wght@1,900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050505;
+  --bg2: #0d0d0d;
+  --coral: #fbd5ca;
+  --white: #ffffff;
+  --gray: #888;
+  --gray2: #333;
+  --border: #1a1a1a;
+  --higher-bg: #333366;
+  --fight: #E24B4A;
+  --flow: #EF9F27;
+  --enrich: #BA7517;
+  --love: #639922;
+  --express: #1D9E75;
+  --focus: #378ADD;
+  --celebrate: #7F77DD;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--coral);
+  font-family: 'Quantico', monospace;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* CUSTOM CURSOR */
+#cursor {
+  position: fixed;
+  width: 6px; height: 6px;
+  background: var(--white);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s;
+}
+
+/* HIGHER WORD RULE */
+.H {
+  font-family: 'Montserrat', sans-serif;
+  font-style: italic;
+  font-weight: 900;
+  background: var(--higher-bg);
+  padding: 0 5px;
+  color: #fff;
+}
+
+/* RAINBOW TOP LINE */
+.rainbow {
+  height: 2px;
+  background: linear-gradient(90deg, var(--fight), var(--flow), var(--enrich), var(--love), var(--express), var(--focus), var(--celebrate));
+  width: 100%;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  background: rgba(5,5,5,0.92);
+  backdrop-filter: blur(8px);
+}
+.nav-logo {
+  font-family: 'Quantico', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  color: var(--coral);
+  text-transform: uppercase;
+}
+.nav-cta {
+  font-family: 'Quantico', monospace;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  color: var(--coral);
+  background: transparent;
+  border: none;
+  cursor: none;
+  transition: color 0.15s;
+  padding: 6px 0;
+}
+.nav-cta .gh-get { font-family: 'Quantico', monospace; font-weight: 700; }
+.nav-cta .gh-h { font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 900; background: var(--higher-bg); padding: 1px 6px; color: #fff; margin-left: 4px; }
+.nav-cta:hover { color: var(--white); }
+.nav-cta:hover .gh-h { background: var(--higher-bg); }
+
+/* HERO */
+#hero {
+  position: relative;
+  height: 100vh;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+#hero-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 0 24px;
+}
+
+.hero-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.5em;
+  color: var(--gray);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.3s forwards;
+}
+
+.hero-logo {
+  font-size: clamp(72px, 14vw, 140px);
+  font-weight: 700;
+  color: var(--coral);
+  letter-spacing: 0.15em;
+  line-height: 1;
+  margin-bottom: 8px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.5s forwards;
+}
+
+.hero-tagline {
+  font-size: clamp(11px, 2vw, 14px);
+  letter-spacing: 0.35em;
+  color: var(--gray);
+  text-transform: uppercase;
+  margin-bottom: 56px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.7s forwards;
+}
+
+.hero-btn {
+  font-family: 'Quantico', monospace;
+  font-weight: 700;
+  font-size: clamp(16px, 2.5vw, 20px);
+  letter-spacing: 0.14em;
+  color: var(--coral);
+  background: transparent;
+  border: none;
+  cursor: none;
+  transition: color 0.15s;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.9s forwards;
+  padding: 8px 0;
+}
+.hero-btn:hover { color: var(--white); }
+.hero-btn .hl { font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 900; background: var(--higher-bg); padding: 2px 8px; color: #fff; margin-left: 4px; }
+
+.hero-scroll {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  letter-spacing: 0.4em;
+  color: var(--gray2);
+  text-transform: uppercase;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.4s forwards;
+}
+
+/* SECTIONS */
+section {
+  padding: 100px 0;
+  max-width: 960px;
+  margin: 0 auto;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+.s-label {
+  font-size: 9px;
+  letter-spacing: 0.5em;
+  color: var(--gray2);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.s-title {
+  font-size: clamp(24px, 4vw, 44px);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.1;
+  letter-spacing: 0.05em;
+  margin-bottom: 48px;
+}
+
+/* DIVIDER */
+.divider {
+  width: 100%;
+  height: 1px;
+  background: var(--border);
+}
+
+/* LOOP STEPS */
+.loop {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.loop-item {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 24px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: start;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s, transform 0.5s;
+}
+.loop-item.visible { opacity: 1; transform: translateY(0); }
+.loop-n {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--gray2);
+  padding-top: 3px;
+}
+.loop-name {
+  font-size: clamp(13px, 2vw, 16px);
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.loop-desc {
+  font-size: 12px;
+  color: var(--gray);
+  line-height: 1.8;
+}
+
+/* MAP SECTION */
+#map-section {
+  padding: 0;
+  max-width: 100%;
+  margin: 0;
+}
+#map-section .inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 80px 40px 32px;
+}
+#map-wrap {
+  width: 100%;
+  height: 520px;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+#map-canvas {
+  width: 100%; height: 100%;
+  display: block;
+  cursor: none;
+}
+
+/* MAP DROPDOWN */
+.dd-wrap {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  text-align: center;
+  min-width: 260px;
+}
+.dd-trigger {
+  background: transparent;
+  border: none;
+  cursor: none;
+  padding: 6px 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  justify-content: center;
+  width: 100%;
+}
+.dd-trigger .q {
+  font-family: 'Quantico', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--coral);
+  transition: color 0.15s;
+}
+.dd-trigger:hover .q { color: var(--white); }
+.dd-arr {
+  font-size: 9px;
+  color: var(--gray2);
+  transition: transform 0.2s;
+  display: inline-block;
+}
+.dd-wrap.open .dd-arr { transform: rotate(180deg); }
+.dd-menu {
+  display: none;
+  padding: 6px 0;
+  background: rgba(5,5,5,0.96);
+  border-top: 1px solid var(--border);
+}
+.dd-wrap.open .dd-menu { display: block; }
+.dd-item {
+  padding: 10px 24px;
+  cursor: none;
+  transition: background 0.12s;
+  text-align: left;
+}
+.dd-item:hover { background: rgba(51,51,102,0.25); }
+.dd-item.on { background: rgba(51,51,102,0.18); }
+.dd-row1 {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin-bottom: 3px;
+}
+.dd-item .q {
+  font-family: 'Quantico', monospace;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--coral);
+  transition: color 0.12s;
+}
+.dd-item:hover .q, .dd-item.on .q { color: var(--white); }
+.dd-item .h {
+  font-family: 'Montserrat', sans-serif;
+  font-style: italic;
+  font-weight: 900;
+  font-size: 18px;
+  color: #fff;
+  background: var(--higher-bg);
+  padding: 1px 7px;
+}
+.dd-item .def {
+  font-family: 'Quantico', monospace;
+  font-size: 11px;
+  color: #666;
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+  margin-top: 4px;
+}
+.dd-item:hover .def { color: #999; }
+
+#map-tip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 30;
+  display: none;
+  padding: 7px 12px;
+  background: #080808;
+}
+#map-tip .ta {
+  font-family: 'Quantico', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+#map-tip .tt {
+  font-family: 'Quantico', monospace;
+  font-size: 9px;
+  color: #444;
+  letter-spacing: 0.12em;
+  margin-top: 3px;
+}
+
+/* INTENTIONS GRID */
+.int-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin-bottom: 0;
+}
+.int-item {
+  background: var(--bg);
+  padding: 24px 12px;
+  text-align: center;
+  cursor: none;
+  transition: background 0.2s;
+}
+.int-item:hover { background: var(--bg2); }
+.int-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin: 0 auto 12px;
+}
+.int-name {
+  font-family: 'Quantico', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--coral);
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+.int-neuro {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--gray2);
+  line-height: 1.6;
+}
+
+/* CASTES */
+.caste-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+.caste-card {
+  background: var(--bg);
+  padding: 28px 20px;
+  transition: background 0.2s;
+  cursor: none;
+}
+.caste-card:hover { background: var(--bg2); }
+.caste-card.featured { background: rgba(55,138,221,0.04); }
+.caste-name {
+  font-family: 'Quantico', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--white);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.caste-price {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  line-height: 1;
+}
+.caste-price span {
+  font-size: 10px;
+  color: var(--gray);
+  font-weight: 400;
+}
+.caste-feats {
+  font-size: 10px;
+  color: var(--gray);
+  line-height: 2;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+.caste-btn {
+  margin-top: 20px;
+  font-family: 'Quantico', monospace;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--coral);
+  background: transparent;
+  border: none;
+  cursor: none;
+  transition: color 0.15s;
+  padding: 4px 0;
+  display: block;
+}
+.caste-btn:hover { color: var(--white); }
+.caste-btn .hl { font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 900; background: var(--higher-bg); padding: 1px 5px; color: #fff; margin-left: 4px; }
+
+/* PROCESS */
+.process-steps {
+  display: flex;
+  flex-direction: column;
+}
+.p-step {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 24px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: start;
+}
+.p-n {
+  font-family: 'Space Mono', monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--coral);
+  line-height: 1;
+  opacity: 0.4;
+}
+.p-title {
+  font-size: clamp(13px, 2vw, 16px);
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.p-desc {
+  font-size: 12px;
+  color: var(--gray);
+  line-height: 1.8;
+}
+
+/* FOOTER CTA */
+#footer-cta {
+  padding: 120px 40px;
+  text-align: center;
+  position: relative;
+  border-top: 1px solid var(--border);
+}
+.footer-big {
+  font-size: clamp(48px, 10vw, 96px);
+  font-weight: 700;
+  color: var(--coral);
+  letter-spacing: 0.15em;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+.footer-sub {
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  color: var(--gray2);
+  text-transform: uppercase;
+  margin-bottom: 52px;
+}
+.footer-legal {
+  margin-top: 48px;
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  color: var(--gray2);
+  text-transform: uppercase;
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav { padding: 0 20px; }
+  section { padding: 64px 20px; }
+  .int-grid { grid-template-columns: repeat(3, 1fr); }
+  .int-item:last-child { grid-column: 2; }
+  .caste-grid { grid-template-columns: 1fr 1fr; }
+  .caste-card:last-child { grid-column: span 2; }
+  #footer-cta { padding: 80px 20px; }
+  #map-wrap { height: 420px; }
+}
+@media (max-width: 480px) {
+  .caste-grid { grid-template-columns: 1fr; }
+  .caste-card:last-child { grid-column: span 1; }
+  .int-grid { grid-template-columns: repeat(2, 1fr); }
+  .int-item:last-child { grid-column: span 1; }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+
+<!-- NAV -->
+<div class="rainbow"></div>
+<nav>
+  <div class="nav-logo">TOTEHM</div>
+  <button class="nav-cta" onclick="document.getElementById('castes').scrollIntoView({behavior:'smooth'})">
+    <span class="gh-get">get</span><span class="gh-h">Higher</span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Lisbon · Fighter Club · WaHigher</div>
+    <div class="hero-logo">GRIND</div>
+    <div class="hero-tagline">The city is the hardware. Your grind is the software.</div>
+    <button class="hero-btn" onclick="document.getElementById('castes').scrollIntoView({behavior:'smooth'})">
+      get <span class="hl">Higher</span>
+    </button>
+  </div>
+  <div class="hero-scroll">↓ scroll</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONCEPT -->
+<section id="concept">
+  <div class="s-label">01 — The loop</div>
+  <div class="s-title">Stop enduring the city.<br>Program it.</div>
+  <div class="loop">
+    <div class="loop-item">
+      <div class="loop-n">01</div>
+      <div>
+        <div class="loop-name">Intention</div>
+        <div class="loop-desc">Choose your state of mind among 7 intentions. The city filters around you.</div>
+      </div>
+    </div>
+    <div class="loop-item">
+      <div class="loop-n">02</div>
+      <div>
+        <div class="loop-name">Visualisation</div>
+        <div class="loop-desc">The MAP shows active spots matching your intention. A constellation over Lisbon.</div>
+      </div>
+    </div>
+    <div class="loop-item">
+      <div class="loop-n">03</div>
+      <div>
+        <div class="loop-name">Decision</div>
+        <div class="loop-desc">Tap a spot. The PIN opens fullscreen. Video, activity, vibe, timer.</div>
+      </div>
+    </div>
+    <div class="loop-item">
+      <div class="loop-n">04</div>
+      <div>
+        <div class="loop-name">Access</div>
+        <div class="loop-desc">Your role unlocks the experience. Telegram sends you the details. You go.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MAP -->
+<div id="map-section">
+  <div class="inner">
+    <div class="s-label">02 — Live map</div>
+    <div class="s-title">Choose your intention.<br>The city reveals itself.</div>
+  </div>
+  <div id="map-wrap">
+    <canvas id="map-canvas"></canvas>
+    <div class="dd-wrap" id="dd">
+      <button class="dd-trigger" onclick="toggleDD()">
+        <span class="q" id="dd-cur">Choose an intention</span>
+        <span class="dd-arr">▾</span>
+      </button>
+      <div class="dd-menu">
+        <div class="dd-item" onclick="si('fight',this)">
+          <div class="dd-row1"><span class="q">fight</span><span class="h">Higher</span></div>
+          <div class="def">Conquer yourself through harder effort — One more rep</div>
+        </div>
+        <div class="dd-item" onclick="si('flow',this)">
+          <div class="dd-row1"><span class="q">flow</span><span class="h">Higher</span></div>
+          <div class="def">Liberate energy through movement — Let your body lead</div>
+        </div>
+        <div class="dd-item" onclick="si('enrich',this)">
+          <div class="dd-row1"><span class="q">enrich</span><span class="h">Higher</span></div>
+          <div class="def">Master your wealth through capital & network — Build your empire</div>
+        </div>
+        <div class="dd-item" onclick="si('love',this)">
+          <div class="dd-row1"><span class="q">love</span><span class="h">Higher</span></div>
+          <div class="def">Contemplate life through connection & beauty — Slow down to go far</div>
+        </div>
+        <div class="dd-item" onclick="si('express',this)">
+          <div class="dd-row1"><span class="q">express</span><span class="h">Higher</span></div>
+          <div class="def">Give form to emotion through creation — Make it exist</div>
+        </div>
+        <div class="dd-item" onclick="si('focus',this)">
+          <div class="dd-row1"><span class="q">focus</span><span class="h">Higher</span></div>
+          <div class="def">Master your mind through deep mental focus — Go deep or go home</div>
+        </div>
+        <div class="dd-item" onclick="si('celebrate',this)">
+          <div class="dd-row1"><span class="q">celebrate</span><span class="h">Higher</span></div>
+          <div class="def">Elevate energy through collective effervescence — We rise together</div>
+        </div>
+      </div>
+    </div>
+    <div id="map-tip"><div class="ta" id="mt-a"></div><div class="tt" id="mt-t"></div></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- INTENTIONS -->
+<section id="intentions">
+  <div class="s-label">03 — 7 intentions</div>
+  <div class="s-title">Every state of mind<br>has its color, its energy, its neuro.</div>
+  <div class="int-grid">
+    <div class="int-item">
+      <div class="int-dot" style="background:var(--fight)"></div>
+      <div class="int-name" style="color:var(--fight)">fight<br><span class="H" style="font-size:13px">Higher</span></div>
+      <div class="int-neuro">Adrenaline<br>High Beta</div>
+    </div>
+    <div class="int-item">
+      <div class="int-dot" style="background:var(--focus)"></div>
+      <div class="int-name" style="color:var(--focus)">focus<br><span class="H" style="font-size:13px">Higher</span></div>
+      <div class="int-neuro">Acetylcholine<br>Gamma</div>
+    </div>
+    <div class="int-item">
+      <div class="int-dot" style="background:var(--enrich)"></div>
+      <div class="int-name" style="color:var(--enrich)">enrich<br><span class="H" style="font-size:13px">Higher</span></div>
+      <div class="int-neuro">Dopamine<br>Beta</div>
+    </div>
+    <div class="int-item">
+      <div class="int-dot" style="background:var(--love)"></div>
+      <div class="int-name" style="color:var(--love)">love<br><span class="H" style="font-size:13px">Higher</span></div>
+      <div class="int-neuro">Serotonin<br>Theta</div>
+    </div>
+    <div class="int-item">
+      <div class="int-dot" style="background:var(--express)"></div>
+      <div class="int-name" style="color:var(--express)">express<br><span class="H" style="font-size:13px">Higher</span></div>
+      <div class="int-neuro">Dopamine<br>Theta</div>
+    </div>
+    <div class="int-item">
+      <div class="int-dot" style="background:var(--flow)"></div>
+      <div class="int-name" style="color:var(--flow)">flow<br><span class="H" style="font-size:13px">Higher</span></div>
+      <div class="int-neuro">Anandamide<br>Alpha</div>
+    </div>
+    <div class="int-item">
+      <div class="int-dot" style="background:var(--celebrate)"></div>
+      <div class="int-name" style="color:var(--celebrate)">celebrate<br><span class="H" style="font-size:13px">Higher</span></div>
+      <div class="int-neuro">Oxytocin<br>Gamma</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CASTES -->
+<section id="castes">
+  <div class="s-label">04 — join the Fighter Club</div>
+  <div class="s-title">Choose your level<br>of elevation.</div>
+  <div class="caste-grid">
+    <div class="caste-card">
+      <div class="caste-name">Leaf</div>
+      <div class="caste-price" style="color:var(--flow)">~15€<span>/week</span></div>
+      <div class="caste-feats">3 intentions<br>Musical matching<br>Standard spots<br>Kiff mode</div>
+      <button class="caste-btn">get <span class="hl">Higher</span></button>
+    </div>
+    <div class="caste-card">
+      <div class="caste-name">Super Leaf</div>
+      <div class="caste-price" style="color:var(--enrich)">150€<span>/week</span></div>
+      <div class="caste-feats">3 intentions<br>VIP + private access<br>Shadow mode<br>Kiff mode</div>
+      <button class="caste-btn">get <span class="hl">Higher</span></button>
+    </div>
+    <div class="caste-card featured">
+      <div class="caste-name" style="color:var(--focus)">Paper ★</div>
+      <div class="caste-price" style="color:var(--focus)">50€<span>/month</span></div>
+      <div class="caste-feats">All 7 intentions<br>7 AI Mentors<br>AI PUSH active<br>Grind + Kiff mode<br>Grind Radar</div>
+      <button class="caste-btn">get <span class="hl">Higher</span></button>
+    </div>
+    <div class="caste-card">
+      <div class="caste-name">Scholar</div>
+      <div class="caste-price" style="color:var(--express)">15€<span>/month</span></div>
+      <div class="caste-feats">= Paper<br>Student rate<br>University email</div>
+      <button class="caste-btn">get <span class="hl">Higher</span></button>
+    </div>
+    <div class="caste-card" style="background:rgba(127,119,221,0.03)">
+      <div class="caste-name" style="color:var(--celebrate)">Super Paper</div>
+      <div class="caste-price" style="color:var(--celebrate)">22k$<span> NFT</span></div>
+      <div class="caste-feats">Lifetime access<br>The Board<br>Founders vote<br>Steps 8→10</div>
+      <button class="caste-btn" style="color:var(--celebrate)">get <span class="hl">Higher</span></button>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="s-label">05 — How it works</div>
+  <div class="s-title">In 3 minutes<br>you're in the Club.</div>
+  <div class="process-steps">
+    <div class="p-step">
+      <div class="p-n">1</div>
+      <div>
+        <div class="p-title">Scan the QR code</div>
+        <div class="p-desc">TotehmPaper or TotehmLeaf. You land here.</div>
+      </div>
+    </div>
+    <div class="p-step">
+      <div class="p-n">2</div>
+      <div>
+        <div class="p-title">Choose your access</div>
+        <div class="p-desc">Leaf, Paper, or Scholar. Secure payment via Telegram.</div>
+      </div>
+    </div>
+    <div class="p-step">
+      <div class="p-n">3</div>
+      <div>
+        <div class="p-title">Immediate access</div>
+        <div class="p-desc">Your role is activated. The Mini App opens. Lisbon is yours.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER CTA -->
+<div id="footer-cta">
+  <div class="rainbow" style="position:absolute;top:0;left:0;right:0"></div>
+  <div class="footer-big">get <span class="H">Higher</span>.</div>
+  <div class="footer-sub">Lisbon · Fighter Club · 2025</div>
+  <button class="hero-btn" onclick="document.getElementById('castes').scrollIntoView({behavior:'smooth'})">
+    join the Fighter Club
+  </button>
+  <div class="footer-legal">TOTEHM · WaHigher · Absolute anonymity · Zero ego</div>
+  <div class="rainbow" style="position:absolute;bottom:0;left:0;right:0"></div>
+</div>
+
+<script>
+// CURSOR
+const cur = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX + 'px';
+  cur.style.top = e.clientY + 'px';
+});
+
+// HERO CANVAS — minimal floating spots
+(function(){
+  const cv = document.getElementById('hero-canvas');
+  const X = cv.getContext('2d');
+  const COLS = ['#E24B4A','#EF9F27','#BA7517','#639922','#1D9E75','#378ADD','#7F77DD','#fbd5ca'];
+  let W, H, pts = [];
+
+  function resize(){
+    W = cv.width = cv.offsetWidth;
+    H = cv.height = cv.offsetHeight;
+    pts = [];
+    const n = Math.floor(W * H / 22000);
+    for(let i = 0; i < n; i++){
+      const c = COLS[Math.floor(Math.random() * COLS.length)];
+      pts.push({
+        x: Math.random()*W, y: Math.random()*H,
+        r: 1 + Math.random()*3,
+        vx: (Math.random()-.5)*.08,
+        vy: (Math.random()-.5)*.08,
+        c, ph: Math.random()*Math.PI*2,
+        sp: .005+Math.random()*.012
+      });
+    }
+  }
+
+  let t = 0;
+  function draw(){
+    t += 0.016;
+    X.fillStyle = '#050505';
+    X.fillRect(0,0,W,H);
+    pts.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if(p.x < -10) p.x = W+10;
+      if(p.x > W+10) p.x = -10;
+      if(p.y < -10) p.y = H+10;
+      if(p.y > H+10) p.y = -10;
+      const a = .3 + .25*Math.sin(t*p.sp*60+p.ph);
+      X.beginPath();
+      X.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      X.fillStyle = p.c + Math.floor(a*255).toString(16).padStart(2,'0');
+      X.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+
+  new ResizeObserver(resize).observe(cv);
+  resize(); draw();
+})();
+
+// MAP CANVAS
+(function(){
+  const cv = document.getElementById('map-canvas');
+  const X = cv.getContext('2d');
+  const tip = document.getElementById('map-tip');
+  const IT = {
+    fight:    {h:'#E24B4A', r:226, g:75,  b:74},
+    flow:     {h:'#EF9F27', r:239, g:159, b:39},
+    enrich:   {h:'#BA7517', r:186, g:117, b:23},
+    love:     {h:'#639922', r:99,  g:153, b:34},
+    express:  {h:'#1D9E75', r:29,  g:158, b:117},
+    focus:    {h:'#378ADD', r:55,  g:138, b:221},
+    celebrate:{h:'#7F77DD', r:127, g:119, b:221}
+  };
+  const SP = [
+    {id:1,  rx:.13,ry:.20,in:'fight',    ac:'Boxing',     tl:45,bo:0},
+    {id:2,  rx:.85,ry:.16,in:'focus',    ac:'Deep work',  tl:60,bo:8},
+    {id:3,  rx:.80,ry:.74,in:'flow',     ac:'Skate',      tl:30,bo:3},
+    {id:4,  rx:.09,ry:.72,in:'love',     ac:'Sunset',     tl:55,bo:12},
+    {id:5,  rx:.91,ry:.40,in:'enrich',   ac:'Pitch',      tl:25,bo:5},
+    {id:6,  rx:.16,ry:.84,in:'express',  ac:'Graffiti',   tl:40,bo:15},
+    {id:7,  rx:.05,ry:.50,in:'celebrate',ac:'Rooftop',    tl:70,bo:2},
+    {id:8,  rx:.82,ry:.86,in:'fight',    ac:'Crossfit',   tl:35,bo:18},
+    {id:9,  rx:.20,ry:.10,in:'focus',    ac:'Library',    tl:50,bo:7},
+    {id:10, rx:.90,ry:.10,in:'flow',     ac:'Surf',       tl:45,bo:0},
+    {id:11, rx:.30,ry:.91,in:'love',     ac:'Café',       tl:30,bo:10},
+    {id:12, rx:.74,ry:.06,in:'express',  ac:'Open mic',   tl:55,bo:4},
+    {id:13, rx:.95,ry:.76,in:'enrich',   ac:'Networking', tl:40,bo:20},
+    {id:14, rx:.07,ry:.91,in:'celebrate',ac:'DJ set',     tl:65,bo:6},
+    {id:15, rx:.26,ry:.16,in:'fight',    ac:'Dojo',       tl:35,bo:1},
+    {id:16, rx:.70,ry:.93,in:'focus',    ac:'Silence',    tl:50,bo:9},
+    {id:17, rx:.93,ry:.88,in:'flow',     ac:'Dance',      tl:40,bo:14},
+    {id:18, rx:.05,ry:.06,in:'love',     ac:'Garden',     tl:45,bo:2},
+    {id:19, rx:.40,ry:.04,in:'express',  ac:'Slam',       tl:50,bo:11},
+    {id:20, rx:.60,ry:.96,in:'celebrate',ac:'Afterwork',  tl:30,bo:5},
+  ];
+  const CY = 80;
+  let W, H, mx = -999, my = -999, ai = null, el = 0;
+
+  function rsz(){
+    const p = cv.parentElement;
+    W = cv.width = p.offsetWidth;
+    H = cv.height = p.offsetHeight;
+  }
+  function age(s,t){ return ((t-s.bo)%CY+CY)%CY; }
+
+  function drawMap(){
+    el += 0.022; const t = el;
+    X.fillStyle = '#050505';
+    X.fillRect(0,0,W,H);
+    let hov = null, hd = 44;
+
+    SP.forEach(s => {
+      const vis = ai === s.in;
+      const sx = s.rx*W, sy = s.ry*H;
+      const ag = age(s,t);
+      const rem = Math.max(0, 1-ag/s.tl);
+      const c = IT[s.in];
+      if(vis){
+        X.save();
+        X.shadowColor = c.h;
+        X.shadowBlur = 6 + rem*32;
+        X.beginPath();
+        X.arc(sx,sy,8,0,Math.PI*2);
+        X.fillStyle = c.h;
+        X.fill();
+        X.restore();
+        X.font = '700 9px Quantico,monospace';
+        X.fillStyle = '#fbd5ca';
+        X.textAlign = 'center';
+        X.fillText(s.ac, sx, sy+21);
+        X.fillStyle = 'rgba(255,255,255,0.05)';
+        X.fillRect(sx-18, sy+25, 36, 1);
+        X.fillStyle = `rgba(${c.r},${c.g},${c.b},0.4)`;
+        X.fillRect(sx-18, sy+25, 36*rem, 1);
+        const d = Math.sqrt((mx-sx)**2+(my-sy)**2);
+        if(d < hd){ hd=d; hov=s; }
+      } else {
+        X.beginPath();
+        X.arc(sx,sy,2,0,Math.PI*2);
+        X.fillStyle = 'rgba(255,255,255,0.04)';
+        X.fill();
+      }
+    });
+
+    if(mx>0&&mx<W&&my>0&&my<H){
+      X.beginPath(); X.arc(mx,my,3,0,Math.PI*2);
+      X.fillStyle = 'rgba(255,255,255,0.9)'; X.fill();
+    }
+
+    if(hov){
+      const ag = age(hov,t);
+      const mins = Math.max(1, Math.round((hov.tl-ag)*1.8)+3);
+      document.getElementById('mt-a').textContent = hov.ac;
+      document.getElementById('mt-a').style.color = IT[hov.in].h;
+      document.getElementById('mt-t').textContent = mins+' min left';
+      tip.style.display = 'block';
+      tip.style.left = Math.min(mx+16,W-150)+'px';
+      tip.style.top = Math.max(my-8,8)+'px';
+    } else { tip.style.display = 'none'; }
+
+    requestAnimationFrame(drawMap);
+  }
+
+  window.toggleDD = function(){
+    document.getElementById('dd').classList.toggle('open');
+  };
+  window.si = function(i,el){
+    ai = i;
+    document.querySelectorAll('.dd-item').forEach(x=>x.classList.remove('on'));
+    el.classList.add('on');
+    document.getElementById('dd-cur').textContent = i+' Higher';
+    document.getElementById('dd').classList.remove('open');
+  };
+
+  cv.addEventListener('mousemove', e => {
+    const r = cv.getBoundingClientRect();
+    mx = e.clientX-r.left; my = e.clientY-r.top;
+  });
+  cv.addEventListener('mouseleave', ()=>{ mx=-999; tip.style.display='none'; });
+  document.addEventListener('click', e => {
+    if(!document.getElementById('dd').contains(e.target))
+      document.getElementById('dd').classList.remove('open');
+  });
+
+  new ResizeObserver(rsz).observe(cv);
+  rsz(); drawMap();
+})();
+
+// SCROLL REVEAL
+const items = document.querySelectorAll('.loop-item');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach((e,i) => {
+    if(e.isIntersecting){
+      setTimeout(()=> e.target.classList.add('visible'), i*80);
+    }
+  });
+}, {threshold:0.1});
+items.forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
