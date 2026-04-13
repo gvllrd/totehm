@@ -546,8 +546,7 @@ function renderIntentions(){
           value="${normalizeHex(it.color)||'#ffffff'}"
           style="width:18px;height:18px;padding:0;border:none;background:transparent;cursor:pointer"
           data-key="intentions.${i}.color"
-          oninput="this.nextElementSibling.style.background=this.value">
-        <div style="width:8px;height:8px;border-radius:50%;background:${normalizeHex(it.color)||'#ffffff'};flex-shrink:0"></div>
+oninput="this.nextElementSibling.style.background=this.value; this.value=this.value.toLowerCase()"        <div style="width:8px;height:8px;border-radius:50%;background:${normalizeHex(it.color)||'#ffffff'};flex-shrink:0"></div>
         <input class="field-input" data-key="intentions.${i}.name" value="${esc(it.name)}" style="font-weight:700">
         <input class="field-input" data-key="intentions.${i}.desc" value="${esc(it.desc)}" placeholder="Description">
         <input class="field-input" data-key="intentions.${i}.note" value="${esc(it.note||'')}" placeholder="Note" style="color:var(--gray)">
@@ -565,17 +564,6 @@ function renderRegles(){
   </div>`;
 }
 
-function renderIntentions(){
-  return `<div class="intentions-list">
-    ${(data.intentions||[]).map((it,i)=>`
-      <div class="intention-item">
-        <div style="width:8px;height:8px;border-radius:50%;background:${it.color};flex-shrink:0"></div>
-        <input class="field-input" data-key="intentions.${i}.name" value="${esc(it.name)}" style="font-weight:700;color:${it.color}">
-        <input class="field-input" data-key="intentions.${i}.desc" value="${esc(it.desc)}" placeholder="Description">
-        <input class="field-input" data-key="intentions.${i}.note" value="${esc(it.note||'')}" placeholder="Note" style="color:var(--gray)">
-      </div>`).join('')}
-  </div>`;
-}
 
 function renderCastes(){
   return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
