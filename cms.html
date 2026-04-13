@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -216,7 +217,6 @@ async function loadAll(){
 
 async function saveAll(){
   collectData();
-  collectStyle();
   setStatus('saving','Sauvegarde···');
   document.getElementById('save-btn').disabled=true;
   try{
@@ -227,15 +227,19 @@ async function saveAll(){
     } else {
       await sbFetch('cms_content',{method:'POST',body:JSON.stringify({id:'context_v6b',content:JSON.stringify(data)})});
     }
-    // Save style
-    const existsStyle=await sbFetch('style_config?id=eq.main&select=id');
-    if(existsStyle&&existsStyle.length>0){
-      await sbFetch('style_config?id=eq.main',{method:'PATCH',body:JSON.stringify({config:styleConfig,updated_at:new Date().toISOString()})});
-    } else {
-      await sbFetch('style_config',{method:'POST',body:JSON.stringify({id:'main',config:styleConfig})});
-    }
+    // Save style — direct PATCH sans vérification préalable
+    await fetch(SUPABASE_URL+'/rest/v1/style_config?id=eq.main',{
+      method:'PATCH',
+      headers:{
+        'apikey':SUPABASE_KEY,
+        'Authorization':'Bearer '+SUPABASE_KEY,
+        'Content-Type':'application/json',
+        'Prefer':'return=representation'
+      },
+      body:JSON.stringify({config:styleConfig,updated_at:new Date().toISOString()})
+    });
     setStatus('saved','Sauvegardé ✓');
-    showToast('Sauvegardé — la landing se met à jour au prochain rechargement','ok');
+    showToast('Sauvegardé ✓ bg='+styleConfig.bg,'ok');
   } catch(e){
     setStatus('error','Erreur save');
     showToast('Erreur : '+e.message,'err');
