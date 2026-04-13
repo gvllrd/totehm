@@ -104,7 +104,7 @@ input[type=range]{width:100%;accent-color:var(--coral)}
 
 /* Intentions */
 .intentions-list{display:flex;flex-direction:column;gap:10px}
-.intention-item{display:grid;grid-template-columns:24px 8px 110px 1fr 1fr;gap:10px;align-items:center}
+.intention-item{display:grid;grid-template-columns:8px 110px 1fr 1fr;gap:10px;align-items:center}
 
 /* Build table */
 .build-table{width:100%;border-collapse:collapse}
@@ -189,13 +189,7 @@ function tryLogin(){
 // ── SUPABASE ──
 async function sbFetch(path,opts={}){
   const res=await fetch(`${SUPABASE_URL}/rest/v1/${path}`,{
-    headers:{
-      'apikey':SUPABASE_KEY,
-      'Authorization':`Bearer ${SUPABASE_KEY}`,
-      'Content-Type':'application/json',
-      'Prefer':'return=representation',
-      ...opts.headers
-    },
+    headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/json','Prefer':'return=representation',...opts.headers},
     ...opts
   });
   if(res.status===204||res.status===404)return null;
@@ -210,17 +204,11 @@ async function loadAll(){
       sbFetch('cms_content?id=eq.context_v6b&select=content'),
       sbFetch('style_config?id=eq.main&select=config')
     ]);
-
-    console.log('cmsRows:', cmsRows);
-    console.log('styleRows:', styleRows);
-
     if(cmsRows&&cmsRows.length>0) data=JSON.parse(cmsRows[0].content);
     if(styleRows&&styleRows.length>0) styleConfig={...DEFAULT_STYLE,...styleRows[0].config};
-
     setStatus('saved','Synchronisé');
     renderCMS();
   } catch(e){
-    console.error('LOAD ERROR:', e);
     setStatus('error','Erreur chargement');
     renderCMS();
   }
@@ -230,70 +218,31 @@ async function saveAll(){
   collectData();
   setStatus('saving','Sauvegarde···');
   document.getElementById('save-btn').disabled=true;
-
   try{
-    const now=new Date().toISOString();
-
-    // SAVE CMS CONTENT (UPSERT)
-    const cmsRes=await fetch(
-      SUPABASE_URL+'/rest/v1/cms_content?on_conflict=id',
-      {
-        method:'POST',
-        headers:{
-          'apikey':SUPABASE_KEY,
-          'Authorization':'Bearer '+SUPABASE_KEY,
-          'Content-Type':'application/json',
-          'Prefer':'resolution=merge-duplicates,return=representation'
-        },
-        body:JSON.stringify([{
-          id:'context_v6b',
-          content:JSON.stringify(data),
-          updated_at:now
-        }])
-      }
-    );
-
-    const cmsText=await cmsRes.text();
-    console.log('cms_content save response:', cmsText);
-
-    if(!cmsRes.ok){
-      throw new Error('cms_content: '+cmsText);
+    // Save content
+    const existsCMS=await sbFetch('cms_content?id=eq.context_v6b&select=id');
+    if(existsCMS&&existsCMS.length>0){
+      await sbFetch('cms_content?id=eq.context_v6b',{method:'PATCH',body:JSON.stringify({content:JSON.stringify(data),updated_at:new Date().toISOString()})});
+    } else {
+      await sbFetch('cms_content',{method:'POST',body:JSON.stringify({id:'context_v6b',content:JSON.stringify(data)})});
     }
-
-    // SAVE STYLE CONFIG (UPSERT)
-    const styleRes=await fetch(
-      SUPABASE_URL+'/rest/v1/style_config?on_conflict=id',
-      {
-        method:'POST',
-        headers:{
-          'apikey':SUPABASE_KEY,
-          'Authorization':'Bearer '+SUPABASE_KEY,
-          'Content-Type':'application/json',
-          'Prefer':'resolution=merge-duplicates,return=representation'
-        },
-        body:JSON.stringify([{
-          id:'main',
-          config:styleConfig,
-          updated_at:now
-        }])
-      }
-    );
-
-    const styleText=await styleRes.text();
-    console.log('style_config save response:', styleText);
-
-    if(!styleRes.ok){
-      throw new Error('style_config: '+styleText);
-    }
-
+    // Save style — direct PATCH sans vérification préalable
+    await fetch(SUPABASE_URL+'/rest/v1/style_config?id=eq.main',{
+      method:'PATCH',
+      headers:{
+        'apikey':SUPABASE_KEY,
+        'Authorization':'Bearer '+SUPABASE_KEY,
+        'Content-Type':'application/json',
+        'Prefer':'return=representation'
+      },
+      body:JSON.stringify({config:styleConfig,updated_at:new Date().toISOString()})
+    });
     setStatus('saved','Sauvegardé ✓');
     showToast('Sauvegardé ✓ bg='+styleConfig.bg,'ok');
   } catch(e){
-    console.error('SAVE ERROR:', e);
     setStatus('error','Erreur save');
     showToast('Erreur : '+e.message,'err');
   }
-
   document.getElementById('save-btn').disabled=false;
 }
 
@@ -437,48 +386,17 @@ function renderStyle(){
   `;
 }
 
-function normalizeHex(v){
-  const s=String(v||'').trim();
-  return /^#[0-9a-fA-F]{6}$/.test(s) ? s.toLowerCase() : null;
-}
-
-function setColorValue(key, el){
-  const hex=normalizeHex(el.value);
-  if(!hex) return;
-
-  const row=el.closest('.cp-row');
-  if(!row) return;
-
-  const swatch=row.querySelector('.cp-swatch');
-  const picker=row.querySelector('input[type="color"]');
-  const hexInput=row.querySelector('.cp-hex');
-
-  if(swatch) swatch.style.background=hex;
-  if(picker) picker.value=hex;
-  if(hexInput) hexInput.value=hex;
-
-  styleConfig[key]=hex;
-}
-
 function cp(key,label,val){
-  const safe=normalizeHex(val)||'#000000';
   return `
     <div class="cp-item">
       <div class="cp-label">${label}</div>
       <div class="cp-row">
-        <div class="cp-swatch" style="background:${safe}">
-          <input
-            type="color"
-            value="${safe}"
-            oninput="setColorValue('${key}', this)">
+        <div class="cp-swatch" style="background:${val}">
+          <input type="color" value="${val}"
+            oninput="this.parentElement.style.background=this.value;this.nextElementSibling.value=this.value;styleConfig['${key}']=this.value">
         </div>
-        <input
-          class="cp-hex"
-          value="${safe}"
-          maxlength="7"
-          oninput="setColorValue('${key}', this)"
-          onchange="setColorValue('${key}', this)"
-          onblur="setColorValue('${key}', this)">
+        <input class="cp-hex" value="${val}" maxlength="7"
+          oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/)){this.previousElementSibling.querySelector('input').value=this.value;this.previousElementSibling.style.background=this.value;styleConfig['${key}']=this.value}">
       </div>
     </div>`;
 }
@@ -547,24 +465,7 @@ function renderVision(){
     <div class="field"><div class="field-label">Solution (Objectif)</div>
       <textarea class="field-textarea" data-key="vision.solution">${esc(v.solution||'')}</textarea></div>`;
 }
-  
-function renderIntentions(){
-  return `<div class="intentions-list">
-    ${(data.intentions||[]).map((it,i)=>`
-      <div class="intention-item">
-        <input
-          type="color"
-          value="${normalizeHex(it.color)||'#ffffff'}"
-          style="width:18px;height:18px;padding:0;border:none;background:transparent;cursor:pointer"
-          data-key="intentions.${i}.color"
-          oninput="this.nextElementSibling.style.background=this.value; this.value=this.value.toLowerCase()">
-        <div style="width:8px;height:8px;border-radius:50%;background:${normalizeHex(it.color)||'#ffffff'};flex-shrink:0"></div>
-        <input class="field-input" data-key="intentions.${i}.name" value="${esc(it.name)}" style="font-weight:700">
-        <input class="field-input" data-key="intentions.${i}.desc" value="${esc(it.desc)}" placeholder="Description">
-        <input class="field-input" data-key="intentions.${i}.note" value="${esc(it.note||'')}" placeholder="Note" style="color:var(--gray)">
-      </div>`).join('')}
-  </div>`;
-}
+
 function renderRegles(){
   return `<div class="rules-list">
     ${(data.regles||[]).map((r,i)=>`
@@ -575,6 +476,17 @@ function renderRegles(){
   </div>`;
 }
 
+function renderIntentions(){
+  return `<div class="intentions-list">
+    ${(data.intentions||[]).map((it,i)=>`
+      <div class="intention-item">
+        <div style="width:8px;height:8px;border-radius:50%;background:${it.color};flex-shrink:0"></div>
+        <input class="field-input" data-key="intentions.${i}.name" value="${esc(it.name)}" style="font-weight:700;color:${it.color}">
+        <input class="field-input" data-key="intentions.${i}.desc" value="${esc(it.desc)}" placeholder="Description">
+        <input class="field-input" data-key="intentions.${i}.note" value="${esc(it.note||'')}" placeholder="Note" style="color:var(--gray)">
+      </div>`).join('')}
+  </div>`;
+}
 
 function renderCastes(){
   return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
@@ -628,21 +540,11 @@ function collectData(){
   document.querySelectorAll('[data-key]').forEach(el=>{
     const keys=el.dataset.key.split('.');
     let obj=data;
-
     for(let i=0;i<keys.length-1;i++){
-      const key=keys[i];
-      const nextKey=keys[i+1];
-      const nextIsIndex=/^\d+$/.test(nextKey);
-
-      if(obj[key]===undefined){
-        obj[key]=nextIsIndex?[]:{};
-      }
-
-      obj=obj[key];
+      if(obj[keys[i]]===undefined)obj[keys[i]]={};
+      obj=obj[keys[i]];
     }
-
-    const lastKey=keys[keys.length-1];
-    obj[lastKey]=el.value;
+    obj[keys[keys.length-1]]=el.value;
   });
 }
 
