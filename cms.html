@@ -104,7 +104,7 @@ input[type=range]{width:100%;accent-color:var(--coral)}
 
 /* Intentions */
 .intentions-list{display:flex;flex-direction:column;gap:10px}
-.intention-item{display:grid;grid-template-columns:8px 110px 1fr 1fr;gap:10px;align-items:center}
+.intention-item{display:grid;grid-template-columns:24px 8px 110px 1fr 1fr;gap:10px;align-items:center}
 
 /* Build table */
 .build-table{width:100%;border-collapse:collapse}
@@ -537,6 +537,17 @@ function renderMeta(){
       <input class="field-input" data-key="meta.stack" value="${esc(m.stack||'')}"></div>`;
 }
 
+function renderVision(){
+  const v=data.vision||{};
+  return `
+    <div class="field"><div class="field-label">Promesse</div>
+      <textarea class="field-textarea" data-key="vision.promesse" style="min-height:120px">${esc(v.promesse||'')}</textarea></div>
+    <div class="field"><div class="field-label">Problème (Répulsion)</div>
+      <textarea class="field-textarea" data-key="vision.probleme">${esc(v.probleme||'')}</textarea></div>
+    <div class="field"><div class="field-label">Solution (Objectif)</div>
+      <textarea class="field-textarea" data-key="vision.solution">${esc(v.solution||'')}</textarea></div>`;
+}
+  
 function renderIntentions(){
   return `<div class="intentions-list">
     ${(data.intentions||[]).map((it,i)=>`
@@ -546,14 +557,14 @@ function renderIntentions(){
           value="${normalizeHex(it.color)||'#ffffff'}"
           style="width:18px;height:18px;padding:0;border:none;background:transparent;cursor:pointer"
           data-key="intentions.${i}.color"
-oninput="this.nextElementSibling.style.background=this.value; this.value=this.value.toLowerCase()"        <div style="width:8px;height:8px;border-radius:50%;background:${normalizeHex(it.color)||'#ffffff'};flex-shrink:0"></div>
+          oninput="this.nextElementSibling.style.background=this.value; this.value=this.value.toLowerCase()">
+        <div style="width:8px;height:8px;border-radius:50%;background:${normalizeHex(it.color)||'#ffffff'};flex-shrink:0"></div>
         <input class="field-input" data-key="intentions.${i}.name" value="${esc(it.name)}" style="font-weight:700">
         <input class="field-input" data-key="intentions.${i}.desc" value="${esc(it.desc)}" placeholder="Description">
         <input class="field-input" data-key="intentions.${i}.note" value="${esc(it.note||'')}" placeholder="Note" style="color:var(--gray)">
       </div>`).join('')}
   </div>`;
 }
-
 function renderRegles(){
   return `<div class="rules-list">
     ${(data.regles||[]).map((r,i)=>`
