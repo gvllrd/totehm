@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -7,319 +8,133 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Quantico:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #050505;
-  --panel: #0a0b0c;
-  --border: #1a1b1e;
-  --coral: #fbd5ca;
-  --white: #fff;
-  --gray: #666;
-  --dim: #333;
-  --fight: #E24B4A;
-  --flow: #EF9F27;
-  --enrich: #BA7517;
-  --love: #639922;
-  --express: #1D9E75;
-  --focus: #378ADD;
-  --celebrate: #7F77DD;
+  --bg:#050505;--panel:#0a0b0c;--border:#1a1b1e;--coral:#fbd5ca;
+  --white:#fff;--gray:#666;--dim:#333;
+  --fight:#E24B4A;--flow:#EF9F27;--enrich:#BA7517;--love:#639922;
+  --express:#1D9E75;--focus:#378ADD;--celebrate:#7F77DD;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; }
-body {
-  background: var(--bg);
-  color: var(--white);
-  font-family: 'Quantico', monospace;
-  overflow-x: hidden;
-}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--white);font-family:'Quantico',monospace;overflow-x:hidden}
 
-/* ── LOCK SCREEN ── */
-#lock {
-  position: fixed; inset: 0;
-  background: var(--bg);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 32px; z-index: 999;
-  transition: opacity .4s;
-}
-#lock.out { opacity: 0; pointer-events: none; }
-.lock-logo {
-  font-size: 48px; font-weight: 700;
-  letter-spacing: .3em; color: var(--coral);
-}
-.lock-sub {
-  font-family: 'Space Mono', monospace;
-  font-size: 11px; color: var(--gray);
-  letter-spacing: .2em; text-transform: uppercase;
-}
-.lock-form {
-  display: flex; flex-direction: column;
-  align-items: center; gap: 12px;
-}
-.lock-input {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  color: var(--white);
-  font-family: 'Space Mono', monospace;
-  font-size: 14px; letter-spacing: .15em;
-  padding: 12px 24px; text-align: center;
-  outline: none; width: 260px;
-  transition: border-color .2s;
-}
-.lock-input:focus { border-color: var(--coral); }
-.lock-btn {
-  background: transparent;
-  border: 1px solid var(--coral);
-  color: var(--coral);
-  font-family: 'Quantico', monospace;
-  font-weight: 700; font-size: 14px;
-  letter-spacing: .12em; padding: 10px 32px;
-  cursor: pointer; transition: all .15s;
-  text-transform: uppercase;
-}
-.lock-btn:hover { background: var(--coral); color: #000; }
-.lock-err {
-  font-family: 'Space Mono', monospace;
-  font-size: 11px; color: var(--fight);
-  letter-spacing: .1em; min-height: 16px;
-}
-.rb {
-  height: 2px;
-  background: linear-gradient(90deg,
-    var(--fight), var(--flow), var(--enrich),
-    var(--love), var(--express), var(--focus), var(--celebrate));
-  width: 260px;
-}
+#lock{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;z-index:999;transition:opacity .4s}
+#lock.out{opacity:0;pointer-events:none}
+.lock-logo{font-size:48px;font-weight:700;letter-spacing:.3em;color:var(--coral)}
+.lock-sub{font-family:'Space Mono',monospace;font-size:11px;color:var(--gray);letter-spacing:.2em;text-transform:uppercase}
+.lock-form{display:flex;flex-direction:column;align-items:center;gap:12px}
+.lock-input{background:var(--panel);border:1px solid var(--border);color:var(--white);font-family:'Space Mono',monospace;font-size:14px;letter-spacing:.15em;padding:12px 24px;text-align:center;outline:none;width:260px;transition:border-color .2s}
+.lock-input:focus{border-color:var(--coral)}
+.lock-btn{background:transparent;border:1px solid var(--coral);color:var(--coral);font-family:'Quantico',monospace;font-weight:700;font-size:14px;letter-spacing:.12em;padding:10px 32px;cursor:pointer;transition:all .15s;text-transform:uppercase}
+.lock-btn:hover{background:var(--coral);color:#000}
+.lock-err{font-family:'Space Mono',monospace;font-size:11px;color:var(--fight);letter-spacing:.1em;min-height:16px}
+.rb{height:2px;background:linear-gradient(90deg,var(--fight),var(--flow),var(--enrich),var(--love),var(--express),var(--focus),var(--celebrate));width:260px}
 
-/* ── CMS ── */
-#cms { display: none; min-height: 100vh; }
-#cms.show { display: block; }
+#cms{display:none;min-height:100vh}
+#cms.show{display:block}
 
-/* Nav */
-.cms-nav {
-  position: sticky; top: 0; z-index: 100;
-  background: var(--panel);
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center;
-  justify-content: space-between;
-  padding: 0 28px; height: 48px;
-}
-.cms-nav-logo {
-  font-size: 15px; font-weight: 700;
-  letter-spacing: .2em; color: var(--coral);
-}
-.cms-nav-right {
-  display: flex; align-items: center; gap: 16px;
-}
-.status-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--gray); display: inline-block;
-  transition: background .3s;
-}
-.status-dot.saved { background: var(--love); }
-.status-dot.saving { background: var(--flow); animation: pulse .8s infinite; }
-.status-dot.error { background: var(--fight); }
-@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
-.status-label {
-  font-family: 'Space Mono', monospace;
-  font-size: 10px; color: var(--gray);
-  letter-spacing: .1em;
-}
-.save-btn {
-  background: transparent;
-  border: 1px solid var(--coral);
-  color: var(--coral);
-  font-family: 'Quantico', monospace;
-  font-weight: 700; font-size: 13px;
-  letter-spacing: .1em; padding: 6px 20px;
-  cursor: pointer; transition: all .15s;
-}
-.save-btn:hover { background: var(--coral); color: #000; }
-.save-btn:disabled { opacity: .4; cursor: default; }
+.cms-nav{position:sticky;top:0;z-index:100;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:48px}
+.cms-nav-logo{font-size:15px;font-weight:700;letter-spacing:.2em;color:var(--coral)}
+.cms-nav-right{display:flex;align-items:center;gap:16px}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--gray);display:inline-block;transition:background .3s}
+.status-dot.saved{background:var(--love)}
+.status-dot.saving{background:var(--flow);animation:pulse .8s infinite}
+.status-dot.error{background:var(--fight)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.status-label{font-family:'Space Mono',monospace;font-size:10px;color:var(--gray);letter-spacing:.1em}
+.save-btn{background:transparent;border:1px solid var(--coral);color:var(--coral);font-family:'Quantico',monospace;font-weight:700;font-size:13px;letter-spacing:.1em;padding:6px 20px;cursor:pointer;transition:all .15s}
+.save-btn:hover{background:var(--coral);color:#000}
+.save-btn:disabled{opacity:.4;cursor:default}
 
-/* Content */
-.cms-body {
-  max-width: 1100px; margin: 0 auto;
-  padding: 40px 28px;
-}
-.cms-title {
-  font-family: 'Space Mono', monospace;
-  font-size: 11px; color: var(--gray);
-  letter-spacing: .2em; text-transform: uppercase;
-  margin-bottom: 32px;
-}
+.cms-body{max-width:1100px;margin:0 auto;padding:40px 28px}
+.cms-title{font-family:'Space Mono',monospace;font-size:11px;color:var(--gray);letter-spacing:.2em;text-transform:uppercase;margin-bottom:32px}
 
-/* Sections */
-.cms-section {
-  border: 1px solid var(--border);
-  margin-bottom: 16px;
-  background: var(--panel);
-}
-.cms-section-head {
-  display: flex; align-items: center;
-  justify-content: space-between;
-  padding: 12px 18px;
-  border-bottom: 1px solid var(--border);
-  cursor: pointer;
-  user-select: none;
-}
-.cms-section-head:hover { background: #0d0e10; }
-.cms-section-label {
-  display: flex; align-items: center; gap: 10px;
-}
-.sec-num {
-  font-family: 'Space Mono', monospace;
-  font-size: 10px; color: var(--gray);
-  letter-spacing: .15em;
-}
-.sec-name {
-  font-size: 13px; font-weight: 700;
-  color: var(--white); letter-spacing: .06em;
-  text-transform: uppercase;
-}
-.sec-arrow {
-  font-size: 10px; color: var(--gray);
-  transition: transform .2s;
-}
-.cms-section.open .sec-arrow { transform: rotate(180deg); }
-.cms-section-body {
-  display: none; padding: 20px 18px;
-}
-.cms-section.open .cms-section-body { display: block; }
+.cms-section{border:1px solid var(--border);margin-bottom:16px;background:var(--panel)}
+.cms-section-head{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+.cms-section-head:hover{background:#0d0e10}
+.cms-section-label{display:flex;align-items:center;gap:10px}
+.sec-num{font-family:'Space Mono',monospace;font-size:10px;color:var(--gray);letter-spacing:.15em}
+.sec-name{font-size:13px;font-weight:700;color:var(--white);letter-spacing:.06em;text-transform:uppercase}
+.sec-arrow{font-size:10px;color:var(--gray);transition:transform .2s}
+.cms-section.open .sec-arrow{transform:rotate(180deg)}
+.cms-section-body{display:none;padding:20px 18px}
+.cms-section.open .cms-section-body{display:block}
 
-/* Fields */
-.field { margin-bottom: 18px; }
-.field:last-child { margin-bottom: 0; }
-.field-label {
-  font-family: 'Space Mono', monospace;
-  font-size: 9px; color: var(--gray);
-  letter-spacing: .18em; text-transform: uppercase;
-  margin-bottom: 6px;
-}
-.field-input, .field-textarea {
-  width: 100%;
-  background: #000;
-  border: 1px solid var(--dim);
-  color: var(--white);
-  font-family: 'Quantico', monospace;
-  font-size: 14px;
-  padding: 10px 14px;
-  outline: none;
-  transition: border-color .15s;
-  resize: vertical;
-}
-.field-input:focus, .field-textarea:focus {
-  border-color: var(--coral);
-}
-.field-textarea { min-height: 90px; line-height: 1.6; }
-.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field{margin-bottom:18px}
+.field:last-child{margin-bottom:0}
+.field-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--gray);letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px}
+.field-input,.field-textarea{width:100%;background:#000;border:1px solid var(--dim);color:var(--white);font-family:'Quantico',monospace;font-size:14px;padding:10px 14px;outline:none;transition:border-color .15s;resize:vertical}
+.field-input:focus,.field-textarea:focus{border-color:var(--coral)}
+.field-textarea{min-height:90px;line-height:1.6}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
-/* Color grid */
-.color-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
-}
-.color-item {
-  display: flex; flex-direction: column;
-  align-items: center; gap: 4px;
-}
-.color-dot {
-  width: 28px; height: 28px; border-radius: 50%;
-  border: 1px solid var(--border);
-}
-.color-name {
-  font-family: 'Space Mono', monospace;
-  font-size: 8px; color: var(--gray);
-  text-align: center;
-}
+/* ── STYLE EDITOR ── */
+.style-tabs{display:flex;gap:1px;margin-bottom:16px;background:var(--border)}
+.style-tab{flex:1;padding:9px;text-align:center;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);cursor:pointer;background:var(--panel);transition:all .15s}
+.style-tab.active{color:var(--coral);background:#000}
+
+.color-picker-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+.cp-item{display:flex;flex-direction:column;gap:5px}
+.cp-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--gray);letter-spacing:.12em;text-transform:uppercase}
+.cp-row{display:flex;align-items:center;gap:8px}
+.cp-swatch{width:32px;height:32px;border-radius:4px;border:1px solid var(--border);cursor:pointer;flex-shrink:0;position:relative;overflow:hidden}
+.cp-swatch input[type=color]{position:absolute;inset:-4px;width:calc(100%+8px);height:calc(100%+8px);opacity:0;cursor:pointer}
+.cp-hex{flex:1;background:#000;border:1px solid var(--dim);color:var(--white);font-family:'Space Mono',monospace;font-size:11px;padding:6px 8px;outline:none;transition:border-color .15s}
+.cp-hex:focus{border-color:var(--coral)}
+
+.section-toggles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.sec-toggle{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border:1px solid var(--border);background:#000}
+.sec-toggle-name{font-size:12px;font-weight:700;letter-spacing:.06em}
+.toggle-switch{position:relative;width:36px;height:20px;flex-shrink:0}
+.toggle-switch input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;inset:0;background:var(--dim);border-radius:10px;cursor:pointer;transition:background .2s}
+.toggle-switch input:checked+.toggle-slider{background:var(--love)}
+.toggle-slider::after{content:'';position:absolute;width:14px;height:14px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s}
+.toggle-switch input:checked+.toggle-slider::after{transform:translateX(16px)}
+
+.preview-btn{width:100%;background:transparent;border:1px solid var(--dim);color:var(--gray);font-family:'Quantico',monospace;font-size:12px;letter-spacing:.1em;padding:9px;cursor:pointer;transition:all .15s;text-transform:uppercase;margin-top:8px}
+.preview-btn:hover{border-color:var(--coral);color:var(--coral)}
+
+.slider-row{display:grid;grid-template-columns:1fr 80px;gap:12px;align-items:center;margin-bottom:12px}
+.slider-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--gray);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+input[type=range]{width:100%;accent-color:var(--coral)}
 
 /* Rules list */
-.rules-list { display: flex; flex-direction: column; gap: 8px; }
-.rule-item {
-  display: grid;
-  grid-template-columns: 28px 1fr;
-  gap: 10px; align-items: start;
-}
-.rule-n {
-  font-family: 'Space Mono', monospace;
-  font-size: 9px; color: var(--fight);
-  padding-top: 12px;
-}
+.rules-list{display:flex;flex-direction:column;gap:8px}
+.rule-item{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
+.rule-n{font-family:'Space Mono',monospace;font-size:9px;color:var(--fight);padding-top:12px}
 
 /* Intentions */
-.intentions-list { display: flex; flex-direction: column; gap: 10px; }
-.intention-item {
-  display: grid;
-  grid-template-columns: 8px 110px 1fr 1fr;
-  gap: 10px; align-items: center;
-}
-.int-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-}
+.intentions-list{display:flex;flex-direction:column;gap:10px}
+.intention-item{display:grid;grid-template-columns:8px 110px 1fr 1fr;gap:10px;align-items:center}
 
-/* Build order table */
-.build-table { width: 100%; border-collapse: collapse; }
-.build-table th {
-  font-family: 'Space Mono', monospace;
-  font-size: 9px; color: var(--gray);
-  letter-spacing: .12em; text-transform: uppercase;
-  padding: 8px 10px; text-align: left;
-  border-bottom: 1px solid var(--border);
-  background: #000;
-}
-.build-table td {
-  padding: 8px 10px;
-  border-bottom: 1px solid var(--dim);
-  vertical-align: top;
-}
-.build-table tr:last-child td { border-bottom: none; }
-.build-n {
-  font-family: 'Space Mono', monospace;
-  font-size: 10px; color: var(--coral);
-}
+/* Build table */
+.build-table{width:100%;border-collapse:collapse}
+.build-table th{font-family:'Space Mono',monospace;font-size:9px;color:var(--gray);letter-spacing:.12em;text-transform:uppercase;padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);background:#000}
+.build-table td{padding:8px 10px;border-bottom:1px solid var(--dim);vertical-align:top}
+.build-table tr:last-child td{border-bottom:none}
+.build-n{font-family:'Space Mono',monospace;font-size:10px;color:var(--coral)}
 
-/* Toast */
-.toast {
-  position: fixed; bottom: 28px; right: 28px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  padding: 12px 20px;
-  font-family: 'Space Mono', monospace;
-  font-size: 11px; color: var(--white);
-  letter-spacing: .08em;
-  opacity: 0; transform: translateY(10px);
-  transition: all .25s; pointer-events: none;
-  z-index: 200;
-}
-.toast.show { opacity: 1; transform: none; }
-.toast.ok { border-color: var(--love); color: var(--love); }
-.toast.err { border-color: var(--fight); color: var(--fight); }
-
-/* Loading */
-.loading {
-  text-align: center; padding: 80px;
-  font-family: 'Space Mono', monospace;
-  font-size: 11px; color: var(--gray);
-  letter-spacing: .2em;
-}
+.toast{position:fixed;bottom:28px;right:28px;background:var(--panel);border:1px solid var(--border);padding:12px 20px;font-family:'Space Mono',monospace;font-size:11px;color:var(--white);letter-spacing:.08em;opacity:0;transform:translateY(10px);transition:all .25s;pointer-events:none;z-index:200}
+.toast.show{opacity:1;transform:none}
+.toast.ok{border-color:var(--love);color:var(--love)}
+.toast.err{border-color:var(--fight);color:var(--fight)}
+.loading{text-align:center;padding:80px;font-family:'Space Mono',monospace;font-size:11px;color:var(--gray);letter-spacing:.2em}
 </style>
 </head>
 <body>
 
-<!-- LOCK SCREEN -->
 <div id="lock">
   <div class="lock-logo">TOTEHM</div>
   <div class="rb"></div>
   <div class="lock-sub">Context File — Accès privé</div>
   <div class="lock-form">
-    <input type="password" class="lock-input" id="pwd"
-      placeholder="MOT DE PASSE"
+    <input type="password" class="lock-input" id="pwd" placeholder="MOT DE PASSE"
       onkeydown="if(event.key==='Enter')tryLogin()">
     <button class="lock-btn" onclick="tryLogin()">Entrer</button>
     <div class="lock-err" id="lock-err"></div>
   </div>
 </div>
 
-<!-- CMS -->
 <div id="cms">
   <nav class="cms-nav">
     <div class="cms-nav-logo">TOTEHM · CMS</div>
@@ -329,204 +144,143 @@ body {
       <button class="save-btn" id="save-btn" onclick="saveAll()">Sauvegarder</button>
     </div>
   </nav>
-
   <div class="cms-body">
     <div class="cms-title">Context File v6b — Référence absolue · Édition en direct</div>
-    <div id="cms-content"><div class="loading">Chargement depuis Supabase···</div></div>
+    <div id="cms-content"><div class="loading">Chargement···</div></div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ── CONFIG ──
-const SUPABASE_URL = 'https://abujjbkbbiumxrokozph.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
-const PASSWORD = 'wahigher2025';
+const SUPABASE_URL='https://abujjbkbbiumxrokozph.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+const PASSWORD='wahigher2025';
+const LANDING_URL='https://gvllrd.github.io/totehm/index.html';
 
-// ── DATA par défaut (context v6b) ──
-const DEFAULT_DATA = {
-  meta: {
-    version: 'v6b',
-    fondateur: 'WaHigher',
-    mvp: 'Lisbonne',
-    domaine: 'Ionos',
-    stack: 'Supabase · Telegram · GitHub'
-  },
-  vision: {
-    promesse: 'higher than better, better than even higher. Heaven.\nSocial media algorithms pull people downward by training them to consume more and more content, passive on the same place.\nTOTEHM pushes you through content to move, perform, and really enjoy the city.',
-    probleme: 'Métro-boulot-dodo · Boucles identiques · Perte de plasticité cérébrale · Stagnation émotionnelle. L\'ennemi = les apps qui gardent sur le canapé.',
-    solution: 'Exploration temps réel · Activation par intention · Liberté totale · Stoner Method · AI-matched grind (Paper) · Musique par intention (Leaf) · 7 intentions.'
-  },
-  regles: [
-    'Ne JAMAIS supprimer d\'éléments — ajouter ou modifier uniquement.',
-    'Style : minimaliste, dark, underground. Jamais corporate, jamais startup bullshit.',
-    'Typo : Quantico pour toute l\'UI. Montserrat Black Italic UNIQUEMENT pour "higher".',
-    'Tous les "higher" = SVG officiel WaHigher. Obligatoire partout.',
-    'Tout est centré. Aucune exception.',
-    'La MAP est le centre du produit. Dropdown centré au milieu de la MAP.',
-    '"LISBON REAL AND LIVING MAP" = overline au-dessus de la MAP.',
-    'Copywriting : "higher than better, better than even higher" · "Think opposite" · "Mens sana in corpore sano".',
-    'Interdire : phrases corporate, nouveaux concepts hors TOTEHM.',
-    'Figher Club (pas Fighter). App 100% en anglais. PIN preview = direct child de #map-container.',
-    'Bouton "Get higher" nav droite = stamp exact. Jamais texte simple.',
-    '"higher" toujours minuscule. "Social or anti-social". "Perform or Relax higher".'
-  ],
-  intentions: [
-    { name: 'Fight', color: '#E24B4A', desc: 'Conquer yourself. Dojos, crossfit.', note: 'Paper · Adrénaline. High Beta.' },
-    { name: 'Focus', color: '#378ADD', desc: 'Master your mind. Silence, cowork.', note: 'Paper · Acétylcholine. Gamma.' },
-    { name: 'Enrich', color: '#BA7517', desc: 'Master your wealth. VCs, pitch.', note: 'Paper · Dopamine. Beta.' },
-    { name: 'Express', color: '#1D9E75', desc: 'Give form to emotion. Art, graffiti.', note: 'Paper · Dopamine créative.' },
-    { name: 'Flow', color: '#EF9F27', desc: 'Liberate energy. Surf, skate, danse.', note: 'Leaf · Anandamide. Alpha-Theta.' },
-    { name: 'Love', color: '#639922', desc: 'Contemplate life. Sunsets, cafés.', note: 'Leaf · Sérotonine. Theta.' },
-    { name: 'Celebrate', color: '#7F77DD', desc: 'Collective effervescence. Clubs.', note: 'Leaf · Dopamine + Ocytocine.' }
-  ],
-  castes: [
-    { name: 'Leaf', prix: '15€', type: 'One-time payment', desc: 'Flow, Love, Celebrate. Couche sensorielle.' },
-    { name: 'Super Leaf', prix: '150€', type: 'One-time payment', desc: 'VIP + Shadow mode. Couche sélective.' },
-    { name: 'Paper', prix: '50€/mois', type: 'Recurring membership', desc: '7 intentions. AI-matched grind. 7 Mentors.' },
-    { name: 'Super Paper', prix: '22k$', type: 'NFT · all cities · limited', desc: 'Lifetime. Strategic votes. 7% royalties.' }
-  ],
-  stack: [
-    { name: 'Supabase', desc: 'DB + Auth + Realtime + Edge Functions + pg_cron', cost: '0€' },
-    { name: 'Telegram', desc: 'Bot + Mini App (5 screens) + Invoices', cost: '0€' },
-    { name: 'GitHub + Pages', desc: 'Code + landing', cost: '0€' },
-    { name: 'OpenAI', desc: 'GPT-4o + embeddings + Whisper', cost: '~20€/mois' },
-    { name: 'Stripe', desc: 'Invoices + Affiliation 50/50', cost: '2.9%+0.30€' },
-    { name: 'Ionos', desc: 'Domaine → GitHub Pages', cost: '~10€/an' },
-    { name: 'Cloudinary', desc: 'Overlays vidéos/images', cost: '0€' },
-    { name: 'Pollinations.ai', desc: 'Images SPOTS RSS', cost: '0€' }
-  ],
-  build: [
-    { n: '1', brique: 'SQL Supabase', desc: 'Tables users, spots (vibe, is_rss), pgvector, RLS par caste.', valid: 'SPOT inséré → visible MAP' },
-    { n: '2', brique: 'Ghost Factory', desc: 'RSS → OpenAI → Pollinations → SPOT is_rss=true. pg_cron/1h.', valid: 'Article → SPOT Supabase' },
-    { n: '3', brique: 'Landing v12', desc: 'Hero MAP cockpit. Météo/heure. Stamp higher CSS. Loop+Problem.', valid: 'MAP interactive sur Ionos' },
-    { n: '4', brique: 'Mini App HOME + MAP', desc: 'React Telegram. Même design. Supabase Realtime.', valid: 'SPOT dropé → MAP temps réel' },
-    { n: '5', brique: 'GET HIGHER Stoner', desc: '7 étapes. Logo animé. Typewriter. Grind + Kiff.', valid: 'Session OK + message reçu' },
-    { n: '6', brique: 'totehm-bot', desc: 'Onboarding /start → GRIND → Mentors. /drop vidéo+intention.', valid: 'GRIND dans Supabase' },
-    { n: '7', brique: 'Stripe + check-access', desc: 'Invoices + webhook. Rôle activé. Affiliation 50/50.', valid: 'Payer 1€ → rôle activé' },
-    { n: '8', brique: 'match-and-notify', desc: 'pgvector scoring. Seuil 0.60. AI-matched grind.', valid: 'Drop → notif Mentor <10s' }
-  ]
+const DEFAULT_STYLE={
+  bg:'#111213',panel:'#0a0b0c',coral:'#fbd5ca',border:'#222426',
+  gray:'#999',dim:'#666',faint:'#333',
+  fight:'#E24B4A',flow:'#EF9F27',enrich:'#BA7517',love:'#639922',
+  express:'#1D9E75',focus:'#378ADD',celebrate:'#7F77DD',
+  font_size_base:'15.69',font_size_title:'47.08',map_margin:'104',
+  sections_visible:{hero:true,loop:true,figher_club:true,castes:true,process:true,footer:true}
 };
 
-let data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+let data={};
+let styleConfig=JSON.parse(JSON.stringify(DEFAULT_STYLE));
+let activeStyleTab='colors';
 
 // ── AUTH ──
-function tryLogin() {
-  const val = document.getElementById('pwd').value;
-  if (val === PASSWORD) {
+function tryLogin(){
+  if(document.getElementById('pwd').value===PASSWORD){
     document.getElementById('lock').classList.add('out');
-    setTimeout(() => {
-      document.getElementById('lock').style.display = 'none';
+    setTimeout(()=>{
+      document.getElementById('lock').style.display='none';
       document.getElementById('cms').classList.add('show');
-      loadFromSupabase();
-    }, 400);
+      loadAll();
+    },400);
   } else {
-    document.getElementById('lock-err').textContent = 'Mot de passe incorrect.';
-    document.getElementById('pwd').value = '';
+    document.getElementById('lock-err').textContent='Mot de passe incorrect.';
+    document.getElementById('pwd').value='';
     document.getElementById('pwd').focus();
   }
 }
 
 // ── SUPABASE ──
-async function sbFetch(path, opts = {}) {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': `Bearer ${SUPABASE_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=representation',
-      ...opts.headers
-    },
+async function sbFetch(path,opts={}){
+  const res=await fetch(`${SUPABASE_URL}/rest/v1/${path}`,{
+    headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/json','Prefer':'return=representation',...opts.headers},
     ...opts
   });
-  if (!res.ok && res.status !== 404) throw new Error(await res.text());
-  if (res.status === 204 || res.status === 404) return null;
+  if(res.status===204||res.status===404)return null;
+  if(!res.ok)throw new Error(await res.text());
   return res.json();
 }
 
-async function loadFromSupabase() {
-  setStatus('saving', 'Chargement···');
-  try {
-    const rows = await sbFetch('cms_content?id=eq.context_v6b&select=content');
-    if (rows && rows.length > 0) {
-      data = JSON.parse(rows[0].content);
-    }
-    setStatus('saved', 'Synchronisé');
+async function loadAll(){
+  setStatus('saving','Chargement···');
+  try{
+    const [cmsRows,styleRows]=await Promise.all([
+      sbFetch('cms_content?id=eq.context_v6b&select=content'),
+      sbFetch('style_config?id=eq.main&select=config')
+    ]);
+    if(cmsRows&&cmsRows.length>0) data=JSON.parse(cmsRows[0].content);
+    if(styleRows&&styleRows.length>0) styleConfig={...DEFAULT_STYLE,...styleRows[0].config};
+    setStatus('saved','Synchronisé');
     renderCMS();
-  } catch(e) {
-    setStatus('error', 'Erreur chargement');
-    renderCMS(); // fallback sur DEFAULT_DATA
+  } catch(e){
+    setStatus('error','Erreur chargement');
+    renderCMS();
   }
 }
 
-async function saveAll() {
+async function saveAll(){
   collectData();
-  setStatus('saving', 'Sauvegarde···');
-  document.getElementById('save-btn').disabled = true;
-  try {
-    const existing = await sbFetch('cms_content?id=eq.context_v6b&select=id');
-    const payload = { id: 'context_v6b', content: JSON.stringify(data), updated_at: new Date().toISOString() };
-    if (existing && existing.length > 0) {
-      await sbFetch('cms_content?id=eq.context_v6b', {
-        method: 'PATCH',
-        body: JSON.stringify({ content: payload.content, updated_at: payload.updated_at })
-      });
+  collectStyle();
+  setStatus('saving','Sauvegarde···');
+  document.getElementById('save-btn').disabled=true;
+  try{
+    // Save content
+    const existsCMS=await sbFetch('cms_content?id=eq.context_v6b&select=id');
+    if(existsCMS&&existsCMS.length>0){
+      await sbFetch('cms_content?id=eq.context_v6b',{method:'PATCH',body:JSON.stringify({content:JSON.stringify(data),updated_at:new Date().toISOString()})});
     } else {
-      await sbFetch('cms_content', { method: 'POST', body: JSON.stringify(payload) });
+      await sbFetch('cms_content',{method:'POST',body:JSON.stringify({id:'context_v6b',content:JSON.stringify(data)})});
     }
-    setStatus('saved', 'Sauvegardé ✓');
-    showToast('Sauvegardé avec succès', 'ok');
-  } catch(e) {
-    setStatus('error', 'Erreur save');
-    showToast('Erreur : ' + e.message, 'err');
+    // Save style
+    const existsStyle=await sbFetch('style_config?id=eq.main&select=id');
+    if(existsStyle&&existsStyle.length>0){
+      await sbFetch('style_config?id=eq.main',{method:'PATCH',body:JSON.stringify({config:styleConfig,updated_at:new Date().toISOString()})});
+    } else {
+      await sbFetch('style_config',{method:'POST',body:JSON.stringify({id:'main',config:styleConfig})});
+    }
+    setStatus('saved','Sauvegardé ✓');
+    showToast('Sauvegardé — la landing se met à jour au prochain rechargement','ok');
+  } catch(e){
+    setStatus('error','Erreur save');
+    showToast('Erreur : '+e.message,'err');
   }
-  document.getElementById('save-btn').disabled = false;
+  document.getElementById('save-btn').disabled=false;
 }
 
-// ── STATUS ──
-function setStatus(type, label) {
-  const dot = document.getElementById('status-dot');
-  const lbl = document.getElementById('status-label');
-  dot.className = 'status-dot ' + type;
-  lbl.textContent = label;
+// ── STATUS / TOAST ──
+function setStatus(type,label){
+  document.getElementById('status-dot').className='status-dot '+type;
+  document.getElementById('status-label').textContent=label;
 }
-
-// ── TOAST ──
 let toastTimer;
-function showToast(msg, type = 'ok') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + type;
+function showToast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show '+type;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.className = 'toast', 3000);
+  toastTimer=setTimeout(()=>t.className='toast',4000);
 }
 
 // ── RENDER CMS ──
-function renderCMS() {
-  const container = document.getElementById('cms-content');
-  container.innerHTML = `
-    ${renderSection('01', 'Méta', renderMeta())}
-    ${renderSection('02', 'Vision & Copywriting', renderVision())}
-    ${renderSection('03', 'Règles absolues', renderRegles(), true)}
-    ${renderSection('04', '7 Intentions', renderIntentions(), true)}
-    ${renderSection('05', 'Castes & Abonnements', renderCastes())}
-    ${renderSection('06', 'Stack technique', renderStack())}
-    ${renderSection('07', 'Ordre de build', renderBuild())}
+function renderCMS(){
+  const c=document.getElementById('cms-content');
+  c.innerHTML=`
+    ${renderSection('01','Méta',renderMeta())}
+    ${renderSection('02','Vision & Copywriting',renderVision())}
+    ${renderSection('03','Règles absolues',renderRegles(),true)}
+    ${renderSection('04','7 Intentions',renderIntentions(),true)}
+    ${renderSection('05','Castes & Abonnements',renderCastes())}
+    ${renderSection('06','Stack technique',renderStack())}
+    ${renderSection('07','Ordre de build',renderBuild())}
+    ${renderSection('08','Style · Landing Page',renderStyle(),false,'var(--focus)')}
   `;
-  // Couleurs non éditables — juste visuelles
-  document.querySelectorAll('.cms-section-head').forEach(h => {
-    h.addEventListener('click', () => {
-      h.closest('.cms-section').classList.toggle('open');
-    });
+  document.querySelectorAll('.cms-section-head').forEach(h=>{
+    h.addEventListener('click',()=>h.closest('.cms-section').classList.toggle('open'));
   });
-  // Ouvrir le premier
   document.querySelector('.cms-section').classList.add('open');
+  bindStyleTabs();
 }
 
-function renderSection(n, name, body, open = false) {
+function renderSection(n,name,body,open=false,accentColor=''){
+  const accent=accentColor?`border-top:2px solid ${accentColor};`:'';
   return `
-    <div class="cms-section ${open ? 'open' : ''}">
+    <div class="cms-section${open?' open':''}" style="${accent}">
       <div class="cms-section-head">
         <div class="cms-section-label">
           <span class="sec-num">${n}</span>
@@ -535,176 +289,271 @@ function renderSection(n, name, body, open = false) {
         <span class="sec-arrow">▾</span>
       </div>
       <div class="cms-section-body">${body}</div>
+    </div>`;
+}
+
+// ── STYLE SECTION ──
+function renderStyle(){
+  const s=styleConfig;
+  const sv=s.sections_visible||{};
+  return `
+    <div class="style-tabs" id="style-tabs">
+      <div class="style-tab ${activeStyleTab==='colors'?'active':''}" data-tab="colors">Couleurs</div>
+      <div class="style-tab ${activeStyleTab==='intentions'?'active':''}" data-tab="intentions">Intentions</div>
+      <div class="style-tab ${activeStyleTab==='typo'?'active':''}" data-tab="typo">Typographie</div>
+      <div class="style-tab ${activeStyleTab==='sections'?'active':''}" data-tab="sections">Sections</div>
+    </div>
+
+    <div id="style-tab-colors" class="style-tab-content" style="display:${activeStyleTab==='colors'?'block':'none'}">
+      <div class="field-label" style="margin-bottom:12px">Couleurs globales</div>
+      <div class="color-picker-row">
+        ${cp('bg','Background',s.bg)}
+        ${cp('panel','Panel',s.panel)}
+        ${cp('coral','Coral (boutons)',s.coral)}
+        ${cp('border','Border',s.border)}
+        ${cp('gray','Gray (textes)',s.gray)}
+        ${cp('dim','Dim (subtitles)',s.dim)}
+        ${cp('faint','Faint (hints)',s.faint)}
+      </div>
+      <button class="preview-btn" onclick="openPreview()">Prévisualiser la landing →</button>
+    </div>
+
+    <div id="style-tab-intentions" class="style-tab-content" style="display:${activeStyleTab==='intentions'?'block':'none'}">
+      <div class="field-label" style="margin-bottom:12px">Couleurs des 7 intentions</div>
+      <div class="color-picker-row">
+        ${cp('fight','Fight',s.fight)}
+        ${cp('flow','Flow',s.flow)}
+        ${cp('enrich','Enrich',s.enrich)}
+        ${cp('love','Love',s.love)}
+        ${cp('express','Express',s.express)}
+        ${cp('focus','Focus',s.focus)}
+        ${cp('celebrate','Celebrate',s.celebrate)}
+      </div>
+      <button class="preview-btn" onclick="openPreview()">Prévisualiser la landing →</button>
+    </div>
+
+    <div id="style-tab-typo" class="style-tab-content" style="display:${activeStyleTab==='typo'?'block':'none'}">
+      <div class="field-label" style="margin-bottom:12px">Tailles de police</div>
+      <div class="slider-row">
+        <div>
+          <div class="slider-label">Texte courant</div>
+          <input type="range" min="12" max="20" step="0.5"
+            value="${s.font_size_base}"
+            oninput="document.getElementById('val-base').textContent=this.value+'px';styleConfig.font_size_base=this.value"
+            style="width:100%">
+        </div>
+        <input class="field-input" id="val-base" value="${s.font_size_base}px" style="text-align:center;padding:6px" readonly>
+      </div>
+      <div class="slider-row">
+        <div>
+          <div class="slider-label">Titre principal (hero)</div>
+          <input type="range" min="28" max="72" step="1"
+            value="${s.font_size_title}"
+            oninput="document.getElementById('val-title').textContent=this.value+'px';styleConfig.font_size_title=this.value"
+            style="width:100%">
+        </div>
+        <input class="field-input" id="val-title" value="${s.font_size_title}px" style="text-align:center;padding:6px" readonly>
+      </div>
+      <div class="slider-row">
+        <div>
+          <div class="slider-label">Marge MAP (desktop)</div>
+          <input type="range" min="0" max="200" step="4"
+            value="${s.map_margin}"
+            oninput="document.getElementById('val-map').textContent=this.value+'px';styleConfig.map_margin=this.value"
+            style="width:100%">
+        </div>
+        <input class="field-input" id="val-map" value="${s.map_margin}px" style="text-align:center;padding:6px" readonly>
+      </div>
+      <button class="preview-btn" onclick="openPreview()">Prévisualiser la landing →</button>
+    </div>
+
+    <div id="style-tab-sections" class="style-tab-content" style="display:${activeStyleTab==='sections'?'block':'none'}">
+      <div class="field-label" style="margin-bottom:12px">Sections visibles sur la landing</div>
+      <div class="section-toggles">
+        ${secToggle('hero','Hero · MAP',sv.hero)}
+        ${secToggle('loop','The Loop',sv.loop)}
+        ${secToggle('figher_club','Figher Club',sv.figher_club)}
+        ${secToggle('castes','Castes',sv.castes)}
+        ${secToggle('process','Process',sv.process)}
+        ${secToggle('footer','Footer',sv.footer)}
+      </div>
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--gray);padding:10px;border:1px solid var(--border);background:#000">
+        Les sections désactivées sont masquées (display:none) sur la landing au prochain rechargement.
+      </div>
     </div>
   `;
 }
 
-function renderMeta() {
-  const m = data.meta;
+function cp(key,label,val){
+  return `
+    <div class="cp-item">
+      <div class="cp-label">${label}</div>
+      <div class="cp-row">
+        <div class="cp-swatch" style="background:${val}">
+          <input type="color" value="${val}"
+            oninput="this.parentElement.style.background=this.value;this.nextElementSibling.value=this.value;styleConfig['${key}']=this.value">
+        </div>
+        <input class="cp-hex" value="${val}" maxlength="7"
+          oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/)){this.previousElementSibling.querySelector('input').value=this.value;this.previousElementSibling.style.background=this.value;styleConfig['${key}']=this.value}">
+      </div>
+    </div>`;
+}
+
+function secToggle(key,label,val){
+  return `
+    <div class="sec-toggle">
+      <span class="sec-toggle-name">${label}</span>
+      <label class="toggle-switch">
+        <input type="checkbox" ${val?'checked':''} data-section="${key}"
+          onchange="styleConfig.sections_visible['${key}']=this.checked">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>`;
+}
+
+function bindStyleTabs(){
+  document.querySelectorAll('.style-tab').forEach(tab=>{
+    tab.addEventListener('click',()=>{
+      activeStyleTab=tab.dataset.tab;
+      document.querySelectorAll('.style-tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelectorAll('.style-tab-content').forEach(c=>c.style.display='none');
+      document.getElementById('style-tab-'+activeStyleTab).style.display='block';
+    });
+  });
+}
+
+function openPreview(){
+  showToast('Sauvegarde avant prévisualisation···','ok');
+  saveAll().then(()=>window.open(LANDING_URL,'_blank'));
+}
+
+// ── COLLECT STYLE ──
+function collectStyle(){
+  // Already updated live via oninput handlers
+}
+
+// ── CONTENT SECTIONS ──
+function renderMeta(){
+  const m=data.meta||{};
   return `
     <div class="field-row">
-      <div class="field">
-        <div class="field-label">Version</div>
-        <input class="field-input" data-key="meta.version" value="${esc(m.version)}">
-      </div>
-      <div class="field">
-        <div class="field-label">Fondateur</div>
-        <input class="field-input" data-key="meta.fondateur" value="${esc(m.fondateur)}">
-      </div>
+      <div class="field"><div class="field-label">Version</div>
+        <input class="field-input" data-key="meta.version" value="${esc(m.version||'')}"></div>
+      <div class="field"><div class="field-label">Fondateur</div>
+        <input class="field-input" data-key="meta.fondateur" value="${esc(m.fondateur||'')}"></div>
     </div>
     <div class="field-row">
-      <div class="field">
-        <div class="field-label">MVP City</div>
-        <input class="field-input" data-key="meta.mvp" value="${esc(m.mvp)}">
-      </div>
-      <div class="field">
-        <div class="field-label">Domaine</div>
-        <input class="field-input" data-key="meta.domaine" value="${esc(m.domaine)}">
-      </div>
+      <div class="field"><div class="field-label">MVP City</div>
+        <input class="field-input" data-key="meta.mvp" value="${esc(m.mvp||'')}"></div>
+      <div class="field"><div class="field-label">Domaine</div>
+        <input class="field-input" data-key="meta.domaine" value="${esc(m.domaine||'')}"></div>
     </div>
-    <div class="field">
-      <div class="field-label">Stack (résumé)</div>
-      <input class="field-input" data-key="meta.stack" value="${esc(m.stack)}">
-    </div>
-  `;
+    <div class="field"><div class="field-label">Stack</div>
+      <input class="field-input" data-key="meta.stack" value="${esc(m.stack||'')}"></div>`;
 }
 
-function renderVision() {
-  const v = data.vision;
+function renderVision(){
+  const v=data.vision||{};
   return `
-    <div class="field">
-      <div class="field-label">Promesse principale</div>
-      <textarea class="field-textarea" data-key="vision.promesse" style="min-height:120px">${esc(v.promesse)}</textarea>
-    </div>
-    <div class="field">
-      <div class="field-label">Le Problème (Répulsion · #753268)</div>
-      <textarea class="field-textarea" data-key="vision.probleme">${esc(v.probleme)}</textarea>
-    </div>
-    <div class="field">
-      <div class="field-label">La Solution (Objectif · #2d4186)</div>
-      <textarea class="field-textarea" data-key="vision.solution">${esc(v.solution)}</textarea>
-    </div>
-  `;
+    <div class="field"><div class="field-label">Promesse</div>
+      <textarea class="field-textarea" data-key="vision.promesse" style="min-height:120px">${esc(v.promesse||'')}</textarea></div>
+    <div class="field"><div class="field-label">Problème (Répulsion)</div>
+      <textarea class="field-textarea" data-key="vision.probleme">${esc(v.probleme||'')}</textarea></div>
+    <div class="field"><div class="field-label">Solution (Objectif)</div>
+      <textarea class="field-textarea" data-key="vision.solution">${esc(v.solution||'')}</textarea></div>`;
 }
 
-function renderRegles() {
+function renderRegles(){
   return `<div class="rules-list">
-    ${data.regles.map((r, i) => `
+    ${(data.regles||[]).map((r,i)=>`
       <div class="rule-item">
         <div class="rule-n">${String(i+1).padStart(2,'0')}</div>
-        <textarea class="field-textarea" data-key="regles.${i}"
-          style="min-height:52px">${esc(r)}</textarea>
-      </div>
-    `).join('')}
+        <textarea class="field-textarea" data-key="regles.${i}" style="min-height:52px">${esc(r)}</textarea>
+      </div>`).join('')}
   </div>`;
 }
 
-function renderIntentions() {
+function renderIntentions(){
   return `<div class="intentions-list">
-    ${data.intentions.map((it, i) => `
+    ${(data.intentions||[]).map((it,i)=>`
       <div class="intention-item">
-        <div class="int-dot" style="background:${it.color}"></div>
-        <input class="field-input" data-key="intentions.${i}.name"
-          value="${esc(it.name)}" style="font-weight:700;color:${it.color}">
-        <input class="field-input" data-key="intentions.${i}.desc"
-          value="${esc(it.desc)}" placeholder="Description">
-        <input class="field-input" data-key="intentions.${i}.note"
-          value="${esc(it.note)}" placeholder="Note" style="color:var(--gray)">
-      </div>
-    `).join('')}
+        <div style="width:8px;height:8px;border-radius:50%;background:${it.color};flex-shrink:0"></div>
+        <input class="field-input" data-key="intentions.${i}.name" value="${esc(it.name)}" style="font-weight:700;color:${it.color}">
+        <input class="field-input" data-key="intentions.${i}.desc" value="${esc(it.desc)}" placeholder="Description">
+        <input class="field-input" data-key="intentions.${i}.note" value="${esc(it.note||'')}" placeholder="Note" style="color:var(--gray)">
+      </div>`).join('')}
   </div>`;
 }
 
-function renderCastes() {
+function renderCastes(){
   return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-    ${data.castes.map((c, i) => `
+    ${(data.castes||[]).map((c,i)=>`
       <div style="border:1px solid var(--border);padding:16px;background:#000">
-        <div class="field">
-          <div class="field-label">Nom</div>
-          <input class="field-input" data-key="castes.${i}.name" value="${esc(c.name)}">
-        </div>
+        <div class="field"><div class="field-label">Nom</div>
+          <input class="field-input" data-key="castes.${i}.name" value="${esc(c.name||'')}"></div>
+        <div class="field"><div class="field-label">Target (profil)</div>
+          <input class="field-input" data-key="castes.${i}.target" value="${esc(c.target||'')}" style="color:var(--coral)"></div>
+        <div class="field"><div class="field-label">Description target</div>
+          <textarea class="field-textarea" data-key="castes.${i}.target_desc" style="min-height:52px">${esc(c.target_desc||'')}</textarea></div>
         <div class="field-row">
-          <div class="field">
-            <div class="field-label">Prix</div>
-            <input class="field-input" data-key="castes.${i}.prix" value="${esc(c.prix)}">
-          </div>
-          <div class="field">
-            <div class="field-label">Type billing</div>
-            <input class="field-input" data-key="castes.${i}.type" value="${esc(c.type)}">
-          </div>
+          <div class="field"><div class="field-label">Prix</div>
+            <input class="field-input" data-key="castes.${i}.prix" value="${esc(c.prix||'')}"></div>
+          <div class="field"><div class="field-label">Billing</div>
+            <input class="field-input" data-key="castes.${i}.type" value="${esc(c.type||'')}"></div>
         </div>
-        <div class="field">
-          <div class="field-label">Description</div>
-          <textarea class="field-textarea" data-key="castes.${i}.desc"
-            style="min-height:60px">${esc(c.desc)}</textarea>
-        </div>
-      </div>
-    `).join('')}
+        <div class="field"><div class="field-label">Features</div>
+          <textarea class="field-textarea" data-key="castes.${i}.desc" style="min-height:60px">${esc(c.desc||'')}</textarea></div>
+      </div>`).join('')}
   </div>`;
 }
 
-function renderStack() {
+function renderStack(){
   return `<div style="display:flex;flex-direction:column;gap:8px">
-    ${data.stack.map((s, i) => `
+    ${(data.stack||[]).map((s,i)=>`
       <div style="display:grid;grid-template-columns:140px 1fr 100px;gap:10px;align-items:center">
-        <input class="field-input" data-key="stack.${i}.name"
-          value="${esc(s.name)}" style="font-weight:700;color:var(--coral)">
+        <input class="field-input" data-key="stack.${i}.name" value="${esc(s.name)}" style="font-weight:700;color:var(--coral)">
         <input class="field-input" data-key="stack.${i}.desc" value="${esc(s.desc)}">
-        <input class="field-input" data-key="stack.${i}.cost"
-          value="${esc(s.cost)}" style="color:var(--love);text-align:center">
-      </div>
-    `).join('')}
+        <input class="field-input" data-key="stack.${i}.cost" value="${esc(s.cost)}" style="color:var(--love);text-align:center">
+      </div>`).join('')}
   </div>`;
 }
 
-function renderBuild() {
+function renderBuild(){
   return `<table class="build-table">
-    <thead><tr>
-      <th>#</th><th>Brique</th><th>Description</th><th>Validation</th>
-    </tr></thead>
+    <thead><tr><th>#</th><th>Brique</th><th>Description</th><th>Validation</th></tr></thead>
     <tbody>
-      ${data.build.map((b, i) => `
+      ${(data.build||[]).map((b,i)=>`
         <tr>
           <td><span class="build-n">${b.n}</span></td>
-          <td><input class="field-input" data-key="build.${i}.brique"
-            value="${esc(b.brique)}" style="font-weight:700"></td>
-          <td><textarea class="field-textarea" data-key="build.${i}.desc"
-            style="min-height:52px">${esc(b.desc)}</textarea></td>
-          <td><input class="field-input" data-key="build.${i}.valid"
-            value="${esc(b.valid)}" style="color:var(--love)"></td>
-        </tr>
-      `).join('')}
+          <td><input class="field-input" data-key="build.${i}.brique" value="${esc(b.brique)}" style="font-weight:700"></td>
+          <td><textarea class="field-textarea" data-key="build.${i}.desc" style="min-height:52px">${esc(b.desc)}</textarea></td>
+          <td><input class="field-input" data-key="build.${i}.valid" value="${esc(b.valid)}" style="color:var(--love)"></td>
+        </tr>`).join('')}
     </tbody>
   </table>`;
 }
 
-// ── COLLECT ──
-function collectData() {
-  document.querySelectorAll('[data-key]').forEach(el => {
-    const keys = el.dataset.key.split('.');
-    let obj = data;
-    for (let i = 0; i < keys.length - 1; i++) {
-      if (obj[keys[i]] === undefined) obj[keys[i]] = {};
-      obj = obj[keys[i]];
+function collectData(){
+  document.querySelectorAll('[data-key]').forEach(el=>{
+    const keys=el.dataset.key.split('.');
+    let obj=data;
+    for(let i=0;i<keys.length-1;i++){
+      if(obj[keys[i]]===undefined)obj[keys[i]]={};
+      obj=obj[keys[i]];
     }
-    obj[keys[keys.length - 1]] = el.value;
+    obj[keys[keys.length-1]]=el.value;
   });
 }
 
-// ── UTILS ──
-function esc(s) {
-  return String(s || '')
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;');
+function esc(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// Auto-save on Ctrl+S
-document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='s'){
     e.preventDefault();
-    if (document.getElementById('cms').classList.contains('show')) saveAll();
+    if(document.getElementById('cms').classList.contains('show'))saveAll();
   }
 });
 </script>
