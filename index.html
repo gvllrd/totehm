@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -222,57 +223,38 @@ nav{position:fixed;top:0;left:0;right:0;z-index:300;height:44px;background:var(-
 }
 </style>
 <script>
-(async function(){
+(function(){
+  var xhr=new XMLHttpRequest();
+  xhr.open('GET','https://abujjbkbbiumxrokozph.supabase.co/rest/v1/style_config?id=eq.main&select=config',false);
+  xhr.setRequestHeader('apikey','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
+  xhr.setRequestHeader('Authorization','Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
   try{
-    const r=await fetch('https://abujjbkbbiumxrokozph.supabase.co/rest/v1/style_config?id=eq.main&select=config',{
-      headers:{
-        'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us',
-        'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us'
+    xhr.send();
+    if(xhr.status===200){
+      var rows=JSON.parse(xhr.responseText);
+      if(rows&&rows[0]){
+        var s=rows[0].config;
+        var css=':root{';
+        if(s.bg)css+='--bg:'+s.bg+';';
+        if(s.panel)css+='--panel:'+s.panel+';';
+        if(s.coral)css+='--coral:'+s.coral+';';
+        if(s.border)css+='--border:'+s.border+';';
+        if(s.gray)css+='--gray:'+s.gray+';';
+        if(s.dim)css+='--dim:'+s.dim+';';
+        if(s.faint)css+='--faint:'+s.faint+';';
+        if(s.fight)css+='--fight:'+s.fight+';';
+        if(s.flow)css+='--flow:'+s.flow+';';
+        if(s.enrich)css+='--enrich:'+s.enrich+';';
+        if(s.love)css+='--love:'+s.love+';';
+        if(s.express)css+='--express:'+s.express+';';
+        if(s.focus)css+='--focus:'+s.focus+';';
+        if(s.celebrate)css+='--celebrate:'+s.celebrate+';';
+        css+='}';
+        document.write('<style id="sb-style">'+css+'</style>');
+        window._sbStyle=s;
       }
-    });
-    const rows=await r.json();
-    if(!rows||!rows[0])return;
-    const s=rows[0].config;
-    const root=document.documentElement.style;
-    if(s.bg)root.setProperty('--bg',s.bg);
-    if(s.panel)root.setProperty('--panel',s.panel);
-    if(s.coral)root.setProperty('--coral',s.coral);
-    if(s.border)root.setProperty('--border',s.border);
-    if(s.gray)root.setProperty('--gray',s.gray);
-    if(s.dim)root.setProperty('--dim',s.dim);
-    if(s.faint)root.setProperty('--faint',s.faint);
-    if(s.fight)root.setProperty('--fight',s.fight);
-    if(s.flow)root.setProperty('--flow',s.flow);
-    if(s.enrich)root.setProperty('--enrich',s.enrich);
-    if(s.love)root.setProperty('--love',s.love);
-    if(s.express)root.setProperty('--express',s.express);
-    if(s.focus)root.setProperty('--focus',s.focus);
-    if(s.celebrate)root.setProperty('--celebrate',s.celebrate);
-    if(s.map_margin){
-      document.addEventListener('DOMContentLoaded',()=>{
-        const mc=document.getElementById('map-container');
-        const hw=document.querySelector('.hud-weather');
-        if(mc){mc.style.left=s.map_margin+'px';mc.style.right=s.map_margin+'px';}
-        if(hw){hw.style.left=s.map_margin+'px';hw.style.right=s.map_margin+'px';}
-      });
     }
-    if(s.sections_visible){
-      document.addEventListener('DOMContentLoaded',()=>{
-        const sv=s.sections_visible;
-        if(sv.loop===false) document.querySelectorAll('.sec').forEach(el=>{
-          if(el.querySelector('.slabel')&&el.querySelector('.slabel').textContent.includes('loop')) el.style.display='none';
-        });
-        if(sv.figher_club===false) document.querySelectorAll('.sec').forEach(el=>{
-          if(el.querySelector('.slabel')&&el.querySelector('.slabel').textContent.includes('figher')) el.style.display='none';
-        });
-        if(sv.castes===false){const el=document.getElementById('castes');if(el)el.style.display='none';}
-        if(sv.process===false) document.querySelectorAll('.sec').forEach(el=>{
-          if(el.querySelector('.process')) el.style.display='none';
-        });
-        if(sv.footer===false){const el=document.getElementById('footer');if(el)el.style.display='none';}
-      });
-    }
-  }catch(e){console.log('Style Supabase indisponible, fallback CSS');}
+  }catch(e){console.log('Supabase fallback');}
 })();
 </script>
 </head>
@@ -511,6 +493,25 @@ nav{position:fixed;top:0;left:0;right:0;z-index:300;height:44px;background:var(-
 </div>
 
 <script>
+
+document.addEventListener('DOMContentLoaded',function(){
+  var s=window._sbStyle;
+  if(!s)return;
+  if(s.map_margin){
+    var mc=document.getElementById('map-container');
+    var hw=document.querySelector('.hud-weather');
+    if(mc){mc.style.left=s.map_margin+'px';mc.style.right=s.map_margin+'px';}
+    if(hw){hw.style.left=s.map_margin+'px';hw.style.right=s.map_margin+'px';}
+  }
+  if(s.sections_visible){
+    var sv=s.sections_visible;
+    if(sv.loop===false)document.querySelectorAll('.sec').forEach(function(el){if(el.querySelector('.slabel')&&el.querySelector('.slabel').textContent.includes('loop'))el.style.display='none';});
+    if(sv.figher_club===false)document.querySelectorAll('.sec').forEach(function(el){if(el.querySelector('.slabel')&&el.querySelector('.slabel').textContent.includes('figher'))el.style.display='none';});
+    if(sv.castes===false){var el=document.getElementById('castes');if(el)el.style.display='none';}
+    if(sv.process===false)document.querySelectorAll('.sec').forEach(function(el){if(el.querySelector('.process'))el.style.display='none';});
+    if(sv.footer===false){var el=document.getElementById('footer');if(el)el.style.display='none';}
+  }
+});
 const cur=document.getElementById('cur');
 document.addEventListener('mousemove',e=>{cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';});
 const IT={fight:{h:'#E24B4A',r:226,g:75,b:74},flow:{h:'#EF9F27',r:239,g:159,b:39},enrich:{h:'#BA7517',r:186,g:117,b:23},love:{h:'#639922',r:99,g:153,b:34},express:{h:'#1D9E75',r:29,g:158,b:117},focus:{h:'#378ADD',r:55,g:138,b:221},celebrate:{h:'#7F77DD',r:127,g:119,b:221}};
