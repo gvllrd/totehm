@@ -435,7 +435,7 @@ function cp(key,label,val){
       <div class="cp-row">
         <div class="cp-swatch" style="background:${val}">
           <input type="color" value="${val}"
-            oninput="this.parentElement.style.background=this.value;this.nextElementSibling.value=this.value;styleConfig['${key}']=this.value">
+            oninput="this.parentElement.style.background=this.value;this.parentElement.nextElementSibling.value=this.value;styleConfig['${key}']=this.value">
         </div>
         <input class="cp-hex" value="${val}" maxlength="7"
           oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/)){this.previousElementSibling.querySelector('input').value=this.value;this.previousElementSibling.style.background=this.value;styleConfig['${key}']=this.value}">
