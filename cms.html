@@ -189,7 +189,13 @@ function tryLogin(){
 // ── SUPABASE ──
 async function sbFetch(path,opts={}){
   const res=await fetch(`${SUPABASE_URL}/rest/v1/${path}`,{
-    headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/json','Prefer':'return=representation',...opts.headers},
+    headers:{
+      'apikey':SUPABASE_KEY,
+      'Authorization':`Bearer ${SUPABASE_KEY}`,
+      'Content-Type':'application/json',
+      'Prefer':'return=representation',
+      ...opts.headers
+    },
     ...opts
   });
   if(res.status===204||res.status===404)return null;
@@ -208,8 +214,9 @@ async function loadAll(){
     console.log('cmsRows:', cmsRows);
     console.log('styleRows:', styleRows);
 
-    if(cmsRows&&cmsRows.length>0) data=JSON.parse(cmsRows.content);
-    if(styleRows&&styleRows.length>0) styleConfig={...DEFAULT_STYLE,...styleRows.config};
+    if(cmsRows&&cmsRows.length>0) data=JSON.parse(cmsRows[0].content);
+    if(styleRows&&styleRows.length>0) styleConfig={...DEFAULT_STYLE,...styleRows[0].config};
+
     setStatus('saved','Synchronisé');
     renderCMS();
   } catch(e){
@@ -225,62 +232,64 @@ async function saveAll(){
   document.getElementById('save-btn').disabled=true;
 
   try{
+    const now=new Date().toISOString();
+
     // SAVE CMS CONTENT (UPSERT)
-    const cmsRes = await fetch(
-      SUPABASE_URL + "/rest/v1/cms_content?on_conflict=id",
+    const cmsRes=await fetch(
+      SUPABASE_URL+'/rest/v1/cms_content?on_conflict=id',
       {
-        method: "POST",
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization": "Bearer " + SUPABASE_KEY,
-          "Content-Type": "application/json",
-          "Prefer": "resolution=merge-duplicates,return=representation"
+        method:'POST',
+        headers:{
+          'apikey':SUPABASE_KEY,
+          'Authorization':'Bearer '+SUPABASE_KEY,
+          'Content-Type':'application/json',
+          'Prefer':'resolution=merge-duplicates,return=representation'
         },
-        body: JSON.stringify([{
-          id: "context_v6b",
-          content: JSON.stringify(data),
-          updated_at: new Date().toISOString()
+        body:JSON.stringify([{
+          id:'context_v6b',
+          content:JSON.stringify(data),
+          updated_at:now
         }])
       }
     );
 
-    const cmsText = await cmsRes.text();
+    const cmsText=await cmsRes.text();
+    console.log('cms_content save response:', cmsText);
+
     if(!cmsRes.ok){
-      throw new Error("cms_content: " + cmsText);
+      throw new Error('cms_content: '+cmsText);
     }
 
     // SAVE STYLE CONFIG (UPSERT)
-    const styleRes = await fetch(
-      SUPABASE_URL + "/rest/v1/style_config?on_conflict=id",
+    const styleRes=await fetch(
+      SUPABASE_URL+'/rest/v1/style_config?on_conflict=id',
       {
-        method: "POST",
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization": "Bearer " + SUPABASE_KEY,
-          "Content-Type": "application/json",
-          "Prefer": "resolution=merge-duplicates,return=representation"
+        method:'POST',
+        headers:{
+          'apikey':SUPABASE_KEY,
+          'Authorization':'Bearer '+SUPABASE_KEY,
+          'Content-Type':'application/json',
+          'Prefer':'resolution=merge-duplicates,return=representation'
         },
-        body: JSON.stringify([{
-          id: "main",
-          config: styleConfig,
-          updated_at: new Date().toISOString()
+        body:JSON.stringify([{
+          id:'main',
+          config:styleConfig,
+          updated_at:now
         }])
       }
     );
 
-    const styleText = await styleRes.text();
-    if(!styleRes.ok){
-      throw new Error("style_config: " + styleText);
-    }
+    const styleText=await styleRes.text();
+    console.log('style_config save response:', styleText);
 
-    console.log("cms_content saved:", cmsText);
-    console.log("style_config saved:", styleText);
+    if(!styleRes.ok){
+      throw new Error('style_config: '+styleText);
+    }
 
     setStatus('saved','Sauvegardé ✓');
     showToast('Sauvegardé ✓ bg='+styleConfig.bg,'ok');
-
   } catch(e){
-    console.error("SAVE ERROR:", e);
+    console.error('SAVE ERROR:', e);
     setStatus('error','Erreur save');
     showToast('Erreur : '+e.message,'err');
   }
@@ -435,7 +444,7 @@ function cp(key,label,val){
       <div class="cp-row">
         <div class="cp-swatch" style="background:${val}">
           <input type="color" value="${val}"
-            oninput="this.parentElement.style.background=this.value;this.parentElement.nextElementSibling.value=this.value;styleConfig['${key}']=this.value">
+            oninput="this.parentElement.style.background=this.value;this.nextElementSibling.value=this.value;styleConfig['${key}']=this.value">
         </div>
         <input class="cp-hex" value="${val}" maxlength="7"
           oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/)){this.previousElementSibling.querySelector('input').value=this.value;this.previousElementSibling.style.background=this.value;styleConfig['${key}']=this.value}">
@@ -583,7 +592,10 @@ function collectData(){
     const keys=el.dataset.key.split('.');
     let obj=data;
     for(let i=0;i<keys.length-1;i++){
-      if(obj[keys[i]]===undefined)obj[keys[i]]={};
+      if(obj[keys[i]]===undefined){
+        const nextKey=keys[i+1];
+        obj[keys[i]]=/^\d+$/.test(nextKey)?[]:{};
+      }
       obj=obj[keys[i]];
     }
     obj[keys[keys.length-1]]=el.value;
