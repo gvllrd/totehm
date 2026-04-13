@@ -437,35 +437,50 @@ function renderStyle(){
   `;
 }
 
+<script>
+function normalizeHex(v){
+  const s=String(v||'').trim();
+  return /^#[0-9a-fA-F]{6}$/.test(s) ? s.toLowerCase() : null;
+}
+
+function setColorValue(key, el){
+  const hex=normalizeHex(el.value);
+  if(!hex) return;
+
+  const row=el.closest('.cp-row');
+  const swatch=row.querySelector('.cp-swatch');
+  const picker=row.querySelector('input[type="color"]');
+  const hexInput=row.querySelector('.cp-hex');
+
+  swatch.style.background=hex;
+  picker.value=hex;
+  hexInput.value=hex;
+  styleConfig[key]=hex;
+}
+
 function cp(key,label,val){
+  const safe=normalizeHex(val)||'#000000';
   return `
     <div class="cp-item">
       <div class="cp-label">${label}</div>
       <div class="cp-row">
-        <div class="cp-swatch" style="background:${val}">
+        <div class="cp-swatch" style="background:${safe}">
           <input
             type="color"
-            value="${val}"
-            oninput="
-              this.parentElement.style.background=this.value;
-              this.parentElement.nextElementSibling.value=this.value;
-              styleConfig['${key}']=this.value;
-            ">
+            value="${safe}"
+            oninput="setColorValue('${key}', this)">
         </div>
         <input
           class="cp-hex"
-          value="${val}"
+          value="${safe}"
           maxlength="7"
-          oninput="
-            if(/^#[0-9a-fA-F]{6}$/.test(this.value)){
-              this.previousElementSibling.querySelector('input').value=this.value;
-              this.previousElementSibling.style.background=this.value;
-              styleConfig['${key}']=this.value;
-            }
-          ">
+          oninput="setColorValue('${key}', this)"
+          onchange="setColorValue('${key}', this)"
+          onblur="setColorValue('${key}', this)">
       </div>
     </div>`;
 }
+</script>
 
 function secToggle(key,label,val){
   return `
@@ -521,15 +536,22 @@ function renderMeta(){
       <input class="field-input" data-key="meta.stack" value="${esc(m.stack||'')}"></div>`;
 }
 
-function renderVision(){
-  const v=data.vision||{};
-  return `
-    <div class="field"><div class="field-label">Promesse</div>
-      <textarea class="field-textarea" data-key="vision.promesse" style="min-height:120px">${esc(v.promesse||'')}</textarea></div>
-    <div class="field"><div class="field-label">Problème (Répulsion)</div>
-      <textarea class="field-textarea" data-key="vision.probleme">${esc(v.probleme||'')}</textarea></div>
-    <div class="field"><div class="field-label">Solution (Objectif)</div>
-      <textarea class="field-textarea" data-key="vision.solution">${esc(v.solution||'')}</textarea></div>`;
+function renderIntentions(){
+  return `<div class="intentions-list">
+    ${(data.intentions||[]).map((it,i)=>`
+      <div class="intention-item">
+        <input
+          type="color"
+          value="${normalizeHex(it.color)||'#ffffff'}"
+          style="width:18px;height:18px;padding:0;border:none;background:transparent;cursor:pointer"
+          data-key="intentions.${i}.color"
+          oninput="this.nextElementSibling.style.background=this.value">
+        <div style="width:8px;height:8px;border-radius:50%;background:${normalizeHex(it.color)||'#ffffff'};flex-shrink:0"></div>
+        <input class="field-input" data-key="intentions.${i}.name" value="${esc(it.name)}" style="font-weight:700">
+        <input class="field-input" data-key="intentions.${i}.desc" value="${esc(it.desc)}" placeholder="Description">
+        <input class="field-input" data-key="intentions.${i}.note" value="${esc(it.note||'')}" placeholder="Note" style="color:var(--gray)">
+      </div>`).join('')}
+  </div>`;
 }
 
 function renderRegles(){
