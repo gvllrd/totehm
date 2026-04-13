@@ -437,7 +437,6 @@ function renderStyle(){
   `;
 }
 
-<script>
 function normalizeHex(v){
   const s=String(v||'').trim();
   return /^#[0-9a-fA-F]{6}$/.test(s) ? s.toLowerCase() : null;
@@ -448,13 +447,16 @@ function setColorValue(key, el){
   if(!hex) return;
 
   const row=el.closest('.cp-row');
+  if(!row) return;
+
   const swatch=row.querySelector('.cp-swatch');
   const picker=row.querySelector('input[type="color"]');
   const hexInput=row.querySelector('.cp-hex');
 
-  swatch.style.background=hex;
-  picker.value=hex;
-  hexInput.value=hex;
+  if(swatch) swatch.style.background=hex;
+  if(picker) picker.value=hex;
+  if(hexInput) hexInput.value=hex;
+
   styleConfig[key]=hex;
 }
 
@@ -480,7 +482,6 @@ function cp(key,label,val){
       </div>
     </div>`;
 }
-</script>
 
 function secToggle(key,label,val){
   return `
