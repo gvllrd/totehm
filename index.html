@@ -3,6 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+(async function(){
+  try{
+    const r=await fetch('https://abujjbkbbiumxrokozph.supabase.co/rest/v1/style_config?id=eq.main&select=config',{
+      headers:{'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us'}
+    });
+    const rows=await r.json();
+    if(!rows||!rows[0])return;
+    const s=rows[0].config;
+    const root=document.documentElement.style;
+    if(s.bg)root.setProperty('--bg',s.bg);
+    if(s.panel)root.setProperty('--panel',s.panel);
+    if(s.coral)root.setProperty('--coral',s.coral);
+    if(s.border)root.setProperty('--border',s.border);
+    if(s.gray)root.setProperty('--gray',s.gray);
+    if(s.dim)root.setProperty('--dim',s.dim);
+    if(s.faint)root.setProperty('--faint',s.faint);
+    if(s.fight)root.setProperty('--fight',s.fight);
+    if(s.flow)root.setProperty('--flow',s.flow);
+    if(s.enrich)root.setProperty('--enrich',s.enrich);
+    if(s.love)root.setProperty('--love',s.love);
+    if(s.express)root.setProperty('--express',s.express);
+    if(s.focus)root.setProperty('--focus',s.focus);
+    if(s.celebrate)root.setProperty('--celebrate',s.celebrate);
+    if(s.map_margin){
+      document.addEventListener('DOMContentLoaded',()=>{
+        const mc=document.getElementById('map-container');
+        const hw=document.querySelector('.hud-weather');
+        if(mc){mc.style.left=s.map_margin+'px';mc.style.right=s.map_margin+'px';}
+        if(hw){hw.style.left=s.map_margin+'px';hw.style.right=s.map_margin+'px';}
+      });
+    }
+    if(s.sections_visible){
+      document.addEventListener('DOMContentLoaded',()=>{
+        const map={
+          loop:'#loop-section,section:has(.slabel)',
+          figher_club:'section:has(#figher)',
+          castes:'#castes',
+          process:'section:has(.process)',
+          footer:'#footer'
+        };
+        Object.entries(s.sections_visible).forEach(([k,v])=>{
+          if(!v&&map[k]){
+            document.querySelectorAll(map[k]).forEach(el=>el.style.display='none');
+          }
+        });
+      });
+    }
+  }catch(e){console.log('Style Supabase indisponible, fallback CSS')}
+})();
+</script>
 <title>TOTEHM</title>
 <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Montserrat:ital,wght@1,900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
