@@ -298,13 +298,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:300;height:44px;background:var(-
             <span class="ddarr">▾</span>
           </button>
           <div class="ddm">
-            <div class="ddi" onclick="si('fight',this,'#E24B4A')"><div class="ddr1"><div class="ddi-dot" style="background:#E24B4A"></div><span class="ddiq" style="color:#E24B4A">Fight</span><span class="ddih">higher</span></div><div class="dddef">Conquer yourself through harder effort. One more rep.</div></div>
-            <div class="ddi" onclick="si('flow',this,'#EF9F27')"><div class="ddr1"><div class="ddi-dot" style="background:#EF9F27"></div><span class="ddiq" style="color:#EF9F27">Flow</span><span class="ddih">higher</span></div><div class="dddef">Liberate energy through movement. Let your body lead.</div></div>
-            <div class="ddi" onclick="si('enrich',this,'#BA7517')"><div class="ddr1"><div class="ddi-dot" style="background:#BA7517"></div><span class="ddiq" style="color:#BA7517">Enrich</span><span class="ddih">higher</span></div><div class="dddef">Master your wealth through capital & network.</div></div>
-            <div class="ddi" onclick="si('love',this,'#639922')"><div class="ddr1"><div class="ddi-dot" style="background:#639922"></div><span class="ddiq" style="color:#639922">Love</span><span class="ddih">higher</span></div><div class="dddef">Contemplate life through connection & beauty.</div></div>
-            <div class="ddi" onclick="si('express',this,'#1D9E75')"><div class="ddr1"><div class="ddi-dot" style="background:#1D9E75"></div><span class="ddiq" style="color:#1D9E75">Express</span><span class="ddih">higher</span></div><div class="dddef">Give form to emotion through creation.</div></div>
-            <div class="ddi" onclick="si('focus',this,'#378ADD')"><div class="ddr1"><div class="ddi-dot" style="background:#378ADD"></div><span class="ddiq" style="color:#378ADD">Focus</span><span class="ddih">higher</span></div><div class="dddef">Master your mind through deep mental focus.</div></div>
-            <div class="ddi" onclick="si('celebrate',this,'#7F77DD')"><div class="ddr1"><div class="ddi-dot" style="background:#7F77DD"></div><span class="ddiq" style="color:#7F77DD">Celebrate</span><span class="ddih">higher</span></div><div class="dddef">Elevate energy through collective effervescence.</div></div>
+            <div class="ddi" onclick="si('fight',this,getComputedStyle(document.documentElement).getPropertyValue('--fight').trim())"><div class="ddr1"><div class="ddi-dot" style="background:var(--fight)"></div><span class="ddiq" style="color:var(--fight)">Fight</span><span class="ddih">higher</span></div><div class="dddef">Conquer yourself through harder effort. One more rep.</div></div>
+            <div class="ddi" onclick="si('flow',this,getComputedStyle(document.documentElement).getPropertyValue('--flow').trim())"><div class="ddr1"><div class="ddi-dot" style="background:var(--flow)"></div><span class="ddiq" style="color:var(--flow)">Flow</span><span class="ddih">higher</span></div><div class="dddef">Liberate energy through movement. Let your body lead.</div></div>
+            <div class="ddi" onclick="si('enrich',this,getComputedStyle(document.documentElement).getPropertyValue('--enrich').trim())"><div class="ddr1"><div class="ddi-dot" style="background:var(--enrich)"></div><span class="ddiq" style="color:var(--enrich)">Enrich</span><span class="ddih">higher</span></div><div class="dddef">Master your wealth through capital & network.</div></div>
+            <div class="ddi" onclick="si('love',this,getComputedStyle(document.documentElement).getPropertyValue('--love').trim())"><div class="ddr1"><div class="ddi-dot" style="background:var(--love)"></div><span class="ddiq" style="color:var(--love)">Love</span><span class="ddih">higher</span></div><div class="dddef">Contemplate life through connection & beauty.</div></div>
+            <div class="ddi" onclick="si('express',this,getComputedStyle(document.documentElement).getPropertyValue('--express').trim())"><div class="ddr1"><div class="ddi-dot" style="background:var(--express)"></div><span class="ddiq" style="color:var(--express)">Express</span><span class="ddih">higher</span></div><div class="dddef">Give form to emotion through creation.</div></div>
+            <div class="ddi" onclick="si('focus',this,getComputedStyle(document.documentElement).getPropertyValue('--focus').trim())"><div class="ddr1"><div class="ddi-dot" style="background:var(--focus)"></div><span class="ddiq" style="color:var(--focus)">Focus</span><span class="ddih">higher</span></div><div class="dddef">Master your mind through deep mental focus.</div></div>
+            <div class="ddi" onclick="si('celebrate',this,getComputedStyle(document.documentElement).getPropertyValue('--celebrate').trim())"><div class="ddr1"><div class="ddi-dot" style="background:var(--celebrate)"></div><span class="ddiq" style="color:var(--celebrate)">Celebrate</span><span class="ddih">higher</span></div><div class="dddef">Elevate energy through collective effervescence.</div></div>
           </div>
         </div>
       </div>
@@ -494,6 +494,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:300;height:44px;background:var(-
 <script>
 
 document.addEventListener('DOMContentLoaded',function(){
+  refreshIntentColors();
+  if(typeof updateHUD==='function')updateHUD();
   var s=window._sbStyle;
   if(!s)return;
   if(s.map_margin){
@@ -513,7 +515,10 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 const cur=document.getElementById('cur');
 document.addEventListener('mousemove',e=>{cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';});
-const IT={fight:{h:'#E24B4A',r:226,g:75,b:74},flow:{h:'#EF9F27',r:239,g:159,b:39},enrich:{h:'#BA7517',r:186,g:117,b:23},love:{h:'#639922',r:99,g:153,b:34},express:{h:'#1D9E75',r:29,g:158,b:117},focus:{h:'#378ADD',r:55,g:138,b:221},celebrate:{h:'#7F77DD',r:127,g:119,b:221}};
+function hexToRgb(hex){hex=String(hex||'').trim();const m=hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);if(!m)return{r:255,g:255,b:255};return{r:parseInt(m[1],16),g:parseInt(m[2],16),b:parseInt(m[3],16)};}
+function buildIntentColors(){const s=window._sbStyle||{};const keys=['fight','flow','enrich','love','express','focus','celebrate'];const out={};keys.forEach(key=>{const hex=s[key]||getComputedStyle(document.documentElement).getPropertyValue('--'+key).trim()||'#ffffff';const rgb=hexToRgb(hex);out[key]={h:hex,r:rgb.r,g:rgb.g,b:rgb.b};});return out;}
+let IT={};
+function refreshIntentColors(){IT=buildIntentColors();}
 const SP=[
   {id:1,rx:.16,ry:.16,in:'fight',ac:'Boxing class',music:'Trap / Drill',comment:'Coach brings the heat.',pub:true,members:8,rss:false,tl:45,bo:0},
   {id:2,rx:.82,ry:.19,in:'focus',ac:'Deep work',music:'Lo-fi / Ambient',comment:'Best silence in Lisbon.',pub:true,members:12,rss:false,tl:60,bo:8},
@@ -561,7 +566,20 @@ function showPP(s){const ag=age(s,el),mins=Math.max(1,Math.round((s.tl-ag)*1.8)+
 mcv.addEventListener('mousemove',e=>{const r=mcv.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;inside=true;if(!ai){pp.style.display='none';return;}let hov=null,hd=48;SP.forEach(s=>{if(s.in!==ai)return;const rem=Math.max(0,1-age(s,el)/s.tl);if(rem<=0)return;const d=Math.sqrt((mx-s.rx*W)**2+(my-s.ry*H)**2);if(d<hd){hd=d;hov=s;}});hovId=hov?hov.id:null;if(hov){showPP(hov);let px=mx+16,py=my-8;if(px+196>W)px=mx-212;if(py+330>H)py=H-338;pp.style.left=px+'px';pp.style.top=py+'px';}else pp.style.display='none';});
 mcv.addEventListener('mouseleave',()=>{mx=-999;my=-999;inside=false;hovId=null;pp.style.display='none';});
 window.toggleDD=function(){document.getElementById('dd').classList.toggle('open');};
-window.si=function(i,el,color){ai=i;document.querySelectorAll('.ddi').forEach(x=>x.classList.remove('on'));el.classList.add('on');document.getElementById('ddcur').textContent='Choose an intention';document.getElementById('dd').classList.remove('open');document.getElementById('hud-intent').textContent=i.toUpperCase()+' HIGHER';};
+window.si=function(i,el,color){
+  ai=i;
+  document.querySelectorAll('.ddi').forEach(x=>x.classList.remove('on'));
+  el.classList.add('on');
+  const label=i.charAt(0).toUpperCase()+i.slice(1)+' higher';
+  const ddcur=document.getElementById('ddcur');
+  const hud=document.getElementById('hud-intent');
+  ddcur.textContent=label;
+  ddcur.style.color=color||'#fff';
+  hud.textContent=i.toUpperCase()+' HIGHER';
+  hud.style.color=color||'';
+  document.getElementById('dd').classList.remove('open');
+  updateHUD();
+};
 document.addEventListener('click',e=>{if(!document.getElementById('dd').contains(e.target))document.getElementById('dd').classList.remove('open');});
 document.querySelectorAll('.li,.tl-item').forEach((el,i)=>{new IntersectionObserver(ent=>{ent.forEach(e=>{if(e.isIntersecting)setTimeout(()=>el.classList.add('vis'),i*55);});},{threshold:.1}).observe(el);});
 function updateTime(){const d=new Date(new Date().toLocaleString('en',{timeZone:'Europe/Lisbon'}));document.getElementById('lis-time').textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
