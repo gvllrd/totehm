@@ -10,7 +10,7 @@
 html,body{background:#000;overflow-x:hidden}
 body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
 
-/* ═══════════════════════════ STAGE */
+/* ═══════════════════ STAGE ═══════════════════ */
 .stage{
   width:100%;aspect-ratio:16/9;
   background:#000;overflow:hidden;flex-shrink:0;
@@ -30,7 +30,6 @@ body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
   animation:pulse 3s ease-in-out infinite;
 }
 @keyframes pulse{0%,100%{opacity:.12;transform:scale(1)}50%{opacity:.3;transform:scale(1.06)}}
-
 .cta{
   position:absolute;bottom:14px;right:18px;
   color:#fff;font-size:9px;letter-spacing:.35em;text-transform:uppercase;
@@ -38,7 +37,7 @@ body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
 }
 .cta:hover{opacity:1}
 
-/* ═══════════════════════════ SIGN BUTTON */
+/* ═══════════════════ SIGN BUTTON ═══════════════════ */
 .sign{
   background:none;border:0;padding:0;cursor:pointer;
   transition:transform .12s ease,filter .2s ease;
@@ -51,7 +50,7 @@ body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
   filter:drop-shadow(0 0 6px rgba(255,255,255,.45)) drop-shadow(0 0 18px #333366);
 }
 
-/* ═══════════════════════════ MOBILE: SLIDER */
+/* ═══════════════════ MOBILE: SLIDER ═══════════════════ */
 .slider-wrap{
   flex:1;display:flex;align-items:center;background:#000;
   padding:12px 0;min-height:100px;
@@ -70,67 +69,77 @@ body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
   scroll-snap-align:center;
 }
 
-/* ═══════════════════════════ DESKTOP: CONTROLLER */
+/* ═══════════════════ DESKTOP: CONTROLLER ═══════════════════ */
 .controller{display:none}
 
-@media(min-width:1024px)and(orientation:landscape){
+@media(min-width:1024px){
   body{flex-direction:row;height:100vh;height:100dvh;overflow:hidden}
-  .stage{flex:1 1 58%;width:auto;height:100%;aspect-ratio:auto}
+  .stage{flex:0 0 55%;width:auto;height:100%;aspect-ratio:auto}
   .slider-wrap{display:none}
   .controller{
-    display:flex;flex:1 1 42%;height:100%;
+    display:flex;flex:0 0 45%;height:100%;
     align-items:center;justify-content:center;
-    background:#000;padding:24px;
+    background:#000;padding:20px;
   }
+
+  /* The board = manette aspect ratio */
   .ctrl{
-    position:relative;width:100%;max-width:640px;aspect-ratio:16/10;
+    position:relative;width:100%;max-width:680px;
+    aspect-ratio:1.55/1;
   }
   .ctrl .sign{position:absolute}
 
-  /* ═══ CONTROLLER POSITIONS ═══ */
+  /* ════════════════════════════════════════════════
+     CONTROLLER LAYOUT — matches PS4 image exactly
+     ════════════════════════════════════════════════ */
 
-  /* ── TOP ROW: L1/R1 shoulders ── */
-  .ctrl .sign[data-id="wrong_way"]  {left:4%;top:0%;width:12%}
-  .ctrl .sign[data-id="one_way"]    {right:1%;top:0%;width:18%}
+  /* ── L1 / R1 (shoulder buttons — top row) ── */
+  .ctrl [data-id="wrong_way"]       {left:12%;top:0%;width:10%}
+  .ctrl [data-id="one_way"]         {right:2%;top:0%;width:18%}
 
-  /* ── SCREEN CENTER: H + P ── */
-  .ctrl .sign[data-id="Hotel"]      {left:36%;top:6%;width:11%}
-  .ctrl .sign[data-id="parking"]    {left:50%;top:6%;width:9%}
+  /* ── SCREEN (touchpad — H and P) ── */
+  .ctrl [data-id="Hotel"]           {left:37%;top:5%;width:10.5%}
+  .ctrl [data-id="parking"]         {left:49%;top:5%;width:8.5%}
 
-  /* ── T sign above D-pad ── */
-  .ctrl .sign[data-id="station"]    {left:23%;top:8%;width:7%}
+  /* ── T sign (above D-pad, small) ── */
+  .ctrl [data-id="station"]         {left:25%;top:10%;width:5.5%}
 
-  /* ── D-PAD (arrows in cross formation) ── */
-  .ctrl .sign[data-id="straight"]          {left:13%;top:22%;width:7.5%}
-  .ctrl .sign[data-id="left2"]             {left:3%;top:34%;width:7.5%}
-  .ctrl .sign[data-id="left_or_straight"]  {left:23%;top:34%;width:7.5%}
-  .ctrl .sign[data-id="uturn"]             {left:13%;top:46%;width:7.5%}
+  /* ── D-PAD (cross formation, left side) ── */
+  .ctrl [data-id="straight"]        {left:15%;top:20%;width:6.5%}
+  .ctrl [data-id="left2"]           {left:6%;top:31%;width:6.5%}
+  .ctrl [data-id="left_or_straight"]{left:24%;top:31%;width:6.5%}
+  .ctrl [data-id="uturn"]           {left:15%;top:42%;width:6.5%}
 
-  /* ── RIGHT CLUSTER (action buttons △○✕□) ── */
-  .ctrl .sign[data-id="stop"]       {right:20%;top:20%;width:9%}
-  .ctrl .sign[data-id="no_entry"]   {right:5%;top:25%;width:9%}
-  .ctrl .sign[data-id="dead_end"]   {right:20%;top:40%;width:8%}
-  .ctrl .sign[data-id="priority"]   {right:5%;top:42%;width:8%}
+  /* ── ACTION CLUSTER (right side — like △○✕□) ── */
+  .ctrl [data-id="stop"]            {right:22%;top:22%;width:8%}
+  .ctrl [data-id="no_entry"]        {right:6%;top:22%;width:8%}
 
-  /* ── CENTER CROSS (+) ── */
-  .ctrl .sign[data-id="pharma"]     {left:28%;top:48%;width:14%}
+  /* ── Turn signs (right mid) ── */
+  .ctrl [data-id="priority"]        {right:5%;top:38%;width:7%}
+  .ctrl [data-id="dead_end"]        {right:17%;top:42%;width:7%}
 
-  /* ── CENTER SMALL ── */
-  .ctrl .sign[data-id="single_lane"]{left:44%;top:54%;width:6%}
-  .ctrl .sign[data-id="roundabout"] {left:52%;top:44%;width:14%}
+  /* ── CROSS + (center, the d-pad physical cross) ── */
+  .ctrl [data-id="pharma"]          {left:28%;top:48%;width:13%}
 
-  /* ── BOTTOM LEFT: left analog stick ── */
-  .ctrl .sign[data-id="no_parking"] {left:2%;top:62%;width:22%}
+  /* ── CENTER SMALL (between sticks) ── */
+  .ctrl [data-id="single_lane"]     {left:44%;top:54%;width:5.5%}
+  .ctrl [data-id="roundabout"]      {left:51%;top:44%;width:13%}
 
-  /* ── BOTTOM RIGHT: right analog stick ── */
-  .ctrl .sign[data-id="obstacles"]  {right:3%;top:55%;width:13%}
-  .ctrl .sign[data-id="detour"]     {right:16%;top:68%;width:12%}
+  /* ── LEFT ANALOG STICK (big heliport H) ── */
+  .ctrl [data-id="no_parking"]      {left:1%;top:56%;width:24%}
 
-  /* ── BOTTOM CENTER ── */
-  .ctrl .sign[data-id="Hospital"]   {left:36%;top:72%;width:9%}
+  /* ── RIGHT BOTTOM (★★★★★ H area) ── */
+  .ctrl [data-id="obstacles"]       {right:1%;top:54%;width:20%}
+
+  /* ── EXTRA 2 (below center) ── */
+  .ctrl [data-id="Hospital"]        {left:36%;top:72%;width:8%}
+  .ctrl [data-id="detour"]          {right:24%;top:72%;width:10%}
 }
 
-@media(min-width:1440px){.ctrl{max-width:760px}}
+@media(min-width:1440px){
+  .ctrl{max-width:800px}
+  .slider .sign{width:80px;height:80px;min-width:80px}
+}
 
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -163,7 +172,6 @@ body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
 
   const VIDEOS={
     // wrong_way:'assets/video/wrong_way.mp4',
-    // stop:'assets/video/stop.mp4',
   };
 
   const video=document.getElementById('v');
@@ -199,7 +207,6 @@ body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
     document.querySelectorAll('.sign[data-id="'+id+'"]').forEach(b=>b.setAttribute('aria-pressed','true'));
     current=btn;
     idle.hidden=true;
-
     const src=VIDEOS[id];
     if(src){
       video.hidden=false;
