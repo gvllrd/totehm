@@ -4,229 +4,301 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-<title>TOTEHM — Play The Street</title>
+<title>Make Lisbon Streets Work For You© — TOTEHM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{background:#000;overflow-x:hidden}
-body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+html,body{background:#000;overflow:hidden;height:100%;font-family:'Quantico',sans-serif}
 
-/* ═══════════════════ STAGE ═══════════════════ */
-.stage{
-  width:100%;aspect-ratio:16/9;
-  background:#000;overflow:hidden;flex-shrink:0;
-  position:relative;
+/* ═══════════════ LAYER 1 : ROTATE SCREEN (mobile portrait only) ═══════════════ */
+.rotate{
+  position:fixed;inset:0;z-index:100;background:#000;
+  display:none;
+  flex-direction:column;align-items:center;justify-content:center;
+  gap:26px;padding:28px;text-align:center;
 }
-.stage video{width:100%;height:100%;object-fit:cover;display:block}
-.stage video[hidden]{display:none}
-.stage-idle{
-  position:absolute;inset:0;
+@media (orientation:portrait) and (pointer:coarse){
+  .rotate{display:flex}
+}
+.rotate .slogan{width:min(64vw,250px)}
+.rotate .sub{
+  color:#8a8a8a;font-weight:700;font-size:15px;
+  letter-spacing:.32em;text-transform:uppercase;
+}
+.rotate .spinner{
+  width:64px;height:64px;color:#FBD5CA;
+  animation:spin 3.2s linear infinite;margin-top:22px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.rotate .hint{color:#FBD5CA;font-size:15px;margin-top:8px}
+.rotate .credit{
+  position:absolute;bottom:26px;left:0;right:0;
+  color:#8a8a8a;font-size:13px;padding:0 20px;
+}
+.rotate .credit b{color:#FBD5CA;font-weight:700}
+
+/* ═══════════════ LAYER 2 : CONTROLLER BOARD ═══════════════ */
+.world{
+  position:fixed;inset:0;
   display:flex;align-items:center;justify-content:center;
-  background:#000;transition:opacity .4s ease;
+  background:#000;
+  transition:transform .55s cubic-bezier(.65,0,.35,1);
 }
-.stage-idle[hidden]{opacity:0;pointer-events:none}
-.stage-idle .plus{
-  color:#333366;font-size:min(22vw,160px);
-  font-weight:300;opacity:.2;
-  animation:pulse 3s ease-in-out infinite;
-}
-@keyframes pulse{0%,100%{opacity:.12;transform:scale(1)}50%{opacity:.3;transform:scale(1.06)}}
-.cta{
-  position:absolute;bottom:14px;right:18px;
-  color:#fff;font-size:9px;letter-spacing:.35em;text-transform:uppercase;
-  text-decoration:none;opacity:.3;transition:opacity .2s;z-index:10;
-}
-.cta:hover{opacity:1}
+.world.up{transform:translateY(-100%)}
 
-/* ═══════════════════ SIGN BUTTON ═══════════════════ */
+.board{
+  position:relative;
+  /* letterboxed 16:9 canvas, always fully visible */
+  width:min(100vw,calc(100vh * 1.7778));
+  height:min(100vh,calc(100vw / 1.7778));
+  background:url('assets/img/background_lisbon.png') center/contain no-repeat;
+}
+
 .sign{
+  position:absolute;
+  left:var(--l);top:var(--t);width:var(--w);
   background:none;border:0;padding:0;cursor:pointer;
-  transition:transform .12s ease,filter .2s ease;
-  touch-action:manipulation;outline:none;flex-shrink:0;
+  transition:transform .14s ease,filter .2s ease;
+  touch-action:manipulation;outline:none;
 }
-.sign img{width:100%;height:100%;display:block;object-fit:contain;pointer-events:none}
-.sign:hover{filter:brightness(1.15)}
-.sign:active{transform:scale(.88)}
-.sign[aria-pressed="true"]{
-  filter:drop-shadow(0 0 6px rgba(255,255,255,.45)) drop-shadow(0 0 18px #333366);
+.sign img{width:100%;height:auto;display:block;pointer-events:none}
+.sign:hover{filter:brightness(1.18) drop-shadow(0 0 10px rgba(255,255,255,.25))}
+.sign:active{transform:scale(.86)}
+
+/* ═══════════════ LAYER 3 : EXPERIENCE (black screen below) ═══════════════ */
+.xp{
+  position:fixed;inset:0;top:100%;z-index:50;background:#000;
+  transition:top .55s cubic-bezier(.65,0,.35,1);
 }
+.xp.up{top:0}
 
-/* ═══════════════════ MOBILE: SLIDER ═══════════════════ */
-.slider-wrap{
-  flex:1;display:flex;align-items:center;background:#000;
-  padding:12px 0;min-height:100px;
+.punch{
+  position:absolute;
+  max-width:72vw;
+  color:#FBD5CA;
+  font-weight:700;
+  font-size:clamp(17px,2.6vw,30px);
+  letter-spacing:.04em;
+  line-height:1.55;
+  opacity:1;transition:opacity .5s ease;
 }
-.slider{
-  display:flex;gap:16px;
-  overflow-x:auto;overflow-y:hidden;
-  scroll-snap-type:x mandatory;
-  -webkit-overflow-scrolling:touch;
-  padding:8px 24px;
-  scrollbar-width:none;
+.punch.out{opacity:0}
+.punch .caret{
+  display:inline-block;width:.55em;height:1.05em;
+  background:#FBD5CA;vertical-align:text-bottom;margin-left:2px;
+  animation:blink .85s steps(1) infinite;
 }
-.slider::-webkit-scrollbar{display:none}
-.slider .sign{
-  width:68px;height:68px;min-width:68px;
-  scroll-snap-align:center;
+@keyframes blink{50%{opacity:0}}
+
+.xp video{
+  position:absolute;left:50%;top:0;transform:translateX(-50%);
+  height:min(72vh,100%);max-width:94vw;
+  opacity:0;transition:opacity .5s ease;
+  background:#000;
 }
+.xp video.in{opacity:1}
 
-/* ═══════════════════ DESKTOP: CONTROLLER ═══════════════════ */
-.controller{display:none}
-
-@media(min-width:1024px){
-  body{flex-direction:row;height:100vh;height:100dvh;overflow:hidden}
-  .stage{flex:0 0 55%;width:auto;height:100%;aspect-ratio:auto}
-  .slider-wrap{display:none}
-  .controller{
-    display:flex;flex:0 0 45%;height:100%;
-    align-items:center;justify-content:center;
-    background:#000;padding:20px;
-  }
-
-  /* The board = manette aspect ratio */
-  .ctrl{
-    position:relative;width:100%;max-width:680px;
-    aspect-ratio:1.55/1;
-  }
-  .ctrl .sign{position:absolute}
-
-  /* ════════════════════════════════════════════════
-     CONTROLLER LAYOUT — matches PS4 image exactly
-     ════════════════════════════════════════════════ */
-
-  /* ── L1 / R1 (shoulder buttons — top row) ── */
-  .ctrl [data-id="wrong_way"]       {left:12%;top:0%;width:10%}
-  .ctrl [data-id="one_way"]         {right:2%;top:0%;width:18%}
-
-  /* ── SCREEN (touchpad — H and P) ── */
-  .ctrl [data-id="Hotel"]           {left:37%;top:5%;width:10.5%}
-  .ctrl [data-id="parking"]         {left:49%;top:5%;width:8.5%}
-
-  /* ── T sign (above D-pad, small) ── */
-  .ctrl [data-id="station"]         {left:25%;top:10%;width:5.5%}
-
-  /* ── D-PAD (cross formation, left side) ── */
-  .ctrl [data-id="straight"]        {left:15%;top:20%;width:6.5%}
-  .ctrl [data-id="left2"]           {left:6%;top:31%;width:6.5%}
-  .ctrl [data-id="left_or_straight"]{left:24%;top:31%;width:6.5%}
-  .ctrl [data-id="uturn"]           {left:15%;top:42%;width:6.5%}
-
-  /* ── ACTION CLUSTER (right side — like △○✕□) ── */
-  .ctrl [data-id="stop"]            {right:22%;top:22%;width:8%}
-  .ctrl [data-id="no_entry"]        {right:6%;top:22%;width:8%}
-
-  /* ── Turn signs (right mid) ── */
-  .ctrl [data-id="priority"]        {right:5%;top:38%;width:7%}
-  .ctrl [data-id="dead_end"]        {right:17%;top:42%;width:7%}
-
-  /* ── CROSS + (center, the d-pad physical cross) ── */
-  .ctrl [data-id="pharma"]          {left:28%;top:48%;width:13%}
-
-  /* ── CENTER SMALL (between sticks) ── */
-  .ctrl [data-id="single_lane"]     {left:44%;top:54%;width:5.5%}
-  .ctrl [data-id="roundabout"]      {left:51%;top:44%;width:13%}
-
-  /* ── LEFT ANALOG STICK (big heliport H) ── */
-  .ctrl [data-id="no_parking"]      {left:1%;top:56%;width:24%}
-
-  /* ── RIGHT BOTTOM (★★★★★ H area) ── */
-  .ctrl [data-id="obstacles"]       {right:1%;top:54%;width:20%}
-
-  /* ── EXTRA 2 (below center) ── */
-  .ctrl [data-id="Hospital"]        {left:36%;top:72%;width:8%}
-  .ctrl [data-id="detour"]          {right:24%;top:72%;width:10%}
+.xp .close{
+  position:absolute;top:16px;right:20px;z-index:5;
+  background:none;border:0;color:#fff;opacity:.3;
+  font-size:22px;font-family:inherit;cursor:pointer;
+  transition:opacity .2s;padding:6px;
 }
+.xp .close:hover{opacity:1}
 
-@media(min-width:1440px){
-  .ctrl{max-width:800px}
-  .slider .sign{width:80px;height:80px;min-width:80px}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
 }
-
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 
-<section class="stage">
-  <video id="v" playsinline muted loop preload="none" hidden></video>
-  <div class="stage-idle" id="idle"><span class="plus">+</span></div>
-  <a class="cta" href="buy.html">Get Higher →</a>
-</section>
+<!-- ═══════════════ ROTATE (mobile portrait) ═══════════════ -->
+<div class="rotate">
+  <div class="slogan">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200" role="img" aria-label="Higher">
+      <defs>
+        <mask id="higher-holes">
+          <rect width="600" height="200" fill="white"/>
+          <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
+          <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
+          <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
+        </mask>
+      </defs>
+      <rect width="600" height="200" fill="#333366" mask="url(#higher-holes)"/>
+      <g fill="#ffffff" transform="translate(34.32, 144.42)">
+        <path transform="translate(0.000, 0) scale(0.144, -0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/>
+        <path transform="translate(115.776, 0) scale(0.144, -0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/>
+        <path transform="translate(162.576, 0) scale(0.144, -0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/>
+        <path transform="translate(264.960, 0) scale(0.144, -0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/>
+        <path transform="translate(366.048, 0) scale(0.144, -0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/>
+        <path transform="translate(459.360, 0) scale(0.144, -0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/>
+      </g>
+    </svg>
+  </div>
+  <div class="sub">Make Lisbon Streets Sublime</div>
+  <svg class="spinner" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+    <path d="M50 18 A22 22 0 1 0 54 34"/>
+    <polyline points="42,10 50,18 42,26"/>
+  </svg>
+  <div class="hint">Turn your phone (or turn if off)</div>
+  <div class="credit">Digital, neurological, and Street Art Performance by <b>Wavywah</b></div>
+</div>
 
-<!-- MOBILE -->
-<div class="slider-wrap"><div class="slider" id="slider"></div></div>
+<!-- ═══════════════ CONTROLLER ═══════════════ -->
+<div class="world" id="world">
+  <div class="board" id="board"></div>
+</div>
 
-<!-- DESKTOP -->
-<div class="controller"><div class="ctrl" id="ctrl"></div></div>
+<!-- ═══════════════ EXPERIENCE ═══════════════ -->
+<div class="xp" id="xp">
+  <button class="close" id="xpClose" aria-label="close">✕</button>
+  <div class="punch" id="punch"></div>
+  <video id="vid" playsinline preload="none"></video>
+</div>
 
 <script>
 (()=>{
-  const SIGNS=[
-    'wrong_way','one_way','station','Hotel','parking',
-    'straight','left2','left_or_straight','uturn',
-    'stop','no_entry','priority','dead_end',
-    'pharma','single_lane','roundabout',
-    'no_parking','obstacles','Hospital','detour'
-  ];
+/* ═══ CONFIG ═══ */
+const SVG_BASE = 'assets/signs/';
+const VID_BASE = 'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/play-signals/';
 
-  const BASE='assets/signs/';
+/* id : [left%, top%, width%, punchline] */
+const SIGNS = {
+  fire_exit:          [22.5,  6.5,  6.8, "To avoid a headache, stop thinking with your head."],
+  Heli:               [45.6,  6.0,  6.0, "The power of Habits: The sky is the limit."],
+  aed:                [70.0,  7.0,  6.5, "Consult your heart. The response is automatic."],
+  pharma:             [20.5, 20.5, 10.5, "Attract all you love."],
+  destination:        [40.0, 17.5, 18.5, "Elevation demands friction and aspiration."],
+  lisboa_city_hall:   [60.0, 14.0,  6.5, "Time creates the vibe. Travel creates discoveries."],
+  speed_bump_caution: [67.5, 16.0,  6.5, "Slow down! Come back to life urgently."],
+  crosswalk_caution:  [63.3, 28.5,  5.2, "Intelligent grind needs strategy."],
+  no_entry:           [73.0, 28.5,  5.8, "Access denied to mental bullshit."],
+  no_parking:         [68.3, 37.5,  5.2, "Protect your strategy. Know your enemies."],
+  dead_end:           [20.0, 50.0,  7.2, "Action without preparation leads nowhere: Just do it."],
+  roundabout:         [32.5, 48.5, 10.5, "The supreme objective now is to appreciate the 360 of now."],
+  hospital:           [46.8, 37.5,  3.8, "Healing is a process."],
+  parking:            [45.8, 44.5,  5.2, "Powerful Presence."],
+  Hotel:              [46.3, 55.5,  4.8, "Hard fights lead to hard peace."],
+  left_or_straight:   [56.5, 48.5, 10.5, "Yin / Yang. Feminine / Masculine. Inspiration / Expiration."],
+  no_uturn:           [69.0, 48.0,  9.0, "Never reverse intelligent decisions."],
+  stop:               [72.5, 63.5, 12.0, "Yes, stop that sht."],
+  crosswalk:          [44.0, 70.0,  9.0, "Step by step is the road to success and the safest way."],
+  green_walk:         [14.5, 66.0,  7.0, "Advance with love. It leads to the best path."],
+  red_walk:           [23.5, 70.5,  7.0, "To stop mental bullsht: stay immobile one instant, avoid the crash."],
+  priority:           [56.0, 68.0,  6.5, "Focus on your objectives, not the battles. They come by the way."],
+};
 
-  const VIDEOS={
-    // wrong_way:'assets/video/wrong_way.mp4',
-  };
+/* ═══ DOM ═══ */
+const board = document.getElementById('board');
+const world = document.getElementById('world');
+const xp    = document.getElementById('xp');
+const punch = document.getElementById('punch');
+const vid   = document.getElementById('vid');
+const xpClose = document.getElementById('xpClose');
 
-  const video=document.getElementById('v');
-  const idle=document.getElementById('idle');
-  const slider=document.getElementById('slider');
-  const ctrl=document.getElementById('ctrl');
-  let current=null;
+let busy = false;
+let typeTimer = null, waitTimer = null;
 
-  function makeBtn(id){
-    const btn=document.createElement('button');
-    btn.className='sign';
-    btn.dataset.id=id;
-    btn.setAttribute('aria-label',id.replace(/_/g,' '));
-    btn.setAttribute('aria-pressed','false');
-    const img=document.createElement('img');
-    img.src=BASE+id+'.svg';
-    img.alt=id.replace(/_/g,' ');
-    img.loading='lazy';
-    btn.appendChild(img);
-    btn.addEventListener('click',()=>play(btn));
-    return btn;
-  }
+/* ═══ BUILD BOARD ═══ */
+for (const [id, [l,t,w]] of Object.entries(SIGNS)){
+  const b = document.createElement('button');
+  b.className = 'sign';
+  b.style.setProperty('--l', l+'%');
+  b.style.setProperty('--t', t+'%');
+  b.style.setProperty('--w', w+'%');
+  b.setAttribute('aria-label', id.replace(/_/g,' '));
+  const img = document.createElement('img');
+  img.src = SVG_BASE + id + '.svg';
+  img.alt = '';
+  img.loading = 'lazy';
+  b.appendChild(img);
+  b.addEventListener('click', ()=>launch(id));
+  board.appendChild(b);
+}
 
-  SIGNS.forEach(id=>{
-    slider.appendChild(makeBtn(id));
-    ctrl.appendChild(makeBtn(id));
-  });
+/* ═══ EXPERIENCE FLOW ═══ */
+function launch(id){
+  if (busy) return;
+  busy = true;
 
-  function play(btn){
-    if(current===btn)return;
-    const id=btn.dataset.id;
-    document.querySelectorAll('.sign').forEach(b=>b.setAttribute('aria-pressed','false'));
-    document.querySelectorAll('.sign[data-id="'+id+'"]').forEach(b=>b.setAttribute('aria-pressed','true'));
-    current=btn;
-    idle.hidden=true;
-    const src=VIDEOS[id];
-    if(src){
-      video.hidden=false;
-      if(video.src!==src)video.src=src;
-      video.play().catch(()=>{});
-    }else{
-      video.hidden=true;
-      video.removeAttribute('src');
+  const text = SIGNS[id][3];
+
+  /* Preload video during the punchline */
+  vid.src = VID_BASE + id + '.mp4';
+  vid.load();
+  vid.classList.remove('in');
+  punch.classList.remove('out');
+  punch.innerHTML = '';
+
+  /* Random punchline position (safe zone) */
+  const l = 8 + Math.random()*30;   /* 8–38 vw */
+  const t = 12 + Math.random()*50;  /* 12–62 vh */
+  punch.style.left = l+'vw';
+  punch.style.top  = t+'vh';
+
+  /* Slide up */
+  world.classList.add('up');
+  xp.classList.add('up');
+
+  /* Typewriter after slide */
+  setTimeout(()=>typewrite(text, ()=>{
+    /* Reading time proportional to text length */
+    const readMs = Math.max(1500, text.length * 45);
+    waitTimer = setTimeout(startVideo, readMs);
+  }), 620);
+}
+
+function typewrite(text, done){
+  let i = 0;
+  const caret = '<span class="caret"></span>';
+  const tick = ()=>{
+    i++;
+    punch.innerHTML = text.slice(0,i) + caret;
+    if (i < text.length){
+      typeTimer = setTimeout(tick, 32);
+    } else {
+      punch.innerHTML = text; /* remove caret at end */
+      done();
     }
-    if(navigator.vibrate)navigator.vibrate(10);
-  }
+  };
+  tick();
+}
 
-  const KEYS={ArrowUp:'straight',ArrowDown:'uturn',ArrowLeft:'left2',ArrowRight:'left_or_straight'};
-  document.addEventListener('keydown',e=>{
-    const id=KEYS[e.key];
-    if(!id)return;
-    e.preventDefault();
-    const b=ctrl.querySelector('.sign[data-id="'+id+'"]')||slider.querySelector('.sign[data-id="'+id+'"]');
-    if(b)play(b);
-  });
+function startVideo(){
+  punch.classList.add('out');
+  vid.classList.add('in');
+  vid.play().catch(()=>{ /* if autoplay blocked, show controls */ vid.controls = true; });
+}
+
+vid.addEventListener('ended', comeBack);
+xpClose.addEventListener('click', comeBack);
+
+function comeBack(){
+  clearTimeout(typeTimer); clearTimeout(waitTimer);
+  vid.pause();
+  world.classList.remove('up');
+  xp.classList.remove('up');
+  setTimeout(()=>{
+    vid.classList.remove('in');
+    vid.removeAttribute('src'); vid.load();
+    punch.innerHTML = '';
+    punch.classList.remove('out');
+    busy = false;
+  }, 600);
+}
+
+/* Tap punchline area = skip waiting, start video now */
+xp.addEventListener('click', e=>{
+  if (e.target === xpClose) return;
+  if (busy && !vid.classList.contains('in') && punch.textContent.length){
+    clearTimeout(typeTimer); clearTimeout(waitTimer);
+    punch.innerHTML = '';
+    startVideo();
+  }
+});
 })();
 </script>
 
