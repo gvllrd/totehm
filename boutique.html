@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Higher × Wavywah × Champion 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#5a5a5a;--bg:#000;--navy:#333366;--rep:#743169;--blue:#36498c;
+  --futura:'Futura','Jost',sans-serif;
+  --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+  --tile-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%2336498c'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+  --tile-full:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Crect width='44' height='44' fill='%23333366'/%3E%3Ccircle cx='22' cy='0' r='6' fill='%23000000'/%3E%3Ccircle cx='22' cy='44' r='6' fill='%23000000'/%3E%3Ccircle cx='0' cy='22' r='6' fill='%23000000'/%3E%3Ccircle cx='44' cy='22' r='6' fill='%23000000'/%3E%3C/svg%3E");
+  --tile-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23743169'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;min-height:100%;background:var(--bg);color:var(--g-light);font-family:var(--futura);font-weight:300;-webkit-font-smoothing:antialiased}
+body{overflow-x:hidden}
+.hide{display:none!important}
+.mono{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.16em;color:var(--g-mid);text-transform:uppercase}
+
+/* ── BOUTONS DE MARQUE : repos -> survol bleu clair (desktop) -> clic navy ── */
+.btn-sig{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
+.btn-coral{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:var(--coral);background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
+.size-btn{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:2px 10px;-webkit-tap-highlight-color:transparent;transition:color .15s}
+@media(hover:hover){
+  .btn-sig:hover,.btn-coral:hover,.size-btn:hover{color:#fff;border-image-source:var(--tile-light);border-image-slice:6 fill;border-image-repeat:round}
+}
+.btn-sig:active,.btn-coral:active,.size-btn:active,.size-btn.on{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+
+/* Encode : coral pur, sans encadré */
+.btn-encode{font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;letter-spacing:0;color:var(--coral);background:none;border:none;cursor:pointer;padding:8px 10px;transition:opacity .18s;-webkit-tap-highlight-color:transparent}
+.btn-encode:hover{opacity:.7}
+
+/* Back in Time : format bouton de marque, survol+clic rouge-violet, sans flèche */
+.btn-back{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
+.btn-back:hover,.btn-back:active{color:#fff;border-image-source:var(--tile-rep);border-image-slice:6 fill;border-image-repeat:round}
+
+#back-top{position:fixed;top:14px;left:14px;z-index:50}
+
+/* ── RÉFÉRENCE ARTISTIQUE (tiroir dynamique) ── */
+.art-row{display:flex;flex-direction:column;align-items:center;gap:10px;padding:50px 22px 0}
+.art-drawer{overflow:hidden;max-height:0;opacity:0;transition:max-height .42s ease,opacity .38s ease;display:flex;justify-content:center}
+.art-drawer.on{max-height:62vh;opacity:1;margin-top:4px}
+#art-link{display:block;width:min(74vw,310px);aspect-ratio:1/1;border:1px solid #1c1c1c;overflow:hidden;cursor:pointer;transition:border-color .2s}
+#art-link:hover{border-color:#333}
+#art-link img{width:100%;height:100%;object-fit:cover;display:block}
+#art-link .ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.16em;color:#2a2a2a;text-transform:uppercase;text-align:center;padding:16px}
+
+/* ── CARROUSEL SUPPORTS ── */
+#carousel{position:relative;margin-top:34px;padding:0 20px 12px;min-height:200px;display:flex;align-items:center;justify-content:center}
+#card{display:flex;flex-direction:column;align-items:center;gap:13px;text-align:center;opacity:1;transition:opacity .28s ease;width:100%;max-width:420px}
+#card.fade{opacity:0}
+.visual{width:min(66vw,260px);aspect-ratio:3/4;max-height:40vh;border:1px solid #1c1c1c;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.visual img{width:100%;height:100%;object-fit:cover;display:block}
+.visual .ph{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;color:#222;text-transform:uppercase;text-align:center;padding:14px}
+.support-desc{font-family:var(--futura);font-weight:300;font-size:13px;line-height:1.65;color:var(--g-light);max-width:380px;overflow:hidden;max-height:0;opacity:0;transition:max-height .4s ease,opacity .35s ease}
+.support-desc.on{max-height:300px;opacity:1;margin-top:1px}
+.pieces{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--g-mid)}
+.soldout{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.16em;color:var(--rep);text-transform:uppercase}
+.arrow{position:fixed;top:56%;transform:translateY(-50%);z-index:30;font-family:'Space Mono',monospace;font-size:20px;color:#3a3a3a;background:none;border:none;cursor:pointer;padding:14px;transition:color .2s}
+.arrow:hover{color:var(--g-mid)}
+#arr-l{left:4px}#arr-r{right:4px}
+#dots{display:flex;gap:8px;justify-content:center;padding:14px 0 40px}
+.dot{width:6px;height:6px;border-radius:50%;background:#2a2a2a;transition:background .25s,transform .25s}
+.dot.on{background:var(--coral);transform:scale(1.3)}
+
+/* ── FULL-SCREEN PERFORÉ (l'écrit) ── */
+#fs{position:fixed;inset:0;z-index:80;background:var(--navy);border:11px solid transparent;border-image-source:var(--tile-full);border-image-slice:11;border-image-repeat:round;display:none;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:40px 28px}
+#fs.show{display:flex}
+#fs .q{font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;letter-spacing:0;color:#fff;text-align:center;line-height:1.6;max-width:540px;transition:opacity .25s ease}
+#fs textarea{width:100%;max-width:560px;background:transparent;border:none;outline:none;resize:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:19px;line-height:1.7;text-align:center;caret-color:#fff;min-height:26vh}
+#fs textarea::placeholder{color:rgba(255,255,255,.34)}
+
+/* ── CONFIG ── */
+#config{position:fixed;inset:0;z-index:60;background:var(--bg);overflow-y:auto;padding:64px 22px 80px;display:none;flex-direction:column;align-items:center}
+#config.show{display:flex}
+#cfg-back{position:fixed;top:14px;left:14px;z-index:62}
+.perf-box{font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:#fff;line-height:1.6;text-align:center;background:var(--navy);border:8px solid transparent;border-image-source:var(--tile-btn);border-image-slice:8 fill;border-image-repeat:round;padding:14px 18px;max-width:440px;font-style:italic;margin-bottom:34px}
+.cfg-step{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:26px;width:100%;max-width:520px;opacity:0;max-height:0;overflow:hidden;transition:opacity .4s ease}
+.cfg-step.on{opacity:1;max-height:620px;overflow:visible}
+.name-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:none;outline:none;border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:var(--coral);min-width:210px}
+.note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px}
+.note.ok{color:#639922}.note.no{color:var(--rep)}.note.dim{color:var(--g-dark)}
+.sizes{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.price-big{font-family:'Quantico',sans-serif;font-weight:400;font-size:20px;color:var(--g-mid);letter-spacing:0}
+.terms{font-family:var(--futura);font-weight:300;font-size:11px;line-height:1.6;color:var(--g-dark);text-align:center;max-width:430px;margin-top:4px}
+.terms a{color:var(--g-mid);text-decoration:underline;cursor:pointer}
+#done{text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px}
+#done .big{font-family:'Quantico',sans-serif;font-weight:400;font-size:18px;color:#fff}
+#done .sub{font-family:var(--futura);font-size:13px;color:var(--g-mid);line-height:1.6;max-width:360px}
+
+@media(max-width:600px){#fs .q{font-size:15px}#fs textarea{font-size:17px}}
+@media(prefers-reduced-motion:reduce){#card{transition:opacity .12s}}
+</style>
+</head>
+<body>
+
+<button class="btn-back" id="back-top">Back in Time</button>
+
+<!-- référence artistique : tiroir dynamique -->
+<div class="art-row">
+  <button class="btn-sig" id="art-btn">artistic reference for Totehmization</button>
+  <div class="art-drawer" id="art-drawer">
+    <a id="art-link" target="_blank" rel="noopener"><div class="ph">artist reference</div></a>
+  </div>
+</div>
+
+<!-- carrousel des supports -->
+<div id="carousel"><div id="card"></div></div>
+<button class="arrow" id="arr-l">‹</button>
+<button class="arrow" id="arr-r">›</button>
+<div id="dots"></div>
+
+<!-- FULL-SCREEN : l'écrit -->
+<div id="fs">
+  <div class="q" id="fs-q">What legacy will you leave to Humanity through your Totehm Cloth ?</div>
+  <textarea id="fs-text" maxlength="1500" placeholder="write it."></textarea>
+  <button class="btn-encode hide" id="fs-encode">Encode</button>
+</div>
+
+<!-- CONFIG -->
+<div id="config">
+  <button class="btn-back" id="cfg-back">Back in Time</button>
+  <div class="perf-box" id="msg-recall"></div>
+
+  <div class="cfg-step on" id="step-name">
+    <button class="btn-coral" id="name-btn">Engrave the name of your Totehm Cloth</button>
+    <input class="name-input hide" id="name-input" maxlength="40" placeholder="name it">
+    <div class="note dim" id="name-note"></div>
+  </div>
+
+  <div class="cfg-step" id="step-dim">
+    <button class="btn-sig" id="dim-btn">Define dimensions of the Totehm Cloth Support</button>
+    <div class="sizes hide" id="size-row">
+      <button class="size-btn" data-s="S">S</button>
+      <button class="size-btn" data-s="M">M</button>
+      <button class="size-btn" data-s="L">L</button>
+      <button class="size-btn" data-s="XL">XL</button>
+    </div>
+  </div>
+
+  <div class="cfg-step" id="step-order">
+    <div class="price-big" id="price-big"></div>
+    <button class="btn-sig" id="order-btn">Order your Totehm Cloth</button>
+    <div class="terms">By pressing Order your Totehm Cloth, you accept the <a id="terms-link">terms of sale</a>. Each Totehm Cloth is unique, made to order, and validated by the artist.</div>
+    <div class="note dim" id="order-note"></div>
+  </div>
+
+  <div id="done" class="hide">
+    <div class="big" id="done-name"></div>
+    <div class="sub">Encoded. Wavywah will bring it to life. Each Totehm Cloth is unique and validated by the artist before it's made.</div>
+    <button class="btn-back" id="done-back">Back in Time</button>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
+const $=id=>document.getElementById(id);
+
+let collab=null, supports=[], ci=0;
+let order={support:null,message:'',name:'',size:''};
+
+async function load(){
+  const {data:cs}=await sb.from('collabs').select('*').eq('active',true).order('position').limit(1);
+  collab=(cs&&cs[0])||null;
+  if(collab){
+    $('art-btn').textContent=(collab.artist||'Artist')+' artistic reference for Totehmization';
+    const link=$('art-link');
+    link.href=collab.portfolio_url||'#';
+    if(collab.artist_ref_url){ link.innerHTML='<img src="'+collab.artist_ref_url+'" alt="Artistic reference">'; }
+  }
+  let q=sb.from('totehm_cloth_support').select('*').eq('active',true).order('position');
+  if(collab) q=q.eq('collab_id',collab.id);
+  const {data}=await q;
+  supports=data||[];
+  renderDots();render();
+}
+function avail(s){return Math.max((s.max_pieces||0)-(s.claimed||0),0);}
+
+/* tiroir référence artistique */
+$('art-btn').onclick=()=>$('art-drawer').classList.toggle('on');
+
+function render(){
+  const s=supports[ci];const card=$('card');
+  if(!s){card.innerHTML='<div class="mono">collection coming soon</div>';return;}
+  const left=avail(s);
+  const visual = s.image_url
+    ? `<div class="visual"><img src="${s.image_url}" alt="support"></div>`
+    : `<div class="visual"><div class="ph">support</div></div>`;
+  card.innerHTML =
+    visual +
+    `<button class="btn-sig" id="support-btn">Totehm Cloth Support</button>`+
+    `<div class="support-desc" id="support-desc">${esc(s.details||'')}</div>`+
+    (left>0?`<div class="pieces">${left} / ${s.max_pieces} pieces left</div>`:`<div class="soldout">sold out</div>`)+
+    (left>0?`<button class="btn-coral" id="totehmize">Totehmize</button>`:'');
+  card.querySelector('#support-btn').onclick=()=>$('support-desc').classList.toggle('on');
+  const tb=card.querySelector('#totehmize'); if(tb) tb.onclick=()=>startTotehmize(s);
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===ci));
+}
+function renderDots(){const w=$('dots');w.innerHTML='';supports.forEach((s,i)=>{const d=document.createElement('div');d.className='dot'+(i===ci?' on':'');w.appendChild(d);});}
+function go(d){const n=ci+d;if(n<0||n>=supports.length)return;ci=n;const card=$('card');card.classList.add('fade');setTimeout(()=>{render();card.classList.remove('fade');},200);}
+$('arr-l').onclick=()=>go(-1);$('arr-r').onclick=()=>go(1);
+let x0=0;
+$('carousel').addEventListener('touchstart',e=>{x0=e.changedTouches[0].screenX;},{passive:true});
+$('carousel').addEventListener('touchend',e=>{const dx=e.changedTouches[0].screenX-x0;if(Math.abs(dx)>50)go(dx<0?1:-1);},{passive:true});
+window.addEventListener('keydown',e=>{if(!$('config').classList.contains('show')&&!$('fs').classList.contains('show')){if(e.key==='ArrowRight')go(1);if(e.key==='ArrowLeft')go(-1);}});
+
+$('back-top').onclick=()=>{location.href='index.html';};
+
+/* TOTEHMIZE -> full-screen écrit */
+function startTotehmize(s){
+  order={support:s,message:'',name:'',size:''};
+  $('fs-text').value='';
+  $('fs-q').classList.remove('hide');      // question visible
+  $('fs-encode').classList.add('hide');    // Encode caché tant que rien n'est écrit
+  $('fs').classList.add('show');
+  setTimeout(()=>$('fs-text').focus(),150);
+}
+/* dès que l'utilisateur écrit : la question disparaît, Encode apparaît */
+$('fs-text').addEventListener('input',()=>{
+  const has=$('fs-text').value.trim().length>0;
+  $('fs-q').classList.toggle('hide',has);
+  $('fs-encode').classList.toggle('hide',!has);
+});
+$('fs-encode').onclick=()=>{
+  const m=$('fs-text').value.trim();
+  if(!m){return;}
+  order.message=m;
+  $('fs').classList.remove('show');
+  openConfig();
+};
+
+/* CONFIG */
+function openConfig(){
+  $('msg-recall').textContent='“'+order.message+'”';
+  $('step-name').classList.add('on');$('step-dim').classList.remove('on');$('step-order').classList.remove('on');
+  $('done').classList.add('hide');$('msg-recall').classList.remove('hide');
+  $('name-btn').classList.remove('hide');
+  $('name-input').classList.add('hide');$('name-input').value='';$('name-input').classList.remove('on');
+  $('name-note').textContent='';$('name-note').className='note dim';
+  $('size-row').classList.add('hide');
+  document.querySelectorAll('.size-btn').forEach(b=>b.classList.remove('on'));
+  $('order-note').textContent='';
+  $('config').classList.add('show');$('config').scrollTop=0;
+}
+$('cfg-back').onclick=()=>{$('config').classList.remove('show');};
+$('done-back').onclick=()=>{$('config').classList.remove('show');load();};
+
+/* NAME -> saisie (box figée) + vérif Supabase */
+$('name-btn').onclick=()=>{
+  $('name-btn').classList.add('hide');
+  const inp=$('name-input');inp.classList.remove('hide');inp.classList.add('on');
+  setTimeout(()=>inp.focus(),100);
+};
+let nameTimer=null,nameOK=false;
+$('name-input').addEventListener('input',()=>{
+  nameOK=false;revealDim(false);
+  const v=$('name-input').value.trim();const note=$('name-note');
+  clearTimeout(nameTimer);
+  if(v.length<2){note.className='note dim';note.textContent='at least 2 characters';return;}
+  note.className='note dim';note.textContent='checking…';
+  nameTimer=setTimeout(async()=>{
+    const {data,error}=await sb.from('totehm_clothes').select('name').ilike('name',v).limit(1);
+    if(error){note.className='note dim';note.textContent='try again';return;}
+    if(data&&data.length){note.className='note no';note.textContent='already taken';nameOK=false;revealDim(false);}
+    else{note.className='note ok';note.textContent='available';nameOK=true;order.name=v;revealDim(true);}
+  },420);
+});
+function revealDim(show){$('step-dim').classList.toggle('on',show);if(!show)$('step-order').classList.remove('on');}
+
+/* DIMENSIONS */
+$('dim-btn').onclick=()=>{$('size-row').classList.toggle('hide');};
+document.querySelectorAll('.size-btn').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('.size-btn').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');order.size=b.dataset.s;
+    $('price-big').textContent=fmt(order.support);
+    $('step-order').classList.add('on');
+    setTimeout(()=>$('step-order').scrollIntoView({behavior:'smooth',block:'center'}),120);
+  };
+});
+
+/* ORDER */
+$('order-btn').onclick=async()=>{
+  if(!order.name||!order.size||!order.message)return;
+  const note=$('order-note');note.className='note dim';note.textContent='encoding…';
+  $('order-btn').style.pointerEvents='none';
+  const s=order.support;
+  const {error}=await sb.from('totehm_clothes').insert({garment_id:s.id,message:order.message,name:order.name,size:order.size,price:s.price,status:'pending'});
+  $('order-btn').style.pointerEvents='';
+  if(error){note.className='note no';note.textContent=error.code==='23505'?'that name was just taken':'error, try again';return;}
+  $('step-name').classList.remove('on');$('step-dim').classList.remove('on');$('step-order').classList.remove('on');$('msg-recall').classList.add('hide');
+  $('done-name').textContent='“'+order.name+'” — '+order.size;
+  $('done').classList.remove('hide');
+};
+$('terms-link').onclick=(e)=>{e.preventDefault();alert('Each Totehm Cloth is a unique, made-to-order piece, validated by the artist before production. All sales are final once the artist begins. Delivery times vary per piece.');};
+
+function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+function fmt(s){const p=Number(s.price);const cur=(s.currency||'€');return cur==='€'?(p+' €'):(cur+' '+p);}
+
+load();
+</script>
+</body>
+</html>
