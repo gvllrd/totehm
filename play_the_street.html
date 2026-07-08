@@ -4,129 +4,166 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-<title>Make Lisbon Streets Work For You© — TOTEHM</title>
+<title>Make The Streets Of Lisbon Sublime For Your Brain© — TOTEHM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Bebas+Neue&family=Montserrat:ital,wght@1,900&display=swap" rel="stylesheet">
 <style>
+/* ═══ TOKENS — exact stoner_method.html ═══ */
+:root{
+  --coral:#fbd5ca;--higher-bg:#333366;
+  --plus:#36498c;--minus:#743169;
+  --futura-light:'Futura','Jost',sans-serif;
+  --futura-bold:'Futura','Jost',sans-serif;
+}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{background:#000;overflow:hidden;height:100%;font-family:'Quantico',sans-serif}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Futura','Jost',sans-serif;font-weight:300}
 
-/* ═══════════════ LAYER 1 : ROTATE SCREEN (mobile portrait only) ═══════════════ */
+/* ═══════════ LAYER 1 : ROTATE (mobile portrait only) ═══════════ */
 .rotate{
   position:fixed;inset:0;z-index:100;background:#000;
-  display:none;
-  flex-direction:column;align-items:center;justify-content:center;
-  gap:26px;padding:28px;text-align:center;
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  gap:18px;padding:28px;text-align:center;
 }
-@media (orientation:portrait) and (pointer:coarse){
-  .rotate{display:flex}
-}
-.rotate .slogan{width:min(64vw,250px)}
-.rotate .sub{
-  color:#8a8a8a;font-weight:700;font-size:15px;
-  letter-spacing:.32em;text-transform:uppercase;
-}
-.rotate .spinner{
-  width:64px;height:64px;color:#FBD5CA;
-  animation:spin 3.2s linear infinite;margin-top:22px;
-}
+@media (orientation:portrait) and (pointer:coarse){.rotate{display:flex}}
+.rotate .slogan{width:min(26vw,100px)}
+.rotate .sub{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.1em;color:#808080;line-height:1.4}
+.rotate .spinner{width:44px;height:44px;color:var(--coral);animation:spin 3.2s linear infinite;margin-top:14px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.rotate .hint{color:#FBD5CA;font-size:15px;margin-top:8px}
-.rotate .credit{
-  position:absolute;bottom:26px;left:0;right:0;
-  color:#8a8a8a;font-size:13px;padding:0 20px;
-}
-.rotate .credit b{color:#FBD5CA;font-weight:700}
+.rotate .hint{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:var(--coral);line-height:1.7;letter-spacing:.02em}
+.rotate .credit{position:absolute;bottom:22px;left:0;right:0;font-family:var(--futura-light);font-weight:300;font-size:12.5px;color:#b5b5c2;font-style:italic;padding:0 20px;line-height:1.45}
+.rotate .credit b{color:var(--coral);font-weight:700;font-style:normal}
 
-/* ═══════════════ LAYER 2 : CONTROLLER BOARD ═══════════════ */
+/* ═══════════ LAYER 2 : INTRO ═══════════ */
+.intro{
+  position:fixed;inset:0;z-index:90;background:#000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:16px;padding:24px;text-align:center;
+  transition:opacity .5s ease;overflow-y:auto;
+}
+.intro.gone{opacity:0;pointer-events:none}
+@media (orientation:portrait) and (pointer:coarse){.intro{visibility:hidden}}
+.intro h1{
+  font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;
+  color:var(--coral);line-height:1.7;letter-spacing:.02em;
+  text-transform:uppercase;max-width:560px;
+}
+.intro .nb-p{
+  font-family:var(--futura-light);font-weight:400;font-size:14px;
+  color:#e0e0e0;line-height:1.55;letter-spacing:.02em;max-width:460px;margin:0;
+}
+.intro .prereq-title{
+  font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;
+  color:var(--coral);letter-spacing:.02em;line-height:1.7;margin-top:6px;
+}
+.intro .prereq{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.intro .prereq-line{
+  font-family:var(--futura-light);font-weight:400;font-size:14px;
+  color:#e0e0e0;line-height:1.55;letter-spacing:.02em;
+  display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;
+}
+.get-higher{
+  background:none;border:0;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;
+  color:var(--coral);letter-spacing:.02em;line-height:1.7;
+  padding:2px 4px;transition:transform .15s ease;
+}
+.get-higher:active{transform:scale(.94)}
+.get-higher .higher-inline{display:inline-flex;align-items:center;width:54px;vertical-align:middle;line-height:0;filter:drop-shadow(0 3px 10px rgba(251,213,202,.45))}
+@media (hover:hover){.get-higher:hover .higher-inline{filter:drop-shadow(0 3px 16px rgba(251,213,202,.8))}}
+.intro .grind-link{
+  font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
+  color:#b0b0b0;text-decoration:none;letter-spacing:0;line-height:1.4;
+  transition:color .18s ease;
+}
+.intro .grind-link:hover{color:#fff}
+.intro .nb-src{
+  font-family:var(--futura-light);font-weight:300;font-size:12.5px;
+  color:#b5b5c2;font-style:italic;line-height:1.45;letter-spacing:.01em;
+  max-width:420px;margin-top:8px;
+}
+
+/* ═══════════ LAYER 3 : CONTROLLER BOARD ═══════════ */
 .world{
   position:fixed;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  background:#000;
+  display:flex;align-items:center;justify-content:center;background:#000;
   transition:transform .55s cubic-bezier(.65,0,.35,1);
 }
-.world.up{transform:translateY(-100%)}
-
+/* INVERTED: controller slides DOWN */
+.world.away{transform:translateY(100%)}
 .board{
   position:relative;
-  /* letterboxed 16:9 canvas, always fully visible */
   width:min(100vw,calc(100vh * 1.7778));
   height:min(100vh,calc(100vw / 1.7778));
   background:url('assets/img/background_lisbon.png') center/contain no-repeat;
 }
-
 .sign{
-  position:absolute;
-  left:var(--l);top:var(--t);width:var(--w);
+  position:absolute;left:var(--l);top:var(--t);width:var(--w);
   background:none;border:0;padding:0;cursor:pointer;
   transition:transform .14s ease,filter .2s ease;
   touch-action:manipulation;outline:none;
 }
 .sign img{width:100%;height:auto;display:block;pointer-events:none}
-.sign:hover{filter:brightness(1.18) drop-shadow(0 0 10px rgba(255,255,255,.25))}
+.sign:hover{filter:brightness(1.15) drop-shadow(0 0 6px rgba(255,255,255,.2))}
 .sign:active{transform:scale(.86)}
 
-/* ═══════════════ LAYER 3 : EXPERIENCE (black screen below) ═══════════════ */
+/* ═══════════ LAYER 4 : EXPERIENCE (enters from TOP — inverted) ═══════════ */
 .xp{
-  position:fixed;inset:0;top:100%;z-index:50;background:#000;
+  position:fixed;left:0;right:0;height:100%;top:-100%;z-index:50;background:#000;
   transition:top .55s cubic-bezier(.65,0,.35,1);
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding:5vh 0 4vh;
 }
 .xp.up{top:0}
-
+/* Video — exact stoner_method sizing: square, contain */
+.vid-wrap{
+  position:relative;flex-shrink:0;
+  width:min(46vw,46vh);height:min(46vw,46vh);
+  max-width:300px;max-height:300px;margin-bottom:3vh;
+  opacity:0;transition:opacity .5s ease;
+}
+.vid-wrap.in{opacity:1}
+.xp video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
+/* Punchline — exact stoner tech-text */
 .punch{
-  position:absolute;
-  max-width:72vw;
-  color:#FBD5CA;
-  font-weight:700;
-  font-size:clamp(17px,2.6vw,30px);
-  letter-spacing:.04em;
-  line-height:1.55;
+  position:absolute;max-width:58vw;
+  font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;
+  color:var(--coral);line-height:1.7;letter-spacing:.02em;text-align:center;
   opacity:1;transition:opacity .5s ease;
 }
 .punch.out{opacity:0}
 .punch .caret{
-  display:inline-block;width:.55em;height:1.05em;
-  background:#FBD5CA;vertical-align:text-bottom;margin-left:2px;
+  display:inline-block;width:.5em;height:1em;background:var(--coral);
+  vertical-align:text-bottom;margin-left:2px;
   animation:blink .85s steps(1) infinite;
 }
 @keyframes blink{50%{opacity:0}}
-
-.xp video{
-  position:absolute;left:50%;top:0;transform:translateX(-50%);
-  height:min(72vh,100%);max-width:94vw;
-  opacity:0;transition:opacity .5s ease;
-  background:#000;
-}
-.xp video.in{opacity:1}
-
 .xp .close{
-  position:absolute;top:16px;right:20px;z-index:5;
-  background:none;border:0;color:#fff;opacity:.3;
-  font-size:22px;font-family:inherit;cursor:pointer;
-  transition:opacity .2s;padding:6px;
+  position:absolute;top:14px;left:14px;z-index:5;
+  font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;
+  color:#b0b0b0;background:none;border:0;cursor:pointer;
+  line-height:1.5;padding:0 4px;transition:color .15s ease;
 }
-.xp .close:hover{opacity:1}
+.xp .close:hover{color:#fff}
 
-@media (prefers-reduced-motion:reduce){
-  *{animation:none!important;transition:none!important}
-}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 
-<!-- ═══════════════ ROTATE (mobile portrait) ═══════════════ -->
-<div class="rotate">
-  <div class="slogan">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200" role="img" aria-label="Higher">
-      <defs>
-        <mask id="higher-holes">
-          <rect width="600" height="200" fill="white"/>
-          <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
-          <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
-          <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
-        </mask>
-      </defs>
+<!-- Official Higher slogan — single source, reused via <use> -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <mask id="higher-holes">
+      <rect width="600" height="200" fill="white"/>
+      <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
+      <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
+      <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
+    </mask>
+    <g id="higher-badge">
       <rect width="600" height="200" fill="#333366" mask="url(#higher-holes)"/>
       <g fill="#ffffff" transform="translate(34.32, 144.42)">
         <path transform="translate(0.000, 0) scale(0.144, -0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/>
@@ -136,71 +173,121 @@ html,body{background:#000;overflow:hidden;height:100%;font-family:'Quantico',san
         <path transform="translate(366.048, 0) scale(0.144, -0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/>
         <path transform="translate(459.360, 0) scale(0.144, -0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/>
       </g>
-    </svg>
-  </div>
-  <div class="sub">Make Lisbon Streets Sublime</div>
+    </g>
+  </defs>
+</svg>
+
+<!-- ═══════════ ROTATE ═══════════ -->
+<div class="rotate">
+  <svg class="slogan" viewBox="0 0 600 200"><use href="#higher-badge"/></svg>
+  <div class="sub">MAKE LISBON STREETS SUBLIME</div>
   <svg class="spinner" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
-    <path d="M50 18 A22 22 0 1 0 54 34"/>
-    <polyline points="42,10 50,18 42,26"/>
+    <path d="M 32 12 A 20 20 0 1 1 12 32"/>
+    <polygon points="12,21 5,34 19,34" fill="currentColor" stroke="none"/>
   </svg>
-  <div class="hint">Turn your phone (or turn if off)</div>
+  <div class="hint">Turn your phone (or turn it off)</div>
   <div class="credit">Digital, neurological, and Street Art Performance by <b>Wavywah</b></div>
 </div>
 
-<!-- ═══════════════ CONTROLLER ═══════════════ -->
+<!-- ═══════════ INTRO ═══════════ -->
+<div class="intro" id="intro">
+  <h1>Make The Streets Of Lisbon<br>Sublime For Your Brain©</h1>
+  <p class="nb-p">This artistic and neurological experience transforms the streets of Lisbon into mental stimulants.</p>
+  <div class="prereq-title">Prerequisites:</div>
+  <div class="prereq">
+    <span class="prereq-line">
+      <button class="get-higher" id="enter">
+        Get
+        <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-badge"/></svg>
+      </button>
+      at least once
+    </span>
+    <a class="grind-link" href="grind.html">Create your Grind</a>
+  </div>
+  <p class="nb-src">The artist wavywah used Latinized English vocabulary to facilitate universal understanding.</p>
+</div>
+
+<!-- ═══════════ CONTROLLER ═══════════ -->
 <div class="world" id="world">
   <div class="board" id="board"></div>
 </div>
 
-<!-- ═══════════════ EXPERIENCE ═══════════════ -->
+<!-- ═══════════ EXPERIENCE ═══════════ -->
 <div class="xp" id="xp">
-  <button class="close" id="xpClose" aria-label="close">✕</button>
+  <button class="close" id="xpClose">← back</button>
+  <div class="vid-wrap" id="vidWrap"><video id="vid" playsinline preload="none"></video></div>
   <div class="punch" id="punch"></div>
-  <video id="vid" playsinline preload="none"></video>
 </div>
+
+<audio id="ps" src="https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/sound/playstation.mp3" preload="auto"></audio>
 
 <script>
 (()=>{
 /* ═══ CONFIG ═══ */
-const SVG_BASE = 'assets/signs/';
+const IMG_BASE = 'assets/signs/';
+const IMG_EXT  = '.png';
 const VID_BASE = 'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/play-signals/';
 
-/* id : [left%, top%, width%, punchline] */
+/* id : [left%, top%, width%, punchline] — mockup-faithful positions */
 const SIGNS = {
-  fire_exit:          [22.5,  6.5,  6.8, "To avoid a headache, stop thinking with your head."],
-  Heli:               [45.6,  6.0,  6.0, "The power of Habits: The sky is the limit."],
-  aed:                [70.0,  7.0,  6.5, "Consult your heart. The response is automatic."],
-  pharma:             [20.5, 20.5, 10.5, "Attract all you love."],
-  destination:        [40.0, 17.5, 18.5, "Elevation demands friction and aspiration."],
-  lisboa_city_hall:   [60.0, 14.0,  6.5, "Time creates the vibe. Travel creates discoveries."],
-  speed_bump_caution: [67.5, 16.0,  6.5, "Slow down! Come back to life urgently."],
-  crosswalk_caution:  [63.3, 28.5,  5.2, "Intelligent grind needs strategy."],
-  no_entry:           [73.0, 28.5,  5.8, "Access denied to mental bullshit."],
-  no_parking:         [68.3, 37.5,  5.2, "Protect your strategy. Know your enemies."],
-  dead_end:           [20.0, 50.0,  7.2, "Action without preparation leads nowhere: Just do it."],
-  roundabout:         [32.5, 48.5, 10.5, "The supreme objective now is to appreciate the 360 of now."],
-  hospital:           [46.8, 37.5,  3.8, "Healing is a process."],
-  parking:            [45.8, 44.5,  5.2, "Powerful Presence."],
-  Hotel:              [46.3, 55.5,  4.8, "Hard fights lead to hard peace."],
-  left_or_straight:   [56.5, 48.5, 10.5, "Yin / Yang. Feminine / Masculine. Inspiration / Expiration."],
-  no_uturn:           [69.0, 48.0,  9.0, "Never reverse intelligent decisions."],
-  stop:               [72.5, 63.5, 12.0, "Yes, stop that sht."],
-  crosswalk:          [44.0, 70.0,  9.0, "Step by step is the road to success and the safest way."],
-  green_walk:         [14.5, 66.0,  7.0, "Advance with love. It leads to the best path."],
-  red_walk:           [23.5, 70.5,  7.0, "To stop mental bullsht: stay immobile one instant, avoid the crash."],
-  priority:           [56.0, 68.0,  6.5, "Focus on your objectives, not the battles. They come by the way."],
+  fire_exit:          [23.0,  7.5,  6.5, "To avoid a headache, stop thinking with your head."],
+  Heli:               [45.8,  7.0,  5.5, "The power of Habits: The sky is the limit."],
+  aed:                [70.0,  7.5,  6.5, "Consult your heart. The response is automatic."],
+  pharma:             [21.0, 21.0, 10.0, "Attract all you love."],
+  destination:        [40.0, 18.0, 18.0, "Elevation demands friction and aspiration."],
+  lisboa_city_hall:   [60.5, 15.0,  6.0, "Time creates the vibe. Travel creates discoveries."],
+  speed_bump_caution: [68.0, 17.5,  6.0, "Slow down! Come back to life urgently."],
+  crosswalk_caution:  [64.0, 29.0,  4.7, "Intelligent grind needs strategy."],
+  no_entry:           [73.0, 29.0,  5.5, "Access denied to mental bullshit."],
+  no_parking:         [69.0, 38.5,  5.0, "Protect your strategy. Know your enemies."],
+  dead_end:           [20.5, 50.5,  7.0, "Action without preparation leads nowhere: Just do it."],
+  roundabout:         [33.0, 49.0, 10.4, "The supreme objective now is to appreciate the 360 of now."],
+  hospital:           [47.0, 38.0,  3.4, "Healing is a process."],
+  parking:            [46.0, 45.5,  5.2, "Powerful Presence."],
+  Hotel:              [46.0, 55.5,  5.5, "Hard fights lead to hard peace."],
+  left_or_straight:   [57.0, 49.0, 10.4, "Yin / Yang. Feminine / Masculine. Inspiration / Expiration."],
+  no_uturn:           [70.0, 49.0,  8.6, "Never reverse intelligent decisions."],
+  stop:               [73.5, 65.0, 11.5, "Yes, stop that sht."],
+  crosswalk:          [44.5, 71.0,  8.3, "Step by step is the road to success and the safest way."],
+  green_walk:         [15.0, 66.0,  6.0, "Advance with love. It leads to the best path."],
+  red_walk:           [23.5, 71.0,  6.0, "To stop mental bullsht: stay immobile one instant, avoid the crash."],
+  priority:           [56.5, 69.0,  5.5, "Focus on your objectives, not the battles. They come by the way."],
 };
 
 /* ═══ DOM ═══ */
+const intro = document.getElementById('intro');
+const enter = document.getElementById('enter');
 const board = document.getElementById('board');
 const world = document.getElementById('world');
 const xp    = document.getElementById('xp');
 const punch = document.getElementById('punch');
+const vidWrap = document.getElementById('vidWrap');
 const vid   = document.getElementById('vid');
 const xpClose = document.getElementById('xpClose');
+const ps    = document.getElementById('ps');
 
-let busy = false;
-let typeTimer = null, waitTimer = null;
+let busy = false, typeTimer = null, waitTimer = null;
+
+/* ═══ SOUND — playstation.mp3 ═══ */
+let soundDone = false;
+function playSound(){
+  if (soundDone) return;
+  ps.play().then(()=>{ soundDone = true; }).catch(()=>{
+    /* Autoplay blocked → play on first gesture */
+    const once = ()=>{ ps.play().catch(()=>{}); soundDone = true;
+      document.removeEventListener('pointerdown', once);
+    };
+    document.addEventListener('pointerdown', once, {once:true});
+  });
+}
+/* Desktop (or already landscape): on load */
+const isPortraitCoarse = window.matchMedia('(orientation: portrait) and (pointer: coarse)');
+if (!isPortraitCoarse.matches) playSound();
+/* Mobile: the moment the phone is rotated to landscape */
+isPortraitCoarse.addEventListener('change', e=>{ if(!e.matches) playSound(); });
+
+/* ═══ INTRO → MAP ═══ */
+enter.addEventListener('click', ()=> intro.classList.add('gone'));
 
 /* ═══ BUILD BOARD ═══ */
 for (const [id, [l,t,w]] of Object.entries(SIGNS)){
@@ -211,7 +298,7 @@ for (const [id, [l,t,w]] of Object.entries(SIGNS)){
   b.style.setProperty('--w', w+'%');
   b.setAttribute('aria-label', id.replace(/_/g,' '));
   const img = document.createElement('img');
-  img.src = SVG_BASE + id + '.svg';
+  img.src = IMG_BASE + id + IMG_EXT;
   img.alt = '';
   img.loading = 'lazy';
   b.appendChild(img);
@@ -226,28 +313,22 @@ function launch(id){
 
   const text = SIGNS[id][3];
 
-  /* Preload video during the punchline */
   vid.src = VID_BASE + id + '.mp4';
   vid.load();
-  vid.classList.remove('in');
+  vidWrap.classList.remove('in');
   punch.classList.remove('out');
   punch.innerHTML = '';
 
   /* Random punchline position (safe zone) */
-  const l = 8 + Math.random()*30;   /* 8–38 vw */
-  const t = 12 + Math.random()*50;  /* 12–62 vh */
-  punch.style.left = l+'vw';
-  punch.style.top  = t+'vh';
+  punch.style.left = (8 + Math.random()*34)+'vw';
+  punch.style.top  = (14 + Math.random()*48)+'vh';
 
-  /* Slide up */
-  world.classList.add('up');
+  /* INVERTED slide: controller goes DOWN, experience enters from TOP */
+  world.classList.add('away');
   xp.classList.add('up');
 
-  /* Typewriter after slide */
   setTimeout(()=>typewrite(text, ()=>{
-    /* Reading time proportional to text length */
-    const readMs = Math.max(1500, text.length * 45);
-    waitTimer = setTimeout(startVideo, readMs);
+    waitTimer = setTimeout(startVideo, Math.max(1500, text.length*45));
   }), 620);
 }
 
@@ -257,20 +338,16 @@ function typewrite(text, done){
   const tick = ()=>{
     i++;
     punch.innerHTML = text.slice(0,i) + caret;
-    if (i < text.length){
-      typeTimer = setTimeout(tick, 32);
-    } else {
-      punch.innerHTML = text; /* remove caret at end */
-      done();
-    }
+    if (i < text.length){ typeTimer = setTimeout(tick, 32); }
+    else { punch.innerHTML = text; done(); }
   };
   tick();
 }
 
 function startVideo(){
   punch.classList.add('out');
-  vid.classList.add('in');
-  vid.play().catch(()=>{ /* if autoplay blocked, show controls */ vid.controls = true; });
+  vidWrap.classList.add('in');
+  vid.play().catch(()=>{ vid.controls = true; });
 }
 
 vid.addEventListener('ended', comeBack);
@@ -279,10 +356,10 @@ xpClose.addEventListener('click', comeBack);
 function comeBack(){
   clearTimeout(typeTimer); clearTimeout(waitTimer);
   vid.pause();
-  world.classList.remove('up');
+  world.classList.remove('away');
   xp.classList.remove('up');
   setTimeout(()=>{
-    vid.classList.remove('in');
+    vidWrap.classList.remove('in');
     vid.removeAttribute('src'); vid.load();
     punch.innerHTML = '';
     punch.classList.remove('out');
@@ -290,10 +367,10 @@ function comeBack(){
   }, 600);
 }
 
-/* Tap punchline area = skip waiting, start video now */
+/* Tap during punchline = skip to video */
 xp.addEventListener('click', e=>{
   if (e.target === xpClose) return;
-  if (busy && !vid.classList.contains('in') && punch.textContent.length){
+  if (busy && !vidWrap.classList.contains('in') && punch.textContent.length){
     clearTimeout(typeTimer); clearTimeout(waitTimer);
     punch.innerHTML = '';
     startVideo();
