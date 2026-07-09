@@ -172,6 +172,13 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   height:min(100vh,calc(100vw / 1.7778));
   background:url('assets/img/background_lisbon.png') center/contain no-repeat;
 }
+/* Desktop only: shrink the whole controller (image + signs scale together) */
+@media (hover:hover) and (min-width:900px){
+  .board{
+    width:min(66vw,calc(66vh * 1.7778));
+    height:min(66vh,calc(66vw / 1.7778));
+  }
+}
 .sign{
   position:absolute;left:var(--l);top:var(--t);width:var(--w);
   background:none;border:0;padding:0;cursor:pointer;
@@ -196,6 +203,13 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   width:min(50vw,50vh);height:min(50vw,50vh);
   max-width:340px;max-height:340px;margin-bottom:3vh;
   opacity:0;transition:opacity .5s ease;
+}
+/* Mobile: bump video size a touch */
+@media (pointer:coarse){
+  .vid-wrap{
+    width:min(58vw,55vh);height:min(58vw,55vh);
+    max-width:380px;max-height:380px;
+  }
 }
 .vid-wrap.in{opacity:1}
 .xp video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
@@ -312,7 +326,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   <a class="xp-higher" id="xpHigher" href="stoner_method.html">
     Get
     <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-badge"/></svg>
-    to get it
+    Get it
   </a>
   <div class="vid-wrap" id="vidWrap"><video id="vid" playsinline preload="none"></video></div>
   <div class="punch" id="punch"></div>
@@ -333,7 +347,7 @@ const SIGNS = {
   Heli:               [46.0,  7.4,  5.2, "The power of Habits: The sky is the limit."],
   aed:                [70.1,  5.5,  6.5, "Consult your heart. The response is automatic."],
   green_walk:         [33.7,  9.0,  3.8, "Advance with love. It leads to the best path."],
-  red_walk:           [33.8, 16.5,  4.6, "To stop mental bullsht: stay immobile one instant, avoid the crash."],
+  red_walk:           [33.7, 16.5,  3.8, "To stop mental bullsht: stay immobile one instant, avoid the crash."],
   pharma:             [20.8, 22.5, 10.0, "Attract all you love."],
   destination:        [40.1,  9.5, 18.5, "Elevation demands friction and aspiration."],
   lisboa_city_hall:   [60.8, 10.0,  6.2, "Time creates the vibe. Travel creates discoveries."],
@@ -379,8 +393,17 @@ prereqBtn.addEventListener('click', ()=>{
 
 /* ═══ [Initialize] → play sound + reveal controller ═══ */
 initBtn.addEventListener('click', ()=>{
-  ps.currentTime = 0;
-  ps.play().catch(()=>{});
+  /* PlayStation boot sound — user gesture unlocks autoplay policy */
+  try {
+    ps.muted = false;
+    ps.volume = 1;
+    ps.currentTime = 0;
+    const p = ps.play();
+    if (p && typeof p.catch === 'function'){
+      p.catch(err => console.warn('[playstation.mp3] play blocked:', err));
+    }
+  } catch(e){ console.warn('[playstation.mp3] error:', e); }
+
   intro.classList.add('gone');
   world.classList.add('on');
 });
