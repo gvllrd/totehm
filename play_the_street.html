@@ -51,12 +51,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   color:var(--coral);line-height:1.7;letter-spacing:.02em;
   text-transform:uppercase;max-width:560px;
 }
-/* Bebas Neue tagline — like subtitle in stoner */
-.intro .tagline{
-  font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.1em;
-  color:#808080;line-height:1.4;max-width:560px;
-}
-
 /* ═══════════ Prerequisites drawer — copie exacte de .neuro-link ═══════════ */
 .neuro-link{
   font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;
@@ -82,16 +76,22 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   padding:16px 10px 6px;
 }
 
-/* Get Higher button — Quantico bold coral, badge WITHOUT shadow */
+/* [Get Higher] inside Prerequisites drawer — neuro-link style, gray */
 .get-higher{
-  background:none;border:0;cursor:pointer;
+  background:none;cursor:pointer;text-decoration:none;
   display:inline-flex;align-items:center;gap:6px;
-  font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;
-  color:var(--coral);letter-spacing:.02em;line-height:1.7;
-  padding:2px 4px;transition:transform .15s ease;text-decoration:none;
+  font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;
+  color:#b0b0b0;line-height:1.4;
+  border:6px solid transparent;padding:0 3px;
+  -webkit-tap-highlight-color:transparent;
+  transition:color .18s ease;
 }
-.get-higher:active{transform:scale(.94)}
-.get-higher .higher-inline{display:inline-flex;align-items:center;width:54px;vertical-align:middle;line-height:0}
+.get-higher:hover,.get-higher:active,.get-higher:focus-visible{
+  color:#fff;
+  border-image-source:var(--tile-blue);
+  border-image-slice:6 fill;border-image-repeat:round;
+}
+.get-higher .higher-inline{display:inline-flex;align-items:center;width:44px;vertical-align:middle;line-height:0}
 
 /* Create your Grind — same neuro-link style */
 .grind-link{
@@ -120,11 +120,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   transition:filter .2s ease;
 }
 .wavy-link:hover{filter:brightness(1.15)}
-/* Higher badge inline in Bebas tagline */
-.intro .tagline .higher-inline{
-  display:inline-flex;align-items:center;width:54px;
-  vertical-align:middle;line-height:0;margin:0 2px;
-}
 /* Italic note — .nb-src exact from stoner_method */
 .intro .nb-src{
   font-family:var(--futura-light);font-weight:300;font-size:12.5px;
@@ -132,32 +127,35 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   max-width:420px;margin:0;
 }
 
-/* [Initialize] — same visual language as [Prerequisites] */
-.initialize{
-  font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;
-  color:#b0b0b0;background:none;cursor:pointer;display:inline-block;
-  border:6px solid transparent;padding:0 3px;line-height:1.4;margin-top:22px;
-  -webkit-tap-highlight-color:transparent;transition:color .18s ease;
+/* [Higher love] — continue button, slogan badge love version */
+.btn-love{
+  background:none;border:0;cursor:pointer;padding:0;
+  width:min(26vw,100px);line-height:0;margin-top:22px;
+  transition:transform .15s ease,filter .2s ease;
+  -webkit-tap-highlight-color:transparent;
 }
-.initialize:hover,.initialize:focus-visible,.initialize:active{
+.btn-love svg{width:100%;height:auto;display:block}
+.btn-love:hover{filter:brightness(1.12)}
+.btn-love:active{transform:scale(.94)}
+
+/* [Get Higher to get it] floating on the experience — neuro-link style, gray */
+.xp-higher{
+  position:absolute;z-index:6;
+  font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;
+  color:#b0b0b0;background:none;text-decoration:none;
+  border:6px solid transparent;padding:0 3px;line-height:1.4;
+  display:inline-flex;align-items:center;gap:6px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  opacity:0;pointer-events:none;
+  transition:opacity .4s ease,color .18s ease,transform .15s ease;
+}
+.xp-higher.in{opacity:1;pointer-events:auto}
+.xp-higher:hover,.xp-higher:active{
   color:#fff;
   border-image-source:var(--tile-blue);
   border-image-slice:6 fill;border-image-repeat:round;
 }
-
-/* [Get Higher] floating on the experience — random position, sales hook */
-.xp-higher{
-  position:absolute;z-index:6;
-  background:none;border:0;cursor:pointer;
-  display:inline-flex;align-items:center;gap:6px;
-  font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;
-  color:var(--coral);letter-spacing:.02em;line-height:1.7;
-  padding:2px 4px;transition:transform .15s ease,opacity .4s ease;
-  opacity:0;pointer-events:none;text-decoration:none;
-}
-.xp-higher.in{opacity:1;pointer-events:auto}
-.xp-higher:active{transform:scale(.94)}
-.xp-higher .higher-inline{display:inline-flex;align-items:center;width:54px;vertical-align:middle;line-height:0}
+.xp-higher .higher-inline{display:inline-flex;align-items:center;width:44px;vertical-align:middle;line-height:0}
 
 /* ═══════════ LAYER 3 : CONTROLLER BOARD ═══════════ */
 .world{
@@ -254,6 +252,20 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
         <path transform="translate(459.360, 0) scale(0.144, -0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/>
       </g>
     </g>
+    <g id="higher-love" mask="url(#higher-holes)">
+      <rect width="600" height="200" fill="#333366"/>
+      <rect x="34.6" y="108" width="364.4" height="48" fill="#2d4186"/>
+      <rect x="399"  y="108" width="166.4" height="48" fill="#722f66"/>
+      <g fill="#ffffff" transform="translate(34.32, 144.42)">
+        <path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/>
+        <path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0Z"/>
+        <path transform="translate(115.776,0) scale(0.144,-0.144)" fill="#639922" d="M241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/>
+        <path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/>
+        <path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/>
+        <path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/>
+        <path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/>
+      </g>
+    </g>
   </defs>
 </svg>
 
@@ -270,8 +282,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 
 <!-- ═══════════ INTRO ═══════════ -->
 <div class="intro" id="intro">
-  <div class="tagline">WALKING IN THE STREET WILL BECOME<br>A <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-badge"/></svg> MENTAL PERFORMANCE.</div>
-  <p class="nb-p">This Digital, Neurological and Street Art Performance by <a class="wavy-link" href="wavy.html">Wavywah</a> transforms the streets of Lisbon into mental stimulants.</p>
+  <p class="nb-p">This Digital, Neurological and Street Art Performance by <a class="wavy-link" href="wavy.html">Wavywah</a> transforms the streets of Lisbon into mental stimulants. Walking is dope for your brain.</p>
 
   <button class="neuro-link" id="prereq-btn" aria-expanded="false">Prerequisites</button>
   <div id="prereq-content">
@@ -284,7 +295,9 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
     </div>
   </div>
 
-  <button class="initialize" id="initialize">Initialize</button>
+  <button class="btn-love" id="initialize" aria-label="Get Higher — continue">
+    <svg viewBox="0 0 600 200"><use href="#higher-love"/></svg>
+  </button>
   <p class="nb-src">The artist Wavywah used Latinized English vocabulary to facilitate universal understanding.</p>
 </div>
 
@@ -299,6 +312,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   <a class="xp-higher" id="xpHigher" href="stoner_method.html">
     Get
     <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-badge"/></svg>
+    to get it
   </a>
   <div class="vid-wrap" id="vidWrap"><video id="vid" playsinline preload="none"></video></div>
   <div class="punch" id="punch"></div>
@@ -313,30 +327,30 @@ const IMG_BASE = 'assets/signs/';
 const IMG_EXT  = '.png';
 const VID_BASE = 'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/play-signals/';
 
-/* id : [left%, top%, width%, punchline] — measured on the reference mockup */
+/* id : [left%, top%, width%, punchline] — measured on the updated reference.png */
 const SIGNS = {
-  fire_exit:          [18.4,  3.6,  7.3, "To avoid a headache, stop thinking with your head."],
-  Heli:               [45.8,  3.2,  5.7, "The power of Habits: The sky is the limit."],
-  aed:                [74.1,  3.6,  7.9, "Consult your heart. The response is automatic."],
-  pharma:             [14.8, 19.2, 10.3, "Attract all you love."],
-  destination:        [38.6, 15.2, 21.2, "Elevation demands friction and aspiration."],
-  lisboa_city_hall:   [63.9, 11.4,  6.1, "Time creates the vibe. Travel creates discoveries."],
-  speed_bump_caution: [74.4, 15.3,  5.0, "Slow down! Come back to life urgently."],
-  crosswalk_caution:  [66.8, 26.8,  5.4, "Intelligent grind needs strategy."],
-  no_entry:           [78.1, 27.0,  6.6, "Access denied to mental bullshit."],
-  no_parking:         [73.8, 37.1,  5.1, "Protect your strategy. Know your enemies."],
-  dead_end:           [15.2, 50.6,  8.2, "Action without preparation leads nowhere: Just do it."],
-  roundabout:         [30.2, 48.4, 12.0, "The supreme objective now is to appreciate the 360 of now."],
-  hospital:           [46.7, 37.3,  3.9, "Healing is a process."],
-  parking:            [46.0, 45.7,  5.7, "Powerful Presence."],
-  Hotel:              [45.8, 56.6,  5.8, "Hard fights lead to hard peace."],
-  left_or_straight:   [58.4, 48.4, 12.0, "Yin / Yang. Feminine / Masculine. Inspiration / Expiration."],
-  no_uturn:           [73.5, 51.8, 10.7, "Never reverse intelligent decisions."],
-  stop:               [77.8, 67.0, 14.2, "Yes, stop that sht."],
-  crosswalk:          [43.9, 71.4,  9.5, "Step by step is the road to success and the safest way."],
-  priority:           [ 9.1, 67.3, 12.0, "Focus on your objectives, not the battles. They come by the way."],
-  green_walk:         [36.5, 72.0,  4.5, "Advance with love. It leads to the best path."],
-  red_walk:           [55.0, 72.0,  4.5, "To stop mental bullsht: stay immobile one instant, avoid the crash."],
+  fire_exit:          [23.1,  5.5,  6.5, "To avoid a headache, stop thinking with your head."],
+  Heli:               [46.0,  7.4,  5.2, "The power of Habits: The sky is the limit."],
+  aed:                [70.1,  5.5,  6.5, "Consult your heart. The response is automatic."],
+  green_walk:         [33.7,  9.0,  3.8, "Advance with love. It leads to the best path."],
+  red_walk:           [33.8, 16.5,  4.6, "To stop mental bullsht: stay immobile one instant, avoid the crash."],
+  pharma:             [20.8, 22.5, 10.0, "Attract all you love."],
+  destination:        [40.1,  9.5, 18.5, "Elevation demands friction and aspiration."],
+  lisboa_city_hall:   [60.8, 10.0,  6.2, "Time creates the vibe. Travel creates discoveries."],
+  speed_bump_caution: [68.4, 15.5,  6.2, "Slow down! Come back to life urgently."],
+  crosswalk_caution:  [63.5, 27.0,  5.6, "Intelligent grind needs strategy."],
+  no_entry:           [73.4, 27.6,  5.5, "Access denied to mental bullshit."],
+  no_parking:         [68.5, 37.0,  5.8, "Protect your strategy. Know your enemies."],
+  hospital:           [46.8, 37.0,  3.8, "Healing is a process."],
+  parking:            [46.1, 44.6,  5.2, "Powerful Presence."],
+  Hotel:              [46.0, 55.0,  5.6, "Hard fights lead to hard peace."],
+  dead_end:           [20.4, 51.0,  6.9, "Action without preparation leads nowhere: Just do it."],
+  roundabout:         [32.9, 49.5, 10.2, "The supreme objective now is to appreciate the 360 of now."],
+  left_or_straight:   [56.9, 49.5, 10.2, "Yin / Yang. Feminine / Masculine. Inspiration / Expiration."],
+  no_uturn:           [69.8, 49.7,  8.8, "Never reverse intelligent decisions."],
+  priority:           [15.4, 66.8, 10.1, "Focus on your objectives, not the battles. They come by the way."],
+  crosswalk:          [44.5, 71.0,  8.5, "Step by step is the road to success and the safest way."],
+  stop:               [73.3, 66.0, 11.6, "Yes, stop that sht."],
 };
 
 /* ═══ DOM ═══ */
