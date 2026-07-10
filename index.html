@@ -39,6 +39,7 @@ body{display:flex;flex-direction:column;align-items:center;justify-content:cente
 
 nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max-width:540px}
 .menu-row{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
+.menu-gap{width:100%;height:16px}
 .line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:none;outline:none;border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:var(--coral);min-width:230px}
 .note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px;text-align:center}
 .note.ok{color:#639922}.note.no{color:var(--rep)}.note.dim{color:var(--g-dark)}
@@ -88,33 +89,40 @@ footer .dope-ico svg{width:100%;height:100%;display:block}
     <div class="note dim hide" id="where-note"></div>
   </div>
 
-  <!-- LOCAL (Lisbon) : collabs + Decode -->
-  <div id="local-rows" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%">
-    <div id="collabs"></div>
-    <a class="btn-sig" href="play_the_street.html">Make the Lisbon streets work for your brain©</a>
+  <!-- MENU : local = tout ; international = tout sauf .local-only -->
+  <div id="menu-main" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%">
+
+    <!-- 1-2 : Totehm Cloth -->
+    <a class="btn-sig" href="boutique.html">Create a Totehm Cloth</a>
     <div class="menu-row">
       <button class="btn-sig" id="decode-btn">Decode a Totehm Cloth</button>
-      <input class="line-input hide" id="decode-input" maxlength="40" placeholder="name of the cloth">
+      <input class="line-input hide" id="decode-input" maxlength="40" placeholder="ex: 0.Test">
       <div class="note dim hide" id="decode-note"></div>
     </div>
-  </div>
 
-  <!-- INTERNATIONAL : fonctionnalités globales -->
-  <div id="intl-rows" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%">
-    <a class="btn-sig" href="discover.html">Have a good Trip — Stoner Way of Life©</a>
+    <div class="menu-gap"></div>
+
+    <!-- 3-4-5 : Higher / Grind / Streets -->
+    <a class="btn-sig" href="discover.html">Get Higher</a>
     <a class="btn-sig" href="https://www.totehm.space/grind.html">My Totehm Grind</a>
-    <a class="btn-sig" href="https://www.totehm.space/grind.html?v=search">Search a Trip</a>
+    <a class="btn-sig local-only" href="play_the_street.html">Make the Lisbon Streets Sublime</a>
+
+    <div class="menu-gap"></div>
+
+    <!-- 6-7-8 : Email / Map / Opposite -->
     <div class="menu-row">
       <button class="btn-sig" id="email-btn">Email for dope news</button>
       <input class="line-input hide" id="email-input" type="email" maxlength="120" placeholder="your@email">
       <div class="note dim hide" id="email-note"></div>
     </div>
+    <a class="btn-sig local-only" href="totehm_map.html">My Higher Lisbon</a>
     <div class="menu-row">
       <button class="btn-sig" id="think-btn">Think same but opposite</button>
       <div class="think-drawer" id="think-drawer">
         <video id="think-vid" playsinline controls preload="none"></video>
       </div>
     </div>
+
   </div>
 </nav>
 
@@ -137,12 +145,13 @@ const SBURL='https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/h
 /* ── ÉCRANS : landing / intl / lisbon ── */
 function showScreen(s){
   $('where-row').classList.toggle('hide', s!=='landing');
-  $('local-rows').classList.toggle('hide', s!=='lisbon');
-  $('intl-rows').classList.toggle('hide', s==='landing');
-  // Lisbon : LSB + higher_lisbon + pas de footer ; sinon WRLD + real + footer
+  $('menu-main').classList.toggle('hide', s==='landing');
+  // items réservés à Lisbonne : visibles seulement en mode lisbon
+  document.querySelectorAll('.local-only').forEach(el=>el.classList.toggle('hide', s!=='lisbon'));
+  // Lisbon : LSB + logo Totehm + pas de footer ; sinon WRLD + real + footer
   if(s==='lisbon'){
     $('tag-loc').textContent='LSB';
-    $('real-img').src=SBURL+'higher_lisbon.png';
+    $('real-img').src='assets/img/totehm_logo.png';
     $('real-img').classList.add('color');
     $('footer').classList.add('hide');
   }else{
@@ -153,13 +162,6 @@ function showScreen(s){
   }
 }
 showScreen('landing');
-
-/* ── COLLABS dynamiques (local / Lisbon) ── */
-(async()=>{
-  const {data}=await sb.from('collabs').select('*').eq('active',true).order('position');
-  const box=$('collabs');box.innerHTML='';
-  (data||[]).forEach(c=>{const a=document.createElement('a');a.className='btn-sig';a.href=c.url||'boutique.html';a.textContent=c.name;box.appendChild(a);});
-})();
 
 /* ── util : bouton -> saisie ── */
 function morph(btn,input,note){btn.onclick=()=>{btn.classList.add('hide');input.classList.remove('hide');if(note){note.classList.remove('hide');}setTimeout(()=>input.focus(),100);};}
