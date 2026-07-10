@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TOTEHM — Public Map</title>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Montserrat:ital,wght@1,900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fight:#E24B4A;--flow:#BA7517;--enrich:#EF9F27;
+  --love:#639922;--express:#1D9E75;--focus:#378ADD;--celebrate:#7F77DD;
+  --coral:#fbd5ca;
+  --gray-light:#C8C8C8;--gray-mid:#909090;--gray-dark:#606060;
+}
+
+/* ── RESET ─────────────────────────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#000;overflow:hidden}
+body{font-family:'Quantico',monospace;color:var(--gray-light)}
+@media (hover:hover) and (pointer:fine){ body{cursor:none} }
+
+#cur{position:fixed;width:4px;height:4px;background:#cfcfcf;border-radius:50%;
+  pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
+@media (hover:none),(pointer:coarse){ #cur{display:none} }
+
+/* ── LAYOUT ─────────────────────────────────────────────────────────────── */
+#hero{position:relative;width:100vw;height:100vh;background:#000;overflow:hidden}
+#map-container{position:absolute;inset:0;background:#000}
+#mcv{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1}
+#map-overlays{position:absolute;inset:0;z-index:2;pointer-events:none}
+
+/* ── REVEAL SYSTEM — "dark, lightened by user intention" ────────────────── */
+/* All overlay texts start dim */
+.reveal{
+  transition: opacity .35s ease, color .25s ease;
+  opacity: .38;
+}
+/* Desktop: any mouse movement → reveal everything */
+body.map-alive .reveal{ opacity: 1 }
+/* Intention selected → always fully revealed */
+body.has-intention .reveal{ opacity: 1 }
+/* Mobile: tap/touch → reveal */
+@media (hover:none),(pointer:coarse){
+  .reveal{ opacity:.45 }
+  body.map-alive .reveal{ opacity:1 }
+}
+
+/* ── TOP BAR ─────────────────────────────────────────────────────────────── */
+.nav-top{
+  position:absolute;top:16px;left:0;right:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;z-index:10;pointer-events:none;
+}
+.nav-higher-pub{
+  display:inline-flex;align-items:center;gap:6px;
+  text-decoration:none;pointer-events:auto;
+}
+/* "Get" = coral → white on hover/active */
+.gw{
+  font-family:'Quantico',monospace;font-weight:700;font-size:15px;
+  color:var(--coral);
+  transition:color .15s ease;
+}
+.nav-higher-pub:hover .gw{ color:#fff }
+body.has-intention .gw{ color:#fff }
+
+.nav-right{
+  font-family:'Space Mono',monospace;font-size:10px;
+  color:var(--gray-dark);letter-spacing:.14em;text-transform:uppercase;
+  pointer-events:none;
+}
+
+/* ── OVERLINE ────────────────────────────────────────────────────────────── */
+.hero-overline{
+  position:absolute;top:44px;left:50%;transform:translateX(-50%);
+  font-family:'Space Mono',monospace;font-size:11px;
+  color:var(--gray-dark);letter-spacing:.22em;text-transform:uppercase;
+  pointer-events:none;z-index:10;white-space:nowrap;
+}
+
+/* ── WEATHER ─────────────────────────────────────────────────────────────── */
+.hud-weather{
+  position:absolute;top:62px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:24px;width:min(92vw,620px);padding:0 8px;
+  z-index:10;pointer-events:none;
+}
+.hw{
+  font-family:'Space Mono',monospace;font-size:11px;
+  color:var(--gray-mid);letter-spacing:.08em;
+  display:flex;gap:10px;align-items:center;white-space:nowrap;
+}
+.hw-val{
+  color:var(--gray-light);
+  transition:color .2s ease;
+}
+body.map-alive .hw-val, body.has-intention .hw-val{ color:#fff }
+
+/* ── INTENTION SELECTOR — at 40%, dropdown DOWN ─────────────────────────── */
+.map-head{
+  position:absolute;top:40%;left:50%;
+  transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+  width:min(92vw,440px);z-index:20;
+}
+/* map-q: coral → white on hover/active */
+.map-q{
+  font-family:'Quantico',monospace;font-size:15px;
+  color:var(--coral);letter-spacing:.01em;text-align:center;
+  transition:color .18s ease;
+}
+body.map-alive .map-q, body.has-intention .map-q{ color:#fff }
+
+.ddw{position:relative;pointer-events:auto;width:100%;display:flex;justify-content:center}
+.ddt{
+  background:transparent;border:none;
+  display:flex;align-items:center;gap:8px;justify-content:center;padding:4px 0;
+}
+/* ddtq: coral → white on hover/active */
+.ddtq{
+  font-family:'Quantico',monospace;font-size:20px;font-weight:700;
+  color:var(--coral);
+  transition:color .15s ease;
+}
+.ddt:hover .ddtq{ color:#fff }
+body.has-intention .ddtq{ color:#fff }
+
+.ddarr{font-size:10px;color:var(--gray-dark);transition:transform .2s,color .2s}
+.ddw.open .ddarr{transform:rotate(180deg)}
+.ddt:hover .ddarr{ color:var(--gray-mid) }
+
+/* Dropdown DOWN */
+.ddm{
+  display:none;
+  position:absolute;top:calc(100% + 8px);bottom:auto;
+  left:50%;transform:translateX(-50%);
+  min-width:min(92vw,360px);z-index:50;
+  background:rgba(0,0,0,.92);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.07);
+  overflow:hidden;
+  animation:ddOpen .18s ease;
+}
+@keyframes ddOpen{from{opacity:0;transform:translateX(-50%) translateY(-6px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.ddw.open .ddm{display:block}
+
+/* Dropdown items — full reveal system */
+.ddi{
+  padding:10px 14px;text-align:left;
+  border-left:2px solid transparent;
+  transition:background .15s ease, transform .12s ease, border-color .15s ease;
+}
+@media (hover:hover) and (pointer:fine){
+  .ddi{ transform-origin:left center }
+  .ddi:hover{
+    background:rgba(255,255,255,.05);
+    border-left-color:currentColor;
+    transform:scale(1.02) translateX(3px);
+  }
+  /* On hover: intention name → white, description → visible */
+  .ddi:hover .ddiq{ color:#fff !important }
+  .ddi:hover .dddef{ color:#C8C8C8 }
+  .ddi:hover .ddi-dot{ box-shadow:0 0 6px currentColor }
+}
+.ddr1{display:flex;align-items:center;gap:10px}
+.ddi-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;transition:box-shadow .15s ease}
+.ddiq{font-family:'Quantico',monospace;font-size:17px;font-weight:700;transition:color .15s ease}
+/* dddef: deep dark → reveals on hover */
+.dddef{
+  font-family:'Space Mono',monospace;font-size:11px;
+  color:var(--gray-dark);padding-left:17px;line-height:1.4;margin-top:2px;
+  transition:color .18s ease;
+}
+/* ddih: "Higher" badge after intention name (LEAF only) */
+.ddih{display:inline-flex;align-items:center;margin-left:4px;vertical-align:middle}
+
+/* ── HUD BOTTOM ──────────────────────────────────────────────────────────── */
+.hud-bottom{
+  position:absolute;left:0;right:0;bottom:16px;
+  display:flex;justify-content:center;
+  pointer-events:none;z-index:10;
+}
+#hud-intent{
+  font-family:'Quantico',monospace;font-size:13px;
+  letter-spacing:.1em;color:var(--gray-mid);text-transform:uppercase;
+  transition:color .2s ease;
+}
+body.has-intention #hud-intent{ color:var(--gray-light) }
+
+/* ── CORNERS ─────────────────────────────────────────────────────────────── */
+.corner{
+  position:absolute;font-family:'Space Mono',monospace;
+  font-size:10px;color:var(--gray-dark);letter-spacing:.14em;
+  text-transform:uppercase;z-index:10;pointer-events:none;
+}
+.corner.bl{bottom:16px;left:18px}
+.corner.br{bottom:16px;right:18px;text-align:right}
+
+/* ── SPOT PREVIEW (desktop hover) ───────────────────────────────────────── */
+#pp{
+  position:absolute;z-index:5;display:none;
+  width:200px;min-height:300px;
+  background:rgba(0,0,0,.95);
+  flex-direction:column;overflow:hidden;pointer-events:none;
+  border-left:1px solid rgba(255,255,255,.06);
+}
+.pp-media{width:100%;min-height:110px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;position:relative;flex-shrink:0}
+.pp-src{position:absolute;top:6px;right:6px;font-size:9px;font-weight:700;padding:2px 5px;font-family:'Space Mono',monospace}
+.pp-src.rss{color:var(--focus)}.pp-src.member{color:var(--love)}
+.pp-body{padding:10px 12px;display:flex;flex-direction:column;gap:5px}
+.pp-int{font-size:13px;font-weight:700}
+.pp-act{font-size:14px;font-weight:700;color:#d6d6d6}
+.pp-mus{font-family:'Space Mono',monospace;font-size:10px;color:var(--gray-mid)}
+.pp-com{font-family:'Space Mono',monospace;font-size:11px;color:#7a7a7a;font-style:italic;line-height:1.4}
+.pp-foot{display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid #111}
+.pp-time{font-family:'Space Mono',monospace;font-size:10px;color:#bdbdbd}
+.pp-mem{font-size:12px;color:#d6d6d6;font-weight:700}
+.pp-badge{font-size:9px;font-weight:700;padding:2px 5px;font-family:'Space Mono',monospace;color:#7a7a7a}
+
+/* ── HIGHER ASSET (static SVG) ───────────────────────────────────────────── */
+.higher-asset{display:inline-flex;align-items:center;justify-content:center;line-height:1;vertical-align:-0.14em}
+.higher-asset svg{display:block;overflow:visible}
+.H,.ddih{display:inline-block;vertical-align:middle;line-height:0;margin:0 1px}
+
+/* ── HIGHER BREATHING (LEAF nav only) ───────────────────────────────────── */
+.higher-breath-wrap{
+  display:inline-flex;align-items:center;
+  height:52px;
+  margin-left:4px;
+  vertical-align:middle;
+  transform-origin:left center;
+}
+.higher-breath-wrap canvas{height:100%;width:auto;display:block}
+
+/* ── MOBILE BOTTOM SHEET ─────────────────────────────────────────────────── */
+#mobile-sheet{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;
+  z-index:200;background:#000;
+  border-top:1px solid #1a1a1a;
+  padding:0 0 env(safe-area-inset-bottom,16px);
+}
+#mobile-sheet.visible{display:block}
+.sheet-handle{width:36px;height:3px;border-radius:2px;background:#2a2a2a;margin:10px auto 0}
+.sheet-q-row{
+  padding:14px 20px 8px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.sheet-q{
+  font-family:'Quantico',monospace;font-size:13px;
+  color:var(--coral);transition:color .2s ease;
+}
+body.has-intention .sheet-q{ color:#fff }
+.sheet-close-btn{
+  font-family:'Space Mono',monospace;font-size:11px;
+  color:#3a3a3a;background:transparent;border:none;padding:4px;display:none;
+}
+#mobile-sheet.has-selection .sheet-close-btn{display:block;color:#606060}
+.sheet-intentions{
+  display:flex;gap:8px;overflow-x:auto;
+  padding:8px 20px 16px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  scroll-snap-type:x mandatory;
+}
+.sheet-intentions::-webkit-scrollbar{display:none}
+.sheet-int-pill{
+  flex-shrink:0;scroll-snap-align:start;
+  display:flex;align-items:center;gap:7px;
+  padding:10px 16px;
+  border:1px solid #1e1e1e;background:#060606;
+  white-space:nowrap;
+  transition:border-color .2s ease,background .2s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.sheet-int-pill.active{border-color:currentColor;background:#0a0a0a}
+.sheet-int-pill.active .sheet-int-label{color:#fff !important}
+.sheet-int-pill.active .sheet-int-dot{box-shadow:0 0 8px currentColor}
+.sheet-int-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.sheet-int-label{font-family:'Quantico',monospace;font-size:15px;font-weight:700}
+
+/* ── MOBILE OVERRIDES ────────────────────────────────────────────────────── */
+@media (hover:none),(pointer:coarse){
+  .map-head{display:none}
+  .corner{display:none}
+  .hud-weather{
+    top:auto;bottom:72px;
+    width:auto;left:16px;right:auto;transform:none;
+    gap:8px;flex-direction:column;align-items:flex-start;
+  }
+  .hw{font-size:10px}
+  .hero-overline{font-size:9px;letter-spacing:.16em;top:40px}
+  .nav-top{padding:0 16px}
+  .gw{font-size:14px}
+  .hud-bottom{display:none}
+}
+
+/* ── SPOT SHORTS OVERLAY ─────────────────────────────────────────────────── */
+#shorts-overlay{position:fixed;inset:0;z-index:1000;background:#000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+</style>
+</head>
+<body>
+<div id="cur"></div>
+<section id="hero">
+  <div id="map-container">
+    <canvas id="mcv"></canvas>
+    <div id="map-overlays">
+
+      <!-- TOP BAR — Get + static Higher -->
+      <div class="nav-top">
+        <a class="nav-higher-pub reveal" href="#" aria-label="Get Higher">
+          <span class="gw">Get</span><span class="H">Higher</span>
+        </a>
+        <span class="nav-right reveal" id="lis-time-nav">--:--</span>
+      </div>
+
+      
+      <!-- OVERLINE -->
+      <div class="hero-overline reveal">LISBON · REAL AND LIVING MAP</div>
+
+      <!-- WEATHER -->
+      <div class="hud-weather">
+        <div class="hw reveal"><span class="hw-val" id="lis-time">--:--</span><span id="lis-desc">···</span></div>
+        <div class="hw reveal"><span class="hw-val" id="lis-temp">--°C</span><span id="lis-wind">-- km/h</span></div>
+      </div>
+
+      <!-- SPOT PREVIEW (desktop) -->
+      <div id="pp">
+        <div class="pp-media" id="ppimg"><div id="ppsrc" class="pp-src"></div></div>
+        <div class="pp-body">
+          <div class="pp-int" id="ppint"></div>
+          <div class="pp-act" id="ppact"></div>
+          <div class="pp-mus" id="ppmus"></div>
+          <div class="pp-com" id="ppcom"></div>
+          <div class="pp-foot">
+            <span class="pp-time" id="pptime"></span>
+            <span class="pp-mem" id="ppmem"></span>
+            <span class="pp-badge" id="ppbadge"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- HUD BOTTOM -->
+      <div class="hud-bottom"><span id="hud-intent">— SELECT INTENTION —</span></div>
+      <div class="corner bl reveal">LIS · 38°42'N · 9°08'W</div>
+      <div class="corner br reveal" id="spot-count-corner"></div>
+      <div id="mobile-hint" style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Space Mono',monospace;font-size:11px;color:#2a2a2a;letter-spacing:.12em;text-align:center;pointer-events:none;z-index:5;line-height:1.8"></div>
+
+
+      <!-- DESKTOP SELECTOR -->
+      <div class="map-head">
+        <div class="map-q">What's your next move, right now?</div>
+        <div class="ddw" id="dd">
+          <button class="ddt" onclick="toggleDD()">
+            <span class="ddtq" id="ddcur">Choose an intention</span>
+            <span class="ddarr">▾</span>
+          </button>
+          <div class="ddm">
+          <div class="ddi" onclick="si('fight','#E24B4A')"><div class="ddr1"><div class="ddi-dot" style="background:var(--fight)"></div><span class="ddiq" style="color:var(--fight)">Fight</span></div><div class="dddef">Conquer yourself through harder effort.</div></div>
+            <div class="ddi" onclick="si('flow','#BA7517')"><div class="ddr1"><div class="ddi-dot" style="background:var(--flow)"></div><span class="ddiq" style="color:var(--flow)">Flow</span></div><div class="dddef">Liberate energy through movement.</div></div>
+            <div class="ddi" onclick="si('enrich','#EF9F27')"><div class="ddr1"><div class="ddi-dot" style="background:var(--enrich)"></div><span class="ddiq" style="color:var(--enrich)">Enrich</span></div><div class="dddef">Master your wealth through capital & network.</div></div>
+            <div class="ddi" onclick="si('love','#639922')"><div class="ddr1"><div class="ddi-dot" style="background:var(--love)"></div><span class="ddiq" style="color:var(--love)">Love</span></div><div class="dddef">Contemplate life through connection & beauty.</div></div>
+            <div class="ddi" onclick="si('express','#1D9E75')"><div class="ddr1"><div class="ddi-dot" style="background:var(--express)"></div><span class="ddiq" style="color:var(--express)">Express</span></div><div class="dddef">Give form to emotion through creation.</div></div>
+            <div class="ddi" onclick="si('focus','#378ADD')"><div class="ddr1"><div class="ddi-dot" style="background:var(--focus)"></div><span class="ddiq" style="color:var(--focus)">Focus</span></div><div class="dddef">Master your mind through deep mental focus.</div></div>
+            <div class="ddi" onclick="si('celebrate','#7F77DD')"><div class="ddr1"><div class="ddi-dot" style="background:var(--celebrate)"></div><span class="ddiq" style="color:var(--celebrate)">Celebrate</span></div><div class="dddef">Elevate energy through collective effervescence.</div></div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div id="mobile-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-q-row">
+    <span class="sheet-q">What's your intention right now?</span>
+    <button class="sheet-close-btn" id="sheet-clear" onclick="clearIntention()">✕ clear</button>
+  </div>
+  <div class="sheet-intentions" id="sheet-intentions">
+    <div class="sheet-int-pill" data-int="fight"   data-color="#E24B4A" onclick="siMobile(this)"><div class="sheet-int-dot" style="background:var(--fight)"></div><span class="sheet-int-label" style="color:var(--fight)">Fight</span></div>
+    <div class="sheet-int-pill" data-int="flow"    data-color="#BA7517" onclick="siMobile(this)"><div class="sheet-int-dot" style="background:var(--flow)"></div><span class="sheet-int-label" style="color:var(--flow)">Flow</span></div>
+    <div class="sheet-int-pill" data-int="enrich"  data-color="#EF9F27" onclick="siMobile(this)"><div class="sheet-int-dot" style="background:var(--enrich)"></div><span class="sheet-int-label" style="color:var(--enrich)">Enrich</span></div>
+    <div class="sheet-int-pill" data-int="love"    data-color="#639922" onclick="siMobile(this)"><div class="sheet-int-dot" style="background:var(--love)"></div><span class="sheet-int-label" style="color:var(--love)">Love</span></div>
+    <div class="sheet-int-pill" data-int="express" data-color="#1D9E75" onclick="siMobile(this)"><div class="sheet-int-dot" style="background:var(--express)"></div><span class="sheet-int-label" style="color:var(--express)">Express</span></div>
+    <div class="sheet-int-pill" data-int="focus"   data-color="#378ADD" onclick="siMobile(this)"><div class="sheet-int-dot" style="background:var(--focus)"></div><span class="sheet-int-label" style="color:var(--focus)">Focus</span></div>
+    <div class="sheet-int-pill" data-int="celebrate" data-color="#7F77DD" onclick="siMobile(this)"><div class="sheet-int-dot" style="background:var(--celebrate)"></div><span class="sheet-int-label" style="color:var(--celebrate)">Celebrate</span></div>
+  </div>
+</div>
+
+<script>
+window.MAP_IS_LEAF = false;
+
+const SUPABASE_URL  = 'https://abujjbkbbiumxrokozph.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+let SP = [];
+
+async function loadSpots(){
+  try{
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/spots?is_public=eq.true&active=eq.true&select=id,intention,activite,commentaire,rx,ry,is_rss,is_public,member_count,duration_min,expires_at,tags&order=created_at.desc`,
+      {headers:{'apikey':SUPABASE_ANON,'Authorization':'Bearer '+SUPABASE_ANON}}
+    );
+    const data = await res.json();
+    SP = data.map((s,i)=>({
+      id:s.id, rx:s.rx||Math.random(), ry:s.ry||Math.random(),
+      in:s.intention, ac:s.activite,
+      music:(s.tags||[]).slice(0,2).join(' / ')||'···',
+      comment:s.commentaire||'', pub:s.is_public,
+      members:s.member_count||0, rss:s.is_rss,
+      tl:s.duration_min||60, bo:i*3,
+    }));
+  }catch(e){
+    SP = DEMO_SPOTS;
+  }
+}
+
+const DEMO_SPOTS=[
+  {id:1,rx:.16,ry:.16,in:'fight',ac:'Boxing class',music:'Trap / Drill',comment:'Coach brings the heat.',pub:true,members:8,rss:false,tl:45,bo:0},
+  {id:2,rx:.82,ry:.19,in:'focus',ac:'Deep work',music:'Lo-fi / Ambient',comment:'Best silence in Lisbon.',pub:true,members:12,rss:false,tl:60,bo:8},
+  {id:3,rx:.76,ry:.72,in:'flow',ac:'Skate',music:'Hip-hop / Funk',comment:'Empty concrete. Go now.',pub:true,members:5,rss:true,tl:30,bo:3},
+  {id:4,rx:.14,ry:.70,in:'love',ac:'Sunset view',music:'Soul / Jazz',comment:'Go before 7pm.',pub:true,members:20,rss:false,tl:55,bo:12},
+  {id:5,rx:.12,ry:.44,in:'celebrate',ac:'Secret rooftop',music:'House / Techno',comment:'Invite only.',pub:false,members:30,rss:false,tl:70,bo:2},
+];
+
+
+function hexToRgb(hex){const m=hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);if(!m)return{r:255,g:255,b:255};return{r:parseInt(m[1],16),g:parseInt(m[2],16),b:parseInt(m[3],16)};}
+const IT={
+  fight:hexToRgb('#E24B4A'),flow:hexToRgb('#BA7517'),enrich:hexToRgb('#EF9F27'),
+  love:hexToRgb('#639922'),express:hexToRgb('#1D9E75'),focus:hexToRgb('#378ADD'),celebrate:hexToRgb('#7F77DD')
+};
+for(const k in IT){IT[k].h=getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim();}
+
+const CY=80,KMW=3.0,KMH=2.0;
+let W,H,mx=-999,my=-999,ai=null,el=0,inside=false,hovId=null;
+const mc=document.getElementById('map-container');
+const mcv=document.getElementById('mcv'),X=mcv.getContext('2d');
+const pp=document.getElementById('pp');
+
+function rsz(){const dpr=Math.max(1,window.devicePixelRatio||1);const r=mc.getBoundingClientRect();W=r.width;H=r.height;mcv.width=Math.round(W*dpr);mcv.height=Math.round(H*dpr);mcv.style.width=W+'px';mcv.style.height=H+'px';X.setTransform(dpr,0,0,dpr,0,0);}
+function age(s,t){return((t-s.bo)%CY+CY)%CY;}
+function distM(sx,sy){const dx=(mx-sx)/W*KMW*1000,dy=(my-sy)/H*KMH*1000;return Math.sqrt(dx*dx+dy*dy);}
+function fmt(m){return m<1000?Math.round(m)+'m':(m/1000).toFixed(1)+'km';}
+
+function drawCanvas(){
+  el+=.018;const t=el;
+  X.fillStyle='#000';X.fillRect(0,0,W,H);
+  X.strokeStyle='rgba(255,255,255,.015)';X.lineWidth=.5;
+  for(let x=0;x<W;x+=55){X.beginPath();X.moveTo(x,0);X.lineTo(x,H);X.stroke();}
+  for(let y=0;y<H;y+=55){X.beginPath();X.moveTo(0,y);X.lineTo(W,y);X.stroke();}
+  if(inside&&mx>0&&mx<W&&my>0&&my<H&&ai){SP.forEach(s=>{if(s.in!==ai)return;const rem=Math.max(0,1-age(s,t)/s.tl);if(rem<=0)return;const sx=s.rx*W,sy=s.ry*H;const dist=distM(sx,sy);const la=Math.max(.03,Math.min(.4,(1-dist/2000)*.4));const c=IT[s.in];X.save();X.strokeStyle=`rgba(${c.r},${c.g},${c.b},${la})`;X.lineWidth=.5;X.setLineDash([3,7]);X.beginPath();X.moveTo(mx,my);X.lineTo(sx,sy);X.stroke();X.setLineDash([]);X.restore();const lx=(mx+sx)/2,ly=(my+sy)/2;const fa=Math.max(.07,Math.min(.7,(1-dist/1500)*.7));X.font='700 8px Space Mono,monospace';X.fillStyle=`rgba(${c.r},${c.g},${c.b},${fa})`;X.textAlign='center';X.fillText(fmt(dist),lx,ly-3);});}
+  SP.forEach(s=>{const vis=ai===s.in;const sx=s.rx*W,sy=s.ry*H;const ag=age(s,t),rem=Math.max(0,1-ag/s.tl);if(vis&&rem<=0)return;const c=IT[s.in];if(vis){const dotR=8+rem*3;const isHov=hovId===s.id;X.save();X.shadowColor=isHov?'#fff':c.h;X.shadowBlur=isHov?14:4+rem*26;X.beginPath();X.arc(sx,sy,dotR,0,Math.PI*2);X.fillStyle=isHov?'rgba(255,255,255,.92)':c.h;X.globalAlpha=.22+rem*.78;X.fill();X.restore();X.globalAlpha=1;X.font='bold 9px Quantico,monospace';X.fillStyle='#bdbdbd';X.textAlign='center';X.fillText(s.ac,sx,sy+dotR+12);const bw=42,by=sy+dotR+16;X.fillStyle='rgba(255,255,255,.05)';X.fillRect(sx-bw/2,by,bw,2);X.fillStyle=c.h;X.fillRect(sx-bw/2,by,bw*rem,2);}else{X.beginPath();X.arc(sx,sy,1.6,0,Math.PI*2);X.fillStyle='rgba(255,255,255,.02)';X.fill();}});
+  if(inside&&mx>0&&mx<W&&my>0&&my<H){X.beginPath();X.arc(mx,my,2.5,0,Math.PI*2);X.fillStyle='rgba(200,200,200,.9)';X.fill();}
+  requestAnimationFrame(drawCanvas);
+}
+
+function showPP(s,withHigher){
+  const ag=age(s,el),mins=Math.max(1,Math.round((s.tl-ag)*1.8)+3),c=IT[s.in];
+  document.getElementById('ppimg').style.cssText=`background:${c.h}18;color:${c.h};min-height:110px`;
+  const src=document.getElementById('ppsrc');
+  src.className=s.rss?'pp-src rss':'pp-src member';
+  src.textContent=s.rss?'AUTO·RSS':'MEMBER DROP';
+  const cap=s.in.charAt(0).toUpperCase()+s.in.slice(1);
+  document.getElementById('ppint').textContent=withHigher?cap+' Higher':cap;
+  document.getElementById('ppint').style.color=c.h;
+  document.getElementById('ppact').textContent=s.ac;
+  document.getElementById('ppmus').textContent='♪ '+s.music;
+  document.getElementById('ppcom').textContent='"'+s.comment+'"';
+  document.getElementById('pptime').textContent=mins+' min left';
+  document.getElementById('ppmem').textContent=s.members+' Fighers';
+}
+
+mcv.addEventListener('mousemove',e=>{
+  const r=mcv.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;inside=true;
+  if(!ai){pp.style.display='none';return;}
+  let hov=null,hd=48;
+  SP.forEach(s=>{if(s.in!==ai)return;const rem=Math.max(0,1-age(s,el)/s.tl);if(rem<=0)return;const d=Math.sqrt((mx-s.rx*W)**2+(my-s.ry*H)**2);if(d<hd){hd=d;hov=s;}});
+  hovId=hov?hov.id:null;
+  if(hov){
+    showPP(hov, window.MAP_IS_LEAF||false);
+    let px=mx+16,py=my-8;
+    if(px+204>W)px=mx-220;if(py+320>H)py=H-328;
+    pp.style.left=px+'px';pp.style.top=py+'px';pp.style.display='flex';
+  }else pp.style.display='none';
+});
+mcv.addEventListener('mouseleave',()=>{mx=-999;my=-999;inside=false;hovId=null;pp.style.display='none';});
+
+/* ── REVEAL SYSTEM JS ────────────────────────────────────────────────────── */
+let revealTimer;
+function triggerReveal(){
+  document.body.classList.add('map-alive');
+  clearTimeout(revealTimer);
+  revealTimer = setTimeout(()=>{
+    if(!ai) document.body.classList.remove('map-alive');
+  }, 4000);
+}
+document.addEventListener('mousemove', triggerReveal);
+document.addEventListener('touchstart', triggerReveal, {passive:true});
+document.addEventListener('touchmove', triggerReveal, {passive:true});
+
+/* ── DROPDOWN ────────────────────────────────────────────────────────────── */
+window.toggleDD=function(){document.getElementById('dd').classList.toggle('open');};
+document.addEventListener('click',e=>{
+  if(!document.getElementById('dd').contains(e.target))
+    document.getElementById('dd').classList.remove('open');
+});
+
+/* ── INTENTION SELECT ────────────────────────────────────────────────────── */
+window.si=function(i,color){
+  ai=i;
+  document.body.classList.add('has-intention','map-alive');
+  const label=i.charAt(0).toUpperCase()+i.slice(1)+(window.MAP_IS_LEAF?' Higher':'');
+  const ddcur=document.getElementById('ddcur');
+  if(ddcur){ddcur.textContent=label;ddcur.style.color=color||'#fff';}
+  const hud=document.getElementById('hud-intent');
+  if(hud){hud.textContent=i.toUpperCase()+(window.MAP_IS_LEAF?' HIGHER':'');hud.style.color=color||'#fff';}
+  document.getElementById('dd').classList.remove('open');
+  document.querySelectorAll('.sheet-int-pill').forEach(p=>p.classList.toggle('active',p.dataset.int===i));
+  document.getElementById('mobile-sheet').classList.add('has-selection');
+  replaceHigherAssets();
+};
+window.siMobile=function(el){si(el.dataset.int,el.dataset.color);};
+window.clearIntention=function(){
+  ai=null;
+  document.body.classList.remove('has-intention');
+  document.querySelectorAll('.sheet-int-pill').forEach(p=>p.classList.remove('active'));
+  document.getElementById('mobile-sheet').classList.remove('has-selection');
+  const ddcur=document.getElementById('ddcur');
+  if(ddcur){ddcur.textContent='Choose an intention';ddcur.style.color='';}
+  const hud=document.getElementById('hud-intent');
+  if(hud){hud.textContent='— SELECT INTENTION —';hud.style.color='';}
+};
+
+/* ── SHORTS MODE ─────────────────────────────────────────────────────────── */
+function openShorts(spotId){
+  const s=SP.find(x=>x.id===spotId);if(!s)return;
+  const c=IT[s.in];
+  const ag=age(s,el),mins=Math.max(1,Math.round((s.tl-ag)*1.8)+3);
+  const ov=document.createElement('div');
+  ov.id='shorts-overlay';
+  ov.innerHTML=`
+    <div style="width:min(100vw,420px);height:100vh;position:relative;background:#000;display:flex;flex-direction:column;justify-content:flex-end;padding:32px 24px 48px;overflow:hidden">
+      <div style="position:absolute;inset:0;background:${c.h}06;pointer-events:none"></div>
+      <button onclick="closeShorts()" style="position:absolute;top:20px;right:20px;background:transparent;border:none;color:#606060;font-size:22px;cursor:pointer;font-family:Space Mono,monospace;z-index:10;transition:color .15s ease" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#606060'">×</button>
+      <div style="position:absolute;top:20px;left:20px;font-family:Space Mono,monospace;font-size:9px;font-weight:700;padding:3px 8px;border:1px solid ${s.rss?'#378ADD':'#639922'};color:${s.rss?'#378ADD':'#639922'}">${s.rss?'AUTO·RSS':'MEMBER DROP'}</div>
+      <div style="width:8px;height:8px;border-radius:50%;background:${c.h};margin-bottom:16px"></div>
+      <div style="font-family:Quantico,monospace;font-size:13px;font-weight:700;color:${c.h};letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px">${s.in.toUpperCase()}${window.MAP_IS_LEAF?' HIGHER':''}</div>
+      <div style="font-family:Quantico,monospace;font-size:28px;font-weight:700;color:#E8E8E8;line-height:1.1;margin-bottom:12px">${s.ac}</div>
+      <div style="font-family:Quantico,monospace;font-size:14px;color:#606060;font-style:italic;margin-bottom:24px">"${s.comment}"</div>
+      <div style="font-family:Space Mono,monospace;font-size:11px;color:#3a3a3a;margin-bottom:20px">♪ ${s.music}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-family:Space Mono,monospace;font-size:11px;color:#C8C8C8">${mins} min left</span>
+        <span style="font-family:Space Mono,monospace;font-size:11px;color:#606060">${s.members} Fighers</span>
+      </div>
+      <div style="height:1px;background:#1a1a1a;margin-top:16px"><div style="height:1px;background:${c.h};width:${Math.max(2,(1-ag/s.tl)*100)}%"></div></div>
+      <div style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-family:Space Mono,monospace;font-size:9px;color:#1a1a1a;letter-spacing:.15em">SWIPE · ESC TO CLOSE</div>
+    </div>`;
+  document.body.appendChild(ov);
+  const onKey=e=>{if(e.key==='Escape')closeShorts();};
+  document.addEventListener('keydown',onKey);
+  ov._onKey=onKey;
+  ov.addEventListener('click',e=>{if(e.target===ov)closeShorts();});
+}
+function closeShorts(){
+  const o=document.getElementById('shorts-overlay');
+  if(o){o.style.opacity='0';o.style.transition='opacity .2s';setTimeout(()=>o.remove(),200);if(o._onKey)document.removeEventListener('keydown',o._onKey);}
+}
+mcv.addEventListener('click',e=>{
+  if(!ai)return;
+  const r=mcv.getBoundingClientRect();const cx=e.clientX-r.left,cy=e.clientY-r.top;
+  let cl=null,cd=32;
+  SP.forEach(s=>{if(s.in!==ai)return;const rem=Math.max(0,1-age(s,el)/s.tl);if(rem<=0)return;const d=Math.sqrt((cx-s.rx*W)**2+(cy-s.ry*H)**2);if(d<cd){cd=d;cl=s;}});
+  if(cl)openShorts(cl.id);
+});
+mcv.addEventListener('touchend',e=>{
+  if(!ai)return;
+  const r=mcv.getBoundingClientRect();const t=e.changedTouches[0];
+  const cx=t.clientX-r.left,cy=t.clientY-r.top;
+  let cl=null,cd=48;
+  SP.forEach(s=>{if(s.in!==ai)return;const d=Math.sqrt((cx-s.rx*W)**2+(cy-s.ry*H)**2);if(d<cd){cd=d;cl=s;}});
+  if(cl)openShorts(cl.id);
+},{passive:true});
+
+/* ── HIGHER ASSETS (static SVG) ─────────────────────────────────────────── */
+function replaceHigherAssets(){
+  document.querySelectorAll('.H,.ddih').forEach(el=>{
+    if(el.dataset.higherReady==='1')return;
+    const fs=parseFloat(getComputedStyle(el).fontSize)||14;
+    const h=Math.max(18,Math.round(fs*1.16));const w=Math.round(h*3);
+    const mid='holes-'+Math.random().toString(36).slice(2,10);
+    el.innerHTML=`<span class="higher-asset"><svg width="${w}" height="${h}" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg"><defs><mask id="${mid}"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="60" r="14" fill="black"/><circle cx="0" cy="100" r="14" fill="black"/><circle cx="0" cy="140" r="14" fill="black"/><circle cx="600" cy="60" r="14" fill="black"/><circle cx="600" cy="100" r="14" fill="black"/><circle cx="600" cy="140" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#${mid})"/><text x="50%" y="56%" dominant-baseline="middle" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-style="italic" font-size="144" fill="#ffffff">Higher</text></svg></span>`;
+    el.dataset.higherReady='1';
+  });
+}
+
+/* ── WEATHER & TIME ──────────────────────────────────────────────────────── */
+function updateTime(){
+  const d=new Date(new Date().toLocaleString('en',{timeZone:'Europe/Lisbon'}));
+  const t=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  document.getElementById('lis-time').textContent=t;
+  const n=document.getElementById('lis-time-nav');if(n)n.textContent=t;
+}
+async function fetchWeather(){
+  try{
+    const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=38.717&longitude=-9.14&current=temperature_2m,windspeed_10m,weathercode&timezone=Europe/Lisbon');
+    const d=await r.json();const c=d.current;
+    document.getElementById('lis-temp').textContent=Math.round(c.temperature_2m)+'°C';
+    document.getElementById('lis-wind').textContent=Math.round(c.windspeed_10m)+' km/h';
+    const wc=c.weathercode;
+    document.getElementById('lis-desc').textContent=wc===0?'Clear':wc<=3?'Cloudy':wc<=49?'Fog':wc<=69?'Rain':wc<=79?'Snow':'Storm';
+  }catch(e){document.getElementById('lis-desc').textContent='···';}
+}
+
+
+async function init(){
+  await loadSpots();
+  updateTime();setInterval(updateTime,30000);
+  fetchWeather();setInterval(fetchWeather,300000);
+  new ResizeObserver(rsz).observe(mc);rsz();drawCanvas();
+  replaceHigherAssets();
+  
+if(window.matchMedia('(hover:none),(pointer:coarse)').matches){
+  document.getElementById('mobile-sheet').classList.add('visible');
+}
+
+}
+init();
+
+</script>
+</body>
+</html>
