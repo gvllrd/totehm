@@ -15,16 +15,41 @@
   --tile-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23743169'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--bg);min-height:100%;-webkit-font-smoothing:antialiased}
-body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:7vh 22px 5vh;overflow-y:auto}
+html,body{background:var(--bg);min-height:100%;-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+html{scroll-snap-type:y mandatory}
+body{display:flex;flex-direction:column;align-items:center;min-height:100vh;overflow-y:auto}
 .hide{display:none!important}
+
+/* SECTIONS : hero (atterrissage) + context (vidéo de marque) */
+.hero,.context{width:100%;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;scroll-snap-align:start;scroll-snap-stop:always;position:relative}
+.hero{padding:7vh 22px 4vh}
+.context{padding:5vh 22px}
+.ctx-down{margin-top:7vh;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;-webkit-tap-highlight-color:transparent}
+.ctx-label{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:#b0b0b0;transition:color .15s ease}
+.ctx-down:hover .ctx-label{color:#fff}
+.chev{width:22px;height:22px;color:var(--g-mid);transition:color .15s ease}
+.ctx-down:hover .chev,.ctx-up:hover .chev{color:#fff}
+.ctx-up{position:absolute;top:22px;left:50%;transform:translateX(-50%);background:none;border:none;cursor:pointer;padding:8px 14px;-webkit-tap-highlight-color:transparent}
+.ctx-up .chev{width:26px;height:26px}
+.ctx-vid{height:5cm;width:auto;max-width:84vw;display:block;background:#000}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+.bob{animation:bob 1.8s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.bob{animation:none}html,body{scroll-behavior:auto}}
 
 .slogan{width:min(52vw,200px);margin-bottom:13px}
 .slogan svg{display:block;width:100%;height:auto}
 .tagline{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--g-mid);letter-spacing:0;text-align:center;margin-bottom:5vh}
 .realwrap{margin-top:7vh;display:flex;justify-content:center}
 .real{width:130px;height:auto;display:block;opacity:.8;filter:grayscale(1)}
-.real.color{filter:none;opacity:1;width:97.5px}
+.real.color{filter:none;opacity:1;width:85px;animation:paper-float 9s ease-in-out infinite}
+@keyframes paper-float{
+  0%{transform:translate(0,0) rotate(0deg)}
+  25%{transform:translate(3px,-4px) rotate(1deg)}
+  50%{transform:translate(-2px,3px) rotate(-1deg)}
+  75%{transform:translate(4px,2px) rotate(.6deg)}
+  100%{transform:translate(0,0) rotate(0deg)}
+}
+@media(prefers-reduced-motion:reduce){.real.color{animation:none}}
 
 /* boutons de marque : survol bleu clair (desktop) / clic navy */
 .btn-sig{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
@@ -43,15 +68,6 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 .line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:none;outline:none;border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:var(--coral);min-width:230px}
 .note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px;text-align:center}
 .note.ok{color:#639922}.note.no{color:var(--rep)}.note.dim{color:var(--g-dark)}
-/* tiroir vidéo : format vertical, ratio natif (pas de coupe) */
-.think-drawer{overflow:hidden;max-height:0;opacity:0;transition:max-height .4s ease,opacity .4s ease;display:flex;justify-content:center}
-.think-drawer.on{max-height:230px;opacity:1;margin-top:10px}
-.think-drawer video{height:5cm;width:auto;max-width:84vw;display:block;background:#000}
-
-footer{margin-top:7vh;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.14em;color:var(--g-dark);text-align:center;line-height:1.5}
-footer .r{font-size:.7em;vertical-align:super}
-footer .dope-ico{display:inline-block;width:15px;height:15px;vertical-align:middle;margin-left:5px;color:var(--g-mid)}
-footer .dope-ico svg{width:100%;height:100%;display:block}
 
 /* FULL-SCREEN perforé : résultat Decode */
 .fs-perf{position:fixed;inset:0;z-index:80;background:var(--navy);border:11px solid transparent;border-image-source:var(--tile-full);border-image-slice:11;border-image-repeat:round;display:none;flex-direction:column;align-items:center;justify-content:center;padding:60px 30px 40px}
@@ -78,6 +94,7 @@ footer .dope-ico svg{width:100%;height:100%;display:block}
   </defs>
 </svg>
 
+<section class="hero" id="hero">
 <div class="slogan"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></div>
 <div class="tagline">OWN/YOUR/TIME&nbsp;&nbsp;&nbsp;NOW:WON&nbsp;&nbsp;&nbsp;<span id="tag-loc">WRLD</span></div>
 
@@ -109,26 +126,33 @@ footer .dope-ico svg{width:100%;height:100%;display:block}
 
     <div class="menu-gap"></div>
 
-    <!-- 6-7-8 : Email / Map / Opposite -->
+    <!-- 6-7 : Email / Map -->
     <div class="menu-row">
       <button class="btn-sig" id="email-btn">Email for dope news</button>
       <input class="line-input hide" id="email-input" type="email" maxlength="120" placeholder="your@email">
       <div class="note dim hide" id="email-note"></div>
     </div>
     <a class="btn-sig local-only" href="totehm_map.html">My Higher Lisbon</a>
-    <div class="menu-row">
-      <button class="btn-sig" id="think-btn">Think same but opposite</button>
-      <div class="think-drawer" id="think-drawer">
-        <video id="think-vid" playsinline controls preload="none"></video>
-      </div>
-    </div>
 
   </div>
 </nav>
 
 <div class="realwrap"><img src="https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/higher_boutique/real.png" alt="DOPE — No Social Media. For Real." class="real" id="real-img"></div>
 
-<footer id="footer">TOTEHM 1993<span class="r">©</span> DESIGNED BY SCIENCE AND NEUROSCIENCE <span class="dope-ico"><svg viewBox="100 240 660 320" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M193.16 295.785c0 21.8-17.672 39.476-39.473 39.476-21.805 0-39.477-17.676-39.477-39.476 0-21.801 17.672-39.473 39.477-39.473 21.801 0 39.473 17.672 39.473 39.473m-11.723 0c0-15.325-12.422-27.75-27.75-27.75-15.328 0-27.75 12.425-27.75 27.75 0 15.324 12.422 27.75 27.75 27.75 15.328 0 27.75-12.426 27.75-27.75z"/><path d="M192.027 508.664c0 21.805-17.672 39.476-39.476 39.476-21.797 0-39.473-17.675-39.473-39.476 0-21.801 17.676-39.473 39.473-39.473 21.804 0 39.476 17.672 39.476 39.473m-11.727 0c0-15.325-12.422-27.75-27.75-27.75-15.328 0-27.75 12.425-27.75 27.75 0 15.328 12.422 27.75 27.75 27.75 15.328 0 27.75-12.422 27.75-27.75z"/><path d="M742.289 295.187c0 21.801-17.672 39.473-39.473 39.473-21.801 0-39.477-17.672-39.477-39.473 0-21.8 17.676-39.476 39.477-39.476 21.801 0 39.473 17.676 39.473 39.476m-11.723 0c0-15.324-12.422-27.75-27.75-27.75-15.328 0-27.75 12.426-27.75 27.75 0 15.324 12.422 27.75 27.75 27.75 15.328 0 27.75-12.426 27.75-27.75z"/><path d="M191.777 313.746v.008l-2.754-4.973 59.363 37.101-6.051-.097 88.879-51.614c1.754-1.015 3.907-1.058 5.696-.105l91.769 48.754-5.629.066 98.641-55.562c1.914-1.078 4.273-.992 6.109.219l88.395 58.445-6.133-.203 58.305-33.18c2.812-1.601 6.394-.62 7.996 2.196 1.601 2.812.617 6.39-2.196 7.992l-58.304 33.184c-1.922 1.09-4.289 1.011-6.133-.207l-88.394-58.446 6.109.219-98.637 55.563c-1.742.98-3.863 1.007-5.629.07l-91.773-48.754 5.695-.11-88.879 51.614c-1.879 1.09-4.207 1.05-6.051-.102l-59.363-37.097c-1.715-1.071-2.754-2.95-2.754-4.973v-.008c0-3.238 2.625-5.863 5.863-5.863 3.235 0 5.86 2.625 5.86 5.863z"/><path d="M248.465 354.148v.008l-.001-.098 1.629 98.317-2.82-4.914 91.449 55.511-5.926-.093 94.485-53.379-2.977 5.266-2.929-104.805c-.09-3.234 2.46-5.933 5.699-6.023 3.234-.09 5.933 2.46 6.023 5.695l2.93 104.805c.058 2.172-1.086 4.199-2.977 5.27l-94.484 53.382c-1.848 1.043-4.113 1.008-5.926-.094l-91.453-55.511c-1.723-1.043-2.785-2.899-2.82-4.914l-1.625-98.317-.004-.097v-.008c0-3.238 2.629-5.863 5.863-5.863 3.239 0 5.864 2.625 5.864 5.863z"/><path d="M248.363 454.742v.012c0 2.046-1.07 3.949-2.82 5.011l-59.465 36.067c-2.766 1.675-6.371.793-8.051-1.973-1.68-2.77-.797-6.375 1.973-8.055l59.46-36.066-2.82 5.016v-.012c0-3.238 2.625-5.859 5.86-5.859 3.238 0 5.863 2.621 5.863 5.859z"/></svg></span></footer>
+  <!-- remplace le footer : accès au contexte de marque -->
+  <button class="ctx-down" id="ctx-down" aria-label="Think same but opposite">
+    <span class="ctx-label">Think same but opposite</span>
+    <svg class="chev bob" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+  </button>
+</section>
+
+<!-- SECTION CONTEXTE : vidéo de marque -->
+<section class="context" id="context">
+  <button class="ctx-up" id="ctx-up" aria-label="Remonter">
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
+  </button>
+  <video class="ctx-vid" id="ctx-vid" playsinline controls preload="none"></video>
+</section>
 
 <!-- FULL-SCREEN : résultat Decode -->
 <div class="fs-perf" id="decode-fs">
@@ -146,19 +170,18 @@ const SBURL='https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/h
 function showScreen(s){
   $('where-row').classList.toggle('hide', s!=='landing');
   $('menu-main').classList.toggle('hide', s==='landing');
+  $('ctx-down').classList.toggle('hide', s!=='landing'); // affordance contexte : landing uniquement
   // items réservés à Lisbonne : visibles seulement en mode lisbon
   document.querySelectorAll('.local-only').forEach(el=>el.classList.toggle('hide', s!=='lisbon'));
-  // Lisbon : LSB + logo Totehm + pas de footer ; sinon WRLD + real + footer
+  // Lisbon : LSB + logo Totehm ; sinon WRLD + real
   if(s==='lisbon'){
     $('tag-loc').textContent='LSB';
     $('real-img').src='assets/img/totehm_logo.png';
     $('real-img').classList.add('color');
-    $('footer').classList.add('hide');
   }else{
     $('tag-loc').textContent='WRLD';
     $('real-img').src=SBURL+'real.png';
     $('real-img').classList.remove('color');
-    $('footer').classList.remove('hide'); // footer visible : landing + international
   }
 }
 showScreen('landing');
@@ -212,14 +235,22 @@ $('email-input').addEventListener('keydown',async(e)=>{
   note.className='note ok';note.textContent="you're in";$('email-input').disabled=true;
 });
 
-/* ── THINK same but opposite : tiroir vidéo ── */
-let loaded=false;
-$('think-btn').onclick=()=>{
-  const d=$('think-drawer'),v=$('think-vid');
-  const open=d.classList.toggle('on');
-  if(open){ if(!loaded){v.src=SBURL+'same_but_opposite.mp4';loaded=true;} v.play().catch(()=>{}); }
-  else{ v.pause(); }
-};
+/* ── CONTEXTE DE MARQUE : scroll/clic vers la vidéo + lecture-pause auto ── */
+(function(){
+  const ctx=$('context'),hero=$('hero'),v=$('ctx-vid');
+  let vloaded=false;
+  const loadVid=()=>{ if(!vloaded){ v.src=SBURL+'same_but_opposite.mp4'; vloaded=true; } };
+  $('ctx-down').addEventListener('click',()=>{ loadVid(); ctx.scrollIntoView({behavior:'smooth'}); v.play().catch(()=>{}); });
+  $('ctx-up').addEventListener('click',()=>{ hero.scrollIntoView({behavior:'smooth'}); });
+  // couvre aussi le scroll naturel : joue à l'entrée, met en pause à la sortie
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ loadVid(); v.play().catch(()=>{}); }
+      else{ v.pause(); }
+    });
+  },{threshold:0.55});
+  io.observe(ctx);
+})();
 </script>
 </body>
 </html>
