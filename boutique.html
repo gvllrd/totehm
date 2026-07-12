@@ -57,8 +57,42 @@ div.style-img{display:flex;align-items:center;justify-content:center;font-family
 .style-item.on .style-img{filter:none;opacity:1}
 .style-item.on .st-name{color:#fff}
 
-/* ── BLIND DROP : l'avertissement, dans la continuité mais plus visible ── */
+/* ── BLIND DROP : l'avertissement fusionné avec les terms ── */
 .blind{font-family:'Quantico',sans-serif;font-weight:400;font-size:12px;line-height:1.75;color:var(--g-light);text-align:center;max-width:430px;margin-top:16px}
+
+/* ── CONCEPT : l'histoire du Totehm Cloth ── */
+#concept-btn{position:fixed;top:14px;right:14px;z-index:50}
+#concept{position:fixed;inset:0;z-index:70;background:var(--bg);overflow-y:auto;display:none;flex-direction:column;align-items:center;gap:34px;padding:70px 24px 60px}
+#concept.show{display:flex}
+#concept-back{position:fixed;top:14px;left:14px;z-index:72}
+#concept-slides{display:flex;flex-direction:column;align-items:center;gap:34px;width:100%}
+.slide{display:flex;flex-direction:column;align-items:center;gap:12px;max-width:420px;width:100%}
+.slide-img{width:min(74vw,320px);aspect-ratio:1/1;border:1px solid #1c1c1c;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.slide-img img{width:100%;height:100%;object-fit:cover;display:block}
+.slide-img .ph{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;color:#2a2a2a;text-transform:uppercase;text-align:center;padding:14px}
+.slide-cap{font-family:var(--futura);font-weight:300;font-size:13px;line-height:1.7;color:var(--g-light);text-align:center;max-width:360px}
+
+/* ── MEMBER SPACE : email code, no password ── */
+#conn-bar{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:45;display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:rgba(255,255,255,.62);padding:0;-webkit-tap-highlight-color:transparent;transition:color .2s}
+#conn-bar:hover{color:#fff}
+#conn-bar .dot{width:6px;height:6px;border-radius:50%;background:#888;transition:background .3s}
+#conn-bar .dot.in{background:#639922}
+#member{position:fixed;inset:0;z-index:75;background:rgba(0,0,0,.84);display:none;align-items:center;justify-content:center;padding:24px}
+#member.show{display:flex}
+.mw-card{background:#0a0a0a;border:1px solid #1e1e1e;max-width:340px;width:100%;padding:30px 24px;text-align:center;position:relative}
+.mw-title{font-family:'Quantico',sans-serif;font-weight:700;font-size:18px;color:#fff;margin-bottom:14px}
+.mw-body{font-family:var(--futura);font-weight:300;font-size:13px;color:var(--g-mid);line-height:1.7;margin-bottom:14px}
+.mw-close{position:absolute;top:12px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:var(--g-mid);background:none;border:none;cursor:pointer;padding:0}
+.mw-close:hover{color:#fff}
+.mw-input{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:6px 2px;caret-color:var(--coral);text-align:center;margin-bottom:10px}
+.mw-input::placeholder{color:rgba(255,255,255,.33)}
+.mw-list{display:flex;flex-direction:column;gap:8px;margin:10px 0 14px;text-align:left;max-height:200px;overflow-y:auto}
+.mw-row{display:flex;justify-content:space-between;gap:10px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;color:#cfcfcf}
+.mw-row .st{color:var(--g-mid);text-transform:uppercase;font-size:9px;flex-shrink:0}
+.mw-pseudo{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:#fff;margin-bottom:4px}
+.mw-mail{font-family:'Space Mono',monospace;font-size:9px;color:var(--g-dark);margin-bottom:12px;word-break:break-all}
+.mw-out{margin-top:2px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--g-mid);background:none;border:none;cursor:pointer;transition:color .15s}
+.mw-out:hover{color:#fff}
 
 /* ── CARROUSEL SUPPORTS ── */
 #carousel{position:relative;margin-top:0;padding:76px 20px 12px;min-height:200px;display:flex;align-items:center;justify-content:center}
@@ -95,8 +129,7 @@ div.style-img{display:flex;align-items:center;justify-content:center;font-family
 .note.ok{color:#639922}.note.no{color:var(--rep)}.note.dim{color:var(--g-dark)}
 .sizes{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 .price-big{font-family:'Quantico',sans-serif;font-weight:400;font-size:20px;color:var(--g-mid);letter-spacing:0}
-.terms{font-family:var(--futura);font-weight:300;font-size:11px;line-height:1.6;color:var(--g-dark);text-align:center;max-width:430px;margin-top:4px}
-.terms a{color:var(--g-mid);text-decoration:underline;cursor:pointer}
+.blind a{color:var(--g-mid);text-decoration:underline;cursor:pointer}
 #done{text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px}
 #done .big{font-family:'Quantico',sans-serif;font-weight:400;font-size:18px;color:#fff}
 #done .sub{font-family:var(--futura);font-size:13px;color:var(--g-mid);line-height:1.6;max-width:360px}
@@ -108,6 +141,41 @@ div.style-img{display:flex;align-items:center;justify-content:center;font-family
 <body>
 
 <button class="btn-back" id="back-top">Back in Time</button>
+<button class="btn-sig" id="concept-btn">What is a Totehm Cloth ?</button>
+
+<button id="conn-bar" aria-label="member space"><span class="dot" id="conn-dot"></span><span id="conn-txt">Guest</span></button>
+
+<!-- MEMBER SPACE : 3 états -->
+<div id="member">
+  <div class="mw-card">
+    <button class="mw-close" id="mw-close">Close</button>
+    <div class="mw-title">Member space</div>
+    <div id="mw-out-state">
+      <div class="mw-body">One email. No password.<br>Your Totehm Cloths, your Grind, your Figher Club access.</div>
+      <input class="mw-input" id="mw-email" type="email" placeholder="your email" autocomplete="email">
+      <input class="mw-input hide" id="mw-code" inputmode="numeric" maxlength="6" placeholder="6-digit code">
+      <div class="note dim" id="mw-note"></div>
+    </div>
+    <div id="mw-claim-state" class="hide">
+      <div class="mw-body">Claim your permanent underground pseudo.</div>
+      <input class="mw-input" id="mw-pseudo" maxlength="24" placeholder="pseudo">
+      <div class="note dim" id="mw-claim-note"></div>
+    </div>
+    <div id="mw-in-state" class="hide">
+      <div class="mw-pseudo" id="mw-who"></div>
+      <div class="mw-mail" id="mw-mail"></div>
+      <div class="mw-body" style="margin-bottom:4px">My Totehm Cloths</div>
+      <div class="mw-list" id="mw-list"></div>
+      <button class="mw-out" id="mw-signout">Sign out</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONCEPT : l'histoire, image par image -->
+<div id="concept">
+  <button class="btn-back" id="concept-back">Back in Time</button>
+  <div id="concept-slides"></div>
+</div>
 
 <!-- carrousel des supports : l'entrée de la Totehmisation -->
 <div id="carousel"><div id="card"></div></div>
@@ -150,14 +218,13 @@ div.style-img{display:flex;align-items:center;justify-content:center;font-family
   <div class="cfg-step" id="step-order">
     <div class="price-big" id="price-big"></div>
     <button class="btn-sig" id="order-btn">Order your Totehm Cloth</button>
-    <div class="terms">By pressing Order your Totehm Cloth, you accept the <a id="terms-link">terms of sale</a>. Each Totehm Cloth is unique, made to order, and validated by the artist.</div>
-    <div class="blind">The Totehm Cloth is a leap into the unknown. We take absolute control over the design, its size, and where it lands. Trust us. If you don't, do not order. No returns, no refunds.</div>
+    <div class="blind">By pressing Order your Totehm Cloth, you accept the <a id="terms-link">terms of sale</a>. The Totehm Cloth is a leap into the unknown. We take absolute control over the design, its size, and where it lands. Trust us. If you don't, do not order. No returns, no refunds.</div>
     <div class="note dim" id="order-note"></div>
   </div>
 
   <div id="done" class="hide">
     <div class="big" id="done-name"></div>
-    <div class="sub">Encoded. The artist will bring it to life. Each Totehm Cloth is unique and validated by the artist before it's made.</div>
+    <div class="sub">In process</div>
     <button class="btn-back" id="done-back">Back in Time</button>
   </div>
 </div>
@@ -186,6 +253,87 @@ async function load(){
 }
 function avail(s){return Math.max((s.max_pieces||0)-(s.claimed||0),0);}
 
+/* ── CONCEPT : l'histoire du Totehm Cloth ── */
+let conceptLoaded=false;
+$('concept-btn').onclick=async()=>{
+  $('concept').classList.add('show');
+  if(conceptLoaded)return;
+  const {data}=await sb.from('concept_slides').select('*').eq('active',true).order('position');
+  const box=$('concept-slides');box.innerHTML='';
+  (data||[]).forEach(s=>{
+    const d=document.createElement('div');d.className='slide';
+    d.innerHTML=(s.image_url
+      ?'<div class="slide-img"><img src="'+s.image_url+'" alt=""></div>'
+      :'<div class="slide-img"><div class="ph">visual coming soon</div></div>')
+      +'<div class="slide-cap">'+esc(s.caption||'')+'</div>';
+    box.appendChild(d);
+  });
+  conceptLoaded=true;
+};
+$('concept-back').onclick=()=>{$('concept').classList.remove('show');};
+
+/* ── MEMBER SPACE : email-only DNA, no password ── */
+let me=null, myProfile=null;
+function connPaint(){
+  $('conn-txt').textContent=(myProfile&&myProfile.pseudo)||(me?'Member':'Guest');
+  $('conn-dot').classList.toggle('in',!!me);
+}
+async function loadProfile(){
+  if(!me){myProfile=null;connPaint();return;}
+  const {data}=await sb.from('profiles').select('pseudo').eq('id',me.id).maybeSingle();
+  myProfile=data||null;connPaint();
+}
+function memberPaint(){
+  $('mw-out-state').classList.toggle('hide',!!me);
+  $('mw-claim-state').classList.toggle('hide',!(me&&!myProfile));
+  $('mw-in-state').classList.toggle('hide',!(me&&myProfile));
+  if(me&&myProfile){$('mw-who').textContent=myProfile.pseudo;$('mw-mail').textContent=me.email||'';loadCloths();}
+}
+async function loadCloths(){
+  const box=$('mw-list');box.innerHTML='<div class="note dim">…</div>';
+  const {data}=await sb.from('totehm_clothes').select('name,status,created_at').eq('user_id',me.id).order('created_at',{ascending:false});
+  if(!data||!data.length){box.innerHTML='<div class="note dim">none yet</div>';return;}
+  box.innerHTML='';
+  data.forEach(c=>{const d=document.createElement('div');d.className='mw-row';d.innerHTML='<span>'+esc(c.name)+'</span><span class="st">'+esc(c.status||'')+'</span>';box.appendChild(d);});
+}
+$('conn-bar').onclick=()=>{$('member').classList.add('show');memberPaint();};
+$('mw-close').onclick=()=>$('member').classList.remove('show');
+$('member').addEventListener('click',e=>{if(e.target===$('member'))$('member').classList.remove('show');});
+
+let mwEmail='';
+$('mw-email').addEventListener('keydown',async e=>{
+  if(e.key!=='Enter')return;
+  const v=$('mw-email').value.trim(), note=$('mw-note');
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){note.className='note no';note.textContent='invalid email';return;}
+  note.className='note dim';note.textContent='sending…';
+  const {error}=await sb.auth.signInWithOtp({email:v,options:{shouldCreateUser:true}});
+  if(error){note.className='note no';note.textContent='try again in a minute';return;}
+  mwEmail=v;
+  note.className='note ok';note.textContent='code sent — check your email';
+  $('mw-code').classList.remove('hide');setTimeout(()=>$('mw-code').focus(),80);
+});
+$('mw-code').addEventListener('input',async()=>{
+  const t=$('mw-code').value.trim(), note=$('mw-note');
+  if(t.length!==6)return;
+  note.className='note dim';note.textContent='verifying…';
+  const {error}=await sb.auth.verifyOtp({email:mwEmail,token:t,type:'email'});
+  if(error){note.className='note no';note.textContent='wrong code';return;}
+  note.className='note dim';note.textContent='';
+  $('mw-code').value='';$('mw-code').classList.add('hide');
+});
+$('mw-pseudo').addEventListener('keydown',async e=>{
+  if(e.key!=='Enter')return;
+  const v=$('mw-pseudo').value.trim(), note=$('mw-claim-note');
+  if(v.length<3||v.length>24){note.className='note no';note.textContent='3 to 24 characters';return;}
+  note.className='note dim';note.textContent='…';
+  const {error}=await sb.from('profiles').insert({id:me.id,pseudo:v});
+  if(error){note.className='note no';note.textContent=error.code==='23505'?'already taken':'try again';return;}
+  note.textContent='';await loadProfile();memberPaint();
+});
+$('mw-signout').onclick=async()=>{await sb.auth.signOut();$('member').classList.remove('show');};
+sb.auth.onAuthStateChange(async()=>{const {data:{session}}=await sb.auth.getSession();me=session?.user||null;await loadProfile();memberPaint();});
+(async()=>{const {data:{session}}=await sb.auth.getSession();me=session?.user||null;await loadProfile();})();
+
 function render(){
   const s=supports[ci];const card=$('card');
   if(!s){card.innerHTML='<div class="mono">collection coming soon</div>';return;}
@@ -209,7 +357,7 @@ $('arr-l').onclick=()=>go(-1);$('arr-r').onclick=()=>go(1);
 let x0=0;
 $('carousel').addEventListener('touchstart',e=>{x0=e.changedTouches[0].screenX;},{passive:true});
 $('carousel').addEventListener('touchend',e=>{const dx=e.changedTouches[0].screenX-x0;if(Math.abs(dx)>50)go(dx<0?1:-1);},{passive:true});
-window.addEventListener('keydown',e=>{if(!$('config').classList.contains('show')&&!$('fs').classList.contains('show')){if(e.key==='ArrowRight')go(1);if(e.key==='ArrowLeft')go(-1);}});
+window.addEventListener('keydown',e=>{if(!$('config').classList.contains('show')&&!$('fs').classList.contains('show')&&!$('member').classList.contains('show')&&!$('concept').classList.contains('show')){if(e.key==='ArrowRight')go(1);if(e.key==='ArrowLeft')go(-1);}});
 
 $('back-top').onclick=()=>{location.href='index.html';};
 
@@ -262,7 +410,7 @@ $('cfg-back').onclick=()=>{
   $('fs').classList.add('show');
   setTimeout(()=>$('fs-text').focus(),150);
 };
-$('done-back').onclick=()=>{$('config').classList.remove('show');load();};
+$('done-back').onclick=()=>{location.href='index.html';};
 
 /* NAME -> box préfixée (0.Name) + vérif Supabase sur le code complet */
 $('name-btn').onclick=()=>{
@@ -339,7 +487,7 @@ $('order-btn').onclick=async()=>{
   const note=$('order-note');note.className='note dim';note.textContent='encoding…';
   $('order-btn').style.pointerEvents='none';
   const s=order.support;
-  const {error}=await sb.from('totehm_clothes').insert({garment_id:s.id,message:order.message,name:order.name,size:order.size,price:s.price,style_id:order.style.id,status:'pending'});
+  const {error}=await sb.from('totehm_clothes').insert({garment_id:s.id,message:order.message,name:order.name,size:order.size,price:s.price,style_id:order.style.id,status:'pending',user_id:me?me.id:null,email:me?me.email:null});
   $('order-btn').style.pointerEvents='';
   if(error){note.className='note no';note.textContent=error.code==='23505'?'that name was just taken':'error, try again';return;}
   $('step-name').classList.remove('on');$('step-style').classList.remove('on');$('step-dim').classList.remove('on');$('step-order').classList.remove('on');
