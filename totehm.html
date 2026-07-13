@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>TOTEHM — My Totehm</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Jost:wght@300;400;500;700&family=Montserrat:ital,wght@0,600;1,900&family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#606060;--bg:#000;
+  --navy:#333366;--blue:#36498c;--rep:#743169;--love:#639922;
+  --futura:'Futura','Jost',sans-serif;
+  --rl:44px;   /* rail left */
+  --rw:18px;   /* rail width */
+  --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+  --tile-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%2336498c'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+  --tile-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23743169'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+}
+@media(min-width:700px){:root{--rl:25vw;--rw:22px}}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);font-family:var(--futura);font-weight:300;font-size:14px;overflow:hidden;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
+.hide{display:none!important}
+.gbtn{font-family:'Quantico',sans-serif;font-weight:400;background:none;border:none;padding:0;margin:0;cursor:pointer;line-height:1.5;-webkit-tap-highlight-color:transparent;transition:color .15s,background .15s}
+
+/* ══ LE LOGO HABITÉ ══ */
+/* bordure perforée du viewport : les trous du stamp, clairsemés */
+.pf{position:fixed;z-index:60;pointer-events:none}
+#pf-t{top:0;left:0;right:0;height:15px;background-image:radial-gradient(circle at 50% 0,#000 0 12px,transparent 13px);background-size:25% 15px;background-repeat:repeat-x}
+#pf-b{bottom:0;left:0;right:0;height:15px;background-image:radial-gradient(circle at 50% 100%,#000 0 12px,transparent 13px);background-size:25% 15px;background-repeat:repeat-x;background-position:bottom}
+#pf-l{top:0;bottom:0;left:0;width:15px;background-image:radial-gradient(circle at 0 50%,#000 0 12px,transparent 13px);background-size:15px 33.34%;background-repeat:repeat-y}
+#pf-r{top:0;bottom:0;right:0;width:15px;background-image:radial-gradient(circle at 100% 50%,#000 0 12px,transparent 13px);background-size:15px 33.34%;background-repeat:repeat-y;background-position:right}
+
+#rail{position:fixed;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.30);z-index:1;transition:opacity .4s}
+#bigT{position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;transition:opacity .4s;line-height:0}
+#bigT img{height:52px;width:auto;display:block;-webkit-user-drag:none}
+#wordmark{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;transition:opacity .4s;line-height:0}
+#wordmark img{height:58px;width:auto;display:block;-webkit-user-drag:none}
+
+/* Get Higher (haut droite) + Real inspiration (bas droite) */
+#get-higher{position:fixed;top:16px;right:16px;z-index:31;display:flex;flex-direction:column;align-items:flex-end;gap:2px;background:none;border:none;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent;transition:opacity .2s}
+#get-higher:hover{opacity:.7}
+#get-higher .chev{width:18px;height:12px;color:rgba(255,255,255,.6);align-self:center}
+#get-higher .lab{display:flex;align-items:center;gap:6px;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:rgba(255,255,255,.62)}
+.higher-inline{height:1.5em;width:auto;display:inline-block;vertical-align:-.32em}
+#go-settings{position:fixed;bottom:22px;right:16px;z-index:31;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent;transition:opacity .2s;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;color:rgba(255,255,255,.5);text-transform:none}
+#go-settings:hover{opacity:.7}
+#go-settings .chev{width:18px;height:12px;color:rgba(255,255,255,.5)}
+
+/* ── STONER METHOD : la section du dessus ── */
+#stoner{position:fixed;inset:0;z-index:55;background:#000;display:none}
+#stoner.show{display:block}
+#stoner iframe{width:100%;height:100%;border:none;display:block}
+#stoner-back{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:57;background:none;border:none;cursor:pointer;color:rgba(255,255,255,.6);padding:6px;-webkit-tap-highlight-color:transparent;transition:color .2s;display:none}
+#stoner.show~#stoner-back{display:block}
+#stoner-back:hover{color:#fff}
+#stoner-back svg{width:22px;height:14px;display:block}
+
+/* ── CONNECTION BAR ── */
+#conn-bar{position:fixed;top:16px;left:14px;z-index:45;display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:none;color:rgba(255,255,255,.62);padding:0;-webkit-tap-highlight-color:transparent;transition:color .2s}
+#conn-bar:hover{color:#fff}
+#conn-bar .dot{width:6px;height:6px;border-radius:50%;background:#888}
+
+/* ══ FLOORVIEW : 0 = HABITS (navy) · 1 = SETTINGS (noir) ══ */
+#floorview{position:fixed;inset:0;display:flex;flex-direction:column;transition:background-color .5s ease;z-index:2;background:transparent}
+#fv-inner{flex:1;display:flex;flex-direction:column;padding:96px 0;position:relative;z-index:2;overflow-y:auto}
+#fv-status{position:fixed;bottom:56px;left:50%;transform:translateX(-50%);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;color:rgba(255,255,255,.55);text-transform:uppercase;min-height:12px;pointer-events:none;z-index:3}
+
+/* ── HABITS : chaque Habit vit sur le rail du logo ── */
+#habits{width:100%;display:flex;flex-direction:column;gap:9px}
+.habit{position:relative;display:flex;align-items:center;min-height:30px;padding-right:30px}
+.habit .meta{position:absolute;right:calc(100% - var(--rl) + 10px);display:flex;align-items:center;gap:8px;white-space:nowrap}
+.habit .h-x{background:none;border:none;color:rgba(255,255,255,.28);font-size:15px;line-height:1;cursor:pointer;padding:0;transition:color .15s}
+.habit .h-x:hover{color:#fff}
+.habit .h-freq{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:none;color:rgba(255,255,255,.55);background:none;border:none;padding:0;cursor:pointer;transition:color .15s}
+.habit .h-freq:hover{color:#fff}
+.habit .h-T{background:none;border:none;padding:0;cursor:pointer;line-height:0;transition:opacity .15s}
+.habit .h-T img{height:15px;width:auto;display:block}
+.habit .h-T:hover{opacity:.6}
+/* le trait reste NOIR tant que la Time frequency n'est pas choisie via le T */
+.habit .tick{position:absolute;left:var(--rl);width:var(--rw);height:5px;background:#000;top:50%;transform:translateY(-50%)}
+.habit.timed .tick{background:#fff}
+.habit .h-body{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;position:relative;display:flex;align-items:center}
+.h-text,.h-add{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:4px 2px;caret-color:#fff;text-align:left}
+.h-text::placeholder{color:rgba(255,255,255,.33)}
+/* placeholder custom : le H de Habit en blanc */
+.h-hint{position:absolute;left:2px;top:50%;transform:translateY(-50%);font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:rgba(255,255,255,.33);pointer-events:none}
+.h-hint .hh{color:#fff}
+
+/* ── FREQUENCY PANEL ── */
+#freq-panel{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:22px}
+.fp-card{background:#0a0a0a;border:1px solid #1e1e1e;width:100%;max-width:300px;padding:20px 18px 16px;display:flex;flex-direction:column;gap:12px}
+#fp-input{background:none;border:none;border-bottom:1px solid rgba(255,255,255,.18);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:4px 2px;text-align:center;caret-color:#fff}
+#fp-input::placeholder{color:rgba(255,255,255,.3);font-size:12px;font-style:italic}
+#fp-preview{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--coral);min-height:13px;text-align:center}
+#fp-list{display:flex;flex-direction:column;gap:7px;max-height:42vh;overflow-y:auto;padding-right:4px}
+.fp-opt{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--g-mid);text-align:left}
+.fp-opt:hover{color:#fff}
+.fp-opt.on{color:var(--coral)}
+
+/* ══ SETTINGS (noir, prolongement d'index.html : tiroirs + radios boutique) ══ */
+#settings{width:100%;max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:22px;padding:4vh 22px 0;align-items:center}
+.set-block{display:flex;flex-direction:column;gap:11px;align-items:center;width:100%}
+.drawer{overflow:hidden;max-height:0;opacity:0;transition:max-height .42s ease,opacity .38s ease;width:100%;display:flex;flex-direction:column;align-items:center;gap:11px}
+.drawer.on{max-height:520px;opacity:1;margin-top:2px}
+.set-note{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;color:var(--g-dark);text-transform:uppercase;text-align:center}
+.name-input{background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:4px 2px;caret-color:#fff;max-width:260px;text-align:center}
+.name-input::placeholder{color:rgba(255,255,255,.33)}
+.name-locked{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:#fff;letter-spacing:.02em}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+/* radios : le pattern size-btn de boutique.html */
+.size-btn{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:2px 10px;-webkit-tap-highlight-color:transparent;transition:color .15s}
+@media(hover:hover){.size-btn:hover{color:#fff;border-image-source:var(--tile-light);border-image-slice:6 fill;border-image-repeat:round}}
+.size-btn:active,.size-btn.on{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+.bot-row{display:flex;align-items:center;gap:12px;max-width:340px}
+.toggle{width:42px;height:22px;border-radius:11px;background:#161616;border:1px solid #262626;position:relative;cursor:pointer;flex-shrink:0;transition:.25s;-webkit-tap-highlight-color:transparent}
+.toggle .knob{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#666;transition:.25s}
+.toggle.on{background:#14241a;border-color:var(--love)}
+.toggle.on .knob{left:22px;background:var(--love)}
+.bot-txt{font-family:var(--futura);font-weight:300;font-size:12px;color:var(--g-mid);line-height:1.5;text-align:left}
+.bot-txt b{color:var(--g-light);font-weight:700}
+
+/* Search a Totehm : le pattern morph d'index.html */
+.btn-sig{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
+@media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:var(--tile-light);border-image-slice:6 fill;border-image-repeat:round}}
+.btn-sig:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+.line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:none;outline:none;border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:var(--coral);min-width:230px}
+.note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px;text-align:center}
+.note.ok{color:#639922}.note.no{color:var(--rep)}.note.dim{color:var(--g-dark)}
+
+#results{width:100%;max-width:520px;margin-top:6px;display:flex;flex-direction:column;gap:14px;padding-bottom:26px}
+.res-user{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.18em;color:var(--coral);text-transform:uppercase;margin-top:8px}
+.res-private{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:.14em;color:var(--g-dark);text-transform:uppercase}
+.res{border:1px solid #141414;padding:14px;display:flex;flex-direction:column;gap:7px}
+.rline{display:flex;gap:8px;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:#cfcfcf;line-height:1.5}
+.rline .tag{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;flex-shrink:0;padding-top:3px;color:#8a8ac0}
+.hf{font-family:'Space Mono',monospace;font-style:normal;font-size:8px;color:var(--g-mid);letter-spacing:.04em}
+.copy{align-self:flex-end;font-size:11px;color:var(--coral);opacity:0;transition:opacity .2s}
+.res:hover .copy{opacity:1}
+@media(hover:none){.copy{opacity:.9}}
+
+/* ── MEMBER WINDOW ── */
+#member-window{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.84);display:none;align-items:center;justify-content:center;padding:24px}
+#member-window.show{display:flex}
+.mw-card{background:#0a0a0a;border:1px solid #1e1e1e;max-width:340px;width:100%;padding:30px 24px;text-align:center;position:relative}
+.mw-title{font-family:'Quantico',sans-serif;font-weight:700;font-size:18px;color:#fff;margin-bottom:14px}
+.mw-body{font-family:var(--futura);font-weight:300;font-size:13px;color:var(--g-mid);line-height:1.7;margin-bottom:14px}
+.mw-close{position:absolute;top:12px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:none;color:var(--g-mid);background:none;border:none;cursor:pointer;padding:0}
+.mw-close:hover{color:#fff}
+.mw-input{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:6px 2px;caret-color:var(--coral);text-align:center;margin-bottom:10px}
+.mw-input::placeholder{color:rgba(255,255,255,.33)}
+.mw-note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px;margin-top:6px}
+.mw-note.ok{color:#639922}.mw-note.no{color:#b06a9f}.mw-note.dim{color:var(--g-dark)}
+.mw-pseudo{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:#fff;margin-bottom:4px}
+.mw-mail{font-family:'Space Mono',monospace;font-size:9px;color:var(--g-dark);margin-bottom:12px;word-break:break-all}
+.mw-out{margin-top:6px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--g-mid);background:none;border:none;cursor:pointer;transition:color .15s}
+.mw-out:hover{color:#fff}
+.mw-sync{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:var(--love);margin-top:8px;min-height:12px}
+
+@media(max-width:600px){.h-text,.h-add,.h-hint{font-size:14px}#bigT{font-size:38px}}
+@media(prefers-reduced-motion:reduce){#fv-inner{transition:none!important}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="higher-slogan" viewBox="0 0 600 200">
+      <defs><mask id="hmask"><rect width="600" height="200" fill="white"/>
+        <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
+        <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
+        <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
+      </mask></defs>
+      <rect width="600" height="200" fill="#333366" mask="url(#hmask)"/>
+      <text x="50%" y="144.42" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-style="italic" font-size="144" fill="#ffffff">Higher</text>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="pf" id="pf-t"></div><div class="pf" id="pf-b"></div><div class="pf" id="pf-l"></div><div class="pf" id="pf-r"></div>
+
+<div id="rail"></div>
+<div id="bigT"><img src="assets/img/T.png" alt="T"
+  onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/T.png'"></div>
+<div id="wordmark"><img src="assets/img/TOTEHM.png" alt="TOTEHM"
+  onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/TOTEHM.png'"></div>
+
+<button id="conn-bar" aria-label="member space"><span class="dot"></span>Guest</button>
+
+<button id="get-higher" aria-label="Get Higher">
+  <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
+  <span class="lab">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-slogan"></use></svg></span>
+</button>
+
+<button id="go-settings" aria-label="Real inspiration">
+  <span>Real inspiration</span>
+  <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2 L12 11 L22 2"/></svg>
+</button>
+
+<div id="stoner"><iframe id="stoner-frame" title="Stoner Method"></iframe></div>
+<button id="stoner-back" aria-label="back to your Totehm"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2 L12 11 L22 2"/></svg></button>
+
+<div id="floorview">
+  <div id="fv-inner">
+    <div id="habits"></div>
+
+    <div id="settings" class="hide">
+      <div class="set-block">
+        <button class="btn-sig" id="dw-name">Your Totehm</button>
+        <div class="drawer" id="d-name">
+          <input id="set-name" class="name-input" placeholder="your Totehm" maxlength="24" autocomplete="off" spellcheck="false">
+          <div class="name-locked hide" id="set-name-locked"></div>
+          <div class="set-note">the name members search for</div>
+        </div>
+      </div>
+      <div class="set-block">
+        <button class="btn-sig" id="dw-vis">Visibility of your Habits</button>
+        <div class="drawer" id="d-vis">
+          <div class="row"><button class="size-btn" id="set-private">Private</button><button class="size-btn" id="set-members">Visible to members</button></div>
+        </div>
+      </div>
+      <div class="set-block">
+        <button class="btn-sig" id="dw-city">Sync with the City</button>
+        <div class="drawer" id="d-city">
+          <div class="bot-row"><div class="toggle" id="set-bot"><div class="knob"></div></div><div class="bot-txt"><b>The City feeds your Totehm.</b><br>Get events that match your Habits.</div></div>
+          <div class="set-note">— Lisbon · preview until it goes live —</div>
+        </div>
+      </div>
+      <div class="set-block">
+        <button class="btn-sig" id="search-btn">Search a Totehm</button>
+        <div class="drawer" id="d-search">
+          <input class="line-input" id="search-input" maxlength="24" placeholder="name of a Totehm" autocomplete="off" spellcheck="false">
+          <div class="note dim" id="search-note"></div>
+          <div id="results"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="fv-status"></div>
+</div>
+
+<div id="freq-panel" class="hide">
+  <div class="fp-card">
+    <input id="fp-input" placeholder="type it — any language" autocomplete="off" spellcheck="false">
+    <div id="fp-preview"></div>
+    <div id="fp-list"></div>
+  </div>
+</div>
+
+<div id="member-window">
+  <div class="mw-card">
+    <button class="mw-close" id="mw-close">Close</button>
+    <div class="mw-title">Member space</div>
+    <div id="mw-out-state">
+      <div class="mw-body">One email. No password.<br>Your Totehm syncs across devices.</div>
+      <input class="mw-input" id="mw-email" type="email" placeholder="your email" autocomplete="email">
+      <input class="mw-input hide" id="mw-code" inputmode="numeric" maxlength="6" placeholder="6-digit code">
+      <div class="mw-note dim" id="mw-note"></div>
+    </div>
+    <div id="mw-claim-state" class="hide">
+      <div class="mw-body">Choose the name of your Totehm.<br>This is how members will find you.</div>
+      <input class="mw-input" id="mw-pseudo" maxlength="24" placeholder="your Totehm">
+      <div class="mw-note dim" id="mw-claim-note"></div>
+    </div>
+    <div id="mw-in-state" class="hide">
+      <div class="mw-pseudo" id="mw-who"></div>
+      <div class="mw-mail" id="mw-mail"></div>
+      <div class="mw-body" style="margin-bottom:4px">Your Habits are synced to the cloud.</div>
+      <div class="mw-sync" id="mw-sync"></div>
+      <button class="mw-out" id="mw-signout">Sign out</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
+const $=id=>document.getElementById(id);
+
+/* ══ FREQUENCY ENGINE — l'échelle des rythmes (T = Time) ══ */
+const FREQS=[
+  {id:'every_minute',    label:'every minute',        w:1},
+  {id:'hourly',          label:'every hour',          w:60},
+  {id:'several_daily',   label:'several times a day', w:480},
+  {id:'every_morning',   label:'every morning',       w:1438},
+  {id:'daily',           label:'daily',               w:1440},
+  {id:'every_night',     label:'every night',         w:1442},
+  {id:'every_other_day', label:'every other day',     w:2880},
+  {id:'twice_week',      label:'twice a week',        w:5040},
+  {id:'weekly',          label:'weekly',              w:10080},
+  {id:'every_monday',    label:'every monday',        w:10081},
+  {id:'every_tuesday',   label:'every tuesday',       w:10082},
+  {id:'every_wednesday', label:'every wednesday',     w:10083},
+  {id:'every_thursday',  label:'every thursday',      w:10084},
+  {id:'every_friday',    label:'every friday',        w:10085},
+  {id:'every_saturday',  label:'every saturday',      w:10086},
+  {id:'every_sunday',    label:'every sunday',        w:10087},
+  {id:'biweekly',        label:'every two weeks',     w:20160},
+  {id:'monthly',         label:'monthly',             w:43200},
+  {id:'quarterly',       label:'every quarter',       w:129600},
+  {id:'yearly',          label:'yearly',              w:525600},
+  {id:'sometimes',       label:'sometimes',           w:9999999}
+];
+const FREQ_BY_ID={};FREQS.forEach(f=>FREQ_BY_ID[f.id]=f);
+const fw=id=>(FREQ_BY_ID[id]||FREQ_BY_ID.daily).w;
+const flabel=id=>(FREQ_BY_ID[id]||FREQ_BY_ID.daily).label;
+
+/* deduceFreq : reconnaît la fréquence dans n'importe quelle langue */
+const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+const DAYS={
+  monday:['monday','mon','lundi','segunda','lunes','lunedi','montag','maandag'],
+  tuesday:['tuesday','tue','tues','mardi','terca','martes','martedi','dienstag','dinsdag'],
+  wednesday:['wednesday','wed','mercredi','quarta','miercoles','mercoledi','mittwoch','woensdag'],
+  thursday:['thursday','thu','thur','jeudi','quinta','jueves','giovedi','donnerstag','donderdag'],
+  friday:['friday','fri','vendredi','sexta','viernes','venerdi','freitag','vrijdag'],
+  saturday:['saturday','sat','samedi','sabado','sabato','samstag','zaterdag'],
+  sunday:['sunday','sun','dimanche','domingo','domenica','sonntag','zondag']
+};
+const U={
+  minute:['minute','minutes','min','mins','minuto','minutos','minuti','minuten','minuut'],
+  hour:['hour','hours','hr','hrs','hourly','heure','heures','horaire','hora','horas','ora','ore','stunde','stunden','stundlich','uur'],
+  morning:['morning','mornings','matin','matins','manha','manhas','manana','mananas','mattina','mattine','morgens','ochtend','reveil','wakeup'],
+  night:['night','nights','evening','evenings','soir','soirs','soiree','nuit','nuits','noite','noites','noche','noches','notte','notti','sera','abend','abends','nacht','avond','coucher','bedtime'],
+  day:['day','days','daily','everyday','jour','jours','journee','quotidien','quotidienne','quotidiennement','dia','dias','diario','diaria','diariamente','giorno','giorni','giornaliero','tag','tage','taglich','dagelijks'],
+  week:['week','weeks','weekly','semaine','semaines','hebdo','hebdomadaire','semana','semanas','semanal','settimana','settimane','settimanale','woche','wochen','wochentlich','wekelijks'],
+  month:['month','months','monthly','mois','mensuel','mensuelle','mensuellement','mes','meses','mensal','mensualmente','mese','mesi','mensile','monat','monate','monatlich','maand','maandelijks'],
+  quarter:['quarter','quarterly','trimestre','trimestres','trimestriel','trimestrielle','trimestral','quartal','kwartaal'],
+  year:['year','years','yearly','annual','annually','an','ans','annee','annees','annuel','annuelle','annuellement','ano','anos','anual','anualmente','anno','anni','annuale','jahr','jahre','jahrlich','jaar','jaarlijks'],
+  sometimes:['sometimes','occasionally','parfois','manchmal','soms','irregular','irregulier','sporadic','sporadique','random','aleatoire','occasionnellement']
+};
+const hasKw=(n,arr)=>arr.some(k=>new RegExp('(^|\\s)'+k+'($|\\s)').test(n));
+function deduceFreq(raw){
+  let n=norm(raw);if(!n)return null;
+  const exact=FREQS.find(f=>f.label===n);if(exact)return exact.id;
+  if(n.length>=4){const part=FREQS.find(f=>f.label.indexOf(n)!==-1||n.indexOf(f.label)!==-1);if(part)return part.id;}
+  if(hasKw(n,U.sometimes))return 'sometimes';
+  n=n.replace(/(^|\s)(deux|two|dos|due|zwei|twee)($|\s)/g,'$12$3').replace(/(^|\s)(trois|three|tres|tre|drei|drie)($|\s)/g,'$13$3');
+  let mult=false,num=null;
+  if(/(^|\s)(twice|bihebdo)($|\s)/.test(n)){mult=true;num=2;}
+  if(/(^|\s)thrice($|\s)/.test(n)){mult=true;num=3;}
+  const nm=n.match(/(\d+)\s*(x|times|fois|vezes|veces|volte|mal|keer)?/);
+  if(nm&&nm[1]){num=parseInt(nm[1],10);if(nm[2])mult=true;}
+  if(/(^|\s)(x\d+|times|fois|vezes|veces|volte|mal|keer|per|par|por|al)($|\s)/.test(n))mult=true;
+  for(const d in DAYS){if(hasKw(n,DAYS[d]))return 'every_'+d;}
+  if(/(^|\s)(fortnight|fortnightly|quinzaine|quincena|bimensuel|bimensuelle|bimensal|quindicinale)($|\s)/.test(n))return 'biweekly';
+  if(hasKw(n,U.minute))return 'every_minute';
+  if(hasKw(n,U.hour))return 'hourly';
+  if(hasKw(n,U.morning))return 'every_morning';
+  if(hasKw(n,U.night))return 'every_night';
+  if(hasKw(n,U.day)){
+    if(/(^|\s)(other|alterni|alternos|sur 2)($|\s)/.test(n))return 'every_other_day';
+    if(num===2&&!mult)return 'every_other_day';
+    if(/(^|\s)(several|plusieurs|varias|varios|varie|mehrmals|meermaals)($|\s)/.test(n))return 'several_daily';
+    if(num&&num>=2&&mult)return 'several_daily';
+    return 'daily';
+  }
+  if(hasKw(n,U.week)){
+    if(num===2&&mult)return 'twice_week';
+    if(num===2&&!mult)return 'biweekly';
+    return 'weekly';
+  }
+  if(hasKw(n,U.month))return 'monthly';
+  if(hasKw(n,U.quarter))return 'quarterly';
+  if(hasKw(n,U.year))return 'yearly';
+  return null;
+}
+
+/* ══ STORAGE — dual local+cloud ══ */
+const KEY='totehm_habits_v1';
+const KEYP='totehm_profile_v1';
+let me=null, myProfile=null, cloudMode=false, cloudSaveTimer=null, saveTimer=null;
+
+function loadState(){
+  try{const r=localStorage.getItem(KEY);if(r)return JSON.parse(r);}catch(e){}
+  /* migration depuis le Grind v5 : on aplatit les steps de tous les trips */
+  try{
+    const r5=localStorage.getItem('totehm_grind_v5');
+    if(r5){
+      const g=JSON.parse(r5)||[];
+      const habits=[];const seen={};
+      g.forEach(t=>{(t.steps||[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;habits.push({t:s.t,f:FREQ_BY_ID[s.f]?s.f:null});}});});
+      const vis=g.some(t=>t.vis==='network')?'network':'private';
+      if(habits.length)return {habits,vis};
+    }
+  }catch(e){}
+  return null;
+}
+const pload=()=>{try{const r=localStorage.getItem(KEYP);return r?JSON.parse(r):null;}catch(e){return null;}};
+
+let state=loadState()||{habits:[
+  {t:'Get Higher',f:'every_minute'},
+  {t:'Read 20 minutes of neuroscience',f:'every_night'},
+  {t:'Drop a street sticker in Lisbon',f:'weekly'}
+],vis:'private'};
+let profile=pload()||{name:'',bot:false};
+let floor=0, busy=false, fpTarget=null, pendingF=null, st=null;
+
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(state));localStorage.setItem(KEYP,JSON.stringify(profile));}catch(e){}
+  if(cloudMode&&me){scheduleCloudSave();}
+  $('fv-status').textContent='saved';
+  setTimeout(()=>{if($('fv-status').textContent==='saved')$('fv-status').textContent='';},1100);
+}
+
+/* ── CLOUD : un snapshot = une ligne trips ── */
+async function cloudSave(){
+  if(!me)return;
+  $('mw-sync').textContent='syncing…';
+  try{
+    await sb.from('trips').delete().eq('user_id',me.id);
+    const {error}=await sb.from('trips').insert({
+      user_id:me.id, letter:0, position:0,
+      objective:'', habits:'', repulsions:'',
+      visibility:(state.vis==='network')?'network':'private',
+      steps:state.habits, bot:!!profile.bot
+    });
+    if(error)throw error;
+    $('mw-sync').textContent='synced ✓';
+    setTimeout(()=>{if($('mw-sync').textContent==='synced ✓')$('mw-sync').textContent='';},1400);
+  }catch(e){$('mw-sync').textContent='sync failed — will retry';}
+}
+function scheduleCloudSave(){clearTimeout(cloudSaveTimer);cloudSaveTimer=setTimeout(cloudSave,900);}
+async function cloudLoad(){
+  if(!me)return;
+  const {data,error}=await sb.from('trips').select('*').eq('user_id',me.id).order('position');
+  if(error||!data||!data.length)return;
+  const habits=[];const seen={};
+  data.forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;habits.push({t:s.t,f:FREQ_BY_ID[s.f]?s.f:null});}});});
+  state={habits, vis:data.some(r=>r.visibility==='network')?'network':'private'};
+  if(data[0].bot!=null)profile.bot=!!data[0].bot;
+  try{localStorage.setItem(KEY,JSON.stringify(state));localStorage.setItem(KEYP,JSON.stringify(profile));}catch(e){}
+}
+async function migrateLocalToCloudIfNeeded(){
+  if(!me)return;
+  const {count}=await sb.from('trips').select('*',{count:'exact',head:true}).eq('user_id',me.id);
+  if((count||0)===0 && state.habits.length){await cloudSave();}
+  else{await cloudLoad();}
+}
+
+/* ══ RENDER ══ */
+const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;};
+const T_SVG='<img src="assets/img/T.svg" alt="T" onerror="this.onerror=null;this.src=\'https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/T.svg\'">';
+/* les habits sans Time frequency coulent en bas, juste au-dessus de la ligne d'ajout */
+const fw2=f=>f?fw(f):1e12;
+function sortHabits(){state.habits.sort((a,b)=>fw2(a.f)-fw2(b.f));}
+
+function renderHabits(){
+  sortHabits();
+  const box=$('habits');let h='';
+  state.habits.forEach((s,i)=>{
+    h+='<div class="habit'+(s.f?' timed':'')+'">'
+      +'<span class="meta"><button class="h-x" data-i="'+i+'" aria-label="remove">×</button>'
+      +(s.f
+        ?'<button class="gbtn h-freq" data-i="'+i+'">'+esc(flabel(s.f))+'</button>'
+        :'<button class="h-T" data-i="'+i+'" title="Time frequency">'+T_SVG+'</button>')
+      +'</span>'
+      +'<span class="tick"></span>'
+      +'<span class="h-body"><input class="h-text" data-i="'+i+'"></span>'
+      +'</div>';
+  });
+  /* la ligne d'ajout : le T = Time frequency de la future Habit */
+  h+='<div class="habit add'+(pendingF?' timed':'')+'">'
+    +'<span class="meta">'
+    +(pendingF
+      ?'<button class="gbtn h-freq" id="h-pf">'+esc(flabel(pendingF))+'</button>'
+      :'<button class="h-T" id="h-T" title="Time frequency">'+T_SVG+'</button>')
+    +'</span>'
+    +'<span class="tick"></span>'
+    +'<span class="h-body"><input class="h-add" id="h-add"><span class="h-hint" id="h-hint">'
+    +(state.habits.length===0?'What is your main <span class="hh">H</span>abit':'add a <span class="hh">H</span>abit')
+    +'</span></span>'
+    +'</div>';
+  box.innerHTML=h;
+
+  box.querySelectorAll('.h-text').forEach(inp=>{
+    inp.value=state.habits[+inp.dataset.i].t||'';
+    inp.addEventListener('input',()=>{state.habits[+inp.dataset.i].t=inp.value;clearTimeout(saveTimer);saveTimer=setTimeout(save,700);});
+  });
+  box.querySelectorAll('.h-freq[data-i]').forEach(b=>{b.onclick=()=>openFreqPanel(+b.dataset.i);});
+  box.querySelectorAll('.h-T[data-i]').forEach(b=>{b.onclick=()=>openFreqPanel(+b.dataset.i);});
+  box.querySelectorAll('.h-x').forEach(b=>{b.onclick=()=>{state.habits.splice(+b.dataset.i,1);save();renderHabits();};});
+  const hT=$('h-T');if(hT)hT.onclick=()=>openFreqPanel('new');
+  const pf=$('h-pf');if(pf)pf.onclick=()=>openFreqPanel('new');
+  const add=$('h-add'), hint=$('h-hint');
+  add.addEventListener('input',()=>{hint.style.display=add.value?'none':'';});
+  add.addEventListener('keydown',e=>{
+    if(e.key!=='Enter')return;e.preventDefault();
+    const v=add.value.trim();if(!v)return;
+    state.habits.push({t:v,f:pendingF||null});
+    pendingF=null;save();renderHabits();
+    const na=$('h-add');if(na)na.focus();
+  });
+}
+
+function renderSettings(){
+  if(me&&myProfile){
+    $('set-name').classList.add('hide');
+    $('set-name-locked').textContent=myProfile.pseudo;
+    $('set-name-locked').classList.remove('hide');
+  }else{
+    $('set-name').classList.remove('hide');
+    if(document.activeElement!==$('set-name'))$('set-name').value=profile.name||'';
+    $('set-name-locked').classList.add('hide');
+  }
+  $('set-private').classList.toggle('on',(state.vis||'private')!=='network');
+  $('set-members').classList.toggle('on',state.vis==='network');
+  $('set-bot').classList.toggle('on',!!profile.bot);
+}
+
+function paint(){
+  const isSet=floor===1;
+  $('habits').classList.toggle('hide',isSet);
+  $('settings').classList.toggle('hide',!isSet);
+  $('floorview').style.backgroundColor=isSet?'#000':'transparent';
+  $('rail').style.opacity=isSet?'0':'1';
+  $('bigT').style.opacity=isSet?'0':'1';
+  $('wordmark').style.opacity=isSet?'0':'1';
+  $('get-higher').style.display=isSet?'none':'';
+  $('go-settings').style.display=isSet?'none':'';
+  if(isSet)renderSettings();else renderHabits();
+}
+
+/* ══ FREQUENCY PANEL ══ */
+const fpOpen=()=>!$('freq-panel').classList.contains('hide');
+function openFreqPanel(target){
+  fpTarget=target;$('fp-input').value='';$('fp-preview').textContent='';
+  const cur=(target==='new')?pendingF:(state.habits[target]?state.habits[target].f:null);
+  renderFpList(cur);
+  $('freq-panel').classList.remove('hide');
+  setTimeout(()=>{try{$('fp-input').focus();}catch(e){}},40);
+}
+function closeFreqPanel(){$('freq-panel').classList.add('hide');fpTarget=null;}
+function applyFreq(id){
+  if(fpTarget==null||!FREQ_BY_ID[id]){closeFreqPanel();return;}
+  if(fpTarget==='new'){pendingF=id;closeFreqPanel();renderHabits();const na=$('h-add');if(na)na.focus();return;}
+  if(!state.habits[fpTarget]){closeFreqPanel();return;}
+  state.habits[fpTarget].f=id;save();closeFreqPanel();renderHabits();
+}
+function renderFpList(currentId){
+  const box=$('fp-list');box.innerHTML='';
+  FREQS.forEach(f=>{const b=document.createElement('button');b.className='gbtn fp-opt'+(f.id===currentId?' on':'');b.textContent=f.label;b.onclick=()=>applyFreq(f.id);box.appendChild(b);});
+}
+$('fp-input').addEventListener('input',()=>{
+  const raw=$('fp-input').value;const id=deduceFreq(raw);
+  $('fp-preview').textContent=id?('\u2192 '+flabel(id)):(raw.trim()?'\u2192 ?':'');
+  $('fp-list').querySelectorAll('.fp-opt').forEach(b=>b.classList.toggle('on',id!=null&&b.textContent===flabel(id)));
+});
+$('fp-input').addEventListener('keydown',e=>{
+  if(e.key==='Enter'){e.preventDefault();const id=deduceFreq($('fp-input').value);if(id)applyFreq(id);}
+  else if(e.key==='Escape'){closeFreqPanel();}
+});
+$('freq-panel').addEventListener('click',e=>{if(e.target===$('freq-panel'))closeFreqPanel();});
+
+/* ══ NAVIGATION : up = Get Higher · down = Settings ══ */
+function animateSwap(dy,apply){
+  if(busy)return;busy=true;const inner=$('fv-inner');
+  inner.style.transition='opacity .2s ease, transform .2s ease';
+  inner.style.opacity='0';inner.style.transform='translate(0,'+(-dy*26)+'px)';
+  setTimeout(()=>{apply();inner.style.transition='none';inner.style.transform='translate(0,'+(dy*26)+'px)';
+    requestAnimationFrame(()=>{inner.style.transition='opacity .3s ease, transform .3s ease';inner.style.opacity='1';inner.style.transform='translate(0,0)';setTimeout(()=>{busy=false;},300);});
+  },200);
+}
+let stonerLoaded=false;
+function showStoner(on){
+  $('stoner').classList.toggle('show',on);
+  if(on){ save(); if(!stonerLoaded){$('stoner-frame').src='stoner_method.html';stonerLoaded=true;} }
+}
+function go(dFloor){
+  if(busy||fpOpen()||$('member-window').classList.contains('show'))return;
+  if($('stoner').classList.contains('show')){ if(dFloor>0)showStoner(false); return; }
+  if(dFloor<0){ if(floor===1){animateSwap(-1,()=>{floor=0;paint();});} else {showStoner(true);} }
+  else if(dFloor>0){ if(floor===0){animateSwap(1,()=>{floor=1;paint();});} }
+}
+$('get-higher').onclick=()=>{if(!busy)showStoner(true);};
+$('stoner-back').onclick=()=>showStoner(false);
+$('go-settings').onclick=()=>go(1);
+
+let wheelLock=false;
+window.addEventListener('wheel',(e)=>{
+  if(wheelLock||fpOpen())return;
+  if(e.target&&e.target.closest&&e.target.closest('#results,#freq-panel,#member-window,#fv-inner.scroll'))return;
+  const ay=Math.abs(e.deltaY);
+  if(ay>30){wheelLock=true;setTimeout(()=>wheelLock=false,300);go(e.deltaY>0?1:-1);}
+},{passive:true});
+let y0=0,axis=null,t0el=null,x0=0;
+window.addEventListener('touchstart',(e)=>{x0=e.changedTouches[0].screenX;y0=e.changedTouches[0].screenY;axis=null;t0el=e.target;},{passive:true});
+window.addEventListener('touchmove',(e)=>{if(axis)return;const dx=e.changedTouches[0].screenX-x0,dy=e.changedTouches[0].screenY-y0;if(Math.abs(dx)>12||Math.abs(dy)>12)axis=Math.abs(dx)>Math.abs(dy)?'h':'v';},{passive:true});
+window.addEventListener('touchend',(e)=>{
+  if(fpOpen())return;
+  if(t0el&&t0el.closest&&t0el.closest('#results,#freq-panel,#member-window,input,textarea,button'))return;
+  const dy=e.changedTouches[0].screenY-y0;const TH=50;
+  if(axis==='v'){if(dy<-TH)go(1);else if(dy>TH)go(-1);}
+},{passive:true});
+window.addEventListener('keydown',(e)=>{
+  if(fpOpen()){if(e.key==='Escape')closeFreqPanel();return;}
+  if(e.target.tagName==='INPUT')return;
+  if($('member-window').classList.contains('show')){if(e.key==='Escape')$('member-window').classList.remove('show');return;}
+  if(e.key==='ArrowDown'){e.preventDefault();go(1);}else if(e.key==='ArrowUp'){e.preventDefault();go(-1);}
+});
+
+/* ══ SETTINGS handlers ══ */
+[['dw-name','d-name'],['dw-vis','d-vis'],['dw-city','d-city'],['search-btn','d-search']].forEach(([b,d])=>{
+  $(b).onclick=()=>{const dr=$(d);dr.classList.toggle('on');if(d==='d-search'&&dr.classList.contains('on'))setTimeout(()=>$('search-input').focus(),120);};
+});
+$('set-name').addEventListener('input',()=>{profile.name=$('set-name').value;save();});
+$('set-private').onclick=()=>{state.vis='private';save();renderSettings();};
+$('set-members').onclick=()=>{state.vis='network';save();renderSettings();};
+$('set-bot').onclick=()=>{profile.bot=!profile.bot;save();renderSettings();};
+
+/* ══ SEARCH A TOTEHM — le pattern morph d'index.html ══ */
+/* réseau démo pour le mode guest */
+const NETWORK=[
+  {who:'wavywah', vis:'network', habits:[{t:'Get Higher',f:'every_minute'},{t:'Make one beat',f:'daily'},{t:'Finish one track',f:'weekly'}]},
+  {who:'lisboeta', vis:'network', habits:[{t:'Replace the urge with 10 push-ups',f:'several_daily'},{t:'Walk after every meal',f:'daily'}]},
+  {who:'serra', vis:'network', habits:[{t:'Stretch',f:'every_morning'},{t:'Cut sugar',f:'daily'},{t:'Long run',f:'every_sunday'}]}
+];
+function habitCard(who,habits){
+  const d=document.createElement('div');d.className='res';
+  const items=[...habits].sort((a,b)=>fw2(a.f)-fw2(b.f)).map(h=>esc(h.t)+(h.f?' <span class="hf">\u00b7 '+esc(flabel(h.f))+'</span>':'')).join('&nbsp;&nbsp; ');
+  d.innerHTML='<div class="rline"><span class="tag">H</span><span>'+items+'</span></div>';
+  const c=document.createElement('button');c.className='gbtn copy';c.textContent='Copy into my Habits \u2198';
+  c.onclick=()=>{
+    const seen={};state.habits.forEach(h=>seen[norm(h.t)]=1);
+    let added=0;
+    habits.forEach(h=>{const k=norm(h.t);if(!seen[k]){seen[k]=1;state.habits.push({t:h.t,f:FREQ_BY_ID[h.f]?h.f:null});added++;}});
+    save();c.textContent=added?('Copied '+added+' \u2713'):'Already in';c.disabled=true;
+  };
+  d.appendChild(c);
+  return d;
+}
+async function doSearch(){
+  const q=$('search-input').value.trim();
+  const box=$('results'),note=$('search-note');
+  box.innerHTML='';
+  if(q.length<2){note.className='note dim';note.textContent='name of a Totehm';return;}
+  note.className='note dim';note.textContent='searching…';
+
+  if(!me){
+    const users=NETWORK.filter(u=>u.who.toLowerCase().indexOf(q.toLowerCase())!==-1);
+    note.textContent='';
+    if(!users.length){note.className='note no';note.textContent='no Totehm by that name';return;}
+    users.forEach(u=>{
+      const head=document.createElement('div');head.className='res-user';head.textContent=u.who;box.appendChild(head);
+      if(u.vis!=='network'){const p=document.createElement('div');p.className='res-private';p.textContent='Private';box.appendChild(p);return;}
+      box.appendChild(habitCard(u.who,u.habits));
+    });
+    return;
+  }
+
+  const {data:profiles}=await sb.from('profiles').select('id,pseudo').ilike('pseudo','%'+q+'%').limit(12);
+  note.textContent='';
+  if(!profiles||!profiles.length){note.className='note no';note.textContent='no Totehm by that name';return;}
+  const ids=profiles.map(p=>p.id);
+  const {data:rows}=await sb.from('trips').select('user_id,steps').in('user_id',ids).eq('visibility','network');
+  const byUser={};(rows||[]).forEach(r=>{const arr=byUser[r.user_id]=byUser[r.user_id]||[];(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{if(s&&s.t)arr.push(s);});});
+  profiles.forEach(p=>{
+    const head=document.createElement('div');head.className='res-user';head.textContent=p.pseudo;box.appendChild(head);
+    const habits=byUser[p.id]||[];
+    if(!habits.length){const pv=document.createElement('div');pv.className='res-private';pv.textContent='Private';box.appendChild(pv);return;}
+    box.appendChild(habitCard(p.pseudo,habits));
+  });
+}
+$('search-input').addEventListener('input',()=>{clearTimeout(st);st=setTimeout(doSearch,260);});
+
+/* ══ MEMBER SPACE : email-only DNA ══ */
+function connPaint(){
+  const label=(myProfile&&myProfile.pseudo)||(me?'Member':'Guest');
+  $('conn-bar').innerHTML='<span class="dot"'+(me?' style="background:#639922"':'')+'></span>'+label;
+}
+async function loadProfile(){
+  if(!me){myProfile=null;cloudMode=false;connPaint();return;}
+  const {data}=await sb.from('profiles').select('pseudo').eq('id',me.id).maybeSingle();
+  myProfile=data||null;
+  cloudMode=!!myProfile;
+  connPaint();
+}
+function memberPaint(){
+  $('mw-out-state').classList.toggle('hide',!!me);
+  $('mw-claim-state').classList.toggle('hide',!(me&&!myProfile));
+  $('mw-in-state').classList.toggle('hide',!(me&&myProfile));
+  if(me&&myProfile){$('mw-who').textContent=myProfile.pseudo;$('mw-mail').textContent=me.email||'';}
+}
+$('conn-bar').onclick=()=>{$('member-window').classList.add('show');memberPaint();};
+$('mw-close').onclick=()=>$('member-window').classList.remove('show');
+$('member-window').addEventListener('click',e=>{if(e.target===$('member-window'))$('member-window').classList.remove('show');});
+
+let mwEmail='';
+$('mw-email').addEventListener('keydown',async e=>{
+  if(e.key!=='Enter')return;
+  const v=$('mw-email').value.trim(), note=$('mw-note');
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){note.className='mw-note no';note.textContent='invalid email';return;}
+  note.className='mw-note dim';note.textContent='sending…';
+  const {error}=await sb.auth.signInWithOtp({email:v,options:{shouldCreateUser:true}});
+  if(error){note.className='mw-note no';note.textContent='try again in a minute';return;}
+  mwEmail=v;
+  note.className='mw-note ok';note.textContent='code sent — check your email';
+  $('mw-code').classList.remove('hide');setTimeout(()=>$('mw-code').focus(),80);
+});
+$('mw-code').addEventListener('input',async()=>{
+  const t=$('mw-code').value.trim(), note=$('mw-note');
+  if(t.length!==6)return;
+  note.className='mw-note dim';note.textContent='verifying…';
+  const {error}=await sb.auth.verifyOtp({email:mwEmail,token:t,type:'email'});
+  if(error){note.className='mw-note no';note.textContent='wrong code';return;}
+  note.textContent='';$('mw-code').value='';$('mw-code').classList.add('hide');$('mw-email').value='';
+});
+$('mw-pseudo').addEventListener('keydown',async e=>{
+  if(e.key!=='Enter')return;
+  const v=$('mw-pseudo').value.trim(), note=$('mw-claim-note');
+  if(v.length<3||v.length>24){note.className='mw-note no';note.textContent='3 to 24 characters';return;}
+  note.className='mw-note dim';note.textContent='…';
+  const {error}=await sb.from('profiles').insert({id:me.id,pseudo:v});
+  if(error){note.className='mw-note no';note.textContent=error.code==='23505'?'already taken':'try again';return;}
+  note.textContent='';
+  profile.name=v;try{localStorage.setItem(KEYP,JSON.stringify(profile));}catch(e){}
+  await loadProfile();
+  await migrateLocalToCloudIfNeeded();
+  memberPaint();paint();
+});
+$('mw-signout').onclick=async()=>{await sb.auth.signOut();$('member-window').classList.remove('show');};
+
+sb.auth.onAuthStateChange(async()=>{
+  const {data:{session}}=await sb.auth.getSession();
+  me=session?.user||null;
+  await loadProfile();
+  if(me&&myProfile){await migrateLocalToCloudIfNeeded();}
+  memberPaint();paint();
+});
+(async()=>{
+  const {data:{session}}=await sb.auth.getSession();
+  me=session?.user||null;
+  await loadProfile();
+  if(me&&myProfile){await cloudLoad();}
+  paint();
+})();
+</script>
+</body>
+</html>
