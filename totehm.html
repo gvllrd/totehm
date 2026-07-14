@@ -29,6 +29,12 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 #pf-b{bottom:0;left:0;right:0;height:15px;background-image:radial-gradient(circle at 50% 100%,#000 0 12px,transparent 13px);background-size:25% 15px;background-repeat:repeat-x;background-position:bottom}
 #pf-l{top:0;bottom:0;left:0;width:15px;background-image:radial-gradient(circle at 0 50%,#000 0 12px,transparent 13px);background-size:15px 33.34%;background-repeat:repeat-y}
 #pf-r{top:0;bottom:0;right:0;width:15px;background-image:radial-gradient(circle at 100% 50%,#000 0 12px,transparent 13px);background-size:15px 33.34%;background-repeat:repeat-y;background-position:right}
+@media(min-width:700px){
+  #pf-t{height:28px;background-image:radial-gradient(circle at 50% 0,#000 0 23px,transparent 24px);background-size:25% 28px}
+  #pf-b{height:28px;background-image:radial-gradient(circle at 50% 100%,#000 0 23px,transparent 24px);background-size:25% 28px}
+  #pf-l{width:28px;background-image:radial-gradient(circle at 0 50%,#000 0 23px,transparent 24px);background-size:28px 33.34%}
+  #pf-r{width:28px;background-image:radial-gradient(circle at 100% 50%,#000 0 23px,transparent 24px);background-size:28px 33.34%}
+}
 
 #rail{position:fixed;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.30);z-index:1;transition:opacity .4s}
 #bigT{position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;transition:opacity .4s;line-height:0}
@@ -50,7 +56,7 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 #stoner{position:fixed;inset:0;z-index:55;background:#000;display:none}
 #stoner.show{display:block}
 #stoner iframe{width:100%;height:100%;border:none;display:block}
-#stoner-back{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:57;background:none;border:none;cursor:pointer;color:rgba(255,255,255,.6);padding:6px;-webkit-tap-highlight-color:transparent;transition:color .2s;display:none}
+#stoner-back{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:57;background:none;border:none;cursor:pointer;color:rgba(255,255,255,.6);padding:6px;-webkit-tap-highlight-color:transparent;transition:color .2s;display:none}
 #stoner.show~#stoner-back{display:block}
 #stoner-back:hover{color:#fff}
 #stoner-back svg{width:22px;height:14px;display:block}
@@ -71,7 +77,7 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 .habit .meta{position:absolute;right:calc(100% - var(--rl) + 10px);display:flex;align-items:center;gap:8px;white-space:nowrap}
 .habit .h-x{background:none;border:none;color:rgba(255,255,255,.28);font-size:15px;line-height:1;cursor:pointer;padding:0;transition:color .15s}
 .habit .h-x:hover{color:#fff}
-.habit .h-freq{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:none;color:rgba(255,255,255,.55);background:none;border:none;padding:0;cursor:pointer;transition:color .15s}
+.habit .h-freq{font-family:'Quantico',sans-serif;font-weight:400;font-size:11px;letter-spacing:0;color:rgba(255,255,255,.7);background:none;border:none;padding:0;cursor:pointer;transition:color .15s}
 .habit .h-freq:hover{color:#fff}
 .habit .h-T{background:none;border:none;padding:0;cursor:pointer;line-height:0;transition:opacity .15s}
 .habit .h-T img{height:15px;width:auto;display:block}
@@ -80,7 +86,9 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 .habit .tick{position:absolute;left:var(--rl);width:var(--rw);height:5px;background:#000;top:50%;transform:translateY(-50%)}
 .habit.timed .tick{background:#fff}
 .habit .h-body{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;position:relative;display:flex;align-items:center}
-.h-text,.h-add{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:4px 2px;caret-color:#fff;text-align:left}
+.h-T-alt{display:none}
+@media(max-width:600px){.habit.timed .h-freq{display:none}.habit.timed .h-T-alt{display:block}}
+.h-text,.h-add{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;line-height:1.5;padding:4px 2px;caret-color:#fff;text-align:left;resize:none;overflow:hidden;display:block}
 .h-text::placeholder{color:rgba(255,255,255,.33)}
 /* placeholder custom : le H de Habit en blanc */
 .h-hint{position:absolute;left:2px;top:50%;transform:translateY(-50%);font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:rgba(255,255,255,.33);pointer-events:none}
@@ -89,17 +97,18 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 /* ── FREQUENCY PANEL ── */
 #freq-panel{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:22px}
 .fp-card{background:#0a0a0a;border:1px solid #1e1e1e;width:100%;max-width:300px;padding:20px 18px 16px;display:flex;flex-direction:column;gap:12px}
-#fp-input{background:none;border:none;border-bottom:1px solid rgba(255,255,255,.18);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:4px 2px;text-align:center;caret-color:#fff}
+#fp-input{background:none;border:none;border-bottom:1px solid rgba(255,255,255,.18);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;padding:4px 2px;text-align:center;caret-color:#fff}
 #fp-input::placeholder{color:rgba(255,255,255,.3);font-size:12px;font-style:italic}
 #fp-preview{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--coral);min-height:13px;text-align:center}
 #fp-list{display:flex;flex-direction:column;gap:7px;max-height:42vh;overflow-y:auto;padding-right:4px}
-.fp-opt{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--g-mid);text-align:left}
+.fp-opt{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#c4c4c4;text-align:left}
 .fp-opt:hover{color:#fff}
 .fp-opt.on{color:var(--coral)}
 
 /* ══ SETTINGS (noir, prolongement d'index.html : tiroirs + radios boutique) ══ */
-#settings{width:100%;max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:22px;padding:4vh 22px 0;align-items:center}
-.set-block{display:flex;flex-direction:column;gap:11px;align-items:center;width:100%}
+#settings{width:100%;max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:8px;padding:3vh 22px 0;align-items:center}
+.set-block{display:flex;flex-direction:column;gap:7px;align-items:center;width:100%}
+.wm-totehm{font-family:'Montserrat',sans-serif;font-weight:600;font-style:normal;color:#fff;letter-spacing:.16em;margin-right:-.16em}
 .drawer{overflow:hidden;max-height:0;opacity:0;transition:max-height .42s ease,opacity .38s ease;width:100%;display:flex;flex-direction:column;align-items:center;gap:11px}
 .drawer.on{max-height:520px;opacity:1;margin-top:2px}
 .set-note{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;color:var(--g-dark);text-transform:uppercase;text-align:center}
@@ -187,17 +196,17 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 <button id="conn-bar" aria-label="member space"><span class="dot"></span>Guest</button>
 
 <button id="get-higher" aria-label="Get Higher">
-  <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
+  <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
   <span class="lab">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-slogan"></use></svg></span>
 </button>
 
 <button id="go-settings" aria-label="Real inspiration">
   <span>Real inspiration</span>
-  <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2 L12 11 L22 2"/></svg>
+  <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2 L12 11 L22 2"/></svg>
 </button>
 
 <div id="stoner"><iframe id="stoner-frame" title="Stoner Method"></iframe></div>
-<button id="stoner-back" aria-label="back to your Totehm"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2 L12 11 L22 2"/></svg></button>
+<button id="stoner-back" aria-label="back to your Totehm"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2 L12 11 L22 2"/></svg></button>
 
 <div id="floorview">
   <div id="fv-inner">
@@ -205,10 +214,10 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 
     <div id="settings" class="hide">
       <div class="set-block">
-        <button class="btn-sig" id="dw-name">Your Totehm</button>
+        <button class="btn-sig" id="dw-name" style="white-space:nowrap">My <span class="wm-totehm">TOTEHM</span></button>
         <div class="drawer" id="d-name">
           <input id="set-name" class="name-input" placeholder="your Totehm" maxlength="24" autocomplete="off" spellcheck="false">
-          <div class="name-locked hide" id="set-name-locked"></div>
+          <div class="note dim" id="name-note"></div>
           <div class="set-note">the name members search for</div>
         </div>
       </div>
@@ -283,9 +292,11 @@ const FREQS=[
   {id:'several_daily',   label:'several times a day', w:480},
   {id:'every_morning',   label:'every morning',       w:1438},
   {id:'daily',           label:'daily',               w:1440},
-  {id:'every_night',     label:'every night',         w:1442},
+  {id:'every_weekday',   label:'every weekday',       w:1441},
+  {id:'every_night',     label:'every night',         w:1443},
   {id:'every_other_day', label:'every other day',     w:2880},
   {id:'twice_week',      label:'twice a week',        w:5040},
+  {id:'every_weekend',   label:'every weekend',       w:10078},
   {id:'weekly',          label:'weekly',              w:10080},
   {id:'every_monday',    label:'every monday',        w:10081},
   {id:'every_tuesday',   label:'every tuesday',       w:10082},
@@ -295,9 +306,15 @@ const FREQS=[
   {id:'every_saturday',  label:'every saturday',      w:10086},
   {id:'every_sunday',    label:'every sunday',        w:10087},
   {id:'biweekly',        label:'every two weeks',     w:20160},
+  {id:'twice_month',     label:'twice a month',       w:21600},
   {id:'monthly',         label:'monthly',             w:43200},
   {id:'quarterly',       label:'every quarter',       w:129600},
+  {id:'semiannual',      label:'every six months',    w:262800},
   {id:'yearly',          label:'yearly',              w:525600},
+  {id:'every_2_years',   label:'every two years',     w:1051200},
+  {id:'every_5_years',   label:'every five years',    w:2628000},
+  {id:'every_decade',    label:'every 10 years',      w:5256000},
+  {id:'randomly',        label:'randomly',            w:9999998},
   {id:'sometimes',       label:'sometimes',           w:9999999}
 ];
 const FREQ_BY_ID={};FREQS.forEach(f=>FREQ_BY_ID[f.id]=f);
@@ -323,15 +340,23 @@ const U={
   day:['day','days','daily','everyday','jour','jours','journee','quotidien','quotidienne','quotidiennement','dia','dias','diario','diaria','diariamente','giorno','giorni','giornaliero','tag','tage','taglich','dagelijks'],
   week:['week','weeks','weekly','semaine','semaines','hebdo','hebdomadaire','semana','semanas','semanal','settimana','settimane','settimanale','woche','wochen','wochentlich','wekelijks'],
   month:['month','months','monthly','mois','mensuel','mensuelle','mensuellement','mes','meses','mensal','mensualmente','mese','mesi','mensile','monat','monate','monatlich','maand','maandelijks'],
-  quarter:['quarter','quarterly','trimestre','trimestres','trimestriel','trimestrielle','trimestral','quartal','kwartaal'],
+  quarter:['quarter','quarterly','trimestre','trimestres','trimestriel','trimestrielle','trimestral','quartal','kwartaal','season','seasons','saison','saisons','estacion','estacao','stagione','seizoen'],
+  weekend:['weekend','weekends','wochenende','wochenenden'],
+  weekday:['weekday','weekdays','workday','workdays','ouvrable','ouvrables','uteis','laborables','feriali','werktag','werktage','werkdagen'],
+  semiannual:['semiannual','biannual','semestre','semestres','semestriel','semestrielle','semestral','semestrale','halbjahrlich','halfjaarlijks'],
+  decade:['decade','decades','decennie','decennies','decada','decadas','decennio','jahrzehnt','decennium'],
+  random:['random','randomly','aleatoire','aleatoirement','aleatorio','aleatoriamente','casuale','casualmente','zufallig','willekeurig','whenever'],
   year:['year','years','yearly','annual','annually','an','ans','annee','annees','annuel','annuelle','annuellement','ano','anos','anual','anualmente','anno','anni','annuale','jahr','jahre','jahrlich','jaar','jaarlijks'],
-  sometimes:['sometimes','occasionally','parfois','manchmal','soms','irregular','irregulier','sporadic','sporadique','random','aleatoire','occasionnellement']
+  sometimes:['sometimes','occasionally','parfois','quelquefois','manchmal','soms','irregular','irregulier','sporadic','sporadique','occasionnellement']
 };
 const hasKw=(n,arr)=>arr.some(k=>new RegExp('(^|\\s)'+k+'($|\\s)').test(n));
 function deduceFreq(raw){
   let n=norm(raw);if(!n)return null;
   const exact=FREQS.find(f=>f.label===n);if(exact)return exact.id;
   if(n.length>=4){const part=FREQS.find(f=>f.label.indexOf(n)!==-1||n.indexOf(f.label)!==-1);if(part)return part.id;}
+  const SOMETIMES_PHRASES=['de temps en temps','de vez em quando','de vez en cuando','a veces','as vezes','every now and then','now and then','once in a while','ogni tanto','ab und zu','af en toe','quelques fois'];
+  if(SOMETIMES_PHRASES.some(p=>n.indexOf(p)!==-1))return 'sometimes';
+  if(hasKw(n,U.random))return 'randomly';
   if(hasKw(n,U.sometimes))return 'sometimes';
   n=n.replace(/(^|\s)(deux|two|dos|due|zwei|twee)($|\s)/g,'$12$3').replace(/(^|\s)(trois|three|tres|tre|drei|drie)($|\s)/g,'$13$3');
   let mult=false,num=null;
@@ -341,6 +366,10 @@ function deduceFreq(raw){
   if(nm&&nm[1]){num=parseInt(nm[1],10);if(nm[2])mult=true;}
   if(/(^|\s)(x\d+|times|fois|vezes|veces|volte|mal|keer|per|par|por|al)($|\s)/.test(n))mult=true;
   for(const d in DAYS){if(hasKw(n,DAYS[d]))return 'every_'+d;}
+  if(hasKw(n,U.weekend)||n.indexOf('fin de semaine')!==-1||n.indexOf('fim de semana')!==-1||n.indexOf('fin de semana')!==-1)return 'every_weekend';
+  if(hasKw(n,U.weekday)||n.indexOf('en semaine')!==-1||n.indexOf('dias uteis')!==-1)return 'every_weekday';
+  if(hasKw(n,U.decade))return 'every_decade';
+  if(hasKw(n,U.semiannual))return 'semiannual';
   if(/(^|\s)(fortnight|fortnightly|quinzaine|quincena|bimensuel|bimensuelle|bimensal|quindicinale)($|\s)/.test(n))return 'biweekly';
   if(hasKw(n,U.minute))return 'every_minute';
   if(hasKw(n,U.hour))return 'hourly';
@@ -356,11 +385,22 @@ function deduceFreq(raw){
   if(hasKw(n,U.week)){
     if(num===2&&mult)return 'twice_week';
     if(num===2&&!mult)return 'biweekly';
+    if(num&&num>=3&&!mult)return 'monthly';
     return 'weekly';
   }
-  if(hasKw(n,U.month))return 'monthly';
+  if(hasKw(n,U.month)){
+    if(num===2&&mult)return 'twice_month';
+    if(num&&num>=5&&!mult)return 'semiannual';
+    if(num&&num>=2&&!mult)return 'quarterly';
+    return 'monthly';
+  }
   if(hasKw(n,U.quarter))return 'quarterly';
-  if(hasKw(n,U.year))return 'yearly';
+  if(hasKw(n,U.year)){
+    if(num&&num>=8&&!mult)return 'every_decade';
+    if(num&&num>=4&&!mult)return 'every_5_years';
+    if(num&&num>=2&&!mult)return 'every_2_years';
+    return 'yearly';
+  }
   return null;
 }
 
@@ -450,11 +490,11 @@ function renderHabits(){
     h+='<div class="habit'+(s.f?' timed':'')+'">'
       +'<span class="meta"><button class="h-x" data-i="'+i+'" aria-label="remove">×</button>'
       +(s.f
-        ?'<button class="gbtn h-freq" data-i="'+i+'">'+esc(flabel(s.f))+'</button>'
+        ?'<button class="gbtn h-freq" data-i="'+i+'">'+esc(flabel(s.f))+'</button><button class="h-T h-T-alt" data-i="'+i+'" title="Time frequency">'+T_SVG+'</button>'
         :'<button class="h-T" data-i="'+i+'" title="Time frequency">'+T_SVG+'</button>')
       +'</span>'
       +'<span class="tick"></span>'
-      +'<span class="h-body"><input class="h-text" data-i="'+i+'"></span>'
+      +'<span class="h-body"><textarea class="h-text" rows="1" data-i="'+i+'"></textarea></span>'
       +'</div>';
   });
   /* la ligne d'ajout : le T = Time frequency de la future Habit */
@@ -465,15 +505,17 @@ function renderHabits(){
       :'<button class="h-T" id="h-T" title="Time frequency">'+T_SVG+'</button>')
     +'</span>'
     +'<span class="tick"></span>'
-    +'<span class="h-body"><input class="h-add" id="h-add"><span class="h-hint" id="h-hint">'
+    +'<span class="h-body"><textarea class="h-add" rows="1" id="h-add"></textarea><span class="h-hint" id="h-hint">'
     +(state.habits.length===0?'What is your main <span class="hh">H</span>abit':'add a <span class="hh">H</span>abit')
     +'</span></span>'
     +'</div>';
   box.innerHTML=h;
 
+  const autoGrow=el=>{el.style.height='auto';el.style.height=el.scrollHeight+'px';};
   box.querySelectorAll('.h-text').forEach(inp=>{
-    inp.value=state.habits[+inp.dataset.i].t||'';
-    inp.addEventListener('input',()=>{state.habits[+inp.dataset.i].t=inp.value;clearTimeout(saveTimer);saveTimer=setTimeout(save,700);});
+    inp.value=state.habits[+inp.dataset.i].t||'';autoGrow(inp);
+    inp.addEventListener('input',()=>{autoGrow(inp);state.habits[+inp.dataset.i].t=inp.value.replace(/\n/g,' ');clearTimeout(saveTimer);saveTimer=setTimeout(save,700);});
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();inp.blur();}});
   });
   box.querySelectorAll('.h-freq[data-i]').forEach(b=>{b.onclick=()=>openFreqPanel(+b.dataset.i);});
   box.querySelectorAll('.h-T[data-i]').forEach(b=>{b.onclick=()=>openFreqPanel(+b.dataset.i);});
@@ -481,10 +523,11 @@ function renderHabits(){
   const hT=$('h-T');if(hT)hT.onclick=()=>openFreqPanel('new');
   const pf=$('h-pf');if(pf)pf.onclick=()=>openFreqPanel('new');
   const add=$('h-add'), hint=$('h-hint');
-  add.addEventListener('input',()=>{hint.style.display=add.value?'none':'';});
+  autoGrow(add);
+  add.addEventListener('input',()=>{autoGrow(add);hint.style.display=add.value?'none':'';});
   add.addEventListener('keydown',e=>{
     if(e.key!=='Enter')return;e.preventDefault();
-    const v=add.value.trim();if(!v)return;
+    const v=add.value.replace(/\n/g,' ').trim();if(!v)return;
     state.habits.push({t:v,f:pendingF||null});
     pendingF=null;save();renderHabits();
     const na=$('h-add');if(na)na.focus();
@@ -492,15 +535,10 @@ function renderHabits(){
 }
 
 function renderSettings(){
-  if(me&&myProfile){
-    $('set-name').classList.add('hide');
-    $('set-name-locked').textContent=myProfile.pseudo;
-    $('set-name-locked').classList.remove('hide');
-  }else{
-    $('set-name').classList.remove('hide');
-    if(document.activeElement!==$('set-name'))$('set-name').value=profile.name||'';
-    $('set-name-locked').classList.add('hide');
+  if(document.activeElement!==$('set-name')){
+    $('set-name').value=(me&&myProfile)?(myProfile.pseudo||''):(profile.name||'');
   }
+  $('name-note').textContent='';$('name-note').className='note dim';
   $('set-private').classList.toggle('on',(state.vis||'private')!=='network');
   $('set-members').classList.toggle('on',state.vis==='network');
   $('set-bot').classList.toggle('on',!!profile.bot);
@@ -601,7 +639,36 @@ window.addEventListener('keydown',(e)=>{
 [['dw-name','d-name'],['dw-vis','d-vis'],['dw-city','d-city'],['search-btn','d-search']].forEach(([b,d])=>{
   $(b).onclick=()=>{const dr=$(d);dr.classList.toggle('on');if(d==='d-search'&&dr.classList.contains('on'))setTimeout(()=>$('search-input').focus(),120);};
 });
-$('set-name').addEventListener('input',()=>{profile.name=$('set-name').value;save();});
+/* renommage du Totehm : vérif de dispo live (comme le Totehm Cloth), Enter pour claim */
+let nameTimer=null;
+$('set-name').addEventListener('input',()=>{
+  const v=$('set-name').value.trim(), note=$('name-note');
+  if(!me){profile.name=$('set-name').value;save();return;}
+  clearTimeout(nameTimer);
+  if(myProfile&&v===myProfile.pseudo){note.className='note dim';note.textContent='';return;}
+  if(v.length<3){note.className='note dim';note.textContent='at least 3 characters';return;}
+  note.className='note dim';note.textContent='checking\u2026';
+  nameTimer=setTimeout(async()=>{
+    const {data,error}=await sb.from('profiles').select('id').ilike('pseudo',v).neq('id',me.id).limit(1);
+    if(error){note.className='note dim';note.textContent='try again';return;}
+    if(data&&data.length){note.className='note no';note.textContent='already taken';}
+    else{note.className='note ok';note.textContent='available \u2014 press Enter to claim';}
+  },420);
+});
+$('set-name').addEventListener('keydown',async e=>{
+  if(e.key!=='Enter'||!me)return;
+  e.preventDefault();
+  const v=$('set-name').value.trim(), note=$('name-note');
+  if(v.length<3||v.length>24){note.className='note no';note.textContent='3 to 24 characters';return;}
+  if(myProfile&&v===myProfile.pseudo)return;
+  note.className='note dim';note.textContent='\u2026';
+  const {error}=await sb.from('profiles').update({pseudo:v}).eq('id',me.id);
+  if(error){note.className='note no';note.textContent=error.code==='23505'?'already taken':'try again';return;}
+  myProfile={pseudo:v};profile.name=v;
+  try{localStorage.setItem(KEYP,JSON.stringify(profile));}catch(err){}
+  note.className='note ok';note.textContent='claimed \u2713';
+  connPaint();
+});
 $('set-private').onclick=()=>{state.vis='private';save();renderSettings();};
 $('set-members').onclick=()=>{state.vis='network';save();renderSettings();};
 $('set-bot').onclick=()=>{profile.bot=!profile.bot;save();renderSettings();};
