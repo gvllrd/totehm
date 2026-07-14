@@ -114,7 +114,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 .btn-back{position:fixed;top:14px;left:14px;z-index:200;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
 .btn-back:hover,.btn-back:active{color:#fff;border-image-source:var(--tile-rep);border-image-slice:6 fill;border-image-repeat:round}
 /* retour vers My TOTEHM (top-right, chevron ↓ sous le mot) */
-#go-totehm{position:fixed;top:14px;right:14px;z-index:200;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent;transition:opacity .15s ease}
+#go-totehm{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;padding:0;margin:14px 0 4px;-webkit-tap-highlight-color:transparent;transition:opacity .15s ease}
 #go-totehm:hover{opacity:.7}
 #go-totehm .lab{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:#b0b0b0;white-space:nowrap;transition:color .15s ease;padding:0 4px;border:6px solid transparent}
 #go-totehm:hover .lab,#go-totehm:active .lab{color:#fff;border-image-source:var(--tile-rep);border-image-slice:6 fill;border-image-repeat:round}
@@ -123,8 +123,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 </style>
 </head>
 <body>
-<button class="btn-back" id="stoner-back" onclick="location.href='index.html'">Back in Time</button>
-<button id="go-totehm" aria-label="My TOTEHM" onclick="(window.parent!==window)?window.parent.postMessage({type:'totehm-close-stoner'},'*'):location.href='totehm.html'"><span class="lab">My <span class="wm-totehm">TOTEHM</span></span><svg class="chev" viewBox="0 0 24 14"><path d="M2 2 L12 11 L22 2"/></svg></button>
+<button class="btn-back" id="stoner-back" onclick="location.href='index.html#menu'">Back in Time</button>
 <div id="loading">LOADING...</div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -221,6 +220,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
     <div id="close-tech">Make it Happen. <span class="higher-inline-p"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span> Performance.</div>
     <button class="neuro-link" id="neuro-close">Neurological reasons</button>
     <div id="neuro-content-close"></div>
+    <button id="go-totehm" aria-label="My TOTEHM" onclick="(window.parent!==window)?window.parent.postMessage({type:'totehm-close-stoner'},'*'):location.href='totehm.html'"><span class="lab">My <span class="wm-totehm">TOTEHM</span></span><svg class="chev" viewBox="0 0 24 14"><path d="M2 2 L12 11 L22 2"/></svg></button>
     <button id="shop-btn" type="button">La boutique <span class="higher-shop"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span></button>
     <button id="wa-btn" type="button" aria-label="By Wa">
       <span class="wa-label">By</span>

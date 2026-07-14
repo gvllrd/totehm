@@ -171,6 +171,7 @@ const SBURL='https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/h
 
 /* ── ÉCRANS : landing / intl / lisbon ── */
 function showScreen(s){
+  if(s==='lisbon'||s==='intl'){try{localStorage.setItem('totehm_city',s);}catch(e){}}
   $('where-row').classList.toggle('hide', s!=='landing');
   $('menu-main').classList.toggle('hide', s==='landing');
   $('ctx-down').classList.toggle('hide', s!=='landing'); // affordance contexte : landing uniquement
@@ -187,7 +188,16 @@ function showScreen(s){
     $('real-img').classList.remove('color');
   }
 }
-showScreen('landing');
+/* Back in Time des autres pages -> retour au bon menu (pas l'atterrissage) */
+(function(){
+  const h=(location.hash||'').replace('#','');
+  if(h==='lisbon'||h==='intl'){showScreen(h);return;}
+  if(h==='menu'){
+    let saved=null;try{saved=localStorage.getItem('totehm_city');}catch(e){}
+    showScreen((saved==='lisbon'||saved==='intl')?saved:'landing');return;
+  }
+  showScreen('landing');
+})();
 
 /* ── util : bouton -> saisie ── */
 function morph(btn,input,note){btn.onclick=()=>{btn.classList.add('hide');input.classList.remove('hide');if(note){note.classList.remove('hide');}setTimeout(()=>input.focus(),100);};}

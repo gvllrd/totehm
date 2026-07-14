@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#000000">
 <title>TOTEHM — My Totehm</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Jost:wght@300;400;500;700&family=Montserrat:ital,wght@0,600;1,900&family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -10,8 +11,10 @@
   --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#606060;--bg:#000;
   --navy:#333366;--blue:#36498c;--rep:#743169;--love:#639922;
   --futura:'Futura','Jost',sans-serif;
-  --rl:44px;   /* rail left */
+  --rl:58px;   /* rail left */
   --rw:18px;   /* rail width */
+  --band-t:96px;   /* bande haute : T.png + Get Higher */
+  --band-b:112px;  /* bande basse : TOTEHM.png + Real inspiration */
   --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%2336498c'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23743169'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
@@ -57,15 +60,19 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 #stoner.show{display:block}
 #stoner iframe{width:100%;height:100%;border:none;display:block}
 
+/* ── BACK IN TIME ── */
+.btn-back{position:fixed;top:14px;left:14px;z-index:46;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
+.btn-back:hover,.btn-back:active{color:#fff;border-image-source:var(--tile-rep);border-image-slice:6 fill;border-image-repeat:round}
+
 /* ── CONNECTION BAR ── */
-#conn-bar{position:fixed;top:16px;left:14px;z-index:45;display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:none;color:rgba(255,255,255,.62);padding:0;-webkit-tap-highlight-color:transparent;transition:color .2s}
+#conn-bar{position:fixed;bottom:14px;left:14px;z-index:45;display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:none;color:rgba(255,255,255,.62);padding:0;-webkit-tap-highlight-color:transparent;transition:color .2s}
 #conn-bar:hover{color:#fff}
 #conn-bar .dot{width:6px;height:6px;border-radius:50%;background:#888}
 
 /* ══ FLOORVIEW : 0 = HABITS (navy) · 1 = SETTINGS (noir) ══ */
 #floorview{position:fixed;inset:0;display:flex;flex-direction:column;transition:background-color .5s ease;z-index:2;background:transparent}
-#fv-inner{flex:1;display:flex;flex-direction:column;padding:96px 0;position:relative;z-index:2;overflow-y:auto}
-#fv-status{position:fixed;bottom:56px;left:50%;transform:translateX(-50%);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;color:rgba(255,255,255,.55);text-transform:uppercase;min-height:12px;pointer-events:none;z-index:3}
+#fv-inner{position:absolute;left:0;right:0;top:var(--band-t);bottom:var(--band-b);display:flex;flex-direction:column;padding:4px 0;z-index:2;overflow-y:auto;overscroll-behavior:contain}
+#fv-status{position:fixed;bottom:6px;right:16px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;color:rgba(255,255,255,.45);text-transform:uppercase;min-height:12px;pointer-events:none;z-index:3}
 
 /* ── HABITS : chaque Habit vit sur le rail du logo ── */
 #habits{width:100%;display:flex;flex-direction:column;gap:9px}
@@ -189,6 +196,7 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 <div id="wordmark"><img src="assets/img/TOTEHM.png" alt="TOTEHM"
   onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/TOTEHM.png'"></div>
 
+<button class="btn-back" id="back-top" onclick="location.href='index.html#menu'">Back in Time</button>
 <button id="conn-bar" aria-label="member space"><span class="dot"></span>Guest</button>
 
 <button id="get-higher" aria-label="Get Higher">
@@ -209,16 +217,12 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 
     <div id="settings" class="hide">
       <div class="set-block">
-        <button class="btn-sig" id="dw-name" style="white-space:nowrap">My <span class="wm-totehm">TOTEHM</span></button>
-        <div class="drawer" id="d-name">
+        <button class="btn-sig" id="dw-set" style="white-space:nowrap">My <span class="wm-totehm">TOTEHM</span> setting</button>
+        <div class="drawer" id="d-set">
+          <div class="set-note">Name</div>
           <input id="set-name" class="name-input" placeholder="your Totehm" maxlength="24" autocomplete="off" spellcheck="false">
           <div class="note dim" id="name-note"></div>
-          <div class="set-note">the name members search for</div>
-        </div>
-      </div>
-      <div class="set-block">
-        <button class="btn-sig" id="dw-vis">Visibility of your Habits</button>
-        <div class="drawer" id="d-vis">
+          <div class="set-note" style="margin-top:10px">Visibility</div>
           <div class="row"><button class="size-btn" id="set-private">Private</button><button class="size-btn" id="set-members">Visible to members</button></div>
         </div>
       </div>
@@ -230,7 +234,7 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
         </div>
       </div>
       <div class="set-block">
-        <button class="btn-sig" id="search-btn">Search a Totehm</button>
+        <button class="btn-sig" id="search-btn" style="white-space:nowrap">Search a <span class="wm-totehm">TOTEHM</span></button>
         <div class="drawer" id="d-search">
           <input class="line-input" id="search-input" maxlength="24" placeholder="name of a Totehm" autocomplete="off" spellcheck="false">
           <div class="note dim" id="search-note"></div>
@@ -608,11 +612,19 @@ window.addEventListener('message',e=>{if(e.data&&e.data.type==='totehm-close-sto
 $('go-settings').onclick=()=>go(1);
 
 let wheelLock=false;
+function scrollEdges(){
+  const sc=$('fv-inner');
+  return {top:sc.scrollTop<=1, bottom:sc.scrollTop+sc.clientHeight>=sc.scrollHeight-1};
+}
 window.addEventListener('wheel',(e)=>{
-  if(wheelLock||fpOpen())return;
-  if(e.target&&e.target.closest&&e.target.closest('#results,#freq-panel,#member-window,#fv-inner.scroll'))return;
-  const ay=Math.abs(e.deltaY);
-  if(ay>30){wheelLock=true;setTimeout(()=>wheelLock=false,300);go(e.deltaY>0?1:-1);}
+  if(wheelLock||fpOpen()||$('member-window').classList.contains('show'))return;
+  if(e.target&&e.target.closest&&e.target.closest('#results,#freq-panel,#member-window'))return;
+  if(Math.abs(e.deltaY)<=30)return;
+  const edge=scrollEdges(), down=e.deltaY>0;
+  if(down&&!edge.bottom)return;   /* la liste scrolle d'abord */
+  if(!down&&!edge.top)return;
+  wheelLock=true;setTimeout(()=>wheelLock=false,350);
+  go(down?1:-1);
 },{passive:true});
 let y0=0,axis=null,t0el=null,x0=0;
 window.addEventListener('touchstart',(e)=>{x0=e.changedTouches[0].screenX;y0=e.changedTouches[0].screenY;axis=null;t0el=e.target;},{passive:true});
@@ -621,7 +633,11 @@ window.addEventListener('touchend',(e)=>{
   if(fpOpen())return;
   if(t0el&&t0el.closest&&t0el.closest('#results,#freq-panel,#member-window,input,textarea,button'))return;
   const dy=e.changedTouches[0].screenY-y0;const TH=50;
-  if(axis==='v'){if(dy<-TH)go(1);else if(dy>TH)go(-1);}
+  if(axis==='v'){
+    const edge=scrollEdges();
+    if(dy<-TH&&edge.bottom)go(1);
+    else if(dy>TH&&edge.top)go(-1);
+  }
 },{passive:true});
 window.addEventListener('keydown',(e)=>{
   if(fpOpen()){if(e.key==='Escape')closeFreqPanel();return;}
@@ -631,7 +647,7 @@ window.addEventListener('keydown',(e)=>{
 });
 
 /* ══ SETTINGS handlers ══ */
-[['dw-name','d-name'],['dw-vis','d-vis'],['dw-city','d-city'],['search-btn','d-search']].forEach(([b,d])=>{
+[['dw-set','d-set'],['dw-city','d-city'],['search-btn','d-search']].forEach(([b,d])=>{
   $(b).onclick=()=>{const dr=$(d);dr.classList.toggle('on');if(d==='d-search'&&dr.classList.contains('on'))setTimeout(()=>$('search-input').focus(),120);};
 });
 /* renommage du Totehm : vérif de dispo live (comme le Totehm Cloth), Enter pour claim */
