@@ -56,10 +56,6 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 #stoner{position:fixed;inset:0;z-index:55;background:#000;display:none}
 #stoner.show{display:block}
 #stoner iframe{width:100%;height:100%;border:none;display:block}
-#stoner-back{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:57;background:none;border:none;cursor:pointer;color:rgba(255,255,255,.6);padding:6px;-webkit-tap-highlight-color:transparent;transition:color .2s;display:none}
-#stoner.show~#stoner-back{display:block}
-#stoner-back:hover{color:#fff}
-#stoner-back svg{width:22px;height:14px;display:block}
 
 /* ── CONNECTION BAR ── */
 #conn-bar{position:fixed;top:16px;left:14px;z-index:45;display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:none;color:rgba(255,255,255,.62);padding:0;-webkit-tap-highlight-color:transparent;transition:color .2s}
@@ -206,7 +202,6 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 </button>
 
 <div id="stoner"><iframe id="stoner-frame" title="Stoner Method"></iframe></div>
-<button id="stoner-back" aria-label="back to your Totehm"><svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2 L12 11 L22 2"/></svg></button>
 
 <div id="floorview">
   <div id="fv-inner">
@@ -609,7 +604,7 @@ function go(dFloor){
   else if(dFloor>0){ if(floor===0){animateSwap(1,()=>{floor=1;paint();});} }
 }
 $('get-higher').onclick=()=>{if(!busy)showStoner(true);};
-$('stoner-back').onclick=()=>showStoner(false);
+window.addEventListener('message',e=>{if(e.data&&e.data.type==='totehm-close-stoner')showStoner(false);});
 $('go-settings').onclick=()=>go(1);
 
 let wheelLock=false;
