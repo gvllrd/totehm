@@ -111,13 +111,12 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   #btn-slogan{width:32vw}
   #subtitle{font-size:14px}
 }
-.btn-back{position:fixed;top:14px;left:14px;z-index:200;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
-.btn-back:hover,.btn-back:active{color:#fff;border-image-source:var(--tile-rep);border-image-slice:6 fill;border-image-repeat:round}
+.btn-back{position:fixed;top:14px;left:14px;z-index:200;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:none;padding:2px 6px;line-height:1.5;-webkit-tap-highlight-color:transparent;transition:color .15s ease,background .15s ease}
+.btn-back:hover,.btn-back:active{color:#fff;background:var(--rep)}
 /* retour vers My TOTEHM (top-right, chevron ↓ sous le mot) */
 #go-totehm{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;padding:0;margin:14px 0 4px;-webkit-tap-highlight-color:transparent;transition:opacity .15s ease}
 #go-totehm:hover{opacity:.7}
-#go-totehm .lab{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:#b0b0b0;white-space:nowrap;transition:color .15s ease;padding:0 4px;border:6px solid transparent}
-#go-totehm:hover .lab,#go-totehm:active .lab{color:#fff;border-image-source:var(--tile-rep);border-image-slice:6 fill;border-image-repeat:round}
+#go-totehm .lab{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:#fff;white-space:nowrap;padding:0 4px;border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
 #go-totehm .wm-totehm{font-family:'Montserrat',sans-serif;font-weight:600;font-style:normal;color:#fff;letter-spacing:.16em;margin-right:-.16em}
 #go-totehm .chev{width:18px;height:11px;color:rgba(255,255,255,.55);stroke-width:1.2;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round}
 </style>
@@ -220,12 +219,12 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
     <div id="close-tech">Make it Happen. <span class="higher-inline-p"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span> Performance.</div>
     <button class="neuro-link" id="neuro-close">Neurological reasons</button>
     <div id="neuro-content-close"></div>
-    <button id="go-totehm" aria-label="My TOTEHM" onclick="(window.parent!==window)?window.parent.postMessage({type:'totehm-close-stoner'},'*'):location.href='totehm.html'"><span class="lab">My <span class="wm-totehm">TOTEHM</span></span><svg class="chev" viewBox="0 0 24 14"><path d="M2 2 L12 11 L22 2"/></svg></button>
     <button id="shop-btn" type="button">La boutique <span class="higher-shop"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span></button>
     <button id="wa-btn" type="button" aria-label="By Wa">
       <span class="wa-label">By</span>
       <span class="wa-sig"><svg viewBox="0 0 592 480" xmlns="http://www.w3.org/2000/svg" fill="#ffffff"><path d="M251.16 9.34C193.94 62.03 171.52 84.45 151.99 106.59 131.36 129.98 107.56 160.24 91.6 181.42 80.32 196.41 64.09 210.86 63.96 220.76 63.96 226.54 68.22 232.45 73.58 234.65 81.97 238.09 101.23 229.84 114.57 226.81 127.5 223.79 142.08 218.83 152.81 216.63 160.52 215.12 167.53 211.95 172.62 213.74 177.16 215.26 182.39 219.25 182.93 224.61 184.17 235.61 165.74 256.38 150.47 279.49 122 322.41 37.27 428.46 18.7 458.17 12.93 467.38 11.82 474.12 8.8 477.15 7.42 478.52 6.18 479.21 4.81 479.07 3.3 478.94 0.96 477.29 0.41 475.91-0.14 474.67-0.14 473.57 1.1 471.51 8.11 458.86 81.15 402.32 125.99 365.6 176.75 324.06 226.95 283.2 290.22 235.48 373.44 172.62 559.54 31.9 584.16 24.34 587.33 23.38 588.7 23.65 589.94 24.48 591.18 25.3 591.73 27.36 591.73 28.6 591.73 29.7 591.32 30.8 590.63 31.49 589.67 32.32 587.6 33.14 586.36 33 585.27 33 584.3 32.45 583.61 31.63 582.79 30.66 582.1 28.6 582.24 27.36 582.38 26.27 582.93 25.3 583.75 24.61 584.71 23.93 586.91 23.38 588.15 23.51 589.12 23.79 590.08 24.48 590.77 25.3 591.32 25.99 591.87 27.09 591.87 28.19 591.73 29.43 591.45 30.12 589.8 32.18 574.54 50.06 379.36 180.32 296.27 243.04 233 290.63 182.8 331.48 132.18 372.89 87.61 409.47 19.8 471.23 7.97 477.97 6.32 478.94 5.91 479.21 4.81 479.07 3.57 479.07 1.64 477.97.96 477.01.27 476.05 0 475.09.13 473.57.68 469.58 4.67 462.57 11 452.39 29.98 421.58 114.57 316.63 142.22 274.54 156.66 252.67 177.02 229.01 172.48 222.82 167.94 216.63 133.97 233 116.09 236.3 100.27 239.19 81.29 246.75 70.97 242.49 63.41 239.19 56.53 230.66 56.11 222.41 55.43 210.17 72.21 192.42 84.18 175.37 99.99 152.67 124.2 123.51 144.97 99.99 164.78 77.57 187.34 55.01 205.63 37.41 219.8 23.65 237.95 5.77 244.7 2.19 246.76 1.09 247.86.82 249.1 1.09 250.2 1.23 251.3 2.05 251.85 3.02 252.54 3.84 252.81 5.22 252.67 6.32 252.67 7.28 251.16 9.34 251.16 9.34Z"/></svg></span>
     </button>
+    <button id="go-totehm" aria-label="My TOTEHM" onclick="(window.parent!==window)?window.parent.postMessage({type:'totehm-close-stoner'},'*'):location.href='totehm.html'"><span class="lab">My <span class="wm-totehm">TOTEHM</span></span><svg class="chev" viewBox="0 0 24 14"><path d="M2 2 L12 11 L22 2"/></svg></button>
     <div id="close-quote">Success and happiness are a permanent inner battle. Win it within, and the outer world follows. Microcosm equals macrocosm — it all depends on you. All of it.</div>
   </div>
 </div>

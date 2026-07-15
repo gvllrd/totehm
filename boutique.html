@@ -25,7 +25,7 @@ body{overflow-x:hidden}
 .btn-coral{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:var(--coral);background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
 .size-btn{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:2px 10px;-webkit-tap-highlight-color:transparent;transition:color .15s}
 @media(hover:hover){
-  .btn-sig:hover,.btn-coral:hover,.size-btn:hover{color:#fff;border-image-source:var(--tile-light);border-image-slice:6 fill;border-image-repeat:round}
+  .btn-sig:hover,.btn-coral:hover,.size-btn:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
 }
 .btn-sig:active,.btn-coral:active,.size-btn:active,.size-btn.on{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
 
@@ -34,8 +34,8 @@ body{overflow-x:hidden}
 .btn-encode:hover{opacity:.7}
 
 /* Back in Time : format bouton de marque, survol+clic rouge-violet, sans flèche */
-.btn-back{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
-.btn-back:hover,.btn-back:active{color:#fff;border-image-source:var(--tile-rep);border-image-slice:6 fill;border-image-repeat:round}
+.btn-back{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:none;padding:2px 6px;line-height:1.5;-webkit-tap-highlight-color:transparent;transition:color .15s ease,background .15s ease}
+.btn-back:hover,.btn-back:active{color:#fff;background:var(--rep)}
 
 #back-top{position:fixed;top:14px;left:14px;z-index:50}
 

@@ -11,7 +11,7 @@
   --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#606060;--bg:#000;
   --navy:#333366;--blue:#36498c;--rep:#743169;--love:#639922;
   --futura:'Futura','Jost',sans-serif;
-  --rl:58px;   /* rail left */
+  --rl:46px;   /* rail left */
   --rw:18px;   /* rail width */
   --band-t:96px;   /* bande haute : T.png + Get Higher */
   --band-b:112px;  /* bande basse : TOTEHM.png + Real inspiration */
@@ -26,19 +26,6 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 .gbtn{font-family:'Quantico',sans-serif;font-weight:400;background:none;border:none;padding:0;margin:0;cursor:pointer;line-height:1.5;-webkit-tap-highlight-color:transparent;transition:color .15s,background .15s}
 
 /* ══ LE LOGO HABITÉ ══ */
-/* bordure perforée du viewport : les trous du stamp, clairsemés */
-.pf{position:fixed;z-index:60;pointer-events:none}
-#pf-t{top:0;left:0;right:0;height:15px;background-image:radial-gradient(circle at 50% 0,#000 0 12px,transparent 13px);background-size:25% 15px;background-repeat:repeat-x}
-#pf-b{bottom:0;left:0;right:0;height:15px;background-image:radial-gradient(circle at 50% 100%,#000 0 12px,transparent 13px);background-size:25% 15px;background-repeat:repeat-x;background-position:bottom}
-#pf-l{top:0;bottom:0;left:0;width:15px;background-image:radial-gradient(circle at 0 50%,#000 0 12px,transparent 13px);background-size:15px 33.34%;background-repeat:repeat-y}
-#pf-r{top:0;bottom:0;right:0;width:15px;background-image:radial-gradient(circle at 100% 50%,#000 0 12px,transparent 13px);background-size:15px 33.34%;background-repeat:repeat-y;background-position:right}
-@media(min-width:700px){
-  #pf-t{height:28px;background-image:radial-gradient(circle at 50% 0,#000 0 23px,transparent 24px);background-size:25% 28px}
-  #pf-b{height:28px;background-image:radial-gradient(circle at 50% 100%,#000 0 23px,transparent 24px);background-size:25% 28px}
-  #pf-l{width:28px;background-image:radial-gradient(circle at 0 50%,#000 0 23px,transparent 24px);background-size:28px 33.34%}
-  #pf-r{width:28px;background-image:radial-gradient(circle at 100% 50%,#000 0 23px,transparent 24px);background-size:28px 33.34%}
-}
-
 #rail{position:fixed;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.30);z-index:1;transition:opacity .4s}
 #bigT{position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;transition:opacity .4s;line-height:0}
 #bigT img{height:52px;width:auto;display:block;-webkit-user-drag:none}
@@ -78,7 +65,7 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 #habits{width:100%;display:flex;flex-direction:column;gap:9px}
 .habit{position:relative;display:flex;align-items:center;min-height:30px;padding-right:30px}
 .habit .meta{position:absolute;right:calc(100% - var(--rl) + 10px);display:flex;align-items:center;gap:8px;white-space:nowrap}
-.habit .h-x{background:none;border:none;color:rgba(255,255,255,.28);font-size:15px;line-height:1;cursor:pointer;padding:0;transition:color .15s}
+.habit .h-x{position:absolute;right:4px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.28);font-size:15px;line-height:1;cursor:pointer;padding:0;transition:color .15s}
 .habit .h-x:hover{color:#fff}
 .habit .h-freq{font-family:'Quantico',sans-serif;font-weight:400;font-size:11px;letter-spacing:0;color:rgba(255,255,255,.7);background:none;border:none;padding:0;cursor:pointer;transition:color .15s}
 .habit .h-freq:hover{color:#fff}
@@ -121,34 +108,35 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 .row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
 /* radios : le pattern size-btn de boutique.html */
 .size-btn{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:2px 10px;-webkit-tap-highlight-color:transparent;transition:color .15s}
-@media(hover:hover){.size-btn:hover{color:#fff;border-image-source:var(--tile-light);border-image-slice:6 fill;border-image-repeat:round}}
+@media(hover:hover){.size-btn:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
 .size-btn:active,.size-btn.on{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
-.bot-row{display:flex;align-items:center;gap:12px;max-width:340px}
-.toggle{width:42px;height:22px;border-radius:11px;background:#161616;border:1px solid #262626;position:relative;cursor:pointer;flex-shrink:0;transition:.25s;-webkit-tap-highlight-color:transparent}
-.toggle .knob{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#666;transition:.25s}
-.toggle.on{background:#14241a;border-color:var(--love)}
-.toggle.on .knob{left:22px;background:var(--love)}
-.bot-txt{font-family:var(--futura);font-weight:300;font-size:12px;color:var(--g-mid);line-height:1.5;text-align:left}
+.bot-txt{font-family:var(--futura);font-weight:300;font-size:12px;color:var(--g-mid);line-height:1.6;text-align:center;max-width:320px}
 .bot-txt b{color:var(--g-light);font-weight:700}
 
 /* Search a Totehm : le pattern morph d'index.html */
 .btn-sig{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
-@media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:var(--tile-light);border-image-slice:6 fill;border-image-repeat:round}}
+@media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
 .btn-sig:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+.btn-wm{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
 .line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:none;outline:none;border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:var(--coral);min-width:230px}
-.note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px;text-align:center}
-.note.ok{color:#639922}.note.no{color:var(--rep)}.note.dim{color:var(--g-dark)}
+.note{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;text-align:center}
+.note.ok{color:#7db32e}.note.no{color:#b06a9f}.note.dim{color:#9a9a9a}
 
-#results{width:100%;max-width:520px;margin-top:6px;display:flex;flex-direction:column;gap:14px;padding-bottom:26px}
-.res-user{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.18em;color:var(--coral);text-transform:uppercase;margin-top:8px}
-.res-private{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:.14em;color:var(--g-dark);text-transform:uppercase}
-.res{border:1px solid #141414;padding:14px;display:flex;flex-direction:column;gap:7px}
-.rline{display:flex;gap:8px;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:#cfcfcf;line-height:1.5}
-.rline .tag{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;flex-shrink:0;padding-top:3px;color:#8a8ac0}
-.hf{font-family:'Space Mono',monospace;font-style:normal;font-size:8px;color:var(--g-mid);letter-spacing:.04em}
-.copy{align-self:flex-end;font-size:11px;color:var(--coral);opacity:0;transition:opacity .2s}
-.res:hover .copy{opacity:1}
-@media(hover:none){.copy{opacity:.9}}
+/* ── TOTEHM VIEWER : le Totehm d'un membre, read-only ── */
+#tview{position:fixed;inset:0;z-index:70;background:var(--navy);display:none}
+#tview.show{display:block}
+.tv-rail{position:absolute;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.30)}
+.tv-T{position:absolute;top:24px;left:50%;transform:translateX(-50%);line-height:0}
+.tv-T img{height:52px;width:auto;display:block}
+.tv-wm{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);line-height:0}
+.tv-wm img{height:58px;width:auto;display:block}
+.tv-name{position:absolute;bottom:16px;left:14px;font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:#fff}
+.tv-list{position:absolute;left:0;right:0;top:var(--band-t);bottom:var(--band-b);overflow-y:auto;display:flex;flex-direction:column;gap:9px;padding:4px 0}
+.r-habit{position:relative;display:flex;align-items:center;min-height:30px;padding-right:30px}
+.r-meta{position:absolute;right:calc(100% - var(--rl) + 10px);font-family:'Quantico',sans-serif;font-weight:400;font-size:11px;color:rgba(255,255,255,.7);white-space:nowrap}
+.r-tick{position:absolute;left:var(--rl);width:var(--rw);height:5px;background:#fff;top:50%;transform:translateY(-50%)}
+.r-text{margin-left:calc(var(--rl) + var(--rw) + 16px);font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:#fff;line-height:1.5;border-bottom:1px solid rgba(255,255,255,.15);padding:4px 2px;flex:1}
+.tv-private{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.14em;color:rgba(255,255,255,.5);text-transform:uppercase}
 
 /* ── MEMBER WINDOW ── */
 #member-window{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.84);display:none;align-items:center;justify-content:center;padding:24px}
@@ -188,8 +176,6 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
   </defs>
 </svg>
 
-<div class="pf" id="pf-t"></div><div class="pf" id="pf-b"></div><div class="pf" id="pf-l"></div><div class="pf" id="pf-r"></div>
-
 <div id="rail"></div>
 <div id="bigT"><img src="assets/img/T.png" alt="T"
   onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/T.png'"></div>
@@ -217,7 +203,7 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 
     <div id="settings" class="hide">
       <div class="set-block">
-        <button class="btn-sig" id="dw-set" style="white-space:nowrap">My <span class="wm-totehm">TOTEHM</span> setting</button>
+        <button class="btn-sig btn-wm" id="dw-set" style="white-space:nowrap">My <span class="wm-totehm">TOTEHM</span> setting</button>
         <div class="drawer" id="d-set">
           <div class="set-note">Name</div>
           <input id="set-name" class="name-input" placeholder="your Totehm" maxlength="24" autocomplete="off" spellcheck="false">
@@ -229,21 +215,30 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
       <div class="set-block">
         <button class="btn-sig" id="dw-city">Sync with the City</button>
         <div class="drawer" id="d-city">
-          <div class="bot-row"><div class="toggle" id="set-bot"><div class="knob"></div></div><div class="bot-txt"><b>The City feeds your Totehm.</b><br>Get events that match your Habits.</div></div>
+          <div class="bot-txt"><b>The City feeds your Totehm.</b><br>Get events that match your Habits.</div>
+          <div class="row"><button class="size-btn" id="bot-off">Off</button><button class="size-btn" id="bot-on">Sync</button></div>
           <div class="set-note">— Lisbon · preview until it goes live —</div>
         </div>
       </div>
       <div class="set-block">
-        <button class="btn-sig" id="search-btn" style="white-space:nowrap">Search a <span class="wm-totehm">TOTEHM</span></button>
+        <button class="btn-sig btn-wm" id="search-btn" style="white-space:nowrap">Search a <span class="wm-totehm">TOTEHM</span></button>
         <div class="drawer" id="d-search">
           <input class="line-input" id="search-input" maxlength="24" placeholder="name of a Totehm" autocomplete="off" spellcheck="false">
           <div class="note dim" id="search-note"></div>
-          <div id="results"></div>
         </div>
       </div>
     </div>
   </div>
   <div id="fv-status"></div>
+</div>
+
+<div id="tview">
+  <button class="btn-back" id="tv-back">Back in Time</button>
+  <div class="tv-rail"></div>
+  <div class="tv-T"><img src="assets/img/T.png" alt="T" onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/T.png'"></div>
+  <div class="tv-wm"><img src="assets/img/TOTEHM.png" alt="TOTEHM" onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/TOTEHM.png'"></div>
+  <div class="tv-name" id="tv-name"></div>
+  <div class="tv-list" id="tv-list"></div>
 </div>
 
 <div id="freq-panel" class="hide">
@@ -431,7 +426,7 @@ let state=loadState()||{habits:[
   {t:'Drop a street sticker in Lisbon',f:'weekly'}
 ],vis:'private'};
 let profile=pload()||{name:'',bot:false};
-let floor=0, busy=false, fpTarget=null, pendingF=null, st=null;
+let floor=0, busy=false, fpTarget=null, pendingF=null;
 
 function save(){
   try{localStorage.setItem(KEY,JSON.stringify(state));localStorage.setItem(KEYP,JSON.stringify(profile));}catch(e){}
@@ -487,7 +482,8 @@ function renderHabits(){
   const box=$('habits');let h='';
   state.habits.forEach((s,i)=>{
     h+='<div class="habit'+(s.f?' timed':'')+'">'
-      +'<span class="meta"><button class="h-x" data-i="'+i+'" aria-label="remove">×</button>'
+      +'<button class="h-x" data-i="'+i+'" aria-label="remove">×</button>'
+      +'<span class="meta">'
       +(s.f
         ?'<button class="gbtn h-freq" data-i="'+i+'">'+esc(flabel(s.f))+'</button><button class="h-T h-T-alt" data-i="'+i+'" title="Time frequency">'+T_SVG+'</button>'
         :'<button class="h-T" data-i="'+i+'" title="Time frequency">'+T_SVG+'</button>')
@@ -540,7 +536,8 @@ function renderSettings(){
   $('name-note').textContent='';$('name-note').className='note dim';
   $('set-private').classList.toggle('on',(state.vis||'private')!=='network');
   $('set-members').classList.toggle('on',state.vis==='network');
-  $('set-bot').classList.toggle('on',!!profile.bot);
+  $('bot-off').classList.toggle('on',!profile.bot);
+  $('bot-on').classList.toggle('on',!!profile.bot);
 }
 
 function paint(){
@@ -602,7 +599,7 @@ function showStoner(on){
   if(on){ save(); if(!stonerLoaded){$('stoner-frame').src='stoner_method.html';stonerLoaded=true;} }
 }
 function go(dFloor){
-  if(busy||fpOpen()||$('member-window').classList.contains('show'))return;
+  if(busy||fpOpen()||$('member-window').classList.contains('show')||$('tview').classList.contains('show'))return;
   if($('stoner').classList.contains('show')){ if(dFloor>0)showStoner(false); return; }
   if(dFloor<0){ if(floor===1){animateSwap(-1,()=>{floor=0;paint();});} else {showStoner(true);} }
   else if(dFloor>0){ if(floor===0){animateSwap(1,()=>{floor=1;paint();});} }
@@ -682,7 +679,8 @@ $('set-name').addEventListener('keydown',async e=>{
 });
 $('set-private').onclick=()=>{state.vis='private';save();renderSettings();};
 $('set-members').onclick=()=>{state.vis='network';save();renderSettings();};
-$('set-bot').onclick=()=>{profile.bot=!profile.bot;save();renderSettings();};
+$('bot-off').onclick=()=>{profile.bot=false;save();renderSettings();};
+$('bot-on').onclick=()=>{profile.bot=true;save();renderSettings();};
 
 /* ══ SEARCH A TOTEHM — le pattern morph d'index.html ══ */
 /* réseau démo pour le mode guest */
@@ -691,53 +689,50 @@ const NETWORK=[
   {who:'lisboeta', vis:'network', habits:[{t:'Replace the urge with 10 push-ups',f:'several_daily'},{t:'Walk after every meal',f:'daily'}]},
   {who:'serra', vis:'network', habits:[{t:'Stretch',f:'every_morning'},{t:'Cut sugar',f:'daily'},{t:'Long run',f:'every_sunday'}]}
 ];
-function habitCard(who,habits){
-  const d=document.createElement('div');d.className='res';
-  const items=[...habits].sort((a,b)=>fw2(a.f)-fw2(b.f)).map(h=>esc(h.t)+(h.f?' <span class="hf">\u00b7 '+esc(flabel(h.f))+'</span>':'')).join('&nbsp;&nbsp; ');
-  d.innerHTML='<div class="rline"><span class="tag">H</span><span>'+items+'</span></div>';
-  const c=document.createElement('button');c.className='gbtn copy';c.textContent='Copy into my Habits \u2198';
-  c.onclick=()=>{
-    const seen={};state.habits.forEach(h=>seen[norm(h.t)]=1);
-    let added=0;
-    habits.forEach(h=>{const k=norm(h.t);if(!seen[k]){seen[k]=1;state.habits.push({t:h.t,f:FREQ_BY_ID[h.f]?h.f:null});added++;}});
-    save();c.textContent=added?('Copied '+added+' \u2713'):'Already in';c.disabled=true;
-  };
-  d.appendChild(c);
-  return d;
-}
-async function doSearch(){
-  const q=$('search-input').value.trim();
-  const box=$('results'),note=$('search-note');
-  box.innerHTML='';
-  if(q.length<2){note.className='note dim';note.textContent='name of a Totehm';return;}
-  note.className='note dim';note.textContent='searching…';
-
+/* SEARCH A TOTEHM : Enter -> full-screen read-only (le pattern Decode) */
+async function openTotehmView(q){
+  const note=$('search-note');
+  note.className='note dim';note.textContent='searching\u2026';
+  let name=null, habits=null;
   if(!me){
-    const users=NETWORK.filter(u=>u.who.toLowerCase().indexOf(q.toLowerCase())!==-1);
-    note.textContent='';
-    if(!users.length){note.className='note no';note.textContent='no Totehm by that name';return;}
-    users.forEach(u=>{
-      const head=document.createElement('div');head.className='res-user';head.textContent=u.who;box.appendChild(head);
-      if(u.vis!=='network'){const p=document.createElement('div');p.className='res-private';p.textContent='Private';box.appendChild(p);return;}
-      box.appendChild(habitCard(u.who,u.habits));
-    });
-    return;
+    const ql=q.toLowerCase();
+    const u=NETWORK.find(x=>x.who.toLowerCase()===ql)||NETWORK.find(x=>x.who.toLowerCase().indexOf(ql)!==-1);
+    if(!u){note.className='note no';note.textContent='no Totehm by that name';return;}
+    name=u.who;habits=(u.vis==='network')?u.habits:null;
+  }else{
+    let {data:ps}=await sb.from('profiles').select('id,pseudo').ilike('pseudo',q).limit(1);
+    let p=(ps&&ps[0])||null;
+    if(!p){const {data:ps2}=await sb.from('profiles').select('id,pseudo').ilike('pseudo','%'+q+'%').limit(1);p=(ps2&&ps2[0])||null;}
+    if(!p){note.className='note no';note.textContent='no Totehm by that name';return;}
+    name=p.pseudo;
+    const {data:rows}=await sb.from('trips').select('steps,visibility').eq('user_id',p.id).eq('visibility','network');
+    if(rows&&rows.length){
+      habits=[];rows.forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{if(s&&s.t)habits.push(s);});});
+      if(!habits.length)habits=null;
+    }
   }
-
-  const {data:profiles}=await sb.from('profiles').select('id,pseudo').ilike('pseudo','%'+q+'%').limit(12);
   note.textContent='';
-  if(!profiles||!profiles.length){note.className='note no';note.textContent='no Totehm by that name';return;}
-  const ids=profiles.map(p=>p.id);
-  const {data:rows}=await sb.from('trips').select('user_id,steps').in('user_id',ids).eq('visibility','network');
-  const byUser={};(rows||[]).forEach(r=>{const arr=byUser[r.user_id]=byUser[r.user_id]||[];(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{if(s&&s.t)arr.push(s);});});
-  profiles.forEach(p=>{
-    const head=document.createElement('div');head.className='res-user';head.textContent=p.pseudo;box.appendChild(head);
-    const habits=byUser[p.id]||[];
-    if(!habits.length){const pv=document.createElement('div');pv.className='res-private';pv.textContent='Private';box.appendChild(pv);return;}
-    box.appendChild(habitCard(p.pseudo,habits));
-  });
+  $('tv-name').textContent=name;
+  const list=$('tv-list');list.innerHTML='';
+  if(!habits){list.innerHTML='<div class="tv-private">Private</div>';}
+  else{
+    [...habits].sort((a,b)=>fw2(a.f)-fw2(b.f)).forEach(h=>{
+      const d=document.createElement('div');d.className='r-habit';
+      d.innerHTML='<span class="r-meta">'+(h.f?esc(flabel(h.f)):'')+'</span>'
+        +'<span class="r-tick"'+(h.f?'':' style="background:#000"')+'></span>'
+        +'<span class="r-text">'+esc(h.t)+'</span>';
+      list.appendChild(d);
+    });
+  }
+  $('tview').classList.add('show');
 }
-$('search-input').addEventListener('input',()=>{clearTimeout(st);st=setTimeout(doSearch,260);});
+$('search-input').addEventListener('keydown',e=>{
+  if(e.key!=='Enter')return;
+  const v=$('search-input').value.trim();
+  if(v.length<2){$('search-note').className='note dim';$('search-note').textContent='name of a Totehm';return;}
+  openTotehmView(v);
+});
+$('tv-back').onclick=()=>$('tview').classList.remove('show');
 
 /* ══ MEMBER SPACE : email-only DNA ══ */
 function connPaint(){
@@ -810,6 +805,13 @@ sb.auth.onAuthStateChange(async()=>{
   if(me&&myProfile){await cloudLoad();}
   paint();
 })();
+window.addEventListener('pageshow',e=>{
+  if(!e.persisted)return;
+  showStoner(false);
+  $('member-window').classList.remove('show');
+  $('tview').classList.remove('show');
+  paint();
+});
 </script>
 </body>
 </html>
