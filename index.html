@@ -58,12 +58,12 @@ body{display:flex;flex-direction:column;align-items:center;min-height:100vh;over
 .wm-totehm{font-family:'Montserrat',sans-serif;font-weight:600;font-style:normal;color:#fff;letter-spacing:.16em;margin-right:-.16em}
 @media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
 .btn-sig:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
-.btn-wm{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+.wm-frame{border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;padding:0 4px;margin:0 2px;color:#fff}
 .btn-coral{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:var(--coral);background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
 @media(hover:hover){.btn-coral:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
 .btn-coral:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
 /* Back in Time : survol+clic rouge-violet, sans flèche */
-.btn-back{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:none;padding:2px 6px;line-height:1.5;-webkit-tap-highlight-color:transparent;transition:color .15s ease,background .15s ease}
+.btn-back{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:none;padding:0 2px;line-height:1.4;-webkit-tap-highlight-color:transparent;transition:color .15s ease,background .15s ease}
 .btn-back:hover,.btn-back:active{color:#fff;background:var(--rep)}
 
 nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max-width:540px}
@@ -125,7 +125,7 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 
     <!-- 3-4-5 : Higher / Grind / Streets -->
     <a class="btn-sig" href="discover.html">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-slogan"></use></svg></a>
-    <a class="btn-sig btn-wm" style="white-space:nowrap" href="totehm.html">My <span class="wm-totehm">TOTEHM</span></a>
+    <a class="btn-sig" style="white-space:nowrap" href="totehm.html">My <span class="wm-frame"><span class="wm-totehm">TOTEHM</span></span></a>
     <a class="btn-sig local-only" href="play_the_street.html">Make the Lisbon Streets Sublime</a>
 
     <div class="menu-gap"></div>

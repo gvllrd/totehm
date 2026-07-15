@@ -48,8 +48,8 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 #stoner iframe{width:100%;height:100%;border:none;display:block}
 
 /* ── BACK IN TIME ── */
-.btn-back{position:fixed;top:14px;left:14px;z-index:46;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
-.btn-back:hover,.btn-back:active{color:#fff;border-image-source:var(--tile-rep);border-image-slice:6 fill;border-image-repeat:round}
+.btn-back{position:fixed;top:14px;left:14px;z-index:46;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:none;padding:0 2px;line-height:1.4;-webkit-tap-highlight-color:transparent;transition:color .15s ease,background .15s ease}
+.btn-back:hover,.btn-back:active{color:#fff;background:var(--rep)}
 
 /* ── CONNECTION BAR ── */
 #conn-bar{position:fixed;bottom:14px;left:14px;z-index:45;display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:none;color:rgba(255,255,255,.62);padding:0;-webkit-tap-highlight-color:transparent;transition:color .2s}
@@ -117,7 +117,7 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 .btn-sig{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
 @media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
 .btn-sig:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
-.btn-wm{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+.wm-frame{border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;padding:0 4px;margin:0 2px;color:#fff}
 .line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:none;outline:none;border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:var(--coral);min-width:230px}
 .note{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;text-align:center}
 .note.ok{color:#7db32e}.note.no{color:#b06a9f}.note.dim{color:#9a9a9a}
@@ -203,7 +203,7 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 
     <div id="settings" class="hide">
       <div class="set-block">
-        <button class="btn-sig btn-wm" id="dw-set" style="white-space:nowrap">My <span class="wm-totehm">TOTEHM</span> setting</button>
+        <button class="btn-sig" id="dw-set" style="white-space:nowrap">My <span class="wm-frame"><span class="wm-totehm">TOTEHM</span></span> setting</button>
         <div class="drawer" id="d-set">
           <div class="set-note">Name</div>
           <input id="set-name" class="name-input" placeholder="your Totehm" maxlength="24" autocomplete="off" spellcheck="false">
@@ -221,7 +221,7 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
         </div>
       </div>
       <div class="set-block">
-        <button class="btn-sig btn-wm" id="search-btn" style="white-space:nowrap">Search a <span class="wm-totehm">TOTEHM</span></button>
+        <button class="btn-sig" id="search-btn" style="white-space:nowrap">Search a <span class="wm-frame"><span class="wm-totehm">TOTEHM</span></span></button>
         <div class="drawer" id="d-search">
           <input class="line-input" id="search-input" maxlength="24" placeholder="name of a Totehm" autocomplete="off" spellcheck="false">
           <div class="note dim" id="search-note"></div>
@@ -252,22 +252,19 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 <div id="member-window">
   <div class="mw-card">
     <button class="mw-close" id="mw-close">Close</button>
-    <div class="mw-title">Member space</div>
     <div id="mw-out-state">
-      <div class="mw-body">One email. No password.<br>Your Totehm syncs across devices.</div>
       <input class="mw-input" id="mw-email" type="email" placeholder="your email" autocomplete="email">
       <input class="mw-input hide" id="mw-code" inputmode="numeric" maxlength="6" placeholder="6-digit code">
       <div class="mw-note dim" id="mw-note"></div>
     </div>
     <div id="mw-claim-state" class="hide">
-      <div class="mw-body">Choose the name of your Totehm.<br>This is how members will find you.</div>
+      <div class="mw-body">Choose the name of your Totehm.</div>
       <input class="mw-input" id="mw-pseudo" maxlength="24" placeholder="your Totehm">
       <div class="mw-note dim" id="mw-claim-note"></div>
     </div>
     <div id="mw-in-state" class="hide">
       <div class="mw-pseudo" id="mw-who"></div>
       <div class="mw-mail" id="mw-mail"></div>
-      <div class="mw-body" style="margin-bottom:4px">Your Habits are synced to the cloud.</div>
       <div class="mw-sync" id="mw-sync"></div>
       <button class="mw-out" id="mw-signout">Sign out</button>
     </div>
@@ -666,10 +663,12 @@ $('set-name').addEventListener('input',()=>{
 $('set-name').addEventListener('keydown',async e=>{
   if(e.key!=='Enter'||!me)return;
   e.preventDefault();
+  clearTimeout(nameTimer);
   const v=$('set-name').value.trim(), note=$('name-note');
+  note.className='note dim';note.textContent='';
   if(v.length<3||v.length>24){note.className='note no';note.textContent='3 to 24 characters';return;}
   if(myProfile&&v===myProfile.pseudo)return;
-  note.className='note dim';note.textContent='\u2026';
+  note.className='note dim';note.textContent='claiming\u2026';
   const {error}=await sb.from('profiles').update({pseudo:v}).eq('id',me.id);
   if(error){note.className='note no';note.textContent=error.code==='23505'?'already taken':'try again';return;}
   myProfile={pseudo:v};profile.name=v;
