@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>TOTEHM — Stoner Method</title>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Bebas+Neue&family=Montserrat:ital,wght@0,600;1,900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Futura','Jost',sans-serif;font-weight:300}
+:root{
+  --coral:#fbd5ca;--higher-bg:#333366;
+  --futura-light:'Futura','Jost',sans-serif;
+  --futura-bold:'Futura','Jost',sans-serif;
+  --plus:#36498c;--minus:#743169;
+  --g3:#909090;--g4:#606060;
+  --tile-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23743169'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+}
+#stage{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;overflow-y:auto;overflow-x:hidden;padding:5vh 0 4vh}
+#vid-wrap{position:relative;flex-shrink:0;width:min(46vw,46vh);height:min(46vw,46vh);max-width:300px;max-height:300px;margin-bottom:3vh}
+#vid{width:100%;height:100%;object-fit:contain;display:block;background:#000}
+
+.tap-zone{position:absolute;left:0;right:0;background:transparent;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none;z-index:10;pointer-events:none}
+.tap-zone.show{pointer-events:auto}
+#zone-plus{top:14%;height:28%}
+#zone-minus{top:42%;height:16%}
+
+#logo-btn{position:absolute;inset:0;background:transparent;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none;z-index:11;pointer-events:none;display:none}
+#logo-btn.show{display:block;pointer-events:auto}
+
+#technique{position:relative;width:90%;max-width:460px;display:none;flex-direction:column;align-items:center;gap:8px}
+#technique.show{display:flex}
+.tech-text{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:var(--coral);text-align:center;line-height:1.7;letter-spacing:0}
+.tech-text .higher-inline{display:inline-flex;align-items:center;width:54px;vertical-align:middle;line-height:0;margin:0 2px}
+.green-text{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:var(--coral);text-align:center;margin-bottom:8px;letter-spacing:.02em}
+.tech-text .higher-inline svg{display:block;width:100%;height:auto}
+
+/* NEUROLOGICAL REASONS — en colonne (icône au-dessus), placé sous le texte */
+.neuro-link{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;display:inline-block;border:6px solid transparent;padding:0 3px;line-height:1.4;margin-top:10px;-webkit-tap-highlight-color:transparent;transition:color .18s ease}
+.neuro-link:hover,.neuro-link:focus-visible,.neuro-link:active,.neuro-link.on{color:#fff;border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");border-image-slice:6 fill;border-image-repeat:round}
+/* ── ACCORDION NEURO (contenu rétractable Shopify-style) ── */
+#neuro-content,#neuro-content-0{width:100%;max-width:440px;max-height:0;overflow:hidden;transition:max-height .4s ease;opacity:0}
+#neuro-content.open,#neuro-content-0.open{max-height:1000px;opacity:1;overflow:visible;transition:max-height .5s ease,opacity .4s ease .1s}
+.neuro-block{text-align:center;padding:16px 10px 6px}
+.nb-p{font-family:var(--futura-light);font-weight:400;font-size:14px;color:#e0e0e0;line-height:1.55;letter-spacing:.02em;margin:0 0 16px;transition:transform .28s cubic-bezier(.22,.61,.36,1),color .28s ease;transform-origin:center center}
+.nb-p:last-child{margin-bottom:0}
+.higher-inline-p{display:inline-block;width:42px;height:14px;vertical-align:middle;line-height:0;margin:0 2px}
+.higher-inline-p svg{display:block;width:100%;height:100%}
+.nb-src{font-family:var(--futura-light);font-weight:300;font-size:12.5px;color:#b5b5c2;font-style:italic;line-height:1.45;margin:10px 0 0;letter-spacing:.01em}
+
+
+#btn-slogan{border:none;background:none;padding:0;cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent;display:block;line-height:0;width:min(26vw,100px);margin-top:24px}
+#btn-slogan svg{display:block;width:100%;height:auto}
+
+#step0-intro{position:relative;width:90%;max-width:460px;display:none;text-align:center;font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:var(--coral);line-height:1.7;letter-spacing:.02em;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px}
+#step0-intro.show{display:flex}
+#step0-intro .higher-inline{display:inline-flex;align-items:center;width:54px;vertical-align:middle;line-height:0;margin:0 2px}
+#step0-intro .higher-inline svg{display:block;width:100%;height:auto}
+
+#step0-ui{position:relative;width:90%;max-width:460px;display:none;flex-direction:column;align-items:center;gap:14px}
+#step0-ui.show{display:flex}
+#step0-text{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:var(--coral);text-align:center;line-height:1.7;letter-spacing:.02em;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px}
+#step0-text .higher-inline{display:inline-flex;align-items:center;width:54px;vertical-align:middle;line-height:0;margin:0 2px}
+#step0-text .higher-inline svg{display:block;width:100%;height:auto}
+
+/* BOUTONS [High]/[Low] : Quantico Bold surligné texte, sans margin */
+.choice-row{display:flex;align-items:center;justify-content:center;gap:18px}
+.choice-btn{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;letter-spacing:0;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none;color:var(--coral);padding:1px 5px;line-height:1.1;transition:color .15s ease}
+#btn-high-blue{background-color:var(--plus)}
+#btn-low{background-color:var(--minus)}
+.choice-btn:hover{color:#626286}
+
+#subtitle{display:none;width:90%;max-width:560px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.1em;color:#808080;line-height:1.4;margin:auto auto 0;padding-top:6vh;flex-shrink:0}
+#subtitle.show{display:block}
+
+#close-screen{position:fixed;inset:0;display:none;background:#000;z-index:60;overflow-y:auto;overflow-x:hidden}
+#close-screen.visible{display:flex}
+#close-inner{width:90%;max-width:460px;margin:auto;display:flex;flex-direction:column;align-items:center;padding:6vh 0;gap:10px}
+#close-tech{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:var(--coral);text-align:center;line-height:1.7;letter-spacing:.02em}
+#close-tech .higher-inline{display:inline-flex;align-items:center;width:54px;vertical-align:middle;line-height:0;margin:0 2px}
+#close-tech .higher-inline svg{display:block;width:100%;height:auto}
+#neuro-content-close{width:100%;max-width:440px;max-height:0;overflow:hidden;opacity:0;transition:max-height .4s ease,opacity .4s ease}
+#neuro-content-close.open{max-height:1000px;opacity:1;overflow:visible}
+.higher-top{width:min(40vw,200px);margin-bottom:24px}
+.higher-top svg{display:block;width:100%;height:auto}
+/* Bouton boutique */
+#shop-btn{margin-top:20px;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none;font-family:var(--futura-bold);font-weight:700;font-size:13px;color:#909090;letter-spacing:.08em;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;transition:color .2s ease}
+#shop-btn:hover{color:#c0c0c0}
+.higher-shop{display:inline-flex;width:50px;line-height:0;vertical-align:middle}
+.higher-shop svg{display:block;width:100%;height:auto}
+/* Bouton By Wã */
+#wa-btn{margin-top:22px;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none;display:inline-flex;align-items:center;gap:7px;transition:opacity .2s ease}
+.wa-label{font-family:var(--futura-bold);font-weight:700;font-size:12px;color:#909090;letter-spacing:.08em;text-transform:uppercase;transition:color .2s ease}
+.wa-sig{display:inline-flex;width:34px;line-height:0}
+.wa-sig svg{display:block;width:100%;height:auto;opacity:.78;transition:opacity .2s ease}
+#wa-btn:hover .wa-label{color:#c0c0c0}
+#wa-btn:hover .wa-sig svg{opacity:1}
+#close-quote{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.1em;color:#808080;line-height:1.4;text-align:center;margin-top:5vh}
+
+#loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;z-index:200;font-size:11px;color:#333;letter-spacing:.15em;font-family:'Courier New',monospace}
+#loading.hidden{display:none}
+
+
+/* ── HOVER MAGNIFY par PARAGRAPHE — l'intention agrandit (desktop) ── */
+@media(hover:hover){
+  .nb-p:hover{transform:scale(1.05);color:#ffffff}
+}
+
+@media(max-width:600px){
+  #vid-wrap{width:54vw;height:54vw;max-width:240px;max-height:240px}
+  #btn-slogan{width:32vw}
+  #subtitle{font-size:14px}
+}
+.btn-back{position:fixed;top:14px;left:14px;z-index:200;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:none;padding:0 2px;line-height:1.4;-webkit-tap-highlight-color:transparent;transition:color .15s ease,background .15s ease}
+.btn-back:hover,.btn-back:active{color:#fff;background:var(--rep)}
+/* retour vers My TOTEHM (top-right, chevron ↓ sous le mot) */
+#go-totehm{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;padding:0;margin:14px 0 4px;-webkit-tap-highlight-color:transparent;transition:opacity .15s ease}
+#go-totehm:hover{opacity:.7}
+#go-totehm .lab{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:#b0b0b0;white-space:nowrap;transition:color .15s ease}
+#go-totehm:hover .lab,#go-totehm:active .lab{color:#fff}
+.wm-frame{background:var(--navy);padding:0 3px;margin:0 1px;color:#fff}
+#go-totehm .wm-totehm{font-family:'Montserrat',sans-serif;font-weight:600;font-style:normal;color:#fff;letter-spacing:.16em;margin-right:-.16em}
+#go-totehm .chev{width:18px;height:11px;color:rgba(255,255,255,.55);stroke-width:1.2;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+<body>
+<button class="btn-back" id="stoner-back" onclick="location.href='index_boutique.html#menu'">Back in Time</button>
+<div id="loading">LOADING...</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- HIGHER slogan blanc classique -->
+    <symbol id="higher-slogan" viewBox="0 0 600 200">
+      <defs><mask id="hmask"><rect width="600" height="200" fill="white"/>
+        <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
+        <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
+        <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
+      </mask></defs>
+      <rect width="600" height="200" fill="#333366" mask="url(#hmask)"/>
+      <text x="50%" y="144.42" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-style="italic" font-size="144" fill="#ffffff">Higher</text>
+    </symbol>
+
+    <!-- HIGHER GRIND : bandes surlignage bleu+violet, lettres blanches -->
+    <symbol id="higher-grind" viewBox="0 0 600 200">
+      <defs><mask id="gmask"><rect width="600" height="200" fill="white"/>
+        <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
+        <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
+        <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
+      </mask></defs>
+      <g mask="url(#gmask)">
+        <rect width="600" height="200" fill="#333366"/>
+        <rect x="34.6" y="108" width="364.4" height="48" fill="#2d4186"/>
+        <rect x="399" y="108" width="166.4" height="48" fill="#722f66"/>
+        <g fill="#ffffff" transform="translate(34.32, 144.42)">
+          <path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/>
+          <path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/>
+          <path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/>
+          <path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/>
+          <path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/>
+          <path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/>
+        </g>
+      </g>
+    </symbol>
+
+    <!-- HIGHER LOVE : comme grind mais dot du i en vert #639922 -->
+    <symbol id="higher-love" viewBox="0 0 600 200">
+      <defs><mask id="lvmask"><rect width="600" height="200" fill="white"/>
+        <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
+        <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
+        <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
+      </mask></defs>
+      <g mask="url(#lvmask)">
+        <rect width="600" height="200" fill="#333366"/>
+        <rect x="34.6" y="108" width="364.4" height="48" fill="#2d4186"/>
+        <rect x="399" y="108" width="166.4" height="48" fill="#722f66"/>
+        <g fill="#ffffff" transform="translate(34.32, 144.42)">
+          <path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/>
+          <path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0Z"/>
+          <path transform="translate(115.776,0) scale(0.144,-0.144)" fill="#639922" d="M241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/>
+          <path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/>
+          <path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/>
+          <path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/>
+          <path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/>
+        </g>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="stage">
+  <div id="vid-wrap">
+    <video id="vid" playsinline muted preload="auto"></video>
+    <button class="tap-zone" id="zone-plus" aria-label="High"></button>
+    <button class="tap-zone" id="zone-minus" aria-label="Low"></button>
+    <button id="logo-btn" aria-label="Next"></button>
+  </div>
+
+  <div id="step0-intro">Interact with the dope logo / slogan. <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span> Brand</div>
+
+  <div id="step0-ui">
+    <div id="step0-text">Wassup? <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span> Self-knowledge</div>
+    <div class="choice-row">
+      <button class="choice-btn" id="btn-low">Low</button>
+      <button class="choice-btn" id="btn-high-blue">High</button>
+    </div>
+    <button class="neuro-link" id="neuro-step0">Neurological reasons</button>
+    <div id="neuro-content-0"></div>
+  </div>
+
+  <div id="technique">
+    <div class="tech-text" id="tech-text"></div>
+    <div id="neuro-content"></div>
+    <button id="btn-slogan" type="button" aria-label="Higher"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></button>
+  </div>
+  <div id="subtitle"></div>
+</div>
+
+<div id="close-screen">
+  <div id="close-inner">
+    <span class="higher-top"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>
+    <div id="close-tech">Make it Happen. <span class="higher-inline-p"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span> Performance.</div>
+    <button class="neuro-link" id="neuro-close">Neurological reasons</button>
+    <div id="neuro-content-close"></div>
+    <button id="shop-btn" type="button">La boutique <span class="higher-shop"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span></button>
+    <button id="wa-btn" type="button" aria-label="By Wa">
+      <span class="wa-label">By</span>
+      <span class="wa-sig"><svg viewBox="0 0 592 480" xmlns="http://www.w3.org/2000/svg" fill="#ffffff"><path d="M251.16 9.34C193.94 62.03 171.52 84.45 151.99 106.59 131.36 129.98 107.56 160.24 91.6 181.42 80.32 196.41 64.09 210.86 63.96 220.76 63.96 226.54 68.22 232.45 73.58 234.65 81.97 238.09 101.23 229.84 114.57 226.81 127.5 223.79 142.08 218.83 152.81 216.63 160.52 215.12 167.53 211.95 172.62 213.74 177.16 215.26 182.39 219.25 182.93 224.61 184.17 235.61 165.74 256.38 150.47 279.49 122 322.41 37.27 428.46 18.7 458.17 12.93 467.38 11.82 474.12 8.8 477.15 7.42 478.52 6.18 479.21 4.81 479.07 3.3 478.94 0.96 477.29 0.41 475.91-0.14 474.67-0.14 473.57 1.1 471.51 8.11 458.86 81.15 402.32 125.99 365.6 176.75 324.06 226.95 283.2 290.22 235.48 373.44 172.62 559.54 31.9 584.16 24.34 587.33 23.38 588.7 23.65 589.94 24.48 591.18 25.3 591.73 27.36 591.73 28.6 591.73 29.7 591.32 30.8 590.63 31.49 589.67 32.32 587.6 33.14 586.36 33 585.27 33 584.3 32.45 583.61 31.63 582.79 30.66 582.1 28.6 582.24 27.36 582.38 26.27 582.93 25.3 583.75 24.61 584.71 23.93 586.91 23.38 588.15 23.51 589.12 23.79 590.08 24.48 590.77 25.3 591.32 25.99 591.87 27.09 591.87 28.19 591.73 29.43 591.45 30.12 589.8 32.18 574.54 50.06 379.36 180.32 296.27 243.04 233 290.63 182.8 331.48 132.18 372.89 87.61 409.47 19.8 471.23 7.97 477.97 6.32 478.94 5.91 479.21 4.81 479.07 3.57 479.07 1.64 477.97.96 477.01.27 476.05 0 475.09.13 473.57.68 469.58 4.67 462.57 11 452.39 29.98 421.58 114.57 316.63 142.22 274.54 156.66 252.67 177.02 229.01 172.48 222.82 167.94 216.63 133.97 233 116.09 236.3 100.27 239.19 81.29 246.75 70.97 242.49 63.41 239.19 56.53 230.66 56.11 222.41 55.43 210.17 72.21 192.42 84.18 175.37 99.99 152.67 124.2 123.51 144.97 99.99 164.78 77.57 187.34 55.01 205.63 37.41 219.8 23.65 237.95 5.77 244.7 2.19 246.76 1.09 247.86.82 249.1 1.09 250.2 1.23 251.3 2.05 251.85 3.02 252.54 3.84 252.81 5.22 252.67 6.32 252.67 7.28 251.16 9.34 251.16 9.34Z"/></svg></span>
+    </button>
+    <button id="go-totehm" aria-label="My TOTEHM"><span class="lab">My <span class="wm-frame"><span class="wm-totehm">TOTEHM</span></span></span><svg class="chev" viewBox="0 0 24 14"><path d="M2 2 L12 11 L22 2"/></svg></button>
+    <div id="close-quote">Success and happiness are a permanent inner battle. Win it within, and the outer world follows. Microcosm equals macrocosm — it all depends on you. All of it.</div>
+  </div>
+</div>
+
+<script>
+const SB = 'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/stoner-method/';
+const DOPE = '<svg viewBox="100 240 660 320" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M193.16 295.785c0 21.8-17.672 39.476-39.473 39.476-21.805 0-39.477-17.676-39.477-39.476 0-21.801 17.672-39.473 39.477-39.473 21.801 0 39.473 17.672 39.473 39.473m-11.723 0c0-15.325-12.422-27.75-27.75-27.75-15.328 0-27.75 12.425-27.75 27.75 0 15.324 12.422 27.75 27.75 27.75 15.328 0 27.75-12.426 27.75-27.75z"/><path d="M192.027 508.664c0 21.805-17.672 39.476-39.476 39.476-21.797 0-39.473-17.675-39.473-39.476 0-21.801 17.676-39.473 39.473-39.473 21.804 0 39.476 17.672 39.476 39.473m-11.727 0c0-15.325-12.422-27.75-27.75-27.75-15.328 0-27.75 12.425-27.75 27.75 0 15.328 12.422 27.75 27.75 27.75 15.328 0 27.75-12.422 27.75-27.75z"/><path d="M742.289 295.187c0 21.801-17.672 39.473-39.473 39.473-21.801 0-39.477-17.672-39.477-39.473 0-21.8 17.676-39.476 39.477-39.476 21.801 0 39.473 17.676 39.473 39.476m-11.723 0c0-15.324-12.422-27.75-27.75-27.75-15.328 0-27.75 12.426-27.75 27.75 0 15.324 12.422 27.75 27.75 27.75 15.328 0 27.75-12.426 27.75-27.75z"/><path d="M191.777 313.746v.008l-2.754-4.973 59.363 37.101-6.051-.097 88.879-51.614c1.754-1.015 3.907-1.058 5.696-.105l91.769 48.754-5.629.066 98.641-55.562c1.914-1.078 4.273-.992 6.109.219l88.395 58.445-6.133-.203 58.305-33.18c2.812-1.601 6.394-.62 7.996 2.196 1.601 2.812.617 6.39-2.196 7.992l-58.304 33.184c-1.922 1.09-4.289 1.011-6.133-.207l-88.394-58.446 6.109.219-98.637 55.563c-1.742.98-3.863 1.007-5.629.07l-91.773-48.754 5.695-.11-88.879 51.614c-1.879 1.09-4.207 1.05-6.051-.102l-59.363-37.097c-1.715-1.071-2.754-2.95-2.754-4.973v-.008c0-3.238 2.625-5.863 5.863-5.863 3.235 0 5.86 2.625 5.86 5.863z"/><path d="M248.465 354.148v.008l-.001-.098 1.629 98.317-2.82-4.914 91.449 55.511-5.926-.093 94.485-53.379-2.977 5.266-2.929-104.805c-.09-3.234 2.46-5.933 5.699-6.023 3.234-.09 5.933 2.46 6.023 5.695l2.93 104.805c.058 2.172-1.086 4.199-2.977 5.27l-94.484 53.382c-1.848 1.043-4.113 1.008-5.926-.094l-91.453-55.511c-1.723-1.043-2.785-2.899-2.82-4.914l-1.625-98.317-.004-.097v-.008c0-3.238 2.629-5.863 5.863-5.863 3.239 0 5.864 2.625 5.864 5.863z"/><path d="M248.363 454.742v.012c0 2.046-1.07 3.949-2.82 5.011l-59.465 36.067c-2.766 1.675-6.371.793-8.051-1.973-1.68-2.77-.797-6.375 1.973-8.055l59.46-36.066-2.82 5.016v-.012c0-3.238 2.625-5.859 5.86-5.859 3.238 0 5.863 2.621 5.863 5.859z"/></svg>';
+
+/* slogan : 'slogan' classique | 'grind' | 'love' */
+const STEPS = [
+  { file:'step_0_know_yourself.mp4', screen:0, quote:'Know yourself, know the enemy, fear no battle. \u2014 Sun Tzu' },
+  { file:'step_1_repulsion.mp4', text:'Repulse mentally that sh*t. {H} your brain.', slogan:'grind', why:'telegram_stoner_step_01_full', quote:'You have power over your mind \u2014 not outside events. Realize this, and you will find strength. \u2014 Marcus Aurelius' },
+  { file:'step_2_breath.mp4', text:'Just breathe and feel your heart. {H} your peace.', slogan:'love', why:'telegram_stoner_step_02_full', quote:'Nature does not hurry, yet everything is accomplished. \u2014 Lao Tzu' },
+  { file:'step_3_amplify_breath.mp4', text:'{H} your breath.', slogan:'grind', why:'telegram_stoner_step_03_full', quote:'Air stokes the fire. \u2014 Traditional Proverb' },
+  { file:'step_4_fully_aware.mp4', text:'{H} your consciousness. Here. Now. Around. Inside.', slogan:'grind', why:'telegram_stoner_step_04_full', quote:'The present moment is the only time over which we have dominion. \u2014 Thich Nhat Hanh' },
+  { file:'step_5_determination.mp4', text:'Visualize your objectives and determine your next steps. {H} your strategy.', slogan:'grind', why:'telegram_stoner_step_05_full', quote:'Victorious warriors win first and then go to war, while defeated warriors go to war first and then seek to win. \u2014 Sun Tzu' },
+  { file:'step_6_make_it_Happen.mp4', text:'Make it Happen. {H} Performance.', slogan:'slogan', why:'telegram_stoner_step_06_full', quote:'Some people want it to happen, some wish it would happen, others make it happen. \u2014 Michael Jordan' },
+  { file:'step_7_step_by_step.mp4', text:'Step by step.', slogan:'slogan', why:'telegram_stoner_step_07_full', quote:'What we do repeatedly is what we become. \u2014 Aristotle' },
+  { file:'step_8_love_the_process.mp4', text:'Love each step. Trust the way. {H} mentality.', slogan:'love', greenText:'EM sounds like love in French', why:'telegram_stoner_step_08_full', quote:'Faith is to believe what you do not see; the reward of this faith is to see what you believe. \u2014 Saint Augustine' },
+  { file:'step_9_express.mp4', text:'Express your emotions through art. {H} your Self.', slogan:'slogan', why:'telegram_stoner_step_09_full', quote:'The purpose of art is washing the dust of daily life off our souls. \u2014 Pablo Picasso' },
+  { file:'step_10_Time.mp4', text:'Master your Time. Get {H} again.', slogan:'slogan', why:'telegram_stoner_step_10_full', quote:'Time is the most valuable thing a man can spend. \u2014 Theophrastus' },
+];
+const NEURO = {0:"<div class=\"neuro-block\"><p class=\"nb-p\">Master yourself and you master everything. The people who control their own mind live longer, love deeper, and bend reality to their will. It starts with one brutal question: where am I right now?</p><p class=\"nb-p\">Naming your thought, emotion or urge fires your prefrontal cortex and instantly drops cortisol. Your amygdala — the fear center — goes quiet. You move from reaction to command.</p><p class=\"nb-p\">On the EEG this is the shift out of scattered beta. The simple act of looking inward already begins to organize your brainwaves. Awareness is the first key.</p><p class=\"nb-src\">Lieberman, UCLA — Affect Labeling (2007) · Fleming, Nature Neuroscience — Metacognition (2024)</p></div>",
+1:"<div class=\"neuro-block\"><p class=\"nb-p\">Every empire you'll ever build starts here: the power to say no. Kill the urge that drags you down and you forge unbreakable discipline — the rarest superpower on earth.</p><p class=\"nb-p\">The moment you reject the bad move, your prefrontal cortex cuts the dopamine your brain craved. It stings — that sting is a brand new neural connection being born. Old circuit weakens, new one fires.</p><p class=\"nb-p\">This is high beta — raw stress energy. You don't fight it, you convert it. The spike becomes fuel.</p><p class=\"nb-src\">Schultz, Nature Reviews Neuroscience (2016) · Huberman Lab, Stanford — Dopamine & Habits (2023)</p></div>",
+2:"<div class=\"neuro-block\"><p class=\"nb-p\">Calm is power. The longest-living, sharpest, most magnetic humans share one weapon: a nervous system they control. And it all runs through a single switch you carry everywhere — your breath.</p><p class=\"nb-p\">Slow breathing fires your vagus nerve, floods you with endorphins and GABA, and crushes cortisol. It stabilizes and locks in the new connection you just created.</p><p class=\"nb-p\">Your brain glides from beta chaos into alpha calm in under a minute. Then your heart slows — living proof your system obeys you.</p><p class=\"nb-src\">Zaccaro, Frontiers (2018) · Balban & Huberman, Cell Reports Medicine — Breathwork (2023)</p></div>",
+3:"<div class=\"neuro-block\"><p class=\"nb-p\">This is where you stop surviving and start performing. Amplify your breath and you build the calm, focused, unshakable state that elite humans train years to reach — the foundation of longevity.</p><p class=\"nb-p\">Endorphins and serotonin rise, cortisol collapses. Your heart and brain lock into coherence, the cleanest signal your body can run on.</p><p class=\"nb-p\">Deeper alpha. The amplified rhythm tunes your whole system like an instrument — ready to perform.</p><p class=\"nb-src\">Lehrer, Applied Psychophysiology (2014) · Shaffer, Frontiers — Heart Coherence (2020)</p></div>",
+4:"<div class=\"neuro-block\"><p class=\"nb-p\">Presence is the doorway to genius. The happiest, most creative, most alive people aren't lost in their heads — they're fully here. This is the state monks and champions chase for a lifetime.</p><p class=\"nb-p\">Serotonin and anandamide rise as your default-mode network goes quiet. The endless inner chatter stops. You perceive everything around you — and everything inside you.</p><p class=\"nb-p\">You drop into theta — deep presence. Here. Now. Around. Inside.</p><p class=\"nb-src\">Lutz & Davidson, PNAS (2004) · Goleman & Davidson, Altered Traits (2017)</p></div>",
+5:"<div class=\"neuro-block\"><p class=\"nb-p\">Winners win twice: first in their mind, then in the world. See your goals with total clarity and your brain starts building the path before your body moves. Vision is power made visible.</p><p class=\"nb-p\">Picturing what you want releases the good dopamine — pure motivation fuel — through your reward circuit. The exact opposite of the dopamine you killed when you repulsed the negative.</p><p class=\"nb-p\">Seeing fires alpha, planning fires beta, and the instant you decide your next move — a gamma burst locks it in.</p><p class=\"nb-src\">Schultz, Nature Reviews Neuroscience (2016) · Huberman Lab, Stanford — Goal Pursuit (2022)</p></div>",
+6:"<div class=\"neuro-block\"><p class=\"nb-p\">This is the state every great human lives for: total flow. Effortless power, unstoppable focus, your best self fully online. Flow isn't luck — you engineered it, every step.</p><p class=\"nb-p\">Dopamine, endorphins and noradrenaline fire together — the exact chemical cocktail behind every peak performance ever recorded.</p><p class=\"nb-p\">Full gamma. Your brain regions sync into one. Execution becomes effortless.</p><p class=\"nb-src\">Csikszentmihalyi, Flow (1990) · Huberman & Knudsen, Nature — Focus & Flow (2023)</p></div>",
+7:"<div class=\"neuro-block\"><p class=\"nb-p\">The difference between dreamers and legends is simple: legends finish. Stack one small win on another and you become unstoppable — not by force, but by rhythm.</p><p class=\"nb-p\">Each completed move releases a fresh hit of reward dopamine and noradrenaline — fuel for the next. Break it down and you never run dry.</p><p class=\"nb-p\">Sustained gamma. Entering flow is easy — staying there is the art. One move at a time.</p><p class=\"nb-src\">Berridge, Neuron — Reward (1995) · Lieberman, The Molecule of More (2018)</p></div>",
+8:"<div class=\"neuro-block\"><p class=\"nb-p\">Love is the ultimate cement. What you love, you repeat — and what you repeat, you become. This is how you rewire yourself permanently into the person you want to be.</p><p class=\"nb-p\">Oxytocin floods in and locks the new behavior into your brain, tying it to reward. The habit gets carved in for good.</p><p class=\"nb-p\">You glide from gamma performance into a warm, satisfied alpha. This is where transformation sticks.</p><p class=\"nb-src\">Walum & Young, Nature Reviews Neuroscience (2018) · Marlin, Nature — Oxytocin (2021)</p></div>",
+9:"<div class=\"neuro-block\"><p class=\"nb-p\">Bottled emotion is a slow poison. The freest, healthiest, longest-living people let it move through them. Release it — tears, shouts, joy, grief — and create from it.</p><p class=\"nb-p\">Expression releases endorphins and serotonin, the same relief as a good cry or a raw scream. What stays locked in sabotages you later.</p><p class=\"nb-p\">Theta again — but this time to release. You open the door to what's stored deep and let it out through art.</p><p class=\"nb-src\">Pennebaker, Opening Up by Writing It Down (2016) · Frontiers — Expressive Arts (2022)</p></div>",
+10:"<div class=\"neuro-block\"><p class=\"nb-p\">This is how you build a superbrain that grows stronger for decades instead of burning out. Get {H} often enough and you forge new habits, a new mind, a longer life.</p><p class=\"nb-p\">Your system rebalances — cortisol cleared, dopamine and serotonin restocked — close to the delta and theta states where the brain repairs itself.</p><p class=\"nb-p\">Back to neutral alpha. Every full cycle leaves your baseline a little {H} than before. Time out isn't the end. It's the loop that compounds.</p><p class=\"nb-src\">McEwen, Nature Neuroscience — Allostasis (2012) · Walker, Why We Sleep (2017)</p></div>"};
+const NEURO_CLOSE = "<div class=\"neuro-block\"><p class=\"nb-p\">This is the whole game. Every goal you chase — wealth, love, mastery, freedom — is won or lost inside your own head first. The moment you think, feel or act negatively, you get a choice: sink, or get {H}.</p><p class=\"nb-p\">Each time you choose {H}, you fire dopamine through your reward circuit, calm your amygdala, and carve the neural path of a winner. Repeat it enough and your brain physically rebuilds itself around success and happiness.</p><p class=\"nb-p\">Success and happiness are a permanent inner battle — fought in alpha, beta, theta and gamma. Win it within, and the outer world bends to follow. Microcosm equals macrocosm. It all depends on you. All of it.</p><p class=\"nb-src\">Hamilton, Self-Esteem and Goal Attainment (2014) · Csikszentmihalyi, Flow (1990) · Dispenza, Breaking the Habit of Being Yourself (2012)</p></div>";
+const INSTAGRAM_URL = 'https://www.instagram.com/wahigher';
+const BOT_URL = 'https://t.me/TotehmBot';
+const SHOW_TIME_0 = 3.7;
+let currentStep = 0;
+
+const SLOGAN_ID = {slogan:'higher-slogan', grind:'higher-grind', love:'higher-love'};
+
+const vid=document.getElementById('vid');
+const zonePlus=document.getElementById('zone-plus');
+const zoneMinus=document.getElementById('zone-minus');
+const logoBtn=document.getElementById('logo-btn');
+const technique=document.getElementById('technique');
+const techText=document.getElementById('tech-text');
+const btnSlogan=document.getElementById('btn-slogan');
+const step0ui=document.getElementById('step0-ui');
+const step0intro=document.getElementById('step0-intro');
+const btnLow=document.getElementById('btn-low');
+const btnHighBlue=document.getElementById('btn-high-blue');
+const subtitle=document.getElementById('subtitle');
+const closeScreen=document.getElementById('close-screen');
+const loading=document.getElementById('loading');
+let zonesShown=false;
+const neuroContent=document.getElementById('neuro-content');
+function toggleNeuro(){neuroContent.classList.toggle('open');}
+
+function injectSlogan(htmlStr){
+  return htmlStr.replace(/\{H\}/g, '<span class="higher-inline-p"><svg viewBox="0 0 600 200" preserveAspectRatio="xMidYMid meet"><use href="#higher-slogan"></use></svg></span>');
+}
+function buildTechnique(step){
+  techText.innerHTML='';
+  // texte vert spécifique (ex: EM sounds like love) au-dessus
+  const gt=document.getElementById('green-text');
+  if(gt) gt.remove();
+  if(step.greenText){
+    const g=document.createElement('div');
+    g.className='green-text';g.id='green-text';
+    g.textContent=step.greenText;
+    techText.parentNode.insertBefore(g, techText);
+  }
+  const sloganId=SLOGAN_ID[step.slogan||'slogan'];
+  const tokens=(step.text||'').split('{H}');
+  tokens.forEach((tok,i)=>{
+    if(tok)techText.appendChild(document.createTextNode(tok));
+    if(i<tokens.length-1){
+      const h=document.createElement('span');h.className='higher-inline';
+      h.innerHTML='<svg viewBox="0 0 600 200"><use href="#'+sloganId+'"></use></svg>';
+      techText.appendChild(h);
+    }
+  });
+  // bouton slogan en bas = même variante que le step
+  btnSlogan.innerHTML='<svg viewBox="0 0 600 200"><use href="#'+sloganId+'"></use></svg>';
+  // bouton Neurological reasons sous le texte → toggle accordion
+  const old=document.getElementById('neuro-tech');
+  if(old) old.remove();
+  const n=document.createElement('button');
+  n.className='neuro-link';n.id='neuro-tech';
+  n.innerHTML='Neurological reasons';
+  n.onclick=toggleNeuro;
+  techText.insertAdjacentElement('afterend',n);
+  // remplir le contenu accordion pour ce step
+  neuroContent.innerHTML = injectSlogan(NEURO[currentStep] || '');
+  neuroContent.classList.remove('open');
+}
+
+async function loadVideoStep(idx){
+  const step=STEPS[idx];
+  zonesShown=false;
+  technique.classList.remove('show');
+  subtitle.classList.remove('show');
+  step0ui.classList.remove('show');
+  step0intro.classList.remove('show');
+  zonePlus.classList.remove('show');
+  zoneMinus.classList.remove('show');
+  logoBtn.classList.remove('show');
+
+  try{
+    const resp=await fetch(SB+step.file);
+    const blob=await resp.blob();
+    vid.src=URL.createObjectURL(blob);
+  }catch(e){vid.crossOrigin='anonymous';vid.src=SB+step.file;}
+  vid.load();
+  loading.classList.add('hidden');
+
+  if(idx>=1){
+    buildTechnique(step);
+    subtitle.textContent=step.quote||'';
+    logoBtn.classList.add('show');
+    technique.classList.add('show');
+    subtitle.classList.add('show');
+  }else{
+    step0intro.classList.add('show');
+  }
+}
+
+function revealStep0UI(){
+  if(zonesShown)return;
+  zonesShown=true;
+  step0intro.classList.remove('show');
+  zonePlus.classList.add('show');
+  zoneMinus.classList.add('show');
+  step0ui.classList.add('show');
+  subtitle.textContent=STEPS[0].quote||'';
+  subtitle.classList.add('show');
+}
+
+vid.addEventListener('loadeddata',()=>{vid.play().catch(()=>{document.addEventListener('touchstart',()=>vid.play(),{once:true});});});
+vid.addEventListener('timeupdate',()=>{
+  if(currentStep===0 && !zonesShown && vid.currentTime>=SHOW_TIME_0){revealStep0UI();}
+});
+vid.addEventListener('ended',()=>{
+  vid.currentTime=vid.duration-0.01;vid.pause();
+  if(currentStep===0 && !zonesShown){revealStep0UI();}
+});
+
+function goMethod(){currentStep=1;loadVideoStep(1);}
+function goClose(){closeScreen.classList.add('visible');}
+zoneMinus.addEventListener('click',goMethod);
+btnLow.addEventListener('click',goMethod);
+zonePlus.addEventListener('click',goClose);
+btnHighBlue.addEventListener('click',goClose);
+
+function nextStep(){
+  if(currentStep<STEPS.length-1){currentStep++;loadVideoStep(currentStep);}
+  else{closeScreen.classList.add('visible');}
+}
+btnSlogan.addEventListener('click',nextStep);
+// Tap naturel sur la vidéo : pause / play / replay (sans icône)
+logoBtn.addEventListener('click',()=>{
+  if(vid.ended){ vid.currentTime=0; vid.play(); }
+  else if(vid.paused){ vid.play(); }
+  else { vid.pause(); }
+});
+
+function openWhy(){
+  const step=STEPS[currentStep];
+  if(step&&step.why){window.open(BOT_URL+'?start='+step.why,'_blank');}
+}
+const neuroContent0=document.getElementById('neuro-content-0');
+neuroContent0.innerHTML=injectSlogan(NEURO[0]||'');
+document.getElementById('neuro-step0').onclick=()=>{neuroContent0.classList.toggle('open');};
+// Close screen : neuro accordion + dope icon + By Wa
+const neuroContentClose=document.getElementById('neuro-content-close');
+neuroContentClose.innerHTML=injectSlogan(NEURO_CLOSE);
+document.getElementById('neuro-close').onclick=()=>{neuroContentClose.classList.toggle('open');};
+const waBtn=document.getElementById('wa-btn');
+if(waBtn) waBtn.onclick=()=>{window.open(INSTAGRAM_URL,'_blank');};
+const shopBtn=document.getElementById('shop-btn');
+if(shopBtn) shopBtn.onclick=()=>{window.location.href='shop.html';};
+
+/* Bas de la méthode Stoner : [My TOTEHM] -> retour au Totehm.
+   Embarqué en iframe dans totehm.html : on ferme l'overlay via postMessage.
+   Ouvert en standalone : on navigue vers totehm.html. */
+const goTotehm=document.getElementById('go-totehm');
+if(goTotehm) goTotehm.onclick=()=>{
+  const embedded = window.parent && window.parent!==window;
+  if(embedded){
+    try{ window.parent.postMessage({type:'totehm-close-stoner'},'*'); return; }
+    catch(e){ /* cross-origin : on retombe sur la navigation */ }
+  }
+  window.location.href='totehm.html';
+};
+
+loadVideoStep(0);
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Create a Totehm Cloth</title>
+<title>Create a Totehm Cloth — Streetwear</title>
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -80,7 +80,6 @@ div.style-img{display:flex;align-items:center;justify-content:center;font-family
 #member{position:fixed;inset:0;z-index:75;background:rgba(0,0,0,.84);display:none;align-items:center;justify-content:center;padding:24px}
 #member.show{display:flex}
 .mw-card{background:#0a0a0a;border:1px solid #1e1e1e;max-width:340px;width:100%;padding:30px 24px;text-align:center;position:relative}
-.mw-title{font-family:'Quantico',sans-serif;font-weight:700;font-size:18px;color:#fff;margin-bottom:14px}
 .mw-body{font-family:var(--futura);font-weight:300;font-size:13px;color:var(--g-mid);line-height:1.7;margin-bottom:14px}
 .mw-close{position:absolute;top:12px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:var(--g-mid);background:none;border:none;cursor:pointer;padding:0}
 .mw-close:hover{color:#fff}
@@ -149,15 +148,14 @@ div.style-img{display:flex;align-items:center;justify-content:center;font-family
 <div id="member">
   <div class="mw-card">
     <button class="mw-close" id="mw-close">Close</button>
-    <div class="mw-title">Member space</div>
+    
     <div id="mw-out-state">
-      <div class="mw-body">One email. No password.<br>Your Totehm Cloths, your Grind, your Figher Club access.</div>
       <input class="mw-input" id="mw-email" type="email" placeholder="your email" autocomplete="email">
       <input class="mw-input hide" id="mw-code" inputmode="numeric" maxlength="6" placeholder="6-digit code">
       <div class="note dim" id="mw-note"></div>
     </div>
     <div id="mw-claim-state" class="hide">
-      <div class="mw-body">Claim your permanent underground pseudo.</div>
+      <div class="mw-body">Choose the name of your Totehm.</div>
       <input class="mw-input" id="mw-pseudo" maxlength="24" placeholder="pseudo">
       <div class="note dim" id="mw-claim-note"></div>
     </div>
@@ -359,7 +357,7 @@ $('carousel').addEventListener('touchstart',e=>{x0=e.changedTouches[0].screenX;}
 $('carousel').addEventListener('touchend',e=>{const dx=e.changedTouches[0].screenX-x0;if(Math.abs(dx)>50)go(dx<0?1:-1);},{passive:true});
 window.addEventListener('keydown',e=>{if(!$('config').classList.contains('show')&&!$('fs').classList.contains('show')&&!$('member').classList.contains('show')&&!$('concept').classList.contains('show')){if(e.key==='ArrowRight')go(1);if(e.key==='ArrowLeft')go(-1);}});
 
-$('back-top').onclick=()=>{location.href='index.html#menu';};
+$('back-top').onclick=()=>{location.href='index_boutique.html#menu';};
 
 /* TOTEHMIZE -> full-screen écrit */
 function startTotehmize(s){
@@ -410,7 +408,7 @@ $('cfg-back').onclick=()=>{
   $('fs').classList.add('show');
   setTimeout(()=>$('fs-text').focus(),150);
 };
-$('done-back').onclick=()=>{location.href='index.html#menu';};
+$('done-back').onclick=()=>{location.href='index_boutique.html#menu';};
 
 /* NAME -> box préfixée (0.Name) + vérif Supabase sur le code complet */
 $('name-btn').onclick=()=>{

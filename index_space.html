@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOTEHM — Space</title>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Bebas+Neue&family=Montserrat:ital,wght@0,600;1,900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#5a5a5a;--bg:#000;--navy:#333366;--rep:#743169;--blue:#36498c;
+  --futura:'Futura','Jost',sans-serif;
+  --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);min-height:100%;-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:8vh 22px;gap:0}
+.hide{display:none!important}
+
+/* slogan Higher */
+.slogan{width:min(52vw,200px);margin-bottom:12px}
+.slogan svg{display:block;width:100%;height:auto}
+.tagline{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--g-mid);letter-spacing:0;text-align:center;margin-bottom:6vh}
+
+/* note "experimental branding" */
+.exp-note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--g-dark);text-align:center;margin-bottom:5vh;max-width:340px;line-height:1.9}
+
+nav{display:flex;flex-direction:column;align-items:center;gap:14px;width:100%;max-width:540px}
+
+/* boutons de marque : repos -> survol bleu clair (desktop) -> clic navy */
+.btn-sig{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-flex;align-items:center;gap:.4em;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
+@media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
+.btn-sig:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+
+/* branding inline : slogan Higher */
+.higher-inline{height:1.5em;width:auto;vertical-align:-.32em;display:inline-block;margin:0 .04em}
+
+/* logo Totehm dans le bouton "My" */
+.logo-totehm{height:1.35em;width:auto;vertical-align:-.28em;display:inline-block}
+
+/* petit tag experimental accolé à chaque bouton */
+.exp-tag{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--g-dark)}
+
+.footer{margin-top:8vh;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--g-dark);text-align:center}
+
+@media(max-width:600px){.slogan{width:min(60vw,185px)}.tagline{font-size:13px}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="higher-slogan" viewBox="0 0 600 200">
+      <defs><mask id="hmask"><rect width="600" height="200" fill="white"/>
+        <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
+        <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
+        <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
+      </mask></defs>
+      <rect width="600" height="200" fill="#333366" mask="url(#hmask)"/>
+      <text x="50%" y="144.42" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-style="italic" font-size="144" fill="#ffffff">Higher</text>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="slogan"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></div>
+<div class="tagline">OWN/YOUR/TIME&nbsp;&nbsp;&nbsp;NOW:WON&nbsp;&nbsp;&nbsp;SPACE</div>
+
+<div class="exp-note">This logo and this slogan are experimental.<br>Dope branding, live and in motion.</div>
+
+<nav>
+  <!-- 1 : Get Higher -> l'expérience de marque -->
+  <a class="btn-sig" href="totehm.html">
+    Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-slogan"></use></svg>
+    <span class="exp-tag">(experimental)</span>
+  </a>
+
+  <!-- 2 : My — logo Totehm -->
+  <a class="btn-sig" href="totehm.html">
+    My
+    <img class="logo-totehm"
+         src="assets/img/TOTEHM.png"
+         alt="TOTEHM"
+         onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/TOTEHM.png'">
+    <span class="exp-tag">(experimental)</span>
+  </a>
+</nav>
+
+<div class="footer">totehm.space</div>
+
+</body>
+</html>

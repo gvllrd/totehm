@@ -93,7 +93,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 
 /* ── FREQUENCY PANEL ── */
 #freq-panel{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:22px}
-.fp-card{background:#0a0a0a;border:1px solid #1e1e1e;width:100%;max-width:300px;padding:20px 18px 16px;display:flex;flex-direction:column;gap:12px}
+.fp-card{background:#0a0a0a;border:1px solid #1e1e1e;width:100%;max-width:380px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px}
 #fp-input{background:none;border:none;border-bottom:1px solid rgba(255,255,255,.18);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;padding:4px 2px;text-align:center;caret-color:#fff}
 #fp-input::placeholder{color:rgba(255,255,255,.3);font-size:12px;font-style:italic}
 #fp-preview{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--coral);min-height:22px;text-align:center;background:none;border:none;padding:2px 8px;cursor:pointer;transition:color .15s,background .15s;-webkit-tap-highlight-color:transparent}
@@ -101,13 +101,14 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 #fp-preview:empty,#fp-preview.hide{pointer-events:none}
 #fp-list{display:flex;flex-direction:column;gap:7px;max-height:42vh;overflow-y:auto;padding-right:4px}
 /* étape 2 : l'intention de l'Habitude (les 7 de la Map) */
-#fp-ints{display:flex;flex-direction:column;gap:9px;max-height:52vh;overflow-y:auto;padding-right:4px}
-.fp-int{display:flex;align-items:center;gap:8px;background:none;border:none;padding:2px 0;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
+#fp-ints{display:flex;flex-direction:column;gap:12px;max-height:60vh;overflow-y:auto;padding-right:4px}
+.fp-int{display:flex;flex-direction:column;gap:4px;background:none;border:none;padding:4px 0;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
 .fp-int:hover{opacity:.75}
-.fp-int .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.fp-int .nm{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px}
-.fp-int .higher-inline{height:1.15em;vertical-align:-.22em}
-.fp-int .df{font-family:var(--futura);font-weight:300;font-size:10px;color:var(--g-mid);line-height:1.35;margin-left:2px;flex:1}
+.fp-int-r1{display:flex;align-items:center;gap:8px}
+.fp-int .tglyph{height:15px;width:auto;flex-shrink:0}
+.fp-int .nm{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px}
+.fp-int .higher-inline{height:1.25em;vertical-align:-.28em}
+.fp-int .df{font-family:var(--futura);font-weight:300;font-size:12px;color:#c4c4c4;line-height:1.5;padding-left:22px}
 .fp-int.on .nm{text-decoration:underline}
 .fp-skip{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--g-dark);background:none;border:none;cursor:pointer;padding:4px 0;transition:color .15s}
 .fp-skip:hover{color:#fff}
@@ -204,7 +205,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 <div id="wordmark" class="sink-el"><img src="assets/img/TOTEHM.png" alt="TOTEHM"
   onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/TOTEHM.png'"></div>
 
-<button class="btn-back sink-el" id="back-top" onclick="location.href='index.html#menu'">Back in Time</button>
+<button class="btn-back sink-el" id="back-top" onclick="location.href='index_boutique.html#menu'">Back in Time</button>
 <button id="conn-bar" class="sink-el" aria-label="member space"><span class="dot"></span>Guest</button>
 
 <button id="get-higher" class="sink-el" aria-label="Get Higher">
@@ -236,11 +237,19 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
         </div>
       </div>
       <div class="set-block">
-        <button class="btn-sig" id="dw-city">Sync with the City</button>
+        <button class="btn-sig" id="dw-city">Select your city</button>
         <div class="drawer" id="d-city">
-          <div class="bot-txt"><b>The City feeds your Totehm.</b><br>Get events that match your Habits.</div>
-          <div class="row"><button class="size-btn" id="bot-off">Off</button><button class="size-btn" id="bot-on">Sync</button></div>
-          <div class="set-note">— Lisbon · preview until it goes live —</div>
+          <div class="bot-txt"><b>The City feeds your Totehm.</b><br>Events that match your Habits — their time, frequency & intention.</div>
+          <input class="line-input" id="city-input" maxlength="40" placeholder="name of your city" autocomplete="off" spellcheck="false">
+          <div class="note dim" id="city-note"></div>
+
+          <!-- LISBON only : play the street + city RSS/events sync -->
+          <div id="city-lisbon" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:11px;width:100%">
+            <a class="btn-sig" href="play_the_street.html">Make the Lisbon Streets Sublime</a>
+            <div class="set-note">— City feed —</div>
+            <div class="row"><button class="size-btn" id="bot-off">Off</button><button class="size-btn" id="bot-on">Sync</button></div>
+            <div class="set-note">— Lisbon · preview until it goes live —</div>
+          </div>
         </div>
       </div>
       <div class="set-block">
@@ -582,8 +591,8 @@ async function migrateLocalToCloudIfNeeded(){
 /* ══ LES 7 INTENTIONS (source : totehm_map.html) ══ */
 const INTS=[
   {id:'fight',    name:'Fight',    color:'#E24B4A', def:'Conquer yourself through harder effort.'},
-  {id:'flow',     name:'Flow',     color:'#BA7517', def:'Liberate energy through movement.'},
-  {id:'enrich',   name:'Enrich',   color:'#EF9F27', def:'Master your wealth through capital & network.'},
+  {id:'flow',     name:'Flow',     color:'#e48b31', def:'Liberate energy through movement.'},
+  {id:'enrich',   name:'Enrich',   color:'#fcbe21', def:'Master your wealth through capital & network.'},
   {id:'love',     name:'Love',     color:'#639922', def:'Contemplate life through connection & beauty.'},
   {id:'express',  name:'Express',  color:'#1D9E75', def:'Give form to emotion through creation.'},
   {id:'focus',    name:'Focus',    color:'#378ADD', def:'Master your mind through deep mental focus.'},
@@ -594,7 +603,7 @@ const intColor=i=>(INT_BY_ID[i]||{}).color||'#fff';
 
 /* ══ RENDER ══ */
 const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;};
-const T_SVG='<svg class="tglyph" viewBox="0 0 100 100" aria-hidden="true"><path fill="currentColor" d="M8 10h84v20H62v62H38V30H8z"/></svg>';
+const T_SVG='<svg class="tglyph" viewBox="0 0 624 636" aria-hidden="true"><path fill="currentColor" d="M0 0 H624 V92 H358 V592 H434 V636 H190 V592 H266 V92 H0 Z"/></svg>';
 /* les habits sans Time frequency coulent en bas, juste au-dessus de la ligne d'ajout */
 const fw2=f=>f?fw(f):1e12;
 function sortHabits(){state.habits.sort((a,b)=>fw2(a.f)-fw2(b.f));}
@@ -662,8 +671,7 @@ function renderSettings(){
   $('name-note').textContent='';$('name-note').className='note dim';
   $('set-private').classList.toggle('on',(state.vis||'private')!=='network');
   $('set-members').classList.toggle('on',state.vis==='network');
-  $('bot-off').classList.toggle('on',!profile.bot);
-  $('bot-on').classList.toggle('on',!!profile.bot);
+  paintCity();
 }
 
 function paint(){
@@ -727,9 +735,9 @@ function renderFpInts(currentId){
   INTS.forEach(x=>{
     const b=document.createElement('button');
     b.className='fp-int'+(x.id===currentId?' on':'');
-    b.innerHTML='<span class="dot" style="background:'+x.color+'"></span>'
+    b.innerHTML='<span class="fp-int-r1"><span style="color:'+x.color+'">'+T_SVG+'</span>'
       +'<span class="nm" style="color:'+x.color+'">'+x.name+'</span>'
-      +'<svg class="higher-inline" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg>'
+      +'<svg class="higher-inline" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></span>'
       +'<span class="df">'+esc(x.def)+'</span>';
     b.onclick=()=>applyIntent(x.id);
     box.appendChild(b);
@@ -862,6 +870,33 @@ $('set-private').onclick=()=>{state.vis='private';save();renderSettings();};
 $('set-members').onclick=()=>{state.vis='network';save();renderSettings();};
 $('bot-off').onclick=()=>{profile.bot=false;save();renderSettings();};
 $('bot-on').onclick=()=>{profile.bot=true;save();renderSettings();};
+
+/* ══ SELECT YOUR CITY — déplacé depuis index.html ══
+   Lisbonne -> [Make the Lisbon Streets Sublime] + City feed (RSS/events). */
+const LISBON=['lisbon','lisboa','lisbonne','lissabon','lisbona','lisabona','lizbona','lisabon','lisszabon','lisburi','\uB9AC\uC2A4\uBCF8','\u91CC\u65AF\u672C','\u043B\u0438\u0441\u0441\u0430\u0431\u043E\u043D','\u0644\u0634\u0628\u0648\u0646\u0629','\u0644\u064A\u0633\u0628\u0648\u0646'];
+function isLisbon(v){
+  const n=(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+  return LISBON.some(x=>n.includes(x));
+}
+function paintCity(){
+  const lis=isLisbon(profile.city||'');
+  $('city-lisbon').classList.toggle('hide',!lis);
+  if(document.activeElement!==$('city-input')) $('city-input').value=profile.city||'';
+  $('bot-off').classList.toggle('on',!profile.bot);
+  $('bot-on').classList.toggle('on',!!profile.bot);
+}
+let cityTimer=null;
+$('city-input').addEventListener('input',()=>{
+  const v=$('city-input').value.trim(), note=$('city-note');
+  clearTimeout(cityTimer);
+  cityTimer=setTimeout(()=>{
+    profile.city=v; save();
+    if(!v){note.className='note dim';note.textContent='';}
+    else if(isLisbon(v)){note.className='note ok';note.textContent='Lisbon \u2713';}
+    else{note.className='note dim';note.textContent='more cities soon';}
+    paintCity();
+  },300);
+});
 
 /* ══ SEARCH A TOTEHM — le pattern morph d'index.html ══ */
 /* réseau démo pour le mode guest */

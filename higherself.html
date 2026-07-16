@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>HigherSelf</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Montserrat:ital,wght@0,600;1,900&family=Quantico:wght@400;700&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#606060;
+  --navy:#333366;--rep:#743169;
+  --fight:#E24B4A;--flow:#e48b31;--enrich:#fcbe21;--love:#639922;--express:#1D9E75;--focus:#378ADD;--celebrate:#7F77DD;
+  --futura:'Futura','Jost',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#000;color:var(--g-light);font-family:var(--futura);font-weight:300;font-size:14px;min-height:100%}
+.hide{display:none!important}
+#app{max-width:520px;margin:0 auto;padding:26px 18px 60px;display:flex;flex-direction:column;gap:22px;align-items:center}
+
+/* header */
+#hs-head{display:flex;flex-direction:column;align-items:center;gap:6px}
+#hs-head .hg{height:40px;width:auto}
+#hs-head .sub{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--g-dark)}
+#hs-who{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:#fff}
+.wm-totehm{font-family:'Montserrat',sans-serif;font-weight:600;color:#fff;letter-spacing:.16em;margin-right:-.16em}
+.wm-frame{background:var(--navy);padding:0 3px;margin:0 1px;color:#fff}
+
+/* auth */
+#auth{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;max-width:300px}
+.in{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-size:15px;padding:6px 2px;caret-color:var(--coral);text-align:center}
+.in::placeholder{color:rgba(255,255,255,.33)}
+.note{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;text-align:center}
+.note.ok{color:#7db32e}.note.no{color:#b06a9f}.note.dim{color:#9a9a9a}
+
+/* intentions */
+#ints{display:flex;flex-direction:column;gap:12px;width:100%}
+.int-card{border:1px solid #161616;padding:16px;display:flex;flex-direction:column;gap:8px;cursor:pointer;background:none;text-align:left;transition:border-color .2s;-webkit-tap-highlight-color:transparent}
+.int-card:active,.int-card.on{border-color:var(--ic)}
+.int-r1{display:flex;align-items:center;gap:9px}
+.int-r1 .tg{height:16px;width:auto;color:var(--ic);flex-shrink:0}
+.int-r1 .nm{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:var(--ic)}
+.higher-inline{height:1.25em;width:auto;vertical-align:-.25em}
+.int-def{font-family:var(--futura);font-weight:300;font-size:13px;color:#c4c4c4;line-height:1.55;padding-left:24px}
+
+/* panneau d'une intention */
+.int-body{display:none;flex-direction:column;gap:14px;margin-top:8px}
+.int-card.on .int-body{display:flex}
+.lbl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--g-dark)}
+.vibe-row{display:flex;gap:8px;align-items:center}
+.vibe-row .in{text-align:left;font-size:14px}
+.save{font-family:'Quantico',sans-serif;font-weight:400;font-size:12px;color:#b0b0b0;background:none;border:none;cursor:pointer;padding:2px 8px;transition:color .15s,background .15s;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+.save:hover,.save:active{color:#fff;background:var(--navy)}
+.hlist{display:flex;flex-direction:column;gap:8px}
+.hrow{display:flex;align-items:center;gap:9px;font-family:'Quantico',sans-serif;font-size:13px;color:#dedede;line-height:1.45}
+.hrow .tg{height:12px;width:auto;flex-shrink:0}
+.hrow .fq{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.06em;color:var(--g-mid);flex-shrink:0;text-transform:none}
+.empty{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--g-dark)}
+
+/* city sync */
+#city{display:flex;flex-direction:column;gap:9px;align-items:center;border-top:1px solid #141414;padding-top:18px;width:100%}
+.row{display:flex;gap:12px}
+.size-btn{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:#b0b0b0;background:none;cursor:pointer;border:none;padding:2px 10px;-webkit-tap-highlight-color:transparent;transition:color .15s,background .15s}
+.size-btn.on,.size-btn:active{color:#fff;background:var(--navy)}
+.city-note{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;color:var(--g-dark);text-transform:uppercase;text-align:center}
+#hs-out{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--g-mid);background:none;border:none;cursor:pointer;margin-top:6px}
+#hs-out:hover{color:#fff}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="higher-slogan" viewBox="0 0 600 200">
+      <defs><mask id="hmask"><rect width="600" height="200" fill="white"/>
+        <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
+        <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
+        <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
+      </mask></defs>
+      <rect width="600" height="200" fill="#333366" mask="url(#hmask)"/>
+      <text x="50%" y="144.42" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-style="italic" font-size="144" fill="#ffffff">Higher</text>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="app">
+  <div id="hs-head">
+    <svg class="hg" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-slogan"></use></svg>
+    <div class="sub">HigherSelf — your coach</div>
+    <div id="hs-who" class="hide"></div>
+  </div>
+
+  <!-- AUTH : email-only DNA -->
+  <div id="auth">
+    <input class="in" id="a-email" type="email" placeholder="your email" autocomplete="email">
+    <input class="in hide" id="a-code" inputmode="numeric" maxlength="6" placeholder="6-digit code">
+    <div class="note dim" id="a-note"></div>
+  </div>
+
+  <!-- LES 7 INTENTIONS -->
+  <div id="ints" class="hide"></div>
+
+  <!-- CITY SYNC -->
+  <div id="city" class="hide">
+    <div class="lbl">Sync with the City</div>
+    <div class="row"><button class="size-btn" id="c-off">Off</button><button class="size-btn" id="c-on">Sync</button></div>
+    <div class="city-note">— Lisbon · HigherSelf matches the City to your Habits —</div>
+    <button id="hs-out">Sign out</button>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
+const $=id=>document.getElementById(id);
+
+/* Telegram context */
+const tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
+if(tg){tg.ready();tg.expand();try{tg.setBackgroundColor('#000000');tg.setHeaderColor('#000000');}catch(e){}}
+const TG_ID=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.id)||null;
+
+/* Les 7 intentions + mentor-vibes par défaut */
+const INTS=[
+  {id:'fight',    name:'Fight',    color:'var(--fight)',    def:'Conquer yourself through harder effort.',           vibe:'David Goggins'},
+  {id:'flow',     name:'Flow',     color:'var(--flow)',     def:'Liberate energy through movement.',                 vibe:'Alan Watts'},
+  {id:'enrich',   name:'Enrich',   color:'var(--enrich)',   def:'Master your wealth through capital & network.',     vibe:'Naval Ravikant'},
+  {id:'love',     name:'Love',     color:'var(--love)',     def:'Contemplate life through connection & beauty.',     vibe:'Esther Perel'},
+  {id:'express',  name:'Express',  color:'var(--express)',  def:'Give form to emotion through creation.',            vibe:'Virgil Abloh'},
+  {id:'focus',    name:'Focus',    color:'var(--focus)',    def:'Master your mind through deep mental focus.',       vibe:'Steve Jobs'},
+  {id:'celebrate',name:'Celebrate',color:'var(--celebrate)',def:'Elevate energy through collective effervescence.',  vibe:'Anthony Bourdain'}
+];
+const T_SVG='<svg class="tg" viewBox="0 0 624 636" aria-hidden="true"><path fill="currentColor" d="M0 0 H624 V92 H358 V592 H434 V636 H190 V592 H266 V92 H0 Z"/></svg>';
+
+/* fréquences (pour trier par importance = poids le plus faible en premier) */
+const W={every_minute:1,hourly:60,several_daily:480,every_morning:1438,daily:1440,every_weekday:1441,every_night:1443,every_other_day:2880,twice_week:5040,every_weekend:10078,weekly:10080,every_monday:10081,every_tuesday:10082,every_wednesday:10083,every_thursday:10084,every_friday:10085,every_saturday:10086,every_sunday:10087,biweekly:20160,twice_month:21600,monthly:43200,quarterly:129600,semiannual:262800,yearly:525600,every_2_years:1051200,every_5_years:2628000,every_decade:5256000,randomly:9999998,sometimes:9999999};
+const LBL={every_minute:'every minute',hourly:'every hour',several_daily:'several times a day',every_morning:'every morning',daily:'daily',every_weekday:'every weekday',every_night:'every night',every_other_day:'every other day',twice_week:'twice a week',every_weekend:'every weekend',weekly:'weekly',every_monday:'every monday',every_tuesday:'every tuesday',every_wednesday:'every wednesday',every_thursday:'every thursday',every_friday:'every friday',every_saturday:'every saturday',every_sunday:'every sunday',biweekly:'every two weeks',twice_month:'twice a month',monthly:'monthly',quarterly:'every quarter',semiannual:'every six months',yearly:'yearly',every_2_years:'every two years',every_5_years:'every five years',every_decade:'every 10 years',randomly:'randomly',sometimes:'sometimes'};
+const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;};
+
+let me=null, habits=[], prefs={}, tripRow=null;
+
+/* ── AUTH ── */
+let email='';
+$('a-email').addEventListener('keydown',async e=>{
+  if(e.key!=='Enter')return;
+  const v=$('a-email').value.trim(), note=$('a-note');
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){note.className='note no';note.textContent='invalid email';return;}
+  note.className='note dim';note.textContent='sending…';
+  const {error}=await sb.auth.signInWithOtp({email:v,options:{shouldCreateUser:true}});
+  if(error){note.className='note no';note.textContent='try again in a minute';return;}
+  email=v;note.className='note ok';note.textContent='code sent — check your email';
+  $('a-code').classList.remove('hide');setTimeout(()=>$('a-code').focus(),80);
+});
+$('a-code').addEventListener('input',async()=>{
+  const t=$('a-code').value.trim(), note=$('a-note');
+  if(t.length!==6)return;
+  note.className='note dim';note.textContent='verifying…';
+  const {error}=await sb.auth.verifyOtp({email,token:t,type:'email'});
+  if(error){note.className='note no';note.textContent='wrong code';return;}
+  note.textContent='';
+});
+$('hs-out').onclick=async()=>{await sb.auth.signOut();location.reload();};
+
+/* ── DATA ── */
+async function loadAll(){
+  /* profil + lien telegram */
+  const {data:p}=await sb.from('profiles').select('pseudo,telegram_id').eq('id',me.id).maybeSingle();
+  if(p&&p.pseudo){$('hs-who').innerHTML='My <span class="wm-frame"><span class="wm-totehm">TOTEHM</span></span> · '+esc(p.pseudo);$('hs-who').classList.remove('hide');}
+  if(TG_ID&&p&&p.telegram_id!==TG_ID){await sb.from('profiles').update({telegram_id:TG_ID}).eq('id',me.id);}
+  /* habits (la ligne unique trips) */
+  const {data:rows}=await sb.from('trips').select('*').eq('user_id',me.id).order('position');
+  tripRow=(rows&&rows[0])||null;
+  habits=[];
+  (rows||[]).forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{if(s&&s.t)habits.push(s);});});
+  habits.sort((a,b)=>((a.f&&W[a.f])||1e12)-((b.f&&W[b.f])||1e12));
+  /* prefs mentors */
+  const {data:pr}=await sb.from('higherself_prefs').select('intention,mentors').eq('user_id',me.id);
+  prefs={};(pr||[]).forEach(r=>{prefs[r.intention]=(r.mentors&&r.mentors.vibe)||'';});
+  renderInts();renderCity();
+}
+
+/* ── RENDER ── */
+function renderInts(){
+  const box=$('ints');box.innerHTML='';
+  INTS.forEach(x=>{
+    const card=document.createElement('div');
+    card.className='int-card';card.style.setProperty('--ic',x.color);
+    const mine=habits.filter(h=>h.i===x.id);
+    const hl=mine.length
+      ? mine.map(h=>'<div class="hrow"><span style="color:'+x.color+'">'+T_SVG+'</span><span>'+esc(h.t)+'</span>'+(h.f?'<span class="fq">· '+esc(LBL[h.f]||h.f)+'</span>':'')+'</div>').join('')
+      : '<div class="empty">no habit with this intention yet — add one in My TOTEHM</div>';
+    card.innerHTML=
+      '<div class="int-r1">'+T_SVG+'<span class="nm">'+x.name+'</span>'
+      +'<svg class="higher-inline" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></div>'
+      +'<div class="int-def">'+esc(x.def)+'</div>'
+      +'<div class="int-body">'
+        +'<div><div class="lbl">Mentor vibe</div>'
+        +'<div class="vibe-row"><input class="in vibe" data-int="'+x.id+'" placeholder="'+esc(x.vibe)+'" value="'+esc(prefs[x.id]||'')+'">'
+        +'<button class="save" data-int="'+x.id+'">Save</button></div></div>'
+        +'<div><div class="lbl">Your Habits — most frequent first</div><div class="hlist">'+hl+'</div></div>'
+      +'</div>';
+    card.querySelector('.int-r1').onclick=()=>{document.querySelectorAll('.int-card').forEach(c=>{if(c!==card)c.classList.remove('on');});card.classList.toggle('on');};
+    card.querySelector('.save').onclick=async ev=>{
+      ev.stopPropagation();
+      const inp=card.querySelector('.vibe');
+      const vibe=inp.value.trim()||x.vibe;
+      const row={user_id:me.id,intention:x.id,mentors:{vibe},updated_at:new Date().toISOString()};
+      if(TG_ID)row.telegram_id=TG_ID;
+      const {error}=await sb.from('higherself_prefs').upsert(row,{onConflict:'user_id,intention'});
+      ev.target.textContent=error?'retry':'Saved ✓';
+      setTimeout(()=>{ev.target.textContent='Save';},1400);
+      if(!error)prefs[x.id]=vibe;
+    };
+    box.appendChild(card);
+  });
+  $('ints').classList.remove('hide');
+}
+function renderCity(){
+  const on=!!(tripRow&&tripRow.bot);
+  $('c-off').classList.toggle('on',!on);
+  $('c-on').classList.toggle('on',on);
+  $('city').classList.remove('hide');
+}
+async function setBot(v){
+  if(!tripRow)return;
+  await sb.from('trips').update({bot:v}).eq('id',tripRow.id);
+  tripRow.bot=v;renderCity();
+}
+$('c-off').onclick=()=>setBot(false);
+$('c-on').onclick=()=>setBot(true);
+
+/* ── BOOT ── */
+sb.auth.onAuthStateChange(async()=>{
+  const {data:{session}}=await sb.auth.getSession();
+  me=session?.user||null;
+  $('auth').classList.toggle('hide',!!me);
+  if(me)await loadAll();
+});
+(async()=>{
+  const {data:{session}}=await sb.auth.getSession();
+  me=session?.user||null;
+  $('auth').classList.toggle('hide',!!me);
+  if(me)await loadAll();
+})();
+</script>
+</body>
+</html>
