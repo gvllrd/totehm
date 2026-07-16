@@ -205,7 +205,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 <div id="wordmark" class="sink-el"><img src="assets/img/TOTEHM.png" alt="TOTEHM"
   onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/TOTEHM.png'"></div>
 
-<button class="btn-back sink-el" id="back-top" onclick="location.href='index_boutique.html#menu'">Back in Time</button>
+<button class="btn-back sink-el" id="back-top" onclick="location.href='index.html#menu'">Back in Time</button>
 <button id="conn-bar" class="sink-el" aria-label="member space"><span class="dot"></span>Guest</button>
 
 <button id="get-higher" class="sink-el" aria-label="Get Higher">
@@ -783,7 +783,7 @@ function showStoner(on){
   busy=true;setTimeout(()=>{busy=false;},640);
   $('stoner').classList.toggle('show',on);
   document.body.classList.toggle('liftoff',on);
-  if(on){ save(); if(!stonerLoaded){$('stoner-frame').src='stoner_method.html';stonerLoaded=true;} }
+  if(on){ save(); if(!stonerLoaded){$('stoner-frame').src='stoner.html';stonerLoaded=true;} }
 }
 function go(dFloor){
   if(busy||fpOpen()||$('member-window').classList.contains('show')||$('tview').classList.contains('show'))return;
