@@ -43,9 +43,17 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 #go-settings .chev{width:18px;height:12px;color:rgba(255,255,255,.5)}
 
 /* ── STONER METHOD : la section du dessus ── */
-#stoner{position:fixed;inset:0;z-index:55;background:#000;display:none}
-#stoner.show{display:block}
+#stoner{position:fixed;inset:0;z-index:55;background:#000;transform:translateY(-100%);visibility:hidden;pointer-events:none;transition:transform .58s cubic-bezier(.45,0,.2,1),visibility 0s linear .58s;will-change:transform}
+#stoner.show{transform:translateY(0);visibility:visible;pointer-events:auto;transition:transform .58s cubic-bezier(.45,0,.2,1),visibility 0s}
 #stoner iframe{width:100%;height:100%;border:none;display:block}
+/* le monde s'enfonce pendant que la méthode descend d'en haut */
+.sink-el{transition:transform .58s cubic-bezier(.45,0,.2,1),opacity .45s ease}
+body.liftoff .sink-el{transform:translateY(16vh);opacity:0}
+/* le flash Higher qui monte au décollage */
+#lift-hg{position:fixed;left:50%;top:58%;transform:translate(-50%,-50%);z-index:56;opacity:0;pointer-events:none}
+#lift-hg svg{height:44px;width:auto;display:block}
+body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
+@keyframes lifthg{0%{opacity:0;transform:translate(-50%,-20%)}22%{opacity:1}100%{opacity:0;transform:translate(-50%,-300%)}}
 
 /* ── BACK IN TIME ── */
 .btn-back{position:fixed;top:14px;left:14px;z-index:46;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:none;padding:0 2px;line-height:1.4;-webkit-tap-highlight-color:transparent;transition:color .15s ease,background .15s ease}
@@ -69,15 +77,14 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 .habit .h-x:hover{color:#fff}
 .habit .h-freq{font-family:'Quantico',sans-serif;font-weight:400;font-size:11px;letter-spacing:0;color:rgba(255,255,255,.7);background:none;border:none;padding:0;cursor:pointer;transition:color .15s}
 .habit .h-freq:hover{color:#fff}
-.habit .h-T{background:none;border:none;padding:0;cursor:pointer;line-height:0;transition:opacity .15s}
-.habit .h-T img{height:15px;width:auto;display:block}
+.habit .h-T{background:none;border:none;padding:0;cursor:pointer;line-height:0;color:#fff;transition:opacity .15s,color .25s}
+.habit .h-T .tglyph{height:14px;width:auto;display:block}
 .habit .h-T:hover{opacity:.6}
 /* le trait reste NOIR tant que la Time frequency n'est pas choisie via le T */
 .habit .tick{position:absolute;left:var(--rl);width:var(--rw);height:5px;background:#000;top:50%;transform:translateY(-50%)}
 .habit.timed .tick{background:#fff}
 .habit .h-body{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;position:relative;display:flex;align-items:center}
-.h-T-alt{display:none}
-@media(max-width:600px){.habit.timed .h-freq{display:none}.habit.timed .h-T-alt{display:block}}
+@media(max-width:600px){.habit.timed .h-freq{display:none}}
 .h-text,.h-add{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;line-height:1.5;padding:4px 2px;caret-color:#fff;text-align:left;resize:none;overflow:hidden;display:block}
 .h-text::placeholder{color:rgba(255,255,255,.33)}
 /* placeholder custom : le H de Habit en blanc */
@@ -91,6 +98,17 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 #fp-input::placeholder{color:rgba(255,255,255,.3);font-size:12px;font-style:italic}
 #fp-preview{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--coral);min-height:13px;text-align:center}
 #fp-list{display:flex;flex-direction:column;gap:7px;max-height:42vh;overflow-y:auto;padding-right:4px}
+/* étape 2 : l'intention de l'Habitude (les 7 de la Map) */
+#fp-ints{display:flex;flex-direction:column;gap:9px;max-height:52vh;overflow-y:auto;padding-right:4px}
+.fp-int{display:flex;align-items:center;gap:8px;background:none;border:none;padding:2px 0;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
+.fp-int:hover{opacity:.75}
+.fp-int .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.fp-int .nm{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px}
+.fp-int .higher-inline{height:1.15em;vertical-align:-.22em}
+.fp-int .df{font-family:var(--futura);font-weight:300;font-size:10px;color:var(--g-mid);line-height:1.35;margin-left:2px;flex:1}
+.fp-int.on .nm{text-decoration:underline}
+.fp-skip{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--g-dark);background:none;border:none;cursor:pointer;padding:4px 0;transition:color .15s}
+.fp-skip:hover{color:#fff}
 .fp-opt{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#c4c4c4;text-align:left}
 .fp-opt:hover{color:#fff}
 .fp-opt.on{color:var(--coral)}
@@ -133,7 +151,9 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 .tv-name{position:absolute;bottom:16px;left:14px;font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:#fff}
 .tv-list{position:absolute;left:0;right:0;top:var(--band-t);bottom:var(--band-b);overflow-y:auto;display:flex;flex-direction:column;gap:9px;padding:4px 0}
 .r-habit{position:relative;display:flex;align-items:center;min-height:30px;padding-right:30px}
-.r-meta{position:absolute;right:calc(100% - var(--rl) + 10px);font-family:'Quantico',sans-serif;font-weight:400;font-size:11px;color:rgba(255,255,255,.7);white-space:nowrap}
+.r-meta{position:absolute;right:calc(100% - var(--rl) + 10px);display:flex;align-items:center;gap:6px;font-family:'Quantico',sans-serif;font-weight:400;font-size:11px;color:rgba(255,255,255,.7);white-space:nowrap}
+.r-meta .h-T{cursor:default}
+@media(max-width:600px){.r-meta .r-fl{display:none}}
 .r-tick{position:absolute;left:var(--rl);width:var(--rw);height:5px;background:#fff;top:50%;transform:translateY(-50%)}
 .r-text{margin-left:calc(var(--rl) + var(--rw) + 16px);font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:#fff;line-height:1.5;border-bottom:1px solid rgba(255,255,255,.15);padding:4px 2px;flex:1}
 .tv-private{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.14em;color:rgba(255,255,255,.5);text-transform:uppercase}
@@ -176,28 +196,29 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
   </defs>
 </svg>
 
-<div id="rail"></div>
-<div id="bigT"><img src="assets/img/T.png" alt="T"
+<div id="rail" class="sink-el"></div>
+<div id="bigT" class="sink-el"><img src="assets/img/T.png" alt="T"
   onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/T.png'"></div>
-<div id="wordmark"><img src="assets/img/TOTEHM.png" alt="TOTEHM"
+<div id="wordmark" class="sink-el"><img src="assets/img/TOTEHM.png" alt="TOTEHM"
   onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/TOTEHM.png'"></div>
 
-<button class="btn-back" id="back-top" onclick="location.href='index.html#menu'">Back in Time</button>
-<button id="conn-bar" aria-label="member space"><span class="dot"></span>Guest</button>
+<button class="btn-back sink-el" id="back-top" onclick="location.href='index.html#menu'">Back in Time</button>
+<button id="conn-bar" class="sink-el" aria-label="member space"><span class="dot"></span>Guest</button>
 
-<button id="get-higher" aria-label="Get Higher">
+<button id="get-higher" class="sink-el" aria-label="Get Higher">
   <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
   <span class="lab">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-slogan"></use></svg></span>
 </button>
 
-<button id="go-settings" aria-label="Real inspiration">
+<button id="go-settings" class="sink-el" aria-label="Real inspiration">
   <span>Real inspiration</span>
   <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2 L12 11 L22 2"/></svg>
 </button>
 
+<div id="lift-hg"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></div>
 <div id="stoner"><iframe id="stoner-frame" title="Stoner Method"></iframe></div>
 
-<div id="floorview">
+<div id="floorview" class="sink-el">
   <div id="fv-inner">
     <div id="habits"></div>
 
@@ -246,6 +267,8 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
     <input id="fp-input" placeholder="type it — any language" autocomplete="off" spellcheck="false">
     <div id="fp-preview"></div>
     <div id="fp-list"></div>
+    <div id="fp-ints" class="hide"></div>
+    <button class="fp-skip hide" id="fp-skip">no intention yet</button>
   </div>
 </div>
 
@@ -408,7 +431,7 @@ function loadState(){
     if(r5){
       const g=JSON.parse(r5)||[];
       const habits=[];const seen={};
-      g.forEach(t=>{(t.steps||[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;habits.push({t:s.t,f:FREQ_BY_ID[s.f]?s.f:null});}});});
+      g.forEach(t=>{(t.steps||[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;habits.push({t:s.t,f:FREQ_BY_ID[s.f]?s.f:null,i:INT_BY_ID[s.i]?s.i:null});}});});
       const vis=g.some(t=>t.vis==='network')?'network':'private';
       if(habits.length)return {habits,vis};
     }
@@ -423,7 +446,7 @@ let state=loadState()||{habits:[
   {t:'Drop a street sticker in Lisbon',f:'weekly'}
 ],vis:'private'};
 let profile=pload()||{name:'',bot:false};
-let floor=0, busy=false, fpTarget=null, pendingF=null;
+let floor=0, busy=false, fpTarget=null, fpStage='freq', pendingF=null, pendingI=null;
 
 function save(){
   try{localStorage.setItem(KEY,JSON.stringify(state));localStorage.setItem(KEYP,JSON.stringify(profile));}catch(e){}
@@ -455,7 +478,7 @@ async function cloudLoad(){
   const {data,error}=await sb.from('trips').select('*').eq('user_id',me.id).order('position');
   if(error||!data||!data.length)return;
   const habits=[];const seen={};
-  data.forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;habits.push({t:s.t,f:FREQ_BY_ID[s.f]?s.f:null});}});});
+  data.forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;habits.push({t:s.t,f:FREQ_BY_ID[s.f]?s.f:null,i:INT_BY_ID[s.i]?s.i:null});}});});
   state={habits, vis:data.some(r=>r.visibility==='network')?'network':'private'};
   if(data[0].bot!=null)profile.bot=!!data[0].bot;
   try{localStorage.setItem(KEY,JSON.stringify(state));localStorage.setItem(KEYP,JSON.stringify(profile));}catch(e){}
@@ -467,9 +490,22 @@ async function migrateLocalToCloudIfNeeded(){
   else{await cloudLoad();}
 }
 
+/* ══ LES 7 INTENTIONS (source : totehm_map.html) ══ */
+const INTS=[
+  {id:'fight',    name:'Fight',    color:'#E24B4A', def:'Conquer yourself through harder effort.'},
+  {id:'flow',     name:'Flow',     color:'#BA7517', def:'Liberate energy through movement.'},
+  {id:'enrich',   name:'Enrich',   color:'#EF9F27', def:'Master your wealth through capital & network.'},
+  {id:'love',     name:'Love',     color:'#639922', def:'Contemplate life through connection & beauty.'},
+  {id:'express',  name:'Express',  color:'#1D9E75', def:'Give form to emotion through creation.'},
+  {id:'focus',    name:'Focus',    color:'#378ADD', def:'Master your mind through deep mental focus.'},
+  {id:'celebrate',name:'Celebrate',color:'#7F77DD', def:'Elevate energy through collective effervescence.'}
+];
+const INT_BY_ID={};INTS.forEach(x=>INT_BY_ID[x.id]=x);
+const intColor=i=>(INT_BY_ID[i]||{}).color||'#fff';
+
 /* ══ RENDER ══ */
 const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;};
-const T_SVG='<img src="assets/img/T.svg" alt="T" onerror="this.onerror=null;this.src=\'https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/T.svg\'">';
+const T_SVG='<svg class="tglyph" viewBox="0 0 100 100" aria-hidden="true"><path fill="currentColor" d="M8 10h84v20H62v62H38V30H8z"/></svg>';
 /* les habits sans Time frequency coulent en bas, juste au-dessus de la ligne d'ajout */
 const fw2=f=>f?fw(f):1e12;
 function sortHabits(){state.habits.sort((a,b)=>fw2(a.f)-fw2(b.f));}
@@ -482,7 +518,7 @@ function renderHabits(){
       +'<button class="h-x" data-i="'+i+'" aria-label="remove">×</button>'
       +'<span class="meta">'
       +(s.f
-        ?'<button class="gbtn h-freq" data-i="'+i+'">'+esc(flabel(s.f))+'</button><button class="h-T h-T-alt" data-i="'+i+'" title="Time frequency">'+T_SVG+'</button>'
+        ?'<button class="h-T h-Ti" data-i="'+i+'" title="Intention" style="color:'+(s.i?intColor(s.i):'#fff')+'">'+T_SVG+'</button><button class="gbtn h-freq" data-i="'+i+'">'+esc(flabel(s.f))+'</button>'
         :'<button class="h-T" data-i="'+i+'" title="Time frequency">'+T_SVG+'</button>')
       +'</span>'
       +'<span class="tick"></span>'
@@ -493,7 +529,7 @@ function renderHabits(){
   h+='<div class="habit add'+(pendingF?' timed':'')+'">'
     +'<span class="meta">'
     +(pendingF
-      ?'<button class="gbtn h-freq" id="h-pf">'+esc(flabel(pendingF))+'</button>'
+      ?'<button class="h-T h-Ti" id="h-Tp" title="Intention" style="color:'+(pendingI?intColor(pendingI):'#fff')+'">'+T_SVG+'</button><button class="gbtn h-freq" id="h-pf">'+esc(flabel(pendingF))+'</button>'
       :'<button class="h-T" id="h-T" title="Time frequency">'+T_SVG+'</button>')
     +'</span>'
     +'<span class="tick"></span>'
@@ -510,18 +546,22 @@ function renderHabits(){
     inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();inp.blur();}});
   });
   box.querySelectorAll('.h-freq[data-i]').forEach(b=>{b.onclick=()=>openFreqPanel(+b.dataset.i);});
-  box.querySelectorAll('.h-T[data-i]').forEach(b=>{b.onclick=()=>openFreqPanel(+b.dataset.i);});
+  box.querySelectorAll('.h-T[data-i]').forEach(b=>{
+    const i=+b.dataset.i;
+    b.onclick=()=>openFreqPanel(i, b.classList.contains('h-Ti')?'int':'freq');
+  });
   box.querySelectorAll('.h-x').forEach(b=>{b.onclick=()=>{state.habits.splice(+b.dataset.i,1);save();renderHabits();};});
-  const hT=$('h-T');if(hT)hT.onclick=()=>openFreqPanel('new');
-  const pf=$('h-pf');if(pf)pf.onclick=()=>openFreqPanel('new');
+  const hT=$('h-T');if(hT)hT.onclick=()=>openFreqPanel('new','freq');
+  const hTp=$('h-Tp');if(hTp)hTp.onclick=()=>openFreqPanel('new','int');
+  const pf=$('h-pf');if(pf)pf.onclick=()=>openFreqPanel('new','freq');
   const add=$('h-add'), hint=$('h-hint');
   autoGrow(add);
   add.addEventListener('input',()=>{autoGrow(add);hint.style.display=add.value?'none':'';});
   add.addEventListener('keydown',e=>{
     if(e.key!=='Enter')return;e.preventDefault();
     const v=add.value.replace(/\n/g,' ').trim();if(!v)return;
-    state.habits.push({t:v,f:pendingF||null});
-    pendingF=null;save();renderHabits();
+    state.habits.push({t:v,f:pendingF||null,i:pendingI||null});
+    pendingF=null;pendingI=null;save();renderHabits();
     const na=$('h-add');if(na)na.focus();
   });
 }
@@ -552,20 +592,61 @@ function paint(){
 
 /* ══ FREQUENCY PANEL ══ */
 const fpOpen=()=>!$('freq-panel').classList.contains('hide');
-function openFreqPanel(target){
+function showFpStage(stage){
+  fpStage=stage;
+  const isInt=stage==='int';
+  $('fp-input').classList.toggle('hide',isInt);
+  $('fp-preview').classList.toggle('hide',isInt);
+  $('fp-list').classList.toggle('hide',isInt);
+  $('fp-ints').classList.toggle('hide',!isInt);
+  $('fp-skip').classList.toggle('hide',!isInt);
+  if(isInt){renderFpInts(currentIntOfTarget());}
+}
+function currentIntOfTarget(){
+  if(fpTarget==='new')return pendingI;
+  return (state.habits[fpTarget]&&state.habits[fpTarget].i)||null;
+}
+function openFreqPanel(target,stage){
   fpTarget=target;$('fp-input').value='';$('fp-preview').textContent='';
   const cur=(target==='new')?pendingF:(state.habits[target]?state.habits[target].f:null);
   renderFpList(cur);
+  showFpStage(stage||'freq');
   $('freq-panel').classList.remove('hide');
-  setTimeout(()=>{try{$('fp-input').focus();}catch(e){}},40);
+  if((stage||'freq')==='freq')setTimeout(()=>{try{$('fp-input').focus();}catch(e){}},40);
 }
-function closeFreqPanel(){$('freq-panel').classList.add('hide');fpTarget=null;}
+function closeFreqPanel(){$('freq-panel').classList.add('hide');fpTarget=null;fpStage='freq';}
 function applyFreq(id){
   if(fpTarget==null||!FREQ_BY_ID[id]){closeFreqPanel();return;}
-  if(fpTarget==='new'){pendingF=id;closeFreqPanel();renderHabits();const na=$('h-add');if(na)na.focus();return;}
+  if(fpTarget==='new'){
+    pendingF=id;
+    if(!pendingI){showFpStage('int');renderHabits();return;}
+    closeFreqPanel();renderHabits();const na=$('h-add');if(na)na.focus();return;
+  }
   if(!state.habits[fpTarget]){closeFreqPanel();return;}
-  state.habits[fpTarget].f=id;save();closeFreqPanel();renderHabits();
+  state.habits[fpTarget].f=id;save();
+  if(!state.habits[fpTarget].i){showFpStage('int');renderHabits();return;}
+  closeFreqPanel();renderHabits();
 }
+/* étape 2 : l'intention colore le T et se pose à côté de la fréquence */
+function applyIntent(id){
+  if(fpTarget==='new'){pendingI=id;closeFreqPanel();renderHabits();const na=$('h-add');if(na)na.focus();return;}
+  if(state.habits[fpTarget]){state.habits[fpTarget].i=id;save();}
+  closeFreqPanel();renderHabits();
+}
+function renderFpInts(currentId){
+  const box=$('fp-ints');box.innerHTML='';
+  INTS.forEach(x=>{
+    const b=document.createElement('button');
+    b.className='fp-int'+(x.id===currentId?' on':'');
+    b.innerHTML='<span class="dot" style="background:'+x.color+'"></span>'
+      +'<span class="nm" style="color:'+x.color+'">'+x.name+'</span>'
+      +'<svg class="higher-inline" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg>'
+      +'<span class="df">'+esc(x.def)+'</span>';
+    b.onclick=()=>applyIntent(x.id);
+    box.appendChild(b);
+  });
+}
+$('fp-skip').onclick=()=>applyIntent(null);
 function renderFpList(currentId){
   const box=$('fp-list');box.innerHTML='';
   FREQS.forEach(f=>{const b=document.createElement('button');b.className='gbtn fp-opt'+(f.id===currentId?' on':'');b.textContent=f.label;b.onclick=()=>applyFreq(f.id);box.appendChild(b);});
@@ -592,7 +673,9 @@ function animateSwap(dy,apply){
 }
 let stonerLoaded=false;
 function showStoner(on){
+  busy=true;setTimeout(()=>{busy=false;},640);
   $('stoner').classList.toggle('show',on);
+  document.body.classList.toggle('liftoff',on);
   if(on){ save(); if(!stonerLoaded){$('stoner-frame').src='stoner_method.html';stonerLoaded=true;} }
 }
 function go(dFloor){
@@ -684,9 +767,9 @@ $('bot-on').onclick=()=>{profile.bot=true;save();renderSettings();};
 /* ══ SEARCH A TOTEHM — le pattern morph d'index.html ══ */
 /* réseau démo pour le mode guest */
 const NETWORK=[
-  {who:'wavywah', vis:'network', habits:[{t:'Get Higher',f:'every_minute'},{t:'Make one beat',f:'daily'},{t:'Finish one track',f:'weekly'}]},
-  {who:'lisboeta', vis:'network', habits:[{t:'Replace the urge with 10 push-ups',f:'several_daily'},{t:'Walk after every meal',f:'daily'}]},
-  {who:'serra', vis:'network', habits:[{t:'Stretch',f:'every_morning'},{t:'Cut sugar',f:'daily'},{t:'Long run',f:'every_sunday'}]}
+  {who:'wavywah', vis:'network', habits:[{t:'Get Higher',f:'every_minute',i:'focus'},{t:'Make one beat',f:'daily',i:'express'},{t:'Finish one track',f:'weekly',i:'express'}]},
+  {who:'lisboeta', vis:'network', habits:[{t:'Replace the urge with 10 push-ups',f:'several_daily',i:'fight'},{t:'Walk after every meal',f:'daily',i:'flow'}]},
+  {who:'serra', vis:'network', habits:[{t:'Stretch',f:'every_morning',i:'flow'},{t:'Cut sugar',f:'daily',i:'fight'},{t:'Long run',f:'every_sunday',i:'fight'}]}
 ];
 /* SEARCH A TOTEHM : Enter -> full-screen read-only (le pattern Decode) */
 async function openTotehmView(q){
@@ -717,7 +800,7 @@ async function openTotehmView(q){
   else{
     [...habits].sort((a,b)=>fw2(a.f)-fw2(b.f)).forEach(h=>{
       const d=document.createElement('div');d.className='r-habit';
-      d.innerHTML='<span class="r-meta">'+(h.f?esc(flabel(h.f)):'')+'</span>'
+      d.innerHTML='<span class="r-meta">'+(h.i?'<span class="h-T" style="color:'+intColor(h.i)+';cursor:default">'+T_SVG+'</span>':'')+(h.f?'<span class="r-fl">'+esc(flabel(h.f))+'</span>':'')+'</span>'
         +'<span class="r-tick"'+(h.f?'':' style="background:#000"')+'></span>'
         +'<span class="r-text">'+esc(h.t)+'</span>';
       list.appendChild(d);
