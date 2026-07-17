@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TOTEHM — Master v22</title>
+<title>TOTEHM — Master v24</title>
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Bebas+Neue&family=Montserrat:ital,wght@1,900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -18,13 +18,13 @@
   /* 7 INTENTIONS */
   --express:#1D9E75;--focus:#378ADD;--fight:#E24B4A;
   --flow:#BA7517;--love:#639922;--celebrate:#7F77DD;--enrich:#EF9F27;
-  /* GRIND — 3 colors of the private network */
-  --grind-objectives:#36498c; /* light blue · OBJECTIVES · the sky · direction / trajectory */
-  --grind-habits:#333366;     /* TOTEHM signature navy (same as --higher-bg) · HABITS · traffic signs */
-  --grind-repulsions:#743169; /* red-violet · REPULSIONS · forbidden / stop signs */
-  /* Slogan grind/love bands */
-  --grind-band-blue:#2d4186;  /* slogan grind — blue band under High */
-  --grind-band-violet:#722f66;/* slogan grind — violet band under er */
+  /* 3 SIGNAL COLORS — Objectives / Habits / Repulsions (slogan states + button interactions) */
+  --grind-objectives:#36498c; /* light blue · OBJECTIVES · the sky · button hover · direction */
+  --grind-habits:#333366;     /* TOTEHM signature navy (same as --higher-bg) · HABITS · traffic signs · button tap */
+  --grind-repulsions:#743169; /* red-violet · REPULSIONS · Back in Time · forbidden / stop signs */
+  /* Slogan bands */
+  --grind-band-blue:#2d4186;  /* slogan — blue band under High */
+  --grind-band-violet:#722f66;/* slogan — violet band under er */
   --love-dot:#639922;         /* slogan love — green dot on the i (EM = aime) */
   /* TYPE SYSTEM */
   --futura-light:'Futura','Jost',sans-serif; /* body texts (regular weight) */
@@ -39,8 +39,9 @@ body{padding:32px;max-width:1200px;margin:0 auto}
       technique-texts + Wahigher's art. Never anywhere else.
    2. Futura Regular (Jost fallback) = ALL other body texts,
       explanations, doctrine, content. Color: light gray #e0e0e0.
-   3. Futura UPPERCASE = ALL buttons (gray #909090, hover lighter).
-      Never a #333366 fill on hover — only a lighter gray.
+   3. Quantico Regular (400) = ALL signature buttons (light gray
+      #b0b0b0 at rest → white text + perforated box on interaction:
+      hover #36498c, click/tap navy #333366). Back in Time = #743169.
    4. Futura Light italic = scientific sources (famous + recent,
       to prove the method is cutting-edge).
    5. Bebas Neue = citations / quotes ONLY (gray nuances).
@@ -147,7 +148,7 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
   <div class="cover-title">TOTEHM</div>
   <div class="cover-tag">DOPE BRANDING. NO SOCIAL MEDIA.</div>
   <div class="cover-meta">
-    <span class="pill pill-coral">Master v22</span>
+    <span class="pill pill-coral">Master v24</span>
     <span class="pill">Founder · WaHigher</span>
     <span class="pill">HQ · Lisbon</span>
     <span class="pill">Frontend · English Only</span>
@@ -167,10 +168,10 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
     1. TOTEHM is a brand · an experience · a method · a club. Never an events app, never a corporate startup, never a generic map.<br>
     2. Frontend = 100% English. Master + Memento = French (brand terms stay English).<br>
     3. <span class="q-bold">Quantico Bold #fbd5ca</span> is EXCLUSIVE to Stoner Method technical texts + logo-element techniques. <strong>Everywhere else, Quantico is regular (weight 400) in coral</strong> — the only other exception is the word <span class="q-bold">Get</span> before the [Higher] slogan. <strong>No letter-spacing on Quantico, ever</strong> (letters stay tight).<br>
-    3b. <strong>THE TOTEHM SIGNATURE BUTTON</strong> (home menu + [Neurological reasons]) : Quantico regular, <strong>light gray <span style="color:#b0b0b0">#b0b0b0</span> at rest → on hover/press the text turns pure white AND a navy <span class="q-bold" style="color:#fff">#333366</span> perforated highlight-box appears behind it</strong> (the Higher-slogan blotter language). Same font/size as discover (14px), no letter-spacing, tight padding.<br>3c. <strong>THE PERFORATED BOX — CORNERS ARE SACRED.</strong> Every perforated box (the Higher slogan AND the button hover-box) has <strong>four clean right-angle corners</strong> : the round perforations sit only along the edges, NEVER on the corners. Implemented with CSS <span class="q-bold" style="color:#fff">border-image</span> + an SVG tile (border-image never repeats or distorts corners), so corner geometry is guaranteed and the perforation count adapts to the text width.<br>
+    3b. <strong>THE TOTEHM SIGNATURE BUTTON</strong> (home menu + [Neurological reasons]) : <strong>Quantico Regular</strong> (weight 400), 14px, no letter-spacing, tight padding. Rest = light gray <span style="color:#b0b0b0">#b0b0b0</span> (or coral for the rare brand-term buttons). <strong>Desktop hover</strong> = perforated box in light blue <span class="q-bold" style="color:#fff">#36498c</span>. <strong>Click / tap (mobile)</strong> = perforated box in navy <span class="q-bold" style="color:#fff">#333366</span>. The text turns pure white on both. <span class="q-bold" style="color:#fff">Back in Time</span> = same format but hover AND click = red-violet <span class="q-bold" style="color:#fff">#743169</span>, no arrow, on every page → returns to the Menu (index.html#menu).<br>3c. <strong>THE PERFORATED BOX — CORNERS ARE SACRED.</strong> Every perforated box (the Higher slogan AND the button hover-box) has <strong>four clean right-angle corners</strong> : the round perforations sit only along the edges, NEVER on the corners. Implemented with CSS <span class="q-bold" style="color:#fff">border-image</span> + an SVG tile (border-image never repeats or distorts corners), so corner geometry is guaranteed and the perforation count adapts to the text width.<br>
     4. <span class="bebas">Bebas Neue</span> is for decorative / secondary / gray-scale writings.<br>
     5. The whole must feel ULTRA dark · ULTRA minimal · single-trait icons · empty-call vibe. The user must feel <strong>peace</strong> on arrival.<br>
-    6. <strong>Dope Branding. No Social Media.</strong> — community lives in the product, the Grind, and Email. Nowhere else.<br>
+    6. <strong>Dope Branding. No Social Media.</strong> — community lives in the product, the Method, and Email. Nowhere else.<br>
     7. <strong>NEGATIVITY IS RAW ENERGY. USE IT.</strong> — founding formula. Never softened.<br>
     8. PAPER (and SUPER PAPER) only. <strong>LEAF is deprecated</strong> and folded into PAPER as the whole experience.<br>
     9. Figher Club (not Fighter) — everywhere, permanently.
@@ -261,12 +262,14 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
         The landing page is a bare, coded menu in the spirit of Supreme's site. Pure surface (Level 1).<br>
         · Top : the <span class="q-bold">Higher</span> perforated slogan (where Supreme puts its box logo).<br>
         · Under it : <span style="font-family:'Quantico',monospace;color:var(--coral)">Your Time&nbsp;&nbsp;Now&nbsp;&nbsp;WRLD</span> (Quantico <em>regular</em> coral, where Supreme puts the date/time/city).<br>
-        · The menu uses the TOTEHM signature button (Quantico regular coral → white + perforated navy box on hover) :<br>
-        &nbsp;&nbsp;— <strong>My Grind</strong> → grind.html (your collection of Trips · create one)<br>
-        &nbsp;&nbsp;— <strong>Have a good Trip — Stoner Way of Life©</strong> → discover.html (put a Trip in motion : the Trip door + CORE manifesto, then Get Higher → the Method)<br>
-        &nbsp;&nbsp;— <strong>Search a Trip</strong> → grind.html?v=search (real inspiration for the grind)<br>
-        &nbsp;&nbsp;— <strong>TOTEHM x Champion 2026</strong> → shop.html (the drop)<br>
+        · The menu uses the TOTEHM signature button (Quantico regular → white + perforated navy box on hover) :<br>
+        &nbsp;&nbsp;— <strong>Create a Totehm Cloth Streetwear</strong> → streetwear.html (the Blind-Drop boutique)<br>
+        &nbsp;&nbsp;— <strong>Totehmize my Hermès / Louis Vuitton / Gucci Cloth</strong> → luxury.html (upcoming)<br>
+        &nbsp;&nbsp;— <strong>Decode a Totehm Cloth</strong> → retrieve a member's written legacy by its unique name (full-screen on Enter)<br>
+        &nbsp;&nbsp;— <strong>Experience our dope branding</strong> → discover.html (the brand door → Get Higher → totehm.space)<br>
+        &nbsp;&nbsp;— <strong>Email for dope news</strong> → the only signal channel<br>
         · A claim block : <em>DOPE BRAND · NO SOCIAL MEDIA · FOR REAL</em>.<br>
+        · City selection lives inside <strong>totehm.html → Select your city</strong> (Lisbon unlocks <em>Make the Lisbon Streets Sublime</em>). The landing is landing only.<br>
         · Footer : <span class="bebas" style="letter-spacing:.12em">TOTEHM© — THINK OPPOSITE</span> (Bebas Neue).
       </div>
     </div>
@@ -513,8 +516,8 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
     <div class="block">
       <div class="bt">What it is</div>
       <div class="bv">
-        A direct extension of Stoner Method©. Rebrands as : <strong>Make the Streets of the World Work for You©</strong>.<br><br>
-        The user clicks a <strong>panel-button</strong> in the city (or its digital twin on the Map). Each panel launches a video tied to a logo element.<br><br>
+        A direct extension of Stoner Method©. Live as <strong>Make The Streets Of Lisbon Sublime For Your Brain©</strong> (<code>play_the_street.html</code>, reached from totehm.html → Select your city → Lisbon).<br><br>
+        The user clicks a <strong>traffic-sign panel-button</strong> in the city (or its digital twin on the Map). Each sign launches a <em>non-revealed</em> Stoner technique video (teaser funnel toward the Method) → Get [Higher] opens <code>stoner.html</code>. Art performance credited to <strong>Wavywah</strong> (wavy.html).<br><br>
         Goal : reactivate the Stoner experience consciously and unconsciously — induce relaxation and mental performance from any street, any sign, any moment.
       </div>
     </div>
@@ -528,151 +531,12 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
 </div>
 
 
-<!-- ═════════════════════════════════════════════════════════
-     06 · THE GRIND
-     ═════════════════════════════════════════════════════════ -->
-<div class="section">
-  <div class="sh"><span class="sn">06</span><span class="st">The Grind</span></div>
-  <div class="sb">
-
-    <div class="block">
-      <div class="bt">Definition — The Grind is a Collection of Trips</div>
-      <div class="bv">
-        The Grind is not a productivity tool. It is the <strong>core identity of every member</strong> inside the private network — a public representation of the life someone has chosen to build. It answers one question : <span class="q-bold">"What is your Grind?"</span><br><br>
-        <strong>The Grind is your collection of Trips.</strong> Each Trip is a meaningful project, ambition or transformation. A Grind can hold one Trip or dozens — <em>Become a Digital Artist · Run a Marathon · Build a Company · Learn Japanese.</em> The Grind is a <strong>map of your life, not a to-do list.</strong><br><br>
-        <em>Grind ≠ tool. Grind = orientation. The Grind is your strategy. Get Higher is how you live it.</em>
-      </div>
-    </div>
-
-    <div class="block" style="border-left:2px solid var(--coral)">
-      <div class="bt">The Trip — Destination · Steps · Fights</div>
-      <div class="bv">
-        A <strong>Trip</strong> is the fundamental building block of a Grind. Every Trip is composed of exactly three elements :<br><br>
-        <span style="color:#5d77c4">📍 <strong>DESTINATION</strong></span> — the final objective, the place you want to reach. Follows SMART (Specific, Measurable, Achievable, Relevant, Time-bound). It gives direction. <em>Without a Destination, there is no Trip.</em><br><br>
-        <span style="color:#7d7db8">👣 <strong>STEPS</strong></span> — the daily habits, small actions repeated consistently. Every Step moves you closer. <em>A Destination without Steps is only a wish.</em><br><br>
-        <span style="color:#b56ba0">⚔️ <strong>FIGHTS</strong></span> — everything that threatens your Steps : distraction, procrastination, fear, addiction, negative environments. <strong>The purpose of Fights is not to fight the Destination — it is to protect the Steps.</strong> If the Steps survive, the Destination will eventually be reached.<br><br>
-        <strong>The philosophy :</strong> Every Trip has a Destination. Every Destination needs Steps. Every Step has Fights. <span class="q-bold">Keep Getting Higher.</span>
-      </div>
-    </div>
-
-    <div class="block">
-      <div class="bt">The Three Semantic Worlds — TOTEHM's Vocabulary</div>
-      <div class="bv">
-        Every word in the brand belongs to one of three complementary worlds :<br><br>
-        <strong>THE HIGH</strong> — <span class="q-bold">Higher · Get Higher · Stoner · High</span>. Elevation, transformation, a higher state of being.<br>
-        <strong>THE JOURNEY</strong> — <span class="q-bold">Grind · Trip · Destination · Steps</span>. Life is a journey composed of meaningful Trips.<br>
-        <strong>THE FIGHT</strong> — <span class="q-bold">Fights · Repulse · Win · Discipline</span>. Every transformation requires resistance. The Fights exist to protect the Steps.<br><br>
-        <strong>Design objective :</strong> the Grind must never feel like a productivity app. It is a <em>personal life map</em>. Members don't manage tasks — they build Trips. They don't check habits — they protect their Steps. They don't chase goals — they travel toward Destinations.
-      </div>
-    </div>
-
-    <div class="block">
-      <div class="bt">Pillars = the three sections inside every Trip (color logic preserved)</div>
-      <div class="bv">The street-brain color code now lives <em>inside</em> each Trip : Destination = light blue (the sky), Steps = navy (the way-finding signs), Fights = red-violet (the stop signs). Same colors, renamed to the journey vocabulary.</div>
-    </div>
-
-    <div class="grid3">
-      <div class="block" style="border-left:2px solid var(--grind-objectives)">
-        <div class="bt" style="color:var(--grind-objectives)">Pillar 1 · DESTINATION (📍 the objective)</div>
-        <div class="bv">
-          <strong style="color:var(--grind-objectives)">#36498c</strong> — light blue.<br>
-          <em>Direction · trajectory · projection.</em><br><br>
-          <strong>Street signal</strong> : <span style="color:var(--grind-objectives)">the sky</span>.<br>
-          The brain reads light blue as :<br>
-          → aim<br>
-          → align<br>
-          → head somewhere<br><br>
-          Where you are going. The horizon. The long-term commitment.
-        </div>
-      </div>
-      <div class="block" style="border-left:2px solid var(--grind-habits)">
-        <div class="bt" style="color:#7a86b3">Pillar 2 · STEPS (👣 the habits)</div>
-        <div class="bv">
-          <strong style="color:#7a86b3">#333366</strong> — TOTEHM signature blue (navy).<br>
-          <em>Repetition · execution · continuity.</em><br><br>
-          <strong>Street signal</strong> : <span style="color:#7a86b3">traffic &amp; way-finding signs</span>.<br>
-          The brain reads navy blue as :<br>
-          → maintain<br>
-          → repeat<br>
-          → keep going<br><br>
-          What you maintain daily — the executable form of OBJECTIVES.
-        </div>
-      </div>
-      <div class="block" style="border-left:2px solid var(--grind-repulsions)">
-        <div class="bt" style="color:var(--grind-repulsions)">Pillar 3 · FIGHTS (⚔️ the repulsions)</div>
-        <div class="bv">
-          <strong style="color:var(--grind-repulsions)">#743169</strong> — red-violet.<br>
-          <em>Protection · elimination · block.</em><br><br>
-          <strong>Street signal</strong> : <span style="color:var(--grind-repulsions)">forbidden / stop signs</span>.<br>
-          The brain reads red-violet as :<br>
-          → stop<br>
-          → cut<br>
-          → reject<br><br>
-          What you eliminate — the parasites that sabotage OBJECTIVES.
-        </div>
-      </div>
-    </div>
-
-    <div class="block" style="border-left:2px solid var(--higher-bg)">
-      <div class="bt">7 Intentions vs 3 Grind Colors — Two Distinct Systems</div>
-      <div class="bv">
-        <strong>The 7 Intentions</strong> → mental states · perception · mode<br>
-        <strong>The 3 Grind Colors</strong> → action · direction · behavior<br><br>
-        Two distinct systems. They coexist in the city and on the Map. Intentions reorganize the world. Grind reorganizes the user.
-      </div>
-    </div>
-
-    <div class="block" style="border-left:2px solid var(--express)">
-      <div class="bt">Why These Three Colors — The Street-Brain Logic</div>
-      <div class="bv">
-        TOTEHM does not invent a code. It <strong style="color:var(--coral)">reveals a code already present</strong> in every city on Earth.<br><br>
-        · The <strong style="color:var(--grind-objectives)">sky</strong> has always told the brain : aim, project, align. → <strong style="color:var(--grind-objectives)">OBJECTIVES</strong><br>
-        · The <strong style="color:#7a86b3">traffic signs</strong> have always told the brain : follow, maintain, execute. → <strong style="color:#7a86b3">HABITS</strong><br>
-        · The <strong style="color:var(--grind-repulsions)">forbidden signs</strong> have always told the brain : stop, cut, reject. → <strong style="color:var(--grind-repulsions)">REPULSIONS</strong><br><br>
-        The pedestrian already executes HABITS when following a navy sign. Already aims at OBJECTIVES when watching the horizon. Already feels REPULSIONS in front of red-violet interdictions. <em>The Grind is what the brain already does — named.</em>
-      </div>
-    </div>
-
-    <div class="block" style="border-left:2px solid var(--express)">
-      <div class="bt">Perception Shift — After Activation</div>
-      <div class="bv">
-        After activation, the user no longer sees a city. They see <strong style="color:var(--coral)">instructions</strong>.<br><br>
-        · A street → a set of <strong style="color:var(--coral)">INSTRUCTIONS</strong><br>
-        · A signal → a felt <strong style="color:var(--coral)">TRIGGER</strong><br>
-        · A red-violet sign → a permanent <strong style="color:var(--grind-repulsions)">REPULSION</strong><br>
-        · A navy panel → an executed <strong style="color:#7a86b3">HABIT</strong><br>
-        · The horizon → an alive <strong style="color:var(--grind-objectives)">OBJECTIVE</strong><br><br>
-        The street reinforces the Grind permanently. The real reinforces the heading.
-      </div>
-    </div>
-
-    <div class="block" style="border-left:2px solid var(--coral)">
-      <div class="bt">Navigation — You Navigate INSIDE the Logo (grind.html, built)</div>
-      <div class="bv">
-        The Grind is not a page, it is the inside of the TOTEHM logo. A <strong>triplet</strong> is one life-strategy : one OBJECTIVE, the HABITS that reach it, the REPULSIONS that protect those habits. <em>The Grind is a life strategy made of life strategies.</em><br><br>
-        · <strong>Entry</strong> — email magic link (no password, email-only DNA) → claim one permanent underground pseudo. Verified members get a ✓ badge (granted by Wah, later tied to the NFT).<br>
-        · <strong>The column = the triplet.</strong> You always land on the OBJECTIVE (full-screen light-blue #36498c). Swipe down to descend into it : HABITS (navy #333366) → REPULSIONS (red-violet #743169). Gravity holds the triplet together — habits and repulsions live <em>under</em> their objective.<br>
-        · <strong>Unlimited triplets</strong> (the 6-letter T-O-T-E-H-M slot system is dropped). Swipe horizontally like turning a book page ; past the last triplet, a new one is created. Delete a triplet at the bottom of its descent.<br>
-        · <strong>All user text is pure-white Quantico Bold</strong> on the pillar color — full continuity with the Stoner Method.<br>
-        · <strong>Top-left HUD</strong> : current triplet / total (e.g. 02 / 05). Auto-save on every edit.<br>
-        · <strong>Privacy per triplet</strong> : two buttons, <span class="q-bold">Private</span> (default) and <span class="q-bold">Visible to Figher Club</span>.<br>
-        · <strong>Search (top floor)</strong> : three colored boxes — Objective (blue) · Habit (navy) · Repulsion (red-violet). Search a category ; results are the matching triplets of members set to "Visible to Figher Club". <strong>Interaction = copy a triplet into your own Grind</strong> (resonance, not likes).
-      </div>
-    </div>
-
-    <div class="alert blue">
-      <strong>No Social Media. Ever.</strong> No likes, no feeds, no comparison engines. The Grind is read, lived, walked — never scrolled.
-    </div>
-
-  </div>
-</div>
-
 
 <!-- ═════════════════════════════════════════════════════════
-     07 · LISBON — THE FIRST GROUND
+     06 · LISBON — THE FIRST GROUND
      ═════════════════════════════════════════════════════════ -->
 <div class="section">
-  <div class="sh"><span class="sn">07</span><span class="st">Lisbon — The First Ground</span></div>
+  <div class="sh"><span class="sn">06</span><span class="st">Lisbon — The First Ground</span></div>
   <div class="sb">
 
     <div class="block">
@@ -682,26 +546,15 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
       </div>
     </div>
 
-    <div class="grid2">
-      <div class="block" style="border-left:2px solid var(--love)">
-        <div class="bt">Free Tier — Public Map</div>
-        <div class="bv">
-          · The TOTEHM Map exposed publicly<br>
-          · 7 categories matching the 7 Intentions<br>
-          · Powered by RSS — <strong>From the Web</strong> (Ghost Factory)<br>
-          · Free of access · No login required<br>
-          · The mystery hook : "you've seen Lisbon. Now feel it."
-        </div>
-      </div>
-      <div class="block" style="border-left:2px solid var(--fight)">
-        <div class="bt">Higher Club — Private Tier</div>
-        <div class="bv">
-          · Private spots curated globally (the 7 Intentions)<br>
-          · Shared facilities &amp; infrastructures<br>
-          · Member-only Grind access<br>
-          · Mentor / vibe matching<br>
-          · Signal-grade events
-        </div>
+    <div class="block" style="border-left:2px solid var(--love)">
+      <div class="bt">The Map — Public, RSS-fed</div>
+      <div class="bv">
+        · The TOTEHM Map exposed publicly<br>
+        · 7 categories matching the 7 Intentions<br>
+        · Powered by RSS — <strong>From the Web</strong> (Ghost Factory)<br>
+        · Free of access · No login required<br>
+        · The mystery hook : "you've seen Lisbon. Now feel it."<br>
+        · <em>A private/community layer (Figher Club) is deferred — see §15 Phase 2.</em>
       </div>
     </div>
 
@@ -730,42 +583,35 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
 
 
 <!-- ═════════════════════════════════════════════════════════
-     08 · MONETIZATION
+     07 · MONETIZATION
      ═════════════════════════════════════════════════════════ -->
 <div class="section">
-  <div class="sh"><span class="sn">08</span><span class="st">Monetization</span></div>
+  <div class="sh"><span class="sn">07</span><span class="st">Monetization</span></div>
   <div class="sb">
 
     <div class="grid3">
       <div class="block" style="border-top:2px solid var(--coral)">
-        <div class="bt">NFT — Entry Ticket</div>
+        <div class="bt">NFT — Stoner Method Key</div>
         <div class="bv">
-          The user enters TOTEHM by buying the <strong>NFT</strong> — an investment in the brand.<br><br>
-          The NFT unlocks :<br>
-          · Boutique access<br>
-          · Higher Club subscription rights<br>
-          · Future drops &amp; airdrops<br><br>
+          The NFT is <strong>not</strong> a whole-brand entry ticket. It <strong>unlocks the deep Stoner Method</strong> : free up to &amp; including <strong>step 6 of "the action"</strong> ; steps 7+ unlock by holding the Totehm NFT.<br><br>
+          Bought with a <strong>bank card via thirdweb</strong> (fiat checkout → mint) — no wallet friction, no crypto knowledge required.<br><br>
           <strong>7% royalties</strong> on every secondary sale.
         </div>
       </div>
       <div class="block" style="border-top:2px solid var(--fight)">
-        <div class="bt">Higher Club — Monthly Sub</div>
+        <div class="bt">Gating — server-side (critical)</div>
         <div class="bv">
-          NFT holders can subscribe to Higher Club :<br>
-          · Private network access<br>
-          · Member facilities (global)<br>
-          · Curated 7-Intention spots<br>
-          · Mentor / vibe matching<br><br>
-          Recurring · cancel anytime · raised pricing for non-NFT entrants.
+          Gating MUST be server-side. Gated videos live in a <strong>private bucket</strong>; a Supabase <strong>Edge Function</strong> verifies NFT ownership (wallet signature + on-chain balance check on the collection contract via a free RPC) and returns short-lived <strong>signed URLs</strong>.<br><br>
+          Never put gated URLs in client code — client-side gating is trivially bypassed.
         </div>
       </div>
       <div class="block" style="border-top:2px solid var(--flow)">
-        <div class="bt">Boutique — PAPER · SUPER PAPER</div>
+        <div class="bt">Boutique — Blind Drop (Stripe)</div>
         <div class="bv">
-          The dopest branding alive.<br><br>
-          · <strong>PAPER</strong> — core merch line<br>
+          The Totehm Cloth boutique runs on <strong>Stripe</strong>, not the NFT.<br><br>
+          · <strong>PAPER</strong> — core line<br>
           · <strong>SUPER PAPER</strong> — limited drops · Supreme-tier scarcity<br><br>
-          The shop is reserved for NFT holders — protected scarcity by design.
+          Flow: Totehmize → Encode → Engrave 0.Name → size → Order. Made-to-order, artist-validated.
         </div>
       </div>
     </div>
@@ -774,7 +620,7 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
       <div class="bt">Communication Channel</div>
       <div class="bv">
         <strong>Email only.</strong> No Instagram. No TikTok. No Twitter. No newsletter widgets.<br>
-        One signal per drop. One signal per Higher Club update. Inbox = the only inbox that matters.
+        One signal per drop. Inbox = the only inbox that matters. In-product, <strong>HigherSelf</strong> (Telegram coach) carries the ongoing relationship.
       </div>
     </div>
 
@@ -787,10 +633,10 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
 
 
 <!-- ═════════════════════════════════════════════════════════
-     09 · STYLE SYSTEM
+     08 · STYLE SYSTEM
      ═════════════════════════════════════════════════════════ -->
 <div class="section">
-  <div class="sh"><span class="sn">09</span><span class="st">Style System</span></div>
+  <div class="sh"><span class="sn">08</span><span class="st">Style System</span></div>
   <div class="sb">
 
     <table>
@@ -798,7 +644,7 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
       <tr><td>Background</td><td>Pure black <span class="mono">#000000</span> · ultra dark · empty-call vibe</td></tr>
       <tr><td>Brand color</td><td><span class="q-bold">#fbd5ca</span> — <strong>EXCLUSIVE</strong> to Stoner Method technique-texts &amp; Wahigher's art (Quantico Bold)</td></tr>
       <tr><td>Body type</td><td>Futura Regular (Jost fallback) · all explanations &amp; content · light gray <span class="mono">#e0e0e0</span></td></tr>
-      <tr><td>Buttons</td><td>Futura UPPERCASE · gray <span class="mono">#909090</span> · hover = lighter gray (never white, never #333366 fill)</td></tr>
+      <tr><td>Buttons</td><td>Quantico Regular (400) · light gray <span class="mono">#b0b0b0</span> at rest → white text + perforated box on interaction (hover <span class="mono">#36498c</span>, click/tap navy <span class="mono">#333366</span>) · sacred right-angle corners via border-image SVG tile · Back in Time = red-violet <span class="mono">#743169</span></td></tr>
       <tr><td>Sources</td><td>Futura Light italic · famous + recent refs · proves the method is cutting-edge</td></tr>
       <tr><td>Citations</td><td>Bebas Neue · quotes only · gray nuances</td></tr>
       <tr><td>Slogan asset</td><td>Montserrat 900 italic · the only pure WHITE · outlined perforated badge</td></tr>
@@ -838,7 +684,7 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
     </div>
 
     <div class="alert green" style="margin-top:14px">
-      <strong>Test before shipping any screen :</strong> can you remove 50% of the text? If yes, do it. The user must <em>feel</em> before they understand. Understanding belongs to the bot, the email, the mentor.
+      <strong>Test before shipping any screen :</strong> can you remove 50% of the text? If yes, do it. The user must <em>feel</em> before they understand. Understanding belongs to the bot, the email, HigherSelf.
     </div>
 
     <div class="block" style="margin-top:14px;border-left:2px solid var(--coral)">
@@ -887,19 +733,19 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
 
 
 <!-- ═════════════════════════════════════════════════════════
-     10 · TECH STACK
+     09 · TECH STACK
      ═════════════════════════════════════════════════════════ -->
 <div class="section">
-  <div class="sh"><span class="sn">10</span><span class="st">Tech Stack</span></div>
+  <div class="sh"><span class="sn">09</span><span class="st">Tech Stack</span></div>
   <div class="sb">
     <table>
       <tr><th>Layer</th><th>Tool</th><th>Role</th></tr>
       <tr><td>Frontend</td><td>HTML / CSS / Vanilla JS</td><td>Static, fast, no framework lock-in</td></tr>
       <tr><td>Backend</td><td>Supabase</td><td>Auth · DB · RLS · Realtime · Edge Functions</td></tr>
       <tr><td>Media</td><td>Cloudinary</td><td>Logo videos · overlays · adaptive delivery</td></tr>
-      <tr><td>Payments</td><td>Stripe</td><td>NFT mint relay · Higher Club subscription · Boutique</td></tr>
+      <tr><td>Payments</td><td>Stripe + thirdweb</td><td>Stripe = Boutique (Blind Drop) · thirdweb = NFT fiat mint (Stoner gating)</td></tr>
       <tr><td>NFT</td><td>EVM (TBD)</td><td>Entry ticket · 7% royalties on secondary</td></tr>
-      <tr><td>Email</td><td>Resend / Postmark</td><td>The only outbound channel — drops, Higher Club, signals</td></tr>
+      <tr><td>Email</td><td>Resend / Postmark</td><td>The only outbound channel — drops &amp; signals (+ Supabase email-code login)</td></tr>
       <tr><td>Repo</td><td>GitHub</td><td>Source of truth · branch-per-feature · merge to main = deploy</td></tr>
       <tr><td>RSS Engine</td><td>Ghost Factory</td><td>Free Map population — From the Web</td></tr>
     </table>
@@ -908,44 +754,63 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
 
 
 <!-- ═════════════════════════════════════════════════════════
-     11 · PAGES MVP
+     10 · PAGES MVP
      ═════════════════════════════════════════════════════════ -->
 <div class="section">
-  <div class="sh"><span class="sn">11</span><span class="st">Pages MVP</span></div>
+  <div class="sh"><span class="sn">10</span><span class="st">Pages MVP</span></div>
   <div class="sb">
     <table>
       <tr><th>#</th><th>Page</th><th>Purpose</th><th>Access</th></tr>
-      <tr><td>01</td><td>Home = Stoner</td><td>The Stoner Method IS the home. Step 0 (Wassup? mirror) → 10 steps · logo-videos + technique-text + neuro accordion + slogan. Ends on [Higher] performance + La boutique + By Wã.</td><td>Public · NFT for full</td></tr>
-      <tr><td>03</td><td>Play the Street</td><td>Panel-button triggers · digital twin of city</td><td>Public preview · NFT for active</td></tr>
-      <tr><td>04</td><td>Map · Free</td><td>Lisbon · 7 Intentions · RSS-fed</td><td>Public</td></tr>
-      <tr><td>05</td><td>Map · Higher Club</td><td>Private spots · global · facilities</td><td>NFT + Higher Club sub</td></tr>
-      <tr><td>06</td><td>Grind</td><td>3 written pillars · no feed</td><td>NFT</td></tr>
-      <tr><td>07</td><td>La boutique Higher</td><td>Ultra-minimal · garments scroll ONE by ONE · permanent collab line (e.g. "TOTEHM x Champion — 2026", Quantico normal) · per item: units left + invite to drop part of your TOTEHM Grind</td><td>NFT</td></tr>
-      <tr><td>08</td><td>NFT Mint</td><td>Brand entry · investment</td><td>Public</td></tr>
-      <tr><td>09</td><td>Email Capture</td><td>The only signal channel</td><td>Public</td></tr>
+      <tr><td>01</td><td>index.html (higher.boutique)</td><td>Boutique menu · streetwear + luxury + Decode + Experience dope branding + Email</td><td>Public</td></tr>
+      <tr><td>02</td><td>stoner_method.html</td><td>The Stoner Method. Step 0 (Wassup? mirror) → 10 steps · logo-videos + technique-text + neuro accordion + slogan. Ends on [Higher] performance + La boutique + By Wã.</td><td>Free to step 6 · NFT (thirdweb) for 7+</td></tr>
+      <tr><td>03</td><td>totehm.html (My TOTEHM)</td><td>Live inside the logo · temporal &amp; intentional Habits · Select your city · embeds the Method (iframe)</td><td>Guest / member</td></tr>
+      <tr><td>04</td><td>play_the_street.html</td><td>Lisbon panel-button triggers · teaser funnel to the Method NFT</td><td>Public preview</td></tr>
+      <tr><td>05</td><td>streetwear.html</td><td>Blind Drop boutique · Totehmize → Encode → Engrave 0.Name → size → Order · luxury.html upcoming</td><td>Member · Stripe</td></tr>
+      <tr><td>06</td><td>higherself.html</td><td>Telegram Mini App · 7 Intentions + Voice Identity (no mentors) · Habit pushes + City matches</td><td>Member (email-code)</td></tr>
+      <tr><td>07</td><td>discover.html</td><td>Brand door → Get [Higher] → totehm.space</td><td>Public</td></tr>
+      <tr><td>08</td><td>space/index.html (totehm.space)</td><td>Experimental branding · Get [Higher] + My [logo]</td><td>Public</td></tr>
     </table>
+
+    <div class="block" style="margin-top:14px;border-left:2px solid var(--focus)">
+      <div class="bt">File Routing — as built (repo gvllrd/totehm)</div>
+      <table>
+        <tr><th>File</th><th>Domain / root</th><th>Links out to</th></tr>
+        <tr><td>index.html</td><td>higher.boutique</td><td>streetwear.html · luxury.html · discover.html · Decode · Email</td></tr>
+        <tr><td>streetwear.html</td><td>higher.boutique</td><td>index.html#menu (Back in Time)</td></tr>
+        <tr><td>luxury.html</td><td>higher.boutique</td><td>upcoming (Hermès / LV / Gucci)</td></tr>
+        <tr><td>discover.html</td><td>higher.boutique</td><td>Get [Higher] → https://totehm.space</td></tr>
+        <tr><td>totehm.html</td><td>higher.boutique</td><td>stoner.html (iframe) · play_the_street.html · index.html#menu</td></tr>
+        <tr><td>stoner.html</td><td>higher.boutique</td><td>totehm.html · shop.html · index.html#menu</td></tr>
+        <tr><td>play_the_street.html</td><td>higher.boutique</td><td>stoner.html · wavy.html</td></tr>
+        <tr><td>higherself.html</td><td>Telegram Mini App</td><td>Supabase (no page nav)</td></tr>
+        <tr><td>space/index.html</td><td>totehm.space</td><td>Get [Higher] · My [logo] → higher.boutique/totehm.html</td></tr>
+      </table>
+      <div class="bv" style="margin-top:10px">
+        <strong style="color:var(--coral)">Pending pages (referenced, not yet created):</strong> <code>wavy.html</code> (Wavywah artist page, from play_the_street), <code>luxury.html</code> (Hermès / LV / Gucci flow, from index), <code>shop.html</code> (from stoner). The dead <code>grind.html</code> link in play_the_street has been repointed to <code>totehm.html</code> ("Create your Totehm").
+      </div>
+    </div>
   </div>
 </div>
 
 
 <!-- ═════════════════════════════════════════════════════════
-     12 · BUILD ORDER (14 days)
+     11 · BUILD ORDER (14 days)
      ═════════════════════════════════════════════════════════ -->
 <div class="section">
-  <div class="sh"><span class="sn">12</span><span class="st">Build Order — 14 Days</span></div>
+  <div class="sh"><span class="sn">11</span><span class="st">Build Order — 14 Days</span></div>
   <div class="sb">
     <table>
       <tr><th>Day</th><th>Brick</th><th>Output</th></tr>
-      <tr><td>1–2</td><td>Repo + Supabase schema + Auth</td><td>GitHub repo · DB ready · login flow</td></tr>
-      <tr><td>3–4</td><td>Home page · storytelling · [Higher] button</td><td>Live URL · video overlay system wired</td></tr>
-      <tr><td>5–6</td><td>Stoner Method screens · logo-element overlays</td><td>Cloudinary integrated · sequence playable</td></tr>
-      <tr><td>7</td><td>NFT mint flow + Stripe relay</td><td>Buy → unlock boutique flag</td></tr>
-      <tr><td>8–9</td><td>Map · Free tier · RSS Ghost Factory</td><td>Lisbon spots populated by 7 categories</td></tr>
-      <tr><td>10</td><td>Higher Club private map + sub flow</td><td>NFT-gated private layer</td></tr>
-      <tr><td>11</td><td>Grind page · 3 pillars</td><td>Static read · zero feed</td></tr>
-      <tr><td>12</td><td>Boutique skeleton · PAPER drop</td><td>One product live · NFT-gated checkout</td></tr>
-      <tr><td>13</td><td>Email capture + first signal sequence</td><td>Resend/Postmark wired</td></tr>
-      <tr><td>14</td><td>QA · brand compliance pass · launch sweep</td><td>All-screen sweep with the rules above</td></tr>
+      <tr><td>1–2</td><td>Repo + Vercel (2 projects) + Supabase schema + email-code Auth</td><td>Two domains live · DB ready · passwordless login</td></tr>
+      <tr><td>3–4</td><td>index.html menu + discover.html + totehm.space landing</td><td>Boutique menu + brand door wired</td></tr>
+      <tr><td>5–6</td><td>stoner.html · logo-element overlays</td><td>Cloudinary integrated · sequence playable to step 6</td></tr>
+      <tr><td>7</td><td>NFT gating (thirdweb fiat mint) + Edge Function signed URLs</td><td>Steps 7+ unlock server-side</td></tr>
+      <tr><td>8–9</td><td>totehm.html · Habits · Select your city · Method iframe</td><td>My TOTEHM live · guest→cloud migration</td></tr>
+      <tr><td>10</td><td>play_the_street.html · Lisbon signs</td><td>Teaser funnel to the Method</td></tr>
+      <tr><td>11</td><td>streetwear.html Blind Drop + Stripe Checkout</td><td>Order → paid → pipeline</td></tr>
+      <tr><td>12</td><td>higherself.html Telegram Mini App + coach pipeline</td><td>Habit pushes + City matches</td></tr>
+      <tr><td>13</td><td>Email capture + first signal sequence</td><td>Resend wired</td></tr>
+      <tr><td>14</td><td>QA · brand compliance pass · dead-link sweep</td><td>All-screen sweep with the rules above</td></tr>
     </table>
     <div class="alert green" style="margin-top:14px">
       <strong>Filter test for every brick :</strong> does this serve the core MVP in 14 days? If not → Phase 2.
@@ -955,10 +820,10 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
 
 
 <!-- ═════════════════════════════════════════════════════════
-     13 · GO-TO-MARKET (Lisbon)
+     12 · GO-TO-MARKET (Lisbon)
      ═════════════════════════════════════════════════════════ -->
 <div class="section">
-  <div class="sh"><span class="sn">13</span><span class="st">Go-to-Market — Lisbon</span></div>
+  <div class="sh"><span class="sn">12</span><span class="st">Go-to-Market — Lisbon</span></div>
   <div class="sb">
     <div class="grid2">
       <div class="block">
@@ -992,10 +857,10 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
 
 
 <!-- ═════════════════════════════════════════════════════════
-     14 · MULTI-AI OPERATING SYSTEM
+     13 · MULTI-AI OPERATING SYSTEM
      ═════════════════════════════════════════════════════════ -->
 <div class="section">
-  <div class="sh"><span class="sn">14</span><span class="st">Multi-AI Operating System</span></div>
+  <div class="sh"><span class="sn">13</span><span class="st">Multi-AI Operating System</span></div>
   <div class="sb">
     <div class="block">
       <div class="bt">Source of Truth</div>
@@ -1019,10 +884,10 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
 
 
 <!-- ═════════════════════════════════════════════════════════
-     15 · OUTPUT VOICE — FIGHER
+     14 · OUTPUT VOICE — FIGHER
      ═════════════════════════════════════════════════════════ -->
 <div class="section">
-  <div class="sh"><span class="sn">15</span><span class="st">Output Voice — Figher</span></div>
+  <div class="sh"><span class="sn">14</span><span class="st">Output Voice — Figher</span></div>
   <div class="sb">
     <div class="grid2">
       <div class="block">
@@ -1046,7 +911,7 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
     <div class="block">
       <div class="bt">Brand Vocabulary (English · sealed)</div>
       <div class="bv">
-        Higher · Get Higher · Figher Club · Grind · Intentions · Map · Spot · Stoner Method · Play the Street · Make the Streets of the World Work for You · BRAIN · NEUROCHEMISTRY · CEREBRAL WAVES · FRICTION · REPULSIONS · OBJECTIVES · HABITS · FIELD · SIGNALS · STREET NEURO ART · USEFUL BRAND · DOPE LOGO · DOPE SLOGAN · DOPE BRANDING · NO SOCIAL MEDIA · NEGATIVITY IS RAW ENERGY · SUPPORTED BY NEUROSCIENCES &amp; EEG.
+        Higher · Get Higher · Figher Club · Totehm · Totehm Cloth · Totehmize · Encode · Decode · Habits · Intentions · Map · Spot · Stoner Method · Play the Street · Make The Streets Of Lisbon Sublime For Your Brain · HigherSelf · BRAIN · NEUROCHEMISTRY · CEREBRAL WAVES · FRICTION · REPULSIONS · OBJECTIVES · FIELD · SIGNALS · STREET NEURO ART · USEFUL BRAND · DOPE LOGO · DOPE SLOGAN · DOPE BRANDING · NO SOCIAL MEDIA · NEGATIVITY IS RAW ENERGY · SUPPORTED BY NEUROSCIENCES &amp; EEG.
       </div>
     </div>
   </div>
@@ -1054,18 +919,19 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
 
 
 <!-- ═════════════════════════════════════════════════════════
-     16 · PHASE 2 — DEFERRED
+     15 · PHASE 2 — DEFERRED
      ═════════════════════════════════════════════════════════ -->
 <div class="section">
-  <div class="sh"><span class="sn">16</span><span class="st">Phase 2 — Deferred</span></div>
+  <div class="sh"><span class="sn">15</span><span class="st">Phase 2 — Deferred</span></div>
   <div class="sb">
     <div class="grid2">
       <div class="block" style="border-left:2px solid var(--celebrate)">
         <div class="bt">Deferred</div>
         <div class="bv">
+          · <strong>Figher Club</strong> — the community layer, a paid extension of the TOTEHM social network on <strong>totehm.space</strong>: shared facilities &amp; infrastructures, private spots curated by the 7 Intentions, member vibe-matching, signal-grade events. Monetizes a community once it exists — not a day-one cash path.<br>
           · Multi-language frontend<br>
           · Full Telegram mini-app (5 screens)<br>
-          · Full AI mentor system<br>
+          · Voice Identity maturation (style analysis deepens as habits accumulate)<br>
           · YouTube (Spotify first if any)<br>
           · International cities beyond Lisbon
         </div>
@@ -1085,19 +951,19 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
 
 
 <!-- ═════════════════════════════════════════════════════════
-     17 · SYSTEM STATE — JULY 2026 (SUPERSEDES CONTRADICTED DOCTRINE)
+     16 · SYSTEM STATE — JULY 2026 (WHAT IS LIVE)
      ═════════════════════════════════════════════════════════ -->
 <div class="section">
-  <div class="sh"><span class="sn">17</span><span class="st">System State — July 2026</span></div>
+  <div class="sh"><span class="sn">16</span><span class="st">System State — July 2026</span></div>
   <div class="sb">
 
     <div class="block" style="border-left:2px solid var(--focus)">
-      <div class="bt">My TOTEHM — the product (totehm.html, replaces The Grind)</div>
+      <div class="bt">My TOTEHM — the product (totehm.html)</div>
       <div class="bv">
-        The user lives <strong>inside the logo</strong>: navy #333366, the stamp stripe is the ladder rail, T.png top, TOTEHM.png bottom.<br>
+        The user lives <strong>inside the logo</strong>: navy #333366, the stamp stripe is the ladder rail, T.png top, TOTEHM.png bottom. Tagline OWN/YOUR/TIME · NOW:WON · WRLD (LSB in Lisbon).<br>
+        Top-right <strong>Get [Higher]</strong> → liftoff animation (Higher badge rises) → Stoner Method descends (stoner.html iframe); My TOTEHM inside the method sends postMessage → descent back, state preserved. Bottom-right <strong>Real inspiration</strong> (Search a member's Totehm). Bottom-left <strong>member space</strong> (Guest dot → email-code login).<br>
         A Totehm collects <strong>temporal &amp; intentional Habits</strong>: each Habit gets a <strong>Time frequency</strong> (T pressed → 29-option multilingual ladder, from every minute to every 10 years, randomly, sometimes) then an <strong>Intention</strong> (the 7 of the Map). The T glyph takes the intention color and sits next to the frequency. Tick stays black until timed.<br>
-        Swipe up → <strong>liftoff animation</strong> (Higher badge rises) → Stoner Method descends (iframe). My TOTEHM inside the method sends postMessage → descent back, state preserved.<br>
-        Swipe down → settings drawers: My TOTEHM setting (Name rename w/ live availability check — <strong>name is renamable, Instagram-style; "permanent pseudo" doctrine is amended</strong> — + Visibility radios), Sync with the City, Search a TOTEHM (Enter → full-screen read-only viewer of a member's Totehm).
+        Swipe down → settings drawers: My TOTEHM setting (Name rename w/ live availability check — <strong>name is renamable, Instagram-style</strong> — + Visibility radios), <strong>Select your city</strong> (Lisbon → <em>Make the Lisbon Streets Sublime</em> → play_the_street.html + City feed of events matching your Habits by time, frequency &amp; intention), Search a TOTEHM (Enter → full-screen read-only viewer of a member's Totehm).
       </div>
     </div>
 
@@ -1122,17 +988,19 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
     <div class="block" style="border-left:2px solid var(--celebrate)">
       <div class="bt">HigherSelf — the Telegram coach (higherself.html Mini App)</div>
       <div class="bv">
-        Mini App: same email-code login inside Telegram webview → captures telegram_id into profiles → intention selector (7, Map colors, Higher slogan badge, official one-line definitions) → per-intention <strong>mentor-vibe</strong> (defaults: Fight·Goggins, Flow·Watts, Enrich·Naval, Love·Perel, Express·Abloh, Focus·Jobs, Celebrate·Bourdain; free text) saved to higherself_prefs(user_id,intention,mentors jsonb) → user's Habits listed most-frequent-first.<br>
+        Mini App: same email-code login inside Telegram webview → captures telegram_id into profiles → the 7 Intentions (Map colors, Higher slogan badge, official one-line definitions) → user's Habits listed most-frequent-first. <strong>No mentors, no manual configuration.</strong><br>
+        <strong>Voice Identity (doctrine):</strong> TOTEHM never speaks like a celebrity. <em>You are what you repeatedly do</em> — the user's own vocabulary, verbs, style and energy (via embeddings, intentions, Time Frequencies) shape the tone of every push. TOTEHM never tells the user who to become; it mirrors, progressively, the Higher Self they are already building. The voice evolves as the Habits evolve.<br>
+        <strong>Matching engine (doctrine):</strong> city events arrive by RSS (Ghost Factory) and are enriched <strong>once</strong> by OpenAI — embedding + main intention + tags + summary stored in Supabase; never re-called. Each Habit line (Time Frequency ×33 · Intention ×7 · free text) is embedded on create/edit only, stored permanently. Recommendations are computed <strong>exclusively in Supabase Edge Functions</strong>: semantic proximity (habit ↔ event embeddings) + intention + time frequency + user location + temporal context. <strong>Zero OpenAI calls at notification time</strong> — OpenAI enriches, Edge Functions think.<br>
         Data spine ready: bot_knowledge (+ sync-knowledge edge fn), bot_memory(user/coach turns), rss_sources(region) = Ghost Factory.<br>
-        <strong>n8n coach pipeline (to build):</strong> cron → users where trips.bot=true &amp; profiles.telegram_id → load habits by weight + prefs.vibe + last N bot_memory turns + (Lisbon) RSS items scored against habit keywords/intention → LLM writes one push in the mentor's tone proposing the highest-weight habit + one City match → sendMessage via Bot API → log to bot_memory. Memory keeps the flow relevant; never repeat the last suggestion.
+        <strong>n8n coach pipeline (to build):</strong> cron → users where trips.bot=true &amp; profiles.telegram_id → load habits by weight + last N bot_memory turns + pre-scored City matches (Edge Function: embeddings + intention + frequency + location + time) → the push is written in the user's <strong>Voice Identity</strong> — the tone of their own habit language — proposing the highest-weight habit + one City match → sendMessage via Bot API → log to bot_memory. Memory keeps the flow relevant; never repeat the last suggestion.
       </div>
     </div>
 
     <div class="block" style="border-left:2px solid var(--fight)">
       <div class="bt">Navigation &amp; brand rules locked this cycle</div>
       <div class="bv">
-        Back in Time everywhere → <strong>index.html#menu</strong> (deep-link restores Lisbon/Intl menu, city remembered; landing is landing only).<br>
-        TOTEHM wordmark in buttons = Montserrat 600 in a <strong>plain navy box</strong> (no perforation, minimal padding). Back in Time = plain <strong>rep-red box</strong> on hover, no perforation. Perforated hover fill = navy #333366 (light blue retired). totehm.html page borders carry <strong>no</strong> perforation — the frame lives on the wordmark, not the page.<br>
+        Back in Time everywhere → <strong>index.html#menu</strong> (landing is landing only; city is chosen in totehm.html, not on the landing).<br>
+        Signature buttons = <strong>Quantico Regular</strong>, perforated box on interaction: hover <strong>#36498c</strong>, click/tap navy <strong>#333366</strong>, sacred right-angle corners (border-image SVG tile). TOTEHM wordmark in buttons = Montserrat 600 in a plain navy box. Back in Time = red-violet <strong>#743169</strong>, no arrow. totehm.html page borders carry <strong>no</strong> perforation — the frame lives on the wordmark, not the page.<br>
         bfcache hardened via pageshow on index/totehm.
       </div>
     </div>
@@ -1151,11 +1019,11 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
     <div style="font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--g4);letter-spacing:0.18em;margin-top:8px">DOPE BRANDING. NO SOCIAL MEDIA.</div>
   </div>
   <!-- ═════════════════════════════════════════════════════════
-       JUNE 2026 — CONSOLIDATED UPDATE & ROADMAP (v23)
+       APPENDIX — VOCABULARY · DEPLOYMENT · ROADMAP
        ═════════════════════════════════════════════════════════ -->
   <section style="margin-top:52px;border-top:2px solid var(--coral);padding-top:30px">
-    <div style="font-family:var(--futura-bold);text-transform:uppercase;letter-spacing:.1em;color:var(--white);font-size:20px;margin-bottom:6px">June 2026 — Consolidated Update &amp; Roadmap</div>
-    <div style="color:var(--g4);font-size:12px;margin-bottom:28px">Supersedes any earlier note where it conflicts · v23</div>
+    <div style="font-family:var(--futura-bold);text-transform:uppercase;letter-spacing:.1em;color:var(--white);font-size:20px;margin-bottom:6px">Appendix — Vocabulary · Deployment · Roadmap</div>
+    <div style="color:var(--g4);font-size:12px;margin-bottom:28px">Single source of truth · July 2026 · v24</div>
 
     <!-- A. VOCABULARY -->
     <div style="color:var(--g1);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:14px;margin:22px 0 8px">A · Vocabulary — Totehm Cloth (LOCKED)</div>
@@ -1164,37 +1032,25 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
     <p style="margin-bottom:8px">Boutique flow verbs (in order): <span style="color:var(--coral)">Totehmize</span> → <span style="color:var(--coral)">Encode</span> → <span style="color:var(--coral)">Engrave the name of your Totehm Cloth</span> → Define dimensions of the Totehm Cloth Support → Order your Totehm Cloth.</p>
     <p style="margin-bottom:8px"><span style="color:var(--coral)">Decode a Totehm Cloth</span> = retrieve a member's written legacy by its unique name (full-screen on Enter).</p>
 
-    <!-- B. SIGNATURE BUTTON -->
-    <div style="color:var(--g1);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:14px;margin:22px 0 8px">B · The Signature Button — UPDATED (supersedes the old &ldquo;Futura, no fill&rdquo; rule)</div>
-    <p style="margin-bottom:8px">Built in <strong>Quantico Regular</strong> (not Futura, not Bold). No letter-spacing.</p>
-    <p style="margin-bottom:8px">Rest = light gray <code>#b0b0b0</code> (or coral for the rare brand-term buttons).</p>
-    <p style="margin-bottom:8px"><strong>Desktop hover</strong> = perforated box in light blue <code>#36498c</code> (the Grind &ldquo;Objectives / sky&rdquo; blue).</p>
-    <p style="margin-bottom:8px"><strong>Click / tap (mobile)</strong> = perforated box in navy <code>#333366</code>.</p>
-    <p style="margin-bottom:8px">The perforated box keeps <strong>sacred right-angle corners</strong> (CSS <code>border-image</code> SVG tile — perforations on edges only, never on corners).</p>
-    <p style="margin-bottom:8px"><span style="color:var(--grind-repulsions)">Back in Time</span> button = same format, but hover AND click = red-violet <code>#743169</code> (Repulsion). <strong>No arrow.</strong> Present on every page to return to the Menu.</p>
-    <p style="margin-bottom:8px"><strong>Coral is sacred:</strong> reserved for ultra-specific brand terms only (Totehmize, Encode, Totehm Cloth…). <strong>Coral Bold = Stoner Method technique-texts ONLY.</strong> Prices, counts, and secondary actions stay gray.</p>
+    <!-- B. INDEX ARCHITECTURE (current) -->
+    <div style="color:var(--g1);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:14px;margin:22px 0 8px">B · Index (higher.boutique) &amp; totehm.space — current architecture</div>
+    <p style="margin-bottom:8px"><strong>higher.boutique</strong> (root <code>index.html</code>) shows the boutique menu directly — no landing city-gate. Buttons: Create a Totehm Cloth Streetwear (<code>streetwear.html</code>) · Totehmize my Hermès / Louis Vuitton / Gucci Cloth (<code>luxury.html</code>, upcoming) · Decode a Totehm Cloth · Experience our dope branding (<code>discover.html</code>) · Email for dope news.</p>
+    <p style="margin-bottom:8px"><strong>City selection moved into <code>totehm.html</code> → Select your city</strong> (accent-insensitive, multilingual). Lisbon unlocks <em>Make the Lisbon Streets Sublime</em> (<code>play_the_street.html</code>) + a City feed of events matching Habits by time, frequency &amp; intention.</p>
+    <p style="margin-bottom:8px"><strong>totehm.space</strong> is served from the <code>space/</code> folder (root <code>space/index.html</code>): two experimental-branding buttons — Get [Higher] and My [logo] — both flagged experimental. <code>discover.html</code> → Get [Higher] → <code>totehm.space</code>.</p>
 
-    <!-- C. INDEX ARCHITECTURE -->
-    <div style="color:var(--g1);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:14px;margin:22px 0 8px">C · Index (higher.boutique) — Two-part architecture (LOCKED)</div>
-    <p style="margin-bottom:8px"><strong>① Landing (international entry):</strong> Higher slogan + &ldquo;OWN/YOUR/TIME&nbsp;&nbsp;NOW:WON&nbsp;&nbsp;WRLD&rdquo; + real.png + &ldquo;TOTEHM 1993© DESIGNED BY SCIENCE AND NEUROSCIENCE&rdquo; (dope molecule right after NEUROSCIENCE) + the <span style="color:var(--coral)">Where you at</span> morph-input (&ldquo;name of the city&rdquo;).</p>
-    <p style="margin-bottom:8px">On Enter, the city is matched (accent-insensitive, multilingual: Lisboa / Lisbon / Lisbonne / Lissabon / 里斯本 / リスボン …):</p>
-    <p style="margin-bottom:8px;padding-left:16px">→ <strong>Lisbon</strong> opens <strong>② Menu Lisbon</strong>: <code>higher_lisbon.png</code> instead of real.png, tagline &ldquo;…NOW:WON <strong>LSB</strong>&rdquo;, <strong>no footer</strong>. Shows the local features + the international ones.</p>
-    <p style="margin-bottom:8px;padding-left:16px">→ <strong>Any other city</strong> opens the <strong>Menu International</strong>: real.png + footer kept. Global features only — Have a good Trip — Stoner Way of Life©, My Totehm Grind, Search a Trip, Email for dope news, Think same but opposite (drawer video, vertical native ratio).</p>
-    <p style="margin-bottom:8px">Cross-domain links: My Totehm Grind &amp; Search a Trip → <code>www.totehm.space</code>; collabs → the boutique.</p>
-
-    <!-- D. DEPLOYMENT & SECURITY -->
-    <div style="color:var(--g1);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:14px;margin:22px 0 8px">D · Deployment &amp; Security (LOCKED)</div>
-    <p style="margin-bottom:8px">Two domains, <strong>both served by Vercel</strong> (free SSL/HTTPS, CDN, GitHub auto-deploy). Registrars: <strong>Hostinger</strong> (higher.boutique — main) + <strong>IONOS</strong> (totehm.space). DNS at each registrar: <code>A @ → 76.76.21.21</code> · <code>CNAME www → cname.vercel-dns.com</code>.</p>
+    <!-- C. DEPLOYMENT & SECURITY -->
+    <div style="color:var(--g1);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:14px;margin:22px 0 8px">C · Deployment &amp; Security (LOCKED)</div>
+    <p style="margin-bottom:8px">One GitHub repo (<code>gvllrd/totehm</code>), <strong>two Vercel projects</strong>: higher.boutique (root <code>/</code>) + totehm.space (root <code>space/</code>). Free SSL/HTTPS, CDN, auto-deploy on push. Registrars: <strong>Hostinger</strong> (higher.boutique) + <strong>IONOS</strong> (totehm.space).</p>
     <p style="margin-bottom:8px">Security headers via <code>vercel.json</code> (HSTS, nosniff, X-Frame-Options SAMEORIGIN, Referrer-Policy, Permissions-Policy).</p>
-    <p style="margin-bottom:8px">Supabase: the <code>anon</code> key is public by design — security lives in <strong>RLS</strong>. Set Auth → Site URL + Redirect URLs to the live domains (required for the Grind magic-link). Never commit the <code>service_role</code> key.</p>
-    <p style="margin-bottom:8px">Hardening applied (June 2026): function <code>search_path</code> fixed; internal functions (<code>bump_claimed</code>, <code>rls_auto_enable</code>) revoked from the public API.</p>
+    <p style="margin-bottom:8px">Supabase: the <code>anon</code> key is public by design — security lives in <strong>RLS</strong>. Set Auth → Site URL + Redirect URLs to the live domains (required for the email-code login). Never commit the <code>service_role</code> key.</p>
 
-    <!-- E. ROADMAP -->
-    <div style="color:var(--g1);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:14px;margin:22px 0 8px">E · Roadmap — Locked directions</div>
-    <p style="margin-bottom:8px"><strong>1 · Play the Street (Lisbon menu).</strong> Lisbon traffic-sign buttons, each opening a <em>non-revealed</em> Stoner technique video — a teaser funnel toward the Stoner Method NFT. Lives in the Lisbon (local) menu. File <code>play_the_street.html</code>; videos in the <code>play-signals</code> bucket.</p>
-    <p style="margin-bottom:8px"><strong>2 · Stoner Method — freemium + NFT gating.</strong> Free up to &amp; including <strong>step 6 of &ldquo;the action&rdquo;</strong>. Steps 7+ unlock by holding the Totehm NFT.<br>
-    <span style="color:var(--coral)">Tech doctrine (critical):</span> gating MUST be server-side. Gated videos live in a <strong>private bucket</strong>; a Supabase <strong>Edge Function</strong> verifies NFT ownership (wallet signature + on-chain balance check on the collection contract via a free RPC) and returns short-lived <strong>signed URLs</strong>. Never put gated URLs in client code — client-side gating is trivially bypassed.</p>
-    <p style="margin-bottom:8px"><strong>3 · International Boutique.</strong> Same model as Lisbon, but global. Implemented via the <code>collabs</code> table with a <code>scope</code>/<code>city</code> field (Lisbon collabs vs international collabs) so each menu surfaces the right collection.</p>
+    <!-- D. ROADMAP -->
+    <div style="color:var(--g1);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:14px;margin:22px 0 8px">D · Roadmap — Locked directions</div>
+    <p style="margin-bottom:8px"><strong>1 · Play the Street (Lisbon).</strong> Lisbon traffic-sign buttons, each opening a <em>non-revealed</em> Stoner technique video — a teaser funnel toward the Stoner Method NFT. File <code>play_the_street.html</code>; videos in the <code>play-signals</code> bucket.</p>
+    <p style="margin-bottom:8px"><strong>2 · Stoner Method — freemium + NFT gating.</strong> Free up to &amp; including <strong>step 6 of &ldquo;the action&rdquo;</strong>; steps 7+ unlock by holding the Totehm NFT, <strong>bought by bank card via thirdweb</strong> (fiat → mint).<br>
+    <span style="color:var(--coral)">Tech doctrine (critical):</span> gating MUST be server-side. Gated videos live in a <strong>private bucket</strong>; a Supabase <strong>Edge Function</strong> verifies NFT ownership (wallet signature + on-chain balance check via a free RPC) and returns short-lived <strong>signed URLs</strong>. Never put gated URLs in client code.</p>
+    <p style="margin-bottom:8px"><strong>3 · Boutique cash path.</strong> Stripe Checkout + address + webhook → status paid → pipeline (LLM prompt → images → curation → upscale → Printful). <strong>luxury.html</strong> = the Hermès / LV / Gucci Totehmize flow.</p>
+    <p style="margin-bottom:8px"><strong>4 · International Boutique.</strong> Same model as Lisbon, global — via a <code>collabs</code> table with a <code>scope</code>/<code>city</code> field so each menu surfaces the right collection.</p>
   </section>
 
   <div class="footer-meta">
@@ -1202,7 +1058,7 @@ td:first-child{color:var(--coral);font-weight:700;font-family:'Space Mono',monos
     ⚠️ Never delete — only add or amend.<br>
     ⚠️ Frontend = English Only · Figher Club (not Fighter).<br>
     ⚠️ Next steps : Supabase schema · Ghost Factory · TotehmMap · NFT contract.<br><br>
-    WaHigher · Lisbon · 2025 · Master Prompt v22<br>
+    WaHigher · Lisbon · 2025 · Master Prompt v24<br>
     Supported by neurosciences &amp; EEG.
   </div>
 </div>
