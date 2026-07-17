@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Make The Streets Of Lisbon Sublime For Your Brain© — TOTEHM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Bebas+Neue&family=Montserrat:ital,wght@1,900&display=swap" rel="stylesheet">
+<style>
+/* ═══ TOKENS — exact stoner_method.html ═══ */
+:root{
+  --coral:#fbd5ca;--higher-bg:#333366;
+  --plus:#36498c;--minus:#743169;
+  --futura-light:'Futura','Jost',sans-serif;
+  --futura-bold:'Futura','Jost',sans-serif;
+  --tile-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23743169'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+  --tile-blue:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Futura','Jost',sans-serif;font-weight:300}
+
+/* ═══════════ LAYER 1 : ROTATE (mobile portrait only) ═══════════ */
+.rotate{
+  position:fixed;inset:0;z-index:100;background:#000;
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  gap:18px;padding:28px;text-align:center;
+}
+@media (orientation:portrait) and (pointer:coarse){.rotate{display:flex}}
+.rotate .slogan{width:min(26vw,100px)}
+.rotate .sub{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.1em;color:#808080;line-height:1.4}
+.rotate .spinner{width:44px;height:44px;color:var(--coral);animation:spin 3.2s linear infinite;margin-top:14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* NON-BOLD — Quantico 400 coral, bold reserved for Stoner Method techniques */
+.rotate .hint{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--coral);line-height:1.6;letter-spacing:.02em}
+.rotate .credit{position:absolute;bottom:22px;left:0;right:0;font-family:var(--futura-light);font-weight:300;font-size:12.5px;color:#b5b5c2;font-style:italic;padding:0 20px;line-height:1.45}
+.rotate .credit b{color:var(--coral);font-weight:700;font-style:normal}
+
+/* ═══════════ LAYER 2 : INTRO ═══════════ */
+.intro{
+  position:fixed;inset:0;z-index:90;background:#000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:14px;padding:24px;text-align:center;
+  transition:opacity .5s ease;overflow-y:auto;
+}
+.intro.gone{opacity:0;pointer-events:none}
+@media (orientation:portrait) and (pointer:coarse){.intro{visibility:hidden}}
+.intro h1{
+  font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;
+  color:var(--coral);line-height:1.7;letter-spacing:.02em;
+  text-transform:uppercase;max-width:560px;
+}
+/* ═══════════ Prerequisites drawer — copie exacte de .neuro-link ═══════════ */
+.neuro-link{
+  font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;
+  color:#b0b0b0;background:none;cursor:pointer;display:inline-block;
+  border:6px solid transparent;padding:0 3px;line-height:1.4;margin-top:10px;
+  -webkit-tap-highlight-color:transparent;transition:color .18s ease;
+}
+.neuro-link:hover,.neuro-link:focus-visible,.neuro-link:active,.neuro-link.on{
+  color:#fff;
+  border-image-source:var(--tile-blue);
+  border-image-slice:6 fill;border-image-repeat:round;
+}
+#prereq-content{
+  width:100%;max-width:440px;max-height:0;overflow:hidden;
+  transition:max-height .4s ease;opacity:0;
+}
+#prereq-content.open{
+  max-height:600px;opacity:1;overflow:visible;
+  transition:max-height .5s ease,opacity .4s ease .1s;
+}
+.prereq-block{
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  padding:16px 10px 6px;
+}
+
+/* [Get Higher] inside Prerequisites drawer — neuro-link style, gray */
+.get-higher{
+  background:none;cursor:pointer;text-decoration:none;
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;
+  color:#b0b0b0;line-height:1.4;
+  border:6px solid transparent;padding:0 3px;
+  -webkit-tap-highlight-color:transparent;
+  transition:color .18s ease;
+}
+.get-higher:hover,.get-higher:active,.get-higher:focus-visible{
+  color:#fff;
+  border-image-source:var(--tile-blue);
+  border-image-slice:6 fill;border-image-repeat:round;
+}
+.get-higher .higher-inline{display:inline-flex;align-items:center;width:44px;vertical-align:middle;line-height:0}
+
+/* Create your Grind — same neuro-link style */
+.grind-link{
+  font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;
+  color:#b0b0b0;text-decoration:none;display:inline-block;
+  border:6px solid transparent;padding:0 3px;line-height:1.4;
+  transition:color .18s ease;
+}
+.grind-link:hover,.grind-link:active{
+  color:#fff;
+  border-image-source:var(--tile-blue);
+  border-image-slice:6 fill;border-image-repeat:round;
+}
+
+/* Body paragraph — .nb-p exact from stoner_method */
+.intro .nb-p{
+  font-family:var(--futura-light);font-weight:400;font-size:14px;
+  color:#e0e0e0;line-height:1.55;letter-spacing:.02em;
+  max-width:460px;margin:0;
+}
+.intro .nb-p .wavy{color:var(--coral)}
+/* [Wavywah] — quantico coral link */
+.wavy-link{
+  font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
+  color:var(--coral);text-decoration:none;letter-spacing:.02em;
+  transition:filter .2s ease;
+}
+.wavy-link:hover{filter:brightness(1.15)}
+/* Italic note — .nb-src exact from stoner_method */
+.intro .nb-src{
+  font-family:var(--futura-light);font-weight:300;font-size:12.5px;
+  color:#b5b5c2;font-style:italic;line-height:1.45;letter-spacing:.01em;
+  max-width:420px;margin:0;
+}
+
+/* [Higher love] — continue button, slogan badge love version */
+.btn-love{
+  background:none;border:0;cursor:pointer;padding:0;
+  width:min(26vw,100px);line-height:0;margin-top:22px;
+  transition:transform .15s ease,filter .2s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-love svg{width:100%;height:auto;display:block}
+.btn-love:hover{filter:brightness(1.12)}
+.btn-love:active{transform:scale(.94)}
+
+/* [Get Higher to get it] floating on the experience — neuro-link style, gray */
+.xp-higher{
+  position:absolute;z-index:6;
+  font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;
+  color:#b0b0b0;background:none;text-decoration:none;
+  border:6px solid transparent;padding:0 3px;line-height:1.4;
+  display:inline-flex;align-items:center;gap:6px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  opacity:0;pointer-events:none;
+  transition:opacity .4s ease,color .18s ease,transform .15s ease;
+}
+.xp-higher.in{opacity:1;pointer-events:auto}
+.xp-higher:hover,.xp-higher:active{
+  color:#fff;
+  border-image-source:var(--tile-blue);
+  border-image-slice:6 fill;border-image-repeat:round;
+}
+.xp-higher .higher-inline{display:inline-flex;align-items:center;width:44px;vertical-align:middle;line-height:0}
+
+/* ═══════════ LAYER 3 : CONTROLLER BOARD ═══════════ */
+.world{
+  position:fixed;inset:0;
+  display:flex;align-items:center;justify-content:center;background:#000;
+  transition:transform .55s cubic-bezier(.65,0,.35,1);
+  opacity:0;pointer-events:none;
+}
+.world.on{opacity:1;pointer-events:auto;transition:transform .55s cubic-bezier(.65,0,.35,1),opacity .35s ease}
+.world.away{transform:translateY(100%)}
+.board{
+  position:relative;
+  width:min(100vw,calc(100vh * 1.7778));
+  height:min(100vh,calc(100vw / 1.7778));
+  background:url('assets/img/background_lisbon.png') center/contain no-repeat;
+}
+/* Desktop only: shrink the whole controller (image + signs scale together) */
+@media (hover:hover) and (min-width:900px){
+  .board{
+    width:min(66vw,calc(66vh * 1.7778));
+    height:min(66vh,calc(66vw / 1.7778));
+  }
+}
+.sign{
+  position:absolute;left:var(--l);top:var(--t);width:var(--w);
+  background:none;border:0;padding:0;cursor:pointer;
+  transition:transform .14s ease,filter .2s ease;
+  touch-action:manipulation;outline:none;
+}
+.sign img{width:100%;height:auto;display:block;pointer-events:none}
+.sign:hover{filter:brightness(1.15) drop-shadow(0 0 6px rgba(255,255,255,.2))}
+.sign:active{transform:scale(.86)}
+
+/* ═══════════ LAYER 4 : EXPERIENCE (from TOP — inverted) ═══════════ */
+.xp{
+  position:fixed;left:0;right:0;height:100%;top:-100%;z-index:50;background:#000;
+  transition:top .55s cubic-bezier(.65,0,.35,1);
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding:5vh 0 4vh;
+}
+.xp.up{top:0}
+/* Video — larger than stoner (50vw / 50vh, max 340px) */
+.vid-wrap{
+  position:relative;flex-shrink:0;
+  width:min(50vw,50vh);height:min(50vw,50vh);
+  max-width:340px;max-height:340px;margin-bottom:3vh;
+  opacity:0;transition:opacity .5s ease;
+}
+/* Mobile: bump video size a touch */
+@media (pointer:coarse){
+  .vid-wrap{
+    width:min(58vw,55vh);height:min(58vw,55vh);
+    max-width:380px;max-height:380px;
+  }
+}
+.vid-wrap.in{opacity:1}
+.xp video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
+/* Punchline — exact stoner tech-text */
+.punch{
+  position:absolute;max-width:58vw;
+  font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;
+  color:var(--coral);line-height:1.7;letter-spacing:.02em;text-align:center;
+  opacity:1;transition:opacity .5s ease;
+}
+.punch.out{opacity:0}
+.punch .caret{
+  display:inline-block;width:.5em;height:1em;background:var(--coral);
+  vertical-align:text-bottom;margin-left:2px;
+  animation:blink .85s steps(1) infinite;
+}
+@keyframes blink{50%{opacity:0}}
+/* [Back in Time] — Quantico 400 gray, no arrow */
+.xp .close{
+  position:fixed;top:14px;left:14px;z-index:200;
+  font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;
+  color:#b0b0b0;background:none;border:6px solid transparent;
+  cursor:pointer;padding:0 4px;line-height:1.5;
+  transition:color .15s ease;
+}
+.xp .close:hover,.xp .close:active{
+  color:#fff;
+  border-image-source:var(--tile-rep);
+  border-image-slice:6 fill;border-image-repeat:round;
+}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- Official Higher slogan — single source, reused via <use> -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <mask id="higher-holes">
+      <rect width="600" height="200" fill="white"/>
+      <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
+      <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
+      <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
+    </mask>
+    <g id="higher-badge">
+      <rect width="600" height="200" fill="#333366" mask="url(#higher-holes)"/>
+      <g fill="#ffffff" transform="translate(34.32, 144.42)">
+        <path transform="translate(0.000, 0) scale(0.144, -0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/>
+        <path transform="translate(115.776, 0) scale(0.144, -0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/>
+        <path transform="translate(162.576, 0) scale(0.144, -0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/>
+        <path transform="translate(264.960, 0) scale(0.144, -0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/>
+        <path transform="translate(366.048, 0) scale(0.144, -0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/>
+        <path transform="translate(459.360, 0) scale(0.144, -0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/>
+      </g>
+    </g>
+    <g id="higher-love" mask="url(#higher-holes)">
+      <rect width="600" height="200" fill="#333366"/>
+      <rect x="34.6" y="108" width="364.4" height="48" fill="#2d4186"/>
+      <rect x="399"  y="108" width="166.4" height="48" fill="#722f66"/>
+      <g fill="#ffffff" transform="translate(34.32, 144.42)">
+        <path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/>
+        <path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0Z"/>
+        <path transform="translate(115.776,0) scale(0.144,-0.144)" fill="#639922" d="M241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/>
+        <path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/>
+        <path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/>
+        <path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/>
+        <path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/>
+      </g>
+    </g>
+  </defs>
+</svg>
+
+<!-- ═══════════ ROTATE ═══════════ -->
+<div class="rotate">
+  <svg class="slogan" viewBox="0 0 600 200"><use href="#higher-badge"/></svg>
+  <div class="sub">MAKE LISBON STREETS SUBLIME</div>
+  <svg class="spinner" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+    <path d="M 32 12 A 20 20 0 1 1 12 32"/>
+    <polygon points="12,21 5,34 19,34" fill="currentColor" stroke="none"/>
+  </svg>
+  <div class="hint">Turn your phone (or turn it off)</div>
+</div>
+
+<!-- ═══════════ INTRO ═══════════ -->
+<div class="intro" id="intro">
+  <p class="nb-p">This Digital, Neurological and Street Art Performance by <a class="wavy-link" href="wavy.html">Wavywah</a> transforms the streets of Lisbon into mental stimulants. Walking is dope for your brain.</p>
+
+  <button class="neuro-link" id="prereq-btn" aria-expanded="false">Prerequisites</button>
+  <div id="prereq-content">
+    <div class="prereq-block">
+      <a class="get-higher" href="stoner.html">
+        Get
+        <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-badge"/></svg>
+      </a>
+      <a class="grind-link" href="grind.html">Create your Grind</a>
+    </div>
+  </div>
+
+  <button class="btn-love" id="initialize" aria-label="Get Higher — continue">
+    <svg viewBox="0 0 600 200"><use href="#higher-love"/></svg>
+  </button>
+  <p class="nb-src">The artist Wavywah used Latinized English vocabulary to facilitate universal understanding.</p>
+</div>
+
+<!-- ═══════════ CONTROLLER ═══════════ -->
+<div class="world" id="world">
+  <div class="board" id="board"></div>
+</div>
+
+<!-- ═══════════ EXPERIENCE ═══════════ -->
+<div class="xp" id="xp">
+  <button class="close" id="xpClose">Back in Time</button>
+  <a class="xp-higher" id="xpHigher" href="stoner.html">
+    Get
+    <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-badge"/></svg>
+    Get it
+  </a>
+  <div class="vid-wrap" id="vidWrap"><video id="vid" playsinline preload="none"></video></div>
+  <div class="punch" id="punch"></div>
+</div>
+
+<audio id="ps" src="https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/sound/playstation.mp3" preload="auto"></audio>
+
+<script>
+(()=>{
+/* ═══ CONFIG ═══ */
+const IMG_BASE = 'assets/signs/';
+const IMG_EXT  = '.png';
+const VID_BASE = 'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/play-signals/';
+
+/* id : [left%, top%, width%, punchline] — measured on the updated reference.png */
+const SIGNS = {
+  fire_exit:          [23.1,  5.5,  6.5, "To avoid a headache, stop thinking with your head."],
+  Heli:               [46.0,  7.4,  5.2, "The power of Habits: The sky is the limit."],
+  aed:                [70.1,  5.5,  6.5, "Consult your heart. The response is automatic."],
+  green_walk:         [33.7,  9.0,  3.8, "Advance with love. It leads to the best path."],
+  red_walk:           [33.7, 16.5,  3.8, "To stop mental bullsht: stay immobile one instant, avoid the crash."],
+  pharma:             [20.8, 22.5, 10.0, "Attract all you love."],
+  destination:        [40.1,  9.5, 18.5, "Elevation demands friction and aspiration."],
+  lisboa_city_hall:   [60.8, 10.0,  6.2, "Time creates the vibe. Travel creates discoveries."],
+  speed_bump_caution: [68.4, 15.5,  6.2, "Slow down! Come back to life urgently."],
+  crosswalk_caution:  [63.5, 27.0,  5.6, "Intelligent grind needs strategy."],
+  no_entry:           [73.4, 27.6,  5.5, "Access denied to mental bullshit."],
+  no_parking:         [68.5, 37.0,  5.8, "Protect your strategy. Know your enemies."],
+  hospital:           [46.8, 37.0,  3.8, "Healing is a process."],
+  parking:            [46.1, 44.6,  5.2, "Powerful Presence."],
+  Hotel:              [46.0, 55.0,  5.6, "Hard fights lead to hard peace."],
+  dead_end:           [20.4, 51.0,  6.9, "Action without preparation leads nowhere: Just do it."],
+  roundabout:         [32.9, 49.5, 10.2, "The supreme objective now is to appreciate the 360 of now."],
+  left_or_straight:   [56.9, 49.5, 10.2, "Yin / Yang. Feminine / Masculine. Inspiration / Expiration."],
+  no_uturn:           [69.8, 49.7,  8.8, "Never reverse intelligent decisions."],
+  priority:           [15.4, 66.8, 10.1, "Focus on your objectives, not the battles. They come by the way."],
+  crosswalk:          [44.5, 71.0,  8.5, "Step by step is the road to success and the safest way."],
+  stop:               [73.3, 66.0, 11.6, "Yes, stop that sht."],
+};
+
+/* ═══ DOM ═══ */
+const intro     = document.getElementById('intro');
+const prereqBtn = document.getElementById('prereq-btn');
+const prereqCnt = document.getElementById('prereq-content');
+const initBtn   = document.getElementById('initialize');
+const board     = document.getElementById('board');
+const world     = document.getElementById('world');
+const xp        = document.getElementById('xp');
+const punch     = document.getElementById('punch');
+const vidWrap   = document.getElementById('vidWrap');
+const vid       = document.getElementById('vid');
+const xpClose   = document.getElementById('xpClose');
+const xpHigher  = document.getElementById('xpHigher');
+const ps        = document.getElementById('ps');
+
+let busy = false, typeTimer = null, waitTimer = null;
+
+/* ═══ Prerequisites drawer ═══ */
+prereqBtn.addEventListener('click', ()=>{
+  const open = prereqCnt.classList.toggle('open');
+  prereqBtn.classList.toggle('on', open);
+  prereqBtn.setAttribute('aria-expanded', open);
+});
+
+/* ═══ [Initialize] → play sound + reveal controller ═══ */
+initBtn.addEventListener('click', ()=>{
+  /* PlayStation boot sound — user gesture unlocks autoplay policy */
+  try {
+    ps.muted = false;
+    ps.volume = 1;
+    ps.currentTime = 0;
+    const p = ps.play();
+    if (p && typeof p.catch === 'function'){
+      p.catch(err => console.warn('[playstation.mp3] play blocked:', err));
+    }
+  } catch(e){ console.warn('[playstation.mp3] error:', e); }
+
+  intro.classList.add('gone');
+  world.classList.add('on');
+});
+
+/* ═══ BUILD BOARD ═══ */
+for (const [id, [l,t,w]] of Object.entries(SIGNS)){
+  const b = document.createElement('button');
+  b.className = 'sign';
+  b.style.setProperty('--l', l+'%');
+  b.style.setProperty('--t', t+'%');
+  b.style.setProperty('--w', w+'%');
+  b.setAttribute('aria-label', id.replace(/_/g,' '));
+  const img = document.createElement('img');
+  img.src = IMG_BASE + id + IMG_EXT;
+  img.alt = '';
+  img.loading = 'lazy';
+  b.appendChild(img);
+  b.addEventListener('click', ()=>launch(id));
+  board.appendChild(b);
+}
+
+/* ═══ EXPERIENCE FLOW ═══ */
+function launch(id){
+  if (busy) return;
+  busy = true;
+
+  const text = SIGNS[id][3];
+
+  vid.src = VID_BASE + id + '.mp4';
+  vid.load();
+  vidWrap.classList.remove('in');
+  xpHigher.classList.remove('in');
+  punch.classList.remove('out');
+  punch.innerHTML = '';
+
+  punch.style.left = (8 + Math.random()*34)+'vw';
+  punch.style.top  = (14 + Math.random()*48)+'vh';
+
+  /* [Get Higher] hook — random position in a safe zone away from center video */
+  const zones = [
+    {l: 6 + Math.random()*10,  t: 78 + Math.random()*10},  /* bottom-left */
+    {l: 78 + Math.random()*10, t: 78 + Math.random()*10},  /* bottom-right */
+    {l: 6 + Math.random()*10,  t: 12 + Math.random()*8},   /* top-left */
+    {l: 78 + Math.random()*10, t: 12 + Math.random()*8},   /* top-right */
+  ];
+  const z = zones[Math.floor(Math.random()*zones.length)];
+  xpHigher.style.left = z.l+'vw';
+  xpHigher.style.top  = z.t+'vh';
+
+  world.classList.add('away');
+  xp.classList.add('up');
+
+  setTimeout(()=>typewrite(text, ()=>{
+    waitTimer = setTimeout(startVideo, Math.max(1500, text.length*45));
+  }), 620);
+}
+
+function typewrite(text, done){
+  let i = 0;
+  const caret = '<span class="caret"></span>';
+  const tick = ()=>{
+    i++;
+    punch.innerHTML = text.slice(0,i) + caret;
+    if (i < text.length){ typeTimer = setTimeout(tick, 32); }
+    else { punch.innerHTML = text; done(); }
+  };
+  tick();
+}
+
+function startVideo(){
+  punch.classList.add('out');
+  vidWrap.classList.add('in');
+  xpHigher.classList.add('in');
+  vid.play().catch(()=>{ vid.controls = true; });
+}
+
+vid.addEventListener('ended', comeBack);
+xpClose.addEventListener('click', comeBack);
+
+function comeBack(){
+  clearTimeout(typeTimer); clearTimeout(waitTimer);
+  vid.pause();
+  world.classList.remove('away');
+  xp.classList.remove('up');
+  setTimeout(()=>{
+    vidWrap.classList.remove('in');
+    xpHigher.classList.remove('in');
+    vid.removeAttribute('src'); vid.load();
+    punch.innerHTML = '';
+    punch.classList.remove('out');
+    busy = false;
+  }, 600);
+}
+
+xp.addEventListener('click', e=>{
+  if (e.target === xpClose) return;
+  if (xpHigher.contains(e.target)) return;
+  if (busy && !vidWrap.classList.contains('in') && punch.textContent.length){
+    clearTimeout(typeTimer); clearTimeout(waitTimer);
+    punch.innerHTML = '';
+    startVideo();
+  }
+});
+})();
+</script>
+
+</body>
+</html>
