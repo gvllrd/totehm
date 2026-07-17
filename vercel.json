@@ -10,5 +10,17 @@
         { "key": "Permissions-Policy", "value": "geolocation=(), microphone=(), camera=()" }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "totehm.space" }],
+      "destination": "/totehm.html"
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "www.totehm.space" }],
+      "destination": "/totehm.html"
+    }
   ]
 }

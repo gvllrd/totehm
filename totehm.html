@@ -205,7 +205,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 <div id="wordmark" class="sink-el"><img src="assets/img/TOTEHM.png" alt="TOTEHM"
   onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/TOTEHM.png'"></div>
 
-<button class="btn-back sink-el" id="back-top" onclick="location.href='index.html#menu'">Back in Time</button>
+<button class="btn-back sink-el" id="back-top">Back in Time</button>
 <button id="conn-bar" class="sink-el" aria-label="member space"><span class="dot"></span>Guest</button>
 
 <button id="get-higher" class="sink-el" aria-label="Get Higher">
@@ -322,6 +322,15 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
 const $=id=>document.getElementById(id);
+/* Back button contextuel selon le domaine :
+   - higher.boutique  -> "Back in Time" retourne au menu boutique
+   - totehm.space     -> "Wear my Totehm" pousse le pont vers la boutique */
+(function(){
+  const btn=$('back-top'); if(!btn) return;
+  const isSpace=/(^|\.)totehm\.space$/i.test(location.hostname);
+  if(isSpace){ btn.textContent='Wear my Totehm'; btn.onclick=()=>{location.href='https://higher.boutique/#menu';}; }
+  else{ btn.onclick=()=>{location.href='index.html#menu';}; }
+})();
 
 /* ══ FREQUENCY ENGINE — 33 rythmes humains, moteur multilingue ══ */
 const FREQS=[
