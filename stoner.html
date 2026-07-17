@@ -118,9 +118,16 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   #btn-slogan{width:32vw}
   #subtitle{font-size:14px}
 }
-.btn-back{position:fixed;top:14px;left:14px;z-index:200;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:none;padding:0 2px;line-height:1.4;-webkit-tap-highlight-color:transparent;transition:color .15s ease,background .15s ease}
-.btn-back:hover,.btn-back:active{color:#fff;background:var(--rep)}
-/* retour vers My TOTEHM (top-right, chevron ↓ sous le mot) */
+/* [My TOTEHM] entre le [Neurological reasons] et la citation — redescend vers les Habitudes.
+   Chevron ↓ = "reviens vers ton Totehm en bas". Visible seulement quand le technique est affiché. */
+#totehm-mid{display:none;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;padding:0;margin:18px auto 0;-webkit-tap-highlight-color:transparent;transition:opacity .15s ease}
+#totehm-mid.show{display:flex}
+#totehm-mid:hover{opacity:.7}
+#totehm-mid .lab{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:#b0b0b0;white-space:nowrap;transition:color .15s ease}
+#totehm-mid:hover .lab,#totehm-mid:active .lab{color:#fff}
+#totehm-mid .wm-frame{display:inline-block;padding:0 4px;background:var(--navy);border-radius:1px;line-height:1}
+#totehm-mid .wm-totehm{font-family:'Montserrat',sans-serif;font-weight:600;font-style:normal;color:#fff;letter-spacing:.16em;margin-right:-.16em}
+#totehm-mid .chev{width:14px;height:9px;color:rgba(255,255,255,.55);stroke-width:1.2;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round}
 #go-totehm{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;padding:0;margin:14px 0 4px;-webkit-tap-highlight-color:transparent;transition:opacity .15s ease}
 #go-totehm:hover{opacity:.7}
 #go-totehm .lab{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:#b0b0b0;white-space:nowrap;transition:color .15s ease}
@@ -131,7 +138,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 </style>
 </head>
 <body>
-<button class="btn-back" id="stoner-back" onclick="location.href='index.html#menu'">Back in Time</button>
+<!-- Back in Time retiré : la sortie de la Méthode se fait via [My TOTEHM] -->
 <div id="loading">LOADING...</div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -219,6 +226,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
     <div id="neuro-content"></div>
     <button id="btn-slogan" type="button" aria-label="Higher"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></button>
   </div>
+  <button id="totehm-mid" aria-label="My TOTEHM — back to your habits"><span class="lab">My <span class="wm-frame"><span class="wm-totehm">TOTEHM</span></span></span><svg class="chev" viewBox="0 0 24 14" aria-hidden="true"><path d="M2 2 L12 11 L22 2"/></svg></button>
   <div id="subtitle"></div>
 </div>
 
@@ -300,6 +308,7 @@ const step0intro=document.getElementById('step0-intro');
 const btnLow=document.getElementById('btn-low');
 const btnHighBlue=document.getElementById('btn-high-blue');
 const subtitle=document.getElementById('subtitle');
+const totehmMid=document.getElementById('totehm-mid');
 const closeScreen=document.getElementById('close-screen');
 const loading=document.getElementById('loading');
 let zonesShown=false;
@@ -349,6 +358,7 @@ async function loadVideoStep(idx){
   const step=STEPS[idx];
   zonesShown=false;
   technique.classList.remove('show');
+  totehmMid.classList.remove('show');
   subtitle.classList.remove('show');
   step0ui.classList.remove('show');
   step0intro.classList.remove('show');
@@ -369,6 +379,7 @@ async function loadVideoStep(idx){
     subtitle.textContent=step.quote||'';
     logoBtn.classList.add('show');
     technique.classList.add('show');
+    totehmMid.classList.add('show');
     subtitle.classList.add('show');
   }else{
     step0intro.classList.add('show');
@@ -435,18 +446,20 @@ if(waBtn) waBtn.onclick=()=>{window.open(INSTAGRAM_URL,'_blank');};
 const shopBtn=document.getElementById('shop-btn');
 if(shopBtn) shopBtn.onclick=()=>{window.location.href='shop.html';};
 
-/* Bas de la méthode Stoner : [My TOTEHM] -> retour au Totehm.
+/* Retour vers My TOTEHM (bouton mid — apparaît avec le technique — + bouton bas de fin).
    Embarqué en iframe dans totehm.html : on ferme l'overlay via postMessage.
    Ouvert en standalone : on navigue vers totehm.html. */
-const goTotehm=document.getElementById('go-totehm');
-if(goTotehm) goTotehm.onclick=()=>{
+function goToTotehm(){
   const embedded = window.parent && window.parent!==window;
   if(embedded){
     try{ window.parent.postMessage({type:'totehm-close-stoner'},'*'); return; }
     catch(e){ /* cross-origin : on retombe sur la navigation */ }
   }
   window.location.href='totehm.html';
-};
+}
+if(totehmMid) totehmMid.onclick=goToTotehm;
+const goTotehm=document.getElementById('go-totehm');
+if(goTotehm) goTotehm.onclick=goToTotehm;
 
 loadVideoStep(0);
 </script>
