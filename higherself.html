@@ -48,10 +48,6 @@ html,body{background:#000;color:var(--g-light);font-family:var(--futura);font-we
 .int-body{display:none;flex-direction:column;gap:14px;margin-top:8px}
 .int-card.on .int-body{display:flex}
 .lbl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--g-dark)}
-.vibe-row{display:flex;gap:8px;align-items:center}
-.vibe-row .in{text-align:left;font-size:14px}
-.save{font-family:'Quantico',sans-serif;font-weight:400;font-size:12px;color:#b0b0b0;background:none;border:none;cursor:pointer;padding:2px 8px;transition:color .15s,background .15s;-webkit-tap-highlight-color:transparent;white-space:nowrap}
-.save:hover,.save:active{color:#fff;background:var(--navy)}
 .hlist{display:flex;flex-direction:column;gap:8px}
 .hrow{display:flex;align-items:center;gap:9px;font-family:'Quantico',sans-serif;font-size:13px;color:#dedede;line-height:1.45}
 .hrow .tg{height:12px;width:auto;flex-shrink:0}
@@ -87,7 +83,8 @@ html,body{background:#000;color:var(--g-light);font-family:var(--futura);font-we
 <div id="app">
   <div id="hs-head">
     <svg class="hg" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-slogan"></use></svg>
-    <div class="sub">HigherSelf — your coach</div>
+    <div class="sub">HigherSelf — your Totehm, alive in the city</div>
+    <div class="sub" style="font-size:10px;opacity:.7">it speaks in the language of your Habits — you are what you repeatedly do</div>
     <div id="hs-who" class="hide"></div>
   </div>
 
@@ -120,15 +117,15 @@ const tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
 if(tg){tg.ready();tg.expand();try{tg.setBackgroundColor('#000000');tg.setHeaderColor('#000000');}catch(e){}}
 const TG_ID=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.id)||null;
 
-/* Les 7 intentions + mentor-vibes par défaut */
+/* Les 7 intentions — la voix de HigherSelf n'est pas un mentor : elle émerge du langage de tes Habits (Voice Identity) */
 const INTS=[
-  {id:'fight',    name:'Fight',    color:'var(--fight)',    def:'Conquer yourself through harder effort.',           vibe:'David Goggins'},
-  {id:'flow',     name:'Flow',     color:'var(--flow)',     def:'Liberate energy through movement.',                 vibe:'Alan Watts'},
-  {id:'enrich',   name:'Enrich',   color:'var(--enrich)',   def:'Master your wealth through capital & network.',     vibe:'Naval Ravikant'},
-  {id:'love',     name:'Love',     color:'var(--love)',     def:'Contemplate life through connection & beauty.',     vibe:'Esther Perel'},
-  {id:'express',  name:'Express',  color:'var(--express)',  def:'Give form to emotion through creation.',            vibe:'Virgil Abloh'},
-  {id:'focus',    name:'Focus',    color:'var(--focus)',    def:'Master your mind through deep mental focus.',       vibe:'Steve Jobs'},
-  {id:'celebrate',name:'Celebrate',color:'var(--celebrate)',def:'Elevate energy through collective effervescence.',  vibe:'Anthony Bourdain'}
+  {id:'fight',    name:'Fight',    color:'var(--fight)',    def:'Conquer yourself through harder effort.'},
+  {id:'flow',     name:'Flow',     color:'var(--flow)',     def:'Liberate energy through movement.'},
+  {id:'enrich',   name:'Enrich',   color:'var(--enrich)',   def:'Master your wealth through capital & network.'},
+  {id:'love',     name:'Love',     color:'var(--love)',     def:'Contemplate life through connection & beauty.'},
+  {id:'express',  name:'Express',  color:'var(--express)',  def:'Give form to emotion through creation.'},
+  {id:'focus',    name:'Focus',    color:'var(--focus)',    def:'Master your mind through deep mental focus.'},
+  {id:'celebrate',name:'Celebrate',color:'var(--celebrate)',def:'Elevate energy through collective effervescence.'}
 ];
 const T_SVG='<svg class="tg" viewBox="0 0 624 636" aria-hidden="true"><path fill="currentColor" d="M0 0 H624 V92 H358 V592 H434 V636 H190 V592 H266 V92 H0 Z"/></svg>';
 
@@ -137,7 +134,7 @@ const W={every_minute:1,hourly:60,several_daily:480,every_morning:1438,daily:144
 const LBL={every_minute:'every minute',hourly:'every hour',several_daily:'several times a day',every_morning:'every morning',daily:'daily',every_weekday:'every weekday',every_night:'every night',every_other_day:'every other day',twice_week:'twice a week',every_weekend:'every weekend',weekly:'weekly',every_monday:'every monday',every_tuesday:'every tuesday',every_wednesday:'every wednesday',every_thursday:'every thursday',every_friday:'every friday',every_saturday:'every saturday',every_sunday:'every sunday',biweekly:'every two weeks',twice_month:'twice a month',monthly:'monthly',quarterly:'every quarter',semiannual:'every six months',yearly:'yearly',every_2_years:'every two years',every_5_years:'every five years',every_decade:'every 10 years',randomly:'randomly',sometimes:'sometimes'};
 const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;};
 
-let me=null, habits=[], prefs={}, tripRow=null;
+let me=null, habits=[], tripRow=null;
 
 /* ── AUTH ── */
 let email='';
@@ -173,9 +170,6 @@ async function loadAll(){
   habits=[];
   (rows||[]).forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{if(s&&s.t)habits.push(s);});});
   habits.sort((a,b)=>((a.f&&W[a.f])||1e12)-((b.f&&W[b.f])||1e12));
-  /* prefs mentors */
-  const {data:pr}=await sb.from('higherself_prefs').select('intention,mentors').eq('user_id',me.id);
-  prefs={};(pr||[]).forEach(r=>{prefs[r.intention]=(r.mentors&&r.mentors.vibe)||'';});
   renderInts();renderCity();
 }
 
@@ -194,23 +188,9 @@ function renderInts(){
       +'<svg class="higher-inline" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></div>'
       +'<div class="int-def">'+esc(x.def)+'</div>'
       +'<div class="int-body">'
-        +'<div><div class="lbl">Mentor vibe</div>'
-        +'<div class="vibe-row"><input class="in vibe" data-int="'+x.id+'" placeholder="'+esc(x.vibe)+'" value="'+esc(prefs[x.id]||'')+'">'
-        +'<button class="save" data-int="'+x.id+'">Save</button></div></div>'
         +'<div><div class="lbl">Your Habits — most frequent first</div><div class="hlist">'+hl+'</div></div>'
       +'</div>';
     card.querySelector('.int-r1').onclick=()=>{document.querySelectorAll('.int-card').forEach(c=>{if(c!==card)c.classList.remove('on');});card.classList.toggle('on');};
-    card.querySelector('.save').onclick=async ev=>{
-      ev.stopPropagation();
-      const inp=card.querySelector('.vibe');
-      const vibe=inp.value.trim()||x.vibe;
-      const row={user_id:me.id,intention:x.id,mentors:{vibe},updated_at:new Date().toISOString()};
-      if(TG_ID)row.telegram_id=TG_ID;
-      const {error}=await sb.from('higherself_prefs').upsert(row,{onConflict:'user_id,intention'});
-      ev.target.textContent=error?'retry':'Saved ✓';
-      setTimeout(()=>{ev.target.textContent='Save';},1400);
-      if(!error)prefs[x.id]=vibe;
-    };
     box.appendChild(card);
   });
   $('ints').classList.remove('hide');

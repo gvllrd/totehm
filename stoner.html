@@ -75,6 +75,13 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 
 #close-screen{position:fixed;inset:0;display:none;background:#000;z-index:60;overflow-y:auto;overflow-x:hidden}
 #close-screen.visible{display:flex}
+/* FREE GATE — fin de l'expérience free (Step 6) */
+#free-gate{position:fixed;inset:0;display:none;background:#000;z-index:70;cursor:pointer}
+#free-gate.visible{display:flex}
+#fg-inner{width:88%;max-width:420px;margin:auto;display:flex;flex-direction:column;align-items:center;gap:22px;text-align:center}
+.fg-bebas{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:.12em;color:#808080;line-height:1.5}
+.fg-coral{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:#fbd5ca;line-height:1.8;letter-spacing:.02em}
+.fg-hint{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#4a4a4a;margin-top:3vh}
 #close-inner{width:90%;max-width:460px;margin:auto;display:flex;flex-direction:column;align-items:center;padding:6vh 0;gap:10px}
 #close-tech{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:var(--coral);text-align:center;line-height:1.7;letter-spacing:.02em}
 #close-tech .higher-inline{display:inline-flex;align-items:center;width:54px;vertical-align:middle;line-height:0;margin:0 2px}
@@ -215,6 +222,15 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   <div id="subtitle"></div>
 </div>
 
+<div id="free-gate" aria-label="Free experience ends here — tap to return">
+  <div id="fg-inner">
+    <div class="fg-bebas">YOU'VE REACHED THE EDGE<br>OF THE FREE EXPERIENCE.</div>
+    <div class="fg-coral">The full Stoner Method<br>unlocks with the Totehm NFT.</div>
+    <div class="fg-bebas" style="font-size:14px">SOON &middot; BANK CARD &middot; NO WALLET NEEDED</div>
+    <div class="fg-hint">tap to return</div>
+  </div>
+</div>
+
 <div id="close-screen">
   <div id="close-inner">
     <span class="higher-top"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>
@@ -263,6 +279,10 @@ const NEURO = {0:"<div class=\"neuro-block\"><p class=\"nb-p\">Master yourself a
 const NEURO_CLOSE = "<div class=\"neuro-block\"><p class=\"nb-p\">This is the whole game. Every goal you chase — wealth, love, mastery, freedom — is won or lost inside your own head first. The moment you think, feel or act negatively, you get a choice: sink, or get {H}.</p><p class=\"nb-p\">Each time you choose {H}, you fire dopamine through your reward circuit, calm your amygdala, and carve the neural path of a winner. Repeat it enough and your brain physically rebuilds itself around success and happiness.</p><p class=\"nb-p\">Success and happiness are a permanent inner battle — fought in alpha, beta, theta and gamma. Win it within, and the outer world bends to follow. Microcosm equals macrocosm. It all depends on you. All of it.</p><p class=\"nb-src\">Hamilton, Self-Esteem and Goal Attainment (2014) · Csikszentmihalyi, Flow (1990) · Dispenza, Breaking the Habit of Being Yourself (2012)</p></div>";
 const INSTAGRAM_URL = 'https://www.instagram.com/wahigher';
 const BOT_URL = 'https://t.me/TotehmBot';
+/* FREE MODE — embarqué dans totehm.html (?free=1) : l'expérience s'arrête à la Step 6.
+   L'expérience complète (stoner.html direct) sera déverrouillée par le NFT Totehm via thirdweb. */
+const FREE = new URLSearchParams(location.search).get('free')==='1';
+const FREE_MAX = 6;
 const SHOW_TIME_0 = 3.7;
 let currentStep = 0;
 
@@ -377,12 +397,17 @@ vid.addEventListener('ended',()=>{
 
 function goMethod(){currentStep=1;loadVideoStep(1);}
 function goClose(){closeScreen.classList.add('visible');}
+/* FREE GATE */
+const freeGate=document.getElementById('free-gate');
+function showFreeGate(){freeGate.classList.add('visible');}
+freeGate.addEventListener('click',()=>{freeGate.classList.remove('visible');});
 zoneMinus.addEventListener('click',goMethod);
 btnLow.addEventListener('click',goMethod);
 zonePlus.addEventListener('click',goClose);
 btnHighBlue.addEventListener('click',goClose);
 
 function nextStep(){
+  if(FREE && currentStep>=FREE_MAX){ showFreeGate(); return; }
   if(currentStep<STEPS.length-1){currentStep++;loadVideoStep(currentStep);}
   else{closeScreen.classList.add('visible');}
 }

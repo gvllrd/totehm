@@ -250,6 +250,13 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
             <div class="row"><button class="size-btn" id="bot-off">Off</button><button class="size-btn" id="bot-on">Sync</button></div>
             <div class="set-note">— Lisbon · preview until it goes live —</div>
           </div>
+
+          <!-- Toute autre ville : on arrive bientôt -->
+          <div id="city-intl" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:11px;width:100%">
+            <div class="bot-txt"><b>We're coming to your city.</b><br>Leave your email — you'll be the first to know when TOTEHM lands.</div>
+            <input class="line-input" id="city-email" type="email" maxlength="120" placeholder="your@email" autocomplete="off" spellcheck="false">
+            <div class="note dim" id="city-email-note"></div>
+          </div>
         </div>
       </div>
       <div class="set-block">
@@ -258,6 +265,12 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
           <input class="line-input" id="search-input" maxlength="24" placeholder="name of a Totehm" autocomplete="off" spellcheck="false">
           <div class="note dim" id="search-note"></div>
         </div>
+      </div>
+
+      <!-- HigherSelf — le prolongement vivant du Totehm dans la ville (Telegram mini-app) -->
+      <div class="set-block">
+        <a class="btn-sig" href="https://t.me/TotehmBot" target="_blank" rel="noopener">My HigherSelf</a>
+        <div class="set-note">— your Totehm, alive in the city · on Telegram —</div>
       </div>
     </div>
   </div>
@@ -783,7 +796,7 @@ function showStoner(on){
   busy=true;setTimeout(()=>{busy=false;},640);
   $('stoner').classList.toggle('show',on);
   document.body.classList.toggle('liftoff',on);
-  if(on){ save(); if(!stonerLoaded){$('stoner-frame').src='stoner.html';stonerLoaded=true;} }
+  if(on){ save(); if(!stonerLoaded){$('stoner-frame').src='stoner.html?free=1';stonerLoaded=true;} }
 }
 function go(dFloor){
   if(busy||fpOpen()||$('member-window').classList.contains('show')||$('tview').classList.contains('show'))return;
@@ -879,8 +892,9 @@ function isLisbon(v){
   return LISBON.some(x=>n.includes(x));
 }
 function paintCity(){
-  const lis=isLisbon(profile.city||'');
+  const c=(profile.city||'').trim(), lis=isLisbon(c);
   $('city-lisbon').classList.toggle('hide',!lis);
+  $('city-intl').classList.toggle('hide',!(c&&!lis));
   if(document.activeElement!==$('city-input')) $('city-input').value=profile.city||'';
   $('bot-off').classList.toggle('on',!profile.bot);
   $('bot-on').classList.toggle('on',!!profile.bot);
@@ -893,9 +907,21 @@ $('city-input').addEventListener('input',()=>{
     profile.city=v; save();
     if(!v){note.className='note dim';note.textContent='';}
     else if(isLisbon(v)){note.className='note ok';note.textContent='Lisbon \u2713';}
-    else{note.className='note dim';note.textContent='more cities soon';}
+    else{note.className='note dim';note.textContent='';}
     paintCity();
   },300);
+});
+/* Ville ≠ Lisbonne : capture email — on t'avertit quand TOTEHM arrive chez toi */
+$('city-email').addEventListener('keydown',async(e)=>{
+  if(e.key!=='Enter')return;
+  const v=$('city-email').value.trim(), note=$('city-email-note');
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){note.className='note no';note.textContent='invalid email';return;}
+  note.className='note dim';note.textContent='...';
+  let {error}=await sb.from('subscribers').insert({email:v,city:(profile.city||'').trim()||null});
+  if(error){ ({error}=await sb.from('subscribers').insert({email:v})); } /* fallback si la colonne city n'existe pas encore */
+  if(error&&!/duplicate/i.test(error.message||'')){note.className='note no';note.textContent='try again';return;}
+  note.className='note ok';note.textContent="you're in — we'll tell you when we land";
+  $('city-email').disabled=true;
 });
 
 /* ══ SEARCH A TOTEHM — le pattern morph d'index.html ══ */
