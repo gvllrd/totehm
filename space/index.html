@@ -22,6 +22,19 @@
 @media(min-width:700px){:root{--rl:25vw;--rw:22px}}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);font-family:var(--futura);font-weight:300;font-size:14px;overflow:hidden;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
+/* ══ PERFORATIONS DU BORD — "écrire dans le logo" (timbre-poste, cf. totehm_logo.png) ══
+   Overlay non-bloquant : dessine les demi-cercles noirs sur les 4 bords, par-dessus le navy,
+   sous tous les éléments interactifs (T.svg, rail, boutons restent cliquables). */
+#perf{position:fixed;inset:0;z-index:4;pointer-events:none}
+#perf::before,#perf::after,#perf i::before,#perf i::after{content:"";position:fixed;background-repeat:repeat-x;background-position:left center}
+/* --perf-d = diamètre du trou · --perf-g = espacement · --perf-corner = marge pleine dans chaque coin */
+:root{--perf-d:15px;--perf-g:30px;--perf-corner:22px}
+/* haut & bas : trous alignés horizontalement, coins gauche/droite pleins */
+#perf::before{top:calc(var(--perf-d)/-2);left:var(--perf-corner);right:var(--perf-corner);height:var(--perf-d);background-image:radial-gradient(circle at center, #000 calc(var(--perf-d)/2 - 0.5px), transparent calc(var(--perf-d)/2));background-size:var(--perf-g) var(--perf-d)}
+#perf::after{bottom:calc(var(--perf-d)/-2);left:var(--perf-corner);right:var(--perf-corner);height:var(--perf-d);background-image:radial-gradient(circle at center, #000 calc(var(--perf-d)/2 - 0.5px), transparent calc(var(--perf-d)/2));background-size:var(--perf-g) var(--perf-d)}
+/* gauche & droite : trous alignés verticalement, coins haut/bas pleins */
+#perf i::before{top:var(--perf-corner);bottom:var(--perf-corner);left:calc(var(--perf-d)/-2);width:var(--perf-d);background-image:radial-gradient(circle at center, #000 calc(var(--perf-d)/2 - 0.5px), transparent calc(var(--perf-d)/2));background-size:var(--perf-d) var(--perf-g);background-repeat:repeat-y;background-position:center top}
+#perf i::after{top:var(--perf-corner);bottom:var(--perf-corner);right:calc(var(--perf-d)/-2);width:var(--perf-d);background-image:radial-gradient(circle at center, #000 calc(var(--perf-d)/2 - 0.5px), transparent calc(var(--perf-d)/2));background-size:var(--perf-d) var(--perf-g);background-repeat:repeat-y;background-position:center top}
 .hide{display:none!important}
 .gbtn{font-family:'Quantico',sans-serif;font-weight:400;background:none;border:none;padding:0;margin:0;cursor:pointer;line-height:1.5;-webkit-tap-highlight-color:transparent;transition:color .15s,background .15s}
 
@@ -45,6 +58,12 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 /* ── STONER METHOD : la section du dessus ── */
 #stoner{position:fixed;inset:0;z-index:55;background:#000;transform:translateY(-100%);visibility:hidden;pointer-events:none;transition:transform .58s cubic-bezier(.45,0,.2,1),visibility 0s linear .58s;will-change:transform}
 #stoner.show{transform:translateY(0);visibility:visible;pointer-events:auto;transition:transform .58s cubic-bezier(.45,0,.2,1),visibility 0s}
+/* Make the Streets Sublime : overlay en bas de la méthode, visible seulement si Lisbon sélectionné en bas */
+#street-btn{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:58;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
+#street-btn.show{display:inline-block}
+#street-btn.hide{display:none}
+@media(hover:hover){#street-btn:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
+#street-btn:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
 #stoner iframe{width:100%;height:100%;border:none;display:block}
 /* le monde s'enfonce pendant que la méthode descend d'en haut */
 .sink-el{transition:transform .58s cubic-bezier(.45,0,.2,1),opacity .45s ease}
@@ -75,8 +94,8 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 .habit .meta{position:absolute;right:calc(100% - var(--rl) + 10px);display:flex;align-items:center;gap:8px;white-space:nowrap}
 .habit .h-x{position:absolute;right:4px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.28);font-size:15px;line-height:1;cursor:pointer;padding:0;transition:color .15s}
 .habit .h-x:hover{color:#fff}
-.habit .h-freq{font-family:'Quantico',sans-serif;font-weight:400;font-size:11px;letter-spacing:0;color:rgba(255,255,255,.7);background:none;border:none;padding:0;cursor:pointer;transition:color .15s}
-.habit .h-freq:hover{color:#fff}
+.habit .h-freq{font-family:'Quantico',sans-serif;font-weight:400;font-size:12px;letter-spacing:0;color:#fff;background:none;border:none;padding:0;cursor:pointer;transition:opacity .15s}
+.habit .h-freq:hover{opacity:.7}
 .habit .h-T{background:none;border:none;padding:0;cursor:pointer;line-height:0;color:#fff;transition:opacity .15s,color .25s}
 .habit .h-T .tglyph{height:14px;width:auto;display:block}
 .habit .h-T:hover{opacity:.6}
@@ -84,7 +103,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 .habit .tick{position:absolute;left:var(--rl);width:var(--rw);height:5px;background:#000;top:50%;transform:translateY(-50%)}
 .habit.timed .tick{background:#fff}
 .habit .h-body{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;position:relative;display:flex;align-items:center}
-@media(max-width:600px){.habit.timed .h-freq{display:none}}
+@media(max-width:600px){.habit.timed .h-freq{font-size:11px}}
 .h-text,.h-add{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;line-height:1.5;padding:4px 2px;caret-color:#fff;text-align:left;resize:none;overflow:hidden;display:block}
 .h-text::placeholder{color:rgba(255,255,255,.33)}
 /* placeholder custom : le H de Habit en blanc */
@@ -100,6 +119,11 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 #fp-preview:hover,#fp-preview:active{color:#fff;background:var(--navy)}
 #fp-preview:empty,#fp-preview.hide{pointer-events:none}
 #fp-list{display:flex;flex-direction:column;gap:7px;max-height:42vh;overflow-y:auto;padding-right:4px}
+/* rappel de l'intention courante dans la vue fréquence : nom en blanc, cliquable pour changer */
+#fp-int-current{display:flex;align-items:center;justify-content:center;gap:8px;background:none;border:none;border-top:1px solid rgba(255,255,255,.12);margin-top:4px;padding:10px 0 2px;cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;color:#fff;transition:opacity .15s}
+#fp-int-current:hover{opacity:.7}
+#fp-int-current.hide{display:none}
+#fp-int-current .tglyph{height:15px;width:auto}
 /* étape 2 : l'intention de l'Habitude (les 7 de la Map) */
 #fp-ints{display:flex;flex-direction:column;gap:12px;max-height:60vh;overflow-y:auto;padding-right:4px}
 .fp-int{display:flex;flex-direction:column;gap:4px;background:none;border:none;padding:4px 0;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
@@ -185,6 +209,8 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 </head>
 <body>
 
+<div id="perf"><i></i></div>
+
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <symbol id="higher-slogan" viewBox="0 0 600 200">
@@ -219,7 +245,9 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 </button>
 
 <div id="lift-hg"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></div>
-<div id="stoner"><iframe id="stoner-frame" title="Stoner Method"></iframe></div>
+<div id="stoner"><iframe id="stoner-frame" title="Stoner Method"></iframe>
+  <a id="street-btn" class="hide" href="play_the_street.html">Make the Lisbon Streets Sublime</a>
+</div>
 
 <div id="floorview" class="sink-el">
   <div id="fv-inner">
@@ -227,7 +255,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 
     <div id="settings" class="hide">
       <div class="set-block">
-        <button class="btn-sig" id="dw-set" style="white-space:nowrap">My <span class="wm-frame"><span class="wm-totehm">TOTEHM</span></span> setting</button>
+        <button class="btn-sig" id="dw-set" style="white-space:nowrap">My TOTEHM settings</button>
         <div class="drawer" id="d-set">
           <div class="set-note">Name</div>
           <input id="set-name" class="name-input" placeholder="your Totehm" maxlength="24" autocomplete="off" spellcheck="false">
@@ -236,41 +264,41 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
           <div class="row"><button class="size-btn" id="set-private">Private</button><button class="size-btn" id="set-members">Visible to members</button></div>
         </div>
       </div>
+
+      <!-- Le coach : TotehmBot. International = coaching sur les données du Totehm ; Lisbon = + match des événements de la ville (RSS) -->
       <div class="set-block">
-        <button class="btn-sig" id="dw-city">Select your city</button>
+        <a class="btn-sig" href="https://t.me/TotehmBot" target="_blank" rel="noopener">My Totehm as a coach</a>
+        <div class="set-note">— your Totehm coaches you, on Telegram —</div>
+      </div>
+      <div class="set-block">
+        <button class="btn-sig" id="dw-city">My Totehm in my city</button>
         <div class="drawer" id="d-city">
-          <div class="bot-txt"><b>The City feeds your Totehm.</b><br>Events that match your Habits — their time, frequency & intention.</div>
           <input class="line-input" id="city-input" maxlength="40" placeholder="name of your city" autocomplete="off" spellcheck="false">
           <div class="note dim" id="city-note"></div>
 
-          <!-- LISBON only : play the street + city RSS/events sync -->
-          <div id="city-lisbon" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:11px;width:100%">
-            <a class="btn-sig" href="play_the_street.html">Make the Lisbon Streets Sublime</a>
-            <div class="set-note">— City feed —</div>
-            <div class="row"><button class="size-btn" id="bot-off">Off</button><button class="size-btn" id="bot-on">Sync</button></div>
-            <div class="set-note">— Lisbon · preview until it goes live —</div>
+          <!-- LISBON : le coach match en plus les événements de la ville (flux RSS) -->
+          <div id="city-lisbon" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:9px;width:100%">
+            <div class="bot-txt">Get events that match your Totehm on Telegram.</div>
+            <a class="btn-sig" href="https://t.me/TotehmBot" target="_blank" rel="noopener">Open TotehmBot</a>
+            <div class="set-note">— Lisbon · city events feed —</div>
           </div>
 
-          <!-- Toute autre ville : on arrive bientôt -->
-          <div id="city-intl" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:11px;width:100%">
-            <div class="bot-txt"><b>We're coming to your city.</b><br>Leave your email — you'll be the first to know when TOTEHM lands.</div>
+          <!-- Toute autre ville : coaching sur les seules données du Totehm, + on prévient quand la ville arrive -->
+          <div id="city-intl" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:9px;width:100%">
+            <div class="bot-txt">Your coach works with your Totehm's data.<br>City events are coming to your city soon.</div>
+            <a class="btn-sig" href="https://t.me/TotehmBot" target="_blank" rel="noopener">Open TotehmBot</a>
+            <div class="set-note" style="margin-top:4px">Be the first to know when TOTEHM lands here:</div>
             <input class="line-input" id="city-email" type="email" maxlength="120" placeholder="your@email" autocomplete="off" spellcheck="false">
             <div class="note dim" id="city-email-note"></div>
           </div>
         </div>
       </div>
       <div class="set-block">
-        <button class="btn-sig" id="search-btn" style="white-space:nowrap">Search a <span class="wm-frame"><span class="wm-totehm">TOTEHM</span></span></button>
+        <button class="btn-sig" id="search-btn" style="white-space:nowrap">Search a Totehm</button>
         <div class="drawer" id="d-search">
           <input class="line-input" id="search-input" maxlength="24" placeholder="name of a Totehm" autocomplete="off" spellcheck="false">
           <div class="note dim" id="search-note"></div>
         </div>
-      </div>
-
-      <!-- HigherSelf — le prolongement vivant du Totehm dans la ville (Telegram mini-app) -->
-      <div class="set-block">
-        <a class="btn-sig" href="https://t.me/TotehmBot" target="_blank" rel="noopener">My HigherSelf</a>
-        <div class="set-note">— your Totehm, alive in the city · on Telegram —</div>
       </div>
     </div>
   </div>
@@ -291,6 +319,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
     <input id="fp-input" placeholder="type it — any language" autocomplete="off" spellcheck="false">
     <button id="fp-preview" type="button"></button>
     <div id="fp-list"></div>
+    <button id="fp-int-current" class="hide" type="button"></button>
     <div id="fp-ints" class="hide"></div>
     <button class="fp-skip hide" id="fp-skip">no intention yet</button>
   </div>
@@ -719,15 +748,28 @@ function showFpStage(stage){
   $('fp-list').classList.toggle('hide',isInt);
   $('fp-ints').classList.toggle('hide',!isInt);
   $('fp-skip').classList.toggle('hide',!isInt);
-  if(isInt){renderFpInts(currentIntOfTarget());}
+  /* en vue fréquence : rappel de l'intention courante (nom blanc, cliquable pour la changer) */
+  const ic=$('fp-int-current');
+  if(!isInt){
+    const curI=currentIntOfTarget();
+    if(curI&&INT_BY_ID[curI]){
+      const x=INT_BY_ID[curI];
+      ic.innerHTML='<span style="color:'+x.color+'">'+T_SVG+'</span><span>'+x.name+'</span>';
+      ic.classList.remove('hide');
+      ic.onclick=()=>showFpStage('int');
+    }else{ic.classList.add('hide');}
+  }else{ic.classList.add('hide'); renderFpInts(currentIntOfTarget());}
 }
 function currentIntOfTarget(){
   if(fpTarget==='new')return pendingI;
   return (state.habits[fpTarget]&&state.habits[fpTarget].i)||null;
 }
 function openFreqPanel(target,stage){
-  fpTarget=target;$('fp-input').value='';$('fp-preview').textContent='';fpDetected=null;
+  fpTarget=target;$('fp-input').value='';fpDetected=null;
   const cur=(target==='new')?pendingF:(state.habits[target]?state.habits[target].f:null);
+  /* habitude déjà timée : on montre la fréquence courante (pré-sélection visible) */
+  if(cur){fpDetected=cur;$('fp-preview').textContent=flabel(cur);}
+  else{$('fp-preview').textContent='';}
   renderFpList(cur);
   showFpStage(stage||'freq');
   $('freq-panel').classList.remove('hide');
@@ -819,6 +861,14 @@ function go(dFloor){
 }
 $('get-higher').onclick=()=>{if(!busy)showStoner(true);};
 window.addEventListener('message',e=>{if(e.data&&e.data.type==='totehm-close-stoner')showStoner(false);});
+
+/* Le bouton Make the Lisbon Streets Sublime (overlay en haut, dans la méthode) suit la ville choisie en bas */
+function paintStreet(){
+  const sb=$('street-btn'); if(!sb)return;
+  const lis=isLisbon((profile.city||'').trim());
+  sb.classList.toggle('show',lis);
+  sb.classList.toggle('hide',!lis);
+}
 $('go-settings').onclick=()=>go(1);
 
 let wheelLock=false;
@@ -894,11 +944,10 @@ $('set-name').addEventListener('keydown',async e=>{
 });
 $('set-private').onclick=()=>{state.vis='private';save();renderSettings();};
 $('set-members').onclick=()=>{state.vis='network';save();renderSettings();};
-$('bot-off').onclick=()=>{profile.bot=false;save();renderSettings();};
-$('bot-on').onclick=()=>{profile.bot=true;save();renderSettings();};
 
-/* ══ SELECT YOUR CITY — déplacé depuis index.html ══
-   Lisbonne -> [Make the Lisbon Streets Sublime] + City feed (RSS/events). */
+/* ══ MY TOTEHM IN MY CITY ══
+   Lisbonne -> le coach match en plus les événements de la ville (RSS).
+   Autre ville -> coaching sur les seules données du Totehm + capture email. */
 const LISBON=['lisbon','lisboa','lisbonne','lissabon','lisbona','lisabona','lizbona','lisabon','lisszabon','lisburi','\uB9AC\uC2A4\uBCF8','\u91CC\u65AF\u672C','\u043B\u0438\u0441\u0441\u0430\u0431\u043E\u043D','\u0644\u0634\u0628\u0648\u0646\u0629','\u0644\u064A\u0633\u0628\u0648\u0646'];
 function isLisbon(v){
   const n=(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
@@ -909,8 +958,7 @@ function paintCity(){
   $('city-lisbon').classList.toggle('hide',!lis);
   $('city-intl').classList.toggle('hide',!(c&&!lis));
   if(document.activeElement!==$('city-input')) $('city-input').value=profile.city||'';
-  $('bot-off').classList.toggle('on',!profile.bot);
-  $('bot-on').classList.toggle('on',!!profile.bot);
+  paintStreet();  /* le bouton Make the Streets Sublime en haut suit la ville */
 }
 let cityTimer=null;
 $('city-input').addEventListener('input',()=>{
