@@ -103,7 +103,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 .habit .tick{position:absolute;left:var(--rl);width:var(--rw);height:5px;background:#000;top:50%;transform:translateY(-50%)}
 .habit.timed .tick{background:#fff}
 .habit .h-body{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;position:relative;display:flex;align-items:center}
-@media(max-width:600px){.habit.timed .h-freq{font-size:11px}}
+@media(max-width:600px){.habit.timed .h-freq{display:none}}
 .h-text,.h-add{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;line-height:1.5;padding:4px 2px;caret-color:#fff;text-align:left;resize:none;overflow:hidden;display:block}
 .h-text::placeholder{color:rgba(255,255,255,.33)}
 /* placeholder custom : le H de Habit en blanc */
@@ -112,6 +112,15 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 
 /* ── FREQUENCY PANEL ── */
 #freq-panel{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:22px}
+/* Fenêtre d'aperçu minimaliste : freq + intention, chacune cliquable pour rouvrir son sélecteur */
+#habit-peek{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:22px}
+.hp-card{background:#0a0a0a;border:1px solid #1e1e1e;width:100%;max-width:340px;padding:22px;display:flex;flex-direction:column;gap:6px}
+.hp-row{background:none;border:none;padding:16px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;color:#fff;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
+.hp-row:hover{opacity:.7}
+.hp-row + .hp-row{border-top:1px solid rgba(255,255,255,.10)}
+.hp-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.hp-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:22px;color:#fff;line-height:1.2}
+.hp-val .tglyph{height:22px;width:auto;vertical-align:-4px;margin-right:6px}
 .fp-card{background:#0a0a0a;border:1px solid #1e1e1e;width:100%;max-width:380px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px}
 #fp-input{background:none;border:none;border-bottom:1px solid rgba(255,255,255,.18);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;padding:4px 2px;text-align:center;caret-color:#fff}
 #fp-input::placeholder{color:rgba(255,255,255,.3);font-size:12px;font-style:italic}
@@ -119,11 +128,6 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 #fp-preview:hover,#fp-preview:active{color:#fff;background:var(--navy)}
 #fp-preview:empty,#fp-preview.hide{pointer-events:none}
 #fp-list{display:flex;flex-direction:column;gap:7px;max-height:42vh;overflow-y:auto;padding-right:4px}
-/* rappel de l'intention courante dans la vue fréquence : nom en blanc, cliquable pour changer */
-#fp-int-current{display:flex;align-items:center;justify-content:center;gap:8px;background:none;border:none;border-top:1px solid rgba(255,255,255,.12);margin-top:4px;padding:10px 0 2px;cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;color:#fff;transition:opacity .15s}
-#fp-int-current:hover{opacity:.7}
-#fp-int-current.hide{display:none}
-#fp-int-current .tglyph{height:15px;width:auto}
 /* étape 2 : l'intention de l'Habitude (les 7 de la Map) */
 #fp-ints{display:flex;flex-direction:column;gap:12px;max-height:60vh;overflow-y:auto;padding-right:4px}
 .fp-int{display:flex;flex-direction:column;gap:4px;background:none;border:none;padding:4px 0;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
@@ -319,9 +323,22 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
     <input id="fp-input" placeholder="type it — any language" autocomplete="off" spellcheck="false">
     <button id="fp-preview" type="button"></button>
     <div id="fp-list"></div>
-    <button id="fp-int-current" class="hide" type="button"></button>
     <div id="fp-ints" class="hide"></div>
     <button class="fp-skip hide" id="fp-skip">no intention yet</button>
+  </div>
+</div>
+
+<!-- Aperçu d'une habitude déjà configurée : freq + intention en un coup d'œil, chaque ligne rouvre son sélecteur -->
+<div id="habit-peek" class="hide" role="dialog" aria-label="Habit settings">
+  <div class="hp-card">
+    <button class="hp-row" id="hp-freq" type="button">
+      <span class="hp-lbl">Time Frequency</span>
+      <span class="hp-val" id="hp-freq-val"></span>
+    </button>
+    <button class="hp-row" id="hp-int" type="button">
+      <span class="hp-lbl">Intention</span>
+      <span class="hp-val" id="hp-int-val"></span>
+    </button>
   </div>
 </div>
 
@@ -697,7 +714,15 @@ function renderHabits(){
   box.querySelectorAll('.h-freq[data-i]').forEach(b=>{b.onclick=()=>openFreqPanel(+b.dataset.i);});
   box.querySelectorAll('.h-T[data-i]').forEach(b=>{
     const i=+b.dataset.i;
-    b.onclick=()=>openFreqPanel(i, b.classList.contains('h-Ti')?'int':'freq');
+    /* T d'une habitude configurée -> fenêtre d'aperçu (freq + intention en un coup d'œil, chacun éditable).
+       T d'une habitude sans intention -> panneau d'édition direct au bon stage. */
+    b.onclick=()=>{
+      if(b.classList.contains('h-Ti') && state.habits[i] && state.habits[i].f && state.habits[i].i){
+        openHabitPeek(i);
+      } else {
+        openFreqPanel(i, b.classList.contains('h-Ti')?'int':'freq');
+      }
+    };
   });
   box.querySelectorAll('.h-x').forEach(b=>{b.onclick=()=>{state.habits.splice(+b.dataset.i,1);save();renderHabits();};});
   const hT=$('h-T');if(hT)hT.onclick=()=>openFreqPanel('new','freq');
@@ -739,7 +764,7 @@ function paint(){
 }
 
 /* ══ FREQUENCY PANEL ══ */
-const fpOpen=()=>!$('freq-panel').classList.contains('hide');
+const fpOpen=()=>!$('freq-panel').classList.contains('hide')||!$('habit-peek').classList.contains('hide');
 function showFpStage(stage){
   fpStage=stage;
   const isInt=stage==='int';
@@ -748,17 +773,7 @@ function showFpStage(stage){
   $('fp-list').classList.toggle('hide',isInt);
   $('fp-ints').classList.toggle('hide',!isInt);
   $('fp-skip').classList.toggle('hide',!isInt);
-  /* en vue fréquence : rappel de l'intention courante (nom blanc, cliquable pour la changer) */
-  const ic=$('fp-int-current');
-  if(!isInt){
-    const curI=currentIntOfTarget();
-    if(curI&&INT_BY_ID[curI]){
-      const x=INT_BY_ID[curI];
-      ic.innerHTML='<span style="color:'+x.color+'">'+T_SVG+'</span><span>'+x.name+'</span>';
-      ic.classList.remove('hide');
-      ic.onclick=()=>showFpStage('int');
-    }else{ic.classList.add('hide');}
-  }else{ic.classList.add('hide'); renderFpInts(currentIntOfTarget());}
+  if(isInt){renderFpInts(currentIntOfTarget());}
 }
 function currentIntOfTarget(){
   if(fpTarget==='new')return pendingI;
@@ -776,6 +791,23 @@ function openFreqPanel(target,stage){
   if((stage||'freq')==='freq')setTimeout(()=>{try{$('fp-input').focus();}catch(e){}},40);
 }
 function closeFreqPanel(){$('freq-panel').classList.add('hide');fpTarget=null;fpStage='freq';}
+
+/* ══ FENÊTRE D'APERÇU D'UNE HABITUDE CONFIGURÉE ══
+   Ouverte au tap sur le T.svg coloré d'une habitude déjà remplie.
+   Montre la Time Frequency et l'Intention en un coup d'œil.
+   Chacune est cliquable : rouvre le sélecteur correspondant pré-rempli. */
+function openHabitPeek(i){
+  const s=state.habits[i]; if(!s||!s.f||!s.i)return;
+  const x=INT_BY_ID[s.i]||null;
+  $('hp-freq-val').textContent=flabel(s.f);
+  $('hp-int-val').innerHTML='<span style="color:'+(x?x.color:'#fff')+'">'+T_SVG+'</span>'+(x?x.name:'');
+  $('hp-freq').onclick=()=>{closeHabitPeek();openFreqPanel(i,'freq');};
+  $('hp-int').onclick =()=>{closeHabitPeek();openFreqPanel(i,'int');};
+  $('habit-peek').classList.remove('hide');
+}
+function closeHabitPeek(){$('habit-peek').classList.add('hide');}
+$('habit-peek').addEventListener('click',(e)=>{if(e.target.id==='habit-peek')closeHabitPeek();});
+document.addEventListener('keydown',(e)=>{if(e.key==='Escape'&&!$('habit-peek').classList.contains('hide'))closeHabitPeek();});
 function applyFreq(id){
   if(fpTarget==null||!FREQ_BY_ID[id]){closeFreqPanel();return;}
   if(fpTarget==='new'){
