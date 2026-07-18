@@ -118,17 +118,14 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   #btn-slogan{width:32vw}
   #subtitle{font-size:14px}
 }
-/* [My TOTEHM] entre le [Neurological reasons] et la citation — redescend vers les Habitudes.
-   Chevron ↓ = "reviens vers ton Totehm en bas". Visible seulement quand le technique est affiché. */
-#totehm-mid{display:none;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;padding:0;margin:auto auto;-webkit-tap-highlight-color:transparent;transition:opacity .15s ease}
-#totehm-mid.show{display:flex}
+/* [My Totehm] entre le [Neurological reasons] et la citation — redescend vers les Habitudes.
+   Chevron ↓ = "reviens vers ton Totehm en bas". Visible dès le départ (step 0 inclus). */
+#totehm-mid{display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:none;cursor:pointer;padding:0;margin:auto auto;-webkit-tap-highlight-color:transparent;transition:opacity .15s ease}
 #totehm-mid:hover{opacity:.7}
-#totehm-mid .lab{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:#b0b0b0;white-space:nowrap;transition:color .15s ease}
+#totehm-mid .lab{font-family:'Quantico',sans-serif;font-weight:400;font-size:22px;color:#b0b0b0;white-space:nowrap;transition:color .15s ease;display:inline-flex;align-items:center;gap:10px}
 #totehm-mid:hover .lab,#totehm-mid:active .lab{color:#fff}
-#totehm-mid .wm-frame{display:inline-block;padding:0 4px;background:var(--navy);border-radius:1px;line-height:1}
-#totehm-mid .wm-totehm{font-family:'Montserrat',sans-serif;font-weight:600;font-style:normal;color:#fff;letter-spacing:.16em;margin-right:-.16em}
-#totehm-mid .chev{width:14px;height:9px;color:rgba(255,255,255,.55);stroke-width:1.2;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round}
-#totehm-mid .wm-img,#go-totehm .wm-img{height:30px;width:30px;vertical-align:-9px;margin-left:5px;display:inline-block;border-radius:2px}
+#totehm-mid .chev{width:24px;height:15px;color:rgba(255,255,255,.55);stroke-width:1.2;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round}
+#totehm-mid .wm-img,#go-totehm .wm-img{height:51px;width:51px;display:inline-block;border-radius:2px;vertical-align:middle}
 #go-totehm{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;padding:0;margin:14px 0 4px;-webkit-tap-highlight-color:transparent;transition:opacity .15s ease}
 #go-totehm:hover{opacity:.7}
 #go-totehm .lab{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:#b0b0b0;white-space:nowrap;transition:color .15s ease}
@@ -262,17 +259,17 @@ const DOPE = '<svg viewBox="100 240 660 320" fill="currentColor" xmlns="http://w
 
 /* slogan : 'slogan' classique | 'grind' | 'love' */
 const STEPS = [
-  { file:'step_0_know_yourself.mp4', screen:0, quote:'Know yourself, know the enemy, fear no battle. \u2014 Sun Tzu' },
-  { file:'step_1_repulsion.mp4', text:'Repulse mentally that sh*t. {H} your brain.', slogan:'grind', why:'telegram_stoner_step_01_full', quote:'You have power over your mind \u2014 not outside events. Realize this, and you will find strength. \u2014 Marcus Aurelius' },
-  { file:'step_2_breath.mp4', text:'Just breathe and feel your heart. {H} your peace.', slogan:'love', why:'telegram_stoner_step_02_full', quote:'Nature does not hurry, yet everything is accomplished. \u2014 Lao Tzu' },
-  { file:'step_3_amplify_breath.mp4', text:'{H} your breath.', slogan:'grind', why:'telegram_stoner_step_03_full', quote:'Air stokes the fire. \u2014 Traditional Proverb' },
-  { file:'step_4_fully_aware.mp4', text:'{H} your consciousness. Here. Now. Around. Inside.', slogan:'grind', why:'telegram_stoner_step_04_full', quote:'The present moment is the only time over which we have dominion. \u2014 Thich Nhat Hanh' },
-  { file:'step_5_determination.mp4', text:'Visualize your objectives and determine your next steps. {H} your strategy.', slogan:'grind', why:'telegram_stoner_step_05_full', quote:'Victorious warriors win first and then go to war, while defeated warriors go to war first and then seek to win. \u2014 Sun Tzu' },
-  { file:'step_6_make_it_Happen.mp4', text:'Make it Happen. {H} Performance.', slogan:'slogan', why:'telegram_stoner_step_06_full', quote:'Some people want it to happen, some wish it would happen, others make it happen. \u2014 Michael Jordan' },
-  { file:'step_7_step_by_step.mp4', text:'Step by step.', slogan:'slogan', why:'telegram_stoner_step_07_full', quote:'What we do repeatedly is what we become. \u2014 Aristotle' },
-  { file:'step_8_love_the_process.mp4', text:'Love each step. Trust the way. {H} mentality.', slogan:'love', greenText:'EM sounds like love in French', why:'telegram_stoner_step_08_full', quote:'Faith is to believe what you do not see; the reward of this faith is to see what you believe. \u2014 Saint Augustine' },
-  { file:'step_9_express.mp4', text:'Express your emotions through art. {H} your Self.', slogan:'slogan', why:'telegram_stoner_step_09_full', quote:'The purpose of art is washing the dust of daily life off our souls. \u2014 Pablo Picasso' },
-  { file:'step_10_Time.mp4', text:'Master your Time. Get {H} again.', slogan:'slogan', why:'telegram_stoner_step_10_full', quote:'Time is the most valuable thing a man can spend. \u2014 Theophrastus' },
+  { file:'step_0_know_yourself.mp4', screen:0 },
+  { file:'step_1_repulsion.mp4', text:'Repulse mentally that sh*t. {H} your brain.', slogan:'grind', why:'telegram_stoner_step_01_full' },
+  { file:'step_2_breath.mp4', text:'Just breathe and feel your heart. {H} your peace.', slogan:'love', why:'telegram_stoner_step_02_full' },
+  { file:'step_3_amplify_breath.mp4', text:'{H} your breath.', slogan:'grind', why:'telegram_stoner_step_03_full' },
+  { file:'step_4_fully_aware.mp4', text:'{H} your consciousness. Here. Now. Around. Inside.', slogan:'grind', why:'telegram_stoner_step_04_full' },
+  { file:'step_5_determination.mp4', text:'Visualize your objectives and determine your next steps. {H} your strategy.', slogan:'grind', why:'telegram_stoner_step_05_full' },
+  { file:'step_6_make_it_Happen.mp4', text:'Make it Happen. {H} Performance.', slogan:'slogan', why:'telegram_stoner_step_06_full' },
+  { file:'step_7_step_by_step.mp4', text:'Step by step.', slogan:'slogan', why:'telegram_stoner_step_07_full' },
+  { file:'step_8_love_the_process.mp4', text:'Love each step. Trust the way. {H} mentality.', slogan:'love', greenText:'EM sounds like love in French', why:'telegram_stoner_step_08_full' },
+  { file:'step_9_express.mp4', text:'Express your emotions through art. {H} your Self.', slogan:'slogan', why:'telegram_stoner_step_09_full' },
+  { file:'step_10_Time.mp4', text:'Master your Time. Get {H} again.', slogan:'slogan', why:'telegram_stoner_step_10_full' },
 ];
 const NEURO = {0:"<div class=\"neuro-block\"><p class=\"nb-p\">Master yourself and you master everything. The people who control their own mind live longer, love deeper, and bend reality to their will. It starts with one brutal question: where am I right now?</p><p class=\"nb-p\">Naming your thought, emotion or urge fires your prefrontal cortex and instantly drops cortisol. Your amygdala — the fear center — goes quiet. You move from reaction to command.</p><p class=\"nb-p\">On the EEG this is the shift out of scattered beta. The simple act of looking inward already begins to organize your brainwaves. Awareness is the first key.</p><p class=\"nb-src\">Lieberman, UCLA — Affect Labeling (2007) · Fleming, Nature Neuroscience — Metacognition (2024)</p></div>",
 1:"<div class=\"neuro-block\"><p class=\"nb-p\">Every empire you'll ever build starts here: the power to say no. Kill the urge that drags you down and you forge unbreakable discipline — the rarest superpower on earth.</p><p class=\"nb-p\">The moment you reject the bad move, your prefrontal cortex cuts the dopamine your brain craved. It stings — that sting is a brand new neural connection being born. Old circuit weakens, new one fires.</p><p class=\"nb-p\">This is high beta — raw stress energy. You don't fight it, you convert it. The spike becomes fuel.</p><p class=\"nb-src\">Schultz, Nature Reviews Neuroscience (2016) · Huberman Lab, Stanford — Dopamine & Habits (2023)</p></div>",
@@ -359,7 +356,6 @@ async function loadVideoStep(idx){
   const step=STEPS[idx];
   zonesShown=false;
   technique.classList.remove('show');
-  totehmMid.classList.remove('show');
   subtitle.classList.remove('show');
   step0ui.classList.remove('show');
   step0intro.classList.remove('show');
@@ -377,11 +373,8 @@ async function loadVideoStep(idx){
 
   if(idx>=1){
     buildTechnique(step);
-    subtitle.textContent=step.quote||'';
     logoBtn.classList.add('show');
     technique.classList.add('show');
-    totehmMid.classList.add('show');
-    subtitle.classList.add('show');
   }else{
     step0intro.classList.add('show');
   }
@@ -394,8 +387,6 @@ function revealStep0UI(){
   zonePlus.classList.add('show');
   zoneMinus.classList.add('show');
   step0ui.classList.add('show');
-  subtitle.textContent=STEPS[0].quote||'';
-  subtitle.classList.add('show');
 }
 
 vid.addEventListener('loadeddata',()=>{vid.play().catch(()=>{document.addEventListener('touchstart',()=>vid.play(),{once:true});});});
