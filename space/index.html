@@ -57,15 +57,20 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 #go-settings:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
 #go-settings .chev{width:18px;height:11px;color:rgba(255,255,255,.55);stroke-width:1.2;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;transition:color .15s}
 
+/* Croix PlayStation — gauche (My Book) et droite (My Next Objective) */
+#go-book,#go-next{position:fixed;top:50%;transform:translateY(-50%);z-index:31;display:flex;flex-direction:row;align-items:center;gap:6px;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;line-height:1.4;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
+#go-book{left:22px}
+#go-next{right:22px}
+@media(hover:hover){#go-book:hover,#go-next:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
+#go-book:active,#go-next:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+#go-book .chev,#go-next .chev{width:11px;height:18px;color:rgba(255,255,255,.55);stroke-width:1.2;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;transition:color .15s}
+
 /* ── STONER METHOD : la section du dessus ── */
-#stoner{position:fixed;inset:0;z-index:55;background:#000;transform:translateY(-100%);visibility:hidden;pointer-events:none;transition:transform .58s cubic-bezier(.45,0,.2,1),visibility 0s linear .58s;will-change:transform}
-#stoner.show{transform:translateY(0);visibility:visible;pointer-events:auto;transition:transform .58s cubic-bezier(.45,0,.2,1),visibility 0s}
-/* Navigation temporelle horizontale — même qualité d'animation que le stoner, axe X.
-   #book = le passé (glisse depuis la gauche) · #nextobj = le futur (glisse depuis la droite) */
-#book,#nextobj{position:fixed;inset:0;z-index:55;background:#000;visibility:hidden;pointer-events:none;transition:transform .58s cubic-bezier(.45,0,.2,1),visibility 0s linear .58s;will-change:transform}
-#book{transform:translateX(-100%)}
-#nextobj{transform:translateX(100%)}
-#book.show,#nextobj.show{transform:translateX(0);visibility:visible;pointer-events:auto;transition:transform .58s cubic-bezier(.45,0,.2,1),visibility 0s}
+#stoner{position:fixed;inset:0;z-index:55;background:#000;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .38s ease,visibility 0s linear .38s;will-change:opacity}
+#stoner.show{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .38s ease,visibility 0s}
+/* Book (passé) et Next Objective (futur) — même fondu, cohérent avec Stoner */
+#book,#nextobj{position:fixed;inset:0;z-index:55;background:#000;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .38s ease,visibility 0s linear .38s;will-change:opacity}
+#book.show,#nextobj.show{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .38s ease,visibility 0s}
 #book iframe,#nextobj iframe{width:100%;height:100%;border:none;display:block}
 /* Make the Streets Sublime : overlay en bas de la méthode, visible seulement si Lisbon sélectionné en bas */
 /* Make the Streets Sublime : bouton phare perforé en HAUT de la méthode (si Lisbon sélectionné en bas) */
@@ -135,6 +140,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 .hp-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5)}
 .hp-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:22px;color:#fff;line-height:1.2}
 .hp-val .tglyph{height:22px;width:auto;vertical-align:-4px;margin-right:6px}
+.hp-def{font-family:var(--futura);font-weight:300;font-style:italic;font-size:12px;color:rgba(255,255,255,.6);line-height:1.4;max-width:260px;margin-top:6px}
 .fp-card{background:#0a0a0a;border:1px solid #1e1e1e;width:100%;max-width:380px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px}
 #fp-input{background:none;border:none;border-bottom:1px solid rgba(255,255,255,.18);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;padding:4px 2px;text-align:center;caret-color:#fff}
 #fp-input::placeholder{color:rgba(255,255,255,.3);font-size:12px;font-style:italic}
@@ -263,6 +269,16 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
   <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2 L12 11 L22 2"/></svg>
 </button>
 
+<button id="go-book" class="sink-el" aria-label="My Book — the past">
+  <svg class="chev" viewBox="0 0 14 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2 L2 12 L11 22"/></svg>
+  <span>My Book</span>
+</button>
+
+<button id="go-next" class="sink-el" aria-label="My Next Objective — the future">
+  <span>My Next Objective</span>
+  <svg class="chev" viewBox="0 0 14 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2 L12 12 L3 22"/></svg>
+</button>
+
 <div id="lift-hg"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></div>
 <div id="stoner"><iframe id="stoner-frame" title="Stoner Method"></iframe>
   <a id="street-btn" class="hide" href="play_the_street.html">Make the Lisbon Streets Sublime</a>
@@ -358,6 +374,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
     <button class="hp-row" id="hp-int" type="button">
       <span class="hp-lbl">Intention</span>
       <span class="hp-val" id="hp-int-val"></span>
+      <span class="hp-def" id="hp-int-def"></span>
     </button>
   </div>
 </div>
@@ -846,6 +863,7 @@ function openHabitPeek(i){
   $('hp-int-val').innerHTML=x
     ? '<span style="color:'+x.color+'">'+T_SVG+' '+x.name+'</span> <svg class="higher-inline" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg>'
     : '';
+  $('hp-int-def').textContent=x?(x.def||''):'';
   $('hp-freq').onclick=()=>{closeHabitPeek();openFreqPanel(i,'freq');};
   $('hp-int').onclick =()=>{closeHabitPeek();openFreqPanel(i,'int');};
   $('habit-peek').classList.remove('hide');
@@ -945,6 +963,8 @@ function go(dFloor){
   else if(dFloor>0){ if(floor===0){animateSwap(1,()=>{floor=1;paint();});} }
 }
 $('get-higher').onclick=()=>{if(!busy)showStoner(true);};
+$('go-book').onclick=()=>{if(!busy&&!hOpen()&&!$('stoner').classList.contains('show')&&floor===0)showBook(true);};
+$('go-next').onclick=()=>{if(!busy&&!hOpen()&&!$('stoner').classList.contains('show')&&floor===0)showNext(true);};
 window.addEventListener('message',e=>{if(e.data&&e.data.type==='totehm-close-stoner')showStoner(false);});
 
 /* Le bouton Make the Lisbon Streets Sublime (overlay en haut, dans la méthode) suit la ville choisie en bas */
@@ -985,9 +1005,9 @@ window.addEventListener('touchend',(e)=>{
   }else if(axis==='h'){
     const dx=e.changedTouches[0].screenX-x0;
     if(Math.abs(dx)<TH)return;
-    if(hOpen()){ if($('book').classList.contains('show')&&dx>TH)showBook(false); else if($('nextobj').classList.contains('show')&&dx<-TH)showNext(false); return; }
+    if(hOpen()){ if($('book').classList.contains('show')&&dx<-TH)showBook(false); else if($('nextobj').classList.contains('show')&&dx>TH)showNext(false); return; }
     if($('stoner').classList.contains('show')||floor!==0)return;
-    if(dx<-TH)showBook(true); else if(dx>TH)showNext(true);
+    if(dx>TH)showBook(true); else if(dx<-TH)showNext(true);
   }
 },{passive:true});
 window.addEventListener('keydown',(e)=>{
@@ -995,8 +1015,8 @@ window.addEventListener('keydown',(e)=>{
   if(e.target.tagName==='INPUT')return;
   if($('member-window').classList.contains('show')){if(e.key==='Escape')$('member-window').classList.remove('show');return;}
   if(e.key==='ArrowDown'){e.preventDefault();go(1);}else if(e.key==='ArrowUp'){e.preventDefault();go(-1);}
-  else if(e.key==='ArrowLeft'){e.preventDefault();if($('nextobj').classList.contains('show'))showNext(false);else if(!hOpen()&&!$('stoner').classList.contains('show')&&floor===0)showBook(true);}
-  else if(e.key==='ArrowRight'){e.preventDefault();if($('book').classList.contains('show'))showBook(false);else if(!hOpen()&&!$('stoner').classList.contains('show')&&floor===0)showNext(true);}
+  else if(e.key==='ArrowLeft'){e.preventDefault();if($('book').classList.contains('show'))showBook(false);else if(!hOpen()&&!$('stoner').classList.contains('show')&&floor===0)showNext(true);}
+  else if(e.key==='ArrowRight'){e.preventDefault();if($('nextobj').classList.contains('show'))showNext(false);else if(!hOpen()&&!$('stoner').classList.contains('show')&&floor===0)showBook(true);}
 });
 /* Le passé et le futur parlent au présent */
 window.addEventListener('message',e=>{

@@ -8,7 +8,7 @@
 <style>
 :root{
   --bg:#36498C; /* le futur — le ciel, la direction */
-  --rl:46px;--rw:14px;--band-t:96px;--band-b:96px;
+  --rl:46px;--rw:14px;--band-t:96px;--band-b:112px;
   --perf-d:15px;--perf-g:30px;--perf-corner:22px;
   --g-light:#e0e0e0;
   --fight:#E24B4A;--flow:#BA7517;--enrich:#EF9F27;--love:#639922;--express:#1D9E75;--focus:#378ADD;--celebrate:#7F77DD;
@@ -26,21 +26,21 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 
 #rail{position:fixed;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.30);z-index:1}
 
-#band-t{position:fixed;top:0;left:0;right:0;height:var(--band-t);display:flex;align-items:center;justify-content:center;gap:14px;z-index:3}
-#band-t img{height:52px;width:auto}
-#band-t .bt-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.14em;color:#fff}
+/* Bandes = strictement le langage d'index */
+#bigT{position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;line-height:0}
+#bigT img{height:52px;width:auto;display:block;-webkit-user-drag:none}
+#wordmark{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;line-height:0}
+#wordmark img{height:58px;width:auto;display:block;-webkit-user-drag:none}
 
 #mid{position:fixed;left:0;right:0;top:var(--band-t);bottom:var(--band-b);overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:6px 0;z-index:2}
 
-/* saisie de l'objectif — même langage que la ligne d'ajout du Totehm */
+/* Ligne de saisie : plus de T avant l'input, aligné sur le rail comme les propositions */
 #obj-row{position:relative;display:flex;align-items:center;min-height:44px}
-#obj-row .meta{position:absolute;left:0;width:calc(var(--rl) + var(--rw) + 10px);display:flex;justify-content:center;color:#fff}
-#obj-row .tglyph{height:20px;width:auto}
 #obj-input{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;margin-right:34px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.35);color:#fff;font-family:'Quantico',sans-serif;font-size:15px;padding:6px 2px;outline:none}
 #obj-input::placeholder{color:rgba(255,255,255,.45)}
 #obj-note{margin-left:calc(var(--rl) + var(--rw) + 16px);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6);min-height:14px}
 
-/* propositions — structure exacte d'une ligne du Totehm */
+/* Propositions — structure exacte d'une ligne du Totehm, T = vrai glyph d'index */
 .prop{position:relative;display:flex;align-items:center;min-height:44px}
 .prop .meta{position:absolute;left:0;width:calc(var(--rl) + var(--rw) + 10px);display:flex;flex-direction:column;align-items:center;gap:2px}
 .prop .tglyph{height:20px;width:auto}
@@ -49,11 +49,8 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 .prop .p-text{font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:#fff;line-height:1.35}
 .prop .p-add{position:absolute;right:20px;top:50%;transform:translateY(-50%);background:none;border:1px solid rgba(255,255,255,.5);color:#fff;font-family:'Quantico',sans-serif;font-size:13px;line-height:1;padding:5px 9px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
 .prop .p-add:hover{opacity:.7}
-.prop.added .p-add{border-color:transparent;color:rgba(255,255,255,.55);cursor:default}
-.prop.added .p-text{opacity:.55}
-
-#band-b{position:fixed;bottom:0;left:0;right:0;height:var(--band-b);display:flex;align-items:center;justify-content:center;z-index:3;padding:0 30px;text-align:center}
-#band-b .q{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.14em;color:rgba(255,255,255,.7)}
+.prop.added{opacity:.4}
+.prop.added .p-add{display:none}
 </style>
 </head>
 <body>
@@ -61,30 +58,25 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 <div id="perf"><i></i></div>
 <div id="rail"></div>
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-<symbol id="Tg" viewBox="0 0 24 24"><path d="M4 5h16M12 5v15" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round"/></symbol>
-</defs></svg>
-
-<div id="band-t">
-  <img src="assets/img/T.png" alt="T">
-  <div class="bt-title">NEXT OBJECTIVE</div>
-</div>
+<!-- Bandes conformes à index.html : T.png en haut centré, TOTEHM.png en bas centré -->
+<div id="bigT" class="sink-el"><img src="assets/img/T.png" alt="T"
+  onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/T.png'"></div>
+<div id="wordmark" class="sink-el"><img src="assets/img/TOTEHM.png" alt="TOTEHM"
+  onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/TOTEHM.png'"></div>
 
 <div id="mid">
   <div id="obj-row">
-    <div class="meta"><svg class="tglyph" viewBox="0 0 24 24"><use href="#Tg"/></svg></div>
     <input id="obj-input" placeholder="I want to..." maxlength="300" autocomplete="off" spellcheck="false">
   </div>
   <div id="obj-note"></div>
   <div id="props"></div>
 </div>
 
-<div id="band-b"><div class="q">WHO DO I WANT TO BECOME NEXT?</div></div>
-
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
 const $=id=>document.getElementById(id);
+const T_SVG='<svg class="tglyph" viewBox="0 0 624 636" aria-hidden="true"><path fill="currentColor" d="M0 0 H624 V92 H358 V592 H434 V636 H190 V592 H266 V92 H0 Z"/></svg>';
 
 const FLABEL={every_minute:'every minute',hourly:'every hour',several_daily:'several times a day',every_morning:'every morning',every_afternoon:'every afternoon',daily:'daily',every_evening:'every evening',every_weekday:'every weekday',every_night:'every night',every_other_day:'every other day',twice_week:'twice a week',every_weekend:'every weekend',weekly:'weekly',every_monday:'every monday',every_tuesday:'every tuesday',every_wednesday:'every wednesday',every_thursday:'every thursday',every_friday:'every friday',every_saturday:'every saturday',every_sunday:'every sunday',biweekly:'every two weeks',twice_month:'twice a month',monthly:'monthly',every_1st_month:'every 1st of the month',every_15th_month:'every 15th of the month',seasonal:'every season change',quarterly:'every quarter',semiannual:'every six months',yearly:'yearly',every_birthday:'every birthday',every_newyear:'every new year',randomly:'randomly',sometimes:'sometimes'};
 const ICOLOR={fight:'var(--fight)',flow:'var(--flow)',enrich:'var(--enrich)',love:'var(--love)',express:'var(--express)',focus:'var(--focus)',celebrate:'var(--celebrate)'};
@@ -96,7 +88,7 @@ function renderProps(habits){
   const box=$('props');box.innerHTML='';
   habits.forEach(h=>{
     const d=document.createElement('div');d.className='prop';
-    d.innerHTML='<div class="meta"><svg class="tglyph" viewBox="0 0 24 24" style="color:'+(ICOLOR[h.i]||'#fff')+'"><use href="#Tg"/></svg><div class="p-freq">'+esc(FLABEL[h.f]||h.f)+'</div></div>'
+    d.innerHTML='<div class="meta"><span style="color:'+(ICOLOR[h.i]||'#fff')+';display:inline-block;height:20px">'+T_SVG+'</span><div class="p-freq">'+esc(FLABEL[h.f]||h.f)+'</div></div>'
       +'<div class="body"><div class="p-text">'+esc(h.text)+'</div></div>'
       +'<button class="p-add" aria-label="Add to my Totehm">+</button>';
     d.querySelector('.p-add').onclick=()=>{
@@ -105,7 +97,7 @@ function renderProps(habits){
       const embedded=window.parent&&window.parent!==window;
       let sent=false;
       if(embedded){try{window.parent.postMessage({type:'totehm-add-habit',habit},'*');sent=true;}catch(e){}}
-      if(!sent){ /* standalone : écrire directement dans le state local du Totehm */
+      if(!sent){
         try{
           const KEY='totehm_habits_v1';
           const raw=localStorage.getItem(KEY);
@@ -115,7 +107,6 @@ function renderProps(habits){
         }catch(e){}
       }
       d.classList.add('added');
-      d.querySelector('.p-add').textContent='in your Totehm';
     };
     box.appendChild(d);
   });
@@ -148,8 +139,8 @@ let lock=false;const trig=()=>{if(lock)return;lock=true;setTimeout(()=>lock=fals
 let x0=0,y0=0,ax=null;
 window.addEventListener('touchstart',e=>{x0=e.changedTouches[0].screenX;y0=e.changedTouches[0].screenY;ax=null;},{passive:true});
 window.addEventListener('touchmove',e=>{if(ax)return;const dx=Math.abs(e.changedTouches[0].screenX-x0),dy=Math.abs(e.changedTouches[0].screenY-y0);if(dx>12||dy>12)ax=dx>dy?'h':'v';},{passive:true});
-window.addEventListener('touchend',e=>{if(ax!=='h')return;if(e.target&&e.target.closest&&e.target.closest('input,button'))return;const dx=e.changedTouches[0].screenX-x0;if(dx<-50)trig();},{passive:true});
-window.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(e.key==='Escape'||e.key==='ArrowLeft')trig();});
+window.addEventListener('touchend',e=>{if(ax!=='h')return;if(e.target&&e.target.closest&&e.target.closest('input,button'))return;const dx=e.changedTouches[0].screenX-x0;if(dx>50)trig();},{passive:true});
+window.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(e.key==='Escape'||e.key==='ArrowRight')trig();});
 </script>
 </body>
 </html>
