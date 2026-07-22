@@ -450,15 +450,15 @@ if(goTotehm) goTotehm.onclick=goToTotehm;
     goToTotehm();
   }
   window.addEventListener('wheel',(e)=>{
-    if(e.deltaY<-30) trigger();
+    if(e.deltaY<-20) trigger();
   },{passive:true});
   let ty0=0,taxis=null;
   window.addEventListener('touchstart',(e)=>{ty0=e.changedTouches[0].screenY;taxis=null;},{passive:true});
-  window.addEventListener('touchmove',(e)=>{if(taxis)return;const dy=Math.abs(e.changedTouches[0].screenY-ty0);if(dy>12)taxis='v';},{passive:true});
+  window.addEventListener('touchmove',(e)=>{if(taxis)return;const dy=Math.abs(e.changedTouches[0].screenY-ty0);if(dy>8)taxis='v';},{passive:true});
   window.addEventListener('touchend',(e)=>{
     if(taxis!=='v')return;
     const dy=e.changedTouches[0].screenY-ty0;
-    if(dy<-50) trigger();  /* doigt qui MONTE = redescend vers Habitudes (mouvement inversé demandé) */
+    if(dy<-32) trigger();  /* doigt qui MONTE = redescend vers Habitudes (mouvement inversé demandé) */
   },{passive:true});
 })();
 

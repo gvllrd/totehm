@@ -1008,7 +1008,7 @@ function scrollEdges(){
 window.addEventListener('wheel',(e)=>{
   if(wheelLock||fpOpen()||$('member-window').classList.contains('show'))return;
   if(e.target&&e.target.closest&&e.target.closest('#results,#freq-panel,#member-window'))return;
-  if(Math.abs(e.deltaY)<=30)return;
+  if(Math.abs(e.deltaY)<=20)return;
   const edge=scrollEdges(), down=e.deltaY>0;
   if(down&&!edge.bottom)return;   /* la liste scrolle d'abord */
   if(!down&&!edge.top)return;
@@ -1017,21 +1017,21 @@ window.addEventListener('wheel',(e)=>{
 },{passive:true});
 let y0=0,axis=null,t0el=null,x0=0;
 window.addEventListener('touchstart',(e)=>{x0=e.changedTouches[0].screenX;y0=e.changedTouches[0].screenY;axis=null;t0el=e.target;},{passive:true});
-window.addEventListener('touchmove',(e)=>{if(axis)return;const dx=e.changedTouches[0].screenX-x0,dy=e.changedTouches[0].screenY-y0;if(Math.abs(dx)>12||Math.abs(dy)>12)axis=Math.abs(dx)>Math.abs(dy)?'h':'v';},{passive:true});
+window.addEventListener('touchmove',(e)=>{if(axis)return;const dx=e.changedTouches[0].screenX-x0,dy=e.changedTouches[0].screenY-y0;if(Math.abs(dx)>8||Math.abs(dy)>8)axis=Math.abs(dx)>Math.abs(dy)?'h':'v';},{passive:true});
 window.addEventListener('touchend',(e)=>{
   if(fpOpen())return;
   if(t0el&&t0el.closest&&t0el.closest('#results,#freq-panel,#member-window,input,textarea,button'))return;
-  const dy=e.changedTouches[0].screenY-y0;const TH=50;
+  const dy=e.changedTouches[0].screenY-y0;const TH=32;
   if(axis==='v'){
     const edge=scrollEdges();
-    if(dy<-TH&&edge.bottom)go(-1);   /* swipe UP -> monter d'un étage (Habits->Settings->Stoner) */
-    else if(dy>TH&&edge.top)go(1);   /* swipe DOWN -> retour vers Habitudes */
+    if(dy>TH&&edge.top)go(-1);        /* swipe DOWN (doigt part du haut, descend) -> monte d'étage */
+    else if(dy<-TH&&edge.bottom)go(1); /* swipe UP -> descend vers Habitudes */
   }else if(axis==='h'){
     const dx=e.changedTouches[0].screenX-x0;
     if(Math.abs(dx)<TH)return;
     if(hOpen()){ if($('book').classList.contains('show')&&dx<-TH)showBook(false); else if($('nextobj').classList.contains('show')&&dx>TH)showNext(false); return; }
-    if($('stoner').classList.contains('show')||floor!==0)return;
-    if(dx>TH)showBook(true); else if(dx<-TH)showNext(true);
+    if($('stoner').classList.contains('show'))return;    /* pas depuis Stoner */
+    if(dx>TH)showBook(true); else if(dx<-TH)showNext(true);    /* Habits + Settings */
   }
 },{passive:true});
 window.addEventListener('keydown',(e)=>{
@@ -1039,8 +1039,8 @@ window.addEventListener('keydown',(e)=>{
   if(e.target.tagName==='INPUT')return;
   if($('member-window').classList.contains('show')){if(e.key==='Escape')$('member-window').classList.remove('show');return;}
   if(e.key==='ArrowDown'){e.preventDefault();go(1);}else if(e.key==='ArrowUp'){e.preventDefault();go(-1);}
-  else if(e.key==='ArrowLeft'){e.preventDefault();if($('book').classList.contains('show'))showBook(false);else if(!hOpen()&&!$('stoner').classList.contains('show')&&floor===0)showNext(true);}
-  else if(e.key==='ArrowRight'){e.preventDefault();if($('nextobj').classList.contains('show'))showNext(false);else if(!hOpen()&&!$('stoner').classList.contains('show')&&floor===0)showBook(true);}
+  else if(e.key==='ArrowLeft'){e.preventDefault();if($('book').classList.contains('show'))showBook(false);else if(!hOpen()&&!$('stoner').classList.contains('show'))showNext(true);}
+  else if(e.key==='ArrowRight'){e.preventDefault();if($('nextobj').classList.contains('show'))showNext(false);else if(!hOpen()&&!$('stoner').classList.contains('show'))showBook(true);}
 });
 /* Le passé et le futur parlent au présent */
 window.addEventListener('message',e=>{
