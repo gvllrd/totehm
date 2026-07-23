@@ -46,30 +46,24 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 #wordmark img{height:58px;width:auto;display:block;-webkit-user-drag:none}
 
 /* Get Higher (haut droite) + Real inspiration (bas droite) */
-#get-higher{position:fixed;top:16px;right:16px;z-index:31;display:flex;flex-direction:column;align-items:flex-end;gap:2px;background:none;border:none;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent;transition:opacity .2s}
-#get-higher:hover{opacity:.7}
-#get-higher .chev{width:18px;height:12px;color:rgba(255,255,255,.6);align-self:center}
-#get-higher .lab{display:flex;align-items:center;gap:6px;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:rgba(255,255,255,.62)}
+/* Petite flèche cliquable centrée juste sous le TOTEHM.png du bas — ouvre le menu paramètres */
+#menu-arrow{position:fixed;bottom:6px;left:50%;transform:translateX(-50%);z-index:31;background:none;border:none;cursor:pointer;padding:4px 12px;line-height:0;-webkit-tap-highlight-color:transparent;transition:opacity .2s}
+#menu-arrow:hover{opacity:.7}
+#menu-arrow svg{width:22px;height:12px;color:rgba(255,255,255,.55)}
 .higher-inline{height:1.5em;width:auto;display:inline-block;vertical-align:-.32em}
 
 /* menu-row : structure d'un bouton-saisie (Name of your Totehm, Search a Totehm) */
 .menu-row{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
 
-/* Curseur PlayStation dans les paramètres : Get Higher / Book / Next / Totehm logo */
-#settings-cross{position:relative;width:100%;max-width:340px;margin:22px auto 8px;height:170px}
-#settings-cross.hide{display:none}
-.sx-btn{position:absolute;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;line-height:1.5;text-decoration:none;white-space:nowrap;display:flex;align-items:center;gap:6px;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
-@media(hover:hover){.sx-btn:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
-.sx-btn:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
-#sx-up   {top:0;   left:50%;transform:translateX(-50%);flex-direction:column;gap:2px;align-items:center}
-#sx-down {bottom:0;left:50%;transform:translateX(-50%);flex-direction:column;gap:2px;align-items:center}
-#sx-left {top:50%;left:0;transform:translateY(-50%)}
-#sx-right{top:50%;right:0;transform:translateY(-50%)}
-.sx-btn .chev{width:18px;height:11px;color:rgba(255,255,255,.55);stroke-width:1.2;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;transition:color .15s}
-.sx-btn .sx-chev-h{width:11px;height:18px}
-.sx-btn .sx-lab{display:flex;align-items:center;gap:5px;font-size:13px;color:inherit}
-.sx-logo img{height:44px;width:44px;display:block;border-radius:2px}
-.sx-logo{gap:5px}
+/* Rangée haute du menu paramètres : My Book · My Totehm↑ · Next Objective */
+#settings-nav{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;max-width:360px;margin:14px auto 22px;padding:0 6px}
+.sn-btn{background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;line-height:1.5;text-decoration:none;white-space:nowrap;display:flex;align-items:center;gap:6px;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
+@media(hover:hover){.sn-btn:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
+.sn-btn:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+.sn-btn .chev{width:18px;height:11px;color:rgba(255,255,255,.55);stroke-width:1.2;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;transition:color .15s}
+.sn-btn .sn-chev-h{width:11px;height:18px}
+.sn-logo{flex-direction:column;gap:3px}
+.sn-logo img{height:38px;width:38px;display:block;border-radius:2px}
 
 /* ── STONER METHOD : la section du dessus ── */
 #stoner{position:fixed;inset:0;z-index:55;background:#000;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .38s ease,visibility 0s linear .38s;will-change:opacity}
@@ -104,9 +98,9 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 .btn-back:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
 
 /* ── CONNECTION BAR ── */
-#conn-bar{position:fixed;bottom:14px;left:14px;z-index:45;display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:none;color:rgba(255,255,255,.62);padding:0;-webkit-tap-highlight-color:transparent;transition:color .2s}
+#conn-bar{position:fixed;top:14px;left:14px;z-index:45;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:0 4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
 #conn-bar:hover{color:#fff}
-#conn-bar .dot{width:6px;height:6px;border-radius:50%;background:#888}
+#conn-bar .dot{width:8px;height:8px;border-radius:50%;background:#888}
 
 /* ══ FLOORVIEW : 0 = HABITS (navy) · 1 = SETTINGS (noir) ══ */
 #floorview{position:fixed;inset:0;display:flex;flex-direction:column;transition:background-color .5s ease;z-index:2;background:transparent}
@@ -117,7 +111,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 #habits{width:100%;display:flex;flex-direction:column;gap:9px}
 .habit{position:relative;display:flex;align-items:center;min-height:30px;padding-right:30px}
 .habit .meta{position:absolute;right:calc(100% - var(--rl) + 10px);display:flex;align-items:center;gap:8px;white-space:nowrap}
-.habit .h-x{position:absolute;right:38px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.28);font-size:15px;line-height:1;cursor:pointer;padding:0;transition:color .15s;z-index:5}
+.habit .h-x{position:absolute;right:18px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.35);font-size:16px;line-height:1;cursor:pointer;padding:6px 8px;transition:color .15s;z-index:5;-webkit-tap-highlight-color:transparent}
 .habit .h-x:hover{color:#fff}
 .habit .h-freq{font-family:'Quantico',sans-serif;font-weight:400;font-size:12px;letter-spacing:0;color:#fff;background:none;border:none;padding:0;cursor:pointer;transition:opacity .15s}
 .habit .h-freq:hover{opacity:.7}
@@ -129,7 +123,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 .habit.timed .tick{background:#fff}
 .habit .h-body{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;position:relative;display:flex;align-items:center}
 @media(max-width:600px){.habit.timed .h-freq{display:none}}
-.h-text,.h-add{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;line-height:1.5;padding:4px 2px;caret-color:#fff;text-align:left;resize:none;overflow:hidden;display:block}
+.h-text,.h-add{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;line-height:1.5;padding:4px 46px 4px 2px;caret-color:#fff;text-align:left;resize:none;overflow:hidden;display:block}
 .h-text::placeholder{color:rgba(255,255,255,.33)}
 /* placeholder custom : le H de Habit en blanc */
 .h-hint{position:absolute;left:2px;top:50%;transform:translateY(-50%);font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:rgba(255,255,255,.33);pointer-events:none}
@@ -139,6 +133,12 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 #freq-panel{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:22px}
 /* Fenêtre d'aperçu minimaliste : freq + intention, chacune cliquable pour rouvrir son sélecteur */
 #habit-peek{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:22px}
+/* Fenêtre de filtre : même style que habit-peek */
+#filter-modal{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:22px}
+/* Badge du filtre actif : petit indicateur cliquable en haut du T.png */
+#filter-badge{position:fixed;top:82px;left:50%;transform:translateX(-50%);z-index:32;display:flex;align-items:center;gap:6px;background:var(--navy);padding:4px 4px 4px 10px;font-family:'Quantico',sans-serif;font-size:11px;color:#fff;letter-spacing:0}
+#filter-badge #fb-clear{background:none;border:none;color:rgba(255,255,255,.65);font-size:14px;line-height:1;cursor:pointer;padding:2px 6px;transition:color .15s;-webkit-tap-highlight-color:transparent}
+#filter-badge #fb-clear:hover{color:#fff}
 .hp-card{background:#0a0a0a;border:1px solid #1e1e1e;width:100%;max-width:340px;padding:22px;display:flex;flex-direction:column;gap:6px}
 .hp-row{background:none;border:none;padding:16px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;color:#fff;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
 .hp-row:hover{opacity:.7}
@@ -264,9 +264,8 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 
 <button id="conn-bar" class="sink-el" aria-label="member space"><span class="dot"></span>Guest</button>
 
-<button id="get-higher" class="sink-el" aria-label="Higher inspiration">
-  <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
-  <span class="lab"><svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-slogan"></use></svg> inspiration</span>
+<button id="menu-arrow" class="sink-el" aria-label="Open menu">
+  <svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
 </button>
 
 <div id="lift-hg"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></div>
@@ -284,6 +283,22 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
     <div id="habits"></div>
 
     <div id="settings" class="hide">
+      <!-- Rangée haute du menu : [My Book] · [My TOTEHM↑ = retour Habits] · [Next Objective] -->
+      <div id="settings-nav">
+        <button id="sn-book" class="sn-btn" aria-label="My Book — the past">
+          <svg class="chev sn-chev-h" viewBox="0 0 14 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2 L2 12 L11 22"/></svg>
+          <span>My Book</span>
+        </button>
+        <button id="sn-home" class="sn-btn sn-logo" aria-label="Back to your Totehm">
+          <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
+          <img src="assets/img/totehm_logo.png" alt="Totehm" onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/totehm_logo.png'">
+        </button>
+        <button id="sn-next" class="sn-btn" aria-label="Next Objective — the future">
+          <span>Next Objective</span>
+          <svg class="chev sn-chev-h" viewBox="0 0 14 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2 L12 12 L3 22"/></svg>
+        </button>
+      </div>
+
       <!-- Menu en 4 boutons alignés : Name, Visibility, City, Search -->
       <div class="set-block">
         <div class="menu-row">
@@ -337,23 +352,9 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
         </div>
       </div>
 
-      <div id="settings-cross">
-        <button id="sx-up" class="sx-btn" aria-label="Get Higher — stoner method">
-          <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
-          <span class="sx-lab">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-slogan"></use></svg></span>
-        </button>
-        <button id="sx-left" class="sx-btn" aria-label="My Book — the past">
-          <svg class="chev sx-chev-h" viewBox="0 0 14 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2 L2 12 L11 22"/></svg>
-          <span>My Book</span>
-        </button>
-        <button id="sx-right" class="sx-btn" aria-label="Next Objective — the future">
-          <span>Next Objective</span>
-          <svg class="chev sx-chev-h" viewBox="0 0 14 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2 L12 12 L3 22"/></svg>
-        </button>
-        <button id="sx-down" class="sx-btn sx-logo" aria-label="Back to your Totehm">
-          <img src="assets/img/totehm_logo.png" alt="Totehm" onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/totehm_logo.png'">
-          <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2 L12 11 L22 2"/></svg>
-        </button>
+      <!-- Bouton [Get Higher... with your Totehm] : monte vers Stoner avec animation d'élévation -->
+      <div class="set-block">
+        <button class="btn-sig" id="btn-get-higher">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-slogan"></use></svg> ... with your Totehm</button>
       </div>
     </div>
   </div>
@@ -392,6 +393,26 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
       <span class="hp-def" id="hp-int-def"></span>
     </button>
   </div>
+</div>
+
+<!-- Fenêtre de filtre au tap sur le T.png du haut : filtrer par Time Frequency ou Intention -->
+<div id="filter-modal" class="hide" role="dialog" aria-label="Filter habits">
+  <div class="hp-card">
+    <button class="hp-row" id="fm-freq" type="button">
+      <span class="hp-lbl">Time Frequency</span>
+      <span class="hp-val" id="fm-freq-val">any rhythm</span>
+    </button>
+    <button class="hp-row" id="fm-int" type="button">
+      <span class="hp-lbl">Intention</span>
+      <span class="hp-val" id="fm-int-val">any intention</span>
+    </button>
+  </div>
+</div>
+
+<!-- Badge du filtre actif : petit indicateur avec croix pour retirer -->
+<div id="filter-badge" class="hide sink-el">
+  <span id="fb-text"></span>
+  <button id="fb-clear" aria-label="Clear filter">×</button>
 </div>
 
 <div id="member-window">
@@ -685,7 +706,7 @@ let state=loadState()||{habits:[
   {t:'Drop a street sticker in Lisbon',f:'weekly'}
 ],vis:'private'};
 let profile=pload()||{name:'',bot:false};
-let floor=0, busy=false, fpTarget=null, fpStage='freq', pendingF=null, pendingI=null;
+let floor=0, busy=false, fpTarget=null, fpStage='freq', pendingF=null, pendingI=null, filterF=null, filterI=null;
 
 function save(){
   try{localStorage.setItem(KEY,JSON.stringify(state));localStorage.setItem(KEYP,JSON.stringify(profile));}catch(e){}
@@ -752,7 +773,12 @@ function sortHabits(){state.habits.sort((a,b)=>fw2(a.f)-fw2(b.f));}
 function renderHabits(){
   sortHabits();
   const box=$('habits');let h='';
-  state.habits.forEach((s,i)=>{
+  const list=state.habits.map((s,i)=>({s,i})).filter(({s})=>{
+    if(filterF && s.f!==filterF) return false;
+    if(filterI && s.i!==filterI) return false;
+    return true;
+  });
+  list.forEach(({s,i})=>{
     h+='<div class="habit'+(s.f?' timed':'')+'">'
       +'<button class="h-x" data-i="'+i+'" aria-label="remove">×</button>'
       +'<span class="meta">'
@@ -832,7 +858,7 @@ function paint(){
   $('rail').style.opacity=isSet?'0':'1';
   $('bigT').style.opacity=isSet?'0':'1';
   $('wordmark').style.opacity=isSet?'0':'1';
-  $('get-higher').style.display=isSet?'none':'';   /* Higher inspiration : visible sur Habits uniquement */
+  $('menu-arrow').style.display=isSet?'none':'';   /* petite flèche : visible sur Habits uniquement */
   if(isSet)renderSettings();else renderHabits();
 }
 
@@ -854,7 +880,9 @@ function currentIntOfTarget(){
 }
 function openFreqPanel(target,stage){
   fpTarget=target;$('fp-input').value='';fpDetected=null;
-  const cur=(target==='new')?pendingF:(state.habits[target]?state.habits[target].f:null);
+  const cur=(target==='new')?pendingF
+    :(target==='filter')?filterF
+    :(state.habits[target]?state.habits[target].f:null);
   /* habitude déjà timée : on montre la fréquence courante (pré-sélection visible) */
   if(cur){fpDetected=cur;$('fp-preview').textContent=flabel(cur);}
   else{$('fp-preview').textContent='';}
@@ -884,8 +912,64 @@ function openHabitPeek(i){
 function closeHabitPeek(){$('habit-peek').classList.add('hide');}
 $('habit-peek').addEventListener('click',(e)=>{if(e.target.id==='habit-peek')closeHabitPeek();});
 document.addEventListener('keydown',(e)=>{if(e.key==='Escape'&&!$('habit-peek').classList.contains('hide'))closeHabitPeek();});
+
+/* ══ FILTRE au tap sur bigT (T.png du haut) ══
+   Ouvre une modale même format que habit-peek : Time Frequency + Intention.
+   Le filtre choisi s'affiche dans un badge avec × pour retirer. */
+function openFilterModal(){
+  $('fm-freq-val').textContent=filterF?flabel(filterF):'any rhythm';
+  if(filterI&&INT_BY_ID[filterI]){
+    const x=INT_BY_ID[filterI];
+    $('fm-int-val').innerHTML='<span style="color:'+x.color+'">'+T_SVG+' '+x.name+'</span>';
+  }else{
+    $('fm-int-val').textContent='any intention';
+  }
+  $('filter-modal').classList.remove('hide');
+}
+function closeFilterModal(){$('filter-modal').classList.add('hide');}
+$('bigT').style.cursor='pointer';
+$('bigT').onclick=()=>{ if(floor===0)openFilterModal(); };
+$('filter-modal').addEventListener('click',(e)=>{if(e.target.id==='filter-modal')closeFilterModal();});
+document.addEventListener('keydown',(e)=>{if(e.key==='Escape'&&!$('filter-modal').classList.contains('hide'))closeFilterModal();});
+
+/* Ligne Time Frequency : réutilise le freq-panel avec fpTarget='filter' */
+$('fm-freq').onclick=()=>{closeFilterModal();openFreqPanel('filter','freq');};
+
+/* Ligne Intention : mini-picker inline avec les 7 intentions colorées + option 'any' */
+$('fm-int').onclick=()=>{
+  const val=$('fm-int-val'); val.innerHTML='';
+  const grid=document.createElement('div');
+  grid.style.cssText='display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:4px';
+  const mkBtn=(label,color,onClick)=>{
+    const b=document.createElement('button');
+    b.type='button';
+    b.style.cssText='background:none;border:1px solid rgba(255,255,255,.35);color:'+color+';font-family:Quantico,sans-serif;font-size:12px;padding:5px 9px;cursor:pointer;transition:opacity .15s;-webkit-tap-highlight-color:transparent';
+    b.textContent=label;
+    b.onclick=(ev)=>{ev.stopPropagation();onClick();};
+    return b;
+  };
+  INTS.forEach(x=>grid.appendChild(mkBtn(x.name,x.color,()=>{filterI=x.id;closeFilterModal();updateFilterBadge();renderHabits();})));
+  grid.appendChild(mkBtn('any','#b0b0b0',()=>{filterI=null;closeFilterModal();updateFilterBadge();renderHabits();}));
+  val.appendChild(grid);
+};
+
+function updateFilterBadge(){
+  const badge=$('filter-badge'), txt=$('fb-text');
+  if(!filterF && !filterI){badge.classList.add('hide');return;}
+  const parts=[];
+  if(filterF)parts.push(flabel(filterF));
+  if(filterI&&INT_BY_ID[filterI])parts.push(INT_BY_ID[filterI].name);
+  txt.textContent=parts.join(' · ');
+  badge.classList.remove('hide');
+}
+$('fb-clear').onclick=()=>{filterF=null;filterI=null;updateFilterBadge();renderHabits();};
 function applyFreq(id){
   if(fpTarget==null||!FREQ_BY_ID[id]){closeFreqPanel();return;}
+  if(fpTarget==='filter'){
+    filterF=id;
+    closeFreqPanel();updateFilterBadge();renderHabits();
+    return;
+  }
   if(fpTarget==='new'){
     pendingF=id;
     if(!pendingI){showFpStage('int');renderHabits();return;}
@@ -984,12 +1068,19 @@ function go(dFloor){
   }
 }
 /* Higher inspiration : monte vers les paramètres (même geste que swipe haut) */
-$('get-higher').onclick=()=>{if(!busy)go(-1);};
+$('menu-arrow').onclick=()=>{if(!busy)go(-1);};
 /* Curseur PlayStation dans les Paramètres */
-$('sx-up').onclick   =()=>{if(!busy&&floor===1&&!hOpen())showStoner(true);};   /* haut = Stoner */
-$('sx-down').onclick =()=>{if(!busy&&floor===1&&!hOpen())go(1);};              /* bas = retour Habitudes */
-$('sx-left').onclick =()=>{if(!busy&&floor===1&&!hOpen())showBook(true);};    /* gauche = Book */
-$('sx-right').onclick=()=>{if(!busy&&floor===1&&!hOpen())showNext(true);};    /* droite = Next Objective */
+/* Rangée haute du menu paramètres */
+$('sn-book').onclick =()=>{if(!busy&&floor===1&&!hOpen())showBook(true);};
+$('sn-home').onclick =()=>{if(!busy&&floor===1&&!hOpen())go(1);};              /* T logo↑ = retour Habits */
+$('sn-next').onclick =()=>{if(!busy&&floor===1&&!hOpen())showNext(true);};
+
+/* [Get Higher... with your Totehm] : animation d'élévation Higher puis ouverture Stoner (pas de scroll) */
+$('btn-get-higher').onclick=()=>{
+  if(busy)return;
+  document.body.classList.add('liftoff');
+  setTimeout(()=>{document.body.classList.remove('liftoff');showStoner(true);},550);
+};
 window.addEventListener('message',e=>{if(e.data&&e.data.type==='totehm-close-stoner')showStoner(false);});
 
 /* Le bouton Make the Lisbon Streets Sublime (overlay en haut, dans la méthode) suit la ville choisie en bas */
@@ -1008,6 +1099,7 @@ function scrollEdges(){
 window.addEventListener('wheel',(e)=>{
   if(wheelLock||fpOpen()||$('member-window').classList.contains('show'))return;
   if(e.target&&e.target.closest&&e.target.closest('#results,#freq-panel,#member-window'))return;
+  if(floor===0)return;   /* depuis Habits : molette désactivée, l'accès menu est la petite flèche */
   if(Math.abs(e.deltaY)<=20)return;
   const edge=scrollEdges(), down=e.deltaY>0;
   if(down&&!edge.bottom)return;   /* la liste scrolle d'abord */
@@ -1023,9 +1115,12 @@ window.addEventListener('touchend',(e)=>{
   if(t0el&&t0el.closest&&t0el.closest('#results,#freq-panel,#member-window,input,textarea,button'))return;
   const dy=e.changedTouches[0].screenY-y0;const TH=32;
   if(axis==='v'){
+    /* Depuis Habits (floor 0) : swipes verticaux désactivés (accès menu = petite flèche uniquement).
+       Depuis Settings (floor 1) : swipe DOWN monte vers Stoner, swipe UP redescend vers Habits. */
+    if(floor===0)return;
     const edge=scrollEdges();
-    if(dy>TH&&edge.top)go(-1);        /* swipe DOWN (doigt part du haut, descend) -> monte d'étage */
-    else if(dy<-TH&&edge.bottom)go(1); /* swipe UP -> descend vers Habitudes */
+    if(dy>TH&&edge.top)go(-1);        /* swipe DOWN -> monte d'étage (vers Stoner) */
+    else if(dy<-TH&&edge.bottom)go(1); /* swipe UP -> redescend (vers Habits) */
   }else if(axis==='h'){
     const dx=e.changedTouches[0].screenX-x0;
     if(Math.abs(dx)<TH)return;
@@ -1038,7 +1133,8 @@ window.addEventListener('keydown',(e)=>{
   if(fpOpen()){if(e.key==='Escape')closeFreqPanel();return;}
   if(e.target.tagName==='INPUT')return;
   if($('member-window').classList.contains('show')){if(e.key==='Escape')$('member-window').classList.remove('show');return;}
-  if(e.key==='ArrowDown'){e.preventDefault();go(1);}else if(e.key==='ArrowUp'){e.preventDefault();go(-1);}
+  if(e.key==='ArrowDown'){if(floor===0)return;e.preventDefault();go(1);}
+  else if(e.key==='ArrowUp'){e.preventDefault();go(-1);}
   else if(e.key==='ArrowLeft'){e.preventDefault();if($('book').classList.contains('show'))showBook(false);else if(!hOpen()&&!$('stoner').classList.contains('show'))showNext(true);}
   else if(e.key==='ArrowRight'){e.preventDefault();if($('nextobj').classList.contains('show'))showNext(false);else if(!hOpen()&&!$('stoner').classList.contains('show'))showBook(true);}
 });
