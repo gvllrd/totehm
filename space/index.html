@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<!--
+  ══ RÈGLES DE NAVIGATION VERROUILLÉES ══ (juillet 2026)
+
+  Étages : deux seulement — HABITS (floor 0) et MENU (floor 1).
+  Stoner est un OVERLAY, jamais un étage, jamais accessible au swipe.
+
+  Verticaux (règle iOS "doigt entraîne le contenu") :
+    · Habits → Menu    : swipe UP    (dy<0)  ·  clic sur #menu-arrow
+    · Menu   → Habits  : swipe DOWN  (dy>0)  ·  clic sur #sn-home
+    · Stoner : SEUL déclencheur = clic sur #btn-get-higher (jamais par swipe)
+
+  Horizontaux (depuis Habits ET Menu) :
+    · swipe DROITE → Book  ·  swipe GAUCHE → Next Objective
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>TOTEHM — My Totehm</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Jost:wght@300;400;500;700&family=Montserrat:ital,wght@0,600;1,900&family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#606060;--bg:#000;
+  --navy:#333366;--blue:#36498c;--rep:#743169;--love:#639922;
+  --futura:'Futura','Jost',sans-serif;
+  --rl:46px;   /* rail left */
+  --rw:18px;   /* rail width */
+  --band-t:96px;   /* bande haute : T.png + Get Higher */
+  --band-b:112px;  /* bande basse : TOTEHM.png + Real inspiration */
+  --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+  --tile-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%2336498c'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+  --tile-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23743169'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+}
+@media(min-width:700px){:root{--rl:25vw;--rw:22px}}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);font-family:var(--futura);font-weight:300;font-size:14px;overflow:hidden;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
+/* ══ PERFORATIONS DU BORD — "écrire dans le logo" (timbre-poste, cf. totehm_logo.png) ══
+   Overlay non-bloquant : dessine les demi-cercles noirs sur les 4 bords, par-dessus le navy,
+   sous tous les éléments interactifs (T.svg, rail, boutons restent cliquables). */
+#perf{position:fixed;inset:0;z-index:4;pointer-events:none}
+#perf::before,#perf::after,#perf i::before,#perf i::after{content:"";position:fixed;background-repeat:repeat-x;background-position:left center}
+/* --perf-d = diamètre du trou · --perf-g = espacement · --perf-corner = marge pleine dans chaque coin */
+:root{--perf-d:15px;--perf-g:30px;--perf-corner:22px}
+/* haut & bas : trous alignés horizontalement, coins gauche/droite pleins */
+#perf::before{top:calc(var(--perf-d)/-2);left:var(--perf-corner);right:var(--perf-corner);height:var(--perf-d);background-image:radial-gradient(circle at center, #000 calc(var(--perf-d)/2 - 0.5px), transparent calc(var(--perf-d)/2));background-size:var(--perf-g) var(--perf-d)}
+#perf::after{bottom:calc(var(--perf-d)/-2);left:var(--perf-corner);right:var(--perf-corner);height:var(--perf-d);background-image:radial-gradient(circle at center, #000 calc(var(--perf-d)/2 - 0.5px), transparent calc(var(--perf-d)/2));background-size:var(--perf-g) var(--perf-d)}
+/* gauche & droite : trous alignés verticalement, coins haut/bas pleins */
+#perf i::before{top:var(--perf-corner);bottom:var(--perf-corner);left:calc(var(--perf-d)/-2);width:var(--perf-d);background-image:radial-gradient(circle at center, #000 calc(var(--perf-d)/2 - 0.5px), transparent calc(var(--perf-d)/2));background-size:var(--perf-d) var(--perf-g);background-repeat:repeat-y;background-position:center top}
+#perf i::after{top:var(--perf-corner);bottom:var(--perf-corner);right:calc(var(--perf-d)/-2);width:var(--perf-d);background-image:radial-gradient(circle at center, #000 calc(var(--perf-d)/2 - 0.5px), transparent calc(var(--perf-d)/2));background-size:var(--perf-d) var(--perf-g);background-repeat:repeat-y;background-position:center top}
+.hide{display:none!important}
+.gbtn{font-family:'Quantico',sans-serif;font-weight:400;background:none;border:none;padding:0;margin:0;cursor:pointer;line-height:1.5;-webkit-tap-highlight-color:transparent;transition:color .15s,background .15s}
+
+/* ══ LE LOGO HABITÉ ══ */
+#rail{position:fixed;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.30);z-index:1;transition:opacity .4s}
+#bigT{position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;transition:opacity .4s;line-height:0}
+#bigT img{height:52px;width:auto;display:block;-webkit-user-drag:none}
+#wordmark{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;transition:opacity .4s;line-height:0}
+#wordmark img{height:58px;width:auto;display:block;-webkit-user-drag:none}
+
+/* Get Higher (haut droite) + Real inspiration (bas droite) */
+/* Petite flèche cliquable centrée juste sous le TOTEHM.png du bas — ouvre le menu paramètres */
+#menu-arrow{position:fixed;bottom:6px;left:50%;transform:translateX(-50%);z-index:31;background:none;border:none;cursor:pointer;padding:4px 12px;line-height:0;-webkit-tap-highlight-color:transparent;transition:opacity .2s}
+#menu-arrow:hover{opacity:.7}
+#menu-arrow svg{width:22px;height:12px;color:rgba(255,255,255,.55)}
+.higher-inline{height:1.5em;width:auto;display:inline-block;vertical-align:-.32em}
+
+/* menu-row : structure d'un bouton-saisie (Name of your Totehm, Search a Totehm) */
+.menu-row{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
+
+/* Rangée haute du menu paramètres : My Book · My Totehm↑ · Next Objective */
+#settings-nav{display:flex;align-items:center;justify-content:center;gap:14px;width:100%;max-width:360px;margin:14px auto 22px;padding:0 6px}
+#settings-nav .sn-btn{flex:1 1 0;justify-content:center}
+#settings-nav #sn-home{flex:0 0 auto}
+.sn-btn{background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;line-height:1.5;text-decoration:none;white-space:nowrap;display:flex;align-items:center;gap:6px;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
+@media(hover:hover){.sn-btn:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
+.sn-btn:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+.sn-btn .chev{width:18px;height:11px;color:rgba(255,255,255,.55);stroke-width:1.2;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;transition:color .15s}
+.sn-btn .sn-chev-h{width:11px;height:18px}
+.sn-logo{flex-direction:column;gap:3px}
+.sn-logo img{height:38px;width:38px;display:block;border-radius:2px}
+
+/* ── STONER METHOD : la section du dessus ── */
+#stoner{position:fixed;inset:0;z-index:55;background:#000;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .38s ease,visibility 0s linear .38s;will-change:opacity}
+#stoner.show{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .38s ease,visibility 0s}
+/* Book (passé) et Next Objective (futur) — même fondu, cohérent avec Stoner */
+#book,#nextobj{position:fixed;inset:0;z-index:55;background:#000;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .38s ease,visibility 0s linear .38s;will-change:opacity}
+#book.show,#nextobj.show{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .38s ease,visibility 0s}
+#book iframe,#nextobj iframe{width:100%;height:100%;border:none;display:block}
+/* Make the Streets Sublime : overlay en bas de la méthode, visible seulement si Lisbon sélectionné en bas */
+/* Make the Streets Sublime : bouton phare perforé en HAUT de la méthode (si Lisbon sélectionné en bas) */
+#street-btn{position:absolute;left:50%;top:16px;transform:translateX(-50%);z-index:58;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
+#street-btn.show{display:inline-block}
+#street-btn.hide{display:none}
+@media(hover:hover){#street-btn:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
+#street-btn:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+/* Tagline permanent en bas de la méthode : la doctrine de la marque */
+#stoner-tagline{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:58;font-family:'Quantico',sans-serif;font-weight:400;font-size:12px;letter-spacing:.04em;color:rgba(255,255,255,.55);text-align:center;white-space:nowrap;pointer-events:none;user-select:none}
+#stoner-tagline sup{font-size:.6em;vertical-align:super}
+#stoner iframe{width:100%;height:100%;border:none;display:block}
+/* le monde s'enfonce pendant que la méthode descend d'en haut */
+.sink-el{transition:transform .58s cubic-bezier(.45,0,.2,1),opacity .45s ease}
+body.liftoff .sink-el{transform:translateY(16vh);opacity:0}
+/* le flash Higher qui monte au décollage */
+#lift-hg{position:fixed;left:50%;top:58%;transform:translate(-50%,-50%);z-index:56;opacity:0;pointer-events:none}
+#lift-hg svg{height:44px;width:auto;display:block}
+body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
+@keyframes lifthg{0%{opacity:0;transform:translate(-50%,-20%)}22%{opacity:1}100%{opacity:0;transform:translate(-50%,-300%)}}
+
+/* ── BACK IN TIME ── */
+.btn-back{position:fixed;top:14px;left:14px;z-index:46;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
+@media(hover:hover){.btn-back:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
+.btn-back:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+
+/* ── CONNECTION BAR ── */
+#conn-bar{position:fixed;top:14px;left:14px;z-index:45;display:none;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:0 4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
+#conn-bar:hover{color:#fff}
+#conn-bar .dot{width:8px;height:8px;border-radius:50%;background:#888}
+
+/* ══ FLOORVIEW : 0 = HABITS (navy) · 1 = SETTINGS (noir) ══ */
+#floorview{position:fixed;inset:0;display:flex;flex-direction:column;transition:background-color .5s ease;z-index:2;background:transparent}
+#fv-inner{position:absolute;left:0;right:0;top:var(--band-t);bottom:var(--band-b);display:flex;flex-direction:column;padding:4px 0;z-index:2;overflow-y:auto;overscroll-behavior:contain}
+#fv-status{position:fixed;bottom:6px;right:16px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;color:rgba(255,255,255,.45);text-transform:uppercase;min-height:12px;pointer-events:none;z-index:3}
+
+/* ── HABITS : chaque Habit vit sur le rail du logo ── */
+#habits{width:100%;display:flex;flex-direction:column;gap:9px}
+.habit{position:relative;display:flex;align-items:center;min-height:30px;padding-right:30px}
+.habit .meta{position:absolute;right:calc(100% - var(--rl) + 10px);display:flex;align-items:center;gap:8px;white-space:nowrap}
+.habit .h-x{position:absolute;right:18px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.35);font-size:16px;line-height:1;cursor:pointer;padding:6px 8px;transition:color .15s;z-index:5;-webkit-tap-highlight-color:transparent}
+.habit .h-x:hover{color:#fff}
+.habit .h-freq{font-family:'Quantico',sans-serif;font-weight:400;font-size:12px;letter-spacing:0;color:#fff;background:none;border:none;padding:0;cursor:pointer;transition:opacity .15s}
+.habit .h-freq:hover{opacity:.7}
+.habit .h-T{background:none;border:none;padding:0;cursor:pointer;line-height:0;color:#fff;transition:opacity .15s,color .25s}
+.habit .h-T .tglyph{height:14px;width:auto;display:block}
+.habit .h-T:hover{opacity:.6}
+/* le trait reste NOIR tant que la Time frequency n'est pas choisie via le T */
+.habit .tick{position:absolute;left:var(--rl);width:var(--rw);height:5px;background:#000;top:50%;transform:translateY(-50%)}
+.habit.timed .tick{background:#fff}
+.habit .h-body{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;position:relative;display:flex;align-items:center}
+@media(max-width:600px){.habit.timed .h-freq{display:none}}
+.h-text,.h-add{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;line-height:1.5;padding:4px 46px 4px 2px;caret-color:#fff;text-align:left;resize:none;overflow:hidden;display:block}
+.h-text::placeholder{color:rgba(255,255,255,.33)}
+/* placeholder custom : le H de Habit en blanc */
+.h-hint{position:absolute;left:2px;top:50%;transform:translateY(-50%);font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:rgba(255,255,255,.33);pointer-events:none}
+.h-hint .hh{color:#fff}
+
+/* ── FREQUENCY PANEL ── */
+#freq-panel{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:22px}
+/* Fenêtre d'aperçu minimaliste : freq + intention, chacune cliquable pour rouvrir son sélecteur */
+#habit-peek{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:22px}
+/* Fenêtre de filtre : même style que habit-peek */
+#filter-modal{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:22px}
+/* Badge du filtre actif : petit indicateur cliquable en haut du T.png */
+/* Badge des filtres : haut à droite, empilé.
+   Ligne 1 = Time Frequency (blanc, Quantico) · Ligne 2 = Intention (couleur de l'intention, Quantico gras) */
+#filter-badge{position:fixed;top:14px;right:14px;z-index:46;display:flex;flex-direction:column;align-items:flex-end;gap:2px;padding:6px 26px 6px 10px;background:rgba(10,10,10,.6);font-family:'Quantico',sans-serif;letter-spacing:0;line-height:1.15;pointer-events:auto}
+#filter-badge .fb-line{font-size:12px;color:#fff}
+#filter-badge #fb-int{font-weight:700}
+#filter-badge .fb-line:empty{display:none}
+#filter-badge #fb-clear{position:absolute;top:2px;right:4px;background:none;border:none;color:rgba(255,255,255,.6);font-size:15px;line-height:1;cursor:pointer;padding:2px 6px;transition:color .15s;-webkit-tap-highlight-color:transparent}
+#filter-badge #fb-clear:hover{color:#fff}
+.hp-card{background:#0a0a0a;border:1px solid #1e1e1e;width:100%;max-width:340px;padding:22px;display:flex;flex-direction:column;gap:6px}
+.hp-row{background:none;border:none;padding:16px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;color:#fff;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
+.hp-row:hover{opacity:.7}
+.hp-row + .hp-row{border-top:1px solid rgba(255,255,255,.10)}
+.hp-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.hp-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:22px;color:#fff;line-height:1.2}
+.hp-val .tglyph{height:22px;width:auto;vertical-align:-4px;margin-right:6px}
+.hp-def{font-family:var(--futura);font-weight:300;font-style:italic;font-size:12px;color:rgba(255,255,255,.6);line-height:1.4;max-width:260px;margin-top:6px}
+.fp-card{background:#0a0a0a;border:1px solid #1e1e1e;width:100%;max-width:380px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px}
+#fp-input{background:none;border:none;border-bottom:1px solid rgba(255,255,255,.18);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;padding:4px 2px;text-align:center;caret-color:#fff}
+#fp-input::placeholder{color:rgba(255,255,255,.3);font-size:12px;font-style:italic}
+#fp-preview{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--coral);min-height:22px;text-align:center;background:none;border:none;padding:2px 8px;cursor:pointer;transition:color .15s,background .15s;-webkit-tap-highlight-color:transparent}
+#fp-preview:hover,#fp-preview:active{color:#fff;background:var(--navy)}
+#fp-preview:empty,#fp-preview.hide{pointer-events:none}
+#fp-list{display:flex;flex-direction:column;gap:7px;max-height:42vh;overflow-y:auto;padding-right:4px}
+/* étape 2 : l'intention de l'Habitude (les 7 de la Map) */
+#fp-ints{display:flex;flex-direction:column;gap:12px;max-height:60vh;overflow-y:auto;padding-right:4px}
+.fp-int{display:flex;flex-direction:column;gap:4px;background:none;border:none;padding:4px 0;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
+.fp-int:hover{opacity:.75}
+.fp-int-r1{display:flex;align-items:center;gap:8px}
+.fp-int .tglyph{height:15px;width:auto;flex-shrink:0}
+.fp-int .nm{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px}
+.fp-int .higher-inline{height:1.25em;vertical-align:-.28em}
+.fp-int .df{font-family:var(--futura);font-weight:300;font-size:12px;color:#c4c4c4;line-height:1.5;padding-left:22px}
+.fp-int.on .nm{text-decoration:underline}
+.fp-skip{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--g-dark);background:none;border:none;cursor:pointer;padding:4px 0;transition:color .15s}
+.fp-skip:hover{color:#fff}
+.fp-opt{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#c4c4c4;text-align:left}
+.fp-opt:hover{color:#fff}
+.fp-opt.on{color:var(--coral)}
+
+/* ══ SETTINGS (noir, prolongement d'index.html : tiroirs + radios boutique) ══ */
+#settings{width:100%;max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:8px;padding:3vh 22px 0;align-items:center}
+.set-block{display:flex;flex-direction:column;gap:7px;align-items:center;width:100%}
+.wm-totehm{font-family:'Montserrat',sans-serif;font-weight:600;font-style:normal;color:#fff;letter-spacing:.16em;margin-right:-.16em}
+.drawer{overflow:hidden;max-height:0;opacity:0;transition:max-height .42s ease,opacity .38s ease;width:100%;display:flex;flex-direction:column;align-items:center;gap:11px}
+.drawer.on{max-height:520px;opacity:1;margin-top:2px}
+.set-note{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;color:var(--g-dark);text-transform:uppercase;text-align:center}
+.name-input{background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:4px 2px;caret-color:#fff;max-width:260px;text-align:center}
+.name-input::placeholder{color:rgba(255,255,255,.33)}
+.name-locked{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:#fff;letter-spacing:.02em}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+/* radios : le pattern size-btn de boutique.html */
+.size-btn{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:2px 10px;-webkit-tap-highlight-color:transparent;transition:color .15s}
+@media(hover:hover){.size-btn:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
+.size-btn:active,.size-btn.on{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+.bot-txt{font-family:var(--futura);font-weight:300;font-size:12px;color:var(--g-mid);line-height:1.6;text-align:center;max-width:320px}
+.city-lead{font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:#fff;line-height:1.5;text-align:center;max-width:340px;padding:6px 0 2px}
+.bot-txt b{color:var(--g-light);font-weight:700}
+
+/* Search a Totehm : le pattern morph d'index.html */
+.btn-sig{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
+@media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
+.btn-sig:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+.wm-frame{background:var(--navy);padding:0 3px;margin:0 1px;color:#fff}
+.line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:none;outline:none;border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:var(--coral);min-width:230px}
+.note{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;text-align:center}
+.note.ok{color:#7db32e}.note.no{color:#b06a9f}.note.dim{color:#9a9a9a}
+
+/* ── TOTEHM VIEWER : le Totehm d'un membre, read-only ── */
+#tview{position:fixed;inset:0;z-index:70;background:var(--navy);display:none}
+#tview.show{display:block}
+.tv-rail{position:absolute;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.30)}
+.tv-T{position:absolute;top:24px;left:50%;transform:translateX(-50%);line-height:0}
+.tv-T img{height:52px;width:auto;display:block}
+.tv-wm{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);line-height:0}
+.tv-wm img{height:58px;width:auto;display:block}
+.tv-name{position:absolute;bottom:16px;left:14px;font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:#fff}
+.tv-list{position:absolute;left:0;right:0;top:var(--band-t);bottom:var(--band-b);overflow-y:auto;display:flex;flex-direction:column;gap:9px;padding:4px 0}
+.r-habit{position:relative;display:flex;align-items:center;min-height:30px;padding-right:30px}
+.r-meta{position:absolute;right:calc(100% - var(--rl) + 10px);display:flex;align-items:center;gap:6px;font-family:'Quantico',sans-serif;font-weight:400;font-size:11px;color:rgba(255,255,255,.7);white-space:nowrap}
+.r-meta .h-T{cursor:default}
+@media(max-width:600px){.r-meta .r-fl{display:none}}
+.r-tick{position:absolute;left:var(--rl);width:var(--rw);height:5px;background:#fff;top:50%;transform:translateY(-50%)}
+.r-text{margin-left:calc(var(--rl) + var(--rw) + 16px);font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:#fff;line-height:1.5;border-bottom:1px solid rgba(255,255,255,.15);padding:4px 2px;flex:1}
+.tv-private{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.14em;color:rgba(255,255,255,.5);text-transform:uppercase}
+
+/* ── MEMBER WINDOW ── */
+#member-window{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.84);display:none;align-items:center;justify-content:center;padding:24px}
+#member-window.show{display:flex}
+.mw-card{background:#0a0a0a;border:1px solid #1e1e1e;max-width:340px;width:100%;padding:30px 24px;text-align:center;position:relative}
+.mw-title{font-family:'Quantico',sans-serif;font-weight:700;font-size:18px;color:#fff;margin-bottom:14px}
+.mw-body{font-family:var(--futura);font-weight:300;font-size:13px;color:var(--g-mid);line-height:1.7;margin-bottom:14px}
+.mw-close{position:absolute;top:12px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:none;color:var(--g-mid);background:none;border:none;cursor:pointer;padding:0}
+.mw-close:hover{color:#fff}
+.mw-input{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:6px 2px;caret-color:var(--coral);text-align:center;margin-bottom:10px}
+.mw-input::placeholder{color:rgba(255,255,255,.33)}
+.mw-note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px;margin-top:6px}
+.mw-note.ok{color:#639922}.mw-note.no{color:#b06a9f}.mw-note.dim{color:var(--g-dark)}
+.mw-pseudo{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:#fff;margin-bottom:4px}
+.mw-mail{font-family:'Space Mono',monospace;font-size:9px;color:var(--g-dark);margin-bottom:12px;word-break:break-all}
+.mw-out{margin-top:6px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--g-mid);background:none;border:none;cursor:pointer;transition:color .15s}
+.mw-out:hover{color:#fff}
+.mw-sync{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:var(--love);margin-top:8px;min-height:12px}
+
+@media(max-width:600px){.h-text,.h-add,.h-hint{font-size:14px}#bigT{font-size:38px}}
+@media(prefers-reduced-motion:reduce){#fv-inner{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div id="perf"><i></i></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="higher-slogan" viewBox="0 0 600 200">
+      <defs><mask id="hmask"><rect width="600" height="200" fill="white"/>
+        <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
+        <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
+        <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
+      </mask></defs>
+      <rect width="600" height="200" fill="#333366" mask="url(#hmask)"/>
+      <text x="50%" y="144.42" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-style="italic" font-size="144" fill="#ffffff">Higher</text>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="rail" class="sink-el"></div>
+<div id="bigT" class="sink-el"><img src="assets/img/T.png" alt="T"
+  onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/T.png'"></div>
+<div id="wordmark" class="sink-el"><img src="assets/img/TOTEHM.png" alt="TOTEHM"
+  onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/TOTEHM.png'"></div>
+
+<button id="conn-bar" class="sink-el" aria-label="member space"><span class="dot"></span>Guest</button>
+
+<button id="menu-arrow" class="sink-el" aria-label="Open menu">
+  <svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2 L12 11 L22 2"/></svg>
+</button>
+
+<div id="lift-hg"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></div>
+<div id="stoner"><iframe id="stoner-frame" title="Stoner Method"></iframe>
+  <a id="street-btn" class="hide" href="play_the_street.html">Make the Lisbon Streets Sublime</a>
+  <div id="stoner-tagline">Mental performance &middot; Stoner Way of Life<sup>&copy;</sup></div>
+</div>
+
+<!-- LE PASSÉ (gauche) et LE FUTUR (droite) — iframes préchargées, glissement horizontal -->
+<div id="book"><iframe id="book-frame" title="Book of My Totehm"></iframe></div>
+<div id="nextobj"><iframe id="nextobj-frame" title="Next Objective"></iframe></div>
+
+<div id="floorview" class="sink-el">
+  <div id="fv-inner">
+    <div id="habits"></div>
+
+    <div id="settings" class="hide">
+      <!-- Rangée haute du menu : [My Book] · [My TOTEHM↑ = retour Habits] · [Next Objective] -->
+      <div id="settings-nav">
+        <button id="sn-book" class="sn-btn" aria-label="My Book — the past">
+          <svg class="chev sn-chev-h" viewBox="0 0 14 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2 L2 12 L11 22"/></svg>
+          <span>My Book</span>
+        </button>
+        <button id="sn-home" class="sn-btn sn-logo" aria-label="Back to your Totehm">
+          <img src="assets/img/totehm_logo.png" alt="Totehm" onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/totehm_logo.png'">
+          <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2 L12 11 L22 2"/></svg>
+        </button>
+        <button id="sn-next" class="sn-btn" aria-label="Next Objective — the future">
+          <span>Next Objective</span>
+          <svg class="chev sn-chev-h" viewBox="0 0 14 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2 L12 12 L3 22"/></svg>
+        </button>
+      </div>
+
+      <!-- Menu en 4 boutons alignés : Name, Visibility, City, Search -->
+      <div class="set-block">
+        <div class="menu-row">
+          <button class="btn-sig" id="name-btn">Name of your Totehm</button>
+          <input class="line-input hide" id="set-name" maxlength="24" placeholder="your Totehm" autocomplete="off" spellcheck="false">
+          <div class="note dim hide" id="name-note"></div>
+        </div>
+      </div>
+
+      <div class="set-block">
+        <div class="menu-row">
+          <button class="btn-sig" id="vis-btn">Visibility</button>
+          <div class="hide" id="vis-panel"><div class="row"><button class="size-btn" id="set-private">Private</button><button class="size-btn" id="set-members">Visible to members</button></div></div>
+        </div>
+      </div>
+
+      <div class="set-block">
+        <button class="btn-sig" id="dw-city">My Totehm in my city</button>
+        <div class="drawer" id="d-city">
+          <input class="line-input" id="city-input" maxlength="40" placeholder="name of your city" autocomplete="off" spellcheck="false">
+          <div class="note dim" id="city-note"></div>
+
+          <div id="city-lisbon" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
+            <div class="city-lead">Get events that match your Totehm on Telegram.</div>
+            <a class="btn-sig" href="https://t.me/TotehmBot" target="_blank" rel="noopener">Go where I am supposed to</a>
+            <div class="set-note">— Lisbon · city events feed —</div>
+          </div>
+
+          <div id="city-intl" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
+            <div class="city-lead">Your coach works with your Totehm's data.<br>City events are coming to your city soon.</div>
+            <a class="btn-sig" href="https://t.me/TotehmBot" target="_blank" rel="noopener">Go where I am supposed to</a>
+            <div class="set-note" style="margin-top:4px">Be the first to know when TOTEHM lands here:</div>
+            <input class="line-input" id="city-email" type="email" maxlength="120" placeholder="your@email" autocomplete="off" spellcheck="false">
+            <div class="note dim" id="city-email-note"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Curseur PlayStation — visible uniquement dans les Paramètres -->
+      <div class="set-block">
+        <div class="menu-row">
+          <button class="btn-sig" id="search-btn">Search a Totehm</button>
+          <input class="line-input hide" id="search-input" maxlength="24" placeholder="name of a Totehm" autocomplete="off" spellcheck="false">
+          <div class="note dim hide" id="search-note"></div>
+        </div>
+      </div>
+
+      <div class="set-block">
+        <div class="menu-row">
+          <a class="btn-sig" id="wear-btn" href="https://higher.boutique/#menu">Wear my Totehm</a>
+        </div>
+      </div>
+
+      <!-- Bouton [Get Higher... with your Totehm] : monte vers Stoner avec animation d'élévation -->
+      <div class="set-block">
+        <button class="btn-sig" id="btn-get-higher">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-slogan"></use></svg> with my Totehm</button>
+      </div>
+    </div>
+  </div>
+  <div id="fv-status"></div>
+</div>
+
+<div id="tview">
+  <button class="btn-back" id="tv-back">Back in Time</button>
+  <div class="tv-rail"></div>
+  <div class="tv-T"><img src="assets/img/T.png" alt="T" onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/T.png'"></div>
+  <div class="tv-wm"><img src="assets/img/TOTEHM.png" alt="TOTEHM" onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/TOTEHM.png'"></div>
+  <div class="tv-name" id="tv-name"></div>
+  <div class="tv-list" id="tv-list"></div>
+</div>
+
+<div id="freq-panel" class="hide">
+  <div class="fp-card">
+    <input id="fp-input" placeholder="type it — any language" autocomplete="off" spellcheck="false">
+    <button id="fp-preview" type="button"></button>
+    <div id="fp-list"></div>
+    <div id="fp-ints" class="hide"></div>
+    <button class="fp-skip hide" id="fp-skip">no intention yet</button>
+  </div>
+</div>
+
+<!-- Aperçu d'une habitude déjà configurée : freq + intention en un coup d'œil, chaque ligne rouvre son sélecteur -->
+<div id="habit-peek" class="hide" role="dialog" aria-label="Habit settings">
+  <div class="hp-card">
+    <button class="hp-row" id="hp-freq" type="button">
+      <span class="hp-lbl">Time Frequency</span>
+      <span class="hp-val" id="hp-freq-val"></span>
+    </button>
+    <button class="hp-row" id="hp-int" type="button">
+      <span class="hp-lbl">Intention</span>
+      <span class="hp-val" id="hp-int-val"></span>
+      <span class="hp-def" id="hp-int-def"></span>
+    </button>
+  </div>
+</div>
+
+<!-- Fenêtre de filtre au tap sur le T.png du haut : filtrer par Time Frequency ou Intention -->
+<div id="filter-modal" class="hide" role="dialog" aria-label="Filter habits">
+  <div class="hp-card">
+    <button class="hp-row" id="fm-freq" type="button">
+      <span class="hp-lbl">Time Frequency</span>
+      <span class="hp-val" id="fm-freq-val">any rhythm</span>
+    </button>
+    <button class="hp-row" id="fm-int" type="button">
+      <span class="hp-lbl">Intention</span>
+      <span class="hp-val" id="fm-int-val">any intention</span>
+    </button>
+  </div>
+</div>
+
+<!-- Badge du filtre actif : petit indicateur avec croix pour retirer -->
+<!-- Badge des filtres actifs : haut à droite, Time Frequency ligne 1, Intention ligne 2 -->
+<div id="filter-badge" class="hide sink-el">
+  <div id="fb-freq" class="fb-line"></div>
+  <div id="fb-int"  class="fb-line"></div>
+  <button id="fb-clear" aria-label="Clear filter">×</button>
+</div>
+
+<div id="member-window">
+  <div class="mw-card">
+    <button class="mw-close" id="mw-close">Close</button>
+    <div id="mw-out-state">
+      <input class="mw-input" id="mw-email" type="email" placeholder="your email" autocomplete="email">
+      <input class="mw-input hide" id="mw-code" inputmode="numeric" maxlength="6" placeholder="6-digit code">
+      <div class="mw-note dim" id="mw-note"></div>
+    </div>
+    <div id="mw-claim-state" class="hide">
+      <div class="mw-body">Choose the name of your Totehm.</div>
+      <input class="mw-input" id="mw-pseudo" maxlength="24" placeholder="your Totehm">
+      <div class="mw-note dim" id="mw-claim-note"></div>
+    </div>
+    <div id="mw-in-state" class="hide">
+      <div class="mw-pseudo" id="mw-who"></div>
+      <div class="mw-mail" id="mw-mail"></div>
+      <div class="mw-sync" id="mw-sync"></div>
+      <button class="mw-out" id="mw-signout">Sign out</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
+const $=id=>document.getElementById(id);
+
+/* ══ JOURNAL DES TRANSFORMATIONS — la matière première du Book of My Totehm ══
+   Chaque mutation d'habitude est journalisée : en local (toujours) et dans Supabase (si loggé).
+   Le Book (brique 2) lira ce journal pour détecter les grandes transformations et écrire les chapitres.
+   kind: habit_added | habit_removed | intention_changed | freq_changed */
+async function logTotehmEvent(kind, habitText, detail){
+  const ev={kind, habit_text:habitText||null, detail:detail||{}, created_at:new Date().toISOString()};
+  try{
+    const raw=localStorage.getItem('totehm_events');
+    const arr=raw?JSON.parse(raw):[];
+    arr.push(ev);
+    if(arr.length>500)arr.splice(0,arr.length-500); /* garde les 500 derniers en local */
+    localStorage.setItem('totehm_events',JSON.stringify(arr));
+  }catch(e){}
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    if(session&&session.user){
+      await sb.from('totehm_events').insert({user_id:session.user.id,kind,habit_text:habitText||null,detail:detail||{}});
+    }
+  }catch(e){}
+}
+
+/* Bouton contextuel "Wear my Totehm" :
+   - sur totehm.space -> pousse le pont vers la boutique (comportement par défaut du href)
+   - sur higher.boutique -> renvoie au menu boutique local */
+(function(){
+  const btn=$('wear-btn'); if(!btn) return;
+  const isSpace=/(^|\.)totehm\.space$/i.test(location.hostname);
+  if(!isSpace){ btn.href='index.html#menu'; }
+})();
+
+/* ══ FREQUENCY ENGINE — 33 rythmes humains, moteur multilingue ══ */
+const FREQS=[
+  {id:'every_minute',      label:'every minute',            w:1},
+  {id:'hourly',            label:'every hour',              w:60},
+  {id:'several_daily',     label:'several times a day',     w:480},
+  {id:'every_morning',     label:'every morning',           w:1436},
+  {id:'every_afternoon',   label:'every afternoon',         w:1438},
+  {id:'daily',             label:'daily',                   w:1440},
+  {id:'every_evening',     label:'every evening',           w:1441},
+  {id:'every_weekday',     label:'every weekday',           w:1442},
+  {id:'every_night',       label:'every night',             w:1443},
+  {id:'every_other_day',   label:'every other day',         w:2880},
+  {id:'twice_week',        label:'twice a week',            w:5040},
+  {id:'every_weekend',     label:'every weekend',           w:10078},
+  {id:'weekly',            label:'weekly',                  w:10080},
+  {id:'every_monday',      label:'every monday',            w:10081},
+  {id:'every_tuesday',     label:'every tuesday',           w:10082},
+  {id:'every_wednesday',   label:'every wednesday',         w:10083},
+  {id:'every_thursday',    label:'every thursday',          w:10084},
+  {id:'every_friday',      label:'every friday',            w:10085},
+  {id:'every_saturday',    label:'every saturday',          w:10086},
+  {id:'every_sunday',      label:'every sunday',            w:10087},
+  {id:'biweekly',          label:'every two weeks',         w:20160},
+  {id:'twice_month',       label:'twice a month',           w:21600},
+  {id:'monthly',           label:'monthly',                 w:43200},
+  {id:'every_1st_month',   label:'every 1st of the month',  w:43201},
+  {id:'every_15th_month',  label:'every 15th of the month', w:43202},
+  {id:'seasonal',          label:'every season change',     w:131400},
+  {id:'quarterly',         label:'every quarter',           w:129600},
+  {id:'semiannual',        label:'every six months',        w:262800},
+  {id:'yearly',            label:'yearly',                  w:525600},
+  {id:'every_birthday',    label:'every birthday',          w:525601},
+  {id:'every_newyear',     label:'every new year',          w:525602},
+  {id:'randomly',          label:'randomly',                w:9999998},
+  {id:'sometimes',         label:'sometimes',               w:9999999}
+];
+const FREQ_BY_ID={};FREQS.forEach(f=>FREQ_BY_ID[f.id]=f);
+const fw=id=>(FREQ_BY_ID[id]||FREQ_BY_ID.daily).w;
+const flabel=id=>(FREQ_BY_ID[id]||FREQ_BY_ID.daily).label;
+
+/* norm : minuscules, sans accents, sans ponctuation */
+const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+
+/* lexique polyglotte : chaque clé regroupe des mots-racines d'une même famille */
+const LEX={
+  minute:['minute','minutes','min','mins','minuto','minutos','minuti','minuten','minuut','minutlich','pol','polovina'],
+  hour:['hour','hours','hr','hrs','hourly','heure','heures','horaire','hora','horas','horario','ora','ore','orario','stunde','stunden','stundlich','uur','uurlijks'],
+  morning:['morning','mornings','matin','matins','matinal','manha','manhas','manana','mananas','matutino','mattina','mattine','mattinale','morgens','morgen','ochtend','ochtenden','reveil','wakeup','aurore','dawn','sunrise'],
+  afternoon:['afternoon','afternoons','apresmidi','apresmidis','aprestmidi','tarde','tardes','pomeriggio','pomeriggi','nachmittag','nachmittags','middag','siesta','apresmidii'],
+  evening:['evening','evenings','soir','soirs','soiree','sera','serate','abend','abends','avond','avonden','sunset','crepuscule','anochecer'],
+  night:['night','nights','nuit','nuits','noite','noites','noche','noches','notte','notti','nacht','nachte','nachts','coucher','bedtime','minuit','midnight'],
+  day:['day','days','daily','everyday','jour','jours','journee','quotidien','quotidiens','quotidienne','quotidiennes','quotidiennement','dia','dias','diario','diaria','diarios','diarias','diariamente','adiario','giorno','giorni','giornaliero','giornalmente','quotidiano','quotidiani','tag','tage','taglich','dagelijks','dag','dagen'],
+  weekday:['weekday','weekdays','workday','workdays','workweek','ouvrable','ouvrables','uteis','laborables','feriali','werktag','werktage','werkdag','werkdagen','businessday'],
+  weekend:['weekend','weekends','wochenende','wochenenden','fimdesemana','findesemana','weekender'],
+  week:['week','weeks','weekly','semaine','semaines','hebdo','hebdomadaire','hebdomadairement','semana','semanas','semanal','semanalmente','settimana','settimane','settimanale','settimanalmente','woche','wochen','wochentlich','wekelijks','weekelijks'],
+  fortnight:['fortnight','fortnightly','quinzaine','quinzena','quincena','bimensuel','bimensuelle','bimensal','quindicinale','vierzehntagig','twoweeks'],
+  month:['month','months','monthly','mois','mensuel','mensuelle','mensuellement','mes','meses','mensal','mensalmente','mensual','mensualmente','mese','mesi','mensile','mensilmente','monat','monate','monatlich','maand','maanden','maandelijks'],
+  quarter:['quarter','quarterly','trimestre','trimestres','trimestriel','trimestrielle','trimestral','quartal','vierteljahr','kwartaal','kwartaals'],
+  season:['season','seasons','seasonal','saison','saisons','saisonnier','saisonniere','estacion','estacoes','estacao','stagione','stagioni','stagionale','jahreszeit','seizoen','seizoenen'],
+  semi:['semiannual','biannual','biannually','semestre','semestres','semestriel','semestrielle','semestral','semestrale','halbjahrlich','halfjaarlijks','sixmonths'],
+  year:['year','years','yearly','annual','annually','an','ans','annee','annees','annuel','annuelle','annuellement','ano','anos','anual','anualmente','anno','anni','annuale','jahr','jahre','jahrlich','jaar','jaren','jaarlijks'],
+  birthday:['birthday','birthdays','anniversaire','anniversaires','aniversario','aniversarios','cumpleanos','compleanno','compleanni','geburtstag','geburtstage','verjaardag','verjaardagen'],
+  newyear:['newyear','newyears','nouvelan','anonuevo','anonovo','capodanno','neujahr','nieuwjaar','janone','januaryfirst'],
+  random:['random','randomly','aleatoire','aleatoirement','aleatorio','aleatoriamente','casuale','casualmente','zufallig','zufall','willekeurig','anytime','whenever','anywhen','impromptu','impromptus','improvise','improvvisamente'],
+  sometimes:['sometimes','somewhat','occasionally','parfois','quelquefois','occasionnellement','avecespirit','manchmal','soms','irregular','irregulier','sporadic','sporadique','sporadically','sporadicamente','oftentimes','oftenish','occasional','vagabond','erratic','erratique','erratico','avolte','aveces']
+};
+const DAYS={
+  monday:['monday','mondays','mon','lundi','lundis','segunda','segundafeira','lunes','lunedi','montag','montags','maandag','maandagen','pirmadienis'],
+  tuesday:['tuesday','tuesdays','tue','tues','mardi','mardis','terca','tercafeira','martes','martedi','dienstag','dienstags','dinsdag','dinsdagen','antradienis'],
+  wednesday:['wednesday','wednesdays','wed','mercredi','mercredis','quarta','quartafeira','miercoles','mercoledi','mittwoch','mittwochs','woensdag','woensdagen','treciadienis'],
+  thursday:['thursday','thursdays','thu','thur','jeudi','jeudis','quinta','quintafeira','jueves','giovedi','donnerstag','donnerstags','donderdag','donderdagen','ketvirtadienis'],
+  friday:['friday','fridays','fri','vendredi','vendredis','sexta','sextafeira','viernes','venerdi','freitag','freitags','vrijdag','vrijdagen','penktadienis'],
+  saturday:['saturday','saturdays','sat','samedi','samedis','sabado','sabados','sabato','samstag','samstags','sonnabend','zaterdag','zaterdagen','sestadienis'],
+  sunday:['sunday','sundays','sun','dimanche','dimanches','domingo','domingos','domenica','sonntag','sonntags','zondag','zondagen','sekmadienis']
+};
+
+/* phrases idiomatiques (avant tokenisation) */
+const PHRASES={
+  sometimes:['de temps en temps','de temps a autre','de vez em quando','de vez en cuando','a veces','as vezes','ogni tanto','ab und zu','af en toe','af en zo','once in a while','every now and then','now and then','from time to time','on and off','here and there','hin und wieder','ab und an'],
+  weekend:['fin de semaine','fin de semana','fim de semana','on weekends','le week end','au week end','ce week end','les week ends'],
+  weekday:['en semaine','dias uteis','dias laborables','dias habiles','giorni feriali','werktags','on weekdays'],
+  afternoon:['every afternoon','all afternoons','chaque apres midi','toutes les apres midi','tous les apres midi','tous les apres midis','todas las tardes','cada tarde','ogni pomeriggio','jeden nachmittag','elke middag','todas as tardes','cada tardes'],
+  morning:['every morning','all mornings','chaque matin','tous les matins','todas las mananas','todas as manhas','ogni mattina','jeden morgen','elke ochtend'],
+  evening:['every evening','all evenings','chaque soir','tous les soirs','todas las tardes noches','todas as tardes','ogni sera','jeden abend','elke avond'],
+  night:['every night','all nights','chaque nuit','toutes les nuits','todas las noches','todas as noites','ogni notte','jede nacht','elke nacht'],
+  birthday:['every birthday','on my birthday','a mon anniversaire','chaque anniversaire','mi cumpleanos','mio compleanno','mein geburtstag'],
+  newyear:['new year','new years eve','le jour de lan','nouvel an','ano nuevo','ano novo','capo danno','neujahrs tag','nieuw jaar','1er janvier','janvier 1'],
+  seasonal:['change of season','changement de saison','cambio de estacion','cambio di stagione','jahreszeitenwechsel','elke seizoen','al cambio de estacion'],
+  every_1st_month:['every 1st of the month','on the 1st','le 1er du mois','premier du mois','el 1 del mes','el primero del mes','il primo del mese','am ersten des monats','1st monthly'],
+  every_15th_month:['every 15th of the month','on the 15th','le 15 du mois','el 15 del mes','il 15 del mese','am 15 des monats','mid month','milieu du mois']
+};
+
+/* détecte un mot-clé simple sur des tokens */
+const hasKw=(n,arr)=>arr.some(k=>new RegExp('(^|\\s)'+k+'($|\\s)').test(n));
+const hasPhr=(n,arr)=>arr.some(p=>n.indexOf(norm(p))!==-1);
+
+/* deduceFreq : trouve TOUJOURS un ID (fallback = sometimes) */
+function deduceFreq(raw){
+  const original=String(raw||'').trim();
+  let n=norm(raw);
+  /* pas de tokens latins mais du texte non vide : fallback direct */
+  if(!n){ return original.length ? 'sometimes' : null; }
+
+  /* match exact sur un label */
+  const exact=FREQS.find(f=>f.label===n);
+  if(exact)return exact.id;
+
+  /* phrases idiomatiques d'abord (avant tokenisation qui pourrait couper) */
+  const PHRASE_TO_ID={weekend:'every_weekend',weekday:'every_weekday',afternoon:'every_afternoon',morning:'every_morning',evening:'every_evening',night:'every_night',birthday:'every_birthday',newyear:'every_newyear',sometimes:'sometimes',seasonal:'seasonal',every_1st_month:'every_1st_month',every_15th_month:'every_15th_month'};
+  for(const k of Object.keys(PHRASES)){
+    if(hasPhr(n,PHRASES[k]))return PHRASE_TO_ID[k]||k;
+  }
+
+  /* fragments de label (ex "twice week" -> "twice a week") */
+  if(n.length>=4){
+    const partial=FREQS.find(f=>{
+      const fl=f.label;
+      return fl.indexOf(n)!==-1 || (n.length>=fl.length-3 && n.indexOf(fl)!==-1);
+    });
+    if(partial)return partial.id;
+  }
+
+  /* nombres en lettres → chiffres */
+  n=n.replace(/(^|\s)(deux|two|dos|due|zwei|twee)($|\s)/g,'$12$3')
+     .replace(/(^|\s)(trois|three|tres|tre|drei|drie)($|\s)/g,'$13$3')
+     .replace(/(^|\s)(quatre|four|cuatro|quattro|vier)($|\s)/g,'$14$3')
+     .replace(/(^|\s)(cinq|five|cinco|cinque|funf)($|\s)/g,'$15$3')
+     .replace(/(^|\s)(six|seis|sei|sechs|zes)($|\s)/g,'$16$3')
+     .replace(/(^|\s)(sept|seven|siete|sette|sieben|zeven)($|\s)/g,'$17$3');
+
+  let mult=false,num=null;
+  if(/(^|\s)(twice|bihebdo)($|\s)/.test(n)){mult=true;num=2;}
+  if(/(^|\s)thrice($|\s)/.test(n)){mult=true;num=3;}
+  const nm=n.match(/(\d+)/);
+  if(nm)num=parseInt(nm[1],10);
+  if(/(?:^|\s)(x\d+|\d+x|times|fois|vezes|veces|volte|mal|keer|per|par|por|al)(?:$|\s)/.test(n))mult=true;
+  if(/(^|\s)(several|plusieurs|varias|varios|varie|mehrmals|meermaals|multiple|many|beaucoup)($|\s)/.test(n))mult=true;
+
+  /* jours nommés */
+  for(const d in DAYS){if(hasKw(n,DAYS[d]))return 'every_'+d;}
+
+  /* dates spéciales */
+  if(hasKw(n,LEX.birthday))return 'every_birthday';
+  if(hasKw(n,LEX.newyear))return 'every_newyear';
+  if(hasKw(n,LEX.season)){return 'seasonal';}
+
+  /* fenêtres de journée */
+  if(hasKw(n,LEX.afternoon))return 'every_afternoon';
+  if(hasKw(n,LEX.morning))return 'every_morning';
+  if(hasKw(n,LEX.evening))return 'every_evening';
+  if(hasKw(n,LEX.night))return 'every_night';
+
+  /* weekend / weekday */
+  if(hasKw(n,LEX.weekend))return 'every_weekend';
+  if(hasKw(n,LEX.weekday))return 'every_weekday';
+
+  /* fortnight */
+  if(hasKw(n,LEX.fortnight))return 'biweekly';
+
+  /* random / sometimes (avant fenêtres génériques) */
+  if(hasKw(n,LEX.random))return 'randomly';
+  if(hasKw(n,LEX.sometimes))return 'sometimes';
+
+  /* minute / heure */
+  if(hasKw(n,LEX.minute))return 'every_minute';
+  if(hasKw(n,LEX.hour))return 'hourly';
+
+  /* jour */
+  if(hasKw(n,LEX.day)){
+    if(/(^|\s)(other|alterni|alternos|sur 2)($|\s)/.test(n))return 'every_other_day';
+    if(num===2&&!mult)return 'every_other_day';
+    if(mult&&num&&num>=2)return 'several_daily';
+    if(/(^|\s)(several|plusieurs|varias|varios|varie|mehrmals|meermaals)($|\s)/.test(n))return 'several_daily';
+    return 'daily';
+  }
+
+  /* semaine */
+  if(hasKw(n,LEX.week)){
+    if(num===2&&mult)return 'twice_week';
+    if(num===2&&!mult)return 'biweekly';
+    if(num&&num>=3&&!mult)return 'monthly';
+    return 'weekly';
+  }
+
+  /* mois */
+  if(hasKw(n,LEX.month)){
+    if(num===2&&mult)return 'twice_month';
+    if(num===1)return 'every_1st_month';
+    if(num===15)return 'every_15th_month';
+    if(num&&num>=5&&!mult)return 'semiannual';
+    if(num&&num>=3&&!mult)return 'quarterly';
+    return 'monthly';
+  }
+
+  /* trimestre / semestre / année */
+  if(hasKw(n,LEX.quarter))return 'quarterly';
+  if(hasKw(n,LEX.semi))return 'semiannual';
+  if(hasKw(n,LEX.year)){
+    if(num&&num>=2&&!mult)return 'sometimes';
+    return 'yearly';
+  }
+
+  /* dernier fallback : GARANTI un résultat */
+  return 'sometimes';
+}
+
+/* ══ STORAGE — dual local+cloud ══ */
+const KEY='totehm_habits_v1';
+const KEYP='totehm_profile_v1';
+let me=null, myProfile=null, cloudMode=false, cloudSaveTimer=null, saveTimer=null;
+
+function loadState(){
+  try{const r=localStorage.getItem(KEY);if(r)return JSON.parse(r);}catch(e){}
+  /* migration depuis le Grind v5 : on aplatit les steps de tous les trips */
+  try{
+    const r5=localStorage.getItem('totehm_grind_v5');
+    if(r5){
+      const g=JSON.parse(r5)||[];
+      const habits=[];const seen={};
+      g.forEach(t=>{(t.steps||[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;habits.push({t:s.t,f:FREQ_BY_ID[s.f]?s.f:null,i:INT_BY_ID[s.i]?s.i:null});}});});
+      const vis=g.some(t=>t.vis==='network')?'network':'private';
+      if(habits.length)return {habits,vis};
+    }
+  }catch(e){}
+  return null;
+}
+const pload=()=>{try{const r=localStorage.getItem(KEYP);return r?JSON.parse(r):null;}catch(e){return null;}};
+
+let state=loadState()||{habits:[
+  {t:'Get Higher',f:'every_minute'},
+  {t:'Read 20 minutes of neuroscience',f:'every_night'},
+  {t:'Drop a street sticker in Lisbon',f:'weekly'}
+],vis:'private'};
+let profile=pload()||{name:'',bot:false};
+let floor=0, busy=false, fpTarget=null, fpStage='freq', pendingF=null, pendingI=null, filterF=null, filterI=null;
+
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(state));localStorage.setItem(KEYP,JSON.stringify(profile));}catch(e){}
+  if(cloudMode&&me){scheduleCloudSave();}
+  $('fv-status').textContent='saved';
+  setTimeout(()=>{if($('fv-status').textContent==='saved')$('fv-status').textContent='';},1100);
+}
+
+/* ── CLOUD : un snapshot = une ligne trips ── */
+async function cloudSave(){
+  if(!me)return;
+  $('mw-sync').textContent='syncing…';
+  try{
+    await sb.from('trips').delete().eq('user_id',me.id);
+    const {error}=await sb.from('trips').insert({
+      user_id:me.id, letter:0, position:0,
+      objective:'', habits:'', repulsions:'',
+      visibility:(state.vis==='network')?'network':'private',
+      steps:state.habits, bot:!!profile.bot
+    });
+    if(error)throw error;
+    $('mw-sync').textContent='synced ✓';
+    setTimeout(()=>{if($('mw-sync').textContent==='synced ✓')$('mw-sync').textContent='';},1400);
+  }catch(e){$('mw-sync').textContent='sync failed — will retry';}
+}
+function scheduleCloudSave(){clearTimeout(cloudSaveTimer);cloudSaveTimer=setTimeout(cloudSave,900);}
+async function cloudLoad(){
+  if(!me)return;
+  const {data,error}=await sb.from('trips').select('*').eq('user_id',me.id).order('position');
+  if(error||!data||!data.length)return;
+  const habits=[];const seen={};
+  data.forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;habits.push({t:s.t,f:FREQ_BY_ID[s.f]?s.f:null,i:INT_BY_ID[s.i]?s.i:null});}});});
+  state={habits, vis:data.some(r=>r.visibility==='network')?'network':'private'};
+  if(data[0].bot!=null)profile.bot=!!data[0].bot;
+  try{localStorage.setItem(KEY,JSON.stringify(state));localStorage.setItem(KEYP,JSON.stringify(profile));}catch(e){}
+}
+async function migrateLocalToCloudIfNeeded(){
+  if(!me)return;
+  const {count}=await sb.from('trips').select('*',{count:'exact',head:true}).eq('user_id',me.id);
+  if((count||0)===0 && state.habits.length){await cloudSave();}
+  else{await cloudLoad();}
+}
+
+/* ══ LES 7 INTENTIONS (source : totehm_map.html) ══ */
+const INTS=[
+  {id:'fight',    name:'Fight',    color:'#E24B4A', def:'Conquer yourself through harder effort.'},
+  {id:'flow',     name:'Flow',     color:'#e48b31', def:'Liberate energy through movement.'},
+  {id:'enrich',   name:'Enrich',   color:'#fcbe21', def:'Master your wealth through capital & network.'},
+  {id:'love',     name:'Love',     color:'#639922', def:'Contemplate life through connection & beauty.'},
+  {id:'express',  name:'Express',  color:'#1D9E75', def:'Give form to emotion through creation.'},
+  {id:'focus',    name:'Focus',    color:'#378ADD', def:'Master your mind through deep mental focus.'},
+  {id:'celebrate',name:'Celebrate',color:'#7F77DD', def:'Elevate energy through collective effervescence.'}
+];
+const INT_BY_ID={};INTS.forEach(x=>INT_BY_ID[x.id]=x);
+const intColor=i=>(INT_BY_ID[i]||{}).color||'#fff';
+
+/* ══ RENDER ══ */
+const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;};
+const T_SVG='<svg class="tglyph" viewBox="0 0 624 636" aria-hidden="true"><path fill="currentColor" d="M0 0 H624 V92 H358 V592 H434 V636 H190 V592 H266 V92 H0 Z"/></svg>';
+/* les habits sans Time frequency coulent en bas, juste au-dessus de la ligne d'ajout */
+const fw2=f=>f?fw(f):1e12;
+function sortHabits(){state.habits.sort((a,b)=>fw2(a.f)-fw2(b.f));}
+
+function renderHabits(){
+  sortHabits();
+  const box=$('habits');let h='';
+  const list=state.habits.map((s,i)=>({s,i})).filter(({s})=>{
+    if(filterF && s.f!==filterF) return false;
+    if(filterI && s.i!==filterI) return false;
+    return true;
+  });
+  list.forEach(({s,i})=>{
+    h+='<div class="habit'+(s.f?' timed':'')+'">'
+      +'<button class="h-x" data-i="'+i+'" aria-label="remove">×</button>'
+      +'<span class="meta">'
+      +(s.f
+        ?'<button class="h-T h-Ti" data-i="'+i+'" title="Intention" style="color:'+(s.i?intColor(s.i):'#fff')+'">'+T_SVG+'</button><button class="gbtn h-freq" data-i="'+i+'">'+esc(flabel(s.f))+'</button>'
+        :'<button class="h-T" data-i="'+i+'" title="Time frequency">'+T_SVG+'</button>')
+      +'</span>'
+      +'<span class="tick"></span>'
+      +'<span class="h-body"><textarea class="h-text" rows="1" data-i="'+i+'"></textarea></span>'
+      +'</div>';
+  });
+  /* la ligne d'ajout : le T = Time frequency de la future Habit */
+  h+='<div class="habit add'+(pendingF?' timed':'')+'">'
+    +'<span class="meta">'
+    +(pendingF
+      ?'<button class="h-T h-Ti" id="h-Tp" title="Intention" style="color:'+(pendingI?intColor(pendingI):'#fff')+'">'+T_SVG+'</button><button class="gbtn h-freq" id="h-pf">'+esc(flabel(pendingF))+'</button>'
+      :'<button class="h-T" id="h-T" title="Time frequency">'+T_SVG+'</button>')
+    +'</span>'
+    +'<span class="tick"></span>'
+    +'<span class="h-body"><textarea class="h-add" rows="1" id="h-add"></textarea><span class="h-hint" id="h-hint">'
+    +(state.habits.length===0?'What is your main <span class="hh">H</span>abit':'add a <span class="hh">H</span>abit')
+    +'</span></span>'
+    +'</div>';
+  box.innerHTML=h;
+
+  const autoGrow=el=>{el.style.height='auto';el.style.height=el.scrollHeight+'px';};
+  box.querySelectorAll('.h-text').forEach(inp=>{
+    inp.value=state.habits[+inp.dataset.i].t||'';autoGrow(inp);
+    inp.addEventListener('input',()=>{autoGrow(inp);state.habits[+inp.dataset.i].t=inp.value.replace(/\n/g,' ');clearTimeout(saveTimer);saveTimer=setTimeout(save,700);});
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();inp.blur();}});
+  });
+  box.querySelectorAll('.h-freq[data-i]').forEach(b=>{b.onclick=()=>openFreqPanel(+b.dataset.i);});
+  box.querySelectorAll('.h-T[data-i]').forEach(b=>{
+    const i=+b.dataset.i;
+    /* T d'une habitude configurée -> fenêtre d'aperçu (freq + intention en un coup d'œil, chacun éditable).
+       T d'une habitude sans intention -> panneau d'édition direct au bon stage. */
+    b.onclick=()=>{
+      if(b.classList.contains('h-Ti') && state.habits[i] && state.habits[i].f && state.habits[i].i){
+        openHabitPeek(i);
+      } else {
+        openFreqPanel(i, b.classList.contains('h-Ti')?'int':'freq');
+      }
+    };
+  });
+  box.querySelectorAll('.h-x').forEach(b=>{b.onclick=()=>{const h=state.habits[+b.dataset.i];logTotehmEvent('habit_removed',h?h.t:null,{f:h?h.f:null,i:h?h.i:null});state.habits.splice(+b.dataset.i,1);save();renderHabits();};});
+  const hT=$('h-T');if(hT)hT.onclick=()=>openFreqPanel('new','freq');
+  const hTp=$('h-Tp');if(hTp)hTp.onclick=()=>openFreqPanel('new','int');
+  const pf=$('h-pf');if(pf)pf.onclick=()=>openFreqPanel('new','freq');
+  const add=$('h-add'), hint=$('h-hint');
+  autoGrow(add);
+  add.addEventListener('input',()=>{autoGrow(add);hint.style.display=add.value?'none':'';});
+  add.addEventListener('keydown',e=>{
+    if(e.key!=='Enter')return;e.preventDefault();
+    const v=add.value.replace(/\n/g,' ').trim();if(!v)return;
+    state.habits.push({t:v,f:pendingF||null,i:pendingI||null});
+    logTotehmEvent('habit_added',v,{f:pendingF||null,i:pendingI||null});
+    pendingF=null;pendingI=null;save();renderHabits();
+    const na=$('h-add');if(na)na.focus();
+  });
+}
+
+function renderSettings(){
+  if(document.activeElement!==$('set-name')){
+    $('set-name').value=(me&&myProfile)?(myProfile.pseudo||''):(profile.name||'');
+  }
+  $('name-note').textContent='';$('name-note').className='note dim';
+  $('set-private').classList.toggle('on',(state.vis||'private')!=='network');
+  $('set-members').classList.toggle('on',state.vis==='network');
+  paintCity();
+}
+
+function paint(){
+  const isSet=floor===1;
+  $('habits').classList.toggle('hide',isSet);
+  $('settings').classList.toggle('hide',!isSet);
+  $('floorview').style.backgroundColor=isSet?'#000':'transparent';
+  $('rail').style.opacity=isSet?'0':'1';
+  $('bigT').style.opacity=isSet?'0':'1';
+  $('wordmark').style.opacity=isSet?'0':'1';
+  $('menu-arrow').style.display=isSet?'none':'';   /* petite flèche : visible sur Habits uniquement */
+  $('conn-bar').style.display=isSet?'flex':'none';  /* barre membre : visible dans le Menu uniquement */
+  if(isSet)renderSettings();else renderHabits();
+}
+
+/* ══ FREQUENCY PANEL ══ */
+const fpOpen=()=>!$('freq-panel').classList.contains('hide')||!$('habit-peek').classList.contains('hide');
+function showFpStage(stage){
+  fpStage=stage;
+  const isInt=stage==='int';
+  $('fp-input').classList.toggle('hide',isInt);
+  $('fp-preview').classList.toggle('hide',isInt);
+  $('fp-list').classList.toggle('hide',isInt);
+  $('fp-ints').classList.toggle('hide',!isInt);
+  $('fp-skip').classList.toggle('hide',!isInt);
+  if(isInt){renderFpInts(currentIntOfTarget());}
+}
+function currentIntOfTarget(){
+  if(fpTarget==='new')return pendingI;
+  return (state.habits[fpTarget]&&state.habits[fpTarget].i)||null;
+}
+function openFreqPanel(target,stage){
+  fpTarget=target;$('fp-input').value='';fpDetected=null;
+  const cur=(target==='new')?pendingF
+    :(target==='filter')?filterF
+    :(state.habits[target]?state.habits[target].f:null);
+  /* habitude déjà timée : on montre la fréquence courante (pré-sélection visible) */
+  if(cur){fpDetected=cur;$('fp-preview').textContent=flabel(cur);}
+  else{$('fp-preview').textContent='';}
+  renderFpList(cur);
+  showFpStage(stage||'freq');
+  $('freq-panel').classList.remove('hide');
+  if((stage||'freq')==='freq')setTimeout(()=>{try{$('fp-input').focus();}catch(e){}},40);
+}
+function closeFreqPanel(){$('freq-panel').classList.add('hide');fpTarget=null;fpStage='freq';}
+
+/* ══ FENÊTRE D'APERÇU D'UNE HABITUDE CONFIGURÉE ══
+   Ouverte au tap sur le T.svg coloré d'une habitude déjà remplie.
+   Montre la Time Frequency et l'Intention en un coup d'œil.
+   Chacune est cliquable : rouvre le sélecteur correspondant pré-rempli. */
+function openHabitPeek(i){
+  const s=state.habits[i]; if(!s||!s.f||!s.i)return;
+  const x=INT_BY_ID[s.i]||null;
+  $('hp-freq-val').textContent=flabel(s.f);
+  $('hp-int-val').innerHTML=x
+    ? '<span style="color:'+x.color+'">'+T_SVG+' '+x.name+'</span> <svg class="higher-inline" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg>'
+    : '';
+  $('hp-int-def').textContent=x?(x.def||''):'';
+  $('hp-freq').onclick=()=>{closeHabitPeek();openFreqPanel(i,'freq');};
+  $('hp-int').onclick =()=>{closeHabitPeek();openFreqPanel(i,'int');};
+  $('habit-peek').classList.remove('hide');
+}
+function closeHabitPeek(){$('habit-peek').classList.add('hide');}
+$('habit-peek').addEventListener('click',(e)=>{if(e.target.id==='habit-peek')closeHabitPeek();});
+document.addEventListener('keydown',(e)=>{if(e.key==='Escape'&&!$('habit-peek').classList.contains('hide'))closeHabitPeek();});
+
+/* ══ FILTRE au tap sur bigT (T.png du haut) ══
+   Ouvre une modale même format que habit-peek : Time Frequency + Intention.
+   Le filtre choisi s'affiche dans un badge avec × pour retirer. */
+function openFilterModal(){
+  $('fm-freq-val').textContent=filterF?flabel(filterF):'any rhythm';
+  if(filterI&&INT_BY_ID[filterI]){
+    const x=INT_BY_ID[filterI];
+    $('fm-int-val').innerHTML='<span style="color:'+x.color+'">'+T_SVG+' '+x.name+'</span>';
+  }else{
+    $('fm-int-val').textContent='any intention';
+  }
+  $('filter-modal').classList.remove('hide');
+}
+function closeFilterModal(){$('filter-modal').classList.add('hide');}
+$('bigT').style.cursor='pointer';
+$('bigT').onclick=()=>{ if(floor===0)openFilterModal(); };
+$('filter-modal').addEventListener('click',(e)=>{if(e.target.id==='filter-modal')closeFilterModal();});
+document.addEventListener('keydown',(e)=>{if(e.key==='Escape'&&!$('filter-modal').classList.contains('hide'))closeFilterModal();});
+
+/* Ligne Time Frequency : réutilise le freq-panel avec fpTarget='filter' */
+$('fm-freq').onclick=()=>{closeFilterModal();openFreqPanel('filter','freq');};
+
+/* Ligne Intention : mini-picker inline avec les 7 intentions colorées + option 'any' */
+$('fm-int').onclick=()=>{
+  const val=$('fm-int-val'); val.innerHTML='';
+  const grid=document.createElement('div');
+  grid.style.cssText='display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:4px';
+  const mkBtn=(label,color,onClick)=>{
+    const b=document.createElement('button');
+    b.type='button';
+    b.style.cssText='background:none;border:1px solid rgba(255,255,255,.35);color:'+color+';font-family:Quantico,sans-serif;font-size:12px;padding:5px 9px;cursor:pointer;transition:opacity .15s;-webkit-tap-highlight-color:transparent';
+    b.textContent=label;
+    b.onclick=(ev)=>{ev.stopPropagation();onClick();};
+    return b;
+  };
+  INTS.forEach(x=>grid.appendChild(mkBtn(x.name,x.color,()=>{filterI=x.id;closeFilterModal();updateFilterBadge();renderHabits();})));
+  grid.appendChild(mkBtn('any','#b0b0b0',()=>{filterI=null;closeFilterModal();updateFilterBadge();renderHabits();}));
+  val.appendChild(grid);
+};
+
+function updateFilterBadge(){
+  const badge=$('filter-badge');
+  if(!filterF && !filterI){badge.classList.add('hide');return;}
+  $('fb-freq').textContent = filterF ? flabel(filterF) : '';
+  if(filterI && INT_BY_ID[filterI]){
+    const x=INT_BY_ID[filterI];
+    $('fb-int').innerHTML = '<span style="color:'+x.color+'">'+x.name+'</span>';
+  }else{
+    $('fb-int').textContent = '';
+  }
+  badge.classList.remove('hide');
+}
+$('fb-clear').onclick=()=>{filterF=null;filterI=null;updateFilterBadge();renderHabits();};
+function applyFreq(id){
+  if(fpTarget==null||!FREQ_BY_ID[id]){closeFreqPanel();return;}
+  if(fpTarget==='filter'){
+    filterF=id;
+    closeFreqPanel();updateFilterBadge();renderHabits();
+    return;
+  }
+  if(fpTarget==='new'){
+    pendingF=id;
+    if(!pendingI){showFpStage('int');renderHabits();return;}
+    closeFreqPanel();renderHabits();const na=$('h-add');if(na)na.focus();return;
+  }
+  if(!state.habits[fpTarget]){closeFreqPanel();return;}
+  const prevF=state.habits[fpTarget].f;
+  state.habits[fpTarget].f=id;save();
+  if(prevF&&prevF!==id)logTotehmEvent('freq_changed',state.habits[fpTarget].t,{from:prevF,to:id});
+  if(!state.habits[fpTarget].i){showFpStage('int');renderHabits();return;}
+  closeFreqPanel();renderHabits();
+}
+/* étape 2 : l'intention colore le T et se pose à côté de la fréquence */
+function applyIntent(id){
+  if(fpTarget==='new'){pendingI=id;closeFreqPanel();renderHabits();const na=$('h-add');if(na)na.focus();return;}
+  if(state.habits[fpTarget]){const prevI=state.habits[fpTarget].i;state.habits[fpTarget].i=id;save();if(prevI!==id)logTotehmEvent('intention_changed',state.habits[fpTarget].t,{from:prevI||null,to:id||null});}
+  closeFreqPanel();renderHabits();
+}
+function renderFpInts(currentId){
+  const box=$('fp-ints');box.innerHTML='';
+  INTS.forEach(x=>{
+    const b=document.createElement('button');
+    b.className='fp-int'+(x.id===currentId?' on':'');
+    b.innerHTML='<span class="fp-int-r1"><span style="color:'+x.color+'">'+T_SVG+'</span>'
+      +'<span class="nm" style="color:'+x.color+'">'+x.name+'</span>'
+      +'<svg class="higher-inline" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></span>'
+      +'<span class="df">'+esc(x.def)+'</span>';
+    b.onclick=()=>applyIntent(x.id);
+    box.appendChild(b);
+  });
+}
+$('fp-skip').onclick=()=>applyIntent(null);
+function renderFpList(currentId){
+  const box=$('fp-list');box.innerHTML='';
+  FREQS.forEach(f=>{const b=document.createElement('button');b.className='gbtn fp-opt'+(f.id===currentId?' on':'');b.dataset.id=f.id;b.textContent=f.label;b.onclick=()=>applyFreq(f.id);box.appendChild(b);});
+}
+let fpDetected=null;
+$('fp-input').addEventListener('input',()=>{
+  const raw=$('fp-input').value;
+  fpDetected=raw.trim()?deduceFreq(raw):null;
+  $('fp-preview').textContent=fpDetected?('\u2192 '+flabel(fpDetected)):'';
+  const box=$('fp-list');
+  let hit=null;
+  box.querySelectorAll('.fp-opt').forEach(b=>{
+    const on=(fpDetected!=null && b.dataset.id===fpDetected);
+    b.classList.toggle('on',on);
+    if(on)hit=b;
+  });
+  if(hit)hit.scrollIntoView({block:'nearest',behavior:'smooth'});
+});
+$('fp-preview').onclick=()=>{if(fpDetected)applyFreq(fpDetected);};
+$('fp-input').addEventListener('keydown',e=>{
+  if(e.key==='Enter'){e.preventDefault();if(fpDetected)applyFreq(fpDetected);else{const id=deduceFreq($('fp-input').value);if(id)applyFreq(id);}}
+  else if(e.key==='Escape'){closeFreqPanel();}
+});
+$('freq-panel').addEventListener('click',e=>{if(e.target===$('freq-panel'))closeFreqPanel();});
+
+/* ══ NAVIGATION : up = Get Higher · down = Settings ══ */
+function animateSwap(dy,apply){
+  if(busy)return;busy=true;const inner=$('fv-inner');
+  inner.style.transition='opacity .2s ease, transform .2s ease';
+  inner.style.opacity='0';inner.style.transform='translate(0,'+(-dy*26)+'px)';
+  setTimeout(()=>{apply();inner.style.transition='none';inner.style.transform='translate(0,'+(dy*26)+'px)';
+    requestAnimationFrame(()=>{inner.style.transition='opacity .3s ease, transform .3s ease';inner.style.opacity='1';inner.style.transform='translate(0,0)';setTimeout(()=>{busy=false;},300);});
+  },200);
+}
+let stonerLoaded=false;
+/* Préchargement des 3 iframes dès l'ouverture -> toutes les directions sont instantanées */
+window.addEventListener('DOMContentLoaded',()=>{
+  if(!stonerLoaded){$('stoner-frame').src='stoner.html?free=1';stonerLoaded=true;}
+  $('book-frame').src='book.html';
+  $('nextobj-frame').src='next_objective.html';
+});
+/* Le passé (gauche) et le futur (droite) — miroirs horizontaux du showStoner */
+function hOpen(){return $('book').classList.contains('show')||$('nextobj').classList.contains('show');}
+function showBook(on){ if(busy)return; $('book').classList.toggle('show',on); if(on)save(); }
+function showNext(on){ if(busy)return; $('nextobj').classList.toggle('show',on); if(on)save(); }
+function showStoner(on){
+  busy=true;setTimeout(()=>{busy=false;},640);
+  $('stoner').classList.toggle('show',on);
+  if(on){ save(); }
+}
+function go(dFloor){
+  if(busy||fpOpen()||$('member-window').classList.contains('show')||$('tview').classList.contains('show'))return;
+  /* Stoner ouvert : swipe bas le referme (retour aux Paramètres, l'étage d'où il vient) */
+  if($('stoner').classList.contains('show')){ if(dFloor>0)showStoner(false); return; }
+  /* Deux étages : Habitudes <-> Paramètres. Stoner UNIQUEMENT par bouton [Get Higher]. */
+  if(dFloor<0 && floor===0){animateSwap(-1,()=>{floor=1;paint();});}       /* Habits -> Menu */
+  else if(dFloor>0 && floor===1){animateSwap(1,()=>{floor=0;paint();});}   /* Menu -> Habits */
+}
+/* Petite flèche sous TOTEHM.png : ouvre le menu (même geste que swipe UP depuis Habits) */
+$('menu-arrow').onclick=()=>{if(!busy)go(-1);};
+/* Curseur PlayStation dans les Paramètres */
+/* Rangée haute du menu paramètres */
+$('sn-book').onclick =()=>{if(!busy&&floor===1&&!hOpen())showBook(true);};
+$('sn-home').onclick =()=>{if(!busy&&floor===1&&!hOpen())go(1);};              /* T logo↑ = retour Habits */
+$('sn-next').onclick =()=>{if(!busy&&floor===1&&!hOpen())showNext(true);};
+
+/* [Get Higher with my Totehm] : animation d'élévation Higher qui va jusqu'au bout,
+   puis ouverture Stoner. C'est le SEUL chemin vers la méthode Stoner. */
+$('btn-get-higher').onclick=()=>{
+  if(busy)return;
+  busy=true;
+  document.body.classList.add('liftoff');
+  setTimeout(()=>{
+    showStoner(true);
+    document.body.classList.remove('liftoff');
+    busy=false;
+  },900);
+};
+window.addEventListener('message',e=>{if(e.data&&e.data.type==='totehm-close-stoner')showStoner(false);});
+
+/* Le bouton Make the Lisbon Streets Sublime (overlay en haut, dans la méthode) suit la ville choisie en bas */
+function paintStreet(){
+  const sb=$('street-btn'); if(!sb)return;
+  const lis=isLisbon((profile.city||'').trim());
+  sb.classList.toggle('show',lis);
+  sb.classList.toggle('hide',!lis);
+}
+
+let wheelLock=false;
+function scrollEdges(){
+  const sc=$('fv-inner');
+  return {top:sc.scrollTop<=1, bottom:sc.scrollTop+sc.clientHeight>=sc.scrollHeight-1};
+}
+/* Molette désactivée pour la navigation : évite les débats inversion naturelle/classique.
+   La nav se fait par : (1) tap sur #menu-arrow / #sn-home  (2) swipe tactile. */
+let y0=0,axis=null,t0el=null,x0=0;
+window.addEventListener('touchstart',(e)=>{x0=e.changedTouches[0].screenX;y0=e.changedTouches[0].screenY;axis=null;t0el=e.target;},{passive:true});
+window.addEventListener('touchmove',(e)=>{if(axis)return;const dx=e.changedTouches[0].screenX-x0,dy=e.changedTouches[0].screenY-y0;if(Math.abs(dx)>8||Math.abs(dy)>8)axis=Math.abs(dx)>Math.abs(dy)?'h':'v';},{passive:true});
+window.addEventListener('touchend',(e)=>{
+  if(fpOpen())return;
+  if(t0el&&t0el.closest&&t0el.closest('#results,#freq-panel,#member-window,input,textarea,button'))return;
+  const dy=e.changedTouches[0].screenY-y0;const TH=32;
+  if(axis==='v'){
+    /* Deux chemins verticaux uniquement :
+       - Depuis Habits (floor 0)   : swipe UP   (doigt monte, dy<0)   -> ouvre le menu
+       - Depuis Settings (floor 1) : swipe DOWN (doigt descend, dy>0) -> retour Habits
+       Stoner n'est JAMAIS accessible par swipe : uniquement via le bouton [Get Higher]. */
+    const edge=scrollEdges();
+    if(floor===0 && dy<-TH && edge.bottom)go(-1);       /* Habits -> Menu */
+    else if(floor===1 && dy>TH && edge.top)go(1);       /* Menu -> Habits */
+  }else if(axis==='h'){
+    const dx=e.changedTouches[0].screenX-x0;
+    if(Math.abs(dx)<TH)return;
+    if(hOpen()){ if($('book').classList.contains('show')&&dx<-TH)showBook(false); else if($('nextobj').classList.contains('show')&&dx>TH)showNext(false); return; }
+    if($('stoner').classList.contains('show'))return;    /* pas depuis Stoner */
+    if(dx>TH)showBook(true); else if(dx<-TH)showNext(true);    /* Habits + Settings */
+  }
+},{passive:true});
+window.addEventListener('keydown',(e)=>{
+  if(fpOpen()){if(e.key==='Escape')closeFreqPanel();return;}
+  if(e.target.tagName==='INPUT')return;
+  if($('member-window').classList.contains('show')){if(e.key==='Escape')$('member-window').classList.remove('show');return;}
+  if(e.key==='ArrowDown'){e.preventDefault();go(1);}
+  else if(e.key==='ArrowUp'){e.preventDefault();go(-1);}
+  else if(e.key==='ArrowLeft'){e.preventDefault();if($('book').classList.contains('show'))showBook(false);else if(!hOpen()&&!$('stoner').classList.contains('show'))showNext(true);}
+  else if(e.key==='ArrowRight'){e.preventDefault();if($('nextobj').classList.contains('show'))showNext(false);else if(!hOpen()&&!$('stoner').classList.contains('show'))showBook(true);}
+});
+/* Le passé et le futur parlent au présent */
+window.addEventListener('message',e=>{
+  if(!e.data)return;
+  if(e.data.type==='totehm-close-book')showBook(false);
+  else if(e.data.type==='totehm-close-next')showNext(false);
+  else if(e.data.type==='totehm-add-habit'&&e.data.habit&&e.data.habit.t){
+    const h=e.data.habit;
+    state.habits.push({t:String(h.t).slice(0,80),f:h.f||null,i:h.i||null});
+    logTotehmEvent('habit_added',h.t,{f:h.f||null,i:h.i||null,source:'next_objective'});
+    save();renderHabits();
+  }
+});
+
+/* ══ SETTINGS handlers ══ */
+/* Bouton-saisie (morph) : Name of your Totehm + Search a Totehm */
+function morph(btn,input,note){
+  btn.onclick=()=>{
+    btn.classList.add('hide');
+    input.classList.remove('hide');
+    if(note)note.classList.remove('hide');
+    setTimeout(()=>{try{input.focus();}catch(e){}},100);
+  };
+}
+morph($('name-btn'),$('set-name'),$('name-note'));
+morph($('search-btn'),$('search-input'),$('search-note'));
+
+/* Visibility : bouton -> révèle le sélecteur Private/Members */
+$('vis-btn').onclick=()=>{$('vis-panel').classList.toggle('hide');};
+/* My Totehm in my city : drawer (comportement inchangé) */
+$('dw-city').onclick=()=>{$('d-city').classList.toggle('on');};
+/* renommage du Totehm : vérif de dispo live (comme le Totehm Cloth), Enter pour claim */
+let nameTimer=null;
+$('set-name').addEventListener('input',()=>{
+  const v=$('set-name').value.trim(), note=$('name-note');
+  if(!me){profile.name=$('set-name').value;save();return;}
+  clearTimeout(nameTimer);
+  if(myProfile&&v===myProfile.pseudo){note.className='note dim';note.textContent='';return;}
+  if(v.length<3){note.className='note dim';note.textContent='at least 3 characters';return;}
+  note.className='note dim';note.textContent='checking\u2026';
+  nameTimer=setTimeout(async()=>{
+    const {data,error}=await sb.from('profiles').select('id').ilike('pseudo',v).neq('id',me.id).limit(1);
+    if(error){note.className='note dim';note.textContent='try again';return;}
+    if(data&&data.length){note.className='note no';note.textContent='already taken';}
+    else{note.className='note ok';note.textContent='available \u2014 press Enter to claim';}
+  },420);
+});
+$('set-name').addEventListener('keydown',async e=>{
+  if(e.key!=='Enter'||!me)return;
+  e.preventDefault();
+  clearTimeout(nameTimer);
+  const v=$('set-name').value.trim(), note=$('name-note');
+  note.className='note dim';note.textContent='';
+  if(v.length<3||v.length>24){note.className='note no';note.textContent='3 to 24 characters';return;}
+  if(myProfile&&v===myProfile.pseudo)return;
+  note.className='note dim';note.textContent='claiming\u2026';
+  const {error}=await sb.from('profiles').update({pseudo:v}).eq('id',me.id);
+  if(error){note.className='note no';note.textContent=error.code==='23505'?'already taken':'try again';return;}
+  myProfile={pseudo:v};profile.name=v;
+  try{localStorage.setItem(KEYP,JSON.stringify(profile));}catch(err){}
+  note.className='note ok';note.textContent='claimed \u2713';
+  connPaint();
+});
+$('set-private').onclick=()=>{state.vis='private';save();renderSettings();};
+$('set-members').onclick=()=>{state.vis='network';save();renderSettings();};
+
+/* ══ MY TOTEHM IN MY CITY ══
+   Lisbonne -> le coach match en plus les événements de la ville (RSS).
+   Autre ville -> coaching sur les seules données du Totehm + capture email. */
+const LISBON=['lisbon','lisboa','lisbonne','lissabon','lisbona','lisabona','lizbona','lisabon','lisszabon','lisburi','\uB9AC\uC2A4\uBCF8','\u91CC\u65AF\u672C','\u043B\u0438\u0441\u0441\u0430\u0431\u043E\u043D','\u0644\u0634\u0628\u0648\u0646\u0629','\u0644\u064A\u0633\u0628\u0648\u0646'];
+function isLisbon(v){
+  const n=(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+  return LISBON.some(x=>n.includes(x));
+}
+function paintCity(){
+  const c=(profile.city||'').trim(), lis=isLisbon(c);
+  $('city-lisbon').classList.toggle('hide',!lis);
+  $('city-intl').classList.toggle('hide',!(c&&!lis));
+  if(document.activeElement!==$('city-input')) $('city-input').value=profile.city||'';
+  paintStreet();  /* le bouton Make the Streets Sublime en haut suit la ville */
+}
+let cityTimer=null;
+$('city-input').addEventListener('input',()=>{
+  const v=$('city-input').value.trim(), note=$('city-note');
+  clearTimeout(cityTimer);
+  cityTimer=setTimeout(()=>{
+    profile.city=v; save();
+    if(!v){note.className='note dim';note.textContent='';}
+    else if(isLisbon(v)){note.className='note ok';note.textContent='Lisbon \u2713';}
+    else{note.className='note dim';note.textContent='';}
+    paintCity();
+  },300);
+});
+/* Ville ≠ Lisbonne : capture email — on t'avertit quand TOTEHM arrive chez toi */
+$('city-email').addEventListener('keydown',async(e)=>{
+  if(e.key!=='Enter')return;
+  const v=$('city-email').value.trim(), note=$('city-email-note');
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){note.className='note no';note.textContent='invalid email';return;}
+  note.className='note dim';note.textContent='...';
+  let {error}=await sb.from('subscribers').insert({email:v,city:(profile.city||'').trim()||null});
+  if(error){ ({error}=await sb.from('subscribers').insert({email:v})); } /* fallback si la colonne city n'existe pas encore */
+  if(error&&!/duplicate/i.test(error.message||'')){note.className='note no';note.textContent='try again';return;}
+  note.className='note ok';note.textContent="you're in — we'll tell you when we land";
+  $('city-email').disabled=true;
+});
+
+/* ══ SEARCH A TOTEHM — le pattern morph d'index.html ══ */
+/* réseau démo pour le mode guest */
+const NETWORK=[
+  {who:'wavywah', vis:'network', habits:[{t:'Get Higher',f:'every_minute',i:'focus'},{t:'Make one beat',f:'daily',i:'express'},{t:'Finish one track',f:'weekly',i:'express'}]},
+  {who:'lisboeta', vis:'network', habits:[{t:'Replace the urge with 10 push-ups',f:'several_daily',i:'fight'},{t:'Walk after every meal',f:'daily',i:'flow'}]},
+  {who:'serra', vis:'network', habits:[{t:'Stretch',f:'every_morning',i:'flow'},{t:'Cut sugar',f:'daily',i:'fight'},{t:'Long run',f:'every_sunday',i:'fight'}]}
+];
+/* SEARCH A TOTEHM : Enter -> full-screen read-only (le pattern Decode) */
+async function openTotehmView(q){
+  const note=$('search-note');
+  note.className='note dim';note.textContent='searching\u2026';
+  let name=null, habits=null;
+  if(!me){
+    const ql=q.toLowerCase();
+    const u=NETWORK.find(x=>x.who.toLowerCase()===ql)||NETWORK.find(x=>x.who.toLowerCase().indexOf(ql)!==-1);
+    if(!u){note.className='note no';note.textContent='no Totehm by that name';return;}
+    name=u.who;habits=(u.vis==='network')?u.habits:null;
+  }else{
+    let {data:ps}=await sb.from('profiles').select('id,pseudo').ilike('pseudo',q).limit(1);
+    let p=(ps&&ps[0])||null;
+    if(!p){const {data:ps2}=await sb.from('profiles').select('id,pseudo').ilike('pseudo','%'+q+'%').limit(1);p=(ps2&&ps2[0])||null;}
+    if(!p){note.className='note no';note.textContent='no Totehm by that name';return;}
+    name=p.pseudo;
+    const {data:rows}=await sb.from('trips').select('steps,visibility').eq('user_id',p.id).eq('visibility','network');
+    if(rows&&rows.length){
+      habits=[];rows.forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{if(s&&s.t)habits.push(s);});});
+      if(!habits.length)habits=null;
+    }
+  }
+  note.textContent='';
+  $('tv-name').textContent=name;
+  const list=$('tv-list');list.innerHTML='';
+  if(!habits){list.innerHTML='<div class="tv-private">Private</div>';}
+  else{
+    [...habits].sort((a,b)=>fw2(a.f)-fw2(b.f)).forEach(h=>{
+      const d=document.createElement('div');d.className='r-habit';
+      d.innerHTML='<span class="r-meta">'+(h.i?'<span class="h-T" style="color:'+intColor(h.i)+';cursor:default">'+T_SVG+'</span>':'')+(h.f?'<span class="r-fl">'+esc(flabel(h.f))+'</span>':'')+'</span>'
+        +'<span class="r-tick"'+(h.f?'':' style="background:#000"')+'></span>'
+        +'<span class="r-text">'+esc(h.t)+'</span>';
+      list.appendChild(d);
+    });
+  }
+  $('tview').classList.add('show');
+}
+$('search-input').addEventListener('keydown',e=>{
+  if(e.key!=='Enter')return;
+  const v=$('search-input').value.trim();
+  if(v.length<2){$('search-note').className='note dim';$('search-note').textContent='name of a Totehm';return;}
+  openTotehmView(v);
+});
+$('tv-back').onclick=()=>$('tview').classList.remove('show');
+
+/* ══ MEMBER SPACE : email-only DNA ══ */
+function connPaint(){
+  const label=(myProfile&&myProfile.pseudo)||(me?'Member':'Guest');
+  $('conn-bar').innerHTML='<span class="dot"'+(me?' style="background:#639922"':'')+'></span>'+label;
+}
+async function loadProfile(){
+  if(!me){myProfile=null;cloudMode=false;connPaint();return;}
+  const {data}=await sb.from('profiles').select('pseudo').eq('id',me.id).maybeSingle();
+  myProfile=data||null;
+  cloudMode=!!myProfile;
+  connPaint();
+}
+function memberPaint(){
+  $('mw-out-state').classList.toggle('hide',!!me);
+  $('mw-claim-state').classList.toggle('hide',!(me&&!myProfile));
+  $('mw-in-state').classList.toggle('hide',!(me&&myProfile));
+  if(me&&myProfile){$('mw-who').textContent=myProfile.pseudo;$('mw-mail').textContent=me.email||'';}
+}
+$('conn-bar').onclick=()=>{$('member-window').classList.add('show');memberPaint();};
+$('mw-close').onclick=()=>$('member-window').classList.remove('show');
+$('member-window').addEventListener('click',e=>{if(e.target===$('member-window'))$('member-window').classList.remove('show');});
+
+let mwEmail='';
+$('mw-email').addEventListener('keydown',async e=>{
+  if(e.key!=='Enter')return;
+  const v=$('mw-email').value.trim(), note=$('mw-note');
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){note.className='mw-note no';note.textContent='invalid email';return;}
+  note.className='mw-note dim';note.textContent='sending…';
+  const {error}=await sb.auth.signInWithOtp({email:v,options:{shouldCreateUser:true}});
+  if(error){note.className='mw-note no';note.textContent='try again in a minute';return;}
+  mwEmail=v;
+  note.className='mw-note ok';note.textContent='code sent — check your email';
+  $('mw-code').classList.remove('hide');setTimeout(()=>$('mw-code').focus(),80);
+});
+$('mw-code').addEventListener('input',async()=>{
+  const t=$('mw-code').value.trim(), note=$('mw-note');
+  if(t.length!==6)return;
+  note.className='mw-note dim';note.textContent='verifying…';
+  const {error}=await sb.auth.verifyOtp({email:mwEmail,token:t,type:'email'});
+  if(error){note.className='mw-note no';note.textContent='wrong code';return;}
+  note.textContent='';$('mw-code').value='';$('mw-code').classList.add('hide');$('mw-email').value='';
+});
+$('mw-pseudo').addEventListener('keydown',async e=>{
+  if(e.key!=='Enter')return;
+  const v=$('mw-pseudo').value.trim(), note=$('mw-claim-note');
+  if(v.length<3||v.length>24){note.className='mw-note no';note.textContent='3 to 24 characters';return;}
+  note.className='mw-note dim';note.textContent='…';
+  const {error}=await sb.from('profiles').insert({id:me.id,pseudo:v});
+  if(error){note.className='mw-note no';note.textContent=error.code==='23505'?'already taken':'try again';return;}
+  note.textContent='';
+  profile.name=v;try{localStorage.setItem(KEYP,JSON.stringify(profile));}catch(e){}
+  await loadProfile();
+  await migrateLocalToCloudIfNeeded();
+  memberPaint();paint();
+});
+$('mw-signout').onclick=async()=>{await sb.auth.signOut();$('member-window').classList.remove('show');};
+
+sb.auth.onAuthStateChange(async()=>{
+  const {data:{session}}=await sb.auth.getSession();
+  me=session?.user||null;
+  await loadProfile();
+  if(me&&myProfile){await migrateLocalToCloudIfNeeded();}
+  memberPaint();paint();
+});
+(async()=>{
+  const {data:{session}}=await sb.auth.getSession();
+  me=session?.user||null;
+  await loadProfile();
+  if(me&&myProfile){await cloudLoad();}
+  paint();
+})();
+window.addEventListener('pageshow',e=>{
+  if(!e.persisted)return;
+  showStoner(false);
+  $('member-window').classList.remove('show');
+  $('tview').classList.remove('show');
+  paint();
+});
+</script>
+</body>
+</html>
