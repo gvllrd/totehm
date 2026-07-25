@@ -77,7 +77,7 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
    1) [My Totehm] logo-image agrandi, flèche ↑ au-dessus (retour aux Habits)
    2) [My Totehm Book] et [My next Objective] sur la même ligne, centrés */
 #settings-nav{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:380px;margin:0 auto 16px;padding:0 6px}
-#settings-nav .sn-row{display:flex;align-items:center;justify-content:center;gap:22px;width:100%}
+#settings-nav .sn-row{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
 .sn-btn{background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;line-height:1.5;text-decoration:none;white-space:nowrap;display:flex;align-items:center;gap:6px;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
 @media(hover:hover){.sn-btn:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
 .sn-btn:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
@@ -222,6 +222,13 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 .city-lead{font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:#fff;line-height:1.5;text-align:center;max-width:340px;padding:6px 0 2px}
 /* Bloc "ville renseignée" : nom en gros + phrase conditionnelle + bouton Livin */
 #city-block{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;padding:6px 0}
+/* Box bleue perforée regroupant : ville détectée + phrase + [My Livin' Totehm].
+   Réutilise le même bord perforé que .btn-sig.claimed pour cohérence visuelle. */
+#city-card{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:340px;border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;padding:14px 18px;text-align:center}
+#city-card #city-detected{color:#fff;font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;letter-spacing:0}
+#city-card #city-detected:empty{display:none}
+#city-card #city-line{color:rgba(255,255,255,.85);font-family:'Quantico',sans-serif;font-size:12px;line-height:1.5}
+#city-card #livin-btn{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;text-decoration:none;padding:0 4px;line-height:1.5;margin-top:4px}
 
 /* [My Livin' Totehm] : fondu continu sur les 7 couleurs d'intention (14s par cycle).
    Chaque couleur transite en fondu vers la suivante. */
@@ -349,11 +356,11 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
           <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
           <img src="assets/img/totehm_logo.png" alt="My Totehm" onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/totehm_logo.png'">
         </button>
-        <!-- Étage 2 : My Totehm Book (←) et My next Objective (→) sur la même ligne, centrés -->
+        <!-- Étage 2 : Autobiography by my Totehm© (←) puis My next Objective (→), l'un au-dessus de l'autre, centrés -->
         <div class="sn-row">
-          <button id="sn-book" class="sn-btn" aria-label="My Totehm Book — the past">
+          <button id="sn-book" class="sn-btn" aria-label="Autobiography by my Totehm — the past">
             <svg class="chev sn-chev-h" viewBox="0 0 14 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2 L2 12 L11 22"/></svg>
-            <span>My Totehm Book</span>
+            <span>Autobiography by my Totehm&copy;</span>
           </button>
           <button id="sn-next" class="sn-btn" aria-label="My next Objective — the future">
             <span>My next Objective</span>
@@ -384,9 +391,11 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
              - Détecté : nom de la ville + phrase conditionnelle + [My Livin' Totehm].
              - Portugal : bouton [Make the Streets Sublime] en plus.
              - Refusé/erreur : phrase internationale + [My Livin' Totehm] seuls. -->
-        <div id="city-detected" class="city-lead" style="text-align:center;color:#fff;font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;letter-spacing:0"></div>
-        <div id="city-line" class="city-lead" style="text-align:center;color:rgba(255,255,255,.7);font-family:'Quantico',sans-serif;font-size:12px;line-height:1.4;margin-top:6px"></div>
-        <a class="btn-sig livin-btn" id="livin-btn" href="https://t.me/TotehmBot" target="_blank" rel="noopener" style="margin-top:12px">My Livin' Totehm</a>
+        <div id="city-card">
+          <div id="city-detected"></div>
+          <div id="city-line"></div>
+          <a class="livin-btn" id="livin-btn" href="https://t.me/TotehmBot" target="_blank" rel="noopener">My Livin' Totehm</a>
+        </div>
         <a class="btn-sig hide" id="streets-btn" href="play_the_street.html" style="margin-top:8px">Make the Streets Sublime</a>
       </div>
 
@@ -1120,7 +1129,12 @@ window.addEventListener('DOMContentLoaded',()=>{
 });
 /* Le passé (gauche) et le futur (droite) — miroirs horizontaux du showStoner */
 function hOpen(){return $('book').classList.contains('show')||$('nextobj').classList.contains('show');}
-function showBook(on){ if(busy)return; $('book').classList.toggle('show',on); if(on)save(); }
+function showBook(on){
+  if(busy)return;
+  if(on&&!me){ $('member-window').classList.add('show'); if(typeof memberPaint==='function')memberPaint(); return; }
+  $('book').classList.toggle('show',on);
+  if(on)save();
+}
 function showNext(on){ if(busy)return; $('nextobj').classList.toggle('show',on); if(on)save(); }
 function showStoner(on){
   busy=true;setTimeout(()=>{busy=false;},640);
@@ -1139,7 +1153,7 @@ function go(dFloor){
 $('menu-arrow').onclick=()=>{if(!busy)go(-1);};
 /* Curseur PlayStation dans les Paramètres */
 /* Rangée haute du menu paramètres */
-$('sn-book').onclick =()=>{if(!busy&&floor===1&&!hOpen())showBook(true);};
+$('sn-book').onclick =requireMember(()=>{if(!busy&&floor===1&&!hOpen())showBook(true);});
 $('sn-home').onclick =()=>{if(!busy&&floor===1&&!hOpen())go(1);};              /* T logo↑ = retour Habits */
 $('sn-next').onclick =()=>{if(!busy&&floor===1&&!hOpen())showNext(true);};
 
@@ -1221,23 +1235,41 @@ window.addEventListener('message',e=>{
 });
 
 /* ══ SETTINGS handlers ══ */
-/* Bouton-saisie (morph) : Name of your Totehm + Search a Totehm */
-function morph(btn,input,note){
-  btn.onclick=()=>{
+/* Frustre les non-membres : ouvre la fenêtre membre pour pousser à s'inscrire.
+   Bloque : Name of my Totehm, Visibility, My Livin' Totehm, My Book (autobiography). */
+function requireMember(fn){
+  return (e)=>{
+    if(me){return fn(e);}
+    if(e&&e.preventDefault)e.preventDefault();
+    $('member-window').classList.add('show');
+    if(typeof memberPaint==='function')memberPaint();
+  };
+}
+
+/* Bouton-saisie (morph) : Name of my Totehm + Search a Totehm */
+function morph(btn,input,note,guarded){
+  const open=()=>{
     btn.classList.add('hide');
     input.classList.remove('hide');
     if(note)note.classList.remove('hide');
     setTimeout(()=>{try{input.focus();}catch(e){}},100);
   };
+  btn.onclick = guarded ? requireMember(open) : open;
 }
-morph($('name-btn'),$('set-name'),$('name-note'));
-morph($('search-btn'),$('search-input'),$('search-note'));
+morph($('name-btn'),$('set-name'),$('name-note'),true);        /* réservé aux membres */
+morph($('search-btn'),$('search-input'),$('search-note'),false);
 
-/* Visibility : bouton -> révèle le sélecteur Private/Members */
-$('vis-btn').onclick=()=>{
+/* Visibility : réservé aux membres */
+$('vis-btn').onclick=requireMember(()=>{
   $('vis-btn').classList.add('hide');
   $('vis-panel').classList.remove('hide');
-};
+});
+
+/* My Livin' Totehm : réservé aux membres.
+   L'ancre est laissée telle quelle pour l'accessibilité ; le handler intercepte le clic. */
+$('livin-btn').addEventListener('click',(e)=>{
+  if(!me){e.preventDefault();$('member-window').classList.add('show');if(typeof memberPaint==='function')memberPaint();}
+});
 /* Peint le bouton Name selon l'état :
    - nom claimed  -> bouton avec le nom et look perforé bleu figé
    - pas de nom   -> bouton neutre "Name of my Totehm" */

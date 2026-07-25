@@ -39,6 +39,10 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 .chap .c-title{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;color:#fff;line-height:1.35}
 .chap .c-date{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-top:2px}
 .chap .body:hover .c-title{opacity:.75}
+.chap .chap-x{position:absolute;right:18px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.35);font-size:18px;line-height:1;cursor:pointer;padding:6px 8px;transition:color .15s;-webkit-tap-highlight-color:transparent}
+.chap .chap-x:hover{color:#fff}
+#read .r-deeper{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:52;background:none;border:6px solid transparent;border-image-source:linear-gradient(135deg,#fbd5ca,#fbd5ca);border-image-slice:6;border-image-repeat:round;color:#fbd5ca;font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;padding:6px 16px;cursor:pointer;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:color .15s,background .15s}
+#read .r-deeper:hover{color:#fff;background:rgba(251,213,202,.15)}
 
 #empty{position:fixed;inset:var(--band-t) 24px var(--band-b);display:none;align-items:center;justify-content:center;text-align:center;z-index:2;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.12em;color:rgba(255,255,255,.65);line-height:1.7}
 #empty.show{display:flex}
@@ -71,6 +75,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
   <button class="r-close" id="r-close">Close</button>
   <div class="r-head"><div class="r-title" id="r-title"></div></div>
   <div class="r-body" id="r-body"></div>
+  <button class="r-deeper" id="r-deeper">Go deeper</button>
 </div>
 
 <script type="module">
@@ -86,26 +91,50 @@ const MOCK=[
 ];
 
 function esc(s){return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+let currentChap=null; /* chapitre ouvert en lecture (pour Go deeper) */
+let allChaps=[]; /* pour re-render après suppression */
 function render(chaps){
+  allChaps=chaps;
   const box=$('list');box.innerHTML='';
   if(!chaps.length){$('empty').classList.add('show');return;}
   $('empty').classList.remove('show');
-  chaps.forEach(c=>{
+  chaps.forEach((c,idx)=>{
     const d=document.createElement('div');d.className='chap';
     const date=(c.opened_at||'').slice(0,10);
-    d.innerHTML='<div class="body"><div class="c-title">'+esc(c.title)+'</div><div class="c-date">'+esc(date)+'</div></div>';
-    d.querySelector('.body').onclick=()=>{$('r-title').textContent=c.title;$('r-body').textContent=c.body||'';$('read').classList.add('show');};
+    d.innerHTML='<div class="body"><div class="c-title">'+esc(c.title)+'</div><div class="c-date">'+esc(date)+'</div></div>'
+              +'<button class="chap-x" aria-label="Delete chapter">&times;</button>';
+    d.querySelector('.body').onclick=()=>{
+      currentChap=c;
+      $('r-title').textContent=c.title;
+      $('r-body').textContent=c.body||'';
+      $('r-deeper').style.display = c.id ? '' : 'none';  /* Go deeper : uniquement si vrai chapitre (id) */
+      $('read').classList.add('show');
+    };
+    d.querySelector('.chap-x').onclick=async(e)=>{
+      e.stopPropagation();
+      if(!confirm('Delete this chapter?'))return;
+      if(c.id){
+        try{await sb.from('book_chapters').delete().eq('id',c.id);}catch(err){}
+      }
+      allChaps.splice(idx,1);
+      render(allChaps.length?allChaps:MOCK);
+    };
     box.appendChild(d);
   });
 }
 $('r-close').onclick=()=>$('read').classList.remove('show');
+/* Go deeper : ouvre TotehmBot avec deep link vers le chapitre courant */
+$('r-deeper').onclick=()=>{
+  if(!currentChap||!currentChap.id)return;
+  window.open('https://t.me/TotehmBot?start=chapter_'+currentChap.id,'_blank','noopener');
+};
 
 (async()=>{
   let chaps=[];
   try{
     const {data:{session}}=await sb.auth.getSession();
     if(session&&session.user){
-      const {data}=await sb.from('book_chapters').select('title,body,opened_at').eq('user_id',session.user.id).order('opened_at',{ascending:false});
+      const {data}=await sb.from('book_chapters').select('id,title,body,opened_at').eq('user_id',session.user.id).order('opened_at',{ascending:false});
       if(data&&data.length)chaps=data;
     }
   }catch(e){}
