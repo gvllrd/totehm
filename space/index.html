@@ -27,13 +27,61 @@
   --futura:'Futura','Jost',sans-serif;
   --rl:46px;   /* rail left */
   --rw:18px;   /* rail width */
-  --band-t:96px;   /* bande haute : T.png + Get Higher */
-  --band-b:112px;  /* bande basse : TOTEHM.png + Real inspiration */
+  --band-t:104px;  /* bande haute : flèche filtre + T.png */
+  --band-b:116px;  /* bande basse : TOTEHM.png + flèche menu */
   --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%2336498c'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23743169'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
 }
-@media(min-width:700px){:root{--rl:25vw;--rw:22px}}
+/* ══ DESKTOP : tout est agrandi (~1.6x) pour garder l'impression de coder le totehm_logo ══
+   Sur grand écran, les valeurs mobile paraissent minuscules et le geste perd sa présence. */
+@media(min-width:700px){
+  :root{
+    --rl:25vw; --rw:30px;
+    --band-t:150px; --band-b:164px;
+    --perf-d:22px; --perf-g:44px; --perf-corner:32px;
+  }
+  /* Logos */
+  #bigT{top:44px}
+  #bigT img{height:85px}
+  #wordmark{bottom:44px}
+  #wordmark img{height:80px}
+  #filter-arrow{top:10px}
+  #filter-arrow svg,#menu-arrow svg{width:32px;height:18px}
+  #menu-arrow{bottom:10px}
+
+  /* Habitudes : texte, T colorés, fréquences */
+  .h-text,.h-add{font-size:19px;padding:6px 58px 6px 4px}
+  .habit .h-T .tglyph{height:19px}
+  .habit .h-freq{font-size:15px}
+  .habit .h-x{font-size:21px;right:24px}
+  .h-hint{font-size:13px}
+
+  /* Boutons et menu */
+  .btn-sig{font-size:17px}
+  .sn-btn{font-size:16px}
+  .sn-logo img{height:96px}
+  .sn-btn .chev{width:24px;height:15px}
+  .sn-btn .sn-chev-h{width:15px;height:24px}
+  .size-btn{font-size:16px}
+  .line-input{font-size:17px;min-width:280px}
+
+  /* Barre membre + badge filtre */
+  #conn-bar{font-size:15px;top:18px;left:18px}
+  #conn-bar .dot{width:10px;height:10px}
+  #filter-badge{top:18px;right:18px}
+  #filter-badge .fb-line{font-size:14px}
+
+  /* Fenêtres modales */
+  .hp-card{max-width:420px;padding:28px}
+  .hp-lbl{font-size:12px}
+  .hp-val{font-size:27px}
+  .hp-def{font-size:14px;max-width:320px}
+  #city-card{max-width:420px;padding:18px 24px}
+  #city-card #city-detected{font-size:18px}
+  #city-card #city-line{font-size:14px}
+  #city-card #livin-btn{font-size:17px}
+}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);font-family:var(--futura);font-weight:300;font-size:14px;overflow:hidden;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
 /* ══ PERFORATIONS DU BORD — "écrire dans le logo" (timbre-poste, cf. totehm_logo.png) ══
@@ -54,10 +102,12 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 
 /* ══ LE LOGO HABITÉ ══ */
 #rail{position:fixed;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.30);z-index:1;transition:opacity .4s}
-#bigT{position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;transition:opacity .4s;line-height:0}
-#bigT img{height:52px;width:auto;display:block;-webkit-user-drag:none}
-#wordmark{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;transition:opacity .4s;line-height:0}
-#wordmark img{height:58px;width:auto;display:block;-webkit-user-drag:none}
+/* Images recadrées (contenu pur, sans marge) : la valeur CSS = la taille visuelle réelle.
+   Mobile : T.png +30% et TOTEHM.png +10% par rapport au rendu précédent. */
+#bigT{position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;transition:opacity .4s;line-height:0}
+#bigT img{height:53px;width:auto;display:block;-webkit-user-drag:none}
+#wordmark{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;transition:opacity .4s;line-height:0}
+#wordmark img{height:50px;width:auto;display:block;-webkit-user-drag:none}
 
 /* Get Higher (haut droite) + Real inspiration (bas droite) */
 /* Petite flèche cliquable centrée juste sous le TOTEHM.png du bas — ouvre le menu paramètres */
