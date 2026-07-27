@@ -159,10 +159,11 @@ const LEVEL_DEF={
   experimental:'Evidence is limited, emerging or conflicting — lower confidence.',
   unverified:'No validation report was returned for this habit.'
 };
-/* Filet de transition : tant que l'edge function ne renvoie pas `level`, les
-   habitudes arrivent sans niveau. Passe à false une fois le backend à jour :
-   elles seront alors écartées au lieu d'être marquées UNVERIFIED. */
-const SHOW_UNVERIFIED=true;
+/* L'edge function garantit désormais un `level` valide sur chaque habitude
+   (schéma strict + filtre serveur). Une habitude sans niveau est donc une
+   anomalie : on l'écarte, conformément à « seules les habitudes validées
+   sont affichées ». Repasser à true seulement pour déboguer. */
+const SHOW_UNVERIFIED=false;
 
 const normLevel=h=>{
   const r=String(h.level||h.evidence_level||h.evidence||'').trim().toLowerCase();
