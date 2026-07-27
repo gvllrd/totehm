@@ -8,7 +8,7 @@
 <style>
 :root{
   --bg:#36498C; /* le futur — le ciel, la direction */
-  --rl:46px;--rw:14px;--band-t:96px;--band-b:112px;
+  --rl:46px;--rw:18px;--band-t:104px;--band-b:116px;
   --perf-d:15px;--perf-g:30px;--perf-corner:22px;
   --g-light:#e0e0e0;
   --fight:#E24B4A;--flow:#BA7517;--enrich:#EF9F27;--love:#639922;--express:#1D9E75;--focus:#378ADD;--celebrate:#7F77DD;
@@ -27,10 +27,10 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 #rail{position:fixed;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.30);z-index:1}
 
 /* Bandes = strictement le langage d'index */
-#bigT{position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;line-height:0}
-#bigT img{height:52px;width:auto;display:block;-webkit-user-drag:none}
-#wordmark{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;line-height:0}
-#wordmark img{height:58px;width:auto;display:block;-webkit-user-drag:none}
+#bigT{position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;line-height:0}
+#bigT img{height:53px;width:auto;display:block;-webkit-user-drag:none}
+#wordmark{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;line-height:0}
+#wordmark img{height:50px;width:auto;display:block;-webkit-user-drag:none}
 
 #mid{position:fixed;left:0;right:0;top:var(--band-t);bottom:var(--band-b);overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:6px 0;z-index:2}
 
@@ -51,6 +51,20 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 .prop .p-add:hover{opacity:.7}
 .prop.added{opacity:.4}
 .prop.added .p-add{display:none}
+
+/* ══ DESKTOP : tout agrandi (~1.6x), cohérent avec index.html ══ */
+@media(min-width:700px){
+  :root{--rl:25vw;--rw:30px;--band-t:150px;--band-b:164px;--perf-d:22px;--perf-g:44px;--perf-corner:32px}
+  #bigT{top:44px} #bigT img{height:85px}
+  #wordmark{bottom:44px} #wordmark img{height:80px}
+  #obj-input{font-size:19px}
+  #obj-note{font-size:11px}
+  .prop .p-text{font-size:19px}
+  .prop .p-freq{font-size:11px;max-width:82px}
+  .prop .p-add{font-size:16px;padding:7px 12px;right:26px}
+  .prop .body{padding-right:78px}
+  .prop .tglyph{height:26px}
+}
 </style>
 </head>
 <body>
