@@ -338,8 +338,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
    Taille / placement calés sur stoner.html (#stage + #vid-wrap + bouton).
    ══════════════════════════════════════════════════════════════════════════ */
 :root{
-  --gate-size:min(18vw,18vh);   /* taille du logo assemblé */
-  --gate-max:110px;              /* plafond desktop */
+  --gate-size:110px;            /* taille du logo assemblé — IDENTIQUE mobile et desktop */
   --gate-top:19vh;              /* descente : centré-haut */
   --gate-gap:3vh;               /* écart logo -> bouton */
   --gate-btn-gap:24px;          /* = margin-top de #btn-slogan (stoner.html) */
@@ -357,10 +356,9 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 body:not(.gate) #gate{display:none}
 #gate.gate-off{opacity:0;pointer-events:none}
 
-/* ── Le carré du logo : mêmes dimensions que #vid-wrap de la méthode ── */
+/* ── Le carré du logo : taille fixe, aucune variation par viewport ── */
 #gate-logo{position:relative;flex-shrink:0;
   width:var(--gate-size);height:var(--gate-size);
-  max-width:var(--gate-max);max-height:var(--gate-max);
   margin-bottom:var(--gate-gap)}
 
 /* Chaque calque est cadré au plus juste sur son dessin (viewBox serré) :
