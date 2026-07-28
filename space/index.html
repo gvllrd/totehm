@@ -278,6 +278,9 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 #city-card #city-fine{font-family:var(--futura);font-weight:300;font-size:11px;line-height:1.6;
   color:rgba(255,255,255,.65);max-width:292px;margin-top:7px}
 /* Seulement si le navigateur a mémorisé un refus : sinon on n'en parle pas. */
+/* « our simple terms » : souligné, dans le gris de la mention, blanc au survol. */
+.terms-link{color:inherit;text-decoration:underline;text-underline-offset:2px;transition:color .2s ease}
+.terms-link:hover,.terms-link:focus{color:#fff;outline:none}
 #city-card #city-hint{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.11em;
   text-transform:uppercase;color:rgba(255,255,255,.5);line-height:1.6;margin-top:5px;max-width:280px}
 /* Le passage d'un état à l'autre reprend le fondu maison (0.38s). */
@@ -483,14 +486,14 @@ body.gate.entered #fv-status{
           <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
           <img src="assets/img/totehm_logo.png" alt="My Totehm" onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/totehm_logo.png'">
         </button>
-        <!-- Étage 2 : Autobiography by my Totehm© (←) puis My next Objective (→), l'un au-dessus de l'autre, centrés -->
+        <!-- Étage 2 : Autobiography by my Totehm© (←) puis My Habits Generator (→), l'un au-dessus de l'autre, centrés -->
         <div class="sn-row">
           <button id="sn-book" class="sn-btn" aria-label="Autobiography by my Totehm — the past">
             <svg class="chev sn-chev-h" viewBox="0 0 14 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2 L2 12 L11 22"/></svg>
             <span>Autobiography by my Totehm&copy;</span>
           </button>
-          <button id="sn-next" class="sn-btn" aria-label="My next Objective — the future">
-            <span>My next Objective</span>
+          <button id="sn-next" class="sn-btn" aria-label="My Habits Generator — the future">
+            <span>My Habits Generator</span>
             <svg class="chev sn-chev-h" viewBox="0 0 14 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2 L12 12 L3 22"/></svg>
           </button>
         </div>
@@ -523,7 +526,7 @@ body.gate.entered #fv-status{
           <div id="city-line"></div>
           <a class="city-cta hide" id="livin-btn" href="https://t.me/TotehmBot" target="_blank" rel="noopener">Make your city match your Totehm</a>
           <button class="city-cta hide" id="city-enable" type="button">Allow Location</button>
-          <div id="city-fine">By clicking, you accept our simple terms.<br>No spam. Every message has a purpose.</div>
+          <div id="city-fine">By clicking, you accept <a class="terms-link" href="terms.html" target="_blank" rel="noopener">our simple terms</a>.<br>No spam. Every message has a purpose.</div>
           <div id="city-hint" class="hide"></div>
         </div>
         <a class="btn-sig hide" id="streets-btn" href="play_the_street.html" style="margin-top:8px">Make the Streets Sublime</a>
@@ -1356,6 +1359,11 @@ window.addEventListener('message',e=>{
   if(!e.data)return;
   if(e.data.type==='totehm-close-book')showBook(false);
   else if(e.data.type==='totehm-close-next')showNext(false);
+  /* Le TOTEHM du bas de book.html : on ferme le livre puis on ouvre les Paramètres. */
+  else if(e.data.type==='totehm-goto-settings'){
+    showBook(false);
+    setTimeout(()=>{ if(floor!==1) go(-1); },400);
+  }
   else if(e.data.type==='totehm-add-habit'&&e.data.habit&&e.data.habit.t){
     const h=e.data.habit;
     state.habits.push({t:String(h.t).slice(0,80),f:h.f||null,i:h.i||null});
@@ -1469,6 +1477,7 @@ $('set-members').onclick=()=>{state.vis='network';save();renderSettings();};
    La ville résolue est mémorisée : au retour, l'état 1 s'affiche tout de
    suite, et on rafraîchit en arrière-plan sans jamais representer de popup. */
 const CITY_KEY='totehm_city_v1';
+const TERMS_LINK='<a class="terms-link" href="terms.html" target="_blank" rel="noopener">our simple terms</a>';
 let cityBooted=false, cityBusy=false;
 
 function citySwap(fn){
@@ -1484,7 +1493,7 @@ function cityAllowed(city){
   $('livin-btn').classList.remove('hide');
   $('city-enable').classList.add('hide');
   $('city-hint').classList.add('hide');
-  $('city-fine').innerHTML='By clicking, you accept our simple terms.<br>No spam. Every message has a purpose.';
+  $('city-fine').innerHTML='By clicking, you accept '+TERMS_LINK+'.<br>No spam. Every message has a purpose.';
 }
 
 function cityLocked(hint){
@@ -1494,7 +1503,7 @@ function cityLocked(hint){
   $('city-enable').classList.remove('hide');
   $('city-enable').disabled=false;
   $('city-enable').textContent='Allow Location';
-  $('city-fine').innerHTML='By clicking, you accept our simple terms.<br>No bullshit notifications. Your city starts playing by your rules.';
+  $('city-fine').innerHTML='By clicking, you accept '+TERMS_LINK+'.<br>No bullshit notifications. Your city starts playing by your rules.';
   const h=$('city-hint');
   if(hint){h.textContent=hint;h.classList.remove('hide');}else{h.classList.add('hide');}
 }
