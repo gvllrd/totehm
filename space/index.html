@@ -265,21 +265,24 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 #city-card #city-line{color:rgba(255,255,255,.85);font-family:'Quantico',sans-serif;font-size:12px;line-height:1.5}
 #city-card #livin-btn{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;text-decoration:none;padding:0 4px;line-height:1.5;margin-top:4px}
 
-/* [My Livin' Totehm] : fondu continu sur les 7 couleurs d'intention (14s par cycle).
-   Chaque couleur transite en fondu vers la suivante. */
-.livin-btn{animation:livinHue 14s linear infinite;color:#fff}
-@media(hover:hover){.livin-btn:hover{animation:livinHue 14s linear infinite}}
-.livin-btn:active{animation:livinHue 14s linear infinite}
-@keyframes livinHue{
-  0%   { color:#E24B4A }  /* Fight */
-  14%  { color:#e48b31 }  /* Flow */
-  28%  { color:#fcbe21 }  /* Enrich */
-  42%  { color:#639922 }  /* Love */
-  57%  { color:#1D9E75 }  /* Express */
-  71%  { color:#378ADD }  /* Focus */
-  85%  { color:#7F77DD }  /* Celebrate */
-  100% { color:#E24B4A }  /* boucle */
-}
+/* CTA de la carte City. Coral = actionnable, et rien d'autre (charte).
+   Quantico coral -> blanc pur au survol, comme partout ailleurs. */
+.city-cta{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--coral);
+  background:none;border:none;padding:0 4px;line-height:1.5;margin-top:4px;
+  text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .2s ease}
+.city-cta:hover,.city-cta:focus{color:#fff;outline:none}
+.city-cta:disabled{opacity:.5;cursor:default}
+
+/* La mention légale : présente, lisible, mais volontairement en retrait.
+   Elle appartient à la carte, ce n'est pas un écran de consentement. */
+#city-card #city-fine{font-family:var(--futura);font-weight:300;font-size:11px;line-height:1.6;
+  color:rgba(255,255,255,.40);max-width:292px;margin-top:7px}
+/* Seulement si le navigateur a mémorisé un refus : sinon on n'en parle pas. */
+#city-card #city-hint{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.11em;
+  text-transform:uppercase;color:rgba(255,255,255,.5);line-height:1.6;margin-top:5px;max-width:280px}
+/* Le passage d'un état à l'autre reprend le fondu maison (0.38s). */
+#city-card{transition:opacity .38s ease}
+#city-card.city-swap{opacity:0}
 .bot-txt b{color:var(--g-light);font-weight:700}
 
 /* Search a Totehm : le pattern morph d'index.html */
@@ -510,15 +513,18 @@ body.gate.entered #fv-status{
       </div>
 
       <div class="set-block" id="city-block">
-        <!-- Ville détectée par géolocalisation (Nominatim reverse-geocoding).
-             - État initial : label "detecting your city..." + tentative auto au premier affichage du menu.
-             - Détecté : nom de la ville + phrase conditionnelle + [My Livin' Totehm].
-             - Portugal : bouton [Make the Streets Sublime] en plus.
-             - Refusé/erreur : phrase internationale + [My Livin' Totehm] seuls. -->
+        <!-- Carte City, deux états, jamais de demande de géoloc non sollicitée.
+             - Autorisée   : {{city}} + phrase + [Make {{city}} match your Totehm]
+             - Sinon       : Location required + phrase + [Enable Location]
+             La mention légale est la même dans les deux états.
+             Portugal : bouton [Make the Streets Sublime] en plus, hors carte. -->
         <div id="city-card">
           <div id="city-detected"></div>
           <div id="city-line"></div>
-          <a class="livin-btn" id="livin-btn" href="https://t.me/TotehmBot" target="_blank" rel="noopener">My Livin' Totehm</a>
+          <a class="city-cta hide" id="livin-btn" href="https://t.me/TotehmBot" target="_blank" rel="noopener">Make your city match your Totehm</a>
+          <button class="city-cta hide" id="city-enable" type="button">Enable Location</button>
+          <div id="city-fine">By clicking, you agree to let Totehm use your location to personalize your city experience.<br>No spam. No bullshit. Your city starts playing by your rules.</div>
+          <div id="city-hint" class="hide"></div>
         </div>
         <a class="btn-sig hide" id="streets-btn" href="play_the_street.html" style="margin-top:8px">Make the Streets Sublime</a>
       </div>
@@ -1451,50 +1457,97 @@ $('set-name').addEventListener('keydown',async e=>{
 $('set-private').onclick=()=>{state.vis='private';save();renderSettings();};
 $('set-members').onclick=()=>{state.vis='network';save();renderSettings();};
 
-/* ══ MY TOTEHM IN MY CITY (géolocalisation Nominatim) ══
-   - Auto-détecte au premier affichage du menu.
-   - Portugal détecté -> phrase Lisbon + [Make the Streets Sublime] visible.
-   - Autre pays      -> phrase internationale + email capture.
-   - Refus/erreur    -> phrase internationale par défaut. */
-let cityDetected=false, cityDetecting=false;
-async function detectCity(){
-  if(cityDetected||cityDetecting)return;
-  cityDetecting=true;
-  $('city-detected').textContent='detecting your city\u2026';
-  if(!navigator.geolocation){cityDetecting=false;showCity(null,false);return;}
+/* ══ CITY ══════════════════════════════════════════════════════════════════
+   Deux états, et une règle : on ne déclenche JAMAIS la demande de
+   géolocalisation sans que l'utilisateur ait cliqué. L'ancienne version la
+   lançait à l'ouverture des Paramètres, ce qui faisait surgir la popup
+   navigateur sans contexte — le meilleur moyen de se faire refuser.
+
+     autorisée      -> {{city}} + [Make {{city}} match your Totehm]
+     sinon          -> Location required + [Enable Location]
+
+   La ville résolue est mémorisée : au retour, l'état 1 s'affiche tout de
+   suite, et on rafraîchit en arrière-plan sans jamais representer de popup. */
+const CITY_KEY='totehm_city_v1';
+let cityBooted=false, cityBusy=false;
+
+function citySwap(fn){
+  const card=$('city-card');
+  card.classList.add('city-swap');
+  setTimeout(()=>{ fn(); card.classList.remove('city-swap'); },380);
+}
+
+function cityAllowed(city){
+  $('city-detected').textContent=city;
+  $('city-line').textContent='Get places and events that match your Totehm.';
+  $('livin-btn').textContent='Make '+city+' match your Totehm';
+  $('livin-btn').classList.remove('hide');
+  $('city-enable').classList.add('hide');
+  $('city-hint').classList.add('hide');
+}
+
+function cityLocked(hint){
+  $('city-detected').textContent='Location required';
+  $('city-line').textContent="Allow location to unlock your city's Totehm.";
+  $('livin-btn').classList.add('hide');
+  $('city-enable').classList.remove('hide');
+  $('city-enable').disabled=false;
+  $('city-enable').textContent='Enable Location';
+  const h=$('city-hint');
+  if(hint){h.textContent=hint;h.classList.remove('hide');}else{h.classList.add('hide');}
+}
+
+/* Résout la ville. `silent` = on sait déjà l'autorisation acquise, donc aucune
+   popup ne peut surgir : on peut appeler sans geste utilisateur. */
+function cityResolve(silent){
+  if(cityBusy)return; cityBusy=true;
+  if(!navigator.geolocation){cityBusy=false;cityLocked('this browser has no location support');return;}
+  if(!silent){$('city-enable').disabled=true;$('city-enable').textContent='locating\u2026';}
   navigator.geolocation.getCurrentPosition(async(pos)=>{
+    let city=localStorage.getItem(CITY_KEY)||'your city';
     try{
       const {latitude:lat,longitude:lng}=pos.coords;
       const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&accept-language=en`,{headers:{'Accept':'application/json'}});
       const d=await r.json();
       const addr=d.address||{};
-      const city=addr.city||addr.town||addr.village||addr.municipality||addr.county||'your city';
-      const countryCode=(addr.country_code||'').toLowerCase();
-      showCity(city,countryCode==='pt');
-    }catch(e){showCity(null,false);}
-    cityDetecting=false;cityDetected=true;
-  },()=>{showCity(null,false);cityDetecting=false;cityDetected=true;},{timeout:8000,maximumAge:3600000});
-}
-function showCity(city,isPortugal){
-  portugalDetected=!!isPortugal;
-  if(city){
-    $('city-detected').textContent=city;
-  }else{
-    $('city-detected').textContent='';
-  }
-  if(isPortugal){
-    $('city-line').textContent='Get places and events that match your Totehm.';
-    $('streets-btn').classList.remove('hide');
-  }else{
-    $('city-line').innerHTML="Your Livin' Totehm works with your Totehm's data.<br>City events are coming to your city soon.";
-    $('streets-btn').classList.add('hide');
-  }
-  paintStreet();
+      city=addr.city||addr.town||addr.village||addr.municipality||addr.county||city;
+      portugalDetected=((addr.country_code||'').toLowerCase()==='pt');
+      paintStreet();
+      try{localStorage.setItem(CITY_KEY,city);}catch(e){}
+    }catch(e){ /* reverse-geocoding muet : on garde la dernière ville connue */ }
+    cityBusy=false;
+    if(silent) cityAllowed(city); else citySwap(()=>cityAllowed(city));
+  },(err)=>{
+    cityBusy=false;
+    /* Un refus mémorisé ne redéclenche aucune popup : le bouton semblerait
+       cassé si on ne le disait pas. */
+    cityLocked(err && err.code===1
+      ? 'blocked by your browser — re-enable location in the site settings'
+      : "couldn't reach your position — try again");
+  },{timeout:8000,maximumAge:3600000});
 }
 
-/* Lancer la détection dès qu'on entre dans le menu (paint isSet=true) */
+$('city-enable').onclick=()=>cityResolve(false);
+
+/* À l'entrée dans les Paramètres : on lit l'état de la permission, on ne la
+   demande pas. Sans l'API Permissions (vieux Safari), on reste en état 2 —
+   le clic reste le seul chemin vers la popup. */
+async function cityBoot(){
+  if(cityBooted)return; cityBooted=true;
+  const cached=localStorage.getItem(CITY_KEY);
+  let perm=null;
+  try{ perm=(await navigator.permissions.query({name:'geolocation'})).state; }catch(e){}
+  if(perm==='granted'){
+    if(cached) cityAllowed(cached);
+    cityResolve(true);
+  }else{
+    cityLocked(null);
+  }
+}
+
+/* Lancer la lecture d'état dès qu'on entre dans le menu */
 const _origPaint=paint;
-paint=function(){_origPaint();if(floor===1)detectCity();};
+paint=function(){_origPaint();if(floor===1)cityBoot();};
 
 /* ══ SEARCH A TOTEHM — le pattern morph d'index.html ══ */
 /* réseau démo pour le mode guest */
