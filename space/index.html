@@ -276,7 +276,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 /* La mention légale : présente, lisible, mais volontairement en retrait.
    Elle appartient à la carte, ce n'est pas un écran de consentement. */
 #city-card #city-fine{font-family:var(--futura);font-weight:300;font-size:11px;line-height:1.6;
-  color:rgba(255,255,255,.40);max-width:292px;margin-top:7px}
+  color:rgba(255,255,255,.65);max-width:292px;margin-top:7px}
 /* Seulement si le navigateur a mémorisé un refus : sinon on n'en parle pas. */
 #city-card #city-hint{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.11em;
   text-transform:uppercase;color:rgba(255,255,255,.5);line-height:1.6;margin-top:5px;max-width:280px}
@@ -515,15 +515,15 @@ body.gate.entered #fv-status{
       <div class="set-block" id="city-block">
         <!-- Carte City, deux états, jamais de demande de géoloc non sollicitée.
              - Autorisée   : {{city}} + phrase + [Make {{city}} match your Totehm]
-             - Sinon       : Location required + phrase + [Enable Location]
+             - Sinon       : Location unavailable + phrase + [Allow Location]
              La mention légale est la même dans les deux états.
              Portugal : bouton [Make the Streets Sublime] en plus, hors carte. -->
         <div id="city-card">
           <div id="city-detected"></div>
           <div id="city-line"></div>
           <a class="city-cta hide" id="livin-btn" href="https://t.me/TotehmBot" target="_blank" rel="noopener">Make your city match your Totehm</a>
-          <button class="city-cta hide" id="city-enable" type="button">Enable Location</button>
-          <div id="city-fine">By clicking, you agree to let Totehm use your location to personalize your city experience.<br>No spam. No bullshit. Your city starts playing by your rules.</div>
+          <button class="city-cta hide" id="city-enable" type="button">Allow Location</button>
+          <div id="city-fine">By clicking, you accept our simple terms.<br>No spam. Every message has a purpose.</div>
           <div id="city-hint" class="hide"></div>
         </div>
         <a class="btn-sig hide" id="streets-btn" href="play_the_street.html" style="margin-top:8px">Make the Streets Sublime</a>
@@ -1464,7 +1464,7 @@ $('set-members').onclick=()=>{state.vis='network';save();renderSettings();};
    navigateur sans contexte — le meilleur moyen de se faire refuser.
 
      autorisée      -> {{city}} + [Make {{city}} match your Totehm]
-     sinon          -> Location required + [Enable Location]
+     sinon          -> Location unavailable + [Allow Location]
 
    La ville résolue est mémorisée : au retour, l'état 1 s'affiche tout de
    suite, et on rafraîchit en arrière-plan sans jamais representer de popup. */
@@ -1479,20 +1479,22 @@ function citySwap(fn){
 
 function cityAllowed(city){
   $('city-detected').textContent=city;
-  $('city-line').textContent='Get places and events that match your Totehm.';
+  $('city-line').textContent='Get places and events aligned with your Totehm.';
   $('livin-btn').textContent='Make '+city+' match your Totehm';
   $('livin-btn').classList.remove('hide');
   $('city-enable').classList.add('hide');
   $('city-hint').classList.add('hide');
+  $('city-fine').innerHTML='By clicking, you accept our simple terms.<br>No spam. Every message has a purpose.';
 }
 
 function cityLocked(hint){
-  $('city-detected').textContent='Location required';
-  $('city-line').textContent="Allow location to unlock your city's Totehm.";
+  $('city-detected').textContent='Location unavailable';
+  $('city-line').textContent='Enable location to discover places and events aligned with your Totehm.';
   $('livin-btn').classList.add('hide');
   $('city-enable').classList.remove('hide');
   $('city-enable').disabled=false;
-  $('city-enable').textContent='Enable Location';
+  $('city-enable').textContent='Allow Location';
+  $('city-fine').innerHTML='By clicking, you accept our simple terms.<br>No bullshit notifications. Your city starts playing by your rules.';
   const h=$('city-hint');
   if(hint){h.textContent=hint;h.classList.remove('hide');}else{h.classList.add('hide');}
 }
