@@ -318,6 +318,27 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 .tv-private{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.14em;color:rgba(255,255,255,.5);text-transform:uppercase}
 
 /* ── MEMBER WINDOW ── */
+/* ══ ABONNEMENT dans l'espace membre ══
+   Abonné    : le palier + ce qu'il lui apporte + [Change plan]
+   Non abonné: les trois paliers, sur place, sans quitter la fenêtre. */
+#mw-sub{width:100%;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.14)}
+#mw-sub .s-lab{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:8px}
+#mw-sub .s-tier{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:#fff}
+#mw-sub .s-meta{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-top:3px}
+#mw-sub .s-perks{margin:10px 0 0;padding:0;list-style:none;text-align:left}
+#mw-sub .s-perks li{font-family:var(--futura);font-weight:300;font-size:12.5px;line-height:1.55;color:rgba(255,255,255,.82);margin-bottom:6px;padding-left:13px;position:relative}
+#mw-sub .s-perks li::before{content:"";position:absolute;left:0;top:8px;width:6px;height:2px;background:var(--coral)}
+#mw-sub .s-perks li b{font-family:'Quantico',sans-serif;font-weight:700;color:#fff}
+#mw-sub .s-act{font-family:'Quantico',sans-serif;font-size:13px;color:var(--coral);background:none;border:none;padding:6px 0 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;transition:color .2s}
+#mw-sub .s-act:hover{color:#fff}
+/* Les trois paliers pour qui n'en a pas */
+#mw-sub .s-plan{width:100%;text-align:left;background:none;border:1px solid rgba(255,255,255,.18);color:#fff;padding:10px 12px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:border-color .2s,background .2s}
+#mw-sub .s-plan:hover{border-color:var(--coral);background:rgba(251,213,202,.06)}
+#mw-sub .s-plan .p-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+#mw-sub .s-plan .p-name{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:#fff}
+#mw-sub .s-plan .p-price{font-family:'Quantico',sans-serif;font-size:13px;color:var(--coral);white-space:nowrap}
+#mw-sub .s-plan .p-why{font-family:var(--futura);font-weight:300;font-size:11.5px;line-height:1.5;color:rgba(255,255,255,.7);margin-top:5px}
+
 #member-window{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.84);display:none;align-items:center;justify-content:center;padding:24px}
 #member-window.show{display:flex}
 .mw-card{background:#0a0a0a;border:1px solid #1e1e1e;max-width:340px;width:100%;padding:30px 24px;text-align:center;position:relative}
@@ -632,6 +653,7 @@ body.gate.entered #fv-status{
       <div class="mw-pseudo" id="mw-who"></div>
       <div class="mw-mail" id="mw-mail"></div>
       <div class="mw-sync" id="mw-sync"></div>
+      <div id="mw-sub"></div>
       <button class="mw-out" id="mw-signout">Sign out</button>
     </div>
   </div>
@@ -1624,6 +1646,76 @@ async function loadProfile(){
   cloudMode=!!myProfile;
   connPaint();
 }
+/* ══ PALIERS ══════════════════════════════════════════════════════════════
+   ⚠️ SEUL ENDROIT À ÉDITER pour tes tarifs réels. Je n'ai pas accès à ton
+   compte Stripe : les noms, prix et `stripe` ci-dessous sont des marques-places.
+   `perks` dit ce que le palier change dans la vie de la personne, pas ce qu'il
+   débloque techniquement — c'est ça qui fait sentir le retour sur investissement. */
+const PLANS=[
+  {key:'seed',   name:'Seed',   price:'free',       cta:'https://totehm.space',
+   why:'Your Totehm, your habits, your Book. For as long as you want.',
+   perks:['Unlimited <b>habits</b> across the 7 intentions',
+          'Your <b>Book</b> writes itself from what you actually do',
+          '<b>3 objectives</b> generated per month']},
+  {key:'higher', name:'Higher', price:'€6 / month', cta:'https://totehm.space',
+   why:'The coach that knows your Totehm and speaks to you where you already are.',
+   perks:['Everything in <b>Seed</b>',
+          '<b>TotehmBot</b> on Telegram, tuned to your intentions',
+          '<b>Unlimited objectives</b>, graded by evidence',
+          'Your city\u2019s places and events, matched to your Totehm']},
+  {key:'sublime',name:'Sublime',price:'€15 / month',cta:'https://totehm.space',
+   why:'For the ones who build in public and want the street to answer back.',
+   perks:['Everything in <b>Higher</b>',
+          '<b>Figher Club</b> — find the Totehms that match yours',
+          'Early access to <b>drops</b> and <b>PAPER</b>',
+          'Your Book, exported and printable']}
+];
+const PLAN_BY_KEY=Object.fromEntries(PLANS.map(p=>[p.key,p]));
+
+/* Lit l'abonnement de l'utilisateur. Rien n'est écrit depuis le client :
+   c'est le webhook du fournisseur de paiement qui fait foi. */
+async function loadSubscription(){
+  if(!me) return null;
+  try{
+    const {data}=await sb.from('subscriptions')
+      .select('tier,status,current_period_end,cancel_at_period_end')
+      .eq('user_id',me.id).maybeSingle();
+    return data||null;
+  }catch(e){ return null; }
+}
+
+function paintSubscription(sub){
+  const box=$('mw-sub'); if(!box) return;
+  const live=sub && ['active','trialing','past_due'].includes(sub.status);
+  if(live){
+    const plan=PLAN_BY_KEY[sub.tier]||{name:sub.tier,perks:[]};
+    const end=sub.current_period_end?new Date(sub.current_period_end):null;
+    const when=end?end.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}):'';
+    const meta=sub.cancel_at_period_end
+      ? (when?'ends '+when:'ending')
+      : (sub.status==='past_due'?'payment failed':(when?'renews '+when:'active'));
+    box.innerHTML='<div class="s-lab">Your plan</div>'
+      +'<div class="s-tier">'+esc(plan.name)+'</div>'
+      +'<div class="s-meta">'+esc(meta)+'</div>'
+      +'<ul class="s-perks">'+plan.perks.map(x=>'<li>'+x+'</li>').join('')+'</ul>'
+      +'<button class="s-act" id="mw-sub-change">Change plan</button>';
+    const b=$('mw-sub-change');
+    if(b) b.onclick=()=>window.open('https://totehm.space','_blank','noopener');
+  }else{
+    box.innerHTML='<div class="s-lab">Choose your plan</div>'
+      +PLANS.map(p=>'<button class="s-plan" data-k="'+p.key+'">'
+        +'<span class="p-top"><span class="p-name">'+esc(p.name)+'</span>'
+        +'<span class="p-price">'+esc(p.price)+'</span></span>'
+        +'<span class="p-why">'+esc(p.why)+'</span></button>').join('');
+    box.querySelectorAll('.s-plan').forEach(btn=>{
+      btn.onclick=()=>{
+        const plan=PLAN_BY_KEY[btn.dataset.k];
+        if(plan&&plan.cta) window.open(plan.cta,'_blank','noopener');
+      };
+    });
+  }
+}
+
 function memberPaint(){
   $('mw-out-state').classList.toggle('hide',!!me);
   $('mw-claim-state').classList.toggle('hide',!(me&&!myProfile));
@@ -1631,6 +1723,15 @@ function memberPaint(){
   if(me&&myProfile){$('mw-who').textContent=myProfile.pseudo;$('mw-mail').textContent=me.email||'';}
 }
 $('conn-bar').onclick=()=>{$('member-window').classList.add('show');memberPaint();};
+
+/* L'abonnement se repeint à chaque ouverture de la fenêtre membre. */
+const _mpOrig=memberPaint;
+memberPaint=function(){
+  _mpOrig();
+  const box=$('mw-sub'); if(!box) return;
+  if(!me){ box.innerHTML=''; return; }
+  loadSubscription().then(paintSubscription);
+};
 $('mw-close').onclick=()=>$('member-window').classList.remove('show');
 $('member-window').addEventListener('click',e=>{if(e.target===$('member-window'))$('member-window').classList.remove('show');});
 

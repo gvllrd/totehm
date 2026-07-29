@@ -24,7 +24,8 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 #bigT{position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;line-height:0;background:none;border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
 #bigT:hover{opacity:.7}
 #bigT svg{height:53px;width:auto;display:block}
-#wordmark{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;line-height:0}
+#wordmark{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;line-height:0;background:none;border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
+#wordmark:hover{opacity:.7}
 #wordmark svg{height:50px;width:auto;display:block}
 
 #mid{position:fixed;left:0;right:0;top:var(--band-t);bottom:var(--band-b);overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:6px 0;z-index:2}
@@ -35,17 +36,20 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 #obj-input::placeholder{color:rgba(255,255,255,.45)}
 #obj-note{margin-left:calc(var(--rl) + var(--rw) + 16px);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6);min-height:14px}
 
-/* Propositions — structure exacte d'une ligne du Totehm, T = vrai glyph d'index */
-.prop{position:relative;display:flex;align-items:flex-start;min-height:44px;padding:4px 0}
-.prop .meta{position:absolute;left:0;top:0;width:calc(var(--rl) + var(--rw) + 10px);display:flex;justify-content:center;align-items:center;min-height:44px}
-.prop .tglyph{height:25px;width:auto}
-.prop .p-freq{font-family:'Quantico',sans-serif;font-size:11px;color:rgba(255,255,255,.72);white-space:nowrap}
-.prop .body{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;padding-right:56px}
+/* ══ PROPOSITIONS ══
+   Géométrie reprise au pixel près de `.habit` dans index.html : c'est le même
+   Totehm, simplement en lecture seule. Le [T] et la fréquence se rangent à
+   gauche du rail, le tiret blanc marque le rail, le texte part à droite. */
+.prop{position:relative;display:flex;align-items:flex-start;min-height:30px;padding:0 34px 0 0}
+.prop .meta{position:absolute;top:2px;right:calc(100% - var(--rl) + 10px);display:flex;align-items:center;gap:8px;white-space:nowrap}
+.prop .h-T{line-height:0;color:#fff;display:block}
+.prop .h-T .tglyph{height:14px;width:auto;display:block}
+.prop .h-freq{font-family:'Quantico',sans-serif;font-weight:400;font-size:12px;letter-spacing:0;color:#fff}
+.prop .tick{position:absolute;left:var(--rl);width:var(--rw);height:5px;background:#fff;top:8px}
+.prop .h-body{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;display:flex;flex-direction:column;align-items:flex-start}
 .prop .p-text{font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:#fff;line-height:1.35}
-.prop .p-add{position:absolute;right:10px;top:50%;background:none;border:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:700;font-size:38px;line-height:1;padding:0 12px;cursor:pointer;-webkit-tap-highlight-color:transparent;transform:translateY(-50%);transition:opacity .15s,transform .12s}
-.prop .p-add:hover{opacity:.7}
-.prop .p-add:active{transform:translateY(-50%) scale(.85)}
-/* Ligne basse de la carte : NIVEAU + [Why]. Rien d'autre — ni source, ni score. */
+
+/* Ligne basse : NIVEAU + [Why]. Ni source, ni score — ils vivent dans le rapport. */
 .prop .p-foot{display:flex;align-items:center;gap:11px;margin-top:5px;flex-wrap:wrap}
 .lvl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;line-height:1.6;white-space:nowrap}
 .lvl.essential{color:#fff;border:6px solid transparent;border-image-source:var(--tile-perf);border-image-slice:6 fill;border-image-repeat:round;padding:0 3px}
@@ -54,6 +58,9 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 .lvl.unverified{color:rgba(255,255,255,.38);font-style:italic}
 .prop .p-why{font-family:'Quantico',sans-serif;font-weight:400;font-size:11px;color:rgba(255,255,255,.62);background:none;border:none;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;-webkit-tap-highlight-color:transparent;transition:color .15s}
 .prop .p-why:hover{color:#fff}
+.prop .p-add{position:absolute;right:0;top:-4px;background:none;border:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:700;font-size:38px;line-height:1;padding:0 10px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .15s,transform .12s}
+.prop .p-add:hover{opacity:.7}
+.prop .p-add:active{transform:scale(.85)}
 .prop.added{opacity:.4}
 .prop.added .p-add{display:none}
 
@@ -90,15 +97,15 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
    L'edge function renvoie `dir`. La mise en page est ancrée à gauche partout :
    on la retourne d'un bloc plutôt que de la réécrire en propriétés logiques. */
 [dir="rtl"] #rail{left:auto;right:var(--rl)}
-[dir="rtl"] .prop .meta{left:auto;right:0}
-[dir="rtl"] .prop .body{margin-left:0;margin-right:calc(var(--rl) + var(--rw) + 16px);padding-right:0;padding-left:56px}
-[dir="rtl"] .prop .p-add{right:auto;left:10px}
+[dir="rtl"] .prop .meta{right:auto;left:calc(100% - var(--rl) + 10px)}
+[dir="rtl"] .prop .h-body{margin-left:0;margin-right:calc(var(--rl) + var(--rw) + 16px)}
+[dir="rtl"] .prop .tick{left:auto;right:var(--rl)}
+[dir="rtl"] .prop .p-add{right:auto;left:0}
 [dir="rtl"] #obj-input{margin-left:34px;margin-right:calc(var(--rl) + var(--rw) + 16px)}
 [dir="rtl"] #obj-note{margin-left:0;margin-right:calc(var(--rl) + var(--rw) + 16px)}
 [dir="rtl"] #why .w-top{justify-content:flex-start}
 @media(min-width:700px){
-  [dir="rtl"] .prop .body{padding-left:74px}
-  [dir="rtl"] .prop .p-add{left:14px}
+  [dir="rtl"] .prop .p-add{left:0}
 }
 
 /* ══ DESKTOP : tout agrandi (~1.6x), cohérent avec index.html ══ */
@@ -108,11 +115,13 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
   #wordmark{bottom:44px} #wordmark svg{height:80px}
   #obj-input{font-size:19px}
   #obj-note{font-size:11px}
+  .prop{padding-right:46px}
   .prop .p-text{font-size:19px}
-  .prop .p-freq{font-size:14px}
-  .prop .p-add{font-size:50px;padding:0 16px;right:14px}
-  .prop .body{padding-right:74px}
-  .prop .tglyph{height:32px}
+  .prop .h-freq{font-size:15px}
+  .prop .h-T .tglyph{height:18px}
+  .prop .tick{top:11px;height:6px}
+  .prop .meta{top:3px}
+  .prop .p-add{font-size:50px;padding:0 12px;top:-6px}
   .prop .p-why{font-size:14px}
   .lvl{font-size:11px}
   #why .w-title{font-size:20px}
@@ -132,7 +141,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 
 <!-- Bandes conformes à index.html : T.png en haut centré, TOTEHM.png en bas centré -->
 <button id="bigT" class="sink-el" type="button" aria-label="Back to my Totehm"><svg id="ui-t" viewBox="79.832 47.921 66.789 66.932" preserveAspectRatio="xMidYMid meet" role="img" aria-label="T" style="pointer-events:none"><defs><clipPath id="tut_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tut_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tut_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tut_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tut_ffb4264ddd)"><g clip-path="url(#tut_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tut_0eae0d8cca)"><g clip-path="url(#tut_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tut_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tut_92fddf9f0e)"><g clip-path="url(#tut_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tut_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tut_7d4c700d36)"><g clip-path="url(#tut_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></svg></button>
-<div id="wordmark" class="sink-el"><svg id="ui-wm" viewBox="74.997 121.602 77.584 46.683" preserveAspectRatio="xMidYMid meet" role="img" aria-label="TOTEHM"><defs><g/><clipPath id="tuw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tuw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg></div>
+<button id="wordmark" class="sink-el" type="button" aria-label="Open settings"><svg id="ui-wm" viewBox="74.997 121.602 77.584 46.683" preserveAspectRatio="xMidYMid meet" role="img" aria-label="TOTEHM" style="pointer-events:none"><defs><g/><clipPath id="tuw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tuw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg></button>
 
 <div id="mid">
   <div id="obj-row">
@@ -263,11 +272,14 @@ function renderProps(habits){
     const freq=h.f_label||FLABEL[h.f]||h.f;
     /* Le T seul reste sur le rail : coloré, il s'y lit. La fréquence descend
        dans la ligne basse, sur le fond plein, où elle est lisible. */
-    d.innerHTML='<div class="meta"><span style="color:'+(ICOLOR[h.i]||'#fff')+';display:inline-block;height:25px">'+T_SVG+'</span></div>'
-      +'<div class="body"><div class="p-text">'+esc(h.text)+'</div>'
-      +'<div class="p-foot"><span class="p-freq">'+esc(freq)+'</span>'
-      +'<span class="lvl '+lvl+'">'+esc(label)+'</span>'
-      +'<button class="p-why" type="button">'+esc(L.why)+'</button></div></div>'
+    /* Exactement la ligne d'une habitude d'index.html, en lecture seule. */
+    d.innerHTML='<span class="meta">'
+      +'<span class="h-T" style="color:'+(ICOLOR[h.i]||'#fff')+'">'+T_SVG+'</span>'
+      +'<span class="h-freq">'+esc(freq)+'</span></span>'
+      +'<span class="tick"></span>'
+      +'<span class="h-body"><span class="p-text">'+esc(h.text)+'</span>'
+      +'<span class="p-foot"><span class="lvl '+lvl+'">'+esc(label)+'</span>'
+      +'<button class="p-why" type="button">'+esc(L.why)+'</button></span></span>'
       +'<button class="p-add" aria-label="+">+</button>';
     d.querySelector('.p-why').onclick=()=>openWhy(h);
     d.querySelector('.p-add').onclick=()=>{
@@ -346,6 +358,12 @@ autoGrow();
 
 /* Le T du haut ramène au Totehm */
 $('bigT').onclick=()=>goBack();
+$('wordmark').onclick=()=>{
+  if(whyOpen()){closeWhy();return;}
+  const embedded=window.parent&&window.parent!==window;
+  if(embedded){try{window.parent.postMessage({type:'totehm-goto-settings'},'*');return;}catch(e){}}
+  window.location.href='index.html';
+};
 
 $('obj-input').addEventListener('keydown',async(e)=>{
   /* Maj+Entrée insère un retour ligne ; Entrée seule lance la génération. */
