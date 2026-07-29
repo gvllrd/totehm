@@ -65,11 +65,9 @@ div.style-img{display:flex;align-items:center;justify-content:center;font-family
 #concept{position:fixed;inset:0;z-index:70;background:var(--bg);overflow-y:auto;display:none;flex-direction:column;align-items:center;gap:34px;padding:70px 24px 60px}
 #concept.show{display:flex}
 #concept-back{position:fixed;top:14px;left:14px;z-index:72}
-#concept-slides{display:flex;flex-direction:column;align-items:center;gap:34px;width:100%}
-.slide{display:flex;flex-direction:column;align-items:center;gap:12px;max-width:420px;width:100%}
-.slide-img{width:min(74vw,320px);aspect-ratio:1/1;border:1px solid #1c1c1c;overflow:hidden;display:flex;align-items:center;justify-content:center}
-.slide-img img{width:100%;height:100%;object-fit:cover;display:block}
-.slide-img .ph{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;color:#2a2a2a;text-transform:uppercase;text-align:center;padding:14px}
+#concept-slides{display:flex;flex-direction:column;align-items:center;gap:42px;width:100%}
+.slide{display:flex;flex-direction:column;align-items:center;gap:10px;max-width:420px;width:100%}
+.slide-title{font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;color:#fff;text-align:center;line-height:1.4}
 .slide-cap{font-family:var(--futura);font-weight:300;font-size:13px;line-height:1.7;color:var(--g-light);text-align:center;max-width:360px}
 
 /* ── MEMBER SPACE : email code, no password ── */
@@ -140,11 +138,10 @@ div.style-img{display:flex;align-items:center;justify-content:center;font-family
 <body>
 
 <button class="btn-back" id="back-top">Back in Time</button>
-<button class="btn-sig" id="concept-btn">What is a Totehm Cloth ?</button>
+<button class="btn-sig" id="concept-btn">What is a Totehm Cloth Streetwear ?</button>
 
 <button id="conn-bar" aria-label="member space"><span class="dot" id="conn-dot"></span><span id="conn-txt">Guest</span></button>
 
-<!-- MEMBER SPACE : 3 états -->
 <div id="member">
   <div class="mw-card">
     <button class="mw-close" id="mw-close">Close</button>
@@ -169,26 +166,40 @@ div.style-img{display:flex;align-items:center;justify-content:center;font-family
   </div>
 </div>
 
-<!-- CONCEPT : l'histoire, image par image -->
 <div id="concept">
   <button class="btn-back" id="concept-back">Back in Time</button>
-  <div id="concept-slides"></div>
+  <div id="concept-slides">
+    <div class="slide">
+      <div class="slide-title">1. Every Totehm Cloth Streetwear is born from your message.</div>
+      <div class="slide-cap">Some messages are written for yourself. Some are written for someone you love. Some are written for humanity.</div>
+    </div>
+    <div class="slide">
+      <div class="slide-title">2. Your message becomes an original artwork.</div>
+      <div class="slide-cap">Not through customization, but through collaboration. Choose one of our current Artistic Styles, each available for a limited time and a limited number of original pieces. Our artists curate the final artwork, which remains a surprise until the moment you unbox your Totehm Cloth Streetwear—revealing an original artwork born from your message.</div>
+    </div>
+    <div class="slide">
+      <div class="slide-title">3. Every Totehm Cloth Streetwear has its own identifier.</div>
+      <div class="slide-cap">Integrated into the original piece, it preserves the story behind the artwork through Decode, allowing future generations to rediscover the message that inspired it.</div>
+    </div>
+  </div>
 </div>
 
-<!-- carrousel des supports : l'entrée de la Totehmisation -->
 <div id="carousel"><div id="card"></div></div>
 <button class="arrow" id="arr-l">‹</button>
 <button class="arrow" id="arr-r">›</button>
 <div id="dots"></div>
 
-<!-- FULL-SCREEN : l'écrit -->
 <div id="fs">
-  <div class="q" id="fs-q">Leave your Totehm Cloth writing here</div>
+  <div class="q" id="fs-q">
+    Leave your message.<br><br>
+    <span style="font-size: 13px; color: var(--g-mid); font-family: var(--futura);">
+      A sentence, a memory, a promise, a confession, or a message to humanity.
+    </span>
+  </div>
   <textarea id="fs-text" maxlength="1500" placeholder="write it."></textarea>
   <button class="btn-encode hide" id="fs-encode">Encode</button>
 </div>
 
-<!-- CONFIG : la page qui se construit input par input -->
 <div id="config">
   <button class="btn-back" id="cfg-back">Back in writing Time</button>
 
@@ -252,22 +263,7 @@ async function load(){
 function avail(s){return Math.max((s.max_pieces||0)-(s.claimed||0),0);}
 
 /* ── CONCEPT : l'histoire du Totehm Cloth ── */
-let conceptLoaded=false;
-$('concept-btn').onclick=async()=>{
-  $('concept').classList.add('show');
-  if(conceptLoaded)return;
-  const {data}=await sb.from('concept_slides').select('*').eq('active',true).order('position');
-  const box=$('concept-slides');box.innerHTML='';
-  (data||[]).forEach(s=>{
-    const d=document.createElement('div');d.className='slide';
-    d.innerHTML=(s.image_url
-      ?'<div class="slide-img"><img src="'+s.image_url+'" alt=""></div>'
-      :'<div class="slide-img"><div class="ph">visual coming soon</div></div>')
-      +'<div class="slide-cap">'+esc(s.caption||'')+'</div>';
-    box.appendChild(d);
-  });
-  conceptLoaded=true;
-};
+$('concept-btn').onclick=()=>{ $('concept').classList.add('show'); };
 $('concept-back').onclick=()=>{$('concept').classList.remove('show');};
 
 /* ── MEMBER SPACE : email-only DNA, no password ── */
