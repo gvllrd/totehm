@@ -29,6 +29,11 @@
   ],
   "redirects": [
     {
+      "source": "/",
+      "destination": "/totehm",
+      "permanent": false
+    },
+    {
       "source": "/higher",
       "destination": "/get_higher.html",
       "permanent": false
@@ -37,12 +42,6 @@
       "source": "/gethigher",
       "destination": "/get_higher.html",
       "permanent": false
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/",
-      "destination": "/totehm"
     }
   ]
 }
