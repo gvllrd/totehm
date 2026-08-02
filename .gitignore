@@ -49,3 +49,7 @@ __pycache__/
 oracle/
 supabase/.temp/
 **/supabase/.temp/
+# ─── backend ───────────────────────────────────────────────────
+backend/n8n/.env
+backend/**/.env
+backend/supabase/.temp/

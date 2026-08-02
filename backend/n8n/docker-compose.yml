@@ -1,0 +1,52 @@
+version: "3.3"
+
+# ═══════════════════════════════════════════════════════════════
+# TOTEHM · n8n
+# Serveur : Oracle Cloud Infrastructure, Ubuntu, ~/n8n-server
+# Domaine : n8n.higher.boutique (DNS Vercel, A -> IP publique OCI)
+# Rôle    : automatisation Totehm Cloth (Printful, Replicate, Resend)
+#
+# Les secrets vivent dans .env sur le serveur, JAMAIS dans ce fichier.
+# ═══════════════════════════════════════════════════════════════
+
+services:
+
+  caddy:
+    image: caddy:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - n8n
+
+  n8n:
+    image: n8nio/n8n:latest
+    restart: unless-stopped
+    expose:
+      - "5678"
+    environment:
+      - N8N_HOST=n8n.higher.boutique
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - NODE_ENV=production
+      - WEBHOOK_URL=https://n8n.higher.boutique/
+      - GENERIC_TIMEZONE=Europe/Lisbon
+      # Auth — sans ça, ton n8n est ouvert à tout Internet sur 443
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD}
+      # Chiffrement des credentials stockés
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+    volumes:
+      # SANS ce volume, un `docker compose down` efface TOUS tes workflows
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  n8n_data:
+  caddy_data:
+  caddy_config:
