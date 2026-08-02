@@ -181,15 +181,18 @@ html,body{width:100%;min-height:100%;background:#000;font-family:'Futura','Jost'
 
 </div>
 
-<script src="https://esm.sh/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script>
+<script type="module">
+/* Même méthode que index.html : module ES, pas UMD.
+   Le build UMD d'esm.sh n'expose PAS window.supabase — la page
+   plantait silencieusement à la première ligne. */
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const SB_URL  = 'https://abujjbkbbiumxrokozph.supabase.co';
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
 const GATE_FN = SB_URL + '/functions/v1/stoner-gate';
 const PAY_FN  = SB_URL + '/functions/v1/higher-checkout';
 const METHOD  = '/stoner.html';
 const COHORT  = 777;
-const sb = window.supabase.createClient(SB_URL, SB_ANON);
+const sb = createClient(SB_URL, SB_ANON);
 
 const V = { sell:document.getElementById('v-sell'),
             mail:document.getElementById('v-mail'),
