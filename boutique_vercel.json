@@ -1,4 +1,5 @@
 {
+  "cleanUrls": true,
   "headers": [
     {
       "source": "/(.*)",
@@ -24,23 +25,6 @@
           "value": "geolocation=(), microphone=(), camera=()"
         }
       ]
-    }
-  ],
-  "redirects": [
-    {
-      "source": "/space/:path*",
-      "destination": "https://www.totehm.space/:path*",
-      "permanent": true
-    },
-    {
-      "source": "/stoner.html",
-      "destination": "https://www.totehm.space/stoner.html",
-      "permanent": false
-    },
-    {
-      "source": "/higherself.html",
-      "destination": "https://www.totehm.space/higherself.html",
-      "permanent": false
     }
   ]
 }

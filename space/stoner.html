@@ -76,6 +76,25 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 #close-screen{position:fixed;inset:0;display:none;background:#000;z-index:60;overflow-y:auto;overflow-x:hidden}
 #close-screen.visible{display:flex}
 /* FREE GATE — fin de l'expérience free (Step 6) */
+.fg-buy{background:none;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+  font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;color:#fbd5ca;
+  padding:0.02em 0.18em;margin:18px 0 10px;line-height:1;
+  border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+  border-image-slice:6 fill;border-image-repeat:round;border-width:6px;border-style:solid}
+.fg-buy .higher-inline{display:inline-flex;align-items:center;width:58px;line-height:0}
+.fg-buy .higher-inline svg{display:block;width:100%;height:auto;fill:currentColor}
+.fg-price{font-weight:400;opacity:.85;margin-left:4px}
+.pt-view{display:none;flex-direction:column;align-items:center;gap:14px}
+.pt-view.on{display:flex}
+.pt-count{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.14em;color:#fbd5ca;opacity:.8}
+.pt-line{font-family:'Bebas Neue',Arial Narrow,sans-serif;font-size:13px;letter-spacing:.14em;color:#8f8fae}
+.pt-input{background:transparent;border:1px solid #5a5a85;border-radius:4px;color:#fbd5ca;
+  font-family:'Space Mono',monospace;font-size:14px;padding:9px 14px;width:min(280px,72vw);
+  text-align:center;outline:none}
+.pt-input:focus{border-color:#fbd5ca}
+.pt-err{font-family:'Space Mono',monospace;font-size:12px;color:#f0997b;min-height:15px}
+.pt-back{background:none;border:none;color:#6f6f9c;font-family:'Bebas Neue',Arial Narrow,sans-serif;
+  font-size:12px;letter-spacing:.12em;cursor:pointer;padding:4px}
 #free-gate{position:fixed;inset:0;display:none;background:#000;z-index:70;cursor:pointer}
 #free-gate.visible{display:flex}
 #fg-inner{width:88%;max-width:420px;margin:auto;display:flex;flex-direction:column;align-items:center;gap:22px;text-align:center}
@@ -220,10 +239,35 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 
 <div id="free-gate" aria-label="Free experience ends here — tap to return">
   <div id="fg-inner">
-    <div class="fg-bebas">YOU'VE REACHED THE EDGE<br>OF THE FREE EXPERIENCE.</div>
-    <div class="fg-coral">The full Stoner Method<br>unlocks with the Totehm NFT.</div>
-    <div class="fg-bebas" style="font-size:14px">SOON &middot; BANK CARD &middot; NO WALLET NEEDED</div>
-    <div class="fg-hint">tap to return</div>
+    <div id="pt-sell" class="pt-view on">
+      <div class="pt-line" id="pt-mode">YOU CAME IN LOW.</div>
+      <div class="fg-coral" id="pt-pitch">Ten steps. An artistic and<br>neurological experience of the logo.</div>
+      <div class="pt-line">FIGHER CLUB &middot; NUMBERED PLACE &middot; FOR LIFE</div>
+      <button id="fg-buy" class="fg-buy">
+        Get <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>
+        <span class="fg-price">17 &euro;</span>
+      </button>
+      <div class="pt-count" id="pt-count">&mdash;&mdash;&mdash;</div>
+      <div class="fg-hint">tap outside to return</div>
+    </div>
+
+    <div id="pt-mail" class="pt-view">
+      <div class="fg-coral">Be a member<br>to experience the method.</div>
+      <input id="pt-email" class="pt-input" type="email" inputmode="email"
+             autocomplete="email" placeholder="your@email.com" />
+      <button id="pt-send" class="fg-buy">Send code</button>
+      <div class="pt-err" id="pt-err1"></div>
+      <button class="pt-back" data-back="sell">BACK</button>
+    </div>
+
+    <div id="pt-code" class="pt-view">
+      <div class="fg-coral">Six digits.<br>Check your inbox.</div>
+      <input id="pt-otp" class="pt-input" type="text" inputmode="numeric"
+             autocomplete="one-time-code" maxlength="6" placeholder="000000" />
+      <button id="pt-verify" class="fg-buy">Enter</button>
+      <div class="pt-err" id="pt-err2"></div>
+      <button class="pt-back" data-back="mail">BACK</button>
+    </div>
   </div>
 </div>
 
@@ -241,8 +285,22 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   </div>
 </div>
 
+<script src="https://esm.sh/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
-const SB = 'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/stoner-method/';
+/* SB retiré le 01/08/2026 : le bucket stoner-method est passé en NON PUBLIC.
+   Tous les steps (0 à 10) passent par les URLs signées de stoner-gate. */
+
+/* ─── GATE · steps 7-10 ─────────────────────────────────────── */
+const SB_URL  = 'https://abujjbkbbiumxrokozph.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+const GATE_FN = SB_URL + '/functions/v1/stoner-gate';
+const DEEP_FROM = 0;          // tout est derrière le mur
+const WALL = '/get_higher.html';
+const PRICE_LABEL = '17 \u20AC';
+const COHORT_MAX  = 777;
+let   ACCESS  = false;        // jamais true par défaut
+let   SIGNED  = {};           // { 7: url, 8: url, ... }
+const sb = window.supabase.createClient(SB_URL, SB_ANON);
 const DOPE = '<svg viewBox="100 240 660 320" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M193.16 295.785c0 21.8-17.672 39.476-39.473 39.476-21.805 0-39.477-17.676-39.477-39.476 0-21.801 17.672-39.473 39.477-39.473 21.801 0 39.473 17.672 39.473 39.473m-11.723 0c0-15.325-12.422-27.75-27.75-27.75-15.328 0-27.75 12.425-27.75 27.75 0 15.324 12.422 27.75 27.75 27.75 15.328 0 27.75-12.426 27.75-27.75z"/><path d="M192.027 508.664c0 21.805-17.672 39.476-39.476 39.476-21.797 0-39.473-17.675-39.473-39.476 0-21.801 17.676-39.473 39.473-39.473 21.804 0 39.476 17.672 39.476 39.473m-11.727 0c0-15.325-12.422-27.75-27.75-27.75-15.328 0-27.75 12.425-27.75 27.75 0 15.328 12.422 27.75 27.75 27.75 15.328 0 27.75-12.422 27.75-27.75z"/><path d="M742.289 295.187c0 21.801-17.672 39.473-39.473 39.473-21.801 0-39.477-17.672-39.477-39.473 0-21.8 17.676-39.476 39.477-39.476 21.801 0 39.473 17.676 39.473 39.476m-11.723 0c0-15.324-12.422-27.75-27.75-27.75-15.328 0-27.75 12.426-27.75 27.75 0 15.324 12.422 27.75 27.75 27.75 15.328 0 27.75-12.426 27.75-27.75z"/><path d="M191.777 313.746v.008l-2.754-4.973 59.363 37.101-6.051-.097 88.879-51.614c1.754-1.015 3.907-1.058 5.696-.105l91.769 48.754-5.629.066 98.641-55.562c1.914-1.078 4.273-.992 6.109.219l88.395 58.445-6.133-.203 58.305-33.18c2.812-1.601 6.394-.62 7.996 2.196 1.601 2.812.617 6.39-2.196 7.992l-58.304 33.184c-1.922 1.09-4.289 1.011-6.133-.207l-88.394-58.446 6.109.219-98.637 55.563c-1.742.98-3.863 1.007-5.629.07l-91.773-48.754 5.695-.11-88.879 51.614c-1.879 1.09-4.207 1.05-6.051-.102l-59.363-37.097c-1.715-1.071-2.754-2.95-2.754-4.973v-.008c0-3.238 2.625-5.863 5.863-5.863 3.235 0 5.86 2.625 5.86 5.863z"/><path d="M248.465 354.148v.008l-.001-.098 1.629 98.317-2.82-4.914 91.449 55.511-5.926-.093 94.485-53.379-2.977 5.266-2.929-104.805c-.09-3.234 2.46-5.933 5.699-6.023 3.234-.09 5.933 2.46 6.023 5.695l2.93 104.805c.058 2.172-1.086 4.199-2.977 5.27l-94.484 53.382c-1.848 1.043-4.113 1.008-5.926-.094l-91.453-55.511c-1.723-1.043-2.785-2.899-2.82-4.914l-1.625-98.317-.004-.097v-.008c0-3.238 2.629-5.863 5.863-5.863 3.239 0 5.864 2.625 5.864 5.863z"/><path d="M248.363 454.742v.012c0 2.046-1.07 3.949-2.82 5.011l-59.465 36.067c-2.766 1.675-6.371.793-8.051-1.973-1.68-2.77-.797-6.375 1.973-8.055l59.46-36.066-2.82 5.016v-.012c0-3.238 2.625-5.859 5.86-5.859 3.238 0 5.863 2.621 5.863 5.859z"/></svg>';
 
 /* slogan : 'slogan' classique | 'grind' | 'love' */
@@ -271,12 +329,72 @@ const NEURO = {0:"<div class=\"neuro-block\"><p class=\"nb-p\">Master yourself a
 9:"<div class=\"neuro-block\"><p class=\"nb-p\">Bottled emotion is a slow poison. The freest, healthiest, longest-living people let it move through them. Release it — tears, shouts, joy, grief — and create from it.</p><p class=\"nb-p\">Expression releases endorphins and serotonin, the same relief as a good cry or a raw scream. What stays locked in sabotages you later.</p><p class=\"nb-p\">Theta again — but this time to release. You open the door to what's stored deep and let it out through art.</p><p class=\"nb-src\">Pennebaker, Opening Up by Writing It Down (2016) · Frontiers — Expressive Arts (2022)</p></div>",
 10:"<div class=\"neuro-block\"><p class=\"nb-p\">This is how you build a superbrain that grows stronger for decades instead of burning out. Get {H} often enough and you forge new habits, a new mind, a longer life.</p><p class=\"nb-p\">Your system rebalances — cortisol cleared, dopamine and serotonin restocked — close to the delta and theta states where the brain repairs itself.</p><p class=\"nb-p\">Back to neutral alpha. Every full cycle leaves your baseline a little {H} than before. Time out isn't the end. It's the loop that compounds.</p><p class=\"nb-src\">McEwen, Nature Neuroscience — Allostasis (2012) · Walker, Why We Sleep (2017)</p></div>"};
 const NEURO_CLOSE = "<div class=\"neuro-block\"><p class=\"nb-p\">This is the whole game. Every goal you chase — wealth, love, mastery, freedom — is won or lost inside your own head first. The moment you think, feel or act negatively, you get a choice: sink, or get {H}.</p><p class=\"nb-p\">Each time you choose {H}, you fire dopamine through your reward circuit, calm your amygdala, and carve the neural path of a winner. Repeat it enough and your brain physically rebuilds itself around success and happiness.</p><p class=\"nb-p\">Success and happiness are a permanent inner battle — fought in alpha, beta, theta and gamma. Win it within, and the outer world bends to follow. Microcosm equals macrocosm. It all depends on you. All of it.</p><p class=\"nb-src\">Hamilton, Self-Esteem and Goal Attainment (2014) · Csikszentmihalyi, Flow (1990) · Dispenza, Breaking the Habit of Being Yourself (2012)</p></div>";
+/* ═══════════════════════════════════════════════════════════
+   MODE · [Low] / [High]
+   ───────────────────────────────────────────────────────────
+   Low  entre au step 1 (répulsion = carburant).
+   High entre au step 2 (souffle direct — rien à repousser).
+
+   Tout le contenu High vit dans HIGH et NEURO_HIGH, jamais
+   dans STEPS ni NEURO. Écrire une variante = remplir une clé.
+   Clé absente  ->  retombe automatiquement sur la version Low.
+
+   CONFIGURATION À RESPECTER, à l'identique de la version Low :
+     text       mêmes emplacements de {H} que le Low
+     slogan     'slogan' | 'grind' | 'love'
+     greenText  null si aucun, sinon la ligne verte
+     why        deep link TotehmBot
+     NEURO_HIGH mêmes <p class="nb-p"> + un <p class="nb-src">
+                avec des sources réelles
+   ═══════════════════════════════════════════════════════════ */
+let MODE = 'low';
+const START_STEP = { low: 1, high: 2 };
+
+const HIGH = {
+  // 2:  { text:'', slogan:'love',   greenText:null, why:'' },
+  // 3:  { text:'', slogan:'slogan', greenText:null, why:'' },
+  // 4:  { text:'', slogan:'slogan', greenText:null, why:'' },
+  // 5:  { text:'', slogan:'slogan', greenText:null, why:'' },
+  // 6:  { text:'', slogan:'slogan', greenText:null, why:'' },
+  // 7:  { text:'', slogan:'slogan', greenText:null, why:'' },
+  // 8:  { text:'', slogan:'love',   greenText:null, why:'' },
+  // 9:  { text:'', slogan:'slogan', greenText:null, why:'' },
+  // 10: { text:'', slogan:'slogan', greenText:null, why:'' },
+};
+
+const NEURO_HIGH = {
+  // 2: "<div class=\"neuro-block\">...</div>",
+};
+
+/* Résolveurs — un seul endroit décide, partout ailleurs on lit. */
+function hiFor(idx){ return (MODE==='high' && HIGH[idx]) ? HIGH[idx] : null; }
+
+function techFor(idx, step){
+  const h = hiFor(idx);
+  return (h && h.text) ? h.text : (step.text || '');
+}
+function sloganFor(idx, step){
+  const h = hiFor(idx);
+  return (h && h.slogan) ? h.slogan : (step.slogan || 'slogan');
+}
+function greenFor(idx, step){
+  const h = hiFor(idx);
+  if(h && Object.prototype.hasOwnProperty.call(h,'greenText')) return h.greenText;
+  return step.greenText;
+}
+function whyFor(idx, step){
+  const h = hiFor(idx);
+  return (h && h.why) ? h.why : (step.why || '');
+}
+function neuroFor(idx){
+  return (MODE==='high' && NEURO_HIGH[idx]) ? NEURO_HIGH[idx] : (NEURO[idx] || '');
+}
+
 const INSTAGRAM_URL = 'https://www.instagram.com/wahigher';
 const BOT_URL = 'https://t.me/TotehmBot';
 /* FREE MODE — embarqué dans totehm.html (?free=1) : l'expérience s'arrête à la Step 6.
    L'expérience complète (stoner.html direct) sera déverrouillée par le NFT Totehm via thirdweb. */
-const FREE = new URLSearchParams(location.search).get('free')==='1';
-const FREE_MAX = 6;
+/* FREE/FREE_MAX retirés : le gate n'est plus opt-in par l'URL. */
 const SHOW_TIME_0 = 3.7;
 let currentStep = 0;
 
@@ -309,14 +427,15 @@ function buildTechnique(step){
   // texte vert spécifique (ex: EM sounds like love) au-dessus
   const gt=document.getElementById('green-text');
   if(gt) gt.remove();
-  if(step.greenText){
+  const _green = greenFor(currentStep, step);
+  if(_green){
     const g=document.createElement('div');
     g.className='green-text';g.id='green-text';
-    g.textContent=step.greenText;
+    g.textContent=_green;
     techText.parentNode.insertBefore(g, techText);
   }
-  const sloganId=SLOGAN_ID[step.slogan||'slogan'];
-  const tokens=(step.text||'').split('{H}');
+  const sloganId=SLOGAN_ID[sloganFor(currentStep, step)];
+  const tokens=techFor(currentStep, step).split('{H}');
   tokens.forEach((tok,i)=>{
     if(tok)techText.appendChild(document.createTextNode(tok));
     if(i<tokens.length-1){
@@ -336,7 +455,7 @@ function buildTechnique(step){
   n.onclick=toggleNeuro;
   techText.insertAdjacentElement('afterend',n);
   // remplir le contenu accordion pour ce step
-  neuroContent.innerHTML = injectSlogan(NEURO[currentStep] || '');
+  neuroContent.innerHTML = injectSlogan(neuroFor(currentStep));
   neuroContent.classList.remove('open');
 }
 
@@ -352,10 +471,21 @@ async function loadVideoStep(idx){
   logoBtn.classList.remove('show');
 
   try{
-    const resp=await fetch(SB+step.file);
+    const src = SIGNED[idx];   // toujours signé, jamais d'URL publique
+    if(!src){ showGate(); return; }
+    const resp=await fetch(src);
     const blob=await resp.blob();
     vid.src=URL.createObjectURL(blob);
-  }catch(e){vid.crossOrigin='anonymous';vid.src=SB+step.file;}
+  }catch(e){
+    /* Fallback : on retente en direct sur l'URL signée (le blob peut
+       échouer sur mobile pour des vidéos lourdes). Jamais d'URL publique :
+       le bucket est privé, elle renverrait une 400.
+       Pas de crossOrigin='anonymous' — ça casse Supabase Storage. */
+    console.error('load step '+idx+':', e);
+    const s = SIGNED[idx];
+    if(s){ vid.removeAttribute('crossorigin'); vid.src = s; }
+    else { showGate(); return; }
+  }
   vid.load();
   loading.classList.add('hidden');
 
@@ -386,21 +516,176 @@ vid.addEventListener('ended',()=>{
   if(currentStep===0 && !zonesShown){revealStep0UI();}
 });
 
-function goMethod(){currentStep=1;loadVideoStep(1);}
+async function goMethod(mode){
+  MODE = (mode === 'high') ? 'high' : 'low';
+  saveEntryMode(MODE);
+  if(!ACCESS){
+    await checkAccess();
+    if(!ACCESS){ showPorte(); return; }
+  }
+  currentStep = START_STEP[MODE];
+  loadVideoStep(currentStep);
+}
+
+/* Le mode déclaré est le seul signal de segmentation gratuit.
+   localStorage = la session en cours.
+   RPC          = la première déclaration, figée, pour le drip. */
+async function saveEntryMode(mode){
+  try{ localStorage.setItem('totehm_entry_mode', mode); }catch(e){}
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(!session) return;
+    await sb.rpc('set_entry_mode', { p_mode: mode });
+  }catch(e){ console.error('entry_mode:', e); }
+}
 function goClose(){closeScreen.classList.add('visible');}
 /* FREE GATE */
 const freeGate=document.getElementById('free-gate');
-function showFreeGate(){freeGate.classList.add('visible');}
-freeGate.addEventListener('click',()=>{freeGate.classList.remove('visible');});
-zoneMinus.addEventListener('click',goMethod);
-btnLow.addEventListener('click',goMethod);
-zonePlus.addEventListener('click',goClose);
-btnHighBlue.addEventListener('click',goClose);
+const PT = { sell:document.getElementById('pt-sell'),
+             mail:document.getElementById('pt-mail'),
+             code:document.getElementById('pt-code') };
 
-function nextStep(){
-  if(FREE && currentStep>=FREE_MAX){ showFreeGate(); return; }
-  if(currentStep<STEPS.length-1){currentStep++;loadVideoStep(currentStep);}
+function ptShow(v){
+  Object.keys(PT).forEach(k=>PT[k].classList.toggle('on', k===v));
+}
+
+/* Deux raisons d'entrer, deux copies. */
+const PITCH = {
+  low:{ mode:'YOU CAME IN LOW.',
+        pitch:'Ten steps to turn it around.<br>An artistic and neurological experience.' },
+  high:{ mode:'YOU CAME IN HIGH.',
+         pitch:'Ten steps to hold the altitude.<br>An artistic and neurological experience.' }
+};
+
+function showPorte(){
+  try{ if(MODE) localStorage.setItem('totehm_entry_mode', MODE); }catch(e){}
+  window.location.replace(WALL);
+}
+function showGate(){ showPorte(); }
+
+/* Rareté réelle : un compteur serveur, jamais un chiffre écrit en dur. */
+async function loadCount(){
+  const el = document.getElementById('pt-count');
+  try{
+    const { data, error } = await sb.rpc('figher_count');
+    if(error || data===null) throw error;
+    const left = Math.max(0, COHORT_MAX - data);
+    el.textContent = left>0
+      ? left + ' / ' + COHORT_MAX + ' PLACES LEFT AT ' + PRICE_LABEL
+      : 'FIRST 777 CLOSED';
+  }catch(e){ el.textContent = COHORT_MAX + ' PLACES AT ' + PRICE_LABEL; }
+}
+
+freeGate.addEventListener('click',(e)=>{
+  if(e.target.closest('#pt-inner')||e.target.closest('#fg-inner')) return;
+  freeGate.classList.remove('visible');
+});
+document.querySelectorAll('[data-back]').forEach(b=>{
+  b.addEventListener('click',()=>ptShow(b.dataset.back));
+});
+
+/* 1. Le bouton d'achat ouvre l'email : on veut savoir QUI paie. */
+document.getElementById('fg-buy').addEventListener('click',async()=>{
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session?.user?.email){ toStripe(session.user.email); return; }
+  ptShow('mail');
+  setTimeout(()=>document.getElementById('pt-email').focus(),50);
+});
+
+/* 2. Envoi du code à 6 chiffres. */
+const btnSend = document.getElementById('pt-send');
+btnSend.addEventListener('click',async()=>{
+  const email = document.getElementById('pt-email').value.trim().toLowerCase();
+  const err   = document.getElementById('pt-err1');
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ err.textContent='Check the address.'; return; }
+  err.textContent=''; btnSend.disabled=true; btnSend.textContent='Sending...';
+  const { error } = await sb.auth.signInWithOtp({
+    email, options:{ shouldCreateUser:true }
+  });
+  btnSend.disabled=false; btnSend.textContent='Send code';
+  if(error){ err.textContent='Could not send. Try again.'; return; }
+  ptShow('code');
+  setTimeout(()=>document.getElementById('pt-otp').focus(),50);
+});
+
+/* 3. Vérification -> session -> Stripe. */
+const btnVerify = document.getElementById('pt-verify');
+btnVerify.addEventListener('click',async()=>{
+  const email = document.getElementById('pt-email').value.trim().toLowerCase();
+  const token = document.getElementById('pt-otp').value.trim();
+  const err   = document.getElementById('pt-err2');
+  if(token.length!==6){ err.textContent='Six digits.'; return; }
+  err.textContent=''; btnVerify.disabled=true; btnVerify.textContent='Checking...';
+  const { error } = await sb.auth.verifyOtp({ email, token, type:'email' });
+  btnVerify.disabled=false; btnVerify.textContent='Enter';
+  if(error){ err.textContent='Wrong or expired code.'; return; }
+  saveEntryMode(MODE);
+  await checkAccess();
+  if(ACCESS){                       // déjà membre : il repasse sans repayer
+    freeGate.classList.remove('visible');
+    currentStep = START_STEP[MODE];
+    loadVideoStep(currentStep);
+    return;
+  }
+  toStripe(email);
+});
+
+document.getElementById('pt-otp').addEventListener('keydown',e=>{
+  if(e.key==='Enter') btnVerify.click();
+});
+document.getElementById('pt-email').addEventListener('keydown',e=>{
+  if(e.key==='Enter') btnSend.click();
+});
+
+function toStripe(email){
+  window.location.href = PAY_URL + '?prefilled_email=' + encodeURIComponent(email);
+}
+
+/* Retour de Stripe : ?checked=1 ne débloque rien, il relance juste le check. */
+/* Retour de Stripe : ?checked=1 ne débloque rien, il relance le check.
+   Le webhook peut avoir 1-2 s de retard -> on retente une fois. */
+/* Retour de Stripe : le webhook peut avoir 1-2 s de retard.
+   On retente une fois avant de renvoyer au mur. */
+(async function bootGate(){
+  await checkAccess();
+  const back = new URLSearchParams(location.search).get('checked')==='1';
+  if(back && !ACCESS){
+    await new Promise(r=>setTimeout(r,2500));
+    await checkAccess();
+  }
+  if(!ACCESS){ window.location.replace(WALL); return; }
+})();
+/* Les 4 déclencheurs entrent TOUS dans la méthode.
+   Avant : zonePlus / btnHighBlue -> goClose, autrement dit
+   la marque disait au revoir à quiconque déclarait aller bien. */
+zoneMinus.addEventListener('click',      ()=>goMethod('low'));
+btnLow.addEventListener('click',         ()=>goMethod('low'));
+zonePlus.addEventListener('click',       ()=>goMethod('high'));
+btnHighBlue.addEventListener('click',    ()=>goMethod('high'));
+
+async function nextStep(){
+  const target = currentStep + 1;
+  if(target >= DEEP_FROM && !ACCESS){
+    await checkAccess();                 // re-check : il a peut-être payé entre-temps
+    if(!ACCESS){ showGate(); return; }
+  }
+  if(currentStep<STEPS.length-1){currentStep=target;loadVideoStep(currentStep);}
   else{closeScreen.classList.add('visible');}
+}
+
+/* Interroge le serveur. La vérité n'est jamais dans le client. */
+async function checkAccess(){
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(!session){ ACCESS=false; return; }
+    const r = await fetch(GATE_FN, {
+      method:'POST',
+      headers:{ 'Authorization':'Bearer '+session.access_token, 'Content-Type':'application/json' }
+    });
+    const j = await r.json();
+    ACCESS = j.access === true;
+    SIGNED = j.urls || {};
+  }catch(e){ console.error('gate:', e); ACCESS=false; SIGNED={}; }
 }
 btnSlogan.addEventListener('click',nextStep);
 // Tap naturel sur la vidéo : pause / play / replay (sans icône)
@@ -412,7 +697,9 @@ logoBtn.addEventListener('click',()=>{
 
 function openWhy(){
   const step=STEPS[currentStep];
-  if(step&&step.why){window.open(BOT_URL+'?start='+step.why,'_blank');}
+  if(!step) return;
+  const w = whyFor(currentStep, step);
+  if(w){window.open(BOT_URL+'?start='+w,'_blank');}
 }
 const neuroContent0=document.getElementById('neuro-content-0');
 neuroContent0.innerHTML=injectSlogan(NEURO[0]||'');

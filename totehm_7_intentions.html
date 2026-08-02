@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TOTEHM — 7 Intentions · Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Montserrat:ital,wght@1,900&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:        #000;
+  --bg2:       #080808;
+  --bg3:       #0e0e0e;
+  --border:    #1a1a1a;
+  --coral:     #fbd5ca;
+  --navy:      #333366;
+  --g1:        #e8e8e8;
+  --g2:        #c0c0c0;
+  --g3:        #909090;
+  --g4:        #555;
+  --g5:        #2a2a2a;
+
+  --fight:     #E24B4A;
+  --flow:      #EF9F27;
+  --enrich:    #BA7517;
+  --love:      #639922;
+  --express:   #1D9E75;
+  --focus:     #378ADD;
+  --celebrate: #7F77DD;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); color: var(--g2); font-family: 'Quantico', monospace; font-size: 13px; line-height: 1.65; }
+
+/* ── LAYOUT ── */
+body { padding: 48px 32px 80px; max-width: 1400px; margin: 0 auto; }
+
+/* ── HEADER ── */
+.page-header { margin-bottom: 56px; border-bottom: 1px solid var(--border); padding-bottom: 32px; }
+.page-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--g4);
+  margin-bottom: 12px;
+}
+.page-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(36px, 6vw, 72px);
+  letter-spacing: .12em;
+  color: var(--g1);
+  line-height: 1;
+}
+.page-sub {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--g3);
+  letter-spacing: .06em;
+  max-width: 680px;
+}
+
+/* ── LEGEND BAR ── */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  margin-bottom: 40px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+}
+.legend-item {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--g4);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.legend-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── INTENTION BLOCK ── */
+.intention {
+  margin-bottom: 64px;
+  border-left: 3px solid var(--ic);
+  padding-left: 24px;
+  position: relative;
+}
+.int-top {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+.int-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .2em;
+  color: var(--g4);
+  flex-shrink: 0;
+}
+.int-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(28px, 4vw, 48px);
+  letter-spacing: .14em;
+  color: var(--ic);
+  line-height: 1;
+}
+.int-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--ic);
+  opacity: .55;
+  padding: 2px 8px;
+  border: 1px solid currentColor;
+  flex-shrink: 0;
+}
+.int-def {
+  font-family: 'Quantico', monospace;
+  font-size: 14px;
+  color: var(--g2);
+  margin-bottom: 4px;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+.int-essence {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--g3);
+  letter-spacing: .06em;
+  margin-bottom: 28px;
+  font-style: italic;
+}
+
+/* ── GRID ── */
+.int-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+@media (max-width: 900px) {
+  .int-grid { grid-template-columns: 1fr; }
+}
+.cell {
+  background: var(--bg2);
+  padding: 18px 16px;
+}
+.cell-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--ic);
+  opacity: .7;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cell-label::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--ic);
+  opacity: .8;
+  flex-shrink: 0;
+}
+.cell ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.cell ul li {
+  font-size: 12px;
+  color: var(--g2);
+  padding-left: 10px;
+  position: relative;
+  line-height: 1.45;
+}
+.cell ul li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--ic);
+  opacity: .4;
+  font-size: 9px;
+  top: 4px;
+}
+.cell ul li em {
+  color: var(--g4);
+  font-style: normal;
+  font-size: 10px;
+}
+
+/* ── MENTOR BLOCK ── */
+.mentor-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+@media (max-width: 700px) { .mentor-row { grid-template-columns: 1fr; } }
+.mentor-cell {
+  background: var(--bg3);
+  padding: 18px 16px;
+}
+
+/* ── PUSH TONE ── */
+.push-block {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--ic);
+  padding: 16px 18px;
+  margin-bottom: 20px;
+}
+.push-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--ic);
+  opacity: .7;
+  margin-bottom: 10px;
+}
+.push-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.push-ex {
+  font-family: 'Quantico', monospace;
+  font-size: 12px;
+  color: var(--g2);
+  padding: 8px 12px;
+  background: rgba(0,0,0,.4);
+  border-left: 2px solid var(--ic);
+  opacity: .85;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.push-ex::before {
+  content: '"';
+  color: var(--ic);
+  margin-right: 2px;
+}
+.push-ex::after {
+  content: '"';
+  color: var(--ic);
+  margin-left: 2px;
+}
+
+/* ── NEURO TAG ── */
+.neuro-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+.ntag {
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border: 1px solid var(--ic);
+  color: var(--ic);
+  opacity: .6;
+}
+
+/* ── WAVE TAG ── */
+.wave-tag {
+  display: inline-block;
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  background: var(--ic);
+  color: #000;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+
+/* ── DIVIDER ── */
+.int-divider {
+  height: 1px;
+  background: linear-gradient(90deg, var(--ic), transparent);
+  opacity: .18;
+  margin: 48px 0 64px;
+}
+
+/* ── FOOTER ── */
+.page-footer {
+  margin-top: 80px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--g4);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     PAGE HEADER
+══════════════════════════════════════════ -->
+<header class="page-header">
+  <div class="page-label">TOTEHM · Brand Reference · Internal Document</div>
+  <div class="page-title">7 INTENTIONS</div>
+  <div class="page-sub">
+    Each Intention = a brain state · a neurochemistry · a color · a sound environment · a sub-map of the city.
+    The user picks one. The city reorganizes itself. Every Habit is analyzed and assigned one Intention.
+    Every City Spot carries the color of its Intention.
+  </div>
+</header>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#E24B4A"></div>Fight #E24B4A</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#EF9F27"></div>Flow #EF9F27</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#BA7517"></div>Enrich #BA7517</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#639922"></div>Love #639922</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#1D9E75"></div>Express #1D9E75</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#378ADD"></div>Focus #378ADD</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#7F77DD"></div>Celebrate #7F77DD</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     01 · FIGHT
+══════════════════════════════════════════ -->
+<section class="intention" style="--ic: var(--fight)">
+  <div class="int-top">
+    <span class="int-num">01</span>
+    <span class="int-name">Fight</span>
+    <span class="int-badge">Higher</span>
+  </div>
+  <div class="int-def">Conquer yourself through harder effort. One more rep.</div>
+  <div class="int-essence">Resilience · Mental hardness · Self-overcoming · Exit the comfort zone · Embrace the pain</div>
+  <div class="wave-tag" style="background:var(--fight)">Beta / Gamma · Noradrenaline · Endorphins</div>
+
+  <div class="int-grid">
+    <div class="cell">
+      <div class="cell-label">Habits — Nature & Examples</div>
+      <ul>
+        <li>Morning cold shower <em>daily</em></li>
+        <li>Martial arts training <em>3×/week</em></li>
+        <li>Running / trail / obstacles <em>daily or weekly</em></li>
+        <li>Weight lifting / Crossfit <em>several daily</em></li>
+        <li>Intermittent fasting <em>daily</em></li>
+        <li>Ice bath / cryotherapy <em>weekly</em></li>
+        <li>Waking at 5am+ <em>every morning</em></li>
+        <li>Doing the task you fear first <em>daily</em></li>
+        <li>No social media before 9am <em>every morning</em></li>
+        <li>Writing fears down and facing one <em>weekly</em></li>
+        <li>Sparring / competitive sports <em>every weekday</em></li>
+        <li>No phone for 1h after waking <em>every morning</em></li>
+      </ul>
+    </div>
+    <div class="cell">
+      <div class="cell-label">City Spots & Events</div>
+      <ul>
+        <li>Boxing gyms, MMA, Muay Thai dojos</li>
+        <li>Crossfit boxes, functional training</li>
+        <li>Open-air workout parks</li>
+        <li>Stadium stairs / urban trail routes</li>
+        <li>Sparring sessions (member drops)</li>
+        <li>5am run groups</li>
+        <li>Obstacle race events</li>
+        <li>Cold plunge facilities</li>
+        <li>Military-style boot camps</li>
+        <li>Intense dance battles / breaking circles</li>
+        <li>Climbing walls, parkour spots</li>
+        <li>Silent 6am city runs (member coord.)</li>
+      </ul>
+    </div>
+    <div class="cell">
+      <div class="cell-label">Habit Classification Signals</div>
+      <ul>
+        <li>Keywords: discipline, pain, harder, push, resist, cold, early, training, conquer, one more</li>
+        <li>Physical effort markers: weights, run, spar, fast, wake</li>
+        <li>Frequency: daily/morning-heavy habits → Fight</li>
+        <li>Avoidance patterns (no X before Y) → Fight</li>
+        <li>Self-competition language ("beat my record") → Fight</li>
+        <li>Habit requiring willpower against impulse → Fight</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mentor-row">
+    <div class="mentor-cell">
+      <div class="cell-label">Default Mentor</div>
+      <div style="font-family:'Bebas Neue';font-size:24px;color:var(--fight);letter-spacing:.12em">David Goggins</div>
+      <div style="font-size:11px;color:var(--g3);margin-top:4px">Can't Hurt Me · Stay Hard · 40% Rule</div>
+    </div>
+    <div class="mentor-cell">
+      <div class="cell-label">Mentor Tone Signature</div>
+      <ul>
+        <li>Zero comfort. Zero excuses.</li>
+        <li>Military cadence — short, punchy sentences</li>
+        <li>Orders, not suggestions</li>
+        <li>Uses "you're soft" energy to trigger action</li>
+        <li>Celebrates completion, never the feeling</li>
+        <li>Quantifies everything (reps, time, weight)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="push-block">
+    <div class="push-label">Push Message Tone — Bot Examples</div>
+    <div class="push-examples">
+      <div class="push-ex">Your body is lying to you right now. It's telling you to stay warm. Don't. The cold shower is waiting. 30 seconds. Go.</div>
+      <div class="push-ex">5:47am. You're already behind every person who got up before you. That's data. Use it. Shoes on.</div>
+      <div class="push-ex">That session you're about to skip? That's exactly the session you need. The discomfort IS the point.</div>
+    </div>
+  </div>
+
+  <div class="neuro-strip">
+    <span class="ntag">Noradrenaline</span>
+    <span class="ntag">Beta waves</span>
+    <span class="ntag">Gamma waves</span>
+    <span class="ntag">Endorphins</span>
+    <span class="ntag">Exit comfort zone</span>
+    <span class="ntag">Mental fortitude</span>
+  </div>
+</section>
+<div class="int-divider"></div>
+
+
+<!-- ══════════════════════════════════════════
+     02 · FLOW
+══════════════════════════════════════════ -->
+<section class="intention" style="--ic: var(--flow)">
+  <div class="int-top">
+    <span class="int-num">02</span>
+    <span class="int-name">Flow</span>
+    <span class="int-badge">Higher</span>
+  </div>
+  <div class="int-def">Liberate energy through the movement of the body.</div>
+  <div class="int-essence">Release · Fluid movement · Letting go · Body leads · Internal rhythm · Somatic freedom</div>
+  <div class="wave-tag" style="background:var(--flow)">Alpha / Theta · Serotonin · Endorphins</div>
+
+  <div class="int-grid">
+    <div class="cell">
+      <div class="cell-label">Habits — Nature & Examples</div>
+      <ul>
+        <li>Dance session (any style) <em>weekly</em></li>
+        <li>Yoga practice <em>daily or several daily</em></li>
+        <li>Tai Chi / Qi Gong <em>every morning</em></li>
+        <li>Freestyle movement / ecstatic dance <em>weekly</em></li>
+        <li>Swimming <em>twice a week</em></li>
+        <li>Breathwork (Wim Hof, holotropic) <em>daily</em></li>
+        <li>Stretching / mobility flow <em>every morning</em></li>
+        <li>Skating (freestyle) <em>weekly</em></li>
+        <li>Surfing <em>every weekend</em></li>
+        <li>African / Afro dance workshops <em>monthly</em></li>
+        <li>Body scan meditation + movement <em>daily</em></li>
+        <li>Capoeira <em>twice a week</em></li>
+      </ul>
+    </div>
+    <div class="cell">
+      <div class="cell-label">City Spots & Events</div>
+      <ul>
+        <li>Dance studios / Afrobeats classes</li>
+        <li>Yoga studios (rooftop preferred)</li>
+        <li>Tai Chi gardens (early morning)</li>
+        <li>Open concrete skate spots</li>
+        <li>Surf schools / beach break spots</li>
+        <li>Ecstatic dance events (underground)</li>
+        <li>River/pool swim spots</li>
+        <li>Breathwork circles</li>
+        <li>Capoeira roda (outdoor circles)</li>
+        <li>Dance battles / cypher spots</li>
+        <li>Movement festivals</li>
+        <li>Open-air markets with live drums</li>
+      </ul>
+    </div>
+    <div class="cell">
+      <div class="cell-label">Habit Classification Signals</div>
+      <ul>
+        <li>Keywords: move, flow, breathe, body, dance, release, float, wave, rhythm</li>
+        <li>Any embodied practice without competition</li>
+        <li>Practices where body sensation is the goal</li>
+        <li>Movement with music or nature</li>
+        <li>Liberation vocabulary ("let go", "free", "release")</li>
+        <li>Cyclical/fluid frequency (not rigid-daily)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mentor-row">
+    <div class="mentor-cell">
+      <div class="cell-label">Default Mentor</div>
+      <div style="font-family:'Bebas Neue';font-size:24px;color:var(--flow);letter-spacing:.12em">Alan Watts</div>
+      <div style="font-size:11px;color:var(--g3);margin-top:4px">The Tao · The Art of Being · Wiggly World</div>
+    </div>
+    <div class="mentor-cell">
+      <div class="cell-label">Mentor Tone Signature</div>
+      <ul>
+        <li>Philosophical, circular, unhurried</li>
+        <li>Paradoxes and Zen-like inversions</li>
+        <li>No imperative — invitations, not orders</li>
+        <li>Water metaphors, nature metaphors</li>
+        <li>Humor: light, wise, non-judgmental</li>
+        <li>The message arrives sideways</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="push-block">
+    <div class="push-label">Push Message Tone — Bot Examples</div>
+    <div class="push-examples">
+      <div class="push-ex">You don't have to go anywhere. The body already knows what to do. Give it a room and fifteen minutes. Start with one breath.</div>
+      <div class="push-ex">Water doesn't force its way. It finds it. Your yoga mat is on the floor. The question isn't motivation — the question is: what happens if you just begin?</div>
+      <div class="push-ex">There's a dance session tonight at the corner of your city. Nobody's watching. That's the point. Your body has been waiting for this since Monday.</div>
+    </div>
+  </div>
+
+  <div class="neuro-strip">
+    <span class="ntag">Serotonin</span>
+    <span class="ntag">Endorphins</span>
+    <span class="ntag">Alpha waves</span>
+    <span class="ntag">Theta waves</span>
+    <span class="ntag">Somatic release</span>
+    <span class="ntag">Interoception</span>
+  </div>
+</section>
+<div class="int-divider"></div>
+
+
+<!-- ══════════════════════════════════════════
+     03 · ENRICH
+══════════════════════════════════════════ -->
+<section class="intention" style="--ic: var(--enrich)">
+  <div class="int-top">
+    <span class="int-num">03</span>
+    <span class="int-name">Enrich</span>
+    <span class="int-badge">Higher</span>
+  </div>
+  <div class="int-def">Master your wealth through capital, network & knowledge.</div>
+  <div class="int-essence">Accumulation · Leverage · Strategic growth · Capital · Network density · Mastery of systems</div>
+  <div class="wave-tag" style="background:var(--enrich)">Beta (focused) · Dopamine · Prefrontal activation</div>
+
+  <div class="int-grid">
+    <div class="cell">
+      <div class="cell-label">Habits — Nature & Examples</div>
+      <ul>
+        <li>Reading (finance, philosophy, business) <em>daily</em></li>
+        <li>Reviewing investment portfolio <em>weekly</em></li>
+        <li>Networking event attendance <em>monthly</em></li>
+        <li>Pitch deck / business plan work <em>weekly</em></li>
+        <li>Learning a new skill / course <em>weekly</em></li>
+        <li>Cold outreach (1 per day) <em>daily</em></li>
+        <li>Podcasts / lectures (knowledge) <em>daily</em></li>
+        <li>Reviewing P&L / financial tracking <em>weekly</em></li>
+        <li>Mentorship calls <em>monthly</em></li>
+        <li>Language learning <em>daily</em></li>
+        <li>Journaling (strategy) <em>daily</em></li>
+        <li>Founder / investor event <em>monthly</em></li>
+      </ul>
+    </div>
+    <div class="cell">
+      <div class="cell-label">City Spots & Events</div>
+      <ul>
+        <li>Founder meetups / startup evenings</li>
+        <li>VC pitch nights</li>
+        <li>Co-working libraries (silent zones)</li>
+        <li>Networking dinners (private, curated)</li>
+        <li>Business school open lectures</li>
+        <li>Book launches / intellectual salons</li>
+        <li>Financial district cafés (deal-making energy)</li>
+        <li>Angel investor roundtables</li>
+        <li>Tech hubs / incubators</li>
+        <li>Language exchange evenings</li>
+        <li>Premium business clubs</li>
+        <li>Masterclass / workshop events</li>
+      </ul>
+    </div>
+    <div class="cell">
+      <div class="cell-label">Habit Classification Signals</div>
+      <ul>
+        <li>Keywords: invest, learn, read, network, capital, build, skill, wealth, strategy, grow, master</li>
+        <li>Cognitive accumulation (knowledge + money)</li>
+        <li>Delayed gratification habits</li>
+        <li>Social leverage (connecting people)</li>
+        <li>"Output equals input" logic</li>
+        <li>Any habit about building assets (financial or intellectual)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mentor-row">
+    <div class="mentor-cell">
+      <div class="cell-label">Default Mentor</div>
+      <div style="font-family:'Bebas Neue';font-size:24px;color:var(--enrich);letter-spacing:.12em">Naval Ravikant</div>
+      <div style="font-size:11px;color:var(--g3);margin-top:4px">How to Get Rich · Almanack · Leverage</div>
+    </div>
+    <div class="mentor-cell">
+      <div class="cell-label">Mentor Tone Signature</div>
+      <ul>
+        <li>Aphoristic — dense, one-sentence truths</li>
+        <li>Calm and certain, never hyped</li>
+        <li>Systems thinking: incentives, leverage, equity</li>
+        <li>Long-game framing (decades, not weeks)</li>
+        <li>Zero noise. Maximum signal.</li>
+        <li>Asks the question that reframes everything</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="push-block">
+    <div class="push-label">Push Message Tone — Bot Examples</div>
+    <div class="push-examples">
+      <div class="push-ex">Wealth is assets that work while you sleep. That cold outreach you're avoiding is a future conversation that compounds. Send it.</div>
+      <div class="push-ex">Reading 30 pages a day puts you ahead of 99% of people in a year. You haven't opened the book yet today. That's the only relevant fact.</div>
+      <div class="push-ex">The meeting tonight has 3 investors and 6 founders you've never met. One connection changes the math. Show up early. Stay sharp.</div>
+    </div>
+  </div>
+
+  <div class="neuro-strip">
+    <span class="ntag">Dopamine</span>
+    <span class="ntag">Beta focus</span>
+    <span class="ntag">Prefrontal cortex</span>
+    <span class="ntag">Delayed reward</span>
+    <span class="ntag">Neuroplasticity</span>
+    <span class="ntag">Strategic cognition</span>
+  </div>
+</section>
+<div class="int-divider"></div>
+
+
+<!-- ══════════════════════════════════════════
+     04 · LOVE
+══════════════════════════════════════════ -->
+<section class="intention" style="--ic: var(--love)">
+  <div class="int-top">
+    <span class="int-num">04</span>
+    <span class="int-name">Love</span>
+    <span class="int-badge">Higher</span>
+  </div>
+  <div class="int-def">Contemplate life through connection & beauty.</div>
+  <div class="int-essence">Passivity · Receptivity · Openness · Presence · Beauty as a state · Sensory slowness</div>
+  <div class="wave-tag" style="background:var(--love)">Alpha · Oxytocin · Serotonin · Parasympathetic activation</div>
+
+  <div class="int-grid">
+    <div class="cell">
+      <div class="cell-label">Habits — Nature & Examples</div>
+      <ul>
+        <li>Watching sunrise / sunset <em>weekly</em></li>
+        <li>Museum or gallery visit <em>monthly</em></li>
+        <li>Calling someone you love <em>weekly</em></li>
+        <li>Slow walk without phone <em>daily</em></li>
+        <li>Cooking for others <em>weekly</em></li>
+        <li>Live music / theatre / opera <em>monthly</em></li>
+        <li>Journaling (emotional, gratitude) <em>daily</em></li>
+        <li>Park session (just sitting, observing) <em>weekly</em></li>
+        <li>Flowers / plants care <em>daily</em></li>
+        <li>3 things of beauty noticed today <em>daily</em></li>
+        <li>Letter / postcard to someone <em>monthly</em></li>
+        <li>Long meal with no agenda <em>weekly</em></li>
+      </ul>
+    </div>
+    <div class="cell">
+      <div class="cell-label">City Spots & Events</div>
+      <ul>
+        <li>Parks at golden hour (Monsanto, Estrela…)</li>
+        <li>Art museums / contemporary galleries</li>
+        <li>Fado concerts (authentic, small venues)</li>
+        <li>Viewpoints / miradouros at sunset</li>
+        <li>Botanical gardens</li>
+        <li>Theatre & classical concerts</li>
+        <li>Outdoor cinema</li>
+        <li>Garden cafés (slow, no laptops)</li>
+        <li>Antique markets / craft fairs</li>
+        <li>Poetry readings / literary events</li>
+        <li>River walks (Tejo, sunset light)</li>
+        <li>Community dinners / shared tables</li>
+      </ul>
+    </div>
+    <div class="cell">
+      <div class="cell-label">Habit Classification Signals</div>
+      <ul>
+        <li>Keywords: beauty, connect, gratitude, slow, see, feel, nature, art, love, notice, share</li>
+        <li>Passive observation habits (no output required)</li>
+        <li>Relational habits (calls, meals, letters)</li>
+        <li>Sensory attention practices</li>
+        <li>Any habit reducing speed to increase depth</li>
+        <li>Emotional warmth language ("for others", "together")</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mentor-row">
+    <div class="mentor-cell">
+      <div class="cell-label">Default Mentor</div>
+      <div style="font-family:'Bebas Neue';font-size:24px;color:var(--love);letter-spacing:.12em">Esther Perel</div>
+      <div style="font-size:11px;color:var(--g3);margin-top:4px">Mating in Captivity · State of Affairs · Erotic Intelligence</div>
+    </div>
+    <div class="mentor-cell">
+      <div class="cell-label">Mentor Tone Signature</div>
+      <ul>
+        <li>Warm but precise — clinical warmth</li>
+        <li>Questions that open, not close</li>
+        <li>European elegance in cadence</li>
+        <li>Never moralizing — observing</li>
+        <li>Celebrates mystery, ambiguity, depth</li>
+        <li>Pleasure and presence as intelligence</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="push-block">
+    <div class="push-label">Push Message Tone — Bot Examples</div>
+    <div class="push-examples">
+      <div class="push-ex">There is a park 800m from where you are. The light at this hour is irreplaceable. You don't need to do anything there. Just arrive.</div>
+      <div class="push-ex">When did you last call them? Not text. Call. The voice carries what the message never will. Tonight is a good night for that.</div>
+      <div class="push-ex">The exhibit closes Sunday. You said you'd go. Beauty doesn't reschedule itself. Two hours. No phone. Let the work do what it was made to do.</div>
+    </div>
+  </div>
+
+  <div class="neuro-strip">
+    <span class="ntag">Oxytocin</span>
+    <span class="ntag">Serotonin</span>
+    <span class="ntag">Alpha waves</span>
+    <span class="ntag">Parasympathetic</span>
+    <span class="ntag">Aesthetic perception</span>
+    <span class="ntag">Attachment system</span>
+  </div>
+</section>
+<div class="int-divider"></div>
+
+
+<!-- ══════════════════════════════════════════
+     05 · EXPRESS
+══════════════════════════════════════════ -->
+<section class="intention" style="--ic: var(--express)">
+  <div class="int-top">
+    <span class="int-num">05</span>
+    <span class="int-name">Express</span>
+    <span class="int-badge">Higher</span>
+  </div>
+  <div class="int-def">Give form to emotion through creation.</div>
+  <div class="int-essence">Output · Making · Externalizing the internal · Art as release · Voice as identity · Form over feeling</div>
+  <div class="wave-tag" style="background:var(--express)">Beta creative · Dopamine · Default Mode Network</div>
+
+  <div class="int-grid">
+    <div class="cell">
+      <div class="cell-label">Habits — Nature & Examples</div>
+      <ul>
+        <li>Writing (journal, fiction, lyrics) <em>daily</em></li>
+        <li>Drawing / sketching <em>daily</em></li>
+        <li>Music production / instrument <em>daily or weekly</em></li>
+        <li>Graffiti / mural work <em>weekly</em></li>
+        <li>Photography (intentional) <em>weekly</em></li>
+        <li>Ceramics / sculpture atelier <em>weekly</em></li>
+        <li>Spoken word / slam poetry <em>monthly</em></li>
+        <li>Video / short film creation <em>monthly</em></li>
+        <li>Fashion design / DIY garments <em>monthly</em></li>
+        <li>Improvisation (theatre, music) <em>weekly</em></li>
+        <li>Collage / zine making <em>monthly</em></li>
+        <li>Voice memo / audio journaling <em>daily</em></li>
+      </ul>
+    </div>
+    <div class="cell">
+      <div class="cell-label">City Spots & Events</div>
+      <ul>
+        <li>Graffiti walls (legal spots)</li>
+        <li>Open mic nights</li>
+        <li>Slam poetry sessions</li>
+        <li>Art workshops / ceramic studios</li>
+        <li>Recording studios (open sessions)</li>
+        <li>Street photography walks</li>
+        <li>Improvisation theatre workshops</li>
+        <li>Zine fairs / DIY culture events</li>
+        <li>Fashion design ateliers</li>
+        <li>Collective murals (member-organized)</li>
+        <li>Sketchbook sessions in public spaces</li>
+        <li>Film screening + creation labs</li>
+      </ul>
+    </div>
+    <div class="cell">
+      <div class="cell-label">Habit Classification Signals</div>
+      <ul>
+        <li>Keywords: write, draw, make, create, build, design, sing, shoot, play, form, express, record</li>
+        <li>Output-oriented practices (something is produced)</li>
+        <li>Emotion-to-form translation habits</li>
+        <li>Any creative medium used regularly</li>
+        <li>"I need to get this out" language → Express</li>
+        <li>Habits with blank page or blank canvas logic</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mentor-row">
+    <div class="mentor-cell">
+      <div class="cell-label">Default Mentor</div>
+      <div style="font-family:'Bebas Neue';font-size:24px;color:var(--express);letter-spacing:.12em">Virgil Abloh</div>
+      <div style="font-size:11px;color:var(--g3);margin-top:4px">Off-White · LV Men's · 3% Rule · DJ Culture</div>
+    </div>
+    <div class="mentor-cell">
+      <div class="cell-label">Mentor Tone Signature</div>
+      <ul>
+        <li>The remix as the methodology</li>
+        <li>Quotation marks around everything — question conventions</li>
+        <li>Street credibility meets institutional access</li>
+        <li>Process as product — show the making</li>
+        <li>Casual precision: relaxed but intentional</li>
+        <li>Encourages the 3% deviation (not reinvention)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="push-block">
+    <div class="push-label">Push Message Tone — Bot Examples</div>
+    <div class="push-examples">
+      <div class="push-ex">You don't need the perfect idea. You need the 3% different version of what already exists. Open the notebook. Start there.</div>
+      <div class="push-ex">The graffiti wall on Rua da Boavista is empty tonight. Nobody owns that concrete. Bring your cans. Don't plan it. Let it happen.</div>
+      <div class="push-ex">The open mic starts at 9. You've been sitting on those lines for three weeks. They're done. The only thing missing is an audience.</div>
+    </div>
+  </div>
+
+  <div class="neuro-strip">
+    <span class="ntag">Dopamine</span>
+    <span class="ntag">Default Mode Network</span>
+    <span class="ntag">Beta creative</span>
+    <span class="ntag">Emotional processing</span>
+    <span class="ntag">Identity expression</span>
+    <span class="ntag">Flow state (creative)</span>
+  </div>
+</section>
+<div class="int-divider"></div>
+
+
+<!-- ══════════════════════════════════════════
+     06 · FOCUS
+══════════════════════════════════════════ -->
+<section class="intention" style="--ic: var(--focus)">
+  <div class="int-top">
+    <span class="int-num">06</span>
+    <span class="int-name">Focus</span>
+    <span class="int-badge">Higher</span>
+  </div>
+  <div class="int-def">Find yourself through deep mental focus.</div>
+  <div class="int-essence">Deep work · Cognitive sharpness · Attention as power · Single-task mastery · Signal over noise</div>
+  <div class="wave-tag" style="background:var(--focus)">Gamma (deep work) · Dopamine · Prefrontal cortex peak</div>
+
+  <div class="int-grid">
+    <div class="cell">
+      <div class="cell-label">Habits — Nature & Examples</div>
+      <ul>
+        <li>Deep work block (2h+ no interruption) <em>daily</em></li>
+        <li>Meditation (focus type / zazen) <em>every morning</em></li>
+        <li>Single-tasking sessions <em>every weekday</em></li>
+        <li>Study session (no music, no phone) <em>daily</em></li>
+        <li>Weekly review / planning session <em>weekly</em></li>
+        <li>Code sprint / engineering block <em>daily</em></li>
+        <li>No notifications before noon <em>every morning</em></li>
+        <li>Pomodoro protocol <em>every weekday</em></li>
+        <li>One-page writing per day <em>daily</em></li>
+        <li>Pre-work ritual (same sequence) <em>every morning</em></li>
+        <li>Digital detox afternoon <em>weekly</em></li>
+        <li>Reading (technical, theoretical) <em>daily</em></li>
+      </ul>
+    </div>
+    <div class="cell">
+      <div class="cell-label">City Spots & Events</div>
+      <ul>
+        <li>Silent co-working spaces</li>
+        <li>Pay-what-you-want study cafés</li>
+        <li>Public libraries (quiet floors)</li>
+        <li>Specialty coffee shops (low noise)</li>
+        <li>Morning-only focus pop-ups</li>
+        <li>Member-coordinated deep work sessions</li>
+        <li>Monastery / retreat day sessions</li>
+        <li>Rooftop solo work spots (member drops)</li>
+        <li>No-wifi cafés (intentional)</li>
+        <li>Study pods / isolation booths</li>
+        <li>Museum reading rooms</li>
+        <li>Tech campus open days</li>
+      </ul>
+    </div>
+    <div class="cell">
+      <div class="cell-label">Habit Classification Signals</div>
+      <ul>
+        <li>Keywords: focus, deep, study, work, code, write, think, concentrate, plan, review, block, solo</li>
+        <li>Time-blocking vocabulary ("2h block", "no phone")</li>
+        <li>Cognitive output (not relational, not physical)</li>
+        <li>Anti-distraction habits → Focus</li>
+        <li>Habits with a pre-ritual or environment setup</li>
+        <li>Solitary by design — no social component</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mentor-row">
+    <div class="mentor-cell">
+      <div class="cell-label">Default Mentor</div>
+      <div style="font-family:'Bebas Neue';font-size:24px;color:var(--focus);letter-spacing:.12em">Steve Jobs</div>
+      <div style="font-size:11px;color:var(--g3);margin-top:4px">Saying No · Simplicity as Sophistication · Reality Distortion</div>
+    </div>
+    <div class="mentor-cell">
+      <div class="cell-label">Mentor Tone Signature</div>
+      <ul>
+        <li>Ruthless prioritization — subtraction, not addition</li>
+        <li>High standards stated without apology</li>
+        <li>The long silence before the right answer</li>
+        <li>Minimalist sentences: no filler, no hedging</li>
+        <li>Reality distortion: what you commit to becomes real</li>
+        <li>Asks: "Is this the most important thing right now?"</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="push-block">
+    <div class="push-label">Push Message Tone — Bot Examples</div>
+    <div class="push-examples">
+      <div class="push-ex">Focus means saying no to the hundred other good ideas. You have two hours before the afternoon fragments you. Use them for the one thing. You know what it is.</div>
+      <div class="push-ex">The co-working space has two seats left at the window. Binaural on. Phone face-down. The work doesn't start when you feel ready. It starts when you sit down.</div>
+      <div class="push-ex">Simplicity is the ultimate sophistication. Your task list has eleven items. Cross out nine. The remaining two are your day. Start the first one now.</div>
+    </div>
+  </div>
+
+  <div class="neuro-strip">
+    <span class="ntag">Gamma waves</span>
+    <span class="ntag">Dopamine</span>
+    <span class="ntag">Prefrontal cortex</span>
+    <span class="ntag">Deep work state</span>
+    <span class="ntag">Cognitive endurance</span>
+    <span class="ntag">Attention mastery</span>
+  </div>
+</section>
+<div class="int-divider"></div>
+
+
+<!-- ══════════════════════════════════════════
+     07 · CELEBRATE
+══════════════════════════════════════════ -->
+<section class="intention" style="--ic: var(--celebrate)">
+  <div class="int-top">
+    <span class="int-num">07</span>
+    <span class="int-name">Celebrate</span>
+    <span class="int-badge">Higher</span>
+  </div>
+  <div class="int-def">Elevate energy through collective effervescence. Enjoy the full life.</div>
+  <div class="int-essence">Peak moments · Pleasure as fuel · Collective joy · Milestone recognition · The art of living fully</div>
+  <div class="wave-tag" style="background:var(--celebrate)">Theta / Gamma · Dopamine · Oxytocin · Endorphins</div>
+
+  <div class="int-grid">
+    <div class="cell">
+      <div class="cell-label">Habits — Nature & Examples</div>
+      <ul>
+        <li>One meal worth remembering per week <em>weekly</em></li>
+        <li>Going out / party with intention <em>weekly or every weekend</em></li>
+        <li>Marking a personal win out loud <em>weekly</em></li>
+        <li>Trying one new restaurant/bar <em>weekly</em></li>
+        <li>Spontaneous trip / weekend escape <em>monthly</em></li>
+        <li>Concert / live music / DJ set <em>monthly</em></li>
+        <li>Celebrating others' wins <em>weekly</em></li>
+        <li>Toast ritual (no occasion required) <em>weekly</em></li>
+        <li>Rooftop / terrace session at dusk <em>weekly</em></li>
+        <li>Secret spot / underground event <em>monthly</em></li>
+        <li>Dress-up with intention (not for others) <em>weekly</em></li>
+        <li>Morning pleasure ritual (best coffee, sun) <em>daily</em></li>
+      </ul>
+    </div>
+    <div class="cell">
+      <div class="cell-label">City Spots & Events</div>
+      <ul>
+        <li>Underground sets / techno/house nights</li>
+        <li>Secret rooftop events (invite-only)</li>
+        <li>Afterwork gatherings (first round on us)</li>
+        <li>Michelin / tasting menu experiences</li>
+        <li>Live DJ sets (outdoor, summer)</li>
+        <li>Beach parties / sunrise events</li>
+        <li>Private dinner clubs</li>
+        <li>Pop-up champagne bars</li>
+        <li>Year-end celebrations (community)</li>
+        <li>Fashion shows / launch parties</li>
+        <li>Legendary bars (iconic address, rare cocktail)</li>
+        <li>Festival fringe events (small, no crowds)</li>
+      </ul>
+    </div>
+    <div class="cell">
+      <div class="cell-label">Habit Classification Signals</div>
+      <ul>
+        <li>Keywords: celebrate, enjoy, toast, party, mark, win, pleasure, treat, savor, go out, gather</li>
+        <li>Hedonic habits (pleasure is the entire point)</li>
+        <li>Social rituals around positive milestones</li>
+        <li>"Because life is short" reasoning → Celebrate</li>
+        <li>Habits that break routine on purpose</li>
+        <li>Collective joy — other people are part of the habit</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mentor-row">
+    <div class="mentor-cell">
+      <div class="cell-label">Default Mentor</div>
+      <div style="font-family:'Bebas Neue';font-size:24px;color:var(--celebrate);letter-spacing:.12em">Anthony Bourdain</div>
+      <div style="font-size:11px;color:var(--g3);margin-top:4px">Kitchen Confidential · Parts Unknown · The whole damn table</div>
+    </div>
+    <div class="mentor-cell">
+      <div class="cell-label">Mentor Tone Signature</div>
+      <ul>
+        <li>Honest hedonism — zero guilt, no apology</li>
+        <li>Irreverent but never hollow</li>
+        <li>Specific sensory detail (the taste, the room, the light)</li>
+        <li>Rage against the mediocre and the safe</li>
+        <li>Joy as a serious life commitment</li>
+        <li>FOMO-free — being present IS the point</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="push-block">
+    <div class="push-label">Push Message Tone — Bot Examples</div>
+    <div class="push-examples">
+      <div class="push-ex">There's an underground set starting at midnight in the Mouraria. The kind that only exists tonight. You'll sleep next week. Go now. Leave sober if you want. Stay until dawn if you need to.</div>
+      <div class="push-ex">You hit that target. I know you moved straight to the next one. Don't. Mark this. Call one person. Order the good bottle. The Grind will still be there tomorrow.</div>
+      <div class="push-ex">The best meal of your week doesn't have to cost a fortune. It has to matter. Tonight, cook something real. Light a candle. Eat slowly. That's it. That's the whole habit.</div>
+    </div>
+  </div>
+
+  <div class="neuro-strip">
+    <span class="ntag">Dopamine</span>
+    <span class="ntag">Oxytocin</span>
+    <span class="ntag">Endorphins</span>
+    <span class="ntag">Theta waves</span>
+    <span class="ntag">Collective effervescence</span>
+    <span class="ntag">Reward system peak</span>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════ -->
+<footer class="page-footer">
+  <span>TOTEHM · 7 Intentions Reference · Internal</span>
+  <span>v1.0 · 2026</span>
+</footer>
+
+</body>
+</html>
