@@ -42,7 +42,7 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/totehm.html"
+      "destination": "/totehm"
     }
   ]
 }
