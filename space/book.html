@@ -137,7 +137,7 @@ $('wordmark').onclick=()=>{
   if($('read').classList.contains('show')){$('read').classList.remove('show');return;}
   const embedded=window.parent&&window.parent!==window;
   if(embedded){try{window.parent.postMessage({type:'totehm-goto-settings'},'*');return;}catch(e){}}
-  window.location.href='index.html#settings';
+  window.location.href='totehm.html#settings';
 };
 /* Go deeper : ouvre TotehmBot avec deep link vers le chapitre courant */
 $('r-deeper').onclick=()=>{
@@ -162,7 +162,7 @@ function goBack(){
   if($('read').classList.contains('show')){$('read').classList.remove('show');return;}
   const embedded=window.parent&&window.parent!==window;
   if(embedded){try{window.parent.postMessage({type:'totehm-close-book'},'*');return;}catch(e){}}
-  window.location.href='index.html';
+  window.location.href='totehm.html';
 }
 let lock=false;const trig=()=>{if(lock)return;lock=true;setTimeout(()=>lock=false,600);goBack();};
 window.addEventListener('wheel',e=>{if(Math.abs(e.deltaX)>20&&e.deltaX>0)trig();},{passive:true});

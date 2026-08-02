@@ -1304,6 +1304,13 @@ function go(dFloor){
   if(dFloor<0 && floor===0){animateSwap(-1,()=>{floor=1;paint();});}       /* Habits -> Menu */
   else if(dFloor>0 && floor===1){animateSwap(1,()=>{floor=0;paint();});}   /* Menu -> Habits */
 }
+/* Arrivée depuis next_objective.html en pleine page : #settings ouvre
+   directement les Paramètres. En iframe, c'est le postMessage
+   'totehm-goto-settings' qui s'en charge — les deux chemins existent. */
+if(location.hash === '#settings'){
+  setTimeout(()=>{ if(floor!==1){ floor=1; paint(); } }, 60);
+  history.replaceState(null, '', location.pathname);
+}
 /* Petite flèche sous TOTEHM.png : ouvre le menu (même geste que swipe UP depuis Habits) */
 $('menu-arrow').onclick=()=>{if(!busy)go(-1);};
 /* Curseur PlayStation dans les Paramètres */

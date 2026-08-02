@@ -105,6 +105,10 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 [dir="rtl"] #obj-note{margin-left:0;margin-right:calc(var(--rl) + var(--rw) + 16px)}
 [dir="rtl"] #why .w-top{justify-content:flex-start}
 @media(min-width:700px){
+  /* Aligné sur book.html et index.html — mêmes valeurs, au pixel */
+  :root{--rl:25vw;--rw:30px;--band-t:150px;--band-b:164px}
+  #bigT{top:44px}      #bigT svg{height:85px}
+  #wordmark{bottom:44px} #wordmark svg{height:80px}
   [dir="rtl"] .prop .p-add{left:0}
 }
 
@@ -362,7 +366,7 @@ $('wordmark').onclick=()=>{
   if(whyOpen()){closeWhy();return;}
   const embedded=window.parent&&window.parent!==window;
   if(embedded){try{window.parent.postMessage({type:'totehm-goto-settings'},'*');return;}catch(e){}}
-  window.location.href='index.html';
+  window.location.href='totehm.html#settings';
 };
 
 $('obj-input').addEventListener('keydown',async(e)=>{
@@ -391,7 +395,7 @@ function goBack(){
   if(whyOpen()){closeWhy();return;}   /* le rapport se referme d'abord */
   const embedded=window.parent&&window.parent!==window;
   if(embedded){try{window.parent.postMessage({type:'totehm-close-next'},'*');return;}catch(e){}}
-  window.location.href='index.html';
+  window.location.href='totehm.html';
 }
 let lock=false;const trig=()=>{if(lock)return;lock=true;setTimeout(()=>lock=false,600);goBack();};
 let x0=0,y0=0,ax=null;
