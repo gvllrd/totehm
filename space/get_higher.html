@@ -1,78 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>TOTEHM &mdash; Get Higher</title>
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Bebas+Neue&family=Space+Mono&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>TOTEHM — Get Higher</title>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Bebas+Neue&family=Montserrat:ital,wght@1,900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;min-height:100%;background:#000;font-family:'Futura','Jost',sans-serif;font-weight:300}
 :root{
-  --coral:#fbd5ca;--higher-bg:#333366;
+  --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#606060;--bg:#000;
+  --futura-light:'Futura','Jost',sans-serif;--rhythm:1;
   --plus:#36498c;--minus:#743169;
-  --perf:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
 }
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-font-smoothing:antialiased}
 
-#stage{min-height:100vh;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:22px;padding:40px 20px;text-align:center}
+#stage{position:fixed;inset:0;padding:54px 24px 70px;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+.seq-block{position:absolute;width:100%;max-width:540px;text-align:center;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(15px);transition:opacity .65s ease,transform .65s cubic-bezier(.22,.61,.36,1);display:flex;flex-direction:column;align-items:center;gap:calc(15px*var(--rhythm))}
+.seq-block.active{visibility:visible}.seq-block.show{opacity:1;transform:translateY(0);pointer-events:auto}
+.seq-block.instant{transition:none}
+.seq-block.coherence.show .coral-line{animation:settle .9s cubic-bezier(.22,.61,.36,1)}
+@keyframes settle{0%{filter:blur(5px)}100%{filter:blur(0)}}
 
-/* Le logo, comme dans stoner.html */
-#totehm-logo{width:min(30vw,110px);line-height:0;opacity:.9}
-#totehm-logo img{display:block;width:100%;height:auto}
+.t-futura{font-family:var(--futura-light);font-weight:300;font-size:14px;color:var(--g-light);line-height:1.7;letter-spacing:.02em; padding:0 20px;}
+.t-coral{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--coral);line-height:1.7;letter-spacing:.02em; padding:0 20px;}
+.t-mono{font-family:'Space Mono',monospace;font-weight:400;font-size:11px;color:var(--g-dark);line-height:1.5;letter-spacing:.16em;text-transform:uppercase}
 
-/* Le slogan outlined, jamais une webfont */
-#slogan-big{width:min(46vw,190px);line-height:0}
-#slogan-big svg{display:block;width:100%;height:auto;fill:var(--coral)}
-.higher-inline{display:inline-flex;align-items:center;width:54px;vertical-align:middle;
-  line-height:0;margin:0 2px}
+.higher-svg{width:min(28vw,100px);display:inline-block;line-height:0}
+.higher-svg svg{display:block;width:100%;height:auto}
+
+#vhint{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);font-family:'Space Mono',monospace;font-size:14px;color:var(--g-mid);opacity:.6;transition:opacity .5s ease;pointer-events:none;animation:bob 2.2s ease-in-out infinite}
+#vhint.gone{opacity:0}
+@keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-5px)}}
+
+@media(max-width:600px){.higher-svg{width:min(32vw,95px)}}
+@media(prefers-reduced-motion:reduce){.seq-block{transition:opacity .3s ease}.seq-block.coherence.show .coral-line{animation:none}#vhint{animation:none}}
+
+/* --- NOUVEAUX STYLES POUR LA FIN (PAYMENT GATE) ET MENU ALIGNÉ TOTEHM.HTML --- */
+.q-bold{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:var(--coral);
+  line-height:1.4;letter-spacing:.02em;display:flex;align-items:center;
+  justify-content:center;gap:4px;width:100%;max-width:460px; text-transform:uppercase;}
+
+/* Ajout spécifique pour le titre Figher Club (Quantico blanc) */
+.q-title{font-family:'Quantico',sans-serif;font-weight:700;font-size:18px;color:#fff;
+  line-height:1.4;letter-spacing:.06em;display:flex;align-items:center;
+  justify-content:center;gap:4px;width:100%;max-width:460px; text-transform:uppercase; margin-bottom:4px;}
+
+.higher-inline{display:inline-flex;align-items:center;width:54px;vertical-align:middle;line-height:0;margin:0 2px;}
 .higher-inline svg{display:block;width:100%;height:auto;fill:currentColor}
+.higher-inline-p{display:inline-block;width:42px;height:14px;vertical-align:middle;line-height:0;margin:0 2px}
+.higher-inline-p svg{display:block;width:100%;height:100%;fill:currentColor}
 
-/* Quantico Bold coral — comme #step0-text */
-.q-bold{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:var(--coral);
-  line-height:1.7;letter-spacing:.02em;display:flex;flex-wrap:wrap;align-items:center;
-  justify-content:center;gap:4px;width:90%;max-width:460px}
+/* Format texte menu totehm.html */
+.m-info{font-family:var(--futura-light);font-weight:300;font-size:13px;color:#909090;line-height:1.6;margin-bottom:18px; padding:0 24px;}
+.fc-img{width:90%; max-width:320px; aspect-ratio:16/9; object-fit:cover; border-radius:2px; margin-bottom:12px; background:#0a0a0a; border:1px solid #1e1e1e; display:block;}
 
-/* Bebas grayscale — comme #subtitle */
-.bebas{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.1em;
-  color:#808080;line-height:1.4;width:90%;max-width:520px}
+/* Golden Ratio Tiers Slider */
+.tiers-scroll-wrapper { width:100%; max-width:540px; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; scrollbar-width:none; -webkit-mask-image:linear-gradient(to right, transparent, black 8%, black 92%, transparent); mask-image:linear-gradient(to right, transparent, black 8%, black 92%, transparent); margin-bottom: 24px; padding: 4px 0;}
+.tiers-scroll-wrapper::-webkit-scrollbar { display:none; }
+.tiers-scroll-inner { display:flex; gap:12px; padding:0 35px; width:max-content; align-items:center; }
 
-.mono{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;color:#606060}
+.size-btn{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;border:6px solid transparent;padding:6px 12px;transition:color .15s; position:relative; display:inline-flex; flex-direction:column; align-items:center; justify-content:center; min-width:110px; flex-shrink:0;}
+.size-btn.active{color:#fff;border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");border-image-slice:6 fill;border-image-repeat:round}
+.size-btn.done { text-decoration: line-through; opacity: 0.3; }
+.size-btn.future { opacity: 0.4; }
+.tier-lbl { font-size: 10px; opacity: 0.6; margin-bottom: 4px;}
 
-/* Bouton surligné — grammaire .choice-btn */
-.choice-row{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap}
-.choice-btn{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;letter-spacing:0;
-  border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none;
-  color:var(--coral);padding:1px 5px;line-height:1.1;transition:color .15s ease;
-  display:inline-flex;align-items:center;gap:5px}
-.choice-btn:hover{color:#626286}
-.btn-buy{background-color:var(--plus)}
-.btn-buy .higher-inline{width:50px}
-.btn-alt{background-color:var(--minus)}
-.choice-btn:disabled{opacity:.45;cursor:default}
+/* Bouton d'achat style .btn-sig de totehm.html */
+.btn-sig{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-flex; align-items:center; gap:6px; -webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
+.btn-sig.claimed{color:#fff;border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");border-image-slice:6 fill;border-image-repeat:round}
+@media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");border-image-slice:6 fill;border-image-repeat:round}}
+.btn-sig:active{color:#fff;border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");border-image-slice:6 fill;border-image-repeat:round}
 
-/* Lien discret — grammaire .neuro-link */
-.soft-link{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:#b0b0b0;
-  background:none;cursor:pointer;display:inline-block;border:6px solid transparent;
-  padding:0 3px;line-height:1.4;text-decoration:none;transition:color .18s ease;
-  -webkit-tap-highlight-color:transparent}
-.soft-link:hover,.soft-link:focus-visible{color:#fff;border-image-source:var(--perf);
-  border-image-slice:6 fill;border-image-repeat:round}
+.note{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;text-align:center}
+.note.dim{color:#9a9a9a}
 
-.field{background:transparent;border:1px solid #4a4a7a;border-radius:3px;color:var(--coral);
-  font-family:'Space Mono',monospace;font-size:14px;padding:10px 14px;width:min(280px,76vw);
-  text-align:center;outline:none}
-.field:focus{border-color:var(--coral)}
-.err{font-family:'Space Mono',monospace;font-size:12px;color:#f0997b;min-height:16px}
+/* Input style de totehm.html */
+.line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:none;outline:none;border:6px solid transparent;border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:var(--coral);min-width:260px}
+.line-input::placeholder{color:rgba(255,255,255,.33)}
 
-.view{display:none;flex-direction:column;align-items:center;gap:22px;width:100%}
-.view.on{display:flex}
-.rule{width:40px;height:1px;background:#3a3a5a}
 </style>
 </head>
 <body>
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="higher-slogan" viewBox="0 0 600 200">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="higher-slogan" viewBox="0 0 600 200">
       <defs><mask id="hmask"><rect width="600" height="200" fill="white"/>
         <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
         <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
@@ -81,137 +93,227 @@ html,body{width:100%;min-height:100%;background:#000;font-family:'Futura','Jost'
       <rect width="600" height="200" fill="#333366" mask="url(#hmask)"/>
       <text x="50%" y="144.42" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-style="italic" font-size="144" fill="#ffffff">Higher</text>
     </symbol>
-<symbol id="higher-grind" viewBox="0 0 600 200">
-      <defs><mask id="gmask"><rect width="600" height="200" fill="white"/>
-        <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
-        <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
-        <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
-      </mask></defs>
-      <g mask="url(#gmask)">
-        <rect width="600" height="200" fill="#333366"/>
-        <rect x="34.6" y="108" width="364.4" height="48" fill="#2d4186"/>
-        <rect x="399" y="108" width="166.4" height="48" fill="#722f66"/>
-        <g fill="#ffffff" transform="translate(34.32, 144.42)">
-          <path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/>
-          <path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/>
-          <path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/>
-          <path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/>
-          <path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/>
-          <path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/>
-        </g>
-      </g>
-    </symbol>
-<symbol id="higher-love" viewBox="0 0 600 200">
-      <defs><mask id="lvmask"><rect width="600" height="200" fill="white"/>
-        <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
-        <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
-        <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
-      </mask></defs>
-      <g mask="url(#lvmask)">
-        <rect width="600" height="200" fill="#333366"/>
-        <rect x="34.6" y="108" width="364.4" height="48" fill="#2d4186"/>
-        <rect x="399" y="108" width="166.4" height="48" fill="#722f66"/>
-        <g fill="#ffffff" transform="translate(34.32, 144.42)">
-          <path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/>
-          <path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0Z"/>
-          <path transform="translate(115.776,0) scale(0.144,-0.144)" fill="#639922" d="M241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/>
-          <path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/>
-          <path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/>
-          <path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/>
-          <path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/>
-        </g>
-      </g>
-    </symbol></svg>
+  </defs>
+</svg>
 
-<div id="stage">
-
-  <!-- ─── VENTE ─────────────────────────────────────────── -->
-  <div id="v-sell" class="view on">
-    <div id="totehm-logo"><img src="assets/img/totehm_logo.png" alt="Totehm"></div>
-    <div id="slogan-big"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></div>
-
-    <div class="q-bold">Experiment the
-      <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>
-      logo. Ten steps, for life.</div>
-
-    <div class="rule"></div>
-
-    <div class="bebas">AN ARTISTIC AND NEUROLOGICAL EXPERIENCE<br>OF THE MARK &middot; YOUR OWN CHEMISTRY</div>
-
-    <div class="q-bold">It adds
-      <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>
-      to your Totehm.</div>
-    <div class="bebas" style="font-size:13px">HIGHER SEED &middot; HIGHER PLANT &middot; HIGHER TREE</div>
-
-    <div class="rule"></div>
-
-    <div class="choice-row">
-      <button id="btn-buy" class="choice-btn btn-buy">Get
-        <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>
-        17&nbsp;&euro;</button>
-    </div>
-    <div class="mono" id="counter">&mdash;&mdash;&mdash;</div>
-    <div class="bebas" style="font-size:13px">ONE TIME &middot; NEVER A SUBSCRIPTION</div>
-
-    <div class="rule"></div>
-    <a class="soft-link" href="/totehm.html">Open my Totehm &mdash; free</a>
-  </div>
-
-  <!-- ─── EMAIL ─────────────────────────────────────────── -->
-  <div id="v-mail" class="view">
-    <div id="slogan-big" style="width:min(34vw,140px)"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></div>
-    <div class="q-bold">Be a member to run the method.</div>
-    <input id="in-email" class="field" type="email" inputmode="email"
-           autocomplete="email" placeholder="your@email.com">
-    <div class="choice-row"><button id="btn-send" class="choice-btn btn-buy">Send code</button></div>
-    <div class="err" id="err-mail"></div>
-    <button class="soft-link" data-back="sell">Back</button>
-  </div>
-
-  <!-- ─── CODE ──────────────────────────────────────────── -->
-  <div id="v-code" class="view">
-    <div id="slogan-big" style="width:min(34vw,140px)"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></div>
-    <div class="q-bold">Six digits. Check your inbox.</div>
-    <input id="in-otp" class="field" type="text" inputmode="numeric"
-           autocomplete="one-time-code" maxlength="6" placeholder="000000">
-    <div class="choice-row"><button id="btn-verify" class="choice-btn btn-buy">Enter</button></div>
-    <div class="err" id="err-code"></div>
-    <button class="soft-link" data-back="mail">Back</button>
-  </div>
-
-</div>
+<div id="stage"></div>
+<div id="vhint">&darr;</div>
 
 <script type="module">
-/* Même méthode que index.html : module ES, pas UMD.
-   Le build UMD d'esm.sh n'expose PAS window.supabase — la page
-   plantait silencieusement à la première ligne. */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const SB_URL  = 'https://abujjbkbbiumxrokozph.supabase.co';
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
 const GATE_FN = SB_URL + '/functions/v1/stoner-gate';
 const PAY_FN  = SB_URL + '/functions/v1/higher-checkout';
 const METHOD  = '/stoner.html';
-const COHORT  = 777;
 const sb = createClient(SB_URL, SB_ANON);
 
-const V = { sell:document.getElementById('v-sell'),
-            mail:document.getElementById('v-mail'),
-            code:document.getElementById('v-code') };
-function show(v){ Object.keys(V).forEach(k=>V[k].classList.toggle('on', k===v)); }
-document.querySelectorAll('[data-back]').forEach(b=>{
-  b.addEventListener('click',()=>show(b.dataset.back));
-});
+const G=(x)=>({t:"g",x});const C=(x)=>({t:"c",x});const M=(x)=>({t:"m",x});
 
-/* Rareté réelle : compteur serveur, jamais un chiffre en dur. */
+/* MANIFESTE CORE — version générique, fin modifiée avec le Paywall Golden Ratio */
+const SLIDES=[
+  {slot:"reframe",parts:[G("Most people think they're just losing energy."),G("That it was just a bad day.\nThat tomorrow will be better."),C("They're losing years.")]},
+  {slot:"reframe",parts:[G("Not to disease.\nNot to age.\nNot to genetics."),C("To internal stress\nand external stimulation.")]},
+  {slot:"inside",parts:[C("Inside."),G("Anxiety.\nPressure.\nNegativity.\nOverthinking."),C("Excess cortisol."),G("Time becomes heavy.\nDense.\nSlow.")]},
+  {slot:"outside",parts:[C("Outside."),G("Notifications.\nScrolling.\nInstant rewards."),C("Dopamine traps."),G("Time feels infinite.")]},
+  {slot:"fragment",parts:[G("Stress makes the present unbearable.\nStimulation keeps the future perpetually ahead."),G("But neither allows temporal coherence."),G("Scattered attention.\nScattered brainwaves."),C("Scattered reality.")]},
+  {slot:"coherence",parts:[G("When time becomes coherent :"),G("Deep focus lasts.\nDecisions sharpen.\nActions align.\nPerformance follows."),C("Reality becomes the trip you live.")]},
+  {slot:"reclaim",parts:[G("The most valuable resource on Earth\nisn't money.\nIt isn't status.\nIt isn't power."),C("It's time."),G("Stress and external stimulation\nspend it for you."),G("Take it back."),M("Achieve your objectives faster by taking your time")]},
+  {slot:"paywall",parts:[{t:"paywall"}]},
+  {slot:"mail",parts:[{t:"mail"}]},
+  {slot:"code",parts:[{t:"code"}]}
+];
+
+const stage=document.getElementById('stage');
+const vhint=document.getElementById('vhint');
+let curSlide=0,isAnimating=false;const FADE=650;
+
+function buildSlide(slide){
+  const block=document.createElement('div');
+  block.className='seq-block'+(slide.slot==='coherence'?' coherence':'');
+  
+  slide.parts.forEach(p=>{
+    if(p.t==='paywall'){
+      block.innerHTML = `
+        <img src="assets/img/figher_club.png" alt="Figher Club" class="fc-img" onerror="this.style.display='none'">
+        <div class="q-title">FIGHER CLUB</div>
+        <div class="m-info">We aim to gather 11 million individuals operating at peak neurological coherence — mentally, emotionally, and behaviorally — to build and network the <span class="higher-inline-p"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span> way through <span class="higher-inline-p"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span> places and events.</div>
+
+        <div class="tiers-scroll-wrapper" id="tiers-wrapper">
+           <div class="tiers-scroll-inner" id="tiers-container">
+              <!-- Injected by JS -->
+           </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <button id="btn-buy" class="btn-sig claimed">Get <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span> for <span id="dyn-price">--</span> &euro;</button>
+            <div class="note dim" id="counter">&mdash;&mdash;&mdash;</div>
+        </div>
+      `;
+    } else if(p.t==='mail'){
+      block.innerHTML = `
+        <div class="q-bold" style="color:var(--coral);">Be a member to run the method.</div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+            <input id="in-email" class="line-input" type="email" inputmode="email" autocomplete="email" placeholder="your@email.com">
+            <button id="btn-send" class="btn-sig claimed">Send code</button>
+            <div class="note dim" id="err-mail"></div>
+            <button class="btn-sig" id="btn-back-to-sell" style="margin-top:12px;">Back</button>
+        </div>
+      `;
+    } else if(p.t==='code'){
+       block.innerHTML = `
+        <div class="q-bold" style="color:var(--coral);">Six digits. Check your inbox.</div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+            <input id="in-otp" class="line-input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000">
+            <button id="btn-verify" class="btn-sig claimed">Enter</button>
+            <div class="note dim" id="err-code"></div>
+            <button class="btn-sig" id="btn-back-to-mail" style="margin-top:12px;">Back</button>
+        </div>
+       `;
+    } else{
+      const d=document.createElement('div');
+      d.className=p.t==='g'?'t-futura':(p.t==='c'?'t-coral coral-line':'t-mono');
+      d.innerHTML=(p.x||'').replace(/\n/g,'<br>');
+      block.appendChild(d);
+    }
+  });
+  return block;
+}
+
+function showSlide(i,instant){
+  const blocks=stage.querySelectorAll('.seq-block');
+  blocks.forEach((b,idx)=>{
+    if(idx===i){if(instant)b.classList.add('instant');b.classList.add('active');
+      requestAnimationFrame(()=>{b.classList.add('show');if(instant)requestAnimationFrame(()=>b.classList.remove('instant'));});}
+    else{b.classList.remove('show');setTimeout(()=>b.classList.remove('active'),instant?0:FADE);}
+  });
+  curSlide=i;
+  
+  if (curSlide >= 7) {
+     hideHint();
+  }
+}
+
+function goToSlide(i){if(isAnimating||i<0||i>=SLIDES.length||i===curSlide)return;isAnimating=true;showSlide(i,false);setTimeout(()=>isAnimating=false,FADE);}
+function next(){goToSlide(curSlide+1);}
+function prev(){goToSlide(curSlide-1);}
+
+let wheelLock=false;
+window.addEventListener('wheel',e=>{if(wheelLock||Math.abs(e.deltaY)<28 || curSlide >= 7)return;wheelLock=true;setTimeout(()=>wheelLock=false,180);hideHint();e.deltaY>0?next():prev();},{passive:true});
+let y0=0;
+window.addEventListener('touchstart',e=>{y0=e.changedTouches[0].screenY;},{passive:true});
+window.addEventListener('touchend',e=>{if(curSlide >= 7) return; const dy=e.changedTouches[0].screenY-y0;if(Math.abs(dy)<40)return;hideHint();dy<0?next():prev();},{passive:true});
+window.addEventListener('keydown',e=>{if(curSlide >= 7) return; if(e.key==='ArrowDown'){next();hideHint();}else if(e.key==='ArrowUp'){prev();hideHint();}});
+let hg=false;function hideHint(){if(!hg){hg=true;vhint.classList.add('gone');}}
+
+/* build + start */
+stage.innerHTML='';
+SLIDES.forEach(s=>stage.appendChild(buildSlide(s)));
+showSlide(0,true);
+
+/* --- LOGIQUE D'ACHAT ET TIERS (Supabase & Golden Ratio) --- */
+
+/* Paliers en nombre d'or, arrêtés à 5.
+   Le générateur d'origine produisait 24 paliers, le dernier à
+   710 647 € la place — lisible dans le source par n'importe qui.
+   Au-delà de 1 260 membres, on décidera à ce moment-là.
+
+   ⚠️ Cette table est un MIROIR de celle de higher-checkout.
+   Le serveur seul décide du prix réellement facturé. Si tu
+   modifies ici, modifie AUSSI supabase/functions/higher-checkout. */
+const goldenTiers = [
+  { id:"t1", seats:  77, price: 11, limit:   77 },
+  { id:"t2", seats: 125, price: 18, limit:  202 },
+  { id:"t3", seats: 202, price: 29, limit:  404 },
+  { id:"t4", seats: 327, price: 47, limit:  731 },
+  { id:"t5", seats: 529, price: 76, limit: 1260 }
+];
+
+// Inject into DOM
+const container = document.getElementById('tiers-container');
+if (container) {
+    container.innerHTML = goldenTiers.map((t, idx) => `
+        <div class="size-btn future" id="${t.id}">
+            <span class="tier-lbl">${idx === 0 ? '1st' : 'Next'} ${t.seats.toLocaleString('en-US')}</span>
+            <span style="font-size:16px; font-weight:bold; color:inherit;">${t.price.toLocaleString('en-US')} &euro;</span>
+        </div>
+    `).join('');
+}
+
 (async function counter(){
   const el = document.getElementById('counter');
+  const dynPrice = document.getElementById('dyn-price');
+  if(!el || !dynPrice) return;
+  
   try{
     const { data, error } = await sb.rpc('figher_count');
     if(error || data===null) throw error;
-    const left = Math.max(0, COHORT - data);
-    el.textContent = left>0 ? left+' / '+COHORT+' PLACES LEFT'
-                            : 'FIRST 777 CLOSED';
-  }catch(e){ el.textContent = 'FIRST '+COHORT+' AT 17 EUR'; }
+    
+    const count = data;
+    let activePrice = 77;
+    let spotsLeft = 0;
+    let isActiveSet = false;
+    let activeElId = null;
+
+    for(let i=0; i<goldenTiers.length; i++){
+        const t = goldenTiers[i];
+        const tEl = document.getElementById(t.id);
+        if(!tEl) continue;
+
+        if(count >= t.limit){
+            tEl.className = 'size-btn done';
+        } else if(!isActiveSet) {
+            tEl.className = 'size-btn active';
+            spotsLeft = t.limit - count;
+            activePrice = t.price;
+            isActiveSet = true;
+            activeElId = t.id;
+        } else {
+            tEl.className = 'size-btn future';
+        }
+    }
+
+    /* Le prix affiché est confirmé par le serveur. Sans ça, la page
+       peut annoncer 11 € pendant que Stripe facture autre chose —
+       l'acheteur abandonne et on ne sait jamais pourquoi. */
+    dynPrice.textContent = activePrice.toLocaleString('en-US');
+    try{
+      const { data:{ session } } = await sb.auth.getSession();
+      if(session){
+        const r = await fetch(PAY_FN, {
+          method:'POST',
+          headers:{ 'Authorization':'Bearer '+session.access_token,
+                    'Content-Type':'application/json' },
+          body: JSON.stringify({ quote: true })
+        });
+        const q = await r.json();
+        if(q && q.amount) dynPrice.textContent =
+          Math.round(q.amount/100).toLocaleString('en-US');
+      }
+    }catch(e){ /* on garde l'affichage local */ }
+
+    if(spotsLeft > 0){
+        el.textContent = spotsLeft.toLocaleString('en-US') + ' places left at this tier';
+    } else {
+        el.textContent = 'ALL TIERS CLOSED';
+    }
+
+    // Scroll to center the active tier
+    if(activeElId) {
+        setTimeout(() => {
+            const activeEl = document.getElementById(activeElId);
+            const wrapper = document.getElementById('tiers-wrapper');
+            if(activeEl && wrapper) {
+                const offset = activeEl.offsetLeft - (wrapper.clientWidth / 2) + (activeEl.clientWidth / 2);
+                wrapper.scrollTo({ left: offset, behavior: 'smooth' });
+            }
+        }, 100);
+    }
+
+  }catch(e){ 
+    if(dynPrice) dynPrice.textContent = '11';   /* palier 1 */
+    if(el) el.textContent = 'SYSTEM OFFLINE'; 
+  }
 })();
 
 async function hasAccess(){
@@ -226,17 +328,15 @@ async function hasAccess(){
   }catch(e){ return false; }
 }
 
-/* Déjà membre : on ne lui vend pas ce qu'il possède. */
 (async function boot(){
   if(await hasAccess()) window.location.replace(METHOD);
 })();
 
-/* Le prix ne vit pas dans le front : le serveur compte et applique. */
 async function toStripe(){
   const err = document.getElementById('err-code');
   try{
     const { data:{ session } } = await sb.auth.getSession();
-    if(!session){ show('mail'); return; }
+    if(!session){ goToSlide(8); return; } // Slide Mail
     const r = await fetch(PAY_FN, {
       method:'POST',
       headers:{ 'Authorization':'Bearer '+session.access_token,
@@ -253,42 +353,63 @@ async function toStripe(){
   }
 }
 
-document.getElementById('btn-buy').addEventListener('click',async()=>{
-  const { data:{ session } } = await sb.auth.getSession();
-  if(session?.user?.email){ toStripe(); return; }
-  show('mail');
-  setTimeout(()=>document.getElementById('in-email').focus(),50);
-});
+// Attach Event Listeners
+setTimeout(() => {
+  const btnBuy = document.getElementById('btn-buy');
+  if(btnBuy) {
+    btnBuy.addEventListener('click',async()=>{
+      const { data:{ session } } = await sb.auth.getSession();
+      if(session?.user?.email){ toStripe(); return; }
+      goToSlide(8); // Slide Mail
+      setTimeout(()=>document.getElementById('in-email').focus(),50);
+    });
+  }
 
-const btnSend = document.getElementById('btn-send');
-btnSend.addEventListener('click',async()=>{
-  const email = document.getElementById('in-email').value.trim().toLowerCase();
-  const err   = document.getElementById('err-mail');
-  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ err.textContent='Check the address.'; return; }
-  err.textContent=''; btnSend.disabled=true; btnSend.textContent='Sending...';
-  const { error } = await sb.auth.signInWithOtp({ email, options:{ shouldCreateUser:true }});
-  btnSend.disabled=false; btnSend.textContent='Send code';
-  if(error){ err.textContent='Could not send. Try again.'; return; }
-  show('code');
-  setTimeout(()=>document.getElementById('in-otp').focus(),50);
-});
+  const btnSend = document.getElementById('btn-send');
+  if(btnSend) {
+    btnSend.addEventListener('click',async()=>{
+      const email = document.getElementById('in-email').value.trim().toLowerCase();
+      const err   = document.getElementById('err-mail');
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ err.textContent='Check the address.'; return; }
+      err.textContent=''; btnSend.disabled=true; btnSend.textContent='Sending...';
+      const { error } = await sb.auth.signInWithOtp({ email, options:{ shouldCreateUser:true }});
+      btnSend.disabled=false; btnSend.textContent='Send code';
+      if(error){ err.textContent='Could not send. Try again.'; return; }
+      goToSlide(9); // Slide Code
+      setTimeout(()=>document.getElementById('in-otp').focus(),50);
+    });
+  }
 
-const btnVerify = document.getElementById('btn-verify');
-btnVerify.addEventListener('click',async()=>{
-  const email = document.getElementById('in-email').value.trim().toLowerCase();
-  const token = document.getElementById('in-otp').value.trim();
-  const err   = document.getElementById('err-code');
-  if(token.length!==6){ err.textContent='Six digits.'; return; }
-  err.textContent=''; btnVerify.disabled=true; btnVerify.textContent='Checking...';
-  const { error } = await sb.auth.verifyOtp({ email, token, type:'email' });
-  btnVerify.disabled=false; btnVerify.textContent='Enter';
-  if(error){ err.textContent='Wrong or expired code.'; return; }
-  if(await hasAccess()){ window.location.replace(METHOD); return; }
-  toStripe();
-});
+  const btnVerify = document.getElementById('btn-verify');
+  if(btnVerify) {
+    btnVerify.addEventListener('click',async()=>{
+      const email = document.getElementById('in-email').value.trim().toLowerCase();
+      const token = document.getElementById('in-otp').value.trim();
+      const err   = document.getElementById('err-code');
+      if(token.length!==6){ err.textContent='Six digits.'; return; }
+      err.textContent=''; btnVerify.disabled=true; btnVerify.textContent='Checking...';
+      const { error } = await sb.auth.verifyOtp({ email, token, type:'email' });
+      btnVerify.disabled=false; btnVerify.textContent='Enter';
+      if(error){ err.textContent='Wrong or expired code.'; return; }
+      if(await hasAccess()){ window.location.replace(METHOD); return; }
+      toStripe();
+    });
+  }
 
-document.getElementById('in-email').addEventListener('keydown',e=>{ if(e.key==='Enter') btnSend.click(); });
-document.getElementById('in-otp').addEventListener('keydown',e=>{ if(e.key==='Enter') btnVerify.click(); });
+  const btnBackToSell = document.getElementById('btn-back-to-sell');
+  if(btnBackToSell) btnBackToSell.addEventListener('click', () => goToSlide(7));
+
+  const btnBackToMail = document.getElementById('btn-back-to-mail');
+  if(btnBackToMail) btnBackToMail.addEventListener('click', () => goToSlide(8));
+
+  const inEmail = document.getElementById('in-email');
+  if(inEmail) inEmail.addEventListener('keydown',e=>{ if(e.key==='Enter') btnSend.click(); });
+
+  const inOtp = document.getElementById('in-otp');
+  if(inOtp) inOtp.addEventListener('keydown',e=>{ if(e.key==='Enter') btnVerify.click(); });
+
+}, 100);
+
 </script>
 </body>
 </html>
