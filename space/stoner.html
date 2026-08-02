@@ -654,6 +654,8 @@ function toStripe(email){
     await checkAccess();
   }
   if(!ACCESS){ window.location.replace(WALL); return; }
+  currentStep = 0;
+  loadVideoStep(0);
 })();
 /* Les 4 déclencheurs entrent TOUS dans la méthode.
    Avant : zonePlus / btnHighBlue -> goClose, autrement dit
@@ -749,7 +751,8 @@ if(goTotehm) goTotehm.onclick=goToTotehm;
   },{passive:true});
 })();
 
-loadVideoStep(0);
+/* L'init est déclenché par bootGate, jamais avant : sans les URLs
+   signées, loadVideoStep(0) partait sur SIGNED[0] undefined. */
 </script>
 </body>
 </html>

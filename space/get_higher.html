@@ -1,49 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Get Higher &middot; TOTEHM</title>
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Bebas+Neue&family=Space+Mono:wght@400&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>TOTEHM &mdash; Get Higher</title>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Bebas+Neue&family=Space+Mono&display=swap" rel="stylesheet">
 <style>
-:root{--navy:#333366;--coral:#fbd5ca;--dim:#8f8fae;--line:#4a4a7a}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0;background:#000;color:#fff;font-family:'Jost',sans-serif;font-weight:300}
-body{min-height:100vh;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;padding:34px 20px;text-align:center;gap:18px}
-.higher-big{width:min(260px,66vw);line-height:0}
-.higher-big svg{display:block;width:100%;height:auto;fill:var(--coral)}
-.higher-inline{display:inline-block;width:52px;vertical-align:-2px;line-height:0}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;min-height:100%;background:#000;font-family:'Futura','Jost',sans-serif;font-weight:300}
+:root{
+  --coral:#fbd5ca;--higher-bg:#333366;
+  --plus:#36498c;--minus:#743169;
+  --perf:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+}
+
+#stage{min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:22px;padding:40px 20px;text-align:center}
+
+/* Le logo, comme dans stoner.html */
+#totehm-logo{width:min(30vw,110px);line-height:0;opacity:.9}
+#totehm-logo img{display:block;width:100%;height:auto}
+
+/* Le slogan outlined, jamais une webfont */
+#slogan-big{width:min(46vw,190px);line-height:0}
+#slogan-big svg{display:block;width:100%;height:auto;fill:var(--coral)}
+.higher-inline{display:inline-flex;align-items:center;width:54px;vertical-align:middle;
+  line-height:0;margin:0 2px}
 .higher-inline svg{display:block;width:100%;height:auto;fill:currentColor}
-.bebas{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.16em;color:var(--dim)}
-.quan{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;line-height:1.75;
-  color:var(--coral);max-width:340px}
-.quan-b{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;color:var(--coral)}
-.mono{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.1em;color:var(--dim)}
-.rule{width:44px;height:1px;background:var(--line)}
-.tiers{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:360px}
-.tier{border:1px solid var(--line);border-radius:4px;padding:7px 11px;
-  font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--dim)}
-.tier b{color:var(--coral);font-weight:400}
-.btn{background:none;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
-  font-family:'Quantico',sans-serif;font-weight:400;font-size:17px;color:var(--coral);
-  padding:0.02em 0.18em;line-height:1;border-width:6px;border-style:solid;
-  border-image-slice:6 fill;border-image-repeat:round;
-  border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E")}
-.btn:disabled{opacity:.45;cursor:default}
-.price{opacity:.85;margin-left:3px}
-.field{background:transparent;border:1px solid var(--line);border-radius:4px;color:var(--coral);
-  font-family:'Space Mono',monospace;font-size:14px;padding:10px 14px;width:min(300px,78vw);
+
+/* Quantico Bold coral — comme #step0-text */
+.q-bold{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:var(--coral);
+  line-height:1.7;letter-spacing:.02em;display:flex;flex-wrap:wrap;align-items:center;
+  justify-content:center;gap:4px;width:90%;max-width:460px}
+
+/* Bebas grayscale — comme #subtitle */
+.bebas{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.1em;
+  color:#808080;line-height:1.4;width:90%;max-width:520px}
+
+.mono{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;color:#606060}
+
+/* Bouton surligné — grammaire .choice-btn */
+.choice-row{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap}
+.choice-btn{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;letter-spacing:0;
+  border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none;
+  color:var(--coral);padding:1px 5px;line-height:1.1;transition:color .15s ease;
+  display:inline-flex;align-items:center;gap:5px}
+.choice-btn:hover{color:#626286}
+.btn-buy{background-color:var(--plus)}
+.btn-buy .higher-inline{width:50px}
+.btn-alt{background-color:var(--minus)}
+.choice-btn:disabled{opacity:.45;cursor:default}
+
+/* Lien discret — grammaire .neuro-link */
+.soft-link{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:#b0b0b0;
+  background:none;cursor:pointer;display:inline-block;border:6px solid transparent;
+  padding:0 3px;line-height:1.4;text-decoration:none;transition:color .18s ease;
+  -webkit-tap-highlight-color:transparent}
+.soft-link:hover,.soft-link:focus-visible{color:#fff;border-image-source:var(--perf);
+  border-image-slice:6 fill;border-image-repeat:round}
+
+.field{background:transparent;border:1px solid #4a4a7a;border-radius:3px;color:var(--coral);
+  font-family:'Space Mono',monospace;font-size:14px;padding:10px 14px;width:min(280px,76vw);
   text-align:center;outline:none}
 .field:focus{border-color:var(--coral)}
 .err{font-family:'Space Mono',monospace;font-size:12px;color:#f0997b;min-height:16px}
-.view{display:none;flex-direction:column;align-items:center;gap:16px}
+
+.view{display:none;flex-direction:column;align-items:center;gap:22px;width:100%}
 .view.on{display:flex}
-.back{background:none;border:none;color:#5a5a85;font-family:'Bebas Neue',sans-serif;
-  font-size:12px;letter-spacing:.14em;cursor:pointer}
-.free{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:.14em;color:#5a5a85;
-  max-width:320px;line-height:1.6}
-a.free-link{color:#5a5a85;text-decoration:underline}
+.rule{width:40px;height:1px;background:#3a3a5a}
 </style>
 </head>
 <body>
@@ -99,67 +123,70 @@ a.free-link{color:#5a5a85;text-decoration:underline}
       </g>
     </symbol></svg>
 
-<!-- ─── VENTE ─────────────────────────────────────────────── -->
-<div id="v-sell" class="view on">
-  <span class="higher-big"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>
+<div id="stage">
 
-  <div class="bebas">TEN STEPS &middot; ONE LOGO &middot; YOUR OWN CHEMISTRY</div>
-  <div class="rule"></div>
+  <!-- ─── VENTE ─────────────────────────────────────────── -->
+  <div id="v-sell" class="view on">
+    <div id="totehm-logo"><img src="assets/img/totehm_logo.png" alt="Totehm"></div>
+    <div id="slogan-big"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></div>
 
-  <div class="quan">
-    An artistic and neurological experience of the mark.
-    Ten steps you run whenever you want, for the rest of your life.
+    <div class="q-bold">Experiment the
+      <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>
+      logo. Ten steps, for life.</div>
+
+    <div class="rule"></div>
+
+    <div class="bebas">AN ARTISTIC AND NEUROLOGICAL EXPERIENCE<br>OF THE MARK &middot; YOUR OWN CHEMISTRY</div>
+
+    <div class="q-bold">It adds
+      <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>
+      to your Totehm.</div>
+    <div class="bebas" style="font-size:13px">HIGHER SEED &middot; HIGHER PLANT &middot; HIGHER TREE</div>
+
+    <div class="rule"></div>
+
+    <div class="choice-row">
+      <button id="btn-buy" class="choice-btn btn-buy">Get
+        <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>
+        17&nbsp;&euro;</button>
+    </div>
+    <div class="mono" id="counter">&mdash;&mdash;&mdash;</div>
+    <div class="bebas" style="font-size:13px">ONE TIME &middot; NEVER A SUBSCRIPTION</div>
+
+    <div class="rule"></div>
+    <a class="soft-link" href="/index.html">Open my Totehm &mdash; free</a>
   </div>
 
-  <div class="bebas">IT ADDS <span style="color:var(--coral)">HIGHER</span> TO YOUR TOTEHM</div>
-  <div class="tiers">
-    <span class="tier"><b>Higher</b> Seed</span>
-    <span class="tier"><b>Higher</b> Plant</span>
-    <span class="tier"><b>Higher</b> Tree</span>
+  <!-- ─── EMAIL ─────────────────────────────────────────── -->
+  <div id="v-mail" class="view">
+    <div id="slogan-big" style="width:min(34vw,140px)"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></div>
+    <div class="q-bold">Be a member to run the method.</div>
+    <input id="in-email" class="field" type="email" inputmode="email"
+           autocomplete="email" placeholder="your@email.com">
+    <div class="choice-row"><button id="btn-send" class="choice-btn btn-buy">Send code</button></div>
+    <div class="err" id="err-mail"></div>
+    <button class="soft-link" data-back="sell">Back</button>
   </div>
-  <div class="mono">ONE TIME &middot; NEVER A SUBSCRIPTION</div>
 
-  <div class="rule"></div>
-  <button id="btn-buy" class="btn">
-    Get <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>
-    <span class="price">17 &euro;</span>
-  </button>
-  <div class="mono" id="counter">&mdash;&mdash;&mdash;</div>
-
-  <div class="free">
-    YOUR TOTEHM STAYS FREE &mdash; HABITS, THE BOOK, THE LOGO.<br>
-    <a class="free-link" href="/index.html">OPEN MY TOTEHM</a>
+  <!-- ─── CODE ──────────────────────────────────────────── -->
+  <div id="v-code" class="view">
+    <div id="slogan-big" style="width:min(34vw,140px)"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></div>
+    <div class="q-bold">Six digits. Check your inbox.</div>
+    <input id="in-otp" class="field" type="text" inputmode="numeric"
+           autocomplete="one-time-code" maxlength="6" placeholder="000000">
+    <div class="choice-row"><button id="btn-verify" class="choice-btn btn-buy">Enter</button></div>
+    <div class="err" id="err-code"></div>
+    <button class="soft-link" data-back="mail">Back</button>
   </div>
-</div>
 
-<!-- ─── EMAIL ─────────────────────────────────────────────── -->
-<div id="v-mail" class="view">
-  <span class="higher-big" style="width:min(180px,46vw)"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>
-  <div class="quan">Be a member<br>to run the method.</div>
-  <input id="in-email" class="field" type="email" inputmode="email"
-         autocomplete="email" placeholder="your@email.com">
-  <button id="btn-send" class="btn">Send code</button>
-  <div class="err" id="err-mail"></div>
-  <button class="back" data-back="sell">BACK</button>
-</div>
-
-<!-- ─── CODE ──────────────────────────────────────────────── -->
-<div id="v-code" class="view">
-  <span class="higher-big" style="width:min(180px,46vw)"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>
-  <div class="quan">Six digits.<br>Check your inbox.</div>
-  <input id="in-otp" class="field" type="text" inputmode="numeric"
-         autocomplete="one-time-code" maxlength="6" placeholder="000000">
-  <button id="btn-verify" class="btn">Enter</button>
-  <div class="err" id="err-code"></div>
-  <button class="back" data-back="mail">BACK</button>
 </div>
 
 <script src="https://esm.sh/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 const SB_URL  = 'https://abujjbkbbiumxrokozph.supabase.co';
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
-const PAY_FN  = SB_URL + '/functions/v1/higher-checkout';
 const GATE_FN = SB_URL + '/functions/v1/stoner-gate';
+const PAY_FN  = SB_URL + '/functions/v1/higher-checkout';
 const METHOD  = '/stoner.html';
 const COHORT  = 777;
 const sb = window.supabase.createClient(SB_URL, SB_ANON);
@@ -172,19 +199,18 @@ document.querySelectorAll('[data-back]').forEach(b=>{
   b.addEventListener('click',()=>show(b.dataset.back));
 });
 
-/* Le compteur vient du serveur. Une rareté écrite en dur n'est pas une rareté. */
+/* Rareté réelle : compteur serveur, jamais un chiffre en dur. */
 (async function counter(){
   const el = document.getElementById('counter');
   try{
     const { data, error } = await sb.rpc('figher_count');
     if(error || data===null) throw error;
     const left = Math.max(0, COHORT - data);
-    el.textContent = left>0 ? left+' / '+COHORT+' PLACES LEFT AT 17 EUR'
+    el.textContent = left>0 ? left+' / '+COHORT+' PLACES LEFT'
                             : 'FIRST 777 CLOSED';
   }catch(e){ el.textContent = 'FIRST '+COHORT+' AT 17 EUR'; }
 })();
 
-/* Déjà membre ? On ne lui vend pas ce qu'il possède. */
 async function hasAccess(){
   try{
     const { data:{ session } } = await sb.auth.getSession();
@@ -196,12 +222,13 @@ async function hasAccess(){
     return j.access === true;
   }catch(e){ return false; }
 }
+
+/* Déjà membre : on ne lui vend pas ce qu'il possède. */
 (async function boot(){
   if(await hasAccess()) window.location.replace(METHOD);
 })();
 
-/* Le prix n'est plus dans le front. Le serveur compte les places
-   et applique 17 € ou 29 € lui-même. */
+/* Le prix ne vit pas dans le front : le serveur compte et applique. */
 async function toStripe(){
   const err = document.getElementById('err-code');
   try{
