@@ -200,10 +200,8 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 </svg>
 
 <div id="rail" class="sink-el"></div>
-<div id="bigT" class="sink-el"><img src="assets/img/T.png" alt="T"
-  onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/T.png'"></div>
-<div id="wordmark" class="sink-el"><img src="assets/img/TOTEHM.png" alt="TOTEHM"
-  onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/TOTEHM.png'"></div>
+<div id="bigT" class="sink-el"><img src="assets/img/T.png" alt="T"></div>
+<div id="wordmark" class="sink-el"><img src="assets/img/TOTEHM.png" alt="TOTEHM"></div>
 
 <button class="btn-back sink-el" id="back-top">Back in Time</button>
 <button id="conn-bar" class="sink-el" aria-label="member space"><span class="dot"></span>Guest</button>
@@ -280,8 +278,8 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 <div id="tview">
   <button class="btn-back" id="tv-back">Back in Time</button>
   <div class="tv-rail"></div>
-  <div class="tv-T"><img src="assets/img/T.png" alt="T" onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/T.png'"></div>
-  <div class="tv-wm"><img src="assets/img/TOTEHM.png" alt="TOTEHM" onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/TOTEHM.png'"></div>
+  <div class="tv-T"><img src="assets/img/T.png" alt="T"></div>
+  <div class="tv-wm"><img src="assets/img/TOTEHM.png" alt="TOTEHM"></div>
   <div class="tv-name" id="tv-name"></div>
   <div class="tv-list" id="tv-list"></div>
 </div>
@@ -805,7 +803,7 @@ function showStoner(on){
   busy=true;setTimeout(()=>{busy=false;},640);
   $('stoner').classList.toggle('show',on);
   document.body.classList.toggle('liftoff',on);
-  if(on){ save(); if(!stonerLoaded){$('stoner-frame').src='stoner.html?free=1';stonerLoaded=true;} }
+  if(on){ save(); if(!stonerLoaded){$('stoner-frame').src='stoner.html';stonerLoaded=true;} }
 }
 function go(dFloor){
   if(busy||fpOpen()||$('member-window').classList.contains('show')||$('tview').classList.contains('show'))return;

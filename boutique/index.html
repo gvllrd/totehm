@@ -481,7 +481,7 @@ body.gate.entered #fv-status{
         <!-- Étage 1 : bouton [My Totehm] version logo-image centré, avec flèche ↑ au-dessus -->
         <button id="sn-home" class="sn-btn sn-logo" aria-label="Back to my Totehm">
           <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
-          <img src="assets/img/totehm_logo.png" alt="My Totehm" onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/gvllrd/totehm/main/assets/img/totehm_logo.png'">
+          <img src="assets/img/totehm_logo.png" alt="My Totehm">
         </button>
         <!-- Étage 2 : Autobiography by my Totehm© (←) puis My next Objective (→), l'un au-dessus de l'autre, centrés -->
         <div class="sn-row">
@@ -1253,7 +1253,7 @@ function animateSwap(dy,apply){
 let stonerLoaded=false;
 /* Préchargement des 3 iframes dès l'ouverture -> toutes les directions sont instantanées */
 window.addEventListener('DOMContentLoaded',()=>{
-  if(!stonerLoaded){$('stoner-frame').src='stoner.html?free=1';stonerLoaded=true;}
+  if(!stonerLoaded){$('stoner-frame').src='stoner.html';stonerLoaded=true;}
   $('book-frame').src='book.html';
   $('nextobj-frame').src='next_objective.html';
 });
