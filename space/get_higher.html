@@ -329,7 +329,7 @@ async function hasAccess(){
 }
 
 (async function boot(){
-  if(await hasAccess()) window.location.replace(METHOD);
+  if(await hasAccess()) (window.top || window).location.replace(METHOD);
 })();
 
 async function toStripe(){
@@ -344,9 +344,14 @@ async function toStripe(){
       body:'{}'
     });
     const j = await r.json();
-    if(j.already){ window.location.replace(METHOD); return; }
+    if(j.already){ (window.top || window).location.replace(METHOD); return; }
     if(!j.url) throw new Error(j.error || 'no url');
-    window.location.href = j.url;
+    /* get_higher.html peut être affiché DANS l'iframe de totehm.html.
+       Une redirection window.location vers Stripe y est bloquée
+       (Stripe envoie X-Frame-Options) : le navigateur annule en
+       silence, rien dans la console. On sort donc vers le haut. */
+    try{ (window.top || window).location.href = j.url; }
+    catch(e){ window.open(j.url, '_blank'); }
   }catch(e){
     console.error('checkout:', e);
     if(err) err.textContent = 'Could not open checkout. Try again.';
@@ -404,7 +409,7 @@ setTimeout(() => {
       const { error } = await sb.auth.verifyOtp({ email, token, type:'email' });
       btnVerify.disabled=false; btnVerify.textContent='Enter';
       if(error){ err.textContent='Wrong or expired code.'; return; }
-      if(await hasAccess()){ window.location.replace(METHOD); return; }
+      if(await hasAccess()){ (window.top || window).location.replace(METHOD); return; }
       toStripe();
     });
   }
