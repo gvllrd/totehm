@@ -353,11 +353,24 @@ async function toStripe(){
   }
 }
 
+/* Délégation sur document plutôt que getElementById à 100 ms.
+   Si l'élément n'existait pas encore à cet instant, le `if(btnBuy)`
+   avalait l'erreur en silence : bouton visible, aucun écouteur,
+   rien dans la console. La délégation ne peut pas rater. */
+document.addEventListener('click', async (ev) => {
+  const t = ev.target.closest('#btn-buy');
+  if(!t) return;
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session?.user?.email){ toStripe(); return; }
+  goToSlide(8);
+  setTimeout(()=>{ const el=document.getElementById('in-email'); if(el) el.focus(); },50);
+});
+
 // Attach Event Listeners
 setTimeout(() => {
-  const btnBuy = document.getElementById('btn-buy');
-  if(btnBuy) {
-    btnBuy.addEventListener('click',async()=>{
+  const btnBuyLegacy = null;
+  if(btnBuyLegacy) {
+    btnBuyLegacy.addEventListener('click',async()=>{
       const { data:{ session } } = await sb.auth.getSession();
       if(session?.user?.email){ toStripe(); return; }
       goToSlide(8); // Slide Mail
