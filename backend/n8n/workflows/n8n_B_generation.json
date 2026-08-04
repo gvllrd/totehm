@@ -1,0 +1,262 @@
+{
+ "name": "TOTEHM B — Generation",
+ "nodes": [
+  {
+   "parameters": {
+    "httpMethod": "POST",
+    "path": "streetwear-generate",
+    "responseMode": "onReceived",
+    "options": {}
+   },
+   "id": "f1544c8b-78f0-4fc7-a522-f895f0fd4f3b",
+   "name": "Trigger",
+   "type": "n8n-nodes-base.webhook",
+   "typeVersion": 2,
+   "position": [
+    0,
+    0
+   ]
+  },
+  {
+   "parameters": {
+    "method": "GET",
+    "url": "=https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_clothes?id=eq.{{ $json.body.cloth_id }}&select=id,message,name,size,artistic_styles(name),totehm_cloth_support(title)",
+    "options": {},
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "apikey",
+       "value": "={{ $vars.SB_SERVICE_KEY }}"
+      },
+      {
+       "name": "Authorization",
+       "value": "=Bearer {{ $vars.SB_SERVICE_KEY }}"
+      },
+      {
+       "name": "Content-Type",
+       "value": "application/json"
+      },
+      {
+       "name": "Prefer",
+       "value": "return=representation"
+      }
+     ]
+    }
+   },
+   "id": "7a217ee3-faf9-437f-a458-1e46a0e3e156",
+   "name": "Supabase: get cloth",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    220,
+    0
+   ]
+  },
+  {
+   "parameters": {
+    "method": "PATCH",
+    "url": "=https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_clothes?id=eq.{{ $json[0].id }}",
+    "options": {},
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "apikey",
+       "value": "={{ $vars.SB_SERVICE_KEY }}"
+      },
+      {
+       "name": "Authorization",
+       "value": "=Bearer {{ $vars.SB_SERVICE_KEY }}"
+      },
+      {
+       "name": "Content-Type",
+       "value": "application/json"
+      },
+      {
+       "name": "Prefer",
+       "value": "return=representation"
+      }
+     ]
+    },
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "{\"status\":\"generating\"}"
+   },
+   "id": "10d979e9-c6e0-479e-8f9c-bd11fc081d7b",
+   "name": "Supabase: status=generating",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    440,
+    0
+   ]
+  },
+  {
+   "parameters": {
+    "jsCode": "\nconst c = $('Supabase: get cloth').first().json[0];\nconst style = c.artistic_styles?.name || 'abstract';\nreturn [{ json: { cloth_id: c.id, name: c.name,\n  prompt: `original artwork born from this message: \\u00ab${c.message}\\u00bb. artistic style: ${style}. no text, no letters, no words in the image. museum-grade composition, bold, printable on a garment, strong silhouette, high contrast.`\n}}];\n"
+   },
+   "id": "878fdb0b-9b12-4320-9a2d-1fae3e404e1b",
+   "name": "Build prompt",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    660,
+    0
+   ]
+  },
+  {
+   "parameters": {
+    "method": "POST",
+    "url": "https://api.openai.com/v1/images/generations",
+    "options": {},
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "Authorization",
+       "value": "=Bearer {{ $vars.OPENAI_KEY }}"
+      },
+      {
+       "name": "Content-Type",
+       "value": "application/json"
+      }
+     ]
+    },
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify({ model: \"gpt-image-1\", prompt: $json.prompt, n: 3, size: \"1024x1536\", quality: \"medium\" }) }}"
+   },
+   "id": "1e76a454-bdaa-447d-ab3b-a7f787338457",
+   "name": "OpenAI: generate x3",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    880,
+    0
+   ]
+  },
+  {
+   "parameters": {
+    "jsCode": "\nconst cloth = $('Build prompt').first().json;\nreturn $input.first().json.data.map((d, i) => ({ json: { cloth_id: cloth.cloth_id, name: cloth.name, idx: i + 1, b64: d.b64_json } }));\n"
+   },
+   "id": "e7a89736-903f-4005-820b-07524f448540",
+   "name": "Split concepts",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    1100,
+    0
+   ]
+  },
+  {
+   "parameters": {
+    "jsCode": "\n// why: l'api storage attend du binaire, pas du base64\nconst out = [];\nfor (const item of $input.all()) {\n  const { cloth_id, idx, b64, name } = item.json;\n  const path = `${cloth_id}/concept-${idx}.png`;\n  const res = await this.helpers.httpRequest({\n    method: 'POST',\n    url: `https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/streetwear-generations/${path}`,\n    headers: { apikey: $vars.SB_SERVICE_KEY, Authorization: `Bearer ${$vars.SB_SERVICE_KEY}`, 'Content-Type': 'image/png', 'x-upsert': 'true' },\n    body: Buffer.from(b64, 'base64'),\n  });\n  // url signée 7 jours pour telegram + curation\n  const signed = await this.helpers.httpRequest({\n    method: 'POST',\n    url: `https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/sign/streetwear-generations/${path}`,\n    headers: { apikey: $vars.SB_SERVICE_KEY, Authorization: `Bearer ${$vars.SB_SERVICE_KEY}`, 'Content-Type': 'application/json' },\n    body: { expiresIn: 604800 }, json: true,\n  });\n  out.push({ json: { cloth_id, name, idx, storage_path: path, image_url: 'https://abujjbkbbiumxrokozph.supabase.co/storage/v1' + signed.signedURL } });\n}\nreturn out;\n"
+   },
+   "id": "2076d68f-c8ff-4b61-9c8e-003b37c6a292",
+   "name": "Upload concepts to Storage",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    1320,
+    0
+   ]
+  },
+  {
+   "parameters": {
+    "jsCode": "\n// why: un seul node pour insérer les 3 concepts puis envoyer l'album + clavier de curation\nconst items = $input.all().map(i => i.json);\nconst cloth_id = items[0].cloth_id, name = items[0].name;\nconst inserted = await this.helpers.httpRequest({\n  method: 'POST',\n  url: 'https://abujjbkbbiumxrokozph.supabase.co/rest/v1/cloth_concepts',\n  headers: { apikey: $vars.SB_SERVICE_KEY, Authorization: `Bearer ${$vars.SB_SERVICE_KEY}`, 'Content-Type': 'application/json', Prefer: 'return=representation' },\n  body: items.map(i => ({ cloth_id: i.cloth_id, image_url: i.image_url, storage_path: i.storage_path })), json: true,\n});\nawait this.helpers.httpRequest({\n  method: 'PATCH',\n  url: `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_clothes?id=eq.${cloth_id}`,\n  headers: { apikey: $vars.SB_SERVICE_KEY, Authorization: `Bearer ${$vars.SB_SERVICE_KEY}`, 'Content-Type': 'application/json' },\n  body: { status: 'curation' }, json: true,\n});\nconst cloth = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_clothes?id=eq.${cloth_id}&select=message,name,size`,\n  headers: { apikey: $vars.SB_SERVICE_KEY, Authorization: `Bearer ${$vars.SB_SERVICE_KEY}` }, json: true,\n});\nconst tg = `https://api.telegram.org/bot${$vars.TG_TOKEN}`;\nawait this.helpers.httpRequest({ method: 'POST', url: `${tg}/sendMediaGroup`, json: true, body: {\n  chat_id: $vars.TG_CURATOR_CHAT,\n  media: inserted.map((c, i) => ({ type: 'photo', media: c.image_url, caption: i === 0 ? `\\u3010${cloth[0].name}\\u3011 ${cloth[0].size}\\n\\u00ab${cloth[0].message.slice(0, 800)}\\u00bb` : undefined })),\n}});\nawait this.helpers.httpRequest({ method: 'POST', url: `${tg}/sendMessage`, json: true, body: {\n  chat_id: $vars.TG_CURATOR_CHAT,\n  text: `curate \\u3010${cloth[0].name}\\u3011`,\n  reply_markup: { inline_keyboard: [\n    inserted.map((c, i) => ({ text: String(i + 1), callback_data: `pick:${c.id}` })),\n    [{ text: 'REGEN', callback_data: `regen:${cloth_id}` }],\n  ]},\n}});\nreturn [{ json: { ok: true, cloth_id } }];\n"
+   },
+   "id": "fbb22a8d-25bb-4ee9-b5f9-32a7698e713b",
+   "name": "Insert concepts + Telegram",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    1540,
+    0
+   ]
+  }
+ ],
+ "connections": {
+  "Trigger": {
+   "main": [
+    [
+     {
+      "node": "Supabase: get cloth",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Supabase: get cloth": {
+   "main": [
+    [
+     {
+      "node": "Supabase: status=generating",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Supabase: status=generating": {
+   "main": [
+    [
+     {
+      "node": "Build prompt",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Build prompt": {
+   "main": [
+    [
+     {
+      "node": "OpenAI: generate x3",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "OpenAI: generate x3": {
+   "main": [
+    [
+     {
+      "node": "Split concepts",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Split concepts": {
+   "main": [
+    [
+     {
+      "node": "Upload concepts to Storage",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Upload concepts to Storage": {
+   "main": [
+    [
+     {
+      "node": "Insert concepts + Telegram",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "settings": {
+  "executionOrder": "v1"
+ },
+ "active": false
+}

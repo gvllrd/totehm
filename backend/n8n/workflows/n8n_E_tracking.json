@@ -1,0 +1,51 @@
+{
+ "name": "TOTEHM E — Tracking",
+ "nodes": [
+  {
+   "parameters": {
+    "httpMethod": "POST",
+    "path": "printful-events",
+    "responseMode": "onReceived",
+    "options": {}
+   },
+   "id": "3d0f7c0a-cde1-4534-b0af-34d75a33774b",
+   "name": "Printful Webhook",
+   "type": "n8n-nodes-base.webhook",
+   "typeVersion": 2,
+   "position": [
+    0,
+    0
+   ]
+  },
+  {
+   "parameters": {
+    "jsCode": "\nconst ev = $input.first().json.body;\nif (ev.type !== 'package_shipped') return [];\nconst ship = ev.data.shipment, orderExt = ev.data.order.external_id;\nconst sbh = { apikey: $vars.SB_SERVICE_KEY, Authorization: `Bearer ${$vars.SB_SERVICE_KEY}`, 'Content-Type': 'application/json', Prefer: 'return=representation' };\nconst updated = await this.helpers.httpRequest({ method: 'PATCH',\n  url: `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_clothes?id=eq.${orderExt}`,\n  headers: sbh, json: true,\n  body: { status: 'shipped', tracking_number: ship.tracking_number, tracking_url: ship.tracking_url } });\nconst c = updated[0];\nawait this.helpers.httpRequest({ method: 'POST', url: 'https://api.resend.com/emails', json: true,\n  headers: { Authorization: `Bearer ${$vars.RESEND_KEY}`, 'Content-Type': 'application/json' },\n  body: {\n    from: 'TOTEHM <totehm@higher.boutique>', to: [c.email],\n    subject: `\\u3010${c.name}\\u3011 has left the atelier.`,\n    html: `<p>Your Totehm Cloth \\u3010${c.name}\\u3011 is on its way.</p><p><a href=\"${c.tracking_url}\">Track it</a></p><p>Do not open it like a package. Open it like a painting.</p><p>\\u2014 TOTEHM</p>`,\n  }});\nreturn [{ json: { ok: true } }];\n"
+   },
+   "id": "0e42bd4e-bc34-4642-9422-abe26c0faf3d",
+   "name": "Ship + Resend",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    220,
+    0
+   ]
+  }
+ ],
+ "connections": {
+  "Printful Webhook": {
+   "main": [
+    [
+     {
+      "node": "Ship + Resend",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "settings": {
+  "executionOrder": "v1"
+ },
+ "active": false
+}

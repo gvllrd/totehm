@@ -1,0 +1,51 @@
+{
+ "name": "TOTEHM C — Curation",
+ "nodes": [
+  {
+   "parameters": {
+    "httpMethod": "POST",
+    "path": "curation",
+    "responseMode": "onReceived",
+    "options": {}
+   },
+   "id": "7836d7ba-ce6a-4abb-bb0a-c97d7988c7a0",
+   "name": "Telegram Callback",
+   "type": "n8n-nodes-base.webhook",
+   "typeVersion": 2,
+   "position": [
+    0,
+    0
+   ]
+  },
+  {
+   "parameters": {
+    "jsCode": "\n// why: un tap du curateur pilote tout : pick -> upscale -> compose -> printful ; regen -> nouvelle génération\nconst cb = $input.first().json.body.callback_query;\nif (!cb) return [];\nconst [action, id] = cb.data.split(':');\nconst tg = `https://api.telegram.org/bot${$vars.TG_TOKEN}`;\nconst sbh = { apikey: $vars.SB_SERVICE_KEY, Authorization: `Bearer ${$vars.SB_SERVICE_KEY}`, 'Content-Type': 'application/json' };\nif (action === 'regen') {\n  await this.helpers.httpRequest({ method: 'POST', url: `${$vars.N8N_BASE_URL}/webhook/streetwear-generate`, json: true, body: { cloth_id: id } });\n  await this.helpers.httpRequest({ method: 'POST', url: `${tg}/answerCallbackQuery`, json: true, body: { callback_query_id: cb.id, text: 'regenerating\\u2026' } });\n  return [];\n}\n// pick\nconst concept = (await this.helpers.httpRequest({ method: 'GET', url: `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/cloth_concepts?id=eq.${id}&select=*`, headers: sbh, json: true }))[0];\nawait this.helpers.httpRequest({ method: 'PATCH', url: `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/cloth_concepts?id=eq.${id}`, headers: sbh, json: true, body: { selected: true } });\n// upscale via replicate real-esrgan x4\nconst pred = await this.helpers.httpRequest({ method: 'POST', url: 'https://api.replicate.com/v1/predictions', json: true,\n  headers: { Authorization: `Bearer ${$vars.REPLICATE_KEY}`, 'Content-Type': 'application/json', Prefer: 'wait=60' },\n  body: { version: $vars.REPLICATE_ESRGAN_VERSION, input: { image: concept.image_url, scale: 4 } } });\nconst upscaled = Array.isArray(pred.output) ? pred.output[0] : pred.output;\n// compose : artwork + logo + totehm cloth name (edge function)\nconst composed = await this.helpers.httpRequest({ method: 'POST',\n  url: 'https://abujjbkbbiumxrokozph.supabase.co/functions/v1/compose-artwork', json: true,\n  headers: { Authorization: `Bearer ${$vars.SB_SERVICE_KEY}`, 'Content-Type': 'application/json' },\n  body: { cloth_id: concept.cloth_id, source_url: upscaled } });\nawait this.helpers.httpRequest({ method: 'PATCH', url: `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_clothes?id=eq.${concept.cloth_id}`, headers: sbh, json: true,\n  body: { status: 'approved', artwork_final_url: composed.final_url, artwork_print_url: composed.print_url } });\nawait this.helpers.httpRequest({ method: 'POST', url: `${$vars.N8N_BASE_URL}/webhook/streetwear-printful`, json: true, body: { cloth_id: concept.cloth_id } });\nawait this.helpers.httpRequest({ method: 'POST', url: `${tg}/answerCallbackQuery`, json: true, body: { callback_query_id: cb.id, text: '\\u2713 encoded' } });\nreturn [{ json: { ok: true } }];\n"
+   },
+   "id": "3ad62b70-93fe-4a0e-bb06-deae6eccf2c1",
+   "name": "Route + Process",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    220,
+    0
+   ]
+  }
+ ],
+ "connections": {
+  "Telegram Callback": {
+   "main": [
+    [
+     {
+      "node": "Route + Process",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "settings": {
+  "executionOrder": "v1"
+ },
+ "active": false
+}

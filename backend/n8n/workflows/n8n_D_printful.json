@@ -1,0 +1,51 @@
+{
+ "name": "TOTEHM D — Printful",
+ "nodes": [
+  {
+   "parameters": {
+    "httpMethod": "POST",
+    "path": "streetwear-printful",
+    "responseMode": "onReceived",
+    "options": {}
+   },
+   "id": "789b6990-1f27-4038-a9f7-c49bf9422840",
+   "name": "Trigger",
+   "type": "n8n-nodes-base.webhook",
+   "typeVersion": 2,
+   "position": [
+    0,
+    0
+   ]
+  },
+  {
+   "parameters": {
+    "jsCode": "\n// why: confirm=false d'abord — tu valides les 3 premières en dashboard, puis tu passes $vars.PRINTFUL_CONFIRM à true\nconst sbh = { apikey: $vars.SB_SERVICE_KEY, Authorization: `Bearer ${$vars.SB_SERVICE_KEY}`, 'Content-Type': 'application/json' };\nconst cloth = (await this.helpers.httpRequest({ method: 'GET',\n  url: `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_clothes?id=eq.${$input.first().json.body.cloth_id}&select=*`,\n  headers: sbh, json: true }))[0];\nconst variantMap = JSON.parse($vars.PRINTFUL_VARIANT_MAP); // ex: {\"default\":{\"S\":4011,\"M\":4012,\"L\":4013,\"XL\":4014}}\nconst variants = variantMap[cloth.garment_id] || variantMap['default'];\nconst ship = cloth.shipping?.address || cloth.shipping || {};\nconst order = await this.helpers.httpRequest({ method: 'POST',\n  url: `https://api.printful.com/orders?confirm=${$vars.PRINTFUL_CONFIRM === 'true'}`,\n  headers: { Authorization: `Bearer ${$vars.PRINTFUL_KEY}`, 'Content-Type': 'application/json' }, json: true,\n  body: {\n    external_id: cloth.id,\n    recipient: {\n      name: cloth.shipping?.name || 'Totehm Member',\n      address1: ship.line1, address2: ship.line2 || '',\n      city: ship.city, state_code: ship.state || '', country_code: ship.country,\n      zip: ship.postal_code, email: cloth.email,\n    },\n    items: [{ variant_id: variants[cloth.size], quantity: 1, files: [{ type: 'default', url: cloth.artwork_print_url }] }],\n  }});\nawait this.helpers.httpRequest({ method: 'PATCH',\n  url: `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_clothes?id=eq.${cloth.id}`,\n  headers: sbh, json: true, body: { status: 'production', printful_order_id: String(order.result.id) } });\nreturn [{ json: { printful_order_id: order.result.id } }];\n"
+   },
+   "id": "74456dc7-3359-4a59-8e99-5538b2170b16",
+   "name": "Create Printful order",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    220,
+    0
+   ]
+  }
+ ],
+ "connections": {
+  "Trigger": {
+   "main": [
+    [
+     {
+      "node": "Create Printful order",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "settings": {
+  "executionOrder": "v1"
+ },
+ "active": false
+}

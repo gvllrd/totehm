@@ -1,0 +1,183 @@
+{
+ "name": "TOTEHM A — Payment",
+ "nodes": [
+  {
+   "parameters": {
+    "httpMethod": "POST",
+    "path": "stripe-streetwear",
+    "responseMode": "onReceived",
+    "options": {
+     "rawBody": true
+    }
+   },
+   "id": "0add76a4-112a-4597-983f-2e29e37eae48",
+   "name": "Stripe Webhook",
+   "type": "n8n-nodes-base.webhook",
+   "typeVersion": 2,
+   "position": [
+    0,
+    0
+   ]
+  },
+  {
+   "parameters": {
+    "jsCode": "\n// why: sans vérif de signature, n'importe qui peut marquer une commande payée\nconst crypto = require('crypto');\nconst sig = $input.first().json.headers['stripe-signature'] || '';\nconst raw = $input.first().binary?.data ? Buffer.from($input.first().binary.data.data, 'base64').toString('utf8') : JSON.stringify($input.first().json.body);\nconst parts = Object.fromEntries(sig.split(',').map(s => s.split('=')));\nconst signed = parts.t + '.' + raw;\nconst expected = crypto.createHmac('sha256', $vars.STRIPE_WHSEC).update(signed).digest('hex');\nif (expected !== parts.v1) throw new Error('bad signature');\nconst event = JSON.parse(raw);\nif (event.type !== 'checkout.session.completed') return [];\nconst s = event.data.object;\nreturn [{ json: {\n  cloth_id: s.metadata.cloth_id,\n  payment_intent: s.payment_intent,\n  email: s.customer_details?.email || null,\n  shipping: s.shipping_details || s.customer_details || {}\n}}];\n"
+   },
+   "id": "24b5c693-8a98-4e15-93f1-36a4ad969224",
+   "name": "Verify Signature + Extract",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    220,
+    0
+   ]
+  },
+  {
+   "parameters": {
+    "method": "PATCH",
+    "url": "=https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_clothes?id=eq.{{ $json.cloth_id }}&status=eq.draft",
+    "options": {},
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "apikey",
+       "value": "={{ $vars.SB_SERVICE_KEY }}"
+      },
+      {
+       "name": "Authorization",
+       "value": "=Bearer {{ $vars.SB_SERVICE_KEY }}"
+      },
+      {
+       "name": "Content-Type",
+       "value": "application/json"
+      },
+      {
+       "name": "Prefer",
+       "value": "return=representation"
+      }
+     ]
+    },
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify({ status: \"paid\", paid_at: new Date().toISOString(), stripe_payment_intent: $json.payment_intent, email: $json.email, shipping: $json.shipping }) }}"
+   },
+   "id": "bcae49a8-ffed-4650-b04f-342644d1d62c",
+   "name": "Supabase: mark paid",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    440,
+    0
+   ]
+  },
+  {
+   "parameters": {
+    "method": "POST",
+    "url": "={{ $vars.N8N_BASE_URL }}/webhook/streetwear-generate",
+    "options": {},
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "Content-Type",
+       "value": "application/json"
+      }
+     ]
+    },
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify({ cloth_id: $('Verify Signature + Extract').first().json.cloth_id }) }}"
+   },
+   "id": "dc187d28-be54-498b-914b-cdfb3928def1",
+   "name": "Trigger Generation (WF B)",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    660,
+    0
+   ]
+  },
+  {
+   "parameters": {
+    "method": "POST",
+    "url": "https://api.resend.com/emails",
+    "options": {},
+    "sendHeaders": true,
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "Authorization",
+       "value": "=Bearer {{ $vars.RESEND_KEY }}"
+      },
+      {
+       "name": "Content-Type",
+       "value": "application/json"
+      }
+     ]
+    },
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify({ from: \"TOTEHM <totehm@higher.boutique>\", to: [$('Verify Signature + Extract').first().json.email], subject: \"Your message is being encoded.\", html: \"<p>Your Totehm Cloth is born. Our artists are now interpreting your message.</p><p>You will not see the artwork before it lands. That is the point.</p><p>— TOTEHM</p>\" }) }}"
+   },
+   "id": "db062957-7375-4694-9b5d-634867e4d70c",
+   "name": "Resend: confirmation",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    880,
+    0
+   ]
+  }
+ ],
+ "connections": {
+  "Stripe Webhook": {
+   "main": [
+    [
+     {
+      "node": "Verify Signature + Extract",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Verify Signature + Extract": {
+   "main": [
+    [
+     {
+      "node": "Supabase: mark paid",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Supabase: mark paid": {
+   "main": [
+    [
+     {
+      "node": "Trigger Generation (WF B)",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Trigger Generation (WF B)": {
+   "main": [
+    [
+     {
+      "node": "Resend: confirmation",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "settings": {
+  "executionOrder": "v1"
+ },
+ "active": false
+}
