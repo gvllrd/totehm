@@ -54,3 +54,4 @@ backend/n8n/.env
 backend/**/.env
 backend/supabase/.temp/
 /supabase/
+/supabase/
