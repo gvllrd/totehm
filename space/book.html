@@ -8,6 +8,8 @@
 <style>
 :root{
   --bg:#743169; /* le passé — rouge-violet de la charte */
+  --logo-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23743169'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000000'/%3E%3C/svg%3E");
+  --logo-navy:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000000'/%3E%3C/svg%3E");
   --rl:46px;--rw:18px;--band-t:104px;--band-b:116px;
   --g-light:#e0e0e0;--g-mid:#909090;
   --futura:'Jost',sans-serif;
@@ -51,23 +53,63 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 #read .r-close:hover{color:#fff}
 
 /* ══ DESKTOP : tout agrandi (~1.6x), cohérent avec index.html ══ */
+
+.side-nav{display:none}
+
+/* ══ DESKTOP : le même carré que totehm.html, à la couleur près ═════════════
+   Strictement le montage de next_objective.html, en rouge-violet et en
+   miroir. Embarqué, le parent dessine et colore déjà le carré : on ne
+   recalcule que la géométrie sur 100vw, qui vaut ici sa padding box, soit
+   --stage * .8768 — d'où les facteurs du parent divisés par ce rapport.
+   Ouvert directement par URL, personne ne dessine : on s'en charge.
+   La boîte de retour est à DROITE, parce que le livre se tient à gauche
+   du Totehm : on revient toujours vers le centre.
+   ══════════════════════════════════════════════════════════════════════════ */
+@media(min-aspect-ratio:9/10){
+  html.embedded{
+    --rl:max(38px,calc(100vw * .0821));
+    --rw:max(16px,calc(100vw * .0388));
+  }
+  html.embedded #rail{top:30px;bottom:30px}
+}
+
 @media(min-width:700px){
-  :root{--rl:25vw;--rw:30px;--band-t:150px;--band-b:164px}
-  #bigT{top:44px} #bigT svg{height:85px}
-  #wordmark{bottom:44px} #wordmark svg{height:80px}
-  .chap .c-title{font-size:19px}
-  .chap .c-date{font-size:11px}
-  .chap .chap-x{font-size:22px;right:24px}
-  .chap .body{padding-right:58px}
-  #read .r-title{font-size:20px}
-  #read .r-body{font-size:18px;line-height:1.95}
-  #read .r-deeper{font-size:17px;padding:8px 20px}
-  #read .r-close{font-size:16px}
-  #empty{font-size:22px}
+  html:not(.embedded){
+    --stage:min(92vh,78vw,640px);
+    --pad:calc(var(--stage) * .0616);
+    --rl:max(38px,calc(var(--stage) * .072));
+    --rw:max(16px,calc(var(--stage) * .034));
+    --side:max(34px,calc(var(--stage) * .058));
+    --side-gap:calc(var(--stage) * .05);
+  }
+  html:not(.embedded),html:not(.embedded) body{background:#000}
+  html:not(.embedded) #stage{
+    position:fixed;left:50%;top:50%;
+    transform:translate(-50%,-50%);
+    width:var(--stage);height:var(--stage);
+    border:var(--pad) solid transparent;
+    background:var(--logo-rep) 0 0/100% 100% no-repeat border-box;
+    overflow:hidden;z-index:10;
+  }
+  html:not(.embedded) #rail{top:30px;bottom:30px}
+  html:not(.embedded) #side-home{
+    display:flex;align-items:center;justify-content:center;
+    position:fixed;top:50%;transform:translateY(-50%);
+    left:calc(50% + var(--stage) / 2 + var(--side-gap));
+    width:var(--side);height:var(--side);
+    background:var(--logo-navy) 0 0/100% 100% no-repeat;
+    border:none;cursor:pointer;padding:0;z-index:12;
+    -webkit-tap-highlight-color:transparent;transition:opacity .2s}
+  html:not(.embedded) #side-home:hover{opacity:.72}
+  html:not(.embedded) #side-home svg{width:11px;height:19px;color:#fff;
+    fill:none;stroke:currentColor;stroke-width:1.4;
+    stroke-linecap:round;stroke-linejoin:round}
 }
 </style>
+<script>if(window.parent&&window.parent!==window)document.documentElement.classList.add('embedded');</script>
 </head>
 <body>
+<div id="stage">
 
 <div id="rail"></div>
 
@@ -85,6 +127,8 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
   <button class="r-deeper" id="r-deeper">Go deeper</button>
 </div>
 
+</div><!-- /#stage -->
+<button class="side-nav" id="side-home" type="button" aria-label="Back to my Totehm"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M3 2 L11 12 L3 22"/></svg></button>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
@@ -164,6 +208,7 @@ function goBack(){
   if(embedded){try{window.parent.postMessage({type:'totehm-close-book'},'*');return;}catch(e){}}
   window.location.href='totehm.html';
 }
+$('side-home').onclick=()=>goBack();
 let lock=false;const trig=()=>{if(lock)return;lock=true;setTimeout(()=>lock=false,600);goBack();};
 window.addEventListener('wheel',e=>{if(Math.abs(e.deltaX)>20&&e.deltaX>0)trig();},{passive:true});
 let x0=0,y0=0,ax=null;

@@ -10,8 +10,10 @@
   --bg:#36498C; /* le futur — le ciel, la direction */
   --rl:46px;--rw:18px;--band-t:104px;--band-b:116px;
   --g-light:#e0e0e0;
-  --fight:#E24B4A;--flow:#BA7517;--enrich:#EF9F27;--love:#639922;--express:#1D9E75;--focus:#378ADD;--celebrate:#7F77DD;
+  --fight:#E24B4A;--flow:#e48b31;--enrich:#fcbe21;--love:#639922;--express:#1D9E75;--focus:#378ADD;--celebrate:#7F77DD;
   --futura:'Jost',sans-serif;
+  --logo-navy:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000000'/%3E%3C/svg%3E");
+  --logo-blue:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%2336498C'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000000'/%3E%3C/svg%3E");
   --tile-perf:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath fill='%23ffffff' fill-opacity='.18' fill-rule='evenodd' d='M0 0h24v24H0Z M9 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0 M9 24a3 3 0 1 0 6 0a3 3 0 1 0-6 0 M-3 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0 M21 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0'/%3E%3C/svg%3E");
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -73,8 +75,9 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 #why.show .w-veil{opacity:1}
 #why .w-sheet{position:absolute;left:0;right:0;bottom:0;max-height:86vh;max-height:86dvh;background:var(--bg);
   display:flex;flex-direction:column;transform:translateY(101%);
-  transition:transform .36s cubic-bezier(.22,.61,.36,1);box-shadow:0 -18px 44px rgba(0,0,0,.4)}
-#why.show .w-sheet{transform:none}
+  transition:transform .36s cubic-bezier(.22,.61,.36,1),box-shadow .36s ease;
+  box-shadow:0 0 0 rgba(0,0,0,0)}
+#why.show .w-sheet{transform:none;box-shadow:0 -18px 44px rgba(0,0,0,.4)}
 /* Le Close occupe sa propre rangée : plus aucun recouvrement possible
    avec le titre, quelle que soit sa longueur. */
 #why .w-top{display:flex;justify-content:flex-end;padding:10px 14px 0;flex-shrink:0}
@@ -104,42 +107,74 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 [dir="rtl"] #obj-input{margin-left:34px;margin-right:calc(var(--rl) + var(--rw) + 16px)}
 [dir="rtl"] #obj-note{margin-left:0;margin-right:calc(var(--rl) + var(--rw) + 16px)}
 [dir="rtl"] #why .w-top{justify-content:flex-start}
-@media(min-width:700px){
-  /* Aligné sur book.html et index.html — mêmes valeurs, au pixel */
-  :root{--rl:25vw;--rw:30px;--band-t:150px;--band-b:164px}
-  #bigT{top:44px}      #bigT svg{height:85px}
-  #wordmark{bottom:44px} #wordmark svg{height:80px}
-  [dir="rtl"] .prop .p-add{left:0}
+
+.side-nav{display:none}
+
+/* ══ DESKTOP : le même carré que totehm.html, à la couleur près ═════════════
+   Deux situations, et le mobile n'entre dans aucune des deux.
+
+   Embarqué en iframe dans le Totehm : le parent dessine déjà le carré et le
+   passe en bleu clair. On ne repeint donc rien — on se contente de recalculer
+   la géométrie sur 100vw, qui vaut ici exactement la padding box du parent,
+   soit --stage * .8768. D'où les facteurs du parent divisés par .8768 :
+   .072/.8768 = .0821 et .034/.8768 = .0388. Le seuil est un rapport d'aspect
+   et non une largeur : l'iframe est carrée quand le parent est en mode
+   desktop, portrait quand il est en mode mobile.
+
+   Ouvert directement par URL : personne ne dessine le carré, on le fait.
+   ══════════════════════════════════════════════════════════════════════════ */
+@media(min-aspect-ratio:9/10){
+  html.embedded{
+    --rl:max(38px,calc(100vw * .0821));
+    --rw:max(16px,calc(100vw * .0388));
+  }
+  html.embedded #rail{top:30px;bottom:30px}
+  html.embedded .prop .h-freq{display:none}
 }
 
-/* ══ DESKTOP : tout agrandi (~1.6x), cohérent avec index.html ══ */
 @media(min-width:700px){
-  :root{--rl:25vw;--rw:30px;--band-t:150px;--band-b:164px}
-  #bigT{top:44px} #bigT svg{height:85px}
-  #wordmark{bottom:44px} #wordmark svg{height:80px}
-  #obj-input{font-size:19px}
-  #obj-note{font-size:11px}
-  .prop{padding-right:46px}
-  .prop .p-text{font-size:19px}
-  .prop .h-freq{font-size:15px}
-  .prop .h-T .tglyph{height:18px}
-  .prop .tick{top:11px;height:6px}
-  .prop .meta{top:3px}
-  .prop .p-add{font-size:50px;padding:0 12px;top:-6px}
-  .prop .p-why{font-size:14px}
-  .lvl{font-size:11px}
-  #why .w-title{font-size:20px}
-  #why .w-sub{font-size:11px}
-  #why .w-sec{font-size:11px}
-  #why .w-p{font-size:17px}
-  #why .w-src{font-size:16px}
-  #why .w-ref{font-size:12px}
-  #why .w-sheet{left:50%;transform:translate(-50%,101%);width:min(680px,100%)}
-  #why.show .w-sheet{transform:translateX(-50%)}
+  html:not(.embedded){
+    --stage:min(92vh,78vw,640px);
+    --pad:calc(var(--stage) * .0616);
+    --rl:max(38px,calc(var(--stage) * .072));
+    --rw:max(16px,calc(var(--stage) * .034));
+    --side:max(34px,calc(var(--stage) * .058));
+    --side-gap:calc(var(--stage) * .05);
+  }
+  html:not(.embedded),html:not(.embedded) body{background:#000}
+  html:not(.embedded) #stage{
+    position:fixed;left:50%;top:50%;
+    transform:translate(-50%,-50%);
+    width:var(--stage);height:var(--stage);
+    border:var(--pad) solid transparent;
+    background:var(--logo-blue) 0 0/100% 100% no-repeat border-box;
+    overflow:hidden;z-index:10;
+  }
+  html:not(.embedded) #rail{top:30px;bottom:30px}
+  html:not(.embedded) .prop .h-freq{display:none}
+
+  /* Ouvert en direct, personne ne dessine les boîtes de navigation autour du
+     carré : on pose la seule qui ait un sens ici, le retour au Totehm. Elle
+     est à gauche parce que le générateur se tient à droite du Totehm.
+     Embarqué, c'est le parent qui l'affiche — d'où le :not(.embedded). */
+  html:not(.embedded) #side-home{
+    display:flex;align-items:center;justify-content:center;
+    position:fixed;top:50%;transform:translateY(-50%);
+    right:calc(50% + var(--stage) / 2 + var(--side-gap));
+    width:var(--side);height:var(--side);
+    background:var(--logo-navy) 0 0/100% 100% no-repeat;
+    border:none;cursor:pointer;padding:0;z-index:12;
+    -webkit-tap-highlight-color:transparent;transition:opacity .2s}
+  html:not(.embedded) #side-home:hover{opacity:.72}
+  html:not(.embedded) #side-home svg{width:11px;height:19px;color:#fff;
+    fill:none;stroke:currentColor;stroke-width:1.4;
+    stroke-linecap:round;stroke-linejoin:round}
 }
 </style>
+<script>if(window.parent&&window.parent!==window)document.documentElement.classList.add('embedded');</script>
 </head>
 <body>
+<div id="stage">
 
 <div id="rail"></div>
 
@@ -156,6 +191,8 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 </div>
 
 <!-- Rapport de validation complet — ouvert par [Why], jamais visible dans la liste -->
+</div><!-- /#stage -->
+<button class="side-nav" id="side-home" type="button" aria-label="Back to my Totehm"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></button>
 <div id="why" aria-hidden="true">
   <div class="w-veil" id="w-veil"></div>
   <div class="w-sheet" role="dialog" aria-modal="true" aria-labelledby="w-title">
@@ -397,6 +434,7 @@ function goBack(){
   if(embedded){try{window.parent.postMessage({type:'totehm-close-next'},'*');return;}catch(e){}}
   window.location.href='totehm.html';
 }
+$('side-home').onclick=()=>goBack();
 let lock=false;const trig=()=>{if(lock)return;lock=true;setTimeout(()=>lock=false,600);goBack();};
 let x0=0,y0=0,ax=null;
 window.addEventListener('touchstart',e=>{x0=e.changedTouches[0].screenX;y0=e.changedTouches[0].screenY;ax=null;},{passive:true});
