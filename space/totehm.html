@@ -972,7 +972,7 @@ function loadState(){
       const g=JSON.parse(r5)||[];
       const habits=[];const seen={};
       g.forEach(t=>{(t.steps||[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;habits.push({t:s.t,f:FREQ_BY_ID[s.f]?s.f:null,i:INT_BY_ID[s.i]?s.i:null});}});});
-      const vis=g.some(t=>t.vis==='network')?'network':'private';
+      const vis=g.some(t=>t.vis==='members')?'members':'private';
       if(habits.length)return {habits,vis};
     }
   }catch(e){}
@@ -995,16 +995,15 @@ function save(){
   setTimeout(()=>{if($('fv-status').textContent==='saved')$('fv-status').textContent='';},1100);
 }
 
-/* ── CLOUD : un snapshot = une ligne trips ── */
+/* ── CLOUD : un snapshot = une ligne totehms ── */
 async function cloudSave(){
   if(!me)return;
   $('mw-sync').textContent='syncing…';
   try{
-    await sb.from('trips').delete().eq('user_id',me.id);
-    const {error}=await sb.from('trips').insert({
-      user_id:me.id, letter:0, position:0,
-      objective:'', habits:'', repulsions:'',
-      visibility:(state.vis==='network')?'network':'private',
+    await sb.from('totehms').delete().eq('user_id',me.id);
+    const {error}=await sb.from('totehms').insert({
+      user_id:me.id,
+      totehm_visibility:(state.vis==='members')?'members':'private',
       steps:state.habits, bot:!!profile.bot
     });
     if(error)throw error;
@@ -1012,20 +1011,22 @@ async function cloudSave(){
     setTimeout(()=>{if($('mw-sync').textContent==='synced ✓')$('mw-sync').textContent='';},1400);
   }catch(e){$('mw-sync').textContent='sync failed — will retry';}
 }
+/* Un state venu du localStorage d'avant la migration porte l'ancienne valeur. */
+if(state&&state.vis==='network')state.vis='members';
 function scheduleCloudSave(){clearTimeout(cloudSaveTimer);cloudSaveTimer=setTimeout(cloudSave,900);}
 async function cloudLoad(){
   if(!me)return;
-  const {data,error}=await sb.from('trips').select('*').eq('user_id',me.id).order('position');
+  const {data,error}=await sb.from('totehms').select('*').eq('user_id',me.id);
   if(error||!data||!data.length)return;
   const habits=[];const seen={};
   data.forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;habits.push({t:s.t,f:FREQ_BY_ID[s.f]?s.f:null,i:INT_BY_ID[s.i]?s.i:null});}});});
-  state={habits, vis:data.some(r=>r.visibility==='network')?'network':'private'};
+  state={habits, vis:data.some(r=>r.totehm_visibility==='members')?'members':'private'};
   if(data[0].bot!=null)profile.bot=!!data[0].bot;
   try{localStorage.setItem(KEY,JSON.stringify(state));localStorage.setItem(KEYP,JSON.stringify(profile));}catch(e){}
 }
 async function migrateLocalToCloudIfNeeded(){
   if(!me)return;
-  const {count}=await sb.from('trips').select('*',{count:'exact',head:true}).eq('user_id',me.id);
+  const {count}=await sb.from('totehms').select('*',{count:'exact',head:true}).eq('user_id',me.id);
   if((count||0)===0 && state.habits.length){await cloudSave();}
   else{await cloudLoad();}
 }
@@ -1125,8 +1126,8 @@ function renderSettings(){
     paintNameButton();  /* affiche le nom claimé + look figé si validé */
   }
   $('name-note').textContent='';$('name-note').className='note dim';
-  $('set-private').classList.toggle('on',(state.vis||'private')!=='network');
-  $('set-members').classList.toggle('on',state.vis==='network');
+  $('set-private').classList.toggle('on',(state.vis||'private')!=='members');
+  $('set-members').classList.toggle('on',state.vis==='members');
   /* Si visibilité déjà définie -> options visibles direct, bouton caché */
   if(state.vis){
     $('vis-btn').classList.add('hide');
@@ -1623,7 +1624,7 @@ $('set-name').addEventListener('keydown',async e=>{
   setTimeout(()=>{paintNameButton();note.textContent='';note.className='note dim';},900);
 });
 $('set-private').onclick=()=>{state.vis='private';save();renderSettings();};
-$('set-members').onclick=()=>{state.vis='network';save();renderSettings();};
+$('set-members').onclick=()=>{state.vis='members';save();renderSettings();};
 
 /* ══ CITY ══════════════════════════════════════════════════════════════════
    Deux états, et une règle : on ne déclenche JAMAIS la demande de
@@ -1723,9 +1724,9 @@ paint=function(){_origPaint();if(floor===1)cityBoot();};
 /* ══ SEARCH A TOTEHM — le pattern morph d'index.html ══ */
 /* réseau démo pour le mode guest */
 const NETWORK=[
-  {who:'wavywah', vis:'network', habits:[{t:'Get Higher',f:'every_minute',i:'focus'},{t:'Make one beat',f:'daily',i:'express'},{t:'Finish one track',f:'weekly',i:'express'}]},
-  {who:'lisboeta', vis:'network', habits:[{t:'Replace the urge with 10 push-ups',f:'several_daily',i:'fight'},{t:'Walk after every meal',f:'daily',i:'flow'}]},
-  {who:'serra', vis:'network', habits:[{t:'Stretch',f:'every_morning',i:'flow'},{t:'Cut sugar',f:'daily',i:'fight'},{t:'Long run',f:'every_sunday',i:'fight'}]}
+  {who:'wavywah', vis:'members', habits:[{t:'Get Higher',f:'every_minute',i:'focus'},{t:'Make one beat',f:'daily',i:'express'},{t:'Finish one track',f:'weekly',i:'express'}]},
+  {who:'lisboeta', vis:'members', habits:[{t:'Replace the urge with 10 push-ups',f:'several_daily',i:'fight'},{t:'Walk after every meal',f:'daily',i:'flow'}]},
+  {who:'serra', vis:'members', habits:[{t:'Stretch',f:'every_morning',i:'flow'},{t:'Cut sugar',f:'daily',i:'fight'},{t:'Long run',f:'every_sunday',i:'fight'}]}
 ];
 /* SEARCH A TOTEHM : Enter -> full-screen read-only (le pattern Decode) */
 async function openTotehmView(q){
@@ -1736,14 +1737,14 @@ async function openTotehmView(q){
     const ql=q.toLowerCase();
     const u=NETWORK.find(x=>x.who.toLowerCase()===ql)||NETWORK.find(x=>x.who.toLowerCase().indexOf(ql)!==-1);
     if(!u){note.className='note no';note.textContent='no Totehm by that name';return;}
-    name=u.who;habits=(u.vis==='network')?u.habits:null;
+    name=u.who;habits=(u.vis==='members')?u.habits:null;
   }else{
     let {data:ps}=await sb.from('profiles').select('id,pseudo').ilike('pseudo',q).limit(1);
     let p=(ps&&ps[0])||null;
     if(!p){const {data:ps2}=await sb.from('profiles').select('id,pseudo').ilike('pseudo','%'+q+'%').limit(1);p=(ps2&&ps2[0])||null;}
     if(!p){note.className='note no';note.textContent='no Totehm by that name';return;}
     name=p.pseudo;
-    const {data:rows}=await sb.from('trips').select('steps,visibility').eq('user_id',p.id).eq('visibility','network');
+    const {data:rows}=await sb.from('totehms').select('steps,totehm_visibility').eq('user_id',p.id).eq('totehm_visibility','members');
     if(rows&&rows.length){
       habits=[];rows.forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{if(s&&s.t)habits.push(s);});});
       if(!habits.length)habits=null;
