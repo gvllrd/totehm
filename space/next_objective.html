@@ -96,6 +96,17 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 #why.show .w-sheet{transform:none;box-shadow:0 -18px 44px rgba(0,0,0,.4)}
 /* Le Close occupe sa propre rangée : plus aucun recouvrement possible
    avec le titre, quelle que soit sa longueur. */
+/* La poignée : un trait, tiré vers le bas, referme le rapport. `touch-action:none`
+   pour que le geste nous revienne au lieu de scroller la page derrière.
+   `.dragging` coupe la transition — sinon chaque pixel du doigt serait lissé
+   sur 360 ms et le tiroir suivrait le geste avec un train de retard. */
+#why .w-grab{flex-shrink:0;padding:11px 0 3px;display:flex;justify-content:center;
+  cursor:grab;touch-action:none;-webkit-tap-highlight-color:transparent}
+#why .w-grab:active{cursor:grabbing}
+#why .w-grab i{display:block;width:38px;height:3px;border-radius:2px;
+  background:rgba(255,255,255,.26);transition:background .2s}
+#why .w-grab:hover i{background:rgba(255,255,255,.45)}
+#why.dragging .w-sheet{transition:none}
 #why .w-top{display:flex;justify-content:flex-end;padding:10px 14px 0;flex-shrink:0}
 #why .w-head{padding:4px 22px 14px;border-bottom:1px solid rgba(255,255,255,.14);flex-shrink:0}
 #why .w-title{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:#fff;line-height:1.35}
@@ -218,6 +229,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 <div id="why" aria-hidden="true">
   <div class="w-veil" id="w-veil"></div>
   <div class="w-sheet" role="dialog" aria-modal="true" aria-labelledby="w-title">
+    <div class="w-grab" id="w-grab" aria-hidden="true"><i></i></div>
     <div class="w-top"><button class="w-close" id="w-close">Close</button></div>
     <div class="w-head">
       <div class="w-title" id="w-title"></div>
@@ -406,12 +418,45 @@ function openWhy(h){
   $('why').setAttribute('aria-hidden','false');
 }
 function closeWhy(){
-  $('why').classList.remove('show');
+  const sh=$('why').querySelector('.w-sheet');
+  if(sh)sh.style.transform='';
+  $('why').classList.remove('dragging','show');
   $('why').setAttribute('aria-hidden','true');
 }
 const whyOpen=()=>$('why').classList.contains('show');
 applyUI();
 $('w-close').onclick=closeWhy;
+/* Pointer Events : une seule implémentation pour la souris et le doigt.
+   Le tiroir ne suit que vers le bas — le tirer vers le haut ne l'agrandit pas,
+   il n'y a rien au-dessus. Deux façons de le fermer : dépasser 28 % de sa
+   hauteur, ou un geste vif, qui n'a pas besoin d'aller aussi loin. */
+(function(){
+  const wrap=$('why'), sheet=wrap.querySelector('.w-sheet'), grab=$('w-grab');
+  let id=null, y0=0, dy=0, t0=0;
+  function release(){
+    if(id===null)return;
+    const h=sheet.offsetHeight||1;
+    const flick=(Date.now()-t0)<300 && dy>40;
+    wrap.classList.remove('dragging');
+    sheet.style.transform='';        /* la classe reprend la main */
+    if(dy>Math.min(120,h*0.28)||flick) closeWhy();
+    id=null; dy=0;
+  }
+  grab.addEventListener('pointerdown',e=>{
+    if(!whyOpen())return;
+    id=e.pointerId; y0=e.clientY; dy=0; t0=Date.now();
+    try{grab.setPointerCapture(id);}catch(_){}
+    wrap.classList.add('dragging');
+  });
+  grab.addEventListener('pointermove',e=>{
+    if(id===null||e.pointerId!==id)return;
+    dy=Math.max(0,e.clientY-y0);
+    sheet.style.transform='translateY('+dy+'px)';
+  });
+  grab.addEventListener('pointerup',release);
+  grab.addEventListener('pointercancel',release);
+})();
+
 $('w-veil').onclick=closeWhy;
 
 
