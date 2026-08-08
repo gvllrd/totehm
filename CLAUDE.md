@@ -66,6 +66,21 @@ en silence.
 (`<use href="#higher-slogan">`), jamais une webfont. En email, un PNG :
 ni SVG ni webfont ne passent chez Gmail ou Outlook.
 
+## Doctrine de coût
+
+Calculer une fois, stocker, interroger à l'infini. Jamais un appel API
+payant à chaque requête utilisateur quand un pré-calcul stocké donne le
+même résultat.
+
+- Embeddings + pgvector plutôt qu'un LLM à chaque match
+- Google Places payé une fois au seeding, jamais en direct
+- `pg_cron` + Edge Functions pour la chronobiologie, pas un serveur n8n
+- Un LLM seulement là où le déterministe ne suffit pas
+
+Avant toute feature appelant une API payante : estimer le coût mensuel
+à 1 000 utilisateurs et le comparer à l'ARPU (8,37 €/mois). Une feature
+qui coûte plus qu'elle ne rapporte ne se construit pas.
+
 ## Doctrine visuelle
 
 | | |
