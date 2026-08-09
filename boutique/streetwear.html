@@ -480,13 +480,18 @@ $('order-btn').onclick=async()=>{
   if(!order.name||!order.size||!order.message||!order.style)return;
   const note=$('order-note');note.className='note dim';note.textContent='encoding…';
   $('order-btn').style.pointerEvents='none';
-  const s=order.support;
-  const {error}=await sb.from('totehm_clothes').insert({garment_id:s.id,message:order.message,name:order.name,size:order.size,price:s.price,style_id:order.style.id,status:'pending',user_id:me?me.id:null,email:me?me.email:null});
+  const {data,error}=await sb.functions.invoke('create-checkout',{body:{
+    garment_id:order.support.id,message:order.message,name:order.name,
+    size:order.size,style_id:order.style.id,
+    user_id:me?me.id:null,email:me?me.email:null
+  }});
   $('order-btn').style.pointerEvents='';
-  if(error){note.className='note no';note.textContent=error.code==='23505'?'that name was just taken':'error, try again';return;}
-  $('step-name').classList.remove('on');$('step-style').classList.remove('on');$('step-dim').classList.remove('on');$('step-order').classList.remove('on');
-  $('done-name').textContent='“'+order.name+'” — '+order.size;
-  $('done').classList.remove('hide');
+  if(error||!data?.url){
+    const msg=data?.error==='sold out'?'sold out':data?.error==='name taken'?'that name was just taken':'error, try again';
+    note.className='note no';note.textContent=msg;return;
+  }
+  sessionStorage.setItem('tc_pending','”'+order.name+'” — '+order.size);
+  window.top.location.href=data.url;
 };
 $('terms-link').onclick=(e)=>{e.preventDefault();alert('Each Totehm Cloth is a unique, made-to-order piece, validated by the artist before production. All sales are final once the artist begins. Delivery times vary per piece.');};
 
@@ -494,6 +499,16 @@ function esc(s){const d=document.createElement('div');d.textContent=s||'';return
 function fmt(s){const p=Number(s.price);const cur=(s.currency||'€');return cur==='€'?(p+' €'):(cur+' '+p);}
 
 load();
+(()=>{
+  const p=new URLSearchParams(location.search);
+  if(p.get('paid')){
+    const label=sessionStorage.getItem('tc_pending')||'';
+    sessionStorage.removeItem('tc_pending');
+    $('done-name').textContent=label;
+    $('done').classList.remove('hide');
+    $('config').classList.add('show');
+  }
+})();
 </script>
 </body>
 </html>
