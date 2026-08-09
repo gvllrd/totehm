@@ -20,18 +20,18 @@ html{scroll-snap-type:y mandatory}
 body{display:flex;flex-direction:column;align-items:center;min-height:100vh;overflow-y:auto}
 .hide{display:none!important}
 
-/* SECTIONS : hero (atterrissage) + context (vidéo de marque) */
+/* SECTIONS : hero (atterrissage) + context (vidéo de marque) + footer (no social) */
 .hero,.context{width:100%;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;scroll-snap-align:start;scroll-snap-stop:always;position:relative}
 .hero{padding:7vh 22px 4vh}
 .context{padding:5vh 22px}
-.ctx-down{margin-top:7vh;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;-webkit-tap-highlight-color:transparent}
+.ctx-down{margin-top:4vh;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;-webkit-tap-highlight-color:transparent}
 .ctx-label{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:#b0b0b0;transition:color .15s ease}
 .ctx-down:hover .ctx-label{color:#fff}
 .chev{width:22px;height:22px;color:var(--g-mid);transition:color .15s ease}
 .ctx-down:hover .chev,.ctx-up:hover .chev{color:#fff}
 .ctx-up{position:absolute;top:22px;left:50%;transform:translateX(-50%);background:none;border:none;cursor:pointer;padding:8px 14px;-webkit-tap-highlight-color:transparent}
 .ctx-up .chev{width:26px;height:26px}
-.ctx-vid{height:5cm;width:auto;max-width:84vw;display:block;background:#000}
+.ctx-vid{height:5cm;width:auto;max-width:84vw;display:block;background:#000;margin-bottom:3vh}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
 .bob{animation:bob 1.8s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.bob{animation:none}html,body{scroll-behavior:auto}}
@@ -39,7 +39,7 @@ body{display:flex;flex-direction:column;align-items:center;min-height:100vh;over
 .slogan{width:min(52vw,200px);margin-bottom:13px}
 .slogan svg{display:block;width:100%;height:auto}
 .tagline{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--g-mid);letter-spacing:0;text-align:center;margin-bottom:5vh}
-.realwrap{margin-top:7vh;display:flex;justify-content:center}
+.realwrap{margin-top:6vh;display:flex;justify-content:center}
 .real{width:80px;height:auto;display:block;opacity:1;filter:grayscale(0)}
 .real.color{filter:none;opacity:1;width:85px;animation:paper-float 9s ease-in-out infinite}
 @keyframes paper-float{
@@ -51,9 +51,8 @@ body{display:flex;flex-direction:column;align-items:center;min-height:100vh;over
 }
 @media(prefers-reduced-motion:reduce){.real.color{animation:none}}
 
-/* boutons de marque : survol bleu clair (desktop) / clic navy */
+/* boutons de marque */
 .btn-sig{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
-/* branding inline : badge slogan "Higher" + wordmark TOTEHM */
 .higher-inline{height:1.5em;width:auto;vertical-align:-.32em;display:inline-block;margin:0 .04em}
 .wm-totehm{font-family:'Montserrat',sans-serif;font-weight:600;font-style:normal;color:#fff;letter-spacing:.16em;margin-right:-.16em}
 @media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
@@ -62,7 +61,6 @@ body{display:flex;flex-direction:column;align-items:center;min-height:100vh;over
 .btn-coral{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:var(--coral);background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
 @media(hover:hover){.btn-coral:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
 .btn-coral:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
-/* Back in Time : survol+clic rouge-violet, sans flèche */
 .btn-back{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:none;padding:0 2px;line-height:1.4;-webkit-tap-highlight-color:transparent;transition:color .15s ease,background .15s ease}
 .btn-back:hover,.btn-back:active{color:#fff;background:var(--rep)}
 
@@ -78,6 +76,22 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 .fs-perf.show{display:flex}
 .fs-perf .fs-back{position:fixed;top:16px;left:16px;z-index:82}
 .fs-msg{font-family:'Quantico',sans-serif;font-weight:400;font-size:clamp(18px,4.4vw,26px);color:#fff;line-height:1.55;text-align:center;max-width:640px;font-style:italic;white-space:pre-wrap;overflow-y:auto;max-height:78vh}
+
+/* LUXURY : sous-titre + défilement horizontal logos */
+.lux-block{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
+.brand-subtitle{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.22em;color:var(--g-dark);text-align:center}
+.brand-scroll{display:flex;gap:18px;overflow-x:auto;padding:8px 6px 12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;width:100%;max-width:380px;justify-content:flex-start}
+.brand-scroll::-webkit-scrollbar{display:none}
+.brand-logo{flex:0 0 auto;width:52px;height:52px;object-fit:contain;filter:grayscale(1) brightness(.55);scroll-snap-align:center;border-radius:0;transition:filter .2s}
+.brand-logo:hover{filter:grayscale(0) brightness(1)}
+
+/* STREETWEAR : sous-titre + image support */
+.sw-block{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
+.sw-support-img{width:min(54vw,160px);height:auto;display:block;filter:grayscale(45%);margin-top:4px}
+
+/* NO SOCIAL MEDIA footer */
+.no-social-wrap{width:100%;display:flex;justify-content:center;padding:6vh 22px 5vh}
+.no-social-img{width:min(72vw,280px);height:auto;display:block;opacity:.7}
 
 @media(max-width:600px){.slogan{width:min(60vw,185px)}.tagline{font-size:13px}}
 </style>
@@ -103,24 +117,31 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 <div class="tagline">OWN/YOUR/TIME&nbsp;&nbsp;&nbsp;NOW:WON&nbsp;&nbsp;&nbsp;<span id="tag-loc">WRLD</span></div>
 
 <nav>
-  <!-- MENU (la sélection de ville a été déplacée dans totehm.html) -->
   <div id="menu-main" style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%">
 
     <!-- 1 : Streetwear -->
-    <a class="btn-sig" href="streetwear.html">Create a Totehm Cloth Streetwear</a>
-    <!-- 2 : Luxury (bientôt) -->
-    <a class="btn-sig" href="luxury.html">Totehmize my Hermès / Louis Vuitton / Gucci Cloth</a>
+    <div class="sw-block">
+      <a class="btn-sig" href="streetwear.html">Totehmize my streetwear</a>
+      <span class="brand-subtitle">CURRENT CLOTH SUPPORT</span>
+      <img src="assets/img/champion.jpg" alt="Champion" class="sw-support-img">
+    </div>
+
+    <!-- 2 : Luxury -->
+    <div class="lux-block">
+      <a class="btn-sig" href="luxury.html">Totehmize my Cloth &amp; stuff</a>
+      <span class="brand-subtitle">BRAND WE TOTEHMIZE</span>
+      <div class="brand-scroll">
+        <img src="assets/img/hermes.jpg" alt="Hermès" class="brand-logo">
+        <img src="assets/img/louis_vuitton.jpg" alt="Louis Vuitton" class="brand-logo">
+        <img src="assets/img/gucci.jpg" alt="Gucci" class="brand-logo">
+      </div>
+    </div>
 
     <div class="menu-row">
       <button class="btn-sig" id="decode-btn">Decode a Totehm Cloth</button>
       <input class="line-input hide" id="decode-input" maxlength="40" placeholder="ex: 0.Test">
       <div class="note dim hide" id="decode-note"></div>
     </div>
-
-    <div class="menu-gap"></div>
-
-    <!-- Dope branding : un seul bouton vers discover.html -->
-    <a class="btn-sig" href="discover.html">Experience our dope branding</a>
 
     <div class="menu-gap"></div>
 
@@ -135,7 +156,7 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 
 <div class="realwrap"><img src="assets/img/totehm_logo.png" alt="TOTEHM" class="real" id="real-img"></div>
   
-  <!-- remplace le footer : accès au contexte de marque -->
+  <!-- accès au contexte de marque -->
   <button class="ctx-down" id="ctx-down" aria-label="Think same but opposite">
     <span class="ctx-label">Think same but opposite</span>
     <svg class="chev bob" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
@@ -148,7 +169,14 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
     <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
   </button>
   <video class="ctx-vid" id="ctx-vid" playsinline muted controls preload="none"></video>
+  <!-- Dope branding : juste sous la vidéo -->
+  <a class="btn-sig" href="discover.html">Experience our dope branding</a>
 </section>
+
+<!-- NO SOCIAL MEDIA -->
+<div class="no-social-wrap">
+  <img src="assets/img/no_social_media.jpg" alt="No Social Media" class="no-social-img">
+</div>
 
 <!-- FULL-SCREEN : résultat Decode -->
 <div class="fs-perf" id="decode-fs">
@@ -162,19 +190,14 @@ const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUz
 const $=id=>document.getElementById(id);
 const SBURL='https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/higher_boutique/';
 
-/* La sélection de ville a été déplacée dans totehm.html ([Select your city]).
-   index_boutique.html montre directement le menu de la boutique. */
-
-/* Back in Time des autres pages -> on ferme juste l'overlay Decode */
 window.addEventListener('pageshow',e=>{
   if(!e.persisted)return;
   $('decode-fs').classList.remove('show');
 });
 
-/* ── util : bouton -> saisie ── */
 function morph(btn,input,note){btn.onclick=()=>{btn.classList.add('hide');input.classList.remove('hide');if(note){note.classList.remove('hide');}setTimeout(()=>input.focus(),100);};}
 
-/* ── DECODE a Totehm Cloth : [Enter] -> full-screen ── */
+/* DECODE a Totehm Cloth */
 morph($('decode-btn'),$('decode-input'),$('decode-note'));
 $('decode-input').addEventListener('keydown',async(e)=>{
   if(e.key!=='Enter')return;
@@ -185,7 +208,7 @@ $('decode-input').addEventListener('keydown',async(e)=>{
   if(error){note.className='note dim';note.textContent='try again';return;}
   if(data&&data.length){
     note.textContent='';
-    $('decode-msg').textContent='“'+data[0].message+'”';
+    $('decode-msg').textContent='"'+data[0].message+'"';
     $('decode-fs').classList.add('show');
   }else{
     note.className='note no';note.textContent='no Totehm Cloth by that name';
@@ -193,7 +216,7 @@ $('decode-input').addEventListener('keydown',async(e)=>{
 });
 $('decode-back').onclick=()=>{$('decode-fs').classList.remove('show');};
 
-/* ── EMAIL for dope news ── */
+/* EMAIL for dope news */
 morph($('email-btn'),$('email-input'),$('email-note'));
 $('email-input').addEventListener('keydown',async(e)=>{
   if(e.key!=='Enter')return;
@@ -205,14 +228,13 @@ $('email-input').addEventListener('keydown',async(e)=>{
   note.className='note ok';note.textContent="you're in";$('email-input').disabled=true;
 });
 
-/* ── CONTEXTE DE MARQUE : scroll/clic vers la vidéo + lecture-pause auto ── */
+/* CONTEXTE DE MARQUE */
 (function(){
   const ctx=$('context'),hero=$('hero'),v=$('ctx-vid');
   let vloaded=false;
   const loadVid=()=>{ if(!vloaded){ v.src=SBURL+'same_but_opposite.mp4'; vloaded=true; } };
   $('ctx-down').addEventListener('click',()=>{ loadVid(); v.muted=false; ctx.scrollIntoView({behavior:'smooth'}); v.play().catch(()=>{}); });
   $('ctx-up').addEventListener('click',()=>{ hero.scrollIntoView({behavior:'smooth'}); });
-  // couvre aussi le scroll naturel : joue à l'entrée, met en pause à la sortie
   const io=new IntersectionObserver(entries=>{
     entries.forEach(e=>{
       if(e.isIntersecting){ loadVid(); v.play().catch(()=>{}); }
