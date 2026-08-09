@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TOTEHM — Master</title>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Bebas+Neue&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#000;--bg2:#0a0a0a;--line:#1c1c1c;--coral:#fbd5ca;--navy:#333366;
+ --g1:#e8e8e8;--g2:#b8b8b8;--g3:#808080;--g4:#4a4a4a;
+ --fight:#E24B4A;--flow:#EF9F27;--enrich:#BA7517;--love:#639922;
+ --express:#1D9E75;--focus:#378ADD;--celebrate:#7F77DD}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--g2);font-family:'Quantico',monospace;
+ font-size:13px;line-height:1.7;padding:40px 24px 90px;max-width:1000px;margin:0 auto}
+h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(34px,7vw,64px);letter-spacing:.1em;
+ color:var(--g1);line-height:1}
+.sub{font-size:12px;color:var(--g3);margin-top:8px;letter-spacing:.04em}
+.stamp{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.24em;
+ color:var(--g4);text-transform:uppercase;margin-bottom:10px}
+header{border-bottom:1px solid var(--line);padding-bottom:26px;margin-bottom:12px}
+h2{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.1em;color:var(--g1);
+ margin:44px 0 4px;padding-top:22px;border-top:1px solid var(--line)}
+h2 span{font-family:'Space Mono',monospace;font-size:11px;color:var(--g4);
+ letter-spacing:.2em;margin-right:12px}
+h3{font-family:'Quantico',monospace;font-weight:700;font-size:13px;color:var(--coral);
+ margin:22px 0 6px;letter-spacing:.04em}
+p{margin:8px 0}
+b{color:var(--g1);font-weight:700}
+.coral{color:var(--coral)}
+.key{background:var(--bg2);border-left:2px solid var(--coral);padding:12px 16px;margin:14px 0}
+.warn{background:var(--bg2);border-left:2px solid var(--fight);padding:12px 16px;margin:14px 0}
+.ok{background:var(--bg2);border-left:2px solid var(--love);padding:12px 16px;margin:14px 0}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:12px}
+th{text-align:left;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.16em;
+ color:var(--g4);text-transform:uppercase;padding:7px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid #131313;vertical-align:top}
+td:first-child{color:var(--g1)}
+code{font-family:'Space Mono',monospace;font-size:11px;color:var(--coral);
+ background:#111;padding:1px 5px;border-radius:2px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;vertical-align:1px}
+ul{margin:8px 0 8px 18px}
+li{margin:3px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:14px 0}
+.card{background:var(--bg2);border:1px solid var(--line);padding:16px}
+.card h4{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:.08em;
+ color:var(--g1);margin-bottom:2px}
+.price{font-family:'Space Mono',monospace;font-size:11px;color:var(--coral);margin-bottom:10px}
+.no{color:var(--g4)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="stamp">Document unique · 5 août 2026 · v2</div>
+  <h1>TOTEHM — MASTER</h1>
+  <div class="sub">Tout ce qu'il faut savoir, en une page. Les détails techniques vivent dans <code>backend/README.md</code>, à côté du code.</div>
+</header>
+
+<div class="key">
+  <b>La proposition en une phrase.</b><br>
+  Le logo TOTEHM n'est pas un signe : c'est une interface. On y dépose ses habitudes,
+  et il devient un instrument de performance mentale. <b>Le branding est utile</b> —
+  c'est ça qu'on vend, et c'est ce que la Stoner Method démontre.
+</div>
+
+<div class="warn">
+  <b>L'OBJECTIF — 1 000 000 €/mois.</b> Ce n'est pas un slogan, c'est une équation.
+  Chaque décision de ce document déplace un de ses termes ou ne sert à rien.<br><br>
+  <b>abonnés payants × ARPU = MRR.</b> Mix cible 70 % Plant / 30 % Tree →
+  ARPU <b>9,40 €/mois</b> → il faut <b class="coral">106 400 abonnés payants</b>,
+  soit ≈ 1,3 M d'inscrits à 8 % de conversion.<br><br>
+  Les paliers : <b>1 k€</b> ≈ 110 payants · <b>10 k€</b> ≈ 1 100 · <b>100 k€</b> ≈ 10 600 ·
+  <b>1 M€</b> ≈ 106 400. Chaque ×10 est une machine différente, pas la même en plus gros.<br><br>
+  <b>Le Cloth n'est pas un à-côté, c'est le raccourci.</b> Un hoodie net = 86,93 € =
+  <b>presque 6 mois de Tree encaissés d'un coup</b>. 106 400 abonnés, c'est des années.
+  3 000 pièces/mois, c'est un problème de logistique — bien plus court à résoudre.
+</div>
+
+
+<h2><span>01</span>La boucle — deux domaines, une marque</h2>
+
+<table>
+<tr><th>Domaine</th><th>Rôle</th><th>Dossier</th></tr>
+<tr><td>www.totehm.space</td><td>Le Totehm, l'autobiographie, la Stoner Method, TotehmBot, les abonnements</td><td><code>space/</code></td></tr>
+<tr><td>www.higher.boutique</td><td>Totehm Cloth, Decode, la curation artiste, les NFT</td><td><code>boutique/</code></td></tr>
+</table>
+
+<p><b>space produit la matière</b> (habitudes → événements → autobiographie).
+<b>boutique la transforme en objet</b> (un chapitre devient un vêtement, illustré sous un style curaté).</p>
+
+<p>Les deux fonctionnent <b>aussi indépendamment</b> :</p>
+<ul>
+<li><b>Mode A</b> — anonyme : texte perso + un nom, sans compte. Decode fonctionne par le nom. <span class="coral">C'est le canal d'acquisition.</span></li>
+<li><b>Mode B</b> — membre : un chapitre de l'autobiographie. <span class="no">Pas encore construit.</span></li>
+</ul>
+
+<div class="warn">
+<b>Une session ne peut PAS être partagée entre les deux domaines.</b>
+Origines différentes = <code>localStorage</code> cloisonnés. Même compte, même badge,
+mais deux connexions. C'est le modèle de sécurité des navigateurs, pas une limite de Supabase.
+Un pont (code à usage unique) sera nécessaire pour le mode B — pas avant.
+</div>
+
+
+<h2><span>02</span>Le Totehm</h2>
+
+<p>Le logo se déconstruit en quatre couches SVG qui deviennent l'espace de saisie.
+Chaque <b>habitude</b> porte deux attributs :</p>
+
+<ul>
+<li><b>Time Frequency</b> — 33 valeurs, de <i>everyday</i> à <i>once in a lifetime</i></li>
+<li><b>Intention</b> — une des 7 ci-dessous</li>
+</ul>
+
+<p>Tout ce qui se passe dans le Totehm est journalisé dans <code>totehm_events</code>
+(<code>habit_added</code>, <code>habit_removed</code>, <code>freq_changed</code>,
+<code>intention_changed</code>, <code>habit_outcome</code>). <b>C'est cette matière qui écrit l'autobiographie.</b></p>
+
+<p><b>Next Objective</b> est éphémère — seules les habitudes acceptées persistent.</p>
+
+<h3>Intelligent Habit Outcome — le moteur qui remplit l'autobiographie</h3>
+
+<p>Le tracking classique demande à l'utilisateur de tenir un journal. Personne ne tient un journal.
+<b>TOTEHM demande une chose, une fois, avec des boutons.</b></p>
+
+<div class="key">
+<b>« Tu es allé courir ? »</b> &nbsp;→&nbsp;
+<code>Done</code> · <code>Skipped</code> · <code>Not today</code><br>
+Si <code>Done</code>, une seule relance : <code>Easy</code> · <code>Hard</code> · <code>Best one yet</code><br><br>
+<b>Aucune saisie libre. Aucun score. Aucune streak.</b> Trois taps maximum, puis le bot se tait.
+</div>
+
+<p><b>La règle « be true ».</b> <code>Skipped</code> est une réponse honorable, enregistrée
+telle quelle, jamais commentée. Une autobiographie qui ne contient que les réussites est une
+brochure — elle n'a aucune valeur, ni pour son auteur ni pour celui qui la lira en Plant.
+<b>Ce sont les creux qui rendent le récit vrai</b> : « 47 courses, 9 abandons, et les 9 étaient
+en novembre » est une phrase que seul un outcome honnête peut produire.</p>
+
+<h3>Ne jamais être chiant — les plafonds</h3>
+<ul>
+<li><b>Une seule question par jour maximum</b>, toutes habitudes confondues.</li>
+<li>Elle ne part que si <code>habit_priority()</code> place l'habitude en tête <b>et</b> qu'elle est due.</li>
+<li><b>Ratio NOTHING ≥ 80 %</b> — sur 10 fenêtres d'intervention, le bot doit se taire 8 fois. En dessous, il devient une notification de plus, et il meurt.</li>
+<li>Jamais hors des quiet hours du profil. Jamais deux jours de suite sur la même habitude sans réponse.</li>
+<li><b>Deux non-réponses consécutives = silence sur cette habitude pendant 7 jours.</b> Le bot lit l'absence de réponse comme une réponse.</li>
+</ul>
+
+<div class="ok">
+<b>Pourquoi ça compte économiquement.</b> L'Intelligent Habit Outcome est gratuit, dans Seed,
+et c'est <b>volontaire</b> : c'est lui qui produit le corpus. Seed fabrique la matière,
+<b>Plant vend l'accès à la matière des autres</b>. Un tier gratuit qui ne produirait rien
+serait un coût. Celui-ci est un actif.
+</div>
+
+
+<h2><span>03</span>Les 7 Intentions</h2>
+
+<p>Chaque Intention = un état cérébral · une neurochimie · une couleur · un environnement sonore ·
+une sous-carte de la ville. L'utilisateur en choisit une, <b>la ville se réorganise</b>.
+Chaque habitude est analysée et assignée à une Intention. Chaque spot porte sa couleur.</p>
+
+<table>
+<tr><th>#</th><th>Intention</th><th>Le geste</th><th>Neuro</th><th>Mentor</th></tr>
+<tr><td>01</td><td><span class="dot" style="background:var(--fight)"></span>Fight</td>
+<td>Se conquérir par l'effort. One more rep.</td><td>Beta/Gamma · Noradrénaline · Endorphines</td><td>David Goggins</td></tr>
+<tr><td>02</td><td><span class="dot" style="background:var(--flow)"></span>Flow</td>
+<td>Libérer l'énergie par le mouvement du corps.</td><td>Alpha/Theta · Sérotonine · Endorphines</td><td>Alan Watts</td></tr>
+<tr><td>03</td><td><span class="dot" style="background:var(--enrich)"></span>Enrich</td>
+<td>Maîtriser sa richesse : capital, réseau, savoir.</td><td>Beta focalisé · Dopamine · Préfrontal</td><td>Naval Ravikant</td></tr>
+<tr><td>04</td><td><span class="dot" style="background:var(--love)"></span>Love</td>
+<td>Contempler la vie par le lien et la beauté.</td><td>Alpha · Ocytocine · Sérotonine</td><td>Esther Perel</td></tr>
+<tr><td>05</td><td><span class="dot" style="background:var(--express)"></span>Express</td>
+<td>Donner forme à l'émotion par la création.</td><td>Beta créatif · Dopamine · DMN</td><td>Virgil Abloh</td></tr>
+<tr><td>06</td><td><span class="dot" style="background:var(--focus)"></span>Focus</td>
+<td>Se trouver par la concentration profonde.</td><td>Gamma · Dopamine · Pic préfrontal</td><td>Steve Jobs</td></tr>
+<tr><td>07</td><td><span class="dot" style="background:var(--celebrate)"></span>Celebrate</td>
+<td>Élever l'énergie par l'effervescence collective.</td><td>Theta/Gamma · Dopamine · Ocytocine</td><td>Anthony Bourdain</td></tr>
+</table>
+
+<p class="sub">Le détail complet — habitudes types, spots, signaux de classification, ton du mentor,
+exemples de push — vit dans <code>totehm_7_intentions.html</code>. C'est la référence opérationnelle
+du classifieur et du bot.</p>
+
+
+<h2><span>04</span>Stoner Method &amp; badge Higher</h2>
+
+<p><b>Ce qu'on vend n'est pas du contenu, c'est une entrée.</b> Le mur
+<code>get_higher.html</code> précède tout, step 0 compris.</p>
+
+<p><b>Le fork [Low] / [High]</b> est un état <i>instantané</i>, redéclaré à chaque run.
+Low entre au step 1 (répulsion = carburant). High entre au step 2 (rien à brûler).</p>
+
+<h3>Paliers — nombre d'or</h3>
+<table>
+<tr><th>Palier</th><th>Places</th><th>Prix</th><th>Cumul</th></tr>
+<tr><td>1</td><td>77</td><td class="coral">11 €</td><td>77</td></tr>
+<tr><td>2</td><td>125</td><td>18 €</td><td>202</td></tr>
+<tr><td>3</td><td>202</td><td>29 €</td><td>404</td></tr>
+<tr><td>4</td><td>327</td><td>47 €</td><td>731</td></tr>
+<tr><td>5</td><td>529</td><td>76 €</td><td>1 260</td></tr>
+</table>
+
+<div class="warn">
+Le prix est <b>calculé côté serveur</b> par <code>higher-checkout</code>.
+La table du front n'est qu'un miroir d'affichage. <b>Modifier l'un sans l'autre</b>
+= la page annonce un prix, Stripe en facture un autre, l'acheteur abandonne.
+</div>
+
+<h3>Higher est un préfixe, pas un 4<sup>e</sup> tier</h3>
+<p><code>Seed → Higher Seed</code> · <code>Plant → Higher Plant</code> · <code>Tree → Higher Tree</code><br>
+Un achat unique qui <b>valorise tous les tiers, y compris le gratuit</b>. Le badge grandit
+avec la personne. Rendu : <code>[Higher] Plant · #047</code> — le mot Higher toujours en SVG outlined.</p>
+
+
+<h2><span>05</span>Les 3 abonnements</h2>
+
+<div class="key">
+<b>La règle de conception, corrigée le 5 août.</b> On ne vend jamais à quelqu'un
+l'accès à <i>ses propres</i> données — c'est faible, et ça donne l'impression d'une rançon.
+On vend l'accès à <b>celles des autres</b>.<br><br>
+<b>Seed produit le corpus. Plant vend l'accès au corpus. Tree vend le calcul continu.</b>
+Chaque tier a une nature économique différente, et c'est ça qui rend l'échelle de prix honnête.
+</div>
+
+<h3>La copie destinée aux utilisateurs</h3>
+<p class="sub">Version frontend. Le ton est celui de la marque : direct, sans superlatif publicitaire.
+Autorisé sur les cartes de tiers et la page d'abonnement. <b>Interdit dans</b> <code>terms.html</code>,
+les emails transactionnels et les pages de paiement.</p>
+
+<div class="grid">
+  <div class="card">
+    <h4>🌱 SEED</h4><div class="price">GRATUIT · inscription, aucune CB</div>
+    <p class="coral">« Plant your story »</p>
+    <p>Fuck boring productivity apps and fake motivation. Plant your story, build your system,
+    and let your biography write itself.</p>
+    <ul>
+      <li><b>Totehm</b> — Intentional &amp; Temporal Habits</li>
+      <li><b>Intelligent Habit Outcome</b> — no boring tracking, just what you need to know where you stand</li>
+      <li><b>Autobiography</b> — written automatically by your Totehm and your outcomes</li>
+      <li><b>Habits Generator</b> — science-backed, set your objective, get the right habits · <b>3 / day</b></li>
+    </ul>
+    <p class="no">Ton Totehm et ton autobiographie restent <b>privés</b> par défaut.
+    Tu ne peux pas encore lire ceux des autres.</p>
+  </div>
+
+  <div class="card">
+    <h4>🪴 PLANT</h4><div class="price">7 €/mois · ou 70 €/an (2 mois offerts)</div>
+    <p class="coral">« Make it grow »</p>
+    <p>Social media shows the flex — and kills your time while you scroll.
+    Access the raw source code of real people and study how they actually built their life.</p>
+    <ul>
+      <li>Everything in <b>Seed</b></li>
+      <li>Access the <b>Totehm and full autobiographies</b> of people who inspire you</li>
+      <li><b>Implement their habits</b> — intention and frequency included — into your own Totehm</li>
+      <li>Turn a chapter of your autobiography into a <b>Totehm Cloth</b> — exclusive to higher.boutique.
+      Where streetwear meets tailor-made, art and your story.</li>
+    </ul>
+    <p class="no">Pas encore de recommandations de lieux ni d'événements.</p>
+  </div>
+
+  <div class="card">
+    <h4>🌳 TREE</h4><div class="price">15 €/mois · ou 150 €/an (2 mois offerts)</div>
+    <p class="coral">« Be at the top »</p>
+    <p>Don't let the city consume you like a tourist.
+    Turn the city into a playground connected to your deep intentions.</p>
+    <ul>
+      <li>Everything in <b>Plant</b></li>
+      <li><b>Right now, the right place or event</b> — matched to your intention of the moment</li>
+      <li><b>Qualified recommendations</b> — places and events read against your Totehm and your autobiography, not against a category</li>
+      <li>A message from your Totehm, when it actually means something</li>
+    </ul>
+  </div>
+</div>
+
+<h3>Pourquoi Tree coûte le double de Plant — la vraie raison</h3>
+<p><b>Plant a un coût marginal proche de zéro.</b> Le corpus existe déjà, produit gratuitement
+par les Seed. Lire l'autobiographie d'un autre, c'est une requête Postgres. Marge quasi pure.</p>
+<p><b>Tree a un coût marginal réel et récurrent.</b> Google Places, les API événementielles,
+les embeddings, les jobs d'analyse qui tournent en continu pour que la recommandation soit
+<b>ultra qualifiée</b> et pas une liste de cafés. On ne vend pas un accès, on vend du calcul.</p>
+
+<table>
+<tr><th>Par abonné / mois</th><th>Plant 7 €</th><th>Tree 15 €</th></tr>
+<tr><td>Prix TTC</td><td>7,00 €</td><td>15,00 €</td></tr>
+<tr><td>TVA (moy. UE ≈ 21 %)</td><td>− 1,21 €</td><td>− 2,60 €</td></tr>
+<tr><td>Stripe (2,9 % + 0,25 €)</td><td>− 0,45 €</td><td>− 0,69 €</td></tr>
+<tr><td>Google Places / événements</td><td>—</td><td>− 1,10 €</td></tr>
+<tr><td>Embeddings · ranking · cron</td><td>− 0,02 €</td><td>− 0,30 €</td></tr>
+<tr><td><b>NET TOTEHM</b></td><td class="coral"><b>5,32 €</b></td><td class="coral"><b>10,31 €</b></td></tr>
+</table>
+<p class="sub">Le rapport net est de <b>1,94×</b> pour un prix affiché à 2,14×. L'échelle de prix
+n'est pas un arrondi marketing : elle suit le coût réel. C'est défendable devant n'importe qui.</p>
+
+<div class="warn">
+<b>Le tripwire du gratuit.</b> 3 générations/jour en Seed ≈ <b>0,10 €/utilisateur/mois</b>
+de coût IA. À 100 000 inscrits gratuits, c'est <b>10 000 €/mois</b> à porter.
+<b>Règle : si le coût IA du gratuit dépasse 15 % du MRR, le quota descend à 1/jour.</b>
+Pas de débat, c'est arithmétique.
+</div>
+
+<h3>Mensuel et annuel — les deux, et pourquoi</h3>
+<p>L'annuel est à <b>2 mois offerts</b> — un fait, pas une promotion. Il n'y a ni compte à
+rebours ni « offre limitée » : ce serait de l'urgence artificielle, et c'est interdit par la doctrine.</p>
+<ul>
+<li><b>Pour l'utilisateur :</b> deux mois de moins à payer, et il n'y pense plus.</li>
+<li><b>Pour TOTEHM :</b> le cash arrive en une fois, les frais Stripe passent de
+<b>6,5 % à 3,2 %</b> (12 transactions à 0,25 € contre une seule), et <b>onze fenêtres
+de résiliation disparaissent</b>.</li>
+</ul>
+<p><b>L'annuel est présenté en premier, le mensuel reste visible et sans friction.</b>
+On ne cache jamais le mensuel : le cacher ferait fuir ceux qui veulent tester, et ceux-là
+sont la moitié du haut de l'entonnoir.</p>
+
+<h3>Visibilité — deux interrupteurs, jamais un de plus</h3>
+<div class="key">
+<b>Dans le Totehm :</b><br>
+<code>Mon Totehm</code> &nbsp;·&nbsp; <b>Private</b> (défaut) | Visible to members<br>
+<code>Mon autobiographie</code> &nbsp;·&nbsp; <b>Private</b> (défaut) | Visible to members<br><br>
+<b>Le second n'apparaît que si le premier est activé.</b> Ce n'est pas une contrainte arbitraire :
+l'autobiographie nomme les habitudes. Une autobiographie publique adossée à un Totehm privé
+ferait fuiter le Totehm par la bande.
+</div>
+<ul>
+<li><b>Privé par défaut, toujours.</b> Aucun opt-in implicite, aucune case pré-cochée.</li>
+<li><b>Révocable à l'instant</b>, avec effet immédiat sur la lecture.</li>
+<li><b>Seuls Plant et Tree peuvent lire.</b> Un Seed ne voit personne — c'est exactement là que se situe le mur.</li>
+<li>Implémentation : <code>profiles.totehm_visibility</code> et <code>profiles.autobiography_visibility</code>,
+<code>text check ('private','members') default 'private'</code>. Le filtre vit dans la <b>RLS</b>, jamais dans le front.</li>
+</ul>
+<div class="warn">
+<b>C'est le point de rupture juridique et le point de rupture de confiance — le même.</b>
+<code>terms.html</code> promet aujourd'hui que les données ne sortent pas. Dès qu'un Plant
+peut lire l'autobiographie d'un autre, cette phrase est fausse.
+<b>Aucun Plant ne se vend avant que les terms couvrent la publication</b> : opt-in explicite,
+granularité, révocation, et ce qui reste visible après révocation (rien).
+</div>
+
+<h3>Crew Code — la croissance vient de là, pas de la publicité</h3>
+<p>Un créateur ne fait pas de pub pour TOTEHM. Il dit <b>« Search my Totehm »</b>, et c'est tout.
+Sa communauté prend un Plant pour lire son système. <b>Il ne vend rien, il montre.</b></p>
+<ul>
+<li><b>Crew Code</b> court et unique (<code>WAHY</code>, <code>LEX</code>) — jamais mis en avant côté utilisateur,
+il ne sert qu'à l'attribution.</li>
+<li>Il voyage dans les <code>metadata</code> Stripe, exactement comme <code>product:'higher'</code>.
+Le rattachement s'écrit <b>une fois, au premier paiement, et ne bouge plus jamais</b>.</li>
+<li><b>Revenue Share récurrent</b> sur le net, tant que le membre reste abonné.
+Paliers de négociation <b>privés</b> : 10 · 20 · 30 · 40 %, jusqu'à 50 % en custom.
+<b>Jamais publiés.</b></li>
+<li>Dashboard créateur : membres actifs, MRR du crew, part à percevoir, historique, churn. Rien d'autre.</li>
+<li><b>Pas de page publique créateur.</b> Ni <code>/@creator</code>, ni <code>/crew/wahy</code> —
+ce serait un réseau social, et ce n'est pas ce qu'on construit.</li>
+</ul>
+<p class="sub">V0 <b>manuel</b> : tu crées le créateur à la main, tu vires le 1<sup>er</sup> du mois.
+Stripe Connect quand le manuel dépasse 2 h/mois — pas avant 50 créateurs.</p>
+
+<h3>Higher reste orthogonal</h3>
+<p><b>Higher n'est pas un 4<sup>e</sup> tier</b>, c'est un préfixe qui s'achète une fois
+(11 € au palier 1) et qui valorise les trois — y compris le gratuit.
+<code>Higher Seed</code> · <code>Higher Plant</code> · <code>Higher Tree</code>.
+Un Tree sans Higher reste possible, un Higher Seed aussi.
+<b>La méthode s'achète, la pratique s'abonne</b> — ne jamais faire cohabiter les deux sur le même objet.</p>
+
+<h3>Ce que ça implique côté backend</h3>
+<table>
+<tr><th>Tier</th><th>Ce qu'il faut construire</th><th>Nature du coût</th></tr>
+<tr><td><b>Seed</b></td><td>Compteur de quota 3/jour sur la génération · <code>habit_outcome</code> dans <code>totehm_events</code> · moteur d'autobiographie · les deux interrupteurs de visibilité</td><td>IA, plafonnée</td></tr>
+<tr><td><b>Plant</b></td><td>Lecture cross-user sous RLS · <code>Search a Totehm</code> · import d'une habitude d'un autre Totehm · pont vers le Cloth depuis un chapitre · tables Crew + attribution au webhook</td><td>≈ 0 — requêtes Postgres</td></tr>
+<tr><td><b>Tree</b></td><td>Google Places + API événements · cache par ville × intention · scoring contre Totehm <i>et</i> autobiographie · push proactif sous plafond NOTHING</td><td>Variable, par appel</td></tr>
+</table>
+<div class="ok">
+<b>Le cache est ce qui rend Tree rentable.</b> Une recherche « Focus · Lisbonne · 14 h »
+sert des dizaines d'abonnés. Sans cache par ville × intention × créneau, le coût par
+utilisateur est multiplié par cinq et Tree devient une machine à perdre de l'argent.
+<b>Le cache n'est pas une optimisation, c'est une condition d'existence du tier.</b>
+</div>
+
+
+<h2><span>06</span>higher.boutique — le Revenue Engine</h2>
+
+<h3>Ce qu'on vend</h3>
+<p>Un <b>Totehm Cloth</b> : une histoire — texte perso ou chapitre d'autobiographie —
+illustrée sous un style artistique, curatée par un artiste partenaire, imprimée sur
+une pièce unique. <b>Ce n'est pas un vêtement personnalisé, c'est une sortie du Totehm.</b></p>
+
+<div class="key">
+<b>Data Identity.</b> Chaque pièce porte un identifiant unique <code>1.ClothName</code> —
+le chiffre est l'année d'époque TOTEHM, incrémentée chaque 1<sup>er</sup> juin.
+Imprimé dans le design, à vie.<br><br>
+<b>Le Decode reste ouvert à tous</b>, sans compte, sans paiement. On croise une pièce
+dans la rue, on tape son nom, on lit le message, on veut la sienne.
+<b>Fermer le Decode, c'est fermer le canal d'acquisition le moins cher du système.</b>
+</div>
+
+<h3>Unit Economics — le P&amp;L par pièce</h3>
+<p class="sub">« marge ~65 % » ne permet aucune décision. Le détail ligne par ligne répond à :
+combien de ventes pour X € ? quel prix plancher ? quel split artiste est soutenable ?</p>
+
+<table>
+<tr><th></th><th>T-Shirt</th><th>Hoodie</th></tr>
+<tr><td>Prix public TTC</td><td>95,00 €</td><td>160,00 €</td></tr>
+<tr><td>Stripe (2,9 % + 0,25 €)</td><td>− 3,01 €</td><td>− 4,89 €</td></tr>
+<tr><td>Printful — pièce + DTG</td><td>− 15,50 €</td><td>− 32,00 €</td></tr>
+<tr><td>Printful — shipping EU</td><td>− 4,50 €</td><td>− 6,00 €</td></tr>
+<tr><td>Génération IA (7 concepts + upscale)</td><td>− 1,20 €</td><td>− 1,20 €</td></tr>
+<tr><td>Artiste Level 1 (25 % du net)</td><td>− 17,95 €</td><td>− 28,98 €</td></tr>
+<tr><td><b>NET TOTEHM</b></td><td class="coral"><b>53,84 €</b></td><td class="coral"><b>86,93 €</b></td></tr>
+<tr><td>Marge nette</td><td>56,7 %</td><td>54,3 %</td></tr>
+</table>
+
+<div class="ok">
+<b>Doctrine Manual-First.</b> Le pipeline n8n complet n'est pas nécessaire pour
+<b>encaisser</b> — il est nécessaire pour <b>scaler</b>. Deux problèmes différents,
+deux urgences différentes.<br><br>
+<b>V0, commandes 1 à 20 :</b> Stripe encaisse → notification Telegram → concepts générés
+à la main → curation → upscale + montage → commande Printful <i>via l'interface web</i>,
+pas l'API → tracking envoyé par Resend.<br>
+<b>Automatiser quand le manuel dépasse 5 h/semaine.</b>
+</div>
+
+<h3>Garde-fous — ce qui tue la marque</h3>
+<div class="warn">
+<b>Interdits absolus</b><br>
+✕ Ouvrir un compte social au nom de TOTEHM &nbsp;·&nbsp; ✕ Acheter de la publicité<br>
+✕ Promettre un rendu ou montrer un preview &nbsp;·&nbsp; ✕ Vendre le Luxury en prospection froide<br>
+✕ Solder, remiser, Black Friday &nbsp;·&nbsp; ✕ Laisser une commission influencer un classement
+</div>
+<div class="ok">
+<b>Non négociables</b><br>
+✓ Decode ouvert à tous, sans compte &nbsp;·&nbsp; ✓ Un seul signal par drop, par email<br>
+✓ Le client ne voit jamais l'œuvre avant l'ouverture du colis<br>
+✓ Virement à l'artiste immédiat après la vente<br>
+✓ Une place d'Executive Artist par ville, pas deux<br>
+✓ Chaque pièce porte son identifiant, à vie
+</div>
+
+<h3>Le NFT — une 3<sup>e</sup> clé, pas un produit parallèle</h3>
+<p>Une seule table décide de l'accès : <code>stoner_access</code>, avec
+<code>source ∈ (stripe, nft, grant)</code>. Le gate ne vérifie <b>jamais</b> la chaîne en
+direct — il lit une ligne. Un job de réconciliation écrira <code>source='nft'</code>
+le jour venu, <b>sans qu'on touche au gate</b>.</p>
+<p>Le checkout fiat thirdweb <b>passe par Stripe de toute façon</b> : Stripe est le
+prérequis du NFT, pas son alternative. KYC au premier achat fiat + historique de
+dépréciation (Paper NFT Checkout arrêté) → on ne bâtit pas l'unique moteur de cash dessus.</p>
+<p class="sub"><b>Levier réel :</b> les NFT <b>Quantum de Wavywah</b> sont déjà mintés sur
+Rarible — coût de build ≈ zéro, il manque <code>wavy.html</code>. C'est l'asset qu'on ouvre
+devant une galerie. <span class="coral">Le lien existe déjà sur le site et renvoie 404.</span></p>
+
+
+<h2><span>07</span>Où vit quoi</h2>
+
+<table>
+<tr><th>Quoi</th><th>Où</th></tr>
+<tr><td>Pages totehm.space</td><td><code>space/</code> · Vercel Root Directory <code>space</code></td></tr>
+<tr><td>Pages higher.boutique</td><td><code>boutique/</code> · Vercel Root Directory <code>boutique</code></td></tr>
+<tr><td>SQL, Edge Functions, n8n</td><td><code>backend/</code> — <b>servi par personne</b></td></tr>
+<tr><td>Ce master, les notes</td><td><code>~/totehm_docs/</code> — <b>hors du repo</b> (repo public)</td></tr>
+<tr><td>Clés SSH Oracle</td><td><code>~/totehm/oracle/</code> — gitignoré</td></tr>
+</table>
+
+<div class="warn">
+<b><code>backend/</code> doit rester à la racine.</b> Placé dans <code>space/</code> ou
+<code>boutique/</code>, Vercel le servirait publiquement : SQL, code des fonctions et
+<code>docker-compose.yml</code> deviendraient téléchargeables.
+</div>
+
+<h3>Un seul projet Supabase pour les deux domaines</h3>
+<p><code>abujjbkbbiumxrokozph</code> · eu-west-1 · <b>c'est ce qui rend les deux plateformes liées</b> :
+même base, mêmes fonctions, même auth.</p>
+
+<div class="warn">
+<b>Deux flux Stripe sur le même compte.</b><br>
+<code>create-checkout</code> → Totehm Cloth &nbsp;·&nbsp; <code>higher-checkout</code> → Figher Club<br>
+<code>stripe-webhook</code> reçoit <b>les deux</b> et n'accorde l'accès Higher que si
+<code>metadata.product === 'higher'</code>.<br>
+<b>Ne jamais retirer ce filtre</b> — sans lui, chaque acheteur de t-shirt obtiendrait
+l'accès Higher gratuitement, sans que personne s'en aperçoive.
+</div>
+
+
+<h2><span>08</span>État au 3 août 2026</h2>
+
+<div class="ok">
+<b>CE QUI TOURNE</b><br>
+Deux dossiers, deux projets Vercel, deux domaines · <code>backend/</code> étanche ·
+bucket <code>stoner-method</code> privé, 11 vidéos en URLs signées ·
+3 Edge Functions déployées · le gate validé en réel ·
+<b>premier paiement encaissé de bout en bout</b> (Figher #002, 11 €, test) ·
+vocabulaire mort retiré (LEAF/PAPER/SUPER PAPER, <code>user_roles</code>).<br>
+<b>9 août 2026 :</b>
+<b>Pipeline n8n A→E = moteur de production validé.</b> Credentials Stripe whsec_, OpenAI, Telegram, Printful branchés. Ne pas bypasser. ·
+<code>create-checkout</code> corrigé : <code>metadata.product='cloth'</code> isole le flux streetwear du webhook Higher ·
+UI <code>index.html</code> : "Totehmize my streetwear" + Champion · "Totehmize my Cloth &amp; stuff" + logos Hermès/LV/Gucci · "Experience our dope branding" sous la vidéo · <code>no_social_media.jpg</code> en bas de page ·
+Stock DB remis à zéro : 13 lignes de test supprimées, <code>claimed=0</code> sur les 3 supports.
+</div>
+
+<div class="warn">
+<b>CE QUI MANQUE POUR ENCAISSER HIGHER EN RÉEL</b><br>
+1. Resend — vérifier <code>higher.boutique</code>, DNS dans <b>Vercel</b> (pas Hostinger)<br>
+2. <code>supabase secrets set RESEND_API_KEY=re_...</code><br>
+3. SMTP custom dans Supabase Auth — sinon <b>2 codes email par heure</b><br>
+4. Passer Stripe en <b>live</b> : nouveau webhook, nouveau <code>whsec_</code>, <code>sk_live_</code>
+</div>
+
+<div class="warn">
+<b>CE QUI MANQUE POUR ENCAISSER LES ABONNEMENTS</b> — rien de tout ça n'existe encore,
+et sans ça la section 05 est un poster.<br>
+1. <b>4 Price IDs Stripe</b> — Plant mensuel/annuel, Tree mensuel/annuel<br>
+2. Edge Function <code>subscription-checkout</code> — mode <code>subscription</code>,
+<code>metadata:{product:'subscription', tier, period, crew_code}</code><br>
+3. <code>stripe-webhook</code> étendu — <code>customer.subscription.created / updated / deleted</code>,
+<code>invoice.payment_failed</code>. <b>Le filtre <code>metadata.product</code> reste intact.</b><br>
+4. Edge Function <code>stripe-portal</code> — résiliation et changement de plan sans écrire une ligne d'UI<br>
+5. <code>subscribe.html</code> — le tunnel, annuel d'abord, mensuel visible<br>
+6. Les deux colonnes de visibilité + la RLS de lecture cross-user<br>
+7. <code>terms.html</code> — la section publication. <b>Bloquant légal sur Plant.</b>
+</div>
+
+<div class="warn">
+<b>ORDRE — ce qui bloque quoi</b><br>
+<b>Bloquant Seed :</b> l'autobiographie est désormais gratuite → le moteur doit tourner
+<b>avant le premier inscrit</b>, plus avant le premier payant. C'est une escalade, pas un report.<br>
+<b>Bloquant Plant :</b> les terms + les deux interrupteurs + la RLS cross-user.
+On ne vend pas l'accès aux autres avant que les autres aient pu dire oui.<br>
+<b>Bloquant Tree :</b> le cache par ville × intention. Sans lui, chaque abonné coûte 5× plus cher que prévu.
+</div>
+
+<h3>Décisions verrouillées</h3>
+<ul>
+<li><b>L'autobiographie est gratuite, dans Seed</b> (5 août). Vendre à quelqu'un l'accès à sa propre vie est faible et se retourne contre la marque. Ce qui se vend, c'est <b>l'accès à celle des autres</b>. Seed produit le corpus, Plant le vend.</li>
+<li><b>Privé par défaut, sans exception.</b> Aucune donnée d'un utilisateur n'est lisible par un autre sans un geste explicite, révocable à l'instant.</li>
+<li><b>Mensuel et annuel coexistent.</b> Annuel = 2 mois offerts, présenté en premier. Le mensuel n'est jamais caché — le cacher coûterait plus en haut d'entonnoir que ce qu'il rapporterait en marge.</li>
+<li><b>Le cache est une condition d'existence de Tree</b>, pas une optimisation à faire plus tard.</li>
+<li><b>Le Crew Code n'a pas de vitrine.</b> Pas de page créateur, pas de profil public, pas de classement. « Search my Totehm » et rien d'autre.</li>
+<li><b>Le drip 7 jours est abandonné</b> — [Low] est instantané, un mode déclaré au J0 est périmé au J4. Et fractionner la méthode ne la ralentit pas : ça la détruit.</li>
+<li><b>Aucune allusion à une valeur future</b> du NFT ou de la place. Uniquement des avantages nommés, livrables, non financiers.</li>
+<li><b>La revente n'est pas opérée par TOTEHM.</b> Si la place devient un NFT, Rarible et OpenSea existent, les royalties tombent, et TOTEHM n'opère rien.</li>
+<li><b>Le palier suivant est écrit, jamais suggéré.</b> Un calendrier de prix publié fait agir ; un sous-entendu, non.</li>
+<li><b>Les 11 M$</b> sont un chiffre de pitch, cohérent avec la doctrine de rareté. Jamais côté acheteur, jamais traité comme du cashflow.</li>
+</ul>
+
+<h3>Dette identifiée, non traitée</h3>
+<ul>
+<li><code>spots.state_of_mind</code> mélange deux langues (<code>calm</code> 27 / <code>calme</code> 6) et des valeurs multiples. Pour l'affichage ça passe ; pour du matching par embedding, deux orthographes = deux clusters = résultat faux.</li>
+<li>Vocabulaire à migrer : <code>member_grind</code> → <b>totehm</b> · <code>intention</code> → <b>intention_now</b> · <code>book_chapters</code> → <b>autobiographie</b>. Casse <code>match_member_to_spots</code>, <code>match_spots_grind</code>, <code>match_spots_vibe</code>, le bot et n8n → à faire avec des vues de compatibilité.</li>
+<li><code>member_vibes</code> — table vide, jamais utilisée. Réaffectable (musique + type de lieu, intentions Celebrate et Focus).</li>
+<li><code>_deprecated_user_roles_20260803</code> — à supprimer après le 3 septembre.</li>
+</ul>
+
+<div class="ok">
+<b>Le moteur de la Higher Map existe déjà</b> — <code>match_member_to_spots</code>,
+<code>match_spots_grind</code>, <code>match_spots_vibe</code>. Et <code>spots</code> porte
+<code>intention</code>, <code>state_of_mind</code>, <code>lat/lng</code>,
+<code>duration_min</code>, <code>expires_at</code> et deux embeddings.
+La Map est plus proche qu'elle n'en a l'air. Hors périmètre tant qu'aucun euro n'est rentré.
+</div>
+
+
+<h2><span>09</span>Doctrine de marque</h2>
+
+<table>
+<tr><th>Élément</th><th>Règle</th></tr>
+<tr><td>Navy <code>#333366</code></td><td>présent · habitudes · ancrage</td></tr>
+<tr><td>Bleu clair</td><td>objectifs · le ciel · où l'on va</td></tr>
+<tr><td>Rouge-violet <code>#743169</code></td><td>répulsions · carburant</td></tr>
+<tr><td>Coral <code>#fbd5ca</code></td><td><b>exclusivement</b> actionnable/interactif — jamais décoratif</td></tr>
+<tr><td>Quantico Bold coral</td><td><b>exclusivement</b> noms de techniques Stoner et noms d'Intentions</td></tr>
+<tr><td>Bebas Neue (gris)</td><td>narration et copie décorative</td></tr>
+<tr><td>Le mot « Higher »</td><td><b>toujours</b> le SVG outlined — <b>jamais</b> une webfont. En email : PNG (ni SVG ni webfont ne passent).</td></tr>
+<tr><td>Perforation</td><td>cœur du logo et du système de boutons · padding <code>0.02em 0.18em</code></td></tr>
+<tr><td>Interdits</td><td>« archivé » · « customized / personalized / POD » · urgence artificielle</td></tr>
+</table>
+
+<h3>Méthode</h3>
+<ul>
+<li>Brique par brique · valider avant de coder · une modification à la fois · <code>node --check</code> après chaque JS</li>
+<li><b>Manuel d'abord, automatiser ensuite</b> — automatiser quand le manuel dépasse 5 h/semaine</li>
+<li><b>Filtre 7 jours</b> sur toute idée nouvelle. La discipline est d'arrêter, pas de commencer.</li>
+<li><b>Métrique hebdomadaire : le cash déplacé</b>, pas les features livrées.</li>
+</ul>
+
+</body>
+</html>
