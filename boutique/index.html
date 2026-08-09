@@ -82,12 +82,13 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 .brand-subtitle{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.22em;color:var(--g-dark);text-align:center}
 .brand-scroll{display:flex;gap:18px;overflow-x:auto;padding:8px 6px 12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;width:100%;max-width:380px;justify-content:center}
 .brand-scroll::-webkit-scrollbar{display:none}
-.brand-logo{flex:0 0 auto;width:64px;height:64px;object-fit:contain;filter:grayscale(1) brightness(.55);scroll-snap-align:center;border-radius:0;transition:filter .2s}
-.brand-logo:hover{filter:grayscale(0) brightness(1)}
+.brand-logo{flex:0 0 auto;width:64px;height:64px;object-fit:contain;filter:none;scroll-snap-align:center;border-radius:0;transition:filter .2s}
+.brand-logo:hover,.brand-logo:active{filter:brightness(1.25)}
 
 /* STREETWEAR : sous-titre + image support */
 .sw-block{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
-.sw-support-img{width:64px;height:64px;object-fit:contain;display:block;filter:grayscale(45%);margin-top:4px}
+.sw-support-img{width:64px;height:64px;object-fit:contain;display:block;filter:none;margin-top:4px;transition:filter .2s}
+.sw-support-img:hover,.sw-support-img:active{filter:brightness(1.25)}
 
 /* NO SOCIAL MEDIA footer */
 .no-social-wrap{width:100%;display:flex;justify-content:center;padding:6vh 22px 5vh}
