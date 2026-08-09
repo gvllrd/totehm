@@ -4,12 +4,10 @@ Socle commun aux deux domaines. **Un seul projet Supabase** sert
 `totehm.space` et `higher.boutique` — c'est ce qui rend les deux
 plateformes liées : même base, mêmes fonctions, même auth.
 
-```
-~/totehm/
-  space/       →  www.totehm.space      (Vercel, Root Directory = space)
-  boutique/    →  www.higher.boutique   (Vercel, Root Directory = boutique)
-  backend/     →  servi par PERSONNE    ← ce dossier
-```
+    ~/totehm/
+      space/       →  www.totehm.space      (Vercel, Root Directory = space)
+      boutique/    →  www.higher.boutique   (Vercel, Root Directory = boutique)
+      backend/     →  servi par PERSONNE    ← ce dossier
 
 ⚠️ **`backend/` doit rester à la racine.** Placé dans `space/` ou
 `boutique/`, Vercel le servirait publiquement : le SQL, le code des
@@ -19,11 +17,9 @@ Edge Functions et le `docker-compose.yml` deviendraient téléchargeables.
 
 ## Projet Supabase
 
-```
-ref     abujjbkbbiumxrokozph
-region  eu-west-1
-nom     get Higher
-```
+    ref     abujjbkbbiumxrokozph
+    region  eu-west-1
+    nom     get Higher
 
 ## Qui utilise quoi
 
@@ -85,32 +81,22 @@ repo public.
 
 ---
 
-## Déployer
+## Déployer (Via Claude Code)
 
-```bash
-supabase functions deploy stoner-gate
-supabase functions deploy higher-checkout
-supabase functions deploy stripe-webhook --no-verify-jwt
-```
+Les déploiements et migrations ne sont plus opérés manuellement.
+Claude (CTO) conçoit l'architecture et livre les commandes dans un fichier `CLAUDE_CODE.md`.
+Claude Code exécute ensuite ces commandes dans le terminal :
 
-`--no-verify-jwt` sur le webhook : Stripe n'a pas de JWT Supabase.
-Sans risque, la signature cryptographique est vérifiée dans le code.
-
-Les migrations SQL se collent dans SQL Editor, ou :
-
-```bash
-supabase db push
-```
+    supabase functions deploy stoner-gate
+    supabase functions deploy higher-checkout
+    supabase functions deploy stripe-webhook --no-verify-jwt
+    supabase db push
 
 ---
 
-## Les masters ne sont PAS ici
+## Le Master n'est PAS ici
 
-`totehm_space_master.html` et `higher_boutique_master.html` restent dans
-`~/totehm_docs/`, hors du repo.
+Le document stratégique unique `TOTEHM_MASTER.html` vit dans `~/totehm_docs/`, hors du repo public.
 
-Raison : le repo GitHub est **public**. `backend/` n'est pas servi par
-Vercel, mais il reste lisible sur GitHub. Les masters contiennent prix,
-roadmap et unit economics — inutile de les publier.
-
-Le `.gitignore` les exclut déjà via `*_master.html`.
+**Ce fichier est maintenu par le CTO (Claude) et le COO (Gemini).** 
+Conformément à la **Règle d'Or**, à chaque nouvelle livraison via le `files.zip`, le fichier Master est mis à jour pour refléter la réalité de l'infrastructure, l'avancement des chantiers (ce qui tourne / ce qui manque), et documenter les décisions. Une tâche n'est terminée que si le code et les 3 documents sont synchronisés.
