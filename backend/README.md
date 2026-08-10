@@ -37,6 +37,27 @@ Edge Functions et le `docker-compose.yml` deviendraient téléchargeables.
 | `stripe-webhook` | ✅ Higher | ⚠️ voir plus bas |
 | `create-checkout` | — | ✅ Cloth |
 
+## Lien Printful — totehm_cloth_support
+
+Chaque support a deux colonnes Printful :
+
+| Colonne | Type | Rôle |
+|---|---|---|
+| `printful_product_id` | BIGINT | ID du produit dans le store Printful |
+| `printful_variant_map` | JSONB | `{ "S": { variant_id, sync_variant_id, retail_price }, … }` |
+
+Le **Workflow D (n8n)** lit `printful_variant_map[cloth.size].sync_variant_id`
+pour construire le payload `POST /orders` vers Printful.
+
+Le fichier brodé (`embroidery_back_center`) est l'artwork généré par Replicate
+(`cloth.artwork_print_url`). Le logo Higher sur le devant est configuré
+directement dans le store Printful — il n'est pas renvoyé à chaque commande.
+
+Actuellement mappé :
+- **Heavyweight Crewneck** → store product `455053848` (Champion S149, Black, S/M/L/XL/2XL)
+
+---
+
 ## ⚠️ Deux flux Stripe sur le même compte
 
 `create-checkout` (Cloth) et `higher-checkout` (Figher Club) créent
@@ -100,3 +121,12 @@ Le document stratégique unique `TOTEHM_MASTER.html` vit dans `~/totehm_docs/`, 
 
 **Ce fichier est maintenu par le CTO (Claude) et le COO (Gemini).** 
 Conformément à la **Règle d'Or**, à chaque nouvelle livraison via le `files.zip`, le fichier Master est mis à jour pour refléter la réalité de l'infrastructure, l'avancement des chantiers (ce qui tourne / ce qui manque), et documenter les décisions. Une tâche n'est terminée que si le code et les 3 documents sont synchronisés.
+---
+
+## 🚽 Règle inbox — Chasse d'eau
+
+Après chaque déploiement, Claude Code vide `~/inbox/` :
+
+    rm -rf ~/inbox/*
+
+Dernière commande de chaque `CLAUDE_CODE.md`, sans exception.
