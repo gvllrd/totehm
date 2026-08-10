@@ -37,7 +37,6 @@ body{overflow-x:hidden}
 .btn-back{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:none;padding:0 2px;line-height:1.4;-webkit-tap-highlight-color:transparent;transition:color .15s ease,background .15s ease}
 .btn-back:hover,.btn-back:active{color:#fff;background:var(--rep)}
 
-#back-top{position:fixed;top:14px;left:14px;z-index:50}
 
 /* ── ENGRAVE : box perforée avec préfixe d'époque ── */
 .name-box{display:none;align-items:center;border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;padding:0 8px}
@@ -137,7 +136,6 @@ div.style-img{display:flex;align-items:center;justify-content:center;font-family
 </head>
 <body>
 
-<button class="btn-back" id="back-top">Back in Time</button>
 <button class="btn-sig" id="concept-btn">What is a Totehm Cloth Streetwear ?</button>
 
 <button id="conn-bar" aria-label="member space"><span class="dot" id="conn-dot"></span><span id="conn-txt">Guest</span></button>
@@ -353,7 +351,6 @@ $('carousel').addEventListener('touchstart',e=>{x0=e.changedTouches[0].screenX;}
 $('carousel').addEventListener('touchend',e=>{const dx=e.changedTouches[0].screenX-x0;if(Math.abs(dx)>50)go(dx<0?1:-1);},{passive:true});
 window.addEventListener('keydown',e=>{if(!$('config').classList.contains('show')&&!$('fs').classList.contains('show')&&!$('member').classList.contains('show')&&!$('concept').classList.contains('show')){if(e.key==='ArrowRight')go(1);if(e.key==='ArrowLeft')go(-1);}});
 
-$('back-top').onclick=()=>{location.href='index.html#menu';};
 
 /* TOTEHMIZE -> full-screen écrit */
 function startTotehmize(s){
