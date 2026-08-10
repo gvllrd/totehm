@@ -215,15 +215,13 @@ div.style-img{display:flex;align-items:center;justify-content:center;font-family
   <div class="cfg-step" id="step-dim">
     <button class="btn-sig" id="dim-btn">Define dimensions of the Totehm Cloth Support</button>
     <div class="sizes hide" id="size-row">
-      <button class="size-btn" data-s="S">S</button>
-      <button class="size-btn" data-s="M">M</button>
-      <button class="size-btn" data-s="L">L</button>
-      <button class="size-btn" data-s="XL">XL</button>
+      <!-- tailles injectées dynamiquement depuis printful_variant_map -->
     </div>
   </div>
 
   <div class="cfg-step" id="step-order">
     <div class="price-big" id="price-big"></div>
+
     <button class="btn-sig" id="order-btn">Order your Totehm Cloth</button>
     <div class="blind">By pressing Order your Totehm Cloth, you accept the <a id="terms-link">terms of sale</a>. The Totehm Cloth is a leap into the unknown. We take absolute control over the design, its size, and where it lands. Trust us. If you don't, do not order. No returns, no refunds.</div>
     <div class="note dim" id="order-note"></div>
@@ -245,11 +243,10 @@ let supports=[], ci=0;
 let styles=[], stylesLoaded=false;
 let order={support:null,message:'',name:'',size:'',style:null};
 
-/* ── ÉPOQUE : 0 = année Totehm démarrant au 1er juin 2026, +1 chaque 1er juin ── */
 const EPOCH_YEAR=2026;
 function epochPrefix(){
   const d=new Date(), y=d.getFullYear();
-  const ey=(d.getMonth()>=5)?y:y-1;   // juin = mois 5
+  const ey=(d.getMonth()>=5)?y:y-1;
   return Math.max(ey-EPOCH_YEAR,0)+'.';
 }
 
@@ -260,11 +257,9 @@ async function load(){
 }
 function avail(s){return Math.max((s.max_pieces||0)-(s.claimed||0),0);}
 
-/* ── CONCEPT : l'histoire du Totehm Cloth ── */
 $('concept-btn').onclick=()=>{ $('concept').classList.add('show'); };
 $('concept-back').onclick=()=>{$('concept').classList.remove('show');};
 
-/* ── MEMBER SPACE : email-only DNA, no password ── */
 let me=null, myProfile=null;
 function connPaint(){
   $('conn-txt').textContent=(myProfile&&myProfile.pseudo)||(me?'Member':'Guest');
@@ -296,7 +291,7 @@ let mwEmail='';
 $('mw-email').addEventListener('keydown',async e=>{
   if(e.key!=='Enter')return;
   const v=$('mw-email').value.trim(), note=$('mw-note');
-  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){note.className='note no';note.textContent='invalid email';return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){note.className='note no';note.textContent='invalid email';return;}
   note.className='note dim';note.textContent='sending…';
   const {error}=await sb.auth.signInWithOtp({email:v,options:{shouldCreateUser:true}});
   if(error){note.className='note no';note.textContent='try again in a minute';return;}
@@ -330,17 +325,17 @@ function render(){
   const s=supports[ci];const card=$('card');
   if(!s){card.innerHTML='<div class="mono">collection coming soon</div>';return;}
   const left=avail(s);
-  const visual = s.image_url
-    ? `<div class="visual"><img src="${s.image_url}" alt="support"></div>`
-    : `<div class="visual"><div class="ph">support</div></div>`;
-  card.innerHTML =
-    visual +
+  const visual=s.image_url
+    ?`<div class="visual"><img src="${s.image_url}" alt="support"></div>`
+    :`<div class="visual"><div class="ph">support</div></div>`;
+  card.innerHTML=
+    visual+
     `<button class="btn-sig" id="support-btn">Totehm Cloth Support Details</button>`+
     `<div class="support-desc" id="support-desc">${esc(s.details||'')}</div>`+
     (left>0?`<div class="pieces">${left} / ${s.max_pieces} pieces left</div>`:`<div class="soldout">sold out</div>`)+
     (left>0?`<button class="btn-coral" id="totehmize">Totehmize</button>`:'');
   card.querySelector('#support-btn').onclick=()=>$('support-desc').classList.toggle('on');
-  const tb=card.querySelector('#totehmize'); if(tb) tb.onclick=()=>startTotehmize(s);
+  const tb=card.querySelector('#totehmize');if(tb)tb.onclick=()=>startTotehmize(s);
   document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===ci));
 }
 function renderDots(){const w=$('dots');w.innerHTML='';supports.forEach((s,i)=>{const d=document.createElement('div');d.className='dot'+(i===ci?' on':'');w.appendChild(d);});}
@@ -351,17 +346,14 @@ $('carousel').addEventListener('touchstart',e=>{x0=e.changedTouches[0].screenX;}
 $('carousel').addEventListener('touchend',e=>{const dx=e.changedTouches[0].screenX-x0;if(Math.abs(dx)>50)go(dx<0?1:-1);},{passive:true});
 window.addEventListener('keydown',e=>{if(!$('config').classList.contains('show')&&!$('fs').classList.contains('show')&&!$('member').classList.contains('show')&&!$('concept').classList.contains('show')){if(e.key==='ArrowRight')go(1);if(e.key==='ArrowLeft')go(-1);}});
 
-
-/* TOTEHMIZE -> full-screen écrit */
 function startTotehmize(s){
   order={support:s,message:'',name:'',size:'',style:null};
   $('fs-text').value='';
-  $('fs-q').classList.remove('hide');      // question visible
-  $('fs-encode').classList.add('hide');    // Encode caché tant que rien n'est écrit
+  $('fs-q').classList.remove('hide');
+  $('fs-encode').classList.add('hide');
   $('fs').classList.add('show');
   setTimeout(()=>$('fs-text').focus(),150);
 }
-/* dès que l'utilisateur écrit : la question disparaît, Encode apparaît */
 $('fs-text').addEventListener('input',()=>{
   const has=$('fs-text').value.trim().length>0;
   $('fs-q').classList.toggle('hide',has);
@@ -375,7 +367,6 @@ $('fs-encode').onclick=()=>{
   openConfig();
 };
 
-/* CONFIG : la page se construit au fur et à mesure des inputs */
 function openConfig(){
   $('name-prefix').textContent=epochPrefix();
   $('step-name').classList.add('on');$('step-style').classList.remove('on');$('step-dim').classList.remove('on');$('step-order').classList.remove('on');
@@ -386,12 +377,11 @@ function openConfig(){
   $('style-drawer').classList.remove('on');
   document.querySelectorAll('.style-item').forEach(x=>x.classList.remove('on'));
   order.style=null;order.name='';order.size='';
-  $('size-row').classList.add('hide');
-  document.querySelectorAll('.size-btn').forEach(b=>b.classList.remove('on'));
+  // reset tailles
+  $('size-row').innerHTML='';$('size-row').classList.add('hide');
   $('order-note').textContent='';
   $('config').classList.add('show');$('config').scrollTop=0;
 }
-/* Back in writing Time : retour à l'écrit, texte préservé */
 $('cfg-back').onclick=()=>{
   $('config').classList.remove('show');
   $('fs-text').value=order.message||'';
@@ -403,7 +393,6 @@ $('cfg-back').onclick=()=>{
 };
 $('done-back').onclick=()=>{location.href='index.html#menu';};
 
-/* NAME -> box préfixée (0.Name) + vérif Supabase sur le code complet */
 $('name-btn').onclick=()=>{
   $('name-btn').classList.add('hide');
   $('name-box').classList.add('on');
@@ -425,7 +414,6 @@ $('name-input').addEventListener('input',()=>{
   },420);
 });
 
-/* chaîne de révélation : name -> style -> dimensions -> order */
 function revealStyle(show){
   $('step-style').classList.toggle('on',show);
   if(show)loadStyles();
@@ -433,7 +421,6 @@ function revealStyle(show){
 }
 function revealDim(show){$('step-dim').classList.toggle('on',show);if(!show)$('step-order').classList.remove('on');}
 
-/* STYLES ARTISTIQUES : tiroir horizontal (Supabase-driven) */
 $('style-btn').onclick=()=>{$('style-drawer').classList.toggle('on');loadStyles();};
 async function loadStyles(){
   if(stylesLoaded)return;
@@ -460,34 +447,70 @@ function renderStyles(){
   });
 }
 
-/* DIMENSIONS */
-$('dim-btn').onclick=()=>{$('size-row').classList.toggle('hide');};
-document.querySelectorAll('.size-btn').forEach(b=>{
+/* DIMENSIONS : tailles dynamiques depuis printful_variant_map */
+$('dim-btn').onclick=()=>{
+  // Construire les boutons de taille à partir du support sélectionné
+  const variantMap=order.support?.printful_variant_map||{};
+  const sizes=Object.keys(variantMap).sort((a,b)=>{
+    const order=['S','M','L','XL','2XL','3XL'];
+    return order.indexOf(a)-order.indexOf(b);
+  });
+  const row=$('size-row');
+  row.innerHTML='';
+  if(!sizes.length){
+    // fallback si pas de printful_variant_map (anciens supports)
+    ['S','M','L','XL'].forEach(s=>addSizeBtn(s,row));
+  } else {
+    sizes.forEach(s=>addSizeBtn(s,row));
+  }
+  row.classList.toggle('hide');
+};
+
+function addSizeBtn(s,row){
+  const b=document.createElement('button');
+  b.className='size-btn';b.dataset.s=s;b.textContent=s;
   b.onclick=()=>{
-    document.querySelectorAll('.size-btn').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on');order.size=b.dataset.s;
+    row.querySelectorAll('.size-btn').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');order.size=s;
     $('price-big').textContent=fmt(order.support);
+    // Afficher email guest si non connecté
     $('step-order').classList.add('on');
     setTimeout(()=>$('step-order').scrollIntoView({behavior:'smooth',block:'center'}),120);
   };
-});
+  row.appendChild(b);
+}
 
 /* ORDER */
 $('order-btn').onclick=async()=>{
   if(!order.name||!order.size||!order.message||!order.style)return;
-  const note=$('order-note');note.className='note dim';note.textContent='encoding…';
+  const note=$('order-note');
+
+  // Connexion obligatoire
+  if(!me){
+    $('config').classList.remove('show');
+    $('member').classList.add('show');
+    memberPaint();
+    return;
+  }
+  const email=me.email;
+
+  note.className='note dim';note.textContent='encoding…';
   $('order-btn').style.pointerEvents='none';
   const {data,error}=await sb.functions.invoke('create-checkout',{body:{
-    garment_id:order.support.id,message:order.message,name:order.name,
-    size:order.size,style_id:order.style.id,
-    user_id:me?me.id:null,email:me?me.email:null
+    garment_id:order.support.id,
+    message:order.message,
+    name:order.name,
+    size:order.size,
+    style_id:order.style.id,
+    user_id:me?me.id:null,
+    email:email
   }});
   $('order-btn').style.pointerEvents='';
   if(error||!data?.url){
     const msg=data?.error==='sold out'?'sold out':data?.error==='name taken'?'that name was just taken':'error, try again';
     note.className='note no';note.textContent=msg;return;
   }
-  sessionStorage.setItem('tc_pending','”'+order.name+'” — '+order.size);
+  sessionStorage.setItem('tc_pending','"'+order.name+'" — '+order.size);
   window.top.location.href=data.url;
 };
 $('terms-link').onclick=(e)=>{e.preventDefault();alert('Each Totehm Cloth is a unique, made-to-order piece, validated by the artist before production. All sales are final once the artist begins. Delivery times vary per piece.');};
@@ -496,11 +519,19 @@ function esc(s){const d=document.createElement('div');d.textContent=s||'';return
 function fmt(s){const p=Number(s.price);const cur=(s.currency||'€');return cur==='€'?(p+' €'):(cur+' '+p);}
 
 load();
-(()=>{
+
+/* Retour post-paiement Stripe : récupérer le cloth depuis DB si cloth_id dispo */
+(async()=>{
   const p=new URLSearchParams(location.search);
   if(p.get('paid')){
-    const label=sessionStorage.getItem('tc_pending')||'';
+    const clothId=p.get('cloth');
+    let label=sessionStorage.getItem('tc_pending')||'';
     sessionStorage.removeItem('tc_pending');
+    // Tenter de récupérer le nom réel depuis Supabase
+    if(clothId){
+      const {data}=await sb.from('totehm_clothes').select('name,size').eq('id',clothId).maybeSingle();
+      if(data) label=`"${data.name}" — ${data.size}`;
+    }
     $('done-name').textContent=label;
     $('done').classList.remove('hide');
     $('config').classList.add('show');
@@ -508,4 +539,3 @@ load();
 })();
 </script>
 </body>
-</html>
