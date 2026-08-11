@@ -1,0 +1,48 @@
+{
+  "name": "Workflow F — Printful Product Listener",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "printful-product",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-printful",
+      "name": "Printful Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Workflow F — Printful Product Listener\n// Écoute product_synced, product_updated, product_deleted\n// Met à jour totehm_cloth_support automatiquement\n\nconst cfg = $('⚙️ CONFIG').first().json;\nconst body = $input.first().json.body;\nconst type = body.type;\nconst sbh = {\n  apikey: cfg.SB_KEY,\n  Authorization: `Bearer ${cfg.SB_KEY}`,\n  'Content-Type': 'application/json'\n};\n\n// product_deleted → passer active=false\nif (type === 'product_deleted') {\n  const pf_id = body.data?.sync_product?.id;\n  if (!pf_id) return [{ json: { ok: true, action: 'ignored', reason: 'no product id' } }];\n  await this.helpers.httpRequest({\n    method: 'PATCH',\n    url: `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_cloth_support?printful_product_id=eq.${pf_id}`,\n    headers: sbh, json: true,\n    body: { active: false }\n  });\n  return [{ json: { ok: true, action: 'deactivated', printful_product_id: pf_id } }];\n}\n\n// product_synced / product_updated → fetch détails + upsert\nif (!['product_synced', 'product_updated'].includes(type)) {\n  return [{ json: { ok: true, action: 'ignored', type } }];\n}\n\nconst pf_id = body.data?.sync_product?.id;\nif (!pf_id) return [{ json: { ok: true, action: 'ignored', reason: 'no product id' } }];\n\n// 1. Récupérer les détails complets du produit depuis Printful\nconst pfRes = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `https://api.printful.com/store/products/${pf_id}`,\n  headers: { Authorization: `Bearer ${cfg.PRINTFUL_TOKEN}` },\n  json: true\n});\n\nconst product = pfRes.result.sync_product;\nconst variants = pfRes.result.sync_variants;\n\n// 2. Construire printful_variant_map\n// { \"S\": { variant_id, sync_variant_id, retail_price }, ... }\nconst variantMap = {};\nfor (const v of variants) {\n  if (!v.size) continue;\n  variantMap[v.size] = {\n    variant_id: v.variant_id,\n    sync_variant_id: v.id,\n    retail_price: parseFloat(v.retail_price)\n  };\n}\n\n// 3. Vérifier si le support existe déjà en base\nconst existing = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_cloth_support?printful_product_id=eq.${pf_id}&select=id,price,max_pieces,active,print_area`,\n  headers: sbh, json: true\n});\n\nconst exists = existing && existing.length > 0;\n\n// 4. Champs à upsert — NE PAS écraser : price, max_pieces, active, print_area, position\n// Ces champs sont des décisions de marque, pas des données Printful\nconst upsertData = {\n  printful_product_id: pf_id,\n  printful_variant_map: variantMap,\n  title: product.name,\n  thumbnail_url: product.thumbnail_url || null\n};\n\n// Si nouveau produit → initialiser les champs de marque avec des valeurs par défaut\nif (!exists) {\n  upsertData.price = 0;        // à remplir par Wah\n  upsertData.max_pieces = 0;  // à remplir par Wah\n  upsertData.active = false;   // inactif jusqu'à configuration\n  upsertData.claimed = 0;\n  upsertData.print_area = {\n    method: 'dtg',\n    placement: 'back',\n    width_in: 12,\n    height_in: 16,\n    dpi: 300\n  };\n}\n\n// 5. Upsert dans totehm_cloth_support\nconst method = exists ? 'PATCH' : 'POST';\nconst url = exists\n  ? `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_cloth_support?printful_product_id=eq.${pf_id}`\n  : 'https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_cloth_support';\n\nawait this.helpers.httpRequest({\n  method, url, headers: { ...sbh, Prefer: 'return=representation' },\n  body: upsertData, json: true\n});\n\nreturn [{ json: {\n  ok: true,\n  action: exists ? 'updated' : 'created',\n  printful_product_id: pf_id,\n  title: product.name,\n  sizes: Object.keys(variantMap)\n} }];\n"
+      },
+      "id": "code-upsert",
+      "name": "Upsert totehm_cloth_support",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [560, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ received: true }) }}"
+      },
+      "id": "respond",
+      "name": "Respond 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [880, 300]
+    }
+  ],
+  "connections": {
+    "Printful Webhook": {
+      "main": [[{ "node": "Upsert totehm_cloth_support", "type": "main", "index": 0 }]]
+    },
+    "Upsert totehm_cloth_support": {
+      "main": [[{ "node": "Respond 200", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" }
+}
