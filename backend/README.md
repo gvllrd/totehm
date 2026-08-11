@@ -39,24 +39,33 @@ Edge Functions et le `docker-compose.yml` deviendraient téléchargeables.
 
 ## Lien Printful — totehm_cloth_support
 
-Chaque support a deux colonnes Printful :
+**Support physique : Cotton Heritage** (remplace Champion — décision verrouillée 11 août 2026)
+- Broderie Higher box perforée → **devant** (configuré dans Printful)
+- Logo TOTEHM LSD paper → **manches** (configuré dans Printful)
+- Illustration curateur DTG → **dos** (`type: "back"`, généré par `compose-artwork` à chaque commande)
+
+Colonnes Printful sur `totehm_cloth_support` :
 
 | Colonne | Type | Rôle |
 |---|---|---|
 | `printful_product_id` | BIGINT | ID du produit dans le store Printful |
 | `printful_variant_map` | JSONB | `{ "S": { variant_id, sync_variant_id, retail_price }, … }` |
+| `print_area` | JSONB | `{ "width_in": 12, "height_in": 16, "dpi": 300, "placement": "back" }` |
 
-Le **Workflow D (n8n)** lit `printful_variant_map[cloth.size].sync_variant_id`
-pour construire le payload `POST /orders` vers Printful.
+Le **Workflow D** lit `printful_variant_map[cloth.size].sync_variant_id` + `type: "back"` (DTG).
+Le **Workflow F** (à construire) écoute `product_synced / product_updated / product_deleted` Printful et upsert automatiquement `totehm_cloth_support`.
 
-Le fichier brodé (`embroidery_back_center`) est l'artwork généré par Replicate
-(`cloth.artwork_print_url`). Le logo Higher sur le devant est configuré
-directement dans le store Printful — il n'est pas renvoyé à chaque commande.
+## Collections (drops)
 
-Actuellement mappé :
-- **Heavyweight Crewneck** → store product `455053848` (Champion S149, Black, S/M/L/XL/2XL)
+Table `collections` à créer :
+- `slug` : format `0.[NomCollection]` (ex: `0.blackout`)
+- `description` : texte court affiché sous le titre sur le front
+- `color` : couleur unique du drop (monochrome — pas de sélecteur)
+- `total_max_pieces` : calculé = `SUM(max_pieces)` de tous les supports du drop
 
----
+Stock restant global = `total_max_pieces` − `SUM(claimed)` sur les supports du drop. Calculable en temps réel depuis Supabase, pas de colonne dénormalisée.
+
+## ⚠️ Deux flux Stripe sur le même compte
 
 ## ⚠️ Deux flux Stripe sur le même compte
 

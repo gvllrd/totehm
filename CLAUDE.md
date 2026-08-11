@@ -62,4 +62,4 @@ Après chaque déploiement réussi, Claude Code vide `~/inbox/` sans exception :
 ```bash
 rm -rf ~/inbox/*
 ```
-Cette commande est la **dernière étape** de chaque `CLAUDE_CODE.md`, après tous les commits et push. `~/inbox/` doit toujours repartir vide. Pas de fichiers résiduels, pas d'anciens zips, pas de restes.
+Cette commande est la **dernière étape** de chaque `CLAUDE_CODE.md`, après tous les commits et push. `~/inbox/` doit toujours repartir vide.

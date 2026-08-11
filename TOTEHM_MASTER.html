@@ -478,20 +478,51 @@ l'accès Higher gratuitement, sans que personne s'en aperçoive.
 </div>
 
 
-<h2><span>08</span>État au 3 août 2026</h2>
+<h2><span>08</span>État au 11 août 2026</h2>
 
 <div class="ok">
 <b>CE QUI TOURNE</b><br>
 Deux dossiers, deux projets Vercel, deux domaines · <code>backend/</code> étanche ·
 bucket <code>stoner-method</code> privé, 11 vidéos en URLs signées ·
-3 Edge Functions déployées · le gate validé en réel ·
-<b>premier paiement encaissé de bout en bout</b> (Figher #002, 11 €, test) ·
-vocabulaire mort retiré (LEAF/PAPER/SUPER PAPER, <code>user_roles</code>).<br>
-<b>9 août 2026 :</b>
-<b>Pipeline n8n A→E = moteur de production validé.</b> Credentials Stripe whsec_, OpenAI, Telegram, Printful branchés. Ne pas bypasser. ·
-<code>create-checkout</code> corrigé : <code>metadata.product='cloth'</code> isole le flux streetwear du webhook Higher ·
-UI <code>index.html</code> : "Totehmize my streetwear" + Champion · "Totehmize my Cloth &amp; stuff" + logos Hermès/LV/Gucci · "Experience our dope branding" sous la vidéo · <code>no_social_media.jpg</code> en bas de page ·
-Stock DB remis à zéro : 13 lignes de test supprimées, <code>claimed=0</code> sur les 3 supports.
+Edge Functions déployées : <code>create-checkout</code> · <code>compose-artwork</code> · <code>higher-checkout</code> · <code>stoner-gate</code> · <code>stripe-webhook</code> ·
+le gate validé en réel · <b>premier paiement encaissé de bout en bout</b> (Figher #002, 11 €, test) ·
+vocabulaire mort retiré (LEAF/PAPER/SUPER PAPER, <code>user_roles</code>) ·
+stock DB remis à zéro (13 lignes de test supprimées, <code>claimed=0</code> sur 3 supports) ·
+<code>create-checkout</code> injecte <code>metadata.product='cloth'</code> — flux streetwear isolé du webhook Higher ·
+<code>printful_product_id</code> + <code>printful_variant_map</code> ajoutés sur <code>totehm_cloth_support</code> ·
+connexion membre obligatoire avant checkout sur <code>streetwear.html</code> ·
+tailles dynamiques depuis <code>printful_variant_map</code> (plus de hardcode S/M/L/XL) ·
+pipeline n8n A→E opérationnel, credentials branchés ·
+<code>higher_slogan_transparent.png</code> (2400×800 RGBA, outlined) dans <code>boutique/assets/img/</code>
+</div>
+
+<div class="warn">
+<b>DÉCISIONS VERROUILLÉES — session 9–11 août 2026</b><br>
+<b>Cotton Heritage</b> remplace Champion — DTG pleine surface dos, pas de broderie ·
+broderie Higher box perforée <b>devant</b>, logo TOTEHM <b>manches</b> — configurés dans Printful, jamais renvoyés par le pipeline ·
+illustration curateur (Replicate → upscale → compose-artwork) = <b>dos uniquement</b>, type <code>back</code> (DTG) ·
+<b>monochrome par drop</b> — une seule couleur par collection, pas de sélecteur couleur ·
+<b>pas d'étiquette de marque tierce</b> — 100% TOTEHM sur Cotton Heritage
+</div>
+
+<div class="ok">
+<b>NOMENCLATURE COLLECTION</b><br>
+Format : <code>0.[NomCollection]</code> (ex: <code>0.blackout</code>, <code>0.firstBlackout</code>)<br>
+L'epoch <code>0.</code> = an 0 de la marque (1er juin 2026 → 31 mai 2027). +1 chaque 1er juin.<br>
+Chaque collection (drop) a : un nom · une description courte · un <code>total_max_pieces</code> = <code>SUM(max_pieces)</code> de tous ses supports ·
+le stock restant global = <code>total_max_pieces</code> − total pièces vendues sur le drop, calculable en temps réel depuis Supabase.
+</div>
+
+<div class="warn">
+<b>CE QUI RESTE À CONSTRUIRE — higher.boutique</b><br>
+1. <b>Workflow D</b> — corriger <code>variant_id=11111</code> → <code>sync_variant_id</code> dynamique depuis <code>printful_variant_map</code> + <code>type: "back"</code> (DTG Cotton Heritage)<br>
+2. <b>Workflow F</b> — Printful listener : <code>product_synced / product_updated / product_deleted</code> → upsert automatique <code>totehm_cloth_support</code><br>
+3. <b>Table <code>collections</code></b> — nom, slug, description, couleur, <code>total_max_pieces</code>, FK vers <code>totehm_cloth_support</code><br>
+4. <b>Champ <code>print_area</code></b> (jsonb) sur <code>totehm_cloth_support</code> — dimensions par produit pour <code>compose-artwork</code> dynamique<br>
+5. <b>Webhook Printful</b> à enregistrer : <code>POST /webhooks</code> avec l'URL du Workflow F<br>
+6. <b>Frontend <code>streetwear.html</code></b> — afficher nom collection + description + stock global restant sous le titre<br>
+7. <b><code>TOTEHM_LOGO_URL</code></b> secret Supabase à confirmer : <code>supabase secrets set TOTEHM_LOGO_URL=https://higher.boutique/assets/img/totehm_logo.png</code><br>
+8. <b>Produits Cotton Heritage</b> à créer dans Printful avec Higher brodé devant + TOTEHM sur les manches
 </div>
 
 <div class="warn">
