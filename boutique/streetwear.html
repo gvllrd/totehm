@@ -3,168 +3,185 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Create a Totehm Cloth — Streetwear</title>
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<title>Totehm Cloth Streetwear</title>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Jost:wght@300;400&display=swap" rel="stylesheet">
 <style>
 :root{
-  --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#5a5a5a;--bg:#000;--navy:#333366;--rep:#743169;--blue:#36498c;
-  --futura:'Futura','Jost',sans-serif;
-  --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
-  --tile-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%2336498c'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
-  --tile-full:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Crect width='44' height='44' fill='%23333366'/%3E%3Ccircle cx='22' cy='0' r='6' fill='%23000000'/%3E%3Ccircle cx='22' cy='44' r='6' fill='%23000000'/%3E%3Ccircle cx='0' cy='22' r='6' fill='%23000000'/%3E%3Ccircle cx='44' cy='22' r='6' fill='%23000000'/%3E%3C/svg%3E");
-  --tile-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23743169'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+  --coral:#fbd5ca;--navy:#333366;--rep:#743169;
+  --g0:#fff;--g1:#b0b0b0;--g2:#5a5a5a;--bg:#000;
+  --tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000'/%3E%3C/svg%3E");
+  --tile-full:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Crect width='44' height='44' fill='%23333366'/%3E%3Ccircle cx='22' cy='0' r='6' fill='%23000'/%3E%3Ccircle cx='22' cy='44' r='6' fill='%23000'/%3E%3Ccircle cx='0' cy='22' r='6' fill='%23000'/%3E%3Ccircle cx='44' cy='22' r='6' fill='%23000'/%3E%3C/svg%3E");
+  --q:'Quantico',sans-serif;--mono:'Space Mono',monospace;--body:'Jost',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;min-height:100%;background:var(--bg);color:var(--g-light);font-family:var(--futura);font-weight:300;-webkit-font-smoothing:antialiased}
-body{overflow-x:hidden}
+html,body{width:100%;min-height:100dvh;background:var(--bg);color:var(--g1);font-family:var(--body);font-weight:300;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 .hide{display:none!important}
-.mono{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.16em;color:var(--g-mid);text-transform:uppercase}
+.mono{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--g2)}
 
-/* ── BOUTONS DE MARQUE : repos -> survol bleu clair (desktop) -> clic navy ── */
-.btn-sig{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
-.btn-coral{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:var(--coral);background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
-.size-btn{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:2px 10px;-webkit-tap-highlight-color:transparent;transition:color .15s}
-@media(hover:hover){
-  .btn-sig:hover,.btn-coral:hover,.size-btn:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
-}
-.btn-sig:active,.btn-coral:active,.size-btn:active,.size-btn.on{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
-
-/* Encode : coral pur, sans encadré */
-.btn-encode{font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;letter-spacing:0;color:var(--coral);background:none;border:none;cursor:pointer;padding:8px 10px;transition:opacity .18s;-webkit-tap-highlight-color:transparent}
-.btn-encode:hover{opacity:.7}
-
-/* Back in Time : format bouton de marque, survol+clic rouge-violet, sans flèche */
-.btn-back{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:none;padding:0 2px;line-height:1.4;-webkit-tap-highlight-color:transparent;transition:color .15s ease,background .15s ease}
+/* BOUTONS */
+.btn{font-family:var(--q);font-weight:400;font-size:14px;color:var(--g1);background:none;border:6px solid transparent;cursor:pointer;padding:1px 6px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s}
+.btn-coral{font-family:var(--q);font-weight:400;font-size:14px;color:var(--coral);background:none;border:6px solid transparent;cursor:pointer;padding:1px 6px;line-height:1.5;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s}
+.btn-encode{font-family:var(--q);font-size:15px;color:var(--coral);background:none;border:none;cursor:pointer;padding:10px 14px;-webkit-tap-highlight-color:transparent;transition:opacity .18s}
+.btn-encode:hover{opacity:.65}
+.btn-back{font-family:var(--q);font-size:13px;color:var(--g2);background:none;border:none;cursor:pointer;padding:2px 4px;-webkit-tap-highlight-color:transparent;transition:color .15s,background .15s}
 .btn-back:hover,.btn-back:active{color:#fff;background:var(--rep)}
+.sz{font-family:var(--q);font-size:13px;color:var(--g1);background:none;border:6px solid transparent;cursor:pointer;padding:2px 11px;-webkit-tap-highlight-color:transparent;transition:color .12s}
+@media(hover:hover){.btn:hover,.btn-coral:hover,.sz:hover{color:#fff;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round}}
+.btn:active,.btn-coral:active,.sz:active,.sz.on{color:#fff;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round}
 
+/* LAYOUT */
+#main{display:flex;flex-direction:column;min-height:100dvh}
 
-/* ── ENGRAVE : box perforée avec préfixe d'époque ── */
-.name-box{display:none;align-items:center;border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;padding:0 8px}
-.name-box.on{display:flex}
-.name-prefix{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:#fff;opacity:.55;user-select:none}
-.name-box input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:none;outline:none;border:none;text-align:left;caret-color:var(--coral);min-width:170px;padding:0}
+/* HEADER */
+#header{display:flex;align-items:flex-start;justify-content:space-between;padding:16px 18px 12px;position:sticky;top:0;z-index:40;background:rgba(0,0,0,.96);border-bottom:1px solid #111}
+#hdr-left{display:flex;flex-direction:column;gap:3px}
+#page-title{font-family:var(--mono);font-size:8px;color:var(--g2);letter-spacing:.18em}
+#collection-slug{font-family:var(--q);font-size:13px;color:var(--coral);min-height:17px}
+#collection-stock{font-family:var(--mono);font-size:8px;color:var(--g2);min-height:10px;margin-top:1px}
 
-/* ── STYLES ARTISTIQUES : tiroir en défilement horizontal, bordures dentelées ── */
-.style-drawer{overflow:hidden;max-height:0;opacity:0;transition:max-height .42s ease,opacity .38s ease;width:100%}
-.style-drawer.on{max-height:260px;opacity:1;margin-top:6px}
-.style-track{display:flex;gap:18px;overflow-x:auto;padding:10px 6px 16px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.style-track::-webkit-scrollbar{display:none}
-.style-item{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:8px;background:none;border:none;cursor:pointer;scroll-snap-align:center;-webkit-tap-highlight-color:transparent;padding:0}
-.style-img{width:118px;height:118px;object-fit:cover;display:block;border:8px solid transparent;border-image-source:var(--tile-btn);border-image-slice:8 fill;border-image-repeat:round;filter:grayscale(45%);opacity:.72;transition:opacity .2s ease,filter .2s ease}
-div.style-img{display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;color:#2a2a2a;text-transform:uppercase}
-.style-item .st-name{font-family:'Quantico',sans-serif;font-weight:400;font-size:12px;letter-spacing:0;color:#b0b0b0;max-width:134px;text-align:center;line-height:1.35;transition:color .2s ease}
-.style-item.on .style-img{filter:none;opacity:1}
-.style-item.on .st-name{color:#fff}
+/* CAROUSEL */
+#carousel-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 0 16px;position:relative}
+#card{display:flex;flex-direction:column;align-items:center;gap:13px;text-align:center;width:100%;max-width:420px;padding:0 48px;opacity:1;transition:opacity .22s ease}
+#card.fade{opacity:0}
+.visual{width:min(56vw,210px);aspect-ratio:3/4;border:1px solid #181818;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#060606}
+.visual img{width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(18%);transition:filter .3s}
+.visual img:hover{filter:none}
+.visual .ph{font-family:var(--mono);font-size:8px;color:#222;text-transform:uppercase;padding:14px}
+.sup-title{font-family:var(--q);font-size:13px;color:var(--g1)}
+.sup-detail{font-family:var(--body);font-size:12px;line-height:1.65;color:var(--g2);max-width:300px;overflow:hidden;max-height:0;opacity:0;transition:max-height .38s ease,opacity .3s ease}
+.sup-detail.on{max-height:180px;opacity:1;margin-top:2px}
+.pieces{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--g2)}
+.soldout{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--rep);text-transform:uppercase}
+.arrow{position:absolute;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:20px;color:#282828;background:none;border:none;cursor:pointer;padding:16px 10px;transition:color .2s;z-index:10;user-select:none}
+.arrow:hover{color:var(--g2)}
+#arr-l{left:0}#arr-r{right:0}
 
-/* ── BLIND DROP : l'avertissement fusionné avec les terms ── */
-.blind{font-family:'Quantico',sans-serif;font-weight:400;font-size:12px;line-height:1.75;color:var(--g-light);text-align:center;max-width:430px;margin-top:16px}
-
-/* ── CONCEPT : l'histoire du Totehm Cloth ── */
-#concept-btn{position:fixed;top:14px;right:14px;z-index:50}
-#concept{position:fixed;inset:0;z-index:70;background:var(--bg);overflow-y:auto;display:none;flex-direction:column;align-items:center;gap:34px;padding:70px 24px 60px}
-#concept.show{display:flex}
-#concept-back{position:fixed;top:14px;left:14px;z-index:72}
-#concept-slides{display:flex;flex-direction:column;align-items:center;gap:42px;width:100%}
-.slide{display:flex;flex-direction:column;align-items:center;gap:10px;max-width:420px;width:100%}
-.slide-title{font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;color:#fff;text-align:center;line-height:1.4}
-.slide-cap{font-family:var(--futura);font-weight:300;font-size:13px;line-height:1.7;color:var(--g-light);text-align:center;max-width:360px}
-
-/* ── MEMBER SPACE : email code, no password ── */
-#conn-bar{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:45;display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:rgba(255,255,255,.62);padding:0;-webkit-tap-highlight-color:transparent;transition:color .2s}
+/* FOOTER */
+#footer-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 20px;border-top:1px solid #111}
+#dots{display:flex;gap:8px;justify-content:center}
+.dot{width:5px;height:5px;border-radius:50%;background:#222;transition:background .22s,transform .22s}
+.dot.on{background:var(--coral);transform:scale(1.35)}
+#conn-bar{display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:rgba(255,255,255,.45);-webkit-tap-highlight-color:transparent;transition:color .2s;padding:0}
 #conn-bar:hover{color:#fff}
-#conn-bar .dot{width:6px;height:6px;border-radius:50%;background:#888;transition:background .3s}
-#conn-bar .dot.in{background:#639922}
-#member{position:fixed;inset:0;z-index:75;background:rgba(0,0,0,.84);display:none;align-items:center;justify-content:center;padding:24px}
+#conn-bar .dc{width:5px;height:5px;border-radius:50%;background:#383838;transition:background .3s}
+#conn-bar .dc.in{background:#639922}
+
+/* MEMBER */
+#member{position:fixed;inset:0;z-index:75;background:rgba(0,0,0,.88);display:none;align-items:flex-end;justify-content:center}
 #member.show{display:flex}
-.mw-card{background:#0a0a0a;border:1px solid #1e1e1e;max-width:340px;width:100%;padding:30px 24px;text-align:center;position:relative}
-.mw-body{font-family:var(--futura);font-weight:300;font-size:13px;color:var(--g-mid);line-height:1.7;margin-bottom:14px}
-.mw-close{position:absolute;top:12px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:var(--g-mid);background:none;border:none;cursor:pointer;padding:0}
+.mw-sheet{background:#0b0b0b;border-top:1px solid #1c1c1c;width:100%;max-width:460px;padding:24px 22px 38px;text-align:center;position:relative;animation:sup .2s ease}
+@keyframes sup{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+@media(min-width:580px){#member{align-items:center}.mw-sheet{border:1px solid #1c1c1c;padding:30px 26px}}
+.mw-close{position:absolute;top:11px;right:13px;font-family:var(--mono);font-size:8px;color:var(--g2);background:none;border:none;cursor:pointer;padding:4px}
 .mw-close:hover{color:#fff}
-.mw-input{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:6px 2px;caret-color:var(--coral);text-align:center;margin-bottom:10px}
-.mw-input::placeholder{color:rgba(255,255,255,.33)}
-.mw-list{display:flex;flex-direction:column;gap:8px;margin:10px 0 14px;text-align:left;max-height:200px;overflow-y:auto}
-.mw-row{display:flex;justify-content:space-between;gap:10px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;color:#cfcfcf}
-.mw-row .st{color:var(--g-mid);text-transform:uppercase;font-size:9px;flex-shrink:0}
-.mw-pseudo{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:#fff;margin-bottom:4px}
-.mw-mail{font-family:'Space Mono',monospace;font-size:9px;color:var(--g-dark);margin-bottom:12px;word-break:break-all}
-.mw-out{margin-top:2px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--g-mid);background:none;border:none;cursor:pointer;transition:color .15s}
+.mw-body{font-family:var(--body);font-size:13px;color:var(--g2);line-height:1.7;margin-bottom:12px}
+.mw-input{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.1);outline:none;color:#fff;font-family:var(--q);font-size:14px;padding:7px 2px;caret-color:var(--coral);text-align:center;margin-bottom:10px}
+.mw-input::placeholder{color:rgba(255,255,255,.25)}
+.mw-list{display:flex;flex-direction:column;gap:8px;margin:10px 0 14px;text-align:left;max-height:170px;overflow-y:auto}
+.mw-row{display:flex;justify-content:space-between;gap:10px;font-family:var(--mono);font-size:9px;color:#cfcfcf}
+.mw-row .st{color:var(--g2);text-transform:uppercase;font-size:8px;flex-shrink:0}
+.mw-pseudo{font-family:var(--q);font-weight:700;font-size:15px;color:#fff;margin-bottom:3px}
+.mw-mail{font-family:var(--mono);font-size:8px;color:var(--g2);margin-bottom:12px;word-break:break-all}
+.mw-out{font-family:var(--mono);font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--g2);background:none;border:none;cursor:pointer;transition:color .15s;margin-top:4px}
 .mw-out:hover{color:#fff}
 
-/* ── CARROUSEL SUPPORTS ── */
-#carousel{position:relative;margin-top:0;padding:76px 20px 12px;min-height:200px;display:flex;align-items:center;justify-content:center}
-#card{display:flex;flex-direction:column;align-items:center;gap:13px;text-align:center;opacity:1;transition:opacity .28s ease;width:100%;max-width:420px}
-#card.fade{opacity:0}
-.visual{width:min(66vw,260px);aspect-ratio:3/4;max-height:40vh;border:1px solid #1c1c1c;overflow:hidden;display:flex;align-items:center;justify-content:center}
-.visual img{width:100%;height:100%;object-fit:cover;display:block}
-.visual .ph{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;color:#222;text-transform:uppercase;text-align:center;padding:14px}
-.support-desc{font-family:var(--futura);font-weight:300;font-size:13px;line-height:1.65;color:var(--g-light);max-width:380px;overflow:hidden;max-height:0;opacity:0;transition:max-height .4s ease,opacity .35s ease}
-.support-desc.on{max-height:300px;opacity:1;margin-top:1px}
-.pieces{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--g-mid)}
-.soldout{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.16em;color:var(--rep);text-transform:uppercase}
-.arrow{position:fixed;top:56%;transform:translateY(-50%);z-index:30;font-family:'Space Mono',monospace;font-size:20px;color:#3a3a3a;background:none;border:none;cursor:pointer;padding:14px;transition:color .2s}
-.arrow:hover{color:var(--g-mid)}
-#arr-l{left:4px}#arr-r{right:4px}
-#dots{display:flex;gap:8px;justify-content:center;padding:14px 0 40px}
-.dot{width:6px;height:6px;border-radius:50%;background:#2a2a2a;transition:background .25s,transform .25s}
-.dot.on{background:var(--coral);transform:scale(1.3)}
+/* CONCEPT */
+#concept{position:fixed;inset:0;z-index:70;background:var(--bg);overflow-y:auto;display:none;flex-direction:column;gap:36px;padding:66px 24px 60px;align-items:center}
+#concept.show{display:flex}
+#concept-back{position:fixed;top:14px;left:14px;z-index:72}
+.slide{display:flex;flex-direction:column;gap:10px;max-width:400px;width:100%}
+.slide-title{font-family:var(--q);font-size:14px;color:#fff;line-height:1.45}
+.slide-cap{font-family:var(--body);font-size:13px;line-height:1.7;color:var(--g2);max-width:360px}
 
-/* ── FULL-SCREEN PERFORÉ (l'écrit) ── */
-#fs{position:fixed;inset:0;z-index:80;background:var(--navy);border:11px solid transparent;border-image-source:var(--tile-full);border-image-slice:11;border-image-repeat:round;display:none;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:40px 28px}
+/* ÉCRITURE */
+#fs{position:fixed;inset:0;z-index:80;background:var(--navy);border:11px solid transparent;border-image-source:var(--tile-full);border-image-slice:11;border-image-repeat:round;display:none;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:40px 28px}
 #fs.show{display:flex}
-#fs .q{font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;letter-spacing:0;color:#fff;text-align:center;line-height:1.6;max-width:540px;transition:opacity .25s ease}
-#fs textarea{width:100%;max-width:560px;background:transparent;border:none;outline:none;resize:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:19px;line-height:1.7;text-align:center;caret-color:#fff;min-height:26vh}
-#fs textarea::placeholder{color:rgba(255,255,255,.34)}
+#fs .q-txt{font-family:var(--q);font-size:15px;color:rgba(255,255,255,.82);text-align:center;line-height:1.65;max-width:500px;transition:opacity .22s}
+#fs textarea{width:100%;max-width:540px;background:transparent;border:none;outline:none;resize:none;color:#fff;font-family:var(--q);font-size:18px;line-height:1.7;text-align:center;caret-color:#fff;min-height:24vh}
+#fs textarea::placeholder{color:rgba(255,255,255,.25)}
+@media(max-width:600px){#fs .q-txt{font-size:14px}#fs textarea{font-size:16px}}
 
-/* ── CONFIG ── */
-#config{position:fixed;inset:0;z-index:60;background:var(--bg);overflow-y:auto;padding:64px 22px 80px;display:none;flex-direction:column;align-items:center}
+/* CONFIG */
+#config{position:fixed;inset:0;z-index:60;background:var(--bg);overflow-y:auto;padding:58px 22px 90px;display:none;flex-direction:column;align-items:center}
 #config.show{display:flex}
 #cfg-back{position:fixed;top:14px;left:14px;z-index:62}
-.cfg-step{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:26px;width:100%;max-width:520px;opacity:0;max-height:0;overflow:hidden;transition:opacity .4s ease}
-.cfg-step.on{opacity:1;max-height:620px;overflow:visible}
-.note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px}
-.note.ok{color:#639922}.note.no{color:var(--rep)}.note.dim{color:var(--g-dark)}
-.sizes{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.price-big{font-family:'Quantico',sans-serif;font-weight:400;font-size:20px;color:var(--g-mid);letter-spacing:0}
-.blind a{color:var(--g-mid);text-decoration:underline;cursor:pointer}
+.cfg-step{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:28px;width:100%;max-width:500px;opacity:0;max-height:0;overflow:hidden;transition:opacity .34s ease,max-height .34s ease}
+.cfg-step.on{opacity:1;max-height:640px;overflow:visible}
+.note{font-family:var(--mono);font-size:8px;letter-spacing:.14em;text-transform:uppercase;min-height:11px}
+.note.ok{color:#639922}.note.no{color:var(--rep)}.note.dim{color:var(--g2)}
+.name-box{display:none;align-items:center;border:6px solid transparent;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round;padding:0 8px}
+.name-box.on{display:flex}
+.name-prefix{font-family:var(--q);font-size:14px;color:#fff;opacity:.48;user-select:none}
+.name-box input{font-family:var(--q);font-size:14px;color:#fff;background:none;outline:none;border:none;caret-color:var(--coral);min-width:160px;padding:0}
+.style-drawer{overflow:hidden;max-height:0;opacity:0;transition:max-height .4s ease,opacity .35s ease;width:100%}
+.style-drawer.on{max-height:240px;opacity:1;margin-top:6px}
+.style-track{display:flex;gap:16px;overflow-x:auto;padding:10px 6px 14px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.style-track::-webkit-scrollbar{display:none}
+.style-item{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:7px;background:none;border:none;cursor:pointer;scroll-snap-align:center;-webkit-tap-highlight-color:transparent;padding:0}
+.style-img{width:106px;height:106px;object-fit:cover;display:block;border:8px solid transparent;border-image-source:var(--tile);border-image-slice:8 fill;border-image-repeat:round;filter:grayscale(55%);opacity:.6;transition:opacity .2s,filter .2s}
+div.style-img{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:8px;color:#2a2a2a;text-transform:uppercase}
+.style-item .st-name{font-family:var(--q);font-size:11px;color:var(--g2);max-width:120px;text-align:center;line-height:1.3;transition:color .2s}
+.style-item.on .style-img{filter:none;opacity:1}
+.style-item.on .st-name{color:#fff}
+.sizes{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.price-big{font-family:var(--q);font-size:18px;color:var(--g2)}
+.blind{font-family:var(--body);font-size:11px;line-height:1.85;color:var(--g2);text-align:center;max-width:380px;margin-top:12px}
+.blind a{color:var(--g2);text-decoration:underline;cursor:pointer}
 #done{text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px}
-#done .big{font-family:'Quantico',sans-serif;font-weight:400;font-size:18px;color:#fff}
-#done .sub{font-family:var(--futura);font-size:13px;color:var(--g-mid);line-height:1.6;max-width:360px}
+#done .big{font-family:var(--q);font-size:16px;color:#fff}
+#done .sub{font-family:var(--body);font-size:12px;color:var(--g2);line-height:1.65;max-width:340px}
 
-@media(max-width:600px){#fs .q{font-size:15px}#fs textarea{font-size:17px}}
-@media(prefers-reduced-motion:reduce){#card{transition:opacity .12s}}
-
-#collection-block{text-align:center;padding:10px 0 4px;display:none}
-#collection-block.show{display:block}
-#collection-name{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--coral);letter-spacing:.04em}
-#collection-desc{font-family:var(--futura);font-size:11px;color:var(--g-mid);margin-top:3px;line-height:1.5}
-#collection-stock{font-family:'Space Mono',monospace;font-size:10px;color:var(--g-dark);letter-spacing:.12em;text-transform:uppercase;margin-top:4px}
+/* DESKTOP */
+@media(min-width:700px){
+  #main{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr auto}
+  #header{grid-column:1/-1}
+  #carousel-wrap{border-right:1px solid #111}
+  #footer-bar{grid-column:1/-1}
+}
+@media(prefers-reduced-motion:reduce){#card{transition:none}.cfg-step{transition:none}.sup-detail{transition:none}}
 </style>
 </head>
 <body>
+<div id="main">
 
-<button class="btn-sig" id="concept-btn">What is a Totehm Cloth Streetwear ?</button>
+<header id="header">
+  <div id="hdr-left">
+    <div id="page-title">Totehm Cloth Streetwear</div>
+    <div id="collection-slug"></div>
+    <div id="collection-stock"></div>
+  </div>
+  <button class="btn" id="concept-btn" style="font-size:12px;color:var(--g2)">what is this ?</button>
+</header>
 
-<!-- BLOC COLLECTION — lu depuis Supabase table collections -->
-<div class="collection-block" id="collection-block">
-  <div class="collection-name" id="collection-name"></div>
-  <div class="collection-desc" id="collection-desc"></div>
-  <div class="collection-stock" id="collection-stock"></div>
+<div id="carousel-wrap">
+  <button class="arrow" id="arr-l">‹</button>
+  <div id="card"></div>
+  <button class="arrow" id="arr-r">›</button>
 </div>
 
-<button id="conn-bar" aria-label="member space"><span class="dot" id="conn-dot"></span><span id="conn-txt">Guest</span></button>
+<footer id="footer-bar">
+  <div id="dots"></div>
+  <button id="conn-bar" aria-label="member space">
+    <span class="dc" id="conn-dot"></span>
+    <span id="conn-txt">Guest</span>
+  </button>
+</footer>
 
+</div>
+
+<!-- MEMBER -->
 <div id="member">
-  <div class="mw-card">
-    <button class="mw-close" id="mw-close">Close</button>
-    
+  <div class="mw-sheet">
+    <button class="mw-close" id="mw-close">close</button>
     <div id="mw-out-state">
-      <input class="mw-input" id="mw-email" type="email" placeholder="your email" autocomplete="email">
+      <div class="mw-body">Enter your email to access your Totehm.</div>
+      <input class="mw-input" id="mw-email" type="email" placeholder="your@email" autocomplete="email">
       <input class="mw-input hide" id="mw-code" inputmode="numeric" maxlength="6" placeholder="6-digit code">
       <div class="note dim" id="mw-note"></div>
     </div>
     <div id="mw-claim-state" class="hide">
       <div class="mw-body">Choose the name of your Totehm.</div>
-      <input class="mw-input" id="mw-pseudo" maxlength="24" placeholder="pseudo">
+      <input class="mw-input" id="mw-pseudo" maxlength="24" placeholder="your name">
       <div class="note dim" id="mw-claim-note"></div>
     </div>
     <div id="mw-in-state" class="hide">
@@ -172,117 +189,153 @@ div.style-img{display:flex;align-items:center;justify-content:center;font-family
       <div class="mw-mail" id="mw-mail"></div>
       <div class="mw-body" style="margin-bottom:4px">My Totehm Cloths</div>
       <div class="mw-list" id="mw-list"></div>
-      <button class="mw-out" id="mw-signout">Sign out</button>
+      <button class="mw-out" id="mw-signout">sign out</button>
     </div>
   </div>
 </div>
 
+<!-- CONCEPT -->
 <div id="concept">
-  <button class="btn-back" id="concept-back">Back in Time</button>
-  <div id="concept-slides">
+  <button class="btn-back" id="concept-back">← back</button>
+  <div style="display:flex;flex-direction:column;gap:40px;width:100%;max-width:400px;padding-top:8px">
     <div class="slide">
-      <div class="slide-title">1. Every Totehm Cloth Streetwear is born from your message.</div>
-      <div class="slide-cap">Some messages are written for yourself. Some are written for someone you love. Some are written for humanity.</div>
+      <div class="slide-title">1. Every Totehm Cloth is born from your message.</div>
+      <div class="slide-cap">A sentence, a memory, a promise. Written for yourself, for someone you love, or for humanity.</div>
     </div>
     <div class="slide">
       <div class="slide-title">2. Your message becomes an original artwork.</div>
-      <div class="slide-cap">Not through customization, but through collaboration. Choose one of our current Artistic Styles, each available for a limited time and a limited number of original pieces. Our artists curate the final artwork, which remains a surprise until the moment you unbox your Totehm Cloth Streetwear—revealing an original artwork born from your message.</div>
+      <div class="slide-cap">Not customization — collaboration. Our artists curate the final piece. The artwork remains a surprise until unboxing.</div>
     </div>
     <div class="slide">
-      <div class="slide-title">3. Every Totehm Cloth Streetwear has its own identifier.</div>
-      <div class="slide-cap">Integrated into the original piece, it preserves the story behind the artwork through Decode, allowing future generations to rediscover the message that inspired it.</div>
+      <div class="slide-title">3. Every piece has its own identifier.</div>
+      <div class="slide-cap">Encoded into the cloth. Future generations can Decode it and rediscover the message that created it.</div>
     </div>
   </div>
 </div>
 
-<div id="carousel"><div id="card"></div></div>
-<button class="arrow" id="arr-l">‹</button>
-<button class="arrow" id="arr-r">›</button>
-<div id="dots"></div>
-
+<!-- ÉCRITURE -->
 <div id="fs">
-  <div class="q" id="fs-q">
-    Leave your message.<br><br>
-    <span style="font-size: 13px; color: var(--g-mid); font-family: var(--futura);">
-      A sentence, a memory, a promise, a confession, or a message to humanity.
-    </span>
+  <div class="q-txt" id="fs-q">
+    Leave your message.<br>
+    <span style="font-size:12px;color:rgba(255,255,255,.38);font-family:'Jost',sans-serif">A sentence, a memory, a promise, a confession.</span>
   </div>
   <textarea id="fs-text" maxlength="1500" placeholder="write it."></textarea>
-  <button class="btn-encode hide" id="fs-encode">Encode</button>
+  <button class="btn-encode hide" id="fs-encode">Encode →</button>
 </div>
 
+<!-- CONFIG -->
 <div id="config">
-  <button class="btn-back" id="cfg-back">Back in writing Time</button>
+  <button class="btn-back" id="cfg-back">← back to writing</button>
 
   <div class="cfg-step on" id="step-name">
     <button class="btn-coral" id="name-btn">Engrave the name of your Totehm Cloth</button>
-    <div class="name-box" id="name-box"><span class="name-prefix" id="name-prefix">0.</span><input id="name-input" maxlength="40" placeholder="name it"></div>
+    <div class="name-box" id="name-box">
+      <span class="name-prefix" id="name-prefix">0.</span>
+      <input id="name-input" maxlength="40" placeholder="name it">
+    </div>
     <div class="note dim" id="name-note"></div>
   </div>
 
   <div class="cfg-step" id="step-style">
-    <button class="btn-sig" id="style-btn">Choose an artistic style that will reflect your writing</button>
+    <button class="btn" id="style-btn">Choose an artistic style</button>
     <div class="style-drawer" id="style-drawer"><div class="style-track" id="style-track"></div></div>
   </div>
 
   <div class="cfg-step" id="step-dim">
-    <button class="btn-sig" id="dim-btn">Define dimensions of the Totehm Cloth Support</button>
-    <div class="sizes hide" id="size-row">
-      <!-- tailles injectées dynamiquement depuis printful_variant_map -->
-    </div>
+    <button class="btn" id="dim-btn">Choose your size</button>
+    <div class="sizes hide" id="size-row"></div>
   </div>
 
   <div class="cfg-step" id="step-order">
     <div class="price-big" id="price-big"></div>
-
-    <button class="btn-sig" id="order-btn">Order your Totehm Cloth</button>
-    <div class="blind">By pressing Order your Totehm Cloth, you accept the <a id="terms-link">terms of sale</a>. The Totehm Cloth is a leap into the unknown. We take absolute control over the design, its size, and where it lands. Trust us. If you don't, do not order. No returns, no refunds.</div>
+    <button class="btn" id="order-btn">Order your Totehm Cloth</button>
+    <div class="blind">By ordering, you accept the <a id="terms-link">terms of sale</a>. We control the design entirely. No returns, no refunds.</div>
     <div class="note dim" id="order-note"></div>
   </div>
 
   <div id="done" class="hide">
     <div class="big" id="done-name"></div>
-    <div class="sub">In process</div>
-    <button class="btn-back" id="done-back">Back in Time</button>
+    <div class="sub">In process. You will not see the artwork before it arrives.</div>
+    <button class="btn-back" id="done-back">← back to collection</button>
   </div>
 </div>
 
 <script type="module">
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import{createClient}from'https://esm.sh/@supabase/supabase-js@2';
 const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
 const $=id=>document.getElementById(id);
-
-let supports=[], ci=0;
-let styles=[], stylesLoaded=false;
+const SIZES=['S','M','L','XL','2XL','3XL'];
+let supports=[],ci=0,styles=[],stylesLoaded=false;
 let order={support:null,message:'',name:'',size:'',style:null};
+let me=null,myProfile=null;
 
-const EPOCH_YEAR=2026;
-function epochPrefix(){
-  const d=new Date(), y=d.getFullYear();
-  const ey=(d.getMonth()>=5)?y:y-1;
-  return Math.max(ey-EPOCH_YEAR,0)+'.';
+function epochPrefix(){const d=new Date(),y=d.getFullYear(),ey=d.getMonth()>=5?y:y-1;return Math.max(ey-2026,0)+'.';}
+function avail(s){return Math.max((s.max_pieces||0)-(s.claimed||0),0);}
+function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+function fmt(s){return Number(s.price)+' €';}
+
+async function loadCollection(){
+  try{
+    const{data:col}=await sb.from('collections').select('id,slug,description').eq('active',true).order('created_at',{ascending:false}).limit(1).maybeSingle();
+    if(!col)return;
+    $('collection-slug').textContent=col.slug||'';
+    const{data:stock}=await sb.from('totehm_cloth_support').select('max_pieces,claimed').eq('collection_id',col.id).eq('active',true);
+    const rem=(stock||[]).reduce((s,r)=>s+Math.max((r.max_pieces||0)-(r.claimed||0),0),0);
+    $('collection-stock').textContent=rem>0?rem+' left':'sold out';
+  }catch(_){}
 }
 
 async function load(){
-  const {data}=await sb.from('totehm_cloth_support').select('*').eq('active',true).order('position');
-  supports=data||[];
-  renderDots();render();
+  const{data}=await sb.from('totehm_cloth_support').select('*').eq('active',true).order('position');
+  supports=data||[];renderDots();render();
 }
-function avail(s){return Math.max((s.max_pieces||0)-(s.claimed||0),0);}
 
-$('concept-btn').onclick=()=>{ $('concept').classList.add('show'); };
-$('concept-back').onclick=()=>{$('concept').classList.remove('show');};
+function render(){
+  const s=supports[ci];const card=$('card');
+  if(!s){card.innerHTML='<div class="mono" style="padding:30px 0">collection coming soon</div>';return;}
+  const left=avail(s);
+  const img=s.thumbnail_url||s.image_url;
+  card.innerHTML=
+    (img?`<div class="visual"><img src="${img}" alt="${esc(s.title||'')}"></div>`
+       :`<div class="visual"><div class="ph">${esc(s.title||'support')}</div></div>`)+
+    `<div class="sup-title">${esc(s.title||'')}</div>`+
+    (s.details?`<button class="btn" id="sup-det-btn" style="font-size:11px;color:var(--g2)">details</button><div class="sup-detail" id="sup-det">${esc(s.details)}</div>`:'')+
+    (left>0?`<div class="pieces">${left} / ${s.max_pieces}</div>`:`<div class="soldout">sold out</div>`)+
+    (left>0?`<button class="btn-coral" id="totehmize">Totehmize</button>`:'');
+  if(s.details)card.querySelector('#sup-det-btn').onclick=()=>card.querySelector('#sup-det').classList.toggle('on');
+  const tb=card.querySelector('#totehmize');if(tb)tb.onclick=()=>startTotehmize(s);
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===ci));
+}
 
-let me=null, myProfile=null;
-function connPaint(){
-  $('conn-txt').textContent=(myProfile&&myProfile.pseudo)||(me?'Member':'Guest');
-  $('conn-dot').classList.toggle('in',!!me);
+function renderDots(){
+  const w=$('dots');w.innerHTML='';
+  supports.forEach((_,i)=>{const d=document.createElement('div');d.className='dot'+(i===ci?' on':'');w.appendChild(d);});
 }
-async function loadProfile(){
-  if(!me){myProfile=null;connPaint();return;}
-  const {data}=await sb.from('profiles').select('pseudo').eq('id',me.id).maybeSingle();
-  myProfile=data||null;connPaint();
+
+function go(d){
+  const n=ci+d;if(n<0||n>=supports.length)return;
+  ci=n;$('card').classList.add('fade');
+  setTimeout(()=>{render();$('card').classList.remove('fade');},220);
 }
+$('arr-l').onclick=()=>go(-1);$('arr-r').onclick=()=>go(1);
+let x0=0;
+document.addEventListener('touchstart',e=>{x0=e.changedTouches[0].screenX;},{passive:true});
+document.addEventListener('touchend',e=>{
+  if($('fs').classList.contains('show')||$('config').classList.contains('show')||$('member').classList.contains('show')||$('concept').classList.contains('show'))return;
+  const dx=e.changedTouches?.[0]?.screenX-x0;
+  if(Math.abs(dx||0)>50)go(dx<0?1:-1);
+},{passive:true});
+window.addEventListener('keydown',e=>{
+  if(!$('config').classList.contains('show')&&!$('fs').classList.contains('show')&&!$('member').classList.contains('show')&&!$('concept').classList.contains('show')){
+    if(e.key==='ArrowRight')go(1);if(e.key==='ArrowLeft')go(-1);
+  }
+});
+
+$('concept-btn').onclick=()=>$('concept').classList.add('show');
+$('concept-back').onclick=()=>$('concept').classList.remove('show');
+
+function connPaint(){$('conn-txt').textContent=(myProfile?.pseudo)||(me?'Member':'Guest');$('conn-dot').classList.toggle('in',!!me);}
+async function loadProfile(){if(!me){myProfile=null;connPaint();return;}const{data}=await sb.from('profiles').select('pseudo').eq('id',me.id).maybeSingle();myProfile=data||null;connPaint();}
 function memberPaint(){
   $('mw-out-state').classList.toggle('hide',!!me);
   $('mw-claim-state').classList.toggle('hide',!(me&&!myProfile));
@@ -291,8 +344,8 @@ function memberPaint(){
 }
 async function loadCloths(){
   const box=$('mw-list');box.innerHTML='<div class="note dim">…</div>';
-  const {data}=await sb.from('totehm_clothes').select('name,status,created_at').eq('user_id',me.id).order('created_at',{ascending:false});
-  if(!data||!data.length){box.innerHTML='<div class="note dim">none yet</div>';return;}
+  const{data}=await sb.from('totehm_clothes').select('name,status').eq('user_id',me.id).order('created_at',{ascending:false});
+  if(!data?.length){box.innerHTML='<div class="note dim">none yet</div>';return;}
   box.innerHTML='';
   data.forEach(c=>{const d=document.createElement('div');d.className='mw-row';d.innerHTML='<span>'+esc(c.name)+'</span><span class="st">'+esc(c.status||'')+'</span>';box.appendChild(d);});
 }
@@ -303,94 +356,56 @@ $('member').addEventListener('click',e=>{if(e.target===$('member'))$('member').c
 let mwEmail='';
 $('mw-email').addEventListener('keydown',async e=>{
   if(e.key!=='Enter')return;
-  const v=$('mw-email').value.trim(), note=$('mw-note');
+  const v=$('mw-email').value.trim(),note=$('mw-note');
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){note.className='note no';note.textContent='invalid email';return;}
   note.className='note dim';note.textContent='sending…';
-  const {error}=await sb.auth.signInWithOtp({email:v,options:{shouldCreateUser:true}});
+  const{error}=await sb.auth.signInWithOtp({email:v,options:{shouldCreateUser:true}});
   if(error){note.className='note no';note.textContent='try again in a minute';return;}
-  mwEmail=v;
-  note.className='note ok';note.textContent='code sent — check your email';
+  mwEmail=v;note.className='note ok';note.textContent='code sent';
   $('mw-code').classList.remove('hide');setTimeout(()=>$('mw-code').focus(),80);
 });
 $('mw-code').addEventListener('input',async()=>{
-  const t=$('mw-code').value.trim(), note=$('mw-note');
+  const t=$('mw-code').value.trim(),note=$('mw-note');
   if(t.length!==6)return;
   note.className='note dim';note.textContent='verifying…';
-  const {error}=await sb.auth.verifyOtp({email:mwEmail,token:t,type:'email'});
+  const{error}=await sb.auth.verifyOtp({email:mwEmail,token:t,type:'email'});
   if(error){note.className='note no';note.textContent='wrong code';return;}
-  note.className='note dim';note.textContent='';
-  $('mw-code').value='';$('mw-code').classList.add('hide');
+  note.textContent='';$('mw-code').value='';$('mw-code').classList.add('hide');
 });
 $('mw-pseudo').addEventListener('keydown',async e=>{
   if(e.key!=='Enter')return;
-  const v=$('mw-pseudo').value.trim(), note=$('mw-claim-note');
+  const v=$('mw-pseudo').value.trim(),note=$('mw-claim-note');
   if(v.length<3||v.length>24){note.className='note no';note.textContent='3 to 24 characters';return;}
   note.className='note dim';note.textContent='…';
-  const {error}=await sb.from('profiles').insert({id:me.id,pseudo:v});
+  const{error}=await sb.from('profiles').insert({id:me.id,pseudo:v});
   if(error){note.className='note no';note.textContent=error.code==='23505'?'already taken':'try again';return;}
   note.textContent='';await loadProfile();memberPaint();
 });
 $('mw-signout').onclick=async()=>{await sb.auth.signOut();$('member').classList.remove('show');};
-sb.auth.onAuthStateChange(async()=>{const {data:{session}}=await sb.auth.getSession();me=session?.user||null;await loadProfile();memberPaint();});
-(async()=>{const {data:{session}}=await sb.auth.getSession();me=session?.user||null;await loadProfile();})();
-
-function render(){
-  const s=supports[ci];const card=$('card');
-  if(!s){card.innerHTML='<div class="mono">collection coming soon</div>';return;}
-  const left=avail(s);
-  const visual=s.image_url
-    ?`<div class="visual"><img src="${s.image_url}" alt="support"></div>`
-    :`<div class="visual"><div class="ph">support</div></div>`;
-  card.innerHTML=
-    visual+
-    `<button class="btn-sig" id="support-btn">Totehm Cloth Support Details</button>`+
-    `<div class="support-desc" id="support-desc">${esc(s.details||'')}</div>`+
-    (left>0?`<div class="pieces">${left} / ${s.max_pieces} pieces left</div>`:`<div class="soldout">sold out</div>`)+
-    (left>0?`<button class="btn-coral" id="totehmize">Totehmize</button>`:'');
-  card.querySelector('#support-btn').onclick=()=>$('support-desc').classList.toggle('on');
-  const tb=card.querySelector('#totehmize');if(tb)tb.onclick=()=>startTotehmize(s);
-  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===ci));
-}
-function renderDots(){const w=$('dots');w.innerHTML='';supports.forEach((s,i)=>{const d=document.createElement('div');d.className='dot'+(i===ci?' on':'');w.appendChild(d);});}
-function go(d){const n=ci+d;if(n<0||n>=supports.length)return;ci=n;const card=$('card');card.classList.add('fade');setTimeout(()=>{render();card.classList.remove('fade');},200);}
-$('arr-l').onclick=()=>go(-1);$('arr-r').onclick=()=>go(1);
-let x0=0;
-$('carousel').addEventListener('touchstart',e=>{x0=e.changedTouches[0].screenX;},{passive:true});
-$('carousel').addEventListener('touchend',e=>{const dx=e.changedTouches[0].screenX-x0;if(Math.abs(dx)>50)go(dx<0?1:-1);},{passive:true});
-window.addEventListener('keydown',e=>{if(!$('config').classList.contains('show')&&!$('fs').classList.contains('show')&&!$('member').classList.contains('show')&&!$('concept').classList.contains('show')){if(e.key==='ArrowRight')go(1);if(e.key==='ArrowLeft')go(-1);}});
+sb.auth.onAuthStateChange(async()=>{const{data:{session}}=await sb.auth.getSession();me=session?.user||null;await loadProfile();memberPaint();});
+(async()=>{const{data:{session}}=await sb.auth.getSession();me=session?.user||null;await loadProfile();})();
 
 function startTotehmize(s){
   order={support:s,message:'',name:'',size:'',style:null};
-  $('fs-text').value='';
-  $('fs-q').classList.remove('hide');
-  $('fs-encode').classList.add('hide');
-  $('fs').classList.add('show');
-  setTimeout(()=>$('fs-text').focus(),150);
+  $('fs-text').value='';$('fs-q').classList.remove('hide');$('fs-encode').classList.add('hide');
+  $('fs').classList.add('show');setTimeout(()=>$('fs-text').focus(),150);
 }
 $('fs-text').addEventListener('input',()=>{
   const has=$('fs-text').value.trim().length>0;
-  $('fs-q').classList.toggle('hide',has);
-  $('fs-encode').classList.toggle('hide',!has);
+  $('fs-q').classList.toggle('hide',has);$('fs-encode').classList.toggle('hide',!has);
 });
-$('fs-encode').onclick=()=>{
-  const m=$('fs-text').value.trim();
-  if(!m){return;}
-  order.message=m;
-  $('fs').classList.remove('show');
-  openConfig();
-};
+$('fs-encode').onclick=()=>{const m=$('fs-text').value.trim();if(!m)return;order.message=m;$('fs').classList.remove('show');openConfig();};
 
 function openConfig(){
   $('name-prefix').textContent=epochPrefix();
-  $('step-name').classList.add('on');$('step-style').classList.remove('on');$('step-dim').classList.remove('on');$('step-order').classList.remove('on');
-  $('done').classList.add('hide');
-  $('name-btn').classList.remove('hide');
+  $('step-name').classList.add('on');
+  ['step-style','step-dim','step-order'].forEach(id=>$(id).classList.remove('on'));
+  $('done').classList.add('hide');$('name-btn').classList.remove('hide');
   $('name-box').classList.remove('on');$('name-input').value='';
   $('name-note').textContent='';$('name-note').className='note dim';
   $('style-drawer').classList.remove('on');
   document.querySelectorAll('.style-item').forEach(x=>x.classList.remove('on'));
   order.style=null;order.name='';order.size='';
-  // reset tailles
   $('size-row').innerHTML='';$('size-row').classList.add('hide');
   $('order-note').textContent='';
   $('config').classList.add('show');$('config').scrollTop=0;
@@ -399,170 +414,84 @@ $('cfg-back').onclick=()=>{
   $('config').classList.remove('show');
   $('fs-text').value=order.message||'';
   const has=(order.message||'').trim().length>0;
-  $('fs-q').classList.toggle('hide',has);
-  $('fs-encode').classList.toggle('hide',!has);
-  $('fs').classList.add('show');
-  setTimeout(()=>$('fs-text').focus(),150);
+  $('fs-q').classList.toggle('hide',has);$('fs-encode').classList.toggle('hide',!has);
+  $('fs').classList.add('show');setTimeout(()=>$('fs-text').focus(),150);
 };
-$('done-back').onclick=()=>{location.href='index.html#menu';};
+$('done-back').onclick=()=>{location.href='index.html';};
 
-$('name-btn').onclick=()=>{
-  $('name-btn').classList.add('hide');
-  $('name-box').classList.add('on');
-  setTimeout(()=>$('name-input').focus(),100);
-};
-let nameTimer=null,nameOK=false;
+$('name-btn').onclick=()=>{$('name-btn').classList.add('hide');$('name-box').classList.add('on');setTimeout(()=>$('name-input').focus(),100);};
+let nameTimer=null;
 $('name-input').addEventListener('input',()=>{
-  nameOK=false;revealStyle(false);
-  const v=$('name-input').value.trim();const note=$('name-note');
+  revealStyle(false);
+  const v=$('name-input').value.trim(),note=$('name-note');
   clearTimeout(nameTimer);
   if(v.length<2){note.className='note dim';note.textContent='at least 2 characters';return;}
   note.className='note dim';note.textContent='checking…';
   nameTimer=setTimeout(async()=>{
     const full=$('name-prefix').textContent+v;
-    const {data,error}=await sb.from('totehm_clothes').select('name').ilike('name',full).limit(1);
+    const{data,error}=await sb.from('totehm_clothes').select('name').ilike('name',full).limit(1);
     if(error){note.className='note dim';note.textContent='try again';return;}
-    if(data&&data.length){note.className='note no';note.textContent='already taken';nameOK=false;revealStyle(false);}
-    else{note.className='note ok';note.textContent='available';nameOK=true;order.name=full;revealStyle(true);}
+    if(data?.length){note.className='note no';note.textContent='already taken';revealStyle(false);}
+    else{note.className='note ok';note.textContent='available';order.name=full;revealStyle(true);}
   },420);
 });
 
-function revealStyle(show){
-  $('step-style').classList.toggle('on',show);
-  if(show)loadStyles();
-  if(!show){$('step-dim').classList.remove('on');$('step-order').classList.remove('on');}
-}
+function revealStyle(show){$('step-style').classList.toggle('on',show);if(show)loadStyles();if(!show){$('step-dim').classList.remove('on');$('step-order').classList.remove('on');}}
 function revealDim(show){$('step-dim').classList.toggle('on',show);if(!show)$('step-order').classList.remove('on');}
-
 $('style-btn').onclick=()=>{$('style-drawer').classList.toggle('on');loadStyles();};
 async function loadStyles(){
   if(stylesLoaded)return;
-  const {data}=await sb.from('artistic_styles').select('*').eq('active',true).order('position');
-  styles=data||[];stylesLoaded=true;
-  renderStyles();
+  const{data}=await sb.from('artistic_styles').select('*').eq('active',true).order('position');
+  styles=data||[];stylesLoaded=true;renderStyles();
 }
 function renderStyles(){
   const t=$('style-track');t.innerHTML='';
-  if(!styles.length){t.innerHTML='<div class="mono" style="padding:12px 6px">styles coming soon</div>';return;}
+  if(!styles.length){t.innerHTML='<div class="mono" style="padding:14px 6px">styles coming soon</div>';return;}
   styles.forEach(s=>{
     const b=document.createElement('button');b.className='style-item';
-    b.innerHTML=(s.image_url
-      ?'<img class="style-img" src="'+s.image_url+'" alt="">'
-      :'<div class="style-img">style</div>')
-      +'<div class="st-name">'+esc(s.name||'')+'</div>';
-    b.onclick=()=>{
-      document.querySelectorAll('.style-item').forEach(x=>x.classList.remove('on'));
-      b.classList.add('on');order.style=s;
-      revealDim(true);
-      setTimeout(()=>$('step-dim').scrollIntoView({behavior:'smooth',block:'center'}),120);
-    };
+    b.innerHTML=(s.image_url?'<img class="style-img" src="'+s.image_url+'" alt="">':`<div class="style-img"></div>`)+'<div class="st-name">'+esc(s.name||'')+'</div>';
+    b.onclick=()=>{document.querySelectorAll('.style-item').forEach(x=>x.classList.remove('on'));b.classList.add('on');order.style=s;revealDim(true);setTimeout(()=>$('step-dim').scrollIntoView({behavior:'smooth',block:'center'}),120);};
     t.appendChild(b);
   });
 }
 
-/* DIMENSIONS : tailles dynamiques depuis printful_variant_map */
 $('dim-btn').onclick=()=>{
-  // Construire les boutons de taille à partir du support sélectionné
-  const variantMap=order.support?.printful_variant_map||{};
-  const sizes=Object.keys(variantMap).sort((a,b)=>{
-    const order=['S','M','L','XL','2XL','3XL'];
-    return order.indexOf(a)-order.indexOf(b);
+  const vm=order.support?.printful_variant_map||{};
+  const sizes=Object.keys(vm).sort((a,b)=>SIZES.indexOf(a)-SIZES.indexOf(b));
+  const row=$('size-row');row.innerHTML='';
+  (sizes.length?sizes:['S','M','L','XL']).forEach(s=>{
+    const b=document.createElement('button');b.className='sz';b.textContent=s;
+    b.onclick=()=>{row.querySelectorAll('.sz').forEach(x=>x.classList.remove('on'));b.classList.add('on');order.size=s;$('price-big').textContent=fmt(order.support);$('step-order').classList.add('on');setTimeout(()=>$('step-order').scrollIntoView({behavior:'smooth',block:'center'}),120);};
+    row.appendChild(b);
   });
-  const row=$('size-row');
-  row.innerHTML='';
-  if(!sizes.length){
-    // fallback si pas de printful_variant_map (anciens supports)
-    ['S','M','L','XL'].forEach(s=>addSizeBtn(s,row));
-  } else {
-    sizes.forEach(s=>addSizeBtn(s,row));
-  }
   row.classList.toggle('hide');
 };
 
-function addSizeBtn(s,row){
-  const b=document.createElement('button');
-  b.className='size-btn';b.dataset.s=s;b.textContent=s;
-  b.onclick=()=>{
-    row.querySelectorAll('.size-btn').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on');order.size=s;
-    $('price-big').textContent=fmt(order.support);
-    // Afficher email guest si non connecté
-    $('step-order').classList.add('on');
-    setTimeout(()=>$('step-order').scrollIntoView({behavior:'smooth',block:'center'}),120);
-  };
-  row.appendChild(b);
-}
-
-/* ORDER */
 $('order-btn').onclick=async()=>{
   if(!order.name||!order.size||!order.message||!order.style)return;
+  if(!me){$('config').classList.remove('show');$('member').classList.add('show');memberPaint();return;}
   const note=$('order-note');
-
-  // Connexion obligatoire
-  if(!me){
-    $('config').classList.remove('show');
-    $('member').classList.add('show');
-    memberPaint();
-    return;
-  }
-  const email=me.email;
-
   note.className='note dim';note.textContent='encoding…';
   $('order-btn').style.pointerEvents='none';
-  const {data,error}=await sb.functions.invoke('create-checkout',{body:{
-    garment_id:order.support.id,
-    message:order.message,
-    name:order.name,
-    size:order.size,
-    style_id:order.style.id,
-    user_id:me?me.id:null,
-    email:email
-  }});
+  const{data,error}=await sb.functions.invoke('create-checkout',{body:{garment_id:order.support.id,message:order.message,name:order.name,size:order.size,style_id:order.style.id,user_id:me.id,email:me.email}});
   $('order-btn').style.pointerEvents='';
-  if(error||!data?.url){
-    const msg=data?.error==='sold out'?'sold out':data?.error==='name taken'?'that name was just taken':'error, try again';
-    note.className='note no';note.textContent=msg;return;
-  }
+  if(error||!data?.url){note.className='note no';note.textContent=data?.error==='sold out'?'sold out':data?.error==='name taken'?'that name was just taken':'error, try again';return;}
   sessionStorage.setItem('tc_pending','"'+order.name+'" — '+order.size);
   window.top.location.href=data.url;
 };
-$('terms-link').onclick=(e)=>{e.preventDefault();alert('Each Totehm Cloth is a unique, made-to-order piece, validated by the artist before production. All sales are final once the artist begins. Delivery times vary per piece.');};
+$('terms-link').onclick=e=>{e.preventDefault();alert('Each Totehm Cloth is a unique, made-to-order piece. All sales are final once the artist begins. No returns, no refunds.');};
 
-function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
-function fmt(s){const p=Number(s.price);const cur=(s.currency||'€');return cur==='€'?(p+' €'):(cur+' '+p);}
+loadCollection();load();
 
-async function loadCollection(){
-  try{
-    const {data:col,error}=await sb.from('collections').select('id,slug,description').eq('active',true).order('created_at',{ascending:false}).limit(1).maybeSingle();
-    if(error||!col)return;
-    const {data:stock}=await sb.from('totehm_cloth_support').select('max_pieces,claimed').eq('collection_id',col.id).eq('active',true);
-    const remaining=(stock||[]).reduce((sum,r)=>sum+Math.max((r.max_pieces||0)-(r.claimed||0),0),0);
-    $('collection-name').textContent=col.slug||'';
-    $('collection-desc').textContent=col.description||'';
-    $('collection-stock').textContent=remaining>0?`${remaining} pièces restantes`:'sold out';
-    $('collection-block').classList.add('show');
-  }catch(_){}
-}
-
-loadCollection();
-load();
-
-/* Retour post-paiement Stripe : récupérer le cloth depuis DB si cloth_id dispo */
 (async()=>{
   const p=new URLSearchParams(location.search);
-  if(p.get('paid')){
-    const clothId=p.get('cloth');
-    let label=sessionStorage.getItem('tc_pending')||'';
-    sessionStorage.removeItem('tc_pending');
-    // Tenter de récupérer le nom réel depuis Supabase
-    if(clothId){
-      const {data}=await sb.from('totehm_clothes').select('name,size').eq('id',clothId).maybeSingle();
-      if(data) label=`"${data.name}" — ${data.size}`;
-    }
-    $('done-name').textContent=label;
-    $('done').classList.remove('hide');
-    $('config').classList.add('show');
-  }
+  if(!p.get('paid'))return;
+  const clothId=p.get('cloth');
+  let label=sessionStorage.getItem('tc_pending')||'';
+  sessionStorage.removeItem('tc_pending');
+  if(clothId){const{data}=await sb.from('totehm_clothes').select('name,size').eq('id',clothId).maybeSingle();if(data)label=`"${data.name}" — ${data.size}`;}
+  $('done-name').textContent=label;$('done').classList.remove('hide');$('config').classList.add('show');
 })();
 </script>
 </body>
+</html>
