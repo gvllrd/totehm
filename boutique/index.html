@@ -87,6 +87,10 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 
 /* STREETWEAR : sous-titre + image support */
 .sw-block{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
+#sw-collection{display:none;flex-direction:column;align-items:center;gap:3px;padding-top:2px}
+#sw-col-name{font-family:'Quantico',sans-serif;font-size:13px;color:var(--coral);letter-spacing:.04em}
+#sw-col-desc{font-family:var(--futura);font-size:11px;color:var(--g-mid);text-align:center;max-width:280px;line-height:1.4}
+#sw-col-sold{font-family:'Space Mono',monospace;font-size:10px;color:var(--g-dark);letter-spacing:.12em;text-transform:uppercase}
 
 
 /* NO SOCIAL MEDIA footer */
@@ -122,7 +126,11 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
     <!-- 1 : Streetwear -->
     <div class="sw-block">
       <a class="btn-sig" href="streetwear.html">Create my Totehm Streetwear Cloth</a>
-
+      <div id="sw-collection">
+        <div id="sw-col-name"></div>
+        <div id="sw-col-desc"></div>
+        <div id="sw-col-sold"></div>
+      </div>
     </div>
 
     <!-- 2 : Luxury -->
@@ -241,6 +249,19 @@ $('email-input').addEventListener('keydown',async(e)=>{
     });
   },{threshold:0.55});
   io.observe(ctx);
+})();
+
+(async()=>{
+  try{
+    const {data:col,error}=await sb.from('collections').select('id,slug,description').eq('active',true).order('created_at',{ascending:false}).limit(1).maybeSingle();
+    if(error||!col)return;
+    const {data:rows}=await sb.from('totehm_cloth_support').select('claimed').eq('collection_id',col.id).eq('active',true);
+    const sold=(rows||[]).reduce((s,r)=>s+(r.claimed||0),0);
+    document.getElementById('sw-col-name').textContent=col.slug||'';
+    document.getElementById('sw-col-desc').textContent=col.description||'';
+    document.getElementById('sw-col-sold').textContent=`${sold} pièces vendues`;
+    document.getElementById('sw-collection').style.display='flex';
+  }catch(_){}
 })();
 </script>
 </body>
