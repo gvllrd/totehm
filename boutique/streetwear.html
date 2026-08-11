@@ -132,11 +132,24 @@ div.style-img{display:flex;align-items:center;justify-content:center;font-family
 
 @media(max-width:600px){#fs .q{font-size:15px}#fs textarea{font-size:17px}}
 @media(prefers-reduced-motion:reduce){#card{transition:opacity .12s}}
+
+#collection-block{text-align:center;padding:10px 0 4px;display:none}
+#collection-block.show{display:block}
+#collection-name{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--coral);letter-spacing:.04em}
+#collection-desc{font-family:var(--futura);font-size:11px;color:var(--g-mid);margin-top:3px;line-height:1.5}
+#collection-stock{font-family:'Space Mono',monospace;font-size:10px;color:var(--g-dark);letter-spacing:.12em;text-transform:uppercase;margin-top:4px}
 </style>
 </head>
 <body>
 
 <button class="btn-sig" id="concept-btn">What is a Totehm Cloth Streetwear ?</button>
+
+<!-- BLOC COLLECTION — lu depuis Supabase table collections -->
+<div class="collection-block" id="collection-block">
+  <div class="collection-name" id="collection-name"></div>
+  <div class="collection-desc" id="collection-desc"></div>
+  <div class="collection-stock" id="collection-stock"></div>
+</div>
 
 <button id="conn-bar" aria-label="member space"><span class="dot" id="conn-dot"></span><span id="conn-txt">Guest</span></button>
 
@@ -518,6 +531,20 @@ $('terms-link').onclick=(e)=>{e.preventDefault();alert('Each Totehm Cloth is a u
 function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
 function fmt(s){const p=Number(s.price);const cur=(s.currency||'€');return cur==='€'?(p+' €'):(cur+' '+p);}
 
+async function loadCollection(){
+  try{
+    const {data:col,error}=await sb.from('collections').select('id,slug,description').eq('active',true).order('created_at',{ascending:false}).limit(1).maybeSingle();
+    if(error||!col)return;
+    const {data:stock}=await sb.from('totehm_cloth_support').select('max_pieces,claimed').eq('collection_id',col.id).eq('active',true);
+    const remaining=(stock||[]).reduce((sum,r)=>sum+Math.max((r.max_pieces||0)-(r.claimed||0),0),0);
+    $('collection-name').textContent=col.slug||'';
+    $('collection-desc').textContent=col.description||'';
+    $('collection-stock').textContent=remaining>0?`${remaining} pièces restantes`:'sold out';
+    $('collection-block').classList.add('show');
+  }catch(_){}
+}
+
+loadCollection();
 load();
 
 /* Retour post-paiement Stripe : récupérer le cloth depuis DB si cloth_id dispo */
