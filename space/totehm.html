@@ -1490,7 +1490,39 @@ $('freq-panel').addEventListener('click',e=>{if(e.target===$('freq-panel'))close
 
 /* ══ NAVIGATION : up = Get Higher · down = Settings ══ */
 function animateSwap(dy,apply){
-  if(busy)return;busy=true;const inner=$('fv-inner');
+  if(busy)return;busy=true;
+  const inner=$('fv-inner');
+  const isDesktop=window.innerWidth>=700&&window.matchMedia('(hover:hover)').matches;
+  if(isDesktop){
+    const fv=$('floorview');
+    const goingDown=dy<0; /* habits → settings */
+    const h=inner.clientHeight;
+    $('habits').classList.remove('hide');
+    $('settings').classList.remove('hide');
+    $('habits').style.minHeight=h+'px';
+    $('settings').style.minHeight=h+'px';
+    fv.style.overflow='hidden';
+    inner.style.overflow='hidden';
+    inner.style.transition='none';
+    inner.style.transform=goingDown?'translateY(0)':'translateY(-'+h+'px)';
+    requestAnimationFrame(()=>{requestAnimationFrame(()=>{
+      inner.style.transition='transform .52s cubic-bezier(.4,0,.2,1)';
+      inner.style.transform=goingDown?'translateY(-'+h+'px)':'translateY(0)';
+      setTimeout(()=>{
+        apply();
+        fv.style.overflow='';
+        inner.style.overflow='';
+        inner.style.transition='none';
+        inner.style.transform='';
+        inner.scrollTop=0;
+        $('habits').style.minHeight='';
+        $('settings').style.minHeight='';
+        busy=false;
+      },540);
+    });});
+    return;
+  }
+  /* Mobile : fondu + micro-glissement */
   inner.style.transition='opacity .2s ease, transform .2s ease';
   inner.style.opacity='0';inner.style.transform='translate(0,'+(-dy*26)+'px)';
   setTimeout(()=>{apply();inner.scrollTop=0;inner.style.transition='none';inner.style.transform='translate(0,'+(dy*26)+'px)';
