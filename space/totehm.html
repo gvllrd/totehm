@@ -442,7 +442,8 @@ body.gate.entered #fv-status{
   .set-note:hover,.bot-txt:hover,.acct-warn:hover,.acct-note:hover,.hp-lbl:hover,.hp-def:hover,.fp-int .df:hover,.mw-mail:hover,.mw-body:hover,.city-line:hover,.city-hint:hover,.att-txt:hover{color:#fff}
 }
 /* ── Settings nav: tuiles perforées ── */
-.sn-tile{display:inline-block;width:20px;height:20px;flex-shrink:0;background:0 0/100% 100% no-repeat}
+.sn-tile{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;flex-shrink:0;background:0 0/100% 100% no-repeat}
+.sn-tile svg{width:7px;height:12px;color:#fff;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .sn-tile-rep{background-image:var(--logo-rep)}
 .sn-tile-blue{background-image:var(--logo-blue)}
 /* ── Habit add: T blink + hint ── */
@@ -538,6 +539,11 @@ body.gate.entered #fv-status{
     left:calc(50% + var(--stage) / 2 + var(--side-gap));
     background-image:var(--logo-blue);
   }
+  #settings-nav .sn-row{display:none}
+  .side-nav{height:auto;flex-direction:column;gap:5px;padding:8px 4px}
+  .sn-label{font-family:'Quantico',sans-serif;font-size:8px;letter-spacing:.04em;color:rgba(255,255,255,.6);text-align:center;line-height:1.35;transition:color .15s;display:block}
+  .side-nav:hover .sn-label{color:#fff}
+  #side-left.home .sn-label,#side-right.home .sn-label{display:none}
 }
 
 </style>
@@ -610,12 +616,12 @@ body.gate.entered #fv-status{
         <!-- Étage 2 : Autobiography by my Totehm© (←) puis My Habits Generator (→), l'un au-dessus de l'autre, centrés -->
         <div class="sn-row">
           <button id="sn-book" class="sn-btn" aria-label="Autobiography by my Totehm — the past">
-            <span class="sn-tile sn-tile-rep" aria-hidden="true"></span>
+            <span class="sn-tile sn-tile-rep" aria-hidden="true"><svg viewBox="0 0 14 24"><path d="M11 2 L3 12 L11 22"/></svg></span>
             <span>Autobiography by my Totehm&copy;</span>
           </button>
           <button id="sn-next" class="sn-btn" aria-label="My Habits Generator — the future">
             <span>My Habits Generator</span>
-            <span class="sn-tile sn-tile-blue" aria-hidden="true"></span>
+            <span class="sn-tile sn-tile-blue" aria-hidden="true"><svg viewBox="0 0 14 24"><path d="M3 2 L11 12 L3 22"/></svg></span>
           </button>
         </div>
       </div>
@@ -774,8 +780,8 @@ body.gate.entered #fv-status{
     </div>
   </div>
 </div>
-<button class="side-nav" id="side-left" aria-label="My Totehm Book"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></button>
-<button class="side-nav" id="side-right" aria-label="My next Objective"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M3 2 L11 12 L3 22"/></svg></button>
+<button class="side-nav" id="side-left" aria-label="My Totehm Book"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg><span class="sn-label">Autobiography<br>by my Totehm©</span></button>
+<button class="side-nav" id="side-right" aria-label="My next Objective"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M3 2 L11 12 L3 22"/></svg><span class="sn-label">My Habits<br>Generator</span></button>
 <div id="lift-hg"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg></div>
 <div id="stoner"><iframe id="stoner-frame" title="Stoner Method"></iframe>
   <a id="street-btn" class="hide" href="play_the_street.html">Make the Lisbon Streets Sublime</a>
