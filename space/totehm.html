@@ -536,6 +536,11 @@ body.gate.entered #fv-status{
   .sn-label{font-family:'Quantico',sans-serif;font-size:9px;letter-spacing:.04em;color:rgba(255,255,255,.6);text-align:center;line-height:1.35;transition:color .15s;display:block}
   .side-nav:hover .sn-label{color:#fff}
   #side-left.home .sn-label,#side-right.home .sn-label{display:none}
+  /* ── Scroll-snap entre les deux étages ── */
+  #fv-inner{overflow-y:scroll;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none}
+  #fv-inner::-webkit-scrollbar{display:none}
+  #habits,#settings{flex:0 0 100%;overflow-y:auto;scroll-snap-align:start}
+  #settings{display:flex!important}  /* toujours dans le DOM, c'est le scroll qui révèle */
 }
 
 </style>
@@ -1274,23 +1279,32 @@ function renderSettings(){
   }
 }
 
-function paint(){
-  const isSet=floor===1;
-  $('habits').classList.toggle('hide',isSet);
-  $('settings').classList.toggle('hide',!isSet);
-  $('fv-inner').classList.toggle('menu-mode',isSet);   /* menu : remonte le contenu */
+function applyFloorFx(isSet){
   $('floorview').style.backgroundColor=isSet?'#000':'transparent';
-  /* Desktop : sur les Paramètres le carré perforé s'efface aussi.
-     Le logo habité, c'est le Totehm — pas le menu. */
-  { const st=$('stage'); if(st)st.classList.toggle('z-set',isSet); }
+  {const st=$('stage');if(st)st.classList.toggle('z-set',isSet);}
   $('rail').style.opacity=isSet?'0':'1';
   $('bigT').style.opacity=isSet?'0':'1';
   $('wordmark').style.opacity=isSet?'0':'1';
-  $('menu-arrow').style.display=isSet?'none':'';   /* petite flèche bas : visible sur Habits uniquement */
-  $('filter-arrow').style.display=isSet?'none':''; /* petite flèche haut : visible sur Habits uniquement */
-  $('conn-bar').style.display=isSet?'flex':'none';  /* barre membre : visible dans le Menu uniquement */
+  $('menu-arrow').style.display=isSet?'none':'';
+  $('filter-arrow').style.display=isSet?'none':'';
+  $('conn-bar').style.display=isSet?'flex':'none';
   document.body.classList.toggle('in-settings',isSet);
   if(isSet)renderSettings();else renderHabits();
+}
+function paint(){
+  const isSet=floor===1;
+  if(isDesk()){
+    /* Desktop : scroll-snap reveals sections — no hide/show, no menu-mode shift */
+    const inner=$('fv-inner'), h=inner.clientHeight;
+    inner.scrollTo({top:isSet?h:0,behavior:'smooth'});
+    renderHabits(); renderSettings(); /* both always rendered */
+  } else {
+    $('habits').classList.toggle('hide',isSet);
+    $('settings').classList.toggle('hide',!isSet);
+    $('fv-inner').classList.toggle('menu-mode',isSet);
+    if(isSet)renderSettings();else renderHabits();
+  }
+  applyFloorFx(isSet);
 }
 
 /* ══ FREQUENCY PANEL ══ */
@@ -1564,11 +1578,15 @@ function showStoner(on){
 }
 function go(dFloor){
   if(busy||fpOpen()||$('member-window').classList.contains('show')||$('tview').classList.contains('show'))return;
-  /* Stoner ouvert : swipe bas le referme (retour aux Paramètres, l'étage d'où il vient) */
   if($('stoner').classList.contains('show')){ if(dFloor>0)showStoner(false); return; }
-  /* Deux étages : Habitudes <-> Paramètres. Stoner UNIQUEMENT par bouton [Get Higher]. */
-  if(dFloor<0 && floor===0){animateSwap(-1,()=>{floor=1;paint();});}       /* Habits -> Menu */
-  else if(dFloor>0 && floor===1){animateSwap(1,()=>{floor=0;paint();});}   /* Menu -> Habits */
+  if(isDesk()){
+    const inner=$('fv-inner'),h=inner.clientHeight;
+    if(dFloor<0&&floor===0)inner.scrollTo({top:h,behavior:'smooth'});
+    else if(dFloor>0&&floor===1)inner.scrollTo({top:0,behavior:'smooth'});
+    return;
+  }
+  if(dFloor<0 && floor===0){animateSwap(-1,()=>{floor=1;paint();});}
+  else if(dFloor>0 && floor===1){animateSwap(1,()=>{floor=0;paint();});}
 }
 /* Arrivée depuis next_objective.html en pleine page : #settings ouvre
    directement les Paramètres. En iframe, c'est le postMessage
@@ -1654,14 +1672,30 @@ function wheelBlocked(t){
   if($('stoner').classList.contains('show')||hOpen())return true;
   return !!(t&&t.closest&&t.closest('#freq-panel,#habit-peek,#filter-modal,#member-window,input,textarea'));
 }
+/* Desktop : le scroll-snap natif de #fv-inner gère la molette/trackpad.
+   Le listener ci-dessous synchronise la variable floor quand l'utilisateur fait défiler. */
+{
+  let _lastFloor=floor;
+  $('fv-inner').addEventListener('scroll',()=>{
+    if(!isDesk())return;
+    const inner=$('fv-inner'),h=inner.clientHeight||1;
+    const newFloor=inner.scrollTop/h>=0.5?1:0;
+    if(newFloor!==_lastFloor){
+      _lastFloor=newFloor;floor=newFloor;
+      applyFloorFx(newFloor===1);
+    }
+  },{passive:true});
+}
+/* Mobile : la molette n'existe pas — le swipe tactile fait tout. Sur desktop, le
+   scroll-snap prend le relais ; on ne traite plus les événements wheel manuellement. */
 window.addEventListener('wheel',(e)=>{
-  if(!isDesk()||wheelBlocked(e.target))return;
+  if(isDesk()||wheelBlocked(e.target))return;   /* desktop : scroll-snap natif */
   const now=Date.now();
   if(now-wheelAt>320)wheelAcc=0;
   wheelAt=now;
   if(wheelLock)return;
   const down=e.deltaY>0, edge=scrollEdges();
-  if(down&&!edge.bottom){wheelAcc=0;return;}   /* la liste se lit d'abord */
+  if(down&&!edge.bottom){wheelAcc=0;return;}
   if(!down&&!edge.top){wheelAcc=0;return;}
   wheelAcc+=e.deltaY;
   if(Math.abs(wheelAcc)<90)return;
