@@ -186,7 +186,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 .fp-card{background:#0a0a0a;border:1px solid #1e1e1e;width:100%;max-width:380px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px}
 #fp-input{background:none;border:none;border-bottom:1px solid rgba(255,255,255,.18);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;padding:4px 2px;text-align:center;caret-color:#fff}
 #fp-input::placeholder{color:rgba(255,255,255,.3);font-size:12px;font-style:italic}
-#fp-preview{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--coral);min-height:22px;text-align:center;background:none;border:none;padding:2px 8px;cursor:pointer;transition:color .15s,background .15s;-webkit-tap-highlight-color:transparent}
+#fp-preview{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:rgba(255,255,255,.65);min-height:22px;text-align:center;background:none;border:none;padding:2px 8px;cursor:pointer;transition:color .15s,background .15s;-webkit-tap-highlight-color:transparent}
 #fp-preview:hover,#fp-preview:active{color:#fff;background:var(--navy)}
 #fp-preview:empty,#fp-preview.hide{pointer-events:none}
 #fp-list{display:flex;flex-direction:column;gap:7px;max-height:42vh;overflow-y:auto;padding-right:4px}
@@ -204,7 +204,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 .fp-skip:hover{color:#fff}
 .fp-opt{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#c4c4c4;text-align:left}
 .fp-opt:hover{color:#fff}
-.fp-opt.on{color:var(--coral)}
+.fp-opt.on{color:#fff}
 
 /* ══ SETTINGS (noir, prolongement d'index.html : tiroirs + radios boutique) ══ */
 #settings{width:100%;max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:8px;padding:3vh 22px 0;align-items:center}
@@ -237,7 +237,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 
 /* CTA de la carte City. Coral = actionnable, et rien d'autre (charte).
    Quantico coral -> blanc pur au survol, comme partout ailleurs. */
-.city-cta{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--coral);
+.city-cta{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:rgba(255,255,255,.65);
   background:none;border:none;padding:0 4px;line-height:1.5;margin-top:4px;
   text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .2s ease}
 .city-cta:hover,.city-cta:focus{color:#fff;outline:none}
@@ -258,9 +258,8 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
    charte c'est la couleur de ce qui brûle, pas une alerte système. */
 #acct{display:flex;flex-direction:column;align-items:center;gap:9px;width:100%;max-width:340px}
 .acct-btn{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;
-  background:none;cursor:pointer;border:6px solid transparent;
-  border-image-source:var(--tile-rep);border-image-slice:6;border-image-repeat:round;
-  color:#e8c8de;padding:0 8px;line-height:1.6;-webkit-tap-highlight-color:transparent;
+  background:none;cursor:pointer;border:none;
+  color:var(--rep);padding:0 8px;line-height:1.6;-webkit-tap-highlight-color:transparent;
   transition:opacity .2s}
 .acct-btn:hover{opacity:.78}
 .acct-btn[disabled]{opacity:.5;cursor:default}
@@ -280,7 +279,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 @media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
 .btn-sig:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
 .wm-frame{background:var(--navy);padding:0 3px;margin:0 1px;color:#fff}
-.line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:none;outline:none;border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:var(--coral);min-width:230px}
+.line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:none;outline:none;border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:#fff;min-width:230px}
 .note{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;text-align:center}
 .note.ok{color:#7db32e}.note.no{color:#b06a9f}.note.dim{color:#9a9a9a}
 
@@ -314,16 +313,16 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 #mw-sub .s-meta{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-top:3px}
 #mw-sub .s-perks{margin:10px 0 0;padding:0;list-style:none;text-align:left}
 #mw-sub .s-perks li{font-family:var(--futura);font-weight:300;font-size:12.5px;line-height:1.55;color:rgba(255,255,255,.82);margin-bottom:6px;padding-left:13px;position:relative}
-#mw-sub .s-perks li::before{content:"";position:absolute;left:0;top:8px;width:6px;height:2px;background:var(--coral)}
+#mw-sub .s-perks li::before{content:"";position:absolute;left:0;top:8px;width:6px;height:2px;background:rgba(255,255,255,.3)}
 #mw-sub .s-perks li b{font-family:'Quantico',sans-serif;font-weight:700;color:#fff}
-#mw-sub .s-act{font-family:'Quantico',sans-serif;font-size:13px;color:var(--coral);background:none;border:none;padding:6px 0 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;transition:color .2s}
+#mw-sub .s-act{font-family:'Quantico',sans-serif;font-size:13px;color:rgba(255,255,255,.65);background:none;border:none;padding:6px 0 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;transition:color .2s}
 #mw-sub .s-act:hover{color:#fff}
 /* Les trois paliers pour qui n'en a pas */
 #mw-sub .s-plan{width:100%;text-align:left;background:none;border:1px solid rgba(255,255,255,.18);color:#fff;padding:10px 12px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:border-color .2s,background .2s}
-#mw-sub .s-plan:hover{border-color:var(--coral);background:rgba(251,213,202,.06)}
+#mw-sub .s-plan:hover{border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.04)}
 #mw-sub .s-plan .p-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
 #mw-sub .s-plan .p-name{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:#fff}
-#mw-sub .s-plan .p-price{font-family:'Quantico',sans-serif;font-size:13px;color:var(--coral);white-space:nowrap}
+#mw-sub .s-plan .p-price{font-family:'Quantico',sans-serif;font-size:13px;color:var(--g-light);white-space:nowrap}
 .p-price{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
 .p-alt{font-family:var(--futura);font-weight:300;font-size:10.5px;color:rgba(255,255,255,.55)}
 #mw-sub .s-plan .p-why{font-family:var(--futura);font-weight:300;font-size:11.5px;line-height:1.5;color:rgba(255,255,255,.7);margin-top:5px}
@@ -335,7 +334,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 .mw-body{font-family:var(--futura);font-weight:300;font-size:13px;color:var(--g-mid);line-height:1.7;margin-bottom:14px}
 .mw-close{position:absolute;top:12px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:none;color:var(--g-mid);background:none;border:none;cursor:pointer;padding:0}
 .mw-close:hover{color:#fff}
-.mw-input{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:6px 2px;caret-color:var(--coral);text-align:center;margin-bottom:10px}
+.mw-input{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:6px 2px;caret-color:#fff;text-align:center;margin-bottom:10px}
 .mw-input::placeholder{color:rgba(255,255,255,.33)}
 .mw-note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px;margin-top:6px}
 .mw-note.ok{color:#639922}.mw-note.no{color:#b06a9f}.mw-note.dim{color:var(--g-dark)}
@@ -396,9 +395,7 @@ body:not(.gate) #gate{display:none}
    influenceur atterrit ici et doit voir le chemin Higher sans s'inscrire
    pour le decouvrir. get_higher.html accepte un visiteur sans session — il
    affiche le prix et ne demande le compte qu'au moment de payer. */
-#gate-higher{margin-top:var(--gate-btn-gap);transition:opacity .25s ease;
-  color:#e0e0e0;display:inline-block}
-#gate-open{margin-top:10px;transition:opacity .25s ease}
+#gate-open{margin-top:var(--gate-btn-gap);transition:opacity .25s ease}
 
 /* ══ ÉTAT 2 — LA DÉCONSTRUCTION ══
    Les valeurs --tf-* sont mesurées une fois en JS (positions réelles de l'UI)
@@ -408,8 +405,9 @@ body.gate.entered #gl-t   {transform:var(--tf-t,translateY(-40vh))}
 body.gate.entered #gl-wm  {transform:var(--tf-wm,translateY(40vh))}
 body.gate.entered #gl-rail{transform:var(--tf-rail,translateX(-30vw))}
 body.gate.entered #gate-enter,
-body.gate.entered #gate-higher,
-body.gate.entered #gate-open{opacity:0;pointer-events:none}
+body.gate.entered #gate-open,
+body.gate.entered #gate-attention,
+body.gate.entered #gate-bottom{opacity:0;pointer-events:none}
 
 /* ══ L'UI de l'app : masquée pendant l'état 1, fondu entrant pendant l'état 2 ══ */
 body.gate #rail,body.gate #bigT,body.gate #wordmark,
@@ -431,6 +429,20 @@ body.gate.entered #fv-status{
   body.gate #floorview,body.gate #conn-bar,body.gate #menu-arrow,
   body.gate #filter-arrow,body.gate #fv-status{transition-duration:.01ms!important}
 }
+/* ── Gate: banière d'attention ── */
+#gate-attention{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:26px;max-width:280px;text-align:center;transition:opacity .25s ease}
+#att-icon{width:16px;height:16px;color:rgba(255,255,255,.35);flex-shrink:0}
+.att-txt{font-family:'Quantico',sans-serif;font-weight:400;font-size:11px;letter-spacing:.04em;color:rgba(255,255,255,.35);line-height:1.65}
+/* ── Gate: zone du bas (Search + second Open) ── */
+#gate-bottom{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:auto;padding-bottom:4vh;width:100%;transition:opacity .25s ease}
+/* ── Settings nav: tuiles perforées ── */
+.sn-tile{display:inline-block;width:20px;height:20px;flex-shrink:0;background:0 0/100% 100% no-repeat}
+.sn-tile-rep{background-image:var(--logo-rep)}
+.sn-tile-blue{background-image:var(--logo-blue)}
+/* ── Habit add: T blink + hint ── */
+@keyframes t-pulse{0%,100%{opacity:1}50%{opacity:.18}}
+.h-T.blink{animation:t-pulse 2.2s ease-in-out infinite}
+.h-T-hint{font-family:'Quantico',sans-serif;font-size:9px;color:rgba(255,255,255,.38);white-space:nowrap;margin-left:3px;display:inline-block;vertical-align:middle}
 
 /* ══ DESKTOP : le logo habité devient un carré ══════════════════════════════
    Ce bloc est EN FIN DE FEUILLE, pas au début : à spécificité égale c'est le
@@ -536,8 +548,16 @@ body.gate.entered #fv-status{
     <svg class="glayer" id="gl-wm"   viewBox="74.997 121.602 77.584 46.683"   preserveAspectRatio="none" aria-hidden="true"><defs><g/><clipPath id="tgw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tgw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg>
     <button id="gate-enter" aria-label="Enter my Totehm"></button>
   </div>
-  <a class="btn-sig" id="gate-higher" href="/get_higher.html">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> with my Totehm</a>
   <button class="btn-sig" id="gate-open">Open my Totehm</button>
+  <div id="gate-attention">
+    <svg id="att-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <span class="att-txt">Everything you do in your Totehm writes your biography.</span>
+  </div>
+  <div id="gate-bottom">
+    <input class="line-input" id="gate-search-input" maxlength="24" placeholder="search a Totehm" autocomplete="off" spellcheck="false">
+    <div class="note dim hide" id="gate-search-note"></div>
+    <button class="btn-sig" id="gate-open-2">Open my Totehm</button>
+  </div>
 </div>
 
 
@@ -585,12 +605,12 @@ body.gate.entered #fv-status{
         <!-- Étage 2 : Autobiography by my Totehm© (←) puis My Habits Generator (→), l'un au-dessus de l'autre, centrés -->
         <div class="sn-row">
           <button id="sn-book" class="sn-btn" aria-label="Autobiography by my Totehm — the past">
-            <svg class="chev sn-chev-h" viewBox="0 0 14 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2 L2 12 L11 22"/></svg>
+            <span class="sn-tile sn-tile-rep" aria-hidden="true"></span>
             <span>Autobiography by my Totehm&copy;</span>
           </button>
           <button id="sn-next" class="sn-btn" aria-label="My Habits Generator — the future">
             <span>My Habits Generator</span>
-            <svg class="chev sn-chev-h" viewBox="0 0 14 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2 L12 12 L3 22"/></svg>
+            <span class="sn-tile sn-tile-blue" aria-hidden="true"></span>
           </button>
         </div>
       </div>
@@ -1115,7 +1135,7 @@ function renderHabits(){
     +'<span class="meta">'
     +(pendingF
       ?'<button class="h-T h-Ti" id="h-Tp" title="Intention" style="color:'+(pendingI?intColor(pendingI):'#fff')+'">'+T_SVG+'</button><button class="gbtn h-freq" id="h-pf">'+esc(flabel(pendingF))+'</button>'
-      :'<button class="h-T" id="h-T" title="Time frequency">'+T_SVG+'</button>')
+      :'<button class="h-T" id="h-T" title="Time frequency">'+T_SVG+'</button><span class="h-T-hint hide" id="h-T-hint">click T</span>')
     +'</span>'
     +'<span class="tick"></span>'
     +'<span class="h-body"><textarea class="h-add" rows="1" id="h-add"></textarea><span class="h-hint" id="h-hint">'
@@ -1149,7 +1169,13 @@ function renderHabits(){
   const pf=$('h-pf');if(pf)pf.onclick=()=>openFreqPanel('new','freq');
   const add=$('h-add'), hint=$('h-hint');
   autoGrow(add);
-  add.addEventListener('input',()=>{autoGrow(add);hint.style.display=add.value?'none':'';});
+  add.addEventListener('input',()=>{
+    autoGrow(add);
+    hint.style.display=add.value?'none':'';
+    const hT=$('h-T'),tHint=$('h-T-hint');
+    if(hT)hT.classList.toggle('blink',!!add.value&&!pendingF);
+    if(tHint)tHint.classList.toggle('hide',!add.value||!!pendingF);
+  });
   add.addEventListener('keydown',e=>{
     if(e.key!=='Enter')return;e.preventDefault();
     const v=add.value.replace(/\n/g,' ').trim();if(!v)return;
@@ -1418,7 +1444,7 @@ function renderFpInts(currentId){
     b.className='fp-int'+(x.id===currentId?' on':'');
     b.innerHTML='<span class="fp-int-r1"><span style="color:'+x.color+'">'+T_SVG+'</span>'
       +'<span class="nm" style="color:'+x.color+'">'+x.name+'</span>'
-      +'<svg class="higher-inline" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg></span>'
+      +(myHigher?'<svg class="higher-inline" viewBox="0 0 600 200" aria-label="Higher" role="img"><use href="#higher-word"></use></svg>':'')+'</span>'
       +'<span class="df">'+esc(x.def)+'</span>';
     b.onclick=()=>applyIntent(x.id);
     box.appendChild(b);
@@ -1455,7 +1481,7 @@ function animateSwap(dy,apply){
   if(busy)return;busy=true;const inner=$('fv-inner');
   inner.style.transition='opacity .2s ease, transform .2s ease';
   inner.style.opacity='0';inner.style.transform='translate(0,'+(-dy*26)+'px)';
-  setTimeout(()=>{apply();inner.style.transition='none';inner.style.transform='translate(0,'+(dy*26)+'px)';
+  setTimeout(()=>{apply();inner.scrollTop=0;inner.style.transition='none';inner.style.transform='translate(0,'+(dy*26)+'px)';
     requestAnimationFrame(()=>{inner.style.transition='opacity .3s ease, transform .3s ease';inner.style.opacity='1';inner.style.transform='translate(0,0)';setTimeout(()=>{busy=false;},300);});
   },200);
 }
@@ -2221,6 +2247,14 @@ window.addEventListener('pageshow',e=>{
 
   /* [Open my Totehm] : strictement le même geste que le clic sur le logo */
   $('gate-open').onclick=()=>enter();
+  const go2=$('gate-open-2');if(go2)go2.onclick=()=>enter();
+  const gsi=$('gate-search-input');
+  if(gsi)gsi.addEventListener('keydown',e=>{
+    if(e.key!=='Enter')return;
+    const v=gsi.value.trim();
+    if(v.length<2){const n=$('gate-search-note');if(n){n.classList.remove('hide');n.textContent='2 characters min';}return;}
+    enter(()=>openTotehmView(v));
+  });
 })();
 </script>
 </body>
