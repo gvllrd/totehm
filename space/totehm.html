@@ -512,35 +512,27 @@ body.gate.entered #fv-status{
      est ignorée et le scale(60) d'origine reprend la main. */
   body.gate.entered #gl-bg{transform:var(--tf-bg,scale(var(--gate-bg-scale)));opacity:1}
 
-  /* Les deux accès Book et Next vivent HORS du carré, dans le noir : deux
-     boîtes perforées à la couleur de leur page — rouge-violet à gauche pour
-     l'autobiographie, bleu clair à droite pour le générateur d'habitudes. */
-  .side-nav{display:flex;align-items:center;justify-content:center;
+  /* Les deux accès Book et Next vivent HORS du carré, dans le noir : bouton
+     flex-column — carré perforé (.sn-box) strict en haut, intitulé Quantico en
+     dessous, hors zone perforée. */
+  .side-nav{display:flex;flex-direction:column;align-items:center;
     position:fixed;top:50%;transform:translateY(-50%);
-    width:var(--side);height:var(--side);
-    background:0 0/100% 100% no-repeat;
-    border:none;cursor:pointer;padding:0;z-index:12;
+    background:none;border:none;cursor:pointer;padding:0;gap:7px;z-index:12;
     -webkit-tap-highlight-color:transparent;transition:opacity .2s}
   .side-nav:hover{opacity:.72}
-  .side-nav svg{width:11px;height:19px;color:#fff;
+  .sn-box{display:flex;align-items:center;justify-content:center;
+    width:var(--side);height:var(--side);
+    background:0 0/100% 100% no-repeat;flex-shrink:0}
+  .side-nav svg{width:12px;height:20px;color:#fff;
     fill:none;stroke:currentColor;stroke-width:1.4;
     stroke-linecap:round;stroke-linejoin:round}
-  /* Quand une zone est ouverte, la boîte restée visible cesse d'annoncer une
-     destination : elle passe en navy et devient le chemin de retour vers le
-     Totehm. Le sens du chevron tombe juste sans le changer — Book est à
-     gauche du carré, Next à sa droite, on revient donc toujours vers le
-     centre. */
-  #side-left.home,#side-right.home{background-image:var(--logo-navy)}
-  #side-left{
-    right:calc(50% + var(--stage) / 2 + var(--side-gap));
-    background-image:var(--logo-rep);
-  }
-  #side-right{
-    left:calc(50% + var(--stage) / 2 + var(--side-gap));
-    background-image:var(--logo-blue);
-  }
+  /* Retour Totehm : la boîte vire au navy, le chevron tombe juste sans bouger. */
+  #side-left.home .sn-box,#side-right.home .sn-box{background-image:var(--logo-navy)}
+  #side-left{right:calc(50% + var(--stage) / 2 + var(--side-gap))}
+  #side-left .sn-box{background-image:var(--logo-rep)}
+  #side-right{left:calc(50% + var(--stage) / 2 + var(--side-gap))}
+  #side-right .sn-box{background-image:var(--logo-blue)}
   body.in-settings .side-nav{display:none}
-  .side-nav{flex-direction:column;gap:6px;padding:10px 6px;width:var(--side);height:var(--side)}
   .sn-label{font-family:'Quantico',sans-serif;font-size:9px;letter-spacing:.04em;color:rgba(255,255,255,.6);text-align:center;line-height:1.35;transition:color .15s;display:block}
   .side-nav:hover .sn-label{color:#fff}
   #side-left.home .sn-label,#side-right.home .sn-label{display:none}
@@ -780,8 +772,8 @@ body.gate.entered #fv-status{
     </div>
   </div>
 </div>
-<button class="side-nav" id="side-left" aria-label="My Totehm Book"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg><span class="sn-label">Autobiography<br>by my Totehm©</span></button>
-<button class="side-nav" id="side-right" aria-label="My next Objective"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M3 2 L11 12 L3 22"/></svg><span class="sn-label">My Habits<br>Generator</span></button>
+<button class="side-nav" id="side-left" aria-label="My Totehm Book"><span class="sn-box"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></span><span class="sn-label">Autobiography<br>by my Totehm©</span></button>
+<button class="side-nav" id="side-right" aria-label="My next Objective"><span class="sn-box"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M3 2 L11 12 L3 22"/></svg></span><span class="sn-label">My Habits<br>Generator</span></button>
 <div id="lift-hg"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg></div>
 <div id="stoner"><iframe id="stoner-frame" title="Stoner Method"></iframe>
   <a id="street-btn" class="hide" href="play_the_street.html">Make the Lisbon Streets Sublime</a>
