@@ -32,6 +32,7 @@ Dans ce lot de fichiers, tu DOIS obligatoirement inclure :
 - **Supabase Front :** Toujours le module ES (`https://esm.sh/@supabase/supabase-js@2`), jamais UMD.
 - **Sécurité Stripe :** Les flux Cloth et Higher partagent le même webhook. Le filtre `metadata.product === 'higher'` est vital. Ne JAMAIS le retirer.
 - **Esthétique :** Le mot "Higher" est toujours utilisé via le SVG outlined `<use href="#higher-slogan">`, jamais en webfont.
+- **Desktop UX — texte gris :** Sur desktop (`@media(hover:hover)`), tout texte gris passe en `#fff` au survol du curseur. Appliquer cette règle à tous les éléments de texte statique gris ajoutés ou modifiés.
 
 ## L'Écosystème des IA et la Délégation
 TOTEHM fonctionne comme une startup :

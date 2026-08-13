@@ -374,7 +374,7 @@ body:not(.gate) #gate{display:none}
 /* ── Le carré du logo : taille fixe, aucune variation par viewport ── */
 #gate-logo{position:relative;flex-shrink:0;
   width:var(--gate-size);height:var(--gate-size);
-  margin-bottom:var(--gate-gap)}
+  margin-bottom:10px}
 
 /* Chaque calque est cadré au plus juste sur son dessin (viewBox serré) :
    son rectangle DOM == le rectangle du glyphe -> le calcul FLIP est exact. */
@@ -395,7 +395,7 @@ body:not(.gate) #gate{display:none}
    influenceur atterrit ici et doit voir le chemin Higher sans s'inscrire
    pour le decouvrir. get_higher.html accepte un visiteur sans session — il
    affiche le prix et ne demande le compte qu'au moment de payer. */
-#gate-open{margin-top:var(--gate-btn-gap);transition:opacity .25s ease}
+#gate-open{margin-top:0;transition:opacity .25s ease}
 
 /* ══ ÉTAT 2 — LA DÉCONSTRUCTION ══
    Les valeurs --tf-* sont mesurées une fois en JS (positions réelles de l'UI)
@@ -406,7 +406,6 @@ body.gate.entered #gl-wm  {transform:var(--tf-wm,translateY(40vh))}
 body.gate.entered #gl-rail{transform:var(--tf-rail,translateX(-30vw))}
 body.gate.entered #gate-enter,
 body.gate.entered #gate-open,
-body.gate.entered #gate-attention,
 body.gate.entered #gate-bottom{opacity:0;pointer-events:none}
 
 /* ══ L'UI de l'app : masquée pendant l'état 1, fondu entrant pendant l'état 2 ══ */
@@ -429,12 +428,19 @@ body.gate.entered #fv-status{
   body.gate #floorview,body.gate #conn-bar,body.gate #menu-arrow,
   body.gate #filter-arrow,body.gate #fv-status{transition-duration:.01ms!important}
 }
-/* ── Gate: banière d'attention ── */
-#gate-attention{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:26px;max-width:280px;text-align:center;transition:opacity .25s ease}
-#att-icon{width:16px;height:16px;color:rgba(255,255,255,.35);flex-shrink:0}
-.att-txt{font-family:'Quantico',sans-serif;font-weight:400;font-size:11px;letter-spacing:.04em;color:rgba(255,255,255,.35);line-height:1.65}
-/* ── Gate: zone du bas (Search + second Open) ── */
-#gate-bottom{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:auto;padding-bottom:4vh;width:100%;transition:opacity .25s ease}
+/* ── Gate: banière d'attention (dans gate-bottom) ── */
+#gate-attention{display:flex;flex-direction:column;align-items:center;gap:5px;max-width:280px;text-align:center}
+#att-icon{width:14px;height:14px;color:rgba(255,255,255,.3);flex-shrink:0}
+.att-txt{font-family:'Quantico',sans-serif;font-weight:400;font-size:10px;letter-spacing:.04em;color:rgba(255,255,255,.3);line-height:1.65}
+/* ── Gate: zone basse (Search + phrase) — margin-top:auto pousse vers le bas ── */
+#gate-bottom{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:auto;padding-bottom:5vh;width:100%;transition:opacity .25s ease}
+/* ── Gate: Search bar — style moteur de recherche ── */
+#gate-search-input{width:min(320px,82vw);min-width:0;font-size:15px}
+/* ── Desktop : texte gris → blanc au survol ── */
+@media(hover:hover){
+  .set-note,.bot-txt,.acct-warn,.acct-note,.hp-lbl,.hp-def,.fp-int .df,.mw-mail,.mw-body,.city-line,.city-hint,.att-txt{transition:color .15s}
+  .set-note:hover,.bot-txt:hover,.acct-warn:hover,.acct-note:hover,.hp-lbl:hover,.hp-def:hover,.fp-int .df:hover,.mw-mail:hover,.mw-body:hover,.city-line:hover,.city-hint:hover,.att-txt:hover{color:#fff}
+}
 /* ── Settings nav: tuiles perforées ── */
 .sn-tile{display:inline-block;width:20px;height:20px;flex-shrink:0;background:0 0/100% 100% no-repeat}
 .sn-tile-rep{background-image:var(--logo-rep)}
@@ -549,14 +555,13 @@ body.gate.entered #fv-status{
     <button id="gate-enter" aria-label="Enter my Totehm"></button>
   </div>
   <button class="btn-sig" id="gate-open">Open my Totehm</button>
-  <div id="gate-attention">
-    <svg id="att-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-    <span class="att-txt">Everything you do in your Totehm writes your biography.</span>
-  </div>
   <div id="gate-bottom">
     <input class="line-input" id="gate-search-input" maxlength="24" placeholder="search a Totehm" autocomplete="off" spellcheck="false">
     <div class="note dim hide" id="gate-search-note"></div>
-    <button class="btn-sig" id="gate-open-2">Open my Totehm</button>
+    <div id="gate-attention">
+      <svg id="att-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span class="att-txt">Everything you do in your Totehm writes your biography.</span>
+    </div>
   </div>
 </div>
 
