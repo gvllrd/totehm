@@ -477,8 +477,8 @@ body.gate.entered #fv-status{
        Encombrement total = --stage * (1 + 2 * (.058 + .05)) = --stage * 1.216. */
     --stage:min(92vh,78vw,640px);
     --pad:calc(var(--stage) * .0616);   /* profondeur d'une perforation */
-    --side:max(34px,calc(var(--stage) * .058));  /* juste le chevron + un filet */
-    --side-gap:calc(var(--stage) * .05);
+    --side:max(56px,calc(var(--stage) * .10));   /* carré élargi : chevron + intitulé */
+    --side-gap:calc(var(--stage) * .085);         /* éloigné du Totehm */
     --rl:max(38px,calc(var(--stage) * .072));   /* dégage les T des perforations */
     --rw:max(16px,calc(var(--stage) * .034));   /* rail de saisie, pas rail de logo */
   }
@@ -539,9 +539,9 @@ body.gate.entered #fv-status{
     left:calc(50% + var(--stage) / 2 + var(--side-gap));
     background-image:var(--logo-blue);
   }
-  #settings-nav .sn-row{display:none}
-  .side-nav{height:auto;flex-direction:column;gap:5px;padding:8px 4px}
-  .sn-label{font-family:'Quantico',sans-serif;font-size:8px;letter-spacing:.04em;color:rgba(255,255,255,.6);text-align:center;line-height:1.35;transition:color .15s;display:block}
+  body.in-settings .side-nav{display:none}
+  .side-nav{flex-direction:column;gap:6px;padding:10px 6px;width:var(--side);height:var(--side)}
+  .sn-label{font-family:'Quantico',sans-serif;font-size:9px;letter-spacing:.04em;color:rgba(255,255,255,.6);text-align:center;line-height:1.35;transition:color .15s;display:block}
   .side-nav:hover .sn-label{color:#fff}
   #side-left.home .sn-label,#side-right.home .sn-label{display:none}
 }
@@ -1297,6 +1297,7 @@ function paint(){
   $('menu-arrow').style.display=isSet?'none':'';   /* petite flèche bas : visible sur Habits uniquement */
   $('filter-arrow').style.display=isSet?'none':''; /* petite flèche haut : visible sur Habits uniquement */
   $('conn-bar').style.display=isSet?'flex':'none';  /* barre membre : visible dans le Menu uniquement */
+  document.body.classList.toggle('in-settings',isSet);
   if(isSet)renderSettings();else renderHabits();
 }
 
