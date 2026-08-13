@@ -44,8 +44,12 @@ html,body{width:100%;min-height:100dvh;background:var(--bg);color:var(--g1);font
 #card{display:flex;flex-direction:column;align-items:center;gap:13px;text-align:center;width:100%;max-width:420px;padding:0 48px;opacity:1;transition:opacity .22s ease}
 #card.fade{opacity:0}
 .visual{position:relative;width:min(56vw,210px);aspect-ratio:3/4;border:1px solid #181818;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#060606}
-.visual img{width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(18%);transition:filter .3s}
+.visual img{width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(18%);transition:filter .3s,opacity .12s}
 .visual img:hover{filter:none}
+.visual img.vis-fade{opacity:0}
+.vis-arr{position:absolute;top:50%;transform:translateY(-50%);background:none;border:none;font-family:var(--mono);font-size:13px;color:rgba(255,255,255,.28);cursor:pointer;padding:10px 5px;z-index:3;-webkit-tap-highlight-color:transparent;transition:color .15s;line-height:1}
+.vis-arr:hover,.vis-arr:active{color:rgba(255,255,255,.7)}
+.vis-arr-l{left:0}.vis-arr-r{right:0}
 .visual .ph{font-family:var(--mono);font-size:8px;color:#222;text-transform:uppercase;padding:14px}
 .vis-dots{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);display:flex;gap:4px;z-index:2}
 .vis-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.22);cursor:pointer;transition:background .2s;-webkit-tap-highlight-color:transparent}
@@ -269,6 +273,7 @@ const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUz
 const $=id=>document.getElementById(id);
 const SIZES=['S','M','L','XL','2XL','3XL'];
 let supports=[],ci=0,styles=[],stylesLoaded=false;
+const supportImages={};
 let order={support:null,message:'',name:'',size:'',style:null};
 let me=null,myProfile=null;
 
@@ -288,27 +293,36 @@ async function loadCollection(){
   }catch(_){}
 }
 
-async function load(){
-  const{data}=await sb.from('totehm_cloth_support').select('*').eq('active',true).order('position');
-  supports=data||[];renderDots();render();
+async function preloadImages(list){
+  await Promise.all(list.map(async s=>{
+    if(!s.storage_folder){supportImages[s.id]=[];return;}
+    try{
+      const{data:files}=await sb.storage.from('totehm-cloth-support').list(s.storage_folder,{sortBy:{column:'name',order:'asc'}});
+      supportImages[s.id]=(files||[]).filter(f=>/\.(png|jpe?g|webp)$/i.test(f.name)).map(f=>sb.storage.from('totehm-cloth-support').getPublicUrl(`${s.storage_folder}/${f.name}`).data.publicUrl);
+    }catch(_){supportImages[s.id]=[];}
+  }));
 }
 
-async function render(){
+async function load(){
+  const{data}=await sb.from('totehm_cloth_support').select('*').eq('active',true).order('position');
+  supports=data||[];
+  await preloadImages(supports);
+  renderDots();render();
+}
+
+function render(){
   const s=supports[ci];const card=$('card');
   if(!s){card.innerHTML='<div class="mono" style="padding:30px 0">collection coming soon</div>';return;}
   const left=avail(s);
-
-  let images=[];
-  if(s.storage_folder){
-    try{
-      const{data:files}=await sb.storage.from('totehm-cloth-support').list(s.storage_folder,{sortBy:{column:'name',order:'asc'}});
-      images=(files||[]).filter(f=>/\.(png|jpe?g|webp)$/i.test(f.name)).map(f=>sb.storage.from('totehm-cloth-support').getPublicUrl(`${s.storage_folder}/${f.name}`).data.publicUrl);
-    }catch(_){}
-  }
+  const images=supportImages[s.id]||[];
 
   const visualHtml=images.length>0
     ?`<div class="visual" id="vis"><img src="${images[0]}" alt="${esc(s.title||'')}" id="vis-img">`+
-      (images.length>1?`<div class="vis-dots" id="vis-dots">${images.map((_,i)=>`<span class="vis-dot${i===0?' on':''}" data-i="${i}"></span>`).join('')}</div>`:'')+
+      (images.length>1
+        ?`<button class="vis-arr vis-arr-l" id="vis-l">‹</button>`+
+         `<button class="vis-arr vis-arr-r" id="vis-r">›</button>`+
+         `<div class="vis-dots" id="vis-dots">${images.map((_,i)=>`<span class="vis-dot${i===0?' on':''}" data-i="${i}"></span>`).join('')}</div>`
+        :'')+
       `</div>`
     :`<div class="visual"><div class="ph">${esc(s.title||'support')}</div></div>`;
 
@@ -326,11 +340,18 @@ async function render(){
   if(images.length>1){
     let vi=0;
     const visEl=$('vis'),imgEl=$('vis-img'),dotsEl=$('vis-dots');
-    function setVi(n){vi=n;imgEl.src=images[vi];dotsEl.querySelectorAll('.vis-dot').forEach((d,i)=>d.classList.toggle('on',i===vi));}
+    function setVi(n){
+      vi=(n+images.length)%images.length;
+      imgEl.classList.add('vis-fade');
+      setTimeout(()=>{imgEl.src=images[vi];imgEl.classList.remove('vis-fade');},110);
+      dotsEl.querySelectorAll('.vis-dot').forEach((d,i)=>d.classList.toggle('on',i===vi));
+    }
+    $('vis-l').onclick=e=>{e.stopPropagation();setVi(vi-1);};
+    $('vis-r').onclick=e=>{e.stopPropagation();setVi(vi+1);};
     dotsEl.querySelectorAll('.vis-dot').forEach(d=>{d.onclick=e=>{e.stopPropagation();setVi(+d.dataset.i);};});
     let vx=0;
     visEl.addEventListener('touchstart',e=>{vx=e.changedTouches[0].screenX;},{passive:true});
-    visEl.addEventListener('touchend',e=>{const dx=e.changedTouches[0].screenX-vx;if(Math.abs(dx)>40){setVi((vi+(dx<0?1:-1)+images.length)%images.length);e.stopPropagation();}},{passive:true});
+    visEl.addEventListener('touchend',e=>{const dx=e.changedTouches[0].screenX-vx;if(Math.abs(dx)>40){setVi(vi+(dx<0?1:-1));e.stopPropagation();}},{passive:true});
   }
 }
 
