@@ -1,0 +1,37 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [{ "type": "cookie", "key": "totehm_geo", "value": "lisbon" }],
+      "destination": "/lisbon.html"
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "cookie", "key": "totehm_geo", "value": "global" }],
+      "destination": "/get_higher.html"
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "header", "key": "x-vercel-ip-country", "value": "PT" }],
+      "destination": "/lisbon.html"
+    },
+    { "source": "/", "destination": "/get_higher.html" },
+
+    { "source": "/lisbon", "destination": "/lisbon.html" },
+    { "source": "/global", "destination": "/get_higher.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "geolocation=(self), camera=(), microphone=()" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" }
+      ]
+    }
+  ]
+}
