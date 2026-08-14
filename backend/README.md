@@ -1,96 +1,114 @@
 # TOTEHM · backend
 
-Socle commun aux deux domaines. **Un seul projet Supabase** sert
-`totehm.space` et `higher.boutique` — c'est ce qui rend les deux
-plateformes liées : même base, mêmes fonctions, même auth.
+Socle commun aux trois domaines. **Un seul projet Supabase** sert `totehm.com`,
+`totehm.space` et `higher.boutique`.
 
-    ~/totehm/
-      space/       →  www.totehm.space      (Vercel, Root Directory = space)
-      boutique/    →  www.higher.boutique   (Vercel, Root Directory = boutique)
-      backend/     →  servi par PERSONNE    ← ce dossier
+```
+~/totehm/
+  totehm.com/  →  totehm.com            (Vercel, Root Directory = totehm.com)
+  space/       →  www.totehm.space      (Vercel, Root Directory = space)
+  boutique/    →  www.higher.boutique   (Vercel, Root Directory = boutique)
+  backend/     →  servi par PERSONNE    ← ce dossier
+  oracle/      →  clés SSH, gitignoré
+```
 
-⚠️ **`backend/` doit rester à la racine.** Placé dans `space/` ou
-`boutique/`, Vercel le servirait publiquement : le SQL, le code des
-Edge Functions et le `docker-compose.yml` deviendraient téléchargeables.
+⚠️ **`backend/` doit rester à la racine.** Placé dans un dossier Vercel, le SQL,
+le code des Edge Functions et le `docker-compose.yml` deviendraient
+téléchargeables.
+
+Les trois produits sont **indépendants**. Ils partagent une base, pas des
+fichiers front. `totehm.com/` ne référence jamais `space/`.
 
 ---
 
 ## Projet Supabase
 
-    ref     abujjbkbbiumxrokozph
-    region  eu-west-1
-    nom     get Higher
+```
+ref     abujjbkbbiumxrokozph
+region  eu-west-1
+nom     get Higher
+```
 
 ## Qui utilise quoi
 
-| Table / fonction | space | boutique |
-|---|---|---|
-| `stoner_access` | ✅ le gate | — |
-| `stoner_runs` | ✅ Low/High | — |
-| `totehm_events` | ✅ le Totehm | — |
-| `book_chapters` | ✅ autobiographie | ✅ mode B du Cloth |
-| `totehm_clothes` | — | ✅ commandes |
-| `spots` | ✅ Play the Street | ✅ Play the Street |
-| `profiles`, `subscriptions` | ✅ | ✅ |
-| `stoner-gate` | ✅ | — |
-| `higher-checkout` | ✅ | — |
-| `stripe-webhook` | ✅ Higher | ⚠️ voir plus bas |
-| `create-checkout` | — | ✅ Cloth |
+| Table / fonction | .com | .space | .boutique |
+|---|---|---|---|
+| `stoner_access` | ✅ gate | ✅ gate | — |
+| `stoner_runs` | ✅ | ✅ | — |
+| `totehm_events` | — | ✅ le Totehm | — |
+| `book_chapters` | — | ✅ autobiographie | ✅ mode B du Cloth |
+| `totehm_cloth_support` | — | — | ✅ |
+| `totehm_clothes` | — | — | ✅ commandes |
+| `spots` | — | ✅ | ✅ |
+| `profiles`, `subscriptions` | — | ✅ | ✅ |
+| `stoner-gate` | ✅ | ✅ | — |
+| `higher-checkout` | — | ✅ | — |
+| `create-checkout` | — | — | ✅ Cloth |
+| `stripe-webhook` | reçoit **tout** | | |
 
-## Lien Printful — totehm_cloth_support
-
-**Support physique : Cotton Heritage** (remplace Champion — décision verrouillée 11 août 2026)
-- Broderie Higher box perforée → **devant** (configuré dans Printful)
-- Logo TOTEHM LSD paper → **manches** (configuré dans Printful)
-- Illustration curateur DTG → **dos** (`type: "back"`, généré par `compose-artwork` à chaque commande)
-
-Colonnes Printful sur `totehm_cloth_support` :
-
-| Colonne | Type | Rôle |
-|---|---|---|
-| `printful_product_id` | BIGINT | ID du produit dans le store Printful |
-| `printful_variant_map` | JSONB | `{ "S": { variant_id, sync_variant_id, retail_price }, … }` |
-| `print_area` | JSONB | `{ "width_in": 12, "height_in": 16, "dpi": 300, "placement": "back" }` |
-
-Le **Workflow D** lit `printful_variant_map[cloth.size].sync_variant_id` + `type: "back"` (DTG).
-Le **Workflow F** (à construire) écoute `product_synced / product_updated / product_deleted` Printful et upsert automatiquement `totehm_cloth_support`.
-
-## Collections (drops)
-
-Table `collections` à créer :
-- `slug` : format `0.[NomCollection]` (ex: `0.blackout`)
-- `description` : texte court affiché sous le titre sur le front
-- `color` : couleur unique du drop (monochrome — pas de sélecteur)
-- `total_max_pieces` : calculé = `SUM(max_pieces)` de tous les supports du drop
-
-Stock restant global = `total_max_pieces` − `SUM(claimed)` sur les supports du drop. Calculable en temps réel depuis Supabase, pas de colonne dénormalisée.
-
-## ⚠️ Deux flux Stripe sur le même compte
-
-## ⚠️ Deux flux Stripe sur le même compte
-
-`create-checkout` (Cloth) et `higher-checkout` (Figher Club) créent
-tous deux des sessions Stripe. `stripe-webhook` reçoit **les deux**.
-
-Il n'accorde l'accès Higher que si `metadata.product === 'higher'`.
-Sans ce filtre, chaque acheteur de t-shirt recevrait l'accès Higher
-gratuitement, sans que personne s'en aperçoive.
-
-**Ne jamais retirer ce filtre.** Et toute nouvelle fonction de
-checkout doit poser sa propre `metadata.product`.
+`subscriptions` est la **source de vérité unique** de l'état d'un tier.
+`_deprecated_user_roles_20260803` est morte et sera droppée après septembre 2026.
 
 ---
 
-## Ce qui reste à faire pour encaisser Higher
+## ⚠️ Trois flux Stripe sur le même compte
 
-1. Endpoint Stripe → `https://abujjbkbbiumxrokozph.supabase.co/functions/v1/stripe-webhook`
-   événement `checkout.session.completed` uniquement
-2. `supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_...`
-3. Resend en SMTP custom dans Supabase Auth
-   (défaut Supabase = **2 emails/heure**, les codes ne partiront pas)
+`create-checkout` (Cloth), `higher-checkout` (Figher Club) et, à venir,
+`subscription-checkout` (MRR) créent tous des sessions Stripe.
+`stripe-webhook` les reçoit **toutes**.
 
-Déjà en place : `STRIPE_SECRET_KEY`, les 3 Edge Functions déployées,
-le bucket `stoner-method` en privé, les tables et les RPC.
+Le routage se fait sur `metadata.product` :
+
+| Valeur | Flux | Effet |
+|---|---|---|
+| `higher` | Stoner Experience | écrit dans `stoner_access` |
+| `cloth` | Totehm Cloth | déclenche la commande Printful |
+| `subscription` | Plant / Tree | écrit dans `subscriptions` |
+
+**Règles :**
+1. Un `switch` avec un `default` **explicite** qui log et renvoie 200. Jamais un
+   `if` : un quatrième produit ne doit jamais tomber dans une branche permissive.
+2. Toute nouvelle fonction de checkout pose sa propre `metadata.product`.
+   Sans ça, un acheteur de t-shirt reçoit l'accès Higher gratuitement et
+   personne ne s'en aperçoit.
+3. **Ne jamais retirer ce filtre.**
+
+### Le piège des abonnements
+
+`checkout.session.completed` porte la metadata.
+`customer.subscription.updated`, `.deleted` et `invoice.payment_failed` **ne la
+portent pas** — or ce sont eux qui coupent l'accès à l'échéance.
+
+La metadata doit donc être posée **aussi** dans `subscription_data.metadata` à la
+création du checkout, pour qu'elle vive sur l'objet Subscription lui-même.
+Une ligne. Irrattrapable sur les abonnements déjà créés.
+
+### Idempotence
+
+Stripe rejoue. Une table `stripe_events(event_id primary key)` et un insert en
+tête de webhook : si ça conflicte, on renvoie 200 et on sort. Sans ça, un rejeu
+sur une commande Cloth peut déclencher deux impressions Printful.
+
+---
+
+## CORS — une seule liste
+
+Les origines autorisées vivent dans `supabase/functions/_shared/origins.ts` et
+nulle part ailleurs. Six entrées : apex + `www` pour chacun des trois domaines,
+plus `http://localhost:3000` en développement.
+
+**Jamais de `Access-Control-Allow-Origin: '*'`** sur une fonction qui touche au
+paiement ou à une donnée utilisateur.
+
+## Sessions
+
+Trois domaines = trois origines = trois `localStorage` = **trois sessions**.
+Il n'y a pas de SSO. C'est le modèle de sécurité des navigateurs, pas une limite
+de Supabase.
+
+Le pont, le jour où un second domaine aura besoin d'un utilisateur connecté :
+`auth.admin.generateLink` côté serveur → `token_hash` à usage unique et courte
+durée → `verifyOtp` sur le domaine cible. **Jamais un refresh token dans une URL.**
 
 ---
 
@@ -102,40 +120,28 @@ le bucket `stoner-method` en privé, les tables et les RPC.
 | `SUPABASE_SERVICE_ROLE_KEY` | injectée par Supabase | ✅ |
 | `STRIPE_SECRET_KEY` | `supabase secrets` | ✅ |
 | `STRIPE_WEBHOOK_SECRET` | `supabase secrets` | ✅ |
+| `RESEND_API_KEY` | `supabase secrets` | ✅ |
+| `TOTEHM_LOGO_URL` | `supabase secrets` | — |
 | clés SSH Oracle | `~/totehm/oracle/` | ✅ gitignoré |
-| `.env` de n8n | sur le serveur Oracle | ✅ |
+| `.env` de n8n | serveur Oracle, permissions 600 | ✅ |
 
-Les Edge Functions lisent tout par `Deno.env.get()` — aucune valeur
-n'apparaît dans le code, c'est pour ça qu'il est poussable sur un
-repo public.
-
----
-
-## Déployer (Via Claude Code)
-
-Les déploiements et migrations ne sont plus opérés manuellement.
-Claude (CTO) conçoit l'architecture et livre les commandes dans un fichier `CLAUDE_CODE.md`.
-Claude Code exécute ensuite ces commandes dans le terminal :
-
-    supabase functions deploy stoner-gate
-    supabase functions deploy higher-checkout
-    supabase functions deploy stripe-webhook --no-verify-jwt
-    supabase db push
+Les Edge Functions lisent tout par `Deno.env.get()` — aucune valeur n'apparaît
+dans le code.
 
 ---
 
-## Le Master n'est PAS ici
+## ⚠️ Le repo et la prod divergent
 
-Le document stratégique unique `TOTEHM_MASTER.html` vit dans `~/totehm_docs/`, hors du repo public.
+Au 14 août 2026, `higher-checkout` sur `main` contient encore l'ancienne
+tarification (`COHORT_MAX=777`, 17 € / 29 €) alors que la production sert les
+cinq paliers (11 → 76 €) et expose un mode `{quote:true}`.
 
-**Ce fichier est maintenu par le CTO (Claude) et le COO (Gemini).** 
-Conformément à la **Règle d'Or**, à chaque nouvelle livraison via le `files.zip`, le fichier Master est mis à jour pour refléter la réalité de l'infrastructure, l'avancement des chantiers (ce qui tourne / ce qui manque), et documenter les décisions. Une tâche n'est terminée que si le code et les 3 documents sont synchronisés.
----
+**Toujours vérifier l'état déployé avant un `supabase functions deploy`.** Un
+redéploiement aveugle depuis le repo repasserait le paywall à 17 €.
 
-## 🚽 Règle inbox — Chasse d'eau
+## n8n — statut : gelé
 
-Après chaque déploiement, Claude Code vide `~/inbox/` :
-
-    rm -rf ~/inbox/*
-
-Dernière commande de chaque `CLAUDE_CODE.md`, sans exception.
+Ni abandonné, ni développé. Workflows A→E opérationnels, Workflow F (Printful
+listener) construit. Stockés dans `backend/n8n/workflows/`.
+Le pipeline n'est pas nécessaire pour encaisser, il l'est pour scaler.
+On automatise quand le manuel dépasse 5 h/semaine.
