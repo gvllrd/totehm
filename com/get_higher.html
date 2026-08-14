@@ -40,7 +40,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
   line-height:1.4;letter-spacing:.02em;display:flex;align-items:center;
   justify-content:center;gap:4px;width:100%;max-width:460px; text-transform:uppercase;}
 
-/* Ajout spécifique pour le titre Figher Club (Quantico blanc) */
+/* Ajout spécifique pour le titre Titre du paywall (Quantico blanc) */
 .q-title{font-family:'Quantico',sans-serif;font-weight:700;font-size:18px;color:#fff;
   line-height:1.4;letter-spacing:.06em;display:flex;align-items:center;
   justify-content:center;gap:4px;width:100%;max-width:460px; text-transform:uppercase; margin-bottom:4px;}
@@ -135,9 +135,8 @@ function buildSlide(slide){
   slide.parts.forEach(p=>{
     if(p.t==='paywall'){
       block.innerHTML = `
-        <img src="assets/img/figher_club.png" alt="Figher Club" class="fc-img" onerror="this.style.display='none'">
-        <div class="q-title">FIGHER CLUB</div>
-        <div class="m-info">We aim to gather 11 million individuals operating at peak neurological coherence — mentally, emotionally, and behaviorally — to build and network the <span class="higher-inline-p"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span> way through <span class="higher-inline-p"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span> places and events.</div>
+        <div class="q-title">THE STONER EXPERIENCE</div>
+        <div class="m-info">Ten steps. An artistic and neurological experience. A numbered place, for life.</div>
 
         <div class="tiers-scroll-wrapper" id="tiers-wrapper">
            <div class="tiers-scroll-inner" id="tiers-container">
@@ -250,7 +249,7 @@ if (container) {
   if(!el || !dynPrice) return;
   
   try{
-    const { data, error } = await sb.rpc('figher_count');
+    const { data, error } = await sb.rpc('higher_count');
     if(error || data===null) throw error;
     
     const count = data;
