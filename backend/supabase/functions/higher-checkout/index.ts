@@ -1,16 +1,13 @@
-// ═══════════════════════════════════════════════════════════════
 // TOTEHM · higher-checkout
-// why : le prix et le palier ne vivent jamais côté client ;
-//       l'email vient du JWT, jamais du body
-// how : palier calculé serveur (777 premières à 17 €, puis 29 €),
+// why : le prix ne vit jamais côté client ; l'email vient du JWT
+// how : palier calculé SERVEUR sur le nombre réel de membres,
 //       metadata product='higher' pour que le webhook ne confonde
-//       JAMAIS cet achat avec une commande Totehm Cloth
-// what : renvoie l'url stripe vers laquelle rediriger
-// verify_jwt = true
-// ═══════════════════════════════════════════════════════════════
+//       jamais cet achat avec une commande Totehm Cloth
+// what : { url, amount, tier } — ou { amount, tier } si body.quote
 
 import Stripe from "npm:stripe@14";
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { corsHeaders, resolveOrigin, SITE_COM } from "../_shared/origins.ts";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "");
 
@@ -20,25 +17,26 @@ const admin = createClient(
   { auth: { persistSession: false } },
 );
 
-const COHORT_MAX  = 777;
-const PRICE_EARLY = 1700;  // 17 € — les 777 premières places
-const PRICE_AFTER = 2900;  // 29 € — palier publié, jamais suggéré
+// Paliers en nombre d'or, arrêtés à 5.
+// MIROIR de goldenTiers dans higher.html — modifier les deux ensemble.
+// Le front AFFICHE, ce fichier APPLIQUE.
+const TIERS = [
+  { tier: 1, limit:   77, cents: 1100 },
+  { tier: 2, limit:  202, cents: 1800 },
+  { tier: 3, limit:  404, cents: 2900 },
+  { tier: 4, limit:  731, cents: 4700 },
+  { tier: 5, limit: 1260, cents: 7600 },
+];
+const BEYOND = { tier: 6, cents: 12300 };  // au-delà de 1260, on décidera
 
-const SITE = "https://www.totehm.space";
-const ALLOWED = [SITE, "https://totehm.space", "http://localhost:3000"];
-
-function cors(origin: string | null) {
-  const allow = origin && ALLOWED.includes(origin) ? origin : SITE;
-  return {
-    "Access-Control-Allow-Origin": allow,
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Content-Type": "application/json",
-  };
+function tierFor(taken: number) {
+  for (const t of TIERS) if (taken < t.limit) return t;
+  return BEYOND;
 }
 
 Deno.serve(async (req) => {
-  const headers = cors(req.headers.get("origin"));
+  const origin = req.headers.get("origin");
+  const headers = corsHeaders(origin, SITE_COM);
   const json = (b: unknown, s = 200) =>
     new Response(JSON.stringify(b), { status: s, headers });
 
@@ -51,8 +49,6 @@ Deno.serve(async (req) => {
   const authHeader = req.headers.get("Authorization");
   if (!authHeader) return json({ error: "no_session" }, 401);
 
-  // L'email vient du JWT. Jamais du body : sinon n'importe qui
-  // peut acheter au nom de quelqu'un d'autre.
   const asUser = createClient(
     Deno.env.get("SUPABASE_URL")!,
     Deno.env.get("SUPABASE_ANON_KEY")!,
@@ -63,7 +59,6 @@ Deno.serve(async (req) => {
 
   const email = user.email.trim().toLowerCase();
 
-  // Déjà membre : on ne vend pas ce qu'il possède.
   const { data: existing } = await admin
     .from("stoner_access")
     .select("email")
@@ -71,14 +66,28 @@ Deno.serve(async (req) => {
     .maybeSingle();
   if (existing) return json({ already: true }, 200);
 
-  // Le palier est calculé SERVEUR. Un prix côté client se modifie
-  // en deux clics dans les devtools.
   const { count } = await admin
     .from("stoner_access")
     .select("email", { count: "exact", head: true });
 
-  const taken  = count ?? 0;
-  const amount = taken < COHORT_MAX ? PRICE_EARLY : PRICE_AFTER;
+  const taken = count ?? 0;
+  const t = tierFor(taken);
+
+  let body: Record<string, unknown> = {};
+  try { body = await req.json(); } catch (_) { /* body vide accepté */ }
+
+  // ?quote : le front demande juste le prix à afficher, sans créer
+  // de session Stripe. Évite d'annoncer un prix et d'en facturer un autre.
+  if (body?.quote === true) {
+    return json({ amount: t.cents, tier: t.tier, taken }, 200);
+  }
+
+  // La renonciation au droit de rétractation est obligatoire (EU).
+  if (body?.waiver !== true) {
+    return json({ error: "waiver_required" }, 400);
+  }
+
+  const site = resolveOrigin(origin, SITE_COM);
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -87,23 +96,26 @@ Deno.serve(async (req) => {
       line_items: [{
         price_data: {
           currency: "eur",
-          unit_amount: amount,
+          unit_amount: t.cents,
           product_data: {
-            name: "Figher Club — Higher",
+            name: `Figher Club — Higher · Tier ${t.tier}`,
             description: "Stoner Method, ten steps, for life. Numbered place.",
           },
         },
         quantity: 1,
       }],
-      // LA CLÉ DE TOUT : le webhook n'accorde l'accès QUE si
-      // product === 'higher'. Sans ça, chaque acheteur de Totehm
-      // Cloth recevrait l'accès Higher gratuitement.
-      metadata: { product: "higher", email },
-      success_url: `${SITE}/stoner.html?checked=1`,
-      cancel_url:  `${SITE}/get_higher.html`,
+      metadata: {
+        product: "higher",
+        email,
+        tier: String(t.tier),
+        waiver: "true",
+        waiver_ts: String(body?.waiver_ts ?? new Date().toISOString()),
+      },
+      success_url: `${site}/stoner.html?checked=1`,
+      cancel_url:  `${site}/get_higher.html`,
     });
 
-    return json({ url: session.url, amount });
+    return json({ url: session.url, amount: t.cents, tier: t.tier });
   } catch (e) {
     console.error("stripe:", e);
     return json({ error: "stripe" }, 502);
