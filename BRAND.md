@@ -159,6 +159,54 @@ Existing voice:
 > Ten steps to hold the altitude. (High)
 > An artistic and neurological experience.
 
+### Where Figher Club lives
+
+**Figher Club never appears on `.com`.**
+
+It is a cultural reversal — Fight Club → Figher Club — and a reversal only lands
+on someone who already holds the reference. A gallery curator, or a passer-by who
+just scanned a sticker on a Lisbon sign, has no context for it: they read a pun
+whose key they were never given.
+
+The same rule catches a second leak. The `.com` paywall must not describe "places
+and events" — that is Tree, and Tree lives on `.space`. **Two products on one
+payment screen is one product too many.**
+
+What `.com` may say: `GET HIGHER` (the slogan works with zero context), the
+numbered place, the ten steps, the artistic and neurological framing.
+
+**Figher Club belongs to `totehm.space`.** Not to the boutique — the boutique is
+where a story becomes an object, and Figher is not an object, it is a state of a
+person. The buyer of the Stoner Experience discovers they have become a Figher
+*on arriving at `.space`*, never as a sales argument beforehand. A revelation is
+stronger than a promise.
+
+Mechanically it already works and needs no bridge: `.com` writes to
+`stoner_access` through the Stripe webhook, `.space` reads it. One database,
+three domains — this is what the architecture was built for.
+
+As Tree becomes collaborative, Figher becomes **the qualification to contribute**:
+you did the method, so you can publish a spot. A club that does something, rather
+than a club that decorates.
+
+### The status layer, assumed on purpose
+
+The Higher badge is visible next to other members' names. **This is a deliberate
+exception to the Plant doctrine and it must be named as such**, not left to exist
+by accident.
+
+Plant exists to break `LOOK AT ME` in favour of `LEARN FROM ME`, and a badge beside
+a pseudonym is, mechanically, a status marker. The exception holds only as long as
+the badge carries *information* rather than rank: it says this person went through
+the method, so their published habits and spots rest on something.
+
+The line not to cross: **one badge, binary, never a score, never a ranking, never a
+leaderboard, never a count of anything comparable between members.** The moment
+Higher becomes a quantity, Plant becomes the thing it was built against.
+
+*(Internal identifier: the Postgres function is `higher_count`. The old
+`figher_count` is deprecated — see `TOTEHM_MASTER.html`.)*
+
 ### CRITICAL DISTINCTION
 
 **The Stoner Method is NOT the 7 Intentions.**
