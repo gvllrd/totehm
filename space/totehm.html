@@ -543,6 +543,38 @@ body.gate.entered #fv-status{
   #fv-inner::-webkit-scrollbar{display:none}
   #habits,#settings{flex:0 0 100%;overflow-y:auto;scroll-snap-align:start}
   #settings{display:flex!important}  /* toujours dans le DOM, c'est le scroll qui révèle */
+
+  /* ══ LE CARRÉ GLISSE ══
+     #stage était position:fixed : il ne bougeait jamais, seul #fv-inner
+     scrollait dans sa bande. Résultat, rien ne semblait défiler. On lie
+     maintenant sa translation à body.in-settings — le carré sort par le
+     haut, les réglages occupent l'écran qu'il libère. */
+  #stage{transition:transform .62s cubic-bezier(.22,.61,.36,1),
+                     opacity .45s ease}
+  body.in-settings #stage{transform:translate(-50%,calc(-50% - 108vh));opacity:0}
+
+  /* Les réglages ne sont plus contraints à la bande étroite une fois le
+     carré parti : ils prennent la hauteur entière. */
+  #fv-inner{transition:top .62s cubic-bezier(.22,.61,.36,1),
+                       bottom .62s cubic-bezier(.22,.61,.36,1)}
+  body.in-settings #fv-inner{top:0;bottom:0}
+  body.in-settings #settings{padding-top:7vh;max-width:520px}
+
+  /* ══ LES DEUX ACCÈS, À LA TAILLE DES BOUTONS DE RÉGLAGE ══
+     .sn-label était à 9px : illisible à côté de .btn-sig (14px). */
+  .sn-label{font-size:14px;line-height:1.4;max-width:calc(var(--side) * 2.6);
+    white-space:normal}
+
+  /* Dans les réglages, la rangée réapparaît AU-DESSUS du menu, à la même
+     taille que lui. Elle était masquée car les boutons latéraux la
+     doublaient — or ceux-ci disparaissent avec le carré. */
+  #settings-nav .sn-row{display:flex;flex-direction:column;align-items:center;
+    gap:10px;margin-bottom:6px}
+  #settings-nav .sn-btn{font-size:14px}
+
+  /* Le retour au Totehm se fait en scrollant vers le haut : le bouton
+     logo + flèche faisait doublon avec le geste. */
+  #sn-home{display:none}
 }
 
 </style>
@@ -1293,6 +1325,27 @@ function applyFloorFx(isSet){
   document.body.classList.toggle('in-settings',isSet);
   if(isSet)renderSettings();else renderHabits();
 }
+/* Desktop : le scroll de #fv-inner est un geste libre — molette, trackpad,
+   barre d'espace. paint() ne s'exécute que sur action explicite, donc sans
+   cet écouteur le carré restait immobile pendant que les réglages
+   apparaissaient. On synchronise l'état sur la position réelle. */
+(function syncFloorOnScroll(){
+  const inner=document.getElementById('fv-inner');
+  if(!inner)return;
+  let raf=null;
+  inner.addEventListener('scroll',()=>{
+    if(!isDesk()||raf)return;
+    raf=requestAnimationFrame(()=>{
+      raf=null;
+      const isSet=inner.scrollTop>inner.clientHeight*0.4;
+      if((floor===1)===isSet)return;
+      floor=isSet?1:0;
+      document.body.classList.toggle('in-settings',isSet);
+      applyFloorFx(isSet);
+    });
+  },{passive:true});
+})();
+
 function paint(){
   const isSet=floor===1;
   if(isDesk()){
@@ -1981,9 +2034,17 @@ $('city-detected').onclick=()=>{
   if($('city-detected').classList.contains('can-refresh'))cityResolve(false);
 };
 
-/* Lancer la lecture d'état dès qu'on entre dans le menu */
+/* La lecture d'état démarrait à l'entrée dans le menu : le nom de ville et
+   le bouton n'apparaissaient qu'après coup, une fois l'aller-retour réseau
+   terminé sous les yeux de l'utilisateur. On la lance au chargement — le
+   cache localStorage s'affiche alors instantanément, et la permission est
+   déjà résolue quand on arrive dans les réglages. */
 const _origPaint=paint;
 paint=function(){_origPaint();if(floor===1)cityBoot();};
+if(document.readyState==='loading')
+  document.addEventListener('DOMContentLoaded',()=>cityBoot());
+else
+  cityBoot();
 
 /* ══ SEARCH A TOTEHM — le pattern morph d'index.html ══ */
 /* réseau démo pour le mode guest */
