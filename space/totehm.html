@@ -538,42 +538,27 @@ body.gate.entered #fv-status{
   .sn-label{font-family:'Quantico',sans-serif;font-size:9px;letter-spacing:.04em;color:rgba(255,255,255,.6);text-align:center;line-height:1.35;transition:color .15s;display:block}
   .side-nav:hover .sn-label{color:#fff}
   #side-left.home .sn-label,#side-right.home .sn-label{display:none}
-  /* ── Scroll-snap entre les deux étages ── */
-  #fv-inner{overflow-y:scroll;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none}
-  #fv-inner::-webkit-scrollbar{display:none}
-  #habits,#settings{flex:0 0 100%;overflow-y:auto;scroll-snap-align:start}
-  #settings{display:flex!important}  /* toujours dans le DOM, c'est le scroll qui révèle */
+  /* ══ LE CARRÉ GLISSE ══ */
+  #stage{transition:transform .6s cubic-bezier(.22,.61,.36,1)}
+  body.in-settings #stage{transform:translate(-50%,calc(-50% - 104vh))}
 
-  /* ══ LE CARRÉ GLISSE ══
-     #stage était position:fixed : il ne bougeait jamais, seul #fv-inner
-     scrollait dans sa bande. Résultat, rien ne semblait défiler. On lie
-     maintenant sa translation à body.in-settings — le carré sort par le
-     haut, les réglages occupent l'écran qu'il libère. */
-  #stage{transition:transform .62s cubic-bezier(.22,.61,.36,1),
-                     opacity .45s ease}
-  body.in-settings #stage{transform:translate(-50%,calc(-50% - 108vh));opacity:0}
+  /* ══ SETTINGS DÉTACHÉ DU CARRÉ ══
+     #settings vit dans #stage (overflow:hidden + transform = bloc conteneur fixed).
+     On le sort du carré au boot via JS (initDeskTwo) et on l'attache à body.
+     body.desk-two active ce bloc CSS ; body.desk-two.in-settings le révèle. */
+  body.desk-two #settings{position:fixed;inset:0;display:flex!important;
+    flex-direction:column;align-items:center;max-width:none;margin:0;
+    padding:9vh 22px 4vh;overflow-y:auto;background:#000;z-index:11;
+    transform:translateY(100vh);
+    transition:transform .6s cubic-bezier(.22,.61,.36,1)}
+  body.desk-two.in-settings #settings{transform:translateY(0)}
+  body.desk-two #settings > *{width:100%;max-width:460px}
 
-  /* Les réglages ne sont plus contraints à la bande étroite une fois le
-     carré parti : ils prennent la hauteur entière. */
-  #fv-inner{transition:top .62s cubic-bezier(.22,.61,.36,1),
-                       bottom .62s cubic-bezier(.22,.61,.36,1)}
-  body.in-settings #fv-inner{top:0;bottom:0}
-  body.in-settings #settings{padding-top:7vh;max-width:520px}
-
-  /* ══ LES DEUX ACCÈS, À LA TAILLE DES BOUTONS DE RÉGLAGE ══
-     .sn-label était à 9px : illisible à côté de .btn-sig (14px). */
-  .sn-label{font-size:14px;line-height:1.4;max-width:calc(var(--side) * 2.6);
-    white-space:normal}
-
-  /* Dans les réglages, la rangée réapparaît AU-DESSUS du menu, à la même
-     taille que lui. Elle était masquée car les boutons latéraux la
-     doublaient — or ceux-ci disparaissent avec le carré. */
-  #settings-nav .sn-row{display:flex;flex-direction:column;align-items:center;
-    gap:10px;margin-bottom:6px}
+  .sn-label{font-size:14px;line-height:1.4;
+    max-width:calc(var(--side) * 2.8);white-space:normal}
+  #settings-nav .sn-row{display:flex;flex-direction:column;
+    align-items:center;gap:10px}
   #settings-nav .sn-btn{font-size:14px}
-
-  /* Le retour au Totehm se fait en scrollant vers le haut : le bouton
-     logo + flèche faisait doublon avec le geste. */
   #sn-home{display:none}
 }
 
@@ -1334,7 +1319,7 @@ function applyFloorFx(isSet){
   if(!inner)return;
   let raf=null;
   inner.addEventListener('scroll',()=>{
-    if(!isDesk()||raf)return;
+    if(!isDesk()||raf||document.body.classList.contains('desk-two'))return;
     raf=requestAnimationFrame(()=>{
       raf=null;
       const isSet=inner.scrollTop>inner.clientHeight*0.4;
@@ -1349,10 +1334,7 @@ function applyFloorFx(isSet){
 function paint(){
   const isSet=floor===1;
   if(isDesk()){
-    /* Desktop : scroll-snap reveals sections — no hide/show, no menu-mode shift */
-    const inner=$('fv-inner'), h=inner.clientHeight;
-    inner.scrollTo({top:isSet?h:0,behavior:'smooth'});
-    renderHabits(); renderSettings(); /* both always rendered */
+    renderHabits(); renderSettings();
   } else {
     $('habits').classList.toggle('hide',isSet);
     $('settings').classList.toggle('hide',!isSet);
@@ -1633,9 +1615,8 @@ function go(dFloor){
   if(busy||fpOpen()||$('member-window').classList.contains('show')||$('tview').classList.contains('show'))return;
   if($('stoner').classList.contains('show')){ if(dFloor>0)showStoner(false); return; }
   if(isDesk()){
-    const inner=$('fv-inner'),h=inner.clientHeight;
-    if(dFloor<0&&floor===0)inner.scrollTo({top:h,behavior:'smooth'});
-    else if(dFloor>0&&floor===1)inner.scrollTo({top:0,behavior:'smooth'});
+    if(dFloor<0&&floor===0){floor=1;paint();}
+    else if(dFloor>0&&floor===1){floor=0;paint();}
     return;
   }
   if(dFloor<0 && floor===0){animateSwap(-1,()=>{floor=1;paint();});}
@@ -1717,6 +1698,30 @@ window.addEventListener('touchend',(e)=>{
    volerait le scroll interne de la liste d'habitudes. Le verrou évite qu'une
    inertie de trackpad ne traverse deux étages d'un coup. */
 const isDesk=()=>window.matchMedia('(min-width:700px)').matches;
+
+/* Desktop : #settings est dans #stage (overflow:hidden + transform = bloc conteneur
+   des descendants fixed) → clippé dans le carré, il part avec lui.
+   On le sort et on l'attache à body. body.desk-two active le CSS dédié.
+   Sur resize vers mobile, on le remet à sa place d'origine. */
+(function initDeskTwo(){
+  const settings=document.getElementById('settings');
+  if(!settings)return;
+  const parent=settings.parentNode;
+  const anchor=settings.nextSibling;
+  function apply(){
+    if(isDesk()){
+      if(settings.parentNode!==document.body){document.body.appendChild(settings);}
+      document.body.classList.add('desk-two');
+    } else {
+      if(settings.parentNode===document.body){parent.insertBefore(settings,anchor);}
+      document.body.classList.remove('desk-two');
+    }
+  }
+  apply();
+  let rz=null;
+  window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(apply,120);},{passive:true});
+})();
+
 let wheelAcc=0, wheelAt=0;
 function wheelBlocked(t){
   if(busy||fpOpen())return true;
@@ -1730,7 +1735,7 @@ function wheelBlocked(t){
 {
   let _lastFloor=floor;
   $('fv-inner').addEventListener('scroll',()=>{
-    if(!isDesk())return;
+    if(!isDesk()||document.body.classList.contains('desk-two'))return;
     const inner=$('fv-inner'),h=inner.clientHeight||1;
     const newFloor=inner.scrollTop/h>=0.5?1:0;
     if(newFloor!==_lastFloor){
