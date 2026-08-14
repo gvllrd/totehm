@@ -1,11 +1,12 @@
 import Stripe from 'npm:stripe@14';
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { corsHeaders, SITE_BOUT } from '../_shared/origins.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!);
 const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
 
 Deno.serve(async (req) => {
-  const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, content-type' };
+  const cors = corsHeaders(req.headers.get('origin'), SITE_BOUT);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
 
   const { garment_id, message, name, size, style_id, user_id, email } = await req.json();
