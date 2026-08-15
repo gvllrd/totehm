@@ -1735,6 +1735,14 @@ const isDesk=()=>window.matchMedia('(min-width:700px)').matches;
   },{passive:false});
 })();
 
+(function totemWheelDown(){
+  $('fv-inner').addEventListener('wheel',(e)=>{
+    if(!isDesk()||!document.body.classList.contains('desk-two')||floor!==0)return;
+    if(wheelBlocked(e.target))return;
+    if(e.deltaY>0){e.preventDefault();floor=1;paint();}
+  },{passive:false});
+})();
+
 document.addEventListener('keydown',(e)=>{
   if(e.key==='Escape'&&isDesk()&&floor===1){floor=0;paint();}
 });
