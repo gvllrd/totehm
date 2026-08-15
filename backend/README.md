@@ -145,3 +145,63 @@ Ni abandonné, ni développé. Workflows A→E opérationnels, Workflow F (Print
 listener) construit. Stockés dans `backend/n8n/workflows/`.
 Le pipeline n'est pas nécessaire pour encaisser, il l'est pour scaler.
 On automatise quand le manuel dépasse 5 h/semaine.
+---
+
+## Abonnements — en place depuis le 15/08
+
+### `subscription-checkout` · verify_jwt = true
+
+Reçoit `{ tier, period }`, jamais un prix. Les Price ID vivent dans les
+secrets : ils diffèrent entre test et live, un ID en dur obligerait à
+redéployer pour passer en production.
+
+```
+PRICE_PLANT_MONTH   PRICE_PLANT_YEAR
+PRICE_TREE_MONTH    PRICE_TREE_YEAR
+```
+
+Pose la metadata **deux fois** :
+- sur la session → lue par `checkout.session.completed`
+- sur `subscription_data` → vit sur l'objet Subscription
+
+La seconde est indispensable. Les événements de cycle de vie ne portent
+pas la metadata de session — or ce sont eux qui coupent l'accès.
+
+### `stripe_events` · idempotence
+
+Insert de `event_id` en tête de webhook. Conflit → 200 et sortie.
+Stripe rejoue systématiquement : sans ça, un rejeu crée un second
+abonnement, ou deux impressions Printful côté Cloth.
+
+### `my_tier()` · security definer, authenticated
+
+Source unique du tier côté front :
+
+```json
+{ "tier": "plant", "status": "active", "until": "...",
+  "cancel_at_period_end": false, "paid": true }
+```
+
+**Aucune ligne dans `subscriptions` = `seed`.** Un abonnement expiré ou
+impayé retombe à `seed` automatiquement — pas de tâche de nettoyage à
+écrire, pas d'oubli possible.
+
+RLS active sur `subscriptions` : un membre lit sa ligne, l'écriture
+appartient au webhook via `service_role`.
+
+### Les quatre événements traités
+
+| Événement | Effet |
+|---|---|
+| `checkout.session.completed` | route sur `metadata.product` |
+| `customer.subscription.updated` | met à jour statut et échéance |
+| `customer.subscription.deleted` | retombe à `seed` |
+| `invoice.payment_failed` | suit le statut Stripe |
+
+Le `switch` sur `metadata.product` a un `default` explicite qui log et
+renvoie 200. Un produit inconnu ne déclenche rien.
+
+### Ce qui reste manuel
+
+Créer les produits et prix dans le dashboard Stripe, puis poser les
+quatre `PRICE_*` dans `supabase secrets`. Aucune API ne le fait.
