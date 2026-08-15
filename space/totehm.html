@@ -559,7 +559,8 @@ body.gate.entered #fv-status{
   #settings-nav .sn-row{display:flex;flex-direction:column;
     align-items:center;gap:10px}
   #settings-nav .sn-btn{font-size:14px}
-  #sn-home{display:none}
+  #sn-home{display:flex}
+  #sn-home img{width:52px;height:auto}
 }
 
 </style>
@@ -1721,6 +1722,22 @@ const isDesk=()=>window.matchMedia('(min-width:700px)').matches;
   let rz=null;
   window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(apply,120);},{passive:true});
 })();
+
+(function settingsWheelUp(){
+  const set=document.getElementById('settings');
+  if(!set)return;
+  set.addEventListener('wheel',(e)=>{
+    if(!isDesk()||floor!==1)return;
+    if(e.deltaY<0&&set.scrollTop<=0){
+      e.preventDefault();
+      floor=0;paint();
+    }
+  },{passive:false});
+})();
+
+document.addEventListener('keydown',(e)=>{
+  if(e.key==='Escape'&&isDesk()&&floor===1){floor=0;paint();}
+});
 
 let wheelAcc=0, wheelAt=0;
 function wheelBlocked(t){
