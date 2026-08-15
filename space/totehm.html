@@ -538,21 +538,13 @@ body.gate.entered #fv-status{
   .sn-label{font-family:'Quantico',sans-serif;font-size:9px;letter-spacing:.04em;color:#fff;text-align:center;line-height:1.35;transition:opacity .2s;display:block;opacity:0}
   .side-nav:hover .sn-label{opacity:1}
   #side-left.home .sn-label,#side-right.home .sn-label{display:none}
-  /* ══ LE CARRÉ GLISSE ══ */
-  #stage{transition:transform .6s cubic-bezier(.22,.61,.36,1)}
-  body.in-settings #stage{transform:translate(-50%,calc(-50% - 104vh))}
-
-  /* ══ SETTINGS DÉTACHÉ DU CARRÉ ══
-     #settings vit dans #stage (overflow:hidden + transform = bloc conteneur fixed).
-     On le sort du carré au boot via JS (initDeskTwo) et on l'attache à body.
-     body.desk-two active ce bloc CSS ; body.desk-two.in-settings le révèle. */
-  body.desk-two #settings{position:fixed;inset:0;display:flex!important;
-    flex-direction:column;align-items:center;max-width:none;margin:0;
-    padding:9vh 22px 4vh;overflow-y:auto;background:#000;z-index:11;
-    transform:translateY(100vh);
-    transition:transform .6s cubic-bezier(.22,.61,.36,1)}
-  body.desk-two.in-settings #settings{transform:translateY(0)}
-  body.desk-two #settings > *{width:100%;max-width:460px}
+  /* ══ SCROLL-SNAP NATIF : habits + settings empilés dans #fv-inner ══ */
+  #fv-inner{scroll-snap-type:y mandatory}
+  #habits{scroll-snap-align:start;flex-shrink:0;height:100%}
+  #settings{scroll-snap-align:start;flex-shrink:0;height:100%;overflow-y:auto;
+    display:flex!important;flex-direction:column;align-items:center;
+    max-width:none;margin:0;padding:9vh 22px 4vh}
+  #settings > *{width:100%;max-width:460px}
 
   .sn-label{font-size:14px;line-height:1.4;
     max-width:calc(var(--side) * 2.8);white-space:normal}
@@ -1317,7 +1309,7 @@ function applyFloorFx(isSet){
   if(!inner)return;
   let raf=null;
   inner.addEventListener('scroll',()=>{
-    if(!isDesk()||raf||document.body.classList.contains('desk-two'))return;
+    if(!isDesk()||raf)return;
     raf=requestAnimationFrame(()=>{
       raf=null;
       const isSet=inner.scrollTop>inner.clientHeight*0.4;
@@ -1613,8 +1605,9 @@ function go(dFloor){
   if(busy||fpOpen()||$('member-window').classList.contains('show')||$('tview').classList.contains('show'))return;
   if($('stoner').classList.contains('show')){ if(dFloor>0)showStoner(false); return; }
   if(isDesk()){
-    if(dFloor<0&&floor===0){floor=1;paint();}
-    else if(dFloor>0&&floor===1){floor=0;paint();}
+    const inner=$('fv-inner');
+    if(dFloor<0&&floor===0)inner.scrollTo({top:inner.clientHeight,behavior:'smooth'});
+    else if(dFloor>0&&floor===1)inner.scrollTo({top:0,behavior:'smooth'});
     return;
   }
   if(dFloor<0 && floor===0){animateSwap(-1,()=>{floor=1;paint();});}
@@ -1624,7 +1617,11 @@ function go(dFloor){
    directement les Paramètres. En iframe, c'est le postMessage
    'totehm-goto-settings' qui s'en charge — les deux chemins existent. */
 if(location.hash === '#settings'){
-  setTimeout(()=>{ if(floor!==1){ floor=1; paint(); } }, 60);
+  setTimeout(()=>{
+    const inner=$('fv-inner');
+    if(isDesk())inner.scrollTo({top:inner.clientHeight,behavior:'instant'});
+    else if(floor!==1){floor=1;paint();}
+  }, 60);
   history.replaceState(null, '', location.pathname);
 }
 /* Petite flèche sous TOTEHM.png : ouvre le menu (même geste que swipe UP depuis Habits) */
@@ -1697,52 +1694,16 @@ window.addEventListener('touchend',(e)=>{
    inertie de trackpad ne traverse deux étages d'un coup. */
 const isDesk=()=>window.matchMedia('(min-width:700px)').matches;
 
-/* Desktop : #settings est dans #stage (overflow:hidden + transform = bloc conteneur
-   des descendants fixed) → clippé dans le carré, il part avec lui.
-   On le sort et on l'attache à body. body.desk-two active le CSS dédié.
-   Sur resize vers mobile, on le remet à sa place d'origine. */
-(function initDeskTwo(){
-  const settings=document.getElementById('settings');
-  if(!settings)return;
-  const parent=settings.parentNode;
-  const anchor=settings.nextSibling;
-  function apply(){
-    if(isDesk()){
-      if(settings.parentNode!==document.body){document.body.appendChild(settings);}
-      document.body.classList.add('desk-two');
-    } else {
-      if(settings.parentNode===document.body){parent.insertBefore(settings,anchor);}
-      document.body.classList.remove('desk-two');
-    }
-  }
-  apply();
-  let rz=null;
-  window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(apply,120);},{passive:true});
-})();
-
-(function settingsWheelUp(){
-  const set=document.getElementById('settings');
-  if(!set)return;
-  set.addEventListener('wheel',(e)=>{
-    if(!isDesk()||floor!==1)return;
-    if(e.deltaY<0&&set.scrollTop<=0){
-      e.preventDefault();
-      floor=0;paint();
-    }
-  },{passive:false});
-})();
-
-(function totemWheelDown(){
-  $('fv-inner').addEventListener('wheel',(e)=>{
-    if(!isDesk()||!document.body.classList.contains('desk-two')||floor!==0)return;
-    if(wheelBlocked(e.target))return;
-    if(e.deltaY>0){e.preventDefault();floor=1;paint();}
-    else if(e.deltaY<0){e.preventDefault();openFilterModal();}
-  },{passive:false});
-})();
-
+/* Desktop scroll-snap : le filtre s'ouvre en scrollant vers le haut depuis le sommet.
+   Le scroll vers le bas (habits→settings) est géré nativement par scroll-snap CSS.
+   Échap depuis settings → retour habits par scroll. */
+$('fv-inner').addEventListener('wheel',(e)=>{
+  if(!isDesk()||floor!==0||$('fv-inner').scrollTop>0)return;
+  if(wheelBlocked(e.target))return;
+  if(e.deltaY<0){e.preventDefault();openFilterModal();}
+},{passive:false});
 document.addEventListener('keydown',(e)=>{
-  if(e.key==='Escape'&&isDesk()&&floor===1){floor=0;paint();}
+  if(e.key==='Escape'&&isDesk()&&floor===1)$('fv-inner').scrollTo({top:0,behavior:'smooth'});
 });
 
 let wheelAcc=0, wheelAt=0;
@@ -1758,7 +1719,7 @@ function wheelBlocked(t){
 {
   let _lastFloor=floor;
   $('fv-inner').addEventListener('scroll',()=>{
-    if(!isDesk()||document.body.classList.contains('desk-two'))return;
+    if(!isDesk())return;
     const inner=$('fv-inner'),h=inner.clientHeight||1;
     const newFloor=inner.scrollTop/h>=0.5?1:0;
     if(newFloor!==_lastFloor){
