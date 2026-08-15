@@ -538,18 +538,65 @@ body.gate.entered #fv-status{
   .sn-label{font-family:'Quantico',sans-serif;font-size:9px;letter-spacing:.04em;color:#fff;text-align:center;line-height:1.35;transition:opacity .2s;display:block;opacity:0}
   .side-nav:hover .sn-label{opacity:1}
   #side-left.home .sn-label,#side-right.home .sn-label{display:none}
-  /* ══ SCROLL-SNAP NATIF : habits + settings empilés dans #fv-inner ══ */
-  #fv-inner{scroll-snap-type:y mandatory}
-  #habits{scroll-snap-align:start;flex-shrink:0;height:100%}
-  #settings{scroll-snap-align:start;flex-shrink:0;height:100%;overflow-y:auto;
-    display:flex!important;flex-direction:column;align-items:center;
-    max-width:none;margin:0;padding:9vh 22px 4vh}
-  #settings > *{width:100%;max-width:460px}
+  /* ══ LE TOTEHM SE REPLIE ══
+     Le scroll-snap natif snappait d'abord, le JS suivait apres coup :
+     l'UI changeait avec un temps de retard visible. On remplace par une
+     sequence pilotee, inverse du deploiement de la gate.
 
+     La gate est detruite apres l'entree (gate.remove()) : impossible de
+     la rejouer. Mais ses quatre pieces vivent toujours ici —
+     #gl-bg -> le fond navy de #stage, #gl-t -> #bigT,
+     #gl-wm -> #wordmark, #gl-rail -> #rail. On replie celles-la.
+     Meme duree et meme easing que le deploiement : --gate-dur,
+     --gate-ease. L'aller et le retour sont le meme geste. */
+  #fv-inner{scroll-snap-type:none}
+  #habits{flex-shrink:0;height:auto}
+
+  #stage{transition:transform var(--gate-dur) var(--gate-ease),
+                    opacity   var(--gate-dur) var(--gate-ease)}
+  body.in-settings #stage{
+    transform:translate(-50%,-50%) scale(.24);
+    opacity:0;pointer-events:none}
+
+  /* Les trois pieces convergent vers le centre pendant le repli : le T
+     redescend, le wordmark remonte, le rail s'efface. C'est exactement
+     l'inverse de translateY(-40vh) / translateY(40vh) / translateX(-30vw). */
+  #bigT,#wordmark,#rail{
+    transition:transform var(--gate-dur) var(--gate-ease),
+               opacity   var(--gate-dur) var(--gate-ease)}
+  body.in-settings #bigT    {transform:translateY(34%)  scale(.7)}
+  body.in-settings #wordmark{transform:translateY(-34%) scale(.7)}
+  body.in-settings #rail    {opacity:0}
+
+  /* ══ SECTION 2 : LES REGLAGES ══
+     Hors de #stage — le JS les remonte dans <body> au boot desktop.
+     Sinon overflow:hidden les clipperait et le scale(.24) les
+     retrecirait avec le carre. Ils entrent APRES le repli : le delai
+     .48s laisse le Totehm finir son geste avant qu'ils apparaissent. */
+  body.desk-two #settings{
+    position:fixed;left:0;right:0;top:0;bottom:0;
+    display:flex!important;flex-direction:column;align-items:center;
+    justify-content:flex-start;
+    max-width:none;margin:0;padding:9vh 22px 5vh;
+    overflow-y:auto;overscroll-behavior:contain;background:#000;z-index:11;
+    opacity:0;pointer-events:none;transform:translateY(5vh);
+    transition:opacity .5s ease .48s,
+               transform .5s var(--gate-ease) .48s}
+  body.desk-two.in-settings #settings{
+    opacity:1;pointer-events:auto;transform:translateY(0)}
+  body.desk-two #settings > *{width:100%;max-width:460px}
+
+  /* ══ LES DEUX ACCES, A LA TAILLE DES BOUTONS DE REGLAGE ══ */
   .sn-label{font-size:14px;line-height:1.4;
     max-width:calc(var(--side) * 2.8);white-space:normal}
+  #settings-nav .sn-row{display:flex;flex-direction:column;
+    align-items:center;gap:10px;margin-bottom:2px}
   #settings-nav .sn-btn{font-size:14px}
-  #sn-home{display:none}
+
+  /* Le bouton logo RESTE : c'est la sortie visible. La masquer avait
+     piege l'utilisateur dans les reglages. */
+  #sn-home{display:flex}
+  #sn-home img{width:54px;height:auto}
 }
 
 </style>
@@ -1304,22 +1351,10 @@ function applyFloorFx(isSet){
    barre d'espace. paint() ne s'exécute que sur action explicite, donc sans
    cet écouteur le carré restait immobile pendant que les réglages
    apparaissaient. On synchronise l'état sur la position réelle. */
-(function syncFloorOnScroll(){
-  const inner=document.getElementById('fv-inner');
-  if(!inner)return;
-  let raf=null;
-  inner.addEventListener('scroll',()=>{
-    if(!isDesk()||raf)return;
-    raf=requestAnimationFrame(()=>{
-      raf=null;
-      const isSet=inner.scrollTop>inner.clientHeight*0.4;
-      if((floor===1)===isSet)return;
-      floor=isSet?1:0;
-      document.body.classList.toggle('in-settings',isSet);
-      applyFloorFx(isSet);
-    });
-  },{passive:true});
-})();
+/* syncFloorOnScroll retire : il lisait scrollTop de #fv-inner pour en
+   deduire l'etage. Ce scroll n'existe plus — #settings est sorti du carre
+   et #habits ne fait plus 100% de hauteur. Le laisser aurait remis floor
+   a 0 des le premier repaint. C'est foldGesture qui pilote desormais. */
 
 function paint(){
   const isSet=floor===1;
@@ -1605,9 +1640,10 @@ function go(dFloor){
   if(busy||fpOpen()||$('member-window').classList.contains('show')||$('tview').classList.contains('show'))return;
   if($('stoner').classList.contains('show')){ if(dFloor>0)showStoner(false); return; }
   if(isDesk()){
-    const inner=$('fv-inner');
-    if(dFloor<0&&floor===0)inner.scrollTo({top:inner.clientHeight,behavior:'smooth'});
-    else if(dFloor>0&&floor===1)inner.scrollTo({top:0,behavior:'smooth'});
+    /* Meme bascule que sur mobile, sans animateSwap : ce sont le carre et
+       la section 2 qui bougent, pas le contenu qui permute. */
+    if(dFloor<0&&floor===0){floor=1;paint();}
+    else if(dFloor>0&&floor===1){floor=0;paint();}
     return;
   }
   if(dFloor<0 && floor===0){animateSwap(-1,()=>{floor=1;paint();});}
@@ -1626,6 +1662,49 @@ if(location.hash === '#settings'){
 }
 /* Petite flèche sous TOTEHM.png : ouvre le menu (même geste que swipe UP depuis Habits) */
 $('menu-arrow').onclick=()=>{if(!busy)go(-1);};
+
+/* ══ LE GESTE : molette vers le bas replie, vers le haut redeploie ══
+   Trois sorties, jamais moins : molette haut, Echap, bouton logo. Une
+   seule sortie masquee avait suffi a pieger l'utilisateur dans les
+   reglages. Le verrou d'animation dure --gate-dur pour ne pas empiler
+   deux replis. */
+(function foldGesture(){
+  let lock=false, acc=0, at=0;
+  const FOLD=1050;                       /* --gate-dur */
+  function lockNow(){ lock=true; setTimeout(()=>lock=false, FOLD); }
+
+  function blocked(){
+    if(busy||lock||!isDesk())return true;
+    if(typeof fpOpen==='function'&&fpOpen())return true;
+    const mw=document.getElementById('member-window');
+    if(mw&&mw.classList.contains('show'))return true;
+    const tv=document.getElementById('tview');
+    if(tv&&tv.classList.contains('show'))return true;
+    const st=document.getElementById('stoner');
+    if(st&&st.classList.contains('show'))return true;
+    return false;
+  }
+
+  window.addEventListener('wheel',(e)=>{
+    if(blocked())return;
+    const now=Date.now();
+    if(now-at>320)acc=0;
+    at=now; acc+=e.deltaY;
+
+    if(acc>42&&floor===0){                       /* bas : on replie   */
+      acc=0; lockNow(); floor=1; paint();
+    }else if(acc<-42&&floor===1){                /* haut : on redeploie */
+      const set=document.getElementById('settings');
+      if(set&&set.scrollTop>0)return;            /* la liste scrolle d'abord */
+      acc=0; lockNow(); floor=0; paint();
+    }
+  },{passive:true});
+
+  document.addEventListener('keydown',(e)=>{
+    if(e.key!=='Escape'||!isDesk()||floor!==1||blocked())return;
+    lockNow(); floor=0; paint();
+  });
+})();
 /* Curseur PlayStation dans les Paramètres */
 /* Rangée haute du menu paramètres */
 $('sn-book').onclick =requireMember(()=>{if(!busy&&floor===1&&!hOpen())showBook(true);});
@@ -1693,6 +1772,28 @@ window.addEventListener('touchend',(e)=>{
    volerait le scroll interne de la liste d'habitudes. Le verrou évite qu'une
    inertie de trackpad ne traverse deux étages d'un coup. */
 const isDesk=()=>window.matchMedia('(min-width:700px)').matches;
+
+/* ══ DESKTOP : #settings sort du carre ══
+   #stage porte overflow:hidden ET un transform. Le transform fait de
+   #stage le bloc conteneur de ses descendants position:fixed : tout ce
+   qui reste dedans est clippe, et le scale(.24) du repli le retrecirait
+   avec le carre. On remonte #settings dans <body>.
+   Sur mobile il ne bouge pas : la classe desk-two n'est jamais posee et
+   la mise en page d'origine tient telle quelle. */
+(function twoSections(){
+  const set=document.getElementById('settings');
+  if(!set)return;
+  const home=set.parentNode, next=set.nextSibling;
+  function place(){
+    const d=isDesk();
+    document.body.classList.toggle('desk-two',d);
+    if(d){ if(set.parentNode!==document.body) document.body.appendChild(set); }
+    else  { if(set.parentNode!==home) home.insertBefore(set,next); }
+  }
+  place();
+  let t=null;
+  window.addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(place,180);});
+})();
 
 /* Desktop scroll-snap : le filtre s'ouvre en scrollant vers le haut depuis le sommet.
    Le scroll vers le bas (habits→settings) est géré nativement par scroll-snap CSS.
