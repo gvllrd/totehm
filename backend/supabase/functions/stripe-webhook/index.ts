@@ -1,7 +1,15 @@
 // TOTEHM · stripe-webhook
-// Stripe checkout payé -> écrit l'email dans stoner_access
-//                      -> envoie la confirmation via Resend
-//                      -> trace le résultat dans stoner_access.email_status
+// Trois flux sur le même compte — routage sur metadata.product :
+//   higher       → stoner_access + email Resend
+//   cloth        → ignoré ici (Printful géré ailleurs)
+//   subscription → subscriptions (Figher Club)
+//
+// Events traités :
+//   checkout.session.completed
+//   customer.subscription.updated
+//   customer.subscription.deleted
+//   invoice.payment_failed
+//
 // verify_jwt = false (Stripe n'a pas de JWT Supabase)
 
 import Stripe from "npm:stripe@14";
@@ -67,7 +75,6 @@ function welcomeHtml(num: number, amount: string) {
 </body></html>`;
 }
 
-// Renvoie une trace lisible, jamais une exception.
 async function sendWelcome(email: string, num: number, amount: string): Promise<string> {
   const key = Deno.env.get("RESEND_API_KEY");
   if (!key) return "KO: RESEND_API_KEY absente des secrets";
@@ -94,56 +101,17 @@ async function sendWelcome(email: string, num: number, amount: string): Promise<
   }
 }
 
-Deno.serve(async (req) => {
-  if (req.method !== "POST") return new Response("method not allowed", { status: 405 });
+// ─── Handlers ────────────────────────────────────────────────────────────────
 
-  const signature = req.headers.get("stripe-signature");
-  if (!signature) return new Response("no signature", { status: 400 });
-
-  const raw = await req.text();   // JAMAIS req.json() : signature sur le body brut
-
-  let event: Stripe.Event;
-  try {
-    event = await stripe.webhooks.constructEventAsync(
-      raw, signature, Deno.env.get("STRIPE_WEBHOOK_SECRET")!, undefined, cryptoProvider,
-    );
-  } catch (err) {
-    console.error("signature invalide:", err.message);
-    return new Response("invalid signature", { status: 400 });
-  }
-
-  if (event.type !== "checkout.session.completed") {
-    return new Response("ignored", { status: 200 });
-  }
-
-  const session = event.data.object as Stripe.Checkout.Session;
-
-  // CRITIQUE : deux flux Stripe sur ce compte.
-  //   create-checkout -> Totehm Cloth | higher-checkout -> Figher Club
-  // Un default explicite : rien d'inconnu n'accorde jamais un accès.
-  switch (session.metadata?.product) {
-    case "higher":
-      break;
-    case "cloth":
-      return new Response("cloth handled elsewhere", { status: 200 });
-    case "subscription":
-      console.log("subscription product received — handler not yet implemented:", session.id);
-      return new Response("ok", { status: 200 });
-    default:
-      console.warn("unknown product in metadata:", session.metadata?.product, "session:", session.id);
-      return new Response("ok", { status: 200 });
-  }
-
-  if (session.payment_status !== "paid") {
-    return new Response("unpaid", { status: 200 });
-  }
+async function handleHigherCheckout(session: Stripe.Checkout.Session) {
+  if (session.payment_status !== "paid") return;
 
   const email = (session.customer_details?.email ?? session.customer_email ?? "")
     .trim().toLowerCase();
 
   if (!email) {
     console.error("session payée sans email:", session.id);
-    return new Response("no email", { status: 200 });
+    return;
   }
 
   const amount = `${(session.amount_total ?? 0) / 100} ${session.currency?.toUpperCase()}`;
@@ -157,13 +125,11 @@ Deno.serve(async (req) => {
 
   if (error) {
     console.error("écriture stoner_access échouée:", error.message);
-    return new Response("db error", { status: 500 });   // 500 = Stripe rejoue
+    throw new Error(error.message);
   }
 
-  console.log("accès accordé:", email);
+  console.log("accès higher accordé:", email);
 
-  // L'email ne doit JAMAIS faire échouer le webhook : l'accès est déjà
-  // accordé. Un 500 ici ferait rejouer Stripe et enverrait des doublons.
   let status = "KO: numéro introuvable";
   try {
     const { data: rows } = await admin
@@ -181,6 +147,198 @@ Deno.serve(async (req) => {
   await admin.from("stoner_access")
     .update({ email_status: status })
     .eq("email", email);
+}
+
+async function handleSubscriptionCheckout(session: Stripe.Checkout.Session) {
+  const userId = session.metadata?.supabase_user_id;
+  const lockedPrice = parseInt(session.metadata?.member_locked_price ?? "0", 10);
+  const customerId = session.customer as string;
+  const subId = session.subscription as string;
+
+  if (!userId || !subId) {
+    console.error("metadata manquante dans subscription checkout:", session.id);
+    return;
+  }
+
+  const sub = await stripe.subscriptions.retrieve(subId);
+
+  const now = new Date().toISOString();
+  const trialEnd = sub.trial_end
+    ? new Date(sub.trial_end * 1000).toISOString()
+    : null;
+  const periodEnd = new Date(sub.current_period_end * 1000).toISOString();
+
+  const { error } = await admin.from("subscriptions").upsert(
+    {
+      user_id:              userId,
+      stripe_customer_id:   customerId,
+      stripe_subscription_id: subId,
+      status:               sub.status,
+      member_locked_price:  lockedPrice,
+      trial_started_at:     now,
+      trial_ends_at:        trialEnd,
+      current_period_end:   periodEnd,
+      started_at:           now,
+    },
+    { onConflict: "user_id" },
+  );
+
+  if (error) {
+    console.error("subscriptions upsert échoué:", error.message);
+    throw new Error(error.message);
+  }
+
+  console.log("abonnement créé — user:", userId, "sub:", subId, "status:", sub.status);
+}
+
+async function handleSubscriptionUpdated(sub: Stripe.Subscription) {
+  if (sub.metadata?.product !== "subscription") {
+    console.log("subscription.updated ignoré — produit inconnu:", sub.id);
+    return;
+  }
+
+  const trialEnd = sub.trial_end
+    ? new Date(sub.trial_end * 1000).toISOString()
+    : null;
+  const periodEnd = new Date(sub.current_period_end * 1000).toISOString();
+
+  const { error } = await admin.from("subscriptions")
+    .update({
+      status:              sub.status,
+      current_period_end:  periodEnd,
+      cancel_at_period_end: sub.cancel_at_period_end,
+      trial_ends_at:       trialEnd,
+    })
+    .eq("stripe_subscription_id", sub.id);
+
+  if (error) {
+    console.error("subscriptions update échoué:", error.message);
+    throw new Error(error.message);
+  }
+
+  console.log("abonnement mis à jour:", sub.id, "→", sub.status);
+}
+
+async function handleSubscriptionDeleted(sub: Stripe.Subscription) {
+  if (sub.metadata?.product !== "subscription") {
+    console.log("subscription.deleted ignoré — produit inconnu:", sub.id);
+    return;
+  }
+
+  const { error } = await admin.from("subscriptions")
+    .update({ status: "canceled" })
+    .eq("stripe_subscription_id", sub.id);
+
+  if (error) {
+    console.error("subscriptions canceled update échoué:", error.message);
+    throw new Error(error.message);
+  }
+
+  console.log("abonnement annulé:", sub.id);
+}
+
+async function handlePaymentFailed(invoice: Stripe.Invoice) {
+  const subId = typeof invoice.subscription === "string"
+    ? invoice.subscription
+    : invoice.subscription?.id;
+
+  if (!subId) {
+    console.log("invoice.payment_failed sans subscription — ignoré:", invoice.id);
+    return;
+  }
+
+  const { error } = await admin.from("subscriptions")
+    .update({ status: "past_due" })
+    .eq("stripe_subscription_id", subId);
+
+  if (error) {
+    console.error("past_due update échoué:", error.message);
+    throw new Error(error.message);
+  }
+
+  console.log("paiement échoué — abonnement en past_due:", subId);
+}
+
+// ─── Dispatcher ───────────────────────────────────────────────────────────────
+
+Deno.serve(async (req) => {
+  if (req.method !== "POST") return new Response("method not allowed", { status: 405 });
+
+  const signature = req.headers.get("stripe-signature");
+  if (!signature) return new Response("no signature", { status: 400 });
+
+  const raw = await req.text();
+
+  let event: Stripe.Event;
+  try {
+    event = await stripe.webhooks.constructEventAsync(
+      raw, signature, Deno.env.get("STRIPE_WEBHOOK_SECRET")!, undefined, cryptoProvider,
+    );
+  } catch (err) {
+    console.error("signature invalide:", err.message);
+    return new Response("invalid signature", { status: 400 });
+  }
+
+  // Idempotence — PK conflict = déjà traité
+  const { error: idempErr } = await admin
+    .from("stripe_events")
+    .insert({ event_id: event.id, type: event.type });
+
+  if (idempErr) {
+    if (idempErr.code === "23505") {
+      console.log("event déjà traité:", event.id);
+      return new Response("already processed", { status: 200 });
+    }
+    // Table absente ou autre erreur : on logue et on continue
+    console.warn("stripe_events insert échoué (non bloquant):", idempErr.message);
+  }
+
+  try {
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        switch (session.metadata?.product) {
+          case "higher":
+            await handleHigherCheckout(session);
+            break;
+          case "cloth":
+            console.log("cloth checkout — géré ailleurs:", session.id);
+            break;
+          case "subscription":
+            await handleSubscriptionCheckout(session);
+            break;
+          default:
+            console.warn("product inconnu dans metadata:", session.metadata?.product, "session:", session.id);
+        }
+        break;
+      }
+
+      case "customer.subscription.updated": {
+        const sub = event.data.object as Stripe.Subscription;
+        await handleSubscriptionUpdated(sub);
+        break;
+      }
+
+      case "customer.subscription.deleted": {
+        const sub = event.data.object as Stripe.Subscription;
+        await handleSubscriptionDeleted(sub);
+        break;
+      }
+
+      case "invoice.payment_failed": {
+        const invoice = event.data.object as Stripe.Invoice;
+        await handlePaymentFailed(invoice);
+        break;
+      }
+
+      default:
+        console.log("event ignoré:", event.type);
+    }
+  } catch (err) {
+    // 500 → Stripe rejoue : utilisé pour les erreurs DB critiques uniquement
+    console.error("erreur handler:", event.type, err.message);
+    return new Response("handler error", { status: 500 });
+  }
 
   return new Response("ok", { status: 200 });
 });
