@@ -55,3 +55,4 @@ backend/**/.env
 backend/supabase/.temp/
 /supabase/
 /supabase/
+TOTEHM_MASTER.html

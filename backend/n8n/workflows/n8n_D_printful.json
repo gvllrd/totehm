@@ -1,51 +1,48 @@
 {
- "name": "TOTEHM D — Printful",
- "nodes": [
-  {
-   "parameters": {
-    "httpMethod": "POST",
-    "path": "streetwear-printful",
-    "responseMode": "onReceived",
-    "options": {}
-   },
-   "id": "789b6990-1f27-4038-a9f7-c49bf9422840",
-   "name": "Trigger",
-   "type": "n8n-nodes-base.webhook",
-   "typeVersion": 2,
-   "position": [
-    0,
-    0
-   ]
+  "name": "Workflow D — Printful Order",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "streetwear-printful",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-d",
+      "name": "Webhook Printful Order",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $('⚙️ CONFIG').first().json;\nconst cloth_id = $input.first().json.body.cloth_id;\nconst sbh = { apikey: cfg.SB_KEY, Authorization: `Bearer ${cfg.SB_KEY}`, 'Content-Type': 'application/json' };\n\n// 1. Récupérer la commande complète avec son support\nconst clothRes = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_clothes?id=eq.${cloth_id}&select=*,totehm_cloth_support(*)`,\n  headers: sbh, json: true\n});\nconst cloth = clothRes[0];\nconst support = cloth.totehm_cloth_support;\n\n// 2. Mapper taille → sync_variant_id via printful_variant_map\nconst variantMap = support.printful_variant_map;\nif (!variantMap || !variantMap[cloth.size]) {\n  throw new Error(`Taille ${cloth.size} introuvable dans printful_variant_map pour le support ${support.id}`);\n}\nconst sync_variant_id = variantMap[cloth.size].sync_variant_id;\n\n// 3. Lire la méthode d'impression depuis print_area\nconst printArea = support.print_area || { method: 'dtg', placement: 'back' };\nconst fileType = printArea.method === 'dtg' ? 'back' : `embroidery_${printArea.placement}`;\n\n// 4. Construire le payload Printful\nconst pfOrder = {\n  recipient: {\n    name: cloth.shipping?.name || 'TOTEHM Client',\n    address1: cloth.shipping?.address?.line1,\n    address2: cloth.shipping?.address?.line2 || '',\n    city: cloth.shipping?.address?.city,\n    state_code: cloth.shipping?.address?.state || '',\n    country_code: cloth.shipping?.address?.country,\n    zip: cloth.shipping?.address?.postal_code\n  },\n  items: [{\n    sync_variant_id: sync_variant_id,\n    name: `TOTEHM — ${cloth.name}`,\n    quantity: 1,\n    files: [{\n      type: fileType,\n      url: cloth.artwork_print_url\n    }]\n  }]\n};\n\n// 5. Envoyer à Printful\nconst pf = await this.helpers.httpRequest({\n  method: 'POST',\n  url: 'https://api.printful.com/orders',\n  headers: { Authorization: `Bearer ${cfg.PRINTFUL_TOKEN}`, 'Content-Type': 'application/json' },\n  body: pfOrder, json: true\n});\n\n// 6. Mettre à jour Supabase\nawait this.helpers.httpRequest({\n  method: 'PATCH',\n  url: `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_clothes?id=eq.${cloth_id}`,\n  headers: sbh, json: true,\n  body: { status: 'production', printful_order_id: pf.result.id }\n});\n\nreturn [{ json: { ok: true, printful_order_id: pf.result.id, file_type: fileType, sync_variant_id } }];\n"
+      },
+      "id": "code-d",
+      "name": "Order Printful",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [560, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true }) }}"
+      },
+      "id": "respond-d",
+      "name": "Respond 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [880, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Printful Order": {
+      "main": [[{ "node": "Order Printful", "type": "main", "index": 0 }]]
+    },
+    "Order Printful": {
+      "main": [[{ "node": "Respond 200", "type": "main", "index": 0 }]]
+    }
   },
-  {
-   "parameters": {
-    "jsCode": "\n// why: confirm=false d'abord — tu valides les 3 premières en dashboard, puis tu passes $vars.PRINTFUL_CONFIRM à true\nconst sbh = { apikey: $vars.SB_SERVICE_KEY, Authorization: `Bearer ${$vars.SB_SERVICE_KEY}`, 'Content-Type': 'application/json' };\nconst cloth = (await this.helpers.httpRequest({ method: 'GET',\n  url: `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_clothes?id=eq.${$input.first().json.body.cloth_id}&select=*`,\n  headers: sbh, json: true }))[0];\nconst variantMap = JSON.parse($vars.PRINTFUL_VARIANT_MAP); // ex: {\"default\":{\"S\":4011,\"M\":4012,\"L\":4013,\"XL\":4014}}\nconst variants = variantMap[cloth.garment_id] || variantMap['default'];\nconst ship = cloth.shipping?.address || cloth.shipping || {};\nconst order = await this.helpers.httpRequest({ method: 'POST',\n  url: `https://api.printful.com/orders?confirm=${$vars.PRINTFUL_CONFIRM === 'true'}`,\n  headers: { Authorization: `Bearer ${$vars.PRINTFUL_KEY}`, 'Content-Type': 'application/json' }, json: true,\n  body: {\n    external_id: cloth.id,\n    recipient: {\n      name: cloth.shipping?.name || 'Totehm Member',\n      address1: ship.line1, address2: ship.line2 || '',\n      city: ship.city, state_code: ship.state || '', country_code: ship.country,\n      zip: ship.postal_code, email: cloth.email,\n    },\n    items: [{ variant_id: variants[cloth.size], quantity: 1, files: [{ type: 'default', url: cloth.artwork_print_url }] }],\n  }});\nawait this.helpers.httpRequest({ method: 'PATCH',\n  url: `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_clothes?id=eq.${cloth.id}`,\n  headers: sbh, json: true, body: { status: 'production', printful_order_id: String(order.result.id) } });\nreturn [{ json: { printful_order_id: order.result.id } }];\n"
-   },
-   "id": "74456dc7-3359-4a59-8e99-5538b2170b16",
-   "name": "Create Printful order",
-   "type": "n8n-nodes-base.code",
-   "typeVersion": 2,
-   "position": [
-    220,
-    0
-   ]
-  }
- ],
- "connections": {
-  "Trigger": {
-   "main": [
-    [
-     {
-      "node": "Create Printful order",
-      "type": "main",
-      "index": 0
-     }
-    ]
-   ]
-  }
- },
- "settings": {
-  "executionOrder": "v1"
- },
- "active": false
+  "settings": { "executionOrder": "v1" }
 }

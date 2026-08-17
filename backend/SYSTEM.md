@@ -189,7 +189,7 @@ sans rien apporter.
 
 | Table | Lignes | Rôle |
 |---|---:|---|
-| `totehms` | 8 | **la vérité des habitudes** — `steps[]`, `bot`, `tz`, `quiet_from/to`, `max_daily` |
+| `totehms` | 1 | **la vérité des habitudes** — `steps[]`, `bot`, `tz`, `quiet_from/to`, `max_daily` |
 | `objectives` | 0 | **FUTURE** — un objectif ne se supprime pas, il change de statut |
 | `objective_events` | 0 | append-only, alimenté par trigger |
 | `habit_outcomes` | 0 | **DONE / MISSED**, `answered_at` NULL = silence, et c'est une donnée |
@@ -205,7 +205,7 @@ sans rien apporter.
 
 | Table | Lignes | Rôle |
 |---|---:|---|
-| `profiles` | 8 | pseudo, `telegram_id` |
+| `profiles` | 1 | pseudo, `telegram_id` — comptes test supprimés le 18/08 |
 | `subscriptions` | 0 | **source unique de l'adhésion** |
 | `stripe_events` | 0 | idempotence webhook |
 | `crew_codes` · `crew_attributions` | 0 | Crew Code, attribution définitive |
