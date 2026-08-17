@@ -67,6 +67,23 @@ Le compte est unique, la session ne l'est pas.
 → pas de Free Plan permanent
 ```
 
+### Gating — décision du 18/08/2026
+
+`my_membership()` renvoie `member: false` quand le trial expire ou le paiement échoue.
+**Le front affiche le mur de vente. Point.**
+
+- Pas de mode lecture seule.
+- Pas de contenu dégradé.
+- Pas de "tu as X jours restants" — Stripe gère l'état, le front lit `member`.
+
+```
+member: true   → accès complet
+member: false  → mur de vente → subscription-checkout
+```
+
+C'est Stripe qui passe `trialing` → `canceled` à J+7 sans paiement.
+Zéro logique de dates côté TOTEHM.
+
 ### Price lock — règle absolue
 
 Le prix auquel un membre rejoint est **verrouillé pour lui tant que son
@@ -94,15 +111,22 @@ Le renouvellement annuel d'un membre existant se fait **toujours** sur son
 
 Les paliers vivent en base ou en config serveur. **Jamais dans le frontend.**
 
-### Champs à prévoir en base (pas encore créés)
+### Champs en base — état 18/08/2026
 
+**Créés (migration `20260817_subscriptions_figher_club`) :**
+```
+stripe_customer_id       text, nullable
+stripe_subscription_id   text, nullable, unique index partiel
+member_locked_price      integer (centimes), nullable
+trial_started_at         timestamptz, nullable
+trial_ends_at            timestamptz, nullable
+tier                     désormais nullable (historique uniquement)
+```
+
+**Pas encore créés :**
 ```
 current_club_price       prix actuel pour les nouveaux membres
-member_locked_price      prix figé à la souscription
-membership_started_at
-membership_status
 member_number            position dans le Club
-pricing_tier             palier au moment de l'entrée
 ```
 
 ### Totehm Spots
@@ -252,8 +276,8 @@ Aucune ligne = pas membre. Un abonnement expiré, impayé ou annulé retombe
 |---|---:|:---:|---|
 | `stoner-gate` | 9 | ✅ | signe 11 URLs, bucket privé, 15 min |
 | `higher-checkout` | 3 | ✅ | 5 paliers, prix **serveur**, mode `quote` |
-| `stripe-webhook` | 17 | ❌ | routeur 3 flux + 4 événements |
-| `subscription-checkout` | 2 | ✅ | ⚠️ **à refaire** — parle encore de tiers |
+| `stripe-webhook` | 18 | ❌ | routeur 3 flux + 4 événements, idempotence |
+| `subscription-checkout` | 3 | ✅ | 7j trial, price lock, PRICE_FIGHER_YEAR |
 | `autobiographiste` | 3 | ✅ | modèle premium, 8 règles, write/revise/accept |
 | `bot-tick` | 3 | ❌ | cron horaire, DONE/MISSED |
 | `bot-reply` | 3 | ❌ | webhook Telegram, **zéro appel IA** |
