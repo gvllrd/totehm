@@ -157,15 +157,29 @@ facture mensuelle sans revenu en face. Le gratuit reste déterministe.
 ### Composants transverses — règle absolue
 
 **Boutons et saisies ont le même style sur les trois domaines.**
-Un Claude ne réinvente jamais un bouton ou un input. Il copie le composant existant dans le domaine concerné.
+Un Claude ne réinvente jamais un bouton ou un input. Référence : `boutique/index.html`.
 
-```
-Bouton primaire  → fond plein, pas d'arrondi, lettre-spacing 2px
-Input            → fond transparent, bordure bottom uniquement, pas de border-radius
+**Bouton — `.btn-sig`**
+```css
+font-family: 'Quantico', sans-serif; font-weight: 400; font-size: 14px;
+color: #b0b0b0; background: none; border: 6px solid transparent;
+padding: 0 4px; line-height: 1.5; transition: color .15s ease;
+/* hover / active : */
+color: #fff; border-image-source: var(--tile-btn);
+border-image-slice: 6 fill; border-image-repeat: round;
 ```
 
-Ne jamais introduire : `border-radius` sur un bouton · box-shadow décoratif ·
-placeholder coloré · animation d'entrée sur un input.
+**Input — `.line-input`**
+```css
+font-family: 'Quantico', sans-serif; font-weight: 400; font-size: 14px;
+color: #fff; background: none; outline: none;
+border: 6px solid transparent;
+border-image-source: var(--tile-btn); border-image-slice: 6 fill; border-image-repeat: round;
+padding: 0 6px; text-align: center; caret-color: var(--coral);
+```
+
+Ne jamais introduire : `border-radius` · `box-shadow` décoratif ·
+placeholder coloré · `border-bottom` seul · animation d'entrée sur un input.
 
 ---
 
