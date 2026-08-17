@@ -230,6 +230,22 @@ repasserait le paywall à 17 €.
 
 ---
 
+## TotehmBot — bot unique des 3 entités
+
+Un seul bot Telegram (`TELEGRAM_BOT_TOKEN`) sert `totehm.space`, `higher.boutique`
+et `totehm.com`. **TotehmManager est abandonné.**
+
+| Domaine | Usage |
+|---|---|
+| `totehm.space` | habitudes, Figher Club, autobiographie |
+| `higher.boutique` | curation des illustrations générées par n8n |
+| `totehm.com` | à venir |
+
+Les workflows n8n qui pointaient vers TotehmManager seront redirigés vers TotehmBot
+au fil des itérations — pas de migration forcée, on le fait au cas par cas.
+
+---
+
 ## n8n — statut : gelé
 
 Ni abandonné, ni développé. Workflows A→E dans `backend/n8n/workflows/`.

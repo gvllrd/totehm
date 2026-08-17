@@ -202,11 +202,16 @@ donc posée **deux fois** : session *et* `subscription_data`.
 | `SUPABASE_SERVICE_ROLE_KEY` | injectée par Supabase | ✅ |
 | `STRIPE_SECRET_KEY` · `STRIPE_WEBHOOK_SECRET` | `supabase secrets` | ✅ |
 | `RESEND_API_KEY` | `supabase secrets` | ✅ |
-| `OPENAI_API_KEY` | `supabase secrets` | ❌ **manquant** |
+| `OPENAI_API_KEY` | `supabase secrets` | ✅ (clé commune aux 3 entités) |
 | `AUTOBIO_MODEL` | `supabase secrets` | optionnel, défaut `gpt-4o` |
-| `TELEGRAM_BOT_TOKEN` · `TELEGRAM_WEBHOOK_SECRET` | `supabase secrets` | ❌ **manquants** |
-| `PRICE_*` Figher Club | `supabase secrets` | ❌ **manquants** |
+| `TELEGRAM_BOT_TOKEN` | `supabase secrets` | ⚠️ **à remplacer** — valeur actuelle = TotehmManager, doit devenir TotehmBot |
+| `TELEGRAM_WEBHOOK_SECRET` | `supabase secrets` | ❌ **manquant** |
+| `PRICE_FIGHER_YEAR` | `supabase secrets` | ❌ **manquant** — `price_...` Stripe annuel |
 | clés SSH Oracle | `~/totehm/oracle/` | ✅ gitignoré, 600 |
+
+**TotehmBot est le bot unique des 3 entités** (`totehm.space`, `higher.boutique`,
+`totehm.com`). TotehmManager est abandonné. Les workflows n8n qui pointaient vers
+TotehmManager seront redirigés vers TotehmBot au fil des itérations.
 
 **Un secret Supabase n'est jamais relisible.** `supabase secrets list` montre les
 noms, jamais les valeurs. Les noter dans un gestionnaire au moment de la création.
@@ -322,6 +327,7 @@ Functions sont téléchargeables.
 | 18/08 | `objectives` + `objective_events` | la couche FUTURE n'existait pas |
 | 18/08 | **Figher Club, adhésion unique** | Seed/Plant/Tree ne sont plus des paliers publics |
 | 18/08 | `totehm_clothes.chapter_id` | un vêtement porte un **chapitre**, pas un texte |
+| 17/08 | **TotehmBot bot unique des 3 entités**, TotehmManager abandonné | un bot par domaine = 3 bots à maintenir ; la curation illustrations n8n rejoint TotehmBot |
 
 ---
 
