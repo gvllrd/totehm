@@ -156,8 +156,8 @@ facture mensuelle sans revenu en face. Le gratuit reste déterministe.
 
 ### Composants transverses — règle absolue
 
-**Boutons et saisies ont le même style sur les trois domaines.**
-Un Claude ne réinvente jamais un bouton ou un input. Référence : `boutique/index.html`.
+**Boutons et saisies suivent le même style sur les trois domaines.**
+Référence : `boutique/index.html`. Des exceptions existent — lire le contexte avant de copier.
 
 **Bouton — `.btn-sig`**
 ```css
