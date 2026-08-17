@@ -148,11 +148,24 @@ facture mensuelle sans revenu en face. Le gratuit reste déterministe.
 | | |
 |---|---|
 | Navy `#333366` | présent, habitudes, ancrage |
-| Coral `#fbd5ca` | **exclusivement** actionnable — jamais décoratif |
+| Coral `#fbd5ca` | **exclusivement** `totehm.com` — la méthode Stoner. Jamais sur `space` ni `boutique`. |
 | Rouge-violet `#743169` | répulsions, carburant |
-| Quantico Bold coral | **exclusivement** techniques et Intentions |
+| Quantico Bold coral | **exclusivement** `totehm.com` — techniques et Intentions |
 | Bebas Neue gris | narration |
 | Perforation | padding `0.02em 0.18em` |
+
+### Composants transverses — règle absolue
+
+**Boutons et saisies ont le même style sur les trois domaines.**
+Un Claude ne réinvente jamais un bouton ou un input. Il copie le composant existant dans le domaine concerné.
+
+```
+Bouton primaire  → fond plein, pas d'arrondi, lettre-spacing 2px
+Input            → fond transparent, bordure bottom uniquement, pas de border-radius
+```
+
+Ne jamais introduire : `border-radius` sur un bouton · box-shadow décoratif ·
+placeholder coloré · animation d'entrée sur un input.
 
 ---
 
