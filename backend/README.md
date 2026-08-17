@@ -12,12 +12,11 @@ Socle commun aux trois domaines. **Un seul projet Supabase** sert `totehm.com`,
   oracle/      →  clés SSH, gitignoré
 ```
 
-⚠️ **`backend/` doit rester à la racine.** Placé dans un dossier Vercel, le SQL,
-le code des Edge Functions et le `docker-compose.yml` deviendraient
-téléchargeables.
+⚠️ **`backend/` doit rester à la racine.** Dans un dossier Vercel, le SQL, les
+Edge Functions et le `docker-compose.yml` deviendraient téléchargeables.
 
-Les trois produits sont **indépendants**. Ils partagent une base, pas des
-fichiers front. `totehm.com/` ne référence jamais `space/`.
+**L'état mesuré du système vit dans `SYSTEM.md`, à côté.** Ce fichier-ci explique
+*pourquoi* c'est construit ainsi et *où sont les pièges*.
 
 ---
 
@@ -26,51 +25,70 @@ fichiers front. `totehm.com/` ne référence jamais `space/`.
 ```
 ref     abujjbkbbiumxrokozph
 region  eu-west-1
-nom     get Higher
 ```
 
-## Qui utilise quoi
+---
 
-| Table / fonction | .com | .space | .boutique |
-|---|---|---|---|
-| `stoner_access` | ✅ gate | ✅ gate | — |
-| `stoner_runs` | ✅ | ✅ | — |
-| `totehm_events` | — | ✅ le Totehm | — |
-| `book_chapters` | — | ✅ autobiographie | ✅ mode B du Cloth |
-| `totehm_cloth_support` | — | — | ✅ |
-| `totehm_clothes` | — | — | ✅ commandes |
-| `spots` | — | ✅ | ✅ |
-| `profiles`, `subscriptions` | — | ✅ | ✅ |
-| `stoner-gate` | ✅ | ✅ | — |
-| `higher-checkout` | — | ✅ | — |
-| `create-checkout` | — | — | ✅ Cloth |
-| `stripe-webhook` | reçoit **tout** | | |
+## La boucle de totehm.space
 
-`subscriptions` est la **source de vérité unique** de l'état d'un tier.
-`_deprecated_user_roles_20260803` est morte et sera droppée après septembre 2026.
+```
+   LE TOTEHM            l'habitude est déposée dans le logo (totehms.steps)
+        |               fréquence (33) + intention (7)
+   TOTEHMBOT            "Tu l'as fait ?"
+        |
+   DONE / MISSED        deux taps, c'est tout
+        |
+   WHY ?                si MISSED — texte libre, mot pour mot
+        |
+   OBSTACLE RÉCURRENT   3 fois en 60 jours
+        |
+   REPULSION            il CHOISIT dans le corpus, ou il écrit la sienne
+        |
+   MÉMOIRE              persistée, une seule active par habitude
+        |
+   +-------------------+-------------------+
+   |                                       |
+   AUTOBIOGRAPHIE                      FUTUR PUSH
+   (LLM, sur événement)                (template + SES mots, 0 €)
+```
+
+**`totehms.steps` est la vérité.** `totehm_events` est un journal, et il est
+incomplet : 25 habitudes réelles pour 8 événements. **Tout ce qui décide ou
+raconte lit `my_habits()`**, jamais le journal.
+
+---
+
+## Deux régimes de coût — la règle qui gouverne tout
+
+**MÉCANIQUE — jamais un centime.** Compter, matcher, décider quand pousser,
+détecter une récurrence, composer un rappel. Le bot fait **zéro appel IA** :
+un rappel de Repulsion est un gabarit + les mots exacts de l'utilisateur, et
+c'est plus fidèle qu'une génération.
+
+**QUALITÉ — le meilleur modèle.** L'autobiographie. ~0,017 € le chapitre contre
+~6,37 € net par membre : 3,8 % du revenu même avec 14 générations par mois.
+Économiser ici dégrade le produit pour rien.
 
 ---
 
 ## ⚠️ Trois flux Stripe sur le même compte
 
-`create-checkout` (Cloth), `higher-checkout` (Figher Club) et, à venir,
-`subscription-checkout` (MRR) créent tous des sessions Stripe.
+`create-checkout` (Cloth), `higher-checkout` (l'expérience) et
+`subscription-checkout` (Figher Club) créent tous des sessions.
 `stripe-webhook` les reçoit **toutes**.
 
-Le routage se fait sur `metadata.product` :
-
-| Valeur | Flux | Effet |
-|---|---|---|
-| `higher` | Stoner Experience | écrit dans `stoner_access` |
-| `cloth` | Totehm Cloth | déclenche la commande Printful |
-| `subscription` | Plant / Tree | écrit dans `subscriptions` |
+| `metadata.product` | Effet |
+|---|---|
+| `higher` | écrit dans `stoner_access` |
+| `cloth` | commande Printful |
+| `subscription` | écrit dans `subscriptions` |
+| *inconnu* | log, 200, **ne déclenche rien** |
 
 **Règles :**
-1. Un `switch` avec un `default` **explicite** qui log et renvoie 200. Jamais un
-   `if` : un quatrième produit ne doit jamais tomber dans une branche permissive.
+1. Un `switch` avec `default` **explicite**. Jamais un `if` : un quatrième
+   produit ne doit jamais tomber dans une branche permissive.
 2. Toute nouvelle fonction de checkout pose sa propre `metadata.product`.
-   Sans ça, un acheteur de t-shirt reçoit l'accès Higher gratuitement et
-   personne ne s'en aperçoit.
+   Sans ça, un acheteur de t-shirt reçoit l'accès Higher et personne ne le voit.
 3. **Ne jamais retirer ce filtre.**
 
 ### Le piège des abonnements
@@ -80,22 +98,99 @@ Le routage se fait sur `metadata.product` :
 portent pas** — or ce sont eux qui coupent l'accès à l'échéance.
 
 La metadata doit donc être posée **aussi** dans `subscription_data.metadata` à la
-création du checkout, pour qu'elle vive sur l'objet Subscription lui-même.
-Une ligne. Irrattrapable sur les abonnements déjà créés.
+création du checkout. Une ligne. **Irrattrapable sur les abonnements déjà créés.**
 
 ### Idempotence
 
-Stripe rejoue. Une table `stripe_events(event_id primary key)` et un insert en
-tête de webhook : si ça conflicte, on renvoie 200 et on sort. Sans ça, un rejeu
-sur une commande Cloth peut déclencher deux impressions Printful.
+`stripe_events(event_id primary key)` + un insert en tête de webhook : si ça
+conflicte, on renvoie 200 et on sort. Sans ça, un rejeu peut déclencher deux
+impressions Printful.
 
 ---
 
-## CORS — une seule liste
+## Le Figher Club — une seule adhésion
+
+Seed / Plant / Tree ne sont plus des paliers publics. Le produit expose **un
+état** : membre, ou pas.
+
+```
+PREMIER MOIS — GRATUIT
+PUIS — ANNUEL
+```
+
+Le premier mois gratuit est un `trialing` Stripe : **aucune logique de dates à
+maintenir de notre côté**, donc aucune dérive possible.
+
+`my_membership()` est le seul appel dont le front a besoin. Aucune ligne = pas
+membre. Un abonnement expiré, impayé ou annulé retombe **automatiquement** à
+`false` : pas de tâche de nettoyage, pas d'oubli.
+
+Les valeurs `seed`/`plant`/`tree` restent lisibles en base pour l'historique de
+développement. **Elles ne sont jamais montrées à l'utilisateur.**
+
+---
+
+## Le bot — ce qui le fait taire
+
+`push_decision()` est entièrement déterministe. **NOTHING domine** : la fonction
+dit non par défaut.
+
+```
+bot_off         non activé → silence
+quiet_hours     22h → 8h, fuseau du membre, passage de minuit géré
+max_daily       2 par jour
+min_gap         4 heures
+decay           3 questions ignorées → silence une semaine
+nothing_due     aucune habitude en attente
+```
+
+**Le decay est le plus important.** Un bot qui insiste quand on l'ignore se fait
+bloquer, pas obéir.
+
+**La Repulsion ne déclenche jamais un push.** Elle en change les mots — et ce
+sont les mots de l'utilisateur. Zéro appel IA.
+
+`record_push()` crée l'envoi **et** la question ouverte dans la même transaction :
+les deux ne peuvent pas diverger.
+
+---
+
+## L'Autobiographiste
+
+**La règle du non-mensonge, qui gouverne tout le reste :**
+
+> L'IA ne peut inventer aucun fait.
+> L'utilisateur peut en ajouter — c'est sa vie, il en est l'autorité.
+
+Une instruction sur la **forme** est toujours obéie. Une instruction qui demande
+d'affirmer un fait absent des données et non déclaré par l'utilisateur ne l'est
+jamais — et le modèle **ne commente pas son refus**.
+
+Ce que l'utilisateur déclare est persisté **avant** la génération
+(`chapter_context`) : une régénération future ne le perd jamais.
+
+**Trois modes :**
+- `write` — le premier chapitre
+- `revise` — une **proposition**, rien n'est écrit
+- `accept` — la proposition devient le chapitre, l'ancienne est archivée
+
+`revise` n'écrit pas : l'utilisateur voit l'avant et l'après côte à côte avant de
+trancher. Sans ça, il perd le texte qu'il aimait avant d'avoir vu le nouveau.
+
+**Le versioning est un trigger, pas du code.** Un futur développeur qui oublie de
+sauvegarder ne peut pas perdre un chapitre corrigé — la base le protège.
+
+**Un chapitre se ferme sur une décision, jamais sur un calendrier** : une
+Repulsion posée, un objectif clos, une habitude lâchée, une intention déplacée —
+et au moins 5 réponses. Une décision sans matière donne un chapitre vide ;
+de la matière sans décision n'a pas de fin.
+
+---
+
+## CORS
 
 Les origines autorisées vivent dans `supabase/functions/_shared/origins.ts` et
-nulle part ailleurs. Six entrées : apex + `www` pour chacun des trois domaines,
-plus `http://localhost:3000` en développement.
+nulle part ailleurs. Apex + `www` pour les trois domaines, plus `localhost:3000`.
 
 **Jamais de `Access-Control-Allow-Origin: '*'`** sur une fonction qui touche au
 paiement ou à une donnée utilisateur.
@@ -108,100 +203,35 @@ de Supabase.
 
 Le pont, le jour où un second domaine aura besoin d'un utilisateur connecté :
 `auth.admin.generateLink` côté serveur → `token_hash` à usage unique et courte
-durée → `verifyOtp` sur le domaine cible. **Jamais un refresh token dans une URL.**
+durée → `verifyOtp` sur le domaine cible.
+**Jamais un refresh token dans une URL.**
 
 ---
 
-## Secrets — où ils vivent
+## Déployer
 
-| Clé | Emplacement | Jamais dans git |
-|---|---|---|
-| `SUPABASE_ANON_KEY` | en dur dans les `.html` | — publique par nature |
-| `SUPABASE_SERVICE_ROLE_KEY` | injectée par Supabase | ✅ |
-| `STRIPE_SECRET_KEY` | `supabase secrets` | ✅ |
-| `STRIPE_WEBHOOK_SECRET` | `supabase secrets` | ✅ |
-| `RESEND_API_KEY` | `supabase secrets` | ✅ |
-| `TOTEHM_LOGO_URL` | `supabase secrets` | — |
-| clés SSH Oracle | `~/totehm/oracle/` | ✅ gitignoré |
-| `.env` de n8n | serveur Oracle, permissions 600 | ✅ |
+Les déploiements ne sont pas opérés à la main. Claude livre les commandes dans
+`CLAUDE_CODE.md`, Claude Code les exécute.
 
-Les Edge Functions lisent tout par `Deno.env.get()` — aucune valeur n'apparaît
-dans le code.
+```bash
+supabase functions deploy bot-tick --no-verify-jwt
+supabase functions deploy bot-reply --no-verify-jwt
+supabase functions deploy stripe-webhook --no-verify-jwt
+supabase functions deploy autobiographiste
+supabase db push
+```
+
+`--no-verify-jwt` sur les webhooks : Stripe et Telegram n'ont pas de JWT
+Supabase. Sans risque — la signature est vérifiée dans le code.
+
+⚠️ **Toujours vérifier l'état déployé avant un `deploy`.** Sur `main`,
+`higher-checkout` porte encore l'ancienne tarification : un redéploiement aveugle
+repasserait le paywall à 17 €.
 
 ---
-
-## ⚠️ Le repo et la prod divergent
-
-Au 14 août 2026, `higher-checkout` sur `main` contient encore l'ancienne
-tarification (`COHORT_MAX=777`, 17 € / 29 €) alors que la production sert les
-cinq paliers (11 → 76 €) et expose un mode `{quote:true}`.
-
-**Toujours vérifier l'état déployé avant un `supabase functions deploy`.** Un
-redéploiement aveugle depuis le repo repasserait le paywall à 17 €.
 
 ## n8n — statut : gelé
 
-Ni abandonné, ni développé. Workflows A→E opérationnels, Workflow F (Printful
-listener) construit. Stockés dans `backend/n8n/workflows/`.
+Ni abandonné, ni développé. Workflows A→E dans `backend/n8n/workflows/`.
 Le pipeline n'est pas nécessaire pour encaisser, il l'est pour scaler.
 On automatise quand le manuel dépasse 5 h/semaine.
----
-
-## Abonnements — en place depuis le 15/08
-
-### `subscription-checkout` · verify_jwt = true
-
-Reçoit `{ tier, period }`, jamais un prix. Les Price ID vivent dans les
-secrets : ils diffèrent entre test et live, un ID en dur obligerait à
-redéployer pour passer en production.
-
-```
-PRICE_PLANT_MONTH   PRICE_PLANT_YEAR
-PRICE_TREE_MONTH    PRICE_TREE_YEAR
-```
-
-Pose la metadata **deux fois** :
-- sur la session → lue par `checkout.session.completed`
-- sur `subscription_data` → vit sur l'objet Subscription
-
-La seconde est indispensable. Les événements de cycle de vie ne portent
-pas la metadata de session — or ce sont eux qui coupent l'accès.
-
-### `stripe_events` · idempotence
-
-Insert de `event_id` en tête de webhook. Conflit → 200 et sortie.
-Stripe rejoue systématiquement : sans ça, un rejeu crée un second
-abonnement, ou deux impressions Printful côté Cloth.
-
-### `my_tier()` · security definer, authenticated
-
-Source unique du tier côté front :
-
-```json
-{ "tier": "plant", "status": "active", "until": "...",
-  "cancel_at_period_end": false, "paid": true }
-```
-
-**Aucune ligne dans `subscriptions` = `seed`.** Un abonnement expiré ou
-impayé retombe à `seed` automatiquement — pas de tâche de nettoyage à
-écrire, pas d'oubli possible.
-
-RLS active sur `subscriptions` : un membre lit sa ligne, l'écriture
-appartient au webhook via `service_role`.
-
-### Les quatre événements traités
-
-| Événement | Effet |
-|---|---|
-| `checkout.session.completed` | route sur `metadata.product` |
-| `customer.subscription.updated` | met à jour statut et échéance |
-| `customer.subscription.deleted` | retombe à `seed` |
-| `invoice.payment_failed` | suit le statut Stripe |
-
-Le `switch` sur `metadata.product` a un `default` explicite qui log et
-renvoie 200. Un produit inconnu ne déclenche rien.
-
-### Ce qui reste manuel
-
-Créer les produits et prix dans le dashboard Stripe, puis poser les
-quatre `PRICE_*` dans `supabase secrets`. Aucune API ne le fait.
