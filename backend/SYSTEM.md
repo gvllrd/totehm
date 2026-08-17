@@ -210,13 +210,35 @@ sans rien apporter.
 | `stripe_events` | 0 | idempotence webhook |
 | `crew_codes` · `crew_attributions` | 0 | Crew Code, attribution définitive |
 | `stoner_access` | 6 | les Fighers (achat unique, `.com`) |
-| `spots` | 125 | lieux, 2 embeddings — le moteur de la Map existe déjà |
+| `spots` | 125 | lieux, 2 embeddings — **moteur COMPLET, prêt à brancher** |
 | `bot_knowledge` | 55 | base de connaissance, embeddings |
 | `totehm_clothes` | 1 | commandes Cloth · **`chapter_id`** relie au chapitre |
 | `totehm_events` | 15 | ⚠️ journal **incomplet** — voir §7 |
 
 **Table morte :** `_deprecated_user_roles_20260803` — à dropper après le
 3 septembre 2026.
+
+### Higher Map — état réel (18/08/2026)
+
+**Ce n'est pas un chantier. C'est un branchement.**
+
+```
+125 spots · 125 avec intention · 125 géolocalisés
+duration_min · expires_at · is_public · member_count · tags
+2 embeddings par spot : vibe + grind
+
+Fonctions prêtes :
+  match_member_to_spots()   → spots pertinents pour ce membre
+  match_spots_grind()       → matching sur l'axe effort/discipline
+  match_spots_vibe()        → matching sur l'axe énergie/ambiance
+```
+
+**Ce qui manque :**
+1. L'interface dans `totehm.html` — un appel à `match_member_to_spots()`, une liste de spots
+2. Du seeding hors Lisbonne
+
+Pas de migration. Pas de nouvelle table. Pas de nouveau service.
+Un écran, un appel, une UI.
 
 ---
 
