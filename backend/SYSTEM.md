@@ -51,7 +51,97 @@ Le compte est unique, la session ne l'est pas.
 
 ---
 
-## 2 · Conflit connu : `trips` n'existe pas
+## 2 · Figher Club — pricing officiel
+
+> **Ces décisions sont prioritaires sur toute règle de pricing antérieure.**
+> Ne pas implémenter tant qu'une tâche dédiée n'est pas demandée.
+> Ne pas hard-coder les paliers dans le frontend.
+
+### Le modèle
+
+```
+7 DAYS FREE
+→ membership annuel payant
+→ prix d'entrée actuel : 77 €/an
+→ pas d'abonnement mensuel
+→ pas de Free Plan permanent
+```
+
+### Price lock — règle absolue
+
+Le prix auquel un membre rejoint est **verrouillé pour lui tant que son
+membership reste actif**, même si le Club monte de palier.
+
+```
+current_club_price   → prix affiché aux nouveaux membres
+member_locked_price  → prix stocké à la souscription, jamais recalculé
+```
+
+Le renouvellement annuel d'un membre existant se fait **toujours** sur son
+`member_locked_price`, jamais sur le `current_club_price` du moment.
+
+### Paliers de prix (configurables, non hard-codés)
+
+| Membres | Prix annuel |
+|---|---|
+| 1 – 100 | 77 € |
+| 101 – 250 | 99 € |
+| 251 – 500 | 129 € |
+| 501 – 1 000 | 149 € |
+| 1 001 – 2 500 | 177 € |
+| 2 501 – 5 000 | 199 € |
+| 5 001+ | 229 € |
+
+Les paliers vivent en base ou en config serveur. **Jamais dans le frontend.**
+
+### Champs à prévoir en base (pas encore créés)
+
+```
+current_club_price       prix actuel pour les nouveaux membres
+member_locked_price      prix figé à la souscription
+membership_started_at
+membership_status
+member_number            position dans le Club
+pricing_tier             palier au moment de l'entrée
+```
+
+### Totehm Spots
+
+Un membre peut proposer un spot (lieu, intention, capacité, date, visibilité,
+prix éventuel). Le Club devient un réseau physique distribué.
+
+Types : FOCUS · FIGHT · ENRICH · LOVE · etc.
+
+Visibilité : `public` · `club` · `private`.
+
+### Communication — règles
+
+Ne jamais présenter comme un SaaS. Toujours en logique club :
+
+```
+MORE MEMBERS → MORE SPOTS → MORE PLACES → MORE VALUE
+```
+
+Pas de : Free/Pro/Premium · tableau comparatif mensuel/annuel · gamification.
+
+Format officiel :
+
+```
+Figher Club
+7 DAYS FREE
+CURRENT CLUB PRICE — 77 €/YEAR
+"Join at €77/year. Your price is locked while your membership is active."
+```
+
+### Stripe — à faire lors de l'implémentation
+
+- Essai : **7 jours** (pas 30 — corriger le produit Stripe si créé avec 30 jours)
+- Prix Stripe figé à la création de l'abonnement → `member_locked_price`
+- `PRICE_FIGHER_YEAR` dans Supabase secrets = price ID du palier d'entrée
+
+---
+
+## 3 · Conflit connu : `trips` n'existe pas
 
 `space_master_v5.md` §52 recommande une table `trips`. **Elle n'existe pas.**
 
@@ -328,6 +418,7 @@ Functions sont téléchargeables.
 | 18/08 | **Figher Club, adhésion unique** | Seed/Plant/Tree ne sont plus des paliers publics |
 | 18/08 | `totehm_clothes.chapter_id` | un vêtement porte un **chapitre**, pas un texte |
 | 17/08 | **TotehmBot bot unique des 3 entités**, TotehmManager abandonné | un bot par domaine = 3 bots à maintenir ; la curation illustrations n8n rejoint TotehmBot |
+| 17/08 | **Figher Club pricing officiel** — 7 jours d'essai, 77 €/an, price lock, paliers par nombre de membres | vision club, pas SaaS ; la valeur augmente avec le réseau |
 
 ---
 
