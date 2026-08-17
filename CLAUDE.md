@@ -129,7 +129,8 @@ Compter, matcher, décider quand pousser, détecter une récurrence, composer un
 rappel. Du SQL, des embeddings, des gabarits. Le bot fait **zéro appel IA**.
 
 **QUALITÉ — le meilleur modèle.**
-L'autobiographie et les propositions d'objectifs. C'est ce que le membre achète.
+L'autobiographie et les propositions d'objectifs. Ce que le membre achète, c'est
+**la Higher Map** — l'autobiographie est une couche de valeur, pas le produit.
 Un chapitre coûte ~0,017 € contre ~6,37 € net par membre : **3,8 % du revenu même
 avec 14 générations par mois.** Économiser ici, c'est dégrader le produit pour
 rien.
