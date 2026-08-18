@@ -148,7 +148,7 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
   position:absolute;inset:0;z-index:1;
   max-width:none;padding:0;margin:0;gap:0;
   pointer-events:none;
-  display:flex;flex-direction:column;justify-content:space-between
+  display:flex;flex-direction:column;justify-content:flex-start
 }
 
 /* Bandeau haut : gradient noir → transparent sur le titre + sous-titre */
@@ -168,9 +168,9 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 #hmap.map-active #hm-note,
 #hmap.map-active #city-block{display:none}
 
-/* Bandeau bas : gradient + bouton retour */
+/* Bandeau bas : poussé au fond par margin-top:auto, gradient + bouton retour */
 #hmap.map-active #hmap-close{
-  margin:0;
+  margin-top:auto;margin-bottom:0;
   padding:28px 22px 32px;
   background:linear-gradient(to top,rgba(0,0,0,.72) 0%,transparent 100%);
   pointer-events:auto
@@ -1927,65 +1927,78 @@ function loadMapLibre(){
 
 function closeHmPopup(){ $('hm-popup').classList.remove('show'); }
 
-/* Initialise MapLibre dans #map-canvas avec les spots en marqueurs */
+/* Initialise MapLibre dans #map-canvas avec les spots en marqueurs.
+   Le RAF est obligatoire : map-active passe #map-canvas de display:none à
+   display:block. Sans RAF, le navigateur n'a pas recalculé les styles et
+   MapLibre lit le container à 0×0 — rien ne s'affiche. */
 function renderMapLibre(coords, spots){
   const hmap=$('hmap');
   hmap.classList.add('map-active');
 
   if(_mapInstance){ try{_mapInstance.remove();}catch(e){} _mapInstance=null; }
 
-  const map=new maplibregl.Map({
-    container:'map-canvas',
-    style:'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
-    center:[coords.lng, coords.lat],
-    zoom:14,
-    attributionControl:false
-  });
-  _mapInstance=map;
+  requestAnimationFrame(()=>{
+    const canvas=$('map-canvas');
+    const map=new maplibregl.Map({
+      container: canvas,
+      style:'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+      center:[coords.lng, coords.lat],
+      zoom:14,
+      attributionControl:false
+    });
+    _mapInstance=map;
 
-  map.addControl(new maplibregl.AttributionControl({compact:true}),'bottom-left');
+    map.addControl(new maplibregl.AttributionControl({compact:true}),'bottom-left');
 
-  /* Point bleu de position utilisateur */
-  const uEl=document.createElement('div');
-  uEl.className='hm-marker hm-user-dot';
-  new maplibregl.Marker({element:uEl, anchor:'center'})
-    .setLngLat([coords.lng, coords.lat])
-    .addTo(map);
+    /* Point blanc de position utilisateur */
+    const uEl=document.createElement('div');
+    uEl.className='hm-marker hm-user-dot';
+    new maplibregl.Marker({element:uEl, anchor:'center'})
+      .setLngLat([coords.lng, coords.lat])
+      .addTo(map);
 
-  /* Popup custom — fermée au clic sur la carte */
-  const popup=$('hm-popup');
-  popup.querySelector('.pop-close').onclick=closeHmPopup;
+    const popup=$('hm-popup');
+    popup.querySelector('.pop-close').onclick=closeHmPopup;
 
-  map.on('load', ()=>{
-    map.on('click', closeHmPopup);
+    /* Erreur de chargement → fallback liste */
+    map.on('error', err=>{
+      console.warn('MapLibre error, falling back to list:', err.error?.message||err);
+      hmap.classList.remove('map-active');
+      try{map.remove();}catch(e){} _mapInstance=null;
+      renderHmList(spots, spots.map(s=>s.intention).filter((v,i,a)=>a.indexOf(v)===i));
+    });
 
-    spots.forEach(s=>{
-      if(s.lat==null||s.lng==null) return;
-      const col=HM_COLOR[s.intention]||'#606060';
-      const el=document.createElement('div');
-      el.className='hm-marker';
-      el.style.background=col;
+    map.on('load', ()=>{
+      map.on('click', closeHmPopup);
 
-      new maplibregl.Marker({element:el, anchor:'center'})
-        .setLngLat([s.lng, s.lat])
-        .addTo(map);
+      spots.forEach(s=>{
+        if(s.lat==null||s.lng==null) return;
+        const col=HM_COLOR[s.intention]||'#606060';
+        const el=document.createElement('div');
+        el.className='hm-marker';
+        el.style.background=col;
 
-      el.addEventListener('click', ev=>{
-        ev.stopPropagation();
-        popup.querySelector('.pop-name').textContent=s.activite||s.lieu_type||'place';
-        const meta=[s.intention, s.duration_min?s.duration_min+' min':null].filter(Boolean).join(' · ');
-        popup.querySelector('.pop-meta').textContent=meta;
-        const why=popup.querySelector('.pop-why');
-        if(s.commentaire){ why.textContent=s.commentaire; why.style.display=''; }
-        else why.style.display='none';
-        popup.classList.add('show');
+        new maplibregl.Marker({element:el, anchor:'center'})
+          .setLngLat([s.lng, s.lat])
+          .addTo(map);
+
+        el.addEventListener('click', ev=>{
+          ev.stopPropagation();
+          popup.querySelector('.pop-name').textContent=s.activite||s.lieu_type||'place';
+          const meta=[s.intention, s.duration_min?s.duration_min+' min':null].filter(Boolean).join(' · ');
+          popup.querySelector('.pop-meta').textContent=meta;
+          const why=popup.querySelector('.pop-why');
+          if(s.commentaire){ why.textContent=s.commentaire; why.style.display=''; }
+          else why.style.display='none';
+          popup.classList.add('show');
+        });
       });
     });
-  });
 
-  /* S'assure que MapLibre recalcule quand le canvas change de taille */
-  new ResizeObserver(()=>{ if(_mapInstance) _mapInstance.resize(); })
-    .observe($('map-canvas'));
+    /* Resize si #hmap change de dimensions (rotation mobile, etc.) */
+    new ResizeObserver(()=>{ if(_mapInstance) _mapInstance.resize(); })
+      .observe(canvas);
+  });
 }
 
 /* Mode liste : fallback si pas de coords ou si MapLibre a planté */
