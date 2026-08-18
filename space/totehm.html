@@ -152,7 +152,7 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 /* ── MODE CARTE — map-active ────────────────────────────────────────────── */
 
 /* Le canvas MapLibre remplit tout #hmap */
-#map-canvas{display:none;position:absolute;inset:0;z-index:0}
+#map-canvas{display:none;position:absolute;inset:0;width:100%;height:100%;z-index:0}
 #hmap.map-active #map-canvas{display:block}
 
 /* En mode carte, #hmap-in devient une superposition non-scrollable */
@@ -181,12 +181,19 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 #hmap.map-active #hm-list,
 #hmap.map-active #hm-note{display:none}
 
-/* Bandeau bas : poussé au fond par margin-top:auto, gradient + bouton retour */
+/* Bouton Login : poussé au fond, aligné centre, boîte perforée sur le texte seul */
 #hmap.map-active #hmap-close{
-  margin-top:auto;margin-bottom:0;
-  padding:28px 22px 32px;
-  background:linear-gradient(to top,rgba(0,0,0,.72) 0%,transparent 100%);
+  margin-top:auto;margin-bottom:28px;
+  padding:0 4px;
+  background:none;
+  align-self:center;
   pointer-events:auto
+}
+
+/* bigT/wordmark/rail cachés dès que la Map est active — sur TOUS les écrans.
+   transition:none : disparition instantanée, zéro résidu visible. */
+body.in-map #bigT,body.in-map #wordmark,body.in-map #rail{
+  opacity:0!important;pointer-events:none!important;transition:none!important
 }
 
 /* Pendant le fade-out de la map (retour Habits) : bigT reste caché jusqu'à ce
@@ -454,6 +461,9 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 .mw-out:hover{color:#fff}
 .mw-sync{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:var(--love);margin-top:8px;min-height:12px}
 
+.acct-btn{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:var(--rep);background:none;border:none;cursor:pointer;padding:0 8px;line-height:1.6;display:block;margin:4px auto 0;text-align:center;-webkit-tap-highlight-color:transparent;transition:opacity .2s}
+.acct-btn:hover{opacity:.72}
+
 @media(max-width:600px){.h-text,.h-add,.h-hint{font-size:14px}#bigT{font-size:38px}}
 @media(prefers-reduced-motion:reduce){#fv-inner{transition:none!important}}
 
@@ -656,7 +666,7 @@ body.gate.entered #fv-status{
     transform:translateY(-50%) scale(0);
     opacity:0;pointer-events:none}
   body.in-map #bigT,body.in-map #wordmark,body.in-map #rail{
-    opacity:0!important;transition:opacity .38s ease}
+    opacity:0!important;transition:none!important}
   body.in-map #menu-arrow,body.in-map #filter-arrow{display:none!important}
   .sn-label{font-family:'Quantico',sans-serif;font-size:9px;letter-spacing:.04em;color:#fff;text-align:center;line-height:1.35;transition:opacity .2s;display:block;opacity:0}
   .side-nav:hover .sn-label{opacity:1}
@@ -1792,17 +1802,22 @@ function go(dFloor){
   const next = floor + (dFloor < 0 ? 1 : -1);
   if(next < 0 || next > 2) return;
   if(isDesk()){ floor = next; paint(); return; }
-  /* Mobile : les transitions vers/depuis la map utilisent uniquement le fade CSS
-     de #hmap (pas d'animateSwap sur fv-inner) — évite le flash de bigT. */
+  /* Mobile — transitions map : paint() direct, #hmap(z-index:55, bg:#000)
+     couvre immédiatement tout. body.in-map cache bigT/wordmark/rail sans délai. */
   if(floor === 1 || next === 1){
     busy=true;
-    if(floor === 1){
-      /* On quitte la map : cacher bigT le temps que #hmap se fonde vers 0 */
+    if(next === 1){
+      floor=1; paint();
+      setTimeout(()=>{busy=false;},430);
+    } else {
+      /* Map → Habits : #hmap fade-out CSS, bigT caché pendant la transition.
+         Si la carte n'a pas rendu (pas de map-active), on réinitialise hmapLoaded
+         pour permettre une nouvelle tentative au prochain accès. */
+      if(!$('hmap').classList.contains('map-active')) hmapLoaded=false;
       document.body.classList.add('map-leaving');
-      setTimeout(()=>document.body.classList.remove('map-leaving'), 420);
+      floor=next; paint();
+      setTimeout(()=>{document.body.classList.remove('map-leaving');busy=false;},430);
     }
-    floor=next; paint();
-    setTimeout(()=>{busy=false;}, 420);
     return;
   }
   animateSwap(dFloor, ()=>{ floor = next; paint(); });
@@ -1919,15 +1934,16 @@ function renderMapLibre(coords, spots){
 
   if(_mapInstance){ try{_mapInstance.remove();}catch(e){} _mapInstance=null; }
 
-  /* Double RAF : un seul frame ne garantit pas le layout sur tous les mobiles
-     quand display passe de none à block. Deux frames = paint complet garanti. */
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+  /* setTimeout(150) : plus fiable que RAF sur mobile (iOS Safari, Chromebook)
+     pour garantir que display:block est calculé avant l'init MapLibre. */
+  setTimeout(()=>{
     const canvas=$('map-canvas');
-    /* Failsafe : si le canvas est encore 0×0, forcer les dimensions */
-    if(!canvas.offsetWidth){
-      canvas.style.width=window.innerWidth+'px';
-      canvas.style.height=window.innerHeight+'px';
-    }
+    /* Dimensions absolues en px — MapLibre mesure clientWidth/clientHeight,
+       qui peut rester 0 sur certains mobiles même après un RAF. */
+    const w=$('hmap').offsetWidth||window.innerWidth;
+    const h=$('hmap').offsetHeight||window.innerHeight;
+    canvas.style.width=w+'px';
+    canvas.style.height=h+'px';
     const map=new maplibregl.Map({
       container: canvas,
       style:'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
@@ -1949,15 +1965,29 @@ function renderMapLibre(coords, spots){
     const popup=$('hm-popup');
     popup.querySelector('.pop-close').onclick=closeHmPopup;
 
+    /* Indicateur pendant le chargement des tuiles */
+    const loadMsg=document.createElement('div');
+    loadMsg.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;pointer-events:none';
+    const loadSpan=document.createElement('span');
+    loadSpan.style.cssText='font-family:Space Mono,monospace;font-size:10px;letter-spacing:.12em;color:#606060';
+    loadSpan.textContent='loading tiles...';
+    loadMsg.appendChild(loadSpan);
+    canvas.parentElement.appendChild(loadMsg);
+
     /* Erreur de chargement → fallback liste */
     map.on('error', err=>{
-      console.warn('MapLibre error, falling back to list:', err.error?.message||err);
+      const msg=(err&&err.error&&err.error.message)||String(err)||'map error';
+      loadMsg.remove();
       hmap.classList.remove('map-active');
       try{map.remove();}catch(e){} _mapInstance=null;
+      const note2=$('hm-note');
+      note2.className='note no';
+      note2.textContent='[6] '+msg.slice(0,80);
       renderHmList(spots, spots.map(s=>s.intention).filter((v,i,a)=>a.indexOf(v)===i));
     });
 
     map.on('load', ()=>{
+      loadMsg.remove();
       map.on('click', closeHmPopup);
 
       spots.forEach(s=>{
@@ -1987,7 +2017,7 @@ function renderMapLibre(coords, spots){
     /* Resize si #hmap change de dimensions (rotation mobile, etc.) */
     new ResizeObserver(()=>{ if(_mapInstance) _mapInstance.resize(); })
       .observe(canvas);
-  }));
+  },150);
 }
 
 /* Mode liste : fallback si pas de coords ou si MapLibre a planté */
@@ -2018,16 +2048,16 @@ async function loadMap(){
   note.textContent='reading your Totehm...';
 
   try{
+    note.textContent='[1] session...';
     const { data:{ session } }=await sb.auth.getSession();
-    if(!session){ note.className='note no'; note.textContent='sign in first'; return; }
+    if(!session){ note.className='note no'; note.textContent='[1] not signed in'; return; }
 
-    /* Coords : cache localStorage en priorité, sinon demande directe.
-       La popup système n'est déclenchée qu'une fois — la réponse est cachée. */
+    /* Coords : cache localStorage en priorité, sinon demande directe. */
     let coords=null;
     try{ const c=localStorage.getItem('totehm_map_pos_v1'); if(c) coords=JSON.parse(c); }catch(e){}
 
     if(!coords && navigator.geolocation){
-      note.textContent='locating...';
+      note.textContent='[2] locating...';
       coords=await new Promise(resolve=>{
         navigator.geolocation.getCurrentPosition(
           pos=>{
@@ -2035,40 +2065,45 @@ async function loadMap(){
             try{localStorage.setItem('totehm_map_pos_v1',JSON.stringify(c));}catch(e){}
             resolve(c);
           },
-          ()=>resolve(null),
+          (err)=>{ note.textContent='[2] geo blocked: '+err.code; resolve(null); },
           {timeout:10000,maximumAge:600000}
         );
       });
-      note.textContent='reading your Totehm...';
+    } else if(!coords){
+      note.textContent='[2] no geolocation';
     }
 
+    note.textContent='[3] fetching spots'+(coords?' with location':'')+'...';
     const r=await fetch('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/higher-map',{
       method:'POST',
       headers:{'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json'},
       body:JSON.stringify(coords?{lat:coords.lat,lng:coords.lng}:{})
     });
 
-    if(r.status===402){ note.className='note no'; note.textContent='members only'; return; }
+    note.textContent='[3] status '+r.status;
+    if(r.status===402){ note.className='note no'; note.textContent='[3] members only'; return; }
     const j=await r.json();
 
-    if(j.reason==='no_intention'){ note.className='note dim'; note.textContent='give your habits an intention first'; return; }
+    if(j.reason==='no_intention'){ note.className='note dim'; note.textContent='[3] no intention on habits'; return; }
 
     const spots=j.spots||[], intentions=j.intentions||[];
+    note.textContent='[4] '+spots.length+' spots'+(coords?', rendering map...':', list mode');
 
-    if(!spots.length){ note.className='note dim'; note.textContent='nothing around you yet'; hmapLoaded=true; return; }
+    if(!spots.length){ note.className='note dim'; note.textContent='[4] nothing around you yet'; hmapLoaded=true; return; }
 
-    /* Carte si coords disponibles, liste sinon */
     if(coords){
       try{
+        note.textContent='[5] loading MapLibre...';
         await loadMapLibre();
+        note.textContent='[5] initializing map...';
         renderMapLibre(coords, spots);
         const sub=$('hm-sub');
         if(sub) sub.textContent=spots.length+' places · '+intentions.join(' · ');
-        note.textContent='';
         hmapLoaded=true;
         return;
       }catch(mapErr){
-        console.warn('MapLibre failed, list fallback:', mapErr);
+        note.className='note no';
+        note.textContent='[5] map error: '+(mapErr&&mapErr.message||mapErr);
         $('hmap').classList.remove('map-active');
         if(_mapInstance){ try{_mapInstance.remove();}catch(e){} _mapInstance=null; }
       }
@@ -2080,7 +2115,7 @@ async function loadMap(){
   }catch(e){
     console.error('higher-map:',e);
     note.className='note no';
-    note.textContent='could not load the map';
+    note.textContent='error: '+(e&&e.message||e);
   }
 }
 
