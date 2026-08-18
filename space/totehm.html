@@ -717,6 +717,7 @@ body.gate.entered #fv-status{
 <div id="hmap" aria-hidden="true">
   <div id="hmap-in">
     <div class="hm-title">HIGHER MAP</div>
+    <div class="hm-sub" id="hm-sub">around you, through your Totehm</div>
     <div id="city-block">
       <div id="city-card">
         <div id="city-detected"></div>
@@ -1848,8 +1849,8 @@ async function loadMap(){
       return;
     }
 
-    $('hm-sub').textContent =
-      spots.length + ' places · ' + (j.intentions||[]).join(' · ');
+    const sub=$('hm-sub');
+    if(sub) sub.textContent = spots.length + ' places · ' + (j.intentions||[]).join(' · ');
 
     list.innerHTML = spots.map(s => {
       const col = HM_COLOR[s.intention] || '#606060';
