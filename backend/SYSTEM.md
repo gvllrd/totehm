@@ -394,6 +394,15 @@ vérifier qu'aucune page ne l'appelle.
 Inaccessible sauf `service_role`. Volontaire ou oubli : à trancher avant de
 brancher le pipeline Cloth.
 
+### ⚠️ Format des steps — clé compacte `i`, pas `intention`
+
+Les steps stockés dans `totehms.steps[]` utilisent un format compact :
+`{ f: "daily", i: "focus", t: "Nom de l'habitude" }`.
+La clé intention est **`i`**, pas `intention`.
+Toute fonction qui lit les steps doit utiliser `s.i || s.intention`.
+**`higher-map` v1-v3 lisait `s.intention` → renvoyait toujours `no_intention`.**
+Corrigé en v4.
+
 ### ⚠️ `spots.state_of_mind` — deux langues
 `calm` (27) et `calme` (6). Pour l'affichage ça passe ; **pour du matching par
 embedding, deux orthographes = deux clusters = résultat faux.**
@@ -474,6 +483,7 @@ Functions sont téléchargeables.
 | 18/08 | Settings desktop : `#settings-nav .sn-row{display:none}` — seul `#sn-home` reste | supprimer les boutons Autobiography et Generator du panel Settings sans toucher la nav mobile |
 | 18/08 | Filtre : TIME FREQUENCY → étape intention avant fermeture | sans ça, la fenêtre se fermait avant que l'utilisateur ait pu choisir une intention |
 | 18/08 | `GOOGLE_MAPS_API_KEY` absente des secrets Supabase | fallback spots DB actif jusqu'à la pose de la clé |
+| 18/08 | Steps format compact `{f,i,t}` — `higher-map` lisait `s.intention` → `no_intention` toujours | corrigé v4 : `s.i \|\| s.intention` |
 
 ---
 

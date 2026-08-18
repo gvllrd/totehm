@@ -55,9 +55,11 @@ Deno.serve(async (req) => {
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const steps: { intention?: string }[] = totehm?.steps ?? [];
+  // Les steps utilisent 'i' comme clé compacte pour intention (f/i/t).
+  // On accepte aussi 'intention' pour éviter toute régression.
+  const steps: { i?: string; intention?: string }[] = totehm?.steps ?? [];
   const intentions = [...new Set(
-    steps.map((s) => s.intention).filter(Boolean),
+    steps.map((s) => s.i || s.intention).filter(Boolean),
   )] as string[];
 
   if (!intentions.length) {
