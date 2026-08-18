@@ -218,27 +218,21 @@ sans rien apporter.
 **Table morte :** `_deprecated_user_roles_20260803` — à dropper après le
 3 septembre 2026.
 
-### Higher Map — état réel (18/08/2026)
+### Higher Map — concept réel (18/08/2026)
 
-**Ce n'est pas un chantier. C'est un branchement.**
+**Ce n'est pas les spots en base. C'est Google Maps + le spectre du Totehm.**
 
 ```
-125 spots · 125 avec intention · 125 géolocalisés
-duration_min · expires_at · is_public · member_count · tags
-2 embeddings par spot : vibe + grind
-
-Fonctions prêtes :
-  match_member_to_spots()   → spots pertinents pour ce membre
-  match_spots_grind()       → matching sur l'axe effort/discipline
-  match_spots_vibe()        → matching sur l'axe énergie/ambiance
+1. Localisation de l'utilisateur
+2. Appel API Google Maps / Google Events dans la zone
+3. Filtrage par le spectre du Totehm du membre (habitudes + intentions)
+→ Ce que tu vois sur la Map, c'est le monde filtré par qui tu es
 ```
 
-**Ce qui manque :**
-1. L'interface dans `totehm.html` — un appel à `match_member_to_spots()`, une liste de spots
-2. Du seeding hors Lisbonne
+La table `spots` (125 lignes) est distincte — ne pas confondre.
 
-Pas de migration. Pas de nouvelle table. Pas de nouveau service.
-Un écran, un appel, une UI.
+**Ce qui manque :** l'écran dans `totehm.html`.
+Pas de migration. Pas de nouvelle table. Un appel, une UI.
 
 ---
 
