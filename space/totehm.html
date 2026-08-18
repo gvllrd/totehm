@@ -89,6 +89,50 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 #book,#nextobj{position:fixed;inset:0;z-index:55;background:#000;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .38s ease,visibility 0s linear .38s;will-change:opacity}
 #book.show,#nextobj.show{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .38s ease,visibility 0s}
 #book iframe,#nextobj iframe{width:100%;height:100%;border:none;display:block}
+
+/* ══ HIGHER MAP ══
+   Meme overlay que #book et #nextobj : le geste doit etre identique.
+   Pas d'iframe ici : la Map lit my_habits() et la session, une
+   frontiere d'iframe n'apporterait rien et couperait le contexte. */
+#hmap{position:fixed;inset:0;z-index:55;background:#000;opacity:0;visibility:hidden;
+  pointer-events:none;transition:opacity .38s ease,visibility 0s linear .38s;
+  overflow-y:auto;overscroll-behavior:contain}
+#hmap.show{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .38s ease,visibility 0s}
+#hmap-in{max-width:520px;margin:0 auto;padding:9vh 22px 6vh;
+  display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center}
+#hmap-in > *{width:100%}
+
+/* Le titre reste sobre : c'est la liste qui porte l'information. */
+.hm-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.1em;color:#e0e0e0}
+.hm-sub{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:#606060;line-height:1.7}
+
+/* Un spot : pas de conteneur borde, une simple ligne separatrice.
+   Le point de couleur porte l'intention — c'est le seul endroit ou
+   la couleur parle. */
+.hm-spot{display:flex;align-items:flex-start;gap:11px;text-align:left;
+  padding:13px 0}
+/* Carre, pas rond : la doctrine interdit border-radius, et l'esthetique
+   TOTEHM est faite d'angles durs. Le point porte l'intention. */
+.hm-dot{width:7px;height:7px;flex-shrink:0;margin-top:6px}
+.hm-body{flex:1;min-width:0}
+.hm-name{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
+  color:#b0b0b0;line-height:1.45;transition:color .15s ease}
+.hm-meta{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;
+  text-transform:uppercase;color:#4a4a4a;margin-top:3px}
+.hm-why{font-family:'Quantico',sans-serif;font-size:12px;color:#808080;
+  line-height:1.5;margin-top:4px;transition:color .15s ease}
+/* Separation par l'espace, pas par un trait : « border-bottom seul »
+   fait partie des interdits. */
+#hm-list{display:flex;flex-direction:column;gap:4px}
+
+/* Desktop : tout gris passe en blanc au survol. Regle transverse. */
+@media(hover:hover){
+  .hm-spot:hover .hm-name,
+  .hm-spot:hover .hm-why{color:#fff}
+}
+
+#hmap-close{margin-top:6px}
 /* Make the Streets Sublime : overlay en bas de la méthode, visible seulement si Lisbon sélectionné en bas */
 /* Make the Streets Sublime : bouton phare perforé en HAUT de la méthode (si Lisbon sélectionné en bas) */
 #street-btn{position:absolute;left:50%;top:16px;transform:translateX(-50%);z-index:58;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
@@ -656,6 +700,18 @@ body.gate.entered #fv-status{
 <div id="book"><iframe id="book-frame" title="Book of My Totehm"></iframe></div>
 <div id="nextobj"><iframe id="nextobj-frame" title="Next Objective"></iframe></div>
 
+<!-- Higher Map : le monde filtre par ton Totehm. Extension monde du
+     PRESENT, donc ici et pas dans une page a part. -->
+<div id="hmap" aria-hidden="true">
+  <div id="hmap-in">
+    <div class="hm-title">HIGHER MAP</div>
+    <div class="hm-sub" id="hm-sub">around you, through your Totehm</div>
+    <div id="hm-list"></div>
+    <div class="note dim" id="hm-note"></div>
+    <button class="btn-sig" id="hmap-close">Back to my Totehm</button>
+  </div>
+</div>
+
 <div id="floorview" class="sink-el">
   <div id="fv-inner">
     <div id="habits"></div>
@@ -712,6 +768,14 @@ body.gate.entered #fv-status{
           <div id="city-hint" class="hide"></div>
         </div>
         <a class="btn-sig hide" id="streets-btn" href="https://www.totehm.com/lisbon" target="_blank" rel="noopener" style="margin-top:8px">Make the Streets Sublime</a>
+      </div>
+
+      <!-- Higher Map : juste apres City, parce qu'elle en depend.
+           Sans position, la Map n'a rien a filtrer. -->
+      <div class="set-block">
+        <div class="menu-row">
+          <button class="btn-sig" id="hmap-btn">Higher Map</button>
+        </div>
       </div>
 
       <!-- Curseur PlayStation — visible uniquement dans les Paramètres -->
@@ -1716,6 +1780,116 @@ $('sn-book').onclick =requireMember(()=>{if(!busy&&floor===1&&!hOpen())showBook(
 $('sn-home').onclick =()=>{if(!busy&&floor===1&&!hOpen())go(1);};              /* T logo↑ = retour Habits */
 $('sn-next').onclick =()=>{if(!busy&&floor===1&&!hOpen())showNext(true);};
 
+/* ══ HIGHER MAP ══
+   Le monde filtre par ton Totehm : ta position part au serveur, il
+   croise tes intentions avec les lieux de ta zone, il renvoie ce qui
+   te correspond.
+
+   La cle Google vit cote serveur. Une cle dans le front est lisible
+   par tout le monde, et la doctrine dit de payer un lieu une fois
+   puis de l'interroger a l'infini. Tant qu'elle n'est pas posee,
+   higher-map sert les spots deja en base : l'ecran marche avec de
+   vraies donnees, il ne montre jamais un vide. */
+const HM_COLOR = {
+  fight:'#E24B4A', flow:'#EF9F27', enrich:'#BA7517', love:'#639922',
+  express:'#1D9E75', focus:'#378ADD', celebrate:'#7F77DD'
+};
+
+let hmapLoaded = false;
+
+function showMap(on){
+  if(busy) return;
+  $('hmap').classList.toggle('show', on);
+  $('hmap').setAttribute('aria-hidden', on ? 'false' : 'true');
+  if(on && !hmapLoaded) loadMap();
+}
+
+async function loadMap(){
+  const list = $('hm-list'), note = $('hm-note');
+  list.innerHTML = '';
+  note.className = 'note dim';
+  note.textContent = 'reading your Totehm...';
+
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(!session){ note.className='note no'; note.textContent='sign in first'; return; }
+
+    /* La position n'est jamais redemandee : on reutilise le cache
+       pose par cityBoot. Une carte ne doit pas declencher une popup
+       systeme a chaque ouverture. */
+    let coords = null;
+    try{
+      const c = localStorage.getItem('totehm_map_pos_v1');
+      if(c) coords = JSON.parse(c);
+    }catch(e){}
+
+    const r = await fetch(SB_URL + '/functions/v1/higher-map', {
+      method:'POST',
+      headers:{ 'Authorization':'Bearer ' + session.access_token,
+                'Content-Type':'application/json' },
+      body: JSON.stringify(coords ? { lat:coords.lat, lng:coords.lng } : {})
+    });
+
+    if(r.status === 402){
+      note.className='note no';
+      note.textContent='members only';
+      return;
+    }
+    const j = await r.json();
+
+    if(j.reason === 'no_intention'){
+      note.className='note dim';
+      note.textContent='give your habits an intention first';
+      return;
+    }
+
+    const spots = j.spots || [];
+    if(!spots.length){
+      note.className='note dim';
+      note.textContent='nothing around you yet';
+      hmapLoaded = true;
+      return;
+    }
+
+    $('hm-sub').textContent =
+      spots.length + ' places · ' + (j.intentions||[]).join(' · ');
+
+    list.innerHTML = spots.map(s => {
+      const col = HM_COLOR[s.intention] || '#606060';
+      const name = esc(s.activite || s.lieu_type || 'place');
+      const why  = s.commentaire ? '<div class="hm-why">'+esc(s.commentaire)+'</div>' : '';
+      const meta = [s.intention, s.duration_min ? s.duration_min+' min' : null]
+                     .filter(Boolean).join(' · ');
+      return '<div class="hm-spot">'
+           +   '<span class="hm-dot" style="background:'+col+'"></span>'
+           +   '<div class="hm-body">'
+           +     '<div class="hm-name">'+name+'</div>'
+           +     '<div class="hm-meta">'+esc(meta)+'</div>'
+           +     why
+           +   '</div>'
+           + '</div>';
+    }).join('');
+
+    note.textContent = '';
+    hmapLoaded = true;
+
+  }catch(e){
+    console.error('higher-map:', e);
+    note.className='note no';
+    note.textContent='could not load the map';
+  }
+}
+
+/* Le gating vient du SERVEUR : higher-map renvoie 402 si le membership
+   n'est pas actif. requireMember ne verifie que la session, pas
+   l'adhesion — les deux sont necessaires. */
+$('hmap-btn').onclick = requireMember(()=>{ if(!busy) showMap(true); });
+$('hmap-close').onclick = ()=> showMap(false);
+
+document.addEventListener('keydown', e=>{
+  if(e.key === 'Escape' && $('hmap').classList.contains('show')) showMap(false);
+});
+
 /* [Get Higher with my Totehm] : animation d'élévation Higher qui va jusqu'au bout,
    puis ouverture Stoner. C'est le SEUL chemin vers la méthode Stoner. */
 $('btn-get-higher').onclick=()=>{
@@ -2061,6 +2235,10 @@ function cityResolve(silent){
     if(c)cityAllowed(c,true); else cityLocked('no answer from your device — check that location is on');
   },11000);
   navigator.geolocation.getCurrentPosition(async(pos)=>{
+    /* La Higher Map reutilise cette position : une carte ne doit pas
+       declencher une popup systeme a chaque ouverture. */
+    try{ localStorage.setItem('totehm_map_pos_v1', JSON.stringify({
+      lat: pos.coords.latitude, lng: pos.coords.longitude })); }catch(e){}
     clearTimeout(cityGuard);
     const cached=localStorage.getItem(CITY_KEY);
     let city=null;
