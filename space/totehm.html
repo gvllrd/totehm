@@ -717,7 +717,17 @@ body.gate.entered #fv-status{
 <div id="hmap" aria-hidden="true">
   <div id="hmap-in">
     <div class="hm-title">HIGHER MAP</div>
-    <div class="hm-sub" id="hm-sub">around you, through your Totehm</div>
+    <div id="city-block">
+      <div id="city-card">
+        <div id="city-detected"></div>
+        <div id="city-line"></div>
+        <a class="city-cta hide" id="livin-btn" href="https://t.me/TotehmBot" target="_blank" rel="noopener">Make your city match your Totehm</a>
+        <button class="city-cta hide" id="city-enable" type="button">Allow Location</button>
+        <div id="city-fine">By clicking, you accept <a class="terms-link" href="terms.html" target="_blank" rel="noopener">our simple terms</a>.<br>No spam. Every message has a purpose.</div>
+        <div id="city-hint" class="hide"></div>
+      </div>
+      <a class="btn-sig hide" id="streets-btn" href="https://www.totehm.com/lisbon" target="_blank" rel="noopener" style="margin-top:8px">Make the Streets Sublime</a>
+    </div>
     <div id="hm-list"></div>
     <div class="note dim" id="hm-note"></div>
     <button class="btn-sig" id="hmap-close">Back to my Totehm</button>
@@ -763,23 +773,6 @@ body.gate.entered #fv-status{
           <button class="btn-sig" id="vis-btn">Visibility</button>
           <div class="hide" id="vis-panel"><div class="row"><button class="size-btn" id="set-private">Private</button><button class="size-btn" id="set-members">Visible to members</button></div></div>
         </div>
-      </div>
-
-      <div class="set-block" id="city-block">
-        <!-- Carte City, deux états, jamais de demande de géoloc non sollicitée.
-             - Autorisée   : {{city}} + phrase + [Make {{city}} match your Totehm]
-             - Sinon       : Location unavailable + phrase + [Allow Location]
-             La mention légale est la même dans les deux états.
-             Portugal : bouton [Make the Streets Sublime] en plus, hors carte. -->
-        <div id="city-card">
-          <div id="city-detected"></div>
-          <div id="city-line"></div>
-          <a class="city-cta hide" id="livin-btn" href="https://t.me/TotehmBot" target="_blank" rel="noopener">Make your city match your Totehm</a>
-          <button class="city-cta hide" id="city-enable" type="button">Allow Location</button>
-          <div id="city-fine">By clicking, you accept <a class="terms-link" href="terms.html" target="_blank" rel="noopener">our simple terms</a>.<br>No spam. Every message has a purpose.</div>
-          <div id="city-hint" class="hide"></div>
-        </div>
-        <a class="btn-sig hide" id="streets-btn" href="https://www.totehm.com/lisbon" target="_blank" rel="noopener" style="margin-top:8px">Make the Streets Sublime</a>
       </div>
 
       <!-- Curseur PlayStation — visible uniquement dans les Paramètres -->
