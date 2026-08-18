@@ -583,6 +583,8 @@ body.gate.entered #fv-status{
   #side-right .sn-box{background-image:var(--logo-blue)}
   #settings-nav .sn-row{display:none}
   body.in-settings .side-nav{display:none}
+  body.in-map .side-nav{display:none}
+  body.in-map #stage{display:none}
   .sn-label{font-family:'Quantico',sans-serif;font-size:9px;letter-spacing:.04em;color:#fff;text-align:center;line-height:1.35;transition:opacity .2s;display:block;opacity:0}
   .side-nav:hover .sn-label{opacity:1}
   #side-left.home .sn-label,#side-right.home .sn-label{display:none}
@@ -1422,6 +1424,7 @@ function paint(){
   const isSet = floor === 2;
 
   // Higher Map
+  document.body.classList.toggle('in-map', isMap);
   $('hmap').classList.toggle('show', isMap);
   $('hmap').setAttribute('aria-hidden', isMap ? 'false' : 'true');
   if(isMap && !hmapLoaded) loadMap();
@@ -1435,18 +1438,6 @@ function paint(){
     if(isSet) renderSettings(); else renderHabits();
   }
   applyFloorFx(isSet);
-
-  // Map : masque le chrome (le z-index:55 de #hmap couvre tout, mais on
-  // anticipe le fondu pour éviter le flash pendant le .38s d'opacité)
-  // Ne pas ajouter in-settings : déclencherait le layout desk-two Settings
-  if(isMap){
-    $('menu-arrow').style.display   = 'none';
-    $('filter-arrow').style.display = 'none';
-    $('bigT').style.opacity         = '0';
-    $('wordmark').style.opacity     = '0';
-    $('rail').style.opacity         = '0';
-    $('floorview').style.backgroundColor = '#000';
-  }
 }
 
 /* ══ FREQUENCY PANEL ══ */
