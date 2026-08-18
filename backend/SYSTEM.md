@@ -206,7 +206,7 @@ sans rien apporter.
 | Table | Lignes | Rôle |
 |---|---:|---|
 | `profiles` | 1 | pseudo, `telegram_id` — comptes test supprimés le 18/08 |
-| `subscriptions` | 0 | **source unique de l'adhésion** |
+| `subscriptions` | 1 | **source unique de l'adhésion** — wavywah `trialing` (test) |
 | `stripe_events` | 0 | idempotence webhook |
 | `crew_codes` · `crew_attributions` | 0 | Crew Code, attribution définitive |
 | `stoner_access` | 6 | les Fighers (achat unique, `.com`) |
@@ -218,28 +218,37 @@ sans rien apporter.
 **Table morte :** `_deprecated_user_roles_20260803` — à dropper après le
 3 septembre 2026.
 
-### Higher Map — état 18/08/2026
+### Higher Map — état 18/08/2026 (mis à jour)
 
 **Ce n'est pas les spots en base. C'est Google Places + le spectre du Totehm.**
 
 ```
-1. Localisation de l'utilisateur (localStorage totehm_map_pos_v1 — jamais re-demandée)
-2. POST /functions/v1/higher-map → Edge Function higher-map v1
+1. Coords : localStorage totehm_map_pos_v1 si disponible → Lisbonne {38.716,-9.142}
+   par défaut. cityBoot() met à jour le cache silencieusement. Aucune invite GPS
+   dans loadMap() — la carte s'affiche toujours, positionnée sur Lisbonne au pire.
+2. POST /functions/v1/higher-map (v4) — filtrage par steps[].i (clé compacte)
 3. Si GOOGLE_MAPS_API_KEY posée : Google Places Nearby Search (rayon 1 500 m)
-   Sinon : fallback spots table filtrée par intention + triée par proximité
-4. Filtrage par les intentions du Totehm du membre (steps[].intention)
+   Sinon : fallback spots table filtrée par intention + triée par proximité GPS
+4. MapLibre GL JS (CDN, lazy-loaded) + CARTO Dark Matter tiles → carte interactive
+   Fallback si MapLibre échoue : liste horizontale (overflow-x:auto, cards 140 px)
 → Ce que tu vois sur la Map, c'est le monde filtré par qui tu es
 ```
 
-**UI :** `#hmap` dans `space/totehm.html`. Sibling de `#stage`, **jamais à l'intérieur** — `#stage` a un `transform` sur desktop qui en ferait le containing block de `position:fixed` et empêcherait le plein écran.
+**UI :** `#hmap` dans `space/totehm.html`. Sibling de `#stage`, **jamais à l'intérieur** — `#stage` a un `transform` sur desktop qui en ferait le containing block de `position:fixed`.
+
+`body.in-map` cache bigT/wordmark/rail **instantanément** (`transition:none!important`) — règle GLOBALE, hors de tout `@media`. Avant : la règle était dans `@media(min-width:700px)` → résidus visibles sur mobile à chaque swipe.
+
+`hmapLoaded` est réinitialisé à `false` quand on quitte la Map si `#hmap` n'a pas la classe `map-active` (rendu échoué) — permet une nouvelle tentative.
 
 **Membership :** 402 si pas membre, `reason:'no_intention'` si aucune intention posée.
 
-**Secret manquant :** `GOOGLE_MAPS_API_KEY` → sans elle, fallback spots DB actif.
+**Secret manquant :** `GOOGLE_MAPS_API_KEY` → sans elle, fallback spots DB actif (fonctionnel).
+
+**⚠️ `spots.expires_at` :** tous les 125 spots avaient `expires_at = 2026-06-03` — expirés depuis 2 mois, la requête renvoyait 0 lignes. Passés à `NULL` le 18/08. **Ne jamais insérer de spots avec une `expires_at` en dur proche** — utiliser `NULL` pour les spots permanents.
 
 La table `spots` (125 lignes, 2 embeddings) est distincte — ne pas confondre avec la Higher Map.
 
-**Ce qui reste à faire :** MapLibre GL JS, couche romantique, cache two-step Google Places → Supabase.
+**Ce qui reste à faire :** poser `GOOGLE_MAPS_API_KEY` dans Supabase secrets, couche romantique, cache two-step Google Places → Supabase.
 
 ---
 
@@ -304,7 +313,7 @@ Aucune ligne = pas membre. Un abonnement expiré, impayé ou annulé retombe
 | `autobiographiste` | 3 | ✅ | modèle premium, 8 règles, write/revise/accept |
 | `bot-tick` | 3 | ❌ | cron horaire, DONE/MISSED |
 | `bot-reply` | 3 | ❌ | webhook Telegram, **zéro appel IA** |
-| `higher-map` | 1 | ✅ | localisation → Google Places (si clé) ou spots DB ; filtré par intentions du Totehm |
+| `higher-map` | 4 | ✅ | localisation → Google Places (si clé) ou spots DB ; filtré par `steps[].i` |
 
 `verify_jwt=false` sur les webhooks est **normal** : Stripe et Telegram n'ont pas
 de JWT Supabase. La sécurité vient de la signature vérifiée dans le code.
@@ -484,6 +493,13 @@ Functions sont téléchargeables.
 | 18/08 | Filtre : TIME FREQUENCY → étape intention avant fermeture | sans ça, la fenêtre se fermait avant que l'utilisateur ait pu choisir une intention |
 | 18/08 | `GOOGLE_MAPS_API_KEY` absente des secrets Supabase | fallback spots DB actif jusqu'à la pose de la clé |
 | 18/08 | Steps format compact `{f,i,t}` — `higher-map` lisait `s.intention` → `no_intention` toujours | corrigé v4 : `s.i \|\| s.intention` |
+| 18/08 | `spots.expires_at` → NULL pour tous les spots | tous avaient `expires_at = 2026-06-03` → 0 spots depuis 2 mois |
+| 18/08 | `loadMap()` : Lisbonne `{38.716,-9.142}` par défaut, plus de bloc GPS | GPS bloqué = liste sans carte ; Lisbonne couvre les spots en base |
+| 18/08 | `body.in-map #bigT/wordmark/rail` : règle GLOBALE + `transition:none` | était dans `@media(min-width:700px)` → résidus T.svg/wordmark/rail sur mobile |
+| 18/08 | MapLibre GL JS + CARTO Dark Matter tiles — carte interactive opérationnelle | Higher Map v1 front : markers colorés par intention, popup au tap |
+| 18/08 | Liste spots fallback : horizontale (`overflow-x:auto`, cards 140 px) | scroll vertical clashait avec le swipe-floor du Totehm |
+| 18/08 | `.acct-btn` CSS ajouté | bouton Delete my Totehm sans style ni couleur rouge-violet `#743169` |
+| 18/08 | `go()` : suppression du fade 180 ms de `fv-inner` avant `paint()` | le fade rendait fv-inner transparent → bigT visible 180 ms contre le fond navy |
 
 ---
 
