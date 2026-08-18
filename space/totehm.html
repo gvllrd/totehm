@@ -591,7 +591,8 @@ body.gate.entered #fv-status{
     transform:translateY(-50%) scale(0);
     opacity:0;pointer-events:none}
   body.in-map #bigT,body.in-map #wordmark,body.in-map #rail{
-    opacity:0;transition:opacity .38s ease}
+    opacity:0!important;transition:opacity .38s ease}
+  body.in-map #menu-arrow,body.in-map #filter-arrow{display:none!important}
   .sn-label{font-family:'Quantico',sans-serif;font-size:9px;letter-spacing:.04em;color:#fff;text-align:center;line-height:1.35;transition:opacity .2s;display:block;opacity:0}
   .side-nav:hover .sn-label{opacity:1}
   #side-left.home .sn-label,#side-right.home .sn-label{display:none}
@@ -1400,15 +1401,14 @@ function renderSettings(){
   }
 }
 
-function applyFloorFx(isSet,isMap){
-  const hide=isSet||isMap;
-  $('floorview').style.backgroundColor=hide?'#000':'transparent';
+function applyFloorFx(isSet){
+  $('floorview').style.backgroundColor=isSet?'#000':'transparent';
   {const st=$('stage');if(st)st.classList.toggle('z-set',isSet);}
-  $('rail').style.opacity=hide?'0':'1';
-  $('bigT').style.opacity=hide?'0':'1';
-  $('wordmark').style.opacity=hide?'0':'1';
-  $('menu-arrow').style.display=hide?'none':'';
-  $('filter-arrow').style.display=hide?'none':'';
+  $('rail').style.opacity=isSet?'0':'1';
+  $('bigT').style.opacity=isSet?'0':'1';
+  $('wordmark').style.opacity=isSet?'0':'1';
+  $('menu-arrow').style.display=isSet?'none':'';
+  $('filter-arrow').style.display=isSet?'none':'';
   $('conn-bar').style.display=isSet?'flex':'none';
   document.body.classList.toggle('in-settings',isSet);
   if(isSet)renderSettings();else renderHabits();
@@ -1440,7 +1440,7 @@ function paint(){
     $('fv-inner').classList.toggle('menu-mode', isSet);
     if(isSet) renderSettings(); else renderHabits();
   }
-  applyFloorFx(isSet,isMap);
+  applyFloorFx(isSet);
 }
 
 /* ══ FREQUENCY PANEL ══ */
