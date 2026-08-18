@@ -116,7 +116,7 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
   padding:13px 0}
 /* Carre, pas rond : la doctrine interdit border-radius, et l'esthetique
    TOTEHM est faite d'angles durs. Le point porte l'intention. */
-.hm-dot{width:7px;height:7px;flex-shrink:0;margin-top:6px}
+.hm-dot{width:7px;height:7px;flex-shrink:0}
 .hm-body{flex:1;min-width:0}
 .hm-name{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
   color:#b0b0b0;line-height:1.45;transition:color .15s ease}
@@ -126,7 +126,11 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
   line-height:1.5;margin-top:4px;transition:color .15s ease}
 /* Separation par l'espace, pas par un trait : « border-bottom seul »
    fait partie des interdits. */
-#hm-list{display:flex;flex-direction:column;gap:4px}
+#hm-list{display:flex;flex-direction:row;gap:20px;overflow-x:auto;
+  padding:4px 0 16px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+#hm-list::-webkit-scrollbar{display:none}
+.hm-spot{display:flex;flex-direction:column;align-items:flex-start;gap:5px;
+  flex-shrink:0;width:140px;padding:0;text-align:left}
 
 /* Desktop : tout gris passe en blanc au survol. Regle transverse. */
 @media(hover:hover){
@@ -2052,61 +2056,43 @@ async function loadMap(){
     const { data:{ session } }=await sb.auth.getSession();
     if(!session){ note.className='note no'; note.textContent='[1] not signed in'; return; }
 
-    /* Coords : cache localStorage en priorité, sinon demande directe. */
-    let coords=null;
+    /* Coords : cache GPS si disponible, Lisbonne par défaut sinon.
+       cityBoot() met à jour le cache silencieusement. */
+    let coords={lat:38.716,lng:-9.142};
     try{ const c=localStorage.getItem('totehm_map_pos_v1'); if(c) coords=JSON.parse(c); }catch(e){}
 
-    if(!coords && navigator.geolocation){
-      note.textContent='[2] locating...';
-      coords=await new Promise(resolve=>{
-        navigator.geolocation.getCurrentPosition(
-          pos=>{
-            const c={lat:pos.coords.latitude,lng:pos.coords.longitude};
-            try{localStorage.setItem('totehm_map_pos_v1',JSON.stringify(c));}catch(e){}
-            resolve(c);
-          },
-          (err)=>{ note.textContent='[2] geo blocked: '+err.code; resolve(null); },
-          {timeout:10000,maximumAge:600000}
-        );
-      });
-    } else if(!coords){
-      note.textContent='[2] no geolocation';
-    }
-
-    note.textContent='[3] fetching spots'+(coords?' with location':'')+'...';
+    note.textContent='[2] fetching spots...';
     const r=await fetch('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/higher-map',{
       method:'POST',
       headers:{'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json'},
       body:JSON.stringify(coords?{lat:coords.lat,lng:coords.lng}:{})
     });
 
-    note.textContent='[3] status '+r.status;
+    note.textContent='[3] '+r.status;
     if(r.status===402){ note.className='note no'; note.textContent='[3] members only'; return; }
     const j=await r.json();
 
     if(j.reason==='no_intention'){ note.className='note dim'; note.textContent='[3] no intention on habits'; return; }
 
     const spots=j.spots||[], intentions=j.intentions||[];
-    note.textContent='[4] '+spots.length+' spots'+(coords?', rendering map...':', list mode');
+    note.textContent='[4] '+spots.length+' spots, rendering map...';
 
     if(!spots.length){ note.className='note dim'; note.textContent='[4] nothing around you yet'; hmapLoaded=true; return; }
 
-    if(coords){
-      try{
-        note.textContent='[5] loading MapLibre...';
-        await loadMapLibre();
-        note.textContent='[5] initializing map...';
-        renderMapLibre(coords, spots);
-        const sub=$('hm-sub');
-        if(sub) sub.textContent=spots.length+' places · '+intentions.join(' · ');
-        hmapLoaded=true;
-        return;
-      }catch(mapErr){
-        note.className='note no';
-        note.textContent='[5] map error: '+(mapErr&&mapErr.message||mapErr);
-        $('hmap').classList.remove('map-active');
-        if(_mapInstance){ try{_mapInstance.remove();}catch(e){} _mapInstance=null; }
-      }
+    try{
+      note.textContent='[5] loading MapLibre...';
+      await loadMapLibre();
+      note.textContent='[5] initializing map...';
+      renderMapLibre(coords, spots);
+      const sub=$('hm-sub');
+      if(sub) sub.textContent=spots.length+' places · '+intentions.join(' · ');
+      hmapLoaded=true;
+      return;
+    }catch(mapErr){
+      note.className='note no';
+      note.textContent='[5] map error: '+(mapErr&&mapErr.message||mapErr);
+      $('hmap').classList.remove('map-active');
+      if(_mapInstance){ try{_mapInstance.remove();}catch(e){} _mapInstance=null; }
     }
 
     renderHmList(spots, intentions);
