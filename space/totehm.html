@@ -2037,7 +2037,7 @@ async function loadMap(){
     let coords=null;
     try{ const c=localStorage.getItem('totehm_map_pos_v1'); if(c) coords=JSON.parse(c); }catch(e){}
 
-    const r=await fetch(SB_URL+'/functions/v1/higher-map',{
+    const r=await fetch('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/higher-map',{
       method:'POST',
       headers:{'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json'},
       body:JSON.stringify(coords?{lat:coords.lat,lng:coords.lng}:{})
