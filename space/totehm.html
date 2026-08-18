@@ -567,7 +567,7 @@ body.gate.entered #fv-status{
   .side-nav{display:flex;flex-direction:column;align-items:center;
     position:fixed;top:50%;transform:translateY(-50%);
     background:none;border:none;cursor:pointer;padding:0;gap:7px;z-index:12;
-    -webkit-tap-highlight-color:transparent;transition:opacity .2s}
+    -webkit-tap-highlight-color:transparent;transition:opacity .2s,transform .38s ease}
   .side-nav:hover{opacity:.72}
   .sn-box{display:flex;align-items:center;justify-content:center;
     width:var(--side);height:var(--side);
@@ -583,8 +583,15 @@ body.gate.entered #fv-status{
   #side-right .sn-box{background-image:var(--logo-blue)}
   #settings-nav .sn-row{display:none}
   body.in-settings .side-nav{display:none}
-  body.in-map .side-nav{display:none}
-  body.in-map #stage{display:none}
+  body.in-map #stage{
+    transform:translate(-50%,-50%) scale(0);
+    opacity:0;pointer-events:none;
+    transition:transform .38s ease,opacity .38s ease}
+  body.in-map .side-nav{
+    transform:translateY(-50%) scale(0);
+    opacity:0;pointer-events:none}
+  body.in-map #bigT,body.in-map #wordmark,body.in-map #rail{
+    opacity:0;transition:opacity .38s ease}
   .sn-label{font-family:'Quantico',sans-serif;font-size:9px;letter-spacing:.04em;color:#fff;text-align:center;line-height:1.35;transition:opacity .2s;display:block;opacity:0}
   .side-nav:hover .sn-label{opacity:1}
   #side-left.home .sn-label,#side-right.home .sn-label{display:none}
