@@ -134,6 +134,19 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
   .hm-spot:hover .hm-why{color:#fff}
 }
 
+/* Nav logo — identique à #sn-home dans Settings */
+#hmap-nav{
+  background:none;border:6px solid transparent;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:8px 0 4px;-webkit-tap-highlight-color:transparent
+}
+#hmap-nav .chev{width:22px;height:13px;color:rgba(255,255,255,.55);
+  fill:none;stroke:currentColor;stroke-width:1.2;
+  stroke-linecap:round;stroke-linejoin:round;transition:color .15s}
+#hmap-nav img{width:54px;height:auto;display:block}
+@media(hover:hover){#hmap-nav:hover .chev{color:#fff}}
+#hmap-nav:active .chev{color:#fff}
+
 #hmap-close{margin-top:6px}
 
 /* ── MODE CARTE — map-active ────────────────────────────────────────────── */
@@ -151,12 +164,13 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
   display:flex;flex-direction:column;justify-content:flex-start
 }
 
-/* Bandeau haut : gradient noir → transparent sur le titre + sous-titre */
-#hmap.map-active .hm-title{
-  padding:22px 22px 4px;
+/* Bandeau haut : logo nav avec gradient, titre masqué (logo le remplace) */
+#hmap.map-active #hmap-nav{
+  padding:16px 22px 4px;
   background:linear-gradient(to bottom,rgba(0,0,0,.78) 0%,rgba(0,0,0,.18) 100%);
-  pointer-events:none
+  pointer-events:auto
 }
+#hmap.map-active .hm-title{display:none}
 #hmap.map-active #hm-sub{
   padding:0 22px 28px;
   background:linear-gradient(to bottom,rgba(0,0,0,.18) 0%,transparent 100%);
@@ -925,6 +939,11 @@ body.gate.entered #fv-status{
 
   <!-- mode liste (fallback) + overlay map -->
   <div id="hmap-in">
+    <!-- Logo nav — retour au Totehm, identique à #sn-home dans Settings -->
+    <button id="hmap-nav" type="button" aria-label="Back to my Totehm">
+      <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
+      <img src="assets/img/totehm_logo.png" alt="My Totehm">
+    </button>
     <div class="hm-title">HIGHER MAP</div>
     <div class="hm-sub" id="hm-sub">around you, through your Totehm</div>
     <div id="city-block">
@@ -940,7 +959,7 @@ body.gate.entered #fv-status{
     </div>
     <div id="hm-list"></div>
     <div class="note dim" id="hm-note"></div>
-    <button class="btn-sig" id="hmap-close">Back to my Totehm</button>
+    <button class="btn-sig" id="hmap-close">Login</button>
   </div>
 </div>
 
@@ -2079,13 +2098,17 @@ async function loadMap(){
   }
 }
 
-/* Le gating vient du SERVEUR : higher-map renvoie 402 si le membership
-   n'est pas actif. requireMember ne vérifie que la session, pas
-   l'adhésion — les deux sont nécessaires. */
-$('hmap-close').onclick = ()=> go(1);  /* Map → Habits */
+/* Logo nav : retour Habits direct, toujours disponible */
+$('hmap-nav').onclick = ()=>{ floor=0; paint(); };
+
+/* Login : ouvre le panneau compte/connexion */
+$('hmap-close').onclick = ()=>{
+  $('member-window').classList.add('show');
+  if(typeof memberPaint==='function') memberPaint();
+};
 
 document.addEventListener('keydown', e=>{
-  if(e.key === 'Escape' && $('hmap').classList.contains('show')) showMap(false);
+  if(e.key === 'Escape' && $('hmap').classList.contains('show')){ floor=0; paint(); }
 });
 
 /* [Get Higher with my Totehm] : animation d'élévation Higher qui va jusqu'au bout,
