@@ -1571,7 +1571,8 @@ function applyFreq(id){
   if(fpTarget==null||!FREQ_BY_ID[id]){closeFreqPanel();return;}
   if(fpTarget==='filter'){
     filterF=id;
-    closeFreqPanel();updateFilterBadge();renderHabits();
+    $('fp-skip').textContent='any intention';
+    showFpStage('int');
     return;
   }
   if(fpTarget==='new'){
@@ -1589,6 +1590,7 @@ function applyFreq(id){
 /* étape 2 : l'intention colore le T et se pose à côté de la fréquence */
 function applyIntent(id){
   if(fpTarget==='new'){pendingI=id;closeFreqPanel();renderHabits();const na=$('h-add');if(na)na.focus();return;}
+  if(fpTarget==='filter'){filterI=id;closeFreqPanel();updateFilterBadge();renderHabits();return;}
   if(state.habits[fpTarget]){const prevI=state.habits[fpTarget].i;state.habits[fpTarget].i=id;save();if(prevI!==id)logTotehmEvent('intention_changed',state.habits[fpTarget].t,{from:prevI||null,to:id||null});}
   closeFreqPanel();renderHabits();
 }
