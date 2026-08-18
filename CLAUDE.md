@@ -214,6 +214,11 @@ padding: 0 6px; text-align: center; caret-color: var(--coral);
 Ne jamais introduire : `border-radius` · `box-shadow` décoratif ·
 placeholder coloré · `border-bottom` seul · animation d'entrée sur un input.
 
+**Boxe perforée au survol — règle absolue**
+La bordure `border-image` suit la taille du contenu. Un bouton ou lien perforé
+doit avoir `display:inline-block` (ou `inline-flex`) et `width:fit-content` — jamais
+`width:100%` sauf intention explicite. La boxe couvre le texte, pas la colonne.
+
 **Layout — règles générales**
 - Contenu centré (`margin: 0 auto`, `text-align: center`, `align-items: center`)
 - Pas de bordure sur les conteneurs, cards, sections

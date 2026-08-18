@@ -180,7 +180,6 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 /* Masqués en mode carte : liste et note */
 #hmap.map-active #hm-list,
 #hmap.map-active #hm-note,
-#hmap.map-active #city-block{display:none}
 
 /* Bandeau bas : poussé au fond par margin-top:auto, gradient + bouton retour */
 #hmap.map-active #hmap-close{
@@ -373,54 +372,8 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 @media(hover:hover){.size-btn:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
 .size-btn:active,.size-btn.on{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
 .bot-txt{font-family:var(--futura);font-weight:300;font-size:12px;color:var(--g-mid);line-height:1.6;text-align:center;max-width:320px}
-.city-lead{font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:#fff;line-height:1.5;text-align:center;max-width:340px;padding:6px 0 2px}
-/* Bloc "ville renseignée" : nom en gros + phrase conditionnelle + bouton Livin */
-#city-block{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;padding:6px 0}
-/* Box bleue perforée regroupant : ville détectée + phrase + [My Livin' Totehm].
-   Réutilise le même bord perforé que .btn-sig.claimed pour cohérence visuelle. */
-#city-card{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:340px;border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;padding:14px 18px;text-align:center}
-#city-card #city-detected{color:#fff;font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;letter-spacing:0}
-#city-card #city-detected.can-refresh{cursor:pointer}
-#city-card #city-detected.can-refresh:hover{opacity:.75}
-#city-card #city-detected:empty{display:none}
-#city-card #city-line{color:rgba(255,255,255,.85);font-family:'Quantico',sans-serif;font-size:12px;line-height:1.5}
-#city-card #livin-btn{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;text-decoration:none;padding:0 4px;line-height:1.5;margin-top:4px}
-
-/* CTA de la carte City. Coral = actionnable, et rien d'autre (charte).
-   Quantico coral -> blanc pur au survol, comme partout ailleurs. */
-.city-cta{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:rgba(255,255,255,.65);
-  background:none;border:none;padding:0 4px;line-height:1.5;margin-top:4px;
-  text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .2s ease}
-.city-cta:hover,.city-cta:focus{color:#fff;outline:none}
-.city-cta:disabled{opacity:.5;cursor:default}
-
-/* La mention légale : présente, lisible, mais volontairement en retrait.
-   Elle appartient à la carte, ce n'est pas un écran de consentement. */
-#city-card #city-fine{font-family:var(--futura);font-weight:300;font-size:11px;line-height:1.6;
-  color:rgba(255,255,255,.65);max-width:292px;margin-top:7px}
-/* Seulement si le navigateur a mémorisé un refus : sinon on n'en parle pas. */
-/* « our simple terms » : souligné, dans le gris de la mention, blanc au survol. */
 .terms-link{color:inherit;text-decoration:underline;text-underline-offset:2px;transition:color .2s ease}
 .terms-link:hover,.terms-link:focus{color:#fff;outline:none}
-#city-card #city-hint{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.11em;
-  text-transform:uppercase;color:rgba(255,255,255,.5);line-height:1.6;margin-top:5px;max-width:280px}
-/* Le passage d'un état à l'autre reprend le fondu maison (0.38s). */
-/* Gestion du compte. Le rouge est celui des Répulsions (--rep) : dans la
-   charte c'est la couleur de ce qui brûle, pas une alerte système. */
-#acct{display:flex;flex-direction:column;align-items:center;gap:9px;width:100%;max-width:340px}
-.acct-btn{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;
-  background:none;cursor:pointer;border:none;
-  color:var(--rep);padding:0 8px;line-height:1.6;-webkit-tap-highlight-color:transparent;
-  transition:opacity .2s}
-.acct-btn:hover{opacity:.78}
-.acct-btn[disabled]{opacity:.5;cursor:default}
-.acct-btn.armed{color:#fff;font-weight:700}
-#acct .acct-warn{font-family:var(--futura);font-weight:300;font-size:11px;line-height:1.6;
-  color:rgba(255,255,255,.55);text-align:center;max-width:300px}
-#acct .acct-note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.11em;
-  text-transform:uppercase;color:rgba(255,255,255,.55);text-align:center}
-#city-card{transition:opacity .38s ease}
-#city-card.city-swap{opacity:0}
 .bot-txt b{color:var(--g-light);font-weight:700}
 
 /* Search a Totehm : le pattern morph d'index.html */
@@ -547,6 +500,8 @@ body:not(.gate) #gate{display:none}
    pour le decouvrir. get_higher.html accepte un visiteur sans session — il
    affiche le prix et ne demande le compte qu'au moment de payer. */
 #gate-open{margin-top:0;transition:opacity .25s ease}
+.gate-terms{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;color:rgba(255,255,255,.28);text-align:center;margin:6px 0 0;transition:opacity .25s ease}
+.gate-terms .terms-link{color:inherit;text-decoration:underline}
 
 /* ══ ÉTAT 2 — LA DÉCONSTRUCTION ══
    Les valeurs --tf-* sont mesurées une fois en JS (positions réelles de l'UI)
@@ -557,6 +512,7 @@ body.gate.entered #gl-wm  {transform:var(--tf-wm,translateY(40vh))}
 body.gate.entered #gl-rail{transform:var(--tf-rail,translateX(-30vw))}
 body.gate.entered #gate-enter,
 body.gate.entered #gate-open,
+body.gate.entered .gate-terms,
 body.gate.entered #gate-bottom,
 body.gate.entered #gate-attention{opacity:0;pointer-events:none}
 
@@ -590,8 +546,8 @@ body.gate.entered #fv-status{
 #gate-search-input{width:min(320px,82vw);min-width:0;font-size:15px}
 /* ── Desktop : texte gris → blanc au survol ── */
 @media(hover:hover){
-  .set-note,.bot-txt,.acct-warn,.acct-note,.hp-lbl,.hp-def,.fp-int .df,.mw-mail,.mw-body,.city-line,.city-hint,.att-txt{transition:color .15s}
-  .set-note:hover,.bot-txt:hover,.acct-warn:hover,.acct-note:hover,.hp-lbl:hover,.hp-def:hover,.fp-int .df:hover,.mw-mail:hover,.mw-body:hover,.city-line:hover,.city-hint:hover,.att-txt:hover{color:#fff}
+  .set-note,.bot-txt,.acct-warn,.acct-note,.hp-lbl,.hp-def,.fp-int .df,.mw-mail,.mw-body,.att-txt{transition:color .15s}
+  .set-note:hover,.bot-txt:hover,.acct-warn:hover,.acct-note:hover,.hp-lbl:hover,.hp-def:hover,.fp-int .df:hover,.mw-mail:hover,.mw-body:hover,.att-txt:hover{color:#fff}
 }
 /* ── Settings nav: tuiles perforées ── */
 .sn-tile{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;flex-shrink:0;background:0 0/100% 100% no-repeat}
@@ -780,6 +736,7 @@ body.gate.entered #fv-status{
     <span class="att-txt">Everything you do in your Totehm writes your biography.</span>
   </div>
   <button class="btn-sig" id="gate-open">Open my Totehm</button>
+  <p class="gate-terms">By opening your Totehm, you accept <a class="terms-link" href="terms.html" target="_blank" rel="noopener">its simple terms</a>.</p>
   <div id="gate-bottom">
     <input class="line-input" id="gate-search-input" maxlength="24" placeholder="search a Totehm" autocomplete="off" spellcheck="false">
     <div class="note dim hide" id="gate-search-note"></div>
@@ -944,19 +901,7 @@ body.gate.entered #fv-status{
       <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
       <img src="assets/img/totehm_logo.png" alt="My Totehm">
     </button>
-    <div class="hm-title">HIGHER MAP</div>
     <div class="hm-sub" id="hm-sub">around you, through your Totehm</div>
-    <div id="city-block">
-      <div id="city-card">
-        <div id="city-detected"></div>
-        <div id="city-line"></div>
-        <a class="city-cta hide" id="livin-btn" href="https://t.me/TotehmBot" target="_blank" rel="noopener">Make your city match your Totehm</a>
-        <button class="city-cta hide" id="city-enable" type="button">Allow Location</button>
-        <div id="city-fine">By clicking, you accept <a class="terms-link" href="terms.html" target="_blank" rel="noopener">our simple terms</a>.<br>No spam. Every message has a purpose.</div>
-        <div id="city-hint" class="hide"></div>
-      </div>
-      <a class="btn-sig hide" id="streets-btn" href="https://www.totehm.com/lisbon" target="_blank" rel="noopener" style="margin-top:8px">Make the Streets Sublime</a>
-    </div>
     <div id="hm-list"></div>
     <div class="note dim" id="hm-note"></div>
     <button class="btn-sig" id="hmap-close">Login</button>
@@ -2318,11 +2263,6 @@ $('vis-btn').onclick=requireMember(()=>{
   $('vis-panel').classList.remove('hide');
 });
 
-/* My Livin' Totehm : réservé aux membres.
-   L'ancre est laissée telle quelle pour l'accessibilité ; le handler intercepte le clic. */
-$('livin-btn').addEventListener('click',(e)=>{
-  if(!me){e.preventDefault();$('member-window').classList.add('show');if(typeof memberPaint==='function')memberPaint();}
-});
 /* Peint le bouton Name selon l'état :
    - nom claimed  -> bouton avec le nom et look perforé bleu figé
    - pas de nom   -> bouton neutre "Name of my Totehm" */
@@ -2380,159 +2320,49 @@ $('set-name').addEventListener('keydown',async e=>{
 $('set-private').onclick=()=>{state.vis='private';save();renderSettings();};
 $('set-members').onclick=()=>{state.vis='members';save();renderSettings();};
 
-/* ══ CITY ══════════════════════════════════════════════════════════════════
-   Deux états, et une règle : on ne déclenche JAMAIS la demande de
-   géolocalisation sans que l'utilisateur ait cliqué. L'ancienne version la
-   lançait à l'ouverture des Paramètres, ce qui faisait surgir la popup
-   navigateur sans contexte — le meilleur moyen de se faire refuser.
-
-     autorisée      -> {{city}} + [Make {{city}} match your Totehm]
-     sinon          -> Location unavailable + [Allow Location]
-
-   La ville résolue est mémorisée : au retour, l'état 1 s'affiche tout de
-   suite, et on rafraîchit en arrière-plan sans jamais representer de popup. */
+/* ══ CITY (headless) ════════════════════════════════════════════════════════
+   Pas d'UI city-block. On cache silencieusement la position GPS dès que la
+   permission est déjà accordée — la Higher Map la réutilise sans popup. */
 const CITY_KEY='totehm_city_v1';
-/* Nominatim renvoie aussi le centre de l'entite matchee. A zoom=10 c'est la
-   ville, pas l'appareil : une capture d'ecran des Parametres ne trahit donc
-   pas le quartier de qui l'a prise. C'est ce point que la carte utilisera. */
 const CITY_LL='totehm_city_ll_v1';
-const TERMS_LINK='<a class="terms-link" href="terms.html" target="_blank" rel="noopener">our simple terms</a>';
-let cityBooted=false, cityBusy=false, cityGuard=0;
+let cityBooted=false, cityBusy=false;
 
-function citySwap(fn){
-  const card=$('city-card');
-  card.classList.add('city-swap');
-  setTimeout(()=>{ fn(); card.classList.remove('city-swap'); },380);
-}
-
-function cityAllowed(city,stale){
-  $('city-detected').textContent=city;
-  /* Memorisee et non reconfirmee : on la montre quand meme — mieux vaut la
-     derniere ville connue qu'un « Location unavailable » mensonger — mais on
-     la rend cliquable pour la reprendre. */
-  $('city-detected').classList.toggle('can-refresh',!!stale);
-  $('city-detected').title = stale ? 'tap to update' : '';
-  $('city-line').textContent='Get places and events aligned with your Totehm.';
-  $('livin-btn').textContent='Make '+city+' match your Totehm';
-  $('livin-btn').classList.remove('hide');
-  $('city-enable').classList.add('hide');
-  $('city-hint').classList.add('hide');
-  $('city-fine').innerHTML='By clicking, you accept '+TERMS_LINK+'.<br>No spam. Every message has a purpose.';
-}
-
-function cityLocked(hint){
-  $('city-detected').textContent='Location unavailable';
-  $('city-line').textContent='Enable location to discover places and events aligned with your Totehm.';
-  $('livin-btn').classList.add('hide');
-  $('city-enable').classList.remove('hide');
-  $('city-enable').disabled=false;
-  $('city-enable').textContent='Allow Location';
-  $('city-fine').innerHTML='By clicking, you accept '+TERMS_LINK+'.<br>No bullshit notifications. Your city starts playing by your rules.';
-  const h=$('city-hint');
-  if(hint){h.textContent=hint;h.classList.remove('hide');}else{h.classList.add('hide');}
-}
-
-/* Résout la ville. `silent` = on sait déjà l'autorisation acquise, donc aucune
-   popup ne peut surgir : on peut appeler sans geste utilisateur. */
-function cityResolve(silent){
-  if(cityBusy)return; cityBusy=true;
-  if(!navigator.geolocation){cityBusy=false;cityLocked('this browser has no location support');return;}
-  if(!silent){$('city-enable').disabled=true;$('city-enable').textContent='locating\u2026';}
-  /* Certains navigateurs ne rappellent ni le succes ni l'erreur quand le
-     service de localisation est coupe au niveau de l'OS. Sans ce filet,
-     cityBusy reste vrai et le bouton est mort jusqu'au rechargement. */
-  clearTimeout(cityGuard);
-  cityGuard=setTimeout(()=>{
-    if(!cityBusy)return;
-    cityBusy=false;
-    const c=localStorage.getItem(CITY_KEY);
-    if(c)cityAllowed(c,true); else cityLocked('no answer from your device — check that location is on');
-  },11000);
-  navigator.geolocation.getCurrentPosition(async(pos)=>{
-    /* La Higher Map reutilise cette position : une carte ne doit pas
-       declencher une popup systeme a chaque ouverture. */
-    try{ localStorage.setItem('totehm_map_pos_v1', JSON.stringify({
-      lat: pos.coords.latitude, lng: pos.coords.longitude })); }catch(e){}
-    clearTimeout(cityGuard);
-    const cached=localStorage.getItem(CITY_KEY);
-    let city=null;
-    try{
-      const {latitude:lat,longitude:lng}=pos.coords;
-      const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&accept-language=en`,{headers:{'Accept':'application/json'}});
-      const d=await r.json();
-      const addr=d.address||{};
-      city=addr.city||addr.town||addr.village||addr.municipality||addr.county||null;
-      portugalDetected=((addr.country_code||'').toLowerCase()==='pt');
-      paintStreet();
-      if(city){
-        try{
-          localStorage.setItem(CITY_KEY,city);
-          if(d.lat&&d.lon) localStorage.setItem(CITY_LL,d.lat+','+d.lon);
-        }catch(e){}
-      }
-    }catch(e){ /* reverse-geocoding muet : on ne fabrique pas un nom de ville */ }
-    cityBusy=false;
-    if(city){
-      if(silent) cityAllowed(city,false); else citySwap(()=>cityAllowed(city,false));
-    }else if(cached){
-      /* La position est connue, le nom non. Afficher « your city » ferait
-         passer un echec pour un succes : on montre la derniere ville reelle. */
-      if(silent) cityAllowed(cached,true); else citySwap(()=>cityAllowed(cached,true));
-    }else{
-      cityLocked("couldn't name your city — try again in a moment");
-    }
-  },(err)=>{
-    clearTimeout(cityGuard);
-    cityBusy=false;
-    /* Un refus mémorisé ne redéclenche aucune popup : le bouton semblerait
-       cassé si on ne le disait pas. */
-    cityLocked(err && err.code===1
-      ? 'blocked by your browser — re-enable location in the site settings'
-      : "couldn't reach your position — try again");
-  },{timeout:8000,maximumAge:3600000});
-}
-
-$('city-enable').onclick=()=>cityResolve(false);
-
-/* À l'entrée dans les Paramètres : on lit l'état de la permission, on ne la
-   demande pas. Sans l'API Permissions (vieux Safari), on reste en état 2 —
-   le clic reste le seul chemin vers la popup. */
 async function cityBoot(){
   if(cityBooted)return; cityBooted=true;
-  const cached=localStorage.getItem(CITY_KEY);
-  /* Ce qu'on sait deja s'affiche immediatement. L'ancien code n'affichait la
-     ville memorisee que si l'API Permissions repondait 'granted' — or Safari
-     ne l'expose pas pour la geolocalisation avant la 16, et pas partout
-     ensuite. Resultat : « Location unavailable » sur une ville pourtant
-     connue, a chaque visite. L'API n'est plus qu'une optimisation. */
-  if(cached) cityAllowed(cached,true); else cityLocked(null);
+  if(!navigator.geolocation)return;
   let perm=null;
   try{
     if(navigator.permissions&&navigator.permissions.query)
       perm=(await navigator.permissions.query({name:'geolocation'})).state;
   }catch(e){}
-  if(perm==='granted'){ cityResolve(true); return; }
-  if(perm==='denied'&&!cached)
-    cityLocked('blocked by your browser — re-enable location in the site settings');
-  /* 'prompt', ou pas d'API du tout : on ne demande rien sans geste. Le bouton
-     est la, et le nom de la ville memorisee est cliquable pour la reprendre. */
+  if(perm!=='granted')return;
+  if(cityBusy)return; cityBusy=true;
+  navigator.geolocation.getCurrentPosition(async(pos)=>{
+    try{ localStorage.setItem('totehm_map_pos_v1', JSON.stringify({
+      lat: pos.coords.latitude, lng: pos.coords.longitude })); }catch(e){}
+    try{
+      const {latitude:lat,longitude:lng}=pos.coords;
+      const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&accept-language=en`,{headers:{'Accept':'application/json'}});
+      const d=await r.json();
+      const addr=d.address||{};
+      const city=addr.city||addr.town||addr.village||addr.municipality||addr.county||null;
+      portugalDetected=((addr.country_code||'').toLowerCase()==='pt');
+      paintStreet();
+      if(city) try{
+        localStorage.setItem(CITY_KEY,city);
+        if(d.lat&&d.lon) localStorage.setItem(CITY_LL,d.lat+','+d.lon);
+      }catch(e){}
+    }catch(e){}
+    cityBusy=false;
+  },()=>{ cityBusy=false; },{timeout:8000,maximumAge:3600000});
 }
-$('city-detected').onclick=()=>{
-  if($('city-detected').classList.contains('can-refresh'))cityResolve(false);
-};
 
-/* La lecture d'état démarrait à l'entrée dans le menu : le nom de ville et
-   le bouton n'apparaissaient qu'après coup, une fois l'aller-retour réseau
-   terminé sous les yeux de l'utilisateur. On la lance au chargement — le
-   cache localStorage s'affiche alors instantanément, et la permission est
-   déjà résolue quand on arrive dans les réglages. */
 const _origPaint=paint;
 paint=function(){_origPaint();if(floor===1)cityBoot();};
 if(document.readyState==='loading')
   document.addEventListener('DOMContentLoaded',()=>cityBoot());
 else
   cityBoot();
-
 /* ══ SEARCH A TOTEHM — le pattern morph d'index.html ══ */
 /* réseau démo pour le mode guest */
 const NETWORK=[
