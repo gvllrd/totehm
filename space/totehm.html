@@ -713,29 +713,6 @@ body.gate.entered #fv-status{
 <div id="book"><iframe id="book-frame" title="Book of My Totehm"></iframe></div>
 <div id="nextobj"><iframe id="nextobj-frame" title="Next Objective"></iframe></div>
 
-<!-- Higher Map : le monde filtre par ton Totehm. Extension monde du
-     PRESENT, donc ici et pas dans une page a part. -->
-<div id="hmap" aria-hidden="true">
-  <div id="hmap-in">
-    <div class="hm-title">HIGHER MAP</div>
-    <div class="hm-sub" id="hm-sub">around you, through your Totehm</div>
-    <div id="city-block">
-      <div id="city-card">
-        <div id="city-detected"></div>
-        <div id="city-line"></div>
-        <a class="city-cta hide" id="livin-btn" href="https://t.me/TotehmBot" target="_blank" rel="noopener">Make your city match your Totehm</a>
-        <button class="city-cta hide" id="city-enable" type="button">Allow Location</button>
-        <div id="city-fine">By clicking, you accept <a class="terms-link" href="terms.html" target="_blank" rel="noopener">our simple terms</a>.<br>No spam. Every message has a purpose.</div>
-        <div id="city-hint" class="hide"></div>
-      </div>
-      <a class="btn-sig hide" id="streets-btn" href="https://www.totehm.com/lisbon" target="_blank" rel="noopener" style="margin-top:8px">Make the Streets Sublime</a>
-    </div>
-    <div id="hm-list"></div>
-    <div class="note dim" id="hm-note"></div>
-    <button class="btn-sig" id="hmap-close">Back to my Totehm</button>
-  </div>
-</div>
-
 <div id="floorview" class="sink-el">
   <div id="fv-inner">
     <div id="habits"></div>
@@ -842,6 +819,30 @@ body.gate.entered #fv-status{
 
 
 </div><!-- /#stage -->
+
+<!-- Higher Map : hors de #stage — #stage a un transform sur desktop qui en
+     ferait le containing block de position:fixed et empêcherait le plein écran. -->
+<div id="hmap" aria-hidden="true">
+  <div id="hmap-in">
+    <div class="hm-title">HIGHER MAP</div>
+    <div class="hm-sub" id="hm-sub">around you, through your Totehm</div>
+    <div id="city-block">
+      <div id="city-card">
+        <div id="city-detected"></div>
+        <div id="city-line"></div>
+        <a class="city-cta hide" id="livin-btn" href="https://t.me/TotehmBot" target="_blank" rel="noopener">Make your city match your Totehm</a>
+        <button class="city-cta hide" id="city-enable" type="button">Allow Location</button>
+        <div id="city-fine">By clicking, you accept <a class="terms-link" href="terms.html" target="_blank" rel="noopener">our simple terms</a>.<br>No spam. Every message has a purpose.</div>
+        <div id="city-hint" class="hide"></div>
+      </div>
+      <a class="btn-sig hide" id="streets-btn" href="https://www.totehm.com/lisbon" target="_blank" rel="noopener" style="margin-top:8px">Make the Streets Sublime</a>
+    </div>
+    <div id="hm-list"></div>
+    <div class="note dim" id="hm-note"></div>
+    <button class="btn-sig" id="hmap-close">Back to my Totehm</button>
+  </div>
+</div>
+
 <div id="freq-panel" class="hide">
   <div class="fp-card">
     <input id="fp-input" placeholder="type it — any language" autocomplete="off" spellcheck="false">
