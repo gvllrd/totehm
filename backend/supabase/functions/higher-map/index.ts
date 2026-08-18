@@ -112,6 +112,8 @@ async function fromGoogle(
           commentaire: p.vicinity ?? null,
           intention,
           duration_min: null,
+          lat: p.geometry?.location?.lat ?? null,
+          lng: p.geometry?.location?.lng ?? null,
         });
       }
     } catch (e) {

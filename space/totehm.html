@@ -135,6 +135,95 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 }
 
 #hmap-close{margin-top:6px}
+
+/* ── MODE CARTE — map-active ────────────────────────────────────────────── */
+
+/* Le canvas MapLibre remplit tout #hmap */
+#map-canvas{display:none;position:absolute;inset:0;z-index:0}
+#hmap.map-active #map-canvas{display:block}
+
+/* En mode carte, #hmap-in devient une superposition non-scrollable */
+#hmap.map-active{overflow:hidden}
+#hmap.map-active #hmap-in{
+  position:absolute;inset:0;z-index:1;
+  max-width:none;padding:0;margin:0;gap:0;
+  pointer-events:none;
+  display:flex;flex-direction:column;justify-content:space-between
+}
+
+/* Bandeau haut : gradient noir → transparent sur le titre + sous-titre */
+#hmap.map-active .hm-title{
+  padding:22px 22px 4px;
+  background:linear-gradient(to bottom,rgba(0,0,0,.78) 0%,rgba(0,0,0,.18) 100%);
+  pointer-events:none
+}
+#hmap.map-active #hm-sub{
+  padding:0 22px 28px;
+  background:linear-gradient(to bottom,rgba(0,0,0,.18) 0%,transparent 100%);
+  color:#606060;pointer-events:none
+}
+
+/* Masqués en mode carte : liste et note */
+#hmap.map-active #hm-list,
+#hmap.map-active #hm-note,
+#hmap.map-active #city-block{display:none}
+
+/* Bandeau bas : gradient + bouton retour */
+#hmap.map-active #hmap-close{
+  margin:0;
+  padding:28px 22px 32px;
+  background:linear-gradient(to top,rgba(0,0,0,.72) 0%,transparent 100%);
+  pointer-events:auto
+}
+
+/* Marqueurs intention — carrés (pas de border-radius : doctrine TOTEHM) */
+.hm-marker{
+  width:11px;height:11px;cursor:pointer;
+  transition:transform .15s ease,opacity .15s ease;
+  opacity:.9
+}
+.hm-marker:hover{transform:scale(1.7);opacity:1}
+
+/* Point de position utilisateur */
+.hm-user-dot{
+  width:13px;height:13px;background:#fff;
+  outline:2px solid rgba(255,255,255,.3);outline-offset:3px;
+  cursor:default
+}
+
+/* Popup custom — style TOTEHM, pas le popup MapLibre */
+#hm-popup{
+  display:none;
+  position:absolute;left:50%;bottom:130px;
+  transform:translateX(-50%);
+  z-index:3;
+  background:#000;
+  border:6px solid transparent;
+  border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;
+  padding:14px 18px 14px 14px;
+  min-width:220px;max-width:300px;
+  text-align:left;
+  pointer-events:auto
+}
+#hm-popup.show{display:block}
+#hmap.map-active #hm-popup{position:absolute}
+.pop-close{
+  position:absolute;top:5px;right:7px;
+  font-family:'Quantico',sans-serif;font-size:14px;
+  color:#606060;background:none;border:none;cursor:pointer;line-height:1;
+  padding:0;transition:color .15s
+}
+.pop-close:hover{color:#fff}
+.pop-name{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:#fff;line-height:1.45}
+.pop-meta{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;
+  text-transform:uppercase;color:#4a4a4a;margin-top:4px}
+.pop-why{font-family:'Quantico',sans-serif;font-size:12px;color:#808080;
+  margin-top:7px;line-height:1.5}
+
+/* Sur les petits écrans, le popup passe en bas fixe */
+@media(max-width:500px){
+  #hm-popup{min-width:80vw;max-width:92vw;bottom:110px}
+}
 /* Make the Streets Sublime : overlay en bas de la méthode, visible seulement si Lisbon sélectionné en bas */
 /* Make the Streets Sublime : bouton phare perforé en HAUT de la méthode (si Lisbon sélectionné en bas) */
 #street-btn{position:absolute;left:50%;top:16px;transform:translateX(-50%);z-index:58;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
@@ -823,6 +912,18 @@ body.gate.entered #fv-status{
 <!-- Higher Map : hors de #stage — #stage a un transform sur desktop qui en
      ferait le containing block de position:fixed et empêcherait le plein écran. -->
 <div id="hmap" aria-hidden="true">
+  <!-- canvas MapLibre — visible seulement en mode map-active -->
+  <div id="map-canvas"></div>
+
+  <!-- popup au tap sur un marqueur -->
+  <div id="hm-popup">
+    <button class="pop-close" type="button" aria-label="close">×</button>
+    <div class="pop-name"></div>
+    <div class="pop-meta"></div>
+    <div class="pop-why"></div>
+  </div>
+
+  <!-- mode liste (fallback) + overlay map -->
   <div id="hmap-in">
     <div class="hm-title">HIGHER MAP</div>
     <div class="hm-sub" id="hm-sub">around you, through your Totehm</div>
@@ -1801,90 +1902,173 @@ const HM_COLOR = {
 };
 
 let hmapLoaded = false;
+let _mapInstance = null;
 
 function showMap(on){
   if(on){ floor=1; paint(); } else { if(floor===1){ floor=0; paint(); } }
 }
 
+/* Charge MapLibre GL JS et son CSS en lazy — une seule fois par session */
+function loadMapLibre(){
+  if(window.maplibregl) return Promise.resolve();
+  return new Promise((resolve, reject)=>{
+    if(!document.getElementById('ml-css')){
+      const css=document.createElement('link');
+      css.id='ml-css'; css.rel='stylesheet';
+      css.href='https://cdn.jsdelivr.net/npm/maplibre-gl@4/dist/maplibre-gl.css';
+      document.head.appendChild(css);
+    }
+    const js=document.createElement('script');
+    js.src='https://cdn.jsdelivr.net/npm/maplibre-gl@4/dist/maplibre-gl.js';
+    js.onload=resolve; js.onerror=reject;
+    document.head.appendChild(js);
+  });
+}
+
+function closeHmPopup(){ $('hm-popup').classList.remove('show'); }
+
+/* Initialise MapLibre dans #map-canvas avec les spots en marqueurs */
+function renderMapLibre(coords, spots){
+  const hmap=$('hmap');
+  hmap.classList.add('map-active');
+
+  if(_mapInstance){ try{_mapInstance.remove();}catch(e){} _mapInstance=null; }
+
+  const map=new maplibregl.Map({
+    container:'map-canvas',
+    style:'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+    center:[coords.lng, coords.lat],
+    zoom:14,
+    attributionControl:false
+  });
+  _mapInstance=map;
+
+  map.addControl(new maplibregl.AttributionControl({compact:true}),'bottom-left');
+
+  /* Point bleu de position utilisateur */
+  const uEl=document.createElement('div');
+  uEl.className='hm-marker hm-user-dot';
+  new maplibregl.Marker({element:uEl, anchor:'center'})
+    .setLngLat([coords.lng, coords.lat])
+    .addTo(map);
+
+  /* Popup custom — fermée au clic sur la carte */
+  const popup=$('hm-popup');
+  popup.querySelector('.pop-close').onclick=closeHmPopup;
+
+  map.on('load', ()=>{
+    map.on('click', closeHmPopup);
+
+    spots.forEach(s=>{
+      if(s.lat==null||s.lng==null) return;
+      const col=HM_COLOR[s.intention]||'#606060';
+      const el=document.createElement('div');
+      el.className='hm-marker';
+      el.style.background=col;
+
+      new maplibregl.Marker({element:el, anchor:'center'})
+        .setLngLat([s.lng, s.lat])
+        .addTo(map);
+
+      el.addEventListener('click', ev=>{
+        ev.stopPropagation();
+        popup.querySelector('.pop-name').textContent=s.activite||s.lieu_type||'place';
+        const meta=[s.intention, s.duration_min?s.duration_min+' min':null].filter(Boolean).join(' · ');
+        popup.querySelector('.pop-meta').textContent=meta;
+        const why=popup.querySelector('.pop-why');
+        if(s.commentaire){ why.textContent=s.commentaire; why.style.display=''; }
+        else why.style.display='none';
+        popup.classList.add('show');
+      });
+    });
+  });
+
+  /* S'assure que MapLibre recalcule quand le canvas change de taille */
+  new ResizeObserver(()=>{ if(_mapInstance) _mapInstance.resize(); })
+    .observe($('map-canvas'));
+}
+
+/* Mode liste : fallback si pas de coords ou si MapLibre a planté */
+function renderHmList(spots, intentions){
+  const list=$('hm-list'), note=$('hm-note'), sub=$('hm-sub');
+  if(sub) sub.textContent=spots.length+' places · '+intentions.join(' · ');
+  list.innerHTML=spots.map(s=>{
+    const col=HM_COLOR[s.intention]||'#606060';
+    const name=esc(s.activite||s.lieu_type||'place');
+    const why=s.commentaire?'<div class="hm-why">'+esc(s.commentaire)+'</div>':'';
+    const meta=[s.intention, s.duration_min?s.duration_min+' min':null].filter(Boolean).join(' · ');
+    return '<div class="hm-spot">'
+         +   '<span class="hm-dot" style="background:'+col+'"></span>'
+         +   '<div class="hm-body">'
+         +     '<div class="hm-name">'+name+'</div>'
+         +     '<div class="hm-meta">'+esc(meta)+'</div>'
+         +     why
+         +   '</div>'
+         + '</div>';
+  }).join('');
+  note.textContent='';
+}
+
 async function loadMap(){
-  const list = $('hm-list'), note = $('hm-note');
-  list.innerHTML = '';
-  note.className = 'note dim';
-  note.textContent = 'reading your Totehm...';
+  const note=$('hm-note');
+  $('hm-list').innerHTML='';
+  note.className='note dim';
+  note.textContent='reading your Totehm...';
 
   try{
-    const { data:{ session } } = await sb.auth.getSession();
+    const { data:{ session } }=await sb.auth.getSession();
     if(!session){ note.className='note no'; note.textContent='sign in first'; return; }
 
-    /* La position n'est jamais redemandee : on reutilise le cache
-       pose par cityBoot. Une carte ne doit pas declencher une popup
-       systeme a chaque ouverture. */
-    let coords = null;
-    try{
-      const c = localStorage.getItem('totehm_map_pos_v1');
-      if(c) coords = JSON.parse(c);
-    }catch(e){}
+    /* La position n'est jamais re-demandée : cityBoot la cache une seule fois.
+       Une carte ne doit pas déclencher de popup système à chaque ouverture. */
+    let coords=null;
+    try{ const c=localStorage.getItem('totehm_map_pos_v1'); if(c) coords=JSON.parse(c); }catch(e){}
 
-    const r = await fetch(SB_URL + '/functions/v1/higher-map', {
+    const r=await fetch(SB_URL+'/functions/v1/higher-map',{
       method:'POST',
-      headers:{ 'Authorization':'Bearer ' + session.access_token,
-                'Content-Type':'application/json' },
-      body: JSON.stringify(coords ? { lat:coords.lat, lng:coords.lng } : {})
+      headers:{'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json'},
+      body:JSON.stringify(coords?{lat:coords.lat,lng:coords.lng}:{})
     });
 
-    if(r.status === 402){
-      note.className='note no';
-      note.textContent='members only';
-      return;
+    if(r.status===402){ note.className='note no'; note.textContent='members only'; return; }
+    const j=await r.json();
+
+    if(j.reason==='no_intention'){ note.className='note dim'; note.textContent='give your habits an intention first'; return; }
+
+    const spots=j.spots||[], intentions=j.intentions||[];
+
+    if(!spots.length){ note.className='note dim'; note.textContent='nothing around you yet'; hmapLoaded=true; return; }
+
+    /* Carte si coords disponibles, liste sinon */
+    if(coords){
+      try{
+        await loadMapLibre();
+        renderMapLibre(coords, spots);
+        const sub=$('hm-sub');
+        if(sub) sub.textContent=spots.length+' places · '+intentions.join(' · ');
+        note.textContent='';
+        hmapLoaded=true;
+        return;
+      }catch(mapErr){
+        console.warn('MapLibre failed, list fallback:', mapErr);
+        $('hmap').classList.remove('map-active');
+        if(_mapInstance){ try{_mapInstance.remove();}catch(e){} _mapInstance=null; }
+      }
     }
-    const j = await r.json();
 
-    if(j.reason === 'no_intention'){
-      note.className='note dim';
-      note.textContent='give your habits an intention first';
-      return;
-    }
-
-    const spots = j.spots || [];
-    if(!spots.length){
-      note.className='note dim';
-      note.textContent='nothing around you yet';
-      hmapLoaded = true;
-      return;
-    }
-
-    const sub=$('hm-sub');
-    if(sub) sub.textContent = spots.length + ' places · ' + (j.intentions||[]).join(' · ');
-
-    list.innerHTML = spots.map(s => {
-      const col = HM_COLOR[s.intention] || '#606060';
-      const name = esc(s.activite || s.lieu_type || 'place');
-      const why  = s.commentaire ? '<div class="hm-why">'+esc(s.commentaire)+'</div>' : '';
-      const meta = [s.intention, s.duration_min ? s.duration_min+' min' : null]
-                     .filter(Boolean).join(' · ');
-      return '<div class="hm-spot">'
-           +   '<span class="hm-dot" style="background:'+col+'"></span>'
-           +   '<div class="hm-body">'
-           +     '<div class="hm-name">'+name+'</div>'
-           +     '<div class="hm-meta">'+esc(meta)+'</div>'
-           +     why
-           +   '</div>'
-           + '</div>';
-    }).join('');
-
-    note.textContent = '';
-    hmapLoaded = true;
+    renderHmList(spots, intentions);
+    hmapLoaded=true;
 
   }catch(e){
-    console.error('higher-map:', e);
+    console.error('higher-map:',e);
     note.className='note no';
     note.textContent='could not load the map';
   }
 }
 
 /* Le gating vient du SERVEUR : higher-map renvoie 402 si le membership
-   n'est pas actif. requireMember ne verifie que la session, pas
-   l'adhesion — les deux sont necessaires. */
+   n'est pas actif. requireMember ne vérifie que la session, pas
+   l'adhésion — les deux sont nécessaires. */
 $('hmap-close').onclick = ()=> go(1);  /* Map → Habits */
 
 document.addEventListener('keydown', e=>{

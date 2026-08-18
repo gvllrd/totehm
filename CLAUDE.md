@@ -82,6 +82,39 @@ Autobiographie    TOTEHM · Habitudes   Objectifs
 **Pas de quatrième couche temporelle. Pas de `map.html`** — la Higher Map est
 l'extension monde du PRÉSENT, elle vit dans `totehm.html`.
 
+### Navigation 3 floors — règles absolues (`totehm.html`)
+
+```
+floor 0  →  Habitudes   (PRESENT par défaut)
+floor 1  →  Higher Map  (extension monde)
+floor 2  →  Settings
+```
+
+Desktop : `foldGesture()` + wheel. Mobile : swipe + `animateSwap`.
+`paint()` pose `body.in-map` (floor===1) et `body.in-settings` (floor===2).
+
+**`#hmap` doit être sibling de `#stage`, jamais à l'intérieur.**
+`#stage` a `transform:translate(-50%,-50%)` sur desktop → il devient le
+containing block de tous les éléments `position:fixed` qu'il contient →
+`#hmap` ne couvrirait que `#stage`, pas le viewport. Règle irrattrapable.
+
+**`body.in-map` + CSS `!important` pour la couche Map.**
+`applyFloorFx()` pose des styles inline (`el.style.opacity=…`). Les règles
+`body.in-map #bigT { opacity:0!important }` sont les seules qui les surchargent
+sans modifier la signature de `applyFloorFx()` (un paramètre, stable).
+
+**Listener `fv-inner` scroll supprimé.** Il était conçu pour 2 floors
+(0=Habits, 1=Settings). Avec 3 floors, il déclenchait `applyFloorFx(true)` sur
+le floor Map → ajoutait `in-settings` → Settings s'affichait à la place de la Map.
+
+**Settings desktop** : `#settings-nav .sn-row { display:none!important }`.
+Seul `#sn-home` (logo sans hover perforé) reste visible. Les chevrons et leurs
+intitulés disparaissent uniquement sur desktop — la nav mobile est inchangée.
+
+**Filtre deux étapes** : TIME FREQUENCY → étape intention avant fermeture.
+`applyFreq()` sur `fpTarget==='filter'` appelle `showFpStage('int')`, pas `closeFreqPanel()`.
+`applyIntent()` sur `fpTarget==='filter'` ferme le panneau et applique le filtre.
+
 ### Contraintes absolues
 
 **Sessions.** Trois domaines = trois `localStorage` = trois sessions.

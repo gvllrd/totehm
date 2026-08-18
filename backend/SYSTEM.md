@@ -218,21 +218,28 @@ sans rien apporter.
 **Table morte :** `_deprecated_user_roles_20260803` — à dropper après le
 3 septembre 2026.
 
-### Higher Map — concept réel (18/08/2026)
+### Higher Map — état 18/08/2026
 
-**Ce n'est pas les spots en base. C'est Google Maps + le spectre du Totehm.**
+**Ce n'est pas les spots en base. C'est Google Places + le spectre du Totehm.**
 
 ```
-1. Localisation de l'utilisateur
-2. Appel API Google Maps / Google Events dans la zone
-3. Filtrage par le spectre du Totehm du membre (habitudes + intentions)
+1. Localisation de l'utilisateur (localStorage totehm_map_pos_v1 — jamais re-demandée)
+2. POST /functions/v1/higher-map → Edge Function higher-map v1
+3. Si GOOGLE_MAPS_API_KEY posée : Google Places Nearby Search (rayon 1 500 m)
+   Sinon : fallback spots table filtrée par intention + triée par proximité
+4. Filtrage par les intentions du Totehm du membre (steps[].intention)
 → Ce que tu vois sur la Map, c'est le monde filtré par qui tu es
 ```
 
-La table `spots` (125 lignes) est distincte — ne pas confondre.
+**UI :** `#hmap` dans `space/totehm.html`. Sibling de `#stage`, **jamais à l'intérieur** — `#stage` a un `transform` sur desktop qui en ferait le containing block de `position:fixed` et empêcherait le plein écran.
 
-**Ce qui manque :** l'écran dans `totehm.html`.
-Pas de migration. Pas de nouvelle table. Un appel, une UI.
+**Membership :** 402 si pas membre, `reason:'no_intention'` si aucune intention posée.
+
+**Secret manquant :** `GOOGLE_MAPS_API_KEY` → sans elle, fallback spots DB actif.
+
+La table `spots` (125 lignes, 2 embeddings) est distincte — ne pas confondre avec la Higher Map.
+
+**Ce qui reste à faire :** MapLibre GL JS, couche romantique, cache two-step Google Places → Supabase.
 
 ---
 
@@ -297,6 +304,7 @@ Aucune ligne = pas membre. Un abonnement expiré, impayé ou annulé retombe
 | `autobiographiste` | 3 | ✅ | modèle premium, 8 règles, write/revise/accept |
 | `bot-tick` | 3 | ❌ | cron horaire, DONE/MISSED |
 | `bot-reply` | 3 | ❌ | webhook Telegram, **zéro appel IA** |
+| `higher-map` | 1 | ✅ | localisation → Google Places (si clé) ou spots DB ; filtré par intentions du Totehm |
 
 `verify_jwt=false` sur les webhooks est **normal** : Stripe et Telegram n'ont pas
 de JWT Supabase. La sécurité vient de la signature vérifiée dans le code.
@@ -336,7 +344,8 @@ donc posée **deux fois** : session *et* `subscription_data`.
 | `AUTOBIO_MODEL` | `supabase secrets` | optionnel, défaut `gpt-4o` |
 | `TELEGRAM_BOT_TOKEN` | `supabase secrets` | ⚠️ **à remplacer** — valeur actuelle = TotehmManager, doit devenir TotehmBot |
 | `TELEGRAM_WEBHOOK_SECRET` | `supabase secrets` | ❌ **manquant** |
-| `PRICE_FIGHER_YEAR` | `supabase secrets` | ❌ **manquant** — `price_...` Stripe annuel |
+| `PRICE_FIGHER_YEAR` | `supabase secrets` | ✅ `price_1U5Rca1hAyZo38svOccaGeiE` |
+| `GOOGLE_MAPS_API_KEY` | `supabase secrets` | ❌ **manquant** — active Google Places dans higher-map |
 | clés SSH Oracle | `~/totehm/oracle/` | ✅ gitignoré, 600 |
 
 **TotehmBot est le bot unique des 3 entités** (`totehm.space`, `higher.boutique`,
@@ -459,6 +468,12 @@ Functions sont téléchargeables.
 | 18/08 | `totehm_clothes.chapter_id` | un vêtement porte un **chapitre**, pas un texte |
 | 17/08 | **TotehmBot bot unique des 3 entités**, TotehmManager abandonné | un bot par domaine = 3 bots à maintenir ; la curation illustrations n8n rejoint TotehmBot |
 | 17/08 | **Figher Club pricing officiel** — 7 jours d'essai, 77 €/an, price lock, paliers par nombre de membres | vision club, pas SaaS ; la valeur augmente avec le réseau |
+| 18/08 | Navigation 3 floors : 0=Habitudes · 1=Higher Map · 2=Settings | la Map n'est pas un 4e domaine ni un fichier séparé — elle vit dans `totehm.html` |
+| 18/08 | `#hmap` sibling de `#stage`, jamais à l'intérieur | `#stage` a un `transform` desktop → devient containing block de `position:fixed` → full-screen impossible si #hmap est dedans |
+| 18/08 | `body.in-map` + CSS `!important` pour la transition Map | `applyFloorFx()` pose des styles inline → seul `!important` peut les surcharger sans changer la signature |
+| 18/08 | Settings desktop : `#settings-nav .sn-row{display:none}` — seul `#sn-home` reste | supprimer les boutons Autobiography et Generator du panel Settings sans toucher la nav mobile |
+| 18/08 | Filtre : TIME FREQUENCY → étape intention avant fermeture | sans ça, la fenêtre se fermait avant que l'utilisateur ait pu choisir une intention |
+| 18/08 | `GOOGLE_MAPS_API_KEY` absente des secrets Supabase | fallback spots DB actif jusqu'à la pose de la clé |
 
 ---
 
