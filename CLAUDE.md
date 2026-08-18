@@ -181,6 +181,11 @@ padding: 0 6px; text-align: center; caret-color: var(--coral);
 Ne jamais introduire : `border-radius` · `box-shadow` décoratif ·
 placeholder coloré · `border-bottom` seul · animation d'entrée sur un input.
 
+**Layout — règles générales**
+- Contenu centré (`margin: 0 auto`, `text-align: center`, `align-items: center`)
+- Pas de bordure sur les conteneurs, cards, sections
+- Le fond fait le cadre — pas la bordure
+
 ---
 
 ## Les livrables — le contrat « Tout télécharger »
