@@ -1421,7 +1421,7 @@ function paint(){
   const isMap = floor === 1;
   const isSet = floor === 2;
 
-  // Higher Map : overlay position:fixed qui couvre tout quand actif
+  // Higher Map
   $('hmap').classList.toggle('show', isMap);
   $('hmap').setAttribute('aria-hidden', isMap ? 'false' : 'true');
   if(isMap && !hmapLoaded) loadMap();
@@ -1435,6 +1435,17 @@ function paint(){
     if(isSet) renderSettings(); else renderHabits();
   }
   applyFloorFx(isSet);
+
+  // Map : même traitement visuel que Settings — rien ne doit apparaître
+  if(isMap){
+    $('menu-arrow').style.display  = 'none';
+    $('filter-arrow').style.display = 'none';
+    $('bigT').style.opacity        = '0';
+    $('wordmark').style.opacity    = '0';
+    $('rail').style.opacity        = '0';
+    $('floorview').style.backgroundColor = '#000';
+    document.body.classList.add('in-settings');
+  }
 }
 
 /* ══ FREQUENCY PANEL ══ */
@@ -1711,15 +1722,9 @@ function go(dFloor){
   if($('stoner').classList.contains('show')){ if(dFloor>0)showStoner(false); return; }
   const next = floor + (dFloor < 0 ? 1 : -1);
   if(next < 0 || next > 2) return;
-  // Transitions Habits↔Settings (0↔2) passent toujours par la Map (floor 1)
-  // Transition vers/depuis la Map : le CSS de #hmap gère le fondu (.38s)
-  // Transition vers Settings : animateSwap pour le glissement Habits/Settings
-  if(isDesk()){
-    floor = next; paint(); return;
-  }
-  if(next === 2 && floor === 1){ animateSwap(-1, ()=>{ floor=2; paint(); }); }
-  else if(next === 1 && floor === 2){ animateSwap(1, ()=>{ floor=1; paint(); }); }
-  else { floor = next; paint(); }
+  if(isDesk()){ floor = next; paint(); return; }
+  // Toutes les transitions verticales : même animation que Settings
+  animateSwap(dFloor, ()=>{ floor = next; paint(); });
 }
 /* Arrivée depuis next_objective.html en pleine page : #settings ouvre
    directement les Paramètres. En iframe, c'est le postMessage
