@@ -177,9 +177,9 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
   color:#606060;pointer-events:none
 }
 
-/* Masqués en mode carte : liste et note */
+/* Masqués en mode carte */
 #hmap.map-active #hm-list,
-#hmap.map-active #hm-note,
+#hmap.map-active #hm-note{display:none}
 
 /* Bandeau bas : poussé au fond par margin-top:auto, gradient + bouton retour */
 #hmap.map-active #hmap-close{
@@ -187,6 +187,12 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
   padding:28px 22px 32px;
   background:linear-gradient(to top,rgba(0,0,0,.72) 0%,transparent 100%);
   pointer-events:auto
+}
+
+/* Pendant le fade-out de la map (retour Habits) : bigT reste caché jusqu'à ce
+   que #hmap soit invisible — sinon il apparaît 380ms derrière la map qui s'efface. */
+body.map-leaving #bigT,body.map-leaving #wordmark,body.map-leaving #rail{
+  opacity:0!important;pointer-events:none!important
 }
 
 /* Marqueurs intention — carrés (pas de border-radius : doctrine TOTEHM) */
@@ -1786,7 +1792,19 @@ function go(dFloor){
   const next = floor + (dFloor < 0 ? 1 : -1);
   if(next < 0 || next > 2) return;
   if(isDesk()){ floor = next; paint(); return; }
-  // Toutes les transitions verticales : même animation que Settings
+  /* Mobile : les transitions vers/depuis la map utilisent uniquement le fade CSS
+     de #hmap (pas d'animateSwap sur fv-inner) — évite le flash de bigT. */
+  if(floor === 1 || next === 1){
+    busy=true;
+    if(floor === 1){
+      /* On quitte la map : cacher bigT le temps que #hmap se fonde vers 0 */
+      document.body.classList.add('map-leaving');
+      setTimeout(()=>document.body.classList.remove('map-leaving'), 420);
+    }
+    floor=next; paint();
+    setTimeout(()=>{busy=false;}, 420);
+    return;
+  }
   animateSwap(dFloor, ()=>{ floor = next; paint(); });
 }
 /* Arrivée depuis next_objective.html en pleine page : #settings ouvre
@@ -1901,8 +1919,15 @@ function renderMapLibre(coords, spots){
 
   if(_mapInstance){ try{_mapInstance.remove();}catch(e){} _mapInstance=null; }
 
-  requestAnimationFrame(()=>{
+  /* Double RAF : un seul frame ne garantit pas le layout sur tous les mobiles
+     quand display passe de none à block. Deux frames = paint complet garanti. */
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
     const canvas=$('map-canvas');
+    /* Failsafe : si le canvas est encore 0×0, forcer les dimensions */
+    if(!canvas.offsetWidth){
+      canvas.style.width=window.innerWidth+'px';
+      canvas.style.height=window.innerHeight+'px';
+    }
     const map=new maplibregl.Map({
       container: canvas,
       style:'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
@@ -1962,7 +1987,7 @@ function renderMapLibre(coords, spots){
     /* Resize si #hmap change de dimensions (rotation mobile, etc.) */
     new ResizeObserver(()=>{ if(_mapInstance) _mapInstance.resize(); })
       .observe(canvas);
-  });
+  }));
 }
 
 /* Mode liste : fallback si pas de coords ou si MapLibre a planté */
@@ -1996,10 +2021,26 @@ async function loadMap(){
     const { data:{ session } }=await sb.auth.getSession();
     if(!session){ note.className='note no'; note.textContent='sign in first'; return; }
 
-    /* La position n'est jamais re-demandée : cityBoot la cache une seule fois.
-       Une carte ne doit pas déclencher de popup système à chaque ouverture. */
+    /* Coords : cache localStorage en priorité, sinon demande directe.
+       La popup système n'est déclenchée qu'une fois — la réponse est cachée. */
     let coords=null;
     try{ const c=localStorage.getItem('totehm_map_pos_v1'); if(c) coords=JSON.parse(c); }catch(e){}
+
+    if(!coords && navigator.geolocation){
+      note.textContent='locating...';
+      coords=await new Promise(resolve=>{
+        navigator.geolocation.getCurrentPosition(
+          pos=>{
+            const c={lat:pos.coords.latitude,lng:pos.coords.longitude};
+            try{localStorage.setItem('totehm_map_pos_v1',JSON.stringify(c));}catch(e){}
+            resolve(c);
+          },
+          ()=>resolve(null),
+          {timeout:10000,maximumAge:600000}
+        );
+      });
+      note.textContent='reading your Totehm...';
+    }
 
     const r=await fetch('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/higher-map',{
       method:'POST',
