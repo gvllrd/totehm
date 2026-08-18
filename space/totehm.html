@@ -206,20 +206,22 @@ body.map-leaving #bigT,body.map-leaving #wordmark,body.map-leaving #rail{
   opacity:0!important;pointer-events:none!important
 }
 
-/* Marqueurs intention — carrés (pas de border-radius : doctrine TOTEHM) */
+/* Marqueurs T — couleur via el.style.color, SVG fill:currentColor */
 .hm-marker{
-  width:11px;height:11px;cursor:pointer;
+  width:15px;height:15px;cursor:pointer;display:flex;
+  align-items:center;justify-content:center;
   transition:transform .15s ease,opacity .15s ease;
-  opacity:.9
+  opacity:.85
 }
-.hm-marker:hover{transform:scale(1.7);opacity:1}
+.hm-marker:active{transform:scale(1.4);opacity:1}
+@media(hover:hover){.hm-marker:hover{transform:scale(1.4);opacity:1}}
 
-/* Point de position utilisateur */
-.hm-user-dot{
-  width:13px;height:13px;background:#fff;
-  outline:2px solid rgba(255,255,255,.3);outline-offset:3px;
-  cursor:default
+/* Marqueur utilisateur — T blanc, pulsation radar */
+@keyframes radar-pulse{
+  0%,100%{transform:scale(1);opacity:1}
+  50%{transform:scale(1.25);opacity:.6}
 }
+.hm-user-dot{color:#fff!important;animation:radar-pulse 2.4s ease-in-out infinite;cursor:default}
 
 /* Popup custom — style TOTEHM, pas le popup MapLibre */
 #hm-popup{
@@ -1928,6 +1930,22 @@ function loadMapLibre(){
 
 function closeHmPopup(){ $('hm-popup').classList.remove('show'); }
 
+/* T TOTEHM vectoriel — fill:currentColor pour coloration par intention */
+const T_MARKER_SVG='<svg viewBox="0 0 68 68" fill="currentColor" width="15" height="15" aria-hidden="true">'
+  +'<rect x="0.9" y="0" width="66.7" height="9.6"/>'
+  +'<rect x="29.4" y="0" width="9.6" height="66.7"/>'
+  +'<rect x="21.2" y="62.4" width="26.1" height="5.4"/>'
+  +'</svg>';
+
+/* Formule de Haversine — distance réelle en mètres entre deux coordonnées */
+function haversine(lat1,lng1,lat2,lng2){
+  const R=6371e3,f=Math.PI/180;
+  const φ1=lat1*f,φ2=lat2*f,Δφ=(lat2-lat1)*f,Δλ=(lng2-lng1)*f;
+  const a=Math.sin(Δφ/2)**2+Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
+  return 2*R*Math.asin(Math.sqrt(a));
+}
+function fmtDist(m){return m<1000?Math.round(m)+'m':(m/1000).toFixed(1)+'km';}
+
 /* Initialise MapLibre dans #map-canvas avec les spots en marqueurs.
    Le RAF est obligatoire : map-active passe #map-canvas de display:none à
    display:block. Sans RAF, le navigateur n'a pas recalculé les styles et
@@ -1948,20 +1966,21 @@ function renderMapLibre(coords, spots){
     const h=$('hmap').offsetHeight||window.innerHeight;
     canvas.style.width=w+'px';
     canvas.style.height=h+'px';
+    /* Void Radar — fond noir natif, zéro réseau cartographique */
     const map=new maplibregl.Map({
       container: canvas,
-      style:'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+      style:{version:8,sources:{},layers:[{id:'bg',type:'background',paint:{'background-color':'#000000'}}]},
       center:[coords.lng, coords.lat],
       zoom:14,
+      interactive:false,
       attributionControl:false
     });
     _mapInstance=map;
 
-    map.addControl(new maplibregl.AttributionControl({compact:true}),'bottom-left');
-
-    /* Point blanc de position utilisateur */
+    /* Marqueur T utilisateur — blanc, animation radar-pulse */
     const uEl=document.createElement('div');
     uEl.className='hm-marker hm-user-dot';
+    uEl.innerHTML=T_MARKER_SVG;
     new maplibregl.Marker({element:uEl, anchor:'center'})
       .setLngLat([coords.lng, coords.lat])
       .addTo(map);
@@ -1969,19 +1988,8 @@ function renderMapLibre(coords, spots){
     const popup=$('hm-popup');
     popup.querySelector('.pop-close').onclick=closeHmPopup;
 
-    /* Indicateur pendant le chargement des tuiles */
-    const loadMsg=document.createElement('div');
-    loadMsg.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;pointer-events:none';
-    const loadSpan=document.createElement('span');
-    loadSpan.style.cssText='font-family:Space Mono,monospace;font-size:10px;letter-spacing:.12em;color:#606060';
-    loadSpan.textContent='loading tiles...';
-    loadMsg.appendChild(loadSpan);
-    canvas.parentElement.appendChild(loadMsg);
-
-    /* Erreur de chargement → fallback liste */
     map.on('error', err=>{
       const msg=(err&&err.error&&err.error.message)||String(err)||'map error';
-      loadMsg.remove();
       hmap.classList.remove('map-active');
       try{map.remove();}catch(e){} _mapInstance=null;
       const note2=$('hm-note');
@@ -1991,24 +1999,24 @@ function renderMapLibre(coords, spots){
     });
 
     map.on('load', ()=>{
-      loadMsg.remove();
-      map.on('click', closeHmPopup);
-
       spots.forEach(s=>{
         if(s.lat==null||s.lng==null) return;
         const col=HM_COLOR[s.intention]||'#606060';
         const el=document.createElement('div');
         el.className='hm-marker';
-        el.style.background=col;
+        el.style.color=col;
+        el.style.filter='drop-shadow(0 0 4px '+col+')';
+        el.innerHTML=T_MARKER_SVG;
 
-        new maplibregl.Marker({element:el, anchor:'center'})
+        new maplibregl.Marker({element:el, anchor:'bottom'})
           .setLngLat([s.lng, s.lat])
           .addTo(map);
 
         el.addEventListener('click', ev=>{
           ev.stopPropagation();
           popup.querySelector('.pop-name').textContent=s.activite||s.lieu_type||'place';
-          const meta=[s.intention, s.duration_min?s.duration_min+' min':null].filter(Boolean).join(' · ');
+          const dist=haversine(coords.lat,coords.lng,s.lat,s.lng);
+          const meta=[s.intention, fmtDist(dist), s.duration_min?s.duration_min+' min':null].filter(Boolean).join(' · ');
           popup.querySelector('.pop-meta').textContent=meta;
           const why=popup.querySelector('.pop-why');
           if(s.commentaire){ why.textContent=s.commentaire; why.style.display=''; }
