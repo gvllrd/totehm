@@ -650,16 +650,11 @@ body.gate.entered #fv-status{
     align-items:center;gap:10px;margin-bottom:2px}
   #settings-nav .sn-btn{font-size:14px}
 
-  /* Logo fixe en haut — visible sur tous les étages sauf Map.
-     Sorti de #settings par JS (twoSections) pour ne pas hériter de son opacity:0. */
-  #side-left,#side-right{display:none}
-  #sn-home{
-    position:fixed;top:20px;left:50%;transform:translateX(-50%);
-    z-index:50;display:flex;flex-direction:column;align-items:center;gap:3px;
-    cursor:pointer}
-  #sn-home img{width:38px;height:auto}
+  /* Settings desktop : seul le logo reste, sans les boutons Autobiography/Generator */
+  #settings-nav .sn-row{display:none!important}
+  #sn-home{display:flex}
+  #sn-home img{width:54px;height:auto}
   #sn-home:hover,#sn-home:active{border-image-source:none;color:#b0b0b0}
-  body.in-map #sn-home{opacity:0;pointer-events:none;transition:opacity .38s ease}
 }
 
 </style>
@@ -1789,11 +1784,7 @@ $('menu-arrow').onclick=()=>{if(!busy)go(-1);};
 /* Curseur PlayStation dans les Paramètres */
 /* Rangée haute du menu paramètres */
 $('sn-book').onclick =requireMember(()=>{if(!busy&&floor===2&&!hOpen())showBook(true);});
-$('sn-home').onclick =()=>{
-  if(busy||hOpen())return;
-  if(floor===0&&isDesk()){floor=2;paint();}
-  else if(floor===2){floor=0;paint();}
-};  /* T logo = retour Habits direct */
+$('sn-home').onclick =()=>{if(!busy&&floor===2&&!hOpen()){floor=0;paint();}};  /* T logo = retour Habits direct */
 $('sn-next').onclick =()=>{if(!busy&&floor===2&&!hOpen())showNext(true);};
 
 /* ══ HIGHER MAP ══
@@ -1979,18 +1970,11 @@ const isDesk=()=>window.matchMedia('(min-width:700px)').matches;
   const set=document.getElementById('settings');
   if(!set)return;
   const home=set.parentNode, next=set.nextSibling;
-  const logo=document.getElementById('sn-home');
-  const logoHome=logo?logo.parentNode:null, logoNext=logo?logo.nextSibling:null;
   function place(){
     const d=isDesk();
     document.body.classList.toggle('desk-two',d);
-    if(d){
-      if(set.parentNode!==document.body) document.body.appendChild(set);
-      if(logo&&logo.parentNode!==document.body) document.body.appendChild(logo);
-    } else {
-      if(set.parentNode!==home) home.insertBefore(set,next);
-      if(logo&&logoHome&&logo.parentNode!==logoHome) logoHome.insertBefore(logo,logoNext);
-    }
+    if(d){ if(set.parentNode!==document.body) document.body.appendChild(set); }
+    else  { if(set.parentNode!==home) home.insertBefore(set,next); }
   }
   place();
   let t=null;
