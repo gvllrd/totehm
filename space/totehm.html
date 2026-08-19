@@ -93,9 +93,12 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 #book iframe,#nextobj iframe{width:100%;height:100%;border:none;display:block}
 
 /* ══ HIGHER MAP ══
-   Meme overlay que #book et #nextobj : le geste doit etre identique.
-   Pas d'iframe ici : la Map lit my_habits() et la session, une
-   frontiere d'iframe n'apporterait rien et couperait le contexte. */
+   Radar noir. Aucune tuile cartographique n'est chargée : le monde
+   est vide et ce sont tes intentions qui l'éclairent. Zéro requête
+   carto, zéro coût, et une identité qui n'appartient qu'à TOTEHM.
+   Les marqueurs sont des T — le seul glyphe autorisé ici.
+
+   Même overlay que #book et #nextobj : le geste doit être identique. */
 #hmap{position:fixed;inset:0;z-index:55;background:#000;opacity:0;visibility:hidden;
   pointer-events:none;transition:opacity .38s ease,visibility 0s linear .38s;
   overflow-y:auto;overscroll-behavior:contain}
@@ -104,18 +107,23 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
   display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center}
 #hmap-in > *{width:100%}
 
-/* Le titre reste sobre : c'est la liste qui porte l'information. */
 .hm-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.1em;color:#e0e0e0}
 .hm-sub{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.16em;
   text-transform:uppercase;color:#606060;line-height:1.7}
 
-/* Un spot : pas de conteneur borde, une simple ligne separatrice.
-   Le point de couleur porte l'intention — c'est le seul endroit ou
-   la couleur parle. */
-.hm-spot{display:flex;align-items:flex-start;gap:11px;text-align:left;
-  padding:13px 0}
-/* Carre, pas rond : la doctrine interdit border-radius, et l'esthetique
-   TOTEHM est faite d'angles durs. Le point porte l'intention. */
+/* ── LE SYSTÈME DE RÉVÉLATION ────────────────────────────────────────────
+   « sombre, éclairci par l'intention ». Tout le HUD démarre à 38 %.
+   Un mouvement le réveille 4 s. Une intention choisie le fixe à 1. */
+.hm-reveal{opacity:.38;transition:opacity .35s ease,color .25s ease}
+body.hm-alive .hm-reveal,body.hm-picked .hm-reveal{opacity:1}
+@media(hover:none),(pointer:coarse){.hm-reveal{opacity:.5}}
+
+/* ── LISTE (repli si MapLibre échoue) ────────────────────────────────── */
+#hm-list{display:flex;flex-direction:row;gap:20px;overflow-x:auto;
+  padding:4px 0 16px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+#hm-list::-webkit-scrollbar{display:none}
+.hm-spot{display:flex;flex-direction:column;align-items:flex-start;gap:5px;
+  flex-shrink:0;width:140px;padding:0;text-align:left}
 .hm-dot{width:7px;height:7px;flex-shrink:0}
 .hm-body{flex:1;min-width:0}
 .hm-name{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
@@ -124,18 +132,8 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
   text-transform:uppercase;color:#4a4a4a;margin-top:3px}
 .hm-why{font-family:'Quantico',sans-serif;font-size:12px;color:#808080;
   line-height:1.5;margin-top:4px;transition:color .15s ease}
-/* Separation par l'espace, pas par un trait : « border-bottom seul »
-   fait partie des interdits. */
-#hm-list{display:flex;flex-direction:row;gap:20px;overflow-x:auto;
-  padding:4px 0 16px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-#hm-list::-webkit-scrollbar{display:none}
-.hm-spot{display:flex;flex-direction:column;align-items:flex-start;gap:5px;
-  flex-shrink:0;width:140px;padding:0;text-align:left}
-
-/* Desktop : tout gris passe en blanc au survol. Regle transverse. */
 @media(hover:hover){
-  .hm-spot:hover .hm-name,
-  .hm-spot:hover .hm-why{color:#fff}
+  .hm-spot:hover .hm-name,.hm-spot:hover .hm-why{color:#fff}
 }
 
 /* Nav logo — identique à #sn-home dans Settings */
@@ -150,130 +148,140 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 #hmap-nav img{width:54px;height:auto;display:block}
 @media(hover:hover){#hmap-nav:hover .chev{color:#fff}}
 #hmap-nav:active .chev{color:#fff}
-
 #hmap-close{margin-top:6px}
 
-/* ── MODE CARTE — map-active ────────────────────────────────────────────── */
-
-/* Le canvas MapLibre remplit tout #hmap */
+/* ── MODE CARTE — map-active ────────────────────────────────────────── */
 #map-canvas{display:none;position:absolute;inset:0;width:100%;height:100%;z-index:0}
 #hmap.map-active #map-canvas{display:block}
-
-/* En mode carte, #hmap-in devient une superposition non-scrollable */
 #hmap.map-active{overflow:hidden}
+
+/* La grille : posée AU-DESSUS du canvas, jamais dedans. Le radar ne
+   bouge pas (interactive:false), donc une grille fixe est honnête et
+   ne coûte pas un seul repaint de la carte. */
+#hm-grid{display:none;position:absolute;inset:0;z-index:1;pointer-events:none;
+  background-image:
+    repeating-linear-gradient(to right,rgba(255,255,255,.018) 0 1px,transparent 1px 55px),
+    repeating-linear-gradient(to bottom,rgba(255,255,255,.018) 0 1px,transparent 1px 55px)}
+#hmap.map-active #hm-grid{display:block}
+
+/* Les lignes de distance — canvas 2D par-dessus la carte */
+#hm-lines{display:none;position:absolute;inset:0;z-index:2;pointer-events:none}
+#hmap.map-active #hm-lines{display:block}
+
 #hmap.map-active #hmap-in{
-  position:absolute;inset:0;z-index:1;
+  position:absolute;inset:0;z-index:3;
   max-width:none;padding:0;margin:0;gap:0;
   pointer-events:none;
   display:flex;flex-direction:column;justify-content:flex-start
 }
-
-/* Bandeau haut : logo nav avec gradient, titre masqué (logo le remplace) */
 #hmap.map-active #hmap-nav{
   padding:16px 22px 4px;
   background:linear-gradient(to bottom,rgba(0,0,0,.78) 0%,rgba(0,0,0,.18) 100%);
   pointer-events:auto
 }
 #hmap.map-active .hm-title{display:none}
-#hmap.map-active #hm-sub{
-  padding:0 22px 28px;
-  background:linear-gradient(to bottom,rgba(0,0,0,.18) 0%,transparent 100%);
-  color:#606060;pointer-events:none
-}
-
-/* Masqués en mode carte */
+#hmap.map-active #hm-sub{display:none}
 #hmap.map-active #hm-list,
 #hmap.map-active #hm-note{display:none}
-
-/* Bouton Login : poussé au fond, aligné centre, boîte perforée sur le texte seul */
 #hmap.map-active #hmap-close{
-  margin-top:auto;margin-bottom:28px;
-  padding:0 4px;
-  background:none;
-  align-self:center;
-  pointer-events:auto
+  margin-top:auto;margin-bottom:28px;padding:0 4px;background:none;
+  align-self:center;pointer-events:auto
 }
 
-/* bigT/wordmark/rail cachés dès que la Map est active — sur TOUS les écrans.
-   transition:none : disparition instantanée, zéro résidu visible. */
 body.in-map #bigT,body.in-map #wordmark,body.in-map #rail{
   opacity:0!important;pointer-events:none!important;transition:none!important
 }
-
-/* Pendant le fade-out de la map (retour Habits) : bigT reste caché jusqu'à ce
-   que #hmap soit invisible — sinon il apparaît 380ms derrière la map qui s'efface. */
 body.map-leaving #bigT,body.map-leaving #wordmark,body.map-leaving #rail{
   opacity:0!important;pointer-events:none!important
 }
 
-/* Marqueurs T — couleur via el.style.color, SVG fill:currentColor */
-.hm-marker{
-  width:15px;height:15px;cursor:pointer;display:flex;
-  align-items:center;justify-content:center;
-  transition:transform .15s ease,opacity .15s ease;
-  opacity:.85
-}
-.hm-marker:active{transform:scale(1.4);opacity:1}
-@media(hover:hover){.hm-marker:hover{transform:scale(1.4);opacity:1}}
+/* ── OVERLINE + MÉTÉO ───────────────────────────────────────────────── */
+#hm-overline{
+  display:none;position:absolute;top:74px;left:50%;transform:translateX(-50%);
+  font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--g-dark);white-space:nowrap;
+  z-index:6;pointer-events:none}
+#hmap.map-active #hm-overline{display:block}
+#hm-overline.approx{color:#7a5a4a}
 
-/* Marqueur utilisateur — T blanc, pulsation radar */
-@keyframes radar-pulse{
-  0%,100%{transform:scale(1);opacity:1}
-  50%{transform:scale(1.25);opacity:.6}
-}
-.hm-user-dot{color:#fff!important;animation:radar-pulse 2.4s ease-in-out infinite;cursor:default}
-.hm-marker.hm-hidden{display:none}
+#hm-weather{
+  display:none;position:absolute;top:94px;left:50%;transform:translateX(-50%);
+  align-items:center;justify-content:space-between;gap:24px;
+  width:min(92vw,560px);padding:0 8px;z-index:6;pointer-events:none}
+#hmap.map-active #hm-weather{display:flex}
+.hm-w{font-family:'Space Mono',monospace;font-size:11px;color:var(--g-mid);
+  letter-spacing:.08em;display:flex;gap:10px;align-items:center;white-space:nowrap}
+.hm-w b{font-weight:400;color:var(--g-light);transition:color .2s ease}
+body.hm-alive .hm-w b,body.hm-picked .hm-w b{color:#fff}
 
-/* ── SÉLECTEUR D'INTENTION — desktop ──────────────────────────────────── */
+/* ── SÉLECTEUR D'INTENTION — desktop, à 40 % ────────────────────────── */
 #hm-selector{
-  position:absolute;top:42%;left:50%;
-  transform:translate(-50%,-50%);
-  display:flex;flex-direction:column;align-items:center;gap:12px;
-  width:min(92vw,380px);z-index:4;
-  opacity:0;pointer-events:none;transition:opacity .3s ease
-}
+  position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+  width:min(92vw,420px);z-index:7;
+  opacity:0;pointer-events:none;transition:opacity .3s ease}
 #hm-selector.ready{opacity:1;pointer-events:auto}
-.hm-q{font-family:'Quantico',sans-serif;font-size:13px;
-  color:var(--coral);letter-spacing:.02em;text-align:center}
+.hm-q{font-family:'Quantico',sans-serif;font-size:15px;
+  color:var(--coral);letter-spacing:.01em;text-align:center;transition:color .18s ease}
+body.hm-alive .hm-q,body.hm-picked .hm-q{color:#fff}
 #hm-dd{position:relative}
 #hm-ddt{background:transparent;border:none;cursor:pointer;
-  display:flex;align-items:center;gap:8px;padding:0;
+  display:flex;align-items:center;gap:8px;padding:4px 0;
   -webkit-tap-highlight-color:transparent}
 #hm-ddt-lbl{font-family:'Quantico',sans-serif;font-size:20px;font-weight:700;
   color:var(--coral);transition:color .15s}
 #hm-ddt:hover #hm-ddt-lbl{color:#fff}
-.hm-ddarr{font-size:10px;color:#606060;transition:transform .2s}
+body.hm-picked #hm-ddt-lbl{color:#fff}
+.hm-ddarr{font-size:10px;color:var(--g-dark);transition:transform .2s,color .2s}
 #hm-dd.open .hm-ddarr{transform:rotate(180deg)}
 #hm-ddm{display:none;position:absolute;top:calc(100% + 8px);left:50%;
-  transform:translateX(-50%);min-width:260px;z-index:10;
-  background:rgba(0,0,0,.96);border:1px solid rgba(255,255,255,.08)}
+  transform:translateX(-50%);min-width:min(92vw,340px);z-index:10;
+  background:rgba(0,0,0,.94);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.07);animation:hmDD .18s ease}
+@keyframes hmDD{from{opacity:0;transform:translateX(-50%) translateY(-6px)}
+                to{opacity:1;transform:translateX(-50%) translateY(0)}}
 #hm-dd.open #hm-ddm{display:block}
-.hm-ddi{display:flex;align-items:flex-start;gap:10px;padding:10px 16px;
+.hm-ddi{display:flex;align-items:flex-start;gap:10px;padding:10px 15px;
   cursor:pointer;border-left:2px solid transparent;
-  transition:background .12s,border-color .12s}
-.hm-ddi:hover{background:rgba(255,255,255,.04);border-left-color:currentColor}
+  transition:background .12s,border-color .12s,transform .12s}
+@media(hover:hover){
+  .hm-ddi{transform-origin:left center}
+  .hm-ddi:hover{background:rgba(255,255,255,.05);border-left-color:currentColor;
+    transform:translateX(3px)}
+  .hm-ddi:hover .hm-ddi-name{color:#fff!important}
+  .hm-ddi:hover .hm-ddi-def{color:#c8c8c8}
+}
 .hm-ddi.active{border-left-color:currentColor;background:rgba(255,255,255,.03)}
-.hm-ddi-dot{width:6px;height:6px;flex-shrink:0;margin-top:6px}
-.hm-ddi-name{font-family:'Quantico',sans-serif;font-size:16px;font-weight:700;line-height:1.2}
-.hm-ddi-def{font-family:'Space Mono',monospace;font-size:9px;color:#606060;
-  margin-top:2px;line-height:1.5}
-/* Masqué sur mobile — le sheet prend le relai */
+.hm-ddi-dot{width:7px;height:7px;flex-shrink:0;margin-top:6px}
+.hm-ddi-name{font-family:'Quantico',sans-serif;font-size:17px;font-weight:700;
+  line-height:1.2;transition:color .15s}
+.hm-ddi-def{font-family:'Space Mono',monospace;font-size:10px;color:var(--g-dark);
+  margin-top:3px;line-height:1.45;transition:color .18s}
+.hm-ddi-n{font-family:'Space Mono',monospace;font-size:9px;color:#3a3a3a;margin-left:auto;padding-top:6px}
 @media(hover:none),(pointer:coarse){#hm-selector{display:none}}
 
-/* ── BOTTOM SHEET MOBILE ──────────────────────────────────────────────── */
+/* ── BOTTOM SHEET MOBILE ────────────────────────────────────────────── */
 #hm-sheet{
-  position:absolute;bottom:0;left:0;right:0;z-index:5;
+  position:absolute;bottom:0;left:0;right:0;z-index:8;
   background:#000;border-top:1px solid #1a1a1a;
   padding-bottom:env(safe-area-inset-bottom,12px);
-  opacity:0;pointer-events:none;transition:opacity .3s ease
-}
+  opacity:0;pointer-events:none;transition:opacity .3s ease}
 #hm-sheet.ready{opacity:1;pointer-events:auto}
-.hm-handle{width:32px;height:2px;background:#2a2a2a;margin:10px auto 6px}
+.hm-handle{width:32px;height:2px;background:#2a2a2a;margin:10px auto 0}
+.hm-sheet-q{display:flex;align-items:center;justify-content:space-between;
+  padding:12px 20px 6px}
+.hm-sheet-q span{font-family:'Quantico',sans-serif;font-size:13px;
+  color:var(--coral);transition:color .2s}
+body.hm-picked .hm-sheet-q span{color:#fff}
+#hm-clear{font-family:'Space Mono',monospace;font-size:11px;color:#3a3a3a;
+  background:none;border:none;padding:4px;display:none;cursor:pointer}
+#hm-sheet.picked #hm-clear{display:block;color:var(--g-dark)}
 #hm-pills{display:flex;gap:8px;overflow-x:auto;
-  padding:4px 20px 14px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  padding:6px 20px 14px;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  scroll-snap-type:x mandatory}
 #hm-pills::-webkit-scrollbar{display:none}
-.hm-pill{flex-shrink:0;display:flex;align-items:center;gap:7px;
-  padding:8px 14px;border:1px solid #1e1e1e;background:#060606;
+.hm-pill{flex-shrink:0;scroll-snap-align:start;display:flex;align-items:center;gap:7px;
+  padding:9px 15px;border:1px solid #1e1e1e;background:#060606;
   cursor:pointer;white-space:nowrap;
   transition:border-color .18s,background .18s;
   -webkit-tap-highlight-color:transparent}
@@ -281,54 +289,98 @@ body.map-leaving #bigT,body.map-leaving #wordmark,body.map-leaving #rail{
 .hm-pill.active .hm-pill-lbl{color:#fff!important}
 .hm-pill-dot{width:6px;height:6px;flex-shrink:0}
 .hm-pill-lbl{font-family:'Quantico',sans-serif;font-size:14px;font-weight:700}
-/* Masqué sur desktop — le dropdown prend le relai */
+.hm-pill-n{font-family:'Space Mono',monospace;font-size:9px;color:#3a3a3a}
 @media(hover:hover) and (pointer:fine){#hm-sheet{display:none}}
 
-/* ── COIN BAS DROIT — nombre de spots ────────────────────────────────── */
-#hm-corner{position:absolute;bottom:16px;right:18px;z-index:4;
+/* ── COINS ──────────────────────────────────────────────────────────── */
+.hm-corner{display:none;position:absolute;bottom:16px;z-index:6;
   font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;
-  text-transform:uppercase;color:#606060;pointer-events:none;
-  opacity:0;transition:opacity .3s ease}
-#hm-corner.ready{opacity:1}
-
-/* Sur mobile : login caché en map-active (sheet occupe le bas) */
+  text-transform:uppercase;color:var(--g-dark);pointer-events:none}
+#hmap.map-active .hm-corner{display:block}
+#hm-corner-bl{left:18px}
+#hm-corner{right:18px;text-align:right}
 @media(hover:none),(pointer:coarse){
+  #hmap.map-active .hm-corner{display:none}
   #hmap.map-active #hmap-close{display:none}
+  #hm-overline{top:66px}
+  #hm-weather{top:86px;width:auto;left:16px;right:auto;transform:none;
+    flex-direction:column;align-items:flex-start;gap:6px}
 }
 
-/* Popup custom — style TOTEHM, pas le popup MapLibre */
+/* ── MARQUEURS T ────────────────────────────────────────────────────── */
+.hm-marker{
+  width:15px;height:15px;cursor:pointer;display:flex;
+  align-items:center;justify-content:center;
+  transition:transform .15s ease,opacity .15s ease;opacity:.85}
+.hm-marker:active{transform:scale(1.4);opacity:1}
+@media(hover:hover){.hm-marker:hover{transform:scale(1.4);opacity:1}}
+.hm-marker.hm-dim{opacity:.1;pointer-events:none}
+.hm-marker.hm-on{opacity:1}
+/* Le T "place" (Google) est plus discret que le T "spot" (éditorial) :
+   un lieu scrapé n'a pas la même valeur qu'un lieu écrit. */
+.hm-marker.hm-src-place{opacity:.5}
+.hm-marker.hm-src-place.hm-on{opacity:.8}
+
+@keyframes radar-pulse{
+  0%,100%{transform:scale(1);opacity:1}
+  50%{transform:scale(1.25);opacity:.6}
+}
+.hm-user-dot{color:#fff!important;animation:radar-pulse 2.4s ease-in-out infinite;cursor:default}
+
+/* ── APERÇU AU SURVOL — desktop ─────────────────────────────────────── */
+#hm-pp{position:absolute;z-index:9;display:none;width:200px;
+  background:rgba(0,0,0,.96);flex-direction:column;overflow:hidden;
+  pointer-events:none;border-left:1px solid rgba(255,255,255,.06)}
+#hm-pp.show{display:flex}
+.pp-media{width:100%;height:82px;display:flex;align-items:center;justify-content:center;
+  font-family:'Quantico',sans-serif;font-size:13px;font-weight:700;position:relative;flex-shrink:0}
+.pp-src{position:absolute;top:6px;right:6px;font-family:'Space Mono',monospace;
+  font-size:8px;font-weight:700;padding:2px 5px;letter-spacing:.1em}
+.pp-body{padding:10px 12px;display:flex;flex-direction:column;gap:5px}
+.pp-int{font-family:'Quantico',sans-serif;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.pp-act{font-family:'Quantico',sans-serif;font-size:14px;font-weight:700;color:#d6d6d6;line-height:1.3}
+.pp-com{font-family:'Space Mono',monospace;font-size:10px;color:#7a7a7a;font-style:italic;line-height:1.45}
+.pp-foot{display:flex;justify-content:space-between;align-items:center;
+  padding-top:8px;margin-top:2px;border-top:1px solid #131313}
+.pp-dist{font-family:'Space Mono',monospace;font-size:10px;color:#bdbdbd}
+.pp-walk{font-family:'Space Mono',monospace;font-size:10px;color:var(--g-dark)}
+@media(hover:none),(pointer:coarse){#hm-pp{display:none!important}}
+
+/* ── POPUP AU TAP ───────────────────────────────────────────────────── */
 #hm-popup{
-  display:none;
-  position:absolute;left:50%;bottom:130px;
-  transform:translateX(-50%);
-  z-index:3;
-  background:#000;
+  display:none;position:absolute;left:50%;bottom:132px;transform:translateX(-50%);
+  z-index:9;background:#000;
   border:6px solid transparent;
   border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;
-  padding:14px 18px 14px 14px;
-  min-width:220px;max-width:300px;
-  text-align:left;
-  pointer-events:auto
-}
+  padding:14px 18px 14px 14px;min-width:220px;max-width:300px;
+  text-align:left;pointer-events:auto}
 #hm-popup.show{display:block}
-#hmap.map-active #hm-popup{position:absolute}
-.pop-close{
-  position:absolute;top:5px;right:7px;
-  font-family:'Quantico',sans-serif;font-size:14px;
-  color:#606060;background:none;border:none;cursor:pointer;line-height:1;
-  padding:0;transition:color .15s
-}
+.pop-close{position:absolute;top:5px;right:7px;font-family:'Quantico',sans-serif;
+  font-size:14px;color:var(--g-dark);background:none;border:none;cursor:pointer;
+  line-height:1;padding:0;transition:color .15s}
 .pop-close:hover{color:#fff}
 .pop-name{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:#fff;line-height:1.45}
 .pop-meta{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;
   text-transform:uppercase;color:#4a4a4a;margin-top:4px}
 .pop-why{font-family:'Quantico',sans-serif;font-size:12px;color:#808080;
   margin-top:7px;line-height:1.5}
+.pop-go{display:inline-block;margin-top:10px;font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--g-mid);text-decoration:none;transition:color .15s}
+.pop-go:hover{color:#fff}
+@media(max-width:500px){#hm-popup{min-width:80vw;max-width:92vw;bottom:118px}}
 
-/* Sur les petits écrans, le popup passe en bas fixe */
-@media(max-width:500px){
-  #hm-popup{min-width:80vw;max-width:92vw;bottom:110px}
-}
+/* ── BOUTON RADAR (géoloc refusée / à relancer) ─────────────────────── */
+#hm-geo{display:none;position:absolute;left:50%;bottom:24px;transform:translateX(-50%);
+  z-index:9;font-family:'Quantico',sans-serif;font-size:12px;color:#b0b0b0;
+  background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;
+  line-height:1.6;white-space:nowrap;-webkit-tap-highlight-color:transparent;
+  transition:color .15s}
+#hmap.map-active #hm-geo.show{display:inline-block}
+#hm-geo:hover,#hm-geo:active{color:#fff;
+  border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+@media(hover:none),(pointer:coarse){#hmap.map-active #hm-geo.show{bottom:auto;top:50%}}
+
 /* Make the Streets Sublime : overlay en bas de la méthode, visible seulement si Lisbon sélectionné en bas */
 /* Make the Streets Sublime : bouton phare perforé en HAUT de la méthode (si Lisbon sélectionné en bas) */
 #street-btn{position:absolute;left:50%;top:16px;transform:translateX(-50%);z-index:58;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
@@ -980,21 +1032,43 @@ body.gate.entered #fv-status{
 <div id="hmap" aria-hidden="true">
   <!-- canvas MapLibre — visible seulement en mode map-active -->
   <div id="map-canvas"></div>
+  <!-- grille et lignes de distance : au-dessus de la carte, jamais dedans -->
+  <div id="hm-grid"></div>
+  <canvas id="hm-lines"></canvas>
 
-  <!-- popup au tap sur un marqueur -->
+  <!-- Où tu es, ce qu'il fait -->
+  <div id="hm-overline" class="hm-reveal">LISBON · REAL AND LIVING MAP</div>
+  <div id="hm-weather">
+    <div class="hm-w hm-reveal"><b id="hm-time">--:--</b><span id="hm-sky">···</span></div>
+    <div class="hm-w hm-reveal"><b id="hm-temp">--°C</b><span id="hm-wind">-- km/h</span></div>
+  </div>
+
+  <!-- Aperçu au survol (desktop) -->
+  <div id="hm-pp">
+    <div class="pp-media"><span class="pp-src"></span><span class="pp-glyph"></span></div>
+    <div class="pp-body">
+      <div class="pp-int"></div>
+      <div class="pp-act"></div>
+      <div class="pp-com"></div>
+      <div class="pp-foot"><span class="pp-dist"></span><span class="pp-walk"></span></div>
+    </div>
+  </div>
+
+  <!-- Popup au tap sur un marqueur -->
   <div id="hm-popup">
     <button class="pop-close" type="button" aria-label="close">×</button>
     <div class="pop-name"></div>
     <div class="pop-meta"></div>
     <div class="pop-why"></div>
+    <a class="pop-go" target="_blank" rel="noopener">take me there →</a>
   </div>
 
   <!-- Sélecteur d'intention desktop -->
   <div id="hm-selector">
-    <p class="hm-q">What's your next move?</p>
+    <p class="hm-q hm-reveal">What's your next move, right now?</p>
     <div id="hm-dd">
       <button id="hm-ddt" type="button">
-        <span id="hm-ddt-lbl">— all intentions —</span>
+        <span id="hm-ddt-lbl">Choose an intention</span>
         <span class="hm-ddarr">▾</span>
       </button>
       <div id="hm-ddm"></div>
@@ -1004,13 +1078,21 @@ body.gate.entered #fv-status{
   <!-- Bottom sheet mobile -->
   <div id="hm-sheet">
     <div class="hm-handle"></div>
+    <div class="hm-sheet-q">
+      <span>What's your intention right now?</span>
+      <button id="hm-clear" type="button">✕ clear</button>
+    </div>
     <div id="hm-pills"></div>
   </div>
 
-  <!-- Compteur coin bas droit -->
-  <div id="hm-corner"></div>
+  <!-- Coins -->
+  <div id="hm-corner-bl" class="hm-corner hm-reveal"></div>
+  <div id="hm-corner" class="hm-corner hm-reveal"></div>
 
-  <!-- mode liste (fallback) + overlay map -->
+  <!-- Relance de la géolocalisation, seulement si elle a échoué -->
+  <button id="hm-geo" type="button">Activate radar</button>
+
+  <!-- mode liste (repli) + overlay carte -->
   <div id="hmap-in">
     <!-- Logo nav — retour au Totehm, identique à #sn-home dans Settings -->
     <button id="hmap-nav" type="button" aria-label="Back to my Totehm">
@@ -1371,12 +1453,12 @@ async function cloudSave(){
   if(!me)return;
   $('mw-sync').textContent='syncing…';
   try{
-    await sb.from('totehms').delete().eq('user_id',me.id);
-    const {error}=await sb.from('totehms').insert({
+    const {error}=await sb.from('totehms').upsert({
       user_id:me.id,
       totehm_visibility:(state.vis==='members')?'members':'private',
-      steps:state.habits, bot:!!profile.bot
-    });
+      steps:state.habits, bot:!!profile.bot,
+      updated_at:new Date().toISOString()
+    },{onConflict:'user_id'});
     if(error)throw error;
     $('mw-sync').textContent='synced ✓';
     setTimeout(()=>{if($('mw-sync').textContent==='synced ✓')$('mw-sync').textContent='';},1400);
@@ -1610,6 +1692,7 @@ function paint(){
 
   // Higher Map
   document.body.classList.toggle('in-map', isMap);
+  if(!isMap) document.body.classList.remove('hm-alive','hm-picked');
   $('hmap').classList.toggle('show', isMap);
   $('hmap').setAttribute('aria-hidden', isMap ? 'false' : 'true');
   if(isMap && !hmapLoaded) loadMap();
@@ -1984,96 +2067,107 @@ $('sn-home').onclick =()=>{if(!busy&&floor===2&&!hOpen()){floor=0;paint();}};  /
 $('sn-next').onclick =()=>{if(!busy&&floor===2&&!hOpen())showNext(true);};
 
 /* ══ HIGHER MAP ══
-   Le monde filtre par ton Totehm : ta position part au serveur, il
+   Le monde filtré par ton Totehm : ta position part au serveur, il
    croise tes intentions avec les lieux de ta zone, il renvoie ce qui
    te correspond.
 
-   La cle Google vit cote serveur. Une cle dans le front est lisible
-   par tout le monde, et la doctrine dit de payer un lieu une fois
-   puis de l'interroger a l'infini. Tant qu'elle n'est pas posee,
-   higher-map sert les spots deja en base : l'ecran marche avec de
-   vraies donnees, il ne montre jamais un vide. */
-const HM_COLOR = {
-  fight:'#E24B4A', flow:'#EF9F27', enrich:'#BA7517', love:'#639922',
-  express:'#1D9E75', focus:'#378ADD', celebrate:'#7F77DD'
+   Trois principes tenus ici :
+   · La clé Google vit côté serveur, et le serveur ne la dépense que
+     si la base est maigre autour de toi (higher-map v5).
+   · La carte ne charge AUCUNE tuile. Fond noir, grille, T. Zéro
+     requête cartographique, zéro coût, une identité qui n'est qu'à
+     nous.
+   · La carte s'affiche TOUJOURS. Géoloc refusée, GPS muet, permission
+     bloquée : on retombe sur Lisbonne et on le dit. Un écran vide est
+     un bug, pas un message. */
+
+let hmapLoaded   = false;
+let _map         = null;
+let _markers     = [];      /* {el, s} */
+let _activeInt   = null;
+let _origin      = null;    /* {lat,lng,fallback} */
+let _spots       = [];
+let _hover       = null;
+
+/* ── GÉOLOCALISATION ─────────────────────────────────────────────────────
+   La v4 échouait en silence : une erreur devenait null, null devenait
+   rien, et rien devenait un écran mort. Ici chaque code d'erreur a un
+   nom, un cache a une durée de vie, et l'échec a une porte de sortie. */
+const GEO_KEY = 'totehm_geo_v2';
+const GEO_TTL = 15 * 60 * 1000;              /* 15 min — on bouge */
+const GEO_ERR = {
+  1: 'location refused · showing Lisbon',
+  2: 'location unavailable · showing Lisbon',
+  3: 'location timed out · showing Lisbon'
 };
 
-let hmapLoaded = false;
-let _mapInstance = null;
-let _markers = [];          /* {el, intention} — rempli par renderMapLibre */
-let _activeIntention = null;
+function geoCached(){
+  try{
+    const c = JSON.parse(localStorage.getItem(GEO_KEY) || 'null');
+    if(c && Date.now() - c.t < GEO_TTL) return c;
+  }catch(e){}
+  return null;
+}
 
-function filterMarkers(intentionId){
-  _markers.forEach(m=>{
-    m.el.classList.toggle('hm-hidden', !!intentionId && m.intention!==intentionId);
+function geoStore(pos){
+  const c = {
+    lat: +pos.coords.latitude.toFixed(5),
+    lng: +pos.coords.longitude.toFixed(5),
+    acc: Math.round(pos.coords.accuracy || 0),
+    t:   Date.now()
+  };
+  try{ localStorage.setItem(GEO_KEY, JSON.stringify(c)); }catch(e){}
+  return c;
+}
+
+/* Deux passes : une lecture rapide et grossière pour afficher tout de
+   suite, une lecture précise en arrière-plan qui recadre si elle arrive.
+   Attendre 15 s un GPS haute précision avant de dessiner quoi que ce
+   soit, c'est ce qui donnait l'impression que « ça ne marche pas ». */
+function geoAsk(precise){
+  return new Promise((res, rej)=>{
+    if(!navigator.geolocation) return rej({code:2});
+    navigator.geolocation.getCurrentPosition(
+      p => res(geoStore(p)),
+      e => rej(e),
+      { enableHighAccuracy: !!precise,
+        timeout: precise ? 15000 : 7000,
+        maximumAge: precise ? 0 : 120000 }
+    );
   });
 }
 
-function selectIntention(id){
-  _activeIntention = _activeIntention===id ? null : id; /* toggle */
-  filterMarkers(_activeIntention);
-  const col = _activeIntention ? HM_COLOR[_activeIntention]||'#fff' : null;
-  /* Desktop : label + item actif */
-  const lbl=$('hm-ddt-lbl');
-  if(lbl){
-    const found=INTENTS_CONF.find(x=>x.id===_activeIntention);
-    lbl.textContent=found?found.name:'— all intentions —';
-    lbl.style.color=col||'';
-  }
-  document.querySelectorAll('.hm-ddi').forEach(el=>{
-    el.classList.toggle('active', el.dataset.int===_activeIntention);
-  });
-  /* Mobile : pills */
-  document.querySelectorAll('.hm-pill').forEach(el=>{
-    const on=el.dataset.int===_activeIntention;
-    el.classList.toggle('active', on);
-    el.style.borderColor=on?HM_COLOR[el.dataset.int]:'';
-  });
-  /* Ferme le dropdown */
-  const dd=$('hm-dd');
-  if(dd) dd.classList.remove('open');
-  /* Spot count */
-  const visible=_markers.filter(m=>!_activeIntention||m.intention===_activeIntention).length;
-  const corner=$('hm-corner');
-  if(corner) corner.textContent=visible+' spot'+(visible>1?'s':'');
+async function geoPermission(){
+  try{
+    if(navigator.permissions){
+      const s = await navigator.permissions.query({name:'geolocation'});
+      return s.state;                          /* granted · prompt · denied */
+    }
+  }catch(e){}
+  return 'prompt';
 }
 
-function buildSelector(intentions, totalSpots){
-  const ddm=$('hm-ddm'), pills=$('hm-pills');
-  const items=INTENTS_CONF.filter(x=>intentions.includes(x.id));
-
-  if(ddm){
-    ddm.innerHTML=items.map(x=>`<div class="hm-ddi" data-int="${x.id}" style="color:${x.color}" onclick="selectIntention('${x.id}')">
-      <div class="hm-ddi-dot" style="background:${x.color}"></div>
-      <div><div class="hm-ddi-name">${x.name}</div><div class="hm-ddi-def">${x.def}</div></div>
-    </div>`).join('');
-    /* Toggle dropdown */
-    const ddt=$('hm-ddt');
-    if(ddt) ddt.onclick=()=>$('hm-dd').classList.toggle('open');
-    document.addEventListener('click',e=>{
-      const dd=$('hm-dd');
-      if(dd&&!dd.contains(e.target))dd.classList.remove('open');
-    },{once:false,capture:false});
-  }
-  if(pills){
-    pills.innerHTML=items.map(x=>`<div class="hm-pill" data-int="${x.id}" onclick="selectIntention('${x.id}')">
-      <div class="hm-pill-dot" style="background:${x.color}"></div>
-      <span class="hm-pill-lbl" style="color:${x.color}">${x.name}</span>
-    </div>`).join('');
-  }
-
-  const corner=$('hm-corner');
-  if(corner){ corner.textContent=totalSpots+' spot'+(totalSpots>1?'s':''); corner.classList.add('ready'); }
-  const sel=$('hm-selector'), sheet=$('hm-sheet');
-  if(sel) sel.classList.add('ready');
-  if(sheet) sheet.classList.add('ready');
+/* ── OUTILS ──────────────────────────────────────────────────────────── */
+function fmtDist(m){ return m < 1000 ? Math.round(m)+'m' : (m/1000).toFixed(1)+'km'; }
+function fmtWalk(m){ return Math.max(1, Math.round(m/75))+' min walk'; }
+function fmtDMS(v, pos, neg){
+  const d = Math.floor(Math.abs(v));
+  const m = Math.round((Math.abs(v)-d)*60);
+  return d+'°'+String(m).padStart(2,'0')+"'"+(v>=0?pos:neg);
 }
+
+/* T TOTEHM vectoriel — fill:currentColor pour coloration par intention */
+const T_MARKER_SVG='<svg viewBox="0 0 68 68" fill="currentColor" width="15" height="15" aria-hidden="true">'
+  +'<rect x="0.9" y="0" width="66.7" height="9.6"/>'
+  +'<rect x="29.4" y="0" width="9.6" height="66.7"/>'
+  +'<rect x="21.2" y="62.4" width="26.1" height="5.4"/>'
+  +'</svg>';
 
 function showMap(on){
   if(on){ floor=1; paint(); } else { if(floor===1){ floor=0; paint(); } }
 }
 
-/* Charge MapLibre GL JS et son CSS en lazy — une seule fois par session */
+/* MapLibre en lazy — une seule fois par session */
 function loadMapLibre(){
   if(window.maplibregl) return Promise.resolve();
   return new Promise((resolve, reject)=>{
@@ -2085,237 +2179,429 @@ function loadMapLibre(){
     }
     const js=document.createElement('script');
     js.src='https://cdn.jsdelivr.net/npm/maplibre-gl@4/dist/maplibre-gl.js';
-    js.onload=resolve; js.onerror=reject;
+    js.onload=resolve; js.onerror=()=>reject(new Error('maplibre unreachable'));
     document.head.appendChild(js);
   });
 }
 
+/* ── RÉVÉLATION ──────────────────────────────────────────────────────────
+   Le HUD dort à 38 %. Un geste le réveille quatre secondes. Une
+   intention choisie l'allume pour de bon. */
+let hmRevealTimer;
+function hmReveal(){
+  document.body.classList.add('hm-alive');
+  clearTimeout(hmRevealTimer);
+  hmRevealTimer=setTimeout(()=>{
+    if(!_activeInt) document.body.classList.remove('hm-alive');
+  }, 4000);
+}
+
+/* ── SÉLECTEUR ───────────────────────────────────────────────────────── */
+function hmCount(id){ return _spots.filter(s=>s.intention===id).length; }
+
+function buildSelector(intentions){
+  const ddm=$('hm-ddm'), pills=$('hm-pills');
+  /* INTS est la source unique des sept intentions. Aucune autre table
+     de couleurs ne doit exister dans ce fichier. */
+  const items=INTS.filter(x=>intentions.includes(x.id));
+
+  if(ddm){
+    ddm.innerHTML=items.map(x=>
+      '<div class="hm-ddi" data-int="'+x.id+'" style="color:'+x.color+'">'
+      +'<div class="hm-ddi-dot" style="background:'+x.color+'"></div>'
+      +'<div><div class="hm-ddi-name" style="color:'+x.color+'">'+esc(x.name)+'</div>'
+      +'<div class="hm-ddi-def">'+esc(x.def)+'</div></div>'
+      +'<div class="hm-ddi-n">'+hmCount(x.id)+'</div></div>').join('');
+    ddm.querySelectorAll('.hm-ddi').forEach(el=>{
+      el.onclick=()=>selectIntention(el.dataset.int);
+    });
+  }
+  if(pills){
+    pills.innerHTML=items.map(x=>
+      '<div class="hm-pill" data-int="'+x.id+'">'
+      +'<div class="hm-pill-dot" style="background:'+x.color+'"></div>'
+      +'<span class="hm-pill-lbl" style="color:'+x.color+'">'+esc(x.name)+'</span>'
+      +'<span class="hm-pill-n">'+hmCount(x.id)+'</span></div>').join('');
+    pills.querySelectorAll('.hm-pill').forEach(el=>{
+      el.onclick=()=>selectIntention(el.dataset.int);
+    });
+  }
+
+  const ddt=$('hm-ddt');
+  if(ddt) ddt.onclick=e=>{ e.stopPropagation(); $('hm-dd').classList.toggle('open'); };
+
+  $('hm-selector').classList.add('ready');
+  $('hm-sheet').classList.add('ready');
+  paintCorner();
+}
+
+function selectIntention(id){
+  _activeInt = (_activeInt===id) ? null : id;   /* toggle */
+  const col  = _activeInt ? intColor(_activeInt) : null;
+  const conf = INT_BY_ID[_activeInt];
+
+  document.body.classList.toggle('hm-picked', !!_activeInt);
+  if(_activeInt) document.body.classList.add('hm-alive');
+  $('hm-sheet').classList.toggle('picked', !!_activeInt);
+
+  const lbl=$('hm-ddt-lbl');
+  if(lbl){ lbl.textContent = conf ? conf.name : 'Choose an intention';
+           lbl.style.color = col || ''; }
+
+  document.querySelectorAll('.hm-ddi').forEach(el=>
+    el.classList.toggle('active', el.dataset.int===_activeInt));
+  document.querySelectorAll('.hm-pill').forEach(el=>{
+    const on = el.dataset.int===_activeInt;
+    el.classList.toggle('active', on);
+    el.style.borderColor = on ? intColor(el.dataset.int) : '';
+  });
+
+  const dd=$('hm-dd'); if(dd) dd.classList.remove('open');
+  closeHmPopup();
+
+  /* Le monde ne disparaît pas : il s'assombrit. Ce qui ne correspond
+     pas à l'intention reste là, à 10 %. */
+  _markers.forEach(m=>{
+    const on = !_activeInt || m.s.intention===_activeInt;
+    m.el.classList.toggle('hm-dim', !on);
+    m.el.classList.toggle('hm-on',  on && !!_activeInt);
+  });
+
+  fitToIntention();
+  paintCorner();
+  drawLines();
+}
+
+function paintCorner(){
+  const n = _activeInt ? hmCount(_activeInt) : _spots.length;
+  const c = $('hm-corner');
+  if(c) c.textContent = n + ' spot' + (n>1?'s':'');
+  const bl = $('hm-corner-bl');
+  if(bl && _origin) bl.textContent =
+    fmtDMS(_origin.lat,'N','S') + ' · ' + fmtDMS(_origin.lng,'E','W');
+}
+
+/* Recadre sur ce qui compte. Le radar suit l'intention. */
+function fitToIntention(){
+  if(!_map || !_origin) return;
+  const list = _spots.filter(s=>!_activeInt || s.intention===_activeInt);
+  if(!list.length) return;
+  const b = new maplibregl.LngLatBounds([_origin.lng,_origin.lat],[_origin.lng,_origin.lat]);
+  list.slice(0,14).forEach(s=>b.extend([s.lng,s.lat]));
+  const narrow = window.matchMedia('(max-width:700px)').matches;
+  _map.fitBounds(b, {
+    padding:{ top:140, bottom: narrow?170:90, left:56, right:56 },
+    maxZoom:16, duration:520
+  });
+}
+
+/* ── LIGNES DE DISTANCE ───────────────────────────────────────────────────
+   La signature visuelle : des traits pointillés de toi vers les lieux,
+   avec la distance réelle au milieu. Dessinés sur un canvas au-dessus
+   de la carte, jamais dans la carte — MapLibre n'a rien à recalculer. */
+function drawLines(){
+  const cv=$('hm-lines'); if(!cv||!_map||!_origin) return;
+  const dpr=Math.max(1,window.devicePixelRatio||1);
+  const w=cv.clientWidth, h=cv.clientHeight;
+  if(!w||!h) return;
+  if(cv.width!==Math.round(w*dpr)){ cv.width=Math.round(w*dpr); cv.height=Math.round(h*dpr); }
+  const X=cv.getContext('2d');
+  X.setTransform(dpr,0,0,dpr,0,0);
+  X.clearRect(0,0,w,h);
+  if(!_activeInt) return;
+
+  const me=_map.project([_origin.lng,_origin.lat]);
+  const col=intColor(_activeInt);
+  _spots.filter(s=>s.intention===_activeInt).slice(0,6).forEach(s=>{
+    const p=_map.project([s.lng,s.lat]);
+    X.save();
+    X.strokeStyle=col; X.globalAlpha=.22; X.lineWidth=.5;
+    X.setLineDash([3,7]);
+    X.beginPath(); X.moveTo(me.x,me.y); X.lineTo(p.x,p.y); X.stroke();
+    X.restore();
+    X.font='700 8px "Space Mono",monospace';
+    X.fillStyle=col; X.globalAlpha=.5; X.textAlign='center';
+    X.fillText(fmtDist(s.dist_m||0),(me.x+p.x)/2,(me.y+p.y)/2-3);
+    X.globalAlpha=1;
+  });
+}
+
+/* ── APERÇU / POPUP ──────────────────────────────────────────────────── */
 function closeHmPopup(){ $('hm-popup').classList.remove('show'); }
 
-/* T TOTEHM vectoriel — fill:currentColor pour coloration par intention */
-const T_MARKER_SVG='<svg viewBox="0 0 68 68" fill="currentColor" width="15" height="15" aria-hidden="true">'
-  +'<rect x="0.9" y="0" width="66.7" height="9.6"/>'
-  +'<rect x="29.4" y="0" width="9.6" height="66.7"/>'
-  +'<rect x="21.2" y="62.4" width="26.1" height="5.4"/>'
-  +'</svg>';
+function showPreview(s, ev){
+  const pp=$('hm-pp'); if(!pp) return;
+  const col=intColor(s.intention);
+  const conf=INT_BY_ID[s.intention]||{name:s.intention};
+  pp.querySelector('.pp-media').style.cssText='background:'+col+'18;color:'+col;
+  pp.querySelector('.pp-glyph').innerHTML=T_MARKER_SVG;
+  const src=pp.querySelector('.pp-src');
+  src.textContent = s.source==='spot' ? 'TOTEHM PICK' : 'NEARBY';
+  src.style.color = s.source==='spot' ? col : '#4a4a4a';
+  pp.querySelector('.pp-int').textContent=conf.name;
+  pp.querySelector('.pp-int').style.color=col;
+  pp.querySelector('.pp-act').textContent=s.activite||'place';
+  const com=pp.querySelector('.pp-com');
+  com.textContent=s.commentaire ? '"'+s.commentaire+'"' : '';
+  com.style.display=s.commentaire?'':'none';
+  pp.querySelector('.pp-dist').textContent=fmtDist(s.dist_m||0);
+  pp.querySelector('.pp-walk').textContent=fmtWalk(s.dist_m||0);
 
-/* Formule de Haversine — distance réelle en mètres entre deux coordonnées */
-function haversine(lat1,lng1,lat2,lng2){
-  const R=6371e3,f=Math.PI/180;
-  const φ1=lat1*f,φ2=lat2*f,Δφ=(lat2-lat1)*f,Δλ=(lng2-lng1)*f;
-  const a=Math.sin(Δφ/2)**2+Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
-  return 2*R*Math.asin(Math.sqrt(a));
+  const r=$('hmap').getBoundingClientRect();
+  let x=ev.clientX-r.left+16, y=ev.clientY-r.top-8;
+  if(x+210>r.width)  x=ev.clientX-r.left-216;
+  if(y+240>r.height) y=r.height-248;
+  pp.style.left=x+'px'; pp.style.top=Math.max(8,y)+'px';
+  pp.classList.add('show');
 }
-function fmtDist(m){return m<1000?Math.round(m)+'m':(m/1000).toFixed(1)+'km';}
+function hidePreview(){ const pp=$('hm-pp'); if(pp) pp.classList.remove('show'); }
 
-/* Initialise MapLibre dans #map-canvas avec les spots en marqueurs.
-   Le RAF est obligatoire : map-active passe #map-canvas de display:none à
-   display:block. Sans RAF, le navigateur n'a pas recalculé les styles et
-   MapLibre lit le container à 0×0 — rien ne s'affiche. */
-function renderMapLibre(coords, spots){
+function openHmPopup(s){
+  const pop=$('hm-popup');
+  pop.querySelector('.pop-name').textContent=s.activite||'place';
+  const conf=INT_BY_ID[s.intention]||{name:s.intention};
+  pop.querySelector('.pop-meta').textContent=
+    [conf.name, fmtDist(s.dist_m||0), fmtWalk(s.dist_m||0)].join(' · ');
+  const why=pop.querySelector('.pop-why');
+  if(s.commentaire){ why.textContent=s.commentaire; why.style.display=''; }
+  else why.style.display='none';
+  /* Lien Maps simple : une URL, pas un appel d'API. Zéro euro. */
+  pop.querySelector('.pop-go').href=
+    'https://www.google.com/maps/dir/?api=1&destination='+s.lat+','+s.lng;
+  pop.classList.add('show');
+}
+
+/* ── RENDU DE LA CARTE ───────────────────────────────────────────────── */
+function renderMapLibre(origin, spots){
   const hmap=$('hmap');
   hmap.classList.add('map-active');
+  if(_map){ try{_map.remove();}catch(e){} _map=null; }
+  _markers=[]; _activeInt=null; _origin=origin; _spots=spots;
+  document.body.classList.remove('hm-picked');
 
-  if(_mapInstance){ try{_mapInstance.remove();}catch(e){} _mapInstance=null; }
-  _markers=[];
-  _activeIntention=null;
-
-  /* setTimeout(150) : plus fiable que RAF sur mobile (iOS Safari, Chromebook)
-     pour garantir que display:block est calculé avant l'init MapLibre. */
+  /* setTimeout(150) : plus fiable que RAF sur mobile pour garantir que
+     display:block est calculé avant l'init — sinon MapLibre lit un
+     container à 0×0 et n'affiche rien. */
   setTimeout(()=>{
     const canvas=$('map-canvas');
-    /* Dimensions absolues en px — MapLibre mesure clientWidth/clientHeight,
-       qui peut rester 0 sur certains mobiles même après un RAF. */
-    const w=$('hmap').offsetWidth||window.innerWidth;
-    const h=$('hmap').offsetHeight||window.innerHeight;
-    canvas.style.width=w+'px';
-    canvas.style.height=h+'px';
-    /* Void Radar — fond noir natif, zéro réseau cartographique */
+    const w=hmap.offsetWidth||window.innerWidth;
+    const h=hmap.offsetHeight||window.innerHeight;
+    canvas.style.width=w+'px'; canvas.style.height=h+'px';
+
     const map=new maplibregl.Map({
       container: canvas,
+      /* Void Radar — fond noir natif, zéro réseau cartographique */
       style:{version:8,sources:{},layers:[{id:'bg',type:'background',paint:{'background-color':'#000000'}}]},
-      center:[coords.lng, coords.lat],
-      zoom:14,
-      interactive:false,
-      attributionControl:false
+      center:[origin.lng, origin.lat],
+      zoom:14, interactive:false, attributionControl:false
     });
-    _mapInstance=map;
-
-    /* Marqueur T utilisateur — blanc, animation radar-pulse */
-    const uEl=document.createElement('div');
-    uEl.className='hm-marker hm-user-dot';
-    uEl.innerHTML=T_MARKER_SVG;
-    new maplibregl.Marker({element:uEl, anchor:'center'})
-      .setLngLat([coords.lng, coords.lat])
-      .addTo(map);
-
-    const popup=$('hm-popup');
-    popup.querySelector('.pop-close').onclick=closeHmPopup;
+    _map=map;
 
     map.on('error', err=>{
-      const msg=(err&&err.error&&err.error.message)||String(err)||'map error';
+      const msg=(err&&err.error&&err.error.message)||'map error';
       hmap.classList.remove('map-active');
-      try{map.remove();}catch(e){} _mapInstance=null;
-      const note2=$('hm-note');
-      note2.className='note no';
-      note2.textContent='[6] '+msg.slice(0,80);
-      renderHmList(spots, spots.map(s=>s.intention).filter((v,i,a)=>a.indexOf(v)===i));
+      try{map.remove();}catch(e){} _map=null;
+      const note=$('hm-note'); note.className='note no'; note.textContent=msg.slice(0,80);
+      renderHmList(spots);
     });
 
     map.on('load', ()=>{
+      /* Toi — T blanc qui pulse */
+      const uEl=document.createElement('div');
+      uEl.className='hm-marker hm-user-dot';
+      uEl.innerHTML=T_MARKER_SVG;
+      new maplibregl.Marker({element:uEl, anchor:'center'})
+        .setLngLat([origin.lng, origin.lat]).addTo(map);
+
       spots.forEach(s=>{
         if(s.lat==null||s.lng==null) return;
-        const col=HM_COLOR[s.intention]||'#606060';
+        const col=intColor(s.intention);
         const el=document.createElement('div');
-        el.className='hm-marker';
+        el.className='hm-marker hm-src-'+(s.source||'spot');
         el.style.color=col;
         el.style.filter='drop-shadow(0 0 4px '+col+')';
         el.innerHTML=T_MARKER_SVG;
-
         new maplibregl.Marker({element:el, anchor:'bottom'})
-          .setLngLat([s.lng, s.lat])
-          .addTo(map);
-        _markers.push({el, intention:s.intention});
+          .setLngLat([s.lng, s.lat]).addTo(map);
+        _markers.push({el, s});
 
-        el.addEventListener('click', ev=>{
-          ev.stopPropagation();
-          popup.querySelector('.pop-name').textContent=s.activite||s.lieu_type||'place';
-          const dist=haversine(coords.lat,coords.lng,s.lat,s.lng);
-          const meta=[s.intention, fmtDist(dist), s.duration_min?s.duration_min+' min':null].filter(Boolean).join(' · ');
-          popup.querySelector('.pop-meta').textContent=meta;
-          const why=popup.querySelector('.pop-why');
-          if(s.commentaire){ why.textContent=s.commentaire; why.style.display=''; }
-          else why.style.display='none';
-          popup.classList.add('show');
-        });
+        el.addEventListener('click', ev=>{ ev.stopPropagation(); openHmPopup(s); });
+        el.addEventListener('mouseenter', ev=>{ _hover=s; showPreview(s, ev); });
+        el.addEventListener('mousemove',  ev=>{ if(_hover===s) showPreview(s, ev); });
+        el.addEventListener('mouseleave', ()=>{ _hover=null; hidePreview(); });
       });
-      /* Sélecteur : construit avec les intentions disponibles dans les spots */
-      const uniqIntentions=[...new Set(spots.map(s=>s.intention).filter(Boolean))];
-      buildSelector(uniqIntentions, spots.length);
+
+      buildSelector([...new Set(spots.map(s=>s.intention).filter(Boolean))]);
+      fitToIntention();
+      drawLines();
     });
 
-    /* Resize si #hmap change de dimensions (rotation mobile, etc.) */
-    new ResizeObserver(()=>{ if(_mapInstance) _mapInstance.resize(); })
-      .observe(canvas);
+    map.on('render', drawLines);
+    map.on('move',   drawLines);
+
+    new ResizeObserver(()=>{
+      if(!_map) return;
+      const cv=$('hm-lines');
+      if(cv){ cv.width=0; }         /* force le recalcul dpr au prochain draw */
+      _map.resize(); drawLines();
+    }).observe(canvas);
   },150);
 }
 
-/* Mode liste : fallback si pas de coords ou si MapLibre a planté */
-function renderHmList(spots, intentions){
-  const list=$('hm-list'), note=$('hm-note'), sub=$('hm-sub');
-  if(sub) sub.textContent=spots.length+' places · '+intentions.join(' · ');
+/* Repli liste : si MapLibre ne charge pas, l'information reste lisible. */
+function renderHmList(spots){
+  const list=$('hm-list'), note=$('hm-note');
   list.innerHTML=spots.map(s=>{
-    const col=HM_COLOR[s.intention]||'#606060';
-    const name=esc(s.activite||s.lieu_type||'place');
+    const col=intColor(s.intention);
     const why=s.commentaire?'<div class="hm-why">'+esc(s.commentaire)+'</div>':'';
-    const meta=[s.intention, s.duration_min?s.duration_min+' min':null].filter(Boolean).join(' · ');
-    return '<div class="hm-spot">'
-         +   '<span class="hm-dot" style="background:'+col+'"></span>'
-         +   '<div class="hm-body">'
-         +     '<div class="hm-name">'+name+'</div>'
-         +     '<div class="hm-meta">'+esc(meta)+'</div>'
-         +     why
-         +   '</div>'
-         + '</div>';
+    const meta=[s.intention, s.dist_m!=null?fmtDist(s.dist_m):null].filter(Boolean).join(' · ');
+    return '<div class="hm-spot"><span class="hm-dot" style="background:'+col+'"></span>'
+         + '<div class="hm-body"><div class="hm-name">'+esc(s.activite||'place')+'</div>'
+         + '<div class="hm-meta">'+esc(meta)+'</div>'+why+'</div></div>';
   }).join('');
   note.textContent='';
 }
 
+/* ── MÉTÉO ET HEURE ──────────────────────────────────────────────────────
+   open-meteo : pas de clé, pas de quota, pas de facture. */
+let hmWeatherAt=0;
+function hmTime(){
+  const d=new Date();
+  const t=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  const el=$('hm-time'); if(el) el.textContent=t;
+}
+async function hmWeather(lat,lng){
+  if(Date.now()-hmWeatherAt < 300000) return;
+  hmWeatherAt=Date.now();
+  try{
+    const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat
+      +'&longitude='+lng+'&current=temperature_2m,windspeed_10m,weathercode');
+    const c=(await r.json()).current;
+    $('hm-temp').textContent=Math.round(c.temperature_2m)+'°C';
+    $('hm-wind').textContent=Math.round(c.windspeed_10m)+' km/h';
+    const w=c.weathercode;
+    $('hm-sky').textContent = w===0?'Clear':w<=3?'Cloudy':w<=49?'Fog':w<=69?'Rain':w<=79?'Snow':'Storm';
+  }catch(e){ $('hm-sky').textContent='···'; }
+}
+
+/* ── CHARGEMENT ──────────────────────────────────────────────────────── */
 async function loadMap(){
   const note=$('hm-note');
   $('hm-list').innerHTML='';
   note.className='note dim';
-  note.textContent='reading your Totehm...';
+  note.textContent='reading your Totehm…';
+  $('hm-geo').classList.remove('show');
 
   try{
-    note.textContent='[1] session...';
-    const { data:{ session } }=await sb.auth.getSession();
-    if(!session){ note.className='note no'; note.textContent='[1] not signed in'; return; }
+    const { data:{ session } } = await sb.auth.getSession();
+    if(!session){ note.className='note no'; note.textContent='sign in to open the radar'; return; }
 
-    /* Coords : cache GPS en priorité, sinon demande live */
-    let coords=null;
-    try{ const c=localStorage.getItem('totehm_map_pos_v1'); if(c) coords=JSON.parse(c); }catch(e){}
-
-    if(!coords && navigator.geolocation){
-      note.textContent='[2] locating...';
-      coords=await new Promise(resolve=>{
-        navigator.geolocation.getCurrentPosition(
-          pos=>{
-            const c={lat:pos.coords.latitude,lng:pos.coords.longitude};
-            try{localStorage.setItem('totehm_map_pos_v1',JSON.stringify(c));}catch(e){}
-            resolve(c);
-          },
-          ()=>resolve(null),
-          {timeout:10000,maximumAge:300000}
-        );
-      });
-    }
-
+    /* 1. Position — cache court, sinon demande, sinon on continue sans. */
+    let coords=geoCached(), geoNote=null;
     if(!coords){
-      note.textContent='';
-      const btn=document.createElement('button');
-      btn.className='btn-sig';btn.textContent='Activate Radar';
-      btn.onclick=async()=>{
-        note.textContent='[2] locating...';btn.remove();
-        try{
-          coords=await new Promise((res,rej)=>
-            navigator.geolocation.getCurrentPosition(
-              pos=>{const c={lat:pos.coords.latitude,lng:pos.coords.longitude};
-                try{localStorage.setItem('totehm_map_pos_v1',JSON.stringify(c));}catch(e){}
-                res(c);},
-              rej,{timeout:15000}
-            )
-          );
-          hmapLoaded=false; loadMap();
-        }catch(e){ note.className='note no'; note.textContent='[2] geo blocked'; }
-      };
-      note.appendChild(btn);
-      return;
+      const perm=await geoPermission();
+      if(perm==='denied'){ geoNote=GEO_ERR[1]; }
+      else{
+        note.textContent='locating…';
+        try{ coords=await geoAsk(false); }
+        catch(e){ geoNote=GEO_ERR[e&&e.code] || GEO_ERR[2]; }
+      }
     }
 
-    note.textContent='[2] fetching spots...';
+    /* 2. Le serveur tranche : il retombe sur Lisbonne si on n'a rien. */
+    note.textContent='reading the streets…';
     const r=await fetch('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/higher-map',{
       method:'POST',
       headers:{'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json'},
       body:JSON.stringify(coords?{lat:coords.lat,lng:coords.lng}:{})
     });
 
-    note.textContent='[3] '+r.status;
-    if(r.status===402){ note.className='note no'; note.textContent='[3] members only'; return; }
+    if(r.status===402){ note.className='note no'; note.textContent='members only'; return; }
+    if(!r.ok){ note.className='note no'; note.textContent='radar unavailable ('+r.status+')'; return; }
+
     const j=await r.json();
-
-    if(j.reason==='no_intention'){ note.className='note dim'; note.textContent='[3] no intention on habits'; return; }
-
-    const spots=j.spots||[], intentions=j.intentions||[];
-    note.textContent='[4] '+spots.length+' spots, rendering map...';
-
-    if(!spots.length){ note.className='note dim'; note.textContent='[4] nothing around you yet'; hmapLoaded=true; return; }
-
-    try{
-      note.textContent='[5] loading MapLibre...';
-      await loadMapLibre();
-      note.textContent='[5] initializing map...';
-      renderMapLibre(coords, spots);
-      const sub=$('hm-sub');
-      if(sub) sub.textContent=spots.length+' places · '+intentions.join(' · ');
-      hmapLoaded=true;
-      return;
-    }catch(mapErr){
-      note.className='note no';
-      note.textContent='[5] map error: '+(mapErr&&mapErr.message||mapErr);
-      $('hmap').classList.remove('map-active');
-      if(_mapInstance){ try{_mapInstance.remove();}catch(e){} _mapInstance=null; }
+    if(j.reason==='no_intention'){
+      note.className='note dim';
+      note.textContent='give at least one habit an intention — the map reads your Totehm';
+      hmapLoaded=true; return;
     }
 
-    renderHmList(spots, intentions);
+    const spots=j.spots||[];
+    const origin=j.origin||{lat:38.7078,lng:-9.1366,fallback:true};
+
+    if(!spots.length){
+      note.className='note dim';
+      note.textContent='nothing around you yet';
+      hmapLoaded=true; return;
+    }
+
+    /* 3. Rendu. */
+    try{
+      await loadMapLibre();
+      renderMapLibre(origin, spots);
+    }catch(mapErr){
+      note.className='note no';
+      note.textContent=(mapErr&&mapErr.message)||'map error';
+      $('hmap').classList.remove('map-active');
+      renderHmList(spots);
+      hmapLoaded=true; return;
+    }
+
+    /* 4. HUD. */
+    const ov=$('hm-overline');
+    if(origin.fallback){
+      ov.textContent='LISBON · '+(geoNote||'default position');
+      ov.classList.add('approx');
+      $('hm-geo').classList.add('show');
+    }else{
+      ov.textContent='REAL AND LIVING MAP';
+      ov.classList.remove('approx');
+      $('hm-geo').classList.remove('show');
+    }
+    hmTime(); hmWeather(origin.lat, origin.lng);
     hmapLoaded=true;
+
+    /* 5. Affinage en arrière-plan : si le GPS précis répond après coup
+       et qu'on a bougé de plus de 300 m, on recharge une fois. */
+    if(!origin.fallback && coords && coords.acc>500){
+      geoAsk(true).then(c=>{
+        const moved=Math.hypot((c.lat-origin.lat)*111000,(c.lng-origin.lng)*87000);
+        if(moved>300){ hmapLoaded=false; loadMap(); }
+      }).catch(()=>{});
+    }
 
   }catch(e){
     console.error('higher-map:',e);
     note.className='note no';
-    note.textContent='error: '+(e&&e.message||e);
+    note.textContent=(e&&e.message)||'radar error';
   }
 }
+
+/* ── ÉVÉNEMENTS ──────────────────────────────────────────────────────── */
+$('hm-popup').querySelector('.pop-close').onclick=closeHmPopup;
+$('hm-clear').onclick=()=>{ if(_activeInt) selectIntention(_activeInt); };
+$('hm-geo').onclick=async()=>{
+  const btn=$('hm-geo');
+  btn.textContent='locating…';
+  try{
+    await geoAsk(true);
+    btn.textContent='Activate radar';
+    hmapLoaded=false;
+    await loadMap();
+  }catch(e){
+    btn.textContent=(GEO_ERR[e&&e.code]||GEO_ERR[2]).split('·')[0].trim();
+    setTimeout(()=>{btn.textContent='Activate radar';},2600);
+  }
+};
+
+document.addEventListener('click',e=>{
+  const dd=$('hm-dd');
+  if(dd && !dd.contains(e.target)) dd.classList.remove('open');
+});
+['mousemove','touchstart','touchmove'].forEach(ev=>
+  $('hmap').addEventListener(ev, hmReveal, {passive:true}));
+setInterval(hmTime, 30000);
+window.addEventListener('resize', drawLines);
 
 /* Logo nav : retour Habits direct, toujours disponible */
 $('hmap-nav').onclick = ()=>{ floor=0; paint(); };
