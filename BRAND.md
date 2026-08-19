@@ -2,7 +2,7 @@
 
 **Source of truth for product, brand and ecosystem.**
 Read this before writing any copy, naming anything, or designing any UI.
-Technical rules live in `CLAUDE.md`. Product state lives in `TOTEHM_MASTER.html`.
+Technical rules live in `CLAUDE.md`. Product state lives in `backend/SYSTEM.md`.
 
 ---
 
@@ -205,7 +205,7 @@ leaderboard, never a count of anything comparable between members.** The moment
 Higher becomes a quantity, Plant becomes the thing it was built against.
 
 *(Internal identifier: the Postgres function is `higher_count`. The old
-`figher_count` is deprecated — see `TOTEHM_MASTER.html`.)*
+`figher_count` is deprecated — see `backend/SYSTEM.md` §7.)*
 
 ### CRITICAL DISTINCTION
 
@@ -323,6 +323,67 @@ objectives.
 
 > Maps tell you where. TOTEHM tells you why.
 > A map for the person you're becoming.
+
+---
+
+## Higher Map — le Void Radar — 19/08/2026
+
+**Le monde est vide jusqu'à ce que l'intention le projette.**
+
+La Higher Map ne charge aucune tuile cartographique et ne charge aucun
+lieu à l'ouverture. Fond noir, grille, anneaux de portée, un balayage
+qui tourne, et ton T au centre. Rien d'autre. Le système pose une seule
+question : quelle est ton intention, là, maintenant.
+
+C'est seulement quand tu réponds que le monde apparaît.
+
+### Le flow, en trois temps
+
+1. **Le vide.** Swipe sur l'étage 1. Le radar tourne autour de toi. Il
+   n'y a rien à regarder parce qu'il n'y a rien à faire tant que tu
+   n'as pas décidé.
+2. **La décision.** Tu choisis une intention. Une seule.
+3. **La projection.** Les T naissent du centre vers l'extérieur, du
+   plus proche au plus lointain. Le radar s'allume à la couleur de ton
+   intention.
+
+Ce n'est pas un détail d'animation : c'est la thèse du produit rendue
+visible. Le monde ne te propose rien. C'est ton intention qui fait
+apparaître ce qui compte.
+
+### Les règles tenues
+
+- **Le seul glyphe autorisé est le T.** Pas de pin, pas de goutte, pas
+  d'icône de catégorie. Toi au centre en blanc pur, les lieux autour à
+  la couleur de l'intention.
+- **Le sélecteur montre TES intentions.** Il est construit depuis ton
+  Totehm, pas depuis ce qui traîne autour de toi. Si tu n'as posé
+  aucune intention sur tes habitudes, le radar te renvoie à tes
+  habitudes — c'est le bon endroit pour commencer.
+- **Le HUD dort.** Tout le texte d'interface démarre à 38 %. Un geste
+  le réveille quatre secondes. Une intention choisie l'allume, puis le
+  sélecteur s'efface pour laisser le radar respirer.
+- **Un lieu écrit vaut plus qu'un lieu trouvé.** Les spots éditoriaux
+  passent devant les lieux Google et leur T est plus lumineux. La
+  distinction se voit sans être expliquée.
+- **Quinze T maximum.** Au-delà l'écran devient une soupe et le choix
+  redevient impossible.
+- **Le radar s'affiche toujours.** Géolocalisation refusée, GPS muet,
+  permission bloquée : repli sur Lisbonne, annoncé à l'écran. Un écran
+  vide au démarrage est le design ; un écran vide après une décision
+  est un bug.
+
+### Aucune librairie de carte
+
+Un `<canvas>` et des `<div>` suffisent. Le radar ne dépend plus d'un
+script tiers pour s'afficher, et l'écran ne charge rien avant que le
+membre ait décidé.
+
+### Question ouverte
+
+Le radar est derrière l'abonnement. Un membre Seed n'en voit rien — pas
+même le vide qui tourne, qui serait pourtant la meilleure publicité
+pour Plant. À trancher.
 
 ---
 

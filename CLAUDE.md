@@ -115,6 +115,31 @@ intitulés disparaissent uniquement sur desktop — la nav mobile est inchangée
 `applyFreq()` sur `fpTarget==='filter'` appelle `showFpStage('int')`, pas `closeFreqPanel()`.
 `applyIntent()` sur `fpTarget==='filter'` ferme le panneau et applique le filtre.
 
+### Le Void Radar — architecture et mathématique · 19/08/2026
+
+Trois couches superposées dans `#hmap`, aucune librairie externe.
+
+| Couche | Élément | Rôle |
+|---|---|---|
+| 0 | `<canvas id="hm-canvas">` | grille, anneaux de portée, balayage, lignes de distance |
+| 1 | `<div id="hm-markers">` | les T, positionnés en `transform` |
+| 2 | HUD | sélecteur, météo, coins, popup |
+
+**Pourquoi pas de moteur cartographique.** Un moteur de carte chargeait ~800 ko de JS depuis un CDN pour peindre un fond noir sans tuile. En prime : `setTimeout(150)` pour que le container ne soit pas mesuré à 0×0, un `ResizeObserver`, un handler `map.on('error')` et un mode de repli. Le canvas supprime les quatre.
+
+**Pourquoi les marqueurs sont du DOM et pas du canvas.** Un T dessiné dans le canvas n'a ni `:hover`, ni zone de clic, ni animation CSS, ni accessibilité. Un `<div>` a tout ça gratuitement. Le canvas fait ce qu'il fait bien (des traits par milliers), le DOM fait ce qu'il fait bien (une quinzaine d'objets interactifs).
+
+**La projection.** Deux calculs distincts, séparation volontaire.
+
+- Distance affichée → **Haversine** : le chiffre que le membre lit, il doit être juste.
+- Position pixel → **projection plane locale** (équirectangulaire tangente, corrigée cosinus latitude). Mesuré depuis Lisbonne : écart < 0,05 px jusqu'à 5,6 km. Exact là où ça se lit, économe là où ça ne se voit pas.
+
+**L'échelle est adaptative.** Le lieu le plus lointain se pose à 86 % du rayon écran. Plancher 400 m, plafond 4 000 m. Une échelle fixe laisserait la moitié des lieux hors écran en zone dense et donnerait un radar vide en zone creuse.
+
+**La boucle.** `requestAnimationFrame` tourne uniquement quand l'étage 1 est affiché. `paint()` appelle `radarStart()` en entrant et `radarStop()` en sortant.
+
+**`HM_HITS`** — `Map` intention → lieux, vidée à chaque session. Re-cliquer une intention déjà chargée est instantané, zéro requête.
+
 ### Contraintes absolues
 
 **Sessions.** Trois domaines = trois `localStorage` = trois sessions.
