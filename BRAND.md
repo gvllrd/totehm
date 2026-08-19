@@ -326,62 +326,94 @@ objectives.
 
 ---
 
-## Higher Map — le Void Radar — 19/08/2026
+## Higher Map — Void Radar & Swipe Deck — 19/08/2026
 
 **Le monde est vide jusqu'à ce que l'intention le projette.**
 
-La Higher Map ne charge aucune tuile cartographique et ne charge aucun
-lieu à l'ouverture. Fond noir, grille, anneaux de portée, un balayage
-qui tourne, et ton T au centre. Rien d'autre. Le système pose une seule
-question : quelle est ton intention, là, maintenant.
-
-C'est seulement quand tu réponds que le monde apparaît.
+Rien ne charge à l'ouverture. Le système pose une seule question :
+quelle est ton intention, là, maintenant. C'est seulement quand tu
+réponds que le monde apparaît.
 
 ### Le flow, en trois temps
 
-1. **Le vide.** Swipe sur l'étage 1. Le radar tourne autour de toi. Il
-   n'y a rien à regarder parce qu'il n'y a rien à faire tant que tu
+1. **Le vide.** Noir absolu. La question flotte au centre de l'écran.
+   Il n'y a rien à regarder parce qu'il n'y a rien à faire tant que tu
    n'as pas décidé.
-2. **La décision.** Tu choisis une intention. Une seule.
-3. **La projection.** Les T naissent du centre vers l'extérieur, du
-   plus proche au plus lointain. Le radar s'allume à la couleur de ton
-   intention.
+2. **L'ascension.** Tu choisis une intention. Le bloc monte et libère
+   l'écran.
+3. **La révélation.** Le monde apparaît, à la couleur de ton intention.
 
-Ce n'est pas un détail d'animation : c'est la thèse du produit rendue
-visible. Le monde ne te propose rien. C'est ton intention qui fait
-apparaître ce qui compte.
+Ce n'est pas une animation : c'est la thèse du produit rendue visible.
+Le monde ne te propose rien. C'est ton intention qui fait apparaître ce
+qui compte.
+
+### Deux rendus, un seul état
+
+Le radar est juste sur un grand écran et mauvais sur un téléphone :
+quinze marqueurs sur 390 px, ce sont quinze cibles collées les unes aux
+autres. Le rendu bifurque donc à 700 px — mais **uniquement le rendu**.
+
+| Écran | Rendu |
+|---|---|
+| ≥ 700 px | **Radar** — canvas, anneaux de portée, balayage, T positionnés autour de toi |
+| < 700 px | **Swipe Deck** — carrousel horizontal, une carte par lieu, 4/5 de l'écran |
+
+Une machine à états, un chargeur, **une seule carte de contenu servie
+aux deux**. C'est la règle qui empêche cette bifurcation de doubler le
+coût de maintenance pour toujours : le jour où la carte change, elle
+change une fois.
 
 ### Les règles tenues
 
-- **Le seul glyphe autorisé est le T.** Pas de pin, pas de goutte, pas
-  d'icône de catégorie. Toi au centre en blanc pur, les lieux autour à
-  la couleur de l'intention.
-- **Le sélecteur montre TES intentions.** Il est construit depuis ton
-  Totehm, pas depuis ce qui traîne autour de toi. Si tu n'as posé
-  aucune intention sur tes habitudes, le radar te renvoie à tes
-  habitudes — c'est le bon endroit pour commencer.
-- **Le HUD dort.** Tout le texte d'interface démarre à 38 %. Un geste
-  le réveille quatre secondes. Une intention choisie l'allume, puis le
-  sélecteur s'efface pour laisser le radar respirer.
-- **Un lieu écrit vaut plus qu'un lieu trouvé.** Les spots éditoriaux
-  passent devant les lieux Google et leur T est plus lumineux. La
-  distinction se voit sans être expliquée.
-- **Quinze T maximum.** Au-delà l'écran devient une soupe et le choix
-  redevient impossible.
-- **Le radar s'affiche toujours.** Géolocalisation refusée, GPS muet,
-  permission bloquée : repli sur Lisbonne, annoncé à l'écran. Un écran
-  vide au démarrage est le design ; un écran vide après une décision
-  est un bug.
+- **Le T marque ce vers quoi on peut aller.** Toi, tu n'es pas une
+  destination : au centre du radar, tu es un **carré blanc**. Ça règle
+  aussi une vraie confusion — un T blanc au milieu de T colorés se
+  lisait comme un lieu sans intention.
+- **Le T remplace la pastille.** Dans tous les menus d'intention, le
+  glyphe TOTEHM, jamais un rond de couleur.
+- **Un seul point d'entrée membre : le point vert en haut à gauche.**
+  Aucun bouton natif posé au milieu du vide. Quand la position doit
+  être relancée, c'est la ligne de statut elle-même qui devient
+  cliquable.
+- **La géolocalisation est silencieuse.** Si elle échoue, repli sur
+  Lisbonne, annoncé sobrement. Un écran vide après une décision est un
+  bug.
+- **Quinze lieux maximum.** Au-delà, l'écran devient une soupe et le
+  choix redevient impossible.
 
-### Aucune librairie de carte
+### Typographie — la hiérarchie passe par la lumière
 
-Un `<canvas>` et des `<div>` suffisent. Le radar ne dépend plus d'un
-script tiers pour s'afficher, et l'écran ne charge rien avant que le
-membre ait décidé.
+- **Zéro italique.** Banni de l'UI.
+- **Quantico, 14 px minimum, pour tout ce qui se LIT.**
+- **Space Mono pour ce qui se MESURE** — coordonnées, distances, heure,
+  température. La frontière entre la parole et la donnée.
+- **Quatre valeurs de gris, jamais plus** : blanc pour ce qui compte
+  maintenant, gris clair pour le secondaire, gris pour le contexte,
+  gris sombre pour la structure.
+
+### Unified Spot Model
+
+Trois natures, **déduites** et non stockées :
+
+| Nature | Déduite de | Affichage |
+|---|---|---|
+| `PLACE` | par défaut | ça reste |
+| `LIVE_EVENT` | `expires_at` renseigné | compte à rebours |
+| `MEMBER_DROP` | `user_id` renseigné | posé par un membre |
+
+### Ce qui n'est pas affiché, et pourquoi
+
+- **Pas d'image** : `image_url` pointe vers pollinations.ai sur 105 des
+  121 spots — une image générée à la volée, par un service gratuit sans
+  engagement, montrant un lieu réel qui n'a jamais ressemblé à ça. Dans
+  un produit dont la thèse est le réel, c'est le pire champ à mettre en
+  haut d'une carte. Ce qui est affiché est ce qui est vrai.
+- **Pas de genre musical** : il n'apparaît que dans `tags`, sur une
+  partie des lignes, sans garantie.
 
 ### Question ouverte
 
-Le radar est derrière l'abonnement. Un membre Seed n'en voit rien — pas
+La carte est derrière l'abonnement. Un membre Seed n'en voit rien — pas
 même le vide qui tourne, qui serait pourtant la meilleure publicité
 pour Plant. À trancher.
 

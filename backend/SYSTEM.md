@@ -222,50 +222,82 @@ sans rien apporter.
 
 | Table | Rôle | Lignes mesurées |
 |---|---|---|
-| `spots` | lieux éditoriaux, écrits | 125 dont 121 actifs+publics, 125 géolocalisés |
-| `places` | cache Google, un lieu = une ligne, `intentions[]` cumulatif | 0 (clé Google non posée) |
-| `places_cells` | `(cell, intention)` déjà balayés, TTL 90 j | 0 |
-| `places_budget` | compteur d'appels Google par jour | 0 |
+| `spots` | lieux éditoriaux | 125 dont 121 actifs+publics, tous géolocalisés |
+| `places` | cache Google | 0 (désactivé) |
+| `places_cells` | cellules balayées, TTL 90 j | 0 |
+| `places_budget` | appels Google par jour | 0 |
 
-RLS activée sans policy sur les trois nouvelles : seul `service_role` y accède. `anon` et `authenticated` ne voient rien.
-
-Répartition des spots par intention (19/08/2026) : love 26 · focus 19 · flow 18 · celebrate 18 · fight 15 · express 15 · enrich 10.
+RLS activée sans policy sur les trois dernières : seul `service_role` y accède.
 
 **⚠️ `spots.expires_at` :** tous les 125 spots avaient `expires_at = 2026-06-03` — expirés depuis 2 mois, la requête renvoyait 0 lignes. Passés à `NULL` le 18/08. **Ne jamais insérer de spots avec une `expires_at` en dur proche** — utiliser `NULL` pour les spots permanents.
 
-#### Fonctions SQL
+#### Remplissage réel de `spots` (121 actifs+publics)
 
-- `places_near(lat, lng, radius, intentions[], limit)` — `stable`, `security definer`. Union spots + places, tri `rank_tier, dist_m`. Index `gist(ll_to_earth(lat,lng))` sur `places`, `earth_box` des deux côtés. Révoquée pour `anon` et `authenticated`.
-- `places_budget_take(max)` — incrémente le compteur du jour s'il est sous le plafond, renvoie `true` si l'appel Google est autorisé.
+| Champ | Rempli | Note |
+|---|---|---|
+| `state_of_mind` | 121 | 21 valeurs distinctes, FR et EN mélangés |
+| `duration_min` | 121 | |
+| `tags` | 121 | contient parfois un genre musical, sans garantie |
+| `vibe` | 121 | 2 valeurs seulement : `paper`, `leaf` |
+| `image_url` | 121 | **105 pointent vers pollinations.ai** — image générée à la volée, non affichée par le front |
+| `member_count` | 121 | **> 0 sur 16 seulement** — affiché uniquement dans ce cas |
+| `commentaire` | 36 | |
+| `video_url` | 0 | chaînes vides |
+| `user_id` | 0 | aucun MEMBER_DROP à ce jour |
+| `expires_at` | 0 | aucun LIVE_EVENT à ce jour |
+
+Par intention, dans un rayon de 4 km depuis la Praça do Comércio :
+love 14 · focus 12 · express 10 · celebrate 9 · enrich 6 · fight 5 · flow 4.
+
+#### Dette identifiée
+
+`image_url` en pollinations.ai est une image inventée, régénérée à chaque affichage par un service gratuit sans engagement. Pour la rendre utilisable : générer une fois, stocker dans Supabase Storage, servir depuis notre domaine. Tant que ce n'est pas fait, le front ne l'affiche pas.
 
 #### Retour arrière
 
 - Front : `cp space/totehm.html.bak-<date> space/totehm.html`
-- Serveur : redéployer `higher-map` v5 (toutes intentions d'un coup) ou v4 depuis l'historique Supabase
-- Les tables `places`, `places_cells`, `places_budget` sont additives — les laisser en place ne casse rien
+- Google : `PLACES_ENABLED = true` dans `higher-map/index.ts`, redéployer
+- Serveur : v6 ou v5 depuis l'historique Supabase
 
-### Higher Map — v6, mesuré le 19/08/2026
+### places_near — corrigée le 19/08/2026
+
+Signature : `places_near(lat, lng, radius, intentions[], limit, places)`
+→ `source, ref, name, intention, kind, lieu_type, why, state_of_mind, vibe, tags, member_count, ends_at, lat, lng, dist_m, duration_min`
+
+`stable`, `security definer`, révoquée pour `anon` et `authenticated`.
+
+**Correction du rayon.** `earth_box` est une *boîte*, pas un cercle : dans les coins elle laissait passer jusqu'à √2 × rayon, soit 5 657 m pour un rayon annoncé à 4 000. Mesuré avant correction : des spots à 5 033 m étaient servis. `earth_box` reste en tête pour l'index GiST, `earth_distance` tranche derrière. Sans ça, l'échelle du radar était calculée sur des lieux hors portée.
+
+Les spots éditoriaux passent devant les places Google (`rank_tier`) : un lieu écrit vaut plus qu'un lieu trouvé.
+
+### Higher Map — v7, mesuré le 19/08/2026
 
 `verify_jwt = true` · POST `{ lat?, lng?, intention? }` · réponse
-`{ spots[], intention, intentions[], origin:{lat,lng,fallback}, radius_m, sweeps }`
+`{ spots[], intention, intentions[], origin:{lat,lng,fallback}, radius_m, sweeps, places_enabled }`
 
-Le monde filtré par le Totehm du membre.
+#### Ce qui a changé en v7
 
-#### Ce qui a changé en v6 — flow « Intention Trigger »
+**`PLACES_ENABLED = false`.** La table `spots` seule pour l'instant. Le cache Google n'est **pas supprimé** : il ne coûte rien tant que la clé n'est pas posée, et le démolir pour le reconstruire dans trois semaines serait du travail jeté. Un seul booléen le rallume.
 
-Le front n'appelle plus cette fonction à l'ouverture de la carte. Il l'appelle **au moment où le membre choisit une intention**, et il en passe **une seule**. La réponse ne contient que les lieux de cette intention.
+**Unified Spot Model**, déduit et non stocké :
 
-Conséquence coût : plus d'invocations (une par choix au lieu d'une par ouverture), mais chacune balaie au plus **une** intention Google au lieu de trois. Le coût Google baisse, le coût Supabase est inclus dans le forfait. Estimation à 1 000 membres : ~30 000 invocations/mois, largement sous le quota.
+| Nature | Déduite de |
+|---|---|
+| `MEMBER_DROP` | `spots.user_id` renseigné |
+| `LIVE_EVENT` | `spots.expires_at` renseigné |
+| `PLACE` | par défaut |
+
+La réponse porte désormais `kind`, `state_of_mind`, `vibe`, `tags`, `member_count`, `ends_at` en plus des champs existants.
 
 #### Chaîne d'exécution
 
 1. `auth.getUser()` sur le bearer.
-2. `subscriptions` — `.limit(1)`, jamais `.maybeSingle()` : deux lignes actives (upgrade, réabonnement) faisaient planter la requête et rendaient un 402 à un membre qui paie.
-3. `totehms` — `.order('updated_at' desc).limit(1)`. Même raison. Les steps utilisent la clé compacte `i` ; `intention` est accepté en secours.
-4. **Contrôle d'intention** : si le corps porte `intention`, elle doit figurer dans le Totehm du membre. Sinon `403 not_your_intention`. On n'interroge pas le monde sous une intention qu'on n'a pas posée sur ses propres habitudes.
-5. Coordonnées absentes → repli **Praça do Comércio** (38.7078, -9.1366) avec `origin.fallback = true`. Le radar affiche toujours quelque chose ; un écran vide est un bug, pas un message.
-6. `places_near()` — spots éditoriaux d'abord, cache Google ensuite, rayon 4 000 m, 60 lignes max.
-7. Google **seulement** si l'étape 6 renvoie moins de 8 lieux.
+2. `subscriptions` — `.limit(1)`, jamais `.maybeSingle()` : deux lignes actives faisaient planter la requête et rendaient un 402 à un membre qui paie.
+3. `totehms` — `.order('updated_at' desc).limit(1)`. Même raison.
+4. **Contrôle d'intention** : si le corps porte `intention`, elle doit figurer dans le Totehm du membre. Sinon `403 not_your_intention`.
+5. Coordonnées absentes → repli **Praça do Comércio** (38.7078, -9.1366), `origin.fallback = true`.
+6. `places_near()` — rayon 4 000 m, 60 lignes max.
+7. Google : dormant tant que `PLACES_ENABLED` vaut `false`.
 
 #### Codes de réponse
 
@@ -279,33 +311,16 @@ Conséquence coût : plus d'invocations (une par choix au lieu d'une par ouvertu
 
 #### Doctrine de coût
 
-La v4 appelait Google une fois par intention **à chaque ouverture**. 4 intentions × 2 ouvertures/jour = 240 appels/mois ≈ 8,40 $/mois pour UN membre, contre 6,75 € d'ARPU. Elle perdait de l'argent dès le premier abonné. À 1 000 membres : 8 400 $/mois.
+La v4 appelait Google une fois par intention **à chaque ouverture** : 240 appels/mois ≈ 8,40 $/mois pour UN membre contre 6,75 € d'ARPU. Elle perdait de l'argent dès le premier abonné. Les trois verrous posés en v5 restent en place, éteints :
 
 | Verrou | Constante | Valeur |
 |---|---|---|
+| Interrupteur global | `PLACES_ENABLED` | **false** |
 | La base d'abord | `MIN_RESULTS` | 8 |
 | Cellule géographique, pas personnelle | `CELL_TTL_DAYS` | 90 |
 | Appels Google max par requête | `MAX_SWEEPS` | 3 |
 | Plafond global quotidien | `DAILY_BUDGET` | 200 |
 | Rayon servi | `RADIUS_M` | 4 000 m |
-
-Le cache est **géographique** : une cellule de ~1,1 km est balayée une fois puis sert tous les membres du quartier. Le second membre coûte 0. Couvrir Lisbonne coûte ~11 $ **une seule fois**.
-
-Field mask Google réduit au minimum (`id, displayName, location, formattedAddress, primaryType`) : chaque champ en plus change de SKU.
-
-Sans `GOOGLE_MAPS_API_KEY`, la fonction sert les spots en base et ne dépense rien. **La clé est optionnelle, pas requise.**
-
-#### Traduction intention → types Google
-
-| Intention | Types |
-|---|---|
-| fight | gym, fitness_center, sports_complex |
-| flow | park, hiking_area, swimming_pool |
-| enrich | book_store, university, convention_center |
-| love | cafe, garden, tourist_attraction |
-| express | art_gallery, art_studio, performing_arts_theater |
-| focus | library, coffee_shop |
-| celebrate | night_club, bar, concert_hall |
 
 #### Contrainte posée le 19/08/2026
 
@@ -346,7 +361,7 @@ Sans `GOOGLE_MAPS_API_KEY`, la fonction sert les spots en base et ne dépense ri
 ### La carte
 | Fonction | Rôle |
 |---|---|
-| `places_near(lat, lng, radius, intentions[], limit)` | `stable`, `security definer`. Union spots + places, tri `rank_tier, dist_m`. Index `gist(ll_to_earth(lat,lng))` sur `places`, `earth_box` sur les deux côtés. Révoquée pour `anon` et `authenticated`. |
+| `places_near(lat, lng, radius, intentions[], limit, places)` | `stable`, `security definer`. Union spots + places, tri `rank_tier, dist_m`. `earth_box` pour l'index GiST, `earth_distance` pour tronquer au cercle réel. Révoquée pour `anon` et `authenticated`. |
 | `places_budget_take(max)` | incrémente le compteur du jour s'il est sous le plafond, renvoie `true` si l'appel Google est autorisé |
 
 ### Objectifs, musique, adhésion
@@ -380,7 +395,7 @@ Aucune ligne = pas membre. Un abonnement expiré, impayé ou annulé retombe
 | `autobiographiste` | 3 | ✅ | modèle premium, 8 règles, write/revise/accept |
 | `bot-tick` | 3 | ❌ | cron horaire, DONE/MISSED |
 | `bot-reply` | 3 | ❌ | webhook Telegram, **zéro appel IA** |
-| `higher-map` | 6 | ✅ | trigger par intention, une intention par requête, contrôle `not_your_intention` ; cache géographique 90 j, plafond 200 appels/jour |
+| `higher-map` | 7 | ✅ | unified spot model, `PLACES_ENABLED` interrupteur Google, contrôle `not_your_intention` ; cache géographique 90 j, plafond 200 appels/jour |
 
 `verify_jwt=false` sur les webhooks est **normal** : Stripe et Telegram n'ont pas
 de JWT Supabase. La sécurité vient de la signature vérifiée dans le code.
@@ -569,6 +584,7 @@ Functions sont téléchargeables.
 | 18/08 | `go()` : suppression du fade 180 ms de `fv-inner` avant `paint()` | le fade rendait fv-inner transparent → bigT visible 180 ms contre le fond navy |
 | 19/08 | **Higher Map v2 — radar TOTEHM** : fond noir, zéro tuile, marqueurs T, lignes pointillées | zéro requête cartographique, identité propre à TOTEHM |
 | 19/08 | **Void Radar — Higher Map v3** : canvas+DOM, trigger par intention, librairie de carte retirée | 800 ko de JS pour un fond noir sans tuile ; trigger intention → coût Google par choix, pas par ouverture |
+| 19/08 | **Swipe Deck & Radar — Higher Map v4** : rendu bifurque à 700 px, unified spot model, correction rayon `places_near`, `PLACES_ENABLED` | radar mauvais sur 390 px ; une machine à états, deux rendus, une carte de contenu |
 | 19/08 | Cache géographique `places` + `places_cells` + `places_budget` | la v4 coûtait 8,40 $/mois par membre ; cache cellule = 0 $ à partir du 2e membre |
 | 19/08 | `totehms_user_id_uniq` — index unique sur `totehms(user_id)` | deux onglets en course créaient deux Totehms → cassait `.maybeSingle()` côté serveur |
 | 19/08 | `cloudSave()` : `delete`+`insert` → `upsert onConflict:'user_id'` | atomique, compatible avec l'index unique |

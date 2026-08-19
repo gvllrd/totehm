@@ -115,30 +115,66 @@ intitulés disparaissent uniquement sur desktop — la nav mobile est inchangée
 `applyFreq()` sur `fpTarget==='filter'` appelle `showFpStage('int')`, pas `closeFreqPanel()`.
 `applyIntent()` sur `fpTarget==='filter'` ferme le panneau et applique le filtre.
 
-### Le Void Radar — architecture et mathématique · 19/08/2026
+### Higher Map — architecture et mathématique · 19/08/2026
 
-Trois couches superposées dans `#hmap`, aucune librairie externe.
+Aucune librairie externe.
+
+#### Deux rendus, un seul état
+
+La règle qui tient tout : **une machine à états, un chargeur, une carte de contenu**. Seules deux fonctions divergent.
+
+| Partagé | Divergent |
+|---|---|
+| `pickIntention()` le déclencheur | `renderRadar()` ≥ 700 px |
+| `HM_HITS` le cache de session | `renderDeck()` < 700 px |
+| `cardHTML()` **le balisage de la carte** | |
+| géoloc, météo, sélecteur, `RAD` | |
+
+`cardHTML()` sert le deck **et** l'aperçu desktop. Le CSS ajuste les tailles, jamais le contenu. Le jour où la carte change, elle change une fois.
+
+`applyMode()` pose `hm-radar` ou `hm-deck` sur `#hmap`. Au redimensionnement, si la frontière des 700 px est franchie, le rendu bascule et **l'état ne bouge pas** : aucune requête n'est refaite.
+
+#### Trois couches, côté radar
 
 | Couche | Élément | Rôle |
 |---|---|---|
-| 0 | `<canvas id="hm-canvas">` | grille, anneaux de portée, balayage, lignes de distance |
+| 0 | `<canvas id="hm-canvas">` | grille, anneaux, balayage, lignes, plaques de distance |
 | 1 | `<div id="hm-markers">` | les T, positionnés en `transform` |
-| 2 | HUD | sélecteur, météo, coins, popup |
+| 2 | HUD | sélecteur, horloge, coins, aperçu |
 
-**Pourquoi pas de moteur cartographique.** Un moteur de carte chargeait ~800 ko de JS depuis un CDN pour peindre un fond noir sans tuile. En prime : `setTimeout(150)` pour que le container ne soit pas mesuré à 0×0, un `ResizeObserver`, un handler `map.on('error')` et un mode de repli. Le canvas supprime les quatre.
+**Pourquoi les marqueurs sont du DOM.** Un T dessiné dans le canvas n'a ni `:hover`, ni zone de clic, ni animation CSS, ni accessibilité. Les marqueurs sont des `<button>` avec `aria-label` : cible de 30 px, glyphe de 15 px.
 
-**Pourquoi les marqueurs sont du DOM et pas du canvas.** Un T dessiné dans le canvas n'a ni `:hover`, ni zone de clic, ni animation CSS, ni accessibilité. Un `<div>` a tout ça gratuitement. Le canvas fait ce qu'il fait bien (des traits par milliers), le DOM fait ce qu'il fait bien (une quinzaine d'objets interactifs).
+#### La projection
 
-**La projection.** Deux calculs distincts, séparation volontaire.
+**Distance affichée → Haversine.** Le chiffre sur lequel on décide de se déplacer, il doit être juste.
 
-- Distance affichée → **Haversine** : le chiffre que le membre lit, il doit être juste.
-- Position pixel → **projection plane locale** (équirectangulaire tangente, corrigée cosinus latitude). Mesuré depuis Lisbonne : écart < 0,05 px jusqu'à 5,6 km. Exact là où ça se lit, économe là où ça ne se voit pas.
+**Position pixel → projection plane locale**, équirectangulaire tangente, corrigée en cos(latitude). Écart < 0,03 px jusqu'à 4,2 km depuis Lisbonne. Exact là où ça se lit, économe là où ça ne se voit pas.
 
-**L'échelle est adaptative.** Le lieu le plus lointain se pose à 86 % du rayon écran. Plancher 400 m, plafond 4 000 m. Une échelle fixe laisserait la moitié des lieux hors écran en zone dense et donnerait un radar vide en zone creuse.
+#### L'échelle
 
-**La boucle.** `requestAnimationFrame` tourne uniquement quand l'étage 1 est affiché. `paint()` appelle `radarStart()` en entrant et `radarStop()` en sortant.
+```
+range  = clamp(distance_max × 1,15 ; 400 ; 4000)
+rayon  = min(W, H) / 2 × 0,82
+échelle = rayon / range
+```
+
+Une échelle fixe laisserait la moitié des lieux hors écran en zone dense. La portée est affichée en bas à droite.
+
+#### La boucle
+
+`requestAnimationFrame` tourne **uniquement** quand l'étage 1 est affiché **et** que le rendu est le radar. `radarStart()` refuse de démarrer si `isDeck()` : sur mobile il n'y a pas de canvas.
+
+Les étiquettes de distance posent une **plaque noire** avant le texte, mesurée à `measureText()`. Sans elle, le pointillé se lisait au travers des chiffres.
+
+#### Le cache d'intention
 
 **`HM_HITS`** — `Map` intention → lieux, vidée à chaque session. Re-cliquer une intention déjà chargée est instantané, zéro requête.
+
+#### Pièges à connaître
+
+`#hmap` est un overlay à `z-index: 55`. Tout élément censé rester accessible depuis la carte doit passer au-dessus (`#conn-bar` vivait à 45 — invisible depuis la carte).
+
+Retirer un élément du DOM sans retirer son handler (`$('id').onclick` sur `null`) lève un TypeError **à l'évaluation du module** : ce n'est pas la carte qui casse, c'est tout le script. Tout retrait d'élément se vérifie avec l'audit `$('id')` vs `id=` présents.
 
 ### Contraintes absolues
 
