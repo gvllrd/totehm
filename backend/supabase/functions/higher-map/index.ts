@@ -1,34 +1,31 @@
-// TOTEHM · higher-map v6
+// TOTEHM · higher-map v7
 // ─────────────────────────────────────────────────────────────────────
 // Le monde filtré par ton Totehm.
 //
-// v6 — flow « Intention Trigger ». Le front n'appelle plus cette
-// fonction à l'ouverture de la carte : il l'appelle au moment où le
-// membre choisit une intention, et il en passe UNE. On ne renvoie que
-// les lieux de cette intention.
+// v7 — Unified Spot Model et Google coupé.
 //
-// Conséquence côté coût : plus d'invocations (une par choix au lieu
-// d'une par ouverture), mais chacune balaie au plus UNE intention
-// Google au lieu de trois. Le coût Google baisse, le coût Supabase est
-// inclus dans le forfait. Estimation à 1 000 membres : ~30 000
-// invocations/mois, largement sous le quota.
+// PLACES_ENABLED = false. Le Founder veut la table `spots` seule pour
+// l'instant. Le cache Google n'est PAS supprimé : il ne coûte rien
+// tant que la clé n'est pas posée, et le supprimer pour le
+// reconstruire dans trois semaines serait du travail jeté. Un seul
+// booléen le rallume, et places_near reçoit p_places en conséquence.
+//
+// Le modèle unifié est DÉDUIT, pas stocké :
+//   user_id renseigné    → MEMBER_DROP
+//   expires_at renseigné → LIVE_EVENT  (le front affiche le compte à rebours)
+//   sinon                → PLACE
+// Une colonne `kind` devrait être tenue cohérente à chaque écriture ;
+// déduite, elle est vraie par construction.
 //
 // SÉCURITÉ : l'intention demandée doit appartenir au Totehm du membre.
-// Sinon on refuse. On ne laisse pas interroger le monde sous une
-// intention qu'on n'a pas assumée dans ses habitudes.
+// On n'interroge pas le monde sous une intention qu'on n'a pas posée
+// sur ses propres habitudes.
 //
-// DOCTRINE DE COÛT — inchangée depuis la v5.
-// Google Places facture ~35 $ / 1 000 appels. La v4 appelait Google
-// une fois par intention À CHAQUE ouverture : 8,40 $/mois pour UN
-// membre contre 6,75 € d'ARPU. Trois verrous :
-//   1. La base d'abord. Google n'est appelé QUE si places_near()
-//      renvoie moins de MIN_RESULTS lieux.
-//   2. Le cache est géographique, pas personnel. Une cellule de
-//      ~1,1 km est balayée une fois puis sert tous les membres du
-//      quartier pendant CELL_TTL_DAYS. Le second membre coûte 0.
-//   3. Un plafond global par jour (places_budget_take). Au-dessus, on
-//      sert la base et on ne dépense plus. C'est ce qui sépare un bug
-//      d'une facture à 3 000 €.
+// DOCTRINE DE COÛT — la v4 appelait Google une fois par intention à
+// chaque ouverture : 8,40 $/mois pour UN membre contre 6,75 € d'ARPU.
+// Trois verrous depuis la v5 : la base d'abord (MIN_RESULTS), un cache
+// géographique et non personnel (CELL_TTL_DAYS), un plafond global
+// quotidien (DAILY_BUDGET). Ils restent en place, éteints.
 //
 // verify_jwt = true
 // ─────────────────────────────────────────────────────────────────────
@@ -43,8 +40,11 @@ const ALLOWED_ORIGINS = [
   "http://localhost:3000",
 ];
 
-// Lisbonne — Praça do Comércio. Repli quand le navigateur refuse la
-// géolocalisation : le radar montre toujours quelque chose.
+// L'interrupteur. true = le cache Google reprend du service.
+const PLACES_ENABLED = false;
+
+// Lisbonne — Praça do Comércio. Repli quand le navigateur ne donne
+// rien : le radar montre toujours quelque chose.
 const FALLBACK = { lat: 38.7078, lng: -9.1366 };
 
 const RADIUS_M      = 4000;
@@ -70,8 +70,6 @@ const sb = createClient(
   { auth: { persistSession: false } },
 );
 
-// Une intention → plusieurs types Google. Traduction éditoriale d'une
-// intention en lieux réels ; le type seul ne dit rien.
 const GOOGLE_TYPES: Record<string, string[]> = {
   fight:     ["gym", "fitness_center", "sports_complex"],
   flow:      ["park", "hiking_area", "swimming_pool"],
@@ -82,7 +80,6 @@ const GOOGLE_TYPES: Record<string, string[]> = {
   celebrate: ["night_club", "bar", "concert_hall"],
 };
 
-// Cellule ≈ 1,1 km × 0,87 km à la latitude de Lisbonne.
 const cellOf = (lat: number, lng: number) => `${lat.toFixed(2)},${lng.toFixed(2)}`;
 
 Deno.serve(async (req) => {
@@ -96,9 +93,9 @@ Deno.serve(async (req) => {
     return Response.json({ error: "unauthorized" }, { status: 401, headers: cors });
   }
 
-  // Abonnement — .limit(1) et pas .maybeSingle() : deux lignes actives
-  // (upgrade, réabonnement) faisaient planter la requête et rendaient
-  // un 402 à un membre qui paie.
+  // .limit(1) et pas .maybeSingle() : deux lignes actives (upgrade,
+  // réabonnement) faisaient planter la requête et rendaient un 402 à
+  // un membre qui paie.
   const { data: subs } = await sb
     .from("subscriptions").select("status")
     .eq("user_id", user.id)
@@ -109,7 +106,6 @@ Deno.serve(async (req) => {
     return Response.json({ error: "members only" }, { status: 402, headers: cors });
   }
 
-  // Totehm — la ligne la plus récente fait foi.
   const { data: totehms } = await sb
     .from("totehms").select("steps, updated_at")
     .eq("user_id", user.id)
@@ -134,8 +130,6 @@ Deno.serve(async (req) => {
     if (typeof body?.intention === "string") asked = body.intention;
   } catch { /* pas de body */ }
 
-  // On n'interroge le monde que sous une intention réellement posée
-  // sur ses propres habitudes.
   if (asked && !mine.includes(asked)) {
     return Response.json(
       { reason: "not_your_intention", intentions: mine },
@@ -150,8 +144,7 @@ Deno.serve(async (req) => {
   let spots = await near(lat!, lng!, wanted);
   let sweeps = 0;
 
-  // Google n'entre en jeu que si la base est maigre ICI.
-  if (spots.length < MIN_RESULTS) {
+  if (PLACES_ENABLED && spots.length < MIN_RESULTS) {
     sweeps = await warm(lat!, lng!, wanted);
     if (sweeps > 0) spots = await near(lat!, lng!, wanted);
   }
@@ -163,6 +156,7 @@ Deno.serve(async (req) => {
     origin: { lat, lng, fallback },
     radius_m: RADIUS_M,
     sweeps,
+    places_enabled: PLACES_ENABLED,
   }, { headers: cors });
 });
 
@@ -172,25 +166,32 @@ async function near(lat: number, lng: number, intentions: string[]) {
     p_radius: RADIUS_M,
     p_intentions: intentions,
     p_limit: 60,
+    p_places: PLACES_ENABLED,
   });
   if (error) { console.error("places_near:", error.message); return []; }
 
   return (data ?? []).map((r: Record<string, unknown>) => ({
-    id:           r.ref,
-    source:       r.source,
-    activite:     r.name,
-    intention:    r.intention,
-    lieu_type:    r.lieu_type,
-    commentaire:  r.why,
-    lat:          r.lat,
-    lng:          r.lng,
-    dist_m:       r.dist_m,
-    duration_min: r.duration_min,
+    id:            r.ref,
+    source:        r.source,
+    kind:          r.kind,
+    activite:      r.name,
+    intention:     r.intention,
+    lieu_type:     r.lieu_type,
+    commentaire:   r.why,
+    state_of_mind: r.state_of_mind,
+    vibe:          r.vibe,
+    tags:          r.tags,
+    member_count:  r.member_count,
+    ends_at:       r.ends_at,
+    lat:           r.lat,
+    lng:           r.lng,
+    dist_m:        r.dist_m,
+    duration_min:  r.duration_min,
   }));
 }
 
-// Balaye la cellule pour les intentions encore froides. Écrit dans
-// places. Renvoie le nombre d'appels Google réellement passés.
+// Balaye la cellule pour les intentions encore froides. Dormant tant
+// que PLACES_ENABLED vaut false.
 async function warm(lat: number, lng: number, intentions: string[]): Promise<number> {
   const key = Deno.env.get("GOOGLE_MAPS_API_KEY");
   if (!key) return 0;
@@ -219,7 +220,6 @@ async function warm(lat: number, lng: number, intentions: string[]): Promise<num
         headers: {
           "Content-Type": "application/json",
           "X-Goog-Api-Key": key,
-          // Field mask minimal : chaque champ en plus change de SKU.
           "X-Goog-FieldMask":
             "places.id,places.displayName,places.location,places.formattedAddress,places.primaryType",
         },
@@ -238,11 +238,8 @@ async function warm(lat: number, lng: number, intentions: string[]): Promise<num
       const rows = (j.places ?? []).filter((p: Record<string, unknown>) => p.id && p.location);
 
       for (const p of rows) {
-        // Un lieu peut porter plusieurs intentions : on ajoute, on
-        // n'écrase pas. Le parc est flow ET love.
         const { data: prev } = await sb
           .from("places").select("intentions").eq("place_id", p.id).maybeSingle();
-
         const merged = [...new Set([...(prev?.intentions ?? []), intention])];
 
         await sb.from("places").upsert({
