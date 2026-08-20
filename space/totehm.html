@@ -250,8 +250,10 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
 .hm-ddi-def{font-family:'Quantico',sans-serif;font-size:14px;font-weight:400;
   color:var(--hm-lo);margin-top:5px;line-height:1.45;transition:color .18s}
 @media(max-width:699px){ .hm-ddi-def{color:var(--hm-mid)} }
-.hm-ddi-neuro{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;
-  text-transform:uppercase;color:currentColor;opacity:.3;margin-top:5px;line-height:1.5}
+.hm-ddi-neuro{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.hm-ddi-ntag{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.13em;
+  text-transform:uppercase;border:1px solid currentColor;opacity:.5;
+  padding:2px 7px;line-height:1.6;white-space:nowrap}
 
 /* Le badge Higher suit l'intention, jamais collé au mot */
 .hm-ddi-name .hi-badge,#hm-ddt-lbl .hi-badge{margin-left:9px}
@@ -330,8 +332,7 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
   font-family:'Quantico',sans-serif;font-size:14px;font-weight:700;
   letter-spacing:.1em;text-transform:uppercase}
 .hm-c-int .hi-badge{margin-left:8px}
-.hm-c-neuro{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;
-  text-transform:uppercase;opacity:.3;margin-top:-8px;margin-bottom:10px;line-height:1.5}
+.hm-c-neuro{display:flex;flex-wrap:wrap;gap:4px;margin-top:-6px;margin-bottom:10px}
 
 .hm-c-name{font-family:'Quantico',sans-serif;font-weight:700;
   color:var(--hm-hi);line-height:1.15;margin-bottom:12px}
@@ -2226,7 +2227,7 @@ function cardHTML(s){
    +  '<span class="hm-c-int" style="color:'+col+'">'+tGlyph(13)+'&nbsp;&nbsp;'
    +     esc(conf.name)+hiBadge()+'</span>'
    +'</div>'
-   +(conf.neuro?'<div class="hm-c-neuro" style="color:'+col+'">'+esc(conf.neuro)+'</div>':'')
+   +(conf.neuro?'<div class="hm-c-neuro" style="color:'+col+'">'+conf.neuro.split(' · ').map(t=>'<span class="hm-ddi-ntag">'+esc(t)+'</span>').join('')+'</div>':'')
    +'<div class="hm-c-name">'+esc(s.activite||'place')+'</div>'
    +(s.commentaire?'<div class="hm-c-why">'+esc(s.commentaire)+'</div>':'')
    +(facts.length?'<div class="hm-c-facts">'+facts.join('')+'</div>':'')
@@ -2476,7 +2477,7 @@ function buildSelector(){
     +tGlyph(15)
     +'<div><div class="hm-ddi-name" style="color:'+x.color+'">'+esc(x.name)+hiBadge()+'</div>'
     +'<div class="hm-ddi-def">'+esc(x.def)+'</div>'
-    +(x.neuro?'<div class="hm-ddi-neuro">'+esc(x.neuro)+'</div>':'')
+    +(x.neuro?'<div class="hm-ddi-neuro">'+x.neuro.split(' · ').map(t=>'<span class="hm-ddi-ntag">'+esc(t)+'</span>').join('')+'</div>':'')
     +'</div></div>').join('');
 
   ddm.querySelectorAll('.hm-ddi').forEach(el=>{
@@ -3107,7 +3108,7 @@ const PLAN_BY_KEY=Object.fromEntries(PLANS.map(p=>[p.key,p]));
    « ma ligne » ; celle d'autrui vient de la vue higher_badges, qui n'expose
    que l'id et le pseudo. */
 let myHigher=false;
-const HI_SVG='<span class="hi-badge" title="Higher"><svg viewBox="0 0 600 200" aria-label="Higher" role="img"><use href="#higher-word"></use></svg></span>';
+const HI_SVG='<span class="hi-badge" title="Higher"><svg viewBox="0 0 600 200" aria-label="Higher" role="img"><use href="#higher-badge"></use></svg></span>';
 async function loadHigher(){
   myHigher=false;
   if(!me)return;
