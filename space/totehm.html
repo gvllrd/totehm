@@ -156,16 +156,26 @@ body.hm-alive .hm-w b{color:var(--hm-hi)}
 
 #hm-corner-bl,#hm-corner{position:absolute;bottom:16px;z-index:6;
   font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--hm-dim);pointer-events:none}
+  text-transform:uppercase;color:var(--hm-lo);pointer-events:none}
 #hm-corner-bl{left:18px}
 #hm-corner{right:18px;text-align:right}
 
+/* LE STATUT DE POSITION.
+   Il vivait à 110px pendant que le sélecteur choisi montait a 96px : le bloc
+   du selecteur (440px de large, z-index 20) recouvrait ce bouton, et le clic
+   « tap to use your position » n'arrivait JAMAIS jusqu'a la geolocalisation.
+   C'etait ca, « la localisation ne fonctionne pas ». Il descend sous le
+   selecteur des qu'une intention est choisie. */
 #hm-overline{position:absolute;top:110px;left:50%;transform:translateX(-50%);
-  font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--hm-dim);white-space:nowrap;
-  z-index:6;pointer-events:auto;cursor:default;background:none;border:none;padding:4px}
-#hm-overline.retry{color:var(--hm-lo);cursor:pointer;text-decoration:underline;
-  text-underline-offset:3px}
+  font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--hm-lo);white-space:nowrap;
+  z-index:12;pointer-events:auto;cursor:default;background:none;border:none;
+  padding:6px 10px;transition:top .5s cubic-bezier(.45,0,.2,1),color .2s ease}
+body.hm-picked #hm-overline{top:152px}
+/* En fallback le statut est TOUJOURS cliquable, meme pendant « locating… » */
+body.hm-geo-fallback #hm-overline{cursor:pointer}
+#hm-overline.retry{color:var(--hm-mid);cursor:pointer;text-decoration:underline;
+  text-underline-offset:4px}
 #hm-overline.retry:hover{color:var(--hm-hi)}
 
 /* Logo nav — retour au Totehm, identique à #sn-home dans Settings */
@@ -191,10 +201,13 @@ body.map-leaving #bigT,body.map-leaving #wordmark,body.map-leaving #rail{
 #hm-selector{position:absolute;left:50%;top:28%;transform:translate(-50%,-50%);
   display:flex;flex-direction:column;align-items:center;gap:16px;
   width:min(92vw,440px);z-index:20;
-  transition:top .62s cubic-bezier(.45,0,.2,1),transform .62s cubic-bezier(.45,0,.2,1),
-             gap .5s ease,opacity .3s ease;
+  transition:top .5s cubic-bezier(.45,0,.2,1),transform .5s cubic-bezier(.45,0,.2,1),
+             gap .4s ease,opacity .3s ease;
   opacity:0;pointer-events:none}
-#hm-selector.ready{opacity:1;pointer-events:auto}
+/* Seuls les enfants prennent le clic : la boite du selecteur mesure 440px de
+   large et volait les clics sur les T et sur le statut derriere elle. */
+#hm-selector.ready{opacity:1}
+#hm-selector.ready > *{pointer-events:auto}
 
 /* L'ASCENSION — l'intention choisie, le bloc monte et libère le
    centre. Sur desktop le radar redevient 100 % cliquable ; sur mobile
@@ -206,7 +219,10 @@ body.hm-picked #hm-selector{top:96px;transform:translate(-50%,0);gap:8px}
   color:var(--hm-mid);text-align:center;line-height:1.5;
   transition:color .2s ease,font-size .4s ease,opacity .4s ease}
 body.hm-alive .hm-q{color:var(--hm-hi)}
-body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
+/* L'intention est choisie : la question n'a plus de raison d'etre. Elle
+   restait la, grise, et traversait les cartes ouvertes. Elle s'efface. */
+body.hm-picked .hm-q{font-size:14px;opacity:0;height:0;margin:0;overflow:hidden;
+  pointer-events:none}
 
 #hm-dd{position:relative}
 #hm-ddt{background:transparent;border:none;cursor:pointer;
@@ -274,7 +290,11 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
    aller ; tu n'es pas une destination. Le distinguer supprime aussi
    une vraie confusion : un T blanc au milieu de T colorés se lisait
    comme un spot sans intention. */
-#hm-me{position:absolute;left:0;top:0;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;
+/* La position passe par left/top et JAMAIS par transform : l'animation
+   hm-pulse anime transform, elle ecrasait le translate() pose en JS et le
+   carre blanc restait bloque dans le coin haut-gauche, invisible. On ne se
+   voyait donc jamais au centre de son propre radar. */
+#hm-me{position:absolute;left:0;top:0;width:10px;height:10px;margin:-5px 0 0 -5px;
   background:#fff;pointer-events:none;z-index:3;
   box-shadow:0 0 10px rgba(255,255,255,.75);
   animation:hm-pulse 2.6s ease-in-out infinite}
@@ -303,7 +323,9 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
 .hm-marker .tglyph{animation:hm-ignite .34s cubic-bezier(.2,.8,.3,1) backwards}
 
 /* ── APERÇU RICHE AU CLIC (desktop) ────────────────────────────────── */
-#hm-card{position:absolute;z-index:12;display:none;width:270px;
+/* z-index 30 : AU-DESSUS du selecteur (20). A 12, le titre de l'intention et
+   la question passaient par-dessus la carte ouverte — le texte bavait. */
+#hm-card{position:absolute;z-index:30;display:none;width:270px;
   background:#121212;border:1px solid #2a2a2a;
   box-shadow:0 16px 40px rgba(0,0,0,.9);
   overscroll-behavior:contain;
@@ -315,7 +337,7 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
    RENDU B — LE SWIPE DECK (< 700 px)
    ══════════════════════════════════════════════════════════════════ */
 #hm-deck{display:none;position:absolute;left:0;right:0;bottom:0;height:80vh;
-  z-index:8;
+  z-index:30;
   overflow-x:auto;overflow-y:hidden;
   scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
   scrollbar-width:none;
@@ -365,10 +387,15 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
 @media(hover:hover){.hm-c-go:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
 .hm-c-go:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
 
-/* L'asset Higher du sélecteur d'intention : le wordmark lisible (#higher-word)
-   à 16px, jamais l'ancien badge minuscule. */
-.hm-ddi-name .hi-word,#hm-ddt-lbl .hi-word{display:inline-flex;align-items:center;line-height:0;margin-left:9px}
-.hm-ddi-name .hi-word svg,#hm-ddt-lbl .hi-word svg{height:16px;width:auto;display:inline-block}
+/* L'asset Higher : le BADGE BLEU (navy #333366, lettres blanches), jamais le
+   wordmark corail — sur fond noir il tirait vers le dore et se lisait mal.
+   Et il est grand : c'est une accreditation, pas une note de bas de page. */
+.hm-ddi-name .hi-word,#hm-ddt-lbl .hi-word{display:inline-flex;align-items:center;line-height:0;margin-left:11px}
+.hm-ddi-name .hi-word svg{height:21px;width:auto;display:inline-block}
+#hm-ddt-lbl .hi-word svg{height:24px;width:auto;display:inline-block}
+/* Le meme badge sur les cartes, a l'echelle du titre */
+.hm-c-int .hi-badge svg{height:17px}
+.hm-slide .hm-c-int .hi-badge svg{height:19px}
 
 /* [ ✕ clear ] — sous le sélecteur, mobile uniquement, une fois l'intention posée */
 #hm-clear{display:none;margin-top:2px;font-family:'Space Mono',monospace;font-size:9px;
@@ -389,15 +416,15 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
 #hm-card .hm-c-foot{margin-top:14px;padding-top:11px}
 #hm-card .hm-c-close{position:absolute;top:6px;right:9px;
   font-family:'Quantico',sans-serif;font-size:16px;line-height:1;
-  color:var(--hm-dim);background:none;border:none;cursor:pointer;padding:2px;
+  color:var(--hm-lo);background:none;border:none;cursor:pointer;padding:2px 6px;
   transition:color .15s}
 #hm-card .hm-c-close:hover{color:var(--hm-hi)}
 
 /* Compteur de position dans le deck */
 #hm-count{display:none;position:absolute;bottom:calc(80vh + 14px);left:50%;
-  transform:translateX(-50%);z-index:8;
+  transform:translateX(-50%);z-index:29;
   font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.18em;
-  color:var(--hm-dim);pointer-events:none}
+  color:var(--hm-lo);pointer-events:none}
 #hmap.hm-deck.hm-loaded #hm-count{display:block}
 
 /* ── BASCULE DES DEUX RENDUS ───────────────────────────────────────── */
@@ -1724,6 +1751,7 @@ function paint(){
   $('hmap').classList.toggle('show', isMap);
   $('hmap').setAttribute('aria-hidden', isMap ? 'false' : 'true');
   if(isMap && !hmapLoaded) loadMap();
+  else if(isMap) geoRetryIfFallback();   /* revenu sur la carte : on retente */
 
   /* Habits = l'étage de base, toujours rendu ; #hmap le recouvre en mode Map. */
   renderHabits();
@@ -2101,8 +2129,8 @@ let hmapLoaded = false;
 
 const RAD = {
   on:false, raf:0, t:0,
-  origin:null, coords:null, geoNote:null,
-  spots:[], intention:null,
+  origin:null, coords:null, geoNote:null, geoPending:false,
+  spots:[], intention:null, hover:null, focus:null,
   range:1200, cx:0, cy:0, rpx:0, W:0, H:0, dpr:1
 };
 
@@ -2126,6 +2154,7 @@ function geoCached(){
   }catch(e){}
   return null;
 }
+function geoBust(){ try{ localStorage.removeItem(GEO_KEY); }catch(e){} }
 function geoStore(pos){
   const c={ lat:+pos.coords.latitude.toFixed(5),
             lng:+pos.coords.longitude.toFixed(5),
@@ -2133,19 +2162,84 @@ function geoStore(pos){
   try{ localStorage.setItem(GEO_KEY, JSON.stringify(c)); }catch(e){}
   return c;
 }
-/* Passe rapide d'abord. Attendre quinze secondes un GPS haute
-   précision avant de dessiner quoi que ce soit, c'est ce qui donnait
-   l'impression que « ça ne marche pas ». */
-function geoAsk(precise){
-  return new Promise((res,rej)=>{
-    if(!navigator.geolocation) return rej({code:2});
+/* LE VRAI BUG DE LA GEOLOCALISATION.
+   Le timeout etait a 7 s. Le prompt du navigateur, lui, attend un humain :
+   le temps de lire « Autoriser » et de cliquer, la promesse etait deja
+   rejetee, on retombait sur Lisbonne — et comme hmapLoaded passait a true,
+   plus rien ne redemandait jamais. On autorisait, il ne se passait rien.
+   Desormais on attend le temps qu'il faut, et une seule demande vit a la
+   fois (deux getCurrentPosition en parallele, certains navigateurs en
+   perdent un). */
+let GEO_INFLIGHT=null;
+/* force = le contexte a change (la personne vient d'autoriser, ou elle
+   redemande d'elle-meme) : on relance sans attendre la demande en vol, qui
+   peut rester pendante tout son timeout. */
+function geoAsk(precise,force){
+  if(GEO_INFLIGHT && !force) return GEO_INFLIGHT;
+  const q=new Promise((res,rej)=>{
+    if(!navigator.geolocation) return rej({code:2,reason:'unsupported'});
+    if(window.isSecureContext===false) return rej({code:1,reason:'insecure'});
     navigator.geolocation.getCurrentPosition(
       p=>res(geoStore(p)), e=>rej(e),
       { enableHighAccuracy:!!precise,
-        timeout: precise?15000:7000,
-        maximumAge: precise?0:120000 });
+        timeout: precise?30000:20000,
+        maximumAge: precise?0:60000 });
   });
+  GEO_INFLIGHT=q;
+  const clear=()=>{ if(GEO_INFLIGHT===q) GEO_INFLIGHT=null; };
+  q.then(clear,clear);
+  return q;
 }
+/* Applique une position fraiche partout : origine, coins, meteo, statut.
+   Renvoie true si l'on a REELLEMENT bouge — relancer l'Edge Function pour
+   trente metres, c'est une facture sans contrepartie (doctrine de cout). */
+function geoApply(c){
+  const prev=RAD.origin;
+  const moved = !prev || prev.fallback ||
+                haversine(prev.lat,prev.lng,c.lat,c.lng) > 150;
+  RAD.coords=c; RAD.geoPending=false;
+  RAD.origin={lat:c.lat,lng:c.lng,fallback:false};
+  RAD.geoNote=null;
+  setOverline(); paintCorner();
+  hmTime(); hmWeather(c.lat,c.lng);
+  return moved;
+}
+/* Relance l'intention courante sur la nouvelle origine. */
+async function geoRefresh(moved){
+  if(moved===false) return;
+  const cur=RAD.intention;
+  HM_HITS.clear();
+  if(cur){ RAD.intention=null; await pickIntention(cur); }
+}
+/* LES DEUX FILETS QUI MARCHENT PARTOUT.
+   navigator.permissions n'existe pas pour la geolocalisation sur Safari iOS :
+   impossible de s'appuyer sur onchange seul. Alors on retente simplement
+   quand la personne revient sur la carte, et quand l'onglet redevient
+   visible — exactement le moment ou elle revient d'avoir autorise la
+   position dans ses reglages. Aucun cout : c'est une API du navigateur. */
+function geoSoftDeadline(ms){
+  setTimeout(()=>{
+    if(RAD.geoPending && RAD.origin && RAD.origin.fallback){
+      RAD.geoPending=false;
+      if(!RAD.geoNote) RAD.geoNote=3;
+      setOverline();
+    }
+  }, ms||12000);
+}
+function geoRetryIfFallback(){
+  if(!RAD.origin||!RAD.origin.fallback) return;
+  if(RAD.geoPending||GEO_INFLIGHT) return;
+  if(RAD.geoNote===1||RAD.geoNote==='insecure') return;  /* refus explicite : on n'insiste pas */
+  RAD.geoPending=true; setOverline(); geoSoftDeadline(12000);
+  geoAsk(false,true)
+    .then(c=>geoRefresh(geoApply(c)))
+    .catch(e=>{ RAD.geoPending=false;
+      RAD.geoNote=(e&&e.reason==='insecure')?'insecure':((e&&e.code)||2);
+      setOverline(); });
+}
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible' && floor===1) geoRetryIfFallback();
+});
 async function geoPermission(){
   try{
     if(navigator.permissions)
@@ -2198,9 +2292,10 @@ function tGlyph(size){
 /* Le badge Higher réutilise le symbole #higher-word déjà dans le
    document. Aucun nouvel asset. */
 function hiBadge(){ try{ return HI_SVG; }catch(e){ return ''; } }
-/* Sélecteur d'intention : le wordmark Higher lisible (#higher-word), pas le
-   badge minuscule. Stylé à 16px via .hi-word. */
-function hiWord(){ return '<span class="hi-word" title="Higher"><svg viewBox="0 0 600 200" aria-label="Higher" role="img"><use href="#higher-word"></use></svg></span>'; }
+/* Selecteur d'intention : le BADGE Higher, fond navy #333366 et lettres
+   blanches — le bleu de la marque. Le wordmark corail (#higher-word) virait
+   au dore sur fond noir et se lisait mal. Taille pilotee par .hi-word. */
+function hiWord(){ return '<span class="hi-word" title="Higher"><svg viewBox="0 0 600 200" aria-label="Higher" role="img"><use href="#higher-badge"></use></svg></span>'; }
 
 function showMap(on){
   if(on){ floor=1; paint(); } else { if(floor===1){ floor=0; paint(); } }
@@ -2283,7 +2378,7 @@ function computeRange(spots){
 
 function layoutMarkers(){
   const me=$('hm-me');
-  if(me) me.style.transform='translate('+RAD.cx+'px,'+RAD.cy+'px)';
+  if(me){ me.style.left=RAD.cx+'px'; me.style.top=RAD.cy+'px'; }
   if(!RAD.range) return;
   const scale=RAD.rpx/RAD.range;
   RAD.spots.forEach(s=>{
@@ -2324,30 +2419,30 @@ function radarDraw(){
   }
   X.globalAlpha=1;
 
-  /* Lignes de distance + étiquettes — STRATIFICATION EN 2 PASSES.
-     Passe 1 : TOUTES les lignes pointillées. Passe 2 : TOUS les fonds noirs
-     et textes. Sinon la ligne d'un spot barrait l'étiquette d'un autre :
-     ici les distances couvrent toujours les lignes, jamais l'inverse. */
-  if(RAD.spots.length){
-    const shown=RAD.spots.slice(0,8);
-    /* Passe 1 — les traits */
+  /* LA DISTANCE NE S'AFFICHE QU'AU SURVOL.
+     Huit etiquettes permanentes empilees au centre du radar, c'etait une
+     bouillie illisible. Le vide est l'etat par defaut : on survole un T,
+     sa ligne et sa distance apparaissent, seules. Deux passes conservees —
+     tous les traits d'abord, toutes les plaques ensuite : une distance ne
+     peut jamais etre barree par une ligne. */
+  const shown=[RAD.focus,RAD.hover].filter((x,i,a)=>x&&a.indexOf(x)===i);
+  if(shown.length){
     X.save();
-    X.setLineDash([3,7]); X.lineDashOffset=-RAD.t*14; X.lineWidth=.5;
-    shown.forEach(s=>{
-      X.strokeStyle=intColor(s.intention); X.globalAlpha=.22;
-      X.beginPath(); X.moveTo(cx,cy); X.lineTo(s._px,s._py); X.stroke();
+    X.setLineDash([3,7]); X.lineDashOffset=-RAD.t*14; X.lineWidth=.8;
+    shown.forEach(sp=>{
+      X.strokeStyle=intColor(sp.intention); X.globalAlpha=.45;
+      X.beginPath(); X.moveTo(cx,cy); X.lineTo(sp._px,sp._py); X.stroke();
     });
     X.restore();
-    /* Passe 2 — les plaques + textes, par-dessus tous les traits */
-    X.font='700 11px "Space Mono",monospace';
+    X.font='700 12px "Space Mono",monospace';
     X.textAlign='center'; X.textBaseline='middle';
-    shown.forEach(s=>{
-      const c=intColor(s.intention);
-      const label=fmtDist(s.dist_m||0);
-      const lx=cx+(s._px-cx)*.55, ly=cy+(s._py-cy)*.55;
+    shown.forEach(sp=>{
+      const c=intColor(sp.intention);
+      const label=fmtDist(sp.dist_m||0);
+      const lx=cx+(sp._px-cx)*.55, ly=cy+(sp._py-cy)*.55;
       const w=X.measureText(label).width;
-      X.fillStyle='#000'; X.globalAlpha=.92;
-      X.fillRect(lx-w/2-6, ly-9, w+12, 18);
+      X.fillStyle='#000'; X.globalAlpha=.94;
+      X.fillRect(lx-w/2-8, ly-11, w+16, 22);
       X.globalAlpha=1; X.fillStyle=c;
       X.fillText(label, lx, ly);
     });
@@ -2384,6 +2479,9 @@ function renderRadar(spots){
     el.innerHTML=tGlyph(15);
     el.querySelector('.tglyph').style.animationDelay=(i*44)+'ms';
     el.addEventListener('click',ev=>{ ev.stopPropagation(); openCard(s,el); });
+    /* Le survol REVELE la distance — rien d'autre ne la dessine. */
+    el.addEventListener('mouseenter',()=>{ RAD.hover=s; });
+    el.addEventListener('mouseleave',()=>{ if(RAD.hover===s) RAD.hover=null; });
     box.appendChild(el);
     s._el=el;
   });
@@ -2393,7 +2491,7 @@ function renderRadar(spots){
 }
 
 /* ── APERÇU RICHE (desktop) ──────────────────────────────────────────── */
-function closeCard(){ const c=$('hm-card'); if(c) c.classList.remove('show'); }
+function closeCard(){ const c=$('hm-card'); if(c) c.classList.remove('show'); RAD.focus=null; }
 
 function openCard(s, anchor){
   const card=$('hm-card');
@@ -2401,6 +2499,7 @@ function openCard(s, anchor){
                 +'<div class="hm-c-inner">'+cardHTML(s)+'</div>';
   card.querySelector('.hm-c-close').onclick=closeCard;
   card.classList.add('show');
+  RAD.focus=s;   /* sa distance reste affichee tant que la carte est ouverte */
 
   /* Posé à côté du T, jamais dessus, et jamais hors écran. */
   const r=$('hmap').getBoundingClientRect();
@@ -2448,7 +2547,7 @@ function applyMode(){
 }
 
 function renderSpots(spots){
-  RAD.spots=spots;
+  RAD.spots=spots; RAD.hover=null; RAD.focus=null;
   const hmap=$('hmap');
   $('hm-deck').innerHTML='';
   $('hm-markers').querySelectorAll('.hm-marker').forEach(el=>el.remove());
@@ -2462,7 +2561,7 @@ function renderSpots(spots){
 }
 
 function clearSpots(){
-  RAD.spots=[]; RAD.range=1200; RAD.intention=null;
+  RAD.spots=[]; RAD.range=1200; RAD.intention=null; RAD.hover=null; RAD.focus=null;
   $('hm-deck').innerHTML='';
   $('hm-markers').querySelectorAll('.hm-marker').forEach(el=>el.remove());
   $('hmap').classList.remove('hm-loaded');
@@ -2534,8 +2633,19 @@ function say(msg){ const n=$('hm-note'); if(n) n.textContent=msg||''; }
 
 function setOverline(){
   const ov=$('hm-overline'), o=RAD.origin||{};
+  /* Tant que la demande court, on le DIT — un ecran muet pendant vingt
+     secondes, c'est ce qui donnait « la localisation ne fonctionne pas ». */
+  document.body.classList.toggle('hm-geo-fallback', !!o.fallback);
+  if(o.fallback && RAD.geoPending){
+    ov.textContent='locating…'; ov.classList.remove('retry'); return;
+  }
   if(o.fallback){
-    ov.textContent='Lisbon · tap to use your position';
+    const n=RAD.geoNote;
+    ov.textContent =
+      n==='insecure' ? 'location needs https · tap to retry'
+    : n===1          ? 'location blocked · allow it in your browser, then tap'
+    : n===3          ? 'location timed out · tap to retry'
+    :                  'Lisbon · tap to use your position';
     ov.classList.add('retry');
   }else{
     ov.textContent='real and living map';
@@ -2649,22 +2759,40 @@ async function loadMap(){
       hmapLoaded=true; return;
     }
 
-    let coords=geoCached(); RAD.geoNote=null;
-    if(!coords){
-      const perm=await geoPermission();
-      if(perm!=='denied'){
-        try{ coords=await geoAsk(false); }catch(e){ RAD.geoNote=(e&&e.code)||2; }
-      }else RAD.geoNote=1;
-    }
-    RAD.coords=coords;
-    RAD.origin=coords ? {lat:coords.lat,lng:coords.lng,fallback:false}
+    /* LA CARTE N'ATTEND PLUS LE GPS POUR EXISTER.
+       Avant, loadMap restait bloque sur getCurrentPosition : ecran sans
+       statut pendant tout le timeout, puis Lisbonne pour de bon. Desormais
+       on dessine immediatement sur la derniere position connue (ou Lisbonne),
+       et la demande court en arriere-plan : que la personne accepte en trois
+       secondes ou en trente, la carte se recale toute seule quand ca arrive. */
+    const cached=geoCached();
+    RAD.geoNote=null;
+    RAD.coords=cached;
+    RAD.origin=cached ? {lat:cached.lat,lng:cached.lng,fallback:false}
                       : {lat:38.7078,lng:-9.1366,fallback:true};
 
     clearSpots(); markActive(null);
+    RAD.geoPending=!cached;
     setOverline();
     radarStart();
     hmTime(); hmWeather(RAD.origin.lat, RAD.origin.lng);
     hmapLoaded=true;
+
+    if(!cached){
+      const perm=await geoPermission();
+      if(perm==='denied'){
+        RAD.geoPending=false; RAD.geoNote=1; setOverline();
+      }else{
+        geoAsk(false)
+          .then(c=>geoRefresh(geoApply(c)))
+          .catch(e=>{
+            RAD.geoPending=false;
+            RAD.geoNote=(e&&e.reason==='insecure')?'insecure':((e&&e.code)||2);
+            setOverline();
+          });
+        geoSoftDeadline(12000);
+      }
+    }
 
   }catch(e){
     console.error('higher-map:',e);
@@ -2677,14 +2805,34 @@ async function loadMap(){
    posé au milieu du vide. */
 $('hm-overline').onclick=async()=>{
   const ov=$('hm-overline');
-  if(!ov.classList.contains('retry')) return;
-  ov.textContent='locating…';
+  if(!RAD.origin || !RAD.origin.fallback) return;   /* deja localise : rien a faire */
+  ov.textContent='locating…'; ov.classList.remove('retry');
+  RAD.geoPending=true; geoSoftDeadline(12000);
   try{
-    await geoAsk(true);
-    HM_HITS.clear(); hmapLoaded=false;
-    await loadMap();
-  }catch(e){ setOverline(); }
+    geoBust();                         /* un cache Lisbonne ne doit pas repondre */
+    const c=await geoAsk(true,true);
+    await geoRefresh(geoApply(c));
+  }catch(e){
+    RAD.geoPending=false;
+    RAD.geoNote=(e&&e.reason==='insecure')?'insecure':((e&&e.code)||2);
+    setOverline();
+  }
 };
+
+/* AUTORISER APRES COUP DOIT SUFFIRE.
+   La personne refuse, puis debloque la position dans la barre d'adresse :
+   sans ceci la carte restait sur Lisbonne jusqu'au rechargement. On ecoute
+   la bascule de permission et on reprend la main tout seul. */
+(async function geoWatch(){
+  try{
+    if(!navigator.permissions||!navigator.permissions.query)return;
+    const st=await navigator.permissions.query({name:'geolocation'});
+    st.onchange=async()=>{
+      if(st.state!=='granted')return;
+      try{ geoBust(); await geoRefresh(geoApply(await geoAsk(false,true))); }catch(e){}
+    };
+  }catch(e){}
+})();
 
 document.addEventListener('click',e=>{
   const dd=$('hm-dd');
@@ -2997,11 +3145,12 @@ async function cityBoot(){
   }catch(e){}
   if(perm!=='granted')return;
   if(cityBusy)return; cityBusy=true;
-  navigator.geolocation.getCurrentPosition(async(pos)=>{
+  /* Passe par geoAsk : une seule demande GPS en vol pour toute l'app. */
+  geoAsk(false).then(async(c)=>{
     try{ localStorage.setItem('totehm_map_pos_v1', JSON.stringify({
-      lat: pos.coords.latitude, lng: pos.coords.longitude })); }catch(e){}
+      lat: c.lat, lng: c.lng })); }catch(e){}
     try{
-      const {latitude:lat,longitude:lng}=pos.coords;
+      const lat=c.lat, lng=c.lng;
       const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&accept-language=en`,{headers:{'Accept':'application/json'}});
       const d=await r.json();
       const addr=d.address||{};
@@ -3014,7 +3163,7 @@ async function cityBoot(){
       }catch(e){}
     }catch(e){}
     cityBusy=false;
-  },()=>{ cityBusy=false; },{timeout:8000,maximumAge:3600000});
+  }).catch(()=>{ cityBusy=false; });
 }
 
 const _origPaint=paint;
