@@ -20,8 +20,8 @@
   --g5:        #2a2a2a;
 
   --fight:     #E24B4A;
-  --flow:      #EF9F27;
-  --enrich:    #BA7517;
+  --flow:      #e48b31;
+  --enrich:    #fcbe21;
   --love:      #639922;
   --express:   #1D9E75;
   --focus:     #378ADD;
@@ -57,16 +57,15 @@ body { padding: 48px 32px 80px; max-width: 1400px; margin: 0 auto; }
   letter-spacing: .06em;
   max-width: 680px;
 }
-.page-disclaimer {
+/* ── DISCLAIMER — le modèle neuro est une simplification, pas un biomarqueur ── */
+.page-note {
   margin-top: 16px;
   font-family: 'Space Mono', monospace;
-  font-size: 9px;
-  letter-spacing: .1em;
+  font-size: 10px;
+  line-height: 1.6;
+  letter-spacing: .04em;
   color: var(--g4);
   max-width: 720px;
-  line-height: 1.75;
-  border-left: 2px solid var(--border);
-  padding-left: 12px;
 }
 
 /* ── LEGEND BAR ── */
@@ -271,7 +270,9 @@ body { padding: 48px 32px 80px; max-width: 1400px; margin: 0 auto; }
   margin-left: 2px;
 }
 
-/* ── NEURO TAG ── */
+/* ── NEURO TAG ──
+   Précision clinique : les signatures neuro doivent se lire. Pas d'opacité
+   réduite — pleine couleur d'intention, bordure structurelle. */
 .neuro-strip {
   display: flex;
   flex-wrap: wrap;
@@ -286,7 +287,6 @@ body { padding: 48px 32px 80px; max-width: 1400px; margin: 0 auto; }
   padding: 3px 8px;
   border: 1px solid var(--ic);
   color: var(--ic);
-  opacity: .6;
 }
 
 /* ── WAVE TAG ── */
@@ -341,14 +341,16 @@ body { padding: 48px 32px 80px; max-width: 1400px; margin: 0 auto; }
     The user picks one. The city reorganizes itself. Every Habit is analyzed and assigned one Intention.
     Every City Spot carries the color of its Intention.
   </div>
-  <div class="page-disclaimer">Each TOTEHM Intention is associated with a simplified neurobiological signature — a model combining neural activity patterns, neurotransmitter systems, autonomic regulation and cognitive networks relevant to the corresponding mode of experience. It is not a clinical biomarker or a one-to-one mapping of brain activity.</div>
+  <p class="page-note">
+    Each TOTEHM Intention is associated with a simplified neurobiological signature — a model combining neural activity patterns, neurotransmitter systems, autonomic regulation and cognitive networks relevant to the corresponding mode of experience. It is not a clinical biomarker or a one-to-one mapping of brain activity.
+  </p>
 </header>
 
 <!-- LEGEND -->
 <div class="legend">
   <div class="legend-item"><div class="legend-dot" style="background:#E24B4A"></div>Fight #E24B4A</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#EF9F27"></div>Flow #EF9F27</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#BA7517"></div>Enrich #BA7517</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#e48b31"></div>Flow #e48b31</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#fcbe21"></div>Enrich #fcbe21</div>
   <div class="legend-item"><div class="legend-dot" style="background:#639922"></div>Love #639922</div>
   <div class="legend-item"><div class="legend-dot" style="background:#1D9E75"></div>Express #1D9E75</div>
   <div class="legend-item"><div class="legend-dot" style="background:#378ADD"></div>Focus #378ADD</div>
@@ -367,7 +369,7 @@ body { padding: 48px 32px 80px; max-width: 1400px; margin: 0 auto; }
   </div>
   <div class="int-def">Conquer yourself through harder effort. One more rep.</div>
   <div class="int-essence">Resilience · Mental hardness · Self-overcoming · Exit the comfort zone · Embrace the pain</div>
-  <div class="wave-tag" style="background:var(--fight)">HIGH BETA / GAMMA · NORADRENALINE · ENDOGENOUS OPIOIDS</div>
+  <div class="wave-tag" style="background:var(--fight)">High Beta / Gamma · Noradrenaline · Endogenous Opioids</div>
 
   <div class="int-grid">
     <div class="cell">
@@ -466,7 +468,7 @@ body { padding: 48px 32px 80px; max-width: 1400px; margin: 0 auto; }
   </div>
   <div class="int-def">Liberate energy through the movement of the body.</div>
   <div class="int-essence">Release · Fluid movement · Letting go · Body leads · Internal rhythm · Somatic freedom</div>
-  <div class="wave-tag" style="background:var(--flow)">ALPHA / THETA · SEROTONIN · ENDOCANNABINOID SYSTEM</div>
+  <div class="wave-tag" style="background:var(--flow)">Alpha / Theta · Serotonin · Endocannabinoid System</div>
 
   <div class="int-grid">
     <div class="cell">
@@ -565,7 +567,7 @@ body { padding: 48px 32px 80px; max-width: 1400px; margin: 0 auto; }
   </div>
   <div class="int-def">Master your wealth through capital, network & knowledge.</div>
   <div class="int-essence">Accumulation · Leverage · Strategic growth · Capital · Network density · Mastery of systems</div>
-  <div class="wave-tag" style="background:var(--enrich)">BETA · DOPAMINE · ACETYLCHOLINE</div>
+  <div class="wave-tag" style="background:var(--enrich)">Beta · Dopamine · Acetylcholine</div>
 
   <div class="int-grid">
     <div class="cell">
@@ -663,7 +665,7 @@ body { padding: 48px 32px 80px; max-width: 1400px; margin: 0 auto; }
   </div>
   <div class="int-def">Contemplate life through connection & beauty.</div>
   <div class="int-essence">Passivity · Receptivity · Openness · Presence · Beauty as a state · Sensory slowness</div>
-  <div class="wave-tag" style="background:var(--love)">ALPHA · OXYTOCIN · PARASYMPATHETIC</div>
+  <div class="wave-tag" style="background:var(--love)">Alpha · Oxytocin · Parasympathetic</div>
 
   <div class="int-grid">
     <div class="cell">
@@ -761,7 +763,7 @@ body { padding: 48px 32px 80px; max-width: 1400px; margin: 0 auto; }
   </div>
   <div class="int-def">Give form to emotion through creation.</div>
   <div class="int-essence">Output · Making · Externalizing the internal · Art as release · Voice as identity · Form over feeling</div>
-  <div class="wave-tag" style="background:var(--express)">BETA CREATIVE · DOPAMINE · DEFAULT MODE NETWORK</div>
+  <div class="wave-tag" style="background:var(--express)">Beta Creative · Dopamine · Default Mode Network</div>
 
   <div class="int-grid">
     <div class="cell">
@@ -859,7 +861,7 @@ body { padding: 48px 32px 80px; max-width: 1400px; margin: 0 auto; }
   </div>
   <div class="int-def">Find yourself through deep mental focus.</div>
   <div class="int-essence">Deep work · Cognitive sharpness · Attention as power · Single-task mastery · Signal over noise</div>
-  <div class="wave-tag" style="background:var(--focus)">HIGH BETA · DOPAMINE · PREFRONTAL CORTEX</div>
+  <div class="wave-tag" style="background:var(--focus)">High Beta · Dopamine · Prefrontal Cortex</div>
 
   <div class="int-grid">
     <div class="cell">
@@ -957,7 +959,7 @@ body { padding: 48px 32px 80px; max-width: 1400px; margin: 0 auto; }
   </div>
   <div class="int-def">Elevate energy through collective effervescence. Enjoy the full life.</div>
   <div class="int-essence">Peak moments · Pleasure as fuel · Collective joy · Milestone recognition · The art of living fully</div>
-  <div class="wave-tag" style="background:var(--celebrate)">HIGH BETA · DOPAMINE · OXYTOCIN · ENDOGENOUS OPIOIDS</div>
+  <div class="wave-tag" style="background:var(--celebrate)">High Beta · Dopamine · Oxytocin · Endogenous Opioids</div>
 
   <div class="int-grid">
     <div class="cell">
@@ -1049,7 +1051,7 @@ body { padding: 48px 32px 80px; max-width: 1400px; margin: 0 auto; }
 ══════════════════════════════════════════ -->
 <footer class="page-footer">
   <span>TOTEHM · 7 Intentions Reference · Internal</span>
-  <span>v1.0 · 2026</span>
+  <span>v1.1 · 2026 · neuro signatures aligned</span>
 </footer>
 
 </body>
