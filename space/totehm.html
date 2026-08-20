@@ -144,9 +144,10 @@ body.hm-alive .hm-reveal,body.hm-picked .hm-reveal{opacity:1}
 
 /* ── COINS : conn-bar en haut à gauche, temps et météo en haut à droite,
       coordonnées en bas à gauche, portée en bas à droite ──────────── */
-#hm-clock-left{position:absolute;top:16px;left:16px;z-index:6;
+/* Météo séparée en deux ancres : Heure + Ciel à gauche, Temp + Vent à droite. */
+#hm-weather-left{position:absolute;top:16px;left:16px;z-index:6;
   pointer-events:none;display:flex;flex-direction:column;align-items:flex-start;gap:3px}
-#hm-clock-right{position:absolute;top:16px;right:16px;z-index:6;text-align:right;
+#hm-weather-right{position:absolute;top:16px;right:16px;z-index:6;text-align:right;
   pointer-events:none;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
 .hm-w{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;
   color:var(--hm-lo);white-space:nowrap;display:flex;gap:8px;align-items:baseline}
@@ -187,7 +188,7 @@ body.map-leaving #bigT,body.map-leaving #wordmark,body.map-leaving #rail{
 /* ══════════════════════════════════════════════════════════════════
    LE SÉLECTEUR — commun aux deux rendus
    ══════════════════════════════════════════════════════════════════ */
-#hm-selector{position:absolute;left:50%;top:25%;transform:translate(-50%,-50%);
+#hm-selector{position:absolute;left:50%;top:28%;transform:translate(-50%,-50%);
   display:flex;flex-direction:column;align-items:center;gap:16px;
   width:min(92vw,440px);z-index:20;
   transition:top .62s cubic-bezier(.45,0,.2,1),transform .62s cubic-bezier(.45,0,.2,1),
@@ -221,10 +222,11 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
 
 #hm-ddm{display:none;position:absolute;top:calc(100% + 10px);left:50%;
   transform:translateX(-50%);width:min(92vw,360px);z-index:11;
-  background:#0a0a0a;
-  border:1px solid #1a1a1a;
-  box-shadow:0 12px 40px rgba(0,0,0,.8);
-  max-height:60vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:#121212;
+  border:1px solid #2a2a2a;
+  box-shadow:0 16px 40px rgba(0,0,0,.9);
+  max-height:40vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
   animation:hmDD .18s ease}
 @keyframes hmDD{from{opacity:0;transform:translateX(-50%) translateY(-6px)}
                 to{opacity:1;transform:translateX(-50%) translateY(0)}}
@@ -302,8 +304,9 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
 
 /* ── APERÇU RICHE AU CLIC (desktop) ────────────────────────────────── */
 #hm-card{position:absolute;z-index:12;display:none;width:270px;
-  background:#0a0a0a;border:1px solid #1a1a1a;
-  box-shadow:0 12px 40px rgba(0,0,0,.8);
+  background:#121212;border:1px solid #2a2a2a;
+  box-shadow:0 16px 40px rgba(0,0,0,.9);
+  overscroll-behavior:contain;
   flex-direction:column;overflow:hidden}
 #hm-card.show{display:flex}
 #hmap.hm-deck #hm-card{display:none!important}
@@ -324,8 +327,8 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
 .hm-slide{flex:0 0 100vw;width:100vw;height:100%;scroll-snap-align:center;
   display:flex;flex-direction:column;justify-content:flex-end;
   padding:0 26px 34px;box-sizing:border-box}
-.hm-slide .hm-c-inner{background:#0a0a0a;border:1px solid #1a1a1a;
-  box-shadow:0 12px 40px rgba(0,0,0,.8)}
+.hm-slide .hm-c-inner{background:#121212;border:1px solid #2a2a2a;
+  box-shadow:0 16px 40px rgba(0,0,0,.9)}
 
 /* ── LA CARTE — un seul balisage, servi au deck et à l'aperçu ─────── */
 .hm-c-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
@@ -352,10 +355,28 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
   gap:14px;margin-top:20px;padding-top:14px;border-top:1px solid rgba(255,255,255,.09)}
 .hm-c-dist{font-family:'Space Mono',monospace;font-size:15px;color:var(--hm-hi)}
 .hm-c-walk{font-family:'Space Mono',monospace;font-size:11px;color:var(--hm-lo);margin-left:8px}
-.hm-c-go{font-family:'Quantico',sans-serif;font-size:14px;font-weight:700;
-  color:var(--hm-mid);text-decoration:none;white-space:nowrap;
-  transition:color .15s;-webkit-tap-highlight-color:transparent}
-.hm-c-go:hover,.hm-c-go:active{color:var(--hm-hi)}
+/* [ TAKE ME THERE → ] — style officiel .btn-sig : bordures perforées
+   actives, Quantico 14px, majuscules. */
+.hm-c-go{font-family:'Quantico',sans-serif;font-size:14px;font-weight:400;
+  letter-spacing:0;text-transform:uppercase;color:var(--hm-mid);
+  background:none;text-decoration:none;white-space:nowrap;cursor:pointer;
+  border:6px solid transparent;padding:0 4px;line-height:1.5;display:inline-block;
+  -webkit-tap-highlight-color:transparent;transition:color .15s ease}
+@media(hover:hover){.hm-c-go:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
+.hm-c-go:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+
+/* L'asset Higher du sélecteur d'intention : le wordmark lisible (#higher-word)
+   à 16px, jamais l'ancien badge minuscule. */
+.hm-ddi-name .hi-word,#hm-ddt-lbl .hi-word{display:inline-flex;align-items:center;line-height:0;margin-left:9px}
+.hm-ddi-name .hi-word svg,#hm-ddt-lbl .hi-word svg{height:16px;width:auto;display:inline-block}
+
+/* [ ✕ clear ] — sous le sélecteur, mobile uniquement, une fois l'intention posée */
+#hm-clear{display:none;margin-top:2px;font-family:'Space Mono',monospace;font-size:9px;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--hm-lo);background:none;
+  border:none;cursor:pointer;padding:4px 6px;-webkit-tap-highlight-color:transparent;
+  transition:color .15s}
+#hm-clear:hover{color:var(--hm-hi)}
+@media(max-width:699px){ body.hm-picked #hm-clear{display:inline-block} }
 
 /* Tailles : la carte plein écran respire, l'aperçu se resserre. */
 .hm-slide .hm-c-name{font-size:34px}
@@ -383,7 +404,7 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
 @media(max-width:699px){
   #hm-corner-bl,#hm-corner{display:none}
   #hmap-nav img{width:42px}
-  #hm-overline{top:105px}
+  #hm-overline{top:110px}
 }
 @media(min-width:700px){
   #hm-deck,#hm-count{display:none!important}
@@ -424,8 +445,10 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 @media(hover:hover){.btn-back:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
 .btn-back:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
 
-/* ── CONNECTION BAR ── */
-#conn-bar{position:fixed;top:14px;left:14px;z-index:45;display:none;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:0 4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
+/* ── CONNECTION BAR ──
+   Point d'entrée membre unique — le Dashboard. Visible sur TOUS les étages
+   (Habits + Map), placé sous les logos/météo pour ne jamais les heurter. */
+#conn-bar{position:fixed;top:44px;left:16px;z-index:45;display:none;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:0 4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
 #conn-bar:hover{color:#fff}
 /* Accréditation Higher. Elle ne s'affiche que pour qui l'a payée ou reçue :
    la source de vérité est stoner_access, jamais le front. */
@@ -593,7 +616,15 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 
 #member-window{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.84);display:none;align-items:center;justify-content:center;padding:24px}
 #member-window.show{display:flex}
-.mw-card{background:#0a0a0a;border:1px solid #1e1e1e;max-width:340px;width:100%;padding:30px 24px;text-align:center;position:relative}
+.mw-card{background:#121212;border:1px solid #2a2a2a;box-shadow:0 16px 40px rgba(0,0,0,.9);max-width:360px;width:100%;padding:30px 24px;text-align:center;position:relative;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.mw-card::-webkit-scrollbar{width:0;display:none}
+/* ══ LE DASHBOARD : #settings vit désormais dans la fenêtre membre ══
+   Tous les réglages (nom, visibilité, abonnement, suppression) sous un seul toit. */
+#mw-in-state #settings.mw-dash{max-width:none;margin:0;padding:16px 0 0;gap:12px;background:none}
+#mw-in-state #settings.mw-dash > .set-block{width:100%}
+/* La navigation Autobiography / Generator n'est pas un réglage : elle reste
+   accessible au swipe latéral et aux flèches, jamais dans le Dashboard. */
+#mw-in-state #settings-nav{display:none!important}
 .mw-title{font-family:'Quantico',sans-serif;font-weight:700;font-size:18px;color:#fff;margin-bottom:14px}
 .mw-body{font-family:var(--futura);font-weight:300;font-size:13px;color:var(--g-mid);line-height:1.7;margin-bottom:14px}
 .mw-close{position:absolute;top:12px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:none;color:var(--g-mid);background:none;border:none;cursor:pointer;padding:0}
@@ -925,8 +956,6 @@ body.gate.entered #fv-status{
 <div id="bigT" class="sink-el"><svg id="ui-t" viewBox="79.832 47.921 66.789 66.932" role="img" aria-label="T"><defs><clipPath id="tut_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tut_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tut_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tut_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tut_ffb4264ddd)"><g clip-path="url(#tut_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tut_0eae0d8cca)"><g clip-path="url(#tut_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tut_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tut_92fddf9f0e)"><g clip-path="url(#tut_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tut_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tut_7d4c700d36)"><g clip-path="url(#tut_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></svg></div>
 <div id="wordmark" class="sink-el"><svg id="ui-wm" viewBox="74.997 121.602 77.584 46.683" role="img" aria-label="TOTEHM"><defs><g/><clipPath id="tuw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tuw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg></div>
 
-<button id="conn-bar" class="sink-el" aria-label="member space"><span class="dot"></span>Guest</button>
-
 <button id="menu-arrow" class="sink-el" aria-label="Open menu">
   <svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2 L12 11 L22 2"/></svg>
 </button>
@@ -940,74 +969,7 @@ body.gate.entered #fv-status{
   <div id="fv-inner">
     <div id="habits"></div>
 
-    <div id="settings" class="hide">
-      <!-- Rangée haute du menu : [My Book] · [My TOTEHM↑ = retour Habits] · [Next Objective] -->
-      <div id="settings-nav">
-        <!-- Étage 1 : bouton [My Totehm] version logo-image centré, avec flèche ↑ au-dessus -->
-        <button id="sn-home" class="sn-btn sn-logo" aria-label="Back to my Totehm">
-          <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
-          <img src="assets/img/totehm_logo.png" alt="My Totehm">
-        </button>
-        <!-- Étage 2 : Autobiography (←) puis My Habits Generator (→), l'un au-dessus de l'autre, centrés -->
-        <div class="sn-row">
-          <button id="sn-book" class="sn-btn" aria-label="Autobiography by my Totehm — the past">
-            <span class="sn-tile sn-tile-rep" aria-hidden="true"><svg viewBox="0 0 14 24"><path d="M11 2 L3 12 L11 22"/></svg></span>
-            <span>Autobiography by my Totehm&copy;</span>
-          </button>
-          <button id="sn-next" class="sn-btn" aria-label="My Habits Generator — the future">
-            <span>My Habits Generator</span>
-            <span class="sn-tile sn-tile-blue" aria-hidden="true"><svg viewBox="0 0 14 24"><path d="M3 2 L11 12 L3 22"/></svg></span>
-          </button>
-        </div>
-      </div>
 
-      <!-- Menu en 4 boutons alignés : Name, Visibility, City, Search -->
-      <div class="set-block">
-        <div class="menu-row">
-          <button class="btn-sig" id="name-btn">Name of my Totehm</button>
-          <input class="line-input hide" id="set-name" maxlength="24" placeholder="my Totehm" autocomplete="off" spellcheck="false">
-          <div class="note dim hide" id="name-note"></div>
-        </div>
-      </div>
-
-      <div class="set-block">
-        <div class="menu-row">
-          <button class="btn-sig" id="vis-btn">Visibility</button>
-          <div class="hide" id="vis-panel"><div class="row"><button class="size-btn" id="set-private">Private</button><button class="size-btn" id="set-members">Visible to members</button></div></div>
-        </div>
-      </div>
-
-      <!-- Curseur PlayStation — visible uniquement dans les Paramètres -->
-      <div class="set-block">
-        <div class="menu-row">
-          <button class="btn-sig" id="search-btn">Search a Totehm</button>
-          <input class="line-input hide" id="search-input" maxlength="24" placeholder="name of a Totehm" autocomplete="off" spellcheck="false">
-          <div class="note dim hide" id="search-note"></div>
-        </div>
-      </div>
-
-      <!-- Bouton [Get Higher with my Totehm] : monte vers Stoner avec animation d'élévation -->
-      <div class="set-block">
-        <button class="btn-sig" id="btn-get-higher">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> with my Totehm</button>
-      </div>
-
-      <!-- Bouton [Wear the dopest branding ever made] : pont vers la boutique -->
-      <div class="set-block">
-        <div class="menu-row">
-          <a class="btn-sig" id="wear-btn" href="https://higher.boutique/#menu">Wear the dopest branding ever made</a>
-        </div>
-      </div>
-
-      <!-- Gestion du compte : deux gestes distincts, jamais confondus. -->
-      <div class="set-block">
-        <div id="acct" class="hide">
-          <button class="acct-btn" id="acct-wipe" type="button">Delete my Totehm</button>
-          <div class="acct-warn" id="acct-warn">Your habits, your autobiography and your personal data are erased. Your subscription stays active.</div>
-          <button class="acct-btn hide" id="acct-cancel" type="button">Cancel my subscription</button>
-          <div class="acct-note hide" id="acct-note"></div>
-        </div>
-      </div>
-    </div>
   </div>
   <div id="fv-status"></div>
 </div>
@@ -1043,6 +1005,11 @@ body.gate.entered #fv-status{
 
 </div><!-- /#stage -->
 
+<!-- Point d'entrée membre (Dashboard). HORS de #stage : sur desktop #stage subit
+     scale(0) en mode Map, ce qui collapserait ses enfants fixed. Au niveau body,
+     #conn-bar reste visible et cliquable sur TOUS les étages. -->
+<button id="conn-bar" class="sink-el" aria-label="member space"><span class="dot"></span>Guest</button>
+
 <!-- Higher Map : hors de #stage — #stage a un transform sur desktop qui en
      ferait le containing block de position:fixed et empêcherait le plein écran. -->
 <div id="hmap" aria-hidden="true">
@@ -1059,11 +1026,11 @@ body.gate.entered #fv-status{
   <!-- Statut. Devient cliquable seulement si la position doit être relancée. -->
   <button id="hm-overline" type="button"></button>
 
-  <!-- Heure + ciel en haut à gauche, temp + vent en haut à droite -->
-  <div id="hm-clock-left">
+  <!-- Météo séparée : Heure + Ciel à gauche, Temp + Vent à droite -->
+  <div id="hm-weather-left">
     <div class="hm-w hm-reveal"><b id="hm-time">--:--</b><span id="hm-sky">···</span></div>
   </div>
-  <div id="hm-clock-right">
+  <div id="hm-weather-right">
     <div class="hm-w hm-reveal"><b id="hm-temp">--°</b><span id="hm-wind">-- km/h</span></div>
   </div>
 
@@ -1081,6 +1048,7 @@ body.gate.entered #fv-status{
       </button>
       <div id="hm-ddm"></div>
     </div>
+    <button id="hm-clear" type="button">&times; clear</button>
   </div>
 
   <!-- RENDU B · deck (<700px) : 4/5 de l'écran, une carte par spot -->
@@ -1146,7 +1114,77 @@ body.gate.entered #fv-status{
       <div class="mw-pseudo" id="mw-who"></div>
       <div class="mw-mail" id="mw-mail"></div>
       <div class="mw-sync" id="mw-sync"></div>
+    <div id="settings" class="mw-dash">
+      <!-- Rangée haute du menu : [My Book] · [My TOTEHM↑ = retour Habits] · [Next Objective] -->
+      <div id="settings-nav">
+        <!-- Étage 1 : bouton [My Totehm] version logo-image centré, avec flèche ↑ au-dessus -->
+        <button id="sn-home" class="sn-btn sn-logo" aria-label="Back to my Totehm">
+          <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
+          <img src="assets/img/totehm_logo.png" alt="My Totehm">
+        </button>
+        <!-- Étage 2 : Autobiography (←) puis My Habits Generator (→), l'un au-dessus de l'autre, centrés -->
+        <div class="sn-row">
+          <button id="sn-book" class="sn-btn" aria-label="Autobiography by my Totehm — the past">
+            <span class="sn-tile sn-tile-rep" aria-hidden="true"><svg viewBox="0 0 14 24"><path d="M11 2 L3 12 L11 22"/></svg></span>
+            <span>Autobiography by my Totehm&copy;</span>
+          </button>
+          <button id="sn-next" class="sn-btn" aria-label="My Habits Generator — the future">
+            <span>My Habits Generator</span>
+            <span class="sn-tile sn-tile-blue" aria-hidden="true"><svg viewBox="0 0 14 24"><path d="M3 2 L11 12 L3 22"/></svg></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Menu en 4 boutons alignés : Name, Visibility, City, Search -->
+      <div class="set-block">
+        <div class="menu-row">
+          <button class="btn-sig" id="name-btn">Name of my Totehm</button>
+          <input class="line-input hide" id="set-name" maxlength="24" placeholder="my Totehm" autocomplete="off" spellcheck="false">
+          <div class="note dim hide" id="name-note"></div>
+        </div>
+      </div>
+
+      <div class="set-block">
+        <div class="menu-row">
+          <button class="btn-sig" id="vis-btn">Visibility</button>
+          <div class="hide" id="vis-panel"><div class="row"><button class="size-btn" id="set-private">Private</button><button class="size-btn" id="set-members">Visible to members</button></div></div>
+        </div>
+      </div>
+
+      <!-- Curseur PlayStation — visible uniquement dans les Paramètres -->
+      <div class="set-block">
+        <div class="menu-row">
+          <button class="btn-sig" id="search-btn">Search a Totehm</button>
+          <input class="line-input hide" id="search-input" maxlength="24" placeholder="name of a Totehm" autocomplete="off" spellcheck="false">
+          <div class="note dim hide" id="search-note"></div>
+        </div>
+      </div>
+
+      <!-- Abonnement : offre unique Higher Club, peinte par paintSubscription() -->
       <div id="mw-sub"></div>
+
+      <!-- Bouton [Get Higher with my Totehm] : monte vers Stoner avec animation d'élévation -->
+      <div class="set-block">
+        <button class="btn-sig" id="btn-get-higher">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> with my Totehm</button>
+      </div>
+
+      <!-- Bouton [Wear the dopest branding ever made] : pont vers la boutique -->
+      <div class="set-block">
+        <div class="menu-row">
+          <a class="btn-sig" id="wear-btn" href="https://higher.boutique/#menu">Wear the dopest branding ever made</a>
+        </div>
+      </div>
+
+      <!-- Gestion du compte : deux gestes distincts, jamais confondus. -->
+      <div class="set-block">
+        <div id="acct" class="hide">
+          <button class="acct-btn" id="acct-wipe" type="button">Delete my Totehm</button>
+          <div class="acct-warn" id="acct-warn">Your habits, your autobiography and your personal data are erased. Your subscription stays active.</div>
+          <button class="acct-btn hide" id="acct-cancel" type="button">Cancel my subscription</button>
+          <div class="acct-note hide" id="acct-note"></div>
+        </div>
+      </div>
+    </div>
       <button class="mw-out" id="mw-signout">Sign out</button>
     </div>
   </div>
@@ -1474,13 +1512,13 @@ async function migrateLocalToCloudIfNeeded(){
 
 /* ══ LES 7 INTENTIONS (source : totehm_map.html) ══ */
 const INTS=[
-  {id:'fight',    name:'Fight',    color:'#E24B4A', def:'Conquer yourself through harder effort.',         neuro:'HIGH BETA / GAMMA · NORADRENALINE · ENDOGENOUS OPIOIDS'},
-  {id:'flow',     name:'Flow',     color:'#e48b31', def:'Liberate energy through movement.',               neuro:'ALPHA / THETA · SEROTONIN · ENDOCANNABINOID SYSTEM'},
-  {id:'enrich',   name:'Enrich',   color:'#fcbe21', def:'Master your wealth through capital & network.',   neuro:'BETA · DOPAMINE · ACETYLCHOLINE'},
-  {id:'love',     name:'Love',     color:'#639922', def:'Contemplate life through connection & beauty.',   neuro:'ALPHA · OXYTOCIN · PARASYMPATHETIC'},
-  {id:'express',  name:'Express',  color:'#1D9E75', def:'Give form to emotion through creation.',          neuro:'BETA CREATIVE · DOPAMINE · DEFAULT MODE NETWORK'},
-  {id:'focus',    name:'Focus',    color:'#378ADD', def:'Master your mind through deep mental focus.',     neuro:'HIGH BETA · DOPAMINE · PREFRONTAL CORTEX'},
-  {id:'celebrate',name:'Celebrate',color:'#7F77DD', def:'Elevate energy through collective effervescence.',neuro:'HIGH BETA · DOPAMINE · OXYTOCIN · ENDOGENOUS OPIOIDS'}
+  {id:'fight',    name:'Fight',    color:'#E24B4A', def:'Conquer yourself through harder effort.',         neuro:'High Beta / Gamma · Noradrenaline · Endogenous Opioids'},
+  {id:'flow',     name:'Flow',     color:'#e48b31', def:'Liberate energy through movement.',               neuro:'Alpha / Theta · Serotonin · Endocannabinoid System'},
+  {id:'enrich',   name:'Enrich',   color:'#fcbe21', def:'Master your wealth through capital & network.',   neuro:'Beta · Dopamine · Acetylcholine'},
+  {id:'love',     name:'Love',     color:'#639922', def:'Contemplate life through connection & beauty.',   neuro:'Alpha · Oxytocin · Parasympathetic'},
+  {id:'express',  name:'Express',  color:'#1D9E75', def:'Give form to emotion through creation.',          neuro:'Beta Creative · Dopamine · Default Mode Network'},
+  {id:'focus',    name:'Focus',    color:'#378ADD', def:'Master your mind through deep mental focus.',     neuro:'High Beta · Dopamine · Prefrontal Cortex'},
+  {id:'celebrate',name:'Celebrate',color:'#7F77DD', def:'Elevate energy through collective effervescence.',neuro:'High Beta · Dopamine · Oxytocin · Endogenous Opioids'}
 ];
 const INT_BY_ID={};INTS.forEach(x=>INT_BY_ID[x.id]=x);
 const intColor=i=>(INT_BY_ID[i]||{}).color||'#fff';
@@ -1653,17 +1691,18 @@ function renderSettings(){
   }
 }
 
-function applyFloorFx(isSet){
-  $('floorview').style.backgroundColor=isSet?'#000':'transparent';
-  {const st=$('stage');if(st)st.classList.toggle('z-set',isSet);}
-  $('rail').style.opacity=isSet?'0':'1';
-  $('bigT').style.opacity=isSet?'0':'1';
-  $('wordmark').style.opacity=isSet?'0':'1';
-  $('menu-arrow').style.display=isSet?'none':'';
-  $('filter-arrow').style.display=isSet?'none':'';
-  $('conn-bar').style.display=(isSet||isMap)?'flex':'none';
-  document.body.classList.toggle('in-settings',isSet);
-  if(isSet)renderSettings();else renderHabits();
+/* Deux étages seulement : 0 = Habits · 1 = Map. Les Settings sont partis dans
+   le Dashboard membre (#member-window). Plus d'étage noir, plus de z-set. */
+function applyFloorFx(){
+  const st=$('stage'); if(st) st.classList.remove('z-set');
+  $('floorview').style.backgroundColor='transparent';
+  $('rail').style.opacity='1';
+  $('bigT').style.opacity='1';
+  $('wordmark').style.opacity='1';
+  $('menu-arrow').style.display='';
+  $('filter-arrow').style.display='';
+  $('conn-bar').style.display='flex';   /* Dashboard : accessible sur TOUS les étages */
+  document.body.classList.remove('in-settings');
 }
 /* Desktop : le scroll de #fv-inner est un geste libre — molette, trackpad,
    barre d'espace. paint() ne s'exécute que sur action explicite, donc sans
@@ -1676,7 +1715,6 @@ function applyFloorFx(isSet){
 
 function paint(){
   const isMap = floor === 1;
-  const isSet = floor === 2;
 
   // Higher Map
   document.body.classList.toggle('in-map', isMap);
@@ -1687,15 +1725,9 @@ function paint(){
   $('hmap').setAttribute('aria-hidden', isMap ? 'false' : 'true');
   if(isMap && !hmapLoaded) loadMap();
 
-  if(isDesk()){
-    renderHabits(); renderSettings();
-  } else {
-    $('habits').classList.toggle('hide', isSet);
-    $('settings').classList.toggle('hide', !isSet);
-    $('fv-inner').classList.toggle('menu-mode', isSet);
-    if(isSet) renderSettings(); else renderHabits();
-  }
-  applyFloorFx(isSet);
+  /* Habits = l'étage de base, toujours rendu ; #hmap le recouvre en mode Map. */
+  renderHabits();
+  applyFloorFx();
 }
 
 /* ══ FREQUENCY PANEL ══ */
@@ -1889,41 +1921,12 @@ $('fp-input').addEventListener('keydown',e=>{
 });
 $('freq-panel').addEventListener('click',e=>{if(e.target===$('freq-panel'))closeFreqPanel();});
 
-/* ══ NAVIGATION : up = Get Higher · down = Settings ══ */
+/* ══ NAVIGATION — fondu court, cadence iOS ══
+   Avec deux étages, toute bascule 0↔1 passe par la Map (branche dédiée de go()).
+   Ce fondu ne sert plus que de filet ; transitions ≤ 380 ms, jamais plus. */
 function animateSwap(dy,apply){
   if(busy)return;busy=true;
   const inner=$('fv-inner');
-  const isDesktop=window.innerWidth>=700&&window.matchMedia('(hover:hover)').matches;
-  if(isDesktop){
-    const fv=$('floorview');
-    const goingDown=dy<0; /* habits → settings */
-    const h=inner.clientHeight;
-    $('habits').classList.remove('hide');
-    $('settings').classList.remove('hide');
-    $('habits').style.minHeight=h+'px';
-    $('settings').style.minHeight=h+'px';
-    fv.style.overflow='hidden';
-    inner.style.overflow='hidden';
-    inner.style.transition='none';
-    inner.style.transform=goingDown?'translateY(0)':'translateY(-'+h+'px)';
-    requestAnimationFrame(()=>{requestAnimationFrame(()=>{
-      inner.style.transition='transform .52s cubic-bezier(.4,0,.2,1)';
-      inner.style.transform=goingDown?'translateY(-'+h+'px)':'translateY(0)';
-      setTimeout(()=>{
-        apply();
-        fv.style.overflow='';
-        inner.style.overflow='';
-        inner.style.transition='none';
-        inner.style.transform='';
-        inner.scrollTop=0;
-        $('habits').style.minHeight='';
-        $('settings').style.minHeight='';
-        busy=false;
-      },540);
-    });});
-    return;
-  }
-  /* Mobile : fondu + micro-glissement */
   inner.style.transition='opacity .2s ease, transform .2s ease';
   inner.style.opacity='0';inner.style.transform='translate(0,'+(-dy*26)+'px)';
   setTimeout(()=>{apply();inner.scrollTop=0;inner.style.transition='none';inner.style.transform='translate(0,'+(dy*26)+'px)';
@@ -1973,7 +1976,7 @@ function go(dFloor){
   if(busy||fpOpen()||$('member-window').classList.contains('show')||$('tview').classList.contains('show'))return;
   if($('stoner').classList.contains('show')){ if(dFloor>0)showStoner(false); return; }
   const next = floor + (dFloor < 0 ? 1 : -1);
-  if(next < 0 || next > 2) return;
+  if(next < 0 || next > 1) return;   /* plus d'étage 2 : Habits (0) ↔ Map (1) */
   if(isDesk()){ floor = next; paint(); return; }
   /* Mobile — transitions map : paint() direct, #hmap(z-index:55, bg:#000)
      couvre immédiatement tout. body.in-map cache bigT/wordmark/rail sans délai. */
@@ -1996,13 +1999,12 @@ function go(dFloor){
   animateSwap(dFloor, ()=>{ floor = next; paint(); });
 }
 /* Arrivée depuis next_objective.html en pleine page : #settings ouvre
-   directement les Paramètres. En iframe, c'est le postMessage
-   'totehm-goto-settings' qui s'en charge — les deux chemins existent. */
+   directement le Dashboard membre (les réglages y vivent désormais). En
+   iframe, c'est le postMessage 'totehm-goto-settings' qui s'en charge. */
 if(location.hash === '#settings'){
   setTimeout(()=>{
-    const inner=$('fv-inner');
-    if(isDesk())inner.scrollTo({top:inner.clientHeight,behavior:'instant'});
-    else if(floor!==2){floor=2;paint();}
+    $('member-window').classList.add('show');
+    if(typeof memberPaint==='function')memberPaint();
   }, 60);
   history.replaceState(null, '', location.pathname);
 }
@@ -2016,7 +2018,7 @@ $('menu-arrow').onclick=()=>{if(!busy)go(-1);};
    deux replis. */
 (function foldGesture(){
   let lock=false, acc=0, at=0;
-  const FOLD=1050;                       /* --gate-dur */
+  const FOLD=380;                        /* nav 2 étages : verrou court, iOS-like */
   function lockNow(){ lock=true; setTimeout(()=>lock=false, FOLD); }
 
   function blocked(){
@@ -2033,14 +2035,18 @@ $('menu-arrow').onclick=()=>{if(!busy)go(-1);};
 
   window.addEventListener('wheel',(e)=>{
     if(blocked())return;
+    /* Scroll chaining : molette dans le menu/popup/deck de la Map → on ne
+       change JAMAIS d'étage (sinon l'utilisateur reste prisonnier de la Map). */
+    if(typeof wheelBlocked==='function' && wheelBlocked(e.target))return;
     const now=Date.now();
     if(now-at>320)acc=0;
     at=now; acc+=e.deltaY;
 
-    if(acc>42&&floor<2){                          /* bas : monte d'un étage */
+    /* Habits (0) → Map (1) vers le bas. Sur la Map, vers le bas = rien (plus
+       d'étage 2). Vers le haut (deltaY<0) sur la Map = retour aux Habits. */
+    if(acc>42&&floor<1){
       acc=0; lockNow(); floor++; paint();
-    }else if(acc<-42&&floor>0){                  /* haut : descend d'un étage */
-      if(floor===2){const set=document.getElementById('settings');if(set&&set.scrollTop>0)return;}
+    }else if(acc<-42&&floor>0){
       acc=0; lockNow(); floor--; paint();
     }
   },{passive:true});
@@ -2050,11 +2056,13 @@ $('menu-arrow').onclick=()=>{if(!busy)go(-1);};
     lockNow(); floor--; paint();
   });
 })();
-/* Curseur PlayStation dans les Paramètres */
-/* Rangée haute du menu paramètres */
-$('sn-book').onclick =requireMember(()=>{if(!busy&&floor===2&&!hOpen())showBook(true);});
-$('sn-home').onclick =()=>{if(!busy&&floor===2&&!hOpen()){floor=0;paint();}};  /* T logo = retour Habits direct */
-$('sn-next').onclick =()=>{if(!busy&&floor===2&&!hOpen())showNext(true);};
+/* Rangée du Dashboard (masquée par défaut) : si un jour ré-affichée, ces liens
+   ferment la fenêtre membre puis ouvrent la zone. Autobiography / Generator
+   restent surtout accessibles au swipe latéral et aux flèches. */
+function closeMember(){ $('member-window').classList.remove('show'); }
+$('sn-book').onclick =requireMember(()=>{closeMember();if(!busy&&!hOpen())showBook(true);});
+$('sn-home').onclick =()=>{closeMember();if(!busy&&!hOpen()){floor=0;paint();}};
+$('sn-next').onclick =()=>{closeMember();if(!busy&&!hOpen())showNext(true);};
 
 /* ══ HIGHER MAP — VOID RADAR / SWIPE DECK ══
    Le monde est vide jusqu'à ce que l'intention le projette.
@@ -2190,6 +2198,9 @@ function tGlyph(size){
 /* Le badge Higher réutilise le symbole #higher-word déjà dans le
    document. Aucun nouvel asset. */
 function hiBadge(){ try{ return HI_SVG; }catch(e){ return ''; } }
+/* Sélecteur d'intention : le wordmark Higher lisible (#higher-word), pas le
+   badge minuscule. Stylé à 16px via .hi-word. */
+function hiWord(){ return '<span class="hi-word" title="Higher"><svg viewBox="0 0 600 200" aria-label="Higher" role="img"><use href="#higher-word"></use></svg></span>'; }
 
 function showMap(on){
   if(on){ floor=1; paint(); } else { if(floor===1){ floor=0; paint(); } }
@@ -2291,14 +2302,14 @@ function radarDraw(){
   RAD.t+=1/60;
 
   /* Grille — la trame du vide */
-  X.strokeStyle='rgba(255,255,255,.035)'; X.lineWidth=1;
+  X.strokeStyle='rgba(255,255,255,.055)'; X.lineWidth=1;
   X.beginPath();
   for(let x=(cx%55);x<W;x+=55){ X.moveTo(x+.5,0); X.lineTo(x+.5,H); }
   for(let y=(cy%55);y<H;y+=55){ X.moveTo(0,y+.5); X.lineTo(W,y+.5); }
   X.stroke();
 
   /* Anneaux de portée */
-  X.strokeStyle='rgba(255,255,255,.08)'; X.lineWidth=1;
+  X.strokeStyle='rgba(255,255,255,.13)'; X.lineWidth=1;
   for(let k=1;k<=3;k++){ X.beginPath(); X.arc(cx,cy,rpx*k/3,0,Math.PI*2); X.stroke(); }
 
   /* Balayage — vingt secteurs dégressifs. Pas de gradient conique :
@@ -2313,20 +2324,25 @@ function radarDraw(){
   }
   X.globalAlpha=1;
 
-  /* Lignes de distance + étiquettes. L'étiquette pose une plaque noire
-     qui coupe le pointillé : sans elle le texte se lisait au travers
-     des tirets. */
+  /* Lignes de distance + étiquettes — STRATIFICATION EN 2 PASSES.
+     Passe 1 : TOUTES les lignes pointillées. Passe 2 : TOUS les fonds noirs
+     et textes. Sinon la ligne d'un spot barrait l'étiquette d'un autre :
+     ici les distances couvrent toujours les lignes, jamais l'inverse. */
   if(RAD.spots.length){
+    const shown=RAD.spots.slice(0,8);
+    /* Passe 1 — les traits */
+    X.save();
+    X.setLineDash([3,7]); X.lineDashOffset=-RAD.t*14; X.lineWidth=.5;
+    shown.forEach(s=>{
+      X.strokeStyle=intColor(s.intention); X.globalAlpha=.22;
+      X.beginPath(); X.moveTo(cx,cy); X.lineTo(s._px,s._py); X.stroke();
+    });
+    X.restore();
+    /* Passe 2 — les plaques + textes, par-dessus tous les traits */
     X.font='700 11px "Space Mono",monospace';
     X.textAlign='center'; X.textBaseline='middle';
-    RAD.spots.slice(0,8).forEach(s=>{
+    shown.forEach(s=>{
       const c=intColor(s.intention);
-      X.save();
-      X.setLineDash([3,7]); X.lineDashOffset=-RAD.t*14;
-      X.strokeStyle=c; X.globalAlpha=.22; X.lineWidth=.5;
-      X.beginPath(); X.moveTo(cx,cy); X.lineTo(s._px,s._py); X.stroke();
-      X.restore();
-
       const label=fmtDist(s.dist_m||0);
       const lx=cx+(s._px-cx)*.55, ly=cy+(s._py-cy)*.55;
       const w=X.measureText(label).width;
@@ -2479,7 +2495,7 @@ function buildSelector(){
   if(ddm) ddm.innerHTML=items.map(x=>
     '<div class="hm-ddi" data-int="'+x.id+'" style="color:'+x.color+'">'
     +tGlyph(15)
-    +'<div><div class="hm-ddi-name" style="color:'+x.color+'">'+esc(x.name)+hiBadge()+'</div>'
+    +'<div><div class="hm-ddi-name" style="color:'+x.color+'">'+esc(x.name)+hiWord()+'</div>'
     +'<div class="hm-ddi-def">'+esc(x.def)+'</div>'
     +(x.neuro?'<div class="hm-ddi-neuro">'+x.neuro.split(' · ').map(t=>'<span class="hm-ddi-ntag">'+esc(t)+'</span>').join('')+'</div>':'')
     +'</div></div>').join('');
@@ -2506,7 +2522,7 @@ function markActive(id){
   const lbl=$('hm-ddt-lbl'), conf=INT_BY_ID[id];
   if(lbl){
     lbl.innerHTML = conf
-      ? tGlyph(16)+esc(conf.name)+hiBadge()
+      ? tGlyph(16)+esc(conf.name)+hiWord()
       : 'Choose an intention';
     lbl.style.color = id ? intColor(id) : '';
   }
@@ -2677,6 +2693,13 @@ document.addEventListener('click',e=>{
 ['mousemove','touchstart','touchmove'].forEach(ev=>
   $('hmap').addEventListener(ev, hmReveal, {passive:true}));
 
+/* Cliquer dans le vide du radar referme l'aperçu. Les T font stopPropagation
+   au clic (openCard) : seul le canvas nu reçoit ce clic. */
+{ const cv=$('hm-canvas'); if(cv) cv.addEventListener('click', closeCard); }
+
+/* [ ✕ clear ] mobile — éteint l'intention courante (re-clic = extinction). */
+$('hm-clear').onclick=()=>{ if(RAD.intention) pickIntention(RAD.intention); };
+
 /* Rotation du téléphone ou fenêtre redimensionnée : on peut traverser
    la frontière des 700 px. Le rendu change, l'état ne bouge pas. */
 let hmModeTimer;
@@ -2705,6 +2728,9 @@ document.addEventListener('keydown', e=>{
    puis ouverture Stoner. C'est le SEUL chemin vers la méthode Stoner. */
 $('btn-get-higher').onclick=()=>{
   if(busy)return;
+  /* Le bouton vit dans le Dashboard : on ferme la modale (z-index 95) avant le
+     décollage, sinon Stoner (z-index 55) s'ouvrirait derrière elle. */
+  $('member-window').classList.remove('show');
   busy=true;
   document.body.classList.add('liftoff');
   setTimeout(()=>{
@@ -2736,28 +2762,26 @@ window.addEventListener('touchmove',(e)=>{if(axis)return;const dx=e.changedTouch
 window.addEventListener('touchend',(e)=>{
   if(fpOpen())return;
   if(t0el&&t0el.closest&&t0el.closest('#results,#freq-panel,#member-window,input,textarea,button'))return;
+  /* SÉCURITÉ SWIPE DECK : tout geste né dans la Map reste dans la Map. Le
+     deck scrolle horizontalement en natif ; aucun swipe ne déclenche Book,
+     Next, ni un changement d'étage. Le retour aux Habits = le logo #hmap-nav. */
+  if(t0el&&t0el.closest&&t0el.closest('#hmap'))return;
   const dy=e.changedTouches[0].screenY-y0;const TH=32;
   if(axis==='v'){
-    /* Chemins verticaux :
-       - Habits (floor 0)   : swipe UP   (dy<0) -> ouvre le menu     · swipe DOWN (dy>0) -> ouvre le filtre
-       - Settings (floor 1) : swipe DOWN (dy>0) -> retour Habits
-       Stoner n'est JAMAIS accessible par swipe : uniquement via le bouton [Get Higher]. */
+    /* Deux étages : Habits (0) ↔ Map (1). Stoner n'est JAMAIS au swipe. */
     const edge=scrollEdges();
     if(floor===0){
       if(dy<-TH && edge.bottom)go(-1);                              /* Habits → Map */
       else if(dy>TH && edge.top)openFilterModal();                  /* Habits → Filtre */
     }
-    else if(floor===1){
-      if(dy>TH)go(1);                                               /* Map → Habits */
-      else if(dy<-TH)go(-1);                                        /* Map → Settings */
-    }
-    else if(floor===2 && dy>TH && edge.top)go(1);                   /* Settings → Map */
+    /* floor 1 (Map) : géré dans #hmap (logo pour revenir), rien d'global ici. */
   }else if(axis==='h'){
     const dx=e.changedTouches[0].screenX-x0;
     if(Math.abs(dx)<TH)return;
     if(hOpen()){ if($('book').classList.contains('show')&&dx<-TH)showBook(false); else if($('nextobj').classList.contains('show')&&dx>TH)showNext(false); return; }
     if($('stoner').classList.contains('show'))return;    /* pas depuis Stoner */
-    if(dx>TH)showBook(true); else if(dx<-TH)showNext(true);    /* Habits + Settings */
+    if(floor!==0)return;                                 /* Book/Next : depuis Habits uniquement */
+    if(dx>TH)showBook(true); else if(dx<-TH)showNext(true);
   }
 },{passive:true});
 /* ══ NAVIGATION DESKTOP ══
@@ -2774,20 +2798,10 @@ const isDesk=()=>window.matchMedia('(min-width:700px)').matches;
    avec le carre. On remonte #settings dans <body>.
    Sur mobile il ne bouge pas : la classe desk-two n'est jamais posee et
    la mise en page d'origine tient telle quelle. */
-(function twoSections(){
-  const set=document.getElementById('settings');
-  if(!set)return;
-  const home=set.parentNode, next=set.nextSibling;
-  function place(){
-    const d=isDesk();
-    document.body.classList.toggle('desk-two',d);
-    if(d){ if(set.parentNode!==document.body) document.body.appendChild(set); }
-    else  { if(set.parentNode!==home) home.insertBefore(set,next); }
-  }
-  place();
-  let t=null;
-  window.addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(place,180);});
-})();
+/* twoSections neutralisé : #settings vit maintenant dans #member-window (une
+   modale fixe hors de #stage). Le clippage/scale du carré ne le concerne plus,
+   donc plus aucun déplacement DOM ni classe desk-two. */
+(function twoSections(){ document.body.classList.remove('desk-two'); })();
 
 /* Desktop scroll-snap : le filtre s'ouvre en scrollant vers le haut depuis le sommet.
    Le scroll vers le bas (habits→settings) est géré nativement par scroll-snap CSS.
@@ -2807,7 +2821,7 @@ function wheelBlocked(t){
   if($('member-window').classList.contains('show'))return true;
   if($('tview').classList.contains('show'))return true;
   if($('stoner').classList.contains('show')||hOpen())return true;
-  return !!(t&&t.closest&&t.closest('#freq-panel,#habit-peek,#filter-modal,#member-window,input,textarea'));
+  return !!(t&&t.closest&&t.closest('#freq-panel,#habit-peek,#filter-modal,#member-window,#hm-ddm,#hm-card,#hm-deck,input,textarea'));
 }
 /* fv-inner scroll listener retiré : conçu pour 2 floors (0=Habits, 1=Settings).
    Avec 3 floors (0=Habits, 1=Map, 2=Settings), il déclenchait applyFloorFx(true)
@@ -2825,9 +2839,9 @@ window.addEventListener('wheel',(e)=>{
   if(!down&&!edge.top){wheelAcc=0;return;}
   wheelAcc+=e.deltaY;
   if(Math.abs(wheelAcc)<90)return;
-  wheelAcc=0; wheelLock=true; setTimeout(()=>{wheelLock=false;},700);
-  if(floor===0){ if(down)go(-1); else openFilterModal(); }
-  else if(floor===1&&!down)go(1);
+  wheelAcc=0; wheelLock=true; setTimeout(()=>{wheelLock=false;},350);
+  if(floor===0){ if(down)go(-1); else openFilterModal(); }  /* Habits : bas→Map, haut→Filtre */
+  else if(floor===1&&!down)go(1);                          /* Map : haut→Habits, bas→rien */
 },{passive:true});
 
 /* Chevrons latéraux : mêmes cibles que le swipe horizontal.
@@ -2866,8 +2880,9 @@ window.addEventListener('message',e=>{
     setTimeout(()=>{ if(floor!==0) go(1); },400);
   }
   else if(e.data.type==='totehm-goto-settings'){
+    /* Les réglages sont dans le Dashboard membre désormais. */
     showBook(false);showNext(false);
-    setTimeout(()=>{ if(floor!==1) go(-1); },400);
+    setTimeout(()=>{ $('member-window').classList.add('show'); if(typeof memberPaint==='function')memberPaint(); },400);
   }
   else if(e.data.type==='totehm-add-habit'&&e.data.habit&&e.data.habit.t){
     const h=e.data.habit;
@@ -3054,6 +3069,9 @@ async function openTotehmView(q){
       list.appendChild(d);
     });
   }
+  /* Search vit dans le Dashboard : on ferme la modale avant le viewer plein
+     écran (z-index 70 < 95), sinon il s'ouvrirait derrière. */
+  $('member-window').classList.remove('show');
   $('tview').classList.add('show');
 }
 $('search-input').addEventListener('keydown',e=>{
@@ -3078,32 +3096,28 @@ async function loadProfile(){
   cloudMode=!!myProfile;
   connPaint();
 }
-/* ══ PALIERS ══════════════════════════════════════════════════════════════
-   ⚠️ SEUL ENDROIT À ÉDITER pour tes tarifs réels. Je n'ai pas accès à ton
-   compte Stripe : les noms, prix et `stripe` ci-dessous sont des marques-places.
-   `perks` dit ce que le palier change dans la vie de la personne, pas ce qu'il
-   débloque techniquement — c'est ça qui fait sentir le retour sur investissement. */
-const PLANS=[
-  {key:'seed',  name:'Seed',  price:'free',
-   why:'Fuck boring productivity apps and fake motivation. Plant your story, build your system, and let your biography write itself.',
-   perks:['<b>Totehm</b> \u2014 intentional & temporal habits',
-          '<b>Intelligent Habit Outcome</b> \u2014 no boring tracking, just what you need to know where you stand',
-          '<b>Autobiography</b> \u2014 written automatically by your Totehm and your outcomes',
-          '<b>Habits Generator</b> \u2014 science-backed, 3 per day']},
-  {key:'plant', name:'Plant', price:'\u20ac70 / year', alt:'or \u20ac7 / month',
-   why:'Social media shows the flex \u2014 and kills your time while you scroll. Access the raw source code of real people and study how they actually built their life.',
-   perks:['Everything in <b>Seed</b>',
-          'Access the <b>Totehm and full autobiographies</b> of people who inspire you',
-          '<b>Implement their habits</b> \u2014 intention and frequency included',
-          'Turn a chapter of your autobiography into a <b>Totehm Cloth</b>']},
-  {key:'tree',  name:'Tree',  price:'\u20ac150 / year', alt:'or \u20ac15 / month',
-   why:'Don\u2019t let the city consume you like a tourist. Turn the city into a playground connected to your deep intentions.',
-   perks:['Everything in <b>Plant</b>',
-          '<b>Right now, the right place or event</b> \u2014 matched to your intention of the moment',
-          '<b>Qualified recommendations</b> \u2014 read against your Totehm and your autobiography, not against a category',
-          'A message from your Totehm, <b>when it actually means something</b>']}
-];
-const PLAN_BY_KEY=Object.fromEntries(PLANS.map(p=>[p.key,p]));
+/* ══ L'OFFRE UNIQUE — HIGHER CLUB ═══════════════════════════════════════════
+   Un seul palier remplace Seed / Plant / Tree : essai 7 jours, puis un tarif
+   unique qui inclut la Higher Map et le Totehm Cloth.
+
+   ⚠️ SEUL ENDROIT À ÉDITER pour ton tarif réel. `price` / `priceAlt` sont des
+   marques-places (je n'ai pas accès à ton Stripe) : j'ai repris le tarif Plant,
+   ton moteur de MRR (148 abonnés = 1 k€/mois). Ajuste-les ici, nulle part ailleurs.
+
+   NOM : le brief disait « Figher Club ». Je l'ai lu « Higher Club » — cohérent
+   avec la marque HIGHER omniprésente (asset #higher-word, « Get Higher »…).
+   Pour revenir en arrière : change simplement CLUB.name ci-dessous. */
+const CLUB={
+  key:'higher',
+  name:'Higher Club',
+  trial:'7-day free trial',
+  price:'€7 / month',
+  priceAlt:'€70 / year',
+  why:'One membership. The city becomes a playground matched to your intention of the moment, and a chapter of your story becomes something you wear.',
+  perks:['<b>Higher Map</b> — the right place or event, right now, matched to your intention',
+         '<b>Totehm Cloth</b> — turn a chapter of your autobiography into something you wear',
+         'Everything your Totehm already does — habits, outcomes, autobiography, generator']
+};
 
 /* Lit l'abonnement de l'utilisateur. Rien n'est écrit depuis le client :
    c'est le webhook du fournisseur de paiement qui fait foi. */
@@ -3142,39 +3156,39 @@ function paintSubscription(sub){
   const box=$('mw-sub'); if(!box) return;
   const live=sub && ['active','trialing','past_due'].includes(sub.status);
   if(live){
-    const plan=PLAN_BY_KEY[sub.tier]||{name:sub.tier,perks:[]};
+    /* Un seul palier : quel que soit le `tier` en base (y compris d'anciens
+       seed/plant/tree), c'est le Higher Club. */
     const end=sub.current_period_end?new Date(sub.current_period_end):null;
     const when=end?end.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}):'';
     const meta=sub.cancel_at_period_end
       ? (when?'ends '+when:'ending')
-      : (sub.status==='past_due'?'payment failed':(when?'renews '+when:'active'));
-    box.innerHTML='<div class="s-lab">Your plan</div>'
-      +'<div class="s-tier">'+esc(plan.name)+'</div>'
+      : (sub.status==='trialing'?(when?'trial ends '+when:'trial')
+        :(sub.status==='past_due'?'payment failed':(when?'renews '+when:'active')));
+    box.innerHTML='<div class="s-lab">Your membership</div>'
+      +'<div class="s-tier">'+esc(CLUB.name)+'</div>'
       +'<div class="s-meta">'+esc(meta)+'</div>'
-      +'<ul class="s-perks">'+plan.perks.map(x=>'<li>'+x+'</li>').join('')+'</ul>'
-      +'<button class="s-act" id="mw-sub-change">Change plan</button>';
+      +'<ul class="s-perks">'+CLUB.perks.map(x=>'<li>'+x+'</li>').join('')+'</ul>'
+      +'<button class="s-act" id="mw-sub-change">Manage membership</button>';
     const b=$('mw-sub-change');
     if(b) b.onclick=()=>window.open('https://totehm.space','_blank','noopener');
   }else{
-    box.innerHTML='<div class="s-lab">Choose your plan</div>'
-      +PLANS.map(p=>'<button class="s-plan" data-k="'+p.key+'">'
-        +'<span class="p-top"><span class="p-name">'+esc(p.name)+'</span>'
-        +'<span class="p-price">'+esc(p.price)
-        +(p.alt?'<span class="p-alt">'+esc(p.alt)+'</span>':'')+'</span></span>'
-        +'<span class="p-why">'+esc(p.why)+'</span></button>').join('');
-    box.querySelectorAll('.s-plan').forEach(btn=>{
-      btn.onclick=()=>{
-        const plan=PLAN_BY_KEY[btn.dataset.k];
-        if(!plan||plan.key==='seed')return;
-        /* Point d'accroche de subscription-checkout. La redirection devra
-           viser window.top : lancee depuis une iframe, Stripe est annule en
-           silence par le navigateur. */
-        btn.blur();
-      };
-    });
+    box.innerHTML='<div class="s-lab">Membership</div>'
+      +'<div class="s-plan s-club">'
+      +'<span class="p-top"><span class="p-name">'+esc(CLUB.name)+'</span>'
+      +'<span class="p-price">'+esc(CLUB.trial)
+      +'<span class="p-alt">then '+esc(CLUB.price)+' \u00b7 '+esc(CLUB.priceAlt)+'</span></span></span>'
+      +'<span class="p-why">'+esc(CLUB.why)+'</span>'
+      +'<ul class="s-perks">'+CLUB.perks.map(x=>'<li>'+x+'</li>').join('')+'</ul>'
+      +'<button class="s-act" id="mw-club">Start '+esc(CLUB.trial)+'</button>'
+      +'</div>';
+    const btn=$('mw-club');
+    if(btn) btn.onclick=()=>{
+      /* Point d'accroche de subscription-checkout. La redirection devra viser
+         window.top : lancee depuis une iframe, Stripe est annule en silence. */
+      btn.blur();
+    };
   }
 }
-
 function memberPaint(){
   $('mw-out-state').classList.toggle('hide',!!me);
   $('mw-claim-state').classList.toggle('hide',!(me&&!myProfile));
@@ -3183,10 +3197,12 @@ function memberPaint(){
 }
 $('conn-bar').onclick=()=>{$('member-window').classList.add('show');memberPaint();};
 
-/* L'abonnement se repeint à chaque ouverture de la fenêtre membre. */
+/* Le Dashboard se repeint à chaque ouverture : réglages (nom, visibilité,
+   suppression) + abonnement (offre unique). */
 const _mpOrig=memberPaint;
 memberPaint=function(){
   _mpOrig();
+  if(me&&myProfile&&typeof renderSettings==='function')renderSettings();
   const box=$('mw-sub'); if(!box) return;
   if(!me){ box.innerHTML=''; return; }
   loadSubscription().then(paintSubscription);
