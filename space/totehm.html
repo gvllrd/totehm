@@ -144,6 +144,8 @@ body.hm-alive .hm-reveal,body.hm-picked .hm-reveal{opacity:1}
 
 /* ── COINS : conn-bar en haut à gauche, temps et météo en haut à droite,
       coordonnées en bas à gauche, portée en bas à droite ──────────── */
+#hm-clock-left{position:absolute;top:14px;left:16px;z-index:6;
+  pointer-events:none;display:flex;flex-direction:column;align-items:flex-start;gap:3px}
 #hm-clock{position:absolute;top:14px;right:16px;z-index:6;text-align:right;
   pointer-events:none;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
 .hm-w{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;
@@ -157,7 +159,7 @@ body.hm-alive .hm-w b{color:var(--hm-hi)}
 #hm-corner-bl{left:18px}
 #hm-corner{right:18px;text-align:right}
 
-#hm-overline{position:absolute;top:44px;left:50%;transform:translateX(-50%);
+#hm-overline{position:absolute;top:88px;left:50%;transform:translateX(-50%);
   font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;
   text-transform:uppercase;color:var(--hm-dim);white-space:nowrap;
   z-index:6;pointer-events:auto;cursor:default;background:none;border:none;padding:4px}
@@ -185,9 +187,9 @@ body.map-leaving #bigT,body.map-leaving #wordmark,body.map-leaving #rail{
 /* ══════════════════════════════════════════════════════════════════
    LE SÉLECTEUR — commun aux deux rendus
    ══════════════════════════════════════════════════════════════════ */
-#hm-selector{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);
+#hm-selector{position:absolute;left:50%;top:30%;transform:translate(-50%,-50%);
   display:flex;flex-direction:column;align-items:center;gap:16px;
-  width:min(92vw,440px);z-index:9;
+  width:min(92vw,440px);z-index:20;
   transition:top .62s cubic-bezier(.45,0,.2,1),transform .62s cubic-bezier(.45,0,.2,1),
              gap .5s ease,opacity .3s ease;
   opacity:0;pointer-events:none}
@@ -210,7 +212,7 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
   display:flex;align-items:center;gap:9px;padding:4px 0;
   -webkit-tap-highlight-color:transparent}
 #hm-ddt-lbl{display:flex;align-items:center;gap:8px;
-  font-family:'Quantico',sans-serif;font-size:22px;font-weight:700;
+  font-family:'Quantico',sans-serif;font-size:16px;font-weight:700;
   color:var(--coral);transition:color .15s}
 #hm-ddt-lbl .tglyph{width:16px;height:16px;flex-shrink:0}
 #hm-ddt:hover #hm-ddt-lbl{color:var(--hm-hi)}
@@ -219,8 +221,8 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
 
 #hm-ddm{display:none;position:absolute;top:calc(100% + 10px);left:50%;
   transform:translateX(-50%);width:min(92vw,360px);z-index:11;
-  background:rgba(0,0,0,.96);backdrop-filter:blur(10px);
-  border:1px solid rgba(255,255,255,.07);
+  background:#000;
+  border:1px solid #1a1a1a;
   max-height:60vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
   animation:hmDD .18s ease}
 @keyframes hmDD{from{opacity:0;transform:translateX(-50%) translateY(-6px)}
@@ -253,6 +255,7 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
 
 /* Le badge Higher suit l'intention, jamais collé au mot */
 .hm-ddi-name .hi-badge,#hm-ddt-lbl .hi-badge{margin-left:9px}
+.hm-ddi-name .hi-badge svg,#hm-ddt-lbl .hi-badge svg{height:16px;width:auto;display:block}
 
 /* ══════════════════════════════════════════════════════════════════
    RENDU A — LE RADAR (≥ 700 px)
@@ -375,7 +378,7 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
 @media(max-width:699px){
   #hm-corner-bl,#hm-corner{display:none}
   #hmap-nav img{width:42px}
-  #hm-overline{top:74px}
+  #hm-overline{top:84px}
 }
 @media(min-width:700px){
   #hm-deck,#hm-count{display:none!important}
@@ -1051,9 +1054,11 @@ body.gate.entered #fv-status{
   <!-- Statut. Devient cliquable seulement si la position doit être relancée. -->
   <button id="hm-overline" type="button"></button>
 
-  <!-- Heure et météo, en haut à droite, sur les deux rendus -->
-  <div id="hm-clock">
+  <!-- Heure + ciel en haut à gauche, temp + vent en haut à droite -->
+  <div id="hm-clock-left">
     <div class="hm-w hm-reveal"><b id="hm-time">--:--</b><span id="hm-sky">···</span></div>
+  </div>
+  <div id="hm-clock">
     <div class="hm-w hm-reveal"><b id="hm-temp">--°</b><span id="hm-wind">-- km/h</span></div>
   </div>
 
