@@ -144,9 +144,9 @@ body.hm-alive .hm-reveal,body.hm-picked .hm-reveal{opacity:1}
 
 /* ── COINS : conn-bar en haut à gauche, temps et météo en haut à droite,
       coordonnées en bas à gauche, portée en bas à droite ──────────── */
-#hm-clock-left{position:absolute;top:14px;left:16px;z-index:6;
+#hm-clock-left{position:absolute;top:16px;left:16px;z-index:6;
   pointer-events:none;display:flex;flex-direction:column;align-items:flex-start;gap:3px}
-#hm-clock{position:absolute;top:14px;right:16px;z-index:6;text-align:right;
+#hm-clock-right{position:absolute;top:16px;right:16px;z-index:6;text-align:right;
   pointer-events:none;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
 .hm-w{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;
   color:var(--hm-lo);white-space:nowrap;display:flex;gap:8px;align-items:baseline}
@@ -159,7 +159,7 @@ body.hm-alive .hm-w b{color:var(--hm-hi)}
 #hm-corner-bl{left:18px}
 #hm-corner{right:18px;text-align:right}
 
-#hm-overline{position:absolute;top:88px;left:50%;transform:translateX(-50%);
+#hm-overline{position:absolute;top:110px;left:50%;transform:translateX(-50%);
   font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;
   text-transform:uppercase;color:var(--hm-dim);white-space:nowrap;
   z-index:6;pointer-events:auto;cursor:default;background:none;border:none;padding:4px}
@@ -187,7 +187,7 @@ body.map-leaving #bigT,body.map-leaving #wordmark,body.map-leaving #rail{
 /* ══════════════════════════════════════════════════════════════════
    LE SÉLECTEUR — commun aux deux rendus
    ══════════════════════════════════════════════════════════════════ */
-#hm-selector{position:absolute;left:50%;top:30%;transform:translate(-50%,-50%);
+#hm-selector{position:absolute;left:50%;top:25%;transform:translate(-50%,-50%);
   display:flex;flex-direction:column;align-items:center;gap:16px;
   width:min(92vw,440px);z-index:20;
   transition:top .62s cubic-bezier(.45,0,.2,1),transform .62s cubic-bezier(.45,0,.2,1),
@@ -221,8 +221,9 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
 
 #hm-ddm{display:none;position:absolute;top:calc(100% + 10px);left:50%;
   transform:translateX(-50%);width:min(92vw,360px);z-index:11;
-  background:#000;
+  background:#0a0a0a;
   border:1px solid #1a1a1a;
+  box-shadow:0 12px 40px rgba(0,0,0,.8);
   max-height:60vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
   animation:hmDD .18s ease}
 @keyframes hmDD{from{opacity:0;transform:translateX(-50%) translateY(-6px)}
@@ -252,7 +253,7 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
 @media(max-width:699px){ .hm-ddi-def{color:var(--hm-mid)} }
 .hm-ddi-neuro{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
 .hm-ddi-ntag{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.13em;
-  text-transform:uppercase;border:1px solid currentColor;opacity:.5;
+  text-transform:uppercase;color:var(--hm-mid);border:1px solid var(--hm-dim);
   padding:2px 7px;line-height:1.6;white-space:nowrap}
 
 /* Le badge Higher suit l'intention, jamais collé au mot */
@@ -301,7 +302,8 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
 
 /* ── APERÇU RICHE AU CLIC (desktop) ────────────────────────────────── */
 #hm-card{position:absolute;z-index:12;display:none;width:270px;
-  background:#000;border:1px solid rgba(255,255,255,.09);
+  background:#0a0a0a;border:1px solid #1a1a1a;
+  box-shadow:0 12px 40px rgba(0,0,0,.8);
   flex-direction:column;overflow:hidden}
 #hm-card.show{display:flex}
 #hmap.hm-deck #hm-card{display:none!important}
@@ -322,6 +324,8 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
 .hm-slide{flex:0 0 100vw;width:100vw;height:100%;scroll-snap-align:center;
   display:flex;flex-direction:column;justify-content:flex-end;
   padding:0 26px 34px;box-sizing:border-box}
+.hm-slide .hm-c-inner{background:#0a0a0a;border:1px solid #1a1a1a;
+  box-shadow:0 12px 40px rgba(0,0,0,.8)}
 
 /* ── LA CARTE — un seul balisage, servi au deck et à l'aperçu ─────── */
 .hm-c-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
@@ -379,7 +383,7 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
 @media(max-width:699px){
   #hm-corner-bl,#hm-corner{display:none}
   #hmap-nav img{width:42px}
-  #hm-overline{top:84px}
+  #hm-overline{top:105px}
 }
 @media(min-width:700px){
   #hm-deck,#hm-count{display:none!important}
@@ -1059,7 +1063,7 @@ body.gate.entered #fv-status{
   <div id="hm-clock-left">
     <div class="hm-w hm-reveal"><b id="hm-time">--:--</b><span id="hm-sky">···</span></div>
   </div>
-  <div id="hm-clock">
+  <div id="hm-clock-right">
     <div class="hm-w hm-reveal"><b id="hm-temp">--°</b><span id="hm-wind">-- km/h</span></div>
   </div>
 
@@ -2287,14 +2291,14 @@ function radarDraw(){
   RAD.t+=1/60;
 
   /* Grille — la trame du vide */
-  X.strokeStyle='rgba(255,255,255,.018)'; X.lineWidth=1;
+  X.strokeStyle='rgba(255,255,255,.035)'; X.lineWidth=1;
   X.beginPath();
   for(let x=(cx%55);x<W;x+=55){ X.moveTo(x+.5,0); X.lineTo(x+.5,H); }
   for(let y=(cy%55);y<H;y+=55){ X.moveTo(0,y+.5); X.lineTo(W,y+.5); }
   X.stroke();
 
   /* Anneaux de portée */
-  X.strokeStyle='rgba(255,255,255,.05)'; X.lineWidth=1;
+  X.strokeStyle='rgba(255,255,255,.08)'; X.lineWidth=1;
   for(let k=1;k<=3;k++){ X.beginPath(); X.arc(cx,cy,rpx*k/3,0,Math.PI*2); X.stroke(); }
 
   /* Balayage — vingt secteurs dégressifs. Pas de gradient conique :
@@ -2397,7 +2401,7 @@ function openCard(s, anchor){
    ══════════════════════════════════════════════════════════════════════ */
 function renderDeck(spots){
   const deck=$('hm-deck');
-  deck.innerHTML=spots.map(s=>'<div class="hm-slide">'+cardHTML(s)+'</div>').join('');
+  deck.innerHTML=spots.map(s=>'<div class="hm-slide"><div class="hm-c-inner">'+cardHTML(s)+'</div></div>').join('');
   deck.scrollLeft=0;
   paintCount(0, spots.length);
 
