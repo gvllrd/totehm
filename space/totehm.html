@@ -248,6 +248,8 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
 .hm-ddi-def{font-family:'Quantico',sans-serif;font-size:14px;font-weight:400;
   color:var(--hm-lo);margin-top:5px;line-height:1.45;transition:color .18s}
 @media(max-width:699px){ .hm-ddi-def{color:var(--hm-mid)} }
+.hm-ddi-neuro{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;color:currentColor;opacity:.3;margin-top:5px;line-height:1.5}
 
 /* Le badge Higher suit l'intention, jamais collé au mot */
 .hm-ddi-name .hi-badge,#hm-ddt-lbl .hi-badge{margin-left:9px}
@@ -325,6 +327,8 @@ body.hm-picked .hm-q{font-size:14px;color:var(--hm-dim)}
   font-family:'Quantico',sans-serif;font-size:14px;font-weight:700;
   letter-spacing:.1em;text-transform:uppercase}
 .hm-c-int .hi-badge{margin-left:8px}
+.hm-c-neuro{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;opacity:.3;margin-top:-8px;margin-bottom:10px;line-height:1.5}
 
 .hm-c-name{font-family:'Quantico',sans-serif;font-weight:700;
   color:var(--hm-hi);line-height:1.15;margin-bottom:12px}
@@ -1460,13 +1464,13 @@ async function migrateLocalToCloudIfNeeded(){
 
 /* ══ LES 7 INTENTIONS (source : totehm_map.html) ══ */
 const INTS=[
-  {id:'fight',    name:'Fight',    color:'#E24B4A', def:'Conquer yourself through harder effort.'},
-  {id:'flow',     name:'Flow',     color:'#e48b31', def:'Liberate energy through movement.'},
-  {id:'enrich',   name:'Enrich',   color:'#fcbe21', def:'Master your wealth through capital & network.'},
-  {id:'love',     name:'Love',     color:'#639922', def:'Contemplate life through connection & beauty.'},
-  {id:'express',  name:'Express',  color:'#1D9E75', def:'Give form to emotion through creation.'},
-  {id:'focus',    name:'Focus',    color:'#378ADD', def:'Master your mind through deep mental focus.'},
-  {id:'celebrate',name:'Celebrate',color:'#7F77DD', def:'Elevate energy through collective effervescence.'}
+  {id:'fight',    name:'Fight',    color:'#E24B4A', def:'Conquer yourself through harder effort.',         neuro:'HIGH BETA / GAMMA · NORADRENALINE · ENDOGENOUS OPIOIDS'},
+  {id:'flow',     name:'Flow',     color:'#e48b31', def:'Liberate energy through movement.',               neuro:'ALPHA / THETA · SEROTONIN · ENDOCANNABINOID SYSTEM'},
+  {id:'enrich',   name:'Enrich',   color:'#fcbe21', def:'Master your wealth through capital & network.',   neuro:'BETA · DOPAMINE · ACETYLCHOLINE'},
+  {id:'love',     name:'Love',     color:'#639922', def:'Contemplate life through connection & beauty.',   neuro:'ALPHA · OXYTOCIN · PARASYMPATHETIC'},
+  {id:'express',  name:'Express',  color:'#1D9E75', def:'Give form to emotion through creation.',          neuro:'BETA CREATIVE · DOPAMINE · DEFAULT MODE NETWORK'},
+  {id:'focus',    name:'Focus',    color:'#378ADD', def:'Master your mind through deep mental focus.',     neuro:'HIGH BETA · DOPAMINE · PREFRONTAL CORTEX'},
+  {id:'celebrate',name:'Celebrate',color:'#7F77DD', def:'Elevate energy through collective effervescence.',neuro:'HIGH BETA · DOPAMINE · OXYTOCIN · ENDOGENOUS OPIOIDS'}
 ];
 const INT_BY_ID={};INTS.forEach(x=>INT_BY_ID[x.id]=x);
 const intColor=i=>(INT_BY_ID[i]||{}).color||'#fff';
@@ -2217,6 +2221,7 @@ function cardHTML(s){
    +  '<span class="hm-c-int" style="color:'+col+'">'+tGlyph(13)+'&nbsp;&nbsp;'
    +     esc(conf.name)+hiBadge()+'</span>'
    +'</div>'
+   +(conf.neuro?'<div class="hm-c-neuro" style="color:'+col+'">'+esc(conf.neuro)+'</div>':'')
    +'<div class="hm-c-name">'+esc(s.activite||'place')+'</div>'
    +(s.commentaire?'<div class="hm-c-why">'+esc(s.commentaire)+'</div>':'')
    +(facts.length?'<div class="hm-c-facts">'+facts.join('')+'</div>':'')
@@ -2465,7 +2470,9 @@ function buildSelector(){
     '<div class="hm-ddi" data-int="'+x.id+'" style="color:'+x.color+'">'
     +tGlyph(15)
     +'<div><div class="hm-ddi-name" style="color:'+x.color+'">'+esc(x.name)+hiBadge()+'</div>'
-    +'<div class="hm-ddi-def">'+esc(x.def)+'</div></div></div>').join('');
+    +'<div class="hm-ddi-def">'+esc(x.def)+'</div>'
+    +(x.neuro?'<div class="hm-ddi-neuro">'+esc(x.neuro)+'</div>':'')
+    +'</div></div>').join('');
 
   ddm.querySelectorAll('.hm-ddi').forEach(el=>{
     el.onclick=()=>pickIntention(el.dataset.int);
