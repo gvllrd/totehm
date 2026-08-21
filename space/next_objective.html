@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>My Habits Generator</title>
+<title>TOTEHM — My next objective</title>
 <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Jost:wght@300;400&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -14,15 +14,21 @@
   --futura:'Jost',sans-serif;
   --logo-navy:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000000'/%3E%3C/svg%3E");
   --logo-blue:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%2336498C'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000000'/%3E%3C/svg%3E");
-  --tile-perf:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath fill='%23ffffff' fill-opacity='.18' fill-rule='evenodd' d='M0 0h24v24H0Z M9 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0 M9 24a3 3 0 1 0 6 0a3 3 0 1 0-6 0 M-3 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0 M21 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0'/%3E%3C/svg%3E");
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-family:var(--futura);font-weight:300;font-size:14px;overflow:hidden;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
 
 
-#rail{position:fixed;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.30);z-index:1}
+#rail{position:fixed;top:0;bottom:0;left:var(--rl);width:var(--rw);background:#626286;z-index:1}
 
-/* Bandes = strictement le langage d'index */
+/* ══ LE LOGO HABITÉ — mesures reprises AU PIXEL de totehm.html ══
+   #bigT top:30px / 53px de haut · #wordmark bottom:30px / 50px de haut.
+   Toute divergence ici se voit comme un saut au moment de la bascule. */
+/* Petite flèche cliquable centrée au-dessus du T — ouvre le filtre.
+   Le T lui-même est réservé au retour vers le Totehm. */
+#filter-arrow{position:fixed;top:6px;left:50%;transform:translateX(-50%);z-index:31;background:none;border:none;cursor:pointer;padding:4px 12px;line-height:0;-webkit-tap-highlight-color:transparent;transition:opacity .2s}
+#filter-arrow:hover{opacity:.7}
+#filter-arrow svg{width:22px;height:12px;color:rgba(255,255,255,.55)}
 #bigT{position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;line-height:0;background:none;border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
 #bigT:hover{opacity:.7}
 #bigT svg{height:53px;width:auto;display:block}
@@ -51,13 +57,16 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 .prop .h-body{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;display:flex;flex-direction:column;align-items:flex-start}
 .prop .p-text{font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:#fff;line-height:1.35}
 
-/* Ligne basse : NIVEAU + [Why]. Ni source, ni score — ils vivent dans le rapport. */
+/* ══ LE SCORE ══
+   Les trois paliers (ESSENTIEL / RECOMMANDÉ / EXPÉRIMENTAL) demandaient
+   qu'on apprenne un vocabulaire avant de pouvoir comparer deux lignes,
+   et la boîte perforée d'ESSENTIEL criait plus fort que l'habitude
+   elle-même. Un nombre sur 100 se lit sans mode d'emploi et se compare
+   d'un coup d'œil. Un seul attribut visuel, aucune couleur en plus. */
 .prop .p-foot{display:flex;align-items:center;gap:11px;margin-top:5px;flex-wrap:wrap}
-.lvl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;line-height:1.6;white-space:nowrap}
-.lvl.essential{color:#fff;border:6px solid transparent;border-image-source:var(--tile-perf);border-image-slice:6 fill;border-image-repeat:round;padding:0 3px}
-.lvl.recommended{color:rgba(255,255,255,.82)}
-.lvl.experimental{color:rgba(255,255,255,.52)}
-.lvl.unverified{color:rgba(255,255,255,.38);font-style:italic}
+.p-score{font-family:'Space Mono',monospace;font-weight:700;font-size:12px;
+  letter-spacing:.04em;color:#fff;line-height:1.6;white-space:nowrap}
+.p-score i{font-style:normal;font-weight:400;font-size:10px;color:rgba(255,255,255,.45)}
 .prop .p-why{font-family:'Quantico',sans-serif;font-weight:400;font-size:11px;color:rgba(255,255,255,.62);background:none;border:none;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;-webkit-tap-highlight-color:transparent;transition:color .15s}
 .prop .p-why:hover{color:#fff}
 .prop .p-add{position:absolute;right:0;top:-4px;background:none;border:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:700;font-size:38px;line-height:1;padding:0 10px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .15s,transform .12s}
@@ -80,11 +89,29 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
   -webkit-tap-highlight-color:transparent;transition:opacity .2s}
 .prop .p-hi:hover{opacity:.78}
 .prop .p-hi svg{height:13px;width:auto;display:block}
-#peek{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.82);
+/* ══ MODALES PLEIN VIEWPORT ══
+   `inset:0` seul suffit sur un élément fixed — sauf qu'ici le voile noir
+   ne couvrait PAS tout l'écran : la règle vivait dans une feuille où un
+   ancêtre transformé redéfinissait le bloc conteneur. On écrit les quatre
+   mesures explicitement, il n'y a plus rien à interpréter. */
+#peek,#filter-modal{position:fixed;left:0;top:0;inset:0;
+  width:100vw;height:100vh;z-index:90;background:rgba(0,0,0,.82);
   display:none;align-items:center;justify-content:center;padding:22px}
-#peek.show{display:flex}
+#peek.show,#filter-modal.show{display:flex}
 .pk-card{background:#0a0a0a;border:1px solid #1e1e1e;width:100%;max-width:340px;
-  padding:22px;display:flex;flex-direction:column;gap:6px}
+  padding:22px;display:flex;flex-direction:column;gap:6px;position:relative}
+/* La croix : sans elle on ne sortait de la fenêtre que par hasard. */
+.pk-x{position:absolute;top:8px;right:12px;background:none;border:none;
+  color:rgba(255,255,255,.45);font-family:'Quantico',sans-serif;font-size:20px;
+  line-height:1;cursor:pointer;padding:4px 8px;transition:color .15s;
+  -webkit-tap-highlight-color:transparent}
+.pk-x:hover{color:#fff}
+.pk-ro{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(255,255,255,.4);text-align:center;
+  padding-top:12px;border-top:1px solid rgba(255,255,255,.10)}
+.pk-def{font-family:'Quantico',sans-serif;font-size:13px;color:rgba(255,255,255,.78);
+  line-height:1.45;max-width:260px;margin-top:7px}
+.pk-def:empty{display:none}
 .pk-row{padding:16px 8px;display:flex;flex-direction:column;align-items:center;
   gap:6px;text-align:center;color:#fff;border-top:1px solid rgba(255,255,255,.10)}
 .pk-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
@@ -118,7 +145,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 #why .w-head{padding:4px 22px 14px;border-bottom:1px solid rgba(255,255,255,.14);flex-shrink:0}
 #why .w-title{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:#fff;line-height:1.35}
 #why .w-sub{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-top:5px}
-#why .w-head .lvl{display:inline-block;margin-top:9px}
+#why .w-head .p-score{display:inline-block;margin-top:9px;font-size:14px}
 #why .w-body{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:16px 22px 26px}
 #why .w-sec{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.55);margin:0 0 6px}
 #why .w-sec:not(:first-child){margin-top:20px}
@@ -213,7 +240,12 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 
 <div id="rail"></div>
 
-<!-- Bandes conformes à index.html : T.png en haut centré, TOTEHM.png en bas centré -->
+<!-- Petite flèche au-dessus du T : ouvre le filtre (lecture seule) -->
+<button id="filter-arrow" type="button" aria-label="Open filter">
+  <svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
+</button>
+
+<!-- T.svg en haut, TOTEHM.svg en bas : mêmes coordonnées qu'en totehm.html -->
 <button id="bigT" class="sink-el" type="button" aria-label="Back to my Totehm"><svg id="ui-t" viewBox="79.832 47.921 66.789 66.932" preserveAspectRatio="xMidYMid meet" role="img" aria-label="T" style="pointer-events:none"><defs><clipPath id="tut_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tut_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tut_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tut_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tut_ffb4264ddd)"><g clip-path="url(#tut_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tut_0eae0d8cca)"><g clip-path="url(#tut_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tut_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tut_92fddf9f0e)"><g clip-path="url(#tut_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tut_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tut_7d4c700d36)"><g clip-path="url(#tut_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></svg></button>
 <button id="wordmark" class="sink-el" type="button" aria-label="Open settings"><svg id="ui-wm" viewBox="74.997 121.602 77.584 46.683" preserveAspectRatio="xMidYMid meet" role="img" aria-label="TOTEHM" style="pointer-events:none"><defs><g/><clipPath id="tuw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tuw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg></button>
 
@@ -230,8 +262,29 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 <button class="side-nav" id="side-home" type="button" aria-label="Back to my Totehm"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></button>
 <div id="peek" role="dialog" aria-label="Habit details">
   <div class="pk-card">
+    <button class="pk-x" id="pk-close" type="button" aria-label="Close">&times;</button>
     <div class="pk-row"><span class="pk-lbl">Time Frequency</span><span class="pk-val" id="pk-freq"></span></div>
     <div class="pk-row"><span class="pk-lbl">Intention</span><span class="pk-val" id="pk-int"></span></div>
+  </div>
+</div>
+
+<!-- LE FILTRE, EN LECTURE SEULE.
+     Même fenêtre que celle du Totehm, mêmes mesures, mêmes libellés — mais
+     rien n'y est actionnable : on regarde le filtre posé sur son Totehm,
+     on ne le change pas depuis le générateur. -->
+<div id="filter-modal" role="dialog" aria-label="Filter — read only">
+  <div class="pk-card">
+    <button class="pk-x" id="fm-close" type="button" aria-label="Close">&times;</button>
+    <div class="pk-row">
+      <span class="pk-lbl">Time Frequency</span>
+      <span class="pk-val" id="fm-freq-val">any rhythm</span>
+    </div>
+    <div class="pk-row">
+      <span class="pk-lbl">Intention</span>
+      <span class="pk-val" id="fm-int-val">any intention</span>
+      <span class="pk-def" id="fm-int-def"></span>
+    </div>
+    <div class="pk-ro">read only &middot; set it in your Totehm</div>
   </div>
 </div>
 <div id="why" aria-hidden="true">
@@ -242,7 +295,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
     <div class="w-head">
       <div class="w-title" id="w-title"></div>
       <div class="w-sub" id="w-sub"></div>
-      <span class="lvl" id="w-lvl"></span>
+      <span class="p-score" id="w-score"></span>
     </div>
     <div class="w-body" id="w-body"></div>
   </div>
@@ -256,25 +309,38 @@ const T_SVG='<svg class="tglyph" viewBox="0 0 624 636" aria-hidden="true"><path 
 
 const FLABEL={every_minute:'every minute',hourly:'every hour',several_daily:'several times a day',every_morning:'every morning',every_afternoon:'every afternoon',daily:'daily',every_evening:'every evening',every_weekday:'every weekday',every_night:'every night',every_other_day:'every other day',twice_week:'twice a week',every_weekend:'every weekend',weekly:'weekly',every_monday:'every monday',every_tuesday:'every tuesday',every_wednesday:'every wednesday',every_thursday:'every thursday',every_friday:'every friday',every_saturday:'every saturday',every_sunday:'every sunday',biweekly:'every two weeks',twice_month:'twice a month',monthly:'monthly',every_1st_month:'every 1st of the month',every_15th_month:'every 15th of the month',seasonal:'every season change',quarterly:'every quarter',semiannual:'every six months',yearly:'yearly',every_birthday:'every birthday',every_newyear:'every new year',randomly:'randomly',sometimes:'sometimes'};
 const INAME={fight:'Fight',flow:'Flow',enrich:'Enrich',love:'Love',express:'Express',focus:'Focus',celebrate:'Celebrate'};
+/* Les 7 intentions, copiées de totehm.html — copiées, jamais partagées. */
+const INT_BY_ID_FULL={
+  fight:    {name:'Fight',    color:'#E24B4A', def:'Conquer yourself through harder effort.'},
+  flow:     {name:'Flow',     color:'#e48b31', def:'Liberate energy through movement.'},
+  enrich:   {name:'Enrich',   color:'#fcbe21', def:'Master your wealth through capital & network.'},
+  love:     {name:'Love',     color:'#639922', def:'Contemplate life through connection & beauty.'},
+  express:  {name:'Express',  color:'#1D9E75', def:'Give form to emotion through creation.'},
+  focus:    {name:'Focus',    color:'#378ADD', def:'Master your mind through deep mental focus.'},
+  celebrate:{name:'Celebrate',color:'#7F77DD', def:'Elevate energy through collective effervescence.'}
+};
 const ICOLOR={fight:'var(--fight)',flow:'var(--flow)',enrich:'var(--enrich)',love:'var(--love)',express:'var(--express)',focus:'var(--focus)',celebrate:'var(--celebrate)'};
 
-/* ══ NIVEAUX DE PREUVE ══
-   L'edge function `generate_objective` classe chaque habitude candidate.
-   Seules les habitudes validées reviennent ; le front ne fait que les afficher
-   dans l'ordre de force de preuve, et garde le rapport hors de la liste. */
-const LEVELS={essential:'Essential',recommended:'Recommended',experimental:'Experimental'};
-const LEVEL_RANK={essential:0,recommended:1,experimental:2,unverified:3};
-const LEVEL_DEF={
-  essential:'Strong scientific consensus. This habit is considered essential to reach the objective.',
-  recommended:'Evidence is solid, but conditional on context or on your profile.',
-  experimental:'Evidence is limited, emerging or conflicting — lower confidence.',
-  unverified:'No validation report was returned for this habit.'
-};
-/* L'edge function garantit désormais un `level` valide sur chaque habitude
-   (schéma strict + filtre serveur). Une habitude sans niveau est donc une
-   anomalie : on l'écarte, conformément à « seules les habitudes validées
-   sont affichées ». Repasser à true seulement pour déboguer. */
-const SHOW_UNVERIFIED=false;
+/* ══ LE SCORE ══
+   `generate_objective` renvoie un `score` entier de 0 à 100 : la force de
+   preuve ET la pertinence pour CET objectif, en un seul nombre. Les trois
+   paliers ont disparu de l'écran — un mot de vocabulaire à apprendre pour
+   comparer deux lignes, c'était un mot de trop. Le palier reste calculable
+   côté serveur, il ne s'affiche plus.
+   Un score manquant est déduit du niveau : une version plus ancienne de la
+   fonction ne doit pas produire une liste vide. */
+const LEVEL_SCORE={essential:95,recommended:80,experimental:62};
+function scoreOf(h){
+  let v=h.score;
+  if(typeof v!=='number'){
+    const c=h.confidence;
+    if(typeof c==='number') v=c<=1?c*100:c;
+  }
+  if(typeof v!=='number'||!isFinite(v)) v=LEVEL_SCORE[String(h.level||'').toLowerCase()];
+  if(typeof v!=='number'||!isFinite(v)) return null;
+  return Math.max(0,Math.min(100,Math.round(v)));
+}
+const scoreHTML=v=>v==null?'':'<span class="p-score">'+v+'<i>/100</i></span>';
 
 /* ══ LANGUE ══
    Le modèle renvoie le contenu (habitudes, f_label, level_label, rapport) dans
@@ -329,10 +395,6 @@ function applyUI(){
   $('w-close').textContent=L.close;
 }
 
-const normLevel=h=>{
-  const r=String(h.level||h.evidence_level||h.evidence||'').trim().toLowerCase();
-  return LEVELS[r]?r:'unverified';
-};
 const safeUrl=u=>/^https?:\/\//i.test(u||'')?u:'';
 function confText(c){
   if(c===null||c===undefined||c==='')return '';
@@ -345,14 +407,14 @@ function note(t){$('obj-note').textContent=t||'';}
 
 function renderProps(habits){
   const box=$('props');box.innerHTML='';
+  /* Le plus fort en haut. À score égal, l'ordre du modèle est conservé. */
   const list=habits
-    .map(h=>Object.assign({},h,{_lvl:normLevel(h)}))
-    .filter(h=>SHOW_UNVERIFIED||h._lvl!=='unverified')
-    .sort((a,b)=>LEVEL_RANK[a._lvl]-LEVEL_RANK[b._lvl]);
+    .map(h=>Object.assign({},h,{_score:scoreOf(h)}))
+    .filter(h=>h._score!=null)
+    .sort((a,b)=>b._score-a._score);
   if(!list.length){note(L.novalid);return;}
   list.forEach(h=>{
     const d=document.createElement('div');d.className='prop';
-    const lvl=h._lvl, label=h.level_label||LEVELS[lvl]||'Unverified';
     const freq=h.f_label||FLABEL[h.f]||h.f;
     /* Le T seul reste sur le rail : coloré, il s'y lit. La fréquence descend
        dans la ligne basse, sur le fond plein, où elle est lisible. */
@@ -362,7 +424,7 @@ function renderProps(habits){
       +'<span class="h-freq">'+esc(freq)+'</span></span>'
       +'<span class="tick"></span>'
       +'<span class="h-body"><span class="p-text">'+esc(h.text)+'</span>'
-      +'<span class="p-foot"><span class="lvl '+lvl+'">'+esc(label)+'</span>'
+      +'<span class="p-foot">'+scoreHTML(h._score)
       +(h.stoner?'<button class="p-hi" type="button" aria-label="Get Higher"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-word"></use></svg></button>':'')
       +'<button class="p-why" type="button">'+esc(L.why)+'</button></span></span>'
       +'<button class="p-add" aria-label="+">+</button>';
@@ -408,10 +470,10 @@ function srcLine(x){
           :'<div class="w-src">'+t+r+'</div>';
 }
 function openWhy(h){
-  const lvl=h._lvl||normLevel(h), label=h.level_label||LEVELS[lvl]||'Unverified';
+  const sc=(h._score!=null)?h._score:scoreOf(h);
   $('w-title').textContent=h.text||'';
   $('w-sub').textContent=[(h.i||''),(h.f_label||FLABEL[h.f]||h.f||'')].filter(Boolean).join(' · ');
-  const b=$('w-lvl');b.className='lvl '+lvl;b.textContent=label;
+  $('w-score').innerHTML=sc==null?'':sc+'<i>/100</i>';
 
   const why=h.why||h.rationale||'';
   const reasoning=h.reasoning||h.analysis||'';
@@ -425,7 +487,7 @@ function openWhy(h){
   /* Le modèle écrit déjà `confidence` dans la langue de l'utilisateur : on
      l'affiche telle quelle et on ne retombe sur la définition anglaise du
      palier que si elle manque. */
-  html+='<div class="w-sec">'+esc(L.s_conf)+'</div><div class="w-p">'+esc(conf||LEVEL_DEF[lvl]||'')+'</div>';
+  html+='<div class="w-sec">'+esc(L.s_conf)+'</div><div class="w-p">'+esc(conf)+'</div>';
   html+='<div class="w-sec">'+esc(L.s_src)+'</div>'
       + (srcs.length?srcs.map(srcLine).join(''):'<div class="w-none">'+esc(L.no_src)+'</div>');
   $('w-body').innerHTML=html;
@@ -477,19 +539,28 @@ $('w-veil').onclick=closeWhy;
 
 
 let busy=false;
+
+/* ══ CE QUI EST DÉJÀ POSÉ ══
+   Même origine que totehm.html : le même localStorage. On lit le Totehm
+   sans une seule requête, et on l'envoie au moteur comme exclusion. */
+function myHabits(){
+  try{
+    const raw=localStorage.getItem('totehm_habits_v1');
+    const st=raw?JSON.parse(raw):null;
+    const arr=(st&&Array.isArray(st.habits))?st.habits:[];
+    return arr.map(h=>String((h&&h.t)||'').trim()).filter(Boolean).slice(0,40);
+  }catch(e){return [];}
+}
+
 /* La zone grandit avec le texte : rien de ce qu'on écrit ne reste caché. */
 function autoGrow(){const t=$('obj-input');t.style.height='auto';t.style.height=t.scrollHeight+'px';}
 $('obj-input').addEventListener('input',autoGrow);
 autoGrow();
 
-/* Le T du haut ramène au Totehm */
+/* Le T du haut ET le TOTEHM du bas ramènent à totehm.html — jamais ailleurs. */
 $('bigT').onclick=()=>goBack();
-$('wordmark').onclick=()=>{
-  if(whyOpen()){closeWhy();return;}
-  const embedded=window.parent&&window.parent!==window;
-  if(embedded){try{window.parent.postMessage({type:'totehm-goto-settings'},'*');return;}catch(e){}}
-  window.location.href='totehm.html#settings';
-};
+$('wordmark').onclick=()=>goBack();
+$('filter-arrow').onclick=()=>openFilter();
 
 $('obj-input').addEventListener('keydown',async(e)=>{
   /* Maj+Entrée insère un retour ligne ; Entrée seule lance la génération. */
@@ -500,7 +571,11 @@ $('obj-input').addEventListener('keydown',async(e)=>{
   if(v.length<4){note(L.short);return;}
   busy=true;note(L.working);$('props').innerHTML='';
   try{
-    const {data,error}=await sb.functions.invoke('generate_objective',{body:{objective:v}});
+    /* Le moteur doit proposer AUTRE CHOSE que ce qui est déjà posé. Sans
+       cette liste il reproposait les mêmes habitudes à chaque objectif :
+       le serveur ne peut pas deviner un Totehm qu'il ne voit pas. */
+    const {data,error}=await sb.functions.invoke('generate_objective',
+      {body:{objective:v, count:7, exclude:myHabits()}});
     if(error){note(error.message&&/503|not configured/i.test(error.message)?L.soon:L.retry);busy=false;return;}
     const habits=(data&&data.habits)||[];
     /* La langue réellement employée par le modèle pilote l'habillage. */
@@ -512,13 +587,61 @@ $('obj-input').addEventListener('keydown',async(e)=>{
   busy=false;
 });
 
-/* Retour au centre : swipe gauche / Escape -> le parent referme */
+/* Retour au Totehm : bascule sèche, aucun fondu de part et d'autre. */
 function goBack(){
-  if(whyOpen()){closeWhy();return;}   /* le rapport se referme d'abord */
+  if(whyOpen()){closeWhy();return;}
+  if(filterOpen()){closeFilter();return;}
+  if($('peek').classList.contains('show')){closePeek();return;}   /* le rapport se referme d'abord */
   const embedded=window.parent&&window.parent!==window;
   if(embedded){try{window.parent.postMessage({type:'totehm-close-next'},'*');return;}catch(e){}}
   window.location.href='totehm.html';
 }
+/* ══ LE FILTRE, EN LECTURE SEULE ══
+   La source de vérité est le filtre posé dans le Totehm, écrit par
+   totehm.html dans `totehm_filter_v1`. On le lit, on l'affiche, on n'y
+   touche pas — un filtre modifiable depuis deux écrans est un filtre qui
+   ment dans l'un des deux. */
+function readFilter(){
+  try{const r=JSON.parse(localStorage.getItem('totehm_filter_v1')||'null');
+      return r||{f:null,i:null};}catch(e){return {f:null,i:null};}
+}
+function openFilter(){
+  const flt=readFilter();
+  $('fm-freq-val').textContent=flt.f?(FLABEL[flt.f]||flt.f):'any rhythm';
+  const x=flt.i?(INT_BY_ID_FULL[flt.i]||null):null;
+  if(x){
+    $('fm-int-val').innerHTML='<span style="color:'+x.color+'">'+T_SVG+' '+esc(x.name)+'</span>';
+    $('fm-int-def').textContent=x.def||'';
+  }else{
+    $('fm-int-val').textContent='any intention';
+    $('fm-int-def').textContent='';
+  }
+  $('filter-modal').classList.add('show');
+}
+function closeFilter(){$('filter-modal').classList.remove('show');}
+const filterOpen=()=>$('filter-modal').classList.contains('show');
+$('fm-close').onclick=closeFilter;
+$('filter-modal').addEventListener('click',e=>{if(e.target.id==='filter-modal')closeFilter();});
+
+/* Le geste : au sommet de la liste, vers le haut, le filtre s'ouvre —
+   exactement comme dans le Totehm. passive:true, aucun accumulateur. */
+(function filterGesture(){
+  let lock=false;
+  const arm=()=>{lock=true;setTimeout(()=>{lock=false;},520);};
+  const atTop=()=>$('mid').scrollTop<=1;
+  const blocked=t=>busy||whyOpen()||filterOpen()||$('peek').classList.contains('show')
+    ||!!(t&&t.closest&&t.closest('input,textarea,#why,#peek,#filter-modal'));
+  window.addEventListener('wheel',e=>{
+    if(blocked(e.target)||lock)return;
+    if(e.deltaY<-4&&atTop()){arm();openFilter();}
+  },{passive:true});
+  window.addEventListener('touchend',e=>{
+    if(blocked(e.target)||lock||ax!=='v')return;
+    const dy=e.changedTouches[0].screenY-y0;
+    if(dy>32&&atTop()){arm();openFilter();}
+  },{passive:true});
+})();
+
 /* La proposition n'est pas encore une habitude : rien n'est modifiable ici. */
 function openPeek(h){
   $('pk-freq').textContent=h.f_label||FLABEL[h.f]||h.f||'any rhythm';
@@ -528,17 +651,28 @@ function openPeek(h){
   $('peek').classList.add('show');
 }
 function closePeek(){$('peek').classList.remove('show');}
+$('pk-close').onclick=closePeek;
 $('peek').addEventListener('click',e=>{if(e.target.id==='peek')closePeek();});
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'&&$('peek').classList.contains('show')){e.stopPropagation();closePeek();}
+  if(e.key!=='Escape')return;
+  if($('peek').classList.contains('show')){e.stopPropagation();closePeek();return;}
+  if(filterOpen()){e.stopPropagation();closeFilter();}
 },true);
 $('side-home').onclick=()=>goBack();
 let lock=false;const trig=()=>{if(lock)return;lock=true;setTimeout(()=>lock=false,600);goBack();};
 let x0=0,y0=0,ax=null;
 window.addEventListener('touchstart',e=>{x0=e.changedTouches[0].screenX;y0=e.changedTouches[0].screenY;ax=null;},{passive:true});
 window.addEventListener('touchmove',e=>{if(ax)return;const dx=Math.abs(e.changedTouches[0].screenX-x0),dy=Math.abs(e.changedTouches[0].screenY-y0);if(dx>8||dy>8)ax=dx>dy?'h':'v';},{passive:true});
-window.addEventListener('touchend',e=>{if(ax!=='h')return;if(e.target&&e.target.closest&&e.target.closest('input,button'))return;const dx=e.changedTouches[0].screenX-x0;if(dx>32)trig();},{passive:true});
-window.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(e.key==='Escape'||e.key==='ArrowRight')trig();});
+window.addEventListener('touchend',e=>{if(ax!=='h')return;if(whyOpen()||filterOpen()||$('peek').classList.contains('show'))return;if(e.target&&e.target.closest&&e.target.closest('input,textarea,button'))return;const dx=e.changedTouches[0].screenX-x0;if(dx>32)trig();},{passive:true});
+/* LE FIX CLAVIER. L'objectif se tape dans un <textarea> : ne tester que
+   INPUT laissait la flèche droite quitter la page en pleine écriture. */
+const isTyping=e=>{const t=e&&e.target;
+  return !!t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable===true);};
+window.addEventListener('keydown',e=>{
+  if(isTyping(e))return;
+  if(filterOpen()||$('peek').classList.contains('show'))return;
+  if(e.key==='Escape'||e.key==='ArrowRight')trig();
+});
 /* Un swipe à l'intérieur du rapport ne doit pas naviguer */
 $('why').addEventListener('touchmove',e=>{if(whyOpen())e.stopPropagation();},{passive:true});
 </script>
