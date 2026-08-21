@@ -218,6 +218,27 @@ sans rien apporter.
 **Table morte :** `_deprecated_user_roles_20260803` — à dropper après le
 3 septembre 2026.
 
+### `wisdom` — les leçons de My Wisdom (créée le 21/08/2026)
+
+| Colonne | Type | Note |
+|---|---|---|
+| `id` | uuid | pk |
+| `user_id` | uuid | → `auth.users`, ON DELETE CASCADE |
+| `text` | text | 1 à 400 caractères, contrainte en base |
+| `i` | text | id d'intention, **optionnel** — une leçon peut n'en porter aucune |
+| `created_at` | timestamptz | |
+
+RLS activée, **4 policies, toutes `auth.uid() = user_id`** : select, insert,
+update, delete. Aucune lecture croisée, même entre membres — My Wisdom n'est
+pas un mur public, et ce n'est pas `totehms.totehm_visibility`.
+
+Ce n'est **pas** `book_chapters`. Un chapitre a un titre, un corps et une date
+d'ouverture, il est écrit par `autobiographiste`. Une leçon est écrite à la
+main, en une ligne. Les mélanger aurait pollué la table que lit le générateur
+de chapitres.
+
+`delete_my_totehm()` efface `wisdom` depuis le 21/08/2026.
+
 ### Tables de la carte — 19/08/2026
 
 | Table | Rôle | Lignes mesurées |
@@ -395,10 +416,27 @@ Aucune ligne = pas membre. Un abonnement expiré, impayé ou annulé retombe
 | `autobiographiste` | 3 | ✅ | modèle premium, 8 règles, write/revise/accept |
 | `bot-tick` | 3 | ❌ | cron horaire, DONE/MISSED |
 | `bot-reply` | 3 | ❌ | webhook Telegram, **zéro appel IA** |
-| `higher-map` | 7 | ✅ | unified spot model, `PLACES_ENABLED` interrupteur Google, contrôle `not_your_intention` ; cache géographique 90 j, plafond 200 appels/jour |
+| `higher-map` | 7 | ✅ | localisation → spots DB (Google coupé, PLACES_ENABLED=false) ; filtré par `steps[].i` ; 402 sans abonnement, 403 sur une intention absente du Totehm |
+| `generate_objective` | 26 | ❌ | 7 habitudes vérifiables, exclusions du profil, score 0-100 ; cache 3 couches |
 
 `verify_jwt=false` sur les webhooks est **normal** : Stripe et Telegram n'ont pas
 de JWT Supabase. La sécurité vient de la signature vérifiée dans le code.
+
+### `objective_cache` — règle de cache (depuis v26)
+
+**La couche sémantique est coupée dès qu'il y a un profil.**
+Depuis la v26, `generate_objective` reçoit les habitudes déjà posées
+(`exclude[]`) et doit proposer autre chose. L'empreinte de cette liste entre
+dans `norm_hash`. La couche 2 (voisin pgvector) est **sautée** quand
+`exclude` n'est pas vide, et l'`embedding` n'est écrit que pour les réponses
+sans profil : un voisin sémantique a été conçu pour quelqu'un d'autre, ses
+habitudes ne complètent pas ce Totehm-ci. Servir ce cache-là, ce serait
+renvoyer une réponse fausse pour économiser un dixième de centime.
+
+Conséquence de coût, mesurée : un membre avec des habitudes paie une génération
+à chaque objectif nouveau (~0,0019 $ en gpt-4o-mini). À 1 000 membres × 3
+générations/mois : ~5,70 $/mois contre 6 750 € d'ARPU. Le débit reste plafonné
+à 30 objectifs/heure par IP.
 
 ### Le routage Stripe — `switch` avec `default` explicite
 
@@ -571,7 +609,7 @@ Functions sont téléchargeables.
 | 18/08 | Navigation 3 floors : 0=Habitudes · 1=Higher Map · 2=Settings | la Map n'est pas un 4e domaine ni un fichier séparé — elle vit dans `totehm.html` |
 | 18/08 | `#hmap` sibling de `#stage`, jamais à l'intérieur | `#stage` a un `transform` desktop → devient containing block de `position:fixed` → full-screen impossible si #hmap est dedans |
 | 18/08 | `body.in-map` + CSS `!important` pour la transition Map | `applyFloorFx()` pose des styles inline → seul `!important` peut les surcharger sans changer la signature |
-| 18/08 | Settings desktop : `#settings-nav .sn-row{display:none}` — seul `#sn-home` reste | supprimer les boutons Autobiography et Generator du panel Settings sans toucher la nav mobile |
+| 18/08 | Settings desktop : `#settings-nav .sn-row{display:none}` — seul `#sn-home` reste | supprimer les boutons My Wisdom et My next objective du panel Settings sans toucher la nav mobile |
 | 18/08 | Filtre : TIME FREQUENCY → étape intention avant fermeture | sans ça, la fenêtre se fermait avant que l'utilisateur ait pu choisir une intention |
 | 18/08 | `GOOGLE_MAPS_API_KEY` : clé optionnelle, fallback spots DB si absente | fallback spots DB actif ; la clé active le cache Google mais n'est pas requise |
 | 18/08 | Steps format compact `{f,i,t}` — `higher-map` lisait `s.intention` → `no_intention` toujours | corrigé v4 : `s.i \|\| s.intention` |

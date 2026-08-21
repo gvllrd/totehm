@@ -69,51 +69,89 @@ téléchargeables.
 jamais `space/`. Un contenu commun est copié, pas partagé. Un produit qui casse
 quand un autre bouge n'est pas indépendant.
 
-### Les trois temps de totehm.space
+### Les quatre écrans de totehm.space
 
 ```
-PAST              PRESENT              FUTURE
-book.html         totehm.html          next_objective.html
-Autobiographie    TOTEHM · Habitudes   Objectifs
-                  Higher Map
-                  Settings
+PAST              PRESENT              FUTURE               LE MONDE
+book.html         totehm.html          next_objective.html  map.html
+My Wisdom         TOTEHM · Habitudes   My next objective    Higher Map
+les leçons        la saisie                                 radar / cartes
 ```
 
-**Pas de quatrième couche temporelle. Pas de `map.html`** — la Higher Map est
-l'extension monde du PRÉSENT, elle vit dans `totehm.html`.
+**La Higher Map a son propre fichier depuis le 21/08/2026.** Elle n'est plus
+un étage de `totehm.html` : elle est un environnement, avec son état, son
+cycle de vie et sa porte. `totehm.html` ne la connaît que par un lien
+(`[Open my Totehm World]`, sur l'atterrissage).
 
-### Navigation 3 floors — règles absolues (`totehm.html`)
+Pourquoi : tant qu'elle était un étage, la Map partageait `floor`, `paint()`,
+`busy` et les écouteurs de geste avec la saisie d'habitudes. Trois écrans dans
+une machine à états faite pour deux — c'est ce qui produisait « le filtre
+manque de fluidité » et « le scroll ouvre la map ». Sortie, elle ne coûte plus
+rien à la page d'à côté.
+
+`book.html` n'est plus l'autobiographie. C'est **My Wisdom** : une leçon par
+ligne, sur le rail, exactement le système de `totehm.html`. Les chapitres
+narratifs (`book_chapters`, `autobiographiste`) restent en base et continuent
+d'exister pour le bot — ils n'ont simplement plus d'écran à eux.
+
+### Navigation — règles absolues (`totehm.html`)
+
+**Il n'y a plus d'étage.** Un seul écran de saisie, et l'atterrissage
+au-dessus. `floor`, `animateSwap()`, `foldGesture()`, `body.in-map` et
+`body.in-settings` sont supprimés — ne pas les réintroduire.
 
 ```
-floor 0  →  Habitudes   (PRESENT par défaut)
-floor 1  →  Higher Map  (extension monde)
-floor 2  →  Settings
+ATTERRISSAGE  (body.gate)          le logo assemblé, Search, la Terre
+     ↕  clic logo / [Open my Totehm]     ↕  croix #fold-x · geste bas · Échap
+SAISIE        (body sans .gate)    le rail, les habitudes
 ```
 
-Desktop : `foldGesture()` + wheel. Mobile : swipe + `animateSwap`.
-`paint()` pose `body.in-map` (floor===1) et `body.in-settings` (floor===2).
+Le repli est le déploiement joué à l'envers, sur les mêmes quatre calques
+(`#gl-bg → #stage`, `#gl-t → #bigT`, `#gl-wm → #wordmark`, `#gl-rail → #rail`),
+même durée, même easing (`--gate-dur`, `--gate-ease`).
+**Le gate n'est plus détruit après l'entrée** (`gate.remove()` a disparu) :
+sans lui, il n'y a rien à rejouer.
 
-**`#hmap` doit être sibling de `#stage`, jamais à l'intérieur.**
-`#stage` a `transform:translate(-50%,-50%)` sur desktop → il devient le
-containing block de tous les éléments `position:fixed` qu'il contient →
-`#hmap` ne couvrirait que `#stage`, pas le viewport. Règle irrattrapable.
+Verticaux, dans la saisie :
+- au **sommet** de la liste, geste vers le haut → le filtre
+- au **pied** de la liste, geste vers le bas → le Totehm se replie
 
-**`body.in-map` + CSS `!important` pour la couche Map.**
-`applyFloorFx()` pose des styles inline (`el.style.opacity=…`). Les règles
-`body.in-map #bigT { opacity:0!important }` sont les seules qui les surchargent
-sans modifier la signature de `applyFloorFx()` (un paramètre, stable).
+**Un seul écouteur `wheel`, dans `verticalGesture()`, en `passive:true`.**
+Il y en avait trois avant, dont un en `passive:false` avec `preventDefault()`
+et un accumulateur de 90 px : ils se disputaient le même geste et retenaient le
+scroll. C'était ça, « le filtre manque de fluidité ». Ne jamais en rajouter un
+deuxième.
 
-**Listener `fv-inner` scroll supprimé.** Il était conçu pour 2 floors
-(0=Habits, 1=Settings). Avec 3 floors, il déclenchait `applyFloorFx(true)` sur
-le floor Map → ajoutait `in-settings` → Settings s'affichait à la place de la Map.
+**Le fix clavier, dans les quatre fichiers.** Tout écouteur global de touche
+commence par :
+```js
+if (e.target.tagName==='INPUT' || e.target.tagName==='TEXTAREA'
+    || e.target.isContentEditable) return;
+```
+Les habitudes et l'objectif sont des `<textarea>` : ne tester que `INPUT`
+laissait les flèches changer de page en pleine écriture.
 
-**Settings desktop** : `#settings-nav .sn-row { display:none!important }`.
-Seul `#sn-home` (logo sans hover perforé) reste visible. Les chevrons et leurs
-intitulés disparaissent uniquement sur desktop — la nav mobile est inchangée.
+**Transitions sèches entre fichiers.** `#book`, `#nextobj` et `#stoner`
+basculent en `visibility`, **jamais en `opacity`**. Un fondu croisé laisse voir
+deux couleurs à la fois — le carré rouge-violet de My Wisdom bavait sur le navy
+pendant 380 ms. Et `visibility` plutôt que `display:none` : les iframes restent
+mises en page derrière, la première bascule n'attend pas un relayout.
+
+**`#hmap` n'existe plus dans `totehm.html`.** La règle « `#hmap` doit être
+sibling de `#stage` » est caduque. La contrainte qui la fondait reste vraie et
+vaut pour tout nouvel overlay : `#stage` porte `transform` sur desktop, il est
+donc le bloc conteneur de ses descendants `position:fixed`. Un overlay
+plein écran vit **hors** de `#stage`.
 
 **Filtre deux étapes** : TIME FREQUENCY → étape intention avant fermeture.
-`applyFreq()` sur `fpTarget==='filter'` appelle `showFpStage('int')`, pas `closeFreqPanel()`.
-`applyIntent()` sur `fpTarget==='filter'` ferme le panneau et applique le filtre.
+`applyFreq()` sur `fpTarget==='filter'` appelle `showFpStage('int')`, pas
+`closeFreqPanel()`. `applyIntent()` sur `fpTarget==='filter'` ferme le panneau
+et applique le filtre. **Le filtre est persisté** dans `totehm_filter_v1` :
+`next_objective.html` le lit en lecture seule, et une fenêtre qui affiche un
+filtre qu'elle ne peut pas relire est une fenêtre qui ment.
+
+**Settings desktop** : `#settings-nav .sn-row { display:none!important }`.
+Seul `#sn-home` reste visible.
 
 ### Higher Map — architecture et mathématique · 19/08/2026
 
