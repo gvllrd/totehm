@@ -1,70 +1,98 @@
 <!DOCTYPE html>
+<!--
+  ══ MY WISDOM ══ (août 2026)
+
+  Ce fichier était l'autobiographie. Il ne l'est plus.
+  Une autobiographie se lit ; une leçon se pose, se garde, se relit dans
+  le désordre. On abandonne les chapitres, la narration et le bot.
+
+  Ce qui reste est EXACTEMENT le système de totehm.html : le rail, une
+  ligne par entrée, le T à gauche du rail, le texte à droite, et une
+  ligne d'ajout en bas dont le T clignote. Rien de nouveau à apprendre :
+  qui sait poser une Habit sait poser un Teach.
+
+  Le T ouvre l'intention, en plein écran, une étape à la fois.
+  Le T du haut ET le TOTEHM du bas ramènent à totehm.html.
+  Aucun fondu : la bascule est sèche.
+-->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Book of My Totehm</title>
+<title>TOTEHM — My Wisdom</title>
 <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Jost:wght@300;400&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#743169; /* le passé — rouge-violet de la charte */
+  --bg:#743169; /* la zone gauche — rouge-violet de la charte */
+  --rl:46px;--rw:18px;--band-t:104px;--band-b:116px;
+  --g-light:#e0e0e0;--g-mid:#909090;--g-dark:#606060;
+  --fight:#E24B4A;--flow:#e48b31;--enrich:#fcbe21;--love:#639922;--express:#1D9E75;--focus:#378ADD;--celebrate:#7F77DD;
+  --futura:'Futura','Jost',sans-serif;
   --logo-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23743169'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000000'/%3E%3C/svg%3E");
   --logo-navy:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000000'/%3E%3C/svg%3E");
-  --rl:46px;--rw:18px;--band-t:104px;--band-b:116px;
-  --g-light:#e0e0e0;--g-mid:#909090;
-  --futura:'Jost',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-family:var(--futura);font-weight:300;font-size:14px;overflow:hidden;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
+.hide{display:none!important}
 
-
-#rail{position:fixed;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.30);z-index:1}
-
-/* Bandes = strictement le langage d'index : T.png en haut centré, TOTEHM.png en bas centré */
+/* ══ LE LOGO HABITÉ — mesures reprises AU PIXEL de totehm.html ══
+   #bigT top:30px / 53px de haut · #wordmark bottom:30px / 50px de haut.
+   Toute divergence ici se voit comme un saut au moment de la bascule. */
+#rail{position:fixed;top:0;bottom:0;left:var(--rl);width:var(--rw);background:#626286;z-index:1}
 #bigT{position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;line-height:0;background:none;border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
-#bigT:hover{opacity:.7}
 #bigT svg{height:53px;width:auto;display:block}
 #wordmark{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;line-height:0;background:none;border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
-#wordmark:hover{opacity:.7}
 #wordmark svg{height:50px;width:auto;display:block}
+@media(hover:hover){#bigT:hover,#wordmark:hover{opacity:.7}}
 
-/* liste des chapitres (plus de T.svg) */
-#list{position:fixed;left:0;right:0;top:var(--band-t);bottom:var(--band-b);overflow-y:auto;display:flex;flex-direction:column;gap:9px;padding:4px 0;z-index:2}
-.chap{position:relative;display:flex;align-items:center;min-height:44px}
-.chap .body{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;padding-right:44px;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.chap .c-title{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;color:#fff;line-height:1.35}
-.chap .c-date{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-top:2px}
-.chap .body:hover .c-title{opacity:.75}
-.chap .chap-x{position:absolute;right:18px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.35);font-size:18px;line-height:1;cursor:pointer;padding:6px 8px;transition:color .15s;-webkit-tap-highlight-color:transparent}
-.chap .chap-x:hover{color:#fff}
-#read .r-deeper{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:52;background:none;border:6px solid transparent;border-image-source:var(--logo-rep);border-image-slice:6 fill;border-image-repeat:round;color:rgba(255,255,255,.6);font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;padding:6px 16px;cursor:pointer;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:color .15s,opacity .15s}
-#read .r-deeper:hover{color:#fff}
+/* ══ LA LISTE — une ligne par leçon, exactement .habit de totehm.html ══ */
+#list{position:fixed;left:0;right:0;top:var(--band-t);bottom:var(--band-b);overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:9px;padding:4px 0;z-index:2}
+.teach{position:relative;display:flex;align-items:center;min-height:30px;padding-right:30px}
+.teach .meta{position:absolute;right:calc(100% - var(--rl) + 10px);display:flex;align-items:center;gap:8px;white-space:nowrap}
+.teach .t-x{position:absolute;right:18px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.35);font-size:16px;line-height:1;cursor:pointer;padding:6px 8px;transition:color .15s;z-index:5;-webkit-tap-highlight-color:transparent}
+.teach .t-x:hover{color:#fff}
+.teach .h-T{background:none;border:none;padding:0;cursor:pointer;line-height:0;color:#fff;transition:opacity .15s,color .25s}
+.teach .h-T .tglyph{height:14px;width:auto;display:block}
+.teach .h-T:hover{opacity:.6}
+.teach .tick{position:absolute;left:var(--rl);width:var(--rw);height:5px;background:#000;top:50%;transform:translateY(-50%)}
+.teach.marked .tick{background:#fff}
+.teach .h-body{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;position:relative;display:flex;align-items:center}
+.t-text,.t-add{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;line-height:1.5;padding:4px 46px 4px 2px;caret-color:#fff;text-align:left;resize:none;overflow:hidden;display:block}
+.t-hint{position:absolute;left:2px;top:50%;transform:translateY(-50%);font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:rgba(255,255,255,.33);pointer-events:none;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.t-hint .hh{color:#fff}
+.t-date{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.42);margin-left:calc(var(--rl) + var(--rw) + 18px);margin-top:-4px}
 
-#empty{position:fixed;inset:var(--band-t) 24px var(--band-b);display:none;align-items:center;justify-content:center;text-align:center;z-index:2;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.12em;color:rgba(255,255,255,.65);line-height:1.7}
-#empty.show{display:flex}
+/* Le T de la ligne d'ajout clignote : l'invitation ne s'écrit pas, elle bat. */
+@keyframes t-pulse{0%,100%{opacity:1}50%{opacity:.18}}
+.h-T.blink{animation:t-pulse 2.2s ease-in-out infinite}
 
-/* lecture d'un chapitre */
-#read{position:fixed;inset:0;z-index:50;background:var(--bg);display:none;flex-direction:column}
-#read.show{display:flex}
-#read .r-head{height:var(--band-t);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-#read .r-title{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:#fff}
-#read .r-body{flex:1;overflow-y:auto;padding:8px 34px 30px calc(var(--rl) + var(--rw) + 20px);font-family:var(--futura);font-weight:300;font-size:15px;line-height:1.9;color:#f0e6ee;white-space:pre-wrap}
-#read .r-close{position:fixed;top:14px;right:16px;z-index:51;font-family:'Quantico',sans-serif;font-size:13px;color:#d8c4d4;background:none;border:none;cursor:pointer;padding:4px;-webkit-tap-highlight-color:transparent}
-#read .r-close:hover{color:#fff}
+/* ══ L'ÉTAPE — plein écran, fond noirci, une seule question à la fois ══
+   Strictement #freq-panel / #habit-peek de totehm.html : 100 % du viewport,
+   une carte au centre, rien d'autre à décider. */
+#pick{position:fixed;left:0;top:0;width:100vw;height:100vh;inset:0;z-index:90;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:22px}
+.pk-card{background:#0a0a0a;border:1px solid #1e1e1e;width:100%;max-width:380px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px;max-height:86vh}
+.pk-q{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);text-align:center}
+#pk-ints{display:flex;flex-direction:column;gap:12px;overflow-y:auto;overscroll-behavior:contain;padding-right:4px}
+.pk-int{display:flex;flex-direction:column;gap:4px;background:none;border:none;padding:4px 0;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
+.pk-int:hover{opacity:.75}
+.pk-int-r1{display:flex;align-items:center;gap:8px}
+.pk-int .tglyph{height:15px;width:auto;flex-shrink:0}
+.pk-int .nm{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px}
+.pk-int .df{font-family:var(--futura);font-weight:300;font-size:12px;color:#c4c4c4;line-height:1.5;padding-left:22px}
+.pk-int.on .nm{text-decoration:underline}
+.pk-skip{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--g-dark);background:none;border:none;cursor:pointer;padding:4px 0;transition:color .15s}
+.pk-skip:hover{color:#fff}
 
-/* ══ DESKTOP : tout agrandi (~1.6x), cohérent avec index.html ══ */
+#status{position:fixed;bottom:6px;right:16px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;color:rgba(255,255,255,.45);text-transform:uppercase;min-height:12px;pointer-events:none;z-index:3}
 
 .side-nav{display:none}
 
-/* ══ DESKTOP : le même carré que totehm.html, à la couleur près ═════════════
-   Strictement le montage de next_objective.html, en rouge-violet et en
-   miroir. Embarqué, le parent dessine et colore déjà le carré : on ne
+/* ══ DESKTOP : le même carré que totehm.html, à la couleur près ══════════
+   Embarqué en iframe : le parent dessine déjà le carré et le colore. On ne
    recalcule que la géométrie sur 100vw, qui vaut ici sa padding box, soit
    --stage * .8768 — d'où les facteurs du parent divisés par ce rapport.
-   Ouvert directement par URL, personne ne dessine : on s'en charge.
-   La boîte de retour est à DROITE, parce que le livre se tient à gauche
-   du Totehm : on revient toujours vers le centre.
-   ══════════════════════════════════════════════════════════════════════════ */
+   Ouvert directement par URL : personne ne dessine, on s'en charge.
+   ══════════════════════════════════════════════════════════════════════ */
 @media(min-aspect-ratio:9/10){
   html.embedded{
     --rl:max(38px,calc(100vw * .0821));
@@ -72,7 +100,6 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
   }
   html.embedded #rail{top:30px;bottom:30px}
 }
-
 @media(min-width:700px){
   html:not(.embedded){
     --stage:min(92vh,78vw,640px);
@@ -113,109 +140,215 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 
 <div id="rail"></div>
 
-<!-- Bandes conformes à index.html : T.png en haut, TOTEHM.png en bas, centrés -->
+<!-- T.svg en haut, TOTEHM.svg en bas : mêmes coordonnées qu'en totehm.html -->
 <button id="bigT" class="sink-el" type="button" aria-label="Back to my Totehm"><svg id="ui-t" viewBox="79.832 47.921 66.789 66.932" preserveAspectRatio="xMidYMid meet" role="img" aria-label="T" style="pointer-events:none"><defs><clipPath id="tut_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tut_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tut_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tut_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tut_ffb4264ddd)"><g clip-path="url(#tut_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tut_0eae0d8cca)"><g clip-path="url(#tut_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tut_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tut_92fddf9f0e)"><g clip-path="url(#tut_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tut_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tut_7d4c700d36)"><g clip-path="url(#tut_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></svg></button>
-<button id="wordmark" class="sink-el" type="button" aria-label="Open settings"><svg id="ui-wm" viewBox="74.997 121.602 77.584 46.683" preserveAspectRatio="xMidYMid meet" role="img" aria-label="TOTEHM" style="pointer-events:none"><defs><g/><clipPath id="tuw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tuw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg></button>
+<button id="wordmark" class="sink-el" type="button" aria-label="Back to my Totehm"><svg id="ui-wm" viewBox="74.997 121.602 77.584 46.683" preserveAspectRatio="xMidYMid meet" role="img" aria-label="TOTEHM" style="pointer-events:none"><defs><g/><clipPath id="tuw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tuw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg></button>
 
 <div id="list"></div>
-<div id="empty">YOUR FIRST CHAPTER<br>IS BEING WRITTEN<br>BY YOUR HABITS.</div>
-
-<div id="read">
-  <button class="r-close" id="r-close">Close</button>
-  <div class="r-head"><div class="r-title" id="r-title"></div></div>
-  <div class="r-body" id="r-body"></div>
-  <button class="r-deeper" id="r-deeper">Reflect</button>
-</div>
 
 </div><!-- /#stage -->
+
 <button class="side-nav" id="side-home" type="button" aria-label="Back to my Totehm"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M3 2 L11 12 L3 22"/></svg></button>
+
+<!-- L'ÉTAPE : l'intention de la leçon, plein écran, fond noirci -->
+<div id="pick" class="hide" role="dialog" aria-label="Intention of this teach">
+  <div class="pk-card">
+    <div class="pk-q">What does this teach serve?</div>
+    <div id="pk-ints"></div>
+    <button class="pk-skip" id="pk-skip" type="button">no intention yet</button>
+  </div>
+</div>
+
+<div id="status"></div>
+
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
 const $=id=>document.getElementById(id);
+const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;};
+const T_SVG='<svg class="tglyph" viewBox="0 0 624 636" aria-hidden="true"><path fill="currentColor" d="M0 0 H624 V92 H358 V592 H434 V636 H190 V592 H266 V92 H0 Z"/></svg>';
 
-/* Chapitres fictifs — l'algorithme narratif (brique 2) les remplacera par les vrais */
-const MOCK=[
-  {title:'The Turn Toward Focus',opened_at:'2026-06-28',body:'Something shifted at the end of June.\n\nFour habits arrived in a single week — deep work every morning, reading every night, a phone-free hour, a walk before thinking. The dominant intention moved from Express to Focus.\n\nThe Totehm stopped scattering. It started aiming.'},
-  {title:'The Great Pruning',opened_at:'2026-05-11',body:'Seven habits were removed in May.\n\nNot from weakness — from clarity. What survived: the daily grind, the weekly reset, the morning breath.\n\nA Totehm is also made of what it refuses to carry.'},
-  {title:'First Marks',opened_at:'2026-04-02',body:'The first habits were carved here.\n\nWrite every day. Train every other day. Call someone who matters, weekly.\n\nSimple lines. But every identity begins with a first mark on the wall.'}
+/* Une saisie en cours n'est JAMAIS une navigation. */
+const isTyping=e=>{const t=e&&e.target;
+  return !!t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable===true);};
+
+/* Les 7 intentions — même source que totehm.html. Copiées, pas partagées :
+   trois origines, trois fichiers, aucun couplage. */
+const INTS=[
+  {id:'fight',    name:'Fight',    color:'#E24B4A', def:'Conquer yourself through harder effort.'},
+  {id:'flow',     name:'Flow',     color:'#e48b31', def:'Liberate energy through movement.'},
+  {id:'enrich',   name:'Enrich',   color:'#fcbe21', def:'Master your wealth through capital & network.'},
+  {id:'love',     name:'Love',     color:'#639922', def:'Contemplate life through connection & beauty.'},
+  {id:'express',  name:'Express',  color:'#1D9E75', def:'Give form to emotion through creation.'},
+  {id:'focus',    name:'Focus',    color:'#378ADD', def:'Master your mind through deep mental focus.'},
+  {id:'celebrate',name:'Celebrate',color:'#7F77DD', def:'Elevate energy through collective effervescence.'}
 ];
+const INT_BY_ID={};INTS.forEach(x=>INT_BY_ID[x.id]=x);
+const intColor=i=>(INT_BY_ID[i]||{}).color||'#fff';
 
-function esc(s){return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-let currentChap=null; /* chapitre ouvert en lecture (pour Go deeper) */
-let allChaps=[]; /* pour re-render après suppression */
-function render(chaps){
-  allChaps=chaps;
-  const box=$('list');box.innerHTML='';
-  if(!chaps.length){$('empty').classList.add('show');return;}
-  $('empty').classList.remove('show');
-  chaps.forEach((c,idx)=>{
-    const d=document.createElement('div');d.className='chap';
-    const date=(c.opened_at||'').slice(0,10);
-    d.innerHTML='<div class="body"><div class="c-title">'+esc(c.title)+'</div><div class="c-date">'+esc(date)+'</div></div>'
-              +'<button class="chap-x" aria-label="Delete chapter">&times;</button>';
-    d.querySelector('.body').onclick=()=>{
-      currentChap=c;
-      $('r-title').textContent=c.title;
-      $('r-body').textContent=c.body||'';
-      $('r-deeper').style.display = c.id ? '' : 'none';  /* Go deeper : uniquement si vrai chapitre (id) */
-      $('read').classList.add('show');
-    };
-    d.querySelector('.chap-x').onclick=async(e)=>{
-      e.stopPropagation();
-      if(!confirm('Delete this chapter?'))return;
-      if(c.id){
-        try{await sb.from('book_chapters').delete().eq('id',c.id);}catch(err){}
-      }
-      allChaps.splice(idx,1);
-      render(allChaps.length?allChaps:MOCK);
-    };
-    box.appendChild(d);
+/* ══ STORAGE — local d'abord, nuage si connecté ══
+   Exactement la doctrine du Totehm : on écrit toujours en local, le nuage
+   suit quand il y a une session. Un invité garde ses leçons. */
+const KEY='totehm_wisdom_v1';
+let me=null, teaches=[], pendingI=null, pickTarget=null, saveTimer=null;
+
+function loadLocal(){
+  try{const r=localStorage.getItem(KEY);const a=r?JSON.parse(r):null;return Array.isArray(a)?a:[];}catch(e){return [];}
+}
+function saveLocal(){
+  try{localStorage.setItem(KEY,JSON.stringify(teaches));}catch(e){}
+  $('status').textContent='saved';
+  setTimeout(()=>{if($('status').textContent==='saved')$('status').textContent='';},1100);
+}
+async function cloudInsert(t){
+  if(!me)return null;
+  const {data,error}=await sb.from('wisdom').insert({user_id:me.id,text:t.t,i:t.i||null}).select('id').maybeSingle();
+  if(error)return null;
+  return data?data.id:null;
+}
+async function cloudUpdate(t){
+  if(!me||!t.id)return;
+  try{await sb.from('wisdom').update({text:t.t,i:t.i||null}).eq('id',t.id);}catch(e){}
+}
+async function cloudDelete(t){
+  if(!me||!t.id)return;
+  try{await sb.from('wisdom').delete().eq('id',t.id);}catch(e){}
+}
+
+/* ══ RENDER — une ligne par leçon, la ligne d'ajout en bas ══ */
+function render(){
+  const box=$('list');let h='';
+  teaches.forEach((t,i)=>{
+    h+='<div class="teach'+(t.i?' marked':'')+'">'
+      +'<button class="t-x" data-i="'+i+'" aria-label="remove">&times;</button>'
+      +'<span class="meta"><button class="h-T" data-i="'+i+'" aria-label="Intention" style="color:'+(t.i?intColor(t.i):'#fff')+'">'+T_SVG+'</button></span>'
+      +'<span class="tick"></span>'
+      +'<span class="h-body"><textarea class="t-text" rows="1" data-i="'+i+'"></textarea></span>'
+      +'</div>';
+  });
+  /* La ligne d'ajout : le T clignote, il ouvre l'intention. */
+  h+='<div class="teach add'+(pendingI?' marked':'')+'">'
+    +'<span class="meta"><button class="h-T'+(pendingI?'':' blink')+'" id="t-T" aria-label="Intention" style="color:'+(pendingI?intColor(pendingI):'#fff')+'">'+T_SVG+'</button></span>'
+    +'<span class="tick"></span>'
+    +'<span class="h-body"><textarea class="t-add" rows="1" id="t-add"></textarea>'
+    +'<span class="t-hint" id="t-hint">Add a <span class="hh">t</span>each to your Self</span></span>'
+    +'</div>';
+  box.innerHTML=h;
+
+  const grow=el=>{el.style.height='auto';el.style.height=el.scrollHeight+'px';};
+  box.querySelectorAll('.t-text').forEach(inp=>{
+    const i=+inp.dataset.i;
+    inp.value=teaches[i].t||'';grow(inp);
+    inp.addEventListener('input',()=>{
+      grow(inp);teaches[i].t=inp.value.replace(/\n/g,' ');
+      clearTimeout(saveTimer);saveTimer=setTimeout(()=>{saveLocal();cloudUpdate(teaches[i]);},700);
+    });
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();inp.blur();}});
+  });
+  box.querySelectorAll('.teach .h-T[data-i]').forEach(b=>{
+    b.onclick=()=>openPick(+b.dataset.i);
+  });
+  box.querySelectorAll('.t-x').forEach(b=>{
+    b.onclick=()=>{const i=+b.dataset.i;const t=teaches[i];teaches.splice(i,1);saveLocal();cloudDelete(t);render();};
+  });
+
+  const tT=$('t-T'); if(tT)tT.onclick=()=>openPick('new');
+  const add=$('t-add'), hint=$('t-hint');
+  grow(add);
+  add.addEventListener('input',()=>{grow(add);hint.style.display=add.value?'none':'';});
+  add.addEventListener('keydown',async e=>{
+    if(e.key!=='Enter')return;e.preventDefault();
+    const v=add.value.replace(/\n/g,' ').trim();if(!v)return;
+    const t={t:v,i:pendingI||null,at:new Date().toISOString(),id:null};
+    teaches.unshift(t);pendingI=null;saveLocal();render();
+    const na=$('t-add');if(na)na.focus();
+    const id=await cloudInsert(t);
+    if(id){t.id=id;saveLocal();}
   });
 }
-$('r-close').onclick=()=>$('read').classList.remove('show');
 
-/* Le T ramène au Totehm (ses habitudes) ; le TOTEHM ouvre les Paramètres. */
-$('bigT').onclick=()=>goBack();
-$('wordmark').onclick=()=>{
-  if($('read').classList.contains('show')){$('read').classList.remove('show');return;}
-  const embedded=window.parent&&window.parent!==window;
-  if(embedded){try{window.parent.postMessage({type:'totehm-goto-settings'},'*');return;}catch(e){}}
-  window.location.href='totehm.html#settings';
-};
-/* Go deeper : ouvre TotehmBot avec deep link vers le chapitre courant */
-$('r-deeper').onclick=()=>{
-  if(!currentChap||!currentChap.id)return;
-  window.open('https://t.me/TotehmBot?start=chapter_'+currentChap.id,'_blank','noopener');
-};
+/* ══ L'ÉTAPE : l'intention, plein écran ══ */
+function renderInts(cur){
+  const box=$('pk-ints');box.innerHTML='';
+  INTS.forEach(x=>{
+    const b=document.createElement('button');
+    b.type='button';
+    b.className='pk-int'+(x.id===cur?' on':'');
+    b.innerHTML='<span class="pk-int-r1"><span style="color:'+x.color+'">'+T_SVG+'</span>'
+      +'<span class="nm" style="color:'+x.color+'">'+esc(x.name)+'</span></span>'
+      +'<span class="df">'+esc(x.def)+'</span>';
+    b.onclick=()=>applyInt(x.id);
+    box.appendChild(b);
+  });
+}
+function openPick(target){
+  pickTarget=target;
+  renderInts(target==='new'?pendingI:(teaches[target]&&teaches[target].i)||null);
+  $('pick').classList.remove('hide');
+}
+function closePick(){$('pick').classList.add('hide');pickTarget=null;}
+const pickOpen=()=>!$('pick').classList.contains('hide');
+function applyInt(id){
+  if(pickTarget==='new'){pendingI=id;closePick();render();const na=$('t-add');if(na)na.focus();return;}
+  const t=teaches[pickTarget];
+  if(t){t.i=id;saveLocal();cloudUpdate(t);}
+  closePick();render();
+}
+$('pk-skip').onclick=()=>applyInt(null);
+$('pick').addEventListener('click',e=>{if(e.target===$('pick'))closePick();});
 
-(async()=>{
-  let chaps=[];
-  try{
-    const {data:{session}}=await sb.auth.getSession();
-    if(session&&session.user){
-      const {data}=await sb.from('book_chapters').select('id,title,body,opened_at').eq('user_id',session.user.id).order('opened_at',{ascending:false});
-      if(data&&data.length)chaps=data;
-    }
-  }catch(e){}
-  render(chaps.length?chaps:MOCK);
-})();
-
-/* Retour au centre : swipe droite / molette / Escape -> le parent referme */
-function goBack(){
-  if($('read').classList.contains('show')){$('read').classList.remove('show');return;}
+/* ══ NAVIGATION — le T du haut ET le TOTEHM du bas ramènent à totehm.html ══
+   En iframe on le dit au parent, sinon on y va. Bascule sèche des deux côtés :
+   aucun fondu, aucun setTimeout. */
+function goTotehm(){
+  if(pickOpen()){closePick();return;}
   const embedded=window.parent&&window.parent!==window;
   if(embedded){try{window.parent.postMessage({type:'totehm-close-book'},'*');return;}catch(e){}}
   window.location.href='totehm.html';
 }
-$('side-home').onclick=()=>goBack();
-let lock=false;const trig=()=>{if(lock)return;lock=true;setTimeout(()=>lock=false,600);goBack();};
+$('bigT').onclick=goTotehm;
+$('wordmark').onclick=goTotehm;
+$('side-home').onclick=goTotehm;
+
+let lock=false;
+const trig=()=>{if(lock)return;lock=true;setTimeout(()=>{lock=false;},600);goTotehm();};
 window.addEventListener('wheel',e=>{if(Math.abs(e.deltaX)>20&&e.deltaX>0)trig();},{passive:true});
 let x0=0,y0=0,ax=null;
 window.addEventListener('touchstart',e=>{x0=e.changedTouches[0].screenX;y0=e.changedTouches[0].screenY;ax=null;},{passive:true});
 window.addEventListener('touchmove',e=>{if(ax)return;const dx=Math.abs(e.changedTouches[0].screenX-x0),dy=Math.abs(e.changedTouches[0].screenY-y0);if(dx>8||dy>8)ax=dx>dy?'h':'v';},{passive:true});
-window.addEventListener('touchend',e=>{if(ax!=='h')return;const dx=e.changedTouches[0].screenX-x0;if(dx<-32)trig();},{passive:true});
-window.addEventListener('keydown',e=>{if(e.key==='Escape'||e.key==='ArrowLeft')trig();});
+window.addEventListener('touchend',e=>{if(ax!=='h')return;if(pickOpen())return;const dx=e.changedTouches[0].screenX-x0;if(dx<-32)trig();},{passive:true});
+/* LE FIX CLAVIER : les flèches déplacent le curseur dans un champ, jamais la page. */
+window.addEventListener('keydown',e=>{
+  if(isTyping(e))return;
+  if(e.key==='Escape'){if(pickOpen()){closePick();return;}trig();return;}
+  if(e.key==='ArrowLeft')trig();
+});
+
+/* ══ BOOT ══ */
+(async()=>{
+  teaches=loadLocal();
+  render();
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    me=session?.user||null;
+  }catch(e){}
+  if(!me)return;
+  try{
+    const {data}=await sb.from('wisdom').select('id,text,i,created_at')
+      .eq('user_id',me.id).order('created_at',{ascending:false});
+    if(data){
+      /* Le nuage fait foi dès qu'il existe ; ce qui n'a jamais été poussé
+         (pas d'id) est envoyé maintenant, puis la liste est refaite. */
+      const orphans=teaches.filter(t=>!t.id);
+      teaches=data.map(r=>({id:r.id,t:r.text,i:r.i||null,at:r.created_at}));
+      for(const o of orphans){
+        const id=await cloudInsert(o);
+        teaches.unshift({id:id,t:o.t,i:o.i||null,at:o.at||new Date().toISOString()});
+      }
+      saveLocal();render();
+    }
+  }catch(e){}
+})();
 </script>
 </body>
 </html>
