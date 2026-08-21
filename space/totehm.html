@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <!--
-  ══ RÈGLES DE NAVIGATION VERROUILLÉES ══ (juillet 2026)
+  ══ RÈGLES DE NAVIGATION VERROUILLÉES ══ (août 2026)
 
-  Étages : TROIS — HABITS (0) · HIGHER MAP (1) · SETTINGS (2).
-  Stoner est un OVERLAY, jamais un étage, jamais accessible au swipe.
+  PLUS D'ÉTAGES. Un seul écran de saisie, et l'atterrissage au-dessus.
+  La Higher Map a quitté ce fichier : elle vit dans map.html.
 
   Verticaux (règle iOS "doigt entraîne le contenu") :
-    · Habits   → Map      : swipe UP   ·  clic sur #menu-arrow
-    · Map      → Settings : swipe UP
-    · Settings → Map      : swipe DOWN
-    · Map      → Habits   : swipe DOWN  ·  logo #hmap-nav
-    · Stoner : SEUL déclencheur = clic sur #btn-get-higher (jamais par swipe)
+    · au SOMMET de la liste, geste vers le bas  → le filtre
+    · au PIED de la liste, geste vers le haut   → le Totehm se replie
+      vers l'atterrissage (même geste que la croix #fold-x et Échap)
+    · Stoner : SEUL déclencheur = clic sur #btn-get-higher
 
-  Horizontaux (depuis Habits ET Map ET Settings) :
-    · swipe DROITE → Book  ·  swipe GAUCHE → Next Objective
+  Horizontaux :
+    · swipe DROITE → My Wisdom  ·  swipe GAUCHE → My next objective
+
+  TRANSITIONS SÈCHES. Aucun fondu croisé entre deux fichiers : les
+  overlays basculent en display, jamais en opacity. Le carré rouge de
+  book.html ne peut plus baver sur le bleu.
 -->
 <html lang="en">
 <head>
@@ -85,365 +88,15 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 .sn-logo .chev{width:22px;height:13px;color:rgba(255,255,255,.55)}
 
 /* ── STONER METHOD : la section du dessus ── */
-#stoner{position:fixed;inset:0;z-index:55;background:#000;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .38s ease,visibility 0s linear .38s;will-change:opacity}
-#stoner.show{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .38s ease,visibility 0s}
-/* Book (passé) et Next Objective (futur) — même fondu, cohérent avec Stoner */
-#book,#nextobj{position:fixed;inset:0;z-index:55;background:#000;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .38s ease,visibility 0s linear .38s;will-change:opacity}
-#book.show,#nextobj.show{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .38s ease,visibility 0s}
+/* ══ TRANSITIONS SÈCHES ══
+   Trois overlays plein cadre, zéro fondu. Un crossfade entre deux
+   fichiers laisse voir les deux couleurs à la fois : le carré rouge-violet
+   de My Wisdom bavait sur le navy pendant 380 ms. On bascule en display :
+   une frame, une seule couleur, jamais deux. */
+#stoner,#book,#nextobj{position:fixed;inset:0;z-index:55;background:#000;
+  visibility:hidden;pointer-events:none}
+#stoner.show,#book.show,#nextobj.show{visibility:visible;pointer-events:auto}
 #book iframe,#nextobj iframe{width:100%;height:100%;border:none;display:block}
-
-/* ══ HIGHER MAP — VOID RADAR / SWIPE DECK ══
-   Le monde est vide jusqu'à ce que l'intention le projette.
-
-   DEUX RENDUS, UN SEUL ÉTAT.
-   Le radar est juste sur un grand écran et mauvais sur un téléphone :
-   quinze T sur 390 px, ce sont quinze cibles de 16 px collées les unes
-   aux autres. Alors le rendu bifurque à 700 px — mais UNIQUEMENT le
-   rendu. Une seule machine à états, un seul chargeur, une seule carte
-   de contenu. C'est ce qui empêche cette bifurcation de doubler le
-   coût de maintenance pour toujours.
-
-     ≥ 700 px  RADAR   canvas + T positionnés en transform
-     < 700 px  DECK    carrousel horizontal, cartes 100vw × 80vh
-
-   TYPOGRAPHIE
-     Quantico ≥ 14px pour tout ce qui se LIT.
-     Space Mono pour ce qui se MESURE (coordonnées, distances, heure,
-     température). Ce n'est pas de la décoration : c'est la frontière
-     entre la parole et la donnée.
-     Zéro italique. Banni.
-     La hiérarchie passe par la lumière, jamais par la taille seule.
-
-   Même overlay que #book et #nextobj : le geste doit être identique. */
-
-#hmap{position:fixed;inset:0;z-index:55;background:#000;opacity:0;visibility:hidden;
-  pointer-events:none;transition:opacity .38s ease,visibility 0s linear .38s;
-  overflow:hidden;overscroll-behavior:contain}
-#hmap.show{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .38s ease,visibility 0s}
-
-/* Le point d'entrée membre est #conn-bar. Il vit à z-index 45, donc
-   SOUS cet overlay (55) : sans cette remontée il est invisible depuis
-   la carte, et c'était le cas. */
-body.in-map #conn-bar{z-index:60}
-
-/* ── ÉCHELLE DE GRIS — la hiérarchie passe par la lumière ─────────── */
-:root{
-  --hm-hi:#ffffff;      /* ce qui compte maintenant */
-  --hm-mid:#b4b4b4;     /* lisible, secondaire */
-  --hm-lo:#6d6d6d;      /* contexte */
-  --hm-dim:#3c3c3c;     /* structure */
-}
-
-/* ── RÉVÉLATION ──────────────────────────────────────────────────────
-   Desktop : le HUD dort à 38 %, un geste le réveille, le blanc arrive
-   au survol. Mobile : gris clair en permanence — sur un téléphone il
-   n'y a pas de survol, donc pas de récompense à attendre. */
-.hm-reveal{opacity:.38;transition:opacity .35s ease,color .25s ease}
-body.hm-alive .hm-reveal,body.hm-picked .hm-reveal{opacity:1}
-@media(max-width:699px){.hm-reveal{opacity:1}}
-
-/* ── COINS : conn-bar en haut à gauche, temps et météo en haut à droite,
-      coordonnées en bas à gauche, portée en bas à droite ──────────── */
-/* Météo séparée en deux ancres : Heure + Ciel à gauche, Temp + Vent à droite. */
-#hm-weather-left{position:absolute;top:16px;left:16px;z-index:6;
-  pointer-events:none;display:flex;flex-direction:column;align-items:flex-start;gap:3px}
-#hm-weather-right{position:absolute;top:16px;right:16px;z-index:6;text-align:right;
-  pointer-events:none;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
-.hm-w{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;
-  color:var(--hm-lo);white-space:nowrap;display:flex;gap:8px;align-items:baseline}
-.hm-w b{font-weight:400;color:var(--hm-mid);transition:color .2s ease}
-body.hm-alive .hm-w b{color:var(--hm-hi)}
-
-#hm-corner-bl,#hm-corner{position:absolute;bottom:16px;z-index:6;
-  font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--hm-lo);pointer-events:none}
-#hm-corner-bl{left:18px}
-#hm-corner{right:18px;text-align:right}
-
-/* LE STATUT DE POSITION.
-   Il vivait à 110px pendant que le sélecteur choisi montait a 96px : le bloc
-   du selecteur (440px de large, z-index 20) recouvrait ce bouton, et le clic
-   « tap to use your position » n'arrivait JAMAIS jusqu'a la geolocalisation.
-   C'etait ca, « la localisation ne fonctionne pas ». Il descend sous le
-   selecteur des qu'une intention est choisie. */
-#hm-overline{position:absolute;top:110px;left:50%;transform:translateX(-50%);
-  font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--hm-lo);white-space:nowrap;
-  z-index:12;pointer-events:auto;cursor:default;background:none;border:none;
-  padding:6px 10px;transition:top .5s cubic-bezier(.45,0,.2,1),color .2s ease}
-body.hm-picked #hm-overline{top:152px}
-/* En fallback le statut est TOUJOURS cliquable, meme pendant « locating… » */
-body.hm-geo-fallback #hm-overline{cursor:pointer}
-#hm-overline.retry{color:var(--hm-mid);cursor:pointer;text-decoration:underline;
-  text-underline-offset:4px}
-#hm-overline.retry:hover{color:var(--hm-hi)}
-
-/* Logo nav — retour au Totehm, identique à #sn-home dans Settings */
-#hmap-nav{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:7;
-  background:none;border:6px solid transparent;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;gap:5px;
-  padding:6px 0 4px;-webkit-tap-highlight-color:transparent}
-#hmap-nav .chev{width:22px;height:13px;color:rgba(255,255,255,.5);
-  fill:none;stroke:currentColor;stroke-width:1.2;
-  stroke-linecap:round;stroke-linejoin:round;transition:color .15s}
-#hmap-nav img{width:48px;height:auto;display:block}
-@media(hover:hover){#hmap-nav:hover .chev{color:var(--hm-hi)}}
-#hmap-nav:active .chev{color:var(--hm-hi)}
-
-body.in-map #bigT,body.in-map #wordmark,body.in-map #rail{
-  opacity:0!important;pointer-events:none!important;transition:none!important}
-body.map-leaving #bigT,body.map-leaving #wordmark,body.map-leaving #rail{
-  opacity:0!important;pointer-events:none!important}
-
-/* ══════════════════════════════════════════════════════════════════
-   LE SÉLECTEUR — commun aux deux rendus
-   ══════════════════════════════════════════════════════════════════ */
-#hm-selector{position:absolute;left:50%;top:28%;transform:translate(-50%,-50%);
-  display:flex;flex-direction:column;align-items:center;gap:16px;
-  width:min(92vw,440px);z-index:20;
-  transition:top .5s cubic-bezier(.45,0,.2,1),transform .5s cubic-bezier(.45,0,.2,1),
-             gap .4s ease,opacity .3s ease;
-  opacity:0;pointer-events:none}
-/* Seuls les enfants prennent le clic : la boite du selecteur mesure 440px de
-   large et volait les clics sur les T et sur le statut derriere elle. */
-#hm-selector.ready{opacity:1}
-#hm-selector.ready > *{pointer-events:auto}
-
-/* L'ASCENSION — l'intention choisie, le bloc monte et libère le
-   centre. Sur desktop le radar redevient 100 % cliquable ; sur mobile
-   le deck prend les 4/5 du bas. */
-body.hm-picked #hm-selector{top:96px;transform:translate(-50%,0);gap:8px}
-@media(max-width:699px){ body.hm-picked #hm-selector{top:72px} }
-
-.hm-q{font-family:'Quantico',sans-serif;font-size:16px;font-weight:400;
-  color:var(--hm-mid);text-align:center;line-height:1.5;
-  transition:color .2s ease,font-size .4s ease,opacity .4s ease}
-body.hm-alive .hm-q{color:var(--hm-hi)}
-/* L'intention est choisie : la question n'a plus de raison d'etre. Elle
-   restait la, grise, et traversait les cartes ouvertes. Elle s'efface. */
-body.hm-picked .hm-q{font-size:14px;opacity:0;height:0;margin:0;overflow:hidden;
-  pointer-events:none}
-
-#hm-dd{position:relative}
-#hm-ddt{background:transparent;border:none;cursor:pointer;
-  display:flex;align-items:center;gap:9px;padding:4px 0;
-  -webkit-tap-highlight-color:transparent}
-#hm-ddt-lbl{display:flex;align-items:center;gap:8px;
-  font-family:'Quantico',sans-serif;font-size:16px;font-weight:700;
-  color:var(--coral);transition:color .15s}
-#hm-ddt-lbl .tglyph{width:16px;height:16px;flex-shrink:0}
-#hm-ddt:hover #hm-ddt-lbl{color:var(--hm-hi)}
-.hm-ddarr{font-size:11px;color:var(--hm-dim);transition:transform .2s,color .2s}
-#hm-dd.open .hm-ddarr{transform:rotate(180deg)}
-
-#hm-ddm{display:none;position:absolute;top:calc(100% + 10px);left:50%;
-  transform:translateX(-50%);width:min(92vw,360px);z-index:11;
-  background:#121212;
-  border:1px solid #2a2a2a;
-  box-shadow:0 16px 40px rgba(0,0,0,.9);
-  max-height:40vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;
-  animation:hmDD .18s ease}
-@keyframes hmDD{from{opacity:0;transform:translateX(-50%) translateY(-6px)}
-                to{opacity:1;transform:translateX(-50%) translateY(0)}}
-#hm-dd.open #hm-ddm{display:block}
-
-/* Le T remplace le point de couleur. Le gap l'empêche de toucher le
-   texte — c'est un glyphe, pas une puce. */
-.hm-ddi{display:flex;align-items:flex-start;gap:13px;padding:13px 17px;
-  cursor:pointer;border-left:2px solid transparent;
-  transition:background .12s,border-color .12s,opacity .18s;
-  -webkit-tap-highlight-color:transparent}
-.hm-ddi .tglyph{width:15px;height:15px;flex-shrink:0;margin-top:3px}
-@media(hover:hover){
-  .hm-ddi:hover{background:rgba(255,255,255,.05);border-left-color:currentColor}
-  .hm-ddi:hover .hm-ddi-name{color:var(--hm-hi)!important}
-  .hm-ddi:hover .hm-ddi-def{color:var(--hm-mid)}
-}
-.hm-ddi.active{border-left-color:currentColor;background:rgba(255,255,255,.04)}
-.hm-ddi.active .hm-ddi-name{color:var(--hm-hi)!important}
-.hm-ddi.loading{opacity:.3;pointer-events:none}
-.hm-ddi-name{display:flex;align-items:center;
-  font-family:'Quantico',sans-serif;font-size:18px;font-weight:700;
-  line-height:1.15;transition:color .15s}
-.hm-ddi-def{font-family:'Quantico',sans-serif;font-size:14px;font-weight:400;
-  color:var(--hm-lo);margin-top:5px;line-height:1.45;transition:color .18s}
-@media(max-width:699px){ .hm-ddi-def{color:var(--hm-mid)} }
-.hm-ddi-neuro{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
-.hm-ddi-ntag{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.13em;
-  text-transform:uppercase;color:var(--hm-mid);border:1px solid var(--hm-dim);
-  padding:2px 7px;line-height:1.6;white-space:nowrap}
-
-/* Le badge Higher suit l'intention, jamais collé au mot */
-.hm-ddi-name .hi-badge,#hm-ddt-lbl .hi-badge{margin-left:9px}
-.hm-ddi-name .hi-badge svg,#hm-ddt-lbl .hi-badge svg{height:16px;width:auto;display:block}
-
-/* ══════════════════════════════════════════════════════════════════
-   RENDU A — LE RADAR (≥ 700 px)
-   ══════════════════════════════════════════════════════════════════ */
-#hm-canvas,#hm-markers{display:none;position:absolute;inset:0}
-#hm-canvas{z-index:0;width:100%;height:100%}
-#hm-markers{z-index:1;pointer-events:none}
-#hmap.hm-radar #hm-canvas,#hmap.hm-radar #hm-markers{display:block}
-
-/* TOI. Un carré blanc, pas un T. Le T marque ce vers quoi on peut
-   aller ; tu n'es pas une destination. Le distinguer supprime aussi
-   une vraie confusion : un T blanc au milieu de T colorés se lisait
-   comme un spot sans intention. */
-/* La position passe par left/top et JAMAIS par transform : l'animation
-   hm-pulse anime transform, elle ecrasait le translate() pose en JS et le
-   carre blanc restait bloque dans le coin haut-gauche, invisible. On ne se
-   voyait donc jamais au centre de son propre radar. */
-#hm-me{position:absolute;left:0;top:0;width:10px;height:10px;margin:-5px 0 0 -5px;
-  background:#fff;pointer-events:none;z-index:3;
-  box-shadow:0 0 10px rgba(255,255,255,.75);
-  animation:hm-pulse 2.6s ease-in-out infinite}
-@keyframes hm-pulse{
-  0%,100%{transform:scale(1);opacity:1}
-  50%{transform:scale(1.5);opacity:.5}
-}
-
-/* Les T. La zone de clic fait 30 px, le glyphe 15 : on ne peut pas
-   toucher un texte voisin avec le dessin, et la cible reste prenable. */
-.hm-marker{position:absolute;left:0;top:0;width:30px;height:30px;
-  margin:-15px 0 0 -15px;
-  display:flex;align-items:center;justify-content:center;
-  pointer-events:auto;cursor:pointer;background:none;border:none;padding:0;
-  transition:opacity .2s ease;will-change:transform;
-  -webkit-tap-highlight-color:transparent}
-.hm-marker .tglyph{width:15px;height:15px;display:block;
-  transition:transform .15s ease}
-.hm-marker:hover .tglyph,.hm-marker:focus-visible .tglyph{transform:scale(1.5)}
-.hm-marker.src-place{opacity:.55}
-.hm-marker.src-place:hover{opacity:1}
-
-/* Le radar s'allume : les T naissent du centre, du plus proche au plus
-   lointain. */
-@keyframes hm-ignite{from{opacity:0;transform:scale(.2)} to{opacity:1;transform:scale(1)}}
-.hm-marker .tglyph{animation:hm-ignite .34s cubic-bezier(.2,.8,.3,1) backwards}
-
-/* ── APERÇU RICHE AU CLIC (desktop) ────────────────────────────────── */
-/* z-index 30 : AU-DESSUS du selecteur (20). A 12, le titre de l'intention et
-   la question passaient par-dessus la carte ouverte — le texte bavait. */
-#hm-card{position:absolute;z-index:30;display:none;width:270px;
-  background:#121212;border:1px solid #2a2a2a;
-  box-shadow:0 16px 40px rgba(0,0,0,.9);
-  overscroll-behavior:contain;
-  flex-direction:column;overflow:hidden}
-#hm-card.show{display:flex}
-#hmap.hm-deck #hm-card{display:none!important}
-
-/* ══════════════════════════════════════════════════════════════════
-   RENDU B — LE SWIPE DECK (< 700 px)
-   ══════════════════════════════════════════════════════════════════ */
-#hm-deck{display:none;position:absolute;left:0;right:0;bottom:0;height:80vh;
-  z-index:30;
-  overflow-x:auto;overflow-y:hidden;
-  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
-  scrollbar-width:none;
-  opacity:0;transition:opacity .5s ease .1s;
-  padding-bottom:env(safe-area-inset-bottom,0)}
-#hm-deck::-webkit-scrollbar{display:none}
-#hmap.hm-deck.hm-loaded #hm-deck{display:flex;opacity:1}
-
-.hm-slide{flex:0 0 100vw;width:100vw;height:100%;scroll-snap-align:center;
-  display:flex;flex-direction:column;justify-content:flex-end;
-  padding:0 26px 34px;box-sizing:border-box}
-.hm-slide .hm-c-inner{background:#121212;border:1px solid #2a2a2a;
-  box-shadow:0 16px 40px rgba(0,0,0,.9)}
-
-/* ── LA CARTE — un seul balisage, servi au deck et à l'aperçu ─────── */
-.hm-c-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
-.hm-c-kind{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
-  letter-spacing:.16em;text-transform:uppercase;
-  padding:3px 8px;border:1px solid currentColor}
-.hm-c-int{display:flex;align-items:center;
-  font-family:'Quantico',sans-serif;font-size:14px;font-weight:700;
-  letter-spacing:.1em;text-transform:uppercase}
-.hm-c-int .hi-badge{margin-left:8px}
-.hm-c-neuro{display:flex;flex-wrap:wrap;gap:4px;margin-top:-6px;margin-bottom:10px}
-
-.hm-c-name{font-family:'Quantico',sans-serif;font-weight:700;
-  color:var(--hm-hi);line-height:1.15;margin-bottom:12px}
-.hm-c-why{font-family:'Quantico',sans-serif;font-weight:400;
-  color:var(--hm-mid);line-height:1.55;font-style:normal}
-
-.hm-c-facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
-.hm-c-fact{font-family:'Quantico',sans-serif;font-size:14px;font-weight:400;
-  color:var(--hm-lo);border:1px solid rgba(255,255,255,.09);padding:5px 11px}
-.hm-c-fact b{font-weight:700;color:var(--hm-mid)}
-
-.hm-c-foot{display:flex;align-items:baseline;justify-content:space-between;
-  gap:14px;margin-top:20px;padding-top:14px;border-top:1px solid rgba(255,255,255,.09)}
-.hm-c-dist{font-family:'Space Mono',monospace;font-size:15px;color:var(--hm-hi)}
-.hm-c-walk{font-family:'Space Mono',monospace;font-size:11px;color:var(--hm-lo);margin-left:8px}
-/* [ TAKE ME THERE → ] — style officiel .btn-sig : bordures perforées
-   actives, Quantico 14px, majuscules. */
-.hm-c-go{font-family:'Quantico',sans-serif;font-size:14px;font-weight:400;
-  letter-spacing:0;text-transform:uppercase;color:var(--hm-mid);
-  background:none;text-decoration:none;white-space:nowrap;cursor:pointer;
-  border:6px solid transparent;padding:0 4px;line-height:1.5;display:inline-block;
-  -webkit-tap-highlight-color:transparent;transition:color .15s ease}
-@media(hover:hover){.hm-c-go:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
-.hm-c-go:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
-
-/* L'asset Higher : le BADGE BLEU (navy #333366, lettres blanches), jamais le
-   wordmark corail — sur fond noir il tirait vers le dore et se lisait mal.
-   Et il est grand : c'est une accreditation, pas une note de bas de page. */
-.hm-ddi-name .hi-word,#hm-ddt-lbl .hi-word{display:inline-flex;align-items:center;line-height:0;margin-left:11px}
-.hm-ddi-name .hi-word svg{height:21px;width:auto;display:inline-block}
-#hm-ddt-lbl .hi-word svg{height:24px;width:auto;display:inline-block}
-/* Le meme badge sur les cartes, a l'echelle du titre */
-.hm-c-int .hi-badge svg{height:17px}
-.hm-slide .hm-c-int .hi-badge svg{height:19px}
-
-/* [ ✕ clear ] — sous le sélecteur, mobile uniquement, une fois l'intention posée */
-#hm-clear{display:none;margin-top:2px;font-family:'Space Mono',monospace;font-size:9px;
-  letter-spacing:.16em;text-transform:uppercase;color:var(--hm-lo);background:none;
-  border:none;cursor:pointer;padding:4px 6px;-webkit-tap-highlight-color:transparent;
-  transition:color .15s}
-#hm-clear:hover{color:var(--hm-hi)}
-@media(max-width:699px){ body.hm-picked #hm-clear{display:inline-block} }
-
-/* Tailles : la carte plein écran respire, l'aperçu se resserre. */
-.hm-slide .hm-c-name{font-size:34px}
-.hm-slide .hm-c-why{font-size:16px}
-#hm-card .hm-c-inner{padding:16px 18px}
-#hm-card .hm-c-name{font-size:19px;margin-bottom:9px}
-#hm-card .hm-c-why{font-size:14px}
-#hm-card .hm-c-facts{gap:6px;margin-top:12px}
-#hm-card .hm-c-fact{font-size:14px;padding:4px 9px}
-#hm-card .hm-c-foot{margin-top:14px;padding-top:11px}
-#hm-card .hm-c-close{position:absolute;top:6px;right:9px;
-  font-family:'Quantico',sans-serif;font-size:16px;line-height:1;
-  color:var(--hm-lo);background:none;border:none;cursor:pointer;padding:2px 6px;
-  transition:color .15s}
-#hm-card .hm-c-close:hover{color:var(--hm-hi)}
-
-/* Compteur de position dans le deck */
-#hm-count{display:none;position:absolute;bottom:calc(80vh + 14px);left:50%;
-  transform:translateX(-50%);z-index:29;
-  font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.18em;
-  color:var(--hm-lo);pointer-events:none}
-#hmap.hm-deck.hm-loaded #hm-count{display:block}
-
-/* ── BASCULE DES DEUX RENDUS ───────────────────────────────────────── */
-@media(max-width:699px){
-  #hm-corner-bl,#hm-corner{display:none}
-  #hmap-nav img{width:42px}
-  #hm-overline{top:110px}
-}
-@media(min-width:700px){
-  #hm-deck,#hm-count{display:none!important}
-}
-
-/* ── ÉTAT VIDE / MESSAGE ───────────────────────────────────────────── */
-#hm-note{position:absolute;left:50%;bottom:14%;transform:translateX(-50%);
-  z-index:9;width:min(88vw,420px);text-align:center;
-  font-family:'Quantico',sans-serif;font-size:14px;font-weight:400;
-  color:var(--hm-lo);line-height:1.6;pointer-events:none}
-#hm-note:empty{display:none}
-@media(max-width:699px){ #hm-note{bottom:auto;top:52%} }
 
 /* Make the Streets Sublime : overlay en bas de la méthode, visible seulement si Lisbon sélectionné en bas */
 /* Make the Streets Sublime : bouton phare perforé en HAUT de la méthode (si Lisbon sélectionné en bas) */
@@ -649,8 +302,8 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
    Tous les réglages (nom, visibilité, abonnement, suppression) sous un seul toit. */
 #mw-in-state #settings.mw-dash{max-width:none;margin:0;padding:16px 0 0;gap:12px;background:none}
 #mw-in-state #settings.mw-dash > .set-block{width:100%}
-/* La navigation Autobiography / Generator n'est pas un réglage : elle reste
-   accessible au swipe latéral et aux flèches, jamais dans le Dashboard. */
+/* La navigation My Wisdom / My next objective n'est pas un réglage : elle
+   reste accessible au swipe latéral et aux flèches, jamais dans le Dashboard. */
 #mw-in-state #settings-nav{display:none!important}
 .mw-title{font-family:'Quantico',sans-serif;font-weight:700;font-size:18px;color:#fff;margin-bottom:14px}
 .mw-body{font-family:var(--futura);font-weight:300;font-size:13px;color:var(--g-mid);line-height:1.7;margin-bottom:14px}
@@ -690,9 +343,14 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 }
 
 /* ── L'écran d'atterrissage ── */
+/* L'atterrissage porte maintenant la Terre et deux portes : il défile.
+   `overflow-y:auto` et non `hidden` — sinon le bas de la page n'existe
+   simplement pas sur un téléphone. */
 #gate{position:fixed;inset:0;z-index:200;background:#000;
   display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-  padding:var(--gate-top) 0 4vh;overflow:hidden;transition:opacity .32s ease}
+  padding:var(--gate-top) 0 0;overflow-x:hidden;overflow-y:auto;
+  overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  transition:opacity .32s ease}
 body:not(.gate) #gate{display:none}
 #gate.gate-off{opacity:0;pointer-events:none}
 
@@ -735,17 +393,20 @@ body.gate.entered #gate-enter,
 body.gate.entered #gate-open,
 body.gate.entered .gate-terms,
 body.gate.entered #gate-bottom,
+body.gate.entered #gate-world,
 body.gate.entered #gate-attention{opacity:0;pointer-events:none}
 
 /* ══ L'UI de l'app : masquée pendant l'état 1, fondu entrant pendant l'état 2 ══ */
 body.gate #rail,body.gate #bigT,body.gate #wordmark,
 body.gate #floorview,body.gate #conn-bar,body.gate #menu-arrow,
-body.gate #filter-arrow,body.gate #fv-status{
+body.gate #filter-arrow,body.gate #fv-status,body.gate #fold-x,
+body.gate #filter-badge{
   opacity:0;pointer-events:none;transition:opacity .55s ease}
 body.gate.entered #rail,body.gate.entered #bigT,body.gate.entered #wordmark,
 body.gate.entered #floorview,body.gate.entered #conn-bar,
 body.gate.entered #menu-arrow,body.gate.entered #filter-arrow,
-body.gate.entered #fv-status{
+body.gate.entered #fv-status,body.gate.entered #fold-x,
+body.gate.entered #filter-badge{
   opacity:1;pointer-events:auto;transition:opacity .55s ease var(--gate-reveal)}
 
 /* Le rail de l'app reprend exactement le gris du logo (#626286) */
@@ -755,7 +416,8 @@ body.gate.entered #fv-status{
   #gate-logo .glayer{transition-duration:.01ms!important}
   body.gate #rail,body.gate #bigT,body.gate #wordmark,
   body.gate #floorview,body.gate #conn-bar,body.gate #menu-arrow,
-  body.gate #filter-arrow,body.gate #fv-status{transition-duration:.01ms!important}
+  body.gate #filter-arrow,body.gate #fv-status,body.gate #fold-x,
+  body.gate #filter-badge{transition-duration:.01ms!important}
 }
 /* ── Gate: avertissement ancré tout en haut, hors du flux flex ── */
 #gate-attention{position:absolute;top:3vh;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:5px;max-width:280px;text-align:center;transition:opacity .25s ease}
@@ -775,10 +437,38 @@ body.gate.entered #fv-status{
 .sn-tile svg{width:7px;height:12px;color:#fff;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .sn-tile-rep{background-image:var(--logo-rep)}
 .sn-tile-blue{background-image:var(--logo-blue)}
-/* ── Habit add: T blink + hint ── */
+/* ── Le T de la ligne d'ajout clignote : c'est l'invitation, il n'y a
+      plus un mot pour la dire. Il ouvre temporalité puis intention. ── */
 @keyframes t-pulse{0%,100%{opacity:1}50%{opacity:.18}}
 .h-T.blink{animation:t-pulse 2.2s ease-in-out infinite}
-.h-T-hint{font-family:'Quantico',sans-serif;font-size:9px;color:rgba(255,255,255,.38);white-space:nowrap;margin-left:3px;display:inline-block;vertical-align:middle}
+
+/* ── LA CROIX DE REPLI ──
+   Sur le flanc droit du Totehm, à mi-hauteur : le seul endroit libre de
+   tout — le badge de filtre occupe le coin haut droit, les chevrons de
+   navigation vivent HORS du carré. Elle rejoue le déploiement à l'envers
+   et ramène à l'atterrissage. */
+#fold-x{position:fixed;top:50%;right:6px;transform:translateY(-50%);z-index:33;
+  background:none;border:none;cursor:pointer;padding:12px 8px;line-height:0;
+  -webkit-tap-highlight-color:transparent}
+#fold-x svg{width:14px;height:14px;color:rgba(255,255,255,.42);display:block;
+  fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;
+  transition:color .15s}
+@media(hover:hover){#fold-x:hover svg{color:#fff}}
+#fold-x:active svg{color:#fff}
+
+/* ── L'ATTERRISSAGE : la Terre et la porte du monde ──
+   La vidéo n'est chargée QUE si elle entre dans le champ (IntersectionObserver).
+   1,9 Mo servis à chaque visiteur qui ne descend jamais, c'est de l'egress
+   payé pour rien. */
+/* La Terre suit le bloc Search, elle ne se colle PAS au bas du cadre :
+   `margin-top:auto` la plaquait en bas et ouvrait un trou noir de 350 px
+   au milieu de l'atterrissage. Une marge franche, et la page se lit d'un
+   trait — logo, portes, Terre. */
+#gate-world{display:flex;flex-direction:column;align-items:center;gap:14px;
+  width:100%;margin-top:7vh;padding:0 18px calc(4vh + env(safe-area-inset-bottom,0));
+  transition:opacity .25s ease}
+#gate-video{width:min(300px,72vw);aspect-ratio:1/1;object-fit:cover;display:block;
+  background:#000;border:none;outline:none}
 
 /* ══ DESKTOP : le logo habité devient un carré ══════════════════════════════
    Ce bloc est EN FIN DE FEUILLE, pas au début : à spécificité égale c'est le
@@ -862,67 +552,17 @@ body.gate.entered #fv-status{
   #side-right{left:calc(50% + var(--stage) / 2 + var(--side-gap))}
   #side-right .sn-box{background-image:var(--logo-blue)}
   #settings-nav .sn-row{display:none}
-  body.in-settings .side-nav{display:none}
-  body.in-map #stage{
-    transform:translate(-50%,-50%) scale(0);
-    opacity:0;pointer-events:none;
-    transition:transform .38s ease,opacity .38s ease}
-  body.in-map .side-nav{
-    transform:translateY(-50%) scale(0);
-    opacity:0;pointer-events:none}
-  body.in-map #bigT,body.in-map #wordmark,body.in-map #rail{
-    opacity:0!important;transition:none!important}
-  body.in-map #menu-arrow,body.in-map #filter-arrow{display:none!important}
   .sn-label{font-family:'Quantico',sans-serif;font-size:9px;letter-spacing:.04em;color:#fff;text-align:center;line-height:1.35;transition:opacity .2s;display:block;opacity:0}
   .side-nav:hover .sn-label{opacity:1}
   #side-left.home .sn-label,#side-right.home .sn-label{display:none}
   /* ══ LE TOTEHM SE REPLIE ══
-     Le scroll-snap natif snappait d'abord, le JS suivait apres coup :
-     l'UI changeait avec un temps de retard visible. On remplace par une
-     sequence pilotee, inverse du deploiement de la gate.
-
-     La gate est detruite apres l'entree (gate.remove()) : impossible de
-     la rejouer. Mais ses quatre pieces vivent toujours ici —
+     Le repli ne passe plus par un étage : c'est le module GATE qui rejoue
+     le déploiement à l'envers, sur les quatre pièces du logo —
      #gl-bg -> le fond navy de #stage, #gl-t -> #bigT,
-     #gl-wm -> #wordmark, #gl-rail -> #rail. On replie celles-la.
-     Meme duree et meme easing que le deploiement : --gate-dur,
-     --gate-ease. L'aller et le retour sont le meme geste. */
+     #gl-wm -> #wordmark, #gl-rail -> #rail. Même durée, même easing
+     (--gate-dur, --gate-ease) : l'aller et le retour sont le même geste. */
   #fv-inner{scroll-snap-type:none}
   #habits{flex-shrink:0;height:auto}
-
-  #stage{transition:transform var(--gate-dur) var(--gate-ease),
-                    opacity   var(--gate-dur) var(--gate-ease)}
-  body.in-settings #stage{
-    transform:translate(-50%,-50%) scale(.24);
-    opacity:0;pointer-events:none}
-
-  /* Les trois pieces convergent vers le centre pendant le repli : le T
-     redescend, le wordmark remonte, le rail s'efface. C'est exactement
-     l'inverse de translateY(-40vh) / translateY(40vh) / translateX(-30vw). */
-  #bigT,#wordmark,#rail{
-    transition:transform var(--gate-dur) var(--gate-ease),
-               opacity   var(--gate-dur) var(--gate-ease)}
-  body.in-settings #bigT    {transform:translateY(34%)  scale(.7)}
-  body.in-settings #wordmark{transform:translateY(-34%) scale(.7)}
-  body.in-settings #rail    {opacity:0}
-
-  /* ══ SECTION 2 : LES REGLAGES ══
-     Hors de #stage — le JS les remonte dans <body> au boot desktop.
-     Sinon overflow:hidden les clipperait et le scale(.24) les
-     retrecirait avec le carre. Ils entrent APRES le repli : le delai
-     .48s laisse le Totehm finir son geste avant qu'ils apparaissent. */
-  body.desk-two #settings{
-    position:fixed;left:0;right:0;top:0;bottom:0;
-    display:flex!important;flex-direction:column;align-items:center;
-    justify-content:flex-start;
-    max-width:none;margin:0;padding:9vh 22px 5vh;
-    overflow-y:auto;overscroll-behavior:contain;background:#000;z-index:11;
-    opacity:0;pointer-events:none;transform:translateY(5vh);
-    transition:opacity .5s ease .48s,
-               transform .5s var(--gate-ease) .48s}
-  body.desk-two.in-settings #settings{
-    opacity:1;pointer-events:auto;transform:translateY(0)}
-  body.desk-two #settings > *{width:100%;max-width:460px}
 
   /* ══ LES DEUX ACCES, A LA TAILLE DES BOUTONS DE REGLAGE ══ */
   .sn-label{font-size:14px;line-height:1.4;
@@ -931,7 +571,7 @@ body.gate.entered #fv-status{
     align-items:center;gap:10px;margin-bottom:2px}
   #settings-nav .sn-btn{font-size:14px}
 
-  /* Settings desktop : seul le logo reste, sans les boutons Autobiography/Generator */
+  /* Settings desktop : seul le logo reste, sans My Wisdom / My next objective */
   #settings-nav .sn-row{display:none!important}
   #sn-home{display:flex}
   #sn-home img{width:54px;height:auto}
@@ -958,9 +598,19 @@ body.gate.entered #fv-status{
   </div>
   <button class="btn-sig" id="gate-open">Open my Totehm</button>
   <p class="gate-terms">By opening your Totehm, you accept <a class="terms-link" href="terms.html" target="_blank" rel="noopener">its simple terms</a>.</p>
+
+  <!-- Search a Totehm : un bouton, rien d'autre. La boîte perforée
+       n'apparaît qu'au clic (pattern morph du reste du produit). -->
   <div id="gate-bottom">
-    <input class="line-input" id="gate-search-input" maxlength="24" placeholder="search a Totehm" autocomplete="off" spellcheck="false">
+    <button class="btn-sig" id="gate-search-btn">Search a Totehm</button>
+    <input class="line-input hide" id="gate-search-input" maxlength="24" placeholder="name of a Totehm" autocomplete="off" spellcheck="false">
     <div class="note dim hide" id="gate-search-note"></div>
+  </div>
+
+  <!-- Tout en bas : la Terre, puis la porte du monde. -->
+  <div id="gate-world">
+    <video id="gate-video" autoplay muted loop playsinline preload="none" disablepictureinpicture aria-label="Earth"></video>
+    <a class="btn-sig" id="gate-world-btn" href="map.html">Open my Totehm World</a>
   </div>
 </div>
 
@@ -987,9 +637,14 @@ body.gate.entered #fv-status{
   <svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2 L12 11 L22 2"/></svg>
 </button>
 
+<!-- La croix : referme le Totehm et rejoue le déploiement à l'envers. -->
+<button id="fold-x" class="sink-el" type="button" aria-label="Close my Totehm">
+  <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
+</button>
 
-<!-- LE PASSÉ (gauche) et LE FUTUR (droite) — iframes préchargées, glissement horizontal -->
-<div id="book"><iframe id="book-frame" title="Book of My Totehm"></iframe></div>
+
+<!-- LE PASSÉ (gauche) et LE FUTUR (droite) — iframes préchargées, bascule sèche -->
+<div id="book"><iframe id="book-frame" title="My Wisdom"></iframe></div>
 <div id="nextobj"><iframe id="nextobj-frame" title="Next Objective"></iframe></div>
 
 <div id="floorview" class="sink-el">
@@ -1037,57 +692,6 @@ body.gate.entered #fv-status{
      #conn-bar reste visible et cliquable sur TOUS les étages. -->
 <button id="conn-bar" class="sink-el" aria-label="member space"><span class="dot"></span>Guest</button>
 
-<!-- Higher Map : hors de #stage — #stage a un transform sur desktop qui en
-     ferait le containing block de position:fixed et empêcherait le plein écran. -->
-<div id="hmap" aria-hidden="true">
-  <!-- RENDU A · radar (≥700px) : canvas pour les traits, DOM pour les T -->
-  <canvas id="hm-canvas"></canvas>
-  <div id="hm-markers"><div id="hm-me"></div></div>
-
-  <!-- Retour au Totehm -->
-  <button id="hmap-nav" type="button" aria-label="Back to my Totehm">
-    <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
-    <img src="assets/img/totehm_logo.png" alt="My Totehm">
-  </button>
-
-  <!-- Statut. Devient cliquable seulement si la position doit être relancée. -->
-  <button id="hm-overline" type="button"></button>
-
-  <!-- Météo séparée : Heure + Ciel à gauche, Temp + Vent à droite -->
-  <div id="hm-weather-left">
-    <div class="hm-w hm-reveal"><b id="hm-time">--:--</b><span id="hm-sky">···</span></div>
-  </div>
-  <div id="hm-weather-right">
-    <div class="hm-w hm-reveal"><b id="hm-temp">--°</b><span id="hm-wind">-- km/h</span></div>
-  </div>
-
-  <!-- Coins : coordonnées réelles, portée courante -->
-  <div id="hm-corner-bl" class="hm-reveal"></div>
-  <div id="hm-corner" class="hm-reveal"></div>
-
-  <!-- Le sélecteur. Centré dans le vide, il monte quand tu choisis. -->
-  <div id="hm-selector">
-    <p class="hm-q hm-reveal">What's your intention right now, right here?</p>
-    <div id="hm-dd">
-      <button id="hm-ddt" type="button">
-        <span id="hm-ddt-lbl">Choose an intention</span>
-        <span class="hm-ddarr">▾</span>
-      </button>
-      <div id="hm-ddm"></div>
-    </div>
-    <button id="hm-clear" type="button">&times; clear</button>
-  </div>
-
-  <!-- RENDU B · deck (<700px) : 4/5 de l'écran, une carte par spot -->
-  <div id="hm-count"></div>
-  <div id="hm-deck"></div>
-
-  <!-- Aperçu riche au clic sur un T (desktop) -->
-  <div id="hm-card"></div>
-
-  <!-- Message d'état : jamais un bouton natif, juste du texte -->
-  <div id="hm-note"></div>
-</div>
 
 <div id="freq-panel" class="hide">
   <div class="fp-card">
@@ -1149,14 +753,14 @@ body.gate.entered #fv-status{
           <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
           <img src="assets/img/totehm_logo.png" alt="My Totehm">
         </button>
-        <!-- Étage 2 : Autobiography (←) puis My Habits Generator (→), l'un au-dessus de l'autre, centrés -->
+        <!-- Étage 2 : My Wisdom (←) puis My next objective (→), l'un au-dessus de l'autre, centrés -->
         <div class="sn-row">
-          <button id="sn-book" class="sn-btn" aria-label="Autobiography by my Totehm — the past">
+          <button id="sn-book" class="sn-btn" aria-label="My Wisdom — what you have learned">
             <span class="sn-tile sn-tile-rep" aria-hidden="true"><svg viewBox="0 0 14 24"><path d="M11 2 L3 12 L11 22"/></svg></span>
-            <span>Autobiography by my Totehm&copy;</span>
+            <span>My Wisdom</span>
           </button>
-          <button id="sn-next" class="sn-btn" aria-label="My Habits Generator — the future">
-            <span>My Habits Generator</span>
+          <button id="sn-next" class="sn-btn" aria-label="My next objective — the future">
+            <span>My next objective</span>
             <span class="sn-tile sn-tile-blue" aria-hidden="true"><svg viewBox="0 0 14 24"><path d="M3 2 L11 12 L3 22"/></svg></span>
           </button>
         </div>
@@ -1216,8 +820,8 @@ body.gate.entered #fv-status{
     </div>
   </div>
 </div>
-<button class="side-nav" id="side-left" aria-label="My Totehm Book"><span class="sn-box"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></span><span class="sn-label">Autobiography<br>by my Totehm©</span></button>
-<button class="side-nav" id="side-right" aria-label="My next Objective"><span class="sn-box"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M3 2 L11 12 L3 22"/></svg></span><span class="sn-label">My Habits<br>Generator</span></button>
+<button class="side-nav" id="side-left" aria-label="My Wisdom"><span class="sn-box"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></span><span class="sn-label">My Wisdom</span></button>
+<button class="side-nav" id="side-right" aria-label="My next objective"><span class="sn-box"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M3 2 L11 12 L3 22"/></svg></span><span class="sn-label">My next objective</span></button>
 <div id="lift-hg"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg></div>
 <div id="stoner"><a id="stoner-door" href="https://www.totehm.com" target="_blank" rel="noopener" aria-label="Get Higher — Stoner Experience"><span class="sd-k">GET</span><svg class="sd-h" viewBox="0 0 600 200" aria-label="Higher" role="img"><use href="#higher-word"></use></svg></a>
   <a id="street-btn" class="hide" href="https://www.totehm.com/lisbon" target="_blank" rel="noopener">Make the Lisbon Streets Sublime</a>
@@ -1492,7 +1096,29 @@ let state=loadState()||{habits:[
   {t:'Drop a street sticker in Lisbon',f:'weekly'}
 ],vis:'private'};
 let profile=pload()||{name:'',bot:false};
-let floor=0, busy=false, fpTarget=null, fpStage='freq', pendingF=null, pendingI=null, filterF=null, filterI=null;
+let busy=false, fpTarget=null, fpStage='freq', pendingF=null, pendingI=null, filterF=null, filterI=null;
+
+/* Le repli vers l'atterrissage. Assigné par le module GATE en fin de script :
+   déclaré ici parce que trois gestes l'appellent bien avant d'y arriver. */
+let foldToGate=()=>{};
+
+/* Une saisie en cours n'est JAMAIS une navigation. Les flèches déplacent le
+   curseur dans un champ, elles ne changent pas de page. */
+const isTyping=e=>{const t=e&&e.target;
+  return !!t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable===true);};
+
+/* Le filtre survit au rechargement, et My next objective le lit en lecture
+   seule : sans persistance, sa fenêtre de filtre mentirait. */
+const KEYF='totehm_filter_v1';
+let lastFilterSaved=null;
+function saveFilter(){
+  const v=JSON.stringify({f:filterF,i:filterI});
+  if(v===lastFilterSaved)return;          /* paint() passe ici à chaque rendu */
+  lastFilterSaved=v;
+  try{localStorage.setItem(KEYF,v);}catch(e){}
+}
+try{const _rf=JSON.parse(localStorage.getItem(KEYF)||'null');
+    if(_rf){filterF=_rf.f||null;filterI=_rf.i||null;}}catch(e){}
 
 function save(){
   try{localStorage.setItem(KEY,JSON.stringify(state));localStorage.setItem(KEYP,JSON.stringify(profile));}catch(e){}
@@ -1582,7 +1208,7 @@ function renderHabits(){
     +'<span class="meta">'
     +(pendingF
       ?'<button class="h-T h-Ti" id="h-Tp" title="Intention" style="color:'+(pendingI?intColor(pendingI):'#fff')+'">'+T_SVG+'</button><button class="gbtn h-freq" id="h-pf">'+esc(flabel(pendingF))+'</button>'
-      :'<button class="h-T" id="h-T" title="Time frequency">'+T_SVG+'</button><span class="h-T-hint hide" id="h-T-hint">click T</span>')
+      :'<button class="h-T blink" id="h-T" aria-label="Time frequency and intention" title="Time frequency">'+T_SVG+'</button>')
     +'</span>'
     +'<span class="tick"></span>'
     +'<span class="h-body"><textarea class="h-add" rows="1" id="h-add"></textarea><span class="h-hint" id="h-hint">'
@@ -1619,9 +1245,6 @@ function renderHabits(){
   add.addEventListener('input',()=>{
     autoGrow(add);
     hint.style.display=add.value?'none':'';
-    const hT=$('h-T'),tHint=$('h-T-hint');
-    if(hT)hT.classList.toggle('blink',!!add.value&&!pendingF);
-    if(tHint)tHint.classList.toggle('hide',!add.value||!!pendingF);
   });
   add.addEventListener('keydown',e=>{
     if(e.key!=='Enter')return;e.preventDefault();
@@ -1718,8 +1341,8 @@ function renderSettings(){
   }
 }
 
-/* Deux étages seulement : 0 = Habits · 1 = Map. Les Settings sont partis dans
-   le Dashboard membre (#member-window). Plus d'étage noir, plus de z-set. */
+/* Plus d'étage du tout : un seul écran. Cette fonction ne fait plus que
+   remettre l'UI dans son état nominal après un rendu. */
 function applyFloorFx(){
   const st=$('stage'); if(st) st.classList.remove('z-set');
   $('floorview').style.backgroundColor='transparent';
@@ -1728,33 +1351,16 @@ function applyFloorFx(){
   $('wordmark').style.opacity='1';
   $('menu-arrow').style.display='';
   $('filter-arrow').style.display='';
-  $('conn-bar').style.display='flex';   /* Dashboard : accessible sur TOUS les étages */
-  document.body.classList.remove('in-settings');
+  $('conn-bar').style.display='flex';
 }
-/* Desktop : le scroll de #fv-inner est un geste libre — molette, trackpad,
-   barre d'espace. paint() ne s'exécute que sur action explicite, donc sans
-   cet écouteur le carré restait immobile pendant que les réglages
-   apparaissaient. On synchronise l'état sur la position réelle. */
-/* syncFloorOnScroll retire : il lisait scrollTop de #fv-inner pour en
-   deduire l'etage. Ce scroll n'existe plus — #settings est sorti du carre
-   et #habits ne fait plus 100% de hauteur. Le laisser aurait remis floor
-   a 0 des le premier repaint. C'est foldGesture qui pilote desormais. */
-
+/* Un seul écran. La Map est partie dans map.html : plus d'étage, plus de
+   machine à états verticale, plus de fondu à orchestrer. */
 function paint(){
-  const isMap = floor === 1;
-
-  // Higher Map
-  document.body.classList.toggle('in-map', isMap);
-  if(isMap){ if(hmapLoaded) radarStart(); }
-  else{ radarStop(); document.body.classList.remove('hm-alive','hm-picked');
-        $('hmap').classList.remove('hm-loaded'); }
-  $('hmap').classList.toggle('show', isMap);
-  $('hmap').setAttribute('aria-hidden', isMap ? 'false' : 'true');
-  if(isMap && !hmapLoaded) loadMap();
-  else if(isMap) geoRetryIfFallback();   /* revenu sur la carte : on retente */
-
-  /* Habits = l'étage de base, toujours rendu ; #hmap le recouvre en mode Map. */
   renderHabits();
+  /* Le badge est repeint ici et pas seulement au changement de filtre : un
+     filtre restauré du localStorage masquait des habitudes sans que rien à
+     l'écran ne le dise ni ne permette de l'enlever. */
+  updateFilterBadge();
   applyFloorFx();
 }
 
@@ -1841,11 +1447,11 @@ function openFilterModal(){
 }
 function closeFilterModal(){$('filter-modal').classList.add('hide');}
 $('bigT').style.cursor='pointer';
-$('bigT').onclick=()=>{ if(floor===0)openFilterModal(); };
-$('filter-arrow').onclick=()=>{ if(floor===0)openFilterModal(); };
-/* TOTEHM.png cliquable : ouvre le menu, comme la petite flèche du bas */
+$('bigT').onclick=()=>openFilterModal();
+$('filter-arrow').onclick=()=>openFilterModal();
+/* TOTEHM.png cliquable : ouvre le Dashboard, comme la petite flèche du bas */
 $('wordmark').style.cursor='pointer';
-$('wordmark').onclick=()=>{ if(!busy&&floor===0)go(-1); };
+$('wordmark').onclick=()=>openDashboard();
 $('filter-modal').addEventListener('click',(e)=>{if(e.target.id==='filter-modal')closeFilterModal();});
 document.addEventListener('keydown',(e)=>{if(e.key==='Escape'&&!$('filter-modal').classList.contains('hide'))closeFilterModal();});
 
@@ -1871,6 +1477,7 @@ $('fm-int').onclick=()=>{
 };
 
 function updateFilterBadge(){
+  saveFilter();
   const badge=$('filter-badge');
   if(!filterF && !filterI){badge.classList.add('hide');return;}
   $('fb-freq').textContent = filterF ? flabel(filterF) : '';
@@ -1886,7 +1493,7 @@ $('fb-clear').onclick=()=>{filterF=null;filterI=null;updateFilterBadge();renderH
 function applyFreq(id){
   if(fpTarget==null||!FREQ_BY_ID[id]){closeFreqPanel();return;}
   if(fpTarget==='filter'){
-    filterF=id;
+    filterF=id; saveFilter();
     $('fp-skip').textContent='any intention';
     showFpStage('int');
     return;
@@ -1949,19 +1556,13 @@ $('fp-input').addEventListener('keydown',e=>{
 });
 $('freq-panel').addEventListener('click',e=>{if(e.target===$('freq-panel'))closeFreqPanel();});
 
-/* ══ NAVIGATION — fondu court, cadence iOS ══
-   Avec deux étages, toute bascule 0↔1 passe par la Map (branche dédiée de go()).
-   Ce fondu ne sert plus que de filet ; transitions ≤ 380 ms, jamais plus. */
-function animateSwap(dy,apply){
-  if(busy)return;busy=true;
-  const inner=$('fv-inner');
-  inner.style.transition='opacity .2s ease, transform .2s ease';
-  inner.style.opacity='0';inner.style.transform='translate(0,'+(-dy*26)+'px)';
-  setTimeout(()=>{apply();inner.scrollTop=0;inner.style.transition='none';inner.style.transform='translate(0,'+(dy*26)+'px)';
-    requestAnimationFrame(()=>{inner.style.transition='opacity .3s ease, transform .3s ease';inner.style.opacity='1';inner.style.transform='translate(0,0)';setTimeout(()=>{busy=false;},300);});
-  },200);
+/* ══ LE DASHBOARD ══ Tous les réglages vivent dans la fenêtre membre. */
+function openDashboard(){
+  if(busy||fpOpen()||$('tview').classList.contains('show'))return;
+  $('member-window').classList.add('show');
+  if(typeof memberPaint==='function')memberPaint();
 }
-/* Préchargement des 3 iframes dès l'ouverture -> toutes les directions sont instantanées */
+/* Préchargement des 2 iframes dès l'ouverture -> les deux côtés sont instantanés */
 window.addEventListener('DOMContentLoaded',()=>{
   $('book-frame').src='book.html';
   $('nextobj-frame').src='next_objective.html';
@@ -1984,8 +1585,8 @@ function paintZone(){
   R.classList.toggle('hide',nextOn);
   L.classList.toggle('home',nextOn);
   R.classList.toggle('home',bookOn);
-  L.setAttribute('aria-label',nextOn?'Back to my Totehm':'My Totehm Book');
-  R.setAttribute('aria-label',bookOn?'Back to my Totehm':'My next Objective');
+  L.setAttribute('aria-label',nextOn?'Back to my Totehm':'My Wisdom');
+  R.setAttribute('aria-label',bookOn?'Back to my Totehm':'My next objective');
 }
 function showBook(on){
   if(busy)return;
@@ -2000,32 +1601,6 @@ function showStoner(on){
   $('stoner').classList.toggle('show',on);
   if(on){ save(); }
 }
-function go(dFloor){
-  if(busy||fpOpen()||$('member-window').classList.contains('show')||$('tview').classList.contains('show'))return;
-  if($('stoner').classList.contains('show')){ if(dFloor>0)showStoner(false); return; }
-  const next = floor + (dFloor < 0 ? 1 : -1);
-  if(next < 0 || next > 1) return;   /* plus d'étage 2 : Habits (0) ↔ Map (1) */
-  if(isDesk()){ floor = next; paint(); return; }
-  /* Mobile — transitions map : paint() direct, #hmap(z-index:55, bg:#000)
-     couvre immédiatement tout. body.in-map cache bigT/wordmark/rail sans délai. */
-  if(floor === 1 || next === 1){
-    busy=true;
-    if(next === 1){
-      floor=1; paint();
-      setTimeout(()=>{busy=false;},430);
-    } else {
-      /* Map → Habits : #hmap fade-out CSS, bigT caché pendant la transition.
-         Si la carte n'a pas rendu (pas de map-active), on réinitialise hmapLoaded
-         pour permettre une nouvelle tentative au prochain accès. */
-      if(!$('hmap').classList.contains('map-active')) hmapLoaded=false;
-      document.body.classList.add('map-leaving');
-      floor=next; paint();
-      setTimeout(()=>{document.body.classList.remove('map-leaving');busy=false;},430);
-    }
-    return;
-  }
-  animateSwap(dFloor, ()=>{ floor = next; paint(); });
-}
 /* Arrivée depuis next_objective.html en pleine page : #settings ouvre
    directement le Dashboard membre (les réglages y vivent désormais). En
    iframe, c'est le postMessage 'totehm-goto-settings' qui s'en charge. */
@@ -2036,841 +1611,47 @@ if(location.hash === '#settings'){
   }, 60);
   history.replaceState(null, '', location.pathname);
 }
-/* Petite flèche sous TOTEHM.png : ouvre le menu (même geste que swipe UP depuis Habits) */
-$('menu-arrow').onclick=()=>{if(!busy)go(-1);};
+/* Petite flèche sous TOTEHM.png : ouvre le Dashboard */
+$('menu-arrow').onclick=()=>openDashboard();
+/* La croix : le Totehm se replie et l'atterrissage revient. */
+$('fold-x').onclick=()=>foldToGate();
 
-/* ══ LE GESTE : molette vers le bas replie, vers le haut redeploie ══
-   Trois sorties, jamais moins : molette haut, Echap, bouton logo. Une
-   seule sortie masquee avait suffi a pieger l'utilisateur dans les
-   reglages. Le verrou d'animation dure --gate-dur pour ne pas empiler
-   deux replis. */
-(function foldGesture(){
-  let lock=false, acc=0, at=0;
-  const FOLD=380;                        /* nav 2 étages : verrou court, iOS-like */
-  function lockNow(){ lock=true; setTimeout(()=>lock=false, FOLD); }
+/* ══ LE GESTE VERTICAL — une seule implémentation, molette ET doigt ══
+   Au SOMMET de la liste, vers le haut  → le filtre.
+   Au PIED de la liste, vers le bas     → le Totehm se replie.
 
-  function blocked(){
-    if(busy||lock||!isDesk())return true;
-    if(typeof fpOpen==='function'&&fpOpen())return true;
-    const mw=document.getElementById('member-window');
-    if(mw&&mw.classList.contains('show'))return true;
-    const tv=document.getElementById('tview');
-    if(tv&&tv.classList.contains('show'))return true;
-    const st=document.getElementById('stoner');
-    if(st&&st.classList.contains('show'))return true;
-    return false;
+   `passive:true`, aucun preventDefault, aucun accumulateur : l'ancien
+   seuil de 90 px de delta cumulé était exactement ce qui donnait au
+   filtre son temps de retard. Un verrou de 520 ms suffit à empêcher
+   qu'une inertie de trackpad ne rejoue le geste deux fois. */
+(function verticalGesture(){
+  let lock=false;
+  const arm=()=>{lock=true;setTimeout(()=>{lock=false;},520);};
+  function blocked(t){
+    if(busy||lock||fpOpen())return true;
+    if(document.body.classList.contains('gate'))return true;   /* on est déjà à l'atterrissage */
+    if($('member-window').classList.contains('show'))return true;
+    if($('tview').classList.contains('show'))return true;
+    if($('stoner').classList.contains('show')||hOpen())return true;
+    if(!$('filter-modal').classList.contains('hide'))return true;
+    if(!$('habit-peek').classList.contains('hide'))return true;
+    return !!(t&&t.closest&&t.closest('#freq-panel,#habit-peek,#filter-modal,#member-window,input,textarea'));
   }
-
   window.addEventListener('wheel',(e)=>{
-    if(blocked())return;
-    /* Scroll chaining : molette dans le menu/popup/deck de la Map → on ne
-       change JAMAIS d'étage (sinon l'utilisateur reste prisonnier de la Map). */
-    if(typeof wheelBlocked==='function' && wheelBlocked(e.target))return;
-    const now=Date.now();
-    if(now-at>320)acc=0;
-    at=now; acc+=e.deltaY;
-
-    /* Habits (0) → Map (1) vers le bas. Sur la Map, vers le bas = rien (plus
-       d'étage 2). Vers le haut (deltaY<0) sur la Map = retour aux Habits. */
-    if(acc>42&&floor<1){
-      acc=0; lockNow(); floor++; paint();
-    }else if(acc<-42&&floor>0){
-      acc=0; lockNow(); floor--; paint();
-    }
+    if(blocked(e.target))return;
+    const edge=scrollEdges();
+    if(e.deltaY<-4&&edge.top){arm();openFilterModal();}
+    else if(e.deltaY>4&&edge.bottom){arm();foldToGate();}
   },{passive:true});
-
-  document.addEventListener('keydown',(e)=>{
-    if(e.key!=='Escape'||!isDesk()||floor===0||blocked())return;
-    lockNow(); floor--; paint();
-  });
 })();
+
 /* Rangée du Dashboard (masquée par défaut) : si un jour ré-affichée, ces liens
-   ferment la fenêtre membre puis ouvrent la zone. Autobiography / Generator
-   restent surtout accessibles au swipe latéral et aux flèches. */
+   ferment la fenêtre membre puis ouvrent la zone. My Wisdom / My next
+   objective restent surtout accessibles au swipe latéral et aux flèches. */
 function closeMember(){ $('member-window').classList.remove('show'); }
 $('sn-book').onclick =requireMember(()=>{closeMember();if(!busy&&!hOpen())showBook(true);});
-$('sn-home').onclick =()=>{closeMember();if(!busy&&!hOpen()){floor=0;paint();}};
+$('sn-home').onclick =()=>{closeMember();if(!busy&&!hOpen())paint();};
 $('sn-next').onclick =()=>{closeMember();if(!busy&&!hOpen())showNext(true);};
-
-/* ══ HIGHER MAP — VOID RADAR / SWIPE DECK ══
-   Le monde est vide jusqu'à ce que l'intention le projette.
-
-   LE FLOW, identique sur les deux rendus
-     1. LE VIDE       noir absolu, la question flotte au centre
-     2. L'ASCENSION   tu choisis, le bloc monte et libère l'écran
-     3. LA RÉVÉLATION la requête part, le monde apparaît
-
-   Aucune requête ne part avant l'étape 2.
-
-   DEUX RENDUS, UN SEUL ÉTAT
-     Le radar est juste sur un grand écran et mauvais sur un téléphone.
-     Alors le rendu bifurque à 700 px — mais UNIQUEMENT le rendu.
-     Une machine à états, un chargeur, une carte de contenu.
-     `renderRadar()` et `renderDeck()` sont les deux seules fonctions
-     qui divergent ; `cardHTML()` les sert toutes les deux. C'est ce
-     qui empêche la bifurcation de doubler la maintenance.
-
-   CE QUI N'EST PAS AFFICHÉ, ET POURQUOI
-     Pas de progression : la colonne n'existe pas.
-     Pas de genre musical : il n'existe que dans `tags`, sur une partie
-       des lignes, sans garantie. Le poser comme un champ de premier
-       plan reviendrait à promettre une donnée qu'on n'a pas.
-     Pas d'image : `image_url` pointe vers pollinations.ai sur 105 des
-       121 spots — une image générée à la volée, à chaque affichage,
-       par un service gratuit sans engagement, montrant un lieu réel
-       qui n'a jamais ressemblé à ça. Quinze cartes = quinze appels
-       externes lents pour de la fiction. Dans un produit dont la thèse
-       est le réel, c'est le pire champ à mettre en haut d'une carte.
-     Ce qui est affiché est ce qui est vrai : state_of_mind, vibe,
-     durée, tags, distance, et member_count seulement quand il dépasse
-     zéro (16 spots sur 121). */
-
-let hmapLoaded = false;
-
-const RAD = {
-  on:false, raf:0, t:0,
-  origin:null, coords:null, geoNote:null, geoPending:false,
-  spots:[], intention:null, hover:null, focus:null,
-  range:1200, cx:0, cy:0, rpx:0, W:0, H:0, dpr:1
-};
-
-const MAX_T   = 15;          /* au-delà, l'écran devient une soupe */
-const HM_HITS = new Map();   /* intention -> spots, cache de session */
-
-const isDeck = () => window.matchMedia('(max-width:699px)').matches;
-
-/* ── GÉOLOCALISATION SILENCIEUSE ────────────────────────────────────────
-   Elle ne parle jamais pour ne rien dire. Si elle tarde, le radar
-   attend, vide. Si elle échoue, on retombe sur Lisbonne et la ligne de
-   statut devient cliquable — pas de bouton natif posé au milieu de
-   l'écran. */
-const GEO_KEY = 'totehm_geo_v2';
-const GEO_TTL = 15 * 60 * 1000;
-
-function geoCached(){
-  try{
-    const c=JSON.parse(localStorage.getItem(GEO_KEY)||'null');
-    if(c && Date.now()-c.t < GEO_TTL) return c;
-  }catch(e){}
-  return null;
-}
-function geoBust(){ try{ localStorage.removeItem(GEO_KEY); }catch(e){} }
-function geoStore(pos){
-  const c={ lat:+pos.coords.latitude.toFixed(5),
-            lng:+pos.coords.longitude.toFixed(5),
-            acc:Math.round(pos.coords.accuracy||0), t:Date.now() };
-  try{ localStorage.setItem(GEO_KEY, JSON.stringify(c)); }catch(e){}
-  return c;
-}
-/* LE VRAI BUG DE LA GEOLOCALISATION.
-   Le timeout etait a 7 s. Le prompt du navigateur, lui, attend un humain :
-   le temps de lire « Autoriser » et de cliquer, la promesse etait deja
-   rejetee, on retombait sur Lisbonne — et comme hmapLoaded passait a true,
-   plus rien ne redemandait jamais. On autorisait, il ne se passait rien.
-   Desormais on attend le temps qu'il faut, et une seule demande vit a la
-   fois (deux getCurrentPosition en parallele, certains navigateurs en
-   perdent un). */
-let GEO_INFLIGHT=null;
-/* force = le contexte a change (la personne vient d'autoriser, ou elle
-   redemande d'elle-meme) : on relance sans attendre la demande en vol, qui
-   peut rester pendante tout son timeout. */
-function geoAsk(precise,force){
-  if(GEO_INFLIGHT && !force) return GEO_INFLIGHT;
-  const q=new Promise((res,rej)=>{
-    if(!navigator.geolocation) return rej({code:2,reason:'unsupported'});
-    if(window.isSecureContext===false) return rej({code:1,reason:'insecure'});
-    navigator.geolocation.getCurrentPosition(
-      p=>res(geoStore(p)), e=>rej(e),
-      { enableHighAccuracy:!!precise,
-        timeout: precise?30000:20000,
-        maximumAge: precise?0:60000 });
-  });
-  GEO_INFLIGHT=q;
-  const clear=()=>{ if(GEO_INFLIGHT===q) GEO_INFLIGHT=null; };
-  q.then(clear,clear);
-  return q;
-}
-/* Applique une position fraiche partout : origine, coins, meteo, statut.
-   Renvoie true si l'on a REELLEMENT bouge — relancer l'Edge Function pour
-   trente metres, c'est une facture sans contrepartie (doctrine de cout). */
-function geoApply(c){
-  const prev=RAD.origin;
-  const moved = !prev || prev.fallback ||
-                haversine(prev.lat,prev.lng,c.lat,c.lng) > 150;
-  RAD.coords=c; RAD.geoPending=false;
-  RAD.origin={lat:c.lat,lng:c.lng,fallback:false};
-  RAD.geoNote=null;
-  setOverline(); paintCorner();
-  hmTime(); hmWeather(c.lat,c.lng);
-  return moved;
-}
-/* Relance l'intention courante sur la nouvelle origine. */
-async function geoRefresh(moved){
-  if(moved===false) return;
-  const cur=RAD.intention;
-  HM_HITS.clear();
-  if(cur){ RAD.intention=null; await pickIntention(cur); }
-}
-/* LES DEUX FILETS QUI MARCHENT PARTOUT.
-   navigator.permissions n'existe pas pour la geolocalisation sur Safari iOS :
-   impossible de s'appuyer sur onchange seul. Alors on retente simplement
-   quand la personne revient sur la carte, et quand l'onglet redevient
-   visible — exactement le moment ou elle revient d'avoir autorise la
-   position dans ses reglages. Aucun cout : c'est une API du navigateur. */
-function geoSoftDeadline(ms){
-  setTimeout(()=>{
-    if(RAD.geoPending && RAD.origin && RAD.origin.fallback){
-      RAD.geoPending=false;
-      if(!RAD.geoNote) RAD.geoNote=3;
-      setOverline();
-    }
-  }, ms||12000);
-}
-function geoRetryIfFallback(){
-  if(!RAD.origin||!RAD.origin.fallback) return;
-  if(RAD.geoPending||GEO_INFLIGHT) return;
-  if(RAD.geoNote===1||RAD.geoNote==='insecure') return;  /* refus explicite : on n'insiste pas */
-  RAD.geoPending=true; setOverline(); geoSoftDeadline(12000);
-  geoAsk(false,true)
-    .then(c=>geoRefresh(geoApply(c)))
-    .catch(e=>{ RAD.geoPending=false;
-      RAD.geoNote=(e&&e.reason==='insecure')?'insecure':((e&&e.code)||2);
-      setOverline(); });
-}
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible' && floor===1) geoRetryIfFallback();
-});
-async function geoPermission(){
-  try{
-    if(navigator.permissions)
-      return (await navigator.permissions.query({name:'geolocation'})).state;
-  }catch(e){}
-  return 'prompt';
-}
-
-/* ── MATHÉMATIQUE ────────────────────────────────────────────────────────
-   Deux calculs distincts, et la séparation est volontaire.
-   · La DISTANCE AFFICHÉE vient de Haversine — exacte, parce que c'est
-     le chiffre sur lequel on décide de se déplacer.
-   · La POSITION PIXEL vient d'une projection plane locale, tangente à
-     la position du membre, corrigée en cos(latitude). Mesuré : 0,03 px
-     d'écart à 4 km. Exact là où ça se lit, économe là où ça ne se voit
-     pas. */
-const EARTH_R=6371e3, DEG=Math.PI/180;
-
-function haversine(aLat,aLng,bLat,bLng){
-  const dLat=(bLat-aLat)*DEG, dLng=(bLng-aLng)*DEG;
-  const h=Math.sin(dLat/2)**2
-        + Math.cos(aLat*DEG)*Math.cos(bLat*DEG)*Math.sin(dLng/2)**2;
-  return 2*EARTH_R*Math.asin(Math.sqrt(h));
-}
-function localEN(oLat,oLng,lat,lng){
-  return { e:(lng-oLng)*DEG*EARTH_R*Math.cos(oLat*DEG),
-           n:(lat-oLat)*DEG*EARTH_R };
-}
-function fmtDist(m){ return m<1000 ? Math.round(m)+' m' : (m/1000).toFixed(1)+' km'; }
-function fmtWalk(m){ return Math.max(1,Math.round(m/75))+' min walk'; }
-function fmtDMS(v,pos,neg){
-  const d=Math.floor(Math.abs(v)), m=Math.round((Math.abs(v)-d)*60);
-  return d+'°'+String(m).padStart(2,'0')+"'"+(v>=0?pos:neg);
-}
-function fmtLeft(iso){
-  const ms=new Date(iso)-Date.now();
-  if(!(ms>0)) return null;
-  const h=Math.floor(ms/36e5), m=Math.round(ms%36e5/6e4);
-  return h>0 ? h+'h '+m+'m left' : m+'m left';
-}
-
-/* T TOTEHM vectoriel — fill:currentColor, coloré par l'intention */
-function tGlyph(size){
-  return '<svg class="tglyph" viewBox="0 0 68 68" fill="currentColor" '
-    +'width="'+(size||15)+'" height="'+(size||15)+'" aria-hidden="true">'
-    +'<rect x="0.9" y="0" width="66.7" height="9.6"/>'
-    +'<rect x="29.4" y="0" width="9.6" height="66.7"/>'
-    +'<rect x="21.2" y="62.4" width="26.1" height="5.4"/></svg>';
-}
-/* Le badge Higher réutilise le symbole #higher-word déjà dans le
-   document. Aucun nouvel asset. */
-function hiBadge(){ try{ return HI_SVG; }catch(e){ return ''; } }
-/* Selecteur d'intention : le BADGE Higher, fond navy #333366 et lettres
-   blanches — le bleu de la marque. Le wordmark corail (#higher-word) virait
-   au dore sur fond noir et se lisait mal. Taille pilotee par .hi-word. */
-function hiWord(){ return '<span class="hi-word" title="Higher"><svg viewBox="0 0 600 200" aria-label="Higher" role="img"><use href="#higher-badge"></use></svg></span>'; }
-
-function showMap(on){
-  if(on){ floor=1; paint(); } else { if(floor===1){ floor=0; paint(); } }
-}
-
-/* ── RÉVÉLATION ──────────────────────────────────────────────────────── */
-let hmRevealTimer;
-function hmReveal(){
-  document.body.classList.add('hm-alive');
-  clearTimeout(hmRevealTimer);
-  hmRevealTimer=setTimeout(()=>document.body.classList.remove('hm-alive'),4000);
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   LA CARTE — un seul balisage, servi au deck ET à l'aperçu desktop
-   ══════════════════════════════════════════════════════════════════════ */
-const KIND_LABEL={ PLACE:'Place', LIVE_EVENT:'Live', MEMBER_DROP:'Drop' };
-
-function cardHTML(s){
-  const col  = intColor(s.intention);
-  const conf = INT_BY_ID[s.intention] || {name:s.intention};
-
-  const facts=[];
-  if(s.state_of_mind) facts.push('<span class="hm-c-fact">'+esc(s.state_of_mind)+'</span>');
-  if(s.duration_min)  facts.push('<span class="hm-c-fact"><b>'+s.duration_min+'</b> min</span>');
-  if(s.lieu_type)     facts.push('<span class="hm-c-fact">'+esc(s.lieu_type)+'</span>');
-  /* member_count n'existe que sur 16 spots sur 121 : on le montre quand
-     il dit quelque chose, jamais « 0 membre ». */
-  if(s.member_count)  facts.push('<span class="hm-c-fact"><b>'+s.member_count+'</b> members</span>');
-  const left = s.ends_at ? fmtLeft(s.ends_at) : null;
-  if(left)            facts.push('<span class="hm-c-fact" style="color:'+col+'">'+esc(left)+'</span>');
-  (s.tags||[]).slice(0,3).forEach(t=>{
-    if(t && t!==s.intention) facts.push('<span class="hm-c-fact">'+esc(t)+'</span>');
-  });
-
-  return ''
-   +'<div class="hm-c-top">'
-   +  '<span class="hm-c-kind" style="color:'+col+'">'+(KIND_LABEL[s.kind]||'Place')+'</span>'
-   +  '<span class="hm-c-int" style="color:'+col+'">'+tGlyph(13)+'&nbsp;&nbsp;'
-   +     esc(conf.name)+hiBadge()+'</span>'
-   +'</div>'
-   +(conf.neuro?'<div class="hm-c-neuro" style="color:'+col+'">'+conf.neuro.split(' · ').map(t=>'<span class="hm-ddi-ntag">'+esc(t)+'</span>').join('')+'</div>':'')
-   +'<div class="hm-c-name">'+esc(s.activite||'place')+'</div>'
-   +(s.commentaire?'<div class="hm-c-why">'+esc(s.commentaire)+'</div>':'')
-   +(facts.length?'<div class="hm-c-facts">'+facts.join('')+'</div>':'')
-   +'<div class="hm-c-foot">'
-   +  '<span><span class="hm-c-dist">'+fmtDist(s.dist_m||0)+'</span>'
-   +  '<span class="hm-c-walk">'+fmtWalk(s.dist_m||0)+'</span></span>'
-   +  '<a class="hm-c-go" target="_blank" rel="noopener" '
-   +     'href="https://www.google.com/maps/dir/?api=1&destination='+s.lat+','+s.lng+'">'
-   +     'take me there &rarr;</a>'
-   +'</div>';
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   RENDU A — LE RADAR
-   ══════════════════════════════════════════════════════════════════════ */
-function radarResize(){
-  const cv=$('hm-canvas'); if(!cv) return;
-  const box=$('hmap');
-  const W=box.clientWidth||window.innerWidth;
-  const H=box.clientHeight||window.innerHeight;
-  const dpr=Math.max(1,Math.min(2,window.devicePixelRatio||1));
-  RAD.W=W; RAD.H=H; RAD.dpr=dpr;
-  cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
-  cv.style.width=W+'px'; cv.style.height=H+'px';
-  RAD.cx=W/2; RAD.cy=H/2;
-  RAD.rpx=Math.min(W,H)/2*0.82;
-  layoutMarkers();
-}
-
-/* L'échelle suit ce qu'il y a à montrer. Une échelle fixe laisserait
-   la moitié des lieux hors écran en zone dense et donnerait un radar
-   quasi vide en zone creuse. */
-function computeRange(spots){
-  if(!spots.length) return 1200;
-  const far=spots.reduce((m,s)=>Math.max(m,s.dist_m||0),0);
-  return Math.min(4000, Math.max(400, far*1.15));
-}
-
-function layoutMarkers(){
-  const me=$('hm-me');
-  if(me){ me.style.left=RAD.cx+'px'; me.style.top=RAD.cy+'px'; }
-  if(!RAD.range) return;
-  const scale=RAD.rpx/RAD.range;
-  RAD.spots.forEach(s=>{
-    s._px=RAD.cx+s._e*scale;
-    s._py=RAD.cy-s._n*scale;
-    if(s._el) s._el.style.transform='translate('+s._px+'px,'+s._py+'px)';
-  });
-}
-
-function radarDraw(){
-  const cv=$('hm-canvas'); if(!cv||!RAD.on){ RAD.raf=0; return; }
-  const X=cv.getContext('2d');
-  const {W,H,cx,cy,rpx,dpr}=RAD;
-  X.setTransform(dpr,0,0,dpr,0,0);
-  X.clearRect(0,0,W,H);
-  RAD.t+=1/60;
-
-  /* Grille — la trame du vide */
-  X.strokeStyle='rgba(255,255,255,.055)'; X.lineWidth=1;
-  X.beginPath();
-  for(let x=(cx%55);x<W;x+=55){ X.moveTo(x+.5,0); X.lineTo(x+.5,H); }
-  for(let y=(cy%55);y<H;y+=55){ X.moveTo(0,y+.5); X.lineTo(W,y+.5); }
-  X.stroke();
-
-  /* Anneaux de portée */
-  X.strokeStyle='rgba(255,255,255,.13)'; X.lineWidth=1;
-  for(let k=1;k<=3;k++){ X.beginPath(); X.arc(cx,cy,rpx*k/3,0,Math.PI*2); X.stroke(); }
-
-  /* Balayage — vingt secteurs dégressifs. Pas de gradient conique :
-     il n'est pas universel, et vingt fill() coûtent moins qu'un test
-     de compatibilité. */
-  const head=RAD.t*Math.PI/3;
-  const col=RAD.intention ? intColor(RAD.intention) : '#ffffff';
-  for(let i=0;i<20;i++){
-    X.beginPath(); X.moveTo(cx,cy);
-    X.arc(cx,cy,rpx,head-i*0.035-0.035,head-i*0.035); X.closePath();
-    X.fillStyle=col; X.globalAlpha=0.035*(1-i/20); X.fill();
-  }
-  X.globalAlpha=1;
-
-  /* LA DISTANCE NE S'AFFICHE QU'AU SURVOL.
-     Huit etiquettes permanentes empilees au centre du radar, c'etait une
-     bouillie illisible. Le vide est l'etat par defaut : on survole un T,
-     sa ligne et sa distance apparaissent, seules. Deux passes conservees —
-     tous les traits d'abord, toutes les plaques ensuite : une distance ne
-     peut jamais etre barree par une ligne. */
-  const shown=[RAD.focus,RAD.hover].filter((x,i,a)=>x&&a.indexOf(x)===i);
-  if(shown.length){
-    X.save();
-    X.setLineDash([3,7]); X.lineDashOffset=-RAD.t*14; X.lineWidth=.8;
-    shown.forEach(sp=>{
-      X.strokeStyle=intColor(sp.intention); X.globalAlpha=.45;
-      X.beginPath(); X.moveTo(cx,cy); X.lineTo(sp._px,sp._py); X.stroke();
-    });
-    X.restore();
-    X.font='700 12px "Space Mono",monospace';
-    X.textAlign='center'; X.textBaseline='middle';
-    shown.forEach(sp=>{
-      const c=intColor(sp.intention);
-      const label=fmtDist(sp.dist_m||0);
-      const lx=cx+(sp._px-cx)*.55, ly=cy+(sp._py-cy)*.55;
-      const w=X.measureText(label).width;
-      X.fillStyle='#000'; X.globalAlpha=.94;
-      X.fillRect(lx-w/2-8, ly-11, w+16, 22);
-      X.globalAlpha=1; X.fillStyle=c;
-      X.fillText(label, lx, ly);
-    });
-  }
-
-  RAD.raf=requestAnimationFrame(radarDraw);
-}
-
-function radarStart(){
-  /* Aucune boucle sur mobile : le deck n'a pas de canvas, et une rAF
-     qui tourne pour rien, c'est de la batterie brûlée. */
-  if(RAD.on || isDeck()) return;
-  RAD.on=true; radarResize();
-  if(!RAD.raf) RAD.raf=requestAnimationFrame(radarDraw);
-}
-function radarStop(){
-  RAD.on=false;
-  if(RAD.raf){ cancelAnimationFrame(RAD.raf); RAD.raf=0; }
-}
-
-function renderRadar(spots){
-  const box=$('hm-markers');
-  box.querySelectorAll('.hm-marker').forEach(el=>el.remove());
-  RAD.range=computeRange(spots);
-
-  spots.forEach((s,i)=>{
-    const c=intColor(s.intention);
-    const el=document.createElement('button');
-    el.type='button';
-    el.className='hm-marker src-'+(s.source||'spot');
-    el.style.color=c;
-    el.style.filter='drop-shadow(0 0 5px '+c+')';
-    el.setAttribute('aria-label', (s.activite||'place')+' — '+fmtDist(s.dist_m||0));
-    el.innerHTML=tGlyph(15);
-    el.querySelector('.tglyph').style.animationDelay=(i*44)+'ms';
-    el.addEventListener('click',ev=>{ ev.stopPropagation(); openCard(s,el); });
-    /* Le survol REVELE la distance — rien d'autre ne la dessine. */
-    el.addEventListener('mouseenter',()=>{ RAD.hover=s; });
-    el.addEventListener('mouseleave',()=>{ if(RAD.hover===s) RAD.hover=null; });
-    box.appendChild(el);
-    s._el=el;
-  });
-
-  layoutMarkers();
-  radarStart();
-}
-
-/* ── APERÇU RICHE (desktop) ──────────────────────────────────────────── */
-function closeCard(){ const c=$('hm-card'); if(c) c.classList.remove('show'); RAD.focus=null; }
-
-function openCard(s, anchor){
-  const card=$('hm-card');
-  card.innerHTML='<button class="hm-c-close" type="button" aria-label="close">×</button>'
-                +'<div class="hm-c-inner">'+cardHTML(s)+'</div>';
-  card.querySelector('.hm-c-close').onclick=closeCard;
-  card.classList.add('show');
-  RAD.focus=s;   /* sa distance reste affichee tant que la carte est ouverte */
-
-  /* Posé à côté du T, jamais dessus, et jamais hors écran. */
-  const r=$('hmap').getBoundingClientRect();
-  const w=card.offsetWidth||270, h=card.offsetHeight||220;
-  let x=(s._px||RAD.cx)+24, y=(s._py||RAD.cy)-h/2;
-  if(x+w>r.width-16)  x=(s._px||RAD.cx)-w-24;
-  if(x<16) x=16;
-  y=Math.max(16, Math.min(y, r.height-h-16));
-  card.style.left=x+'px'; card.style.top=y+'px';
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   RENDU B — LE SWIPE DECK
-   ══════════════════════════════════════════════════════════════════════ */
-function renderDeck(spots){
-  const deck=$('hm-deck');
-  deck.innerHTML=spots.map(s=>'<div class="hm-slide"><div class="hm-c-inner">'+cardHTML(s)+'</div></div>').join('');
-  deck.scrollLeft=0;
-  paintCount(0, spots.length);
-
-  /* Le compteur suit le doigt. rAF pour ne pas recalculer à chaque
-     pixel de scroll. */
-  let tick=false;
-  deck.onscroll=()=>{
-    if(tick) return; tick=true;
-    requestAnimationFrame(()=>{
-      tick=false;
-      const w=deck.clientWidth||1;
-      paintCount(Math.round(deck.scrollLeft/w), spots.length);
-    });
-  };
-}
-function paintCount(i,n){
-  const el=$('hm-count');
-  if(el) el.textContent=n ? String(Math.min(i+1,n)).padStart(2,'0')+' / '+String(n).padStart(2,'0') : '';
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   ÉTAT COMMUN
-   ══════════════════════════════════════════════════════════════════════ */
-function applyMode(){
-  const hmap=$('hmap');
-  hmap.classList.toggle('hm-deck', isDeck());
-  hmap.classList.toggle('hm-radar', !isDeck());
-}
-
-function renderSpots(spots){
-  RAD.spots=spots; RAD.hover=null; RAD.focus=null;
-  const hmap=$('hmap');
-  $('hm-deck').innerHTML='';
-  $('hm-markers').querySelectorAll('.hm-marker').forEach(el=>el.remove());
-  closeCard();
-
-  if(isDeck()){ radarStop(); renderDeck(spots); }
-  else        { renderRadar(spots); }
-
-  hmap.classList.toggle('hm-loaded', spots.length>0);
-  paintCorner();
-}
-
-function clearSpots(){
-  RAD.spots=[]; RAD.range=1200; RAD.intention=null; RAD.hover=null; RAD.focus=null;
-  $('hm-deck').innerHTML='';
-  $('hm-markers').querySelectorAll('.hm-marker').forEach(el=>el.remove());
-  $('hmap').classList.remove('hm-loaded');
-  closeCard(); paintCount(0,0); paintCorner();
-}
-
-function paintCorner(){
-  const c=$('hm-corner');
-  if(c) c.textContent = RAD.intention
-    ? RAD.spots.length+' within '+fmtDist(RAD.range)
-    : '';
-  const bl=$('hm-corner-bl');
-  if(bl && RAD.origin) bl.textContent =
-    fmtDMS(RAD.origin.lat,'N','S')+' · '+fmtDMS(RAD.origin.lng,'E','W');
-}
-
-/* ── SÉLECTEUR ───────────────────────────────────────────────────────────
-   Construit depuis state.habits : la carte montre TES intentions, pas
-   ce qui traîne autour de toi. Zéro réseau. */
-function myIntentions(){
-  const h=(typeof state!=='undefined' && state && state.habits) ? state.habits : [];
-  return [...new Set(h.map(x=>x&&x.i).filter(x=>INT_BY_ID[x]))];
-}
-
-function buildSelector(){
-  const ids=myIntentions();
-  const items=INTS.filter(x=>ids.includes(x.id));
-  const ddm=$('hm-ddm');
-
-  if(ddm) ddm.innerHTML=items.map(x=>
-    '<div class="hm-ddi" data-int="'+x.id+'" style="color:'+x.color+'">'
-    +tGlyph(15)
-    +'<div><div class="hm-ddi-name" style="color:'+x.color+'">'+esc(x.name)+hiWord()+'</div>'
-    +'<div class="hm-ddi-def">'+esc(x.def)+'</div>'
-    +(x.neuro?'<div class="hm-ddi-neuro">'+x.neuro.split(' · ').map(t=>'<span class="hm-ddi-ntag">'+esc(t)+'</span>').join('')+'</div>':'')
-    +'</div></div>').join('');
-
-  ddm.querySelectorAll('.hm-ddi').forEach(el=>{
-    el.onclick=()=>pickIntention(el.dataset.int);
-  });
-
-  const ddt=$('hm-ddt');
-  if(ddt) ddt.onclick=e=>{ e.stopPropagation(); $('hm-dd').classList.toggle('open'); };
-
-  $('hm-selector').classList.add('ready');
-  return items.length;
-}
-
-function markLoading(id,on){
-  document.querySelectorAll('.hm-ddi').forEach(el=>
-    el.classList.toggle('loading', on && el.dataset.int===id));
-}
-
-function markActive(id){
-  document.querySelectorAll('.hm-ddi').forEach(el=>
-    el.classList.toggle('active', el.dataset.int===id));
-  const lbl=$('hm-ddt-lbl'), conf=INT_BY_ID[id];
-  if(lbl){
-    lbl.innerHTML = conf
-      ? tGlyph(16)+esc(conf.name)+hiWord()
-      : 'Choose an intention';
-    lbl.style.color = id ? intColor(id) : '';
-  }
-  document.body.classList.toggle('hm-picked', !!id);
-  $('hm-dd').classList.remove('open');
-}
-
-function say(msg){ const n=$('hm-note'); if(n) n.textContent=msg||''; }
-
-function setOverline(){
-  const ov=$('hm-overline'), o=RAD.origin||{};
-  /* Tant que la demande court, on le DIT — un ecran muet pendant vingt
-     secondes, c'est ce qui donnait « la localisation ne fonctionne pas ». */
-  document.body.classList.toggle('hm-geo-fallback', !!o.fallback);
-  if(o.fallback && RAD.geoPending){
-    ov.textContent='locating…'; ov.classList.remove('retry'); return;
-  }
-  if(o.fallback){
-    const n=RAD.geoNote;
-    ov.textContent =
-      n==='insecure' ? 'location needs https · tap to retry'
-    : n===1          ? 'location blocked · allow it in your browser, then tap'
-    : n===3          ? 'location timed out · tap to retry'
-    :                  'Lisbon · tap to use your position';
-    ov.classList.add('retry');
-  }else{
-    ov.textContent='real and living map';
-    ov.classList.remove('retry');
-  }
-}
-
-/* ── LE DÉCLENCHEUR ──────────────────────────────────────────────────────
-   Rien ne part sur le réseau avant ce clic. */
-async function pickIntention(id){
-  if(!id) return;
-
-  if(RAD.intention===id){          /* re-cliquer éteint */
-    clearSpots(); markActive(null); say('');
-    return;
-  }
-
-  if(HM_HITS.has(id)){             /* déjà chargée : instantané, gratuit */
-    RAD.intention=id; markActive(id);
-    renderSpots(HM_HITS.get(id)); say('');
-    return;
-  }
-
-  markLoading(id,true); say('scanning…');
-
-  try{
-    const { data:{ session } }=await sb.auth.getSession();
-    if(!session){ markLoading(id,false); say('sign in to open the radar'); return; }
-
-    const body={ intention:id };
-    if(RAD.coords){ body.lat=RAD.coords.lat; body.lng=RAD.coords.lng; }
-
-    const r=await fetch('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/higher-map',{
-      method:'POST',
-      headers:{'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json'},
-      body:JSON.stringify(body)
-    });
-    markLoading(id,false);
-
-    if(r.status===402){ say('the radar is part of the membership'); return; }
-    if(!r.ok){ say('the radar is unreachable right now'); return; }
-
-    const j=await r.json();
-    if(j.reason==='no_intention'){
-      say('give at least one habit an intention — the radar reads your Totehm'); return;
-    }
-
-    if(j.origin) RAD.origin=j.origin;
-    const o=RAD.origin;
-
-    const spots=(j.spots||[])
-      .filter(s=>s.lat!=null && s.lng!=null)
-      .map(s=>{
-        const en=localEN(o.lat,o.lng,s.lat,s.lng);
-        return Object.assign({},s,{
-          _e:en.e, _n:en.n,
-          dist_m: s.dist_m!=null ? s.dist_m
-                : Math.round(haversine(o.lat,o.lng,s.lat,s.lng))
-        });
-      })
-      .sort((a,b)=>a.dist_m-b.dist_m)
-      .slice(0,MAX_T);
-
-    HM_HITS.set(id,spots);
-    RAD.intention=id; markActive(id);
-    renderSpots(spots);
-    setOverline();
-    say(spots.length ? '' : 'nothing within range for this intention');
-
-  }catch(e){
-    console.error('higher-map:',e);
-    markLoading(id,false);
-    say('the radar hit an error');
-  }
-}
-
-/* ── MÉTÉO ET HEURE ──────────────────────────────────────────────────────
-   open-meteo : pas de clé, pas de quota, pas de facture. */
-let hmWeatherAt=0;
-function hmTime(){
-  const d=new Date(), el=$('hm-time');
-  if(el) el.textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
-}
-async function hmWeather(lat,lng){
-  if(Date.now()-hmWeatherAt<300000) return;
-  hmWeatherAt=Date.now();
-  try{
-    const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat
-      +'&longitude='+lng+'&current=temperature_2m,windspeed_10m,weathercode');
-    const c=(await r.json()).current;
-    $('hm-temp').textContent=Math.round(c.temperature_2m)+'°';
-    $('hm-wind').textContent=Math.round(c.windspeed_10m)+' km/h';
-    const w=c.weathercode;
-    $('hm-sky').textContent=w===0?'Clear':w<=3?'Cloudy':w<=49?'Fog':w<=69?'Rain':w<=79?'Snow':'Storm';
-  }catch(e){ $('hm-sky').textContent='···'; }
-}
-
-/* ── OUVERTURE DE L'ÉTAGE ────────────────────────────────────────────────
-   Aucun spot n'est chargé ici. On établit la position en silence, on
-   construit le sélecteur depuis le Totehm local, on laisse le vide. */
-async function loadMap(){
-  applyMode();
-  say('');
-
-  try{
-    const { data:{ session } }=await sb.auth.getSession();
-    if(!session){ say('sign in to open the radar'); return; }
-
-    if(!buildSelector()){
-      say('give at least one habit an intention — the radar reads your Totehm');
-      hmapLoaded=true; return;
-    }
-
-    /* LA CARTE N'ATTEND PLUS LE GPS POUR EXISTER.
-       Avant, loadMap restait bloque sur getCurrentPosition : ecran sans
-       statut pendant tout le timeout, puis Lisbonne pour de bon. Desormais
-       on dessine immediatement sur la derniere position connue (ou Lisbonne),
-       et la demande court en arriere-plan : que la personne accepte en trois
-       secondes ou en trente, la carte se recale toute seule quand ca arrive. */
-    const cached=geoCached();
-    RAD.geoNote=null;
-    RAD.coords=cached;
-    RAD.origin=cached ? {lat:cached.lat,lng:cached.lng,fallback:false}
-                      : {lat:38.7078,lng:-9.1366,fallback:true};
-
-    clearSpots(); markActive(null);
-    RAD.geoPending=!cached;
-    setOverline();
-    radarStart();
-    hmTime(); hmWeather(RAD.origin.lat, RAD.origin.lng);
-    hmapLoaded=true;
-
-    if(!cached){
-      const perm=await geoPermission();
-      if(perm==='denied'){
-        RAD.geoPending=false; RAD.geoNote=1; setOverline();
-      }else{
-        geoAsk(false)
-          .then(c=>geoRefresh(geoApply(c)))
-          .catch(e=>{
-            RAD.geoPending=false;
-            RAD.geoNote=(e&&e.reason==='insecure')?'insecure':((e&&e.code)||2);
-            setOverline();
-          });
-        geoSoftDeadline(12000);
-      }
-    }
-
-  }catch(e){
-    console.error('higher-map:',e);
-    say('the radar hit an error');
-  }
-}
-
-/* ── ÉVÉNEMENTS ──────────────────────────────────────────────────────── */
-/* La ligne de statut EST le bouton de relance. Pas de bouton natif
-   posé au milieu du vide. */
-$('hm-overline').onclick=async()=>{
-  const ov=$('hm-overline');
-  if(!RAD.origin || !RAD.origin.fallback) return;   /* deja localise : rien a faire */
-  ov.textContent='locating…'; ov.classList.remove('retry');
-  RAD.geoPending=true; geoSoftDeadline(12000);
-  try{
-    geoBust();                         /* un cache Lisbonne ne doit pas repondre */
-    const c=await geoAsk(true,true);
-    await geoRefresh(geoApply(c));
-  }catch(e){
-    RAD.geoPending=false;
-    RAD.geoNote=(e&&e.reason==='insecure')?'insecure':((e&&e.code)||2);
-    setOverline();
-  }
-};
-
-/* AUTORISER APRES COUP DOIT SUFFIRE.
-   La personne refuse, puis debloque la position dans la barre d'adresse :
-   sans ceci la carte restait sur Lisbonne jusqu'au rechargement. On ecoute
-   la bascule de permission et on reprend la main tout seul. */
-(async function geoWatch(){
-  try{
-    if(!navigator.permissions||!navigator.permissions.query)return;
-    const st=await navigator.permissions.query({name:'geolocation'});
-    st.onchange=async()=>{
-      if(st.state!=='granted')return;
-      try{ geoBust(); await geoRefresh(geoApply(await geoAsk(false,true))); }catch(e){}
-    };
-  }catch(e){}
-})();
-
-document.addEventListener('click',e=>{
-  const dd=$('hm-dd');
-  if(dd && !dd.contains(e.target)) dd.classList.remove('open');
-});
-['mousemove','touchstart','touchmove'].forEach(ev=>
-  $('hmap').addEventListener(ev, hmReveal, {passive:true}));
-
-/* Cliquer dans le vide du radar referme l'aperçu. Les T font stopPropagation
-   au clic (openCard) : seul le canvas nu reçoit ce clic. */
-{ const cv=$('hm-canvas'); if(cv) cv.addEventListener('click', closeCard); }
-
-/* [ ✕ clear ] mobile — éteint l'intention courante (re-clic = extinction). */
-$('hm-clear').onclick=()=>{ if(RAD.intention) pickIntention(RAD.intention); };
-
-/* Rotation du téléphone ou fenêtre redimensionnée : on peut traverser
-   la frontière des 700 px. Le rendu change, l'état ne bouge pas. */
-let hmModeTimer;
-window.addEventListener('resize',()=>{
-  clearTimeout(hmModeTimer);
-  hmModeTimer=setTimeout(()=>{
-    const was=$('hmap').classList.contains('hm-deck');
-    applyMode();
-    if(was!==isDeck()){ radarStop(); if(RAD.spots.length) renderSpots(RAD.spots); }
-    else if(RAD.on) radarResize();
-  },160);
-});
-setInterval(hmTime,30000);
-
-/* Logo nav : retour Habits direct, toujours disponible */
-$('hmap-nav').onclick = ()=>{ floor=0; paint(); };
-
-/* Le bouton [Login] de la carte a ete retire : #conn-bar est le
-   point d'entree membre unique, sur tous les etages. */
-
-document.addEventListener('keydown', e=>{
-  if(e.key === 'Escape' && $('hmap').classList.contains('show')){ floor=0; paint(); }
-});
 
 /* [Get Higher with my Totehm] : animation d'élévation Higher qui va jusqu'au bout,
    puis ouverture Stoner. C'est le SEUL chemin vers la méthode Stoner. */
@@ -2897,7 +1678,6 @@ function paintStreet(){
   sb.classList.toggle('hide',!portugalDetected);
 }
 
-let wheelLock=false;
 function scrollEdges(){
   const sc=$('fv-inner');
   return {top:sc.scrollTop<=1, bottom:sc.scrollTop+sc.clientHeight>=sc.scrollHeight-1};
@@ -2910,87 +1690,26 @@ window.addEventListener('touchmove',(e)=>{if(axis)return;const dx=e.changedTouch
 window.addEventListener('touchend',(e)=>{
   if(fpOpen())return;
   if(t0el&&t0el.closest&&t0el.closest('#results,#freq-panel,#member-window,input,textarea,button'))return;
-  /* SÉCURITÉ SWIPE DECK : tout geste né dans la Map reste dans la Map. Le
-     deck scrolle horizontalement en natif ; aucun swipe ne déclenche Book,
-     Next, ni un changement d'étage. Le retour aux Habits = le logo #hmap-nav. */
-  if(t0el&&t0el.closest&&t0el.closest('#hmap'))return;
+  if(document.body.classList.contains('gate'))return;   /* l'atterrissage défile librement */
   const dy=e.changedTouches[0].screenY-y0;const TH=32;
   if(axis==='v'){
-    /* Deux étages : Habits (0) ↔ Map (1). Stoner n'est JAMAIS au swipe. */
     const edge=scrollEdges();
-    if(floor===0){
-      if(dy<-TH && edge.bottom)go(-1);                              /* Habits → Map */
-      else if(dy>TH && edge.top)openFilterModal();                  /* Habits → Filtre */
-    }
-    /* floor 1 (Map) : géré dans #hmap (logo pour revenir), rien d'global ici. */
+    /* Vers le bas au pied de la liste : le Totehm se replie — exactement
+       la croix. Vers le haut au sommet : le filtre. */
+    if(dy<-TH && edge.bottom)foldToGate();
+    else if(dy>TH && edge.top)openFilterModal();
   }else if(axis==='h'){
     const dx=e.changedTouches[0].screenX-x0;
     if(Math.abs(dx)<TH)return;
     if(hOpen()){ if($('book').classList.contains('show')&&dx<-TH)showBook(false); else if($('nextobj').classList.contains('show')&&dx>TH)showNext(false); return; }
     if($('stoner').classList.contains('show'))return;    /* pas depuis Stoner */
-    if(floor!==0)return;                                 /* Book/Next : depuis Habits uniquement */
     if(dx>TH)showBook(true); else if(dx<-TH)showNext(true);
   }
 },{passive:true});
-/* ══ NAVIGATION DESKTOP ══
-   Le doigt n'existe pas ici. La molette reprend exactement les mêmes chemins
-   que le swipe, mais seulement une fois le contenu lu jusqu'au bord : sinon on
-   volerait le scroll interne de la liste d'habitudes. Le verrou évite qu'une
-   inertie de trackpad ne traverse deux étages d'un coup. */
-const isDesk=()=>window.matchMedia('(min-width:700px)').matches;
-
-/* ══ DESKTOP : #settings sort du carre ══
-   #stage porte overflow:hidden ET un transform. Le transform fait de
-   #stage le bloc conteneur de ses descendants position:fixed : tout ce
-   qui reste dedans est clippe, et le scale(.24) du repli le retrecirait
-   avec le carre. On remonte #settings dans <body>.
-   Sur mobile il ne bouge pas : la classe desk-two n'est jamais posee et
-   la mise en page d'origine tient telle quelle. */
-/* twoSections neutralisé : #settings vit maintenant dans #member-window (une
-   modale fixe hors de #stage). Le clippage/scale du carré ne le concerne plus,
-   donc plus aucun déplacement DOM ni classe desk-two. */
-(function twoSections(){ document.body.classList.remove('desk-two'); })();
-
-/* Desktop scroll-snap : le filtre s'ouvre en scrollant vers le haut depuis le sommet.
-   Le scroll vers le bas (habits→settings) est géré nativement par scroll-snap CSS.
-   Échap depuis settings → retour habits par scroll. */
-$('fv-inner').addEventListener('wheel',(e)=>{
-  if(!isDesk()||floor!==0||$('fv-inner').scrollTop>0)return;
-  if(wheelBlocked(e.target))return;
-  if(e.deltaY<0){e.preventDefault();openFilterModal();}
-},{passive:false});
-document.addEventListener('keydown',(e)=>{
-  if(e.key==='Escape'&&isDesk()&&floor===1)$('fv-inner').scrollTo({top:0,behavior:'smooth'});
-});
-
-let wheelAcc=0, wheelAt=0;
-function wheelBlocked(t){
-  if(busy||fpOpen())return true;
-  if($('member-window').classList.contains('show'))return true;
-  if($('tview').classList.contains('show'))return true;
-  if($('stoner').classList.contains('show')||hOpen())return true;
-  return !!(t&&t.closest&&t.closest('#freq-panel,#habit-peek,#filter-modal,#member-window,#hm-ddm,#hm-card,#hm-deck,input,textarea'));
-}
-/* fv-inner scroll listener retiré : conçu pour 2 floors (0=Habits, 1=Settings).
-   Avec 3 floors (0=Habits, 1=Map, 2=Settings), il déclenchait applyFloorFx(true)
-   sur Map floor → ajoutait in-settings → Settings à la place de la Map. */
-/* Mobile : la molette n'existe pas — le swipe tactile fait tout. Sur desktop, le
-   scroll-snap prend le relais ; on ne traite plus les événements wheel manuellement. */
-window.addEventListener('wheel',(e)=>{
-  if(isDesk()||wheelBlocked(e.target))return;   /* desktop : scroll-snap natif */
-  const now=Date.now();
-  if(now-wheelAt>320)wheelAcc=0;
-  wheelAt=now;
-  if(wheelLock)return;
-  const down=e.deltaY>0, edge=scrollEdges();
-  if(down&&!edge.bottom){wheelAcc=0;return;}
-  if(!down&&!edge.top){wheelAcc=0;return;}
-  wheelAcc+=e.deltaY;
-  if(Math.abs(wheelAcc)<90)return;
-  wheelAcc=0; wheelLock=true; setTimeout(()=>{wheelLock=false;},350);
-  if(floor===0){ if(down)go(-1); else openFilterModal(); }  /* Habits : bas→Map, haut→Filtre */
-  else if(floor===1&&!down)go(1);                          /* Map : haut→Habits, bas→rien */
-},{passive:true});
+/* La molette est traitée à un seul endroit : verticalGesture(). Les deux
+   écouteurs concurrents d'avant (un sur #fv-inner en passive:false, un sur
+   window avec un accumulateur de 90 px) se disputaient le même geste et
+   retenaient le scroll — c'était ça, le filtre qui « manque de fluidité ». */
 
 /* Chevrons latéraux : mêmes cibles que le swipe horizontal.
    Ils passent sous Book et Next (z-index) : on ouvre par eux, on referme par
@@ -3010,10 +1729,23 @@ $('side-right').onclick=()=>{ if(navBlocked())return;
 
 window.addEventListener('keydown',(e)=>{
   if(fpOpen()){if(e.key==='Escape')closeFreqPanel();return;}
-  if(e.target.tagName==='INPUT')return;
+  /* LE FIX CLAVIER. Une flèche dans un champ déplace le curseur, point.
+     Les habitudes sont des <textarea> : ne tester que INPUT laissait la
+     flèche gauche changer de page en pleine écriture. */
+  if(isTyping(e))return;
+  if(document.body.classList.contains('gate'))return;
   if($('member-window').classList.contains('show')){if(e.key==='Escape')$('member-window').classList.remove('show');return;}
-  if(e.key==='ArrowDown'){e.preventDefault();go(1);}
-  else if(e.key==='ArrowUp'){e.preventDefault();go(-1);}
+  if(e.key==='Escape'){
+    /* Les modales se ferment par leurs propres écouteurs : on ne replie
+       le Totehm que si l'écran est nu. */
+    if(!$('filter-modal').classList.contains('hide')||!$('habit-peek').classList.contains('hide'))return;
+    if($('tview').classList.contains('show'))return;
+    if($('stoner').classList.contains('show')){showStoner(false);return;}
+    if(hOpen()){showBook(false);showNext(false);return;}
+    foldToGate();return;
+  }
+  if(e.key==='ArrowDown'){e.preventDefault();if(!hOpen())foldToGate();}
+  else if(e.key==='ArrowUp'){e.preventDefault();if(!hOpen())openFilterModal();}
   else if(e.key==='ArrowLeft'){e.preventDefault();if($('book').classList.contains('show'))showBook(false);else if(!hOpen()&&!$('stoner').classList.contains('show'))showNext(true);}
   else if(e.key==='ArrowRight'){e.preventDefault();if($('nextobj').classList.contains('show'))showNext(false);else if(!hOpen()&&!$('stoner').classList.contains('show'))showBook(true);}
 });
@@ -3023,14 +1755,11 @@ window.addEventListener('message',e=>{
   /* Contrat de navigation, identique pour book.html et next_objective.html :
      le T du haut ramène au rail des Habits, le TOTEHM du bas aux Paramètres.
      Toujours — quel que soit l'étage d'où la zone a été ouverte. */
-  if(e.data.type==='totehm-close-book'||e.data.type==='totehm-close-next'){
+  /* Le T du haut ET le TOTEHM du bas ramènent au Totehm. Bascule sèche :
+     aucun setTimeout, aucun fondu — la couleur change d'une seule frame. */
+  if(e.data.type==='totehm-close-book'||e.data.type==='totehm-close-next'
+     ||e.data.type==='totehm-goto-settings'){
     showBook(false);showNext(false);
-    setTimeout(()=>{ if(floor!==0) go(1); },400);
-  }
-  else if(e.data.type==='totehm-goto-settings'){
-    /* Les réglages sont dans le Dashboard membre désormais. */
-    showBook(false);showNext(false);
-    setTimeout(()=>{ $('member-window').classList.add('show'); if(typeof memberPaint==='function')memberPaint(); },400);
   }
   else if(e.data.type==='totehm-add-habit'&&e.data.habit&&e.data.habit.t){
     const h=e.data.habit;
@@ -3145,8 +1874,14 @@ async function cityBoot(){
   }catch(e){}
   if(perm!=='granted')return;
   if(cityBusy)return; cityBusy=true;
-  /* Passe par geoAsk : une seule demande GPS en vol pour toute l'app. */
-  geoAsk(false).then(async(c)=>{
+  /* La Map est partie dans map.html avec son moteur GPS. Ici il ne reste
+     qu'un besoin : savoir si l'on est au Portugal, pour la porte Lisbonne
+     de Stoner. Une seule demande, silencieuse, jamais de prompt — on n'entre
+     ici que si la permission est DÉJÀ accordée. */
+  new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(
+    pos=>res({lat:+pos.coords.latitude.toFixed(5),lng:+pos.coords.longitude.toFixed(5)}),
+    rej,{enableHighAccuracy:false,timeout:20000,maximumAge:60000}
+  )).then(async(c)=>{
     try{ localStorage.setItem('totehm_map_pos_v1', JSON.stringify({
       lat: c.lat, lng: c.lng })); }catch(e){}
     try{
@@ -3166,8 +1901,6 @@ async function cityBoot(){
   }).catch(()=>{ cityBusy=false; });
 }
 
-const _origPaint=paint;
-paint=function(){_origPaint();if(floor===1)cityBoot();};
 if(document.readyState==='loading')
   document.addEventListener('DOMContentLoaded',()=>cityBoot());
 else
@@ -3434,10 +2167,18 @@ window.addEventListener('pageshow',e=>{
 
 
 /* ══════════════════════════════════════════════════════════════════════════
-   LANDING GATE — déconstruction vectorielle
+   LANDING GATE — déconstruction vectorielle, ET SON EXACT CONTRAIRE
    Le JS ne fait QUE mesurer (une fois) où l'UI se trouve réellement, et
    écrit le résultat dans des variables CSS. Toute l'animation est ensuite
    jouée par les transitions CSS sur transform / opacity : netteté absolue.
+
+   LE REPLI. Le gate n'est PLUS détruit après l'entrée (`gate.remove()`) :
+   il fallait pouvoir le rejouer à l'envers. Il reste dans le document,
+   masqué par `body:not(.gate) #gate{display:none}` — coût : zéro repaint,
+   zéro écouteur actif. `fold()` remet body.gate ET body.entered dans la
+   même frame (les pièces restent donc où elles sont), force un reflow,
+   puis retire `entered` : les quatre calques repartent vers le logo, l'UI
+   de l'app s'efface. Aller et retour sont le même geste, à l'envers.
    ══════════════════════════════════════════════════════════════════════════ */
 (()=>{
   const gate=$('gate'); if(!gate) return;
@@ -3471,48 +2212,109 @@ window.addEventListener('pageshow',e=>{
     }
   }
 
-  let done=false;
+  const DUR=1050, REVEAL=520;
+  let open=false, moving=false, timer=null;
+
   function enter(then){
-    if(done) return; done=true;
+    if(open||moving) return;
+    moving=true;
+    gate.scrollTop=0;                /* on mesure toujours depuis le haut */
     measure();                       /* dernière mesure juste avant le départ */
     void gate.offsetWidth;           /* reflow : garantit le point de départ  */
     body.classList.add('entered');
 
-    const ms=1050+520+120;           /* --gate-dur + --gate-reveal + marge     */
-    setTimeout(()=>{
+    clearTimeout(timer);
+    timer=setTimeout(()=>{
       gate.classList.add('gate-off');
-      setTimeout(()=>{
+      timer=setTimeout(()=>{
         body.classList.remove('gate','entered');
-        gate.remove();               /* le gate ne sert qu'une fois           */
+        open=true; moving=false;
         if(then) then();
       },340);
-    },ms);
+    },DUR+REVEAL+120);
   }
+
+  /* Le repli : le déploiement, exactement à l'envers. */
+  function fold(){
+    if(!open||moving) return;
+    moving=true;
+    clearTimeout(timer);
+    /* On mesure AVANT de replier : la fenêtre a pu être redimensionnée
+       depuis l'entrée, et les pièces doivent partir d'où elles sont
+       réellement, pas d'où elles étaient il y a dix minutes. */
+    body.classList.add('gate','entered');
+    measure();
+    gate.style.transition='none';
+    gate.classList.remove('gate-off');
+    void gate.offsetWidth;           /* le gate est là, opaque, sans fondu */
+    gate.style.transition='';
+    body.classList.remove('entered');
+    gate.scrollTop=0;
+    open=false;
+    timer=setTimeout(()=>{ moving=false; },DUR+120);
+  }
+
+  /* Le reste du script replie par ici. */
+  foldToGate=fold;
 
   /* État 1 (la classe est déjà posée sur <body> dans le HTML : zéro flash) */
   body.classList.add('gate');
 
-  /* Pendant l'état 1, aucun geste ne doit atteindre l'app en dessous */
-  const swallow=e=>{ if(body.classList.contains('gate')) e.stopPropagation(); };
+  /* Pendant l'état 1, aucun geste ne doit atteindre l'app en dessous — mais
+     l'atterrissage a ses propres champs et sa propre vidéo : un geste NÉ
+     dans le gate lui appartient. Sans cette exception, la touche Entrée
+     n'atteignait jamais le champ de recherche, capturée au niveau window. */
+  const swallow=e=>{
+    if(!body.classList.contains('gate')) return;
+    const t=e.target;
+    if(t&&t.closest&&t.closest('#gate')) return;
+    e.stopPropagation();
+  };
   ['touchstart','touchmove','touchend','wheel','keydown'].forEach(t=>
     window.addEventListener(t,swallow,{capture:true,passive:true}));
   requestAnimationFrame(()=>requestAnimationFrame(measure));
-  window.addEventListener('resize',()=>{ if(!done) measure(); });
-  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(!done) measure(); });
+  window.addEventListener('resize',()=>{ if(!open) measure(); });
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(!open) measure(); });
 
   /* Le clic sur le logo = la déconstruction */
   $('gate-enter').onclick=()=>enter();
 
   /* [Open my Totehm] : strictement le même geste que le clic sur le logo */
   $('gate-open').onclick=()=>enter();
-  const go2=$('gate-open-2');if(go2)go2.onclick=()=>enter();
-  const gsi=$('gate-search-input');
-  if(gsi)gsi.addEventListener('keydown',e=>{
+
+  /* ── Search a Totehm : un bouton, la boîte n'arrive qu'au clic ── */
+  const gsb=$('gate-search-btn'), gsi=$('gate-search-input'), gsn=$('gate-search-note');
+  if(gsb&&gsi) gsb.onclick=()=>{
+    gsb.classList.add('hide');
+    gsi.classList.remove('hide');
+    if(gsn) gsn.classList.remove('hide');
+    setTimeout(()=>{try{gsi.focus();}catch(e){}},100);
+  };
+  if(gsi) gsi.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){ gsi.classList.add('hide'); if(gsn)gsn.classList.add('hide');
+                          gsb.classList.remove('hide'); return; }
     if(e.key!=='Enter')return;
     const v=gsi.value.trim();
-    if(v.length<2){const n=$('gate-search-note');if(n){n.classList.remove('hide');n.textContent='2 characters min';}return;}
+    if(v.length<2){ if(gsn){gsn.classList.remove('hide');gsn.textContent='2 characters min';} return; }
     enter(()=>openTotehmView(v));
   });
+
+  /* ── LA TERRE ──
+     `preload="none"` et chargement au premier contact visuel. 1,9 Mo servis
+     à chaque visiteur qui ne descend jamais jusqu'ici, c'est de l'egress
+     Supabase payé pour rien : ~1,9 Go par millier de visiteurs. */
+  const gv=$('gate-video');
+  if(gv){
+    const SRC='https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/space/earth.mp4';
+    let armed=false;
+    const arm=()=>{ if(armed)return; armed=true; gv.src=SRC; gv.play().catch(()=>{}); };
+    if('IntersectionObserver' in window){
+      const io=new IntersectionObserver(es=>{
+        es.forEach(en=>{ if(en.isIntersecting){ arm(); io.disconnect(); } });
+      },{threshold:.2});
+      io.observe(gv);
+    } else { arm(); }
+  }
 })();
 </script>
 </body>

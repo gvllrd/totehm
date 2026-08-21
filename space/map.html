@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<!--
+  ══ MY TOTEHM WORLD ══ (août 2026)
+
+  La carte a quitté totehm.html. Elle n'est plus un étage : c'est un
+  environnement, avec sa propre porte, son propre état, son propre cycle
+  de vie. totehm.html ne la référence plus que par un lien.
+
+  UN SEUL PRINCIPE, DEUX RENDUS.
+  Étape 1 — LES SEPT INTENTIONS, plein écran. Rien d'autre.
+  Étape 2 — LE MONDE.
+      < 700 px  des cartes plein écran, une par lieu, on swipe.
+                Une croix ramène aux sept intentions.
+      ≥ 700 px  le radar. Et RIEN d'autre que les T : pas de météo, pas
+                de coordonnées, pas de barre de statut, pas de logo. Tout
+                ce qui doit être lu ou choisi s'ouvre en fenêtre plein
+                écran sur fond noirci — le même geste qu'à l'étape 1.
+
+  Le radar zoome à la molette. Le vide du radar est cliquable : il rouvre
+  les intentions. C'est la seule commande, et elle n'occupe aucun pixel.
+
+  MÉTÉO ET COORDONNÉES SUPPRIMÉES. Elles décoraient le radar sans jamais
+  changer une décision, et coûtaient un appel réseau par session.
+  Pour les rétablir : elles vivaient dans #hm-weather-left/right.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>TOTEHM — My Totehm World</title>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --coral:#fbd5ca;
+  --hi:#ffffff;      /* ce qui compte maintenant */
+  --mid:#b4b4b4;     /* lisible, secondaire */
+  --lo:#6d6d6d;      /* contexte */
+  --dim:#3c3c3c;     /* structure */
+  --futura:'Futura','Jost',sans-serif;
+  --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#000;color:var(--mid);
+  font-family:var(--futura);font-weight:300;font-size:14px;
+  overflow:hidden;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
+.hide{display:none!important}
+
+/* ══════════════════════════════════════════════════════════════════════
+   ÉTAPE 1 — LES SEPT INTENTIONS, PLEIN ÉCRAN
+   Le même objet sur les deux rendus : une fenêtre noire qui prend tout,
+   une question, sept lignes, une sortie.
+   ══════════════════════════════════════════════════════════════════════ */
+.sheet{position:fixed;left:0;top:0;inset:0;width:100vw;height:100vh;z-index:60;
+  background:#000;display:none;flex-direction:column;
+  padding:max(22px,4vh) 20px calc(22px + env(safe-area-inset-bottom,0))}
+.sheet.show{display:flex}
+/* Sur le radar, les fenêtres se posent sur un voile — le monde reste
+   deviné derrière, on n'a pas quitté la carte. */
+#info{background:rgba(0,0,0,.88);align-items:center;justify-content:center;z-index:70}
+
+.s-q{font-family:'Quantico',sans-serif;font-size:16px;font-weight:400;
+  color:var(--hi);text-align:center;line-height:1.5;flex-shrink:0;margin-bottom:6px}
+.s-sub{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--lo);text-align:center;flex-shrink:0;
+  background:none;border:none;padding:6px 10px;cursor:default;
+  -webkit-tap-highlight-color:transparent;transition:color .15s}
+#s-geo.retry{color:var(--mid);cursor:pointer;text-decoration:underline;text-underline-offset:4px}
+#s-geo.retry:hover{color:var(--hi)}
+
+#s-list{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;display:flex;flex-direction:column;
+  justify-content:center;gap:2px;margin:10px 0;max-width:520px;width:100%;
+  margin-left:auto;margin-right:auto}
+.s-int{display:flex;align-items:flex-start;gap:13px;padding:13px 8px;
+  background:none;border:none;border-left:2px solid transparent;
+  text-align:left;cursor:pointer;width:100%;
+  -webkit-tap-highlight-color:transparent;
+  transition:background .12s,border-color .12s,opacity .18s}
+.s-int .tglyph{width:15px;height:15px;flex-shrink:0;margin-top:4px}
+.s-int-name{display:flex;align-items:center;
+  font-family:'Quantico',sans-serif;font-size:18px;font-weight:700;line-height:1.15}
+.s-int-def{font-family:'Quantico',sans-serif;font-size:14px;font-weight:400;
+  color:var(--mid);margin-top:5px;line-height:1.45}
+@media(hover:hover){
+  .s-int:hover{background:rgba(255,255,255,.05);border-left-color:currentColor}
+  .s-int:hover .s-int-name{color:var(--hi)!important}
+}
+.s-int.on{border-left-color:currentColor;background:rgba(255,255,255,.04)}
+.s-int.loading{opacity:.3;pointer-events:none}
+/* Une intention absente du Totehm ne peut rien renvoyer : le serveur la
+   refuse (403). On le dit AVANT de partir, plutôt que de payer l'aller-retour. */
+.s-int.cold{opacity:.34}
+.s-int.cold .s-int-def{color:var(--lo)}
+
+#s-note{font-family:'Quantico',sans-serif;font-size:14px;color:var(--lo);
+  text-align:center;line-height:1.6;min-height:22px;flex-shrink:0;padding:0 10px}
+#s-note:empty{display:none}
+
+.s-exit{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
+  color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;
+  padding:0 4px;line-height:1.5;text-decoration:none;white-space:nowrap;
+  align-self:center;flex-shrink:0;margin-top:8px;
+  -webkit-tap-highlight-color:transparent;transition:color .15s ease}
+@media(hover:hover){.s-exit:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
+.s-exit:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+
+/* ══════════════════════════════════════════════════════════════════════
+   ÉTAPE 2 · RENDU A — LE RADAR (≥ 700 px)
+   Le canvas, les T, toi. Rien d'autre. Jamais.
+   ══════════════════════════════════════════════════════════════════════ */
+#world{position:fixed;inset:0;z-index:10;display:none}
+#world.show{display:block}
+#canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;cursor:crosshair}
+#markers{position:absolute;inset:0;z-index:1;pointer-events:none}
+
+/* TOI. Un carré blanc, pas un T : tu n'es pas une destination.
+   La position passe par left/top et JAMAIS par transform — l'animation
+   anime transform et écraserait le placement. */
+#me{position:absolute;left:0;top:0;width:10px;height:10px;margin:-5px 0 0 -5px;
+  background:#fff;pointer-events:none;z-index:3;
+  box-shadow:0 0 10px rgba(255,255,255,.75);
+  animation:pulse 2.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.5}}
+
+.marker{position:absolute;left:0;top:0;width:30px;height:30px;margin:-15px 0 0 -15px;
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:auto;cursor:pointer;background:none;border:none;padding:0;
+  transition:opacity .2s ease;will-change:transform;
+  -webkit-tap-highlight-color:transparent}
+.marker .tglyph{width:15px;height:15px;display:block;transition:transform .15s ease}
+.marker:hover .tglyph,.marker:focus-visible .tglyph{transform:scale(1.5)}
+.marker.src-place{opacity:.55}
+.marker.src-place:hover{opacity:1}
+@keyframes ignite{from{opacity:0;transform:scale(.2)} to{opacity:1;transform:scale(1)}}
+.marker .tglyph{animation:ignite .34s cubic-bezier(.2,.8,.3,1) backwards}
+
+/* ══════════════════════════════════════════════════════════════════════
+   ÉTAPE 2 · RENDU B — LES CARTES PLEIN ÉCRAN (< 700 px)
+   Une carte occupe l'écran entier. On swipe. Une croix referme.
+   ══════════════════════════════════════════════════════════════════════ */
+#deck{position:fixed;inset:0;z-index:20;display:none;
+  overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  overscroll-behavior:contain;background:#000}
+#deck::-webkit-scrollbar{display:none}
+#deck.show{display:flex}
+.slide{flex:0 0 100vw;width:100vw;height:100%;scroll-snap-align:center;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:calc(58px + env(safe-area-inset-top,0)) 26px calc(52px + env(safe-area-inset-bottom,0));
+  overflow-y:auto;overscroll-behavior:contain}
+
+#deck-x{position:fixed;top:calc(14px + env(safe-area-inset-top,0));right:14px;z-index:24;
+  display:none;background:none;border:none;cursor:pointer;padding:10px;line-height:0;
+  -webkit-tap-highlight-color:transparent}
+#deck-x.show{display:block}
+#deck-x svg{width:16px;height:16px;color:var(--mid);display:block;
+  fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+#count{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0));left:50%;
+  transform:translateX(-50%);z-index:24;display:none;
+  font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.18em;
+  color:var(--lo);pointer-events:none}
+#count.show{display:block}
+
+/* ══ LA CARTE — un seul balisage, servi au deck ET à la fenêtre du radar ══ */
+.c-inner{width:100%}
+#info .c-inner{background:#121212;border:1px solid #2a2a2a;max-width:420px;
+  padding:22px 22px 20px;max-height:82vh;overflow-y:auto;overscroll-behavior:contain}
+.c-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.c-kind{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;padding:3px 8px;border:1px solid currentColor}
+.c-int{display:flex;align-items:center;font-family:'Quantico',sans-serif;
+  font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.c-name{font-family:'Quantico',sans-serif;font-weight:700;color:var(--hi);
+  line-height:1.15;margin-bottom:12px}
+.c-why{font-family:'Quantico',sans-serif;font-weight:400;color:var(--mid);
+  line-height:1.55;font-style:normal}
+.c-facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.c-fact{font-family:'Quantico',sans-serif;font-size:14px;font-weight:400;
+  color:var(--lo);border:1px solid rgba(255,255,255,.09);padding:5px 11px}
+.c-fact b{font-weight:700;color:var(--mid)}
+.c-foot{display:flex;align-items:baseline;justify-content:space-between;gap:14px;
+  margin-top:20px;padding-top:14px;border-top:1px solid rgba(255,255,255,.09)}
+.c-dist{font-family:'Space Mono',monospace;font-size:15px;color:var(--hi)}
+.c-walk{font-family:'Space Mono',monospace;font-size:11px;color:var(--lo);margin-left:8px}
+.c-go{font-family:'Quantico',sans-serif;font-size:14px;font-weight:400;
+  text-transform:uppercase;color:var(--mid);background:none;text-decoration:none;
+  white-space:nowrap;cursor:pointer;border:6px solid transparent;padding:0 4px;
+  line-height:1.5;display:inline-block;-webkit-tap-highlight-color:transparent;
+  transition:color .15s ease}
+@media(hover:hover){.c-go:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
+.c-go:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+.slide .c-name{font-size:clamp(28px,8vw,38px)}
+.slide .c-why{font-size:16px}
+#info .c-name{font-size:22px}
+#info .c-why{font-size:15px}
+#info .c-x{position:absolute;top:calc(14px + env(safe-area-inset-top,0));right:16px;
+  background:none;border:none;cursor:pointer;padding:10px;line-height:0;
+  -webkit-tap-highlight-color:transparent}
+#info .c-x svg{width:16px;height:16px;color:var(--mid);display:block;
+  fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+#info .c-x:hover svg{color:var(--hi)}
+
+/* ── LA BASCULE DES DEUX RENDUS ── */
+@media(max-width:699px){ #world{display:none!important} }
+@media(min-width:700px){ #deck,#deck-x,#count{display:none!important} }
+</style>
+</head>
+<body>
+
+<!-- ÉTAPE 2 · RADAR (desktop) : le canvas, les T, toi. Rien d'autre. -->
+<div id="world">
+  <canvas id="canvas"></canvas>
+  <div id="markers"><div id="me"></div></div>
+</div>
+
+<!-- ÉTAPE 2 · DECK (mobile) : une carte par lieu, plein écran -->
+<div id="deck"></div>
+<button id="deck-x" type="button" aria-label="Back to the intentions">
+  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg>
+</button>
+<div id="count"></div>
+
+<!-- ÉTAPE 1 · LES SEPT INTENTIONS -->
+<div id="step" class="sheet show" role="dialog" aria-label="Choose an intention">
+  <p class="s-q">What's your intention right now, right here?</p>
+  <button class="s-sub" id="s-geo" type="button"></button>
+  <div id="s-list"></div>
+  <div id="s-note"></div>
+  <a class="s-exit" href="totehm.html">My Totehm</a>
+</div>
+
+<!-- LA FENÊTRE D'UN LIEU (desktop) : plein écran, fond noirci -->
+<div id="info" class="sheet" role="dialog" aria-label="Place">
+  <button class="c-x" id="info-x" type="button" aria-label="Close">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg>
+  </button>
+  <div class="c-inner" id="info-body"></div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL='https://abujjbkbbiumxrokozph.supabase.co';
+const sb=createClient(SB_URL,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
+const $=id=>document.getElementById(id);
+const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;};
+const isTyping=e=>{const t=e&&e.target;
+  return !!t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable===true);};
+
+/* Les 7 intentions — copiées de totehm.html. Copiées, jamais partagées. */
+const INTS=[
+  {id:'fight',    name:'Fight',    color:'#E24B4A', def:'Conquer yourself through harder effort.'},
+  {id:'flow',     name:'Flow',     color:'#e48b31', def:'Liberate energy through movement.'},
+  {id:'enrich',   name:'Enrich',   color:'#fcbe21', def:'Master your wealth through capital & network.'},
+  {id:'love',     name:'Love',     color:'#639922', def:'Contemplate life through connection & beauty.'},
+  {id:'express',  name:'Express',  color:'#1D9E75', def:'Give form to emotion through creation.'},
+  {id:'focus',    name:'Focus',    color:'#378ADD', def:'Master your mind through deep mental focus.'},
+  {id:'celebrate',name:'Celebrate',color:'#7F77DD', def:'Elevate energy through collective effervescence.'}
+];
+const INT_BY_ID={};INTS.forEach(x=>INT_BY_ID[x.id]=x);
+const intColor=i=>(INT_BY_ID[i]||{}).color||'#fff';
+function tGlyph(size){
+  return '<svg class="tglyph" viewBox="0 0 68 68" fill="currentColor" '
+    +'width="'+(size||15)+'" height="'+(size||15)+'" aria-hidden="true">'
+    +'<rect x="0.9" y="0" width="66.7" height="9.6"/>'
+    +'<rect x="29.4" y="0" width="9.6" height="66.7"/>'
+    +'<rect x="21.2" y="62.4" width="26.1" height="5.4"/></svg>';
+}
+
+const isDeck=()=>window.matchMedia('(max-width:699px)').matches;
+const MAX_T=15;                 /* au-delà, l'écran devient une soupe */
+const HITS=new Map();           /* intention -> spots, cache de session */
+
+const RAD={ on:false, raf:0, t:0,
+  origin:null, coords:null, geoNote:null, geoPending:false,
+  spots:[], intention:null, hover:null, focus:null,
+  base:1200, zoom:1, cx:0, cy:0, rpx:0, W:0, H:0, dpr:1 };
+
+/* ══ MATHÉMATIQUE ══
+   La DISTANCE AFFICHÉE vient de Haversine — exacte, c'est le chiffre sur
+   lequel on décide de se déplacer. La POSITION PIXEL vient d'une projection
+   plane locale corrigée en cos(latitude) : 0,03 px d'écart à 4 km. */
+const EARTH_R=6371e3, DEG=Math.PI/180;
+function haversine(aLat,aLng,bLat,bLng){
+  const dLat=(bLat-aLat)*DEG, dLng=(bLng-aLng)*DEG;
+  const h=Math.sin(dLat/2)**2+Math.cos(aLat*DEG)*Math.cos(bLat*DEG)*Math.sin(dLng/2)**2;
+  return 2*EARTH_R*Math.asin(Math.sqrt(h));
+}
+const localEN=(oLat,oLng,lat,lng)=>({
+  e:(lng-oLng)*DEG*EARTH_R*Math.cos(oLat*DEG), n:(lat-oLat)*DEG*EARTH_R });
+const fmtDist=m=>m<1000?Math.round(m)+' m':(m/1000).toFixed(1)+' km';
+const fmtWalk=m=>Math.max(1,Math.round(m/75))+' min walk';
+function fmtLeft(iso){
+  const ms=new Date(iso)-Date.now(); if(!(ms>0))return null;
+  const h=Math.floor(ms/36e5), m=Math.round(ms%36e5/6e4);
+  return h>0?h+'h '+m+'m left':m+'m left';
+}
+
+/* ══ GÉOLOCALISATION ══
+   Elle ne parle jamais pour ne rien dire, et jamais sur le radar : son
+   statut vit dans la fenêtre des intentions, la seule qui ait des mots.
+   Le timeout est long — un humain doit avoir le temps de lire « Autoriser »
+   et de cliquer, sinon on retombe sur Lisbonne pendant qu'il accepte. */
+const GEO_KEY='totehm_geo_v2', GEO_TTL=15*60*1000;
+function geoCached(){
+  try{const c=JSON.parse(localStorage.getItem(GEO_KEY)||'null');
+      if(c&&Date.now()-c.t<GEO_TTL)return c;}catch(e){}
+  return null;
+}
+const geoBust=()=>{try{localStorage.removeItem(GEO_KEY);}catch(e){}};
+function geoStore(pos){
+  const c={lat:+pos.coords.latitude.toFixed(5),lng:+pos.coords.longitude.toFixed(5),
+           acc:Math.round(pos.coords.accuracy||0),t:Date.now()};
+  try{localStorage.setItem(GEO_KEY,JSON.stringify(c));}catch(e){}
+  return c;
+}
+let GEO_INFLIGHT=null;
+function geoAsk(precise,force){
+  if(GEO_INFLIGHT&&!force)return GEO_INFLIGHT;
+  const q=new Promise((res,rej)=>{
+    if(!navigator.geolocation)return rej({code:2,reason:'unsupported'});
+    if(window.isSecureContext===false)return rej({code:1,reason:'insecure'});
+    navigator.geolocation.getCurrentPosition(p=>res(geoStore(p)),e=>rej(e),
+      {enableHighAccuracy:!!precise,timeout:precise?30000:20000,maximumAge:precise?0:60000});
+  });
+  GEO_INFLIGHT=q;
+  const clear=()=>{if(GEO_INFLIGHT===q)GEO_INFLIGHT=null;};
+  q.then(clear,clear);
+  return q;
+}
+/* Relancer l'Edge Function pour trente mètres, c'est une facture sans
+   contrepartie. On ne recharge qu'au-delà de 150 m. */
+function geoApply(c){
+  const prev=RAD.origin;
+  const moved=!prev||prev.fallback||haversine(prev.lat,prev.lng,c.lat,c.lng)>150;
+  RAD.coords=c; RAD.geoPending=false; RAD.geoNote=null;
+  RAD.origin={lat:c.lat,lng:c.lng,fallback:false};
+  paintGeo();
+  return moved;
+}
+async function geoRefresh(moved){
+  if(moved===false)return;
+  const cur=RAD.intention;
+  HITS.clear();
+  if(cur){RAD.intention=null;await pick(cur);}
+}
+function geoDeadline(ms){
+  setTimeout(()=>{
+    if(RAD.geoPending&&RAD.origin&&RAD.origin.fallback){
+      RAD.geoPending=false;
+      if(!RAD.geoNote)RAD.geoNote=3;
+      paintGeo();
+    }
+  },ms||12000);
+}
+function paintGeo(){
+  const el=$('s-geo'), o=RAD.origin||{};
+  if(o.fallback&&RAD.geoPending){el.textContent='locating…';el.classList.remove('retry');return;}
+  if(o.fallback){
+    const n=RAD.geoNote;
+    el.textContent = n==='insecure' ? 'location needs https · tap to retry'
+      : n===1 ? 'location blocked · allow it in your browser, then tap'
+      : n===3 ? 'location timed out · tap to retry'
+      :         'Lisbon · tap to use your position';
+    el.classList.add('retry');
+  }else{
+    el.textContent='real and living map';
+    el.classList.remove('retry');
+  }
+}
+$('s-geo').onclick=async()=>{
+  if(!RAD.origin||!RAD.origin.fallback)return;
+  $('s-geo').textContent='locating…';$('s-geo').classList.remove('retry');
+  RAD.geoPending=true; geoDeadline(12000);
+  try{ geoBust(); await geoRefresh(geoApply(await geoAsk(true,true))); }
+  catch(e){ RAD.geoPending=false;
+    RAD.geoNote=(e&&e.reason==='insecure')?'insecure':((e&&e.code)||2); paintGeo(); }
+};
+
+/* ══ LA CARTE — un seul balisage pour les deux rendus ══
+   Pas d'image : `image_url` pointe vers un générateur d'images à la volée
+   sur 105 des 121 spots. Quinze cartes = quinze appels externes lents pour
+   de la fiction, dans un produit dont la thèse est le réel. */
+const KIND={PLACE:'Place',LIVE_EVENT:'Live',MEMBER_DROP:'Drop'};
+function cardHTML(s){
+  const col=intColor(s.intention), conf=INT_BY_ID[s.intention]||{name:s.intention};
+  const facts=[];
+  if(s.state_of_mind)facts.push('<span class="c-fact">'+esc(s.state_of_mind)+'</span>');
+  if(s.duration_min) facts.push('<span class="c-fact"><b>'+s.duration_min+'</b> min</span>');
+  if(s.lieu_type)    facts.push('<span class="c-fact">'+esc(s.lieu_type)+'</span>');
+  if(s.member_count) facts.push('<span class="c-fact"><b>'+s.member_count+'</b> members</span>');
+  const left=s.ends_at?fmtLeft(s.ends_at):null;
+  if(left)           facts.push('<span class="c-fact" style="color:'+col+'">'+esc(left)+'</span>');
+  (s.tags||[]).slice(0,3).forEach(t=>{
+    if(t&&t!==s.intention)facts.push('<span class="c-fact">'+esc(t)+'</span>');});
+  return ''
+   +'<div class="c-top">'
+   +  '<span class="c-kind" style="color:'+col+'">'+(KIND[s.kind]||'Place')+'</span>'
+   +  '<span class="c-int" style="color:'+col+'">'+tGlyph(13)+'&nbsp;&nbsp;'+esc(conf.name)+'</span>'
+   +'</div>'
+   +'<div class="c-name">'+esc(s.activite||'place')+'</div>'
+   +(s.commentaire?'<div class="c-why">'+esc(s.commentaire)+'</div>':'')
+   +(facts.length?'<div class="c-facts">'+facts.join('')+'</div>':'')
+   +'<div class="c-foot">'
+   +  '<span><span class="c-dist">'+fmtDist(s.dist_m||0)+'</span>'
+   +  '<span class="c-walk">'+fmtWalk(s.dist_m||0)+'</span></span>'
+   +  '<a class="c-go" target="_blank" rel="noopener" '
+   +     'href="https://www.google.com/maps/dir/?api=1&destination='+s.lat+','+s.lng+'">'
+   +     'take me there &rarr;</a>'
+   +'</div>';
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   RENDU A — LE RADAR, ET SON ZOOM
+   L'échelle automatique cadre ce qu'il y a à montrer ; la molette la
+   corrige. Sans zoom, deux lieux à trente mètres l'un de l'autre sont
+   deux T superposés : on ne peut ni les lire, ni les viser.
+   ══════════════════════════════════════════════════════════════════════ */
+const ZOOM_MIN=0.3, ZOOM_MAX=8;
+const range=()=>Math.max(60,RAD.base/RAD.zoom);
+
+function resize(){
+  const cv=$('canvas'); if(!cv)return;
+  const W=window.innerWidth, H=window.innerHeight;
+  const dpr=Math.max(1,Math.min(2,window.devicePixelRatio||1));
+  RAD.W=W;RAD.H=H;RAD.dpr=dpr;
+  cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
+  cv.style.width=W+'px';cv.style.height=H+'px';
+  RAD.cx=W/2;RAD.cy=H/2;RAD.rpx=Math.min(W,H)/2*0.82;
+  layout();
+}
+function autoRange(spots){
+  if(!spots.length)return 1200;
+  const far=spots.reduce((m,s)=>Math.max(m,s.dist_m||0),0);
+  return Math.min(4000,Math.max(400,far*1.15));
+}
+function layout(){
+  const m=$('me'); if(m){m.style.left=RAD.cx+'px';m.style.top=RAD.cy+'px';}
+  const scale=RAD.rpx/range(), pad=40;
+  RAD.spots.forEach(s=>{
+    s._px=RAD.cx+s._e*scale;
+    s._py=RAD.cy-s._n*scale;
+    if(s._el){
+      s._el.style.transform='translate('+s._px+'px,'+s._py+'px)';
+      /* Un T hors cadre n'est pas caché « pour faire propre » : il vole
+         des clics au bord de l'écran et fausse le compte visuel. */
+      const out=s._px<-pad||s._py<-pad||s._px>RAD.W+pad||s._py>RAD.H+pad;
+      s._el.style.display=out?'none':'flex';
+    }
+  });
+}
+function draw(){
+  const cv=$('canvas'); if(!cv||!RAD.on){RAD.raf=0;return;}
+  const X=cv.getContext('2d');
+  const {W,H,cx,cy,rpx,dpr}=RAD;
+  X.setTransform(dpr,0,0,dpr,0,0);
+  X.clearRect(0,0,W,H);
+  RAD.t+=1/60;
+
+  X.strokeStyle='rgba(255,255,255,.055)';X.lineWidth=1;
+  X.beginPath();
+  for(let x=(cx%55);x<W;x+=55){X.moveTo(x+.5,0);X.lineTo(x+.5,H);}
+  for(let y=(cy%55);y<H;y+=55){X.moveTo(0,y+.5);X.lineTo(W,y+.5);}
+  X.stroke();
+
+  X.strokeStyle='rgba(255,255,255,.13)';X.lineWidth=1;
+  for(let k=1;k<=3;k++){X.beginPath();X.arc(cx,cy,rpx*k/3,0,Math.PI*2);X.stroke();}
+
+  /* Balayage — vingt secteurs dégressifs. Pas de gradient conique : il
+     n'est pas universel, et vingt fill() coûtent moins qu'un test de
+     compatibilité. */
+  const head=RAD.t*Math.PI/3;
+  const col=RAD.intention?intColor(RAD.intention):'#ffffff';
+  for(let i=0;i<20;i++){
+    X.beginPath();X.moveTo(cx,cy);
+    X.arc(cx,cy,rpx,head-i*0.035-0.035,head-i*0.035);X.closePath();
+    X.fillStyle=col;X.globalAlpha=0.035*(1-i/20);X.fill();
+  }
+  X.globalAlpha=1;
+
+  /* La distance n'apparaît qu'au survol : huit étiquettes permanentes
+     empilées au centre, c'était une bouillie. Deux passes — les traits,
+     puis les plaques : une distance ne peut jamais être barrée. */
+  const shown=[RAD.focus,RAD.hover].filter((x,i,a)=>x&&a.indexOf(x)===i);
+  if(shown.length){
+    X.save();
+    X.setLineDash([3,7]);X.lineDashOffset=-RAD.t*14;X.lineWidth=.8;
+    shown.forEach(sp=>{
+      X.strokeStyle=intColor(sp.intention);X.globalAlpha=.45;
+      X.beginPath();X.moveTo(cx,cy);X.lineTo(sp._px,sp._py);X.stroke();
+    });
+    X.restore();
+    X.font='700 12px "Space Mono",monospace';
+    X.textAlign='center';X.textBaseline='middle';
+    shown.forEach(sp=>{
+      const label=fmtDist(sp.dist_m||0);
+      const lx=cx+(sp._px-cx)*.55, ly=cy+(sp._py-cy)*.55;
+      const w=X.measureText(label).width;
+      X.fillStyle='#000';X.globalAlpha=.94;
+      X.fillRect(lx-w/2-8,ly-11,w+16,22);
+      X.globalAlpha=1;X.fillStyle=intColor(sp.intention);
+      X.fillText(label,lx,ly);
+    });
+  }
+  RAD.raf=requestAnimationFrame(draw);
+}
+function radarStart(){
+  if(RAD.on||isDeck())return;
+  RAD.on=true;resize();
+  if(!RAD.raf)RAD.raf=requestAnimationFrame(draw);
+}
+function radarStop(){RAD.on=false;if(RAD.raf){cancelAnimationFrame(RAD.raf);RAD.raf=0;}}
+
+function renderRadar(spots){
+  const box=$('markers');
+  box.querySelectorAll('.marker').forEach(el=>el.remove());
+  RAD.base=autoRange(spots);RAD.zoom=1;
+  spots.forEach((s,i)=>{
+    const c=intColor(s.intention);
+    const el=document.createElement('button');
+    el.type='button';
+    el.className='marker src-'+(s.source||'spot');
+    el.style.color=c;
+    el.style.filter='drop-shadow(0 0 5px '+c+')';
+    el.setAttribute('aria-label',(s.activite||'place')+' — '+fmtDist(s.dist_m||0));
+    el.innerHTML=tGlyph(15);
+    el.querySelector('.tglyph').style.animationDelay=(i*44)+'ms';
+    el.addEventListener('click',ev=>{ev.stopPropagation();openInfo(s);});
+    el.addEventListener('mouseenter',()=>{RAD.hover=s;});
+    el.addEventListener('mouseleave',()=>{if(RAD.hover===s)RAD.hover=null;});
+    box.appendChild(el);
+    s._el=el;
+  });
+  layout();radarStart();
+}
+
+/* LE ZOOM. La molette dilate l'échelle autour de toi — tu es toujours au
+   centre, c'est ta carte. Le facteur est multiplicatif : le geste a le
+   même effet quel que soit le niveau où l'on se trouve. */
+$('canvas').addEventListener('wheel',e=>{
+  if(isDeck()||!RAD.spots.length)return;
+  e.preventDefault();
+  const k=e.deltaY<0?1.14:1/1.14;
+  RAD.zoom=Math.max(ZOOM_MIN,Math.min(ZOOM_MAX,RAD.zoom*k));
+  layout();
+},{passive:false});
+
+/* Le vide du radar EST la commande : il rouvre les sept intentions.
+   Aucun bouton, aucun pixel dépensé, et un seul endroit où revenir. */
+$('canvas').addEventListener('click',()=>{ if(!isDeck())openStep(); });
+
+/* ══════════════════════════════════════════════════════════════════════
+   RENDU B — LES CARTES PLEIN ÉCRAN
+   ══════════════════════════════════════════════════════════════════════ */
+function renderDeck(spots){
+  const deck=$('deck');
+  deck.innerHTML=spots.map(s=>'<div class="slide"><div class="c-inner">'+cardHTML(s)+'</div></div>').join('');
+  deck.scrollLeft=0;
+  paintCount(0,spots.length);
+  let tick=false;
+  deck.onscroll=()=>{
+    if(tick)return;tick=true;
+    requestAnimationFrame(()=>{
+      tick=false;
+      const w=deck.clientWidth||1;
+      paintCount(Math.round(deck.scrollLeft/w),spots.length);
+    });
+  };
+}
+function paintCount(i,n){
+  $('count').textContent=n?String(Math.min(i+1,n)).padStart(2,'0')+' / '+String(n).padStart(2,'0'):'';
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   LES DEUX ÉTATS
+   ══════════════════════════════════════════════════════════════════════ */
+function openStep(){
+  $('step').classList.add('show');
+  closeInfo();
+  $('deck').classList.remove('show');
+  $('deck-x').classList.remove('show');
+  $('count').classList.remove('show');
+  $('world').classList.remove('show');
+  radarStop();
+}
+function openWorld(){
+  $('step').classList.remove('show');
+  if(isDeck()){
+    $('deck').classList.add('show');
+    $('deck-x').classList.add('show');
+    $('count').classList.add('show');
+  }else{
+    $('world').classList.add('show');
+    radarStart();
+  }
+}
+const stepOpen=()=>$('step').classList.contains('show');
+$('deck-x').onclick=openStep;
+
+function openInfo(s){
+  RAD.focus=s;
+  $('info-body').innerHTML=cardHTML(s);
+  $('info').classList.add('show');
+}
+function closeInfo(){$('info').classList.remove('show');RAD.focus=null;}
+const infoOpen=()=>$('info').classList.contains('show');
+$('info-x').onclick=closeInfo;
+$('info').addEventListener('click',e=>{if(e.target.id==='info')closeInfo();});
+
+function renderSpots(spots){
+  RAD.spots=spots;RAD.hover=null;RAD.focus=null;
+  $('deck').innerHTML='';
+  $('markers').querySelectorAll('.marker').forEach(el=>el.remove());
+  closeInfo();
+  if(isDeck()){radarStop();renderDeck(spots);}
+  else{renderRadar(spots);}
+}
+
+/* ══ LE SÉLECTEUR — LES SEPT, TOUJOURS ══
+   Les sept intentions sont montrées, y compris celles qu'aucune habitude
+   ne porte : la carte doit dire ce qui EXISTE. Mais `higher-map` refuse
+   (403) une intention absente du Totehm — on marque ces lignes et on
+   répond sans partir. Un aller-retour pour un refus prévisible, c'est une
+   facture pour rien. */
+let mine=[];
+function say(m){$('s-note').textContent=m||'';}
+function buildSelector(){
+  const box=$('s-list');box.innerHTML='';
+  INTS.forEach(x=>{
+    const cold=mine.length>0&&mine.indexOf(x.id)===-1;
+    const b=document.createElement('button');
+    b.type='button';
+    b.className='s-int'+(cold?' cold':'')+(RAD.intention===x.id?' on':'');
+    b.dataset.int=x.id;
+    b.style.color=x.color;
+    b.innerHTML=tGlyph(15)
+      +'<span><span class="s-int-name" style="color:'+x.color+'">'+esc(x.name)+'</span>'
+      +'<span class="s-int-def">'+esc(x.def)+'</span></span>';
+    b.onclick=()=>pick(x.id);
+    box.appendChild(b);
+  });
+}
+function markLoading(id,on){
+  document.querySelectorAll('.s-int').forEach(el=>
+    el.classList.toggle('loading',on&&el.dataset.int===id));
+}
+function markActive(id){
+  document.querySelectorAll('.s-int').forEach(el=>
+    el.classList.toggle('on',el.dataset.int===id));
+}
+
+/* ══ LE DÉCLENCHEUR — rien ne part sur le réseau avant ce clic ══ */
+async function pick(id){
+  if(!id)return;
+  if(mine.length&&mine.indexOf(id)===-1){
+    say('no habit carries this intention yet — give it one in your Totehm');
+    return;
+  }
+  if(HITS.has(id)){
+    RAD.intention=id;markActive(id);
+    renderSpots(HITS.get(id));
+    say('');openWorld();
+    return;
+  }
+  markLoading(id,true);say('scanning…');
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    if(!session){markLoading(id,false);say('sign in to open the radar');return;}
+    const body={intention:id};
+    if(RAD.coords){body.lat=RAD.coords.lat;body.lng=RAD.coords.lng;}
+    const r=await fetch(SB_URL+'/functions/v1/higher-map',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    markLoading(id,false);
+    if(r.status===402){say('the radar is part of the membership');return;}
+    if(r.status===403){say('no habit carries this intention yet — give it one in your Totehm');return;}
+    if(!r.ok){say('the radar is unreachable right now');return;}
+    const j=await r.json();
+    if(j.reason==='no_intention'){
+      say('give at least one habit an intention — the radar reads your Totehm');return;
+    }
+    if(Array.isArray(j.intentions)&&j.intentions.length){mine=j.intentions;buildSelector();}
+    if(j.origin)RAD.origin=j.origin;
+    const o=RAD.origin;
+    const spots=(j.spots||[])
+      .filter(s=>s.lat!=null&&s.lng!=null)
+      .map(s=>{
+        const en=localEN(o.lat,o.lng,s.lat,s.lng);
+        return Object.assign({},s,{_e:en.e,_n:en.n,
+          dist_m:s.dist_m!=null?s.dist_m:Math.round(haversine(o.lat,o.lng,s.lat,s.lng))});
+      })
+      .sort((a,b)=>a.dist_m-b.dist_m)
+      .slice(0,MAX_T);
+    HITS.set(id,spots);
+    RAD.intention=id;markActive(id);
+    paintGeo();
+    if(!spots.length){say('nothing within range for this intention');return;}
+    renderSpots(spots);
+    say('');openWorld();
+  }catch(e){
+    console.error('higher-map:',e);
+    markLoading(id,false);
+    say('the radar hit an error');
+  }
+}
+
+/* ══ OUVERTURE ══
+   Aucun spot n'est chargé ici. On établit la position en silence, on
+   construit les sept, on laisse le vide. La carte n'attend pas le GPS
+   pour exister : on dessine sur la dernière position connue (ou Lisbonne)
+   et la demande court en arrière-plan. */
+(async function boot(){
+  buildSelector();
+  if(!isDeck())resize();
+  const cached=geoCached();
+  RAD.coords=cached;
+  RAD.origin=cached?{lat:cached.lat,lng:cached.lng,fallback:false}
+                   :{lat:38.7078,lng:-9.1366,fallback:true};
+  RAD.geoPending=!cached;
+  paintGeo();
+
+  if(!cached){
+    let perm='prompt';
+    try{ if(navigator.permissions)
+      perm=(await navigator.permissions.query({name:'geolocation'})).state; }catch(e){}
+    if(perm==='denied'){RAD.geoPending=false;RAD.geoNote=1;paintGeo();}
+    else{
+      geoAsk(false).then(c=>geoRefresh(geoApply(c)))
+        .catch(e=>{RAD.geoPending=false;
+          RAD.geoNote=(e&&e.reason==='insecure')?'insecure':((e&&e.code)||2);paintGeo();});
+      geoDeadline(12000);
+    }
+  }
+
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    if(!session){say('sign in to open the radar');return;}
+    /* Les intentions réellement portées par le Totehm, lues en local :
+       zéro requête. Le serveur reste la source de vérité et corrigera
+       cette liste à la première réponse. */
+    try{
+      const raw=localStorage.getItem('totehm_habits_v1');
+      const st=raw?JSON.parse(raw):null;
+      const arr=(st&&Array.isArray(st.habits))?st.habits:[];
+      mine=[...new Set(arr.map(h=>h&&h.i).filter(x=>INT_BY_ID[x]))];
+    }catch(e){}
+    if(mine.length)buildSelector();
+  }catch(e){}
+})();
+
+/* AUTORISER APRÈS COUP DOIT SUFFIRE : sans ceci la carte restait sur
+   Lisbonne jusqu'au rechargement. */
+(async function geoWatch(){
+  try{
+    if(!navigator.permissions||!navigator.permissions.query)return;
+    const st=await navigator.permissions.query({name:'geolocation'});
+    st.onchange=async()=>{
+      if(st.state!=='granted')return;
+      try{geoBust();await geoRefresh(geoApply(await geoAsk(false,true)));}catch(e){}
+    };
+  }catch(e){}
+})();
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState!=='visible')return;
+  if(!RAD.origin||!RAD.origin.fallback)return;
+  if(RAD.geoPending||GEO_INFLIGHT)return;
+  if(RAD.geoNote===1||RAD.geoNote==='insecure')return;   /* refus explicite : on n'insiste pas */
+  RAD.geoPending=true;paintGeo();geoDeadline(12000);
+  geoAsk(false,true).then(c=>geoRefresh(geoApply(c)))
+    .catch(e=>{RAD.geoPending=false;
+      RAD.geoNote=(e&&e.reason==='insecure')?'insecure':((e&&e.code)||2);paintGeo();});
+});
+
+/* Rotation du téléphone ou fenêtre redimensionnée : on peut traverser la
+   frontière des 700 px. Le rendu change, l'état ne bouge pas. */
+let modeTimer;
+window.addEventListener('resize',()=>{
+  clearTimeout(modeTimer);
+  modeTimer=setTimeout(()=>{
+    /* Le canvas est redimensionné même à l'étape 1 : sans ça il gardait
+       les 300×150 par défaut jusqu'au premier radar, et la toute première
+       image du radar sortait étirée. */
+    if(!isDeck())resize();
+    if(stepOpen())return;
+    radarStop();
+    if(RAD.spots.length){renderSpots(RAD.spots);openWorld();}
+    else{openStep();}
+  },160);
+});
+
+/* LE FIX CLAVIER : une saisie n'est jamais une navigation. */
+window.addEventListener('keydown',e=>{
+  if(isTyping(e))return;
+  if(e.key!=='Escape')return;
+  if(infoOpen()){closeInfo();return;}
+  if(!stepOpen()){openStep();return;}
+  window.location.href='totehm.html';
+});
+</script>
+</body>
+</html>
