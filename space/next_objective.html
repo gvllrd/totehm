@@ -24,11 +24,6 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 /* ══ LE LOGO HABITÉ — mesures reprises AU PIXEL de totehm.html ══
    #bigT top:30px / 53px de haut · #wordmark bottom:30px / 50px de haut.
    Toute divergence ici se voit comme un saut au moment de la bascule. */
-/* Petite flèche cliquable centrée au-dessus du T — ouvre le filtre.
-   Le T lui-même est réservé au retour vers le Totehm. */
-#filter-arrow{position:fixed;top:6px;left:50%;transform:translateX(-50%);z-index:31;background:none;border:none;cursor:pointer;padding:4px 12px;line-height:0;-webkit-tap-highlight-color:transparent;transition:opacity .2s}
-#filter-arrow:hover{opacity:.7}
-#filter-arrow svg{width:22px;height:12px;color:rgba(255,255,255,.55)}
 #bigT{position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;line-height:0;background:none;border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
 #bigT:hover{opacity:.7}
 #bigT svg{height:53px;width:auto;display:block}
@@ -52,6 +47,12 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 .prop .meta{position:absolute;top:2px;right:calc(100% - var(--rl) + 10px);display:flex;align-items:center;gap:8px;white-space:nowrap}
 .prop .h-T{line-height:0;color:#fff;display:block;background:none;border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .prop .h-T .tglyph{height:14px;width:auto;display:block}
+/* Le T de chaque proposition clignote, à la couleur de son intention :
+   c'est lui qui ouvre la fréquence et l'intention en lecture. Même battement
+   que le T de la ligne d'ajout du Totehm — le geste s'apprend une fois. */
+@keyframes t-pulse{0%,100%{opacity:1}50%{opacity:.18}}
+.prop .h-T.blink{animation:t-pulse 2.2s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.prop .h-T.blink{animation:none}}
 .prop .h-freq{font-family:'Quantico',sans-serif;font-weight:400;font-size:12px;letter-spacing:0;color:#fff}
 .prop .tick{position:absolute;left:var(--rl);width:var(--rw);height:5px;background:#fff;top:8px}
 .prop .h-body{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;display:flex;flex-direction:column;align-items:flex-start}
@@ -69,7 +70,12 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 .p-score i{font-style:normal;font-weight:400;font-size:10px;color:rgba(255,255,255,.45)}
 .prop .p-why{font-family:'Quantico',sans-serif;font-weight:400;font-size:11px;color:rgba(255,255,255,.62);background:none;border:none;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;-webkit-tap-highlight-color:transparent;transition:color .15s}
 .prop .p-why:hover{color:#fff}
-.prop .p-add{position:absolute;right:0;top:-4px;background:none;border:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:700;font-size:38px;line-height:1;padding:0 10px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .15s,transform .12s}
+/* Le + était un glyphe Quantico 700 en 38 px : un trait épais qui pesait plus
+   lourd que l'habitude qu'il ajoutait. C'est un SVG à trait fin, à l'échelle
+   des chevrons de navigation. */
+.prop .p-add{position:absolute;right:0;top:2px;background:none;border:none;line-height:0;padding:4px 8px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .15s,transform .12s}
+.prop .p-add svg{width:20px;height:20px;display:block;color:#fff;
+  fill:none;stroke:currentColor;stroke-width:1.3;stroke-linecap:round}
 .prop .p-add:hover{opacity:.7}
 .prop .p-add:active{transform:scale(.85)}
 .prop.added{opacity:.4}
@@ -94,10 +100,10 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
    ne couvrait PAS tout l'écran : la règle vivait dans une feuille où un
    ancêtre transformé redéfinissait le bloc conteneur. On écrit les quatre
    mesures explicitement, il n'y a plus rien à interpréter. */
-#peek,#filter-modal{position:fixed;left:0;top:0;inset:0;
+#peek{position:fixed;left:0;top:0;inset:0;
   width:100vw;height:100vh;z-index:90;background:rgba(0,0,0,.82);
   display:none;align-items:center;justify-content:center;padding:22px}
-#peek.show,#filter-modal.show{display:flex}
+#peek.show{display:flex}
 .pk-card{background:#0a0a0a;border:1px solid #1e1e1e;width:100%;max-width:340px;
   padding:22px;display:flex;flex-direction:column;gap:6px;position:relative}
 /* La croix : sans elle on ne sortait de la fenêtre que par hasard. */
@@ -106,12 +112,6 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
   line-height:1;cursor:pointer;padding:4px 8px;transition:color .15s;
   -webkit-tap-highlight-color:transparent}
 .pk-x:hover{color:#fff}
-.pk-ro{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;
-  text-transform:uppercase;color:rgba(255,255,255,.4);text-align:center;
-  padding-top:12px;border-top:1px solid rgba(255,255,255,.10)}
-.pk-def{font-family:'Quantico',sans-serif;font-size:13px;color:rgba(255,255,255,.78);
-  line-height:1.45;max-width:260px;margin-top:7px}
-.pk-def:empty{display:none}
 .pk-row{padding:16px 8px;display:flex;flex-direction:column;align-items:center;
   gap:6px;text-align:center;color:#fff;border-top:1px solid rgba(255,255,255,.10)}
 .pk-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
@@ -240,12 +240,9 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 
 <div id="rail"></div>
 
-<!-- Petite flèche au-dessus du T : ouvre le filtre (lecture seule) -->
-<button id="filter-arrow" type="button" aria-label="Open filter">
-  <svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
-</button>
-
-<!-- T.svg en haut, TOTEHM.svg en bas : mêmes coordonnées qu'en totehm.html -->
+<!-- T.svg en haut, TOTEHM.svg en bas : mêmes coordonnées qu'en totehm.html.
+     Les deux ramènent au Totehm. Pas de flèche de filtre ici — le filtre est
+     une notion du Totehm, pas du générateur. -->
 <button id="bigT" class="sink-el" type="button" aria-label="Back to my Totehm"><svg id="ui-t" viewBox="79.832 47.921 66.789 66.932" preserveAspectRatio="xMidYMid meet" role="img" aria-label="T" style="pointer-events:none"><defs><clipPath id="tut_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tut_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tut_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tut_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tut_ffb4264ddd)"><g clip-path="url(#tut_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tut_0eae0d8cca)"><g clip-path="url(#tut_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tut_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tut_92fddf9f0e)"><g clip-path="url(#tut_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tut_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tut_7d4c700d36)"><g clip-path="url(#tut_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></svg></button>
 <button id="wordmark" class="sink-el" type="button" aria-label="Open settings"><svg id="ui-wm" viewBox="74.997 121.602 77.584 46.683" preserveAspectRatio="xMidYMid meet" role="img" aria-label="TOTEHM" style="pointer-events:none"><defs><g/><clipPath id="tuw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tuw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg></button>
 
@@ -260,31 +257,14 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 <!-- Rapport de validation complet — ouvert par [Why], jamais visible dans la liste -->
 </div><!-- /#stage -->
 <button class="side-nav" id="side-home" type="button" aria-label="Back to my Totehm"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></button>
+<!-- La fenêtre de lecture LOCALE : elle ne sert que si ce fichier est ouvert
+     en direct par URL. Embarqué dans le Totehm, c'est SA fenêtre qui s'ouvre,
+     parce qu'elle seule peut noircir l'écran au-delà du carré. -->
 <div id="peek" role="dialog" aria-label="Habit details">
   <div class="pk-card">
     <button class="pk-x" id="pk-close" type="button" aria-label="Close">&times;</button>
     <div class="pk-row"><span class="pk-lbl">Time Frequency</span><span class="pk-val" id="pk-freq"></span></div>
     <div class="pk-row"><span class="pk-lbl">Intention</span><span class="pk-val" id="pk-int"></span></div>
-  </div>
-</div>
-
-<!-- LE FILTRE, EN LECTURE SEULE.
-     Même fenêtre que celle du Totehm, mêmes mesures, mêmes libellés — mais
-     rien n'y est actionnable : on regarde le filtre posé sur son Totehm,
-     on ne le change pas depuis le générateur. -->
-<div id="filter-modal" role="dialog" aria-label="Filter — read only">
-  <div class="pk-card">
-    <button class="pk-x" id="fm-close" type="button" aria-label="Close">&times;</button>
-    <div class="pk-row">
-      <span class="pk-lbl">Time Frequency</span>
-      <span class="pk-val" id="fm-freq-val">any rhythm</span>
-    </div>
-    <div class="pk-row">
-      <span class="pk-lbl">Intention</span>
-      <span class="pk-val" id="fm-int-val">any intention</span>
-      <span class="pk-def" id="fm-int-def"></span>
-    </div>
-    <div class="pk-ro">read only &middot; set it in your Totehm</div>
   </div>
 </div>
 <div id="why" aria-hidden="true">
@@ -309,16 +289,6 @@ const T_SVG='<svg class="tglyph" viewBox="0 0 624 636" aria-hidden="true"><path 
 
 const FLABEL={every_minute:'every minute',hourly:'every hour',several_daily:'several times a day',every_morning:'every morning',every_afternoon:'every afternoon',daily:'daily',every_evening:'every evening',every_weekday:'every weekday',every_night:'every night',every_other_day:'every other day',twice_week:'twice a week',every_weekend:'every weekend',weekly:'weekly',every_monday:'every monday',every_tuesday:'every tuesday',every_wednesday:'every wednesday',every_thursday:'every thursday',every_friday:'every friday',every_saturday:'every saturday',every_sunday:'every sunday',biweekly:'every two weeks',twice_month:'twice a month',monthly:'monthly',every_1st_month:'every 1st of the month',every_15th_month:'every 15th of the month',seasonal:'every season change',quarterly:'every quarter',semiannual:'every six months',yearly:'yearly',every_birthday:'every birthday',every_newyear:'every new year',randomly:'randomly',sometimes:'sometimes'};
 const INAME={fight:'Fight',flow:'Flow',enrich:'Enrich',love:'Love',express:'Express',focus:'Focus',celebrate:'Celebrate'};
-/* Les 7 intentions, copiées de totehm.html — copiées, jamais partagées. */
-const INT_BY_ID_FULL={
-  fight:    {name:'Fight',    color:'#E24B4A', def:'Conquer yourself through harder effort.'},
-  flow:     {name:'Flow',     color:'#e48b31', def:'Liberate energy through movement.'},
-  enrich:   {name:'Enrich',   color:'#fcbe21', def:'Master your wealth through capital & network.'},
-  love:     {name:'Love',     color:'#639922', def:'Contemplate life through connection & beauty.'},
-  express:  {name:'Express',  color:'#1D9E75', def:'Give form to emotion through creation.'},
-  focus:    {name:'Focus',    color:'#378ADD', def:'Master your mind through deep mental focus.'},
-  celebrate:{name:'Celebrate',color:'#7F77DD', def:'Elevate energy through collective effervescence.'}
-};
 const ICOLOR={fight:'var(--fight)',flow:'var(--flow)',enrich:'var(--enrich)',love:'var(--love)',express:'var(--express)',focus:'var(--focus)',celebrate:'var(--celebrate)'};
 
 /* ══ LE SCORE ══
@@ -420,14 +390,16 @@ function renderProps(habits){
        dans la ligne basse, sur le fond plein, où elle est lisible. */
     /* Exactement la ligne d'une habitude d'index.html, en lecture seule. */
     d.innerHTML='<span class="meta">'
-      +'<button class="h-T" type="button" aria-label="Time frequency and intention" style="color:'+(ICOLOR[h.i]||'#fff')+'">'+T_SVG+'</button>'
+      +'<button class="h-T blink" type="button" aria-label="Time frequency and intention" style="color:'+(ICOLOR[h.i]||'#fff')+'">'+T_SVG+'</button>'
       +'<span class="h-freq">'+esc(freq)+'</span></span>'
       +'<span class="tick"></span>'
       +'<span class="h-body"><span class="p-text">'+esc(h.text)+'</span>'
       +'<span class="p-foot">'+scoreHTML(h._score)
       +(h.stoner?'<button class="p-hi" type="button" aria-label="Get Higher"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-word"></use></svg></button>':'')
       +'<button class="p-why" type="button">'+esc(L.why)+'</button></span></span>'
-      +'<button class="p-add" aria-label="+">+</button>';
+      +'<button class="p-add" type="button" aria-label="Add to my Totehm">'
+      +  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 V20 M4 12 H20"/></svg>'
+      +'</button>';
     d.querySelector('.h-T').onclick=()=>openPeek(h);
     /* Depuis l'iframe du Totehm, une navigation doit viser window.top :
        le tunnel Stripe lance dans un cadre est annule sans message. */
@@ -557,10 +529,12 @@ function autoGrow(){const t=$('obj-input');t.style.height='auto';t.style.height=
 $('obj-input').addEventListener('input',autoGrow);
 autoGrow();
 
-/* Le T du haut ET le TOTEHM du bas ramènent à totehm.html — jamais ailleurs. */
+/* Le T du haut ET le TOTEHM du bas ramènent à totehm.html — jamais ailleurs.
+   Il n'y a plus de flèche de filtre ici : le filtre est une notion du Totehm,
+   pas du générateur. Ce qui se lit en lecture seule, c'est la fréquence et
+   l'intention de CHAQUE proposition, par son T. */
 $('bigT').onclick=()=>goBack();
 $('wordmark').onclick=()=>goBack();
-$('filter-arrow').onclick=()=>openFilter();
 
 $('obj-input').addEventListener('keydown',async(e)=>{
   /* Maj+Entrée insère un retour ligne ; Entrée seule lance la génération. */
@@ -590,10 +564,8 @@ $('obj-input').addEventListener('keydown',async(e)=>{
 /* Retour au Totehm : bascule sèche, aucun fondu de part et d'autre. */
 function goBack(){
   if(whyOpen()){closeWhy();return;}
-  if(filterOpen()){closeFilter();return;}
   if($('peek').classList.contains('show')){closePeek();return;}   /* le rapport se referme d'abord */
-  const embedded=window.parent&&window.parent!==window;
-  if(embedded){try{window.parent.postMessage({type:'totehm-close-next'},'*');return;}catch(e){}}
+  if(embedded()){try{window.parent.postMessage({type:'totehm-close-next'},'*');return;}catch(e){}}
   window.location.href='totehm.html';
 }
 /* ══ LE FILTRE, EN LECTURE SEULE ══
@@ -601,49 +573,26 @@ function goBack(){
    totehm.html dans `totehm_filter_v1`. On le lit, on l'affiche, on n'y
    touche pas — un filtre modifiable depuis deux écrans est un filtre qui
    ment dans l'un des deux. */
-function readFilter(){
-  try{const r=JSON.parse(localStorage.getItem('totehm_filter_v1')||'null');
-      return r||{f:null,i:null};}catch(e){return {f:null,i:null};}
-}
-function openFilter(){
-  const flt=readFilter();
-  $('fm-freq-val').textContent=flt.f?(FLABEL[flt.f]||flt.f):'any rhythm';
-  const x=flt.i?(INT_BY_ID_FULL[flt.i]||null):null;
-  if(x){
-    $('fm-int-val').innerHTML='<span style="color:'+x.color+'">'+T_SVG+' '+esc(x.name)+'</span>';
-    $('fm-int-def').textContent=x.def||'';
-  }else{
-    $('fm-int-val').textContent='any intention';
-    $('fm-int-def').textContent='';
-  }
-  $('filter-modal').classList.add('show');
-}
-function closeFilter(){$('filter-modal').classList.remove('show');}
-const filterOpen=()=>$('filter-modal').classList.contains('show');
-$('fm-close').onclick=closeFilter;
-$('filter-modal').addEventListener('click',e=>{if(e.target.id==='filter-modal')closeFilter();});
+/* ══ LA FENÊTRE DE LECTURE ══
+   Le T coloré de chaque proposition l'ouvre : fréquence et intention, en
+   lecture seule. Rien n'est modifiable — une proposition n'est pas encore
+   une habitude.
 
-/* Le geste : au sommet de la liste, vers le haut, le filtre s'ouvre —
-   exactement comme dans le Totehm. passive:true, aucun accumulateur. */
-(function filterGesture(){
-  let lock=false;
-  const arm=()=>{lock=true;setTimeout(()=>{lock=false;},520);};
-  const atTop=()=>$('mid').scrollTop<=1;
-  const blocked=t=>busy||whyOpen()||filterOpen()||$('peek').classList.contains('show')
-    ||!!(t&&t.closest&&t.closest('input,textarea,#why,#peek,#filter-modal'));
-  window.addEventListener('wheel',e=>{
-    if(blocked(e.target)||lock)return;
-    if(e.deltaY<-4&&atTop()){arm();openFilter();}
-  },{passive:true});
-  window.addEventListener('touchend',e=>{
-    if(blocked(e.target)||lock||ax!=='v')return;
-    const dy=e.changedTouches[0].screenY-y0;
-    if(dy>32&&atTop()){arm();openFilter();}
-  },{passive:true});
-})();
-
-/* La proposition n'est pas encore une habitude : rien n'est modifiable ici. */
+   EMBARQUÉ, C'EST LE PARENT QUI L'OUVRE. Une iframe ne peut pas noircir
+   l'écran au-delà de son propre cadre : sur desktop elle est enfermée dans
+   le carré, et un voile qui s'arrête au bord du carré n'est pas un voile.
+   On demande donc au Totehm d'ouvrir LA SIENNE — celle qui couvre vraiment
+   tout. « Exactement comme totehm.html » : c'est littéralement sa fenêtre.
+   Ouvert en direct par URL, personne au-dessus : on ouvre la nôtre. */
+const embedded=()=>!!(window.parent&&window.parent!==window);
 function openPeek(h){
+  if(embedded()){
+    try{
+      window.parent.postMessage({type:'totehm-read-peek',
+        habit:{f:h.f||null,i:h.i||null}},'*');
+      return;
+    }catch(e){}
+  }
   $('pk-freq').textContent=h.f_label||FLABEL[h.f]||h.f||'any rhythm';
   const name=h.i_label||INAME[h.i]||h.i;
   if(h.i&&ICOLOR[h.i]) $('pk-int').innerHTML='<span style="color:'+ICOLOR[h.i]+'">'+T_SVG+esc(name)+'</span>';
@@ -655,22 +604,34 @@ $('pk-close').onclick=closePeek;
 $('peek').addEventListener('click',e=>{if(e.target.id==='peek')closePeek();});
 document.addEventListener('keydown',e=>{
   if(e.key!=='Escape')return;
-  if($('peek').classList.contains('show')){e.stopPropagation();closePeek();return;}
-  if(filterOpen()){e.stopPropagation();closeFilter();}
+  if($('peek').classList.contains('show')){e.stopPropagation();closePeek();}
 },true);
+
+/* ══ LES MESURES DU RAIL VIENNENT DU PARENT ══
+   Plus de facteur dérivé de `100vw` : le Totehm envoie ses propres valeurs
+   calculées, on les pose telles quelles. Identiques par construction. */
+window.addEventListener('message',e=>{
+  if(!e.data||e.data.type!=='totehm-metrics')return;
+  const r=document.documentElement.style;
+  if(e.data.rl)r.setProperty('--rl',e.data.rl);
+  if(e.data.rw)r.setProperty('--rw',e.data.rw);
+  if(e.data.bandT)r.setProperty('--band-t',e.data.bandT);
+  if(e.data.bandB)r.setProperty('--band-b',e.data.bandB);
+});
+if(embedded()){try{window.parent.postMessage({type:'totehm-need-metrics'},'*');}catch(e){}}
 $('side-home').onclick=()=>goBack();
 let lock=false;const trig=()=>{if(lock)return;lock=true;setTimeout(()=>lock=false,600);goBack();};
 let x0=0,y0=0,ax=null;
 window.addEventListener('touchstart',e=>{x0=e.changedTouches[0].screenX;y0=e.changedTouches[0].screenY;ax=null;},{passive:true});
 window.addEventListener('touchmove',e=>{if(ax)return;const dx=Math.abs(e.changedTouches[0].screenX-x0),dy=Math.abs(e.changedTouches[0].screenY-y0);if(dx>8||dy>8)ax=dx>dy?'h':'v';},{passive:true});
-window.addEventListener('touchend',e=>{if(ax!=='h')return;if(whyOpen()||filterOpen()||$('peek').classList.contains('show'))return;if(e.target&&e.target.closest&&e.target.closest('input,textarea,button'))return;const dx=e.changedTouches[0].screenX-x0;if(dx>32)trig();},{passive:true});
+window.addEventListener('touchend',e=>{if(ax!=='h')return;if(whyOpen()||$('peek').classList.contains('show'))return;if(e.target&&e.target.closest&&e.target.closest('input,textarea,button'))return;const dx=e.changedTouches[0].screenX-x0;if(dx>32)trig();},{passive:true});
 /* LE FIX CLAVIER. L'objectif se tape dans un <textarea> : ne tester que
    INPUT laissait la flèche droite quitter la page en pleine écriture. */
 const isTyping=e=>{const t=e&&e.target;
   return !!t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable===true);};
 window.addEventListener('keydown',e=>{
   if(isTyping(e))return;
-  if(filterOpen()||$('peek').classList.contains('show'))return;
+  if($('peek').classList.contains('show'))return;
   if(e.key==='Escape'||e.key==='ArrowRight')trig();
 });
 /* Un swipe à l'intérieur du rapport ne doit pas naviguer */
