@@ -121,7 +121,7 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
    Il vit maintenant DANS le flux de l'atterrissage, à la place libérée par
    l'avertissement supprimé — c'est le premier écran, c'est là qu'on se
    connecte. Dans l'app, le Dashboard s'ouvre par le TOTEHM du bas. */
-#conn-bar{position:static;margin:0 auto 2vh;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:0 4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
+#conn-bar{position:static;margin:0 auto 2.4vh;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:0 4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
 #conn-bar:hover{color:#fff}
 /* Accréditation Higher. Elle ne s'affiche que pour qui l'a payée ou reçue :
    la source de vérité est stoner_access, jamais le front. */
@@ -288,7 +288,7 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 .p-alt{font-family:var(--futura);font-weight:300;font-size:10.5px;color:rgba(255,255,255,.55)}
 #mw-sub .s-plan .p-why{font-family:var(--futura);font-weight:300;font-size:11.5px;line-height:1.5;color:rgba(255,255,255,.7);margin-top:5px}
 
-#member-window{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.84);display:none;align-items:center;justify-content:center;padding:24px}
+#member-window{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.84);display:none;align-items:center;justify-content:center;padding:24px}
 #member-window.show{display:flex}
 .mw-card{background:#121212;border:1px solid #2a2a2a;box-shadow:0 16px 40px rgba(0,0,0,.9);max-width:360px;width:100%;padding:30px 24px;text-align:center;position:relative;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .mw-card::-webkit-scrollbar{width:0;display:none}
@@ -341,14 +341,27 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 #gate.no-anim,#gate.no-anim *{transition:none!important;animation:none!important}
 
 /* ── L'écran d'atterrissage ── */
-/* L'atterrissage porte maintenant la Terre et deux portes : il défile.
-   `overflow-y:auto` et non `hidden` — sinon le bas de la page n'existe
-   simplement pas sur un téléphone. */
+/* ══ LE BUG MOBILE, ET SA CAUSE EXACTE ══
+   L'atterrissage défile (`overflow-y:auto`) depuis qu'il porte la Terre.
+   Or `#gl-bg` monte à scale(60) pendant l'animation — sur mobile, faute de
+   `--tf-bg` mesurable, c'est la valeur de repli. 110 px × 60 = 6 600 px de
+   carré à l'intérieur d'un conteneur qui défile : MESURÉ, la hauteur de
+   défilement du gate passait de 844 px à 2 525 px pendant le geste. Le
+   navigateur ajustait alors la position de défilement et les boutons du bas
+   sortaient de l'écran. C'était ça, « des boutons qui disparaissent ».
+
+   Le correctif : PENDANT l'animation (déploiement comme repli), le gate ne
+   défile pas. Les deux ne se produisent jamais en même temps — on ne
+   parcourt pas la page pendant qu'elle se déplie. Au repos, les calques
+   sont à scale(1) et le défilement redevient normal.
+   Desktop n'a jamais eu le problème : `--tf-bg` y vaut ~scale(5,8), qui
+   tient dans le carré. */
 #gate{position:fixed;inset:0;z-index:200;background:#000;
   display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
   padding:var(--gate-top) 0 0;overflow-x:hidden;overflow-y:auto;
   overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
   transition:opacity .32s ease}
+body.gate.entered #gate,body.gate.folding #gate{overflow:hidden}
 body:not(.gate) #gate{display:none}
 #gate.gate-off{opacity:0;pointer-events:none}
 
@@ -591,6 +604,16 @@ body.gate.entered #filter-badge{
 
 <!-- ══ ÉTAT 1 : LE LOGO RECOMPOSÉ — 4 SVG vectoriels superposés ══ -->
 <div id="gate">
+  <!-- La météo, ancrée en haut à droite. -->
+  <div id="gate-weather" aria-hidden="true">
+    <div class="gw-line"><b id="gw-time">--:--</b><span id="gw-sky"></span></div>
+    <div class="gw-line" id="gw-row2"><b id="gw-temp"></b><span id="gw-wind"></span></div>
+  </div>
+
+  <!-- L'accès membre : AU-DESSUS du logo. C'est la première chose qu'on lit
+       en arrivant, et la fenêtre qu'il ouvre monte au-dessus du gate. -->
+  <button id="conn-bar" type="button" aria-label="member space"><span class="dot"></span>Guest</button>
+
   <div id="gate-logo">
     <svg class="glayer" id="gl-bg"   viewBox="0 0 224.88 224.08" preserveAspectRatio="none"    aria-hidden="true"><defs><mask id="tgb_m" maskUnits="userSpaceOnUse" x="-40" y="-40" width="310" height="310"><rect x="-40" y="-40" width="310" height="310" fill="#fff"/><circle cx="56.421" cy="0.000" r="13.86" fill="#000"/><circle cx="56.421" cy="224.078" r="13.86" fill="#000"/><circle cx="112.440" cy="0.000" r="13.86" fill="#000"/><circle cx="112.440" cy="224.078" r="13.86" fill="#000"/><circle cx="168.459" cy="0.000" r="13.86" fill="#000"/><circle cx="168.459" cy="224.078" r="13.86" fill="#000"/><circle cx="0.402" cy="56.020" r="13.86" fill="#000"/><circle cx="224.478" cy="56.020" r="13.86" fill="#000"/><circle cx="0.402" cy="112.039" r="13.86" fill="#000"/><circle cx="224.478" cy="112.039" r="13.86" fill="#000"/><circle cx="0.402" cy="168.059" r="13.86" fill="#000"/><circle cx="224.478" cy="168.059" r="13.86" fill="#000"/></mask></defs><rect x="0.402" y="0.000" width="224.076" height="224.078" fill="#333366" mask="url(#tgb_m)"/></svg>
     <svg class="glayer" id="gl-rail" viewBox="20.689 0.225 17.203 223.630" preserveAspectRatio="none"    aria-hidden="true"><defs><clipPath id="tgr_3a710ebbbe"><path d="M 20.652344 0.261719 L 37.839844 0.261719 L 37.839844 223.816406 L 20.652344 223.816406 Z M 20.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tgr_1b01f8474a"><path d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.816406 L 0.652344 223.816406 Z M 0.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tgr_95349ecf51"><rect x="0" width="18" y="0" height="224"/></clipPath></defs><g clip-path="url(#tgr_3a710ebbbe)"><g transform="matrix(1, 0, 0, 1, 20, -0.000000000000020428)"><g clip-path="url(#tgr_95349ecf51)"><g clip-path="url(#tgr_1b01f8474a)"><path fill="#626286" d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.808594 L 0.652344 223.808594 Z M 0.652344 0.261719 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></svg>
@@ -598,15 +621,6 @@ body.gate.entered #filter-badge{
     <svg class="glayer" id="gl-wm"   viewBox="74.997 121.602 77.584 46.683"   preserveAspectRatio="none" aria-hidden="true"><defs><g/><clipPath id="tgw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tgw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg>
     <button id="gate-enter" aria-label="Enter my Totehm"></button>
   </div>
-  <!-- 6 · La météo, ancrée en haut à droite. -->
-  <div id="gate-weather" aria-hidden="true">
-    <div class="gw-line"><b id="gw-time">--:--</b><span id="gw-sky"></span></div>
-    <div class="gw-line" id="gw-row2"><b id="gw-temp"></b><span id="gw-wind"></span></div>
-  </div>
-
-  <!-- 13 · L'accès membre, dans le flux, à la place de l'avertissement. -->
-  <button id="conn-bar" type="button" aria-label="member space"><span class="dot"></span>Guest</button>
-
   <button class="btn-sig" id="gate-open">Open my Totehm</button>
   <p class="gate-terms">By opening your Totehm, you accept <a class="terms-link" href="terms.html" target="_blank" rel="noopener">its simple terms</a>.</p>
 
@@ -1109,8 +1123,9 @@ let foldToGate=()=>{};
 const isTyping=e=>{const t=e&&e.target;
   return !!t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable===true);};
 
-/* Le filtre survit au rechargement, et My next objective le lit en lecture
-   seule : sans persistance, sa fenêtre de filtre mentirait. */
+/* Le filtre survit au rechargement : sans persistance, on retrouvait son
+   Totehm entier alors qu'on l'avait laissé filtré. Il ne sort plus de ce
+   fichier — My next objective n'a plus de fenêtre de filtre. */
 const KEYF='totehm_filter_v1';
 let lastFilterSaved=null;
 function saveFilter(){
@@ -1423,8 +1438,10 @@ function openReadPeek(h){
   $('hp-int-def').textContent=x?(x.def||''):'';
   $('hp-freq').onclick=null;
   $('hp-int').onclick=null;
+  /* L'ordre était inversé : on ajoutait `ro` puis on le retirait dans le
+     `remove` suivant. La lecture seule n'a donc jamais été appliquée. */
+  $('habit-peek').classList.remove('hide');
   $('habit-peek').classList.add('ro');
-  $('habit-peek').classList.remove('ro','hide');
 }
 function closeHabitPeek(){$('habit-peek').classList.add('hide');$('habit-peek').classList.remove('ro');}
 $('habit-peek').addEventListener('click',(e)=>{if(e.target.id==='habit-peek')closeHabitPeek();});
@@ -1567,6 +1584,38 @@ window.addEventListener('DOMContentLoaded',()=>{
   $('book-frame').src='book.html';
   $('nextobj-frame').src='next_objective.html';
 });
+
+/* ══ LES MESURES DU RAIL : DONNÉES, PLUS DÉDUITES ══
+   book.html et next_objective.html recalculaient `--rl` et `--rw` depuis
+   `100vw` avec un facteur dérivé (.0821 = .072 / .8768). Deux formules pour
+   une même mesure, c'est un endroit où l'écart finit toujours par s'installer :
+   il suffit d'une barre de défilement, d'un arrondi, ou d'une retouche d'un
+   seul côté. Le parent envoie désormais ses valeurs calculées. Elles ne sont
+   plus égales par arithmétique — elles sont identiques par construction. */
+function pushMetrics(){
+  /* ⚠️ PAS `getPropertyValue('--rl')` : une propriété personnalisée est
+     SUBSTITUÉE, pas calculée. On récupérerait le jeton brut
+     `max(38px,calc(min(92vh,78vw,640px) * .072))`, que l'iframe résoudrait
+     contre SA fenêtre — c'est-à-dire faux, et exactement le genre d'écart
+     qu'on cherche à supprimer. On lit donc la valeur UTILISÉE, en pixels,
+     sur le rail lui-même. */
+  const rail=$('rail'), rs=rail?getComputedStyle(rail):null;
+  const cs=getComputedStyle(document.documentElement);
+  const m={type:'totehm-metrics',
+           rl:rs?rs.left:cs.getPropertyValue('--rl').trim(),
+           rw:rs?rs.width:cs.getPropertyValue('--rw').trim(),
+           bandT:cs.getPropertyValue('--band-t').trim(),
+           bandB:cs.getPropertyValue('--band-b').trim()};
+  ['book-frame','nextobj-frame'].forEach(id=>{
+    const f=$(id);
+    if(f&&f.contentWindow){try{f.contentWindow.postMessage(m,'*');}catch(e){}}
+  });
+}
+['book-frame','nextobj-frame'].forEach(id=>{
+  const f=$(id); if(f) f.addEventListener('load',pushMetrics);
+});
+let metricsTimer=null;
+window.addEventListener('resize',()=>{clearTimeout(metricsTimer);metricsTimer=setTimeout(pushMetrics,120);});
 /* Le passé (gauche) et le futur (droite) */
 function hOpen(){return $('book').classList.contains('show')||$('nextobj').classList.contains('show');}
 /* Desktop : la couleur de la bordure du carré dit où l'on est.
@@ -1737,6 +1786,19 @@ window.addEventListener('message',e=>{
     state.habits.push({t:String(h.t).slice(0,80),f:h.f||null,i:h.i||null});
     logTotehmEvent('habit_added',h.t,{f:h.f||null,i:h.i||null,source:'next_objective'});
     save();renderHabits();
+  }
+  /* ══ LA FENÊTRE DE LECTURE, OUVERTE PAR LE PARENT ══
+     Une iframe ne peut pas noircir l'écran au-delà de son propre cadre : sur
+     desktop elle est enfermée dans le carré. Alors ce n'est pas elle qui
+     ouvre la fenêtre — c'est nous, avec CELLE du Totehm, celle qui couvre
+     vraiment tout. « Exactement comme totehm.html » : c'est littéralement
+     la fenêtre de totehm.html. */
+  else if(e.data.type==='totehm-read-peek'&&e.data.habit){
+    openReadPeek(e.data.habit);
+  }
+  /* Une iframe qui vient de démarrer réclame les mesures du rail. */
+  else if(e.data.type==='totehm-need-metrics'){
+    pushMetrics();
   }
 });
 
@@ -2187,7 +2249,24 @@ window.addEventListener('pageshow',e=>{
       const a=$(p.from), b=$(p.to);
       if(!a||!b) continue;
       const f=a.getBoundingClientRect(), t=b.getBoundingClientRect();
-      if(!f.width||!f.height||!t.width||!t.height) continue;
+      /* Cible sans boîte — sur mobile #stage n'a que des enfants `fixed`,
+         donc une hauteur nulle. On EFFACE la variable au lieu de garder
+         l'ancienne : une valeur mesurée en desktop puis rejouée en portrait
+         après rotation replierait le fond sur un carré qui n'existe plus. */
+      if(!f.width||!f.height||!t.width||!t.height){
+        root.style.removeProperty(p.v);
+        /* Et on ramène l'échelle de repli à ce qu'il FAUT pour couvrir
+           l'écran. `scale(60)` sur 110 px, c'est 6 600 px de carré dans un
+           conteneur qui défile : la cause du bug mobile. Il suffit de sortir
+           les perforations du champ — au-delà, on ne fait que fabriquer du
+           débordement. Le 1,8 est la marge qui les met dehors dans tous les
+           sens, y compris quand le logo n'est pas centré verticalement. */
+        if(p.v==='--tf-bg'&&f.width){
+          const need=Math.ceil(Math.max(window.innerWidth,window.innerHeight)/f.width*1.8);
+          root.style.setProperty('--gate-bg-scale',String(Math.max(8,Math.min(60,need))));
+        }
+        continue;
+      }
       const dx=(t.left+t.right)/2-(f.left+f.right)/2;
       const dy=(t.top+t.bottom)/2-(f.top+f.bottom)/2;
       const sx=t.width/f.width, sy=t.height/f.height;
@@ -2245,7 +2324,8 @@ window.addEventListener('pageshow',e=>{
 
     gate.classList.add('no-anim');        /* 1. rien ne bouge              */
     gate.classList.remove('gate-off');
-    body.classList.add('gate');           /* 2. le gate au repos, opaque   */
+    body.classList.add('gate','folding'); /* 2. le gate au repos, opaque,  */
+                                          /*    et il NE DÉFILE PAS        */
     gate.scrollTop=0;                     /*    on mesure toujours du haut */
     void gate.offsetWidth;
     measure();                            /* 3. rect NON transformé        */
@@ -2256,11 +2336,26 @@ window.addEventListener('pageshow',e=>{
     body.classList.remove('entered');     /* 6. et le repli part           */
 
     open=false;
-    timer=setTimeout(()=>{ moving=false; },DUR+120);
+    timer=setTimeout(()=>{
+      body.classList.remove('folding');   /* le défilement redevient normal */
+      moving=false;
+    },DUR+120);
   }
 
   /* Le reste du script replie par ici. */
   foldToGate=fold;
+
+  /* ══ LE SECOND VERROU ══
+     `overflow:hidden` empêche l'utilisateur de faire défiler, PAS le
+     navigateur : un `scrollTop` programmatique, une mise au point sur un
+     champ ou un reste d'inertie passent quand même — mesuré, le bouton du
+     bas se faisait chasser hors de l'écran. Alors pendant l'animation on
+     réépingle le défilement à zéro à chaque tentative. Piloté par
+     l'événement, jamais en boucle : zéro coût au repos. */
+  gate.addEventListener('scroll',()=>{
+    if(gate.scrollTop&&(body.classList.contains('entered')||body.classList.contains('folding')))
+      gate.scrollTop=0;
+  },{passive:true});
 
   /* État 1 (la classe est déjà posée sur <body> dans le HTML : zéro flash) */
   body.classList.add('gate');
