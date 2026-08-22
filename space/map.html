@@ -59,32 +59,45 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
    deviné derrière, on n'a pas quitté la carte. */
 #info{background:rgba(0,0,0,.88);align-items:center;justify-content:center;z-index:70}
 
-.s-q{font-family:'Quantico',sans-serif;font-size:16px;font-weight:400;
-  color:var(--hi);text-align:center;line-height:1.5;flex-shrink:0;margin-bottom:6px}
+/* La question « What's your intention right now, right here? » a été retirée :
+   sept intentions nommées et définies n'ont pas besoin qu'on demande.
+   L'espace libéré va aux lignes. */
 .s-sub{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.18em;
   text-transform:uppercase;color:var(--lo);text-align:center;flex-shrink:0;
-  background:none;border:none;padding:6px 10px;cursor:default;
+  background:none;border:none;padding:4px 10px;cursor:default;
   -webkit-tap-highlight-color:transparent;transition:color .15s}
+#s-geo:empty{display:none}
 #s-geo.retry{color:var(--mid);cursor:pointer;text-decoration:underline;text-underline-offset:4px}
 #s-geo.retry:hover{color:var(--hi)}
 
+/* `justify-content:flex-start` et non `center` : les sept lignes remplissent
+   la hauteur au lieu de flotter au milieu d'un écran vide. */
 #s-list{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;display:flex;flex-direction:column;
-  justify-content:center;gap:2px;margin:10px 0;max-width:520px;width:100%;
-  margin-left:auto;margin-right:auto}
-.s-int{display:flex;align-items:flex-start;gap:13px;padding:13px 8px;
+  justify-content:flex-start;gap:0;margin:6px auto;max-width:560px;width:100%}
+.s-int{display:flex;align-items:flex-start;gap:15px;padding:15px 10px;
   background:none;border:none;border-left:2px solid transparent;
   text-align:left;cursor:pointer;width:100%;
   -webkit-tap-highlight-color:transparent;
   transition:background .12s,border-color .12s,opacity .18s}
-.s-int .tglyph{width:15px;height:15px;flex-shrink:0;margin-top:4px}
+.s-int + .s-int{border-top:1px solid rgba(255,255,255,.07)}
+.s-int .tglyph{width:17px;height:17px;flex-shrink:0;margin-top:4px}
 .s-int-name{display:flex;align-items:center;
-  font-family:'Quantico',sans-serif;font-size:18px;font-weight:700;line-height:1.15}
+  font-family:'Quantico',sans-serif;font-size:20px;font-weight:700;line-height:1.15}
 .s-int-def{font-family:'Quantico',sans-serif;font-size:14px;font-weight:400;
-  color:var(--mid);margin-top:5px;line-height:1.45}
+  color:var(--mid);margin-top:6px;line-height:1.45}
+/* ── LES MOLÉCULES ET LES ONDES ──
+   Ce que l'intention fait au cerveau, en trois traces. Space Mono parce que
+   c'est de la donnée, pas de la parole ; gris sur gris parce que ça se lit
+   après le nom, jamais avant. */
+.s-int-neuro{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.s-int-ntag{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--mid);border:1px solid var(--dim);
+  padding:3px 8px;line-height:1.6;white-space:nowrap}
 @media(hover:hover){
   .s-int:hover{background:rgba(255,255,255,.05);border-left-color:currentColor}
   .s-int:hover .s-int-name{color:var(--hi)!important}
+  .s-int:hover .s-int-ntag{color:var(--hi);border-color:var(--lo)}
 }
 .s-int.on{border-left-color:currentColor;background:rgba(255,255,255,.04)}
 .s-int.loading{opacity:.3;pointer-events:none}
@@ -118,7 +131,7 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
    La position passe par left/top et JAMAIS par transform — l'animation
    anime transform et écraserait le placement. */
 #me{position:absolute;left:0;top:0;width:10px;height:10px;margin:-5px 0 0 -5px;
-  background:#fff;pointer-events:none;z-index:3;
+  background:#fff;border-radius:50%;pointer-events:none;z-index:3;
   box-shadow:0 0 10px rgba(255,255,255,.75);
   animation:pulse 2.6s ease-in-out infinite}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.5}}
@@ -145,10 +158,15 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
   overscroll-behavior:contain;background:#000}
 #deck::-webkit-scrollbar{display:none}
 #deck.show{display:flex}
+/* Les cartes sont désormais accessibles sur GRAND écran aussi (bascule
+   map/card). Sans largeur maximale, une description de six mots s'étirait
+   sur 1 400 px et devenait illisible : la mesure du texte prime sur la
+   largeur de la fenêtre. Le bloc reste centré, la carte reste plein écran. */
 .slide{flex:0 0 100vw;width:100vw;height:100%;scroll-snap-align:center;
   display:flex;flex-direction:column;justify-content:center;
   padding:calc(58px + env(safe-area-inset-top,0)) 26px calc(52px + env(safe-area-inset-bottom,0));
   overflow-y:auto;overscroll-behavior:contain}
+.slide .c-inner{max-width:720px;width:100%;margin:0 auto}
 
 #deck-x{position:fixed;top:calc(14px + env(safe-area-inset-top,0));right:14px;z-index:24;
   display:none;background:none;border:none;cursor:pointer;padding:10px;line-height:0;
@@ -201,9 +219,37 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
   fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
 #info .c-x:hover svg{color:var(--hi)}
 
-/* ── LA BASCULE DES DEUX RENDUS ── */
-@media(max-width:699px){ #world{display:none!important} }
-@media(min-width:700px){ #deck,#deck-x,#count{display:none!important} }
+/* ══ 16 · LA BASCULE MAP / CARD ══
+   Les deux rendus ne sont plus imposés par la largeur de l'écran : ils sont
+   CHOISIS. Un téléphone peut vouloir le radar, un grand écran peut vouloir
+   lire les cartes une par une. La largeur ne décide plus que du rendu par
+   DÉFAUT, au premier affichage.
+   Le bouton est la seule chose qui flotte au-dessus du radar, et il n'y a
+   rien d'autre : c'est le prix d'un choix qui ne peut pas se deviner. */
+#view-toggle{position:fixed;top:calc(14px + env(safe-area-inset-top,0));
+  left:50%;transform:translateX(-50%);z-index:26;display:none;
+  font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--lo);background:none;border:none;
+  cursor:pointer;padding:8px 14px;-webkit-tap-highlight-color:transparent;
+  transition:color .15s}
+#view-toggle.show{display:block}
+#view-toggle:hover{color:var(--hi)}
+
+/* ── LES FLÈCHES DU DECK ──
+   Le scroll-snap horizontal ne se devine pas sur un grand écran, et se rate
+   au doigt quand la carte défile verticalement. Deux flèches poussent
+   `scrollLeft` d'une carte pleine, exactement. */
+.deck-nav{position:fixed;top:50%;transform:translateY(-50%);z-index:25;
+  display:none;background:none;border:none;cursor:pointer;padding:16px 10px;
+  line-height:0;-webkit-tap-highlight-color:transparent}
+.deck-nav.show{display:block}
+.deck-nav svg{width:13px;height:22px;color:var(--lo);display:block;
+  fill:none;stroke:currentColor;stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round;transition:color .15s}
+.deck-nav:hover svg{color:var(--hi)}
+.deck-nav[disabled]{opacity:.18;pointer-events:none}
+#deck-prev{left:2px}
+#deck-next{right:2px}
 </style>
 </head>
 <body>
@@ -219,11 +265,19 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
 <button id="deck-x" type="button" aria-label="Back to the intentions">
   <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg>
 </button>
+<button class="deck-nav" id="deck-prev" type="button" aria-label="Previous place">
+  <svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg>
+</button>
+<button class="deck-nav" id="deck-next" type="button" aria-label="Next place">
+  <svg viewBox="0 0 14 24" aria-hidden="true"><path d="M3 2 L11 12 L3 22"/></svg>
+</button>
 <div id="count"></div>
+
+<!-- La bascule entre le radar et les cartes. Choisie, jamais imposée. -->
+<button id="view-toggle" type="button"></button>
 
 <!-- ÉTAPE 1 · LES SEPT INTENTIONS -->
 <div id="step" class="sheet show" role="dialog" aria-label="Choose an intention">
-  <p class="s-q">What's your intention right now, right here?</p>
   <button class="s-sub" id="s-geo" type="button"></button>
   <div id="s-list"></div>
   <div id="s-note"></div>
@@ -247,15 +301,16 @@ const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':s;r
 const isTyping=e=>{const t=e&&e.target;
   return !!t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable===true);};
 
-/* Les 7 intentions — copiées de totehm.html. Copiées, jamais partagées. */
+/* Les 7 intentions — copiées de totehm.html, `neuro` compris. Copiées,
+   jamais partagées : trois origines, trois fichiers, aucun couplage. */
 const INTS=[
-  {id:'fight',    name:'Fight',    color:'#E24B4A', def:'Conquer yourself through harder effort.'},
-  {id:'flow',     name:'Flow',     color:'#e48b31', def:'Liberate energy through movement.'},
-  {id:'enrich',   name:'Enrich',   color:'#fcbe21', def:'Master your wealth through capital & network.'},
-  {id:'love',     name:'Love',     color:'#639922', def:'Contemplate life through connection & beauty.'},
-  {id:'express',  name:'Express',  color:'#1D9E75', def:'Give form to emotion through creation.'},
-  {id:'focus',    name:'Focus',    color:'#378ADD', def:'Master your mind through deep mental focus.'},
-  {id:'celebrate',name:'Celebrate',color:'#7F77DD', def:'Elevate energy through collective effervescence.'}
+  {id:'fight',    name:'Fight',    color:'#E24B4A', def:'Conquer yourself through harder effort.',          neuro:'High Beta / Gamma · Noradrenaline · Endogenous Opioids'},
+  {id:'flow',     name:'Flow',     color:'#e48b31', def:'Liberate energy through movement.',                neuro:'Alpha / Theta · Serotonin · Endocannabinoid System'},
+  {id:'enrich',   name:'Enrich',   color:'#fcbe21', def:'Master your wealth through capital & network.',    neuro:'Beta · Dopamine · Acetylcholine'},
+  {id:'love',     name:'Love',     color:'#639922', def:'Contemplate life through connection & beauty.',    neuro:'Alpha · Oxytocin · Parasympathetic'},
+  {id:'express',  name:'Express',  color:'#1D9E75', def:'Give form to emotion through creation.',           neuro:'Beta Creative · Dopamine · Default Mode Network'},
+  {id:'focus',    name:'Focus',    color:'#378ADD', def:'Master your mind through deep mental focus.',      neuro:'High Beta · Dopamine · Prefrontal Cortex'},
+  {id:'celebrate',name:'Celebrate',color:'#7F77DD', def:'Elevate energy through collective effervescence.', neuro:'High Beta · Dopamine · Oxytocin · Endogenous Opioids'}
 ];
 const INT_BY_ID={};INTS.forEach(x=>INT_BY_ID[x.id]=x);
 const intColor=i=>(INT_BY_ID[i]||{}).color||'#fff';
@@ -267,12 +322,18 @@ function tGlyph(size){
     +'<rect x="21.2" y="62.4" width="26.1" height="5.4"/></svg>';
 }
 
-const isDeck=()=>window.matchMedia('(max-width:699px)').matches;
+/* ══ 16 · MAP OU CARD — un ÉTAT, plus une largeur ══
+   La largeur d'écran ne décide plus que du rendu PAR DÉFAUT, au premier
+   affichage. Ensuite c'est un choix, et il tient : un téléphone peut vouloir
+   le radar, un grand écran peut vouloir lire les cartes une par une.
+   `view` vaut 'map' ou 'cards' ; il n'est jamais lu depuis le CSS. */
+let view=null;
+const defaultView=()=>window.matchMedia('(max-width:699px)').matches?'cards':'map';
 const MAX_T=15;                 /* au-delà, l'écran devient une soupe */
 const HITS=new Map();           /* intention -> spots, cache de session */
 
 const RAD={ on:false, raf:0, t:0,
-  origin:null, coords:null, geoNote:null, geoPending:false,
+  origin:null, coords:null, geoDenied:false, geoPending:false,
   spots:[], intention:null, hover:null, focus:null,
   base:1200, zoom:1, cx:0, cy:0, rpx:0, W:0, H:0, dpr:1 };
 
@@ -315,13 +376,24 @@ function geoStore(pos){
   return c;
 }
 let GEO_INFLIGHT=null;
+/* ══ LE VRAI BUG DE LA LOCALISATION ══
+   Deux minuteries se battaient. `getCurrentPosition` avait 20 s de timeout,
+   et une « échéance douce » de 12 s déclarait l'échec par-dessus : douze
+   secondes, c'est moins que le temps qu'il faut à un humain pour lire
+   « Autoriser » et cliquer. On retombait sur Lisbonne PENDANT que la demande
+   courait encore, et comme l'écran affichait déjà un repli, la position
+   acceptée trois secondes plus tard n'était plus attendue par personne.
+
+   L'échéance douce est supprimée. Il n'y a plus qu'une horloge, celle du
+   navigateur, et elle est large : le prompt de permission compte dans le
+   délai, il faut lui laisser la place. */
 function geoAsk(precise,force){
   if(GEO_INFLIGHT&&!force)return GEO_INFLIGHT;
   const q=new Promise((res,rej)=>{
     if(!navigator.geolocation)return rej({code:2,reason:'unsupported'});
     if(window.isSecureContext===false)return rej({code:1,reason:'insecure'});
     navigator.geolocation.getCurrentPosition(p=>res(geoStore(p)),e=>rej(e),
-      {enableHighAccuracy:!!precise,timeout:precise?30000:20000,maximumAge:precise?0:60000});
+      {enableHighAccuracy:!!precise,timeout:precise?60000:45000,maximumAge:precise?0:60000});
   });
   GEO_INFLIGHT=q;
   const clear=()=>{if(GEO_INFLIGHT===q)GEO_INFLIGHT=null;};
@@ -333,10 +405,17 @@ function geoAsk(precise,force){
 function geoApply(c){
   const prev=RAD.origin;
   const moved=!prev||prev.fallback||haversine(prev.lat,prev.lng,c.lat,c.lng)>150;
-  RAD.coords=c; RAD.geoPending=false; RAD.geoNote=null;
+  RAD.coords=c; RAD.geoPending=false; RAD.geoDenied=false;
   RAD.origin={lat:c.lat,lng:c.lng,fallback:false};
   paintGeo();
   return moved;
+}
+function geoFail(e){
+  RAD.geoPending=false;
+  /* Un refus explicite est la seule information qu'on garde : on n'insiste
+     plus tout seul. Tout le reste est traité pareil — on peut réessayer. */
+  RAD.geoDenied=!!(e&&(e.code===1||e.reason==='insecure'));
+  paintGeo();
 }
 async function geoRefresh(moved){
   if(moved===false)return;
@@ -344,37 +423,21 @@ async function geoRefresh(moved){
   HITS.clear();
   if(cur){RAD.intention=null;await pick(cur);}
 }
-function geoDeadline(ms){
-  setTimeout(()=>{
-    if(RAD.geoPending&&RAD.origin&&RAD.origin.fallback){
-      RAD.geoPending=false;
-      if(!RAD.geoNote)RAD.geoNote=3;
-      paintGeo();
-    }
-  },ms||12000);
-}
+/* Trois mots au maximum, et aucun message d'erreur : « location blocked »
+   ou « timed out » ne dit rien de faisable à qui lit. Localisé, la ligne
+   disparaît ; sinon elle propose, une fois, de réessayer. */
 function paintGeo(){
   const el=$('s-geo'), o=RAD.origin||{};
-  if(o.fallback&&RAD.geoPending){el.textContent='locating…';el.classList.remove('retry');return;}
-  if(o.fallback){
-    const n=RAD.geoNote;
-    el.textContent = n==='insecure' ? 'location needs https · tap to retry'
-      : n===1 ? 'location blocked · allow it in your browser, then tap'
-      : n===3 ? 'location timed out · tap to retry'
-      :         'Lisbon · tap to use your position';
-    el.classList.add('retry');
-  }else{
-    el.textContent='real and living map';
-    el.classList.remove('retry');
-  }
+  if(!o.fallback){ el.textContent=''; el.classList.remove('retry'); return; }
+  if(RAD.geoPending){ el.textContent='locating…'; el.classList.remove('retry'); return; }
+  el.textContent='tap to use your position';
+  el.classList.add('retry');
 }
 $('s-geo').onclick=async()=>{
   if(!RAD.origin||!RAD.origin.fallback)return;
-  $('s-geo').textContent='locating…';$('s-geo').classList.remove('retry');
-  RAD.geoPending=true; geoDeadline(12000);
+  RAD.geoPending=true; RAD.geoDenied=false; paintGeo();
   try{ geoBust(); await geoRefresh(geoApply(await geoAsk(true,true))); }
-  catch(e){ RAD.geoPending=false;
-    RAD.geoNote=(e&&e.reason==='insecure')?'insecure':((e&&e.code)||2); paintGeo(); }
+  catch(e){ geoFail(e); }
 };
 
 /* ══ LA CARTE — un seul balisage pour les deux rendus ══
@@ -382,31 +445,51 @@ $('s-geo').onclick=async()=>{
    sur 105 des 121 spots. Quinze cartes = quinze appels externes lents pour
    de la fiction, dans un produit dont la thèse est le réel. */
 const KIND={PLACE:'Place',LIVE_EVENT:'Live',MEMBER_DROP:'Drop'};
+
+/* ══ LA DESCRIPTION ══
+   `tags` sort des cartes : une rangée de mots-clés bruts qui répétait
+   souvent `lieu_type` et n'apprenait rien. À sa place, la description.
+
+   ⚠️ MESURÉ LE 21/08/2026 : `commentaire` n'est renseigné que sur 40 spots
+   sur 125. Quand il manque, on COMPOSE une ligne avec ce qui est toujours
+   vrai — le type de lieu, la durée — plutôt que de laisser un blanc.
+   On n'invente rien, et on n'utilise NI `vibe` (qui vaut "leaf" ou "paper",
+   une classification interne, jamais une description) NI `state_of_mind`
+   seul (bilingue : "calm"/"calme", "créatif", "productive vibe").
+   Le vrai correctif est de remplir `commentaire` sur les 85 spots restants. */
+const human=v=>String(v||'').replace(/_/g,' ').trim();
+function describe(s){
+  if(s.commentaire) return s.commentaire;
+  const bits=[];
+  if(s.lieu_type)    bits.push(human(s.lieu_type));
+  if(s.duration_min) bits.push('about '+s.duration_min+' min');
+  return bits.join(' · ');
+}
+
 function cardHTML(s){
   const col=intColor(s.intention), conf=INT_BY_ID[s.intention]||{name:s.intention};
   const facts=[];
-  if(s.state_of_mind)facts.push('<span class="c-fact">'+esc(s.state_of_mind)+'</span>');
+  if(s.state_of_mind)facts.push('<span class="c-fact">'+esc(human(s.state_of_mind))+'</span>');
   if(s.duration_min) facts.push('<span class="c-fact"><b>'+s.duration_min+'</b> min</span>');
-  if(s.lieu_type)    facts.push('<span class="c-fact">'+esc(s.lieu_type)+'</span>');
+  if(s.lieu_type)    facts.push('<span class="c-fact">'+esc(human(s.lieu_type))+'</span>');
   if(s.member_count) facts.push('<span class="c-fact"><b>'+s.member_count+'</b> members</span>');
   const left=s.ends_at?fmtLeft(s.ends_at):null;
   if(left)           facts.push('<span class="c-fact" style="color:'+col+'">'+esc(left)+'</span>');
-  (s.tags||[]).slice(0,3).forEach(t=>{
-    if(t&&t!==s.intention)facts.push('<span class="c-fact">'+esc(t)+'</span>');});
+  const desc=describe(s);
   return ''
    +'<div class="c-top">'
    +  '<span class="c-kind" style="color:'+col+'">'+(KIND[s.kind]||'Place')+'</span>'
    +  '<span class="c-int" style="color:'+col+'">'+tGlyph(13)+'&nbsp;&nbsp;'+esc(conf.name)+'</span>'
    +'</div>'
    +'<div class="c-name">'+esc(s.activite||'place')+'</div>'
-   +(s.commentaire?'<div class="c-why">'+esc(s.commentaire)+'</div>':'')
+   +(desc?'<div class="c-why">'+esc(desc)+'</div>':'')
    +(facts.length?'<div class="c-facts">'+facts.join('')+'</div>':'')
    +'<div class="c-foot">'
    +  '<span><span class="c-dist">'+fmtDist(s.dist_m||0)+'</span>'
    +  '<span class="c-walk">'+fmtWalk(s.dist_m||0)+'</span></span>'
    +  '<a class="c-go" target="_blank" rel="noopener" '
    +     'href="https://www.google.com/maps/dir/?api=1&destination='+s.lat+','+s.lng+'">'
-   +     'take me there &rarr;</a>'
+   +     'take me there</a>'
    +'</div>';
 }
 
@@ -505,7 +588,7 @@ function draw(){
   RAD.raf=requestAnimationFrame(draw);
 }
 function radarStart(){
-  if(RAD.on||isDeck())return;
+  if(RAD.on||view!=='map')return;
   RAD.on=true;resize();
   if(!RAD.raf)RAD.raf=requestAnimationFrame(draw);
 }
@@ -531,14 +614,14 @@ function renderRadar(spots){
     box.appendChild(el);
     s._el=el;
   });
-  layout();radarStart();
+  layout();
 }
 
 /* LE ZOOM. La molette dilate l'échelle autour de toi — tu es toujours au
    centre, c'est ta carte. Le facteur est multiplicatif : le geste a le
    même effet quel que soit le niveau où l'on se trouve. */
 $('canvas').addEventListener('wheel',e=>{
-  if(isDeck()||!RAD.spots.length)return;
+  if(view!=='map'||!RAD.spots.length)return;
   e.preventDefault();
   const k=e.deltaY<0?1.14:1/1.14;
   RAD.zoom=Math.max(ZOOM_MIN,Math.min(ZOOM_MAX,RAD.zoom*k));
@@ -547,7 +630,7 @@ $('canvas').addEventListener('wheel',e=>{
 
 /* Le vide du radar EST la commande : il rouvre les sept intentions.
    Aucun bouton, aucun pixel dépensé, et un seul endroit où revenir. */
-$('canvas').addEventListener('click',()=>{ if(!isDeck())openStep(); });
+$('canvas').addEventListener('click',()=>{ if(view==='map')openStep(); });
 
 /* ══════════════════════════════════════════════════════════════════════
    RENDU B — LES CARTES PLEIN ÉCRAN
@@ -562,14 +645,33 @@ function renderDeck(spots){
     if(tick)return;tick=true;
     requestAnimationFrame(()=>{
       tick=false;
-      const w=deck.clientWidth||1;
-      paintCount(Math.round(deck.scrollLeft/w),spots.length);
+      paintCount(deckIndex(),spots.length);
+      paintNav();
     });
   };
+  paintNav();
 }
 function paintCount(i,n){
   $('count').textContent=n?String(Math.min(i+1,n)).padStart(2,'0')+' / '+String(n).padStart(2,'0'):'';
 }
+
+/* ── LES FLÈCHES ──
+   Le scroll-snap horizontal ne se devine pas à la souris, et se rate au doigt
+   dès que la carte défile aussi verticalement. Les flèches poussent
+   `scrollLeft` d'une carte pleine, jamais d'un pixel de moins. */
+const deckIndex=()=>{const d=$('deck');return Math.round(d.scrollLeft/(d.clientWidth||1));};
+function deckStep(d){
+  const deck=$('deck'), w=deck.clientWidth||1;
+  const i=Math.max(0,Math.min(RAD.spots.length-1,deckIndex()+d));
+  deck.scrollTo({left:i*w,behavior:'smooth'});
+}
+function paintNav(){
+  const i=deckIndex(), n=RAD.spots.length;
+  $('deck-prev').disabled = i<=0;
+  $('deck-next').disabled = i>=n-1;
+}
+$('deck-prev').onclick=()=>deckStep(-1);
+$('deck-next').onclick=()=>deckStep(1);
 
 /* ══════════════════════════════════════════════════════════════════════
    LES DEUX ÉTATS
@@ -577,25 +679,32 @@ function paintCount(i,n){
 function openStep(){
   $('step').classList.add('show');
   closeInfo();
-  $('deck').classList.remove('show');
-  $('deck-x').classList.remove('show');
-  $('count').classList.remove('show');
-  $('world').classList.remove('show');
+  ['deck','deck-x','count','deck-prev','deck-next','world','view-toggle']
+    .forEach(id=>$(id).classList.remove('show'));
   radarStop();
+}
+/* Une seule fonction pose l'écran : les deux rendus existent déjà en mémoire,
+   la bascule ne redemande jamais rien au réseau. */
+function applyView(){
+  const cards = view==='cards';
+  ['deck','deck-x','count','deck-prev','deck-next']
+    .forEach(id=>$(id).classList.toggle('show',cards));
+  $('world').classList.toggle('show',!cards);
+  const t=$('view-toggle');
+  t.textContent = cards ? 'radar' : 'cards';
+  t.setAttribute('aria-label', cards ? 'Switch to the radar' : 'Switch to the cards');
+  if(cards){ radarStop(); paintNav(); }
+  else { resize(); radarStart(); }
 }
 function openWorld(){
   $('step').classList.remove('show');
-  if(isDeck()){
-    $('deck').classList.add('show');
-    $('deck-x').classList.add('show');
-    $('count').classList.add('show');
-  }else{
-    $('world').classList.add('show');
-    radarStart();
-  }
+  if(!view) view=defaultView();
+  $('view-toggle').classList.add('show');
+  applyView();
 }
 const stepOpen=()=>$('step').classList.contains('show');
 $('deck-x').onclick=openStep;
+$('view-toggle').onclick=()=>{ view = view==='cards' ? 'map' : 'cards'; applyView(); };
 
 function openInfo(s){
   RAD.focus=s;
@@ -607,13 +716,14 @@ const infoOpen=()=>$('info').classList.contains('show');
 $('info-x').onclick=closeInfo;
 $('info').addEventListener('click',e=>{if(e.target.id==='info')closeInfo();});
 
+/* Les DEUX rendus sont construits à chaque chargement. Ils coûtent quelques
+   nœuds DOM ; en échange la bascule map/card est instantanée et ne redemande
+   rien au réseau — c'est le seul moyen que le bouton soit gratuit à presser. */
 function renderSpots(spots){
   RAD.spots=spots;RAD.hover=null;RAD.focus=null;
-  $('deck').innerHTML='';
-  $('markers').querySelectorAll('.marker').forEach(el=>el.remove());
   closeInfo();
-  if(isDeck()){radarStop();renderDeck(spots);}
-  else{renderRadar(spots);}
+  renderDeck(spots);
+  renderRadar(spots);
 }
 
 /* ══ LE SÉLECTEUR — LES SEPT, TOUJOURS ══
@@ -633,9 +743,13 @@ function buildSelector(){
     b.className='s-int'+(cold?' cold':'')+(RAD.intention===x.id?' on':'');
     b.dataset.int=x.id;
     b.style.color=x.color;
-    b.innerHTML=tGlyph(15)
+    b.innerHTML=tGlyph(17)
       +'<span><span class="s-int-name" style="color:'+x.color+'">'+esc(x.name)+'</span>'
-      +'<span class="s-int-def">'+esc(x.def)+'</span></span>';
+      +'<span class="s-int-def">'+esc(x.def)+'</span>'
+      +(x.neuro?'<span class="s-int-neuro">'
+        +x.neuro.split(' · ').map(t=>'<span class="s-int-ntag">'+esc(t)+'</span>').join('')
+        +'</span>':'')
+      +'</span>';
     b.onclick=()=>pick(x.id);
     box.appendChild(b);
   });
@@ -713,7 +827,7 @@ async function pick(id){
    et la demande court en arrière-plan. */
 (async function boot(){
   buildSelector();
-  if(!isDeck())resize();
+  resize();
   const cached=geoCached();
   RAD.coords=cached;
   RAD.origin=cached?{lat:cached.lat,lng:cached.lng,fallback:false}
@@ -725,12 +839,9 @@ async function pick(id){
     let perm='prompt';
     try{ if(navigator.permissions)
       perm=(await navigator.permissions.query({name:'geolocation'})).state; }catch(e){}
-    if(perm==='denied'){RAD.geoPending=false;RAD.geoNote=1;paintGeo();}
+    if(perm==='denied'){RAD.geoPending=false;RAD.geoDenied=true;paintGeo();}
     else{
-      geoAsk(false).then(c=>geoRefresh(geoApply(c)))
-        .catch(e=>{RAD.geoPending=false;
-          RAD.geoNote=(e&&e.reason==='insecure')?'insecure':((e&&e.code)||2);paintGeo();});
-      geoDeadline(12000);
+      geoAsk(false).then(c=>geoRefresh(geoApply(c))).catch(geoFail);
     }
   }
 
@@ -766,27 +877,24 @@ document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState!=='visible')return;
   if(!RAD.origin||!RAD.origin.fallback)return;
   if(RAD.geoPending||GEO_INFLIGHT)return;
-  if(RAD.geoNote===1||RAD.geoNote==='insecure')return;   /* refus explicite : on n'insiste pas */
-  RAD.geoPending=true;paintGeo();geoDeadline(12000);
-  geoAsk(false,true).then(c=>geoRefresh(geoApply(c)))
-    .catch(e=>{RAD.geoPending=false;
-      RAD.geoNote=(e&&e.reason==='insecure')?'insecure':((e&&e.code)||2);paintGeo();});
+  if(RAD.geoDenied)return;                     /* refus explicite : on n'insiste pas */
+  RAD.geoPending=true;paintGeo();
+  geoAsk(false,true).then(c=>geoRefresh(geoApply(c))).catch(geoFail);
 });
 
 /* Rotation du téléphone ou fenêtre redimensionnée : on peut traverser la
    frontière des 700 px. Le rendu change, l'état ne bouge pas. */
+/* Rotation du téléphone ou fenêtre redimensionnée. Le rendu CHOISI ne change
+   plus tout seul : seule la géométrie suit. Basculer de vue dans le dos de
+   quelqu'un qui vient de la choisir, c'est lui reprendre son choix. */
 let modeTimer;
 window.addEventListener('resize',()=>{
   clearTimeout(modeTimer);
   modeTimer=setTimeout(()=>{
-    /* Le canvas est redimensionné même à l'étape 1 : sans ça il gardait
-       les 300×150 par défaut jusqu'au premier radar, et la toute première
-       image du radar sortait étirée. */
-    if(!isDeck())resize();
+    resize();                      /* le canvas suit toujours la fenêtre */
     if(stepOpen())return;
-    radarStop();
-    if(RAD.spots.length){renderSpots(RAD.spots);openWorld();}
-    else{openStep();}
+    if(view==='cards'){ const d=$('deck'); d.scrollLeft=deckIndex()*(d.clientWidth||1); paintNav(); }
+    else layout();
   },160);
 });
 
