@@ -324,6 +324,22 @@ window.addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft')trig();
 });
 
+/* ══ LES MESURES DU RAIL VIENNENT DU PARENT ══
+   Plus de facteur dérivé de `100vw` : le Totehm envoie ses valeurs déjà
+   résolues en pixels, on les pose telles quelles. Identiques par
+   construction, et non plus égales par arithmétique. */
+window.addEventListener('message',e=>{
+  if(!e.data||e.data.type!=='totehm-metrics')return;
+  const r=document.documentElement.style;
+  if(e.data.rl)r.setProperty('--rl',e.data.rl);
+  if(e.data.rw)r.setProperty('--rw',e.data.rw);
+  if(e.data.bandT)r.setProperty('--band-t',e.data.bandT);
+  if(e.data.bandB)r.setProperty('--band-b',e.data.bandB);
+});
+if(window.parent&&window.parent!==window){
+  try{window.parent.postMessage({type:'totehm-need-metrics'},'*');}catch(e){}
+}
+
 /* ══ BOOT ══ */
 (async()=>{
   teaches=loadLocal();
