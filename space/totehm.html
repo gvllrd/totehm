@@ -9,10 +9,14 @@
     · au SOMMET de la liste, geste vers le bas  → le filtre
     · au PIED de la liste, geste vers le haut   → le Totehm se replie
       vers l'atterrissage (même geste que la croix #fold-x et Échap)
-    · Stoner : SEUL déclencheur = clic sur #btn-get-higher
+    · La méthode Stoner n'est plus hébergée ici : [Get Higher] est un
+      lien vers totehm.com
 
   Horizontaux :
     · swipe DROITE → My Wisdom  ·  swipe GAUCHE → My next objective
+
+  L'ATTERRISSAGE porte : la météo (haut droite), l'accès membre, le logo,
+  [Open my Totehm], Search a Totehm, puis [Open my Totehm World] et la Terre.
 
   TRANSITIONS SÈCHES. Aucun fondu croisé entre deux fichiers : les
   overlays basculent en display, jamais en opacity. Le carré rouge de
@@ -93,32 +97,16 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
    fichiers laisse voir les deux couleurs à la fois : le carré rouge-violet
    de My Wisdom bavait sur le navy pendant 380 ms. On bascule en display :
    une frame, une seule couleur, jamais deux. */
-#stoner,#book,#nextobj{position:fixed;inset:0;z-index:55;background:#000;
+#book,#nextobj{position:fixed;inset:0;z-index:55;background:#000;
   visibility:hidden;pointer-events:none}
-#stoner.show,#book.show,#nextobj.show{visibility:visible;pointer-events:auto}
+#book.show,#nextobj.show{visibility:visible;pointer-events:auto}
 #book iframe,#nextobj iframe{width:100%;height:100%;border:none;display:block}
 
-/* Make the Streets Sublime : overlay en bas de la méthode, visible seulement si Lisbon sélectionné en bas */
-/* Make the Streets Sublime : bouton phare perforé en HAUT de la méthode (si Lisbon sélectionné en bas) */
-#street-btn{position:absolute;left:50%;top:16px;transform:translateX(-50%);z-index:58;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
-#street-btn.show{display:inline-block}
-#street-btn.hide{display:none}
-@media(hover:hover){#street-btn:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
-#street-btn:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
-/* Tagline permanent en bas de la méthode : la doctrine de la marque */
-#stoner-tagline{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:58;font-family:'Quantico',sans-serif;font-weight:400;font-size:12px;letter-spacing:.04em;color:rgba(255,255,255,.55);text-align:center;white-space:nowrap;pointer-events:none;user-select:none}
-#stoner-tagline sup{font-size:.6em;vertical-align:super}
-#stoner-door{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:16px;text-decoration:none;-webkit-tap-highlight-color:transparent;cursor:pointer}#stoner-door .sd-k{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,9vw,74px);letter-spacing:.12em;color:#e8e8e8;line-height:1}#stoner-door .sd-h{height:clamp(30px,7vw,58px);width:auto;display:block}@media(hover:hover){#stoner-door:hover .sd-k{color:#fff}}
-/* le monde s'enfonce pendant que la méthode descend d'en haut */
+/* La méthode Stoner vit sur totehm.com. [Get Higher with my Totehm] est un
+   lien, rien de plus : plus d'overlay, plus de décollage, plus de porte
+   Lisbonne. Pour les rétablir, ils vivaient ici — #stoner, #stoner-door,
+   #street-btn, #stoner-tagline, #lift-hg et body.liftoff. */
 .sink-el{transition:transform .58s cubic-bezier(.45,0,.2,1),opacity .45s ease}
-body.liftoff .sink-el{transform:translateY(16vh);opacity:0}
-/* Pendant l'animation Higher : fond total noir → seul le slogan reste visible */
-body.liftoff{background:#000!important}
-/* le flash Higher qui monte au décollage */
-#lift-hg{position:fixed;left:50%;top:58%;transform:translate(-50%,-50%);z-index:56;opacity:0;pointer-events:none}
-#lift-hg svg{height:44px;width:auto;display:block}
-body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
-@keyframes lifthg{0%{opacity:0;transform:translate(-50%,-20%)}22%{opacity:1}100%{opacity:0;transform:translate(-50%,-300%)}}
 
 /* ── BACK IN TIME ── */
 .btn-back{position:fixed;top:14px;left:14px;z-index:46;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
@@ -128,7 +116,12 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 /* ── CONNECTION BAR ──
    Point d'entrée membre unique — le Dashboard. Visible sur TOUS les étages
    (Habits + Map), placé sous les logos/météo pour ne jamais les heurter. */
-#conn-bar{position:fixed;top:44px;left:16px;z-index:45;display:none;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:0 4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
+/* ══ 13 · L'ACCÈS MEMBRE ══
+   Il flottait en haut à gauche, par-dessus le Totehm, sur tous les écrans.
+   Il vit maintenant DANS le flux de l'atterrissage, à la place libérée par
+   l'avertissement supprimé — c'est le premier écran, c'est là qu'on se
+   connecte. Dans l'app, le Dashboard s'ouvre par le TOTEHM du bas. */
+#conn-bar{position:static;margin:0 auto 2vh;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:0 4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
 #conn-bar:hover{color:#fff}
 /* Accréditation Higher. Elle ne s'affiche que pour qui l'a payée ou reçue :
    la source de vérité est stoner_access, jamais le front. */
@@ -176,7 +169,8 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 /* Badge du filtre actif : petit indicateur cliquable en haut du T.png */
 /* Badge des filtres : haut à droite, empilé.
    Ligne 1 = Time Frequency (blanc, Quantico) · Ligne 2 = Intention (couleur de l'intention, Quantico gras) */
-#filter-badge{position:fixed;top:14px;right:14px;z-index:46;display:flex;flex-direction:row;align-items:flex-start;gap:4px;font-family:'Quantico',sans-serif;letter-spacing:0;line-height:1.15;pointer-events:auto}
+/* Le badge descend de 40 px : la croix de repli a pris le coin. */
+#filter-badge{position:fixed;top:52px;right:14px;z-index:46;display:flex;flex-direction:row;align-items:flex-start;gap:4px;font-family:'Quantico',sans-serif;letter-spacing:0;line-height:1.15;pointer-events:auto}
 #filter-badge .fb-stack{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
 #filter-badge .fb-line{font-size:12px;color:#fff}
 #filter-badge #fb-int{font-weight:700}
@@ -342,6 +336,10 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
   --gate-reveal:.52s;           /* retard avant l'apparition de l'UI */
 }
 
+/* Pendant que le repli remet les calques à leur place d'arrivée, RIEN ne
+   doit s'animer : sinon on voit le saut avant de voir le retour. */
+#gate.no-anim,#gate.no-anim *{transition:none!important;animation:none!important}
+
 /* ── L'écran d'atterrissage ── */
 /* L'atterrissage porte maintenant la Terre et deux portes : il défile.
    `overflow-y:auto` et non `hidden` — sinon le bas de la page n'existe
@@ -394,16 +392,17 @@ body.gate.entered #gate-open,
 body.gate.entered .gate-terms,
 body.gate.entered #gate-bottom,
 body.gate.entered #gate-world,
-body.gate.entered #gate-attention{opacity:0;pointer-events:none}
+body.gate.entered #conn-bar,
+body.gate.entered #gate-weather{opacity:0;pointer-events:none}
 
 /* ══ L'UI de l'app : masquée pendant l'état 1, fondu entrant pendant l'état 2 ══ */
 body.gate #rail,body.gate #bigT,body.gate #wordmark,
-body.gate #floorview,body.gate #conn-bar,body.gate #menu-arrow,
+body.gate #floorview,body.gate #menu-arrow,
 body.gate #filter-arrow,body.gate #fv-status,body.gate #fold-x,
 body.gate #filter-badge{
   opacity:0;pointer-events:none;transition:opacity .55s ease}
 body.gate.entered #rail,body.gate.entered #bigT,body.gate.entered #wordmark,
-body.gate.entered #floorview,body.gate.entered #conn-bar,
+body.gate.entered #floorview,
 body.gate.entered #menu-arrow,body.gate.entered #filter-arrow,
 body.gate.entered #fv-status,body.gate.entered #fold-x,
 body.gate.entered #filter-badge{
@@ -415,22 +414,29 @@ body.gate.entered #filter-badge{
 @media(prefers-reduced-motion:reduce){
   #gate-logo .glayer{transition-duration:.01ms!important}
   body.gate #rail,body.gate #bigT,body.gate #wordmark,
-  body.gate #floorview,body.gate #conn-bar,body.gate #menu-arrow,
+  body.gate #floorview,body.gate #menu-arrow,
   body.gate #filter-arrow,body.gate #fv-status,body.gate #fold-x,
   body.gate #filter-badge{transition-duration:.01ms!important}
 }
-/* ── Gate: avertissement ancré tout en haut, hors du flux flex ── */
-#gate-attention{position:absolute;top:3vh;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:5px;max-width:280px;text-align:center;transition:opacity .25s ease}
-#att-icon{width:14px;height:14px;color:rgba(255,255,255,.3);flex-shrink:0}
-.att-txt{font-family:'Quantico',sans-serif;font-weight:400;font-size:10px;letter-spacing:.04em;color:rgba(255,255,255,.3);line-height:1.65}
+/* ══ 6 · LA MÉTÉO DE L'ATTERRISSAGE ══
+   Ancrée en haut à droite, dans le bloc conteneur de #gate. Space Mono :
+   c'est de la donnée, pas de la parole. */
+#gate-weather{position:absolute;top:16px;right:16px;z-index:3;
+  display:flex;flex-direction:column;align-items:flex-end;gap:3px;
+  pointer-events:none;transition:opacity .25s ease}
+.gw-line{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;
+  color:rgba(255,255,255,.42);white-space:nowrap;display:flex;gap:8px;align-items:baseline}
+.gw-line b{font-weight:400;color:rgba(255,255,255,.72)}
+#gw-row2{display:none}
 /* ── Gate: zone basse (Search + phrase) — margin-top:auto pousse vers le bas ── */
 #gate-bottom{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:14px;width:100%;transition:opacity .25s ease}
+#conn-bar{transition:color .15s,opacity .25s ease}
 /* ── Gate: Search bar — style moteur de recherche ── */
 #gate-search-input{width:min(320px,82vw);min-width:0;font-size:15px}
 /* ── Desktop : texte gris → blanc au survol ── */
 @media(hover:hover){
-  .set-note,.bot-txt,.acct-warn,.acct-note,.hp-lbl,.hp-def,.fp-int .df,.mw-mail,.mw-body,.att-txt{transition:color .15s}
-  .set-note:hover,.bot-txt:hover,.acct-warn:hover,.acct-note:hover,.hp-lbl:hover,.hp-def:hover,.fp-int .df:hover,.mw-mail:hover,.mw-body:hover,.att-txt:hover{color:#fff}
+  .set-note,.bot-txt,.acct-note,.hp-lbl,.hp-def,.fp-int .df,.mw-mail,.mw-body{transition:color .15s}
+  .set-note:hover,.bot-txt:hover,.acct-note:hover,.hp-lbl:hover,.hp-def:hover,.fp-int .df:hover,.mw-mail:hover,.mw-body:hover{color:#fff}
 }
 /* ── Settings nav: tuiles perforées ── */
 .sn-tile{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;flex-shrink:0;background:0 0/100% 100% no-repeat}
@@ -447,10 +453,10 @@ body.gate.entered #filter-badge{
    tout — le badge de filtre occupe le coin haut droit, les chevrons de
    navigation vivent HORS du carré. Elle rejoue le déploiement à l'envers
    et ramène à l'atterrissage. */
-#fold-x{position:fixed;top:50%;right:6px;transform:translateY(-50%);z-index:33;
-  background:none;border:none;cursor:pointer;padding:12px 8px;line-height:0;
+#fold-x{position:fixed;top:10px;right:10px;z-index:34;
+  background:none;border:none;cursor:pointer;padding:10px;line-height:0;
   -webkit-tap-highlight-color:transparent}
-#fold-x svg{width:14px;height:14px;color:rgba(255,255,255,.42);display:block;
+#fold-x svg{width:20px;height:20px;color:rgba(255,255,255,.5);display:block;
   fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;
   transition:color .15s}
 @media(hover:hover){#fold-x:hover svg{color:#fff}}
@@ -467,7 +473,7 @@ body.gate.entered #filter-badge{
 #gate-world{display:flex;flex-direction:column;align-items:center;gap:14px;
   width:100%;margin-top:7vh;padding:0 18px calc(4vh + env(safe-area-inset-bottom,0));
   transition:opacity .25s ease}
-#gate-video{width:min(300px,72vw);aspect-ratio:1/1;object-fit:cover;display:block;
+#gate-video{width:min(190px,46vw);aspect-ratio:1/1;object-fit:cover;display:block;
   background:#000;border:none;outline:none}
 
 /* ══ DESKTOP : le logo habité devient un carré ══════════════════════════════
@@ -592,10 +598,15 @@ body.gate.entered #filter-badge{
     <svg class="glayer" id="gl-wm"   viewBox="74.997 121.602 77.584 46.683"   preserveAspectRatio="none" aria-hidden="true"><defs><g/><clipPath id="tgw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tgw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg>
     <button id="gate-enter" aria-label="Enter my Totehm"></button>
   </div>
-  <div id="gate-attention">
-    <svg id="att-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-    <span class="att-txt">Everything you do in your Totehm writes your biography.</span>
+  <!-- 6 · La météo, ancrée en haut à droite. -->
+  <div id="gate-weather" aria-hidden="true">
+    <div class="gw-line"><b id="gw-time">--:--</b><span id="gw-sky"></span></div>
+    <div class="gw-line" id="gw-row2"><b id="gw-temp"></b><span id="gw-wind"></span></div>
   </div>
+
+  <!-- 13 · L'accès membre, dans le flux, à la place de l'avertissement. -->
+  <button id="conn-bar" type="button" aria-label="member space"><span class="dot"></span>Guest</button>
+
   <button class="btn-sig" id="gate-open">Open my Totehm</button>
   <p class="gate-terms">By opening your Totehm, you accept <a class="terms-link" href="terms.html" target="_blank" rel="noopener">its simple terms</a>.</p>
 
@@ -607,10 +618,12 @@ body.gate.entered #filter-badge{
     <div class="note dim hide" id="gate-search-note"></div>
   </div>
 
-  <!-- Tout en bas : la Terre, puis la porte du monde. -->
+  <!-- Tout en bas : la porte du monde, puis la Terre. La porte d'abord —
+       une image ne se clique pas, un bouton oui, et il ne doit pas se
+       mériter au défilement. -->
   <div id="gate-world">
-    <video id="gate-video" autoplay muted loop playsinline preload="none" disablepictureinpicture aria-label="Earth"></video>
     <a class="btn-sig" id="gate-world-btn" href="map.html">Open my Totehm World</a>
+    <video id="gate-video" autoplay muted loop playsinline preload="none" disablepictureinpicture aria-label="Earth"></video>
   </div>
 </div>
 
@@ -686,11 +699,6 @@ body.gate.entered #filter-badge{
 
 
 </div><!-- /#stage -->
-
-<!-- Point d'entrée membre (Dashboard). HORS de #stage : sur desktop #stage subit
-     scale(0) en mode Map, ce qui collapserait ses enfants fixed. Au niveau body,
-     #conn-bar reste visible et cliquable sur TOUS les étages. -->
-<button id="conn-bar" class="sink-el" aria-label="member space"><span class="dot"></span>Guest</button>
 
 
 <div id="freq-panel" class="hide">
@@ -796,7 +804,7 @@ body.gate.entered #filter-badge{
 
       <!-- Bouton [Get Higher with my Totehm] : monte vers Stoner avec animation d'élévation -->
       <div class="set-block">
-        <button class="btn-sig" id="btn-get-higher">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> with my Totehm</button>
+        <a class="btn-sig" id="btn-get-higher" href="https://www.totehm.com" target="_blank" rel="noopener">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> with my Totehm</a>
       </div>
 
       <!-- Bouton [Wear the dopest branding ever made] : pont vers la boutique -->
@@ -810,7 +818,6 @@ body.gate.entered #filter-badge{
       <div class="set-block">
         <div id="acct" class="hide">
           <button class="acct-btn" id="acct-wipe" type="button">Delete my Totehm</button>
-          <div class="acct-warn" id="acct-warn">Your habits, your autobiography and your personal data are erased. Your subscription stays active.</div>
           <button class="acct-btn hide" id="acct-cancel" type="button">Cancel my subscription</button>
           <div class="acct-note hide" id="acct-note"></div>
         </div>
@@ -822,11 +829,6 @@ body.gate.entered #filter-badge{
 </div>
 <button class="side-nav" id="side-left" aria-label="My Wisdom"><span class="sn-box"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></span><span class="sn-label">My Wisdom</span></button>
 <button class="side-nav" id="side-right" aria-label="My next objective"><span class="sn-box"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M3 2 L11 12 L3 22"/></svg></span><span class="sn-label">My next objective</span></button>
-<div id="lift-hg"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg></div>
-<div id="stoner"><a id="stoner-door" href="https://www.totehm.com" target="_blank" rel="noopener" aria-label="Get Higher — Stoner Experience"><span class="sd-k">GET</span><svg class="sd-h" viewBox="0 0 600 200" aria-label="Higher" role="img"><use href="#higher-word"></use></svg></a>
-  <a id="street-btn" class="hide" href="https://www.totehm.com/lisbon" target="_blank" rel="noopener">Make the Lisbon Streets Sublime</a>
-  <div id="stoner-tagline">Mental performance &middot; Stoner Way of Life<sup>&copy;</sup></div>
-</div>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
@@ -1285,14 +1287,14 @@ function wipeReset(){
   const b=$('acct-wipe');
   b.classList.remove('armed'); b.disabled=false;
   b.textContent='Delete my Totehm';
-  $('acct-warn').textContent='Your habits, your autobiography and your personal data are erased. Your subscription stays active.';
 }
 $('acct-wipe').onclick=async()=>{
   const b=$('acct-wipe');
   if(!wipeArmed){
+    /* La confirmation tient dans le libellé du bouton : deux gestes, six
+       secondes d'armement, et pas un paragraphe pour l'expliquer. */
     b.classList.add('armed');
     b.textContent='Tap again to erase';
-    $('acct-warn').textContent='This cannot be undone. Your Totehm name is released and someone else can take it.';
     wipeArmed=setTimeout(wipeReset,6000);
     return;
   }
@@ -1309,11 +1311,9 @@ $('acct-wipe').onclick=async()=>{
     try{localStorage.removeItem(KEY);localStorage.removeItem(KEYP);}catch(_){}
     renderHabits(); connPaint(); renderSettings();
     b.textContent='erased'; b.disabled=true;
-    $('acct-warn').textContent='Your Totehm is gone. Claim a name to start a new one.';
   }catch(e){
     b.disabled=false; b.classList.remove('armed');
-    b.textContent='Delete my Totehm';
-    $('acct-warn').textContent='Could not erase — try again in a moment.';
+    b.textContent='could not erase — try again';
   }
 };
 $('acct-cancel').onclick=()=>{
@@ -1567,7 +1567,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   $('book-frame').src='book.html';
   $('nextobj-frame').src='next_objective.html';
 });
-/* Le passé (gauche) et le futur (droite) — miroirs horizontaux du showStoner */
+/* Le passé (gauche) et le futur (droite) */
 function hOpen(){return $('book').classList.contains('show')||$('nextobj').classList.contains('show');}
 /* Desktop : la couleur de la bordure du carré dit où l'on est.
    Navy = Habits · bleu clair = Next Objective · rouge-violet = Book. */
@@ -1596,11 +1596,6 @@ function showBook(on){
   if(on)save();
 }
 function showNext(on){ if(busy)return; $('nextobj').classList.toggle('show',on); paintZone(); if(on)save(); }
-function showStoner(on){
-  busy=true;setTimeout(()=>{busy=false;},640);
-  $('stoner').classList.toggle('show',on);
-  if(on){ save(); }
-}
 /* Arrivée depuis next_objective.html en pleine page : #settings ouvre
    directement le Dashboard membre (les réglages y vivent désormais). En
    iframe, c'est le postMessage 'totehm-goto-settings' qui s'en charge. */
@@ -1632,7 +1627,7 @@ $('fold-x').onclick=()=>foldToGate();
     if(document.body.classList.contains('gate'))return true;   /* on est déjà à l'atterrissage */
     if($('member-window').classList.contains('show'))return true;
     if($('tview').classList.contains('show'))return true;
-    if($('stoner').classList.contains('show')||hOpen())return true;
+    if(hOpen())return true;
     if(!$('filter-modal').classList.contains('hide'))return true;
     if(!$('habit-peek').classList.contains('hide'))return true;
     return !!(t&&t.closest&&t.closest('#freq-panel,#habit-peek,#filter-modal,#member-window,input,textarea'));
@@ -1653,30 +1648,9 @@ $('sn-book').onclick =requireMember(()=>{closeMember();if(!busy&&!hOpen())showBo
 $('sn-home').onclick =()=>{closeMember();if(!busy&&!hOpen())paint();};
 $('sn-next').onclick =()=>{closeMember();if(!busy&&!hOpen())showNext(true);};
 
-/* [Get Higher with my Totehm] : animation d'élévation Higher qui va jusqu'au bout,
-   puis ouverture Stoner. C'est le SEUL chemin vers la méthode Stoner. */
-$('btn-get-higher').onclick=()=>{
-  if(busy)return;
-  /* Le bouton vit dans le Dashboard : on ferme la modale (z-index 95) avant le
-     décollage, sinon Stoner (z-index 55) s'ouvrirait derrière elle. */
-  $('member-window').classList.remove('show');
-  busy=true;
-  document.body.classList.add('liftoff');
-  setTimeout(()=>{
-    showStoner(true);
-    document.body.classList.remove('liftoff');
-    busy=false;
-  },900);
-};
-window.addEventListener('message',e=>{if(e.data&&e.data.type==='totehm-close-stoner')showStoner(false);});
-
-/* Le bouton Make the Lisbon Streets Sublime (overlay dans la méthode Stoner) suit le drapeau isPortugal détecté */
-let portugalDetected=false;
-function paintStreet(){
-  const sb=$('street-btn'); if(!sb)return;
-  sb.classList.toggle('show',portugalDetected);
-  sb.classList.toggle('hide',!portugalDetected);
-}
+/* [Get Higher with my Totehm] est un <a> vers totehm.com. Il n'y a plus
+   d'écouteur, plus de classe `liftoff`, plus d'overlay #stoner : la méthode
+   Stoner a son domaine, ce fichier n'a pas à l'héberger. */
 
 function scrollEdges(){
   const sc=$('fv-inner');
@@ -1702,7 +1676,6 @@ window.addEventListener('touchend',(e)=>{
     const dx=e.changedTouches[0].screenX-x0;
     if(Math.abs(dx)<TH)return;
     if(hOpen()){ if($('book').classList.contains('show')&&dx<-TH)showBook(false); else if($('nextobj').classList.contains('show')&&dx>TH)showNext(false); return; }
-    if($('stoner').classList.contains('show'))return;    /* pas depuis Stoner */
     if(dx>TH)showBook(true); else if(dx<-TH)showNext(true);
   }
 },{passive:true});
@@ -1716,7 +1689,6 @@ window.addEventListener('touchend',(e)=>{
    le T de la page ouverte, les flèches du clavier ou Échap. */
 function navBlocked(){
   return busy||fpOpen()
-    ||$('stoner').classList.contains('show')
     ||$('member-window').classList.contains('show')
     ||$('tview').classList.contains('show')
     ||!$('habit-peek').classList.contains('hide')
@@ -1740,14 +1712,13 @@ window.addEventListener('keydown',(e)=>{
        le Totehm que si l'écran est nu. */
     if(!$('filter-modal').classList.contains('hide')||!$('habit-peek').classList.contains('hide'))return;
     if($('tview').classList.contains('show'))return;
-    if($('stoner').classList.contains('show')){showStoner(false);return;}
     if(hOpen()){showBook(false);showNext(false);return;}
     foldToGate();return;
   }
   if(e.key==='ArrowDown'){e.preventDefault();if(!hOpen())foldToGate();}
   else if(e.key==='ArrowUp'){e.preventDefault();if(!hOpen())openFilterModal();}
-  else if(e.key==='ArrowLeft'){e.preventDefault();if($('book').classList.contains('show'))showBook(false);else if(!hOpen()&&!$('stoner').classList.contains('show'))showNext(true);}
-  else if(e.key==='ArrowRight'){e.preventDefault();if($('nextobj').classList.contains('show'))showNext(false);else if(!hOpen()&&!$('stoner').classList.contains('show'))showBook(true);}
+  else if(e.key==='ArrowLeft'){e.preventDefault();if($('book').classList.contains('show'))showBook(false);else if(!hOpen())showNext(true);}
+  else if(e.key==='ArrowRight'){e.preventDefault();if($('nextobj').classList.contains('show'))showNext(false);else if(!hOpen())showBook(true);}
 });
 /* Le passé et le futur parlent au présent */
 window.addEventListener('message',e=>{
@@ -1857,54 +1828,67 @@ $('set-name').addEventListener('keydown',async e=>{
 $('set-private').onclick=()=>{state.vis='private';save();renderSettings();};
 $('set-members').onclick=()=>{state.vis='members';save();renderSettings();};
 
-/* ══ CITY (headless) ════════════════════════════════════════════════════════
-   Pas d'UI city-block. On cache silencieusement la position GPS dès que la
-   permission est déjà accordée — la Higher Map la réutilise sans popup. */
-const CITY_KEY='totehm_city_v1';
-const CITY_LL='totehm_city_ll_v1';
-let cityBooted=false, cityBusy=false;
+/* ══ 6 · LA MÉTÉO DE L'ATTERRISSAGE ══════════════════════════════════════
+   open-meteo : pas de clé, pas de quota, pas de facture.
 
-async function cityBoot(){
-  if(cityBooted)return; cityBooted=true;
-  if(!navigator.geolocation)return;
-  let perm=null;
-  try{
-    if(navigator.permissions&&navigator.permissions.query)
-      perm=(await navigator.permissions.query({name:'geolocation'})).state;
-  }catch(e){}
-  if(perm!=='granted')return;
-  if(cityBusy)return; cityBusy=true;
-  /* La Map est partie dans map.html avec son moteur GPS. Ici il ne reste
-     qu'un besoin : savoir si l'on est au Portugal, pour la porte Lisbonne
-     de Stoner. Une seule demande, silencieuse, jamais de prompt — on n'entre
-     ici que si la permission est DÉJÀ accordée. */
-  new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(
-    pos=>res({lat:+pos.coords.latitude.toFixed(5),lng:+pos.coords.longitude.toFixed(5)}),
-    rej,{enableHighAccuracy:false,timeout:20000,maximumAge:60000}
-  )).then(async(c)=>{
-    try{ localStorage.setItem('totehm_map_pos_v1', JSON.stringify({
-      lat: c.lat, lng: c.lng })); }catch(e){}
+   L'HEURE ne demande rien à personne : elle s'affiche toujours.
+   LE TEMPS exige une position, et on ne la DEMANDE PAS ici. Un prompt de
+   géolocalisation sur la première seconde d'une page d'accueil, c'est un
+   visiteur qui s'en va. On se sert de ce qu'on a déjà — le cache écrit par
+   map.html — ou d'une permission DÉJÀ accordée. Sinon il n'y a que l'heure,
+   et c'est très bien : mieux vaut trois caractères vrais qu'un « --° »
+   permanent qui ne dira jamais rien.
+
+   Un appel réseau par visite, seulement quand une position est connue.
+   ══════════════════════════════════════════════════════════════════════════ */
+(function gateWeather(){
+  const t=$('gw-time'); if(!t)return;
+  const tick=()=>{const d=new Date();
+    t.textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');};
+  tick(); setInterval(tick,30000);
+
+  const SKY=w=>w===0?'Clear':w<=3?'Cloudy':w<=49?'Fog':w<=69?'Rain':w<=79?'Snow':'Storm';
+  let done=false;
+  async function paintWeather(lat,lng){
+    if(done)return; done=true;
     try{
-      const lat=c.lat, lng=c.lng;
-      const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&accept-language=en`,{headers:{'Accept':'application/json'}});
-      const d=await r.json();
-      const addr=d.address||{};
-      const city=addr.city||addr.town||addr.village||addr.municipality||addr.county||null;
-      portugalDetected=((addr.country_code||'').toLowerCase()==='pt');
-      paintStreet();
-      if(city) try{
-        localStorage.setItem(CITY_KEY,city);
-        if(d.lat&&d.lon) localStorage.setItem(CITY_LL,d.lat+','+d.lon);
+      const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat
+        +'&longitude='+lng+'&current=temperature_2m,windspeed_10m,weathercode');
+      const c=(await r.json()).current;
+      if(!c)return;
+      $('gw-temp').textContent=Math.round(c.temperature_2m)+'\u00b0';
+      $('gw-wind').textContent=Math.round(c.windspeed_10m)+' km/h';
+      $('gw-sky').textContent=SKY(c.weathercode);
+      $('gw-row2').style.display='flex';
+    }catch(e){ /* pas de météo = pas de météo, jamais d'erreur à l'écran */ }
+  }
+  function cachedPos(){
+    for(const k of ['totehm_geo_v2','totehm_map_pos_v1']){
+      try{
+        const c=JSON.parse(localStorage.getItem(k)||'null');
+        if(c&&isFinite(c.lat)&&isFinite(c.lng))return c;
       }catch(e){}
-    }catch(e){}
-    cityBusy=false;
-  }).catch(()=>{ cityBusy=false; });
-}
+    }
+    return null;
+  }
+  const c=cachedPos();
+  if(c){ paintWeather(c.lat,c.lng); return; }
+  (async()=>{
+    let st='prompt';
+    try{ if(navigator.permissions&&navigator.permissions.query)
+      st=(await navigator.permissions.query({name:'geolocation'})).state; }catch(e){}
+    if(st!=='granted'||!navigator.geolocation)return;   /* JAMAIS de prompt ici */
+    navigator.geolocation.getCurrentPosition(pos=>{
+      const lat=+pos.coords.latitude.toFixed(5), lng=+pos.coords.longitude.toFixed(5);
+      /* On repose la position dans le cache que map.html relira : une seule
+         demande GPS pour les deux écrans. */
+      try{localStorage.setItem('totehm_geo_v2',JSON.stringify(
+        {lat:lat,lng:lng,acc:Math.round(pos.coords.accuracy||0),t:Date.now()}));}catch(e){}
+      paintWeather(lat,lng);
+    },()=>{},{enableHighAccuracy:false,timeout:20000,maximumAge:600000});
+  })();
+})();
 
-if(document.readyState==='loading')
-  document.addEventListener('DOMContentLoaded',()=>cityBoot());
-else
-  cityBoot();
 /* ══ SEARCH A TOTEHM — le pattern morph d'index.html ══ */
 /* réseau démo pour le mode guest */
 const NETWORK=[
@@ -1995,10 +1979,13 @@ const CLUB={
   trial:'7-day free trial',
   price:'€7 / month',
   priceAlt:'€70 / year',
-  why:'One membership. The city becomes a playground matched to your intention of the moment, and a chapter of your story becomes something you wear.',
-  perks:['<b>Higher Map</b> — the right place or event, right now, matched to your intention',
-         '<b>Totehm Cloth</b> — turn a chapter of your autobiography into something you wear',
-         'Everything your Totehm already does — habits, outcomes, autobiography, generator']
+  /* Le palier se vendait en un paragraphe et trois puces. Le nom, l'essai et
+     le prix suffisent : qui est déjà dans son Totehm n'a pas besoin qu'on lui
+     explique ce qu'il y trouve. Pour rétablir l'argumentaire, il suffit de
+     remplir `why` et `perks` — paintSubscription() les affiche dès qu'ils
+     ne sont pas vides. */
+  why:'',
+  perks:[]
 };
 
 /* Lit l'abonnement de l'utilisateur. Rien n'est écrit depuis le client :
@@ -2049,7 +2036,7 @@ function paintSubscription(sub){
     box.innerHTML='<div class="s-lab">Your membership</div>'
       +'<div class="s-tier">'+esc(CLUB.name)+'</div>'
       +'<div class="s-meta">'+esc(meta)+'</div>'
-      +'<ul class="s-perks">'+CLUB.perks.map(x=>'<li>'+x+'</li>').join('')+'</ul>'
+      +(CLUB.perks.length?'<ul class="s-perks">'+CLUB.perks.map(x=>'<li>'+x+'</li>').join('')+'</ul>':'')
       +'<button class="s-act" id="mw-sub-change">Manage membership</button>';
     const b=$('mw-sub-change');
     if(b) b.onclick=()=>window.open('https://totehm.space','_blank','noopener');
@@ -2059,8 +2046,8 @@ function paintSubscription(sub){
       +'<span class="p-top"><span class="p-name">'+esc(CLUB.name)+'</span>'
       +'<span class="p-price">'+esc(CLUB.trial)
       +'<span class="p-alt">then '+esc(CLUB.price)+' \u00b7 '+esc(CLUB.priceAlt)+'</span></span></span>'
-      +'<span class="p-why">'+esc(CLUB.why)+'</span>'
-      +'<ul class="s-perks">'+CLUB.perks.map(x=>'<li>'+x+'</li>').join('')+'</ul>'
+      +(CLUB.why?'<span class="p-why">'+esc(CLUB.why)+'</span>':'')
+      +(CLUB.perks.length?'<ul class="s-perks">'+CLUB.perks.map(x=>'<li>'+x+'</li>').join('')+'</ul>':'')
       +'<button class="s-act" id="mw-club">Start '+esc(CLUB.trial)+'</button>'
       +'</div>';
     const btn=$('mw-club');
@@ -2159,7 +2146,6 @@ sb.auth.onAuthStateChange(async()=>{
 })();
 window.addEventListener('pageshow',e=>{
   if(!e.persisted)return;
-  showStoner(false);
   $('member-window').classList.remove('show');
   $('tview').classList.remove('show');
   paint();
@@ -2218,6 +2204,7 @@ window.addEventListener('pageshow',e=>{
   function enter(then){
     if(open||moving) return;
     moving=true;
+    gate.classList.remove('no-anim');
     gate.scrollTop=0;                /* on mesure toujours depuis le haut */
     measure();                       /* dernière mesure juste avant le départ */
     void gate.offsetWidth;           /* reflow : garantit le point de départ  */
@@ -2234,22 +2221,40 @@ window.addEventListener('pageshow',e=>{
     },DUR+REVEAL+120);
   }
 
-  /* Le repli : le déploiement, exactement à l'envers. */
+  /* ══ LE REPLI — le déploiement, exactement à l'envers ══
+
+     L'ORDRE DES OPÉRATIONS EST LE CŒUR DU PROBLÈME, ET C'ÉTAIT LE BUG.
+     `measure()` lit `getBoundingClientRect()`, qui renvoie le rectangle
+     APRÈS transformation. En posant `.entered` AVANT de mesurer, on
+     mesurait des calques déjà déplacés : `--tf-bg` était alors recalculé
+     depuis la position d'arrivée au lieu de la position de départ, et
+     l'échelle du fond se composait avec elle-même. À chaque repli le carré
+     navy partait à une taille différente — le « conflit de ratio ».
+
+     Donc : on affiche le gate AU REPOS, on mesure là, et seulement ensuite
+     on pose l'état d'arrivée — sans rien animer (`no-anim`), sinon on
+     verrait le saut avant de voir le retour.
+
+     `#gate-world` et `#conn-bar` reviennent par le même chemin : ils
+     n'ont pas de style inline, seulement la règle `body.gate.entered`.
+     Retirer `entered` leur rend `opacity:1` et `pointer-events:auto`. */
   function fold(){
     if(!open||moving) return;
     moving=true;
     clearTimeout(timer);
-    /* On mesure AVANT de replier : la fenêtre a pu être redimensionnée
-       depuis l'entrée, et les pièces doivent partir d'où elles sont
-       réellement, pas d'où elles étaient il y a dix minutes. */
-    body.classList.add('gate','entered');
-    measure();
-    gate.style.transition='none';
+
+    gate.classList.add('no-anim');        /* 1. rien ne bouge              */
     gate.classList.remove('gate-off');
-    void gate.offsetWidth;           /* le gate est là, opaque, sans fondu */
-    gate.style.transition='';
-    body.classList.remove('entered');
-    gate.scrollTop=0;
+    body.classList.add('gate');           /* 2. le gate au repos, opaque   */
+    gate.scrollTop=0;                     /*    on mesure toujours du haut */
+    void gate.offsetWidth;
+    measure();                            /* 3. rect NON transformé        */
+    body.classList.add('entered');        /* 4. saut à la position d'UI    */
+    void gate.offsetWidth;
+    gate.classList.remove('no-anim');     /* 5. transitions rendues        */
+    void gate.offsetWidth;
+    body.classList.remove('entered');     /* 6. et le repli part           */
+
     open=false;
     timer=setTimeout(()=>{ moving=false; },DUR+120);
   }
