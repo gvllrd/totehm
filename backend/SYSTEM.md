@@ -239,6 +239,28 @@ de chapitres.
 
 `delete_my_totehm()` efface `wisdom` depuis le 21/08/2026.
 
+### `spot_takes` — « TAKE ME THERE » (créée le 22/08/2026)
+
+| Colonne | Type | Note |
+|---|---|---|
+| `ref` | text | clé du lieu — uuid d'un spot OU place_id Google |
+| `user_id` | uuid | → `auth.users`, ON DELETE CASCADE |
+| `created_at` | timestamptz | |
+
+Clé primaire `(ref, user_id)` : un membre compte pour un, quel que soit le
+nombre de clics. RLS activée **SANS aucune policy** — aucun accès direct.
+Tout passe par deux fonctions SECURITY DEFINER, `execute` accordé au seul
+rôle `authenticated` :
+
+| Fonction | Rôle |
+|---|---|
+| `take_me_there(text)` | enregistre le geste, renvoie le total |
+| `spot_takes_count(text[])` | les totaux d'une liste, en UN appel |
+
+⚠️ **`spots.member_count` n'est PAS ce compteur.** C'est une colonne figée,
+remplie à la main sur 20 lignes sur 125 (max 50). Elle ne compte rien et
+n'est plus affichée.
+
 ### Tables de la carte — 19/08/2026
 
 | Table | Rôle | Lignes mesurées |

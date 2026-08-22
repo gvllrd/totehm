@@ -112,6 +112,78 @@ même durée, même easing (`--gate-dur`, `--gate-ease`).
 **Le gate n'est plus détruit après l'entrée** (`gate.remove()` a disparu) :
 sans lui, il n'y a rien à rejouer.
 
+**L'ORDRE DANS `fold()` N'EST PAS NÉGOCIABLE.** `measure()` lit
+`getBoundingClientRect()`, qui renvoie le rectangle **après** transformation.
+Mesurer alors que `.entered` est déjà posé revient à mesurer des calques
+déjà déplacés : `f` vaut `t`, donc `dx = 0` et `scale = 1`, et `--tf-bg`
+retombe sur l'identité. Symptôme constaté : à partir du deuxième
+déploiement, le carré navy du fond ne s'agrandissait plus du tout.
+La séquence, dans cet ordre exact :
+1. `gate.classList.add('no-anim')` — plus rien ne s'anime
+2. afficher le gate **au repos** (`body.gate`, sans `entered`), `scrollTop=0`
+3. `measure()` — rectangles non transformés
+4. `body.classList.add('entered')` — saut aux positions d'UI, instantané
+5. retirer `no-anim`, forcer un reflow
+6. retirer `entered` — le repli part
+
+**Stoner n'est plus dans `totehm.html`.** `[Get Higher with my Totehm]` est
+un `<a href="https://www.totehm.com">`. L'overlay `#stoner`, `#lift-hg`,
+`body.liftoff`, `#street-btn` et `#stoner-tagline` sont supprimés, ainsi que
+`showStoner()`, `paintStreet()` et `portugalDetected`. La méthode a son
+domaine ; ce fichier n'a pas à l'héberger.
+
+**L'ATTERRISSAGE NE DÉFILE PAS PENDANT L'ANIMATION.** Deux verrous, et il
+faut les deux :
+```css
+body.gate.entered #gate, body.gate.folding #gate { overflow:hidden }
+```
+```js
+gate.addEventListener('scroll',()=>{ if(entered||folding) gate.scrollTop=0; });
+```
+Pourquoi : `#gl-bg` monte à `scale(60)` pendant le geste — sur mobile, faute
+de `--tf-bg` mesurable, c'est la valeur de repli. 110 px × 60 = 6 600 px de
+carré à l'intérieur d'un conteneur qui défile. **Mesuré : la hauteur de
+défilement du gate passait de 844 px à 2 525 px**, le navigateur ajustait la
+position et les boutons du bas sortaient de l'écran. C'était ça, « des
+boutons qui disparaissent ».
+`overflow:hidden` seul ne suffit pas : il bloque l'utilisateur, pas le
+navigateur — un `scrollTop` programmatique passe quand même. D'où le
+réépinglage par événement.
+Et `measure()` ramène `--gate-bg-scale` à ce qu'il FAUT pour couvrir l'écran
+(≈14 au lieu de 60) quand `#stage` n'a pas de boîte : le débordement tombe de
+2 500 px à 33 px. Ne pas remettre 60 en dur.
+
+**`measure()` EFFACE la variable quand la cible n'a pas de boîte.** Sur
+mobile `#stage` n'a que des enfants `position:fixed`, donc une hauteur nulle.
+Garder l'ancienne valeur, c'était rejouer en portrait une mesure prise en
+desktop, et replier le fond sur un carré qui n'existe plus.
+
+**La fenêtre membre est à `z-index:250`, au-dessus du gate (200).** Elle
+vivait à 95 : cliquer sur l'accès membre depuis l'atterrissage ouvrait la
+fenêtre DERRIÈRE l'écran noir, et rien ne se passait. `#conn-bar` vit
+maintenant dans le flux du gate, **au-dessus du logo**.
+
+**LES MESURES DU RAIL SONT ENVOYÉES, PAS DÉDUITES.** `pushMetrics()` lit la
+valeur UTILISÉE en pixels sur `#rail` (`getComputedStyle(rail).left`) et la
+poste aux deux iframes. ⚠️ **Jamais `getPropertyValue('--rl')`** : une
+propriété personnalisée est SUBSTITUÉE, pas calculée — on récupérerait le
+jeton `max(38px,calc(min(92vh,78vw,640px) * .072))`, que l'iframe résoudrait
+contre SA fenêtre. C'est-à-dire faux, et exactement l'écart qu'on supprime.
+
+**La fenêtre de lecture de `next_objective.html` est ouverte par le PARENT.**
+Une iframe ne peut pas noircir l'écran au-delà de son propre cadre : sur
+desktop elle est enfermée dans le carré, et un voile qui s'arrête au bord du
+carré n'est pas un voile. L'iframe poste `totehm-read-peek`, le Totehm ouvre
+`#habit-peek` — celle qui couvre vraiment tout. « Exactement comme
+totehm.html » : c'est littéralement sa fenêtre.
+Au passage, `openReadPeek()` faisait `classList.add('ro')` puis
+`classList.remove('ro','hide')` : la lecture seule n'a jamais été appliquée
+depuis qu'elle existe. Corrigé.
+
+**Il n'y a plus de filtre dans `next_objective.html`.** Le filtre est une
+notion du Totehm. Ce que le générateur montre en lecture, c'est la fréquence
+et l'intention de CHAQUE proposition, par son T coloré qui clignote.
+
 Verticaux, dans la saisie :
 - au **sommet** de la liste, geste vers le haut → le filtre
 - au **pied** de la liste, geste vers le bas → le Totehm se replie
@@ -131,7 +203,7 @@ if (e.target.tagName==='INPUT' || e.target.tagName==='TEXTAREA'
 Les habitudes et l'objectif sont des `<textarea>` : ne tester que `INPUT`
 laissait les flèches changer de page en pleine écriture.
 
-**Transitions sèches entre fichiers.** `#book`, `#nextobj` et `#stoner`
+**Transitions sèches entre fichiers.** `#book` et `#nextobj`
 basculent en `visibility`, **jamais en `opacity`**. Un fondu croisé laisse voir
 deux couleurs à la fois — le carré rouge-violet de My Wisdom bavait sur le navy
 pendant 380 ms. Et `visibility` plutôt que `display:none` : les iframes restent
@@ -152,6 +224,70 @@ filtre qu'elle ne peut pas relire est une fenêtre qui ment.
 
 **Settings desktop** : `#settings-nav .sn-row { display:none!important }`.
 Seul `#sn-home` reste visible.
+
+### `map.html` — les règles
+
+**Le rendu est un ÉTAT, pas une largeur.** `view` vaut `'map'` ou `'cards'`.
+La largeur d'écran ne décide que du rendu par DÉFAUT, au premier affichage ;
+ensuite c'est un choix, et il tient — y compris à la rotation du téléphone.
+Ne jamais remettre une règle du type `@media(max-width:699px){#world{display:none}}` :
+elle reprendrait à l'utilisateur un choix qu'il vient de faire.
+
+**Les deux rendus sont construits à chaque chargement de spots.** Quelques
+nœuds DOM en plus, et en échange la bascule ne redemande jamais rien au
+réseau. C'est la seule façon que le bouton soit gratuit à presser.
+
+**Le radar ne porte AUCUN HUD.** Le canvas, les T, le point blanc, et le seul
+bouton de bascule. Météo, coordonnées, barre de statut et logo de retour ont
+été retirés. Tout ce qui se lit ou se choisit s'ouvre en fenêtre plein écran
+sur fond noirci. Le vide du radar est cliquable : il rouvre les intentions.
+
+**La localisation n'a qu'une horloge.** Une seule minuterie, celle du
+navigateur, à 45 s (60 s en mode précis). Il y en avait deux : une « échéance
+douce » de 12 s déclarait l'échec pendant que `getCurrentPosition` courait
+encore sur 20 s. Douze secondes, c'est moins que le temps de lire
+« Autoriser » et de cliquer : on retombait sur Lisbonne pendant que la
+personne acceptait. **Ne jamais remettre de deuxième minuterie.**
+
+**Aucun message d'erreur de localisation.** Deux états et rien d'autre :
+`locating…`, ou `tap to use your position`. Localisé, la ligne disparaît.
+« location blocked », « timed out », « needs https » ne disaient rien de
+faisable à qui les lisait.
+
+**`vibe` ne s'affiche jamais.** La colonne vaut `leaf` ou `paper` : c'est une
+classification interne. La description d'une carte vient de `commentaire`, et
+à défaut d'une ligne composée avec `lieu_type` et `duration_min`.
+
+**Une carte porte QUATRE choses.** Intention · Titre · Commentaire · Combien
+de membres y sont allés. Les puces de faits (état d'esprit, durée, type de
+lieu) ont été retirées : elles répétaient la description et remplissaient
+l'écran de mots isolés. Seule la minute restante (`ends_at`) survit, parce
+qu'elle périme.
+
+**`spots.member_count` NE COMPTE RIEN.** C'est une colonne figée, remplie à
+la main sur 20 lignes sur 125 (max 50). Ne jamais l'afficher comme un
+compteur. Le vrai compte vit dans `spot_takes`, alimenté au clic sur
+[take me there], lu par `spot_takes_count(text[])` — un appel par écran de
+spots, jamais un par carte.
+
+**Le logo habité est sur la carte aussi.** Le T (coloré par l'intention
+courante) et sa flèche ouvrent les filtres ; le TOTEHM du bas ramène au menu
+des sept intentions, d'un seul clic — pas de geste à apprendre, la carte n'a
+pas de liste à parcourir avant d'y arriver. Mêmes coordonnées que partout
+ailleurs : T à 30 px du haut sur 53 px, TOTEHM à 30 px du bas sur 50 px.
+
+**Les filtres de spots ne repartent JAMAIS sur le réseau.** Distance et type
+filtrent la liste déjà reçue. Un filtre qui redemande au serveur, c'est une
+facture par clic.
+
+**Le zoom a trois entrées, le déplacement zéro.** Molette, boutons + / −,
+pincement à deux doigts. `touch-action:none` sur le canvas est obligatoire —
+sans lui le navigateur avale le pincement avant nous. La carte ne se déplace
+pas : elle se dilate autour de toi, tu restes au centre.
+
+**`touch-action:pan-x` sur `#deck`.** Sans cette ligne, un pouce jamais
+parfaitement horizontal partait dans l'axe vertical de la carte et le swipe
+se perdait une fois sur deux.
 
 ### Higher Map — architecture et mathématique · 19/08/2026
 
