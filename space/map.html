@@ -124,7 +124,10 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
    ══════════════════════════════════════════════════════════════════════ */
 #world{position:fixed;inset:0;z-index:10;display:none}
 #world.show{display:block}
-#canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;cursor:crosshair}
+/* `touch-action:none` : sans lui le navigateur avale le pincement avant nous
+   et le zoom à deux doigts n'arrive jamais jusqu'au JS. */
+#canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;
+  cursor:crosshair;touch-action:none}
 #markers{position:absolute;inset:0;z-index:1;pointer-events:none}
 
 /* TOI. Un carré blanc, pas un T : tu n'es pas une destination.
@@ -152,9 +155,12 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
    ÉTAPE 2 · RENDU B — LES CARTES PLEIN ÉCRAN (< 700 px)
    Une carte occupe l'écran entier. On swipe. Une croix referme.
    ══════════════════════════════════════════════════════════════════════ */
+/* `touch-action:pan-x` : ce conteneur défile horizontalement, point. Sans
+   cette ligne, un pouce jamais parfaitement horizontal partait dans l'axe
+   vertical de la carte et le swipe se perdait une fois sur deux. */
 #deck{position:fixed;inset:0;z-index:20;display:none;
   overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
-  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;touch-action:pan-x;
   overscroll-behavior:contain;background:#000}
 #deck::-webkit-scrollbar{display:none}
 #deck.show{display:flex}
@@ -168,12 +174,6 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
   overflow-y:auto;overscroll-behavior:contain}
 .slide .c-inner{max-width:720px;width:100%;margin:0 auto}
 
-#deck-x{position:fixed;top:calc(14px + env(safe-area-inset-top,0));right:14px;z-index:24;
-  display:none;background:none;border:none;cursor:pointer;padding:10px;line-height:0;
-  -webkit-tap-highlight-color:transparent}
-#deck-x.show{display:block}
-#deck-x svg{width:16px;height:16px;color:var(--mid);display:block;
-  fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
 #count{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0));left:50%;
   transform:translateX(-50%);z-index:24;display:none;
   font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.18em;
@@ -193,10 +193,6 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
   line-height:1.15;margin-bottom:12px}
 .c-why{font-family:'Quantico',sans-serif;font-weight:400;color:var(--mid);
   line-height:1.55;font-style:normal}
-.c-facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
-.c-fact{font-family:'Quantico',sans-serif;font-size:14px;font-weight:400;
-  color:var(--lo);border:1px solid rgba(255,255,255,.09);padding:5px 11px}
-.c-fact b{font-weight:700;color:var(--mid)}
 .c-foot{display:flex;align-items:baseline;justify-content:space-between;gap:14px;
   margin-top:20px;padding-top:14px;border-top:1px solid rgba(255,255,255,.09)}
 .c-dist{font-family:'Space Mono',monospace;font-size:15px;color:var(--hi)}
@@ -226,8 +222,10 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
    DÉFAUT, au premier affichage.
    Le bouton est la seule chose qui flotte au-dessus du radar, et il n'y a
    rien d'autre : c'est le prix d'un choix qui ne peut pas se deviner. */
-#view-toggle{position:fixed;top:calc(14px + env(safe-area-inset-top,0));
-  left:50%;transform:translateX(-50%);z-index:26;display:none;
+/* En haut à DROITE : le centre appartient au T et à sa flèche. Posé au
+   milieu, le libellé traversait littéralement le T. */
+#view-toggle{position:fixed;top:calc(12px + env(safe-area-inset-top,0));
+  right:8px;z-index:26;display:none;
   font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.18em;
   text-transform:uppercase;color:var(--lo);background:none;border:none;
   cursor:pointer;padding:8px 14px;-webkit-tap-highlight-color:transparent;
@@ -250,6 +248,68 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
 .deck-nav[disabled]{opacity:.18;pointer-events:none}
 #deck-prev{left:2px}
 #deck-next{right:2px}
+
+/* ══ LE LOGO HABITÉ SUR LA CARTE ══
+   Mêmes coordonnées que dans totehm.html : T à 30 px du haut sur 53 px,
+   TOTEHM à 30 px du bas sur 50 px, flèche à 6 px au-dessus du T.
+   Ils n'apparaissent QUE dans le monde — l'écran des sept intentions n'en
+   a pas besoin, il est déjà le menu. */
+.world-ui{display:none}
+body.in-world .world-ui{display:block}
+#filter-arrow{position:fixed;top:6px;left:50%;transform:translateX(-50%);z-index:31;
+  background:none;border:none;cursor:pointer;padding:4px 12px;line-height:0;
+  -webkit-tap-highlight-color:transparent;transition:opacity .2s}
+#filter-arrow:hover{opacity:.7}
+#filter-arrow svg{width:22px;height:12px;color:rgba(255,255,255,.55)}
+#bigT{position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:30;
+  background:none;border:none;padding:0;line-height:0;cursor:pointer;
+  user-select:none;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
+#bigT .tglyph{height:53px;width:auto;display:block;color:#fff;transition:color .3s ease}
+#wordmark{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:30;
+  background:none;border:none;padding:0;line-height:0;cursor:pointer;
+  user-select:none;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
+#wordmark svg{height:50px;width:auto;display:block}
+@media(hover:hover){#bigT:hover,#wordmark:hover{opacity:.7}}
+
+/* ══ LE ZOOM ══ Deux boutons, parce que la molette n'existe pas au doigt
+   et que le pincement ne se devine pas. */
+#zoom{position:fixed;right:14px;top:50%;transform:translateY(-50%);z-index:27;
+  flex-direction:column;gap:8px}
+body.in-world.view-map #zoom{display:flex}
+body.in-world.view-cards #zoom{display:none}
+#zoom button{width:34px;height:34px;background:none;border:1px solid var(--dim);
+  color:var(--mid);font-family:'Quantico',sans-serif;font-size:18px;line-height:1;
+  cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent;
+  transition:color .15s,border-color .15s}
+#zoom button:hover{color:var(--hi);border-color:var(--lo)}
+#zoom button[disabled]{opacity:.25;pointer-events:none}
+
+/* ══ LES FILTRES DES SPOTS ══ Mêmes mesures que la fenêtre du Totehm. */
+#filter-modal{background:rgba(0,0,0,.82);align-items:center;justify-content:center;z-index:80}
+.fm-card{background:#0a0a0a;border:1px solid #1e1e1e;width:100%;max-width:340px;
+  padding:22px;display:flex;flex-direction:column;gap:6px}
+.fm-row{background:none;border:none;padding:16px 8px;cursor:pointer;display:flex;
+  flex-direction:column;align-items:center;gap:6px;text-align:center;color:#fff;
+  -webkit-tap-highlight-color:transparent;transition:opacity .15s}
+.fm-row:hover{opacity:.7}
+.fm-row + .fm-row{border-top:1px solid rgba(255,255,255,.10)}
+.fm-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(255,255,255,.5)}
+.fm-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:22px;color:#fff;line-height:1.2}
+.fm-opts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:4px}
+.fm-opt{background:none;border:1px solid rgba(255,255,255,.35);color:#c4c4c4;
+  font-family:'Quantico',sans-serif;font-size:12px;padding:5px 9px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:color .15s,border-color .15s}
+.fm-opt:hover{color:#fff}
+.fm-opt.on{color:#fff;border-color:#fff}
+
+/* Le compteur passe en bas à droite : le TOTEHM occupe le centre. */
+#count{left:auto;right:18px;transform:none}
+
+/* ══ LE NOMBRE DE MEMBRES QUI Y SONT ALLÉS ══ */
+.c-takes{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--lo);margin-top:14px}
+.c-takes b{font-weight:700;color:var(--mid)}
 </style>
 </head>
 <body>
@@ -260,11 +320,8 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
   <div id="markers"><div id="me"></div></div>
 </div>
 
-<!-- ÉTAPE 2 · DECK (mobile) : une carte par lieu, plein écran -->
+<!-- ÉTAPE 2 · DECK : une carte par lieu, plein écran -->
 <div id="deck"></div>
-<button id="deck-x" type="button" aria-label="Back to the intentions">
-  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg>
-</button>
 <button class="deck-nav" id="deck-prev" type="button" aria-label="Previous place">
   <svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg>
 </button>
@@ -273,8 +330,43 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
 </button>
 <div id="count"></div>
 
+<!-- ══ LE LOGO HABITÉ, ICI AUSSI ══
+     Mêmes gestes que dans le Totehm : la flèche et le T du haut ouvrent les
+     filtres, le TOTEHM du bas ramène au menu. Un seul vocabulaire pour tout
+     le produit — qui sait filtrer ses habitudes sait filtrer ses spots. -->
+<button id="filter-arrow" class="world-ui" type="button" aria-label="Filter the spots">
+  <svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
+</button>
+<button id="bigT" class="world-ui" type="button" aria-label="Filter the spots">
+  <svg class="tglyph" viewBox="0 0 68 68" fill="currentColor" aria-hidden="true">
+    <rect x="0.9" y="0" width="66.7" height="9.6"/>
+    <rect x="29.4" y="0" width="9.6" height="66.7"/>
+    <rect x="21.2" y="62.4" width="26.1" height="5.4"/></svg>
+</button>
+<button id="wordmark" class="world-ui" type="button" aria-label="Back to the intentions"><svg id="map-wm" viewBox="74.997 121.602 77.584 46.683" preserveAspectRatio="xMidYMid meet" role="img" aria-label="TOTEHM" style="pointer-events:none"><defs><g/><clipPath id="mwm_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#mwm_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg></button>
+
+<!-- Le zoom du radar : deux boutons, et les doigts. -->
+<div id="zoom" class="world-ui">
+  <button id="zoom-in"  type="button" aria-label="Zoom in">+</button>
+  <button id="zoom-out" type="button" aria-label="Zoom out">&minus;</button>
+</div>
+
 <!-- La bascule entre le radar et les cartes. Choisie, jamais imposée. -->
 <button id="view-toggle" type="button"></button>
+
+<!-- LES FILTRES DES SPOTS : plein écran, fond noirci, comme dans le Totehm -->
+<div id="filter-modal" class="sheet" role="dialog" aria-label="Filter the spots">
+  <div class="fm-card">
+    <button class="fm-row" id="fm-dist" type="button">
+      <span class="fm-lbl">Distance</span>
+      <span class="fm-val" id="fm-dist-val">any distance</span>
+    </button>
+    <button class="fm-row" id="fm-kind" type="button">
+      <span class="fm-lbl">Kind</span>
+      <span class="fm-val" id="fm-kind-val">anything</span>
+    </button>
+  </div>
+</div>
 
 <!-- ÉTAPE 1 · LES SEPT INTENTIONS -->
 <div id="step" class="sheet show" role="dialog" aria-label="Choose an intention">
@@ -466,32 +558,74 @@ function describe(s){
   return bits.join(' · ');
 }
 
+/* ══ QUATRE CHOSES, ET RIEN D'AUTRE ══
+   Intention · Titre · Commentaire · Combien y sont allés.
+   Les puces de faits (état d'esprit, durée, type de lieu) sont parties :
+   elles répétaient la description et remplissaient l'écran de mots isolés.
+   La minute où il reste (`ends_at`) survit, parce qu'elle périme. */
 function cardHTML(s){
   const col=intColor(s.intention), conf=INT_BY_ID[s.intention]||{name:s.intention};
-  const facts=[];
-  if(s.state_of_mind)facts.push('<span class="c-fact">'+esc(human(s.state_of_mind))+'</span>');
-  if(s.duration_min) facts.push('<span class="c-fact"><b>'+s.duration_min+'</b> min</span>');
-  if(s.lieu_type)    facts.push('<span class="c-fact">'+esc(human(s.lieu_type))+'</span>');
-  if(s.member_count) facts.push('<span class="c-fact"><b>'+s.member_count+'</b> members</span>');
-  const left=s.ends_at?fmtLeft(s.ends_at):null;
-  if(left)           facts.push('<span class="c-fact" style="color:'+col+'">'+esc(left)+'</span>');
   const desc=describe(s);
+  const left=s.ends_at?fmtLeft(s.ends_at):null;
+  const n=takesOf(s);
   return ''
    +'<div class="c-top">'
    +  '<span class="c-kind" style="color:'+col+'">'+(KIND[s.kind]||'Place')+'</span>'
    +  '<span class="c-int" style="color:'+col+'">'+tGlyph(13)+'&nbsp;&nbsp;'+esc(conf.name)+'</span>'
+   +  (left?'<span class="c-kind" style="color:'+col+'">'+esc(left)+'</span>':'')
    +'</div>'
    +'<div class="c-name">'+esc(s.activite||'place')+'</div>'
    +(desc?'<div class="c-why">'+esc(desc)+'</div>':'')
-   +(facts.length?'<div class="c-facts">'+facts.join('')+'</div>':'')
+   +'<div class="c-takes" data-takes="'+esc(s.id||'')+'">'
+   +  (n?('<b>'+n+'</b> '+(n===1?'member went there':'members went there')):'be the first to go')
+   +'</div>'
    +'<div class="c-foot">'
    +  '<span><span class="c-dist">'+fmtDist(s.dist_m||0)+'</span>'
    +  '<span class="c-walk">'+fmtWalk(s.dist_m||0)+'</span></span>'
-   +  '<a class="c-go" target="_blank" rel="noopener" '
+   +  '<a class="c-go" target="_blank" rel="noopener" data-ref="'+esc(s.id||'')+'" '
    +     'href="https://www.google.com/maps/dir/?api=1&destination='+s.lat+','+s.lng+'">'
    +     'take me there</a>'
    +'</div>';
 }
+
+/* ══ « TAKE ME THERE » — UN VRAI COMPTEUR ══
+   `spots.member_count` est une colonne figée, remplie à la main sur 20 lignes
+   sur 125 : elle ne compte rien et on ne l'affiche plus. Le compte vient de
+   `spot_takes`, alimenté au clic. Une ligne par membre et par lieu (clé
+   primaire) : appuyer dix fois compte pour un. Une seule requête par écran
+   de spots, jamais une par carte. */
+const TAKES=new Map();
+const takesOf=s=>TAKES.get(String(s.id||''))||0;
+async function loadTakes(spots){
+  const refs=spots.map(s=>String(s.id||'')).filter(Boolean);
+  if(!refs.length)return;
+  try{
+    const {data}=await sb.rpc('spot_takes_count',{p_refs:refs});
+    (data||[]).forEach(r=>TAKES.set(String(r.ref),Number(r.takes)||0));
+  }catch(e){ /* pas de compte = « be the first to go », jamais d'erreur */ }
+  paintTakes();
+}
+function paintTakes(){
+  document.querySelectorAll('.c-takes[data-takes]').forEach(el=>{
+    const n=TAKES.get(el.dataset.takes)||0;
+    el.innerHTML = n
+      ? '<b>'+n+'</b> '+(n===1?'member went there':'members went there')
+      : 'be the first to go';
+  });
+}
+/* Le clic n'attend pas la réponse : la carte s'ouvre, le compte suit. */
+function recordTake(ref){
+  if(!ref)return;
+  TAKES.set(ref,(TAKES.get(ref)||0)+1);
+  paintTakes();
+  sb.rpc('take_me_there',{p_ref:ref}).then(({data,error})=>{
+    if(!error&&typeof data==='number'){TAKES.set(ref,data);paintTakes();}
+  }).catch(()=>{});
+}
+document.addEventListener('click',e=>{
+  const a=e.target&&e.target.closest&&e.target.closest('.c-go[data-ref]');
+  if(a)recordTake(a.dataset.ref);
+});
 
 /* ══════════════════════════════════════════════════════════════════════
    RENDU A — LE RADAR, ET SON ZOOM
@@ -617,20 +751,77 @@ function renderRadar(spots){
   layout();
 }
 
-/* LE ZOOM. La molette dilate l'échelle autour de toi — tu es toujours au
-   centre, c'est ta carte. Le facteur est multiplicatif : le geste a le
-   même effet quel que soit le niveau où l'on se trouve. */
+/* ══ LE ZOOM — TROIS GESTES POUR LA MÊME CHOSE ══
+   La molette au trackpad, deux boutons au doigt, et le pincement comme dans
+   n'importe quelle carte. Le facteur est multiplicatif : le geste a le même
+   effet quel que soit le niveau où l'on se trouve. Tu restes au centre —
+   c'est ta carte, elle ne se déplace pas, elle se dilate autour de toi. */
+function zoomBy(k){
+  if(!RAD.spots.length)return;
+  RAD.zoom=Math.max(ZOOM_MIN,Math.min(ZOOM_MAX,RAD.zoom*k));
+  layout();paintZoom();
+}
+function paintZoom(){
+  $('zoom-in').disabled  = RAD.zoom>=ZOOM_MAX-1e-6;
+  $('zoom-out').disabled = RAD.zoom<=ZOOM_MIN+1e-6;
+}
+$('zoom-in').onclick =e=>{e.stopPropagation();zoomBy(1.35);};
+$('zoom-out').onclick=e=>{e.stopPropagation();zoomBy(1/1.35);};
+
 $('canvas').addEventListener('wheel',e=>{
   if(view!=='map'||!RAD.spots.length)return;
   e.preventDefault();
-  const k=e.deltaY<0?1.14:1/1.14;
-  RAD.zoom=Math.max(ZOOM_MIN,Math.min(ZOOM_MAX,RAD.zoom*k));
-  layout();
+  zoomBy(e.deltaY<0?1.14:1/1.14);
 },{passive:false});
+
+/* ── LE PINCEMENT ──
+   Pointer Events : une seule implémentation pour le doigt et le stylet.
+   `touch-action:none` sur le canvas est indispensable — sans lui le
+   navigateur avale le geste avant nous et rien n'arrive jamais.
+   Deux doigts = zoom. Un seul = rien : le radar ne se déplace pas. */
+(function pinch(){
+  const cv=$('canvas');
+  const pts=new Map();
+  let base=0, baseZoom=1, pinching=false;
+  const dist=()=>{
+    const a=[...pts.values()];
+    if(a.length<2)return 0;
+    return Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);
+  };
+  cv.addEventListener('pointerdown',e=>{
+    if(view!=='map')return;
+    pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pts.size===2){pinching=true;base=dist();baseZoom=RAD.zoom;
+      try{cv.setPointerCapture(e.pointerId);}catch(_){}}
+  });
+  cv.addEventListener('pointermove',e=>{
+    if(!pts.has(e.pointerId))return;
+    pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(!pinching||pts.size<2)return;
+    const d=dist();
+    if(!base||!d)return;
+    RAD.zoom=Math.max(ZOOM_MIN,Math.min(ZOOM_MAX,baseZoom*(d/base)));
+    layout();paintZoom();
+  });
+  const up=e=>{
+    pts.delete(e.pointerId);
+    if(pts.size<2){
+      /* Le pincement vient de finir : on neutralise le clic qui suivrait,
+         sinon lever les doigts rouvrirait les sept intentions. */
+      if(pinching){pinching=false;justPinched=Date.now();}
+    }
+  };
+  ['pointerup','pointercancel','pointerleave'].forEach(t=>cv.addEventListener(t,up));
+})();
+let justPinched=0;
 
 /* Le vide du radar EST la commande : il rouvre les sept intentions.
    Aucun bouton, aucun pixel dépensé, et un seul endroit où revenir. */
-$('canvas').addEventListener('click',()=>{ if(view==='map')openStep(); });
+$('canvas').addEventListener('click',()=>{
+  if(view!=='map')return;
+  if(Date.now()-justPinched<400)return;   /* fin de pincement, pas un clic */
+  openStep();
+});
 
 /* ══════════════════════════════════════════════════════════════════════
    RENDU B — LES CARTES PLEIN ÉCRAN
@@ -662,7 +853,7 @@ function paintCount(i,n){
 const deckIndex=()=>{const d=$('deck');return Math.round(d.scrollLeft/(d.clientWidth||1));};
 function deckStep(d){
   const deck=$('deck'), w=deck.clientWidth||1;
-  const i=Math.max(0,Math.min(RAD.spots.length-1,deckIndex()+d));
+  const i=Math.max(0,Math.min(Math.max(0,RAD.spots.length-1),deckIndex()+d));
   deck.scrollTo({left:i*w,behavior:'smooth'});
 }
 function paintNav(){
@@ -670,41 +861,102 @@ function paintNav(){
   $('deck-prev').disabled = i<=0;
   $('deck-next').disabled = i>=n-1;
 }
-$('deck-prev').onclick=()=>deckStep(-1);
-$('deck-next').onclick=()=>deckStep(1);
+$('deck-prev').onclick=e=>{e.stopPropagation();deckStep(-1);};
+$('deck-next').onclick=e=>{e.stopPropagation();deckStep(1);};
+
+/* ══ LE SWIPE HORIZONTAL ══
+   Au doigt, `scroll-snap-type:x mandatory` fait déjà le travail — à une
+   condition : que le navigateur nous donne le geste. `.slide` défilait aussi
+   verticalement, et un pouce jamais parfaitement horizontal partait dans le
+   mauvais axe. `touch-action:pan-x` sur le deck tranche : ce conteneur
+   défile horizontalement, point.
+
+   À la souris il n'y a pas de swipe du tout : on l'ajoute en Pointer Events.
+   Un seuil de 8 px avant de saisir le geste, sinon un clic sur [take me
+   there] serait avalé par le glissement. */
+(function deckSwipe(){
+  const deck=$('deck');
+  let id=null,x0=0,left0=0,dragging=false;
+  deck.addEventListener('pointerdown',e=>{
+    if(e.pointerType==='touch')return;      /* le doigt : natif, déjà parfait */
+    id=e.pointerId;x0=e.clientX;left0=deck.scrollLeft;dragging=false;
+  });
+  deck.addEventListener('pointermove',e=>{
+    if(id===null||e.pointerId!==id)return;
+    const dx=e.clientX-x0;
+    if(!dragging){
+      if(Math.abs(dx)<8)return;
+      dragging=true;deck.style.scrollSnapType='none';
+      try{deck.setPointerCapture(id);}catch(_){}
+    }
+    deck.scrollLeft=left0-dx;
+  });
+  const end=()=>{
+    if(id===null)return;
+    if(dragging){
+      deck.style.scrollSnapType='';
+      /* On repose sur la carte la plus proche : sans ça le deck reste entre
+         deux cartes et scroll-snap ne reprend qu'au geste suivant. */
+      deckStep(0);
+    }
+    id=null;dragging=false;
+  };
+  ['pointerup','pointercancel','pointerleave'].forEach(t=>deck.addEventListener(t,end));
+  /* Un glissement ne doit pas déclencher le lien qu'il a survolé. */
+  deck.addEventListener('click',e=>{if(dragging){e.preventDefault();e.stopPropagation();}},true);
+})();
 
 /* ══════════════════════════════════════════════════════════════════════
    LES DEUX ÉTATS
    ══════════════════════════════════════════════════════════════════════ */
 function openStep(){
   $('step').classList.add('show');
-  closeInfo();
-  ['deck','deck-x','count','deck-prev','deck-next','world','view-toggle']
+  closeInfo();closeFilter();
+  ['deck','count','deck-prev','deck-next','world','view-toggle']
     .forEach(id=>$(id).classList.remove('show'));
+  document.body.classList.remove('in-world','view-map','view-cards');
   radarStop();
 }
 /* Une seule fonction pose l'écran : les deux rendus existent déjà en mémoire,
    la bascule ne redemande jamais rien au réseau. */
 function applyView(){
   const cards = view==='cards';
-  ['deck','deck-x','count','deck-prev','deck-next']
+  ['deck','count','deck-prev','deck-next']
     .forEach(id=>$(id).classList.toggle('show',cards));
   $('world').classList.toggle('show',!cards);
+  document.body.classList.toggle('view-cards',cards);
+  document.body.classList.toggle('view-map',!cards);
   const t=$('view-toggle');
   t.textContent = cards ? 'radar' : 'cards';
   t.setAttribute('aria-label', cards ? 'Switch to the radar' : 'Switch to the cards');
   if(cards){ radarStop(); paintNav(); }
-  else { resize(); radarStart(); }
+  else { resize(); radarStart(); paintZoom(); }
 }
 function openWorld(){
   $('step').classList.remove('show');
   if(!view) view=defaultView();
   $('view-toggle').classList.add('show');
+  /* `in-world` allume le logo habité : le T, sa flèche et le TOTEHM. */
+  document.body.classList.add('in-world');
+  paintBigT();
   applyView();
 }
 const stepOpen=()=>$('step').classList.contains('show');
-$('deck-x').onclick=openStep;
-$('view-toggle').onclick=()=>{ view = view==='cards' ? 'map' : 'cards'; applyView(); };
+$('view-toggle').onclick=e=>{ e.stopPropagation(); view = view==='cards' ? 'map' : 'cards'; applyView(); };
+
+/* Le T porte la couleur de l'intention courante — comme sur le rail du
+   Totehm, la couleur dit ce qu'on regarde. */
+function paintBigT(){
+  const g=$('bigT').querySelector('.tglyph');
+  if(g) g.style.color = RAD.intention ? intColor(RAD.intention) : '#fff';
+}
+
+/* Les deux mêmes déclencheurs que dans le Totehm : le T, et le geste vers le
+   haut. Le TOTEHM du bas ramène au menu — sans geste, d'un seul clic : la
+   carte n'a pas de liste à parcourir avant d'y arriver. */
+$('bigT').onclick=e=>{e.stopPropagation();openFilter();};
+$('filter-arrow').onclick=e=>{e.stopPropagation();openFilter();};
+$('wordmark').onclick=e=>{e.stopPropagation();openStep();};
 
 function openInfo(s){
   RAD.focus=s;
@@ -724,7 +976,70 @@ function renderSpots(spots){
   closeInfo();
   renderDeck(spots);
   renderRadar(spots);
+  loadTakes(spots);
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   LES FILTRES DES SPOTS
+   Le T et sa flèche les ouvrent — exactement les deux déclencheurs du
+   Totehm. Ils ne repartent JAMAIS sur le réseau : on filtre la liste déjà
+   reçue. Un filtre qui redemande au serveur, c'est une facture par clic.
+   ══════════════════════════════════════════════════════════════════════ */
+const DIST_OPTS=[{v:0,l:'any distance'},{v:500,l:'500 m'},{v:1000,l:'1 km'},
+                 {v:2000,l:'2 km'},{v:4000,l:'4 km'}];
+const KIND_OPTS=[{v:'',l:'anything'},{v:'PLACE',l:'Place'},
+                 {v:'LIVE_EVENT',l:'Live'},{v:'MEMBER_DROP',l:'Drop'}];
+let fDist=0, fKind='';
+let allSpots=[];
+
+const distLabel=()=>(DIST_OPTS.find(o=>o.v===fDist)||DIST_OPTS[0]).l;
+const kindLabel=()=>(KIND_OPTS.find(o=>o.v===fKind)||KIND_OPTS[0]).l;
+
+function applyFilters(){
+  const list=allSpots.filter(s=>
+    (!fDist || (s.dist_m||0)<=fDist) &&
+    (!fKind || (s.kind||'PLACE')===fKind));
+  renderSpots(list);
+  if(!stepOpen())applyView();
+  say(list.length ? '' : 'nothing matches this filter');
+}
+function mkOpts(box,opts,cur,pick){
+  box.innerHTML='';
+  const grid=document.createElement('div');grid.className='fm-opts';
+  opts.forEach(o=>{
+    const b=document.createElement('button');
+    b.type='button';b.className='fm-opt'+(o.v===cur?' on':'');
+    b.textContent=o.l;
+    b.onclick=ev=>{ev.stopPropagation();pick(o.v);};
+    grid.appendChild(b);
+  });
+  box.appendChild(grid);
+}
+function paintFilter(){
+  $('fm-dist-val').textContent=distLabel();
+  $('fm-kind-val').textContent=kindLabel();
+}
+function openFilter(){ paintFilter(); $('filter-modal').classList.add('show'); }
+function closeFilter(){ $('filter-modal').classList.remove('show'); }
+const filterOpen=()=>$('filter-modal').classList.contains('show');
+$('fm-dist').onclick=e=>{e.stopPropagation();
+  mkOpts($('fm-dist-val'),DIST_OPTS,fDist,v=>{fDist=v;closeFilter();applyFilters();});};
+$('fm-kind').onclick=e=>{e.stopPropagation();
+  mkOpts($('fm-kind-val'),KIND_OPTS,fKind,v=>{fKind=v;closeFilter();applyFilters();});};
+$('filter-modal').addEventListener('click',e=>{if(e.target.id==='filter-modal')closeFilter();});
+
+/* Le geste vers le haut ouvre les filtres — le même que dans le Totehm.
+   passive:true, aucun accumulateur, un verrou court. */
+(function filterGesture(){
+  let lock=false;
+  const arm=()=>{lock=true;setTimeout(()=>{lock=false;},520);};
+  const blocked=t=>stepOpen()||filterOpen()||infoOpen()||lock
+    ||!!(t&&t.closest&&t.closest('#deck,#zoom,#view-toggle,#info,#filter-modal'));
+  window.addEventListener('wheel',e=>{
+    if(blocked(e.target))return;
+    if(e.deltaY<-4){arm();openFilter();}
+  },{passive:true});
+})();
 
 /* ══ LE SÉLECTEUR — LES SEPT, TOUJOURS ══
    Les sept intentions sont montrées, y compris celles qu'aucune habitude
@@ -772,7 +1087,9 @@ async function pick(id){
   }
   if(HITS.has(id)){
     RAD.intention=id;markActive(id);
-    renderSpots(HITS.get(id));
+    allSpots=HITS.get(id);
+    renderSpots(allSpots.filter(s=>
+      (!fDist||(s.dist_m||0)<=fDist)&&(!fKind||(s.kind||'PLACE')===fKind)));
     say('');openWorld();
     return;
   }
@@ -811,7 +1128,9 @@ async function pick(id){
     RAD.intention=id;markActive(id);
     paintGeo();
     if(!spots.length){say('nothing within range for this intention');return;}
-    renderSpots(spots);
+    allSpots=spots;
+    renderSpots(allSpots.filter(s=>
+      (!fDist||(s.dist_m||0)<=fDist)&&(!fKind||(s.kind||'PLACE')===fKind)));
     say('');openWorld();
   }catch(e){
     console.error('higher-map:',e);
