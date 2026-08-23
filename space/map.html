@@ -554,7 +554,18 @@ function geoApply(c){
   paintGeo();
   return moved;
 }
+/* Voir totehm.html, `geoDiag` : un `code 1` instantané n'est pas forcément
+   un refus de l'utilisateur — ça peut être Permissions-Policy qui a coupé la
+   géoloc pour toute l'origine. On le dit, sinon on cherche cinq lots. */
+function geoDiag(e){
+  if(!e||e.code!==1)return;
+  if(!/permissions policy|feature policy|disabled in this document/i.test(e.message||''))return;
+  console.warn('[totehm] La géolocalisation est coupée par un EN-TÊTE, pas par '
+    +'l\'utilisateur. space/vercel.json : Permissions-Policy doit dire '
+    +'geolocation=(self), jamais geolocation=(). Message : '+e.message);
+}
 function geoFail(e){
+  geoDiag(e);
   RAD.geoPending=false;
   /* Un refus explicite est la seule information qu'on garde : on n'insiste
      plus tout seul. Tout le reste est traité pareil — on peut réessayer. */
