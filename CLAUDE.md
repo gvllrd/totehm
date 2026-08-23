@@ -101,7 +101,7 @@ au-dessus. `floor`, `animateSwap()`, `foldGesture()`, `body.in-map` et
 `body.in-settings` sont supprimés — ne pas les réintroduire.
 
 ```
-ATTERRISSAGE  (body.gate)          le logo assemblé, Search, la Terre
+ATTERRISSAGE  (body.gate)          le logo assemblé, Search, le radar
      ↕  clic logo / [Open my Totehm]     ↕  croix #fold-x · geste bas · Échap
 SAISIE        (body sans .gate)    le rail, les habitudes
 ```
@@ -224,6 +224,22 @@ filtre qu'elle ne peut pas relire est une fenêtre qui ment.
 
 **Settings desktop** : `#settings-nav .sn-row { display:none!important }`.
 Seul `#sn-home` reste visible.
+
+**L'atterrissage de `.space` est un radar, pas une vidéo.** `earth.mp4` est
+supprimée : 1,9 Mo d'egress Supabase par visiteur pour une illustration.
+
+`#gate-radar` est un canvas plein cadre, centré sur le logo — la carte tourne
+autour de toi, et toi c'est ton Totehm. Grille, trois cercles de portée,
+balayage en vingt secteurs dégressifs : le même dessin que `map.html`, copié,
+jamais partagé. Zéro appel réseau, zéro donnée. La boucle s'arrête dès que le
+Totehm est déployé ou l'onglet caché, et repart après un repli.
+
+L'atterrissage tient sur DEUX écrans qui défilent (`#gate-hero`,
+`#gate-context`), le second portant « Think same but opposite » et
+`same_but_opposite.mp4`. Pendant l'animation de déploiement ou de repli, le
+second écran passe en `display:none` : `scrollHeight == clientHeight`, il n'y
+a physiquement plus rien à faire défiler. C'est le TROISIÈME verrou, et le
+seul qui ne soit pas une course.
 
 ### `map.html` — les règles
 
@@ -349,6 +365,69 @@ Les étiquettes de distance posent une **plaque noire** avant le texte, mesurée
 `#hmap` est un overlay à `z-index: 55`. Tout élément censé rester accessible depuis la carte doit passer au-dessus (`#conn-bar` vivait à 45 — invisible depuis la carte).
 
 Retirer un élément du DOM sans retirer son handler (`$('id').onclick` sur `null`) lève un TypeError **à l'évaluation du module** : ce n'est pas la carte qui casse, c'est tout le script. Tout retrait d'élément se vérifie avec l'audit `$('id')` vs `id=` présents.
+
+### Le geste tactile se conduit, il ne se règle pas
+
+Trois lots ont essayé de faire marcher le swipe des cartes en réglant le
+défilement natif : `scroll-snap-type:x mandatory`, puis
+`-webkit-overflow-scrolling:touch`, puis `touch-action:pan-x` par-dessus un
+enfant qui défile en Y. Chacun se comporte différemment selon le moteur, et
+ces trois-là s'annulent entre eux.
+
+**Règle.** Dès qu'un geste porte une fonction produit — changer de carte,
+zoomer, replier — on coupe le natif (`touch-action:none`) et on conduit en
+Pointer Events, avec le MÊME code pour le doigt et la souris. Un seul chemin,
+testable en Chromium headless. Un verrou d'axe posé une fois au
+franchissement du seuil : un pouce n'est jamais droit.
+
+Le corollaire : si on coupe `touch-action`, on doit RENDRE les gestes qu'on
+a retirés. Le défilement vertical d'une carte longue se pousse à la main
+(`slide.scrollTop`), sinon on répare un geste en en cassant un autre.
+
+### Le gris devient blanc au survol — et c'est la machine qui l'écrit
+
+Règle de design, sans exception : sur desktop, tout texte gris passe au blanc
+au survol.
+
+Une liste de sélecteurs tenue à la main a raté trois lots de suite : chaque
+nouveau bloc gris arrivait sans son survol. Elle n'est plus tenue à la main.
+
+`tools/hover.py` lit la feuille de style d'un fichier, trouve toute règle qui
+pose une couleur GRISE sur du texte, et écrit le bloc de survol correspondant
+entre deux marqueurs. Le gris est défini une fois : trois canaux à moins de
+30 d'écart, ou un blanc translucide. Les couleurs d'intention (#E24B4A,
+#378ADD…) ne sont pas grises et gardent leur teinte.
+
+    python3 tools/hover.py space/totehm.html space/map.html \
+                           space/book.html space/next_objective.html
+
+Le bloc généré est délimité par
+`/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */`.
+Ne pas l'éditer : relancer l'outil. Il se remplace lui-même.
+
+**À relancer après toute modification de CSS dans `space/`.**
+
+Un test navigateur relit le CSSOM du fichier servi et échoue s'il reste un
+seul gris sans survol : l'exhaustivité est vérifiée, pas promise.
+
+### Une réponse tardive n'écrase jamais un état plus frais
+
+`higher-map` renvoie `origin:{lat,lng,fallback}` — son propre repli Lisbonne
+quand la requête part sans coordonnées. Le front faisait
+`RAD.origin = j.origin` sans condition : une position GPS obtenue PENDANT la
+requête était écrasée par le repli au retour. Définitivement, puisque plus
+rien ne redemandait.
+
+**Règle.** Toute réponse réseau qui pose un état partagé doit vérifier
+qu'elle n'est pas dépassée :
+
+1. un compteur de séquence (`PICK_SEQ`) — la réponse d'une demande périmée
+   se jette, elle ne se fusionne pas ;
+2. une garde de fraîcheur — le serveur ne corrige que ce que le client
+   ignore (`if(j.origin && !RAD.coords)`).
+
+Ça vaut pour toute donnée que le client peut connaître mieux que le serveur :
+position, session, préférences locales.
 
 ### Contraintes absolues
 

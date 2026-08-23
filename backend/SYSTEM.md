@@ -369,6 +369,23 @@ La v4 appelait Google une fois par intention **à chaque ouverture** : 240 appel
 
 `totehms_user_id_uniq` — index unique sur `totehms(user_id)`. `cloudSave()` faisait `delete` puis `insert` : deux onglets en course avaient créé deux Totehms pour un membre, ce qui cassait `.maybeSingle()` côté serveur. Le front est passé en `upsert` sur `onConflict: 'user_id'` dans le même lot.
 
+#### `origin` est une SUGGESTION, pas une vérité
+
+`higher-map` v7 renvoie `origin:{lat,lng,fallback}`. Quand le corps de la
+requête ne porte ni `lat` ni `lng`, la fonction retombe sur Lisbonne
+(38.7078 / -9.1366) et pose `fallback:true`. C'est le comportement voulu :
+le radar montre toujours quelque chose.
+
+**Le front ne doit jamais traiter ce champ comme faisant autorité.** Le
+navigateur connaît mieux la position que le serveur. Mesuré le 23/08/2026 :
+c'est cette confiance aveugle qui rendait la localisation inopérante sur
+`.space` malgré un GPS autorisé et répondant.
+
+`dist_m` renvoyé par `places_near` est calculé depuis cette `origin` : si le
+front garde sa propre position, il doit soit recalculer les distances, soit
+relancer la requête avec les coordonnées. Le front fait le second
+(`geoRefresh`), le seul qui reste juste pour les spots hors rayon.
+
 ---
 
 ## 4 · Fonctions Postgres
@@ -444,6 +461,25 @@ Aucune ligne = pas membre. Un abonnement expiré, impayé ou annulé retombe
 `verify_jwt=false` sur les webhooks est **normal** : Stripe et Telegram n'ont pas
 de JWT Supabase. La sécurité vient de la signature vérifiée dans le code.
 
+### Une réponse tardive n'écrase jamais un état plus frais
+
+`higher-map` renvoie `origin:{lat,lng,fallback}` — son propre repli Lisbonne
+quand la requête part sans coordonnées. Le front faisait
+`RAD.origin = j.origin` sans condition : une position GPS obtenue PENDANT la
+requête était écrasée par le repli au retour. Définitivement, puisque plus
+rien ne redemandait.
+
+**Règle.** Toute réponse réseau qui pose un état partagé doit vérifier
+qu'elle n'est pas dépassée :
+
+1. un compteur de séquence (`PICK_SEQ`) — la réponse d'une demande périmée
+   se jette, elle ne se fusionne pas ;
+2. une garde de fraîcheur — le serveur ne corrige que ce que le client
+   ignore (`if(j.origin && !RAD.coords)`).
+
+Ça vaut pour toute donnée que le client peut connaître mieux que le serveur :
+position, session, préférences locales.
+
 ### `objective_cache` — règle de cache (depuis v26)
 
 **La couche sémantique est coupée dès qu'il y a un profil.**
@@ -478,6 +514,20 @@ dans une branche permissive : chaque acheteur de t-shirt recevrait l'accès High
 de vie ne la portent pas** — or ce sont eux qui coupent l'accès. La metadata est
 donc posée **deux fois** : session *et* `subscription_data`.
 **Irrattrapable sur un abonnement déjà créé sans elle.**
+
+---
+
+## 5b · Storage — buckets vidéos, mesuré le 23/08/2026
+
+| bucket | fichier | taille | servi à |
+|---|---|---|---|
+| `higher_boutique` | `same_but_opposite.mp4` | 211 Ko | higher.boutique |
+| `space` | `same_but_opposite.mp4` | — | **À COPIER** — totehm.space |
+| `space` | `earth.mp4` | 1,87 Mo | **plus référencé — à supprimer** |
+
+`space/totehm.html` demande `space/same_but_opposite.mp4`. Le fichier
+n'existe pour l'instant que dans `higher_boutique`. Il se COPIE : trois
+origines, trois produits, un contenu commun ne se partage pas.
 
 ---
 
