@@ -2109,6 +2109,11 @@ $('set-members').onclick=()=>{state.vis='members';save();renderSettings();};
    même origine (www.totehm.space), même localStorage. Une demande GPS pour
    les deux écrans, et la carte s'ouvre déjà localisée.
    ══════════════════════════════════════════════════════════════════════════ */
+/* Deux besoins, deux fonctions. La météo se contente d'une position d'hier ;
+   décider s'il faut DEMANDER exige une position fraîche, sinon une entrée
+   ancienne (`totehm_map_pos_v1`, écrite sans horodatage par une version
+   précédente) bloque le prompt pour toujours. */
+const POS_TTL=15*60*1000;
 function cachedPos(){
   for(const k of ['totehm_geo_v2','totehm_map_pos_v1']){
     try{
@@ -2117,6 +2122,37 @@ function cachedPos(){
     }catch(e){}
   }
   return null;
+}
+function freshPos(){
+  try{
+    const c=JSON.parse(localStorage.getItem('totehm_geo_v2')||'null');
+    if(c&&isFinite(c.lat)&&isFinite(c.lng)&&c.t&&Date.now()-c.t<POS_TTL)return c;
+  }catch(e){}
+  return null;
+}
+/* ══ CE QUI A COÛTÉ CINQ VAGUES ══
+   MESURÉ LE 23/08/2026 sur le DÉPLOYÉ, pas sur le fichier : Vercel servait
+   `Permissions-Policy: geolocation=(), microphone=(), camera=()` sur tout
+   totehm.space. Une liste VIDE désactive la géolocalisation pour tout le
+   monde, la page comprise. Le navigateur répond alors :
+
+     code 1 — « Geolocation has been disabled in this document by
+                permissions policy. »
+
+   …instantanément, sans jamais montrer de prompt. Et `permissions.query`
+   répond quand même « granted » : rien dans l'API ne dit que c'est la
+   plateforme qui a tranché. AUCUN JavaScript ne peut revenir dessus.
+   Cinq lots de correctifs ont été écrits dans la mauvaise couche.
+
+   Corrigé dans `space/vercel.json` : `geolocation=(self)`.
+   Ce diagnostic reste pour que la prochaine régression se lise en une
+   seconde au lieu de cinq vagues. */
+function geoDiag(e){
+  if(!e||e.code!==1)return;
+  if(!/permissions policy|feature policy|disabled in this document/i.test(e.message||''))return;
+  console.warn('[totehm] La géolocalisation est coupée par un EN-TÊTE, pas par '
+    +'l\'utilisateur. Vérifier space/vercel.json : Permissions-Policy doit dire '
+    +'geolocation=(self), jamais geolocation=(). Message du navigateur : '+e.message);
 }
 function storePos(pos){
   const p={lat:+pos.coords.latitude.toFixed(5),lng:+pos.coords.longitude.toFixed(5),
@@ -2668,7 +2704,7 @@ window.addEventListener('pageshow',e=>{
     let going=false;
     btn.addEventListener('click',e=>{
       if(going)return;
-      if(cachedPos()||!navigator.geolocation)return;        /* déjà su : on part */
+      if(freshPos()||!navigator.geolocation)return;         /* déjà su, et frais : on part */
       /* ══ preventDefault() DOIT ÊTRE SYNCHRONE ══
          MESURÉ : avec un handler `async` qui attendait d'abord
          permissions.query(), la navigation était DÉJÀ partie quand le
@@ -2691,7 +2727,7 @@ window.addEventListener('pageshow',e=>{
           const p=storePos(pos);
           if(window.__gatePaintWeather)window.__gatePaintWeather(p.lat,p.lng);
           go();
-        },()=>{ clearTimeout(cap); go(); },
+        },e=>{ clearTimeout(cap); geoDiag(e); go(); },
         {enableHighAccuracy:false,timeout:7500,maximumAge:60000});
       })();
     });
