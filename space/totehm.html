@@ -121,7 +121,10 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
    Il vit maintenant DANS le flux de l'atterrissage, à la place libérée par
    l'avertissement supprimé — c'est le premier écran, c'est là qu'on se
    connecte. Dans l'app, le Dashboard s'ouvre par le TOTEHM du bas. */
-#conn-bar{position:static;margin:0 auto 2.4vh;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:0 4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
+/* Coin haut gauche, en vis-à-vis de OWN/YOUR/WORLD. `fixed` et pas
+   `absolute` : le gate défile maintenant sur deux écrans, le menu membre
+   ne doit pas partir avec. */
+#conn-bar{position:fixed;top:14px;left:16px;z-index:4;margin:0;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
 #conn-bar:hover{color:#fff}
 /* Accréditation Higher. Elle ne s'affiche que pour qui l'a payée ou reçue :
    la source de vérité est stoner_access, jamais le front. */
@@ -326,7 +329,7 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
    ══════════════════════════════════════════════════════════════════════════ */
 :root{
   --gate-size:110px;            /* taille du logo assemblé — IDENTIQUE mobile et desktop */
-  --gate-top:19vh;              /* descente : centré-haut */
+  --gate-top:12vh;              /* remonté, mais sous les deux coins hauts */
   --gate-gap:3vh;               /* écart logo -> bouton */
   --gate-btn-gap:24px;          /* = margin-top de #btn-slogan (stoner.html) */
   --gate-dur:1.05s;             /* durée de la déconstruction */
@@ -357,13 +360,46 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
    Desktop n'a jamais eu le problème : `--tf-bg` y vaut ~scale(5,8), qui
    tient dans le carré. */
 #gate{position:fixed;inset:0;z-index:200;background:#000;
-  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-  padding:var(--gate-top) 0 0;overflow-x:hidden;overflow-y:auto;
+  display:block;overflow-x:hidden;overflow-y:auto;
   overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  scroll-snap-type:y mandatory;scroll-behavior:smooth;
   transition:opacity .32s ease}
-body.gate.entered #gate,body.gate.folding #gate{overflow:hidden}
+/* Deux écrans pleins : l'atterrissage, puis « Think same but opposite ».
+   Le pliage doit trouver un gate immobile — on coupe l'accroche ET le
+   défilement pendant l'animation, sinon la mesure FLIP est fausse. */
+#gate-hero,#gate-context{width:100%;min-height:100dvh;
+  display:flex;flex-direction:column;align-items:center;
+  scroll-snap-align:start;scroll-snap-stop:always;position:relative}
+#gate-hero{justify-content:flex-start;padding:var(--gate-top) 0 0}
+#gate-context{justify-content:center;padding:5vh 22px}
+body.gate.entered #gate,body.gate.folding #gate{overflow:hidden;scroll-snap-type:none;scroll-behavior:auto}
+/* ══ LE TROISIÈME VERROU ══
+   MESURÉ LE 23/08/2026 (v3.mjs) : avec deux sections, un `scrollTop=3000`
+   programmatique pendant l'animation chassait le bouton du monde hors de
+   l'écran — l'écouteur `scroll` réépingle bien à 0, mais une tâche plus
+   tard, et une frame suffit à faire disparaître un bouton. `overflow:hidden`
+   n'empêche que l'utilisateur, pas le code.
+   On retire physiquement la seconde section pendant l'animation :
+   scrollHeight == clientHeight, et il n'y a plus rien à faire défiler. Ce
+   n'est plus une course, c'est une impossibilité. */
+body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
 body:not(.gate) #gate{display:none}
 #gate.gate-off{opacity:0;pointer-events:none}
+
+/* ══ LE RADAR — CE QU'EST totehm.space, MONTRÉ SANS UN MOT ══
+   La Terre disait « le monde ». Le radar dit « une carte qui tourne autour
+   de TOI et qui trie selon ton intention » — c'est le produit, pas une
+   illustration. Il remplace earth.mp4 : 1,9 Mo d'egress Supabase par
+   visiteur remplacés par une boucle canvas qui ne coûte rien au serveur.
+   Il s'arrête dès que le Totehm est déployé ou l'onglet caché : une boucle
+   d'animation derrière une app, c'est de la batterie pour rien. */
+/* `width/height:100%` explicites : un <canvas> est un élément remplacé, sa
+   taille intrinsèque est 300x150 et `inset:0` ne la remplace pas. Sans ces
+   deux lignes le radar est une vignette de 300 px en haut à gauche. */
+#gate-radar{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block;
+  pointer-events:none;opacity:.9;transition:opacity .5s ease}
+body.gate.entered #gate-radar,body.gate.folding #gate-radar{opacity:0}
+#gate-hero>*:not(#gate-radar){position:relative;z-index:1}
 
 /* ── Le carré du logo : taille fixe, aucune variation par viewport ── */
 #gate-logo{position:relative;flex-shrink:0;
@@ -390,8 +426,14 @@ body:not(.gate) #gate{display:none}
    pour le decouvrir. get_higher.html accepte un visiteur sans session — il
    affiche le prix et ne demande le compte qu'au moment de payer. */
 #gate-open{margin-top:0;transition:opacity .25s ease}
-.gate-terms{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;color:rgba(255,255,255,.28);text-align:center;margin:6px 0 0;transition:opacity .25s ease}
-.gate-terms .terms-link{color:inherit;text-decoration:underline}
+/* La phrase « By opening your Totehm… » sous le bouton faisait lire un
+   contrat au moment d'entrer. Le lien reste — obligation — mais au coin,
+   là où on le cherche quand on le cherche. */
+#terms-corner{position:fixed;right:16px;bottom:calc(12px + env(safe-area-inset-bottom,0));z-index:4;
+  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;
+  text-transform:uppercase;color:#8a8a8a;text-decoration:none;
+  padding:6px 2px;transition:color .15s ease,opacity .25s ease}
+body.gate.entered #terms-corner{opacity:0;pointer-events:none}
 
 /* ══ ÉTAT 2 — LA DÉCONSTRUCTION ══
    Les valeurs --tf-* sont mesurées une fois en JS (positions réelles de l'UI)
@@ -402,9 +444,9 @@ body.gate.entered #gl-wm  {transform:var(--tf-wm,translateY(40vh))}
 body.gate.entered #gl-rail{transform:var(--tf-rail,translateX(-30vw))}
 body.gate.entered #gate-enter,
 body.gate.entered #gate-open,
-body.gate.entered .gate-terms,
 body.gate.entered #gate-bottom,
 body.gate.entered #gate-world,
+body.gate.entered #ctx-down,
 body.gate.entered #conn-bar,
 body.gate.entered #gate-weather{opacity:0;pointer-events:none}
 
@@ -434,18 +476,37 @@ body.gate.entered #filter-badge{
 /* ══ 6 · LA MÉTÉO DE L'ATTERRISSAGE ══
    Ancrée en haut à droite, dans le bloc conteneur de #gate. Space Mono :
    c'est de la donnée, pas de la parole. */
-#gate-weather{position:absolute;top:16px;right:16px;z-index:3;
-  display:flex;flex-direction:column;align-items:flex-end;gap:3px;
-  pointer-events:none;transition:opacity .25s ease}
+/* L'heure est partie : trois caractères qui n'appartenaient à personne.
+   OWN / YOUR / WORLD, c'est la promesse de .space en trois mots. La météo
+   reste dessous, et seulement si une position est connue. */
+#gate-weather{position:fixed;top:14px;right:16px;z-index:3;
+  display:flex;flex-direction:column;align-items:flex-end;gap:2px;
+  transition:opacity .25s ease}
+#own-world{display:flex;flex-direction:column;align-items:flex-end;gap:1px;
+  font-family:'Quantico',sans-serif;font-weight:700;font-size:13px;
+  letter-spacing:.16em;line-height:1.18;color:#909090;transition:color .15s ease}
+@media(hover:hover){#gate-weather:hover #own-world{color:#fff}}
 .gw-line{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;
   color:rgba(255,255,255,.42);white-space:nowrap;display:flex;gap:8px;align-items:baseline}
 .gw-line b{font-weight:400;color:rgba(255,255,255,.72)}
-#gw-row2{display:none}
+#gw-row2{display:none;margin-top:5px;font-size:10px}
+/* Sur un écran de 390 px, le logo centré et le coin haut droit se touchent :
+   on resserre le coin plutôt que de descendre le logo. */
+@media(max-width:430px){
+  #own-world{font-size:11px;letter-spacing:.13em}
+  .gw-line{font-size:9px;gap:6px}
+}
 /* ── Gate: zone basse (Search + phrase) — margin-top:auto pousse vers le bas ── */
 #gate-bottom{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:14px;width:100%;transition:opacity .25s ease}
 #conn-bar{transition:color .15s,opacity .25s ease}
 /* ── Gate: Search bar — style moteur de recherche ── */
+/* Une box rectangulaire pleine, #626283 — pas la tuile perforée navy des
+   boutons. `border-image:none` est obligatoire : sans lui la tuile héritée
+   de .line-input reste peinte PAR-DESSUS le fond et rien ne change. */
 #gate-search-input{width:min(320px,82vw);min-width:0;font-size:15px}
+#gate-search-input,#search-input{background:#626283;border:6px solid #626283;
+  border-image:none;color:#fff;caret-color:#fff}
+#gate-search-input::placeholder,#search-input::placeholder{color:rgba(255,255,255,.55)}
 /* ── Desktop : texte gris → blanc au survol ── */
 @media(hover:hover){
   .set-note,.bot-txt,.acct-note,.hp-lbl,.hp-def,.fp-int .df,.mw-mail,.mw-body{transition:color .15s}
@@ -484,10 +545,29 @@ body.gate.entered #filter-badge{
    au milieu de l'atterrissage. Une marge franche, et la page se lit d'un
    trait — logo, portes, Terre. */
 #gate-world{display:flex;flex-direction:column;align-items:center;gap:14px;
-  width:100%;margin-top:7vh;padding:0 18px calc(4vh + env(safe-area-inset-bottom,0));
+  width:100%;margin-top:4.5vh;padding:0 18px;
   transition:opacity .25s ease}
-#gate-video{width:min(190px,46vw);aspect-ratio:1/1;object-fit:cover;display:block;
-  background:#000;border:none;outline:none}
+/* ══ THINK SAME BUT OPPOSITE ══
+   Le même bloc que higher.boutique/index.html — bouton, chevron qui
+   respire, section pleine page, remontée. Copié, pas partagé : trois
+   origines, trois fichiers. La vidéo n'est chargée qu'à l'entrée dans le
+   champ, comme la Terre avant elle. */
+#ctx-down{margin-top:auto;margin-bottom:calc(4vh + env(safe-area-inset-bottom,0));
+  background:none;border:none;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;gap:8px;-webkit-tap-highlight-color:transparent;
+  transition:opacity .25s ease}
+.ctx-label{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
+  color:#b0b0b0;transition:color .15s ease}
+.chev{width:22px;height:22px;color:#909090;transition:color .15s ease}
+@media(hover:hover){#ctx-down:hover .ctx-label,#ctx-down:hover .chev,#ctx-up:hover .chev{color:#fff}}
+#ctx-up{position:absolute;top:22px;left:50%;transform:translateX(-50%);
+  background:none;border:none;cursor:pointer;padding:8px 14px;
+  -webkit-tap-highlight-color:transparent}
+#ctx-up .chev{width:26px;height:26px}
+#ctx-vid{height:5cm;width:auto;max-width:84vw;display:block;background:#000;margin-bottom:3vh}
+@keyframes ctx-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+.bob{animation:ctx-bob 1.8s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.bob{animation:none}#gate{scroll-behavior:auto}}
 
 /* ══ DESKTOP : le logo habité devient un carré ══════════════════════════════
    Ce bloc est EN FIN DE FEUILLE, pas au début : à spécificité égale c'est le
@@ -597,6 +677,70 @@ body.gate.entered #filter-badge{
   #sn-home:hover,#sn-home:active{border-image-source:none;color:#b0b0b0}
 }
 
+
+
+
+
+
+
+
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Le gris en survol devient blanc. Généré depuis la feuille
+   elle-même : un nouveau bloc gris entre ici tout seul.        */
+@media(hover:hover){
+#menu-arrow svg:hover,
+#filter-arrow svg:hover,
+.sn-btn:hover,
+.sn-btn .chev:hover,
+.sn-logo .chev:hover,
+.btn-back:hover,
+#conn-bar:hover,
+#fv-status:hover,
+.habit .h-x:hover,
+.h-text:hover::placeholder,
+.h-hint:hover,
+#filter-badge #fb-clear:hover,
+.hp-lbl:hover,
+.hp-def:hover,
+.fm-def:hover,
+#fp-input:hover::placeholder,
+#fp-preview:hover,
+.fp-int .df:hover,
+.fp-skip:hover,
+.fp-opt:hover,
+.set-note:hover,
+.name-input:hover::placeholder,
+.size-btn:hover,
+.bot-txt:hover,
+.bot-txt b:hover,
+.btn-sig:hover,
+.note.dim:hover,
+.r-meta:hover,
+.tv-private:hover,
+#mw-sub .s-lab:hover,
+#mw-sub .s-meta:hover,
+#mw-sub .s-perks li:hover,
+#mw-sub .s-act:hover,
+#mw-sub .s-plan .p-price:hover,
+.p-alt:hover,
+#mw-sub .s-plan .p-why:hover,
+.mw-body:hover,
+.mw-close:hover,
+.mw-input:hover::placeholder,
+.mw-note.dim:hover,
+.mw-mail:hover,
+.mw-out:hover,
+#terms-corner:hover,
+#own-world:hover,
+.gw-line:hover,
+.gw-line b:hover,
+#gate-search-input:hover::placeholder,
+#search-input:hover::placeholder,
+#fold-x svg:hover,
+.ctx-label:hover,
+.chev:hover{color:#fff}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body class="gate">
@@ -604,15 +748,19 @@ body.gate.entered #filter-badge{
 
 <!-- ══ ÉTAT 1 : LE LOGO RECOMPOSÉ — 4 SVG vectoriels superposés ══ -->
 <div id="gate">
-  <!-- La météo, ancrée en haut à droite. -->
-  <div id="gate-weather" aria-hidden="true">
-    <div class="gw-line"><b id="gw-time">--:--</b><span id="gw-sky"></span></div>
-    <div class="gw-line" id="gw-row2"><b id="gw-temp"></b><span id="gw-wind"></span></div>
-  </div>
 
-  <!-- L'accès membre : AU-DESSUS du logo. C'est la première chose qu'on lit
-       en arrivant, et la fenêtre qu'il ouvre monte au-dessus du gate. -->
+  <!-- Coin haut droit : la promesse. Coin haut gauche : le membre.
+       Coin bas droit : les conditions. Les trois sont `fixed` — le gate
+       défile sur deux écrans, les coins ne bougent pas. -->
+  <div id="gate-weather">
+    <div id="own-world" aria-label="Own your world"><span>OWN</span><span>YOUR</span><span>WORLD</span></div>
+    <div class="gw-line" id="gw-row2"><b id="gw-temp"></b><span id="gw-wind"></span><span id="gw-sky"></span></div>
+  </div>
   <button id="conn-bar" type="button" aria-label="member space"><span class="dot"></span>Guest</button>
+  <a id="terms-corner" href="terms.html" target="_blank" rel="noopener">Simple terms of use</a>
+
+<section id="gate-hero">
+  <canvas id="gate-radar" aria-hidden="true"></canvas>
 
   <div id="gate-logo">
     <svg class="glayer" id="gl-bg"   viewBox="0 0 224.88 224.08" preserveAspectRatio="none"    aria-hidden="true"><defs><mask id="tgb_m" maskUnits="userSpaceOnUse" x="-40" y="-40" width="310" height="310"><rect x="-40" y="-40" width="310" height="310" fill="#fff"/><circle cx="56.421" cy="0.000" r="13.86" fill="#000"/><circle cx="56.421" cy="224.078" r="13.86" fill="#000"/><circle cx="112.440" cy="0.000" r="13.86" fill="#000"/><circle cx="112.440" cy="224.078" r="13.86" fill="#000"/><circle cx="168.459" cy="0.000" r="13.86" fill="#000"/><circle cx="168.459" cy="224.078" r="13.86" fill="#000"/><circle cx="0.402" cy="56.020" r="13.86" fill="#000"/><circle cx="224.478" cy="56.020" r="13.86" fill="#000"/><circle cx="0.402" cy="112.039" r="13.86" fill="#000"/><circle cx="224.478" cy="112.039" r="13.86" fill="#000"/><circle cx="0.402" cy="168.059" r="13.86" fill="#000"/><circle cx="224.478" cy="168.059" r="13.86" fill="#000"/></mask></defs><rect x="0.402" y="0.000" width="224.076" height="224.078" fill="#333366" mask="url(#tgb_m)"/></svg>
@@ -622,7 +770,6 @@ body.gate.entered #filter-badge{
     <button id="gate-enter" aria-label="Enter my Totehm"></button>
   </div>
   <button class="btn-sig" id="gate-open">Open my Totehm</button>
-  <p class="gate-terms">By opening your Totehm, you accept <a class="terms-link" href="terms.html" target="_blank" rel="noopener">its simple terms</a>.</p>
 
   <!-- Search a Totehm : un bouton, rien d'autre. La boîte perforée
        n'apparaît qu'au clic (pattern morph du reste du produit). -->
@@ -637,8 +784,19 @@ body.gate.entered #filter-badge{
        mériter au défilement. -->
   <div id="gate-world">
     <a class="btn-sig" id="gate-world-btn" href="map.html">Open my Totehm World</a>
-    <video id="gate-video" autoplay muted loop playsinline preload="none" disablepictureinpicture aria-label="Earth"></video>
   </div>
+
+  <button id="ctx-down" type="button" aria-label="Think same but opposite">
+    <span class="ctx-label">Think same but opposite</span>
+    <svg class="chev bob" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+  </button>
+</section>
+
+<section id="gate-context">
+  <button id="ctx-up" type="button" aria-label="Back up"><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>
+  <video id="ctx-vid" playsinline muted controls preload="none"></video>
+  <button class="btn-sig" id="gate-open-2" type="button">Open my Totehm</button>
+</section>
 </div>
 
 
@@ -1904,11 +2062,6 @@ $('set-members').onclick=()=>{state.vis='members';save();renderSettings();};
    Un appel réseau par visite, seulement quand une position est connue.
    ══════════════════════════════════════════════════════════════════════════ */
 (function gateWeather(){
-  const t=$('gw-time'); if(!t)return;
-  const tick=()=>{const d=new Date();
-    t.textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');};
-  tick(); setInterval(tick,30000);
-
   const SKY=w=>w===0?'Clear':w<=3?'Cloudy':w<=49?'Fog':w<=69?'Rain':w<=79?'Snow':'Storm';
   let done=false;
   async function paintWeather(lat,lng){
@@ -1924,32 +2077,53 @@ $('set-members').onclick=()=>{state.vis='members';save();renderSettings();};
       $('gw-row2').style.display='flex';
     }catch(e){ /* pas de météo = pas de météo, jamais d'erreur à l'écran */ }
   }
-  function cachedPos(){
-    for(const k of ['totehm_geo_v2','totehm_map_pos_v1']){
-      try{
-        const c=JSON.parse(localStorage.getItem(k)||'null');
-        if(c&&isFinite(c.lat)&&isFinite(c.lng))return c;
-      }catch(e){}
-    }
-    return null;
-  }
+  window.__gatePaintWeather=paintWeather;
   const c=cachedPos();
   if(c){ paintWeather(c.lat,c.lng); return; }
   (async()=>{
     let st='prompt';
     try{ if(navigator.permissions&&navigator.permissions.query)
       st=(await navigator.permissions.query({name:'geolocation'})).state; }catch(e){}
-    if(st!=='granted'||!navigator.geolocation)return;   /* JAMAIS de prompt ici */
+    if(st!=='granted'||!navigator.geolocation)return;   /* déjà accordée : silence */
     navigator.geolocation.getCurrentPosition(pos=>{
-      const lat=+pos.coords.latitude.toFixed(5), lng=+pos.coords.longitude.toFixed(5);
-      /* On repose la position dans le cache que map.html relira : une seule
-         demande GPS pour les deux écrans. */
-      try{localStorage.setItem('totehm_geo_v2',JSON.stringify(
-        {lat:lat,lng:lng,acc:Math.round(pos.coords.accuracy||0),t:Date.now()}));}catch(e){}
-      paintWeather(lat,lng);
+      const p=storePos(pos); paintWeather(p.lat,p.lng);
     },()=>{},{enableHighAccuracy:false,timeout:20000,maximumAge:600000});
   })();
 })();
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LA LOCALISATION — POURQUOI ELLE NE MARCHAIT PAS SUR .space
+   ══════════════════════════════════════════════════════════════════════════
+   MESURÉ LE 23/08/2026 (w4.mjs, cas A) : sur un navigateur neuf, la page
+   d'atterrissage appelait `getCurrentPosition` ZÉRO fois. Le code portait
+   même le commentaire « JAMAIS de prompt ici » : la météo n'acceptait
+   qu'une permission DÉJÀ accordée. Comme rien ne la demandait jamais, elle
+   ne l'était jamais. La boucle était fermée sur elle-même.
+
+   On la demande maintenant — une fois, sur un geste, au seul endroit où
+   elle veut dire quelque chose : [Open my Totehm World]. Un prompt lâché au
+   chargement, sans contexte, c'est le refus définitif garanti ; le même
+   prompt sur le bouton qui dit « mon monde » se comprend tout seul.
+
+   La position est écrite dans `totehm_geo_v2`, la clé que map.html relit :
+   même origine (www.totehm.space), même localStorage. Une demande GPS pour
+   les deux écrans, et la carte s'ouvre déjà localisée.
+   ══════════════════════════════════════════════════════════════════════════ */
+function cachedPos(){
+  for(const k of ['totehm_geo_v2','totehm_map_pos_v1']){
+    try{
+      const c=JSON.parse(localStorage.getItem(k)||'null');
+      if(c&&isFinite(c.lat)&&isFinite(c.lng))return c;
+    }catch(e){}
+  }
+  return null;
+}
+function storePos(pos){
+  const p={lat:+pos.coords.latitude.toFixed(5),lng:+pos.coords.longitude.toFixed(5),
+           acc:Math.round(pos.coords.accuracy||0),t:Date.now()};
+  try{localStorage.setItem('totehm_geo_v2',JSON.stringify(p));}catch(e){}
+  return p;
+}
 
 /* ══ SEARCH A TOTEHM — le pattern morph d'index.html ══ */
 /* réseau démo pour le mode guest */
@@ -2339,6 +2513,8 @@ window.addEventListener('pageshow',e=>{
     timer=setTimeout(()=>{
       body.classList.remove('folding');   /* le défilement redevient normal */
       moving=false;
+      /* Le gate se rejoue : la boucle du radar s'était arrêtée en entrant. */
+      if(window.__gateRadarStart)window.__gateRadarStart();
     },DUR+120);
   }
 
@@ -2399,22 +2575,127 @@ window.addEventListener('pageshow',e=>{
     enter(()=>openTotehmView(v));
   });
 
-  /* ── LA TERRE ──
-     `preload="none"` et chargement au premier contact visuel. 1,9 Mo servis
-     à chaque visiteur qui ne descend jamais jusqu'ici, c'est de l'egress
-     Supabase payé pour rien : ~1,9 Go par millier de visiteurs. */
-  const gv=$('gate-video');
-  if(gv){
-    const SRC='https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/space/earth.mp4';
+  /* ══ LE RADAR DE FOND ══
+     Le même dessin que map.html — grille, trois cercles de portée, balayage
+     en vingt secteurs dégressifs. Copié, jamais partagé.
+     Aucun appel réseau, aucune donnée : c'est une forme, pas une carte. La
+     boucle s'arrête dès que le Totehm est déployé ou l'onglet caché. */
+  (function gateRadar(){
+    const cv=$('gate-radar'); if(!cv||!cv.getContext)return;
+    const X=cv.getContext('2d');
+    let W=0,H=0,dpr=1,t=0,raf=0;
+    function size(){
+      dpr=Math.min(2,window.devicePixelRatio||1);
+      W=cv.clientWidth;H=cv.clientHeight;
+      cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
+    }
+    function frame(){
+      raf=0;
+      if(!body.classList.contains('gate')||document.hidden)return;
+      if(!W||!H)size();
+      /* Le centre du radar EST le centre du logo. C'est la thèse de
+         .space en une image : la carte tourne autour de toi, et toi c'est
+         ton Totehm. Mesuré à chaque frame — le logo bouge avec --gate-top. */
+      const lg=document.getElementById('gate-logo');
+      const r0=lg?lg.getBoundingClientRect():null;
+      const cx=r0?r0.left+r0.width/2:W/2, cy=r0?r0.top+r0.height/2:H*0.3;
+      /* « Plus grand et imposant » : le rayon déborde volontairement du
+         cadre — le radar est un fond, pas une vignette. */
+      const rpx=Math.max(W,H)*0.78;
+      X.setTransform(dpr,0,0,dpr,0,0);
+      X.clearRect(0,0,W,H);
+      t+=1/60;
+
+      X.strokeStyle='rgba(255,255,255,.062)';X.lineWidth=1;
+      X.beginPath();
+      for(let x=(cx%55);x<W;x+=55){X.moveTo(x+.5,0);X.lineTo(x+.5,H);}
+      for(let y=(cy%55);y<H;y+=55){X.moveTo(0,y+.5);X.lineTo(W,y+.5);}
+      X.stroke();
+
+      X.strokeStyle='rgba(255,255,255,.17)';X.lineWidth=1;
+      for(let k=1;k<=3;k++){X.beginPath();X.arc(cx,cy,rpx*k/3,0,Math.PI*2);X.stroke();}
+
+      const head=t*Math.PI/3;
+      for(let i=0;i<20;i++){
+        X.beginPath();X.moveTo(cx,cy);
+        X.arc(cx,cy,rpx,head-i*0.035-0.035,head-i*0.035);X.closePath();
+        X.fillStyle='#ffffff';X.globalAlpha=0.055*(1-i/20);X.fill();
+      }
+      X.globalAlpha=1;
+      raf=requestAnimationFrame(frame);
+    }
+    const start=()=>{ if(!raf&&body.classList.contains('gate')&&!document.hidden){size();raf=requestAnimationFrame(frame);} };
+    let rt; window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{size();start();},160);});
+    document.addEventListener('visibilitychange',start);
+    /* Le gate se rejoue : la boucle doit repartir après un repli. */
+    window.__gateRadarStart=start;
+    start();
+  })();
+
+  /* ══ THINK SAME BUT OPPOSITE ══
+     Le même câblage que higher.boutique/index.html : le bouton descend et
+     lance, le chevron remonte, l'observateur charge la vidéo au premier
+     contact visuel et la met en pause quand elle sort du champ. 
+     `preload="none"` : l'egress ne se paie que pour ceux qui descendent. */
+  (function gateContext(){
+    const ctx=$('gate-context'), hero=$('gate-hero'), v=$('ctx-vid');
+    if(!ctx||!hero||!v)return;
+    const SRC='https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/space/same_but_opposite.mp4';
     let armed=false;
-    const arm=()=>{ if(armed)return; armed=true; gv.src=SRC; gv.play().catch(()=>{}); };
+    const load=()=>{ if(armed)return; armed=true; v.src=SRC; };
+    $('ctx-down').addEventListener('click',()=>{
+      load(); v.muted=false;
+      ctx.scrollIntoView({behavior:'smooth'});
+      v.play().catch(()=>{});
+    });
+    $('ctx-up').addEventListener('click',()=>{ hero.scrollIntoView({behavior:'smooth'}); });
     if('IntersectionObserver' in window){
-      const io=new IntersectionObserver(es=>{
-        es.forEach(en=>{ if(en.isIntersecting){ arm(); io.disconnect(); } });
-      },{threshold:.2});
-      io.observe(gv);
-    } else { arm(); }
-  }
+      const io=new IntersectionObserver(es=>{es.forEach(e=>{
+        if(e.isIntersecting){ load(); v.play().catch(()=>{}); } else { v.pause(); }
+      });},{threshold:.55});
+      io.observe(ctx);
+    }
+    const g2=$('gate-open-2'); if(g2) g2.onclick=()=>{ gate.scrollTop=0; enter(); };
+  })();
+
+  /* ══ [OPEN MY TOTEHM WORLD] : LE SEUL ENDROIT OÙ ON DEMANDE LA POSITION ══
+     Un geste, un prompt, une navigation. Si le navigateur ne répond pas en
+     huit secondes on part quand même : la carte sait vivre sur son repli, et
+     faire attendre quelqu'un devant un bouton mort est pire qu'une carte
+     approximative. */
+  (function worldGeo(){
+    const btn=$('gate-world-btn'); if(!btn)return;
+    let going=false;
+    btn.addEventListener('click',e=>{
+      if(going)return;
+      if(cachedPos()||!navigator.geolocation)return;        /* déjà su : on part */
+      /* ══ preventDefault() DOIT ÊTRE SYNCHRONE ══
+         MESURÉ : avec un handler `async` qui attendait d'abord
+         permissions.query(), la navigation était DÉJÀ partie quand le
+         preventDefault arrivait — il ne restait plus rien à empêcher, et
+         zéro prompt n'était affiché. On coupe d'abord, on décide ensuite. */
+      e.preventDefault();
+      going=true;
+      const href=btn.getAttribute('href'), label=btn.textContent;
+      const go=()=>{ if(!going)return; going=false; btn.textContent=label;
+                     window.location.href=href; };
+      (async()=>{
+        let st='prompt';
+        try{ if(navigator.permissions&&navigator.permissions.query)
+          st=(await navigator.permissions.query({name:'geolocation'})).state; }catch(_){}
+        if(st==='denied')return go();                        /* refus : on n'insiste pas */
+        btn.textContent='locating…';
+        const cap=setTimeout(go,8000);
+        navigator.geolocation.getCurrentPosition(pos=>{
+          clearTimeout(cap);
+          const p=storePos(pos);
+          if(window.__gatePaintWeather)window.__gatePaintWeather(p.lat,p.lng);
+          go();
+        },()=>{ clearTimeout(cap); go(); },
+        {enableHighAccuracy:false,timeout:7500,maximumAge:60000});
+      })();
+    });
+  })();
 })();
 </script>
 </body>
