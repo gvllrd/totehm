@@ -155,12 +155,17 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
    ÉTAPE 2 · RENDU B — LES CARTES PLEIN ÉCRAN (< 700 px)
    Une carte occupe l'écran entier. On swipe. Une croix referme.
    ══════════════════════════════════════════════════════════════════════ */
-/* `touch-action:pan-x` : ce conteneur défile horizontalement, point. Sans
-   cette ligne, un pouce jamais parfaitement horizontal partait dans l'axe
-   vertical de la carte et le swipe se perdait une fois sur deux. */
+/* ══ POURQUOI PLUS AUCUN DÉFILEMENT NATIF ICI ══
+   Trois lots de suite ont essayé de faire marcher le swipe au doigt en
+   réglant le natif : `scroll-snap-type:x mandatory`, puis
+   `-webkit-overflow-scrolling:touch`, puis `touch-action:pan-x` par-dessus
+   un enfant `.slide` qui défile en Y. Chacun se comporte différemment selon
+   le moteur, et sur iOS ces trois-là s'annulent entre eux. On arrête de
+   régler : `touch-action:none`, le navigateur ne touche plus à rien, et le
+   geste est conduit en Pointer Events — le MÊME code pour le doigt et la
+   souris, celui qui marche déjà. Un seul chemin, testable. */
 #deck{position:fixed;inset:0;z-index:20;display:none;
-  overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
-  -webkit-overflow-scrolling:touch;scrollbar-width:none;touch-action:pan-x;
+  overflow-x:auto;overflow-y:hidden;scrollbar-width:none;touch-action:none;
   overscroll-behavior:contain;background:#000}
 #deck::-webkit-scrollbar{display:none}
 #deck.show{display:flex}
@@ -168,10 +173,10 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
    map/card). Sans largeur maximale, une description de six mots s'étirait
    sur 1 400 px et devenait illisible : la mesure du texte prime sur la
    largeur de la fenêtre. Le bloc reste centré, la carte reste plein écran. */
-.slide{flex:0 0 100vw;width:100vw;height:100%;scroll-snap-align:center;
+.slide{flex:0 0 100%;width:100%;height:100%;
   display:flex;flex-direction:column;justify-content:center;
   padding:calc(58px + env(safe-area-inset-top,0)) 26px calc(52px + env(safe-area-inset-bottom,0));
-  overflow-y:auto;overscroll-behavior:contain}
+  overflow-y:auto;overscroll-behavior:contain;touch-action:none}
 .slide .c-inner{max-width:720px;width:100%;margin:0 auto}
 
 #count{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0));left:50%;
@@ -197,11 +202,19 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
   margin-top:20px;padding-top:14px;border-top:1px solid rgba(255,255,255,.09)}
 .c-dist{font-family:'Space Mono',monospace;font-size:15px;color:var(--hi)}
 .c-walk{font-family:'Space Mono',monospace;font-size:11px;color:var(--lo);margin-left:8px}
+/* La couleur passe par --gc, jamais par un style inline : un style inline
+   bat la feuille et le survol ne pourrait plus repasser au blanc. */
+/* Plus de `text-transform:uppercase` : « TAKE ME THERE » était une commande
+   criée, « Go Flow » est un cap. Le nom de l'intention se lit comme il
+   s'écrit dans le reste du produit. */
 .c-go{font-family:'Quantico',sans-serif;font-size:14px;font-weight:400;
-  text-transform:uppercase;color:var(--mid);background:none;text-decoration:none;
+  color:var(--gc,var(--mid));background:none;text-decoration:none;
   white-space:nowrap;cursor:pointer;border:6px solid transparent;padding:0 4px;
-  line-height:1.5;display:inline-block;-webkit-tap-highlight-color:transparent;
-  transition:color .15s ease}
+  line-height:1.5;display:inline-flex;align-items:center;gap:7px;
+  -webkit-tap-highlight-color:transparent;transition:color .15s ease}
+/* Le [Higher] : la slogan-box perforée navy, à hauteur de texte. */
+.c-hi{display:inline-block;width:44px;line-height:0;flex-shrink:0}
+.c-hi svg{display:block;width:100%;height:auto}
 @media(hover:hover){.c-go:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
 .c-go:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
 .slide .c-name{font-size:clamp(28px,8vw,38px)}
@@ -310,9 +323,48 @@ body.in-world.view-cards #zoom{display:none}
 .c-takes{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;
   text-transform:uppercase;color:var(--lo);margin-top:14px}
 .c-takes b{font-weight:700;color:var(--mid)}
+
+
+
+
+
+
+
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Le gris en survol devient blanc. Généré depuis la feuille
+   elle-même : un nouveau bloc gris entre ici tout seul.        */
+@media(hover:hover){
+.s-sub:hover,
+#s-geo.retry:hover,
+.s-int-def:hover,
+.s-int-ntag:hover,
+.s-int.cold .s-int-def:hover,
+#s-note:hover,
+.s-exit:hover,
+#count:hover,
+.c-why:hover,
+.c-walk:hover,
+.c-go:hover,
+#info .c-x svg:hover,
+#view-toggle:hover,
+.deck-nav svg:hover,
+#filter-arrow svg:hover,
+#zoom button:hover,
+.fm-lbl:hover,
+.fm-opt:hover,
+.c-takes:hover,
+.c-takes b:hover{color:#fff}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body>
+
+<!-- Le [Higher] perforé navy, COPIÉ de totehm.html. Produits indépendants,
+     fichiers indépendants : un contenu commun se copie, il ne se partage pas. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="higher-badge" viewBox="0 0 600 200"><defs><mask id="hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></symbol>
+</defs></svg>
 
 <!-- ÉTAPE 2 · RADAR (desktop) : le canvas, les T, toi. Rien d'autre. -->
 <div id="world">
@@ -426,7 +478,7 @@ const HITS=new Map();           /* intention -> spots, cache de session */
 
 const RAD={ on:false, raf:0, t:0,
   origin:null, coords:null, geoDenied:false, geoPending:false,
-  spots:[], intention:null, hover:null, focus:null,
+  spots:[], intention:null, loading:null, hover:null, focus:null,
   base:1200, zoom:1, cx:0, cy:0, rpx:0, W:0, H:0, dpr:1 };
 
 /* ══ MATHÉMATIQUE ══
@@ -511,7 +563,10 @@ function geoFail(e){
 }
 async function geoRefresh(moved){
   if(moved===false)return;
-  const cur=RAD.intention;
+  /* `RAD.loading` : au démarrage l'intention est cliquée AVANT que le GPS
+     réponde, et `RAD.intention` n'est posée qu'au retour du réseau. Sans lui,
+     geoRefresh ne relançait rien et l'écran restait sur le repli. */
+  const cur=RAD.intention||RAD.loading;
   HITS.clear();
   if(cur){RAD.intention=null;await pick(cur);}
 }
@@ -583,8 +638,11 @@ function cardHTML(s){
    +  '<span><span class="c-dist">'+fmtDist(s.dist_m||0)+'</span>'
    +  '<span class="c-walk">'+fmtWalk(s.dist_m||0)+'</span></span>'
    +  '<a class="c-go" target="_blank" rel="noopener" data-ref="'+esc(s.id||'')+'" '
+   +     'style="--gc:'+col+'" '
    +     'href="https://www.google.com/maps/dir/?api=1&destination='+s.lat+','+s.lng+'">'
-   +     'take me there</a>'
+   +     'Go '+esc(conf.name)
+   +     '<span class="c-hi"><svg viewBox="0 0 600 200" role="img" aria-label="Higher">'
+   +       '<use href="#higher-badge"></use></svg></span></a>'
    +'</div>';
 }
 
@@ -864,44 +922,74 @@ function paintNav(){
 $('deck-prev').onclick=e=>{e.stopPropagation();deckStep(-1);};
 $('deck-next').onclick=e=>{e.stopPropagation();deckStep(1);};
 
-/* ══ LE SWIPE HORIZONTAL ══
-   Au doigt, `scroll-snap-type:x mandatory` fait déjà le travail — à une
-   condition : que le navigateur nous donne le geste. `.slide` défilait aussi
-   verticalement, et un pouce jamais parfaitement horizontal partait dans le
-   mauvais axe. `touch-action:pan-x` sur le deck tranche : ce conteneur
-   défile horizontalement, point.
+/* ══ LE SWIPE — UN SEUL CODE POUR LE DOIGT ET LA SOURIS ══
+   Le doigt ne passait plus par ici : on faisait confiance à scroll-snap.
+   MESURÉ : ça marche en Chromium et ça se perd ailleurs, parce que trois
+   mécaniques natives se disputaient le même geste (cf. le bloc CSS de
+   #deck). Le natif est coupé, on conduit :
 
-   À la souris il n'y a pas de swipe du tout : on l'ajoute en Pointer Events.
-   Un seuil de 8 px avant de saisir le geste, sinon un clic sur [take me
-   there] serait avalé par le glissement. */
+   · seuil de 8 px avant de saisir — sinon un clic sur [Go Flow] serait
+     avalé par le moindre tremblement de doigt ;
+   · verrou d'axe posé UNE fois, au franchissement du seuil : |dx|>|dy| et
+     c'est horizontal jusqu'au relâchement. Un pouce n'est jamais droit ;
+     sans verrou il change d'avis en cours de route et le swipe se perd ;
+   · vertical : on pousse nous-mêmes le scrollTop de la carte, puisque
+     `touch-action:none` a retiré ce geste au navigateur ;
+   · au relâchement : un quart de carte parcouru OU un geste rapide fait
+     tourner la carte. Sinon on revient. Pas de scroll-snap à attendre. */
 (function deckSwipe(){
   const deck=$('deck');
-  let id=null,x0=0,left0=0,dragging=false;
+  let id=null,x0=0,y0=0,left0=0,top0=0,t0=0,slide=null,axis='',dragging=false;
+  const W=()=>deck.clientWidth||1;
+
   deck.addEventListener('pointerdown',e=>{
-    if(e.pointerType==='touch')return;      /* le doigt : natif, déjà parfait */
-    id=e.pointerId;x0=e.clientX;left0=deck.scrollLeft;dragging=false;
+    if(id!==null)return;
+    id=e.pointerId;x0=e.clientX;y0=e.clientY;t0=e.timeStamp;
+    left0=deck.scrollLeft;
+    slide=e.target&&e.target.closest?e.target.closest('.slide'):null;
+    top0=slide?slide.scrollTop:0;
+    axis='';dragging=false;
   });
+
   deck.addEventListener('pointermove',e=>{
     if(id===null||e.pointerId!==id)return;
-    const dx=e.clientX-x0;
-    if(!dragging){
-      if(Math.abs(dx)<8)return;
-      dragging=true;deck.style.scrollSnapType='none';
+    const dx=e.clientX-x0, dy=e.clientY-y0;
+    if(!axis){
+      if(Math.abs(dx)<8&&Math.abs(dy)<8)return;
+      axis=Math.abs(dx)>=Math.abs(dy)?'x':'y';
+      dragging=true;
       try{deck.setPointerCapture(id);}catch(_){}
     }
-    deck.scrollLeft=left0-dx;
-  });
-  const end=()=>{
-    if(id===null)return;
-    if(dragging){
-      deck.style.scrollSnapType='';
-      /* On repose sur la carte la plus proche : sans ça le deck reste entre
-         deux cartes et scroll-snap ne reprend qu'au geste suivant. */
-      deckStep(0);
+    if(axis==='x'){
+      /* Bornes dures : sans elles le premier et le dernier écran partent
+         dans le vide et reviennent d'un coup sec. */
+      const max=(deck.children.length-1)*W();
+      deck.scrollLeft=Math.max(0,Math.min(max,left0-dx));
+    }else if(slide){
+      slide.scrollTop=top0-dy;
     }
-    id=null;dragging=false;
+  });
+
+  const end=e=>{
+    if(id===null)return;
+    if(axis==='x'){
+      const dx=(e&&e.clientX!=null?e.clientX:x0)-x0;
+      const dt=Math.max(1,(e&&e.timeStamp?e.timeStamp:t0+1)-t0);
+      const fast=Math.abs(dx)/dt>0.45;                 /* px/ms */
+      const far =Math.abs(dx)>W()*0.25;
+      const from=Math.round(left0/W());
+      const step=(far||fast)?(dx<0?1:-1):0;
+      const n=deck.children.length;
+      const to=Math.max(0,Math.min(n-1,from+step));
+      deck.scrollTo({left:to*W(),behavior:'smooth'});
+    }
+    try{deck.releasePointerCapture(id);}catch(_){}
+    id=null;slide=null;
+    /* `dragging` retombe au tick suivant : le click natif arrive APRÈS le
+       pointerup, et il doit encore trouver le drapeau levé pour être avalé. */
+    setTimeout(()=>{dragging=false;axis='';},0);
   };
-  ['pointerup','pointercancel','pointerleave'].forEach(t=>deck.addEventListener(t,end));
+  ['pointerup','pointercancel'].forEach(t=>deck.addEventListener(t,end));
   /* Un glissement ne doit pas déclencher le lien qu'il a survolé. */
   deck.addEventListener('click',e=>{if(dragging){e.preventDefault();e.stopPropagation();}},true);
 })();
@@ -1078,7 +1166,11 @@ function markActive(id){
     el.classList.toggle('on',el.dataset.int===id));
 }
 
-/* ══ LE DÉCLENCHEUR — rien ne part sur le réseau avant ce clic ══ */
+/* ══ LE DÉCLENCHEUR — rien ne part sur le réseau avant ce clic ══
+   `PICK_SEQ` : la réponse d'une demande dépassée est jetée. Sans ce compteur,
+   la requête partie sans GPS revenait après celle relancée avec, et remettait
+   des distances calculées depuis Lisbonne par-dessus les bonnes. */
+let PICK_SEQ=0;
 async function pick(id){
   if(!id)return;
   if(mine.length&&mine.indexOf(id)===-1){
@@ -1094,6 +1186,7 @@ async function pick(id){
     return;
   }
   markLoading(id,true);say('scanning…');
+  const seq=++PICK_SEQ; RAD.loading=id;
   try{
     const {data:{session}}=await sb.auth.getSession();
     if(!session){markLoading(id,false);say('sign in to open the radar');return;}
@@ -1109,11 +1202,22 @@ async function pick(id){
     if(r.status===403){say('no habit carries this intention yet — give it one in your Totehm');return;}
     if(!r.ok){say('the radar is unreachable right now');return;}
     const j=await r.json();
+    if(seq!==PICK_SEQ)return;          /* dépassée : une autre demande a pris la main */
+    RAD.loading=null;
     if(j.reason==='no_intention'){
       say('give at least one habit an intention — the radar reads your Totehm');return;
     }
     if(Array.isArray(j.intentions)&&j.intentions.length){mine=j.intentions;buildSelector();}
-    if(j.origin)RAD.origin=j.origin;
+    /* ══ LA PANNE DE LOCALISATION, LA VRAIE ══
+       MESURÉ LE 23/08/2026 (w4.mjs, cas C) : GPS autorisé, réponse en 1,5 s,
+       radar interrogé avant. La réponse du radar arrivait 1,8 s APRÈS le GPS
+       et faisait `RAD.origin = j.origin`. Or higher-map v7 renvoie son propre
+       repli — Lisbonne, `fallback:true` — dès que la requête part sans
+       coordonnées, ce qui est le cas normal puisque l'écran s'ouvre avant le
+       GPS. Une position juste était donc écrasée par un repli, définitivement,
+       et « tap to use your position » restait affiché GPS accordé.
+       Le serveur ne corrige plus que ce que le navigateur ignore. */
+    if(j.origin&&!RAD.coords)RAD.origin=j.origin;
     const o=RAD.origin;
     const spots=(j.spots||[])
       .filter(s=>s.lat!=null&&s.lng!=null)
