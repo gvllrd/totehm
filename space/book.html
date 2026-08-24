@@ -71,7 +71,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
    Strictement #freq-panel / #habit-peek de totehm.html : 100 % du viewport,
    une carte au centre, rien d'autre à décider. */
 #pick{position:fixed;left:0;top:0;width:100vw;height:100vh;inset:0;z-index:90;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:22px}
-.pk-card{background:#080808;border:1px solid #161616;width:100%;max-width:380px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px;max-height:86vh}
+.pk-card{background:#131316;border:1px solid #242429;width:100%;max-width:380px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px;max-height:86vh}
 .pk-q{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);text-align:center}
 #pk-ints{display:flex;flex-direction:column;gap:12px;overflow-y:auto;overscroll-behavior:contain;padding-right:4px}
 .pk-int{display:flex;flex-direction:column;gap:4px;background:none;border:none;padding:4px 0;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
@@ -87,9 +87,16 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 #status{position:fixed;bottom:6px;right:16px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;color:rgba(255,255,255,.45);text-transform:uppercase;min-height:12px;pointer-events:none;z-index:3}
 
 .side-nav{display:none}
+/* ══ LECTURE SEULE ══ Ce qui écrit est RETIRÉ, pas grisé : un champ grisé
+   invite encore à essayer, un champ absent ne ment pas. */
+body.ro .teach.add,body.ro .t-x{display:none!important}
+body.ro .t-text{pointer-events:none}
 /* ══ LE CURSEUR DE BORD (mobile) ══ voir next_objective.html : même objet. */
-.edge-nav{position:fixed;top:50%;transform:translateY(-50%);right:0;z-index:33;
-  background:none;border:none;padding:14px 4px 14px 8px;line-height:0;cursor:pointer;
+/* Au bord de l'écran, à mi-hauteur, le curseur ne disait rien : il était
+   loin de ce qu'il commande. Il se pose À CÔTÉ du T.svg blanc — la marque
+   qui ramène au Totehm — et le geste devient lisible d'un coup d'œil. */
+.edge-nav{position:fixed;top:30px;left:calc(50% + 40px);z-index:33;
+  background:none;border:none;padding:14px 10px;line-height:0;cursor:pointer;
   color:#9a7a8a;-webkit-tap-highlight-color:transparent;transition:opacity .2s}
 .edge-nav svg{width:13px;height:22px;display:block;fill:none;stroke:currentColor;
   stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
@@ -150,6 +157,12 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 
 
 
+
+
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -187,9 +200,9 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 <!-- L'ÉTAPE : l'intention de la leçon, plein écran, fond noirci -->
 <div id="pick" class="hide" role="dialog" aria-label="Intention of this teach">
   <div class="pk-card">
-    <div class="pk-q">How much does this teach weigh?</div>
+    <div class="pk-q">What does this teach serve?</div>
     <div id="pk-ints"></div>
-    <button class="pk-skip" id="pk-skip" type="button">no weight yet</button>
+    <button class="pk-skip" id="pk-skip" type="button">no intention yet</button>
   </div>
 </div>
 
@@ -199,6 +212,12 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
 const $=id=>document.getElementById(id);
+/* ══ ?ro=<pseudo> — LE VOLET D'UN AUTRE, EN LECTURE ══
+   La bascule voyage depuis totehm.html. Ici elle ne fait que deux choses :
+   lire chez quelqu'un d'autre, et empêcher toute écriture. Les policies
+   RLS font le reste — elles ne rendent que ce qui est ouvert aux membres. */
+const RO=(()=>{try{const v=new URLSearchParams(location.search).get('ro');
+  return v&&v.trim()?v.trim().slice(0,32):null;}catch(e){return null;}})();
 const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;};
 const T_SVG='<svg class="tglyph" viewBox="0 0 624 636" aria-hidden="true"><path fill="currentColor" d="M0 0 H624 V92 H358 V592 H434 V636 H190 V592 H266 V92 H0 Z"/></svg>';
 
@@ -219,45 +238,54 @@ const INTS=[
 ];
 const INT_BY_ID={};INTS.forEach(x=>INT_BY_ID[x.id]=x);
 
-/* ══ L'IMPORTANCE, PAS L'INTENTION ══
-   Une leçon ne « sert » pas une intention : elle pèse. Une intention dit où
-   l'on va, une leçon dit ce qu'on a payé pour le savoir. Trois niveaux, pas
-   sept — au-delà de trois, personne ne distingue plus.
-   Le blanc monte avec le poids : la hiérarchie se voit sans se lire. */
-const LEVELS=[
-  {id:3,name:'Changed me',   def:'The lesson that redrew the map. You are not the same after it.', color:'#ffffff'},
-  {id:2,name:'Holds up',     def:'Proven more than once. You would teach it to someone you love.', color:'#b4b4b4'},
-  {id:1,name:'Worth keeping',def:'True today. Not yet paid for twice.',                            color:'#6d6d6d'}
-];
-const LEVEL_BY_ID={};LEVELS.forEach(x=>LEVEL_BY_ID[x.id]=x);
-const lvColor=v=>(LEVEL_BY_ID[v]||{}).color||'#ffffff';
+/* ══ ANNULÉ (24/08) — LES NIVEAUX D'IMPORTANCE ══
+   On revient aux SEPT INTENTIONS pour classer une leçon. Elles sont déjà
+   le vocabulaire du produit partout ailleurs ; en inventer un second pour
+   My Wisdom obligeait à apprendre deux échelles au lieu d'une.
+   La colonne `wisdom.importance` reste en base, vide et sans usage —
+   elle se retire au lot suivant si rien ne la reprend. */
 const intColor=i=>(INT_BY_ID[i]||{}).color||'#fff';
 
 /* ══ STORAGE — local d'abord, nuage si connecté ══
    Exactement la doctrine du Totehm : on écrit toujours en local, le nuage
    suit quand il y a une session. Un invité garde ses leçons. */
 const KEY='totehm_wisdom_v1';
+/* En lecture il n'y a RIEN en local à sauver : le cache appartient au
+   membre connecté, pas à celui qu'on regarde. */
+let ROID=null;
+async function resolveRO(){
+  if(!RO)return null;
+  try{
+    const {data}=await sb.from('profiles').select('id').ilike('pseudo',RO).limit(1);
+    ROID=(data&&data[0]&&data[0].id)||null;
+  }catch(e){}
+  return ROID;
+}
 let me=null, teaches=[], pendingI=null, pickTarget=null, saveTimer=null;
 
 function loadLocal(){
   try{const r=localStorage.getItem(KEY);const a=r?JSON.parse(r):null;return Array.isArray(a)?a:[];}catch(e){return [];}
 }
 function saveLocal(){
+  if(RO)return;   /* le cache local appartient au membre connecté */
   try{localStorage.setItem(KEY,JSON.stringify(teaches));}catch(e){}
   $('status').textContent='saved';
   setTimeout(()=>{if($('status').textContent==='saved')$('status').textContent='';},1100);
 }
 async function cloudInsert(t){
+  if(RO)return null;   /* lecture seule : aucune écriture, jamais */
   if(!me)return null;
-  const {data,error}=await sb.from('wisdom').insert({user_id:me.id,text:t.t,importance:t.i||null}).select('id').maybeSingle();
+  const {data,error}=await sb.from('wisdom').insert({user_id:me.id,text:t.t,i:t.i||null}).select('id').maybeSingle();
   if(error)return null;
   return data?data.id:null;
 }
 async function cloudUpdate(t){
+  if(RO)return null;   /* lecture seule : aucune écriture, jamais */
   if(!me||!t.id)return;
-  try{await sb.from('wisdom').update({text:t.t,importance:t.i||null}).eq('id',t.id);}catch(e){}
+  try{await sb.from('wisdom').update({text:t.t,i:t.i||null}).eq('id',t.id);}catch(e){}
 }
 async function cloudDelete(t){
+  if(RO)return null;   /* lecture seule : aucune écriture, jamais */
   if(!me||!t.id)return;
   try{await sb.from('wisdom').delete().eq('id',t.id);}catch(e){}
 }
@@ -268,14 +296,14 @@ function render(){
   teaches.forEach((t,i)=>{
     h+='<div class="teach'+(t.i?' marked':'')+'">'
       +'<button class="t-x" data-i="'+i+'" aria-label="remove">&times;</button>'
-      +'<span class="meta"><button class="h-T" data-i="'+i+'" aria-label="Weight" style="color:'+(t.i?lvColor(t.i):'#fff')+'">'+T_SVG+'</button></span>'
+      +'<span class="meta"><button class="h-T" data-i="'+i+'" aria-label="Intention" style="color:'+(t.i?intColor(t.i):'#fff')+'">'+T_SVG+'</button></span>'
       +'<span class="tick"></span>'
       +'<span class="h-body"><textarea class="t-text" rows="1" data-i="'+i+'"></textarea></span>'
       +'</div>';
   });
   /* La ligne d'ajout : le T clignote, il ouvre l'intention. */
   h+='<div class="teach add'+(pendingI?' marked':'')+'">'
-    +'<span class="meta"><button class="h-T'+(pendingI?'':' blink')+'" id="t-T" aria-label="Weight" style="color:'+(pendingI?lvColor(pendingI):'#fff')+'">'+T_SVG+'</button></span>'
+    +'<span class="meta"><button class="h-T'+(pendingI?'':' blink')+'" id="t-T" aria-label="Intention" style="color:'+(pendingI?intColor(pendingI):'#fff')+'">'+T_SVG+'</button></span>'
     +'<span class="tick"></span>'
     +'<span class="h-body"><textarea class="t-add" rows="1" id="t-add"></textarea>'
     /* Le « t » de « teach » EST le T du logo. La lettre le disait, l'icône
@@ -319,7 +347,7 @@ function render(){
 /* ══ L'ÉTAPE : le poids de la leçon, plein écran ══ */
 function renderInts(cur){
   const box=$('pk-ints');box.innerHTML='';
-  LEVELS.forEach(x=>{
+  INTS.forEach(x=>{
     const b=document.createElement('button');
     b.type='button';
     b.className='pk-int'+(x.id===cur?' on':'');
@@ -343,7 +371,7 @@ function openPick(target){
   pickTarget=target;
   const cur=target==='new'?pendingI:(teaches[target]&&teaches[target].i)||null;
   if(embedded){
-    try{window.parent.postMessage({type:'totehm-pick-weight',value:cur},'*');return;}catch(e){}
+    try{window.parent.postMessage({type:'totehm-pick-intention',value:cur},'*');return;}catch(e){}
   }
   renderInts(cur);
   $('pick').classList.remove('hide');
@@ -351,8 +379,8 @@ function openPick(target){
 function closePick(){$('pick').classList.add('hide');pickTarget=null;}
 /* La réponse du parent vaut exactement un clic ici. */
 window.addEventListener('message',e=>{
-  if(!e.data||e.data.type!=='totehm-weight')return;
-  applyInt(e.data.value==null?null:+e.data.value);
+  if(!e.data||e.data.type!=='totehm-intention')return;
+  applyInt(e.data.value||null);
 });
 const pickOpen=()=>!$('pick').classList.contains('hide');
 function applyInt(id){
@@ -410,7 +438,10 @@ if(window.parent&&window.parent!==window){
 
 /* ══ BOOT ══ */
 (async()=>{
-  teaches=loadLocal();
+  /* En lecture on ne part JAMAIS du cache local : il contient les leçons du
+     membre connecté, et elles s'afficheraient sous le nom d'un autre. */
+  teaches=RO?[]:loadLocal();
+  if(RO)document.body.classList.add('ro');
   render();
   try{
     const {data:{session}}=await sb.auth.getSession();
@@ -418,13 +449,15 @@ if(window.parent&&window.parent!==window){
   }catch(e){}
   if(!me)return;
   try{
-    const {data}=await sb.from('wisdom').select('id,text,importance,created_at')
-      .eq('user_id',me.id).order('created_at',{ascending:false});
+    const uid=RO?(await resolveRO()):me.id;
+    if(!uid){ teaches=[]; render(); return; }
+    const {data}=await sb.from('wisdom').select('id,text,i,created_at')
+      .eq('user_id',uid).order('created_at',{ascending:false});
     if(data){
       /* Le nuage fait foi dès qu'il existe ; ce qui n'a jamais été poussé
          (pas d'id) est envoyé maintenant, puis la liste est refaite. */
-      const orphans=teaches.filter(t=>!t.id);
-      teaches=data.map(r=>({id:r.id,t:r.text,i:r.importance||null,at:r.created_at}));
+      const orphans=RO?[]:teaches.filter(t=>!t.id);
+      teaches=data.map(r=>({id:r.id,t:r.text,i:r.i||null,at:r.created_at}));
       for(const o of orphans){
         const id=await cloudInsert(o);
         teaches.unshift({id:id,t:o.t,i:o.i||null,at:o.at||new Date().toISOString()});

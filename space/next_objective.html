@@ -60,10 +60,11 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
    gauche du rail, le tiret blanc marque le rail, le texte part à droite. */
 .prop{position:relative;display:flex;align-items:flex-start;min-height:30px;padding:0 34px 0 0}
 .prop .meta{position:absolute;top:2px;right:calc(100% - var(--rl) + 10px);display:flex;align-items:center;gap:8px;white-space:nowrap}
-/* MESURÉ : sur mobile une seconde marque apparaissait à côté du T
-   clignotant. `.h-T` est la SEULE marque d'une proposition — tout autre
-   glyphe dans `.meta` est masqué, le comportement est celui du desktop. */
-.prop .meta > *:not(.h-T):not(.h-freq){display:none}
+/* `.h-T` est la SEULE chose visible dans la colonne d'une proposition.
+   La fréquence y restait sur mobile alors qu'elle est masquée sur desktop
+   (deux règles plus bas) : deux comportements pour un même écran. Elle se
+   lit dans la fenêtre qu'ouvre le T, pas en marge de la liste. */
+.prop .meta > *:not(.h-T){display:none}
 .prop .h-T{line-height:0;color:#fff;display:block;background:none;border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .prop .h-T .tglyph{height:14px;width:auto;display:block}
 /* Le T de chaque proposition clignote, à la couleur de son intention :
@@ -109,6 +110,13 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
    fréquence sur desktop, où .prop .h-freq est masquée faute de place. */
 /* Le tag [Get Higher] : il n'apparait que si le modele a reconnu une pratique
    de performance mentale entrainee. Le mot est en traces, pas en webfont. */
+/* ══ HIGHER : EXCLUSIVITÉ ABSOLUE ══
+   Masqué PAR DÉFAUT. `body.higher` n'est posée que pour un membre connecté
+   à l'abonnement vivant ET ayant fait la méthode Stoner. Si la
+   vérification échoue, si le réseau tombe, rien ne s'affiche : l'inverse
+   laisserait une fenêtre où l'exclusivité fuit. */
+.higher-only{display:none!important}
+body.higher .higher-only{display:revert!important}
 .prop .p-hi{background:none;border:none;padding:0;margin-left:2px;cursor:pointer;
   line-height:0;display:inline-flex;align-items:center;
   -webkit-tap-highlight-color:transparent;transition:opacity .2s}
@@ -123,7 +131,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
   width:100vw;height:100vh;z-index:90;background:rgba(0,0,0,.82);
   display:none;align-items:center;justify-content:center;padding:22px}
 #peek.show{display:flex}
-.pk-card{background:#080808;border:1px solid #161616;width:100%;max-width:340px;
+.pk-card{background:#131316;border:1px solid #242429;width:100%;max-width:340px;
   padding:22px;display:flex;flex-direction:column;gap:6px;position:relative}
 /* La croix : sans elle on ne sortait de la fenêtre que par hasard. */
 .pk-x{position:absolute;top:8px;right:12px;background:none;border:none;
@@ -189,10 +197,24 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 [dir="rtl"] #why .w-top{justify-content:flex-start}
 
 .side-nav{display:none}
+/* ══ LECTURE SEULE ══ Le générateur n'a pas de sens chez quelqu'un d'autre :
+   ce qu'on lit, ce sont ses OBJECTIFS, pas une machine à en produire. */
+body.ro #obj-input,body.ro #obj-locked,body.ro .p-add,body.ro .p-hi{display:none!important}
+.ro-obj{display:flex;flex-direction:column;gap:5px;padding:15px 0;
+  margin-left:calc(var(--rl) + var(--rw) + 16px);margin-right:16px;
+  border-bottom:1px solid rgba(255,255,255,.07)}
+.ro-obj .ro-t{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:#fff;line-height:1.35}
+.ro-obj .ro-m{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;color:#8a8a8a}
+#ro-empty{font-family:'Quantico',sans-serif;font-size:14px;color:#8a8a8a;
+  text-align:center;padding:26px 18px;line-height:1.6}
 /* ══ LE CURSEUR DE BORD (mobile) ══
    Il ne navigue pas tout seul : il dit qu'un côté existe, et il y mène. */
-.edge-nav{position:fixed;top:50%;transform:translateY(-50%);left:0;z-index:33;
-  background:none;border:none;padding:14px 8px 14px 4px;line-height:0;cursor:pointer;
+/* Au bord de l'écran, à mi-hauteur, le curseur ne disait rien : il était
+   loin de ce qu'il commande. Il se pose À CÔTÉ du T.svg — la marque qui
+   ramène au Totehm — et le geste devient lisible d'un coup d'œil. */
+.edge-nav{position:fixed;top:30px;right:calc(50% + 40px);z-index:33;
+  background:none;border:none;padding:14px 10px;line-height:0;cursor:pointer;
   color:#7a7a9a;-webkit-tap-highlight-color:transparent;transition:opacity .2s}
 .edge-nav svg{width:13px;height:22px;display:block;fill:none;stroke:currentColor;
   stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
@@ -276,6 +298,12 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 
 
 
+
+
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -293,14 +321,16 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 #why .w-src:hover,
 #why .w-ref:hover,
 #why .w-none:hover,
-#why .w-close:hover{color:#fff}
+#why .w-close:hover,
+.ro-obj .ro-m:hover,
+#ro-empty:hover{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 <script>if(window.parent&&window.parent!==window)document.documentElement.classList.add('embedded');</script>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="higher-word" viewBox="0 0 600 200"><defs><mask id="hw-holes"><rect width="600" height="200" fill="white"/><circle cx='60' cy='0' r='14' fill='black'/><circle cx='60' cy='200' r='14' fill='black'/><circle cx='140' cy='0' r='14' fill='black'/><circle cx='140' cy='200' r='14' fill='black'/><circle cx='220' cy='0' r='14' fill='black'/><circle cx='220' cy='200' r='14' fill='black'/><circle cx='300' cy='0' r='14' fill='black'/><circle cx='300' cy='200' r='14' fill='black'/><circle cx='380' cy='0' r='14' fill='black'/><circle cx='380' cy='200' r='14' fill='black'/><circle cx='460' cy='0' r='14' fill='black'/><circle cx='460' cy='200' r='14' fill='black'/><circle cx='540' cy='0' r='14' fill='black'/><circle cx='540' cy='200' r='14' fill='black'/><circle cx='0' cy='70' r='14' fill='black'/><circle cx='600' cy='70' r='14' fill='black'/><circle cx='0' cy='130' r='14' fill='black'/><circle cx='600' cy='130' r='14' fill='black'/></mask></defs><g mask="url(#hw-holes)"><rect width="600" height="200" fill="#fbd5ca"/><g fill="#333366" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></g></symbol></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="higher-badge" viewBox="0 0 600 200"><defs><mask id="hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></symbol><symbol id="higher-word" viewBox="0 0 600 200"><defs><mask id="hw-holes"><rect width="600" height="200" fill="white"/><circle cx='60' cy='0' r='14' fill='black'/><circle cx='60' cy='200' r='14' fill='black'/><circle cx='140' cy='0' r='14' fill='black'/><circle cx='140' cy='200' r='14' fill='black'/><circle cx='220' cy='0' r='14' fill='black'/><circle cx='220' cy='200' r='14' fill='black'/><circle cx='300' cy='0' r='14' fill='black'/><circle cx='300' cy='200' r='14' fill='black'/><circle cx='380' cy='0' r='14' fill='black'/><circle cx='380' cy='200' r='14' fill='black'/><circle cx='460' cy='0' r='14' fill='black'/><circle cx='460' cy='200' r='14' fill='black'/><circle cx='540' cy='0' r='14' fill='black'/><circle cx='540' cy='200' r='14' fill='black'/><circle cx='0' cy='70' r='14' fill='black'/><circle cx='600' cy='70' r='14' fill='black'/><circle cx='0' cy='130' r='14' fill='black'/><circle cx='600' cy='130' r='14' fill='black'/></mask></defs><g mask="url(#hw-holes)"><rect width="600" height="200" fill="#fbd5ca"/><g fill="#333366" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></g></symbol></svg>
 <div id="stage">
 
 <div id="rail"></div>
@@ -354,6 +384,12 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
 const $=id=>document.getElementById(id);
+/* ══ ?ro=<pseudo> — LE VOLET D'UN AUTRE, EN LECTURE ══
+   La bascule voyage depuis totehm.html. Ici elle ne fait que deux choses :
+   lire chez quelqu'un d'autre, et empêcher toute écriture. Les policies
+   RLS font le reste — elles ne rendent que ce qui est ouvert aux membres. */
+const RO=(()=>{try{const v=new URLSearchParams(location.search).get('ro');
+  return v&&v.trim()?v.trim().slice(0,32):null;}catch(e){return null;}})();
 const T_SVG='<svg class="tglyph" viewBox="0 0 624 636" aria-hidden="true"><path fill="currentColor" d="M0 0 H624 V92 H358 V592 H434 V636 H190 V592 H266 V92 H0 Z"/></svg>';
 
 const FLABEL={every_minute:'every minute',hourly:'every hour',several_daily:'several times a day',every_morning:'every morning',every_afternoon:'every afternoon',daily:'daily',every_evening:'every evening',every_weekday:'every weekday',every_night:'every night',every_other_day:'every other day',twice_week:'twice a week',every_weekend:'every weekend',weekly:'weekly',every_monday:'every monday',every_tuesday:'every tuesday',every_wednesday:'every wednesday',every_thursday:'every thursday',every_friday:'every friday',every_saturday:'every saturday',every_sunday:'every sunday',biweekly:'every two weeks',twice_month:'twice a month',monthly:'monthly',every_1st_month:'every 1st of the month',every_15th_month:'every 15th of the month',seasonal:'every season change',quarterly:'every quarter',semiannual:'every six months',yearly:'yearly',every_birthday:'every birthday',every_newyear:'every new year',randomly:'randomly',sometimes:'sometimes'};
@@ -464,7 +500,12 @@ function renderProps(habits){
       +'<span class="tick"></span>'
       +'<span class="h-body"><span class="p-text">'+esc(h.text)+'</span>'
       +'<span class="p-foot">'+scoreHTML(h._score)
-      +(h.stoner?'<button class="p-hi" type="button" aria-label="Get Higher"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-word"></use></svg></button>':'')
+      /* ══ HIGHER : EXCLUSIVITÉ ABSOLUE ══
+         Le tag ne paraît que si le membre PORTE déjà Higher — abonnement
+         vivant ET méthode Stoner. `higher-only` le masque par défaut en
+         CSS : si la vérification échoue, rien ne s'affiche. Et #higher-badge
+         (navy) remplace #higher-word (coral) : plus de doré. */
+      +(h.stoner?'<button class="p-hi higher-only" type="button" aria-label="Higher"><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg></button>':'')
       +'<button class="p-why" type="button">'+esc(L.why)+'</button></span></span>'
       +'<button class="p-add" type="button" aria-label="Add to my Totehm">'
       +  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 V20 M4 12 H20"/></svg>'
@@ -604,6 +645,7 @@ function myHabits(){
    Une seule écriture par objectif ; rien ne bloque l'écran. */
 let OBJ_ID=null, OBJ_TEXT='';
 async function saveObjective(text){
+  if(RO)return;   /* lecture seule */
   OBJ_TEXT=text; OBJ_ID=null;
   try{
     const {data:{session}}=await sb.auth.getSession();
@@ -716,7 +758,50 @@ document.addEventListener('keydown',e=>{
 /* ══ LES MESURES DU RAIL VIENNENT DU PARENT ══
    Plus de facteur dérivé de `100vw` : le Totehm envoie ses propres valeurs
    calculées, on les pose telles quelles. Identiques par construction. */
+/* ══ LES OBJECTIFS D'UN AUTRE, EN LECTURE ══
+   Trois requêtes de moins qu'un générateur : on ne génère rien, on lit. La
+   policy `objectives members read` (24/08) ne rend que ce qui appartient à
+   un Totehm ouvert aux membres, et jamais à un anonyme. */
+(async function roBoot(){
+  if(!RO)return;
+  document.body.classList.add('ro');
+  const box=$('props');
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    if(!session){box.innerHTML='<div id="ro-empty">sign in to read a Totehm</div>';return;}
+    const {data:ps}=await sb.from('profiles').select('id').ilike('pseudo',RO).limit(1);
+    const uid=(ps&&ps[0]&&ps[0].id)||null;
+    if(!uid){box.innerHTML='<div id="ro-empty">no Totehm by that name</div>';return;}
+    const {data}=await sb.from('objectives').select('text,status,created_at')
+      .eq('user_id',uid).order('created_at',{ascending:false}).limit(40);
+    if(!data||!data.length){box.innerHTML='<div id="ro-empty">no objective set yet</div>';return;}
+    box.innerHTML=data.map(o=>'<div class="ro-obj"><span class="ro-t">'+esc(o.text)+'</span>'
+      +'<span class="ro-m">'+esc(o.status||'active')+'</span></div>').join('');
+  }catch(e){ box.innerHTML='<div id="ro-empty">nothing to read right now</div>'; }
+})();
+
+/* ══ QUI PORTE HIGHER ══
+   Embarqué, le parent nous le dit — il l'a déjà calculé, une requête suffit
+   pour les deux écrans. Ouvert seul, on le vérifie nous-mêmes : deux
+   conditions, abonnement vivant ET méthode Stoner. Dans les deux cas la
+   classe est posée APRÈS vérification, jamais avant. */
+function paintHigher(on){ document.body.classList.toggle('higher',!!on); }
+(async function ownHigher(){
+  if(window.parent&&window.parent!==window)return;   /* le parent s'en charge */
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    if(!session)return;
+    const [{data:st},{data:sub}]=await Promise.all([
+      sb.from('stoner_access').select('granted_at').limit(1),
+      sb.from('subscriptions').select('status').eq('user_id',session.user.id)
+        .in('status',['active','trialing']).limit(1)
+    ]);
+    paintHigher(!!(st&&st.length&&st[0].granted_at)&&!!(sub&&sub.length));
+  }catch(e){ /* illisible = rien ne s'affiche */ }
+})();
+
 window.addEventListener('message',e=>{
+  if(e.data&&e.data.type==='totehm-higher'){ paintHigher(e.data.on); return; }
   if(!e.data||e.data.type!=='totehm-metrics')return;
   const r=document.documentElement.style;
   if(e.data.rl)r.setProperty('--rl',e.data.rl);
