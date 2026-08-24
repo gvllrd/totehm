@@ -368,6 +368,7 @@ function renderInts(cur){
    Hors cadre (book.html ouvert seul), la fenêtre locale reste et suffit. */
 const embedded=!!(window.parent&&window.parent!==window);
 function openPick(target){
+  if(RO)return;
   pickTarget=target;
   const cur=target==='new'?pendingI:(teaches[target]&&teaches[target].i)||null;
   if(embedded){

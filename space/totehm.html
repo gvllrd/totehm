@@ -2183,7 +2183,7 @@ window.addEventListener('message',e=>{
      c'est nous qui noircissons — son 100vh s'arrête au cadre. */
   /* My Wisdom demande le poids d'une leçon : c'est nous qui l'affichons,
      puis nous le lui renvoyons. L'iframe ne quitte jamais son cadre. */
-  else if(e.data.type==='totehm-pick-intention'){ openWeightPick(e.data.value||null); }
+  else if(e.data.type==='totehm-pick-intention'){ if(!RO) openWeightPick(e.data.value||null); }
   /* Une iframe qui vient de démarrer réclame les mesures du rail. */
   else if(e.data.type==='totehm-need-metrics'){
     pushMetrics();
