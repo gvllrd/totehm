@@ -2883,13 +2883,34 @@ window.addEventListener('pageshow',e=>{
     if(gsn) gsn.classList.remove('hide');
     setTimeout(()=>{try{gsi.focus();}catch(e){}},100);
   };
-  if(gsi) gsi.addEventListener('keydown',e=>{
+  if(gsi) gsi.addEventListener('keydown',async e=>{
     if(e.key==='Escape'){ gsi.classList.add('hide'); if(gsn)gsn.classList.add('hide');
                           gsb.classList.remove('hide'); return; }
     if(e.key!=='Enter')return;
     const v=gsi.value.trim();
     if(v.length<2){ if(gsn){gsn.classList.remove('hide');gsn.textContent='2 characters min';} return; }
-    enter(()=>openTotehmView(v));
+    /* Chercher AVANT d'entrer : si on entre d'abord puis la recherche échoue,
+       le membre se retrouve dans son propre Totehm en mode écriture. */
+    if(gsn){ gsn.classList.remove('hide'); gsn.textContent='searching…'; }
+    let target=null;
+    try{
+      if(me){
+        let {data:ps}=await sb.from('profiles').select('id,pseudo').ilike('pseudo',v).limit(1);
+        let p=(ps&&ps[0])||null;
+        if(!p){const{data:ps2}=await sb.from('profiles').select('id,pseudo').ilike('pseudo','%'+v+'%').limit(1);p=(ps2&&ps2[0])||null;}
+        if(p){
+          const{data:rows}=await sb.from('totehms').select('totehm_visibility').eq('user_id',p.id).eq('totehm_visibility','members').limit(1);
+          if(rows&&rows.length) target=p.pseudo;
+        }
+      } else {
+        const ql=v.toLowerCase();
+        const u=NETWORK.find(x=>x.who.toLowerCase()===ql)||NETWORK.find(x=>x.who.toLowerCase().indexOf(ql)!==-1);
+        if(u&&u.vis==='members') target=u.who;
+      }
+    }catch(_){}
+    if(!target){ if(gsn) gsn.textContent='this Totehm is private'; return; }
+    if(gsn) gsn.textContent='';
+    location.href='totehm.html?ro='+encodeURIComponent(target);
   });
 
   /* ══ LE RADAR DE FOND ══
