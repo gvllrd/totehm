@@ -37,8 +37,8 @@
   --mid:#b4b4b4;     /* lisible, secondaire */
   --lo:#6d6d6d;      /* contexte */
   --dim:#3c3c3c;     /* structure */
-  --box:#080808;     /* le fond d'une boîte : presque noir, jamais gris */
-  --box-line:#161616;/* son seul liseré */
+  --box:#131316;     /* gris noirci : il se détache du noir profond de la page */
+  --box-line:#242429;/* son seul liseré */
   --futura:'Futura','Jost',sans-serif;
   --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
 }
@@ -294,11 +294,18 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
    a pas besoin, il est déjà le menu. */
 .world-ui{display:none}
 body.in-world .world-ui{display:block}
-#filter-arrow{position:fixed;top:6px;left:50%;transform:translateX(-50%);z-index:31;
+/* ══ ANNULÉ (24/08) ══ Le chevron vers le haut disait « il y a un filtre
+   par là ». Le T le dit mieux : il bat, et il EST le filtre. */
+#filter-arrow{display:none!important;position:fixed;top:6px;left:50%;transform:translateX(-50%);z-index:31;
   background:none;border:none;cursor:pointer;padding:4px 12px;line-height:0;
   -webkit-tap-highlight-color:transparent;transition:opacity .2s}
 #filter-arrow:hover{opacity:.7}
 #filter-arrow svg{width:22px;height:12px;color:rgba(255,255,255,.55)}
+/* Le T bat lentement : c'est l'invitation, et il EST le filtre.
+   4,2 s et un creux à .45 — un signal qui bat vite dit « urgence ». */
+@keyframes t-slow{0%,100%{opacity:1}50%{opacity:.45}}
+#bigT svg{animation:t-slow 4.2s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){#bigT svg{animation:none}}
 #bigT{position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:30;
   background:none;border:none;padding:0;line-height:0;cursor:pointer;
   user-select:none;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
@@ -368,6 +375,12 @@ body.in-world.view-cards #zoom{display:none}
 .c-takes{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;
   text-transform:uppercase;color:var(--lo);margin-top:14px}
 .c-takes b{font-weight:700;color:var(--mid)}
+
+
+
+
+
+
 
 
 
@@ -1062,6 +1075,25 @@ $('deck-next').onclick=e=>{e.stopPropagation();deckStep(1);};
     setTimeout(()=>{dragging=false;axis='';},0);
   };
   ['pointerup','pointercancel'].forEach(t=>deck.addEventListener(t,end));
+
+  /* ══ LE TRACKPAD ══
+     `touch-action:none` a retiré au navigateur TOUT défilement du deck, y
+     compris le geste horizontal à deux doigts du trackpad — qui arrive en
+     `wheel` avec un `deltaX`. On le conduit nous-mêmes : on accumule, et
+     une carte tourne dès qu'on a parcouru un quart d'écran. Un verrou de
+     420 ms empêche l'inertie du trackpad d'enchaîner cinq cartes d'un seul
+     geste (un trackpad continue d'émettre longtemps après le doigt). */
+  let acc=0, wlock=0;
+  deck.addEventListener('wheel',e=>{
+    if(!deck.classList.contains('show'))return;
+    if(Math.abs(e.deltaX)<=Math.abs(e.deltaY))return;   /* vertical : pas pour nous */
+    e.preventDefault();
+    if(Date.now()<wlock){acc=0;return;}
+    acc+=e.deltaX;
+    if(Math.abs(acc)<W()*0.25)return;
+    const dir=acc>0?1:-1; acc=0; wlock=Date.now()+420;
+    deckStep(dir);
+  },{passive:false});
   /* Un glissement ne doit pas déclencher le lien qu'il a survolé. */
   deck.addEventListener('click',e=>{if(dragging){e.preventDefault();e.stopPropagation();}},true);
 })();
@@ -1123,6 +1155,8 @@ function paintBigT(){
 let MULTI_LOCK=0;
 const multiTouch=()=>{MULTI_LOCK=Date.now()+400;};
 const multiLocked=()=>Date.now()<MULTI_LOCK;
+/* Le pincement finit en `click` fantôme quand un doigt s'est posé sur le T :
+   le verrou reste, c'est lui qui empêche le zoom d'ouvrir le filtre. */
 $('bigT').onclick=e=>{e.stopPropagation();if(multiLocked())return;openFilter();};
 $('filter-arrow').onclick=e=>{e.stopPropagation();if(multiLocked())return;openFilter();};
 $('wordmark').onclick=e=>{e.stopPropagation();openStep();};
@@ -1216,39 +1250,13 @@ $('filter-modal').addEventListener('click',e=>{if(e.target.id==='filter-modal')c
 
 /* Le geste vers le haut ouvre les filtres — le même que dans le Totehm.
    passive:true, aucun accumulateur, un verrou court. */
-(function filterGesture(){
-  let lock=false;
-  const arm=()=>{lock=true;setTimeout(()=>{lock=false;},520);};
-  const blocked=t=>stepOpen()||filterOpen()||infoOpen()||gateOpen()||lock||multiLocked()
-    ||!!(t&&t.closest&&t.closest('#deck,#zoom,#view-toggle,#info,#filter-modal,#gate-modal'));
-  window.addEventListener('wheel',e=>{
-    if(blocked(e.target)||e.ctrlKey)return;
-    if(e.deltaY<-4){arm();openFilter();}
-  },{passive:true});
-
-  /* ══ AU DOIGT ══
-     MESURÉ : `filterGesture` n'écoutait QUE `wheel`. Un téléphone n'en
-     produit pas — le geste vers le haut sur le radar n'ouvrait donc jamais
-     rien. On écoute le toucher, et STRICTEMENT à un seul doigt : un
-     pincement porte toujours deux points, il ne peut plus être confondu
-     avec une intention d'ouvrir les filtres. */
-  let y0=null, x0=null;
-  window.addEventListener('touchstart',e=>{
-    if(e.touches.length!==1){y0=null;multiTouch();return;}
-    y0=e.touches[0].clientY; x0=e.touches[0].clientX;
-  },{passive:true});
-  window.addEventListener('touchmove',e=>{
-    if(y0===null)return;
-    if(e.touches.length!==1){y0=null;multiTouch();return;}
-    const dy=e.touches[0].clientY-y0, dx=e.touches[0].clientX-x0;
-    if(Math.abs(dy)<44||Math.abs(dx)>Math.abs(dy))return;   /* franchement vertical */
-    y0=null;
-    if(dy>0)return;                                          /* vers le bas : rien */
-    if(blocked(e.target))return;
-    arm();openFilter();
-  },{passive:true});
-  window.addEventListener('touchend',()=>{y0=null;},{passive:true});
-})();
+/* ══ ANNULÉ (24/08) — LES DEUX GESTES DE FILTRE ══
+   La molette vers le haut et le doigt vers le haut ouvraient les filtres.
+   Deux gestes invisibles pour une fonction, et sur mobile ils se battaient
+   avec le pincement du zoom. Tout est retiré : le T bat lentement et
+   l'ouvre au clic, desktop comme mobile. Un signal qu'on voit, un geste
+   qu'on connaît — plus rien à deviner.
+   Le zoom récupère donc le pincement pour lui seul. */
 
 /* ══ LE SÉLECTEUR — LES SEPT, TOUJOURS ══
    Les sept intentions sont montrées, y compris celles qu'aucune habitude
