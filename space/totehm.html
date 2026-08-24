@@ -2667,11 +2667,23 @@ $('mw-pseudo').addEventListener('keydown',async e=>{
 });
 $('mw-signout').onclick=async()=>{await sb.auth.signOut();$('member-window').classList.remove('show');};
 
+/* En mode RO, un seul point de chargement : onAuthStateChange, dont la
+   session est établie. Le IIFE appellait getSession() en parallèle — quand
+   il revenait avec me=null après un loadRO() réussi, roFail() effaçait les
+   habits. Le flag roLoaded évite un double-chargement sur TOKEN_REFRESHED. */
+let roLoaded=false;
 sb.auth.onAuthStateChange(async()=>{
   const {data:{session}}=await sb.auth.getSession();
   me=session?.user||null;
   await loadProfile();
-  if(RO){ if(me)await loadRO(); memberPaint();paint(); return; }
+  if(RO){
+    if(!roLoaded){
+      roLoaded=true;
+      if(me) await loadRO(); else roFail('sign in to read a Totehm');
+    }
+    memberPaint();paint();
+    return;
+  }
   if(me&&myProfile){await migrateLocalToCloudIfNeeded();}
   memberPaint();paint();
 });
@@ -2679,16 +2691,7 @@ sb.auth.onAuthStateChange(async()=>{
   const {data:{session}}=await sb.auth.getSession();
   me=session?.user||null;
   await loadProfile();
-  /* En lecture on charge le Totehm VISITÉ et jamais le sien : sans ce
-     branchement, la page afficherait ses propres habitudes sous le nom de
-     quelqu'un d'autre. Les policies exigent une session — sans compte, on
-     dit pourquoi plutôt que d'afficher un écran vide. */
-  if(RO){
-    if(!me){ roFail('sign in to read a Totehm'); }
-    else{ await loadRO(); }
-    paint();
-    return;
-  }
+  if(RO){ return; /* onAuthStateChange gère le chargement */ }
   if(me&&myProfile){await cloudLoad();}
   paint();
 })();
