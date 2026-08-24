@@ -37,6 +37,8 @@
   --mid:#b4b4b4;     /* lisible, secondaire */
   --lo:#6d6d6d;      /* contexte */
   --dim:#3c3c3c;     /* structure */
+  --box:#080808;     /* le fond d'une boîte : presque noir, jamais gris */
+  --box-line:#161616;/* son seul liseré */
   --futura:'Futura','Jost',sans-serif;
   --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
 }
@@ -66,23 +68,30 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
   text-transform:uppercase;color:var(--lo);text-align:center;flex-shrink:0;
   background:none;border:none;padding:4px 10px;cursor:default;
   -webkit-tap-highlight-color:transparent;transition:color .15s}
+/* Plus de « tap to use your position ». La position se demande NATIVEMENT,
+   en arrière-plan, comme n'importe quelle carte le fait. Un lien qui demande
+   l'autorisation de demander, c'est une porte devant une porte.
+   #s-geo ne sert plus qu'à dire « locating… » pendant l'attente. */
 #s-geo:empty{display:none}
-#s-geo.retry{color:var(--mid);cursor:pointer;text-decoration:underline;text-underline-offset:4px}
-#s-geo.retry:hover{color:var(--hi)}
 
 /* `justify-content:flex-start` et non `center` : les sept lignes remplissent
    la hauteur au lieu de flotter au milieu d'un écran vide. */
 #s-list{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;display:flex;flex-direction:column;
   justify-content:flex-start;gap:0;margin:6px auto;max-width:560px;width:100%}
-.s-int{display:flex;align-items:flex-start;gap:15px;padding:15px 10px;
-  background:none;border:none;border-left:2px solid transparent;
-  text-align:left;cursor:pointer;width:100%;
+/* TOUT est centré : le T, le nom, la définition, les traces. Une colonne,
+   un axe. Le liseré de gauche disparaît — il tirait l'œil hors de l'axe. */
+.s-int{display:flex;flex-direction:column;align-items:center;gap:0;
+  padding:15px 10px;background:none;border:none;
+  text-align:center;cursor:pointer;width:100%;position:relative;
   -webkit-tap-highlight-color:transparent;
-  transition:background .12s,border-color .12s,opacity .18s}
+  transition:background .12s,opacity .18s}
 .s-int + .s-int{border-top:1px solid rgba(255,255,255,.07)}
-.s-int .tglyph{width:17px;height:17px;flex-shrink:0;margin-top:4px}
-.s-int-name{display:flex;align-items:center;
+/* Le T.svg passe AU-DESSUS de l'intention : c'est lui qui la porte. */
+.s-int .tglyph{width:17px;height:17px;flex-shrink:0;position:relative;z-index:2;
+  margin:0 0 7px}
+.s-int-name{display:flex;align-items:center;justify-content:center;
+  position:relative;z-index:1;
   font-family:'Quantico',sans-serif;font-size:20px;font-weight:700;line-height:1.15}
 .s-int-def{font-family:'Quantico',sans-serif;font-size:14px;font-weight:400;
   color:var(--mid);margin-top:6px;line-height:1.45}
@@ -90,16 +99,16 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
    Ce que l'intention fait au cerveau, en trois traces. Space Mono parce que
    c'est de la donnée, pas de la parole ; gris sur gris parce que ça se lit
    après le nom, jamais avant. */
-.s-int-neuro{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.s-int-neuro{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;justify-content:center}
 .s-int-ntag{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.13em;
   text-transform:uppercase;color:var(--mid);border:1px solid var(--dim);
   padding:3px 8px;line-height:1.6;white-space:nowrap}
 @media(hover:hover){
-  .s-int:hover{background:rgba(255,255,255,.05);border-left-color:currentColor}
+  .s-int:hover{background:rgba(255,255,255,.05)}
   .s-int:hover .s-int-name{color:var(--hi)!important}
   .s-int:hover .s-int-ntag{color:var(--hi);border-color:var(--lo)}
 }
-.s-int.on{border-left-color:currentColor;background:rgba(255,255,255,.04)}
+.s-int.on{background:rgba(255,255,255,.04)}
 .s-int.loading{opacity:.3;pointer-events:none}
 /* Une intention absente du Totehm ne peut rien renvoyer : le serveur la
    refuse (403). On le dit AVANT de partir, plutôt que de payer l'aller-retour. */
@@ -187,7 +196,11 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
 
 /* ══ LA CARTE — un seul balisage, servi au deck ET à la fenêtre du radar ══ */
 .c-inner{width:100%}
-#info .c-inner{background:#121212;border:1px solid #2a2a2a;max-width:420px;
+/* ══ UNE SEULE BOÎTE POUR TOUT LE PRODUIT ══
+   Presque-noir sur noir profond : la profondeur vient de la nuance, pas d'un
+   cadre gris. `--box` et `--box-line` sont les deux seules valeurs, et elles
+   servent aussi bien à la fenêtre d'un lieu qu'à celle des filtres. */
+#info .c-inner{background:var(--box);border:1px solid var(--box-line);max-width:520px;
   padding:22px 22px 20px;max-height:82vh;overflow-y:auto;overscroll-behavior:contain}
 .c-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
 .c-kind{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
@@ -217,10 +230,22 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
 .c-hi svg{display:block;width:100%;height:auto}
 @media(hover:hover){.c-go:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
 .c-go:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
-.slide .c-name{font-size:clamp(28px,8vw,38px)}
+/* ══ PLUS DE FORMAT « CARD » SUR DESKTOP ══
+   Une carte pleine page de 1 400 px n'est pas une carte, c'est un mur. Le
+   contenu est CENTRÉ et tient dans la même boîte que partout ailleurs, à
+   l'écran près. Un seul objet à comprendre, deux tailles. */
+.slide .c-inner{background:var(--box);border:1px solid var(--box-line);
+  padding:26px 24px;max-width:520px}
+.c-inner{text-align:center}
+.c-top{justify-content:center}
+.c-foot{justify-content:center;flex-wrap:wrap}
+.slide .c-name{font-size:clamp(26px,6.4vw,34px)}
 .slide .c-why{font-size:16px}
-#info .c-name{font-size:22px}
+#info .c-name{font-size:24px}
 #info .c-why{font-size:15px}
+/* L'espace du commentaire, sous le titre : c'est là que quelqu'un se projette.
+   Il est réservé même vide — sinon la carte saute d'une hauteur à l'autre. */
+.c-why{min-height:2.9em}
 #info .c-x{position:absolute;top:calc(14px + env(safe-area-inset-top,0));right:16px;
   background:none;border:none;cursor:pointer;padding:10px;line-height:0;
   -webkit-tap-highlight-color:transparent}
@@ -299,7 +324,27 @@ body.in-world.view-cards #zoom{display:none}
 
 /* ══ LES FILTRES DES SPOTS ══ Mêmes mesures que la fenêtre du Totehm. */
 #filter-modal{background:rgba(0,0,0,.82);align-items:center;justify-content:center;z-index:80}
-.fm-card{background:#0a0a0a;border:1px solid #1e1e1e;width:100%;max-width:340px;
+/* ══ LA PORTE ══
+   Un visiteur qui choisit une intention sans compte recevait une ligne de
+   texte sous les sept — personne ne la lisait, et ça passait pour une panne.
+   Il reçoit maintenant une fenêtre : ce qu'il vient de demander, ce qu'il
+   faut pour l'obtenir, et le bouton qui l'y mène. Même boîte que le reste. */
+#gate-modal{background:rgba(0,0,0,.88);align-items:center;justify-content:center;z-index:90}
+.gm-card{background:var(--box);border:1px solid var(--box-line);width:100%;
+  max-width:380px;padding:30px 26px 26px;display:flex;flex-direction:column;
+  align-items:center;gap:14px;text-align:center}
+.gm-T{width:26px;height:26px;display:block}
+.gm-title{font-family:'Quantico',sans-serif;font-weight:700;font-size:21px;
+  color:var(--hi);line-height:1.25}
+.gm-body{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
+  color:var(--mid);line-height:1.55;max-width:300px}
+.gm-actions{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:4px}
+.gm-x{position:absolute;top:calc(14px + env(safe-area-inset-top,0));right:16px;
+  background:none;border:none;cursor:pointer;padding:10px;line-height:0;
+  -webkit-tap-highlight-color:transparent}
+.gm-x svg{width:16px;height:16px;color:var(--mid);display:block;
+  fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+.fm-card{background:var(--box);border:1px solid var(--box-line);width:100%;max-width:340px;
   padding:22px;display:flex;flex-direction:column;gap:6px}
 .fm-row{background:none;border:none;padding:16px 8px;cursor:pointer;display:flex;
   flex-direction:column;align-items:center;gap:6px;text-align:center;color:#fff;
@@ -330,12 +375,13 @@ body.in-world.view-cards #zoom{display:none}
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
 @media(hover:hover){
 .s-sub:hover,
-#s-geo.retry:hover,
 .s-int-def:hover,
 .s-int-ntag:hover,
 .s-int.cold .s-int-def:hover,
@@ -350,6 +396,8 @@ body.in-world.view-cards #zoom{display:none}
 .deck-nav svg:hover,
 #filter-arrow svg:hover,
 #zoom button:hover,
+.gm-body:hover,
+.gm-x svg:hover,
 .fm-lbl:hover,
 .fm-opt:hover,
 .c-takes:hover,
@@ -422,10 +470,25 @@ body.in-world.view-cards #zoom{display:none}
 
 <!-- ÉTAPE 1 · LES SEPT INTENTIONS -->
 <div id="step" class="sheet show" role="dialog" aria-label="Choose an intention">
-  <button class="s-sub" id="s-geo" type="button"></button>
+  <div class="s-sub" id="s-geo" aria-live="polite"></div>
   <div id="s-list"></div>
   <div id="s-note"></div>
   <a class="s-exit" href="totehm.html">My Totehm</a>
+</div>
+
+<!-- LA PORTE : sans compte, choisir une intention ouvre ceci -->
+<div id="gate-modal" class="sheet" role="dialog" aria-label="Sign in">
+  <button class="gm-x" id="gm-x" type="button" aria-label="Close">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg>
+  </button>
+  <div class="gm-card">
+    <span id="gm-T" class="gm-T"></span>
+    <div class="gm-title" id="gm-title">The radar reads your Totehm</div>
+    <div class="gm-body" id="gm-body"></div>
+    <div class="gm-actions">
+      <a class="s-exit" id="gm-go" href="totehm.html">Open my Totehm</a>
+    </div>
+  </div>
 </div>
 
 <!-- LA FENÊTRE D'UN LIEU (desktop) : plein écran, fond noirci -->
@@ -585,18 +648,9 @@ async function geoRefresh(moved){
    ou « timed out » ne dit rien de faisable à qui lit. Localisé, la ligne
    disparaît ; sinon elle propose, une fois, de réessayer. */
 function paintGeo(){
-  const el=$('s-geo'), o=RAD.origin||{};
-  if(!o.fallback){ el.textContent=''; el.classList.remove('retry'); return; }
-  if(RAD.geoPending){ el.textContent='locating…'; el.classList.remove('retry'); return; }
-  el.textContent='tap to use your position';
-  el.classList.add('retry');
+  const el=$('s-geo'); if(!el)return;
+  el.textContent=RAD.geoPending?'locating\u2026':'';
 }
-$('s-geo').onclick=async()=>{
-  if(!RAD.origin||!RAD.origin.fallback)return;
-  RAD.geoPending=true; RAD.geoDenied=false; paintGeo();
-  try{ geoBust(); await geoRefresh(geoApply(await geoAsk(true,true))); }
-  catch(e){ geoFail(e); }
-};
 
 /* ══ LA CARTE — un seul balisage pour les deux rendus ══
    Pas d'image : `image_url` pointe vers un générateur d'images à la volée
@@ -837,9 +891,16 @@ function paintZoom(){
 $('zoom-in').onclick =e=>{e.stopPropagation();zoomBy(1.35);};
 $('zoom-out').onclick=e=>{e.stopPropagation();zoomBy(1/1.35);};
 
+/* Le zoom se pince, il ne se fait plus au défilement. Sur trackpad, un vrai
+   pincement à deux doigts arrive en `wheel` avec `ctrlKey` — c'est la seule
+   molette qu'on écoute. Un défilement ordinaire est rendu à la page, pour
+   que le geste vers le haut puisse ouvrir le filtre.
+   Les boutons + / − restent : sans eux, une souris à un bouton ne zoome pas. */
 $('canvas').addEventListener('wheel',e=>{
   if(view!=='map'||!RAD.spots.length)return;
+  if(!e.ctrlKey)return;
   e.preventDefault();
+  multiTouch();
   zoomBy(e.deltaY<0?1.14:1/1.14);
 },{passive:false});
 
@@ -860,7 +921,7 @@ $('canvas').addEventListener('wheel',e=>{
   cv.addEventListener('pointerdown',e=>{
     if(view!=='map')return;
     pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
-    if(pts.size===2){pinching=true;base=dist();baseZoom=RAD.zoom;
+    if(pts.size>=2){pinching=true;multiTouch();base=dist();baseZoom=RAD.zoom;
       try{cv.setPointerCapture(e.pointerId);}catch(_){}}
   });
   cv.addEventListener('pointermove',e=>{
@@ -1053,8 +1114,17 @@ function paintBigT(){
 /* Les deux mêmes déclencheurs que dans le Totehm : le T, et le geste vers le
    haut. Le TOTEHM du bas ramène au menu — sans geste, d'un seul clic : la
    carte n'a pas de liste à parcourir avant d'y arriver. */
-$('bigT').onclick=e=>{e.stopPropagation();openFilter();};
-$('filter-arrow').onclick=e=>{e.stopPropagation();openFilter();};
+/* ══ LE PINCEMENT N'OUVRE PLUS LE FILTRE ══
+   MESURÉ : les deux seules portes du filtre sur mobile étaient le clic sur
+   #bigT et sur #filter-arrow. Or #bigT est en haut de l'écran : un pincement
+   dont un doigt s'y posait terminait en `click`, et le filtre s'ouvrait au
+   lieu de zoomer. On pose un verrou pendant et juste après tout geste à
+   plusieurs doigts — 400 ms, le temps que le `click` fantôme passe. */
+let MULTI_LOCK=0;
+const multiTouch=()=>{MULTI_LOCK=Date.now()+400;};
+const multiLocked=()=>Date.now()<MULTI_LOCK;
+$('bigT').onclick=e=>{e.stopPropagation();if(multiLocked())return;openFilter();};
+$('filter-arrow').onclick=e=>{e.stopPropagation();if(multiLocked())return;openFilter();};
 $('wordmark').onclick=e=>{e.stopPropagation();openStep();};
 
 function openInfo(s){
@@ -1118,6 +1188,23 @@ function paintFilter(){
   $('fm-dist-val').textContent=distLabel();
   $('fm-kind-val').textContent=kindLabel();
 }
+/* La fenêtre nomme l'intention qu'on vient de choisir : ce n'est pas un mur
+   générique, c'est la porte de CE qu'on voulait voir. */
+function openGateModal(id){
+  const x=INT_BY_ID[id]||null;
+  const col=x?x.color:'#fff';
+  const g=$('gm-T'); if(g){g.innerHTML=tGlyph(26);g.style.color=col;}
+  $('gm-title').textContent=x?('Your world, filtered by '+x.name):'The radar reads your Totehm';
+  $('gm-body').textContent=x
+    ? 'The radar shows the places that carry '+x.name+' around you \u2014 and only the ones your own habits point to. Open your Totehm first: it is what the map reads.'
+    : 'The radar reads the intentions you put on your own habits. Open your Totehm first.';
+  $('gate-modal').classList.add('show');
+}
+function closeGateModal(){ $('gate-modal').classList.remove('show'); }
+$('gm-x').onclick=closeGateModal;
+$('gate-modal').addEventListener('click',e=>{if(e.target.id==='gate-modal')closeGateModal();});
+const gateOpen=()=>$('gate-modal').classList.contains('show');
+
 function openFilter(){ paintFilter(); $('filter-modal').classList.add('show'); }
 function closeFilter(){ $('filter-modal').classList.remove('show'); }
 const filterOpen=()=>$('filter-modal').classList.contains('show');
@@ -1132,12 +1219,35 @@ $('filter-modal').addEventListener('click',e=>{if(e.target.id==='filter-modal')c
 (function filterGesture(){
   let lock=false;
   const arm=()=>{lock=true;setTimeout(()=>{lock=false;},520);};
-  const blocked=t=>stepOpen()||filterOpen()||infoOpen()||lock
-    ||!!(t&&t.closest&&t.closest('#deck,#zoom,#view-toggle,#info,#filter-modal'));
+  const blocked=t=>stepOpen()||filterOpen()||infoOpen()||gateOpen()||lock||multiLocked()
+    ||!!(t&&t.closest&&t.closest('#deck,#zoom,#view-toggle,#info,#filter-modal,#gate-modal'));
   window.addEventListener('wheel',e=>{
-    if(blocked(e.target))return;
+    if(blocked(e.target)||e.ctrlKey)return;
     if(e.deltaY<-4){arm();openFilter();}
   },{passive:true});
+
+  /* ══ AU DOIGT ══
+     MESURÉ : `filterGesture` n'écoutait QUE `wheel`. Un téléphone n'en
+     produit pas — le geste vers le haut sur le radar n'ouvrait donc jamais
+     rien. On écoute le toucher, et STRICTEMENT à un seul doigt : un
+     pincement porte toujours deux points, il ne peut plus être confondu
+     avec une intention d'ouvrir les filtres. */
+  let y0=null, x0=null;
+  window.addEventListener('touchstart',e=>{
+    if(e.touches.length!==1){y0=null;multiTouch();return;}
+    y0=e.touches[0].clientY; x0=e.touches[0].clientX;
+  },{passive:true});
+  window.addEventListener('touchmove',e=>{
+    if(y0===null)return;
+    if(e.touches.length!==1){y0=null;multiTouch();return;}
+    const dy=e.touches[0].clientY-y0, dx=e.touches[0].clientX-x0;
+    if(Math.abs(dy)<44||Math.abs(dx)>Math.abs(dy))return;   /* franchement vertical */
+    y0=null;
+    if(dy>0)return;                                          /* vers le bas : rien */
+    if(blocked(e.target))return;
+    arm();openFilter();
+  },{passive:true});
+  window.addEventListener('touchend',()=>{y0=null;},{passive:true});
 })();
 
 /* ══ LE SÉLECTEUR — LES SEPT, TOUJOURS ══
@@ -1157,13 +1267,14 @@ function buildSelector(){
     b.className='s-int'+(cold?' cold':'')+(RAD.intention===x.id?' on':'');
     b.dataset.int=x.id;
     b.style.color=x.color;
+    /* Plus de <span> enveloppant : chaque élément est un enfant direct du
+       bouton, donc chacun s'aligne sur l'axe central de la colonne. */
     b.innerHTML=tGlyph(17)
-      +'<span><span class="s-int-name" style="color:'+x.color+'">'+esc(x.name)+'</span>'
+      +'<span class="s-int-name" style="color:'+x.color+'">'+esc(x.name)+'</span>'
       +'<span class="s-int-def">'+esc(x.def)+'</span>'
       +(x.neuro?'<span class="s-int-neuro">'
         +x.neuro.split(' · ').map(t=>'<span class="s-int-ntag">'+esc(t)+'</span>').join('')
-        +'</span>':'')
-      +'</span>';
+        +'</span>':'');
     b.onclick=()=>pick(x.id);
     box.appendChild(b);
   });
@@ -1200,7 +1311,7 @@ async function pick(id){
   const seq=++PICK_SEQ; RAD.loading=id;
   try{
     const {data:{session}}=await sb.auth.getSession();
-    if(!session){markLoading(id,false);say('sign in to open the radar');return;}
+    if(!session){markLoading(id,false);say('');openGateModal(id);return;}
     const body={intention:id};
     if(RAD.coords){body.lat=RAD.coords.lat;body.lng=RAD.coords.lng;}
     const r=await fetch(SB_URL+'/functions/v1/higher-map',{
@@ -1269,12 +1380,16 @@ async function pick(id){
   RAD.geoPending=!cached;
   paintGeo();
 
-  if(!cached){
+  /* NATIF : la carte demande la position en arrivant, comme toute carte.
+     Même avec un cache, on rafraîchit en fond — un cache de quinze minutes
+     peut valoir deux kilomètres. Rien ne bloque : l'écran est déjà là. */
+  {
     let perm='prompt';
     try{ if(navigator.permissions)
       perm=(await navigator.permissions.query({name:'geolocation'})).state; }catch(e){}
     if(perm==='denied'){RAD.geoPending=false;RAD.geoDenied=true;paintGeo();}
     else{
+      RAD.geoPending=!cached; paintGeo();
       geoAsk(false).then(c=>geoRefresh(geoApply(c))).catch(geoFail);
     }
   }
