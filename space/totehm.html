@@ -1598,12 +1598,20 @@ function renderHabits(){
   const autoGrow=el=>{el.style.height='auto';el.style.height=el.scrollHeight+'px';};
   box.querySelectorAll('.h-text').forEach(inp=>{
     inp.value=state.habits[+inp.dataset.i].t||'';autoGrow(inp);
+    if(RO){inp.readOnly=true;return;}
     inp.addEventListener('input',()=>{autoGrow(inp);state.habits[+inp.dataset.i].t=inp.value.replace(/\n/g,' ');clearTimeout(saveTimer);saveTimer=setTimeout(save,700);});
     inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();inp.blur();}});
   });
-  box.querySelectorAll('.h-freq[data-i]').forEach(b=>{b.onclick=()=>openFreqPanel(+b.dataset.i);});
+  /* En lecture, le T et la fréquence ouvrent l'aperçu FIGÉ (openReadPeek) :
+     jamais openHabitPeek/openFreqPanel, qui écrivent dans state.habits — le
+     Totehm affiché à l'écran n'est pas le sien, il ne s'édite pas depuis ici. */
+  box.querySelectorAll('.h-freq[data-i]').forEach(b=>{
+    const i=+b.dataset.i;
+    b.onclick=RO?()=>openReadPeek(state.habits[i]):()=>openFreqPanel(i);
+  });
   box.querySelectorAll('.h-T[data-i]').forEach(b=>{
     const i=+b.dataset.i;
+    if(RO){ b.onclick=()=>openReadPeek(state.habits[i]); return; }
     /* T d'une habitude configurée -> fenêtre d'aperçu (freq + intention en un coup d'œil, chacun éditable).
        T d'une habitude sans intention -> panneau d'édition direct au bon stage. */
     b.onclick=()=>{
