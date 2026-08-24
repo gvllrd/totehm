@@ -37,6 +37,21 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 #obj-row{position:relative;display:flex;align-items:flex-start;min-height:44px;padding-top:4px}
 #obj-input{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;margin-right:34px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.35);color:#fff;font-family:'Quantico',sans-serif;font-size:15px;line-height:1.45;padding:6px 2px;outline:none;resize:none;overflow:hidden;min-height:32px;display:block}
 #obj-input::placeholder{color:rgba(255,255,255,.45)}
+/* ══ L'OBJECTIF N'EST PLUS UNE RECHERCHE ══
+   Un champ qui se vide après usage, c'est une barre Google : on tape, on
+   regarde, on oublie. Figé et nommé, l'objectif devient un engagement — et
+   c'est cet engagement qui retient. */
+#obj-locked{display:none;margin-left:calc(var(--rl) + var(--rw) + 16px);
+  margin-right:34px;padding:6px 2px;align-items:baseline;gap:8px;flex-wrap:wrap}
+#obj-locked.show{display:flex}
+#obj-lock-lbl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;color:#8a8a8a;white-space:nowrap}
+#obj-lock-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;
+  color:#fff;line-height:1.45}
+#obj-lock-x{background:none;border:none;cursor:pointer;padding:2px 6px;line-height:0;
+  -webkit-tap-highlight-color:transparent}
+#obj-lock-x svg{width:12px;height:12px;color:#8a8a8a;display:block;fill:none;
+  stroke:currentColor;stroke-width:1.6;stroke-linecap:round;transition:color .15s}
 #obj-note{margin-left:calc(var(--rl) + var(--rw) + 16px);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6);min-height:14px}
 
 /* ══ PROPOSITIONS ══
@@ -45,6 +60,10 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
    gauche du rail, le tiret blanc marque le rail, le texte part à droite. */
 .prop{position:relative;display:flex;align-items:flex-start;min-height:30px;padding:0 34px 0 0}
 .prop .meta{position:absolute;top:2px;right:calc(100% - var(--rl) + 10px);display:flex;align-items:center;gap:8px;white-space:nowrap}
+/* MESURÉ : sur mobile une seconde marque apparaissait à côté du T
+   clignotant. `.h-T` est la SEULE marque d'une proposition — tout autre
+   glyphe dans `.meta` est masqué, le comportement est celui du desktop. */
+.prop .meta > *:not(.h-T):not(.h-freq){display:none}
 .prop .h-T{line-height:0;color:#fff;display:block;background:none;border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .prop .h-T .tglyph{height:14px;width:auto;display:block}
 /* Le T de chaque proposition clignote, à la couleur de son intention :
@@ -104,7 +123,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
   width:100vw;height:100vh;z-index:90;background:rgba(0,0,0,.82);
   display:none;align-items:center;justify-content:center;padding:22px}
 #peek.show{display:flex}
-.pk-card{background:#0a0a0a;border:1px solid #1e1e1e;width:100%;max-width:340px;
+.pk-card{background:#080808;border:1px solid #161616;width:100%;max-width:340px;
   padding:22px;display:flex;flex-direction:column;gap:6px;position:relative}
 /* La croix : sans elle on ne sortait de la fenêtre que par hasard. */
 .pk-x{position:absolute;top:8px;right:12px;background:none;border:none;
@@ -170,6 +189,15 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 [dir="rtl"] #why .w-top{justify-content:flex-start}
 
 .side-nav{display:none}
+/* ══ LE CURSEUR DE BORD (mobile) ══
+   Il ne navigue pas tout seul : il dit qu'un côté existe, et il y mène. */
+.edge-nav{position:fixed;top:50%;transform:translateY(-50%);left:0;z-index:33;
+  background:none;border:none;padding:14px 8px 14px 4px;line-height:0;cursor:pointer;
+  color:#7a7a9a;-webkit-tap-highlight-color:transparent;transition:opacity .2s}
+.edge-nav svg{width:13px;height:22px;display:block;fill:none;stroke:currentColor;
+  stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.edge-nav:active{opacity:.5}
+@media(min-width:700px){.edge-nav{display:none}}
 
 /* ══ DESKTOP : le même carré que totehm.html, à la couleur près ═════════════
    Deux situations, et le mobile n'entre dans aucune des deux.
@@ -218,19 +246,29 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
      carré : on pose la seule qui ait un sens ici, le retour au Totehm. Elle
      est à gauche parce que le générateur se tient à droite du Totehm.
      Embarqué, c'est le parent qui l'affiche — d'où le :not(.embedded). */
+  /* Le chevron navy porte son intitulé, comme le rouge et le bleu clair de
+     totehm.html : trois chevrons, trois noms, un seul format. */
   html:not(.embedded) #side-home{
-    display:flex;align-items:center;justify-content:center;
+    display:flex;flex-direction:column;align-items:center;gap:6px;
     position:fixed;top:50%;transform:translateY(-50%);
     right:calc(50% + var(--stage) / 2 + var(--side-gap));
-    width:var(--side);height:var(--side);
-    background:var(--logo-navy) 0 0/100% 100% no-repeat;
-    border:none;cursor:pointer;padding:0;z-index:12;
+    background:none;border:none;cursor:pointer;padding:0;z-index:12;
     -webkit-tap-highlight-color:transparent;transition:opacity .2s}
   html:not(.embedded) #side-home:hover{opacity:.72}
+  html:not(.embedded) #side-home .sn-box{
+    display:flex;align-items:center;justify-content:center;
+    width:var(--side);height:var(--side);
+    background:var(--logo-navy) 0 0/100% 100% no-repeat}
   html:not(.embedded) #side-home svg{width:11px;height:19px;color:#fff;
     fill:none;stroke:currentColor;stroke-width:1.4;
     stroke-linecap:round;stroke-linejoin:round}
+  html:not(.embedded) #side-home .sn-label{
+    font-family:'Quantico',sans-serif;font-size:9px;letter-spacing:.04em;
+    color:#fff;text-align:center;line-height:1.35;opacity:0;transition:opacity .2s}
+  html:not(.embedded) #side-home:hover .sn-label{opacity:1}
 }
+
+
 
 
 
@@ -243,6 +281,8 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
    elle-même : un nouveau bloc gris entre ici tout seul.        */
 @media(hover:hover){
 #obj-input:hover::placeholder,
+#obj-lock-lbl:hover,
+#obj-lock-x svg:hover,
 #obj-note:hover,
 .p-score i:hover,
 .prop .p-why:hover,
@@ -273,7 +313,8 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 
 <div id="mid">
   <div id="obj-row">
-    <textarea id="obj-input" placeholder="I want to..." maxlength="300" rows="1" autocomplete="off" spellcheck="false"></textarea>
+    <textarea id="obj-input" placeholder="Next Objective ?" maxlength="300" rows="1" autocomplete="off" spellcheck="false"></textarea>
+    <div id="obj-locked"><span id="obj-lock-lbl"></span><span id="obj-lock-val"></span><button id="obj-lock-x" type="button" aria-label="Change objective"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg></button></div>
   </div>
   <div id="obj-note"></div>
   <div id="props"></div>
@@ -281,7 +322,10 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 
 <!-- Rapport de validation complet — ouvert par [Why], jamais visible dans la liste -->
 </div><!-- /#stage -->
-<button class="side-nav" id="side-home" type="button" aria-label="Back to my Totehm"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></button>
+<button class="side-nav" id="side-home" type="button" aria-label="My Habits"><span class="sn-box"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></span><span class="sn-label">My Habits</span></button>
+<!-- Mobile : un curseur au bord gauche dit d'où l'on vient et où l'on
+     retourne. Le swipe existait sans que rien ne l'annonce. -->
+<button class="edge-nav" id="edge-home" type="button" aria-label="My Habits"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></button>
 <!-- La fenêtre de lecture LOCALE : elle ne sert que si ce fichier est ouvert
      en direct par URL. Embarqué dans le Totehm, c'est SA fenêtre qui s'ouvre,
      parce qu'elle seule peut noircir l'écran au-delà du carré. -->
@@ -341,35 +385,35 @@ const scoreHTML=v=>v==null?'':'<span class="p-score">'+v+'<i>/100</i></span>';
    Le modèle renvoie le contenu (habitudes, f_label, level_label, rapport) dans
    la langue de l'objectif. Ici ne vivent que les libellés d'interface. */
 const UI={
-  en:{ph:'I want to...',working:'designing habits · checking evidence...',validated:'validated — accept what feels true',
+  en:{ph:'Next Objective ?',working:'designing habits · checking evidence...',validated:'validated — accept what feels true',
       novalid:'nothing passed validation — rephrase and try again',nothing:'nothing came back — rephrase and try again',
       retry:'try again',short:'write your objective first',soon:'generation engine coming online soon',
-      why:'Why',close:'Close',s_why:'Why this habit',s_reason:'Reasoning',s_conf:'Confidence',s_src:'Sources',
+      lock:'Habits to achieve',why:'Why',close:'Close',s_why:'Why this habit',s_reason:'Reasoning',s_conf:'Confidence',s_src:'Sources',
       no_why:'No rationale was returned for this habit.',no_src:'No source was returned for this habit.'},
-  fr:{ph:'Je veux...',working:'conception des habitudes · vérification des preuves...',validated:'validé — accepte ce qui sonne juste',
+  fr:{ph:'Prochain objectif ?',working:'conception des habitudes · vérification des preuves...',validated:'validé — accepte ce qui sonne juste',
       novalid:"rien n'a passé la validation — reformule et réessaie",nothing:"rien n'est revenu — reformule et réessaie",
       retry:'réessaie',short:"écris ton objectif d'abord",soon:'moteur de génération bientôt en ligne',
-      why:'Pourquoi',close:'Fermer',s_why:'Pourquoi cette habitude',s_reason:'Raisonnement',s_conf:'Niveau de confiance',s_src:'Sources',
+      lock:'Habitudes pour atteindre',why:'Pourquoi',close:'Fermer',s_why:'Pourquoi cette habitude',s_reason:'Raisonnement',s_conf:'Niveau de confiance',s_src:'Sources',
       no_why:"Aucune justification n'a été renvoyée pour cette habitude.",no_src:"Aucune source n'a été renvoyée pour cette habitude."},
-  es:{ph:'Quiero...',working:'diseñando hábitos · verificando evidencia...',validated:'validado — acepta lo que sientas verdadero',
+  es:{ph:'\u00bfPr\u00f3ximo objetivo?',working:'diseñando hábitos · verificando evidencia...',validated:'validado — acepta lo que sientas verdadero',
       novalid:'nada superó la validación — reformula e inténtalo de nuevo',nothing:'no volvió nada — reformula e inténtalo de nuevo',
       retry:'inténtalo de nuevo',short:'escribe primero tu objetivo',soon:'motor de generación disponible pronto',
-      why:'Por qué',close:'Cerrar',s_why:'Por qué este hábito',s_reason:'Razonamiento',s_conf:'Nivel de confianza',s_src:'Fuentes',
+      lock:'Hábitos para lograr',why:'Por qué',close:'Cerrar',s_why:'Por qué este hábito',s_reason:'Razonamiento',s_conf:'Nivel de confianza',s_src:'Fuentes',
       no_why:'No se devolvió ninguna justificación para este hábito.',no_src:'No se devolvió ninguna fuente para este hábito.'},
-  pt:{ph:'Quero...',working:'a desenhar hábitos · a verificar evidências...',validated:'validado — aceita o que soa verdadeiro',
+  pt:{ph:'Pr\u00f3ximo objetivo?',working:'a desenhar hábitos · a verificar evidências...',validated:'validado — aceita o que soa verdadeiro',
       novalid:'nada passou na validação — reformula e tenta de novo',nothing:'não voltou nada — reformula e tenta de novo',
       retry:'tenta de novo',short:'escreve primeiro o teu objetivo',soon:'motor de geração disponível em breve',
-      why:'Porquê',close:'Fechar',s_why:'Porquê este hábito',s_reason:'Raciocínio',s_conf:'Nível de confiança',s_src:'Fontes',
+      lock:'Hábitos para alcançar',why:'Porquê',close:'Fechar',s_why:'Porquê este hábito',s_reason:'Raciocínio',s_conf:'Nível de confiança',s_src:'Fontes',
       no_why:'Nenhuma justificação foi devolvida para este hábito.',no_src:'Nenhuma fonte foi devolvida para este hábito.'},
   de:{ph:'Ich will...',working:'Gewohnheiten entwerfen · Belege prüfen...',validated:'validiert — nimm an, was sich stimmig anfühlt',
       novalid:'nichts hat die Prüfung bestanden — formuliere neu',nothing:'nichts zurückgekommen — formuliere neu',
       retry:'nochmal versuchen',short:'schreib zuerst dein Ziel',soon:'Generierung bald verfügbar',
-      why:'Warum',close:'Schließen',s_why:'Warum diese Gewohnheit',s_reason:'Begründung',s_conf:'Konfidenz',s_src:'Quellen',
+      lock:'Gewohnheiten für',why:'Warum',close:'Schließen',s_why:'Warum diese Gewohnheit',s_reason:'Begründung',s_conf:'Konfidenz',s_src:'Quellen',
       no_why:'Für diese Gewohnheit wurde keine Begründung geliefert.',no_src:'Für diese Gewohnheit wurde keine Quelle geliefert.'},
   it:{ph:'Voglio...',working:'progettazione abitudini · verifica delle prove...',validated:'validato — accetta ciò che senti vero',
       novalid:'niente ha superato la validazione — riformula e riprova',nothing:'non è tornato nulla — riformula e riprova',
       retry:'riprova',short:'scrivi prima il tuo obiettivo',soon:'motore di generazione presto disponibile',
-      why:'Perché',close:'Chiudi',s_why:'Perché questa abitudine',s_reason:'Ragionamento',s_conf:'Livello di fiducia',s_src:'Fonti',
+      lock:'Abitudini per',why:'Perché',close:'Chiudi',s_why:'Perché questa abitudine',s_reason:'Ragionamento',s_conf:'Livello di fiducia',s_src:'Fonti',
       no_why:'Nessuna giustificazione restituita per questa abitudine.',no_src:'Nessuna fonte restituita per questa abitudine.'}
 };
 const pickLang=c=>{const k=String(c||'').toLowerCase().split(/[-_]/)[0];return UI[k]?k:'en';};
@@ -436,7 +480,11 @@ function renderProps(habits){
     d.querySelector('.p-why').onclick=()=>openWhy(h);
     d.querySelector('.p-add').onclick=()=>{
       if(d.classList.contains('added'))return;
+      /* `oid` et `o` : l'identifiant de l'objectif quand il est en base, et
+         son texte pour que l'habitude reste lisible même hors ligne. */
       const habit={t:h.text,f:h.f,i:h.i};
+      if(OBJ_ID)habit.oid=OBJ_ID;
+      if(OBJ_TEXT)habit.o=OBJ_TEXT;
       const embedded=window.parent&&window.parent!==window;
       let sent=false;
       if(embedded){try{window.parent.postMessage({type:'totehm-add-habit',habit},'*');sent=true;}catch(e){}}
@@ -549,6 +597,37 @@ function myHabits(){
   }catch(e){return [];}
 }
 
+/* ══ L'OBJECTIF EN BASE ══
+   Le champ était un prompt éphémère : tapé, consommé, perdu. Il devient une
+   ligne de `objectives`, et chaque habitude ajoutée porte son `oid`. On sait
+   alors POURQUOI une habitude est là — et le membre le voit aussi.
+   Une seule écriture par objectif ; rien ne bloque l'écran. */
+let OBJ_ID=null, OBJ_TEXT='';
+async function saveObjective(text){
+  OBJ_TEXT=text; OBJ_ID=null;
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    if(!session)return;                       /* invité : rien à écrire */
+    const {data,error}=await sb.from('objectives')
+      .insert({user_id:session.user.id,text:text,status:'active'})
+      .select('id').single();
+    if(!error&&data)OBJ_ID=data.id;
+  }catch(e){ /* pas d'objectif enregistré = pas de blocage à l'écran */ }
+}
+function lockObjective(text){
+  OBJ_TEXT=text;
+  $('obj-lock-lbl').textContent=(L.lock||'Habits to achieve')+' :';
+  $('obj-lock-val').textContent=text;
+  $('obj-input').style.display='none';
+  $('obj-locked').classList.add('show');
+}
+function unlockObjective(){
+  $('obj-locked').classList.remove('show');
+  $('obj-input').style.display='';
+  $('obj-input').focus();
+}
+$('obj-lock-x').onclick=unlockObjective;
+
 /* La zone grandit avec le texte : rien de ce qu'on écrit ne reste caché. */
 function autoGrow(){const t=$('obj-input');t.style.height='auto';t.style.height=t.scrollHeight+'px';}
 $('obj-input').addEventListener('input',autoGrow);
@@ -569,6 +648,8 @@ $('obj-input').addEventListener('keydown',async(e)=>{
   const v=$('obj-input').value.trim();
   if(v.length<4){note(L.short);return;}
   busy=true;note(L.working);$('props').innerHTML='';
+  lockObjective(v);
+  saveObjective(v);                    /* en fond : rien n'attend le réseau */
   try{
     /* Le moteur doit proposer AUTRE CHOSE que ce qui est déjà posé. Sans
        cette liste il reproposait les mêmes habitudes à chaque objectif :
@@ -645,6 +726,7 @@ window.addEventListener('message',e=>{
 });
 if(embedded()){try{window.parent.postMessage({type:'totehm-need-metrics'},'*');}catch(e){}}
 $('side-home').onclick=()=>goBack();
+$('edge-home').onclick=()=>goBack();
 let lock=false;const trig=()=>{if(lock)return;lock=true;setTimeout(()=>lock=false,600);goBack();};
 let x0=0,y0=0,ax=null;
 window.addEventListener('touchstart',e=>{x0=e.changedTouches[0].screenX;y0=e.changedTouches[0].screenY;ax=null;},{passive:true});
