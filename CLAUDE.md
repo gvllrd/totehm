@@ -410,6 +410,51 @@ Ne pas l'éditer : relancer l'outil. Il se remplace lui-même.
 Un test navigateur relit le CSSOM du fichier servi et échoue s'il reste un
 seul gris sans survol : l'exhaustivité est vérifiée, pas promise.
 
+### Un `<canvas>` est un élément REMPLACÉ — deux fois le même piège
+
+Ses attributs `width`/`height` lui donnent une taille INTRINSÈQUE (le tampon
+de dessin). Ni `position:fixed;inset:0`, ni `position:absolute;inset:0` ne la
+remplacent : sans `width:100%;height:100%` explicites, la boîte CSS vaut le
+tampon, pas le conteneur.
+
+Mesuré deux fois en deux jours : d'abord une vignette de 300×150 en haut à
+gauche, puis un rond dessiné hors de l'écran parce que la boîte CSS valait le
+double du cadre. **Tout canvas porte les deux lignes, sans exception.**
+
+Corollaire : ne jamais poser une hauteur inline sur un canvas depuis une
+mesure de son propre parent — le parent grossit, l'observateur relit, ça
+boucle. Le canvas se met en `absolute` dans un cadre `relative`, et il ne
+pousse plus rien.
+
+### Une boîte, une seule, dans tout le produit
+
+`#080808` sur le noir de la page, liseré `#161616`. La profondeur vient de la
+NUANCE, jamais d'un cadre gris. Fenêtre de poids, de fréquence, de filtre, de
+membre, carte d'un lieu : le même objet, deux tailles.
+
+**Aucun gris comme surface.** Un gris sur du noir fait « application », et
+`.space` n'en est pas une. Le gris ne sert qu'au TEXTE secondaire — et il
+passe au blanc au survol (voir la règle du survol).
+
+### Une iframe ne peut pas couvrir l'écran — c'est le parent qui ouvre
+
+Sur desktop, `#book` et `#nextobj` sont des descendants de `#stage`, qui porte
+un `transform`. Leur boîte fait donc 562×562, pas la fenêtre : un `100vh`
+dedans ne vaut rien, et un simple voile posé par le parent ne règle rien
+(soit il reste enfermé dans le carré, soit il recouvre l'iframe ET sa propre
+fenêtre).
+
+**Règle.** Une iframe qui doit ouvrir quelque chose de plein écran ne l'ouvre
+pas : elle le DEMANDE au parent par postMessage, et le parent lui renvoie le
+résultat. Contrat en place :
+
+| message | sens | qui répond |
+|---|---|---|
+| `totehm-read-peek` | lire fréquence + intention d'une habitude | le parent affiche |
+| `totehm-pick-weight` | choisir le poids d'une leçon | le parent répond `totehm-weight` |
+| `totehm-add-habit` | ajouter une habitude au Totehm | le parent enregistre |
+| `totehm-metrics` | mesures du rail, en pixels résolus | le parent pousse |
+
 ### Une réponse tardive n'écrase jamais un état plus frais
 
 `higher-map` renvoie `origin:{lat,lng,fallback}` — son propre repli Lisbonne

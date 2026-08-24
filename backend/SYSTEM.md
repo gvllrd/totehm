@@ -239,6 +239,38 @@ de chapitres.
 
 `delete_my_totehm()` efface `wisdom` depuis le 21/08/2026.
 
+#### `wisdom` — le POIDS, pas l'intention (23/08/2026)
+
+`importance smallint` (1-3), contrainte posée :
+1 Worth keeping · 2 Holds up · 3 Changed me.
+
+Une leçon ne « sert » pas une intention : elle pèse. Sept intentions sur une
+leçon, c'était emprunter le vocabulaire des habitudes à un objet qui n'en a
+pas besoin.
+
+**EXPAND / CONTRACT.** `wisdom.i` est GARDÉE le temps d'un lot : entre le
+`git push` et le build Vercel, le front encore en ligne écrit dans `i`. Elle
+se retire au lot suivant :
+
+    alter table public.wisdom drop column i;
+
+#### `higher_badges` — DEUX conditions (23/08/2026)
+
+La vue joint désormais `subscriptions` : méthode Stoner faite sur
+`totehm.com` **ET** abonnement `active`/`trialing`. Un achat isolé sur `.com`
+ne suffit plus — c'est l'engagement complet que le badge valorise.
+
+**MESURÉ le 23/08/2026 : la vue renvoie 0 ligne.** 6 accès Stoner accordés,
+**1 seul avec un compte `.space`**, 1 abonnement vivant (`trialing`) qui n'est
+pas le sien. Ce n'est pas un bug de la vue : c'est une fuite d'acquisition —
+cinq personnes ont payé sur `.com` et ne sont jamais venues sur `.space`.
+
+#### `objectives` — enfin alimentée
+
+`next_objective.html` insère une ligne à chaque Entrée, et chaque habitude
+ajoutée porte `oid` (l'identifiant) et `o` (le texte) dans `totehms.steps`.
+On sait désormais POURQUOI une habitude existe. Table vide avant ce lot.
+
 ### `spot_takes` — « TAKE ME THERE » (créée le 22/08/2026)
 
 | Colonne | Type | Note |
