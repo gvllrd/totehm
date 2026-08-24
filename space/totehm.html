@@ -71,6 +71,20 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 #filter-arrow{position:fixed;top:6px;left:50%;transform:translateX(-50%);z-index:31;background:none;border:none;cursor:pointer;padding:4px 12px;line-height:0;-webkit-tap-highlight-color:transparent;transition:opacity .2s}
 #filter-arrow:hover{opacity:.7}
 #filter-arrow svg{width:22px;height:12px;color:rgba(255,255,255,.55)}
+/* ══ LES DEUX CURSEURS DU HAUT (mobile) ══
+   Sur desktop, deux carrés perforés flanquent le Totehm et disent où mènent
+   les côtés. Sur mobile il n'y avait RIEN : le swipe existait sans que rien
+   ne l'annonce. Deux chevrons de part et d'autre du T.svg, aux couleurs des
+   deux fichiers — rep pour My Wisdom, blue pour My next objective. */
+.tnav{position:fixed;top:30px;z-index:32;background:none;border:none;
+  padding:12px 10px;line-height:0;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:opacity .2s}
+.tnav svg{width:13px;height:22px;display:block;fill:none;stroke:currentColor;
+  stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+#tnav-l{left:calc(50% - 78px);color:#b06a9f}
+#tnav-r{right:calc(50% - 78px);color:#7fa3e8}
+.tnav:active{opacity:.5}
+@media(min-width:700px){.tnav{display:none}}
 .higher-inline{height:1.5em;width:auto;display:inline-block;vertical-align:-.32em}
 
 /* menu-row : structure d'un bouton-saisie (Name of your Totehm, Search a Totehm) */
@@ -180,7 +194,13 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 #filter-badge .fb-line:empty{display:none}
 #filter-badge #fb-clear{background:none;border:none;color:rgba(255,255,255,.4);font-size:14px;line-height:1;cursor:pointer;padding:0 2px;margin-top:1px;transition:color .15s;-webkit-tap-highlight-color:transparent}
 #filter-badge #fb-clear:hover{color:#fff}
-.hp-card{background:#0a0a0a;border:1px solid #1e1e1e;width:100%;max-width:340px;padding:22px;display:flex;flex-direction:column;gap:6px}
+/* ══ UNE SEULE BOÎTE POUR TOUT LE PRODUIT ══
+   Presque-noir (#080808) sur le noir profond de la page, un liseré à
+   #161616. La profondeur vient de la NUANCE, pas d'un cadre gris. Toutes
+   les fenêtres — poids, fréquence, filtre, membre — sont le même objet.
+   Aucun gris : un gris sur du noir fait « application », et .space n'en
+   est pas une. */
+.hp-card{background:#080808;border:1px solid #161616;width:100%;max-width:340px;padding:22px;display:flex;flex-direction:column;gap:6px}
 .hp-row{background:none;border:none;padding:16px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;color:#fff;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
 .hp-row:hover{opacity:.7}
 .hp-row + .hp-row{border-top:1px solid rgba(255,255,255,.10)}
@@ -193,7 +213,7 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 .hp-def{font-family:var(--futura);font-weight:300;font-style:normal;font-size:12px;color:rgba(255,255,255,.6);line-height:1.4;max-width:260px;margin-top:6px}
 .fm-def{font-family:'Quantico',sans-serif;font-size:13px;color:rgba(255,255,255,.78);line-height:1.45;max-width:260px;margin-top:7px;min-height:0}
 .fm-def:empty{display:none}
-.fp-card{background:#0a0a0a;border:1px solid #1e1e1e;width:100%;max-width:380px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px}
+.fp-card{background:#080808;border:1px solid #161616;width:100%;max-width:380px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px}
 #fp-input{background:none;border:none;border-bottom:1px solid rgba(255,255,255,.18);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;padding:4px 2px;text-align:center;caret-color:#fff}
 #fp-input::placeholder{color:rgba(255,255,255,.3);font-size:12px;font-style:normal}
 #fp-preview{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:rgba(255,255,255,.65);min-height:22px;text-align:center;background:none;border:none;padding:2px 8px;cursor:pointer;transition:color .15s,background .15s;-webkit-tap-highlight-color:transparent}
@@ -291,9 +311,37 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 .p-alt{font-family:var(--futura);font-weight:300;font-size:10.5px;color:rgba(255,255,255,.55)}
 #mw-sub .s-plan .p-why{font-family:var(--futura);font-weight:300;font-size:11.5px;line-height:1.5;color:rgba(255,255,255,.7);margin-top:5px}
 
+/* ══ LA FENÊTRE DE POIDS, OUVERTE PAR LE PARENT ══
+   MESURÉ le 23/08/2026 : sur desktop, #book est un descendant de #stage,
+   qui porte un transform — sa boîte fait 562x562, pas la fenêtre. Un simple
+   voile posé par le parent ne réglait donc rien : soit il restait enfermé
+   dans le carré, soit il recouvrait l'iframe et sa propre fenêtre avec.
+   Ce n'est pas le voile qui doit monter, c'est LA FENÊTRE. Exactement le
+   mécanisme de `totehm-read-peek`, pour la même raison. */
+#wpick{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.86);
+  display:none;align-items:center;justify-content:center;padding:22px}
+#wpick.show{display:flex}
+.wp-card{background:#080808;border:1px solid #161616;width:100%;max-width:380px;
+  padding:24px 22px 18px;display:flex;flex-direction:column;gap:14px;max-height:86vh}
+.wp-q{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(255,255,255,.5);text-align:center}
+.wp-list{display:flex;flex-direction:column;gap:14px;overflow-y:auto;overscroll-behavior:contain}
+.wp-lv{display:flex;flex-direction:column;gap:4px;background:none;border:none;
+  padding:4px 0;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;
+  transition:opacity .15s}
+.wp-lv:hover{opacity:.75}
+.wp-r1{display:flex;align-items:center;gap:8px}
+.wp-lv .tglyph{height:15px;width:auto;flex-shrink:0}
+.wp-nm{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px}
+.wp-df{font-family:var(--futura);font-weight:300;font-size:12px;color:#c4c4c4;
+  line-height:1.5;padding-left:23px}
+.wp-lv.on .wp-nm{text-decoration:underline}
+.wp-skip{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;color:#606060;background:none;border:none;cursor:pointer;
+  padding:4px 0;transition:color .15s}
 #member-window{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.84);display:none;align-items:center;justify-content:center;padding:24px}
 #member-window.show{display:flex}
-.mw-card{background:#121212;border:1px solid #2a2a2a;box-shadow:0 16px 40px rgba(0,0,0,.9);max-width:360px;width:100%;padding:30px 24px;text-align:center;position:relative;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.mw-card{background:#080808;border:1px solid #161616;max-width:360px;width:100%;padding:30px 24px;text-align:center;position:relative;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .mw-card::-webkit-scrollbar{width:0;display:none}
 /* ══ LE DASHBOARD : #settings vit désormais dans la fenêtre membre ══
    Tous les réglages (nom, visibilité, abonnement, suppression) sous un seul toit. */
@@ -329,7 +377,7 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
    ══════════════════════════════════════════════════════════════════════════ */
 :root{
   --gate-size:110px;            /* taille du logo assemblé — IDENTIQUE mobile et desktop */
-  --gate-top:12vh;              /* remonté, mais sous les deux coins hauts */
+  --gate-top:8vh;               /* remonté : le radar prend le creux du bas */
   --gate-gap:3vh;               /* écart logo -> bouton */
   --gate-btn-gap:24px;          /* = margin-top de #btn-slogan (stoner.html) */
   --gate-dur:1.05s;             /* durée de la déconstruction */
@@ -370,7 +418,7 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 #gate-hero,#gate-context{width:100%;min-height:100dvh;
   display:flex;flex-direction:column;align-items:center;
   scroll-snap-align:start;scroll-snap-stop:always;position:relative}
-#gate-hero{justify-content:flex-start;padding:var(--gate-top) 0 0}
+#gate-hero{justify-content:flex-start;padding:var(--gate-top) 0 0;overflow:hidden}
 #gate-context{justify-content:center;padding:5vh 22px}
 body.gate.entered #gate,body.gate.folding #gate{overflow:hidden;scroll-snap-type:none;scroll-behavior:auto}
 /* ══ LE TROISIÈME VERROU ══
@@ -396,15 +444,31 @@ body:not(.gate) #gate{display:none}
 /* `width/height:100%` explicites : un <canvas> est un élément remplacé, sa
    taille intrinsèque est 300x150 et `inset:0` ne la remplace pas. Sans ces
    deux lignes le radar est une vignette de 300 px en haut à gauche. */
-#gate-radar{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block;
-  pointer-events:none;opacity:.9;transition:opacity .5s ease}
-body.gate.entered #gate-radar,body.gate.folding #gate-radar{opacity:0}
-#gate-hero>*:not(#gate-radar){position:relative;z-index:1}
+/* Le radar n'est plus un fond qui déborde : c'est un ROND ENTIER, posé sous
+   [Search a Totehm], au plus grand que la place permet. Il occupe donc un
+   bloc dans le flux — plus de `position:fixed` — et sa taille est celle du
+   creux qui reste sous la recherche. Le quadrillé est parti : le fond de
+   .space est un noir plein, rien d'autre. */
+/* Le canvas est en `absolute` DANS son cadre, jamais dans le flux.
+   MESURÉ : en `height:100%` dans le flux, le JS lui posait une hauteur en
+   pixels lue sur le cadre, le cadre grossissait d'autant, l'observateur
+   relisait… le rond débordait par le bas et chassait les deux boutons.
+   Sorti du flux, il ne peut plus rien pousser. */
+/* `width/height:100%` OBLIGATOIRES, deuxième fois que ce piège mord : un
+   <canvas> est un élément REMPLACÉ. Ses attributs width/height lui donnent
+   une taille intrinsèque (ici le tampon de dessin, 2560x860) et ni `inset:0`
+   ni la position absolue ne la remplacent. Sans ces deux lignes, la boîte CSS
+   valait le double du cadre et le rond partait se dessiner hors de l'écran. */
+#gate-radar{position:absolute;inset:0;width:100%;height:100%;display:block;
+  pointer-events:none}
+#radar-wrap{position:relative;width:100%;flex:1 1 0;min-height:120px;
+  margin-top:2vh;transition:opacity .25s ease}
+body.gate.entered #radar-wrap,body.gate.folding #radar-wrap{opacity:0}
 
 /* ── Le carré du logo : taille fixe, aucune variation par viewport ── */
 #gate-logo{position:relative;flex-shrink:0;
   width:var(--gate-size);height:var(--gate-size);
-  margin-bottom:10px}
+  margin-bottom:8px}
 
 /* Chaque calque est cadré au plus juste sur son dessin (viewBox serré) :
    son rectangle DOM == le rectangle du glyphe -> le calcul FLIP est exact. */
@@ -454,12 +518,14 @@ body.gate.entered #gate-weather{opacity:0;pointer-events:none}
 body.gate #rail,body.gate #bigT,body.gate #wordmark,
 body.gate #floorview,body.gate #menu-arrow,
 body.gate #filter-arrow,body.gate #fv-status,body.gate #fold-x,
+body.gate .tnav,
 body.gate #filter-badge{
   opacity:0;pointer-events:none;transition:opacity .55s ease}
 body.gate.entered #rail,body.gate.entered #bigT,body.gate.entered #wordmark,
 body.gate.entered #floorview,
 body.gate.entered #menu-arrow,body.gate.entered #filter-arrow,
 body.gate.entered #fv-status,body.gate.entered #fold-x,
+body.gate.entered .tnav,
 body.gate.entered #filter-badge{
   opacity:1;pointer-events:auto;transition:opacity .55s ease var(--gate-reveal)}
 
@@ -479,25 +545,32 @@ body.gate.entered #filter-badge{
 /* L'heure est partie : trois caractères qui n'appartenaient à personne.
    OWN / YOUR / WORLD, c'est la promesse de .space en trois mots. La météo
    reste dessous, et seulement si une position est connue. */
+/* Le haut droit ne porte plus que la promesse. La donnée descend en bas à
+   gauche, en vis-à-vis de SIMPLE TERMS OF USE qui tient le bas droit. */
 #gate-weather{position:fixed;top:14px;right:16px;z-index:3;
   display:flex;flex-direction:column;align-items:flex-end;gap:2px;
   transition:opacity .25s ease}
-#own-world{display:flex;flex-direction:column;align-items:flex-end;gap:1px;
-  font-family:'Quantico',sans-serif;font-weight:700;font-size:13px;
-  letter-spacing:.16em;line-height:1.18;color:#909090;transition:color .15s ease}
+#gw-row2{display:none;position:fixed;left:16px;
+  bottom:calc(12px + env(safe-area-inset-bottom,0));z-index:4;margin:0;
+  font-size:9px;transition:opacity .25s ease}
+body.gate.entered #gw-row2{opacity:0;pointer-events:none}
+/* Même typo que SIMPLE TERMS OF USE : Space Mono, 9 px, .12em, capitales.
+   Les deux coins du bas et du haut parlent alors la même langue. */
+#own-world{display:flex;flex-direction:column;align-items:flex-end;gap:2px;
+  font-family:'Space Mono',monospace;font-weight:400;font-size:9px;
+  letter-spacing:.12em;text-transform:uppercase;line-height:1.5;color:#8a8a8a;
+  transition:color .15s ease}
 @media(hover:hover){#gate-weather:hover #own-world{color:#fff}}
 .gw-line{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;
   color:rgba(255,255,255,.42);white-space:nowrap;display:flex;gap:8px;align-items:baseline}
 .gw-line b{font-weight:400;color:rgba(255,255,255,.72)}
-#gw-row2{display:none;margin-top:5px;font-size:10px}
 /* Sur un écran de 390 px, le logo centré et le coin haut droit se touchent :
    on resserre le coin plutôt que de descendre le logo. */
 @media(max-width:430px){
-  #own-world{font-size:11px;letter-spacing:.13em}
   .gw-line{font-size:9px;gap:6px}
 }
 /* ── Gate: zone basse (Search + phrase) — margin-top:auto pousse vers le bas ── */
-#gate-bottom{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:14px;width:100%;transition:opacity .25s ease}
+#gate-bottom{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:12px;width:100%;flex-shrink:0;transition:opacity .25s ease}
 #conn-bar{transition:color .15s,opacity .25s ease}
 /* ── Gate: Search bar — style moteur de recherche ── */
 /* Une box rectangulaire pleine, #626283 — pas la tuile perforée navy des
@@ -545,14 +618,14 @@ body.gate.entered #filter-badge{
    au milieu de l'atterrissage. Une marge franche, et la page se lit d'un
    trait — logo, portes, Terre. */
 #gate-world{display:flex;flex-direction:column;align-items:center;gap:14px;
-  width:100%;margin-top:4.5vh;padding:0 18px;
+  width:100%;margin-top:2.5vh;padding:0 18px;flex-shrink:0;
   transition:opacity .25s ease}
 /* ══ THINK SAME BUT OPPOSITE ══
    Le même bloc que higher.boutique/index.html — bouton, chevron qui
    respire, section pleine page, remontée. Copié, pas partagé : trois
    origines, trois fichiers. La vidéo n'est chargée qu'à l'entrée dans le
    champ, comme la Terre avant elle. */
-#ctx-down{margin-top:auto;margin-bottom:calc(4vh + env(safe-area-inset-bottom,0));
+#ctx-down{margin-top:2.5vh;margin-bottom:calc(3vh + env(safe-area-inset-bottom,0));flex-shrink:0;
   background:none;border:none;cursor:pointer;display:flex;flex-direction:column;
   align-items:center;gap:8px;-webkit-tap-highlight-color:transparent;
   transition:opacity .25s ease}
@@ -684,6 +757,8 @@ body.gate.entered #filter-badge{
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -724,6 +799,9 @@ body.gate.entered #filter-badge{
 #mw-sub .s-plan .p-price:hover,
 .p-alt:hover,
 #mw-sub .s-plan .p-why:hover,
+.wp-q:hover,
+.wp-df:hover,
+.wp-skip:hover,
 .mw-body:hover,
 .mw-close:hover,
 .mw-input:hover::placeholder,
@@ -753,15 +831,13 @@ body.gate.entered #filter-badge{
        Coin bas droit : les conditions. Les trois sont `fixed` — le gate
        défile sur deux écrans, les coins ne bougent pas. -->
   <div id="gate-weather">
-    <div id="own-world" aria-label="Own your world"><span>OWN</span><span>YOUR</span><span>WORLD</span></div>
+    <div id="own-world" aria-label="Own your space"><span>OWN</span><span>YOUR</span><span>SPACE</span></div>
     <div class="gw-line" id="gw-row2"><b id="gw-temp"></b><span id="gw-wind"></span><span id="gw-sky"></span></div>
   </div>
   <button id="conn-bar" type="button" aria-label="member space"><span class="dot"></span>Guest</button>
   <a id="terms-corner" href="terms.html" target="_blank" rel="noopener">Simple terms of use</a>
 
 <section id="gate-hero">
-  <canvas id="gate-radar" aria-hidden="true"></canvas>
-
   <div id="gate-logo">
     <svg class="glayer" id="gl-bg"   viewBox="0 0 224.88 224.08" preserveAspectRatio="none"    aria-hidden="true"><defs><mask id="tgb_m" maskUnits="userSpaceOnUse" x="-40" y="-40" width="310" height="310"><rect x="-40" y="-40" width="310" height="310" fill="#fff"/><circle cx="56.421" cy="0.000" r="13.86" fill="#000"/><circle cx="56.421" cy="224.078" r="13.86" fill="#000"/><circle cx="112.440" cy="0.000" r="13.86" fill="#000"/><circle cx="112.440" cy="224.078" r="13.86" fill="#000"/><circle cx="168.459" cy="0.000" r="13.86" fill="#000"/><circle cx="168.459" cy="224.078" r="13.86" fill="#000"/><circle cx="0.402" cy="56.020" r="13.86" fill="#000"/><circle cx="224.478" cy="56.020" r="13.86" fill="#000"/><circle cx="0.402" cy="112.039" r="13.86" fill="#000"/><circle cx="224.478" cy="112.039" r="13.86" fill="#000"/><circle cx="0.402" cy="168.059" r="13.86" fill="#000"/><circle cx="224.478" cy="168.059" r="13.86" fill="#000"/></mask></defs><rect x="0.402" y="0.000" width="224.076" height="224.078" fill="#333366" mask="url(#tgb_m)"/></svg>
     <svg class="glayer" id="gl-rail" viewBox="20.689 0.225 17.203 223.630" preserveAspectRatio="none"    aria-hidden="true"><defs><clipPath id="tgr_3a710ebbbe"><path d="M 20.652344 0.261719 L 37.839844 0.261719 L 37.839844 223.816406 L 20.652344 223.816406 Z M 20.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tgr_1b01f8474a"><path d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.816406 L 0.652344 223.816406 Z M 0.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tgr_95349ecf51"><rect x="0" width="18" y="0" height="224"/></clipPath></defs><g clip-path="url(#tgr_3a710ebbbe)"><g transform="matrix(1, 0, 0, 1, 20, -0.000000000000020428)"><g clip-path="url(#tgr_95349ecf51)"><g clip-path="url(#tgr_1b01f8474a)"><path fill="#626286" d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.808594 L 0.652344 223.808594 Z M 0.652344 0.261719 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></svg>
@@ -782,6 +858,11 @@ body.gate.entered #filter-badge{
   <!-- Tout en bas : la porte du monde, puis la Terre. La porte d'abord —
        une image ne se clique pas, un bouton oui, et il ne doit pas se
        mériter au défilement. -->
+  <!-- Le radar : un rond entier, sous la recherche, au plus grand que la
+       place laisse. Ce n'est pas une décoration de fond — c'est ce qu'est
+       totehm.space, montré sans un mot. -->
+  <div id="radar-wrap"><canvas id="gate-radar" aria-hidden="true"></canvas></div>
+
   <div id="gate-world">
     <a class="btn-sig" id="gate-world-btn" href="map.html">Open my Totehm World</a>
   </div>
@@ -793,7 +874,7 @@ body.gate.entered #filter-badge{
 </section>
 
 <section id="gate-context">
-  <button id="ctx-up" type="button" aria-label="Back up"><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>
+  <button id="ctx-up" type="button" aria-label="Open my Totehm"><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>
   <video id="ctx-vid" playsinline muted controls preload="none"></video>
   <button class="btn-sig" id="gate-open-2" type="button">Open my Totehm</button>
 </section>
@@ -811,6 +892,8 @@ body.gate.entered #filter-badge{
 <div id="rail" class="sink-el"></div>
 
 <!-- Petite flèche cliquable centrée juste au-dessus du T.png du haut — ouvre le filtre -->
+<button class="tnav sink-el" id="tnav-l" type="button" aria-label="My Wisdom"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></button>
+<button class="tnav sink-el" id="tnav-r" type="button" aria-label="My next objective"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M3 2 L11 12 L3 22"/></svg></button>
 <button id="filter-arrow" class="sink-el" aria-label="Open filter">
   <svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
 </button>
@@ -908,6 +991,16 @@ body.gate.entered #filter-badge{
     </button>
   </div>
 </div>
+<!-- La fenêtre de poids de My Wisdom : HORS de #stage, seul endroit d'où
+     l'on couvre vraiment 100vw/100vh sur desktop. -->
+<div id="wpick" role="dialog" aria-label="Weight of this teach">
+  <div class="wp-card">
+    <div class="wp-q">How much does this teach weigh?</div>
+    <div class="wp-list" id="wp-list"></div>
+    <button class="wp-skip" id="wp-skip" type="button">no weight yet</button>
+  </div>
+</div>
+
 <div id="member-window">
   <div class="mw-card">
     <button class="mw-close" id="mw-close">Close</button>
@@ -1576,8 +1669,10 @@ function openHabitPeek(i){
   const s=state.habits[i]; if(!s||!s.f||!s.i)return;
   const x=INT_BY_ID[s.i]||null;
   $('hp-freq-val').textContent=flabel(s.f);
+  /* Le badge n'est plus collé à CHAQUE intention : il ne veut rien dire
+     s'il est partout. Il ne paraît que si le membre le porte vraiment. */
   $('hp-int-val').innerHTML=x
-    ? '<span style="color:'+x.color+'">'+T_SVG+' '+x.name+'</span> <svg class="higher-inline" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg>'
+    ? '<span style="color:'+x.color+'">'+T_SVG+' '+x.name+'</span>'+(myHigher?' '+HI_SVG:'')
     : '';
   $('hp-int-def').textContent=x?(x.def||''):'';
   $('hp-freq').onclick=()=>{closeHabitPeek();openFreqPanel(i,'freq');};
@@ -1699,7 +1794,9 @@ function renderFpInts(currentId){
     b.className='fp-int'+(x.id===currentId?' on':'');
     b.innerHTML='<span class="fp-int-r1"><span style="color:'+x.color+'">'+T_SVG+'</span>'
       +'<span class="nm" style="color:'+x.color+'">'+x.name+'</span>'
-      +(myHigher?'<svg class="higher-inline" viewBox="0 0 600 200" aria-label="Higher" role="img"><use href="#higher-word"></use></svg>':'')+'</span>'
+      /* #higher-badge (navy) et non #higher-word (coral) : le doré tirait
+         l'œil hors de la couleur de l'intention, qui est l'information. */
+      +(myHigher?'<svg class="higher-inline" viewBox="0 0 600 200" aria-label="Higher" role="img"><use href="#higher-badge"></use></svg>':'')+'</span>'
       +'<span class="df">'+esc(x.def)+'</span>';
     b.onclick=()=>applyIntent(x.id);
     box.appendChild(b);
@@ -1901,10 +1998,16 @@ function navBlocked(){
     ||!$('habit-peek').classList.contains('hide')
     ||!$('filter-modal').classList.contains('hide');
 }
-$('side-left').onclick =()=>{ if(navBlocked())return;
+/* Les deux curseurs mobiles font EXACTEMENT ce que font les carrés desktop :
+   un seul geste nommé deux fois, jamais deux comportements. */
+const navLeft =()=>{ if(navBlocked())return;
   if($('nextobj').classList.contains('show'))showNext(false); else showBook(true); };
-$('side-right').onclick=()=>{ if(navBlocked())return;
+const navRight=()=>{ if(navBlocked())return;
   if($('book').classList.contains('show'))showBook(false); else showNext(true); };
+$('side-left').onclick =navLeft;
+$('side-right').onclick=navRight;
+$('tnav-l').onclick=navLeft;
+$('tnav-r').onclick=navRight;
 
 window.addEventListener('keydown',(e)=>{
   if(fpOpen()){if(e.key==='Escape')closeFreqPanel();return;}
@@ -1937,6 +2040,7 @@ window.addEventListener('message',e=>{
      aucun setTimeout, aucun fondu — la couleur change d'une seule frame. */
   if(e.data.type==='totehm-close-book'||e.data.type==='totehm-close-next'
      ||e.data.type==='totehm-goto-settings'){
+    closeWeightPick();
     showBook(false);showNext(false);
   }
   else if(e.data.type==='totehm-add-habit'&&e.data.habit&&e.data.habit.t){
@@ -1954,6 +2058,11 @@ window.addEventListener('message',e=>{
   else if(e.data.type==='totehm-read-peek'&&e.data.habit){
     openReadPeek(e.data.habit);
   }
+  /* Même raison, autre forme : My Wisdom ouvre SA fenêtre de poids, mais
+     c'est nous qui noircissons — son 100vh s'arrête au cadre. */
+  /* My Wisdom demande le poids d'une leçon : c'est nous qui l'affichons,
+     puis nous le lui renvoyons. L'iframe ne quitte jamais son cadre. */
+  else if(e.data.type==='totehm-pick-weight'){ openWeightPick(e.data.value||null); }
   /* Une iframe qui vient de démarrer réclame les mesures du rail. */
   else if(e.data.type==='totehm-need-metrics'){
     pushMetrics();
@@ -2161,6 +2270,36 @@ function storePos(pos){
   return p;
 }
 
+/* ══ LE POIDS D'UNE LEÇON — la fenêtre du parent, pour My Wisdom ══
+   Les trois niveaux sont COPIÉS de book.html, jamais partagés : deux
+   fichiers, deux copies. Le blanc monte avec le poids. */
+const WLEVELS=[
+  {id:3,name:'Changed me',   def:'The lesson that redrew the map. You are not the same after it.', color:'#ffffff'},
+  {id:2,name:'Holds up',     def:'Proven more than once. You would teach it to someone you love.', color:'#b4b4b4'},
+  {id:1,name:'Worth keeping',def:'True today. Not yet paid for twice.',                            color:'#6d6d6d'}
+];
+function replyWeight(v){
+  const f=$('book-frame');
+  if(f&&f.contentWindow){try{f.contentWindow.postMessage({type:'totehm-weight',value:v},'*');}catch(e){}}
+  closeWeightPick();
+}
+function openWeightPick(cur){
+  const box=$('wp-list'); box.innerHTML='';
+  WLEVELS.forEach(x=>{
+    const b=document.createElement('button');
+    b.type='button'; b.className='wp-lv'+(x.id===cur?' on':'');
+    b.innerHTML='<span class="wp-r1"><span style="color:'+x.color+'">'+T_SVG+'</span>'
+      +'<span class="wp-nm" style="color:'+x.color+'">'+esc(x.name)+'</span></span>'
+      +'<span class="wp-df">'+esc(x.def)+'</span>';
+    b.onclick=()=>replyWeight(x.id);
+    box.appendChild(b);
+  });
+  $('wpick').classList.add('show');
+}
+function closeWeightPick(){ $('wpick').classList.remove('show'); }
+$('wp-skip').onclick=()=>replyWeight(null);
+$('wpick').addEventListener('click',e=>{if(e.target===$('wpick'))closeWeightPick();});
+
 /* ══ SEARCH A TOTEHM — le pattern morph d'index.html ══ */
 /* réseau démo pour le mode guest */
 const NETWORK=[
@@ -2272,8 +2411,19 @@ async function loadHigher(){
   myHigher=false;
   if(!me)return;
   try{
-    const {data}=await sb.from('stoner_access').select('granted_at').limit(1);
-    myHigher=!!(data&&data.length&&data[0].granted_at);
+    /* ══ DEUX CONDITIONS, PAS UNE ══
+       Le badge disait « j'ai fait la méthode Stoner ». Il doit dire
+       « je suis membre actif ET j'ai fait la méthode » — c'est l'engagement
+       complet dans l'écosystème qu'il valorise, pas un achat isolé sur .com.
+       La RLS de `stoner_access` restreint déjà la lecture à sa propre ligne
+       (lower(email) = lower(auth.jwt()->>'email')) : le front ne peut pas
+       lire celle d'un autre, et ne décide de rien tout seul. */
+    const [{data:st},{data:sub}]=await Promise.all([
+      sb.from('stoner_access').select('granted_at').limit(1),
+      sb.from('subscriptions').select('status').eq('user_id',me.id)
+        .in('status',['active','trialing']).limit(1)
+    ]);
+    myHigher=!!(st&&st.length&&st[0].granted_at) && !!(sub&&sub.length);
   }catch(_){ /* pas d'accréditation lisible = pas de badge, jamais d'erreur */ }
 }
 async function isHigher(profileId){
@@ -2618,36 +2768,35 @@ window.addEventListener('pageshow',e=>{
      boucle s'arrête dès que le Totehm est déployé ou l'onglet caché. */
   (function gateRadar(){
     const cv=$('gate-radar'); if(!cv||!cv.getContext)return;
+    const wrap=$('radar-wrap');
     const X=cv.getContext('2d');
     let W=0,H=0,dpr=1,t=0,raf=0;
     function size(){
       dpr=Math.min(2,window.devicePixelRatio||1);
-      W=cv.clientWidth;H=cv.clientHeight;
+      W=wrap.clientWidth;H=wrap.clientHeight;
       cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
     }
     function frame(){
       raf=0;
       if(!body.classList.contains('gate')||document.hidden)return;
-      if(!W||!H)size();
-      /* Le centre du radar EST le centre du logo. C'est la thèse de
-         .space en une image : la carte tourne autour de toi, et toi c'est
-         ton Totehm. Mesuré à chaque frame — le logo bouge avec --gate-top. */
-      const lg=document.getElementById('gate-logo');
-      const r0=lg?lg.getBoundingClientRect():null;
-      const cx=r0?r0.left+r0.width/2:W/2, cy=r0?r0.top+r0.height/2:H*0.3;
-      /* « Plus grand et imposant » : le rayon déborde volontairement du
-         cadre — le radar est un fond, pas une vignette. */
-      const rpx=Math.max(W,H)*0.78;
+      /* On remesure dès que le cadre a bougé. Une mesure prise une seule
+         fois, avant que la mise en page ne soit posée, donnait un tampon de
+         dessin à l'échelle d'un cadre qui n'existait plus : le rond partait
+         se dessiner hors de l'écran. */
+      if(wrap.clientWidth!==W||wrap.clientHeight!==H)size();
+      if(!W||!H)return;
+      const cx=W/2, cy=H/2;
+      /* « Le plus grand possible sans déborder » : le rayon est la moitié du
+         plus PETIT côté, moins un cheveu pour que le trait extérieur ne soit
+         pas coupé. Le rond est donc toujours entier, sur mobile comme sur
+         desktop, quelle que soit la place que lui laisse le reste. */
+      const rpx=Math.max(10,Math.min(W,H)/2-2);
       X.setTransform(dpr,0,0,dpr,0,0);
       X.clearRect(0,0,W,H);
       t+=1/60;
 
-      X.strokeStyle='rgba(255,255,255,.062)';X.lineWidth=1;
-      X.beginPath();
-      for(let x=(cx%55);x<W;x+=55){X.moveTo(x+.5,0);X.lineTo(x+.5,H);}
-      for(let y=(cy%55);y<H;y+=55){X.moveTo(0,y+.5);X.lineTo(W,y+.5);}
-      X.stroke();
-
+      /* Pas de quadrillé. Le fond de .space est un noir plein — une grille
+         par-dessus faisait « application », et .space n'en est pas une. */
       X.strokeStyle='rgba(255,255,255,.17)';X.lineWidth=1;
       for(let k=1;k<=3;k++){X.beginPath();X.arc(cx,cy,rpx*k/3,0,Math.PI*2);X.stroke();}
 
@@ -2658,12 +2807,15 @@ window.addEventListener('pageshow',e=>{
         X.fillStyle='#ffffff';X.globalAlpha=0.055*(1-i/20);X.fill();
       }
       X.globalAlpha=1;
+      /* Le point central : toi. Sans lui le rond n'est qu'un cercle. */
+      X.beginPath();X.arc(cx,cy,2.5,0,Math.PI*2);
+      X.fillStyle='rgba(255,255,255,.75)';X.fill();
       raf=requestAnimationFrame(frame);
     }
     const start=()=>{ if(!raf&&body.classList.contains('gate')&&!document.hidden){size();raf=requestAnimationFrame(frame);} };
     let rt; window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{size();start();},160);});
     document.addEventListener('visibilitychange',start);
-    /* Le gate se rejoue : la boucle doit repartir après un repli. */
+    if('ResizeObserver' in window){ new ResizeObserver(()=>{size();start();}).observe(wrap); }
     window.__gateRadarStart=start;
     start();
   })();
@@ -2684,7 +2836,38 @@ window.addEventListener('pageshow',e=>{
       ctx.scrollIntoView({behavior:'smooth'});
       v.play().catch(()=>{});
     });
-    $('ctx-up').addEventListener('click',()=>{ hero.scrollIntoView({behavior:'smooth'}); });
+    /* ══ LE SENS DE REMONTÉE ══
+       On descend pour comprendre (« Think same but opposite »), on remonte
+       pour entrer. Le chevron du haut et le geste vers le haut font donc la
+       MÊME chose : ouvrir le Totehm. Deux affordances pour une direction qui
+       donneraient deux résultats, c'est ce qui rend une page illisible. */
+    const enterFromContext=()=>{ v.pause(); gate.scrollTop=0; enter(); };
+    $('ctx-up').addEventListener('click',enterFromContext);
+
+    /* Le geste : molette et doigt, seulement depuis la seconde section, et
+       jamais pendant le défilement lancé par [Think same but opposite] —
+       sinon le mouvement d'arrivée se retournerait aussitôt en entrée. */
+    let ctxArmed=0;
+    const inContext=()=>gate.scrollTop>gate.clientHeight*0.55;
+    $('ctx-down').addEventListener('click',()=>{ctxArmed=Date.now()+1200;});
+    const ready=()=>inContext()&&Date.now()>ctxArmed&&!body.classList.contains('entered')
+                    &&!body.classList.contains('folding');
+    gate.addEventListener('wheel',e=>{
+      if(e.deltaY>=-4||!ready())return;
+      enterFromContext();
+    },{passive:true});
+    let ty=null;
+    gate.addEventListener('touchstart',e=>{
+      ty=e.touches.length===1?e.touches[0].clientY:null;
+    },{passive:true});
+    gate.addEventListener('touchmove',e=>{
+      if(ty===null||e.touches.length!==1)return;
+      if(e.touches[0].clientY-ty<56)return;       /* le doigt descend franchement */
+      ty=null;
+      if(!ready())return;
+      enterFromContext();
+    },{passive:true});
+    gate.addEventListener('touchend',()=>{ty=null;},{passive:true});
     if('IntersectionObserver' in window){
       const io=new IntersectionObserver(es=>{es.forEach(e=>{
         if(e.isIntersecting){ load(); v.play().catch(()=>{}); } else { v.pause(); }
