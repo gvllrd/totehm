@@ -2849,6 +2849,9 @@ window.addEventListener('pageshow',e=>{
 
   /* État 1 (la classe est déjà posée sur <body> dans le HTML : zéro flash) */
   body.classList.add('gate');
+  /* En lecture, le gate est une page qui n'appartient pas au visiteur :
+     on l'escamote immédiatement et on révèle directement les habits. */
+  if(RO){ body.classList.remove('gate'); open=true; }
 
   /* Pendant l'état 1, aucun geste ne doit atteindre l'app en dessous — mais
      l'atterrissage a ses propres champs et sa propre vidéo : un geste NÉ
