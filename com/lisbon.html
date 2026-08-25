@@ -78,12 +78,15 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 /* "Get" en coral */
 .get-word{color:var(--coral)}
 .xp-higher{
-  display:inline-flex;align-items:center;gap:8px;
+  display:inline-flex;flex-direction:column;align-items:center;gap:6px;
   text-decoration:none;opacity:0;pointer-events:none;
   transition:opacity .4s ease,color .15s ease;
-  margin-top:4px;font-size:16px;
+  margin-top:4px;font-size:16px;text-align:center;
 }
 .xp-higher.in{opacity:1;pointer-events:auto}
+@media (pointer:coarse){
+  .xp-higher{margin-top:0;flex:1;align-items:flex-end}
+}
 .xp .close{position:fixed;top:14px;left:14px;z-index:200}
 
 /* hover desktop */
@@ -193,11 +196,18 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   padding:5vh 0 4vh;
 }
 .xp.up{top:0}
+.xp-row{display:flex;flex-direction:column;align-items:center;width:100%}
+@media (pointer:coarse){
+  .xp-row{flex-direction:row;align-items:center;justify-content:center;padding:0 12px;gap:14px}
+}
 .vid-wrap{
   position:relative;flex-shrink:0;
   width:min(80vw,70vh);height:min(80vw,70vh);
-  max-width:480px;max-height:480px;margin-bottom:6px;
+  max-width:480px;max-height:480px;
   opacity:0;transition:opacity .5s ease;
+}
+@media (pointer:coarse){
+  .vid-wrap{width:58vw;height:58vw;max-width:none;max-height:none}
 }
 .vid-wrap.in{opacity:1}
 .xp video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
@@ -300,12 +310,14 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 <!-- ═══════════ EXPERIENCE ═══════════ -->
 <div class="xp" id="xp">
   <button class="close" id="xpClose">Back in Time</button>
-  <div class="vid-wrap" id="vidWrap"><video id="vid" playsinline preload="none"></video></div>
-  <a class="xp-higher" id="xpHigher" href="stoner.html">
-    Get
-    <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-badge"/></svg>
-    Get it
-  </a>
+  <div class="xp-row">
+    <div class="vid-wrap" id="vidWrap"><video id="vid" playsinline preload="none"></video></div>
+    <a class="xp-higher" id="xpHigher" href="stoner.html">
+      Get
+      <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-badge"/></svg>
+      (to get it)
+    </a>
+  </div>
   <div class="punch" id="punch"></div>
 </div>
 
