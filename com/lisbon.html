@@ -30,11 +30,8 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 @media (orientation:portrait) and (pointer:coarse){.rotate{display:flex}}
 .rotate .slogan{width:min(26vw,100px)}
 .init-vid{width:min(30vw,120px);height:auto;display:block;background:#000}
-.slideshow{position:relative;width:min(52vw,280px);margin:0 auto}
-.sl-img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;transition:opacity .8s ease}
-.sl-img.hidden{opacity:0}
-.sl-img.visible{opacity:1}
-.sl-spacer{width:min(52vw,280px);visibility:hidden;display:block}
+.slideshow{position:relative;width:min(52vw,260px);height:min(52vw,260px);margin:0 auto;flex-shrink:0}
+.sl-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .8s ease}
 .rotate .sub{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.1em;color:#808080;line-height:1.4}
 .rotate .spinner{width:44px;height:44px;color:var(--coral);animation:spin 3.2s linear infinite;margin-top:14px}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -268,7 +265,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 <!-- ═══════════ ROTATE ═══════════ -->
 <div class="rotate">
   <video class="init-vid" src="https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/init.mp4" autoplay muted playsinline preload="auto"></video>
-  <div class="slideshow" id="sl-mob"><img class="sl-spacer" aria-hidden="true"><img class="sl-img visible" id="sl-mob-a" alt=""><img class="sl-img hidden" id="sl-mob-b" alt=""></div>
+  <div class="slideshow" id="sl-mob"><img class="sl-img" id="sl-mob-a" alt="" style="opacity:1"><img class="sl-img" id="sl-mob-b" alt="" style="opacity:0"></div>
   <div class="sub">MAKE LISBON STREETS SUBLIME</div>
   <svg class="spinner" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
     <path d="M 32 12 A 20 20 0 1 1 12 32"/>
@@ -298,7 +295,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 <!-- ═══════════ INTRO ═══════════ -->
 <div class="intro" id="intro">
   <video class="init-vid" src="https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/init.mp4" autoplay muted playsinline preload="auto"></video>
-  <div class="slideshow" id="sl-desk"><img class="sl-spacer" aria-hidden="true"><img class="sl-img visible" id="sl-desk-a" alt=""><img class="sl-img hidden" id="sl-desk-b" alt=""></div>
+  <div class="slideshow" id="sl-desk"><img class="sl-img" id="sl-desk-a" alt="" style="opacity:1"><img class="sl-img" id="sl-desk-b" alt="" style="opacity:0"></div>
   <div class="intro-tagline">MAKE LISBON STREETS DOPE</div>
 
   <button class="btn-play" id="initialize">Play the Lisbon street</button>
@@ -537,54 +534,30 @@ xp.addEventListener('click', e=>{
 /* ═══ SLIDESHOW ═══ */
 (()=>{
   const BASE = 'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/';
-  const EXT  = '.png';
+  const srcs = Array.from({length:8}, (_,i) => BASE+(i+1)+'.png');
   const DUR  = 3200;
 
-  function initSlide(a, b, spacer){
-    const srcs = [];
-    let cur = 0;
+  function initSlide(elA, elB){
+    let cur = 0, front = elA, back = elB;
+    front.src = srcs[0];
 
-    function probe(n){
-      const img = new Image();
-      img.onload = ()=>{
-        srcs.push(BASE + n + EXT);
-        probe(n + 1);
-        if(srcs.length === 1){
-          a.src = srcs[0];
-          spacer.src = srcs[0];
-        }
-        if(srcs.length === 2) schedule();
-      };
-      img.onerror = ()=>{};
-      img.src = BASE + n + EXT;
-    }
-
-    function schedule(){ setTimeout(advance, DUR); }
-
-    function advance(){
-      if(srcs.length < 2){ schedule(); return; }
+    function next(){
       cur = (cur + 1) % srcs.length;
-      const next = srcs[cur];
-      b.src = next;
-      b.classList.remove('hidden'); b.classList.add('visible');
-      a.classList.remove('visible'); a.classList.add('hidden');
-      spacer.src = next;
-      [a, b] = [b, a];
-      schedule();
+      back.src = srcs[cur];
+      back.style.opacity = '1';
+      front.style.opacity = '0';
+      [front, back] = [back, front];
+      setTimeout(next, DUR);
     }
-
-    probe(1);
+    setTimeout(next, DUR);
   }
 
-  const mobA  = document.getElementById('sl-mob-a');
-  const mobB  = document.getElementById('sl-mob-b');
-  const mobSp = document.querySelector('#sl-mob .sl-spacer');
-  const dskA  = document.getElementById('sl-desk-a');
-  const dskB  = document.getElementById('sl-desk-b');
-  const dskSp = document.querySelector('#sl-desk .sl-spacer');
-
-  if(mobA) initSlide(mobA, mobB, mobSp);
-  if(dskA) initSlide(dskA, dskB, dskSp);
+  const mobA = document.getElementById('sl-mob-a');
+  const mobB = document.getElementById('sl-mob-b');
+  const dskA = document.getElementById('sl-desk-a');
+  const dskB = document.getElementById('sl-desk-b');
+  if(mobA) initSlide(mobA, mobB);
+  if(dskA) initSlide(dskA, dskB);
 })();
 
 })();
