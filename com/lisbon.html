@@ -78,10 +78,10 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 /* "Get" en coral */
 .get-word{color:var(--coral)}
 .xp-higher{
-  display:inline-flex;align-items:center;gap:6px;
+  display:inline-flex;align-items:center;gap:8px;
   text-decoration:none;opacity:0;pointer-events:none;
   transition:opacity .4s ease,color .15s ease;
-  margin-top:10px;
+  margin-top:4px;font-size:16px;
 }
 .xp-higher.in{opacity:1;pointer-events:auto}
 .xp .close{position:fixed;top:14px;left:14px;z-index:200}
@@ -110,7 +110,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   border-image-slice:6 fill;border-image-repeat:round;
 }
 .get-higher .higher-inline{display:inline-flex;align-items:center;width:60px;vertical-align:middle;line-height:0}
-.xp-higher .higher-inline{display:inline-flex;align-items:center;width:44px;vertical-align:middle;line-height:0}
+.xp-higher .higher-inline{display:inline-flex;align-items:center;width:120px;vertical-align:middle;line-height:0}
 
 #prereq-content{
   width:100%;max-width:440px;max-height:0;overflow:hidden;
@@ -195,15 +195,9 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 .xp.up{top:0}
 .vid-wrap{
   position:relative;flex-shrink:0;
-  width:min(62vw,62vh);height:min(62vw,62vh);
-  max-width:480px;max-height:480px;margin-bottom:2vh;
+  width:min(80vw,70vh);height:min(80vw,70vh);
+  max-width:480px;max-height:480px;margin-bottom:6px;
   opacity:0;transition:opacity .5s ease;
-}
-@media (pointer:coarse){
-  .vid-wrap{
-    width:min(80vw,70vh);height:min(80vw,70vh);
-    max-width:480px;max-height:480px;
-  }
 }
 .vid-wrap.in{opacity:1}
 .xp video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
