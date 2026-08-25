@@ -25,18 +25,24 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 .rotate{
   position:fixed;inset:0;z-index:100;background:#000;
   display:none;flex-direction:column;align-items:center;justify-content:center;
-  gap:10px;padding:16px;text-align:center;overflow-y:auto;
+  gap:7px;padding:12px 16px;text-align:center;overflow-y:auto;
 }
 @media (orientation:portrait) and (pointer:coarse){.rotate{display:flex}}
 .rotate .slogan{width:min(26vw,100px)}
 .init-vid{width:min(44vw,180px);height:auto;display:block;background:#000}
-.slideshow{position:relative;width:min(70vw,360px);height:min(70vw,360px);margin:0 auto;flex-shrink:0}
+.slideshow{position:relative;width:min(68vw,320px);height:min(68vw,320px);margin:-4px auto 0;flex-shrink:0}
 .sl-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity 1.2s ease}
 .rotate .sub{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.1em;color:#808080;line-height:1.4}
-.rotate .spinner{width:44px;height:44px;color:var(--coral);animation:spin 3.2s linear infinite;margin-top:14px}
+.rotate .spinner{width:58px;height:58px;color:var(--coral);animation:spin 3.2s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-/* NON-BOLD — Quantico 400 coral, bold reserved for Stoner Method techniques */
 .rotate .hint{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--coral);line-height:1.6;letter-spacing:.02em}
+/* Where Street Art btn — exactement #ctx-down de totehm.html */
+.where-btn{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;-webkit-tap-highlight-color:transparent;margin-top:4px}
+.ctx-label{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:#b0b0b0;transition:color .15s ease}
+.chev{width:22px;height:22px;color:#909090;transition:color .15s ease}
+@keyframes ctx-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+.bob{animation:ctx-bob 1.8s ease-in-out infinite}
+@media(hover:hover){.where-btn:hover .ctx-label,.where-btn:hover .chev{color:#fff}}
 .rot-prereq-content{width:100%;max-width:440px;max-height:0;overflow:hidden;transition:max-height .4s ease;opacity:0}
 .rot-prereq-content.open{max-height:400px;opacity:1;overflow:visible;transition:max-height .5s ease,opacity .4s ease .1s}
 .rotate .credit{position:absolute;bottom:22px;left:0;right:0;font-family:var(--futura-light);font-weight:300;font-size:12.5px;color:#b5b5c2;font-style:italic;padding:0 20px;line-height:1.45}
@@ -123,9 +129,9 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   padding:16px 10px 6px;
 }
 
-.streets-tagline{display:flex;flex-direction:column;align-items:center;gap:6px}
-.streets-text{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.1em;color:#808080;line-height:1.2}
-.streets-higher{width:min(38vw,140px);display:block}
+.streets-tagline{display:flex;flex-direction:column;align-items:center;gap:4px}
+.streets-text{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.1em;color:#808080;line-height:1.2}
+.streets-higher{width:min(28vw,100px);display:block}
 
 /* Body paragraph — .nb-p exact from stoner_method */
 .intro .nb-p{
@@ -277,6 +283,11 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
     <polygon points="12,21 5,34 19,34" fill="currentColor" stroke="none"/>
   </svg>
   <div class="hint">Turn your phone (or turn it off)</div>
+
+  <button class="where-btn" type="button">
+    <span class="ctx-label">Where Street Art meets the quintessence of modern neuroscience</span>
+    <svg class="chev bob" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+  </button>
 
   <div class="prereq-row">
     <svg class="prereq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
