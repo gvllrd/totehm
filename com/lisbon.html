@@ -29,6 +29,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 }
 @media (orientation:portrait) and (pointer:coarse){.rotate{display:flex}}
 .rotate .slogan{width:min(26vw,100px)}
+.init-vid{width:min(40vw,160px);height:auto;display:block;background:#000}
 .rotate .sub{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.1em;color:#808080;line-height:1.4}
 .rotate .spinner{width:44px;height:44px;color:var(--coral);animation:spin 3.2s linear infinite;margin-top:14px}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -261,7 +262,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 
 <!-- ═══════════ ROTATE ═══════════ -->
 <div class="rotate">
-  <svg class="slogan" viewBox="0 0 600 200"><use href="#higher-badge"/></svg>
+  <video class="init-vid" src="https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/init.mp4" autoplay muted playsinline preload="auto"></video>
   <div class="sub">MAKE LISBON STREETS SUBLIME</div>
   <svg class="spinner" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
     <path d="M 32 12 A 20 20 0 1 1 12 32"/>
@@ -290,6 +291,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 
 <!-- ═══════════ INTRO ═══════════ -->
 <div class="intro" id="intro">
+  <video class="init-vid" src="https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/init.mp4" autoplay muted playsinline preload="auto"></video>
   <div class="intro-tagline">MAKE LISBON STREETS DOPE</div>
 
   <button class="btn-play" id="initialize">Play the Lisbon street</button>
