@@ -75,17 +75,13 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 .grind-link{display:inline-block;text-decoration:none}
 .btn-play{font-weight:700;margin-top:22px;display:inline-block}
 
-/* prereq row — icône + bouton alignés */
-.prereq-row{display:inline-flex;align-items:center;gap:5px;margin-top:18px}
-.prereq-icon{width:14px;height:14px;color:#b0b0b0;flex-shrink:0}
-.neuro-link{margin-top:0}
-
 /* "Get" en coral */
 .get-word{color:var(--coral)}
 .xp-higher{
-  position:absolute;z-index:6;display:inline-flex;align-items:center;gap:6px;
+  display:inline-flex;align-items:center;gap:6px;
   text-decoration:none;opacity:0;pointer-events:none;
   transition:opacity .4s ease,color .15s ease;
+  margin-top:10px;
 }
 .xp-higher.in{opacity:1;pointer-events:auto}
 .xp .close{position:fixed;top:14px;left:14px;z-index:200}
@@ -197,18 +193,16 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   padding:5vh 0 4vh;
 }
 .xp.up{top:0}
-/* Video — larger than stoner (50vw / 50vh, max 340px) */
 .vid-wrap{
   position:relative;flex-shrink:0;
-  width:min(50vw,50vh);height:min(50vw,50vh);
-  max-width:340px;max-height:340px;margin-bottom:3vh;
+  width:min(62vw,62vh);height:min(62vw,62vh);
+  max-width:480px;max-height:480px;margin-bottom:2vh;
   opacity:0;transition:opacity .5s ease;
 }
-/* Mobile: bump video size a touch */
 @media (pointer:coarse){
   .vid-wrap{
-    width:min(58vw,55vh);height:min(58vw,55vh);
-    max-width:380px;max-height:380px;
+    width:min(80vw,70vh);height:min(80vw,70vh);
+    max-width:480px;max-height:480px;
   }
 }
 .vid-wrap.in{opacity:1}
@@ -283,29 +277,10 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
     <polygon points="12,21 5,34 19,34" fill="currentColor" stroke="none"/>
   </svg>
   <div class="hint">Turn your phone (or turn it off)</div>
-
-  <button class="where-btn" type="button">
+  <button class="where-btn" style="margin-top:auto" type="button">
     <span class="ctx-label">Where Street Art meets the quintessence of modern neuroscience</span>
     <svg class="chev bob" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
   </button>
-
-  <div class="prereq-row">
-    <svg class="prereq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M12 3L22 21H2L12 3Z"/>
-      <line x1="12" y1="10" x2="12" y2="14"/>
-      <circle cx="12" cy="17.5" r=".6" fill="currentColor" stroke="none"/>
-    </svg>
-    <button class="neuro-link" id="rot-prereq-btn" aria-expanded="false">Prerequisites</button>
-  </div>
-  <div id="rot-prereq-content" class="rot-prereq-content">
-    <div class="prereq-block">
-      <a class="get-higher" href="stoner.html">
-        <span class="get-word">Get</span>
-        <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-badge"/></svg>
-      </a>
-      <a class="grind-link" href="https://www.higher.boutique">Create your Totehm</a>
-    </div>
-  </div>
 </div>
 
 <!-- ═══════════ INTRO ═══════════ -->
@@ -316,26 +291,11 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   </div>
   <video class="init-vid" src="assets/slides/init.mp4" autoplay muted playsinline preload="auto"></video>
   <div class="slideshow" id="sl-desk"><img class="sl-img" id="sl-desk-a" alt="" style="opacity:1"><img class="sl-img" id="sl-desk-b" alt="" style="opacity:0"></div>
-
   <button class="btn-play" id="initialize">Play the Lisbon street</button>
-
-  <div class="prereq-row">
-    <svg class="prereq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M12 3L22 21H2L12 3Z"/>
-      <line x1="12" y1="10" x2="12" y2="14"/>
-      <circle cx="12" cy="17.5" r=".6" fill="currentColor" stroke="none"/>
-    </svg>
-    <button class="neuro-link" id="prereq-btn" aria-expanded="false">Prerequisites</button>
-  </div>
-  <div id="prereq-content">
-    <div class="prereq-block">
-      <a class="get-higher" href="stoner.html">
-        <span class="get-word">Get</span>
-        <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-badge"/></svg>
-      </a>
-      <a class="grind-link" href="https://www.higher.boutique">Create your Totehm</a>
-    </div>
-  </div>
+  <button class="where-btn" style="margin-top:auto" type="button">
+    <span class="ctx-label">Where Street Art meets the quintessence of modern neuroscience</span>
+    <svg class="chev bob" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+  </button>
 </div>
 
 <!-- ═══════════ CONTROLLER ═══════════ -->
@@ -346,12 +306,12 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 <!-- ═══════════ EXPERIENCE ═══════════ -->
 <div class="xp" id="xp">
   <button class="close" id="xpClose">Back in Time</button>
+  <div class="vid-wrap" id="vidWrap"><video id="vid" playsinline preload="none"></video></div>
   <a class="xp-higher" id="xpHigher" href="stoner.html">
     Get
     <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-badge"/></svg>
     Get it
   </a>
-  <div class="vid-wrap" id="vidWrap"><video id="vid" playsinline preload="none"></video></div>
   <div class="punch" id="punch"></div>
 </div>
 
@@ -392,8 +352,6 @@ const SIGNS = {
 
 /* ═══ DOM ═══ */
 const intro     = document.getElementById('intro');
-const prereqBtn = document.getElementById('prereq-btn');
-const prereqCnt = document.getElementById('prereq-content');
 const initBtn   = document.getElementById('initialize');
 const board     = document.getElementById('board');
 const world     = document.getElementById('world');
@@ -407,21 +365,6 @@ const ps        = document.getElementById('ps');
 
 let busy = false, typeTimer = null, waitTimer = null;
 
-/* ═══ Prerequisites drawer ═══ */
-prereqBtn.addEventListener('click', ()=>{
-  const open = prereqCnt.classList.toggle('open');
-  prereqBtn.classList.toggle('on', open);
-  prereqBtn.setAttribute('aria-expanded', open);
-});
-
-/* ═══ Prerequisites drawer — mobile rotate screen ═══ */
-const rotPrereqBtn = document.getElementById('rot-prereq-btn');
-const rotPrereqCnt = document.getElementById('rot-prereq-content');
-rotPrereqBtn.addEventListener('click', ()=>{
-  const open = rotPrereqCnt.classList.toggle('open');
-  rotPrereqBtn.classList.toggle('on', open);
-  rotPrereqBtn.setAttribute('aria-expanded', open);
-});
 
 function launchWorld(){
   intro.classList.add('gone');
@@ -483,17 +426,6 @@ function launch(id){
 
   punch.style.left = (8 + Math.random()*34)+'vw';
   punch.style.top  = (14 + Math.random()*48)+'vh';
-
-  /* [Get Higher] hook — random position in a safe zone away from center video */
-  const zones = [
-    {l: 6 + Math.random()*10,  t: 78 + Math.random()*10},  /* bottom-left */
-    {l: 78 + Math.random()*10, t: 78 + Math.random()*10},  /* bottom-right */
-    {l: 6 + Math.random()*10,  t: 12 + Math.random()*8},   /* top-left */
-    {l: 78 + Math.random()*10, t: 12 + Math.random()*8},   /* top-right */
-  ];
-  const z = zones[Math.floor(Math.random()*zones.length)];
-  xpHigher.style.left = z.l+'vw';
-  xpHigher.style.top  = z.t+'vh';
 
   world.classList.add('away');
   xp.classList.add('up');
