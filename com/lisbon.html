@@ -51,18 +51,51 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   color:var(--coral);line-height:1.7;letter-spacing:.02em;
   text-transform:uppercase;max-width:560px;
 }
-/* ═══════════ Prerequisites drawer — copie exacte de .neuro-link ═══════════ */
-.neuro-link{
+/* ═══════════ Boutons — format unifié (réf. space/totehm.html .btn-sig) ═══════════ */
+.neuro-link,.get-higher,.grind-link,.btn-play,.xp-higher,.xp .close{
   font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;
-  color:#b0b0b0;background:none;cursor:pointer;display:inline-block;
-  border:6px solid transparent;padding:0 3px;line-height:1.4;margin-top:10px;
-  -webkit-tap-highlight-color:transparent;transition:color .18s ease;
+  color:#b0b0b0;background:none;border:6px solid transparent;
+  padding:0 4px;line-height:1.5;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:color .15s ease;
 }
-.neuro-link:hover,.neuro-link:focus-visible,.neuro-link:active,.neuro-link.on{
+/* exceptions structurelles */
+.neuro-link{display:inline-block;margin-top:10px}
+.get-higher{display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.grind-link{display:inline-block;text-decoration:none}
+.btn-play{font-weight:700;color:var(--coral);margin-top:22px;display:inline-block}
+.xp-higher{
+  position:absolute;z-index:6;display:inline-flex;align-items:center;gap:6px;
+  text-decoration:none;opacity:0;pointer-events:none;
+  transition:opacity .4s ease,color .15s ease;
+}
+.xp-higher.in{opacity:1;pointer-events:auto}
+.xp .close{position:fixed;top:14px;left:14px;z-index:200}
+
+/* hover desktop */
+@media(hover:hover){
+  .neuro-link:hover,.get-higher:hover,.grind-link:hover,
+  .btn-play:hover,.xp-higher:hover,.xp .close:hover{
+    color:#fff;
+    border-image-source:var(--tile-blue);
+    border-image-slice:6 fill;border-image-repeat:round;
+  }
+  .btn-play:hover{color:var(--coral);filter:brightness(1.2)}
+}
+/* active mobile + desktop */
+.neuro-link:active,.get-higher:active,.grind-link:active,
+.btn-play:active,.xp-higher:active,.xp .close:active{
   color:#fff;
   border-image-source:var(--tile-blue);
   border-image-slice:6 fill;border-image-repeat:round;
 }
+.btn-play:active{color:var(--coral)}
+.neuro-link.on{
+  color:#fff;
+  border-image-source:var(--tile-blue);
+  border-image-slice:6 fill;border-image-repeat:round;
+}
+.get-higher .higher-inline,.xp-higher .higher-inline{display:inline-flex;align-items:center;width:44px;vertical-align:middle;line-height:0}
+
 #prereq-content{
   width:100%;max-width:440px;max-height:0;overflow:hidden;
   transition:max-height .4s ease;opacity:0;
@@ -74,36 +107,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 .prereq-block{
   display:flex;flex-direction:column;align-items:center;gap:12px;
   padding:16px 10px 6px;
-}
-
-/* [Get Higher] inside Prerequisites drawer — neuro-link style, gray */
-.get-higher{
-  background:none;cursor:pointer;text-decoration:none;
-  display:inline-flex;align-items:center;gap:6px;
-  font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;
-  color:#b0b0b0;line-height:1.4;
-  border:6px solid transparent;padding:0 3px;
-  -webkit-tap-highlight-color:transparent;
-  transition:color .18s ease;
-}
-.get-higher:hover,.get-higher:active,.get-higher:focus-visible{
-  color:#fff;
-  border-image-source:var(--tile-blue);
-  border-image-slice:6 fill;border-image-repeat:round;
-}
-.get-higher .higher-inline{display:inline-flex;align-items:center;width:44px;vertical-align:middle;line-height:0}
-
-/* Create your Grind — same neuro-link style */
-.grind-link{
-  font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;
-  color:#b0b0b0;text-decoration:none;display:inline-block;
-  border:6px solid transparent;padding:0 3px;line-height:1.4;
-  transition:color .18s ease;
-}
-.grind-link:hover,.grind-link:active{
-  color:#fff;
-  border-image-source:var(--tile-blue);
-  border-image-slice:6 fill;border-image-repeat:round;
 }
 
 /* Body paragraph — .nb-p exact from stoner_method */
@@ -127,33 +130,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   max-width:420px;margin:0;
 }
 
-.btn-play{
-  font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;
-  color:var(--coral);background:none;border:0;cursor:pointer;
-  padding:0;margin-top:22px;letter-spacing:.05em;
-  transition:filter .2s ease;-webkit-tap-highlight-color:transparent;
-}
-.btn-play:hover{filter:brightness(1.2)}
-.btn-play:active{transform:scale(.94)}
-
-/* [Get Higher to get it] floating on the experience — neuro-link style, gray */
-.xp-higher{
-  position:absolute;z-index:6;
-  font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;
-  color:#b0b0b0;background:none;text-decoration:none;
-  border:6px solid transparent;padding:0 3px;line-height:1.4;
-  display:inline-flex;align-items:center;gap:6px;
-  cursor:pointer;-webkit-tap-highlight-color:transparent;
-  opacity:0;pointer-events:none;
-  transition:opacity .4s ease,color .18s ease,transform .15s ease;
-}
-.xp-higher.in{opacity:1;pointer-events:auto}
-.xp-higher:hover,.xp-higher:active{
-  color:#fff;
-  border-image-source:var(--tile-blue);
-  border-image-slice:6 fill;border-image-repeat:round;
-}
-.xp-higher .higher-inline{display:inline-flex;align-items:center;width:44px;vertical-align:middle;line-height:0}
 
 /* ═══════════ LAYER 3 : CONTROLLER BOARD ═══════════ */
 .world{
@@ -225,19 +201,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   animation:blink .85s steps(1) infinite;
 }
 @keyframes blink{50%{opacity:0}}
-/* [Back in Time] — Quantico 400 gray, no arrow */
-.xp .close{
-  position:fixed;top:14px;left:14px;z-index:200;
-  font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;
-  color:#b0b0b0;background:none;border:6px solid transparent;
-  cursor:pointer;padding:0 4px;line-height:1.5;
-  transition:color .15s ease;
-}
-.xp .close:hover,.xp .close:active{
-  color:#fff;
-  border-image-source:var(--tile-rep);
-  border-image-slice:6 fill;border-image-repeat:round;
-}
 
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
