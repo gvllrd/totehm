@@ -78,15 +78,15 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 /* "Get" en coral */
 .get-word{color:var(--coral)}
 .xp-higher{
-  display:inline-flex;flex-direction:column;align-items:center;gap:6px;
+  display:inline-flex;flex-direction:column;align-items:center;gap:8px;
   text-decoration:none;opacity:0;pointer-events:none;
   transition:opacity .4s ease,color .15s ease;
-  margin-top:4px;font-size:16px;text-align:center;
+  flex-shrink:0;
 }
 .xp-higher.in{opacity:1;pointer-events:auto}
-@media (pointer:coarse){
-  .xp-higher{margin-top:0;flex:1;align-items:flex-end}
-}
+.xp-higher .get-word{color:var(--coral);font-weight:700;font-size:15px}
+.xp-higher .higher-row{display:inline-flex;align-items:center;gap:6px}
+.xp-higher .to-get{font-size:13px;color:#b0b0b0}
 .xp .close{position:fixed;top:14px;left:14px;z-index:200}
 
 /* hover desktop */
@@ -191,40 +191,21 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 /* ═══════════ LAYER 4 : EXPERIENCE (from TOP — inverted) ═══════════ */
 .xp{
   position:fixed;left:0;right:0;height:100%;top:-100%;z-index:50;background:#000;
+  pointer-events:none;
   transition:top .55s cubic-bezier(.65,0,.35,1);
-  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-  padding:5vh 0 4vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:4vh 0;
 }
-.xp.up{top:0}
-.xp-row{display:flex;flex-direction:column;align-items:center;width:100%}
-@media (pointer:coarse){
-  .xp-row{flex-direction:row;align-items:center;justify-content:center;padding:0 12px;gap:14px}
-}
+.xp.up{top:0;pointer-events:auto}
+.xp-row{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:20px;width:100%;padding:0 20px}
 .vid-wrap{
   position:relative;flex-shrink:0;
-  width:min(80vw,70vh);height:min(80vw,70vh);
-  max-width:480px;max-height:480px;
+  width:min(38vw,38vh);height:min(38vw,38vh);
+  max-width:260px;max-height:260px;
   opacity:0;transition:opacity .5s ease;
-}
-@media (pointer:coarse){
-  .vid-wrap{width:58vw;height:58vw;max-width:none;max-height:none}
 }
 .vid-wrap.in{opacity:1}
 .xp video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
-/* Punchline — exact stoner tech-text */
-.punch{
-  position:absolute;max-width:58vw;
-  font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;
-  color:var(--coral);line-height:1.7;letter-spacing:.02em;text-align:center;
-  opacity:1;transition:opacity .5s ease;
-}
-.punch.out{opacity:0}
-.punch .caret{
-  display:inline-block;width:.5em;height:1em;background:var(--coral);
-  vertical-align:text-bottom;margin-left:2px;
-  animation:blink .85s steps(1) infinite;
-}
-@keyframes blink{50%{opacity:0}}
 
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -313,12 +294,13 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   <div class="xp-row">
     <div class="vid-wrap" id="vidWrap"><video id="vid" playsinline preload="none"></video></div>
     <a class="xp-higher" id="xpHigher" href="stoner.html">
-      Get
-      <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-badge"/></svg>
-      (to get it)
+      <div class="higher-row">
+        <span class="get-word">Get</span>
+        <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-badge"/></svg>
+      </div>
+      <span class="to-get">(to get it)</span>
     </a>
   </div>
-  <div class="punch" id="punch"></div>
 </div>
 
 <audio id="ps" src="https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/sound/playstation.mp3" preload="auto"></audio>
@@ -332,28 +314,28 @@ const VID_BASE = 'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/pub
 
 /* id : [left%, top%, width%, punchline] — measured on the updated reference.png */
 const SIGNS = {
-  fire_exit:          [23.1,  5.5,  6.5, "To avoid a headache, stop thinking with your head."],
-  Heli:               [46.0,  7.4,  5.2, "The power of Habits: The sky is the limit."],
-  aed:                [70.1,  5.5,  6.5, "Consult your heart. The response is automatic."],
-  green_walk:         [33.7,  9.0,  3.8, "Advance with love. It leads to the best path."],
-  red_walk:           [33.7, 16.5,  3.8, "To stop mental bullsht: stay immobile one instant, avoid the crash."],
-  pharma:             [20.8, 22.5, 10.0, "Attract all you love."],
-  destination:        [40.1,  9.5, 18.5, "Elevation demands friction and aspiration."],
-  lisboa_city_hall:   [60.8, 10.0,  6.2, "Time creates the vibe. Travel creates discoveries."],
-  speed_bump_caution: [68.4, 15.5,  6.2, "Slow down! Come back to life urgently."],
-  crosswalk_caution:  [63.5, 27.0,  5.6, "Intelligent grind needs strategy."],
-  no_entry:           [73.4, 27.6,  5.5, "Access denied to mental bullshit."],
-  no_parking:         [68.5, 37.0,  5.8, "Protect your strategy. Know your enemies."],
-  hospital:           [46.8, 37.0,  3.8, "Healing is a process."],
-  parking:            [46.1, 44.6,  5.2, "Powerful Presence."],
-  Hotel:              [46.0, 55.0,  5.6, "Hard fights lead to hard peace."],
-  dead_end:           [20.4, 51.0,  6.9, "Action without preparation leads nowhere: Just do it."],
-  roundabout:         [32.9, 49.5, 10.2, "The supreme objective now is to appreciate the 360 of now."],
-  left_or_straight:   [56.9, 49.5, 10.2, "Yin / Yang. Feminine / Masculine. Inspiration / Expiration."],
-  no_uturn:           [69.8, 49.7,  8.8, "Never reverse intelligent decisions."],
-  priority:           [15.4, 66.8, 10.1, "Focus on your objectives, not the battles. They come by the way."],
-  crosswalk:          [44.5, 71.0,  8.5, "Step by step is the road to success and the safest way."],
-  stop:               [73.3, 66.0, 11.6, "Yes, stop that sht."],
+  fire_exit:          [23.1,  5.5,  6.5],
+  Heli:               [46.0,  7.4,  5.2],
+  aed:                [70.1,  5.5,  6.5],
+  green_walk:         [33.7,  9.0,  3.8],
+  red_walk:           [33.7, 16.5,  3.8],
+  pharma:             [20.8, 22.5, 10.0],
+  destination:        [40.1,  9.5, 18.5],
+  lisboa_city_hall:   [60.8, 10.0,  6.2],
+  speed_bump_caution: [68.4, 15.5,  6.2],
+  crosswalk_caution:  [63.5, 27.0,  5.6],
+  no_entry:           [73.4, 27.6,  5.5],
+  no_parking:         [68.5, 37.0,  5.8],
+  hospital:           [46.8, 37.0,  3.8],
+  parking:            [46.1, 44.6,  5.2],
+  Hotel:              [46.0, 55.0,  5.6],
+  dead_end:           [20.4, 51.0,  6.9],
+  roundabout:         [32.9, 49.5, 10.2],
+  left_or_straight:   [56.9, 49.5, 10.2],
+  no_uturn:           [69.8, 49.7,  8.8],
+  priority:           [15.4, 66.8, 10.1],
+  crosswalk:          [44.5, 71.0,  8.5],
+  stop:               [73.3, 66.0, 11.6],
 };
 
 /* ═══ DOM ═══ */
@@ -362,14 +344,13 @@ const initBtn   = document.getElementById('initialize');
 const board     = document.getElementById('board');
 const world     = document.getElementById('world');
 const xp        = document.getElementById('xp');
-const punch     = document.getElementById('punch');
 const vidWrap   = document.getElementById('vidWrap');
 const vid       = document.getElementById('vid');
 const xpClose   = document.getElementById('xpClose');
 const xpHigher  = document.getElementById('xpHigher');
 const ps        = document.getElementById('ps');
 
-let busy = false, typeTimer = null, waitTimer = null;
+let busy = false;
 
 
 function launchWorld(){
@@ -420,51 +401,23 @@ for (const [id, [l,t,w]] of Object.entries(SIGNS)){
 function launch(id){
   if (busy) return;
   busy = true;
-
-  const text = SIGNS[id][3];
-
   vid.src = VID_BASE + id + '.mp4';
   vid.load();
   vidWrap.classList.remove('in');
   xpHigher.classList.remove('in');
-  punch.classList.remove('out');
-  punch.innerHTML = '';
-
-  punch.style.left = (8 + Math.random()*34)+'vw';
-  punch.style.top  = (14 + Math.random()*48)+'vh';
-
   world.classList.add('away');
   xp.classList.add('up');
-
-  setTimeout(()=>typewrite(text, ()=>{
-    waitTimer = setTimeout(startVideo, Math.max(1500, text.length*45));
-  }), 620);
-}
-
-function typewrite(text, done){
-  let i = 0;
-  const caret = '<span class="caret"></span>';
-  const tick = ()=>{
-    i++;
-    punch.innerHTML = text.slice(0,i) + caret;
-    if (i < text.length){ typeTimer = setTimeout(tick, 32); }
-    else { punch.innerHTML = text; done(); }
-  };
-  tick();
-}
-
-function startVideo(){
-  punch.classList.add('out');
-  vidWrap.classList.add('in');
-  xpHigher.classList.add('in');
-  vid.play().catch(()=>{ vid.controls = true; });
+  setTimeout(()=>{
+    vidWrap.classList.add('in');
+    xpHigher.classList.add('in');
+    vid.play().catch(()=>{ vid.controls = true; });
+  }, 400);
 }
 
 vid.addEventListener('ended', comeBack);
 xpClose.addEventListener('click', comeBack);
 
 function comeBack(){
-  clearTimeout(typeTimer); clearTimeout(waitTimer);
   vid.pause();
   world.classList.remove('away');
   xp.classList.remove('up');
@@ -472,21 +425,9 @@ function comeBack(){
     vidWrap.classList.remove('in');
     xpHigher.classList.remove('in');
     vid.removeAttribute('src'); vid.load();
-    punch.innerHTML = '';
-    punch.classList.remove('out');
     busy = false;
   }, 600);
 }
-
-xp.addEventListener('click', e=>{
-  if (e.target === xpClose) return;
-  if (xpHigher.contains(e.target)) return;
-  if (busy && !vidWrap.classList.contains('in') && punch.textContent.length){
-    clearTimeout(typeTimer); clearTimeout(waitTimer);
-    punch.innerHTML = '';
-    startVideo();
-  }
-});
 
 /* ═══ SLIDESHOW ═══ */
 (()=>{
