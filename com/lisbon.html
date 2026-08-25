@@ -31,7 +31,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 .rotate .slogan{width:min(26vw,100px)}
 .init-vid{width:min(44vw,180px);height:auto;display:block;background:#000}
 .slideshow{position:relative;width:min(70vw,360px);height:min(70vw,360px);margin:0 auto;flex-shrink:0}
-.sl-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .8s ease}
+.sl-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity 1.2s ease}
 .rotate .sub{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.1em;color:#808080;line-height:1.4}
 .rotate .spinner{width:44px;height:44px;color:var(--coral);animation:spin 3.2s linear infinite;margin-top:14px}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -534,7 +534,8 @@ xp.addEventListener('click', e=>{
 /* ═══ SLIDESHOW ═══ */
 (()=>{
   const srcs = Array.from({length:7}, (_,i) => 'assets/slides/'+(i+1)+'.png');
-  const DUR  = 3200;
+  const DUR  = 5500;
+  const FADE = 1200;
 
   function initSlide(elA, elB){
     let cur = 0, front = elA, back = elB;
@@ -543,10 +544,14 @@ xp.addEventListener('click', e=>{
     function next(){
       cur = (cur + 1) % srcs.length;
       back.src = srcs[cur];
-      back.style.opacity = '1';
-      front.style.opacity = '0';
-      [front, back] = [back, front];
-      setTimeout(next, DUR);
+      const doFade = ()=>{
+        back.style.opacity = '1';
+        front.style.opacity = '0';
+        [front, back] = [back, front];
+        setTimeout(next, DUR);
+      };
+      if(back.complete) doFade();
+      else back.onload = doFade;
     }
     setTimeout(next, DUR);
   }
