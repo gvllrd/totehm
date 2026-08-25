@@ -118,6 +118,8 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   padding:16px 10px 6px;
 }
 
+.intro-tagline{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.1em;color:#808080;line-height:1.4;text-align:center}
+
 /* Body paragraph — .nb-p exact from stoner_method */
 .intro .nb-p{
   font-family:var(--futura-light);font-weight:400;font-size:14px;
@@ -266,7 +268,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 
 <!-- ═══════════ INTRO ═══════════ -->
 <div class="intro" id="intro">
-  <p class="nb-p">This Digital, Neurological and Street Art Performance by <a class="wavy-link" href="https://www.higher.boutique">Wavywah</a> transforms the streets of Lisbon into mental stimulants. Walking is dope for your brain.</p>
+  <div class="intro-tagline">MAKE LISBON STREETS DOPE</div>
 
   <button class="btn-play" id="initialize">Play the Lisbon street</button>
 
@@ -365,22 +367,31 @@ prereqBtn.addEventListener('click', ()=>{
   prereqBtn.setAttribute('aria-expanded', open);
 });
 
-/* ═══ [Initialize] → play sound + reveal controller ═══ */
-initBtn.addEventListener('click', ()=>{
-  /* PlayStation boot sound — user gesture unlocks autoplay policy */
-  try {
-    ps.muted = false;
-    ps.volume = 1;
-    ps.currentTime = 0;
-    const p = ps.play();
-    if (p && typeof p.catch === 'function'){
-      p.catch(err => console.warn('[playstation.mp3] play blocked:', err));
-    }
-  } catch(e){ console.warn('[playstation.mp3] error:', e); }
-
+function launchWorld(){
   intro.classList.add('gone');
   world.classList.add('on');
+}
+
+/* ═══ [Initialize] → play sound + reveal controller ═══ */
+initBtn.addEventListener('click', ()=>{
+  try {
+    ps.muted = false; ps.volume = 1; ps.currentTime = 0;
+    const p = ps.play();
+    if (p && typeof p.catch === 'function') p.catch(e => console.warn(e));
+  } catch(e){ console.warn(e); }
+  launchWorld();
 });
+
+/* ═══ Mobile : rotation portrait → paysage = lancement direct ═══ */
+if(window.matchMedia('(pointer:coarse)').matches){
+  const onRotate = ()=>{
+    if(window.matchMedia('(orientation:landscape)').matches && !world.classList.contains('on')){
+      launchWorld();
+    }
+  };
+  window.addEventListener('orientationchange', onRotate);
+  if(screen.orientation) screen.orientation.addEventListener('change', onRotate);
+}
 
 /* ═══ BUILD BOARD ═══ */
 for (const [id, [l,t,w]] of Object.entries(SIGNS)){
