@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>TOTEHM — International Gallery Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Bebas+Neue&family=Montserrat:ital,wght@1,900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#606060;--bg:#000;
+  --plus:#36498c;
+  --futura-light:'Futura','Jost',sans-serif;--futura-bold:'Futura','Jost',sans-serif;--rhythm:1;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-font-smoothing:antialiased}
+
+/* ── STAGE (manifeste CORE) ── */
+#stage{position:fixed;inset:0;padding:54px 24px 70px;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+.seq-block{position:absolute;width:90%;max-width:540px;text-align:center;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(15px);transition:opacity .65s ease,transform .65s cubic-bezier(.22,.61,.36,1);display:flex;flex-direction:column;align-items:center;gap:calc(15px*var(--rhythm))}
+.seq-block.active{visibility:visible}.seq-block.show{opacity:1;transform:translateY(0);pointer-events:auto}
+.seq-block.instant{transition:none}
+.seq-block.coherence.show .coral-line{animation:settle .9s cubic-bezier(.22,.61,.36,1)}
+@keyframes settle{0%{filter:blur(5px)}100%{filter:blur(0)}}
+.t-futura{font-family:var(--futura-light);font-weight:300;font-size:14px;color:var(--g-light);line-height:1.7;letter-spacing:.02em}
+.t-coral{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:var(--coral);line-height:1.7;letter-spacing:.02em}
+.t-mono{font-family:'Space Mono',monospace;font-weight:400;font-size:11px;color:var(--g-dark);line-height:1.5;letter-spacing:.16em;text-transform:uppercase}
+.t-intent{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;color:#fff;line-height:1.5;letter-spacing:.01em;padding:3px 8px;display:inline-block;background-color:var(--plus)}
+.btn-start{background:none;border:none;padding:0;cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent;display:inline-flex;align-items:center;gap:8px;transition:transform .3s ease}
+.get-text{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:var(--coral);transition:color .3s ease}
+.higher-svg{width:min(28vw,100px);display:inline-block;line-height:0}
+.higher-svg svg{display:block;width:100%;height:auto}
+@media(hover:hover){.btn-start:hover{transform:scale(1.05)}.btn-start:hover .get-text{color:#fff}}
+#vhint{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);font-family:'Space Mono',monospace;font-size:14px;color:var(--g-mid);opacity:.6;transition:opacity .5s ease;pointer-events:none;animation:bob 2.2s ease-in-out infinite}
+#vhint.gone{opacity:0}
+@keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-5px)}}
+@media(max-width:600px){.get-text{font-size:14px}.higher-svg{width:min(32vw,95px)}}
+@media(prefers-reduced-motion:reduce){.seq-block{transition:opacity .3s ease}.seq-block.coherence.show .coral-line{animation:none}#vhint{animation:none}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="higher-slogan" viewBox="0 0 600 200">
+      <defs><mask id="hmask"><rect width="600" height="200" fill="white"/>
+        <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
+        <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
+        <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
+      </mask></defs>
+      <rect width="600" height="200" fill="#333366" mask="url(#hmask)"/>
+      <text x="50%" y="144.42" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-style="italic" font-size="144" fill="#ffffff">Higher</text>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="stage"></div>
+<div id="vhint">&darr;</div>
+
+<script>
+const G=(x)=>({t:"g",x});const C=(x)=>({t:"c",x});const M=(x)=>({t:"m",x});const CTA={t:"cta"};
+const I=(x)=>({t:"i",x});
+
+function coreSlides(){
+  return [
+    {slot:"reframe",parts:[G("Most people think they are just tired."),G("That it was just a bad day.\nThat tomorrow will be different."),C("They are not just losing energy.\nThey are losing years.")]},
+    {slot:"reframe",parts:[G("Not to age.\nNot to disease."),C("To temporal fracture: trapped between mental stagnation and perpetual rush."),G("Presence dissolves.")]},
+    {slot:"inside",parts:[G("To escape, society turns to external fixes."),G("Chemical highs.\nScreen-induced numbness.\nManufactured dopamine."),C("A borrowed state that steals time.")]},
+    {slot:"outside",parts:[G("The high always crashes."),C("The hours never return."),G("What if the real stimulant was already hardwired in your brain?")]},
+    {slot:"fragment",parts:[G("EEG research proves that your perception of time, focus, and reality is dictated by your brainwave frequencies."),G("Your neural architecture already possesses the chemistry."),C("It requires no external substance.\nOnly the right operating code.")]},
+    {slot:"coherence",parts:[G("TOTEHM was engineered to activate it."),G("Conceived by artist Wavywah through advanced neurological and EEG protocols."),C("Each shape, each color, each animation carries an idea, a neurological technique, or both.")]},
+    {slot:"reclaim",parts:[G("The artwork ceases to be mere contemplation."),C("It becomes an active neurological interface."),G("Facing the living artwork, you deploy its visual directives."),C("The more you GET HIGHER, the deeper the artwork imprints.")]},
+    {slot:"reclaim",parts:[G("Until it becomes an automated neural reflex."),C("Where traditional logos speak to the outside world, TOTEHM speaks directly to you."),G("A functional cognitive trigger designed to push you Higher.")]},
+    {slot:"reclaim",parts:[C("Because this is an active technology, it cannot be bought passively."),G("You do not wear the piece until you have mastered the code."),G("Experience the artwork to unlock the collection."),C("In the end, you just feel, see, and act Higher."),G("GET HIGHER."),CTA]}
+  ];
+}
+
+const stage=document.getElementById('stage');
+const vhint=document.getElementById('vhint');
+let SLIDES=[],curSlide=0,isAnimating=false;const FADE=650;
+
+function buildSlide(slide){
+  const block=document.createElement('div');
+  block.className='seq-block'+(slide.slot==='coherence'?' coherence':'');
+  slide.parts.forEach(p=>{
+    if(p.t==='cta'){
+      const btn=document.createElement('button');btn.className='btn-start';btn.setAttribute('aria-label','Get Higher');
+      btn.innerHTML='<span class="get-text">Get</span><span class="higher-svg"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>';
+      btn.onclick=()=>{window.location.href='stoner_method.html';};
+      block.appendChild(btn);
+    }else{
+      const d=document.createElement('div');
+      d.className=p.t==='g'?'t-futura':(p.t==='c'?'t-coral coral-line':(p.t==='i'?'t-intent':'t-mono'));
+      d.innerHTML=(p.x||'').replace(/\n/g,'<br>');
+      block.appendChild(d);
+    }
+  });
+  return block;
+}
+function render(){
+  SLIDES=coreSlides();stage.innerHTML='';
+  SLIDES.forEach(s=>stage.appendChild(buildSlide(s)));
+  curSlide=0;showSlide(0,true);
+}
+function showSlide(i,instant){
+  const blocks=stage.querySelectorAll('.seq-block');
+  blocks.forEach((b,idx)=>{
+    if(idx===i){if(instant)b.classList.add('instant');b.classList.add('active');
+      requestAnimationFrame(()=>{b.classList.add('show');if(instant)requestAnimationFrame(()=>b.classList.remove('instant'));});}
+    else{b.classList.remove('show');setTimeout(()=>b.classList.remove('active'),instant?0:FADE);}
+  });
+  curSlide=i;
+}
+function goToSlide(i){if(isAnimating||i<0||i>=SLIDES.length||i===curSlide)return;isAnimating=true;showSlide(i,false);setTimeout(()=>isAnimating=false,FADE);}
+function next(){goToSlide(curSlide+1);}function prev(){goToSlide(curSlide-1);}
+
+let wheelLock=false;
+window.addEventListener('wheel',e=>{
+  if(wheelLock||Math.abs(e.deltaY)<28)return;
+  wheelLock=true;setTimeout(()=>wheelLock=false,220);
+  hideHint();e.deltaY>0?next():prev();
+},{passive:true});
+
+let y0=0;
+window.addEventListener('touchstart',e=>{y0=e.changedTouches[0].screenY;},{passive:true});
+window.addEventListener('touchend',e=>{
+  const dy=e.changedTouches[0].screenY-y0;
+  if(Math.abs(dy)<40)return;
+  hideHint();dy<0?next():prev();
+},{passive:true});
+
+window.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'){next();hideHint();}
+  else if(e.key==='ArrowUp'){prev();hideHint();}
+});
+
+let hg=false;
+function hideHint(){if(!hg){hg=true;vhint.classList.add('gone');}}
+
+render();
+</script>
+</body>
+</html>
