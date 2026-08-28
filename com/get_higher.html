@@ -60,6 +60,36 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 .line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:none;outline:none;border:6px solid transparent;border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:var(--coral);min-width:260px}
 .line-input::placeholder{color:rgba(255,255,255,.33)}
 
+/* --- TOTEHM PAPER 3D --- */
+.paper-scene{
+  perspective:700px;
+  width:min(45vw,180px);height:min(45vw,180px);
+  cursor:grab;touch-action:none;
+  user-select:none;-webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;
+  margin:0 auto;
+}
+.paper{width:100%;height:100%;position:relative;transform-style:preserve-3d;will-change:transform}
+.paper-front,.paper-back{
+  position:absolute;inset:0;border-radius:4px;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+}
+.paper-front{
+  background:linear-gradient(135deg,#f5f0e8 0%,#ede8da 100%);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 28px rgba(0,0,0,.7),0 1px 4px rgba(0,0,0,.4);
+}
+.paper-front img{
+  width:72%;height:72%;object-fit:contain;display:block;
+  pointer-events:none;user-select:none;-webkit-user-drag:none;
+}
+.paper-back{
+  background:linear-gradient(135deg,#ebe6da 0%,#ddd7cb 100%);
+  transform:rotateY(180deg);
+  box-shadow:0 4px 28px rgba(0,0,0,.7),0 1px 4px rgba(0,0,0,.4);
+}
+@media(prefers-reduced-motion:reduce){.paper{will-change:auto}}
+
 </style>
 </head>
 <body>
@@ -110,7 +140,14 @@ function buildSlide(slide){
     if(p.t==='paywall'){
       block.innerHTML = `
         <div id="totehm-paper" style="margin-bottom:28px;">
-          <img src="totehm_logo.png" alt="TotehmPaper" style="width:180px;display:block;margin:0 auto;opacity:.9;">
+          <div class="paper-scene">
+            <div class="paper">
+              <div class="paper-front">
+                <img src="totehm_logo.png" alt="TotehmPaper" draggable="false">
+              </div>
+              <div class="paper-back"></div>
+            </div>
+          </div>
         </div>
         <button id="btn-buy" class="btn-sig claimed">Buy a TotehmPaper {THP} — $30</button>
         <div class="note dim" style="margin-top:10px;"><a href="stoner_terms.html" target="_blank" style="color:#606060;text-decoration:none;letter-spacing:.1em;">Simple terms of sale</a></div>
@@ -170,6 +207,84 @@ let hg=false;function hideHint(){if(!hg){hg=true;vhint.classList.add('gone');}}
 stage.innerHTML='';
 SLIDES.forEach(s=>stage.appendChild(buildSlide(s)));
 showSlide(0,true);
+initPaper();
+
+function initPaper(){
+  const scene = document.querySelector('.paper-scene');
+  const paper = document.querySelector('.paper');
+  if(!scene || !paper) return;
+
+  let rotX=2, rotY=-4, velX=0, velY=0;
+  let idleT=0, grabbed=false;
+  let startX=0, startY=0, dragRotX=0, dragRotY=0;
+  let hoverX=null, hoverY=null;
+  let lastTs=null;
+
+  function idleXY(t){
+    return {
+      x: Math.sin(t*.7)*3 + Math.cos(t*1.3)*2,
+      y: Math.cos(t*.5)*4 + Math.sin(t*1.1)*3
+    };
+  }
+
+  function normalizeY(a){ return a - Math.round(a/360)*360; }
+
+  function tick(ts){
+    if(!lastTs) lastTs=ts;
+    const dt = Math.min((ts-lastTs)/1000, .05);
+    lastTs=ts;
+    if(!grabbed){
+      idleT += dt*.35;
+      const g = idleXY(idleT);
+      const tx = hoverX !== null ? hoverX : g.x;
+      const ty = hoverY !== null ? hoverY : g.y;
+      const k = hoverX !== null ? 10 : 7, damp = 5.5;
+      velX += ((tx-rotX)*k - velX*damp)*dt;
+      velY += ((ty-rotY)*k - velY*damp)*dt;
+      rotX += velX*dt;
+      rotY += velY*dt;
+    }
+    paper.style.transform = `rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`;
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  scene.addEventListener('mousemove', e=>{
+    if(grabbed) return;
+    const r = scene.getBoundingClientRect();
+    const dx = (e.clientX - r.left - r.width/2) / (r.width/2);
+    const dy = (e.clientY - r.top - r.height/2) / (r.height/2);
+    hoverX = -dy*12; hoverY = dx*12;
+  });
+  scene.addEventListener('mouseleave', ()=>{ hoverX=null; hoverY=null; });
+
+  function grabStart(cx,cy){
+    grabbed=true; startX=cx; startY=cy; dragRotX=rotX; dragRotY=rotY;
+    scene.style.cursor='grabbing';
+  }
+  function grabMove(cx,cy){
+    if(!grabbed) return;
+    rotX = Math.max(-70, Math.min(70, dragRotX-(cy-startY)*.45));
+    rotY = dragRotY+(cx-startX)*.65;
+  }
+  function grabEnd(){
+    if(!grabbed) return;
+    grabbed=false; rotY=normalizeY(rotY); velX=0; velY=0;
+    scene.style.cursor='grab';
+  }
+
+  scene.addEventListener('mousedown', e=>{ grabStart(e.clientX,e.clientY); e.preventDefault(); });
+  window.addEventListener('mousemove', e=>grabMove(e.clientX,e.clientY));
+  window.addEventListener('mouseup', grabEnd);
+
+  scene.addEventListener('touchstart', e=>{
+    const t=e.changedTouches[0]; grabStart(t.clientX,t.clientY);
+  },{passive:true});
+  scene.addEventListener('touchmove', e=>{
+    const t=e.changedTouches[0]; grabMove(t.clientX,t.clientY);
+  },{passive:true});
+  scene.addEventListener('touchend', grabEnd, {passive:true});
+}
 
 async function hasAccess(){
   try{
