@@ -52,6 +52,8 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;-webkit-font-sm
 .get-text{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:var(--coral);transition:color .3s ease}
 .higher-svg{width:min(28vw,100px);display:inline-block;line-height:0}
 .higher-svg svg{display:block;width:100%;height:auto}
+.higher-inline{display:inline-flex;align-items:center;width:70px;height:23px;vertical-align:middle;margin:0 2px;line-height:0;flex-shrink:0}
+.higher-inline svg{width:100%;height:100%;display:block}
 @media(hover:hover){
   .btn-start:hover{transform:scale(1.05)}
   .btn-start:hover .get-text{color:#fff}
@@ -120,8 +122,8 @@ const SLIDES = [
   { parts:[ G("The high always crashes."), C("The hours never return."), G("What if the real stimulant was already hardwired in your brain?") ] },
   { parts:[ G("EEG research proves that your perception of time, focus, and reality is dictated by your brainwave frequencies."), G("Your neural architecture already possesses the chemistry."), C("It requires no external substance.\nOnly the right operating code.") ] },
   { parts:[ G("TOTEHM was engineered to activate it."), G("Conceived by artist Wavywah through advanced neurological and EEG protocols."), C("Each shape, each color, each animation carries an idea, a neurological technique, or both.") ] },
-  { parts:[ G("The artwork ceases to be mere contemplation."), C("It becomes an active neurological interface."), G("Facing the living artwork, you deploy its visual directives."), C("The more you get Higher, the deeper the artwork imprints.") ] },
-  { parts:[ G("Until it becomes an automated neural reflex."), C("Where traditional logos speak to the outside world, TOTEHM speaks directly to you."), G("A functional cognitive trigger designed to push you Higher.") ] },
+  { parts:[ G("The artwork ceases to be mere contemplation."), C("It becomes an active neurological interface."), G("Facing the living artwork, you deploy its visual directives."), C("The more you get <span class='higher-inline'><svg viewBox='0 0 600 200'><use href='#higher-slogan'></use></svg></span>, the deeper the artwork imprints.") ] },
+  { parts:[ G("Until it becomes an automated neural reflex."), C("Where traditional logos speak to the outside world, TOTEHM speaks directly to you."), G("A functional cognitive trigger designed to push you <span class='higher-inline'><svg viewBox='0 0 600 200'><use href='#higher-slogan'></use></svg></span>.") ] },
   { parts:[ C("Because this is an active technology, it cannot be bought passively."), G("You do not wear the piece until you have mastered the code."), G("Experience the artwork to unlock the collection."), CTA ] }
 ];
 
@@ -154,15 +156,15 @@ function formatText(htmlStr, startIdx) {
       }
       return frag;
     } else if (node.nodeType === Node.ELEMENT_NODE) {
-      if (node.tagName === 'BUTTON' || node.classList.contains('no-pace')) { idx += 12; return node; }
+      if (node.tagName === 'BUTTON' || node.classList.contains('no-pace') || node.classList.contains('higher-inline')) { idx += 8; return node; }
       const clone = node.cloneNode(false);
-      node.childNodes.forEach(ch => clone.appendChild(walk(ch)));
+      Array.from(node.childNodes).forEach(ch => clone.appendChild(walk(ch)));
       return clone;
     }
     return node;
   }
   const frag = document.createDocumentFragment();
-  tmp.childNodes.forEach(ch => frag.appendChild(walk(ch)));
+  Array.from(tmp.childNodes).forEach(ch => frag.appendChild(walk(ch)));
   return { frag, nextIdx: idx };
 }
 
