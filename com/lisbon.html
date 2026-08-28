@@ -251,14 +251,14 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   .higher-svg{width:min(32vw,95px)!important}
 }
 
-/* Discover text — mot par mot, gris → blanc, reste blanc */
+/* Discover text — lettre par lettre, gris clair → blanc, reste blanc */
 .t-quantico-pacer{
   font-family:'Quantico',sans-serif;
   font-weight:400;font-size:15px;line-height:1.85;letter-spacing:.03em;
 }
-.read-word{color:rgba(255,255,255,.35);display:inline}
-.seq-block.show .read-word{animation:wordToWhite .42s ease forwards}
-@keyframes wordToWhite{to{color:#fff}}
+.read-char{color:#e0e0e0;display:inline}
+.seq-block.show .read-char{animation:charToWhite .45s ease forwards}
+@keyframes charToWhite{to{color:#fff}}
 .t-mono{
   font-family:'Space Mono',monospace;
   font-weight:400;font-size:11px;color:var(--g-dark);
@@ -296,7 +296,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 /* Progress bar */
 #disc-prog{position:absolute;bottom:0;left:0;height:1px;background:rgba(255,255,255,.45);width:0%;transition:width .5s cubic-bezier(.65,0,.35,1);pointer-events:none}
 
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.read-word{color:#fff}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.read-char{color:#fff}}
 
 </style>
 </head>
@@ -655,30 +655,31 @@ window.addEventListener('touchend', e=>{
 }, {passive:true});
 
 /* ═══ BUILD DISCOVER SLIDES ═══ */
-/* 240 WPM ≈ 250 ms/mot — le blanc progresse au rythme de la lecture */
-const WMS = 250;
-function wrapWords(htmlStr, wi){
+/* 48 ms/lettre ≈ 240 WPM × 5 lettres/mot */
+const CHAR_MS = 48;
+function wrapChars(htmlStr, ci){
   const tmp = document.createElement('div');
   tmp.innerHTML = htmlStr || '';
   function walk(node){
     if(node.nodeType === Node.TEXT_NODE){
       const text = node.textContent;
-      if(!text.trim()) return node;
+      if(!text) return node;
       const frag = document.createDocumentFragment();
-      text.split(/(\s+)/).forEach(tok=>{
-        if(/^\s*$/.test(tok)){ frag.appendChild(document.createTextNode(tok)); }
+      for(let i=0;i<text.length;i++){
+        const ch = text[i];
+        if(ch===' '||ch==='\t'||ch==='\n'){ frag.appendChild(document.createTextNode(ch)); ci.v+=0.8; }
         else{
           const s = document.createElement('span');
-          s.className = 'read-word'; s.textContent = tok;
-          s.style.animationDelay = (wi.v * WMS / 1000).toFixed(3) + 's';
-          wi.v++; frag.appendChild(s);
+          s.className = 'read-char'; s.textContent = ch;
+          s.style.animationDelay = (ci.v * CHAR_MS / 1000).toFixed(3) + 's';
+          ci.v++; frag.appendChild(s);
         }
-      });
+      }
       return frag;
     } else if(node.nodeType === Node.ELEMENT_NODE){
       if(node.classList.contains('btn-start') || node.tagName === 'BUTTON' ||
          node.classList.contains('higher-inline')){
-        wi.v += Math.max(1, node.textContent.trim().split(/\s+/).length);
+        ci.v += node.classList.contains('higher-inline') ? 8 : node.textContent.length;
         return node;
       }
       const clone = node.cloneNode(false);
@@ -700,7 +701,7 @@ function buildSlide(slide){
     img.className = 'disc-img'; img.src = slide.img; img.alt=''; img.loading='eager';
     block.appendChild(img);
   }
-  const wi = {v:0};
+  const ci = {v:0};
   slide.parts.forEach(p=>{
     if(p.t==='cta'){
       const btn = document.createElement('button');
@@ -712,12 +713,12 @@ function buildSlide(slide){
     }else if(p.t==='m'){
       const d = document.createElement('div');
       d.className = 't-mono'; d.innerHTML = p.x||'';
-      wi.v += Math.max(1, (p.x||'').replace(/<[^>]+>/g,' ').trim().split(/\s+/).length);
+      ci.v += (p.x||'').replace(/<[^>]+>/g,'').length;
       block.appendChild(d);
     }else{
       const d = document.createElement('div');
       d.className = 't-quantico-pacer';
-      d.appendChild(wrapWords(p.x||'', wi));
+      d.appendChild(wrapChars(p.x||'', ci));
       block.appendChild(d);
     }
   });
