@@ -90,6 +90,31 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 }
 @media(prefers-reduced-motion:reduce){.paper{will-change:auto}}
 
+/* --- GLASS BOX --- */
+.glass-box{
+  position:relative;
+  padding:28px;
+  border-radius:12px;
+  background:rgba(255,255,255,.025);
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.2),
+    inset 1px 0 0 rgba(255,255,255,.08),
+    inset -1px 0 0 rgba(255,255,255,.04),
+    inset 0 -1px 0 rgba(255,255,255,.04),
+    0 16px 48px rgba(0,0,0,.75),
+    0 2px 8px rgba(0,0,0,.5);
+}
+.glass-box::before{
+  content:'';position:absolute;inset:0;border-radius:12px;
+  background:linear-gradient(135deg,
+    rgba(255,255,255,.1) 0%,
+    rgba(255,255,255,.03) 30%,
+    transparent 60%
+  );
+  pointer-events:none;z-index:1;
+}
+
 </style>
 </head>
 <body>
@@ -140,12 +165,14 @@ function buildSlide(slide){
     if(p.t==='paywall'){
       block.innerHTML = `
         <div id="totehm-paper" style="margin-bottom:28px;">
-          <div class="paper-scene">
-            <div class="paper">
-              <div class="paper-front">
-                <img src="assets/img/totehm_logo.png" alt="TotehmPaper" draggable="false">
+          <div class="glass-box">
+            <div class="paper-scene">
+              <div class="paper">
+                <div class="paper-front">
+                  <img src="assets/img/totehm_logo.png" alt="TotehmPaper" draggable="false">
+                </div>
+                <div class="paper-back"></div>
               </div>
-              <div class="paper-back"></div>
             </div>
           </div>
         </div>
