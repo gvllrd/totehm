@@ -5,7 +5,7 @@
     {
       "source": "/",
       "has": [{ "type": "cookie", "key": "totehm_geo", "value": "lisbon" }],
-      "destination": "/lisbon.html"
+      "destination": "/discover_lisbon.html"
     },
     {
       "source": "/",
@@ -15,11 +15,11 @@
     {
       "source": "/",
       "has": [{ "type": "header", "key": "x-vercel-ip-country", "value": "PT" }],
-      "destination": "/lisbon.html"
+      "destination": "/discover_lisbon.html"
     },
     { "source": "/", "destination": "/get_higher.html" },
 
-    { "source": "/lisbon", "destination": "/lisbon.html" },
+    { "source": "/lisbon", "destination": "/discover_lisbon.html" },
     { "source": "/global", "destination": "/get_higher.html" }
   ],
   "headers": [
