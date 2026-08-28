@@ -233,6 +233,7 @@ body.higher a.higher-only,body.higher .higher-only.btn-sig{display:inline-block!
 .fm-def{font-family:'Quantico',sans-serif;font-size:13px;color:rgba(255,255,255,.78);line-height:1.45;max-width:260px;margin-top:7px;min-height:0}
 .fm-def:empty{display:none}
 .fp-card{background:#131316;border:1px solid #242429;width:100%;max-width:380px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px}
+.fp-q{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);text-align:center}
 #fp-input{background:none;border:none;border-bottom:1px solid rgba(255,255,255,.18);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;padding:4px 2px;text-align:center;caret-color:#fff}
 #fp-input::placeholder{color:rgba(255,255,255,.3);font-size:12px;font-style:normal}
 #fp-preview{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:rgba(255,255,255,.65);min-height:22px;text-align:center;background:none;border:none;padding:2px 8px;cursor:pointer;transition:color .15s,background .15s;-webkit-tap-highlight-color:transparent}
@@ -1025,6 +1026,7 @@ body.gate.entered #gw-row2{opacity:0;pointer-events:none}
     <input id="fp-input" placeholder="type it — any language" autocomplete="off" spellcheck="false">
     <button id="fp-preview" type="button"></button>
     <div id="fp-list"></div>
+    <div class="fp-q hide" id="fp-q">What's your intention here?</div>
     <div id="fp-ints" class="hide"></div>
     <button class="fp-skip hide" id="fp-skip">no intention yet</button>
   </div>
@@ -1756,6 +1758,7 @@ function showFpStage(stage){
   $('fp-input').classList.toggle('hide',isInt);
   $('fp-preview').classList.toggle('hide',isInt);
   $('fp-list').classList.toggle('hide',isInt);
+  $('fp-q').classList.toggle('hide',!isInt);
   $('fp-ints').classList.toggle('hide',!isInt);
   $('fp-skip').classList.toggle('hide',!isInt);
   if(isInt){renderFpInts(currentIntOfTarget());}
@@ -1835,7 +1838,7 @@ function openFilterModal(){
 }
 function closeFilterModal(){$('filter-modal').classList.add('hide');}
 $('bigT').style.cursor='pointer';
-$('bigT').onclick=()=>openFilterModal();
+$('bigT').onclick=()=>openFreqPanel('filter','int');
 $('filter-arrow').onclick=()=>openFilterModal();
 /* TOTEHM.png cliquable : ouvre le Dashboard, comme la petite flèche du bas */
 $('wordmark').style.cursor='pointer';

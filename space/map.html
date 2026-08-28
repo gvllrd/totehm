@@ -60,6 +60,20 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
 /* Sur le radar, les fenêtres se posent sur un voile — le monde reste
    deviné derrière, on n'a pas quitté la carte. */
 #info{background:rgba(0,0,0,.88);align-items:center;justify-content:center;z-index:70}
+/* La sélection d'intention dans une carte centrée — même système gris que book.html */
+#step{align-items:center;justify-content:center;padding:22px}
+.pk-card{background:#131316;border:1px solid #242429;width:100%;max-width:380px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px;max-height:86vh}
+.pk-q{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);text-align:center}
+.pk-int{display:flex;flex-direction:column;gap:4px;background:none;border:none;padding:4px 0;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
+@media(hover:hover){.pk-int:hover{opacity:.75}}
+.pk-int-r1{display:flex;align-items:center;gap:8px}
+.pk-int .tglyph{height:15px;width:auto;flex-shrink:0}
+.pk-int .nm{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px}
+.pk-int .df{font-family:var(--futura);font-weight:300;font-size:12px;color:#c4c4c4;line-height:1.5;padding-left:22px}
+.pk-int.on .nm{text-decoration:underline}
+.pk-int.cold{opacity:.34}
+.pk-int.cold .df{color:var(--lo)}
+.pk-int.loading{opacity:.3;pointer-events:none}
 
 /* La question « What's your intention right now, right here? » a été retirée :
    sept intentions nommées et définies n'ont pas besoin qu'on demande.
@@ -76,9 +90,8 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
 
 /* `justify-content:flex-start` et non `center` : les sept lignes remplissent
    la hauteur au lieu de flotter au milieu d'un écran vide. */
-#s-list{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;
-  -webkit-overflow-scrolling:touch;display:flex;flex-direction:column;
-  justify-content:flex-start;gap:0;margin:6px auto;max-width:560px;width:100%}
+#s-list{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  display:flex;flex-direction:column;gap:12px;padding-right:4px;max-height:60vh}
 /* TOUT est centré : le T, le nom, la définition, les traces. Une colonne,
    un axe. Le liseré de gauche disparaît — il tirait l'œil hors de l'axe. */
 .s-int{display:flex;flex-direction:column;align-items:center;gap:0;
@@ -395,9 +408,8 @@ body.in-world.view-cards #zoom{display:none}
    elle-même : un nouveau bloc gris entre ici tout seul.        */
 @media(hover:hover){
 .s-sub:hover,
-.s-int-def:hover,
-.s-int-ntag:hover,
-.s-int.cold .s-int-def:hover,
+.pk-int .df:hover,
+.pk-int.cold .df:hover,
 #s-note:hover,
 .s-exit:hover,
 #count:hover,
@@ -483,10 +495,13 @@ body.in-world.view-cards #zoom{display:none}
 
 <!-- ÉTAPE 1 · LES SEPT INTENTIONS -->
 <div id="step" class="sheet show" role="dialog" aria-label="Choose an intention">
-  <div class="s-sub" id="s-geo" aria-live="polite"></div>
-  <div id="s-list"></div>
-  <div id="s-note"></div>
-  <a class="s-exit" href="totehm.html">My Totehm</a>
+  <div class="pk-card">
+    <div class="pk-q">What's your intention right now?</div>
+    <div class="s-sub" id="s-geo" aria-live="polite"></div>
+    <div id="s-list"></div>
+    <div id="s-note"></div>
+    <a class="s-exit" href="totehm.html">My Totehm</a>
+  </div>
 </div>
 
 <!-- LA PORTE : sans compte, choisir une intention ouvre ceci -->
@@ -1272,27 +1287,21 @@ function buildSelector(){
     const cold=mine.length>0&&mine.indexOf(x.id)===-1;
     const b=document.createElement('button');
     b.type='button';
-    b.className='s-int'+(cold?' cold':'')+(RAD.intention===x.id?' on':'');
+    b.className='pk-int'+(cold?' cold':'')+(RAD.intention===x.id?' on':'');
     b.dataset.int=x.id;
-    b.style.color=x.color;
-    /* Plus de <span> enveloppant : chaque élément est un enfant direct du
-       bouton, donc chacun s'aligne sur l'axe central de la colonne. */
-    b.innerHTML=tGlyph(17)
-      +'<span class="s-int-name" style="color:'+x.color+'">'+esc(x.name)+'</span>'
-      +'<span class="s-int-def">'+esc(x.def)+'</span>'
-      +(x.neuro?'<span class="s-int-neuro">'
-        +x.neuro.split(' · ').map(t=>'<span class="s-int-ntag">'+esc(t)+'</span>').join('')
-        +'</span>':'');
+    b.innerHTML='<span class="pk-int-r1"><span style="color:'+x.color+'">'
+      +tGlyph(15)+'</span><span class="nm" style="color:'+x.color+'">'+esc(x.name)+'</span></span>'
+      +'<span class="df">'+esc(x.def)+'</span>';
     b.onclick=()=>pick(x.id);
     box.appendChild(b);
   });
 }
 function markLoading(id,on){
-  document.querySelectorAll('.s-int').forEach(el=>
+  document.querySelectorAll('.pk-int').forEach(el=>
     el.classList.toggle('loading',on&&el.dataset.int===id));
 }
 function markActive(id){
-  document.querySelectorAll('.s-int').forEach(el=>
+  document.querySelectorAll('.pk-int').forEach(el=>
     el.classList.toggle('on',el.dataset.int===id));
 }
 
