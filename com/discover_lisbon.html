@@ -685,7 +685,7 @@ function wrapChars(htmlStr, ci){
     return node;
   }
   const frag = document.createDocumentFragment();
-  tmp.childNodes.forEach(ch => frag.appendChild(walk(ch)));
+  Array.from(tmp.childNodes).forEach(ch => frag.appendChild(walk(ch)));
   return frag;
 }
 
