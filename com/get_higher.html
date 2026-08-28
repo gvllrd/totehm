@@ -110,15 +110,7 @@ const sb = createClient(SB_URL, SB_ANON);
 
 const G=(x)=>({t:"g",x});const C=(x)=>({t:"c",x});const M=(x)=>({t:"m",x});
 
-/* MANIFESTE CORE — version générique, fin modifiée avec le Paywall Golden Ratio */
 const SLIDES=[
-  {slot:"reframe",parts:[G("Most people think they're just losing energy."),G("That it was just a bad day.\nThat tomorrow will be better."),C("They're losing years.")]},
-  {slot:"reframe",parts:[G("Not to disease.\nNot to age.\nNot to genetics."),C("To internal stress\nand external stimulation.")]},
-  {slot:"inside",parts:[C("Inside."),G("Anxiety.\nPressure.\nNegativity.\nOverthinking."),C("Excess cortisol."),G("Time becomes heavy.\nDense.\nSlow.")]},
-  {slot:"outside",parts:[C("Outside."),G("Notifications.\nScrolling.\nInstant rewards."),C("Dopamine traps."),G("Time feels infinite.")]},
-  {slot:"fragment",parts:[G("Stress makes the present unbearable.\nStimulation keeps the future perpetually ahead."),G("But neither allows temporal coherence."),G("Scattered attention.\nScattered brainwaves."),C("Scattered reality.")]},
-  {slot:"coherence",parts:[G("When time becomes coherent :"),G("Deep focus lasts.\nDecisions sharpen.\nActions align.\nPerformance follows."),C("Reality becomes the trip you live.")]},
-  {slot:"reclaim",parts:[G("The most valuable resource on Earth\nisn't money.\nIt isn't status.\nIt isn't power."),C("It's time."),G("Stress and external stimulation\nspend it for you."),G("Take it back."),M("Achieve your objectives faster by taking your time")]},
   {slot:"paywall",parts:[{t:"paywall"}]},
   {slot:"mail",parts:[{t:"mail"}]},
   {slot:"code",parts:[{t:"code"}]}
@@ -192,9 +184,7 @@ function showSlide(i,instant){
   });
   curSlide=i;
   
-  if (curSlide >= 7) {
-     hideHint();
-  }
+  hideHint();
 }
 
 function goToSlide(i){if(isAnimating||i<0||i>=SLIDES.length||i===curSlide)return;isAnimating=true;showSlide(i,false);setTimeout(()=>isAnimating=false,FADE);}
@@ -202,11 +192,8 @@ function next(){goToSlide(curSlide+1);}
 function prev(){goToSlide(curSlide-1);}
 
 let wheelLock=false;
-window.addEventListener('wheel',e=>{if(wheelLock||Math.abs(e.deltaY)<28 || curSlide >= 7)return;wheelLock=true;setTimeout(()=>wheelLock=false,180);hideHint();e.deltaY>0?next():prev();},{passive:true});
 let y0=0;
 window.addEventListener('touchstart',e=>{y0=e.changedTouches[0].screenY;},{passive:true});
-window.addEventListener('touchend',e=>{if(curSlide >= 7) return; const dy=e.changedTouches[0].screenY-y0;if(Math.abs(dy)<40)return;hideHint();dy<0?next():prev();},{passive:true});
-window.addEventListener('keydown',e=>{if(curSlide >= 7) return; if(e.key==='ArrowDown'){next();hideHint();}else if(e.key==='ArrowUp'){prev();hideHint();}});
 let hg=false;function hideHint(){if(!hg){hg=true;vhint.classList.add('gone');}}
 
 /* build + start */
@@ -348,7 +335,7 @@ async function toStripe(){
   const err = document.getElementById('err-code');
   try{
     const { data:{ session } } = await sb.auth.getSession();
-    if(!session){ goToSlide(8); return; } // Slide Mail
+    if(!session){ goToSlide(1); return; } // Slide Mail
     const r = await fetch(PAY_FN, {
       method:'POST',
       headers:{ 'Authorization':'Bearer '+session.access_token,
@@ -379,7 +366,7 @@ document.addEventListener('click', async (ev) => {
   if(!t) return;
   const { data:{ session } } = await sb.auth.getSession();
   if(session?.user?.email){ toStripe(); return; }
-  goToSlide(8);
+  goToSlide(1);
   setTimeout(()=>{ const el=document.getElementById('in-email'); if(el) el.focus(); },50);
 });
 
@@ -390,7 +377,7 @@ setTimeout(() => {
     btnBuyLegacy.addEventListener('click',async()=>{
       const { data:{ session } } = await sb.auth.getSession();
       if(session?.user?.email){ toStripe(); return; }
-      goToSlide(8); // Slide Mail
+      goToSlide(1); // Slide Mail
       setTimeout(()=>document.getElementById('in-email').focus(),50);
     });
   }
@@ -405,7 +392,7 @@ setTimeout(() => {
       const { error } = await sb.auth.signInWithOtp({ email, options:{ shouldCreateUser:true }});
       btnSend.disabled=false; btnSend.textContent='Send code';
       if(error){ err.textContent='Could not send. Try again.'; return; }
-      goToSlide(9); // Slide Code
+      goToSlide(2); // Slide Code
       setTimeout(()=>document.getElementById('in-otp').focus(),50);
     });
   }
@@ -427,10 +414,10 @@ setTimeout(() => {
   }
 
   const btnBackToSell = document.getElementById('btn-back-to-sell');
-  if(btnBackToSell) btnBackToSell.addEventListener('click', () => goToSlide(7));
+  if(btnBackToSell) btnBackToSell.addEventListener('click', () => goToSlide(0));
 
   const btnBackToMail = document.getElementById('btn-back-to-mail');
-  if(btnBackToMail) btnBackToMail.addEventListener('click', () => goToSlide(8));
+  if(btnBackToMail) btnBackToMail.addEventListener('click', () => goToSlide(1));
 
   const inEmail = document.getElementById('in-email');
   if(inEmail) inEmail.addEventListener('keydown',e=>{ if(e.key==='Enter') btnSend.click(); });
