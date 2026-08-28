@@ -7,81 +7,103 @@
 <title>Make The Streets Of Lisbon Sublime For Your Brain© — TOTEHM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Bebas+Neue&family=Montserrat:ital,wght@1,900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Bebas+Neue&family=Montserrat:ital,wght@1,900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* ═══ TOKENS — exact stoner_method.html ═══ */
+
+/* ═══ TOKENS ═══ */
 :root{
   --coral:#fbd5ca;--higher-bg:#333366;
-  --plus:#36498c;--minus:#743169;
+  --plus:#36498c;--minus:#743169;--love:#639922;
+  --obj-blue:#7fa3e8;
+  --hab-navy:#333366;
+  --g-dim:#8e8e98;--g-mid:#909090;--g-dark:#606060;
   --futura-light:'Futura','Jost',sans-serif;
-  --futura-bold:'Futura','Jost',sans-serif;
-  --tile-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23743169'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-blue:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
 }
+
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Futura','Jost',sans-serif;font-weight:300}
 
-/* ═══════════ LAYER 1 : ROTATE (mobile portrait only) ═══════════ */
+/* ═══ KEYWORD UNDERLINES ═══ */
+.kw-obj{
+  text-decoration:underline;
+  text-decoration-color:var(--obj-blue);
+  text-underline-offset:3px;
+  text-decoration-thickness:1.5px;
+}
+.kw-mis{
+  background-image:linear-gradient(90deg,var(--minus),var(--love));
+  background-repeat:no-repeat;
+  background-size:100% 2px;
+  background-position:0 100%;
+  padding-bottom:2px;
+}
+.kw-hab{
+  text-decoration:underline;
+  text-decoration-color:var(--hab-navy);
+  text-underline-offset:3px;
+  text-decoration-thickness:1.5px;
+}
+.kw-h{color:#fff;font-weight:700}
+
+/* ═══ INLINE HIGHER BADGE ═══ */
+.higher-inline{
+  display:inline-flex;align-items:center;
+  width:88px;height:29px;
+  vertical-align:middle;margin:0 3px;
+  line-height:0;flex-shrink:0;
+}
+.higher-inline svg{width:100%;height:100%;display:block}
+
+/* ═══ LAYER 1 : ROTATE (mobile portrait only) ═══ */
 .rotate{
   position:fixed;inset:0;z-index:100;background:#000;
   display:none;flex-direction:column;align-items:center;justify-content:center;
-  gap:7px;padding:12px 16px;text-align:center;overflow-y:auto;
+  gap:10px;padding:14px 16px;text-align:center;overflow-y:auto;
 }
 @media (orientation:portrait) and (pointer:coarse){.rotate{display:flex}}
-.rotate .slogan{width:min(26vw,100px)}
 .init-vid{width:min(44vw,180px);height:auto;display:block;background:#000}
-.slideshow{position:relative;width:min(68vw,320px);height:min(68vw,320px);margin:-4px auto 0;flex-shrink:0}
-.sl-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity 1.2s ease}
-.rotate .sub{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.1em;color:#808080;line-height:1.4}
-.rotate .spinner{width:58px;height:58px;color:var(--coral);animation:spin 3.2s linear infinite}
+.rotate .spinner{width:52px;height:52px;color:var(--coral);animation:spin 3.2s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 .rotate .hint{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--coral);line-height:1.6;letter-spacing:.02em}
-/* Where Street Art btn — exactement #ctx-down de totehm.html */
-.where-btn{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;-webkit-tap-highlight-color:transparent;margin-top:4px}
-.ctx-label{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:#b0b0b0;transition:color .15s ease}
-.chev{width:22px;height:22px;color:#909090;transition:color .15s ease}
+.where-btn{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;-webkit-tap-highlight-color:transparent}
+.ctx-label{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:#b0b0b0;transition:color .15s ease;line-height:1.5}
+.chev{width:22px;height:22px;color:#909090;transition:color .15s ease;flex-shrink:0}
 @keyframes ctx-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
 .bob{animation:ctx-bob 1.8s ease-in-out infinite}
 @media(hover:hover){.where-btn:hover .ctx-label,.where-btn:hover .chev{color:#fff}}
-.rot-prereq-content{width:100%;max-width:440px;max-height:0;overflow:hidden;transition:max-height .4s ease;opacity:0}
-.rot-prereq-content.open{max-height:400px;opacity:1;overflow:visible;transition:max-height .5s ease,opacity .4s ease .1s}
-.rotate .credit{position:absolute;bottom:22px;left:0;right:0;font-family:var(--futura-light);font-weight:300;font-size:12.5px;color:#b5b5c2;font-style:italic;padding:0 20px;line-height:1.45}
-.rotate .credit b{color:var(--coral);font-weight:700;font-style:normal}
 
-/* ═══════════ LAYER 2 : INTRO ═══════════ */
+.streets-tagline{display:flex;flex-direction:column;align-items:center;gap:4px}
+.streets-text{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.1em;color:#808080;line-height:1.2}
+.streets-higher{width:min(28vw,100px);display:block}
+
+/* ═══ LAYER 2 : INTRO ═══ */
 .intro{
   position:fixed;inset:0;z-index:90;background:#000;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:14px;padding:24px;text-align:center;
-  transition:opacity .5s ease;overflow-y:auto;
+  gap:18px;padding:24px;text-align:center;
+  transition:opacity .5s ease;
 }
 .intro.gone{opacity:0;pointer-events:none}
 @media (orientation:portrait) and (pointer:coarse){.intro{visibility:hidden}}
-.intro h1{
-  font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;
-  color:var(--coral);line-height:1.7;letter-spacing:.02em;
-  text-transform:uppercase;max-width:560px;
-}
-/* ═══════════ Boutons — format unifié (réf. space/totehm.html .btn-sig) ═══════════ */
+
+/* ═══ BUTTONS (unified) ═══ */
 .neuro-link,.get-higher,.grind-link,.btn-play,.xp-higher,.xp .close{
   font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;
   color:#b0b0b0;background:none;border:6px solid transparent;
   padding:0 4px;line-height:1.5;cursor:pointer;
   -webkit-tap-highlight-color:transparent;transition:color .15s ease;
 }
-/* exceptions structurelles */
 .neuro-link{display:inline-block}
 .get-higher{display:inline-flex;align-items:center;gap:6px;text-decoration:none}
 .grind-link{display:inline-block;text-decoration:none}
-.btn-play{font-weight:700;margin-top:22px;display:inline-block}
+.btn-play{font-weight:700;display:inline-block}
 
-/* "Get" en coral */
 .get-word{color:var(--coral)}
 .xp-higher{
   display:inline-flex;flex-direction:column;align-items:center;gap:8px;
   text-decoration:none;opacity:0;pointer-events:none;
-  transition:opacity .4s ease,color .15s ease;
-  flex-shrink:0;
+  transition:opacity .4s ease,color .15s ease;flex-shrink:0;
 }
 .xp-higher.in{opacity:1;pointer-events:auto}
 .xp-higher .get-word{color:var(--coral);font-weight:700;font-size:15px}
@@ -89,7 +111,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 .xp-higher .to-get{font-size:13px;color:#b0b0b0}
 .xp .close{position:fixed;top:14px;left:14px;z-index:200}
 
-/* hover desktop */
 @media(hover:hover){
   .neuro-link:hover,.get-higher:hover,.grind-link:hover,
   .btn-play:hover,.xp-higher:hover,.xp .close:hover{
@@ -99,7 +120,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   }
   .btn-play:hover{color:var(--coral);filter:brightness(1.2)}
 }
-/* active mobile + desktop */
 .neuro-link:active,.get-higher:active,.grind-link:active,
 .btn-play:active,.xp-higher:active,.xp .close:active{
   color:#fff;
@@ -112,49 +132,10 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   border-image-source:var(--tile-blue);
   border-image-slice:6 fill;border-image-repeat:round;
 }
-.get-higher .higher-inline{display:inline-flex;align-items:center;width:60px;vertical-align:middle;line-height:0}
-.xp-higher .higher-inline{display:inline-flex;align-items:center;width:120px;vertical-align:middle;line-height:0}
+.get-higher .higher-inline{width:60px}
+.xp-higher .higher-inline{width:120px}
 
-#prereq-content{
-  width:100%;max-width:440px;max-height:0;overflow:hidden;
-  transition:max-height .4s ease;opacity:0;
-}
-#prereq-content.open{
-  max-height:600px;opacity:1;overflow:visible;
-  transition:max-height .5s ease,opacity .4s ease .1s;
-}
-.prereq-block{
-  display:flex;flex-direction:column;align-items:center;gap:12px;
-  padding:16px 10px 6px;
-}
-
-.streets-tagline{display:flex;flex-direction:column;align-items:center;gap:4px}
-.streets-text{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.1em;color:#808080;line-height:1.2}
-.streets-higher{width:min(28vw,100px);display:block}
-
-/* Body paragraph — .nb-p exact from stoner_method */
-.intro .nb-p{
-  font-family:var(--futura-light);font-weight:400;font-size:14px;
-  color:#e0e0e0;line-height:1.55;letter-spacing:.02em;
-  max-width:460px;margin:0;
-}
-.intro .nb-p .wavy{color:var(--coral)}
-/* [Wavywah] — quantico coral link */
-.wavy-link{
-  font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
-  color:var(--coral);text-decoration:none;letter-spacing:.02em;
-  transition:filter .2s ease;
-}
-.wavy-link:hover{filter:brightness(1.15)}
-/* Italic note — .nb-src exact from stoner_method */
-.intro .nb-src{
-  font-family:var(--futura-light);font-weight:300;font-size:12.5px;
-  color:#b5b5c2;font-style:italic;line-height:1.45;letter-spacing:.01em;
-  max-width:420px;margin:0;
-}
-
-
-/* ═══════════ LAYER 3 : CONTROLLER BOARD ═══════════ */
+/* ═══ LAYER 3 : CONTROLLER BOARD ═══ */
 .world{
   position:fixed;inset:0;
   display:flex;align-items:center;justify-content:center;background:#000;
@@ -167,9 +148,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   position:relative;
   width:min(100vw,calc(100vh * 1.7778));
   height:min(100vh,calc(100vw / 1.7778));
-  /* background:url('assets/img/background_lisbon.png') center/contain no-repeat; */
 }
-/* Desktop only: shrink the whole controller (image + signs scale together) */
 @media (hover:hover) and (min-width:900px){
   .board{
     width:min(66vw,calc(66vh * 1.7778));
@@ -188,11 +167,26 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 .sign-spin img{animation:sign-spin 18s linear infinite}
 @keyframes sign-spin{to{transform:rotate(360deg)}}
 
-/* ═══════════ LAYER 4 : EXPERIENCE (from TOP — inverted) ═══════════ */
+/* ═══ DISCOVER TRIGGER (fixed bottom, visible when world.on) ═══ */
+#discTrigger{
+  position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+  z-index:44;display:flex;flex-direction:column;align-items:center;gap:6px;
+  opacity:0;pointer-events:none;transition:opacity .35s ease;
+  text-align:center;white-space:nowrap;
+}
+#discTrigger.visible{opacity:1;pointer-events:auto}
+.disc-btn-label{
+  font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;
+  color:#b0b0b0;background:none;border:none;cursor:pointer;
+  padding:0;letter-spacing:.02em;line-height:1.5;transition:color .15s;
+}
+@media(hover:hover){.disc-btn-label:hover{color:#fff}}
+@media(pointer:coarse){.disc-btn-label{display:none!important}}
+
+/* ═══ LAYER 4 : EXPERIENCE (from TOP) ═══ */
 .xp{
   position:fixed;left:0;right:0;height:100%;top:-100%;z-index:50;background:#000;
-  pointer-events:none;
-  transition:top .55s cubic-bezier(.65,0,.35,1);
+  pointer-events:none;transition:top .55s cubic-bezier(.65,0,.35,1);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:4vh 0;
 }
@@ -206,14 +200,122 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 .vid-wrap.in{opacity:1}
 .xp video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
 
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ═══ LAYER 5 : DISCOVER OVERLAY ═══ */
+.discover{
+  position:fixed;inset:0;z-index:105;background:#000;
+  transform:translateY(100%);
+  transition:transform .55s cubic-bezier(.65,0,.35,1);
+  pointer-events:none;
+}
+.discover.in{transform:translateY(0);pointer-events:auto}
+
+#disc-stage{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+}
+
+.seq-block{
+  position:absolute;
+  width:90%;max-width:580px;
+  text-align:center;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transform:translateY(14px);
+  transition:opacity .65s ease,transform .65s cubic-bezier(.22,.61,.36,1);
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+}
+.seq-block.active{visibility:visible}
+.seq-block.show{opacity:1;transform:translateY(0);pointer-events:auto}
+.seq-block.instant{transition:none}
+
+/* Images — heavy edge darkening to merge with black background */
+.disc-img{
+  width:min(82vw,440px);
+  max-height:38vh;
+  object-fit:contain;
+  display:block;
+  margin-bottom:6px;
+  -webkit-mask-image:radial-gradient(ellipse at center,black 38%,transparent 80%);
+  mask-image:radial-gradient(ellipse at center,black 38%,transparent 80%);
+}
+/* Landscape mobile: no images */
+@media(pointer:coarse) and (orientation:landscape){
+  .disc-img{display:none!important}
+}
+@media(orientation:landscape) and (max-height:520px){
+  .seq-block{gap:10px;max-width:680px}
+  #disc-stage{padding:0 20px}
+}
+@media(max-width:600px){
+  .t-quantico-pacer{font-size:14px}
+  .get-text{font-size:14px}
+  .higher-svg{width:min(32vw,95px)!important}
+}
+
+/* Discover text */
+.t-quantico-pacer{
+  font-family:'Quantico',sans-serif;
+  font-weight:400;font-size:15px;line-height:1.85;letter-spacing:.03em;
+}
+.read-char{color:var(--g-dim);display:inline;will-change:color,text-shadow}
+.seq-block.show .read-char{
+  animation:fillSmooth .55s cubic-bezier(.25,.1,.25,1) forwards;
+}
+@keyframes fillSmooth{
+  0%{color:var(--g-dim);text-shadow:none}
+  50%{color:#fff;text-shadow:0 0 8px rgba(255,255,255,.55)}
+  100%{color:#e0e0e0;text-shadow:0 0 1px rgba(255,255,255,.15)}
+}
+.t-mono{
+  font-family:'Space Mono',monospace;
+  font-weight:400;font-size:11px;color:var(--g-dark);
+  line-height:1.5;letter-spacing:.16em;text-transform:uppercase;
+}
+
+/* GET button in discover */
+.btn-start{
+  background:none;border:none;padding:0;cursor:pointer;outline:none;
+  -webkit-tap-highlight-color:transparent;
+  display:inline-flex;align-items:center;gap:8px;
+  transition:transform .3s ease;
+}
+.get-text{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:var(--coral)}
+.higher-svg{width:min(28vw,100px);display:inline-block;line-height:0}
+.higher-svg svg{display:block;width:100%;height:auto}
+@media(hover:hover){
+  .btn-start:hover{transform:scale(1.05)}
+  .btn-start:hover .get-text{color:#fff}
+}
+
+/* Discover down-hint */
+#disc-hint{
+  position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+  font-family:'Space Mono',monospace;font-size:14px;
+  color:var(--g-mid);opacity:.6;
+  pointer-events:none;animation:disc-bob 2.2s ease-in-out infinite;
+  transition:opacity .5s;
+}
+#disc-hint.gone{opacity:0}
+@keyframes disc-bob{
+  0%,100%{transform:translate(-50%,0)}
+  50%{transform:translate(-50%,-5px)}
+}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
 </style>
 </head>
 <body>
 
-<!-- Official Higher slogan — single source, reused via <use> -->
-<svg width="0" height="0" style="position:absolute">
+<!-- ═══ SVG DEFS ═══ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
+    <!-- T glyph — proportions from T.svg -->
+    <symbol id="t-glyph" viewBox="0 0 60 80">
+      <rect x="0" y="0" width="60" height="11" fill="currentColor"/>
+      <rect x="26" y="0" width="9" height="79" fill="currentColor"/>
+      <rect x="18" y="74" width="24" height="6" fill="currentColor"/>
+    </symbol>
+
     <mask id="higher-holes">
       <rect width="600" height="200" fill="white"/>
       <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
@@ -248,48 +350,54 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   </defs>
 </svg>
 
-<!-- ═══════════ ROTATE ═══════════ -->
+<!-- ═══ ROTATE (portrait mobile) ═══ -->
 <div class="rotate">
   <div class="streets-tagline">
     <span class="streets-text">MAKE LISBON STREETS</span>
     <svg class="streets-higher" viewBox="0 0 600 200"><use href="#higher-badge"/></svg>
   </div>
   <video class="init-vid" src="assets/slides/init.mp4" autoplay muted playsinline preload="auto"></video>
-  <div class="slideshow" id="sl-mob"><img class="sl-img" id="sl-mob-a" alt="" style="opacity:1"><img class="sl-img" id="sl-mob-b" alt="" style="opacity:0"></div>
   <svg class="spinner" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
     <path d="M 32 12 A 20 20 0 1 1 12 32"/>
     <polygon points="12,21 5,34 19,34" fill="currentColor" stroke="none"/>
   </svg>
   <div class="hint">Turn your phone (or turn it off)</div>
-  <button class="where-btn" style="margin-top:auto" type="button">
-    <span class="ctx-label">Where Street Art meets the quintessence of modern neuroscience</span>
+  <button class="where-btn" id="rotateDiscBtn" style="margin-top:auto" type="button" aria-label="Discover">
+    <span class="ctx-label">When Street Art meets the quintessence of modern neuroscience</span>
     <svg class="chev bob" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
   </button>
 </div>
 
-<!-- ═══════════ INTRO ═══════════ -->
+<!-- ═══ INTRO (desktop) ═══ -->
 <div class="intro" id="intro">
   <div class="streets-tagline">
     <span class="streets-text">MAKE LISBON STREETS</span>
     <svg class="streets-higher" viewBox="0 0 600 200"><use href="#higher-badge"/></svg>
   </div>
   <video class="init-vid" src="assets/slides/init.mp4" autoplay muted playsinline preload="auto"></video>
-  <div class="slideshow" id="sl-desk"><img class="sl-img" id="sl-desk-a" alt="" style="opacity:1"><img class="sl-img" id="sl-desk-b" alt="" style="opacity:0"></div>
   <button class="btn-play" id="initialize">Play the Lisbon street</button>
-  <button class="where-btn" style="margin-top:auto" type="button">
-    <span class="ctx-label">Where Street Art meets the quintessence of modern neuroscience</span>
-    <svg class="chev bob" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-  </button>
 </div>
 
-<!-- ═══════════ CONTROLLER ═══════════ -->
+<!-- ═══ CONTROLLER ═══ -->
 <div class="world" id="world">
   <div class="board" id="board"></div>
 </div>
 
-<!-- ═══════════ EXPERIENCE ═══════════ -->
+<!-- ═══ DISCOVER TRIGGER (desktop: button + arrow / mobile: arrow only) ═══ -->
+<div id="discTrigger">
+  <button class="disc-btn-label" id="discBtnLabel">When Street Art meets the quintessence of modern neuroscience</button>
+  <svg class="chev bob" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+</div>
+
+<!-- ═══ DISCOVER ═══ -->
+<div class="discover" id="discover" role="region" aria-label="Discover Lisbon">
+  <div id="disc-stage"></div>
+  <div id="disc-hint" aria-hidden="true">↓</div>
+</div>
+
+<!-- ═══ EXPERIENCE (from TOP) ═══ -->
 <div class="xp" id="xp">
-  <button class="close" id="xpClose">Back in Time</button>
+  <button class="close" id="xpClose">Back in <svg style="display:inline-block;width:0.62em;height:0.85em;vertical-align:-0.08em;color:inherit" viewBox="0 0 60 80" aria-hidden="true"><use href="#t-glyph"/></svg>ime</button>
   <div class="xp-row">
     <div class="vid-wrap" id="vidWrap"><video id="vid" playsinline preload="none"></video></div>
     <a class="xp-higher" id="xpHigher" href="stoner.html">
@@ -306,12 +414,12 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 
 <script>
 (()=>{
+
 /* ═══ CONFIG ═══ */
 const IMG_BASE = 'assets/signs/';
 const IMG_EXT  = '.png';
 const VID_BASE = 'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/play-signals/';
 
-/* id : [left%, top%, width%, punchline] — measured on the updated reference.png */
 const SIGNS = {
   fire_exit:          [23.1,  5.5,  6.5],
   Heli:               [46.0,  7.4,  5.2],
@@ -338,39 +446,121 @@ const SIGNS = {
 };
 
 /* ═══ DOM ═══ */
-const intro     = document.getElementById('intro');
-const initBtn   = document.getElementById('initialize');
-const board     = document.getElementById('board');
-const world     = document.getElementById('world');
-const xp        = document.getElementById('xp');
-const vidWrap   = document.getElementById('vidWrap');
-const vid       = document.getElementById('vid');
-const xpClose   = document.getElementById('xpClose');
-const xpHigher  = document.getElementById('xpHigher');
-const ps        = document.getElementById('ps');
+const intro        = document.getElementById('intro');
+const initBtn      = document.getElementById('initialize');
+const board        = document.getElementById('board');
+const world        = document.getElementById('world');
+const xp           = document.getElementById('xp');
+const vidWrap      = document.getElementById('vidWrap');
+const vid          = document.getElementById('vid');
+const xpClose      = document.getElementById('xpClose');
+const xpHigher     = document.getElementById('xpHigher');
+const ps           = document.getElementById('ps');
+const discTrigger  = document.getElementById('discTrigger');
+const discBtnLabel = document.getElementById('discBtnLabel');
+const discover     = document.getElementById('discover');
+const discStage    = document.getElementById('disc-stage');
+const discHint     = document.getElementById('disc-hint');
+const rotateDiscBtn= document.getElementById('rotateDiscBtn');
 
 let busy = false;
+let discOpen = false;
+let discCur = 0;
+let discLock = false;
+const DISC_FADE = 650;
+const CHAR_DELAY = 0.048;
 
+/* ═══ DISCOVER SLIDE DATA ═══ */
+const G = x => ({t:'g',x});
+const M = x => ({t:'m',x});
+const CTA = {t:'cta'};
 
+const SLIDES = [
+  {
+    img:'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/1.png',
+    parts:[
+      G("You see them everywhere, every single day.<br>Hundreds of times a day."),
+      G("Your brain automatically filters them into background noise."),
+      G("Because yeah, they look completely useless—unless you are crossing the road.")
+    ]
+  },
+  {
+    img:'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/2.png',
+    parts:[
+      G("Now, imagine if they were stimulants."),
+      G("Consciously or unconsciously.")
+    ]
+  },
+  {
+    img:'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/3.png',
+    parts:[
+      G("What if every signal reminded you of your <span class='kw-obj'>objectives</span>?<br>The daily <span class='kw-hab'><span class='kw-h'>H</span>abits</span> to achieve them.<br>The past <span class='kw-mis'>mistakes</span> you swore never to repeat.")
+    ]
+  },
+  {
+    img:'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/4.png',
+    parts:[
+      G("The instant trigger to elevate your mental state:"),
+      G("To act with more efficiency and presence,<br>and truly absorb the beauty of Lisbon—its architecture, vibrant colors, and iconic spots.")
+    ]
+  },
+  {
+    img:'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/5.png',
+    parts:[
+      G("Artist Wavywah integrated Lisbon's urban signals directly into TOTEHM."),
+      G("An artistic and cognitive performance tool conceived through neurology."),
+      G("Each shape, each color carries an idea, a neurological technique, or both."),
+      M("[ LEARN MORE ]")
+    ]
+  },
+  {
+    img:'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/7.png',
+    parts:[
+      G("Once you <button class='btn-start' style='vertical-align:middle;margin:0 4px'><span class='get-text'>GET</span><span class='higher-svg' style='width:70px'><svg viewBox='0 0 600 200'><use href='#higher-badge'></use></svg></span></button>, walking through Lisbon hits differently."),
+      G("Urban signals are no longer background noise."),
+      G("They turn into active cognitive stimuli.")
+    ]
+  },
+  {
+    img:'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/8.png',
+    parts:[
+      G("You don't just walk the city anymore."),
+      G("You operate from a <span class='higher-inline'><svg viewBox='0 0 600 200'><use href='#higher-badge'></use></svg></span> perspective."),
+      G("In the end, you just feel <span class='higher-inline'><svg viewBox='0 0 600 200'><use href='#higher-badge'></use></svg></span>."),
+      CTA
+    ]
+  }
+];
+
+/* ═══ WORLD FLOW ═══ */
 function launchWorld(){
   intro.classList.add('gone');
   world.classList.add('on');
+  updateTrigger();
 }
 
-/* ═══ [Initialize] → play sound + reveal controller ═══ */
+function updateTrigger(){
+  const show = world.classList.contains('on')
+             && !world.classList.contains('away')
+             && !xp.classList.contains('up')
+             && !discOpen;
+  discTrigger.classList.toggle('visible', show);
+}
+
 initBtn.addEventListener('click', ()=>{
-  try {
-    ps.muted = false; ps.volume = 1; ps.currentTime = 0;
-    const p = ps.play();
-    if (p && typeof p.catch === 'function') p.catch(e => console.warn(e));
-  } catch(e){ console.warn(e); }
+  try{
+    ps.muted=false; ps.volume=1; ps.currentTime=0;
+    const p=ps.play();
+    if(p&&typeof p.catch==='function') p.catch(e=>console.warn(e));
+  }catch(e){console.warn(e);}
   launchWorld();
 });
 
-/* ═══ Mobile : rotation portrait → paysage = lancement direct ═══ */
+/* Mobile rotation → auto-launch */
 if(window.matchMedia('(pointer:coarse)').matches){
   const onRotate = ()=>{
     if(window.matchMedia('(orientation:landscape)').matches && !world.classList.contains('on')){
+      if(discOpen) closeDiscover();
       launchWorld();
     }
   };
@@ -379,7 +569,7 @@ if(window.matchMedia('(pointer:coarse)').matches){
 }
 
 /* ═══ BUILD BOARD ═══ */
-for (const [id, [l,t,w]] of Object.entries(SIGNS)){
+for(const [id,[l,t,w]] of Object.entries(SIGNS)){
   const b = document.createElement('button');
   b.className = 'sign';
   b.style.setProperty('--l', l+'%');
@@ -388,9 +578,7 @@ for (const [id, [l,t,w]] of Object.entries(SIGNS)){
   b.setAttribute('aria-label', id.replace(/_/g,' '));
   if(id==='roundabout'||id==='left_or_straight') b.classList.add('sign-spin');
   const img = document.createElement('img');
-  img.src = IMG_BASE + id + IMG_EXT;
-  img.alt = '';
-  img.loading = 'lazy';
+  img.src = IMG_BASE+id+IMG_EXT; img.alt=''; img.loading='lazy';
   b.appendChild(img);
   b.addEventListener('click', ()=>launch(id));
   board.appendChild(b);
@@ -398,18 +586,18 @@ for (const [id, [l,t,w]] of Object.entries(SIGNS)){
 
 /* ═══ EXPERIENCE FLOW ═══ */
 function launch(id){
-  if (busy) return;
+  if(busy || discOpen) return;
   busy = true;
-  vid.src = VID_BASE + id + '.mp4';
-  vid.load();
+  vid.src = VID_BASE+id+'.mp4'; vid.load();
   vidWrap.classList.remove('in');
   xpHigher.classList.remove('in');
   world.classList.add('away');
   xp.classList.add('up');
+  updateTrigger();
   setTimeout(()=>{
     vidWrap.classList.add('in');
     xpHigher.classList.add('in');
-    vid.play().catch(()=>{ vid.controls = true; });
+    vid.play().catch(()=>{ vid.controls=true; });
   }, 400);
 }
 
@@ -425,41 +613,200 @@ function comeBack(){
     xpHigher.classList.remove('in');
     vid.removeAttribute('src'); vid.load();
     busy = false;
+    updateTrigger();
   }, 600);
 }
 
-/* ═══ SLIDESHOW ═══ */
-(()=>{
-  const srcs = Array.from({length:7}, (_,i) => 'assets/slides/'+(i+1)+'.png');
-  const DUR  = 5500;
-  const FADE = 1200;
+/* ═══ DISCOVER OPEN / CLOSE ═══ */
+function openDiscover(){
+  if(discOpen) return;
+  discOpen = true;
+  discover.classList.add('in');
+  updateTrigger();
+  discReset();
+}
 
-  function initSlide(elA, elB){
-    let cur = 0, front = elA, back = elB;
-    front.src = srcs[0];
+function closeDiscover(){
+  if(!discOpen) return;
+  discOpen = false;
+  discover.classList.remove('in');
+  updateTrigger();
+}
 
-    function next(){
-      cur = (cur + 1) % srcs.length;
-      back.src = srcs[cur];
-      const doFade = ()=>{
-        back.style.opacity = '1';
-        front.style.opacity = '0';
-        [front, back] = [back, front];
-        setTimeout(next, DUR);
-      };
-      if(back.complete) doFade();
-      else back.onload = doFade;
+/* Portrait mobile trigger (rotate section) */
+rotateDiscBtn.addEventListener('click', openDiscover);
+
+/* Desktop + landscape mobile trigger */
+discBtnLabel.addEventListener('click', openDiscover);
+discTrigger.querySelector('.chev').addEventListener('click', openDiscover);
+
+/* Scroll down from world → open discover */
+let wWheelLock = false;
+window.addEventListener('wheel', e=>{
+  if(!world.classList.contains('on') || world.classList.contains('away')) return;
+  if(discOpen || busy || e.deltaY<=0 || wWheelLock) return;
+  wWheelLock = true;
+  setTimeout(()=>wWheelLock=false, 700);
+  openDiscover();
+}, {passive:true});
+
+let wTouchY = 0;
+window.addEventListener('touchstart', e=>{
+  if(world.classList.contains('on') && !discOpen && !busy)
+    wTouchY = e.changedTouches[0].screenY;
+}, {passive:true});
+window.addEventListener('touchend', e=>{
+  if(!world.classList.contains('on') || discOpen || busy) return;
+  if(e.changedTouches[0].screenY - wTouchY < -60) openDiscover();
+}, {passive:true});
+
+/* ═══ BUILD DISCOVER SLIDES ═══ */
+function wrapChars(htmlStr, startIdx){
+  const tmp = document.createElement('div');
+  tmp.innerHTML = htmlStr;
+  let ci = startIdx;
+
+  function walk(node){
+    if(node.nodeType===Node.TEXT_NODE){
+      const text = node.textContent;
+      if(!text) return node;
+      const frag = document.createDocumentFragment();
+      for(let i=0;i<text.length;i++){
+        const ch = text[i];
+        if(ch===' '||ch==='\t'||ch==='\n'){
+          frag.appendChild(document.createTextNode(ch));
+          ci += 0.8;
+        }else{
+          const s = document.createElement('span');
+          s.className = 'read-char';
+          s.textContent = ch;
+          s.style.animationDelay = `${(ci*CHAR_DELAY).toFixed(3)}s`;
+          ci++;
+          frag.appendChild(s);
+        }
+      }
+      return frag;
+    }else if(node.nodeType===Node.ELEMENT_NODE){
+      /* Pass through buttons and higher-inline SVGs without wrapping */
+      if(node.classList.contains('btn-start') || node.tagName==='BUTTON' ||
+         node.classList.contains('higher-inline')){
+        ci += node.classList.contains('higher-inline') ? 8 : node.textContent.length;
+        return node;
+      }
+      /* Recurse into all other elements (kw-*, span, br, etc.) */
+      const clone = node.cloneNode(false);
+      node.childNodes.forEach(child => clone.appendChild(walk(child)));
+      return clone;
     }
-    setTimeout(next, DUR);
+    return node;
   }
 
-  const mobA = document.getElementById('sl-mob-a');
-  const mobB = document.getElementById('sl-mob-b');
-  const dskA = document.getElementById('sl-desk-a');
-  const dskB = document.getElementById('sl-desk-b');
-  if(mobA) initSlide(mobA, mobB);
-  if(dskA) initSlide(dskA, dskB);
-})();
+  const frag = document.createDocumentFragment();
+  tmp.childNodes.forEach(child => frag.appendChild(walk(child)));
+  return {fragment:frag, nextIdx:ci};
+}
+
+function buildSlide(slide){
+  const block = document.createElement('div');
+  block.className = 'seq-block';
+  if(slide.img){
+    const img = document.createElement('img');
+    img.className = 'disc-img'; img.src = slide.img; img.alt=''; img.loading='eager';
+    block.appendChild(img);
+  }
+  let cc = 0;
+  slide.parts.forEach(p=>{
+    if(p.t==='cta'){
+      const btn = document.createElement('button');
+      btn.className = 'btn-start'; btn.style.marginTop='10px';
+      btn.setAttribute('aria-label','Get Higher');
+      btn.innerHTML = '<span class="get-text">GET</span><span class="higher-svg"><svg viewBox="0 0 600 200"><use href="#higher-badge"></use></svg></span>';
+      btn.onclick = ()=>{ window.location.href='stoner.html'; };
+      block.appendChild(btn);
+    }else if(p.t==='m'){
+      const d = document.createElement('div');
+      d.className = 't-mono'; d.innerHTML = p.x||'';
+      block.appendChild(d);
+    }else{
+      const d = document.createElement('div');
+      d.className = 't-quantico-pacer';
+      const r = wrapChars(p.x||'', cc);
+      d.appendChild(r.fragment); cc = r.nextIdx;
+      block.appendChild(d);
+    }
+  });
+  return block;
+}
+
+let discHintGone = false;
+function hideDiscHint(){
+  if(!discHintGone){ discHintGone=true; discHint.classList.add('gone'); }
+}
+
+function discShowSlide(i, instant){
+  const blocks = discStage.querySelectorAll('.seq-block');
+  blocks.forEach((b,idx)=>{
+    if(idx===i){
+      if(instant) b.classList.add('instant');
+      b.classList.add('active');
+      requestAnimationFrame(()=>{
+        b.classList.add('show');
+        if(instant) requestAnimationFrame(()=>b.classList.remove('instant'));
+      });
+    }else{
+      b.classList.remove('show');
+      setTimeout(()=>b.classList.remove('active'), instant?0:DISC_FADE);
+    }
+  });
+  discCur = i;
+}
+
+function discGoTo(i){
+  if(discLock || i<0 || i>=SLIDES.length || i===discCur) return;
+  discLock = true;
+  discShowSlide(i, false);
+  setTimeout(()=>discLock=false, DISC_FADE);
+}
+
+function discNext(){ discGoTo(discCur+1); }
+function discPrev(){
+  if(discCur===0){ closeDiscover(); return; }
+  discGoTo(discCur-1);
+}
+
+function discReset(){
+  discStage.innerHTML = '';
+  SLIDES.forEach(s=>discStage.appendChild(buildSlide(s)));
+  discCur = 0; discLock = false; discHintGone = false;
+  discHint.classList.remove('gone');
+  discShowSlide(0, true);
+}
+
+/* Discover gestures */
+let dWheelLock = false;
+discover.addEventListener('wheel', e=>{
+  if(!discOpen || dWheelLock || Math.abs(e.deltaY)<25) return;
+  dWheelLock = true;
+  setTimeout(()=>dWheelLock=false, 220);
+  hideDiscHint();
+  e.deltaY>0 ? discNext() : discPrev();
+}, {passive:true});
+
+let dTouchY = 0;
+discover.addEventListener('touchstart', e=>{ dTouchY=e.changedTouches[0].screenY; }, {passive:true});
+discover.addEventListener('touchend', e=>{
+  const dy = e.changedTouches[0].screenY - dTouchY;
+  if(Math.abs(dy)<35) return;
+  hideDiscHint();
+  dy<0 ? discNext() : discPrev();
+}, {passive:true});
+
+window.addEventListener('keydown', e=>{
+  if(!discOpen) return;
+  if(e.key==='ArrowDown'){ discNext(); hideDiscHint(); }
+  else if(e.key==='ArrowUp'){ discPrev(); }
+  else if(e.key==='Escape'){ closeDiscover(); }
+});
 
 })();
 </script>
