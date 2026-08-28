@@ -251,20 +251,14 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   .higher-svg{width:min(32vw,95px)!important}
 }
 
-/* Discover text */
+/* Discover text — gray → white, stays white */
 .t-quantico-pacer{
   font-family:'Quantico',sans-serif;
   font-weight:400;font-size:15px;line-height:1.85;letter-spacing:.03em;
+  color:rgba(255,255,255,.35);
+  transition:color .7s ease;
 }
-.read-char{color:var(--g-dim);display:inline;will-change:color,text-shadow}
-.seq-block.show .read-char{
-  animation:fillSmooth .55s cubic-bezier(.25,.1,.25,1) forwards;
-}
-@keyframes fillSmooth{
-  0%{color:var(--g-dim);text-shadow:none}
-  50%{color:#fff;text-shadow:0 0 8px rgba(255,255,255,.55)}
-  100%{color:#e0e0e0;text-shadow:0 0 1px rgba(255,255,255,.15)}
-}
+.seq-block.show .t-quantico-pacer{color:#fff}
 .t-mono{
   font-family:'Space Mono',monospace;
   font-weight:400;font-size:11px;color:var(--g-dark);
@@ -288,7 +282,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 
 /* Discover down-hint */
 #disc-hint{
-  position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+  position:absolute;bottom:22px;left:50%;transform:translateX(-50%);
   font-family:'Space Mono',monospace;font-size:14px;
   color:var(--g-mid);opacity:.6;
   pointer-events:none;animation:disc-bob 2.2s ease-in-out infinite;
@@ -299,6 +293,8 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   0%,100%{transform:translate(-50%,0)}
   50%{transform:translate(-50%,-5px)}
 }
+/* Progress bar */
+#disc-prog{position:absolute;bottom:0;left:0;height:1px;background:rgba(255,255,255,.45);width:0%;transition:width .5s cubic-bezier(.65,0,.35,1);pointer-events:none}
 
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
@@ -393,6 +389,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 <div class="discover" id="discover" role="region" aria-label="Discover Lisbon">
   <div id="disc-stage"></div>
   <div id="disc-hint" aria-hidden="true">↓</div>
+  <div id="disc-prog"></div>
 </div>
 
 <!-- ═══ EXPERIENCE (from TOP) ═══ -->
@@ -468,7 +465,6 @@ let discOpen = false;
 let discCur = 0;
 let discLock = false;
 const DISC_FADE = 650;
-const CHAR_DELAY = 0.048;
 
 /* ═══ DISCOVER SLIDE DATA ═══ */
 const G = x => ({t:'g',x});
@@ -661,51 +657,6 @@ window.addEventListener('touchend', e=>{
 }, {passive:true});
 
 /* ═══ BUILD DISCOVER SLIDES ═══ */
-function wrapChars(htmlStr, startIdx){
-  const tmp = document.createElement('div');
-  tmp.innerHTML = htmlStr;
-  let ci = startIdx;
-
-  function walk(node){
-    if(node.nodeType===Node.TEXT_NODE){
-      const text = node.textContent;
-      if(!text) return node;
-      const frag = document.createDocumentFragment();
-      for(let i=0;i<text.length;i++){
-        const ch = text[i];
-        if(ch===' '||ch==='\t'||ch==='\n'){
-          frag.appendChild(document.createTextNode(ch));
-          ci += 0.8;
-        }else{
-          const s = document.createElement('span');
-          s.className = 'read-char';
-          s.textContent = ch;
-          s.style.animationDelay = `${(ci*CHAR_DELAY).toFixed(3)}s`;
-          ci++;
-          frag.appendChild(s);
-        }
-      }
-      return frag;
-    }else if(node.nodeType===Node.ELEMENT_NODE){
-      /* Pass through buttons and higher-inline SVGs without wrapping */
-      if(node.classList.contains('btn-start') || node.tagName==='BUTTON' ||
-         node.classList.contains('higher-inline')){
-        ci += node.classList.contains('higher-inline') ? 8 : node.textContent.length;
-        return node;
-      }
-      /* Recurse into all other elements (kw-*, span, br, etc.) */
-      const clone = node.cloneNode(false);
-      node.childNodes.forEach(child => clone.appendChild(walk(child)));
-      return clone;
-    }
-    return node;
-  }
-
-  const frag = document.createDocumentFragment();
-  tmp.childNodes.forEach(child => frag.appendChild(walk(child)));
-  return {fragment:frag, nextIdx:ci};
-}
-
 function buildSlide(slide){
   const block = document.createElement('div');
   block.className = 'seq-block';
@@ -714,7 +665,6 @@ function buildSlide(slide){
     img.className = 'disc-img'; img.src = slide.img; img.alt=''; img.loading='eager';
     block.appendChild(img);
   }
-  let cc = 0;
   slide.parts.forEach(p=>{
     if(p.t==='cta'){
       const btn = document.createElement('button');
@@ -730,8 +680,7 @@ function buildSlide(slide){
     }else{
       const d = document.createElement('div');
       d.className = 't-quantico-pacer';
-      const r = wrapChars(p.x||'', cc);
-      d.appendChild(r.fragment); cc = r.nextIdx;
+      d.innerHTML = p.x||'';
       block.appendChild(d);
     }
   });
@@ -741,6 +690,11 @@ function buildSlide(slide){
 let discHintGone = false;
 function hideDiscHint(){
   if(!discHintGone){ discHintGone=true; discHint.classList.add('gone'); }
+}
+
+function updateDiscProg(){
+  const p = document.getElementById('disc-prog');
+  if(p) p.style.width = ((discCur+1)/SLIDES.length*100)+'%';
 }
 
 function discShowSlide(i, instant){
@@ -759,6 +713,7 @@ function discShowSlide(i, instant){
     }
   });
   discCur = i;
+  updateDiscProg();
 }
 
 function discGoTo(i){
@@ -779,6 +734,8 @@ function discReset(){
   SLIDES.forEach(s=>discStage.appendChild(buildSlide(s)));
   discCur = 0; discLock = false; discHintGone = false;
   discHint.classList.remove('gone');
+  const p = document.getElementById('disc-prog');
+  if(p) p.style.width = '0%';
   discShowSlide(0, true);
 }
 

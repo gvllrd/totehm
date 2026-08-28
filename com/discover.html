@@ -19,9 +19,8 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 .seq-block{position:absolute;width:90%;max-width:540px;text-align:center;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(15px);transition:opacity .65s ease,transform .65s cubic-bezier(.22,.61,.36,1);display:flex;flex-direction:column;align-items:center;gap:calc(15px*var(--rhythm))}
 .seq-block.active{visibility:visible}.seq-block.show{opacity:1;transform:translateY(0);pointer-events:auto}
 .seq-block.instant{transition:none}
-.seq-block.coherence.show .coral-line{animation:settle .9s cubic-bezier(.22,.61,.36,1)}
-@keyframes settle{0%{filter:blur(5px)}100%{filter:blur(0)}}
-.t-futura{font-family:var(--futura-light);font-weight:300;font-size:14px;color:var(--g-light);line-height:1.7;letter-spacing:.02em}
+.t-futura{font-family:var(--futura-light);font-weight:300;font-size:14px;color:rgba(255,255,255,.35);line-height:1.7;letter-spacing:.02em;transition:color .7s ease}
+.seq-block.show .t-futura{color:#fff}
 .t-coral{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:var(--coral);line-height:1.7;letter-spacing:.02em}
 .t-mono{font-family:'Space Mono',monospace;font-weight:400;font-size:11px;color:var(--g-dark);line-height:1.5;letter-spacing:.16em;text-transform:uppercase}
 .t-intent{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;color:#fff;line-height:1.5;letter-spacing:.01em;padding:3px 8px;display:inline-block;background-color:var(--plus)}
@@ -34,7 +33,8 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 #vhint.gone{opacity:0}
 @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-5px)}}
 @media(max-width:600px){.get-text{font-size:14px}.higher-svg{width:min(32vw,95px)}}
-@media(prefers-reduced-motion:reduce){.seq-block{transition:opacity .3s ease}.seq-block.coherence.show .coral-line{animation:none}#vhint{animation:none}}
+#prog{position:fixed;bottom:0;left:0;height:1px;background:rgba(255,255,255,.45);width:0%;transition:width .5s cubic-bezier(.65,0,.35,1);pointer-events:none;z-index:10}
+@media(prefers-reduced-motion:reduce){.seq-block{transition:opacity .3s ease}.t-futura{transition:none}#vhint{animation:none}}
 </style>
 </head>
 <body>
@@ -55,6 +55,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 
 <div id="stage"></div>
 <div id="vhint">&darr;</div>
+<div id="prog"></div>
 
 <script>
 const G=(x)=>({t:"g",x});const C=(x)=>({t:"c",x});const M=(x)=>({t:"m",x});const CTA={t:"cta"};
@@ -109,6 +110,7 @@ function showSlide(i,instant){
     else{b.classList.remove('show');setTimeout(()=>b.classList.remove('active'),instant?0:FADE);}
   });
   curSlide=i;
+  document.getElementById('prog').style.width=((i+1)/SLIDES.length*100)+'%';
 }
 function goToSlide(i){if(isAnimating||i<0||i>=SLIDES.length||i===curSlide)return;isAnimating=true;showSlide(i,false);setTimeout(()=>isAnimating=false,FADE);}
 function next(){goToSlide(curSlide+1);}function prev(){goToSlide(curSlide-1);}
