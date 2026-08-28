@@ -5,7 +5,7 @@ Socle commun aux trois domaines. **Un seul projet Supabase** sert `totehm.com`,
 
 ```
 ~/totehm/
-  totehm.com/  →  totehm.com            (Vercel, Root Directory = totehm.com)
+  com/         →  totehm.com            (Vercel, Root Directory = com)
   space/       →  www.totehm.space      (Vercel, Root Directory = space)
   boutique/    →  www.higher.boutique   (Vercel, Root Directory = boutique)
   backend/     →  servi par PERSONNE    ← ce dossier
@@ -79,7 +79,7 @@ c'est plus fidèle qu'une génération.
 
 | `metadata.product` | Effet |
 |---|---|
-| `higher` | écrit dans `stoner_access` |
+| `higher` | écrit dans `stoner_access` — TotehmPaper {THP}, 30 $ fixe |
 | `cloth` | commande Printful |
 | `subscription` | écrit dans `subscriptions` |
 | *inconnu* | log, 200, **ne déclenche rien** |

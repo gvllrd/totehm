@@ -159,6 +159,27 @@ Existing voice:
 > Ten steps to hold the altitude. (High)
 > An artistic and neurological experience.
 
+### TotehmPaper {THP} — le ticket d'entrée
+
+Le paywall de `.com` n'est pas un formulaire d'achat. C'est un objet.
+
+**Nom officiel :** TotehmPaper {THP}
+**Prix :** 30 $ — fixe, unique, sans palier.
+**Ce que ça donne :** accès à la méthode complète (stoner.html).
+
+Interface d'achat (get_higher.html au 28/08/2026) :
+- Le logo TOTEHM en grand, centré, comme un carré de papier à tenir entre les doigts.
+- Un seul bouton : `Buy a TotehmPaper {THP} — $30` (perforé, Quantico).
+- En dessous : `Simple terms of sale` — lien sobre, gris sombre, aucune case à cocher.
+- Rien d'autre. Aucun titre. Aucune description. L'objet parle.
+
+**Référence concurrente :** l'acide en carré de papier buvard. La forme physique d'une
+altération d'état. TOTEHM propose la même promesse, sans substance.
+
+⚠️ **Le mot « TotehmPaper » n'apparaît nulle part sur les Discovers.** Il se découvre
+au moment de l'achat. La promesse sur `.com` reste `GET HIGHER` — l'objet est la
+surprise.
+
 ### Where Figher Club lives
 
 **Figher Club never appears on `.com`.**

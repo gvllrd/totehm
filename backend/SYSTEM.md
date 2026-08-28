@@ -34,7 +34,7 @@ produit l'incident du SSO et celui des 70 €/79 €.
 
 ```
 ~/totehm/
-  totehm.com/  →  totehm.com            acquisition, one-shot 11→76 €
+  com/         →  totehm.com            acquisition, TotehmPaper {THP} — 30 $
   space/       →  www.totehm.space      le Figher Club
   boutique/    →  www.higher.boutique   le Cloth
   backend/     →  servi par PERSONNE
@@ -51,7 +51,29 @@ Le compte est unique, la session ne l'est pas.
 
 ---
 
-## 2 · Figher Club — pricing officiel
+## 2 · totehm.com — routing Vercel (au 28/08/2026)
+
+```
+vercel.json (com/vercel.json)
+  /  + cookie totehm_geo=lisbon         → discover_lisbon.html
+  /  + cookie totehm_geo=global         → get_higher.html
+  /  + header x-vercel-ip-country=PT   → discover_lisbon.html
+  /  (défaut)                           → discover.html   ← international
+  /lisbon                               → discover_lisbon.html
+  /global                               → discover.html
+```
+
+**Fichiers actifs :**
+- `discover.html` — Discover international (manifeste neurologique, 9 slides, format identique à la version Lisbon)
+- `discover_lisbon.html` — Discover Lisbon (récupéré depuis git `22128ed`, fixes appliqués)
+- `get_higher.html` — paywall TotehmPaper ($30 fixe, voir §5)
+- `stoner.html`, `stoner_terms.html` — derrière le gate
+
+**Fichier supprimé :** `lisbon.html` (remplacé par `discover_lisbon.html`).
+
+---
+
+## 3 · Figher Club — pricing officiel
 
 > **Ces décisions sont prioritaires sur toute règle de pricing antérieure.**
 > Ne pas implémenter tant qu'une tâche dédiée n'est pas demandée.
@@ -165,7 +187,7 @@ CURRENT CLUB PRICE — 77 €/YEAR
 
 ---
 
-## 3 · Conflit connu : `trips` n'existe pas
+## 4b · Conflit connu : `trips` n'existe pas
 
 `space_master_v5.md` §52 recommande une table `trips`. **Elle n'existe pas.**
 
@@ -183,7 +205,7 @@ sans rien apporter.
 
 ---
 
-## 3 · Supabase — `abujjbkbbiumxrokozph` · eu-west-1
+## 4c · Supabase — `abujjbkbbiumxrokozph` · eu-west-1
 
 ### La boucle (master v5)
 
@@ -481,7 +503,7 @@ Aucune ligne = pas membre. Un abonnement expiré, impayé ou annulé retombe
 | Fonction | Ver. | `verify_jwt` | Rôle |
 |---|---:|:---:|---|
 | `stoner-gate` | 9 | ✅ | signe 11 URLs, bucket privé, 15 min |
-| `higher-checkout` | 3 | ✅ | 5 paliers, prix **serveur**, mode `quote` |
+| `higher-checkout` | 3 | ✅ | 5 paliers côté serveur, prix **serveur**, mode `quote` — ⚠️ **DIVERGENCE : le front affiche 30 $ fixe depuis le 28/08/2026, les paliers ne sont plus visibles en UI. La fonction doit être alignée sur 30 $ fixe.** |
 | `stripe-webhook` | 18 | ❌ | routeur 3 flux + 4 événements, idempotence |
 | `subscription-checkout` | 3 | ✅ | 7j trial, price lock, PRICE_FIGHER_YEAR |
 | `autobiographiste` | 3 | ✅ | modèle premium, 8 règles, write/revise/accept |
@@ -609,10 +631,15 @@ Sur 25 : **9 sans fréquence, 15 sans intention.** Sans fréquence, le bot les
 ignore — il ne sait pas quand demander. `habits_incomplete()` les liste.
 **C'est le blocage produit le plus rentable à lever.**
 
-### ⚠️ Le repo et la prod divergent
-Sur `main`, `higher-checkout` porte encore l'ancienne tarification
-(`COHORT_MAX=777`, 17 €/29 €) alors que la production sert les cinq paliers.
-**Un `deploy` aveugle depuis le repo repasserait le paywall à 17 €.**
+### ⚠️ `higher-checkout` — double divergence
+1. Sur `main`, la fonction porte encore l'ancienne tarification (`COHORT_MAX=777`,
+   17 €/29 €) — la production sert les cinq paliers en or.
+2. Depuis le 28/08/2026, le frontend (`get_higher.html`) **ne montre plus les paliers** :
+   prix fixe 30 $ affiché, checkbox waiver supprimée. La fonction doit être alignée
+   sur 30 $ fixe avant tout redéploiement.
+**Un `deploy` aveugle depuis le repo repasserait le paywall à 17 €. Un `deploy`
+de la version actuelle du front sans fixer la fonction facturerait un montant différent
+de ce qui est affiché.**
 
 ### ⚠️ `create or replace function` rétablit le GRANT à PUBLIC
 Un `revoke` posé avant un `create or replace` est annulé.
@@ -731,6 +758,13 @@ Functions sont téléchargeables.
 | 19/08 | `totehms_user_id_uniq` — index unique sur `totehms(user_id)` | deux onglets en course créaient deux Totehms → cassait `.maybeSingle()` côté serveur |
 | 19/08 | `cloudSave()` : `delete`+`insert` → `upsert onConflict:'user_id'` | atomique, compatible avec l'index unique |
 | 19/08 | Repli Praça do Comércio (38.7078, -9.1366) si GPS absent/refusé | un écran vide est un bug, pas un message |
+| 28/08 | **TotehmPaper {THP}** — nouveau nom produit de l'expérience Stoner, 30 $ fixe | concept LSD paper : l'objet à consommer, pas un abonnement |
+| 28/08 | `get_higher.html` — paywall refait : titre/description/tiers/checkbox supprimés, logo en placeholder 3D | minimalisme maximal, l'objet parle seul |
+| 28/08 | `discover.html` (international) — reformaté à l'identique de `discover_lisbon.html` | cohérence des deux Discovers |
+| 28/08 | `discover_lisbon.html` — récupéré depuis git `22128ed` (version supérieure à celle du zip) | la version zip était plus ancienne |
+| 28/08 | `lisbon.html` supprimé, routing PT → `discover_lisbon.html` | un seul fichier PT, route claire |
+| 28/08 | Vercel défaut `/` → `discover.html` (était `discover.html`, route `/global` ajoutée) | international sans ambiguïté |
+| 28/08 | `higher-checkout` : divergence front/back identifiée — front 30 $ fixe, fonction encore sur 5 paliers | à aligner lors du prochain lot `higher-checkout` |
 
 ---
 
