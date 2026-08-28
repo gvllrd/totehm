@@ -536,10 +536,9 @@ function launchWorld(){
 }
 
 function updateTrigger(){
-  const show = world.classList.contains('on')
-             && !world.classList.contains('away')
+  const show = !discOpen
              && !xp.classList.contains('up')
-             && !discOpen;
+             && !world.classList.contains('away');
   discTrigger.classList.toggle('visible', show);
 }
 
@@ -636,11 +635,10 @@ rotateDiscBtn.addEventListener('click', openDiscover);
 discBtnLabel.addEventListener('click', openDiscover);
 discTrigger.querySelector('.chev').addEventListener('click', openDiscover);
 
-/* Scroll down from world → open discover */
+/* Scroll/swipe down → open discover (desktop from intro or world; mobile from any state) */
 let wWheelLock = false;
 window.addEventListener('wheel', e=>{
-  if(!world.classList.contains('on') || world.classList.contains('away')) return;
-  if(discOpen || busy || e.deltaY<=0 || wWheelLock) return;
+  if(discOpen || busy || world.classList.contains('away') || e.deltaY<=0 || wWheelLock) return;
   wWheelLock = true;
   setTimeout(()=>wWheelLock=false, 700);
   openDiscover();
@@ -648,11 +646,11 @@ window.addEventListener('wheel', e=>{
 
 let wTouchY = 0;
 window.addEventListener('touchstart', e=>{
-  if(world.classList.contains('on') && !discOpen && !busy)
+  if(!discOpen && !busy && !world.classList.contains('away'))
     wTouchY = e.changedTouches[0].screenY;
 }, {passive:true});
 window.addEventListener('touchend', e=>{
-  if(!world.classList.contains('on') || discOpen || busy) return;
+  if(discOpen || busy || world.classList.contains('away')) return;
   if(e.changedTouches[0].screenY - wTouchY < -60) openDiscover();
 }, {passive:true});
 
@@ -764,6 +762,8 @@ window.addEventListener('keydown', e=>{
   else if(e.key==='ArrowUp'){ discPrev(); }
   else if(e.key==='Escape'){ closeDiscover(); }
 });
+
+updateTrigger();
 
 })();
 </script>
