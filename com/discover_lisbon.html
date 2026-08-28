@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>TOTEHM — Lisbon Discover</title>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Montserrat:ital,wght@1,900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #000000;
+  --coral: #fbd5ca;
+  --g-dim: #8e8e98;
+  --g-light: #ffffff;
+  --g-mid: #909090;
+  --g-dark: #606060;
+  --plus: #36498c;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── HEADER DESKTOP ── */
+#top-bar {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.btn-neuro-lead {
+  font-family: 'Quantico', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--plus);
+  border: none;
+  padding: 8px 18px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: opacity 0.25s ease, transform 0.2s ease;
+  outline: none;
+}
+.btn-neuro-lead:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+.arrow-indicator {
+  color: var(--g-mid);
+  font-size: 14px;
+  animation: bobArrow 2s ease-in-out infinite;
+}
+
+@keyframes bobArrow {
+  0%, 100% { transform: translateY(0); opacity: 0.4; }
+  50% { transform: translateY(4px); opacity: 1; }
+}
+
+/* ── SCÈNE DU DISCOVER ── */
+#stage {
+  position: fixed;
+  inset: 0;
+  padding: 80px 24px 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.seq-block {
+  position: absolute;
+  width: 90%;
+  max-width: 580px;
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(14px);
+  transition: opacity 0.65s ease, transform 0.65s cubic-bezier(0.22, 0.61, 0.36, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.seq-block.active { visibility: visible; }
+.seq-block.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.seq-block.instant { transition: none; }
+
+/* Masque de fondu des bords d'image dans le fond noir */
+.slide-art {
+  width: min(82vw, 440px);
+  max-height: 38vh;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 6px;
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 98%);
+  mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 98%);
+}
+
+/* ── SCAN DE LECTURE FLUIDE : GRIS → BLANC ── */
+.t-quantico-pacer {
+  font-family: 'Quantico', sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.85;
+  letter-spacing: 0.03em;
+}
+
+.read-char {
+  color: var(--g-dim);
+  display: inline;
+  will-change: color, text-shadow;
+}
+
+/* Éclairage progressif et doux */
+.seq-block.show .read-char {
+  animation: fillProgressSmooth 0.55s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+@keyframes fillProgressSmooth {
+  0% {
+    color: var(--g-dim);
+    text-shadow: none;
+  }
+  50% {
+    color: #ffffff;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.55);
+  }
+  100% {
+    color: var(--g-light);
+    text-shadow: 0 0 1px rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* ── BOUTON QUANTICO STANDARD (Learn more) ── */
+.btn-sig {
+  font-family: 'Quantico', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: 0;
+  color: #b0b0b0;
+  background: none;
+  cursor: pointer;
+  border: 6px solid transparent;
+  padding: 0 4px;
+  line-height: 1.5;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s ease;
+  text-align: center;
+  outline: none;
+}
+@media(hover: hover) {
+  .btn-sig:hover {
+    color: #fff;
+    border-image-source: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+    border-image-slice: 6 fill;
+    border-image-repeat: round;
+  }
+}
+.btn-sig:active {
+  color: #fff;
+  border-image-source: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+  border-image-slice: 6 fill;
+  border-image-repeat: round;
+}
+
+/* ── SLOGAN GET HIGHER ── */
+.btn-start {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.3s ease;
+}
+.get-word {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  vertical-align: middle;
+  margin: 0 3px;
+}
+.get-text {
+  font-family: 'Quantico', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--coral);
+  transition: color 0.3s ease;
+}
+/* Première occurrence : grise, dans le flux du texte */
+.get-text.dim { color: var(--g-dim); font-size: 15px; }
+.higher-svg {
+  width: min(28vw, 100px);
+  display: inline-block;
+  line-height: 0;
+}
+.higher-svg.inline { width: 70px; }
+.higher-svg svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media(hover: hover) {
+  .btn-start:hover { transform: scale(1.05); }
+  .btn-start:hover .get-text { color: #fff; }
+}
+
+/* Indicateur flèche du bas */
+#vhint {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Space Mono', monospace;
+  font-size: 14px;
+  color: var(--g-mid);
+  opacity: 0.6;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  animation: bob 2.2s ease-in-out infinite;
+}
+#vhint.gone { opacity: 0; }
+
+@keyframes bob {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, -5px); }
+}
+
+/* ── RESPONSIVE & MODE RETOURNÉ / PAYSAGE ── */
+@media (orientation: landscape) and (max-height: 520px) {
+  .slide-art { display: none !important; }
+  #stage { padding: 40px 20px; }
+  .seq-block { gap: 10px; max-width: 680px; }
+  #top-bar { top: 12px; }
+}
+
+@media (max-width: 600px) {
+  #top-bar { display: none; }
+  .t-quantico-pacer { font-size: 14px; }
+  .get-text { font-size: 14px; }
+  .get-text.dim { font-size: 14px; }
+  .higher-svg { width: min(32vw, 95px); }
+  .higher-svg.inline { width: 62px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seq-block { transition: opacity 0.3s ease; }
+  .read-char { animation: none !important; color: var(--g-light); }
+  #vhint, .arrow-indicator { animation: none; }
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="higher-slogan" viewBox="0 0 600 200">
+      <defs>
+        <mask id="hmask">
+          <rect width="600" height="200" fill="white"/>
+          <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
+          <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
+          <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
+        </mask>
+      </defs>
+      <rect width="600" height="200" fill="#333366" mask="url(#hmask)"/>
+      <text x="50%" y="144.42" text-anchor="middle" font-family="Montserrat, sans-serif" font-weight="900" font-style="italic" font-size="144" fill="#ffffff">Higher</text>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="top-bar">
+  <button class="btn-neuro-lead">When Street Art meets the quintessence of modern neuroscience</button>
+  <div class="arrow-indicator">&darr;</div>
+</div>
+
+<div id="stage"></div>
+<div id="vhint">&darr;</div>
+
+<script>
+/* Sortie unique du discover. Le flow est :
+   discover_lisbon.html -> get_higher.html -> (paiement) -> stoner.html
+   L'ancienne cible pointait vers un fichier qui n'existe pas. */
+const EXIT = 'get_higher.html';
+
+const G = (x) => ({ t: "g", x });
+const LEARN = { t: "learn" };
+const CTA = { t: "cta" };
+
+const SLIDES_DATA = [
+  // SLIDE 1
+  {
+    img: "https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/1.png",
+    parts: [
+      G("You see them everywhere, every single day.<br>Hundreds of times a day."),
+      G("Your brain automatically filters them into background noise."),
+      G("Because yeah, they look completely useless—unless you are crossing the road.")
+    ]
+  },
+  // SLIDE 2
+  {
+    img: "https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/2.png",
+    parts: [
+      G("Now, imagine if they were stimulants."),
+      G("Consciously or unconsciously.")
+    ]
+  },
+  // SLIDE 3
+  {
+    img: "https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/3.png",
+    parts: [
+      G("What if every signal reminded you of your objectives?<br>The daily habits to achieve them.<br>The past mistakes you swore never to repeat.")
+    ]
+  },
+  // SLIDE 4
+  {
+    img: "https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/4.png",
+    parts: [
+      G("The instant trigger to elevate your mental state:"),
+      G("To act with more efficiency and presence.")
+    ]
+  },
+  // SLIDE 5
+  {
+    img: "https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/5.png",
+    parts: [
+      G("Artist Wavywah integrated Lisbon’s urban signals directly into TOTEHM."),
+      G("An artistic and cognitive performance tool conceived through neurology."),
+      LEARN
+    ]
+  },
+  // SLIDE 6
+  {
+    img: "https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/7.png",
+    parts: [
+      G("Once you <span class='get-word no-pace'><span class='get-text dim'>Get</span><span class='higher-svg inline'><svg viewBox='0 0 600 200'><use href='#higher-slogan'></use></svg></span></span>, walking through Lisbon hits differently."),
+      G("Urban signals are no longer background noise."),
+      G("They turn into active cognitive stimuli.")
+    ]
+  },
+  // SLIDE 7
+  {
+    img: "https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/8.png",
+    parts: [
+      G("You don't just walk the city anymore."),
+      G("You operate from a Higher perspective."),
+      G("In the end, you just feel Higher."),
+      CTA
+    ]
+  }
+];
+
+const stage = document.getElementById('stage');
+const vhint = document.getElementById('vhint');
+let curSlide = 0;
+let isAnimating = false;
+const FADE = 650;
+const CHAR_DELAY = 0.048; // Tempo posé et naturel
+
+function formatCharPacedText(htmlStr, startCharIndex) {
+  const temp = document.createElement('div');
+  temp.innerHTML = htmlStr;
+
+  let currentCharIdx = startCharIndex;
+
+  function traverseAndWrap(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent;
+      if (!text) return node;
+
+      const fragment = document.createDocumentFragment();
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        if (ch === ' ' || ch === '\t' || ch === '\n') {
+          fragment.appendChild(document.createTextNode(ch));
+          currentCharIdx += 0.8; // Micro respiration entre les mots
+        } else {
+          const span = document.createElement('span');
+          span.className = 'read-char';
+          span.textContent = ch;
+          span.style.animationDelay = `${(currentCharIdx * CHAR_DELAY).toFixed(3)}s`;
+          currentCharIdx++;
+          fragment.appendChild(span);
+        }
+      }
+      return fragment;
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      /* Le bloc du slogan n'est pas découpé lettre par lettre :
+         il compte comme une respiration de 12 caractères. */
+      if (node.classList.contains('no-pace') || node.tagName === 'BUTTON') {
+        currentCharIdx += 12;
+        return node;
+      }
+      const clone = node.cloneNode(false);
+      node.childNodes.forEach(child => {
+        clone.appendChild(traverseAndWrap(child));
+      });
+      return clone;
+    }
+    return node;
+  }
+
+  const resultFrag = document.createDocumentFragment();
+  temp.childNodes.forEach(child => {
+    resultFrag.appendChild(traverseAndWrap(child));
+  });
+
+  return { fragment: resultFrag, nextIndex: currentCharIdx };
+}
+
+function buildSlide(slide) {
+  const block = document.createElement('div');
+  block.className = 'seq-block';
+
+  if (slide.img) {
+    const img = document.createElement('img');
+    img.className = 'slide-art';
+    img.src = slide.img;
+    img.alt = '';
+    img.loading = 'eager';
+    block.appendChild(img);
+  }
+
+  let slideCharCounter = 0;
+
+  slide.parts.forEach(p => {
+    if (p.t === 'cta') {
+      const btn = document.createElement('button');
+      btn.className = 'btn-start';
+      btn.style.marginTop = '10px';
+      btn.setAttribute('aria-label', 'Get Higher');
+      btn.innerHTML = '<span class="get-text">Get</span><span class="higher-svg"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>';
+      btn.onclick = () => { window.location.href = EXIT; };
+      block.appendChild(btn);
+    } else if (p.t === 'learn') {
+      const btn = document.createElement('button');
+      btn.className = 'btn-sig';
+      btn.textContent = 'Learn more';
+      btn.onclick = () => { window.location.href = EXIT; };
+      block.appendChild(btn);
+    } else {
+      const d = document.createElement('div');
+      d.className = 't-quantico-pacer';
+      const paced = formatCharPacedText(p.x || '', slideCharCounter);
+      d.appendChild(paced.fragment);
+      slideCharCounter = paced.nextIndex;
+      block.appendChild(d);
+    }
+  });
+
+  return block;
+}
+
+function init() {
+  stage.innerHTML = '';
+  SLIDES_DATA.forEach(s => stage.appendChild(buildSlide(s)));
+  showSlide(0, true);
+}
+
+function showSlide(i, instant) {
+  const blocks = stage.querySelectorAll('.seq-block');
+  blocks.forEach((b, idx) => {
+    if (idx === i) {
+      if (instant) b.classList.add('instant');
+      b.classList.add('active');
+      requestAnimationFrame(() => {
+        b.classList.add('show');
+        if (instant) requestAnimationFrame(() => b.classList.remove('instant'));
+      });
+    } else {
+      b.classList.remove('show');
+      setTimeout(() => b.classList.remove('active'), instant ? 0 : FADE);
+    }
+  });
+  curSlide = i;
+}
+
+function goToSlide(i) {
+  if (isAnimating || i < 0 || i >= SLIDES_DATA.length || i === curSlide) return;
+  isAnimating = true;
+  showSlide(i, false);
+  setTimeout(() => isAnimating = false, FADE);
+}
+
+function next() { goToSlide(curSlide + 1); }
+function prev() { goToSlide(curSlide - 1); }
+
+let wheelLock = false;
+window.addEventListener('wheel', e => {
+  if (wheelLock || Math.abs(e.deltaY) < 25) return;
+  wheelLock = true;
+  setTimeout(() => wheelLock = false, 220);
+  hideHint();
+  e.deltaY > 0 ? next() : prev();
+}, { passive: true });
+
+let y0 = 0;
+window.addEventListener('touchstart', e => { y0 = e.changedTouches[0].screenY; }, { passive: true });
+window.addEventListener('touchend', e => {
+  const dy = e.changedTouches[0].screenY - y0;
+  if (Math.abs(dy) < 35) return;
+  hideHint();
+  dy < 0 ? next() : prev();
+}, { passive: true });
+
+window.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown') { next(); hideHint(); }
+  else if (e.key === 'ArrowUp') { prev(); hideHint(); }
+});
+
+let hintGone = false;
+function hideHint() {
+  if (!hintGone) {
+    hintGone = true;
+    vhint.classList.add('gone');
+  }
+}
+
+const lead = document.querySelector('.btn-neuro-lead');
+if (lead) lead.onclick = () => { next(); hideHint(); };
+
+init();
+</script>
+</body>
+</html>
