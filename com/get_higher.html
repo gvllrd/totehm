@@ -259,12 +259,16 @@ function initPaper(){
   const ctx    = canvas ? canvas.getContext('2d') : null;
   const vid    = document.getElementById('box-vid');
   function drawCover(){
-    if(!ctx || !vid || vid.readyState < 2) return;
-    const vw=vid.videoWidth, vh=vid.videoHeight, w=180, h=180;
-    const scale=Math.max(w/vw,h/vh);
-    const sw=w/scale, sh=h/scale, sx=(vw-sw)/2, sy=(vh-sh)/2;
-    ctx.drawImage(vid, sx, sy, sw, sh, 0, 0, w, h);
+    if(!ctx) return;
+    ctx.fillStyle='#000'; ctx.fillRect(0,0,180,180);
+    if(!vid || vid.readyState < 2) return;
+    const vw=vid.videoWidth, vh=vid.videoHeight;
+    if(!vw||!vh) return;
+    const w=180,h=180,scale=Math.max(w/vw,h/vh);
+    const sw=w/scale,sh=h/scale,sx=(vw-sw)/2,sy=(vh-sh)/2;
+    try{ ctx.drawImage(vid,sx,sy,sw,sh,0,0,w,h); }catch(e){}
   }
+  if(vid) vid.play().catch(()=>{});
 
   // Start at an angle that shows the box has depth
   let rotX=8, rotY=18, velX=0, velY=0;
