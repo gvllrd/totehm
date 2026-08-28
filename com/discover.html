@@ -178,11 +178,6 @@ function buildSlide(slide) {
       btn.innerHTML = '<span class="get-text">Get</span><span class="higher-svg"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>';
       btn.onclick = () => { window.location.href = EXIT; };
       block.appendChild(btn);
-    } else if (p.t === 'c') {
-      const d = document.createElement('div');
-      d.className = 't-coral';
-      d.innerHTML = (p.x || '').replace(/\n/g, '<br>');
-      block.appendChild(d);
     } else {
       const d = document.createElement('div');
       d.className = 't-quantico-pacer';
