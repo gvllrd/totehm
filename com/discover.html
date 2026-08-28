@@ -19,8 +19,10 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 .seq-block{position:absolute;width:90%;max-width:540px;text-align:center;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(15px);transition:opacity .65s ease,transform .65s cubic-bezier(.22,.61,.36,1);display:flex;flex-direction:column;align-items:center;gap:calc(15px*var(--rhythm))}
 .seq-block.active{visibility:visible}.seq-block.show{opacity:1;transform:translateY(0);pointer-events:auto}
 .seq-block.instant{transition:none}
-.t-futura{font-family:var(--futura-light);font-weight:300;font-size:14px;color:rgba(255,255,255,.35);line-height:1.7;letter-spacing:.02em;transition:color .7s ease}
-.seq-block.show .t-futura{color:#fff}
+.t-futura{font-family:var(--futura-light);font-weight:300;font-size:14px;line-height:1.7;letter-spacing:.02em}
+.read-word{color:rgba(255,255,255,.35);display:inline}
+.seq-block.show .read-word{animation:wordToWhite .42s ease forwards}
+@keyframes wordToWhite{to{color:#fff}}
 .t-coral{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:var(--coral);line-height:1.7;letter-spacing:.02em}
 .t-mono{font-family:'Space Mono',monospace;font-weight:400;font-size:11px;color:var(--g-dark);line-height:1.5;letter-spacing:.16em;text-transform:uppercase}
 .t-intent{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;color:#fff;line-height:1.5;letter-spacing:.01em;padding:3px 8px;display:inline-block;background-color:var(--plus)}
@@ -34,7 +36,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-5px)}}
 @media(max-width:600px){.get-text{font-size:14px}.higher-svg{width:min(32vw,95px)}}
 #prog{position:fixed;bottom:0;left:0;height:1px;background:rgba(255,255,255,.45);width:0%;transition:width .5s cubic-bezier(.65,0,.35,1);pointer-events:none;z-index:10}
-@media(prefers-reduced-motion:reduce){.seq-block{transition:opacity .3s ease}.t-futura{transition:none}#vhint{animation:none}}
+@media(prefers-reduced-motion:reduce){.seq-block{transition:opacity .3s ease}.read-word{animation:none!important;color:#fff}#vhint{animation:none}}
 </style>
 </head>
 <body>
@@ -79,9 +81,39 @@ const stage=document.getElementById('stage');
 const vhint=document.getElementById('vhint');
 let SLIDES=[],curSlide=0,isAnimating=false;const FADE=650;
 
+/* 240 WPM ≈ 250 ms/mot — le blanc progresse au rythme de la lecture */
+const WMS=250;
+function wrapWords(htmlStr,wi){
+  const tmp=document.createElement('div');
+  tmp.innerHTML=(htmlStr||'').replace(/\n/g,'<br>');
+  function walk(node){
+    if(node.nodeType===Node.TEXT_NODE){
+      const text=node.textContent;
+      if(!text.trim())return node;
+      const frag=document.createDocumentFragment();
+      text.split(/(\s+)/).forEach(tok=>{
+        if(/^\s*$/.test(tok)){frag.appendChild(document.createTextNode(tok));}
+        else{const s=document.createElement('span');s.className='read-word';s.textContent=tok;
+          s.style.animationDelay=(wi.v*WMS/1000).toFixed(3)+'s';wi.v++;frag.appendChild(s);}
+      });
+      return frag;
+    }else if(node.nodeType===Node.ELEMENT_NODE){
+      if(node.classList.contains('btn-start')||node.tagName==='BUTTON'||node.classList.contains('higher-inline')){
+        wi.v+=Math.max(1,node.textContent.trim().split(/\s+/).length);return node;}
+      const clone=node.cloneNode(false);
+      node.childNodes.forEach(ch=>clone.appendChild(walk(ch)));return clone;
+    }
+    return node;
+  }
+  const frag=document.createDocumentFragment();
+  tmp.childNodes.forEach(ch=>frag.appendChild(walk(ch)));
+  return frag;
+}
+
 function buildSlide(slide){
   const block=document.createElement('div');
   block.className='seq-block'+(slide.slot==='coherence'?' coherence':'');
+  const wi={v:0};
   slide.parts.forEach(p=>{
     if(p.t==='cta'){
       const btn=document.createElement('button');btn.className='btn-start';btn.setAttribute('aria-label','Get Higher');
@@ -91,7 +123,8 @@ function buildSlide(slide){
     }else{
       const d=document.createElement('div');
       d.className=p.t==='g'?'t-futura':(p.t==='c'?'t-coral coral-line':(p.t==='i'?'t-intent':'t-mono'));
-      d.innerHTML=(p.x||'').replace(/\n/g,'<br>');
+      if(p.t==='g'){d.appendChild(wrapWords(p.x||'',wi));}
+      else{d.innerHTML=(p.x||'').replace(/\n/g,'<br>');wi.v+=Math.max(1,(p.x||'').replace(/<[^>]+>/g,' ').trim().split(/\s+/).length);}
       block.appendChild(d);
     }
   });
