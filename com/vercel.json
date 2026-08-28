@@ -17,10 +17,10 @@
       "has": [{ "type": "header", "key": "x-vercel-ip-country", "value": "PT" }],
       "destination": "/discover_lisbon.html"
     },
-    { "source": "/", "destination": "/get_higher.html" },
+    { "source": "/", "destination": "/discover.html" },
 
     { "source": "/lisbon", "destination": "/discover_lisbon.html" },
-    { "source": "/global", "destination": "/get_higher.html" }
+    { "source": "/global", "destination": "/discover.html" }
   ],
   "headers": [
     {
