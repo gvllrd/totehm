@@ -121,6 +121,75 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 
 @media(prefers-reduced-motion:reduce){.box{will-change:auto}}
 
+/* ═══ STREET BOARD ═══ */
+.world{
+  position:fixed;inset:0;z-index:80;
+  display:flex;align-items:center;justify-content:center;
+  background:#000;
+  transform:translateY(100%);
+  transition:transform .55s cubic-bezier(.65,0,.35,1);
+  pointer-events:none;
+}
+.world.on{transform:translateY(0);pointer-events:auto}
+.board{
+  position:relative;
+  width:min(100vw,calc(100vh * 1.7778));
+  height:min(100vh,calc(100vw / 1.7778));
+}
+@media(hover:hover) and (min-width:900px){
+  .board{width:min(66vw,calc(66vh * 1.7778));height:min(66vh,calc(66vw / 1.7778));}
+}
+.sign{
+  position:absolute;left:var(--l);top:var(--t);width:var(--w);
+  background:none;border:0;padding:0;cursor:pointer;
+  transition:transform .14s ease,filter .2s ease;
+  touch-action:manipulation;outline:none;
+}
+.sign img{width:100%;height:auto;display:block;pointer-events:none}
+@media(hover:hover){.sign:hover{filter:brightness(1.15) drop-shadow(0 0 6px rgba(255,255,255,.2))}}
+.sign:active{transform:scale(.86)}
+.sign-spin img{animation:sign-spin 18s linear infinite}
+@keyframes sign-spin{to{transform:rotate(360deg)}}
+#world-close{
+  position:absolute;top:18px;right:18px;z-index:5;
+  background:none;border:none;cursor:pointer;padding:0;
+  font-family:'Quantico',sans-serif;font-size:13px;color:#606060;
+  transition:color .15s ease;
+}
+@media(hover:hover){#world-close:hover{color:#fff}}
+
+/* ═══ SIGN XP ═══ */
+.xp{
+  position:fixed;inset:0;z-index:90;background:#000;
+  transform:translateY(-100%);
+  transition:transform .55s cubic-bezier(.65,0,.35,1);
+  pointer-events:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:28px;
+}
+.xp.up{transform:translateY(0);pointer-events:auto}
+.vid-wrap{
+  width:min(80vmin,320px);height:min(80vmin,320px);
+  opacity:0;transition:opacity .5s ease;flex-shrink:0;
+  position:relative;
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 0 0 28px rgba(255,255,255,.06);
+  background:rgba(255,255,255,.04);
+}
+.vid-wrap::before{
+  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,.03) 40%,transparent 65%);
+}
+.vid-wrap.in{opacity:1}
+.xp video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
+#xp-close{
+  position:absolute;top:18px;left:18px;
+  background:none;border:none;cursor:pointer;
+  font-family:'Quantico',sans-serif;font-size:13px;color:#606060;
+  transition:color .15s ease;
+}
+@media(hover:hover){#xp-close:hover{color:#fff}}
+
 </style>
 </head>
 <body>
@@ -141,6 +210,19 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 
 <div id="stage"></div>
 <div id="vhint">&darr;</div>
+
+<div class="world" id="world">
+  <button id="world-close">✕</button>
+  <div class="board" id="board"></div>
+</div>
+
+<div class="xp" id="xp">
+  <button id="xp-close">← Back</button>
+  <div class="vid-wrap" id="vidWrap">
+    <video id="vid" playsinline preload="none"></video>
+  </div>
+  <button id="xp-buy" class="btn-sig claimed">Get Higher — $30</button>
+</div>
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -190,6 +272,7 @@ function buildSlide(slide){
         </div>
         <button id="btn-buy" class="btn-sig">Buy a TotehmPaper {THP} — $30</button>
         <div class="note dim" style="margin-top:10px;"><a href="stoner_terms.html" target="_blank" style="color:#606060;text-decoration:none;letter-spacing:.1em;">Simple terms of sale</a></div>
+        <button id="btn-play-street" class="btn-sig" style="margin-top:14px;">Play the street ↓</button>
       `;
     } else if(p.t==='mail'){
       block.innerHTML = `
@@ -439,6 +522,110 @@ setTimeout(() => {
   if(inOtp) inOtp.addEventListener('keydown',e=>{ if(e.key==='Enter') btnVerify.click(); });
 
 }, 100);
+
+/* ═══ STREET BOARD ═══ */
+{
+const IMG_BASE = 'assets/signs/';
+const VID_BASE = 'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/play-signals/';
+
+const SIGNS = {
+  fire_exit:          [23.1,  5.5,  6.5],
+  Heli:               [46.0,  7.4,  5.2],
+  aed:                [70.1,  5.5,  6.5],
+  green_walk:         [33.7,  9.0,  3.8],
+  red_walk:           [33.7, 16.5,  3.8],
+  pharma:             [20.8, 22.5, 10.0],
+  destination:        [40.1,  9.5, 18.5],
+  lisboa_city_hall:   [60.8, 10.0,  6.2],
+  speed_bump_caution: [68.4, 15.5,  6.2],
+  crosswalk_caution:  [63.5, 27.0,  5.6],
+  no_entry:           [73.4, 27.6,  5.5],
+  no_parking:         [68.5, 37.0,  5.8],
+  hospital:           [46.8, 37.0,  3.8],
+  parking:            [46.1, 44.6,  5.2],
+  Hotel:              [46.0, 55.0,  5.6],
+  dead_end:           [20.4, 51.0,  6.9],
+  roundabout:         [32.9, 49.5, 10.2],
+  left_or_straight:   [56.9, 49.5, 10.2],
+  no_uturn:           [69.8, 49.7,  8.8],
+  priority:           [15.4, 66.8, 10.1],
+  crosswalk:          [44.5, 71.0,  8.5],
+  stop:               [73.3, 66.0, 11.6],
+};
+
+const world      = document.getElementById('world');
+const board      = document.getElementById('board');
+const xp         = document.getElementById('xp');
+const vidWrap    = document.getElementById('vidWrap');
+const vid        = document.getElementById('vid');
+const worldClose = document.getElementById('world-close');
+const xpClose    = document.getElementById('xp-close');
+const xpBuy      = document.getElementById('xp-buy');
+
+let streetBusy = false;
+
+for(const [id,[l,t,w]] of Object.entries(SIGNS)){
+  const b = document.createElement('button');
+  b.className = 'sign';
+  b.style.setProperty('--l', l+'%');
+  b.style.setProperty('--t', t+'%');
+  b.style.setProperty('--w', w+'%');
+  b.setAttribute('aria-label', id.replace(/_/g,' '));
+  if(id==='roundabout'||id==='left_or_straight') b.classList.add('sign-spin');
+  const img = document.createElement('img');
+  img.src = IMG_BASE+id+'.png'; img.alt=''; img.loading='lazy';
+  b.appendChild(img);
+  b.addEventListener('click', ()=>launchXp(id));
+  board.appendChild(b);
+}
+
+function openWorld(){ world.classList.add('on'); }
+function closeWorld(){ world.classList.remove('on'); }
+
+function launchXp(id){
+  if(streetBusy) return;
+  streetBusy = true;
+  vid.src = VID_BASE+id+'.mp4'; vid.load();
+  vidWrap.classList.remove('in');
+  closeWorld();
+  xp.classList.add('up');
+  setTimeout(()=>{
+    vidWrap.classList.add('in');
+    vid.play().catch(()=>{ vid.controls=true; });
+  }, 400);
+}
+
+function comeBack(){
+  vid.pause();
+  xp.classList.remove('up');
+  vidWrap.classList.remove('in');
+  setTimeout(()=>{ vid.src=''; streetBusy=false; openWorld(); }, 300);
+}
+
+function closeAll(){
+  vid.pause();
+  xp.classList.remove('up');
+  closeWorld();
+  vidWrap.classList.remove('in');
+  setTimeout(()=>{ vid.src=''; streetBusy=false; }, 300);
+}
+
+vid.addEventListener('ended', comeBack);
+xpClose.addEventListener('click', comeBack);
+worldClose.addEventListener('click', closeAll);
+
+xpBuy.addEventListener('click', async ()=>{
+  closeAll();
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session?.user?.email){ toStripe(); return; }
+  goToSlide(1);
+  setTimeout(()=>{ const el=document.getElementById('in-email'); if(el) el.focus(); },50);
+});
+
+document.addEventListener('click', ev=>{
+  if(ev.target.closest('#btn-play-street')) openWorld();
+});
+}
 
 </script>
 </body>

@@ -41,7 +41,16 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   gap:10px;padding:14px 16px;text-align:center;overflow-y:auto;
 }
 @media (orientation:portrait) and (pointer:coarse){.rotate{display:flex}}
-.vid-frame{display:inline-block;line-height:0;border:1px solid rgba(255,255,255,.22);box-shadow:0 0 18px rgba(255,255,255,.06);}
+.vid-frame{
+  display:inline-block;line-height:0;position:relative;
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 0 0 28px rgba(255,255,255,.06);
+  background:rgba(255,255,255,.04);
+}
+.vid-frame::before{
+  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,.03) 40%,transparent 65%);
+}
 .init-vid{width:min(44vw,180px);height:auto;display:block;background:#000}
 .rotate .spinner{width:52px;height:52px;color:var(--coral);animation:spin 3.2s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -190,6 +199,13 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   position:relative;flex-shrink:0;
   width:min(38vmax,260px);height:min(38vmax,260px);
   opacity:0;transition:opacity .5s ease;
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 0 0 28px rgba(255,255,255,.06);
+  background:rgba(255,255,255,.04);
+}
+.vid-wrap::before{
+  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,.03) 40%,transparent 65%);
 }
 .vid-wrap.in{opacity:1}
 .xp video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
