@@ -40,30 +40,12 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
   line-height:1.4;letter-spacing:.02em;display:flex;align-items:center;
   justify-content:center;gap:4px;width:100%;max-width:460px; text-transform:uppercase;}
 
-/* Ajout spécifique pour le titre Titre du paywall (Quantico blanc) */
-.q-title{font-family:'Quantico',sans-serif;font-weight:700;font-size:18px;color:#fff;
-  line-height:1.4;letter-spacing:.06em;display:flex;align-items:center;
-  justify-content:center;gap:4px;width:100%;max-width:460px; text-transform:uppercase; margin-bottom:4px;}
 
 .higher-inline{display:inline-flex;align-items:center;width:54px;vertical-align:middle;line-height:0;margin:0 2px;}
 .higher-inline svg{display:block;width:100%;height:auto;fill:currentColor}
 .higher-inline-p{display:inline-block;width:42px;height:14px;vertical-align:middle;line-height:0;margin:0 2px}
 .higher-inline-p svg{display:block;width:100%;height:100%;fill:currentColor}
 
-/* Format texte menu totehm.html */
-.m-info{font-family:var(--futura-light);font-weight:300;font-size:13px;color:#909090;line-height:1.6;margin-bottom:18px; padding:0 24px;}
-.fc-img{width:90%; max-width:320px; aspect-ratio:16/9; object-fit:cover; border-radius:2px; margin-bottom:12px; background:#0a0a0a; border:1px solid #1e1e1e; display:block;}
-
-/* Golden Ratio Tiers Slider */
-.tiers-scroll-wrapper { width:100%; max-width:540px; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; scrollbar-width:none; -webkit-mask-image:linear-gradient(to right, transparent, black 8%, black 92%, transparent); mask-image:linear-gradient(to right, transparent, black 8%, black 92%, transparent); margin-bottom: 24px; padding: 4px 0;}
-.tiers-scroll-wrapper::-webkit-scrollbar { display:none; }
-.tiers-scroll-inner { display:flex; gap:12px; padding:0 35px; width:max-content; align-items:center; }
-
-.size-btn{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;border:6px solid transparent;padding:6px 12px;transition:color .15s; position:relative; display:inline-flex; flex-direction:column; align-items:center; justify-content:center; min-width:110px; flex-shrink:0;}
-.size-btn.active{color:#fff;border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");border-image-slice:6 fill;border-image-repeat:round}
-.size-btn.done { text-decoration: line-through; opacity: 0.3; }
-.size-btn.future { opacity: 0.4; }
-.tier-lbl { font-size: 10px; opacity: 0.6; margin-bottom: 4px;}
 
 /* Bouton d'achat style .btn-sig de totehm.html */
 .btn-sig{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-flex; align-items:center; gap:6px; -webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
@@ -127,23 +109,11 @@ function buildSlide(slide){
   slide.parts.forEach(p=>{
     if(p.t==='paywall'){
       block.innerHTML = `
-        <div class="q-title">THE STONER EXPERIENCE</div>
-        <div class="m-info">Ten steps. An artistic and neurological experience. A numbered place, for life.</div>
-
-        <div class="tiers-scroll-wrapper" id="tiers-wrapper">
-           <div class="tiers-scroll-inner" id="tiers-container">
-              <!-- Injected by JS -->
-           </div>
+        <div id="totehm-paper" style="margin-bottom:28px;">
+          <img src="totehm_logo.png" alt="TotehmPaper" style="width:180px;display:block;margin:0 auto;opacity:.9;">
         </div>
-
-        <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
-            <label id="waiver-wrap" style="display:flex;align-items:flex-start;gap:9px;max-width:340px;margin-bottom:4px;cursor:pointer;text-align:left;">
-              <input type="checkbox" id="waiver" style="margin-top:3px;flex:0 0 auto;accent-color:#fbd5ca;">
-              <span class="note dim" style="line-height:1.45;">Access opens immediately. I agree to immediate delivery and waive my 14-day right of withdrawal. <a href="stoner_terms.html" target="_blank" style="color:#fbd5ca;">Terms</a></span>
-            </label>
-            <button id="btn-buy" class="btn-sig claimed">Get <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span> for <span id="dyn-price">--</span> &euro;</button>
-            <div class="note dim" id="counter">&mdash;&mdash;&mdash;</div>
-        </div>
+        <button id="btn-buy" class="btn-sig claimed">Buy a TotehmPaper {THP} — $30</button>
+        <div class="note dim" style="margin-top:10px;"><a href="stoner_terms.html" target="_blank" style="color:#606060;text-decoration:none;letter-spacing:.1em;">Simple terms of sale</a></div>
       `;
     } else if(p.t==='mail'){
       block.innerHTML = `
@@ -201,111 +171,6 @@ stage.innerHTML='';
 SLIDES.forEach(s=>stage.appendChild(buildSlide(s)));
 showSlide(0,true);
 
-/* --- LOGIQUE D'ACHAT ET TIERS (Supabase & Golden Ratio) --- */
-
-/* Paliers en nombre d'or, arrêtés à 5.
-   Le générateur d'origine produisait 24 paliers, le dernier à
-   710 647 € la place — lisible dans le source par n'importe qui.
-   Au-delà de 1 260 membres, on décidera à ce moment-là.
-
-   ⚠️ Cette table est un MIROIR de celle de higher-checkout.
-   Le serveur seul décide du prix réellement facturé. Si tu
-   modifies ici, modifie AUSSI supabase/functions/higher-checkout. */
-const goldenTiers = [
-  { id:"t1", seats:  77, price: 11, limit:   77 },
-  { id:"t2", seats: 125, price: 18, limit:  202 },
-  { id:"t3", seats: 202, price: 29, limit:  404 },
-  { id:"t4", seats: 327, price: 47, limit:  731 },
-  { id:"t5", seats: 529, price: 76, limit: 1260 }
-];
-
-// Inject into DOM
-const container = document.getElementById('tiers-container');
-if (container) {
-    container.innerHTML = goldenTiers.map((t, idx) => `
-        <div class="size-btn future" id="${t.id}">
-            <span class="tier-lbl">${idx === 0 ? '1st' : 'Next'} ${t.seats.toLocaleString('en-US')}</span>
-            <span style="font-size:16px; font-weight:bold; color:inherit;">${t.price.toLocaleString('en-US')} &euro;</span>
-        </div>
-    `).join('');
-}
-
-(async function counter(){
-  const el = document.getElementById('counter');
-  const dynPrice = document.getElementById('dyn-price');
-  if(!el || !dynPrice) return;
-  
-  try{
-    const { data, error } = await sb.rpc('higher_count');
-    if(error || data===null) throw error;
-    
-    const count = data;
-    let activePrice = 77;
-    let spotsLeft = 0;
-    let isActiveSet = false;
-    let activeElId = null;
-
-    for(let i=0; i<goldenTiers.length; i++){
-        const t = goldenTiers[i];
-        const tEl = document.getElementById(t.id);
-        if(!tEl) continue;
-
-        if(count >= t.limit){
-            tEl.className = 'size-btn done';
-        } else if(!isActiveSet) {
-            tEl.className = 'size-btn active';
-            spotsLeft = t.limit - count;
-            activePrice = t.price;
-            isActiveSet = true;
-            activeElId = t.id;
-        } else {
-            tEl.className = 'size-btn future';
-        }
-    }
-
-    /* Le prix affiché est confirmé par le serveur. Sans ça, la page
-       peut annoncer 11 € pendant que Stripe facture autre chose —
-       l'acheteur abandonne et on ne sait jamais pourquoi. */
-    dynPrice.textContent = activePrice.toLocaleString('en-US');
-    try{
-      const { data:{ session } } = await sb.auth.getSession();
-      if(session){
-        const r = await fetch(PAY_FN, {
-          method:'POST',
-          headers:{ 'Authorization':'Bearer '+session.access_token,
-                    'Content-Type':'application/json' },
-          body: JSON.stringify({ quote: true })
-        });
-        const q = await r.json();
-        if(q && q.amount) dynPrice.textContent =
-          Math.round(q.amount/100).toLocaleString('en-US');
-      }
-    }catch(e){ /* on garde l'affichage local */ }
-
-    if(spotsLeft > 0){
-        el.textContent = spotsLeft.toLocaleString('en-US') + ' places left at this tier';
-    } else {
-        el.textContent = 'ALL TIERS CLOSED';
-    }
-
-    // Scroll to center the active tier
-    if(activeElId) {
-        setTimeout(() => {
-            const activeEl = document.getElementById(activeElId);
-            const wrapper = document.getElementById('tiers-wrapper');
-            if(activeEl && wrapper) {
-                const offset = activeEl.offsetLeft - (wrapper.clientWidth / 2) + (activeEl.clientWidth / 2);
-                wrapper.scrollTo({ left: offset, behavior: 'smooth' });
-            }
-        }, 100);
-    }
-
-  }catch(e){ 
-    if(dynPrice) dynPrice.textContent = '11';   /* palier 1 */
-    if(el) el.textContent = 'SYSTEM OFFLINE'; 
-  }
-})();
-
 async function hasAccess(){
   try{
     const { data:{ session } } = await sb.auth.getSession();
@@ -323,15 +188,6 @@ async function hasAccess(){
 })();
 
 async function toStripe(){
-  /* Renonciation au droit de retractation : sans la case, aucun appel Stripe.
-     Verifie cote client pour l'UX, re-verifie cote serveur via metadata. */
-  const wv = document.getElementById('waiver');
-  if(wv && !wv.checked){
-    const w = document.getElementById('waiver-wrap');
-    if(w){ w.style.outline='1px solid #E24B4A'; w.style.outlineOffset='6px';
-           setTimeout(()=>{w.style.outline='none';},1600); }
-    return;
-  }
   const err = document.getElementById('err-code');
   try{
     const { data:{ session } } = await sb.auth.getSession();
