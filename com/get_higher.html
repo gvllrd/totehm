@@ -170,7 +170,7 @@ function buildSlide(slide){
   slide.parts.forEach(p=>{
     if(p.t==='paywall'){
       block.innerHTML = `
-        <video id="box-vid" src="assets/slides/init.mp4" autoplay muted loop playsinline style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;" aria-hidden="true"></video>
+        <video id="box-vid" src="assets/slides/init.mp4" autoplay muted playsinline style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;" aria-hidden="true"></video>
         <div id="totehm-paper" style="margin-bottom:28px;">
           <div class="box-scene">
             <div class="box">
