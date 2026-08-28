@@ -141,8 +141,6 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 
 <div id="stage"></div>
 <div id="vhint">&darr;</div>
-<img src="assets/img/wavywah_signature.jpg" alt="" aria-hidden="true"
-     style="position:fixed;bottom:18px;right:20px;width:90px;opacity:.35;pointer-events:none;user-select:none;mix-blend-mode:screen;">
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -175,8 +173,9 @@ function buildSlide(slide){
         <div id="totehm-paper" style="margin-bottom:28px;">
           <div class="box-scene">
             <div class="box">
-              <div class="bf b-back">
-                <svg viewBox="0 0 600 200" aria-hidden="true" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:150px;"><use href="#higher-slogan"></use></svg>
+              <div class="bf b-back" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
+                <svg viewBox="0 0 600 200" aria-hidden="true" style="width:150px;flex-shrink:0;"><use href="#higher-slogan"></use></svg>
+                <img src="assets/img/wavywah_signature.jpg" alt="" aria-hidden="true" style="width:90px;opacity:.7;mix-blend-mode:screen;pointer-events:none;-webkit-user-drag:none;">
               </div>
               <div class="bf b-logo">
                 <img src="assets/img/totehm_logo.png" alt="TotehmPaper" draggable="false">
