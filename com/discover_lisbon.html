@@ -195,16 +195,50 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 }
 .xp.up{top:0;pointer-events:auto}
 .xp-row{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:20px;width:100%;padding:0 20px}
-.vid-wrap{
-  position:relative;flex-shrink:0;
-  width:min(38vmax,260px);height:min(38vmax,260px);
-  opacity:0;transition:opacity .5s ease;
-  border:1px solid rgba(255,255,255,.22);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 0 0 28px rgba(255,255,255,.06);
-  background:rgba(255,255,255,.04);
+.vbox-scene{
+  --vbs:min(50vmin,260px);--vbd:36px;--vbhd:18px;
+  perspective:900px;width:var(--vbs);height:var(--vbs);
+  cursor:grab;touch-action:none;
+  user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;
+  flex-shrink:0;opacity:0;transition:opacity .5s ease;
 }
-.vid-wrap.in{opacity:1}
-.xp video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
+.vbox-scene.in{opacity:1}
+.vbox{
+  width:var(--vbs);height:var(--vbs);
+  position:relative;transform-style:preserve-3d;will-change:transform;
+}
+.vbf{position:absolute;left:0;top:0;}
+.vb-front{
+  width:var(--vbs);height:var(--vbs);
+  transform:translateZ(var(--vbhd));
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35);
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+}
+.vb-front::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.14) 0%,rgba(255,255,255,.03) 40%,transparent 65%);
+}
+.vb-back{
+  width:var(--vbs);height:var(--vbs);
+  transform:rotateY(180deg) translateZ(var(--vbhd));
+  background:#000;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+}
+.vb-inner{
+  width:var(--vbs);height:var(--vbs);
+  transform:translateZ(0);
+  display:flex;align-items:center;justify-content:center;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  overflow:hidden;
+}
+.vb-inner video{width:100%;height:100%;object-fit:cover;display:block;background:#000;}
+.vbside{position:absolute;left:0;top:0;background:#000;border:1px solid rgba(255,255,255,.06);}
+.vb-right{width:var(--vbd);height:var(--vbs);transform:translateX(calc(var(--vbs) - var(--vbhd))) rotateY(-90deg);}
+.vb-left {width:var(--vbd);height:var(--vbs);transform:translateX(calc(-1 * var(--vbhd))) rotateY(90deg);}
+.vb-top  {width:var(--vbs);height:var(--vbd);transform:translateY(calc(-1 * var(--vbhd))) rotateX(90deg);}
+.vb-bot  {width:var(--vbs);height:var(--vbd);transform:translateY(calc(var(--vbs) - var(--vbhd))) rotateX(-90deg);}
+@media(prefers-reduced-motion:reduce){.vbox{will-change:auto}}
 
 /* ═══ LAYER 5 : DISCOVER OVERLAY ═══ */
 .discover{
@@ -402,7 +436,15 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 <div class="xp" id="xp">
   <button class="close" id="xpClose">Back in <svg style="display:inline-block;width:0.62em;height:0.85em;vertical-align:-0.08em;color:inherit" viewBox="0 0 60 80" aria-hidden="true"><use href="#t-glyph"/></svg>ime</button>
   <div class="xp-row">
-    <div class="vid-wrap" id="vidWrap"><video id="vid" playsinline preload="none"></video></div>
+    <div class="vbox-scene" id="vidWrap">
+      <div class="vbox" id="vidBox">
+        <div class="vbf vb-back"></div>
+        <div class="vbf vb-inner"><video id="vid" playsinline preload="none"></video></div>
+        <div class="vbside vb-right"></div><div class="vbside vb-left"></div>
+        <div class="vbside vb-top"></div><div class="vbside vb-bot"></div>
+        <div class="vbf vb-front"></div>
+      </div>
+    </div>
     <a class="xp-higher" id="xpHigher" href="stoner.html">
       <div class="higher-row">
         <span class="get-word">Get</span>
@@ -588,6 +630,45 @@ for(const [id,[l,t,w]] of Object.entries(SIGNS)){
   board.appendChild(b);
 }
 
+/* ═══ VID BOX DRAG ═══ */
+let vbRaf=null,vbGrab=false,vbRX=5,vbRY=-15,vbVX=0,vbVY=0,vbT=0,vbTs=null;
+let vbSX=0,vbSY=0,vbDRX=0,vbDRY=0,vbHX=null,vbHY=null;
+function startVidBox(){
+  const scene=document.getElementById('vidWrap'),box=document.getElementById('vidBox');
+  if(!scene||!box||vbRaf)return;
+  vbRX=5;vbRY=-15;vbVX=0;vbVY=0;vbT=0;vbTs=null;vbHX=null;vbHY=null;
+  function idleXY(t){return{x:Math.sin(t*.5)*5+Math.cos(t*.9)*2,y:Math.cos(t*.35)*12+Math.sin(t*.8)*5};}
+  function tick(ts){
+    if(!vbTs)vbTs=ts;const dt=Math.min((ts-vbTs)/1000,.05);vbTs=ts;
+    if(!vbGrab){vbT+=dt*.3;const g=idleXY(vbT),tx=vbHX!==null?vbHX:g.x,ty=vbHY!==null?vbHY:g.y;
+      const k=vbHX!==null?10:6,d=5;
+      vbVX+=((tx-vbRX)*k-vbVX*d)*dt;vbVY+=((ty-vbRY)*k-vbVY*d)*dt;vbRX+=vbVX*dt;vbRY+=vbVY*dt;}
+    box.style.transform=`rotateX(${vbRX.toFixed(2)}deg) rotateY(${vbRY.toFixed(2)}deg)`;
+    vbRaf=requestAnimationFrame(tick);
+  }
+  vbRaf=requestAnimationFrame(tick);
+  scene.addEventListener('mousemove',_vbMM);scene.addEventListener('mouseleave',_vbML);
+  scene.addEventListener('mousedown',_vbMD);
+  scene.addEventListener('touchstart',_vbTS,{passive:true});scene.addEventListener('touchmove',_vbTM,{passive:true});scene.addEventListener('touchend',_vbTE,{passive:true});
+  window.addEventListener('mousemove',_vbWM);window.addEventListener('mouseup',_vbMU);
+}
+function stopVidBox(){
+  if(vbRaf){cancelAnimationFrame(vbRaf);vbRaf=null;}vbGrab=false;
+  const s=document.getElementById('vidWrap');
+  if(s){s.removeEventListener('mousemove',_vbMM);s.removeEventListener('mouseleave',_vbML);
+    s.removeEventListener('mousedown',_vbMD);
+    s.removeEventListener('touchstart',_vbTS);s.removeEventListener('touchmove',_vbTM);s.removeEventListener('touchend',_vbTE);}
+  window.removeEventListener('mousemove',_vbWM);window.removeEventListener('mouseup',_vbMU);
+}
+function _vbMM(e){if(vbGrab)return;const r=this.getBoundingClientRect();vbHX=-(e.clientY-r.top-r.height/2)/(r.height/2)*12;vbHY=(e.clientX-r.left-r.width/2)/(r.width/2)*18;}
+function _vbML(){vbHX=null;vbHY=null;}
+function _vbMD(e){vbGrab=true;vbSX=e.clientX;vbSY=e.clientY;vbDRX=vbRX;vbDRY=vbRY;this.style.cursor='grabbing';e.preventDefault();}
+function _vbWM(e){if(!vbGrab)return;vbRX=Math.max(-80,Math.min(80,vbDRX-(e.clientY-vbSY)*.5));vbRY=vbDRY+(e.clientX-vbSX)*.7;}
+function _vbMU(){if(!vbGrab)return;vbGrab=false;vbVX=0;vbVY=0;const s=document.getElementById('vidWrap');if(s)s.style.cursor='grab';}
+function _vbTS(e){const t=e.changedTouches[0];vbGrab=true;vbSX=t.clientX;vbSY=t.clientY;vbDRX=vbRX;vbDRY=vbRY;}
+function _vbTM(e){if(!vbGrab)return;const t=e.changedTouches[0];vbRX=Math.max(-80,Math.min(80,vbDRX-(t.clientY-vbSY)*.5));vbRY=vbDRY+(t.clientX-vbSX)*.7;}
+function _vbTE(){vbGrab=false;vbVX=0;vbVY=0;}
+
 /* ═══ EXPERIENCE FLOW ═══ */
 function launch(id){
   if(busy || discOpen) return;
@@ -602,6 +683,7 @@ function launch(id){
     vidWrap.classList.add('in');
     xpHigher.classList.add('in');
     vid.play().catch(()=>{ vid.controls=true; });
+    startVidBox();
   }, 400);
 }
 
@@ -610,6 +692,7 @@ xpClose.addEventListener('click', comeBack);
 
 function comeBack(){
   vid.pause();
+  stopVidBox();
   world.classList.remove('away');
   xp.classList.remove('up');
   setTimeout(()=>{
