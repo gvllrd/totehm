@@ -171,6 +171,7 @@ Interface d'achat (get_higher.html au 28/08/2026) :
 - Le logo TOTEHM en grand, centré, comme un carré de papier à tenir entre les doigts.
 - Un seul bouton : `Buy a TotehmPaper {THP} — $30` (perforé, Quantico).
 - En dessous : `Simple terms of sale` — lien sobre, gris sombre, aucune case à cocher.
+- En dessous : bouton `Play the street ↓` — ouvre le panneau de 22 panneaux de signalisation lisboètes (Play the Street).
 - Rien d'autre. Aucun titre. Aucune description. L'objet parle.
 
 **Référence concurrente :** l'acide en carré de papier buvard. La forme physique d'une
@@ -274,6 +275,13 @@ directional signs become interactive triggers for mental and artistic sequences.
 Not street advertising. Not a city-guide app. Not an art campaign.
 
 > The city is already talking. You just weren't listening.
+
+**Implémentation au 28/08/2026 :** `discover_lisbon.html` superpose 22 panneaux de
+signalisation lisboètes sur une photo de rue. Chaque signe est un bouton : cliquer
+dessus lance sa vidéo dans une boîte en verre 3D rotative (système `.vbox-scene`,
+voir `CLAUDE.md`). Le même panneau est accessible depuis `get_higher.html` via le
+bouton **"Play the street ↓"**. Les vidéos sont servies depuis le bucket Supabase
+public `play-signals`.
 
 ### International version — THE FIRST DIGITAL LSD
 

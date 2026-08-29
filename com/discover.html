@@ -11,18 +11,24 @@
 <style>
 :root{
   --coral:#fbd5ca;
-  --g-dim:#8e8e98;--g-mid:#909090;--g-dark:#606060;
-  --tile-blue:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+  --g-mid:#909090;--g-dark:#606060;
+  --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;background:#000;overflow:hidden;-webkit-font-smoothing:antialiased}
 
-#stage{
-  position:fixed;inset:0;padding:60px 24px 70px;
-  display:flex;align-items:center;justify-content:center;background:#000;
+/* ─── PAYWALL ─── */
+#paywall{
+  position:fixed;inset:0;z-index:10;background:#000;
+  transition:transform .55s cubic-bezier(.65,0,.35,1);
+}
+#paywall.away{transform:translateY(-100%);pointer-events:none}
+#auth-stage{
+  position:absolute;inset:0;padding:54px 24px 80px;
+  display:flex;align-items:center;justify-content:center;
 }
 .seq-block{
-  position:absolute;width:90%;max-width:560px;text-align:center;
+  position:absolute;width:100%;max-width:540px;text-align:center;
   opacity:0;visibility:hidden;pointer-events:none;transform:translateY(14px);
   transition:opacity .65s ease,transform .65s cubic-bezier(.22,.61,.36,1);
   display:flex;flex-direction:column;align-items:center;gap:16px;
@@ -31,59 +37,144 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;-webkit-font-sm
 .seq-block.show{opacity:1;transform:translateY(0);pointer-events:auto}
 .seq-block.instant{transition:none}
 
-.t-quantico-pacer{
-  font-family:'Quantico',sans-serif;
-  font-weight:400;font-size:15px;line-height:1.85;letter-spacing:.03em;color:#b0b0b0;
+/* ─── 3D LOGO BOX ─── */
+.box-scene{
+  perspective:900px;width:180px;height:180px;
+  cursor:grab;touch-action:none;
+  user-select:none;-webkit-user-select:none;margin:0 auto 20px;
 }
-.t-coral{
-  font-family:'Quantico',sans-serif;
-  font-weight:700;font-size:15px;line-height:1.7;letter-spacing:.02em;color:#909090;
+.box{width:180px;height:180px;position:relative;transform-style:preserve-3d;will-change:transform}
+.bf{position:absolute;left:0;top:0}
+.b-front{
+  width:180px;height:180px;transform:translateZ(25px);
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.22);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35);
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
 }
-.read-char{color:#b0b0b0;display:inline}
-.seq-block.show .read-char{animation:charToWhite .45s ease forwards}
-@keyframes charToWhite{to{color:#fff}}
+.b-front::before{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.14) 0%,rgba(255,255,255,.03) 40%,transparent 65%)}
+.b-back{
+  width:180px;height:180px;transform:rotateY(180deg) translateZ(25px);
+  background:#000;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.b-logo{
+  width:180px;height:180px;transform:translateZ(-12px);
+  display:flex;align-items:center;justify-content:center;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+}
+.b-logo img{width:68%;height:68%;object-fit:contain;pointer-events:none;-webkit-user-drag:none}
+.bside{position:absolute;left:0;top:0;background:#000;border:1px solid rgba(255,255,255,.06)}
+.b-right{width:50px;height:180px;transform:translateX(155px) rotateY(-90deg)}
+.b-left {width:50px;height:180px;transform:translateX(-25px) rotateY(90deg)}
+.b-top  {width:180px;height:50px;transform:translateY(-25px) rotateX(90deg)}
+.b-bot  {width:180px;height:50px;transform:translateY(155px) rotateX(-90deg)}
+@media(prefers-reduced-motion:reduce){.box{will-change:auto}}
 
+/* ─── BUTTONS ─── */
+.btn-sig{
+  font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
+  color:#b0b0b0;background:none;border:6px solid transparent;
+  padding:0 4px;line-height:1.5;cursor:pointer;text-decoration:none;
+  display:inline-flex;align-items:center;gap:6px;
+  -webkit-tap-highlight-color:transparent;transition:color .15s ease;outline:none;
+}
+.btn-sig.claimed{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+@media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
+.btn-sig:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+.note{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;text-align:center}
+.note.dim{color:#9a9a9a}
+.line-input{
+  font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
+  color:#fff;background:none;outline:none;
+  border:6px solid transparent;
+  border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;
+  padding:0 6px;text-align:center;caret-color:var(--coral);min-width:260px;
+}
+.line-input::placeholder{color:rgba(255,255,255,.33)}
+.q-label{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;color:var(--coral);line-height:1.4;text-transform:uppercase}
+
+/* ─── DOWN TRIGGER ─── */
+#down-trigger{
+  position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:15;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  background:none;border:none;cursor:pointer;padding:0;
+  text-align:center;white-space:nowrap;
+  opacity:1;transition:opacity .3s ease;
+}
+#down-trigger.gone{opacity:0;pointer-events:none}
+.trigger-label{
+  font-family:'Quantico',sans-serif;font-size:13px;color:#606060;
+  letter-spacing:.02em;line-height:1.5;transition:color .15s;
+}
+.chev{width:22px;height:22px;color:#606060;flex-shrink:0;transition:color .15s}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+.bob{animation:bob 1.8s ease-in-out infinite}
+@media(pointer:coarse){.trigger-label{display:none}}
+@media(hover:hover){
+  #down-trigger:hover .trigger-label,
+  #down-trigger:hover .chev{color:#fff}
+}
+
+/* ─── DISCOVER ─── */
+#discover{
+  position:fixed;inset:0;z-index:20;background:#000;
+  transform:translateY(100%);pointer-events:none;
+  transition:transform .55s cubic-bezier(.65,0,.35,1);
+}
+#discover.in{transform:translateY(0);pointer-events:auto}
+#disc-back{
+  position:absolute;top:14px;left:14px;z-index:5;
+  font-family:'Quantico',sans-serif;font-size:13px;color:#606060;
+  background:none;border:none;cursor:pointer;padding:0;transition:color .15s;
+}
+@media(hover:hover){#disc-back:hover{color:#fff}}
+#disc-stage{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;padding:60px 24px 50px;
+}
+.disc-block{
+  position:absolute;width:90%;max-width:580px;text-align:center;
+  opacity:0;visibility:hidden;pointer-events:none;transform:translateY(14px);
+  transition:opacity .65s ease,transform .65s cubic-bezier(.22,.61,.36,1);
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+}
+.disc-block.active{visibility:visible}
+.disc-block.show{opacity:1;transform:translateY(0);pointer-events:auto}
+.disc-block.instant{transition:none}
+.t-qp{font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;line-height:1.85;letter-spacing:.03em}
+.t-coral{color:var(--coral)}
+.read-char{color:#b0b0b0;display:inline}
+.disc-block.show .read-char{animation:charToWhite .45s ease forwards}
+@keyframes charToWhite{to{color:#fff}}
+.disc-img{
+  width:min(82vw,440px);max-height:38vh;object-fit:contain;display:block;margin-bottom:6px;
+  -webkit-mask-image:radial-gradient(ellipse at center,black 38%,transparent 80%);
+  mask-image:radial-gradient(ellipse at center,black 38%,transparent 80%);
+}
+@media(pointer:coarse) and (orientation:landscape){.disc-img{display:none!important}}
+#disc-hint{
+  position:absolute;bottom:22px;left:50%;transform:translateX(-50%);
+  font-family:'Space Mono',monospace;font-size:14px;color:var(--g-mid);opacity:.6;
+  pointer-events:none;animation:bob 2.2s ease-in-out infinite;transition:opacity .5s;
+}
+#disc-hint.gone{opacity:0}
+#disc-prog{position:absolute;bottom:0;left:0;height:1px;background:rgba(255,255,255,.45);width:0%;transition:width .5s cubic-bezier(.65,0,.35,1);pointer-events:none}
 .btn-start{
   background:none;border:none;padding:0;cursor:pointer;outline:none;
+  display:inline-flex;align-items:center;gap:8px;transition:transform .3s ease;
   -webkit-tap-highlight-color:transparent;
-  display:inline-flex;align-items:center;gap:8px;
-  transition:transform .3s ease;
 }
-.get-text{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:var(--coral);transition:color .3s ease}
+.get-text{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:var(--coral)}
 .higher-svg{width:min(28vw,100px);display:inline-block;line-height:0}
 .higher-svg svg{display:block;width:100%;height:auto}
 .higher-inline{display:inline-flex;align-items:center;width:70px;height:23px;vertical-align:middle;margin:0 2px;line-height:0;flex-shrink:0}
-.higher-inline svg{width:100%;height:100%;display:block}
-@media(hover:hover){
-  .btn-start:hover{transform:scale(1.05)}
-  .btn-start:hover .get-text{color:#fff}
-}
-
-#vhint{
-  position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
-  font-family:'Space Mono',monospace;font-size:14px;
-  color:var(--g-mid);opacity:.6;transition:opacity .5s ease;
-  pointer-events:none;animation:bob 2.2s ease-in-out infinite;
-}
-#vhint.gone{opacity:0}
-@keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-5px)}}
-
-#prog{
-  position:fixed;bottom:0;left:0;height:2px;
-  background:rgba(255,255,255,.65);width:0%;
-  transition:width .5s cubic-bezier(.65,0,.35,1);
-  pointer-events:none;z-index:10;
-}
-
-@media(max-width:600px){
-  .t-quantico-pacer,.t-coral{font-size:14px}
-  .get-text{font-size:14px}
-  .higher-svg{width:min(32vw,95px)}
-}
+.higher-inline svg{display:block;width:100%;height:100%}
+@media(hover:hover){.btn-start:hover{transform:scale(1.05)}.btn-start:hover .get-text{color:#fff}}
+@media(max-width:600px){.t-qp{font-size:14px}.get-text{font-size:14px}.higher-svg{width:min(32vw,95px)}}
 @media(prefers-reduced-motion:reduce){
-  .seq-block{transition:opacity .3s ease}
-  .read-char{animation:none!important;color:#fff}
-  #vhint{animation:none}
+  *{animation:none!important;transition:none!important}
+  .read-char{color:#fff}.box{will-change:auto}
 }
 </style>
 </head>
@@ -99,9 +190,16 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;-webkit-font-sm
     <symbol id="higher-slogan" viewBox="0 0 600 200">
       <defs><mask id="hmask">
         <rect width="600" height="200" fill="white"/>
-        <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
-        <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
-        <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
+        <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/>
+        <circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/>
+        <circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/>
+        <circle cx="540" cy="0" r="14" fill="black"/>
+        <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/>
+        <circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/>
+        <circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/>
+        <circle cx="540" cy="200" r="14" fill="black"/>
+        <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/>
+        <circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
       </mask></defs>
       <rect width="600" height="200" fill="#333366" mask="url(#hmask)"/>
       <text x="50%" y="144.42" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-style="italic" font-size="144" fill="#ffffff">Higher</text>
@@ -109,146 +207,333 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;-webkit-font-sm
   </defs>
 </svg>
 
-<div id="stage"></div>
-<div id="vhint">&darr;</div>
-<div id="prog"></div>
+<div id="paywall">
+  <div id="auth-stage"></div>
+</div>
 
-<script>
-const EXIT = 'get_higher.html';
+<button id="down-trigger" type="button" aria-label="Discover">
+  <span class="trigger-label">Think Same But Opposite</span>
+  <svg class="chev bob" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+</button>
 
-const G = (x) => ({ t:'g', x });
-const C = (x) => ({ t:'c', x });
-const CTA = { t:'cta' };
+<div id="discover">
+  <button id="disc-back" type="button">← Back</button>
+  <div id="disc-stage"></div>
+  <div id="disc-hint" aria-hidden="true">↓</div>
+  <div id="disc-prog"></div>
+</div>
 
-const SLIDES = [
-  { parts:[ G("Most people think they are just tired."), G("That it was just a bad day.\nThat tomorrow will be different."), C("They are not just losing energy.\nThey are losing years.") ] },
-  { parts:[ G("Not to age.\nNot to disease."), C("To temporal fracture: trapped between mental stagnation and perpetual rush."), G("Presence dissolves.") ] },
-  { parts:[ G("To escape, society turns to external fixes."), G("Chemical highs.\nScreen-induced numbness.\nManufactured dopamine."), C("A borrowed state that steals <svg style='display:inline-block;width:0.62em;height:0.85em;vertical-align:-0.08em;color:inherit' viewBox='0 0 60 80' aria-hidden='true'><use href='#t-glyph'/></svg>ime.") ] },
-  { parts:[ G("The high always crashes."), C("The hours never return."), G("What if the real stimulant was already hardwired in your brain?") ] },
-  { parts:[ G("EEG research proves that your perception of <svg style='display:inline-block;width:0.62em;height:0.85em;vertical-align:-0.08em;color:inherit' viewBox='0 0 60 80' aria-hidden='true'><use href='#t-glyph'/></svg>ime, focus, and reality is dictated by your brainwave frequencies."), G("Your neural architecture already possesses the chemistry."), C("It requires no external substance.\nOnly the right operating code.") ] },
-  { parts:[ G("TOTEHM was engineered to activate it."), G("Conceived by artist Wavywah through advanced neurological and EEG protocols."), C("Each shape, each color, each animation carries an idea, a neurological technique, or both.") ] },
-  { parts:[ G("The artwork ceases to be mere contemplation."), C("It becomes an active neurological interface."), G("Facing the living artwork, you deploy its visual directives."), C("The more you get <span class='higher-inline'><svg viewBox='0 0 600 200'><use href='#higher-slogan'></use></svg></span>, the deeper the artwork imprints.") ] },
-  { parts:[ G("Until it becomes an automated neural reflex."), C("Where traditional logos speak to the outside world, TOTEHM speaks directly to you."), G("A functional cognitive trigger designed to push you <span class='higher-inline'><svg viewBox='0 0 600 200'><use href='#higher-slogan'></use></svg></span>.") ] },
-  { parts:[ C("Because this is an active technology, it cannot be bought passively."), G("You do not wear the piece until you have mastered the code."), G("Experience the artwork to unlock the collection."), CTA ] }
-];
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL  = 'https://abujjbkbbiumxrokozph.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+const GATE_FN = SB_URL+'/functions/v1/stoner-gate';
+const PAY_FN  = SB_URL+'/functions/v1/higher-checkout';
+const METHOD  = '/stoner.html';
+const sb = createClient(SB_URL, SB_ANON);
 
-const stage = document.getElementById('stage');
-const vhint = document.getElementById('vhint');
-const prog  = document.getElementById('prog');
-let curSlide = 0, isAnimating = false;
-const FADE = 650;
-const CHAR_DELAY = 0.048;
+const paywall     = document.getElementById('paywall');
+const authStage   = document.getElementById('auth-stage');
+const downTrigger = document.getElementById('down-trigger');
+const discover    = document.getElementById('discover');
+const discStage   = document.getElementById('disc-stage');
+const discHint    = document.getElementById('disc-hint');
+const discBack    = document.getElementById('disc-back');
+const discProg    = document.getElementById('disc-prog');
 
-function formatText(htmlStr, startIdx) {
-  const tmp = document.createElement('div');
-  tmp.innerHTML = (htmlStr || '').replace(/\n/g, '<br>');
-  let idx = startIdx;
-  function walk(node) {
-    if (node.nodeType === Node.TEXT_NODE) {
-      const text = node.textContent;
-      if (!text) return node;
-      const frag = document.createDocumentFragment();
-      for (let i = 0; i < text.length; i++) {
-        const ch = text[i];
-        if (ch === ' ' || ch === '\t' || ch === '\n') {
-          frag.appendChild(document.createTextNode(ch)); idx += 0.8;
-        } else {
-          const s = document.createElement('span');
-          s.className = 'read-char'; s.textContent = ch;
-          s.style.animationDelay = (idx * CHAR_DELAY).toFixed(3) + 's';
-          idx++; frag.appendChild(s);
-        }
-      }
-      return frag;
-    } else if (node.nodeType === Node.ELEMENT_NODE) {
-      if (node.tagName === 'BUTTON' || node.classList.contains('no-pace') || node.classList.contains('higher-inline')) { idx += 8; return node; }
-      const clone = node.cloneNode(false);
-      Array.from(node.childNodes).forEach(ch => clone.appendChild(walk(ch)));
-      return clone;
-    }
-    return node;
-  }
-  const frag = document.createDocumentFragment();
-  Array.from(tmp.childNodes).forEach(ch => frag.appendChild(walk(ch)));
-  return { frag, nextIdx: idx };
+/* ─── AUTH SLIDES ─── */
+let curSlide=0, authLock=false;
+const FADE=650;
+
+function buildAuth(){
+  const s0=document.createElement('div'); s0.className='seq-block';
+  s0.innerHTML=`
+    <div class="box-scene">
+      <div class="box">
+        <div class="bf b-back"><svg viewBox="0 0 600 200" aria-hidden="true" style="width:120px"><use href="#higher-slogan"></use></svg></div>
+        <div class="bf b-logo"><img src="assets/totehm_logo.svg" alt="TOTEHM"></div>
+        <div class="bside b-right"></div><div class="bside b-left"></div>
+        <div class="bside b-top"></div><div class="bside b-bot"></div>
+        <div class="bf b-front"></div>
+      </div>
+    </div>
+    <button id="btn-buy" class="btn-sig">Buy a TotehmPaper {THP} — $30</button>
+    <div class="note dim"><a href="stoner_terms.html" target="_blank" style="color:#606060;text-decoration:none;letter-spacing:.1em">Simple terms of sale</a></div>`;
+  authStage.appendChild(s0);
+
+  const s1=document.createElement('div'); s1.className='seq-block';
+  s1.innerHTML=`
+    <div class="q-label">Be a member to run the method.</div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+      <input id="in-email" class="line-input" type="email" inputmode="email" autocomplete="email" placeholder="your@email.com">
+      <button id="btn-send" class="btn-sig claimed">Send code</button>
+      <div class="note dim" id="err-mail"></div>
+      <button id="btn-back-sell" class="btn-sig" style="margin-top:12px">Back</button>
+    </div>`;
+  authStage.appendChild(s1);
+
+  const s2=document.createElement('div'); s2.className='seq-block';
+  s2.innerHTML=`
+    <div class="q-label">Six digits. Check your inbox.</div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+      <input id="in-otp" class="line-input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000">
+      <button id="btn-verify" class="btn-sig claimed">Enter</button>
+      <div class="note dim" id="err-code"></div>
+      <button id="btn-back-mail" class="btn-sig" style="margin-top:12px">Back</button>
+    </div>`;
+  authStage.appendChild(s2);
 }
 
-function buildSlide(slide) {
-  const block = document.createElement('div');
-  block.className = 'seq-block';
-  let charIdx = 0;
-  slide.parts.forEach(p => {
-    if (p.t === 'cta') {
-      const btn = document.createElement('button');
-      btn.className = 'btn-start';
-      btn.setAttribute('aria-label', 'Get Higher');
-      btn.innerHTML = '<span class="get-text">Get</span><span class="higher-svg"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>';
-      btn.onclick = () => { window.location.href = EXIT; };
-      block.appendChild(btn);
-    } else {
-      const d = document.createElement('div');
-      d.className = 't-quantico-pacer';
-      const { frag, nextIdx } = formatText(p.x || '', charIdx);
-      charIdx = nextIdx;
-      d.appendChild(frag);
-      block.appendChild(d);
-    }
-  });
-  return block;
-}
-
-function showSlide(i, instant) {
-  const blocks = stage.querySelectorAll('.seq-block');
-  blocks.forEach((b, idx) => {
-    if (idx === i) {
-      if (instant) b.classList.add('instant');
+function showAuth(i,instant){
+  authStage.querySelectorAll('.seq-block').forEach((b,idx)=>{
+    if(idx===i){
+      if(instant)b.classList.add('instant');
       b.classList.add('active');
-      requestAnimationFrame(() => {
+      requestAnimationFrame(()=>{
         b.classList.add('show');
-        if (instant) requestAnimationFrame(() => b.classList.remove('instant'));
+        if(instant)requestAnimationFrame(()=>b.classList.remove('instant'));
       });
-    } else {
+    }else{
       b.classList.remove('show');
-      setTimeout(() => b.classList.remove('active'), instant ? 0 : FADE);
+      setTimeout(()=>b.classList.remove('active'),instant?0:FADE);
     }
   });
-  curSlide = i;
-  prog.style.width = ((i + 1) / SLIDES.length * 100) + '%';
+  curSlide=i;
+  downTrigger.classList.toggle('gone', i!==0||discOpen);
 }
 
-function goToSlide(i) {
-  if (isAnimating || i < 0 || i >= SLIDES.length || i === curSlide) return;
-  isAnimating = true; showSlide(i, false);
-  setTimeout(() => isAnimating = false, FADE);
+function goAuth(i){
+  if(authLock||i<0||i>2||i===curSlide)return;
+  authLock=true; showAuth(i,false); setTimeout(()=>authLock=false,FADE);
 }
-function next() { goToSlide(curSlide + 1); }
-function prev() { goToSlide(curSlide - 1); }
 
-let wheelLock = false;
-window.addEventListener('wheel', e => {
-  if (wheelLock || Math.abs(e.deltaY) < 28) return;
-  wheelLock = true; setTimeout(() => wheelLock = false, 200);
-  hideHint(); e.deltaY > 0 ? next() : prev();
-}, { passive: true });
-let y0 = 0;
-window.addEventListener('touchstart', e => { y0 = e.changedTouches[0].screenY; }, { passive: true });
-window.addEventListener('touchend', e => {
-  const dy = e.changedTouches[0].screenY - y0;
-  if (Math.abs(dy) < 40) return;
-  hideHint(); dy < 0 ? next() : prev();
-}, { passive: true });
-window.addEventListener('keydown', e => {
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-  if (e.key === 'ArrowDown') { next(); hideHint(); }
-  else if (e.key === 'ArrowUp') { prev(); hideHint(); }
+/* ─── LOGO BOX ─── */
+function initPaper(){
+  const scene=document.querySelector('.box-scene'), box=document.querySelector('.box');
+  if(!scene||!box)return;
+  let rX=8,rY=18,vX=0,vY=0,idT=0,grab=false,sX=0,sY=0,dX=0,dY=0,hX=null,hY=null,ts0=null;
+  function ixY(t){return{x:Math.sin(t*.6)*6+Math.cos(t*1.1)*3,y:Math.cos(t*.4)*14+Math.sin(t*.9)*6};}
+  function tick(ts){
+    if(!ts0)ts0=ts; const dt=Math.min((ts-ts0)/1000,.05); ts0=ts;
+    if(!grab){idT+=dt*.3;const g=ixY(idT),tx=hX!==null?hX:g.x,ty=hY!==null?hY:g.y,k=hX!==null?10:6,d=5;
+      vX+=((tx-rX)*k-vX*d)*dt;vY+=((ty-rY)*k-vY*d)*dt;rX+=vX*dt;rY+=vY*dt;}
+    box.style.transform=`rotateX(${rX.toFixed(2)}deg) rotateY(${rY.toFixed(2)}deg)`;
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+  scene.addEventListener('mousemove',e=>{if(grab)return;const r=scene.getBoundingClientRect();hX=-(e.clientY-r.top-r.height/2)/(r.height/2)*15;hY=(e.clientX-r.left-r.width/2)/(r.width/2)*20;});
+  scene.addEventListener('mouseleave',()=>{hX=null;hY=null;});
+  const gs=(cx,cy)=>{grab=true;sX=cx;sY=cy;dX=rX;dY=rY;scene.style.cursor='grabbing';};
+  const gm=(cx,cy)=>{if(!grab)return;rX=Math.max(-80,Math.min(80,dX-(cy-sY)*.5));rY=dY+(cx-sX)*.7;};
+  const ge=()=>{if(!grab)return;grab=false;vX=0;vY=0;scene.style.cursor='grab';};
+  scene.addEventListener('mousedown',e=>{gs(e.clientX,e.clientY);e.preventDefault();});
+  window.addEventListener('mousemove',e=>gm(e.clientX,e.clientY));
+  window.addEventListener('mouseup',ge);
+  scene.addEventListener('touchstart',e=>{const t=e.changedTouches[0];gs(t.clientX,t.clientY);},{passive:true});
+  scene.addEventListener('touchmove',e=>{const t=e.changedTouches[0];gm(t.clientX,t.clientY);},{passive:true});
+  scene.addEventListener('touchend',ge,{passive:true});
+}
+
+/* ─── ACCESS / CHECKOUT ─── */
+async function hasAccess(){
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    if(!session)return false;
+    const r=await fetch(GATE_FN,{method:'POST',headers:{'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json'}});
+    return(await r.json()).access===true;
+  }catch{return false;}
+}
+(async()=>{if(await hasAccess())(window.top||window).location.replace(METHOD);})();
+
+async function toStripe(){
+  const err=document.getElementById('err-code');
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    if(!session){goAuth(1);return;}
+    const r=await fetch(PAY_FN,{method:'POST',headers:{'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json'},body:JSON.stringify({waiver:true,waiver_ts:new Date().toISOString()})});
+    const j=await r.json();
+    if(j.already){(window.top||window).location.replace(METHOD);return;}
+    if(!j.url)throw new Error(j.error||'no url');
+    try{(window.top||window).location.href=j.url;}catch{window.open(j.url,'_blank');}
+  }catch(e){console.error('checkout:',e);if(err)err.textContent='Could not open checkout. Try again.';}
+}
+
+/* ─── DISCOVER OPEN/CLOSE ─── */
+let discOpen=false, discCur=0, discLock=false;
+const DFADE=650;
+
+function openDiscover(){
+  if(discOpen)return; discOpen=true;
+  paywall.classList.add('away');
+  discover.classList.add('in');
+  downTrigger.classList.add('gone');
+  discReset();
+}
+function closeDiscover(){
+  if(!discOpen)return; discOpen=false;
+  discover.classList.remove('in');
+  paywall.classList.remove('away');
+  downTrigger.classList.toggle('gone', curSlide!==0);
+}
+
+downTrigger.addEventListener('click', openDiscover);
+discBack.addEventListener('click', closeDiscover);
+
+let wlLock=false;
+window.addEventListener('wheel',e=>{
+  if(discOpen||wlLock||e.deltaY<=0)return;
+  wlLock=true; setTimeout(()=>wlLock=false,700); openDiscover();
+},{passive:true});
+let wY=0;
+window.addEventListener('touchstart',e=>{wY=e.changedTouches[0].screenY;},{passive:true});
+window.addEventListener('touchend',e=>{
+  if(discOpen)return;
+  if(e.changedTouches[0].screenY-wY<-60)openDiscover();
+},{passive:true});
+window.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+  if(discOpen){
+    if(e.key==='ArrowDown'){discNext();hideHint();}
+    else if(e.key==='ArrowUp')discPrev();
+    else if(e.key==='Escape')closeDiscover();
+  }
 });
 
-let hg = false;
-function hideHint() { if (!hg) { hg = true; vhint.classList.add('gone'); } }
+/* ─── DISCOVER SLIDES ─── */
+const G=x=>({t:'g',x}), C=x=>({t:'c',x}), CTA={t:'cta'};
+const IMGS='https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/';
+const DSLIDES=[
+  {img:'1.png',parts:[G("Most people think they are just tired."),G("That it was just a bad day.\nThat tomorrow will be different."),C("They are not just losing energy.\nThey are losing years.")]},
+  {parts:[G("Not to age.\nNot to disease."),C("To temporal fracture: trapped between mental stagnation and perpetual rush."),G("Presence dissolves.")]},
+  {img:'2.png',parts:[G("To escape, society turns to external fixes."),G("Chemical highs.\nScreen-induced numbness.\nManufactured dopamine."),C("A borrowed state that steals <svg style='display:inline-block;width:.62em;height:.85em;vertical-align:-.08em' viewBox='0 0 60 80' aria-hidden='true'><use href='#t-glyph'/></svg>ime.")]},
+  {parts:[G("The high always crashes."),C("The hours never return."),G("What if the real stimulant was already hardwired in your brain?")]},
+  {parts:[G("EEG research proves that your perception of <svg style='display:inline-block;width:.62em;height:.85em;vertical-align:-.08em' viewBox='0 0 60 80' aria-hidden='true'><use href='#t-glyph'/></svg>ime, focus, and reality is dictated by your brainwave frequencies."),G("Your neural architecture already possesses the chemistry."),C("It requires no external substance.\nOnly the right operating code.")]},
+  {parts:[G("TOTEHM was engineered to activate it."),G("Conceived by artist Wavywah through advanced neurological and EEG protocols."),C("Each shape, each color, each animation carries an idea, a neurological technique, or both.")]},
+  {parts:[G("The artwork ceases to be mere contemplation."),C("It becomes an active neurological interface."),G("Facing the living artwork, you deploy its visual directives."),C("The more you get <span class='higher-inline'><svg viewBox='0 0 600 200'><use href='#higher-slogan'></use></svg></span>, the deeper the artwork imprints.")]},
+  {parts:[G("Until it becomes an automated neural reflex."),C("Where traditional logos speak to the outside world, TOTEHM speaks directly to you."),G("A functional cognitive trigger designed to push you <span class='higher-inline'><svg viewBox='0 0 600 200'><use href='#higher-slogan'></use></svg></span>.")]},
+  {parts:[C("Because this is an active technology, it cannot be bought passively."),G("You do not wear the piece until you have mastered the code."),G("Experience the artwork to unlock the collection."),CTA]}
+];
 
-stage.innerHTML = '';
-SLIDES.forEach(s => stage.appendChild(buildSlide(s)));
-showSlide(0, true);
+const CHAR_MS=48;
+function wrapChars(html,ci){
+  const tmp=document.createElement('div'); tmp.innerHTML=html||'';
+  function walk(n){
+    if(n.nodeType===3){
+      const txt=n.textContent; if(!txt)return n;
+      const f=document.createDocumentFragment();
+      for(let i=0;i<txt.length;i++){const c=txt[i];
+        if(c===' '||c==='\t'||c==='\n'){f.appendChild(document.createTextNode(c));ci.v+=.8;}
+        else{const s=document.createElement('span');s.className='read-char';s.textContent=c;
+          s.style.animationDelay=(ci.v*CHAR_MS/1000).toFixed(3)+'s';ci.v++;f.appendChild(s);}
+      }return f;
+    }else if(n.nodeType===1){
+      if(n.classList.contains('higher-inline')||n.tagName==='BUTTON'){ci.v+=n.classList.contains('higher-inline')?8:n.textContent.length;return n;}
+      const cl=n.cloneNode(false); n.childNodes.forEach(ch=>cl.appendChild(walk(ch))); return cl;
+    }return n;
+  }
+  const f=document.createDocumentFragment();
+  tmp.childNodes.forEach(ch=>f.appendChild(walk(ch))); return f;
+}
+
+function buildDisc(sl){
+  const b=document.createElement('div'); b.className='disc-block';
+  if(sl.img){const i=document.createElement('img');i.className='disc-img';i.src=IMGS+sl.img;i.alt='';i.loading='eager';b.appendChild(i);}
+  const ci={v:0};
+  sl.parts.forEach(p=>{
+    if(p.t==='cta'){
+      const btn=document.createElement('button'); btn.className='btn-start'; btn.style.marginTop='10px';
+      btn.setAttribute('aria-label','Get Higher');
+      btn.innerHTML='<span class="get-text">Get</span><span class="higher-svg"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>';
+      btn.onclick=closeDiscover;
+      b.appendChild(btn);
+    }else{
+      const d=document.createElement('div'); d.className='t-qp'+(p.t==='c'?' t-coral':'');
+      d.appendChild(wrapChars((p.x||'').replace(/\n/g,'<br>'),ci)); b.appendChild(d);
+    }
+  });
+  return b;
+}
+
+let hintGone=false;
+function hideHint(){if(!hintGone){hintGone=true;discHint.classList.add('gone');}}
+
+function discShowSlide(i,instant){
+  discStage.querySelectorAll('.disc-block').forEach((b,idx)=>{
+    if(idx===i){if(instant)b.classList.add('instant');b.classList.add('active');
+      requestAnimationFrame(()=>{b.classList.add('show');if(instant)requestAnimationFrame(()=>b.classList.remove('instant'));});}
+    else{b.classList.remove('show');setTimeout(()=>b.classList.remove('active'),instant?0:DFADE);}
+  });
+  discCur=i; discProg.style.width=((i+1)/DSLIDES.length*100)+'%';
+}
+function discGoTo(i){
+  if(discLock||i<0||i>=DSLIDES.length||i===discCur)return;
+  discLock=true; discShowSlide(i,false); setTimeout(()=>discLock=false,DFADE);
+}
+function discNext(){discGoTo(discCur+1);}
+function discPrev(){if(discCur===0){closeDiscover();return;}discGoTo(discCur-1);}
+function discReset(){
+  discStage.innerHTML=''; hintGone=false; discHint.classList.remove('gone');
+  discProg.style.width='0%';
+  DSLIDES.forEach(s=>discStage.appendChild(buildDisc(s)));
+  discCur=0; discLock=false; discShowSlide(0,true);
+}
+
+let dlLock=false;
+discover.addEventListener('wheel',e=>{
+  if(!discOpen||dlLock||Math.abs(e.deltaY)<25)return;
+  dlLock=true; setTimeout(()=>dlLock=false,220);
+  hideHint(); e.deltaY>0?discNext():discPrev();
+},{passive:true});
+let dY=0;
+discover.addEventListener('touchstart',e=>{dY=e.changedTouches[0].screenY;},{passive:true});
+discover.addEventListener('touchend',e=>{
+  const dy=e.changedTouches[0].screenY-dY;
+  if(Math.abs(dy)<35)return; hideHint(); dy<0?discNext():discPrev();
+},{passive:true});
+
+/* ─── AUTH EVENTS ─── */
+document.addEventListener('click',async ev=>{
+  if(ev.target.closest('#btn-buy')){
+    const{data:{session}}=await sb.auth.getSession();
+    if(session?.user?.email){toStripe();return;}
+    goAuth(1); setTimeout(()=>document.getElementById('in-email')?.focus(),50); return;
+  }
+  if(ev.target.closest('#btn-send')){
+    const email=document.getElementById('in-email')?.value.trim().toLowerCase()||'';
+    const err=document.getElementById('err-mail');
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){if(err)err.textContent='Check the address.';return;}
+    const btn=ev.target.closest('#btn-send');
+    if(err)err.textContent=''; btn.disabled=true; btn.textContent='Sending...';
+    const{error}=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:true}});
+    btn.disabled=false; btn.textContent='Send code';
+    if(error){if(err)err.textContent='Could not send. Try again.';return;}
+    goAuth(2); setTimeout(()=>document.getElementById('in-otp')?.focus(),50); return;
+  }
+  if(ev.target.closest('#btn-verify')){
+    const email=document.getElementById('in-email')?.value.trim().toLowerCase()||'';
+    const token=document.getElementById('in-otp')?.value.trim()||'';
+    const err=document.getElementById('err-code');
+    if(token.length!==6){if(err)err.textContent='Six digits.';return;}
+    const btn=ev.target.closest('#btn-verify');
+    if(err)err.textContent=''; btn.disabled=true; btn.textContent='Checking...';
+    const{error}=await sb.auth.verifyOtp({email,token,type:'email'});
+    btn.disabled=false; btn.textContent='Enter';
+    if(error){if(err)err.textContent='Wrong or expired code.';return;}
+    if(await hasAccess()){(window.top||window).location.replace(METHOD);return;}
+    toStripe(); return;
+  }
+  if(ev.target.closest('#btn-back-sell')){goAuth(0);return;}
+  if(ev.target.closest('#btn-back-mail')){goAuth(1);return;}
+});
+document.addEventListener('keydown',e=>{
+  if(e.target.id==='in-email'&&e.key==='Enter')document.getElementById('btn-send')?.click();
+  if(e.target.id==='in-otp'&&e.key==='Enter')document.getElementById('btn-verify')?.click();
+});
+
+/* ─── INIT ─── */
+buildAuth();
+showAuth(0,true);
+initPaper();
 </script>
 </body>
 </html>

@@ -366,6 +366,65 @@ Les étiquettes de distance posent une **plaque noire** avant le texte, mesurée
 
 Retirer un élément du DOM sans retirer son handler (`$('id').onclick` sur `null`) lève un TypeError **à l'évaluation du module** : ce n'est pas la carte qui casse, c'est tout le script. Tout retrait d'élément se vérifie avec l'audit `$('id')` vs `id=` présents.
 
+### totehm.com — boîte en verre et panneau de rues
+
+#### Système `.vbox-scene` — boîte en verre 3D (28/08/2026)
+
+Partagé entre `discover_lisbon.html` et `get_higher.html`. Tailles différentes via
+des propriétés CSS sur le conteneur.
+
+```css
+/* Variables — à poser sur .vbox-scene ou un ancêtre */
+--vbs   /* taille face (carré)          */
+--vbd   /* profondeur de la boîte       */
+--vbhd  /* --vbd / 2 — maintenir cohérent si --vbd change */
+
+/* Math des faces latérales — ne pas modifier */
+.vb-right { transform: translateX(calc(var(--vbs) - var(--vbhd))) rotateY(-90deg); }
+.vb-left  { transform: translateX(calc(-1 * var(--vbhd))) rotateY(90deg); }
+.vb-top   { transform: translateY(calc(-1 * var(--vbhd))) rotateX(90deg); }
+.vb-bot   { transform: translateY(calc(var(--vbs) - var(--vbhd))) rotateX(-90deg); }
+```
+
+**Structure HTML identique dans les deux fichiers :**
+```html
+<div class="vbox-scene" id="vidWrap">
+  <div class="vbox" id="vidBox">
+    <div class="vbf vb-back"></div>
+    <div class="vbf vb-inner"><video id="vid" playsinline preload="none"></video></div>
+    <div class="vbside vb-right"></div><div class="vbside vb-left"></div>
+    <div class="vbside vb-top"></div><div class="vbside vb-bot"></div>
+    <div class="vbf vb-front"></div>
+  </div>
+</div>
+```
+
+**Cycle de vie JS — règle absolue :** `startVidBox()` démarre la boucle RAF (idle +
+drag Pointer/Touch Events). `stopVidBox()` annule le RAF et retire tous les écouteurs.
+Les handlers sont des **fonctions nommées** (`_vbMM`, `_vbML`, `_vbMD`, `_vbWM`,
+`_vbMU`, `_vbTS`, `_vbTM`, `_vbTE`) — jamais des arrow functions, sinon
+`removeEventListener` ne retire rien.
+
+| Fichier | `--vbs` | `--vbd` | `--vbhd` |
+|---|---|---|---|
+| `discover_lisbon.html` | `min(50vmin,260px)` | `36px` | `18px` |
+| `get_higher.html` | `min(72vmin,300px)` | `40px` | `20px` |
+
+#### Panneau de rues — `get_higher.html`
+
+22 panneaux de signalisation lisboètes, `const SIGNS = { sign_id: [x%, y%, size] }`.
+Bouton **"Play the street ↓"** dans le paywall (après btn-buy et lien CGV).
+
+Clic → overlay `#world` (grille `.sign`) → clic sur signe → overlay `#xp` (vidéo
+dans la boîte en verre 3D rotative). Vidéos depuis le bucket public Supabase
+`play-signals/{sign_id}.mp4`.
+
+Le bloc JS du panneau est en `{}` (block scope ES module) — les vars du panneau ne
+polluent pas le module, mais `sb`, `toStripe` et `goToSlide` restent accessibles
+depuis l'extérieur.
+
+---
+
 ### Le geste tactile se conduit, il ne se règle pas
 
 Trois lots ont essayé de faire marcher le swipe des cartes en réglant le

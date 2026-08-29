@@ -10,7 +10,7 @@
     {
       "source": "/",
       "has": [{ "type": "cookie", "key": "totehm_geo", "value": "global" }],
-      "destination": "/get_higher.html"
+      "destination": "/discover.html"
     },
     {
       "source": "/",

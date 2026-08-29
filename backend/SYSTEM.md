@@ -65,8 +65,8 @@ vercel.json (com/vercel.json)
 
 **Fichiers actifs :**
 - `discover.html` — Discover international (manifeste neurologique, 9 slides, format identique à la version Lisbon)
-- `discover_lisbon.html` — Discover Lisbon (récupéré depuis git `22128ed`, fixes appliqués)
-- `get_higher.html` — paywall TotehmPaper ($30 fixe, voir §5)
+- `discover_lisbon.html` — Discover Lisbon ; 22 panneaux de signalisation lisboètes superposés sur photo de rue — chaque signe ouvre sa vidéo dans une boîte en verre 3D rotative (`.vbox-scene`, voir `CLAUDE.md`)
+- `get_higher.html` — paywall TotehmPaper ($30 fixe, voir §5) ; bouton "Play the street ↓" ouvre le même panneau de 22 signes ; logo TOTEHM dans boîte en verre 3D (idle + drag)
 - `stoner.html`, `stoner_terms.html` — derrière le gate
 
 **Fichier supprimé :** `lisbon.html` (remplacé par `discover_lisbon.html`).
@@ -571,17 +571,22 @@ donc posée **deux fois** : session *et* `subscription_data`.
 
 ---
 
-## 5b · Storage — buckets vidéos, mesuré le 23/08/2026
+## 5b · Storage — buckets vidéos, mesuré le 23/08/2026 · maj 28/08/2026
 
 | bucket | fichier | taille | servi à |
 |---|---|---|---|
 | `higher_boutique` | `same_but_opposite.mp4` | 211 Ko | higher.boutique |
 | `space` | `same_but_opposite.mp4` | — | **À COPIER** — totehm.space |
 | `space` | `earth.mp4` | 1,87 Mo | **plus référencé — à supprimer** |
+| `play-signals` | `{sign_id}.mp4` × 22 | — | totehm.com — Play the Street |
 
 `space/totehm.html` demande `space/same_but_opposite.mp4`. Le fichier
 n'existe pour l'instant que dans `higher_boutique`. Il se COPIE : trois
 origines, trois produits, un contenu commun ne se partage pas.
+
+`play-signals` est un bucket **public**. Chaque fichier est nommé `{sign_id}.mp4`
+où `sign_id` correspond à la clé dans `const SIGNS` de `discover_lisbon.html` et
+`get_higher.html` (ex : `fire_exit.mp4`, `stop.mp4`). 22 vidéos attendues.
 
 ---
 
