@@ -50,7 +50,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);font-family:var(--futura);font-weight:300;font-size:14px;overflow:hidden;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
 .hide{display:none!important}
-.side-nav{display:none}
+
 .gbtn{font-family:'Quantico',sans-serif;font-weight:400;background:none;border:none;padding:0;margin:0;cursor:pointer;line-height:1.5;-webkit-tap-highlight-color:transparent;transition:color .15s,background .15s}
 
 /* ══ LE LOGO HABITÉ ══ */
@@ -86,15 +86,24 @@ body:not(.gate) #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
    les côtés. Sur mobile il n'y avait RIEN : le swipe existait sans que rien
    ne l'annonce. Deux chevrons de part et d'autre du T.svg, aux couleurs des
    deux fichiers — rep pour My Wisdom, blue pour My next objective. */
-.tnav{position:fixed;top:30px;z-index:32;background:none;border:none;
-  padding:12px 10px;line-height:0;cursor:pointer;
+/* ══ LES CURSEURS DE NAVIGATION — ORDINATEUR ET MOBILE, À L'IDENTIQUE ══
+   Les carrés perforés au bord de l'écran, avec leur chevron et leur
+   intitulé, sont supprimés. Il ne reste que ces deux curseurs, à côté du
+   T.svg blanc, en haut, centrés. Mêmes coordonnées dans totehm.html,
+   book.html et next_objective.html : `top:30px` et 44px de part et
+   d'autre du milieu. Le curseur porte la couleur du fichier où il mène. */
+.tnav{position:fixed;top:30px;z-index:33;background:none;border:none;
+  padding:14px 10px;line-height:0;cursor:pointer;
   -webkit-tap-highlight-color:transparent;transition:opacity .2s}
 .tnav svg{width:13px;height:22px;display:block;fill:none;stroke:currentColor;
   stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-#tnav-l{left:calc(50% - 78px);color:#b06a9f}
-#tnav-r{right:calc(50% - 78px);color:#7fa3e8}
+#tnav-l{right:calc(50% + 44px);color:#b06a9f}
+#tnav-r{left:calc(50% + 44px);color:#7fa3e8}
 .tnav:active{opacity:.5}
-@media(min-width:700px){.tnav{display:none}}
+@media(hover:hover){.tnav:hover{opacity:.7}}
+/* Le curseur qui ramène au Totehm porte la marque : blanc, comme le T. */
+.tnav.home{color:#fff}
+.tnav.hide{display:none}
 .higher-inline{height:1.5em;width:auto;display:inline-block;vertical-align:-.32em}
 /* ══ HIGHER : EXCLUSIVITÉ ABSOLUE ══
    Slogan, bouton, badge : rien de la marque HIGHER ne paraît tant que
@@ -106,6 +115,10 @@ body:not(.gate) #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
 .higher-only{display:none!important}
 body.higher .higher-only{display:revert!important}
 body.higher a.higher-only,body.higher .higher-only.btn-sig{display:inline-block!important}
+/* Le conteneur aussi : masquer seulement le lien laissait une boite de
+   hauteur 0 qui consommait quand meme les 12px de `gap` du menu, au-dessus
+   ET en dessous. `revert` rendrait `display:block` et casserait le flex. */
+body.higher .set-block.higher-only{display:flex!important}
 
 /* menu-row : structure d'un bouton-saisie (Name of your Totehm, Search a Totehm) */
 .menu-row{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
@@ -118,12 +131,10 @@ body.higher a.higher-only,body.higher .higher-only.btn-sig{display:inline-block!
 .sn-btn{background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;line-height:1.5;text-decoration:none;white-space:nowrap;display:flex;align-items:center;gap:6px;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
 @media(hover:hover){.sn-btn:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
 .sn-btn:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
-.sn-btn .chev{width:18px;height:11px;color:rgba(255,255,255,.55);stroke-width:1.2;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;transition:color .15s}
-.sn-btn .sn-chev-h{width:11px;height:18px}
-/* Logo agrandi, chevron ↑ centré au-dessus */
+/* Le logo seul, sans chevron au-dessus — supprimé le 29/08 avec tous les
+   autres chevrons de navigation. */
 .sn-logo{flex-direction:column;gap:6px;padding:0}
 .sn-logo img{height:68px;width:68px;display:block;border-radius:2px}
-.sn-logo .chev{width:22px;height:13px;color:rgba(255,255,255,.55)}
 
 /* ── STONER METHOD : la section du dessus ── */
 /* ══ TRANSITIONS SÈCHES ══
@@ -219,21 +230,29 @@ body.higher a.higher-only,body.higher .higher-only.btn-sig{display:inline-block!
    pas un presque-noir : à #080808 la boîte se confondait avec le fond et
    il n'y avait plus de profondeur du tout. Toutes les fenêtres —
    intention, fréquence, filtre, membre — sont le même objet. */
-.hp-card{background:#131316;border:1px solid #242429;width:100%;max-width:340px;padding:22px;display:flex;flex-direction:column;gap:6px}
-.hp-row{background:none;border:none;padding:16px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;color:#fff;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
-.hp-row:hover{opacity:.7}
-.hp-row + .hp-row{border-top:1px solid rgba(255,255,255,.10)}
-.hp-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5)}
-.hp-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:22px;color:#fff;line-height:1.2}
-.hp-val .tglyph{height:22px;width:auto;vertical-align:-4px;margin-right:6px}
+/* ══ LA FICHE — UN SEUL FORMAT, CELUI DE book.html ═══════════════════════
+   Carte #131316 sur bord #242429, question en Space Mono, le T à gauche du
+   nom en Quantico gras, la définition en Quantico dessous, alignée sous le
+   nom. Ce bloc est recopié tel quel dans book.html, next_objective.html et
+   map.html : trois origines, trois copies, jamais un partage. */
+.hp-card{background:#131316;border:1px solid #242429;width:100%;max-width:520px;
+  padding:26px 22px 18px;display:flex;flex-direction:column;gap:10px;max-height:88vh}
+.hp-row{background:none;border:none;padding:13px 8px;cursor:pointer;display:flex;
+  flex-direction:column;align-items:center;gap:0;text-align:center;color:#fff;width:100%;
+  -webkit-tap-highlight-color:transparent;transition:background .12s}
+@media(hover:hover){.hp-row:hover{background:rgba(255,255,255,.05)}}
+.hp-row + .hp-row{border-top:1px solid rgba(255,255,255,.07)}
+.hp-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px}
+.hp-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:19px;color:#fff;line-height:1.15}
+.hp-val .tglyph{width:16px;height:16px;margin:0 auto 6px;display:block}
 /* Lecture seule : les rangees restent identiques, mais ne s'ouvrent plus.
    Un Totehm qui n'est pas le mien ne se modifie pas depuis ma fenetre. */
 #habit-peek.ro .hp-row{cursor:default;pointer-events:none}
 .hp-def{font-family:var(--futura);font-weight:300;font-style:normal;font-size:12px;color:rgba(255,255,255,.6);line-height:1.4;max-width:260px;margin-top:6px}
-.fm-def{font-family:'Quantico',sans-serif;font-size:13px;color:rgba(255,255,255,.78);line-height:1.45;max-width:260px;margin-top:7px;min-height:0}
+.fm-def{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:#b4b4b4;line-height:1.45;margin-top:5px;max-width:none}
 .fm-def:empty{display:none}
 .fp-card{background:#131316;border:1px solid #242429;width:100%;max-width:380px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px}
-.fp-q{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);text-align:center}
 #fp-input{background:none;border:none;border-bottom:1px solid rgba(255,255,255,.18);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;padding:4px 2px;text-align:center;caret-color:#fff}
 #fp-input::placeholder{color:rgba(255,255,255,.3);font-size:12px;font-style:normal}
 #fp-preview{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:rgba(255,255,255,.65);min-height:22px;text-align:center;background:none;border:none;padding:2px 8px;cursor:pointer;transition:color .15s,background .15s;-webkit-tap-highlight-color:transparent}
@@ -285,6 +304,11 @@ body.higher a.higher-only,body.higher .higher-only.btn-sig{display:inline-block!
 .wm-frame{background:var(--navy);padding:0 3px;margin:0 1px;color:#fff}
 .line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:none;outline:none;border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:#fff;min-width:230px}
 .note{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;text-align:center}
+/* renderSettings() retire la classe `hide` des notes pour pouvoir ecrire
+   dedans : chaque bouton du menu portait donc 14px de note vide + 8px de
+   gap, soit 22px de trou permanent sous lui. La note reapparait des
+   qu'elle a quelque chose a dire. */
+.note:empty{display:none}
 .note.ok{color:#7db32e}.note.no{color:#b06a9f}.note.dim{color:#9a9a9a}
 
 /* ── TOTEHM VIEWER : le Totehm d'un membre, read-only ── */
@@ -330,7 +354,10 @@ body.ro #ro-bar{display:flex}
 /* ══ ABONNEMENT dans l'espace membre ══
    Abonné    : le palier + ce qu'il lui apporte + [Change plan]
    Non abonné: les trois paliers, sur place, sans quitter la fenêtre. */
-#mw-sub{width:100%;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.14)}
+/* 8px + les 12px de `gap` du menu = 20px au-dessus du trait, 20px en
+   dessous. Avant : 26 au-dessus, 14 en dessous — le trait paraissait colle
+   a l'abonnement. */
+#mw-sub{width:100%;margin-top:8px;padding-top:20px;border-top:1px solid rgba(255,255,255,.14)}
 #mw-sub .s-lab{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:8px}
 #mw-sub .s-tier{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:#fff}
 #mw-sub .s-meta{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-top:3px}
@@ -363,6 +390,20 @@ body.ro #ro-bar{display:flex}
 /* Le style est celui du sélecteur de map.html, copié : une colonne
    CENTRÉE, le T au-dessus du nom, la définition dessous, les traces neuro
    en bas. Deux fichiers, deux copies — jamais un partage. */
+/* ══ LA FICHE — UN SEUL SYSTÈME DE FILTRE ET DE SÉLECTION ═══════════════
+   Une colonne CENTRÉE : le T au-dessus, le nom, la définition, les traces.
+   Bande au survol, liseré entre les lignes. Ce bloc est recopié à
+   l'identique dans totehm.html, book.html, next_objective.html et
+   map.html — trois origines, quatre copies, jamais un partage.
+     carte       #131316 · liseré #242429 · 520px · 26/22/18 · gouttière 10
+     question    Space Mono 10 · .14em · majuscules · blanc 50%
+     ligne       colonne centrée · 13px 8px · liseré haut blanc 7%
+                 survol blanc 5% · choisie blanc 4%
+     T           16×16, en bloc, 6px sous lui
+     nom         Quantico 700 · 19px
+     définition  Quantico 400 · 13px · #b4b4b4
+     traces      Space Mono 8 · .13em · #b4b4b4 sur bord #3c3c3c
+     sortie      Space Mono 9 · .14em · #606060, liseré au-dessus */
 .wp-card{background:#131316;border:1px solid #242429;width:100%;max-width:520px;
   padding:26px 22px 18px;display:flex;flex-direction:column;gap:10px;max-height:88vh}
 .wp-q{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
@@ -382,8 +423,6 @@ body.ro #ro-bar{display:flex}
 .wp-ntag{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.13em;
   text-transform:uppercase;color:#b4b4b4;border:1px solid #3c3c3c;
   padding:3px 8px;line-height:1.6;white-space:nowrap}
-/* Un liseré sous la liste : sans lui, la dernière intention coupée par le
-   défilement semblait cassée au lieu de « il y en a encore ». */
 .wp-skip{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;
   text-transform:uppercase;color:#606060;background:none;border:none;cursor:pointer;
   padding:12px 0 2px;margin-top:2px;flex-shrink:0;
@@ -396,6 +435,9 @@ body.ro #ro-bar{display:flex}
    Tous les réglages (nom, visibilité, abonnement, suppression) sous un seul toit. */
 #mw-in-state #settings.mw-dash{max-width:none;margin:0;padding:16px 0 0;gap:12px;background:none}
 #mw-in-state #settings.mw-dash > .set-block{width:100%}
+/* Meme regle, generique : le conteneur du bloc compte n'a que #acct pour
+   enfant. Quand #acct est `hide`, le conteneur reste et laisse 12px. */
+#mw-in-state #settings.mw-dash > .set-block:not(:has(> :not(.hide))){display:none}
 /* La navigation My Wisdom / My next objective n'est pas un réglage : elle
    reste accessible au swipe latéral et aux flèches, jamais dans le Dashboard. */
 #mw-in-state #settings-nav{display:none!important}
@@ -634,11 +676,8 @@ body.gate.entered #gw-row2{opacity:0;pointer-events:none}
   .set-note,.bot-txt,.acct-note,.hp-lbl,.hp-def,.fp-int .df,.mw-mail,.mw-body{transition:color .15s}
   .set-note:hover,.bot-txt:hover,.acct-note:hover,.hp-lbl:hover,.hp-def:hover,.fp-int .df:hover,.mw-mail:hover,.mw-body:hover{color:#fff}
 }
-/* ── Settings nav: tuiles perforées ── */
-.sn-tile{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;flex-shrink:0;background:0 0/100% 100% no-repeat}
-.sn-tile svg{width:7px;height:12px;color:#fff;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.sn-tile-rep{background-image:var(--logo-rep)}
-.sn-tile-blue{background-image:var(--logo-blue)}
+/* SUPPRIMÉ (29/08) — .sn-tile, les tuiles perforées qui portaient un chevron
+   dans les boutons My Wisdom / My next objective du menu membre. */
 /* ── Le T de la ligne d'ajout clignote : c'est l'invitation, il n'y a
       plus un mot pour la dire. Il ouvre temporalité puis intention. ── */
 @keyframes t-pulse{0%,100%{opacity:1}50%{opacity:.18}}
@@ -684,11 +723,10 @@ body.gate.entered #gw-row2{opacity:0;pointer-events:none}
 .ctx-label{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
   color:#b0b0b0;transition:color .15s ease}
 .chev{width:22px;height:22px;color:#909090;transition:color .15s ease}
-@media(hover:hover){#ctx-down:hover .ctx-label,#ctx-down:hover .chev,#ctx-up:hover .chev{color:#fff}}
-#ctx-up{position:absolute;top:22px;left:50%;transform:translateX(-50%);
-  background:none;border:none;cursor:pointer;padding:8px 14px;
-  -webkit-tap-highlight-color:transparent}
-#ctx-up .chev{width:26px;height:26px}
+@media(hover:hover){#ctx-down:hover .ctx-label,#ctx-down:hover .chev{color:#fff}}
+/* SUPPRIMÉ (29/08) — #ctx-up, le chevron vers le haut. Il avait déjà été
+   annulé en vague 5B ; son bouton et son écouteur partent avec lui. Le
+   retour se fait par le scroll, comme l'aller. */
 #ctx-vid{height:5cm;width:auto;max-width:84vw;display:block;background:#000;margin-bottom:3vh}
 @keyframes ctx-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
 .bob{animation:ctx-bob 1.8s ease-in-out infinite}
@@ -755,30 +793,12 @@ body.gate.entered #gw-row2{opacity:0;pointer-events:none}
      est ignorée et le scale(60) d'origine reprend la main. */
   body.gate.entered #gl-bg{transform:var(--tf-bg,scale(var(--gate-bg-scale)));opacity:1}
 
-  /* Les deux accès Book et Next vivent HORS du carré, dans le noir : bouton
-     flex-column — carré perforé (.sn-box) strict en haut, intitulé Quantico en
-     dessous, hors zone perforée. */
-  .side-nav{display:flex;flex-direction:column;align-items:center;
-    position:fixed;top:50%;transform:translateY(-50%);
-    background:none;border:none;cursor:pointer;padding:0;gap:7px;z-index:12;
-    -webkit-tap-highlight-color:transparent;transition:opacity .2s,transform .38s ease}
-  .side-nav:hover{opacity:.72}
-  .sn-box{display:flex;align-items:center;justify-content:center;
-    width:var(--side);height:var(--side);
-    background:0 0/100% 100% no-repeat;flex-shrink:0}
-  .side-nav svg{width:12px;height:20px;color:#fff;
-    fill:none;stroke:currentColor;stroke-width:1.4;
-    stroke-linecap:round;stroke-linejoin:round}
-  /* Retour Totehm : la boîte vire au navy, le chevron tombe juste sans bouger. */
-  #side-left.home .sn-box,#side-right.home .sn-box{background-image:var(--logo-navy)}
-  #side-left{right:calc(50% + var(--stage) / 2 + var(--side-gap))}
-  #side-left .sn-box{background-image:var(--logo-rep)}
-  #side-right{left:calc(50% + var(--stage) / 2 + var(--side-gap))}
-  #side-right .sn-box{background-image:var(--logo-blue)}
+  /* SUPPRIMÉ (29/08) — les carrés perforés .side-nav, leur chevron et leur
+     intitulé. La navigation entre les trois fichiers passe désormais par
+     les deux curseurs .tnav, à côté du T, sur ordinateur comme sur mobile.
+     Retour arrière : ce bloc et les deux boutons .side-nav qui vivaient
+     juste avant le module JS, en bas du corps. */
   #settings-nav .sn-row{display:none}
-  .sn-label{font-family:'Quantico',sans-serif;font-size:9px;letter-spacing:.04em;color:#fff;text-align:center;line-height:1.35;transition:opacity .2s;display:block;opacity:0}
-  .side-nav:hover .sn-label{opacity:1}
-  #side-left.home .sn-label,#side-right.home .sn-label{display:none}
   /* ══ LE TOTEHM SE REPLIE ══
      Le repli ne passe plus par un étage : c'est le module GATE qui rejoue
      le déploiement à l'envers, sur les quatre pièces du logo —
@@ -788,9 +808,6 @@ body.gate.entered #gw-row2{opacity:0;pointer-events:none}
   #fv-inner{scroll-snap-type:none}
   #habits{flex-shrink:0;height:auto}
 
-  /* ══ LES DEUX ACCES, A LA TAILLE DES BOUTONS DE REGLAGE ══ */
-  .sn-label{font-size:14px;line-height:1.4;
-    max-width:calc(var(--side) * 2.8);white-space:normal}
   #settings-nav .sn-row{display:flex;flex-direction:column;
     align-items:center;gap:10px;margin-bottom:2px}
   #settings-nav .sn-btn{font-size:14px}
@@ -817,6 +834,14 @@ body.gate.entered #gw-row2{opacity:0;pointer-events:none}
 
 
 
+
+
+
+
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -824,8 +849,6 @@ body.gate.entered #gw-row2{opacity:0;pointer-events:none}
 #menu-arrow svg:hover,
 #filter-arrow svg:hover,
 .sn-btn:hover,
-.sn-btn .chev:hover,
-.sn-logo .chev:hover,
 .btn-back:hover,
 #conn-bar:hover,
 #fv-status:hover,
@@ -882,7 +905,7 @@ body.gate.entered #gw-row2{opacity:0;pointer-events:none}
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
-<body class="gate"><script>try{if(new URLSearchParams(location.search).get('ro'))document.body.classList.remove('gate');}catch(e){}</script>
+<body class="gate">
 
 
 <!-- ══ ÉTAT 1 : LE LOGO RECOMPOSÉ — 4 SVG vectoriels superposés ══ -->
@@ -936,7 +959,6 @@ body.gate.entered #gw-row2{opacity:0;pointer-events:none}
 </section>
 
 <section id="gate-context">
-  <button id="ctx-up" type="button" aria-label="Open my Totehm"><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>
   <video id="ctx-vid" playsinline muted controls preload="none"></video>
   <button class="btn-sig" id="gate-open-2" type="button">Open my Totehm</button>
 </section>
@@ -1026,7 +1048,6 @@ body.gate.entered #gw-row2{opacity:0;pointer-events:none}
     <input id="fp-input" placeholder="type it — any language" autocomplete="off" spellcheck="false">
     <button id="fp-preview" type="button"></button>
     <div id="fp-list"></div>
-    <div class="fp-q hide" id="fp-q">What's your intention here?</div>
     <div id="fp-ints" class="hide"></div>
     <button class="fp-skip hide" id="fp-skip">no intention yet</button>
   </div>
@@ -1085,22 +1106,21 @@ body.gate.entered #gw-row2{opacity:0;pointer-events:none}
       <div class="mw-mail" id="mw-mail"></div>
       <div class="mw-sync" id="mw-sync"></div>
     <div id="settings" class="mw-dash">
-      <!-- Rangée haute du menu : [My Book] · [My TOTEHM↑ = retour Habits] · [Next Objective] -->
+      <!-- Rangée haute du menu. Masquée (#mw-in-state #settings-nav) : la
+           navigation passe par les curseurs .tnav, à côté du T. -->
       <div id="settings-nav">
-        <!-- Étage 1 : bouton [My Totehm] version logo-image centré, avec flèche ↑ au-dessus -->
+        <!-- [My Totehm] logo-image centré. Le chevron ↑ qui le surmontait a
+             été supprimé le 29/08 avec tous les autres. -->
         <button id="sn-home" class="sn-btn sn-logo" aria-label="Back to my Totehm">
-          <svg class="chev" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
           <img src="assets/img/totehm_logo.png" alt="My Totehm">
         </button>
         <!-- Étage 2 : My Wisdom (←) puis My next objective (→), l'un au-dessus de l'autre, centrés -->
         <div class="sn-row">
           <button id="sn-book" class="sn-btn" aria-label="My Wisdom — what you have learned">
-            <span class="sn-tile sn-tile-rep" aria-hidden="true"><svg viewBox="0 0 14 24"><path d="M11 2 L3 12 L11 22"/></svg></span>
             <span>My Wisdom</span>
           </button>
           <button id="sn-next" class="sn-btn" aria-label="My next objective — the future">
             <span>My next objective</span>
-            <span class="sn-tile sn-tile-blue" aria-hidden="true"><svg viewBox="0 0 14 24"><path d="M3 2 L11 12 L3 22"/></svg></span>
           </button>
         </div>
       </div>
@@ -1133,8 +1153,18 @@ body.gate.entered #gw-row2{opacity:0;pointer-events:none}
       <!-- Abonnement : offre unique Higher Club, peinte par paintSubscription() -->
       <div id="mw-sub"></div>
 
+      <!-- TotehmBot : le membre pose ses spots depuis Telegram.
+           Rendu par paintTelegram(). Caché tant qu'il n'est pas abonné :
+           bot-reply refuserait /spot, le bouton serait une impasse. -->
+      <div class="set-block hide" id="tg-block">
+        <div class="menu-row">
+          <button class="btn-sig" id="tg-btn" type="button">Connect TotehmBot</button>
+          <div class="note dim" id="tg-note"></div>
+        </div>
+      </div>
+
       <!-- Bouton [Get Higher with my Totehm] : monte vers Stoner avec animation d'élévation -->
-      <div class="set-block">
+      <div class="set-block higher-only">
         <a class="btn-sig higher-only" id="btn-get-higher" href="https://www.totehm.com" target="_blank" rel="noopener">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> with my Totehm</a>
       </div>
 
@@ -1158,8 +1188,6 @@ body.gate.entered #gw-row2{opacity:0;pointer-events:none}
     </div>
   </div>
 </div>
-<button class="side-nav" id="side-left" aria-label="My Wisdom"><span class="sn-box"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></span><span class="sn-label">My Wisdom</span></button>
-<button class="side-nav" id="side-right" aria-label="My next objective"><span class="sn-box"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M3 2 L11 12 L3 22"/></svg></span><span class="sn-label">My next objective</span></button>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
@@ -1405,6 +1433,10 @@ function deduceFreq(raw){
 const KEY='totehm_habits_v1';
 const KEYP='totehm_profile_v1';
 let me=null, myProfile=null, cloudMode=false, cloudSaveTimer=null, saveTimer=null;
+/* TotehmBot — declare ici et pas plus bas : la remise a zero de la
+   deconnexion s'execute avant, et une TDZ y jetterait. */
+const TG_BOT='TotehmBot';
+let tgLinked=false;
 
 function loadState(){
   try{const r=localStorage.getItem(KEY);if(r)return JSON.parse(r);}catch(e){}
@@ -1600,20 +1632,12 @@ function renderHabits(){
   const autoGrow=el=>{el.style.height='auto';el.style.height=el.scrollHeight+'px';};
   box.querySelectorAll('.h-text').forEach(inp=>{
     inp.value=state.habits[+inp.dataset.i].t||'';autoGrow(inp);
-    if(RO){inp.readOnly=true;return;}
     inp.addEventListener('input',()=>{autoGrow(inp);state.habits[+inp.dataset.i].t=inp.value.replace(/\n/g,' ');clearTimeout(saveTimer);saveTimer=setTimeout(save,700);});
     inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();inp.blur();}});
   });
-  /* En lecture, le T et la fréquence ouvrent l'aperçu FIGÉ (openReadPeek) :
-     jamais openHabitPeek/openFreqPanel, qui écrivent dans state.habits — le
-     Totehm affiché à l'écran n'est pas le sien, il ne s'édite pas depuis ici. */
-  box.querySelectorAll('.h-freq[data-i]').forEach(b=>{
-    const i=+b.dataset.i;
-    b.onclick=RO?()=>openReadPeek(state.habits[i]):()=>openFreqPanel(i);
-  });
+  box.querySelectorAll('.h-freq[data-i]').forEach(b=>{b.onclick=()=>openFreqPanel(+b.dataset.i);});
   box.querySelectorAll('.h-T[data-i]').forEach(b=>{
     const i=+b.dataset.i;
-    if(RO){ b.onclick=()=>openReadPeek(state.habits[i]); return; }
     /* T d'une habitude configurée -> fenêtre d'aperçu (freq + intention en un coup d'œil, chacun éditable).
        T d'une habitude sans intention -> panneau d'édition direct au bon stage. */
     b.onclick=()=>{
@@ -1694,6 +1718,7 @@ $('acct-wipe').onclick=async()=>{
     state={habits:[],vis:'private'};
     profile={name:'',bot:false};
     myProfile=null; cloudMode=false; mySub=null;
+    tgLinked=false; { const tb=$('tg-block'); if(tb)tb.classList.add('hide'); }
     try{localStorage.removeItem(KEY);localStorage.removeItem(KEYP);}catch(_){}
     renderHabits(); connPaint(); renderSettings();
     b.textContent='erased'; b.disabled=true;
@@ -1758,7 +1783,6 @@ function showFpStage(stage){
   $('fp-input').classList.toggle('hide',isInt);
   $('fp-preview').classList.toggle('hide',isInt);
   $('fp-list').classList.toggle('hide',isInt);
-  $('fp-q').classList.toggle('hide',!isInt);
   $('fp-ints').classList.toggle('hide',!isInt);
   $('fp-skip').classList.toggle('hide',!isInt);
   if(isInt){renderFpInts(currentIntOfTarget());}
@@ -1838,7 +1862,7 @@ function openFilterModal(){
 }
 function closeFilterModal(){$('filter-modal').classList.add('hide');}
 $('bigT').style.cursor='pointer';
-$('bigT').onclick=()=>openFreqPanel('filter','int');
+$('bigT').onclick=()=>openFilterModal();
 $('filter-arrow').onclick=()=>openFilterModal();
 /* TOTEHM.png cliquable : ouvre le Dashboard, comme la petite flèche du bas */
 $('wordmark').style.cursor='pointer';
@@ -2008,7 +2032,7 @@ function paintZone(){
   /* On ne propose pas la page où l'on se trouve déjà : la boîte de la zone
      ouverte s'efface. L'autre ne mène plus à sa zone : elle ramène au
      Totehm, et le dit en passant au navy. */
-  const L=$('side-left'), R=$('side-right');
+  const L=$('tnav-l'), R=$('tnav-r');
   L.classList.toggle('hide',bookOn);
   R.classList.toggle('hide',nextOn);
   L.classList.toggle('home',nextOn);
@@ -2122,14 +2146,13 @@ function navBlocked(){
     ||!$('habit-peek').classList.contains('hide')
     ||!$('filter-modal').classList.contains('hide');
 }
-/* Les deux curseurs mobiles font EXACTEMENT ce que font les carrés desktop :
-   un seul geste nommé deux fois, jamais deux comportements. */
+/* Un seul geste, un seul curseur, la même chose partout : les carrés
+   desktop n'existent plus, il n'y a donc plus deux comportements à tenir
+   d'accord. */
 const navLeft =()=>{ if(navBlocked())return;
   if($('nextobj').classList.contains('show'))showNext(false); else showBook(true); };
 const navRight=()=>{ if(navBlocked())return;
   if($('book').classList.contains('show'))showBook(false); else showNext(true); };
-$('side-left').onclick =navLeft;
-$('side-right').onclick=navRight;
 $('tnav-l').onclick=navLeft;
 $('tnav-r').onclick=navRight;
 
@@ -2186,7 +2209,7 @@ window.addEventListener('message',e=>{
      c'est nous qui noircissons — son 100vh s'arrête au cadre. */
   /* My Wisdom demande le poids d'une leçon : c'est nous qui l'affichons,
      puis nous le lui renvoyons. L'iframe ne quitte jamais son cadre. */
-  else if(e.data.type==='totehm-pick-intention'){ if(!RO) openWeightPick(e.data.value||null); }
+  else if(e.data.type==='totehm-pick-intention'){ openWeightPick(e.data.value||null); }
   /* Une iframe qui vient de démarrer réclame les mesures du rail. */
   else if(e.data.type==='totehm-need-metrics'){
     pushMetrics();
@@ -2598,6 +2621,54 @@ function paintSubscription(sub){
     };
   }
 }
+/* ══ TOTEHMBOT ══════════════════════════════════════════════════════
+   Le membre pose un spot depuis Telegram : /spot, sept boutons, une
+   position native. Aucun geocodage, donc aucune API payante.
+
+   La liaison passe par un code a usage unique, valable 10 minutes, cree
+   par new_bot_link_code() et lu par bot-reply au /start. Le compte n'est
+   JAMAIS transmis par le message : le bot le retrouve en base.
+
+   telegram_id n'est ni lisible ni ecrivable par le membre (GRANT par
+   colonne) — sans quoi n'importe qui pouvait s'attribuer le Telegram
+   d'un autre et recevoir ses questions a sa place. D'ou bot_linked(),
+   qui ne rend qu'un booleen sur SA ligne. */
+
+async function paintTelegram(sub){
+  const box=$('tg-block'); if(!box) return;
+  const live = sub && ['active','trialing','past_due'].includes(sub.status);
+  /* Pas d'abonnement = /spot repondrait « reserve aux membres du Club ».
+     On ne montre pas une porte qui se ferme. */
+  box.classList.toggle('hide', !(me && live));
+  if(!(me && live)) return;
+  try{ const {data}=await sb.rpc('bot_linked'); tgLinked=!!data; }
+  catch(_){ tgLinked=false; }
+  const b=$('tg-btn'), n=$('tg-note');
+  b.classList.toggle('claimed', tgLinked);
+  b.textContent = tgLinked ? 'TotehmBot connected' : 'Connect TotehmBot';
+  if(n) n.textContent = tgLinked ? 'send /spot to post a place' : '';
+}
+
+$('tg-btn').onclick=async()=>{
+  const n=$('tg-note');
+  if(tgLinked){ window.open('https://t.me/'+TG_BOT,'_blank','noopener'); return; }
+  n.className='note dim'; n.textContent='opening telegram…';
+  /* La fenetre s'ouvre AVANT l'await : ouverte apres, elle n'est plus
+     rattachee au clic et Safari la bloque. On la remplit ensuite. */
+  const w=window.open('','_blank');
+  const {data,error}=await sb.rpc('new_bot_link_code');
+  if(error||!data){
+    if(w)w.close();
+    n.className='note no'; n.textContent='try again in a minute';
+    return;
+  }
+  const url='https://t.me/'+TG_BOT+'?start='+encodeURIComponent(data);
+  if(w){ w.opener=null; w.location=url; } else { location.href=url; }
+  n.className='note dim'; n.textContent='say /start in telegram, then come back';
+  /* Le code vit 10 min. On represente l'etat au retour d'onglet. */
+  setTimeout(()=>{ loadSubscription().then(paintTelegram); }, 4000);
+};
+
 function memberPaint(){
   $('mw-out-state').classList.toggle('hide',!!me);
   $('mw-claim-state').classList.toggle('hide',!(me&&!myProfile));
@@ -2613,8 +2684,8 @@ memberPaint=function(){
   _mpOrig();
   if(me&&myProfile&&typeof renderSettings==='function')renderSettings();
   const box=$('mw-sub'); if(!box) return;
-  if(!me){ box.innerHTML=''; return; }
-  loadSubscription().then(paintSubscription);
+  if(!me){ box.innerHTML=''; $('tg-block').classList.add('hide'); return; }
+  loadSubscription().then(sub=>{ paintSubscription(sub); paintTelegram(sub); });
 };
 $('mw-close').onclick=()=>{clearTimeout(mwNameTimer);$('member-window').classList.remove('show');};
 $('member-window').addEventListener('click',e=>{if(e.target===$('member-window'))$('member-window').classList.remove('show');});
@@ -2670,23 +2741,11 @@ $('mw-pseudo').addEventListener('keydown',async e=>{
 });
 $('mw-signout').onclick=async()=>{await sb.auth.signOut();$('member-window').classList.remove('show');};
 
-/* En mode RO, un seul point de chargement : onAuthStateChange, dont la
-   session est établie. Le IIFE appellait getSession() en parallèle — quand
-   il revenait avec me=null après un loadRO() réussi, roFail() effaçait les
-   habits. Le flag roLoaded évite un double-chargement sur TOKEN_REFRESHED. */
-let roLoaded=false;
 sb.auth.onAuthStateChange(async()=>{
   const {data:{session}}=await sb.auth.getSession();
   me=session?.user||null;
   await loadProfile();
-  if(RO){
-    if(!roLoaded){
-      roLoaded=true;
-      if(me) await loadRO(); else roFail('sign in to read a Totehm');
-    }
-    memberPaint();paint();
-    return;
-  }
+  if(RO){ if(me)await loadRO(); memberPaint();paint(); return; }
   if(me&&myProfile){await migrateLocalToCloudIfNeeded();}
   memberPaint();paint();
 });
@@ -2694,7 +2753,16 @@ sb.auth.onAuthStateChange(async()=>{
   const {data:{session}}=await sb.auth.getSession();
   me=session?.user||null;
   await loadProfile();
-  if(RO){ return; /* onAuthStateChange gère le chargement */ }
+  /* En lecture on charge le Totehm VISITÉ et jamais le sien : sans ce
+     branchement, la page afficherait ses propres habitudes sous le nom de
+     quelqu'un d'autre. Les policies exigent une session — sans compte, on
+     dit pourquoi plutôt que d'afficher un écran vide. */
+  if(RO){
+    if(!me){ roFail('sign in to read a Totehm'); }
+    else{ await loadRO(); }
+    paint();
+    return;
+  }
   if(me&&myProfile){await cloudLoad();}
   paint();
 })();
@@ -2852,9 +2920,6 @@ window.addEventListener('pageshow',e=>{
 
   /* État 1 (la classe est déjà posée sur <body> dans le HTML : zéro flash) */
   body.classList.add('gate');
-  /* En lecture, le gate est une page qui n'appartient pas au visiteur :
-     on l'escamote immédiatement et on révèle directement les habits. */
-  if(RO){ body.classList.remove('gate'); open=true; }
 
   /* Pendant l'état 1, aucun geste ne doit atteindre l'app en dessous — mais
      l'atterrissage a ses propres champs et sa propre vidéo : un geste NÉ
@@ -2886,34 +2951,13 @@ window.addEventListener('pageshow',e=>{
     if(gsn) gsn.classList.remove('hide');
     setTimeout(()=>{try{gsi.focus();}catch(e){}},100);
   };
-  if(gsi) gsi.addEventListener('keydown',async e=>{
+  if(gsi) gsi.addEventListener('keydown',e=>{
     if(e.key==='Escape'){ gsi.classList.add('hide'); if(gsn)gsn.classList.add('hide');
                           gsb.classList.remove('hide'); return; }
     if(e.key!=='Enter')return;
     const v=gsi.value.trim();
     if(v.length<2){ if(gsn){gsn.classList.remove('hide');gsn.textContent='2 characters min';} return; }
-    /* Chercher AVANT d'entrer : si on entre d'abord puis la recherche échoue,
-       le membre se retrouve dans son propre Totehm en mode écriture. */
-    if(gsn){ gsn.classList.remove('hide'); gsn.textContent='searching…'; }
-    let target=null;
-    try{
-      if(me){
-        let {data:ps}=await sb.from('profiles').select('id,pseudo').ilike('pseudo',v).limit(1);
-        let p=(ps&&ps[0])||null;
-        if(!p){const{data:ps2}=await sb.from('profiles').select('id,pseudo').ilike('pseudo','%'+v+'%').limit(1);p=(ps2&&ps2[0])||null;}
-        if(p){
-          const{data:rows}=await sb.from('totehms').select('totehm_visibility').eq('user_id',p.id).eq('totehm_visibility','members').limit(1);
-          if(rows&&rows.length) target=p.pseudo;
-        }
-      } else {
-        const ql=v.toLowerCase();
-        const u=NETWORK.find(x=>x.who.toLowerCase()===ql)||NETWORK.find(x=>x.who.toLowerCase().indexOf(ql)!==-1);
-        if(u&&u.vis==='members') target=u.who;
-      }
-    }catch(_){}
-    if(!target){ if(gsn) gsn.textContent='this Totehm is private'; return; }
-    if(gsn) gsn.textContent='';
-    location.href='totehm.html?ro='+encodeURIComponent(target);
+    enter(()=>openTotehmView(v));
   });
 
   /* ══ LE RADAR DE FOND ══
@@ -2995,7 +3039,7 @@ window.addEventListener('pageshow',e=>{
        Le geste vers le haut ouvrait le Totehm. Deux directions de
        défilement pour deux résultats différents, ça se devine mal et ça
        surprend. Le chevron du haut fait UNE chose : remonter. */
-    $('ctx-up').addEventListener('click',()=>{ v.pause(); hero.scrollIntoView({behavior:'smooth'}); });
+    /* #ctx-up supprimé : le retour au hero se fait au scroll, comme l'aller. */
     if('IntersectionObserver' in window){
       const io=new IntersectionObserver(es=>{es.forEach(e=>{
         if(e.isIntersecting){ load(); v.play().catch(()=>{}); } else { v.pause(); }
