@@ -227,12 +227,14 @@ sans rien apporter.
 
 | Table | Lignes | Rôle |
 |---|---:|---|
-| `profiles` | 1 | pseudo, `telegram_id` — comptes test supprimés le 18/08 |
+| `profiles` | 3 | pseudo, `telegram_id` — **`telegram_id` n'est plus lisible ni écrivable par `authenticated`** (GRANT par colonne, 29/08) |
+| `bot_link_codes` | 0 | code de liaison Telegram, usage unique, 10 min — RLS active, **aucune policy** |
+| `bot_drafts` | 0 | conversation Telegram en cours — RLS active, **aucune policy** |
 | `subscriptions` | 1 | **source unique de l'adhésion** — wavywah `trialing` (test) |
 | `stripe_events` | 0 | idempotence webhook |
 | `crew_codes` · `crew_attributions` | 0 | Crew Code, attribution définitive |
 | `stoner_access` | 6 | les Fighers (achat unique, `.com`) |
-| `spots` | 125 | lieux, 2 embeddings — **moteur COMPLET, prêt à brancher** |
+| `spots` | 125 | lieux, 2 embeddings — **branché** : `/spot` dans TotehmBot écrit ici, 0 spot membre à ce jour |
 | `bot_knowledge` | 55 | base de connaissance, embeddings |
 | `totehm_clothes` | 1 | commandes Cloth · **`chapter_id`** relie au chapitre |
 | `totehm_events` | 15 | ⚠️ journal **incomplet** — voir §7 |
@@ -775,3 +777,144 @@ Functions sont téléchargeables.
 
 *Ce document se met à jour à chaque changement d'infrastructure.
 Un document daté et faux est pire que pas de document.*
+
+---
+
+## 9 · La production de contenu par les membres — mesuré le 29/08/2026
+
+### Ce qui manquait, et pourquoi rien ne marchait
+
+`bot-reply` répondait « Ouvre ton Totehm sur totehm.space pour lier ton
+compte ». **Cette liaison n'existait nulle part** : zéro occurrence de
+`telegram` dans les quatre fichiers de `space/`. Résultat mesuré :
+`profiles.telegram_id` renseigné sur **0 profil sur 3**. Le bot n'a jamais
+pu parler à personne depuis sa mise en service.
+
+### Le chemin complet
+
+```
+totehm.space, menu membre
+  [Connect TotehmBot]        →  rpc new_bot_link_code()   16 car. base64url
+  ouvre t.me/TotehmBot?start=<code>
+        |
+  /start <code>              →  bot-reply lit bot_link_codes
+                                pose profiles.telegram_id
+                                marque used_at
+        |
+  /spot                      →  canPost(uid) : abonnement active|trialing
+        |
+  intention (7 boutons)  →  activité (texte, 80)  →  pourquoi (texte, 300,
+  ou /passer)  →  position (NATIVE Telegram)  →  quand (1 h / 3 h / lieu)
+  →  visibilité (Club / Public)
+        |
+  insert dans spots, user_id VENANT DE LA BASE
+        |
+  higher-map v8 passe p_include_club=true APRÈS son 402
+        |
+  le spot apparaît sur la carte de ceux qui portent cette intention
+```
+
+### Coût : zéro
+
+La position vient de Telegram (`request_location`), pas d'un géocodage.
+Aucun appel IA dans la boucle. La table `bot_drafts` porte l'état de la
+conversation ; PostgreSQL, pas un service.
+
+### Qui a le droit de publier
+
+`REQUIRE_FIGHER = false` dans `bot-reply` — aujourd'hui l'abonnement Club
+suffit. La condition visée par BRAND.md est le **Figher** (méthode Stoner
++ abonnement) ; elle rendrait la fonction morte : 6 accès Stoner, un seul
+avec un compte `.space`, et l'unique abonnement n'est pas le sien.
+Passer la constante à `true` suffit à resserrer, rien d'autre à changer.
+
+### Trois trous fermés dans ce lot
+
+| Trou | Mesuré | Fermé par |
+|---|---|---|
+| `spots` INSERT n'exigeait que `auth.role() = 'authenticated'` — un membre pouvait publier **au nom d'un autre** | 28/08 | policy `members insert own spots`, `auth.uid() = user_id` |
+| `profiles.telegram_id` lisible **et écrivable** par tout membre — on pouvait s'attribuer le Telegram d'un autre et recevoir ses questions | 29/08 | GRANT par colonne (SELECT sans `telegram_id`, UPDATE sur `pseudo` seul) |
+| `new_bot_link_code()` appelait `gen_random_bytes` avec `search_path = public` — pgcrypto vit dans `extensions`, la fonction **levait à chaque appel** | 29/08 | appel qualifié `extensions.gen_random_bytes` |
+
+Le premier et le troisième sont invisibles à la lecture : le premier ne se
+voit qu'en interrogeant `pg_policy`, le troisième qu'en appelant la fonction
+sous le rôle `authenticated`. Les deux ont été reproduits avant d'être
+corrigés.
+
+### Le piège des GRANT par colonne
+
+`revoke select (telegram_id) ... from authenticated` **ne fait rien** si le
+GRANT a été posé au niveau table. PostgreSQL accepte, émet un WARNING, ne
+change rien. Il faut `revoke select on <table>` puis `grant select (col, ...)`.
+Conséquence à retenir : **toute colonne ajoutée à `profiles` sera invisible
+au front** tant qu'elle n'est pas ajoutée à la liste du `grant`.
+
+---
+
+## 10 · Le design des quatre fichiers — arrêté le 29/08/2026
+
+### Un seul système de filtre et de sélection
+
+Il y en avait **cinq** : `book.html` alignait à gauche, `totehm.html` centrait,
+`next_objective.html` affichait sans définition, `map.html` avait deux styles à
+lui seul. Cinq fenêtres qui font la même chose et ne se ressemblent pas.
+
+Le format retenu est celui du sélecteur d'intention, **centré** :
+
+```
+carte       #131316 · liseré #242429 · 520px · padding 26/22/18 · gouttière 10
+question    Space Mono 10 · .14em · majuscules · blanc 50% · centrée
+ligne       colonne centrée · padding 13px 8px · liseré haut blanc 7%
+            survol blanc 5% · choisie blanc 4%
+T           16×16, EN BLOC AU-DESSUS du nom, 6px sous lui
+nom         Quantico 700 · 19px
+définition  Quantico 400 · 13px · #b4b4b4 · 5px sous le nom
+traces      Space Mono 8 · .13em · #b4b4b4 sur bord #3c3c3c · centrées
+sortie      Space Mono 9 · .14em · #606060, liseré au-dessus
+```
+
+Appliqué à : `#wpick` et `#filter-modal` de `totehm.html`, `#pick` de
+`book.html`, `#peek` de `next_objective.html`, `#filter-modal` et `#step` de
+`map.html`.
+
+**Les définitions sont en Quantico.** Elles étaient en Futura dans
+`book.html`, et `next_objective.html` n'en affichait aucune.
+
+### Les sept définitions sont copiées, jamais partagées
+
+Elles vivent quatre fois : `INTS[].def` dans `totehm.html`, `book.html` et
+`map.html`, `IDEF` dans `next_objective.html`. `tests/w8.mjs` §5 les compare
+mot pour mot et échoue à la première divergence — c'est ce test qui remplace
+le partage interdit par la règle des produits indépendants.
+
+### La navigation : plus un seul chevron
+
+Supprimés : `.side-nav` / `#side-left` / `#side-right` / `#side-home` avec
+leurs carrés perforés et leurs intitulés, les tuiles `.sn-tile`, la flèche ↑
+au-dessus du logo, et `#ctx-up` (déjà annulé en vague 5B).
+
+Il reste **un objet, aux mêmes coordonnées dans les trois fichiers** :
+
+```
+.tnav   top:30px · 44px de part et d'autre du milieu · svg 13×22 · trait 1.5
+        totehm   #tnav-l (#b06a9f, My Wisdom) · #tnav-r (#7fa3e8, Next objective)
+        book     #edge-home à droite, blanc
+        next     #edge-home à gauche, blanc
+```
+
+⚠️ **Le curseur DOIT vivre dans `#stage`.** Sur ordinateur `#stage` porte un
+`transform` : un `position:fixed` à l'intérieur se cale sur LUI, pas sur
+l'écran. Le T y est déjà. Un curseur placé dehors n'a pas le même repère et
+se décale dès que la fenêtre change de taille. C'est la troisième fois que ce
+piège mord dans ce produit.
+
+Le seul chevron qui reste est le ↓ animé de « Think same but opposite » :
+ce n'est pas de la navigation entre fichiers, c'est l'invitation au scroll de
+la page d'atterrissage.
+
+### Ce qui vérifie tout ça
+
+`tests/w8.mjs` ne teste pas un fichier, il les **compare**. Sept contrôles :
+zéro chevron résiduel, curseur au même pixel dans les trois fichiers,
+symétrie autour du T, carte identique dans les quatre, définitions en
+Quantico, les sept définitions mot pour mot, et le pas vertical de la ligne.

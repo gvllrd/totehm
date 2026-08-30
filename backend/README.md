@@ -218,6 +218,7 @@ supabase functions deploy bot-tick --no-verify-jwt
 supabase functions deploy bot-reply --no-verify-jwt
 supabase functions deploy stripe-webhook --no-verify-jwt
 supabase functions deploy autobiographiste
+supabase functions deploy higher-map           # JWT vérifié — jamais --no-verify-jwt
 supabase db push
 ```
 
@@ -237,12 +238,23 @@ et `totehm.com`. **TotehmManager est abandonné.**
 
 | Domaine | Usage |
 |---|---|
-| `totehm.space` | habitudes, Figher Club, autobiographie |
+| `totehm.space` | habitudes, Figher Club, autobiographie, **`/spot`** (production de contenu par les membres) |
 | `higher.boutique` | curation des illustrations générées par n8n |
 | `totehm.com` | à venir |
 
 Les workflows n8n qui pointaient vers TotehmManager seront redirigés vers TotehmBot
 au fil des itérations — pas de migration forcée, on le fait au cas par cas.
+
+**Un seul webhook par bot.** Telegram n'en accepte qu'un. Le geste quotidien
+(DONE / MISSED / WHY) et la production de spots vivent donc dans la **même**
+fonction, `bot-reply`. Les séparer demanderait un second bot, donc un second
+token, donc un second compte à lier — pour rien.
+
+L'ordre des branches dans `bot-reply` n'est pas cosmétique : **le brouillon
+de spot est testé AVANT le « Pourquoi ? »**. Sans cette priorité, la réponse
+à une étape du spot serait enregistrée comme l'obstacle d'une habitude ratée.
+Le TTL de 30 minutes sur `bot_drafts` garantit l'inverse : un brouillon
+oublié n'avale pas un WHY posé une heure plus tard.
 
 ---
 
