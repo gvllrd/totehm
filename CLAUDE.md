@@ -203,11 +203,12 @@ if (e.target.tagName==='INPUT' || e.target.tagName==='TEXTAREA'
 Les habitudes et l'objectif sont des `<textarea>` : ne tester que `INPUT`
 laissait les flèches changer de page en pleine écriture.
 
-**Transitions sèches entre fichiers.** `#book` et `#nextobj`
-basculent en `visibility`, **jamais en `opacity`**. Un fondu croisé laisse voir
-deux couleurs à la fois — le carré rouge-violet de My Wisdom bavait sur le navy
-pendant 380 ms. Et `visibility` plutôt que `display:none` : les iframes restent
-mises en page derrière, la première bascule n'attend pas un relayout.
+**Fondu enchaîné entre fichiers (30/08/2026).** `#book` et `#nextobj` basculent
+en `opacity` sur 280 ms avec `background:#000`. Le fond noir fait rideau pendant
+la transition — sans lui, la couleur sous-jacente (navy de totehm.html) baignait
+au travers. `pointer-events` bascule instantanément avec `.show` : pas d'attente
+de `transitionend`. Le desktop NE surcharge PAS `background:transparent` sur ces
+deux éléments — ce serait rouvrir le problème de bave.
 
 **`#hmap` n'existe plus dans `totehm.html`.** La règle « `#hmap` doit être
 sibling de `#stage` » est caduque. La contrainte qui la fondait reste vraie et

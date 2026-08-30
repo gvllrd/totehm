@@ -227,20 +227,16 @@ body.ro #obj-input,body.ro #obj-locked,body.ro .p-add,body.ro .p-hi{display:none
    ramène au Totehm — et le geste devient lisible d'un coup d'œil. */
 /* ══ LE CURSEUR DE NAVIGATION — ORDINATEUR ET MOBILE, À L'IDENTIQUE ══
    Le carré perforé navy et son intitulé « My Habits » sont supprimés. Il ne
-   reste que ce curseur, à côté du T.svg blanc, en haut, centré : mêmes
-   coordonnées que dans totehm.html et book.html — `top:30px` et 44px du
+   reste que ce curseur, à côté du TOTEHM.svg (bas), centré : mêmes
+   coordonnées que dans totehm.html et book.html — `bottom:30px` et 52px du
    milieu. My next objective est à DROITE du Totehm : on y retourne donc
-   par la gauche. */
-.tnav{position:fixed;top:30px;z-index:33;background:none;border:none;
+   par la gauche. Blanc : une seule destination, rien à distinguer par la couleur. */
+.tnav{position:fixed;bottom:30px;z-index:33;background:none;border:none;
   padding:14px 10px;line-height:0;cursor:pointer;
   -webkit-tap-highlight-color:transparent;transition:opacity .2s}
 .tnav svg{width:13px;height:22px;display:block;fill:none;stroke:currentColor;
   stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-/* Blanc, comme le T à côté duquel il vit. Il n'y a qu'une destination
-   depuis ce fichier : rien à distinguer par la couleur, et le bleu clair
-   se noyait dans le fond navy. Dans totehm.html il y a DEUX curseurs :
-   là, chacun porte la couleur de sa destination. */
-#edge-home{right:calc(50% + 44px);color:#fff}
+#edge-home{right:calc(50% + 52px);color:#fff}
 .tnav:active{opacity:.5}
 @media(hover:hover){.tnav:hover{opacity:.7}}
 
@@ -291,6 +287,8 @@ body.ro #obj-input,body.ro #obj-locked,body.ro .p-add,body.ro .p-hi{display:none
      intitulé « My Habits ». Le curseur .tnav le remplace, aux mêmes
      coordonnées que dans les deux autres fichiers. */
 }
+
+
 
 
 

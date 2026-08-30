@@ -18,9 +18,9 @@
   L'ATTERRISSAGE porte : la météo (haut droite), l'accès membre, le logo,
   [Open my Totehm], Search a Totehm, puis [Open my Totehm World] et la Terre.
 
-  TRANSITIONS SÈCHES. Aucun fondu croisé entre deux fichiers : les
-  overlays basculent en display, jamais en opacity. Le carré rouge de
-  book.html ne peut plus baver sur le bleu.
+  FONDU ENCHAÎNÉ (Netflix). Les overlays #book et #nextobj s'ouvrent en
+  opacity 0→1 sur 280 ms, sur fond #000. Le noir fait rideau — jamais de
+  background:transparent sur ces deux éléments côté desktop.
 -->
 <html lang="en">
 <head>
@@ -81,24 +81,19 @@ body:not(.gate) #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
 #filter-arrow{display:none!important}
 #filter-arrow:hover{opacity:.7}
 #filter-arrow svg{width:22px;height:12px;color:rgba(255,255,255,.55)}
-/* ══ LES DEUX CURSEURS DU HAUT (mobile) ══
-   Sur desktop, deux carrés perforés flanquent le Totehm et disent où mènent
-   les côtés. Sur mobile il n'y avait RIEN : le swipe existait sans que rien
-   ne l'annonce. Deux chevrons de part et d'autre du T.svg, aux couleurs des
-   deux fichiers — rep pour My Wisdom, blue pour My next objective. */
 /* ══ LES CURSEURS DE NAVIGATION — ORDINATEUR ET MOBILE, À L'IDENTIQUE ══
-   Les carrés perforés au bord de l'écran, avec leur chevron et leur
-   intitulé, sont supprimés. Il ne reste que ces deux curseurs, à côté du
-   T.svg blanc, en haut, centrés. Mêmes coordonnées dans totehm.html,
-   book.html et next_objective.html : `top:30px` et 44px de part et
-   d'autre du milieu. Le curseur porte la couleur du fichier où il mène. */
-.tnav{position:fixed;top:30px;z-index:33;background:none;border:none;
+   Placés de part et d'autre du TOTEHM.svg (bas), pas du T.svg (haut).
+   TOTEHM.svg mesure ~83 px de large à height:50px — demi-largeur ~41.5 px.
+   Offset 52 px : laisse 10.5 px de garde entre le bord du wordmark et le
+   bord interne du bouton. Mêmes coordonnées dans les trois fichiers.
+   Le curseur porte la couleur du fichier où il mène. */
+.tnav{position:fixed;bottom:30px;z-index:33;background:none;border:none;
   padding:14px 10px;line-height:0;cursor:pointer;
   -webkit-tap-highlight-color:transparent;transition:opacity .2s}
 .tnav svg{width:13px;height:22px;display:block;fill:none;stroke:currentColor;
   stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-#tnav-l{right:calc(50% + 44px);color:#b06a9f}
-#tnav-r{left:calc(50% + 44px);color:#7fa3e8}
+#tnav-l{right:calc(50% + 52px);color:#b06a9f}
+#tnav-r{left:calc(50% + 52px);color:#7fa3e8}
 .tnav:active{opacity:.5}
 @media(hover:hover){.tnav:hover{opacity:.7}}
 /* Le curseur qui ramène au Totehm porte la marque : blanc, comme le T. */
@@ -137,14 +132,15 @@ body.higher .set-block.higher-only{display:flex!important}
 .sn-logo img{height:68px;width:68px;display:block;border-radius:2px}
 
 /* ── STONER METHOD : la section du dessus ── */
-/* ══ TRANSITIONS SÈCHES ══
-   Trois overlays plein cadre, zéro fondu. Un crossfade entre deux
-   fichiers laisse voir les deux couleurs à la fois : le carré rouge-violet
-   de My Wisdom bavait sur le navy pendant 380 ms. On bascule en display :
-   une frame, une seule couleur, jamais deux. */
+/* ══ FONDU ENCHAÎNÉ — NETFLIX STYLE ══
+   Les overlays s'ouvrent et se ferment en 280 ms sur fond noir.
+   background:#000 garantit que la couleur de la page sous-jacente ne
+   transparaît jamais pendant la transition (ni le navy du Totehm, ni le
+   rouge-violet du Book). pointer-events bascule immédiatement à la pose
+   ou au retrait de .show — le fond noir fait écran le temps du fondu. */
 #book,#nextobj{position:fixed;inset:0;z-index:55;background:#000;
-  visibility:hidden;pointer-events:none}
-#book.show,#nextobj.show{visibility:visible;pointer-events:auto}
+  opacity:0;pointer-events:none;transition:opacity .28s ease}
+#book.show,#nextobj.show{opacity:1;pointer-events:auto}
 #book iframe,#nextobj iframe{width:100%;height:100%;border:none;display:block}
 
 /* La méthode Stoner vit sur totehm.com. [Get Higher with my Totehm] est un
@@ -507,7 +503,6 @@ body.ro #ro-bar{display:flex}
   position:relative;justify-content:flex-start;padding:var(--gate-top) 0 0;overflow:hidden}
 body.gate.entered #gate,body.gate.folding #gate{overflow:hidden;scroll-behavior:auto}
 body:not(.gate) #gate{display:none}
-body:not(.gate) #gate-int-pick{display:none}
 #gate.gate-off{opacity:0;pointer-events:none}
 
 /* ══ LE RADAR — CE QU'EST totehm.space, MONTRÉ SANS UN MOT ══
@@ -673,25 +668,6 @@ body.gate.entered #filter-badge{
 .bob{animation:ctx-bob 1.8s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.bob{animation:none}#gate{scroll-behavior:auto}}
 
-/* ══ SÉLECTEUR D'INTENTION AU DÉPART ══ */
-#gate-int-pick{position:fixed;inset:0;z-index:210;background:rgba(0,0,0,.94);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  opacity:0;pointer-events:none;transition:opacity .25s ease}
-body.gate #gate-int-pick.open{opacity:1;pointer-events:auto}
-#gip-close{position:absolute;top:14px;right:16px;background:none;border:none;
-  cursor:pointer;color:#8a8a8a;font-family:'Space Mono',monospace;font-size:20px;
-  line-height:1;padding:6px;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
-#gip-close:hover{color:#fff}
-#gip-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;
-  padding:0 18px;width:100%;max-width:360px}
-.gip-int{background:none;border:6px solid transparent;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;gap:7px;
-  padding:14px 8px;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
-@media(hover:hover){.gip-int:hover{border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
-.gip-int:active{border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
-.gip-dot{width:11px;height:11px;border-radius:50%;background:var(--ic,#fff);flex-shrink:0}
-.gip-name{font-family:'Quantico',sans-serif;font-weight:700;font-size:13px;color:#fff;text-align:center}
-.gip-higher{width:min(260px,72vw);height:auto;display:block}
 
 /* ══ DESKTOP : le logo habité devient un carré ══════════════════════════════
    Ce bloc est EN FIN DE FEUILLE, pas au début : à spécificité égale c'est le
@@ -744,8 +720,8 @@ body.gate #gate-int-pick.open{opacity:1;pointer-events:auto}
      ouvrant le T, qui porte déjà fréquence et intention. */
   .habit .h-freq{display:none}
 
-  /* Les iframes couvrent le carré : elles portent leur propre couleur. */
-  #book,#nextobj{background:transparent}
+  /* Les iframes couvrent le carré : elles portent leur propre couleur.
+     background:#000 reste en place — il est le rideau du fondu enchaîné. */
 
   /* Les quatre calques du logo convergent vers le mode saisie : le T vers
      #bigT, le wordmark vers #wordmark, le rail vers #rail — et le fond vers
@@ -756,7 +732,7 @@ body.gate #gate-int-pick.open{opacity:1;pointer-events:auto}
 
   /* SUPPRIMÉ (29/08) — les carrés perforés .side-nav, leur chevron et leur
      intitulé. La navigation entre les trois fichiers passe désormais par
-     les deux curseurs .tnav, à côté du T, sur ordinateur comme sur mobile.
+     les deux curseurs .tnav, à côté du TOTEHM.svg (bas), ordinateur et mobile.
      Retour arrière : ce bloc et les deux boutons .side-nav qui vivaient
      juste avant le module JS, en bas du corps. */
   #settings-nav .sn-row{display:none}
@@ -779,6 +755,10 @@ body.gate #gate-int-pick.open{opacity:1;pointer-events:auto}
   #sn-home img{width:54px;height:auto}
   #sn-home:hover,#sn-home:active{border-image-source:none;color:#b0b0b0}
 }
+
+
+
+
 
 
 
@@ -904,11 +884,6 @@ body.gate #gate-int-pick.open{opacity:1;pointer-events:auto}
 </section>
 </div>
 
-<!-- Sélecteur d'intention plein écran — s'ouvre au clic sur #ctx-down -->
-<div id="gate-int-pick" aria-hidden="true">
-  <button id="gip-close" type="button" aria-label="Close">×</button>
-  <div id="gip-grid"></div>
-</div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
@@ -1052,7 +1027,7 @@ body.gate #gate-int-pick.open{opacity:1;pointer-events:auto}
       <div class="mw-sync" id="mw-sync"></div>
     <div id="settings" class="mw-dash">
       <!-- Rangée haute du menu. Masquée (#mw-in-state #settings-nav) : la
-           navigation passe par les curseurs .tnav, à côté du T. -->
+           navigation passe par les curseurs .tnav, à côté du TOTEHM.svg. -->
       <div id="settings-nav">
         <!-- [My Totehm] logo-image centré. Le chevron ↑ qui le surmontait a
              été supprimé le 29/08 avec tous les autres. -->
@@ -2922,57 +2897,20 @@ window.addEventListener('pageshow',e=>{
     start();
   })();
 
-  /* ══ SÉLECTEUR D'INTENTION AU DÉPART ══
-     #ctx-down (« Open my Totehm world ») ouvre ce sélecteur.
-     Un scroll vers le bas du gate le déclenche aussi si le contenu
-     dépasse le viewport. */
-  (function gateIntPick(){
-    let built=false;
-    function build(){
-      if(built)return; built=true;
-      const grid=$('gip-grid'); if(!grid)return;
-      INTS.forEach(it=>{
-        const b=document.createElement('button');
-        b.type='button'; b.className='gip-int';
-        b.style.setProperty('--ic',it.color);
-        b.innerHTML='<span class="gip-dot"></span>'
-          +'<span class="gip-name">'+esc(it.name)+'</span>';
-        b.addEventListener('click',()=>{ window.location.href='map.html?intent='+it.id; });
-        grid.appendChild(b);
-      });
-      /* Higher : version slogan SVG, navigue vers la carte sans filtre */
-      const bh=document.createElement('button');
-      bh.type='button'; bh.className='gip-int';
-      bh.innerHTML='<svg class="gip-higher" viewBox="0 0 600 200" role="img" aria-label="Higher">'
-        +'<use href="#higher-word"></use></svg>';
-      bh.addEventListener('click',()=>{ window.location.href='map.html'; });
-      grid.appendChild(bh);
-    }
-    function open(){
-      build();
-      const el=$('gate-int-pick'); if(!el)return;
-      el.classList.add('open'); el.removeAttribute('aria-hidden');
-    }
-    function close(){
-      const el=$('gate-int-pick'); if(!el)return;
-      el.classList.remove('open'); el.setAttribute('aria-hidden','true');
-    }
-    const ctxDown=$('ctx-down'); if(ctxDown) ctxDown.addEventListener('click',open);
-    const gipClose=$('gip-close'); if(gipClose) gipClose.addEventListener('click',close);
-    const overlay=$('gate-int-pick');
-    if(overlay) overlay.addEventListener('click',e=>{ if(e.target===overlay)close(); });
-    document.addEventListener('keydown',e=>{
-      if(e.key==='Escape'&&overlay&&overlay.classList.contains('open'))close();
-    });
-    /* Déclencheur scroll : si le gate a du contenu qui dépasse, ouvrir quand
-       on scroll vers le bas (petits écrans ou agrandissement de texte). */
-    let fired=false;
-    gate.addEventListener('scroll',()=>{
-      if(entered||folding||fired)return;
-      if(gate.scrollTop>40){fired=true;open();}
+  /* ══ NAVIGATION VERS LA HIGHER MAP ══
+     Clic sur #ctx-down (« Open my Totehm world ») ou swipe-haut sur le gate
+     → map.html. La sélection d'intention se fait sur map.html, qui a son
+     propre sélecteur. Pas d'étape intermédiaire ici. */
+  {
+    const ctxDown=$('ctx-down');
+    if(ctxDown) ctxDown.addEventListener('click',()=>{ window.location.href='map.html'; });
+    let _gsY=0;
+    gate.addEventListener('touchstart',e=>{ _gsY=e.touches[0].clientY; },{passive:true});
+    gate.addEventListener('touchend',e=>{
+      if(entered||folding)return;
+      if(_gsY-e.changedTouches[0].clientY>50) window.location.href='map.html';
     },{passive:true});
-    window.__openGateIntPick=open;
-  })();
+  }
 })();
 </script>
 </body>

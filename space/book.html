@@ -111,20 +111,16 @@ body.ro .t-text{pointer-events:none}
    loin de ce qu'il commande. Il se pose À CÔTÉ du T.svg blanc — la marque
    qui ramène au Totehm — et le geste devient lisible d'un coup d'œil. */
 /* ══ LE CURSEUR DE NAVIGATION — ORDINATEUR ET MOBILE, À L'IDENTIQUE ══
-   Le carré perforé au bord de l'écran est supprimé. Il ne reste que ce
-   curseur, à côté du T.svg blanc, en haut, centré : mêmes coordonnées que
-   dans totehm.html et next_objective.html — `top:30px` et 44px du milieu.
-   My Wisdom est à GAUCHE du Totehm : on y retourne donc par la droite. */
-.tnav{position:fixed;top:30px;z-index:33;background:none;border:none;
+   Placé à côté du TOTEHM.svg (bas), pas du T.svg (haut). Mêmes coordonnées
+   que dans totehm.html et next_objective.html — `bottom:30px` et 52px du
+   milieu. My Wisdom est à GAUCHE du Totehm : on y retourne donc par la
+   droite. Blanc : une seule destination, rien à distinguer par la couleur. */
+.tnav{position:fixed;bottom:30px;z-index:33;background:none;border:none;
   padding:14px 10px;line-height:0;cursor:pointer;
   -webkit-tap-highlight-color:transparent;transition:opacity .2s}
 .tnav svg{width:13px;height:22px;display:block;fill:none;stroke:currentColor;
   stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-/* Blanc, comme le T à côté duquel il vit. Il n'y a qu'une destination
-   depuis ce fichier : rien à distinguer par la couleur, et le rouge-violet
-   se noyait dans le fond rouge-violet. Dans totehm.html il y a DEUX
-   curseurs : là, chacun porte la couleur de sa destination. */
-#edge-home{left:calc(50% + 44px);color:#fff}
+#edge-home{left:calc(50% + 52px);color:#fff}
 .tnav:active{opacity:.5}
 @media(hover:hover){.tnav:hover{opacity:.7}}
 
@@ -163,6 +159,8 @@ body.ro .t-text{pointer-events:none}
   /* SUPPRIMÉ (29/08) — le carré perforé #side-home. Le curseur .tnav le
      remplace, aux mêmes coordonnées que dans les deux autres fichiers. */
 }
+
+
 
 
 
