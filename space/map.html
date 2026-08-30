@@ -318,6 +318,13 @@ body.in-world .world-ui{display:block}
 
 /* ══ LE ZOOM ══ Deux boutons, parce que la molette n'existe pas au doigt
    et que le pincement ne se devine pas. */
+/* Météo en bas à gauche — Space Mono, données brutes, aucun mot superflu */
+#hm-weather{position:fixed;left:16px;bottom:calc(12px + env(safe-area-inset-bottom,0));
+  z-index:27;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.08em;
+  color:rgba(255,255,255,.42);display:none;flex-direction:column;gap:3px;
+  pointer-events:none}
+body.in-world.view-map #hm-weather{display:flex}
+#hm-weather b{font-weight:400;color:rgba(255,255,255,.72)}
 #zoom{position:fixed;right:14px;top:50%;transform:translateY(-50%);z-index:27;
   flex-direction:column;gap:8px}
 body.in-world.view-map #zoom{display:flex}
@@ -484,6 +491,7 @@ body.in-world.view-cards #zoom{display:none}
   <button id="zoom-in"  type="button" aria-label="Zoom in">+</button>
   <button id="zoom-out" type="button" aria-label="Zoom out">&minus;</button>
 </div>
+<div id="hm-weather" role="status" aria-live="polite"></div>
 
 <!-- La bascule entre le radar et les cartes. Choisie, jamais imposée. -->
 <button id="view-toggle" type="button"></button>
@@ -649,6 +657,7 @@ function geoApply(c){
   RAD.coords=c; RAD.geoPending=false; RAD.geoDenied=false;
   RAD.origin={lat:c.lat,lng:c.lng,fallback:false};
   paintGeo();
+  paintWeather(c.lat,c.lng);
   return moved;
 }
 /* Voir totehm.html, `geoDiag` : un `code 1` instantané n'est pas forcément
@@ -685,6 +694,25 @@ function paintGeo(){
   const el=$('s-geo'); if(!el)return;
   el.textContent=RAD.geoPending?'locating\u2026':'';
 }
+
+/* Météo : open-meteo, pas de clé, pas de quota.
+   Un appel par session, uniquement quand une position fraîche est connue. */
+let weatherDone=false;
+async function paintWeather(lat,lng){
+  if(weatherDone)return; weatherDone=true;
+  const SKY=w=>w===0?'Clear':w<=3?'Cloudy':w<=49?'Fog':w<=69?'Rain':w<=79?'Snow':'Storm';
+  try{
+    const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat
+      +'&longitude='+lng+'&current=temperature_2m,windspeed_10m,weathercode');
+    const c=(await r.json()).current; if(!c)return;
+    const el=$('hm-weather'); if(!el)return;
+    el.innerHTML='<b>'+Math.round(c.temperature_2m)+'°</b>'
+      +' '+Math.round(c.windspeed_10m)+' km/h'
+      +' '+SKY(c.weathercode);
+  }catch(e){}
+}
+/* Météo au boot si la position est déjà en cache */
+(function(){const c=geoCached(); if(c)paintWeather(c.lat,c.lng);})();
 
 /* ══ LA CARTE — un seul balisage pour les deux rendus ══
    Pas d'image : `image_url` pointe vers un générateur d'images à la volée
@@ -1400,6 +1428,8 @@ async function pick(id){
    pour exister : on dessine sur la dernière position connue (ou Lisbonne)
    et la demande court en arrière-plan. */
 (async function boot(){
+  const urlIntent=new URLSearchParams(location.search).get('intent');
+  if(urlIntent){ history.replaceState(null,'',location.pathname); RAD.loading=urlIntent; }
   buildSelector();
   resize();
   const cached=geoCached();
@@ -1436,6 +1466,7 @@ async function pick(id){
       mine=[...new Set(arr.map(h=>h&&h.i).filter(x=>INT_BY_ID[x]))];
     }catch(e){}
     if(mine.length)buildSelector();
+    if(urlIntent&&INT_BY_ID[urlIntent])await pick(urlIntent);
   }catch(e){}
 })();
 
