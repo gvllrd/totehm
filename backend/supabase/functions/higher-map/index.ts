@@ -1,6 +1,15 @@
-// TOTEHM · higher-map v7
+// TOTEHM · higher-map v8
 // ─────────────────────────────────────────────────────────────────────
 // Le monde filtré par ton Totehm.
+//
+// v8 — les spots du Club entrent dans la carte.
+//
+// Cette fonction a déjà renvoyé 402 à tout ce qui n'est pas abonné
+// actif : tout appelant qui atteint near() EST un membre du Club.
+// C'est ce contrôle-là, et pas un autre, qui autorise
+// p_include_club = true. Le défaut de places_near reste false : la
+// fonction est SECURITY DEFINER, un appel direct ne doit rien voir de
+// plus qu'avant.
 //
 // v7 — Unified Spot Model et Google coupé.
 //
@@ -167,6 +176,9 @@ async function near(lat: number, lng: number, intentions: string[]) {
     p_intentions: intentions,
     p_limit: 60,
     p_places: PLACES_ENABLED,
+    // Le 402 plus haut est le contrôle d'accès. Ici on ne fait que
+    // dire à la base que l'appelant est un membre.
+    p_include_club: true,
   });
   if (error) { console.error("places_near:", error.message); return []; }
 
