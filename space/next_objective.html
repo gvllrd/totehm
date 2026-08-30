@@ -131,21 +131,34 @@ body.higher .higher-only{display:revert!important}
   width:100vw;height:100vh;z-index:90;background:rgba(0,0,0,.82);
   display:none;align-items:center;justify-content:center;padding:22px}
 #peek.show{display:flex}
-.pk-card{background:#131316;border:1px solid #242429;width:100%;max-width:340px;
-  padding:22px;display:flex;flex-direction:column;gap:6px;position:relative}
+/* ══ LA FICHE — UN SEUL FORMAT, CELUI DE book.html ═══════════════════════
+   Carte #131316 sur bord #242429, libellé en Space Mono, le T à gauche du
+   nom en Quantico gras, la définition en Quantico dessous, alignée sous le
+   nom. Copiée, jamais partagée. */
+/* ══ LA FICHE — UN SEUL SYSTÈME DE FILTRE ET DE SÉLECTION ═══════════════
+   Une colonne CENTRÉE : le T au-dessus, le nom, la définition, les traces.
+   Bande au survol, liseré entre les lignes. Copié à l'identique depuis
+   totehm.html — trois origines, quatre copies, jamais un partage. */
+.pk-card{background:#131316;border:1px solid #242429;width:100%;max-width:520px;
+  padding:26px 22px 18px;display:flex;flex-direction:column;gap:10px;
+  max-height:88vh;position:relative}
 /* La croix : sans elle on ne sortait de la fenêtre que par hasard. */
 .pk-x{position:absolute;top:8px;right:12px;background:none;border:none;
   color:rgba(255,255,255,.45);font-family:'Quantico',sans-serif;font-size:20px;
   line-height:1;cursor:pointer;padding:4px 8px;transition:color .15s;
   -webkit-tap-highlight-color:transparent}
 .pk-x:hover{color:#fff}
-.pk-row{padding:16px 8px;display:flex;flex-direction:column;align-items:center;
-  gap:6px;text-align:center;color:#fff;border-top:1px solid rgba(255,255,255,.10)}
+.pk-row{padding:13px 8px;display:flex;flex-direction:column;align-items:center;
+  gap:0;text-align:center;color:#fff;width:100%}
+.pk-row + .pk-row{border-top:1px solid rgba(255,255,255,.07)}
 .pk-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
-  text-transform:uppercase;color:rgba(255,255,255,.5)}
-.pk-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:22px;
-  color:#fff;line-height:1.2}
-.pk-val .tglyph{height:18px;width:auto;vertical-align:-2px;margin-right:7px}
+  text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px}
+.pk-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:19px;
+  color:#fff;line-height:1.15}
+.pk-val .tglyph{width:16px;height:16px;margin:0 auto 6px;display:block}
+.pk-def{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;
+  color:#b4b4b4;line-height:1.45;margin-top:5px}
+.pk-def:empty{display:none}
 #why{position:fixed;inset:0;z-index:60;pointer-events:none}
 #why.show{pointer-events:auto}
 #why .w-veil{position:absolute;inset:0;background:rgba(0,0,0,.5);opacity:0;transition:opacity .3s ease}
@@ -196,7 +209,6 @@ body.higher .higher-only{display:revert!important}
 [dir="rtl"] #obj-note{margin-left:0;margin-right:calc(var(--rl) + var(--rw) + 16px)}
 [dir="rtl"] #why .w-top{justify-content:flex-start}
 
-.side-nav{display:none}
 /* ══ LECTURE SEULE ══ Le générateur n'a pas de sens chez quelqu'un d'autre :
    ce qu'on lit, ce sont ses OBJECTIFS, pas une machine à en produire. */
 body.ro #obj-input,body.ro #obj-locked,body.ro .p-add,body.ro .p-hi{display:none!important}
@@ -213,13 +225,24 @@ body.ro #obj-input,body.ro #obj-locked,body.ro .p-add,body.ro .p-hi{display:none
 /* Au bord de l'écran, à mi-hauteur, le curseur ne disait rien : il était
    loin de ce qu'il commande. Il se pose À CÔTÉ du T.svg — la marque qui
    ramène au Totehm — et le geste devient lisible d'un coup d'œil. */
-.edge-nav{position:fixed;top:30px;right:calc(50% + 40px);z-index:33;
-  background:none;border:none;padding:14px 10px;line-height:0;cursor:pointer;
-  color:#7a7a9a;-webkit-tap-highlight-color:transparent;transition:opacity .2s}
-.edge-nav svg{width:13px;height:22px;display:block;fill:none;stroke:currentColor;
+/* ══ LE CURSEUR DE NAVIGATION — ORDINATEUR ET MOBILE, À L'IDENTIQUE ══
+   Le carré perforé navy et son intitulé « My Habits » sont supprimés. Il ne
+   reste que ce curseur, à côté du T.svg blanc, en haut, centré : mêmes
+   coordonnées que dans totehm.html et book.html — `top:30px` et 44px du
+   milieu. My next objective est à DROITE du Totehm : on y retourne donc
+   par la gauche. */
+.tnav{position:fixed;top:30px;z-index:33;background:none;border:none;
+  padding:14px 10px;line-height:0;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:opacity .2s}
+.tnav svg{width:13px;height:22px;display:block;fill:none;stroke:currentColor;
   stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.edge-nav:active{opacity:.5}
-@media(min-width:700px){.edge-nav{display:none}}
+/* Blanc, comme le T à côté duquel il vit. Il n'y a qu'une destination
+   depuis ce fichier : rien à distinguer par la couleur, et le bleu clair
+   se noyait dans le fond navy. Dans totehm.html il y a DEUX curseurs :
+   là, chacun porte la couleur de sa destination. */
+#edge-home{right:calc(50% + 44px);color:#fff}
+.tnav:active{opacity:.5}
+@media(hover:hover){.tnav:hover{opacity:.7}}
 
 /* ══ DESKTOP : le même carré que totehm.html, à la couleur près ═════════════
    Deux situations, et le mobile n'entre dans aucune des deux.
@@ -264,31 +287,18 @@ body.ro #obj-input,body.ro #obj-locked,body.ro .p-add,body.ro .p-hi{display:none
   html:not(.embedded) #rail{top:30px;bottom:30px}
   html:not(.embedded) .prop .h-freq{display:none}
 
-  /* Ouvert en direct, personne ne dessine les boîtes de navigation autour du
-     carré : on pose la seule qui ait un sens ici, le retour au Totehm. Elle
-     est à gauche parce que le générateur se tient à droite du Totehm.
-     Embarqué, c'est le parent qui l'affiche — d'où le :not(.embedded). */
-  /* Le chevron navy porte son intitulé, comme le rouge et le bleu clair de
-     totehm.html : trois chevrons, trois noms, un seul format. */
-  html:not(.embedded) #side-home{
-    display:flex;flex-direction:column;align-items:center;gap:6px;
-    position:fixed;top:50%;transform:translateY(-50%);
-    right:calc(50% + var(--stage) / 2 + var(--side-gap));
-    background:none;border:none;cursor:pointer;padding:0;z-index:12;
-    -webkit-tap-highlight-color:transparent;transition:opacity .2s}
-  html:not(.embedded) #side-home:hover{opacity:.72}
-  html:not(.embedded) #side-home .sn-box{
-    display:flex;align-items:center;justify-content:center;
-    width:var(--side);height:var(--side);
-    background:var(--logo-navy) 0 0/100% 100% no-repeat}
-  html:not(.embedded) #side-home svg{width:11px;height:19px;color:#fff;
-    fill:none;stroke:currentColor;stroke-width:1.4;
-    stroke-linecap:round;stroke-linejoin:round}
-  html:not(.embedded) #side-home .sn-label{
-    font-family:'Quantico',sans-serif;font-size:9px;letter-spacing:.04em;
-    color:#fff;text-align:center;line-height:1.35;opacity:0;transition:opacity .2s}
-  html:not(.embedded) #side-home:hover .sn-label{opacity:1}
+  /* SUPPRIMÉ (29/08) — le carré perforé #side-home, son chevron et son
+     intitulé « My Habits ». Le curseur .tnav le remplace, aux mêmes
+     coordonnées que dans les deux autres fichiers. */
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -316,6 +326,7 @@ body.ro #obj-input,body.ro #obj-locked,body.ro .p-add,body.ro .p-hi{display:none
 .prop .p-why:hover,
 .pk-x:hover,
 .pk-lbl:hover,
+.pk-def:hover,
 #why .w-sub:hover,
 #why .w-sec:hover,
 #why .w-src:hover,
@@ -350,12 +361,15 @@ body.ro #obj-input,body.ro #obj-locked,body.ro .p-add,body.ro .p-hi{display:none
   <div id="props"></div>
 </div>
 
+<!-- Le curseur, à gauche du T : My next objective est à DROITE du Totehm.
+     IL VIT DANS #stage, comme le T. Sur ordinateur #stage porte un
+     `transform` : un `position:fixed` à l'intérieur se cale sur LUI, pas sur
+     l'écran. Placé dehors, le curseur et le T n'auraient pas le même repère
+     et se seraient décalés dès que la fenêtre change de taille. -->
+<button class="tnav" id="edge-home" type="button" aria-label="My Habits"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></button>
+
 <!-- Rapport de validation complet — ouvert par [Why], jamais visible dans la liste -->
 </div><!-- /#stage -->
-<button class="side-nav" id="side-home" type="button" aria-label="My Habits"><span class="sn-box"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></span><span class="sn-label">My Habits</span></button>
-<!-- Mobile : un curseur au bord gauche dit d'où l'on vient et où l'on
-     retourne. Le swipe existait sans que rien ne l'annonce. -->
-<button class="edge-nav" id="edge-home" type="button" aria-label="My Habits"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></button>
 <!-- La fenêtre de lecture LOCALE : elle ne sert que si ce fichier est ouvert
      en direct par URL. Embarqué dans le Totehm, c'est SA fenêtre qui s'ouvre,
      parce qu'elle seule peut noircir l'écran au-delà du carré. -->
@@ -363,7 +377,7 @@ body.ro #obj-input,body.ro #obj-locked,body.ro .p-add,body.ro .p-hi{display:none
   <div class="pk-card">
     <button class="pk-x" id="pk-close" type="button" aria-label="Close">&times;</button>
     <div class="pk-row"><span class="pk-lbl">Time Frequency</span><span class="pk-val" id="pk-freq"></span></div>
-    <div class="pk-row"><span class="pk-lbl">Intention</span><span class="pk-val" id="pk-int"></span></div>
+    <div class="pk-row"><span class="pk-lbl">Intention</span><span class="pk-val" id="pk-int"></span><span class="pk-def" id="pk-int-def"></span></div>
   </div>
 </div>
 <div id="why" aria-hidden="true">
@@ -394,6 +408,18 @@ const T_SVG='<svg class="tglyph" viewBox="0 0 624 636" aria-hidden="true"><path 
 
 const FLABEL={every_minute:'every minute',hourly:'every hour',several_daily:'several times a day',every_morning:'every morning',every_afternoon:'every afternoon',daily:'daily',every_evening:'every evening',every_weekday:'every weekday',every_night:'every night',every_other_day:'every other day',twice_week:'twice a week',every_weekend:'every weekend',weekly:'weekly',every_monday:'every monday',every_tuesday:'every tuesday',every_wednesday:'every wednesday',every_thursday:'every thursday',every_friday:'every friday',every_saturday:'every saturday',every_sunday:'every sunday',biweekly:'every two weeks',twice_month:'twice a month',monthly:'monthly',every_1st_month:'every 1st of the month',every_15th_month:'every 15th of the month',seasonal:'every season change',quarterly:'every quarter',semiannual:'every six months',yearly:'yearly',every_birthday:'every birthday',every_newyear:'every new year',randomly:'randomly',sometimes:'sometimes'};
 const INAME={fight:'Fight',flow:'Flow',enrich:'Enrich',love:'Love',express:'Express',focus:'Focus',celebrate:'Celebrate'};
+/* Les définitions, copiées de totehm.html — jamais partagées. Elles
+   s'affichent en Quantico sous le nom, comme dans le filtre et dans
+   book.html : une seule fiche pour tout le produit. */
+const IDEF={
+  fight:'Conquer yourself through harder effort.',
+  flow:'Liberate energy through movement.',
+  enrich:'Master your wealth through capital & network.',
+  love:'Contemplate life through connection & beauty.',
+  express:'Give form to emotion through creation.',
+  focus:'Master your mind through deep mental focus.',
+  celebrate:'Elevate energy through collective effervescence.'
+};
 const ICOLOR={fight:'var(--fight)',flow:'var(--flow)',enrich:'var(--enrich)',love:'var(--love)',express:'var(--express)',focus:'var(--focus)',celebrate:'var(--celebrate)'};
 
 /* ══ LE SCORE ══
@@ -745,6 +771,7 @@ function openPeek(h){
   const name=h.i_label||INAME[h.i]||h.i;
   if(h.i&&ICOLOR[h.i]) $('pk-int').innerHTML='<span style="color:'+ICOLOR[h.i]+'">'+T_SVG+esc(name)+'</span>';
   else $('pk-int').textContent='any intention';
+  $('pk-int-def').textContent = (h.i&&IDEF[h.i]) ? IDEF[h.i] : '';
   $('peek').classList.add('show');
 }
 function closePeek(){$('peek').classList.remove('show');}
@@ -810,7 +837,6 @@ window.addEventListener('message',e=>{
   if(e.data.bandB)r.setProperty('--band-b',e.data.bandB);
 });
 if(embedded()){try{window.parent.postMessage({type:'totehm-need-metrics'},'*');}catch(e){}}
-$('side-home').onclick=()=>goBack();
 $('edge-home').onclick=()=>goBack();
 let lock=false;const trig=()=>{if(lock)return;lock=true;setTimeout(()=>lock=false,600);goBack();};
 let x0=0,y0=0,ax=null;

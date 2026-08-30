@@ -60,20 +60,6 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
 /* Sur le radar, les fenêtres se posent sur un voile — le monde reste
    deviné derrière, on n'a pas quitté la carte. */
 #info{background:rgba(0,0,0,.88);align-items:center;justify-content:center;z-index:70}
-/* La sélection d'intention dans une carte centrée — même système gris que book.html */
-#step{align-items:center;justify-content:center;padding:22px}
-.pk-card{background:#131316;border:1px solid #242429;width:100%;max-width:380px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px;max-height:86vh}
-.pk-q{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);text-align:center}
-.pk-int{display:flex;flex-direction:column;gap:4px;background:none;border:none;padding:4px 0;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
-@media(hover:hover){.pk-int:hover{opacity:.75}}
-.pk-int-r1{display:flex;align-items:center;gap:8px}
-.pk-int .tglyph{height:15px;width:auto;flex-shrink:0}
-.pk-int .nm{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px}
-.pk-int .df{font-family:var(--futura);font-weight:300;font-size:12px;color:#c4c4c4;line-height:1.5;padding-left:22px}
-.pk-int.on .nm{text-decoration:underline}
-.pk-int.cold{opacity:.34}
-.pk-int.cold .df{color:var(--lo)}
-.pk-int.loading{opacity:.3;pointer-events:none}
 
 /* La question « What's your intention right now, right here? » a été retirée :
    sept intentions nommées et définies n'ont pas besoin qu'on demande.
@@ -90,29 +76,30 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
 
 /* `justify-content:flex-start` et non `center` : les sept lignes remplissent
    la hauteur au lieu de flotter au milieu d'un écran vide. */
-#s-list{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
-  display:flex;flex-direction:column;gap:12px;padding-right:4px;max-height:60vh}
+#s-list{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;display:flex;flex-direction:column;
+  justify-content:flex-start;gap:0;margin:6px auto;max-width:520px;width:100%}
 /* TOUT est centré : le T, le nom, la définition, les traces. Une colonne,
    un axe. Le liseré de gauche disparaît — il tirait l'œil hors de l'axe. */
 .s-int{display:flex;flex-direction:column;align-items:center;gap:0;
-  padding:15px 10px;background:none;border:none;
+  padding:13px 8px;background:none;border:none;
   text-align:center;cursor:pointer;width:100%;position:relative;
   -webkit-tap-highlight-color:transparent;
   transition:background .12s,opacity .18s}
 .s-int + .s-int{border-top:1px solid rgba(255,255,255,.07)}
 /* Le T.svg passe AU-DESSUS de l'intention : c'est lui qui la porte. */
-.s-int .tglyph{width:17px;height:17px;flex-shrink:0;position:relative;z-index:2;
-  margin:0 0 7px}
+.s-int .tglyph{width:16px;height:16px;flex-shrink:0;position:relative;z-index:2;
+  margin:0 0 6px}
 .s-int-name{display:flex;align-items:center;justify-content:center;
   position:relative;z-index:1;
-  font-family:'Quantico',sans-serif;font-size:20px;font-weight:700;line-height:1.15}
-.s-int-def{font-family:'Quantico',sans-serif;font-size:14px;font-weight:400;
-  color:var(--mid);margin-top:6px;line-height:1.45}
+  font-family:'Quantico',sans-serif;font-size:19px;font-weight:700;line-height:1.15}
+.s-int-def{font-family:'Quantico',sans-serif;font-size:13px;font-weight:400;
+  color:var(--mid);margin-top:5px;line-height:1.45}
 /* ── LES MOLÉCULES ET LES ONDES ──
    Ce que l'intention fait au cerveau, en trois traces. Space Mono parce que
    c'est de la donnée, pas de la parole ; gris sur gris parce que ça se lit
    après le nom, jamais avant. */
-.s-int-neuro{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;justify-content:center}
+.s-int-neuro{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;justify-content:center}
 .s-int-ntag{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.13em;
   text-transform:uppercase;color:var(--mid);border:1px solid var(--dim);
   padding:3px 8px;line-height:1.6;white-space:nowrap}
@@ -364,20 +351,33 @@ body.in-world.view-cards #zoom{display:none}
   -webkit-tap-highlight-color:transparent}
 .gm-x svg{width:16px;height:16px;color:var(--mid);display:block;
   fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
-.fm-card{background:var(--box);border:1px solid var(--box-line);width:100%;max-width:340px;
-  padding:22px;display:flex;flex-direction:column;gap:6px}
-.fm-row{background:none;border:none;padding:16px 8px;cursor:pointer;display:flex;
-  flex-direction:column;align-items:center;gap:6px;text-align:center;color:#fff;
-  -webkit-tap-highlight-color:transparent;transition:opacity .15s}
-.fm-row:hover{opacity:.7}
-.fm-row + .fm-row{border-top:1px solid rgba(255,255,255,.10)}
+/* ══ LA FICHE — UN SEUL FORMAT, CELUI DE book.html ═══════════════════════
+   C'est la fenêtre qu'ouvre le T.svg qui clignote. Même carte, mêmes
+   graisses, même alignement que dans totehm.html, book.html et
+   next_objective.html. Copiée, jamais partagée. */
+/* ══ LA FICHE — UN SEUL SYSTÈME DE FILTRE ET DE SÉLECTION ═══════════════
+   Une colonne CENTRÉE : le T au-dessus, le nom, la définition, les traces.
+   Bande au survol, liseré entre les lignes. Copié à l'identique depuis
+   totehm.html — trois origines, quatre copies, jamais un partage. */
+.fm-card{background:var(--box);border:1px solid var(--box-line);width:100%;
+  max-width:520px;padding:26px 22px 18px;display:flex;flex-direction:column;
+  gap:10px;max-height:88vh}
+.fm-row{background:none;border:none;padding:13px 8px;cursor:pointer;display:flex;
+  flex-direction:column;align-items:center;gap:0;text-align:center;color:#fff;width:100%;
+  -webkit-tap-highlight-color:transparent;transition:background .12s}
+@media(hover:hover){.fm-row:hover{background:rgba(255,255,255,.05)}}
+.fm-row + .fm-row{border-top:1px solid rgba(255,255,255,.07)}
 .fm-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
-  text-transform:uppercase;color:rgba(255,255,255,.5)}
-.fm-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:22px;color:#fff;line-height:1.2}
-.fm-opts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:4px}
-.fm-opt{background:none;border:1px solid rgba(255,255,255,.35);color:#c4c4c4;
-  font-family:'Quantico',sans-serif;font-size:12px;padding:5px 9px;cursor:pointer;
-  -webkit-tap-highlight-color:transparent;transition:color .15s,border-color .15s}
+  text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px}
+.fm-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:19px;color:#fff;line-height:1.15}
+.fm-opts{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:8px}
+/* Les options reprennent la pastille des traces neuro : même bord, même
+   graisse. Une seule pastille dans tout le produit. */
+.fm-opt{background:none;border:1px solid #3c3c3c;color:#b4b4b4;
+  font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.13em;
+  text-transform:uppercase;padding:3px 8px;line-height:1.6;white-space:nowrap;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:color .15s,border-color .15s}
 .fm-opt:hover{color:#fff}
 .fm-opt.on{color:#fff;border-color:#fff}
 
@@ -403,13 +403,22 @@ body.in-world.view-cards #zoom{display:none}
 
 
 
+
+
+
+
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
 @media(hover:hover){
 .s-sub:hover,
-.pk-int .df:hover,
-.pk-int.cold .df:hover,
+.s-int-def:hover,
+.s-int-ntag:hover,
+.s-int.cold .s-int-def:hover,
 #s-note:hover,
 .s-exit:hover,
 #count:hover,
@@ -495,13 +504,10 @@ body.in-world.view-cards #zoom{display:none}
 
 <!-- ÉTAPE 1 · LES SEPT INTENTIONS -->
 <div id="step" class="sheet show" role="dialog" aria-label="Choose an intention">
-  <div class="pk-card">
-    <div class="pk-q">What's your intention right now?</div>
-    <div class="s-sub" id="s-geo" aria-live="polite"></div>
-    <div id="s-list"></div>
-    <div id="s-note"></div>
-    <a class="s-exit" href="totehm.html">My Totehm</a>
-  </div>
+  <div class="s-sub" id="s-geo" aria-live="polite"></div>
+  <div id="s-list"></div>
+  <div id="s-note"></div>
+  <a class="s-exit" href="totehm.html">My Totehm</a>
 </div>
 
 <!-- LA PORTE : sans compte, choisir une intention ouvre ceci -->
@@ -1287,21 +1293,27 @@ function buildSelector(){
     const cold=mine.length>0&&mine.indexOf(x.id)===-1;
     const b=document.createElement('button');
     b.type='button';
-    b.className='pk-int'+(cold?' cold':'')+(RAD.intention===x.id?' on':'');
+    b.className='s-int'+(cold?' cold':'')+(RAD.intention===x.id?' on':'');
     b.dataset.int=x.id;
-    b.innerHTML='<span class="pk-int-r1"><span style="color:'+x.color+'">'
-      +tGlyph(15)+'</span><span class="nm" style="color:'+x.color+'">'+esc(x.name)+'</span></span>'
-      +'<span class="df">'+esc(x.def)+'</span>';
+    b.style.color=x.color;
+    /* Plus de <span> enveloppant : chaque élément est un enfant direct du
+       bouton, donc chacun s'aligne sur l'axe central de la colonne. */
+    b.innerHTML=tGlyph(17)
+      +'<span class="s-int-name" style="color:'+x.color+'">'+esc(x.name)+'</span>'
+      +'<span class="s-int-def">'+esc(x.def)+'</span>'
+      +(x.neuro?'<span class="s-int-neuro">'
+        +x.neuro.split(' · ').map(t=>'<span class="s-int-ntag">'+esc(t)+'</span>').join('')
+        +'</span>':'');
     b.onclick=()=>pick(x.id);
     box.appendChild(b);
   });
 }
 function markLoading(id,on){
-  document.querySelectorAll('.pk-int').forEach(el=>
+  document.querySelectorAll('.s-int').forEach(el=>
     el.classList.toggle('loading',on&&el.dataset.int===id));
 }
 function markActive(id){
-  document.querySelectorAll('.pk-int').forEach(el=>
+  document.querySelectorAll('.s-int').forEach(el=>
     el.classList.toggle('on',el.dataset.int===id));
 }
 
