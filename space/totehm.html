@@ -464,7 +464,7 @@ body.ro #ro-bar{display:flex}
    ══════════════════════════════════════════════════════════════════════════ */
 :root{
   --gate-size:110px;            /* taille du logo assemblé — IDENTIQUE mobile et desktop */
-  --gate-top:8vh;               /* remonté : le radar prend le creux du bas */
+  --gate-top:8vh;
   --gate-gap:3vh;               /* écart logo -> bouton */
   --gate-btn-gap:24px;          /* = margin-top de #btn-slogan (stoner.html) */
   --gate-dur:1.05s;             /* durée de la déconstruction */
@@ -500,41 +500,11 @@ body.ro #ro-bar{display:flex}
   transition:opacity .32s ease}
 #gate-hero{width:100%;min-height:100dvh;
   display:flex;flex-direction:column;align-items:center;
-  position:relative;justify-content:flex-start;padding:var(--gate-top) 0 0;overflow:hidden}
+  position:relative;justify-content:space-between;
+  padding:max(76px,13vh) 0 max(24px,env(safe-area-inset-bottom,0));overflow:hidden}
 body.gate.entered #gate,body.gate.folding #gate{overflow:hidden;scroll-behavior:auto}
 body:not(.gate) #gate{display:none}
 #gate.gate-off{opacity:0;pointer-events:none}
-
-/* ══ LE RADAR — CE QU'EST totehm.space, MONTRÉ SANS UN MOT ══
-   La Terre disait « le monde ». Le radar dit « une carte qui tourne autour
-   de TOI et qui trie selon ton intention » — c'est le produit, pas une
-   illustration. Il remplace earth.mp4 : 1,9 Mo d'egress Supabase par
-   visiteur remplacés par une boucle canvas qui ne coûte rien au serveur.
-   Il s'arrête dès que le Totehm est déployé ou l'onglet caché : une boucle
-   d'animation derrière une app, c'est de la batterie pour rien. */
-/* `width/height:100%` explicites : un <canvas> est un élément remplacé, sa
-   taille intrinsèque est 300x150 et `inset:0` ne la remplace pas. Sans ces
-   deux lignes le radar est une vignette de 300 px en haut à gauche. */
-/* Le radar n'est plus un fond qui déborde : c'est un ROND ENTIER, posé sous
-   [Search a Totehm], au plus grand que la place permet. Il occupe donc un
-   bloc dans le flux — plus de `position:fixed` — et sa taille est celle du
-   creux qui reste sous la recherche. Le quadrillé est parti : le fond de
-   .space est un noir plein, rien d'autre. */
-/* Le canvas est en `absolute` DANS son cadre, jamais dans le flux.
-   MESURÉ : en `height:100%` dans le flux, le JS lui posait une hauteur en
-   pixels lue sur le cadre, le cadre grossissait d'autant, l'observateur
-   relisait… le rond débordait par le bas et chassait les deux boutons.
-   Sorti du flux, il ne peut plus rien pousser. */
-/* `width/height:100%` OBLIGATOIRES, deuxième fois que ce piège mord : un
-   <canvas> est un élément REMPLACÉ. Ses attributs width/height lui donnent
-   une taille intrinsèque (ici le tampon de dessin, 2560x860) et ni `inset:0`
-   ni la position absolue ne la remplacent. Sans ces deux lignes, la boîte CSS
-   valait le double du cadre et le rond partait se dessiner hors de l'écran. */
-#gate-radar{position:absolute;inset:0;width:100%;height:100%;display:block;
-  pointer-events:none}
-#radar-wrap{position:relative;width:100%;flex:1 1 0;min-height:120px;
-  margin-top:2vh;transition:opacity .25s ease}
-body.gate.entered #radar-wrap,body.gate.folding #radar-wrap{opacity:0}
 
 /* ── Le carré du logo : taille fixe, aucune variation par viewport ── */
 /* Rangée haute : logo 4-SVG + bouton côte à côte, centrés ensemble */
@@ -787,6 +757,8 @@ body.gate.entered #filter-badge{
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -868,13 +840,6 @@ body.gate.entered #filter-badge{
   </div>
   <button class="btn-sig" id="gate-open">Open my Totehm</button>
   </div><!-- /gate-top-row -->
-
-  <!-- Le radar directement sous le logo : TOTEHM comme point de référence.
-       Ce n'est pas une décoration de fond — c'est ce qu'est totehm.space,
-       montré sans un mot. -->
-  <div id="radar-wrap">
-    <canvas id="gate-radar" aria-hidden="true"></canvas>
-  </div>
 
   <!-- Search a Totehm : un bouton, rien d'autre. -->
   <div id="gate-bottom">
@@ -2782,8 +2747,6 @@ window.addEventListener('pageshow',e=>{
     timer=setTimeout(()=>{
       body.classList.remove('folding');   /* le défilement redevient normal */
       moving=false;
-      /* Le gate se rejoue : la boucle du radar s'était arrêtée en entrant. */
-      if(window.__gateRadarStart)window.__gateRadarStart();
     },DUR+120);
   }
 
@@ -2844,69 +2807,9 @@ window.addEventListener('pageshow',e=>{
     enter(()=>openTotehmView(v));
   });
 
-  /* ══ LE RADAR DE FOND ══
-     Le même dessin que map.html — grille, trois cercles de portée, balayage
-     en vingt secteurs dégressifs. Copié, jamais partagé.
-     Aucun appel réseau, aucune donnée : c'est une forme, pas une carte. La
-     boucle s'arrête dès que le Totehm est déployé ou l'onglet caché. */
-  (function gateRadar(){
-    const cv=$('gate-radar'); if(!cv||!cv.getContext)return;
-    const wrap=$('radar-wrap');
-    const X=cv.getContext('2d');
-    let W=0,H=0,dpr=1,t=0,raf=0;
-    function size(){
-      dpr=Math.min(2,window.devicePixelRatio||1);
-      W=wrap.clientWidth;H=wrap.clientHeight;
-      cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
-    }
-    function frame(){
-      raf=0;
-      if(!body.classList.contains('gate')||document.hidden)return;
-      /* On remesure dès que le cadre a bougé. Une mesure prise une seule
-         fois, avant que la mise en page ne soit posée, donnait un tampon de
-         dessin à l'échelle d'un cadre qui n'existait plus : le rond partait
-         se dessiner hors de l'écran. */
-      if(wrap.clientWidth!==W||wrap.clientHeight!==H)size();
-      if(!W||!H)return;
-      const cx=W/2, cy=H/2;
-      /* « Le plus grand possible sans déborder » : le rayon est la moitié du
-         plus PETIT côté, moins un cheveu pour que le trait extérieur ne soit
-         pas coupé. Le rond est donc toujours entier, sur mobile comme sur
-         desktop, quelle que soit la place que lui laisse le reste. */
-      const rpx=Math.max(10,Math.min(W,H)/2-2);
-      X.setTransform(dpr,0,0,dpr,0,0);
-      X.clearRect(0,0,W,H);
-      t+=1/60;
-
-      /* Pas de quadrillé. Le fond de .space est un noir plein — une grille
-         par-dessus faisait « application », et .space n'en est pas une. */
-      X.strokeStyle='rgba(255,255,255,.17)';X.lineWidth=1;
-      for(let k=1;k<=3;k++){X.beginPath();X.arc(cx,cy,rpx*k/3,0,Math.PI*2);X.stroke();}
-
-      const head=t*Math.PI/3;
-      for(let i=0;i<20;i++){
-        X.beginPath();X.moveTo(cx,cy);
-        X.arc(cx,cy,rpx,head-i*0.035-0.035,head-i*0.035);X.closePath();
-        X.fillStyle='#ffffff';X.globalAlpha=0.055*(1-i/20);X.fill();
-      }
-      X.globalAlpha=1;
-      /* Le point central : toi. Sans lui le rond n'est qu'un cercle. */
-      X.beginPath();X.arc(cx,cy,2.5,0,Math.PI*2);
-      X.fillStyle='rgba(255,255,255,.75)';X.fill();
-      raf=requestAnimationFrame(frame);
-    }
-    const start=()=>{ if(!raf&&body.classList.contains('gate')&&!document.hidden){size();raf=requestAnimationFrame(frame);} };
-    let rt; window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{size();start();},160);});
-    document.addEventListener('visibilitychange',start);
-    if('ResizeObserver' in window){ new ResizeObserver(()=>{size();start();}).observe(wrap); }
-    window.__gateRadarStart=start;
-    start();
-  })();
-
   /* ══ NAVIGATION VERS LA HIGHER MAP ══
-     Clic sur #ctx-down (« Open my Totehm world ») ou swipe-haut sur le gate
-     → map.html. La sélection d'intention se fait sur map.html, qui a son
-     propre sélecteur. Pas d'étape intermédiaire ici. */
+     Clic sur #ctx-down ou swipe dans n'importe quelle direction verticale
+     (>40 px) → map.html. Le sélecteur d'intention est sur map.html. */
   {
     const ctxDown=$('ctx-down');
     if(ctxDown) ctxDown.addEventListener('click',()=>{ window.location.href='map.html'; });
@@ -2914,7 +2817,7 @@ window.addEventListener('pageshow',e=>{
     gate.addEventListener('touchstart',e=>{ _gsY=e.touches[0].clientY; },{passive:true});
     gate.addEventListener('touchend',e=>{
       if(entered||folding)return;
-      if(_gsY-e.changedTouches[0].clientY>50) window.location.href='map.html';
+      if(Math.abs(e.changedTouches[0].clientY-_gsY)>40) window.location.href='map.html';
     },{passive:true});
   }
 })();
