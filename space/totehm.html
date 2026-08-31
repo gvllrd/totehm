@@ -205,7 +205,7 @@ body.higher .set-block.higher-only{display:flex!important}
 .h-hint .hh{color:#fff}
 
 /* ── FREQUENCY PANEL ── */
-#freq-panel{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:22px}
+#freq-panel{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.82);display:flex;align-items:flex-start;justify-content:center;padding:max(44px,10dvh) 22px 22px}
 /* Fenêtre d'aperçu minimaliste : freq + intention, chacune cliquable pour rouvrir son sélecteur */
 #habit-peek{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:22px}
 /* Fenêtre de filtre : même style que habit-peek */
@@ -248,15 +248,15 @@ body.higher .set-block.higher-only{display:flex!important}
 .hp-def{font-family:var(--futura);font-weight:300;font-style:normal;font-size:12px;color:rgba(255,255,255,.6);line-height:1.4;max-width:260px;margin-top:6px}
 .fm-def{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:#b4b4b4;line-height:1.45;margin-top:5px;max-width:none}
 .fm-def:empty{display:none}
-.fp-card{background:#131316;border:1px solid #242429;width:100%;max-width:380px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px}
+.fp-card{background:#131316;border:1px solid #242429;width:100%;max-width:380px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px;max-height:calc(100dvh - 66px);overflow:hidden}
 #fp-input{background:none;border:none;border-bottom:1px solid rgba(255,255,255,.18);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;padding:4px 2px;text-align:center;caret-color:#fff}
 #fp-input::placeholder{color:rgba(255,255,255,.3);font-size:12px;font-style:normal}
 #fp-preview{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:rgba(255,255,255,.65);min-height:22px;text-align:center;background:none;border:none;padding:2px 8px;cursor:pointer;transition:color .15s,background .15s;-webkit-tap-highlight-color:transparent}
 #fp-preview:hover,#fp-preview:active{color:#fff;background:var(--navy)}
 #fp-preview:empty,#fp-preview.hide{pointer-events:none}
-#fp-list{display:flex;flex-direction:column;gap:7px;max-height:42vh;overflow-y:auto;padding-right:4px}
+#fp-list{display:flex;flex-direction:column;gap:7px;flex:1 1 0;min-height:0;overflow-y:auto;padding-right:4px}
 /* étape 2 : l'intention de l'Habitude (les 7 de la Map) */
-#fp-ints{display:flex;flex-direction:column;gap:12px;max-height:60vh;overflow-y:auto;padding-right:4px}
+#fp-ints{display:flex;flex-direction:column;gap:12px;flex:1 1 0;min-height:0;overflow-y:auto;padding-right:4px}
 .fp-int{display:flex;flex-direction:column;gap:4px;background:none;border:none;padding:4px 0;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
 .fp-int:hover{opacity:.75}
 .fp-int-r1{display:flex;align-items:center;gap:8px}
@@ -726,6 +726,9 @@ body.gate.entered #filter-badge{
   #sn-home{display:flex}
   #sn-home img{width:54px;height:auto}
   #sn-home:hover,#sn-home:active{border-image-source:none;color:#b0b0b0}
+  /* Desktop : le keyboard n'existe pas — on recentre la carte */
+  #freq-panel{align-items:center;padding:22px}
+  .fp-card{max-height:calc(100vh - 44px)}
 }
 
 
