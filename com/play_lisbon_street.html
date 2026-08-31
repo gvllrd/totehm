@@ -673,7 +673,7 @@ function enterBoardMode(){
   if(isPortraitMobile()) rotatePrompt.classList.add('active');
   ROCKS.forEach(r=>{
     if(r.id==='destination') return;
-    r.uLabel.innerHTML='<svg viewBox="0 0 600 200" style="width:80%;height:auto;display:block;margin:0 auto"><use href="#higher-slogan"></use></svg>';
+    r.uLabel.innerHTML='<svg viewBox="0 0 600 200" style="width:130%;height:auto;display:block;margin:0 auto"><use href="#higher-slogan"></use></svg>';
     if(!r._pressed) r.uLabel.style.opacity='0';
     r._boardClick=()=>{
       r.img.style.filter='brightness(0.2)';
@@ -720,7 +720,7 @@ function snapToBoard(){
   sdiscBack.style.transition='opacity .4s'; sdiscBack.style.opacity='0';
   sdiscTrig.style.opacity='0';
   ROCKS.forEach(r=>{
-    const tx=br.x+(r.tl/100)*br.w, ty=br.y+(r.tt/100)*br.h, tw=(r.tw/100)*br.w*1.4;
+    const tx=br.x+(r.tl/100)*br.w, ty=br.y+(r.tt/100)*br.h, tw=(r.tw/100)*br.w;
     r.wrap.style.transition='transform .9s cubic-bezier(.65,0,.35,1),width .9s,height .9s';
     r.wrap.style.width=tw+'px'; r.wrap.style.height=tw+'px';
     r.wrap.style.transform=`translate(${tx}px,${ty}px)`;
