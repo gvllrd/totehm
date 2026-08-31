@@ -142,6 +142,23 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 #go-totehm:hover{opacity:.7}
 #go-totehm .chev{width:24px;height:15px;color:rgba(255,255,255,.55);stroke-width:1.2;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round}
 #go-totehm .chev{width:18px;height:11px;color:rgba(255,255,255,.55);stroke-width:1.2;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round}
+#conn-bar{position:fixed;top:14px;left:16px;z-index:201;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
+#conn-bar:hover{color:#fff}
+#conn-bar .dot{width:8px;height:8px;border-radius:50%;background:#888}
+#member-window{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.84);display:none;align-items:center;justify-content:center;padding:24px}
+#member-window.show{display:flex}
+.mw-card{background:#131316;border:1px solid #242429;max-width:360px;width:100%;padding:30px 24px;text-align:center;position:relative;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.mw-card::-webkit-scrollbar{display:none}
+.mw-close{position:absolute;top:12px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:#b4b4b4;background:none;border:none;cursor:pointer;padding:0}
+.mw-close:hover{color:#fff}
+.mw-input{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:6px 2px;caret-color:#fff;text-align:center;margin-bottom:10px}
+.mw-input::placeholder{color:rgba(255,255,255,.33)}
+.mw-note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px;margin-top:6px}
+.mw-note.ok{color:#639922}.mw-note.no{color:#b06a9f}.mw-note.dim{color:#6d6d6d}
+.mw-who{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:#fff;margin-bottom:4px}
+.mw-mail{font-family:'Space Mono',monospace;font-size:9px;color:#6d6d6d;margin-bottom:12px;word-break:break-all}
+.mw-signout{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#6d6d6d;background:none;border:none;cursor:pointer;padding:2px 0;margin-top:8px}
+.mw-signout:hover{color:#fff}
 </style>
 </head>
 <body>
@@ -282,6 +299,23 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
       <span class="wa-sig"><svg viewBox="0 0 592 480" xmlns="http://www.w3.org/2000/svg" fill="#ffffff"><path d="M251.16 9.34C193.94 62.03 171.52 84.45 151.99 106.59 131.36 129.98 107.56 160.24 91.6 181.42 80.32 196.41 64.09 210.86 63.96 220.76 63.96 226.54 68.22 232.45 73.58 234.65 81.97 238.09 101.23 229.84 114.57 226.81 127.5 223.79 142.08 218.83 152.81 216.63 160.52 215.12 167.53 211.95 172.62 213.74 177.16 215.26 182.39 219.25 182.93 224.61 184.17 235.61 165.74 256.38 150.47 279.49 122 322.41 37.27 428.46 18.7 458.17 12.93 467.38 11.82 474.12 8.8 477.15 7.42 478.52 6.18 479.21 4.81 479.07 3.3 478.94 0.96 477.29 0.41 475.91-0.14 474.67-0.14 473.57 1.1 471.51 8.11 458.86 81.15 402.32 125.99 365.6 176.75 324.06 226.95 283.2 290.22 235.48 373.44 172.62 559.54 31.9 584.16 24.34 587.33 23.38 588.7 23.65 589.94 24.48 591.18 25.3 591.73 27.36 591.73 28.6 591.73 29.7 591.32 30.8 590.63 31.49 589.67 32.32 587.6 33.14 586.36 33 585.27 33 584.3 32.45 583.61 31.63 582.79 30.66 582.1 28.6 582.24 27.36 582.38 26.27 582.93 25.3 583.75 24.61 584.71 23.93 586.91 23.38 588.15 23.51 589.12 23.79 590.08 24.48 590.77 25.3 591.32 25.99 591.87 27.09 591.87 28.19 591.73 29.43 591.45 30.12 589.8 32.18 574.54 50.06 379.36 180.32 296.27 243.04 233 290.63 182.8 331.48 132.18 372.89 87.61 409.47 19.8 471.23 7.97 477.97 6.32 478.94 5.91 479.21 4.81 479.07 3.57 479.07 1.64 477.97.96 477.01.27 476.05 0 475.09.13 473.57.68 469.58 4.67 462.57 11 452.39 29.98 421.58 114.57 316.63 142.22 274.54 156.66 252.67 177.02 229.01 172.48 222.82 167.94 216.63 133.97 233 116.09 236.3 100.27 239.19 81.29 246.75 70.97 242.49 63.41 239.19 56.53 230.66 56.11 222.41 55.43 210.17 72.21 192.42 84.18 175.37 99.99 152.67 124.2 123.51 144.97 99.99 164.78 77.57 187.34 55.01 205.63 37.41 219.8 23.65 237.95 5.77 244.7 2.19 246.76 1.09 247.86.82 249.1 1.09 250.2 1.23 251.3 2.05 251.85 3.02 252.54 3.84 252.81 5.22 252.67 6.32 252.67 7.28 251.16 9.34 251.16 9.34Z"/></svg></span>
     </a>
     <button id="go-totehm" aria-label="Back to your Totehm"><img class="wm-img" src="assets/img/totehm_logo.png" alt="Totehm"><svg class="chev" viewBox="0 0 24 14"><path d="M2 2 L12 11 L22 2"/></svg></button>
+  </div>
+</div>
+
+<button id="conn-bar" type="button" aria-label="member space"><span class="dot"></span>Guest</button>
+<div id="member-window">
+  <div class="mw-card">
+    <button class="mw-close" id="mw-close">Close</button>
+    <div id="mw-out-state">
+      <input class="mw-input" id="mw-email" type="email" placeholder="your email" autocomplete="email">
+      <input class="mw-input" id="mw-code" inputmode="numeric" maxlength="6" placeholder="6-digit code" style="display:none">
+      <div class="mw-note dim" id="mw-note"></div>
+    </div>
+    <div id="mw-in-state" style="display:none">
+      <div class="mw-who" id="mw-who"></div>
+      <div class="mw-mail" id="mw-mail"></div>
+      <button class="mw-signout" id="mw-signout">Sign out</button>
+    </div>
   </div>
 </div>
 
@@ -756,6 +790,45 @@ if(goTotehm) goTotehm.onclick=goToTotehm;
 
 /* L'init est déclenché par bootGate, jamais avant : sans les URLs
    signées, loadVideoStep(0) partait sur SIGNED[0] undefined. */
+
+/* ══ MEMBER SPACE ══ */
+(()=>{
+  const _$=id=>document.getElementById(id);
+  let me=null,mbEmail='';
+  function mbPaint(){
+    _$('conn-bar').innerHTML='<span class="dot" style="background:'+(me?'#639922':'#888')+'"></span>'+(me?(me.email||'').split('@')[0]:'Guest');
+    _$('mw-out-state').style.display=me?'none':'';
+    _$('mw-in-state').style.display=me?'':'none';
+    if(me){_$('mw-who').textContent=(me.email||'').split('@')[0];_$('mw-mail').textContent=me.email||'';}
+  }
+  _$('conn-bar').onclick=()=>_$('member-window').classList.add('show');
+  _$('mw-close').onclick=()=>_$('member-window').classList.remove('show');
+  _$('member-window').addEventListener('click',e=>{if(e.target===_$('member-window'))_$('member-window').classList.remove('show');});
+  _$('mw-email').addEventListener('keydown',async e=>{
+    if(e.key!=='Enter')return;
+    const v=_$('mw-email').value.trim(),note=_$('mw-note');
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){note.className='mw-note no';note.textContent='invalid email';return;}
+    note.className='mw-note dim';note.textContent='sending…';
+    const {error}=await sb.auth.signInWithOtp({email:v,options:{shouldCreateUser:true}});
+    if(error){note.className='mw-note no';note.textContent='try again in a minute';return;}
+    mbEmail=v;note.className='mw-note ok';note.textContent='code sent — check your email';
+    _$('mw-code').style.display='';setTimeout(()=>_$('mw-code').focus(),80);
+  });
+  _$('mw-code').addEventListener('input',async()=>{
+    const t=_$('mw-code').value.trim(),note=_$('mw-note');
+    if(t.length!==6)return;
+    note.className='mw-note dim';note.textContent='verifying…';
+    const {error}=await sb.auth.verifyOtp({email:mbEmail,token:t,type:'email'});
+    if(error){note.className='mw-note no';note.textContent='wrong code';return;}
+    note.textContent='';_$('mw-code').value='';_$('mw-code').style.display='none';_$('mw-email').value='';
+    _$('member-window').classList.remove('show');
+  });
+  _$('mw-signout').onclick=async()=>{await sb.auth.signOut();_$('member-window').classList.remove('show');};
+  sb.auth.onAuthStateChange(async()=>{
+    const {data:{session}}=await sb.auth.getSession();me=session?.user||null;mbPaint();
+  });
+  sb.auth.getSession().then(({data:{session}})=>{me=session?.user||null;mbPaint();});
+})();
 </script>
 </body>
 </html>
