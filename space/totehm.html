@@ -2009,7 +2009,9 @@ window.addEventListener('touchstart',(e)=>{x0=e.changedTouches[0].screenX;y0=e.c
 window.addEventListener('touchmove',(e)=>{if(axis)return;const dx=e.changedTouches[0].screenX-x0,dy=e.changedTouches[0].screenY-y0;if(Math.abs(dx)>8||Math.abs(dy)>8)axis=Math.abs(dx)>Math.abs(dy)?'h':'v';},{passive:true});
 window.addEventListener('touchend',(e)=>{
   if(fpOpen())return;
-  if(t0el&&t0el.closest&&t0el.closest('#results,#freq-panel,#member-window,input,textarea,button'))return;
+  if(t0el&&t0el.closest&&t0el.closest('#results,#freq-panel,#member-window,input,button'))return;
+  const _ae=document.activeElement;
+  if(_ae&&(_ae.tagName==='TEXTAREA'||_ae.tagName==='INPUT'))return;
   if(document.body.classList.contains('gate'))return;   /* l'atterrissage défile librement */
   const dy=e.changedTouches[0].screenY-y0;const TH=32;
   if(axis==='v'){
