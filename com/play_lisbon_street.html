@@ -477,7 +477,7 @@ function comeBack(){
   setTimeout(()=>{
     vid.src=''; streetBusy=false;
     if(lastXpFrom==='world'){ openWorld(); }
-    else{ ROCKS.forEach(r=>{ r.img.style.opacity='1'; }); }
+    else{ ROCKS.forEach(r=>{ r.img.style.filter=''; r.uLabel.style.opacity='0'; }); }
   },600);
 }
 
@@ -563,8 +563,8 @@ function spawnRock(id,tl,tt,tw){
   img.style.transform=`rotate(${rot}deg)`;
 
   const uLabel=document.createElement('div');
-  uLabel.textContent='USELESS';
-  uLabel.style.cssText=`position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Quantico',sans-serif;font-weight:700;font-size:11px;color:#fbd5ca;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s ease;`;
+  uLabel.textContent='Useless';
+  uLabel.style.cssText=`position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Quantico',sans-serif;font-weight:700;font-size:11px;color:#fbd5ca;letter-spacing:.08em;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s ease;`;
 
   wrap.appendChild(img);
   wrap.appendChild(uLabel);
@@ -668,7 +668,12 @@ function enterBoardMode(){
   sdiscBoardClose.style.display='block';
   if(isPortraitMobile()) rotatePrompt.classList.add('active');
   ROCKS.forEach(r=>{
-    r._boardClick=()=>{ r.img.style.filter='brightness(0.2)'; launchXpFromDisc(r.id); };
+    r.uLabel.innerHTML='<svg viewBox="0 0 600 200" style="width:80%;height:auto;display:block;margin:0 auto"><use href="#higher-slogan"></use></svg>';
+    r._boardClick=()=>{
+      r.img.style.filter='brightness(0.2)';
+      r.uLabel.style.opacity='1';
+      launchXpFromDisc(r.id);
+    };
     r.wrap.addEventListener('click',r._boardClick);
   });
 }
@@ -681,6 +686,9 @@ function exitBoardMode(){
   sdiscBoardClose.style.display='none';
   ROCKS.forEach(r=>{
     r.img.style.filter='';
+    r.uLabel.innerHTML='';
+    r.uLabel.textContent='Useless';
+    r.uLabel.style.opacity='0';
     if(r._boardClick){ r.wrap.removeEventListener('click',r._boardClick); r._boardClick=null; }
   });
 }
