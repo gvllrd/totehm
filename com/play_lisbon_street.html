@@ -597,7 +597,7 @@ function exitBoardMode(){
     if(r._boardClick){ r.img.removeEventListener('click',r._boardClick); r._boardClick=null; }
   });
 }
-sdiscBoardClose.addEventListener('click',()=>{ exitBoardMode(); resetRocks(); sdiscReset(); startAsteroids(); });
+sdiscBoardClose.addEventListener('click',()=>{ window.location.href='discover_lisbon.html'; });
 
 function snapToBoard(){
   if(snapping) return; snapping=true; stopAsteroids();
