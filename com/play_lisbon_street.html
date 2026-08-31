@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>TOTEHM — Lisbon Streets Higher</title>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Bebas+Neue&family=Montserrat:ital,wght@1,900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#606060;--bg:#000;
+  --futura-light:'Futura','Jost',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-font-smoothing:antialiased}
+
+.t-futura{font-family:var(--futura-light);font-weight:300;font-size:14px;color:var(--g-light);line-height:1.7;letter-spacing:.02em;padding:0 20px;}
+.t-coral{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--coral);line-height:1.7;letter-spacing:.02em;padding:0 20px;}
+
+.higher-inline{display:inline-flex;align-items:center;width:54px;vertical-align:middle;line-height:0;margin:0 2px;}
+.higher-inline svg{display:block;width:100%;height:auto;fill:currentColor}
+
+.btn-sig{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-flex;align-items:center;gap:6px;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
+.btn-sig.claimed{color:#fff;border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");border-image-slice:6 fill;border-image-repeat:round}
+@media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");border-image-slice:6 fill;border-image-repeat:round}}
+.btn-sig:active{color:#fff;border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");border-image-slice:6 fill;border-image-repeat:round}
+
+.note{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;text-align:center}
+
+.disc-block{
+  position:absolute;width:90%;max-width:580px;text-align:center;
+  opacity:0;visibility:hidden;pointer-events:none;transform:translateY(14px);
+  transition:opacity .65s ease,transform .65s cubic-bezier(.22,.61,.36,1);
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+}
+.disc-block.active{visibility:visible}
+.disc-block.show{opacity:1;transform:translateY(0);pointer-events:auto}
+.disc-block.instant{transition:none}
+.disc-block.show .coral-line{animation:settle .9s cubic-bezier(.22,.61,.36,1)}
+@keyframes settle{0%{filter:blur(5px)}100%{filter:blur(0)}}
+@media(prefers-reduced-motion:reduce){.disc-block.show .coral-line{animation:none}}
+
+/* ─── STREET DISCOVER (page principale) ─── */
+#street-disc{position:fixed;inset:0;z-index:1;background:#000;}
+#sdisc-back{
+  position:absolute;top:14px;left:14px;z-index:5;
+  font-family:'Space Mono',monospace;font-size:10px;color:#9a9a9a;letter-spacing:.14em;text-transform:uppercase;
+  background:none;border:none;cursor:pointer;padding:0;transition:color .15s;
+}
+@media(hover:hover){#sdisc-back:hover{color:#fff}}
+#sdisc-board-close{
+  position:absolute;top:14px;right:14px;z-index:5;
+  font-family:'Space Mono',monospace;font-size:10px;color:#9a9a9a;letter-spacing:.14em;
+  background:none;border:none;cursor:pointer;padding:0;transition:color .15s;
+}
+@media(hover:hover){#sdisc-board-close:hover{color:#fff}}
+#sdisc-bg{position:absolute;inset:0;overflow:hidden;z-index:0;pointer-events:none;}
+#sdisc-stage{
+  position:absolute;inset:0;z-index:1;
+  display:flex;align-items:center;justify-content:center;padding:60px 24px 70px;
+  pointer-events:none;
+}
+#sdisc-trig{
+  position:absolute;bottom:22px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  background:none;border:none;cursor:pointer;padding:0;
+  text-align:center;white-space:nowrap;
+  opacity:1;transition:opacity .3s ease;
+}
+#sdisc-trig.gone{opacity:0;pointer-events:none}
+@media(pointer:coarse){#sdisc-trig .trigger-label{display:none}}
+.trigger-label{
+  font-family:'Space Mono',monospace;font-size:10px;color:#9a9a9a;
+  letter-spacing:.14em;text-transform:uppercase;line-height:1.5;transition:color .15s;
+}
+.chev{width:22px;height:22px;color:#a0a0a0;flex-shrink:0;transition:color .15s}
+@keyframes bob-chev{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+.bob-chev{animation:bob-chev 1.8s ease-in-out infinite}
+@media(hover:hover){
+  #sdisc-trig:hover .trigger-label,
+  #sdisc-trig:hover .chev{color:#fff}
+}
+
+/* ═══ STREET BOARD ═══ */
+.world{
+  position:fixed;inset:0;z-index:80;
+  display:flex;align-items:center;justify-content:center;
+  background:#000;opacity:0;pointer-events:none;transition:opacity .55s ease;
+}
+.world.on{opacity:1;pointer-events:auto}
+.board{
+  position:relative;
+  width:min(100vw,calc(100vh * 1.7778));
+  height:min(100vh,calc(100vw / 1.7778));
+}
+@media(hover:hover) and (min-width:900px){
+  .board{width:min(66vw,calc(66vh * 1.7778));height:min(66vh,calc(66vw / 1.7778));}
+}
+.sign{
+  position:absolute;left:var(--l);top:var(--t);width:var(--w);
+  background:none;border:0;padding:0;cursor:pointer;
+  transition:transform .14s ease,filter .2s ease;
+  touch-action:manipulation;outline:none;
+}
+.sign img{width:100%;height:auto;display:block;pointer-events:none}
+@media(hover:hover){.sign:hover{filter:brightness(1.15) drop-shadow(0 0 6px rgba(255,255,255,.2))}}
+.sign:active{transform:scale(.86)}
+.sign-spin img{animation:sign-spin 18s linear infinite}
+@keyframes sign-spin{to{transform:rotate(360deg)}}
+#world-close{
+  position:absolute;top:18px;right:18px;z-index:5;
+  background:none;border:none;cursor:pointer;padding:0;
+  font-family:'Space Mono',monospace;font-size:10px;color:#9a9a9a;letter-spacing:.14em;text-transform:uppercase;
+  transition:color .15s ease;
+}
+@media(hover:hover){#world-close:hover{color:#fff}}
+
+/* ═══ SIGN XP ═══ */
+.xp{
+  position:fixed;inset:0;z-index:90;background:#000;
+  opacity:0;pointer-events:none;transition:opacity .55s ease;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;
+}
+.xp.up{opacity:1;pointer-events:auto}
+.vbox-scene{
+  --vbs:min(72vmin,300px);--vbd:40px;--vbhd:20px;
+  perspective:900px;width:var(--vbs);height:var(--vbs);
+  cursor:grab;touch-action:none;
+  user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;
+  flex-shrink:0;opacity:0;transition:opacity .5s ease;
+}
+.vbox-scene.in{opacity:1}
+.vbox{
+  width:var(--vbs);height:var(--vbs);
+  position:relative;transform-style:preserve-3d;will-change:transform;
+}
+.vbf{position:absolute;left:0;top:0;}
+.vb-front{
+  width:var(--vbs);height:var(--vbs);transform:translateZ(var(--vbhd));
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.22);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35);
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+}
+.vb-front::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.14) 0%,rgba(255,255,255,.03) 40%,transparent 65%);
+}
+.vb-back{
+  width:var(--vbs);height:var(--vbs);
+  transform:rotateY(180deg) translateZ(var(--vbhd));
+  background:#000;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+}
+.vb-inner{
+  width:var(--vbs);height:var(--vbs);transform:translateZ(0);
+  display:flex;align-items:center;justify-content:center;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;
+}
+.vb-inner video{width:100%;height:100%;object-fit:cover;display:block;background:#000;}
+.vbside{position:absolute;left:0;top:0;background:#000;border:1px solid rgba(255,255,255,.06);}
+.vb-right{width:var(--vbd);height:var(--vbs);transform:translateX(calc(var(--vbs) - var(--vbhd))) rotateY(-90deg);}
+.vb-left {width:var(--vbd);height:var(--vbs);transform:translateX(calc(-1 * var(--vbhd))) rotateY(90deg);}
+.vb-top  {width:var(--vbs);height:var(--vbd);transform:translateY(calc(-1 * var(--vbhd))) rotateX(90deg);}
+.vb-bot  {width:var(--vbs);height:var(--vbd);transform:translateY(calc(var(--vbs) - var(--vbhd))) rotateX(-90deg);}
+@media(prefers-reduced-motion:reduce){.vbox{will-change:auto}}
+#xp-close{
+  position:absolute;top:18px;left:18px;
+  background:none;border:none;cursor:pointer;
+  font-family:'Space Mono',monospace;font-size:10px;color:#9a9a9a;letter-spacing:.14em;text-transform:uppercase;
+  transition:color .15s ease;
+}
+@media(hover:hover){#xp-close:hover{color:#fff}}
+
+/* ─── AUTH OVERLAY ─── */
+#auth-overlay{
+  position:fixed;inset:0;z-index:100;background:#000;
+  opacity:0;pointer-events:none;transition:opacity .4s ease;
+  display:flex;align-items:center;justify-content:center;
+}
+#auth-overlay.in{opacity:1;pointer-events:auto}
+#auth-back-btn{
+  position:absolute;top:14px;left:14px;
+  font-family:'Space Mono',monospace;font-size:10px;color:#9a9a9a;letter-spacing:.14em;text-transform:uppercase;
+  background:none;border:none;cursor:pointer;padding:0;transition:color .15s;
+}
+@media(hover:hover){#auth-back-btn:hover{color:#fff}}
+.mw-card{background:#131316;border:1px solid #242429;max-width:360px;width:100%;padding:30px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;}
+.line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:#fff;background:none;outline:none;border:6px solid transparent;border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:var(--coral);min-width:260px}
+.line-input::placeholder{color:rgba(255,255,255,.33)}
+
+@media(hover:hover){
+  .t-futura:hover{color:#fff}
+  #sdisc-back:hover{color:#fff}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="t-glyph" viewBox="0 0 624 636">
+      <path fill="#ffffff" d="M0 0 H624 V92 H358 V592 H434 V636 H190 V592 H266 V92 H0 Z"/>
+    </symbol>
+    <symbol id="higher-slogan" viewBox="0 0 600 200">
+      <defs><mask id="hmask"><rect width="600" height="200" fill="white"/>
+        <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
+        <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
+        <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
+      </mask></defs>
+      <rect width="600" height="200" fill="#333366" mask="url(#hmask)"/>
+      <text x="50%" y="144.42" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-style="italic" font-size="144" fill="#ffffff">Higher</text>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="street-disc">
+  <div id="sdisc-bg"></div>
+  <button id="sdisc-back" type="button">Back</button>
+  <button id="sdisc-board-close" type="button" style="display:none">✕</button>
+  <div id="sdisc-stage"></div>
+  <button id="sdisc-trig" type="button" aria-label="Next">
+    <span class="trigger-label">When Street Art meets the quintessence of modern neurology</span>
+    <svg class="chev bob-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+  </button>
+</div>
+
+<div class="world" id="world">
+  <button id="world-close">✕</button>
+  <div class="board" id="board"></div>
+</div>
+
+<div class="xp" id="xp">
+  <button id="xp-close">Back</button>
+  <div class="vbox-scene" id="vidWrap">
+    <div class="vbox" id="vidBox">
+      <div class="vbf vb-back"></div>
+      <div class="vbf vb-inner"><video id="vid" playsinline preload="none"></video></div>
+      <div class="vbside vb-right"></div><div class="vbside vb-left"></div>
+      <div class="vbside vb-top"></div><div class="vbside vb-bot"></div>
+      <div class="vbf vb-front"></div>
+    </div>
+  </div>
+  <button id="xp-buy" class="btn-sig">Get Higher — $30</button>
+</div>
+
+<div id="auth-overlay">
+  <button id="auth-back-btn" type="button">Back</button>
+  <div id="auth-mail" class="mw-card">
+    <p class="t-futura" style="color:#fff;padding:0">Enter your email to continue</p>
+    <input id="in-email" class="line-input" type="email" placeholder="your@email.com" autocomplete="email">
+    <p id="err-mail" class="note" style="color:#e06060;min-height:14px"></p>
+    <button id="btn-send" class="btn-sig claimed">Send code</button>
+  </div>
+  <div id="auth-otp" class="mw-card" style="display:none">
+    <p class="t-futura" style="color:#fff;padding:0">Enter the 6-digit code sent to your email</p>
+    <input id="in-otp" class="line-input" type="text" inputmode="numeric" maxlength="6" placeholder="------">
+    <p id="err-code" class="note" style="color:#e06060;min-height:14px"></p>
+    <button id="btn-verify" class="btn-sig claimed">Enter</button>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL  = 'https://abujjbkbbiumxrokozph.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+const GATE_FN = SB_URL + '/functions/v1/stoner-gate';
+const PAY_FN  = SB_URL + '/functions/v1/higher-checkout';
+const METHOD  = '/stoner.html';
+const sb = createClient(SB_URL, SB_ANON);
+
+async function hasAccess(){
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(!session) return false;
+    const r = await fetch(GATE_FN,{ method:'POST',
+      headers:{ 'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json' }});
+    const j = await r.json();
+    return j.access === true;
+  }catch(e){ return false; }
+}
+
+(async function boot(){
+  if(await hasAccess()) (window.top||window).location.replace(METHOD);
+})();
+
+async function toStripe(){
+  const err = document.getElementById('err-code');
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(!session){ openAuth(); return; }
+    const r = await fetch(PAY_FN,{
+      method:'POST',
+      headers:{ 'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json' },
+      body: JSON.stringify({ waiver:true, waiver_ts:new Date().toISOString() })
+    });
+    const j = await r.json();
+    if(j.already){ (window.top||window).location.replace(METHOD); return; }
+    if(!j.url) throw new Error(j.error||'no url');
+    try{ (window.top||window).location.href = j.url; }
+    catch(e){ window.open(j.url,'_blank'); }
+  }catch(e){
+    console.error('checkout:',e);
+    if(err) err.textContent='Could not open checkout. Try again.';
+  }
+}
+
+/* ─── AUTH OVERLAY ─── */
+const authOverlay = document.getElementById('auth-overlay');
+const authMail    = document.getElementById('auth-mail');
+const authOtp     = document.getElementById('auth-otp');
+const authBackBtn = document.getElementById('auth-back-btn');
+const btnSend     = document.getElementById('btn-send');
+const btnVerify   = document.getElementById('btn-verify');
+const inEmail     = document.getElementById('in-email');
+const inOtp       = document.getElementById('in-otp');
+let emailSent = '';
+
+function openAuth(){ authMail.style.display=''; authOtp.style.display='none'; authOverlay.classList.add('in'); }
+function closeAuth(){ authOverlay.classList.remove('in'); }
+
+authBackBtn.addEventListener('click',()=>{
+  if(authOtp.style.display==='none'){ closeAuth(); }
+  else{ authOtp.style.display='none'; authMail.style.display=''; }
+});
+btnSend.addEventListener('click',async()=>{
+  const email=inEmail.value.trim().toLowerCase();
+  const err=document.getElementById('err-mail');
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ err.textContent='Check the address.'; return; }
+  err.textContent=''; btnSend.disabled=true; btnSend.textContent='Sending...';
+  const { error } = await sb.auth.signInWithOtp({ email, options:{ shouldCreateUser:true }});
+  btnSend.disabled=false; btnSend.textContent='Send code';
+  if(error){ err.textContent='Could not send. Try again.'; return; }
+  emailSent=email; authMail.style.display='none'; authOtp.style.display='';
+  setTimeout(()=>inOtp.focus(),50);
+});
+btnVerify.addEventListener('click',async()=>{
+  const token=inOtp.value.trim();
+  const err=document.getElementById('err-code');
+  if(token.length!==6){ err.textContent='Six digits.'; return; }
+  err.textContent=''; btnVerify.disabled=true; btnVerify.textContent='Checking...';
+  const { error } = await sb.auth.verifyOtp({ email:emailSent, token, type:'email' });
+  btnVerify.disabled=false; btnVerify.textContent='Enter';
+  if(error){ err.textContent='Wrong or expired code.'; return; }
+  closeAuth();
+  if(await hasAccess()){ (window.top||window).location.replace(METHOD); return; }
+  toStripe();
+});
+inEmail.addEventListener('keydown',e=>{ if(e.key==='Enter') btnSend.click(); });
+inOtp.addEventListener('keydown',  e=>{ if(e.key==='Enter') btnVerify.click(); });
+
+/* ═══ STREET BOARD ═══ */
+{
+const IMG_BASE = 'assets/signs/';
+const VID_BASE = 'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/play-signals/';
+
+const SIGNS = {
+  fire_exit:          [23.1,  5.5,  6.5],
+  Heli:               [46.0,  7.4,  5.2],
+  aed:                [70.1,  5.5,  6.5],
+  green_walk:         [33.7,  9.0,  3.8],
+  red_walk:           [33.7, 16.5,  3.8],
+  pharma:             [20.8, 22.5, 10.0],
+  destination:        [40.1,  9.5, 18.5],
+  lisboa_city_hall:   [60.8, 10.0,  6.2],
+  speed_bump_caution: [68.4, 15.5,  6.2],
+  crosswalk_caution:  [63.5, 27.0,  5.6],
+  no_entry:           [73.4, 27.6,  5.5],
+  no_parking:         [68.5, 37.0,  5.8],
+  hospital:           [46.8, 37.0,  3.8],
+  parking:            [46.1, 44.6,  5.2],
+  Hotel:              [46.0, 55.0,  5.6],
+  dead_end:           [20.4, 51.0,  6.9],
+  roundabout:         [32.9, 49.5, 10.2],
+  left_or_straight:   [56.9, 49.5, 10.2],
+  no_uturn:           [69.8, 49.7,  8.8],
+  priority:           [15.4, 66.8, 10.1],
+  crosswalk:          [44.5, 71.0,  8.5],
+  stop:               [73.3, 66.0, 11.6],
+};
+
+const world      = document.getElementById('world');
+const board      = document.getElementById('board');
+const xp         = document.getElementById('xp');
+const vidWrap    = document.getElementById('vidWrap');
+const vid        = document.getElementById('vid');
+const worldClose = document.getElementById('world-close');
+const xpClose    = document.getElementById('xp-close');
+const xpBuy      = document.getElementById('xp-buy');
+
+let streetBusy = false;
+
+for(const [id,[l,t,w]] of Object.entries(SIGNS)){
+  const b = document.createElement('button');
+  b.className = 'sign';
+  b.style.setProperty('--l', l+'%');
+  b.style.setProperty('--t', t+'%');
+  b.style.setProperty('--w', w+'%');
+  b.setAttribute('aria-label', id.replace(/_/g,' '));
+  if(id==='roundabout'||id==='left_or_straight') b.classList.add('sign-spin');
+  const img = document.createElement('img');
+  img.src = IMG_BASE+id+'.png'; img.alt=''; img.loading='lazy';
+  b.appendChild(img);
+  b.addEventListener('click', ()=>launchXp(id));
+  board.appendChild(b);
+}
+
+function openWorld(){ world.classList.add('on'); }
+function closeWorld(){ world.classList.remove('on'); }
+
+let vbRaf=null,vbGrab=false,vbRX=5,vbRY=-15,vbVX=0,vbVY=0,vbT=0,vbTs=null;
+let vbSX=0,vbSY=0,vbDRX=0,vbDRY=0,vbHX=null,vbHY=null;
+function startVidBox(){
+  const scene=document.getElementById('vidWrap'),box=document.getElementById('vidBox');
+  if(!scene||!box||vbRaf)return;
+  vbRX=5;vbRY=-15;vbVX=0;vbVY=0;vbT=0;vbTs=null;vbHX=null;vbHY=null;
+  function idleXY(t){return{x:Math.sin(t*.5)*5+Math.cos(t*.9)*2,y:Math.cos(t*.35)*12+Math.sin(t*.8)*5};}
+  function tick(ts){
+    if(!vbTs)vbTs=ts;const dt=Math.min((ts-vbTs)/1000,.05);vbTs=ts;
+    if(!vbGrab){vbT+=dt*.3;const g=idleXY(vbT),tx=vbHX!==null?vbHX:g.x,ty=vbHY!==null?vbHY:g.y;
+      const k=vbHX!==null?10:6,d=5;
+      vbVX+=((tx-vbRX)*k-vbVX*d)*dt;vbVY+=((ty-vbRY)*k-vbVY*d)*dt;vbRX+=vbVX*dt;vbRY+=vbVY*dt;}
+    box.style.transform=`rotateX(${vbRX.toFixed(2)}deg) rotateY(${vbRY.toFixed(2)}deg)`;
+    vbRaf=requestAnimationFrame(tick);
+  }
+  vbRaf=requestAnimationFrame(tick);
+  scene.addEventListener('mousemove',_vbMM);scene.addEventListener('mouseleave',_vbML);
+  scene.addEventListener('mousedown',_vbMD);
+  scene.addEventListener('touchstart',_vbTS,{passive:true});scene.addEventListener('touchmove',_vbTM,{passive:true});scene.addEventListener('touchend',_vbTE,{passive:true});
+  window.addEventListener('mousemove',_vbWM);window.addEventListener('mouseup',_vbMU);
+}
+function stopVidBox(){
+  if(vbRaf){cancelAnimationFrame(vbRaf);vbRaf=null;}vbGrab=false;
+  const s=document.getElementById('vidWrap');
+  if(s){s.removeEventListener('mousemove',_vbMM);s.removeEventListener('mouseleave',_vbML);
+    s.removeEventListener('mousedown',_vbMD);
+    s.removeEventListener('touchstart',_vbTS);s.removeEventListener('touchmove',_vbTM);s.removeEventListener('touchend',_vbTE);}
+  window.removeEventListener('mousemove',_vbWM);window.removeEventListener('mouseup',_vbMU);
+}
+function _vbMM(e){if(vbGrab)return;const r=this.getBoundingClientRect();vbHX=-(e.clientY-r.top-r.height/2)/(r.height/2)*12;vbHY=(e.clientX-r.left-r.width/2)/(r.width/2)*18;}
+function _vbML(){vbHX=null;vbHY=null;}
+function _vbMD(e){vbGrab=true;vbSX=e.clientX;vbSY=e.clientY;vbDRX=vbRX;vbDRY=vbRY;this.style.cursor='grabbing';e.preventDefault();}
+function _vbWM(e){if(!vbGrab)return;vbRX=Math.max(-80,Math.min(80,vbDRX-(e.clientY-vbSY)*.5));vbRY=vbDRY+(e.clientX-vbSX)*.7;}
+function _vbMU(){if(!vbGrab)return;vbGrab=false;vbVX=0;vbVY=0;const s=document.getElementById('vidWrap');if(s)s.style.cursor='grab';}
+function _vbTS(e){const t=e.changedTouches[0];vbGrab=true;vbSX=t.clientX;vbSY=t.clientY;vbDRX=vbRX;vbDRY=vbRY;}
+function _vbTM(e){if(!vbGrab)return;const t=e.changedTouches[0];vbRX=Math.max(-80,Math.min(80,vbDRX-(t.clientY-vbSY)*.5));vbRY=vbDRY+(t.clientX-vbSX)*.7;}
+function _vbTE(){vbGrab=false;vbVX=0;vbVY=0;}
+
+function launchXp(id){
+  if(streetBusy) return;
+  streetBusy=true; lastXpFrom='world';
+  vid.src=VID_BASE+id+'.mp4'; vid.load();
+  vidWrap.classList.remove('in'); closeWorld(); xp.classList.add('up');
+  setTimeout(()=>{ vidWrap.classList.add('in'); vid.play().catch(()=>{ vid.controls=true; }); startVidBox(); },400);
+}
+
+function comeBack(){
+  vid.pause(); stopVidBox();
+  xp.classList.remove('up'); vidWrap.classList.remove('in');
+  setTimeout(()=>{
+    vid.src=''; streetBusy=false;
+    if(lastXpFrom==='world'){ openWorld(); }
+    else{ ROCKS.forEach(r=>{ r.img.style.opacity='1'; }); }
+  },600);
+}
+
+function closeAll(){
+  vid.pause(); stopVidBox();
+  xp.classList.remove('up'); closeWorld(); vidWrap.classList.remove('in');
+  setTimeout(()=>{ vid.src=''; streetBusy=false; },300);
+}
+
+vid.addEventListener('ended', comeBack);
+xpClose.addEventListener('click', comeBack);
+worldClose.addEventListener('click', closeAll);
+
+xpBuy.addEventListener('click',async()=>{
+  closeAll();
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session?.user?.email){ toStripe(); return; }
+  openAuth();
+});
+
+/* ─── STREET DISCOVER ─── */
+const sdiscBack      = document.getElementById('sdisc-back');
+const sdiscStage     = document.getElementById('sdisc-stage');
+const sdiscTrig      = document.getElementById('sdisc-trig');
+const sdiscBoardClose= document.getElementById('sdisc-board-close');
+const sdiscBg        = document.getElementById('sdisc-bg');
+
+const G=(x)=>({t:"g",x});
+const C=(x)=>({t:"c",x});
+
+const SDSLIDES = [
+  {parts:[G("You see them everywhere, every single day."),G("Hundreds of times a day.")]},
+  {parts:[G("Your brain automatically filters them into background noise."),G("Because yeah, they look completely useless.")]},
+  {parts:[G("Now, imagine if they were stimulants."),G("Consciously or unconsciously.")]},
+  {parts:[G("What if every signal reminded you of your objectives?"),G("The daily habits to achieve them.\nThe past mistakes you swore never to repeat.")]},
+  {parts:[G("The instant trigger to elevate your mental state:"),G("To act with more efficiency and presence.")]},
+  {parts:[G("Artist Wavywah integrated Lisbon's urban signals directly into TOTEHM."),C("An artistic and cognitive performance tool conceived through neurology.")]},
+  {parts:[G("Once you get Higher, walking through Lisbon hits differently."),G("Urban signals are no longer background noise."),C("They turn into active cognitive stimuli.")]},
+  {parts:[G("You don't just walk the city anymore."),C("You operate from a Higher perspective.")]}
+];
+
+const SIGN_ENTRIES = Object.entries(SIGNS);
+const IMPORTANT    = new Set(['crosswalk','stop','no_entry','parking']);
+const ROCKS        = [];
+let   astRaf       = null;
+let   snapping     = false;
+let   lastXpFrom   = 'world';
+
+function getBoardRect(){
+  const W=window.innerWidth,H=window.innerHeight;
+  const desk=window.matchMedia('(hover:hover) and (min-width:900px)').matches;
+  const s=desk?.66:1;
+  const bw=Math.min(W*s,H*s*1.7778), bh=Math.min(H*s,W*s/1.7778);
+  return {x:(W-bw)/2,y:(H-bh)/2,w:bw,h:bh};
+}
+function inTextZone(x,y,size){
+  const cx=window.innerWidth/2,cy=window.innerHeight/2;
+  const hw=Math.min(310,window.innerWidth*.44)+size, hh=220+size;
+  return x>cx-hw&&x<cx+hw&&y>cy-hh&&y<cy+hh;
+}
+function spawnRock(id,tl,tt,tw){
+  const img=document.createElement('img');
+  img.src=IMG_BASE+id+'.png'; img.setAttribute('aria-hidden','true');
+  const W=window.innerWidth,H=window.innerHeight;
+  const size=IMPORTANT.has(id)?65+Math.random()*35:38+Math.random()*32;
+  const x=Math.random()*(W-size), y=Math.random()*(H-size);
+  const vx=(Math.random()-.5)*.5, vy=(Math.random()-.5)*.5;
+  const rot=Math.random()*360, vrot=(Math.random()-.5)*.2;
+  img.style.cssText=`position:absolute;top:0;left:0;width:${size}px;opacity:.22;user-select:none;-webkit-tap-highlight-color:transparent;will-change:transform;transition:opacity .4s ease;cursor:default;`;
+  img.style.transform=`translate(${x}px,${y}px) rotate(${rot}deg)`;
+  sdiscBg.appendChild(img);
+  const r={img,x,y,vx,vy,rot,vrot,size,inZone:false,hovered:false,tl,tt,tw,id};
+  img.addEventListener('mouseenter',()=>{ r.hovered=true; img.style.opacity=boardMode?'.35':'1'; });
+  img.addEventListener('mouseleave',()=>{ r.hovered=false; img.style.opacity=boardMode?'1':(r.inZone?'.06':'.22'); });
+  return r;
+}
+function resetRocks(){
+  snapping=false;
+  const W=window.innerWidth,H=window.innerHeight;
+  ROCKS.forEach(r=>{
+    r.x=Math.random()*(W-r.size); r.y=Math.random()*(H-r.size);
+    r.vx=(Math.random()-.5)*.5;   r.vy=(Math.random()-.5)*.5;
+    r.rot=Math.random()*360;       r.inZone=false;
+    r.img.style.transition='opacity .4s ease';
+    r.img.style.opacity='.22';
+    r.img.style.width=r.size+'px';
+    r.img.style.transform=`translate(${r.x}px,${r.y}px) rotate(${r.rot}deg)`;
+  });
+}
+function startAsteroids(){
+  if(astRaf) return;
+  if(!ROCKS.length) SIGN_ENTRIES.forEach(([id,[l,t,w]])=>ROCKS.push(spawnRock(id,l,t,w)));
+  function tick(){
+    if(snapping) return;
+    const W=window.innerWidth,H=window.innerHeight;
+    ROCKS.forEach(r=>{
+      r.x+=r.vx; r.y+=r.vy; r.rot+=r.vrot;
+      if(r.x>W-r.size){r.x=W-r.size;r.vx=-Math.abs(r.vx);}
+      else if(r.x<0){r.x=0;r.vx=Math.abs(r.vx);}
+      if(r.y>H-r.size){r.y=H-r.size;r.vy=-Math.abs(r.vy);}
+      else if(r.y<0){r.y=0;r.vy=Math.abs(r.vy);}
+      const nowIn=inTextZone(r.x,r.y,r.size);
+      if(nowIn!==r.inZone){ r.inZone=nowIn; if(!r.hovered) r.img.style.opacity=nowIn?'.06':'.22'; }
+      r.img.style.transform=`translate(${r.x.toFixed(1)}px,${r.y.toFixed(1)}px) rotate(${r.rot.toFixed(1)}deg)`;
+    });
+    astRaf=requestAnimationFrame(tick);
+  }
+  astRaf=requestAnimationFrame(tick);
+}
+function stopAsteroids(){
+  if(astRaf){cancelAnimationFrame(astRaf);astRaf=null;}
+}
+
+let boardMode = false;
+
+function enterBoardMode(){
+  boardMode=true;
+  sdiscStage.style.display='none';
+  sdiscBack.style.display='none';
+  sdiscTrig.style.display='none';
+  sdiscBoardClose.style.display='block';
+  ROCKS.forEach(r=>{
+    r.img.style.cursor='pointer';
+    r.img.style.pointerEvents='auto';
+    r._boardClick=()=>{ r.img.style.opacity='.2'; launchXpFromDisc(r.id); };
+    r.img.addEventListener('click',r._boardClick);
+  });
+}
+function exitBoardMode(){
+  boardMode=false;
+  sdiscStage.style.display='';
+  sdiscBack.style.display='';
+  sdiscTrig.style.display='none';
+  sdiscBoardClose.style.display='none';
+  ROCKS.forEach(r=>{
+    r.img.style.cursor='default';
+    if(r._boardClick){ r.img.removeEventListener('click',r._boardClick); r._boardClick=null; }
+  });
+}
+sdiscBoardClose.addEventListener('click',()=>{ exitBoardMode(); });
+
+function snapToBoard(){
+  if(snapping) return; snapping=true; stopAsteroids();
+  const br=getBoardRect();
+  sdiscStage.style.transition='opacity .4s'; sdiscStage.style.opacity='0';
+  sdiscBack.style.transition='opacity .4s'; sdiscBack.style.opacity='0';
+  sdiscTrig.style.opacity='0';
+  ROCKS.forEach(r=>{
+    const tx=br.x+(r.tl/100)*br.w, ty=br.y+(r.tt/100)*br.h, tw=(r.tw/100)*br.w;
+    r.img.style.transition='transform .9s cubic-bezier(.65,0,.35,1),width .9s cubic-bezier(.65,0,.35,1),opacity .5s';
+    r.img.style.opacity='1'; r.img.style.width=tw+'px';
+    r.img.style.transform=`translate(${tx}px,${ty}px) rotate(0deg)`;
+  });
+  setTimeout(()=>{
+    snapping=false;
+    sdiscStage.style.transition=''; sdiscBack.style.transition='';
+    enterBoardMode();
+  },1000);
+}
+
+function launchXpFromDisc(id){
+  if(streetBusy) return; streetBusy=true; lastXpFrom='disc';
+  vid.src=VID_BASE+id+'.mp4'; vid.load();
+  vidWrap.classList.remove('in'); xp.classList.add('up');
+  setTimeout(()=>{ vidWrap.classList.add('in'); vid.play().catch(()=>{vid.controls=true;}); startVidBox(); },400);
+}
+
+function buildSdisc(sl){
+  const b=document.createElement('div'); b.className='disc-block';
+  sl.parts.forEach(p=>{
+    const d=document.createElement('div');
+    d.className=p.t==='c'?'t-futura t-coral coral-line':'t-futura';
+    d.innerHTML=(p.x||'').replace(/\n/g,'<br>');
+    b.appendChild(d);
+  });
+  const btn=document.createElement('button');
+  btn.className='btn-sig'; btn.style.marginTop='14px';
+  btn.textContent='Make them useful for your brain';
+  btn.addEventListener('click',()=>snapToBoard());
+  b.appendChild(btn);
+  return b;
+}
+SDSLIDES.forEach(sl=>sdiscStage.appendChild(buildSdisc(sl)));
+
+let sdiscCur=0, sdiscLock=false;
+const SD_FADE=650;
+
+function showSdisc(i,instant){
+  sdiscStage.querySelectorAll('.disc-block').forEach((b,idx)=>{
+    if(idx===i){
+      if(instant)b.classList.add('instant');
+      b.classList.add('active');
+      requestAnimationFrame(()=>{
+        b.classList.add('show');
+        if(instant)requestAnimationFrame(()=>b.classList.remove('instant'));
+      });
+    } else {
+      b.classList.remove('show');
+      setTimeout(()=>b.classList.remove('active'),instant?0:SD_FADE);
+    }
+  });
+  sdiscCur=i;
+  if(i>0) sdiscTrig.classList.add('gone');
+}
+function sdiscReset(){
+  sdiscStage.querySelectorAll('.disc-block').forEach(b=>b.classList.remove('show','active','instant'));
+  sdiscTrig.classList.remove('gone');
+  sdiscCur=0;
+  requestAnimationFrame(()=>showSdisc(0,true));
+}
+function sdiscNext(){
+  if(sdiscLock||sdiscCur>=SDSLIDES.length-1)return;
+  sdiscLock=true; showSdisc(sdiscCur+1,false); setTimeout(()=>sdiscLock=false,SD_FADE);
+}
+function sdiscPrev(){
+  if(sdiscLock||sdiscCur<=0)return;
+  sdiscLock=true; showSdisc(sdiscCur-1,false); setTimeout(()=>sdiscLock=false,SD_FADE);
+}
+
+/* démarrage */
+resetRocks(); sdiscReset(); startAsteroids();
+
+sdiscBack.addEventListener('click',()=>{ window.location.href='discover_lisbon.html'; });
+sdiscTrig.addEventListener('click',sdiscNext);
+
+let sdWlLock=false;
+window.addEventListener('wheel',e=>{
+  if(sdWlLock)return; sdWlLock=true; setTimeout(()=>sdWlLock=false,700);
+  if(e.deltaY>0) sdiscNext(); else sdiscPrev();
+},{passive:true});
+let sdTY=0;
+window.addEventListener('touchstart',e=>{sdTY=e.changedTouches[0].screenY;},{passive:true});
+window.addEventListener('touchend',e=>{
+  const dy=e.changedTouches[0].screenY-sdTY;
+  if(dy<-50) sdiscNext(); else if(dy>50) sdiscPrev();
+},{passive:true});
+window.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+  if(e.key==='ArrowDown') sdiscNext();
+  else if(e.key==='ArrowUp') sdiscPrev();
+  else if(e.key==='Escape') window.location.href='discover_lisbon.html';
+});
+}
+</script>
+</body>
+</html>
