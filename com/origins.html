@@ -8,62 +8,52 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root { --coral: #fbd5ca; }
 html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
 
 /* ── DECK ── */
-#deck {
-  position: fixed; inset: 0;
-  display: flex; overflow: hidden;
-  touch-action: none;
-}
+#deck { position: fixed; inset: 0; overflow: hidden; }
 .slide {
-  flex: 0 0 100%; width: 100%; height: 100%;
+  position: absolute; width: 100%; height: 100%;
   display: flex; align-items: center; justify-content: center;
   will-change: transform;
-  transition: transform .55s cubic-bezier(.65,0,.35,1);
+  transition: transform .62s cubic-bezier(.65,0,.35,1);
 }
 
-/* ── PHOTO CARD (two faces) ── */
+/* ── INTRO ── */
+.intro-text {
+  max-width: min(560px, 82vw);
+  text-align: center;
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(11px, 1.55vw, 15px);
+  line-height: 2.1;
+  letter-spacing: .04em;
+  color: #fff;
+}
+.intro-text .sub { color: #666; margin-top: 2em; display: block; }
+
+/* ── PHOTO CARD ── */
 .card-scene {
-  perspective: 1000px;
-  cursor: grab;
+  perspective: 1000px; cursor: grab;
   user-select: none; -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: none;
-  /* size wraps the video's natural dimensions */
   display: inline-block; line-height: 0;
 }
 .card-scene.grabbing { cursor: grabbing; }
-
 .card {
-  position: relative;
-  transform-style: preserve-3d;
-  will-change: transform;
-  display: inline-block; line-height: 0;
+  position: relative; transform-style: preserve-3d;
+  will-change: transform; display: inline-block; line-height: 0;
 }
-
-/* FRONT — the video, sets the card's actual size */
-.card-front {
-  display: block;
-  backface-visibility: hidden;
-  overflow: hidden;
-  line-height: 0;
-}
+.card-front { display: block; backface-visibility: hidden; overflow: hidden; line-height: 0; }
 .card-front video {
   display: block;
-  max-width: min(62vw, 460px);
-  max-height: 58vh;
+  max-width: min(62vw, 460px); max-height: 58vh;
   width: auto; height: auto;
   pointer-events: none; user-select: none;
 }
-
-/* BACK — white, exactly the same footprint as the front */
 .card-back {
   position: absolute; inset: 0;
-  backface-visibility: hidden;
-  transform: rotateY(180deg);
-  background: #fff;
+  backface-visibility: hidden; transform: rotateY(180deg); background: #fff;
 }
 
 /* ── COUNTER ── */
@@ -74,26 +64,35 @@ html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
   color: #444; pointer-events: none;
 }
 
-/* ── DOTS ── */
-#dots {
-  position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
-  display: flex; gap: 6px; align-items: center;
-  flex-wrap: wrap; max-width: 90vw; justify-content: center;
+/* ── NEXT ── */
+#next {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 9px;
+  cursor: pointer;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: .22em; text-transform: uppercase;
+  color: #333;
+  transition: opacity .5s ease, color .2s ease;
+  user-select: none;
 }
-.dot {
-  width: 4px; height: 4px; border-radius: 50%;
-  background: #252525; border: none; cursor: pointer;
-  transition: background .3s, transform .3s; padding: 0;
+#next.hidden { opacity: 0; pointer-events: none; }
+@media(hover:hover){ #next:hover { color: #fff; } }
+.next-arrow {
+  width: 8px; height: 8px;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  transform: rotate(45deg);
 }
-.dot.on { background: var(--coral); transform: scale(1.5); }
-@media(hover:hover){ .dot:hover:not(.on){ background: #555; } }
 </style>
 </head>
 <body>
 
 <div id="deck"></div>
 <div id="counter"></div>
-<div id="dots"></div>
+<div id="next">
+  <span>next</span>
+  <div class="next-arrow"></div>
+</div>
 
 <script>
 const BASE  = 'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/wah/';
@@ -103,195 +102,182 @@ const FILES = [
   '21_Kobe_Bryant.mp4','22_Ghostemane.mp4','23_Kendrick_Lamar.mp4','24_xxxtentacion.mp4',
   '25_.nipsey.mp4','26_Mike_Tyson.mp4','27_Mike_Tyson_2.mp4'
 ];
-const COUNT = FILES.length;
+const VCOUNT = FILES.length;
+const TOTAL  = VCOUNT + 1; // slide 0 = intro, slides 1‒27 = videos
+
 const deck      = document.getElementById('deck');
 const counterEl = document.getElementById('counter');
-const dotsEl    = document.getElementById('dots');
+const nextEl    = document.getElementById('next');
 const videos    = [];
 let cur = 0;
 
-/* ── BUILD SLIDES ── */
-for(let i = 0; i < COUNT; i++){
-  const slide = document.createElement('div');
-  slide.className = 'slide';
-  slide.style.transform = `translateX(${i * 100}%)`;
-  slide.innerHTML = `
-    <div class="card-scene" id="scene${i}">
-      <div class="card" id="card${i}">
-        <div class="card-front">
-          <video id="vid${i}" muted loop playsinline preload="none"></video>
-        </div>
-        <div class="card-back"></div>
-      </div>
-    </div>`;
-  deck.appendChild(slide);
+/* ── INTRO SLIDE (index 0) ── */
+(()=>{
+  const s = document.createElement('div');
+  s.className = 'slide';
+  s.innerHTML = `<div class="intro-text">
+    <span>Passionate about science—particularly the fundamental laws of physics—but also about the Bible and its great mysteries, the artist wah has sought to understand reality through his&nbsp;"Quantum" digital art collection.</span>
+    <span class="sub">Like a story, each artistic image in the series builds upon the ideas presented in the previous ones.</span>
+  </div>`;
+  deck.appendChild(s);
+})();
+
+/* ── VIDEO SLIDES (indices 1‒27) ── */
+for(let i = 0; i < VCOUNT; i++){
+  const s = document.createElement('div');
+  s.className = 'slide';
+  s.innerHTML = `<div class="card-scene" id="scene${i}"><div class="card" id="card${i}"><div class="card-front"><video id="vid${i}" muted loop playsinline preload="none"></video></div><div class="card-back"></div></div></div>`;
+  deck.appendChild(s);
   videos.push(document.getElementById(`vid${i}`));
-
-  const dot = document.createElement('button');
-  dot.className = 'dot' + (i===0?' on':'');
-  dot.setAttribute('aria-label', String(i+1));
-  dot.addEventListener('click', ()=>goTo(i));
-  dotsEl.appendChild(dot);
 }
 
-/* ── VIDEO MANAGEMENT ── */
-const loaded = new Array(COUNT).fill(false);
-function loadVid(i){ if(loaded[i]) return; loaded[i]=true; videos[i].src=BASE+FILES[i]; videos[i].load(); }
+/* ── POSITIONING ── */
+function positionSlides(animated){
+  Array.from(deck.children).forEach((s,i)=>{
+    s.style.transition = animated ? '' : 'none';
+    s.style.transform  = `translateY(${(i - cur) * 100}%)`;
+  });
+}
+
+/* ── VIDEO OPS ── */
+const loaded = new Array(VCOUNT).fill(false);
+const vi = si => si - 1; // slide index → video index (-1 on intro slide)
+function loadVid(i){ if(i < 0 || i >= VCOUNT || loaded[i]) return; loaded[i] = true; videos[i].src = BASE + FILES[i]; videos[i].load(); }
 function playVid(i){
+  if(i < 0 || i >= VCOUNT) return;
   loadVid(i);
-  const v=videos[i];
-  if(v.readyState>=3){ v.play().catch(()=>{}); }
-  else { v.addEventListener('canplay',()=>v.play().catch(()=>{}),{once:true}); }
+  videos[i].play().catch(()=>{ videos[i].addEventListener('canplay', ()=>videos[i].play().catch(()=>{}), {once:true}); });
 }
-function pauseVid(i){ videos[i].pause(); }
-function preloadAdj(i){ if(i>0) loadVid(i-1); if(i<COUNT-1) loadVid(i+1); }
+function pauseVid(i){ if(i >= 0 && i < VCOUNT) videos[i].pause(); }
+function preload(si){ [vi(si)-1, vi(si), vi(si)+1].forEach(loadVid); }
 
-/* ── TILT / FLIP CONTROLLER per card ── */
+/* ── TILT CONTROLLER ── */
 function makeTilt(sceneEl, cardEl){
-  let rotX=3, rotY=8, velX=0, velY=0;
-  let idleT=0, hoverX=null, hoverY=null;
-  let lastTs=null, active=false, rafId=null;
+  let rX=3, rY=8, vX=0, vY=0, idleT=0, hX=null, hY=null;
+  let lastTs=null, active=false, raf=null;
   let grabbed=false, gx=0, gy=0, gRX=0, gRY=0, gt=0;
-
-  function idlePos(t){
-    return {
-      x: Math.sin(t*.5)*4  + Math.cos(t*.9)*2,
-      y: Math.cos(t*.35)*10 + Math.sin(t*.8)*4
-    };
-  }
+  const idle = t => ({ x: Math.sin(t*.5)*4 + Math.cos(t*.9)*2, y: Math.cos(t*.35)*10 + Math.sin(t*.8)*4 });
   function tick(ts){
     if(!active) return;
-    if(!lastTs) lastTs=ts;
-    const dt=Math.min((ts-lastTs)/1000,.05); lastTs=ts;
+    if(!lastTs) lastTs = ts;
+    const dt = Math.min((ts - lastTs) / 1000, .05); lastTs = ts;
     if(!grabbed){
-      idleT+=dt*.25;
-      const g=idlePos(idleT);
-      const tx=hoverX!==null?hoverX:g.x, ty=hoverY!==null?hoverY:g.y;
-      const k=hoverX!==null?8:4;
-      velX+=((tx-rotX)*k-velX*3.5)*dt;
-      velY+=((ty-rotY)*k-velY*3.5)*dt;
-      rotX+=velX*dt; rotY+=velY*dt;
+      idleT += dt * .25;
+      const g = idle(idleT), tx = hX !== null ? hX : g.x, ty = hY !== null ? hY : g.y, k = hX !== null ? 8 : 4;
+      vX += ((tx - rX)*k - vX*3.5)*dt; vY += ((ty - rY)*k - vY*3.5)*dt;
+      rX += vX*dt; rY += vY*dt;
     }
-    cardEl.style.transform=`rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`;
-    rafId=requestAnimationFrame(tick);
+    cardEl.style.transform = `rotateX(${rX.toFixed(2)}deg) rotateY(${rY.toFixed(2)}deg)`;
+    raf = requestAnimationFrame(tick);
   }
-
-  /* hover parallax — desktop */
-  sceneEl.addEventListener('mousemove',e=>{
+  sceneEl.addEventListener('mousemove', e=>{
     if(grabbed) return;
-    const r=sceneEl.getBoundingClientRect();
-    hoverX=-((e.clientY-r.top -r.height/2)/(r.height/2))*12;
-    hoverY= ((e.clientX-r.left-r.width/2 )/(r.width/2 ))*18;
+    const r = sceneEl.getBoundingClientRect();
+    hX = -((e.clientY - r.top  - r.height/2) / (r.height/2)) * 12;
+    hY =  ((e.clientX - r.left - r.width/2 ) / (r.width /2)) * 18;
   });
-  sceneEl.addEventListener('mouseleave',()=>{ hoverX=null; hoverY=null; });
-
-  /* drag — physically rotates the card (flip + tilt) */
-  function onDown(cx,cy,ts){
-    grabbed=true; gx=cx; gy=cy; gRX=rotX; gRY=rotY; gt=ts;
-    sceneEl.classList.add('grabbing');
-  }
-  function onMove(cx,cy){
-    if(!grabbed) return;
-    rotX=gRX-(cy-gy)*.45;
-    rotY=gRY+(cx-gx)*.6;
-    cardEl.style.transform=`rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`;
-  }
+  sceneEl.addEventListener('mouseleave', ()=>{ hX = null; hY = null; });
+  function onDown(cx,cy,ts){ grabbed=true; gx=cx; gy=cy; gRX=rX; gRY=rY; gt=ts; sceneEl.classList.add('grabbing'); }
+  function onMove(cx,cy){ if(!grabbed) return; rX=gRX-(cy-gy)*.45; rY=gRY+(cx-gx)*.6; cardEl.style.transform=`rotateX(${rX.toFixed(2)}deg) rotateY(${rY.toFixed(2)}deg)`; }
   function onUp(cx,ts){
     if(!grabbed) return;
-    const res={dx:cx-gx, dt:Math.max(1,ts-gt)};
-    grabbed=false;
-    /* spring back to upright if not significantly flipped */
-    const absY=Math.abs(rotY%360);
-    const flipped=(absY>90&&absY<270);
-    if(!flipped){ rotY=Math.round(rotY/360)*360; } /* snap to 0 or 360 */
-    velX=0; velY=0;
+    const res = {dx: cx-gx, dt: Math.max(1,ts-gt)};
+    grabbed = false;
+    const aY = Math.abs(rY%360);
+    if(!(aY > 90 && aY < 270)) rY = Math.round(rY/360)*360;
+    vX = 0; vY = 0;
     sceneEl.classList.remove('grabbing');
     return res;
   }
-
   return {
-    start(){ if(active) return; active=true; lastTs=null; rafId=requestAnimationFrame(tick); },
-    stop() {
+    start(){ if(active) return; active=true; lastTs=null; raf=requestAnimationFrame(tick); },
+    stop(){
       active=false; grabbed=false;
-      if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
-      rotX=3; rotY=8; velX=0; velY=0;
+      if(raf){ cancelAnimationFrame(raf); raf=null; }
+      rX=3; rY=8; vX=0; vY=0;
       cardEl.style.transform='rotateX(3deg) rotateY(8deg)';
       sceneEl.classList.remove('grabbing');
     },
     onDown, onMove, onUp
   };
 }
-
-const tilts=[];
-for(let i=0;i<COUNT;i++){
-  tilts.push(makeTilt(
-    document.getElementById(`scene${i}`),
-    document.getElementById(`card${i}`)
-  ));
-}
+const tilts = [];
+for(let i = 0; i < VCOUNT; i++)
+  tilts.push(makeTilt(document.getElementById(`scene${i}`), document.getElementById(`card${i}`)));
 
 /* ── NAVIGATION ── */
 function updateUI(){
-  counterEl.textContent=`${cur+1} / ${COUNT}`;
-  dotsEl.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===cur));
+  const v = vi(cur);
+  counterEl.textContent = cur === 0 ? '' : `${v+1} / ${VCOUNT}`;
+  nextEl.classList.toggle('hidden', cur === TOTAL - 1);
 }
+
 function goTo(n){
-  n=Math.max(0,Math.min(COUNT-1,n));
-  if(n===cur) return;
-  pauseVid(cur); tilts[cur].stop();
-  cur=n;
-  Array.from(deck.children).forEach((s,i)=>{ s.style.transform=`translateX(${(i-cur)*100}%)`; });
-  preloadAdj(cur); tilts[cur].start();
-  /* play only once the slide transition has settled */
-  setTimeout(()=>{ if(cur===n) playVid(n); }, 580);
+  n = Math.max(0, Math.min(TOTAL-1, n));
+  if(n === cur) return;
+  const pv = vi(cur), nv = vi(n);
+  pauseVid(pv);
+  if(cur > 0) tilts[pv].stop();
+  cur = n;
+  positionSlides(true);
+  preload(cur);
+  if(cur > 0) tilts[nv].start();
+  setTimeout(()=>{ if(cur === n && cur > 0) playVid(nv); }, 650);
   updateUI();
 }
 
-/* ── POINTER — tilt + swipe ── */
-(function(){
-  let pid=null, x0=0, t0=0;
-  const W=()=>window.innerWidth||1;
-  document.addEventListener('pointerdown',e=>{
-    if(pid!==null) return;
-    pid=e.pointerId; x0=e.clientX; t0=e.timeStamp;
-    tilts[cur].onDown(e.clientX,e.clientY,e.timeStamp);
+nextEl.addEventListener('click', ()=>goTo(cur + 1));
+
+/* ── POINTER (tilt on card + swipe to navigate) ── */
+(()=>{
+  let pid=null, y0=0, x0=0, t0=0, inTilt=false;
+  const H = ()=>window.innerHeight||1;
+  const curScene = ()=>cur > 0 ? document.getElementById(`scene${vi(cur)}`) : null;
+
+  document.addEventListener('pointerdown', e=>{
+    if(pid !== null) return;
+    pid=e.pointerId; x0=e.clientX; y0=e.clientY; t0=e.timeStamp;
+    inTilt = !!curScene()?.contains(e.target);
+    if(inTilt) tilts[vi(cur)].onDown(e.clientX, e.clientY, e.timeStamp);
   });
-  document.addEventListener('pointermove',e=>{
-    if(pid===null||e.pointerId!==pid) return;
-    tilts[cur].onMove(e.clientX,e.clientY);
+  document.addEventListener('pointermove', e=>{
+    if(pid === null || e.pointerId !== pid) return;
+    if(inTilt && cur > 0) tilts[vi(cur)].onMove(e.clientX, e.clientY);
   });
-  document.addEventListener('pointerup',e=>{
-    if(pid===null||e.pointerId!==pid) return;
-    const res=tilts[cur].onUp(e.clientX,e.timeStamp);
-    pid=null;
-    if(!res) return;
-    const fast=Math.abs(res.dx)/res.dt>0.42, far=Math.abs(res.dx)>W()*0.28;
-    if(fast||far) goTo(cur+(res.dx<0?1:-1));
+  document.addEventListener('pointerup', e=>{
+    if(pid === null || e.pointerId !== pid) return;
+    const dy=e.clientY-y0, dx=e.clientX-x0, dt=Math.max(1,e.timeStamp-t0);
+    if(inTilt && cur > 0) tilts[vi(cur)].onUp(e.clientX, e.timeStamp);
+    pid=null; inTilt=false;
+    if(Math.abs(dy) > Math.abs(dx)){
+      if(Math.abs(dy)/dt > 0.35 || Math.abs(dy) > H()*.22) goTo(cur + (dy < 0 ? 1 : -1));
+    }
   });
-  document.addEventListener('pointercancel',()=>{ if(pid!==null){ tilts[cur].onUp(x0,t0); pid=null; } });
+  document.addEventListener('pointercancel', ()=>{
+    if(pid !== null){ if(inTilt && cur > 0) tilts[vi(cur)].onUp(x0, t0); pid=null; inTilt=false; }
+  });
 
   let acc=0, wlock=0;
-  document.addEventListener('wheel',e=>{
-    if(Math.abs(e.deltaX)<=Math.abs(e.deltaY)) return;
+  document.addEventListener('wheel', e=>{
     e.preventDefault();
-    if(Date.now()<wlock){acc=0;return;}
-    acc+=e.deltaX;
-    if(Math.abs(acc)<W()*0.2) return;
-    const dir=acc>0?1:-1; acc=0; wlock=Date.now()+420;
-    goTo(cur+dir);
-  },{passive:false});
+    if(Date.now() < wlock){ acc=0; return; }
+    acc += e.deltaY;
+    if(Math.abs(acc) < H() * .12) return;
+    const dir = acc > 0 ? 1 : -1; acc=0; wlock=Date.now()+500;
+    goTo(cur + dir);
+  }, {passive:false});
 })();
 
-document.addEventListener('keydown',e=>{
-  if(e.key==='ArrowRight') goTo(cur+1);
-  if(e.key==='ArrowLeft')  goTo(cur-1);
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowDown'||e.key==='ArrowRight') goTo(cur+1);
+  if(e.key==='ArrowUp' ||e.key==='ArrowLeft' ) goTo(cur-1);
 });
-window.addEventListener('resize',()=>{
-  Array.from(deck.children).forEach((s,i)=>{ s.style.transition='none'; s.style.transform=`translateX(${(i-cur)*100}%)`; });
-});
+window.addEventListener('resize', ()=>positionSlides(false));
 
 /* ── INIT ── */
-playVid(0); preloadAdj(0); tilts[0].start(); updateUI();
+positionSlides(false);
+preload(0);
+updateUI();
 </script>
 </body>
 </html>
