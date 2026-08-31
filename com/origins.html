@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TOTEHM — Origins</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --coral: #fbd5ca;
+  --fw: min(88vw, 720px);
+  --fh: min(70vh, 520px);
+  --fd: 10px;
+  --fhd: 5px;
+}
+html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
+
+/* ── DECK ── */
+#deck {
+  position: fixed; inset: 0;
+  display: flex;
+  overflow: hidden;
+  touch-action: none;
+}
+.slide {
+  flex: 0 0 100%; width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  will-change: transform;
+  transition: transform .55s cubic-bezier(.65,0,.35,1);
+}
+
+/* ── 3D FRAME ── */
+.frame-scene {
+  perspective: 1400px;
+  width: var(--fw); height: var(--fh);
+  cursor: grab;
+  user-select: none; -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+.frame-scene.grabbing { cursor: grabbing; }
+.frame-box {
+  width: var(--fw); height: var(--fh);
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.frame-face, .frame-side {
+  position: absolute; left: 0; top: 0;
+  backface-visibility: hidden;
+}
+.frame-face { width: var(--fw); height: var(--fh); }
+
+.f-img { transform: translateZ(calc(-1 * var(--fhd))); background: #050505; }
+.f-img img {
+  width: 100%; height: 100%; object-fit: contain; display: block;
+  user-select: none; pointer-events: none; -webkit-user-drag: none;
+}
+.f-front {
+  transform: translateZ(var(--fhd));
+  background: rgba(255,255,255,.018);
+  border: 1px solid rgba(255,255,255,.09);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+}
+.frame-side { background: #080808; border: 1px solid rgba(255,255,255,.04); }
+.f-right { width: var(--fd); height: var(--fh); transform: translateX(calc(var(--fw) - var(--fhd))) rotateY(-90deg); }
+.f-left  { width: var(--fd); height: var(--fh); transform: translateX(calc(-1 * var(--fhd))) rotateY(90deg); }
+.f-top   { width: var(--fw); height: var(--fd); transform: translateY(calc(-1 * var(--fhd))) rotateX(90deg); }
+.f-bot   { width: var(--fw); height: var(--fd); transform: translateY(calc(var(--fh) - var(--fhd))) rotateX(-90deg); }
+
+/* ── COUNTER ── */
+#counter {
+  position: fixed; top: 20px; right: 20px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  color: #444; pointer-events: none;
+  transition: color .3s;
+}
+
+/* ── DOTS ── */
+#dots {
+  position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 9px; align-items: center;
+}
+.dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #252525; border: none; cursor: pointer;
+  transition: background .3s, transform .3s;
+  padding: 0;
+}
+.dot.on { background: var(--coral); transform: scale(1.35); }
+@media(hover:hover){ .dot:hover:not(.on) { background: #555; } }
+</style>
+</head>
+<body>
+
+<div id="deck"></div>
+<div id="counter">1 / 7</div>
+<div id="dots"></div>
+
+<script>
+const BASE  = 'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/com/';
+const COUNT = 7;
+const deck      = document.getElementById('deck');
+const counterEl = document.getElementById('counter');
+const dotsEl    = document.getElementById('dots');
+let cur = 0;
+
+/* ── BUILD SLIDES ── */
+for(let i = 0; i < COUNT; i++){
+  const slide = document.createElement('div');
+  slide.className = 'slide';
+  slide.style.transform = `translateX(${i * 100}%)`;
+  slide.innerHTML = `
+    <div class="frame-scene" id="scene${i}">
+      <div class="frame-box" id="box${i}">
+        <div class="frame-face f-img">
+          <img src="${BASE}${i+1}.png" alt="Origin ${i+1}" loading="${i===0?'eager':'lazy'}">
+        </div>
+        <div class="frame-face f-front"></div>
+        <div class="frame-side f-right"></div>
+        <div class="frame-side f-left"></div>
+        <div class="frame-side f-top"></div>
+        <div class="frame-side f-bot"></div>
+      </div>
+    </div>`;
+  deck.appendChild(slide);
+
+  const dot = document.createElement('button');
+  dot.className = 'dot' + (i===0?' on':'');
+  dot.setAttribute('aria-label', `Origin ${i+1}`);
+  dot.addEventListener('click', ()=>goTo(i));
+  dotsEl.appendChild(dot);
+}
+
+/* slides positioned via translateX — navigation snaps without scrollLeft */
+function positionSlides(){
+  Array.from(deck.children).forEach((s,i)=>{
+    s.style.transform = `translateX(${(i-cur)*100}%)`;
+  });
+}
+
+/* ── TILT — idle + hover parallax + drag ── */
+function makeTilt(sceneEl, boxEl){
+  let rotX=4, rotY=12, velX=0, velY=0;
+  let idleT=0, hoverX=null, hoverY=null;
+  let lastTs=null, active=false, rafId=null;
+  let grabbed=false, gx=0, gy=0, gRX=0, gRY=0, gt=0;
+
+  function idlePos(t){
+    return {
+      x: Math.sin(t*.55)*5  + Math.cos(t*1.0)*2,
+      y: Math.cos(t*.38)*13 + Math.sin(t*.85)*5
+    };
+  }
+
+  function tick(ts){
+    if(!active) return;
+    if(!lastTs) lastTs=ts;
+    const dt = Math.min((ts-lastTs)/1000, .05);
+    lastTs = ts;
+    if(!grabbed){
+      idleT += dt*.28;
+      const g = idlePos(idleT);
+      const tx = hoverX!==null ? hoverX : g.x;
+      const ty = hoverY!==null ? hoverY : g.y;
+      const k  = hoverX!==null ? 9 : 5;
+      velX += ((tx-rotX)*k - velX*4)*dt;
+      velY += ((ty-rotY)*k - velY*4)*dt;
+      rotX += velX*dt;
+      rotY += velY*dt;
+    }
+    boxEl.style.transform = `rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`;
+    rafId = requestAnimationFrame(tick);
+  }
+
+  /* hover parallax */
+  sceneEl.addEventListener('mousemove', e=>{
+    if(grabbed) return;
+    const r = sceneEl.getBoundingClientRect();
+    hoverX = -((e.clientY-r.top -r.height/2)/(r.height/2))*14;
+    hoverY =  ((e.clientX-r.left-r.width/2 )/(r.width/2 ))*20;
+  });
+  sceneEl.addEventListener('mouseleave',()=>{ hoverX=null; hoverY=null; });
+
+  /* drag grab/move/release — returns swipe delta so parent can decide navigation */
+  function onDown(cx,cy,ts){
+    grabbed=true; gx=cx; gy=cy; gRX=rotX; gRY=rotY; gt=ts;
+    sceneEl.classList.add('grabbing');
+  }
+  function onMove(cx,cy){
+    if(!grabbed) return;
+    rotX = Math.max(-75, Math.min(75, gRX-(cy-gy)*.4));
+    rotY = gRY+(cx-gx)*.5;
+    boxEl.style.transform=`rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`;
+  }
+  function onUp(cx,ts){
+    if(!grabbed) return;
+    const result={ dx:cx-gx, dt:Math.max(1,ts-gt) };
+    grabbed=false;
+    rotY = rotY - Math.round(rotY/360)*360;
+    velX=0; velY=0;
+    sceneEl.classList.remove('grabbing');
+    return result;
+  }
+
+  return {
+    start(){ if(active) return; active=true; lastTs=null; rafId=requestAnimationFrame(tick); },
+    stop() { active=false; if(rafId){ cancelAnimationFrame(rafId); rafId=null; } },
+    onDown, onMove, onUp
+  };
+}
+
+const tilts=[];
+for(let i=0;i<COUNT;i++){
+  tilts.push(makeTilt(
+    document.getElementById(`scene${i}`),
+    document.getElementById(`box${i}`)
+  ));
+}
+tilts[0].start();
+
+/* ── NAVIGATION ── */
+function updateUI(){
+  counterEl.textContent = `${cur+1} / ${COUNT}`;
+  dotsEl.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===cur));
+}
+
+function goTo(n, instant){
+  n = Math.max(0, Math.min(COUNT-1, n));
+  if(n===cur) return;
+  tilts[cur].stop();
+  cur=n;
+  if(instant){
+    Array.from(deck.children).forEach((s,i)=>{
+      s.style.transition='none';
+      s.style.transform=`translateX(${(i-cur)*100}%)`;
+    });
+  } else {
+    positionSlides();
+  }
+  tilts[cur].start();
+  updateUI();
+}
+
+/* ── UNIFIED POINTER HANDLER (tilt + swipe detection) ── */
+(function(){
+  let pid=null, x0=0, t0=0;
+  const W=()=>window.innerWidth||1;
+
+  document.addEventListener('pointerdown', e=>{
+    if(pid!==null) return;
+    pid=e.pointerId; x0=e.clientX; t0=e.timeStamp;
+    tilts[cur].onDown(e.clientX, e.clientY, e.timeStamp);
+  });
+
+  document.addEventListener('pointermove', e=>{
+    if(pid===null||e.pointerId!==pid) return;
+    tilts[cur].onMove(e.clientX, e.clientY);
+  });
+
+  document.addEventListener('pointerup', e=>{
+    if(pid===null||e.pointerId!==pid) return;
+    const res = tilts[cur].onUp(e.clientX, e.timeStamp);
+    pid=null;
+    if(!res) return;
+    const fast = Math.abs(res.dx)/res.dt > 0.42;
+    const far  = Math.abs(res.dx) > W()*0.28;
+    if(fast||far) goTo(cur+(res.dx<0?1:-1));
+  });
+
+  document.addEventListener('pointercancel', ()=>{
+    if(pid!==null){ tilts[cur].onUp(x0, t0); pid=null; }
+  });
+
+  /* trackpad wheel */
+  let acc=0, wlock=0;
+  document.addEventListener('wheel', e=>{
+    if(Math.abs(e.deltaX)<=Math.abs(e.deltaY)) return;
+    e.preventDefault();
+    if(Date.now()<wlock){acc=0;return;}
+    acc+=e.deltaX;
+    if(Math.abs(acc)<W()*0.2) return;
+    const dir=acc>0?1:-1; acc=0; wlock=Date.now()+420;
+    goTo(cur+dir);
+  },{passive:false});
+})();
+
+/* ── KEYBOARD ── */
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight') goTo(cur+1);
+  if(e.key==='ArrowLeft')  goTo(cur-1);
+});
+
+/* ── RESIZE ── */
+window.addEventListener('resize',()=>{
+  Array.from(deck.children).forEach((s,i)=>{
+    s.style.transition='none';
+    s.style.transform=`translateX(${(i-cur)*100}%)`;
+  });
+});
+</script>
+</body>
+</html>
