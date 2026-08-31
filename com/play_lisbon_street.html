@@ -479,7 +479,7 @@ function comeBack(){
     if(lastXpFrom==='world'){ openWorld(); }
     else{
       ROCKS.forEach(r=>{ r.img.style.filter=''; });
-      if(lastPressedRock){ lastPressedRock._pressed=true; lastPressedRock.uLabel.style.opacity='1'; lastPressedRock=null; }
+      if(lastPressedRock && lastPressedRock.id!=='destination'){ lastPressedRock._pressed=true; lastPressedRock.uLabel.style.opacity='1'; } lastPressedRock=null;
     }
   },600);
 }
