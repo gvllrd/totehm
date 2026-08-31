@@ -8,11 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --coral: #fbd5ca;
-  --cw: min(82vw, 600px);
-  --ch: min(65vh, 460px);
-}
+:root { --coral: #fbd5ca; }
 html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
 
 /* ── DECK ── */
@@ -31,41 +27,42 @@ html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
 /* ── PHOTO CARD (two faces) ── */
 .card-scene {
   perspective: 1000px;
-  width: var(--cw); height: var(--ch);
   cursor: grab;
   user-select: none; -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: none;
+  /* size wraps the video's natural dimensions */
+  display: inline-block; line-height: 0;
 }
 .card-scene.grabbing { cursor: grabbing; }
 
 .card {
-  width: 100%; height: 100%;
   position: relative;
   transform-style: preserve-3d;
   will-change: transform;
+  display: inline-block; line-height: 0;
 }
 
-/* both faces */
-.card-front, .card-back {
-  position: absolute; inset: 0;
-  backface-visibility: hidden;
-}
-
-/* FRONT — the video */
+/* FRONT — the video, sets the card's actual size */
 .card-front {
-  background: #000;
+  display: block;
+  backface-visibility: hidden;
   overflow: hidden;
+  line-height: 0;
 }
 .card-front video {
-  width: 100%; height: 100%;
-  object-fit: contain;
   display: block;
+  /* natural dimensions, capped to viewport */
+  max-width: min(84vw, 680px);
+  max-height: 68vh;
+  width: auto; height: auto;
   pointer-events: none; user-select: none;
 }
 
-/* BACK — white, like the back of a photo print */
+/* BACK — white, exactly the same footprint as the front */
 .card-back {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
   transform: rotateY(180deg);
   background: #fff;
 }
