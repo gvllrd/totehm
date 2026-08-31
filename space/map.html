@@ -1116,6 +1116,10 @@ $('deck-next').onclick=e=>{e.stopPropagation();deckStep(1);};
       const n=deck.children.length;
       const to=Math.max(0,Math.min(n-1,from+step));
       deck.scrollTo({left:to*W(),behavior:'smooth'});
+    }else if(axis==='y'){
+      const dy_f=(e&&e.clientY!=null?e.clientY:y0)-y0;
+      const dt=Math.max(1,(e&&e.timeStamp?e.timeStamp:t0+1)-t0);
+      if(top0===0&&(dy_f>80||dy_f/dt>0.45)){openStep();}
     }
     try{deck.releasePointerCapture(id);}catch(_){}
     id=null;slide=null;
