@@ -617,6 +617,108 @@ STRONG TOTEHM ECOSYSTEM
 
 ---
 
+## 13. VISUAL STYLE — RÈGLES ABSOLUES
+
+Ces règles s'appliquent à `totehm.com`. Certaines sont transverses à tout l'écosystème.
+
+### Polices
+
+| Famille | Fallback | Usage | Poids |
+|---|---|---|---|
+| **Space Mono** | monospace | Textes narratifs (G — prose, descriptions) | 400 |
+| **Quantico** | sans-serif | Accents (C), boutons, labels, inputs | 400 (accents) · 700 (boutons) |
+| **Space Mono** | monospace | Métadonnées (M), hints, notes | 400 |
+| **Montserrat Italic** | — | SVG `#higher-slogan` uniquement | 900 |
+
+### Couleurs
+
+**Variables CSS**
+
+| Variable | Valeur | Usage |
+|---|---|---|
+| `--coral` | `#fbd5ca` | Uniquement le "Get" du bouton CTA |
+| `--g-light` | `#e0e0e0` | Texte Space Mono (narration) |
+| `--g-mid` | `#909090` | Hints (`disc-hint`, `vhint`) |
+| `--g-dark` | `#606060` | Variable de référence — non utilisée directement |
+| `--bg` | `#000` | Fond — noir absolu |
+| `--plus` | `#36498c` | Navy — bordure perforée des boutons |
+
+**Valeurs fixes**
+
+| Valeur | Usage |
+|---|---|
+| `#ebebeb` | Quantico accent (C) dans le Discover |
+| `#a0a0a0` | Boutons secondaires — Back, Close, trigger label, chevron, liens sobres |
+| `#b0b0b0` | `.btn-sig` au repos |
+| `#9a9a9a` | Notes / `.note.dim` |
+| `#ffffff` | Glyphe T.svg — toujours blanc. État hover/actif de tous les éléments |
+
+### Règles de design — non négociables
+
+**1. Le coral est réservé au "Get"**
+`#fbd5ca` n'apparaît que sur le mot "Get" dans le bouton CTA `Get [Higher]`.
+Nulle part ailleurs dans le Discover. Dans le paywall, les labels coral sont tolérés.
+
+**2. "Higher" toujours en SVG slogan**
+Le mot "Higher" est toujours rendu via `<use href="#higher-slogan">`.
+Jamais écrit en texte, jamais en webfont, jamais en PNG dans une UI interactive.
+En email uniquement : PNG.
+
+**3. Le T de TOTEHM toujours en glyphe SVG**
+`Time`, `Temporal` et toute occurrence du T TOTEHM utilisent `<use href="#t-glyph">`.
+Le glyphe est **toujours blanc** (`fill="#ffffff"` hardcodé dans le symbole),
+indépendamment du contexte couleur du texte parent.
+Syntaxe inline : `<svg style='display:inline-block;width:.62em;height:.85em;vertical-align:-.08em' viewBox='0 0 60 80' aria-hidden='true'><use href='#t-glyph'/></svg>ime`
+
+**4. Tous les textes gris → blanc au survol sur desktop**
+Règle d'or : `@media(hover:hover)` — tout élément dont la couleur est un gris
+(trois canaux < 230, ou blanc translucide) passe en `#fff` au survol.
+Sans exception. Les couleurs d'intention et le coral gardent leur teinte.
+
+**5. Deux familles de boutons**
+
+- **CTA / achat** — `.btn-sig`, `.trigger-label` : Quantico Bold 700, 14px, `#b0b0b0`.
+- **Navigation / retour** — `#disc-back`, `#xp-close`, `#world-close`, `#terms-link` : Space Mono 400, 10px, uppercase, `letter-spacing:.14em`, `#9a9a9a`.
+
+Les deux passent en `#fff` au survol sur desktop.
+
+**6. Fond noir, aucun fond gris**
+`background: #000` partout. Un gris comme surface fait "application".
+Le gris ne sert qu'au texte secondaire.
+
+**7. Pas de flèches dans les boutons**
+Les boutons de navigation (`Back`, `Play the street`, `Close`) n'ont pas d'icône fléchée.
+Le texte suffit.
+
+**8. Le contenu est toujours centré**
+Tout contenu principal — texte, boutons, médias — est centré horizontalement et verticalement.
+Aucun alignement gauche ou droite pour le contenu principal. Jamais de layout à colonnes.
+
+**9. Les quatre coins — règle absolue**
+```
+[ESPACE MEMBRE]          [SIMPLE TERMS OF USE / SALE]
+        ↑                           ↑
+   coin haut gauche          coin haut droit
+```
+- **Coin haut gauche** : accès espace membre uniquement. Rien d'autre.
+- **Coin haut droit** : lien sobre vers les conditions de vente ou d'utilisation (`Simple terms of sale` / `Simple terms of use`). Rien d'autre.
+- **Simple terms of sale/use** : Space Mono 400, 10px, uppercase, `letter-spacing:.14em`, `#9a9a9a`, blanc au survol.
+- **Espace membre** : Quantico Bold, `#a0a0a0`, blanc au survol.
+- Ces deux éléments ne bougent pas quels que soient le scroll, les slides ou les overlays.
+
+### Structure typographique du Discover (`totehm.com`)
+
+| Type | Classe CSS | Rendu |
+|---|---|---|
+| `G(x)` | `.t-space-mono` | Space Mono 400, `#e0e0e0` — narration |
+| `C(x)` | `.t-coral.coral-line` | Quantico 400, `#ebebeb` — passages mis en valeur |
+| `M(x)` | `.t-mono` | Space Mono 400, `#9a9a9a` — métadonnées |
+| CTA | `.btn-start` | "Get" coral + `#higher-slogan` SVG |
+
+L'animation `settle` (blur → net) s'applique aux `.coral-line` au reveal.
+
+---
+
 ## 12. ONE-SENTENCE SOURCE OF TRUTH
 
 > TOTEHM is a connected ecosystem of independent products: an experience that
