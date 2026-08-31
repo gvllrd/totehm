@@ -190,6 +190,18 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
   .t-futura:hover{color:#fff}
   #sdisc-back:hover{color:#fff}
 }
+
+/* ─── ROTATE PROMPT (board mode, portrait mobile) ─── */
+#rotate-prompt{
+  position:fixed;inset:0;z-index:85;background:#000;
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  gap:16px;padding:32px 24px;text-align:center;
+}
+#rotate-prompt.active{display:flex}
+@media(orientation:landscape){#rotate-prompt.active{display:none}}
+.rotate-spinner{width:52px;height:52px;color:var(--coral);animation:spin 3.2s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.rotate-hint{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--coral);line-height:1.6;letter-spacing:.02em}
 </style>
 </head>
 <body>
@@ -239,6 +251,14 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
     </div>
   </div>
   <button id="xp-buy" class="btn-sig">Get Higher — $30</button>
+</div>
+
+<div id="rotate-prompt">
+  <svg class="rotate-spinner" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+    <path d="M 32 12 A 20 20 0 1 1 12 32"/>
+    <polygon points="12,21 5,34 19,34" fill="currentColor" stroke="none"/>
+  </svg>
+  <div class="rotate-hint">Turn your phone to see the streets</div>
 </div>
 
 <div id="auth-overlay">
@@ -573,12 +593,17 @@ function stopAsteroids(){
 
 let boardMode = false;
 
+const rotatePrompt = document.getElementById('rotate-prompt');
+const isPortraitMobile = ()=>
+  window.matchMedia('(pointer:coarse) and (orientation:portrait)').matches;
+
 function enterBoardMode(){
   boardMode=true;
   sdiscStage.style.display='none';
   sdiscBack.style.display='none';
   sdiscTrig.style.display='none';
   sdiscBoardClose.style.display='block';
+  if(isPortraitMobile()) rotatePrompt.classList.add('active');
   ROCKS.forEach(r=>{
     r.img.style.cursor='pointer';
     r.img.style.pointerEvents='auto';
@@ -588,6 +613,7 @@ function enterBoardMode(){
 }
 function exitBoardMode(){
   boardMode=false;
+  rotatePrompt.classList.remove('active');
   sdiscStage.style.display='';
   sdiscBack.style.display='';
   sdiscTrig.style.display='none';
@@ -598,6 +624,18 @@ function exitBoardMode(){
   });
 }
 sdiscBoardClose.addEventListener('click',()=>{ window.location.href='discover_lisbon.html'; });
+
+/* Cache le prompt à la rotation landscape, le remet si on revient portrait */
+if(window.matchMedia('(pointer:coarse)').matches){
+  const onRotate = ()=>{
+    if(boardMode){
+      if(window.matchMedia('(orientation:landscape)').matches) rotatePrompt.classList.remove('active');
+      else rotatePrompt.classList.add('active');
+    }
+  };
+  window.addEventListener('orientationchange', onRotate);
+  if(screen.orientation) screen.orientation.addEventListener('change', onRotate);
+}
 
 function snapToBoard(){
   if(snapping) return; snapping=true; stopAsteroids();
