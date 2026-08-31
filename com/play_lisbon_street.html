@@ -542,7 +542,12 @@ const MAX_V = 0.12;
 function spawnRock(id,tl,tt,tw){
   const W=window.innerWidth,H=window.innerHeight;
   const size=IMPORTANT.has(id)?44+Math.random()*12:28+Math.random()*14;
-  const x=Math.random()*(W-size), y=Math.random()*(H-size);
+  let x,y,attempts=0;
+  do{ x=Math.random()*(W-size); y=Math.random()*(H-size); attempts++;
+      const rx=x+size/2,ry=y+size/2,cx2=W/2,cy2=H/2;
+      if(Math.abs(rx-cx2)<Math.min(320,W*.46)+40&&Math.abs(ry-cy2)<240) continue;
+      break;
+  }while(attempts<20);
   const vx=(Math.random()*.06+0.04)*(Math.random()<.5?1:-1);
   const vy=(Math.random()*.06+0.04)*(Math.random()<.5?1:-1);
   const rot=Math.random()*360, vrot=(Math.random()-.5)*.08;
@@ -618,7 +623,21 @@ function startAsteroids(){
         }
       }
     }
+    /* zone texte : repulsion pour que les panneaux la contournent */
+    const cx=W/2, cy=H/2;
+    const zw=Math.min(320,W*.46)+40, zh=240;
     ROCKS.forEach(r=>{
+      const rx=r.x+r.size/2, ry=r.y+r.size/2;
+      const nearX=rx>cx-zw&&rx<cx+zw;
+      const nearY=ry>cy-zh&&ry<cy+zh;
+      if(nearX&&nearY){
+        const dx=rx-cx, dy=ry-cy;
+        const f=0.025;
+        r.vx+=dx>0?f:-f;
+        r.vy+=dy>0?f:-f;
+        const s=Math.sqrt(r.vx*r.vx+r.vy*r.vy);
+        if(s>MAX_V){r.vx=r.vx/s*MAX_V;r.vy=r.vy/s*MAX_V;}
+      }
       r.x+=r.vx; r.y+=r.vy; r.rot+=r.vrot;
       if(r.x>W-r.size){r.x=W-r.size;r.vx=-Math.abs(r.vx);}
       else if(r.x<0){r.x=0;r.vx=Math.abs(r.vx);}
