@@ -105,6 +105,8 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 #decode-input{background:#626283;border:6px solid #626283;border-image:none;
   color:#fff;caret-color:#fff}
 #decode-input::placeholder{color:rgba(255,255,255,.55)}
+#brand-sub{display:none;flex-direction:column;align-items:center;gap:8px}
+.brand-sub-logo{height:1.1em;width:auto;vertical-align:-.12em;display:inline-block}
 </style>
 </head>
 <body>
@@ -184,7 +186,11 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
   </button>
   <video class="ctx-vid" id="ctx-vid" playsinline muted controls preload="none"></video>
   <!-- Dope branding : juste sous la vidéo -->
-  <a class="btn-sig" href="discover.html">Experience our dope branding</a>
+  <button class="btn-sig" id="brand-btn">Experience our dope branding</button>
+  <div id="brand-sub">
+    <a class="btn-sig" href="https://www.totehm.com">Get <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></a>
+    <a class="btn-sig" href="https://www.totehm.space">My <img src="assets/img/totehm_logo.png" alt="TOTEHM" class="brand-sub-logo"></a>
+  </div>
 </section>
 
 <!-- NO SOCIAL MEDIA -->
@@ -229,6 +235,9 @@ $('decode-input').addEventListener('keydown',async(e)=>{
   }
 });
 $('decode-back').onclick=()=>{$('decode-fs').classList.remove('show');};
+
+/* EXPERIENCE OUR BRANDING */
+$('brand-btn').onclick=()=>{$('brand-btn').classList.add('hide');$('brand-sub').style.display='flex';};
 
 /* EMAIL for dope news */
 morph($('email-btn'),$('email-input'),$('email-note'));
