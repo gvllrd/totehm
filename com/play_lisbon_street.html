@@ -678,13 +678,23 @@ function enterBoardMode(){
   sdiscTrig.style.display='none';
   sdiscBoardClose.style.display='block';
   if(isPortraitMobile()) rotatePrompt.classList.add('active');
+  const SPINNING=new Set(['roundabout','left_or_straight']);
+  const br=getBoardRect();
   ROCKS.forEach(r=>{
-    if(r.id==='destination') return;
-    const angle=(Math.random()*80-40).toFixed(1);
-    const ox=(Math.random()*24-12).toFixed(1);
-    const oy=(Math.random()*24-12).toFixed(1);
-    r.uLabel.style.cssText=`position:absolute;top:${50+Number(oy)}%;left:${50+Number(ox)}%;width:130%;transform:translate(-50%,-50%) rotate(${angle}deg);pointer-events:none;opacity:${r._pressed?1:0};transition:opacity .3s ease;`;
-    r.uLabel.innerHTML='<svg viewBox="0 0 600 200" style="width:100%;height:auto;display:block"><use href="#higher-slogan"></use></svg>';
+    if(r.id!=='destination'){
+      const angle=(Math.random()*80-40).toFixed(1);
+      const ox=(Math.random()*24-12).toFixed(1);
+      const oy=(Math.random()*24-12).toFixed(1);
+      r.uLabel.style.cssText=`position:absolute;top:${50+Number(oy)}%;left:${50+Number(ox)}%;width:130%;transform:translate(-50%,-50%) rotate(${angle}deg);pointer-events:none;opacity:${r._pressed?1:0};transition:opacity .3s ease;`;
+      r.uLabel.innerHTML='<svg viewBox="0 0 600 200" style="width:100%;height:auto;display:block"><use href="#higher-slogan"></use></svg>';
+    }
+    if(SPINNING.has(r.id)){
+      const tx=br.x+(r.tl/100)*br.w, ty=br.y+(r.tt/100)*br.h;
+      r.img.style.transition=''; r.img.style.transform='';
+      r.wrap.style.transition=''; r.wrap.style.transform='';
+      r.wrap.style.translate=`${tx}px ${ty}px`;
+      r.wrap.style.animation='sign-spin 18s linear infinite';
+    }
     r._boardClick=()=>{ lastPressedRock=r; launchXpFromDisc(r.id); };
     r.wrap.addEventListener('click',r._boardClick);
   });
@@ -697,7 +707,8 @@ function exitBoardMode(){
   sdiscTrig.style.display='none';
   sdiscBoardClose.style.display='none';
   ROCKS.forEach(r=>{
-    r.img.style.filter='';
+    r.img.style.filter=''; r.img.style.transform='rotate(0deg)';
+    r.wrap.style.animation=''; r.wrap.style.translate='';
     r.uLabel.textContent='Useless';
     r.uLabel.style.cssText=r._origLabelCss;
     r._pressed=false;
@@ -710,9 +721,13 @@ function reSnapToBoard(){
   const br=getBoardRect();
   ROCKS.forEach(r=>{
     const tx=br.x+(r.tl/100)*br.w, ty=br.y+(r.tt/100)*br.h, tw=(r.tw/100)*br.w;
-    r.wrap.style.transition='transform .5s ease,width .5s,height .5s';
     r.wrap.style.width=tw+'px'; r.wrap.style.height=tw+'px';
-    r.wrap.style.transform=`translate(${tx}px,${ty}px)`;
+    if(r.wrap.style.animation){
+      r.wrap.style.translate=`${tx}px ${ty}px`;
+    } else {
+      r.wrap.style.transition='transform .5s ease,width .5s,height .5s';
+      r.wrap.style.transform=`translate(${tx}px,${ty}px)`;
+    }
   });
 }
 
