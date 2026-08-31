@@ -477,7 +477,7 @@ function comeBack(){
   setTimeout(()=>{
     vid.src=''; streetBusy=false;
     if(lastXpFrom==='world'){ openWorld(); }
-    else{ ROCKS.forEach(r=>{ r.img.style.filter=''; r.uLabel.style.opacity='0'; }); }
+    else{ ROCKS.forEach(r=>{ r.img.style.filter=''; }); }
   },600);
 }
 
@@ -669,9 +669,9 @@ function enterBoardMode(){
   if(isPortraitMobile()) rotatePrompt.classList.add('active');
   ROCKS.forEach(r=>{
     r.uLabel.innerHTML='<svg viewBox="0 0 600 200" style="width:80%;height:auto;display:block;margin:0 auto"><use href="#higher-slogan"></use></svg>';
+    r.uLabel.style.opacity='1';
     r._boardClick=()=>{
       r.img.style.filter='brightness(0.2)';
-      r.uLabel.style.opacity='1';
       launchXpFromDisc(r.id);
     };
     r.wrap.addEventListener('click',r._boardClick);
