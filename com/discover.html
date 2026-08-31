@@ -139,6 +139,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 @keyframes bob-chev{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
 .bob-chev{animation:bob-chev 1.8s ease-in-out infinite}
 @media(pointer:coarse){.trigger-label{display:none}}
+@media(pointer:coarse){#down-trigger .trigger-label{display:block}}
 @media(hover:hover){
   #down-trigger:hover .trigger-label,
   #down-trigger:hover .chev{color:#fff}
@@ -242,7 +243,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 <div id="vhint" class="gone">&darr;</div>
 
 <button id="down-trigger" type="button" aria-label="Discover">
-  <span class="trigger-label">When digital art meets the quintessence of modern neurology</span>
+  <span class="trigger-label" style="font-family:'Quantico',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;color:#9a9a9a;">WHY</span>
   <svg class="chev bob-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
 </button>
 
