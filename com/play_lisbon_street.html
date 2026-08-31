@@ -193,9 +193,9 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 
 /* ─── ROTATE PROMPT (board mode, portrait mobile) ─── */
 #rotate-prompt{
-  position:fixed;inset:0;z-index:85;background:#000;
-  display:none;flex-direction:column;align-items:center;justify-content:center;
-  gap:16px;padding:32px 24px;text-align:center;
+  position:fixed;inset:0;z-index:85;
+  display:none;flex-direction:column;align-items:center;justify-content:space-between;
+  padding:48px 24px 52px;text-align:center;pointer-events:none;
 }
 #rotate-prompt.active{display:flex}
 @media(orientation:landscape){#rotate-prompt.active{display:none}}
@@ -254,11 +254,11 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 </div>
 
 <div id="rotate-prompt">
+  <div class="rotate-hint">Turn the screen</div>
   <svg class="rotate-spinner" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
     <path d="M 32 12 A 20 20 0 1 1 12 32"/>
     <polygon points="12,21 5,34 19,34" fill="currentColor" stroke="none"/>
   </svg>
-  <div class="rotate-hint">Turn your phone to see the streets</div>
 </div>
 
 <div id="auth-overlay">
@@ -701,12 +701,25 @@ function exitBoardMode(){
 }
 sdiscBoardClose.addEventListener('click',()=>{ window.location.href='discover_lisbon.html'; });
 
-/* Cache le prompt à la rotation landscape, le remet si on revient portrait */
+function reSnapToBoard(){
+  const br=getBoardRect();
+  ROCKS.forEach(r=>{
+    const tx=br.x+(r.tl/100)*br.w, ty=br.y+(r.tt/100)*br.h, tw=(r.tw/100)*br.w;
+    r.wrap.style.transition='transform .5s ease,width .5s,height .5s';
+    r.wrap.style.width=tw+'px'; r.wrap.style.height=tw+'px';
+    r.wrap.style.transform=`translate(${tx}px,${ty}px)`;
+  });
+}
+
+/* Repositionne la manette quand l'écran tourne */
 if(window.matchMedia('(pointer:coarse)').matches){
   const onRotate = ()=>{
-    if(boardMode){
-      if(window.matchMedia('(orientation:landscape)').matches) rotatePrompt.classList.remove('active');
-      else rotatePrompt.classList.add('active');
+    if(!boardMode) return;
+    if(window.matchMedia('(orientation:landscape)').matches){
+      rotatePrompt.classList.remove('active');
+      reSnapToBoard();
+    } else {
+      rotatePrompt.classList.add('active');
     }
   };
   window.addEventListener('orientationchange', onRotate);
