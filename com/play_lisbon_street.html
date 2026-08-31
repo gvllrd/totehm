@@ -581,15 +581,17 @@ function spawnRock(id,tl,tt,tw){
   function hideUseless(){ img.style.filter=''; uLabel.style.opacity='0'; }
 
   wrap.addEventListener('mouseenter',()=>{
+    if(id==='destination') return;
     if(boardMode){ if(r._pressed) img.style.filter='brightness(0.2)'; }
     else showUseless();
   });
   wrap.addEventListener('mouseleave',()=>{
+    if(id==='destination') return;
     if(boardMode){ img.style.filter=''; }
     else hideUseless();
   });
   wrap.addEventListener('click',()=>{
-    if(boardMode) return;
+    if(boardMode || id==='destination') return;
     showUseless();
     setTimeout(hideUseless, 1200);
   });
@@ -683,9 +685,9 @@ function enterBoardMode(){
   ROCKS.forEach(r=>{
     if(r.id!=='destination'){
       const angle=(Math.random()*80-40).toFixed(1);
-      const ox=(Math.random()*24-12).toFixed(1);
-      const oy=(Math.random()*24-12).toFixed(1);
-      r.uLabel.style.cssText=`position:absolute;top:${50+Number(oy)}%;left:${50+Number(ox)}%;width:130%;transform:translate(-50%,-50%) rotate(${angle}deg);pointer-events:none;opacity:${r._pressed?1:0};transition:opacity .3s ease;`;
+      const ox=(Math.random()*12-6).toFixed(1);
+      const oy=(Math.random()*12-6).toFixed(1);
+      r.uLabel.style.cssText=`position:absolute;top:${50+Number(oy)}%;left:${50+Number(ox)}%;width:75%;transform:translate(-50%,-50%) rotate(${angle}deg);pointer-events:none;opacity:${r._pressed?1:0};transition:opacity .3s ease;`;
       r.uLabel.innerHTML='<svg viewBox="0 0 600 200" style="width:100%;height:auto;display:block"><use href="#higher-slogan"></use></svg>';
     }
     if(SPINNING.has(r.id)){
