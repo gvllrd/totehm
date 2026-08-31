@@ -575,12 +575,19 @@ function spawnRock(id,tl,tt,tw){
   sdiscBg.appendChild(wrap);
 
   const r={wrap,img,uLabel,x,y,vx,vy,rot,vrot,size,tl,tt,tw,id};
+  r._origLabelCss=uLabel.style.cssText;
 
   function showUseless(){ img.style.filter='brightness(0.2)'; uLabel.style.opacity='1'; }
   function hideUseless(){ img.style.filter=''; uLabel.style.opacity='0'; }
 
-  wrap.addEventListener('mouseenter',()=>{ if(!boardMode) showUseless(); });
-  wrap.addEventListener('mouseleave',()=>{ if(!boardMode) hideUseless(); });
+  wrap.addEventListener('mouseenter',()=>{
+    if(boardMode){ if(r._pressed) img.style.filter='brightness(0.2)'; }
+    else showUseless();
+  });
+  wrap.addEventListener('mouseleave',()=>{
+    if(boardMode){ img.style.filter=''; }
+    else hideUseless();
+  });
   wrap.addEventListener('click',()=>{
     if(boardMode) return;
     showUseless();
@@ -673,13 +680,12 @@ function enterBoardMode(){
   if(isPortraitMobile()) rotatePrompt.classList.add('active');
   ROCKS.forEach(r=>{
     if(r.id==='destination') return;
-    r.uLabel.innerHTML='<svg viewBox="0 0 600 200" style="width:130%;height:auto;display:block;margin:0 auto"><use href="#higher-slogan"></use></svg>';
-    if(!r._pressed) r.uLabel.style.opacity='0';
-    r._boardClick=()=>{
-      r.img.style.filter='brightness(0.2)';
-      lastPressedRock=r;
-      launchXpFromDisc(r.id);
-    };
+    const angle=(Math.random()*80-40).toFixed(1);
+    const ox=(Math.random()*24-12).toFixed(1);
+    const oy=(Math.random()*24-12).toFixed(1);
+    r.uLabel.style.cssText=`position:absolute;top:${50+Number(oy)}%;left:${50+Number(ox)}%;width:130%;transform:translate(-50%,-50%) rotate(${angle}deg);pointer-events:none;opacity:${r._pressed?1:0};transition:opacity .3s ease;`;
+    r.uLabel.innerHTML='<svg viewBox="0 0 600 200" style="width:100%;height:auto;display:block"><use href="#higher-slogan"></use></svg>';
+    r._boardClick=()=>{ lastPressedRock=r; launchXpFromDisc(r.id); };
     r.wrap.addEventListener('click',r._boardClick);
   });
 }
@@ -692,9 +698,8 @@ function exitBoardMode(){
   sdiscBoardClose.style.display='none';
   ROCKS.forEach(r=>{
     r.img.style.filter='';
-    r.uLabel.innerHTML='';
     r.uLabel.textContent='Useless';
-    r.uLabel.style.opacity='0';
+    r.uLabel.style.cssText=r._origLabelCss;
     r._pressed=false;
     if(r._boardClick){ r.wrap.removeEventListener('click',r._boardClick); r._boardClick=null; }
   });
