@@ -164,12 +164,12 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 }
 .disc-block{
   position:absolute;width:90%;max-width:580px;text-align:center;
-  opacity:0;visibility:hidden;pointer-events:none;transform:translateY(14px);
-  transition:opacity .65s ease,transform .65s cubic-bezier(.22,.61,.36,1);
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .35s ease;
   display:flex;flex-direction:column;align-items:center;gap:16px;
 }
 .disc-block.active{visibility:visible}
-.disc-block.show{opacity:1;transform:translateY(0);pointer-events:auto}
+.disc-block.show{opacity:1;pointer-events:auto}
 .disc-block.instant{transition:none}
 .disc-block.show .coral-line{animation:settle .9s cubic-bezier(.22,.61,.36,1)}
 #discover .t-coral{color:#ebebeb}
@@ -612,7 +612,7 @@ const discBack    = document.getElementById('disc-back');
 const discProg    = document.getElementById('disc-prog');
 const downTrigger = document.getElementById('down-trigger');
 let discOpen = false, discCur = 0, discLock = false;
-const DFADE = 650;
+const FADE_OUT = 350, FADE_IN = 400;
 
 function openDiscover(){
   if(discOpen) return; discOpen = true;
@@ -633,25 +633,33 @@ let dHintGone = false;
 function discHideHint(){ if(!dHintGone){ dHintGone = true; discHint.classList.add('gone'); } }
 
 function discShowSlide(i, instant){
-  discStage.querySelectorAll('.disc-block').forEach((b, idx) => {
-    if(idx === i){
-      if(instant) b.classList.add('instant');
-      b.classList.add('active');
-      requestAnimationFrame(() => {
-        b.classList.add('show');
-        if(instant) requestAnimationFrame(() => b.classList.remove('instant'));
-      });
-    } else {
-      b.classList.remove('show');
-      setTimeout(() => b.classList.remove('active'), instant ? 0 : DFADE);
-    }
-  });
-  discCur = i;
+  const blocks = discStage.querySelectorAll('.disc-block');
+  if(instant){
+    blocks.forEach((b, idx) => {
+      b.classList.remove('show','active','instant');
+      if(idx === i){
+        b.classList.add('instant','active');
+        requestAnimationFrame(() => {
+          b.classList.add('show');
+          requestAnimationFrame(() => b.classList.remove('instant'));
+        });
+      }
+    });
+    discCur = i;
+    discProg.style.width = ((i + 1) / DSLIDES.length * 100) + '%';
+    return;
+  }
+  blocks.forEach(b => { b.classList.remove('show'); setTimeout(() => b.classList.remove('active'), FADE_OUT); });
   discProg.style.width = ((i + 1) / DSLIDES.length * 100) + '%';
+  setTimeout(() => {
+    blocks[i].classList.add('active');
+    requestAnimationFrame(() => blocks[i].classList.add('show'));
+    discCur = i;
+  }, FADE_OUT);
 }
 function discGoTo(i){
   if(discLock || i < 0 || i >= DSLIDES.length || i === discCur) return;
-  discLock = true; discShowSlide(i, false); setTimeout(() => discLock = false, DFADE);
+  discLock = true; discShowSlide(i, false); setTimeout(() => discLock = false, FADE_OUT + FADE_IN + 50);
 }
 function discNext(){ discGoTo(discCur + 1); }
 function discPrev(){ if(discCur === 0){ closeDiscover(); return; } discGoTo(discCur - 1); }
