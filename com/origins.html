@@ -52,9 +52,8 @@ html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
 }
 .card-front video {
   display: block;
-  /* natural dimensions, capped to viewport */
-  max-width: min(84vw, 680px);
-  max-height: 68vh;
+  max-width: min(62vw, 460px);
+  max-height: 58vh;
   width: auto; height: auto;
   pointer-events: none; user-select: none;
 }
@@ -138,7 +137,12 @@ for(let i = 0; i < COUNT; i++){
 /* ── VIDEO MANAGEMENT ── */
 const loaded = new Array(COUNT).fill(false);
 function loadVid(i){ if(loaded[i]) return; loaded[i]=true; videos[i].src=BASE+FILES[i]; videos[i].load(); }
-function playVid(i){ loadVid(i); videos[i].play().catch(()=>{}); }
+function playVid(i){
+  loadVid(i);
+  const v=videos[i];
+  if(v.readyState>=3){ v.play().catch(()=>{}); }
+  else { v.addEventListener('canplay',()=>v.play().catch(()=>{}),{once:true}); }
+}
 function pauseVid(i){ videos[i].pause(); }
 function preloadAdj(i){ if(i>0) loadVid(i-1); if(i<COUNT-1) loadVid(i+1); }
 
@@ -207,7 +211,13 @@ function makeTilt(sceneEl, cardEl){
 
   return {
     start(){ if(active) return; active=true; lastTs=null; rafId=requestAnimationFrame(tick); },
-    stop() { active=false; if(rafId){ cancelAnimationFrame(rafId); rafId=null; } },
+    stop() {
+      active=false; grabbed=false;
+      if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
+      rotX=3; rotY=8; velX=0; velY=0;
+      cardEl.style.transform='rotateX(3deg) rotateY(8deg)';
+      sceneEl.classList.remove('grabbing');
+    },
     onDown, onMove, onUp
   };
 }
@@ -231,7 +241,9 @@ function goTo(n){
   pauseVid(cur); tilts[cur].stop();
   cur=n;
   Array.from(deck.children).forEach((s,i)=>{ s.style.transform=`translateX(${(i-cur)*100}%)`; });
-  playVid(cur); preloadAdj(cur); tilts[cur].start();
+  preloadAdj(cur); tilts[cur].start();
+  /* play only once the slide transition has settled */
+  setTimeout(()=>{ if(cur===n) playVid(n); }, 580);
   updateUI();
 }
 
