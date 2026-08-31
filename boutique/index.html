@@ -109,6 +109,23 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 .brand-sub-logo{height:3.5em;width:auto;vertical-align:-.9em;display:inline-block}
 .brand-get{color:var(--coral)}
 .brand-my{font-family:'Quantico',sans-serif;font-weight:400}
+#conn-bar{position:fixed;top:14px;left:16px;z-index:85;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
+#conn-bar:hover{color:#fff}
+#conn-bar .dot{width:8px;height:8px;border-radius:50%;background:#888}
+#member-window{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.84);display:none;align-items:center;justify-content:center;padding:24px}
+#member-window.show{display:flex}
+.mw-card{background:#131316;border:1px solid #242429;max-width:360px;width:100%;padding:30px 24px;text-align:center;position:relative;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.mw-card::-webkit-scrollbar{display:none}
+.mw-close{position:absolute;top:12px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:#b4b4b4;background:none;border:none;cursor:pointer;padding:0}
+.mw-close:hover{color:#fff}
+.mw-input{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:6px 2px;caret-color:#fff;text-align:center;margin-bottom:10px}
+.mw-input::placeholder{color:rgba(255,255,255,.33)}
+.mw-note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px;margin-top:6px}
+.mw-note.ok{color:#639922}.mw-note.no{color:#b06a9f}.mw-note.dim{color:#6d6d6d}
+.mw-who{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:#fff;margin-bottom:4px}
+.mw-mail{font-family:'Space Mono',monospace;font-size:9px;color:#6d6d6d;margin-bottom:12px;word-break:break-all}
+.mw-signout{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#6d6d6d;background:none;border:none;cursor:pointer;padding:2px 0;margin-top:8px}
+.mw-signout:hover{color:#fff}
 </style>
 </head>
 <body>
@@ -206,6 +223,22 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
   <div class="fs-msg" id="decode-msg"></div>
 </div>
 
+<button id="conn-bar" type="button" aria-label="member space"><span class="dot"></span>Guest</button>
+<div id="member-window">
+  <div class="mw-card">
+    <button class="mw-close" id="mw-close">Close</button>
+    <div id="mw-out-state">
+      <input class="mw-input" id="mw-email" type="email" placeholder="your email" autocomplete="email">
+      <input class="mw-input" id="mw-code" inputmode="numeric" maxlength="6" placeholder="6-digit code" style="display:none">
+      <div class="mw-note dim" id="mw-note"></div>
+    </div>
+    <div id="mw-in-state" style="display:none">
+      <div class="mw-who" id="mw-who"></div>
+      <div class="mw-mail" id="mw-mail"></div>
+      <button class="mw-signout" id="mw-signout">Sign out</button>
+    </div>
+  </div>
+</div>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
@@ -280,6 +313,44 @@ $('email-input').addEventListener('keydown',async(e)=>{
     document.getElementById('sw-col-sold').textContent=`${sold} pièces vendues`;
     document.getElementById('sw-collection').style.display='flex';
   }catch(_){}
+})();
+
+/* ══ MEMBER SPACE ══ */
+(()=>{
+  let me=null,mbEmail='';
+  function mbPaint(){
+    $('conn-bar').innerHTML='<span class="dot" style="background:'+(me?'#639922':'#888')+'"></span>'+(me?(me.email||'').split('@')[0]:'Guest');
+    $('mw-out-state').style.display=me?'none':'';
+    $('mw-in-state').style.display=me?'':'none';
+    if(me){$('mw-who').textContent=(me.email||'').split('@')[0];$('mw-mail').textContent=me.email||'';}
+  }
+  $('conn-bar').onclick=()=>$('member-window').classList.add('show');
+  $('mw-close').onclick=()=>$('member-window').classList.remove('show');
+  $('member-window').addEventListener('click',e=>{if(e.target===$('member-window'))$('member-window').classList.remove('show');});
+  $('mw-email').addEventListener('keydown',async e=>{
+    if(e.key!=='Enter')return;
+    const v=$('mw-email').value.trim(),note=$('mw-note');
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){note.className='mw-note no';note.textContent='invalid email';return;}
+    note.className='mw-note dim';note.textContent='sending…';
+    const {error}=await sb.auth.signInWithOtp({email:v,options:{shouldCreateUser:true}});
+    if(error){note.className='mw-note no';note.textContent='try again in a minute';return;}
+    mbEmail=v;note.className='mw-note ok';note.textContent='code sent — check your email';
+    $('mw-code').style.display='';setTimeout(()=>$('mw-code').focus(),80);
+  });
+  $('mw-code').addEventListener('input',async()=>{
+    const t=$('mw-code').value.trim(),note=$('mw-note');
+    if(t.length!==6)return;
+    note.className='mw-note dim';note.textContent='verifying…';
+    const {error}=await sb.auth.verifyOtp({email:mbEmail,token:t,type:'email'});
+    if(error){note.className='mw-note no';note.textContent='wrong code';return;}
+    note.textContent='';$('mw-code').value='';$('mw-code').style.display='none';$('mw-email').value='';
+    $('member-window').classList.remove('show');
+  });
+  $('mw-signout').onclick=async()=>{await sb.auth.signOut();$('member-window').classList.remove('show');};
+  sb.auth.onAuthStateChange(async()=>{
+    const {data:{session}}=await sb.auth.getSession();me=session?.user||null;mbPaint();
+  });
+  sb.auth.getSession().then(({data:{session}})=>{me=session?.user||null;mbPaint();});
 })();
 </script>
 </body>

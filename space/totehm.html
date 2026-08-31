@@ -165,7 +165,7 @@ body.higher .set-block.higher-only{display:flex!important}
 /* Coin haut gauche, en vis-à-vis de OWN/YOUR/WORLD. `fixed` et pas
    `absolute` : le gate défile maintenant sur deux écrans, le menu membre
    ne doit pas partir avec. */
-#conn-bar{position:fixed;top:14px;left:16px;z-index:4;margin:0;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
+#conn-bar{position:fixed;top:14px;left:16px;z-index:201;margin:0;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
 #conn-bar:hover{color:#fff}
 /* Accréditation Higher. Elle ne s'affiche que pour qui l'a payée ou reçue :
    la source de vérité est stoner_access, jamais le front. */
@@ -828,8 +828,7 @@ body.gate.entered #filter-badge{
 <!-- ══ ÉTAT 1 : LE LOGO RECOMPOSÉ — 4 SVG vectoriels superposés ══ -->
 <div id="gate">
 
-  <!-- Coin haut droit : les termes. Coin haut gauche : le membre. -->
-  <button id="conn-bar" type="button" aria-label="member space"><span class="dot"></span>Guest</button>
+  <!-- Coin haut droit : les termes. -->
   <a id="terms-corner" href="terms.html" target="_blank" rel="noopener">Simple terms of use</a>
 
 <section id="gate-hero">
@@ -982,6 +981,7 @@ body.gate.entered #filter-badge{
   </div>
 </div>
 
+<button id="conn-bar" type="button" aria-label="member space"><span class="dot"></span>Guest</button>
 <div id="member-window">
   <div class="mw-card">
     <button class="mw-close" id="mw-close">Close</button>
@@ -1656,7 +1656,6 @@ function applyFloorFx(){
   $('wordmark').style.opacity='1';
   $('menu-arrow').style.display='';
   $('filter-arrow').style.display='';
-  $('conn-bar').style.display='flex';
 }
 /* Un seul écran. La Map est partie dans map.html : plus d'étage, plus de
    machine à états verticale, plus de fondu à orchestrer. */
