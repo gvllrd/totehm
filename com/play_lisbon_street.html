@@ -554,7 +554,7 @@ function spawnRock(id,tl,tt,tw){
 
   /* wrap : gère la translation, contient img + label */
   const wrap=document.createElement('div');
-  wrap.style.cssText=`position:absolute;top:0;left:0;width:${size}px;height:${size}px;cursor:pointer;-webkit-tap-highlight-color:transparent;`;
+  wrap.style.cssText=`position:absolute;top:0;left:0;width:${size}px;height:${size}px;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;`;
   wrap.style.transform=`translate(${x}px,${y}px)`;
 
   const img=document.createElement('img');
