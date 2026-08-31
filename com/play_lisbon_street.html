@@ -477,7 +477,10 @@ function comeBack(){
   setTimeout(()=>{
     vid.src=''; streetBusy=false;
     if(lastXpFrom==='world'){ openWorld(); }
-    else{ ROCKS.forEach(r=>{ r.img.style.filter=''; }); }
+    else{
+      ROCKS.forEach(r=>{ r.img.style.filter=''; });
+      if(lastPressedRock){ lastPressedRock._pressed=true; lastPressedRock.uLabel.style.opacity='1'; lastPressedRock=null; }
+    }
   },600);
 }
 
@@ -525,6 +528,7 @@ const ROCKS        = [];
 let   astRaf       = null;
 let   snapping     = false;
 let   lastXpFrom   = 'world';
+let   lastPressedRock = null;
 
 function getBoardRect(){
   const W=window.innerWidth,H=window.innerHeight;
@@ -669,9 +673,10 @@ function enterBoardMode(){
   if(isPortraitMobile()) rotatePrompt.classList.add('active');
   ROCKS.forEach(r=>{
     r.uLabel.innerHTML='<svg viewBox="0 0 600 200" style="width:80%;height:auto;display:block;margin:0 auto"><use href="#higher-slogan"></use></svg>';
-    r.uLabel.style.opacity='1';
+    if(!r._pressed) r.uLabel.style.opacity='0';
     r._boardClick=()=>{
       r.img.style.filter='brightness(0.2)';
+      lastPressedRock=r;
       launchXpFromDisc(r.id);
     };
     r.wrap.addEventListener('click',r._boardClick);
@@ -689,6 +694,7 @@ function exitBoardMode(){
     r.uLabel.innerHTML='';
     r.uLabel.textContent='Useless';
     r.uLabel.style.opacity='0';
+    r._pressed=false;
     if(r._boardClick){ r.wrap.removeEventListener('click',r._boardClick); r._boardClick=null; }
   });
 }
