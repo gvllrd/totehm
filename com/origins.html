@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>TOTEHM — Origins</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Quantico&family=Space+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
@@ -14,7 +14,7 @@ html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
 #deck { position: fixed; inset: 0; overflow: hidden; }
 .slide {
   position: absolute; width: 100%; height: 100%;
-  display: flex; align-items: center; justify-content: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
   will-change: transform;
   transition: transform .62s cubic-bezier(.65,0,.35,1);
 }
@@ -59,16 +59,16 @@ html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
 /* ── GALLERY LABEL ── */
 .gl{margin-top:22px;width:min(62vw,460px);opacity:0;transition:opacity .5s ease}
 .gl.in{opacity:1}
-.gl-a{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:#2a2a2a;text-transform:uppercase;margin-bottom:3px}
+.gl-a{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:#444;text-transform:uppercase;margin-bottom:3px}
 .gl-t{font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,3vw,28px);letter-spacing:.06em;color:#fff;line-height:1;margin-bottom:3px}
-.gl-m{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;color:#1e1e1e;text-transform:uppercase;margin-bottom:11px}
-.gl-d{width:100%;height:1px;background:#111;margin-bottom:9px}
+.gl-m{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;color:#444;text-transform:uppercase;margin-bottom:11px}
+.gl-d{width:100%;height:1px;background:#222;margin-bottom:9px}
 .gl-r{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
 .gl-p{font-family:'Space Mono',monospace;font-size:13px;color:#fbd5ca;letter-spacing:.04em}
-.gl-e{font-family:'Space Mono',monospace;font-size:9px;color:#222;letter-spacing:.1em;text-transform:uppercase}
-.gl-btn{font-family:'Quantico',sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#555;background:none;border:none;border-top:1px solid #111;padding:9px 0;cursor:pointer;width:100%;text-align:left;transition:color .15s}
+.gl-e{font-family:'Space Mono',monospace;font-size:9px;color:#444;letter-spacing:.1em;text-transform:uppercase}
+.gl-btn{font-family:'Quantico',sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#555;background:none;border:none;border-top:1px solid #222;padding:9px 0;cursor:pointer;width:100%;text-align:left;transition:color .15s}
 .gl-btn:hover{color:#fff}
-.gl-btn:disabled{color:#1e1e1e;cursor:default}
+.gl-btn:disabled{color:#333;cursor:default}
 .gl-btn.loading{color:#333;pointer-events:none}
 
 /* ── COUNTER ── */
