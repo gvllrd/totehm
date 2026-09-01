@@ -194,13 +194,13 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 /* ── XP GALLERY LABEL ── */
 #xp-label{width:min(72vmin,300px);flex-shrink:0;opacity:0;transition:opacity .4s ease .3s}
 #xp-label.in{opacity:1}
-.xp-la{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:#2a2a2a;text-transform:uppercase;margin-bottom:3px}
+.xp-la{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:#444;text-transform:uppercase;margin-bottom:3px}
 .xp-lt{font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,3.5vmin,26px);letter-spacing:.06em;color:#fff;line-height:1;margin-bottom:3px}
-.xp-lm{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;color:#1e1e1e;text-transform:uppercase;margin-bottom:11px}
-.xp-ld{width:100%;height:1px;background:#111;margin-bottom:9px}
+.xp-lm{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;color:#444;text-transform:uppercase;margin-bottom:11px}
+.xp-ld{width:100%;height:1px;background:#222;margin-bottom:9px}
 .xp-lr{display:flex;justify-content:space-between;align-items:baseline}
 .xp-lp{font-family:'Space Mono',monospace;font-size:12px;color:var(--coral);letter-spacing:.04em}
-.xp-le{font-family:'Space Mono',monospace;font-size:8px;color:#282828;letter-spacing:.1em;text-transform:uppercase}
+.xp-le{font-family:'Space Mono',monospace;font-size:8px;color:#444;letter-spacing:.1em;text-transform:uppercase}
 
 /* ─── ROTATE PROMPT (board mode, portrait mobile) ─── */
 #rotate-prompt{
@@ -853,7 +853,35 @@ function launchXpFromDisc(id){
   if(streetBusy) return; streetBusy=true; lastXpFrom='disc';
   vid.src=VID_BASE+id+'.mp4'; vid.load();
   vidWrap.classList.remove('in'); xp.classList.add('up');
-  setTimeout(()=>{ vidWrap.classList.add('in'); vid.play().catch(()=>{vid.controls=true;}); startVidBox(); },400);
+
+  const xpLabel = document.getElementById('xp-label');
+  xpLabel.classList.remove('in');
+  const aw = artworkMap.get(id);
+  if(aw){
+    document.getElementById('xp-artw-title').textContent = aw.title;
+    document.getElementById('xp-artw-price').textContent = '€ ' + (aw.price_cents/100).toLocaleString('fr-FR');
+    const avail = aw.edition_total - aw.edition_sold;
+    const isSold = aw.status==='sold' || avail<=0;
+    document.getElementById('xp-artw-edition').textContent = isSold ? 'sold out' : avail+' / '+aw.edition_total;
+    xpBuy.dataset.artworkId = aw.id;
+    xpBuy.dataset.sold = isSold ? '1' : '0';
+    xpBuy.textContent = isSold ? '— Sold —' : 'Acquire →';
+    xpBuy.disabled = isSold;
+    xpBuy.style.color = isSold ? '#222' : '';
+  } else {
+    xpBuy.dataset.artworkId = '';
+    xpBuy.dataset.sold = '0';
+    xpBuy.textContent = 'Get Higher — $30';
+    xpBuy.disabled = false;
+    xpBuy.style.color = '';
+  }
+
+  setTimeout(()=>{
+    vidWrap.classList.add('in');
+    if(aw) xpLabel.classList.add('in');
+    vid.play().catch(()=>{vid.controls=true;});
+    startVidBox();
+  },400);
 }
 
 function buildSdisc(sl){
