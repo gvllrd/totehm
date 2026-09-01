@@ -56,6 +56,21 @@ html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
   backface-visibility: hidden; transform: rotateY(180deg); background: #fff;
 }
 
+/* ── GALLERY LABEL ── */
+.gl{margin-top:22px;width:min(62vw,460px);opacity:0;transition:opacity .5s ease}
+.gl.in{opacity:1}
+.gl-a{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:#2a2a2a;text-transform:uppercase;margin-bottom:3px}
+.gl-t{font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,3vw,28px);letter-spacing:.06em;color:#fff;line-height:1;margin-bottom:3px}
+.gl-m{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;color:#1e1e1e;text-transform:uppercase;margin-bottom:11px}
+.gl-d{width:100%;height:1px;background:#111;margin-bottom:9px}
+.gl-r{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
+.gl-p{font-family:'Space Mono',monospace;font-size:13px;color:#fbd5ca;letter-spacing:.04em}
+.gl-e{font-family:'Space Mono',monospace;font-size:9px;color:#222;letter-spacing:.1em;text-transform:uppercase}
+.gl-btn{font-family:'Quantico',sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#555;background:none;border:none;border-top:1px solid #111;padding:9px 0;cursor:pointer;width:100%;text-align:left;transition:color .15s}
+.gl-btn:hover{color:#fff}
+.gl-btn:disabled{color:#1e1e1e;cursor:default}
+.gl-btn.loading{color:#333;pointer-events:none}
+
 /* ── COUNTER ── */
 #counter {
   position: fixed; top: 20px; right: 20px;
@@ -106,13 +121,17 @@ html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
   <div class="arrow-wrap down"><div class="chevron down"></div></div>
 </div>
 
-<script>
-const BASE  = 'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/wah/';
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL  = 'https://abujjbkbbiumxrokozph.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+const ART_FN  = SB_URL + '/functions/v1/artwork-checkout';
+const sb = createClient(SB_URL, SB_ANON);
+
+const BASE  = SB_URL + '/storage/v1/object/public/wah/';
 const FILES = [
   '1.mp4','2.mp4','3.mp4','4.mp4','5.mp4','6.mp4','7.mp4','8.mp4','9.mp4',
-  '10.mp4','11.mp4','12.mp4','13.mp4','14.mp4','15.mp4','16.mp4','17.mp4','18.mp4','19.mp4','20.mp4',
-  '21_Kobe_Bryant.mp4','22_Ghostemane.mp4','23_Kendrick_Lamar.mp4','24_xxxtentacion.mp4',
-  '25_.nipsey.mp4','26_Mike_Tyson.mp4','27_Mike_Tyson_2.mp4'
+  '10.mp4','11.mp4','12.mp4','13.mp4','14.mp4','15.mp4','16.mp4','17.mp4','18.mp4','19.mp4','20.mp4'
 ];
 const VCOUNT = FILES.length;
 const TOTAL  = VCOUNT + 1; // slide 0 = intro, slides 1‒27 = videos
@@ -136,14 +155,61 @@ let cur = 0;
   deck.appendChild(s);
 })();
 
-/* ── VIDEO SLIDES (indices 1‒27) ── */
+/* ── VIDEO SLIDES (indices 1–20) ── */
 for(let i = 0; i < VCOUNT; i++){
   const s = document.createElement('div');
   s.className = 'slide';
-  s.innerHTML = `<div class="card-scene" id="scene${i}"><div class="card" id="card${i}"><div class="card-front"><video id="vid${i}" muted loop playsinline preload="none"></video></div><div class="card-back"></div></div></div>`;
+  s.innerHTML = `
+    <div class="card-scene" id="scene${i}"><div class="card" id="card${i}">
+      <div class="card-front"><video id="vid${i}" muted loop playsinline preload="none"></video></div>
+      <div class="card-back"></div>
+    </div></div>
+    <div class="gl" id="gl${i}">
+      <div class="gl-a">Wavywah</div>
+      <div class="gl-t">—</div>
+      <div class="gl-m">Quantum Series · Digital · 2026</div>
+      <div class="gl-d"></div>
+      <div class="gl-r">
+        <span class="gl-p">—</span>
+        <span class="gl-e">1 / 1</span>
+      </div>
+      <button class="gl-btn" disabled>—</button>
+    </div>`;
   deck.appendChild(s);
   videos.push(document.getElementById(`vid${i}`));
 }
+
+// Artwork acquire
+async function acquireArtwork(artworkId, btn){
+  const {data:{session}} = await sb.auth.getSession();
+  if(!session){ location.href='/get_higher.html?return=origins.html'; return; }
+  btn.classList.add('loading'); btn.textContent='loading…';
+  try{
+    const r = await fetch(ART_FN,{method:'POST',
+      headers:{'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json'},
+      body:JSON.stringify({artwork_id:artworkId})});
+    const j = await r.json();
+    if(r.status===402){ location.href=j.redirect||'/get_higher.html'; return; }
+    if(r.status===409){ btn.textContent='Unavailable'; btn.disabled=true; return; }
+    if(j.url){ location.href=j.url; return; }
+    btn.classList.remove('loading'); btn.textContent='Acquire →';
+  }catch(e){ btn.classList.remove('loading'); btn.textContent='Acquire →'; }
+}
+
+// Populate labels when artworks loaded
+function populateLabel(i, aw){
+  const el = document.getElementById('gl'+i);
+  if(!el) return;
+  el.querySelector('.gl-t').textContent = aw.title;
+  el.querySelector('.gl-p').textContent = '€ '+(aw.price_cents/100).toLocaleString('fr-FR');
+  const btn = el.querySelector('.gl-btn');
+  if(aw.status==='sold'){ btn.textContent='Sold'; btn.disabled=true; }
+  else{ btn.textContent='Acquire →'; btn.disabled=false; btn.addEventListener('click',()=>acquireArtwork(aw.id,btn)); }
+  el.classList.add('in');
+}
+
+sb.from('artworks').select('id,title,price_cents,status,sort_order').eq('series','quantum')
+  .then(({data})=>{ if(data) data.forEach(a=>populateLabel(a.sort_order-1, a)); });
 
 /* ── POSITIONING ── */
 function positionSlides(animated){

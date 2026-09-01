@@ -191,6 +191,17 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
   #sdisc-back:hover{color:#fff}
 }
 
+/* ── XP GALLERY LABEL ── */
+#xp-label{width:min(72vmin,300px);flex-shrink:0;opacity:0;transition:opacity .4s ease .3s}
+#xp-label.in{opacity:1}
+.xp-la{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:#2a2a2a;text-transform:uppercase;margin-bottom:3px}
+.xp-lt{font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,3.5vmin,26px);letter-spacing:.06em;color:#fff;line-height:1;margin-bottom:3px}
+.xp-lm{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;color:#1e1e1e;text-transform:uppercase;margin-bottom:11px}
+.xp-ld{width:100%;height:1px;background:#111;margin-bottom:9px}
+.xp-lr{display:flex;justify-content:space-between;align-items:baseline}
+.xp-lp{font-family:'Space Mono',monospace;font-size:12px;color:var(--coral);letter-spacing:.04em}
+.xp-le{font-family:'Space Mono',monospace;font-size:8px;color:#282828;letter-spacing:.1em;text-transform:uppercase}
+
 /* ─── ROTATE PROMPT (board mode, portrait mobile) ─── */
 #rotate-prompt{
   position:fixed;inset:0;z-index:85;
@@ -250,6 +261,16 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
       <div class="vbf vb-front"></div>
     </div>
   </div>
+  <div id="xp-label">
+    <div class="xp-la">Wavywah</div>
+    <div class="xp-lt" id="xp-artw-title">—</div>
+    <div class="xp-lm">22 Signaux de Lisbonne · Digital · 2026</div>
+    <div class="xp-ld"></div>
+    <div class="xp-lr">
+      <span class="xp-lp" id="xp-artw-price">—</span>
+      <span class="xp-le" id="xp-artw-edition">—</span>
+    </div>
+  </div>
   <button id="xp-buy" class="btn-sig">Get Higher — $30</button>
 </div>
 
@@ -283,8 +304,16 @@ const SB_URL  = 'https://abujjbkbbiumxrokozph.supabase.co';
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
 const GATE_FN = SB_URL + '/functions/v1/stoner-gate';
 const PAY_FN  = SB_URL + '/functions/v1/higher-checkout';
+const ART_FN  = SB_URL + '/functions/v1/artwork-checkout';
 const METHOD  = '/stoner.html';
 const sb = createClient(SB_URL, SB_ANON);
+
+// Artworks catalogue (video_key → artwork)
+const artworkMap = new Map();
+sb.from('artworks')
+  .select('id,title,price_cents,edition_total,edition_sold,status,video_key')
+  .eq('series','lisbonne')
+  .then(({ data }) => { if(data) data.forEach(a => artworkMap.set(a.video_key, a)); });
 
 async function hasAccess(){
   try{
@@ -468,7 +497,37 @@ function launchXp(id){
   streetBusy=true; lastXpFrom='world';
   vid.src=VID_BASE+id+'.mp4'; vid.load();
   vidWrap.classList.remove('in'); closeWorld(); xp.classList.add('up');
-  setTimeout(()=>{ vidWrap.classList.add('in'); vid.play().catch(()=>{ vid.controls=true; }); startVidBox(); },400);
+
+  // Gallery label
+  const xpLabel = document.getElementById('xp-label');
+  xpLabel.classList.remove('in');
+  const aw = artworkMap.get(id);
+  if(aw){
+    document.getElementById('xp-artw-title').textContent = aw.title;
+    document.getElementById('xp-artw-price').textContent = '€ ' + (aw.price_cents/100).toLocaleString('fr-FR');
+    const avail = aw.edition_total - aw.edition_sold;
+    const isSold = aw.status==='sold' || avail<=0;
+    document.getElementById('xp-artw-edition').textContent = isSold ? 'sold out' : avail+' / '+aw.edition_total;
+    xpBuy.dataset.artworkId = aw.id;
+    xpBuy.dataset.sold = isSold ? '1' : '0';
+    xpBuy.textContent = isSold ? '— Sold —' : 'Acquire →';
+    xpBuy.disabled = isSold;
+    xpBuy.style.color = isSold ? '#222' : '';
+  } else {
+    // fallback : THP purchase
+    xpBuy.dataset.artworkId = '';
+    xpBuy.dataset.sold = '0';
+    xpBuy.textContent = 'Get Higher — $30';
+    xpBuy.disabled = false;
+    xpBuy.style.color = '';
+  }
+
+  setTimeout(()=>{
+    vidWrap.classList.add('in');
+    if(aw) xpLabel.classList.add('in');
+    vid.play().catch(()=>{ vid.controls=true; });
+    startVidBox();
+  },400);
 }
 
 function comeBack(){
@@ -495,10 +554,31 @@ xpClose.addEventListener('click', comeBack);
 worldClose.addEventListener('click', closeAll);
 
 xpBuy.addEventListener('click',async()=>{
-  closeAll();
-  const { data:{ session } } = await sb.auth.getSession();
-  if(session?.user?.email){ toStripe(); return; }
-  openAuth();
+  if(xpBuy.dataset.sold==='1') return;
+  const artworkId = xpBuy.dataset.artworkId;
+
+  // No artwork linked → THP purchase flow
+  if(!artworkId){ closeAll(); const {data:{session}}=await sb.auth.getSession(); if(session?.user?.email){toStripe();return;} openAuth(); return; }
+
+  const {data:{session}} = await sb.auth.getSession();
+  if(!session){ openAuth(); return; }
+
+  const prev = xpBuy.textContent;
+  xpBuy.textContent='loading…'; xpBuy.disabled=true;
+  try{
+    const r = await fetch(ART_FN,{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json'},
+      body:JSON.stringify({artwork_id:artworkId})
+    });
+    const j = await r.json();
+    if(r.status===402){ closeAll(); toStripe(); return; }     // no THP → buy THP
+    if(r.status===409){ xpBuy.textContent='Unavailable'; return; }
+    if(j.url){ (window.top||window).location.href=j.url; return; }
+    xpBuy.textContent=prev; xpBuy.disabled=false;
+  }catch(e){
+    xpBuy.textContent=prev; xpBuy.disabled=false;
+  }
 });
 
 /* ─── STREET DISCOVER ─── */
