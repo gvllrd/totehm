@@ -34,7 +34,7 @@ produit l'incident du SSO et celui des 70 €/79 €.
 
 ```
 ~/totehm/
-  com/         →  totehm.com            acquisition, TotehmPaper {THP} — 30 $
+  com/         →  totehm.com            acquisition, TotehmPaper {THP} — Lisbonne €11+, International €77
   space/       →  www.totehm.space      le Figher Club
   boutique/    →  www.higher.boutique   le Cloth
   backend/     →  servi par PERSONNE
@@ -66,10 +66,26 @@ vercel.json (com/vercel.json)
 **Fichiers actifs :**
 - `discover.html` — Discover international (manifeste neurologique, 9 slides, format identique à la version Lisbon)
 - `discover_lisbon.html` — Discover Lisbon ; 22 panneaux de signalisation lisboètes superposés sur photo de rue — chaque signe ouvre sa vidéo dans une boîte en verre 3D rotative (`.vbox-scene`, voir `CLAUDE.md`)
-- `get_higher.html` — paywall TotehmPaper ($30 fixe, voir §5) ; bouton "Play the street ↓" ouvre le même panneau de 22 signes ; logo TOTEHM dans boîte en verre 3D (idle + drag)
+- `get_higher.html` — paywall TotehmPaper (à confirmer — probable doublon de `discover_lisbon.html`) ; bouton "Play the street ↓" ouvre le même panneau de 22 signes ; logo TOTEHM dans boîte en verre 3D (idle + drag)
 - `stoner.html`, `stoner_terms.html` — derrière le gate
 
 **Fichier supprimé :** `lisbon.html` (remplacé par `discover_lisbon.html`).
+
+### TotehmPaper {THP} — pricing (au 01/09/2026)
+
+| Géographie | Prix | Logique |
+|---|---|---|
+| **Lisbonne** (`geo:'lisbon'`) | €11 → €76+ | Paliers en nombre d'or sur le compteur de membres |
+| **International** (`geo:'global'`) | **€77 fixe** | Forfait — Totehm est née à Lisbonne |
+
+Le `geo` est transmis dans le body POST vers `higher-checkout`. La fonction sert
+le bon prix sans jamais exposer de montant côté client.
+
+- `discover_lisbon.html` → `{ geo: 'lisbon', waiver: true, ... }`
+- `discover.html` → `{ geo: 'global', waiver: true, ... }`
+
+Stripe affiche : `"TotehmPaper — International"` (global) ou `"Figher Club — Higher · Tier N"` (Lisbonne).
+`metadata.geo` est stocké dans chaque Checkout Session pour traçabilité.
 
 ---
 

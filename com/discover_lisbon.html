@@ -466,7 +466,7 @@ async function toStripe(){
       method:'POST',
       headers:{ 'Authorization':'Bearer '+session.access_token,
                 'Content-Type':'application/json' },
-      body: JSON.stringify({ waiver: true, waiver_ts: new Date().toISOString() })
+      body: JSON.stringify({ geo: 'lisbon', waiver: true, waiver_ts: new Date().toISOString() })
     });
     const j = await r.json();
     if(j.already){ (window.top || window).location.replace(METHOD); return; }

@@ -17,7 +17,7 @@ const admin = createClient(
   { auth: { persistSession: false } },
 );
 
-// Paliers en nombre d'or, arrêtés à 5.
+// Paliers en nombre d'or, arrêtés à 5 (Lisbonne uniquement).
 // MIROIR de goldenTiers dans higher.html — modifier les deux ensemble.
 // Le front AFFICHE, ce fichier APPLIQUE.
 const TIERS = [
@@ -27,7 +27,9 @@ const TIERS = [
   { tier: 4, limit:  731, cents: 4700 },
   { tier: 5, limit: 1260, cents: 7600 },
 ];
-const BEYOND = { tier: 6, cents: 12300 };  // au-delà de 1260, on décidera
+const BEYOND  = { tier: 6, cents: 12300 };  // au-delà de 1260, on décidera
+// Prix forfaitaire international — Totehm est née à Lisbonne.
+const GLOBAL  = { tier: 'global', cents: 7700 };
 
 function tierFor(taken: number) {
   for (const t of TIERS) if (taken < t.limit) return t;
@@ -71,10 +73,12 @@ Deno.serve(async (req) => {
     .select("email", { count: "exact", head: true });
 
   const taken = count ?? 0;
-  const t = tierFor(taken);
 
   let body: Record<string, unknown> = {};
   try { body = await req.json(); } catch (_) { /* body vide accepté */ }
+
+  // geo:'global' → forfait international €77 ; sinon paliers Lisbonne
+  const t = body?.geo === 'global' ? GLOBAL : tierFor(taken);
 
   // ?quote : le front demande juste le prix à afficher, sans créer
   // de session Stripe. Évite d'annoncer un prix et d'en facturer un autre.
@@ -88,6 +92,13 @@ Deno.serve(async (req) => {
   }
 
   const site = resolveOrigin(origin, SITE_COM);
+  const isGlobal = t.tier === 'global';
+  const productName = isGlobal
+    ? "TotehmPaper — International"
+    : `Figher Club — Higher · Tier ${t.tier}`;
+  const productDesc = isGlobal
+    ? "Stoner Method, ten steps, for life. Born in Lisbon."
+    : "Stoner Method, ten steps, for life. Numbered place.";
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -98,8 +109,8 @@ Deno.serve(async (req) => {
           currency: "eur",
           unit_amount: t.cents,
           product_data: {
-            name: `Figher Club — Higher · Tier ${t.tier}`,
-            description: "Stoner Method, ten steps, for life. Numbered place.",
+            name: productName,
+            description: productDesc,
           },
         },
         quantity: 1,
@@ -108,6 +119,7 @@ Deno.serve(async (req) => {
         product: "higher",
         email,
         tier: String(t.tier),
+        geo: String(body?.geo ?? 'lisbon'),
         waiver: "true",
         waiver_ts: String(body?.waiver_ts ?? new Date().toISOString()),
       },
