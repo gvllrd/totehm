@@ -2779,7 +2779,7 @@ window.addEventListener('pageshow',e=>{
   const swallow=e=>{
     if(!body.classList.contains('gate')) return;
     const t=e.target;
-    if(t&&t.closest&&t.closest('#gate')) return;
+    if(t&&t.closest&&t.closest('#gate,#member-window')) return;
     e.stopPropagation();
   };
   ['touchstart','touchmove','touchend','wheel','keydown'].forEach(t=>

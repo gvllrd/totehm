@@ -1,40 +1,19 @@
-// TOTEHM · higher-map v8
+// TOTEHM · higher-map v9
 // ─────────────────────────────────────────────────────────────────────
 // Le monde filtré par ton Totehm.
 //
-// v8 — les spots du Club entrent dans la carte.
+// v9 — Google Places activé + Eventbrite adapter.
 //
-// Cette fonction a déjà renvoyé 402 à tout ce qui n'est pas abonné
-// actif : tout appelant qui atteint near() EST un membre du Club.
-// C'est ce contrôle-là, et pas un autre, qui autorise
-// p_include_club = true. Le défaut de places_near reste false : la
-// fonction est SECURITY DEFINER, un appel direct ne doit rien voir de
-// plus qu'avant.
+// Trois sources de lieux, normalisées au même modèle :
+//   MEMBER_DROP  → spots (table Supabase, user_id renseigné)
+//   LIVE_EVENT   → spots (expires_at) + Eventbrite
+//   PLACE        → spots (permanent) + Google Places cache
 //
-// v7 — Unified Spot Model et Google coupé.
-//
-// PLACES_ENABLED = false. Le Founder veut la table `spots` seule pour
-// l'instant. Le cache Google n'est PAS supprimé : il ne coûte rien
-// tant que la clé n'est pas posée, et le supprimer pour le
-// reconstruire dans trois semaines serait du travail jeté. Un seul
-// booléen le rallume, et places_near reçoit p_places en conséquence.
-//
-// Le modèle unifié est DÉDUIT, pas stocké :
-//   user_id renseigné    → MEMBER_DROP
-//   expires_at renseigné → LIVE_EVENT  (le front affiche le compte à rebours)
-//   sinon                → PLACE
-// Une colonne `kind` devrait être tenue cohérente à chaque écriture ;
-// déduite, elle est vraie par construction.
-//
-// SÉCURITÉ : l'intention demandée doit appartenir au Totehm du membre.
-// On n'interroge pas le monde sous une intention qu'on n'a pas posée
-// sur ses propres habitudes.
-//
-// DOCTRINE DE COÛT — la v4 appelait Google une fois par intention à
-// chaque ouverture : 8,40 $/mois pour UN membre contre 6,75 € d'ARPU.
-// Trois verrous depuis la v5 : la base d'abord (MIN_RESULTS), un cache
-// géographique et non personnel (CELL_TTL_DAYS), un plafond global
-// quotidien (DAILY_BUDGET). Ils restent en place, éteints.
+// Eventbrite tourne en parallèle de places_near : les deux requêtes
+// partent ensemble, on fusionne les résultats. Pas de cache DB pour
+// les events Eventbrite — ils sont courts et leur TTL naturel est
+// l'heure de début. La facture Eventbrite est 0 $ (plan gratuit
+// couvre 2 000 req/h). Google Places reste derrière le cache cellule.
 //
 // verify_jwt = true
 // ─────────────────────────────────────────────────────────────────────
@@ -49,11 +28,9 @@ const ALLOWED_ORIGINS = [
   "http://localhost:3000",
 ];
 
-// L'interrupteur. true = le cache Google reprend du service.
-const PLACES_ENABLED = false;
+const PLACES_ENABLED = true;
 
-// Lisbonne — Praça do Comércio. Repli quand le navigateur ne donne
-// rien : le radar montre toujours quelque chose.
+// Lisbonne — Praça do Comércio. Repli quand le navigateur ne donne rien.
 const FALLBACK = { lat: 38.7078, lng: -9.1366 };
 
 const RADIUS_M      = 4000;
@@ -61,6 +38,9 @@ const MIN_RESULTS   = 8;
 const CELL_TTL_DAYS = 90;
 const MAX_SWEEPS    = 3;
 const DAILY_BUDGET  = 200;
+
+// Rayon Eventbrite en km (arrondi supérieur de RADIUS_M)
+const EB_RADIUS_KM = Math.ceil(RADIUS_M / 1000);
 
 function corsHeaders(origin: string | null): Record<string, string> {
   const allowed = origin && ALLOWED_ORIGINS.includes(origin) ? origin : SITE_SPACE;
@@ -79,6 +59,7 @@ const sb = createClient(
   { auth: { persistSession: false } },
 );
 
+// Intention → Google Places types
 const GOOGLE_TYPES: Record<string, string[]> = {
   fight:     ["gym", "fitness_center", "sports_complex"],
   flow:      ["park", "hiking_area", "swimming_pool"],
@@ -89,7 +70,31 @@ const GOOGLE_TYPES: Record<string, string[]> = {
   celebrate: ["night_club", "bar", "concert_hall"],
 };
 
+// Intention → Eventbrite category IDs
+// https://www.eventbrite.com/platform/api#/reference/category/list/list-categories
+const EVENTBRITE_CATS: Record<string, string[]> = {
+  fight:     ["108"],            // Sports & Fitness
+  flow:      ["107", "399"],     // Health & Wellness, Outdoors & Adventure
+  enrich:    ["102", "105"],     // Science & Tech, Arts
+  love:      ["110", "113"],     // Food & Drink, Community & Culture
+  express:   ["105", "104"],     // Performing & Visual Arts, Film & Media
+  focus:     ["101", "102"],     // Business, Science & Tech
+  celebrate: ["103", "111"],     // Music, Nightlife
+};
+
 const cellOf = (lat: number, lng: number) => `${lat.toFixed(2)},${lng.toFixed(2)}`;
+
+// Distance Haversine en mètres
+function haversine(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371000;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
 
 Deno.serve(async (req) => {
   const cors = corsHeaders(req.headers.get("origin"));
@@ -102,9 +107,6 @@ Deno.serve(async (req) => {
     return Response.json({ error: "unauthorized" }, { status: 401, headers: cors });
   }
 
-  // .limit(1) et pas .maybeSingle() : deux lignes actives (upgrade,
-  // réabonnement) faisaient planter la requête et rendaient un 402 à
-  // un membre qui paie.
   const { data: subs } = await sb
     .from("subscriptions").select("status")
     .eq("user_id", user.id)
@@ -150,7 +152,13 @@ Deno.serve(async (req) => {
   const fallback = lat === null || lng === null;
   if (fallback) { lat = FALLBACK.lat; lng = FALLBACK.lng; }
 
-  let spots = await near(lat!, lng!, wanted);
+  // Spots DB + Eventbrite en parallèle
+  const [dbSpots, ebEvents] = await Promise.all([
+    near(lat!, lng!, wanted),
+    fetchEventbriteEvents(lat!, lng!, wanted),
+  ]);
+
+  let spots = dbSpots;
   let sweeps = 0;
 
   if (PLACES_ENABLED && spots.length < MIN_RESULTS) {
@@ -158,16 +166,22 @@ Deno.serve(async (req) => {
     if (sweeps > 0) spots = await near(lat!, lng!, wanted);
   }
 
+  // Fusion : spots DB d'abord, events Eventbrite ensuite
+  const all = [...spots, ...ebEvents];
+
   return Response.json({
-    spots,
+    spots: all,
     intention: asked,
     intentions: mine,
     origin: { lat, lng, fallback },
     radius_m: RADIUS_M,
     sweeps,
     places_enabled: PLACES_ENABLED,
+    events_count: ebEvents.length,
   }, { headers: cors });
 });
+
+// ─── spots Supabase (MEMBER_DROP, PLACE, LIVE_EVENT en base) ──────────────
 
 async function near(lat: number, lng: number, intentions: string[]) {
   const { data, error } = await sb.rpc("places_near", {
@@ -176,8 +190,6 @@ async function near(lat: number, lng: number, intentions: string[]) {
     p_intentions: intentions,
     p_limit: 60,
     p_places: PLACES_ENABLED,
-    // Le 402 plus haut est le contrôle d'accès. Ici on ne fait que
-    // dire à la base que l'appelant est un membre.
     p_include_club: true,
   });
   if (error) { console.error("places_near:", error.message); return []; }
@@ -202,13 +214,107 @@ async function near(lat: number, lng: number, intentions: string[]) {
   }));
 }
 
-// Balaye la cellule pour les intentions encore froides. Dormant tant
-// que PLACES_ENABLED vaut false.
+// ─── Eventbrite adapter ───────────────────────────────────────────────────
+
+async function fetchEventbriteEvents(
+  lat: number,
+  lng: number,
+  intentions: string[],
+): Promise<ReturnType<typeof near>> {
+  const key = Deno.env.get("EVENTBRITE_API_KEY");
+  if (!key) return [];
+
+  // Union des catégories pour toutes les intentions demandées
+  const cats = [...new Set(intentions.flatMap((i) => EVENTBRITE_CATS[i] ?? []))];
+  if (!cats.length) return [];
+
+  // Catégorie → intention (pour le mapping retour)
+  const catToIntent: Record<string, string> = {};
+  for (const intent of intentions) {
+    for (const cat of (EVENTBRITE_CATS[intent] ?? [])) {
+      catToIntent[cat] ??= intent;
+    }
+  }
+
+  const params = new URLSearchParams({
+    "location.latitude":  String(lat),
+    "location.longitude": String(lng),
+    "location.within":    `${EB_RADIUS_KM}km`,
+    "categories":         cats.join(","),
+    "expand":             "venue",
+    "sort_by":            "date",
+    "page_size":          "20",
+  });
+
+  try {
+    const r = await fetch(
+      `https://www.eventbriteapi.com/v3/events/search/?${params}`,
+      { headers: { "Authorization": `Bearer ${key}` } },
+    );
+    if (!r.ok) {
+      console.error("eventbrite", r.status, await r.text().catch(() => ""));
+      return [];
+    }
+    const j = await r.json();
+    const now = Date.now();
+
+    return ((j.events ?? []) as Record<string, unknown>[])
+      .filter((e) => {
+        // Garder uniquement les events avec lieu géolocalisé et encore à venir
+        const venue = e.venue as Record<string, unknown> | null;
+        if (!venue?.latitude || !venue?.longitude) return false;
+        const start = (e.start as Record<string, unknown>)?.utc as string | null;
+        if (start && new Date(start).getTime() < now) return false;
+        return true;
+      })
+      .map((e) => {
+        const venue    = e.venue as Record<string, unknown>;
+        const start    = (e.start as Record<string, unknown>).utc as string;
+        const end      = (e.end as Record<string, unknown> | null)?.utc as string | null;
+        const elat     = Number(venue.latitude);
+        const elng     = Number(venue.longitude);
+        const catId    = String(e.category_id ?? "");
+        const nameObj  = e.name as Record<string, unknown>;
+        const descObj  = e.description as Record<string, unknown> | null;
+
+        // Intention la mieux mappée parmi celles demandées
+        const intention = catToIntent[catId] ?? intentions[0];
+
+        // Description courte : 200 car max
+        const desc = (descObj?.text as string | null)?.slice(0, 200) ?? null;
+
+        return {
+          id:            `eb_${e.id}`,
+          source:        "eventbrite",
+          kind:          "LIVE_EVENT",
+          activite:      (nameObj?.text as string | null) ?? "Event",
+          intention,
+          lieu_type:     "event",
+          commentaire:   desc,
+          state_of_mind: null,
+          vibe:          null,
+          tags:          [],
+          member_count:  0,
+          ends_at:       end ?? start,  // countdown jusqu'à la fin (ou le début si pas de fin)
+          lat:           elat,
+          lng:           elng,
+          dist_m:        Math.round(haversine(lat, lng, elat, elng)),
+          duration_min:  null,
+        };
+      });
+  } catch (e) {
+    console.error("eventbrite fetch failed:", (e as Error).message);
+    return [];
+  }
+}
+
+// ─── Google Places cache (warm) ───────────────────────────────────────────
+
 async function warm(lat: number, lng: number, intentions: string[]): Promise<number> {
   const key = Deno.env.get("GOOGLE_MAPS_API_KEY");
   if (!key) return 0;
 
-  const cell = cellOf(lat, lng);
+  const cell  = cellOf(lat, lng);
   const stale = new Date(Date.now() - CELL_TTL_DAYS * 864e5).toISOString();
 
   const { data: done } = await sb
@@ -217,7 +323,7 @@ async function warm(lat: number, lng: number, intentions: string[]): Promise<num
     .in("intention", intentions)
     .gt("swept_at", stale);
 
-  const hot = new Set((done ?? []).map((d) => d.intention));
+  const hot  = new Set((done ?? []).map((d) => d.intention));
   const cold = intentions.filter((i) => !hot.has(i) && GOOGLE_TYPES[i]).slice(0, MAX_SWEEPS);
 
   let calls = 0;
