@@ -384,10 +384,10 @@ body.ro #ro-bar{display:flex}
   display:none;align-items:center;justify-content:center;padding:22px}
 #wpick.show{display:flex}
 /* Le style est celui du sélecteur de map.html, copié : une colonne
-   CENTRÉE, le T au-dessus du nom, la définition dessous, les traces neuro
+   CENTRÉE, le T au-dessus du nom, la définition dessous, le pilier
    en bas. Deux fichiers, deux copies — jamais un partage. */
 /* ══ LA FICHE — UN SEUL SYSTÈME DE FILTRE ET DE SÉLECTION ═══════════════
-   Une colonne CENTRÉE : le T au-dessus, le nom, la définition, les traces.
+   Une colonne CENTRÉE : le T au-dessus, le nom, la définition, le pilier.
    Bande au survol, liseré entre les lignes. Ce bloc est recopié à
    l'identique dans totehm.html, book.html, next_objective.html et
    map.html — trois origines, quatre copies, jamais un partage.
@@ -398,7 +398,7 @@ body.ro #ro-bar{display:flex}
      T           16×16, en bloc, 6px sous lui
      nom         Quantico 700 · 19px
      définition  Quantico 400 · 13px · #b4b4b4
-     traces      Space Mono 8 · .13em · #b4b4b4 sur bord #3c3c3c
+     pilier      Space Mono 9 · .22em · #b4b4b4 · un mot en majuscules
      sortie      Space Mono 9 · .14em · #606060, liseré au-dessus */
 .wp-card{background:#131316;border:1px solid #242429;width:100%;max-width:520px;
   padding:26px 22px 18px;display:flex;flex-direction:column;gap:10px;max-height:88vh}
@@ -415,10 +415,8 @@ body.ro #ro-bar{display:flex}
 .wp-nm{font-family:'Quantico',sans-serif;font-weight:700;font-size:19px;line-height:1.15}
 .wp-df{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;
   color:#b4b4b4;line-height:1.45;margin-top:5px}
-.wp-neuro{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;justify-content:center}
-.wp-ntag{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.13em;
-  text-transform:uppercase;color:#b4b4b4;border:1px solid #3c3c3c;
-  padding:3px 8px;line-height:1.6;white-space:nowrap}
+.wp-pillar{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;
+  text-transform:uppercase;color:#b4b4b4;margin-top:8px;line-height:1}
 .wp-skip{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;
   text-transform:uppercase;color:#606060;background:none;border:none;cursor:pointer;
   padding:12px 0 2px;margin-top:2px;flex-shrink:0;
@@ -762,6 +760,10 @@ body.gate.entered #filter-badge{
 
 
 
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -804,7 +806,7 @@ body.gate.entered #filter-badge{
 #mw-sub .s-plan .p-why:hover,
 .wp-q:hover,
 .wp-df:hover,
-.wp-ntag:hover,
+.wp-pillar:hover,
 .wp-skip:hover,
 .mw-body:hover,
 .mw-close:hover,
@@ -1471,13 +1473,13 @@ async function migrateLocalToCloudIfNeeded(){
 
 /* ══ LES 7 INTENTIONS (source : totehm_map.html) ══ */
 const INTS=[
-  {id:'fight',    name:'Fight',    color:'#E24B4A', def:'Conquer yourself through harder effort.',         neuro:'High Beta / Gamma · Noradrenaline · Endogenous Opioids'},
-  {id:'flow',     name:'Flow',     color:'#e48b31', def:'Liberate energy through movement.',               neuro:'Alpha / Theta · Serotonin · Endocannabinoid System'},
-  {id:'enrich',   name:'Enrich',   color:'#fcbe21', def:'Master your wealth through capital & network.',   neuro:'Beta · Dopamine · Acetylcholine'},
-  {id:'love',     name:'Love',     color:'#639922', def:'Contemplate life through connection & beauty.',   neuro:'Alpha · Oxytocin · Parasympathetic'},
-  {id:'express',  name:'Express',  color:'#1D9E75', def:'Give form to emotion through creation.',          neuro:'Beta Creative · Dopamine · Default Mode Network'},
-  {id:'focus',    name:'Focus',    color:'#378ADD', def:'Master your mind through deep mental focus.',     neuro:'High Beta · Dopamine · Prefrontal Cortex'},
-  {id:'celebrate',name:'Celebrate',color:'#7F77DD', def:'Elevate energy through collective effervescence.',neuro:'High Beta · Dopamine · Oxytocin · Endogenous Opioids'}
+  {id:'fight',    name:'Fight',    color:'#E24B4A', def:'Conquer yourself through harder effort.',         pillar:'BODY'},
+  {id:'flow',     name:'Flow',     color:'#e48b31', def:'Liberate energy through movement.',               pillar:'BODY'},
+  {id:'enrich',   name:'Enrich',   color:'#fcbe21', def:'Master your wealth through capital & network.',   pillar:'MENTAL'},
+  {id:'love',     name:'Love',     color:'#639922', def:'Contemplate life through connection & beauty.',   pillar:'SPIRIT'},
+  {id:'express',  name:'Express',  color:'#1D9E75', def:'Give form to emotion through creation.',          pillar:'SOUL'},
+  {id:'focus',    name:'Focus',    color:'#378ADD', def:'Master your mind through deep mental focus.',     pillar:'MENTAL'},
+  {id:'celebrate',name:'Celebrate',color:'#7F77DD', def:'Elevate energy through collective effervescence.',pillar:'SOUL'}
 ];
 const INT_BY_ID={};INTS.forEach(x=>INT_BY_ID[x.id]=x);
 const intColor=i=>(INT_BY_ID[i]||{}).color||'#fff';
@@ -2287,9 +2289,7 @@ function openWeightPick(cur){
     b.innerHTML='<span class="tglyph-wrap" style="color:'+x.color+'">'+T_SVG+'</span>'
       +'<span class="wp-nm" style="color:'+x.color+'">'+esc(x.name)+'</span>'
       +'<span class="wp-df">'+esc(x.def)+'</span>'
-      +(x.neuro?'<span class="wp-neuro">'
-        +x.neuro.split(' · ').map(t=>'<span class="wp-ntag">'+esc(t)+'</span>').join('')
-        +'</span>':'');
+      +'<span class="wp-pillar">'+esc(x.pillar)+'</span>';
     b.onclick=()=>replyIntention(x.id);
     box.appendChild(b);
   });

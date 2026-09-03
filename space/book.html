@@ -90,10 +90,8 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 .pk-int .nm{font-family:'Quantico',sans-serif;font-weight:700;font-size:19px;line-height:1.15}
 .pk-int .df{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;
   color:#b4b4b4;line-height:1.45;margin-top:5px}
-.pk-neuro{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;justify-content:center}
-.pk-ntag{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.13em;
-  text-transform:uppercase;color:#b4b4b4;border:1px solid #3c3c3c;
-  padding:3px 8px;line-height:1.6;white-space:nowrap}
+.pk-pillar{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;
+  text-transform:uppercase;color:#b4b4b4;margin-top:8px;line-height:1}
 .pk-skip{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;
   text-transform:uppercase;color:#606060;background:none;border:none;cursor:pointer;
   padding:12px 0 2px;margin-top:2px;flex-shrink:0;
@@ -184,6 +182,10 @@ body.ro .t-text{pointer-events:none}
 
 
 
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -193,7 +195,7 @@ body.ro .t-text{pointer-events:none}
 .t-date:hover,
 .pk-q:hover,
 .pk-int .df:hover,
-.pk-ntag:hover,
+.pk-pillar:hover,
 .pk-skip:hover,
 #status:hover{color:#fff}
 }
@@ -252,13 +254,13 @@ const isTyping=e=>{const t=e&&e.target;
 /* Les 7 intentions — même source que totehm.html. Copiées, pas partagées :
    trois origines, trois fichiers, aucun couplage. */
 const INTS=[
-  {id:'fight',    name:'Fight',    color:'#E24B4A', def:'Conquer yourself through harder effort.',         neuro:'High Beta / Gamma \u00b7 Noradrenaline \u00b7 Endogenous Opioids'},
-  {id:'flow',     name:'Flow',     color:'#e48b31', def:'Liberate energy through movement.',               neuro:'Alpha / Theta \u00b7 Serotonin \u00b7 Endocannabinoid System'},
-  {id:'enrich',   name:'Enrich',   color:'#fcbe21', def:'Master your wealth through capital & network.',   neuro:'Beta \u00b7 Dopamine \u00b7 Acetylcholine'},
-  {id:'love',     name:'Love',     color:'#639922', def:'Contemplate life through connection & beauty.',   neuro:'Alpha \u00b7 Oxytocin \u00b7 Parasympathetic'},
-  {id:'express',  name:'Express',  color:'#1D9E75', def:'Give form to emotion through creation.',          neuro:'Beta Creative \u00b7 Dopamine \u00b7 Default Mode Network'},
-  {id:'focus',    name:'Focus',    color:'#378ADD', def:'Master your mind through deep mental focus.',     neuro:'High Beta \u00b7 Dopamine \u00b7 Prefrontal Cortex'},
-  {id:'celebrate',name:'Celebrate',color:'#7F77DD', def:'Elevate energy through collective effervescence.',neuro:'High Beta \u00b7 Dopamine \u00b7 Oxytocin \u00b7 Endogenous Opioids'}
+  {id:'fight',    name:'Fight',    color:'#E24B4A', def:'Conquer yourself through harder effort.',         pillar:'BODY'},
+  {id:'flow',     name:'Flow',     color:'#e48b31', def:'Liberate energy through movement.',               pillar:'BODY'},
+  {id:'enrich',   name:'Enrich',   color:'#fcbe21', def:'Master your wealth through capital & network.',   pillar:'MENTAL'},
+  {id:'love',     name:'Love',     color:'#639922', def:'Contemplate life through connection & beauty.',   pillar:'SPIRIT'},
+  {id:'express',  name:'Express',  color:'#1D9E75', def:'Give form to emotion through creation.',          pillar:'SOUL'},
+  {id:'focus',    name:'Focus',    color:'#378ADD', def:'Master your mind through deep mental focus.',     pillar:'MENTAL'},
+  {id:'celebrate',name:'Celebrate',color:'#7F77DD', def:'Elevate energy through collective effervescence.',pillar:'SOUL'}
 ];
 const INT_BY_ID={};INTS.forEach(x=>INT_BY_ID[x.id]=x);
 
@@ -378,9 +380,7 @@ function renderInts(cur){
     b.innerHTML='<span style="color:'+x.color+'">'+T_SVG+'</span>'
       +'<span class="nm" style="color:'+x.color+'">'+esc(x.name)+'</span>'
       +'<span class="df">'+esc(x.def)+'</span>'
-      +(x.neuro?'<span class="pk-neuro">'
-        +x.neuro.split(' \u00b7 ').map(t=>'<span class="pk-ntag">'+esc(t)+'</span>').join('')
-        +'</span>':'');
+      +'<span class="pk-pillar">'+esc(x.pillar)+'</span>';
     b.onclick=()=>applyInt(x.id);
     box.appendChild(b);
   });

@@ -128,6 +128,13 @@ const kbVisibility = () => ({
   ],
 });
 
+const kbEnergy = () => ({
+  inline_keyboard: [
+    [{ text: "\u{1F507} Silent — tête baissée", callback_data: "s:e:silent" },
+     { text: "\u{1F30A} Social — en présence", callback_data: "s:e:social" }],
+  ],
+});
+
 async function askActivite(chat: string) {
   await say(chat,
     "Qu'est-ce qu'on y fait, exactement ?\n" +
@@ -213,7 +220,21 @@ Deno.serve(async (req) => {
         }
 
         if (parts[1] === "v") {
-          const pub = parts[2] === "public";
+          // La visibilité est un choix technique (qui voit) ; l'énergie est le
+          // contrat social (comment on y est). Les deux séparés, dans cet ordre.
+          data.is_public = parts[2] === "public";
+          await draftSet(tgId, uid, "energie", data);
+          await say(chat,
+            "Comment on y est ?\n" +
+            "• Silent — tête baissée, seul\n" +
+            "• Social — en présence, à plusieurs",
+            kbEnergy());
+          return ok();
+        }
+
+        if (parts[1] === "e") {
+          const em  = parts[2] === "silent" ? "silent" : "social";
+          const pub = !!data.is_public;
           // ══ LE user_id VIENT DE LA BASE, JAMAIS DU MESSAGE ══
           // Le bot écrit avec le service_role : la RLS ne le protège pas.
           // C'est ici, et seulement ici, que l'appartenance se décide.
@@ -228,6 +249,7 @@ Deno.serve(async (req) => {
             expires_at:    data.expires_at ?? null,
             is_public:     pub,
             required_role: pub ? "public" : "figher",
+            energy_mode:   em,
             active:        true,
           };
           if (!row.intention || !row.activite || !isFinite(row.lat) || !isFinite(row.lng)) {
@@ -245,9 +267,10 @@ Deno.serve(async (req) => {
           const when = row.expires_at
             ? `pendant ${Math.round((row.duration_min ?? 0) / 60)} h`
             : "en permanence";
+          const energyLabel = em === "silent" ? "Silent" : "Social";
           await say(chat,
             `C'est posé.\n\n${intName(row.intention)} · ${row.activite}\n` +
-            `${pub ? "Public" : "Club"}, ${when}.\n\n` +
+            `${pub ? "Public" : "Club"} · ${energyLabel}, ${when}.\n\n` +
             `Il apparaît maintenant sur la carte de ceux qui portent ${intName(row.intention)} ` +
             `dans leur Totehm, autour de ce point.`);
           return ok();
@@ -422,6 +445,7 @@ Deno.serve(async (req) => {
       if (draft.step === "intention") { await say(chat, "Choisis une intention.", kbIntentions()); return ok(); }
       if (draft.step === "quand")     { await say(chat, "C'est pour quand ?", kbWhen()); return ok(); }
       if (draft.step === "visibilite"){ await say(chat, "Club ou public ?", kbVisibility()); return ok(); }
+      if (draft.step === "energie")   { await say(chat, "Silent ou social ?", kbEnergy()); return ok(); }
       return ok();
     }
 

@@ -95,18 +95,17 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
   font-family:'Quantico',sans-serif;font-size:19px;font-weight:700;line-height:1.15}
 .s-int-def{font-family:'Quantico',sans-serif;font-size:13px;font-weight:400;
   color:var(--mid);margin-top:5px;line-height:1.45}
-/* ── LES MOLÉCULES ET LES ONDES ──
-   Ce que l'intention fait au cerveau, en trois traces. Space Mono parce que
-   c'est de la donnée, pas de la parole ; gris sur gris parce que ça se lit
-   après le nom, jamais avant. */
-.s-int-neuro{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;justify-content:center}
-.s-int-ntag{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.13em;
-  text-transform:uppercase;color:var(--mid);border:1px solid var(--dim);
-  padding:3px 8px;line-height:1.6;white-space:nowrap}
+/* ── LE PILIER ──
+   Un mot, en Space Mono, sous la définition. Il classe l'intention dans la
+   carte mentale des 4 : BODY (action) · MENTAL (cognition) · SOUL (émotion) ·
+   SPIRIT (contemplation). Ce que remplace les tags neurotransmetteurs : moins
+   de traces, plus de sens. */
+.s-int-pillar{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--mid);margin-top:8px;line-height:1}
 @media(hover:hover){
   .s-int:hover{background:rgba(255,255,255,.05)}
   .s-int:hover .s-int-name{color:var(--hi)!important}
-  .s-int:hover .s-int-ntag{color:var(--hi);border-color:var(--lo)}
+  .s-int:hover .s-int-pillar{color:var(--hi)}
 }
 .s-int.on{background:rgba(255,255,255,.04)}
 .s-int.loading{opacity:.3;pointer-events:none}
@@ -205,6 +204,10 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
 .c-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
 .c-kind{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
   letter-spacing:.16em;text-transform:uppercase;padding:3px 8px;border:1px solid currentColor}
+/* Le contrat social d'un drop membre : silent (seul) ou social (à plusieurs).
+   Même géométrie que .c-kind, à peine plus discret pour ne pas voler la vedette
+   au badge DROP. Ne s'affiche QUE sur les MEMBER_DROP et si energy_mode existe. */
+.c-energy{opacity:.85}
 .c-int{display:flex;align-items:center;font-family:'Quantico',sans-serif;
   font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
 .c-name{font-family:'Quantico',sans-serif;font-weight:700;color:var(--hi);
@@ -378,8 +381,8 @@ body.in-world.view-cards #zoom{display:none}
   text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px}
 .fm-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:19px;color:#fff;line-height:1.15}
 .fm-opts{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:8px}
-/* Les options reprennent la pastille des traces neuro : même bord, même
-   graisse. Une seule pastille dans tout le produit. */
+/* Une seule pastille dans tout le produit : bord fin, Space Mono, majuscules,
+   .13em de tracking. Réutilisée ici et ailleurs. */
 .fm-opt{background:none;border:1px solid #3c3c3c;color:#b4b4b4;
   font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.13em;
   text-transform:uppercase;padding:3px 8px;line-height:1.6;white-space:nowrap;
@@ -418,33 +421,7 @@ body.in-world.view-cards #zoom{display:none}
 
 
 
-/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
-/* Le gris en survol devient blanc. Généré depuis la feuille
-   elle-même : un nouveau bloc gris entre ici tout seul.        */
-@media(hover:hover){
-.s-sub:hover,
-.s-int-def:hover,
-.s-int-ntag:hover,
-.s-int.cold .s-int-def:hover,
-#s-note:hover,
-.s-exit:hover,
-#count:hover,
-.c-why:hover,
-.c-walk:hover,
-.c-go:hover,
-#info .c-x svg:hover,
-#view-toggle:hover,
-.deck-nav svg:hover,
-#filter-arrow svg:hover,
-#zoom button:hover,
-.gm-body:hover,
-.gm-x svg:hover,
-.fm-lbl:hover,
-.fm-opt:hover,
-.c-takes:hover,
-.c-takes b:hover{color:#fff}
-}
-/* ══ FIN DU BLOC GÉNÉRÉ ══ */
+
 #conn-bar{position:fixed;top:14px;left:16px;z-index:95;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
 #conn-bar:hover{color:#fff}
 #conn-bar .dot{width:8px;height:8px;border-radius:50%;background:#888}
@@ -462,6 +439,44 @@ body.in-world.view-cards #zoom{display:none}
 .mw-mail{font-family:'Space Mono',monospace;font-size:9px;color:#6d6d6d;margin-bottom:12px;word-break:break-all}
 .mw-signout{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#6d6d6d;background:none;border:none;cursor:pointer;padding:2px 0;margin-top:8px}
 .mw-signout:hover{color:#fff}
+
+
+
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Le gris en survol devient blanc. Généré depuis la feuille
+   elle-même : un nouveau bloc gris entre ici tout seul.        */
+@media(hover:hover){
+.s-sub:hover,
+.s-int-def:hover,
+.s-int-pillar:hover,
+.s-int.cold .s-int-def:hover,
+#s-note:hover,
+.s-exit:hover,
+#count:hover,
+.c-why:hover,
+.c-walk:hover,
+.c-go:hover,
+#info .c-x svg:hover,
+#view-toggle:hover,
+.deck-nav svg:hover,
+#filter-arrow svg:hover,
+#hm-weather:hover,
+#hm-weather b:hover,
+#zoom button:hover,
+.gm-body:hover,
+.gm-x svg:hover,
+.fm-lbl:hover,
+.fm-opt:hover,
+.c-takes:hover,
+.c-takes b:hover,
+#conn-bar:hover,
+.mw-close:hover,
+.mw-input:hover::placeholder,
+.mw-note.dim:hover,
+.mw-mail:hover,
+.mw-signout:hover{color:#fff}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body>
@@ -567,16 +582,17 @@ const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':s;r
 const isTyping=e=>{const t=e&&e.target;
   return !!t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable===true);};
 
-/* Les 7 intentions — copiées de totehm.html, `neuro` compris. Copiées,
-   jamais partagées : trois origines, trois fichiers, aucun couplage. */
+/* Les 7 intentions — chacune porte son Pilier (BODY / MENTAL / SOUL / SPIRIT).
+   Les tags neurotransmetteurs ont été retirés : ils décoraient sans jamais
+   changer une décision. Le Pilier, lui, dit d'un mot ce que le lieu nourrit. */
 const INTS=[
-  {id:'fight',    name:'Fight',    color:'#E24B4A', def:'Conquer yourself through harder effort.',          neuro:'High Beta / Gamma · Noradrenaline · Endogenous Opioids'},
-  {id:'flow',     name:'Flow',     color:'#e48b31', def:'Liberate energy through movement.',                neuro:'Alpha / Theta · Serotonin · Endocannabinoid System'},
-  {id:'enrich',   name:'Enrich',   color:'#fcbe21', def:'Master your wealth through capital & network.',    neuro:'Beta · Dopamine · Acetylcholine'},
-  {id:'love',     name:'Love',     color:'#639922', def:'Contemplate life through connection & beauty.',    neuro:'Alpha · Oxytocin · Parasympathetic'},
-  {id:'express',  name:'Express',  color:'#1D9E75', def:'Give form to emotion through creation.',           neuro:'Beta Creative · Dopamine · Default Mode Network'},
-  {id:'focus',    name:'Focus',    color:'#378ADD', def:'Master your mind through deep mental focus.',      neuro:'High Beta · Dopamine · Prefrontal Cortex'},
-  {id:'celebrate',name:'Celebrate',color:'#7F77DD', def:'Elevate energy through collective effervescence.', neuro:'High Beta · Dopamine · Oxytocin · Endogenous Opioids'}
+  {id:'fight',    name:'Fight',    color:'#E24B4A', def:'Conquer yourself through harder effort.',          pillar:'BODY'},
+  {id:'flow',     name:'Flow',     color:'#e48b31', def:'Liberate energy through movement.',                pillar:'BODY'},
+  {id:'enrich',   name:'Enrich',   color:'#fcbe21', def:'Master your wealth through capital & network.',    pillar:'MENTAL'},
+  {id:'love',     name:'Love',     color:'#639922', def:'Contemplate life through connection & beauty.',    pillar:'SPIRIT'},
+  {id:'express',  name:'Express',  color:'#1D9E75', def:'Give form to emotion through creation.',           pillar:'SOUL'},
+  {id:'focus',    name:'Focus',    color:'#378ADD', def:'Master your mind through deep mental focus.',      pillar:'MENTAL'},
+  {id:'celebrate',name:'Celebrate',color:'#7F77DD', def:'Elevate energy through collective effervescence.', pillar:'SOUL'}
 ];
 const INT_BY_ID={};INTS.forEach(x=>INT_BY_ID[x.id]=x);
 const intColor=i=>(INT_BY_ID[i]||{}).color||'#fff';
@@ -770,6 +786,9 @@ function cardHTML(s){
   return ''
    +'<div class="c-top">'
    +  '<span class="c-kind" style="color:'+col+'">'+(KIND[s.kind]||'Place')+'</span>'
+   +  (s.kind==='MEMBER_DROP'&&s.energy_mode
+       ?'<span class="c-kind c-energy" style="color:'+col+'">'+esc(s.energy_mode)+'</span>'
+       :'')
    +  '<span class="c-int" style="color:'+col+'">'+tGlyph(13)+'&nbsp;&nbsp;'+esc(conf.name)+'</span>'
    +  (left?'<span class="c-kind" style="color:'+col+'">'+esc(left)+'</span>':'')
    +'</div>'
@@ -1350,9 +1369,7 @@ function buildSelector(){
     b.innerHTML=tGlyph(17)
       +'<span class="s-int-name" style="color:'+x.color+'">'+esc(x.name)+'</span>'
       +'<span class="s-int-def">'+esc(x.def)+'</span>'
-      +(x.neuro?'<span class="s-int-neuro">'
-        +x.neuro.split(' · ').map(t=>'<span class="s-int-ntag">'+esc(t)+'</span>').join('')
-        +'</span>':'');
+      +'<span class="s-int-pillar">'+esc(x.pillar)+'</span>';
     b.onclick=()=>pick(x.id);
     box.appendChild(b);
   });
