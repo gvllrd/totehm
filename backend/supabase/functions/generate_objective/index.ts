@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { corsHeaders, SITE_SPACE } from "../_shared/origins.ts";
 
 // generate_objective — My next objective (le futur du Totehm)
 //
@@ -65,12 +66,11 @@ const RATE_WINDOW = 3600;
 const WIDE = new Set(["zh","ja","ko","ru","ar","he","hi","th","el"]);
 const RTL  = new Set(["ar","he","fa","ur","ps","sd","yi","dv","ckb"]);
 
-const CORS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), { status, headers: { ...CORS, "Content-Type": "application/json" } });
+// CORS restreint aux domaines TOTEHM. Wildcard '*' aurait laissé n'importe
+// quel site appeler la fonction — coût OpenAI ~0,002 $ par appel, la facture
+// serait pour Wah. `corsHeaders` importé de _shared/origins.ts, même pattern
+// que higher-checkout, stripe-webhook, higher-map. `json()` est construit
+// dans Deno.serve, closed over l'origine du requester.
 
 function normalize(s: string): string {
   return s.toLowerCase()
@@ -220,7 +220,11 @@ Every habit you return must be STRICTLY COMPLEMENTARY to that list: a different 
 }
 
 Deno.serve(async (req: Request) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
+  const cors = corsHeaders(req.headers.get("origin"), SITE_SPACE);
+  const json = (body: unknown, status = 200) =>
+    new Response(JSON.stringify(body), { status, headers: cors });
+
+  if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
 
   const key = Deno.env.get("OPENAI_API_KEY");
   if (!key) return json({ error: "generation engine not configured", code: "NO_KEY" }, 503);

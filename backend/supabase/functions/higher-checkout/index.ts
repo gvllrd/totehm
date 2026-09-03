@@ -9,7 +9,11 @@ import Stripe from "npm:stripe@14";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders, resolveOrigin, SITE_COM } from "../_shared/origins.ts";
 
-const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "");
+// Pas de fallback `?? ""` : Stripe accepterait la clé vide, échouerait
+// silencieusement au premier appel, et le check ligne 47 arriverait trop tard.
+// Le `!` fait planter le module au démarrage — la fonction ne démarre pas
+// tant que le secret n'est pas là. C'est mieux qu'un paiement fantôme.
+const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!);
 
 const admin = createClient(
   Deno.env.get("SUPABASE_URL")!,
