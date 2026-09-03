@@ -204,12 +204,14 @@ body.higher .set-block.higher-only{display:flex!important}
 .h-hint{position:absolute;left:2px;top:50%;transform:translateY(-50%);font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:rgba(255,255,255,.33);pointer-events:none}
 .h-hint .hh{color:#fff}
 
-/* ── FREQUENCY PANEL ── */
-#freq-panel{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.82);display:flex;align-items:flex-start;justify-content:center;padding:max(44px,10dvh) 22px 22px}
-/* Fenêtre d'aperçu minimaliste : freq + intention, chacune cliquable pour rouvrir son sélecteur */
-#habit-peek{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:22px}
-/* Fenêtre de filtre : même style que habit-peek */
-#filter-modal{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:22px}
+/* ── FENÊTRES PLEIN-ÉCRAN — TOUTES ANCRÉES EN HAUT ──
+   Le clavier mobile mange le tiers inférieur de l'écran ; toute box
+   centrée verticalement disparaît sous le clavier au premier focus.
+   `align-items:flex-start` + `padding-top` fixe l'ancrage en haut,
+   identique mobile et desktop pour rester prévisible. */
+#freq-panel,#habit-peek,#filter-modal{position:fixed;inset:0;z-index:90;
+  background:rgba(0,0,0,.82);display:flex;align-items:flex-start;
+  justify-content:center;padding:max(44px,8dvh) 22px 22px}
 /* Badge du filtre actif : petit indicateur cliquable en haut du T.png */
 /* Badge des filtres : haut à droite, empilé.
    Ligne 1 = Time Frequency (blanc, Quantico) · Ligne 2 = Intention (couleur de l'intention, Quantico gras) */
@@ -242,19 +244,26 @@ body.higher .set-block.higher-only{display:flex!important}
   text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px}
 .hp-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:19px;color:#fff;line-height:1.15}
 .hp-val .tglyph{width:16px;height:16px;margin:0 auto 6px;display:block}
+/* Placeholder "Select --" quand la valeur n'est pas encore choisie.
+   Même font/taille que la valeur remplie (pas de saut visuel au clic),
+   mais dim + tirets pour signifier l'appel à l'action. */
+.hp-placeholder{color:rgba(255,255,255,.35);letter-spacing:.04em}
 /* Lecture seule : les rangees restent identiques, mais ne s'ouvrent plus.
    Un Totehm qui n'est pas le mien ne se modifie pas depuis ma fenetre. */
 #habit-peek.ro .hp-row{cursor:default;pointer-events:none}
 .hp-def{font-family:var(--futura);font-weight:300;font-style:normal;font-size:12px;color:rgba(255,255,255,.6);line-height:1.4;max-width:260px;margin-top:6px}
 .fm-def{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:#b4b4b4;line-height:1.45;margin-top:5px;max-width:none}
 .fm-def:empty{display:none}
-.fp-card{background:#131316;border:1px solid #242429;width:100%;max-width:380px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px;max-height:calc(100dvh - 66px);overflow:hidden}
+.fp-card{background:#131316;border:1px solid #242429;width:100%;max-width:420px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px;max-height:calc(100dvh - 66px);overflow:hidden}
 #fp-input{background:none;border:none;border-bottom:1px solid rgba(255,255,255,.18);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;padding:4px 2px;text-align:center;caret-color:#fff}
 #fp-input::placeholder{color:rgba(255,255,255,.3);font-size:12px;font-style:normal}
 #fp-preview{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:rgba(255,255,255,.65);min-height:22px;text-align:center;background:none;border:none;padding:2px 8px;cursor:pointer;transition:color .15s,background .15s;-webkit-tap-highlight-color:transparent}
 #fp-preview:hover,#fp-preview:active{color:#fff;background:var(--navy)}
 #fp-preview:empty,#fp-preview.hide{pointer-events:none}
-#fp-list{display:flex;flex-direction:column;gap:7px;flex:1 1 0;min-height:0;overflow-y:auto;padding-right:4px}
+/* La liste des 33 fréquences reste TOUJOURS visible sous l'input, même
+   quand le clavier mobile s'ouvre. flex:1 la fait remplir l'espace dispo.
+   Chaque bouton est un vrai tap target (10px vertical), pas juste du texte. */
+#fp-list{display:flex;flex-direction:column;gap:3px;flex:1 1 0;min-height:120px;overflow-y:auto;padding-right:4px;-webkit-overflow-scrolling:touch}
 /* étape 2 : l'intention de l'Habitude (les 7 de la Map) */
 #fp-ints{display:flex;flex-direction:column;gap:12px;flex:1 1 0;min-height:0;overflow-y:auto;padding-right:4px}
 .fp-int{display:flex;flex-direction:column;gap:4px;background:none;border:none;padding:4px 0;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
@@ -267,9 +276,9 @@ body.higher .set-block.higher-only{display:flex!important}
 .fp-int.on .nm{text-decoration:underline}
 .fp-skip{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--g-dark);background:none;border:none;cursor:pointer;padding:4px 0;transition:color .15s}
 .fp-skip:hover{color:#fff}
-.fp-opt{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#c4c4c4;text-align:left}
-.fp-opt:hover{color:#fff}
-.fp-opt.on{color:#fff}
+.fp-opt{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#c4c4c4;text-align:left;padding:8px 10px;border-radius:0;transition:background .12s,color .12s}
+.fp-opt:hover{color:#fff;background:rgba(255,255,255,.04)}
+.fp-opt.on{color:#fff;background:rgba(255,255,255,.06);font-weight:700}
 
 /* ══ SETTINGS (noir, prolongement d'index.html : tiroirs + radios boutique) ══ */
 #settings{width:100%;max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:8px;padding:3vh 22px 0;align-items:center}
@@ -381,7 +390,8 @@ body.ro #ro-bar{display:flex}
    Ce n'est pas le voile qui doit monter, c'est LA FENÊTRE. Exactement le
    mécanisme de `totehm-read-peek`, pour la même raison. */
 #wpick{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.86);
-  display:none;align-items:center;justify-content:center;padding:22px}
+  display:none;align-items:flex-start;justify-content:center;
+  padding:max(44px,8dvh) 22px 22px}
 #wpick.show{display:flex}
 /* Le style est celui du sélecteur de map.html, copié : une colonne
    CENTRÉE, le T au-dessus du nom, la définition dessous, le pilier
@@ -421,7 +431,7 @@ body.ro #ro-bar{display:flex}
   text-transform:uppercase;color:#606060;background:none;border:none;cursor:pointer;
   padding:12px 0 2px;margin-top:2px;flex-shrink:0;
   border-top:1px solid rgba(255,255,255,.09);transition:color .15s}
-#member-window{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.84);display:none;align-items:center;justify-content:center;padding:24px}
+#member-window{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.84);display:none;align-items:flex-start;justify-content:center;padding:max(44px,8dvh) 24px 24px}
 #member-window.show{display:flex}
 .mw-card{background:#131316;border:1px solid #242429;max-width:360px;width:100%;padding:30px 24px;text-align:center;position:relative;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .mw-card::-webkit-scrollbar{width:0;display:none}
@@ -724,10 +734,12 @@ body.gate.entered #filter-badge{
   #sn-home{display:flex}
   #sn-home img{width:54px;height:auto}
   #sn-home:hover,#sn-home:active{border-image-source:none;color:#b0b0b0}
-  /* Desktop : le keyboard n'existe pas — on recentre la carte */
-  #freq-panel{align-items:center;padding:22px}
-  .fp-card{max-height:calc(100vh - 44px)}
+  /* Desktop : freq-panel reste ancré en haut aussi. Un utilisateur qui
+     revient de mobile ne doit pas voir la carte sauter selon le device. */
+  .fp-card{max-height:calc(100vh - 88px)}
 }
+
+
 
 
 
@@ -781,6 +793,7 @@ body.gate.entered #filter-badge{
 .h-hint:hover,
 #filter-badge #fb-clear:hover,
 .hp-lbl:hover,
+.hp-placeholder:hover,
 .hp-def:hover,
 .fm-def:hover,
 #fp-input:hover::placeholder,
@@ -942,7 +955,7 @@ body.gate.entered #filter-badge{
 
 <div id="freq-panel" class="hide">
   <div class="fp-card">
-    <input id="fp-input" placeholder="type it — any language" autocomplete="off" spellcheck="false">
+    <input id="fp-input" placeholder="type any language — or pick below" autocomplete="off" spellcheck="false">
     <button id="fp-preview" type="button"></button>
     <div id="fp-list"></div>
     <div id="fp-ints" class="hide"></div>
@@ -1168,10 +1181,10 @@ const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u03
 const LEX={
   minute:['minute','minutes','min','mins','minuto','minutos','minuti','minuten','minuut','minutlich','pol','polovina'],
   hour:['hour','hours','hr','hrs','hourly','heure','heures','horaire','hora','horas','horario','ora','ore','orario','stunde','stunden','stundlich','uur','uurlijks'],
-  morning:['morning','mornings','matin','matins','matinal','manha','manhas','manana','mananas','matutino','mattina','mattine','mattinale','morgens','morgen','ochtend','ochtenden','reveil','wakeup','aurore','dawn','sunrise'],
-  afternoon:['afternoon','afternoons','apresmidi','apresmidis','aprestmidi','tarde','tardes','pomeriggio','pomeriggi','nachmittag','nachmittags','middag','siesta','apresmidii'],
-  evening:['evening','evenings','soir','soirs','soiree','sera','serate','abend','abends','avond','avonden','sunset','crepuscule','anochecer'],
-  night:['night','nights','nuit','nuits','noite','noites','noche','noches','notte','notti','nacht','nachte','nachts','coucher','bedtime','minuit','midnight'],
+  morning:['morning','mornings','matin','matins','matinal','matinee','manha','manhas','manana','mananas','matutino','mattina','mattine','mattinale','morgens','morgen','fruh','fruhstuck','ochtend','ochtenden','reveil','reveille','wakeup','aurore','dawn','sunrise','aube'],
+  afternoon:['afternoon','afternoons','apresmidi','apresmidis','aprestmidi','tarde','tardes','pomeriggio','pomeriggi','nachmittag','nachmittags','middag','siesta','apresmidii','gouter'],
+  evening:['evening','evenings','soir','soirs','soiree','sera','serate','abend','abends','avond','avonden','sunset','crepuscule','anochecer','sundown','tramonto','atardecer'],
+  night:['night','nights','nuit','nuits','noite','noites','noche','noches','notte','notti','nacht','nachte','nachts','coucher','bedtime','minuit','midnight','dormir','sommeil','sueno','sonno','schlaf','sleep','bettgehen'],
   day:['day','days','daily','everyday','jour','jours','journee','quotidien','quotidiens','quotidienne','quotidiennes','quotidiennement','dia','dias','diario','diaria','diarios','diarias','diariamente','adiario','giorno','giorni','giornaliero','giornalmente','quotidiano','quotidiani','tag','tage','taglich','dagelijks','dag','dagen'],
   weekday:['weekday','weekdays','workday','workdays','workweek','ouvrable','ouvrables','uteis','laborables','feriali','werktag','werktage','werkdag','werkdagen','businessday'],
   weekend:['weekend','weekends','wochenende','wochenenden','fimdesemana','findesemana','weekender'],
@@ -1199,18 +1212,20 @@ const DAYS={
 
 /* phrases idiomatiques (avant tokenisation) */
 const PHRASES={
-  sometimes:['de temps en temps','de temps a autre','de vez em quando','de vez en cuando','a veces','as vezes','ogni tanto','ab und zu','af en toe','af en zo','once in a while','every now and then','now and then','from time to time','on and off','here and there','hin und wieder','ab und an'],
-  weekend:['fin de semaine','fin de semana','fim de semana','on weekends','le week end','au week end','ce week end','les week ends'],
-  weekday:['en semaine','dias uteis','dias laborables','dias habiles','giorni feriali','werktags','on weekdays'],
-  afternoon:['every afternoon','all afternoons','chaque apres midi','toutes les apres midi','tous les apres midi','tous les apres midis','todas las tardes','cada tarde','ogni pomeriggio','jeden nachmittag','elke middag','todas as tardes','cada tardes'],
-  morning:['every morning','all mornings','chaque matin','tous les matins','todas las mananas','todas as manhas','ogni mattina','jeden morgen','elke ochtend'],
-  evening:['every evening','all evenings','chaque soir','tous les soirs','todas las tardes noches','todas as tardes','ogni sera','jeden abend','elke avond'],
-  night:['every night','all nights','chaque nuit','toutes les nuits','todas las noches','todas as noites','ogni notte','jede nacht','elke nacht'],
-  birthday:['every birthday','on my birthday','a mon anniversaire','chaque anniversaire','mi cumpleanos','mio compleanno','mein geburtstag'],
-  newyear:['new year','new years eve','le jour de lan','nouvel an','ano nuevo','ano novo','capo danno','neujahrs tag','nieuw jaar','1er janvier','janvier 1'],
-  seasonal:['change of season','changement de saison','cambio de estacion','cambio di stagione','jahreszeitenwechsel','elke seizoen','al cambio de estacion'],
-  every_1st_month:['every 1st of the month','on the 1st','le 1er du mois','premier du mois','el 1 del mes','el primero del mes','il primo del mese','am ersten des monats','1st monthly'],
-  every_15th_month:['every 15th of the month','on the 15th','le 15 du mois','el 15 del mes','il 15 del mese','am 15 des monats','mid month','milieu du mois']
+  sometimes:['de temps en temps','de temps a autre','de vez em quando','de vez en cuando','a veces','as vezes','ogni tanto','ab und zu','af en toe','af en zo','once in a while','every now and then','now and then','from time to time','on and off','here and there','hin und wieder','ab und an','when i can','quand je peux','cuando puedo','quando posso','wenn ich kann'],
+  weekend:['fin de semaine','fin de semana','fim de semana','on weekends','le week end','au week end','ce week end','les week ends','am wochenende','nel weekend'],
+  weekday:['en semaine','dias uteis','dias laborables','dias habiles','giorni feriali','werktags','on weekdays','en semaine ouvree','wochentags'],
+  afternoon:['every afternoon','all afternoons','chaque apres midi','toutes les apres midi','tous les apres midi','tous les apres midis','todas las tardes','cada tarde','ogni pomeriggio','jeden nachmittag','elke middag','todas as tardes','cada tardes','a laprem','laprem midi'],
+  morning:['every morning','all mornings','chaque matin','tous les matins','todas las mananas','todas as manhas','ogni mattina','jeden morgen','elke ochtend','au reveil','al svegliarmi','al despertar','beim aufwachen','when i wake up','au petit dejeuner','al despertarme','en me levant'],
+  evening:['every evening','all evenings','chaque soir','tous les soirs','todas las tardes noches','todas as tardes','ogni sera','jeden abend','elke avond','avant de me coucher','avant le coucher','before bed','al tramonto','di sera','de nuit tombee'],
+  night:['every night','all nights','chaque nuit','toutes les nuits','todas las noches','todas as noites','ogni notte','jede nacht','elke nacht','avant de dormir','before sleep','vor dem schlafen','prima di dormire','antes de dormir'],
+  birthday:['every birthday','on my birthday','a mon anniversaire','chaque anniversaire','mi cumpleanos','mio compleanno','mein geburtstag','elke verjaardag'],
+  newyear:['new year','new years eve','le jour de lan','nouvel an','ano nuevo','ano novo','capo danno','neujahrs tag','nieuw jaar','1er janvier','janvier 1','january 1st'],
+  seasonal:['change of season','changement de saison','cambio de estacion','cambio di stagione','jahreszeitenwechsel','elke seizoen','al cambio de estacion','a chaque saison'],
+  every_1st_month:['every 1st of the month','on the 1st','le 1er du mois','premier du mois','el 1 del mes','el primero del mes','il primo del mese','am ersten des monats','1st monthly','le premier','the first of'],
+  every_15th_month:['every 15th of the month','on the 15th','le 15 du mois','el 15 del mes','il 15 del mese','am 15 des monats','mid month','milieu du mois','a la mi mois'],
+  daily:['every day','each day','jeden tag','ogni giorno','cada dia','cada dia','tutti i giorni','chaque jour','tous les jours','einmal am tag','einmal taglich','una vez al dia','una vez por dia','una volta al giorno','1 fois par jour','once a day','1 vez ao dia'],
+  weekly:['every week','each week','chaque semaine','toutes les semaines','ogni settimana','cada semana','jede woche','einmal die woche','once a week','1 fois par semaine']
 };
 
 /* détecte un mot-clé simple sur des tokens */
@@ -1229,7 +1244,7 @@ function deduceFreq(raw){
   if(exact)return exact.id;
 
   /* phrases idiomatiques d'abord (avant tokenisation qui pourrait couper) */
-  const PHRASE_TO_ID={weekend:'every_weekend',weekday:'every_weekday',afternoon:'every_afternoon',morning:'every_morning',evening:'every_evening',night:'every_night',birthday:'every_birthday',newyear:'every_newyear',sometimes:'sometimes',seasonal:'seasonal',every_1st_month:'every_1st_month',every_15th_month:'every_15th_month'};
+  const PHRASE_TO_ID={weekend:'every_weekend',weekday:'every_weekday',afternoon:'every_afternoon',morning:'every_morning',evening:'every_evening',night:'every_night',birthday:'every_birthday',newyear:'every_newyear',sometimes:'sometimes',seasonal:'seasonal',every_1st_month:'every_1st_month',every_15th_month:'every_15th_month',daily:'daily',weekly:'weekly'};
   for(const k of Object.keys(PHRASES)){
     if(hasPhr(n,PHRASES[k]))return PHRASE_TO_ID[k]||k;
   }
@@ -1252,11 +1267,12 @@ function deduceFreq(raw){
      .replace(/(^|\s)(sept|seven|siete|sette|sieben|zeven)($|\s)/g,'$17$3');
 
   let mult=false,num=null;
-  if(/(^|\s)(twice|bihebdo)($|\s)/.test(n)){mult=true;num=2;}
-  if(/(^|\s)thrice($|\s)/.test(n)){mult=true;num=3;}
+  if(/(^|\s)(twice|bihebdo|zweimal)($|\s)/.test(n)){mult=true;num=2;}
+  if(/(^|\s)(thrice|dreimal)($|\s)/.test(n)){mult=true;num=3;}
+  if(/(^|\s)(once|einmal|una vez|una volta|1 fois)($|\s)/.test(n)){num=num||1;}
   const nm=n.match(/(\d+)/);
   if(nm)num=parseInt(nm[1],10);
-  if(/(?:^|\s)(x\d+|\d+x|times|fois|vezes|veces|volte|mal|keer|per|par|por|al)(?:$|\s)/.test(n))mult=true;
+  if(/(?:^|\s)(x\d+|\d+x|times|fois|vezes|veces|vez|volte|volta|mal|keer|per|par|por|al|pro|nel|dans|dentro)(?:$|\s)/.test(n))mult=true;
   if(/(^|\s)(several|plusieurs|varias|varios|varie|mehrmals|meermaals|multiple|many|beaucoup)($|\s)/.test(n))mult=true;
 
   /* jours nommés */
@@ -1547,9 +1563,16 @@ function renderHabits(){
     };
   });
   box.querySelectorAll('.h-x').forEach(b=>{b.onclick=()=>{const h=state.habits[+b.dataset.i];logTotehmEvent('habit_removed',h?h.t:null,{f:h?h.f:null,i:h?h.i:null});state.habits.splice(+b.dataset.i,1);save();renderHabits();};});
-  const hT=$('h-T');if(hT)hT.onclick=()=>openFreqPanel('new','freq');
-  const hTp=$('h-Tp');if(hTp)hTp.onclick=()=>openFreqPanel('new','int');
-  const pf=$('h-pf');if(pf)pf.onclick=()=>openFreqPanel('new','freq');
+  /* Le T blink de la ligne d'ajout ouvre désormais la fenêtre d'aperçu
+     "nouvelle habit" — deux rangs, deux Select, l'utilisateur définit
+     chaque valeur indépendamment. Le clavier mobile ne cache plus rien
+     puisque tout est ancré en haut. */
+  const hT=$('h-T');if(hT)hT.onclick=()=>openNewHabitPeek();
+  /* Une fois une fréquence choisie mais pas d'intention : le T coloré
+     et le badge de fréquence restent. Clic sur l'un ou l'autre → même
+     peek, pré-rempli avec ce qu'on a déjà. */
+  const hTp=$('h-Tp');if(hTp)hTp.onclick=()=>openNewHabitPeek();
+  const pf=$('h-pf');if(pf)pf.onclick=()=>openNewHabitPeek();
   const add=$('h-add'), hint=$('h-hint');
   autoGrow(add);
   add.addEventListener('input',()=>{
@@ -1721,6 +1744,29 @@ function openHabitPeek(i){
   $('hp-int').onclick =()=>{closeHabitPeek();openFreqPanel(i,'int');};
   $('habit-peek').classList.remove('hide');
 }
+
+/* ══ FENÊTRE D'APERÇU D'UNE HABITUDE EN COURS DE CRÉATION ══
+   Ouverte au tap sur le T.svg BLINK (ligne d'ajout, `#h-T`).
+   Mêmes deux rangs que openHabitPeek — mais les valeurs vides affichent
+   "Select --" en Quantico, pour signifier « clique-moi ».
+   Cliquer une rangée ferme le peek, ouvre le picker approprié, applique
+   le choix à pendingF/pendingI, et rouvre le peek si l'autre valeur
+   manque encore. Quand les deux sont posées, l'habit est créée
+   automatiquement par le flux existant (applyFreq/applyIntent + renderHabits). */
+function openNewHabitPeek(){
+  const fLabel = pendingF ? flabel(pendingF) : '';
+  const intX   = pendingI ? (INT_BY_ID[pendingI] || null) : null;
+  $('hp-freq-val').innerHTML = fLabel
+    ? esc(fLabel)
+    : '<span class="hp-placeholder">Select --</span>';
+  $('hp-int-val').innerHTML  = intX
+    ? '<span style="color:'+intX.color+'">'+T_SVG+' '+intX.name+'</span>'
+    : '<span class="hp-placeholder">Select --</span>';
+  $('hp-int-def').textContent = intX ? (intX.def || '') : '';
+  $('hp-freq').onclick = () => { closeHabitPeek(); openFreqPanel('new','freq'); };
+  $('hp-int').onclick  = () => { closeHabitPeek(); openFreqPanel('new','int');  };
+  $('habit-peek').classList.remove('hide','ro');
+}
 /* Meme fenetre que la sienne, memes mesures, mais rien n'y est actionnable :
    on lit la Time Frequency et l'Intention d'un autre, on ne les change pas. */
 function openReadPeek(h){
@@ -1812,8 +1858,12 @@ function applyFreq(id){
   }
   if(fpTarget==='new'){
     pendingF=id;
-    if(!pendingI){showFpStage('int');renderHabits();return;}
-    closeFreqPanel();renderHabits();const na=$('h-add');if(na)na.focus();return;
+    closeFreqPanel();
+    /* Nouveau flow peek : au lieu de cascader vers la stage intention
+       dans le même panneau (ancien wizard), on rouvre la fenêtre d'aperçu
+       si l'intention manque encore. Sinon on crée l'habit. */
+    if(!pendingI){renderHabits();openNewHabitPeek();return;}
+    renderHabits();const na=$('h-add');if(na)na.focus();return;
   }
   if(!state.habits[fpTarget]){closeFreqPanel();return;}
   const prevF=state.habits[fpTarget].f;
@@ -1824,7 +1874,14 @@ function applyFreq(id){
 }
 /* étape 2 : l'intention colore le T et se pose à côté de la fréquence */
 function applyIntent(id){
-  if(fpTarget==='new'){pendingI=id;closeFreqPanel();renderHabits();const na=$('h-add');if(na)na.focus();return;}
+  if(fpTarget==='new'){
+    pendingI=id;
+    closeFreqPanel();
+    /* Si la fréquence manque encore, rouvre le peek pour la définir.
+       Sinon crée l'habit (renderHabits gère la conversion pending → state). */
+    if(!pendingF){renderHabits();openNewHabitPeek();return;}
+    renderHabits();const na=$('h-add');if(na)na.focus();return;
+  }
   if(fpTarget==='filter'){filterI=id;closeFreqPanel();updateFilterBadge();renderHabits();return;}
   if(state.habits[fpTarget]){const prevI=state.habits[fpTarget].i;state.habits[fpTarget].i=id;save();if(prevI!==id)logTotehmEvent('intention_changed',state.habits[fpTarget].t,{from:prevI||null,to:id||null});}
   closeFreqPanel();renderHabits();

@@ -112,7 +112,7 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 #conn-bar{position:fixed;top:14px;left:16px;z-index:85;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
 #conn-bar:hover{color:#fff}
 #conn-bar .dot{width:8px;height:8px;border-radius:50%;background:#888}
-#member-window{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.84);display:none;align-items:center;justify-content:center;padding:24px}
+#member-window{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.84);display:none;align-items:flex-start;justify-content:center;padding:max(44px,8dvh) 24px 24px}
 #member-window.show{display:flex}
 .mw-card{background:#131316;border:1px solid #242429;max-width:360px;width:100%;padding:30px 24px;text-align:center;position:relative;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .mw-card::-webkit-scrollbar{display:none}
