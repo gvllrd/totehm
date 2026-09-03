@@ -244,10 +244,13 @@ body.higher .set-block.higher-only{display:flex!important}
   text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px}
 .hp-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:19px;color:#fff;line-height:1.15}
 .hp-val .tglyph{width:16px;height:16px;margin:0 auto 6px;display:block}
-/* Placeholder "Select --" quand la valeur n'est pas encore choisie.
-   Même font/taille que la valeur remplie (pas de saut visuel au clic),
-   mais dim + tirets pour signifier l'appel à l'action. */
-.hp-placeholder{color:rgba(255,255,255,.35);letter-spacing:.04em}
+/* Placeholder pour valeur pas encore choisie : un unique tiret « — »
+   qui clignote comme un curseur. Le tiret et la pulsation ensemble = "à toi
+   de remplir". Aucun mot — les valeurs remplies auront un texte, les vides
+   n'ont qu'un signe. Aucune traduction à maintenir. */
+@keyframes hp-blink{0%,45%{opacity:.85}55%,100%{opacity:.15}}
+.hp-placeholder{color:rgba(255,255,255,.55);letter-spacing:0;
+  animation:hp-blink 1.2s ease-in-out infinite;font-weight:400}
 /* Lecture seule : les rangees restent identiques, mais ne s'ouvrent plus.
    Un Totehm qui n'est pas le mien ne se modifie pas depuis ma fenetre. */
 #habit-peek.ro .hp-row{cursor:default;pointer-events:none}
@@ -266,14 +269,19 @@ body.higher .set-block.higher-only{display:flex!important}
 #fp-list{display:flex;flex-direction:column;gap:3px;flex:1 1 0;min-height:120px;overflow-y:auto;padding-right:4px;-webkit-overflow-scrolling:touch}
 /* étape 2 : l'intention de l'Habitude (les 7 de la Map) */
 #fp-ints{display:flex;flex-direction:column;gap:12px;flex:1 1 0;min-height:0;overflow-y:auto;padding-right:4px}
-.fp-int{display:flex;flex-direction:column;gap:4px;background:none;border:none;padding:4px 0;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
-.fp-int:hover{opacity:.75}
-.fp-int-r1{display:flex;align-items:center;gap:8px}
-.fp-int .tglyph{height:15px;width:auto;flex-shrink:0}
-.fp-int .nm{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px}
-.fp-int .higher-inline{height:1.25em;vertical-align:-.28em}
-.fp-int .df{font-family:var(--futura);font-weight:300;font-size:12px;color:#c4c4c4;line-height:1.5;padding-left:22px}
-.fp-int.on .nm{text-decoration:underline}
+/* Aligné sur .pk-int de book.html : colonne centrée, T au-dessus du nom.
+   Même objet visuel dans tous les sélecteurs d'intention du produit
+   (book.html, totehm.html, map.html) — trois origines, trois copies, jamais
+   un partage. Si l'un dérive, les tests w8.mjs le disent. */
+.fp-int{display:flex;flex-direction:column;align-items:center;gap:0;background:none;border:none;padding:13px 8px;cursor:pointer;text-align:center;-webkit-tap-highlight-color:transparent;width:100%;transition:background .12s}
+.fp-int + .fp-int{border-top:1px solid rgba(255,255,255,.07)}
+@media(hover:hover){.fp-int:hover{background:rgba(255,255,255,.05)}}
+.fp-int.on{background:rgba(255,255,255,.04)}
+.fp-int .tglyph{width:16px;height:16px;flex-shrink:0;margin:0 0 6px;display:block}
+.fp-int .nm{font-family:'Quantico',sans-serif;font-weight:700;font-size:19px;line-height:1.15}
+.fp-int .df{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:#b4b4b4;line-height:1.45;margin-top:5px;max-width:none}
+.fp-int .higher-inline{height:1.25em;vertical-align:-.28em;margin-top:4px}
+.fp-pillar{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#b4b4b4;margin-top:8px;line-height:1}
 .fp-skip{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--g-dark);background:none;border:none;cursor:pointer;padding:4px 0;transition:color .15s}
 .fp-skip:hover{color:#fff}
 .fp-opt{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#c4c4c4;text-align:left;padding:8px 10px;border-radius:0;transition:background .12s,color .12s}
@@ -778,6 +786,8 @@ body.gate.entered #filter-badge{
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -799,6 +809,7 @@ body.gate.entered #filter-badge{
 #fp-input:hover::placeholder,
 #fp-preview:hover,
 .fp-int .df:hover,
+.fp-pillar:hover,
 .fp-skip:hover,
 .fp-opt:hover,
 .set-note:hover,
@@ -1756,12 +1767,11 @@ function openHabitPeek(i){
 function openNewHabitPeek(){
   const fLabel = pendingF ? flabel(pendingF) : '';
   const intX   = pendingI ? (INT_BY_ID[pendingI] || null) : null;
-  $('hp-freq-val').innerHTML = fLabel
-    ? esc(fLabel)
-    : '<span class="hp-placeholder">Select --</span>';
+  const dash   = '<span class="hp-placeholder">—</span>';
+  $('hp-freq-val').innerHTML = fLabel ? esc(fLabel) : dash;
   $('hp-int-val').innerHTML  = intX
     ? '<span style="color:'+intX.color+'">'+T_SVG+' '+intX.name+'</span>'
-    : '<span class="hp-placeholder">Select --</span>';
+    : dash;
   $('hp-int-def').textContent = intX ? (intX.def || '') : '';
   $('hp-freq').onclick = () => { closeHabitPeek(); openFreqPanel('new','freq'); };
   $('hp-int').onclick  = () => { closeHabitPeek(); openFreqPanel('new','int');  };
@@ -1886,17 +1896,20 @@ function applyIntent(id){
   if(state.habits[fpTarget]){const prevI=state.habits[fpTarget].i;state.habits[fpTarget].i=id;save();if(prevI!==id)logTotehmEvent('intention_changed',state.habits[fpTarget].t,{from:prevI||null,to:id||null});}
   closeFreqPanel();renderHabits();
 }
+/* Rendu aligné sur book.html (.pk-int) : T EN BLOC au-dessus du nom,
+   définition dessous, pilier dessous. Colonne centrée. Même objet visuel
+   dans tous les sélecteurs d'intention du produit. */
 function renderFpInts(currentId){
   const box=$('fp-ints');box.innerHTML='';
   INTS.forEach(x=>{
     const b=document.createElement('button');
+    b.type='button';
     b.className='fp-int'+(x.id===currentId?' on':'');
-    b.innerHTML='<span class="fp-int-r1"><span style="color:'+x.color+'">'+T_SVG+'</span>'
-      +'<span class="nm" style="color:'+x.color+'">'+x.name+'</span>'
-      /* #higher-badge (navy) et non #higher-word (coral) : le doré tirait
-         l'œil hors de la couleur de l'intention, qui est l'information. */
-      +(myHigher?'<svg class="higher-inline" viewBox="0 0 600 200" aria-label="Higher" role="img"><use href="#higher-badge"></use></svg>':'')+'</span>'
-      +'<span class="df">'+esc(x.def)+'</span>';
+    b.innerHTML='<span style="color:'+x.color+'">'+T_SVG+'</span>'
+      +'<span class="nm" style="color:'+x.color+'">'+esc(x.name)+'</span>'
+      +(myHigher?'<svg class="higher-inline" viewBox="0 0 600 200" aria-label="Higher" role="img"><use href="#higher-badge"></use></svg>':'')
+      +'<span class="df">'+esc(x.def)+'</span>'
+      +'<span class="fp-pillar">'+esc(x.pillar)+'</span>';
     b.onclick=()=>applyIntent(x.id);
     box.appendChild(b);
   });
