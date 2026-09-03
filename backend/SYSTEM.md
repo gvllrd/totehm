@@ -212,9 +212,10 @@ trips     0 ligne — la table n'existe plus
 totehms   8 lignes, 25 habitudes dans steps
 ```
 
-Elle a été renommée `totehms`. **`totehmBot.html` interroge encore `trips` : il
-est mort, il ne charge aucune habitude pour personne.** C'est le blocage
-frontend le plus urgent.
+Elle a été renommée `totehms`. `totehmBot.html` — le seul fichier qui
+interrogeait encore `trips` — a été supprimé le 03/09/2026 (doublon strict
+de `higherself.html`, table cible morte). Historique retenu pour éviter
+qu'un nouveau fichier ne recrée le même piège de nommage.
 
 Décision : on garde `totehms`. Renommer dans l'autre sens casserait le front
 sans rien apporter.
@@ -360,6 +361,7 @@ RLS activée sans policy sur les trois dernières : seul `service_role` y accèd
 | `video_url` | 0 | chaînes vides |
 | `user_id` | 0 | aucun MEMBER_DROP à ce jour |
 | `expires_at` | 0 | aucun LIVE_EVENT à ce jour |
+| `energy_mode` | 0 | **ajoutée 03/09/2026** — `silent` / `social` / `null`, imposée par le bot sur toute nouvelle insertion (voir §Flow `/spot`). Les 121 lignes antérieures sont `NULL` : backfill manuel plus tard. `places_near` la renvoie ; `map.html` affiche un badge silent/social uniquement sur les MEMBER_DROP. |
 
 Par intention, dans un rayon de 4 km depuis la Praça do Comércio :
 love 14 · focus 12 · express 10 · celebrate 9 · enrich 6 · fight 5 · flow 4.
@@ -493,7 +495,7 @@ relancer la requête avec les coordonnées. Le front fait le second
 ### La carte
 | Fonction | Rôle |
 |---|---|
-| `places_near(lat, lng, radius, intentions[], limit, places)` | `stable`, `security definer`. Union spots + places, tri `rank_tier, dist_m`. `earth_box` pour l'index GiST, `earth_distance` pour tronquer au cercle réel. Révoquée pour `anon` et `authenticated`. |
+| `places_near(lat, lng, radius, intentions[], limit, places, include_club)` | `stable`, `security definer`. Union spots + places, tri `rank_tier, dist_m`. `earth_box` pour l'index GiST, `earth_distance` pour tronquer au cercle réel. Révoquée pour `anon` et `authenticated`. **03/09/2026 — renvoie `energy_mode`** (silent/social pour les spots membres, null pour Google Places et spots legacy). |
 | `places_budget_take(max)` | incrémente le compteur du jour s'il est sous le plafond, renvoie `true` si l'appel Google est autorisé |
 
 ### Objectifs, musique, adhésion
@@ -788,6 +790,10 @@ Functions sont téléchargeables.
 | 28/08 | `lisbon.html` supprimé, routing PT → `discover_lisbon.html` | un seul fichier PT, route claire |
 | 28/08 | Vercel défaut `/` → `discover.html` (était `discover.html`, route `/global` ajoutée) | international sans ambiguïté |
 | 28/08 | `higher-checkout` : divergence front/back identifiée — front 30 $ fixe, fonction encore sur 5 paliers | à aligner lors du prochain lot `higher-checkout` |
+| 03/09 | **`spots.energy_mode`** — nouvelle colonne `silent \| social \| null`, check constraint. Imposée par `bot-reply` sur toute nouvelle insertion `MEMBER_DROP` (7e étape du flow `/spot`, entre visibilité et INSERT). `places_near` la renvoie ; `map.html`, `book.html`, `totehm.html` l'affichent en badge (uniquement sur `MEMBER_DROP`). Legacy : 121 lignes à NULL, badge omis — backfill manuel plus tard. |
+| 03/09 | **Pilier** remplace `neuro` sur les 7 intentions dans le sélecteur — mapping `BODY=fight,flow` · `MENTAL=enrich,focus` · `SOUL=express,celebrate` · `SPIRIT=love`. Appliqué à `map.html`, `book.html`, `totehm.html` (les tags neurotransmetteurs `.s-int-ntag / .pk-ntag / .wp-ntag` supprimés, remplacés par un mot Space Mono en majuscules). `next_objective.html` n'était pas concerné (n'a que `IDEF`). |
+| 03/09 | **Prompt OpenAI `batchDescribe`** réécrit dans `higher-map` — voix du mentor (Goggins/Watts/Naval/Perel/Abloh/Jobs/Bourdain), une ancre physique obligatoire, ban list explicite (`unlock`, `vibrant`, `hidden gem`, `must-visit`, `elevate`, `journey`, `embrace`, `immerse`, `experience`, `vibe`), 8 mots max. Les descriptions déjà en cache ne sont pas régénérées — le nouveau ton s'impose au fil du remplissage. |
+| 03/09 | `GOOGLE_MAPS_API_KEY` **remise en place** dans Supabase secrets (elle manquait depuis un moment — les logs du 02/09 montraient `API_KEY_INVALID`). Testé end-to-end via une fonction `debug-gm` temporaire supprimée après validation. Clé restreinte à Places API (New) dans Cloud Console, aucune restriction d'application (Supabase Edge Functions n'ont pas d'IP fixe). |
 
 ---
 
