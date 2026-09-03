@@ -214,6 +214,12 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
   line-height:1.15;margin-bottom:12px}
 .c-why{font-family:'Quantico',sans-serif;font-weight:400;color:var(--mid);
   line-height:1.55;font-style:normal}
+/* Attribution du match : "ce lieu apparaît parce que ton habit X matche".
+   Space Mono comme les métadonnées, très discret — n'écrase pas le nom du
+   lieu ou la description mentor. Pas de traduction : c'est l'habit du membre
+   qui est cité littéralement. */
+.c-match{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;
+  color:var(--lo);margin-top:10px;line-height:1.4}
 .c-foot{display:flex;align-items:baseline;justify-content:space-between;gap:14px;
   margin-top:20px;padding-top:14px;border-top:1px solid rgba(255,255,255,.09)}
 .c-dist{font-family:'Space Mono',monospace;font-size:15px;color:var(--hi)}
@@ -442,6 +448,8 @@ body.in-world.view-cards #zoom{display:none}
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -454,6 +462,7 @@ body.in-world.view-cards #zoom{display:none}
 .s-exit:hover,
 #count:hover,
 .c-why:hover,
+.c-match:hover,
 .c-walk:hover,
 .c-go:hover,
 #info .c-x svg:hover,
@@ -794,6 +803,9 @@ function cardHTML(s){
    +'</div>'
    +'<div class="c-name">'+esc(s.activite||'place')+'</div>'
    +(desc?'<div class="c-why">'+esc(desc)+'</div>':'')
+   +(s.matched_habit
+       ?'<div class="c-match">matches: '+esc(s.matched_habit)+'</div>'
+       :'')
    +'<div class="c-takes" data-takes="'+esc(s.id||'')+'">'
    +  (n?('<b>'+n+'</b> '+(n===1?'member went there':'members went there')):'be the first to go')
    +'</div>'
@@ -949,19 +961,36 @@ function radarStart(){
 }
 function radarStop(){RAD.on=false;if(RAD.raf){cancelAnimationFrame(RAD.raf);RAD.raf=0;}}
 
+/* rank_tier pilote la LUMINOSITÉ du T. C'est la traduction visuelle du
+   match sémantique entre l'habit du membre et le lieu :
+     0 = MEMBER_DROP        → glow max, opacity 1        (drop humain, prioritaire)
+     1 = fit fort           → glow renforcé, opacity 1
+     2 = fit moyen          → glow normal, opacity .8
+     3 = fit faible / null  → glow discret, opacity .5    (périphérie du radar)
+   Aucun texte de score : c'est visuel. La luminosité EST le message. */
+const TIER_STYLE = [
+  { opacity: 1,  blur: 8, size: 17 },   // 0 MEMBER_DROP
+  { opacity: 1,  blur: 6, size: 16 },   // 1
+  { opacity: .8, blur: 4, size: 15 },   // 2
+  { opacity: .5, blur: 2, size: 14 },   // 3
+];
+
 function renderRadar(spots){
   const box=$('markers');
   box.querySelectorAll('.marker').forEach(el=>el.remove());
   RAD.base=autoRange(spots);RAD.zoom=1;
   spots.forEach((s,i)=>{
     const c=intColor(s.intention);
+    const tier=Math.min(3,Math.max(0,Number(s.rank_tier ?? 3)));
+    const st=TIER_STYLE[tier];
     const el=document.createElement('button');
     el.type='button';
-    el.className='marker src-'+(s.source||'spot');
+    el.className='marker src-'+(s.source||'spot')+' tier-'+tier;
     el.style.color=c;
-    el.style.filter='drop-shadow(0 0 5px '+c+')';
+    el.style.opacity=st.opacity;
+    el.style.filter='drop-shadow(0 0 '+st.blur+'px '+c+')';
     el.setAttribute('aria-label',(s.activite||'place')+' — '+fmtDist(s.dist_m||0));
-    el.innerHTML=tGlyph(15);
+    el.innerHTML=tGlyph(st.size);
     el.querySelector('.tglyph').style.animationDelay=(i*44)+'ms';
     el.addEventListener('click',ev=>{ev.stopPropagation();openInfo(s);});
     el.addEventListener('mouseenter',()=>{RAD.hover=s;});

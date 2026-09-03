@@ -172,10 +172,16 @@ Deno.serve(async (req) => {
     .order("updated_at", { ascending: false })
     .limit(1);
 
-  const steps: { i?: string; intention?: string }[] = totehms?.[0]?.steps ?? [];
-  const mine = [...new Set(
-    steps.map((s) => s.i || s.intention).filter(Boolean),
-  )] as string[];
+  // On garde TOUT le tuple (texte + intention), pas juste l'intention. Le texte
+  // sert au matching sémantique du radar (places_matching_habits).
+  const steps: { t?: string; i?: string; intention?: string }[] = totehms?.[0]?.steps ?? [];
+  const userHabits = steps
+    .map((s) => ({
+      intention: (s.i || s.intention || "").trim(),
+      text:      String(s.t ?? "").trim(),
+    }))
+    .filter((h) => h.intention && h.text);
+  const mine = [...new Set(userHabits.map((h) => h.intention))];
 
   if (!mine.length) {
     return Response.json({ reason: "no_intention" }, { headers: cors });
@@ -208,10 +214,15 @@ Deno.serve(async (req) => {
   // Toutes les sources tournent en parallèle.
   // Ticketmaster : toutes zones (concerts internationaux passent par Lisbonne aussi).
   // Local (Lisbonne) : + Songkick + Meetup.
-  const NO_EVENTS: Awaited<ReturnType<typeof near>> = [];
+  // Habits filtrées sur les intentions demandées, embeddings calculés en batch.
+  // Une seule requête OpenAI, ~30 tokens par habit, coût négligeable.
+  const wantedHabits = userHabits.filter((h) => wanted.includes(h.intention));
+  const habitsWithEmbeddings = await embedHabits(wantedHabits);
+
+  const NO_EVENTS: Awaited<ReturnType<typeof matchNear>> = [];
 
   const [dbSpots, ebEvents, muEvents, tmEvents, skEvents] = await Promise.all([
-    near(lat!, lng!, wanted),
+    matchNear(lat!, lng!, habitsWithEmbeddings),
     fetchEventbriteEvents(lat!, lng!, wanted),                             // dormant
     isLocal ? fetchMeetupEvents(lat!, lng!, wanted)   : Promise.resolve(NO_EVENTS),
     fetchTicketmasterEvents(lat!, lng!, wanted),                           // toutes zones
@@ -223,7 +234,7 @@ Deno.serve(async (req) => {
 
   if (PLACES_ENABLED && spots.length < MIN_RESULTS) {
     sweeps = await warm(lat!, lng!, wanted);
-    if (sweeps > 0) spots = await near(lat!, lng!, wanted);
+    if (sweeps > 0) spots = await matchNear(lat!, lng!, habitsWithEmbeddings);
   }
 
   const events = [...ebEvents, ...muEvents, ...tmEvents, ...skEvents];
@@ -279,9 +290,103 @@ Deno.serve(async (req) => {
   }, { headers: cors });
 });
 
-// ─── spots Supabase ───────────────────────────────────────────────────
+// ─── Embeddings des habits (OpenAI text-embedding-3-small) ──────────
+// Coût réel : ~30 tokens par habit, $0.02/1M tokens → ~$0.0000006 par habit.
+// Pour 10 habits par requête utilisateur, 100 users actifs, 10 loads/jour :
+// $0.006/mois. Négligeable — on ne cache pas, on embed à chaque call.
 
-async function near(lat: number, lng: number, intentions: string[]) {
+type HabitWithEmbedding = { intention: string; text: string; embedding: number[] };
+
+async function embedHabits(
+  habits: { intention: string; text: string }[],
+): Promise<HabitWithEmbedding[]> {
+  if (!habits.length) return [];
+  const key = Deno.env.get("OPENAI_API_KEY");
+  if (!key) { console.warn("OPENAI_API_KEY missing, skipping embed"); return []; }
+
+  try {
+    const r = await fetch("https://api.openai.com/v1/embeddings", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${key}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "text-embedding-3-small",
+        input: habits.map((h) => h.text),
+      }),
+    });
+    if (!r.ok) {
+      console.error("embed habits", r.status, (await r.text()).slice(0, 200));
+      return [];
+    }
+    const j = await r.json();
+    const vectors = (j.data ?? []) as { embedding: number[] }[];
+    return habits.map((h, i) => ({
+      intention: h.intention,
+      text:      h.text,
+      embedding: vectors[i]?.embedding ?? [],
+    })).filter((h) => h.embedding.length === 1536);
+  } catch (e) {
+    console.error("embed habits failed:", (e as Error).message);
+    return [];
+  }
+}
+
+// ─── spots Supabase + places rankés par match sémantique ────────────
+
+async function matchNear(
+  lat: number,
+  lng: number,
+  habits: HabitWithEmbedding[],
+) {
+  // Si aucun embedding (échec OpenAI ou aucun habit), fallback intention-only.
+  if (!habits.length) {
+    const wanted = [...new Set(habits.map((h) => h.intention))];
+    return nearIntentionOnly(lat, lng, wanted);
+  }
+
+  const { data, error } = await sb.rpc("places_matching_habits", {
+    p_lat: lat, p_lng: lng,
+    p_radius: RADIUS_M,
+    p_habits: habits.map((h) => ({
+      intention: h.intention,
+      text:      h.text,
+      embedding: JSON.stringify(h.embedding),
+    })),
+    p_include_club: true,
+    p_limit: 60,
+  });
+  if (error) { console.error("places_matching_habits:", error.message); return []; }
+
+  return (data ?? []).map((r: Record<string, unknown>) => ({
+    id:             r.ref,
+    source:         r.source,
+    kind:           r.kind,
+    activite:       r.name,
+    intention:      r.intention,
+    lieu_type:      r.lieu_type,
+    commentaire:    r.why,
+    state_of_mind:  r.state_of_mind,
+    vibe:           r.vibe,
+    tags:           r.tags,
+    member_count:   r.member_count,
+    ends_at:        r.ends_at,
+    lat:            r.lat,
+    lng:            r.lng,
+    dist_m:         r.dist_m,
+    duration_min:   r.duration_min,
+    energy_mode:    r.energy_mode,
+    score:          r.score,
+    matched_habit:  r.matched_habit,
+    rank_tier:      r.rank_tier,
+  }));
+}
+
+// Fallback : quand pas d'embedding disponible (OpenAI KO), on garde le vieux
+// places_near intention-only pour ne pas casser le radar. Zéro ranking, mais
+// des lieux quand même.
+async function nearIntentionOnly(lat: number, lng: number, intentions: string[]) {
   const { data, error } = await sb.rpc("places_near", {
     p_lat: lat, p_lng: lng,
     p_radius: RADIUS_M,
@@ -290,7 +395,7 @@ async function near(lat: number, lng: number, intentions: string[]) {
     p_places: PLACES_ENABLED,
     p_include_club: true,
   });
-  if (error) { console.error("places_near:", error.message); return []; }
+  if (error) { console.error("places_near fallback:", error.message); return []; }
 
   return (data ?? []).map((r: Record<string, unknown>) => ({
     id:            r.ref,
@@ -310,6 +415,9 @@ async function near(lat: number, lng: number, intentions: string[]) {
     dist_m:        r.dist_m,
     duration_min:  r.duration_min,
     energy_mode:   r.energy_mode,
+    score:         null,
+    matched_habit: null,
+    rank_tier:     r.kind === "MEMBER_DROP" ? 0 : 3,
   }));
 }
 
@@ -321,7 +429,7 @@ async function fetchEventbriteEvents(
   lat: number,
   lng: number,
   intentions: string[],
-): Promise<ReturnType<typeof near>> {
+): Promise<ReturnType<typeof matchNear>> {
   const key = Deno.env.get("EVENTBRITE_API_KEY");
   if (!key) return [];
 
@@ -384,6 +492,10 @@ async function fetchEventbriteEvents(
           lng:           elng,
           dist_m:        Math.round(haversine(lat, lng, elat, elng)),
           duration_min:  null,
+          energy_mode:   null,
+          score:         null,
+          matched_habit: null,
+          rank_tier:     3,
         };
       });
   } catch (e) {
@@ -400,7 +512,7 @@ async function fetchMeetupEvents(
   lat: number,
   lng: number,
   intentions: string[],
-): Promise<ReturnType<typeof near>> {
+): Promise<ReturnType<typeof matchNear>> {
   const token = Deno.env.get("MEETUP_ACCESS_TOKEN");
   if (!token) return [];
 
@@ -492,9 +604,13 @@ async function fetchMeetupEvents(
           lng:           elng,
           dist_m:        Math.round(haversine(lat, lng, elat, elng)),
           duration_min:  null,
+          energy_mode:   null,
+          score:         null,
+          matched_habit: null,
+          rank_tier:     3,
         };
       })
-      .filter(Boolean) as ReturnType<typeof near>;
+      .filter(Boolean) as ReturnType<typeof matchNear>;
   } catch (e) {
     console.error("meetup fetch failed:", (e as Error).message);
     return [];
@@ -510,13 +626,13 @@ async function fetchTicketmasterEvents(
   lat: number,
   lng: number,
   intentions: string[],
-): Promise<ReturnType<typeof near>> {
+): Promise<ReturnType<typeof matchNear>> {
   const key = Deno.env.get("TICKETMASTER_API_KEY");
   if (!key) return [];
 
   const classifications = TM_CLASSIFICATIONS[intentions[0]] ?? ["Music"];
 
-  const results: ReturnType<typeof near> = [];
+  const results: ReturnType<typeof matchNear> = [];
 
   for (const classif of classifications.slice(0, 2)) {
     const params = new URLSearchParams({
@@ -571,6 +687,10 @@ async function fetchTicketmasterEvents(
           lng:           elng,
           dist_m:        Math.round(haversine(lat, lng, elat, elng)),
           duration_min:  null,
+          energy_mode:   null,
+          score:         null,
+          matched_habit: null,
+          rank_tier:     3,
         });
       }
     } catch (e) {
@@ -590,7 +710,7 @@ async function fetchSongkickEvents(
   lat: number,
   lng: number,
   intentions: string[],
-): Promise<ReturnType<typeof near>> {
+): Promise<ReturnType<typeof matchNear>> {
   const key = Deno.env.get("SONGKICK_API_KEY");
   if (!key) return [];
 
@@ -655,6 +775,10 @@ async function fetchSongkickEvents(
           lng:           elng,
           dist_m:        Math.round(haversine(lat, lng, elat, elng)),
           duration_min:  null,
+          energy_mode:   null,
+          score:         null,
+          matched_habit: null,
+          rank_tier:     3,
         };
       });
   } catch (e) {
@@ -831,6 +955,54 @@ async function warm(lat: number, lng: number, intentions: string[]): Promise<num
           await sb.from("places")
             .update({ descriptions: { ...toDescribe[i].existing, [intention]: desc } })
             .eq("place_id", toDescribe[i].place_id);
+        }
+      }
+
+      // Embeddings pour le radar : name + primaryType + toutes les descs
+      // connues (nouvellement générées ou anciennes). Fire-and-forget côté
+      // latence utilisateur — on batch tout en 1 appel OpenAI par sweep.
+      // Places sans embedding tombent en tier 3 du ranking (visibles mais
+      // en périphérie), donc c'est OK si l'embed échoue ponctuellement.
+      const toEmbed = rows.map((p: Record<string, unknown>) => {
+        const dn = p.displayName as { text?: string } | null;
+        return {
+          place_id: p.id as string,
+          name:     dn?.text ?? "place",
+          type:     (p.primaryType as string | null) ?? null,
+        };
+      });
+      if (toEmbed.length > 0) {
+        try {
+          const texts = await Promise.all(toEmbed.map(async (t) => {
+            const { data: row } = await sb.from("places")
+              .select("descriptions").eq("place_id", t.place_id).maybeSingle();
+            const descs = (row?.descriptions ?? {}) as Record<string, string>;
+            const descTxt = Object.values(descs).join(" · ");
+            return [t.name, t.type ?? "", descTxt].filter(Boolean).join(" — ");
+          }));
+          const embRes = await fetch("https://api.openai.com/v1/embeddings", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${Deno.env.get("OPENAI_API_KEY")}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ model: "text-embedding-3-small", input: texts }),
+          });
+          if (embRes.ok) {
+            const embJson = await embRes.json();
+            const vectors = (embJson.data ?? []) as { embedding: number[] }[];
+            await Promise.all(toEmbed.map(async (t, k) => {
+              const vec = vectors[k]?.embedding;
+              if (!vec || vec.length !== 1536) return;
+              await sb.from("places")
+                .update({ embedding: JSON.stringify(vec) })
+                .eq("place_id", t.place_id);
+            }));
+          } else {
+            console.error("warm embed", embRes.status);
+          }
+        } catch (e) {
+          console.error("warm embed failed:", (e as Error).message);
         }
       }
 
