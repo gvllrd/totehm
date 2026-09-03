@@ -267,8 +267,11 @@ body.higher .set-block.higher-only{display:flex!important}
    quand le clavier mobile s'ouvre. flex:1 la fait remplir l'espace dispo.
    Chaque bouton est un vrai tap target (10px vertical), pas juste du texte. */
 #fp-list{display:flex;flex-direction:column;gap:3px;flex:1 1 0;min-height:120px;overflow-y:auto;padding-right:4px;-webkit-overflow-scrolling:touch}
-/* étape 2 : l'intention de l'Habitude (les 7 de la Map) */
-#fp-ints{display:flex;flex-direction:column;gap:12px;flex:1 1 0;min-height:0;overflow-y:auto;padding-right:4px}
+/* étape 2 : l'intention de l'Habitude (les 7 de la Map)
+   min-height:280px force le conteneur à ne jamais collapser sous l'espace
+   dont il a besoin pour afficher au moins 3 intentions — bug précédent :
+   flex:1 1 0 + parent sans hauteur explicite = collapse à 0. */
+#fp-ints{display:flex;flex-direction:column;gap:0;flex:1 1 auto;min-height:280px;overflow-y:auto;padding-right:4px;-webkit-overflow-scrolling:touch}
 /* Aligné sur .pk-int de book.html : colonne centrée, T au-dessus du nom.
    Même objet visuel dans tous les sélecteurs d'intention du produit
    (book.html, totehm.html, map.html) — trois origines, trois copies, jamais
@@ -746,6 +749,8 @@ body.gate.entered #filter-badge{
      revient de mobile ne doit pas voir la carte sauter selon le device. */
   .fp-card{max-height:calc(100vh - 88px)}
 }
+
+
 
 
 
