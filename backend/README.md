@@ -219,11 +219,19 @@ supabase functions deploy bot-reply --no-verify-jwt
 supabase functions deploy stripe-webhook --no-verify-jwt
 supabase functions deploy autobiographiste
 supabase functions deploy higher-map           # JWT vérifié — jamais --no-verify-jwt
+supabase functions deploy generate_objective --no-verify-jwt
+supabase functions deploy prospects --no-verify-jwt
+supabase functions deploy embed-places --no-verify-jwt   # one-shot backfill
 supabase db push
 ```
 
 `--no-verify-jwt` sur les webhooks : Stripe et Telegram n'ont pas de JWT
 Supabase. Sans risque — la signature est vérifiée dans le code.
+
+⚠️ **La CLI cherche `supabase/functions/<slug>` depuis le CWD.**
+Depuis la racine du repo, ces commandes doivent être lancées avec
+`cd backend && supabase functions deploy ...` — sinon la CLI ne trouve
+pas le dossier.
 
 ⚠️ **Toujours vérifier l'état déployé avant un `deploy`.** Sur `main`,
 `higher-checkout` porte encore l'ancienne tarification : un redéploiement aveugle
@@ -255,6 +263,16 @@ de spot est testé AVANT le « Pourquoi ? »**. Sans cette priorité, la répons
 à une étape du spot serait enregistrée comme l'obstacle d'une habitude ratée.
 Le TTL de 30 minutes sur `bot_drafts` garantit l'inverse : un brouillon
 oublié n'avale pas un WHY posé une heure plus tard.
+
+**Flow `/spot` — 7 étapes (03/09/2026)** :
+`intention → activite → commentaire → lieu → quand → visibilite → energie → INSERT`
+
+Chaque étape stocke sa valeur dans `bot_drafts.data` (jsonb). L'étape
+`energie` (silent | social) a été ajoutée le 03/09 : c'est le contrat
+social du drop, imposé au moment de la création. Voir `kbEnergy()` et la
+branche `s:e:` dans `bot-reply/index.ts`. Un draft mid-flow au moment du
+deploy re-route sans perte : l'ancien callback `s:v:` passe directement
+à l'étape énergie.
 
 ---
 

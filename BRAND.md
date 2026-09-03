@@ -347,11 +347,30 @@ TOTEHM is not "Instagram with a better UI". It is a different social purpose.
 ### TREE — vs Google Maps
 
 Maps answer *where is it*. TOTEHM answers *why does this place matter to me*.
-Recommendations filtered by intentions, habits, strategic direction, current
-objectives.
+**Depuis 03/09/2026** : le radar ne filtre plus par intention, il CLASSE
+par correspondance sémantique entre chaque lieu et les habits précises
+du membre. Tu voyages avec ton Totehm, chaque ville se traduit en
+« voici les 3 lieux qui rendent TA discipline possible ici ». Google
+Maps montre ce qui existe, TOTEHM montre ce qui te correspond, dans cet
+ordre.
 
 > Maps tell you where. TOTEHM tells you why.
 > A map for the person you're becoming.
+
+### Les 4 PILIERS — cadre mental des 7 intentions
+
+Les 7 intentions se rangent en 4 piliers, qui servent de carte mentale
+au produit et de mapping pour tout matching sémantique :
+
+| Pilier | Intentions | Ce qui les unit |
+|---|---|---|
+| **BODY** | fight, flow | action physique, ancrage corporel |
+| **MENTAL** | enrich, focus | cognition, acuité, discipline mentale |
+| **SOUL** | express, celebrate | émotion, extériorisation, joie |
+| **SPIRIT** | love | contemplation, réceptivité, beauté |
+
+Le pilier remplace les tags neurotransmetteur qui décoraient sans jamais
+changer une décision. Un mot qui classe, pas trois qui décorent.
 
 ---
 

@@ -281,6 +281,27 @@ lieu) ont été retirées : elles répétaient la description et remplissaient
 l'écran de mots isolés. Seule la minute restante (`ends_at`) survit, parce
 qu'elle périme.
 
+**Depuis 03/09/2026, deux méta-badges peuvent apparaître dans `.c-top`
+(en plus du badge de kind DROP/LIVE/PLACE) :**
+- **energy** (`silent`/`social`) — uniquement sur les MEMBER_DROP, choisi
+  par le membre au moment du drop via l'étape 7 du flow `/spot` du bot.
+  Jamais dérivé du `lieu_type` : c'est un contrat social entre membres.
+- **matched habit** — ligne `.c-match` sous la description : *« matches:
+  {habit_text} »*. Explique POURQUOI ce lieu remonte : cosine similarity
+  entre l'embedding de la place et celui de l'habit précis du membre.
+  Nulle sur les PLACE sans embedding et sur les LIVE_EVENT.
+
+**Le radar CLASSE, il ne filtre pas** (doctrine 03/09/2026). Chaque T
+porte un `rank_tier` 0-3 qui pilote sa luminosité :
+- **0 MEMBER_DROP** — glow max, opacity 1 (drop humain, prioritaire)
+- **1 fit fort** — top tercile du cosine similarity intra-intention
+- **2 fit moyen**
+- **3 fit faible ou sans embedding** — périphérie du radar, opacity .5
+
+Empty state = personne. Google Maps montre ce qui existe, TOTEHM montre
+ce qui te correspond, dans cet ordre. Voir `places_matching_habits` RPC
++ `TIER_STYLE` dans `map.html` pour l'implémentation.
+
 **`spots.member_count` NE COMPTE RIEN.** C'est une colonne figée, remplie à
 la main sur 20 lignes sur 125 (max 50). Ne jamais l'afficher comme un
 compteur. Le vrai compte vit dans `spot_takes`, alimenté au clic sur
@@ -360,6 +381,29 @@ Les étiquettes de distance posent une **plaque noire** avant le texte, mesurée
 #### Le cache d'intention
 
 **`HM_HITS`** — `Map` intention → lieux, vidée à chaque session. Re-cliquer une intention déjà chargée est instantané, zéro requête.
+
+#### Matching sémantique · 03/09/2026
+
+**La RPC `places_matching_habits`** remplace `places_near` pour le radar.
+Elle prend en entrée les habits du membre embedées via `text-embedding-3-
+small` (côté edge, un seul appel OpenAI par requête utilisateur, ~30 tokens
+par habit — coût négligeable). Elle calcule cosine similarity entre chaque
+`places.embedding` et l'embedding de chaque habit de la même intention, et
+retourne les lieux triés par `rank_tier` (0=MEMBER_DROP, 1=top tercile,
+2=moyen, 3=bas ou sans embedding) puis par score.
+
+**Chaque nouvelle place ingérée par `warm()` est embedée à la volée**
+(name + primaryType + descriptions). Sans embedding, une place tombe en
+tier 3 mais reste visible : le radar n'a jamais de trou.
+
+**Pour backfiller les places préexistantes** (sans embedding) : appeler la
+fonction one-shot `embed-places`. Idempotente, coût ~$0.00003 pour 60
+lignes.
+
+**Le placeholder de l'input `#fp-input`** dit "type any language — or
+pick below" : la liste des 33 fréquences (`#fp-list`) reste toujours
+visible sous l'input, min-height:120px, pour que le clavier mobile ne
+la mange pas. Même règle pour `#fp-ints` (min-height:280px).
 
 #### Pièges à connaître
 
@@ -492,6 +536,28 @@ pousse plus rien.
 NUANCE, jamais d'un cadre gris. Fenêtre de poids, de fréquence, de filtre, de
 membre, carte d'un lieu : le même objet, deux tailles.
 
+### Les overlays plein-écran s'ancrent EN HAUT · 03/09/2026
+
+Tous les overlays qui s'ouvrent au-dessus d'un contenu (`#member-window`,
+`#freq-panel`, `#habit-peek`, `#filter-modal`, `#wpick`) portent
+`align-items:flex-start` + `padding-top:max(44px,8dvh)`. **Jamais**
+`align-items:center` : le clavier mobile qui s'ouvre au focus mange le
+tiers inférieur de l'écran, et une box centrée verticalement finit sous
+le clavier. Règle identique sur `space/`, `com/`, `boutique/`.
+
+### Une habit se crée depuis le peek, pas d'un wizard séquentiel · 03/09/2026
+
+Le T blink de la ligne d'ajout (`#h-T`) ouvre `openNewHabitPeek()` — la
+même fenêtre `#habit-peek` que pour éditer, en mode "new". Deux rangs :
+TIME FREQUENCY + INTENTION. Chaque rang affiche un tiret « — » qui pulse
+(`.hp-placeholder`, keyframe `hp-blink`) tant que la valeur n'est pas
+posée. Le clic ouvre le picker approprié, l'autre attend. Une fois les
+deux valeurs posées, l'habit est créée par le flux existant.
+
+Ne pas revenir au wizard séquentiel (`applyFreq` cascadant vers
+`showFpStage('int')` sur target='new') : le peek est le seul point
+d'entrée depuis 03/09.
+
 **Aucun gris comme surface.** Un gris sur du noir fait « application », et
 `.space` n'en est pas une. Le gris ne sert qu'au TEXTE secondaire — et il
 passe au blanc au survol (voir la règle du survol).
@@ -571,6 +637,35 @@ le dernier `create`, jamais l'inverse. Cette erreur a exposé `record_push` à `
 **Esthétique.** Le mot « Higher » est toujours le SVG outlined
 `<use href="#higher-slogan">`, jamais une webfont. En email, un PNG.
 Sur desktop (`@media(hover:hover)`), tout texte gris passe en `#fff` au survol.
+
+**CORS.** Toute Edge Function CORS-restrictive utilise
+`corsHeaders(origin, fallback)` de `_shared/origins.ts`. **Jamais**
+`"Access-Control-Allow-Origin": "*"` — un wildcard sur une fonction qui
+appelle OpenAI/Stripe/Google = facture de n'importe quel site du web.
+Audit du 03/09 : `generate_objective` et `prospects` corrigés (les deux
+utilisaient `*`).
+
+**Stripe SDK init.** `new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!)`.
+**Jamais** `?? ""` : Stripe accepterait la clé vide, échouerait
+silencieusement au premier appel, et un checkout partirait en fantôme.
+Le `!` fait planter le module au démarrage si le secret manque —
+mieux qu'un paiement perdu. Audit du 03/09 : `higher-checkout` et
+`artwork-checkout` corrigés.
+
+**Les 7 intentions portent chacune un PILIER** (BODY / MENTAL / SOUL /
+SPIRIT). Mapping non-négociable, cadre mental de tout le produit :
+
+| Intention | Pilier |
+|-----------|--------|
+| fight, flow | **BODY** |
+| enrich, focus | **MENTAL** |
+| express, celebrate | **SOUL** |
+| love | **SPIRIT** |
+
+Le pilier remplace les tags neurotransmetteur dans le sélecteur des 7
+intentions (`.s-int-pillar` dans map, `.pk-pillar` dans book,
+`.wp-pillar`/`.fp-pillar` dans totehm). Space Mono, `.22em`, majuscules,
+un seul mot. Recopié dans les 4 fichiers `space/*.html` — jamais partagé.
 
 ---
 

@@ -334,16 +334,22 @@ rôle `authenticated` :
 remplie à la main sur 20 lignes sur 125 (max 50). Elle ne compte rien et
 n'est plus affichée.
 
-### Tables de la carte — 19/08/2026
+### Tables de la carte — 19/08/2026 (mise à jour 03/09/2026)
 
 | Table | Rôle | Lignes mesurées |
 |---|---|---|
-| `spots` | lieux éditoriaux | 125 dont 121 actifs+publics, tous géolocalisés |
-| `places` | cache Google | 0 (désactivé) |
-| `places_cells` | cellules balayées, TTL 90 j | 0 |
-| `places_budget` | appels Google par jour | 0 |
+| `spots` | lieux éditoriaux + drops membres | 125 dont 121 actifs+publics, tous géolocalisés. Colonne `energy_mode` (silent/social) ajoutée le 03/09 |
+| `places` | cache Google Places | **60 avec embedding vector(1536)** depuis 03/09 |
+| `places_cells` | cellules balayées, TTL 90 j | ~10 |
+| `places_budget` | appels Google par jour | actif, plafond 200/j |
 
 RLS activée sans policy sur les trois dernières : seul `service_role` y accède.
+
+**`places.embedding vector(1536)` · 03/09/2026** — text-embedding-3-small sur
+`name + primaryType + descriptions.values()`. Index IVFFlat cosine (lists=10).
+Backfill des lignes existantes via edge function `embed-places` (idempotente,
+coût $0.00003 pour 60 lignes). Les nouveaux lieux ingérés par `warm()` sont
+embedés à la volée. Utilisé par la nouvelle RPC `places_matching_habits`.
 
 **⚠️ `spots.expires_at` :** tous les 125 spots avaient `expires_at = 2026-06-03` — expirés depuis 2 mois, la requête renvoyait 0 lignes. Passés à `NULL` le 18/08. **Ne jamais insérer de spots avec une `expires_at` en dur proche** — utiliser `NULL` pour les spots permanents.
 
@@ -495,7 +501,8 @@ relancer la requête avec les coordonnées. Le front fait le second
 ### La carte
 | Fonction | Rôle |
 |---|---|
-| `places_near(lat, lng, radius, intentions[], limit, places, include_club)` | `stable`, `security definer`. Union spots + places, tri `rank_tier, dist_m`. `earth_box` pour l'index GiST, `earth_distance` pour tronquer au cercle réel. Révoquée pour `anon` et `authenticated`. **03/09/2026 — renvoie `energy_mode`** (silent/social pour les spots membres, null pour Google Places et spots legacy). |
+| `places_matching_habits(lat, lng, radius, habits jsonb, include_club, limit)` | **NOUVEAU 03/09/2026 · l'appelé principal du radar.** `habits` = `[{intention, text, embedding}]` calculé côté edge. Retourne places rankées par cosine similarity intra-intention, avec `rank_tier` (0=MEMBER_DROP, 1=top tercile, 2=moyen, 3=bas/sans embedding), `score` (0-1) et `matched_habit` (attribution). `security definer`, révoquée pour `anon` et `authenticated`. |
+| `places_near(lat, lng, radius, intentions[], limit, places, include_club)` | **Fallback pour intention-only** (utilisé quand OpenAI KO ou 0 habit). Union spots + places, tri `rank_tier, dist_m`. `earth_box` pour l'index GiST, `earth_distance` pour tronquer au cercle réel. Révoquée pour `anon` et `authenticated`. **03/09/2026 — renvoie `energy_mode`** (silent/social pour les spots membres, null pour Google Places et spots legacy) et **priorise `descriptions[intention]` sur `address`** comme `why`. |
 | `places_budget_take(max)` | incrémente le compteur du jour s'il est sous le plafond, renvoie `true` si l'appel Google est autorisé |
 
 ### Objectifs, musique, adhésion
@@ -518,19 +525,26 @@ Aucune ligne = pas membre. Un abonnement expiré, impayé ou annulé retombe
 
 ---
 
-## 5 · Edge Functions
+## 5 · Edge Functions — état 03/09/2026
 
 | Fonction | Ver. | `verify_jwt` | Rôle |
 |---|---:|:---:|---|
-| `stoner-gate` | 9 | ✅ | signe 11 URLs, bucket privé, 15 min |
-| `higher-checkout` | 3 | ✅ | 5 paliers côté serveur, prix **serveur**, mode `quote` — ⚠️ **DIVERGENCE : le front affiche 30 $ fixe depuis le 28/08/2026, les paliers ne sont plus visibles en UI. La fonction doit être alignée sur 30 $ fixe.** |
-| `stripe-webhook` | 18 | ❌ | routeur 3 flux + 4 événements, idempotence |
-| `subscription-checkout` | 3 | ✅ | 7j trial, price lock, PRICE_FIGHER_YEAR |
-| `autobiographiste` | 3 | ✅ | modèle premium, 8 règles, write/revise/accept |
-| `bot-tick` | 3 | ❌ | cron horaire, DONE/MISSED |
-| `bot-reply` | 3 | ❌ | webhook Telegram, **zéro appel IA** |
-| `higher-map` | 7 | ✅ | localisation → spots DB (Google coupé, PLACES_ENABLED=false) ; filtré par `steps[].i` ; 402 sans abonnement, 403 sur une intention absente du Totehm |
-| `generate_objective` | 26 | ❌ | 7 habitudes vérifiables, exclusions du profil, score 0-100 ; cache 3 couches |
+| `stoner-gate` | 24 | ✅ | signe 11 URLs, bucket privé, 15 min |
+| `higher-checkout` | 26 | ❌ | 5 paliers côté serveur, prix **serveur**, mode `quote` · **Fix 03/09 : plus de fallback `?? ""` sur STRIPE_SECRET_KEY** — `!` fait planter si secret manque, mieux qu'un paiement fantôme. ⚠️ divergence UI (front 30 $ fixe) reste à aligner |
+| `artwork-checkout` | 6 | ✅ | checkout artwork, `stoner_access` requis · **Fix 03/09 : même correctif Stripe fallback** |
+| `stripe-webhook` | 28 | ❌ | routeur 3 flux + 4 événements, idempotence via `stripe_events` |
+| `subscription-checkout` | 12 | ✅ | 7j trial, price lock, PRICE_FIGHER_YEAR (typo connue, non urgente) |
+| `autobiographiste` | 11 | ✅ | modèle premium, 8 règles, write/revise/accept |
+| `bot-tick` | 11 | ❌ | cron horaire, DONE/MISSED |
+| `bot-reply` | 14 | ❌ | webhook Telegram, **zéro appel IA**. **03/09/2026 : nouvelle étape 7 dans `/spot`** — silent/social après visibilité, avant INSERT. `bot_drafts.step='energie'` |
+| `higher-map` | 24 | ✅ | **v3 03/09/2026** : appelle `places_matching_habits` (fallback `places_near`), embed les habits du membre à chaque call (~30 tokens/habit via text-embedding-3-small), embed les nouveaux places à l'ingestion via `warm()`. Prompt OpenAI mentor + ancre physique. 402 sans abonnement, 403 sur une intention absente du Totehm |
+| `generate_objective` | 32 | ❌ | 7 habitudes vérifiables, exclusions du profil, score 0-100 · **Fix 03/09 : CORS wildcard remplacé par `corsHeaders` shared** — un site externe ne peut plus cramer le budget OpenAI |
+| `prospects` | 22 | ❌ | admin outreach personalized landings · **Fix 03/09 : ADMIN_KEY hardcodée migrée en secret `PROSPECTS_ADMIN_KEY`, CORS restreint aux domaines TOTEHM** |
+| `embed-places` | 1 | ❌ | **NOUVEAU 03/09/2026** — one-shot backfill : embed `name+type+descriptions` des places sans embedding via text-embedding-3-small (batch 50). Idempotent, coût ~$0.00003 pour 60 lignes. À conserver pour futurs backfills |
+| `compose-artwork` | 22 | ❌ | signature streetwear PNG DTG, imagescript |
+| `sync-knowledge`, `generate-embeddings`, `totehm-bot`, `upload-leaf-videos`, `ghost-factory` | | | Rapatriées le 03/09/2026 depuis prod (étaient orphelines sans source locale) |
+
+**Fonctions supprimées le 03/09/2026** : `probe-tmp` (déjà neutralisée par Wah), `debug-tm` (test Ticketmaster temporaire). Voir changelog en fin de doc.
 
 `verify_jwt=false` sur les webhooks est **normal** : Stripe et Telegram n'ont pas
 de JWT Supabase. La sécurité vient de la signature vérifiée dans le code.
