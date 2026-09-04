@@ -220,6 +220,17 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
    qui est cité littéralement. */
 .c-match{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;
   color:var(--lo);margin-top:10px;line-height:1.4}
+/* ══ L'HEURE D'UN LIVE ══
+   Un lieu ne périme pas, un concert si. La date est la première chose
+   qu'on lit sur un événement — elle passe donc dans le badge, à la place
+   de « ends in 3h » qui, sur un Ticketmaster sans heure de fin, annonçait
+   la fin d'un truc qui n'avait pas commencé. */
+.c-when{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;
+  border:1px solid currentColor}
+.c-price{font-family:'Space Mono',monospace;font-size:11px;color:var(--lo);
+  margin-left:8px}
+.c-acts{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .c-foot{display:flex;align-items:baseline;justify-content:space-between;gap:14px;
   margin-top:20px;padding-top:14px;border-top:1px solid rgba(255,255,255,.09)}
 .c-dist{font-family:'Space Mono',monospace;font-size:15px;color:var(--hi)}
@@ -229,6 +240,7 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
 /* Plus de `text-transform:uppercase` : « TAKE ME THERE » était une commande
    criée, « Go Flow » est un cap. Le nom de l'intention se lit comme il
    s'écrit dans le reste du produit. */
+.c-tix{font-weight:700}
 .c-go{font-family:'Quantico',sans-serif;font-size:14px;font-weight:400;
   color:var(--gc,var(--mid));background:none;text-decoration:none;
   white-space:nowrap;cursor:pointer;border:6px solid transparent;padding:0 4px;
@@ -456,6 +468,8 @@ body.in-world.view-cards #zoom{display:none}
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -469,6 +483,7 @@ body.in-world.view-cards #zoom{display:none}
 #count:hover,
 .c-why:hover,
 .c-match:hover,
+.c-price:hover,
 .c-walk:hover,
 .c-go:hover,
 #info .c-x svg:hover,
@@ -627,6 +642,7 @@ function tGlyph(size){
 let view=null;
 const defaultView=()=>window.matchMedia('(max-width:699px)').matches?'cards':'map';
 const MAX_T=15;                 /* au-delà, l'écran devient une soupe */
+const LIVE_SLOTS=5;             /* places réservées à la couche LIVE */
 const HITS=new Map();           /* intention -> spots, cache de session */
 
 const RAD={ on:false, raf:0, t:0,
@@ -653,6 +669,26 @@ function fmtLeft(iso){
   const h=Math.floor(ms/36e5), m=Math.round(ms%36e5/6e4);
   return h>0?h+'h '+m+'m left':m+'m left';
 }
+/* ══ QUAND, POUR UN LIVE ══
+   Aujourd'hui et demain se disent en heures — c'est ce qui fait sortir.
+   Au-delà, la date suffit : personne ne calcule « dans 61 heures ».
+   Fuseau du navigateur : l'heure d'un concert est locale par nature. */
+function fmtWhen(iso){
+  if(!iso)return null;
+  const d=new Date(iso); if(isNaN(d))return null;
+  const now=new Date(), ms=d-now;
+  if(ms<-3*36e5)return null;                      /* commencé depuis longtemps */
+  const hh=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  if(ms<12*36e5&&d.getDate()===now.getDate())return 'tonight '+hh;
+  const tom=new Date(now); tom.setDate(tom.getDate()+1);
+  if(d.getDate()===tom.getDate()&&d.getMonth()===tom.getMonth())return 'tomorrow '+hh;
+  return d.toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'})+' '+hh;
+}
+const fmtPrice=s=>{
+  if(s.price_min==null)return '';
+  const c=s.currency||'';
+  return 'from '+Math.round(s.price_min)+(c?' '+c:'');
+};
 
 /* ══ GÉOLOCALISATION ══
    Elle ne parle jamais pour ne rien dire, et jamais sur le radar : son
@@ -796,7 +832,13 @@ function describe(s){
 function cardHTML(s){
   const col=intColor(s.intention), conf=INT_BY_ID[s.intention]||{name:s.intention};
   const desc=describe(s);
-  const left=s.ends_at?fmtLeft(s.ends_at):null;
+  const live=s.kind==='LIVE_EVENT';
+  /* Un LIVE dit QUAND il commence ; tout le reste dit combien de temps il
+     reste. La v7 servait `ends_at` aux deux — or Ticketmaster ne renvoie
+     presque jamais d'heure de fin, et la carte annonçait donc la fin d'un
+     concert qui n'avait pas commencé. */
+  const when=live?fmtWhen(s.starts_at||s.ends_at):(s.ends_at?fmtLeft(s.ends_at):null);
+  const price=live?fmtPrice(s):'';
   const n=takesOf(s);
   return ''
    +'<div class="c-top">'
@@ -805,7 +847,7 @@ function cardHTML(s){
        ?'<span class="c-kind c-energy" style="color:'+col+'">'+esc(s.energy_mode)+'</span>'
        :'')
    +  '<span class="c-int" style="color:'+col+'">'+tGlyph(13)+'&nbsp;&nbsp;'+esc(conf.name)+'</span>'
-   +  (left?'<span class="c-kind" style="color:'+col+'">'+esc(left)+'</span>':'')
+   +  (when?'<span class="'+(live?'c-when':'c-kind')+'" style="color:'+col+'">'+esc(when)+'</span>':'')
    +'</div>'
    +'<div class="c-name">'+esc(s.activite||'place')+'</div>'
    +(desc?'<div class="c-why">'+esc(desc)+'</div>':'')
@@ -817,13 +859,27 @@ function cardHTML(s){
    +'</div>'
    +'<div class="c-foot">'
    +  '<span><span class="c-dist">'+fmtDist(s.dist_m||0)+'</span>'
-   +  '<span class="c-walk">'+fmtWalk(s.dist_m||0)+'</span></span>'
+   /* Au-delà de dix kilomètres, « 140 min walk » est une insulte polie.
+      La marche ne s'affiche que quand marcher est une option. */
+   +  ((s.dist_m||0)<=10000?'<span class="c-walk">'+fmtWalk(s.dist_m||0)+'</span>':'')
+   +  (price?'<span class="c-price">'+esc(price)+'</span>':'')
+   +  '</span>'
+   +  '<span class="c-acts">'
+   /* L'ACTION D'UN CONCERT N'EST PAS UN ITINÉRAIRE, C'EST UN BILLET.
+      Elle passe donc devant, en gras. L'itinéraire reste, derrière. */
+   +  (live&&s.url
+       ?'<a class="c-go c-tix" target="_blank" rel="noopener" data-ref="'+esc(s.id||'')+'" '
+         +'style="--gc:'+col+'" href="'+esc(s.url)+'">Tickets'
+         +'<span class="c-hi"><svg viewBox="0 0 600 200" role="img" aria-label="Higher">'
+         +'<use href="#higher-badge"></use></svg></span></a>'
+       :'')
    +  '<a class="c-go" target="_blank" rel="noopener" data-ref="'+esc(s.id||'')+'" '
    +     'style="--gc:'+col+'" '
    +     'href="https://www.google.com/maps/dir/?api=1&destination='+s.lat+','+s.lng+'">'
-   +     'Go '+esc(conf.name)
-   +     '<span class="c-hi"><svg viewBox="0 0 600 200" role="img" aria-label="Higher">'
-   +       '<use href="#higher-badge"></use></svg></span></a>'
+   +     (live?'Go there':'Go '+esc(conf.name))
+   +     (live?'':'<span class="c-hi"><svg viewBox="0 0 600 200" role="img" aria-label="Higher">'
+   +       '<use href="#higher-badge"></use></svg></span>')+'</a>'
+   +  '</span>'
    +'</div>';
 }
 
@@ -885,10 +941,18 @@ function resize(){
   RAD.cx=W/2;RAD.cy=H/2;RAD.rpx=Math.min(W,H)/2*0.82;
   layout();
 }
+/* ══ L'ÉCHELLE — CORRIGÉE LE 03/09/2026 ══
+   Le plafond était de 4 000 m, hérité du rayon des lieux physiques. Depuis
+   que la couche LIVE existe, un concert peut être à 40 km : `layout()`
+   posait son T très au-delà du bord et le passait en `display:none`.
+   Résultat mesuré : AUCUN événement Ticketmaster n'était visible sur le
+   radar, quelle que soit la clé posée. Le plafond suit maintenant le rayon
+   réellement servi (50 km) avec une marge. */
+const RANGE_MAX=60000;
 function autoRange(spots){
   if(!spots.length)return 1200;
   const far=spots.reduce((m,s)=>Math.max(m,s.dist_m||0),0);
-  return Math.min(4000,Math.max(400,far*1.15));
+  return Math.min(RANGE_MAX,Math.max(400,far*1.15));
 }
 function layout(){
   const m=$('me'); if(m){m.style.left=RAD.cx+'px';m.style.top=RAD.cy+'px';}
@@ -1312,8 +1376,12 @@ function renderSpots(spots){
    Totehm. Ils ne repartent JAMAIS sur le réseau : on filtre la liste déjà
    reçue. Un filtre qui redemande au serveur, c'est une facture par clic.
    ══════════════════════════════════════════════════════════════════════ */
-const DIST_OPTS=[{v:0,l:'any distance'},{v:500,l:'500 m'},{v:1000,l:'1 km'},
-                 {v:2000,l:'2 km'},{v:4000,l:'4 km'}];
+/* Le filtre ne repart JAMAIS sur le réseau : il taille dans la liste déjà
+   reçue. Les deux derniers paliers existent parce que la couche LIVE porte
+   à 50 km — sans eux, « any distance » était le seul moyen de voir un
+   concert, et il ramenait tout le reste avec. */
+const DIST_OPTS=[{v:0,l:'any distance'},{v:1000,l:'1 km'},{v:2000,l:'2 km'},
+                 {v:4000,l:'4 km'},{v:10000,l:'10 km'},{v:50000,l:'50 km'}];
 const KIND_OPTS=[{v:'',l:'anything'},{v:'PLACE',l:'Place'},
                  {v:'LIVE_EVENT',l:'Live'},{v:'MEMBER_DROP',l:'Drop'}];
 let fDist=0, fKind='';
@@ -1471,15 +1539,38 @@ async function pick(id){
        Le serveur ne corrige plus que ce que le navigateur ignore. */
     if(j.origin&&!RAD.coords)RAD.origin=j.origin;
     const o=RAD.origin;
-    const spots=(j.spots||[])
+    /* ══ CE QU'ON GARDE, ET POURQUOI PAS LES QUINZE PLUS PROCHES ══
+       MESURÉ LE 03/09/2026 : la sélection était `sort(dist).slice(0,15)`.
+       Les lieux physiques sont servis dans 4 km, les événements dans 50 km —
+       les soixante places remplissaient donc les quinze places AVANT le
+       premier concert, systématiquement. La moitié Ticketmaster du produit
+       était chargée, payée, puis jetée avant d'être dessinée.
+
+       On trie par CLASSEMENT (le radar classe, il ne filtre pas) et on
+       réserve jusqu'à cinq places à la couche LIVE. Cinq, parce qu'au-delà
+       la carte devient un programme de salle et qu'on n'est pas Ticketmaster :
+       on est ce qui te correspond dedans. */
+    const withXY=(j.spots||[])
       .filter(s=>s.lat!=null&&s.lng!=null)
       .map(s=>{
         const en=localEN(o.lat,o.lng,s.lat,s.lng);
         return Object.assign({},s,{_e:en.e,_n:en.n,
           dist_m:s.dist_m!=null?s.dist_m:Math.round(haversine(o.lat,o.lng,s.lat,s.lng))});
-      })
-      .sort((a,b)=>a.dist_m-b.dist_m)
-      .slice(0,MAX_T);
+      });
+    const byRank=(a,b)=>
+      (a.rank_tier==null?3:a.rank_tier)-(b.rank_tier==null?3:b.rank_tier)
+      ||(b.score==null?-1:b.score)-(a.score==null?-1:a.score)
+      ||(a.dist_m||0)-(b.dist_m||0);
+    const liveKeep=withXY.filter(s=>s.kind==='LIVE_EVENT').sort(byRank).slice(0,LIVE_SLOTS);
+    const spots=withXY.filter(s=>s.kind!=='LIVE_EVENT').sort(byRank)
+      .slice(0,MAX_T-liveKeep.length).concat(liveKeep).sort(byRank);
+
+    /* Un seul objet à lire dans la console pour savoir ce que le serveur a
+       vraiment servi, et quelle couche est éteinte. Booléens seulement :
+       jamais une valeur de clé dans un navigateur. */
+    window.__totehm_map={intention:id,sources:j.sources,live:j.live_count,
+      places:j.place_count,swept:j.live_swept,sweeps:j.sweeps,
+      origin:j.origin,shown:spots.length,live_shown:liveKeep.length};
     HITS.set(id,spots);
     RAD.intention=id;markActive(id);
     paintGeo();
