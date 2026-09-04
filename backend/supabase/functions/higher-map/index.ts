@@ -1,4 +1,4 @@
-// TOTEHM · higher-map v13 — GOOGLE MAPS + TICKETMASTER, MONDIAL
+// TOTEHM · higher-map v14 — GOOGLE MAPS + TICKETMASTER, MONDIAL
 // ─────────────────────────────────────────────────────────────────────
 // CE QUE RÉPOND CETTE FONCTION
 //   Trois couches, un seul classement, partout sur la planète.
@@ -130,18 +130,55 @@ Deno.serve(async (req) => {
     .limit(1);
 
   // On garde le tuple complet (texte + intention). Le texte fait le
-  // matching sémantique ; l'intention fait le repli.
+  // matching sémantique ; l'intention est la CLÉ DE JOINTURE vers le monde
+  // (places.intentions[], spots.intention, live_events.intentions[]).
+  //
+  // ⚠️ v14 · 04/09/2026 — DEPUIS LE TRIP, UNE HABITUDE N'A PLUS D'INTENTION.
+  // Le membre ne la choisit plus : il range son habitude sous un objectif.
+  // Le filtre d'avant était `.filter((h) => h.intention && h.text)` : il
+  // JETAIT toute habitude sans `i`. Tant que l'écran forçait le choix,
+  // personne ne le voyait. Le jour où plus aucune nouvelle habitude n'en
+  // porte, `mine` devient vide, la fonction renvoie `no_intention`, et la
+  // carte est noire pour tout nouveau membre. Aucun message, aucune erreur.
+  //
+  // On DÉDUIT donc les intentions du texte, côté base, en UN appel pour
+  // tout le Totehm (`habits_intentions`) : déterministe, zéro appel IA,
+  // Seed reste gratuit.
+  //
+  // Et une habitude peut en servir PLUSIEURS : « méditer dans les espaces
+  // verts » est flow ET love. On la duplique donc une fois par intention,
+  // toutes partageant le même embedding — l'intention n'est qu'un préfiltre
+  // grossier, le cosine tranche derrière. Être généreux ici coûte quelques
+  // lignes de candidats ; se tromper coûte un écran vide.
   const steps: { t?: string; i?: string; intention?: string }[] = totehms?.[0]?.steps ?? [];
-  const userHabits = steps
+  const rawHabits = steps
     .map((s) => ({
       intention: (s.i || s.intention || "").trim(),
       text:      String(s.t ?? "").trim(),
     }))
-    .filter((h) => h.intention && h.text);
+    .filter((h) => h.text);
+
+  // Un seul aller-retour, et seulement pour celles qui n'ont pas de choix.
+  const needDerive = rawHabits.filter((h) => !h.intention).map((h) => h.text);
+  let derived: Record<string, string[]> = {};
+  if (needDerive.length) {
+    const { data, error } = await sb.rpc("habits_intentions", { p_texts: needDerive });
+    // Une erreur de RPC se journalise, toujours. Sans ce log, une carte vide
+    // ne dirait pas si c'est la ville qui est vide ou la fonction qui casse.
+    if (error) console.error("habits_intentions:", error.message);
+    derived = (data ?? {}) as Record<string, string[]>;
+  }
+
+  const userHabits = rawHabits.flatMap((h) =>
+    (h.intention ? [h.intention] : (derived[h.text] ?? []))
+      .map((intention) => ({ intention, text: h.text }))
+  );
   const mine = [...new Set(userHabits.map((h) => h.intention))];
 
   if (!mine.length) {
-    return Response.json({ reason: "no_intention" }, { headers: cors });
+    // Plus « pas d'intention » : le membre n'en pose plus. C'est qu'il n'a
+    // écrit aucune habitude — le message doit dire ça, pas autre chose.
+    return Response.json({ reason: "no_habit" }, { headers: cors });
   }
 
   let lat: number | null = null, lng: number | null = null;
@@ -232,9 +269,15 @@ async function embedHabits(
   habits: { intention: string; text: string }[],
 ): Promise<HabitWithEmbedding[]> {
   if (!habits.length) return [];
-  const vectors = await embedTexts(habits.map((h) => h.text));
+  // ⚠️ Une habitude est dupliquée une fois par intention depuis v14 : embeder
+  // le tableau tel quel paierait trois fois le même texte. On embede les
+  // textes UNIQUES, puis on redistribue. À 1 000 membres, c'est la différence
+  // entre une facture et une ligne de bruit.
+  const uniq = [...new Set(habits.map((h) => h.text))];
+  const vectors = await embedTexts(uniq);
+  const byText = new Map(uniq.map((t, i) => [t, vectors[i] ?? []]));
   return habits
-    .map((h, i) => ({ intention: h.intention, text: h.text, embedding: vectors[i] ?? [] }))
+    .map((h) => ({ intention: h.intention, text: h.text, embedding: byText.get(h.text) ?? [] }))
     .filter((h) => h.embedding.length === 1536);
 }
 
