@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Mesuré le 19 août 2026.** Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 4 septembre 2026.** Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -251,10 +251,15 @@ sans rien apporter.
 | `stripe_events` | 0 | idempotence webhook |
 | `crew_codes` · `crew_attributions` | 0 | Crew Code, attribution définitive |
 | `stoner_access` | 6 | les Fighers (achat unique, `.com`) |
-| `spots` | 125 | lieux, 2 embeddings — **branché** : `/spot` dans TotehmBot écrit ici, 0 spot membre à ce jour |
+| `spots` | **0** | ⚠️ **MESURÉ LE 03/09/2026 : LA TABLE EST VIDE.** Elle portait 125 lignes (121 actives+publiques). Elles ont disparu entre le 19/08 et le 03/09 — aucune migration du repo ne les supprime, aucune trace dans le journal. La couche éditoriale de la carte n'existe donc plus : `spots` ne sert aujourd'hui QUE de table des MEMBER_DROP posés par `/spot`. Ne pas réécrire « 125 » ici sans avoir recompté. |
 | `bot_knowledge` | 55 | base de connaissance, embeddings |
 | `totehm_clothes` | 1 | commandes Cloth · **`chapter_id`** relie au chapitre |
-| `totehm_events` | 15 | ⚠️ journal **incomplet** — voir §7 |
+| `totehm_events` | 58 | ⚠️ journal **incomplet** — voir §7 |
+| `live_events` | **0 · mesuré 04/09** | cache d'événements, **toutes sources confondues** — Ticketmaster (mondial) ET agendas locaux. `source`, `intentions[]`, `embedding vector(1536)`, `url`, `starts_at`, prix. RLS active, **aucune policy** : `service_role` seul. Vide parce que rien ne l'a encore remplie : `tm_calls_today = 0`, donc soit la clé Ticketmaster n'est pas posée, soit personne n'a ouvert la carte depuis le déploiement |
+| `live_cells` | 0 | cellules événementielles balayées, 0,1° (~11 km), TTL 12 h |
+| `live_budget` | 0 | appels Ticketmaster par jour, plafond 3 000 (quota gratuit 5 000) |
+| `live_sources` | **18 · 0 active, 18 en erreur** | **NOUVELLE 04/09/2026** — les agendas d'une ville, DÉCLARÉS en base. Une salle de plus = une ligne, zéro ligne de code. RLS active, aucune policy. ⚠️ Les 18 sources lisboètes ont été sondées : **aucune ne publie de flux exploitable**. Voir §7 |
+| `edge_tokens` | 31 | **RENOMMÉE 04/09/2026** (ex-`bot_tick_tokens`) — jetons à usage unique de `edge_call()`, 2 min de vie, colonne `purpose` (`bot-tick` / `agenda-ingest`). Purge d'un jour intégrée à `edge_token_consume()` : pas de tâche de nettoyage à oublier |
 
 **Table morte :** `_deprecated_user_roles_20260803` — à dropper après le
 3 septembre 2026.
@@ -382,6 +387,48 @@ love 14 · focus 12 · express 10 · celebrate 9 · enrich 6 · fight 5 · flow 
 - Google : `PLACES_ENABLED = true` dans `higher-map/index.ts`, redéployer
 - Serveur : v6 ou v5 depuis l'historique Supabase
 
+### La couche LOCALE — les agendas d'une ville · 04/09/2026
+
+**Le problème, mesuré :** Ticketmaster Discovery couvre le monde et **ne
+couvre pas le Portugal**. Le produit tourne à Lisbonne. Une carte mondiale
+qui ne voit rien dans sa propre ville n'est pas une carte mondiale.
+
+**Ce qu'on n'a pas fait :** un adaptateur par site. Un site change de HTML
+tous les six mois, une API privée ferme sans prévenir — Eventbrite l'a fait
+en 2021, Songkick aussi. Trois adaptateurs morts en un lot, c'est la preuve.
+
+**Ce qu'on a fait :** trois parseurs de FORMAT, et des sources déclarées en
+base. Les formats, eux, ne changent pas.
+
+| Parseur | Norme | Reconnaît |
+|---|---|---|
+| `parseIcs` | RFC 5545 | `.ics`, `?ical=1`, export Google/Apple Calendar |
+| `parseJsonLd` | schema.org/Event | le `<script type="application/ld+json">` d'une page |
+| `parseRss` | RSS 2.0 + `ev:` | un flux `/feed/` qui porte une date de DÉBUT |
+
+`parseRss` **rejette** tout item sans `ev:startdate`, `startDate` ou
+`dc:date` : sans ça, on ingérerait la date de PUBLICATION d'un article comme
+l'heure d'un concert. Même piège dans `parseAgendaLx`, où les clés `date` et
+`data` sont explicitement exclues — en WordPress, `date` est la date du post.
+
+`lat`/`lng` sont portés par la **source**, pas par l'événement : une salle ne
+bouge pas, elle n'a pas à être géocodée mille fois. Zéro appel payant.
+
+**`agenda-ingest` a trois modes**, et le troisième est le seul honnête :
+
+| Mode | Ce qu'il fait |
+|---|---|
+| `run` | ingère les sources actives (cron, 5 h 07) |
+| `probe` | teste sans écrire, renvoie le rapport source par source |
+| `discover` | **cherche le flux** : `/wp-json/wp/v2/types`, REST tribe, `?ical=1`, `.ics`, `/feed/` — et écrit l'URL gagnante dans `live_sources` |
+
+`discover` existe parce que deviner l'URL d'un flux ne marche pas : les dix
+premières graines lisboètes ont été posées à la main, et les dix ont renvoyé
+404. On ne devine plus, on sonde et on mesure.
+
+**Coût : zéro.** Onze requêtes HTTP par source, une fois par jour, sur des
+serveurs publics. Aucune API payante, aucun modèle appelé.
+
 ### places_near — corrigée le 19/08/2026
 
 Signature : `places_near(lat, lng, radius, intentions[], limit, places)`
@@ -505,6 +552,24 @@ relancer la requête avec les coordonnées. Le front fait le second
 | `places_near(lat, lng, radius, intentions[], limit, places, include_club)` | **Fallback pour intention-only** (utilisé quand OpenAI KO ou 0 habit). Union spots + places, tri `rank_tier, dist_m`. `earth_box` pour l'index GiST, `earth_distance` pour tronquer au cercle réel. Révoquée pour `anon` et `authenticated`. **03/09/2026 — renvoie `energy_mode`** (silent/social pour les spots membres, null pour Google Places et spots legacy) et **priorise `descriptions[intention]` sur `address`** comme `why`. |
 | `places_budget_take(max)` | incrémente le compteur du jour s'il est sous le plafond, renvoie `true` si l'appel Google est autorisé |
 
+### La couche live et les agendas — `service_role` seul
+| Fonction | Rôle |
+|---|---|
+| `live_near(lat, lng, radius, habits jsonb, intentions[], limit, horizon_days)` | événements proches, rangés **exactement comme un lieu** : cosine similarity intra-intention, `rank_tier` 0-3. **04/09 : sert la vraie colonne `source`** — elle renvoyait `'ticketmaster'` en dur, écrit au temps où il n'y avait qu'une source au monde |
+| `live_budget_take(max)` | plafond d'appels Ticketmaster du jour, 3 000 |
+| `live_events_sweep_expired()` | efface ce qui est passé — un cache d'événements qui ne se vide pas devient un cimetière |
+| `edge_call(fn, body)` | appelle UNE de nos Edge Functions depuis pg_cron, **liste blanche** (`bot-tick`, `agenda-ingest`). Ce n'est pas un proxy HTTP ouvert |
+| `edge_token_consume(token, purpose)` | consomme le jeton une seule fois (`used_at is null` dans le WHERE = exclusion mutuelle), purge ce qui a plus d'un jour |
+| `bot_tick_arm()` · `bot_tick_consume(token)` | enveloppes conservées : `bot-tick` v14 est déployée et les appelle. Renommer sans enveloppe casse la prod entre la migration et le redéploiement |
+
+### HigherSelf et la recherche — 04/09/2026
+| Fonction | Rôle |
+|---|---|
+| `higherself_state(p_user uuid default null)` | **tout l'état en UN appel** : habitudes + série + consistance 30 j + question en attente, wisdom, objectifs ouverts, spots posés, état du bot. `authenticated` (sa session) et `service_role` (le bot). **La session gagne toujours sur `p_user`** : un membre connecté ne peut pas lire le Totehm d'un autre |
+| `search_totehms(q, limit)` | la recherche de membres. Ouverte à `anon`. Ne rend QUE des Totehms partagés (`totehm_visibility='members'`), **jamais un e-mail, jamais un `telegram_id`, jamais un id**. Classement exact > préfixe > sous-chaîne |
+| `spot_search(lat, lng, radius, q, intention, limit)` | les lieux du Club autour d'un point, pour la mini-app et pour `/spots` |
+| `add_wisdom_admin(uuid, text, intention)` · `add_objective_admin(uuid, text)` | poser une leçon ou un objectif **depuis Telegram**. `wisdom` et `objectives` sont protégées par RLS sur `auth.uid()` ; le bot n'a pas de session. `service_role` seul |
+
 ### Objectifs, musique, adhésion
 | Fonction | Rôle |
 |---|---|
@@ -525,24 +590,35 @@ Aucune ligne = pas membre. Un abonnement expiré, impayé ou annulé retombe
 
 ---
 
-## 5 · Edge Functions — état 03/09/2026
+## 5 · Edge Functions — versions RELEVÉES le 04/09/2026
+
+⚠️ Le tableau précédent listait `higher-map`, `bot-reply` et `bot-tick` DEUX
+FOIS chacune, avec deux numéros de version différents — vestige d'un lot où
+on a ajouté une ligne au lieu de corriger la sienne. Un document qui se
+contredit lui-même est un bug : la table ci-dessous est relue depuis
+l'API Supabase, une ligne par fonction, pas d'exception.
 
 | Fonction | Ver. | `verify_jwt` | Rôle |
 |---|---:|:---:|---|
-| `stoner-gate` | 24 | ✅ | signe 11 URLs, bucket privé, 15 min |
-| `higher-checkout` | 26 | ❌ | 5 paliers côté serveur, prix **serveur**, mode `quote` · **Fix 03/09 : plus de fallback `?? ""` sur STRIPE_SECRET_KEY** — `!` fait planter si secret manque, mieux qu'un paiement fantôme. ⚠️ divergence UI (front 30 $ fixe) reste à aligner |
-| `artwork-checkout` | 6 | ✅ | checkout artwork, `stoner_access` requis · **Fix 03/09 : même correctif Stripe fallback** |
-| `stripe-webhook` | 28 | ❌ | routeur 3 flux + 4 événements, idempotence via `stripe_events` |
-| `subscription-checkout` | 12 | ✅ | 7j trial, price lock, PRICE_FIGHER_YEAR (typo connue, non urgente) |
-| `autobiographiste` | 11 | ✅ | modèle premium, 8 règles, write/revise/accept |
-| `bot-tick` | 11 | ❌ | cron horaire, DONE/MISSED |
-| `bot-reply` | 14 | ❌ | webhook Telegram, **zéro appel IA**. **03/09/2026 : nouvelle étape 7 dans `/spot`** — silent/social après visibilité, avant INSERT. `bot_drafts.step='energie'` |
-| `higher-map` | 24 | ✅ | **v3 03/09/2026** : appelle `places_matching_habits` (fallback `places_near`), embed les habits du membre à chaque call (~30 tokens/habit via text-embedding-3-small), embed les nouveaux places à l'ingestion via `warm()`. Prompt OpenAI mentor + ancre physique. 402 sans abonnement, 403 sur une intention absente du Totehm |
-| `generate_objective` | 32 | ❌ | 7 habitudes vérifiables, exclusions du profil, score 0-100 · **Fix 03/09 : CORS wildcard remplacé par `corsHeaders` shared** — un site externe ne peut plus cramer le budget OpenAI |
-| `prospects` | 22 | ❌ | admin outreach personalized landings · **Fix 03/09 : ADMIN_KEY hardcodée migrée en secret `PROSPECTS_ADMIN_KEY`, CORS restreint aux domaines TOTEHM** |
-| `embed-places` | 1 | ❌ | **NOUVEAU 03/09/2026** — one-shot backfill : embed `name+type+descriptions` des places sans embedding via text-embedding-3-small (batch 50). Idempotent, coût ~$0.00003 pour 60 lignes. À conserver pour futurs backfills |
-| `compose-artwork` | 22 | ❌ | signature streetwear PNG DTG, imagescript |
-| `sync-knowledge`, `generate-embeddings`, `totehm-bot`, `upload-leaf-videos`, `ghost-factory` | | | Rapatriées le 03/09/2026 depuis prod (étaient orphelines sans source locale) |
+| `higher-map` | **26** | ✅ | **v13 · 03/09/2026 — GOOGLE MAPS + TICKETMASTER + LA VILLE.** Trois couches (MEMBER_DROP · PLACE · LIVE_EVENT), un seul classement. Eventbrite / Songkick / Meetup supprimés. Cache d'événements via `_shared/live.ts`. Réponse enrichie de `sources{google,ticketmaster,openai}` — **des booléens, jamais des valeurs de clé** |
+| `bot-reply` | **17** | ❌ | **v6 · 04/09/2026 — LE TOTEHM DANS TELEGRAM.** Bouton `web_app` qui ouvre HigherSelf DANS la conversation. `/moi` (le tracking, déduit), `/wisdom`, `/objectif`, `/spots`, `/tonight`, `/spot`, `/carte`, `/pause`, `/reprendre`. **Zéro appel IA** |
+| `bot-tick` | **14** | ❌ | **v4 · 03/09/2026** — entrée par jeton à usage unique (plus de clé `service_role` dans `cron.job.command`). Une erreur de `push_decision` est enfin journalisée |
+| `agenda-ingest` | **2** | ❌ | **NOUVELLE 04/09/2026** — la couche locale. Trois parseurs de format (ICS · JSON-LD · RSS), sources déclarées dans `live_sources`. Modes `run` / `probe` / `discover`. Cron 5 h 07. Budget mural 42 s |
+| `embed-places` | 1 | ❌ | one-shot 03/09 : backfill des embeddings de `places`. Idempotente, ~$0,00003 pour 60 lignes. Conservée pour les prochains backfills |
+| `stoner-gate` | 25 | ✅ | signe 11 URLs, bucket privé, 15 min |
+| `higher-checkout` | 27 | ❌ | 5 paliers côté serveur, prix **serveur**, mode `quote` · Fix 03/09 : plus de `?? ""` sur `STRIPE_SECRET_KEY` — le `!` fait planter au démarrage si le secret manque, mieux qu'un paiement fantôme. ⚠️ divergence UI (front 30 $ fixe) toujours à aligner |
+| `artwork-checkout` | 8 | ✅ | checkout artwork, `stoner_access` requis · même correctif Stripe |
+| `stripe-webhook` | 29 | ❌ | routeur 3 flux + 4 événements, idempotence via `stripe_events` |
+| `create-checkout` | 28 | ❌ | flux Cloth |
+| `subscription-checkout` | 13 | ✅ | 7 j d'essai, price lock, `PRICE_FIGHER_YEAR` (typo connue, non urgente) |
+| `autobiographiste` | 13 | ✅ | modèle premium, 8 règles, write/revise/accept |
+| `generate_objective` | 34 | ❌ | 7 habitudes vérifiables, exclusions du profil, score 0-100 · Fix 03/09 : CORS wildcard remplacé par `corsHeaders` partagé |
+| `prospects` | 25 | ❌ | outreach admin · Fix 03/09 : `ADMIN_KEY` en dur migrée vers le secret `PROSPECTS_ADMIN_KEY`, CORS restreint |
+| `compose-artwork` | 25 | ❌ | signature streetwear PNG DTG, imagescript |
+| `sync-knowledge` · `generate-embeddings` | 26 | ✅ | base de connaissance |
+| `totehm-bot` | 26 | ❌ | ancien bot, laissé en place, **aucun webhook ne pointe dessus** |
+| `upload-leaf-videos` | 24 | ❌ | outil |
+| `ghost-factory` | 24 | ❌ | outil |
 
 **Fonctions supprimées le 03/09/2026** : `probe-tmp` (déjà neutralisée par Wah), `debug-tm` (test Ticketmaster temporaire). Voir changelog en fin de doc.
 
@@ -639,7 +715,10 @@ où `sign_id` correspond à la clé dans `const SIGNS` de `discover_lisbon.html`
 | `TELEGRAM_BOT_TOKEN` | `supabase secrets` | ⚠️ **à remplacer** — valeur actuelle = TotehmManager, doit devenir TotehmBot |
 | `TELEGRAM_WEBHOOK_SECRET` | `supabase secrets` | ❌ **manquant** |
 | `PRICE_FIGHER_YEAR` | `supabase secrets` | ✅ `price_1U5Rca1hAyZo38svOccaGeiE` |
-| `GOOGLE_MAPS_API_KEY` | `supabase secrets` | ⚠️ **optionnelle** — sans elle, spots DB uniquement (0 appel Google) |
+| `GOOGLE_MAPS_API_KEY` | `supabase secrets` | ✅ **posée** — prouvé par les logs du 03/09 (`warm()` a décrit 20 lieux en un balayage) |
+| `TICKETMASTER_API_KEY` | `supabase secrets` | ❓ **À VÉRIFIER — c'est la moitié LIVE du produit.** Aucune trace dans les logs : la fonction renvoie `[]` en silence quand la clé manque. Se vérifie en une ligne : ouvrir la carte, lire `__totehm_map.sources.ticketmaster` |
+| ~~`EVENTBRITE_API_KEY`~~ | `supabase secrets` | ❌ **à supprimer** — la clé est posée, l'API rend 404 depuis 2021. Elle faisait partir un appel mort à chaque ouverture du radar |
+| ~~`SONGKICK_API_KEY`~~ · ~~`MEETUP_ACCESS_TOKEN`~~ | `supabase secrets` | ❌ **à supprimer si posées** — adaptateurs retirés le 03/09 |
 | clés SSH Oracle | `~/totehm/oracle/` | ✅ gitignoré, 600 |
 
 **TotehmBot est le bot unique des 3 entités** (`totehm.space`, `higher.boutique`,
@@ -702,13 +781,196 @@ Toute fonction qui lit les steps doit utiliser `s.i || s.intention`.
 **`higher-map` v1-v3 lisait `s.intention` → renvoyait toujours `no_intention`.**
 Corrigé en v4.
 
+### ⚠️⚠️ UN `RENAME` NE SUIT PAS LE CORPS DES FONCTIONS PL/pgSQL
+
+**Le piège le plus cher du projet à ce jour.** `outcomes` a été renommée
+`habit_outcomes` le 18/08/2026. Quatre fonctions ont continué d'interroger
+l'ancien nom : `push_decision` (3 réf.), `next_push` (6), `chapter_material`
+(2), `log_asked` (1).
+
+En PL/pgSQL une table absente ne se voit PAS à la création — elle lève à
+l'exécution. `push_decision` plantait donc à chaque appel horaire ; `bot-tick`
+recevait `undefined`, comptait « unknown » et passait au suivant. **Zéro
+erreur visible, zéro message envoyé, pendant seize jours.**
+
+Après tout renommage, cette requête, toujours :
+
+```sql
+select proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+ where n.nspname = 'public' and p.prosrc like '%<ancien_nom>%';
+```
+
+Corrigé le 03/09 : `push_decision` et `log_asked` réécrites, `next_push` et
+`chapter_material` supprimées (mortes, remplacées, non appelées).
+
+### ⚠️ TROIS VERROUS SUR LA MÊME PORTE — pourquoi le bot n'a jamais parlé
+
+Aucun n'était visible seul, et chacun suffisait à tout arrêter :
+
+1. `push_decision` interrogeait une table disparue *(ci-dessus)* ;
+2. `totehms.bot` valait `false` pour tout le monde et **rien dans le produit
+   ne le passait à `true`** — `cloudSave()` écrivait `bot: !!profile.bot`,
+   un champ qu'aucun bouton ne cochait, et **écrasait donc à `false` tout
+   allumage venu d'ailleurs** à chaque enregistrement d'habitude ;
+3. **aucune tâche pg_cron n'appelait `bot-tick`.** `README.md` affirmait
+   « pg_cron l'appelle chaque heure » ; `select jobname from cron.job` ne
+   renvoyait que `cleanup-drafts` et `prune_objective_cache`.
+
+Un document qui affirme un comportement non vérifié est un bug. La règle
+n°7 (« vérifier avant d'affirmer ») s'applique aussi aux documents.
+
+### ⚠️ `revoke` par colonne : `authenticated` ≠ `anon`
+
+Le lot du 29/08 a retiré `telegram_id` des GRANT de `authenticated`. Il ne
+l'a **pas** retiré d'`anon`. Mesuré le 03/09 : `SELECT(telegram_id)->anon`,
+`UPDATE(telegram_id)->anon`, `INSERT(telegram_id)->anon`.
+
+Non exploitable **en l'état** (aucune policy RLS ne vise `anon` sur
+`profiles`), mais exploitable à la seconde où quelqu'un ajoute une policy de
+lecture publique — et une policy se pose en une ligne, sans penser aux GRANT.
+Fermé le 03/09. **Un `revoke` par colonne se pose sur les DEUX rôles.**
+
+### ⚠️ `higher_badges` — l'alerte `auth_users_exposed` est connue et sans effet
+
+L'advisor Supabase la classe ERROR parce que la vue joint `auth.users`. Elle
+n'expose que `id` et `pseudo`, deux colonnes déjà publiques dans `profiles`.
+Vérifié le 03/09. Ne pas « corriger » sans lire la définition : `totehm.html`
+s'en sert pour afficher le badge Higher sur le Totehm d'un autre.
+
 ### ⚠️ `spots.state_of_mind` — deux langues
 `calm` (27) et `calme` (6). Pour l'affichage ça passe ; **pour du matching par
 embedding, deux orthographes = deux clusters = résultat faux.**
 
 ---
 
+### ⚠️ LISBONNE NE PUBLIE PAS — mesuré le 04/09/2026
+
+**18 sources lisboètes déclarées, 11 chemins normalisés testés sur chacune,
+0 flux exploitable.** Le rapport, cité tel quel depuis la prod :
+
+```json
+{"id":"lx_agendalx","name":"Agenda Cultural de Lisboa",
+ "mode":"discover","tried":11,"error":"aucun flux exploitable"}
+```
+
+Ce n'est PAS une panne du parseur : `agenda_test.ts` passe 18 assertions sur
+des chaînes réelles des trois formats. Le mécanisme marche, la ville ne
+publie pas. Musei, salles, mairie : tout est en HTML, à la main.
+
+**Conséquence produit :** la couche locale est en place, cron branché, coût
+zéro — et elle restera vide tant qu'on n'aura pas trouvé des publishers qui
+exposent un `.ics`, un RSS daté ou du JSON-LD. C'est un problème de TERRAIN,
+pas d'ingénierie : il part chez Gemini (voir le brief dans `CLAUDE_CODE.md`).
+
+**Ne pas « corriger » ça en écrivant un scraper HTML par site.** Un scraper
+HTML se casse au premier redesign, silencieusement, et il faut le
+re-maintenir pour chaque site. Le jour où on n'a vraiment pas le choix, on
+paie une source agrégée, on ne construit pas dix parseurs jetables.
+
+### ⚠️ `X-Frame-Options` TUAIT LA MINI-APP — trouvé le 04/09/2026
+
+`space/vercel.json` posait `X-Frame-Options: SAMEORIGIN` sur `/(.*)`, donc
+aussi sur `/higherself`. Un Telegram Mini App tourne dans une **iframe** sur
+`web.telegram.org` : le cadre serait resté noir, sans message, pour tout
+utilisateur de Telegram Web. Les clients mobiles ouvrent une webview et
+n'auraient rien vu — le bug n'aurait été signalé que par une moitié des
+membres, ce qui est la pire façon de découvrir un bug.
+
+Corrigé : le bloc général exclut le chemin (`/((?!higherself).*)`) et
+`/higherself` porte une CSP `frame-ancestors` qui nomme Telegram.
+`Permissions-Policy` délègue explicitement la géolocalisation aux origines
+Telegram, sans quoi la capture de spot échouerait en silence dans l'iframe.
+
+**Se vérifie en une ligne, après déploiement :**
+
+```bash
+curl -sI https://www.totehm.space/higherself | grep -iE 'x-frame|frame-ancestors'
+# attendu : AUCUN x-frame-options, et une CSP frame-ancestors qui cite telegram.org
+curl -sI https://www.totehm.space/totehm | grep -i x-frame-options
+# attendu : SAMEORIGIN — le reste du site reste protege
+```
+
+### ⚠️ UN LITTÉRAL POSÉ AU TEMPS DE LA SOURCE UNIQUE
+
+`live_near` renvoyait `'ticketmaster'::text as source` : écrit le 03/09,
+quand il n'existait qu'une seule source d'événements au monde. Le 04/09,
+`agenda-ingest` a commencé à écrire `source = 'lx_<agenda>'` dans la même
+table — et la lecture continuait d'annoncer Ticketmaster. Une colonne
+écrite par l'ingestion et ignorée par la lecture, c'est une donnée qui ment :
+la carte aurait promis une billetterie qui n'existe pas.
+
+**La règle :** dès qu'une table gagne une DEUXIÈME source, on grep les
+littéraux avant d'ajouter la source, pas après.
+
+```sql
+select p.proname from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+where n.nspname='public' and p.prosrc ~ '''(ticketmaster|google)''';
+```
+
 ## 8 · Comment vérifier
+
+**Le lot du 03/09/2026, en une requête :**
+
+```sql
+select
+  (select count(*) from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+    where n.nspname='public' and p.prosrc like '%public.outcomes%')      as fonctions_cassees, -- 0
+  (select count(*) from cron.job where jobname='bot-tick' and active)    as cron_bot_tick,     -- 1
+  (select count(*) from public.live_events)                              as live_rows,
+  (select coalesce(sum(calls),0) from public.live_budget)                as tm_calls_today,
+  (select count(*) from public.totehms where bot)                        as bot_actif;
+```
+
+**Le lot du 04/09/2026, en une requête :**
+
+```sql
+select
+  (select count(*) from public.live_sources)                      as sources,        -- 18
+  (select count(*) from public.live_sources where active)         as sources_ok,     -- 0 au 04/09
+  (select count(*) from public.live_events where source<>'ticketmaster') as evts_locaux,
+  (select count(*) from cron.job where jobname='agenda-ingest' and active) as cron_agenda, -- 1
+  (select count(*) from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+    where n.nspname='public' and p.proname='higherself_state')    as higherself,     -- 1
+  (select count(*) from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+    where n.nspname='public' and p.proname='search_totehms')      as search,         -- 1
+  (select count(*) from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+    where n.nspname='public' and p.prosrc like '%''ticketmaster''::text as source%') as litteral_mort; -- 0
+```
+
+**La recherche, sans être connecté** (c'est tout l'intérêt) :
+
+```sql
+select * from public.search_totehms('wa', 8);
+-- 0 ligne = personne ne porte ce nom OU personne ne l'a partagé.
+-- Jamais « privé » par défaut : le front dit ce qui est vrai.
+```
+
+**Sonder les agendas sans rien écrire :**
+
+```sql
+select public.edge_call('agenda-ingest', '{"mode":"probe"}'::jsonb);
+select status_code, content from net._http_response order by id desc limit 1;
+-- chaque source rend {id, name, tried, found|error}. « aucun flux
+-- exploitable » sur toutes = la ville ne publie pas, ce n'est pas un bug.
+```
+
+**Le bot, de bout en bout, sans attendre l'heure ronde :**
+
+```sql
+select public.bot_tick_arm();
+select status_code, content from net._http_response order by id desc limit 1;
+-- attendu : 200 {"checked":N,"sent":M,"reasons":{...}}
+-- « quiet_hours » la nuit est une RÉUSSITE : la fonction dit non par défaut.
+```
+
+**Quelle couche de la carte est éteinte** — membre connecté, un bloc dans la
+console sur `totehm.space/map`, après avoir cliqué une intention :
+
+```js
+copy(JSON.stringify(window.__totehm_map, null, 2))
+// sources.ticketmaster === false    →  TICKETMASTER_API_KEY n'est pas posée
+// live === 0 && live_swept === true →  clé posée, rien dans cette ville
+```
 
 **Ne jamais faire confiance à ce document sans vérifier.** Il est daté ;
 la réalité bouge.
@@ -759,6 +1021,21 @@ Functions sont téléchargeables.
 
 | Date | Décision | Pourquoi |
 |---|---|---|
+| 04/09 | **La couche locale est faite de FORMATS, pas de sites** | Trois parseurs (ICS · JSON-LD · RSS) et des sources déclarées en base : une salle de plus = une ligne. Un adaptateur par site se casse au premier redesign — trois adaptateurs sont déjà morts en un lot |
+| 04/09 | **`discover` avant d'ingérer** | Les dix premières graines lisboètes ont été devinées à la main : les dix ont rendu 404. On ne devine plus une URL de flux, on sonde onze chemins normalisés et on écrit celui qui répond |
+| 04/09 | **Mesuré : aucune des 18 sources lisboètes ne publie** | Le mécanisme marche (18 assertions passent sur des chaînes réelles), la ville ne publie pas. Problème de terrain → brief Gemini. **Pas de scraper HTML par site** |
+| 04/09 | **La recherche rend une LISTE** | `ilike('%q%').limit(1)` ouvrait le Totehm d'un inconnu choisi par le hasard du plan d'exécution, et pour un invité le front servait TROIS PROFILS INVENTÉS. Une RPC `security definer` ouverte à `anon`, qui ne rend que ce qui est partagé |
+| 04/09 | **HigherSelf : un seul appel, un seul calcul** | Six requêtes au chargement, c'est six fois la latence d'un réseau mobile. Et surtout : la mini-app et le bot lisent la MÊME fonction — deux calculs de la même série finissent toujours par annoncer deux chiffres différents au même membre |
+| 04/09 | **Telegram devient une surface, pas une notification** | Un bouton `web_app` ouvre le Totehm entier DANS la conversation. Rien à configurer chez BotFather, la seule contrainte est le HTTPS. Coût : zéro |
+| 03/09 | **Ticketmaster seule source LIVE, mise en cache** | Eventbrite rendait 404 à chaque ouverture ; Songkick et Meetup sont fermées ou payantes. Une seule API gratuite et mondiale, un balayage par cellule de 11 km toutes les 12 h |
+| 03/09 | Un événement est **rangé**, pas relégué | il portait `rank_tier: 3` en dur : la moitié Ticketmaster du produit s'affichait en périphérie, à opacity .5 |
+| 03/09 | Échelle du radar portée à 60 km | le plafond de 4 km cachait 100 % des événements — `layout()` les passait en `display:none` |
+| 03/09 | Cinq places réservées à la couche LIVE | `sort(dist).slice(0,15)` laissait les 60 places physiques manger les 15 places avant le premier concert |
+| 03/09 | **`push_decision` réécrite sur `habit_outcomes`** | elle interrogeait `outcomes`, renommée le 18/08. Le bot n'avait jamais envoyé un message |
+| 03/09 | La liaison TotehmBot allume le bot | on ne demande pas deux fois la même permission |
+| 03/09 | `bot` retiré du snapshot d'habitudes | le snapshot éteignait le bot à chaque sauvegarde |
+| 03/09 | Cron `bot-tick` par **jeton à usage unique** | la clé `service_role` serait restée en clair dans `cron.job.command`, dans chaque dump |
+| 03/09 | `telegram_id` retiré à `anon` | le lot du 29/08 ne l'avait retiré qu'à `authenticated` |
 | 01/08 | Bucket `stoner-method` privé | les 11 vidéos étaient téléchargeables |
 | 01/08 | `.gitignore` créé | les clés SSH allaient partir sur GitHub |
 | 02/08 | Deux dossiers, deux projets Vercel | un domaine servait les fichiers de l'autre |

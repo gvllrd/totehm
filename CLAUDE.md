@@ -69,14 +69,50 @@ téléchargeables.
 jamais `space/`. Un contenu commun est copié, pas partagé. Un produit qui casse
 quand un autre bouge n'est pas indépendant.
 
-### Les quatre écrans de totehm.space
+### Les cinq écrans de totehm.space
 
 ```
 PAST              PRESENT              FUTURE               LE MONDE
 book.html         totehm.html          next_objective.html  map.html
 My Wisdom         TOTEHM · Habitudes   My next objective    Higher Map
 les leçons        la saisie                                 radar / cartes
+
+                        DANS LA POCHE
+                        higherself.html
+                        HigherSelf — les quatre au même endroit
 ```
+
+**`higherself.html` est la mini-app Telegram, ajoutée le 04/09/2026.** Ce
+n'est pas un sixième produit : c'est les quatre écrans **repliés en un seul**,
+pour un pouce, dans une conversation. Quatre onglets — NOW · WISDOM · NEXT ·
+SPOTS — un seul appel réseau au chargement (`higherself_state()`), et les
+mêmes RPC que les grands écrans. Rien de propre à la mini-app côté serveur :
+le jour où le calcul de la série change, il change pour tout le monde en même
+temps.
+
+Elle s'ouvre par un bouton `web_app` dans Telegram : plein écran, dans la
+conversation, session déjà là, **rien à configurer chez BotFather** — la seule
+contrainte est le HTTPS. C'est ce qui sépare « va sur le site » de « c'est
+ouvert ».
+
+**⚠️ `X-Frame-Options: SAMEORIGIN` TUE UNE MINI-APP.** `space/vercel.json`
+posait cet en-tête sur `/(.*)` — donc aussi sur `/higherself`. Sur Telegram
+Web, un Mini App tourne dans une **iframe** hébergée par `web.telegram.org` :
+le cadre serait resté noir, sans un mot d'explication, pour tout le monde sauf
+les clients mobiles. Corrigé le 04/09 : le bloc général exclut le chemin par
+un negative lookahead (`/((?!higherself).*)`), et `/higherself` porte à la
+place une CSP `frame-ancestors` qui **nomme Telegram et personne d'autre** —
+plus étroit qu'un wildcard, et c'est la seule forme que les navigateurs
+modernes arbitrent correctement face à `X-Frame-Options`.
+
+Deux règles qui en sortent :
+- **Sur Vercel, deux règles d'en-têtes qui matchent le même chemin
+  s'empilent.** On ne « surcharge » pas un en-tête restrictif : on exclut le
+  chemin de la règle qui le pose.
+- **La `Permissions-Policy` doit DÉLÉGUER à l'origine parente.**
+  `geolocation=(self)` suffit pour une page ouverte directement ; dans une
+  iframe Telegram, la capture de spot échouerait en silence. Les origines
+  Telegram sont nommées explicitement.
 
 **La Higher Map a son propre fichier depuis le 21/08/2026.** Elle n'est plus
 un étage de `totehm.html` : elle est un environnement, avec son état, son
@@ -223,6 +259,28 @@ et applique le filtre. **Le filtre est persisté** dans `totehm_filter_v1` :
 `next_objective.html` le lit en lecture seule, et une fenêtre qui affiche un
 filtre qu'elle ne peut pas relire est une fenêtre qui ment.
 
+**LA RECHERCHE REND UNE LISTE, JAMAIS UN PARI · 04/09/2026.** Elle faisait
+`ilike('%'||q||'%').limit(1)` : taper deux lettres ouvrait le Totehm d'UN
+inconnu, choisi par le hasard du plan d'exécution. Et comme un invité ne peut
+pas lire `profiles` (la RLS ne vise que `authenticated`), le fichier
+compensait avec **trois profils inventés en dur** — quelqu'un cherchait une
+personne et trouvait de la fiction.
+
+Une seule RPC, `search_totehms()`, `security definer`, ouverte à `anon` :
+elle ne rend que des Totehms explicitement partagés, jamais un e-mail ni un
+id, et elle classe **exact > préfixe > sous-chaîne** — l'ordre dans lequel un
+humain cherche un nom qu'il connaît déjà.
+
+Trois règles qui en sortent, et qui valent partout :
+- **Un `limit(1)` sans `order by` est un tirage au sort.** Si le résultat est
+  montré à quelqu'un, il faut un classement explicite.
+- **Aucune donnée de démonstration dans un fichier servi.** Un tableau de
+  faux profils qui comble un trou de droits finit toujours par être pris pour
+  du réel. Le trou se ferme côté serveur.
+- **Un message d'erreur dit ce qui est vrai.** « this Totehm is private »
+  s'affichait aussi quand le nom n'existait pas : trois situations, un seul
+  message, aucun moyen de savoir laquelle.
+
 **Settings desktop** : `#settings-nav .sn-row { display:none!important }`.
 Seul `#sn-home` reste visible.
 
@@ -241,6 +299,62 @@ L'atterrissage tient sur DEUX écrans qui défilent (`#gate-hero`,
 second écran passe en `display:none` : `scrollHeight == clientHeight`, il n'y
 a physiquement plus rien à faire défiler. C'est le TROISIÈME verrou, et le
 seul qui ne soit pas une course.
+
+### La carte est le produit — 03/09/2026
+
+`map.html` n'est plus « le quatrième écran ». C'est **Google Maps + Ticketmaster,
+à l'échelle mondiale, filtré par ce que la personne est en train de devenir.**
+
+```
+Google Maps  montre ce qui existe.
+Ticketmaster montre ce qui est en vente.
+TOTEHM       montre ce qui te correspond — dans cet ordre.
+```
+
+Trois couches, un seul classement : `MEMBER_DROP` (spots) · `PLACE` (Google) ·
+`LIVE_EVENT` (Ticketmaster). Un événement se range **exactement comme un lieu** :
+cosine similarity entre son embedding et l'habitude précise du membre. Il ne
+porte plus `rank_tier: 3` en dur — ce qui affichait toute la moitié Ticketmaster
+du produit en périphérie, à opacity .5.
+
+**Une seule source événementielle, et elle est gratuite.** Eventbrite renvoyait
+404 à chaque ouverture du radar (API fermée depuis 2021, clé posée, appel parti
+quand même) ; Songkick est fermée aux nouveaux comptes ; Meetup exige un plan
+Pro payant. Trois adaptateurs morts, retirés. Ticketmaster Discovery reste :
+gratuite, mondiale, 5 000 requêtes/jour.
+
+**Une cellule de 0,1° (~11 km), balayée toutes les 12 h.** Dix fois plus grosse
+que la cellule Google (0,01°) : on cherche un café à la rue près, un concert à
+la ville près. Le deuxième membre d'une ville ne coûte rien. Sans ce cache,
+1 000 membres × 10 ouvertures = 40 000 appels/jour pour un quota de 5 000.
+
+**L'adaptateur vit dans `_shared/live.ts`**, importé par `higher-map` ET
+`bot-reply`. Même règle que `_shared/origins.ts` : une liste dupliquée finit
+toujours par diverger, et ici la divergence se verrait le jour où la carte et
+le bot ne proposent pas la même soirée.
+
+### La ville, en plus du monde — 04/09/2026
+
+Ticketmaster couvre le monde et **ne couvre pas le Portugal**. On tourne à
+Lisbonne. La couche locale ne se règle pas en ajoutant un adaptateur par
+site : un site change de HTML tous les six mois, une API privée ferme sans
+prévenir — trois adaptateurs sont déjà morts en un lot.
+
+**Ce qui ne change pas, ce sont les FORMATS.** Trois parseurs — ICS (RFC
+5545), JSON-LD (`schema.org/Event`), RSS daté — et des sources **déclarées
+en base** (`live_sources`). Une salle de plus = une ligne, zéro ligne de
+code. Les deux couches écrivent dans la MÊME table `live_events` et se
+rangent avec le même classement : un concert de la mairie et un concert
+Ticketmaster sont deux points identiques sur le radar.
+
+**On ne devine jamais l'URL d'un flux.** Les dix premières graines lisboètes
+ont été posées à la main : les dix ont rendu 404. `agenda-ingest` a un mode
+`discover` qui sonde onze chemins normalisés et écrit celui qui répond.
+
+**Mesuré le 04/09/2026 : 18 sources lisboètes, 0 flux exploitable.** Le
+mécanisme marche, la ville ne publie pas. C'est un problème de terrain — il
+part chez Gemini. **Ne pas écrire de scraper HTML par site :** ça se casse au
+premier redesign, silencieusement, et il faut le re-maintenir pour chacun.
 
 ### `map.html` — les règles
 
@@ -301,6 +415,42 @@ porte un `rank_tier` 0-3 qui pilote sa luminosité :
 Empty state = personne. Google Maps montre ce qui existe, TOTEHM montre
 ce qui te correspond, dans cet ordre. Voir `places_matching_habits` RPC
 + `TIER_STYLE` dans `map.html` pour l'implémentation.
+
+**L'ÉCHELLE DU RADAR VA JUSQU'À 60 KM.** Elle était plafonnée à 4 000 m, hérité
+du rayon des lieux physiques. Un concert à 40 km voyait son T posé hors cadre,
+puis passé en `display:none` par `layout()` : **aucun événement Ticketmaster
+n'était visible sur le radar, quelle que soit la clé posée.** Le plafond suit le
+rayon réellement servi. Ne jamais le remettre à 4 000.
+
+**CINQ PLACES SONT RÉSERVÉES À LA COUCHE LIVE.** La sélection était
+`sort(dist).slice(0, 15)` : les lieux physiques sont servis dans 4 km, les
+événements dans 50 km — les soixante places remplissaient donc les quinze places
+AVANT le premier concert, systématiquement. On trie par CLASSEMENT (le radar
+classe, il ne filtre pas) et on garantit jusqu'à cinq LIVE. Cinq, pas quinze :
+au-delà la carte devient un programme de salle, et on n'est pas Ticketmaster —
+on est ce qui te correspond dedans.
+
+**UN LIVE DIT QUAND, PAS COMBIEN DE TEMPS IL RESTE.** Ticketmaster ne renvoie
+presque jamais d'heure de fin : la carte servait `ends_at` et annonçait donc la
+fin d'un concert qui n'avait pas commencé. `fmtWhen(starts_at)` — « tonight
+21:00 », « tomorrow 20:30 », sinon la date. `fmtLeft()` ne sert plus qu'à ce qui
+périme vraiment.
+
+**L'ACTION D'UN CONCERT EST UN BILLET, PAS UN ITINÉRAIRE.** `[Tickets]` passe
+devant, en gras ; `[Go there]` reste derrière. Et « 140 min walk » ne s'affiche
+plus au-delà de dix kilomètres : ce n'est pas une information, c'est une
+insulte polie.
+
+**`window.__totehm_map`** porte le dernier état servi (couches allumées,
+compteurs, origine). C'est le bloc à coller dans la console quand la carte
+semble vide. **Des booléens, jamais une valeur de clé.**
+
+**`window.__totehm_self`** fait la même chose pour `higherself.html` :
+compteurs, onglet courant, état du bot, et l'erreur de RPC si elle a eu lieu.
+Tout écran qui peut être vide porte son diagnostic — un écran vide sans
+diagnostic, c'est trois allers-retours au lieu d'un. Et une erreur de RPC se
+**journalise** : `if(error) return` transforme une panne en écran vide, et un
+écran vide ressemble à « je n'ai rien fait aujourd'hui ».
 
 **`spots.member_count` NE COMPTE RIEN.** C'est une colonne figée, remplie à
 la main sur 20 lignes sur 125 (max 50). Ne jamais l'afficher comme un
@@ -787,6 +937,51 @@ Format : `[POUR X] / CONTEXTE / OBJECTIF / CONTRAINTES / ATTENDU`.
 
 **Tu ne fais pas :** copy marketing · prospection · rédaction juridique ·
 recherche d'influenceurs. Tu délègues avec un brief.
+
+---
+
+## Le bot — ce qui l'a fait taire seize jours, et la règle qui en sort
+
+Trois verrous fermés sur la même porte, aucun visible seul :
+
+1. **`push_decision` interrogeait `outcomes`**, table renommée `habit_outcomes`
+   le 18/08. En PL/pgSQL, une table absente lève à l'EXÉCUTION, pas à la
+   création. La fonction plantait à chaque appel, `bot-tick` recevait
+   `undefined` et comptait « unknown ». Zéro erreur visible.
+2. **`totehms.bot` était `false` partout** et le snapshot d'habitudes
+   (`cloudSave`) le réécrivait à `false` à chaque sauvegarde.
+3. **Aucune tâche pg_cron n'appelait `bot-tick`**, alors que `README.md`
+   affirmait le contraire.
+
+**LES TROIS RÈGLES QUI EN SORTENT :**
+
+- **Après tout `rename`, grepper `pg_proc.prosrc`.** Un renommage ne suit pas
+  le corps des fonctions PL/pgSQL.
+- **Une erreur de RPC se journalise, toujours.** `if (!d?.send)` sans regarder
+  `error` transforme une panne en statistique.
+- **Un document qui affirme un comportement non vérifié est un bug.** La règle
+  « vérifier avant d'affirmer » s'applique aux documents autant qu'au code.
+
+**LE BOT EST UNE SURFACE, PAS UN CANAL DE NOTIFICATION · 04/09/2026.**
+Un bouton `web_app` ouvre `higherself.html` DANS la conversation. Le bot
+répond aussi `/moi` (séries, consistance, ce qui attend), `/wisdom`,
+`/objectif` et `/spots`.
+
+**La mini-app et le bot lisent la MÊME fonction**, `higherself_state()`. Le
+bot passe l'uuid parce qu'il n'a pas de session ; la mini-app ne passe rien
+parce qu'elle en a une — et **la session gagne toujours sur l'argument**,
+sinon un membre connecté lirait le Totehm d'un autre en passant son uuid.
+Ne jamais recalculer une série des deux côtés : le jour où les deux
+divergent, la mini-app et le bot annoncent deux chiffres différents au même
+membre, le même jour.
+
+**Le bot reste à zéro appel IA.** `/moi` est du SQL, `/tonight` est du SQL,
+`/spots` est du SQL. Le gratuit reste déterministe.
+
+**Un secret n'entre jamais dans une commande cron.** `net.http_post` avec la
+clé `service_role` la laisserait en clair dans `cron.job.command` et dans chaque
+dump. On passe par un jeton à usage unique créé en base : il ne quitte jamais
+Postgres, et intercepté, il est déjà mort.
 
 ---
 
