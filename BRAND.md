@@ -354,8 +354,71 @@ du membre. Tu voyages avec ton Totehm, chaque ville se traduit en
 Maps montre ce qui existe, TOTEHM montre ce qui te correspond, dans cet
 ordre.
 
-> Maps tell you where. TOTEHM tells you why.
+**Depuis 03/09/2026, TREE a deux moitiés** : les lieux (Google Places) et
+**ce qui se passe** (Ticketmaster, mondial). La deuxième est ce qui fait sortir
+quelqu'un de chez lui : un lieu ne périme jamais, un concert si.
+
+```
+GOOGLE MAPS   tells you where it is.
+TICKETMASTER  tells you what is on sale.
+TOTEHM        tells you why it is yours — tonight.
+```
+
+An event is not ranked by popularity, by price, or by proximity. It is ranked by
+how close it sits to **the habit you actually wrote down**. A boxing card reaches
+the person whose Totehm says *sparring Thursday*. A jazz cellar reaches the one
+who wrote *listen without my phone*. Same city, two different maps.
+
+> Maps tell you where. Ticketmaster tells you what's on sale.
+> TOTEHM tells you why it's yours.
 > A map for the person you're becoming.
+
+#### Deux échelles, une seule carte — 04/09/2026
+
+TREE se lit à deux distances, et c'est la même carte :
+
+```
+LE MONDE   Ticketmaster       tu atterris à Berlin, ta discipline t'y attend
+LA VILLE   les agendas locaux ce qui se passe ce soir, à dix minutes à pied
+```
+
+Le monde est ce qui rend la promesse **portable** — un Totehm qui ne
+fonctionne que dans une ville n'est pas un système, c'est une appli locale.
+La ville est ce qui rend la promesse **vraie aujourd'hui** : personne ne
+prend l'avion ce soir, mais tout le monde peut sortir.
+
+Sur le radar, les deux sont **le même point**. Un concert programmé par la
+mairie et un concert vendu par Ticketmaster se rangent avec le même
+classement, contre la même habitude. La provenance n'est pas une catégorie
+que le membre a envie de connaître : c'est de la plomberie.
+
+> The world proves it travels with you.
+> The city proves it works tonight.
+
+### HIGHERSELF — le Totehm dans la poche · 04/09/2026
+
+Un système qu'il faut aller chercher n'est pas un système : c'est un
+rendez-vous. Et un rendez-vous, on le manque.
+
+**HigherSelf est le Totehm là où la journée se passe déjà** — dans la
+conversation. Habitudes, séries, leçons, objectifs, lieux : tout ce que
+portent les quatre écrans, sur un pouce, en un geste.
+
+```
+LE SITE       tu vas au Totehm.
+HIGHERSELF    le Totehm est déjà là.
+```
+
+Ce n'est **pas** une version allégée, et ce n'est pas une notification
+déguisée. C'est la même chose, au même endroit que la vie du membre. La
+frontière entre « ouvrir une app » et « répondre à un message » est ce qui
+sépare une discipline tenue d'une discipline abandonnée.
+
+Ce qui n'y entre pas : rien de propre à la mini-app. Le jour où le calcul
+d'une série change, il change partout en même temps — sinon deux surfaces
+annoncent deux chiffres au même membre, le même jour, et le produit ment.
+
+> You don't open your Totehm. It's already open.
 
 ### Les 4 PILIERS — cadre mental des 7 intentions
 
