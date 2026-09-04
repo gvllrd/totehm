@@ -2,7 +2,8 @@
   "cleanUrls": true,
   "headers": [
     {
-      "source": "/(.*)",
+      "//": "TOUT LE SITE SAUF LA MINI-APP. Le negative lookahead n'est pas une coquetterie : sur Vercel, deux regles qui matchent le meme chemin s'empilent, et un X-Frame-Options restrictif qui traine bloque la mini-app meme si une CSP l'autorise plus bas. On exclut le chemin, on ne le surcharge pas.",
+      "source": "/((?!higherself).*)",
       "headers": [
         {
           "key": "Strict-Transport-Security",
@@ -25,6 +26,46 @@
           "value": "geolocation=(self), microphone=(), camera=()"
         }
       ]
+    },
+    {
+      "//": "LA MINI-APP TELEGRAM. Un Mini App tourne DANS une iframe sur web.telegram.org : avec X-Frame-Options SAMEORIGIN, le cadre reste noir et rien ne dit pourquoi. On remplace l'en-tete par une CSP frame-ancestors qui nomme Telegram et personne d'autre — c'est plus etroit qu'un wildcard et c'est la seule forme que les navigateurs modernes arbitrent correctement. Sur mobile, le client natif ouvre une webview (pas d'iframe) : cette regle ne le concerne pas, elle ne le gene pas non plus. La geoloc est deleguee a l'origine Telegram, sinon la capture de spot echoue en silence dans l'iframe.",
+      "source": "/higherself",
+      "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'self' https://telegram.org https://*.telegram.org https://*.t.me"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "geolocation=(self \"https://web.telegram.org\" \"https://webk.telegram.org\" \"https://webz.telegram.org\"), microphone=(), camera=()"
+        }
+      ]
+    },
+    {
+      "//": "Meme regle sur l'URL avec extension : cleanUrls redirige, mais un lien colle a la main ne doit pas retomber sur le X-Frame-Options du bloc general.",
+      "source": "/higherself.html",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'self' https://telegram.org https://*.telegram.org https://*.t.me"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "geolocation=(self \"https://web.telegram.org\" \"https://webk.telegram.org\" \"https://webz.telegram.org\"), microphone=(), camera=()"
+        }
+      ]
     }
   ],
   "redirects": [
@@ -34,13 +75,8 @@
       "permanent": false
     },
     {
-      "source": "/higher",
-      "destination": "/get_higher.html",
-      "permanent": false
-    },
-    {
-      "source": "/gethigher",
-      "destination": "/get_higher.html",
+      "source": "/world",
+      "destination": "/map",
       "permanent": false
     }
   ]
