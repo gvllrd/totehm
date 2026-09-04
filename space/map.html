@@ -37,6 +37,9 @@
   --mid:#b4b4b4;     /* lisible, secondaire */
   --lo:#6d6d6d;      /* contexte */
   --dim:#3c3c3c;     /* structure */
+  --obj:#8FCBE8;     /* L'OBJECTIF — bleu clair. Le WHY. */
+  --hab:#333366;     /* l'habitude — navy. Le HOW. */
+  --rep:#743169;     /* la répulsion — rouge-violet. Ce qui protège le HOW. */
   --box:#131316;     /* gris noirci : il se détache du noir profond de la page */
   --box-line:#242429;/* son seul liseré */
   --futura:'Futura','Jost',sans-serif;
@@ -81,38 +84,50 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
   justify-content:flex-start;gap:0;margin:6px auto;max-width:520px;width:100%}
 /* TOUT est centré : le T, le nom, la définition, les traces. Une colonne,
    un axe. Le liseré de gauche disparaît — il tirait l'œil hors de l'axe. */
-.s-int{display:flex;flex-direction:column;align-items:center;gap:0;
-  padding:13px 8px;background:none;border:none;
-  text-align:center;cursor:pointer;width:100%;position:relative;
-  -webkit-tap-highlight-color:transparent;
-  transition:background .12s,opacity .18s}
-.s-int + .s-int{border-top:1px solid rgba(255,255,255,.07)}
-/* Le T.svg passe AU-DESSUS de l'intention : c'est lui qui la porte. */
-.s-int .tglyph{width:16px;height:16px;flex-shrink:0;position:relative;z-index:2;
-  margin:0 0 6px}
-.s-int-name{display:flex;align-items:center;justify-content:center;
-  position:relative;z-index:1;
-  font-family:'Quantico',sans-serif;font-size:19px;font-weight:700;line-height:1.15}
-.s-int-def{font-family:'Quantico',sans-serif;font-size:13px;font-weight:400;
-  color:var(--mid);margin-top:5px;line-height:1.45}
-/* ── LE PILIER ──
-   Un mot, en Space Mono, sous la définition. Il classe l'intention dans la
-   carte mentale des 4 : BODY (action) · MENTAL (cognition) · SOUL (émotion) ·
-   SPIRIT (contemplation). Ce que remplace les tags neurotransmetteurs : moins
-   de traces, plus de sens. */
-.s-int-pillar{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;
-  text-transform:uppercase;color:var(--mid);margin-top:8px;line-height:1}
+/* ══ LE SÉLECTEUR EST UNE LISTE D'OBJECTIFS · 04/09/2026 ══════════════
+   La carte ne demande plus « quelle intention » — elle demande « quel
+   objectif ». Un trip porte un WHY (l'objectif), des HOW (les habitudes)
+   et ce qui les protège (les répulsions) ; la carte sert le WHY en lisant
+   les HOW. Le classement n'a pas changé d'un iota : il a toujours été le
+   cosine entre un lieu et le TEXTE d'une habitude. On change seulement
+   QUELLES habitudes entrent dans le calcul. */
+.s-trip{display:flex;flex-direction:column;align-items:center;gap:0;
+  width:100%;background:none;border:none;cursor:pointer;
+  padding:15px 10px;text-align:center;-webkit-tap-highlight-color:transparent;
+  transition:background .12s}
+.s-trip + .s-trip{border-top:1px solid rgba(255,255,255,.07)}
+.s-trip-name{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;
+  color:var(--obj);line-height:1.3;max-width:26ch}
+.s-trip-meta{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--lo);margin-top:6px}
+/* Le compte à rebours vient du SERVEUR : l'horloge d'un téléphone ment. */
+.s-trip-when{color:var(--obj)}
+.s-trip.void .s-trip-name{color:var(--mid)}
+.s-trip.void .s-trip-meta{color:var(--lo)}
 @media(hover:hover){
-  .s-int:hover{background:rgba(255,255,255,.05)}
-  .s-int:hover .s-int-name{color:var(--hi)!important}
-  .s-int:hover .s-int-pillar{color:var(--hi)}
+  .s-trip:hover{background:rgba(255,255,255,.05)}
 }
-.s-int.on{background:rgba(255,255,255,.04)}
-.s-int.loading{opacity:.3;pointer-events:none}
-/* Une intention absente du Totehm ne peut rien renvoyer : le serveur la
-   refuse (403). On le dit AVANT de partir, plutôt que de payer l'aller-retour. */
-.s-int.cold{opacity:.34}
-.s-int.cold .s-int-def{color:var(--lo)}
+.s-trip.on{background:rgba(255,255,255,.04)}
+.s-trip.loading{opacity:.3;pointer-events:none}
+
+/* Rattacher une habitude à un objectif, là où le manque se constate.
+   Un objectif sans habitude ne rend pas un radar vide : il rend CETTE
+   liste. L'écran qui signale un manque est celui qui doit le combler. */
+.s-attach{width:100%;padding:4px 0 12px}
+.s-att-h{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--lo);text-align:center;padding:10px 0 4px}
+.s-att-row{display:flex;align-items:center;gap:9px;width:100%;
+  background:none;border:none;cursor:pointer;padding:9px 12px;text-align:left;
+  font-family:'Quantico',sans-serif;font-size:13px;color:var(--mid);
+  -webkit-tap-highlight-color:transparent;transition:color .12s}
+.s-att-row + .s-att-row{border-top:1px solid rgba(255,255,255,.06)}
+@media(hover:hover){.s-att-row:hover{color:var(--hi)}}
+.s-att-dot{width:6px;height:6px;flex-shrink:0;background:var(--hab)}
+.s-att-row.done .s-att-dot{background:var(--obj)}
+
+/* Le selecteur d'intentions a ete remplace par le selecteur
+   d'objectifs le 04/09/2026. Son CSS est retire : aucun JS ne pose plus
+   ces classes, et du CSS mort est une piste fausse. */
 
 #s-note{font-family:'Quantico',sans-serif;font-size:14px;color:var(--lo);
   text-align:center;line-height:1.6;min-height:22px;flex-shrink:0;padding:0 10px}
@@ -470,14 +485,18 @@ body.in-world.view-cards #zoom{display:none}
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
 @media(hover:hover){
 .s-sub:hover,
-.s-int-def:hover,
-.s-int-pillar:hover,
-.s-int.cold .s-int-def:hover,
+.s-trip-meta:hover,
+.s-trip.void .s-trip-name:hover,
+.s-trip.void .s-trip-meta:hover,
+.s-att-h:hover,
+.s-att-row:hover,
 #s-note:hover,
 .s-exit:hover,
 #count:hover,
@@ -647,7 +666,7 @@ const HITS=new Map();           /* intention -> spots, cache de session */
 
 const RAD={ on:false, raf:0, t:0,
   origin:null, coords:null, geoDenied:false, geoPending:false,
-  spots:[], intention:null, loading:null, hover:null, focus:null,
+  spots:[], intention:null, trip:null, loading:null, hover:null, focus:null,
   base:1200, zoom:1, cx:0, cy:0, rpx:0, W:0, H:0, dpr:1 };
 
 /* ══ MATHÉMATIQUE ══
@@ -767,9 +786,12 @@ async function geoRefresh(moved){
   /* `RAD.loading` : au démarrage l'intention est cliquée AVANT que le GPS
      réponde, et `RAD.intention` n'est posée qu'au retour du réseau. Sans lui,
      geoRefresh ne relançait rien et l'écran restait sur le repli. */
-  const cur=RAD.intention||RAD.loading;
+  /* On relance sur l'OBJECTIF courant. `RAD.loading` porte la clé posée
+     avant que le réseau réponde ('all' pour « tous les objectifs »), et
+     'all' doit redevenir `null` : c'est la valeur que pick() attend. */
+  const cur=RAD.trip!==null?RAD.trip:RAD.loading;
   HITS.clear();
-  if(cur){RAD.intention=null;await pick(cur);}
+  if(cur!==null&&cur!==undefined){RAD.trip=null;await pick(cur==='all'?null:cur);}
 }
 /* Trois mots au maximum, et aucun message d'erreur : « location blocked »
    ou « timed out » ne dit rien de faisable à qui lit. Localisé, la ligne
@@ -990,7 +1012,7 @@ function draw(){
      n'est pas universel, et vingt fill() coûtent moins qu'un test de
      compatibilité. */
   const head=RAD.t*Math.PI/3;
-  const col=RAD.intention?intColor(RAD.intention):'#ffffff';
+  const col=RAD.trip?'#8FCBE8':'#ffffff';
   for(let i=0;i<20;i++){
     X.beginPath();X.moveTo(cx,cy);
     X.arc(cx,cy,rpx,head-i*0.035-0.035,head-i*0.035);X.closePath();
@@ -1327,8 +1349,11 @@ $('view-toggle').onclick=e=>{ e.stopPropagation(); view = view==='cards' ? 'map'
 /* Le T porte la couleur de l'intention courante — comme sur le rail du
    Totehm, la couleur dit ce qu'on regarde. */
 function paintBigT(){
+  /* Le T porte la couleur de ce que l'écran sert. Depuis le Trip, ce qu'il
+     sert est un OBJECTIF — donc le bleu clair, pas une couleur d'intention
+     que plus personne ne choisit ni ne voit. */
   const g=$('bigT').querySelector('.tglyph');
-  if(g) g.style.color = RAD.intention ? intColor(RAD.intention) : '#fff';
+  if(g) g.style.color = RAD.trip ? '#8FCBE8' : '#fff';
 }
 
 /* Les deux mêmes déclencheurs que dans le Totehm : le T, et le geste vers le
@@ -1417,13 +1442,15 @@ function paintFilter(){
 /* La fenêtre nomme l'intention qu'on vient de choisir : ce n'est pas un mur
    générique, c'est la porte de CE qu'on voulait voir. */
 function openGateModal(id){
-  const x=INT_BY_ID[id]||null;
-  const col=x?x.color:'#fff';
-  const g=$('gm-T'); if(g){g.innerHTML=tGlyph(26);g.style.color=col;}
-  $('gm-title').textContent=x?('Your world, filtered by '+x.name):'The radar reads your Totehm';
-  $('gm-body').textContent=x
-    ? 'The radar shows the places that carry '+x.name+' around you \u2014 and only the ones your own habits point to. Open your Totehm first: it is what the map reads.'
-    : 'The radar reads the intentions you put on your own habits. Open your Totehm first.';
+  /* Plus d'intention à nommer : ce que la carte sert, c'est un OBJECTIF.
+     Un visiteur non connecté n'en a aucun — le message dit donc ce que la
+     carte lit, pas ce qu'elle filtre. */
+  const t=TRIPS.find(x=>x.id===id)||null;
+  const g=$('gm-T'); if(g){g.innerHTML=tGlyph(26);g.style.color=t?'#8FCBE8':'#fff';}
+  $('gm-title').textContent=t?('Your world, aimed at \u201c'+t.text+'\u201d'):'The radar reads your Totehm';
+  $('gm-body').textContent=t
+    ? 'The radar shows the places and nights that serve this objective \u2014 ranked against the habits you wrote to reach it. Open your Totehm first: it is what the map reads.'
+    : 'The radar reads the objectives you set and the habits you wrote to reach them. Open your Totehm first.';
   $('gate-modal').classList.add('show');
 }
 function closeGateModal(){ $('gate-modal').classList.remove('show'); }
@@ -1456,34 +1483,140 @@ $('filter-modal').addEventListener('click',e=>{if(e.target.id==='filter-modal')c
    (403) une intention absente du Totehm — on marque ces lignes et on
    répond sans partir. Un aller-retour pour un refus prévisible, c'est une
    facture pour rien. */
-let mine=[];
+let mine=[];        /* les intentions servies par le trip courant — plomberie */
+let TRIPS=[];       /* les objectifs ouverts, servis par my_trips() */
+let LOOSE=[];       /* les habitudes qui ne servent encore aucun objectif */
 function say(m){$('s-note').textContent=m||'';}
+
+/* Le TIME ACHIEVEMENT, dit comme un humain le dirait. `days_left` vient du
+   SERVEUR : un client qui compare des dates compare aussi son horloge. */
+function fmtDue(d){
+  if(d==null)return 'no deadline';
+  if(d<0)  return Math.abs(d)+' day'+(Math.abs(d)===1?'':'s')+' overdue';
+  if(d===0)return 'today';
+  if(d===1)return 'tomorrow';
+  if(d<31) return d+' days left';
+  const m=Math.round(d/30);
+  return m+' month'+(m===1?'':'s')+' left';
+}
+
 function buildSelector(){
   const box=$('s-list');box.innerHTML='';
-  INTS.forEach(x=>{
-    const cold=mine.length>0&&mine.indexOf(x.id)===-1;
+
+  /* TOUS LES OBJECTIFS d'abord : c'est le comportement d'avant le Trip, et
+     c'est le seul qui marche quand rien n'est encore rangé. On ne prend
+     jamais à quelqu'un la vue qu'il avait hier. */
+  const all=document.createElement('button');
+  all.type='button';
+  all.className='s-trip'+(RAD.trip===null?' on':'');
+  all.dataset.trip='all';
+  all.style.color='var(--obj)';
+  all.innerHTML=tGlyph(17)
+    +'<span class="s-trip-name">Everything I\u2019m becoming</span>'
+    +'<span class="s-trip-meta">'+(LOOSE.length+TRIPS.reduce((n,t)=>n+(t.habit_count||0),0))
+    +' habits \u00b7 all objectives</span>';
+  all.onclick=()=>pick(null);
+  box.appendChild(all);
+
+  TRIPS.forEach(t=>{
+    const n=t.habit_count||0;
     const b=document.createElement('button');
     b.type='button';
-    b.className='s-int'+(cold?' cold':'')+(RAD.intention===x.id?' on':'');
-    b.dataset.int=x.id;
-    b.style.color=x.color;
-    /* Plus de <span> enveloppant : chaque élément est un enfant direct du
-       bouton, donc chacun s'aligne sur l'axe central de la colonne. */
+    b.className='s-trip'+(n?'':' void')+(RAD.trip===t.id?' on':'');
+    b.dataset.trip=t.id;
+    b.style.color=n?'var(--obj)':'var(--lo)';
     b.innerHTML=tGlyph(17)
-      +'<span class="s-int-name" style="color:'+x.color+'">'+esc(x.name)+'</span>'
-      +'<span class="s-int-def">'+esc(x.def)+'</span>'
-      +'<span class="s-int-pillar">'+esc(x.pillar)+'</span>';
-    b.onclick=()=>pick(x.id);
+      +'<span class="s-trip-name">'+esc(t.text||'objective')+'</span>'
+      +'<span class="s-trip-meta"><span class="s-trip-when">'+esc(fmtDue(t.days_left))
+      +'</span> \u00b7 '+(n?n+' habit'+(n===1?'':'s'):'no habit yet')+'</span>';
+    b.onclick=()=>pick(t.id);
     box.appendChild(b);
   });
+
+  if(!TRIPS.length){
+    const e=document.createElement('div');
+    e.className='s-att-h';
+    e.textContent='no objective yet \u2014 write one in your Totehm';
+    box.appendChild(e);
+  }
 }
+
+/* Un objectif sans habitude n'ouvre pas un radar vide : il ouvre la liste
+   de ce qu'on peut lui rattacher. `habit_set_trip` est déjà en base — on
+   n'écrit pas un écran de plus pour un geste d'une ligne. */
+function buildAttach(tripId){
+  const t=TRIPS.find(x=>x.id===tripId);
+  const box=$('s-list');box.innerHTML='';
+
+  const head=document.createElement('div');
+  head.className='s-trip void';
+  head.innerHTML='<span class="s-trip-name">'+esc(t?t.text:'objective')+'</span>'
+    +'<span class="s-trip-meta">which habits get you there ?</span>';
+  box.appendChild(head);
+
+  const wrap=document.createElement('div');
+  wrap.className='s-attach';
+  if(!LOOSE.length){
+    wrap.innerHTML='<div class="s-att-h">every habit already serves an objective</div>';
+  }else{
+    LOOSE.forEach(h=>{
+      const r=document.createElement('button');
+      r.type='button';r.className='s-att-row';
+      r.innerHTML='<span class="s-att-dot"></span>'+esc(h.t);
+      r.onclick=async()=>{
+        r.classList.add('done');
+        const {error}=await sb.rpc('habit_set_trip',{p_habit:h.t,p_trip:tripId});
+        if(error){r.classList.remove('done');say('could not attach that one');return;}
+        LOOSE=LOOSE.filter(x=>x.t!==h.t);
+        const tt=TRIPS.find(x=>x.id===tripId); if(tt)tt.habit_count=(tt.habit_count||0)+1;
+        /* On repart sur le radar dès la première habitude : c'est le moment
+           où l'objectif devient regardable. */
+        HITS.delete(tripId);
+        pick(tripId);
+      };
+      wrap.appendChild(r);
+    });
+  }
+  box.appendChild(wrap);
+
+  const back=document.createElement('button');
+  back.type='button';back.className='s-att-row';
+  back.innerHTML='<span class="s-att-dot"></span>back to my objectives';
+  back.onclick=()=>buildSelector();
+  box.appendChild(back);
+}
+
 function markLoading(id,on){
-  document.querySelectorAll('.s-int').forEach(el=>
-    el.classList.toggle('loading',on&&el.dataset.int===id));
+  document.querySelectorAll('.s-trip').forEach(el=>
+    el.classList.toggle('loading',on&&el.dataset.trip===String(id==null?'all':id)));
 }
 function markActive(id){
-  document.querySelectorAll('.s-int').forEach(el=>
-    el.classList.toggle('on',el.dataset.int===id));
+  document.querySelectorAll('.s-trip').forEach(el=>
+    el.classList.toggle('on',el.dataset.trip===String(id==null?'all':id)));
+}
+
+/* Les objectifs et les habitudes non rangées, en UN appel. `my_trips()`
+   rend déjà l'arbre entier (trips → habitudes → répulsions) : le sélecteur
+   et la liste de rattachement lisent la même réponse. Zéro appel IA, zéro
+   Edge Function — c'est du SQL derrière la RLS du membre. */
+async function loadTrips(){
+  try{
+    const {data,error}=await sb.rpc('my_trips');
+    if(error)throw error;
+    if(!data||!data.signed_in)return false;
+    TRIPS=(data.trips||[]).map(t=>({
+      id:t.id, text:t.text, target_at:t.target_at, days_left:t.days_left,
+      habit_count:(t.habits||[]).length
+    }));
+    LOOSE=data.loose||[];
+    buildSelector();
+    return true;
+  }catch(e){
+    /* Une erreur de RPC se journalise, toujours : sans ce log, un sélecteur
+       vide ne dit pas si le membre n'a pas d'objectif ou si l'appel casse. */
+    console.error('[map] my_trips:',e&&e.message||e);
+    return false;
+  }
 }
 
 /* ══ LE DÉCLENCHEUR — rien ne part sur le réseau avant ce clic ══
@@ -1492,25 +1625,28 @@ function markActive(id){
    des distances calculées depuis Lisbonne par-dessus les bonnes. */
 let PICK_SEQ=0;
 async function pick(id){
-  if(!id)return;
-  if(mine.length&&mine.indexOf(id)===-1){
-    say('no habit carries this intention yet — give it one in your Totehm');
-    return;
-  }
-  if(HITS.has(id)){
-    RAD.intention=id;markActive(id);
-    allSpots=HITS.get(id);
+  /* `id` est un uuid d'objectif, ou `null` pour « tous les objectifs ».
+     `null` est une valeur LÉGITIME : l'ancien garde-fou `if(!id)return;`
+     l'aurait rejetée et aurait rendu muette la première ligne du sélecteur. */
+  const key=id==null?'all':id;
+  if(HITS.has(key)){
+    RAD.trip=id;markActive(id);
+    allSpots=HITS.get(key);
     renderSpots(allSpots.filter(s=>
       (!fDist||(s.dist_m||0)<=fDist)&&(!fKind||(s.kind||'PLACE')===fKind)));
     say('');openWorld();
     return;
   }
   markLoading(id,true);say('scanning…');
-  const seq=++PICK_SEQ; RAD.loading=id;
+  const seq=++PICK_SEQ; RAD.loading=key;
   try{
     const {data:{session}}=await sb.auth.getSession();
     if(!session){markLoading(id,false);say('');openGateModal(id);return;}
-    const body={intention:id};
+    /* On ne restreint plus les INTENTIONS, on restreint les HABITUDES :
+       celles qui servent cet objectif. Le classement n'a pas bougé d'un
+       iota — il a toujours été le cosine entre un lieu et le TEXTE d'une
+       habitude. L'intention n'était qu'un préfiltre grossier. */
+    const body=id==null?{}:{trip:id};
     if(RAD.coords){body.lat=RAD.coords.lat;body.lng=RAD.coords.lng;}
     const r=await fetch(SB_URL+'/functions/v1/higher-map',{
       method:'POST',
@@ -1519,7 +1655,7 @@ async function pick(id){
     });
     markLoading(id,false);
     if(r.status===402){say('the radar is part of the membership');return;}
-    if(r.status===403){say('no habit carries this intention yet — give it one in your Totehm');return;}
+    if(r.status===403){say('that objective is not yours');return;}
     if(!r.ok){say('the radar is unreachable right now');return;}
     const j=await r.json();
     if(seq!==PICK_SEQ)return;          /* dépassée : une autre demande a pris la main */
@@ -1533,7 +1669,17 @@ async function pick(id){
     if(j.reason==='no_habit'||j.reason==='no_intention'){
       say('write one habit first — the radar reads your Totehm');return;
     }
-    if(Array.isArray(j.intentions)&&j.intentions.length){mine=j.intentions;buildSelector();}
+    /* La liste des objectifs voyage avec CHAQUE réponse : un sélecteur qui
+       doit faire son propre appel montre un cadre vide une seconde à
+       chaque ouverture. */
+    if(Array.isArray(j.trips))TRIPS=j.trips;
+    /* UN OBJECTIF SANS HABITUDE N'OUVRE PAS UN RADAR VIDE. Il ouvre la
+       liste de ce qu'on peut lui rattacher : l'écran qui signale un manque
+       est celui qui doit le combler. */
+    if(j.reason==='trip_empty'){
+      RAD.loading=null;say('');buildAttach(id);openWorld();return;
+    }
+    if(Array.isArray(j.intentions)&&j.intentions.length)mine=j.intentions;
     /* ══ LA PANNE DE LOCALISATION, LA VRAIE ══
        MESURÉ LE 23/08/2026 (w4.mjs, cas C) : GPS autorisé, réponse en 1,5 s,
        radar interrogé avant. La réponse du radar arrivait 1,8 s APRÈS le GPS
@@ -1574,13 +1720,14 @@ async function pick(id){
     /* Un seul objet à lire dans la console pour savoir ce que le serveur a
        vraiment servi, et quelle couche est éteinte. Booléens seulement :
        jamais une valeur de clé dans un navigateur. */
-    window.__totehm_map={intention:id,sources:j.sources,live:j.live_count,
+    window.__totehm_map={trip:key,trips:TRIPS.length,intentions:mine,
+      sources:j.sources,live:j.live_count,
       places:j.place_count,swept:j.live_swept,sweeps:j.sweeps,
       origin:j.origin,shown:spots.length,live_shown:liveKeep.length};
-    HITS.set(id,spots);
-    RAD.intention=id;markActive(id);
+    HITS.set(key,spots);
+    RAD.trip=id;buildSelector();markActive(id);
     paintGeo();
-    if(!spots.length){say('nothing within range for this intention');return;}
+    if(!spots.length){say('nothing within range for this objective');return;}
     allSpots=spots;
     renderSpots(allSpots.filter(s=>
       (!fDist||(s.dist_m||0)<=fDist)&&(!fKind||(s.kind||'PLACE')===fKind)));
@@ -1598,8 +1745,14 @@ async function pick(id){
    pour exister : on dessine sur la dernière position connue (ou Lisbonne)
    et la demande court en arrière-plan. */
 (async function boot(){
-  const urlIntent=new URLSearchParams(location.search).get('intent');
-  if(urlIntent){ history.replaceState(null,'',location.pathname); RAD.loading=urlIntent; }
+  /* `?trip=<uuid>` ouvre directement un objectif — c'est le lien que pose
+     le Totehm. `?intent=` a existé jusqu'au 04/09 : on ne le lit plus, mais
+     on le NETTOIE de l'URL pour ne pas laisser un paramètre mort traîner
+     dans les liens que les gens se sont envoyés. */
+  const qs=new URLSearchParams(location.search);
+  const urlTrip=qs.get('trip');
+  if(urlTrip||qs.get('intent')) history.replaceState(null,'',location.pathname);
+  if(urlTrip) RAD.loading=urlTrip;
   buildSelector();
   resize();
   const cached=geoCached();
@@ -1626,17 +1779,11 @@ async function pick(id){
   try{
     const {data:{session}}=await sb.auth.getSession();
     if(!session){say('sign in to open the radar');return;}
-    /* Les intentions réellement portées par le Totehm, lues en local :
-       zéro requête. Le serveur reste la source de vérité et corrigera
-       cette liste à la première réponse. */
-    try{
-      const raw=localStorage.getItem('totehm_habits_v1');
-      const st=raw?JSON.parse(raw):null;
-      const arr=(st&&Array.isArray(st.habits))?st.habits:[];
-      mine=[...new Set(arr.map(h=>h&&h.i).filter(x=>INT_BY_ID[x]))];
-    }catch(e){}
-    if(mine.length)buildSelector();
-    if(urlIntent&&INT_BY_ID[urlIntent])await pick(urlIntent);
+    /* Les objectifs viennent du serveur, pas du localStorage : un objectif
+       a une DATE et un compte à rebours, et une copie locale d'une date
+       périme sans prévenir. Un appel, avant tout clic. */
+    await loadTrips();
+    if(urlTrip&&TRIPS.some(t=>t.id===urlTrip))await pick(urlTrip);
   }catch(e){}
 })();
 
