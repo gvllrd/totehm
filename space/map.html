@@ -1524,8 +1524,14 @@ async function pick(id){
     const j=await r.json();
     if(seq!==PICK_SEQ)return;          /* dépassée : une autre demande a pris la main */
     RAD.loading=null;
-    if(j.reason==='no_intention'){
-      say('give at least one habit an intention — the radar reads your Totehm');return;
+    /* `no_intention` n'existe plus depuis le Trip : le membre ne choisit
+       plus d'intention, elle est deduite de ce qu'il ecrit. Le seul cas
+       ou le radar n'a rien a lire, c'est un Totehm SANS HABITUDE. On garde
+       l'ancien code un temps : un membre peut avoir la page en cache
+       pendant qu'on deploie, et un message perime vaut mieux qu'un ecran
+       muet. */
+    if(j.reason==='no_habit'||j.reason==='no_intention'){
+      say('write one habit first — the radar reads your Totehm');return;
     }
     if(Array.isArray(j.intentions)&&j.intentions.length){mine=j.intentions;buildSelector();}
     /* ══ LA PANNE DE LOCALISATION, LA VRAIE ══
