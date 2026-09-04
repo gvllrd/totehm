@@ -311,6 +311,24 @@ body.higher .set-block.higher-only{display:flex!important}
 .terms-link:hover,.terms-link:focus{color:#fff;outline:none}
 .bot-txt b{color:var(--g-light);font-weight:700}
 
+/* ══ LES RÉSULTATS DE RECHERCHE ══════════════════════════════════════
+   Une LISTE, pas un pari. L'ancienne recherche faisait
+   `ilike('%q%').limit(1)` : taper « wa » ouvrait le Totehm d'un inconnu,
+   choisi par le hasard du plan d'exécution. On montre ce qu'on a trouvé,
+   et c'est la personne qui choisit. */
+.sr-list{display:flex;flex-direction:column;gap:0;width:min(320px,86vw);
+  margin:8px auto 0;text-align:left}
+.sr-row{display:flex;align-items:baseline;gap:10px;background:none;border:none;
+  width:100%;cursor:pointer;padding:9px 4px;text-align:left;
+  -webkit-tap-highlight-color:transparent;transition:background .12s}
+.sr-row + .sr-row{border-top:1px solid rgba(255,255,255,.07)}
+@media(hover:hover){.sr-row:hover{background:rgba(255,255,255,.05)}}
+.sr-name{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;color:#fff}
+.sr-meta{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--g-mid);margin-left:auto;white-space:nowrap}
+.sr-ints{display:flex;gap:3px;align-items:center}
+.sr-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+
 /* Search a Totehm : le pattern morph d'index.html */
 .btn-sig{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
 /* Bouton "claimed" : nom validé -> look perforé bleu figé (persistant, pas juste au hover) */
@@ -793,6 +811,8 @@ body.gate.entered #filter-badge{
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -822,6 +842,7 @@ body.gate.entered #filter-badge{
 .size-btn:hover,
 .bot-txt:hover,
 .bot-txt b:hover,
+.sr-meta:hover,
 .btn-sig:hover,
 .note.dim:hover,
 #ro-tag:hover,
@@ -1086,6 +1107,8 @@ body.gate.entered #filter-badge{
       <div class="set-block hide" id="tg-block">
         <div class="menu-row">
           <button class="btn-sig" id="tg-btn" type="button">Connect TotehmBot</button>
+          <button class="set-note hide" id="tg-toggle" type="button"
+                  style="background:none;border:none;cursor:pointer;text-align:left"></button>
           <div class="note dim" id="tg-note"></div>
         </div>
       </div>
@@ -1439,10 +1462,18 @@ async function cloudSave(){
   if(!me)return;
   $('mw-sync').textContent='syncing…';
   try{
+    /* ══ `bot` N'EST PLUS DANS CE SNAPSHOT — CORRIGÉ LE 03/09/2026 ══
+       La colonne était écrite ici avec `bot:!!profile.bot`, un champ
+       qu'AUCUN bouton du produit ne cochait : elle valait donc `false`
+       pour tout le monde, et surtout, allumer le bot ailleurs (par la
+       liaison Telegram) était annulé au prochain enregistrement
+       d'habitude. Un upsert PostgREST ne met à jour que les colonnes
+       envoyées : en la retirant, l'interrupteur cesse d'être un effet de
+       bord de la saisie. Il vit dans `set_bot()`. */
     const {error}=await sb.from('totehms').upsert({
       user_id:me.id,
       totehm_visibility:(state.vis==='members')?'members':'private',
-      steps:state.habits, bot:!!profile.bot,
+      steps:state.habits,
       updated_at:new Date().toISOString()
     },{onConflict:'user_id'});
     if(error)throw error;
@@ -2376,46 +2407,70 @@ function closeWeightPick(){ $('wpick').classList.remove('show'); }
 $('wp-skip').onclick=()=>replyIntention(null);
 $('wpick').addEventListener('click',e=>{if(e.target===$('wpick'))closeWeightPick();});
 
-/* ══ SEARCH A TOTEHM — le pattern morph d'index.html ══ */
-/* réseau démo pour le mode guest */
-const NETWORK=[
-  {who:'wavywah', vis:'members', habits:[{t:'Get Higher',f:'every_minute',i:'focus'},{t:'Make one beat',f:'daily',i:'express'},{t:'Finish one track',f:'weekly',i:'express'}]},
-  {who:'lisboeta', vis:'members', habits:[{t:'Replace the urge with 10 push-ups',f:'several_daily',i:'fight'},{t:'Walk after every meal',f:'daily',i:'flow'}]},
-  {who:'serra', vis:'members', habits:[{t:'Stretch',f:'every_morning',i:'flow'},{t:'Cut sugar',f:'daily',i:'fight'},{t:'Long run',f:'every_sunday',i:'fight'}]}
-];
-/* SEARCH A TOTEHM : Enter -> full-screen read-only (le pattern Decode) */
-async function openTotehmView(q){
-  const note=$('search-note');
-  note.className='note dim';note.textContent='searching\u2026';
-  let name=null, habits=null, pid=null;
-  if(!me){
-    const ql=q.toLowerCase();
-    const u=NETWORK.find(x=>x.who.toLowerCase()===ql)||NETWORK.find(x=>x.who.toLowerCase().indexOf(ql)!==-1);
-    if(!u){note.className='note no';note.textContent='no Totehm by that name';return;}
-    name=u.who;habits=(u.vis==='members')?u.habits:null;
-  }else{
-    let {data:ps}=await sb.from('profiles').select('id,pseudo').ilike('pseudo',q).limit(1);
-    let p=(ps&&ps[0])||null;
-    if(!p){const {data:ps2}=await sb.from('profiles').select('id,pseudo').ilike('pseudo','%'+q+'%').limit(1);p=(ps2&&ps2[0])||null;}
-    if(!p){note.className='note no';note.textContent='no Totehm by that name';return;}
-    name=p.pseudo; pid=p.id;
-    const {data:rows}=await sb.from('totehms').select('steps,totehm_visibility').eq('user_id',p.id).eq('totehm_visibility','members');
-    if(rows&&rows.length){
-      habits=[];rows.forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{if(s&&s.t)habits.push(s);});});
-      if(!habits.length)habits=null;
-    }
+/* ══ SEARCH A TOTEHM — RÉÉCRITE LE 04/09/2026 ═══════════════════════
+   CE QUI N'ALLAIT PAS, et qui se voyait tout de suite :
+
+   1. `ilike('%'||q||'%').limit(1)` rendait UN résultat, choisi par le
+      hasard du plan d'exécution. Taper deux lettres ouvrait le Totehm
+      d'un inconnu. Aucune liste, aucun classement, aucun choix.
+   2. Un invité (non connecté) ne peut pas lire `profiles` — la RLS ne
+      vise que `authenticated`. Le fichier compensait avec TROIS PROFILS
+      INVENTÉS en dur. Quelqu'un cherchait une personne et trouvait de
+      la fiction. C'est parti.
+   3. « this Totehm is private » s'affichait aussi quand le nom n'existait
+      pas, et quand le Totehm existait mais était vide. Trois situations,
+      un seul message, aucun moyen de savoir laquelle.
+
+   Une seule RPC, `search_totehms()`, ouverte à `anon` : elle ne rend que
+   des Totehms explicitement partagés, jamais un e-mail ni un id, et elle
+   classe exact > préfixe > sous-chaîne — l'ordre dans lequel un humain
+   cherche un nom qu'il connaît déjà. */
+
+const INT_DOT = i => '<span class="sr-dot" style="background:'+intColor(i)+'"></span>';
+
+async function runSearch(q, noteEl){
+  noteEl.classList.remove('hide');
+  noteEl.className = 'note dim';
+  noteEl.textContent = 'searching\u2026';
+  let rows = [];
+  try{
+    const {data,error} = await sb.rpc('search_totehms',{p_q:q,p_limit:8});
+    if(error) throw error;
+    rows = data || [];
+  }catch(e){
+    noteEl.className='note no'; noteEl.textContent='search is unreachable right now';
+    return;
   }
-  note.textContent='';
-  if(!habits){ note.className='note dim'; note.textContent='this Totehm is private'; return; }
-  $('member-window').classList.remove('show');
-  /* On ne montre plus une liste : on OUVRE son Totehm, les trois volets. */
-  location.href='totehm.html?ro='+encodeURIComponent(name);
+  if(!rows.length){
+    noteEl.className='note dim';
+    /* On dit ce qui est vrai : soit personne ne porte ce nom, soit
+       personne ne l'a partagé. Jamais « privé » par défaut. */
+    noteEl.textContent='no shared Totehm by that name';
+    return;
+  }
+  noteEl.className='note dim';
+  noteEl.innerHTML = '<div class="sr-list">' + rows.map(r =>
+      '<button class="sr-row" type="button" data-pseudo="'+esc(r.pseudo)+'">'
+    +   '<span class="sr-name">'+esc(r.pseudo)+'</span>'
+    +   '<span class="sr-ints">'
+    +     (r.intentions||[]).filter(i=>INT_BY_ID[i]).map(INT_DOT).join('')
+    +   '</span>'
+    +   '<span class="sr-meta">'+(r.habits||0)+' habit'+((r.habits||0)===1?'':'s')+'</span>'
+    +   '</button>').join('') + '</div>';
+  noteEl.querySelectorAll('.sr-row').forEach(b=>{
+    b.onclick = () => {
+      $('member-window').classList.remove('show');
+      location.href = 'totehm.html?ro=' + encodeURIComponent(b.dataset.pseudo);
+    };
+  });
 }
+
 $('search-input').addEventListener('keydown',e=>{
   if(e.key!=='Enter')return;
   const v=$('search-input').value.trim();
-  if(v.length<2){$('search-note').className='note dim';$('search-note').textContent='name of a Totehm';return;}
-  openTotehmView(v);
+  const n=$('search-note');
+  if(v.length<2){n.className='note dim';n.textContent='two letters, minimum';return;}
+  runSearch(v, n);
 });
 
 
@@ -2571,13 +2626,40 @@ async function paintTelegram(sub){
      On ne montre pas une porte qui se ferme. */
   box.classList.toggle('hide', !(me && live));
   if(!(me && live)) return;
-  try{ const {data}=await sb.rpc('bot_linked'); tgLinked=!!data; }
-  catch(_){ tgLinked=false; }
+  /* `bot_state()` rend TROIS choses en un appel : lié, actif, en attente.
+     `bot_linked()` n'en rendait qu'une — et le membre voyait « connected »
+     sur un bot qui n'avait pas le droit de parler. */
+  let st=null;
+  try{ const {data}=await sb.rpc('bot_state'); st=data||null; }catch(_){ st=null; }
+  tgLinked=!!(st&&st.linked);
+  botOn=!!(st&&st.on);
   const b=$('tg-btn'), n=$('tg-note');
   b.classList.toggle('claimed', tgLinked);
   b.textContent = tgLinked ? 'TotehmBot connected' : 'Connect TotehmBot';
-  if(n) n.textContent = tgLinked ? 'send /spot to post a place' : '';
+  const t=$('tg-toggle');
+  if(t){
+    t.classList.toggle('hide', !tgLinked);
+    t.textContent = botOn ? 'pause the daily question' : 'resume the daily question';
+  }
+  if(n) n.textContent = !tgLinked ? ''
+    : (botOn ? 'send /tonight for what is on around you · /spot to post a place'
+             : 'paused — /tonight and /spot still work');
 }
+let botOn=false;
+/* Le membre coupe et rallume depuis la page. Le bot en fait autant avec
+   /pause et /reprendre : deux portes, un seul interrupteur en base. */
+if($('tg-toggle')) $('tg-toggle').onclick=async()=>{
+  const next=!botOn;
+  const {error}=await sb.rpc('set_bot',{p_on:next});
+  if(error)return;
+  botOn=next;
+  const t=$('tg-toggle');
+  t.textContent = botOn ? 'pause the daily question' : 'resume the daily question';
+  const n=$('tg-note');
+  if(n) n.textContent = botOn
+    ? 'send /tonight for what is on around you · /spot to post a place'
+    : 'paused — /tonight and /spot still work';
+};
 
 $('tg-btn').onclick=async()=>{
   const n=$('tg-note');
@@ -2884,8 +2966,10 @@ window.addEventListener('pageshow',e=>{
                           gsb.classList.remove('hide'); return; }
     if(e.key!=='Enter')return;
     const v=gsi.value.trim();
-    if(v.length<2){ if(gsn){gsn.classList.remove('hide');gsn.textContent='2 characters min';} return; }
-    enter(()=>openTotehmView(v));
+    if(v.length<2){ if(gsn){gsn.classList.remove('hide');gsn.textContent='two letters, minimum';} return; }
+    /* L'atterrissage cherche SANS se déployer : on ne fait pas entrer
+       quelqu'un dans son Totehm pour lui montrer une liste de noms. */
+    runSearch(v, gsn);
   });
 
   /* ══ NAVIGATION VERS LA HIGHER MAP ══

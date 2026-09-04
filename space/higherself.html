@@ -1,142 +1,323 @@
 <!DOCTYPE html>
+<!--
+  ══ HIGHERSELF — LE TOTEHM DANS TELEGRAM ══════════════════════════════
+  04/09/2026 · réécrit entièrement.
+
+  CE QUE C'ÉTAIT. Une page qui interrogeait la table `trips` — renommée
+  `totehms` le 18/08/2026, donc absente — et `profiles.telegram_id`,
+  retiré au membre le 29/08. Chaque chargement partait en erreur
+  silencieuse : aucune habitude, un interrupteur qui n'écrivait nulle
+  part, et une auto-attribution du Telegram qui était un trou de
+  sécurité. Rien ne marchait, rien ne le disait.
+
+  CE QUE C'EST. Le Totehm entier, dans la poche :
+
+      NOW      les habitudes ET ce qu'elles ont produit — série,
+               consistance, question en attente. Deux taps pour répondre,
+               sans attendre que le bot demande.
+      WISDOM   les leçons (`book.html`), posées et relues ici.
+      NEXT     les objectifs ouverts (`next_objective.html`), et le
+               geste qui en fait une habitude.
+      SPOTS    poser un lieu (position, intention, énergie) et CHERCHER
+               ceux du Club autour de soi.
+
+  UN SEUL APPEL AU CHARGEMENT. `higherself_state()` rend tout d'un coup.
+  Une mini-app s'ouvre sur un réseau mobile : six requêtes en série, ce
+  sont six allers-retours avant le premier pixel utile.
+
+  LE TRACKING EST DÉDUIT, JAMAIS SAISI. Personne ne coche « série de 12
+  jours » : elle se calcule sur les réponses déjà données. Même doctrine
+  que le pic narratif de l'autobiographie — on ne demande pas ce qu'on
+  peut déduire.
+
+  Fonctionne aussi hors Telegram, dans un navigateur : c'est la même page.
+  ═════════════════════════════════════════════════════════════════════
+-->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-<title>HigherSelf</title>
+<title>HigherSelf — TOTEHM</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Montserrat:ital,wght@0,600;1,900&family=Quantico:wght@400;700&family=Space+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Montserrat:ital,wght@0,600;1,900&family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#606060;
-  --navy:#333366;--rep:#743169;
-  --fight:#E24B4A;--flow:#e48b31;--enrich:#fcbe21;--love:#639922;--express:#1D9E75;--focus:#378ADD;--celebrate:#7F77DD;
+  --coral:#fbd5ca;--navy:#333366;--rep:#743169;
+  --g-light:#e0e0e0;--g-mid:#909090;--g-dark:#606060;
+  --box:#080808;--box-line:#161616;
+  --fight:#E24B4A;--flow:#e48b31;--enrich:#fcbe21;--love:#639922;
+  --express:#1D9E75;--focus:#378ADD;--celebrate:#7F77DD;
   --futura:'Futura','Jost',sans-serif;
+  --rl:34px;--rw:12px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:#000;color:var(--g-light);font-family:var(--futura);font-weight:300;font-size:14px;min-height:100%}
+html,body{background:#000;color:var(--g-light);font-family:var(--futura);
+  font-weight:300;font-size:14px;min-height:100%;-webkit-font-smoothing:antialiased;
+  overscroll-behavior-y:none}
 .hide{display:none!important}
-#app{max-width:520px;margin:0 auto;padding:26px 18px 60px;display:flex;flex-direction:column;gap:22px;align-items:center}
+button{font:inherit;color:inherit}
 
-/* header */
-#hs-head{display:flex;flex-direction:column;align-items:center;gap:6px}
-#hs-head .hg{height:40px;width:auto}
-#hs-head .sub{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--g-dark)}
-#hs-who{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:#fff}
-.wm-totehm{font-family:'Montserrat',sans-serif;font-weight:600;color:#fff;letter-spacing:.16em;margin-right:-.16em}
+/* Le rail — la colonne vertébrale, la même que dans les quatre fichiers. */
+#rail{position:fixed;top:0;bottom:0;left:var(--rl);width:var(--rw);
+  background:#161632;z-index:0}
+
+#app{position:relative;z-index:1;max-width:560px;margin:0 auto;
+  padding:22px 16px calc(28px + env(safe-area-inset-bottom))}
+
+/* ── EN-TÊTE ─────────────────────────────────────────────────────── */
+#head{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:18px}
+#head .hg{height:34px;width:auto}
+.sub{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--g-dark);text-align:center}
+#who{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:#fff}
+.wm-totehm{font-family:'Montserrat',sans-serif;font-weight:600;color:#fff;
+  letter-spacing:.16em;margin-right:-.16em}
 .wm-frame{background:var(--navy);padding:0 3px;margin:0 1px;color:#fff}
 
-/* auth */
-#auth{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;max-width:300px}
-.in{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-size:15px;padding:6px 2px;caret-color:var(--coral);text-align:center}
-.in::placeholder{color:rgba(255,255,255,.33)}
-.note{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;text-align:center}
-.note.ok{color:#7db32e}.note.no{color:#b06a9f}.note.dim{color:#9a9a9a}
+/* ── AUTH ────────────────────────────────────────────────────────── */
+#auth{display:flex;flex-direction:column;gap:10px;align-items:center;
+  width:100%;max-width:300px;margin:24px auto}
+.line-input{width:100%;font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
+  color:#fff;background:none;outline:none;border:6px solid transparent;
+  border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;
+  padding:0 6px;text-align:center;caret-color:var(--coral)}
+.line-input::placeholder{color:rgba(255,255,255,.33)}
+.note{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;min-height:14px;text-align:center}
+.note.ok{color:#7db32e}.note.no{color:#b06a9f}.note.dim{color:var(--g-mid)}
 
-/* intentions */
-#ints{display:flex;flex-direction:column;gap:12px;width:100%}
-.int-card{border:1px solid #161616;padding:16px;display:flex;flex-direction:column;gap:8px;cursor:pointer;background:none;text-align:left;transition:border-color .2s;-webkit-tap-highlight-color:transparent}
-.int-card:active,.int-card.on{border-color:var(--ic)}
-.int-r1{display:flex;align-items:center;gap:9px}
-.int-r1 .tg{height:16px;width:auto;color:var(--ic);flex-shrink:0}
-.int-r1 .nm{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:var(--ic)}
-.higher-inline{height:1.25em;width:auto;vertical-align:-.25em}
-.int-def{font-family:var(--futura);font-weight:300;font-size:13px;color:#c4c4c4;line-height:1.55;padding-left:24px}
+/* ── LES ONGLETS ─────────────────────────────────────────────────── */
+/* Quatre mots, pas d'icônes. On ne devine pas un pictogramme. */
+#tabs{display:flex;justify-content:center;gap:4px;margin:0 0 20px;flex-wrap:wrap}
+.tab{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--g-dark);background:none;border:none;
+  padding:8px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:color .15s}
+.tab.on{color:#fff}
+.tab .n{font-size:8px;color:var(--g-dark);margin-left:5px}
 
-/* panneau d'une intention */
-.int-body{display:none;flex-direction:column;gap:14px;margin-top:8px}
-.int-card.on .int-body{display:flex}
-.lbl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--g-dark)}
-.hlist{display:flex;flex-direction:column;gap:8px}
-.hrow{display:flex;align-items:center;gap:9px;font-family:'Quantico',sans-serif;font-size:13px;color:#dedede;line-height:1.45}
-.hrow .tg{height:12px;width:auto;flex-shrink:0}
-.hrow .fq{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.06em;color:var(--g-mid);flex-shrink:0;text-transform:none}
-.empty{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--g-dark)}
+/* ── UNE LIGNE — le système du Totehm, repris à l'identique ──────── */
+.row{position:relative;display:flex;align-items:flex-start;min-height:34px;
+  padding:6px 0}
+.row .tick{position:absolute;left:calc(var(--rl) - 16px);width:var(--rw);height:4px;
+  background:#000;top:17px}
+.row.marked .tick{background:#fff}
+.row .glyph{position:absolute;left:calc(var(--rl) - 34px);top:11px;
+  background:none;border:none;padding:0;line-height:0;cursor:pointer}
+.row .body{margin-left:calc(var(--rw) + 12px);flex:1;min-width:0}
+.tglyph{height:13px;width:auto;display:block}
+.r-text{font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:#fff;
+  line-height:1.45;word-break:break-word}
+.r-meta{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--g-mid);margin-top:4px;
+  display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.r-meta b{font-weight:700;color:#fff}
+.r-x{background:none;border:none;color:rgba(255,255,255,.3);font-size:15px;
+  line-height:1;cursor:pointer;padding:4px 6px;flex-shrink:0}
 
-/* city sync */
-#city{display:flex;flex-direction:column;gap:9px;align-items:center;border-top:1px solid #141414;padding-top:18px;width:100%}
-.row{display:flex;gap:12px}
-.size-btn{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:#b0b0b0;background:none;cursor:pointer;border:none;padding:2px 10px;-webkit-tap-highlight-color:transparent;transition:color .15s,background .15s}
-.size-btn.on,.size-btn:active{color:#fff;background:var(--navy)}
-.city-note{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;color:var(--g-dark);text-transform:uppercase;text-align:center}
-#hs-out{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--g-mid);background:none;border:none;cursor:pointer;margin-top:6px}
-#hs-out:hover{color:#fff}
+/* ── LA BARRE DE CONSISTANCE ─────────────────────────────────────── */
+/* Une barre, pas un pourcentage isolé : on lit une proportion d'un coup
+   d'œil, on ne lit pas « 63 % » d'un coup d'œil. */
+.bar{height:2px;background:rgba(255,255,255,.12);margin-top:6px;width:100%}
+.bar i{display:block;height:100%;background:currentColor}
+
+/* ── LES DEUX TAPS ───────────────────────────────────────────────── */
+.answer{display:flex;gap:8px;margin-top:8px}
+.btn-sig{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
+  color:#b0b0b0;background:none;border:6px solid transparent;padding:0 4px;
+  line-height:1.5;cursor:pointer;display:inline-block;width:fit-content;
+  -webkit-tap-highlight-color:transparent;transition:color .15s ease}
+.btn-sig:active,.btn-sig.on{color:#fff;border-image-source:var(--tile-btn);
+  border-image-slice:6 fill;border-image-repeat:round}
+@media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:var(--tile-btn);
+  border-image-slice:6 fill;border-image-repeat:round}}
+
+/* ── LA LIGNE D'AJOUT ────────────────────────────────────────────── */
+.add-row textarea{width:100%;background:none;border:none;
+  border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;
+  font-family:'Quantico',sans-serif;font-size:15px;line-height:1.5;
+  padding:4px 2px;resize:none;overflow:hidden;caret-color:#fff}
+@keyframes t-pulse{0%,100%{opacity:1}50%{opacity:.18}}
+.blink{animation:t-pulse 2.2s ease-in-out infinite}
+
+.empty{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--g-dark);padding:14px 0 14px
+  calc(var(--rw) + 12px)}
+.lbl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--g-dark);margin:22px 0 8px
+  calc(var(--rw) + 12px)}
+
+/* ── LA BOÎTE — une seule dans tout le produit ───────────────────── */
+.box{background:var(--box);border:1px solid var(--box-line);padding:16px 14px;
+  margin:10px 0 10px calc(var(--rw) + 12px)}
+
+/* ── LES SEPT, EN GRILLE ─────────────────────────────────────────── */
+.ints{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:1px;
+  background:var(--box-line);border:1px solid var(--box-line)}
+.int{background:var(--box);border:none;padding:12px 6px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  -webkit-tap-highlight-color:transparent;transition:background .12s}
+.int.on{background:rgba(255,255,255,.06)}
+@media(hover:hover){.int:hover{background:rgba(255,255,255,.05)}}
+.int .nm{font-family:'Quantico',sans-serif;font-weight:700;font-size:12px}
+.int .tglyph{height:14px}
+
+/* ── LES SPOTS TROUVÉS ───────────────────────────────────────────── */
+.spot{border-top:1px solid rgba(255,255,255,.07);padding:12px 0}
+.spot:first-child{border-top:none}
+.s-name{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;color:#fff}
+.s-why{font-family:'Quantico',sans-serif;font-size:13px;color:#b4b4b4;
+  line-height:1.5;margin-top:3px}
+.s-foot{display:flex;align-items:baseline;gap:12px;margin-top:8px;flex-wrap:wrap}
+.s-dist{font-family:'Space Mono',monospace;font-size:12px;color:#fff}
+.s-go{font-family:'Quantico',sans-serif;font-size:13px;text-decoration:none;
+  color:var(--gc,var(--g-mid));border:6px solid transparent;padding:0 4px;
+  display:inline-block;width:fit-content;transition:color .15s}
+@media(hover:hover){.s-go:hover{color:#fff;border-image-source:var(--tile-btn);
+  border-image-slice:6 fill;border-image-repeat:round}}
+
+/* ── LE PIED ─────────────────────────────────────────────────────── */
+#foot{margin-top:34px;padding-top:16px;border-top:1px solid var(--box-line);
+  display:flex;flex-direction:column;gap:10px;align-items:center}
+.foot-note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--g-dark);text-align:center;line-height:1.7}
+a.foot-link{color:var(--coral);text-decoration:none}
+
+:root{--tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath fill='%23333366' fill-rule='evenodd' d='M0 0h24v24H0Z M9 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0 M9 24a3 3 0 1 0 6 0a3 3 0 1 0-6 0 M-3 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0 M21 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0'/%3E%3C/svg%3E")}
+
+/* ══ SURVOL — le gris devient blanc, règle absolue du produit ══ */
+@media(hover:hover){
+.sub:hover,.r-meta:hover,.empty:hover,.lbl:hover,.s-why:hover,
+.foot-note:hover,.note.dim:hover,.tab:hover{color:#fff}
+}
+
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Le gris en survol devient blanc. Généré depuis la feuille
+   elle-même : un nouveau bloc gris entre ici tout seul.        */
+@media(hover:hover){
+.sub:hover,
+.line-input:hover::placeholder,
+.note.dim:hover,
+.tab:hover,
+.tab .n:hover,
+.r-meta:hover,
+.r-x:hover,
+.btn-sig:hover,
+.empty:hover,
+.lbl:hover,
+.s-why:hover,
+.s-go:hover,
+.foot-note:hover{color:#fff}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body>
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <defs>
-    <symbol id="higher-slogan" viewBox="0 0 600 200">
-      <defs><mask id="hmask"><rect width="600" height="200" fill="white"/>
-        <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
-        <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
-        <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
-      </mask></defs>
-      <rect width="600" height="200" fill="#333366" mask="url(#hmask)"/>
-      <text x="50%" y="144.42" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-style="italic" font-size="144" fill="#ffffff">Higher</text>
-    </symbol>
-  </defs>
-</svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="higher-slogan" viewBox="0 0 600 200">
+    <defs><mask id="hmask"><rect width="600" height="200" fill="white"/>
+      <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
+      <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
+      <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
+    </mask></defs>
+    <rect width="600" height="200" fill="#333366" mask="url(#hmask)"/>
+    <text x="50%" y="144.42" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-style="italic" font-size="144" fill="#ffffff">Higher</text>
+  </symbol>
+</defs></svg>
+
+<div id="rail"></div>
 
 <div id="app">
-  <div id="hs-head">
+
+  <div id="head">
     <svg class="hg" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-slogan"></use></svg>
-    <div class="sub">HigherSelf — your Totehm, alive in the city</div>
-    <div class="sub" style="font-size:10px;opacity:.7">it speaks in the language of your Habits — you are what you repeatedly do</div>
-    <div id="hs-who" class="hide"></div>
+    <div class="sub">HigherSelf — your Totehm, in your pocket</div>
+    <div id="who" class="hide"></div>
   </div>
 
-  <!-- AUTH : email-only DNA -->
+  <!-- AUTH : email-only DNA, comme partout ailleurs -->
   <div id="auth">
-    <input class="in" id="a-email" type="email" placeholder="your email" autocomplete="email">
-    <input class="in hide" id="a-code" inputmode="numeric" maxlength="6" placeholder="6-digit code">
+    <input class="line-input" id="a-email" type="email" placeholder="your email" autocomplete="email">
+    <input class="line-input hide" id="a-code" inputmode="numeric" maxlength="6" placeholder="6-digit code">
     <div class="note dim" id="a-note"></div>
   </div>
 
-  <!-- LES 7 INTENTIONS -->
-  <div id="ints" class="hide"></div>
+  <nav id="tabs" class="hide">
+    <button class="tab on" data-v="now"    type="button">Now<span class="n" id="n-now"></span></button>
+    <button class="tab"    data-v="wisdom" type="button">Wisdom<span class="n" id="n-wisdom"></span></button>
+    <button class="tab"    data-v="next"   type="button">Next<span class="n" id="n-next"></span></button>
+    <button class="tab"    data-v="spots"  type="button">Spots<span class="n" id="n-spots"></span></button>
+  </nav>
 
-  <!-- CITY SYNC -->
-  <div id="city" class="hide">
-    <div class="lbl">Sync with the City</div>
-    <div class="row"><button class="size-btn" id="c-off">Off</button><button class="size-btn" id="c-on">Sync</button></div>
-    <div class="city-note">— Lisbon · HigherSelf matches the City to your Habits —</div>
-    <button id="hs-out">Sign out</button>
+  <section id="v-now"    class="view hide"></section>
+  <section id="v-wisdom" class="view hide"></section>
+  <section id="v-next"   class="view hide"></section>
+  <section id="v-spots"  class="view hide"></section>
+
+  <div id="foot" class="hide">
+    <button class="btn-sig" id="bot-toggle" type="button"></button>
+    <div class="foot-note" id="bot-note"></div>
+    <a class="foot-note foot-link" id="map-link" href="https://www.totehm.space/map" target="_blank" rel="noopener">open the Higher Map</a>
+    <button class="btn-sig" id="sign-out" type="button">Sign out</button>
   </div>
+
 </div>
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
+const SB_URL='https://abujjbkbbiumxrokozph.supabase.co';
+const sb=createClient(SB_URL,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
+
 const $=id=>document.getElementById(id);
-
-/* Telegram context */
-const tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
-if(tg){tg.ready();tg.expand();try{tg.setBackgroundColor('#000000');tg.setHeaderColor('#000000');}catch(e){}}
-const TG_ID=(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.id)||null;
-
-/* Les 7 intentions — la voix de HigherSelf n'est pas un mentor : elle émerge du langage de tes Habits (Voice Identity) */
-const INTS=[
-  {id:'fight',    name:'Fight',    color:'var(--fight)',    def:'Conquer yourself through harder effort.'},
-  {id:'flow',     name:'Flow',     color:'var(--flow)',     def:'Liberate energy through movement.'},
-  {id:'enrich',   name:'Enrich',   color:'var(--enrich)',   def:'Master your wealth through capital & network.'},
-  {id:'love',     name:'Love',     color:'var(--love)',     def:'Contemplate life through connection & beauty.'},
-  {id:'express',  name:'Express',  color:'var(--express)',  def:'Give form to emotion through creation.'},
-  {id:'focus',    name:'Focus',    color:'var(--focus)',    def:'Master your mind through deep mental focus.'},
-  {id:'celebrate',name:'Celebrate',color:'var(--celebrate)',def:'Elevate energy through collective effervescence.'}
-];
-const T_SVG='<svg class="tg" viewBox="0 0 624 636" aria-hidden="true"><path fill="currentColor" d="M0 0 H624 V92 H358 V592 H434 V636 H190 V592 H266 V92 H0 Z"/></svg>';
-
-/* fréquences (pour trier par importance = poids le plus faible en premier) */
-const W={every_minute:1,hourly:60,several_daily:480,every_morning:1438,daily:1440,every_weekday:1441,every_night:1443,every_other_day:2880,twice_week:5040,every_weekend:10078,weekly:10080,every_monday:10081,every_tuesday:10082,every_wednesday:10083,every_thursday:10084,every_friday:10085,every_saturday:10086,every_sunday:10087,biweekly:20160,twice_month:21600,monthly:43200,quarterly:129600,semiannual:262800,yearly:525600,every_2_years:1051200,every_5_years:2628000,every_decade:5256000,randomly:9999998,sometimes:9999999};
-const LBL={every_minute:'every minute',hourly:'every hour',several_daily:'several times a day',every_morning:'every morning',daily:'daily',every_weekday:'every weekday',every_night:'every night',every_other_day:'every other day',twice_week:'twice a week',every_weekend:'every weekend',weekly:'weekly',every_monday:'every monday',every_tuesday:'every tuesday',every_wednesday:'every wednesday',every_thursday:'every thursday',every_friday:'every friday',every_saturday:'every saturday',every_sunday:'every sunday',biweekly:'every two weeks',twice_month:'twice a month',monthly:'monthly',quarterly:'every quarter',semiannual:'every six months',yearly:'yearly',every_2_years:'every two years',every_5_years:'every five years',every_decade:'every 10 years',randomly:'randomly',sometimes:'sometimes'};
 const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;};
 
-let me=null, habits=[], tripRow=null;
+/* Contexte Telegram. `initDataUnsafe` porte bien son nom : il n'est PAS
+   signé côté client. On ne s'en sert donc jamais pour décider d'une
+   identité — seulement pour savoir qu'on tourne dans Telegram et pour
+   ajuster le cadre. La liaison du compte passe par le code à usage
+   unique, et par lui seul. */
+const tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
+if(tg){
+  tg.ready(); tg.expand();
+  try{tg.setBackgroundColor('#000000');tg.setHeaderColor('#000000');}catch(e){}
+  try{tg.disableVerticalSwipes&&tg.disableVerticalSwipes();}catch(e){}
+}
 
-/* ── AUTH ── */
+/* ══ LES SEPT ══ copiées, jamais partagées : quatre fichiers, quatre copies. */
+const INTS=[
+  {id:'fight',    name:'Fight',    color:'#E24B4A'},
+  {id:'flow',     name:'Flow',     color:'#e48b31'},
+  {id:'enrich',   name:'Enrich',   color:'#fcbe21'},
+  {id:'love',     name:'Love',     color:'#639922'},
+  {id:'express',  name:'Express',  color:'#1D9E75'},
+  {id:'focus',    name:'Focus',    color:'#378ADD'},
+  {id:'celebrate',name:'Celebrate',color:'#7F77DD'}
+];
+const INT_BY_ID={}; INTS.forEach(x=>INT_BY_ID[x.id]=x);
+const intColor=i=>(INT_BY_ID[i]||{}).color||'#fff';
+const intName =i=>(INT_BY_ID[i]||{}).name||'';
+const T_SVG='<svg class="tglyph" viewBox="0 0 624 636" aria-hidden="true"><path fill="currentColor" d="M0 0 H624 V92 H358 V592 H434 V636 H190 V592 H266 V92 H0 Z"/></svg>';
+
+/* Les 33 fréquences, pour l'affichage seul — la saisie se fait dans le
+   Totehm, qui a l'écran pour ça. */
+const FREQ={every_minute:'every minute',hourly:'hourly',several_daily:'several times a day',
+  every_morning:'every morning',daily:'daily',every_weekday:'every weekday',
+  every_night:'every night',every_other_day:'every other day',twice_week:'twice a week',
+  every_weekend:'every weekend',weekly:'weekly',every_monday:'every monday',
+  every_tuesday:'every tuesday',every_wednesday:'every wednesday',every_thursday:'every thursday',
+  every_friday:'every friday',every_saturday:'every saturday',every_sunday:'every sunday',
+  biweekly:'every two weeks',twice_month:'twice a month',monthly:'monthly',
+  quarterly:'every quarter',semiannual:'every six months',yearly:'yearly',
+  every_2_years:'every two years',every_5_years:'every five years',
+  every_decade:'every 10 years',randomly:'randomly',sometimes:'sometimes'};
+
+let me=null, S=null, view='now';
+
+/* ══════════════════════════════════════════════════════════════════
+   AUTH
+   ══════════════════════════════════════════════════════════════════ */
 let email='';
 $('a-email').addEventListener('keydown',async e=>{
   if(e.key!=='Enter')return;
@@ -156,72 +337,450 @@ $('a-code').addEventListener('input',async()=>{
   if(error){note.className='note no';note.textContent='wrong code';return;}
   note.textContent='';
 });
-$('hs-out').onclick=async()=>{await sb.auth.signOut();location.reload();};
+$('sign-out').onclick=async()=>{await sb.auth.signOut();location.reload();};
 
-/* ── DATA ── */
-async function loadAll(){
-  /* profil + lien telegram */
-  const {data:p}=await sb.from('profiles').select('pseudo,telegram_id').eq('id',me.id).maybeSingle();
-  if(p&&p.pseudo){$('hs-who').innerHTML='My <span class="wm-frame"><span class="wm-totehm">TOTEHM</span></span> · '+esc(p.pseudo);$('hs-who').classList.remove('hide');}
-  if(TG_ID&&p&&p.telegram_id!==TG_ID){await sb.from('profiles').update({telegram_id:TG_ID}).eq('id',me.id);}
-  /* habits (la ligne unique trips) */
-  const {data:rows}=await sb.from('trips').select('*').eq('user_id',me.id).order('position');
-  tripRow=(rows&&rows[0])||null;
-  habits=[];
-  (rows||[]).forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{if(s&&s.t)habits.push(s);});});
-  habits.sort((a,b)=>((a.f&&W[a.f])||1e12)-((b.f&&W[b.f])||1e12));
-  renderInts();renderCity();
+/* ══════════════════════════════════════════════════════════════════
+   L'ÉTAT — UN SEUL APPEL
+   ══════════════════════════════════════════════════════════════════ */
+/* Le bloc à coller dans la console quand la mini-app semble vide. Des
+   COMPTEURS et des booléens — jamais une valeur de clé, jamais un id.
+   Un écran vide sans diagnostic, c'est trois allers-retours au lieu d'un. */
+function diag(err){
+  window.__totehm_self = {
+    signed_in : !!(S && S.signed_in),
+    dans_telegram: !!tg,
+    habits    : S ? (S.habits||[]).length     : 0,
+    wisdom    : S ? (S.wisdom||[]).length     : 0,
+    objectifs : S ? (S.objectives||[]).length : 0,
+    spots     : S ? (S.spots||[]).length      : 0,
+    en_attente: S && S.bot ? S.bot.pending : null,
+    bot_lie   : S && S.bot ? S.bot.linked  : null,
+    bot_on    : S && S.bot ? S.bot.on      : null,
+    membre    : S ? !!S.member : null,
+    erreur    : err ? String(err.message || err) : null,
+    onglet    : view,
+  };
 }
 
-/* ── RENDER ── */
-function renderInts(){
-  const box=$('ints');box.innerHTML='';
-  INTS.forEach(x=>{
-    const card=document.createElement('div');
-    card.className='int-card';card.style.setProperty('--ic',x.color);
-    const mine=habits.filter(h=>h.i===x.id);
-    const hl=mine.length
-      ? mine.map(h=>'<div class="hrow"><span style="color:'+x.color+'">'+T_SVG+'</span><span>'+esc(h.t)+'</span>'+(h.f?'<span class="fq">· '+esc(LBL[h.f]||h.f)+'</span>':'')+'</div>').join('')
-      : '<div class="empty">no habit with this intention yet — add one in My TOTEHM</div>';
-    card.innerHTML=
-      '<div class="int-r1">'+T_SVG+'<span class="nm">'+x.name+'</span>'
-      +'<svg class="higher-inline" viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-slogan"></use></svg></div>'
-      +'<div class="int-def">'+esc(x.def)+'</div>'
-      +'<div class="int-body">'
-        +'<div><div class="lbl">Your Habits — most frequent first</div><div class="hlist">'+hl+'</div></div>'
-      +'</div>';
-    card.querySelector('.int-r1').onclick=()=>{document.querySelectorAll('.int-card').forEach(c=>{if(c!==card)c.classList.remove('on');});card.classList.toggle('on');};
-    box.appendChild(card);
-  });
-  $('ints').classList.remove('hide');
+async function load(){
+  const {data,error}=await sb.rpc('higherself_state');
+  /* Une erreur de RPC se JOURNALISE, toujours. `if(error) return` sans
+     regarder l'erreur transforme une panne en écran vide, et un écran
+     vide ressemble à « je n'ai rien fait aujourd'hui ». */
+  if(error) console.error('[higherself] higherself_state a échoué :', error.message||error);
+  if(error||!data||!data.signed_in){ S=null; diag(error); return; }
+  S=data;
+  if(S.pseudo){
+    $('who').innerHTML='My <span class="wm-frame"><span class="wm-totehm">TOTEHM</span></span> · '+esc(S.pseudo);
+    $('who').classList.remove('hide');
+  }
+  $('n-now').textContent    = (S.habits||[]).length     ? '· '+S.habits.length     : '';
+  $('n-wisdom').textContent = (S.wisdom||[]).length     ? '· '+S.wisdom.length     : '';
+  $('n-next').textContent   = (S.objectives||[]).length ? '· '+S.objectives.length : '';
+  $('n-spots').textContent  = (S.spots||[]).length      ? '· '+S.spots.length      : '';
+  paintFoot();
+  render();
+  diag(null);
 }
-function renderCity(){
-  const on=!!(tripRow&&tripRow.bot);
-  $('c-off').classList.toggle('on',!on);
-  $('c-on').classList.toggle('on',on);
-  $('city').classList.remove('hide');
-}
-async function setBot(v){
-  if(!tripRow)return;
-  await sb.from('trips').update({bot:v}).eq('id',tripRow.id);
-  tripRow.bot=v;renderCity();
-}
-$('c-off').onclick=()=>setBot(false);
-$('c-on').onclick=()=>setBot(true);
 
-/* ── BOOT ── */
-sb.auth.onAuthStateChange(async()=>{
-  const {data:{session}}=await sb.auth.getSession();
-  me=session?.user||null;
-  $('auth').classList.toggle('hide',!!me);
-  if(me)await loadAll();
+function paintFoot(){
+  const b=$('bot-toggle'), n=$('bot-note');
+  if(!S.bot.linked){
+    b.classList.add('hide');
+    n.innerHTML='link TotehmBot from your Totehm to be asked daily';
+  }else{
+    b.classList.remove('hide');
+    b.textContent = S.bot.on ? 'pause the daily question' : 'resume the daily question';
+    n.textContent = S.bot.on
+      ? 'never 22:00–08:00 · twice a day at most · silent for a week if you ignore it'
+      : 'paused — the map and /spot still work';
+  }
+  $('foot').classList.remove('hide');
+}
+$('bot-toggle').onclick=async()=>{
+  const next=!S.bot.on;
+  const {error}=await sb.rpc('set_bot',{p_on:next});
+  if(error)return;
+  S.bot.on=next; paintFoot();
+};
+
+/* ══════════════════════════════════════════════════════════════════
+   LE RENDU
+   ══════════════════════════════════════════════════════════════════ */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick=()=>{ view=t.dataset.v; render(); };
 });
-(async()=>{
+
+function render(){
+  if(!S)return;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.v===view));
+  $('tabs').classList.remove('hide');
+  ['now','wisdom','next','spots'].forEach(v=>{
+    $('v-'+v).classList.toggle('hide', v!==view);
+  });
+  if(view==='now')    renderNow();
+  if(view==='wisdom') renderWisdom();
+  if(view==='next')   renderNext();
+  if(view==='spots')  renderSpots();
+}
+
+/* ── NOW — les habitudes et ce qu'elles ont produit ──────────────── */
+function renderNow(){
+  const box=$('v-now');
+  const hs=S.habits||[];
+  if(!hs.length){
+    box.innerHTML='<div class="empty">no habit yet — write them in your Totehm</div>';
+    return;
+  }
+  /* Ce qui attend une réponse passe DEVANT. C'est la seule chose sur
+     cet écran qui demande un geste maintenant. */
+  const pend=hs.filter(h=>h.pending_id), rest=hs.filter(h=>!h.pending_id);
+  box.innerHTML =
+    (pend.length ? '<div class="lbl">waiting for you</div>'+pend.map(habitRow).join('') : '')
+  + (rest.length ? '<div class="lbl">your system</div>'  +rest.map(habitRow).join('') : '');
+
+  box.querySelectorAll('[data-answer]').forEach(b=>{
+    b.onclick=async()=>{
+      const {habit,outcome,intention}=JSON.parse(b.dataset.answer);
+      b.classList.add('on'); b.disabled=true;
+      const {error}=await sb.rpc('record_outcome',{
+        p_habit:habit,p_outcome:outcome,p_feedback:null,p_obstacle:null,p_intention:intention||null});
+      if(error){b.disabled=false;b.classList.remove('on');return;}
+      await load();
+      /* MISSED sans un mot, c'est une donnée perdue. On ouvre le
+         « pourquoi » ici plutôt que d'attendre le prochain passage du bot. */
+      if(outcome==='missed') askWhy(habit);
+    };
+  });
+}
+
+function habitRow(h){
+  const c=intColor(h.intention);
+  const cons=(h.consistency==null)?null:h.consistency;
+  const bits=[];
+  if(h.freq) bits.push(esc(FREQ[h.freq]||h.freq));
+  if(h.streak>0) bits.push('<b>'+h.streak+'</b> in a row');
+  if(cons!=null) bits.push(cons+'% kept');
+  if(!h.ready) bits.push('no frequency — the bot cannot ask');
+  return ''
+   +'<div class="row'+(h.intention?' marked':'')+'">'
+   +  '<span class="glyph" style="color:'+(h.intention?c:'#fff')+'">'+T_SVG+'</span>'
+   +  '<span class="tick"></span>'
+   +  '<span class="body">'
+   +    '<div class="r-text">'+esc(h.habit)+'</div>'
+   +    (bits.length?'<div class="r-meta">'+bits.join('<span style="opacity:.4">·</span>')+'</div>':'')
+   +    (cons!=null?'<div class="bar" style="color:'+c+'"><i style="width:'+cons+'%"></i></div>':'')
+   +    (h.pending_id
+        ? '<div class="answer">'
+          +'<button class="btn-sig" type="button" data-answer=\''+esc(JSON.stringify({habit:h.habit,outcome:'done',intention:h.intention}))+'\'>Done</button>'
+          +'<button class="btn-sig" type="button" data-answer=\''+esc(JSON.stringify({habit:h.habit,outcome:'missed',intention:h.intention}))+'\'>Missed</button>'
+          +'</div>'
+        : '')
+   +  '</span>'
+   +'</div>';
+}
+
+/* Le « pourquoi » — ses mots, mot pour mot. Zéro appel IA : c'est ce
+   texte exact qui reviendra dans un rappel, et c'est pour ça qu'il est
+   plus fidèle qu'une génération. */
+function askWhy(habit){
+  const box=$('v-now');
+  const d=document.createElement('div');
+  d.className='box';
+  d.innerHTML='<div class="lbl" style="margin:0 0 8px">why?</div>'
+    +'<textarea class="line-input" rows="2" placeholder="in one sentence — or skip" '
+    +'style="text-align:left;border-image:none;border-bottom:1px solid rgba(255,255,255,.15)"></textarea>'
+    +'<div class="answer"><button class="btn-sig" type="button">Save</button>'
+    +'<button class="btn-sig" type="button" data-skip="1">Skip</button></div>';
+  box.prepend(d);
+  const ta=d.querySelector('textarea'); ta.focus();
+  d.querySelectorAll('button').forEach(b=>{
+    b.onclick=async()=>{
+      if(!b.dataset.skip){
+        const t=ta.value.trim();
+        if(t) await sb.rpc('record_outcome',{p_habit:habit,p_outcome:'missed',
+          p_feedback:null,p_obstacle:t,p_intention:null});
+      }
+      d.remove(); await load();
+    };
+  });
+}
+
+/* ── WISDOM — les leçons ─────────────────────────────────────────── */
+function renderWisdom(){
+  const box=$('v-wisdom');
+  const w=S.wisdom||[];
+  box.innerHTML =
+    (w.length ? w.map(x=>lineRow(x,'wisdom')).join('')
+              : '<div class="empty">no lesson yet</div>')
+  + addRow('wisdom','Add a Teach to your Self');
+  wireAdd(box,'wisdom');
+  wireDelete(box,'wisdom');
+}
+
+/* ── NEXT — les objectifs ouverts ────────────────────────────────── */
+function renderNext(){
+  const box=$('v-next');
+  const o=S.objectives||[];
+  box.innerHTML =
+    (o.length ? o.map(x=>objRow(x)).join('')
+              : '<div class="empty">no open objective</div>')
+  + addRow('next','Add an objective');
+  wireAdd(box,'next');
+  box.querySelectorAll('[data-tohabit]').forEach(b=>{
+    b.onclick=async()=>{
+      const {id,text}=JSON.parse(b.dataset.tohabit);
+      b.disabled=true;
+      /* FUTURE → PRESENT. La fonction fait les deux : elle clôt
+         l'objectif ET pose l'habitude. Une transaction, pas deux appels
+         qui peuvent diverger. */
+      const {error}=await sb.rpc('objective_to_habit',{p_objective:id,p_habit:text});
+      if(error){b.disabled=false;return;}
+      await load();
+    };
+  });
+}
+
+function objRow(o){
+  return ''
+   +'<div class="row">'
+   +  '<span class="glyph" style="color:#fff">'+T_SVG+'</span>'
+   +  '<span class="tick"></span>'
+   +  '<span class="body">'
+   +    '<div class="r-text">'+esc(o.text)+'</div>'
+   +    '<div class="r-meta">'
+   +      esc(o.status||'open')
+   +      (o.target_at?'<span style="opacity:.4">·</span>'+esc(new Date(o.target_at).toLocaleDateString()):'')
+   +    '</div>'
+   +    '<div class="answer"><button class="btn-sig" type="button" data-tohabit=\''
+   +      esc(JSON.stringify({id:o.id,text:o.text}))+'\'>Make it a habit</button></div>'
+   +  '</span>'
+   +'</div>';
+}
+
+function lineRow(x,kind){
+  const c=x.i?intColor(x.i):'#fff';
+  return ''
+   +'<div class="row'+(x.i?' marked':'')+'">'
+   +  '<span class="glyph" style="color:'+c+'">'+T_SVG+'</span>'
+   +  '<span class="tick"></span>'
+   +  '<span class="body"><div class="r-text">'+esc(x.text)+'</div>'
+   +    (x.i?'<div class="r-meta">'+esc(intName(x.i))+'</div>':'')+'</span>'
+   +  '<button class="r-x" type="button" data-del="'+esc(x.id)+'" data-kind="'+kind+'" aria-label="remove">&times;</button>'
+   +'</div>';
+}
+
+function addRow(kind,hint){
+  return ''
+   +'<div class="row add-row">'
+   +  '<span class="glyph blink" style="color:#fff">'+T_SVG+'</span>'
+   +  '<span class="tick"></span>'
+   +  '<span class="body"><textarea rows="1" data-add="'+kind+'" placeholder="'+esc(hint)+'"></textarea></span>'
+   +'</div>';
+}
+
+function wireAdd(box,kind){
+  const ta=box.querySelector('[data-add]');
+  if(!ta)return;
+  const grow=()=>{ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';};
+  grow(); ta.addEventListener('input',grow);
+  ta.addEventListener('keydown',async e=>{
+    if(e.key!=='Enter')return;
+    e.preventDefault();
+    const v=ta.value.replace(/\n/g,' ').trim();
+    if(!v)return;
+    ta.value=''; grow();
+    if(kind==='wisdom') await sb.from('wisdom').insert({user_id:me.id,text:v});
+    else                await sb.from('objectives').insert({user_id:me.id,text:v,status:'open'});
+    await load();
+  });
+}
+function wireDelete(box,kind){
+  box.querySelectorAll('[data-del]').forEach(b=>{
+    b.onclick=async()=>{
+      await sb.from(kind==='wisdom'?'wisdom':'objectives').delete().eq('id',b.dataset.del);
+      await load();
+    };
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SPOTS — poser un lieu, et chercher ceux du Club
+   ══════════════════════════════════════════════════════════════════ */
+let draft={intention:null,is_public:false,energy:'social',minutes:0};
+let coords=null, searchRows=null, searchQ='';
+
+const fmtDist=m=>m==null?'':(m<1000?Math.round(m)+' m':(m/1000).toFixed(1)+' km');
+
+function renderSpots(){
+  const box=$('v-spots');
+  const mine=S.spots||[];
+
+  box.innerHTML =
+  /* ── LA CAPTURE ─────────────────────────────────────────────── */
+    '<div class="lbl">drop a place</div>'
+  + '<div class="box">'
+  +   '<input class="line-input" id="sp-name" placeholder="what happens there" maxlength="80" '
+  +     'style="text-align:left;border-image:none;border-bottom:1px solid rgba(255,255,255,.15)">'
+  +   '<input class="line-input" id="sp-why" placeholder="why there — one line" maxlength="300" '
+  +     'style="text-align:left;border-image:none;border-bottom:1px solid rgba(255,255,255,.15);margin-top:10px">'
+  +   '<div class="lbl" style="margin:16px 0 6px 0">for which intention</div>'
+  +   '<div class="ints">'+INTS.map(x=>
+        '<button class="int'+(draft.intention===x.id?' on':'')+'" type="button" data-pick="'+x.id+'" '
+        +'style="color:'+x.color+'">'+T_SVG+'<span class="nm">'+x.name+'</span></button>').join('')
+  +   '</div>'
+  +   '<div class="lbl" style="margin:16px 0 6px 0">how you are there</div>'
+  +   '<div class="answer">'
+  +     '<button class="btn-sig'+(draft.energy==='silent'?' on':'')+'" type="button" data-energy="silent">Silent</button>'
+  +     '<button class="btn-sig'+(draft.energy==='social'?' on':'')+'" type="button" data-energy="social">Social</button>'
+  +   '</div>'
+  +   '<div class="lbl" style="margin:16px 0 6px 0">who sees it</div>'
+  +   '<div class="answer">'
+  +     '<button class="btn-sig'+(!draft.is_public?' on':'')+'" type="button" data-vis="club">Club</button>'
+  +     '<button class="btn-sig'+(draft.is_public?' on':'')+'" type="button" data-vis="public">Public</button>'
+  +   '</div>'
+  +   '<div class="lbl" style="margin:16px 0 6px 0">for how long</div>'
+  +   '<div class="answer">'
+  +     '<button class="btn-sig'+(draft.minutes===0?' on':'')+'" type="button" data-min="0">A place</button>'
+  +     '<button class="btn-sig'+(draft.minutes===60?' on':'')+'" type="button" data-min="60">1 h</button>'
+  +     '<button class="btn-sig'+(draft.minutes===180?' on':'')+'" type="button" data-min="180">3 h</button>'
+  +   '</div>'
+  +   '<div class="answer" style="margin-top:16px">'
+  +     '<button class="btn-sig" id="sp-drop" type="button">Drop it here</button></div>'
+  +   '<div class="note dim" id="sp-note" style="text-align:left;margin-top:8px"></div>'
+  + '</div>'
+
+  /* ── LA RECHERCHE ───────────────────────────────────────────── */
+  + '<div class="lbl">find a place</div>'
+  + '<div class="box">'
+  +   '<input class="line-input" id="sq" placeholder="a word, or nothing — then search" '
+  +     'value="'+esc(searchQ)+'" '
+  +     'style="text-align:left;border-image:none;border-bottom:1px solid rgba(255,255,255,.15)">'
+  +   '<div class="answer" style="margin-top:12px">'
+  +     '<button class="btn-sig" id="sq-go" type="button">Search around me</button></div>'
+  +   '<div id="sq-out" style="margin-top:10px">'
+  +     (searchRows===null ? '' :
+        searchRows.length ? searchRows.map(spotCard).join('')
+                          : '<div class="empty" style="padding-left:0">nothing around you yet</div>')
+  +   '</div>'
+  + '</div>'
+
+  /* ── LES MIENS ──────────────────────────────────────────────── */
+  + '<div class="lbl">the places you dropped</div>'
+  + (mine.length ? mine.map(s=>''
+      +'<div class="row marked">'
+      +  '<span class="glyph" style="color:'+intColor(s.intention)+'">'+T_SVG+'</span>'
+      +  '<span class="tick"></span>'
+      +  '<span class="body"><div class="r-text">'+esc(s.activite)+'</div>'
+      +    '<div class="r-meta">'+esc(intName(s.intention))
+      +      '<span style="opacity:.4">·</span>'+(s.is_public?'public':'club')
+      +      (s.energy_mode?'<span style="opacity:.4">·</span>'+esc(s.energy_mode):'')
+      +      (s.takes?'<span style="opacity:.4">·</span><b>'+s.takes+'</b> went there':'')
+      +    '</div></span>'
+      +'</div>').join('')
+    : '<div class="empty">none yet</div>');
+
+  /* ── LES FILS ───────────────────────────────────────────────── */
+  box.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{draft.intention=b.dataset.pick;renderSpots();});
+  box.querySelectorAll('[data-energy]').forEach(b=>b.onclick=()=>{draft.energy=b.dataset.energy;renderSpots();});
+  box.querySelectorAll('[data-vis]').forEach(b=>b.onclick=()=>{draft.is_public=b.dataset.vis==='public';renderSpots();});
+  box.querySelectorAll('[data-min]').forEach(b=>b.onclick=()=>{draft.minutes=+b.dataset.min;renderSpots();});
+  $('sp-drop').onclick=dropSpot;
+  $('sq-go').onclick=doSearch;
+  $('sq').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doSearch();}});
+  box.querySelectorAll('[data-take]').forEach(a=>{
+    a.onclick=()=>{ sb.rpc('take_me_there',{p_ref:a.dataset.take}).catch(()=>{}); };
+  });
+}
+
+function spotCard(s){
+  const c=intColor(s.intention);
+  return '<div class="spot">'
+   + '<div class="s-name">'+esc(s.activite)+'</div>'
+   + (s.commentaire?'<div class="s-why">'+esc(s.commentaire)+'</div>':'')
+   + '<div class="s-foot">'
+   +   '<span class="s-dist">'+fmtDist(s.dist_m)+'</span>'
+   +   '<span class="r-meta" style="margin:0">'+esc(intName(s.intention))
+   +     (s.energy_mode?'<span style="opacity:.4">·</span>'+esc(s.energy_mode):'')
+   +     (s.takes?'<span style="opacity:.4">·</span><b>'+s.takes+'</b>':'')
+   +   '</span>'
+   +   '<a class="s-go" style="--gc:'+c+'" target="_blank" rel="noopener" data-take="'+esc(s.id)+'" '
+   +     'href="https://www.google.com/maps/dir/?api=1&destination='+s.lat+','+s.lng+'">Take me there</a>'
+   + '</div></div>';
+}
+
+/* La position vient du navigateur — dans Telegram comme ailleurs. Aucun
+   géocodage, donc aucune API payante : on ne transforme jamais une
+   adresse en coordonnées, on demande les coordonnées. */
+function whereAmI(){
+  return new Promise((res,rej)=>{
+    if(coords) return res(coords);
+    if(!navigator.geolocation) return rej(new Error('no geolocation'));
+    navigator.geolocation.getCurrentPosition(
+      p=>{coords={lat:p.coords.latitude,lng:p.coords.longitude};res(coords);},
+      e=>rej(e),
+      {enableHighAccuracy:false,timeout:45000,maximumAge:5*60*1000});
+  });
+}
+
+async function dropSpot(){
+  const n=$('sp-note');
+  const name=$('sp-name').value.trim();
+  if(!name){n.className='note no';n.textContent='say what happens there';return;}
+  if(!draft.intention){n.className='note no';n.textContent='pick an intention';return;}
+  n.className='note dim'; n.textContent='finding you…';
+  let c;
+  try{ c=await whereAmI(); }
+  catch(e){ n.className='note no'; n.textContent='tap to allow your position, then try again'; return; }
+
+  n.textContent='dropping…';
+  const row={
+    user_id:me.id,
+    intention:draft.intention,
+    activite:name.slice(0,80),
+    commentaire:$('sp-why').value.trim().slice(0,300)||null,
+    lat:c.lat, lng:c.lng,
+    duration_min: draft.minutes||null,
+    expires_at: draft.minutes? new Date(Date.now()+draft.minutes*60000).toISOString():null,
+    is_public: draft.is_public,
+    required_role: draft.is_public?'public':'figher',
+    energy_mode: draft.energy,
+    active:true
+  };
+  const {error}=await sb.from('spots').insert(row);
+  if(error){ n.className='note no'; n.textContent='could not drop it — try again'; return; }
+  n.className='note ok'; n.textContent='dropped';
+  $('sp-name').value=''; $('sp-why').value='';
+  draft={intention:null,is_public:false,energy:'social',minutes:0};
+  await load();
+}
+
+async function doSearch(){
+  const out=$('sq-out');
+  searchQ=$('sq').value.trim();
+  out.innerHTML='<div class="empty" style="padding-left:0">searching…</div>';
+  let c=null;
+  try{ c=await whereAmI(); }catch(e){ /* sans position on cherche quand même */ }
+  const {data,error}=await sb.rpc('spot_search',{
+    p_lat:c?c.lat:null, p_lng:c?c.lng:null, p_radius:20000,
+    p_q:searchQ||null, p_intention:null, p_limit:20});
+  if(error){ out.innerHTML='<div class="empty" style="padding-left:0">search is unreachable</div>'; return; }
+  searchRows=data||[];
+  renderSpots();
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   BOOT
+   ══════════════════════════════════════════════════════════════════ */
+async function boot(){
   const {data:{session}}=await sb.auth.getSession();
   me=session?.user||null;
   $('auth').classList.toggle('hide',!!me);
-  if(me)await loadAll();
-})();
+  if(!me){ $('tabs').classList.add('hide'); $('foot').classList.add('hide'); return; }
+  await load();
+}
+sb.auth.onAuthStateChange(()=>{boot();});
+boot();
 </script>
 </body>
 </html>
