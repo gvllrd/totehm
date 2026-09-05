@@ -69,18 +69,45 @@ téléchargeables.
 jamais `space/`. Un contenu commun est copié, pas partagé. Un produit qui casse
 quand un autre bouge n'est pas indépendant.
 
-### Les cinq écrans de totehm.space
+### Les écrans de totehm.space — 05/09/2026
 
 ```
-PAST              PRESENT              FUTURE               LE MONDE
-book.html         totehm.html          next_objective.html  map.html
-My Wisdom         TOTEHM · Habitudes   My next objective    Higher Map
-les leçons        la saisie                                 radar / cartes
+LE TOTEHM                                  LE MONDE
+totehm.html                                map.html
+trois VUES dans UN fichier                 Higher Map
+  répulsions · habitudes · objectifs       radar / cartes
 
-                        DANS LA POCHE
-                        higherself.html
-                        HigherSelf — les quatre au même endroit
+                    DANS LA POCHE
+                    higherself.html
+                    HigherSelf — mini-app Telegram
 ```
+
+**`book.html`, `next_objective.html` et `objectives.html` n'existent plus.**
+Supprimés le 05/09 : leur contenu est devenu trois VUES du même fichier.
+Une vue n'est ni un fichier, ni une iframe, ni une page — c'est la même
+liste, les mêmes données, la même session, repeinte.
+
+Ce que la fusion a fait disparaître, et qu'il ne faut pas réintroduire :
+- **`pushMetrics()`** — elle poussait la valeur résolue de `--rl` aux
+  iframes, parce qu'une propriété personnalisée est SUBSTITUÉE et pas
+  calculée. Dans un seul document, le rail est le même pour tout le monde.
+- **Le contrat `postMessage`** (`totehm-read-peek`, `totehm-pick-weight`,
+  `totehm-add-habit`, `totehm-metrics`) — il existait parce qu'une iframe ne
+  peut pas couvrir l'écran au-delà de son cadre et devait DEMANDER au parent.
+  Il n'y a plus de parent ni d'enfant : il y a une page.
+- **Le fondu enchaîné `#book` / `#nextobj`** et leur rideau noir.
+- **La course** où une écriture serveur était effacée par le snapshot
+  d'habitudes suivant : tout passe désormais par le même `cloudSave`.
+
+**My Wisdom et l'autobiographie n'ont plus d'écran sur `.space`.** Elles vont
+dans Telegram. `book_chapters` et `autobiographiste` restent en base.
+
+**La contrainte qui reste vraie, et qui vaut pour tout nouvel overlay :**
+`#stage` porte `transform` sur desktop, il est donc le bloc conteneur de ses
+descendants `position:fixed`. Un overlay qui doit couvrir le CARRÉ vit
+DEDANS ; un overlay qui doit couvrir la FENÊTRE vit dehors. Les fenêtres du
+Totehm (`#habit-peek`, `#trip-peek`, `#freq-panel`, `#filter-modal`) vivent
+dedans : un seul code, deux résultats justes.
 
 **`higherself.html` est la mini-app Telegram, ajoutée le 04/09/2026.** Ce
 n'est pas un sixième produit : c'est les quatre écrans **repliés en un seul**,
@@ -199,26 +226,25 @@ vivait à 95 : cliquer sur l'accès membre depuis l'atterrissage ouvrait la
 fenêtre DERRIÈRE l'écran noir, et rien ne se passait. `#conn-bar` vit
 maintenant dans le flux du gate, **au-dessus du logo**.
 
-**LES MESURES DU RAIL SONT ENVOYÉES, PAS DÉDUITES.** `pushMetrics()` lit la
-valeur UTILISÉE en pixels sur `#rail` (`getComputedStyle(rail).left`) et la
-poste aux deux iframes. ⚠️ **Jamais `getPropertyValue('--rl')`** : une
-propriété personnalisée est SUBSTITUÉE, pas calculée — on récupérerait le
-jeton `max(38px,calc(min(92vh,78vw,640px) * .072))`, que l'iframe résoudrait
-contre SA fenêtre. C'est-à-dire faux, et exactement l'écart qu'on supprime.
+**⚠️ Ne jamais lire `getPropertyValue('--rl')` pour obtenir des pixels.** Une
+propriété personnalisée est SUBSTITUÉE, pas calculée : on récupère le jeton
+`max(38px,calc(min(92vh,78vw,640px) * .072))`, pas sa valeur. Pour des pixels,
+`getComputedStyle(rail).left`. La règle a survécu à `pushMetrics()`, qui est
+morte avec les iframes — elle vaut pour toute mesure à venir.
 
-**La fenêtre de lecture de `next_objective.html` est ouverte par le PARENT.**
-Une iframe ne peut pas noircir l'écran au-delà de son propre cadre : sur
-desktop elle est enfermée dans le carré, et un voile qui s'arrête au bord du
-carré n'est pas un voile. L'iframe poste `totehm-read-peek`, le Totehm ouvre
-`#habit-peek` — celle qui couvre vraiment tout. « Exactement comme
-totehm.html » : c'est littéralement sa fenêtre.
-Au passage, `openReadPeek()` faisait `classList.add('ro')` puis
-`classList.remove('ro','hide')` : la lecture seule n'a jamais été appliquée
-depuis qu'elle existe. Corrigé.
+**LES TROIS VUES · 05/09/2026.** `view` vaut `'habits'` | `'objectives'` |
+`'repulsions'`. `setView(v)` pose la vue, `paintZone()` peint, `renderView()`
+aiguille vers `renderHabits()` / `renderObjectives()` / `renderRepulsions()`.
+`renderHabits()` n'est PAS touchée : elle est appelée depuis une quinzaine
+d'endroits et c'est le chemin qui marche. On aiguille au-dessus.
 
-**Il n'y a plus de filtre dans `next_objective.html`.** Le filtre est une
-notion du Totehm. Ce que le générateur montre en lecture, c'est la fréquence
-et l'intention de CHAQUE proposition, par son T coloré qui clignote.
+Trois entrées, un seul état : les trois carrés `#views`, le balayage
+horizontal, les flèches du clavier. Aucune ne charge quoi que ce soit :
+c'est la même page, la même session, la même mémoire.
+
+**Sans session, une vue autre qu'`habits` ouvre la fenêtre membre.** Les
+objectifs et les répulsions sont des données du serveur : un écran vide ne
+dirait pas pourquoi il est vide.
 
 Verticaux, dans la saisie :
 - au **sommet** de la liste, geste vers le haut → le filtre
@@ -239,25 +265,16 @@ if (e.target.tagName==='INPUT' || e.target.tagName==='TEXTAREA'
 Les habitudes et l'objectif sont des `<textarea>` : ne tester que `INPUT`
 laissait les flèches changer de page en pleine écriture.
 
-**Fondu enchaîné entre fichiers (30/08/2026).** `#book` et `#nextobj` basculent
-en `opacity` sur 280 ms avec `background:#000`. Le fond noir fait rideau pendant
-la transition — sans lui, la couleur sous-jacente (navy de totehm.html) baignait
-au travers. `pointer-events` bascule instantanément avec `.show` : pas d'attente
-de `transitionend`. Le desktop NE surcharge PAS `background:transparent` sur ces
-deux éléments — ce serait rouvrir le problème de bave.
-
 **`#hmap` n'existe plus dans `totehm.html`.** La règle « `#hmap` doit être
-sibling de `#stage` » est caduque. La contrainte qui la fondait reste vraie et
-vaut pour tout nouvel overlay : `#stage` porte `transform` sur desktop, il est
-donc le bloc conteneur de ses descendants `position:fixed`. Un overlay
-plein écran vit **hors** de `#stage`.
+sibling de `#stage` » est caduque. La contrainte qui la fondait reste vraie :
+`#stage` porte `transform` sur desktop, il est donc le bloc conteneur de ses
+descendants `position:fixed`. Un overlay qui doit couvrir la FENÊTRE vit hors
+de `#stage` ; un overlay qui doit rester DANS le carré vit dedans.
 
 **Filtre deux étapes** : TIME FREQUENCY → étape intention avant fermeture.
 `applyFreq()` sur `fpTarget==='filter'` appelle `showFpStage('int')`, pas
 `closeFreqPanel()`. `applyIntent()` sur `fpTarget==='filter'` ferme le panneau
-et applique le filtre. **Le filtre est persisté** dans `totehm_filter_v1` :
-`next_objective.html` le lit en lecture seule, et une fenêtre qui affiche un
-filtre qu'elle ne peut pas relire est une fenêtre qui ment.
+et applique le filtre. **Le filtre est persisté** dans `totehm_filter_v1`.
 
 **LA RECHERCHE REND UNE LISTE, JAMAIS UN PARI · 04/09/2026.** Elle faisait
 `ilike('%'||q||'%').limit(1)` : taper deux lettres ouvrait le Totehm d'UN
@@ -653,7 +670,7 @@ entre deux marqueurs. Le gris est défini une fois : trois canaux à moins de
 #378ADD…) ne sont pas grises et gardent leur teinte.
 
     python3 tools/hover.py space/totehm.html space/map.html \
-                           space/book.html space/next_objective.html
+                           space/higherself.html
 
 Le bloc généré est délimité par
 `/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */`.
@@ -686,6 +703,46 @@ pousse plus rien.
 NUANCE, jamais d'un cadre gris. Fenêtre de poids, de fréquence, de filtre, de
 membre, carte d'un lieu : le même objet, deux tailles.
 
+### Le papier ne change pas. Les boîtes portent la couleur. — 05/09/2026
+
+La référence est le Totehm empilé de `totehm.com` : des blocs PLEINS posés
+les uns sur les autres, séparés par du noir. **Aucune ombre.** Mesuré sur
+l'image de référence : papier `#333366`, bloc de l'objectif `#36498c`, barre
+de la répulsion `#743169`. Trois couleurs, aucune autre.
+
+```
+habitudes    #333366  navy
+objectifs    #36498c  bleu clair
+répulsions   #743169  rouge-violet
+```
+
+**Le Totehm ne se repeint pas, il se déplie.** `#stage` reste navy dans les
+trois vues ; c'est `--skin`, posé par `#stage.v-h|.v-o|.v-r`, qui change la
+couleur des blocs. Ne jamais remettre `.z-next` / `.z-book` sur le fond.
+
+**Mesuré, et c'est ça qui commande le reste : un bloc navy sur un papier navy
+est INVISIBLE** — les deux valent exactement `#333366`. Le logo règle ça
+depuis toujours : ses tuiles ne se détachent que par du NOIR, les
+perforations. D'où le filet `1px solid #000` sur chaque bloc. Ce n'est pas une
+bordure décorative et ce n'est pas une ombre : c'est le vide entre deux pièces
+du même logo, et c'est la seule chose qui rende le navy lisible sur le navy.
+
+**Le survol ne déplace plus rien** : `filter:brightness(1.18)`, pas de
+translation, pas de face décalée.
+
+**Le signe est DANS le bloc.** Le T (ou l'onde d'une répulsion) a quitté la
+marge à gauche du rail : il est le premier enfant de la boîte. Le rail ne
+porte plus que son tiret — le rail est le logo, pas de l'information. Effet de
+bord : le débordement mesuré sous 600 px, où la fréquence sortait de l'écran à
+gauche du rail, n'existe plus.
+
+**Le sélecteur de vue est SOUS le T**, en ligne : trois carrés pleins, ordre
+**rouge-violet · navy · bleu clair**. Les trois sont à pleine valeur en
+permanence — une couleur de marque ne se met pas en veilleuse. La vue courante
+est marquée par un `outline` blanc, qui ne prend aucune place et n'est pas une
+ombre. Le balayage horizontal suit le même ordre : glisser vers la gauche
+avance dans la rangée.
+
 ### Les overlays plein-écran s'ancrent EN HAUT · 03/09/2026
 
 Tous les overlays qui s'ouvrent au-dessus d'un contenu (`#member-window`,
@@ -712,24 +769,17 @@ d'entrée depuis 03/09.
 `.space` n'en est pas une. Le gris ne sert qu'au TEXTE secondaire — et il
 passe au blanc au survol (voir la règle du survol).
 
-### Une iframe ne peut pas couvrir l'écran — c'est le parent qui ouvre
+### Il n'y a plus d'iframe dans `.space` — 05/09/2026
 
-Sur desktop, `#book` et `#nextobj` sont des descendants de `#stage`, qui porte
-un `transform`. Leur boîte fait donc 562×562, pas la fenêtre : un `100vh`
-dedans ne vaut rien, et un simple voile posé par le parent ne règle rien
-(soit il reste enfermé dans le carré, soit il recouvre l'iframe ET sa propre
-fenêtre).
+Le contrat `postMessage` (`totehm-read-peek`, `totehm-pick-weight`,
+`totehm-add-habit`, `totehm-metrics`) existait parce qu'une iframe ne peut pas
+couvrir l'écran au-delà de son cadre : sur desktop elle était enfermée dans le
+carré, et un voile qui s'arrête au bord du carré n'est pas un voile.
 
-**Règle.** Une iframe qui doit ouvrir quelque chose de plein écran ne l'ouvre
-pas : elle le DEMANDE au parent par postMessage, et le parent lui renvoie le
-résultat. Contrat en place :
-
-| message | sens | qui répond |
-|---|---|---|
-| `totehm-read-peek` | lire fréquence + intention d'une habitude | le parent affiche |
-| `totehm-pick-weight` | choisir le poids d'une leçon | le parent répond `totehm-weight` |
-| `totehm-add-habit` | ajouter une habitude au Totehm | le parent enregistre |
-| `totehm-metrics` | mesures du rail, en pixels résolus | le parent pousse |
+Il n'y a plus de parent ni d'enfant : il y a une page, et trois vues.
+**Ne pas réintroduire d'iframe dans `totehm.html`.** Ce qui doit vivre à côté
+vit dans un autre FICHIER (la Map) ou dans une VUE (les trois couches) — pas
+dans un cadre.
 
 ### Une réponse tardive n'écrase jamais un état plus frais
 
