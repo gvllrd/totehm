@@ -2,7 +2,6 @@
   "cleanUrls": true,
   "headers": [
     {
-      "//": "TOUT LE SITE SAUF LA MINI-APP. Le negative lookahead n'est pas une coquetterie : sur Vercel, deux regles qui matchent le meme chemin s'empilent, et un X-Frame-Options restrictif qui traine bloque la mini-app meme si une CSP l'autorise plus bas. On exclut le chemin, on ne le surcharge pas.",
       "source": "/((?!higherself).*)",
       "headers": [
         {
@@ -28,7 +27,6 @@
       ]
     },
     {
-      "//": "LA MINI-APP TELEGRAM. Un Mini App tourne DANS une iframe sur web.telegram.org : avec X-Frame-Options SAMEORIGIN, le cadre reste noir et rien ne dit pourquoi. On remplace l'en-tete par une CSP frame-ancestors qui nomme Telegram et personne d'autre — c'est plus etroit qu'un wildcard et c'est la seule forme que les navigateurs modernes arbitrent correctement. Sur mobile, le client natif ouvre une webview (pas d'iframe) : cette regle ne le concerne pas, elle ne le gene pas non plus. La geoloc est deleguee a l'origine Telegram, sinon la capture de spot echoue en silence dans l'iframe.",
       "source": "/higherself",
       "headers": [
         {
@@ -54,7 +52,6 @@
       ]
     },
     {
-      "//": "Meme regle sur l'URL avec extension : cleanUrls redirige, mais un lien colle a la main ne doit pas retomber sur le X-Frame-Options du bloc general.",
       "source": "/higherself.html",
       "headers": [
         {
