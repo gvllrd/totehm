@@ -1,22 +1,3 @@
-// TOTEHM · higher-map v15 — LA CARTE S'OUVRE SUR UN OBJECTIF
-//
-// CE QUI CHANGE EN v15, et c'est le produit entier qui bascule
-//   La carte ne demande plus « quelle intention ». Elle demande
-//   « quel objectif », et elle range le monde contre les habitudes qui
-//   servent CET objectif. Un trip, c'est un WHY (l'objectif), des HOW
-//   (les habitudes) et ce qui les protège (les répulsions) — la carte
-//   sert le premier en lisant les seconds.
-//
-//   Techniquement, RIEN de neuf : `places_matching_habits` classait déjà
-//   par cosine entre l'embedding d'un lieu et le TEXTE d'une habitude.
-//   L'intention n'a jamais été qu'un préfiltre grossier. On change donc
-//   seulement QUELLES habitudes entrent dans le calcul.
-//
-//   `trip` absent  → toutes les habitudes du membre (comportement v14).
-//   `trip` = uuid  → seulement celles rattachées à ce trip.
-//   trip sans habitude → `reason:'trip_empty'`, jamais un radar vide sans
-//   explication. Un écran vide qui ne dit pas quoi faire est un bug.
-//
 // TOTEHM · higher-map v14 — GOOGLE MAPS + TICKETMASTER, MONDIAL
 // ─────────────────────────────────────────────────────────────────────
 // CE QUE RÉPOND CETTE FONCTION
@@ -169,15 +150,11 @@ Deno.serve(async (req) => {
   // toutes partageant le même embedding — l'intention n'est qu'un préfiltre
   // grossier, le cosine tranche derrière. Être généreux ici coûte quelques
   // lignes de candidats ; se tromper coûte un écran vide.
-  // `o` porte l'uuid du trip que sert cette habitude. Absent = pas encore
-  // rangée : elle compte quand même, dans la vue « tous les objectifs ».
-  const steps: { t?: string; i?: string; intention?: string; o?: string }[] =
-    totehms?.[0]?.steps ?? [];
+  const steps: { t?: string; i?: string; intention?: string }[] = totehms?.[0]?.steps ?? [];
   const rawHabits = steps
     .map((s) => ({
       intention: (s.i || s.intention || "").trim(),
       text:      String(s.t ?? "").trim(),
-      trip:      String(s.o ?? "").trim(),
     }))
     .filter((h) => h.text);
 
@@ -194,7 +171,7 @@ Deno.serve(async (req) => {
 
   const userHabits = rawHabits.flatMap((h) =>
     (h.intention ? [h.intention] : (derived[h.text] ?? []))
-      .map((intention) => ({ intention, text: h.text, trip: h.trip }))
+      .map((intention) => ({ intention, text: h.text }))
   );
   const mine = [...new Set(userHabits.map((h) => h.intention))];
 
@@ -204,86 +181,27 @@ Deno.serve(async (req) => {
     return Response.json({ reason: "no_habit" }, { headers: cors });
   }
 
-  // ── LES TRIPS, POUR LE SÉLECTEUR ────────────────────────────────────
-  // Servis à CHAQUE réponse : le sélecteur de la carte se construit sur
-  // eux, et un sélecteur qui doit faire son propre appel affiche un cadre
-  // vide pendant une seconde à chaque ouverture.
-  //
-  // ⚠️ ON NE FILTRE PAS LE STATUT EN SQL ICI. `not("status","in",...)` se
-  // traduit par `NOT (status IN (...))`, qui vaut NULL — donc FAUX — quand
-  // `status` est nul. La colonne est nullable : un objectif sans statut
-  // aurait disparu du sélecteur, sans erreur et sans qu'on sache pourquoi.
-  // `my_trips()` fait `coalesce(status,'active')` ; les deux chemins doivent
-  // dire la même chose du même objectif, sinon le sélecteur et l'écran des
-  // trips finiront par ne pas lister les mêmes.
-  const CLOSED = ["done", "dropped", "closed"];
-  const { data: trips, error: tripsErr } = await sb
-    .from("objectives")
-    .select("id, text, target_at, status")
-    .eq("user_id", user.id)
-    .order("target_at", { ascending: true, nullsFirst: false });
-  if (tripsErr) console.error("objectives:", tripsErr.message);
-
-  const today = new Date(); today.setUTCHours(0, 0, 0, 0);
-  const myTrips = (trips ?? [])
-    .filter((t: Record<string, unknown>) => !CLOSED.includes(String(t.status ?? "active")))
-    .map((t: Record<string, unknown>) => ({
-    id:    t.id,
-    text:  t.text,
-    target_at: t.target_at,
-    // Le compte à rebours est calculé ICI : un client qui compare des dates
-    // compare aussi son horloge, et celle d'un téléphone ment souvent.
-    days_left: t.target_at
-      ? Math.round((new Date(String(t.target_at)).setUTCHours(0, 0, 0, 0) - today.getTime()) / 864e5)
-      : null,
-    habit_count: rawHabits.filter((h) => h.trip === String(t.id)).length,
-  }));
-  const loose_count = rawHabits.filter((h) => !h.trip).length;
-
   let lat: number | null = null, lng: number | null = null;
   let asked: string | null = null;
-  let trip:  string | null = null;
   try {
     const body = await req.json();
     if (Number.isFinite(body?.lat)) lat = body.lat;
     if (Number.isFinite(body?.lng)) lng = body.lng;
     if (typeof body?.intention === "string") asked = body.intention;
-    if (typeof body?.trip === "string" && body.trip !== "all") trip = body.trip;
   } catch { /* pas de body */ }
 
-  // ── LE FILTRE PAR TRIP — c'est lui, le changement de v15 ────────────
-  // On ne restreint pas les INTENTIONS, on restreint les HABITUDES. Le
-  // classement reste identique : cosine entre le lieu et le texte de
-  // l'habitude. L'intention suit, déduite, invisible.
-  let habitPool = userHabits;
-  if (trip) {
-    if (!myTrips.some((t) => String(t.id) === trip)) {
-      return Response.json({ reason: "not_your_trip", trips: myTrips },
-        { status: 403, headers: cors });
-    }
-    habitPool = userHabits.filter((h) => h.trip === trip);
-    if (!habitPool.length) {
-      // Un radar vide sans explication est un bug. On dit ce qui manque.
-      return Response.json(
-        { reason: "trip_empty", trip, trips: myTrips, loose_count },
-        { headers: cors },
-      );
-    }
-  }
-  const poolIntentions = [...new Set(habitPool.map((h) => h.intention))];
-
-  if (asked && !poolIntentions.includes(asked)) {
+  if (asked && !mine.includes(asked)) {
     return Response.json(
-      { reason: "not_your_intention", intentions: poolIntentions },
+      { reason: "not_your_intention", intentions: mine },
       { status: 403, headers: cors },
     );
   }
-  const wanted = asked ? [asked] : poolIntentions;
+  const wanted = asked ? [asked] : mine;
 
   const fallback = lat === null || lng === null;
   if (fallback) { lat = FALLBACK.lat; lng = FALLBACK.lng; }
 
-  const wantedHabits = habitPool.filter((h) => wanted.includes(h.intention));
+  const wantedHabits = userHabits.filter((h) => wanted.includes(h.intention));
   const habitsWithEmbeddings = await embedHabits(wantedHabits);
 
   // Google et Ticketmaster ne s'attendent pas l'un l'autre.
@@ -318,10 +236,7 @@ Deno.serve(async (req) => {
   return Response.json({
     spots:          merged,
     intention:      asked,
-    intentions:     poolIntentions,
-    trip,
-    trips:          myTrips,
-    loose_count,
+    intentions:     mine,
     origin:         { lat, lng, fallback },
     radius_m:       RADIUS_M,
     live_radius_m:  LIVE_RADIUS_M,
