@@ -815,6 +815,8 @@ body.gate.entered #filter-badge{
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -1401,7 +1403,7 @@ function loadState(){
     if(r5){
       const g=JSON.parse(r5)||[];
       const habits=[];const seen={};
-      g.forEach(t=>{(t.steps||[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;habits.push({t:s.t,f:FREQ_BY_ID[s.f]?s.f:null,i:INT_BY_ID[s.i]?s.i:null});}});});
+      g.forEach(t=>{(t.steps||[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;habits.push({t:s.t,f:FREQ_BY_ID[s.f]?s.f:null,i:INT_BY_ID[s.i]?s.i:null,o:s.o||null});}});});
       const vis=g.some(t=>t.vis==='members')?'members':'private';
       if(habits.length)return {habits,vis};
     }
@@ -1424,6 +1426,13 @@ let state=loadState()||{habits:[
 ],vis:'private'};
 let profile=pload()||{name:'',bot:false};
 let busy=false, fpTarget=null, fpStage='freq', pendingF=null, pendingI=null, filterF=null, filterI=null;
+/* `pendingO` : l'objectif que servira la prochaine habitude ecrite.
+   Pose par le wizard [Add a trip] d'objectives.html, nul partout
+   ailleurs — une habitude ecrite au fil de l'eau ne sert encore rien.
+   ⚠️ Il DOIT etre declare : `pendingO` est lu dans le push d'habitude,
+   et un identifiant non declare ne casse pas au parse — il casse a
+   l'execution, en emportant tout le module avec lui. */
+let pendingO=null;
 
 /* Le repli vers l'atterrissage. Assigné par le module GATE en fin de script :
    déclaré ici parce que trois gestes l'appellent bien avant d'y arriver. */
@@ -1491,7 +1500,13 @@ async function cloudLoad(){
   const {data,error}=await sb.from('totehms').select('*').eq('user_id',me.id);
   if(error||!data||!data.length)return;
   const habits=[];const seen={};
-  data.forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;habits.push({t:s.t,f:FREQ_BY_ID[s.f]?s.f:null,i:INT_BY_ID[s.i]?s.i:null});}});});
+  /* ⚠️ `o` EST TRANSPORTÉ, PAS DÉDUIT. Il porte l'objectif que sert cette
+     habitude, et il est écrit par `habit_set_trip()` côté serveur. Le
+     reconstruire en `{t,f,i}` le jetait — et comme `cloudSave` réécrit
+     `steps` EN ENTIER, la liaison disparaissait à la frappe suivante.
+     Même piège que `totehms.bot` le 03/09 : un snapshot qui écrase tout
+     doit transporter tout ce qu'il écrase. */
+  data.forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;habits.push({t:s.t,f:FREQ_BY_ID[s.f]?s.f:null,i:INT_BY_ID[s.i]?s.i:null,o:s.o||null});}});});
   state={habits, vis:data.some(r=>r.totehm_visibility==='members')?'members':'private'};
   if(data[0].bot!=null)profile.bot=!!data[0].bot;
   try{localStorage.setItem(KEY,JSON.stringify(state));localStorage.setItem(KEYP,JSON.stringify(profile));}catch(e){}
@@ -1513,7 +1528,7 @@ async function loadRO(){
   const habits=[];const seen={};
   rows.forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(x=>{
     const k=norm(x.t); if(x.t&&!seen[k]){seen[k]=1;
-      habits.push({t:x.t,f:FREQ_BY_ID[x.f]?x.f:null,i:INT_BY_ID[x.i]?x.i:null});}});});
+      habits.push({t:x.t,f:FREQ_BY_ID[x.f]?x.f:null,i:INT_BY_ID[x.i]?x.i:null,o:x.o||null});}});});
   state={habits, vis:'members'};
   document.body.classList.add('ro');
   $('ro-who').textContent=prof.pseudo;
@@ -1631,7 +1646,7 @@ function renderHabits(){
   add.addEventListener('keydown',e=>{
     if(e.key!=='Enter')return;e.preventDefault();
     const v=add.value.replace(/\n/g,' ').trim();if(!v)return;
-    state.habits.push({t:v,f:pendingF||null,i:pendingI||null});
+    state.habits.push({t:v,f:pendingF||null,i:pendingI||null,o:pendingO||null});
     logTotehmEvent('habit_added',v,{f:pendingF||null,i:pendingI||null});
     pendingF=null;pendingI=null;save();renderHabits();
     const na=$('h-add');if(na)na.focus();
@@ -2199,9 +2214,19 @@ window.addEventListener('message',e=>{
   }
   else if(e.data.type==='totehm-add-habit'&&e.data.habit&&e.data.habit.t){
     const h=e.data.habit;
-    state.habits.push({t:String(h.t).slice(0,80),f:h.f||null,i:h.i||null});
-    logTotehmEvent('habit_added',h.t,{f:h.f||null,i:h.i||null,source:'next_objective'});
+    const t=String(h.t).slice(0,80);
+    /* `o` PASSE PAR ICI, jamais par une écriture serveur parallèle :
+       `cloudSave` réécrit `steps` en entier, donc un `habit_set_trip()`
+       lancé pendant que le Totehm est ouvert serait effacé à la frappe
+       suivante. L'objectif entre dans le MÊME snapshot que le reste. */
+    state.habits.push({t,f:h.f||null,i:h.i||null,o:h.o||null});
+    logTotehmEvent('habit_added',t,{f:h.f||null,i:h.i||null,o:h.o||null,
+      source:e.data.from||'objectives'});
     save();renderHabits();
+    /* On accuse réception : l'écran qui a demandé l'ajout doit savoir que
+       l'habitude EXISTE avant d'essayer de la rattacher ou de l'afficher.
+       Sans cette réponse, il devine — et deviner, ici, c'est une course. */
+    try{ e.source && e.source.postMessage({type:'totehm-habit-added',t},'*'); }catch(err){}
   }
   /* ══ LA FENÊTRE DE LECTURE, OUVERTE PAR LE PARENT ══
      Une iframe ne peut pas noircir l'écran au-delà de son propre cadre : sur
