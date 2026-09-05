@@ -33,6 +33,10 @@
 :root{
   --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#606060;--bg:#000;
   --navy:#333366;--blue:#36498c;--rep:#743169;--love:#639922;
+  /* --blue est la TUILE bleue du logo. --sky est le BLEU CLAIR de la
+     marque, celui de l'objectif : la tuile ne se voit pas sur un papier
+     navy, le bleu clair si. --skin = la couleur de la vue courante. */
+  --sky:#7fa3e8;--skin:var(--navy);
   --futura:'Futura','Jost',sans-serif;
   --rl:46px;   /* rail left */
   --rw:18px;   /* rail width */
@@ -81,24 +85,45 @@ body:not(.gate) #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
 #filter-arrow{display:none!important}
 #filter-arrow:hover{opacity:.7}
 #filter-arrow svg{width:22px;height:12px;color:rgba(255,255,255,.55)}
-/* ══ LES CURSEURS DE NAVIGATION — ORDINATEUR ET MOBILE, À L'IDENTIQUE ══
-   Placés de part et d'autre du TOTEHM.svg (bas), pas du T.svg (haut).
-   TOTEHM.svg mesure ~83 px de large à height:50px — demi-largeur ~41.5 px.
-   Offset 52 px : laisse 10.5 px de garde entre le bord du wordmark et le
-   bord interne du bouton. Mêmes coordonnées dans les trois fichiers.
-   Le curseur porte la couleur du fichier où il mène. */
-.tnav{position:fixed;bottom:30px;z-index:33;background:none;border:none;
-  padding:14px 10px;line-height:0;cursor:pointer;
-  -webkit-tap-highlight-color:transparent;transition:opacity .2s}
-.tnav svg{width:13px;height:22px;display:block;fill:none;stroke:currentColor;
-  stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-#tnav-l{right:calc(50% + 52px);color:#b06a9f}
-#tnav-r{left:calc(50% + 52px);color:#7fa3e8}
-.tnav:active{opacity:.5}
-@media(hover:hover){.tnav:hover{opacity:.7}}
-/* Le curseur qui ramène au Totehm porte la marque : blanc, comme le T. */
-.tnav.home{color:#fff}
-.tnav.hide{display:none}
+/* ══ LES TROIS COUCHES — le dépliage, en haut à gauche · 05/09/2026 ═══
+   REMPLACE les deux curseurs .tnav (chevrons de part et d'autre du
+   wordmark). Un chevron dit « suivant », et il n'y a pas de suite : il y a
+   TROIS COUCHES du même objet — navy plein et extrudé (les habitudes),
+   bleu à plat (les objectifs), vin plein et extrudé (les répulsions). On
+   voit ce qu'on choisit AVANT de le choisir, ce qu'un chevron ne fait pas.
+
+   `position:fixed` DANS #stage : sur ordinateur #stage porte un transform,
+   il est donc le bloc conteneur de ses descendants fixed — les carrés
+   restent dans le CARRÉ. Sur mobile #stage n'a pas de transform : ils se
+   posent sur l'écran. Un seul code, deux résultats justes.
+
+   Retour arrière : ce bloc, le markup #views/#vname juste après #rail, le
+   bloc de paintZone() et le câblage en bas du module. Les chevrons sont
+   dans git, commit précédent. */
+#views{position:fixed;top:48px;left:11px;z-index:33;display:flex;
+  flex-direction:column;gap:8px}
+/* Le filet blanc n'est pas décoratif : un carré navy sur un fond navy
+   n'existe pas. C'est lui qui rend la couche visible avant le choix. */
+.vt{width:17px;height:17px;cursor:pointer;padding:0;opacity:.45;
+  border:1px solid rgba(255,255,255,.5);
+  -webkit-tap-highlight-color:transparent;
+  transition:opacity .16s,border-color .16s}
+.vt:active{opacity:.8}
+@media(hover:hover){.vt:hover{opacity:.8}}
+.vt[aria-selected="true"]{opacity:1;border-color:#fff}
+.vt:focus-visible{outline:2px solid #fff;outline-offset:2px}
+/* Extrudé = ça se presse (habitude, répulsion). À plat = ça encadre
+   (l'objectif). La même grammaire que les boîtes du rail. */
+.vt.h{background:#333366;box-shadow:2px 2px 0 #22224a}
+.vt.o{background:none;border-color:#36498c}
+.vt.o[aria-selected="true"]{border-color:#9fb4ee}
+.vt.r{background:#743169;box-shadow:2px 2px 0 #4a1f43}
+/* Le nom de la vue tient dans la colonne des carrés, tourné : à droite il
+   tombait sur le rail — et le rail est le logo, on ne pose rien dessus. */
+#vname{position:fixed;top:122px;left:12px;z-index:33;
+  writing-mode:vertical-rl;transform:rotate(180deg);
+  font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.24em;
+  text-transform:uppercase;color:rgba(255,255,255,.42);pointer-events:none}
 .higher-inline{height:1.5em;width:auto;display:inline-block;vertical-align:-.32em}
 /* ══ HIGHER : EXCLUSIVITÉ ABSOLUE ══
    Slogan, bouton, badge : rien de la marque HIGHER ne paraît tant que
@@ -210,12 +235,18 @@ body.higher .set-block.higher-only{display:flex!important}
    Et l'extrusion est une FACE PLEINE décalée, jamais un flou. `BRAND.md`
    interdit l'ombre décorative ; une face n'est pas une ombre, c'est le
    côté d'un objet. Le logo ne fait rien d'autre. */
-.habit .h-body{background:rgba(0,0,0,.3);box-shadow:5px 5px 0 rgba(0,0,0,.45);
+.habit .h-body{background:var(--skin);box-shadow:5px 5px 0 #000;
+  border:1px solid #000;
   padding:7px 11px;transition:transform .15s ease,box-shadow .15s ease}
 @media(hover:hover){
   .habit:not(.add) .h-body:hover{transform:translate(-2px,-2px);
-    box-shadow:7px 7px 0 rgba(0,0,0,.45)}
+    box-shadow:7px 7px 0 #000}
 }
+/* LA VUE CHOISIT LA PEAU — une ligne par vue, et rien d'autre ne bouge.
+   La classe vit sur #stage : les boîtes en héritent, le fond l'ignore. */
+#stage.v-h{--skin:var(--navy)}
+#stage.v-o{--skin:var(--sky)}
+#stage.v-r{--skin:var(--rep)}
 /* La ligne d'ajout n'est pas un objet posé : c'est une invitation. */
 .habit.add .h-body{background:none;box-shadow:none;
   border:1px dashed rgba(255,255,255,.3);transition:border-color .15s}
@@ -227,11 +258,12 @@ body.higher .set-block.higher-only{display:flex!important}
    Même ligne, même rail, même boîte. Seule l'UNITÉ change : une habitude
    porte une fréquence, un objectif une deadline, une répulsion l'habitude
    qu'elle protège. */
+/* L'objectif ENCADRE : filet de sa couleur, jamais de face extrudée. */
 .habit.obj .h-body{background:none;box-shadow:none;
-  border:1.5px solid rgba(255,255,255,.55)}
+  border:1.5px solid var(--skin)}
 @media(hover:hover){
   .habit.obj .h-body:hover{transform:none;box-shadow:none;
-    background:rgba(255,255,255,.1)}
+    background:color-mix(in srgb,var(--skin) 20%,transparent)}
 }
 .v-name{font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;
   line-height:1.5;color:#fff;flex:1;min-width:0;word-break:break-word}
@@ -271,7 +303,7 @@ body.higher .set-block.higher-only{display:flex!important}
   color:#fff;padding:16px 16px 18px}
 .tp-card::-webkit-scrollbar{display:none}
 .tp-top{display:flex;align-items:flex-start;gap:11px;margin-bottom:12px}
-.tp-T{line-height:0;color:#7fa3e8;flex-shrink:0;margin-top:3px}
+.tp-T{line-height:0;color:var(--sky);flex-shrink:0;margin-top:3px}
 .tp-T svg{height:15px;width:auto;fill:currentColor;display:block}
 .tp-name{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;
   line-height:1.35;background:none;border:none;color:#fff;width:100%;
@@ -285,7 +317,8 @@ body.higher .set-block.higher-only{display:flex!important}
   font-size:20px;line-height:1;cursor:pointer;padding:0 3px;transition:color .15s}
 .tp-x:hover{color:#fff}
 /* L'objectif ENCADRE : bordure bleue, jamais d'extrusion. */
-.tp-box{border:1.5px solid #36498c;background:rgba(54,73,140,.3);padding:11px 12px}
+/* Le WHY porte le bleu CLAIR de l'objectif, le même que la vue. */
+.tp-box{border:1.5px solid var(--sky);background:rgba(127,163,232,.16);padding:11px 12px}
 .tp-sec{display:flex;flex-direction:column;gap:5px;margin-top:14px}
 .tp-lbl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.22em;
   text-transform:uppercase;color:rgba(255,255,255,.55)}
@@ -703,14 +736,14 @@ body.gate.entered #conn-bar{opacity:0;pointer-events:none}
 body.gate #rail,body.gate #bigT,body.gate #wordmark,
 body.gate #floorview,body.gate #menu-arrow,
 body.gate #filter-arrow,body.gate #fv-status,body.gate #fold-x,
-body.gate .tnav,
+body.gate #views,body.gate #vname,
 body.gate #filter-badge{
   opacity:0;pointer-events:none;transition:opacity .55s ease}
 body.gate.entered #rail,body.gate.entered #bigT,body.gate.entered #wordmark,
 body.gate.entered #floorview,
 body.gate.entered #menu-arrow,body.gate.entered #filter-arrow,
 body.gate.entered #fv-status,body.gate.entered #fold-x,
-body.gate.entered .tnav,
+body.gate.entered #views,body.gate.entered #vname,
 body.gate.entered #filter-badge{
   opacity:1;pointer-events:auto;transition:opacity .55s ease var(--gate-reveal)}
 
@@ -828,8 +861,15 @@ body.gate.entered #filter-badge{
   /* Le rail s'arrête au T en haut et au wordmark en bas, au lieu de courir
      d'un bord à l'autre : 30px, la même valeur que #bigT et #wordmark. */
   #rail{top:30px;bottom:30px}
-  #stage.z-next{background-image:var(--logo-blue)}
-  #stage.z-book{background-image:var(--logo-rep)}
+  /* #conn-bar est HORS du carré sur ordinateur : les carrés reprennent la
+     ligne du logo (30px), comme #bigT et #rail. Sur mobile il partage le
+     coin avec l'identité, et il descend — c'est le sens du 48px de base. */
+  #views{top:30px}
+  #vname{top:104px}
+  /* SUPPRIMÉ (05/09) — le papier ne change pas de couleur. Une seule
+     tuile, la navy. Ce sont les BOÎTES qui portent les trois couleurs.
+     Retour arrière : ces deux lignes reprenaient --logo-blue/--logo-rep,
+     tous deux toujours définis en tête de feuille. */
   #stage.z-set{background-image:none}
   /* Le rail est à sa place du logo : il ne reste pas 190 px pour un libellé
      de fréquence. Comme sur mobile, il disparaît — la fréquence se lit en
@@ -847,10 +887,10 @@ body.gate.entered #filter-badge{
   body.gate.entered #gl-bg{transform:var(--tf-bg,scale(var(--gate-bg-scale)));opacity:1}
 
   /* SUPPRIMÉ (29/08) — les carrés perforés .side-nav, leur chevron et leur
-     intitulé. La navigation entre les trois fichiers passe désormais par
-     les deux curseurs .tnav, à côté du TOTEHM.svg (bas), ordinateur et mobile.
-     Retour arrière : ce bloc et les deux boutons .side-nav qui vivaient
-     juste avant le module JS, en bas du corps. */
+     intitulé. Puis les curseurs .tnav qui les avaient remplacés (05/09).
+     La navigation passe par les trois carrés #views, en haut à gauche,
+     ordinateur et mobile — et il n'y a plus trois fichiers, il y en a un.
+     Retour arrière : le bloc #views en tête de feuille. */
   #settings-nav .sn-row{display:none}
   /* ══ LE TOTEHM SE REPLIE ══
      Le repli ne passe plus par un étage : c'est le module GATE qui rejoue
@@ -926,12 +966,23 @@ body.gate.entered #filter-badge{
 
 
 
+
+
+
+
+
+
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
 @media(hover:hover){
 #menu-arrow svg:hover,
 #filter-arrow svg:hover,
+#vname:hover,
 .sn-btn:hover,
 .btn-back:hover,
 #conn-bar:hover,
@@ -1042,9 +1093,14 @@ body.gate.entered #filter-badge{
 <div id="stage">
 <div id="rail" class="sink-el"></div>
 
-<!-- Petite flèche cliquable centrée juste au-dessus du T.png du haut — ouvre le filtre -->
-<button class="tnav sink-el" id="tnav-l" type="button" aria-label="My Wisdom"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></button>
-<button class="tnav sink-el" id="tnav-r" type="button" aria-label="My next objective"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M3 2 L11 12 L3 22"/></svg></button>
+<!-- Les trois couches du Totehm. Ordre = ordre de lecture : ce que je fais,
+     pourquoi je le fais, ce qui protège le fait de le faire. -->
+<div id="views" class="sink-el" role="tablist" aria-label="Les trois couches du Totehm">
+  <button class="vt h" type="button" role="tab" data-v="habits"     aria-selected="true"  aria-label="My habits"></button>
+  <button class="vt o" type="button" role="tab" data-v="objectives" aria-selected="false" aria-label="My objectives"></button>
+  <button class="vt r" type="button" role="tab" data-v="repulsions" aria-selected="false" aria-label="My repulsions"></button>
+</div>
+<div id="vname" class="sink-el">habits</div>
 <button id="filter-arrow" class="sink-el" aria-label="Open filter" hidden>
   <svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
 </button>
@@ -1189,7 +1245,7 @@ body.gate.entered #filter-badge{
       <div class="mw-sync" id="mw-sync"></div>
     <div id="settings" class="mw-dash">
       <!-- Rangée haute du menu. Masquée (#mw-in-state #settings-nav) : la
-           navigation passe par les curseurs .tnav, à côté du TOTEHM.svg. -->
+           navigation passe par les trois carrés #views, en haut à gauche. -->
       <div id="settings-nav">
         <!-- [My Totehm] logo-image centré. Le chevron ↑ qui le surmontait a
              été supprimé le 29/08 avec tous les autres. -->
@@ -2153,33 +2209,29 @@ window.addEventListener('DOMContentLoaded',()=>{
    problème n'est pas résolu : il n'existe plus. */
 /* « une zone est ouverte » = on n'est pas sur les habitudes. */
 function hOpen(){return view!=='habits';}
-/* Desktop : la couleur de la bordure du carré dit où l'on est.
-   Navy = Habits · bleu clair = Next Objective · rouge-violet = Book. */
 /* ══ LES TROIS VUES ═══════════════════════════════════════════════════
-   `view` vaut 'habits' | 'objectives' | 'repulsions'. Le carré prend la
-   couleur de la vue — `.z-next` (bleu) et `.z-book` (rouge-violet)
-   existaient déjà dans le CSS pour les iframes ; elles servent maintenant
-   ce à quoi elles étaient destinées depuis le début : le dépliage du logo
-   en trois couleurs. */
+   `view` vaut 'habits' | 'objectives' | 'repulsions'.
+   LE PAPIER NE CHANGE PAS : il est navy dans les trois vues. Ce sont les
+   BOÎTES qui portent la couleur — navy, bleu clair, rouge-violet. Le
+   Totehm ne se repeint pas, il se déplie : ce qui se déplie, ce sont ses
+   pièces, et une pièce a une couleur. */
 let view='habits';
 let TRIPS=[], REPS=[], tripsLoaded=false;
 
 function paintZone(){
   const st=$('stage'); if(!st)return;
-  const bookOn=(view==='repulsions');
-  const nextOn=(view==='objectives');
-  st.classList.toggle('z-book',bookOn);
-  st.classList.toggle('z-next',nextOn);
-  /* On ne propose pas la page où l'on se trouve déjà : la boîte de la zone
-     ouverte s'efface. L'autre ne mène plus à sa zone : elle ramène au
-     Totehm, et le dit en passant au navy. */
-  const L=$('tnav-l'), R=$('tnav-r');
-  L.classList.toggle('hide',bookOn);
-  R.classList.toggle('hide',nextOn);
-  L.classList.toggle('home',nextOn);
-  R.classList.toggle('home',bookOn);
-  L.setAttribute('aria-label',nextOn?'Back to my Totehm':'My Wisdom');
-  R.setAttribute('aria-label',bookOn?'Back to my Totehm':'My next objective');
+  /* Une seule classe de peau à la fois. `toggle` et pas `className=` :
+     #stage porte d'autres classes (z-set, le gate…) qu'on n'écrase pas. */
+  st.classList.toggle('v-h',view==='habits');
+  st.classList.toggle('v-o',view==='objectives');
+  st.classList.toggle('v-r',view==='repulsions');
+  /* Trois onglets : celui de la vue courante est plein, les deux autres
+     sont là. On ne cache rien — c'est ce qui permet de sauter de la vue
+     objectifs à la vue répulsions sans repasser par les habitudes. */
+  document.querySelectorAll('.vt').forEach(b=>{
+    b.setAttribute('aria-selected', b.dataset.v===view ? 'true':'false');
+  });
+  const vn=$('vname'); if(vn)vn.textContent=view;
 }
 /* Changer de vue ne charge rien et ne quitte rien : c'est la même page,
    la même session, la même mémoire. C'est tout l'intérêt de la fusion. */
@@ -2473,15 +2525,20 @@ function navBlocked(){
     ||!$('habit-peek').classList.contains('hide')
     ||!$('filter-modal').classList.contains('hide');
 }
-/* Un seul geste, un seul curseur, la même chose partout : les carrés
-   desktop n'existent plus, il n'y a donc plus deux comportements à tenir
-   d'accord. */
+/* `navLeft`/`navRight` restent : ce sont le balayage et les flèches du
+   clavier, pas les carrés. Un carré ne se lit pas comme « précédent » —
+   il désigne une couche, et on y va directement. */
 const navLeft =()=>{ if(navBlocked())return;
   if(view==='objectives')setView('habits'); else setView('repulsions'); };
 const navRight=()=>{ if(navBlocked())return;
   if(view==='repulsions')setView('habits'); else setView('objectives'); };
-$('tnav-l').onclick=navLeft;
-$('tnav-r').onclick=navRight;
+document.querySelectorAll('.vt').forEach(b=>{
+  b.onclick=()=>{ if(navBlocked())return; setView(b.dataset.v); };
+});
+/* La peau de départ, posée explicitement : sans elle #stage n'a aucune
+   classe v-* au chargement et --skin retombe sur le :root. Ça marche, mais
+   c'est implicite — et un jour quelqu'un changera le :root. */
+paintZone();
 
 window.addEventListener('keydown',(e)=>{
   if(fpOpen()){if(e.key==='Escape')closeFreqPanel();return;}
