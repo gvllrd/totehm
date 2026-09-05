@@ -197,6 +197,53 @@ body.higher .set-block.higher-only{display:flex!important}
 .habit .tick{position:absolute;left:var(--rl);width:var(--rw);height:5px;background:#000;top:50%;transform:translateY(-50%)}
 .habit.timed .tick{background:#fff}
 .habit .h-body{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;position:relative;display:flex;align-items:center}
+
+/* ══ LA BOÎTE — LE CORPS DE LA LIGNE, EXTRUDÉ · 05/09/2026 ═══════════
+   Le logo se déplie d'une couleur en trois, avec de l'épaisseur. La ligne
+   d'habitude fait pareil : elle n'est plus un trait souligné, elle est une
+   boîte qu'on peut presser.
+
+   LA PROFONDEUR EST UNE INFORMATION, pas un effet :
+     extrudé = ça se PRESSE     une habitude, une répulsion
+     à plat   = ça ENCADRE      un objectif encadre le geste, il n'est pas
+                                le geste — il n'est donc jamais extrudé
+   Et l'extrusion est une FACE PLEINE décalée, jamais un flou. `BRAND.md`
+   interdit l'ombre décorative ; une face n'est pas une ombre, c'est le
+   côté d'un objet. Le logo ne fait rien d'autre. */
+.habit .h-body{background:rgba(0,0,0,.3);box-shadow:5px 5px 0 rgba(0,0,0,.45);
+  padding:7px 11px;transition:transform .15s ease,box-shadow .15s ease}
+@media(hover:hover){
+  .habit:not(.add) .h-body:hover{transform:translate(-2px,-2px);
+    box-shadow:7px 7px 0 rgba(0,0,0,.45)}
+}
+/* La ligne d'ajout n'est pas un objet posé : c'est une invitation. */
+.habit.add .h-body{background:none;box-shadow:none;
+  border:1px dashed rgba(255,255,255,.3);transition:border-color .15s}
+.habit.add .h-body:focus-within{border-color:#fff}
+/* Le liseré du textarea faisait doublon avec la boîte. */
+.h-text,.h-add{border-bottom:none;padding:0 46px 0 0}
+
+/* ── LES DEUX AUTRES VUES ────────────────────────────────────────────
+   Même ligne, même rail, même boîte. Seule l'UNITÉ change : une habitude
+   porte une fréquence, un objectif une deadline, une répulsion l'habitude
+   qu'elle protège. */
+.habit.obj .h-body{background:none;box-shadow:none;
+  border:1.5px solid rgba(255,255,255,.55)}
+@media(hover:hover){
+  .habit.obj .h-body:hover{transform:none;box-shadow:none;
+    background:rgba(255,255,255,.1)}
+}
+.v-name{font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;
+  line-height:1.5;color:#fff;flex:1;min-width:0;word-break:break-word}
+.v-sub{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.66);margin-top:5px;
+  font-variant-numeric:tabular-nums}
+.v-sub.late{color:#ffb4b4}
+.v-col{display:flex;flex-direction:column;width:100%;min-width:0}
+.v-wave{width:15px;height:9px;flex-shrink:0;stroke:#fff;fill:none;stroke-width:1.6;
+  margin-right:9px}
+.v-empty{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(255,255,255,.45);padding:24px 0;text-align:center}
 @media(max-width:600px){.habit.timed .h-freq{display:none}}
 .h-text,.h-add{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;line-height:1.5;padding:4px 46px 4px 2px;caret-color:#fff;text-align:left;resize:none;overflow:hidden;display:block}
 .h-text::placeholder{color:rgba(255,255,255,.33)}
@@ -209,6 +256,66 @@ body.higher .set-block.higher-only{display:flex!important}
    centrée verticalement disparaît sous le clavier au premier focus.
    `align-items:flex-start` + `padding-top` fixe l'ancrage en haut,
    identique mobile et desktop pour rester prévisible. */
+/* ══ LA FENÊTRE D'UN OBJECTIF ════════════════════════════════════════
+   Même règle que les autres : `position:fixed` DANS #stage. Sur ordinateur
+   #stage porte un `transform`, il est donc le bloc conteneur de ses
+   descendants fixed — la fenêtre couvre le CARRÉ. Sur mobile #stage n'a
+   pas de transform : elle couvre l'écran. Un seul code, deux résultats
+   justes. Le piège documenté devient la fonctionnalité. */
+#trip-peek{position:fixed;inset:0;z-index:92;background:rgba(0,0,0,.82);
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:max(44px,8dvh) 20px 20px}
+#trip-peek.hide{display:none}
+.tp-card{width:100%;max-width:460px;max-height:100%;overflow-y:auto;
+  scrollbar-width:none;background:#131316;border:1px solid #242429;
+  color:#fff;padding:16px 16px 18px}
+.tp-card::-webkit-scrollbar{display:none}
+.tp-top{display:flex;align-items:flex-start;gap:11px;margin-bottom:12px}
+.tp-T{line-height:0;color:#7fa3e8;flex-shrink:0;margin-top:3px}
+.tp-T svg{height:15px;width:auto;fill:currentColor;display:block}
+.tp-name{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;
+  line-height:1.35;background:none;border:none;color:#fff;width:100%;
+  outline:none;resize:none;overflow:hidden;padding:0}
+.tp-ask{font-family:'Quantico',sans-serif;font-weight:700;font-size:17px;
+  color:#fff;line-height:1.3;flex:1}
+/* Le O en Montserrat italic 900 — la lettre du mot « Higher ». */
+.tp-O{font-family:'Montserrat',sans-serif;font-style:italic;font-weight:900;
+  font-size:1.28em;line-height:0;vertical-align:-.05em;letter-spacing:-.02em}
+.tp-x{margin-left:auto;background:none;border:none;color:rgba(255,255,255,.5);
+  font-size:20px;line-height:1;cursor:pointer;padding:0 3px;transition:color .15s}
+.tp-x:hover{color:#fff}
+/* L'objectif ENCADRE : bordure bleue, jamais d'extrusion. */
+.tp-box{border:1.5px solid #36498c;background:rgba(54,73,140,.3);padding:11px 12px}
+.tp-sec{display:flex;flex-direction:column;gap:5px;margin-top:14px}
+.tp-lbl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.22em;
+  text-transform:uppercase;color:rgba(255,255,255,.55)}
+.tp-in{font-family:'Quantico',sans-serif;font-size:14px;color:#fff;background:none;
+  border:none;border-bottom:1px solid rgba(255,255,255,.28);padding:5px 2px;
+  outline:none;width:100%}
+.tp-in:focus{border-bottom-color:#fff}
+.tp-in::placeholder{color:rgba(255,255,255,.35)}
+.tp-due{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;color:#7fa3e8;margin-top:3px}
+.tp-mini{display:flex;flex-direction:column;gap:5px;margin-top:4px}
+/* Une habitude se PRESSE : elle est extrudée, même ici. */
+.tp-row{display:flex;align-items:center;gap:8px;background:#333366;padding:6px 9px;
+  box-shadow:3px 3px 0 #22224a;color:#fff}
+.tp-row svg{width:11px;height:11px;fill:currentColor;flex-shrink:0;opacity:.85}
+.tp-t{flex:1;min-width:0;font-family:'Quantico',sans-serif;font-size:12px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tp-u{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;
+  text-transform:uppercase;opacity:.62;white-space:nowrap}
+.tp-note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.6);margin-top:10px;min-height:12px}
+.tp-note.no{color:#ffb4b4}
+.tp-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+.tp-btn{background:none;border:1px solid #fff;color:#fff;cursor:pointer;padding:6px 13px;
+  font-family:'Quantico',sans-serif;font-weight:700;font-size:12px;white-space:nowrap;
+  transition:background .15s,color .15s}
+.tp-btn:hover{background:#fff;color:#000}
+.tp-btn.g{border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.55)}
+.tp-btn.g:hover{background:none;border-color:#fff;color:#fff}
+
 #freq-panel,#habit-peek,#filter-modal{position:fixed;inset:0;z-index:90;
   background:rgba(0,0,0,.82);display:flex;align-items:flex-start;
   justify-content:center;padding:max(44px,8dvh) 22px 22px}
@@ -817,6 +924,8 @@ body.gate.entered #filter-badge{
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -828,8 +937,15 @@ body.gate.entered #filter-badge{
 #conn-bar:hover,
 #fv-status:hover,
 .habit .h-x:hover,
+.v-sub:hover,
+.v-empty:hover,
 .h-text:hover::placeholder,
 .h-hint:hover,
+.tp-x:hover,
+.tp-lbl:hover,
+.tp-in:hover::placeholder,
+.tp-note:hover,
+.tp-btn.g:hover,
 #filter-badge #fb-clear:hover,
 .hp-lbl:hover,
 .hp-placeholder:hover,
@@ -952,8 +1068,21 @@ body.gate.entered #filter-badge{
 
 
 <!-- LE PASSÉ (gauche) et LE FUTUR (droite) — iframes préchargées, bascule sèche -->
-<div id="book"><iframe id="book-frame" title="My Wisdom"></iframe></div>
-<div id="nextobj"><iframe id="nextobj-frame" title="Next Objective"></iframe></div>
+<!-- ══ LES DEUX IFRAMES ONT DISPARU · 05/09/2026 ══════════════════════
+     `#book` et `#nextobj` chargeaient book.html et next_objective.html.
+     Les trois écrans sont devenus TROIS VUES du même modèle — objectifs,
+     habitudes, répulsions — et une vue n'a pas besoin d'un document.
+
+     Ce que leur départ emporte, et c'était le vrai coût :
+       · le contrat postMessage en quatre messages (une iframe ne peut pas
+         couvrir l'écran, c'est le parent qui ouvrait pour elle) ;
+       · `pushMetrics()` et le piège du jeton `--rl` — une propriété
+         personnalisée est SUBSTITUÉE, pas calculée, donc l'iframe la
+         résolvait contre SA fenêtre ;
+       · le fondu enchaîné et son rideau noir entre deux documents ;
+       · trois `createClient`, trois vérifications de session, trois copies
+         des SVG du logo et des carrés perforés.
+     Tout ça pour afficher trois listes du même objet. -->
 
 <div id="floorview" class="sink-el">
   <div id="fv-inner">
@@ -1003,6 +1132,7 @@ body.gate.entered #filter-badge{
     <button class="fp-skip hide" id="fp-skip">no intention yet</button>
   </div>
 </div>
+<div id="trip-peek" class="hide" role="dialog" aria-label="Objective"><div class="tp-card"></div></div>
 <div id="habit-peek" class="hide" role="dialog" aria-label="Habit settings">
   <div class="hp-card">
     <button class="hp-row" id="hp-freq" type="button">
@@ -2004,8 +2134,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   /* En lecture, les deux voisins lisent le MÊME membre : la bascule voyage
      avec eux. Sans ça on ouvrirait le Passé d'un autre et le sien propre. */
   const q=RO?('?ro='+encodeURIComponent(RO)):'';
-  $('book-frame').src='book.html'+q;
-  $('nextobj-frame').src='next_objective.html'+q;
+  /* Plus d'iframe à amorcer : les trois vues sont dans ce document. */
 });
 
 /* ══ LES MESURES DU RAIL : DONNÉES, PLUS DÉDUITES ══
@@ -2015,38 +2144,30 @@ window.addEventListener('DOMContentLoaded',()=>{
    il suffit d'une barre de défilement, d'un arrondi, ou d'une retouche d'un
    seul côté. Le parent envoie désormais ses valeurs calculées. Elles ne sont
    plus égales par arithmétique — elles sont identiques par construction. */
-function pushMetrics(){
-  /* ⚠️ PAS `getPropertyValue('--rl')` : une propriété personnalisée est
-     SUBSTITUÉE, pas calculée. On récupérerait le jeton brut
-     `max(38px,calc(min(92vh,78vw,640px) * .072))`, que l'iframe résoudrait
-     contre SA fenêtre — c'est-à-dire faux, et exactement le genre d'écart
-     qu'on cherche à supprimer. On lit donc la valeur UTILISÉE, en pixels,
-     sur le rail lui-même. */
-  const rail=$('rail'), rs=rail?getComputedStyle(rail):null;
-  const cs=getComputedStyle(document.documentElement);
-  const m={type:'totehm-metrics',
-           rl:rs?rs.left:cs.getPropertyValue('--rl').trim(),
-           rw:rs?rs.width:cs.getPropertyValue('--rw').trim(),
-           bandT:cs.getPropertyValue('--band-t').trim(),
-           bandB:cs.getPropertyValue('--band-b').trim()};
-  ['book-frame','nextobj-frame'].forEach(id=>{
-    const f=$(id);
-    if(f&&f.contentWindow){try{f.contentWindow.postMessage(m,'*');}catch(e){}}
-  });
-}
-['book-frame','nextobj-frame'].forEach(id=>{
-  const f=$(id); if(f) f.addEventListener('load',pushMetrics);
-});
-let metricsTimer=null;
-window.addEventListener('resize',()=>{clearTimeout(metricsTimer);metricsTimer=setTimeout(pushMetrics,120);});
-/* Le passé (gauche) et le futur (droite) */
-function hOpen(){return $('book').classList.contains('show')||$('nextobj').classList.contains('show');}
+/* ══ `pushMetrics()` A DISPARU · 05/09/2026 ═══════════════════════════
+   Elle poussait la valeur RÉSOLUE de `--rl` aux deux iframes, parce
+   qu'une propriété personnalisée est SUBSTITUÉE et pas calculée : l'iframe
+   recevait le jeton `max(38px,calc(min(92vh,78vw,640px) * .072))` et le
+   résolvait contre SA fenêtre — donc faux.
+   Dans un seul document, le rail est le même pour tout le monde. Le
+   problème n'est pas résolu : il n'existe plus. */
+/* « une zone est ouverte » = on n'est pas sur les habitudes. */
+function hOpen(){return view!=='habits';}
 /* Desktop : la couleur de la bordure du carré dit où l'on est.
    Navy = Habits · bleu clair = Next Objective · rouge-violet = Book. */
+/* ══ LES TROIS VUES ═══════════════════════════════════════════════════
+   `view` vaut 'habits' | 'objectives' | 'repulsions'. Le carré prend la
+   couleur de la vue — `.z-next` (bleu) et `.z-book` (rouge-violet)
+   existaient déjà dans le CSS pour les iframes ; elles servent maintenant
+   ce à quoi elles étaient destinées depuis le début : le dépliage du logo
+   en trois couleurs. */
+let view='habits';
+let TRIPS=[], REPS=[], tripsLoaded=false;
+
 function paintZone(){
   const st=$('stage'); if(!st)return;
-  const bookOn=$('book').classList.contains('show');
-  const nextOn=$('nextobj').classList.contains('show');
+  const bookOn=(view==='repulsions');
+  const nextOn=(view==='objectives');
   st.classList.toggle('z-book',bookOn);
   st.classList.toggle('z-next',nextOn);
   /* On ne propose pas la page où l'on se trouve déjà : la boîte de la zone
@@ -2060,14 +2181,197 @@ function paintZone(){
   L.setAttribute('aria-label',nextOn?'Back to my Totehm':'My Wisdom');
   R.setAttribute('aria-label',bookOn?'Back to my Totehm':'My next objective');
 }
-function showBook(on){
+/* Changer de vue ne charge rien et ne quitte rien : c'est la même page,
+   la même session, la même mémoire. C'est tout l'intérêt de la fusion. */
+function setView(v){
   if(busy)return;
-  if(on&&!me){ $('member-window').classList.add('show'); if(typeof memberPaint==='function')memberPaint(); return; }
-  $('book').classList.toggle('show',on);
+  /* Les objectifs et les répulsions sont des données du serveur : sans
+     session il n'y a rien à montrer, et l'écran vide ne dirait pas
+     pourquoi. On ouvre la fenêtre membre, comme le faisait `showBook`. */
+  if(v!=='habits'&&!me){
+    $('member-window').classList.add('show');
+    if(typeof memberPaint==='function')memberPaint();
+    return;
+  }
+  view=v;
   paintZone();
-  if(on)save();
+  renderView();
+  if(v!=='habits')loadTrips();
 }
-function showNext(on){ if(busy)return; $('nextobj').classList.toggle('show',on); paintZone(); if(on)save(); }
+function showBook(on){ setView(on?'repulsions':'habits'); if(on)save(); }
+function showNext(on){ setView(on?'objectives':'habits');  if(on)save(); }
+
+/* ── L'AIGUILLAGE ────────────────────────────────────────────────────
+   `renderHabits()` n'est PAS touchée : elle est appelée depuis une
+   quinzaine d'endroits et c'est le chemin qui marche. On aiguille
+   au-dessus. */
+function renderView(){
+  if(view==='objectives') return renderObjectives();
+  if(view==='repulsions') return renderRepulsions();
+  return renderHabits();
+}
+
+/* L'arbre entier en UN appel : objectifs, leurs habitudes, les répulsions
+   de chaque habitude. Chargé à la première ouverture d'une des deux vues,
+   pas au démarrage — le Totehm doit s'ouvrir sans attendre le réseau. */
+async function loadTrips(force){
+  if(!me)return;
+  if(tripsLoaded&&!force)return;
+  try{
+    const {data,error}=await sb.rpc('my_trips');
+    /* Une erreur de RPC se JOURNALISE, toujours : sans ce log, une liste
+       vide ne dit pas si le membre n'a rien posé ou si l'appel casse. */
+    if(error)throw error;
+    if(!data||!data.signed_in)return;
+    TRIPS=data.trips||[];
+    REPS=[];
+    (TRIPS.concat([{habits:data.loose||[]}])).forEach(t=>
+      (t.habits||[]).forEach(h=>(h.repulsions||[]).forEach(r=>
+        REPS.push({id:r.id,text:r.repulsion,habit:h.t,freq:h.f}))));
+    tripsLoaded=true;
+    renderView();
+  }catch(e){
+    console.error('[totehm] my_trips:',e&&e.message||e);
+  }
+}
+
+/* `days_left` vient du SERVEUR : un client qui compare des dates compare
+   aussi son horloge, et celle d'un téléphone ment plus souvent qu'on ne
+   croit. */
+function fmtDue(d){
+  if(d==null)return 'no deadline';
+  if(d<0)  return Math.abs(d)+' day'+(Math.abs(d)===1?'':'s')+' overdue';
+  if(d===0)return 'today';
+  if(d===1)return 'tomorrow';
+  if(d<31) return d+' days left';
+  const m=Math.round(d/30);
+  return m+' month'+(m===1?'':'s')+' left';
+}
+
+const WAVE_SVG='<svg class="v-wave" viewBox="0 0 24 12" aria-hidden="true"><path d="M1 6 Q6 -1 12 6 T23 6"/></svg>';
+
+/* ── LA VUE OBJECTIFS — même ligne, unité = la DEADLINE ────────────── */
+function renderObjectives(){
+  const box=$('habits'); let h='';
+  TRIPS.forEach((t,k)=>{
+    const n=(t.habits||[]).length, late=t.days_left!=null&&t.days_left<0;
+    h+='<div class="habit obj timed">'
+      +'<span class="meta"><button class="h-T" data-obj="'+k+'" title="Deadline">'+T_SVG+'</button></span>'
+      +'<span class="tick"></span>'
+      +'<span class="h-body"><span class="v-col">'
+        +'<span class="v-name">'+esc(t.text)+'</span>'
+        +'<span class="v-sub'+(late?' late':'')+'">'+esc(fmtDue(t.days_left))
+        +' · '+n+' habit'+(n===1?'':'s')+'</span>'
+      +'</span></span></div>';
+  });
+  if(!TRIPS.length)h+='<div class="v-empty">'
+    +(tripsLoaded?'aucun objectif — pose ton premier trip':'chargement…')+'</div>';
+  h+='<div class="habit add obj">'
+    +'<span class="meta"><button class="h-T blink" id="h-addobj" title="Add a Trip">'+T_SVG+'</button></span>'
+    +'<span class="tick"></span>'
+    +'<span class="h-body"><span class="v-name" style="color:rgba(255,255,255,.55)">'
+    +'What’s your <span style="color:#fff">O</span>bjective ?</span></span></div>';
+  box.innerHTML=h;
+  box.querySelectorAll('[data-obj]').forEach(b=>b.onclick=()=>openTripPeek(+b.dataset.obj));
+  const a=$('h-addobj'); if(a)a.onclick=()=>openTripPeek(-1);
+}
+
+/* ── LA VUE RÉPULSIONS — unité = l'HABITUDE protégée ───────────────── */
+/* ══ LA FENÊTRE D'UN OBJECTIF ════════════════════════════════════════
+   `k === -1` ouvre le wizard [Add a Trip] : l'objectif d'abord, la
+   deadline ensuite. Les habitudes se rattachent APRÈS, depuis la vue
+   habitudes — parce qu'une habitude s'écrit sur le rail, c'est le geste
+   du produit, et un wizard qui la recopie ailleurs crée un deuxième
+   endroit où elle existe.
+
+   ANCRÉE EN HAUT comme toutes les fenêtres : le clavier mobile mange le
+   tiers bas de l'écran, et une boîte centrée finit dessous. */
+function openTripPeek(k){
+  const t = k>=0 ? TRIPS[k] : null;
+  const box=$('trip-peek'); if(!box)return;
+  const hs = t ? (t.habits||[]) : [];
+  const due = t ? fmtDue(t.days_left) : '';
+  box.querySelector('.tp-card').innerHTML =
+     '<div class="tp-top">'
+    +  '<span class="tp-T">'+T_SVG+'</span>'
+    +  (t ? '<textarea class="tp-name" rows="1" id="tp-why">'+esc(t.text)+'</textarea>'
+         : '<p class="tp-ask">What’s your <span class="tp-O">O</span>bjective ?</p>')
+    +  '<button class="tp-x" id="tp-x" aria-label="Close">&times;</button>'
+    +'</div>'
+    +(t?'':'<div class="tp-box"><input class="tp-in" id="tp-new" placeholder="ce que tu veux devenir" autocomplete="off"></div>')
+    +'<div class="tp-sec"><span class="tp-lbl">Deadline — le time achievement</span>'
+    +  '<input class="tp-in" type="date" id="tp-due" value="'+esc(t&&t.target_at?String(t.target_at).slice(0,10):'')+'">'
+    +  (t?'<span class="tp-due">'+esc(due)+'</span>':'')
+    +'</div>'
+    +(t?'<div class="tp-sec"><span class="tp-lbl">Les habitudes qui y mènent</span><div class="tp-mini">'
+       +(hs.length?hs.map(x=>'<div class="tp-row">'+T_SVG+'<span class="tp-t">'+esc(x.t)+'</span>'
+           +'<span class="tp-u">'+esc(x.f||'no frequency')+'</span></div>').join('')
+         :'<div class="v-empty" style="padding:12px 0">aucune habitude ne sert cet objectif</div>')
+       +'</div></div>':'')
+    +'<div class="tp-note" id="tp-note"></div>'
+    +'<div class="tp-acts">'
+    +  (t?'<button class="tp-btn g" id="tp-close">Close the trip</button>':'')
+    +  '<button class="tp-btn" id="tp-ok">'+(t?'Done':'Create the trip')+'</button>'
+    +'</div>';
+  box.classList.remove('hide');
+
+  const note=$('tp-note');
+  const say=(m,bad)=>{note.textContent=m||'';note.className='tp-note'+(bad?' no':'');};
+  const grow=el=>{el.style.height='auto';el.style.height=el.scrollHeight+'px';};
+  const nameEl=$('tp-why'); if(nameEl)grow(nameEl);
+  $('tp-x').onclick=()=>box.classList.add('hide');
+  const newEl=$('tp-new'); if(newEl)setTimeout(()=>newEl.focus(),40);
+
+  if(t){
+    let timer=null;
+    nameEl.addEventListener('input',()=>{grow(nameEl);clearTimeout(timer);
+      timer=setTimeout(async()=>{
+        const v=nameEl.value.trim(); if(!v)return;
+        const {error}=await sb.rpc('trip_rename',{p_trip:t.id,p_text:v});
+        if(error){console.error('[totehm] trip_rename:',error.message);say('not saved',1);return;}
+        t.text=v;say('saved');renderView();
+      },600);});
+    $('tp-due').onchange=async e=>{
+      const {error}=await sb.rpc('trip_set_target',{p_trip:t.id,p_target:e.target.value||null});
+      if(error){console.error('[totehm] trip_set_target:',error.message);say('not saved',1);return;}
+      await loadTrips(true);box.classList.add('hide');
+    };
+    $('tp-close').onclick=async()=>{
+      /* Fermer un trip ne supprime rien : les habitudes gardent leur lien,
+         et c'est cette histoire que l'autobiographiste lira. */
+      const {error}=await sb.rpc('trip_close',{p_trip:t.id,p_outcome:'done'});
+      if(error){console.error('[totehm] trip_close:',error.message);say('not closed',1);return;}
+      box.classList.add('hide');await loadTrips(true);
+    };
+    $('tp-ok').onclick=()=>box.classList.add('hide');
+  }else{
+    $('tp-ok').onclick=async()=>{
+      const v=newEl.value.trim(); if(!v){newEl.focus();return;}
+      say('creating…');
+      const {error}=await sb.rpc('trip_create',
+        {p_text:v,p_target:$('tp-due').value||null});
+      if(error){console.error('[totehm] trip_create:',error.message);say('could not create it',1);return;}
+      box.classList.add('hide');await loadTrips(true);
+    };
+    newEl.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('tp-ok').click();}});
+  }
+}
+
+function renderRepulsions(){
+  const box=$('habits'); let h='';
+  REPS.forEach(r=>{
+    h+='<div class="habit timed">'
+      +'<span class="meta"><span class="h-T">'+WAVE_SVG+'</span></span>'
+      +'<span class="tick"></span>'
+      +'<span class="h-body"><span class="v-col">'
+        +'<span class="v-name">'+esc(r.text)+'</span>'
+        +'<span class="v-sub">protège — '+esc(r.habit)+'</span>'
+      +'</span></span></div>';
+  });
+  if(!REPS.length)box.innerHTML='<div class="v-empty">'
+    +(tripsLoaded?'aucune répulsion — pose-en une depuis une habitude':'chargement…')+'</div>';
+  else box.innerHTML=h;
+}
 /* Arrivée depuis next_objective.html en pleine page : #settings ouvre
    directement le Dashboard membre (les réglages y vivent désormais). En
    iframe, c'est le postMessage 'totehm-goto-settings' qui s'en charge. */
@@ -2149,7 +2453,8 @@ window.addEventListener('touchend',(e)=>{
   }else if(axis==='h'){
     const dx=e.changedTouches[0].screenX-x0;
     if(Math.abs(dx)<TH)return;
-    if(hOpen()){ if($('book').classList.contains('show')&&dx<-TH)showBook(false); else if($('nextobj').classList.contains('show')&&dx>TH)showNext(false); return; }
+    if(hOpen()){ if(view==='repulsions'&&dx<-TH)setView('habits');
+                 else if(view==='objectives'&&dx>TH)setView('habits'); return; }
     if(dx>TH)showBook(true); else if(dx<-TH)showNext(true);
   }
 },{passive:true});
@@ -2172,9 +2477,9 @@ function navBlocked(){
    desktop n'existent plus, il n'y a donc plus deux comportements à tenir
    d'accord. */
 const navLeft =()=>{ if(navBlocked())return;
-  if($('nextobj').classList.contains('show'))showNext(false); else showBook(true); };
+  if(view==='objectives')setView('habits'); else setView('repulsions'); };
 const navRight=()=>{ if(navBlocked())return;
-  if($('book').classList.contains('show'))showBook(false); else showNext(true); };
+  if(view==='repulsions')setView('habits'); else setView('objectives'); };
 $('tnav-l').onclick=navLeft;
 $('tnav-r').onclick=navRight;
 
@@ -2196,57 +2501,21 @@ window.addEventListener('keydown',(e)=>{
   }
   if(e.key==='ArrowDown'){e.preventDefault();if(!hOpen())foldToGate();}
   else if(e.key==='ArrowUp'){e.preventDefault();if(!hOpen())openFilterModal();}
-  else if(e.key==='ArrowLeft'){e.preventDefault();if($('book').classList.contains('show'))showBook(false);else if(!hOpen())showNext(true);}
-  else if(e.key==='ArrowRight'){e.preventDefault();if($('nextobj').classList.contains('show'))showNext(false);else if(!hOpen())showBook(true);}
+  else if(e.key==='ArrowLeft'){e.preventDefault();
+    if(view==='repulsions')setView('habits'); else if(!hOpen())setView('objectives');}
+  else if(e.key==='ArrowRight'){e.preventDefault();
+    if(view==='objectives')setView('habits'); else if(!hOpen())setView('repulsions');}
 });
 /* Le passé et le futur parlent au présent */
-window.addEventListener('message',e=>{
-  if(!e.data)return;
-  /* Contrat de navigation, identique pour book.html et next_objective.html :
-     le T du haut ramène au rail des Habits, le TOTEHM du bas aux Paramètres.
-     Toujours — quel que soit l'étage d'où la zone a été ouverte. */
-  /* Le T du haut ET le TOTEHM du bas ramènent au Totehm. Bascule sèche :
-     aucun setTimeout, aucun fondu — la couleur change d'une seule frame. */
-  if(e.data.type==='totehm-close-book'||e.data.type==='totehm-close-next'
-     ||e.data.type==='totehm-goto-settings'){
-    closeWeightPick();
-    showBook(false);showNext(false);
-  }
-  else if(e.data.type==='totehm-add-habit'&&e.data.habit&&e.data.habit.t){
-    const h=e.data.habit;
-    const t=String(h.t).slice(0,80);
-    /* `o` PASSE PAR ICI, jamais par une écriture serveur parallèle :
-       `cloudSave` réécrit `steps` en entier, donc un `habit_set_trip()`
-       lancé pendant que le Totehm est ouvert serait effacé à la frappe
-       suivante. L'objectif entre dans le MÊME snapshot que le reste. */
-    state.habits.push({t,f:h.f||null,i:h.i||null,o:h.o||null});
-    logTotehmEvent('habit_added',t,{f:h.f||null,i:h.i||null,o:h.o||null,
-      source:e.data.from||'objectives'});
-    save();renderHabits();
-    /* On accuse réception : l'écran qui a demandé l'ajout doit savoir que
-       l'habitude EXISTE avant d'essayer de la rattacher ou de l'afficher.
-       Sans cette réponse, il devine — et deviner, ici, c'est une course. */
-    try{ e.source && e.source.postMessage({type:'totehm-habit-added',t},'*'); }catch(err){}
-  }
-  /* ══ LA FENÊTRE DE LECTURE, OUVERTE PAR LE PARENT ══
-     Une iframe ne peut pas noircir l'écran au-delà de son propre cadre : sur
-     desktop elle est enfermée dans le carré. Alors ce n'est pas elle qui
-     ouvre la fenêtre — c'est nous, avec CELLE du Totehm, celle qui couvre
-     vraiment tout. « Exactement comme totehm.html » : c'est littéralement
-     la fenêtre de totehm.html. */
-  else if(e.data.type==='totehm-read-peek'&&e.data.habit){
-    openReadPeek(e.data.habit);
-  }
-  /* Même raison, autre forme : My Wisdom ouvre SA fenêtre de poids, mais
-     c'est nous qui noircissons — son 100vh s'arrête au cadre. */
-  /* My Wisdom demande le poids d'une leçon : c'est nous qui l'affichons,
-     puis nous le lui renvoyons. L'iframe ne quitte jamais son cadre. */
-  else if(e.data.type==='totehm-pick-intention'){ openWeightPick(e.data.value||null); }
-  /* Une iframe qui vient de démarrer réclame les mesures du rail. */
-  else if(e.data.type==='totehm-need-metrics'){
-    pushMetrics();
-  }
-});
+/* ══ LE CONTRAT postMessage A DISPARU · 05/09/2026 ═══════════════════
+   Quatre messages — `totehm-read-peek`, `totehm-pick-weight`,
+   `totehm-add-habit`, `totehm-metrics` — existaient parce qu'une iframe
+   ne peut pas couvrir l'écran au-delà de son cadre et devait DEMANDER au
+   parent d'ouvrir pour elle.
+   Il n'y a plus de parent ni d'enfant : il y a une page. Chaque geste
+   agit directement sur `state.habits`, dans la même mémoire, dans le même
+   `cloudSave`. C'est aussi ce qui fait disparaître la course où une
+   écriture serveur était effacée par le snapshot suivant. */
 
 /* ══ SETTINGS handlers ══ */
 /* Frustre les non-membres : ouvre la fenêtre membre pour pousser à s'inscrire.
@@ -2411,8 +2680,8 @@ function storePos(pos){
    Les trois niveaux sont COPIÉS de book.html, jamais partagés : deux
    fichiers, deux copies. Le blanc monte avec le poids. */
 function replyIntention(v){
-  const f=$('book-frame');
-  if(f&&f.contentWindow){try{f.contentWindow.postMessage({type:'totehm-intention',value:v},'*');}catch(e){}}
+  /* Il n'y a plus d'iframe à qui répondre : la leçon vit dans ce document.
+     La fonction reste le point d'entrée du picker, elle ferme, c'est tout. */
   closeWeightPick();
 }
 function openWeightPick(cur){
@@ -2553,11 +2822,8 @@ const HI_SVG='<span class="hi-badge" title="Higher"><svg viewBox="0 0 600 200" a
    l'affichage ne peuvent pas diverger. */
 function paintHigher(){
   document.body.classList.toggle('higher',!!myHigher);
-  /* Le générateur porte le même tag : on lui dit, il ne redemande pas. */
-  ['book-frame','nextobj-frame'].forEach(id=>{
-    const f=$(id);
-    if(f&&f.contentWindow){try{f.contentWindow.postMessage({type:'totehm-higher',on:!!myHigher},'*');}catch(e){}}
-  });
+  /* Plus d'iframe à prévenir : `body.higher` suffit, tout est dans ce
+     document et lit la même classe. */
 }
 async function loadHigher(){
   myHigher=false; paintHigher();
