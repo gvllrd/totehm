@@ -742,6 +742,118 @@ est marquée par un `outline` blanc, qui ne prend aucune place et n'est pas une
 ombre. Le balayage horizontal ET les flèches suivent le même ordre, tiré de
 la MÊME liste `VIEW_ORDER` : deux listes finissent toujours par diverger.
 
+### Le prototype est ENTRÉ dans le fichier servi — 06/09/2026
+
+Le fichier servi est resté six itérations derrière le prototype pendant un
+lot entier. Ça ne se reproduit pas : le portage est un SCRIPT.
+
+```
+tools/prototype_totehm.py   compose le prototype        → totehm_unfold.html
+tools/vues_totehm.js        le moteur des trois vues    → source unique
+tools/port_prototype.py     injecte le moteur           → space/totehm.html
+tools/hover.py              regénère les survols        (TOUJOURS en dernier)
+```
+
+Chaque remplacement est ancré sur un repère qui doit exister **exactement
+une fois**. Si le fichier a bougé, le script s'arrête et dit lequel — au
+lieu de coller du code à côté de sa place. **Il n'écrit qu'à la fin** :
+un arrêt au milieu laisserait le fichier à moitié porté, l'état le plus
+difficile à diagnostiquer. Et il **audite** : aucun appel ne doit pointer
+vers du code supprimé, parce qu'un `$('id')` sur `null` lève à
+l'évaluation du module et emporte tout le script, pas seulement la vue.
+
+**L'ordre est : port → hover.** Relancer le port deux fois de suite
+échoue (les repères ont disparu), et c'est voulu.
+
+### Le Trip se lit depuis n'importe quelle boîte — 06/09/2026
+
+Ouvrir une boîte montre le **Trip entier**, dans ses trois couleurs, et
+l'ordre des blocs dépend de la vue d'où l'on vient : la pièce qu'on touche
+passe en premier, c'est elle qu'on est venu voir.
+
+| vue | ordre des blocs | les mots |
+|---|---|---|
+| habitudes  | habitude · objectif · répulsions | HABIT · WHY · PROTECTED BY |
+| objectifs  | objectif · habitudes · répulsions | OBJECTIVE · HOW · PROTECTED BY |
+| répulsions | répulsion · habitudes · objectif | REPULSION · IT PROTECTS · WHY |
+
+Les mots disent le **lien**, pas la catégorie — la couleur dit déjà la
+catégorie. WHY remonte, HOW descend, PROTECTS tient.
+
+**On ne change JAMAIS de vue en éditant.** `setView()` refuse tant qu'une
+boîte est ouverte : une vue qui bouge sous les doigts perd la saisie.
+
+**Il n'y a plus de `[Add a Trip]`.** Un seul bouton par vue, qui crée la
+pièce de CETTE vue, vide, et ouvre le triplet dessus. Les deux autres
+pièces sont **offertes** — reprendre une existante (lookup) ou en écrire
+une neuve — jamais imposées : une habitude sans objectif reste une
+habitude, et forcer les trois empêcherait d'écrire.
+
+**Une habitude est navy PARTOUT** — dans le noir d'un Trip, dans le
+rouge-violet d'une répulsion. Mais **pas de cadre navy sur une boîte déjà
+navy** : dans la vue habitudes, la boîte EST la vue, et `.h-frame` n'y
+faisait qu'un double filet. Le cadre ne sert que lorsque l'habitude est
+posée AILLEURS.
+
+**Les écritures sont optimistes.** On pose la valeur en mémoire, on
+dessine, on envoie. L'arbre (`my_trips`) est rechargé **à la fermeture**,
+une fois : le recharger à chaque frappe fermerait le panneau sous les
+doigts.
+
+### Une répulsion protège plusieurs habitudes — 06/09/2026
+
+C'est un **lookup**, au sens Airtable. « La procrastination » menace
+quatre habitudes ; avec une seule colonne `habit_text` il fallait l'écrire
+quatre fois, et quatre copies divergent toujours.
+
+`repulsion_habits` porte les liens. `repulsions.habit_text` reste le
+PREMIER lien — celui que le bot lit déjà, rien à réécrire côté bot. Un
+**trigger** pose le premier lien à l'insertion, quel que soit l'écrivain :
+une table alimentée seulement par le front serait vide pour tout ce qui
+n'est pas le front.
+
+Le serveur renvoie la répulsion **une fois par habitude protégée** ; le
+front déduplique sur son `id` et lit `habits` pour la liste complète.
+Sans ça, la vue répulsions afficherait la même pensée quatre fois.
+
+**Détacher la dernière habitude ne supprime pas la répulsion.** Elle a été
+écrite, elle se rattache ailleurs : on retire le lien, pas la pensée.
+
+**Renommer une habitude ne l'orpheline pas** : `habit_rename_links()`
+suit le texte dans les deux tables, en un appel. Le lien est du TEXTE
+parce que `steps` est du texte — tant qu'une habitude n'a pas
+d'identifiant en base, c'est la seule jointure possible.
+
+### L'ordre d'importance descend jusqu'au bot — 06/09/2026
+
+Le bouton en haut à GAUCHE du carré (trois traits dégressifs, en miroir de
+la croix de repli — à droite il touchait la croix, et un clic sur deux
+refermait le Totehm au lieu de classer). Un rang s'affiche à gauche du
+rail, une barre dit qu'on y est.
+
+`touch-action:none` est **obligatoire** : le geste porte une fonction
+produit, on coupe le natif et on conduit en Pointer Events — un seul
+chemin pour le doigt et la souris.
+
+**L'ordre du membre gagne sur le tri par rythme.** Tant qu'il n'a rien
+classé, les habitudes coulent par fréquence ; dès qu'il en déplace une,
+`state.ord` passe à vrai et c'est SON ordre. Le drapeau est reporté dans
+`cloudLoad` — `state` y est reconstruit de zéro, et sans ce report l'ordre
+était oublié au premier chargement depuis le nuage.
+
+Ce n'est pas cosmétique : `places_matching_habits` départage deux lieux à
+classement égal par `matched_rank`, c'est-à-dire par cet ordre-là. Et le
+bot le suivra.
+
+### `window.__totehm_zone` — le diagnostic du Totehm
+
+Comme `window.__totehm_map` et `window.__totehm_self` : vue courante,
+session, arbre chargé, compteurs, filtre, boîte ouverte, mode classement.
+**Des compteurs et des booléens, jamais une valeur de clé ni un texte du
+membre.** C'est le bloc à coller dans la console quand un écran semble
+vide — sans lui, un écran vide ne dit pas si le membre n'a rien posé, si
+la session est tombée, ou si la RPC casse.
+
 ### Aucune icône dans une boîte — 06/09/2026
 
 Une boîte porte du **texte**. Ce qui la qualifie, c'est sa COULEUR (la vue)

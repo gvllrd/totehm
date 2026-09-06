@@ -572,6 +572,59 @@ relancer la requête avec les coordonnées. Le front fait le second
 | `spot_search(lat, lng, radius, q, intention, limit)` | les lieux du Club autour d'un point, pour la mini-app et pour `/spots` |
 | `add_wisdom_admin(uuid, text, intention)` · `add_objective_admin(uuid, text)` | poser une leçon ou un objectif **depuis Telegram**. `wisdom` et `objectives` sont protégées par RLS sur `auth.uid()` ; le bot n'a pas de session. `service_role` seul |
 
+### Le Trip — objectifs, habitudes, répulsions · maj 06/09/2026
+
+| Fonction | Rôle | Accès |
+|---|---|---|
+| `my_trips()` | **l'arbre entier en UN appel** : objectifs, leurs habitudes, les répulsions de chaque habitude | `authenticated` |
+| `repulsions_of(uuid,text)` | les répulsions d'une habitude, avec **toutes** les habitudes que chacune protège | `service_role` |
+| `trip_create(text,timestamptz)` → `uuid` | crée un objectif | `authenticated` |
+| `trip_rename(uuid,text)` · `trip_set_target(uuid,timestamptz)` | le renomme, pose sa deadline | `authenticated` |
+| `trip_close(uuid,text)` | le sort de la liste (`done`/`dropped`/`closed`) | `authenticated` |
+| `repulsion_set(text,text,text)` → `bigint` | crée une répulsion sur une habitude | `authenticated` |
+| `repulsion_retire(bigint)` | la désactive | `authenticated` |
+| `repulsion_link(bigint,text)` · `repulsion_unlink(bigint,text)` | **le lookup** : attache / détache une habitude | `authenticated` |
+| `habit_rename_links(text,text)` | suit un renommage d'habitude dans les deux tables | `authenticated` |
+
+**Aucune ne prend d'identité en paramètre** : toutes lisent `auth.uid()`.
+Une fonction qui prend l'utilisateur en argument attache une répulsion au
+Totehm de quelqu'un d'autre.
+
+**`repulsions_of` est écrite UNE fois.** `my_trips` l'appelle deux fois —
+les habitudes d'un objectif, puis les habitudes libres. Le même
+sous-select existait en double : deux copies divergent toujours.
+
+### `repulsion_habits` — le lookup, créée le 06/09/2026
+
+```
+repulsion_id  bigint      → repulsions(id) on delete cascade
+user_id       uuid        → auth.users(id) on delete cascade
+habit_text    text
+created_at    timestamptz
+primary key (repulsion_id, habit_text)
+index (user_id, habit_text)
+RLS : le propriétaire seul, en lecture comme en écriture
+```
+
+**`repulsions.habit_text` reste le PREMIER lien** — celui que le bot lit
+déjà. Rien à réécrire côté bot.
+
+**Un trigger `after insert on repulsions` pose le premier lien.** Ce n'est
+pas du confort : une répulsion écrite par le bot, la carte, un admin ou une
+insertion à la main naît avec son lien. Une table alimentée seulement par
+le front serait vide pour tout ce qui n'est pas le front — et le jour où
+elle sert de source de vérité, la moitié des répulsions auraient disparu.
+
+**Le lien est du TEXTE** parce que `steps` est du texte : tant qu'une
+habitude n'a pas d'identifiant en base, c'est la seule jointure possible.
+D'où `habit_rename_links()`, qui répare en un appel au lieu de quatre
+endroits du front.
+
+**Mesuré le 06/09/2026, sous le rôle `authenticated`** : pose +1, retrait
+−1, et `repulsion_link` sur une répulsion qui n'est pas la sienne rend
+`false`. `my_trips` : 8 objectifs, 5 habitudes libres, les répulsions
+portent bien leur tableau `habits`.
+
 ### Objectifs, musique, adhésion
 | Fonction | Rôle |
 |---|---|

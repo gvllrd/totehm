@@ -60,3 +60,8 @@ backend/supabase/.temp/
 /supabase/
 /supabase/
 TOTEHM_MASTER.html
+
+# La sortie du prototype : elle se REGENERE (tools/prototype_totehm.py).
+# Un artefact de build dans le depot, c'est une version de plus a garder
+# d'accord avec sa source.
+totehm_unfold.html
