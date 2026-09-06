@@ -1001,6 +1001,39 @@ contrôle contre les vieilles versions, et ignore le reste.
 
 Pour un fichier unique : un `cp` direct, pas de zip.
 
+### Claude Code ne demande plus la permission — 06/09/2026
+
+`.claude/settings.json` est versionné. Il n'accorde QUE ce qu'un lot exécute :
+lire, copier, commiter, pousser, déployer une Edge Function. Pas
+`--dangerously-skip-permissions`, qui est tout ou rien et qui, le jour où il
+se trompe, se trompe en grand.
+
+**Précédence : `deny` > `ask` > `allow`, première règle qui matche. Un `deny`
+n'admet aucune exception** — un `allow` plus large ne le rattrape pas. C'est
+pourquoi `git add .` est en `ask` et non en `deny` : la règle du projet tient
+sans bloquer le travail. Restent en `ask` : `rm`, `git reset`, `git rebase`,
+`git push --force`, `supabase db`, `supabase secrets set`. Reste en `deny` :
+LIRE `oracle/`, `*.pem`, `id_rsa*`, `.env` — second rempart derrière
+`.gitignore`, celui qui empêche de les recopier ailleurs.
+
+**Trois comportements mesurés le 06/09, et chacun change ce qu'on écrit :**
+
+1. **Aucun rechargement à chaud.** Les settings sont lus UNE FOIS au démarrage.
+   Poser le fichier pendant qu'une session tourne ne change rien : il faut
+   quitter et relancer `claude`. Il n'existe pas de `/reload-settings`.
+2. **Une commande composée est évaluée EN ENTIER**, pas segment par segment.
+   `cd ~/totehm && git status` ne matche pas `Bash(git status *)` : la ligne
+   commence par `cd`. **D'où la règle d'écriture de tout `CLAUDE_CODE.md` :
+   une commande SIMPLE par ligne, jamais `cd X && …`, jamais `VAR=… ; …`.**
+   Et surtout pas `Bash(cd *)` en `allow` pour contourner — ce serait
+   autoriser n'importe quoi après le `&&`. La seule règle `cd` est une
+   correspondance EXACTE, `Bash(cd ~/totehm)`, sans joker.
+3. **Un motif relatif (`./**`) ne matche pas toujours** le chemin absolu que
+   l'outil manipule. D'où le doublon `~/totehm/**`, et d'où le fait que ce
+   qui PORTE réellement l'écriture de fichiers soit `defaultMode:
+   acceptEdits` — un mode, pas un motif de chemin. `auto` et
+   `bypassPermissions` sont interdits dans un settings de projet.
+
 ## Ce qui reste à moi, à lister séparément
 
 Les clics dans un dashboard et les tests navigateur. Pour chaque action externe,

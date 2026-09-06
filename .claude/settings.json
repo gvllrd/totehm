@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+
+  "_pourquoi": [
+    "PLUS DE OUI/NON POUR CE QU'UN LOT FAIT TOUS LES JOURS.",
+    "Ce fichier est VERSIONNÉ : il vaut pour toute session Claude Code ouverte",
+    "dans ce dépôt. Il n'accorde QUE ce qu'un lot exécute — pas",
+    "--dangerously-skip-permissions, qui est tout ou rien et qui, le jour où il",
+    "se trompe, se trompe en grand.",
+    "",
+    "PRÉCÉDENCE : deny > ask > allow, PREMIÈRE RÈGLE QUI MATCHE.",
+    "Un deny n'admet AUCUNE exception — un allow plus large ne le rattrape pas.",
+    "C'est pourquoi `git add .` est en ASK et non en DENY : on tient la règle du",
+    "projet sans bloquer le travail."
+  ],
+
+  "_verifie_le_06_09_2026": [
+    "Trois comportements mesurés, parce qu'un document qui affirme sans vérifier",
+    "est un bug — et parce que chacun des trois change ce qu'on écrit ici :",
+    "",
+    "1. AUCUN RECHARGEMENT À CHAUD. Les settings sont lus UNE FOIS au démarrage",
+    "   de la session. Poser ce fichier pendant qu'une session tourne ne change",
+    "   rien : il faut quitter et relancer `claude`. Il n'existe ni",
+    "   /reload-settings ni équivalent.",
+    "",
+    "2. UNE COMMANDE COMPOSÉE EST ÉVALUÉE EN ENTIER, pas segment par segment.",
+    "   `cd ~/totehm && git status` ne matche PAS `Bash(git status *)` : la",
+    "   ligne commence par `cd`. C'est pour ça que CLAUDE_CODE.md n'écrit plus",
+    "   jamais `cd X && ...` ni `VAR=... ; ...` — une commande simple par ligne,",
+    "   et le motif matche. On ne met surtout PAS `Bash(cd *)` en allow pour",
+    "   contourner : ce serait autoriser n'importe quoi après le `&&`.",
+    "",
+    "3. LES MOTIFS RELATIFS (`./**`) NE MATCHENT PAS TOUJOURS le chemin absolu",
+    "   que l'outil manipule. D'où le doublon `~/totehm/**`. Et d'où le fait que",
+    "   la chose qui PORTE vraiment l'écriture de fichiers, c'est",
+    "   `defaultMode: acceptEdits` — un mode, pas un motif de chemin.",
+    "   `auto` et `bypassPermissions` sont INTERDITS dans un settings de projet."
+  ],
+
+  "permissions": {
+    "defaultMode": "acceptEdits",
+
+    "allow": [
+      "Bash(cd ~/totehm)",
+      "Bash(unzip *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Bash(mkdir *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(grep *)",
+      "Bash(sed *)",
+      "Bash(diff *)",
+      "Bash(wc *)",
+      "Bash(find *)",
+      "Bash(which *)",
+      "Bash(echo *)",
+      "Bash(printf *)",
+
+      "Bash(git status *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git pull *)",
+      "Bash(git fetch *)",
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git show *)",
+      "Bash(git branch *)",
+      "Bash(git checkout *)",
+      "Bash(git merge *)",
+      "Bash(git bundle *)",
+      "Bash(git restore *)",
+      "Bash(git ls-files *)",
+      "Bash(git check-ignore *)",
+
+      "Bash(supabase functions deploy *)",
+      "Bash(supabase functions list *)",
+      "Bash(supabase secrets list *)",
+      "Bash(supabase migration list *)",
+
+      "Bash(python3 *)",
+      "Bash(node *)",
+      "Bash(npm run *)",
+      "Bash(curl *)",
+
+      "Read(./**)",
+      "Edit(./**)",
+      "Write(./**)",
+      "Read(~/totehm/**)",
+      "Edit(~/totehm/**)",
+      "Write(~/totehm/**)",
+      "Read(~/inbox/**)"
+    ],
+
+    "_ask": [
+      "La règle du projet, tenue sans bloquer le travail : `git add .` demande.",
+      "Et rien de destructif ne passe en silence — `supabase db` peut toucher la",
+      "base de production, il demande toujours."
+    ],
+    "ask": [
+      "Bash(git add .)",
+      "Bash(git add -A *)",
+      "Bash(git add --all *)",
+      "Bash(rm *)",
+      "Bash(git reset *)",
+      "Bash(git rebase *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(supabase db *)",
+      "Bash(supabase secrets set *)"
+    ],
+
+    "_deny": [
+      "Les clés SSH ne se lisent pas, même par erreur, même pour aider.",
+      "`oracle/` est déjà dans .gitignore et non suivi — ceci est le second",
+      "rempart, celui qui empêche de les LIRE et donc de les recopier ailleurs."
+    ],
+    "deny": [
+      "Read(./oracle/**)",
+      "Read(~/totehm/oracle/**)",
+      "Read(**/*.pem)",
+      "Read(**/id_rsa*)",
+      "Read(./.env)",
+      "Read(./.env.*)"
+    ]
+  }
+}
