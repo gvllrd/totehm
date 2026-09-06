@@ -765,6 +765,22 @@ l'évaluation du module et emporte tout le script, pas seulement la vue.
 **L'ordre est : port → hover.** Relancer le port deux fois de suite
 échoue (les repères ont disparu), et c'est voulu.
 
+### N'écris jamais `cd ~/totehm && …` — 06/09/2026
+
+Claude Code juge une commande composée **EN ENTIER** contre ses règles de
+permission. `cd ~/totehm && git status` ne matche pas la règle
+`Bash(git status *)` : la ligne commence par `cd`. Résultat, chaque
+commande redemande un oui/non, et `.claude/settings.json` ne sert à rien.
+
+**Tu es déjà dans le dépôt** — la session s'ouvre à sa racine. Écris
+`git status`, pas `cd ~/totehm && git status`. Une commande simple par
+ligne, toujours. Pour agir ailleurs, utilise les options du programme
+(`git -C`, `cp` avec un chemin absolu), jamais un `cd` en préfixe.
+
+Et on ne met **pas** `Bash(cd *)` en `allow` pour contourner : ça
+autoriserait n'importe quoi après le `&&`. La seule règle `cd` est une
+correspondance exacte, sans joker.
+
 ### Le Trip se lit depuis n'importe quelle boîte — 06/09/2026
 
 Ouvrir une boîte montre le **Trip entier**, dans ses trois couleurs, et

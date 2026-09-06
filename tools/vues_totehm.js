@@ -177,7 +177,7 @@ const ORDRE={h:['h','o','r'], t:['o','h','r'], r:['r','h','o']};
    même chose : `val` sert au `.on`, `aff` se lit. */
 const pick=(key,val,opts,aff)=>
   '<span class="selw"><button type="button" class="selb" data-sel="'+esc(key)+'">'
-  +esc(aff||'—')+'</button>'
+  +esc(aff||'—')+' <span class="sel-v">\u25be</span></button>'
   +'<span class="selp'+(selOpen===key?' on':'')+'"><span class="selp-in">'
   +opts.map(o=>'<button type="button" class="selo'+(o.v===val?' on':'')
     +'" data-selv="'+esc(o.v)+'" data-selk="'+esc(key)+'">'+esc(o.l)+'</button>').join('')
@@ -291,9 +291,15 @@ function panneauHTML(){
 /* ══ LE RENDU ════════════════════════════════════════════════════════
    Un seul rendu pour les trois vues et pour la boîte ouverte : la liste et
    le détail ne peuvent pas diverger s'ils sont dessinés ensemble. */
-function renderZone(){
+let lastView=null;
+function renderZone(anim){
   habIds();
   const box=$('habits'); if(!box)return;
+  /* `anim` dit ce qui doit s'animer POUR CE RENDU. Sans ça, l'animation
+     d'ouverture se rejouait à chaque frappe : une boîte qui repousse à
+     chaque lettre n'est pas fluide, elle est nerveuse. */
+  const change = lastView!==null && lastView!==view;
+  lastView=view;
   const sc=$('fv-inner');
   /* MESURÉ : le défilement dérivait de quelques pixels à chaque rendu. Sur
      une longue liste, choisir une intention te déplaçait. On le garde et on
@@ -312,7 +318,7 @@ function renderZone(){
       return true;});
     h=list.map((x,k)=>{
       if(open&&open.kind==='h'&&open.id===x.id)
-        return ligne('<span class="v-col open-in">'+panneauHTML()+'</span>','open',null,null,x.id);
+        return ligne('<span class="v-col open-in">'+panneauHTML()+'</span>','open'+(open.neuf?' neuf':''),null,null,x.id);
       const n=repsOfHab(x.id).length, t=x.o?tripOf(x.o):null;
       /* PAS DE CADRE NAVY SUR UNE BOÎTE DÉJÀ NAVY. `.h-frame` existe pour
          qu'une habitude reste navy quand elle est POSÉE AILLEURS — dans le
@@ -338,7 +344,7 @@ function renderZone(){
   }else if(view==='objectives'){
     h=TRIPS.map((t,k)=>{
       if(open&&open.kind==='t'&&String(open.id)===String(t.id))
-        return ligne('<span class="v-col open-in">'+panneauHTML()+'</span>','open',null,null,t.id);
+        return ligne('<span class="v-col open-in">'+panneauHTML()+'</span>','open'+(open.neuf?' neuf':''),null,null,t.id);
       const n=habsOfTrip(t).length, late=t.days_left!=null&&t.days_left<0;
       return ligne(boite(esc(t.text),
         '<span class="v-frq'+(late?' late':'')+'">'+esc(fmtDue(t.days_left))+'</span>'
@@ -349,7 +355,7 @@ function renderZone(){
   }else{
     h=REPS.map((r,k)=>{
       if(open&&open.kind==='r'&&String(open.id)===String(r.id))
-        return ligne('<span class="v-col open-in">'+panneauHTML()+'</span>','open',null,null,r.id);
+        return ligne('<span class="v-col open-in">'+panneauHTML()+'</span>','open'+(open.neuf?' neuf':''),null,null,r.id);
       const x=habsOfRep(r)[0];
       return ligne(boite(esc(r.text),
         '<span class="v-pil">protects</span>'
@@ -363,9 +369,17 @@ function renderZone(){
      genre de bug qui ne se voit qu'à l'écran — et qui s'est vu. */
   box.innerHTML=(ordering
     ? '<div class="ordbar">order by importance — the bot follows this order</div>' : '')+h;
+  /* Retirer, forcer un reflow, remettre : sans le reflow le navigateur ne
+     rejoue pas une animation dont la classe est déjà là. */
+  /* On ne retire la classe QUE pour la remettre : la retirer au rendu
+     suivant coupait le fondu en plein vol — `loadTrips` redessine deux
+     cents millisecondes après le changement de vue, en plein milieu des
+     260 ms de l'animation. */
+  if(change){ box.classList.remove('swap'); void box.offsetWidth;
+              box.classList.add('swap'); }
   if(keep!=null&&sc)sc.scrollTop=keep;
   const carte=box.querySelector('.habit.open');
-  if(carte)cable(carte);
+  if(carte){ if(anim!=='grow')carte.style.animation='none'; cable(carte); }
   /* ══ LE DIAGNOSTIC ══ Tout écran qui peut être vide porte le sien. Un
      écran vide SANS diagnostic, c'est trois allers-retours au lieu d'un :
      on ne sait pas si le membre n'a rien posé, si la session est tombée,
@@ -392,10 +406,10 @@ function renderZone(){
 
 /* Ouvrir, c'est agrandir la boîte À SA PLACE : on reste dans le Totehm,
    rien ne recouvre le logo. */
-function ouvrir(kind,id){
-  open={kind,id:String(id)}; selOpen=null; intFor=null; lkFor=null; pickFor=null;
+function ouvrir(kind,id,neuf){
+  open={kind,id:String(id),neuf:!!neuf}; selOpen=null; intFor=null; lkFor=null; pickFor=null;
   editH = kind==='h'?String(id):null; editR = kind==='r'?String(id):null;
-  renderZone();
+  renderZone('grow');
   const b=$('habits').querySelector('.habit.open');
   if(b){
     /* MESURÉ : `scrollIntoView` ne bougeait le cadre que de 2 px. Il cherche
@@ -425,7 +439,7 @@ function fermer(){
 async function creerDansLaVue(){
   if(view==='habits'){
     const x={id:'h'+(++HSEQ), t:'', f:pendingF||null, i:pendingI||null, o:null};
-    state.habits.unshift(x); state.ord=true; save(); ouvrir('h',x.id); return;
+    state.habits.unshift(x); state.ord=true; save(); ouvrir('h',x.id,true); return;
   }
   if(!me){$('member-window').classList.add('show');
           if(typeof memberPaint==='function')memberPaint();return;}
@@ -433,7 +447,7 @@ async function creerDansLaVue(){
     const {data,error}=await sb.rpc('trip_create',{p_text:'',p_target:null});
     if(error){console.error('[totehm] trip_create:',error.message);return;}
     TRIPS.unshift({id:data,text:'',target_at:null,days_left:null,habits:[]});
-    ouvrir('t',data); return;
+    ouvrir('t',data,true); return;
   }
   /* Une répulsion se rattache à une habitude : le serveur la classe par
      `habit_text`. Sans habitude, il n'y a rien à protéger — on le dit. */
@@ -442,7 +456,7 @@ async function creerDansLaVue(){
   const {data,error}=await sb.rpc('repulsion_set',{p_habit:h0.t,p_repulsion:'',p_obstacle:''});
   if(error){console.error('[totehm] repulsion_set:',error.message);return;}
   REPS.unshift({id:data,text:'',obstacle:'',hs:[h0.t]});
-  ouvrir('r',String(data));
+  ouvrir('r',String(data),true);
 }
 
 /* ══ LE CÂBLAGE DE LA BOÎTE OUVERTE ══════════════════════════════════ */

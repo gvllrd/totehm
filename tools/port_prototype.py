@@ -71,8 +71,16 @@ CSS = r'''/* ══ LA BOÎTE OUVERTE — IL N'Y A PLUS DE FENÊTRE · 06/09/202
    du noir — c'est là qu'on écrit, qu'on choisit, qu'on efface. Le filet
    garde la couleur de la vue : on sait toujours où l'on est. */
 .habit.open{align-items:stretch;flex:0 0 auto}
-.habit.open .h-body{display:block;padding:12px 12px 14px;cursor:default;
-  background:#000;border:1px solid var(--skin)}
+/* ══ DEUX FONDS, ET ILS NE DISENT PAS LA MÊME CHOSE ══════════════════
+   NAVY — on ouvre quelque chose QUI EXISTE. Le Totehm est navy, on ne l'a
+   pas quitté : on regarde une pièce de son propre Totehm. Le navy SOMBRE
+   se détache du papier sans filet, là où un navy clair serait invisible.
+   NOIR — on CRÉE. La page est blanche, elle est noire, et les trois
+   couleurs de la marque y apparaissent au fur et à mesure qu'on remplit.
+   Le noir est le moment de la conception, jamais celui de la lecture. */
+.habit.open .h-body{display:block;padding:13px 13px 15px;cursor:default;
+  background:var(--navy-d);border:none}
+.habit.open.neuf .h-body{background:#000;border:1px solid var(--skin)}
 @media(hover:hover){.habit.open .h-body:hover{filter:none}}
 .w-top{display:flex;align-items:flex-start;margin-bottom:10px}
 .w-x{margin-left:auto;background:none;border:none;color:rgba(255,255,255,.5);
@@ -92,7 +100,7 @@ CSS = r'''/* ══ LA BOÎTE OUVERTE — IL N'Y A PLUS DE FENÊTRE · 06/09/202
 .blk-l{display:block;font-family:'Space Mono',monospace;font-size:8px;
   letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.62);
   margin-bottom:5px}
-.blk-t{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
+.blk-t{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;
   line-height:1.45;color:#fff;background:none;border:none;outline:none;
   width:100%;display:block;padding:0 22px 0 0;resize:none;overflow:hidden;
   text-align:left;caret-color:#fff;min-height:1.45em}
@@ -162,6 +170,7 @@ CSS = r'''/* ══ LA BOÎTE OUVERTE — IL N'Y A PLUS DE FENÊTRE · 06/09/202
    en FENÊTRE CENTRÉE plein écran, ce qu'un <select> ne sait pas faire —
    et un menu de 33 rythmes dans une liste native est illisible au pouce. */
 .selw{position:relative;display:inline-block}
+.sel-v{opacity:.6;font-size:8px}
 .selb{background:rgba(0,0,0,.3);border:1px solid #000;color:#fff;cursor:pointer;
   padding:3px 8px;font-family:'Space Mono',monospace;font-size:9px;
   letter-spacing:.14em;text-transform:uppercase;transition:background .15s}

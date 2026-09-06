@@ -33,6 +33,9 @@
 :root{
   --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#606060;--bg:#000;
   --navy:#333366;--blue:#36498c;--rep:#743169;--love:#639922;
+  /* Le navy SOMBRE du logo. Sur le navy clair du papier, un bloc navy
+     n'existe pas — celui-ci si, et il ne demande AUCUN filet. */
+  --navy-d:#22224a;
   /* LES TROIS COULEURS DES BLOCS : --navy, --blue, --rep. Mesurées sur le
      Totehm empilé de totehm.com, la référence de la marque.
      --sky est la version TEXTE du bleu de l'objectif : #36498c en aplat se
@@ -84,13 +87,22 @@ body:not(.gate) #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
    Il n'y a pas de lettre pour les répulsions : TOTEHM n'en contient pas,
    et inventer un clignotement sans lettre serait du décor. La couleur des
    boîtes et le carré rouge disent déjà où l'on est. */
-#wm-O,#wm-H{transition:opacity .3s}
-body.v-objectives #wm-O{animation:wm-blink 1.6s steps(1,end) infinite}
-body.v-habits     #wm-H{animation:wm-blink 1.6s steps(1,end) infinite}
+/* LE LOGO RESPIRE, IL NE CLIGNOTE PAS. `steps(1,end)` allumait et
+   éteignait d'un coup — dur, mécanique, une alarme. `ease-in-out` sur
+   2,8 s fait une RESPIRATION : la lettre s'efface et revient. C'est la
+   différence entre un voyant et un être vivant.
+   Il n'y a pas de lettre pour les répulsions — TOTEHM n'en contient pas —
+   alors c'est le PIED du T qui respire. Inventer un glyphe serait du
+   décor ; faire respirer une pièce du logo, non. */
+#wm-O,#wm-H,#t-foot{transition:opacity .3s}
+body.v-objectives  #wm-O  {animation:breathe 2.8s ease-in-out infinite}
+body.v-habits      #wm-H  {animation:breathe 2.8s ease-in-out infinite}
+body.v-repulsions  #t-foot{animation:breathe 2.8s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:1}50%{opacity:.18}}
 @keyframes wm-blink{0%,55%{opacity:1}56%,100%{opacity:.18}}
 @media(prefers-reduced-motion:reduce){
-  #wm-O,#wm-H{animation:none!important}
-  body.v-objectives #wm-O,body.v-habits #wm-H{opacity:1}
+  #wm-O,#wm-H,#t-foot{animation:none!important}
+  body.v-objectives #wm-O,body.v-habits #wm-H,body.v-repulsions #t-foot{opacity:1}
 }
 
 /* Get Higher (haut droite) + Real inspiration (bas droite) */
@@ -342,9 +354,32 @@ body.higher .set-block.higher-only{display:flex!important}
    une boîte OUVERTE est un plan de travail, et un plan de travail se lit sur
    du noir — c'est là qu'on écrit, qu'on choisit, qu'on efface. Le filet
    garde la couleur de la vue : on sait toujours où l'on est. */
-.habit.open{align-items:stretch;flex:0 0 auto}
-.habit.open .h-body{display:block;padding:12px 12px 14px;cursor:default;
-  background:#000;border:1px solid var(--skin)}
+/* LA BOÎTE SE DÉPLIE À SA PLACE. Sans ça elle APPARAÎT — et une boîte qui
+   apparaît ressemble à une fenêtre qui s'ouvre par-dessus, exactement ce
+   qu'on a passé un lot à supprimer. Elle pousse depuis son propre haut :
+   `transform-origin:top`. */
+.habit.open{align-items:stretch;flex:0 0 auto;
+  animation:grow .24s cubic-bezier(.22,.61,.36,1)}
+@keyframes grow{from{opacity:.4;transform:scaleY(.92);transform-origin:top}
+                to{opacity:1;transform:scaleY(1);transform-origin:top}}
+/* CHANGER DE VUE EST UN FONDU, PAS UNE COUPURE. Les boîtes montent de six
+   pixels en s'allumant : on comprend qu'on a tourné une page du même
+   objet, pas qu'on a changé d'écran. */
+#habits.swap{animation:swap .26s cubic-bezier(.22,.61,.36,1)}
+@keyframes swap{from{opacity:0;transform:translateY(6px)}
+                to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){
+  .habit.open,#habits.swap{animation:none}}
+/* ══ DEUX FONDS, ET ILS NE DISENT PAS LA MÊME CHOSE ══════════════════
+   NAVY — on ouvre quelque chose QUI EXISTE. Le Totehm est navy, on ne l'a
+   pas quitté : on regarde une pièce de son propre Totehm. Le navy SOMBRE
+   se détache du papier sans filet, là où un navy clair serait invisible.
+   NOIR — on CRÉE. La page est blanche, elle est noire, et les trois
+   couleurs de la marque y apparaissent au fur et à mesure qu'on remplit.
+   Le noir est le moment de la conception, jamais celui de la lecture. */
+.habit.open .h-body{display:block;padding:13px 13px 15px;cursor:default;
+  background:var(--navy-d);border:none}
+.habit.open.neuf .h-body{background:#000;border:1px solid var(--skin)}
 @media(hover:hover){.habit.open .h-body:hover{filter:none}}
 .w-top{display:flex;align-items:flex-start;margin-bottom:10px}
 .w-x{margin-left:auto;background:none;border:none;color:rgba(255,255,255,.5);
@@ -364,7 +399,7 @@ body.higher .set-block.higher-only{display:flex!important}
 .blk-l{display:block;font-family:'Space Mono',monospace;font-size:8px;
   letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.62);
   margin-bottom:5px}
-.blk-t{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
+.blk-t{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;
   line-height:1.45;color:#fff;background:none;border:none;outline:none;
   width:100%;display:block;padding:0 22px 0 0;resize:none;overflow:hidden;
   text-align:left;caret-color:#fff;min-height:1.45em}
@@ -434,6 +469,7 @@ body.higher .set-block.higher-only{display:flex!important}
    en FENÊTRE CENTRÉE plein écran, ce qu'un <select> ne sait pas faire —
    et un menu de 33 rythmes dans une liste native est illisible au pouce. */
 .selw{position:relative;display:inline-block}
+.sel-v{opacity:.6;font-size:8px}
 .selb{background:rgba(0,0,0,.3);border:1px solid #000;color:#fff;cursor:pointer;
   padding:3px 8px;font-family:'Space Mono',monospace;font-size:9px;
   letter-spacing:.14em;text-transform:uppercase;transition:background .15s}
@@ -1153,6 +1189,12 @@ body.gate.entered #filter-badge{
 
 
 
+
+
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -1297,7 +1339,7 @@ body.gate.entered #filter-badge{
   <span class="ob-1"></span><span class="ob-2"></span><span class="ob-3"></span>
 </button>
 
-<div id="bigT" class="sink-el"><svg id="ui-t" viewBox="79.832 47.921 66.789 66.932" role="img" aria-label="T"><defs><clipPath id="tut_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tut_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tut_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tut_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tut_ffb4264ddd)"><g clip-path="url(#tut_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tut_0eae0d8cca)"><g clip-path="url(#tut_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tut_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tut_92fddf9f0e)"><g clip-path="url(#tut_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tut_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tut_7d4c700d36)"><g clip-path="url(#tut_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></svg></div>
+<div id="bigT" class="sink-el"><svg id="ui-t" viewBox="79.832 47.921 66.789 66.932" role="img" aria-label="T"><defs><clipPath id="tut_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tut_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tut_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tut_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tut_ffb4264ddd)"><g clip-path="url(#tut_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tut_0eae0d8cca)"><g clip-path="url(#tut_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tut_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tut_92fddf9f0e)"><g clip-path="url(#tut_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g id="t-foot" clip-path="url(#tut_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tut_7d4c700d36)"><g clip-path="url(#tut_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></svg></div>
 <div id="wordmark" class="sink-el"><svg id="ui-wm" viewBox="74.997 121.602 77.584 46.683" role="img" aria-label="TOTEHM"><defs><g/><clipPath id="tuw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g id="wm-O" transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tuw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g id="wm-H" transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg></div>
 
 <button id="menu-arrow" class="sink-el" aria-label="Open menu">
@@ -2517,7 +2559,7 @@ const ORDRE={h:['h','o','r'], t:['o','h','r'], r:['r','h','o']};
    même chose : `val` sert au `.on`, `aff` se lit. */
 const pick=(key,val,opts,aff)=>
   '<span class="selw"><button type="button" class="selb" data-sel="'+esc(key)+'">'
-  +esc(aff||'—')+'</button>'
+  +esc(aff||'—')+' <span class="sel-v">\u25be</span></button>'
   +'<span class="selp'+(selOpen===key?' on':'')+'"><span class="selp-in">'
   +opts.map(o=>'<button type="button" class="selo'+(o.v===val?' on':'')
     +'" data-selv="'+esc(o.v)+'" data-selk="'+esc(key)+'">'+esc(o.l)+'</button>').join('')
@@ -2631,9 +2673,15 @@ function panneauHTML(){
 /* ══ LE RENDU ════════════════════════════════════════════════════════
    Un seul rendu pour les trois vues et pour la boîte ouverte : la liste et
    le détail ne peuvent pas diverger s'ils sont dessinés ensemble. */
-function renderZone(){
+let lastView=null;
+function renderZone(anim){
   habIds();
   const box=$('habits'); if(!box)return;
+  /* `anim` dit ce qui doit s'animer POUR CE RENDU. Sans ça, l'animation
+     d'ouverture se rejouait à chaque frappe : une boîte qui repousse à
+     chaque lettre n'est pas fluide, elle est nerveuse. */
+  const change = lastView!==null && lastView!==view;
+  lastView=view;
   const sc=$('fv-inner');
   /* MESURÉ : le défilement dérivait de quelques pixels à chaque rendu. Sur
      une longue liste, choisir une intention te déplaçait. On le garde et on
@@ -2652,7 +2700,7 @@ function renderZone(){
       return true;});
     h=list.map((x,k)=>{
       if(open&&open.kind==='h'&&open.id===x.id)
-        return ligne('<span class="v-col open-in">'+panneauHTML()+'</span>','open',null,null,x.id);
+        return ligne('<span class="v-col open-in">'+panneauHTML()+'</span>','open'+(open.neuf?' neuf':''),null,null,x.id);
       const n=repsOfHab(x.id).length, t=x.o?tripOf(x.o):null;
       /* PAS DE CADRE NAVY SUR UNE BOÎTE DÉJÀ NAVY. `.h-frame` existe pour
          qu'une habitude reste navy quand elle est POSÉE AILLEURS — dans le
@@ -2678,7 +2726,7 @@ function renderZone(){
   }else if(view==='objectives'){
     h=TRIPS.map((t,k)=>{
       if(open&&open.kind==='t'&&String(open.id)===String(t.id))
-        return ligne('<span class="v-col open-in">'+panneauHTML()+'</span>','open',null,null,t.id);
+        return ligne('<span class="v-col open-in">'+panneauHTML()+'</span>','open'+(open.neuf?' neuf':''),null,null,t.id);
       const n=habsOfTrip(t).length, late=t.days_left!=null&&t.days_left<0;
       return ligne(boite(esc(t.text),
         '<span class="v-frq'+(late?' late':'')+'">'+esc(fmtDue(t.days_left))+'</span>'
@@ -2689,7 +2737,7 @@ function renderZone(){
   }else{
     h=REPS.map((r,k)=>{
       if(open&&open.kind==='r'&&String(open.id)===String(r.id))
-        return ligne('<span class="v-col open-in">'+panneauHTML()+'</span>','open',null,null,r.id);
+        return ligne('<span class="v-col open-in">'+panneauHTML()+'</span>','open'+(open.neuf?' neuf':''),null,null,r.id);
       const x=habsOfRep(r)[0];
       return ligne(boite(esc(r.text),
         '<span class="v-pil">protects</span>'
@@ -2703,9 +2751,17 @@ function renderZone(){
      genre de bug qui ne se voit qu'à l'écran — et qui s'est vu. */
   box.innerHTML=(ordering
     ? '<div class="ordbar">order by importance — the bot follows this order</div>' : '')+h;
+  /* Retirer, forcer un reflow, remettre : sans le reflow le navigateur ne
+     rejoue pas une animation dont la classe est déjà là. */
+  /* On ne retire la classe QUE pour la remettre : la retirer au rendu
+     suivant coupait le fondu en plein vol — `loadTrips` redessine deux
+     cents millisecondes après le changement de vue, en plein milieu des
+     260 ms de l'animation. */
+  if(change){ box.classList.remove('swap'); void box.offsetWidth;
+              box.classList.add('swap'); }
   if(keep!=null&&sc)sc.scrollTop=keep;
   const carte=box.querySelector('.habit.open');
-  if(carte)cable(carte);
+  if(carte){ if(anim!=='grow')carte.style.animation='none'; cable(carte); }
   /* ══ LE DIAGNOSTIC ══ Tout écran qui peut être vide porte le sien. Un
      écran vide SANS diagnostic, c'est trois allers-retours au lieu d'un :
      on ne sait pas si le membre n'a rien posé, si la session est tombée,
@@ -2732,10 +2788,10 @@ function renderZone(){
 
 /* Ouvrir, c'est agrandir la boîte À SA PLACE : on reste dans le Totehm,
    rien ne recouvre le logo. */
-function ouvrir(kind,id){
-  open={kind,id:String(id)}; selOpen=null; intFor=null; lkFor=null; pickFor=null;
+function ouvrir(kind,id,neuf){
+  open={kind,id:String(id),neuf:!!neuf}; selOpen=null; intFor=null; lkFor=null; pickFor=null;
   editH = kind==='h'?String(id):null; editR = kind==='r'?String(id):null;
-  renderZone();
+  renderZone('grow');
   const b=$('habits').querySelector('.habit.open');
   if(b){
     /* MESURÉ : `scrollIntoView` ne bougeait le cadre que de 2 px. Il cherche
@@ -2765,7 +2821,7 @@ function fermer(){
 async function creerDansLaVue(){
   if(view==='habits'){
     const x={id:'h'+(++HSEQ), t:'', f:pendingF||null, i:pendingI||null, o:null};
-    state.habits.unshift(x); state.ord=true; save(); ouvrir('h',x.id); return;
+    state.habits.unshift(x); state.ord=true; save(); ouvrir('h',x.id,true); return;
   }
   if(!me){$('member-window').classList.add('show');
           if(typeof memberPaint==='function')memberPaint();return;}
@@ -2773,7 +2829,7 @@ async function creerDansLaVue(){
     const {data,error}=await sb.rpc('trip_create',{p_text:'',p_target:null});
     if(error){console.error('[totehm] trip_create:',error.message);return;}
     TRIPS.unshift({id:data,text:'',target_at:null,days_left:null,habits:[]});
-    ouvrir('t',data); return;
+    ouvrir('t',data,true); return;
   }
   /* Une répulsion se rattache à une habitude : le serveur la classe par
      `habit_text`. Sans habitude, il n'y a rien à protéger — on le dit. */
@@ -2782,7 +2838,7 @@ async function creerDansLaVue(){
   const {data,error}=await sb.rpc('repulsion_set',{p_habit:h0.t,p_repulsion:'',p_obstacle:''});
   if(error){console.error('[totehm] repulsion_set:',error.message);return;}
   REPS.unshift({id:data,text:'',obstacle:'',hs:[h0.t]});
-  ouvrir('r',String(data));
+  ouvrir('r',String(data),true);
 }
 
 /* ══ LE CÂBLAGE DE LA BOÎTE OUVERTE ══════════════════════════════════ */
