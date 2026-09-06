@@ -548,7 +548,9 @@ relancer la requête avec les coordonnées. Le front fait le second
 ### La carte
 | Fonction | Rôle |
 |---|---|
-| `places_matching_habits(lat, lng, radius, habits jsonb, include_club, limit)` | **NOUVEAU 03/09/2026 · l'appelé principal du radar.** `habits` = `[{intention, text, embedding}]` calculé côté edge. Retourne places rankées par cosine similarity intra-intention, avec `rank_tier` (0=MEMBER_DROP, 1=top tercile, 2=moyen, 3=bas/sans embedding), `score` (0-1) et `matched_habit` (attribution). `security definer`, révoquée pour `anon` et `authenticated`. |
+| `places_matching_habits(lat, lng, radius, habits jsonb, include_club, limit, repulsions jsonb)` | **L'appelé principal du radar. RÉÉCRITE le 06/09/2026 — voir §7.** `habits` = `[{intention, text, embedding, rank}]`, `repulsions` = `[{text, embedding}]`, calculés côté edge. **L'intention n'est PLUS un filtre** : tout ce qui est dans le rayon est candidat, le classement décide. Retourne `rank_tier` (0=MEMBER_DROP, 1/2/3 par tercile), `score`, `matched_habit`, `matched_rank` (l'ordre d'importance posé par le membre) et `against` (la répulsion qui a fait rétrograder le lieu). `p_repulsions` a un défaut : un appel à 6 paramètres continue de fonctionner. |
+| `spot_video(spot uuid)` | **NOUVEAU 06/09/2026.** Rend `file_id` Telegram, `kind`, l'URL en cache et `fresh` (cache < 55 min). Ouverte à `anon` : elle ne rend aucune donnée sensible. |
+| `spot_video_cache(spot uuid, url text)` | **NOUVEAU 06/09/2026.** Repose le cache d'URL. **`service_role` UNIQUEMENT** — un client qui pourrait écrire une URL de média pourrait faire pointer un spot n'importe où. Vérifié après le `create`. |
 | `places_near(lat, lng, radius, intentions[], limit, places, include_club)` | **Fallback pour intention-only** (utilisé quand OpenAI KO ou 0 habit). Union spots + places, tri `rank_tier, dist_m`. `earth_box` pour l'index GiST, `earth_distance` pour tronquer au cercle réel. Révoquée pour `anon` et `authenticated`. **03/09/2026 — renvoie `energy_mode`** (silent/social pour les spots membres, null pour Google Places et spots legacy) et **priorise `descriptions[intention]` sur `address`** comme `why`. |
 | `places_budget_take(max)` | incrémente le compteur du jour s'il est sous le plafond, renvoie `true` si l'appel Google est autorisé |
 
@@ -569,6 +571,59 @@ relancer la requête avec les coordonnées. Le front fait le second
 | `search_totehms(q, limit)` | la recherche de membres. Ouverte à `anon`. Ne rend QUE des Totehms partagés (`totehm_visibility='members'`), **jamais un e-mail, jamais un `telegram_id`, jamais un id**. Classement exact > préfixe > sous-chaîne |
 | `spot_search(lat, lng, radius, q, intention, limit)` | les lieux du Club autour d'un point, pour la mini-app et pour `/spots` |
 | `add_wisdom_admin(uuid, text, intention)` · `add_objective_admin(uuid, text)` | poser une leçon ou un objectif **depuis Telegram**. `wisdom` et `objectives` sont protégées par RLS sur `auth.uid()` ; le bot n'a pas de session. `service_role` seul |
+
+### Le Trip — objectifs, habitudes, répulsions · maj 06/09/2026
+
+| Fonction | Rôle | Accès |
+|---|---|---|
+| `my_trips()` | **l'arbre entier en UN appel** : objectifs, leurs habitudes, les répulsions de chaque habitude | `authenticated` |
+| `repulsions_of(uuid,text)` | les répulsions d'une habitude, avec **toutes** les habitudes que chacune protège | `service_role` |
+| `trip_create(text,timestamptz)` → `uuid` | crée un objectif | `authenticated` |
+| `trip_rename(uuid,text)` · `trip_set_target(uuid,timestamptz)` | le renomme, pose sa deadline | `authenticated` |
+| `trip_close(uuid,text)` | le sort de la liste (`done`/`dropped`/`closed`) | `authenticated` |
+| `repulsion_set(text,text,text)` → `bigint` | crée une répulsion sur une habitude | `authenticated` |
+| `repulsion_retire(bigint)` | la désactive | `authenticated` |
+| `repulsion_link(bigint,text)` · `repulsion_unlink(bigint,text)` | **le lookup** : attache / détache une habitude | `authenticated` |
+| `habit_rename_links(text,text)` | suit un renommage d'habitude dans les deux tables | `authenticated` |
+
+**Aucune ne prend d'identité en paramètre** : toutes lisent `auth.uid()`.
+Une fonction qui prend l'utilisateur en argument attache une répulsion au
+Totehm de quelqu'un d'autre.
+
+**`repulsions_of` est écrite UNE fois.** `my_trips` l'appelle deux fois —
+les habitudes d'un objectif, puis les habitudes libres. Le même
+sous-select existait en double : deux copies divergent toujours.
+
+### `repulsion_habits` — le lookup, créée le 06/09/2026
+
+```
+repulsion_id  bigint      → repulsions(id) on delete cascade
+user_id       uuid        → auth.users(id) on delete cascade
+habit_text    text
+created_at    timestamptz
+primary key (repulsion_id, habit_text)
+index (user_id, habit_text)
+RLS : le propriétaire seul, en lecture comme en écriture
+```
+
+**`repulsions.habit_text` reste le PREMIER lien** — celui que le bot lit
+déjà. Rien à réécrire côté bot.
+
+**Un trigger `after insert on repulsions` pose le premier lien.** Ce n'est
+pas du confort : une répulsion écrite par le bot, la carte, un admin ou une
+insertion à la main naît avec son lien. Une table alimentée seulement par
+le front serait vide pour tout ce qui n'est pas le front — et le jour où
+elle sert de source de vérité, la moitié des répulsions auraient disparu.
+
+**Le lien est du TEXTE** parce que `steps` est du texte : tant qu'une
+habitude n'a pas d'identifiant en base, c'est la seule jointure possible.
+D'où `habit_rename_links()`, qui répare en un appel au lieu de quatre
+endroits du front.
+
+**Mesuré le 06/09/2026, sous le rôle `authenticated`** : pose +1, retrait
+−1, et `repulsion_link` sur une répulsion qui n'est pas la sienne rend
+`false`. `my_trips` : 8 objectifs, 5 habitudes libres, les répulsions
+portent bien leur tableau `habits`.
 
 ### Objectifs, musique, adhésion
 | Fonction | Rôle |
@@ -738,6 +793,59 @@ les emails transactionnels via `RESEND_API_KEY`.
 ---
 
 ## 7 · Pièges et divergences
+
+### ⚠️ `places.intentions` N'EST PAS une propriété du lieu — mesuré 06/09/2026
+
+**Cette colonne enregistre quel BALAYAGE a trouvé le lieu, pas ce qu'il est.**
+On balaie `flow` (park, swimming_pool), Google rend aussi les salles du
+quartier, et tout le lot hérite de `flow`.
+
+Preuve, sur la base de production :
+
+| lieu | `lieu_type` | `intentions` |
+|---|---|---|
+| Club 7 | `gym` | `flow` |
+| Holmes Place Palácio SottoMayor | `gym` | `flow` |
+| Street Workout Equipment | `park` | `flow` |
+
+**Aucun lieu n'était étiqueté `fight`.** L'ancienne `places_matching_habits`
+posait deux verrous cumulés sur cette colonne — candidature ET scoring — si
+bien que *« Faire 30 minutes d'exercice physique »* (→ `fight`) rendait
+**0 lieu**, alors que trois lieux d'entraînement étaient à moins de 2,4 km.
+
+**Ne jamais filtrer sur `places.intentions`.** Depuis le 06/09 :
+
+```
+INTENTION   clé d'INGESTION + bonus de score (+0.06). Jamais un verrou.
+HABITUDE    la REQUÊTE — le texte du membre, par similarité sémantique.
+RÉPULSION   une RÉTROGRADATION en tier 3, jamais une exclusion.
+```
+
+Mesuré après correction, même habitude : **0 → 8 lieux**, les deux salles
+dans les sept premiers, aucune librairie dans le lot.
+
+La répulsion **rétrograde et le dit** (colonne `against`) : elle n'exclut
+pas. « Le radar CLASSE, il ne filtre pas » — un filtre qui cache en silence
+fait disparaître de bonnes réponses sans que personne ne le sache. Le seuil
+est haut (cosine > 0,82 **et** > la similarité de la meilleure habitude) :
+on rétrograde sur une ressemblance forte, jamais sur un écho lointain.
+
+**`MAX_SWEEPS` est passé de 3 à 7.** Avec trois balayages par requête, une
+ville ne finissait jamais de se couvrir : quatre intentions sur sept avaient
+zéro lieu après des semaines. Ce n'était pas un défaut de conception, c'était
+un démarrage à froid qui n'aboutissait pas. Le garde-fou reste
+`DAILY_BUDGET` ; avec `CELL_TTL_DAYS = 90`, une cellule coûte 7 appels
+(≈ 0,22 $) une fois par trimestre.
+
+### ⚠️ Le lien Telegram expire, le `file_id` non — 06/09/2026
+
+`getFile` rend une URL valable ~1 h ; `file_id` est permanent. `spots`
+porte donc les deux : `tg_file_id` fait foi, `video_url` n'est qu'un cache
+daté par `video_url_at`. **Ne jamais traiter `video_url` comme durable** —
+un lecteur qui la garde affichera un média mort une heure plus tard.
+
+La fonction `spot-video` est le seul pont : la carte ne doit jamais appeler
+Telegram elle-même, ça exposerait `TELEGRAM_BOT_TOKEN` à qui ouvre le radar.
 
 ### ⚠️ `totehm_events` est un journal incomplet
 25 habitudes réelles dans `steps`, **8 événements** `habit_added`.

@@ -76,6 +76,22 @@ body:not(.gate) #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
 #bigT svg{height:53px;width:auto;display:block}
 #wordmark{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;transition:opacity .4s;line-height:0}
 #wordmark svg{height:50px;width:auto;display:block}
+/* ══ LE LOGO DIT OÙ L'ON EST · 06/09/2026 ════════════════════════════
+   Le O du wordmark clignote sur les OBJECTIFS, le H sur les HABITUDES.
+   C'est la lettre elle-même qui signale, pas une icône posée à côté : le
+   logo n'illustre pas l'écran, il EST l'écran. Les deux glyphes sont
+   nommés dans le SVG servi (`#wm-O`, `#wm-H`), rien n'est redessiné.
+   Il n'y a pas de lettre pour les répulsions : TOTEHM n'en contient pas,
+   et inventer un clignotement sans lettre serait du décor. La couleur des
+   boîtes et le carré rouge disent déjà où l'on est. */
+#wm-O,#wm-H{transition:opacity .3s}
+body.v-objectives #wm-O{animation:wm-blink 1.6s steps(1,end) infinite}
+body.v-habits     #wm-H{animation:wm-blink 1.6s steps(1,end) infinite}
+@keyframes wm-blink{0%,55%{opacity:1}56%,100%{opacity:.18}}
+@media(prefers-reduced-motion:reduce){
+  #wm-O,#wm-H{animation:none!important}
+  body.v-objectives #wm-O,body.v-habits #wm-H{opacity:1}
+}
 
 /* Get Higher (haut droite) + Real inspiration (bas droite) */
 /* Petite flèche cliquable centrée juste sous le TOTEHM.png du bas — ouvre le menu paramètres */
@@ -213,7 +229,10 @@ body.higher .set-block.higher-only{display:flex!important}
    a plus rien à faire défiler et elle ne peut pas remonter en haut du
    cadre. La marge n'existe que quand une boîte est ouverte. */
 #habits:has(.habit.open){padding-bottom:70vh}
-.habit{position:relative;display:flex;align-items:center;min-height:30px}
+/* Mesuré à 390 px : la boîte touchait le bord droit de l'écran et la
+   croix de suppression y était coupée. La ligne a sa marge. */
+.habit{position:relative;display:flex;align-items:center;min-height:30px;
+  padding-right:16px}
 /* LE SIGNE EST DANS LA BOÎTE. `.meta` n'est plus posé dans la marge à
    gauche du rail : il est le premier enfant de la boîte. Le markup est le
    même — les boutons gardent leurs data-i et leurs écouteurs — seule la
@@ -221,7 +240,7 @@ body.higher .set-block.higher-only{display:flex!important}
    le logo, pas de l'information. Effet de bord bienvenu : le débordement
    mesuré sous 600 px, où la fréquence sortait de l'écran, n'existe plus. */
 .habit .meta{display:flex;align-items:center;gap:8px;white-space:nowrap;flex-shrink:0}
-.habit .h-x{position:absolute;right:4px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.35);font-size:16px;line-height:1;cursor:pointer;padding:6px 8px;transition:color .15s;z-index:5;-webkit-tap-highlight-color:transparent}
+.habit .h-x{position:absolute;right:22px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.35);font-size:16px;line-height:1;cursor:pointer;padding:6px 8px;transition:color .15s;z-index:5;-webkit-tap-highlight-color:transparent}
 .habit .h-x:hover{color:#fff}
 .habit .h-freq{font-family:'Quantico',sans-serif;font-weight:400;font-size:12px;letter-spacing:0;color:#fff;background:none;border:none;padding:0;cursor:pointer;transition:opacity .15s}
 .habit .h-freq:hover{opacity:.7}
@@ -261,7 +280,9 @@ body.higher .set-block.higher-only{display:flex!important}
   border:1px dashed rgba(255,255,255,.3);transition:border-color .15s}
 .habit.add .h-body:focus-within{border-color:#fff}
 /* Le liseré du textarea faisait doublon avec la boîte. */
-.h-text,.h-add{border-bottom:none;padding:0 46px 0 0}
+/* Le liseré du textarea faisait doublon avec la boîte : il n'existe plus
+   nulle part, plutôt que d'être posé puis retiré deux règles plus bas. */
+.h-text,.h-add{padding:0 30px 0 0}
 
 /* ── LES DEUX AUTRES VUES ────────────────────────────────────────────
    Même ligne, même rail, même boîte. Seule l'UNITÉ change : une habitude
@@ -272,16 +293,29 @@ body.higher .set-block.higher-only{display:flex!important}
 .v-name{font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;
   line-height:1.5;color:#fff;flex:1;min-width:0;word-break:break-word}
 .v-sub{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;
-  text-transform:uppercase;color:rgba(255,255,255,.66);margin-top:5px;
-  font-variant-numeric:tabular-nums}
+  text-transform:uppercase;color:rgba(255,255,255,.72);margin-top:6px;
+  font-variant-numeric:tabular-nums;display:flex;flex-wrap:wrap;
+  align-items:center;gap:0 10px;line-height:1.5}
+/* La ligne d'unité d'une habitude est un BOUTON : on touche ce qu'on lit.
+   Il ne doit rien ressembler à un bouton pour autant — pas de cadre, pas
+   de fond : c'est la ligne elle-même qui est sensible. */
+.v-meta{background:none;border:none;padding:0;margin-top:6px;cursor:pointer;
+  text-align:left;width:100%;-webkit-tap-highlight-color:transparent;
+  transition:opacity .15s}
+.v-meta:active{opacity:.6}
+@media(hover:hover){.v-meta:hover{opacity:.75}}
+/* L'INTENTION EST LA CHOSE LA PLUS IMPORTANTE D'UNE HABITUDE. Elle
+   s'écrit, dans sa couleur, suivie de son pilier. Elle n'apparaissait
+   nulle part sur la ligne — c'était ça, « on ne voit pas assez ». */
+.v-int{font-weight:700;letter-spacing:.2em}
+.v-pil{color:rgba(255,255,255,.5)}
+.v-frq{color:rgba(255,255,255,.72)}
 .v-sub.late{color:#ffb4b4}
 .v-col{display:flex;flex-direction:column;width:100%;min-width:0}
-.v-wave{width:15px;height:9px;flex-shrink:0;stroke:#fff;fill:none;stroke-width:1.6;
-  margin-right:9px}
 .v-empty{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;
   text-transform:uppercase;color:rgba(255,255,255,.45);padding:24px 0;text-align:center}
 @media(max-width:600px){.habit.timed .h-freq{display:none}}
-.h-text,.h-add{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;line-height:1.5;padding:4px 46px 4px 2px;caret-color:#fff;text-align:left;resize:none;overflow:hidden;display:block}
+.h-text,.h-add{width:100%;background:none;border:none;outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;line-height:1.5;padding:4px 46px 4px 2px;caret-color:#fff;text-align:left;resize:none;overflow:hidden;display:block}
 .h-text::placeholder{color:rgba(255,255,255,.33)}
 /* placeholder custom : le H de Habit en blanc */
 .h-hint{position:absolute;left:2px;top:50%;transform:translateY(-50%);font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:rgba(255,255,255,.33);pointer-events:none}
@@ -292,70 +326,186 @@ body.higher .set-block.higher-only{display:flex!important}
    centrée verticalement disparaît sous le clavier au premier focus.
    `align-items:flex-start` + `padding-top` fixe l'ancrage en haut,
    identique mobile et desktop pour rester prévisible. */
-/* ══ LA BOÎTE OUVERTE — IL N'Y A PLUS DE FENÊTRE · 05/09/2026 ═════════
+/* ══ LA BOÎTE OUVERTE — IL N'Y A PLUS DE FENÊTRE · 06/09/2026 ═════════
    `#trip-peek` était une modale plein écran sur un voile noir à 82 %. Elle
    ne vivait pas DANS le Totehm : elle le recouvrait — plus de T, plus de
    carrés, plus de wordmark, plus de rail. Le voile est parti.
    La boîte de la ligne S'AGRANDIT à sa place, garde la couleur de sa vue,
    et tout se saisit dedans. Le Totehm ne se quitte jamais.
-   `flex-shrink:0` n'est pas du zèle : #habits est une colonne flex, et un
+
+   `flex:0 0 auto` n'est pas du zèle : #habits est une colonne flex, et un
    enfant flex se laisse comprimer par défaut — sans lui la boîte ouverte
    était écrasée à la hauteur d'une ligne et les suivantes se dessinaient
-   par-dessus. */
+   par-dessus.
+
+   LE TRIP SE LIT SUR DU NOIR. Une boîte FERMÉE porte la couleur de sa vue ;
+   une boîte OUVERTE est un plan de travail, et un plan de travail se lit sur
+   du noir — c'est là qu'on écrit, qu'on choisit, qu'on efface. Le filet
+   garde la couleur de la vue : on sait toujours où l'on est. */
 .habit.open{align-items:stretch;flex:0 0 auto}
-.habit.open .h-body{display:block;padding:12px 13px 14px;cursor:default}
+.habit.open .h-body{display:block;padding:12px 12px 14px;cursor:default;
+  background:#000;border:1px solid var(--skin)}
 @media(hover:hover){.habit.open .h-body:hover{filter:none}}
-.tp-top{display:flex;align-items:flex-start;gap:11px;margin-bottom:12px}
-.tp-T{line-height:0;color:var(--sky);flex-shrink:0;margin-top:3px}
-.tp-T svg{height:15px;width:auto;fill:currentColor;display:block}
-.tp-name{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;
-  line-height:1.35;background:none;border:none;color:#fff;width:100%;
-  outline:none;resize:none;overflow:hidden;padding:0}
-.tp-ask{font-family:'Quantico',sans-serif;font-weight:700;font-size:17px;
-  color:#fff;line-height:1.3;flex:1}
-/* LE O DU WORDMARK. Il porte la couleur du texte et s'aligne sur sa ligne
-   de base : c'est la lettre de TOTEHM.svg, en plus petit. */
-.o-mark{display:inline-block;line-height:0;vertical-align:-.055em}
-.o-mark .oglyph{height:1.02em;width:auto;display:block}
-.tp-x{margin-left:auto;background:none;border:none;color:rgba(255,255,255,.5);
+.w-top{display:flex;align-items:flex-start;margin-bottom:10px}
+.w-x{margin-left:auto;background:none;border:none;color:rgba(255,255,255,.5);
   font-size:20px;line-height:1;cursor:pointer;padding:0 3px;transition:color .15s}
-.tp-x:hover{color:#fff}
-/* L'objectif ENCADRE : bordure bleue, jamais d'extrusion. */
-/* Le WHY porte le bleu CLAIR de l'objectif, le même que la vue. */
-/* Le WHY est un bloc PLEIN du bleu de l'objectif, comme dans la liste. */
-.tp-box{border:1px solid #000;background:var(--blue);padding:11px 12px}
-.tp-sec{display:flex;flex-direction:column;gap:5px;margin-top:14px}
-.tp-lbl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.22em;
-  text-transform:uppercase;color:rgba(255,255,255,.55)}
-/* Sur un bloc coloré, c'est le NOIR qui creuse un champ — jamais un gris,
-   jamais une ombre. Même grammaire que les perforations du logo. */
-.tp-in{font-family:'Quantico',sans-serif;font-size:14px;color:#fff;
-  background:rgba(0,0,0,.3);border:1px solid #000;padding:6px 8px;
-  outline:none;width:100%;transition:background .15s}
-.tp-in:focus{background:rgba(0,0,0,.5)}
-.tp-in::placeholder{color:rgba(255,255,255,.35)}
-.tp-due{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;
-  text-transform:uppercase;color:#7fa3e8;margin-top:3px}
-.tp-mini{display:flex;flex-direction:column;gap:5px;margin-top:4px}
-/* Une habitude se PRESSE : elle est extrudée, même ici. */
-/* Un bloc plein, comme partout : le filet noir sépare, jamais une ombre. */
-.tp-row{display:flex;align-items:center;gap:8px;background:#333366;padding:6px 9px;
-  border:1px solid #000;color:#fff}
-.tp-row svg{width:11px;height:11px;fill:currentColor;flex-shrink:0;opacity:.85}
-.tp-t{flex:1;min-width:0;font-family:'Quantico',sans-serif;font-size:12px;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tp-u{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;
-  text-transform:uppercase;opacity:.62;white-space:nowrap}
-.tp-note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;
-  text-transform:uppercase;color:rgba(255,255,255,.6);margin-top:10px;min-height:12px}
-.tp-note.no{color:#ffb4b4}
-.tp-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
-.tp-btn{background:none;border:1px solid #fff;color:#fff;cursor:pointer;padding:6px 13px;
+.w-x:hover{color:#fff}
+
+/* ══ LES TROIS BLOCS DU TRIP ═════════════════════════════════════════
+   Ouvrir n'importe quelle boîte montre le TRIP ENTIER, dans ses trois
+   couleurs. L'ORDRE dépend de la vue d'où l'on vient : la pièce qu'on
+   touche passe en premier — c'est elle qu'on est venu voir.
+   Les mots disent le LIEN, pas la catégorie : la couleur dit déjà la
+   catégorie. WHY remonte, HOW descend, PROTECTS tient. */
+.blk{position:relative;border:1px solid #000;padding:9px 11px 10px;margin-bottom:7px}
+.blk-o{background:var(--blue)}
+.blk-h{background:var(--navy)}
+.blk-r{background:var(--rep)}
+.blk-l{display:block;font-family:'Space Mono',monospace;font-size:8px;
+  letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.62);
+  margin-bottom:5px}
+.blk-t{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
+  line-height:1.45;color:#fff;background:none;border:none;outline:none;
+  width:100%;display:block;padding:0 22px 0 0;resize:none;overflow:hidden;
+  text-align:left;caret-color:#fff;min-height:1.45em}
+.blk-t.go{cursor:pointer;transition:opacity .15s}
+.blk-t.go:hover{opacity:.78}
+.blk-x{position:absolute;top:6px;right:7px;background:none;border:none;
+  color:rgba(255,255,255,.45);font-size:16px;line-height:1;cursor:pointer;
+  padding:0 3px;transition:color .15s}
+.blk-x:hover{color:#fff}
+.blk-u{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:7px;
+  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(255,255,255,.72)}
+.blk-i{background:none;border:none;padding:0;cursor:pointer;font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+.blk .in{font-family:'Quantico',sans-serif;font-size:13px;color:#fff;
+  background:rgba(0,0,0,.3);border:1px solid #000;padding:5px 7px;outline:none;
+  transition:background .15s}
+.blk .in:focus{background:rgba(0,0,0,.5)}
+.blk .in::placeholder{color:rgba(255,255,255,.4)}
+.blk .in.date{color-scheme:dark}
+.blk .in.nw{width:100%;margin-bottom:6px}
+/* UNE HABITUDE EST NAVY PARTOUT, y compris dans le noir du Trip et dans
+   le bloc rouge-violet d'une répulsion. C'est la couleur du présent : elle
+   ne change pas parce qu'on la regarde depuis ailleurs. */
+.h-frame{background:var(--navy);border:1px solid #000;padding:2px 6px;
+  display:inline-block}
+.u-mini{font-family:'Quantico',sans-serif;font-size:11px;letter-spacing:0;
+  text-transform:none}
+.w-sec{margin-top:9px}
+.acts{display:flex;gap:8px;justify-content:flex-end;margin-top:13px;flex-wrap:wrap}
+.btn{background:none;border:1px solid #fff;color:#fff;cursor:pointer;padding:5px 12px;
   font-family:'Quantico',sans-serif;font-weight:700;font-size:12px;white-space:nowrap;
   transition:background .15s,color .15s}
-.tp-btn:hover{background:#fff;color:#000}
-.tp-btn.g{border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.55)}
-.tp-btn.g:hover{background:none;border-color:#fff;color:#fff}
+.btn:hover{background:#fff;color:#000}
+.btn.g{border-color:rgba(255,255,255,.28);color:rgba(255,255,255,.5)}
+.btn.g:hover{background:none;border-color:#fff;color:#fff}
+.dash{width:100%;background:none;border:1px dashed rgba(255,255,255,.28);
+  color:rgba(255,255,255,.6);cursor:pointer;padding:6px;margin-bottom:7px;
+  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;
+  text-transform:uppercase;transition:border-color .15s,color .15s}
+.dash:hover{border-color:#fff;color:#fff}
+.add-box{width:100%;background:none;border:none;color:#fff;cursor:pointer;
+  text-align:left;padding:0;font-family:'Quantico',sans-serif;font-size:14px}
+
+/* ══ LE LOOKUP — UNE RÉPULSION PROTÈGE PLUSIEURS HABITUDES ═══════════
+   Comme un lookup Airtable : on voit d'un coup d'œil ce que « la
+   procrastination » menace, et on l'attache ou la détache d'un doigt.
+   On ne réécrit jamais ce qui est déjà là. */
+.lk{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-top:8px}
+.lk-on{font-family:'Quantico',sans-serif;font-size:11px;color:#fff;
+  background:var(--navy);border:1px solid #000;padding:2px 6px}
+.lk-add{background:none;border:1px dashed rgba(255,255,255,.32);
+  color:rgba(255,255,255,.7);cursor:pointer;padding:2px 7px;
+  font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.16em;
+  text-transform:uppercase;transition:border-color .15s,color .15s}
+.lk-add:hover{border-color:#fff;color:#fff}
+.lk-pick{display:flex;flex-direction:column;gap:4px;margin-top:7px;
+  max-height:190px;overflow:auto}
+.lk-o{text-align:left;background:rgba(0,0,0,.32);border:1px solid #000;color:#fff;
+  cursor:pointer;padding:5px 8px;font-family:'Quantico',sans-serif;font-size:12px;
+  transition:background .15s}
+.lk-o:hover{background:rgba(0,0,0,.55)}
+.lk-o.on{background:var(--navy)}
+
+/* ══ LE DÉROULANT ════════════════════════════════════════════════════
+   Un menu maison et pas un <select> natif : sur mobile il doit s'ouvrir
+   en FENÊTRE CENTRÉE plein écran, ce qu'un <select> ne sait pas faire —
+   et un menu de 33 rythmes dans une liste native est illisible au pouce. */
+.selw{position:relative;display:inline-block}
+.selb{background:rgba(0,0,0,.3);border:1px solid #000;color:#fff;cursor:pointer;
+  padding:3px 8px;font-family:'Space Mono',monospace;font-size:9px;
+  letter-spacing:.14em;text-transform:uppercase;transition:background .15s}
+.selb:hover{background:rgba(0,0,0,.55)}
+.selp{display:none}
+.selp.on{display:block;position:absolute;z-index:60;top:calc(100% + 3px);left:0;
+  min-width:190px;max-height:230px;overflow:auto;background:#000;
+  border:1px solid var(--skin)}
+.selp-in{display:flex;flex-direction:column}
+.selo{text-align:left;background:none;border:none;color:#fff;cursor:pointer;
+  padding:6px 10px;font-family:'Quantico',sans-serif;font-size:12px;
+  transition:background .15s}
+.selo:hover{background:rgba(255,255,255,.1)}
+.selo.on{background:var(--navy)}
+/* Sur mobile le déroulant devient une FENÊTRE CENTRÉE plein écran : un
+   menu ancré sous son bouton finit sous le clavier ou hors du carré. */
+@media(max-width:700px){
+  .selp.on{position:fixed;inset:0;top:0;left:0;min-width:0;max-height:none;
+    border:none;background:rgba(0,0,0,.92);z-index:120;
+    display:flex;align-items:center;justify-content:center;padding:22px}
+  .selp.on .selp-in{width:100%;max-width:340px;max-height:74vh;overflow:auto;
+    background:#000;border:1px solid var(--skin)}
+  .selo{padding:11px 14px;font-size:14px}
+}
+
+/* ══ LE CHOIX D'INTENTION — MINIMAL, EN FONDU ════════════════════════
+   Pas de surlignage : la tuile prend un FONDU de sa couleur, et le mot
+   reste lisible. Choisie, elle se remplit. Le pilier dit à quoi
+   l'intention sert dans une vie — c'est le cadre mental du produit. */
+.ints{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:5px}
+.int{background:linear-gradient(180deg,color-mix(in srgb,var(--ic) 26%,transparent),transparent);
+  border:none;color:#fff;cursor:pointer;padding:7px 6px;text-align:center;
+  transition:background .18s ease}
+.int:hover{background:linear-gradient(180deg,color-mix(in srgb,var(--ic) 46%,transparent),transparent)}
+.int.on{background:var(--ic)}
+.int-n{display:block;font-family:'Quantico',sans-serif;font-weight:700;font-size:12px}
+.int-p{display:block;font-family:'Space Mono',monospace;font-size:7px;
+  letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-top:2px}
+.int.on .int-p{color:rgba(0,0,0,.55)}
+
+/* ══ LE MODE IMPORTANCE ══════════════════════════════════════════════
+   L'ordre n'est pas cosmétique : c'est celui que le bot suivra, et celui
+   qui départage la carte à classement égal. Un seul chemin pour le doigt
+   et la souris — Pointer Events. `touch-action:none` est OBLIGATOIRE :
+   sans lui le navigateur avale le glissement vertical et le classement se
+   perd une fois sur deux. */
+/* EN HAUT À GAUCHE, en miroir de la croix de repli. À droite il touchait
+   la croix : deux cibles de 30 px à 20 px l'une de l'autre, c'est un clic
+   sur deux qui referme le Totehm au lieu de classer. */
+#ordbtn{position:absolute;top:30px;left:calc(var(--pad) + 2px);z-index:44;
+  background:none;border:none;cursor:pointer;padding:4px;display:flex;
+  flex-direction:column;gap:3px;-webkit-tap-highlight-color:transparent}
+#ordbtn span{display:block;height:2px;background:rgba(255,255,255,.45);
+  transition:background .15s,width .15s}
+#ordbtn .ob-1{width:16px}#ordbtn .ob-2{width:11px}#ordbtn .ob-3{width:7px}
+#ordbtn:hover span{background:#fff}
+body.ordering #ordbtn span{background:#fff}
+/* LA BARRE EST DANS LE FLUX, au-dessus de la première ligne. Posée en
+   absolu elle traversait le T : le carré n'a pas de place libre en haut,
+   et une bande de texte qui coupe le logo, c'est le logo qu'on abîme. */
+.ordbar{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(255,255,255,.72);
+  padding:0 0 10px;margin-left:calc(var(--rl) + var(--rw) + 16px)}
+body.ordering .habit{touch-action:none;cursor:grab}
+body.ordering .habit .h-body{opacity:.92}
+.habit.drag{opacity:.4}
+.habit.over .h-body{outline:1px solid #fff;outline-offset:2px}
+.rank{position:absolute;left:calc(var(--rl) - 20px);top:50%;transform:translateY(-50%);
+  font-family:'Space Mono',monospace;font-size:10px;color:rgba(255,255,255,.8);
+  font-variant-numeric:tabular-nums}
+.void{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(255,255,255,.45);padding:24px 0;text-align:center}
 
 #freq-panel,#habit-peek,#filter-modal{position:fixed;inset:0;z-index:90;
   background:rgba(0,0,0,.82);display:flex;align-items:flex-start;
@@ -991,6 +1141,18 @@ body.gate.entered #filter-badge{
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -1004,14 +1166,23 @@ body.gate.entered #filter-badge{
 #fv-status:hover,
 .habit .h-x:hover,
 .v-sub:hover,
+.v-pil:hover,
+.v-frq:hover,
 .v-empty:hover,
 .h-text:hover::placeholder,
 .h-hint:hover,
-.tp-x:hover,
-.tp-lbl:hover,
-.tp-in:hover::placeholder,
-.tp-note:hover,
-.tp-btn.g:hover,
+.w-x:hover,
+.blk-l:hover,
+.blk-x:hover,
+.blk-u:hover,
+.blk .in:hover::placeholder,
+.btn.g:hover,
+.dash:hover,
+.lk-add:hover,
+.int-p:hover,
+.ordbar:hover,
+.rank:hover,
+.void:hover,
 #filter-badge #fb-clear:hover,
 .hp-lbl:hover,
 .hp-placeholder:hover,
@@ -1120,8 +1291,14 @@ body.gate.entered #filter-badge{
   <svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
 </button>
 
+<!-- LE MODE IMPORTANCE. Trois traits dégressifs : c'est un classement,
+     pas un menu. Il vit DANS #stage — donc dans le carré sur desktop. -->
+<button id="ordbtn" class="sink-el" type="button" aria-label="Order by importance">
+  <span class="ob-1"></span><span class="ob-2"></span><span class="ob-3"></span>
+</button>
+
 <div id="bigT" class="sink-el"><svg id="ui-t" viewBox="79.832 47.921 66.789 66.932" role="img" aria-label="T"><defs><clipPath id="tut_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tut_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tut_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tut_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tut_ffb4264ddd)"><g clip-path="url(#tut_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tut_0eae0d8cca)"><g clip-path="url(#tut_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tut_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tut_92fddf9f0e)"><g clip-path="url(#tut_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tut_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tut_7d4c700d36)"><g clip-path="url(#tut_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></svg></div>
-<div id="wordmark" class="sink-el"><svg id="ui-wm" viewBox="74.997 121.602 77.584 46.683" role="img" aria-label="TOTEHM"><defs><g/><clipPath id="tuw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tuw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg></div>
+<div id="wordmark" class="sink-el"><svg id="ui-wm" viewBox="74.997 121.602 77.584 46.683" role="img" aria-label="TOTEHM"><defs><g/><clipPath id="tuw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g id="wm-O" transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tuw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g id="wm-H" transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg></div>
 
 <button id="menu-arrow" class="sink-el" aria-label="Open menu">
   <svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2 L12 11 L22 2"/></svg>
@@ -1707,7 +1884,13 @@ async function cloudLoad(){
      Même piège que `totehms.bot` le 03/09 : un snapshot qui écrase tout
      doit transporter tout ce qu'il écrase. */
   data.forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;habits.push({t:s.t,f:FREQ_BY_ID[s.f]?s.f:null,i:INT_BY_ID[s.i]?s.i:null,o:s.o||null});}});});
+  /* L'ORDRE DU MEMBRE EST UNE DONNÉE. `state` est reconstruit de zéro
+     ici : sans ce report, l'ordre choisi à la main était oublié au
+     premier chargement depuis le nuage. L'ordre lui-même voyage dans
+     `steps` — c'est l'ordre du tableau ; seul le DRAPEAU se perdait. */
+  const ordonne = !!(state && state.ord);
   state={habits, vis:data.some(r=>r.totehm_visibility==='members')?'members':'private'};
+  if(ordonne)state.ord=true;
   if(data[0].bot!=null)profile.bot=!!data[0].bot;
   try{localStorage.setItem(KEY,JSON.stringify(state));localStorage.setItem(KEYP,JSON.stringify(profile));}catch(e){}
 }
@@ -1764,7 +1947,12 @@ const INTS=[
   {id:'celebrate',name:'Celebrate',color:'#7F77DD', def:'Elevate energy through collective effervescence.',pillar:'SOUL'}
 ];
 const INT_BY_ID={};INTS.forEach(x=>INT_BY_ID[x.id]=x);
-const intColor=i=>(INT_BY_ID[i]||{}).color||'#fff';
+const intColor =i=>(INT_BY_ID[i]||{}).color||'#fff';
+/* Le nom et le PILIER d'une intention. Le pilier n'est pas décoratif :
+   c'est le cadre mental du produit — BODY, MENTAL, SOUL, SPIRIT — et il
+   dit à quoi une habitude sert dans une vie, pas seulement ce qu'elle est. */
+const intName  =i=>(INT_BY_ID[i]||{}).name||'';
+const intPillar=i=>(INT_BY_ID[i]||{}).pillar||'';
 
 /* ══ RENDER ══ */
 const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;};
@@ -1773,85 +1961,12 @@ const T_SVG='<svg class="tglyph" viewBox="0 0 624 636" aria-hidden="true"><path 
 const fw2=f=>f?fw(f):1e12;
 function sortHabits(){state.habits.sort((a,b)=>fw2(a.f)-fw2(b.f));}
 
-function renderHabits(){
-  sortHabits();
-  const box=$('habits');let h='';
-  const list=state.habits.map((s,i)=>({s,i})).filter(({s})=>{
-    if(filterF && s.f!==filterF) return false;
-    if(filterI && s.i!==filterI) return false;
-    return true;
-  });
-  list.forEach(({s,i})=>{
-    h+='<div class="habit'+(s.f?' timed':'')+'">'
-      +'<button class="h-x" data-i="'+i+'" aria-label="remove">×</button>'
-      +'<span class="tick"></span>'
-      +'<span class="h-body"><span class="meta">'
-      +(s.f
-        ?'<button class="h-T h-Ti" data-i="'+i+'" title="Intention" style="color:'+(s.i?intColor(s.i):'#fff')+'">'+T_SVG+'</button><button class="gbtn h-freq" data-i="'+i+'">'+esc(flabel(s.f))+'</button>'
-        :'<button class="h-T" data-i="'+i+'" title="Time frequency">'+T_SVG+'</button>')
-      +'</span>'
-      +'<textarea class="h-text" rows="1" data-i="'+i+'"></textarea></span>'
-      +'</div>';
-  });
-  /* la ligne d'ajout : le T = Time frequency de la future Habit */
-  h+='<div class="habit add'+(pendingF?' timed':'')+'">'
-    +'<span class="tick"></span>'
-    +'<span class="h-body"><span class="meta">'
-    +(pendingF
-      ?'<button class="h-T h-Ti" id="h-Tp" title="Intention" style="color:'+(pendingI?intColor(pendingI):'#fff')+'">'+T_SVG+'</button><button class="gbtn h-freq" id="h-pf">'+esc(flabel(pendingF))+'</button>'
-      :'<button class="h-T blink" id="h-T" aria-label="Time frequency and intention" title="Time frequency">'+T_SVG+'</button>')
-    +'</span>'
-    +'<textarea class="h-add" rows="1" id="h-add"></textarea><span class="h-hint" id="h-hint">'
-    +(state.habits.length===0?'What is your main <span class="hh">H</span>abit':'add a <span class="hh">H</span>abit')
-    +'</span></span>'
-    +'</div>';
-  box.innerHTML=h;
-
-  const autoGrow=el=>{el.style.height='auto';el.style.height=el.scrollHeight+'px';};
-  box.querySelectorAll('.h-text').forEach(inp=>{
-    inp.value=state.habits[+inp.dataset.i].t||'';autoGrow(inp);
-    inp.addEventListener('input',()=>{autoGrow(inp);state.habits[+inp.dataset.i].t=inp.value.replace(/\n/g,' ');clearTimeout(saveTimer);saveTimer=setTimeout(save,700);});
-    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();inp.blur();}});
-  });
-  box.querySelectorAll('.h-freq[data-i]').forEach(b=>{b.onclick=()=>openFreqPanel(+b.dataset.i);});
-  box.querySelectorAll('.h-T[data-i]').forEach(b=>{
-    const i=+b.dataset.i;
-    /* T d'une habitude configurée -> fenêtre d'aperçu (freq + intention en un coup d'œil, chacun éditable).
-       T d'une habitude sans intention -> panneau d'édition direct au bon stage. */
-    b.onclick=()=>{
-      if(b.classList.contains('h-Ti') && state.habits[i] && state.habits[i].f && state.habits[i].i){
-        openHabitPeek(i);
-      } else {
-        openFreqPanel(i, b.classList.contains('h-Ti')?'int':'freq');
-      }
-    };
-  });
-  box.querySelectorAll('.h-x').forEach(b=>{b.onclick=()=>{const h=state.habits[+b.dataset.i];logTotehmEvent('habit_removed',h?h.t:null,{f:h?h.f:null,i:h?h.i:null});state.habits.splice(+b.dataset.i,1);save();renderHabits();};});
-  /* Le T blink de la ligne d'ajout ouvre désormais la fenêtre d'aperçu
-     "nouvelle habit" — deux rangs, deux Select, l'utilisateur définit
-     chaque valeur indépendamment. Le clavier mobile ne cache plus rien
-     puisque tout est ancré en haut. */
-  const hT=$('h-T');if(hT)hT.onclick=()=>openNewHabitPeek();
-  /* Une fois une fréquence choisie mais pas d'intention : le T coloré
-     et le badge de fréquence restent. Clic sur l'un ou l'autre → même
-     peek, pré-rempli avec ce qu'on a déjà. */
-  const hTp=$('h-Tp');if(hTp)hTp.onclick=()=>openNewHabitPeek();
-  const pf=$('h-pf');if(pf)pf.onclick=()=>openNewHabitPeek();
-  const add=$('h-add'), hint=$('h-hint');
-  autoGrow(add);
-  add.addEventListener('input',()=>{
-    autoGrow(add);
-    hint.style.display=add.value?'none':'';
-  });
-  add.addEventListener('keydown',e=>{
-    if(e.key!=='Enter')return;e.preventDefault();
-    const v=add.value.replace(/\n/g,' ').trim();if(!v)return;
-    state.habits.push({t:v,f:pendingF||null,i:pendingI||null,o:pendingO||null});
-    logTotehmEvent('habit_added',v,{f:pendingF||null,i:pendingI||null});
-    pendingF=null;pendingI=null;save();renderHabits();
-    const na=$('h-add');if(na)na.focus();
-  });
-}
+/* `renderHabits()` GARDE SON NOM PARCE QUE QUINZE APPELANTS LE CONNAISSENT
+   — le filtre, le compte, la fréquence, la migration locale→nuage. Elle ne
+   dessine plus : elle appelle le moteur des trois vues, qui sait laquelle
+   est ouverte. Un seul rendu pour trois vues, sinon la liste et le détail
+   finissent par ne pas dire la même chose. */
+function renderHabits(){ return renderZone(); }
 
 /* ══ COMPTE ══
    Deux gestes distincts, et rien ne les confond : effacer le Totehm ne touche
@@ -2223,25 +2338,71 @@ window.addEventListener('DOMContentLoaded',()=>{
    problème n'est pas résolu : il n'existe plus. */
 /* « une zone est ouverte » = on n'est pas sur les habitudes. */
 function hOpen(){return view!=='habits';}
-/* ══ LES TROIS VUES ═══════════════════════════════════════════════════
+/* ══ LES TROIS VUES — UN SEUL MOTEUR · 06/09/2026 ═════════════════════
    `view` vaut 'habits' | 'objectives' | 'repulsions'.
+
    LE PAPIER NE CHANGE PAS : il est navy dans les trois vues. Ce sont les
    BOÎTES qui portent la couleur — navy, bleu clair, rouge-violet. Le
    Totehm ne se repeint pas, il se déplie : ce qui se déplie, ce sont ses
-   pièces, et une pièce a une couleur. */
+   pièces, et une pièce a une couleur.
+
+   OUVRIR UNE BOÎTE MONTRE LE TRIP ENTIER, dans ses trois couleurs, ordonné
+   par la vue d'où l'on vient : la pièce qu'on touche passe en premier,
+   c'est elle qu'on est venu voir. On ne change JAMAIS de vue en éditant.
+
+   IL N'Y A PLUS DE [Add a Trip]. Un seul bouton par vue, qui crée la pièce
+   de CETTE vue, vide, et ouvre le triplet dessus. Les deux autres pièces
+   sont OFFERTES — reprendre une existante (lookup) ou en écrire une neuve
+   — jamais imposées : une habitude sans objectif reste une habitude, et
+   forcer les trois empêcherait d'écrire. */
 let view='habits';
+/* L'ordre AFFICHÉ des trois carrés : c'est lui que suit le doigt et lui
+   que suivent les flèches. Une seule liste, sinon les deux divergent. */
+const VIEW_ORDER=['repulsions','habits','objectives'];
 let TRIPS=[], REPS=[], tripsLoaded=false;
 
+/* Ce qui est ouvert, et ce qui est en train d'être choisi. Six états
+   séparés, jamais deux à la fois : deux menus ouverts en même temps, c'est
+   un menu de trop. `editH`/`editR` survivent au rendu — c'est le panneau
+   qui se souvient de la pièce qu'on écrit. */
+let open=null, selOpen=null, intFor=null, lkFor=null,
+    editH=null, editR=null, pickFor=null, ordering=false;
+
+/* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
+   Une habitude vit dans `state.habits`, un tableau sans identifiant. On
+   lui en donne un À L'AFFICHAGE : il ne sert qu'à désigner la ligne qu'on
+   édite pendant cette session. Rien ne s'y rattache en base — une
+   répulsion pointe une habitude par son TEXTE, parce que `steps` est du
+   texte. C'est pour ça que renommer appelle `habit_rename_links`. */
+let HSEQ=0;
+function habIds(){ (state.habits||[]).forEach(x=>{ if(!x.id)x.id='h'+(++HSEQ); }); }
+const habOf  =id=>(state.habits||[]).find(x=>x.id===id)||null;
+const habByT =t =>(state.habits||[]).find(x=>x.t===t)||null;
+const tripOf =id=>TRIPS.find(t=>String(t.id)===String(id))||null;
+const repOf  =id=>REPS.find(r=>String(r.id)===String(id))||null;
+/* `hs` porte des TEXTES d'habitudes — c'est ce que rend le serveur. */
+const repsOfHab=id=>{const x=habOf(id);
+  return x?REPS.filter(r=>(r.hs||[]).includes(x.t)):[];};
+const habsOfRep=r=>(r.hs||[]).map(habByT).filter(Boolean);
+const habsOfTrip=t=>(state.habits||[]).filter(x=>String(x.o||'')===String(t.id));
+
+/* ── LE PAPIER, LES ONGLETS, LE LOGO ─────────────────────────────────
+   Le wordmark vit HORS de #stage : c'est <body> qui porte la vue pour lui.
+   Une seule expression pose toutes les classes du corps — `className=`
+   écrase TOUT, et le mode classement y perdait sa classe à chaque rendu. */
 function paintZone(){
   const st=$('stage'); if(!st)return;
-  /* Une seule classe de peau à la fois. `toggle` et pas `className=` :
-     #stage porte d'autres classes (z-set, le gate…) qu'on n'écrase pas. */
   st.classList.toggle('v-h',view==='habits');
   st.classList.toggle('v-o',view==='objectives');
   st.classList.toggle('v-r',view==='repulsions');
-  /* Trois onglets : celui de la vue courante est plein, les deux autres
-     sont là. On ne cache rien — c'est ce qui permet de sauter de la vue
-     objectifs à la vue répulsions sans repasser par les habitudes. */
+  /* L'état du logo suit le SUJET, pas la vue : un objectif s'écrit aussi
+     depuis la vue habitudes, et c'est encore un objectif. */
+  const oLive = view==='objectives' || (open&&open.kind==='t');
+  document.body.classList.toggle('v-habits',view==='habits');
+  document.body.classList.toggle('v-objectives',view==='objectives');
+  document.body.classList.toggle('v-repulsions',view==='repulsions');
+  document.body.classList.toggle('o-live',!!oLive);
+  document.body.classList.toggle('ordering',ordering);
   document.querySelectorAll('.vt').forEach(b=>{
     b.setAttribute('aria-selected', b.dataset.v===view ? 'true':'false');
   });
@@ -2251,31 +2412,23 @@ function paintZone(){
    la même session, la même mémoire. C'est tout l'intérêt de la fusion. */
 function setView(v){
   if(busy)return;
+  /* ON NE CHANGE JAMAIS DE VUE EN ÉDITANT. Une boîte ouverte est un
+     travail en cours : la vue qui bouge sous les doigts perd la saisie. */
+  if(open)return;
   /* Les objectifs et les répulsions sont des données du serveur : sans
      session il n'y a rien à montrer, et l'écran vide ne dirait pas
-     pourquoi. On ouvre la fenêtre membre, comme le faisait `showBook`. */
+     pourquoi. */
   if(v!=='habits'&&!me){
     $('member-window').classList.add('show');
     if(typeof memberPaint==='function')memberPaint();
     return;
   }
-  view=v;
-  paintZone();
-  renderView();
+  view=v; renderZone();
   if(v!=='habits')loadTrips();
 }
 function showBook(on){ setView(on?'repulsions':'habits'); if(on)save(); }
 function showNext(on){ setView(on?'objectives':'habits');  if(on)save(); }
-
-/* ── L'AIGUILLAGE ────────────────────────────────────────────────────
-   `renderHabits()` n'est PAS touchée : elle est appelée depuis une
-   quinzaine d'endroits et c'est le chemin qui marche. On aiguille
-   au-dessus. */
-function renderView(){
-  if(view==='objectives') return renderObjectives();
-  if(view==='repulsions') return renderRepulsions();
-  return renderHabits();
-}
+function renderView(){ return renderZone(); }
 
 /* L'arbre entier en UN appel : objectifs, leurs habitudes, les répulsions
    de chaque habitude. Chargé à la première ouverture d'une des deux vues,
@@ -2290,12 +2443,18 @@ async function loadTrips(force){
     if(error)throw error;
     if(!data||!data.signed_in)return;
     TRIPS=data.trips||[];
-    REPS=[];
+    /* UNE RÉPULSION, UNE LIGNE — même si elle protège quatre habitudes.
+       Le serveur la renvoie une fois par habitude protégée ; on déduplique
+       sur son id, et `habits` porte la liste complète. Sans ça, la vue
+       répulsions afficherait la même pensée quatre fois. */
+    const vu={}; REPS=[];
     (TRIPS.concat([{habits:data.loose||[]}])).forEach(t=>
-      (t.habits||[]).forEach(h=>(h.repulsions||[]).forEach(r=>
-        REPS.push({id:r.id,text:r.repulsion,habit:h.t,freq:h.f}))));
+      (t.habits||[]).forEach(h=>(h.repulsions||[]).forEach(r=>{
+        if(vu[r.id])return; vu[r.id]=1;
+        REPS.push({id:r.id, text:r.repulsion, obstacle:r.obstacle||'',
+                   hs:Array.isArray(r.habits)&&r.habits.length?r.habits.slice():[h.t]});})));
     tripsLoaded=true;
-    renderView();
+    renderZone();
   }catch(e){
     console.error('[totehm] my_trips:',e&&e.message||e);
   }
@@ -2303,7 +2462,7 @@ async function loadTrips(force){
 
 /* `days_left` vient du SERVEUR : un client qui compare des dates compare
    aussi son horloge, et celle d'un téléphone ment plus souvent qu'on ne
-   croit. */
+   croit. `fmtDue` ne calcule rien, elle met en mots. */
 function fmtDue(d){
   if(d==null)return 'no deadline';
   if(d<0)  return Math.abs(d)+' day'+(Math.abs(d)===1?'':'s')+' overdue';
@@ -2313,169 +2472,548 @@ function fmtDue(d){
   const m=Math.round(d/30);
   return m+' month'+(m===1?'':'s')+' left';
 }
+/* Le <input type="date"> veut AAAA-MM-JJ, le serveur rend un timestamp. */
+const dateIn=t=>t?String(t).slice(0,10):'';
 
-const WAVE_SVG='<svg class="v-wave" viewBox="0 0 24 12" aria-hidden="true"><path d="M1 6 Q6 -1 12 6 T23 6"/></svg>';
-/* LE O DE L'OBJECTIF EST CELUI DU WORDMARK. Extrait du TOTEHM.svg servi,
-   pas redessiné, pas une webfont : c'est la lettre de la marque, en plus
-   petit. Une lettre de marque ne s'imite pas, elle se reprend. */
-const O_SVG='<svg class="oglyph" viewBox="1.156 -15.656 16.297 15.797" aria-hidden="true">'
-  +'<path fill="currentColor" d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></svg>';
+/* ══ LES ÉCRITURES ═══════════════════════════════════════════════════
+   Optimistes : on pose la valeur en mémoire, on dessine, et on envoie.
+   Recharger l'arbre à chaque frappe fermerait le panneau sous les doigts.
+   L'arbre est rafraîchi À LA FERMETURE, une fois, et pas avant. */
+let wDirty=false, wTimer=null;
+function apres(p){ /* une erreur de RPC se journalise, toujours */
+  return Promise.resolve(p).then(({error}={})=>{ if(error)console.error('[totehm] rpc:',error.message); })
+    .catch(e=>console.error('[totehm] rpc:',e&&e.message||e)); }
+function differe(fn){ clearTimeout(wTimer); wTimer=setTimeout(fn,700); }
 
-/* ── LA VUE OBJECTIFS — même ligne, unité = la DEADLINE ──────────────
-   `tripOpen` porte l'index de la boîte ouverte, ou -1 pour [Add a Trip],
-   ou null si tout est fermé. Il n'y a pas de fenêtre : la boîte de la
-   ligne s'agrandit à sa place et porte ses champs. */
-let tripOpen=null;
-function renderObjectives(){
-  const box=$('habits'); let h='';
-  TRIPS.forEach((t,k)=>{
-    if(tripOpen===k){h+=tripLine(k);return;}
-    const n=(t.habits||[]).length, late=t.days_left!=null&&t.days_left<0;
-    h+='<div class="habit obj timed">'
-      +'<span class="tick"></span>'
-      +'<span class="h-body"><span class="meta"><button class="h-T" data-obj="'+k+'" title="Deadline">'+T_SVG+'</button></span>'
-      +'<span class="v-col">'
-        +'<span class="v-name">'+esc(t.text)+'</span>'
-        +'<span class="v-sub'+(late?' late':'')+'">'+esc(fmtDue(t.days_left))
-        +' · '+n+' habit'+(n===1?'':'s')+'</span>'
-      +'</span></span></div>';
-  });
-  if(!TRIPS.length&&tripOpen!==-1)h+='<div class="v-empty">'
-    +(tripsLoaded?'aucun objectif — pose ton premier trip':'chargement…')+'</div>';
-  h+= tripOpen===-1 ? tripLine(-1)
-    : '<div class="habit add obj">'
-      +'<span class="tick"></span>'
-      +'<span class="h-body"><span class="meta"><button class="h-T blink" id="h-addobj" title="Add a Trip">'+T_SVG+'</button></span>'
-      +'<span class="v-name" style="color:rgba(255,255,255,.55)">'
-      +'What’s your <span class="o-mark">'+O_SVG+'</span>bjective ?</span></span></div>';
-  box.innerHTML=h;
-  box.querySelectorAll('[data-obj]').forEach(b=>b.onclick=()=>openTripPeek(+b.dataset.obj));
-  const a=$('h-addobj'); if(a)a.onclick=()=>openTripPeek(-1);
-  const open=box.querySelector('.habit.open');
-  if(open){wireTripCard(open, tripOpen);
-    /* MESURÉ : `scrollIntoView` ne bougeait le cadre que de 2 px. Il
-       cherche « l'ancêtre défilant le plus proche » et, dans un document
-       dont le corps ne défile pas, il ne trouve pas #fv-inner de façon
-       fiable. On lui dit lequel, et de combien : plus de devinette. */
-    requestAnimationFrame(()=>{
-      const sc=$('fv-inner'); if(!sc)return;
-      /* Affectation directe, pas `scrollTo({behavior:'smooth'})` : un
-         défilement doux est annulé quand le système demande moins
-         d'animation, et l'écran ne bougeait alors pas du tout. */
-      sc.scrollTop=sc.scrollTop
-        +open.getBoundingClientRect().top-sc.getBoundingClientRect().top-6;});}
+/* ══ LA LIGNE FERMÉE ═════════════════════════════════════════════════
+   AUCUNE ICÔNE DANS UNE BOÎTE. Une boîte porte du TEXTE. Ce qui la
+   qualifie, c'est sa COULEUR (la vue) et sa LIGNE D'UNITÉ.
+   Le tiret du rail prend la couleur de l'intention : le rail est une
+   pièce du logo, et il devient le spectre d'une vie, lisible avant même
+   d'avoir lu une ligne. Sans intention il reste blanc — le blanc est
+   l'absence, pas une huitième couleur. */
+const ligne=(inner,cls,col,rank,id)=>'<div class="habit timed '+(cls||'')+'"'
+  +(id?' data-row="'+esc(id)+'"':'')+'>'
+  +'<span class="tick"'+(col?' style="background:'+col+'"':'')+'></span>'
+  +(ordering&&rank?'<span class="rank">'+rank+'</span>':'')
+  +'<span class="h-body">'+inner+'</span></div>';
+const boite=(nom,sous,attr)=>'<span class="v-col" '+attr+' role="button" tabindex="0">'
+  +'<span class="v-name">'+nom+'</span><span class="v-sub">'+sous+'</span></span>';
+
+/* ══ LE PANNEAU — LE TRIP VU DEPUIS N'IMPORTE QUELLE BOÎTE ═══════════
+   Les mots disent le LIEN, pas la catégorie : la couleur dit déjà la
+   catégorie. WHY remonte, HOW descend, PROTECTS tient. */
+const LBL={
+  o:{h:'why',            t:'objective',      r:'why'},
+  h:{h:'habit',          t:'how',            r:'it protects'},
+  r:{h:'protected by',   t:'protected by',   r:'repulsion'}};
+/* La pièce de la vue passe EN PREMIER : c'est elle qu'on est venu voir. */
+const ORDRE={h:['h','o','r'], t:['o','h','r'], r:['r','h','o']};
+
+/* UN SEUL COMPOSANT DE CHOIX, partout. `key` identifie le déroulant
+   ouvert ; deux menus ouverts en même temps, c'est un menu de trop. */
+/* MESURÉ : le bouton affichait `every_minute` — l'IDENTIFIANT, pas le
+   libellé. La valeur qui COMPARE et le texte qui S'AFFICHE ne sont pas la
+   même chose : `val` sert au `.on`, `aff` se lit. */
+const pick=(key,val,opts,aff)=>
+  '<span class="selw"><button type="button" class="selb" data-sel="'+esc(key)+'">'
+  +esc(aff||'—')+'</button>'
+  +'<span class="selp'+(selOpen===key?' on':'')+'"><span class="selp-in">'
+  +opts.map(o=>'<button type="button" class="selo'+(o.v===val?' on':'')
+    +'" data-selv="'+esc(o.v)+'" data-selk="'+esc(key)+'">'+esc(o.l)+'</button>').join('')
+  +'</span></span></span>';
+const freqOpts=()=>FREQS.map(f=>({v:f.id,l:f.label}));
+
+/* LE CHOIX D'INTENTION : le NOM et le PILIER, pas un pictogramme. Une
+   intention n'est pas une icône, c'est un mot — et son pilier dit à quoi
+   elle sert dans une vie. Pas de surlignage : la tuile prend un FONDU de
+   sa couleur, et se remplit quand elle est choisie. */
+const intGrid=(sel,hid)=>'<div class="ints">'+INTS.map(x=>
+  '<button type="button" class="int'+(sel===x.id?' on':'')+'" data-i="'+x.id+'" data-ih="'+esc(hid)+'"'
+  +' aria-pressed="'+(sel===x.id)+'" style="--ic:'+x.color+'">'
+  +'<span class="int-n">'+esc(x.name)+'</span><span class="int-p">'+esc(x.pillar)+'</span></button>')
+  .join('')+'</div>';
+
+/* ── L'OBJECTIF ──────────────────────────────────────────────────── */
+const blkO=(t,edit,mode)=>'<div class="blk blk-o">'
+  +'<span class="blk-l">'+LBL.o[mode]+'</span>'
+  +(edit
+     ?'<textarea class="blk-t w-name" rows="1" data-tt="'+esc(t.id)+'">'+esc(t.text)+'</textarea>'
+     :'<button type="button" class="blk-t go" data-goto="t:'+esc(t.id)+'">'+esc(t.text||'untitled')+'</button>')
+  +'<div class="blk-u">'+(edit
+     ?'<input class="in date" type="date" data-td="'+esc(t.id)+'" value="'+esc(dateIn(t.target_at))+'">'
+     :'<span>'+esc(fmtDue(t.days_left))+'</span>')
+  +'<span>'+habsOfTrip(t).length+' habit'+(habsOfTrip(t).length===1?'':'s')+'</span></div>'
+  +'</div>';
+
+/* ── UNE HABITUDE ────────────────────────────────────────────────── */
+const blkH=(x,edit,mode)=>'<div class="blk blk-h">'
+  +'<span class="blk-l">'+LBL.h[mode]+'</span>'
+  +(edit
+     ?'<textarea class="blk-t w-name" rows="1" data-ht="'+esc(x.id)+'">'+esc(x.t)+'</textarea>'
+     :'<button type="button" class="blk-t go" data-goto="h:'+esc(x.id)+'">'+esc(x.t||'untitled')+'</button>')
+  +'<button type="button" class="blk-x" data-hx="'+esc(x.id)+'" aria-label="Remove">&times;</button>'
+  +'<div class="blk-u">'+pick('h:'+x.id, x.f, freqOpts(), x.f?flabel(x.f):'no rhythm')
+  +'<button type="button" class="blk-i" data-ip="'+esc(x.id)+'" style="color:'
+  +(x.i?intColor(x.i):'rgba(255,255,255,.62)')+'">'
+  +(x.i?esc(intName(x.i))+' · '+esc(intPillar(x.i)):'set intention')+'</button></div>'
+  +(intFor===x.id?'<div class="w-sec">'+intGrid(x.i,x.id)+'</div>':'')
+  +'</div>';
+
+/* ── UNE RÉPULSION ───────────────────────────────────────────────────
+   Elle porte EN PREVIEW les habitudes qu'elle protège, en navy. C'est le
+   lookup : on voit d'un coup d'œil ce que « la procrastination » menace,
+   et on l'attache ou la détache d'un doigt. */
+const blkR=(r,edit,mode)=>'<div class="blk blk-r">'
+  +'<span class="blk-l">'+LBL.r[mode]+'</span>'
+  +(edit
+     ?'<textarea class="blk-t w-name" rows="1" data-rt="'+esc(r.id)+'">'+esc(r.text)+'</textarea>'
+     :'<button type="button" class="blk-t go" data-goto="r:'+esc(r.id)+'">'+esc(r.text||'untitled')+'</button>')
+  +'<button type="button" class="blk-x" data-rx="'+esc(r.id)+'" aria-label="Remove">&times;</button>'
+  +'<div class="lk">'
+  +  habsOfRep(r).map(h=>'<span class="lk-on">'+esc(h.t||'untitled habit')+'</span>').join('')
+  +  '<button type="button" class="lk-add" data-lk="'+esc(r.id)+'">'
+  +  (lkFor===String(r.id)?'done':'+ link a habit')+'</button>'
+  +'</div>'
+  +(lkFor===String(r.id)?'<div class="lk-pick">'
+    +(state.habits||[]).map(h=>
+      '<button type="button" class="lk-o'+((r.hs||[]).includes(h.t)?' on':'')
+      +'" data-lkh="'+esc(r.id)+'|'+esc(h.id)+'">'+esc(h.t||'untitled habit')+'</button>').join('')
+    +'</div>':'')
+  +'</div>';
+
+/* UN BLOC VIDE N'EST PAS UN TROU : c'est une invitation à deux temps —
+   reprendre une pièce qui existe déjà, ou en écrire une nouvelle. C'est la
+   règle du lookup : on ne réécrit jamais ce qui est déjà là. */
+const blkVide=(key,mode,liste,ph)=>{
+  const cls={o:'blk-o',h:'blk-h',r:'blk-r'}[key], on=pickFor===key;
+  return '<div class="blk '+cls+'">'
+   +'<span class="blk-l">'+LBL[key][mode]+'</span>'
+   +'<div class="lk"><button type="button" class="lk-add" data-pk="'+key+'">'
+   +(on?'close':'+ pick or write')+'</button></div>'
+   +(on?'<div class="lk-pick">'
+      +'<input class="in nw" data-nw="'+key+'" placeholder="'+esc(ph)+'">'
+      +liste.map(o=>'<button type="button" class="lk-o" data-pick="'+key+'|'+esc(o.id)+'">'
+        +esc(o.txt||'untitled')+'</button>').join('')
+      +'</div>':'')
+   +'</div>';};
+
+function panneau(mode,t,hs,rs){
+  const bloc={
+    o: t ? blkO(t, mode==='t', mode)
+         : blkVide('o',mode,TRIPS.map(x=>({id:x.id,txt:x.text})),'a new objective'),
+    h: (hs.length?hs.map(x=>blkH(x, mode==='h'||x.id===editH, mode)).join('')
+                 :blkVide('h',mode,(state.habits||[]).map(x=>({id:x.id,txt:x.t})),'a new habit'))
+       +(mode!=='h'&&hs.length?'<button type="button" class="dash" data-ah="'+esc(t?t.id:'')+'">+ add a habit</button>':''),
+    r: (rs.length?rs.map(r=>blkR(r, mode==='r'||String(r.id)===editR, mode)).join('')
+                 :blkVide('r',mode,REPS.map(x=>({id:x.id,txt:x.text})),'a new repulsion'))
+       +(hs.length&&rs.length?'<button type="button" class="dash" data-ar="'+esc(hs[0].id)+'">+ add a repulsion</button>':'')};
+  return '<div class="w-top"><button type="button" class="w-x" data-x="1" aria-label="Close">&times;</button></div>'
+   + ORDRE[mode].map(k=>bloc[k]).join('')
+   + '<div class="acts">'
+   +   (mode==='h'?'<button type="button" class="btn g" data-kill="'+esc(open.id)+'">Delete habit</button>':'')
+   +   (mode==='t'?'<button type="button" class="btn g" data-tkill="'+esc(open.id)+'">Delete objective</button>':'')
+   +   (mode==='r'?'<button type="button" class="btn g" data-rkill="'+esc(open.id)+'">Delete repulsion</button>':'')
+   +   '<button type="button" class="btn" data-x="1">Done</button></div>';
 }
-/* La ligne OUVERTE : la même ligne, le même rail, la même couleur — la
-   boîte a simplement grandi. */
-function tripLine(k){
-  return '<div class="habit obj open"><span class="tick"></span>'
-    +'<span class="h-body">'+tripCardHTML(k)+'</span></div>';
+function panneauHTML(){
+  if(open.kind==='h'){const x=habOf(open.id); if(!x)return '';
+    return panneau('h', x.o?tripOf(x.o):null, [x], repsOfHab(x.id));}
+  if(open.kind==='t'){const t=tripOf(open.id); if(!t)return '';
+    const hs=habsOfTrip(t), vu={}, rs=[];
+    hs.forEach(h=>repsOfHab(h.id).forEach(r=>{if(!vu[r.id]){vu[r.id]=1;rs.push(r);}}));
+    return panneau('t', t, hs, rs);}
+  const r=repOf(open.id); if(!r)return '';
+  const hs=habsOfRep(r);
+  return panneau('r', hs[0]&&hs[0].o?tripOf(hs[0].o):null, hs, [r]);
 }
 
-/* ── LA VUE RÉPULSIONS — unité = l'HABITUDE protégée ───────────────── */
-/* ══ LA FENÊTRE D'UN OBJECTIF ════════════════════════════════════════
-   `k === -1` ouvre le wizard [Add a Trip] : l'objectif d'abord, la
-   deadline ensuite. Les habitudes se rattachent APRÈS, depuis la vue
-   habitudes — parce qu'une habitude s'écrit sur le rail, c'est le geste
-   du produit, et un wizard qui la recopie ailleurs crée un deuxième
-   endroit où elle existe.
-
-   ANCRÉE EN HAUT comme toutes les fenêtres : le clavier mobile mange le
-   tiers bas de l'écran, et une boîte centrée finit dessous. */
-function tripCardHTML(k){
-  const t = k>=0 ? TRIPS[k] : null;
-  const hs = t ? (t.habits||[]) : [];
-  const due = t ? fmtDue(t.days_left) : '';
-  return '<div class="tp-top">'
-    +  '<span class="tp-T">'+T_SVG+'</span>'
-    +  (t ? '<textarea class="tp-name" rows="1" id="tp-why">'+esc(t.text)+'</textarea>'
-         : '<p class="tp-ask">What’s your <span class="o-mark">'+O_SVG+'</span>bjective ?</p>')
-    +  '<button class="tp-x" id="tp-x" aria-label="Close">&times;</button>'
-    +'</div>'
-    +(t?'':'<div class="tp-box"><input class="tp-in" id="tp-new" placeholder="ce que tu veux devenir" autocomplete="off"></div>')
-    +'<div class="tp-sec"><span class="tp-lbl">Deadline — le time achievement</span>'
-    +  '<input class="tp-in" type="date" id="tp-due" value="'+esc(t&&t.target_at?String(t.target_at).slice(0,10):'')+'">'
-    +  (t?'<span class="tp-due">'+esc(due)+'</span>':'')
-    +'</div>'
-    +(t?'<div class="tp-sec"><span class="tp-lbl">Les habitudes qui y mènent</span><div class="tp-mini">'
-       +(hs.length?hs.map(x=>'<div class="tp-row">'+T_SVG+'<span class="tp-t">'+esc(x.t)+'</span>'
-           +'<span class="tp-u">'+esc(x.f||'no frequency')+'</span></div>').join('')
-         :'<div class="v-empty" style="padding:12px 0">aucune habitude ne sert cet objectif</div>')
-       +'</div></div>':'')
-    +'<div class="tp-note" id="tp-note"></div>'
-    +'<div class="tp-acts">'
-    +  (t?'<button class="tp-btn g" id="tp-close">Close the trip</button>':'')
-    +  '<button class="tp-btn" id="tp-ok">'+(t?'Done':'Create the trip')+'</button>'
-    +'</div>';
-}
-
-/* Ouvrir, c'est agrandir la boîte à sa place — pas ouvrir une fenêtre. */
-function openTripPeek(k){ tripOpen=k; renderObjectives(); }
-function closeTripPeek(){ tripOpen=null; renderObjectives(); }
-
-function wireTripCard(root,k){
-  const t = k>=0 ? TRIPS[k] : null;
-  const q = sel => root.querySelector(sel);
-  const note=q('#tp-note');
-  const say=(m,bad)=>{if(note){note.textContent=m||'';note.className='tp-note'+(bad?' no':'');}};
-  const grow=el=>{el.style.height='auto';el.style.height=el.scrollHeight+'px';};
-  const nameEl=q('#tp-why'); if(nameEl)grow(nameEl);
-  q('#tp-x').onclick=closeTripPeek;
-  const newEl=q('#tp-new');
-  /* Le focus automatique ouvre le clavier mobile par-dessus la boîte qu'on
-     vient d'agrandir : sur petit écran on laisse la personne toucher. */
-  if(newEl&&window.innerWidth>700)setTimeout(()=>newEl.focus(),40);
-
-  if(t){
-    let timer=null;
-    nameEl.addEventListener('input',()=>{grow(nameEl);clearTimeout(timer);
-      timer=setTimeout(async()=>{
-        const v=nameEl.value.trim(); if(!v)return;
-        const {error}=await sb.rpc('trip_rename',{p_trip:t.id,p_text:v});
-        if(error){console.error('[totehm] trip_rename:',error.message);say('not saved',1);return;}
-        t.text=v;say('saved');
-      },600);});
-    q('#tp-due').onchange=async e=>{
-      const {error}=await sb.rpc('trip_set_target',{p_trip:t.id,p_target:e.target.value||null});
-      if(error){console.error('[totehm] trip_set_target:',error.message);say('not saved',1);return;}
-      tripOpen=null;await loadTrips(true);
-    };
-    q('#tp-close').onclick=async()=>{
-      /* Fermer un trip ne supprime rien : les habitudes gardent leur lien,
-         et c'est cette histoire que l'autobiographiste lira. */
-      const {error}=await sb.rpc('trip_close',{p_trip:t.id,p_outcome:'done'});
-      if(error){console.error('[totehm] trip_close:',error.message);say('not closed',1);return;}
-      tripOpen=null;await loadTrips(true);
-    };
-    q('#tp-ok').onclick=closeTripPeek;
+/* ══ LE RENDU ════════════════════════════════════════════════════════
+   Un seul rendu pour les trois vues et pour la boîte ouverte : la liste et
+   le détail ne peuvent pas diverger s'ils sont dessinés ensemble. */
+function renderZone(){
+  habIds();
+  const box=$('habits'); if(!box)return;
+  const sc=$('fv-inner');
+  /* MESURÉ : le défilement dérivait de quelques pixels à chaque rendu. Sur
+     une longue liste, choisir une intention te déplaçait. On le garde et on
+     le repose — sauf quand on vient d'ouvrir, où on VEUT bouger. */
+  const keep = sc ? sc.scrollTop : null;
+  paintZone();
+  let h='';
+  if(view==='habits'){
+    /* L'ORDRE DU MEMBRE GAGNE. Tant qu'il n'a rien classé, les habitudes
+       coulent par rythme (les plus fréquentes en haut) ; dès qu'il en
+       déplace une, c'est SON ordre — et c'est celui que le bot suivra. */
+    if(!state.ord)sortHabits();
+    const list=(state.habits||[]).filter(x=>{
+      if(filterF && x.f!==filterF) return false;
+      if(filterI && x.i!==filterI) return false;
+      return true;});
+    h=list.map((x,k)=>{
+      if(open&&open.kind==='h'&&open.id===x.id)
+        return ligne('<span class="v-col open-in">'+panneauHTML()+'</span>','open',null,null,x.id);
+      const n=repsOfHab(x.id).length, t=x.o?tripOf(x.o):null;
+      /* PAS DE CADRE NAVY SUR UNE BOÎTE DÉJÀ NAVY. `.h-frame` existe pour
+         qu'une habitude reste navy quand elle est POSÉE AILLEURS — dans le
+         noir d'un Trip, dans le rouge-violet d'une répulsion. Ici la boîte
+         est la vue : le cadre ne faisait qu'un double filet. */
+      return ligne(boite(esc(x.t),
+        (x.i?'<span class="v-int" style="color:'+intColor(x.i)+'">'+esc(intName(x.i))+'</span>'
+             +'<span class="v-pil">'+esc(intPillar(x.i))+'</span>'
+            :'<span class="v-pil">set intention</span>')
+        +'<span class="v-frq">'+esc(x.f?flabel(x.f):'no rhythm')+'</span>'
+        +(n?'<span class="v-pil">'+n+' repulsion'+(n>1?'s':'')+'</span>':'')
+        /* « no objective » ne s'écrit QUE si on sait qu'il n'y en a pas.
+           Tant que l'arbre n'est pas chargé, une habitude rattachée n'a pas
+           encore son objectif en mémoire : l'annoncer libre serait faux, et
+           un écran qui ment une seconde est un écran auquel on ne croit
+           plus. On se tait, puis on dit. */
+        +(t?'<span class="v-pil">'+esc(t.text)+'</span>'
+           :(!x.o?'<span class="v-pil">no objective</span>':'')),
+        'data-h="'+esc(x.id)+'"'), '', x.i?intColor(x.i):null, k+1, x.id);}).join('');
+    if(!list.length)h+='<div class="void">'+(state.habits&&state.habits.length
+      ?'nothing matches this filter':'no habit yet')+'</div>';
+    h+=ligne('<button type="button" class="add-box" data-add="1">+ <b>Add a Habit</b></button>','add');
+  }else if(view==='objectives'){
+    h=TRIPS.map((t,k)=>{
+      if(open&&open.kind==='t'&&String(open.id)===String(t.id))
+        return ligne('<span class="v-col open-in">'+panneauHTML()+'</span>','open',null,null,t.id);
+      const n=habsOfTrip(t).length, late=t.days_left!=null&&t.days_left<0;
+      return ligne(boite(esc(t.text),
+        '<span class="v-frq'+(late?' late':'')+'">'+esc(fmtDue(t.days_left))+'</span>'
+        +'<span class="v-pil">'+n+' habit'+(n===1?'':'s')+'</span>',
+        'data-t="'+esc(t.id)+'"'), '', null, k+1, t.id);}).join('');
+    if(!TRIPS.length)h+='<div class="void">'+(tripsLoaded?'no objective yet':'loading…')+'</div>';
+    h+=ligne('<button type="button" class="add-box" data-add="1">+ <b>Add an Objective</b></button>','add');
   }else{
-    q('#tp-ok').onclick=async()=>{
-      const v=newEl.value.trim(); if(!v){newEl.focus();return;}
-      say('creating…');
-      const {error}=await sb.rpc('trip_create',
-        {p_text:v,p_target:q('#tp-due').value||null});
-      if(error){console.error('[totehm] trip_create:',error.message);say('could not create it',1);return;}
-      tripOpen=null;await loadTrips(true);
-    };
-    newEl.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();q('#tp-ok').click();}});
+    h=REPS.map((r,k)=>{
+      if(open&&open.kind==='r'&&String(open.id)===String(r.id))
+        return ligne('<span class="v-col open-in">'+panneauHTML()+'</span>','open',null,null,r.id);
+      const x=habsOfRep(r)[0];
+      return ligne(boite(esc(r.text),
+        '<span class="v-pil">protects</span>'
+        +'<span class="h-frame u-mini">'+esc(x?x.t:'—')+'</span>',
+        'data-r="'+esc(r.id)+'"'), '', x&&x.i?intColor(x.i):null, k+1, r.id);}).join('');
+    if(!REPS.length)h+='<div class="void">'+(tripsLoaded?'no repulsion yet':'loading…')+'</div>';
+    h+=ligne('<button type="button" class="add-box" data-add="1">+ <b>Add a Repulsion</b></button>','add');
+  }
+  /* La barre se pose ICI et pas dans `h` : chacune des trois branches
+     REMPLACE `h` (`h=...`), donc un préfixe posé avant serait écrasé. Le
+     genre de bug qui ne se voit qu'à l'écran — et qui s'est vu. */
+  box.innerHTML=(ordering
+    ? '<div class="ordbar">order by importance — the bot follows this order</div>' : '')+h;
+  if(keep!=null&&sc)sc.scrollTop=keep;
+  const carte=box.querySelector('.habit.open');
+  if(carte)cable(carte);
+  /* ══ LE DIAGNOSTIC ══ Tout écran qui peut être vide porte le sien. Un
+     écran vide SANS diagnostic, c'est trois allers-retours au lieu d'un :
+     on ne sait pas si le membre n'a rien posé, si la session est tombée,
+     ou si la RPC casse. Des compteurs et des booléens, JAMAIS une valeur
+     de clé ni un texte du membre. C'est le bloc à coller dans la console.
+     Même contrat que `window.__totehm_map` et `window.__totehm_self`. */
+  window.__totehm_zone={vue:view, session:!!me, arbre_charge:tripsLoaded,
+    habitudes:(state.habits||[]).length, objectifs:TRIPS.length, repulsions:REPS.length,
+    filtre:{rythme:!!filterF, intention:!!filterI},
+    boite_ouverte:open?open.kind:null, classement:ordering, ordre_du_membre:!!state.ord};
+  box.querySelectorAll('[data-h],[data-t],[data-r],[data-add]').forEach(el=>{
+    const go=()=>{
+      /* En mode classement, un appui DÉPLACE — il n'ouvre pas. */
+      if(ordering)return;
+      if(el.dataset.add)creerDansLaVue();
+      else if(el.dataset.h)ouvrir('h',el.dataset.h);
+      else if(el.dataset.t)ouvrir('t',el.dataset.t);
+      else ouvrir('r',el.dataset.r);};
+    el.addEventListener('click',go);
+    el.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}});
+  });
+}
+
+/* Ouvrir, c'est agrandir la boîte À SA PLACE : on reste dans le Totehm,
+   rien ne recouvre le logo. */
+function ouvrir(kind,id){
+  open={kind,id:String(id)}; selOpen=null; intFor=null; lkFor=null; pickFor=null;
+  editH = kind==='h'?String(id):null; editR = kind==='r'?String(id):null;
+  renderZone();
+  const b=$('habits').querySelector('.habit.open');
+  if(b){
+    /* MESURÉ : `scrollIntoView` ne bougeait le cadre que de 2 px. Il cherche
+       « l'ancêtre défilant le plus proche » et, dans un document dont le
+       corps ne défile pas, il ne trouve pas #fv-inner de façon fiable. On
+       lui dit lequel, et de combien : plus de devinette. Affectation
+       directe, pas `behavior:'smooth'` — un défilement doux est annulé
+       quand le système demande moins d'animation. */
+    requestAnimationFrame(()=>{const sc=$('fv-inner'); if(!sc)return;
+      sc.scrollTop=sc.scrollTop+b.getBoundingClientRect().top-sc.getBoundingClientRect().top-6;});
+    const f=b.querySelector('textarea.w-name');
+    if(f&&window.innerWidth>700)f.focus();
   }
 }
-
-function renderRepulsions(){
-  const box=$('habits'); let h='';
-  REPS.forEach(r=>{
-    h+='<div class="habit timed">'
-      +'<span class="tick"></span>'
-      +'<span class="h-body"><span class="meta"><span class="h-T">'+WAVE_SVG+'</span></span>'
-      +'<span class="v-col">'
-        +'<span class="v-name">'+esc(r.text)+'</span>'
-        +'<span class="v-sub">protège — '+esc(r.habit)+'</span>'
-      +'</span></span></div>';
-  });
-  if(!REPS.length)box.innerHTML='<div class="v-empty">'
-    +(tripsLoaded?'aucune répulsion — pose-en une depuis une habitude':'chargement…')+'</div>';
-  else box.innerHTML=h;
+function fermer(){
+  open=null;selOpen=null;intFor=null;lkFor=null;pickFor=null;editH=null;editR=null;
+  renderZone();
+  /* L'arbre se recharge ICI, une fois : pendant l'édition il fermerait le
+     panneau sous les doigts, et après il remet la vérité du serveur. */
+  if(wDirty){wDirty=false;loadTrips(true);}
 }
+
+/* ══ CRÉER — UN SEUL BOUTON PAR VUE ══════════════════════════════════
+   Il crée la pièce de SA vue, vide, et ouvre le triplet dessus. La fenêtre
+   qui sert à modifier est celle qui sert à créer : un deuxième chemin de
+   création finirait par diverger. */
+async function creerDansLaVue(){
+  if(view==='habits'){
+    const x={id:'h'+(++HSEQ), t:'', f:pendingF||null, i:pendingI||null, o:null};
+    state.habits.unshift(x); state.ord=true; save(); ouvrir('h',x.id); return;
+  }
+  if(!me){$('member-window').classList.add('show');
+          if(typeof memberPaint==='function')memberPaint();return;}
+  if(view==='objectives'){
+    const {data,error}=await sb.rpc('trip_create',{p_text:'',p_target:null});
+    if(error){console.error('[totehm] trip_create:',error.message);return;}
+    TRIPS.unshift({id:data,text:'',target_at:null,days_left:null,habits:[]});
+    ouvrir('t',data); return;
+  }
+  /* Une répulsion se rattache à une habitude : le serveur la classe par
+     `habit_text`. Sans habitude, il n'y a rien à protéger — on le dit. */
+  const h0=(state.habits||[])[0];
+  if(!h0||!h0.t){alert('write a habit first — a repulsion protects something');return;}
+  const {data,error}=await sb.rpc('repulsion_set',{p_habit:h0.t,p_repulsion:'',p_obstacle:''});
+  if(error){console.error('[totehm] repulsion_set:',error.message);return;}
+  REPS.unshift({id:data,text:'',obstacle:'',hs:[h0.t]});
+  ouvrir('r',String(data));
+}
+
+/* ══ LE CÂBLAGE DE LA BOÎTE OUVERTE ══════════════════════════════════ */
+function grow(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}
+function cable(carte){
+  const on=(sel,ev,fn)=>carte.querySelectorAll(sel).forEach(el=>el.addEventListener(ev,fn));
+  const stop=fn=>e=>{e.stopPropagation();fn(e);};
+  /* MESURÉ : `.w-name` retombait à zéro. `grow()` lisait `scrollHeight`
+     pendant que la boîte n'était pas encore affichée. On mesure APRÈS. */
+  carte.querySelectorAll('textarea.w-name').forEach(grow);
+
+  /* ── LE DÉROULANT ─────────────────────────────────────────────────── */
+  on('[data-sel]','click',stop(e=>{
+    const k=e.currentTarget.dataset.sel; selOpen=(selOpen===k?null:k); renderZone();}));
+  on('[data-selv]','click',stop(e=>{
+    const k=e.currentTarget.dataset.selk, v=e.currentTarget.dataset.selv;
+    selOpen=null;
+    if(k.indexOf('h:')===0){const x=habOf(k.slice(2)); if(x){x.f=v;save();}}
+    renderZone();}));
+
+  /* ── FERMER ───────────────────────────────────────────────────────── */
+  on('[data-x]','click',stop(()=>fermer()));
+
+  /* ── ÉDITER UNE AUTRE PIÈCE, SANS CHANGER DE VUE ──────────────────── */
+  on('[data-goto]','click',stop(e=>{
+    const d=e.currentTarget.dataset.goto, k=d.slice(0,1), id=d.slice(2);
+    if(k==='h')editH=id; else if(k==='r')editR=id;
+    intFor=null;lkFor=null;renderZone();}));
+
+  /* ── LA SAISIE ────────────────────────────────────────────────────── */
+  on('[data-tt]','input',e=>{
+    const t=tripOf(e.target.dataset.tt); if(!t)return;
+    t.text=e.target.value; grow(e.target); wDirty=true;
+    differe(()=>apres(sb.rpc('trip_rename',{p_trip:t.id,p_text:t.text})));});
+  on('[data-td]','change',e=>{
+    const t=tripOf(e.target.dataset.td); if(!t)return;
+    const v=e.target.value;
+    t.target_at=v?v+'T00:00:00Z':null; wDirty=true;
+    apres(sb.rpc('trip_set_target',{p_trip:t.id,p_target:t.target_at}));});
+  on('[data-ht]','input',e=>{
+    const x=habOf(e.target.dataset.ht); if(!x)return;
+    const ancien=x.t; x.t=e.target.value; grow(e.target);
+    differe(()=>{
+      save();
+      /* Renommer une habitude ne doit pas orpheliner ce qui la protège :
+         le lien est du TEXTE, il se répare côté serveur, en un appel. */
+      if(me&&ancien&&ancien!==x.t){
+        REPS.forEach(r=>{const i=(r.hs||[]).indexOf(ancien); if(i>=0)r.hs[i]=x.t;});
+        apres(sb.rpc('habit_rename_links',{p_old:ancien,p_new:x.t}));}
+    });});
+  on('[data-rt]','input',e=>{
+    const r=repOf(e.target.dataset.rt); if(!r)return;
+    r.text=e.target.value; grow(e.target); wDirty=true;
+    differe(()=>apres(sb.rpc('repulsion_set',
+      {p_habit:(r.hs||[])[0]||'', p_repulsion:r.text, p_obstacle:r.obstacle||''})));});
+
+  /* ── L'INTENTION, sur l'habitude qu'on touche ─────────────────────── */
+  on('[data-ip]','click',stop(e=>{
+    const id=e.currentTarget.dataset.ip;
+    intFor=(intFor===id?null:id); lkFor=null; renderZone();}));
+  on('[data-i]','click',stop(e=>{
+    const x=habOf(e.currentTarget.dataset.ih); if(!x)return;
+    const v=e.currentTarget.dataset.i;
+    x.i=(x.i===v?null:v); intFor=null; save(); renderZone();}));
+
+  /* ── LE LOOKUP : une répulsion protège PLUSIEURS habitudes ────────── */
+  on('[data-lk]','click',stop(e=>{
+    const id=String(e.currentTarget.dataset.lk);
+    lkFor=(lkFor===id?null:id); intFor=null; renderZone();}));
+  on('[data-lkh]','click',stop(e=>{
+    const p=e.currentTarget.dataset.lkh.split('|');
+    const r=repOf(p[0]), x=habOf(p[1]); if(!r||!x||!x.t)return;
+    const i=(r.hs||[]).indexOf(x.t);
+    if(i<0){r.hs.push(x.t); apres(sb.rpc('repulsion_link',{p_id:r.id,p_habit:x.t}));}
+    else   {r.hs.splice(i,1); apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:x.t}));}
+    wDirty=true; renderZone();}));
+
+  /* ── LE LOOKUP D'UN BLOC VIDE — reprendre, ou écrire ──────────────── */
+  on('[data-pk]','click',stop(e=>{
+    const k=e.currentTarget.dataset.pk;
+    pickFor=(pickFor===k?null:k); intFor=null; lkFor=null; renderZone();}));
+  on('[data-pick]','click',stop(e=>{
+    const p=e.currentTarget.dataset.pick.split('|');
+    lier(p[0],p[1]); pickFor=null; renderZone();}));
+  on('[data-nw]','keydown',e=>{
+    if(e.key!=='Enter')return; e.preventDefault();
+    const v=e.target.value.trim(); if(!v)return;
+    creerEtLier(e.target.dataset.nw, v);});
+
+  /* ── AJOUTER UNE PIÈCE AU TRIP ────────────────────────────────────── */
+  on('[data-ah]','click',stop(e=>{
+    const x={id:'h'+(++HSEQ), t:'', f:null, i:null, o:e.currentTarget.dataset.ah||null};
+    state.habits.unshift(x); state.ord=true; save(); editH=x.id; editR=null; renderZone();
+    const el=$('habits').querySelector('[data-ht="'+x.id+'"]'); if(el)el.focus();}));
+  on('[data-ar]','click',stop(async e=>{
+    const x=habOf(e.currentTarget.dataset.ar); if(!x||!x.t)return;
+    const {data,error}=await sb.rpc('repulsion_set',{p_habit:x.t,p_repulsion:'',p_obstacle:''});
+    if(error){console.error('[totehm] repulsion_set:',error.message);return;}
+    REPS.unshift({id:data,text:'',obstacle:'',hs:[x.t]});
+    editR=String(data); editH=null; wDirty=true; renderZone();
+    const el=$('habits').querySelector('[data-rt="'+data+'"]'); if(el)el.focus();}));
+
+  /* ── RETIRER ──────────────────────────────────────────────────────── */
+  on('[data-hx],[data-kill]','click',stop(e=>{
+    const id=e.currentTarget.dataset.hx||e.currentTarget.dataset.kill;
+    const x=habOf(id); if(!x)return;
+    logTotehmEvent('habit_removed',x.t,{f:x.f,i:x.i});
+    state.habits=state.habits.filter(h=>h.id!==id);
+    /* Une répulsion qui ne protège plus rien RESTE : elle a été écrite,
+       elle se rattache ailleurs. On retire le lien, pas la pensée. */
+    REPS.forEach(r=>{const i=(r.hs||[]).indexOf(x.t);
+      if(i>=0){r.hs.splice(i,1); if(me)apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:x.t}));}});
+    save();
+    if(editH===id)editH=null;
+    if(open&&open.kind==='h'&&open.id===id)fermer(); else renderZone();}));
+  on('[data-rx],[data-rkill]','click',stop(e=>{
+    const id=String(e.currentTarget.dataset.rx||e.currentTarget.dataset.rkill);
+    REPS=REPS.filter(r=>String(r.id)!==id);
+    apres(sb.rpc('repulsion_retire',{p_id:Number(id)}));
+    if(editR===id)editR=null;
+    if(open&&open.kind==='r'&&String(open.id)===id)fermer(); else renderZone();}));
+  on('[data-tkill]','click',stop(e=>{
+    const id=String(e.currentTarget.dataset.tkill);
+    TRIPS=TRIPS.filter(t=>String(t.id)!==id);
+    (state.habits||[]).forEach(h=>{if(String(h.o||'')===id)h.o=null;});
+    save(); apres(sb.rpc('trip_close',{p_trip:id,p_outcome:'dropped'}));
+    fermer();}));
+}
+
+/* LE LIEN SE POSE DEPUIS CE QU'ON A OUVERT. C'est la seule fonction qui
+   connaît les règles de rattachement, et il n'y en a que trois :
+     un objectif tient plusieurs habitudes ;
+     une habitude sert UN objectif ;
+     une répulsion protège plusieurs habitudes. */
+function lier(k,id){
+  const m=open.kind;
+  if(k==='o'){
+    const x = m==='h'?habOf(open.id) : m==='r'?habsOfRep(repOf(open.id)||{hs:[]})[0] : null;
+    if(x){x.o=id; save();}
+  }else if(k==='h'){
+    if(m==='t'){const x=habOf(id); if(x){x.o=open.id; save();}}
+    else if(m==='r'){const r=repOf(open.id), x=habOf(id);
+      if(r&&x&&x.t&&!(r.hs||[]).includes(x.t)){
+        r.hs.push(x.t); apres(sb.rpc('repulsion_link',{p_id:r.id,p_habit:x.t}));}}
+  }else{
+    const x = m==='h'?habOf(open.id) : m==='t'?habsOfTrip(tripOf(open.id)||{id:''})[0] : null;
+    const r = repOf(id);
+    if(r&&x&&x.t&&!(r.hs||[]).includes(x.t)){
+      r.hs.push(x.t); apres(sb.rpc('repulsion_link',{p_id:r.id,p_habit:x.t}));}
+  }
+  wDirty=true;
+}
+async function creerEtLier(k,txt){
+  if(k==='h'){
+    const x={id:'h'+(++HSEQ), t:txt, f:null, i:null, o:null};
+    state.habits.unshift(x); state.ord=true; save(); lier('h',x.id); pickFor=null; renderZone(); return;}
+  if(!me)return;
+  if(k==='o'){
+    const {data,error}=await sb.rpc('trip_create',{p_text:txt,p_target:null});
+    if(error){console.error('[totehm] trip_create:',error.message);return;}
+    TRIPS.unshift({id:data,text:txt,target_at:null,days_left:null,habits:[]});
+    lier('o',data); pickFor=null; renderZone(); return;}
+  const cible = open.kind==='h'?habOf(open.id) : habsOfTrip(tripOf(open.id)||{id:''})[0];
+  if(!cible||!cible.t)return;
+  const {data,error}=await sb.rpc('repulsion_set',{p_habit:cible.t,p_repulsion:txt,p_obstacle:''});
+  if(error){console.error('[totehm] repulsion_set:',error.message);return;}
+  REPS.unshift({id:data,text:txt,obstacle:'',hs:[cible.t]});
+  pickFor=null; wDirty=true; renderZone();
+}
+
+/* ══ LE CLASSEMENT PAR IMPORTANCE ════════════════════════════════════
+   Un seul chemin pour le doigt et la souris — Pointer Events. On coupe le
+   natif (`touch-action:none` en CSS) parce que le geste porte une fonction
+   produit : sans ça le navigateur avale le glissement vertical et le
+   classement se perd une fois sur deux.
+   L'ordre n'est pas cosmétique. Il descend jusqu'au bot, et jusqu'à la
+   carte : `places_matching_habits` départage deux lieux à classement égal
+   par `matched_rank`, c'est-à-dire par CET ordre-là. */
+const listeDe=v=>v==='habits'?(state.habits||[]):v==='objectives'?TRIPS:REPS;
+function poseListe(v,arr){
+  if(v==='habits'){state.habits=arr;state.ord=true;save();}
+  else if(v==='objectives')TRIPS=arr; else REPS=arr;}
+
+if($('ordbtn'))$('ordbtn').addEventListener('click',()=>{
+  ordering=!ordering;
+  /* Classer et écrire sont deux gestes : une boîte ouverte au milieu d'un
+     classement n'a pas de rang. */
+  if(ordering&&open)open=null;
+  renderZone();});
+
+(function(){
+  const box=$('habits'); if(!box)return;
+  let from=null, cible=null;
+  const rowAt=(x,y)=>{const el=document.elementFromPoint(x,y);
+    return el&&el.closest?el.closest('.habit[data-row]'):null;};
+  box.addEventListener('pointerdown',e=>{
+    if(!ordering)return;
+    const row=e.target.closest&&e.target.closest('.habit[data-row]'); if(!row)return;
+    from=row; row.classList.add('drag');
+    try{row.setPointerCapture(e.pointerId);}catch(_){}
+  });
+  box.addEventListener('pointermove',e=>{
+    if(!from)return;
+    const over=rowAt(e.clientX,e.clientY);
+    if(cible&&cible!==over)cible.classList.remove('over');
+    if(over&&over!==from){over.classList.add('over');cible=over;}
+  });
+  const fin=()=>{
+    if(!from)return;
+    from.classList.remove('drag');
+    if(cible){
+      cible.classList.remove('over');
+      const arr=listeDe(view).slice();
+      const a=arr.findIndex(o=>String(o.id)===from.dataset.row);
+      const b=arr.findIndex(o=>String(o.id)===cible.dataset.row);
+      if(a>=0&&b>=0){const m=arr.splice(a,1)[0];arr.splice(b,0,m);poseListe(view,arr);}
+    }
+    from=null;cible=null;renderZone();
+  };
+  box.addEventListener('pointerup',fin);
+  box.addEventListener('pointercancel',fin);
+})();
+
+/* Trois entrées, un seul état : les carrés, le balayage, les flèches.
+   Aucune ne charge quoi que ce soit — c'est la même page, la même session,
+   la même mémoire. */
+document.querySelectorAll('.vt').forEach(b=>
+  b.addEventListener('click',()=>setView(b.dataset.v)));
+addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&open){e.preventDefault();fermer();}});
+
 /* Arrivée depuis next_objective.html en pleine page : #settings ouvre
    directement le Dashboard membre (les réglages y vivent désormais). En
    iframe, c'est le postMessage 'totehm-goto-settings' qui s'en charge. */
@@ -2557,9 +3095,12 @@ window.addEventListener('touchend',(e)=>{
   }else if(axis==='h'){
     const dx=e.changedTouches[0].screenX-x0;
     if(Math.abs(dx)<TH)return;
-    if(hOpen()){ if(view==='repulsions'&&dx<-TH)setView('habits');
-                 else if(view==='objectives'&&dx>TH)setView('habits'); return; }
-    if(dx>TH)showBook(true); else if(dx<-TH)showNext(true);
+    /* LE BALAYAGE = LES CARRÉS. Même ordre — rouge, navy, bleu clair — et
+       le doigt le suit : glisser vers la GAUCHE avance dans la rangée.
+       On ne change pas de fichier, on ne recharge rien : seules les boîtes
+       changent. C'est le geste d'avant, sur la nouvelle architecture. */
+    const i=VIEW_ORDER.indexOf(view)+(dx<0?1:-1);
+    if(i>=0&&i<VIEW_ORDER.length)setView(VIEW_ORDER[i]);
   }
 },{passive:true});
 /* La molette est traitée à un seul endroit : verticalGesture(). Les deux
@@ -2610,10 +3151,10 @@ window.addEventListener('keydown',(e)=>{
   }
   if(e.key==='ArrowDown'){e.preventDefault();if(!hOpen())foldToGate();}
   else if(e.key==='ArrowUp'){e.preventDefault();if(!hOpen())openFilterModal();}
-  else if(e.key==='ArrowLeft'){e.preventDefault();
-    if(view==='repulsions')setView('habits'); else if(!hOpen())setView('objectives');}
-  else if(e.key==='ArrowRight'){e.preventDefault();
-    if(view==='objectives')setView('habits'); else if(!hOpen())setView('repulsions');}
+  /* Mêmes cibles que le balayage : une flèche parcourt la rangée. */
+  else if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();
+    const i=VIEW_ORDER.indexOf(view)+(e.key==='ArrowRight'?1:-1);
+    if(i>=0&&i<VIEW_ORDER.length)setView(VIEW_ORDER[i]);}
 });
 /* Le passé et le futur parlent au présent */
 /* ══ LE CONTRAT postMessage A DISPARU · 05/09/2026 ═══════════════════
