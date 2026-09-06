@@ -63,19 +63,40 @@ const FALLBACK        = { lat: 38.7078, lng: -9.1366 };   // Praça do Comércio
 const RADIUS_M        = 4000;    // lieux physiques : ce qui se rejoint à pied
 const MIN_RESULTS     = 8;
 const CELL_TTL_DAYS   = 90;      // Google : un café ne déménage pas
-const MAX_SWEEPS      = 3;
+// SEPT, pas trois. Avec trois balayages par requête, une ville ne se
+// couvrait jamais : mesuré le 06/09, quatre intentions sur sept avaient
+// ZÉRO lieu. Ce n'était pas un défaut de conception, c'était un démarrage
+// à froid qui n'a jamais fini. Le vrai garde-fou reste DAILY_BUDGET, et le
+// cache de 90 jours fait qu'une cellule coûte 7 appels (~0,22 $) une fois
+// par trimestre — pas par visite.
+const MAX_SWEEPS      = 7;
 const DAILY_BUDGET    = 200;     // Google, payant
 const MERGED_LIMIT    = 40;
 
 // ─── Google : intention → types de lieux ─────────────────────────────
+// ⚠️ CES TYPES NE SERVENT QU'À L'INGESTION — plus jamais au matching.
+// Depuis le 06/09, `places_matching_habits` ne filtre plus sur
+// `places.intentions` : cette colonne n'enregistre pas ce QU'EST un lieu,
+// elle enregistre QUEL BALAYAGE l'a trouvé. On balayait `flow` (park,
+// pool), Google rendait aussi les salles du quartier, et tout le lot
+// héritait de `flow` — d'où trois salles d'entraînement invisibles à une
+// habitude « faire du sport ». Le matching se fait par EMBEDDING contre le
+// texte de l'habitude ; ces listes ne décident plus que de ce qu'on va
+// CHERCHER, c'est-à-dire de la diversité du catalogue.
 const GOOGLE_TYPES: Record<string, string[]> = {
-  fight:     ["gym", "fitness_center", "sports_complex"],
-  flow:      ["park", "hiking_area", "swimming_pool"],
-  enrich:    ["book_store", "university", "convention_center"],
-  love:      ["cafe", "garden", "tourist_attraction"],
-  express:   ["art_gallery", "art_studio", "performing_arts_theater"],
-  focus:     ["library", "coffee_shop"],
-  celebrate: ["night_club", "bar", "concert_hall"],
+  fight:     ["gym", "fitness_center", "sports_complex", "martial_arts_school",
+              "athletic_field", "sports_club"],
+  flow:      ["park", "hiking_area", "swimming_pool", "yoga_studio",
+              "spa", "beach", "wellness_center"],
+  enrich:    ["book_store", "university", "convention_center", "library",
+              "coworking_space", "business_center"],
+  love:      ["cafe", "garden", "tourist_attraction", "botanical_garden",
+              "scenic_lookout", "restaurant"],
+  express:   ["art_gallery", "art_studio", "performing_arts_theater",
+              "cultural_center", "museum", "movie_theater"],
+  focus:     ["library", "coffee_shop", "coworking_space", "book_store"],
+  celebrate: ["night_club", "bar", "concert_hall", "live_music_venue",
+              "amphitheatre", "banquet_hall"],
 };
 
 // ─── Ton de chaque intention — injecté dans le prompt OpenAI ─────────

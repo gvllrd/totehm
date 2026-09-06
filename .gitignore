@@ -32,10 +32,14 @@ higher_boutique_master.html
 *_snippet.html
 index_higher_snippet.html
 
-# ─── Outils de build one-shot ──────────────────────────────────
+# ─── Scripts de patch jetables ─────────────────────────────────
+# Un script écrit pour UN lot n'a pas à survivre au lot. Les OUTILS, eux,
+# vivent dans tools/ et sont suivis : `tools/` était ignoré en bloc alors
+# que `tools/hover.py` y est commité — une règle qui se contredit, et qui
+# avalait en silence tout outil ajouté ensuite. Corrigé le 06/09.
 patch_*.py
 build_*.py
-tools/
+tools/*_tmp.py
 
 # ─── Système et dépendances ────────────────────────────────────
 .DS_Store

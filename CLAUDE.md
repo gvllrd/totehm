@@ -152,10 +152,9 @@ une machine à états faite pour deux — c'est ce qui produisait « le filtre
 manque de fluidité » et « le scroll ouvre la map ». Sortie, elle ne coûte plus
 rien à la page d'à côté.
 
-`book.html` n'est plus l'autobiographie. C'est **My Wisdom** : une leçon par
-ligne, sur le rail, exactement le système de `totehm.html`. Les chapitres
-narratifs (`book_chapters`, `autobiographiste`) restent en base et continuent
-d'exister pour le bot — ils n'ont simplement plus d'écran à eux.
+Les chapitres narratifs (`book_chapters`, `autobiographiste`) restent en
+base et continuent d'exister pour le bot — ils n'ont plus d'écran à eux
+depuis la fusion du 05/09.
 
 ### Navigation — règles absolues (`totehm.html`)
 
@@ -740,8 +739,53 @@ gauche du rail, n'existe plus.
 **rouge-violet · navy · bleu clair**. Les trois sont à pleine valeur en
 permanence — une couleur de marque ne se met pas en veilleuse. La vue courante
 est marquée par un `outline` blanc, qui ne prend aucune place et n'est pas une
-ombre. Le balayage horizontal suit le même ordre : glisser vers la gauche
-avance dans la rangée.
+ombre. Le balayage horizontal ET les flèches suivent le même ordre, tiré de
+la MÊME liste `VIEW_ORDER` : deux listes finissent toujours par diverger.
+
+### Aucune icône dans une boîte — 06/09/2026
+
+Une boîte porte du **texte**. Ce qui la qualifie, c'est sa COULEUR (la vue)
+et sa **ligne d'unité** — jamais un pictogramme posé devant. Le T des
+habitudes et des objectifs, l'onde des répulsions : supprimés.
+
+Ce que la ligne d'unité dit, et qui manquait :
+
+| | ligne d'unité |
+|---|---|
+| habitude  | **INTENTION** · PILIER · fréquence |
+| objectif  | deadline · combien d'habitudes y mènent |
+| répulsion | l'habitude qu'elle protège |
+
+**L'intention est la chose la plus importante d'une habitude et elle
+n'apparaissait nulle part sur la ligne.** Elle s'écrit maintenant, dans sa
+couleur, suivie de son pilier — c'était ça, « on ne voit pas assez ».
+
+**La ligne d'unité EST le contrôle** : on touche ce qu'on lit. Elle ouvre
+l'aperçu si l'habitude est réglée, le choix d'intention sinon. Plus d'icône
+dans la marge à viser.
+
+### Le logo dit où l'on est — 06/09/2026
+
+Le **O** du wordmark clignote sur la vue OBJECTIFS, le **H** sur la vue
+HABITUDES. C'est la lettre elle-même qui signale : le logo n'illustre pas
+l'écran, il EST l'écran. Les deux glyphes sont nommés dans le SVG servi
+(`#wm-O`, `#wm-H`), rien n'est redessiné, et `<body>` porte la classe de
+vue parce que le wordmark vit hors de `#stage`.
+
+Il n'y a **pas** de lettre pour les répulsions : TOTEHM n'en contient pas,
+et inventer un clignotement sans lettre serait du décor.
+
+### Le Trip se lit sur du noir — 06/09/2026
+
+Une boîte FERMÉE porte la couleur de sa vue. Une boîte OUVERTE est un plan
+de travail — on y écrit, on y choisit, on y efface — et un plan de travail
+se lit sur du **noir**. Le filet garde la couleur de la vue : on sait
+toujours où l'on est.
+
+### L'interface est en anglais
+
+Vocation internationale : mots courts, aucun idiome, rien à traduire pour
+comprendre. Les termes de marque restent en anglais par nature.
 
 ### Les overlays plein-écran s'ancrent EN HAUT · 03/09/2026
 
@@ -1011,6 +1055,34 @@ Trois verrous fermés sur la même porte, aucun visible seul :
   `error` transforme une panne en statistique.
 - **Un document qui affirme un comportement non vérifié est un bug.** La règle
   « vérifier avant d'affirmer » s'applique aux documents autant qu'au code.
+
+**LE BOT N'A PAS DE VOIX — C'EST CELLE DU MEMBRE · 06/09/2026.**
+Le membre doit avoir l'impression de parler à son Higher Self. Ça ne
+s'obtient pas en donnant un ton au bot : ça s'obtient en le lui RETIRANT.
+
+La règle, littérale : **le bot ne dit jamais « je ».** Il n'a pas d'avis,
+pas d'encouragement, pas de conseil, pas de personnage. Chaque phrase qu'il
+envoie appartient à l'une de deux catégories, et à aucune autre :
+1. **les mots du membre**, cités tels qu'il les a écrits — son habitude,
+   son objectif, sa répulsion, sa leçon ;
+2. **un nombre ou une date** — une série, un compte, une échéance, une
+   distance.
+
+Tout le reste est du décor de mentor et se supprime. « Je n'ai pas réussi
+à le poser » devient « not saved ». « C'est reparti, je reprends mes
+questions » devient « resumed ». Ce n'est pas de la sécheresse : c'est ce
+qui fait que le membre lit SES mots et pas ceux d'une machine.
+
+**Ce n'est pas une IA, et ça doit rester vrai techniquement.** Le bot fait
+zéro appel de modèle. `/moi`, `/tonight`, `/spots` sont du SQL. Une réponse
+générée serait une voix, donc un mentor, donc l'inverse du produit — et une
+facture mensuelle sur le parcours gratuit.
+
+**Multilingue, et c'est la règle du silence qui le rend possible.** Un bot
+sans voix n'a presque rien à traduire : quelques dizaines de mots, pas des
+paragraphes. La langue vient de `message.from.language_code`, l'anglais est
+le défaut. Les mots du membre ne se traduisent jamais — ils sont déjà dans
+sa langue.
 
 **LE BOT EST UNE SURFACE, PAS UN CANAL DE NOTIFICATION · 04/09/2026.**
 Un bouton `web_app` ouvre `higherself.html` DANS la conversation. Le bot
