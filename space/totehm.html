@@ -398,32 +398,39 @@ body.higher .set-block.higher-only{display:flex!important}
   transition:background .15s ease}
 .habit.open .v-name[contenteditable]:focus{background:rgba(255,255,255,.14)}
 
-/* Le conteneur des enfants : sous la boîte, aligné sur son bord gauche
-   (le tick continue de le border), fond noirci (navy-d) — c'est le
-   plan de travail. Il glisse et s'ouvre en un seul geste. */
+/* Le conteneur des enfants : TRANSPARENT, purement fonctionnel. Aucun
+   fond, aucun filet, aucun padding — les .blk portent déjà leur couleur
+   et leur filet. `.h-birth` n'existe que pour animer l'arrivée. Elle
+   s'aligne EXACTEMENT sur la boîte cliquée (même margin-left) pour que
+   les enfants soient dans le prolongement, avec la même largeur. */
 .h-birth{display:none}
 .habit.open .h-birth{display:block;
   margin-left:calc(var(--rl) + var(--rw) + 4px);
-  margin-top:6px;padding:11px 12px 12px;
-  background:var(--navy-d);border:1px solid #000;
-  animation:birth-open .34s cubic-bezier(.22,.61,.36,1) both}
+  margin-top:6px;padding:0;
+  background:none;border:none;position:relative;
+  animation:birth-open .3s cubic-bezier(.22,.61,.36,1) both}
+/* Animation opacity SEULE : `transform` créerait un contexte d'empilement
+   qui piègerait le déroulant `.selp.on` (bug de sélection TIME FREQUENCY). */
 @keyframes birth-open{
-  from{opacity:0;transform:translateY(-8px)}
-  to  {opacity:1;transform:translateY(0)}
+  from{opacity:0}
+  to  {opacity:1}
 }
-/* Chaque pièce liée arrive avec un léger retard — cascade de bébés. */
+/* Chaque pièce arrive avec un léger retard — cascade de bébés. `top` sur
+   `position:relative` remplace `translateY` : même effet visuel, aucun
+   contexte d'empilement créé (idem, pour ne pas piéger le déroulant). */
 .habit.open .h-birth .w-top,
 .habit.open .h-birth .blk,
 .habit.open .h-birth .dash,
 .habit.open .h-birth .acts{
+  position:relative;
   animation:blk-in .3s cubic-bezier(.22,.61,.36,1) both}
 .habit.open .h-birth .blk       {animation-delay:.06s}
 .habit.open .h-birth .blk ~ .blk{animation-delay:.16s}
 .habit.open .h-birth .dash      {animation-delay:.22s}
 .habit.open .h-birth .acts      {animation-delay:.28s}
 @keyframes blk-in{
-  from{opacity:0;transform:translateY(-6px)}
-  to  {opacity:1;transform:translateY(0)}
+  from{opacity:0;top:-6px}
+  to  {opacity:1;top:0}
 }
 /* CHANGER DE VUE EST UN FONDU, PAS UNE COUPURE. Les boîtes montent de six
    pixels en s'allumant : on comprend qu'on a tourné une page du même
@@ -475,9 +482,12 @@ body.higher .set-block.higher-only{display:flex!important}
   text-align:left;caret-color:#fff;min-height:1.45em}
 .blk-t.go{cursor:pointer;transition:opacity .15s}
 .blk-t.go:hover{opacity:.78}
-.blk-x{position:absolute;top:6px;right:7px;background:none;border:none;
-  color:rgba(255,255,255,.45);font-size:16px;line-height:1;cursor:pointer;
-  padding:0 3px;transition:color .15s}
+/* La croix est réservée à la FERMETURE des vues (w-x, fold-x). Ce qui
+   SUPPRIME s'écrit — c'est un mot, pas un signe. */
+.blk-x{position:absolute;top:7px;right:8px;background:none;border:none;
+  color:rgba(255,255,255,.5);font-family:'Space Mono',monospace;
+  font-size:8px;letter-spacing:.16em;text-transform:uppercase;
+  line-height:1;cursor:pointer;padding:3px 5px;transition:color .15s}
 .blk-x:hover{color:#fff}
 .blk-u{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:7px;
   font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;
@@ -544,26 +554,28 @@ body.higher .set-block.higher-only{display:flex!important}
   padding:3px 8px;font-family:'Space Mono',monospace;font-size:9px;
   letter-spacing:.14em;text-transform:uppercase;transition:background .15s}
 .selb:hover{background:rgba(0,0,0,.55)}
+/* Le déroulant est TOUJOURS une fenêtre plein écran, mobile ET desktop.
+   L'ancrage local `position:absolute; top:100%` créait deux bugs :
+   1) sur desktop, la liste sortait de `#stage` (overflow:hidden) et se
+      faisait couper ; ou passait sous le T (z-index 30 au-dessus du
+      contexte de `#stage`) — impossible de sélectionner ce qui était
+      « au-dessus » ;
+   2) sur les blocs enfantés, l'animation du parent créait un contexte
+      de piégeage qui remontait le déroulant hors de la boîte.
+   Un modal `position:fixed` échappe toutes ces contraintes. */
 .selp{display:none}
-.selp.on{display:block;position:absolute;z-index:60;top:calc(100% + 3px);left:0;
-  min-width:190px;max-height:230px;overflow:auto;background:#000;
-  border:1px solid var(--skin)}
-.selp-in{display:flex;flex-direction:column}
+.selp.on{display:flex;position:fixed;inset:0;z-index:220;
+  align-items:center;justify-content:center;
+  background:rgba(0,0,0,.85);padding:max(44px,8dvh) 22px 22px;
+  -webkit-tap-highlight-color:transparent}
+.selp-in{display:flex;flex-direction:column;
+  width:100%;max-width:360px;max-height:74vh;overflow:auto;
+  background:#000;border:1px solid var(--skin)}
 .selo{text-align:left;background:none;border:none;color:#fff;cursor:pointer;
-  padding:6px 10px;font-family:'Quantico',sans-serif;font-size:12px;
+  padding:11px 14px;font-family:'Quantico',sans-serif;font-size:14px;
   transition:background .15s}
 .selo:hover{background:rgba(255,255,255,.1)}
 .selo.on{background:var(--navy)}
-/* Sur mobile le déroulant devient une FENÊTRE CENTRÉE plein écran : un
-   menu ancré sous son bouton finit sous le clavier ou hors du carré. */
-@media(max-width:700px){
-  .selp.on{position:fixed;inset:0;top:0;left:0;min-width:0;max-height:none;
-    border:none;background:rgba(0,0,0,.92);z-index:120;
-    display:flex;align-items:center;justify-content:center;padding:22px}
-  .selp.on .selp-in{width:100%;max-width:340px;max-height:74vh;overflow:auto;
-    background:#000;border:1px solid var(--skin)}
-  .selo{padding:11px 14px;font-size:14px}
-}
 
 /* ══ LE CHOIX D'INTENTION — MINIMAL, EN FONDU ════════════════════════
    Pas de surlignage : la tuile prend un FONDU de sa couleur, et le mot
@@ -586,17 +598,20 @@ body.higher .set-block.higher-only{display:flex!important}
    et la souris — Pointer Events. `touch-action:none` est OBLIGATOIRE :
    sans lui le navigateur avale le glissement vertical et le classement se
    perd une fois sur deux. */
-/* EN HAUT À GAUCHE, en miroir de la croix de repli. À droite il touchait
-   la croix : deux cibles de 30 px à 20 px l'une de l'autre, c'est un clic
-   sur deux qui referme le Totehm au lieu de classer. */
-#ordbtn{position:absolute;top:30px;left:calc(var(--pad) + 2px);z-index:44;
-  background:none;border:none;cursor:pointer;padding:4px;display:flex;
-  flex-direction:column;gap:3px;-webkit-tap-highlight-color:transparent}
-#ordbtn span{display:block;height:2px;background:rgba(255,255,255,.45);
+/* Le bouton coiffe le RAIL, il en est la finalité. Centré sur la largeur
+   du rail (--rw), il tombe pile dans sa colonne — une petite pièce
+   supplémentaire du logo. Sur mobile le rail commence au bord, sur
+   desktop il est décalé (--rl). Un seul calcul : centre = --rl + --rw/2. */
+#ordbtn{position:absolute;
+  left:calc(var(--rl) + var(--rw)/2);transform:translateX(-50%);
+  top:6px;padding:6px 8px 8px;z-index:44;
+  background:none;border:none;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  -webkit-tap-highlight-color:transparent}
+#ordbtn span{display:block;height:2px;background:rgba(255,255,255,.62);
   transition:background .15s,width .15s}
-#ordbtn .ob-1{width:16px}#ordbtn .ob-2{width:11px}#ordbtn .ob-3{width:7px}
-#ordbtn:hover span{background:#fff}
-body.ordering #ordbtn span{background:#fff}
+#ordbtn .ob-1{width:16px}#ordbtn .ob-2{width:12px}#ordbtn .ob-3{width:8px}
+#ordbtn:hover span,body.ordering #ordbtn span{background:#fff}
 /* LA BARRE EST DANS LE FLUX, au-dessus de la première ligne. Posée en
    absolu elle traversait le T : le carré n'a pas de place libre en haut,
    et une bande de texte qui coupe le logo, c'est le logo qu'on abîme. */
@@ -607,9 +622,18 @@ body.ordering .habit{touch-action:none;cursor:grab}
 body.ordering .habit .h-body{opacity:.92}
 .habit.drag{opacity:.4}
 .habit.over .h-body{outline:1px solid #fff;outline-offset:2px}
-.rank{position:absolute;left:calc(var(--rl) - 20px);top:50%;transform:translateY(-50%);
-  font-family:'Space Mono',monospace;font-size:10px;color:rgba(255,255,255,.8);
-  font-variant-numeric:tabular-nums}
+/* Le chiffre de classement reprend la typo du slogan HIGHER : Montserrat
+   italic 900. Effet slogan — un nombre qui compte, pas une petite étiquette.
+   Il se pose sur le bord gauche de la boîte, la boîte se pousse à droite
+   en mode `ordering` (padding-left) pour lui laisser la place. */
+.rank{position:absolute;
+  left:calc(var(--rl) + var(--rw) + 8px);
+  top:50%;transform:translateY(-50%);
+  font-family:'Montserrat',sans-serif;font-weight:900;font-style:italic;
+  font-size:20px;line-height:1;color:#fff;
+  font-variant-numeric:tabular-nums;letter-spacing:-.02em;
+  pointer-events:none;z-index:3}
+body.ordering .habit .h-body{padding-left:32px}
 .void{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;
   text-transform:uppercase;color:rgba(255,255,255,.45);padding:24px 0;text-align:center}
 
@@ -1125,6 +1149,9 @@ body.gate.entered #filter-badge{
   /* Le rail s'arrête au T en haut et au wordmark en bas, au lieu de courir
      d'un bord à l'autre : 30px, la même valeur que #bigT et #wordmark. */
   #rail{top:30px;bottom:30px}
+  /* #ordbtn coiffe le rail à son sommet : top:30 = même origine que le
+     rail lui-même. Le bouton est la finalité visible du rail. */
+  #ordbtn{top:30px}
   /* Les carrés sont centrés sous le T dans les deux cas : le T est plus
      petit ici (46px), la rangée remonte d'autant. */
   #views{top:100px}
@@ -1277,13 +1304,11 @@ body.gate.entered #filter-badge{
    dans la liste, couleur d'intention pleine en haut. */
 @media(max-width:699px){
   :root{--rl:0px;--rw:6px;--band-t:150px}
-  /* #ordbtn = boîte 40×40 comme #fold-x (svg 20×20 + padding 10×10) :
-     trois barres largeur 20/14/8 sur 20px de haut (2px × 3 barres +
-     7px × 2 gaps), padding 10 → 40×40. Même géométrie exactement, en
-     miroir de la croix à droite. */
-  #ordbtn{top:10px;left:10px;padding:10px;gap:7px}
-  #ordbtn .ob-1{width:20px}#ordbtn .ob-2{width:14px}#ordbtn .ob-3{width:8px}
-  #ordbtn span{height:2px}
+  /* #ordbtn hérite du positionnement de base : centré sur le rail,
+     tout en haut. Sur mobile le rail commence à left:0 : le bouton est
+     centré sur --rw/2 = 3px. Un peu plus haut qu'en desktop puisqu'il
+     n'y a pas de padding de #stage à respecter. */
+  #ordbtn{top:4px}
   /* L'accès membre quitte le coin gauche (repris par #ordbtn) et se pose
      au-dessus du T, centré. `body:not(.gate)` : dans l'atterrissage,
      #conn-bar garde sa place d'origine — le logo composé du gate occupe
@@ -2712,7 +2737,7 @@ const blkH=(x,edit,mode)=>'<div class="blk blk-h">'
   +(edit
      ?'<textarea class="blk-t w-name" rows="1" data-ht="'+esc(x.id)+'">'+esc(x.t)+'</textarea>'
      :'<button type="button" class="blk-t go" data-goto="h:'+esc(x.id)+'">'+esc(x.t||'untitled')+'</button>')
-  +'<button type="button" class="blk-x" data-hx="'+esc(x.id)+'" aria-label="Remove">&times;</button>'
+  +'<button type="button" class="blk-x" data-hx="'+esc(x.id)+'" aria-label="Remove">delete</button>'
   +'<div class="blk-u">'+pick('h:'+x.id, x.f, freqOpts(), x.f?flabel(x.f):'no rhythm')
   +'<button type="button" class="blk-i" data-ip="'+esc(x.id)+'" style="color:'
   +(x.i?intColor(x.i):'rgba(255,255,255,.62)')+'">'
@@ -2729,7 +2754,7 @@ const blkR=(r,edit,mode)=>'<div class="blk blk-r">'
   +(edit
      ?'<textarea class="blk-t w-name" rows="1" data-rt="'+esc(r.id)+'">'+esc(r.text)+'</textarea>'
      :'<button type="button" class="blk-t go" data-goto="r:'+esc(r.id)+'">'+esc(r.text||'untitled')+'</button>')
-  +'<button type="button" class="blk-x" data-rx="'+esc(r.id)+'" aria-label="Remove">&times;</button>'
+  +'<button type="button" class="blk-x" data-rx="'+esc(r.id)+'" aria-label="Remove">delete</button>'
   +'<div class="lk">'
   +  habsOfRep(r).map(h=>'<span class="lk-on">'+esc(h.t||'untitled habit')+'</span>').join('')
   +  '<button type="button" class="lk-add" data-lk="'+esc(r.id)+'">'
@@ -2764,21 +2789,31 @@ const blkVide=(key,mode,liste,ph)=>{
    descendent en dessous.
    Retour : { linked, acts, wtop } — tous des chaînes HTML prêtes. */
 function panneauParts(mode,t,hs,rs){
+  /* DANS TOUTES LES VUES, TOUTES LES BOÎTES SONT ÉDITABLES.
+     Les vues sont des VUES, pas des filtres : le membre modifie ce
+     qu'il touche, peu importe la couleur du papier. `edit=true` sur
+     les trois blks — le mode `.go` (bouton non éditable) disparaît. */
   const bloc={
-    o: t ? blkO(t, mode==='t', mode)
+    o: t ? blkO(t, true, mode)
          : blkVide('o',mode,TRIPS.map(x=>({id:x.id,txt:x.text})),'a new objective'),
-    h: (hs.length?hs.map(x=>blkH(x, mode==='h'||x.id===editH, mode)).join('')
+    h: (hs.length?hs.map(x=>blkH(x, true, mode)).join('')
                  :blkVide('h',mode,(state.habits||[]).map(x=>({id:x.id,txt:x.t})),'a new habit'))
        +(mode!=='h'&&hs.length?'<button type="button" class="dash" data-ah="'+esc(t?t.id:'')+'">+ add a habit</button>':''),
-    r: (rs.length?rs.map(r=>blkR(r, mode==='r'||String(r.id)===editR, mode)).join('')
+    r: (rs.length?rs.map(r=>blkR(r, true, mode)).join('')
                  :blkVide('r',mode,REPS.map(x=>({id:x.id,txt:x.text})),'a new repulsion'))
-       +(hs.length&&rs.length?'<button type="button" class="dash" data-ar="'+esc(hs[0].id)+'">+ add a repulsion</button>':'')};
+       /* + ajouter une répulsion : dès qu'il y a une habitude à protéger,
+          quel que soit le nombre de répulsions déjà attachées. Avant on
+          exigeait `rs.length` aussi — donc impossible de poser la première. */
+       +(hs.length?'<button type="button" class="dash" data-ar="'+esc(hs[0].id)+'">+ add a repulsion</button>':'')};
   const linkedKs = ORDRE[mode].slice(1);   /* on saute la pièce de la vue */
+  /* Pas de bouton [Done] : chaque saisie s'enregistre à la volée
+     (differe → sauvegarde serveur). La croix (data-x) ferme la vue,
+     [Delete] supprime — rien d'autre à valider. */
   const acts = '<div class="acts">'
    +   (mode==='h'?'<button type="button" class="btn g" data-kill="'+esc(open.id)+'">Delete habit</button>':'')
    +   (mode==='t'?'<button type="button" class="btn g" data-tkill="'+esc(open.id)+'">Delete objective</button>':'')
    +   (mode==='r'?'<button type="button" class="btn g" data-rkill="'+esc(open.id)+'">Delete repulsion</button>':'')
-   +   '<button type="button" class="btn" data-x="1">Done</button></div>';
+   +   '</div>';
   return {
     linked: linkedKs.map(k=>bloc[k]).join(''),
     acts: acts,
@@ -3000,6 +3035,10 @@ function cable(carte){
     selOpen=null;
     if(k.indexOf('h:')===0){const x=habOf(k.slice(2)); if(x){x.f=v;save();}}
     renderZone();}));
+  /* Clic sur le fond du modal (hors de `.selp-in`) referme le déroulant.
+     Un modal doit pouvoir se fermer sans forcément choisir. */
+  on('.selp.on','click',e=>{
+    if(e.target===e.currentTarget){selOpen=null;renderZone();}});
 
   /* ── FERMER ───────────────────────────────────────────────────────── */
   on('[data-x]','click',stop(()=>fermer()));
