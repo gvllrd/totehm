@@ -340,6 +340,14 @@ body.higher .set-block.higher-only{display:flex!important}
 /* L'INTENTION EST LA CHOSE LA PLUS IMPORTANTE D'UNE HABITUDE. Elle
    s'écrit, dans sa couleur, suivie de son pilier. Elle n'apparaissait
    nulle part sur la ligne — c'était ça, « on ne voit pas assez ». */
+/* La ligne d'unité d'une boîte OUVERTE est un contrôle : elle doit se
+   toucher sans ressembler à un bouton — pas de cadre, pas de fond. C'est
+   la ligne elle-même qui est sensible. */
+.v-int-b{background:none;border:none;padding:0;cursor:pointer;
+  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;
+  text-transform:uppercase;font-weight:700;transition:opacity .15s}
+.v-int-b:active{opacity:.6}
+@media(hover:hover){.v-int-b:hover{opacity:.75}}
 .v-int{font-weight:700;letter-spacing:.2em}
 .v-pil{color:rgba(255,255,255,.5)}
 .v-frq{color:rgba(255,255,255,.72)}
@@ -1337,6 +1345,8 @@ body.gate.entered #filter-badge{
   .habit .h-body{margin-left:calc(var(--rw) + 4px)}
 }
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -1365,7 +1375,6 @@ body.gate.entered #filter-badge{
 .lk-add:hover,
 .int-p:hover,
 .ordbar:hover,
-.rank:hover,
 .void:hover,
 #filter-badge #fb-clear:hover,
 .hp-lbl:hover,
@@ -2568,7 +2577,17 @@ const repOf  =id=>REPS.find(r=>String(r.id)===String(id))||null;
 const repsOfHab=id=>{const x=habOf(id);
   return x?REPS.filter(r=>(r.hs||[]).includes(x.t)):[];};
 const habsOfRep=r=>(r.hs||[]).map(habByT).filter(Boolean);
-const habsOfTrip=t=>(state.habits||[]).filter(x=>String(x.o||'')===String(t.id));
+/* ══ UNE HABITUDE SERT PLUSIEURS OBJECTIFS · 07/09/2026 ═══════════════
+   `OBJ` fait le pont : texte d'habitude → liste d'identifiants
+   d'objectifs, telle que le serveur la rend. `steps.o` reste le PREMIER
+   lien — celui que le bot lit déjà — mais il ne décide plus seul. */
+let OBJ={};
+const objIdsOf  =x=>(x&&x.t&&OBJ[x.t])?OBJ[x.t]:(x&&x.o?[String(x.o)]:[]);
+const tripsOfHab=x=>objIdsOf(x).map(tripOf).filter(Boolean);
+const habsOfTrip=t=>(state.habits||[]).filter(x=>objIdsOf(x).includes(String(t.id)));
+/* Le premier lien, celui qui voyage dans `steps` : on le tient à jour à
+   chaque attache ou détache, sinon le bot lirait un objectif effacé. */
+function posePremier(x){ const l=objIdsOf(x); x.o = l.length?l[0]:null; save(); }
 
 /* ── LE PAPIER, LES ONGLETS, LE LOGO ─────────────────────────────────
    Le wordmark vit HORS de #stage : c'est <body> qui porte la vue pour lui.
@@ -2627,6 +2646,13 @@ async function loadTrips(force){
     if(error)throw error;
     if(!data||!data.signed_in)return;
     TRIPS=data.trips||[];
+    /* Le serveur rend, sur CHAQUE habitude, la liste de ses objectifs.
+       On la range par texte d'habitude : c'est la seule clé que `steps`
+       et la base ont en commun. */
+    OBJ={};
+    (TRIPS.concat([{habits:data.loose||[]}])).forEach(t=>
+      (t.habits||[]).forEach(h=>{
+        if(h&&h.t&&Array.isArray(h.objectives))OBJ[h.t]=h.objectives.map(String);}));
     /* UNE RÉPULSION, UNE LIGNE — même si elle protège quatre habitudes.
        Le serveur la renvoie une fois par habitude protégée ; on déduplique
        sur son id, et `habits` porte la liste complète. Sans ça, la vue
@@ -2692,11 +2718,25 @@ const boite=(nom,sous,attr)=>'<span class="v-col" '+attr+' role="button" tabinde
    mais le nom est `contenteditable` : la boîte cliquée passe en mode
    édition à sa PLACE, sans changer de layout. Le sub reste identique
    au fermé — cliquable, il rouvre les modales existantes. */
-const editInner=(kind,x,sous)=>'<span class="v-col edit-in">'
+/* ══ LES SEPT INTENTIONS REVIENNENT · 07/09/2026 ══════════════════════
+   Elles vivaient dans `blkH`, et `birthHTML` ne rend jamais la pièce de
+   la vue courante : ouvrir une habitude depuis la vue habitudes faisait
+   donc disparaître son propre réglage d'intention.
+   FERMÉE, la ligne d'unité SE LIT. OUVERTE, elle SE TOUCHE : l'intention
+   ouvre les sept, le rythme ouvre les trente-trois. Même ligne, même
+   place, même mots — elle devient simplement vivante. */
+const sousVivant=(x)=>
+  '<button type="button" class="v-int-b" data-ip="'+esc(String(x.id))+'" style="color:'
+  +(x.i?intColor(x.i):'rgba(255,255,255,.62)')+'">'
+  +(x.i?esc(intName(x.i))+' · '+esc(intPillar(x.i)):'set intention')+'</button>'
+  +pick('h:'+x.id, x.f, freqOpts(), x.f?flabel(x.f):'no rhythm');
+
+const editInner=(kind,x,sous,extra)=>'<span class="v-col edit-in">'
   +'<span class="v-name" contenteditable="plaintext-only" spellcheck="false"'
   +' data-'+kind+'edit="'+esc(String(x.id))+'">'
   +esc(kind==='h'?(x.t||''):(x.text||''))+'</span>'
-  +'<span class="v-sub">'+sous+'</span></span>';
+  +'<span class="v-sub">'+sous+'</span>'
+  +(extra||'')+'</span>';
 
 /* ══ LE PANNEAU — LE TRIP VU DEPUIS N'IMPORTE QUELLE BOÎTE ═══════════
    Les mots disent le LIEN, pas la catégorie : la couleur dit déjà la
@@ -2733,11 +2773,16 @@ const intGrid=(sel,hid)=>'<div class="ints">'+INTS.map(x=>
   .join('')+'</div>';
 
 /* ── L'OBJECTIF ──────────────────────────────────────────────────── */
-const blkO=(t,edit,mode)=>'<div class="blk blk-o">'
+/* `hid` : quand le bloc est vu DEPUIS une habitude, il porte une croix
+   qui DÉTACHE — elle ne supprime pas l'objectif. Détacher n'est pas
+   effacer : l'objectif a été écrit, il sert peut-être ailleurs. */
+const blkO=(t,edit,mode,hid)=>'<div class="blk blk-o">'
   +'<span class="blk-l">'+LBL.o[mode]+'</span>'
   +(edit
      ?'<textarea class="blk-t w-name" rows="1" data-tt="'+esc(t.id)+'">'+esc(t.text)+'</textarea>'
      :'<button type="button" class="blk-t go" data-goto="t:'+esc(t.id)+'">'+esc(t.text||'untitled')+'</button>')
+  +(hid?'<button type="button" class="blk-x" data-ox="'+esc(String(t.id))+'|'+esc(String(hid))
+        +'" aria-label="Detach">detach</button>':'')
   +'<div class="blk-u">'+(edit
      ?'<input class="in date" type="date" data-td="'+esc(t.id)+'" value="'+esc(dateIn(t.target_at))+'">'
      :'<span>'+esc(fmtDue(t.days_left))+'</span>')
@@ -2806,12 +2851,34 @@ function panneauParts(mode,t,hs,rs){
      Les vues sont des VUES, pas des filtres : le membre modifie ce
      qu'il touche, peu importe la couleur du papier. `edit=true` sur
      les trois blks — le mode `.go` (bouton non éditable) disparaît. */
+  /* DEPUIS UNE HABITUDE, ON VOIT TOUS SES OBJECTIFS. Une habitude peut
+     en servir plusieurs : les afficher tous, chacun détachable, et offrir
+     d'en ajouter un. Depuis un objectif, il n'y en a qu'un — c'est lui. */
+  const mesTrips = (mode==='h'&&hs.length) ? tripsOfHab(hs[0]) : (t?[t]:[]);
+  const blocO = (mode==='h'&&hs.length)
+    ? (mesTrips.length ? mesTrips.map(z=>blkO(z, true, mode, hs[0].id)).join('')
+                       : blkVide('o',mode,TRIPS.map(x=>({id:x.id,txt:x.text})),'a new objective'))
+      +'<button type="button" class="dash" data-ao="'+esc(String(hs[0].id))+'">'
+      +(pickFor==='o'?'close':'+ add an objective')+'</button>'
+      /* REPRENDRE OU ÉCRIRE — jamais réécrire ce qui existe déjà. Les
+         objectifs déjà attachés ne sont pas reproposés : on ne peut pas
+         attacher deux fois la même chose. */
+      +(pickFor==='o'?'<div class="lk-pick">'
+        +'<input class="in nw" data-nw="o" placeholder="a new objective">'
+        +TRIPS.filter(z=>!objIdsOf(hs[0]).includes(String(z.id)))
+          .map(z=>'<button type="button" class="lk-o" data-pick="o|'+esc(String(z.id))+'">'
+            +esc(z.text||'untitled')+'</button>').join('')
+        +'</div>':'')
+    : (t ? blkO(t, true, mode)
+         : blkVide('o',mode,TRIPS.map(x=>({id:x.id,txt:x.text})),'a new objective'));
   const bloc={
-    o: t ? blkO(t, true, mode)
-         : blkVide('o',mode,TRIPS.map(x=>({id:x.id,txt:x.text})),'a new objective'),
+    o: blocO,
     h: (hs.length?hs.map(x=>blkH(x, true, mode)).join('')
                  :blkVide('h',mode,(state.habits||[]).map(x=>({id:x.id,txt:x.t})),'a new habit'))
-       +(mode!=='h'&&hs.length?'<button type="button" class="dash" data-ah="'+esc(t?t.id:'')+'">+ add a habit</button>':''),
+       /* + ajouter une habitude dès qu'on n'est pas DANS la vue habitudes,
+          même s'il n'y en a aucune encore : exiger `hs.length` rendait la
+          première impossible à poser. */
+       +(mode!=='h'?'<button type="button" class="dash" data-ah="'+esc(t?String(t.id):'')+'">+ add a habit</button>':''),
     r: (rs.length?rs.map(r=>blkR(r, true, mode)).join('')
                  :blkVide('r',mode,REPS.map(x=>({id:x.id,txt:x.text})),'a new repulsion'))
        /* + ajouter une répulsion : dès qu'il y a une habitude à protéger,
@@ -2890,7 +2957,9 @@ function renderZone(anim){
         +(t?'<span class="v-pil">'+esc(t.text)+'</span>'
            :(!x.o?'<span class="v-pil">no objective</span>':''));
       if(open&&open.kind==='h'&&open.id===x.id)
-        return ligne(editInner('h',x,sub),'open'+(open.neuf?' neuf':''),x.i?intColor(x.i):null,k+1,x.id,birthHTML());
+        return ligne(editInner('h',x,sousVivant(x),
+            intFor===String(x.id)?'<span class="w-sec">'+intGrid(x.i,x.id)+'</span>':''),
+          'open'+(open.neuf?' neuf':''),x.i?intColor(x.i):null,k+1,x.id,birthHTML());
       /* PAS DE CADRE NAVY SUR UNE BOÎTE DÉJÀ NAVY. `.h-frame` existe pour
          qu'une habitude reste navy quand elle est POSÉE AILLEURS — dans le
          noir d'un Trip, dans le rouge-violet d'une répulsion. Ici la boîte
@@ -3139,6 +3208,19 @@ function cable(carte){
     else   {r.hs.splice(i,1); apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:x.t}));}
     wDirty=true; renderZone();}));
 
+  /* ── UN OBJECTIF DE PLUS, OU UN DE MOINS ─────────────────────────── */
+  on('[data-ao]','click',stop(()=>{
+    pickFor=(pickFor==='o'?null:'o'); intFor=null; lkFor=null; renderZone();}));
+  on('[data-ox]','click',stop(e=>{
+    const p=e.currentTarget.dataset.ox.split('|');
+    const x=habOf(p[1]); if(!x||!x.t)return;
+    /* DÉTACHER N'EST PAS EFFACER : l'objectif a été écrit, il sert
+       peut-être ailleurs. On retire le lien, pas la pensée. */
+    OBJ[x.t]=(OBJ[x.t]||[]).filter(o=>o!==String(p[0]));
+    posePremier(x);
+    apres(sb.rpc('objective_unlink',{p_obj:p[0],p_habit:x.t}));
+    wDirty=true; renderZone();}));
+
   /* ── LE LOOKUP D'UN BLOC VIDE — reprendre, ou écrire ──────────────── */
   on('[data-pk]','click',stop(e=>{
     const k=e.currentTarget.dataset.pk;
@@ -3200,7 +3282,10 @@ function lier(k,id){
   const m=open.kind;
   if(k==='o'){
     const x = m==='h'?habOf(open.id) : m==='r'?habsOfRep(repOf(open.id)||{hs:[]})[0] : null;
-    if(x){x.o=id; save();}
+    if(x&&x.t){
+      OBJ[x.t]=(OBJ[x.t]||[]).concat([String(id)]);
+      posePremier(x);
+      apres(sb.rpc('objective_link',{p_obj:id,p_habit:x.t}));}
   }else if(k==='h'){
     if(m==='t'){const x=habOf(id); if(x){x.o=open.id; save();}}
     else if(m==='r'){const r=repOf(open.id), x=habOf(id);
@@ -3223,7 +3308,7 @@ async function creerEtLier(k,txt){
     const {data,error}=await sb.rpc('trip_create',{p_text:txt,p_target:null});
     if(error){console.error('[totehm] trip_create:',error.message);return;}
     TRIPS.unshift({id:data,text:txt,target_at:null,days_left:null,habits:[]});
-    lier('o',data); pickFor=null; renderZone(); return;}
+    lier('o',data); pickFor=null; wDirty=true; renderZone(); return;}
   const cible = open.kind==='h'?habOf(open.id) : habsOfTrip(tripOf(open.id)||{id:''})[0];
   if(!cible||!cible.t)return;
   const {data,error}=await sb.rpc('repulsion_set',{p_habit:cible.t,p_repulsion:txt,p_obstacle:''});
