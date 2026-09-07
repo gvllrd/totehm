@@ -259,16 +259,16 @@ body.higher .set-block.higher-only{display:flex!important}
 .habit .h-T{background:none;border:none;padding:0;cursor:pointer;line-height:0;color:#fff;transition:opacity .15s,color .25s}
 .habit .h-T .tglyph{height:14px;width:auto;display:block}
 .habit .h-T:hover{opacity:.6}
-/* Le tick n'est plus un trait dans le rail : c'est le CROCHET par
-   lequel la boîte s'accroche au rail. Posé juste après le rail, il
-   forme le bord gauche visible de la boîte — la couleur d'intention
-   devient l'angle vif d'un objet moderne, plutôt qu'un mark détaché.
-   Formule commune mobile/desktop : le crochet se pose à --rl + --rw,
-   quel que soit --rw. */
+/* Le tick N'EST PLUS UN SÉPARÉ : c'est le BORD GAUCHE DE LA BOÎTE.
+   Posé au niveau de sa marge, il chevauche exactement l'arête gauche
+   — la couleur d'intention EST la bordure. La boîte ne « porte » plus
+   une pastille voisine, elle s'accroche au rail par son propre bord.
+   `z-index:2` : le tick passe au-dessus du filet noir de la boîte,
+   sinon le liseré 1px viendrait le griser sur son côté rail. */
 .habit .tick{position:absolute;
-  left:calc(var(--rl) + var(--rw) + 3px);
-  top:2px;bottom:2px;width:3px;height:auto;background:#000;
-  transition:opacity .22s ease,width .22s ease,background .15s ease,left .22s ease}
+  left:calc(var(--rl) + var(--rw) + 4px);
+  top:0;bottom:0;width:3px;height:auto;background:#000;z-index:2;
+  transition:opacity .22s ease,width .22s ease,background .15s ease}
 .habit.timed .tick{background:#fff}
 /* La ligne coule dans le rail : la première pièce porte la couleur
    d'intention pleine, les suivantes s'éteignent — un spectre, pas
@@ -290,8 +290,12 @@ body.higher .set-block.higher-only{display:flex!important}
 .habit.featured .h-body{transform:scale(1.02);filter:brightness(1.06);
   transition:transform .22s cubic-bezier(.22,.61,.36,1),filter .18s ease}
 .habit.open.featured .h-body{transform:none;filter:none}
-.habit .h-body{margin-left:calc(var(--rl) + var(--rw) + 7px);flex:1;position:relative;
-  display:flex;align-items:center;gap:9px;padding-right:26px}
+/* La boîte commence exactement où le tick se pose : le tick chevauche
+   ses 3 premiers pixels et devient le bord gauche. `padding-left` :
+   11 px, soit tick (3) + 8 px d'aération avant le contenu. Le tick
+   reste au-dessus (`z-index:2`), le contenu commence après. */
+.habit .h-body{margin-left:calc(var(--rl) + var(--rw) + 4px);flex:1;position:relative;
+  display:flex;align-items:center;gap:9px;padding:7px 11px}
 
 /* ══ LA BOÎTE — LE CORPS DE LA LIGNE, EXTRUDÉ · 05/09/2026 ═══════════
    Le logo se déplie d'une couleur en trois, avec de l'épaisseur. La ligne
@@ -306,7 +310,7 @@ body.higher .set-block.higher-only{display:flex!important}
    interdit l'ombre décorative ; une face n'est pas une ombre, c'est le
    côté d'un objet. Le logo ne fait rien d'autre. */
 .habit .h-body{background:var(--skin);border:1px solid #000;
-  padding:7px 11px;transition:filter .15s ease}
+  transition:filter .15s ease}
 @media(hover:hover){
   .habit:not(.add) .h-body:hover{filter:brightness(1.18)}
 }
@@ -386,35 +390,60 @@ body.higher .set-block.higher-only{display:flex!important}
    apparaît ressemble à une fenêtre qui s'ouvre par-dessus, exactement ce
    qu'on a passé un lot à supprimer. Elle pousse depuis son propre haut :
    `transform-origin:top`. */
-/* La boîte cliquée NE SE REMPLACE PAS d'un coup — elle enfante.
-   Le contenant se pose (fondu doux, sans écrasement de la mise en page :
-   plus de `scaleY(.92)` qui faisait sursauter les voisines), puis les
-   pièces liées descendent en CASCADE depuis le haut, comme des enfants
-   qui glissent hors du parent. La pièce de la vue courante ouvre le
-   bal ; les deux autres suivent avec 90 et 180 ms de retard.
-   Les sélecteurs `.blk ~ .blk` et `.blk ~ .blk ~ .blk` désignent
-   deuxième et troisième `.blk` sans dépendre de l'ordre exact des
-   frères (une `.dash` ou une `.acts` peut s'intercaler), ce que
-   `nth-of-type` ne saurait pas faire — `.blk` est un div, comme
-   `.w-top`, `.dash` et `.acts`. */
+/* ══ OUVERTURE — L'ENFANTEMENT ═════════════════════════════════════════
+   La boîte cliquée ne se replace plus d'un coup : elle porte la pièce
+   principale (la vue courante) comme un morphe DOUX — un fondu qui
+   remonte de 2 px — pendant que les pièces liées SORTENT depuis son
+   haut, une par une, dévoilées par un `clip-path` qui descend et un
+   léger débordement élastique. C'est un enfantement, pas un empilement.
+   Sélecteurs `.blk ~ .blk` : la 2e `.blk` puis la 3e — indépendants
+   de l'ordre des frères (`.dash`, `.acts`, `.w-top` peuvent s'y glisser),
+   ce que `nth-of-type` ne fait pas puisque tout est `<div>`. */
 .habit.open{align-items:stretch;flex:0 0 auto;
   animation:hab-open .32s cubic-bezier(.22,.61,.36,1)}
 @keyframes hab-open{
-  from{opacity:.55;transform:translateY(-4px)}
+  from{opacity:.5}
+  to  {opacity:1}
+}
+/* Le haut de la fiche : petit fondu, aucun délai. */
+.habit.open .w-top{animation:blk-in .24s cubic-bezier(.22,.61,.36,1) both}
+
+/* 1ʳᵉ .blk = la pièce de la vue courante : elle N'EST PAS née, elle
+   se stabilise. Un fondu doux et une remontée de 2 px, pas de scaleY.
+   C'est ce qui la fait passer pour la « continuation » de la ligne
+   cliquée plutôt que pour une autre boîte apparue. */
+.habit.open .blk{transform-origin:top;
+  animation:blk-settle .3s cubic-bezier(.22,.61,.36,1) both}
+@keyframes blk-settle{
+  from{opacity:0;transform:translateY(2px)}
   to  {opacity:1;transform:translateY(0)}
 }
-.habit.open .w-top{animation:blk-in .24s cubic-bezier(.22,.61,.36,1) both}
-.habit.open .blk{transform-origin:top;
-  animation:blk-birth .42s cubic-bezier(.22,.61,.36,1) both}
-.habit.open .blk ~ .blk{animation-delay:.09s}
-.habit.open .blk ~ .blk ~ .blk{animation-delay:.18s}
-.habit.open .dash{animation:blk-in .26s ease .22s both}
-.habit.open .acts{animation:blk-in .26s ease .28s both}
+
+/* 2ᵉ et 3ᵉ .blk = les ENFANTS : elles glissent depuis le haut, dévoilées
+   par un rideau `clip-path` qui descend, avec un léger overshoot
+   élastique (cubic-bezier au-delà de 1) — comme un tissu qui déferle.
+   `margin-top` négatif → 0 pousse doucement les frères suivants au
+   lieu du saut sec du flow. */
+.habit.open .blk ~ .blk{
+  animation:blk-birth .52s cubic-bezier(.34,1.32,.64,1) both;
+  animation-delay:.09s}
+.habit.open .blk ~ .blk ~ .blk{animation-delay:.22s}
 @keyframes blk-birth{
-  0%{opacity:0;transform:translateY(-12px) scaleY(.82)}
-  60%{opacity:1}
-  100%{opacity:1;transform:translateY(0) scaleY(1)}
+  0%  {opacity:0;
+       clip-path:inset(0 0 100% 0);
+       transform:translateY(-16px) scale(.94);
+       margin-top:-8px}
+  40% {opacity:1}
+  100%{opacity:1;
+       clip-path:inset(0 0 0 0);
+       transform:translateY(0) scale(1);
+       margin-top:0}
 }
+
+/* Les commandes suivent, décalées — elles ne participent pas à
+   l'enfantement, elles s'invitent à la fin. */
+.habit.open .dash{animation:blk-in .28s cubic-bezier(.22,.61,.36,1) .30s both}
+.habit.open .acts{animation:blk-in .3s  cubic-bezier(.22,.61,.36,1) .38s both}
 @keyframes blk-in{
   from{opacity:0;transform:translateY(-4px)}
   to  {opacity:1;transform:translateY(0)}
@@ -1293,7 +1322,7 @@ body.gate.entered #filter-badge{
   /* Rail fin et sourd — une trace, pas une bande. Il tient la colonne du
      regard sans peser. */
   #rail{background:rgba(255,255,255,.16)}
-  .habit .h-body{margin-left:calc(var(--rw) + 7px)}
+  .habit .h-body{margin-left:calc(var(--rw) + 4px)}
   /* Mobile pousse la loupe un peu plus fort (1.035 au lieu de 1.02) :
      la liste tient sur un pouce, le regard cherche un point d'ancrage. */
   .habit.featured .h-body{transform:scale(1.035)}
