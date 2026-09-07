@@ -598,12 +598,13 @@ body.higher .set-block.higher-only{display:flex!important}
    et la souris — Pointer Events. `touch-action:none` est OBLIGATOIRE :
    sans lui le navigateur avale le glissement vertical et le classement se
    perd une fois sur deux. */
-/* Le bouton coiffe le RAIL et le prolonge : trois barres blanches
-   IDENTIQUES (même longueur = largeur du rail, même épaisseur), posées
-   les unes sur les autres. La première fait la largeur exacte du rail
-   — elle en épouse les deux coins — et les trois suivent. Le rail
-   devient ainsi une pièce du geste de classement, pas un décor à côté.
-   Chaque barre respire comme le T (`t-slow`, 4,2s ease-in-out infini),
+/* Le bouton coiffe le RAIL et le PROLONGE : trois barres blanches.
+   La PREMIÈRE fait la largeur exacte du rail — elle se cale dans les
+   deux coins du haut, elle capsule le rail. Les DEUX AUTRES sont plus
+   courtes (décroissantes), comme un rang d'importance qui descend :
+   c'est déjà le geste de classement. Le rail est ainsi une pièce du
+   process, pas un décor à côté.
+   Chaque barre respire comme le T (`t-slow`, 4,2 s ease-in-out infini),
    les trois en HARMONIE — même timing, même easing, ensemble. */
 #ordbtn{position:absolute;
   left:calc(var(--rl) + var(--rw)/2);transform:translateX(-50%);
@@ -611,10 +612,13 @@ body.higher .set-block.higher-only{display:flex!important}
   background:none;border:none;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;gap:3px;
   -webkit-tap-highlight-color:transparent}
-#ordbtn span{display:block;height:2px;width:var(--rw);
-  background:#fff;
+#ordbtn span{display:block;height:2px;background:#fff;
   transition:width .3s ease;
   animation:t-slow 4.2s ease-in-out infinite}
+/* Largeurs : 1ʳᵉ = rail plein · 2ᵉ ≈ 65 % · 3ᵉ ≈ 38 %. */
+#ordbtn .ob-1{width:var(--rw)}
+#ordbtn .ob-2{width:calc(var(--rw) * .65)}
+#ordbtn .ob-3{width:calc(var(--rw) * .38)}
 /* En mode classement, le bouton ne respire plus : on est dedans,
    l'invitation a été acceptée. Barres pleines et fixes. */
 body.ordering #ordbtn span{animation:none;opacity:1}
