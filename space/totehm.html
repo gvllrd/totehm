@@ -622,18 +622,20 @@ body.ordering .habit{touch-action:none;cursor:grab}
 body.ordering .habit .h-body{opacity:.92}
 .habit.drag{opacity:.4}
 .habit.over .h-body{outline:1px solid #fff;outline-offset:2px}
-/* Le chiffre de classement reprend la typo du slogan HIGHER : Montserrat
-   italic 900. Effet slogan — un nombre qui compte, pas une petite étiquette.
-   Il se pose sur le bord gauche de la boîte, la boîte se pousse à droite
-   en mode `ordering` (padding-left) pour lui laisser la place. */
+/* Le chiffre de classement se pose DANS LE RAIL. Le rail s'élargit
+   pour le contenir : `body.ordering` redéfinit --rw à 26 px, et
+   comme #rail, .h-body, .tick et #ordbtn s'accrochent tous à --rw,
+   toute la colonne pousse et le rail devient la piste du classement.
+   Le nombre est centré sur cette piste — Montserrat italic 900,
+   effet slogan comme HIGHER. */
+body.ordering{--rw:26px}
 .rank{position:absolute;
-  left:calc(var(--rl) + var(--rw) + 8px);
-  top:50%;transform:translateY(-50%);
+  left:calc(var(--rl) + var(--rw)/2);
+  top:50%;transform:translate(-50%,-50%);
   font-family:'Montserrat',sans-serif;font-weight:900;font-style:italic;
-  font-size:20px;line-height:1;color:#fff;
+  font-size:18px;line-height:1;color:#fff;
   font-variant-numeric:tabular-nums;letter-spacing:-.02em;
   pointer-events:none;z-index:3}
-body.ordering .habit .h-body{padding-left:32px}
 .void{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;
   text-transform:uppercase;color:rgba(255,255,255,.45);padding:24px 0;text-align:center}
 
