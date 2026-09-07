@@ -1210,7 +1210,7 @@ body.gate.entered #filter-badge{
    effet de loupe — une boîte pleine légèrement agrandie, sans ombre :
    BRAND.md interdit l'ombre décorative. */
 @media(max-width:699px){
-  :root{--rl:0px;--band-t:150px}
+  :root{--rl:0px;--rw:6px;--band-t:150px}
   /* #ordbtn = boîte 40×40 comme #fold-x (svg 20×20 + padding 10×10) :
      trois barres largeur 20/14/8 sur 20px de haut (2px × 3 barres +
      7px × 2 gaps), padding 10 → 40×40. Même géométrie exactement, en
@@ -1227,21 +1227,23 @@ body.gate.entered #filter-badge{
   #bigT svg{height:48px}
   #views{top:118px}
   #vname{top:142px}
-  #rail{background:rgba(255,255,255,.28)}
-  .habit .h-body{margin-left:calc(var(--rw) + 14px)}
-  /* Le tick n'est plus un trait de 5px : c'est une BANDE verticale qui
-     couvre toute la hauteur de la boîte. Pose absolue depuis top jusqu'à
-     bottom, largeur du rail. */
-  .habit .tick{left:0;top:0;bottom:0;width:var(--rw);height:auto;transform:none;
-    transition:opacity .18s ease}
+  /* Rail fin et sourd — une trace, pas une bande. Il tient la colonne du
+     regard sans peser. */
+  #rail{background:rgba(255,255,255,.16)}
+  .habit .h-body{margin-left:calc(var(--rw) + 12px)}
+  /* Le tick n'est plus un bloc de couleur : c'est une TOUCHE. Un trait
+     fin (2px) posé sur le rail, hauteur de la boîte. La couleur
+     d'intention est un pigment, pas une surface. */
+  .habit .tick{left:2px;top:2px;bottom:2px;width:2px;height:auto;transform:none;
+    transition:opacity .18s ease,width .18s ease}
   /* Progression : la première pièce est à pleine valeur, les suivantes
-     s'estompent vers le gris du rail — la couleur d'intention se lit
-     comme un spectre décroissant. */
+     s'estompent vers le gris du rail — un spectre décroissant, pas une
+     collection de bandes. */
   #habits > .habit:nth-of-type(1) .tick{opacity:1}
-  #habits > .habit:nth-of-type(2) .tick{opacity:.72}
-  #habits > .habit:nth-of-type(3) .tick{opacity:.52}
-  #habits > .habit:nth-of-type(4) .tick{opacity:.38}
-  #habits > .habit:nth-of-type(n+5) .tick{opacity:.26}
+  #habits > .habit:nth-of-type(2) .tick{opacity:.62}
+  #habits > .habit:nth-of-type(3) .tick{opacity:.4}
+  #habits > .habit:nth-of-type(4) .tick{opacity:.26}
+  #habits > .habit:nth-of-type(n+5) .tick{opacity:.16}
   #habits > .habit.add .tick{opacity:0}
   /* La ligne mise en avant : celle en tête de liste, ou celle qui vient
      de s'y poser au scroll. Elle passe SOUS le curseur du regard, un
@@ -1251,7 +1253,9 @@ body.gate.entered #filter-badge{
   .habit.featured{z-index:3}
   .habit.featured .h-body{transform:scale(1.035);filter:brightness(1.06);
     transition:transform .22s cubic-bezier(.22,.61,.36,1),filter .18s ease}
-  .habit.featured .tick{opacity:1!important}
+  /* La ligne en avant : le pigment s'élargit d'un cheveu (3px) et passe
+     à pleine valeur. Rien d'autre — la modernité, c'est la retenue. */
+  .habit.featured .tick{opacity:1!important;width:3px}
   /* Une boîte ouverte ne se met plus « en avant » : l'agrandissement
      ferait déborder le contenu qu'on est en train de lire. */
   .habit.open.featured .h-body{transform:none;filter:none}
