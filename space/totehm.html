@@ -379,27 +379,48 @@ body.higher .set-block.higher-only{display:flex!important}
    apparaît ressemble à une fenêtre qui s'ouvre par-dessus, exactement ce
    qu'on a passé un lot à supprimer. Elle pousse depuis son propre haut :
    `transform-origin:top`. */
-/* ══ OUVERTURE — VERSION SIMPLE ET STABLE · 07/09/2026 ═════════════════
-   Version transitoire, en attendant le vrai refactor (la boîte cliquée
-   garde son apparence fermée et n'engendre QUE les pièces liées
-   au-dessous). Ici : fondu du contenant + arrivée en cascade des blocs.
-   Pas de `clip-path`, pas de `margin-top` négatif, pas d'overshoot —
-   ce qui avait produit les bugs. */
-.habit.open{align-items:stretch;flex:0 0 auto;
-  animation:hab-open .28s cubic-bezier(.22,.61,.36,1)}
-@keyframes hab-open{
-  from{opacity:.5;transform:translateY(-2px)}
+/* ══ OUVERTURE — LA BOÎTE NE BOUGE PAS, ELLE ENFANTE · 07/09/2026 ══════
+   Cliquer une boîte la met en mode ÉDITION à sa PLACE : mêmes marges,
+   même padding, même position du nom et du meta. Le `.v-name` devient
+   `contenteditable` — on écrit dedans, rien ne se déplace.
+   Puis, en dessous, un conteneur `.h-birth` apparaît avec les pièces
+   LIÉES uniquement (jamais la pièce cliquée : c'est déjà la boîte).
+   Ce sont les enfants qui glissent hors du parent, avec fondu et
+   translation, décalés en cascade. */
+.habit.open{align-items:stretch;flex:0 0 auto;flex-direction:column}
+/* La boîte fermée reste fermée : même padding, aucune bascule de layout.
+   Seul le nom passe en édition, avec un léger fond pour dire "écris". */
+.habit.open .h-body{cursor:text}
+.habit.open .v-col{cursor:text}
+.habit.open .v-name[contenteditable]{outline:none;cursor:text;
+  padding:1px 5px;margin:-1px -5px;
+  background:rgba(255,255,255,.06);
+  transition:background .15s ease}
+.habit.open .v-name[contenteditable]:focus{background:rgba(255,255,255,.14)}
+
+/* Le conteneur des enfants : sous la boîte, aligné sur son bord gauche
+   (le tick continue de le border), fond noirci (navy-d) — c'est le
+   plan de travail. Il glisse et s'ouvre en un seul geste. */
+.h-birth{display:none}
+.habit.open .h-birth{display:block;
+  margin-left:calc(var(--rl) + var(--rw) + 4px);
+  margin-top:6px;padding:11px 12px 12px;
+  background:var(--navy-d);border:1px solid #000;
+  animation:birth-open .34s cubic-bezier(.22,.61,.36,1) both}
+@keyframes birth-open{
+  from{opacity:0;transform:translateY(-8px)}
   to  {opacity:1;transform:translateY(0)}
 }
-.habit.open .w-top,
-.habit.open .blk,
-.habit.open .dash,
-.habit.open .acts{
+/* Chaque pièce liée arrive avec un léger retard — cascade de bébés. */
+.habit.open .h-birth .w-top,
+.habit.open .h-birth .blk,
+.habit.open .h-birth .dash,
+.habit.open .h-birth .acts{
   animation:blk-in .3s cubic-bezier(.22,.61,.36,1) both}
-.habit.open .blk ~ .blk       {animation-delay:.08s}
-.habit.open .blk ~ .blk ~ .blk{animation-delay:.16s}
-.habit.open .dash             {animation-delay:.20s}
-.habit.open .acts             {animation-delay:.24s}
+.habit.open .h-birth .blk       {animation-delay:.06s}
+.habit.open .h-birth .blk ~ .blk{animation-delay:.16s}
+.habit.open .h-birth .dash      {animation-delay:.22s}
+.habit.open .h-birth .acts      {animation-delay:.28s}
 @keyframes blk-in{
   from{opacity:0;transform:translateY(-6px)}
   to  {opacity:1;transform:translateY(0)}
@@ -425,8 +446,9 @@ body.higher .set-block.higher-only{display:flex!important}
    NOIR — on CRÉE. La page est blanche, elle est noire, et les trois
    couleurs de la marque y apparaissent au fur et à mesure qu'on remplit.
    Le noir est le moment de la conception, jamais celui de la lecture. */
-.habit.open .h-body{display:block;padding:13px 13px 15px;cursor:default;
-  background:var(--navy-d);border:none}
+/* La boîte cliquée garde son apparence FERMÉE — même padding, même
+   couleur, même filet. Seule différence : le nom devient éditable
+   (voir plus haut). C'est ça, « sans bouger ». */
 .habit.open.neuf .h-body{background:#000;border:1px solid var(--skin)}
 @media(hover:hover){.habit.open .h-body:hover{filter:none}}
 .w-top{display:flex;align-items:flex-start;margin-bottom:10px}
@@ -2616,13 +2638,27 @@ function differe(fn){ clearTimeout(wTimer); wTimer=setTimeout(fn,700); }
    pièce du logo, et il devient le spectre d'une vie, lisible avant même
    d'avoir lu une ligne. Sans intention il reste blanc — le blanc est
    l'absence, pas une huitième couleur. */
-const ligne=(inner,cls,col,rank,id)=>'<div class="habit timed '+(cls||'')+'"'
+/* `birth` (optionnel) = HTML du conteneur d'enfants sous la boîte.
+   Vaut null pour toutes les lignes fermées ; seul l'open case le pose. */
+const ligne=(inner,cls,col,rank,id,birth)=>'<div class="habit timed '+(cls||'')+'"'
   +(id?' data-row="'+esc(id)+'"':'')+'>'
   +'<span class="tick"'+(col?' style="background:'+col+'"':'')+'></span>'
   +(ordering&&rank?'<span class="rank">'+rank+'</span>':'')
-  +'<span class="h-body">'+inner+'</span></div>';
+  +'<span class="h-body">'+inner+'</span>'
+  +(birth?'<div class="h-birth">'+birth+'</div>':'')
+  +'</div>';
 const boite=(nom,sous,attr)=>'<span class="v-col" '+attr+' role="button" tabindex="0">'
   +'<span class="v-name">'+nom+'</span><span class="v-sub">'+sous+'</span></span>';
+
+/* `editInner` : la MÊME structure que `boite` (v-col + v-name + v-sub),
+   mais le nom est `contenteditable` : la boîte cliquée passe en mode
+   édition à sa PLACE, sans changer de layout. Le sub reste identique
+   au fermé — cliquable, il rouvre les modales existantes. */
+const editInner=(kind,x,sous)=>'<span class="v-col edit-in">'
+  +'<span class="v-name" contenteditable="plaintext-only" spellcheck="false"'
+  +' data-'+kind+'edit="'+esc(String(x.id))+'">'
+  +esc(kind==='h'?(x.t||''):(x.text||''))+'</span>'
+  +'<span class="v-sub">'+sous+'</span></span>';
 
 /* ══ LE PANNEAU — LE TRIP VU DEPUIS N'IMPORTE QUELLE BOÎTE ═══════════
    Les mots disent le LIEN, pas la catégorie : la couleur dit déjà la
@@ -2722,7 +2758,12 @@ const blkVide=(key,mode,liste,ph)=>{
       +'</div>':'')
    +'</div>';};
 
-function panneau(mode,t,hs,rs){
+/* `panneauParts` : les pièces du trip, séparées.
+   La pièce de la vue courante (`own`) n'entre PAS dans le birth :
+   c'est la boîte fermée qui la porte, éditable. Seules les liées
+   descendent en dessous.
+   Retour : { linked, acts, wtop } — tous des chaînes HTML prêtes. */
+function panneauParts(mode,t,hs,rs){
   const bloc={
     o: t ? blkO(t, mode==='t', mode)
          : blkVide('o',mode,TRIPS.map(x=>({id:x.id,txt:x.text})),'a new objective'),
@@ -2732,24 +2773,33 @@ function panneau(mode,t,hs,rs){
     r: (rs.length?rs.map(r=>blkR(r, mode==='r'||String(r.id)===editR, mode)).join('')
                  :blkVide('r',mode,REPS.map(x=>({id:x.id,txt:x.text})),'a new repulsion'))
        +(hs.length&&rs.length?'<button type="button" class="dash" data-ar="'+esc(hs[0].id)+'">+ add a repulsion</button>':'')};
-  return '<div class="w-top"><button type="button" class="w-x" data-x="1" aria-label="Close">&times;</button></div>'
-   + ORDRE[mode].map(k=>bloc[k]).join('')
-   + '<div class="acts">'
+  const linkedKs = ORDRE[mode].slice(1);   /* on saute la pièce de la vue */
+  const acts = '<div class="acts">'
    +   (mode==='h'?'<button type="button" class="btn g" data-kill="'+esc(open.id)+'">Delete habit</button>':'')
    +   (mode==='t'?'<button type="button" class="btn g" data-tkill="'+esc(open.id)+'">Delete objective</button>':'')
    +   (mode==='r'?'<button type="button" class="btn g" data-rkill="'+esc(open.id)+'">Delete repulsion</button>':'')
    +   '<button type="button" class="btn" data-x="1">Done</button></div>';
+  return {
+    linked: linkedKs.map(k=>bloc[k]).join(''),
+    acts: acts,
+    wtop: '<div class="w-top"><button type="button" class="w-x" data-x="1" aria-label="Close">&times;</button></div>'
+  };
 }
-function panneauHTML(){
+/* birthHTML : le contenu du conteneur `.h-birth` sous la boîte cliquée.
+   Reprend `panneauParts` pour la vue courante (`open.kind`) et
+   concatène wtop + linked + acts. */
+function birthHTML(){
+  let parts=null;
   if(open.kind==='h'){const x=habOf(open.id); if(!x)return '';
-    return panneau('h', x.o?tripOf(x.o):null, [x], repsOfHab(x.id));}
-  if(open.kind==='t'){const t=tripOf(open.id); if(!t)return '';
+    parts=panneauParts('h', x.o?tripOf(x.o):null, [x], repsOfHab(x.id));}
+  else if(open.kind==='t'){const t=tripOf(open.id); if(!t)return '';
     const hs=habsOfTrip(t), vu={}, rs=[];
     hs.forEach(h=>repsOfHab(h.id).forEach(r=>{if(!vu[r.id]){vu[r.id]=1;rs.push(r);}}));
-    return panneau('t', t, hs, rs);}
-  const r=repOf(open.id); if(!r)return '';
-  const hs=habsOfRep(r);
-  return panneau('r', hs[0]&&hs[0].o?tripOf(hs[0].o):null, hs, [r]);
+    parts=panneauParts('t', t, hs, rs);}
+  else{const r=repOf(open.id); if(!r)return '';
+    const hs=habsOfRep(r);
+    parts=panneauParts('r', hs[0]&&hs[0].o?tripOf(hs[0].o):null, hs, [r]);}
+  return parts.wtop + parts.linked + parts.acts;
 }
 
 /* ══ LE RENDU ════════════════════════════════════════════════════════
@@ -2781,9 +2831,18 @@ function renderZone(anim){
       if(filterI && x.i!==filterI) return false;
       return true;});
     h=list.map((x,k)=>{
-      if(open&&open.kind==='h'&&open.id===x.id)
-        return ligne('<span class="v-col open-in">'+panneauHTML()+'</span>','open'+(open.neuf?' neuf':''),null,null,x.id);
       const n=repsOfHab(x.id).length, t=x.o?tripOf(x.o):null;
+      /* Contenu de la boîte : STRICTEMENT IDENTIQUE ouvert et fermé.
+         La seule différence : `editInner` rend le nom éditable. */
+      const sub=(x.i?'<span class="v-int" style="color:'+intColor(x.i)+'">'+esc(intName(x.i))+'</span>'
+             +'<span class="v-pil">'+esc(intPillar(x.i))+'</span>'
+            :'<span class="v-pil">set intention</span>')
+        +'<span class="v-frq">'+esc(x.f?flabel(x.f):'no rhythm')+'</span>'
+        +(n?'<span class="v-pil">'+n+' repulsion'+(n>1?'s':'')+'</span>':'')
+        +(t?'<span class="v-pil">'+esc(t.text)+'</span>'
+           :(!x.o?'<span class="v-pil">no objective</span>':''));
+      if(open&&open.kind==='h'&&open.id===x.id)
+        return ligne(editInner('h',x,sub),'open'+(open.neuf?' neuf':''),x.i?intColor(x.i):null,k+1,x.id,birthHTML());
       /* PAS DE CADRE NAVY SUR UNE BOÎTE DÉJÀ NAVY. `.h-frame` existe pour
          qu'une habitude reste navy quand elle est POSÉE AILLEURS — dans le
          noir d'un Trip, dans le rouge-violet d'une répulsion. Ici la boîte
@@ -2807,24 +2866,22 @@ function renderZone(anim){
     h+=ligne('<button type="button" class="add-box" data-add="1">+ <b>Add a Habit</b></button>','add');
   }else if(view==='objectives'){
     h=TRIPS.map((t,k)=>{
-      if(open&&open.kind==='t'&&String(open.id)===String(t.id))
-        return ligne('<span class="v-col open-in">'+panneauHTML()+'</span>','open'+(open.neuf?' neuf':''),null,null,t.id);
       const n=habsOfTrip(t).length, late=t.days_left!=null&&t.days_left<0;
-      return ligne(boite(esc(t.text),
-        '<span class="v-frq'+(late?' late':'')+'">'+esc(fmtDue(t.days_left))+'</span>'
-        +'<span class="v-pil">'+n+' habit'+(n===1?'':'s')+'</span>',
-        'data-t="'+esc(t.id)+'"'), '', null, k+1, t.id);}).join('');
+      const sub='<span class="v-frq'+(late?' late':'')+'">'+esc(fmtDue(t.days_left))+'</span>'
+        +'<span class="v-pil">'+n+' habit'+(n===1?'':'s')+'</span>';
+      if(open&&open.kind==='t'&&String(open.id)===String(t.id))
+        return ligne(editInner('t',t,sub),'open'+(open.neuf?' neuf':''),null,k+1,t.id,birthHTML());
+      return ligne(boite(esc(t.text),sub,'data-t="'+esc(t.id)+'"'),'',null,k+1,t.id);}).join('');
     if(!TRIPS.length)h+='<div class="void">'+(tripsLoaded?'no objective yet':'loading…')+'</div>';
     h+=ligne('<button type="button" class="add-box" data-add="1">+ <b>Add an Objective</b></button>','add');
   }else{
     h=REPS.map((r,k)=>{
-      if(open&&open.kind==='r'&&String(open.id)===String(r.id))
-        return ligne('<span class="v-col open-in">'+panneauHTML()+'</span>','open'+(open.neuf?' neuf':''),null,null,r.id);
       const x=habsOfRep(r)[0];
-      return ligne(boite(esc(r.text),
-        '<span class="v-pil">protects</span>'
-        +'<span class="h-frame u-mini">'+esc(x?x.t:'—')+'</span>',
-        'data-r="'+esc(r.id)+'"'), '', x&&x.i?intColor(x.i):null, k+1, r.id);}).join('');
+      const sub='<span class="v-pil">protects</span>'
+        +'<span class="h-frame u-mini">'+esc(x?x.t:'—')+'</span>';
+      if(open&&open.kind==='r'&&String(open.id)===String(r.id))
+        return ligne(editInner('r',r,sub),'open'+(open.neuf?' neuf':''),x&&x.i?intColor(x.i):null,k+1,r.id,birthHTML());
+      return ligne(boite(esc(r.text),sub,'data-r="'+esc(r.id)+'"'),'',x&&x.i?intColor(x.i):null,k+1,r.id);}).join('');
     if(!REPS.length)h+='<div class="void">'+(tripsLoaded?'no repulsion yet':'loading…')+'</div>';
     h+=ligne('<button type="button" class="add-box" data-add="1">+ <b>Add a Repulsion</b></button>','add');
   }
@@ -2884,7 +2941,10 @@ function ouvrir(kind,id,neuf){
        quand le système demande moins d'animation. */
     requestAnimationFrame(()=>{const sc=$('fv-inner'); if(!sc)return;
       sc.scrollTop=sc.scrollTop+b.getBoundingClientRect().top-sc.getBoundingClientRect().top-6;});
-    const f=b.querySelector('textarea.w-name');
+    /* Focus sur le nom éditable in-place. Fallback vers la textarea
+       du blk (utilisée si un jour on rouvre un flux d'édition dedans). */
+    const f=b.querySelector('.h-body .v-name[contenteditable]')
+         || b.querySelector('textarea.w-name');
     if(f&&window.innerWidth>700)f.focus();
   }
 }
@@ -2976,6 +3036,35 @@ function cable(carte){
     r.text=e.target.value; grow(e.target); wDirty=true;
     differe(()=>apres(sb.rpc('repulsion_set',
       {p_habit:(r.hs||[])[0]||'', p_repulsion:r.text, p_obstacle:r.obstacle||''})));});
+
+  /* ── ÉDITION INLINE DU NOM DEPUIS LA BOÎTE FERMÉE (mode open) ──────
+     `.v-name[contenteditable]` : le membre écrit dans la boîte cliquée
+     à sa place, sans qu'elle change de layout. Sauvegarde différée
+     (differe), même chemin serveur que les textarea des blks — un
+     seul RPC par pause de frappe. Entrée = fin d'édition, pas de saut
+     de ligne dans un nom. */
+  on('[data-hedit]','input',e=>{
+    const x=habOf(e.target.dataset.hedit); if(!x)return;
+    const ancien=x.t; x.t=e.target.textContent;
+    differe(()=>{
+      save();
+      if(me&&ancien&&ancien!==x.t){
+        REPS.forEach(r=>{const i=(r.hs||[]).indexOf(ancien); if(i>=0)r.hs[i]=x.t;});
+        apres(sb.rpc('habit_rename_links',{p_old:ancien,p_new:x.t}));}
+    });});
+  on('[data-tedit]','input',e=>{
+    const t=tripOf(e.target.dataset.tedit); if(!t)return;
+    t.text=e.target.textContent; wDirty=true;
+    differe(()=>apres(sb.rpc('trip_rename',{p_trip:t.id,p_text:t.text})));});
+  on('[data-redit]','input',e=>{
+    const r=repOf(e.target.dataset.redit); if(!r)return;
+    r.text=e.target.textContent; wDirty=true;
+    differe(()=>apres(sb.rpc('repulsion_set',
+      {p_habit:(r.hs||[])[0]||'', p_repulsion:r.text, p_obstacle:r.obstacle||''})));});
+  /* Entrée dans un contenteditable = saut de ligne par défaut.
+     Un NOM n'a pas de retour à la ligne : Entrée quitte le champ. */
+  on('[data-hedit],[data-tedit],[data-redit]','keydown',e=>{
+    if(e.key==='Enter'){e.preventDefault(); e.target.blur();}});
 
   /* ── L'INTENTION, sur l'habitude qu'on touche ─────────────────────── */
   on('[data-ip]','click',stop(e=>{
