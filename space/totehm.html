@@ -279,17 +279,6 @@ body.higher .set-block.higher-only{display:flex!important}
 #habits > .habit:nth-of-type(4) .tick{opacity:.26}
 #habits > .habit:nth-of-type(n+5) .tick{opacity:.16}
 #habits > .habit.add .tick{opacity:0}
-/* La loupe suit la tête de la liste : la ligne en avant s'agrandit
-   d'un pouce (scale 1.02 desktop, 1.035 mobile) et son tick passe à
-   3 px. Aucune ombre — BRAND.md interdit l'ombre décorative. */
-.habit{transition:transform .2s ease}
-.habit.featured{z-index:3}
-/* Le crochet grossit d'un pouce sur la ligne mise en avant : 4 px
-   au lieu de 3, on sent que la boîte s'accroche plus fort. */
-.habit.featured .tick{opacity:1!important;width:4px}
-.habit.featured .h-body{transform:scale(1.02);filter:brightness(1.06);
-  transition:transform .22s cubic-bezier(.22,.61,.36,1),filter .18s ease}
-.habit.open.featured .h-body{transform:none;filter:none}
 /* La boîte commence exactement où le tick se pose : le tick chevauche
    ses 3 premiers pixels et devient le bord gauche. `padding-left` :
    11 px, soit tick (3) + 8 px d'aération avant le contenu. Le tick
@@ -390,62 +379,29 @@ body.higher .set-block.higher-only{display:flex!important}
    apparaît ressemble à une fenêtre qui s'ouvre par-dessus, exactement ce
    qu'on a passé un lot à supprimer. Elle pousse depuis son propre haut :
    `transform-origin:top`. */
-/* ══ OUVERTURE — L'ENFANTEMENT ═════════════════════════════════════════
-   La boîte cliquée ne se replace plus d'un coup : elle porte la pièce
-   principale (la vue courante) comme un morphe DOUX — un fondu qui
-   remonte de 2 px — pendant que les pièces liées SORTENT depuis son
-   haut, une par une, dévoilées par un `clip-path` qui descend et un
-   léger débordement élastique. C'est un enfantement, pas un empilement.
-   Sélecteurs `.blk ~ .blk` : la 2e `.blk` puis la 3e — indépendants
-   de l'ordre des frères (`.dash`, `.acts`, `.w-top` peuvent s'y glisser),
-   ce que `nth-of-type` ne fait pas puisque tout est `<div>`. */
+/* ══ OUVERTURE — VERSION SIMPLE ET STABLE · 07/09/2026 ═════════════════
+   Version transitoire, en attendant le vrai refactor (la boîte cliquée
+   garde son apparence fermée et n'engendre QUE les pièces liées
+   au-dessous). Ici : fondu du contenant + arrivée en cascade des blocs.
+   Pas de `clip-path`, pas de `margin-top` négatif, pas d'overshoot —
+   ce qui avait produit les bugs. */
 .habit.open{align-items:stretch;flex:0 0 auto;
-  animation:hab-open .32s cubic-bezier(.22,.61,.36,1)}
+  animation:hab-open .28s cubic-bezier(.22,.61,.36,1)}
 @keyframes hab-open{
-  from{opacity:.5}
-  to  {opacity:1}
-}
-/* Le haut de la fiche : petit fondu, aucun délai. */
-.habit.open .w-top{animation:blk-in .24s cubic-bezier(.22,.61,.36,1) both}
-
-/* 1ʳᵉ .blk = la pièce de la vue courante : elle N'EST PAS née, elle
-   se stabilise. Un fondu doux et une remontée de 2 px, pas de scaleY.
-   C'est ce qui la fait passer pour la « continuation » de la ligne
-   cliquée plutôt que pour une autre boîte apparue. */
-.habit.open .blk{transform-origin:top;
-  animation:blk-settle .3s cubic-bezier(.22,.61,.36,1) both}
-@keyframes blk-settle{
-  from{opacity:0;transform:translateY(2px)}
+  from{opacity:.5;transform:translateY(-2px)}
   to  {opacity:1;transform:translateY(0)}
 }
-
-/* 2ᵉ et 3ᵉ .blk = les ENFANTS : elles glissent depuis le haut, dévoilées
-   par un rideau `clip-path` qui descend, avec un léger overshoot
-   élastique (cubic-bezier au-delà de 1) — comme un tissu qui déferle.
-   `margin-top` négatif → 0 pousse doucement les frères suivants au
-   lieu du saut sec du flow. */
-.habit.open .blk ~ .blk{
-  animation:blk-birth .52s cubic-bezier(.34,1.32,.64,1) both;
-  animation-delay:.09s}
-.habit.open .blk ~ .blk ~ .blk{animation-delay:.22s}
-@keyframes blk-birth{
-  0%  {opacity:0;
-       clip-path:inset(0 0 100% 0);
-       transform:translateY(-16px) scale(.94);
-       margin-top:-8px}
-  40% {opacity:1}
-  100%{opacity:1;
-       clip-path:inset(0 0 0 0);
-       transform:translateY(0) scale(1);
-       margin-top:0}
-}
-
-/* Les commandes suivent, décalées — elles ne participent pas à
-   l'enfantement, elles s'invitent à la fin. */
-.habit.open .dash{animation:blk-in .28s cubic-bezier(.22,.61,.36,1) .30s both}
-.habit.open .acts{animation:blk-in .3s  cubic-bezier(.22,.61,.36,1) .38s both}
+.habit.open .w-top,
+.habit.open .blk,
+.habit.open .dash,
+.habit.open .acts{
+  animation:blk-in .3s cubic-bezier(.22,.61,.36,1) both}
+.habit.open .blk ~ .blk       {animation-delay:.08s}
+.habit.open .blk ~ .blk ~ .blk{animation-delay:.16s}
+.habit.open .dash             {animation-delay:.20s}
+.habit.open .acts             {animation-delay:.24s}
 @keyframes blk-in{
-  from{opacity:0;transform:translateY(-4px)}
+  from{opacity:0;transform:translateY(-6px)}
   to  {opacity:1;transform:translateY(0)}
 }
 /* CHANGER DE VUE EST UN FONDU, PAS UNE COUPURE. Les boîtes montent de six
@@ -1295,12 +1251,8 @@ body.gate.entered #filter-badge{
    ligne pour laisser la place.
    Le rail se colle au bord GAUCHE (var(--rl):0) : les boîtes d'habitudes
    récupèrent la largeur qu'occupait l'espace entre le bord et le rail.
-   Le tick devient un TIRET VERTICAL de la hauteur de la boîte : la
-   première boîte porte la couleur vive de son intention, les suivantes
-   deviennent de plus en plus transparentes sur le gris du rail. La ligne
-   en tête de liste (`.featured`, posée par le scroll) monte d'un léger
-   effet de loupe — une boîte pleine légèrement agrandie, sans ombre :
-   BRAND.md interdit l'ombre décorative. */
+   Le tick devient le bord gauche de la boîte : progression d'opacité
+   dans la liste, couleur d'intention pleine en haut. */
 @media(max-width:699px){
   :root{--rl:0px;--rw:6px;--band-t:150px}
   /* #ordbtn = boîte 40×40 comme #fold-x (svg 20×20 + padding 10×10) :
@@ -1323,9 +1275,6 @@ body.gate.entered #filter-badge{
      regard sans peser. */
   #rail{background:rgba(255,255,255,.16)}
   .habit .h-body{margin-left:calc(var(--rw) + 4px)}
-  /* Mobile pousse la loupe un peu plus fort (1.035 au lieu de 1.02) :
-     la liste tient sur un pouce, le regard cherche un point d'ancrage. */
-  .habit.featured .h-body{transform:scale(1.035)}
 }
 
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
@@ -4106,37 +4055,11 @@ window.addEventListener('pageshow',e=>{
   }
 })();
 
-/* ══ LA PREMIÈRE HABITUDE EST EN AVANT — LOUPE AU SCROLL · 07/09/2026 ═══
-   Mobile ET desktop. La ligne en tête de liste porte la classe
-   `.featured` : sa boîte s'agrandit d'un pouce (scale 1.02 desktop,
-   1.035 mobile), sans ombre — BRAND.md interdit l'ombre. Au scroll,
-   c'est la ligne qui vient de se poser en haut du cadre qui prend la
-   classe. La liste est TOUJOURS visible : rien ne sort, rien ne se
-   cache — c'est un effet de loupe, pas un carrousel. */
-(function featureFirstHabit(){
-  const sc=document.getElementById('fv-inner');
-  const list=document.getElementById('habits');
-  if(!sc||!list)return;
-  let raf=null;
-  function update(){
-    raf=null;
-    const items=list.querySelectorAll(':scope > .habit:not(.add)');
-    if(!items.length)return;
-    const scTop=sc.getBoundingClientRect().top;
-    let first=null,minDelta=1/0;
-    items.forEach(el=>{
-      const r=el.getBoundingClientRect();
-      const delta=r.top-scTop;
-      if(delta>=-6 && delta<minDelta){minDelta=delta;first=el;}
-    });
-    items.forEach(el=>el.classList.toggle('featured',el===first));
-  }
-  const schedule=()=>{if(!raf)raf=requestAnimationFrame(update);};
-  sc.addEventListener('scroll',schedule,{passive:true});
-  window.addEventListener('resize',schedule,{passive:true});
-  new MutationObserver(schedule).observe(list,{childList:true});
-  schedule();
-})();
+/* ══ LOUPE SUPPRIMÉE · 07/09/2026 ══════════════════════════════════════
+   La mise en avant de la première ligne (agrandissement + 3D) a été
+   retirée : elle troublait la lecture au lieu de la guider. La liste
+   se lit d'un coup d'œil, aucune ligne n'a besoin d'être « en avant »
+   par défaut. */
 </script>
 </body>
 </html>
