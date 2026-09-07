@@ -609,8 +609,15 @@ body.higher .set-block.higher-only{display:flex!important}
   top:6px;padding:8px 14px;z-index:44;
   background:none;border:none;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;gap:3px;
+  line-height:0;font-size:0;
   -webkit-tap-highlight-color:transparent}
-#ordbtn span{display:block;height:2px;width:var(--rw);background:#fff;
+/* min-height + max-height + flex:0 0 2px : ceinture ET bretelles pour
+   que les 3 barres soient RIGOUREUSEMENT identiques, même sous un flex
+   qui pourrait shrinker la première ou un rendu subpixel qui tricherait. */
+#ordbtn span{display:block;
+  width:var(--rw);height:2px;min-height:2px;max-height:2px;
+  flex:0 0 2px;
+  background:#fff;
   transition:width .3s ease;
   animation:t-slow 4.2s ease-in-out infinite}
 /* En mode classement, la respiration s'arrête : on est dedans. */
