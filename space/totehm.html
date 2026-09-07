@@ -1195,6 +1195,68 @@ body.gate.entered #filter-badge{
 
 
 
+/* ══ MOBILE — COIN HAUT GAUCHE HARMONISÉ AVEC LA CROIX · 07/09/2026 ═════
+   Sur mobile, #ordbtn (classer) prend la même géométrie que #fold-x — même
+   top, même padding, même dimensions — pour créer un tout harmonieux avec
+   la croix à droite. #conn-bar quitte le coin gauche (il y a maintenant
+   l'icône classer) et se pose au-dessus du T, centré. Le T descend d'une
+   ligne pour laisser la place.
+   Le rail se colle au bord GAUCHE (var(--rl):0) : les boîtes d'habitudes
+   récupèrent la largeur qu'occupait l'espace entre le bord et le rail.
+   Le tick devient un TIRET VERTICAL de la hauteur de la boîte : la
+   première boîte porte la couleur vive de son intention, les suivantes
+   deviennent de plus en plus transparentes sur le gris du rail. La ligne
+   en tête de liste (`.featured`, posée par le scroll) monte d'un léger
+   effet de loupe — une boîte pleine légèrement agrandie, sans ombre :
+   BRAND.md interdit l'ombre décorative. */
+@media(max-width:699px){
+  :root{--rl:0px;--band-t:150px}
+  /* #ordbtn = boîte 40×40 comme #fold-x (svg 20×20 + padding 10×10) :
+     trois barres largeur 20/14/8 sur 20px de haut (2px × 3 barres +
+     7px × 2 gaps), padding 10 → 40×40. Même géométrie exactement, en
+     miroir de la croix à droite. */
+  #ordbtn{top:10px;left:10px;padding:10px;gap:7px}
+  #ordbtn .ob-1{width:20px}#ordbtn .ob-2{width:14px}#ordbtn .ob-3{width:8px}
+  #ordbtn span{height:2px}
+  /* L'accès membre quitte le coin gauche (repris par #ordbtn) et se pose
+     au-dessus du T, centré. `body:not(.gate)` : dans l'atterrissage,
+     #conn-bar garde sa place d'origine — le logo composé du gate occupe
+     déjà le centre. */
+  body:not(.gate) #conn-bar{top:8px;left:50%;right:auto;transform:translateX(-50%);padding:6px 10px}
+  #bigT{top:44px}
+  #bigT svg{height:48px}
+  #views{top:118px}
+  #vname{top:142px}
+  #rail{background:rgba(255,255,255,.28)}
+  .habit .h-body{margin-left:calc(var(--rw) + 14px)}
+  /* Le tick n'est plus un trait de 5px : c'est une BANDE verticale qui
+     couvre toute la hauteur de la boîte. Pose absolue depuis top jusqu'à
+     bottom, largeur du rail. */
+  .habit .tick{left:0;top:0;bottom:0;width:var(--rw);height:auto;transform:none;
+    transition:opacity .18s ease}
+  /* Progression : la première pièce est à pleine valeur, les suivantes
+     s'estompent vers le gris du rail — la couleur d'intention se lit
+     comme un spectre décroissant. */
+  #habits > .habit:nth-of-type(1) .tick{opacity:1}
+  #habits > .habit:nth-of-type(2) .tick{opacity:.72}
+  #habits > .habit:nth-of-type(3) .tick{opacity:.52}
+  #habits > .habit:nth-of-type(4) .tick{opacity:.38}
+  #habits > .habit:nth-of-type(n+5) .tick{opacity:.26}
+  #habits > .habit.add .tick{opacity:0}
+  /* La ligne mise en avant : celle en tête de liste, ou celle qui vient
+     de s'y poser au scroll. Elle passe SOUS le curseur du regard, un
+     agrandissement de 1,04 — pas d'ombre, la boîte est un objet plein. */
+  .habit .h-body,.habit .tick{will-change:transform,opacity}
+  .habit{transition:transform .2s ease}
+  .habit.featured{z-index:3}
+  .habit.featured .h-body{transform:scale(1.035);filter:brightness(1.06);
+    transition:transform .22s cubic-bezier(.22,.61,.36,1),filter .18s ease}
+  .habit.featured .tick{opacity:1!important}
+  /* Une boîte ouverte ne se met plus « en avant » : l'agrandissement
+     ferait déborder le contenu qu'on est en train de lire. */
+  .habit.open.featured .h-body{transform:none;filter:none}
+}
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -3085,34 +3147,16 @@ $('menu-arrow').onclick=()=>openDashboard();
 /* La croix : le Totehm se replie et l'atterrissage revient. */
 $('fold-x').onclick=()=>foldToGate();
 
-/* ══ LE GESTE VERTICAL — une seule implémentation, molette ET doigt ══
-   Au SOMMET de la liste, vers le haut  → le filtre.
-   Au PIED de la liste, vers le bas     → le Totehm se replie.
-
-   `passive:true`, aucun preventDefault, aucun accumulateur : l'ancien
-   seuil de 90 px de delta cumulé était exactement ce qui donnait au
-   filtre son temps de retard. Un verrou de 520 ms suffit à empêcher
-   qu'une inertie de trackpad ne rejoue le geste deux fois. */
-(function verticalGesture(){
-  let lock=false;
-  const arm=()=>{lock=true;setTimeout(()=>{lock=false;},520);};
-  function blocked(t){
-    if(busy||lock||fpOpen())return true;
-    if(document.body.classList.contains('gate'))return true;   /* on est déjà à l'atterrissage */
-    if($('member-window').classList.contains('show'))return true;
-    if(false)return true;
-    if(hOpen())return true;
-    if(!$('filter-modal').classList.contains('hide'))return true;
-    if(!$('habit-peek').classList.contains('hide'))return true;
-    return !!(t&&t.closest&&t.closest('#freq-panel,#habit-peek,#filter-modal,#member-window,input,textarea'));
-  }
-  window.addEventListener('wheel',(e)=>{
-    if(blocked(e.target))return;
-    const edge=scrollEdges();
-    if(e.deltaY<-4&&edge.top){arm();openFilterModal();}
-    else if(e.deltaY>4&&edge.bottom){arm();foldToGate();}
-  },{passive:true});
-})();
+/* ══ GESTE VERTICAL — SUPPRIMÉ · 07/09/2026 ══════════════════════════
+   Les deux gestes de scroll — vers le haut au sommet pour ouvrir le
+   filtre, vers le bas au pied pour replier le Totehm — bugguaient le
+   défilement de la liste : un pouce qui essaie de descendre la liste
+   d'un cran l'atteignait souvent au pied et repliait le Totehm par
+   surprise ; un doigt qui remontait au sommet ouvrait le filtre au
+   moment où on essayait juste de voir la première habitude.
+   Le filtre reste accessible par le T (qui EST le filtre), le repli
+   reste accessible par la croix #fold-x et par Échap. */
+(function verticalGesture(){})();
 
 /* Rangée du Dashboard (masquée par défaut) : si un jour ré-affichée, ces liens
    ferment la fenêtre membre puis ouvrent la zone. My Wisdom / My next
@@ -3137,18 +3181,22 @@ window.addEventListener('touchstart',(e)=>{x0=e.changedTouches[0].screenX;y0=e.c
 window.addEventListener('touchmove',(e)=>{if(axis)return;const dx=e.changedTouches[0].screenX-x0,dy=e.changedTouches[0].screenY-y0;if(Math.abs(dx)>8||Math.abs(dy)>8)axis=Math.abs(dx)>Math.abs(dy)?'h':'v';},{passive:true});
 window.addEventListener('touchend',(e)=>{
   if(fpOpen())return;
-  if(t0el&&t0el.closest&&t0el.closest('#results,#freq-panel,#member-window,input,button'))return;
+  /* On ne bloque QUE ce qui capture vraiment le geste : les fenêtres
+     modales, les champs de saisie, et les vrais contrôles interactifs
+     (input/textarea/select). `button` avait été mis là pour blinder,
+     mais toute la vue courante est faite de boutons — la ligne d'unité,
+     le T, la croix. Il barrait le balayage horizontal sur mobile
+     partout où il y avait quelque chose à lire. Résultat : le swipe
+     latéral vers Objectives / Repulsions ne partait presque jamais.
+     Le T (h-T), la croix (h-x) et les tiroirs (v-meta) sont exclus par
+     leur propre onclick — pas besoin d'un guard global. */
+  if(t0el&&t0el.closest&&t0el.closest('#freq-panel,#habit-peek,#filter-modal,#member-window,input,textarea,select'))return;
   const _ae=document.activeElement;
   if(_ae&&(_ae.tagName==='TEXTAREA'||_ae.tagName==='INPUT'))return;
   if(document.body.classList.contains('gate'))return;   /* l'atterrissage défile librement */
+  if(hOpen())return;
   const dy=e.changedTouches[0].screenY-y0;const TH=32;
-  if(axis==='v'){
-    const edge=scrollEdges();
-    /* Vers le bas au pied de la liste : le Totehm se replie — exactement
-       la croix. Vers le haut au sommet : le filtre. */
-    if(dy<-TH && edge.bottom)foldToGate();
-    else if(dy>TH && edge.top)openFilterModal();
-  }else if(axis==='h'){
+  if(axis==='h'){
     const dx=e.changedTouches[0].screenX-x0;
     if(Math.abs(dx)<TH)return;
     /* LE BALAYAGE = LES CARRÉS. Même ordre — rouge, navy, bleu clair — et
@@ -3158,11 +3206,12 @@ window.addEventListener('touchend',(e)=>{
     const i=VIEW_ORDER.indexOf(view)+(dx<0?1:-1);
     if(i>=0&&i<VIEW_ORDER.length)setView(VIEW_ORDER[i]);
   }
+  /* Le geste VERTICAL ne pilote plus rien : le scroll d'ouverture du
+     filtre et de repli du Totehm bugguait le défilement de la liste.
+     Le T ouvre le filtre, la croix (#fold-x) replie. */
 },{passive:true});
-/* La molette est traitée à un seul endroit : verticalGesture(). Les deux
-   écouteurs concurrents d'avant (un sur #fv-inner en passive:false, un sur
-   window avec un accumulateur de 90 px) se disputaient le même geste et
-   retenaient le scroll — c'était ça, le filtre qui « manque de fluidité ». */
+/* La molette ne pilote plus rien : la liste défile normalement. Le
+   filtre passe par le T, le repli par la croix. */
 
 /* Chevrons latéraux : mêmes cibles que le swipe horizontal.
    Ils passent sous Book et Next (z-index) : on ouvre par eux, on referme par
@@ -3984,6 +4033,44 @@ window.addEventListener('pageshow',e=>{
       if(Math.abs(e.changedTouches[0].clientY-_gsY)>40) window.location.href='map.html';
     },{passive:true});
   }
+})();
+
+/* ══ LA PREMIÈRE HABITUDE EST EN AVANT — LOUPE AU SCROLL · 07/09/2026 ═══
+   Mobile. La ligne en tête de liste porte la classe `.featured` : sa boîte
+   s'agrandit d'un pouce (scale 1.035), sans ombre — BRAND.md interdit
+   l'ombre. Au scroll, c'est la ligne qui vient de se poser en haut du
+   cadre qui prend la classe. La liste est TOUJOURS visible : rien ne
+   sort, rien ne se cache — c'est un effet de loupe, pas un carrousel.
+   Pas d'écouteur si on n'est pas sur mobile : desktop n'a pas la même
+   grammaire (la liste s'y lit d'un seul coup d'œil dans le carré). */
+(function featureFirstHabit(){
+  const sc=document.getElementById('fv-inner');
+  const list=document.getElementById('habits');
+  if(!sc||!list)return;
+  const isMobile=()=>window.matchMedia('(max-width:699px)').matches;
+  let raf=null;
+  function update(){
+    raf=null;
+    if(!isMobile()){
+      list.querySelectorAll('.habit.featured').forEach(el=>el.classList.remove('featured'));
+      return;
+    }
+    const items=list.querySelectorAll(':scope > .habit:not(.add)');
+    if(!items.length)return;
+    const scTop=sc.getBoundingClientRect().top;
+    let first=null,minDelta=1/0;
+    items.forEach(el=>{
+      const r=el.getBoundingClientRect();
+      const delta=r.top-scTop;
+      if(delta>=-6 && delta<minDelta){minDelta=delta;first=el;}
+    });
+    items.forEach(el=>el.classList.toggle('featured',el===first));
+  }
+  const schedule=()=>{if(!raf)raf=requestAnimationFrame(update);};
+  sc.addEventListener('scroll',schedule,{passive:true});
+  window.addEventListener('resize',schedule,{passive:true});
+  new MutationObserver(schedule).observe(list,{childList:true});
+  schedule();
 })();
 </script>
 </body>
