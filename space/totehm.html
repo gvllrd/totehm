@@ -598,29 +598,22 @@ body.higher .set-block.higher-only{display:flex!important}
    et la souris — Pointer Events. `touch-action:none` est OBLIGATOIRE :
    sans lui le navigateur avale le glissement vertical et le classement se
    perd une fois sur deux. */
-/* Le bouton coiffe le RAIL et le PROLONGE : trois barres blanches.
-   La PREMIÈRE fait la largeur exacte du rail — elle se cale dans les
-   deux coins du haut, elle capsule le rail. Les DEUX AUTRES sont plus
-   courtes (décroissantes), comme un rang d'importance qui descend :
-   c'est déjà le geste de classement. Le rail est ainsi une pièce du
-   process, pas un décor à côté.
-   Chaque barre respire comme le T (`t-slow`, 4,2 s ease-in-out infini),
-   les trois en HARMONIE — même timing, même easing, ensemble. */
+/* Le bouton coiffe le RAIL : trois barres blanches STRICTEMENT
+   IDENTIQUES. Chacune fait la largeur du rail (var(--rw)), même
+   épaisseur (2 px), empilées. Le rail est prolongé par trois
+   segments qui en épousent la largeur — le rail devient une pièce
+   du geste de classement.
+   Les trois respirent en harmonie comme le T (`t-slow`, 4,2 s). */
 #ordbtn{position:absolute;
   left:calc(var(--rl) + var(--rw)/2);transform:translateX(-50%);
   top:6px;padding:8px 14px;z-index:44;
   background:none;border:none;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;gap:3px;
   -webkit-tap-highlight-color:transparent}
-#ordbtn span{display:block;height:2px;background:#fff;
+#ordbtn span{display:block;height:2px;width:var(--rw);background:#fff;
   transition:width .3s ease;
   animation:t-slow 4.2s ease-in-out infinite}
-/* Largeurs : 1ʳᵉ = rail plein · 2ᵉ ≈ 65 % · 3ᵉ ≈ 38 %. */
-#ordbtn .ob-1{width:var(--rw)}
-#ordbtn .ob-2{width:calc(var(--rw) * .65)}
-#ordbtn .ob-3{width:calc(var(--rw) * .38)}
-/* En mode classement, le bouton ne respire plus : on est dedans,
-   l'invitation a été acceptée. Barres pleines et fixes. */
+/* En mode classement, la respiration s'arrête : on est dedans. */
 body.ordering #ordbtn span{animation:none;opacity:1}
 @media(prefers-reduced-motion:reduce){#ordbtn span{animation:none}}
 /* LA BARRE EST DANS LE FLUX, au-dessus de la première ligne. Posée en
