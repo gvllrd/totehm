@@ -259,9 +259,35 @@ body.higher .set-block.higher-only{display:flex!important}
 .habit .h-T{background:none;border:none;padding:0;cursor:pointer;line-height:0;color:#fff;transition:opacity .15s,color .25s}
 .habit .h-T .tglyph{height:14px;width:auto;display:block}
 .habit .h-T:hover{opacity:.6}
-/* le trait reste NOIR tant que la Time frequency n'est pas choisie via le T */
-.habit .tick{position:absolute;left:var(--rl);width:var(--rw);height:5px;background:#000;top:50%;transform:translateY(-50%)}
+/* Le tick n'est plus une pastille horizontale : c'est une TOUCHE
+   verticale, un trait de 2 px posé au milieu du rail, aussi haut que
+   la boîte. Le rail reste le rail, le tick est un pigment dessus —
+   moderne parce que retenu.
+   Formule commune mobile/desktop : le trait est centré sur la largeur
+   du rail (--rw), quelle qu'elle soit. */
+.habit .tick{position:absolute;
+  left:calc(var(--rl) + (var(--rw) - 2px)/2);
+  top:2px;bottom:2px;width:2px;height:auto;background:#000;
+  transition:opacity .18s ease,width .18s ease,background .15s ease}
 .habit.timed .tick{background:#fff}
+/* La ligne coule dans le rail : la première pièce porte la couleur
+   d'intention pleine, les suivantes s'éteignent — un spectre, pas
+   une liste de rubans. Vaut mobile ET desktop. */
+#habits > .habit:nth-of-type(1) .tick{opacity:1}
+#habits > .habit:nth-of-type(2) .tick{opacity:.62}
+#habits > .habit:nth-of-type(3) .tick{opacity:.4}
+#habits > .habit:nth-of-type(4) .tick{opacity:.26}
+#habits > .habit:nth-of-type(n+5) .tick{opacity:.16}
+#habits > .habit.add .tick{opacity:0}
+/* La loupe suit la tête de la liste : la ligne en avant s'agrandit
+   d'un pouce (scale 1.02 desktop, 1.035 mobile) et son tick passe à
+   3 px. Aucune ombre — BRAND.md interdit l'ombre décorative. */
+.habit{transition:transform .2s ease}
+.habit.featured{z-index:3}
+.habit.featured .tick{opacity:1!important;width:3px}
+.habit.featured .h-body{transform:scale(1.02);filter:brightness(1.06);
+  transition:transform .22s cubic-bezier(.22,.61,.36,1),filter .18s ease}
+.habit.open.featured .h-body{transform:none;filter:none}
 .habit .h-body{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;position:relative;
   display:flex;align-items:center;gap:9px;padding-right:26px}
 
@@ -1231,34 +1257,9 @@ body.gate.entered #filter-badge{
      regard sans peser. */
   #rail{background:rgba(255,255,255,.16)}
   .habit .h-body{margin-left:calc(var(--rw) + 12px)}
-  /* Le tick n'est plus un bloc de couleur : c'est une TOUCHE. Un trait
-     fin (2px) posé sur le rail, hauteur de la boîte. La couleur
-     d'intention est un pigment, pas une surface. */
-  .habit .tick{left:2px;top:2px;bottom:2px;width:2px;height:auto;transform:none;
-    transition:opacity .18s ease,width .18s ease}
-  /* Progression : la première pièce est à pleine valeur, les suivantes
-     s'estompent vers le gris du rail — un spectre décroissant, pas une
-     collection de bandes. */
-  #habits > .habit:nth-of-type(1) .tick{opacity:1}
-  #habits > .habit:nth-of-type(2) .tick{opacity:.62}
-  #habits > .habit:nth-of-type(3) .tick{opacity:.4}
-  #habits > .habit:nth-of-type(4) .tick{opacity:.26}
-  #habits > .habit:nth-of-type(n+5) .tick{opacity:.16}
-  #habits > .habit.add .tick{opacity:0}
-  /* La ligne mise en avant : celle en tête de liste, ou celle qui vient
-     de s'y poser au scroll. Elle passe SOUS le curseur du regard, un
-     agrandissement de 1,04 — pas d'ombre, la boîte est un objet plein. */
-  .habit .h-body,.habit .tick{will-change:transform,opacity}
-  .habit{transition:transform .2s ease}
-  .habit.featured{z-index:3}
-  .habit.featured .h-body{transform:scale(1.035);filter:brightness(1.06);
-    transition:transform .22s cubic-bezier(.22,.61,.36,1),filter .18s ease}
-  /* La ligne en avant : le pigment s'élargit d'un cheveu (3px) et passe
-     à pleine valeur. Rien d'autre — la modernité, c'est la retenue. */
-  .habit.featured .tick{opacity:1!important;width:3px}
-  /* Une boîte ouverte ne se met plus « en avant » : l'agrandissement
-     ferait déborder le contenu qu'on est en train de lire. */
-  .habit.open.featured .h-body{transform:none;filter:none}
+  /* Mobile pousse la loupe un peu plus fort (1.035 au lieu de 1.02) :
+     la liste tient sur un pouce, le regard cherche un point d'ancrage. */
+  .habit.featured .h-body{transform:scale(1.035)}
 }
 
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
@@ -4040,25 +4041,19 @@ window.addEventListener('pageshow',e=>{
 })();
 
 /* ══ LA PREMIÈRE HABITUDE EST EN AVANT — LOUPE AU SCROLL · 07/09/2026 ═══
-   Mobile. La ligne en tête de liste porte la classe `.featured` : sa boîte
-   s'agrandit d'un pouce (scale 1.035), sans ombre — BRAND.md interdit
-   l'ombre. Au scroll, c'est la ligne qui vient de se poser en haut du
-   cadre qui prend la classe. La liste est TOUJOURS visible : rien ne
-   sort, rien ne se cache — c'est un effet de loupe, pas un carrousel.
-   Pas d'écouteur si on n'est pas sur mobile : desktop n'a pas la même
-   grammaire (la liste s'y lit d'un seul coup d'œil dans le carré). */
+   Mobile ET desktop. La ligne en tête de liste porte la classe
+   `.featured` : sa boîte s'agrandit d'un pouce (scale 1.02 desktop,
+   1.035 mobile), sans ombre — BRAND.md interdit l'ombre. Au scroll,
+   c'est la ligne qui vient de se poser en haut du cadre qui prend la
+   classe. La liste est TOUJOURS visible : rien ne sort, rien ne se
+   cache — c'est un effet de loupe, pas un carrousel. */
 (function featureFirstHabit(){
   const sc=document.getElementById('fv-inner');
   const list=document.getElementById('habits');
   if(!sc||!list)return;
-  const isMobile=()=>window.matchMedia('(max-width:699px)').matches;
   let raf=null;
   function update(){
     raf=null;
-    if(!isMobile()){
-      list.querySelectorAll('.habit.featured').forEach(el=>el.classList.remove('featured'));
-      return;
-    }
     const items=list.querySelectorAll(':scope > .habit:not(.add)');
     if(!items.length)return;
     const scTop=sc.getBoundingClientRect().top;
