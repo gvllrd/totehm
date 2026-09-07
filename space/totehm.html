@@ -259,16 +259,16 @@ body.higher .set-block.higher-only{display:flex!important}
 .habit .h-T{background:none;border:none;padding:0;cursor:pointer;line-height:0;color:#fff;transition:opacity .15s,color .25s}
 .habit .h-T .tglyph{height:14px;width:auto;display:block}
 .habit .h-T:hover{opacity:.6}
-/* Le tick n'est plus une pastille horizontale : c'est une TOUCHE
-   verticale, un trait de 2 px posé au milieu du rail, aussi haut que
-   la boîte. Le rail reste le rail, le tick est un pigment dessus —
-   moderne parce que retenu.
-   Formule commune mobile/desktop : le trait est centré sur la largeur
-   du rail (--rw), quelle qu'elle soit. */
+/* Le tick n'est plus un trait dans le rail : c'est le CROCHET par
+   lequel la boîte s'accroche au rail. Posé juste après le rail, il
+   forme le bord gauche visible de la boîte — la couleur d'intention
+   devient l'angle vif d'un objet moderne, plutôt qu'un mark détaché.
+   Formule commune mobile/desktop : le crochet se pose à --rl + --rw,
+   quel que soit --rw. */
 .habit .tick{position:absolute;
-  left:calc(var(--rl) + (var(--rw) - 2px)/2);
-  top:2px;bottom:2px;width:2px;height:auto;background:#000;
-  transition:opacity .18s ease,width .18s ease,background .15s ease}
+  left:calc(var(--rl) + var(--rw) + 3px);
+  top:2px;bottom:2px;width:3px;height:auto;background:#000;
+  transition:opacity .22s ease,width .22s ease,background .15s ease,left .22s ease}
 .habit.timed .tick{background:#fff}
 /* La ligne coule dans le rail : la première pièce porte la couleur
    d'intention pleine, les suivantes s'éteignent — un spectre, pas
@@ -284,11 +284,13 @@ body.higher .set-block.higher-only{display:flex!important}
    3 px. Aucune ombre — BRAND.md interdit l'ombre décorative. */
 .habit{transition:transform .2s ease}
 .habit.featured{z-index:3}
-.habit.featured .tick{opacity:1!important;width:3px}
+/* Le crochet grossit d'un pouce sur la ligne mise en avant : 4 px
+   au lieu de 3, on sent que la boîte s'accroche plus fort. */
+.habit.featured .tick{opacity:1!important;width:4px}
 .habit.featured .h-body{transform:scale(1.02);filter:brightness(1.06);
   transition:transform .22s cubic-bezier(.22,.61,.36,1),filter .18s ease}
 .habit.open.featured .h-body{transform:none;filter:none}
-.habit .h-body{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;position:relative;
+.habit .h-body{margin-left:calc(var(--rl) + var(--rw) + 7px);flex:1;position:relative;
   display:flex;align-items:center;gap:9px;padding-right:26px}
 
 /* ══ LA BOÎTE — LE CORPS DE LA LIGNE, EXTRUDÉ · 05/09/2026 ═══════════
@@ -384,18 +386,53 @@ body.higher .set-block.higher-only{display:flex!important}
    apparaît ressemble à une fenêtre qui s'ouvre par-dessus, exactement ce
    qu'on a passé un lot à supprimer. Elle pousse depuis son propre haut :
    `transform-origin:top`. */
+/* La boîte cliquée NE SE REMPLACE PAS d'un coup — elle enfante.
+   Le contenant se pose (fondu doux, sans écrasement de la mise en page :
+   plus de `scaleY(.92)` qui faisait sursauter les voisines), puis les
+   pièces liées descendent en CASCADE depuis le haut, comme des enfants
+   qui glissent hors du parent. La pièce de la vue courante ouvre le
+   bal ; les deux autres suivent avec 90 et 180 ms de retard.
+   Les sélecteurs `.blk ~ .blk` et `.blk ~ .blk ~ .blk` désignent
+   deuxième et troisième `.blk` sans dépendre de l'ordre exact des
+   frères (une `.dash` ou une `.acts` peut s'intercaler), ce que
+   `nth-of-type` ne saurait pas faire — `.blk` est un div, comme
+   `.w-top`, `.dash` et `.acts`. */
 .habit.open{align-items:stretch;flex:0 0 auto;
-  animation:grow .24s cubic-bezier(.22,.61,.36,1)}
-@keyframes grow{from{opacity:.4;transform:scaleY(.92);transform-origin:top}
-                to{opacity:1;transform:scaleY(1);transform-origin:top}}
+  animation:hab-open .32s cubic-bezier(.22,.61,.36,1)}
+@keyframes hab-open{
+  from{opacity:.55;transform:translateY(-4px)}
+  to  {opacity:1;transform:translateY(0)}
+}
+.habit.open .w-top{animation:blk-in .24s cubic-bezier(.22,.61,.36,1) both}
+.habit.open .blk{transform-origin:top;
+  animation:blk-birth .42s cubic-bezier(.22,.61,.36,1) both}
+.habit.open .blk ~ .blk{animation-delay:.09s}
+.habit.open .blk ~ .blk ~ .blk{animation-delay:.18s}
+.habit.open .dash{animation:blk-in .26s ease .22s both}
+.habit.open .acts{animation:blk-in .26s ease .28s both}
+@keyframes blk-birth{
+  0%{opacity:0;transform:translateY(-12px) scaleY(.82)}
+  60%{opacity:1}
+  100%{opacity:1;transform:translateY(0) scaleY(1)}
+}
+@keyframes blk-in{
+  from{opacity:0;transform:translateY(-4px)}
+  to  {opacity:1;transform:translateY(0)}
+}
 /* CHANGER DE VUE EST UN FONDU, PAS UNE COUPURE. Les boîtes montent de six
    pixels en s'allumant : on comprend qu'on a tourné une page du même
    objet, pas qu'on a changé d'écran. */
 #habits.swap{animation:swap .26s cubic-bezier(.22,.61,.36,1)}
 @keyframes swap{from{opacity:0;transform:translateY(6px)}
                 to{opacity:1;transform:translateY(0)}}
+/* Les voisines de la boîte ouverte glissent vers le bas pour lui faire
+   place au lieu de sauter. `flex-basis` et la hauteur naturelle ne
+   se transitionnent pas, mais un léger décalage sur transform amortit
+   le déplacement — le regard suit. */
+#habits:has(.habit.open) .habit:not(.open){transition:transform .32s cubic-bezier(.22,.61,.36,1)}
 @media(prefers-reduced-motion:reduce){
-  .habit.open,#habits.swap{animation:none}}
+  .habit.open,.habit.open .blk,.habit.open .w-top,.habit.open .dash,
+  .habit.open .acts,#habits.swap{animation:none}}
 /* ══ DEUX FONDS, ET ILS NE DISENT PAS LA MÊME CHOSE ══════════════════
    NAVY — on ouvre quelque chose QUI EXISTE. Le Totehm est navy, on ne l'a
    pas quitté : on regarde une pièce de son propre Totehm. Le navy SOMBRE
@@ -1256,7 +1293,7 @@ body.gate.entered #filter-badge{
   /* Rail fin et sourd — une trace, pas une bande. Il tient la colonne du
      regard sans peser. */
   #rail{background:rgba(255,255,255,.16)}
-  .habit .h-body{margin-left:calc(var(--rw) + 12px)}
+  .habit .h-body{margin-left:calc(var(--rw) + 7px)}
   /* Mobile pousse la loupe un peu plus fort (1.035 au lieu de 1.02) :
      la liste tient sur un pouce, le regard cherche un point d'ancrage. */
   .habit.featured .h-body{transform:scale(1.035)}
