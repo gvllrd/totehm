@@ -598,20 +598,27 @@ body.higher .set-block.higher-only{display:flex!important}
    et la souris — Pointer Events. `touch-action:none` est OBLIGATOIRE :
    sans lui le navigateur avale le glissement vertical et le classement se
    perd une fois sur deux. */
-/* Le bouton coiffe le RAIL, il en est la finalité. Centré sur la largeur
-   du rail (--rw), il tombe pile dans sa colonne — une petite pièce
-   supplémentaire du logo. Sur mobile le rail commence au bord, sur
-   desktop il est décalé (--rl). Un seul calcul : centre = --rl + --rw/2. */
+/* Le bouton coiffe le RAIL et le prolonge : trois barres blanches
+   IDENTIQUES (même longueur = largeur du rail, même épaisseur), posées
+   les unes sur les autres. La première fait la largeur exacte du rail
+   — elle en épouse les deux coins — et les trois suivent. Le rail
+   devient ainsi une pièce du geste de classement, pas un décor à côté.
+   Chaque barre respire comme le T (`t-slow`, 4,2s ease-in-out infini),
+   les trois en HARMONIE — même timing, même easing, ensemble. */
 #ordbtn{position:absolute;
   left:calc(var(--rl) + var(--rw)/2);transform:translateX(-50%);
-  top:6px;padding:6px 8px 8px;z-index:44;
+  top:6px;padding:8px 14px;z-index:44;
   background:none;border:none;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;gap:4px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
   -webkit-tap-highlight-color:transparent}
-#ordbtn span{display:block;height:2px;background:rgba(255,255,255,.62);
-  transition:background .15s,width .15s}
-#ordbtn .ob-1{width:16px}#ordbtn .ob-2{width:12px}#ordbtn .ob-3{width:8px}
-#ordbtn:hover span,body.ordering #ordbtn span{background:#fff}
+#ordbtn span{display:block;height:2px;width:var(--rw);
+  background:#fff;
+  transition:width .3s ease;
+  animation:t-slow 4.2s ease-in-out infinite}
+/* En mode classement, le bouton ne respire plus : on est dedans,
+   l'invitation a été acceptée. Barres pleines et fixes. */
+body.ordering #ordbtn span{animation:none;opacity:1}
+@media(prefers-reduced-motion:reduce){#ordbtn span{animation:none}}
 /* LA BARRE EST DANS LE FLUX, au-dessus de la première ligne. Posée en
    absolu elle traversait le T : le carré n'a pas de place libre en haut,
    et une bande de texte qui coupe le logo, c'est le logo qu'on abîme. */
