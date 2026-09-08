@@ -464,11 +464,76 @@ body.higher .set-block.higher-only{display:flex!important}
 /* La boîte cliquée garde son apparence FERMÉE — même padding, même
    couleur, même filet. Seule différence : le nom devient éditable
    (voir plus haut). C'est ça, « sans bouger ». */
-.habit.open.neuf .h-body{background:#000;border:1px solid var(--skin)}
+/* ══ LE RAIL EST UNE CHAÎNE DE TRAITS · 08/09/2026 ══════════════════
+   Une habitude peut porter PLUSIEURS intentions. Le bord gauche de sa
+   boîte les empile, une par segment : sept intentions, sept traits. C'est
+   le spectre d'une vie, lisible avant d'avoir lu un mot.
+   Les objectifs et les répulsions n'en portent pas — une couleur
+   d'intention sur autre chose qu'une habitude ne voudrait rien dire. */
+.habit .tick{display:flex;flex-direction:column;overflow:hidden}
+.habit .tick i{flex:1 1 0;display:block;min-height:2px}
+
+/* ══ LA MINI-BOÎTE ═══════════════════════════════════════════════════
+   Une pièce liée, vue depuis une autre. Elle porte la couleur de CE
+   QU'ELLE EST — une habitude reste navy même posée dans une répulsion.
+   Un seul format, dans les trois vues. */
+.minis{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-top:8px}
+.mini{display:inline-flex;align-items:center;gap:6px;border:1px solid #000;
+  padding:3px 7px;font-family:'Quantico',sans-serif;font-size:11px;
+  line-height:1.4;color:#fff}
+.m-h{background:var(--navy)}
+.m-o{background:var(--blue)}
+.m-r{background:var(--rep)}
+.mini-x{background:none;border:none;color:rgba(255,255,255,.55);cursor:pointer;
+  font-size:14px;line-height:1;padding:0 1px;transition:color .15s}
+.mini-x:hover{color:#fff}
+
+/* ══ UN CHOIX OUVERT ═════════════════════════════════════════════════
+   Il s'ouvre DANS la boîte, sous sa ligne. Un seul à la fois. */
+.pkw{display:block;margin-top:9px}
+.pk-list{display:flex;flex-direction:column;gap:3px;margin-top:7px;
+  max-height:220px;overflow-y:auto}
+.pk-o{text-align:left;background:rgba(0,0,0,.3);border:1px solid #000;color:#fff;
+  cursor:pointer;padding:7px 9px;font-family:'Quantico',sans-serif;font-size:13px;
+  transition:background .15s}
+.pk-o:hover{background:rgba(0,0,0,.55)}
+.pk-o.on{background:var(--navy)}
+/* CE QUE LA MACHINE A COMPRIS. On écrit « tous les matins » et elle
+   propose le rythme le plus proche des trente-trois — dans n'importe
+   quelle langue, sans un appel de modèle, donc sans facture. */
+.fq-hit{display:block;width:100%;margin-top:6px;background:#fff;color:#000;
+  border:none;cursor:pointer;padding:8px 10px;font-family:'Quantico',sans-serif;
+  font-weight:700;font-size:13px;text-align:left}
+#habits .in.fq{width:100%}
+/* Un bouton sur la ligne d'unité : on touche ce qu'on lit, et ça ne
+   ressemble pas à un bouton — c'est la ligne qui est sensible. */
+/* [Delete] a sa propre ligne, à droite. Collé au « + repulsion » il se
+   lisait comme une troisième option d'ajout — la commande la plus grave
+   de la boîte, posée dans une rangée de commandes anodines. */
+.habit.open .btn.g{display:block;margin:12px 0 0 auto}
+.v-b{background:none;border:none;padding:0;cursor:pointer;color:inherit;
+  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;font-weight:700;transition:opacity .15s}
+.v-b:active{opacity:.6}
+@media(hover:hover){.v-b:hover{opacity:.75}}
+/* Au pouce, une liste de trente-trois se rate. On l'aère. */
+@media(max-width:700px){
+  .pk-o{padding:11px 12px;font-size:14px}
+  .pk-list{max-height:46vh}
+  .mini{font-size:12px;padding:4px 8px}
+}
+
+/* ══ CRÉER, C'EST OUVRIR UNE BOÎTE — PAS CHANGER DE MONDE ════════════
+   Le noir de la création a disparu. Deux fonds pour le même objet, ça se
+   discute à chaque écran au lieu de se lire d'un coup. Une boîte neuve
+   est une boîte : elle porte la couleur de sa vue, navy dans les
+   habitudes. Le Totehm ne se quitte jamais, même en créant. */
+
 @media(hover:hover){.habit.open .h-body:hover{filter:none}}
 .w-top{display:flex;align-items:flex-start;margin-bottom:10px}
-.w-x{margin-left:auto;background:none;border:none;color:rgba(255,255,255,.5);
-  font-size:20px;line-height:1;cursor:pointer;padding:0 3px;transition:color .15s}
+.w-x{position:absolute;top:3px;right:5px;z-index:3;background:none;border:none;
+  color:rgba(255,255,255,.5);font-size:19px;line-height:1;cursor:pointer;
+  padding:0 4px;transition:color .15s}
 .w-x:hover{color:#fff}
 
 /* ══ LES TROIS BLOCS DU TRIP ═════════════════════════════════════════
@@ -477,17 +542,27 @@ body.higher .set-block.higher-only{display:flex!important}
    touche passe en premier — c'est elle qu'on est venu voir.
    Les mots disent le LIEN, pas la catégorie : la couleur dit déjà la
    catégorie. WHY remonte, HOW descend, PROTECTS tient. */
-.blk{position:relative;border:1px solid #000;padding:9px 11px 10px;margin-bottom:7px}
-.blk-o{background:var(--blue)}
-.blk-h{background:var(--navy)}
-.blk-r{background:var(--rep)}
-.blk-l{display:block;font-family:'Space Mono',monospace;font-size:8px;
-  letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.62);
-  margin-bottom:5px}
-.blk-t{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;
-  line-height:1.45;color:#fff;background:none;border:none;outline:none;
+/* ══ UNE PIÈCE LIÉE EST UNE BOÎTE · 07/09/2026 ═══════════════════════
+   Elle avait son propre padding, sa propre graisse, son propre label
+   au-dessus : un DEUXIÈME objet, qui ne s'alignait avec rien. D'où
+   « rien n'est harmonieux ».
+   Il n'y a plus qu'un objet dans tout le Totehm : la BOÎTE. Même padding
+   (7/11), même titre (Quantico 400, 15px), même ligne d'unité. Seule la
+   couleur change — et le mot de liaison, qui entre DANS la ligne d'unité
+   au lieu de flotter au-dessus. Les enfants se posent entre les parents,
+   au même niveau : rien n'est en retrait, rien n'est une fenêtre. */
+.blk{position:relative;background:var(--skin);border:1px solid #000;
+  padding:7px 11px;margin-bottom:6px}
+.blk-o{--skin:var(--blue)}
+.blk-h{--skin:var(--navy)}
+.blk-r{--skin:var(--rep)}
+/* Le mot de liaison — WHY, HOW, PROTECTS — vit dans la ligne d'unité,
+   en tête, exactement là où une habitude porte son intention. */
+.blk-lbl{font-weight:700;letter-spacing:.2em;color:rgba(255,255,255,.55)}
+.blk-t{font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;
+  line-height:1.5;color:#fff;background:none;border:none;outline:none;
   width:100%;display:block;padding:0 22px 0 0;resize:none;overflow:hidden;
-  text-align:left;caret-color:#fff;min-height:1.45em}
+  text-align:left;caret-color:#fff;min-height:1.5em}
 .blk-t.go{cursor:pointer;transition:opacity .15s}
 .blk-t.go:hover{opacity:.78}
 /* La croix est réservée à la FERMETURE des vues (w-x, fold-x). Ce qui
@@ -497,18 +572,29 @@ body.higher .set-block.higher-only{display:flex!important}
   font-size:8px;letter-spacing:.16em;text-transform:uppercase;
   line-height:1;cursor:pointer;padding:3px 5px;transition:color .15s}
 .blk-x:hover{color:#fff}
-.blk-u{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:7px;
-  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;
-  text-transform:uppercase;color:rgba(255,255,255,.72)}
+.blk-u{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:6px;
+  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.72);line-height:1.5}
 .blk-i{background:none;border:none;padding:0;cursor:pointer;font-family:'Space Mono',monospace;
   font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
-.blk .in{font-family:'Quantico',sans-serif;font-size:13px;color:#fff;
-  background:rgba(0,0,0,.3);border:1px solid #000;padding:5px 7px;outline:none;
-  transition:background .15s}
-.blk .in:focus{background:rgba(0,0,0,.5)}
-.blk .in::placeholder{color:rgba(255,255,255,.4)}
-.blk .in.date{color-scheme:dark}
-.blk .in.nw{width:100%;margin-bottom:6px}
+/* AUCUN CHAMP CLAIR NULLE PART. Une saisie se creuse dans la couleur —
+   du noir translucide, comme les perforations du logo — jamais un cadre
+   blanc posé dessus. `color-scheme:dark` s'applique à TOUTE saisie et pas
+   au seul champ de date : sans lui, le navigateur dessine ses propres
+   contrôles en clair et le champ ressort blanc au milieu du bloc. */
+/* PORTÉE : TOUTE saisie de la zone, pas seulement celles d'un bloc. La
+   date d'un objectif vit maintenant sur la ligne de la boîte elle-même —
+   hors `.blk` — et retombait donc sur le champ natif du navigateur, blanc
+   au milieu du bleu. C'était ça, « la saisie blanche ». */
+#habits .in{font-family:'Quantico',sans-serif;font-size:14px;color:#fff;
+  background:rgba(0,0,0,.34);border:1px solid #000;padding:6px 8px;outline:none;
+  color-scheme:dark;transition:background .15s}
+#habits .in:focus{background:rgba(0,0,0,.5)}
+#habits .in::placeholder{color:rgba(255,255,255,.4)}
+/* Le petit calendrier du navigateur est noir sur fond clair : on l'inverse,
+   sinon il disparaît sur le noir translucide du champ. */
+#habits .in.date::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.7;cursor:pointer}
+#habits .in.nw{width:100%;margin-bottom:6px}
 /* UNE HABITUDE EST NAVY PARTOUT, y compris dans le noir du Trip et dans
    le bloc rouge-violet d'une répulsion. C'est la couleur du présent : elle
    ne change pas parce qu'on la regarde depuis ailleurs. */
@@ -1347,6 +1433,18 @@ body.gate.entered #filter-badge{
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -1365,11 +1463,12 @@ body.gate.entered #filter-badge{
 .v-empty:hover,
 .h-text:hover::placeholder,
 .h-hint:hover,
+.mini-x:hover,
 .w-x:hover,
-.blk-l:hover,
+.blk-lbl:hover,
 .blk-x:hover,
 .blk-u:hover,
-.blk .in:hover::placeholder,
+#habits .in:hover::placeholder,
 .btn.g:hover,
 .dash:hover,
 .lk-add:hover,
@@ -2554,12 +2653,11 @@ let view='habits';
 const VIEW_ORDER=['repulsions','habits','objectives'];
 let TRIPS=[], REPS=[], tripsLoaded=false;
 
-/* Ce qui est ouvert, et ce qui est en train d'être choisi. Six états
-   séparés, jamais deux à la fois : deux menus ouverts en même temps, c'est
-   un menu de trop. `editH`/`editR` survivent au rendu — c'est le panneau
-   qui se souvient de la pièce qu'on écrit. */
-let open=null, selOpen=null, intFor=null, lkFor=null,
-    editH=null, editR=null, pickFor=null, ordering=false;
+/* DEUX ÉTATS, ET PAS SIX. Ce qui est OUVERT, et si on est en train de
+   classer. Le choix en cours (`pk`) vit avec le rendu, plus haut — il y
+   en avait cinq, chacun oublié à un endroit différent : c'est comme ça
+   qu'une boîte gardait un menu ouvert d'une autre. */
+let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
    Une habitude vit dans `state.habits`, un tableau sans identifiant. On
@@ -2695,626 +2793,448 @@ function apres(p){ /* une erreur de RPC se journalise, toujours */
     .catch(e=>console.error('[totehm] rpc:',e&&e.message||e)); }
 function differe(fn){ clearTimeout(wTimer); wTimer=setTimeout(fn,700); }
 
-/* ══ LA LIGNE FERMÉE ═════════════════════════════════════════════════
-   AUCUNE ICÔNE DANS UNE BOÎTE. Une boîte porte du TEXTE. Ce qui la
-   qualifie, c'est sa COULEUR (la vue) et sa LIGNE D'UNITÉ.
-   Le tiret du rail prend la couleur de l'intention : le rail est une
-   pièce du logo, et il devient le spectre d'une vie, lisible avant même
-   d'avoir lu une ligne. Sans intention il reste blanc — le blanc est
-   l'absence, pas une huitième couleur. */
-/* `birth` (optionnel) = HTML du conteneur d'enfants sous la boîte.
-   Vaut null pour toutes les lignes fermées ; seul l'open case le pose. */
-const ligne=(inner,cls,col,rank,id,birth)=>'<div class="habit timed '+(cls||'')+'"'
-  +(id?' data-row="'+esc(id)+'"':'')+'>'
-  +'<span class="tick"'+(col?' style="background:'+col+'"':'')+'></span>'
-  +(ordering&&rank?'<span class="rank">'+rank+'</span>':'')
-  +'<span class="h-body">'+inner+'</span>'
-  +(birth?'<div class="h-birth">'+birth+'</div>':'')
-  +'</div>';
-const boite=(nom,sous,attr)=>'<span class="v-col" '+attr+' role="button" tabindex="0">'
-  +'<span class="v-name">'+nom+'</span><span class="v-sub">'+sous+'</span></span>';
+/* ══ LA ZONE — UNE SEULE BOÎTE, PARTOUT LA MÊME · 08/09/2026 ══════════
+   Réécriture complète de la couche d'affichage. Ce qui existait avant
+   fabriquait DEUX objets — la boîte, et le « bloc » d'une pièce liée —
+   avec deux paddings, deux graisses, deux grammaires. D'où « rien n'est
+   fluide, rien n'est harmonieux ».
 
-/* `editInner` : la MÊME structure que `boite` (v-col + v-name + v-sub),
-   mais le nom est `contenteditable` : la boîte cliquée passe en mode
-   édition à sa PLACE, sans changer de layout. Le sub reste identique
-   au fermé — cliquable, il rouvre les modales existantes. */
-/* ══ LES SEPT INTENTIONS REVIENNENT · 07/09/2026 ══════════════════════
-   Elles vivaient dans `blkH`, et `birthHTML` ne rend jamais la pièce de
-   la vue courante : ouvrir une habitude depuis la vue habitudes faisait
-   donc disparaître son propre réglage d'intention.
-   FERMÉE, la ligne d'unité SE LIT. OUVERTE, elle SE TOUCHE : l'intention
-   ouvre les sept, le rythme ouvre les trente-trois. Même ligne, même
-   place, même mots — elle devient simplement vivante. */
-const sousVivant=(x)=>
-  '<button type="button" class="v-int-b" data-ip="'+esc(String(x.id))+'" style="color:'
-  +(x.i?intColor(x.i):'rgba(255,255,255,.62)')+'">'
-  +(x.i?esc(intName(x.i))+' · '+esc(intPillar(x.i)):'set intention')+'</button>'
-  +pick('h:'+x.id, x.f, freqOpts(), x.f?flabel(x.f):'no rhythm');
+   IL N'Y A PLUS QU'UNE BOÎTE, et elle contient TROIS choses :
+     1. son TITRE, toujours modifiable sur place ;
+     2. sa LIGNE D'UNITÉ — ce qui la qualifie, et qui se touche ;
+     3. ses MINI-BOÎTES — ce qui lui est lié, à la couleur de ce que
+        c'est. C'est le format de la boîte répulsion, généralisé : une
+        habitude montre ses objectifs en bleu clair et ses répulsions en
+        rouge-violet, un objectif montre ses habitudes en navy.
 
-const editInner=(kind,x,sous,extra)=>'<span class="v-col edit-in">'
-  +'<span class="v-name" contenteditable="plaintext-only" spellcheck="false"'
-  +' data-'+kind+'edit="'+esc(String(x.id))+'">'
-  +esc(kind==='h'?(x.t||''):(x.text||''))+'</span>'
-  +'<span class="v-sub">'+sous+'</span>'
-  +(extra||'')+'</span>';
+   LES TROIS VUES SONT LA MÊME LISTE, lue par un bout différent. On
+   travaille pleinement dans chacune ; seul le storytelling change. */
 
-/* ══ LE PANNEAU — LE TRIP VU DEPUIS N'IMPORTE QUELLE BOÎTE ═══════════
-   Les mots disent le LIEN, pas la catégorie : la couleur dit déjà la
-   catégorie. WHY remonte, HOW descend, PROTECTS tient. */
-const LBL={
-  o:{h:'why',            t:'objective',      r:'why'},
-  h:{h:'habit',          t:'how',            r:'it protects'},
-  r:{h:'repulsion to protect it',   t:'repulsion to protect it',   r:'repulsion'}};
-/* La pièce de la vue passe EN PREMIER : c'est elle qu'on est venu voir. */
-const ORDRE={h:['h','o','r'], t:['o','h','r'], r:['r','h','o']};
-
-/* UN SEUL COMPOSANT DE CHOIX, partout. `key` identifie le déroulant
-   ouvert ; deux menus ouverts en même temps, c'est un menu de trop. */
-/* MESURÉ : le bouton affichait `every_minute` — l'IDENTIFIANT, pas le
-   libellé. La valeur qui COMPARE et le texte qui S'AFFICHE ne sont pas la
-   même chose : `val` sert au `.on`, `aff` se lit. */
-const pick=(key,val,opts,aff)=>
-  '<span class="selw"><button type="button" class="selb" data-sel="'+esc(key)+'">'
-  +esc(aff||'—')+' <span class="sel-v">\u25be</span></button>'
-  +'<span class="selp'+(selOpen===key?' on':'')+'"><span class="selp-in">'
-  +opts.map(o=>'<button type="button" class="selo'+(o.v===val?' on':'')
-    +'" data-selv="'+esc(o.v)+'" data-selk="'+esc(key)+'">'+esc(o.l)+'</button>').join('')
-  +'</span></span></span>';
-const freqOpts=()=>FREQS.map(f=>({v:f.id,l:f.label}));
-
-/* LE CHOIX D'INTENTION : le NOM et le PILIER, pas un pictogramme. Une
-   intention n'est pas une icône, c'est un mot — et son pilier dit à quoi
-   elle sert dans une vie. Pas de surlignage : la tuile prend un FONDU de
-   sa couleur, et se remplit quand elle est choisie. */
-const intGrid=(sel,hid)=>'<div class="ints">'+INTS.map(x=>
-  '<button type="button" class="int'+(sel===x.id?' on':'')+'" data-i="'+x.id+'" data-ih="'+esc(hid)+'"'
-  +' aria-pressed="'+(sel===x.id)+'" style="--ic:'+x.color+'">'
-  +'<span class="int-n">'+esc(x.name)+'</span><span class="int-p">'+esc(x.pillar)+'</span></button>')
-  .join('')+'</div>';
-
-/* ── L'OBJECTIF ──────────────────────────────────────────────────── */
-/* `hid` : quand le bloc est vu DEPUIS une habitude, il porte une croix
-   qui DÉTACHE — elle ne supprime pas l'objectif. Détacher n'est pas
-   effacer : l'objectif a été écrit, il sert peut-être ailleurs. */
-const blkO=(t,edit,mode,hid)=>'<div class="blk blk-o">'
-  +'<span class="blk-l">'+LBL.o[mode]+'</span>'
-  +(edit
-     ?'<textarea class="blk-t w-name" rows="1" data-tt="'+esc(t.id)+'">'+esc(t.text)+'</textarea>'
-     :'<button type="button" class="blk-t go" data-goto="t:'+esc(t.id)+'">'+esc(t.text||'untitled')+'</button>')
-  +(hid?'<button type="button" class="blk-x" data-ox="'+esc(String(t.id))+'|'+esc(String(hid))
-        +'" aria-label="Detach">detach</button>':'')
-  +'<div class="blk-u">'+(edit
-     ?'<input class="in date" type="date" data-td="'+esc(t.id)+'" value="'+esc(dateIn(t.target_at))+'">'
-     :'<span>'+esc(fmtDue(t.days_left))+'</span>')
-  +'<span>'+habsOfTrip(t).length+' habit'+(habsOfTrip(t).length===1?'':'s')+'</span></div>'
-  +'</div>';
-
-/* ── UNE HABITUDE ────────────────────────────────────────────────── */
-const blkH=(x,edit,mode)=>'<div class="blk blk-h">'
-  +'<span class="blk-l">'+LBL.h[mode]+'</span>'
-  +(edit
-     ?'<textarea class="blk-t w-name" rows="1" data-ht="'+esc(x.id)+'">'+esc(x.t)+'</textarea>'
-     :'<button type="button" class="blk-t go" data-goto="h:'+esc(x.id)+'">'+esc(x.t||'untitled')+'</button>')
-  +'<button type="button" class="blk-x" data-hx="'+esc(x.id)+'" aria-label="Remove">delete</button>'
-  +'<div class="blk-u">'+pick('h:'+x.id, x.f, freqOpts(), x.f?flabel(x.f):'no rhythm')
-  +'<button type="button" class="blk-i" data-ip="'+esc(x.id)+'" style="color:'
-  +(x.i?intColor(x.i):'rgba(255,255,255,.62)')+'">'
-  +(x.i?esc(intName(x.i))+' · '+esc(intPillar(x.i)):'set intention')+'</button></div>'
-  +(intFor===x.id?'<div class="w-sec">'+intGrid(x.i,x.id)+'</div>':'')
-  +'</div>';
-
-/* ── UNE RÉPULSION ───────────────────────────────────────────────────
-   Elle porte EN PREVIEW les habitudes qu'elle protège, en navy. C'est le
-   lookup : on voit d'un coup d'œil ce que « la procrastination » menace,
-   et on l'attache ou la détache d'un doigt. */
-const blkR=(r,edit,mode)=>'<div class="blk blk-r">'
-  +'<span class="blk-l">'+LBL.r[mode]+'</span>'
-  +(edit
-     ?'<textarea class="blk-t w-name" rows="1" data-rt="'+esc(r.id)+'">'+esc(r.text)+'</textarea>'
-     :'<button type="button" class="blk-t go" data-goto="r:'+esc(r.id)+'">'+esc(r.text||'untitled')+'</button>')
-  +'<button type="button" class="blk-x" data-rx="'+esc(r.id)+'" aria-label="Remove">delete</button>'
-  +'<div class="lk">'
-  +  habsOfRep(r).map(h=>'<span class="lk-on">'+esc(h.t||'untitled habit')+'</span>').join('')
-  +  '<button type="button" class="lk-add" data-lk="'+esc(r.id)+'">'
-  +  (lkFor===String(r.id)?'done':'+ link a habit')+'</button>'
-  +'</div>'
-  +(lkFor===String(r.id)?'<div class="lk-pick">'
-    +(state.habits||[]).map(h=>
-      '<button type="button" class="lk-o'+((r.hs||[]).includes(h.t)?' on':'')
-      +'" data-lkh="'+esc(r.id)+'|'+esc(h.id)+'">'+esc(h.t||'untitled habit')+'</button>').join('')
-    +'</div>':'')
-  +'</div>';
-
-/* UN BLOC VIDE N'EST PAS UN TROU : c'est une invitation à deux temps —
-   reprendre une pièce qui existe déjà, ou en écrire une nouvelle. C'est la
-   règle du lookup : on ne réécrit jamais ce qui est déjà là. */
-const blkVide=(key,mode,liste,ph)=>{
-  const cls={o:'blk-o',h:'blk-h',r:'blk-r'}[key], on=pickFor===key;
-  return '<div class="blk '+cls+'">'
-   +'<span class="blk-l">'+LBL[key][mode]+'</span>'
-   +'<div class="lk"><button type="button" class="lk-add" data-pk="'+key+'">'
-   +(on?'close':'+ pick or write')+'</button></div>'
-   +(on?'<div class="lk-pick">'
-      +'<input class="in nw" data-nw="'+key+'" placeholder="'+esc(ph)+'">'
-      +liste.map(o=>'<button type="button" class="lk-o" data-pick="'+key+'|'+esc(o.id)+'">'
-        +esc(o.txt||'untitled')+'</button>').join('')
-      +'</div>':'')
-   +'</div>';};
-
-/* `panneauParts` : les pièces du trip, séparées.
-   La pièce de la vue courante (`own`) n'entre PAS dans le birth :
-   c'est la boîte fermée qui la porte, éditable. Seules les liées
-   descendent en dessous.
-   Retour : { linked, acts, wtop } — tous des chaînes HTML prêtes. */
-function panneauParts(mode,t,hs,rs){
-  /* DANS TOUTES LES VUES, TOUTES LES BOÎTES SONT ÉDITABLES.
-     Les vues sont des VUES, pas des filtres : le membre modifie ce
-     qu'il touche, peu importe la couleur du papier. `edit=true` sur
-     les trois blks — le mode `.go` (bouton non éditable) disparaît. */
-  /* DEPUIS UNE HABITUDE, ON VOIT TOUS SES OBJECTIFS. Une habitude peut
-     en servir plusieurs : les afficher tous, chacun détachable, et offrir
-     d'en ajouter un. Depuis un objectif, il n'y en a qu'un — c'est lui. */
-  const mesTrips = (mode==='h'&&hs.length) ? tripsOfHab(hs[0]) : (t?[t]:[]);
-  const blocO = (mode==='h'&&hs.length)
-    ? (mesTrips.length ? mesTrips.map(z=>blkO(z, true, mode, hs[0].id)).join('')
-                       : blkVide('o',mode,TRIPS.map(x=>({id:x.id,txt:x.text})),'a new objective'))
-      +'<button type="button" class="dash" data-ao="'+esc(String(hs[0].id))+'">'
-      +(pickFor==='o'?'close':'+ add an objective')+'</button>'
-      /* REPRENDRE OU ÉCRIRE — jamais réécrire ce qui existe déjà. Les
-         objectifs déjà attachés ne sont pas reproposés : on ne peut pas
-         attacher deux fois la même chose. */
-      +(pickFor==='o'?'<div class="lk-pick">'
-        +'<input class="in nw" data-nw="o" placeholder="a new objective">'
-        +TRIPS.filter(z=>!objIdsOf(hs[0]).includes(String(z.id)))
-          .map(z=>'<button type="button" class="lk-o" data-pick="o|'+esc(String(z.id))+'">'
-            +esc(z.text||'untitled')+'</button>').join('')
-        +'</div>':'')
-    : (t ? blkO(t, true, mode)
-         : blkVide('o',mode,TRIPS.map(x=>({id:x.id,txt:x.text})),'a new objective'));
-  const bloc={
-    o: blocO,
-    h: (hs.length?hs.map(x=>blkH(x, true, mode)).join('')
-                 :blkVide('h',mode,(state.habits||[]).map(x=>({id:x.id,txt:x.t})),'a new habit'))
-       /* + ajouter une habitude dès qu'on n'est pas DANS la vue habitudes,
-          même s'il n'y en a aucune encore : exiger `hs.length` rendait la
-          première impossible à poser. */
-       +(mode!=='h'?'<button type="button" class="dash" data-ah="'+esc(t?String(t.id):'')+'">+ add a habit</button>':''),
-    r: (rs.length?rs.map(r=>blkR(r, true, mode)).join('')
-                 :blkVide('r',mode,REPS.map(x=>({id:x.id,txt:x.text})),'a new repulsion'))
-       /* + ajouter une répulsion : dès qu'il y a une habitude à protéger,
-          quel que soit le nombre de répulsions déjà attachées. Avant on
-          exigeait `rs.length` aussi — donc impossible de poser la première. */
-       +(hs.length?'<button type="button" class="dash" data-ar="'+esc(hs[0].id)+'">+ add a repulsion</button>':'')};
-  const linkedKs = ORDRE[mode].slice(1);   /* on saute la pièce de la vue */
-  /* Pas de bouton [Done] : chaque saisie s'enregistre à la volée
-     (differe → sauvegarde serveur). La croix (data-x) ferme la vue,
-     [Delete] supprime — rien d'autre à valider. */
-  const acts = '<div class="acts">'
-   +   (mode==='h'?'<button type="button" class="btn g" data-kill="'+esc(open.id)+'">Delete habit</button>':'')
-   +   (mode==='t'?'<button type="button" class="btn g" data-tkill="'+esc(open.id)+'">Delete objective</button>':'')
-   +   (mode==='r'?'<button type="button" class="btn g" data-rkill="'+esc(open.id)+'">Delete repulsion</button>':'')
-   +   '</div>';
-  return {
-    linked: linkedKs.map(k=>bloc[k]).join(''),
-    acts: acts,
-    wtop: '<div class="w-top"><button type="button" class="w-x" data-x="1" aria-label="Close">&times;</button></div>'
-  };
+/* ── LES INTENTIONS SONT PLUSIEURS ───────────────────────────────────
+   Une habitude peut en porter plusieurs. `is` est la liste, `i` reste la
+   PREMIÈRE — c'est elle que le serveur et le bot lisent (`steps.i`), et
+   la tenir à jour évite de toucher à la base. */
+const intIds=x=>!x?[]:(Array.isArray(x.is)&&x.is.length?x.is:(x.i?[x.i]:[]));
+function intToggle(x,id){
+  const l=intIds(x).slice(), k=l.indexOf(id);
+  if(k<0)l.push(id); else l.splice(k,1);
+  x.is=l; x.i=l.length?l[0]:null; save();
 }
-/* birthHTML : le contenu du conteneur `.h-birth` sous la boîte cliquée.
-   Reprend `panneauParts` pour la vue courante (`open.kind`) et
-   concatène wtop + linked + acts. */
-function birthHTML(){
-  let parts=null;
-  if(open.kind==='h'){const x=habOf(open.id); if(!x)return '';
-    parts=panneauParts('h', x.o?tripOf(x.o):null, [x], repsOfHab(x.id));}
-  else if(open.kind==='t'){const t=tripOf(open.id); if(!t)return '';
-    const hs=habsOfTrip(t), vu={}, rs=[];
-    hs.forEach(h=>repsOfHab(h.id).forEach(r=>{if(!vu[r.id]){vu[r.id]=1;rs.push(r);}}));
-    parts=panneauParts('t', t, hs, rs);}
-  else{const r=repOf(open.id); if(!r)return '';
-    const hs=habsOfRep(r);
-    parts=panneauParts('r', hs[0]&&hs[0].o?tripOf(hs[0].o):null, hs, [r]);}
-  return parts.wtop + parts.linked + parts.acts;
-}
+const intCols=x=>intIds(x).map(intColor);
 
-/* ══ LE RENDU ════════════════════════════════════════════════════════
-   Un seul rendu pour les trois vues et pour la boîte ouverte : la liste et
-   le détail ne peuvent pas diverger s'ils sont dessinés ensemble. */
+/* ── LES PIÈCES LIÉES, DANS LES DEUX SENS ────────────────────────── */
+const repsOfHabX=x=>x&&x.t?REPS.filter(r=>(r.hs||[]).includes(x.t)):[];
+
+/* ══ LE RAIL — UNE CHAÎNE DE TRAITS ══════════════════════════════════
+   Le bord gauche d'une boîte habitude porte SES intentions, une par
+   segment, de haut en bas. Sept intentions, sept traits : le spectre
+   d'une vie, lisible avant d'avoir lu un mot.
+   Les autres boîtes n'en portent pas — une couleur d'intention sur un
+   objectif ou une répulsion ne voudrait rien dire. */
+const tickHTML=cols=>'<span class="tick">'
+  +(cols&&cols.length?cols.map(c=>'<i style="background:'+c+'"></i>').join(''):'')
+  +'</span>';
+
+/* ══ LA MINI-BOÎTE ═══════════════════════════════════════════════════
+   Une pièce liée, vue depuis une autre. Elle porte la couleur de CE
+   QU'ELLE EST, jamais celle de la boîte qui l'accueille : une habitude
+   reste navy même posée dans une répulsion. */
+const mini=(kind,txt,attr)=>'<span class="mini m-'+kind+'" '+(attr||'')+'>'
+  +esc(txt||'untitled')+'</span>';
+const miniDel=(kind,txt,data)=>'<span class="mini m-'+kind+'">'+esc(txt||'untitled')
+  +'<button type="button" class="mini-x" '+data+' aria-label="Unlink">&times;</button></span>';
+
+/* ══ LA BOÎTE ════════════════════════════════════════════════════════
+   `o.kind` h|t|r · `o.titre` · `o.unit` (HTML) · `o.minis` (HTML)
+   · `o.ouverte` · `o.extra` (un choix ouvert : intentions, rythme, lien) */
+function boiteHTML(o){
+  const nom = o.ouverte
+    ? '<span class="v-name" contenteditable="plaintext-only" spellcheck="false"'
+      +' data-edit="'+o.kind+':'+esc(String(o.id))+'">'+esc(o.titre)+'</span>'
+    : '<span class="v-name">'+esc(o.titre||'untitled')+'</span>';
+  return '<span class="v-col"'+(o.ouverte?'':' data-open="'+o.kind+':'+esc(String(o.id))+'" role="button" tabindex="0"')+'>'
+    + nom
+    + (o.unit ?'<span class="v-sub">'+o.unit+'</span>':'')
+    + (o.minis?'<span class="minis">'+o.minis+'</span>':'')
+    + (o.extra||'')
+    + (o.ouverte?'<button type="button" class="w-x" data-x="1" aria-label="Close">&times;</button>':'')
+    +'</span>';
+}
+const ligne=(inner,cls,cols,rank,id)=>'<div class="habit timed '+(cls||'')+'"'
+  +(id?' data-row="'+esc(String(id))+'"':'')+'>'
+  + tickHTML(cols)
+  + (ordering&&rank?'<span class="rank">'+rank+'</span>':'')
+  +'<span class="h-body">'+inner+'</span></div>';
+
+/* ══ CE QUI EST OUVERT, ET CE QU'ON EST EN TRAIN DE CHOISIR ══════════
+   UN SEUL choix à la fois : deux menus ouverts, c'est un menu de trop.
+   `pk` vaut null, ou {q:'int'|'freq'|'lien'|'neuf', k:'h'|'t'|'r', id}. */
+let pk=null;
+/* La vue du rendu précédent : c'est elle qui dit si l'on vient de changer
+   de vue, donc s'il faut jouer le fondu. Elle vivait dans l'ancienne zone
+   et a disparu avec elle — sans elle, `renderZone` levait à la première
+   ligne et l'écran restait vide. */
 let lastView=null;
-function renderZone(anim){
+const pkOn=(q,k,id)=>!!pk&&pk.q===q&&pk.k===k&&String(pk.id)===String(id);
+function pkSet(q,k,id){ pk = pkOn(q,k,id) ? null : {q,k,id:String(id)}; renderZone(); }
+
+/* ══ LE RYTHME — ON L'ÉCRIT DANS SA LANGUE ═══════════════════════════
+   `deduceFreq()` lit « tous les matins », « every morning », « jeden
+   Morgen », « ogni mattina » et rend l'un des 33 rythmes. C'est ce qui
+   permet d'écrire au lieu de chercher dans une liste — et ça marche dans
+   toutes les langues sans un appel de modèle, donc sans facture.
+   La liste reste dessous : on écrit OU on choisit, jamais l'un sans
+   l'autre. */
+function freqPicker(x){
+  const devine = pk&&pk.q==='freq'&&pk.devine ? pk.devine : null;
+  return '<span class="pkw">'
+    +'<input class="in fq" data-fqin="'+esc(String(x.id))+'" autocomplete="off"'
+    +' placeholder="write it in your language" value="'+esc(pk&&pk.txt||'')+'">'
+    +(devine?'<button type="button" class="fq-hit" data-fq="'+esc(String(x.id))+'|'+devine+'">'
+      +esc(flabel(devine))+'</button>':'')
+    +'<span class="pk-list">'
+    + FREQS.map(f=>'<button type="button" class="pk-o'+(x.f===f.id?' on':'')
+        +'" data-fq="'+esc(String(x.id))+'|'+f.id+'">'+esc(f.label)+'</button>').join('')
+    +'</span></span>';
+}
+
+/* LES SEPT INTENTIONS — plusieurs à la fois. Pas de surlignage : la tuile
+   prend un fondu de sa couleur, et se remplit quand elle est choisie. */
+const intPicker=x=>{const l=intIds(x);
+  return '<span class="pkw"><span class="ints">'+INTS.map(z=>
+    '<button type="button" class="int'+(l.includes(z.id)?' on':'')+'" data-int="'
+    +esc(String(x.id))+'|'+z.id+'" aria-pressed="'+l.includes(z.id)+'" style="--ic:'+z.color+'">'
+    +'<span class="int-n">'+esc(z.name)+'</span>'
+    +'<span class="int-p">'+esc(z.pillar)+'</span></button>').join('')+'</span></span>';};
+
+/* LE LOOKUP — reprendre ce qui existe, ou écrire du neuf. On ne réécrit
+   jamais ce qui est déjà là : les pièces déjà liées ne sont pas
+   reproposées. */
+function lienPicker(k,id,dejaIds,liste,ph){
+  return '<span class="pkw">'
+    +'<input class="in nw" data-nw="'+k+':'+esc(String(id))+'" autocomplete="off" placeholder="'+esc(ph)+'">'
+    +'<span class="pk-list">'
+    + liste.filter(z=>!dejaIds.includes(String(z.id)))
+        .map(z=>'<button type="button" class="pk-o" data-lien="'+k+':'+esc(String(id))
+          +'|'+esc(String(z.id))+'">'+esc(z.txt||'untitled')+'</button>').join('')
+    +'</span></span>';
+}
+const plus=(q,k,id,mot)=>'<button type="button" class="dash'+(pkOn(q,k,id)?' on':'')+'"'
+  +' data-pk="'+q+':'+k+':'+esc(String(id))+'">'+(pkOn(q,k,id)?'close':'+ '+mot)+'</button>';
+
+/* ══ LES TROIS VUES ══════════════════════════════════════════════════ */
+function renderZone(){
   habIds();
   const box=$('habits'); if(!box)return;
-  /* `anim` dit ce qui doit s'animer POUR CE RENDU. Sans ça, l'animation
-     d'ouverture se rejouait à chaque frappe : une boîte qui repousse à
-     chaque lettre n'est pas fluide, elle est nerveuse. */
-  const change = lastView!==null && lastView!==view;
-  lastView=view;
-  const sc=$('fv-inner');
-  /* MESURÉ : le défilement dérivait de quelques pixels à chaque rendu. Sur
-     une longue liste, choisir une intention te déplaçait. On le garde et on
-     le repose — sauf quand on vient d'ouvrir, où on VEUT bouger. */
-  const keep = sc ? sc.scrollTop : null;
+  const sc=$('fv-inner'); const keep = sc?sc.scrollTop:null;
+  const change = lastView!==null && lastView!==view; lastView=view;
   paintZone();
+
   let h='';
   if(view==='habits'){
-    /* L'ORDRE DU MEMBRE GAGNE. Tant qu'il n'a rien classé, les habitudes
-       coulent par rythme (les plus fréquentes en haut) ; dès qu'il en
-       déplace une, c'est SON ordre — et c'est celui que le bot suivra. */
     if(!state.ord)sortHabits();
     const list=(state.habits||[]).filter(x=>{
       if(filterF && x.f!==filterF) return false;
-      if(filterI && x.i!==filterI) return false;
+      if(filterI && !intIds(x).includes(filterI)) return false;
       return true;});
-    h=list.map((x,k)=>{
-      const n=repsOfHab(x.id).length, t=x.o?tripOf(x.o):null;
-      /* Contenu de la boîte : STRICTEMENT IDENTIQUE ouvert et fermé.
-         La seule différence : `editInner` rend le nom éditable. */
-      const sub=(x.i?'<span class="v-int" style="color:'+intColor(x.i)+'">'+esc(intName(x.i))+'</span>'
-             +'<span class="v-pil">'+esc(intPillar(x.i))+'</span>'
-            :'<span class="v-pil">set intention</span>')
-        +'<span class="v-frq">'+esc(x.f?flabel(x.f):'no rhythm')+'</span>'
-        +(n?'<span class="v-pil">'+n+' repulsion'+(n>1?'s':'')+'</span>':'')
-        +(t?'<span class="v-pil">'+esc(t.text)+'</span>'
-           :(!x.o?'<span class="v-pil">no objective</span>':''));
-      if(open&&open.kind==='h'&&open.id===x.id)
-        return ligne(editInner('h',x,sousVivant(x),
-            intFor===String(x.id)?'<span class="w-sec">'+intGrid(x.i,x.id)+'</span>':''),
-          'open'+(open.neuf?' neuf':''),x.i?intColor(x.i):null,k+1,x.id,birthHTML());
-      /* PAS DE CADRE NAVY SUR UNE BOÎTE DÉJÀ NAVY. `.h-frame` existe pour
-         qu'une habitude reste navy quand elle est POSÉE AILLEURS — dans le
-         noir d'un Trip, dans le rouge-violet d'une répulsion. Ici la boîte
-         est la vue : le cadre ne faisait qu'un double filet. */
-      return ligne(boite(esc(x.t),
-        (x.i?'<span class="v-int" style="color:'+intColor(x.i)+'">'+esc(intName(x.i))+'</span>'
-             +'<span class="v-pil">'+esc(intPillar(x.i))+'</span>'
-            :'<span class="v-pil">set intention</span>')
-        +'<span class="v-frq">'+esc(x.f?flabel(x.f):'no rhythm')+'</span>'
-        +(n?'<span class="v-pil">'+n+' repulsion'+(n>1?'s':'')+'</span>':'')
-        /* « no objective » ne s'écrit QUE si on sait qu'il n'y en a pas.
-           Tant que l'arbre n'est pas chargé, une habitude rattachée n'a pas
-           encore son objectif en mémoire : l'annoncer libre serait faux, et
-           un écran qui ment une seconde est un écran auquel on ne croit
-           plus. On se tait, puis on dit. */
-        +(t?'<span class="v-pil">'+esc(t.text)+'</span>'
-           :(!x.o?'<span class="v-pil">no objective</span>':'')),
-        'data-h="'+esc(x.id)+'"'), '', x.i?intColor(x.i):null, k+1, x.id);}).join('');
-    if(!list.length)h+='<div class="void">'+(state.habits&&state.habits.length
+    h=list.map((x,k)=>vueHabitude(x,k)).join('');
+    if(!list.length)h+='<div class="void">'+((state.habits||[]).length
       ?'nothing matches this filter':'no habit yet')+'</div>';
-    h+=ligne('<button type="button" class="add-box" data-add="1">+ <b>Add a Habit</b></button>','add');
+    h+=ligne('<button type="button" class="add-box" data-add="h">+ <b>Add a Habit</b></button>','add');
   }else if(view==='objectives'){
-    h=TRIPS.map((t,k)=>{
-      const n=habsOfTrip(t).length, late=t.days_left!=null&&t.days_left<0;
-      const sub='<span class="v-frq'+(late?' late':'')+'">'+esc(fmtDue(t.days_left))+'</span>'
-        +'<span class="v-pil">'+n+' habit'+(n===1?'':'s')+'</span>';
-      if(open&&open.kind==='t'&&String(open.id)===String(t.id))
-        return ligne(editInner('t',t,sub),'open'+(open.neuf?' neuf':''),null,k+1,t.id,birthHTML());
-      return ligne(boite(esc(t.text),sub,'data-t="'+esc(t.id)+'"'),'',null,k+1,t.id);}).join('');
+    h=TRIPS.map((t,k)=>vueObjectif(t,k)).join('');
     if(!TRIPS.length)h+='<div class="void">'+(tripsLoaded?'no objective yet':'loading…')+'</div>';
-    h+=ligne('<button type="button" class="add-box" data-add="1">+ <b>Add an Objective</b></button>','add');
+    h+=ligne('<button type="button" class="add-box" data-add="t">+ <b>Add an Objective</b></button>','add');
   }else{
-    h=REPS.map((r,k)=>{
-      const x=habsOfRep(r)[0];
-      const sub='<span class="v-pil">protects</span>'
-        +'<span class="h-frame u-mini">'+esc(x?x.t:'—')+'</span>';
-      if(open&&open.kind==='r'&&String(open.id)===String(r.id))
-        return ligne(editInner('r',r,sub),'open'+(open.neuf?' neuf':''),x&&x.i?intColor(x.i):null,k+1,r.id,birthHTML());
-      return ligne(boite(esc(r.text),sub,'data-r="'+esc(r.id)+'"'),'',x&&x.i?intColor(x.i):null,k+1,r.id);}).join('');
+    h=REPS.map((r,k)=>vueRepulsion(r,k)).join('');
     if(!REPS.length)h+='<div class="void">'+(tripsLoaded?'no repulsion yet':'loading…')+'</div>';
-    h+=ligne('<button type="button" class="add-box" data-add="1">+ <b>Add a Repulsion</b></button>','add');
+    h+=ligne('<button type="button" class="add-box" data-add="r">+ <b>Add a Repulsion</b></button>','add');
   }
-  /* La barre se pose ICI et pas dans `h` : chacune des trois branches
-     REMPLACE `h` (`h=...`), donc un préfixe posé avant serait écrasé. Le
-     genre de bug qui ne se voit qu'à l'écran — et qui s'est vu. */
+
   box.innerHTML=(ordering
-    ? '<div class="ordbar">order by importance — the bot follows this order</div>' : '')+h;
-  /* Retirer, forcer un reflow, remettre : sans le reflow le navigateur ne
-     rejoue pas une animation dont la classe est déjà là. */
-  /* On ne retire la classe QUE pour la remettre : la retirer au rendu
-     suivant coupait le fondu en plein vol — `loadTrips` redessine deux
-     cents millisecondes après le changement de vue, en plein milieu des
-     260 ms de l'animation. */
-  if(change){ box.classList.remove('swap'); void box.offsetWidth;
-              box.classList.add('swap'); }
+    ? '<div class="ordbar">order by importance — the bot follows this order</div>':'')+h;
+  if(change){ box.classList.remove('swap'); void box.offsetWidth; box.classList.add('swap'); }
   if(keep!=null&&sc)sc.scrollTop=keep;
-  const carte=box.querySelector('.habit.open');
-  if(carte){ if(anim!=='grow')carte.style.animation='none'; cable(carte); }
-  /* ══ LE DIAGNOSTIC ══ Tout écran qui peut être vide porte le sien. Un
-     écran vide SANS diagnostic, c'est trois allers-retours au lieu d'un :
-     on ne sait pas si le membre n'a rien posé, si la session est tombée,
-     ou si la RPC casse. Des compteurs et des booléens, JAMAIS une valeur
-     de clé ni un texte du membre. C'est le bloc à coller dans la console.
-     Même contrat que `window.__totehm_map` et `window.__totehm_self`. */
   window.__totehm_zone={vue:view, session:!!me, arbre_charge:tripsLoaded,
     habitudes:(state.habits||[]).length, objectifs:TRIPS.length, repulsions:REPS.length,
     filtre:{rythme:!!filterF, intention:!!filterI},
-    boite_ouverte:open?open.kind:null, classement:ordering, ordre_du_membre:!!state.ord};
-  box.querySelectorAll('[data-h],[data-t],[data-r],[data-add]').forEach(el=>{
-    const go=()=>{
-      /* En mode classement, un appui DÉPLACE — il n'ouvre pas. */
-      if(ordering)return;
-      if(el.dataset.add)creerDansLaVue();
-      else if(el.dataset.h)ouvrir('h',el.dataset.h);
-      else if(el.dataset.t)ouvrir('t',el.dataset.t);
-      else ouvrir('r',el.dataset.r);};
-    el.addEventListener('click',go);
-    el.addEventListener('keydown',e=>{
-      if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}});
-  });
+    boite_ouverte:open?open.kind:null, choix:pk?pk.q:null,
+    classement:ordering, ordre_du_membre:!!state.ord};
+  cable(box);
 }
 
-/* Ouvrir, c'est agrandir la boîte À SA PLACE : on reste dans le Totehm,
-   rien ne recouvre le logo. */
-function ouvrir(kind,id,neuf){
-  open={kind,id:String(id),neuf:!!neuf}; selOpen=null; intFor=null; lkFor=null; pickFor=null;
-  editH = kind==='h'?String(id):null; editR = kind==='r'?String(id):null;
-  renderZone('grow');
+/* ── UNE HABITUDE ────────────────────────────────────────────────────
+   Elle montre SES objectifs (bleu clair) et SES répulsions (rouge-violet).
+   C'est le format de la boîte répulsion, dans l'autre sens. */
+function vueHabitude(x,k){
+  const ouverte = !!open && open.kind==='h' && String(open.id)===String(x.id);
+  const ts=tripsOfHab(x), rs=repsOfHabX(x), l=intIds(x);
+  const unit = ouverte
+    ? '<button type="button" class="v-b" data-pk="int:h:'+esc(String(x.id))+'">'
+      +(l.length?l.map(i=>'<b style="color:'+intColor(i)+'">'+esc(intName(i))+'</b>').join(' · ')
+                :'set intention')+'</button>'
+      +'<button type="button" class="v-b" data-pk="freq:h:'+esc(String(x.id))+'">'
+      +esc(x.f?flabel(x.f):'no rhythm')+' ▾</button>'
+    : (l.length?l.map(i=>'<span class="v-int" style="color:'+intColor(i)+'">'+esc(intName(i))+'</span>').join('')
+               :'<span class="v-pil">set intention</span>')
+      +'<span class="v-frq">'+esc(x.f?flabel(x.f):'no rhythm')+'</span>';
+  const minis = ouverte
+    ? ts.map(t=>miniDel('o',t.text,'data-unlink="o:'+esc(String(x.id))+'|'+esc(String(t.id))+'"')).join('')
+      + rs.map(r=>miniDel('r',r.text,'data-unlink="r:'+esc(String(x.id))+'|'+esc(String(r.id))+'"')).join('')
+      + plus('lien','o',x.id,'objective') + plus('lien','r',x.id,'repulsion')
+    : ts.map(t=>mini('o',t.text)).join('') + rs.map(r=>mini('r',r.text)).join('');
+  let extra='';
+  if(ouverte&&pkOn('int','h',x.id))  extra=intPicker(x);
+  if(ouverte&&pkOn('freq','h',x.id)) extra=freqPicker(x);
+  if(ouverte&&pkOn('lien','o',x.id)) extra=lienPicker('o',x.id,
+      ts.map(t=>String(t.id)), TRIPS.map(t=>({id:t.id,txt:t.text})), 'a new objective');
+  if(ouverte&&pkOn('lien','r',x.id)) extra=lienPicker('r',x.id,
+      rs.map(r=>String(r.id)), REPS.map(r=>({id:r.id,txt:r.text})), 'a new repulsion');
+  return ligne(boiteHTML({kind:'h',id:x.id,titre:x.t,unit,minis,ouverte,extra})
+    +(ouverte?'<button type="button" class="btn g" data-kill="h:'+esc(String(x.id))+'">Delete habit</button>':''),
+    ouverte?'open':'', intCols(x), k+1, x.id);
+}
+
+/* ── UN OBJECTIF ─────────────────────────────────────────────────────
+   Il montre SES habitudes en navy. La deadline se pose ET se retire. */
+function vueObjectif(t,k){
+  const ouverte = !!open && open.kind==='t' && String(open.id)===String(t.id);
+  const hs=habsOfTrip(t), late=t.days_left!=null&&t.days_left<0;
+  const unit = ouverte
+    ? '<input class="in date" type="date" data-date="'+esc(String(t.id))+'" value="'+esc(dateIn(t.target_at))+'">'
+      +(t.target_at?'<button type="button" class="v-b" data-nodate="'+esc(String(t.id))+'">no deadline</button>':'')
+    : '<span class="v-frq'+(late?' late':'')+'">'+esc(fmtDue(t.days_left))+'</span>'
+      +'<span class="v-pil">'+hs.length+' habit'+(hs.length===1?'':'s')+'</span>';
+  const minis = ouverte
+    ? hs.map(x=>miniDel('h',x.t,'data-unlink="ho:'+esc(String(t.id))+'|'+esc(String(x.id))+'"')).join('')
+      + plus('lien','h',t.id,'habit')
+    : hs.map(x=>mini('h',x.t)).join('');
+  const extra = (ouverte&&pkOn('lien','h',t.id))
+    ? lienPicker('h',t.id, hs.map(x=>String(x.id)),
+        (state.habits||[]).map(x=>({id:x.id,txt:x.t})), 'a new habit') : '';
+  return ligne(boiteHTML({kind:'t',id:t.id,titre:t.text,unit,minis,ouverte,extra})
+    +(ouverte?'<button type="button" class="btn g" data-kill="t:'+esc(String(t.id))+'">Delete objective</button>':''),
+    ouverte?'open':'', null, k+1, t.id);
+}
+
+/* ── UNE RÉPULSION ───────────────────────────────────────────────────
+   Elle montre les habitudes qu'elle protège, en navy. */
+function vueRepulsion(r,k){
+  const ouverte = !!open && open.kind==='r' && String(open.id)===String(r.id);
+  const hs=habsOfRep(r);
+  const unit = '<span class="v-pil">protects</span>'
+    +'<span class="v-frq">'+hs.length+' habit'+(hs.length===1?'':'s')+'</span>';
+  const minis = ouverte
+    ? hs.map(x=>miniDel('h',x.t,'data-unlink="hr:'+esc(String(r.id))+'|'+esc(String(x.id))+'"')).join('')
+      + plus('lien','hr',r.id,'habit')
+    : hs.map(x=>mini('h',x.t)).join('');
+  const extra = (ouverte&&pkOn('lien','hr',r.id))
+    ? lienPicker('hr',r.id, hs.map(x=>String(x.id)),
+        (state.habits||[]).map(x=>({id:x.id,txt:x.t})), 'a new habit') : '';
+  return ligne(boiteHTML({kind:'r',id:r.id,titre:r.text,unit,minis,ouverte,extra})
+    +(ouverte?'<button type="button" class="btn g" data-kill="r:'+esc(String(r.id))+'">Delete repulsion</button>':''),
+    ouverte?'open':'', null, k+1, r.id);
+}
+
+/* ══ OUVRIR, FERMER ══════════════════════════════════════════════════ */
+function ouvrir(kind,id){
+  open={kind,id:String(id)}; pk=null; renderZone();
   const b=$('habits').querySelector('.habit.open');
-  if(b){
-    /* MESURÉ : `scrollIntoView` ne bougeait le cadre que de 2 px. Il cherche
-       « l'ancêtre défilant le plus proche » et, dans un document dont le
-       corps ne défile pas, il ne trouve pas #fv-inner de façon fiable. On
-       lui dit lequel, et de combien : plus de devinette. Affectation
-       directe, pas `behavior:'smooth'` — un défilement doux est annulé
-       quand le système demande moins d'animation. */
-    requestAnimationFrame(()=>{const sc=$('fv-inner'); if(!sc)return;
-      sc.scrollTop=sc.scrollTop+b.getBoundingClientRect().top-sc.getBoundingClientRect().top-6;});
-    /* Focus sur le nom éditable in-place. Fallback vers la textarea
-       du blk (utilisée si un jour on rouvre un flux d'édition dedans). */
-    const f=b.querySelector('.h-body .v-name[contenteditable]')
-         || b.querySelector('textarea.w-name');
-    if(f&&window.innerWidth>700)f.focus();
-  }
+  if(!b)return;
+  /* MESURÉ : `scrollIntoView` ne bougeait le cadre que de 2 px — dans un
+     document dont le corps ne défile pas, il ne trouve pas #fv-inner de
+     façon fiable. On lui dit lequel, et de combien. */
+  requestAnimationFrame(()=>{const sc=$('fv-inner'); if(!sc)return;
+    sc.scrollTop=sc.scrollTop+b.getBoundingClientRect().top-sc.getBoundingClientRect().top-6;});
+  const f=b.querySelector('.v-name[contenteditable]');
+  if(f&&window.innerWidth>700)f.focus();
 }
 function fermer(){
-  open=null;selOpen=null;intFor=null;lkFor=null;pickFor=null;editH=null;editR=null;
-  renderZone();
-  /* L'arbre se recharge ICI, une fois : pendant l'édition il fermerait le
-     panneau sous les doigts, et après il remet la vérité du serveur. */
+  open=null; pk=null; renderZone();
+  /* L'arbre se recharge ICI, une fois : pendant l'édition il fermerait la
+     boîte sous les doigts, après il remet la vérité du serveur. */
   if(wDirty){wDirty=false;loadTrips(true);}
 }
 
-/* ══ CRÉER — UN SEUL BOUTON PAR VUE ══════════════════════════════════
-   Il crée la pièce de SA vue, vide, et ouvre le triplet dessus. La fenêtre
-   qui sert à modifier est celle qui sert à créer : un deuxième chemin de
-   création finirait par diverger. */
-async function creerDansLaVue(){
-  if(view==='habits'){
-    const x={id:'h'+(++HSEQ), t:'', f:pendingF||null, i:pendingI||null, o:null};
-    state.habits.unshift(x); state.ord=true; save(); ouvrir('h',x.id,true); return;
-  }
+/* ══ CRÉER — un bouton par vue, la pièce de CETTE vue ═════════════════ */
+async function creer(kind){
+  if(kind==='h'){
+    const x={id:'h'+(++HSEQ), t:'', f:null, i:null, is:[], o:null};
+    state.habits.unshift(x); state.ord=true; save(); ouvrir('h',x.id); return;}
   if(!me){$('member-window').classList.add('show');
           if(typeof memberPaint==='function')memberPaint();return;}
-  if(view==='objectives'){
+  if(kind==='t'){
     const {data,error}=await sb.rpc('trip_create',{p_text:'',p_target:null});
     if(error){console.error('[totehm] trip_create:',error.message);return;}
     TRIPS.unshift({id:data,text:'',target_at:null,days_left:null,habits:[]});
-    ouvrir('t',data,true); return;
-  }
-  /* Une répulsion se rattache à une habitude : le serveur la classe par
-     `habit_text`. Sans habitude, il n'y a rien à protéger — on le dit. */
-  const h0=(state.habits||[])[0];
-  if(!h0||!h0.t){alert('write a habit first — a repulsion protects something');return;}
+    wDirty=true; ouvrir('t',data); return;}
+  const h0=(state.habits||[]).find(z=>z.t);
+  if(!h0){alert('write a habit first — a repulsion protects something');return;}
   const {data,error}=await sb.rpc('repulsion_set',{p_habit:h0.t,p_repulsion:'',p_obstacle:''});
   if(error){console.error('[totehm] repulsion_set:',error.message);return;}
   REPS.unshift({id:data,text:'',obstacle:'',hs:[h0.t]});
-  ouvrir('r',String(data),true);
+  wDirty=true; ouvrir('r',String(data));
 }
 
-/* ══ LE CÂBLAGE DE LA BOÎTE OUVERTE ══════════════════════════════════ */
-function grow(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}
-function cable(carte){
-  const on=(sel,ev,fn)=>carte.querySelectorAll(sel).forEach(el=>el.addEventListener(ev,fn));
-  const stop=fn=>e=>{e.stopPropagation();fn(e);};
-  /* MESURÉ : `.w-name` retombait à zéro. `grow()` lisait `scrollHeight`
-     pendant que la boîte n'était pas encore affichée. On mesure APRÈS. */
-  carte.querySelectorAll('textarea.w-name').forEach(grow);
-
-  /* ── LE DÉROULANT ─────────────────────────────────────────────────── */
-  on('[data-sel]','click',stop(e=>{
-    const k=e.currentTarget.dataset.sel; selOpen=(selOpen===k?null:k); renderZone();}));
-  on('[data-selv]','click',stop(e=>{
-    const k=e.currentTarget.dataset.selk, v=e.currentTarget.dataset.selv;
-    selOpen=null;
-    if(k.indexOf('h:')===0){const x=habOf(k.slice(2)); if(x){x.f=v;save();}}
-    renderZone();}));
-  /* Clic sur le fond du modal (hors de `.selp-in`) referme le déroulant.
-     Un modal doit pouvoir se fermer sans forcément choisir. */
-  on('.selp.on','click',e=>{
-    if(e.target===e.currentTarget){selOpen=null;renderZone();}});
-
-  /* ── FERMER ───────────────────────────────────────────────────────── */
-  on('[data-x]','click',stop(()=>fermer()));
-
-  /* ── ÉDITER UNE AUTRE PIÈCE, SANS CHANGER DE VUE ──────────────────── */
-  on('[data-goto]','click',stop(e=>{
-    const d=e.currentTarget.dataset.goto, k=d.slice(0,1), id=d.slice(2);
-    if(k==='h')editH=id; else if(k==='r')editR=id;
-    intFor=null;lkFor=null;renderZone();}));
-
-  /* ── LA SAISIE ────────────────────────────────────────────────────── */
-  on('[data-tt]','input',e=>{
-    const t=tripOf(e.target.dataset.tt); if(!t)return;
-    t.text=e.target.value; grow(e.target); wDirty=true;
-    differe(()=>apres(sb.rpc('trip_rename',{p_trip:t.id,p_text:t.text})));});
-  on('[data-td]','change',e=>{
-    const t=tripOf(e.target.dataset.td); if(!t)return;
-    const v=e.target.value;
-    t.target_at=v?v+'T00:00:00Z':null; wDirty=true;
-    apres(sb.rpc('trip_set_target',{p_trip:t.id,p_target:t.target_at}));});
-  on('[data-ht]','input',e=>{
-    const x=habOf(e.target.dataset.ht); if(!x)return;
-    const ancien=x.t; x.t=e.target.value; grow(e.target);
-    differe(()=>{
-      save();
-      /* Renommer une habitude ne doit pas orpheliner ce qui la protège :
-         le lien est du TEXTE, il se répare côté serveur, en un appel. */
-      if(me&&ancien&&ancien!==x.t){
-        REPS.forEach(r=>{const i=(r.hs||[]).indexOf(ancien); if(i>=0)r.hs[i]=x.t;});
-        apres(sb.rpc('habit_rename_links',{p_old:ancien,p_new:x.t}));}
-    });});
-  on('[data-rt]','input',e=>{
-    const r=repOf(e.target.dataset.rt); if(!r)return;
-    r.text=e.target.value; grow(e.target); wDirty=true;
-    differe(()=>apres(sb.rpc('repulsion_set',
-      {p_habit:(r.hs||[])[0]||'', p_repulsion:r.text, p_obstacle:r.obstacle||''})));});
-
-  /* ── ÉDITION INLINE DU NOM DEPUIS LA BOÎTE FERMÉE (mode open) ──────
-     `.v-name[contenteditable]` : le membre écrit dans la boîte cliquée
-     à sa place, sans qu'elle change de layout. Sauvegarde différée
-     (differe), même chemin serveur que les textarea des blks — un
-     seul RPC par pause de frappe. Entrée = fin d'édition, pas de saut
-     de ligne dans un nom. */
-  on('[data-hedit]','input',e=>{
-    const x=habOf(e.target.dataset.hedit); if(!x)return;
-    const ancien=x.t; x.t=e.target.textContent;
-    differe(()=>{
-      save();
-      if(me&&ancien&&ancien!==x.t){
-        REPS.forEach(r=>{const i=(r.hs||[]).indexOf(ancien); if(i>=0)r.hs[i]=x.t;});
-        apres(sb.rpc('habit_rename_links',{p_old:ancien,p_new:x.t}));}
-    });});
-  on('[data-tedit]','input',e=>{
-    const t=tripOf(e.target.dataset.tedit); if(!t)return;
-    t.text=e.target.textContent; wDirty=true;
-    differe(()=>apres(sb.rpc('trip_rename',{p_trip:t.id,p_text:t.text})));});
-  on('[data-redit]','input',e=>{
-    const r=repOf(e.target.dataset.redit); if(!r)return;
-    r.text=e.target.textContent; wDirty=true;
-    differe(()=>apres(sb.rpc('repulsion_set',
-      {p_habit:(r.hs||[])[0]||'', p_repulsion:r.text, p_obstacle:r.obstacle||''})));});
-  /* Entrée dans un contenteditable = saut de ligne par défaut.
-     Un NOM n'a pas de retour à la ligne : Entrée quitte le champ. */
-  on('[data-hedit],[data-tedit],[data-redit]','keydown',e=>{
-    if(e.key==='Enter'){e.preventDefault(); e.target.blur();}});
-
-  /* ── L'INTENTION, sur l'habitude qu'on touche ─────────────────────── */
-  on('[data-ip]','click',stop(e=>{
-    const id=e.currentTarget.dataset.ip;
-    intFor=(intFor===id?null:id); lkFor=null; renderZone();}));
-  on('[data-i]','click',stop(e=>{
-    const x=habOf(e.currentTarget.dataset.ih); if(!x)return;
-    const v=e.currentTarget.dataset.i;
-    x.i=(x.i===v?null:v); intFor=null; save(); renderZone();}));
-
-  /* ── LE LOOKUP : une répulsion protège PLUSIEURS habitudes ────────── */
-  on('[data-lk]','click',stop(e=>{
-    const id=String(e.currentTarget.dataset.lk);
-    lkFor=(lkFor===id?null:id); intFor=null; renderZone();}));
-  on('[data-lkh]','click',stop(e=>{
-    const p=e.currentTarget.dataset.lkh.split('|');
-    const r=repOf(p[0]), x=habOf(p[1]); if(!r||!x||!x.t)return;
-    const i=(r.hs||[]).indexOf(x.t);
-    if(i<0){r.hs.push(x.t); apres(sb.rpc('repulsion_link',{p_id:r.id,p_habit:x.t}));}
-    else   {r.hs.splice(i,1); apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:x.t}));}
-    wDirty=true; renderZone();}));
-
-  /* ── UN OBJECTIF DE PLUS, OU UN DE MOINS ─────────────────────────── */
-  on('[data-ao]','click',stop(()=>{
-    pickFor=(pickFor==='o'?null:'o'); intFor=null; lkFor=null; renderZone();}));
-  on('[data-ox]','click',stop(e=>{
-    const p=e.currentTarget.dataset.ox.split('|');
-    const x=habOf(p[1]); if(!x||!x.t)return;
-    /* DÉTACHER N'EST PAS EFFACER : l'objectif a été écrit, il sert
-       peut-être ailleurs. On retire le lien, pas la pensée. */
-    OBJ[x.t]=(OBJ[x.t]||[]).filter(o=>o!==String(p[0]));
-    posePremier(x);
-    apres(sb.rpc('objective_unlink',{p_obj:p[0],p_habit:x.t}));
-    wDirty=true; renderZone();}));
-
-  /* ── LE LOOKUP D'UN BLOC VIDE — reprendre, ou écrire ──────────────── */
-  on('[data-pk]','click',stop(e=>{
-    const k=e.currentTarget.dataset.pk;
-    pickFor=(pickFor===k?null:k); intFor=null; lkFor=null; renderZone();}));
-  on('[data-pick]','click',stop(e=>{
-    const p=e.currentTarget.dataset.pick.split('|');
-    lier(p[0],p[1]); pickFor=null; renderZone();}));
-  on('[data-nw]','keydown',e=>{
-    if(e.key!=='Enter')return; e.preventDefault();
-    const v=e.target.value.trim(); if(!v)return;
-    creerEtLier(e.target.dataset.nw, v);});
-
-  /* ── AJOUTER UNE PIÈCE AU TRIP ────────────────────────────────────── */
-  on('[data-ah]','click',stop(e=>{
-    const x={id:'h'+(++HSEQ), t:'', f:null, i:null, o:e.currentTarget.dataset.ah||null};
-    state.habits.unshift(x); state.ord=true; save(); editH=x.id; editR=null; renderZone();
-    const el=$('habits').querySelector('[data-ht="'+x.id+'"]'); if(el)el.focus();}));
-  on('[data-ar]','click',stop(async e=>{
-    const x=habOf(e.currentTarget.dataset.ar); if(!x||!x.t)return;
-    const {data,error}=await sb.rpc('repulsion_set',{p_habit:x.t,p_repulsion:'',p_obstacle:''});
-    if(error){console.error('[totehm] repulsion_set:',error.message);return;}
-    REPS.unshift({id:data,text:'',obstacle:'',hs:[x.t]});
-    editR=String(data); editH=null; wDirty=true; renderZone();
-    const el=$('habits').querySelector('[data-rt="'+data+'"]'); if(el)el.focus();}));
-
-  /* ── RETIRER ──────────────────────────────────────────────────────── */
-  on('[data-hx],[data-kill]','click',stop(e=>{
-    const id=e.currentTarget.dataset.hx||e.currentTarget.dataset.kill;
-    const x=habOf(id); if(!x)return;
-    logTotehmEvent('habit_removed',x.t,{f:x.f,i:x.i});
-    state.habits=state.habits.filter(h=>h.id!==id);
-    /* Une répulsion qui ne protège plus rien RESTE : elle a été écrite,
-       elle se rattache ailleurs. On retire le lien, pas la pensée. */
-    REPS.forEach(r=>{const i=(r.hs||[]).indexOf(x.t);
-      if(i>=0){r.hs.splice(i,1); if(me)apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:x.t}));}});
-    save();
-    if(editH===id)editH=null;
-    if(open&&open.kind==='h'&&open.id===id)fermer(); else renderZone();}));
-  on('[data-rx],[data-rkill]','click',stop(e=>{
-    const id=String(e.currentTarget.dataset.rx||e.currentTarget.dataset.rkill);
-    REPS=REPS.filter(r=>String(r.id)!==id);
-    apres(sb.rpc('repulsion_retire',{p_id:Number(id)}));
-    if(editR===id)editR=null;
-    if(open&&open.kind==='r'&&String(open.id)===id)fermer(); else renderZone();}));
-  on('[data-tkill]','click',stop(e=>{
-    const id=String(e.currentTarget.dataset.tkill);
-    TRIPS=TRIPS.filter(t=>String(t.id)!==id);
-    (state.habits||[]).forEach(h=>{if(String(h.o||'')===id)h.o=null;});
-    save(); apres(sb.rpc('trip_close',{p_trip:id,p_outcome:'dropped'}));
-    fermer();}));
-}
-
-/* LE LIEN SE POSE DEPUIS CE QU'ON A OUVERT. C'est la seule fonction qui
-   connaît les règles de rattachement, et il n'y en a que trois :
-     un objectif tient plusieurs habitudes ;
-     une habitude sert UN objectif ;
-     une répulsion protège plusieurs habitudes. */
-function lier(k,id){
-  const m=open.kind;
-  if(k==='o'){
-    const x = m==='h'?habOf(open.id) : m==='r'?habsOfRep(repOf(open.id)||{hs:[]})[0] : null;
-    if(x&&x.t){
-      OBJ[x.t]=(OBJ[x.t]||[]).concat([String(id)]);
-      posePremier(x);
-      apres(sb.rpc('objective_link',{p_obj:id,p_habit:x.t}));}
-  }else if(k==='h'){
-    if(m==='t'){const x=habOf(id); if(x){x.o=open.id; save();}}
-    else if(m==='r'){const r=repOf(open.id), x=habOf(id);
-      if(r&&x&&x.t&&!(r.hs||[]).includes(x.t)){
-        r.hs.push(x.t); apres(sb.rpc('repulsion_link',{p_id:r.id,p_habit:x.t}));}}
-  }else{
-    const x = m==='h'?habOf(open.id) : m==='t'?habsOfTrip(tripOf(open.id)||{id:''})[0] : null;
-    const r = repOf(id);
-    if(r&&x&&x.t&&!(r.hs||[]).includes(x.t)){
-      r.hs.push(x.t); apres(sb.rpc('repulsion_link',{p_id:r.id,p_habit:x.t}));}
-  }
+/* ══ ATTACHER, DÉTACHER ══════════════════════════════════════════════
+   Une seule fonction connaît les règles, et il n'y en a que trois :
+     une habitude sert PLUSIEURS objectifs ;
+     une répulsion protège PLUSIEURS habitudes ;
+     détacher n'efface jamais — on retire le lien, pas la pensée. */
+function attache(quoi,srcId,cibleId){
+  if(quoi==='o'){ const x=habOf(srcId), t=tripOf(cibleId); if(!x||!x.t||!t)return;
+    OBJ[x.t]=(OBJ[x.t]||[]).concat([String(t.id)]); posePremier(x);
+    apres(sb.rpc('objective_link',{p_obj:t.id,p_habit:x.t})); }
+  else if(quoi==='h'){ const t=tripOf(srcId), x=habOf(cibleId); if(!t||!x||!x.t)return;
+    OBJ[x.t]=(OBJ[x.t]||[]).concat([String(t.id)]); posePremier(x);
+    apres(sb.rpc('objective_link',{p_obj:t.id,p_habit:x.t})); }
+  else if(quoi==='r'){ const x=habOf(srcId), r=repOf(cibleId); if(!x||!x.t||!r)return;
+    if(!(r.hs||[]).includes(x.t)){r.hs.push(x.t);
+      apres(sb.rpc('repulsion_link',{p_id:r.id,p_habit:x.t}));} }
+  else { const r=repOf(srcId), x=habOf(cibleId); if(!r||!x||!x.t)return;   /* 'hr' */
+    if(!(r.hs||[]).includes(x.t)){r.hs.push(x.t);
+      apres(sb.rpc('repulsion_link',{p_id:r.id,p_habit:x.t}));} }
   wDirty=true;
 }
-async function creerEtLier(k,txt){
-  if(k==='h'){
-    const x={id:'h'+(++HSEQ), t:txt, f:null, i:null, o:null};
-    state.habits.unshift(x); state.ord=true; save(); lier('h',x.id); pickFor=null; renderZone(); return;}
-  if(!me)return;
-  if(k==='o'){
+function detache(quoi,aId,bId){
+  if(quoi==='o'){ const x=habOf(aId); if(!x||!x.t)return;
+    OBJ[x.t]=(OBJ[x.t]||[]).filter(o=>o!==String(bId)); posePremier(x);
+    apres(sb.rpc('objective_unlink',{p_obj:bId,p_habit:x.t})); }
+  else if(quoi==='ho'){ const x=habOf(bId); if(!x||!x.t)return;
+    OBJ[x.t]=(OBJ[x.t]||[]).filter(o=>o!==String(aId)); posePremier(x);
+    apres(sb.rpc('objective_unlink',{p_obj:aId,p_habit:x.t})); }
+  else if(quoi==='r'){ const x=habOf(aId), r=repOf(bId); if(!x||!x.t||!r)return;
+    r.hs=(r.hs||[]).filter(t=>t!==x.t);
+    apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:x.t})); }
+  else { const r=repOf(aId), x=habOf(bId); if(!r||!x||!x.t)return;          /* 'hr' */
+    r.hs=(r.hs||[]).filter(t=>t!==x.t);
+    apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:x.t})); }
+  wDirty=true;
+}
+/* Écrire du neuf ET l'attacher, d'un seul geste. */
+async function neufEtAttache(quoi,srcId,txt){
+  if(quoi==='o'){
     const {data,error}=await sb.rpc('trip_create',{p_text:txt,p_target:null});
     if(error){console.error('[totehm] trip_create:',error.message);return;}
     TRIPS.unshift({id:data,text:txt,target_at:null,days_left:null,habits:[]});
-    lier('o',data); pickFor=null; wDirty=true; renderZone(); return;}
-  const cible = open.kind==='h'?habOf(open.id) : habsOfTrip(tripOf(open.id)||{id:''})[0];
-  if(!cible||!cible.t)return;
-  const {data,error}=await sb.rpc('repulsion_set',{p_habit:cible.t,p_repulsion:txt,p_obstacle:''});
-  if(error){console.error('[totehm] repulsion_set:',error.message);return;}
-  REPS.unshift({id:data,text:txt,obstacle:'',hs:[cible.t]});
-  pickFor=null; wDirty=true; renderZone();
+    attache('o',srcId,data);}
+  else if(quoi==='r'){
+    const x=habOf(srcId); if(!x||!x.t)return;
+    const {data,error}=await sb.rpc('repulsion_set',{p_habit:x.t,p_repulsion:txt,p_obstacle:''});
+    if(error){console.error('[totehm] repulsion_set:',error.message);return;}
+    REPS.unshift({id:data,text:txt,obstacle:'',hs:[x.t]});}
+  else{ /* 'h' depuis un objectif, 'hr' depuis une répulsion */
+    const x={id:'h'+(++HSEQ), t:txt, f:null, i:null, is:[], o:null};
+    state.habits.unshift(x); state.ord=true; save();
+    attache(quoi,srcId,x.id);}
+  pk=null; renderZone();
+}
+
+/* ══ LE CÂBLAGE — un seul, posé sur la liste entière ═════════════════
+   Délégation : la liste est redessinée à chaque geste, et rattacher
+   trente écouteurs à chaque rendu, c'est trente fuites en puissance. */
+let cableFait=false;
+function cable(box){
+  if(cableFait)return; cableFait=true;
+
+  box.addEventListener('click',async e=>{
+    const el=e.target.closest('[data-open],[data-add],[data-x],[data-pk],[data-int],'
+      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill]');
+    if(!el)return;
+    const d=el.dataset;
+
+    if(d.open){ if(ordering)return; const p=d.open.split(':'); ouvrir(p[0],p[1]); return; }
+    if(d.add){ if(ordering)return; creer(d.add); return; }
+    if(d.x!==undefined){ e.stopPropagation(); fermer(); return; }
+    if(d.pk){ e.stopPropagation(); const p=d.pk.split(':'); pkSet(p[0],p[1],p[2]); return; }
+
+    e.stopPropagation();
+    if(d.int){ const p=d.int.split('|'); const x=habOf(p[0]); if(x)intToggle(x,p[1]); renderZone(); return; }
+    if(d.fq){ const p=d.fq.split('|'); const x=habOf(p[0]);
+      if(x){x.f=p[1];save();} pk=null; renderZone(); return; }
+    if(d.lien){ const p=d.lien.split('|'), q=p[0].split(':');
+      attache(q[0],q[1],p[1]); pk=null; renderZone(); return; }
+    if(d.unlink){ const p=d.unlink.split('|'), q=p[0].split(':');
+      detache(q[0],q[1],p[1]); renderZone(); return; }
+    if(d.nodate){ const t=tripOf(d.nodate); if(t){t.target_at=null;t.days_left=null;
+      apres(sb.rpc('trip_set_target',{p_trip:t.id,p_target:null})); wDirty=true;}
+      renderZone(); return; }
+    if(d.kill){ const p=d.kill.split(':'); tue(p[0],p[1]); return; }
+  });
+
+  /* Le clavier ouvre ce que le doigt ouvre. */
+  box.addEventListener('keydown',e=>{
+    const el=e.target.closest&&e.target.closest('[data-open]');
+    if(el&&(e.key==='Enter'||e.key===' ')){e.preventDefault();
+      const p=el.dataset.open.split(':'); ouvrir(p[0],p[1]);}
+  });
+
+  /* ══ LA SAISIE — TOUT S'ENREGISTRE EN ÉCRIVANT ═════════════════════
+     Aucun bouton [Done] nulle part : ce qu'on écrit est posé. */
+  box.addEventListener('input',e=>{
+    const t=e.target;
+    if(t.dataset.edit){
+      const p=t.dataset.edit.split(':'), v=t.textContent;
+      if(p[0]==='h'){ const x=habOf(p[1]); if(!x)return;
+        const ancien=x.t; x.t=v;
+        differe(()=>{ save();
+          /* Renommer ne doit pas orpheliner ce qui s'y rattache : le lien
+             est du TEXTE, il se répare côté serveur en un appel. */
+          if(me&&ancien&&ancien!==x.t){
+            REPS.forEach(r=>{const i=(r.hs||[]).indexOf(ancien); if(i>=0)r.hs[i]=x.t;});
+            if(OBJ[ancien]){OBJ[x.t]=OBJ[ancien]; delete OBJ[ancien];}
+            apres(sb.rpc('habit_rename_links',{p_old:ancien,p_new:x.t}));} }); }
+      else if(p[0]==='t'){ const z=tripOf(p[1]); if(!z)return; z.text=v; wDirty=true;
+        differe(()=>apres(sb.rpc('trip_rename',{p_trip:z.id,p_text:z.text}))); }
+      else { const r=repOf(p[1]); if(!r)return; r.text=v; wDirty=true;
+        differe(()=>apres(sb.rpc('repulsion_set',
+          {p_habit:(r.hs||[])[0]||'', p_repulsion:r.text, p_obstacle:r.obstacle||''}))); }
+      return;
+    }
+    /* Le rythme écrit dans sa langue : on devine à la frappe, sans réseau. */
+    if(t.dataset.fqin && pk){
+      pk.txt=t.value;
+      const g=(typeof deduceFreq==='function')?deduceFreq(t.value):null;
+      const av=pk.devine; pk.devine = (g&&FREQ_BY_ID[g])?g:null;
+      if(av!==pk.devine){ const cur=t.selectionStart; renderZone();
+        const n=$('habits').querySelector('[data-fqin]');
+        if(n){n.focus(); try{n.setSelectionRange(cur,cur);}catch(_){}} }
+    }
+  });
+  box.addEventListener('change',e=>{
+    if(e.target.dataset.date){ const t=tripOf(e.target.dataset.date); if(!t)return;
+      const v=e.target.value; t.target_at = v ? v+'T00:00:00Z' : null;
+      apres(sb.rpc('trip_set_target',{p_trip:t.id,p_target:t.target_at}));
+      wDirty=true; }
+  });
+  box.addEventListener('keydown',e=>{
+    if(e.key!=='Enter')return;
+    const t=e.target;
+    if(t.dataset.nw){ e.preventDefault();
+      const v=t.value.trim(); if(!v)return;
+      const q=t.dataset.nw.split(':'); neufEtAttache(q[0],q[1],v); return; }
+    if(t.dataset.fqin){ e.preventDefault();
+      if(pk&&pk.devine){ const x=habOf(pk.id); if(x){x.f=pk.devine;save();} pk=null; renderZone(); } }
+  });
+}
+
+/* SUPPRIMER — ici, et nulle part ailleurs. */
+function tue(kind,id){
+  if(kind==='h'){ const x=habOf(id); if(!x)return;
+    logTotehmEvent('habit_removed',x.t,{f:x.f,i:x.i});
+    state.habits=state.habits.filter(z=>z.id!==id);
+    REPS.forEach(r=>{const i=(r.hs||[]).indexOf(x.t);
+      if(i>=0){r.hs.splice(i,1); if(me)apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:x.t}));}});
+    if(x.t&&OBJ[x.t]){OBJ[x.t].forEach(o=>apres(sb.rpc('objective_unlink',{p_obj:o,p_habit:x.t})));
+      delete OBJ[x.t];}
+    save(); }
+  else if(kind==='t'){ TRIPS=TRIPS.filter(t=>String(t.id)!==String(id));
+    (state.habits||[]).forEach(x=>{ if(x.t&&OBJ[x.t]){
+      OBJ[x.t]=OBJ[x.t].filter(o=>o!==String(id)); posePremier(x);} });
+    apres(sb.rpc('trip_close',{p_trip:id,p_outcome:'dropped'})); }
+  else { REPS=REPS.filter(r=>String(r.id)!==String(id));
+    apres(sb.rpc('repulsion_retire',{p_id:Number(id)})); }
+  wDirty=true; fermer();
 }
 
 /* ══ LE CLASSEMENT PAR IMPORTANCE ════════════════════════════════════
@@ -3436,11 +3356,23 @@ window.addEventListener('touchend',(e)=>{
      latéral vers Objectives / Repulsions ne partait presque jamais.
      Le T (h-T), la croix (h-x) et les tiroirs (v-meta) sont exclus par
      leur propre onclick — pas besoin d'un guard global. */
-  if(t0el&&t0el.closest&&t0el.closest('#freq-panel,#habit-peek,#filter-modal,#member-window,input,textarea,select'))return;
+  /* `[contenteditable]` : le nom d'une boîte ouverte s'écrit dedans, pas
+     dans un <input>. Sans lui, un doigt qui glisse en corrigeant un mot
+     partait changer de vue. */
+  if(t0el&&t0el.closest&&t0el.closest('#freq-panel,#habit-peek,#filter-modal,#member-window,input,textarea,select,[contenteditable]'))return;
   const _ae=document.activeElement;
   if(_ae&&(_ae.tagName==='TEXTAREA'||_ae.tagName==='INPUT'))return;
   if(document.body.classList.contains('gate'))return;   /* l'atterrissage défile librement */
-  if(hOpen())return;
+  /* ══ LE BALAYAGE MARCHE DANS LES TROIS VUES · 07/09/2026 ═════════════
+     Ici vivait `if(hOpen())return;`. `hOpen()` veut dire « la vue n'est
+     pas habitudes » — une garde d'AVANT les trois vues, quand quitter les
+     habitudes voulait dire ouvrir un autre fichier. Résultat mesuré : on
+     ne pouvait balayer QUE depuis les habitudes ; arrivé sur objectifs ou
+     répulsions, le doigt ne répondait plus et il fallait viser un carré
+     de 17 px.
+     Ce qu'il faut vraiment bloquer, c'est une BOÎTE OUVERTE — et c'est
+     déjà `setView` qui s'en charge : une vue qui bouge sous les doigts
+     perd la saisie. Une seule règle, un seul endroit. */
   const dy=e.changedTouches[0].screenY-y0;const TH=32;
   if(axis==='h'){
     const dx=e.changedTouches[0].screenX-x0;

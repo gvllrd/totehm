@@ -742,6 +742,82 @@ est marquée par un `outline` blanc, qui ne prend aucune place et n'est pas une
 ombre. Le balayage horizontal ET les flèches suivent le même ordre, tiré de
 la MÊME liste `VIEW_ORDER` : deux listes finissent toujours par diverger.
 
+### UNE SEULE BOÎTE, PARTOUT — 08/09/2026
+
+La couche d'affichage fabriquait DEUX objets : la boîte, et le « bloc »
+d'une pièce liée. Deux paddings, deux graisses, deux grammaires. D'où
+« rien n'est fluide, rien n'est harmonieux ». Elle est réécrite.
+
+**Il n'y a plus qu'une boîte, et elle contient trois choses :**
+
+1. son **titre**, toujours modifiable sur place (`contenteditable`) ;
+2. sa **ligne d'unité** — ce qui la qualifie, et qui se touche ;
+3. ses **mini-boîtes** — ce qui lui est lié, à la couleur de ce que c'est.
+
+**La mini-boîte porte la couleur de CE QU'ELLE EST**, jamais celle de la
+boîte qui l'accueille : une habitude reste navy posée dans une répulsion,
+un objectif reste bleu clair posé dans une habitude. C'est le format de la
+boîte répulsion, généralisé aux trois vues.
+
+| vue | la boîte montre |
+|---|---|
+| habitudes  | ses objectifs (bleu clair) · ses répulsions (rouge-violet) |
+| objectifs  | ses habitudes (navy) |
+| répulsions | les habitudes qu'elle protège (navy) |
+
+**Chaque vue est complète.** On crée, on attache, on détache, on renomme
+sans jamais en changer. Seul le storytelling change.
+
+**Détacher n'efface jamais.** La croix d'une mini-boîte retire le LIEN.
+Seul `[Delete]`, sur sa propre ligne, supprime la pièce.
+
+**Tout s'enregistre en écrivant.** Aucun bouton [Done] nulle part.
+
+### Une habitude porte PLUSIEURS intentions — 08/09/2026
+
+`steps[].is` est la liste ; `steps[].i` reste la PREMIÈRE — c'est elle que
+le serveur (`intention_of`) et le bot lisent. Tenir `i` à jour évite de
+toucher à la base : aucune migration.
+
+**Le bord gauche de la boîte les empile**, un trait par intention, de haut
+en bas. Sept intentions, sept traits : le spectre d'une vie, lisible avant
+d'avoir lu un mot. `.tick` est une colonne flex, chaque `i` prend sa part.
+
+**Seules les boîtes habitude en portent.** Une couleur d'intention sur un
+objectif ou une répulsion ne voudrait rien dire.
+
+### Le rythme s'écrit dans sa langue — 08/09/2026
+
+`deduceFreq()` existait et n'était plus branché : la liste des 33 avait
+remplacé la saisie. On écrit « tous les matins », « every morning »,
+« jeden Morgen », « ogni mattina » — la machine propose le rythme le plus
+proche, en gros, au-dessus de la liste. **Zéro appel de modèle, donc zéro
+facture** : c'est du lexique, pas de l'IA. La liste reste dessous : on
+écrit OU on choisit, jamais l'un sans l'autre.
+
+### Une deadline se retire — 08/09/2026
+
+Poser une date était possible, l'enlever ne l'était pas. `[no deadline]`
+n'apparaît que s'il y en a une, et remet `target_at` à `null`.
+
+### Créer, c'est ouvrir une boîte — pas changer de monde
+
+Le noir de la création a disparu. Deux fonds pour le même objet, ça se
+discute à chaque écran au lieu de se lire d'un coup. Une boîte neuve porte
+la couleur de sa vue — navy dans les habitudes. Le Totehm ne se quitte
+jamais, même en créant.
+
+### Deux états, et pas six
+
+`open` et `ordering`. Le choix en cours (`pk`) vit avec le rendu. Il y en
+avait cinq — `selOpen`, `intFor`, `lkFor`, `pickFor`, `editH`/`editR` —
+chacun remis à zéro à un endroit différent : c'est comme ça qu'une boîte
+gardait ouvert le menu d'une autre.
+
+**Un seul écouteur, posé sur la liste, en délégation.** La liste est
+redessinée à chaque geste : rattacher trente écouteurs à chaque rendu,
+c'est trente fuites en puissance.
+
 ### Le prototype est ENTRÉ dans le fichier servi — 06/09/2026
 
 Le fichier servi est resté six itérations derrière le prototype pendant un
