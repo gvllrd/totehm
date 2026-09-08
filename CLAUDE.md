@@ -742,6 +742,77 @@ est marquée par un `outline` blanc, qui ne prend aucune place et n'est pas une
 ombre. Le balayage horizontal ET les flèches suivent le même ordre, tiré de
 la MÊME liste `VIEW_ORDER` : deux listes finissent toujours par diverger.
 
+### La couleur suit le REGARD, pas le rang — 08/09/2026
+
+Le rail s'éteignait selon la position dans la liste : première ligne
+pleine, suivantes dégressives. Vrai tant qu'on ne défile pas — faux dès
+qu'on défile, et on lisait un dégradé qui ne parlait plus de rien.
+
+C'est la boîte **en haut du champ de vision** qui porte sa couleur pleine.
+`peintTraits()` pose `--tk` sur chaque ligne ; un seul écouteur de
+défilement, une seule peinture par image — au doigt, un `scroll` part
+quarante fois par seconde.
+
+### Une répulsion naît de son premier lien — 08/09/2026
+
+Une répulsion protège quelque chose : c'est sa définition. Elle n'existe
+côté serveur que PAR ses liens (`my_trips` ne rend que celles rattachées à
+une habitude). On ne peut donc pas la poser dans le vide.
+
+Avant, `+ Add a Repulsion` exigeait qu'une habitude existe déjà et refusait
+par une alerte — un cul-de-sac. Maintenant : un **brouillon** s'ouvre, on
+écrit, et la première habitude attachée — reprise ou écrite là — la fait
+exister. **Un brouillon qu'on ferme n'a jamais existé** : le laisser dans
+la liste ferait croire à un enregistrement qui disparaîtrait au
+rechargement, le pire des états — visible et faux.
+
+### Ce qui manque respire — 08/09/2026
+
+`[set intention]` et `[set time frequency]` pulsent tant qu'ils sont vides,
+et s'arrêtent dès qu'ils sont posés. Même souffle que le T et que le O du
+wordmark : `breathe`, 2,8 s, ease-in-out. C'est la grammaire du logo, pas
+un clignotant de plus.
+
+**Le réglage s'ouvre AU-DESSUS des liens.** Régler l'intention, c'est
+régler l'habitude : le choix se pose sous sa ligne, avant ses objectifs et
+ses répulsions. Un lookup, lui, concerne les liens : il s'ouvre après eux.
+La boîte a deux fentes, `haut` et `bas`.
+
+**On écrit dans la couleur de ce qu'on pose** : un nouvel objectif en bleu
+clair, une répulsion en rouge-violet, une habitude en navy. Et les
+propositions respirent — elles appellent le doigt sans crier.
+
+### Le déplacement est organique — FLIP
+
+On redessine la liste, donc les cartes SAUTAIENT. `glisse()` mesure avant,
+redessine, remet chaque carte à son ancienne place et relâche : le
+navigateur interpole. First, Last, Invert, Play — rien n'est animé à la
+main, donc ça reste fluide sur un téléphone qui rame. Les styles en ligne
+sont nettoyés après : un `transform` oublié fige la carte au rendu suivant.
+
+**La carte qu'on tient se soulève** — `scale(1.025)` et un peu de clarté.
+Jamais d'ombre : la marque l'interdit.
+
+### `--rw` est le jeton unique du rail
+
+Le rail, les traits du bouton de classement et la marge des boîtes s'y
+accrochent tous : un seul chiffre les épaissit ensemble. Au téléphone il
+passe de 6 à 9 px — à 6 px sur un écran tenu à trente centimètres, ce
+n'est pas du minimalisme, c'est de l'invisible.
+
+⚠️ La hauteur des traits est verrouillée par un trio
+`height/min-height/max-height` plus bas dans la feuille : la rouvrir
+demande de rouvrir les trois, sinon `max-height` gagne seul.
+
+### La recherche est un geste de MEMBRE — 08/09/2026
+
+`[Search a Totehm]` a quitté l'atterrissage : elle vit dans l'espace
+membre, à côté de l'abonnement, dans le Club. L'atterrissage ne garde que
+ce qui s'adresse à un inconnu.
+
+`[Open my Totehm world]` reste : c'est la **seule porte vers la carte**.
+La retirer laisserait `map.html` sans entrée.
+
 ### UNE SEULE BOÎTE, PARTOUT — 08/09/2026
 
 La couche d'affichage fabriquait DEUX objets : la boîte, et le « bloc »
