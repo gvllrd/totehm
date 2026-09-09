@@ -69,7 +69,7 @@ téléchargeables.
 jamais `space/`. Un contenu commun est copié, pas partagé. Un produit qui casse
 quand un autre bouge n'est pas indépendant.
 
-### Les écrans de totehm.space — 05/09/2026
+### Les écrans de totehm.space — 09/09/2026
 
 ```
 LE TOTEHM                                  LE MONDE
@@ -77,17 +77,37 @@ totehm.html                                map.html
 trois VUES dans UN fichier                 Higher Map
   répulsions · habitudes · objectifs       radar / cartes
 
-                    DANS LA POCHE
-                    higherself.html
-                    HigherSelf — mini-app Telegram
+DEUX PAGES, depuis le menu                 DANS LA POCHE
+book.html          My Wisdom               higherself.html
+next_objective.html  My next objective     HigherSelf — mini-app Telegram
 ```
 
-**`book.html`, `next_objective.html` et `objectives.html` n'existent plus.**
-Supprimés le 05/09 : leur contenu est devenu trois VUES du même fichier.
-Une vue n'est ni un fichier, ni une iframe, ni une page — c'est la même
-liste, les mêmes données, la même session, repeinte.
+**`objectives.html` n'existe plus.** Supprimé le 05/09 : son contenu est
+devenu une VUE. Une vue n'est ni un fichier, ni une iframe, ni une page —
+c'est la même liste, les mêmes données, la même session, repeinte.
 
-Ce que la fusion a fait disparaître, et qu'il ne faut pas réintroduire :
+**`book.html` et `next_objective.html` SONT REVENUS — 09/09/2026.** Ce sont
+des PAGES, pas des vues et surtout pas des cadres : même origine, donc même
+`localStorage`, donc même session ; on y va, on en revient par le T du haut
+ou le TOTEHM du bas. Elles ne sont pas des doublons des vues — la vue
+objectifs liste, `next_objective.html` propose ; la vue répulsions liste,
+`book.html` raconte.
+
+Elles s'ouvrent par **deux boutons dans le menu** (`#sn-book`, `#sn-next`),
+en tête du Dashboard, dans la même grammaire `.btn-sig` que les autres. Le
+menu ne s'ouvre que depuis l'intérieur du Totehm : les deux pages sont donc
+inaccessibles à un inconnu, ce qui est exactement leur statut.
+La rangée `.sn-row` qui les portait autrefois est supprimée : elle était
+cachée par trois règles à la fois (`#mw-in-state #settings-nav`, deux
+`@media`) — des boutons qui existaient sans jamais s'afficher.
+
+**Ce qui ne revient PAS avec elles :** l'iframe. Ce sont deux documents que
+l'on visite, jamais deux cadres que l'on encastre. `pushMetrics()`, le
+contrat `postMessage` et le fondu enchaîné restent morts.
+
+Ce que la fusion a fait disparaître, et qu'il ne faut toujours pas
+réintroduire — le retour des deux pages n'y change rien, elles se visitent
+en pleine page :
 - **`pushMetrics()`** — elle poussait la valeur résolue de `--rl` aux
   iframes, parce qu'une propriété personnalisée est SUBSTITUÉE et pas
   calculée. Dans un seul document, le rail est le même pour tout le monde.
@@ -797,12 +817,35 @@ Jamais d'ombre : la marque l'interdit.
 
 Le rail, les traits du bouton de classement et la marge des boîtes s'y
 accrochent tous : un seul chiffre les épaissit ensemble. Au téléphone il
-passe de 6 à 9 px — à 6 px sur un écran tenu à trente centimètres, ce
-n'est pas du minimalisme, c'est de l'invisible.
+vaut **8 px** — à 6 px sur un écran tenu à trente centimètres, ce n'est
+pas du minimalisme, c'est de l'invisible.
 
 ⚠️ La hauteur des traits est verrouillée par un trio
 `height/min-height/max-height` plus bas dans la feuille : la rouvrir
 demande de rouvrir les trois, sinon `max-height` gagne seul.
+
+**⚠️ UNE RÈGLE ÉCRITE DANS UN `@media` N'EXISTE QUE LÀ.** Les trois
+largeurs dégressives de l'icône de classement (`.ob-1/.ob-2/.ob-3`)
+vivaient dans le bloc téléphone. Sur ordinateur, la règle générique
+`#ordbtn span{width:var(--rw)}` — POSTÉRIEURE dans la feuille — reprenait
+la main : **mesuré le 09/09, les trois traits faisaient 21,75 px.** Ce
+n'était plus un classement, c'était un bloc. Les trois lignes suivent
+maintenant `#ordbtn span` immédiatement, hors de tout `@media` : plus
+spécifiques ET postérieures, rien ne peut les écraser.
+
+Le test qui l'a trouvée ne lisait pas la feuille : il MESURAIT les trois
+`getBoundingClientRect()` dans un vrai navigateur, aux deux tailles
+d'écran. C'est la seule façon d'attraper une règle qui perd un duel de
+cascade — grepper le fichier aurait dit « la règle est là », et la règle
+était là.
+
+**⚠️ UN SÉLECTEUR QUI NE VISE RIEN NE LÈVE JAMAIS D'ERREUR.**
+`#member-window .dot` n'a jamais existé : le point vert vit dans
+`#conn-bar`, et lui seul. La règle était écrite, jolie, commentée — et
+morte. Mesuré : `animationName` valait `undefined`. C'est l'ÉTAT qui
+commande, pas l'arbre — `body:has(#member-window.show) #conn-bar .dot`.
+Tout style écrit pour un état doit être vérifié DANS cet état, sur
+l'élément réel, par sa valeur calculée.
 
 ### La recherche est un geste de MEMBRE — 08/09/2026
 

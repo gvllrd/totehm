@@ -175,7 +175,6 @@ body.higher .set-block.higher-only{display:flex!important}
    1) [My Totehm] logo-image agrandi, flèche ↑ au-dessus (retour aux Habits)
    2) [My Totehm Book] et [My next Objective] sur la même ligne, centrés */
 #settings-nav{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:380px;margin:0 auto 16px;padding:0 6px}
-#settings-nav .sn-row{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
 .sn-btn{background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;line-height:1.5;text-decoration:none;white-space:nowrap;display:flex;align-items:center;gap:6px;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
 @media(hover:hover){.sn-btn:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
 .sn-btn:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
@@ -227,10 +226,27 @@ body.higher .set-block.higher-only{display:flex!important}
 .hi-badge svg{height:11px;width:auto;display:block}
 #tv-name .hi-badge svg{height:14px}
 .mw-pseudo .hi-badge svg{height:13px}
-/* UN CARRÉ, PAS UN POINT. Le Totehm est fait de carrés — un rond au
-   milieu de l'identité du membre était la seule forme ronde du produit.
-   Et plus grand : à 8 px il fallait le chercher. */
-#conn-bar .dot{width:11px;height:11px;border-radius:0;background:#888}
+/* ══ UN CARRÉ QUI TOURNE · 09/09/2026 ═══════════════════════════════
+   Le Totehm est fait de carrés : un rond au milieu de l'identité du
+   membre était la seule forme ronde du produit.
+   Sur l'ATTERRISSAGE il tourne lentement — un signal de vie, pas une
+   alarme. Dans l'ESPACE MEMBRE il tourne si vite que l'œil ne suit plus
+   les angles et le voit rond : le carré redevient un point, mais un point
+   qui a tourné pour le devenir. Zéro reflow, zéro peinture — une
+   transformation composite, le GPU s'en charge. */
+#conn-bar .dot{width:9px;height:9px;border-radius:0;background:#888;
+  will-change:transform}
+/* ⚠️ IL N'Y A QU'UN SEUL POINT, et il vit dans `#conn-bar` — pas dans
+   la fenêtre. `#member-window .dot` ne visait donc RIEN : mesuré le
+   09/09, `animationName` valait `undefined`. C'est l'ÉTAT de la fenêtre
+   qui commande, pas son arbre : quand elle est ouverte, le carré du
+   bouton accélère. Un sélecteur frère (`:has`) suffit — aucun JS. */
+body.gate #conn-bar .dot{animation:vrille 7s linear infinite}
+body:has(#member-window.show) #conn-bar .dot{animation:vrille .42s linear infinite}
+@keyframes vrille{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){
+  body.gate #conn-bar .dot,
+  body:has(#member-window.show) #conn-bar .dot{animation:none}}
 
 /* ══ FLOORVIEW : 0 = HABITS (navy) · 1 = SETTINGS (noir) ══ */
 #floorview{position:fixed;inset:0;display:flex;flex-direction:column;transition:background-color .5s ease;z-index:2;background:transparent}
@@ -270,7 +286,10 @@ body.higher .set-block.higher-only{display:flex!important}
    sinon le liseré 1px viendrait le griser sur son côté rail. */
 .habit .tick{position:absolute;
   left:calc(var(--rl) + var(--rw) + 4px);
-  top:0;bottom:0;width:3px;height:auto;background:#000;z-index:2;
+  /* DEUX PIXELS. À trois, la chaîne d'intentions devenait une barre de
+     couleur et volait la vedette au texte — c'est une signature, pas un
+     surligneur. */
+  top:0;bottom:0;width:2px;height:auto;background:#000;z-index:2;
   transition:opacity .22s ease,width .22s ease,background .15s ease}
 .habit.timed .tick{background:#fff}
 /* La ligne coule dans le rail : la première pièce porte la couleur
@@ -402,7 +421,22 @@ body.higher .set-block.higher-only{display:flex!important}
 .habit.open{align-items:stretch;flex:0 0 auto;flex-direction:column}
 /* La boîte fermée reste fermée : même padding, aucune bascule de layout.
    Seul le nom passe en édition, avec un léger fond pour dire "écris". */
-.habit.open .h-body{cursor:text}
+/* ══ LA PIERRE QU'ON SOULÈVE · 09/09/2026 ═══════════════════════════
+   Une boîte en ÉDITION doit se distinguer d'une boîte qu'on lit, et pas
+   par une couleur de plus : par son POIDS. Elle s'élève et RESTE élevée,
+   un peu plus claire, un peu plus grande — comme une dalle qu'on soulève
+   et qu'on cale.
+   620 ms, plus long que les 240 ms des autres animations : une pierre ne
+   se soulève pas à la vitesse d'un fondu. L'easing part vite et finit
+   lentement — c'est la course qui décélère sous la masse. */
+.habit.open .h-body{cursor:text;position:relative;z-index:2;
+  transform:scale(1.014);filter:brightness(1.07);
+  animation:pierre .62s cubic-bezier(.16,.84,.44,1) both}
+@keyframes pierre{
+  from{transform:scale(1) translateY(7px);filter:brightness(1)}
+  to  {transform:scale(1.014) translateY(0);filter:brightness(1.07)}}
+@media(prefers-reduced-motion:reduce){
+  .habit.open .h-body{animation:none;transform:none}}
 .habit.open .v-col{cursor:text}
 .habit.open .v-name[contenteditable]{outline:none;cursor:text;
   padding:1px 5px;margin:-1px -5px;
@@ -564,15 +598,17 @@ body.higher .set-block.higher-only{display:flex!important}
      écran tenu à trente centimètres, ce n'est pas du minimalisme, c'est
      de l'invisible. Cinq pixels — et le bouton de classement suit, sinon
      il devient la seule chose fine de l'écran. */
-  .habit .tick{width:5px}
-  .habit .h-body{margin-left:calc(var(--rl) + var(--rw) + 6px)}
+  .habit .tick{width:3px}
+  .habit .h-body{margin-left:calc(var(--rl) + var(--rw) + 5px)}
   /* `span[class]` et pas `span` : la règle de base vit PLUS BAS dans la
      feuille, et à spécificité égale c'est la dernière qui gagne. On monte
      d'un cran plutôt que de poser un !important. */
-  /* La hauteur est verrouillée par un trio min/max/flex plus bas dans la
-     feuille : on le rouvre en entier, sinon `max-height` gagne seul. */
-  #ordbtn span[class]{height:3px;min-height:3px;max-height:3px;flex:0 0 3px}
-  #ordbtn .ob-1{width:19px}#ordbtn .ob-2{width:13px}#ordbtn .ob-3{width:8px}
+  /* L'ICÔNE EST TAILLÉE DANS LE RAIL — la règle vit désormais PLUS BAS,
+     hors de ce bloc (voir `#ordbtn .ob-1`). Elle était ici, donc réservée
+     au téléphone, et sur ordinateur la règle générique `#ordbtn span`
+     — postérieure dans la feuille — rendait les trois traits ÉGAUX.
+     Mesuré le 09/09 : 21,75 px les trois. Ce n'était plus un classement,
+     c'était un bloc. */
 }
 
 /* ══ CRÉER, C'EST OUVRIR UNE BOÎTE — PAS CHANGER DE MONDE ════════════
@@ -766,6 +802,14 @@ body.higher .set-block.higher-only{display:flex!important}
   background:#fff;
   transition:width .3s ease;
   animation:t-slow 4.2s ease-in-out infinite}
+/* TROIS TRAITS DÉGRESSIFS, PARTOUT. C'est un classement, pas un menu :
+   le premier trait fait exactement la largeur du rail, les deux autres
+   s'y rangent. `--rw` est la seule mesure — téléphone comme ordinateur.
+   Ces trois lignes suivent immédiatement `#ordbtn span` : à spécificité
+   supérieure ET postérieures, rien ne peut plus les écraser. */
+#ordbtn .ob-1{width:var(--rw)}
+#ordbtn .ob-2{width:calc(var(--rw) * .68)}
+#ordbtn .ob-3{width:calc(var(--rw) * .42)}
 /* En mode classement, la respiration s'arrête : on est dedans. */
 body.ordering #ordbtn span{animation:none;opacity:1}
 @media(prefers-reduced-motion:reduce){#ordbtn span{animation:none}}
@@ -1343,7 +1387,6 @@ body.gate.entered #filter-badge{
      La navigation passe par les trois carrés #views, en haut à gauche,
      ordinateur et mobile — et il n'y a plus trois fichiers, il y en a un.
      Retour arrière : le bloc #views en tête de feuille. */
-  #settings-nav .sn-row{display:none}
   /* ══ LE TOTEHM SE REPLIE ══
      Le repli ne passe plus par un étage : c'est le module GATE qui rejoue
      le déploiement à l'envers, sur les quatre pièces du logo —
@@ -1353,12 +1396,8 @@ body.gate.entered #filter-badge{
   #fv-inner{scroll-snap-type:none}
   #habits{flex-shrink:0;height:auto}
 
-  #settings-nav .sn-row{display:flex;flex-direction:column;
-    align-items:center;gap:10px;margin-bottom:2px}
   #settings-nav .sn-btn{font-size:14px}
 
-  /* Settings desktop : seul le logo reste, sans My Wisdom / My next objective */
-  #settings-nav .sn-row{display:none!important}
   #sn-home{display:flex}
   #sn-home img{width:54px;height:auto}
   #sn-home:hover,#sn-home:active{border-image-source:none;color:#b0b0b0}
@@ -1470,7 +1509,11 @@ body.gate.entered #filter-badge{
      de l'invisible. `--rw` est le jeton unique : le rail, les traits du
      bouton de classement et la marge des boîtes s'y accrochent tous, donc
      un seul chiffre les épaissit ensemble. */
-  :root{--rl:0px;--rw:9px;--band-t:150px}
+  /* LE RAIL EST LE LOGO — au téléphone il faut le VOIR, sans le laisser
+     devenir une barre. 8 px : un cran au-dessus des 6 px d'origine, et
+     l'icône s'y accroche par `--rw`, donc les deux restent taillés dans
+     la même mesure. */
+  :root{--rl:0px;--rw:8px;--band-t:150px}
   /* #ordbtn hérite du positionnement de base : centré sur le rail,
      tout en haut. Sur mobile le rail commence à left:0 : le bouton est
      centré sur --rw/2 = 3px. Un peu plus haut qu'en desktop puisqu'il
@@ -1490,6 +1533,16 @@ body.gate.entered #filter-badge{
   #rail{background:rgba(255,255,255,.16)}
   .habit .h-body{margin-left:calc(var(--rw) + 4px)}
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1805,14 +1858,25 @@ body.gate.entered #filter-badge{
         <button id="sn-home" class="sn-btn sn-logo" aria-label="Back to my Totehm">
           <img src="assets/img/totehm_logo.png" alt="My Totehm">
         </button>
-        <!-- Étage 2 : My Wisdom (←) puis My next objective (→), l'un au-dessus de l'autre, centrés -->
-        <div class="sn-row">
-          <button id="sn-book" class="sn-btn" aria-label="My Wisdom — what you have learned">
-            <span>My Wisdom</span>
-          </button>
-          <button id="sn-next" class="sn-btn" aria-label="My next objective — the future">
-            <span>My next objective</span>
-          </button>
+      </div>
+
+      <!-- ══ MES DEUX PAGES · 09/09/2026 ═══════════════════════════════
+           `book.html` et `next_objective.html` sont revenus. Ce ne sont
+           ni des vues ni des cadres : ce sont DEUX PAGES, à la même
+           origine, donc la même session. On y va, on en revient par le T
+           ou par le TOTEHM du bas.
+           Elles vivent ici — dans le menu — et le menu ne s'ouvre que
+           depuis l'intérieur du Totehm.
+           Retour arrière : ce bloc et les deux câblages en bas du module. -->
+      <div class="set-block">
+        <div class="menu-row">
+          <button class="btn-sig" id="sn-book" type="button">My Wisdom</button>
+        </div>
+      </div>
+
+      <div class="set-block">
+        <div class="menu-row">
+          <button class="btn-sig" id="sn-next" type="button">My next objective</button>
         </div>
       </div>
 
@@ -2783,9 +2847,15 @@ function paintZone(){
    la même session, la même mémoire. C'est tout l'intérêt de la fusion. */
 function setView(v){
   if(busy)return;
-  /* ON NE CHANGE JAMAIS DE VUE EN ÉDITANT. Une boîte ouverte est un
-     travail en cours : la vue qui bouge sous les doigts perd la saisie. */
-  if(open)return;
+  if(v===view)return;
+  /* ══ CHANGER DE VUE NE DEMANDE PLUS DE FERMER · 09/09/2026 ══════════
+     Ici on refusait tant qu'une boîte était ouverte, « pour ne pas perdre
+     la saisie ». C'était vrai quand la saisie attendait un bouton ; ce ne
+     l'est plus : tout s'enregistre en écrivant. Il reste juste à POUSSER
+     ce qui dort dans la minuterie, puis la boîte se referme d'elle-même.
+     Zéro friction : on regarde ailleurs, on ne range pas d'abord. */
+  if(open){ pousse(); open=null; pk=null;
+    REPS=REPS.filter(z=>!z.brouillon); }
   /* Les objectifs et les répulsions sont des données du serveur : sans
      session il n'y a rien à montrer, et l'écran vide ne dirait pas
      pourquoi. */
@@ -2861,7 +2931,13 @@ let wDirty=false, wTimer=null;
 function apres(p){ /* une erreur de RPC se journalise, toujours */
   return Promise.resolve(p).then(({error}={})=>{ if(error)console.error('[totehm] rpc:',error.message); })
     .catch(e=>console.error('[totehm] rpc:',e&&e.message||e)); }
-function differe(fn){ clearTimeout(wTimer); wTimer=setTimeout(fn,700); }
+let wPend=null;
+function differe(fn){ clearTimeout(wTimer); wPend=fn; wTimer=setTimeout(()=>{wPend=null;fn();},700); }
+/* RIEN NE SE PERD QUAND ON QUITTE UNE BOÎTE. La saisie part avec 700 ms
+   de retard pour ne pas écrire à chaque lettre ; si on part avant, il faut
+   la POUSSER — sinon les derniers mots restent dans une minuterie que
+   personne n'attend. */
+function pousse(){ if(!wPend)return; clearTimeout(wTimer); const f=wPend; wPend=null; f(); }
 
 /* ══ LA ZONE — UNE SEULE BOÎTE, PARTOUT LA MÊME · 08/09/2026 ══════════
    Réécriture complète de la couche d'affichage. Ce qui existait avant
@@ -2941,6 +3017,13 @@ function boiteHTML(o){
     + (o.haut||'')
     + (o.minis?'<span class="minis">'+o.minis+'</span>':'')
     + (o.bas||'')
+    /* [Delete] EST LE DERNIER ENFANT DE LA COLONNE. Posé à côté de la
+       boîte il flottait à droite et mangeait la largeur — sur un
+       téléphone, la moitié de la ligne pour la commande la plus grave.
+       Ici il est en bas, pleine largeur, et une saisie qui s'allonge le
+       repousse sans jamais le croiser. */
+    + (o.ouverte&&o.tue?'<button type="button" class="btn g" data-kill="'+o.kind+':'
+        +esc(String(o.id))+'">'+o.tue+'</button>':'')
     + (o.ouverte?'<button type="button" class="w-x" data-x="1" aria-label="Close">&times;</button>':'')
     +'</span>';
 }
@@ -3090,8 +3173,7 @@ function vueHabitude(x,k){
       ts.map(t=>String(t.id)), TRIPS.map(t=>({id:t.id,txt:t.text})), 'a new objective','o');
   if(ouverte&&pkOn('lien','r',x.id)) bas=lienPicker('r',x.id,
       rs.map(r=>String(r.id)), REPS.map(r=>({id:r.id,txt:r.text})), 'a new repulsion','r');
-  return ligne(boiteHTML({kind:'h',id:x.id,titre:x.t,unit,minis,ouverte,haut,bas})
-    +(ouverte?'<button type="button" class="btn g" data-kill="h:'+esc(String(x.id))+'">Delete habit</button>':''),
+  return ligne(boiteHTML({kind:'h',id:x.id,titre:x.t,unit,minis,ouverte,haut,bas,tue:'Delete habit'}),
     ouverte?'open':'', intCols(x), k+1, x.id);
 }
 
@@ -3113,8 +3195,7 @@ function vueObjectif(t,k){
   const bas = (ouverte&&pkOn('lien','h',t.id))
     ? lienPicker('h',t.id, hs.map(x=>String(x.id)),
         (state.habits||[]).map(x=>({id:x.id,txt:x.t})), 'a new habit','h') : '';
-  return ligne(boiteHTML({kind:'t',id:t.id,titre:t.text,unit,minis,ouverte,bas})
-    +(ouverte?'<button type="button" class="btn g" data-kill="t:'+esc(String(t.id))+'">Delete objective</button>':''),
+  return ligne(boiteHTML({kind:'t',id:t.id,titre:t.text,unit,minis,ouverte,bas,tue:'Delete objective'}),
     ouverte?'open':'', null, k+1, t.id);
 }
 
@@ -3123,21 +3204,25 @@ function vueObjectif(t,k){
 function vueRepulsion(r,k){
   const ouverte = !!open && open.kind==='r' && String(open.id)===String(r.id);
   const hs=habsOfRep(r);
-  /* UNE RÉPULSION QUI NE PROTÈGE ENCORE RIEN LE DIT. Tant qu'aucune
-     habitude n'est attachée, elle n'existe pas côté serveur — le lien
-     est ce qui la fait exister. */
-  const unit = hs.length ? '<span class="v-pil">protects</span>'
-    : '<span class="v-pil vit">pick what it protects</span>';
-  const minis = groupe('protects', ouverte
+  /* UN SEUL MOT, ET IL RACONTE OÙ L'ON EN EST. Il y en avait deux :
+     « protects » sur la ligne d'unité ET au-dessus des mini-boîtes — la
+     même chose dite deux fois n'est pas du storytelling, c'est du bruit.
+     Une répulsion n'a pas d'unité : elle n'existe que par ce qu'elle
+     protège. Donc pas de ligne d'unité, et le mot du groupe change selon
+     le moment :
+       elle protège déjà      →  PROTECTS
+       elle ne protège rien   →  WRITE A NEW ONE OR PICK AN EXISTING ONE
+     Chaque clic doit dire ce qu'il attend. */
+  const unit = '';
+  const mot = hs.length ? 'protects' : 'write a new one or pick an existing one';
+  const minis = groupe(mot, ouverte
     ? hs.map(x=>miniDel('h',x.t,'data-unlink="hr:'+esc(String(r.id))+'|'+esc(String(x.id))+'"')).join('')
       + plus('lien','hr',r.id,'habit')
-    : hs.map(x=>mini('h',x.t)).join(''))
-    || (ouverte?'<span class="mg">'+plus('lien','hr',r.id,'habit')+'</span>':'');
+    : hs.map(x=>mini('h',x.t)).join(''));
   const bas = (ouverte&&pkOn('lien','hr',r.id))
     ? lienPicker('hr',r.id, hs.map(x=>String(x.id)),
         (state.habits||[]).map(x=>({id:x.id,txt:x.t})), 'a new habit','h') : '';
-  return ligne(boiteHTML({kind:'r',id:r.id,titre:r.text,unit,minis,ouverte,bas})
-    +(ouverte?'<button type="button" class="btn g" data-kill="r:'+esc(String(r.id))+'">Delete repulsion</button>':''),
+  return ligne(boiteHTML({kind:'r',id:r.id,titre:r.text,unit,minis,ouverte,bas,tue:'Delete repulsion'}),
     ouverte?'open':'', null, k+1, r.id);
 }
 
@@ -3529,9 +3614,13 @@ $('fold-x').onclick=()=>foldToGate();
    ferment la fenêtre membre puis ouvrent la zone. My Wisdom / My next
    objective restent surtout accessibles au swipe latéral et aux flèches. */
 function closeMember(){ $('member-window').classList.remove('show'); }
-$('sn-book').onclick =requireMember(()=>{closeMember();if(!busy&&!hOpen())showBook(true);});
+/* ══ LES DEUX PAGES · 09/09/2026 ═════════════════════════════════════
+   `showBook()` / `showNext()` restent : elles servent la touche Échap et
+   la bascule de vue. Les BOUTONS, eux, ouvrent les deux vraies pages.
+   Même origine, donc même session : rien à repasser. */
+$('sn-book').onclick =requireMember(()=>{ location.href='book.html'; });
 $('sn-home').onclick =()=>{closeMember();if(!busy&&!hOpen())paint();};
-$('sn-next').onclick =()=>{closeMember();if(!busy&&!hOpen())showNext(true);};
+$('sn-next').onclick =requireMember(()=>{ location.href='next_objective.html'; });
 
 /* [Get Higher with my Totehm] est un <a> vers totehm.com. Il n'y a plus
    d'écouteur, plus de classe `liftoff`, plus d'overlay #stoner : la méthode
@@ -3589,7 +3678,31 @@ window.addEventListener('touchend',(e)=>{
      filtre et de repli du Totehm bugguait le défilement de la liste.
      Le T ouvre le filtre, la croix (#fold-x) replie. */
 },{passive:true});
-/* La molette ne pilote plus rien : la liste défile normalement. Le
+/* ══ LE TRACKPAD FAIT CE QUE FAIT LE POUCE · 09/09/2026 ══════════════
+   La molette VERTICALE ne pilote toujours rien — c'est la règle qui a
+   réglé « le filtre manque de fluidité », et elle tient. Mais un trackpad
+   glisse aussi HORIZONTALEMENT, et ce geste-là n'est en concurrence avec
+   rien : la liste ne défile pas en X.
+   Deux verrous pour ne pas déclencher sur un scroll un peu oblique :
+   l'horizontale doit dominer nettement (1,6×), et il faut ACCUMULER
+   jusqu'à un seuil — un trackpad envoie trente petits événements pour un
+   seul geste, et sans accumulateur on traverserait les trois vues d'un
+   coup. Le compteur se vide après 220 ms d'immobilité : deux gestes
+   séparés ne s'additionnent pas. */
+(function(){
+  let acc=0, t=0;
+  addEventListener('wheel',e=>{
+    if(document.body.classList.contains('gate'))return;
+    if(Math.abs(e.deltaX) < Math.abs(e.deltaY)*1.6) return;
+    const now=Date.now(); if(now-t>220)acc=0; t=now;
+    acc+=e.deltaX;
+    if(Math.abs(acc)<70)return;
+    const i=VIEW_ORDER.indexOf(view)+(acc>0?1:-1);
+    acc=0;
+    if(i>=0&&i<VIEW_ORDER.length)setView(VIEW_ORDER[i]);
+  },{passive:true});
+})();
+/* La molette VERTICALE ne pilote rien : la liste défile normalement. Le
    filtre passe par le T, le repli par la croix. */
 
 /* Chevrons latéraux : mêmes cibles que le swipe horizontal.
