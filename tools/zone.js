@@ -27,8 +27,15 @@ function intToggle(x,id){
 }
 const intCols=x=>intIds(x).map(intColor);
 
-/* ── LES PIÈCES LIÉES, DANS LES DEUX SENS ────────────────────────── */
-const repsOfHabX=x=>x&&x.t?REPS.filter(r=>(r.hs||[]).includes(x.t)):[];
+/* ── LES PIÈCES LIÉES, DANS LES DEUX SENS ──────────────────────────
+   ⚠️ ON LIT PAR `t0`, LE TEXTE QUE LE SERVEUR CONNAÎT. Les tables de
+   liens portent du texte ; tant qu'on cherchait avec `t` — ce qui est
+   affiché, donc ce qu'on est en train de taper — les objectifs et les
+   répulsions d'une habitude DISPARAISSAIENT à la première lettre tapée
+   dans son titre, pour revenir 700 ms plus tard. `t0` ne bouge que
+   lorsque le serveur a pris le renommage : la boîte ne clignote plus. */
+const srv=x=>x?(x.t0!==undefined?x.t0:x.t):'';
+const repsOfHabX=x=>{const k=srv(x); return k?REPS.filter(r=>(r.hs||[]).includes(k)):[];};
 
 /* ══ LE RAIL — UNE CHAÎNE DE TRAITS ══════════════════════════════════
    Le bord gauche d'une boîte habitude porte SES intentions, une par
@@ -224,7 +231,13 @@ function vueHabitude(x,k){
     ? rs.map(r=>miniDel('r',r.text,'data-unlink="r:'+esc(String(x.id))+'|'+esc(String(r.id))+'"')).join('')
       + plus('lien','r',x.id,'repulsion')
     : rs.map(r=>mini('r',r.text)).join('');
-  const minis = groupe('why',gO) + groupe('protected by',gR);
+  /* ⚠️ « TRIGGER », PAS « PROTECTED BY » · 09/09/2026. Une répulsion
+     n'est pas un garde du corps : c'est une MAUVAISE HABITUDE — celle
+     qu'on fait à la place. Vue depuis l'habitude, elle est donc ce qui
+     la DÉCLENCHE, pas ce qui la protège. Le mot juste change le sens de
+     toute la boîte : WHY monte vers l'objectif, TRIGGER descend vers ce
+     qui fait dérailler. */
+  const minis = groupe('why',gO) + groupe('trigger',gR);
   let haut='', bas='';
   if(ouverte&&pkOn('int','h',x.id))  haut=intPicker(x);
   if(ouverte&&pkOn('freq','h',x.id)) haut=freqPicker(x);
@@ -267,55 +280,43 @@ function vueRepulsion(r,k){
      « protects » sur la ligne d'unité ET au-dessus des mini-boîtes — la
      même chose dite deux fois n'est pas du storytelling, c'est du bruit.
      Une répulsion n'a pas d'unité : elle n'existe que par ce qu'elle
-     protège. Donc pas de ligne d'unité, et le mot du groupe change selon
-     le moment :
-       elle protège déjà      →  PROTECTS
-       elle ne protège rien   →  WRITE A NEW ONE OR PICK AN EXISTING ONE
-     Chaque clic doit dire ce qu'il attend. */
+     remplace. Donc pas de ligne d'unité.
+     ⚠️ « INSTEAD », PAS « PROTECTS » · 09/09/2026. Une répulsion est une
+     MAUVAISE HABITUDE. Ce qu'elle porte, ce ne sont pas des habitudes
+     qu'elle protégerait — ce sont celles à faire À LA PLACE. Le mot dit
+     l'échange, et c'est tout le produit : on ne supprime pas une
+     habitude, on en met une autre à sa place.
+     L'invitation, elle, ne vit plus ici : elle a rejoint le bas de la
+     boîte, sous CLOSE, là où l'on choisit. */
   const unit = '';
-  const mot = hs.length ? 'protects' : 'write a new one or pick an existing one';
+  const mot = 'instead';
   const minis = groupe(mot, ouverte
     ? hs.map(x=>miniDel('h',x.t,'data-unlink="hr:'+esc(String(r.id))+'|'+esc(String(x.id))+'"')).join('')
       + plus('lien','hr',r.id,'habit')
     : hs.map(x=>mini('h',x.t)).join(''));
+  /* ⚠️ L'INVITATION EST SOUS *CLOSE*, PAS AU-DESSUS · 09/09/2026. Elle
+     servait de titre au groupe : posée là, elle parlait de la répulsion
+     — alors qu'elle parle des HABITUDES qu'on va choisir. Sous le
+     lookup ouvert, juste au-dessus de la liste, elle dit ce que le
+     doigt s'apprête à faire. */
   const bas = (ouverte&&pkOn('lien','hr',r.id))
-    ? lienPicker('hr',r.id, hs.map(x=>String(x.id)),
+    ? '<span class="pk-say">write a new one or pick an existing one</span>'
+      + lienPicker('hr',r.id, hs.map(x=>String(x.id)),
         (state.habits||[]).map(x=>({id:x.id,txt:x.t})), 'a new habit','h') : '';
   return ligne(boiteHTML({kind:'r',id:r.id,titre:r.text,unit,minis,ouverte,bas,tue:'Delete repulsion'}),
     ouverte?'open':'', null, k+1, r.id);
 }
 
-/* ══ LA COULEUR SUIT LE REGARD · 08/09/2026 ══════════════════════════
-   Le rail s'éteignait selon la POSITION DANS LA LISTE — la première ligne
-   pleine, les suivantes dégressives. Mais quand on défile, la première
-   ligne n'est plus celle qu'on regarde : on lisait un dégradé qui ne
-   parlait plus de rien.
-   Désormais c'est la boîte EN HAUT DU CHAMP DE VISION qui porte sa
-   couleur pleine, et celles d'en dessous s'éteignent. Le classement reste
-   le même — c'est la lecture qui suit l'œil. */
-const DEGRADE=[1,.62,.4,.26,.16];
-function peintTraits(){
-  const sc=$('fv-inner'), box=$('habits'); if(!sc||!box)return;
-  const y=sc.getBoundingClientRect().top;
-  const rows=[...box.querySelectorAll('.habit')];
-  /* La première dont le BAS est encore sous le haut du cadre : c'est elle
-     qu'on est en train de lire. */
-  let tete=rows.findIndex(r=>r.getBoundingClientRect().bottom > y+4);
-  if(tete<0)tete=0;
-  rows.forEach((r,i)=>{
-    const d=i-tete;
-    r.style.setProperty('--tk', d<0?DEGRADE[DEGRADE.length-1]
-      : DEGRADE[Math.min(d,DEGRADE.length-1)]);
-  });
-}
-/* Un seul écouteur, et une seule peinture par image : au doigt, un
-   `scroll` part quarante fois par seconde et repeindre à chaque fois
-   coûterait plus que tout le reste de la page. */
-let peintDemande=false;
-(function(){ const sc=$('fv-inner'); if(!sc)return;
-  sc.addEventListener('scroll',()=>{ if(peintDemande)return; peintDemande=true;
-    requestAnimationFrame(()=>{peintDemande=false;peintTraits();}); },{passive:true});
-})();
+/* ══ LA COULEUR INTENTIONNELLE NE S'ÉTEINT PLUS · 09/09/2026 ═════════
+   Il y a eu deux dégradés successifs — par le rang, puis par le champ de
+   vision — et les deux avaient le même défaut : ils transformaient une
+   couleur de marque en gris. Une intention à 16 % d'opacité ne dit plus
+   quelle intention c'est ; elle dit seulement « pas celle-là ». Or c'est
+   la seule information que le trait porte.
+   `peintTraits()`, `DEGRADE`, `--tk` et l'écouteur de défilement qui les
+   servait sont supprimés. Pleine valeur, dans les trois vues, en mode
+   classement comme en lecture. */
+function peintTraits(){}
 
 /* ══ OUVRIR, FERMER ══════════════════════════════════════════════════ */
 function ouvrir(kind,id){
@@ -335,6 +336,11 @@ function fermer(){
      ferait croire à une répulsion enregistrée qui disparaîtrait au
      rechargement — le pire des états : visible et faux. */
   REPS=REPS.filter(z=>!z.brouillon);
+  /* ⚠️ POUSSER AVANT DE RECHARGER · 09/09/2026. L'arbre revient du
+     serveur ; si la dernière frappe dort encore dans sa minuterie, le
+     serveur répond avec l'ANCIEN texte et l'écran perd ce qu'on venait
+     d'écrire. On vide les minuteries d'abord — toujours. */
+  pousse();
   open=null; pk=null; renderZone();
   /* L'arbre se recharge ICI, une fois : pendant l'édition il fermerait la
      boîte sous les doigts, après il remet la vérité du serveur. */
@@ -344,7 +350,7 @@ function fermer(){
 /* ══ CRÉER — un bouton par vue, la pièce de CETTE vue ═════════════════ */
 async function creer(kind){
   if(kind==='h'){
-    const x={id:'h'+(++HSEQ), t:'', f:null, i:null, is:[], o:null};
+    const x={id:'h'+(++HSEQ), t:'', t0:'', f:null, i:null, is:[], o:null};
     state.habits.unshift(x); state.ord=true; save(); ouvrir('h',x.id); return;}
   if(!me){$('member-window').classList.add('show');
           if(typeof memberPaint==='function')memberPaint();return;}
@@ -385,35 +391,38 @@ async function poseBrouillon(r,habitTexte){
      une habitude sert PLUSIEURS objectifs ;
      une répulsion protège PLUSIEURS habitudes ;
      détacher n'efface jamais — on retire le lien, pas la pensée. */
+/* ⚠️ ON PARLE AU SERVEUR DANS SA LANGUE : `srv(x)` — le texte qu'il a.
+   Poser un lien avec le texte affiché pendant qu'un renommage dort dans
+   une minuterie créait un lien vers une habitude qui n'existe pas. */
 function attache(quoi,srcId,cibleId){
-  if(quoi==='o'){ const x=habOf(srcId), t=tripOf(cibleId); if(!x||!x.t||!t)return;
-    OBJ[x.t]=(OBJ[x.t]||[]).concat([String(t.id)]); posePremier(x);
-    apres(sb.rpc('objective_link',{p_obj:t.id,p_habit:x.t})); }
-  else if(quoi==='h'){ const t=tripOf(srcId), x=habOf(cibleId); if(!t||!x||!x.t)return;
-    OBJ[x.t]=(OBJ[x.t]||[]).concat([String(t.id)]); posePremier(x);
-    apres(sb.rpc('objective_link',{p_obj:t.id,p_habit:x.t})); }
-  else if(quoi==='r'){ const x=habOf(srcId), r=repOf(cibleId); if(!x||!x.t||!r)return;
-    if(!(r.hs||[]).includes(x.t)){r.hs.push(x.t);
-      apres(sb.rpc('repulsion_link',{p_id:r.id,p_habit:x.t}));} }
-  else { const r=repOf(srcId), x=habOf(cibleId); if(!r||!x||!x.t)return;   /* 'hr' */
-    if(r.brouillon){ poseBrouillon(r,x.t).then(()=>renderZone()); return; }
-    if(!(r.hs||[]).includes(x.t)){r.hs.push(x.t);
-      apres(sb.rpc('repulsion_link',{p_id:r.id,p_habit:x.t}));} }
+  if(quoi==='o'){ const x=habOf(srcId), t=tripOf(cibleId), k=srv(x); if(!x||!k||!t)return;
+    OBJ[k]=(OBJ[k]||[]).concat([String(t.id)]); posePremier(x);
+    apres(sb.rpc('objective_link',{p_obj:t.id,p_habit:k})); }
+  else if(quoi==='h'){ const t=tripOf(srcId), x=habOf(cibleId), k=srv(x); if(!t||!x||!k)return;
+    OBJ[k]=(OBJ[k]||[]).concat([String(t.id)]); posePremier(x);
+    apres(sb.rpc('objective_link',{p_obj:t.id,p_habit:k})); }
+  else if(quoi==='r'){ const x=habOf(srcId), r=repOf(cibleId), k=srv(x); if(!x||!k||!r)return;
+    if(!(r.hs||[]).includes(k)){r.hs.push(k);
+      apres(sb.rpc('repulsion_link',{p_id:r.id,p_habit:k}));} }
+  else { const r=repOf(srcId), x=habOf(cibleId), k=srv(x); if(!r||!x||!k)return;   /* 'hr' */
+    if(r.brouillon){ poseBrouillon(r,k).then(()=>renderZone()); return; }
+    if(!(r.hs||[]).includes(k)){r.hs.push(k);
+      apres(sb.rpc('repulsion_link',{p_id:r.id,p_habit:k}));} }
   wDirty=true;
 }
 function detache(quoi,aId,bId){
-  if(quoi==='o'){ const x=habOf(aId); if(!x||!x.t)return;
-    OBJ[x.t]=(OBJ[x.t]||[]).filter(o=>o!==String(bId)); posePremier(x);
-    apres(sb.rpc('objective_unlink',{p_obj:bId,p_habit:x.t})); }
-  else if(quoi==='ho'){ const x=habOf(bId); if(!x||!x.t)return;
-    OBJ[x.t]=(OBJ[x.t]||[]).filter(o=>o!==String(aId)); posePremier(x);
-    apres(sb.rpc('objective_unlink',{p_obj:aId,p_habit:x.t})); }
-  else if(quoi==='r'){ const x=habOf(aId), r=repOf(bId); if(!x||!x.t||!r)return;
-    r.hs=(r.hs||[]).filter(t=>t!==x.t);
-    apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:x.t})); }
-  else { const r=repOf(aId), x=habOf(bId); if(!r||!x||!x.t)return;          /* 'hr' */
-    r.hs=(r.hs||[]).filter(t=>t!==x.t);
-    apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:x.t})); }
+  if(quoi==='o'){ const x=habOf(aId), k=srv(x); if(!x||!k)return;
+    OBJ[k]=(OBJ[k]||[]).filter(o=>o!==String(bId)); posePremier(x);
+    apres(sb.rpc('objective_unlink',{p_obj:bId,p_habit:k})); }
+  else if(quoi==='ho'){ const x=habOf(bId), k=srv(x); if(!x||!k)return;
+    OBJ[k]=(OBJ[k]||[]).filter(o=>o!==String(aId)); posePremier(x);
+    apres(sb.rpc('objective_unlink',{p_obj:aId,p_habit:k})); }
+  else if(quoi==='r'){ const x=habOf(aId), r=repOf(bId), k=srv(x); if(!x||!k||!r)return;
+    r.hs=(r.hs||[]).filter(t=>t!==k);
+    apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:k})); }
+  else { const r=repOf(aId), x=habOf(bId), k=srv(x); if(!r||!x||!k)return;          /* 'hr' */
+    r.hs=(r.hs||[]).filter(t=>t!==k);
+    apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:k})); }
   wDirty=true;
 }
 /* Écrire du neuf ET l'attacher, d'un seul geste. */
@@ -429,7 +438,7 @@ async function neufEtAttache(quoi,srcId,txt){
     if(error){console.error('[totehm] repulsion_set:',error.message);return;}
     REPS.unshift({id:data,text:txt,obstacle:'',hs:[x.t]});}
   else{ /* 'h' depuis un objectif, 'hr' depuis une répulsion */
-    const x={id:'h'+(++HSEQ), t:txt, f:null, i:null, is:[], o:null};
+    const x={id:'h'+(++HSEQ), t:txt, t0:txt, f:null, i:null, is:[], o:null};
     state.habits.unshift(x); state.ord=true; save();
     attache(quoi,srcId,x.id);}
   pk=null; renderZone();
@@ -481,22 +490,32 @@ function cable(box){
     const t=e.target;
     if(t.dataset.edit){
       const p=t.dataset.edit.split(':'), v=t.textContent;
+      /* ⚠️ CE QU'ON TAPE SE VOIT TOUT DE SUITE, CE QUI PART EST DIFFÉRÉ.
+         Deux choses distinctes, et elles étaient confondues : la mise à
+         jour EN MÉMOIRE attendait 700 ms comme l'appel réseau, donc la
+         boîte se vidait de ses liens le temps de la frappe. Maintenant
+         la mémoire suit la lettre, et seul le réseau attend. */
       if(p[0]==='h'){ const x=habOf(p[1]); if(!x)return;
-        const ancien=x.t; x.t=v;
-        differe(()=>{ save();
-          /* Renommer ne doit pas orpheliner ce qui s'y rattache : le lien
-             est du TEXTE, il se répare côté serveur en un appel. */
+        x.t=v; save();
+        /* Renommer ne doit pas orpheliner ce qui s'y rattache. `t0` est
+           l'ancien nom VRAI — celui que la base a — et pas « le texte
+           d'il y a une lettre », qui partait avant et cassait les liens
+           pour de bon. La clé de minuterie est celle de CETTE habitude :
+           écrire ailleurs ne l'annule plus, ça la pousse. */
+        differe('h:'+x.id,()=>{ save();
+          const ancien=x.t0;
           if(me&&ancien&&ancien!==x.t){
             REPS.forEach(r=>{const i=(r.hs||[]).indexOf(ancien); if(i>=0)r.hs[i]=x.t;});
             if(OBJ[ancien]){OBJ[x.t]=OBJ[ancien]; delete OBJ[ancien];}
-            apres(sb.rpc('habit_rename_links',{p_old:ancien,p_new:x.t}));} }); }
+            apres(sb.rpc('habit_rename_links',{p_old:ancien,p_new:x.t}));}
+          x.t0=x.t; }); }
       else if(p[0]==='t'){ const z=tripOf(p[1]); if(!z)return; z.text=v; wDirty=true;
-        differe(()=>apres(sb.rpc('trip_rename',{p_trip:z.id,p_text:z.text}))); }
+        differe('t:'+z.id,()=>apres(sb.rpc('trip_rename',{p_trip:z.id,p_text:z.text}))); }
       else { const r=repOf(p[1]); if(!r)return; r.text=v; wDirty=true;
         /* Un brouillon s'écrit en mémoire : il n'a pas encore de ligne en
            base, et `repulsion_set` sans habitude en créerait une invisible. */
         if(r.brouillon)return;
-        differe(()=>apres(sb.rpc('repulsion_set',
+        differe('r:'+r.id,()=>apres(sb.rpc('repulsion_set',
           {p_habit:(r.hs||[])[0]||'', p_repulsion:r.text, p_obstacle:r.obstacle||''}))); }
       return;
     }
@@ -530,18 +549,27 @@ function cable(box){
 /* SUPPRIMER — ici, et nulle part ailleurs. */
 function tue(kind,id){
   if(kind==='h'){ const x=habOf(id); if(!x)return;
+    /* ⚠️ ON DÉTRUIT AVEC LE TEXTE DU SERVEUR. Avec le texte affiché, une
+       habitude renommée puis supprimée laissait ses liens en base — et
+       `my_trips` la faisait REVENIR au rechargement suivant. C'était ça,
+       « les suppressions ne fonctionnent pas ». Et on annule d'abord la
+       minuterie de renommage : sinon elle ressuscite le lien après. */
+    const k=srv(x);
+    pousse('h:'+x.id); wSlots.delete('h:'+x.id);
     logTotehmEvent('habit_removed',x.t,{f:x.f,i:x.i});
-    state.habits=state.habits.filter(z=>z.id!==id);
-    REPS.forEach(r=>{const i=(r.hs||[]).indexOf(x.t);
-      if(i>=0){r.hs.splice(i,1); if(me)apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:x.t}));}});
-    if(x.t&&OBJ[x.t]){OBJ[x.t].forEach(o=>apres(sb.rpc('objective_unlink',{p_obj:o,p_habit:x.t})));
-      delete OBJ[x.t];}
+    state.habits=state.habits.filter(z=>String(z.id)!==String(id));
+    REPS.forEach(r=>{const i=(r.hs||[]).indexOf(k);
+      if(i>=0){r.hs.splice(i,1); if(me)apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:k}));}});
+    if(k&&OBJ[k]){OBJ[k].forEach(o=>apres(sb.rpc('objective_unlink',{p_obj:o,p_habit:k})));
+      delete OBJ[k];}
     save(); }
-  else if(kind==='t'){ TRIPS=TRIPS.filter(t=>String(t.id)!==String(id));
-    (state.habits||[]).forEach(x=>{ if(x.t&&OBJ[x.t]){
-      OBJ[x.t]=OBJ[x.t].filter(o=>o!==String(id)); posePremier(x);} });
+  else if(kind==='t'){ pousse('t:'+id); wSlots.delete('t:'+id);
+    TRIPS=TRIPS.filter(t=>String(t.id)!==String(id));
+    (state.habits||[]).forEach(x=>{ const k=srv(x); if(k&&OBJ[k]){
+      OBJ[k]=OBJ[k].filter(o=>o!==String(id)); posePremier(x);} });
     apres(sb.rpc('trip_close',{p_trip:id,p_outcome:'dropped'})); }
-  else { const r=repOf(id); REPS=REPS.filter(z=>String(z.id)!==String(id));
+  else { const r=repOf(id); pousse('r:'+id); wSlots.delete('r:'+id);
+    REPS=REPS.filter(z=>String(z.id)!==String(id));
     if(r&&!r.brouillon)apres(sb.rpc('repulsion_retire',{p_id:Number(id)})); }
   wDirty=true; fermer();
 }

@@ -33,6 +33,17 @@
 :root{
   --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#606060;--bg:#000;
   --navy:#333366;--blue:#36498c;--rep:#743169;--love:#639922;
+  /* ⚠️ LE PAPIER N'EST PLUS LA COULEUR DES BOÎTES · 09/09/2026.
+     Le filet noir est parti — et sans lui un bloc navy sur un papier navy
+     est littéralement INVISIBLE : les deux valaient exactement #333366,
+     on ne voyait plus que le texte flotter. Mesuré à l'écran, les deux
+     tailles.
+     La solution n'est pas de redessiner un trait : c'est de reculer le
+     PAPIER d'un ton. Les trois couleurs de marque restent intactes sur
+     leurs blocs — navy, bleu clair, rouge-violet — et se détachent
+     maintenant par leur VALEUR, comme les blocs empilés du Totehm de
+     totehm.com. Une différence de ton, pas une bordure. */
+  --paper:#2b2b57;
   /* Le navy SOMBRE du logo. Sur le navy clair du papier, un bloc navy
      n'existe pas — celui-ci si, et il ne demande AUCUN filet. */
   --navy-d:#22224a;
@@ -46,19 +57,21 @@
   --futura:'Futura','Jost',sans-serif;
   --rl:46px;   /* rail left */
   --rw:18px;   /* rail width */
-  --band-t:158px;  /* bande haute : T.svg + les trois carrés + leur nom */
+  --band-t:186px;  /* bande haute : T.svg + les trois carrés + leur nom.
+                      186 et pas 158 : les carrés portent chacun un mot
+                      maintenant, et la première boîte les touchait. */
   --band-b:116px;  /* bande basse : TOTEHM.png + flèche menu */
   --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%2336498c'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   /* Le carré perforé du logo (desktop) — même dessin que #gl-bg.
      navy = Habits · bleu clair = Next Objective · rouge-violet = Book */
-  --logo-navy:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000000'/%3E%3C/svg%3E");
+  --logo-navy:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%232b2b57'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000000'/%3E%3C/svg%3E");
   --logo-blue:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%2336498c'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000000'/%3E%3C/svg%3E");
   --logo-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23743169'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000000'/%3E%3C/svg%3E");
   --tile-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23743169'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);font-family:var(--futura);font-weight:300;font-size:14px;overflow:hidden;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
+html,body{width:100%;height:100%;background:var(--paper);color:var(--g-light);font-family:var(--futura);font-weight:300;font-size:14px;overflow:hidden;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
 .hide{display:none!important}
 
 .gbtn{font-family:'Quantico',sans-serif;font-weight:400;background:none;border:none;padding:0;margin:0;cursor:pointer;line-height:1.5;-webkit-tap-highlight-color:transparent;transition:color .15s,background .15s}
@@ -77,7 +90,20 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 body:not(.gate) #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){body:not(.gate) #bigT svg{animation:none}}
 #bigT svg{height:53px;width:auto;display:block}
-#wordmark{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;transition:opacity .4s;line-height:0}
+/* ⚠️ LE TOTEHM N'EST PLUS AU CENTRE · 09/09/2026 : il se range à gauche
+   et laisse la droite aux deux portes. `left` fixe plutôt qu'un
+   `translateX(-50%)` — le wordmark garde exactement la même taille et
+   la même hauteur, il change seulement d'ancrage. */
+#wordmark{position:fixed;bottom:30px;left:max(18px,6vw);transform:none;z-index:30;user-select:none;transition:opacity .4s;line-height:0}
+/* Les deux portes, à droite, à la même hauteur que le wordmark et dans
+   la grammaire `.btn-sig` du reste du produit. */
+#bottom-doors{position:fixed;bottom:30px;right:max(18px,6vw);z-index:31;
+  display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+.door{background:none;border:none;padding:0;cursor:pointer;
+  font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;
+  color:#b0b0b0;transition:color .15s ease;-webkit-tap-highlight-color:transparent;
+  white-space:nowrap}
+@media(hover:hover){.door:hover{color:#fff}}
 #wordmark svg{height:50px;width:auto;display:block}
 /* ══ LE LOGO DIT OÙ L'ON EST · 06/09/2026 ════════════════════════════
    Le O du wordmark clignote sur les OBJECTIFS, le H sur les HABITUDES.
@@ -97,6 +123,11 @@ body:not(.gate) #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
 #wm-O,#wm-H,#t-foot{transition:opacity .3s}
 body.v-objectives  #wm-O  {animation:breathe 2.8s ease-in-out infinite}
 body.v-habits      #wm-H  {animation:breathe 2.8s ease-in-out infinite}
+/* ⚠️ LE H RESPIRE AUSSI SUR LES RÉPULSIONS · 09/09/2026. Une répulsion
+   EST une habitude — une mauvaise. C'est même tout le sujet de la vue :
+   « habits to kill ». La même lettre, donc, et le pied du T avec elle :
+   c'est la même chose vue par son revers. */
+body.v-repulsions  #wm-H  {animation:breathe 2.8s ease-in-out infinite}
 body.v-repulsions  #t-foot{animation:breathe 2.8s ease-in-out infinite}
 @keyframes breathe{0%,100%{opacity:1}50%{opacity:.18}}
 @keyframes wm-blink{0%,55%{opacity:1}56%,100%{opacity:.18}}
@@ -107,9 +138,9 @@ body.v-repulsions  #t-foot{animation:breathe 2.8s ease-in-out infinite}
 
 /* Get Higher (haut droite) + Real inspiration (bas droite) */
 /* Petite flèche cliquable centrée juste sous le TOTEHM.png du bas — ouvre le menu paramètres */
-#menu-arrow{position:fixed;bottom:6px;left:50%;transform:translateX(-50%);z-index:31;background:none;border:none;cursor:pointer;padding:4px 12px;line-height:0;-webkit-tap-highlight-color:transparent;transition:opacity .2s}
-#menu-arrow:hover{opacity:.7}
-#menu-arrow svg{width:22px;height:12px;color:rgba(255,255,255,.55)}
+/* `#menu-arrow` a disparu · 09/09/2026 — voir `#bottom-doors`. Le
+   wordmark ouvre le menu ; le petit chevron sous lui ne faisait que
+   répéter ce geste, et il occupait la place des deux portes. */
 /* Petite flèche cliquable centrée juste au-dessus du T.png du haut — ouvre le filtre */
 /* ══ ANNULÉ (24/08) ══ Le chevron vers le haut disait « il y a un filtre
    par là ». Le T le dit mieux : il clignote, et il EST le filtre. */
@@ -131,27 +162,47 @@ body.v-repulsions  #t-foot{animation:breathe 2.8s ease-in-out infinite}
    Retour arrière : ce bloc, le markup #views/#vname juste après #rail, le
    bloc de paintZone() et le câblage en bas du module. Les chevrons sont
    dans git, commit précédent. */
-#views{position:fixed;top:112px;left:50%;transform:translateX(-50%);
-  z-index:33;display:flex;flex-direction:row;gap:11px}
+#views{position:fixed;top:110px;left:50%;transform:translateX(-50%);
+  z-index:33;display:flex;flex-direction:row;align-items:flex-start;gap:22px}
+/* Le bouton EST la colonne : le carré, puis son nom dessous. Cliquer le
+   mot revient à cliquer la couleur — deux cibles pour un seul geste. */
+.vt-c{display:flex;flex-direction:column;align-items:center;gap:6px;
+  background:none;border:none;padding:0;cursor:pointer;
+  -webkit-tap-highlight-color:transparent}
+.vt-n{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(255,255,255,.34);
+  transition:color .18s ease;white-space:nowrap;text-align:center}
+/* « REPULSIONS — HABITS TO KILL » sur deux lignes : la colonne resterait
+   sinon deux fois plus large que les deux autres et le trio ne serait
+   plus un trio. La seconde ligne est plus discrète — c'est la glose, pas
+   le nom. */
+.vt-n2 b{display:block;font-weight:400;font-size:7px;letter-spacing:.14em;
+  color:rgba(255,255,255,.3);margin-top:2px}
+.vt-c[aria-selected="true"] .vt-n2 b{color:rgba(255,255,255,.62)}
+.vt-c[aria-selected="true"] .vt-n{color:#fff}
+@media(hover:hover){.vt-c:hover .vt-n{color:rgba(255,255,255,.8)}}
 /* LES TROIS COULEURS RESSORTENT — les trois, tout le temps, à pleine
    valeur. Une couleur de marque ne se met pas en veilleuse.
    Ce qui marque la vue courante n'est donc PAS la couleur mais un contour
    blanc : `outline` ne prend aucune place et n'est pas une ombre.
    Le filet noir est la perforation du logo — sans lui le carré navy
    n'existe pas sur un papier navy (mesuré, les deux valent #333366). */
+/* ⚠️ NI FILET NOIR NI CONTOUR BLANC · 09/09/2026. Le carré est une
+   COULEUR ; l'entourer d'un trait en fait un bouton, et le produit n'a
+   pas de boutons encadrés. Ce qui marque la vue courante, c'est
+   l'intitulé qui s'allume dessous et la pleine opacité du carré : les
+   deux autres reculent. Rien ne bouge, rien n'encadre. */
 .vt{width:17px;height:17px;cursor:pointer;padding:0;
-  border:1px solid #000;outline:1.5px solid transparent;outline-offset:2px;
-  -webkit-tap-highlight-color:transparent;transition:outline-color .16s}
-@media(hover:hover){.vt:hover{outline-color:rgba(255,255,255,.45)}}
-.vt[aria-selected="true"]{outline-color:#fff}
-.vt:focus-visible{outline-color:#fff;outline-width:2px}
+  border:none;outline:none;opacity:.42;
+  -webkit-tap-highlight-color:transparent;transition:opacity .18s ease}
+@media(hover:hover){.vt:hover{opacity:.75}}
+.vt[aria-selected="true"]{opacity:1}
+.vt:focus-visible{opacity:1}
 .vt.r{background:var(--rep)}
 .vt.h{background:var(--navy)}
 .vt.o{background:var(--blue)}
 /* Le nom de la vue, sous les carrés, centré comme eux. */
-#vname{position:fixed;top:136px;left:50%;transform:translateX(-50%);z-index:33;
-  font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.24em;
-  text-transform:uppercase;color:rgba(255,255,255,.42);pointer-events:none}
+/* `#vname` a disparu : chaque carré porte son nom (voir `.vt-n`). */
 .higher-inline{height:1.5em;width:auto;display:inline-block;vertical-align:-.32em}
 /* ══ HIGHER : EXCLUSIVITÉ ABSOLUE ══
    Slogan, bouton, badge : rien de la marque HIGHER ne paraît tant que
@@ -289,8 +340,13 @@ body:has(#member-window.show) #conn-bar .dot{animation:vrille .42s linear infini
   /* DEUX PIXELS. À trois, la chaîne d'intentions devenait une barre de
      couleur et volait la vedette au texte — c'est une signature, pas un
      surligneur. */
-  top:0;bottom:0;width:2px;height:auto;background:#000;z-index:2;
-  transition:opacity .22s ease,width .22s ease,background .15s ease}
+  /* ⚠️ z-index:3 — DEVANT LA BOÎTE. Le filet noir de la boîte a disparu ;
+     à z-index égal, c'est le dernier dans le DOM qui gagne, donc le fond
+     de la boîte recouvrait le trait et l'intention devenait invisible sur
+     ordinateur (mesuré). Il passe devant : la couleur d'intention EST le
+     bord gauche de la boîte, exactement comme prévu. */
+  top:0;bottom:0;width:1px;height:auto;background:#000;z-index:3;
+  transition:width .22s ease,background .15s ease}
 .habit.timed .tick{background:#fff}
 /* La ligne coule dans le rail : la première pièce porte la couleur
    d'intention pleine, les suivantes s'éteignent — un spectre, pas
@@ -300,7 +356,14 @@ body:has(#member-window.show) #conn-bar .dot{animation:vrille .42s linear infini
    pleine, celles d'en dessous s'éteignent. L'échelle par `nth-of-type`
    disait la même chose tant qu'on ne défilait pas — et mentait dès qu'on
    défilait. */
-#habits > .habit .tick{opacity:var(--tk,1);transition:opacity .25s ease}
+/* ⚠️ LA COULEUR D'INTENTION NE S'ÉTEINT PLUS · 09/09/2026. `--tk`
+   dégradait l'opacité selon la position dans le champ de vision : une
+   intention à 16 % n'est plus une intention, c'est un gris. Une couleur
+   de marque ne se met pas en veilleuse — la règle valait déjà pour les
+   trois carrés de vue, elle vaut ici. Pleine valeur, toujours, dans
+   toutes les vues et en mode classement.
+   `peintTraits()` et `DEGRADE` sont supprimés avec elle. */
+#habits > .habit .tick{opacity:1}
 #habits > .habit.add .tick{opacity:0}
 /* La boîte commence exactement où le tick se pose : le tick chevauche
    ses 3 premiers pixels et devient le bord gauche. `padding-left` :
@@ -321,8 +384,15 @@ body:has(#member-window.show) #conn-bar .dot{animation:vrille .42s linear infini
    Et l'extrusion est une FACE PLEINE décalée, jamais un flou. `BRAND.md`
    interdit l'ombre décorative ; une face n'est pas une ombre, c'est le
    côté d'un objet. Le logo ne fait rien d'autre. */
-.habit .h-body{background:var(--skin);border:1px solid #000;
-  transition:filter .15s ease}
+/* ⚠️ PLUS DE FILET NOIR · 09/09/2026. La perforation du logo n'est pas
+   un TRAIT, c'est du VIDE : entre deux tuiles il y a du noir de page, pas
+   une bordure dessinée. Les boîtes se détachent maintenant par l'écart
+   qui les sépare (`#habits{gap}`) — même lecture, une ligne de moins,
+   et un bord net au lieu d'un liseré qui gagne un demi-pixel gris sur
+   les écrans non entiers. Vaut pour la boîte, les mini-boîtes, les
+   propositions et les carrés de vue. */
+.habit .h-body{background:var(--skin);border:none;
+  transition:filter .15s ease,transform .28s cubic-bezier(.22,.61,.36,1)}
 @media(hover:hover){
   .habit:not(.add) .h-body:hover{filter:brightness(1.18)}
 }
@@ -429,17 +499,21 @@ body:has(#member-window.show) #conn-bar .dot{animation:vrille .42s linear infini
    620 ms, plus long que les 240 ms des autres animations : une pierre ne
    se soulève pas à la vitesse d'un fondu. L'easing part vite et finit
    lentement — c'est la course qui décélère sous la masse. */
+/* ⚠️ AUCUNE ANIMATION D'ENTRÉE · 09/09/2026. `@keyframes pierre` partait
+   de `translateY(7px)` : la boîte SAUTAIT à chaque clic — et comme la
+   liste est redessinée à chaque geste, elle re-sautait aussi quand on
+   touchait un bouton DEDANS. C'était insupportable, et c'était ma faute.
+   Il ne reste qu'un état : ouverte, la boîte est un peu plus haute et un
+   peu plus claire, et elle y va par une TRANSITION (portée par
+   `.h-body`, plus haut). Une transition ne rejoue pas au redessin —
+   c'est exactement la différence entre les deux. */
 .habit.open .h-body{cursor:text;position:relative;z-index:2;
-  transform:scale(1.014);filter:brightness(1.07);
-  animation:pierre .62s cubic-bezier(.16,.84,.44,1) both}
-@keyframes pierre{
-  from{transform:scale(1) translateY(7px);filter:brightness(1)}
-  to  {transform:scale(1.014) translateY(0);filter:brightness(1.07)}}
+  transform:scale(1.012) translateY(-2px);filter:brightness(1.07)}
 @media(prefers-reduced-motion:reduce){
-  .habit.open .h-body{animation:none;transform:none}}
+  .habit.open .h-body{transform:none}}
 .habit.open .v-col{cursor:text}
 .habit.open .v-name[contenteditable]{outline:none;cursor:text;
-  padding:1px 5px;margin:-1px -5px;
+  padding:1px 5px;margin:-1px -5px;padding-right:30px;
   background:rgba(255,255,255,.06);
   transition:background .15s ease}
 .habit.open .v-name[contenteditable]:focus{background:rgba(255,255,255,.14)}
@@ -516,9 +590,13 @@ body:has(#member-window.show) #conn-bar .dot{animation:vrille .42s linear infini
    QU'ELLE EST — une habitude reste navy même posée dans une répulsion.
    Un seul format, dans les trois vues. */
 .minis{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-top:8px}
-.mini{display:inline-flex;align-items:center;gap:6px;border:1px solid #000;
+/* LE FONDU EST UN SOUFFLE, PAS UNE ENTRÉE EN SCÈNE · 09/09/2026 :
+   .16s au lieu des .34s d'avant, et aucun déplacement — une mini-boîte
+   qui glisse en apparaissant fait bouger toute la ligne sous le doigt. */
+.mini{display:inline-flex;align-items:center;gap:6px;border:none;
   padding:3px 7px;font-family:'Quantico',sans-serif;font-size:11px;
-  line-height:1.4;color:#fff}
+  line-height:1.4;color:#fff;transition:filter .16s ease,opacity .16s ease}
+@media(hover:hover){.mini:hover{filter:brightness(1.14)}}
 .m-h{background:var(--navy)}
 .m-o{background:var(--blue)}
 .m-r{background:var(--rep)}
@@ -566,9 +644,9 @@ body:has(#member-window.show) #conn-bar .dot{animation:vrille .42s linear infini
 .pkw{display:block;margin-top:9px}
 .pk-list{display:flex;flex-direction:column;gap:3px;margin-top:7px;
   max-height:220px;overflow-y:auto}
-.pk-o{text-align:left;background:rgba(0,0,0,.3);border:1px solid #000;color:#fff;
+.pk-o{text-align:left;background:rgba(0,0,0,.3);border:none;color:#fff;
   cursor:pointer;padding:7px 9px;font-family:'Quantico',sans-serif;font-size:13px;
-  transition:background .15s}
+  transition:background .16s ease}
 .pk-o:hover{background:rgba(0,0,0,.55)}
 .pk-o.on{background:var(--navy)}
 /* CE QUE LA MACHINE A COMPRIS. On écrit « tous les matins » et elle
@@ -578,6 +656,12 @@ body:has(#member-window.show) #conn-bar .dot{animation:vrille .42s linear infini
   border:none;cursor:pointer;padding:8px 10px;font-family:'Quantico',sans-serif;
   font-weight:700;font-size:13px;text-align:left}
 #habits .in.fq{width:100%}
+/* CE QUE LE DOIGT S'APPRÊTE À FAIRE. Posé au-dessus de la liste des
+   propositions, jamais au-dessus de la boîte : ça parle de ce qu'on
+   choisit, pas de ce qu'on lit. */
+.pk-say{display:block;font-family:'Space Mono',monospace;font-size:8px;
+  letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.5);
+  margin-top:9px}
 /* Un bouton sur la ligne d'unité : on touche ce qu'on lit, et ça ne
    ressemble pas à un bouton — c'est la ligne qui est sensible. */
 /* [Delete] a sa propre ligne, à droite. Collé au « + repulsion » il se
@@ -598,7 +682,7 @@ body:has(#member-window.show) #conn-bar .dot{animation:vrille .42s linear infini
      écran tenu à trente centimètres, ce n'est pas du minimalisme, c'est
      de l'invisible. Cinq pixels — et le bouton de classement suit, sinon
      il devient la seule chose fine de l'écran. */
-  .habit .tick{width:3px}
+  .habit .tick{width:2px}
   .habit .h-body{margin-left:calc(var(--rl) + var(--rw) + 5px)}
   /* `span[class]` et pas `span` : la règle de base vit PLUS BAS dans la
      feuille, et à spécificité égale c'est la dernière qui gagne. On monte
@@ -619,9 +703,15 @@ body:has(#member-window.show) #conn-bar .dot{animation:vrille .42s linear infini
 
 @media(hover:hover){.habit.open .h-body:hover{filter:none}}
 .w-top{display:flex;align-items:flex-start;margin-bottom:10px}
-.w-x{position:absolute;top:3px;right:5px;z-index:3;background:none;border:none;
-  color:rgba(255,255,255,.5);font-size:19px;line-height:1;cursor:pointer;
-  padding:0 4px;transition:color .15s}
+/* ⚠️ ELLE TOUCHAIT LE TEXTE · 09/09/2026. Posée en absolu dans la boîte,
+   elle se superposait à la première ligne du titre dès que celui-ci
+   remplissait la largeur. Deux corrections, et il faut les deux :
+   elle se décale un peu plus haut et à droite, et le TITRE lui réserve
+   sa place (`.habit.open .v-name{padding-right}`) — un élément en absolu
+   ne pousse rien, c'est au contenu de lui laisser le passage. */
+.w-x{position:absolute;top:2px;right:3px;z-index:3;background:none;border:none;
+  color:rgba(255,255,255,.5);font-size:18px;line-height:1;cursor:pointer;
+  padding:2px 5px;transition:color .15s}
 .w-x:hover{color:#fff}
 
 /* ══ LES TROIS BLOCS DU TRIP ═════════════════════════════════════════
@@ -802,14 +892,13 @@ body:has(#member-window.show) #conn-bar .dot{animation:vrille .42s linear infini
   background:#fff;
   transition:width .3s ease;
   animation:t-slow 4.2s ease-in-out infinite}
-/* TROIS TRAITS DÉGRESSIFS, PARTOUT. C'est un classement, pas un menu :
-   le premier trait fait exactement la largeur du rail, les deux autres
-   s'y rangent. `--rw` est la seule mesure — téléphone comme ordinateur.
+/* TROIS BARRES IDENTIQUES, LARGEUR DU RAIL · 09/09/2026. J'avais fait
+   dégressif — trois longueurs différentes disent « menu », pas
+   « classement », et l'icône ne tombait plus en face du rail. Les trois
+   font exactement `--rw` : taillée dans le rail, comme tout le reste.
    Ces trois lignes suivent immédiatement `#ordbtn span` : à spécificité
    supérieure ET postérieures, rien ne peut plus les écraser. */
-#ordbtn .ob-1{width:var(--rw)}
-#ordbtn .ob-2{width:calc(var(--rw) * .68)}
-#ordbtn .ob-3{width:calc(var(--rw) * .42)}
+#ordbtn .ob-1,#ordbtn .ob-2,#ordbtn .ob-3{width:var(--rw)}
 /* En mode classement, la respiration s'arrête : on est dedans. */
 body.ordering #ordbtn span{animation:none;opacity:1}
 @media(prefers-reduced-motion:reduce){#ordbtn span{animation:none}}
@@ -819,11 +908,36 @@ body.ordering #ordbtn span{animation:none;opacity:1}
 .ordbar{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;
   text-transform:uppercase;color:rgba(255,255,255,.72);
   padding:0 0 10px;margin-left:calc(var(--rl) + var(--rw) + 16px)}
-body.ordering .habit{touch-action:none;cursor:grab}
+/* ⚠️ `touch-action:none` PARTOUT EMPÊCHAIT DE DÉFILER · 09/09/2026.
+   En mode classement, le doigt ne pouvait plus rien faire d'autre que
+   déplacer : impossible de descendre chercher une habitude en bas de
+   liste pour la remonter en haut. C'était ça, « le classement ne permet
+   pas de faire tout ce que l'on souhaite ».
+   Maintenant le doigt DÉFILE (`pan-y`) tant qu'il n'a pas MAINTENU la
+   boîte. L'appui long la saisit, et c'est seulement à ce moment-là
+   qu'on coupe le natif — sur le conteneur, pendant la saisie
+   (`body.grabbing`). Un geste, deux temps, aucune ambiguïté. */
+body.ordering .habit{touch-action:pan-y;cursor:grab}
+body.grabbing #fv-inner,body.grabbing .habit{touch-action:none}
+body.grabbing{cursor:grabbing;user-select:none;-webkit-user-select:none}
 body.ordering .habit .h-body{opacity:.92}
 /* La carte qu'on tient se soulève un peu — jamais d'ombre, la marque
    l'interdit : c'est l'échelle et la clarté qui disent « je la tiens ». */
-.habit.drag{opacity:.9;transform:scale(1.025);filter:brightness(1.12);
+/* LA BOÎTE SAISIE SUIT LE DOIGT. `--dy` est écrit par le geste ; sans
+   déplacement visible, on classe à l'aveugle. Pas de transition sur le
+   transform pendant la saisie — elle traînerait derrière le doigt. */
+/* ⚠️ `pointer-events:none` — SANS LUI, RIEN NE SE CLASSE. La boîte suit
+   le doigt : elle est donc TOUJOURS sous lui, et `elementFromPoint`
+   renvoyait la boîte qu'on tient au lieu de celle qu'on survole. La
+   cible restait nulle, et lâcher ne déplaçait rien. Mesuré : le geste
+   marchait, le classement non. La capture du pointeur continue de
+   router les événements vers elle — les deux mécanismes sont
+   indépendants, et c'est exactement ce qu'il faut ici. */
+.habit.drag{position:relative;z-index:6;transition:none!important;
+  pointer-events:none;
+  transform:translateY(var(--dy,0px)) scale(1.025)}
+.habit.drag .h-body{filter:brightness(1.16)}
+.habit.drag-old{opacity:.9;transform:scale(1.025);filter:brightness(1.12);
   transition:transform .12s ease,filter .12s ease}
 .habit.over .h-body{outline:1px solid #fff;outline-offset:2px}
 /* Le chiffre de classement se pose DANS LE RAIL. Le rail s'élargit
@@ -987,7 +1101,7 @@ body.ordering{--rw:26px}
    invite encore à essayer, un champ absent ne ment pas. */
 body.ro .habit.add,
 body.ro .h-x,
-body.ro #menu-arrow,
+body.ro #bottom-doors,
 body.ro #fv-status{display:none!important}
 body.ro .h-text{pointer-events:none}
 #ro-bar{position:fixed;top:0;left:0;right:0;z-index:40;display:none;
@@ -1228,14 +1342,14 @@ body.gate.entered #conn-bar{opacity:0;pointer-events:none}
 
 /* ══ L'UI de l'app : masquée pendant l'état 1, fondu entrant pendant l'état 2 ══ */
 body.gate #rail,body.gate #bigT,body.gate #wordmark,
-body.gate #floorview,body.gate #menu-arrow,
+body.gate #floorview,body.gate #bottom-doors,
 body.gate #filter-arrow,body.gate #fv-status,body.gate #fold-x,
 body.gate #views,body.gate #vname,
 body.gate #filter-badge{
   opacity:0;pointer-events:none;transition:opacity .55s ease}
 body.gate.entered #rail,body.gate.entered #bigT,body.gate.entered #wordmark,
 body.gate.entered #floorview,
-body.gate.entered #menu-arrow,body.gate.entered #filter-arrow,
+body.gate.entered #bottom-doors,body.gate.entered #filter-arrow,
 body.gate.entered #fv-status,body.gate.entered #fold-x,
 body.gate.entered #views,body.gate.entered #vname,
 body.gate.entered #filter-badge{
@@ -1247,7 +1361,7 @@ body.gate.entered #filter-badge{
 @media(prefers-reduced-motion:reduce){
   #gate-logo .glayer{transition-duration:.01ms!important}
   body.gate #rail,body.gate #bigT,body.gate #wordmark,
-  body.gate #floorview,body.gate #menu-arrow,
+  body.gate #floorview,body.gate #bottom-doors,
   body.gate #filter-arrow,body.gate #fv-status,body.gate #fold-x,
   body.gate #filter-badge{transition-duration:.01ms!important}
 }
@@ -1296,6 +1410,28 @@ body.gate.entered #filter-badge{
    `margin-top:auto` la plaquait en bas et ouvrait un trou noir de 350 px
    au milieu de l'atterrissage. Une marge franche, et la page se lit d'un
    trait — logo, portes, Terre. */
+/* L'ÉCRAN SUIVANT. Il occupe la fenêtre entière et vit SOUS le premier :
+   l'atterrissage défile, il ne change pas de page. */
+#gate-context{width:100%;min-height:100dvh;position:relative;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:26px;padding:max(56px,9vh) 18px max(24px,env(safe-area-inset-bottom,0));
+  background:#000;overflow:hidden}
+#ctx-video{width:min(760px,92vw);aspect-ratio:16/9;background:#0b0b0b;
+  overflow:hidden;display:flex;align-items:center;justify-content:center}
+#ctx-vid{width:100%;height:100%;object-fit:cover;display:block}
+#ctx-say{font-family:'Quantico',sans-serif;font-weight:400;font-size:clamp(20px,4.4vw,34px);
+  line-height:1.25;color:#b0b0b0;text-align:center;margin:0;letter-spacing:.01em}
+#ctx-say b{font-weight:700;color:#fff}
+#ctx-up{background:none;border:none;cursor:pointer;padding:6px 14px;
+  -webkit-tap-highlight-color:transparent;color:#909090;transition:color .15s ease}
+@media(hover:hover){#ctx-up:hover{color:#fff}}
+/* ⚠️ PENDANT L'ANIMATION, IL N'Y A PLUS RIEN À FAIRE DÉFILER. C'est le
+   TROISIÈME verrou de l'atterrissage, et le seul qui ne soit pas une
+   course : `display:none` met `scrollHeight == clientHeight`. Sans lui,
+   `#gl-bg` monté à scale(60) rallonge le gate de deux mille pixels et le
+   navigateur pousse les boutons hors de l'écran. */
+body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
+
 #ctx-down{margin-top:2.5vh;margin-bottom:calc(3vh + env(safe-area-inset-bottom,0));flex-shrink:0;
   background:none;border:none;cursor:pointer;display:flex;flex-direction:column;
   align-items:center;gap:8px;-webkit-tap-highlight-color:transparent;
@@ -1566,13 +1702,33 @@ body.gate.entered #filter-badge{
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
 @media(hover:hover){
-#menu-arrow svg:hover,
+.door:hover,
 #filter-arrow svg:hover,
-#vname:hover,
+.vt-n:hover,
+.vt-n2 b:hover,
+.vt-c[aria-selected="true"] .vt-n2 b:hover,
 .sn-btn:hover,
 .btn-back:hover,
 #conn-bar:hover,
@@ -1587,6 +1743,7 @@ body.gate.entered #filter-badge{
 .mini-x:hover,
 .mg-l:hover,
 #habits .in.nw:hover::placeholder,
+.pk-say:hover,
 .w-x:hover,
 .blk-lbl:hover,
 .blk-x:hover,
@@ -1642,6 +1799,8 @@ body.gate.entered #filter-badge{
 #gate-search-input:hover::placeholder,
 #search-input:hover::placeholder,
 #fold-x svg:hover,
+#ctx-say:hover,
+#ctx-up:hover,
 .ctx-label:hover,
 .chev:hover{color:#fff}
 }
@@ -1676,9 +1835,34 @@ body.gate.entered #filter-badge{
        Le câblage plus bas est gardé par `if(gsb&&gsi)` : retirer le
        balisage ne lève rien. -->
 
-  <button id="ctx-down" type="button" aria-label="Open my Totehm world">
-    <span class="ctx-label">Open my Totehm world</span>
+  <!-- ══ « THINK SAME BUT OPPOSITE » · 09/09/2026 ════════════════════
+       Le bouton menait à `map.html`. Il ne mène plus nulle part ailleurs :
+       il DESCEND, vers l'écran suivant du même atterrissage. Le chevron
+       disait déjà « plus bas » et emmenait sur un autre document — c'est
+       la seule promesse de l'écran qui n'était pas tenue.
+       La carte n'est plus une porte de ce fichier : elle a la sienne,
+       `totehm_world.html`, à retravailler. -->
+  <button id="ctx-down" type="button" aria-label="Think same but opposite">
+    <span class="ctx-label">Think same but opposite</span>
     <svg class="chev bob" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+  </button>
+</section>
+
+<!-- ══ L'ÉCRAN SUIVANT — LA VIDÉO ══════════════════════════════════════
+     Un seul plan, plein cadre, sans commande : une vidéo qu'on regarde,
+     pas qu'on pilote. `playsinline` et `muted` sont OBLIGATOIRES pour
+     qu'elle parte seule sur iOS ; `preload="none"` pour qu'elle ne coûte
+     rien tant que personne n'est descendu.
+     Tant que le fichier n'est pas posé, le cadre reste noir et la phrase
+     tient l'écran toute seule — jamais une icône de média cassé. -->
+<section id="gate-context">
+  <div id="ctx-video">
+    <video id="ctx-vid" playsinline muted loop preload="none"
+           poster="assets/img/dope_space.png"></video>
+  </div>
+  <p id="ctx-say">Think same<br><b>but opposite</b></p>
+  <button id="ctx-up" type="button" aria-label="Back to the top">
+    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg>
   </button>
 </section>
 </div>
@@ -1696,12 +1880,20 @@ body.gate.entered #filter-badge{
 
 <!-- Les trois couches du Totehm. Ordre = ordre de lecture : ce que je fais,
      pourquoi je le fais, ce qui protège le fait de le faire. -->
+<!-- ══ CHAQUE CARRÉ PORTE SON NOM · 09/09/2026 ═══════════════════════
+     Il y avait UN intitulé, celui de la vue courante, posé sous les
+     trois carrés : il fallait cliquer pour savoir ce qu'on allait
+     ouvrir. Chacun porte maintenant le sien — on lit avant de choisir,
+     comme les carrés eux-mêmes montrent la couleur avant le clic.
+     Le mot est le clic : `.vt-c` est le bouton, le carré est dedans. -->
 <div id="views" class="sink-el" role="tablist" aria-label="Les trois couches du Totehm">
-  <button class="vt r" type="button" role="tab" data-v="repulsions" aria-selected="false" aria-label="My repulsions"></button>
-  <button class="vt h" type="button" role="tab" data-v="habits"     aria-selected="true"  aria-label="My habits"></button>
-  <button class="vt o" type="button" role="tab" data-v="objectives" aria-selected="false" aria-label="My objectives"></button>
+  <button class="vt-c" type="button" role="tab" data-v="repulsions" aria-selected="false">
+    <span class="vt r"></span><span class="vt-n vt-n2">repulsions<b>habits to kill</b></span></button>
+  <button class="vt-c" type="button" role="tab" data-v="habits" aria-selected="true">
+    <span class="vt h"></span><span class="vt-n">habits</span></button>
+  <button class="vt-c" type="button" role="tab" data-v="objectives" aria-selected="false">
+    <span class="vt o"></span><span class="vt-n">objectives</span></button>
 </div>
-<div id="vname" class="sink-el">habits</div>
 <button id="filter-arrow" class="sink-el" aria-label="Open filter" hidden>
   <svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
 </button>
@@ -1715,9 +1907,17 @@ body.gate.entered #filter-badge{
 <div id="bigT" class="sink-el"><svg id="ui-t" viewBox="79.832 47.921 66.789 66.932" role="img" aria-label="T"><defs><clipPath id="tut_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tut_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tut_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tut_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tut_ffb4264ddd)"><g clip-path="url(#tut_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tut_0eae0d8cca)"><g clip-path="url(#tut_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tut_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tut_92fddf9f0e)"><g clip-path="url(#tut_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g id="t-foot" clip-path="url(#tut_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tut_7d4c700d36)"><g clip-path="url(#tut_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></svg></div>
 <div id="wordmark" class="sink-el"><svg id="ui-wm" viewBox="74.997 121.602 77.584 46.683" role="img" aria-label="TOTEHM"><defs><g/><clipPath id="tuw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g id="wm-O" transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tuw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g id="wm-H" transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg></div>
 
-<button id="menu-arrow" class="sink-el" aria-label="Open menu">
-  <svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2 L12 11 L22 2"/></svg>
-</button>
+<!-- ══ LA BARRE DU BAS · 09/09/2026 ═══════════════════════════════════
+     Le petit chevron sous le TOTEHM a disparu : il ne disait rien, et le
+     wordmark lui-même ouvre déjà le menu depuis toujours.
+     Le TOTEHM se décale à GAUCHE et laisse la droite à deux portes —
+     My Wisdom et Habits Generator. Elles vivaient dans le menu membre,
+     donc à deux gestes ; elles sont maintenant sous le pouce.
+     Le wordmark reste le menu : on ne perd rien. -->
+<div id="bottom-doors" class="sink-el">
+  <button class="door" id="door-book" type="button">My Wisdom</button>
+  <button class="door" id="door-next" type="button">Habits Generator</button>
+</div>
 
 <!-- La croix : referme le Totehm et rejoue le déploiement à l'envers. -->
 <div id="ro-bar">
@@ -1868,18 +2068,6 @@ body.gate.entered #filter-badge{
            Elles vivent ici — dans le menu — et le menu ne s'ouvre que
            depuis l'intérieur du Totehm.
            Retour arrière : ce bloc et les deux câblages en bas du module. -->
-      <div class="set-block">
-        <div class="menu-row">
-          <button class="btn-sig" id="sn-book" type="button">My Wisdom</button>
-        </div>
-      </div>
-
-      <div class="set-block">
-        <div class="menu-row">
-          <button class="btn-sig" id="sn-next" type="button">My next objective</button>
-        </div>
-      </div>
-
       <!-- Menu en 4 boutons alignés : Name, Visibility, City, Search -->
       <div class="set-block">
         <div class="menu-row">
@@ -2309,7 +2497,17 @@ async function cloudLoad(){
      `steps` EN ENTIER, la liaison disparaissait à la frappe suivante.
      Même piège que `totehms.bot` le 03/09 : un snapshot qui écrase tout
      doit transporter tout ce qu'il écrase. */
-  data.forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;habits.push({t:s.t,f:FREQ_BY_ID[s.f]?s.f:null,i:INT_BY_ID[s.i]?s.i:null,o:s.o||null});}});});
+  /* ⚠️ `is` EST TRANSPORTÉ AUSSI · 09/09/2026 — même piège que `o`, et il
+     coûtait les SEPT INTENTIONS : `cloudSave` écrit `state.habits` en
+     entier, donc la liste partait bien, mais la reconstruction ici ne
+     gardait que `i`. Résultat, une habitude à trois intentions revenait
+     du nuage avec une seule, sans un mot.
+     `t0` est le texte QUE LE SERVEUR VIENT DE DONNER : c'est ici, et
+     nulle part ailleurs, qu'il se pose — le serveur est la référence. */
+  data.forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;
+    const li=Array.isArray(s.is)?s.is.filter(z=>INT_BY_ID[z]):[];
+    habits.push({t:s.t, t0:s.t, f:FREQ_BY_ID[s.f]?s.f:null,
+      i:INT_BY_ID[s.i]?s.i:(li[0]||null), is:li, o:s.o||null});}});});
   /* L'ORDRE DU MEMBRE EST UNE DONNÉE. `state` est reconstruit de zéro
      ici : sans ce report, l'ordre choisi à la main était oublié au
      premier chargement depuis le nuage. L'ordre lui-même voyage dans
@@ -2486,7 +2684,7 @@ function applyFloorFx(){
   $('rail').style.opacity='1';
   $('bigT').style.opacity='1';
   $('wordmark').style.opacity='1';
-  $('menu-arrow').style.display='';
+  const bd=$('bottom-doors'); if(bd)bd.style.display='';
   $('filter-arrow').style.display='';
 }
 /* Un seul écran. La Map est partie dans map.html : plus d'étage, plus de
@@ -2800,21 +2998,41 @@ let open=null, ordering=false;
    répulsion pointe une habitude par son TEXTE, parce que `steps` est du
    texte. C'est pour ça que renommer appelle `habit_rename_links`. */
 let HSEQ=0;
-function habIds(){ (state.habits||[]).forEach(x=>{ if(!x.id)x.id='h'+(++HSEQ); }); }
+/* `t0` EST LE TEXTE QUE LE SERVEUR CONNAÎT · 09/09/2026.
+   Les liens sont du TEXTE en base (`steps` est du texte). Tant que `t`
+   était la seule vérité, taper une lettre dans un titre changeait la clé
+   de tous ses liens INSTANTANÉMENT côté écran, alors que la base ne
+   l'apprenait que 700 ms plus tard : les objectifs et les répulsions
+   disparaissaient de la boîte à chaque frappe, puis revenaient.
+   Pire, `habit_rename_links` partait avec « le texte d'il y a une
+   lettre » comme ancien nom — donc les liens s'orphelinaient VRAIMENT en
+   base. `t0` sépare les deux : `t` est ce qu'on lit, `t0` est ce que le
+   serveur croit. La migration en mémoire est immédiate, l'appel réseau
+   reste différé, et il part avec le bon ancien nom. */
+function habIds(){ (state.habits||[]).forEach(x=>{
+  if(!x.id)x.id='h'+(++HSEQ);
+  if(x.t0===undefined)x.t0=x.t; }); }
 const habOf  =id=>(state.habits||[]).find(x=>x.id===id)||null;
-const habByT =t =>(state.habits||[]).find(x=>x.t===t)||null;
+/* `r.hs` porte des textes SERVEUR : on cherche d'abord par `t0`, et on
+   retombe sur `t` pour ce qui n'a pas encore de texte serveur. */
+const habByT =t =>(state.habits||[]).find(x=>(x.t0!==undefined?x.t0:x.t)===t)
+              ||(state.habits||[]).find(x=>x.t===t)||null;
 const tripOf =id=>TRIPS.find(t=>String(t.id)===String(id))||null;
 const repOf  =id=>REPS.find(r=>String(r.id)===String(id))||null;
 /* `hs` porte des TEXTES d'habitudes — c'est ce que rend le serveur. */
-const repsOfHab=id=>{const x=habOf(id);
-  return x?REPS.filter(r=>(r.hs||[]).includes(x.t)):[];};
+const repsOfHab=id=>{const x=habOf(id); const k=x?(x.t0!==undefined?x.t0:x.t):'';
+  return k?REPS.filter(r=>(r.hs||[]).includes(k)):[];};
 const habsOfRep=r=>(r.hs||[]).map(habByT).filter(Boolean);
 /* ══ UNE HABITUDE SERT PLUSIEURS OBJECTIFS · 07/09/2026 ═══════════════
    `OBJ` fait le pont : texte d'habitude → liste d'identifiants
    d'objectifs, telle que le serveur la rend. `steps.o` reste le PREMIER
    lien — celui que le bot lit déjà — mais il ne décide plus seul. */
 let OBJ={};
-const objIdsOf  =x=>(x&&x.t&&OBJ[x.t])?OBJ[x.t]:(x&&x.o?[String(x.o)]:[]);
+/* ⚠️ `OBJ` EST INDEXÉ PAR LE TEXTE DU SERVEUR (`t0`), jamais par ce
+   qu'on est en train de taper — sinon les objectifs d'une habitude
+   s'évanouissent à chaque lettre. Voir `t0` dans `habIds()`. */
+const objIdsOf  =x=>{const k=x?(x.t0!==undefined?x.t0:x.t):''; 
+  return (k&&OBJ[k])?OBJ[k]:(x&&x.o?[String(x.o)]:[]);};
 const tripsOfHab=x=>objIdsOf(x).map(tripOf).filter(Boolean);
 const habsOfTrip=t=>(state.habits||[]).filter(x=>objIdsOf(x).includes(String(t.id)));
 /* Le premier lien, celui qui voyage dans `steps` : on le tient à jour à
@@ -2838,10 +3056,11 @@ function paintZone(){
   document.body.classList.toggle('v-repulsions',view==='repulsions');
   document.body.classList.toggle('o-live',!!oLive);
   document.body.classList.toggle('ordering',ordering);
-  document.querySelectorAll('.vt').forEach(b=>{
+  document.querySelectorAll('#views .vt-c').forEach(b=>{
     b.setAttribute('aria-selected', b.dataset.v===view ? 'true':'false');
   });
-  const vn=$('vname'); if(vn)vn.textContent=view;
+  /* `#vname` n'existe plus : c'est `aria-selected` sur chaque colonne
+     qui allume le bon intitulé, et il est déjà posé plus bas. */
 }
 /* Changer de vue ne charge rien et ne quitte rien : c'est la même page,
    la même session, la même mémoire. C'est tout l'intérêt de la fusion. */
@@ -2865,7 +3084,13 @@ function setView(v){
     return;
   }
   view=v; renderZone();
-  if(v!=='habits')loadTrips();
+  /* ⚠️ L'ARBRE EST NÉCESSAIRE DANS LES TROIS VUES · 09/09/2026.
+     Il ne se chargeait QUE hors de la vue habitudes — vrai avant la
+     réécriture, quand une habitude n'affichait pas ses liens. Depuis, la
+     boîte habitude montre ses objectifs et ses répulsions : mesuré, elle
+     les affichait VIDES tant qu'on n'était pas passé par une autre vue.
+     C'était ça, « les objectifs et les répulsions ne s'affichent pas ». */
+  loadTrips();
 }
 function showBook(on){ setView(on?'repulsions':'habits'); if(on)save(); }
 function showNext(on){ setView(on?'objectives':'habits');  if(on)save(); }
@@ -2931,13 +3156,27 @@ let wDirty=false, wTimer=null;
 function apres(p){ /* une erreur de RPC se journalise, toujours */
   return Promise.resolve(p).then(({error}={})=>{ if(error)console.error('[totehm] rpc:',error.message); })
     .catch(e=>console.error('[totehm] rpc:',e&&e.message||e)); }
-let wPend=null;
-function differe(fn){ clearTimeout(wTimer); wPend=fn; wTimer=setTimeout(()=>{wPend=null;fn();},700); }
+/* ⚠️ UNE MINUTERIE PAR CHAMP · 09/09/2026. Il y en avait UNE SEULE pour
+   tout le Totehm : écrire dans une habitude puis dans un objectif
+   ANNULAIT l'écriture de l'habitude — `clearTimeout` jetait la fonction
+   en attente sans jamais l'exécuter. Chaque champ a maintenant sa clé
+   (`h:h3`, `t:obj-1`…) ; ouvrir un autre champ POUSSE le précédent au
+   lieu de le perdre. */
+const wSlots=new Map();
+function differe(cle,fn){
+  if(typeof cle==='function'){ fn=cle; cle='_'; }
+  const old=wSlots.get(cle); if(old)clearTimeout(old.t);
+  wSlots.set(cle,{fn,t:setTimeout(()=>{wSlots.delete(cle);fn();},700)});
+}
 /* RIEN NE SE PERD QUAND ON QUITTE UNE BOÎTE. La saisie part avec 700 ms
    de retard pour ne pas écrire à chaque lettre ; si on part avant, il faut
    la POUSSER — sinon les derniers mots restent dans une minuterie que
-   personne n'attend. */
-function pousse(){ if(!wPend)return; clearTimeout(wTimer); const f=wPend; wPend=null; f(); }
+   personne n'attend. `pousse()` sans argument vide TOUT. */
+function pousse(cle){
+  const go=(k,v)=>{ clearTimeout(v.t); wSlots.delete(k); v.fn(); };
+  if(cle!==undefined){ const v=wSlots.get(cle); if(v)go(cle,v); return; }
+  [...wSlots.entries()].forEach(([k,v])=>go(k,v));
+}
 
 /* ══ LA ZONE — UNE SEULE BOÎTE, PARTOUT LA MÊME · 08/09/2026 ══════════
    Réécriture complète de la couche d'affichage. Ce qui existait avant
@@ -2968,8 +3207,15 @@ function intToggle(x,id){
 }
 const intCols=x=>intIds(x).map(intColor);
 
-/* ── LES PIÈCES LIÉES, DANS LES DEUX SENS ────────────────────────── */
-const repsOfHabX=x=>x&&x.t?REPS.filter(r=>(r.hs||[]).includes(x.t)):[];
+/* ── LES PIÈCES LIÉES, DANS LES DEUX SENS ──────────────────────────
+   ⚠️ ON LIT PAR `t0`, LE TEXTE QUE LE SERVEUR CONNAÎT. Les tables de
+   liens portent du texte ; tant qu'on cherchait avec `t` — ce qui est
+   affiché, donc ce qu'on est en train de taper — les objectifs et les
+   répulsions d'une habitude DISPARAISSAIENT à la première lettre tapée
+   dans son titre, pour revenir 700 ms plus tard. `t0` ne bouge que
+   lorsque le serveur a pris le renommage : la boîte ne clignote plus. */
+const srv=x=>x?(x.t0!==undefined?x.t0:x.t):'';
+const repsOfHabX=x=>{const k=srv(x); return k?REPS.filter(r=>(r.hs||[]).includes(k)):[];};
 
 /* ══ LE RAIL — UNE CHAÎNE DE TRAITS ══════════════════════════════════
    Le bord gauche d'une boîte habitude porte SES intentions, une par
@@ -3165,7 +3411,13 @@ function vueHabitude(x,k){
     ? rs.map(r=>miniDel('r',r.text,'data-unlink="r:'+esc(String(x.id))+'|'+esc(String(r.id))+'"')).join('')
       + plus('lien','r',x.id,'repulsion')
     : rs.map(r=>mini('r',r.text)).join('');
-  const minis = groupe('why',gO) + groupe('protected by',gR);
+  /* ⚠️ « TRIGGER », PAS « PROTECTED BY » · 09/09/2026. Une répulsion
+     n'est pas un garde du corps : c'est une MAUVAISE HABITUDE — celle
+     qu'on fait à la place. Vue depuis l'habitude, elle est donc ce qui
+     la DÉCLENCHE, pas ce qui la protège. Le mot juste change le sens de
+     toute la boîte : WHY monte vers l'objectif, TRIGGER descend vers ce
+     qui fait dérailler. */
+  const minis = groupe('why',gO) + groupe('trigger',gR);
   let haut='', bas='';
   if(ouverte&&pkOn('int','h',x.id))  haut=intPicker(x);
   if(ouverte&&pkOn('freq','h',x.id)) haut=freqPicker(x);
@@ -3208,55 +3460,43 @@ function vueRepulsion(r,k){
      « protects » sur la ligne d'unité ET au-dessus des mini-boîtes — la
      même chose dite deux fois n'est pas du storytelling, c'est du bruit.
      Une répulsion n'a pas d'unité : elle n'existe que par ce qu'elle
-     protège. Donc pas de ligne d'unité, et le mot du groupe change selon
-     le moment :
-       elle protège déjà      →  PROTECTS
-       elle ne protège rien   →  WRITE A NEW ONE OR PICK AN EXISTING ONE
-     Chaque clic doit dire ce qu'il attend. */
+     remplace. Donc pas de ligne d'unité.
+     ⚠️ « INSTEAD », PAS « PROTECTS » · 09/09/2026. Une répulsion est une
+     MAUVAISE HABITUDE. Ce qu'elle porte, ce ne sont pas des habitudes
+     qu'elle protégerait — ce sont celles à faire À LA PLACE. Le mot dit
+     l'échange, et c'est tout le produit : on ne supprime pas une
+     habitude, on en met une autre à sa place.
+     L'invitation, elle, ne vit plus ici : elle a rejoint le bas de la
+     boîte, sous CLOSE, là où l'on choisit. */
   const unit = '';
-  const mot = hs.length ? 'protects' : 'write a new one or pick an existing one';
+  const mot = 'instead';
   const minis = groupe(mot, ouverte
     ? hs.map(x=>miniDel('h',x.t,'data-unlink="hr:'+esc(String(r.id))+'|'+esc(String(x.id))+'"')).join('')
       + plus('lien','hr',r.id,'habit')
     : hs.map(x=>mini('h',x.t)).join(''));
+  /* ⚠️ L'INVITATION EST SOUS *CLOSE*, PAS AU-DESSUS · 09/09/2026. Elle
+     servait de titre au groupe : posée là, elle parlait de la répulsion
+     — alors qu'elle parle des HABITUDES qu'on va choisir. Sous le
+     lookup ouvert, juste au-dessus de la liste, elle dit ce que le
+     doigt s'apprête à faire. */
   const bas = (ouverte&&pkOn('lien','hr',r.id))
-    ? lienPicker('hr',r.id, hs.map(x=>String(x.id)),
+    ? '<span class="pk-say">write a new one or pick an existing one</span>'
+      + lienPicker('hr',r.id, hs.map(x=>String(x.id)),
         (state.habits||[]).map(x=>({id:x.id,txt:x.t})), 'a new habit','h') : '';
   return ligne(boiteHTML({kind:'r',id:r.id,titre:r.text,unit,minis,ouverte,bas,tue:'Delete repulsion'}),
     ouverte?'open':'', null, k+1, r.id);
 }
 
-/* ══ LA COULEUR SUIT LE REGARD · 08/09/2026 ══════════════════════════
-   Le rail s'éteignait selon la POSITION DANS LA LISTE — la première ligne
-   pleine, les suivantes dégressives. Mais quand on défile, la première
-   ligne n'est plus celle qu'on regarde : on lisait un dégradé qui ne
-   parlait plus de rien.
-   Désormais c'est la boîte EN HAUT DU CHAMP DE VISION qui porte sa
-   couleur pleine, et celles d'en dessous s'éteignent. Le classement reste
-   le même — c'est la lecture qui suit l'œil. */
-const DEGRADE=[1,.62,.4,.26,.16];
-function peintTraits(){
-  const sc=$('fv-inner'), box=$('habits'); if(!sc||!box)return;
-  const y=sc.getBoundingClientRect().top;
-  const rows=[...box.querySelectorAll('.habit')];
-  /* La première dont le BAS est encore sous le haut du cadre : c'est elle
-     qu'on est en train de lire. */
-  let tete=rows.findIndex(r=>r.getBoundingClientRect().bottom > y+4);
-  if(tete<0)tete=0;
-  rows.forEach((r,i)=>{
-    const d=i-tete;
-    r.style.setProperty('--tk', d<0?DEGRADE[DEGRADE.length-1]
-      : DEGRADE[Math.min(d,DEGRADE.length-1)]);
-  });
-}
-/* Un seul écouteur, et une seule peinture par image : au doigt, un
-   `scroll` part quarante fois par seconde et repeindre à chaque fois
-   coûterait plus que tout le reste de la page. */
-let peintDemande=false;
-(function(){ const sc=$('fv-inner'); if(!sc)return;
-  sc.addEventListener('scroll',()=>{ if(peintDemande)return; peintDemande=true;
-    requestAnimationFrame(()=>{peintDemande=false;peintTraits();}); },{passive:true});
-})();
+/* ══ LA COULEUR INTENTIONNELLE NE S'ÉTEINT PLUS · 09/09/2026 ═════════
+   Il y a eu deux dégradés successifs — par le rang, puis par le champ de
+   vision — et les deux avaient le même défaut : ils transformaient une
+   couleur de marque en gris. Une intention à 16 % d'opacité ne dit plus
+   quelle intention c'est ; elle dit seulement « pas celle-là ». Or c'est
+   la seule information que le trait porte.
+   `peintTraits()`, `DEGRADE`, `--tk` et l'écouteur de défilement qui les
+   servait sont supprimés. Pleine valeur, dans les trois vues, en mode
+   classement comme en lecture. */
+function peintTraits(){}
 
 /* ══ OUVRIR, FERMER ══════════════════════════════════════════════════ */
 function ouvrir(kind,id){
@@ -3276,6 +3516,11 @@ function fermer(){
      ferait croire à une répulsion enregistrée qui disparaîtrait au
      rechargement — le pire des états : visible et faux. */
   REPS=REPS.filter(z=>!z.brouillon);
+  /* ⚠️ POUSSER AVANT DE RECHARGER · 09/09/2026. L'arbre revient du
+     serveur ; si la dernière frappe dort encore dans sa minuterie, le
+     serveur répond avec l'ANCIEN texte et l'écran perd ce qu'on venait
+     d'écrire. On vide les minuteries d'abord — toujours. */
+  pousse();
   open=null; pk=null; renderZone();
   /* L'arbre se recharge ICI, une fois : pendant l'édition il fermerait la
      boîte sous les doigts, après il remet la vérité du serveur. */
@@ -3285,7 +3530,7 @@ function fermer(){
 /* ══ CRÉER — un bouton par vue, la pièce de CETTE vue ═════════════════ */
 async function creer(kind){
   if(kind==='h'){
-    const x={id:'h'+(++HSEQ), t:'', f:null, i:null, is:[], o:null};
+    const x={id:'h'+(++HSEQ), t:'', t0:'', f:null, i:null, is:[], o:null};
     state.habits.unshift(x); state.ord=true; save(); ouvrir('h',x.id); return;}
   if(!me){$('member-window').classList.add('show');
           if(typeof memberPaint==='function')memberPaint();return;}
@@ -3326,35 +3571,38 @@ async function poseBrouillon(r,habitTexte){
      une habitude sert PLUSIEURS objectifs ;
      une répulsion protège PLUSIEURS habitudes ;
      détacher n'efface jamais — on retire le lien, pas la pensée. */
+/* ⚠️ ON PARLE AU SERVEUR DANS SA LANGUE : `srv(x)` — le texte qu'il a.
+   Poser un lien avec le texte affiché pendant qu'un renommage dort dans
+   une minuterie créait un lien vers une habitude qui n'existe pas. */
 function attache(quoi,srcId,cibleId){
-  if(quoi==='o'){ const x=habOf(srcId), t=tripOf(cibleId); if(!x||!x.t||!t)return;
-    OBJ[x.t]=(OBJ[x.t]||[]).concat([String(t.id)]); posePremier(x);
-    apres(sb.rpc('objective_link',{p_obj:t.id,p_habit:x.t})); }
-  else if(quoi==='h'){ const t=tripOf(srcId), x=habOf(cibleId); if(!t||!x||!x.t)return;
-    OBJ[x.t]=(OBJ[x.t]||[]).concat([String(t.id)]); posePremier(x);
-    apres(sb.rpc('objective_link',{p_obj:t.id,p_habit:x.t})); }
-  else if(quoi==='r'){ const x=habOf(srcId), r=repOf(cibleId); if(!x||!x.t||!r)return;
-    if(!(r.hs||[]).includes(x.t)){r.hs.push(x.t);
-      apres(sb.rpc('repulsion_link',{p_id:r.id,p_habit:x.t}));} }
-  else { const r=repOf(srcId), x=habOf(cibleId); if(!r||!x||!x.t)return;   /* 'hr' */
-    if(r.brouillon){ poseBrouillon(r,x.t).then(()=>renderZone()); return; }
-    if(!(r.hs||[]).includes(x.t)){r.hs.push(x.t);
-      apres(sb.rpc('repulsion_link',{p_id:r.id,p_habit:x.t}));} }
+  if(quoi==='o'){ const x=habOf(srcId), t=tripOf(cibleId), k=srv(x); if(!x||!k||!t)return;
+    OBJ[k]=(OBJ[k]||[]).concat([String(t.id)]); posePremier(x);
+    apres(sb.rpc('objective_link',{p_obj:t.id,p_habit:k})); }
+  else if(quoi==='h'){ const t=tripOf(srcId), x=habOf(cibleId), k=srv(x); if(!t||!x||!k)return;
+    OBJ[k]=(OBJ[k]||[]).concat([String(t.id)]); posePremier(x);
+    apres(sb.rpc('objective_link',{p_obj:t.id,p_habit:k})); }
+  else if(quoi==='r'){ const x=habOf(srcId), r=repOf(cibleId), k=srv(x); if(!x||!k||!r)return;
+    if(!(r.hs||[]).includes(k)){r.hs.push(k);
+      apres(sb.rpc('repulsion_link',{p_id:r.id,p_habit:k}));} }
+  else { const r=repOf(srcId), x=habOf(cibleId), k=srv(x); if(!r||!x||!k)return;   /* 'hr' */
+    if(r.brouillon){ poseBrouillon(r,k).then(()=>renderZone()); return; }
+    if(!(r.hs||[]).includes(k)){r.hs.push(k);
+      apres(sb.rpc('repulsion_link',{p_id:r.id,p_habit:k}));} }
   wDirty=true;
 }
 function detache(quoi,aId,bId){
-  if(quoi==='o'){ const x=habOf(aId); if(!x||!x.t)return;
-    OBJ[x.t]=(OBJ[x.t]||[]).filter(o=>o!==String(bId)); posePremier(x);
-    apres(sb.rpc('objective_unlink',{p_obj:bId,p_habit:x.t})); }
-  else if(quoi==='ho'){ const x=habOf(bId); if(!x||!x.t)return;
-    OBJ[x.t]=(OBJ[x.t]||[]).filter(o=>o!==String(aId)); posePremier(x);
-    apres(sb.rpc('objective_unlink',{p_obj:aId,p_habit:x.t})); }
-  else if(quoi==='r'){ const x=habOf(aId), r=repOf(bId); if(!x||!x.t||!r)return;
-    r.hs=(r.hs||[]).filter(t=>t!==x.t);
-    apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:x.t})); }
-  else { const r=repOf(aId), x=habOf(bId); if(!r||!x||!x.t)return;          /* 'hr' */
-    r.hs=(r.hs||[]).filter(t=>t!==x.t);
-    apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:x.t})); }
+  if(quoi==='o'){ const x=habOf(aId), k=srv(x); if(!x||!k)return;
+    OBJ[k]=(OBJ[k]||[]).filter(o=>o!==String(bId)); posePremier(x);
+    apres(sb.rpc('objective_unlink',{p_obj:bId,p_habit:k})); }
+  else if(quoi==='ho'){ const x=habOf(bId), k=srv(x); if(!x||!k)return;
+    OBJ[k]=(OBJ[k]||[]).filter(o=>o!==String(aId)); posePremier(x);
+    apres(sb.rpc('objective_unlink',{p_obj:aId,p_habit:k})); }
+  else if(quoi==='r'){ const x=habOf(aId), r=repOf(bId), k=srv(x); if(!x||!k||!r)return;
+    r.hs=(r.hs||[]).filter(t=>t!==k);
+    apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:k})); }
+  else { const r=repOf(aId), x=habOf(bId), k=srv(x); if(!r||!x||!k)return;          /* 'hr' */
+    r.hs=(r.hs||[]).filter(t=>t!==k);
+    apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:k})); }
   wDirty=true;
 }
 /* Écrire du neuf ET l'attacher, d'un seul geste. */
@@ -3370,7 +3618,7 @@ async function neufEtAttache(quoi,srcId,txt){
     if(error){console.error('[totehm] repulsion_set:',error.message);return;}
     REPS.unshift({id:data,text:txt,obstacle:'',hs:[x.t]});}
   else{ /* 'h' depuis un objectif, 'hr' depuis une répulsion */
-    const x={id:'h'+(++HSEQ), t:txt, f:null, i:null, is:[], o:null};
+    const x={id:'h'+(++HSEQ), t:txt, t0:txt, f:null, i:null, is:[], o:null};
     state.habits.unshift(x); state.ord=true; save();
     attache(quoi,srcId,x.id);}
   pk=null; renderZone();
@@ -3422,22 +3670,32 @@ function cable(box){
     const t=e.target;
     if(t.dataset.edit){
       const p=t.dataset.edit.split(':'), v=t.textContent;
+      /* ⚠️ CE QU'ON TAPE SE VOIT TOUT DE SUITE, CE QUI PART EST DIFFÉRÉ.
+         Deux choses distinctes, et elles étaient confondues : la mise à
+         jour EN MÉMOIRE attendait 700 ms comme l'appel réseau, donc la
+         boîte se vidait de ses liens le temps de la frappe. Maintenant
+         la mémoire suit la lettre, et seul le réseau attend. */
       if(p[0]==='h'){ const x=habOf(p[1]); if(!x)return;
-        const ancien=x.t; x.t=v;
-        differe(()=>{ save();
-          /* Renommer ne doit pas orpheliner ce qui s'y rattache : le lien
-             est du TEXTE, il se répare côté serveur en un appel. */
+        x.t=v; save();
+        /* Renommer ne doit pas orpheliner ce qui s'y rattache. `t0` est
+           l'ancien nom VRAI — celui que la base a — et pas « le texte
+           d'il y a une lettre », qui partait avant et cassait les liens
+           pour de bon. La clé de minuterie est celle de CETTE habitude :
+           écrire ailleurs ne l'annule plus, ça la pousse. */
+        differe('h:'+x.id,()=>{ save();
+          const ancien=x.t0;
           if(me&&ancien&&ancien!==x.t){
             REPS.forEach(r=>{const i=(r.hs||[]).indexOf(ancien); if(i>=0)r.hs[i]=x.t;});
             if(OBJ[ancien]){OBJ[x.t]=OBJ[ancien]; delete OBJ[ancien];}
-            apres(sb.rpc('habit_rename_links',{p_old:ancien,p_new:x.t}));} }); }
+            apres(sb.rpc('habit_rename_links',{p_old:ancien,p_new:x.t}));}
+          x.t0=x.t; }); }
       else if(p[0]==='t'){ const z=tripOf(p[1]); if(!z)return; z.text=v; wDirty=true;
-        differe(()=>apres(sb.rpc('trip_rename',{p_trip:z.id,p_text:z.text}))); }
+        differe('t:'+z.id,()=>apres(sb.rpc('trip_rename',{p_trip:z.id,p_text:z.text}))); }
       else { const r=repOf(p[1]); if(!r)return; r.text=v; wDirty=true;
         /* Un brouillon s'écrit en mémoire : il n'a pas encore de ligne en
            base, et `repulsion_set` sans habitude en créerait une invisible. */
         if(r.brouillon)return;
-        differe(()=>apres(sb.rpc('repulsion_set',
+        differe('r:'+r.id,()=>apres(sb.rpc('repulsion_set',
           {p_habit:(r.hs||[])[0]||'', p_repulsion:r.text, p_obstacle:r.obstacle||''}))); }
       return;
     }
@@ -3471,18 +3729,27 @@ function cable(box){
 /* SUPPRIMER — ici, et nulle part ailleurs. */
 function tue(kind,id){
   if(kind==='h'){ const x=habOf(id); if(!x)return;
+    /* ⚠️ ON DÉTRUIT AVEC LE TEXTE DU SERVEUR. Avec le texte affiché, une
+       habitude renommée puis supprimée laissait ses liens en base — et
+       `my_trips` la faisait REVENIR au rechargement suivant. C'était ça,
+       « les suppressions ne fonctionnent pas ». Et on annule d'abord la
+       minuterie de renommage : sinon elle ressuscite le lien après. */
+    const k=srv(x);
+    pousse('h:'+x.id); wSlots.delete('h:'+x.id);
     logTotehmEvent('habit_removed',x.t,{f:x.f,i:x.i});
-    state.habits=state.habits.filter(z=>z.id!==id);
-    REPS.forEach(r=>{const i=(r.hs||[]).indexOf(x.t);
-      if(i>=0){r.hs.splice(i,1); if(me)apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:x.t}));}});
-    if(x.t&&OBJ[x.t]){OBJ[x.t].forEach(o=>apres(sb.rpc('objective_unlink',{p_obj:o,p_habit:x.t})));
-      delete OBJ[x.t];}
+    state.habits=state.habits.filter(z=>String(z.id)!==String(id));
+    REPS.forEach(r=>{const i=(r.hs||[]).indexOf(k);
+      if(i>=0){r.hs.splice(i,1); if(me)apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:k}));}});
+    if(k&&OBJ[k]){OBJ[k].forEach(o=>apres(sb.rpc('objective_unlink',{p_obj:o,p_habit:k})));
+      delete OBJ[k];}
     save(); }
-  else if(kind==='t'){ TRIPS=TRIPS.filter(t=>String(t.id)!==String(id));
-    (state.habits||[]).forEach(x=>{ if(x.t&&OBJ[x.t]){
-      OBJ[x.t]=OBJ[x.t].filter(o=>o!==String(id)); posePremier(x);} });
+  else if(kind==='t'){ pousse('t:'+id); wSlots.delete('t:'+id);
+    TRIPS=TRIPS.filter(t=>String(t.id)!==String(id));
+    (state.habits||[]).forEach(x=>{ const k=srv(x); if(k&&OBJ[k]){
+      OBJ[k]=OBJ[k].filter(o=>o!==String(id)); posePremier(x);} });
     apres(sb.rpc('trip_close',{p_trip:id,p_outcome:'dropped'})); }
-  else { const r=repOf(id); REPS=REPS.filter(z=>String(z.id)!==String(id));
+  else { const r=repOf(id); pousse('r:'+id); wSlots.delete('r:'+id);
+    REPS=REPS.filter(z=>String(z.id)!==String(id));
     if(r&&!r.brouillon)apres(sb.rpc('repulsion_retire',{p_id:Number(id)})); }
   wDirty=true; fermer();
 }
@@ -3535,26 +3802,80 @@ if($('ordbtn'))$('ordbtn').addEventListener('click',()=>{
   if(ordering&&open)open=null;
   renderZone();});
 
+/* ══ ON MAINTIENT POUR SAISIR · 09/09/2026 ═══════════════════════════
+   Trois choses manquaient, et il fallait les trois :
+
+   1. ON DÉFILE. Le geste partait au premier contact : impossible de
+      descendre chercher une habitude en bas de liste. Un appui de 340 ms
+      SANS bouger la saisit ; un doigt qui glisse avant, c'est un
+      défilement, et on ne lui prend pas.
+   2. ON VOIT CE QU'ON TIENT. La boîte suit le doigt (`--dy`).
+   3. LA LISTE DÉFILE SOUS LA BOÎTE. Tenir une carte contre le bord haut
+      ou bas fait remonter/descendre la liste — sans ça, on ne peut pas
+      emmener une habitude du bas vers le haut, ce qui était la demande
+      littérale. La vitesse suit la proximité du bord : on ralentit en
+      approchant, comme partout ailleurs dans le produit. */
 (function(){
   const box=$('habits'); if(!box)return;
-  let from=null, cible=null;
+  const BORD=64, VMAX=17, SEUIL=8, DELAI=340;
+  let from=null, cible=null, y0=0, yNow=0, timer=null, raf=null, pid=null;
   const rowAt=(x,y)=>{const el=document.elementFromPoint(x,y);
     return el&&el.closest?el.closest('.habit[data-row]'):null;};
+
+  /* Le défilement pendant la saisie : une seule boucle, arrêtée dès que
+     le doigt quitte le bord. */
+  function roule(){
+    raf=null; if(!from)return;
+    const sc=$('fv-inner'); if(!sc)return;
+    const r=sc.getBoundingClientRect();
+    let v=0;
+    if(yNow<r.top+BORD)      v=-VMAX*Math.min(1,(r.top+BORD-yNow)/BORD);
+    else if(yNow>r.bottom-BORD)v= VMAX*Math.min(1,(yNow-(r.bottom-BORD))/BORD);
+    if(v){ sc.scrollTop+=v; suit(); }
+    raf=requestAnimationFrame(roule);
+  }
+  function suit(){
+    if(!from)return;
+    from.style.setProperty('--dy',(yNow-y0)+'px');
+    const over=rowAt(from.getBoundingClientRect().left+20,yNow);
+    if(cible&&cible!==over)cible.classList.remove('over');
+    if(over&&over!==from){over.classList.add('over');cible=over;}
+    else if(!over)cible=null;
+  }
+  function saisit(row,e){
+    from=row; y0=yNow=e.clientY; pid=e.pointerId;
+    row.style.setProperty('--dy','0px');
+    row.classList.add('drag'); document.body.classList.add('grabbing');
+    try{row.setPointerCapture(e.pointerId);}catch(_){}
+    if(navigator.vibrate)try{navigator.vibrate(8);}catch(_){}
+    if(!raf)raf=requestAnimationFrame(roule);
+  }
   box.addEventListener('pointerdown',e=>{
     if(!ordering)return;
     const row=e.target.closest&&e.target.closest('.habit[data-row]'); if(!row)return;
-    from=row; row.classList.add('drag');
-    try{row.setPointerCapture(e.pointerId);}catch(_){}
+    yNow=e.clientY; const y=e.clientY;
+    clearTimeout(timer);
+    timer=setTimeout(()=>{ timer=null; if(Math.abs(yNow-y)<=SEUIL)saisit(row,{clientY:y,pointerId:e.pointerId}); },DELAI);
   });
   box.addEventListener('pointermove',e=>{
+    yNow=e.clientY;
     if(!from)return;
-    const over=rowAt(e.clientX,e.clientY);
-    if(cible&&cible!==over)cible.classList.remove('over');
-    if(over&&over!==from){over.classList.add('over');cible=over;}
-  });
+    e.preventDefault(); suit();
+  },{passive:false});
+  /* ⚠️ LE DÉFILEMENT ANNULE L'APPUI LONG. Un doigt posé sur une boîte
+     pendant que la liste défile sous lui ne veut pas la SAISIR : il veut
+     arrêter le défilement. Sans cette ligne, s'arrêter au bon endroit
+     attrapait la carte qu'on venait juste de regarder. */
+  (function(){ const sc=$('fv-inner'); if(!sc)return;
+    sc.addEventListener('scroll',()=>{ if(timer&&!from){clearTimeout(timer);timer=null;} },
+      {passive:true}); })();
   const fin=()=>{
+    clearTimeout(timer); timer=null;
+    if(raf){cancelAnimationFrame(raf);raf=null;}
     if(!from)return;
-    from.classList.remove('drag');
+    from.classList.remove('drag'); from.style.removeProperty('--dy');
+    document.body.classList.remove('grabbing');
+    try{from.releasePointerCapture(pid);}catch(_){}
     if(cible){
       cible.classList.remove('over');
       const arr=listeDe(view).slice();
@@ -3562,7 +3883,7 @@ if($('ordbtn'))$('ordbtn').addEventListener('click',()=>{
       const b=arr.findIndex(o=>String(o.id)===cible.dataset.row);
       if(a>=0&&b>=0){const m=arr.splice(a,1)[0];arr.splice(b,0,m);poseListe(view,arr);}
     }
-    from=null;cible=null;
+    from=null;cible=null;pid=null;
     /* ══ LE DÉPLACEMENT EST ORGANIQUE, PAS UN SAUT · 08/09/2026 ═══════
        On redessine la liste, donc les cartes SAUTAIENT à leur nouvelle
        place. On mesure AVANT, on redessine, on remet chaque carte à son
@@ -3579,7 +3900,7 @@ if($('ordbtn'))$('ordbtn').addEventListener('click',()=>{
 /* Trois entrées, un seul état : les carrés, le balayage, les flèches.
    Aucune ne charge quoi que ce soit — c'est la même page, la même session,
    la même mémoire. */
-document.querySelectorAll('.vt').forEach(b=>
+document.querySelectorAll('#views .vt-c').forEach(b=>
   b.addEventListener('click',()=>setView(b.dataset.v)));
 addEventListener('keydown',e=>{
   if(e.key==='Escape'&&open){e.preventDefault();fermer();}});
@@ -3594,8 +3915,10 @@ if(location.hash === '#settings'){
   }, 60);
   history.replaceState(null, '', location.pathname);
 }
-/* Petite flèche sous TOTEHM.png : ouvre le Dashboard */
-$('menu-arrow').onclick=()=>openDashboard();
+/* LES DEUX PORTES. Même origine, donc même session : on y va, on en
+   revient par le T ou par le TOTEHM du bas. */
+$('door-book').onclick=requireMember(()=>{ location.href='book.html'; });
+$('door-next').onclick=requireMember(()=>{ location.href='next_objective.html'; });
 /* La croix : le Totehm se replie et l'atterrissage revient. */
 $('fold-x').onclick=()=>foldToGate();
 
@@ -3614,13 +3937,14 @@ $('fold-x').onclick=()=>foldToGate();
    ferment la fenêtre membre puis ouvrent la zone. My Wisdom / My next
    objective restent surtout accessibles au swipe latéral et aux flèches. */
 function closeMember(){ $('member-window').classList.remove('show'); }
-/* ══ LES DEUX PAGES · 09/09/2026 ═════════════════════════════════════
+/* ══ LES DEUX PAGES ONT QUITTÉ LE MENU · 09/09/2026 ══════════════════
+   Elles sont en bas à droite de l'écran, sous le pouce (`#bottom-doors`).
+   Dans un menu, elles étaient à deux gestes d'un écran qu'on ne quitte
+   jamais — donc invisibles.
    `showBook()` / `showNext()` restent : elles servent la touche Échap et
-   la bascule de vue. Les BOUTONS, eux, ouvrent les deux vraies pages.
-   Même origine, donc même session : rien à repasser. */
-$('sn-book').onclick =requireMember(()=>{ location.href='book.html'; });
+   la bascule de vue. */
 $('sn-home').onclick =()=>{closeMember();if(!busy&&!hOpen())paint();};
-$('sn-next').onclick =requireMember(()=>{ location.href='next_objective.html'; });
+
 
 /* [Get Higher with my Totehm] est un <a> vers totehm.com. Il n'y a plus
    d'écouteur, plus de classe `liftoff`, plus d'overlay #stoner : la méthode
@@ -3631,7 +3955,7 @@ function scrollEdges(){
   return {top:sc.scrollTop<=1, bottom:sc.scrollTop+sc.clientHeight>=sc.scrollHeight-1};
 }
 /* Molette désactivée pour la navigation : évite les débats inversion naturelle/classique.
-   La nav se fait par : (1) tap sur #menu-arrow / #sn-home  (2) swipe tactile. */
+   La nav se fait par : (1) tap sur le wordmark / #sn-home  (2) swipe. */
 let y0=0,axis=null,t0el=null,x0=0;
 window.addEventListener('touchstart',(e)=>{x0=e.changedTouches[0].screenX;y0=e.changedTouches[0].screenY;axis=null;t0el=e.target;},{passive:true});
 window.addEventListener('touchmove',(e)=>{if(axis)return;const dx=e.changedTouches[0].screenX-x0,dy=e.changedTouches[0].screenY-y0;if(Math.abs(dx)>8||Math.abs(dy)>8)axis=Math.abs(dx)>Math.abs(dy)?'h':'v';},{passive:true});
@@ -3722,7 +4046,7 @@ const navLeft =()=>{ if(navBlocked())return;
   if(view==='objectives')setView('habits'); else setView('repulsions'); };
 const navRight=()=>{ if(navBlocked())return;
   if(view==='repulsions')setView('habits'); else setView('objectives'); };
-document.querySelectorAll('.vt').forEach(b=>{
+document.querySelectorAll('#views .vt-c').forEach(b=>{
   b.onclick=()=>{ if(navBlocked())return; setView(b.dataset.v); };
 });
 /* La peau de départ, posée explicitement : sans elle #stage n'a aucune
@@ -4300,6 +4624,8 @@ sb.auth.onAuthStateChange(async()=>{
   if(RO){ if(me)await loadRO(); memberPaint();paint(); return; }
   if(me&&myProfile){await migrateLocalToCloudIfNeeded();}
   memberPaint();paint();
+  /* On vient de se connecter : l'arbre n'a jamais été demandé. */
+  loadTrips(true);
 });
 (async()=>{
   const {data:{session}}=await sb.auth.getSession();
@@ -4317,6 +4643,10 @@ sb.auth.onAuthStateChange(async()=>{
   }
   if(me&&myProfile){await cloudLoad();}
   paint();
+  /* L'ARBRE PART TOUT DE SUITE, ET IL NE FAIT PAS ATTENDRE. La liste est
+     déjà peinte depuis le stockage local ; quand l'arbre arrive, les
+     liens apparaissent dedans. On ne retarde rien, on ne bloque rien. */
+  loadTrips();
 })();
 window.addEventListener('pageshow',e=>{
   if(!e.persisted)return;
@@ -4515,15 +4845,29 @@ window.addEventListener('pageshow',e=>{
   /* ══ NAVIGATION VERS LA HIGHER MAP ══
      Clic sur #ctx-down ou swipe dans n'importe quelle direction verticale
      (>40 px) → map.html. Le sélecteur d'intention est sur map.html. */
+  /* ⚠️ LE GESTE NE QUITTE PLUS LA PAGE · 09/09/2026. Un balayage vertical
+     de 40 px — c'est-à-dire n'importe quel début de défilement — envoyait
+     sur `map.html`. Descendre pour LIRE l'atterrissage était donc
+     impossible au doigt : on partait ailleurs. Le chevron et le geste
+     font maintenant la même chose, et c'est ce qu'ils annonçaient :
+     descendre d'un écran. La vidéo ne démarre qu'une fois arrivée —
+     rien ne se télécharge pour quelqu'un qui reste en haut. */
   {
-    const ctxDown=$('ctx-down');
-    if(ctxDown) ctxDown.addEventListener('click',()=>{ window.location.href='map.html'; });
-    let _gsY=0;
-    gate.addEventListener('touchstart',e=>{ _gsY=e.touches[0].clientY; },{passive:true});
-    gate.addEventListener('touchend',e=>{
-      if(entered||folding)return;
-      if(Math.abs(e.changedTouches[0].clientY-_gsY)>40) window.location.href='map.html';
-    },{passive:true});
+    const ctxDown=$('ctx-down'), ctxUp=$('ctx-up'), ctxSec=$('gate-context');
+    const vers=el=>{ if(el&&el.scrollIntoView)el.scrollIntoView({behavior:'smooth',block:'start'}); };
+    if(ctxDown) ctxDown.addEventListener('click',()=>vers(ctxSec));
+    if(ctxUp)   ctxUp.addEventListener('click',()=>vers($('gate-hero')));
+    /* La vidéo se charge quand elle entre dans le cadre, et se met en
+       pause quand elle en sort : une vidéo qui tourne hors écran, c'est
+       de la batterie et de l'egress pour personne. */
+    const v=$('ctx-vid');
+    if(v&&ctxSec&&'IntersectionObserver' in window){
+      new IntersectionObserver(es=>es.forEach(e=>{
+        if(e.isIntersecting){ if(!v.src&&v.dataset.src)v.src=v.dataset.src;
+          const p=v.play(); if(p&&p.catch)p.catch(()=>{}); }
+        else v.pause();
+      }),{threshold:.35}).observe(ctxSec);
+    }
   }
 })();
 

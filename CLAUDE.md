@@ -73,14 +73,28 @@ quand un autre bouge n'est pas indépendant.
 
 ```
 LE TOTEHM                                  LE MONDE
-totehm.html                                map.html
-trois VUES dans UN fichier                 Higher Map
-  répulsions · habitudes · objectifs       radar / cartes
+totehm.html                                totehm_world.html  →  map.html
+trois VUES dans UN fichier                 la porte           la Higher Map
+  répulsions · habitudes · objectifs
 
-DEUX PAGES, depuis le menu                 DANS LA POCHE
-book.html          My Wisdom               higherself.html
-next_objective.html  My next objective     HigherSelf — mini-app Telegram
+DEUX PORTES, en bas à droite               DANS LA POCHE
+book.html            My Wisdom             higherself.html
+next_objective.html  Habits Generator      HigherSelf — mini-app Telegram
 ```
+
+**`totehm_world.html` est la porte de la carte · 09/09/2026.** Le bouton
+du bas de l'atterrissage disait `[Open my Totehm world]` et partait sur
+`map.html` — c'était la SEULE entrée de la Higher Map. Il dit maintenant
+**« Think same but opposite »** et DESCEND d'un écran, dans le même
+atterrissage, vers une vidéo plein cadre. La carte a donc sa propre porte,
+sortie de `totehm.html` pour être retravaillée à part. La retirer sans
+rien mettre à la place aurait laissé le produit sans entrée.
+
+**⚠️ ET LE GESTE NE QUITTE PLUS LA PAGE.** Un balayage vertical de 40 px
+sur l'atterrissage — c'est-à-dire n'importe quel début de défilement —
+envoyait sur `map.html`. Descendre pour LIRE l'atterrissage était donc
+impossible au doigt : on partait ailleurs. Le chevron et le geste font
+maintenant la même chose, et c'est ce qu'ils annonçaient.
 
 **`objectives.html` n'existe plus.** Supprimé le 05/09 : son contenu est
 devenu une VUE. Une vue n'est ni un fichier, ni une iframe, ni une page —
@@ -93,13 +107,18 @@ ou le TOTEHM du bas. Elles ne sont pas des doublons des vues — la vue
 objectifs liste, `next_objective.html` propose ; la vue répulsions liste,
 `book.html` raconte.
 
-Elles s'ouvrent par **deux boutons dans le menu** (`#sn-book`, `#sn-next`),
-en tête du Dashboard, dans la même grammaire `.btn-sig` que les autres. Le
-menu ne s'ouvre que depuis l'intérieur du Totehm : les deux pages sont donc
-inaccessibles à un inconnu, ce qui est exactement leur statut.
-La rangée `.sn-row` qui les portait autrefois est supprimée : elle était
-cachée par trois règles à la fois (`#mw-in-state #settings-nav`, deux
-`@media`) — des boutons qui existaient sans jamais s'afficher.
+Elles s'ouvrent par **deux portes en bas à droite de l'écran** —
+`#bottom-doors` : **[My Wisdom]** et **[Habits Generator]**. Elles ont
+d'abord été mises dans le menu membre ; à deux gestes d'un écran qu'on ne
+quitte jamais, elles étaient invisibles. Sous le pouce, elles existent.
+
+**Le TOTEHM du bas s'est décalé à GAUCHE** pour leur laisser la droite, et
+**le petit chevron sous lui a disparu** : il ne faisait que répéter le
+geste du wordmark, qui ouvre le menu depuis toujours.
+
+La rangée `.sn-row` du menu est supprimée : elle était cachée par trois
+règles à la fois (`#mw-in-state #settings-nav`, deux `@media`) — des
+boutons qui existaient sans jamais s'afficher.
 
 **Ce qui ne revient PAS avec elles :** l'iframe. Ce sont deux documents que
 l'on visite, jamais deux cadres que l'on encastre. `pushMetrics()`, le
@@ -740,14 +759,38 @@ trois vues ; c'est `--skin`, posé par `#stage.v-h|.v-o|.v-r`, qui change la
 couleur des blocs. Ne jamais remettre `.z-next` / `.z-book` sur le fond.
 
 **Mesuré, et c'est ça qui commande le reste : un bloc navy sur un papier navy
-est INVISIBLE** — les deux valent exactement `#333366`. Le logo règle ça
-depuis toujours : ses tuiles ne se détachent que par du NOIR, les
-perforations. D'où le filet `1px solid #000` sur chaque bloc. Ce n'est pas une
-bordure décorative et ce n'est pas une ombre : c'est le vide entre deux pièces
-du même logo, et c'est la seule chose qui rende le navy lisible sur le navy.
+est INVISIBLE** — les deux valaient exactement `#333366`.
+
+**⚠️ LA RÉPONSE N'EST PLUS UN FILET NOIR · 09/09/2026.** Elle l'a été :
+`1px solid #000` sur chaque bloc, au nom de la perforation du logo. Mais
+la perforation n'est pas un TRAIT, c'est du VIDE — entre deux tuiles il y
+a du noir de page, pas une bordure dessinée. Un liseré d'un pixel gagne en
+plus un demi-pixel gris sur tout écran non entier.
+
+**Le papier recule d'un ton : `--paper:#2b2b57`.** Les trois couleurs de
+marque restent intactes sur leurs blocs — navy, bleu clair, rouge-violet —
+et se détachent par leur VALEUR, comme les blocs empilés du Totehm de
+`totehm.com`. Une différence de ton, pas une bordure. `html,body` et le
+carré perforé du desktop (`--logo-navy`) portent le papier ; **plus aucune
+bordure noire nulle part** — ni sur les boîtes, ni sur les mini-boîtes, ni
+sur les propositions, ni sur les trois carrés de vue.
+
+Le seul trait de toute l'interface est BLANC, et il ne dure que le temps
+d'un geste : `.habit.over` pendant un classement.
 
 **Le survol ne déplace plus rien** : `filter:brightness(1.18)`, pas de
 translation, pas de face décalée.
+
+**⚠️ UNE BOÎTE NE SAUTE JAMAIS · 09/09/2026.** J'avais donné à la boîte
+ouverte une `@keyframes` partant de `translateY(7px)`. La liste est
+redessinée à CHAQUE geste — donc l'animation rejouait aussi quand on
+touchait un bouton DEDANS : un sautement à chaque clic.
+
+**Une `@keyframes` rejoue au redessin ; une `transition` non.** C'est
+toute la différence, et c'est la règle : un état permanent (ouverte,
+saisie, survolée) se dit par une transition sur une propriété, jamais par
+une animation. Il ne reste qu'un état — ouverte, la boîte est un peu plus
+haute et un peu plus claire, et elle y va en 280 ms.
 
 **Le signe est DANS le bloc.** Le T (ou l'onde d'une répulsion) a quitté la
 marge à gauche du rail : il est le premier enfant de la boîte. Le rail ne
@@ -756,22 +799,84 @@ bord : le débordement mesuré sous 600 px, où la fréquence sortait de l'écra
 gauche du rail, n'existe plus.
 
 **Le sélecteur de vue est SOUS le T**, en ligne : trois carrés pleins, ordre
-**rouge-violet · navy · bleu clair**. Les trois sont à pleine valeur en
-permanence — une couleur de marque ne se met pas en veilleuse. La vue courante
-est marquée par un `outline` blanc, qui ne prend aucune place et n'est pas une
-ombre. Le balayage horizontal ET les flèches suivent le même ordre, tiré de
-la MÊME liste `VIEW_ORDER` : deux listes finissent toujours par diverger.
+**rouge-violet · navy · bleu clair**. Le balayage horizontal ET les flèches
+suivent le même ordre, tiré de la MÊME liste `VIEW_ORDER` : deux listes
+finissent toujours par diverger.
 
-### La couleur suit le REGARD, pas le rang — 08/09/2026
+**Chaque carré porte SON nom · 09/09/2026.** Il y avait un seul intitulé,
+celui de la vue courante, posé sous les trois : il fallait cliquer pour
+savoir ce qu'on allait ouvrir. Le bouton est maintenant la COLONNE — le
+carré, puis son mot dessous — et le mot est cliquable comme la couleur.
 
-Le rail s'éteignait selon la position dans la liste : première ligne
-pleine, suivantes dégressives. Vrai tant qu'on ne défile pas — faux dès
-qu'on défile, et on lisait un dégradé qui ne parlait plus de rien.
+**Ni filet noir ni contour blanc autour des carrés.** Un carré est une
+COULEUR ; l'entourer d'un trait en fait un bouton, et le produit n'a pas
+de boutons encadrés. Ce qui marque la vue courante, c'est l'intitulé qui
+passe au blanc et le carré à pleine opacité ; les deux autres reculent à
+.42. Rien ne bouge, rien n'encadre.
 
-C'est la boîte **en haut du champ de vision** qui porte sa couleur pleine.
-`peintTraits()` pose `--tk` sur chaque ligne ; un seul écouteur de
-défilement, une seule peinture par image — au doigt, un `scroll` part
-quarante fois par seconde.
+### LE MOTEUR DE LIENS — trois pannes, une seule cause — 09/09/2026
+
+« Les objectifs et les répulsions ne s'affichent pas instantanément dans
+les boxes. Et les suppressions ne fonctionnent pas non plus. » Trois
+symptômes, trois bugs, et la même racine : **les liens sont du TEXTE, et
+le texte bougeait sous eux.**
+
+**1. L'ARBRE NE SE CHARGEAIT PAS DANS LA VUE HABITUDES.** `setView()`
+faisait `if(v!=='habits')loadTrips()` — vrai avant la réécriture, quand
+une habitude n'affichait pas ses liens. Depuis, la boîte habitude MONTRE
+ses objectifs et ses répulsions : mesuré, elle les affichait vides tant
+qu'on n'était pas passé par une autre vue. L'arbre part maintenant au
+démarrage, à la connexion, et dans les trois vues. Il ne fait attendre
+personne : la liste est déjà peinte depuis le stockage local.
+
+**2. `t0` — LE TEXTE QUE LE SERVEUR CONNAÎT.** `steps` est du texte, donc
+`objective_habits` et `repulsion_habits` pointent une habitude par son
+TEXTE. Le front cherchait avec `x.t` — ce qui est AFFICHÉ, donc ce qu'on
+est en train de taper. Taper une lettre dans un titre changeait la clé de
+tous ses liens instantanément à l'écran alors que la base ne l'apprenait
+que 700 ms plus tard : **les objectifs et les répulsions disparaissaient
+de la boîte à chaque frappe.**
+
+Pire, `habit_rename_links` partait avec « le texte d'il y a une lettre »
+comme ancien nom, parce que `ancien` était recalculé à chaque frappe et
+que le `differe` précédent était annulé : **les liens s'orphelinaient
+pour de bon en base.** C'est ça qui faisait revenir une pièce supprimée.
+
+La règle, désormais : **`x.t` est ce qu'on LIT, `x.t0` est ce que le
+serveur CROIT.** On affiche avec `t`, on interroge et on écrit avec `t0`,
+et `t0` ne bouge que quand le renommage a été envoyé. La migration en
+mémoire suit la lettre ; seul le réseau attend.
+
+**3. UNE MINUTERIE PAR CHAMP.** `differe()` en avait UNE pour tout le
+Totehm : écrire dans une habitude puis dans un objectif annulait
+l'écriture de l'habitude — `clearTimeout` jetait la fonction en attente
+sans jamais l'exécuter. Chaque champ a sa clé (`h:h3`, `t:obj-1`), et
+`pousse()` les vide toutes. `fermer()` pousse AVANT de recharger l'arbre :
+sinon le serveur répond avec l'ancien texte et l'écran perd la dernière
+frappe.
+
+**Et supprimer coupe les liens avec `t0`.** Avec le texte affiché, une
+habitude renommée puis supprimée laissait ses liens en base, et
+`my_trips` la faisait revenir au rechargement suivant.
+
+**La règle générale, et elle vaut pour tout lien par texte :** ce qu'on
+affiche et ce qu'on envoie ne sont pas la même valeur dès qu'une écriture
+est différée. Deux champs, jamais un.
+
+### La couleur intentionnelle ne s'éteint plus — 09/09/2026
+
+Il y a eu deux dégradés successifs sur les traits d'intention — par le
+rang, puis par le champ de vision — et les deux avaient le même défaut :
+ils transformaient une couleur de marque en gris. **Une intention à 16 %
+d'opacité ne dit plus quelle intention c'est ; elle dit seulement « pas
+celle-là ».** Or c'est la seule information que le trait porte.
+
+`peintTraits()`, `DEGRADE`, `--tk` et l'écouteur de défilement qui les
+servait sont supprimés. Pleine valeur, dans les trois vues, en mode
+classement comme en lecture. Le trait descend à **1 px** sur ordinateur,
+**2 px** au téléphone — une signature, pas un surligneur — et il passe
+`z-index:3`, DEVANT la boîte : sans le filet noir, le fond de la boîte le
+recouvrait et l'intention devenait invisible.
 
 ### Une répulsion naît de son premier lien — 08/09/2026
 
@@ -813,6 +918,34 @@ sont nettoyés après : un `transform` oublié fige la carte au rendu suivant.
 **La carte qu'on tient se soulève** — `scale(1.025)` et un peu de clarté.
 Jamais d'ombre : la marque l'interdit.
 
+### On MAINTIENT pour saisir — 09/09/2026
+
+Trois choses manquaient au classement, et il fallait les trois :
+
+1. **ON DÉFILE.** `touch-action:none` était posé sur toutes les lignes dès
+   l'entrée en mode classement : le doigt ne pouvait plus rien faire
+   d'autre que déplacer, donc impossible de descendre chercher une
+   habitude en bas de liste pour la remonter en haut. Les lignes sont en
+   `pan-y` ; un appui de **340 ms sans bouger** saisit, et c'est seulement
+   à ce moment qu'on coupe le natif (`body.grabbing`). Un défilement du
+   conteneur annule l'appui long — un doigt posé pendant que la liste
+   glisse veut l'arrêter, pas prendre la carte.
+2. **ON VOIT CE QU'ON TIENT.** La boîte suit le doigt (`--dy`).
+3. **LA LISTE DÉFILE SOUS LA BOÎTE.** Tenir une carte contre le bord haut
+   ou bas fait remonter la liste, à une vitesse proportionnelle à la
+   proximité du bord. Sans ça, emmener une habitude du bas vers le haut
+   reste impossible — c'était la demande littérale.
+
+**⚠️ `pointer-events:none` SUR LA BOÎTE SAISIE, sinon rien ne se classe.**
+Elle suit le doigt, donc elle est toujours SOUS lui : `elementFromPoint`
+renvoyait la boîte qu'on tient au lieu de celle qu'on survole, la cible
+restait nulle, et lâcher ne déplaçait rien. Mesuré : le geste marchait, le
+classement non. La capture du pointeur continue de router les événements
+vers elle — les deux mécanismes sont indépendants.
+
+**La règle générale :** tout élément qui suit le curseur pendant un geste
+doit sortir du test de survol. Sinon il se vise lui-même.
+
 ### `--rw` est le jeton unique du rail
 
 Le rail, les traits du bouton de classement et la marge des boîtes s'y
@@ -824,14 +957,17 @@ pas du minimalisme, c'est de l'invisible.
 `height/min-height/max-height` plus bas dans la feuille : la rouvrir
 demande de rouvrir les trois, sinon `max-height` gagne seul.
 
-**⚠️ UNE RÈGLE ÉCRITE DANS UN `@media` N'EXISTE QUE LÀ.** Les trois
-largeurs dégressives de l'icône de classement (`.ob-1/.ob-2/.ob-3`)
-vivaient dans le bloc téléphone. Sur ordinateur, la règle générique
-`#ordbtn span{width:var(--rw)}` — POSTÉRIEURE dans la feuille — reprenait
-la main : **mesuré le 09/09, les trois traits faisaient 21,75 px.** Ce
-n'était plus un classement, c'était un bloc. Les trois lignes suivent
-maintenant `#ordbtn span` immédiatement, hors de tout `@media` : plus
-spécifiques ET postérieures, rien ne peut les écraser.
+**L'icône de classement, c'est TROIS BARRES IDENTIQUES à la largeur du
+rail.** J'avais essayé des largeurs dégressives : trois longueurs
+différentes disent « menu », pas « classement », et l'icône ne tombait
+plus en face du rail. Les trois valent exactement `--rw`.
+
+**⚠️ UNE RÈGLE ÉCRITE DANS UN `@media` N'EXISTE QUE LÀ.** Ces trois
+largeurs vivaient dans le bloc téléphone ; sur ordinateur, la règle
+générique `#ordbtn span{width:var(--rw)}` — POSTÉRIEURE dans la feuille —
+reprenait la main. Mesuré : 21,75 px les trois, alors que le bloc
+téléphone disait autre chose. Elles suivent maintenant `#ordbtn span`
+immédiatement, hors de tout `@media`.
 
 Le test qui l'a trouvée ne lisait pas la feuille : il MESURAIT les trois
 `getBoundingClientRect()` dans un vrai navigateur, aux deux tailles
@@ -853,8 +989,11 @@ l'élément réel, par sa valeur calculée.
 membre, à côté de l'abonnement, dans le Club. L'atterrissage ne garde que
 ce qui s'adresse à un inconnu.
 
-`[Open my Totehm world]` reste : c'est la **seule porte vers la carte**.
-La retirer laisserait `map.html` sans entrée.
+`[Open my Totehm world]` a quitté l'atterrissage à son tour, le 09/09 :
+le bouton du bas dit désormais « Think same but opposite » et descend d'un
+écran. La porte de la carte n'a pas disparu pour autant — elle a son
+fichier, `totehm_world.html`. **Une porte ne se retire jamais sans en
+poser une autre** : `map.html` sans entrée, c'est le produit sans entrée.
 
 ### UNE SEULE BOÎTE, PARTOUT — 08/09/2026
 
@@ -873,11 +1012,31 @@ boîte qui l'accueille : une habitude reste navy posée dans une répulsion,
 un objectif reste bleu clair posé dans une habitude. C'est le format de la
 boîte répulsion, généralisé aux trois vues.
 
-| vue | la boîte montre |
-|---|---|
-| habitudes  | ses objectifs (bleu clair) · ses répulsions (rouge-violet) |
-| objectifs  | ses habitudes (navy) |
-| répulsions | les habitudes qu'elle protège (navy) |
+| vue | la boîte montre | les mots |
+|---|---|---|
+| habitudes  | ses objectifs (bleu clair) · ses répulsions (rouge-violet) | WHY · **TRIGGER** |
+| objectifs  | ses habitudes (navy) | HOW |
+| répulsions | les habitudes à faire à la place (navy) | **INSTEAD** |
+
+### Une répulsion est une MAUVAISE HABITUDE — 09/09/2026
+
+Ce n'est pas un garde du corps, et les mots le disaient de travers.
+
+- Vue depuis l'habitude, une répulsion est ce qui la fait DÉRAILLER :
+  **TRIGGER**, pas « protected by ». WHY monte vers l'objectif, TRIGGER
+  descend vers ce qui casse.
+- Vue depuis elle-même, ce qu'elle porte n'est pas ce qu'elle protégerait
+  — ce sont les habitudes à faire À LA PLACE : **INSTEAD**. Le mot dit
+  l'échange, et c'est tout le produit : on ne supprime pas une habitude,
+  on en met une autre à sa place.
+- Son intitulé de vue est **« REPULSIONS — HABITS TO KILL »**, et le
+  **H** du wordmark respire dessus comme sur les habitudes. Même lettre :
+  c'est la même chose vue par son revers.
+
+**L'invitation « write a new one or pick an existing one » vit SOUS
+CLOSE**, juste au-dessus des propositions. Au-dessus du groupe, elle
+parlait de la répulsion ; en bas, elle parle des habitudes qu'on va
+choisir — ce que le doigt s'apprête à faire.
 
 **Chaque vue est complète.** On crée, on attache, on détache, on renomme
 sans jamais en changer. Seul le storytelling change.
@@ -979,15 +1138,19 @@ passe en premier, c'est elle qu'on est venu voir.
 
 | vue | ordre des blocs | les mots |
 |---|---|---|
-| habitudes  | habitude · objectif · répulsions | HABIT · WHY · PROTECTED BY |
-| objectifs  | objectif · habitudes · répulsions | OBJECTIVE · HOW · PROTECTED BY |
-| répulsions | répulsion · habitudes · objectif | REPULSION · IT PROTECTS · WHY |
+| habitudes  | habitude · objectifs · répulsions | WHY · **TRIGGER** |
+| objectifs  | objectif · habitudes | HOW |
+| répulsions | répulsion · habitudes | **INSTEAD** |
 
 Les mots disent le **lien**, pas la catégorie — la couleur dit déjà la
-catégorie. WHY remonte, HOW descend, PROTECTS tient.
+catégorie. WHY remonte, HOW descend, TRIGGER fait dérailler, INSTEAD
+remplace. (Voir « Une répulsion est une MAUVAISE HABITUDE ».)
 
-**On ne change JAMAIS de vue en éditant.** `setView()` refuse tant qu'une
-boîte est ouverte : une vue qui bouge sous les doigts perd la saisie.
+**⚠️ ON CHANGE DE VUE EN ÉDITANT · 09/09/2026.** `setView()` refusait tant
+qu'une boîte était ouverte — la règle protégeait la saisie et emprisonnait
+le membre. Elle POUSSE maintenant l'écriture en attente (`pousse()`),
+ferme la boîte, jette les brouillons, et passe. Rien n'est perdu : c'est
+la minuterie qu'il fallait vider, pas le geste qu'il fallait interdire.
 
 **Il n'y a plus de `[Add a Trip]`.** Un seul bouton par vue, qui crée la
 pièce de CETTE vue, vide, et ouvre le triplet dessus. Les deux autres
