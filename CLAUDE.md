@@ -78,9 +78,60 @@ trois VUES dans UN fichier                 la porte           la Higher Map
   répulsions · habitudes · objectifs
 
 DEUX PORTES, en bas à droite               DANS LA POCHE
-book.html            My Wisdom             higherself.html
-next_objective.html  Habits Generator      HigherSelf — mini-app Telegram
+wisdom.html   My Wisdom                    higherself.html
+vision.html   My vision for the future     HigherSelf — mini-app Telegram
 ```
+
+### Les deux JUMEAUX — 13/09/2026
+
+`wisdom.html` (rouge-violet) et `vision.html` (bleu clair) donnent
+l'impression qu'on a seulement changé le FOND du Totehm. Tout le reste
+est le MÊME objet, à la même place, au pixel : le T en haut, le rail à
+gauche, le TOTEHM en bas, l'accès membre au-dessus du T, la croix en haut
+à droite, la boîte, et la piste de classement dans le rail.
+
+**Ils sont GÉNÉRÉS, pas écrits** — `tools/jumeau.py` les dérive de
+`totehm.html`. Deux copies tenues à la main divergent toujours, et ici la
+divergence se verrait au premier saut de logo : c'est exactement ce qui a
+été signalé deux fois. On COPIE (règle du projet : produits indépendants
+= fichiers indépendants), mais on copie par une machine.
+
+Ce qui change, et rien d'autre : le titre · `--paper` et `--skin` · le
+moteur de liste (une table, un texte, une importance) · les trois carrés
+de vue disparaissent · la croix ramène au Totehm.
+
+**`#gate` est ARRACHÉ des jumeaux.** On n'y arrive QUE depuis le Totehm
+déployé : il n'y a rien à déplier. Retirer la classe ne suffisait pas —
+`#terms-corner` vit dans `#gate` en `position:fixed` et interceptait les
+clics de toute la page, la croix comprise. Le bloc entier part.
+
+**La croix renvoie sur `totehm.html#in`**, et le Totehm s'ouvre DÉJÀ
+DÉPLOYÉ. ⚠️ La décision se prend à la ligne qui POSE la classe (dans le
+module GATE), pas plus haut : elle s'exécute après, et elle reposait le
+drapeau qu'on venait de retirer. Et il faut la RETIRER, pas seulement ne
+pas la poser — elle est écrite dans le HTML (`<body class="gate">`) pour
+éviter le flash au chargement.
+
+**Pas de petit T à gauche du rail dans un jumeau.** Une intention sur une
+leçon ou sur une vision ne voudrait rien dire — même règle que pour les
+objectifs et les répulsions.
+
+**⚠️ UNE REDÉCLARATION EST UNE SyntaxError, ET ELLE EMPORTE TOUT.** En
+dérivant ces fichiers j'y suis tombé trois fois de suite — `open`,
+`rangHTML`, `listeDe` : la page s'affichait, vide, sans un mot. Le
+script AUDITE désormais chaque jumeau et refuse d'écrire si un nom est
+déclaré deux fois au niveau du module. On ne cherche plus à la main ce
+qui se mesure.
+
+### `next_objective.html` est mis de côté — 13/09/2026
+
+TOTEHM est un réseau social **privé** : on n'y consomme pas du contenu,
+on en écrit, pour d'autres membres. Une machine qui PROPOSE des habitudes
+fait l'inverse — elle remplit l'écran à la place du membre. Le fichier
+reste dans le dépôt, débranché ; plus aucune porte n'y mène.
+
+À sa place, la **vision** : ce que le membre voit venir, et seulement le
+bon côté. C'est là qu'est le visionnaire.
 
 **`totehm_world.html` est la porte de la carte · 09/09/2026.** Le bouton
 du bas de l'atterrissage disait `[Open my Totehm world]` et partait sur
@@ -814,6 +865,61 @@ de boutons encadrés. Ce qui marque la vue courante, c'est l'intitulé qui
 passe au blanc et le carré à pleine opacité ; les deux autres reculent à
 .42. Rien ne bouge, rien n'encadre.
 
+### ⛔ AUCUNE BORDURE AUTOUR D'UNE BOÎTE — RÈGLE DE MARQUE · 09/09/2026
+
+**Vaut sur les TROIS domaines, sans exception :** `totehm.com`,
+`totehm.space`, `higher.boutique`. Aucune carte, aucun panneau, aucune
+fenêtre, aucun bouton, aucune saisie ne porte de trait dessiné autour
+d'elle.
+
+**Ce qui délimite, et rien d'autre :**
+
+| | |
+|---|---|
+| Navy `#333366` · Bleu clair `#36498c` · Rouge-violet `#743169` | les blocs |
+| Noir absolu `#000` | le vide, les perforations |
+| Le gris et ses nuances | les surfaces secondaires, le texte secondaire |
+
+**Une boîte se détache par sa VALEUR, jamais par un contour.** C'est la
+grammaire du Totehm empilé de `totehm.com` : des blocs pleins posés les
+uns sur les autres, séparés par du noir. Un trait d'un pixel n'est ni le
+bloc ni le vide — c'est un troisième objet, et il gagne en plus un
+demi-pixel gris sur tout écran non entier.
+
+**Quand une boîte n'avait QUE sa bordure pour exister** (`background:none`
++ `border`), elle reçoit une surface grise — `rgba(255,255,255,.06)` à
+`.07`. Elle ne reste jamais invisible : c'est le point de la règle, pas
+son effet de bord. **Et le papier recule d'un ton sous les blocs** :
+`--paper` est plus sombre que `--skin`, sinon un bloc de la couleur du
+papier disparaît (mesuré, deux fois).
+
+**Les trois exceptions, et elles ne sont pas des bordures :**
+1. **La tuile perforée** — `border: 6px solid transparent` +
+   `border-image`. C'est une TEXTURE de marque, pas un trait ; c'est elle
+   qui fait `.btn-sig` et `.line-input`.
+2. **Les arêtes d'une boîte en verre 3D** (`.b-front`, `.bside`,
+   `.vb-front`, `.vbside`). Ce sont les CÔTÉS d'un volume : sans elles la
+   boîte n'est plus une boîte, c'est un carré.
+3. **Le pointillé d'une place vide** — la ligne `+ add`. Elle ne cerne
+   pas une boîte, elle dessine l'absence d'une boîte.
+
+Un filet gris entre deux lignes DANS une boîte n'est pas la bordure
+d'une boîte, et le gris est un délimitant autorisé : il reste.
+
+**Le coral `#fbd5ca` ne délimite rien.** Il est réservé au mot **« Get »**
+de `[Get Higher]` et à la méthode Stoner sur `totehm.com`. Jamais un
+cadre, jamais une bordure, jamais sur `.space` ni `.boutique`.
+
+`tools/nobord.py` passe sur les TROIS domaines et retire tout trait
+dessiné de moins de 4 px. **Il garde ce qui n'est pas une bordure** : la
+tuile perforée (`6px solid transparent` + `border-image`) et les faces
+d'une boîte en verre. Ce qui n'avait QUE son trait pour exister reçoit
+une surface à la main — jamais en masse.
+
+Passage du 13/09/2026 : **63 traits retirés** sur les quinze fichiers,
+dont les séparateurs de rangée et les soulignés de saisie de l'espace
+membre.
+
 ### LE MOTEUR DE LIENS — trois pannes, une seule cause — 09/09/2026
 
 « Les objectifs et les répulsions ne s'affichent pas instantanément dans
@@ -862,6 +968,38 @@ habitude renommée puis supprimée laissait ses liens en base, et
 **La règle générale, et elle vaut pour tout lien par texte :** ce qu'on
 affiche et ce qu'on envoie ne sont pas la même valeur dès qu'une écriture
 est différée. Deux champs, jamais un.
+
+### ON NE LIT JAMAIS PENDANT QU'ON ÉCRIT — 09/09/2026
+
+« Quand je supprime un objectif, il apparaît de suite. » Ce n'était pas
+un bug de suppression : c'était une COURSE, et elle se gagnait presque
+toujours du mauvais côté.
+
+```
+1. on retire l'objectif de la liste          immédiat, à l'écran
+2. on envoie `trip_close`                    parti, PAS arrivé
+3. `fermer()` recharge l'arbre               `my_trips` répond AVANT (2)
+4. le serveur renvoie l'objectif encore actif → il réapparaît
+```
+
+`apres()` envoyait sans jamais attendre. **`EN_VOL` tient maintenant les
+écritures parties et pas encore revenues, et `loadTrips()` commence par
+`await calme()` : aucune lecture de l'arbre ne démarre tant qu'il reste
+une écriture en l'air.** `calme()` pousse aussi les minuteries — une
+frappe qui dort compte comme une écriture qui n'est pas partie.
+
+Ça vaut pour TOUTES les écritures — attacher, détacher, renommer,
+supprimer — donc la même course ne peut plus se reproduire ailleurs.
+
+**⚠️ ET LE TEST DOIT AVOIR DE LA LATENCE.** Le faux Supabase répondait
+dans le même tour de boucle : une écriture était toujours arrivée avant
+la lecture suivante, et la course était **structurellement invisible en
+test**. Il applique maintenant la mutation QUAND ELLE ARRIVE (80 ms), pas
+quand elle part. Contre-épreuve faite : sans le correctif, 6 assertions
+sur 7 tombent ; avec, zéro.
+
+**La règle : un faux serveur qui répond instantanément ne prouve rien
+sur l'ordre des choses.** Toute panne d'ordonnancement lui échappe.
 
 ### La couleur intentionnelle ne s'éteint plus — 09/09/2026
 
@@ -918,7 +1056,39 @@ sont nettoyés après : un `transform` oublié fige la carte au rendu suivant.
 **La carte qu'on tient se soulève** — `scale(1.025)` et un peu de clarté.
 Jamais d'ombre : la marque l'interdit.
 
-### On MAINTIENT pour saisir — 09/09/2026
+### L'ACCROCHE EST LE CHIFFRE, PAS LA BOÎTE — 13/09/2026
+
+L'appui long sur la boîte entière (ci-dessous, 09/09) confisquait le
+doigt : sur téléphone, plus moyen de défiler ni d'ouvrir sans se battre
+avec le mode. Mesuré sur l'appareil de Wah : **le classement ne
+fonctionnait pas du tout sur mobile.**
+
+**Le rail est la piste, le NOMBRE est l'accroche.** Il respire comme le
+T tant qu'on est en mode classement — même souffle, 2,8 s — puis se
+saisit et glisse le long du rail. Trente pixels dans le rail, loin du
+texte : tout le reste de l'écran garde son comportement normal, donc
+**on classe et on écrit dans le même mode, sans jamais choisir.**
+`touch-action:none` est posé sur le CHIFFRE seul.
+
+Les deux chevrons restent : un cran à la fois, au doigt comme au
+clavier. Le glissement sert les longues remontées, les chevrons servent
+la précision.
+
+**⚠️ DEUX CIBLES GÉNÉREUSES EMPILÉES, C'EST UNE CIBLE DE MOINS.** La
+zone sensible des chevrons (`.rk-a::after`, 14 px de débord vertical)
+recouvrait entièrement le nombre qui vit ENTRE eux : `elementFromPoint`
+au centre du chiffre renvoyait la flèche, et l'accroche ne partait
+jamais. Le chiffre passe `z-index:2`, les flèches `1`, et leur débord
+vertical tombe à 2 px.
+
+**⚠️ LA CAPTURE DU POINTEUR VA SUR LA LIGNE, PAS SUR LE CHIFFRE.** La
+liste est redessinée pendant le geste (FLIP) : un pointeur capturé par
+un nœud détruit relâche tout. La ligne porte `data-row` et survit.
+
+Et `pointer-events:none` sur la ligne saisie, sinon elle se vise
+elle-même — leçon déjà payée, ci-dessous.
+
+### On MAINTIENT pour saisir — 09/09/2026 · REMPLACÉ
 
 Trois choses manquaient au classement, et il fallait les trois :
 
@@ -1029,9 +1199,11 @@ Ce n'est pas un garde du corps, et les mots le disaient de travers.
   — ce sont les habitudes à faire À LA PLACE : **INSTEAD**. Le mot dit
   l'échange, et c'est tout le produit : on ne supprime pas une habitude,
   on en met une autre à sa place.
-- Son intitulé de vue est **« REPULSIONS — HABITS TO KILL »**, et le
-  **H** du wordmark respire dessus comme sur les habitudes. Même lettre :
-  c'est la même chose vue par son revers.
+- Son intitulé de vue est **« REPULSIONS — TRIGGER »**, et le **H** du
+  wordmark respire dessus comme sur les habitudes. Même lettre : c'est
+  la même chose vue par son revers. Le mot sous le carré est le même que
+  celui qui nomme le lien dans la boîte habitude — un seul mot pour une
+  seule idée, à deux endroits.
 
 **L'invitation « write a new one or pick an existing one » vit SOUS
 CLOSE**, juste au-dessus des propositions. Au-dessus du groupe, elle
@@ -1376,6 +1548,17 @@ silencieusement au premier appel, et un checkout partirait en fantôme.
 Le `!` fait planter le module au démarrage si le secret manque —
 mieux qu'un paiement perdu. Audit du 03/09 : `higher-checkout` et
 `artwork-checkout` corrigés.
+
+**`visions` est le JUMEAU de `wisdom`** (13/09/2026) : mêmes colonnes —
+`text`, `i`, `importance` — mêmes deux politiques RLS (la sienne en
+écriture, lecture par les membres quand le Totehm est partagé). Deux
+formes d'une seule chose : ce que j'ai appris, ce que je vois venir.
+Vérifiée en production sous `set local role authenticated` : zéro ligne
+lisible sans session.
+
+**L'importance est une COLONNE, pas un ordre implicite.** Elle se
+réécrit en entier quand le classement bouge : un rang sur deux qui
+manque produit un ordre instable, et c'est quelques dizaines de lignes.
 
 **Les 7 intentions portent chacune un PILIER** (BODY / MENTAL / SOUL /
 SPIRIT). Mapping non-négociable, cadre mental de tout le produit :

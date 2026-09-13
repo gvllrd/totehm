@@ -85,7 +85,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 .habit.timed .tick{background:#fff}
 .habit .h-body{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;position:relative;display:flex;align-items:center}
 @media(max-width:600px){.habit.timed .h-freq{display:none}}
-.h-text,.h-add{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;line-height:1.5;padding:4px 2px;caret-color:#fff;text-align:left;resize:none;overflow:hidden;display:block}
+.h-text,.h-add{width:100%;background:none;border:none;outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;line-height:1.5;padding:4px 2px;caret-color:#fff;text-align:left;resize:none;overflow:hidden;display:block}
 .h-text::placeholder{color:rgba(255,255,255,.33)}
 /* placeholder custom : le H de Habit en blanc */
 .h-hint{position:absolute;left:2px;top:50%;transform:translateY(-50%);font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:rgba(255,255,255,.33);pointer-events:none}
@@ -93,8 +93,8 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 
 /* ── FREQUENCY PANEL ── */
 #freq-panel{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:22px}
-.fp-card{background:#0a0a0a;border:1px solid #1e1e1e;width:100%;max-width:380px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px}
-#fp-input{background:none;border:none;border-bottom:1px solid rgba(255,255,255,.18);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;padding:4px 2px;text-align:center;caret-color:#fff}
+.fp-card{background:#0a0a0a;border:none;width:100%;max-width:380px;padding:22px 20px 18px;display:flex;flex-direction:column;gap:12px}
+#fp-input{background:none;border:none;outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;padding:4px 2px;text-align:center;caret-color:#fff}
 #fp-input::placeholder{color:rgba(255,255,255,.3);font-size:12px;font-style:italic}
 #fp-preview{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--coral);min-height:22px;text-align:center;background:none;border:none;padding:2px 8px;cursor:pointer;transition:color .15s,background .15s;-webkit-tap-highlight-color:transparent}
 #fp-preview:hover,#fp-preview:active{color:#fff;background:var(--navy)}
@@ -123,7 +123,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 .drawer{overflow:hidden;max-height:0;opacity:0;transition:max-height .42s ease,opacity .38s ease;width:100%;display:flex;flex-direction:column;align-items:center;gap:11px}
 .drawer.on{max-height:520px;opacity:1;margin-top:2px}
 .set-note{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;color:var(--g-dark);text-transform:uppercase;text-align:center}
-.name-input{background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:4px 2px;caret-color:#fff;max-width:260px;text-align:center}
+.name-input{background:none;border:none;outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:4px 2px;caret-color:#fff;max-width:260px;text-align:center}
 .name-input::placeholder{color:rgba(255,255,255,.33)}
 .name-locked{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:#fff;letter-spacing:.02em}
 .row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
@@ -158,18 +158,18 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 .r-meta .h-T{cursor:default}
 @media(max-width:600px){.r-meta .r-fl{display:none}}
 .r-tick{position:absolute;left:var(--rl);width:var(--rw);height:5px;background:#fff;top:50%;transform:translateY(-50%)}
-.r-text{margin-left:calc(var(--rl) + var(--rw) + 16px);font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:#fff;line-height:1.5;border-bottom:1px solid rgba(255,255,255,.15);padding:4px 2px;flex:1}
+.r-text{margin-left:calc(var(--rl) + var(--rw) + 16px);font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:#fff;line-height:1.5;padding:4px 2px;flex:1}
 .tv-private{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.14em;color:rgba(255,255,255,.5);text-transform:uppercase}
 
 /* ── MEMBER WINDOW ── */
 #member-window{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.84);display:none;align-items:center;justify-content:center;padding:24px}
 #member-window.show{display:flex}
-.mw-card{background:#0a0a0a;border:1px solid #1e1e1e;max-width:340px;width:100%;padding:30px 24px;text-align:center;position:relative}
+.mw-card{background:#0a0a0a;border:none;max-width:340px;width:100%;padding:30px 24px;text-align:center;position:relative}
 .mw-title{font-family:'Quantico',sans-serif;font-weight:700;font-size:18px;color:#fff;margin-bottom:14px}
 .mw-body{font-family:var(--futura);font-weight:300;font-size:13px;color:var(--g-mid);line-height:1.7;margin-bottom:14px}
 .mw-close{position:absolute;top:12px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:none;color:var(--g-mid);background:none;border:none;cursor:pointer;padding:0}
 .mw-close:hover{color:#fff}
-.mw-input{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:6px 2px;caret-color:var(--coral);text-align:center;margin-bottom:10px}
+.mw-input{width:100%;background:none;border:none;outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:6px 2px;caret-color:var(--coral);text-align:center;margin-bottom:10px}
 .mw-input::placeholder{color:rgba(255,255,255,.33)}
 .mw-note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px;margin-top:6px}
 .mw-note.ok{color:#639922}.mw-note.no{color:#b06a9f}.mw-note.dim{color:var(--g-dark)}

@@ -86,7 +86,7 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
   text-align:center;cursor:pointer;width:100%;position:relative;
   -webkit-tap-highlight-color:transparent;
   transition:background .12s,opacity .18s}
-.s-int + .s-int{border-top:1px solid rgba(255,255,255,.07)}
+.s-int + .s-int{}
 /* Le T.svg passe AU-DESSUS de l'intention : c'est lui qui la porte. */
 .s-int .tglyph{width:16px;height:16px;flex-shrink:0;position:relative;z-index:2;
   margin:0 0 6px}
@@ -199,11 +199,15 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
    Presque-noir sur noir profond : la profondeur vient de la nuance, pas d'un
    cadre gris. `--box` et `--box-line` sont les deux seules valeurs, et elles
    servent aussi bien à la fenêtre d'un lieu qu'à celle des filtres. */
-#info .c-inner{background:var(--box);border:1px solid var(--box-line);max-width:520px;
+#info .c-inner{background:var(--box);border:none;max-width:520px;
   padding:22px 22px 20px;max-height:82vh;overflow-y:auto;overscroll-behavior:contain}
 .c-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+/* Le badge n'a plus de contour : c'est sa PROPRE couleur, posée à
+   plat derrière lui, qui le délimite. `color-mix` garde la teinte du
+   kind sans réécrire trois règles. */
 .c-kind{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
-  letter-spacing:.16em;text-transform:uppercase;padding:3px 8px;border:1px solid currentColor}
+  letter-spacing:.16em;text-transform:uppercase;padding:3px 8px;border:none;
+  background:color-mix(in srgb,currentColor 20%,transparent)}
 /* Le contrat social d'un drop membre : silent (seul) ou social (à plusieurs).
    Même géométrie que .c-kind, à peine plus discret pour ne pas voler la vedette
    au badge DROP. Ne s'affiche QUE sur les MEMBER_DROP et si energy_mode existe. */
@@ -227,12 +231,12 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
    la fin d'un truc qui n'avait pas commencé. */
 .c-when{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
   letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;
-  border:1px solid currentColor}
+  border:none;background:color-mix(in srgb,currentColor 20%,transparent)}
 .c-price{font-family:'Space Mono',monospace;font-size:11px;color:var(--lo);
   margin-left:8px}
 .c-acts{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .c-foot{display:flex;align-items:baseline;justify-content:space-between;gap:14px;
-  margin-top:20px;padding-top:14px;border-top:1px solid rgba(255,255,255,.09)}
+  margin-top:20px;padding-top:14px;}
 .c-dist{font-family:'Space Mono',monospace;font-size:15px;color:var(--hi)}
 .c-walk{font-family:'Space Mono',monospace;font-size:11px;color:var(--lo);margin-left:8px}
 /* La couleur passe par --gc, jamais par un style inline : un style inline
@@ -255,7 +259,7 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);
    Une carte pleine page de 1 400 px n'est pas une carte, c'est un mur. Le
    contenu est CENTRÉ et tient dans la même boîte que partout ailleurs, à
    l'écran près. Un seul objet à comprendre, deux tailles. */
-.slide .c-inner{background:var(--box);border:1px solid var(--box-line);
+.slide .c-inner{background:var(--box);border:none;
   padding:26px 24px;max-width:520px}
 .c-inner{text-align:center}
 .c-top{justify-content:center}
@@ -350,7 +354,7 @@ body.in-world.view-map #hm-weather{display:flex}
   flex-direction:column;gap:8px}
 body.in-world.view-map #zoom{display:flex}
 body.in-world.view-cards #zoom{display:none}
-#zoom button{width:34px;height:34px;background:none;border:1px solid var(--dim);
+#zoom button{width:34px;height:34px;background:rgba(255,255,255,.07);border:none;
   color:var(--mid);font-family:'Quantico',sans-serif;font-size:18px;line-height:1;
   cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent;
   transition:color .15s,border-color .15s}
@@ -365,7 +369,7 @@ body.in-world.view-cards #zoom{display:none}
    Il reçoit maintenant une fenêtre : ce qu'il vient de demander, ce qu'il
    faut pour l'obtenir, et le bouton qui l'y mène. Même boîte que le reste. */
 #gate-modal{background:rgba(0,0,0,.88);align-items:center;justify-content:center;z-index:90}
-.gm-card{background:var(--box);border:1px solid var(--box-line);width:100%;
+.gm-card{background:var(--box);border:none;width:100%;
   max-width:380px;padding:30px 26px 26px;display:flex;flex-direction:column;
   align-items:center;gap:14px;text-align:center}
 .gm-T{width:26px;height:26px;display:block}
@@ -387,21 +391,21 @@ body.in-world.view-cards #zoom{display:none}
    Une colonne CENTRÉE : le T au-dessus, le nom, la définition, les traces.
    Bande au survol, liseré entre les lignes. Copié à l'identique depuis
    totehm.html — trois origines, quatre copies, jamais un partage. */
-.fm-card{background:var(--box);border:1px solid var(--box-line);width:100%;
+.fm-card{background:var(--box);border:none;width:100%;
   max-width:520px;padding:26px 22px 18px;display:flex;flex-direction:column;
   gap:10px;max-height:88vh}
 .fm-row{background:none;border:none;padding:13px 8px;cursor:pointer;display:flex;
   flex-direction:column;align-items:center;gap:0;text-align:center;color:#fff;width:100%;
   -webkit-tap-highlight-color:transparent;transition:background .12s}
 @media(hover:hover){.fm-row:hover{background:rgba(255,255,255,.05)}}
-.fm-row + .fm-row{border-top:1px solid rgba(255,255,255,.07)}
+.fm-row + .fm-row{}
 .fm-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
   text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px}
 .fm-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:19px;color:#fff;line-height:1.15}
 .fm-opts{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:8px}
 /* Une seule pastille dans tout le produit : bord fin, Space Mono, majuscules,
    .13em de tracking. Réutilisée ici et ailleurs. */
-.fm-opt{background:none;border:1px solid #3c3c3c;color:#b4b4b4;
+.fm-opt{background:rgba(255,255,255,.06);border:none;color:#b4b4b4;
   font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.13em;
   text-transform:uppercase;padding:3px 8px;line-height:1.6;white-space:nowrap;
   cursor:pointer;-webkit-tap-highlight-color:transparent;
@@ -445,11 +449,11 @@ body.in-world.view-cards #zoom{display:none}
 #conn-bar .dot{width:8px;height:8px;border-radius:50%;background:#888}
 #member-window{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.84);display:none;align-items:center;justify-content:center;padding:24px}
 #member-window.show{display:flex}
-.mw-card{background:#131316;border:1px solid #242429;max-width:360px;width:100%;padding:30px 24px;text-align:center;position:relative;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.mw-card{background:#131316;border:none;max-width:360px;width:100%;padding:30px 24px;text-align:center;position:relative;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .mw-card::-webkit-scrollbar{display:none}
 .mw-close{position:absolute;top:12px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:#b4b4b4;background:none;border:none;cursor:pointer;padding:0}
 .mw-close:hover{color:#fff}
-.mw-input{width:100%;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:6px 2px;caret-color:#fff;text-align:center;margin-bottom:10px}
+.mw-input{width:100%;background:none;border:none;outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:6px 2px;caret-color:#fff;text-align:center;margin-bottom:10px}
 .mw-input::placeholder{color:rgba(255,255,255,.33)}
 .mw-note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px;margin-top:6px}
 .mw-note.ok{color:#639922}.mw-note.no{color:#b06a9f}.mw-note.dim{color:#6d6d6d}

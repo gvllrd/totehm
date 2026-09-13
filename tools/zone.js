@@ -93,10 +93,29 @@ function boiteHTML(o){
     + (o.ouverte?'<button type="button" class="w-x" data-x="1" aria-label="Close">&times;</button>':'')
     +'</span>';
 }
-const ligne=(inner,cls,cols,rank,id)=>'<div class="habit timed '+(cls||'')+'"'
+/* ══ LE CLASSEMENT SE FAIT À DEUX FLÈCHES · 09/09/2026 ═══════════════
+   Le glissement au doigt ne marchait pas au téléphone, et un classement
+   qui rate une fois sur deux est pire que pas de classement : on ne sait
+   plus si on a bougé quelque chose.
+   Deux flèches encadrent le rang : ↑ monte d'un cran, ↓ descend d'un
+   cran. C'est tout. Ça marche au doigt, à la souris, au clavier, et ça
+   ne demande rien à personne — ni de viser, ni de tenir, ni d'attendre.
+   Effet de bord, et c'est un gain : plus rien ne capture le geste, donc
+   ON PEUT OUVRIR ET ÉDITER UNE BOÎTE EN MODE CLASSEMENT, exactement
+   comme en mode normal. Les deux modes ne s'excluent plus. */
+const rangHTML=(rank,id,prem,dern)=>'<span class="rk">'
+  +'<button type="button" class="rk-a" data-mv="up:'+esc(String(id))+'"'
+  +(prem?' disabled':'')+' aria-label="Move up">'
+  +'<svg viewBox="0 0 16 10" aria-hidden="true"><path d="M2 8 L8 2 L14 8"/></svg></button>'
+  +'<span class="rk-n">'+rank+'</span>'
+  +'<button type="button" class="rk-a" data-mv="down:'+esc(String(id))+'"'
+  +(dern?' disabled':'')+' aria-label="Move down">'
+  +'<svg viewBox="0 0 16 10" aria-hidden="true"><path d="M2 2 L8 8 L14 2"/></svg></button>'
+  +'</span>';
+const ligne=(inner,cls,cols,rank,id,prem,dern)=>'<div class="habit timed '+(cls||'')+'"'
   +(id?' data-row="'+esc(String(id))+'"':'')+'>'
   + tickHTML(cols)
-  + (ordering&&rank?'<span class="rank">'+rank+'</span>':'')
+  + (ordering&&rank?rangHTML(rank,id,prem,dern):'')
   +'<span class="h-body">'+inner+'</span></div>';
 
 /* ══ CE QUI EST OUVERT, ET CE QU'ON EST EN TRAIN DE CHOISIR ══════════
@@ -162,6 +181,9 @@ const plus=(q,k,id,mot)=>'<button type="button" class="dash'+(pkOn(q,k,id)?' on'
   +' data-pk="'+q+':'+k+':'+esc(String(id))+'">'+(pkOn(q,k,id)?'close':'+ '+mot)+'</button>';
 
 /* ══ LES TROIS VUES ══════════════════════════════════════════════════ */
+/* Combien de boîtes dans la vue en cours : c'est ce qui dit à la
+   dernière ligne que sa flèche ↓ n'a nulle part où aller. */
+let NB=0;
 function renderZone(){
   habIds();
   const box=$('habits'); if(!box)return;
@@ -176,22 +198,23 @@ function renderZone(){
       if(filterF && x.f!==filterF) return false;
       if(filterI && !intIds(x).includes(filterI)) return false;
       return true;});
-    h=list.map((x,k)=>vueHabitude(x,k)).join('');
+    NB=list.length; h=list.map((x,k)=>vueHabitude(x,k)).join('');
     if(!list.length)h+='<div class="void">'+((state.habits||[]).length
       ?'nothing matches this filter':'no habit yet')+'</div>';
     h+=ligne('<button type="button" class="add-box" data-add="h">+ <b>Add a Habit</b></button>','add');
   }else if(view==='objectives'){
-    h=TRIPS.map((t,k)=>vueObjectif(t,k)).join('');
+    NB=TRIPS.length; h=TRIPS.map((t,k)=>vueObjectif(t,k)).join('');
     if(!TRIPS.length)h+='<div class="void">'+(tripsLoaded?'no objective yet':'loading…')+'</div>';
     h+=ligne('<button type="button" class="add-box" data-add="t">+ <b>Add an Objective</b></button>','add');
   }else{
-    h=REPS.map((r,k)=>vueRepulsion(r,k)).join('');
+    NB=REPS.length; h=REPS.map((r,k)=>vueRepulsion(r,k)).join('');
     if(!REPS.length)h+='<div class="void">'+(tripsLoaded?'no repulsion yet':'loading…')+'</div>';
     h+=ligne('<button type="button" class="add-box" data-add="r">+ <b>Add a Repulsion</b></button>','add');
   }
 
-  box.innerHTML=(ordering
-    ? '<div class="ordbar">order by importance — the bot follows this order</div>':'')+h;
+  /* La bande « order by importance » a quitté le `innerHTML` : elle
+     défilait avec les boîtes. Elle est fixe, sous les trois carrés. */
+  box.innerHTML=h;
   if(change){ box.classList.remove('swap'); void box.offsetWidth; box.classList.add('swap'); }
   if(keep!=null&&sc)sc.scrollTop=keep;
   peintTraits();
@@ -246,7 +269,7 @@ function vueHabitude(x,k){
   if(ouverte&&pkOn('lien','r',x.id)) bas=lienPicker('r',x.id,
       rs.map(r=>String(r.id)), REPS.map(r=>({id:r.id,txt:r.text})), 'a new repulsion','r');
   return ligne(boiteHTML({kind:'h',id:x.id,titre:x.t,unit,minis,ouverte,haut,bas,tue:'Delete habit'}),
-    ouverte?'open':'', intCols(x), k+1, x.id);
+    ouverte?'open':'', intCols(x), k+1, x.id, k===0, k===NB-1);
 }
 
 /* ── UN OBJECTIF ─────────────────────────────────────────────────────
@@ -268,7 +291,7 @@ function vueObjectif(t,k){
     ? lienPicker('h',t.id, hs.map(x=>String(x.id)),
         (state.habits||[]).map(x=>({id:x.id,txt:x.t})), 'a new habit','h') : '';
   return ligne(boiteHTML({kind:'t',id:t.id,titre:t.text,unit,minis,ouverte,bas,tue:'Delete objective'}),
-    ouverte?'open':'', null, k+1, t.id);
+    ouverte?'open':'', null, k+1, t.id, k===0, k===NB-1);
 }
 
 /* ── UNE RÉPULSION ───────────────────────────────────────────────────
@@ -304,7 +327,7 @@ function vueRepulsion(r,k){
       + lienPicker('hr',r.id, hs.map(x=>String(x.id)),
         (state.habits||[]).map(x=>({id:x.id,txt:x.t})), 'a new habit','h') : '';
   return ligne(boiteHTML({kind:'r',id:r.id,titre:r.text,unit,minis,ouverte,bas,tue:'Delete repulsion'}),
-    ouverte?'open':'', null, k+1, r.id);
+    ouverte?'open':'', null, k+1, r.id, k===0, k===NB-1);
 }
 
 /* ══ LA COULEUR INTENTIONNELLE NE S'ÉTEINT PLUS · 09/09/2026 ═════════
@@ -453,13 +476,21 @@ function cable(box){
   if(cableFait)return; cableFait=true;
 
   box.addEventListener('click',async e=>{
-    const el=e.target.closest('[data-open],[data-add],[data-x],[data-pk],[data-int],'
+    /* ⚠️ TOUT `data-*` TRAITÉ PLUS BAS DOIT ÊTRE NOMMÉ ICI. La délégation
+       ne voit que ce que ce sélecteur attrape : `data-mv` manquait, donc
+       les deux flèches de classement ne faisaient rien du tout — le code
+       qui les traite existait et n'était jamais atteint. */
+    const el=e.target.closest('[data-open],[data-add],[data-x],[data-pk],[data-int],[data-mv],'
       +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill]');
     if(!el)return;
     const d=el.dataset;
 
-    if(d.open){ if(ordering)return; const p=d.open.split(':'); ouvrir(p[0],p[1]); return; }
-    if(d.add){ if(ordering)return; creer(d.add); return; }
+    /* ⚠️ ON PEUT OUVRIR UNE BOÎTE EN MODE CLASSEMENT · 09/09/2026.
+       Les deux gestes se disputaient le même doigt tant que classer était
+       un glissement ; avec deux flèches, il n'y a plus de conflit. */
+    if(d.mv){ const p=d.mv.split(':'); bouge(p[0],p[1]); return; }
+    if(d.open){ const p=d.open.split(':'); ouvrir(p[0],p[1]); return; }
+    if(d.add){ creer(d.add); return; }
     if(d.x!==undefined){ e.stopPropagation(); fermer(); return; }
     if(d.pk){ e.stopPropagation(); const p=d.pk.split(':'); pkSet(p[0],p[1],p[2]); return; }
 

@@ -35,7 +35,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--g-light);font-
 
 /* Ligne de saisie : plus de T avant l'input, aligné sur le rail comme les propositions */
 #obj-row{position:relative;display:flex;align-items:flex-start;min-height:44px;padding-top:4px}
-#obj-input{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;margin-right:34px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.35);color:#fff;font-family:'Quantico',sans-serif;font-size:15px;line-height:1.45;padding:6px 2px;outline:none;resize:none;overflow:hidden;min-height:32px;display:block}
+#obj-input{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;margin-right:34px;background:none;border:none;color:#fff;font-family:'Quantico',sans-serif;font-size:15px;line-height:1.45;padding:6px 2px;outline:none;resize:none;overflow:hidden;min-height:32px;display:block}
 #obj-input::placeholder{color:rgba(255,255,255,.45)}
 /* ══ L'OBJECTIF N'EST PLUS UNE RECHERCHE ══
    Un champ qui se vide après usage, c'est une barre Google : on tape, on
@@ -139,7 +139,7 @@ body.higher .higher-only{display:revert!important}
    Une colonne CENTRÉE : le T au-dessus, le nom, la définition, les traces.
    Bande au survol, liseré entre les lignes. Copié à l'identique depuis
    totehm.html — trois origines, quatre copies, jamais un partage. */
-.pk-card{background:#131316;border:1px solid #242429;width:100%;max-width:520px;
+.pk-card{background:#131316;border:none;width:100%;max-width:520px;
   padding:26px 22px 18px;display:flex;flex-direction:column;gap:10px;
   max-height:88vh;position:relative}
 /* La croix : sans elle on ne sortait de la fenêtre que par hasard. */
@@ -150,7 +150,7 @@ body.higher .higher-only{display:revert!important}
 .pk-x:hover{color:#fff}
 .pk-row{padding:13px 8px;display:flex;flex-direction:column;align-items:center;
   gap:0;text-align:center;color:#fff;width:100%}
-.pk-row + .pk-row{border-top:1px solid rgba(255,255,255,.07)}
+.pk-row + .pk-row{}
 .pk-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
   text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px}
 .pk-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:19px;
@@ -182,7 +182,7 @@ body.higher .higher-only{display:revert!important}
 #why .w-grab:hover i{background:rgba(255,255,255,.45)}
 #why.dragging .w-sheet{transition:none}
 #why .w-top{display:flex;justify-content:flex-end;padding:10px 14px 0;flex-shrink:0}
-#why .w-head{padding:4px 22px 14px;border-bottom:1px solid rgba(255,255,255,.14);flex-shrink:0}
+#why .w-head{padding:4px 22px 14px;flex-shrink:0}
 #why .w-title{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:#fff;line-height:1.35}
 #why .w-sub{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-top:5px}
 #why .w-head .p-score{display:inline-block;margin-top:9px;font-size:14px}
@@ -190,7 +190,7 @@ body.higher .higher-only{display:revert!important}
 #why .w-sec{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.55);margin:0 0 6px}
 #why .w-sec:not(:first-child){margin-top:20px}
 #why .w-p{font-family:var(--futura);font-weight:300;font-size:14px;line-height:1.75;color:#eef2fb}
-#why .w-src{display:block;font-family:var(--futura);font-weight:300;font-size:13px;line-height:1.6;color:#dfe6f6;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.1);text-decoration:none}
+#why .w-src{display:block;font-family:var(--futura);font-weight:300;font-size:13px;line-height:1.6;color:#dfe6f6;padding:7px 0;text-decoration:none}
 #why a.w-src:hover{color:#fff;text-decoration:underline}
 #why .w-ref{display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;color:rgba(255,255,255,.5);margin-top:3px}
 #why .w-none{font-family:var(--futura);font-weight:300;font-size:13px;color:rgba(255,255,255,.55);font-style:italic}
@@ -214,7 +214,7 @@ body.higher .higher-only{display:revert!important}
 body.ro #obj-input,body.ro #obj-locked,body.ro .p-add,body.ro .p-hi{display:none!important}
 .ro-obj{display:flex;flex-direction:column;gap:5px;padding:15px 0;
   margin-left:calc(var(--rl) + var(--rw) + 16px);margin-right:16px;
-  border-bottom:1px solid rgba(255,255,255,.07)}
+  }
 .ro-obj .ro-t{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:#fff;line-height:1.35}
 .ro-obj .ro-m{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;
   text-transform:uppercase;color:#8a8a8a}

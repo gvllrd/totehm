@@ -135,7 +135,7 @@ button{font:inherit;color:inherit}
 
 /* ── LA LIGNE D'AJOUT ────────────────────────────────────────────── */
 .add-row textarea{width:100%;background:none;border:none;
-  border-bottom:1px solid rgba(255,255,255,.15);outline:none;color:#fff;
+  outline:none;color:#fff;
   font-family:'Quantico',sans-serif;font-size:15px;line-height:1.5;
   padding:4px 2px;resize:none;overflow:hidden;caret-color:#fff}
 @keyframes t-pulse{0%,100%{opacity:1}50%{opacity:.18}}
@@ -149,12 +149,12 @@ button{font:inherit;color:inherit}
   calc(var(--rw) + 12px)}
 
 /* ── LA BOÎTE — une seule dans tout le produit ───────────────────── */
-.box{background:var(--box);border:1px solid var(--box-line);padding:16px 14px;
+.box{background:var(--box);border:none;padding:16px 14px;
   margin:10px 0 10px calc(var(--rw) + 12px)}
 
 /* ── LES SEPT, EN GRILLE ─────────────────────────────────────────── */
 .ints{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:1px;
-  background:var(--box-line);border:1px solid var(--box-line)}
+  background:var(--box-line);border:none}
 .int{background:var(--box);border:none;padding:12px 6px;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;gap:5px;
   -webkit-tap-highlight-color:transparent;transition:background .12s}
@@ -164,7 +164,7 @@ button{font:inherit;color:inherit}
 .int .tglyph{height:14px}
 
 /* ── LES SPOTS TROUVÉS ───────────────────────────────────────────── */
-.spot{border-top:1px solid rgba(255,255,255,.07);padding:12px 0}
+.spot{padding:12px 0}
 .spot:first-child{border-top:none}
 .s-name{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;color:#fff}
 .s-why{font-family:'Quantico',sans-serif;font-size:13px;color:#b4b4b4;
@@ -493,7 +493,7 @@ function askWhy(habit){
   d.className='box';
   d.innerHTML='<div class="lbl" style="margin:0 0 8px">why?</div>'
     +'<textarea class="line-input" rows="2" placeholder="in one sentence — or skip" '
-    +'style="text-align:left;border-image:none;border-bottom:1px solid rgba(255,255,255,.15)"></textarea>'
+    +'style="text-align:left;border-image:none;"></textarea>'
     +'<div class="answer"><button class="btn-sig" type="button">Save</button>'
     +'<button class="btn-sig" type="button" data-skip="1">Skip</button></div>';
   box.prepend(d);
@@ -625,9 +625,9 @@ function renderSpots(){
     '<div class="lbl">drop a place</div>'
   + '<div class="box">'
   +   '<input class="line-input" id="sp-name" placeholder="what happens there" maxlength="80" '
-  +     'style="text-align:left;border-image:none;border-bottom:1px solid rgba(255,255,255,.15)">'
+  +     'style="text-align:left;border-image:none;">'
   +   '<input class="line-input" id="sp-why" placeholder="why there — one line" maxlength="300" '
-  +     'style="text-align:left;border-image:none;border-bottom:1px solid rgba(255,255,255,.15);margin-top:10px">'
+  +     'style="text-align:left;border-image:none;margin-top:10px">'
   +   '<div class="lbl" style="margin:16px 0 6px 0">for which intention</div>'
   +   '<div class="ints">'+INTS.map(x=>
         '<button class="int'+(draft.intention===x.id?' on':'')+'" type="button" data-pick="'+x.id+'" '
@@ -659,7 +659,7 @@ function renderSpots(){
   + '<div class="box">'
   +   '<input class="line-input" id="sq" placeholder="a word, or nothing — then search" '
   +     'value="'+esc(searchQ)+'" '
-  +     'style="text-align:left;border-image:none;border-bottom:1px solid rgba(255,255,255,.15)">'
+  +     'style="text-align:left;border-image:none;">'
   +   '<div class="answer" style="margin-top:12px">'
   +     '<button class="btn-sig" id="sq-go" type="button">Search around me</button></div>'
   +   '<div id="sq-out" style="margin-top:10px">'
