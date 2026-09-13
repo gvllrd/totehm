@@ -572,19 +572,39 @@ relancer la requête avec les coordonnées. Le front fait le second
 | `spot_search(lat, lng, radius, q, intention, limit)` | les lieux du Club autour d'un point, pour la mini-app et pour `/spots` |
 | `add_wisdom_admin(uuid, text, intention)` · `add_objective_admin(uuid, text)` | poser une leçon ou un objectif **depuis Telegram**. `wisdom` et `objectives` sont protégées par RLS sur `auth.uid()` ; le bot n'a pas de session. `service_role` seul |
 
-### Le Trip — objectifs, habitudes, répulsions · maj 06/09/2026
+### Le Trip — objectifs, habitudes, répulsions · maj 13/09/2026
+
+**« Trip » est du VOCABULAIRE, pas une entité.** C'est un TRIPLET lu
+depuis n'importe quel angle :
+
+- depuis une habitude → elle + ses objectifs + ses répulsions
+- depuis un objectif → lui + ses habitudes + leurs répulsions
+- depuis une répulsion (trigger) → elle + les habitudes à faire à la
+  place + les objectifs qu'elles servent
+
+Le seul endroit en base où le mot est juste, c'est `my_trips()` : elle
+rend PLUSIEURS triplets, centrés sur les objectifs (plus `loose` et
+`done`). Les autres fonctions agissent sur UNE pièce : elles portent
+son nom.
 
 | Fonction | Rôle | Accès |
 |---|---|---|
 | `my_trips()` | **l'arbre entier en UN appel** : objectifs, leurs habitudes, les répulsions de chaque habitude | `authenticated` |
 | `repulsions_of(uuid,text)` | les répulsions d'une habitude, avec **toutes** les habitudes que chacune protège | `service_role` |
-| `trip_create(text,timestamptz)` → `uuid` | crée un objectif | `authenticated` |
-| `trip_rename(uuid,text)` · `trip_set_target(uuid,timestamptz)` | le renomme, pose sa deadline | `authenticated` |
-| `trip_close(uuid,text)` | ferme un objectif — `p_outcome='dropped'` → `status='abandoned',outcome='no'` ; sinon `achieved/yes`. Le vocabulaire de la contrainte `objectives_status_check` : `active,achieved,abandoned,converted` | `authenticated` |
+| `objective_create(text,timestamptz)` → `uuid` | crée un objectif — accepte `p_text=''` (draft, comme les autres pièces) | `authenticated` |
+| `objective_rename(uuid,text)` · `objective_set_target(uuid,timestamptz)` | le renomme, pose sa deadline | `authenticated` |
+| `objective_close(uuid,text)` | ferme un objectif — `p_outcome='dropped'` → `status='abandoned',outcome='no'` ; sinon `achieved/yes`. Vocabulaire de la contrainte `objectives_status_check` : `active,achieved,abandoned,converted` | `authenticated` |
+| `objective_link(uuid,text)` · `objective_unlink(uuid,text)` | **le lookup** habitude → objectif, via la table pivot `objective_habits` | `authenticated` |
 | `repulsion_set(text,text,text)` → `bigint` | crée une répulsion sur une habitude | `authenticated` |
 | `repulsion_retire(bigint)` | la désactive | `authenticated` |
 | `repulsion_link(bigint,text)` · `repulsion_unlink(bigint,text)` | **le lookup** : attache / détache une habitude | `authenticated` |
-| `habit_rename_links(text,text)` | suit un renommage d'habitude dans les deux tables | `authenticated` |
+| `habit_rename_links(text,text)` | suit un renommage d'habitude dans les trois tables de liens | `authenticated` |
+
+**Une porte future ouverte, pas encore construite.** Le TotehmBot pourra
+composer des affirmations neuro-linguistiques par notification à la
+fréquence de l'habitude, en lisant un triplet autour de n'importe quelle
+pièce. Ça demandera une fonction `trip_at(kind,id)` symétrique — on
+l'écrira le jour où le bot l'appellera, pas avant.
 
 **Aucune ne prend d'identité en paramètre** : toutes lisent `auth.uid()`.
 Une fonction qui prend l'utilisateur en argument attache une répulsion au

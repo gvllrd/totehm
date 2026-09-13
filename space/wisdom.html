@@ -2552,12 +2552,14 @@ async function cloudLoad(){
   const {data,error}=await sb.from('totehms').select('*').eq('user_id',me.id);
   if(error||!data||!data.length)return;
   const habits=[];const seen={};
-  /* ⚠️ `o` EST TRANSPORTÉ, PAS DÉDUIT. Il porte l'objectif que sert cette
-     habitude, et il est écrit par `habit_set_trip()` côté serveur. Le
-     reconstruire en `{t,f,i}` le jetait — et comme `cloudSave` réécrit
-     `steps` EN ENTIER, la liaison disparaissait à la frappe suivante.
-     Même piège que `totehms.bot` le 03/09 : un snapshot qui écrase tout
-     doit transporter tout ce qu'il écrase. */
+  /* ⚠️ `o` EST TRANSPORTÉ, PAS DÉDUIT. Il porte le PREMIER objectif que
+     sert cette habitude — celui que le bot lit encore. Le front le tient
+     à jour à chaque attache ou détache (`posePremier` → `save`), et le
+     snapshot `cloudSave` l'écrit dans `steps` en même temps que le reste.
+     Le reconstruire ici en `{t,f,i}` le jetait — et comme `cloudSave`
+     réécrit `steps` EN ENTIER, la liaison disparaissait à la frappe
+     suivante. Même piège que `totehms.bot` le 03/09 : un snapshot qui
+     écrase tout doit transporter tout ce qu'il écrase. */
   /* ⚠️ `is` EST TRANSPORTÉ AUSSI · 09/09/2026 — même piège que `o`, et il
      coûtait les SEPT INTENTIONS : `cloudSave` écrit `state.habits` en
      entier, donc la liste partait bien, mais la reconstruction ici ne
@@ -3224,9 +3226,9 @@ let wDirty=false, wTimer=null;
 
    `apres()` envoyait sans jamais attendre. Supprimer faisait donc :
      1. on retire l'objectif de la liste (immédiat, à l'écran)
-     2. on envoie `trip_close` (parti, pas arrivé)
+     2. on envoie `objective_close` (parti, pas arrivé)
      3. `fermer()` recharge l'arbre — et `my_trips` répond AVANT que
-        `trip_close` ait été commité.
+        `objective_close` ait été commité.
    Le serveur renvoyait donc l'objectif encore actif, et il réapparaissait
    sous les yeux. Rien n'était cassé : c'était une COURSE, et elle se
    gagnait presque toujours du mauvais côté.

@@ -2590,12 +2590,14 @@ async function cloudLoad(){
   const {data,error}=await sb.from('totehms').select('*').eq('user_id',me.id);
   if(error||!data||!data.length)return;
   const habits=[];const seen={};
-  /* ⚠️ `o` EST TRANSPORTÉ, PAS DÉDUIT. Il porte l'objectif que sert cette
-     habitude, et il est écrit par `habit_set_trip()` côté serveur. Le
-     reconstruire en `{t,f,i}` le jetait — et comme `cloudSave` réécrit
-     `steps` EN ENTIER, la liaison disparaissait à la frappe suivante.
-     Même piège que `totehms.bot` le 03/09 : un snapshot qui écrase tout
-     doit transporter tout ce qu'il écrase. */
+  /* ⚠️ `o` EST TRANSPORTÉ, PAS DÉDUIT. Il porte le PREMIER objectif que
+     sert cette habitude — celui que le bot lit encore. Le front le tient
+     à jour à chaque attache ou détache (`posePremier` → `save`), et le
+     snapshot `cloudSave` l'écrit dans `steps` en même temps que le reste.
+     Le reconstruire ici en `{t,f,i}` le jetait — et comme `cloudSave`
+     réécrit `steps` EN ENTIER, la liaison disparaissait à la frappe
+     suivante. Même piège que `totehms.bot` le 03/09 : un snapshot qui
+     écrase tout doit transporter tout ce qu'il écrase. */
   /* ⚠️ `is` EST TRANSPORTÉ AUSSI · 09/09/2026 — même piège que `o`, et il
      coûtait les SEPT INTENTIONS : `cloudSave` écrit `state.habits` en
      entier, donc la liste partait bien, mais la reconstruction ici ne
@@ -3262,9 +3264,9 @@ let wDirty=false, wTimer=null;
 
    `apres()` envoyait sans jamais attendre. Supprimer faisait donc :
      1. on retire l'objectif de la liste (immédiat, à l'écran)
-     2. on envoie `trip_close` (parti, pas arrivé)
+     2. on envoie `objective_close` (parti, pas arrivé)
      3. `fermer()` recharge l'arbre — et `my_trips` répond AVANT que
-        `trip_close` ait été commité.
+        `objective_close` ait été commité.
    Le serveur renvoyait donc l'objectif encore actif, et il réapparaissait
    sous les yeux. Rien n'était cassé : c'était une COURSE, et elle se
    gagnait presque toujours du mauvais côté.
@@ -3691,8 +3693,8 @@ async function creer(kind){
   if(!me){$('member-window').classList.add('show');
           if(typeof memberPaint==='function')memberPaint();return;}
   if(kind==='t'){
-    const {data,error}=await sb.rpc('trip_create',{p_text:'',p_target:null});
-    if(error){console.error('[totehm] trip_create:',error.message);return;}
+    const {data,error}=await sb.rpc('objective_create',{p_text:'',p_target:null});
+    if(error){console.error('[totehm] objective_create:',error.message);return;}
     TRIPS.unshift({id:data,text:'',target_at:null,days_left:null,habits:[]});
     wDirty=true; ouvrir('t',data); return;}
   /* ══ UNE RÉPULSION PROTÈGE QUELQUE CHOSE — C'EST SA DÉFINITION ══════
@@ -3764,8 +3766,8 @@ function detache(quoi,aId,bId){
 /* Écrire du neuf ET l'attacher, d'un seul geste. */
 async function neufEtAttache(quoi,srcId,txt){
   if(quoi==='o'){
-    const {data,error}=await sb.rpc('trip_create',{p_text:txt,p_target:null});
-    if(error){console.error('[totehm] trip_create:',error.message);return;}
+    const {data,error}=await sb.rpc('objective_create',{p_text:txt,p_target:null});
+    if(error){console.error('[totehm] objective_create:',error.message);return;}
     TRIPS.unshift({id:data,text:txt,target_at:null,days_left:null,habits:[]});
     attache('o',srcId,data);}
   else if(quoi==='r'){
@@ -3816,7 +3818,7 @@ function cable(box){
     if(d.unlink){ const p=d.unlink.split('|'), q=p[0].split(':');
       detache(q[0],q[1],p[1]); renderZone(); return; }
     if(d.nodate){ const t=tripOf(d.nodate); if(t){t.target_at=null;t.days_left=null;
-      apres(sb.rpc('trip_set_target',{p_trip:t.id,p_target:null})); wDirty=true;}
+      apres(sb.rpc('objective_set_target',{p_obj:t.id,p_target:null})); wDirty=true;}
       renderZone(); return; }
     if(d.kill){ const p=d.kill.split(':'); tue(p[0],p[1]); return; }
   });
@@ -3854,7 +3856,7 @@ function cable(box){
             apres(sb.rpc('habit_rename_links',{p_old:ancien,p_new:x.t}));}
           x.t0=x.t; }); }
       else if(p[0]==='t'){ const z=tripOf(p[1]); if(!z)return; z.text=v; wDirty=true;
-        differe('t:'+z.id,()=>apres(sb.rpc('trip_rename',{p_trip:z.id,p_text:z.text}))); }
+        differe('t:'+z.id,()=>apres(sb.rpc('objective_rename',{p_obj:z.id,p_text:z.text}))); }
       else { const r=repOf(p[1]); if(!r)return; r.text=v; wDirty=true;
         /* Un brouillon s'écrit en mémoire : il n'a pas encore de ligne en
            base, et `repulsion_set` sans habitude en créerait une invisible. */
@@ -3876,7 +3878,7 @@ function cable(box){
   box.addEventListener('change',e=>{
     if(e.target.dataset.date){ const t=tripOf(e.target.dataset.date); if(!t)return;
       const v=e.target.value; t.target_at = v ? v+'T00:00:00Z' : null;
-      apres(sb.rpc('trip_set_target',{p_trip:t.id,p_target:t.target_at}));
+      apres(sb.rpc('objective_set_target',{p_obj:t.id,p_target:t.target_at}));
       wDirty=true; }
   });
   box.addEventListener('keydown',e=>{
@@ -3911,7 +3913,7 @@ function tue(kind,id){
     TRIPS=TRIPS.filter(t=>String(t.id)!==String(id));
     (state.habits||[]).forEach(x=>{ const k=srv(x); if(k&&OBJ[k]){
       OBJ[k]=OBJ[k].filter(o=>o!==String(id)); posePremier(x);} });
-    apres(sb.rpc('trip_close',{p_trip:id,p_outcome:'dropped'})); }
+    apres(sb.rpc('objective_close',{p_obj:id,p_outcome:'dropped'})); }
   else { const r=repOf(id); pousse('r:'+id); wSlots.delete('r:'+id);
     REPS=REPS.filter(z=>String(z.id)!==String(id));
     if(r&&!r.brouillon)apres(sb.rpc('repulsion_retire',{p_id:Number(id)})); }

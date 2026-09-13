@@ -977,7 +977,7 @@ toujours du mauvais côté.
 
 ```
 1. on retire l'objectif de la liste          immédiat, à l'écran
-2. on envoie `trip_close`                    parti, PAS arrivé
+2. on envoie `objective_close`               parti, PAS arrivé
 3. `fermer()` recharge l'arbre               `my_trips` répond AVANT (2)
 4. le serveur renvoie l'objectif encore actif → il réapparaît
 ```
@@ -1020,8 +1020,9 @@ Les fonctions écrites le 04/09 (`trip_close`, `my_trips`,
 vocabulaire — `'done'`, `'dropped'`, `'closed'`, `'open'`. Aucun n'est
 accepté par la contrainte. Résultat, **mesuré en prod le 13/09** :
 
-- `trip_close` levait `objectives_outcome_check` à chaque appel. Le
-  front l'envoyait par `apres(sb.rpc('trip_close',…))` — une promesse
+- `trip_close` (renommée en `objective_close` le 13/09 — voir plus bas)
+  levait `objectives_outcome_check` à chaque appel. Le front
+  l'envoyait par `apres(sb.rpc('trip_close',…))` — une promesse
   dont l'erreur ne repartait qu'en `console.error`. Aucun retour
   utilisateur : la boîte disparaissait localement, l'objectif revenait
   au premier rechargement. **Aucune suppression n'a jamais abouti en
@@ -1358,6 +1359,34 @@ ligne, toujours. Pour agir ailleurs, utilise les options du programme
 Et on ne met **pas** `Bash(cd *)` en `allow` pour contourner : ça
 autoriserait n'importe quoi après le `&&`. La seule règle `cd` est une
 correspondance exacte, sans joker.
+
+### Trip est du VOCABULAIRE, pas une entité — 13/09/2026
+
+**Un Trip est un TRIPLET lu depuis n'importe quel angle** :
+
+- depuis une habitude → elle + ses objectifs + ses répulsions
+- depuis un objectif → lui + ses habitudes + leurs répulsions
+- depuis une répulsion (trigger) → elle + les habitudes à faire à la
+  place + les objectifs qu'elles servent
+
+Ce n'est pas une table, pas une fonction, pas une pièce. C'est un mode
+de lecture. Le seul endroit en base où le mot est juste, c'est
+`my_trips()` : elle rend PLUSIEURS triplets, centrés sur les objectifs,
+plus les habitudes non rattachées (`loose`) et les triplets terminés
+(`done`).
+
+Les autres fonctions agissent sur UNE pièce et portent son nom :
+`objective_create/rename/set_target/close`, `objective_link/unlink`,
+`repulsion_set/retire/link/unlink`. Le préfixe `trip_*` du 04/09 était
+un mauvais mot : cinq fonctions qui touchaient `objectives` déguisées
+en fonctions de « trip ». Renommées le 13/09.
+
+**Une porte future ouverte, pas encore construite.** Le TotehmBot
+composera des affirmations neuro-linguistiques par notification à la
+fréquence de l'habitude, en lisant un triplet autour de N'IMPORTE
+quelle pièce. Ça demandera une fonction `trip_at(kind,id)` symétrique
+— on l'écrira le jour où le bot l'appellera, pas avant. Le mot Trip
+n'est pas réservé, il attend ce moment-là.
 
 ### Le Trip se lit depuis n'importe quelle boîte — 06/09/2026
 
