@@ -1001,6 +1001,63 @@ sur 7 tombent ; avec, zéro.
 **La règle : un faux serveur qui répond instantanément ne prouve rien
 sur l'ordre des choses.** Toute panne d'ordonnancement lui échappe.
 
+### Le vocabulaire de la contrainte — 13/09/2026
+
+« La suppression ne marche pas. » Le 09/09 c'était une course, on a
+posé `EN_VOL` et `await calme()`. Le 13/09 c'était l'autre moitié, et
+elle traînait depuis LE JOUR MÊME où le trip a été écrit : **la base
+refusait chaque écriture, et personne ne l'entendait.**
+
+`objectives` porte deux contraintes CHECK depuis longtemps :
+
+```
+status  ∈ {'active','achieved','abandoned','converted'}
+outcome ∈ {'yes','no', NULL}
+```
+
+Les fonctions écrites le 04/09 (`trip_close`, `my_trips`,
+`higherself_state`, `add_objective_admin`) parlaient un autre
+vocabulaire — `'done'`, `'dropped'`, `'closed'`, `'open'`. Aucun n'est
+accepté par la contrainte. Résultat, **mesuré en prod le 13/09** :
+
+- `trip_close` levait `objectives_outcome_check` à chaque appel. Le
+  front l'envoyait par `apres(sb.rpc('trip_close',…))` — une promesse
+  dont l'erreur ne repartait qu'en `console.error`. Aucun retour
+  utilisateur : la boîte disparaissait localement, l'objectif revenait
+  au premier rechargement. **Aucune suppression n'a jamais abouti en
+  neuf jours.**
+- `my_trips` filtrait `not in ('done','dropped','closed')` — jamais
+  atteignable — donc TOUS les objectifs remontaient comme actifs, y
+  compris ceux qu'on croyait fermés.
+- `add_objective_admin` insérait avec `status='open'` — refus. Toute
+  pose d'objectif depuis Telegram échouait aussi.
+
+Aligné le 13/09 par `20260913140000_supprimer_un_objectif_agit_vraiment.sql` :
+`dropped → abandoned/no`, `done → achieved/yes`, `open → active`. On
+touche les fonctions, pas la contrainte : une contrainte est la loi du
+produit, la relâcher c'est accepter demain n'importe quel texte
+parasite dans une colonne qu'un rapport de progression lira.
+
+**Les règles qui en sortent :**
+
+- **Un `create or replace function` qui écrit une valeur non prévue
+  par un CHECK ne lève pas à la création.** Il ne lève qu'à
+  l'exécution, et seulement quand une donnée essaie de passer. Un
+  test à froid, sans donnée, ne trouve rien. La preuve d'une écriture
+  se prend en INSÉRANT une ligne — en base, avec la session du
+  membre — pas en compilant la fonction.
+- **`apres()` avale les erreurs.** Elle log, pas plus. Une écriture
+  qu'on envoie par `apres()` sans jamais interroger son retour est
+  **structurellement invisible** quand elle échoue. La ligne locale
+  disparaît, la base ne bouge pas, le membre voit ce qu'il croit être
+  une suppression. Toute écriture dont le SUCCÈS conditionne la vue
+  suivante doit être testée en base, pas seulement en console.
+- **Après tout rename ou ajout de status, grepper `pg_constraint`.**
+  Comme pour `pg_proc.prosrc` après un rename de table (bot, 24/08) :
+  une contrainte n'apparaît pas dans le corps d'une fonction, elle
+  garde son vocabulaire dans son coin, et le jour où les deux ne se
+  parlent plus le produit s'arrête sans un mot.
+
 ### La couleur intentionnelle ne s'éteint plus — 09/09/2026
 
 Il y a eu deux dégradés successifs sur les traits d'intention — par le

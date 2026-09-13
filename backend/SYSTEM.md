@@ -580,7 +580,7 @@ relancer la requête avec les coordonnées. Le front fait le second
 | `repulsions_of(uuid,text)` | les répulsions d'une habitude, avec **toutes** les habitudes que chacune protège | `service_role` |
 | `trip_create(text,timestamptz)` → `uuid` | crée un objectif | `authenticated` |
 | `trip_rename(uuid,text)` · `trip_set_target(uuid,timestamptz)` | le renomme, pose sa deadline | `authenticated` |
-| `trip_close(uuid,text)` | le sort de la liste (`done`/`dropped`/`closed`) | `authenticated` |
+| `trip_close(uuid,text)` | ferme un objectif — `p_outcome='dropped'` → `status='abandoned',outcome='no'` ; sinon `achieved/yes`. Le vocabulaire de la contrainte `objectives_status_check` : `active,achieved,abandoned,converted` | `authenticated` |
 | `repulsion_set(text,text,text)` → `bigint` | crée une répulsion sur une habitude | `authenticated` |
 | `repulsion_retire(bigint)` | la désactive | `authenticated` |
 | `repulsion_link(bigint,text)` · `repulsion_unlink(bigint,text)` | **le lookup** : attache / détache une habitude | `authenticated` |
