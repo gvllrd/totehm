@@ -3,128 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Higher — Totehm</title>
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Bebas+Neue&family=Montserrat:ital,wght@0,600;1,900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<title>Higher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Montserrat:ital,wght@1,900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#5a5a5a;--bg:#000;--navy:#333366;--rep:#743169;--blue:#36498c;
-  --futura:'Futura','Jost',sans-serif;
+  --coral:#fbd5ca;--g-mid:#909090;--g-dark:#606060;--bg:#000;--navy:#333366;--rep:#743169;
+  --q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
   --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
-  --tile-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%2336498c'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
-  --tile-full:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Crect width='44' height='44' fill='%23333366'/%3E%3Ccircle cx='22' cy='0' r='6' fill='%23000000'/%3E%3Ccircle cx='22' cy='44' r='6' fill='%23000000'/%3E%3Ccircle cx='0' cy='22' r='6' fill='%23000000'/%3E%3Ccircle cx='44' cy='22' r='6' fill='%23000000'/%3E%3C/svg%3E");
-  --tile-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23743169'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--bg);min-height:100%;-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
-html{scroll-snap-type:y mandatory}
-body{display:flex;flex-direction:column;align-items:center;min-height:100vh;overflow-y:auto}
+html,body{background:var(--bg);min-height:100%;-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;padding:7vh 22px 4vh;gap:5vh}
 .hide{display:none!important}
 
-/* SECTIONS : hero (atterrissage) + context (vidéo de marque) + footer (no social) */
-.hero,.context{width:100%;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;scroll-snap-align:start;scroll-snap-stop:always;position:relative}
-.hero{padding:7vh 22px 4vh}
-.context{padding:5vh 22px}
-.ctx-down{margin-top:4vh;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;-webkit-tap-highlight-color:transparent}
-.ctx-label{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:#b0b0b0;transition:color .15s ease}
-.ctx-down:hover .ctx-label{color:#fff}
-.chev{width:22px;height:22px;color:var(--g-mid);transition:color .15s ease}
-.ctx-down:hover .chev,.ctx-up:hover .chev{color:#fff}
-.ctx-up{position:absolute;top:22px;left:50%;transform:translateX(-50%);background:none;border:none;cursor:pointer;padding:8px 14px;-webkit-tap-highlight-color:transparent}
-.ctx-up .chev{width:26px;height:26px}
-.ctx-vid{height:5cm;width:auto;max-width:84vw;display:block;background:#000;margin-bottom:3vh}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
-.bob{animation:bob 1.8s ease-in-out infinite}
-@media(prefers-reduced-motion:reduce){.bob{animation:none}html,body{scroll-behavior:auto}}
-
-.slogan{width:min(52vw,200px);margin-bottom:13px}
+.slogan{width:min(52vw,200px)}
 .slogan svg{display:block;width:100%;height:auto}
-.tagline{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--g-mid);letter-spacing:0;text-align:center;margin-bottom:5vh}
-.realwrap{margin-top:6vh;display:flex;justify-content:center}
-.real{width:80px;height:auto;display:block;opacity:1;filter:grayscale(0)}
-.real.color{filter:none;opacity:1;width:85px;animation:paper-float 9s ease-in-out infinite}
-@keyframes paper-float{
-  0%{transform:translate(0,0) rotate(0deg)}
-  25%{transform:translate(3px,-4px) rotate(1deg)}
-  50%{transform:translate(-2px,3px) rotate(-1deg)}
-  75%{transform:translate(4px,2px) rotate(.6deg)}
-  100%{transform:translate(0,0) rotate(0deg)}
-}
-@media(prefers-reduced-motion:reduce){.real.color{animation:none}}
-
-/* boutons de marque */
-.btn-sig{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
-.higher-inline{height:1.5em;width:auto;vertical-align:-.32em;display:inline-block;margin:0 .04em}
-.wm-totehm{font-family:'Montserrat',sans-serif;font-weight:600;font-style:normal;color:#fff;letter-spacing:.16em;margin-right:-.16em}
+.tagline{font-family:var(--q);font-weight:400;font-size:14px;color:var(--g-mid);letter-spacing:0;text-align:center}
+nav{display:flex;flex-direction:column;align-items:center;gap:12px}
+.btn-sig{font-family:var(--q);font-weight:400;font-size:14px;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
 @media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
 .btn-sig:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
-.wm-frame{background:var(--navy);padding:0 3px;margin:0 1px;color:#fff}
-.btn-coral{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:var(--coral);background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
-@media(hover:hover){.btn-coral:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
-.btn-coral:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
-.btn-back{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:none;padding:0 2px;line-height:1.4;-webkit-tap-highlight-color:transparent;transition:color .15s ease,background .15s ease}
-.btn-back:hover,.btn-back:active{color:#fff;background:var(--rep)}
-
-nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max-width:540px}
-.menu-row{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
-.menu-gap{width:100%;height:16px}
-.line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:none;outline:none;border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:var(--coral);min-width:230px}
-.note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px;text-align:center}
-.note.ok{color:#639922}.note.no{color:var(--rep)}.note.dim{color:var(--g-dark)}
-
-/* FULL-SCREEN perforé : résultat Decode */
-.fs-perf{position:fixed;inset:0;z-index:80;background:var(--navy);border:11px solid transparent;border-image-source:var(--tile-full);border-image-slice:11;border-image-repeat:round;display:none;flex-direction:column;align-items:center;justify-content:center;padding:60px 30px 40px}
-.fs-perf.show{display:flex}
-.fs-perf .fs-back{position:fixed;top:16px;left:16px;z-index:82}
-.fs-msg{font-family:'Quantico',sans-serif;font-weight:400;font-size:clamp(18px,4.4vw,26px);color:#fff;line-height:1.55;text-align:center;max-width:640px;font-style:italic;white-space:pre-wrap;overflow-y:auto;max-height:78vh}
-
-/* LUXURY : sous-titre + défilement horizontal logos */
-.lux-block{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
-.brand-subtitle{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.22em;color:var(--g-dark);text-align:center}
-.brand-scroll{display:flex;gap:18px;overflow-x:auto;padding:0 6px 12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;width:100%;max-width:380px;justify-content:center}
-.brand-scroll::-webkit-scrollbar{display:none}
-.brand-logo{flex:0 0 auto;width:64px;height:64px;object-fit:contain;filter:none;scroll-snap-align:center;border-radius:0;transition:filter .2s}
-.brand-logo:hover,.brand-logo:active{filter:brightness(1.25)}
-
-/* STREETWEAR : sous-titre + image support */
-.sw-block{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
-#sw-collection{display:none;flex-direction:column;align-items:center;gap:3px;padding-top:2px}
-#sw-col-name{font-family:'Quantico',sans-serif;font-size:13px;color:var(--coral);letter-spacing:.04em}
-#sw-col-desc{font-family:var(--futura);font-size:11px;color:var(--g-mid);text-align:center;max-width:280px;line-height:1.4}
-#sw-col-sold{font-family:'Space Mono',monospace;font-size:10px;color:var(--g-dark);letter-spacing:.12em;text-transform:uppercase}
-
-
-/* NO SOCIAL MEDIA footer */
-.no-social-wrap{width:100%;display:flex;justify-content:center;padding:6vh 22px 5vh}
-.no-social-img{width:min(72vw,280px);height:auto;display:block;opacity:.7}
-
+.higher-inline{height:1.5em;width:auto;vertical-align:-.32em;display:inline-block;margin:0 .04em}
+.brand-get{color:var(--coral)}
 @media(max-width:600px){.slogan{width:min(60vw,185px)}.tagline{font-size:13px}}
 
-/* La barre de recherche : box rectangulaire pleine #626283, pas la tuile
-   perforee navy des boutons. `border-image:none` est obligatoire — sans lui
-   la tuile heritee de .line-input reste peinte PAR-DESSUS le fond. */
-#decode-input{background:#626283;border:6px solid #626283;border-image:none;
-  color:#fff;caret-color:#fff}
-#decode-input::placeholder{color:rgba(255,255,255,.55)}
-#brand-sub{display:none;flex-direction:column;align-items:center;gap:8px}
-.brand-sub-logo{height:3.5em;width:auto;vertical-align:-.9em;display:inline-block}
-.brand-get{color:var(--coral)}
-.brand-my{font-family:'Quantico',sans-serif;font-weight:400}
-#conn-bar{position:fixed;top:14px;left:16px;z-index:85;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
+/* Member connect bar */
+#conn-bar{position:fixed;top:14px;left:16px;z-index:85;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:var(--q);font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
 #conn-bar:hover{color:#fff}
-#conn-bar .dot{width:8px;height:8px;border-radius:50%;background:#888}
+#conn-bar .dot{width:8px;height:8px;border-radius:50%;background:#888;transition:background .3s}
+#conn-bar .dot.in{background:#639922}
+
+/* Member window */
 #member-window{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.84);display:none;align-items:flex-start;justify-content:center;padding:max(44px,8dvh) 24px 24px}
 #member-window.show{display:flex}
-.mw-card{background:#131316;border:none;max-width:360px;width:100%;padding:30px 24px;text-align:center;position:relative;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.mw-card::-webkit-scrollbar{display:none}
-.mw-close{position:absolute;top:12px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:#b4b4b4;background:none;border:none;cursor:pointer;padding:0}
+.mw-card{background:#131316;max-width:360px;width:100%;padding:30px 24px;text-align:center;position:relative;max-height:88vh;overflow-y:auto;overscroll-behavior:contain}
+.mw-close{position:absolute;top:12px;right:14px;font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:#b4b4b4;background:none;border:none;cursor:pointer;padding:0}
 .mw-close:hover{color:#fff}
-.mw-input{width:100%;background:none;border:none;outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:6px 2px;caret-color:#fff;text-align:center;margin-bottom:10px}
+.mw-input{width:100%;background:none;border:none;outline:none;color:#fff;font-family:var(--q);font-weight:400;font-size:15px;padding:6px 2px;caret-color:#fff;text-align:center;margin-bottom:10px}
 .mw-input::placeholder{color:rgba(255,255,255,.33)}
-.mw-note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px;margin-top:6px}
+.mw-note{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px;margin-top:6px}
 .mw-note.ok{color:#639922}.mw-note.no{color:#b06a9f}.mw-note.dim{color:#6d6d6d}
-.mw-who{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:#fff;margin-bottom:4px}
-.mw-mail{font-family:'Space Mono',monospace;font-size:9px;color:#6d6d6d;margin-bottom:12px;word-break:break-all}
-.mw-signout{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#6d6d6d;background:none;border:none;cursor:pointer;padding:2px 0;margin-top:8px}
+.mw-who{font-family:var(--q);font-weight:700;font-size:16px;color:#fff;margin-bottom:4px}
+.mw-mail{font-family:var(--mono);font-size:9px;color:#6d6d6d;margin-bottom:12px;word-break:break-all}
+.mw-signout{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#6d6d6d;background:none;border:none;cursor:pointer;padding:2px 0;margin-top:8px}
 .mw-signout:hover{color:#fff}
 </style>
 </head>
@@ -144,85 +67,16 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
   </defs>
 </svg>
 
-<section class="hero" id="hero">
 <div class="slogan"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></div>
-<div class="tagline">OWN/YOUR/TIME&nbsp;&nbsp;&nbsp;NOW:WON&nbsp;&nbsp;&nbsp;<span id="tag-loc">WRLD</span></div>
+<div class="tagline">OWN/YOUR/TIME&nbsp;&nbsp;&nbsp;NOW:WON&nbsp;&nbsp;&nbsp;WRLD</div>
 
 <nav>
-  <div id="menu-main" style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%">
-
-    <!-- 1 : Streetwear -->
-    <div class="sw-block">
-      <a class="btn-sig" href="streetwear.html">Create my Totehm Streetwear Cloth</a>
-      <div id="sw-collection">
-        <div id="sw-col-name"></div>
-        <div id="sw-col-desc"></div>
-        <div id="sw-col-sold"></div>
-      </div>
-    </div>
-
-    <!-- 2 : Luxury -->
-    <div class="lux-block">
-      <a class="btn-sig" href="luxury.html">Totehmize my Cloth &amp; stuff</a>
-      <span class="brand-subtitle">BRAND WE TOTEHMIZE</span>
-      <div class="brand-scroll">
-        <img src="assets/img/hermes.jpg" alt="Hermès" class="brand-logo">
-        <img src="assets/img/louis_vuitton.jpg" alt="Louis Vuitton" class="brand-logo">
-        <img src="assets/img/gucci.jpg" alt="Gucci" class="brand-logo">
-      </div>
-    </div>
-
-    <div class="menu-row">
-      <button class="btn-sig" id="decode-btn">Decode a Totehm Cloth</button>
-      <input class="line-input hide" id="decode-input" maxlength="40" placeholder="ex: 0.Test">
-      <div class="note dim hide" id="decode-note"></div>
-    </div>
-
-    <div class="menu-gap"></div>
-
-    <div class="menu-row">
-      <button class="btn-sig" id="email-btn">Email for dope news</button>
-      <input class="line-input hide" id="email-input" type="email" maxlength="120" placeholder="your@email">
-      <div class="note dim hide" id="email-note"></div>
-    </div>
-
-  </div>
+  <a class="btn-sig" href="https://www.totehm.space"><span class="brand-get">Get</span> <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></a>
+  <a class="btn-sig" href="vitrine.html">Higher × Champion 2026</a>
+  <a class="btn-sig" href="https://figher.club">Figher Club</a>
 </nav>
 
-<div class="realwrap"><img src="assets/img/totehm_logo.png" alt="TOTEHM" class="real" id="real-img"></div>
-  
-  <!-- accès au contexte de marque -->
-  <button class="ctx-down" id="ctx-down" aria-label="Think same but opposite">
-    <span class="ctx-label">Think same but opposite</span>
-    <svg class="chev bob" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-  </button>
-</section>
-
-<!-- SECTION CONTEXTE : vidéo de marque -->
-<section class="context" id="context">
-  <button class="ctx-up" id="ctx-up" aria-label="Remonter">
-    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
-  </button>
-  <video class="ctx-vid" id="ctx-vid" playsinline muted controls preload="none"></video>
-  <!-- Dope branding : juste sous la vidéo -->
-  <button class="btn-sig" id="brand-btn">Experience our dope branding</button>
-  <div id="brand-sub">
-    <a class="btn-sig" href="https://www.totehm.com"><span class="brand-get">Get</span> <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></a>
-    <a class="btn-sig" href="https://www.totehm.space"><span class="brand-my">My</span> <img src="assets/img/totehm_logo.png" alt="TOTEHM" class="brand-sub-logo"></a>
-  </div>
-</section>
-
-<!-- NO SOCIAL MEDIA -->
-<div class="no-social-wrap">
-  <img src="assets/img/no_social_media.jpg" alt="No Social Media" class="no-social-img">
-</div>
-
-<!-- FULL-SCREEN : résultat Decode -->
-<div class="fs-perf" id="decode-fs">
-  <button class="btn-back fs-back" id="decode-back">Back in Time</button>
-  <div class="fs-msg" id="decode-msg"></div>
-</div>
-
+<!-- MEMBER SPACE (adapté : login OTP simple, sans liste de cloths) -->
 <button id="conn-bar" type="button" aria-label="member space"><span class="dot"></span>Guest</button>
 <div id="member-window">
   <div class="mw-card">
@@ -239,119 +93,44 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
     </div>
   </div>
 </div>
+
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
+const sb = createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
 const $=id=>document.getElementById(id);
-const SBURL='https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/higher_boutique/';
 
-window.addEventListener('pageshow',e=>{
-  if(!e.persisted)return;
-  $('decode-fs').classList.remove('show');
-});
-
-function morph(btn,input,note){btn.onclick=()=>{btn.classList.add('hide');input.classList.remove('hide');if(note){note.classList.remove('hide');}setTimeout(()=>input.focus(),100);};}
-
-/* DECODE a Totehm Cloth */
-morph($('decode-btn'),$('decode-input'),$('decode-note'));
-$('decode-input').addEventListener('keydown',async(e)=>{
+let me=null,mbEmail='';
+function paint(){
+  $('conn-bar').innerHTML='<span class="dot'+(me?' in':'')+'"></span>'+(me?(me.email||'').split('@')[0]:'Guest');
+  $('mw-out-state').style.display=me?'none':'';
+  $('mw-in-state').style.display=me?'':'none';
+  if(me){$('mw-who').textContent=(me.email||'').split('@')[0];$('mw-mail').textContent=me.email||'';}
+}
+$('conn-bar').onclick=()=>$('member-window').classList.add('show');
+$('mw-close').onclick=()=>$('member-window').classList.remove('show');
+$('member-window').addEventListener('click',e=>{if(e.target===$('member-window'))$('member-window').classList.remove('show');});
+$('mw-email').addEventListener('keydown',async e=>{
   if(e.key!=='Enter')return;
-  const v=$('decode-input').value.trim();const note=$('decode-note');
-  if(v.length<2){note.className='note dim';note.textContent='name of the cloth';return;}
-  note.className='note dim';note.textContent='decoding…';
-  const {data,error}=await sb.from('totehm_clothes').select('name,message').ilike('name',v).limit(1);
-  if(error){note.className='note dim';note.textContent='try again';return;}
-  if(data&&data.length){
-    note.textContent='';
-    $('decode-msg').textContent='"'+data[0].message+'"';
-    $('decode-fs').classList.add('show');
-  }else{
-    note.className='note no';note.textContent='no Totehm Cloth by that name';
-  }
+  const v=$('mw-email').value.trim(),note=$('mw-note');
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){note.className='mw-note no';note.textContent='invalid email';return;}
+  note.className='mw-note dim';note.textContent='sending…';
+  const{error}=await sb.auth.signInWithOtp({email:v,options:{shouldCreateUser:true}});
+  if(error){note.className='mw-note no';note.textContent='try again in a minute';return;}
+  mbEmail=v;note.className='mw-note ok';note.textContent='code sent — check your email';
+  $('mw-code').style.display='';setTimeout(()=>$('mw-code').focus(),80);
 });
-$('decode-back').onclick=()=>{$('decode-fs').classList.remove('show');};
-
-/* EXPERIENCE OUR BRANDING */
-$('brand-btn').onclick=()=>{$('brand-btn').classList.add('hide');$('brand-sub').style.display='flex';};
-
-/* EMAIL for dope news */
-morph($('email-btn'),$('email-input'),$('email-note'));
-$('email-input').addEventListener('keydown',async(e)=>{
-  if(e.key!=='Enter')return;
-  const v=$('email-input').value.trim();const note=$('email-note');
-  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){note.className='note no';note.textContent='invalid email';return;}
-  note.className='note dim';note.textContent='…';
-  const {error}=await sb.from('subscribers').insert({email:v});
-  if(error){note.className= error.code==='23505'?'note ok':'note no';note.textContent= error.code==='23505'?'already in':'try again';return;}
-  note.className='note ok';note.textContent="you're in";$('email-input').disabled=true;
+$('mw-code').addEventListener('input',async()=>{
+  const t=$('mw-code').value.trim(),note=$('mw-note');
+  if(t.length!==6)return;
+  note.className='mw-note dim';note.textContent='verifying…';
+  const{error}=await sb.auth.verifyOtp({email:mbEmail,token:t,type:'email'});
+  if(error){note.className='mw-note no';note.textContent='wrong code';return;}
+  note.textContent='';$('mw-code').value='';$('mw-code').style.display='none';$('mw-email').value='';
+  $('member-window').classList.remove('show');
 });
-
-/* CONTEXTE DE MARQUE */
-(function(){
-  const ctx=$('context'),hero=$('hero'),v=$('ctx-vid');
-  let vloaded=false;
-  const loadVid=()=>{ if(!vloaded){ v.src=SBURL+'same_but_opposite.mp4'; vloaded=true; } };
-  $('ctx-down').addEventListener('click',()=>{ loadVid(); v.muted=false; ctx.scrollIntoView({behavior:'smooth'}); v.play().catch(()=>{}); });
-  $('ctx-up').addEventListener('click',()=>{ hero.scrollIntoView({behavior:'smooth'}); });
-  const io=new IntersectionObserver(entries=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting){ loadVid(); v.play().catch(()=>{}); }
-      else{ v.pause(); }
-    });
-  },{threshold:0.55});
-  io.observe(ctx);
-})();
-
-(async()=>{
-  try{
-    const {data:col,error}=await sb.from('collections').select('id,slug,description').eq('active',true).order('created_at',{ascending:false}).limit(1).maybeSingle();
-    if(error||!col)return;
-    const {data:rows}=await sb.from('totehm_cloth_support').select('claimed').eq('collection_id',col.id).eq('active',true);
-    const sold=(rows||[]).reduce((s,r)=>s+(r.claimed||0),0);
-    document.getElementById('sw-col-name').textContent=col.slug||'';
-    document.getElementById('sw-col-desc').textContent=col.description||'';
-    document.getElementById('sw-col-sold').textContent=`${sold} pièces vendues`;
-    document.getElementById('sw-collection').style.display='flex';
-  }catch(_){}
-})();
-
-/* ══ MEMBER SPACE ══ */
-(()=>{
-  let me=null,mbEmail='';
-  function mbPaint(){
-    $('conn-bar').innerHTML='<span class="dot" style="background:'+(me?'#639922':'#888')+'"></span>'+(me?(me.email||'').split('@')[0]:'Guest');
-    $('mw-out-state').style.display=me?'none':'';
-    $('mw-in-state').style.display=me?'':'none';
-    if(me){$('mw-who').textContent=(me.email||'').split('@')[0];$('mw-mail').textContent=me.email||'';}
-  }
-  $('conn-bar').onclick=()=>$('member-window').classList.add('show');
-  $('mw-close').onclick=()=>$('member-window').classList.remove('show');
-  $('member-window').addEventListener('click',e=>{if(e.target===$('member-window'))$('member-window').classList.remove('show');});
-  $('mw-email').addEventListener('keydown',async e=>{
-    if(e.key!=='Enter')return;
-    const v=$('mw-email').value.trim(),note=$('mw-note');
-    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){note.className='mw-note no';note.textContent='invalid email';return;}
-    note.className='mw-note dim';note.textContent='sending…';
-    const {error}=await sb.auth.signInWithOtp({email:v,options:{shouldCreateUser:true}});
-    if(error){note.className='mw-note no';note.textContent='try again in a minute';return;}
-    mbEmail=v;note.className='mw-note ok';note.textContent='code sent — check your email';
-    $('mw-code').style.display='';setTimeout(()=>$('mw-code').focus(),80);
-  });
-  $('mw-code').addEventListener('input',async()=>{
-    const t=$('mw-code').value.trim(),note=$('mw-note');
-    if(t.length!==6)return;
-    note.className='mw-note dim';note.textContent='verifying…';
-    const {error}=await sb.auth.verifyOtp({email:mbEmail,token:t,type:'email'});
-    if(error){note.className='mw-note no';note.textContent='wrong code';return;}
-    note.textContent='';$('mw-code').value='';$('mw-code').style.display='none';$('mw-email').value='';
-    $('member-window').classList.remove('show');
-  });
-  $('mw-signout').onclick=async()=>{await sb.auth.signOut();$('member-window').classList.remove('show');};
-  sb.auth.onAuthStateChange(async()=>{
-    const {data:{session}}=await sb.auth.getSession();me=session?.user||null;mbPaint();
-  });
-  sb.auth.getSession().then(({data:{session}})=>{me=session?.user||null;mbPaint();});
-})();
+$('mw-signout').onclick=async()=>{await sb.auth.signOut();$('member-window').classList.remove('show');};
+sb.auth.onAuthStateChange(async()=>{const{data:{session}}=await sb.auth.getSession();me=session?.user||null;paint();});
+sb.auth.getSession().then(({data:{session}})=>{me=session?.user||null;paint();});
 </script>
 </body>
 </html>
