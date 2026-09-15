@@ -27,10 +27,16 @@ Chaque remplacement est ancré sur un repère qui doit exister EXACTEMENT
 une fois. Si `totehm.html` a bougé, le script s'arrête et dit lequel, au
 lieu de coller du code à côté de sa place. Il n'écrit qu'à la fin.
 """
+# ⚠️ LE RÉSEAU SOCIAL VIT DANS `com/` DEPUIS LE SWAP DU 15/09/2026.
+#    Le nom du dossier ne dit PLUS ce qu'il sert : `com/` = le Totehm,
+#    `space/` = le branding. Le mapping Vercel n'a pas bougé (projet com
+#    -> dossier com), donc ce sont les URL publiques qui ont changé de
+#    rôle. Lire CLAUDE.md § « L'architecture technique » avant de
+#    déplacer quoi que ce soit.
 import io, os, sys
 
 SC = os.path.dirname(os.path.abspath(__file__)) + '/'
-SRC = SC + '../space/totehm.html'
+SRC = SC + '../com/totehm.html'
 
 JUMEAUX = [
     dict(nom='wisdom.html', titre='TOTEHM — my wisdom',
@@ -434,7 +440,7 @@ for j in JUMEAUX:
     out = fabrique(src, j)
     audit(out, j['nom'])
     audit_noeuds(out, j['nom'])
-    chemin = SC + '../space/' + j['nom']
+    chemin = SC + '../com/' + j['nom']
     io.open(chemin, 'w', encoding='utf-8').write(out)
     print('  %-16s %d octets' % (j['nom'], len(out.encode('utf-8'))))
 print('\nles deux jumeaux sont derives de totehm.html')

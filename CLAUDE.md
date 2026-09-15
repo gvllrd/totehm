@@ -52,14 +52,51 @@ déjà à la question.
 
 ## L'architecture technique
 
+### ⚠️ LE SWAP DU 15/09/2026 — LE NOM DU DOSSIER NE DIT PLUS CE QU'IL SERT
+
 ```
 ~/totehm/
-  totehm.com/  →  totehm.com            (Vercel, Root Directory = totehm.com)
-  space/       →  www.totehm.space      le Figher Club (Vercel, Root Directory = space)
-  boutique/    →  www.higher.boutique   (Vercel, Root Directory = boutique)
-  backend/     →  servi par PERSONNE
-  oracle/      →  clés SSH, gitignoré
+  com/       →  totehm.com           LE RÉSEAU SOCIAL PRIVÉ  ← le produit
+  space/     →  www.totehm.space     le branding, l'expérimentation
+  boutique/  →  www.higher.boutique  le Cloth
+  backend/   →  servi par PERSONNE
+  oracle/    →  clés SSH, gitignoré
 ```
+
+**Le contenu des deux dossiers a été ÉCHANGÉ ; le mapping Vercel n'a pas
+bougé** (projet `com` → dossier `com/`, projet `space` → dossier
+`space/`). Ce sont donc les **URL publiques** qui ont changé de rôle :
+
+| avant le 15/09 | depuis |
+|---|---|
+| `totehm.space/totehm` = le réseau social | **`totehm.com/totehm`** |
+| `totehm.com` = le branding | **`totehm.space`** |
+
+```
+com/     totehm.html · wisdom.html · vision.html · map.html
+         higherself.html · totehm_world.html · next_objective.html
+         totehm_7_intentions.html · terms.html · club/ · vercel.json
+space/   discover.html · discover_lisbon.html · get_higher.html
+         origins.html · stoner.html · stoner_terms.html
+         play_lisbon_street.html · vercel.json
+```
+
+**Trois conséquences, et il faut les trois :**
+
+1. **Tout `CLAUDE_CODE.md` préfixe par le dossier RÉEL** — `com__totehm.html`,
+   `space__discover.html` — et les `cp` visent `~/totehm/com/` ou
+   `~/totehm/space/` en cohérence. Un lot écrit contre l'ancien état doit
+   être corrigé à la main, et ça s'est produit une fois.
+2. **Les outils (`tools/*.py`) pointent sur `com/`.** Recalés le 15/09 ;
+   chacun porte la marque du swap en tête.
+3. **Les URL de retour Stripe visent `SITE_COM`.** Une URL de retour qui
+   pointe encore sur `.space` renvoie l'influenceur sur la page de
+   branding AU MILIEU de son onboarding — on ne le voit qu'en production,
+   sur un vrai créateur.
+
+**La règle qui en sort, et elle est générale : un nom de dossier ou de
+projet n'est pas une source de vérité.** Ce qui fait foi, c'est ce
+tableau. Lire avant de déplacer.
 
 `backend/` doit **impérativement** rester à la racine. Dans un dossier Vercel,
 le SQL, les Edge Functions et le `docker-compose.yml` deviendraient
@@ -97,38 +134,98 @@ le TRAIT du bord gauche dit l'INTENTION. Un objet a les deux, toujours.
 un lien qui n'en accepte qu'un finit toujours par en accepter plusieurs,
 et c'est là qu'on réécrit la moitié du produit.
 
-### ⚠️ LE QUATRIÈME DOMAINE — pourquoi `figher.club` attend — 15/09/2026
+### LE CLUB ET LES CRÉATEURS — 15/09/2026
 
-Le COO demande de centraliser sur `figher.club` le Radar, l'accès
-Boutique et la facturation. **Le squelette est prêt (`club/`), il est
-volontairement INERTE, et il doit le rester tant que le pont de session
-n'existe pas.**
+**`figher.club` est un VANITY URL.** Le Club vit sur
+**`totehm.com/club`**, c'est-à-dire sur l'origine du Totehm : même
+`localStorage`, donc **même session**. Un membre passe de son Totehm au
+Club et à ses gains sans se reconnecter. Le domaine, quand il sera
+acheté, sera une simple redirection 308 — on garde le nom de marque sans
+payer une quatrième session.
 
-La raison tient en une ligne, et elle est déjà dans ce fichier :
+C'est Wah qui a tranché, et c'est la bonne tranche : le nom ne demandait
+pas le domaine.
 
-> Trois domaines = trois `localStorage` = trois sessions.
-> **Il n'y a pas de SSO.**
+#### Le split 80/20 est une ligne de configuration, pas un système
 
-Un quatrième domaine en fait quatre. Un membre connecté sur
-`totehm.space` arrive sur `figher.club` **déconnecté**. Y mettre le
-Radar, l'abonnement ET la boutique, c'est mettre les trois choses qu'on
-paie derrière une porte qui redemande l'e-mail — pas une fois, à chaque
-visite. Ça ne se lit pas comme « un autre domaine », ça se lit comme
-« le produit est cassé ».
+```
+subscription_data.transfer_data.destination = compte connecté du créateur
+subscription_data.application_fee_percent   = 20
+```
 
-**Deux chemins, et un seul se tient avant 110 abonnés :**
+Stripe verse 80 % au créateur et 20 % à la plateforme **à chaque
+renouvellement**, sans virement manuel, sans réconciliation. Je l'avais
+sous-estimé : ce n'était pas trois semaines de travail, c'était deux
+paramètres. Ce qui prend du temps, ce n'est pas le code — c'est
+l'activation Connect côté Stripe et la vérification de la plateforme.
 
-1. **`totehm.space/club`** — même origine, même session, zéro pont,
-   zéro euro, livrable le jour même. Le nom de marque « Figher Club »
-   ne demande pas un domaine qui s'appelle figher.club.
-2. **`figher.club` + pont de session** — `auth.admin.generateLink` →
-   `token_hash` à usage unique et courte durée, échangé côté serveur.
-   **Jamais un jeton de session dans une URL.** Compter une journée de
-   travail, plus le domaine, plus un quatrième projet Vercel à tenir.
+#### Le KYC n'est pas chez nous et ne le sera jamais
 
-Le chemin 1 est recommandé. Le chemin 2 reste ouvert : `club/` est déjà
-un dossier Vercel valide, Root Directory = `club`, à poser le jour où le
-domaine est acheté — sans rien recâbler.
+**Connect Express** héberge l'identité, les pièces, la conformité fiscale
+et les virements. On ne stocke QUE `stripe_account_id` — jamais un IBAN,
+jamais une pièce d'identité, jamais une date de naissance. C'est la seule
+forme de Connect qui tienne dans une timeline de 75 jours.
+
+#### ⚠️ LA CLÉ SECRÈTE NE TOUCHE JAMAIS LE NAVIGATEUR
+
+Lire une balance demande la clé secrète. Une clé secrète dans un fichier
+servi, c'est le compte Stripe entier — tous les créateurs, tous les
+paiements — offert à qui ouvre l'inspecteur. **Quatre Edge Functions**
+font les appels côté serveur ; la page ne reçoit que des NOMBRES DÉJÀ
+CALCULÉS.
+
+| fonction | ce qu'elle fait |
+|---|---|
+| `creator-onboard`   | crée le compte Express + un AccountLink à usage unique |
+| `creator-dashboard` | balance, abonnés, MRR — lus avec `stripeAccount` |
+| `creator-price`     | le prix, borné 3–500 € ici ET par la contrainte SQL |
+| `creator-subscribe` | le Checkout du fan, avec le split 80/20 |
+
+**Le compte connecté vient TOUJOURS de la session, jamais du corps de la
+requête.** Sinon un créateur lirait la balance d'un autre en changeant un
+identifiant, ou relierait le compte Stripe d'un autre au sien.
+
+**`stripeAccount` n'est pas optionnel** sur `balance.retrieve` : sans cet
+en-tête on renvoie la balance de la PLATEFORME à chaque influenceur — le
+pire chiffre faux imaginable.
+
+**Stripe rend une ligne PAR DEVISE.** Prendre `[0]` marche jusqu'au
+premier fan qui paie en livres, puis affiche un chiffre faux sans
+prévenir. On additionne par devise.
+
+**On affiche SA part, pas le brut.** Un créateur qui lit 1 000 € et
+reçoit 800 € se sent floué, même si le taux était écrit ailleurs.
+
+**Et la metadata voyage EN DOUBLE** (`subscription_data.metadata` en plus
+de celle de la session) : les événements de cycle de vie ne portent pas
+la metadata du Checkout, et ce sont eux qui coupent l'accès.
+Irrattrapable après coup.
+
+#### Ce qu'un fan peut lire
+
+`creator_subscriptions` est la jointure qui ouvre la lecture du Totehm
+d'un créateur à son abonné, par `is_subscribed_to()` — `security
+definer` et `stable`, sinon la politique rappelle la RLS de la table
+qu'elle interroge et part en récursion.
+
+### ⚠️ LE QUATRIÈME DOMAINE — l'arbitrage, et ce qu'il est devenu — 15/09/2026
+
+J'ai recommandé de NE PAS acheter un quatrième domaine, pour une raison
+qui reste vraie : quatre domaines = quatre `localStorage` = quatre
+sessions, **et il n'y a pas de SSO**. Un membre connecté sur le Totehm
+serait arrivé déconnecté sur `figher.club`, devant les trois choses qu'il
+paie.
+
+**Wah a tranché autrement et mieux : `figher.club` devient un VANITY
+URL.** Le Club vit sur l'origine du Totehm, le domaine n'est qu'une
+redirection. On garde le nom de marque et on ne paie pas la session.
+C'est la réponse que je n'avais pas vue — je posais le choix comme
+« le domaine OU la session », il l'a résolu en « le nom sans le domaine ».
+
+**Ce qui reste vrai et qu'il ne faut pas oublier :** le jour où un
+service TOTEHM vivra vraiment sur une autre origine, il lui faudra un
+pont — `auth.admin.generateLink` → `token_hash` à usage unique et courte
+durée, échangé côté serveur. **Jamais un jeton de session dans une URL.**
 
 ### Les écrans de totehm.space — 09/09/2026
 
@@ -968,10 +1065,8 @@ Un filet gris entre deux lignes DANS une boîte n'est pas la bordure
 d'une boîte, et le gris est un délimitant autorisé : il reste.
 
 **Le coral `#fbd5ca` ne délimite rien.** Il est réservé au mot **« Get »**
-de `[Get Higher]` et à la méthode Stoner — donc **au domaine qui héberge
-Stoner**, `totehm.space` depuis le swap du 15/09/2026. Jamais un cadre,
-jamais une bordure, jamais sur `totehm.com` (réseau social) ni sur
-`higher.boutique`.
+de `[Get Higher]` et à la méthode Stoner sur `totehm.com`. Jamais un
+cadre, jamais une bordure, jamais sur `.space` ni `.boutique`.
 
 `tools/nobord.py` passe sur les TROIS domaines et retire tout trait
 dessiné de moins de 4 px. **Il garde ce qui n'est pas une bordure** : la
@@ -1732,9 +1827,9 @@ facture mensuelle sans revenu en face. Le gratuit reste déterministe.
 | | |
 |---|---|
 | Navy `#333366` | présent, habitudes, ancrage |
-| Coral `#fbd5ca` | **exclusivement** le domaine Stoner (`totehm.space` depuis le swap 15/09/2026) — le mot « Get » de `[Get Higher]` et les accents de la méthode. Jamais sur `totehm.com` ni `boutique`. |
+| Coral `#fbd5ca` | **exclusivement** `totehm.com` — la méthode Stoner. Jamais sur `space` ni `boutique`. |
 | Rouge-violet `#743169` | répulsions, carburant |
-| Quantico Bold coral | **exclusivement** le domaine Stoner — techniques et Intentions |
+| Quantico Bold coral | **exclusivement** `totehm.com` — techniques et Intentions |
 | Bebas Neue gris | narration |
 | Perforation | padding `0.02em 0.18em` |
 

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>TOTEHM — Creator</title>
+<!--
+  ══ L'ESPACE CRÉATEUR · 15/09/2026 ══════════════════════════════════════
+  totehm.com/club/creator   (le réseau social vit sur .com depuis le swap)
+
+  Un influenceur ouvre son HigherSelf à l'abonnement. Il fixe son prix,
+  il garde 80 %, TOTEHM garde 20 % — automatiquement, à chaque
+  renouvellement. Cette page est ce qu'il voit : ce qu'il a gagné, ce qui
+  arrive, combien de gens le suivent.
+
+  POURQUOI ELLE EST ICI ET PAS SUR figher.club
+  Même origine que le Totehm = même `localStorage` = MÊME SESSION. Le
+  créateur passe de son Totehm à ses gains sans se reconnecter. Sur un
+  quatrième domaine il arriverait déconnecté à chaque visite, et le
+  produit qu'on vend aux influenceurs aurait l'air cassé au premier clic.
+  `figher.club` reste l'adresse qu'on donne : un vanity URL qui redirige
+  ici. On garde le nom sans payer la session.
+
+  ⚠️ AUCUNE CLÉ STRIPE DANS CETTE PAGE, ET IL NE FAUT JAMAIS EN METTRE.
+  Lire une balance demande la clé SECRÈTE ; une clé secrète dans un
+  fichier servi, c'est le compte Stripe entier — tous les créateurs, tous
+  les paiements — offert à qui ouvre l'inspecteur. Les trois Edge
+  Functions (`creator-onboard`, `creator-dashboard`, `creator-price`)
+  font les appels côté serveur ; la page ne reçoit que des NOMBRES.
+
+  ⚠️ LE KYC N'EST PAS CHEZ NOUS. Stripe Connect Express héberge
+  l'identité, les pièces et les virements. On ne stocke que
+  l'identifiant du compte connecté — jamais un IBAN, jamais une pièce.
+-->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,900&family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#000;
+  --surface:rgba(255,255,255,.05);
+  --surface-hi:rgba(255,255,255,.09);
+  --ink:#fff;
+  --ink-2:#b0b0b0;
+  --ink-3:rgba(255,255,255,.42);
+  --navy:#333366;
+  /* STATUT — réservé, jamais réutilisé comme couleur de série. Chaque
+     état sort avec une FORME et un MOT : un carré seul ne dit rien à
+     qui ne distingue pas le vert du jaune. */
+  --ok:#639922;
+  --attente:#e48b31;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;min-height:100%;background:var(--paper);color:var(--ink-2);
+  font-family:'Quantico',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+
+/* Le T en haut, le TOTEHM en bas : mêmes coordonnées que partout ailleurs
+   — 30 px du haut sur 53, 30 px du bas sur 50. Une seule mesure pour
+   tout le produit. */
+#t{position:fixed;top:30px;left:50%;transform:translateX(-50%);line-height:0;
+  background:none;border:none;padding:0;cursor:pointer;z-index:5}
+#t svg{height:53px;width:auto;display:block}
+#wm{position:fixed;bottom:30px;left:max(18px,6vw);line-height:0;
+  background:none;border:none;padding:0;cursor:pointer;z-index:5}
+#wm svg{height:44px;width:auto;display:block}
+#back{position:fixed;bottom:30px;right:max(18px,6vw);z-index:5;
+  background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;
+  font-size:13px;color:var(--ink-2);transition:color .15s ease;white-space:nowrap}
+#back:hover{color:var(--ink)}
+
+#w{max-width:620px;margin:0 auto;padding:120px 20px 150px;
+  display:flex;flex-direction:column;gap:26px}
+/* ⚠️ LE PIED EST FIXE ET LA PAGE DÉFILE SOUS LUI. Mesuré : le prix
+   passait DERRIÈRE le TOTEHM et « Back to my Totehm ». Un voile dégradé
+   — noir opaque en bas, transparent en haut — rend le pied lisible sans
+   poser le moindre trait. La marque n'a pas de barre, elle a du vide. */
+#pied-voile{position:fixed;left:0;right:0;bottom:0;height:110px;z-index:4;
+  pointer-events:none;
+  background:linear-gradient(to top,#000 42%,rgba(0,0,0,.86) 66%,transparent)}
+
+/* Le mot de service : Space Mono, 8 px, .2em — la graisse de toutes les
+   étiquettes du produit. Une étiquette ne crie jamais. */
+.lbl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--ink-3);line-height:1.8}
+
+/* ══ LA FIGURE HÉROS — une seule par écran ═════════════════════════════
+   Ce que le créateur gagne par mois, SA part. Montserrat italic 900 :
+   c'est la fonte de chiffre de la maison, celle du classement et de
+   HIGHER — pas une fantaisie posée ici.
+   Chiffres PROPORTIONNELS et non tabulaires : `tabular-nums` donne à
+   chaque chiffre la largeur d'un zéro, et à cette taille un « 121 »
+   paraît troué. Le tabulaire est réservé aux colonnes. */
+.hero{display:flex;flex-direction:column;gap:8px}
+.hero b{font-family:'Montserrat',sans-serif;font-style:italic;font-weight:900;
+  font-size:clamp(46px,13vw,76px);line-height:.92;color:var(--ink);
+  letter-spacing:-.03em;font-variant-numeric:proportional-nums}
+.hero .sous{font-size:13px;color:var(--ink-2)}
+
+/* ══ LES TUILES ════════════════════════════════════════════════════════
+   Trois chiffres, pas de graphique : il n'y a pas encore de série
+   temporelle à montrer, et un graphique à un point est un mensonge
+   décoratif. Le jour où il y aura douze mois d'historique, une
+   sparkline entrera ici.
+   Aucune bordure — règle de marque. Ce qui sépare, c'est l'ÉCART et la
+   SURFACE, jamais un trait. */
+/* ⚠️ TROIS TUILES, TROIS COLONNES — MÊME AU TÉLÉPHONE. À
+   `minmax(150px,1fr)` on obtenait 2 + 1 sur 390 px : la troisième
+   tombait seule et laissait un trou qui ressemble à une donnée
+   manquante. C'est un RANG de KPI ; il se lit d'un seul balayage
+   horizontal ou il ne se lit pas. */
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(max-width:360px){.tiles{grid-template-columns:repeat(auto-fit,minmax(104px,1fr))}}
+.tile{background:var(--surface);padding:14px 12px 16px;display:flex;
+  flex-direction:column;gap:8px;min-width:0}
+/* La valeur ne déborde jamais de sa tuile : `clamp` la fait respirer sur
+   grand écran et rentrer sur petit, sans jamais rogner un chiffre. */
+.tile .val{font-family:'Quantico',sans-serif;font-weight:700;
+  font-size:clamp(19px,5.4vw,26px);color:var(--ink);line-height:1;
+  white-space:nowrap;overflow-wrap:normal}
+.tile .note{font-size:11px;color:var(--ink-3)}
+
+/* ══ L'ÉTAT DU COMPTE ══════════════════════════════════════════════════
+   Un carré de statut NE SUFFIT PAS : il sort toujours avec son mot. */
+.etat{display:flex;align-items:center;gap:9px;background:var(--surface);
+  padding:13px 16px}
+.etat i{width:9px;height:9px;display:block;flex:0 0 auto}
+.etat span{font-size:12px;color:var(--ink-2)}
+
+.bloc{background:var(--surface);padding:18px 16px;display:flex;
+  flex-direction:column;gap:12px}
+.dit{font-size:13px;line-height:1.65;color:var(--ink-2)}
+.dit b{color:var(--ink);font-weight:700}
+
+/* Le bouton de la maison : pas de cadre, pas d'angle arrondi. */
+.btn{background:var(--surface-hi);border:none;cursor:pointer;
+  font-family:'Quantico',sans-serif;font-size:14px;color:var(--ink);
+  padding:12px 16px;text-align:center;transition:background .15s ease;
+  -webkit-tap-highlight-color:transparent}
+.btn:hover{background:rgba(255,255,255,.15)}
+.btn:disabled{color:var(--ink-3);cursor:default;background:var(--surface)}
+.btn.g{background:none;color:var(--ink-3);font-size:12px;padding:8px 4px}
+.btn.g:hover{color:var(--ink)}
+
+.prix{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.prix input{background:rgba(255,255,255,.07);border:none;outline:none;
+  color:var(--ink);font-family:'Quantico',sans-serif;font-weight:700;
+  font-size:20px;width:104px;padding:9px 11px;text-align:center}
+.prix .cur{font-size:15px;color:var(--ink-3)}
+.note-err{font-size:11px;color:var(--attente);min-height:14px}
+
+.split{display:flex;gap:2px;height:7px;margin-top:2px}
+.split i{display:block;height:100%}
+.split .a{background:var(--ok)}
+.split .b{background:var(--navy)}
+
+/* Le squelette pendant le chargement : une surface qui respire, jamais un
+   « loading… » qui fixe l'œil sur un mot. */
+@keyframes attend{0%,100%{opacity:1}50%{opacity:.45}}
+.vide{animation:attend 1.6s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.vide{animation:none}}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+
+<div id="pied-voile" aria-hidden="true"></div>
+<button id="t" type="button" aria-label="Back to my Totehm"><svg viewBox="0 0 68 68" role="img" aria-label="T"><rect x="0" y="0" width="68" height="10" fill="#fff"/><rect x="29" y="0" width="10" height="67" fill="#fff"/><rect x="21" y="63" width="27" height="5" fill="#fff"/></svg></button>
+
+<div id="w">
+
+  <div>
+    <div class="lbl">The Figher Club — creator</div>
+    <div class="hero" style="margin-top:10px">
+      <b id="mrr" class="vide">—</b>
+      <div class="sous" id="mrr-sous">your share, every month</div>
+    </div>
+    <div class="split" id="split" style="display:none">
+      <i class="a" style="flex:80"></i><i class="b" style="flex:20"></i>
+    </div>
+    <div class="lbl" id="split-lbl" style="display:none;margin-top:6px">
+      80 % you · 20 % totehm
+    </div>
+  </div>
+
+  <div class="tiles" id="tiles">
+    <div class="tile">
+      <div class="lbl">Available now</div>
+      <div class="val vide" id="dispo">—</div>
+      <div class="note">paid out by Stripe</div>
+    </div>
+    <div class="tile">
+      <div class="lbl">On the way</div>
+      <div class="val vide" id="attente">—</div>
+      <div class="note">clearing</div>
+    </div>
+    <div class="tile">
+      <div class="lbl">Subscribers</div>
+      <div class="val vide" id="abos">—</div>
+      <div class="note">active right now</div>
+    </div>
+  </div>
+
+  <div class="etat hide" id="etat">
+    <i id="etat-dot"></i><span id="etat-mot"></span>
+  </div>
+
+  <!-- ÉTAT 1 — pas encore de compte -->
+  <div class="bloc hide" id="b-start">
+    <div class="lbl">Open your creator account</div>
+    <div class="dit">Your followers subscribe to your HigherSelf. You keep
+      <b>80 %</b> of every payment, forever — TOTEHM keeps 20 %.
+      Stripe handles your identity, your tax details and your payouts;
+      we never see them.</div>
+    <button class="btn" id="go-onboard">Continue with Stripe</button>
+  </div>
+
+  <!-- ÉTAT 2 — onboarding commencé, pas fini -->
+  <div class="bloc hide" id="b-finish">
+    <div class="lbl">One step left</div>
+    <div class="dit">Stripe still needs a few details before it can pay you.
+      It takes about three minutes.</div>
+    <button class="btn" id="go-finish">Finish with Stripe</button>
+  </div>
+
+  <!-- ÉTAT 3 — en route : le prix -->
+  <div class="bloc hide" id="b-price">
+    <div class="lbl">Your monthly price</div>
+    <div class="dit">What someone pays to follow your HigherSelf. You can
+      change it whenever you want — people already subscribed keep the
+      price they joined at.</div>
+    <div class="prix">
+      <input id="prix" type="number" inputmode="decimal" min="3" max="500" step="1" placeholder="9">
+      <span class="cur">€ / month</span>
+      <button class="btn" id="save-prix">Save</button>
+    </div>
+    <div class="note-err" id="prix-err"></div>
+  </div>
+
+  <div class="bloc hide" id="b-stripe">
+    <div class="lbl">Payouts</div>
+    <div class="dit">Bank details, tax forms and payout history live in your
+      Stripe account.</div>
+    <button class="btn g" id="go-stripe">Open my Stripe account</button>
+  </div>
+
+  <!-- ÉTAT 0 — pas de session -->
+  <div class="bloc hide" id="b-anon">
+    <div class="lbl">Sign in</div>
+    <div class="dit">The creator space opens from your Totehm — that is where
+      your session lives.</div>
+    <button class="btn" id="go-totehm">Go to my Totehm</button>
+  </div>
+
+</div>
+
+<button id="wm" type="button" aria-label="Back to my Totehm"><svg viewBox="0 0 84 39" role="img" aria-label="TOTEHM"><text x="42" y="26" text-anchor="middle" font-family="Quantico, sans-serif" font-size="14" letter-spacing="1.4" fill="#fff">TOTEHM</text></svg></button>
+<button id="back" type="button">Back to my Totehm</button>
+
+<script type="module">
+/* ⚠️ MODULE ES, jamais UMD : le build UMD ne définit pas `window.supabase`
+   et la page plante en silence. Même règle que partout dans `.space`. */
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const sb = createClient(
+  'https://abujjbkbbiumxrokozph.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
+
+const $ = id => document.getElementById(id);
+const show = (id, on) => $(id).classList.toggle('hide', !on);
+
+/* On n'affiche jamais une somme brute en centimes : 84700 ne veut rien
+   dire. `Intl` porte la devise ET la locale du lecteur. */
+const somme = (cents, dev) => new Intl.NumberFormat(navigator.language || 'en', {
+  style: 'currency', currency: (dev || 'eur').toUpperCase(),
+  maximumFractionDigits: 0,
+}).format((cents || 0) / 100);
+
+/* Stripe rend une ligne PAR DEVISE. Prendre la première marche jusqu'au
+   premier fan qui paie en livres, puis affiche un chiffre faux sans
+   prévenir. On additionne la devise du créateur, et on le dit si une
+   autre traîne. */
+function deSolde(m, dev) {
+  if (!m || typeof m !== 'object') return 0;
+  return m[(dev || 'eur').toLowerCase()] || 0;
+}
+
+let jeton = null, fiche = null;
+
+async function appelle(fn, corps) {
+  const r = await fetch(
+    'https://abujjbkbbiumxrokozph.supabase.co/functions/v1/' + fn, {
+      method: 'POST',
+      headers: {
+        'authorization': 'Bearer ' + jeton,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(corps || {}),
+    });
+  /* Une erreur se JOURNALISE, toujours : sans ce log, un bouton qui ne
+     répond pas ressemble à un bouton mort. */
+  if (!r.ok) console.error('[creator]', fn, r.status);
+  return r.json().catch(() => ({}));
+}
+
+function peins(d) {
+  fiche = d;
+  const dev = d.devise || 'eur';
+
+  const vivant = d.compte && d.compte.charges_enabled;
+  const commence = d.etat !== 'aucun';
+  const fini = d.compte && d.compte.details_submitted;
+
+  show('b-anon', false);
+  show('b-start', d.etat === 'aucun');
+  show('b-finish', commence && !fini);
+  show('b-price', commence && fini);
+  show('b-stripe', commence && fini);
+  show('etat', commence);
+
+  if (commence) {
+    const ok = vivant && d.compte.payouts_enabled;
+    $('etat-dot').style.background = ok ? 'var(--ok)' : 'var(--attente)';
+    /* Le carré sort TOUJOURS avec son mot : la couleur seule ne dit rien
+       à qui ne distingue pas le vert de l'orange. */
+    $('etat-mot').textContent = ok
+      ? 'Your account is live — payouts are on.'
+      : (fini ? 'Stripe is reviewing your account.'
+              : 'Your account is not finished yet.');
+  }
+
+  document.querySelectorAll('.vide').forEach(e => e.classList.remove('vide'));
+
+  if (d.etat === 'aucun') {
+    $('mrr').textContent = somme(0, dev);
+    $('dispo').textContent = '—';
+    $('attente').textContent = '—';
+    $('abos').textContent = '0';
+    return;
+  }
+
+  $('mrr').textContent = somme(d.mrr_createur, dev);
+  $('abos').textContent = String(d.abonnes ?? 0);
+  $('dispo').textContent = d.etat === 'partiel'
+    ? 'unavailable' : somme(deSolde(d.disponible, dev), dev);
+  $('attente').textContent = d.etat === 'partiel'
+    ? 'unavailable' : somme(deSolde(d.en_attente, dev), dev);
+
+  if (d.etat === 'partiel') {
+    $('mrr-sous').textContent =
+      'your share, every month — balances could not be read just now';
+  }
+
+  $('split').style.display = 'flex';
+  $('split-lbl').style.display = 'block';
+
+  if (d.prix) $('prix').value = String(Math.round(d.prix / 100));
+}
+
+/* ── LES GESTES ─────────────────────────────────────────────────────── */
+$('go-onboard').onclick = $('go-finish').onclick = async (e) => {
+  const b = e.currentTarget;
+  b.disabled = true; b.textContent = 'opening Stripe…';
+  const r = await appelle('creator-onboard');
+  if (r && r.url) { location.href = r.url; return; }
+  b.disabled = false; b.textContent = 'Continue with Stripe';
+  $('etat-mot').textContent = 'Stripe did not answer. Try again in a minute.';
+  show('etat', true);
+};
+
+$('save-prix').onclick = async () => {
+  const euros = Number($('prix').value);
+  const err = $('prix-err');
+  err.textContent = '';
+  if (!Number.isFinite(euros) || euros < 3 || euros > 500) {
+    err.textContent = 'Pick something between 3 and 500 €.';
+    return;
+  }
+  const b = $('save-prix'); b.disabled = true; b.textContent = 'saving…';
+  const r = await appelle('creator-price', { cents: Math.round(euros * 100) });
+  b.disabled = false; b.textContent = 'Save';
+  if (!r || !r.ok) { err.textContent = 'Not saved. Try again.'; return; }
+  err.textContent = '';
+};
+
+$('go-stripe').onclick = () => {
+  window.open('https://dashboard.stripe.com/', '_blank', 'noopener');
+};
+
+/* Le T, le TOTEHM et le bouton ramènent au Totehm DÉPLOYÉ — `#in` lui dit
+   de s'ouvrir sans rejouer le dépliage. Même contrat que les jumeaux. */
+const rentre = () => { location.href = '../totehm.html#in'; };
+$('t').onclick = $('wm').onclick = $('back').onclick = rentre;
+$('go-totehm').onclick = rentre;
+
+/* ── LE DÉMARRAGE ───────────────────────────────────────────────────── */
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    document.querySelectorAll('.vide').forEach(e => e.classList.remove('vide'));
+    $('mrr').textContent = '—';
+    show('b-anon', true);
+    return;
+  }
+  jeton = session.access_token;
+  const d = await appelle('creator-dashboard');
+  peins(d && d.etat ? d : { etat: 'aucun' });
+
+  /* On revient de Stripe : l'état du compte a changé côté Stripe mais
+     notre miroir peut être en retard d'une seconde. Une relecture, une
+     seule — pas une boucle. */
+  if (location.search.includes('refresh') || document.referrer.includes('stripe.com')) {
+    setTimeout(async () => peins(await appelle('creator-dashboard')), 1500);
+    history.replaceState(null, '', location.pathname);
+  }
+})();
+
+/* Le diagnostic, comme partout : des compteurs et des booléens, JAMAIS un
+   montant, jamais une valeur de clé. C'est le bloc à coller dans la
+   console quand l'écran semble vide. */
+window.__totehm_creator = () => ({
+  session: !!jeton,
+  etat: fiche ? fiche.etat : null,
+  compte: fiche ? fiche.compte : null,
+  a_un_prix: !!(fiche && fiche.prix),
+  abonnes: fiche ? fiche.abonnes : null,
+});
+</script>
+</body>
+</html>

@@ -191,6 +191,55 @@ async function handleSubscriptionCheckout(session: Stripe.Checkout.Session) {
   console.log("abonnement créé — user:", userId, "sub:", subId, "status:", sub.status);
 }
 
+// ══ LES CRÉATEURS · 15/09/2026 ═══════════════════════════════════════
+// Stripe a encaissé et réparti (80 % au créateur, 20 % à la plateforme)
+// AVANT d'arriver ici. Ces trois fonctions n'ouvrent et ne ferment que
+// l'ACCÈS — jamais un montant, jamais un virement.
+
+async function handleCreatorSub(session: Stripe.Checkout.Session) {
+  const creator = session.metadata?.creator_id;
+  const fan = session.metadata?.fan_id;
+  if (!creator || !fan) {
+    console.error("creator_sub sans metadata:", session.id);
+    return;
+  }
+  const { error } = await admin.from("creator_subscriptions").upsert({
+    creator_id: creator,
+    fan_id: fan,
+    stripe_subscription_id: String(session.subscription ?? ""),
+    status: "active",
+    amount_cents: session.amount_total ?? null,
+    currency: session.currency ?? "eur",
+  }, { onConflict: "creator_id,fan_id" });
+  if (error) throw error;
+}
+
+async function handleCreatorSubState(sub: Stripe.Subscription) {
+  // On vise par l'identifiant Stripe : c'est la seule clé que les deux
+  // côtés partagent, et elle ne bouge jamais.
+  const { error } = await admin.from("creator_subscriptions")
+    .update({
+      status: sub.status,
+      current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
+    })
+    .eq("stripe_subscription_id", sub.id);
+  if (error) throw error;
+}
+
+async function handleAccountUpdated(acc: Stripe.Account) {
+  if (!acc.id) return;
+  const { error } = await admin.from("creator_profiles")
+    .update({
+      charges_enabled: !!acc.charges_enabled,
+      payouts_enabled: !!acc.payouts_enabled,
+      details_submitted: !!acc.details_submitted,
+    })
+    .eq("stripe_account_id", acc.id);
+  // Un compte inconnu n'est pas une erreur : ce peut être un compte créé
+  // à la main dans le dashboard Stripe. On logue, on ne rejoue pas.
+  if (error) console.warn("account.updated sans fiche:", acc.id, error.message);
+}
+
 async function handleSubscriptionUpdated(sub: Stripe.Subscription) {
   if (sub.metadata?.product !== "subscription") {
     console.log("subscription.updated ignoré — produit inconnu:", sub.id);
@@ -307,6 +356,12 @@ Deno.serve(async (req) => {
           case "subscription":
             await handleSubscriptionCheckout(session);
             break;
+          // L'abonnement d'un fan au HigherSelf d'un créateur. Stripe a
+          // déjà fait le split 80/20 (application_fee_percent +
+          // transfer_data) : ici on n'ouvre que l'ACCÈS.
+          case "creator_sub":
+            await handleCreatorSub(session);
+            break;
           default:
             console.warn("product inconnu dans metadata:", session.metadata?.product, "session:", session.id);
         }
@@ -315,13 +370,31 @@ Deno.serve(async (req) => {
 
       case "customer.subscription.updated": {
         const sub = event.data.object as Stripe.Subscription;
-        await handleSubscriptionUpdated(sub);
+        // Deux produits, deux tables. Le `switch` est explicite : un `if`
+        // finit toujours par oublier le troisième.
+        switch (sub.metadata?.product) {
+          case "creator_sub": await handleCreatorSubState(sub); break;
+          default:            await handleSubscriptionUpdated(sub);
+        }
         break;
       }
 
       case "customer.subscription.deleted": {
         const sub = event.data.object as Stripe.Subscription;
-        await handleSubscriptionDeleted(sub);
+        switch (sub.metadata?.product) {
+          case "creator_sub": await handleCreatorSubState(sub); break;
+          default:            await handleSubscriptionDeleted(sub);
+        }
+        break;
+      }
+
+      // ⚠️ L'ÉTAT DU COMPTE CONNECTÉ SE MET À JOUR TOUT SEUL. Sans cet
+      // événement, un créateur qui finit son KYC chez Stripe resterait
+      // « en attente » chez nous jusqu'à ce qu'il rouvre la page — et il
+      // croirait que ça n'a pas marché.
+      case "account.updated": {
+        const acc = event.data.object as Stripe.Account;
+        await handleAccountUpdated(acc);
         break;
       }
 

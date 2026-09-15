@@ -100,6 +100,10 @@ body:not(.gate) #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
    la grammaire `.btn-sig` du reste du produit. */
 #bottom-doors{position:fixed;bottom:30px;right:max(18px,6vw);z-index:31;
   display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+/* La porte du Club se distingue des deux autres : elle ne mène pas à une
+   pièce du Totehm, elle mène au Club. Un blanc plein au lieu d'un gris —
+   pas un cadre, la marque n'en veut nulle part. */
+.door-club{color:#fff;font-weight:700}
 .door{background:none;border:none;padding:0;cursor:pointer;
   font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;
   color:#b0b0b0;transition:color .15s ease;-webkit-tap-highlight-color:transparent;
@@ -1858,6 +1862,10 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
 
 
 
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -2075,6 +2083,12 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
 <div id="bottom-doors" class="sink-el">
   <button class="door" id="door-book" type="button">My Wisdom</button>
   <button class="door" id="door-next" type="button">My vision for the future</button>
+  <!-- ══ LA PORTE DU CLUB · 15/09/2026 ═══════════════════════════════
+       `totehm.space/club` — MÊME ORIGINE, donc même session. C'est
+       toute la raison pour laquelle le Club n'est pas sur un quatrième
+       domaine : on y entre sans se reconnecter.
+       `figher.club` est un vanity URL qui redirige ici. -->
+  <button class="door door-club" id="door-club" type="button">The Figher Club</button>
 </div>
 
 <!-- La croix : referme le Totehm et rejoue le déploiement à l'envers. -->
@@ -4239,6 +4253,7 @@ if(location.hash === '#settings'){
    bon côté — c'est là qu'est le visionnaire. */
 $('door-book').onclick=requireMember(()=>{ location.href='wisdom.html'; });
 $('door-next').onclick=requireMember(()=>{ location.href='vision.html'; });
+$('door-club').onclick=requireMember(()=>{ location.href='club/index.html'; });
 /* La croix : le Totehm se replie et l'atterrissage revient. */
 $('fold-x').onclick=()=>foldToGate();
 
