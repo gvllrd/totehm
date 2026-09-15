@@ -10,7 +10,7 @@
     · au PIED de la liste, geste vers le haut   → le Totehm se replie
       vers l'atterrissage (même geste que la croix #fold-x et Échap)
     · La méthode Stoner n'est plus hébergée ici : [Get Higher] est un
-      lien vers totehm.space
+      lien vers totehm.com
 
   Horizontaux :
     · swipe DROITE → My Wisdom  ·  swipe GAUCHE → My next objective
@@ -42,13 +42,13 @@
      PAPIER d'un ton. Les trois couleurs de marque restent intactes sur
      leurs blocs — navy, bleu clair, rouge-violet — et se détachent
      maintenant par leur VALEUR, comme les blocs empilés du Totehm de
-     totehm.space. Une différence de ton, pas une bordure. */
+     totehm.com. Une différence de ton, pas une bordure. */
   --paper:#2b2b57;
   /* Le navy SOMBRE du logo. Sur le navy clair du papier, un bloc navy
      n'existe pas — celui-ci si, et il ne demande AUCUN filet. */
   --navy-d:#22224a;
   /* LES TROIS COULEURS DES BLOCS : --navy, --blue, --rep. Mesurées sur le
-     Totehm empilé de totehm.space, la référence de la marque.
+     Totehm empilé de totehm.com, la référence de la marque.
      --sky est la version TEXTE du bleu de l'objectif : #36498c en aplat se
      lit sur le papier navy, mais en texte sur une carte sombre il ne se lit
      pas. Un remplissage n'est jamais --sky, un texte n'est jamais --blue.
@@ -122,15 +122,24 @@ body:not(.gate) #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
    alors c'est le PIED du T qui respire. Inventer un glyphe serait du
    décor ; faire respirer une pièce du logo, non. */
 #wm-O,#wm-H,#t-foot{transition:opacity .3s}
-body.v-objectives  #wm-O  {animation:breathe 2.8s ease-in-out infinite}
-body.v-habits      #wm-H  {animation:breathe 2.8s ease-in-out infinite}
+/* Le logo garde un souffle plus marqué : lui, il ne demande rien, il
+   DIT où l'on est. Une signature peut s'effacer, une invitation non. */
+@keyframes respire-logo{0%,100%{opacity:1}50%{opacity:.22}}
+body.v-objectives  #wm-O  {animation:respire-logo 2.8s ease-in-out infinite}
+body.v-habits      #wm-H  {animation:respire-logo 2.8s ease-in-out infinite}
 /* ⚠️ LE H RESPIRE AUSSI SUR LES RÉPULSIONS · 09/09/2026. Une répulsion
    EST une habitude — une mauvaise. C'est même tout le sujet de la vue :
    « habits to kill ». La même lettre, donc, et le pied du T avec elle :
    c'est la même chose vue par son revers. */
-body.v-repulsions  #wm-H  {animation:breathe 2.8s ease-in-out infinite}
-body.v-repulsions  #t-foot{animation:breathe 2.8s ease-in-out infinite}
-@keyframes breathe{0%,100%{opacity:1}50%{opacity:.18}}
+body.v-repulsions  #wm-H  {animation:respire-logo 2.8s ease-in-out infinite}
+body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
+/* ⚠️ CE N'ÉTAIT PLUS UNE RESPIRATION, C'ÉTAIT UN CLIGNOTANT · 15/09/2026.
+   Descendre à .18 d'opacité fait DISPARAÎTRE l'élément une demi-seconde
+   sur trois : l'œil le lit comme une alarme, pas comme une invitation.
+   Le souffle va maintenant de 1 à .62 — on voit la pièce bouger, on ne
+   la voit jamais s'éteindre. Et la période passe de 2,8 à 4,2 s : plus
+   lent qu'une respiration humaine au repos, donc calme. */
+@keyframes breathe{0%,100%{opacity:1}50%{opacity:.62}}
 @keyframes wm-blink{0%,55%{opacity:1}56%,100%{opacity:.18}}
 @media(prefers-reduced-motion:reduce){
   #wm-O,#wm-H,#t-foot{animation:none!important}
@@ -214,7 +223,7 @@ body.v-repulsions  #t-foot{animation:breathe 2.8s ease-in-out infinite}
    Slogan, bouton, badge : rien de la marque HIGHER ne paraît tant que
    `body.higher` n'est pas posée — et elle ne l'est que pour un membre
    connecté qui a un abonnement VIVANT **et** la méthode Stoner faite sur
-   totehm.space. Masqué PAR DÉFAUT, en CSS : si la vérification échoue, si le
+   totehm.com. Masqué PAR DÉFAUT, en CSS : si la vérification échoue, si le
    réseau tombe, si le JS casse, rien ne s'affiche. L'inverse — afficher
    puis retirer — laisse toujours une fenêtre où l'exclusivité fuit. */
 .higher-only{display:none!important}
@@ -252,7 +261,7 @@ body.higher .set-block.higher-only{display:flex!important}
 #book.show,#nextobj.show{opacity:1;pointer-events:auto}
 #book iframe,#nextobj iframe{width:100%;height:100%;border:none;display:block}
 
-/* La méthode Stoner vit sur totehm.space. [Get Higher with my Totehm] est un
+/* La méthode Stoner vit sur totehm.com. [Get Higher with my Totehm] est un
    lien, rien de plus : plus d'overlay, plus de décollage, plus de porte
    Lisbonne. Pour les rétablir, ils vivaient ici — #stoner, #stoner-door,
    #street-btn, #stoner-tagline, #lift-hg et body.liftoff. */
@@ -308,7 +317,10 @@ body.higher .set-block.higher-only{display:flex!important}
    le devenir. Zéro reflow, zéro peinture : une transformation
    composite, le GPU s'en charge. */
 #conn-bar .dot{animation:vrille 7s linear infinite}
-#mw-dot{width:26px;height:26px;border-radius:0;background:#639922;
+/* 14 px et non 26 : à 26 il devenait le sujet de l'écran alors qu'il
+   n'est qu'un signe de vie. Il tourne toujours aussi vite — c'est la
+   VITESSE qui fait le rond, pas la taille. */
+#mw-dot{width:14px;height:14px;border-radius:0;background:#639922;
   will-change:transform;animation:vrille .22s linear infinite;
   margin:0 auto 14px;display:block}
 @keyframes vrille{from{transform:rotate(0)}to{transform:rotate(360deg)}}
@@ -626,6 +638,17 @@ body.higher .set-block.higher-only{display:flex!important}
 /* ══ LE MOT RACONTE LE LIEN ══════════════════════════════════════════
    WHY, HOW, PROTECTS : un groupe de mini-boîtes porte le mot qui dit
    pourquoi elles sont là. Trois mots, et la liste devient une phrase. */
+/* ══ LA BOÎTE FILTRE · 15/09/2026 ════════════════════════════════════
+   Elle est une boîte comme les autres — même padding, même graisse —
+   mais elle ne porte pas la couleur de la vue : elle n'est pas une
+   pièce du Totehm, elle est le RÉGLAGE du Totehm. Un gris à peine posé
+   sur le papier, et son titre en Space Mono comme tous les mots de
+   service du produit. */
+.habit.filtre .h-body{background:rgba(255,255,255,.07)}
+.habit.filtre .v-name{font-family:'Space Mono',monospace;font-size:8px;
+  letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.habit.filtre .tick{display:none}
+@media(hover:hover){.habit.filtre .h-body:hover{background:rgba(255,255,255,.1);filter:none}}
 .mg{display:block;margin-top:9px}
 .mg-l{display:block;font-family:'Space Mono',monospace;font-size:8px;
   letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.5);
@@ -636,7 +659,7 @@ body.higher .set-block.higher-only{display:flex!important}
    Même souffle que le T et que le O du wordmark : 2,8 s, ease-in-out.
    Un réglage vide appelle le doigt sans crier, et s'arrête dès qu'il est
    posé. C'est la grammaire du logo, pas un clignotant de plus. */
-.vit{animation:breathe 2.8s ease-in-out infinite}
+.vit{animation:breathe 4.2s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.vit{animation:none}}
 
 /* ══ ÉCRIRE DANS LA COULEUR DE CE QU'ON POSE ═════════════════════════
@@ -646,7 +669,7 @@ body.higher .set-block.higher-only{display:flex!important}
 .pk-list .pk-o.k-o{background:var(--blue)}
 .pk-list .pk-o.k-r{background:var(--rep)}
 .pk-list .pk-o.k-h{background:var(--navy)}
-.pk-list .pk-o.vit{animation:breathe 3.4s ease-in-out infinite}
+.pk-list .pk-o.vit{animation:breathe 5s ease-in-out infinite}
 .pk-list .pk-o:hover{filter:brightness(1.18);animation:none}
 #habits .in.nw.k-o{background:var(--blue)}
 #habits .in.nw.k-r{background:var(--rep)}
@@ -1357,6 +1380,17 @@ body:not(.gate) #gate{display:none}
 
 /* ── Le carré du logo : taille fixe, aucune variation par viewport ── */
 /* Rangée haute : logo 4-SVG + bouton côte à côte, centrés ensemble */
+/* LA CARTE DE VISITE. Elle vit dans le flux du gate, au-dessus du logo,
+   comme `#conn-bar` : l'atterrissage se lit de haut en bas — qui je suis,
+   le logo, la porte. Les deux réglages de membre (`.gid`) ne paraissent
+   que pour quelqu'un de connecté ; la recherche reste pour tout le monde,
+   c'est la seule chose qui s'adresse à un inconnu. */
+#gate-id{display:flex;flex-direction:column;align-items:center;gap:7px;
+  width:100%;max-width:340px;margin:0 auto 14px;padding:0 18px}
+body:not(.member) #gate-id .gid,
+body:not(.member) #gate-id #set-name,
+body:not(.member) #gate-id #vis-panel,
+body:not(.member) #gate-id #name-note{display:none}
 #gate-top-row{display:flex;flex-direction:column;align-items:center;
   gap:16px;flex-shrink:0}
 #gate-logo{position:relative;flex-shrink:0;
@@ -1812,6 +1846,18 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -1833,6 +1879,7 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
 .h-text:hover::placeholder,
 .h-hint:hover,
 .mini-x:hover,
+.habit.filtre .v-name:hover,
 .mg-l:hover,
 #habits .in.nw:hover::placeholder,
 .pk-say:hover,
@@ -1911,6 +1958,22 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
   <a id="terms-corner" href="terms.html" target="_blank" rel="noopener">Simple terms of use</a>
 
 <section id="gate-hero">
+  <!-- LA CARTE DE VISITE, au-dessus du logo : mon nom, qui me voit, et
+       la porte vers les autres. Visible pour un membre connecté ; un
+       inconnu n'a rien à nommer, il ne voit que la recherche. -->
+  <div id="gate-id">
+    <button class="btn-sig gid" id="name-btn">Name of my Totehm</button>
+    <input class="line-input hide" id="set-name" maxlength="24" placeholder="my Totehm" autocomplete="off" spellcheck="false">
+    <div class="note dim hide" id="name-note"></div>
+
+    <button class="btn-sig gid" id="vis-btn">Visibility</button>
+    <div class="hide" id="vis-panel"><div class="row"><button class="size-btn" id="set-private">Private</button><button class="size-btn" id="set-members">Visible to members</button></div></div>
+
+    <button class="btn-sig" id="search-btn">Search a Totehm</button>
+    <input class="line-input hide" id="search-input" maxlength="24" placeholder="name of a Totehm" autocomplete="off" spellcheck="false">
+    <div class="note dim hide" id="search-note"></div>
+  </div>
+
   <div id="gate-top-row">
   <div id="gate-logo">
     <svg class="glayer" id="gl-bg"   viewBox="0 0 224.88 224.08" preserveAspectRatio="none"    aria-hidden="true"><defs><mask id="tgb_m" maskUnits="userSpaceOnUse" x="-40" y="-40" width="310" height="310"><rect x="-40" y="-40" width="310" height="310" fill="#fff"/><circle cx="56.421" cy="0.000" r="13.86" fill="#000"/><circle cx="56.421" cy="224.078" r="13.86" fill="#000"/><circle cx="112.440" cy="0.000" r="13.86" fill="#000"/><circle cx="112.440" cy="224.078" r="13.86" fill="#000"/><circle cx="168.459" cy="0.000" r="13.86" fill="#000"/><circle cx="168.459" cy="224.078" r="13.86" fill="#000"/><circle cx="0.402" cy="56.020" r="13.86" fill="#000"/><circle cx="224.478" cy="56.020" r="13.86" fill="#000"/><circle cx="0.402" cy="112.039" r="13.86" fill="#000"/><circle cx="224.478" cy="112.039" r="13.86" fill="#000"/><circle cx="0.402" cy="168.059" r="13.86" fill="#000"/><circle cx="224.478" cy="168.059" r="13.86" fill="#000"/></mask></defs><rect x="0.402" y="0.000" width="224.076" height="224.078" fill="#333366" mask="url(#tgb_m)"/></svg>
@@ -2103,7 +2166,11 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
     </button>
   </div>
 </div>
-<div id="filter-modal" class="hide" role="dialog" aria-label="Filter habits">
+<!-- ⚠️ `#filter-modal` NE S'OUVRE PLUS · 15/09/2026. Le filtre est une
+     boîte en tête de liste (`boiteFiltre()`). Le balisage reste le temps
+     d'un lot pour ne rien casser au câblage voisin, mais rien ne
+     l'affiche : `openFilterModal()` déplie la boîte. -->
+<div id="filter-modal" class="hide" hidden role="dialog" aria-label="Filter habits">
   <div class="hp-card">
     <button class="hp-row" id="fm-freq" type="button">
       <span class="hp-lbl">Time Frequency</span>
@@ -2167,30 +2234,17 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
            Elles vivent ici — dans le menu — et le menu ne s'ouvre que
            depuis l'intérieur du Totehm.
            Retour arrière : ce bloc et les deux câblages en bas du module. -->
-      <!-- Menu en 4 boutons alignés : Name, Visibility, City, Search -->
-      <div class="set-block">
-        <div class="menu-row">
-          <button class="btn-sig" id="name-btn">Name of my Totehm</button>
-          <input class="line-input hide" id="set-name" maxlength="24" placeholder="my Totehm" autocomplete="off" spellcheck="false">
-          <div class="note dim hide" id="name-note"></div>
-        </div>
-      </div>
+      <!-- ══ TROIS BLOCS ONT QUITTÉ L'ESPACE MEMBRE · 15/09/2026 ═══════
+           Le NOM, la VISIBILITÉ et la RECHERCHE sont maintenant sur
+           l'ATTERRISSAGE, au-dessus du logo.
 
-      <div class="set-block">
-        <div class="menu-row">
-          <button class="btn-sig" id="vis-btn">Visibility</button>
-          <div class="hide" id="vis-panel"><div class="row"><button class="size-btn" id="set-private">Private</button><button class="size-btn" id="set-members">Visible to members</button></div></div>
-        </div>
-      </div>
-
-      <!-- Curseur PlayStation — visible uniquement dans les Paramètres -->
-      <div class="set-block">
-        <div class="menu-row">
-          <button class="btn-sig" id="search-btn">Search a Totehm</button>
-          <input class="line-input hide" id="search-input" maxlength="24" placeholder="name of a Totehm" autocomplete="off" spellcheck="false">
-          <div class="note dim hide" id="search-note"></div>
-        </div>
-      </div>
+           Pourquoi : ce sont les trois seules choses qu'on règle AVANT
+           d'entrer, pas pendant. Nommer son Totehm et décider qui le
+           voit, c'est la carte de visite ; chercher celui d'un autre,
+           c'est la porte d'à côté. Rien de tout ça n'est un réglage
+           qu'on va chercher à deux gestes une fois dedans.
+           Ce qui reste ici est ce qui ne concerne QUE le membre connecté :
+           l'abonnement, le bot, le compte. -->
 
       <!-- Abonnement : offre unique Higher Club, peinte par paintSubscription() -->
       <div id="mw-sub"></div>
@@ -2209,7 +2263,7 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
 
       <!-- Bouton [Get Higher with my Totehm] : monte vers Stoner avec animation d'élévation -->
       <div class="set-block higher-only">
-        <a class="btn-sig higher-only" id="btn-get-higher" href="https://www.totehm.space" target="_blank" rel="noopener">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> with my Totehm</a>
+        <a class="btn-sig higher-only" id="btn-get-higher" href="https://www.totehm.com" target="_blank" rel="noopener">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> with my Totehm</a>
       </div>
 
       <!-- Bouton [Wear the dopest branding ever made] : pont vers la boutique -->
@@ -2259,7 +2313,7 @@ async function logTotehmEvent(kind, habitText, detail){
 }
 
 /* Bouton contextuel "Wear my Totehm" :
-   - sur totehm.com -> pousse le pont vers la boutique (comportement par défaut du href)
+   - sur totehm.space -> pousse le pont vers la boutique (comportement par défaut du href)
    - sur higher.boutique -> renvoie au menu boutique local */
 (function(){
   const btn=$('wear-btn'); if(!btn) return;
@@ -2590,14 +2644,12 @@ async function cloudLoad(){
   const {data,error}=await sb.from('totehms').select('*').eq('user_id',me.id);
   if(error||!data||!data.length)return;
   const habits=[];const seen={};
-  /* ⚠️ `o` EST TRANSPORTÉ, PAS DÉDUIT. Il porte le PREMIER objectif que
-     sert cette habitude — celui que le bot lit encore. Le front le tient
-     à jour à chaque attache ou détache (`posePremier` → `save`), et le
-     snapshot `cloudSave` l'écrit dans `steps` en même temps que le reste.
-     Le reconstruire ici en `{t,f,i}` le jetait — et comme `cloudSave`
-     réécrit `steps` EN ENTIER, la liaison disparaissait à la frappe
-     suivante. Même piège que `totehms.bot` le 03/09 : un snapshot qui
-     écrase tout doit transporter tout ce qu'il écrase. */
+  /* ⚠️ `o` EST TRANSPORTÉ, PAS DÉDUIT. Il porte l'objectif que sert cette
+     habitude, et il est écrit par `habit_set_trip()` côté serveur. Le
+     reconstruire en `{t,f,i}` le jetait — et comme `cloudSave` réécrit
+     `steps` EN ENTIER, la liaison disparaissait à la frappe suivante.
+     Même piège que `totehms.bot` le 03/09 : un snapshot qui écrase tout
+     doit transporter tout ce qu'il écrase. */
   /* ⚠️ `is` EST TRANSPORTÉ AUSSI · 09/09/2026 — même piège que `o`, et il
      coûtait les SEPT INTENTIONS : `cloudSave` écrit `state.habits` en
      entier, donc la liste partait bien, mais la reconstruction ici ne
@@ -2894,7 +2946,12 @@ document.addEventListener('keydown',(e)=>{if(e.key==='Escape'&&!$('habit-peek').
 /* ══ FILTRE au tap sur bigT (T.png du haut) ══
    Ouvre une modale même format que habit-peek : Time Frequency + Intention.
    Le filtre choisi s'affiche dans un badge avec × pour retirer. */
-function openFilterModal(){
+/* `openFilterModal()` n'est plus appelée que par la compatibilité : le
+   filtre est une BOÎTE. Elle déplie la boîte au lieu d'ouvrir la
+   fenêtre — une fonction qu'on garde doit faire la bonne chose, pas
+   l'ancienne. */
+function openFilterModal(){ filtreOuvert=true; pk=null; renderZone(); }
+function openFilterModalMORT(){
   $('fm-freq-val').textContent=filterF?flabel(filterF):'any rhythm';
   if(filterI&&INT_BY_ID[filterI]){
     const x=INT_BY_ID[filterI];
@@ -2908,8 +2965,12 @@ function openFilterModal(){
 }
 function closeFilterModal(){$('filter-modal').classList.add('hide');}
 $('bigT').style.cursor='pointer';
-$('bigT').onclick=()=>openFilterModal();
-$('filter-arrow').onclick=()=>openFilterModal();
+/* ⚠️ LE T N'OUVRE PLUS DE FENÊTRE · 15/09/2026. Il déplie la boîte
+   filtre EN TÊTE DE LISTE — dans le Totehm, avec le rail, la couleur et
+   la grammaire de boîte. Voir `boiteFiltre()`. */
+$('bigT').onclick=()=>{ filtreOuvert=!filtreOuvert; pk=null; renderZone();
+  if(filtreOuvert){const sc=$('fv-inner'); if(sc)sc.scrollTop=0;} };
+$('filter-arrow').onclick=()=>{ filtreOuvert=true; pk=null; renderZone(); };
 /* TOTEHM.png cliquable : ouvre le Dashboard, comme la petite flèche du bas */
 $('wordmark').style.cursor='pointer';
 $('wordmark').onclick=()=>openDashboard();
@@ -3264,9 +3325,9 @@ let wDirty=false, wTimer=null;
 
    `apres()` envoyait sans jamais attendre. Supprimer faisait donc :
      1. on retire l'objectif de la liste (immédiat, à l'écran)
-     2. on envoie `objective_close` (parti, pas arrivé)
+     2. on envoie `trip_close` (parti, pas arrivé)
      3. `fermer()` recharge l'arbre — et `my_trips` répond AVANT que
-        `objective_close` ait été commité.
+        `trip_close` ait été commité.
    Le serveur renvoyait donc l'objectif encore actif, et il réapparaissait
    sous les yeux. Rien n'était cassé : c'était une COURSE, et elle se
    gagnait presque toujours du mauvais côté.
@@ -3495,6 +3556,56 @@ function lienPicker(k,id,dejaIds,liste,ph,col){
 const plus=(q,k,id,mot)=>'<button type="button" class="dash'+(pkOn(q,k,id)?' on':'')+'"'
   +' data-pk="'+q+':'+k+':'+esc(String(id))+'">'+(pkOn(q,k,id)?'close':'+ '+mot)+'</button>';
 
+/* ══ LE FILTRE EST UNE BOÎTE · 15/09/2026 ════════════════════════════
+   ⚠️ « TOUT CE QUI CONCERNE LE TOTEHM RESTE DANS LE TOTEHM. »
+
+   Le filtre s'ouvrait en fenêtre plein écran, sur un voile noir : on
+   QUITTAIT le Totehm pour régler le Totehm, et une fois dedans il n'y
+   avait plus un repère — ni rail, ni couleur, ni boîte.
+
+   Il est maintenant une BOÎTE, la première de la liste, dans la même
+   grammaire que toutes les autres : un titre, une ligne d'unité qui se
+   touche, et les mêmes sélecteurs d'intention et de rythme qui
+   s'ouvrent DEDANS. Rien de neuf à apprendre — c'est la boîte qu'on
+   connaît, qui filtre au lieu de raconter. */
+let filtreOuvert=false;
+const fpkOn=q=>!!pk&&pk.q===q&&pk.k==='f';
+
+function boiteFiltre(){
+  const ai = filterI&&INT_BY_ID[filterI];
+  const unit =
+    '<button type="button" class="v-b" data-pk="fint:f:0" style="color:'
+      +(ai?intColor(filterI):'rgba(255,255,255,.62)')+'">'
+      +esc(ai?intName(filterI):'any intention')+'</button>'
+   +'<button type="button" class="v-b" data-pk="ffreq:f:0">'
+      +esc(filterF?flabel(filterF):'any rhythm')+' \u25be</button>';
+
+  let haut='';
+  if(fpkOn('fint'))
+    haut='<span class="pkw"><span class="ints">'+INTS.map(z=>
+      '<button type="button" class="int'+(filterI===z.id?' on':'')+'" data-fint="'+z.id+'"'
+      +' aria-pressed="'+(filterI===z.id)+'" style="--ic:'+z.color+'">'
+      +'<span class="int-n">'+esc(z.name)+'</span>'
+      +'<span class="int-p">'+esc(z.pillar)+'</span></button>').join('')+'</span></span>';
+  if(fpkOn('ffreq'))
+    haut='<span class="pkw"><span class="pk-list">'+FREQS.map(f=>
+      '<button type="button" class="pk-o'+(filterF===f.id?' on':'')+'" data-ffq="'+f.id+'">'
+      +esc(f.label)+'</button>').join('')+'</span></span>';
+
+  /* On ne propose d'effacer que s'il y a quelque chose à effacer : un
+     bouton gris permanent apprend à ne plus le voir. */
+  const bas = (filterF||filterI)
+    ? '<button type="button" class="btn g" data-fclear="1">show everything</button>' : '';
+
+  return '<div class="habit timed filtre"><span class="tick"></span>'
+    +'<span class="h-body"><span class="v-col">'
+    +'<span class="v-name">filter</span>'
+    +'<span class="v-sub">'+unit+'</span>'
+    + haut + bas
+    +'<button type="button" class="w-x" data-fx="1" aria-label="Close the filter">&times;</button>'
+    +'</span></span></div>';
+}
+
 /* ══ LES TROIS VUES ══════════════════════════════════════════════════ */
 /* Combien de boîtes dans la vue en cours : c'est ce qui dit à la
    dernière ligne que sa flèche ↓ n'a nulle part où aller. */
@@ -3529,7 +3640,7 @@ function renderZone(){
 
   /* La bande « order by importance » a quitté le `innerHTML` : elle
      défilait avec les boîtes. Elle est fixe, sous les trois carrés. */
-  box.innerHTML=h;
+  box.innerHTML=(filtreOuvert?boiteFiltre():'')+h;
   if(change){ box.classList.remove('swap'); void box.offsetWidth; box.classList.add('swap'); }
   if(keep!=null&&sc)sc.scrollTop=keep;
   peintTraits();
@@ -3693,8 +3804,8 @@ async function creer(kind){
   if(!me){$('member-window').classList.add('show');
           if(typeof memberPaint==='function')memberPaint();return;}
   if(kind==='t'){
-    const {data,error}=await sb.rpc('objective_create',{p_text:'',p_target:null});
-    if(error){console.error('[totehm] objective_create:',error.message);return;}
+    const {data,error}=await sb.rpc('trip_create',{p_text:'',p_target:null});
+    if(error){console.error('[totehm] trip_create:',error.message);return;}
     TRIPS.unshift({id:data,text:'',target_at:null,days_left:null,habits:[]});
     wDirty=true; ouvrir('t',data); return;}
   /* ══ UNE RÉPULSION PROTÈGE QUELQUE CHOSE — C'EST SA DÉFINITION ══════
@@ -3766,8 +3877,8 @@ function detache(quoi,aId,bId){
 /* Écrire du neuf ET l'attacher, d'un seul geste. */
 async function neufEtAttache(quoi,srcId,txt){
   if(quoi==='o'){
-    const {data,error}=await sb.rpc('objective_create',{p_text:txt,p_target:null});
-    if(error){console.error('[totehm] objective_create:',error.message);return;}
+    const {data,error}=await sb.rpc('trip_create',{p_text:txt,p_target:null});
+    if(error){console.error('[totehm] trip_create:',error.message);return;}
     TRIPS.unshift({id:data,text:txt,target_at:null,days_left:null,habits:[]});
     attache('o',srcId,data);}
   else if(quoi==='r'){
@@ -3795,7 +3906,8 @@ function cable(box){
        ne voit que ce que ce sélecteur attrape : `data-mv` manquait, donc
        les deux flèches de classement ne faisaient rien du tout — le code
        qui les traite existait et n'était jamais atteint. */
-    const el=e.target.closest('[data-open],[data-add],[data-x],[data-pk],[data-int],[data-mv],'
+    const el=e.target.closest('[data-fint],[data-ffq],[data-fclear],[data-fx],'
+      +'[data-open],[data-add],[data-x],[data-pk],[data-int],[data-mv],'
       +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill]');
     if(!el)return;
     const d=el.dataset;
@@ -3804,6 +3916,17 @@ function cable(box){
        Les deux gestes se disputaient le même doigt tant que classer était
        un glissement ; avec deux flèches, il n'y a plus de conflit. */
     if(d.mv){ const p=d.mv.split(':'); bouge(p[0],p[1]); return; }
+    /* Le filtre passe AVANT tout : ses boutons vivent dans une boîte,
+       et le sélecteur remonterait sinon sur un `[data-pk]` voisin. */
+    if(d.fx!==undefined){ e.stopPropagation(); filtreOuvert=false; pk=null; renderZone(); return; }
+    if(d.fint!==undefined){ e.stopPropagation();
+      filterI = (filterI===d.fint) ? null : d.fint;
+      saveFilter(); pk=null; renderZone(); return; }
+    if(d.ffq!==undefined){ e.stopPropagation();
+      filterF = (filterF===d.ffq) ? null : d.ffq;
+      saveFilter(); pk=null; renderZone(); return; }
+    if(d.fclear!==undefined){ e.stopPropagation();
+      filterF=null; filterI=null; saveFilter(); pk=null; renderZone(); return; }
     if(d.open){ const p=d.open.split(':'); ouvrir(p[0],p[1]); return; }
     if(d.add){ creer(d.add); return; }
     if(d.x!==undefined){ e.stopPropagation(); fermer(); return; }
@@ -3818,7 +3941,7 @@ function cable(box){
     if(d.unlink){ const p=d.unlink.split('|'), q=p[0].split(':');
       detache(q[0],q[1],p[1]); renderZone(); return; }
     if(d.nodate){ const t=tripOf(d.nodate); if(t){t.target_at=null;t.days_left=null;
-      apres(sb.rpc('objective_set_target',{p_obj:t.id,p_target:null})); wDirty=true;}
+      apres(sb.rpc('trip_set_target',{p_trip:t.id,p_target:null})); wDirty=true;}
       renderZone(); return; }
     if(d.kill){ const p=d.kill.split(':'); tue(p[0],p[1]); return; }
   });
@@ -3856,7 +3979,7 @@ function cable(box){
             apres(sb.rpc('habit_rename_links',{p_old:ancien,p_new:x.t}));}
           x.t0=x.t; }); }
       else if(p[0]==='t'){ const z=tripOf(p[1]); if(!z)return; z.text=v; wDirty=true;
-        differe('t:'+z.id,()=>apres(sb.rpc('objective_rename',{p_obj:z.id,p_text:z.text}))); }
+        differe('t:'+z.id,()=>apres(sb.rpc('trip_rename',{p_trip:z.id,p_text:z.text}))); }
       else { const r=repOf(p[1]); if(!r)return; r.text=v; wDirty=true;
         /* Un brouillon s'écrit en mémoire : il n'a pas encore de ligne en
            base, et `repulsion_set` sans habitude en créerait une invisible. */
@@ -3878,7 +4001,7 @@ function cable(box){
   box.addEventListener('change',e=>{
     if(e.target.dataset.date){ const t=tripOf(e.target.dataset.date); if(!t)return;
       const v=e.target.value; t.target_at = v ? v+'T00:00:00Z' : null;
-      apres(sb.rpc('objective_set_target',{p_obj:t.id,p_target:t.target_at}));
+      apres(sb.rpc('trip_set_target',{p_trip:t.id,p_target:t.target_at}));
       wDirty=true; }
   });
   box.addEventListener('keydown',e=>{
@@ -3913,7 +4036,7 @@ function tue(kind,id){
     TRIPS=TRIPS.filter(t=>String(t.id)!==String(id));
     (state.habits||[]).forEach(x=>{ const k=srv(x); if(k&&OBJ[k]){
       OBJ[k]=OBJ[k].filter(o=>o!==String(id)); posePremier(x);} });
-    apres(sb.rpc('objective_close',{p_obj:id,p_outcome:'dropped'})); }
+    apres(sb.rpc('trip_close',{p_trip:id,p_outcome:'dropped'})); }
   else { const r=repOf(id); pousse('r:'+id); wSlots.delete('r:'+id);
     REPS=REPS.filter(z=>String(z.id)!==String(id));
     if(r&&!r.brouillon)apres(sb.rpc('repulsion_retire',{p_id:Number(id)})); }
@@ -4143,7 +4266,7 @@ function closeMember(){ $('member-window').classList.remove('show'); }
 $('sn-home').onclick =()=>{closeMember();if(!busy&&!hOpen())paint();};
 
 
-/* [Get Higher with my Totehm] est un <a> vers totehm.space. Il n'y a plus
+/* [Get Higher with my Totehm] est un <a> vers totehm.com. Il n'y a plus
    d'écouteur, plus de classe `liftoff`, plus d'overlay #stoner : la méthode
    Stoner a son domaine, ce fichier n'a pas à l'héberger. */
 
@@ -4218,7 +4341,15 @@ window.addEventListener('touchend',(e)=>{
     const now=Date.now(); if(now-t>220)acc=0; t=now;
     acc+=e.deltaX;
     if(Math.abs(acc)<70)return;
-    const i=VIEW_ORDER.indexOf(view)+(acc>0?1:-1);
+    /* ⚠️ LE SENS ÉTAIT INVERSÉ · 15/09/2026. Sur un trackpad, un
+       `deltaX` POSITIF veut dire « je pousse le contenu vers la
+       gauche », donc « montre-moi ce qui est à DROITE ». J'avais lu le
+       delta comme un déplacement de doigt et non comme un déplacement
+       de contenu — c'est l'erreur classique, et elle se voit tout de
+       suite quand on l'a dans les mains.
+       Le balayage tactile, lui, était déjà dans le bon sens : il lit un
+       déplacement de DOIGT. Les deux gestes ne se lisent pas pareil. */
+    const i=VIEW_ORDER.indexOf(view)+(acc>0?-1:1);
     acc=0;
     if(i>=0&&i<VIEW_ORDER.length)setView(VIEW_ORDER[i]);
   },{passive:true});
@@ -4389,7 +4520,7 @@ $('set-members').onclick=()=>{state.vis='members';save();renderSettings();};
    prompt sur le bouton qui dit « mon monde » se comprend tout seul.
 
    La position est écrite dans `totehm_geo_v2`, la clé que map.html relit :
-   même origine (www.totehm.com), même localStorage. Une demande GPS pour
+   même origine (www.totehm.space), même localStorage. Une demande GPS pour
    les deux écrans, et la carte s'ouvre déjà localisée.
    ══════════════════════════════════════════════════════════════════════════ */
 /* Deux besoins, deux fonctions. La météo se contente d'une position d'hier ;
@@ -4416,7 +4547,7 @@ function freshPos(){
 /* ══ CE QUI A COÛTÉ CINQ VAGUES ══
    MESURÉ LE 23/08/2026 sur le DÉPLOYÉ, pas sur le fichier : Vercel servait
    `Permissions-Policy: geolocation=(), microphone=(), camera=()` sur tout
-   totehm.com. Une liste VIDE désactive la géolocalisation pour tout le
+   totehm.space. Une liste VIDE désactive la géolocalisation pour tout le
    monde, la page comprise. Le navigateur répond alors :
 
      code 1 — « Geolocation has been disabled in this document by
@@ -4648,7 +4779,7 @@ function paintSubscription(sub){
       +(CLUB.perks.length?'<ul class="s-perks">'+CLUB.perks.map(x=>'<li>'+x+'</li>').join('')+'</ul>':'')
       +'<button class="s-act" id="mw-sub-change">Manage membership</button>';
     const b=$('mw-sub-change');
-    if(b) b.onclick=()=>window.open('https://totehm.com','_blank','noopener');
+    if(b) b.onclick=()=>window.open('https://totehm.space','_blank','noopener');
   }else{
     box.innerHTML='<div class="s-lab">Membership</div>'
       +'<div class="s-plan s-club">'
@@ -4746,6 +4877,9 @@ function memberPaint(){
   $('mw-out-state').classList.toggle('hide',!!me);
   $('mw-claim-state').classList.toggle('hide',!(me&&!myProfile));
   $('mw-in-state').classList.toggle('hide',!(me&&myProfile));
+  /* `body.member` pilote la carte de visite de l'atterrissage : nommer
+     son Totehm n'a de sens que pour quelqu'un qui en a un. */
+  document.body.classList.toggle('member',!!(me&&myProfile));
   if(me&&myProfile){$('mw-who').textContent=myProfile.pseudo;$('mw-mail').textContent=me.email||'';}
 }
 $('conn-bar').onclick=()=>{$('member-window').classList.add('show');memberPaint();};
@@ -5009,7 +5143,15 @@ window.addEventListener('pageshow',e=>{
      chargement : ne pas la rajouter ici ne l'enlève pas. Mesuré —
      l'atterrissage gardait l'écran et interceptait tous les clics. */
   if(dedans){ body.classList.remove('gate');
-              history.replaceState(null,'',location.pathname); }
+              history.replaceState(null,'',location.pathname);
+    /* ⚠️ ET LA CROIX DOIT POUVOIR REPLIER · 15/09/2026. `fold()` commence
+       par `if(!open||moving) return;` — `open` est l'état LOCAL de ce
+       module, et il n'était jamais posé quand on arrivait déjà déplié
+       depuis un jumeau. Résultat : la croix ne faisait RIEN, une fois sur
+       deux, et seulement en revenant de wisdom ou de vision. Ce n'était
+       pas « parfois » : c'était systématique sur ce chemin-là.
+       On arrive dedans, donc le Totehm est OUVERT : on le dit. */
+    open=true; }
   else { body.classList.add('gate'); }
 
   /* Pendant l'état 1, aucun geste ne doit atteindre l'app en dessous — mais
@@ -5028,11 +5170,16 @@ window.addEventListener('pageshow',e=>{
   window.addEventListener('resize',()=>{ if(!open) measure(); });
   if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(!open) measure(); });
 
+  /* ⚠️ ON NE SUPPOSE JAMAIS LE NŒUD. Ces deux boutons vivent dans
+     `#gate`, et `#gate` n'existe pas dans les jumeaux (wisdom, vision) :
+     un `.onclick` sur `null` lève À L'ÉVALUATION et emporte TOUT le
+     module — la page s'affiche vide, sans un mot. Deux `if` coûtent
+     moins cher qu'un écran blanc. */
+  const ge=$('gate-enter'), go=$('gate-open');
   /* Le clic sur le logo = la déconstruction */
-  $('gate-enter').onclick=()=>enter();
-
+  if(ge) ge.onclick=()=>enter();
   /* [Open my Totehm] : strictement le même geste que le clic sur le logo */
-  $('gate-open').onclick=()=>enter();
+  if(go) go.onclick=()=>enter();
 
   /* ── Search a Totehm : un bouton, la boîte n'arrive qu'au clic ── */
   const gsb=$('gate-search-btn'), gsi=$('gate-search-input'), gsn=$('gate-search-note');

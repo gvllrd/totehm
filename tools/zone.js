@@ -180,6 +180,56 @@ function lienPicker(k,id,dejaIds,liste,ph,col){
 const plus=(q,k,id,mot)=>'<button type="button" class="dash'+(pkOn(q,k,id)?' on':'')+'"'
   +' data-pk="'+q+':'+k+':'+esc(String(id))+'">'+(pkOn(q,k,id)?'close':'+ '+mot)+'</button>';
 
+/* ══ LE FILTRE EST UNE BOÎTE · 15/09/2026 ════════════════════════════
+   ⚠️ « TOUT CE QUI CONCERNE LE TOTEHM RESTE DANS LE TOTEHM. »
+
+   Le filtre s'ouvrait en fenêtre plein écran, sur un voile noir : on
+   QUITTAIT le Totehm pour régler le Totehm, et une fois dedans il n'y
+   avait plus un repère — ni rail, ni couleur, ni boîte.
+
+   Il est maintenant une BOÎTE, la première de la liste, dans la même
+   grammaire que toutes les autres : un titre, une ligne d'unité qui se
+   touche, et les mêmes sélecteurs d'intention et de rythme qui
+   s'ouvrent DEDANS. Rien de neuf à apprendre — c'est la boîte qu'on
+   connaît, qui filtre au lieu de raconter. */
+let filtreOuvert=false;
+const fpkOn=q=>!!pk&&pk.q===q&&pk.k==='f';
+
+function boiteFiltre(){
+  const ai = filterI&&INT_BY_ID[filterI];
+  const unit =
+    '<button type="button" class="v-b" data-pk="fint:f:0" style="color:'
+      +(ai?intColor(filterI):'rgba(255,255,255,.62)')+'">'
+      +esc(ai?intName(filterI):'any intention')+'</button>'
+   +'<button type="button" class="v-b" data-pk="ffreq:f:0">'
+      +esc(filterF?flabel(filterF):'any rhythm')+' \u25be</button>';
+
+  let haut='';
+  if(fpkOn('fint'))
+    haut='<span class="pkw"><span class="ints">'+INTS.map(z=>
+      '<button type="button" class="int'+(filterI===z.id?' on':'')+'" data-fint="'+z.id+'"'
+      +' aria-pressed="'+(filterI===z.id)+'" style="--ic:'+z.color+'">'
+      +'<span class="int-n">'+esc(z.name)+'</span>'
+      +'<span class="int-p">'+esc(z.pillar)+'</span></button>').join('')+'</span></span>';
+  if(fpkOn('ffreq'))
+    haut='<span class="pkw"><span class="pk-list">'+FREQS.map(f=>
+      '<button type="button" class="pk-o'+(filterF===f.id?' on':'')+'" data-ffq="'+f.id+'">'
+      +esc(f.label)+'</button>').join('')+'</span></span>';
+
+  /* On ne propose d'effacer que s'il y a quelque chose à effacer : un
+     bouton gris permanent apprend à ne plus le voir. */
+  const bas = (filterF||filterI)
+    ? '<button type="button" class="btn g" data-fclear="1">show everything</button>' : '';
+
+  return '<div class="habit timed filtre"><span class="tick"></span>'
+    +'<span class="h-body"><span class="v-col">'
+    +'<span class="v-name">filter</span>'
+    +'<span class="v-sub">'+unit+'</span>'
+    + haut + bas
+    +'<button type="button" class="w-x" data-fx="1" aria-label="Close the filter">&times;</button>'
+    +'</span></span></div>';
+}
+
 /* ══ LES TROIS VUES ══════════════════════════════════════════════════ */
 /* Combien de boîtes dans la vue en cours : c'est ce qui dit à la
    dernière ligne que sa flèche ↓ n'a nulle part où aller. */
@@ -214,7 +264,7 @@ function renderZone(){
 
   /* La bande « order by importance » a quitté le `innerHTML` : elle
      défilait avec les boîtes. Elle est fixe, sous les trois carrés. */
-  box.innerHTML=h;
+  box.innerHTML=(filtreOuvert?boiteFiltre():'')+h;
   if(change){ box.classList.remove('swap'); void box.offsetWidth; box.classList.add('swap'); }
   if(keep!=null&&sc)sc.scrollTop=keep;
   peintTraits();
@@ -480,7 +530,8 @@ function cable(box){
        ne voit que ce que ce sélecteur attrape : `data-mv` manquait, donc
        les deux flèches de classement ne faisaient rien du tout — le code
        qui les traite existait et n'était jamais atteint. */
-    const el=e.target.closest('[data-open],[data-add],[data-x],[data-pk],[data-int],[data-mv],'
+    const el=e.target.closest('[data-fint],[data-ffq],[data-fclear],[data-fx],'
+      +'[data-open],[data-add],[data-x],[data-pk],[data-int],[data-mv],'
       +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill]');
     if(!el)return;
     const d=el.dataset;
@@ -489,6 +540,17 @@ function cable(box){
        Les deux gestes se disputaient le même doigt tant que classer était
        un glissement ; avec deux flèches, il n'y a plus de conflit. */
     if(d.mv){ const p=d.mv.split(':'); bouge(p[0],p[1]); return; }
+    /* Le filtre passe AVANT tout : ses boutons vivent dans une boîte,
+       et le sélecteur remonterait sinon sur un `[data-pk]` voisin. */
+    if(d.fx!==undefined){ e.stopPropagation(); filtreOuvert=false; pk=null; renderZone(); return; }
+    if(d.fint!==undefined){ e.stopPropagation();
+      filterI = (filterI===d.fint) ? null : d.fint;
+      saveFilter(); pk=null; renderZone(); return; }
+    if(d.ffq!==undefined){ e.stopPropagation();
+      filterF = (filterF===d.ffq) ? null : d.ffq;
+      saveFilter(); pk=null; renderZone(); return; }
+    if(d.fclear!==undefined){ e.stopPropagation();
+      filterF=null; filterI=null; saveFilter(); pk=null; renderZone(); return; }
     if(d.open){ const p=d.open.split(':'); ouvrir(p[0],p[1]); return; }
     if(d.add){ creer(d.add); return; }
     if(d.x!==undefined){ e.stopPropagation(); fermer(); return; }

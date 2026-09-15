@@ -10,7 +10,7 @@
     · au PIED de la liste, geste vers le haut   → le Totehm se replie
       vers l'atterrissage (même geste que la croix #fold-x et Échap)
     · La méthode Stoner n'est plus hébergée ici : [Get Higher] est un
-      lien vers totehm.space
+      lien vers totehm.com
 
   Horizontaux :
     · swipe DROITE → My Wisdom  ·  swipe GAUCHE → My next objective
@@ -42,7 +42,7 @@
      PAPIER d'un ton. Les trois couleurs de marque restent intactes sur
      leurs blocs — navy, bleu clair, rouge-violet — et se détachent
      maintenant par leur VALEUR, comme les blocs empilés du Totehm de
-     totehm.space. Une différence de ton, pas une bordure. */
+     totehm.com. Une différence de ton, pas une bordure. */
   /* LE JUMEAU N'A QU'UNE COULEUR. Le papier recule d'un ton sous
      elle, exactement comme au Totehm : un bloc de la couleur du papier
      est invisible (mesuré deux fois, ça ne se redémontre plus). */
@@ -51,7 +51,7 @@
      n'existe pas — celui-ci si, et il ne demande AUCUN filet. */
   --navy-d:#22224a;
   /* LES TROIS COULEURS DES BLOCS : --navy, --blue, --rep. Mesurées sur le
-     Totehm empilé de totehm.space, la référence de la marque.
+     Totehm empilé de totehm.com, la référence de la marque.
      --sky est la version TEXTE du bleu de l'objectif : #36498c en aplat se
      lit sur le papier navy, mais en texte sur une carte sombre il ne se lit
      pas. Un remplissage n'est jamais --sky, un texte n'est jamais --blue.
@@ -65,7 +65,7 @@
                       TOUT ce qui est fixe en haut : la liste commence
                       après, jamais dessous. */
   --band-b:116px;  /* bande basse : TOTEHM.png + flèche menu */
-  --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+  --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23743169'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%2336498c'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   /* Le carré perforé du logo (desktop) — même dessin que #gl-bg.
      navy = Habits · bleu clair = Next Objective · rouge-violet = Book */
@@ -125,15 +125,24 @@ body:not(.gate) #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
    alors c'est le PIED du T qui respire. Inventer un glyphe serait du
    décor ; faire respirer une pièce du logo, non. */
 #wm-O,#wm-H,#t-foot{transition:opacity .3s}
-body.v-objectives  #wm-O  {animation:breathe 2.8s ease-in-out infinite}
-body.v-habits      #wm-H  {animation:breathe 2.8s ease-in-out infinite}
+/* Le logo garde un souffle plus marqué : lui, il ne demande rien, il
+   DIT où l'on est. Une signature peut s'effacer, une invitation non. */
+@keyframes respire-logo{0%,100%{opacity:1}50%{opacity:.22}}
+body.v-objectives  #wm-O  {animation:respire-logo 2.8s ease-in-out infinite}
+body.v-habits      #wm-H  {animation:respire-logo 2.8s ease-in-out infinite}
 /* ⚠️ LE H RESPIRE AUSSI SUR LES RÉPULSIONS · 09/09/2026. Une répulsion
    EST une habitude — une mauvaise. C'est même tout le sujet de la vue :
    « habits to kill ». La même lettre, donc, et le pied du T avec elle :
    c'est la même chose vue par son revers. */
-body.v-repulsions  #wm-H  {animation:breathe 2.8s ease-in-out infinite}
-body.v-repulsions  #t-foot{animation:breathe 2.8s ease-in-out infinite}
-@keyframes breathe{0%,100%{opacity:1}50%{opacity:.18}}
+body.v-repulsions  #wm-H  {animation:respire-logo 2.8s ease-in-out infinite}
+body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
+/* ⚠️ CE N'ÉTAIT PLUS UNE RESPIRATION, C'ÉTAIT UN CLIGNOTANT · 15/09/2026.
+   Descendre à .18 d'opacité fait DISPARAÎTRE l'élément une demi-seconde
+   sur trois : l'œil le lit comme une alarme, pas comme une invitation.
+   Le souffle va maintenant de 1 à .62 — on voit la pièce bouger, on ne
+   la voit jamais s'éteindre. Et la période passe de 2,8 à 4,2 s : plus
+   lent qu'une respiration humaine au repos, donc calme. */
+@keyframes breathe{0%,100%{opacity:1}50%{opacity:.62}}
 @keyframes wm-blink{0%,55%{opacity:1}56%,100%{opacity:.18}}
 @media(prefers-reduced-motion:reduce){
   #wm-O,#wm-H,#t-foot{animation:none!important}
@@ -217,6 +226,12 @@ body.v-repulsions  #t-foot{animation:breathe 2.8s ease-in-out infinite}
 /* `#vname` a disparu : chaque carré porte son nom (voir `.vt-n`). */
 /* LE MOT DU JUMEAU, à la place exacte des trois carrés : même hauteur,
    même bande fixe, donc le même écart avec la première boîte. */
+/* LA FUSION : tout ce qui porte la couleur du jumeau revient au navy du
+   Totehm, ensemble, en 200 ms. Une transition sur `background-color` et
+   sur `--skin` suffit — rien ne bouge, seule la teinte voyage. */
+#stage,.habit .h-body{transition:background-color .2s linear,background-image .2s linear}
+body.vers-totehm{--skin:#333366}
+body.vers-totehm #stage{background-image:none;background-color:#333366}
 #jum-say{position:fixed;top:104px;left:50%;transform:translateX(-50%);
   z-index:33;max-width:min(80vw,420px);text-align:center;
   font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;
@@ -227,7 +242,7 @@ body.v-repulsions  #t-foot{animation:breathe 2.8s ease-in-out infinite}
    Slogan, bouton, badge : rien de la marque HIGHER ne paraît tant que
    `body.higher` n'est pas posée — et elle ne l'est que pour un membre
    connecté qui a un abonnement VIVANT **et** la méthode Stoner faite sur
-   totehm.space. Masqué PAR DÉFAUT, en CSS : si la vérification échoue, si le
+   totehm.com. Masqué PAR DÉFAUT, en CSS : si la vérification échoue, si le
    réseau tombe, si le JS casse, rien ne s'affiche. L'inverse — afficher
    puis retirer — laisse toujours une fenêtre où l'exclusivité fuit. */
 .higher-only{display:none!important}
@@ -265,7 +280,7 @@ body.higher .set-block.higher-only{display:flex!important}
 #book.show,#nextobj.show{opacity:1;pointer-events:auto}
 #book iframe,#nextobj iframe{width:100%;height:100%;border:none;display:block}
 
-/* La méthode Stoner vit sur totehm.space. [Get Higher with my Totehm] est un
+/* La méthode Stoner vit sur totehm.com. [Get Higher with my Totehm] est un
    lien, rien de plus : plus d'overlay, plus de décollage, plus de porte
    Lisbonne. Pour les rétablir, ils vivaient ici — #stoner, #stoner-door,
    #street-btn, #stoner-tagline, #lift-hg et body.liftoff. */
@@ -321,7 +336,10 @@ body.higher .set-block.higher-only{display:flex!important}
    le devenir. Zéro reflow, zéro peinture : une transformation
    composite, le GPU s'en charge. */
 #conn-bar .dot{animation:vrille 7s linear infinite}
-#mw-dot{width:26px;height:26px;border-radius:0;background:#639922;
+/* 14 px et non 26 : à 26 il devenait le sujet de l'écran alors qu'il
+   n'est qu'un signe de vie. Il tourne toujours aussi vite — c'est la
+   VITESSE qui fait le rond, pas la taille. */
+#mw-dot{width:14px;height:14px;border-radius:0;background:#639922;
   will-change:transform;animation:vrille .22s linear infinite;
   margin:0 auto 14px;display:block}
 @keyframes vrille{from{transform:rotate(0)}to{transform:rotate(360deg)}}
@@ -638,6 +656,17 @@ body.higher .set-block.higher-only{display:flex!important}
 /* ══ LE MOT RACONTE LE LIEN ══════════════════════════════════════════
    WHY, HOW, PROTECTS : un groupe de mini-boîtes porte le mot qui dit
    pourquoi elles sont là. Trois mots, et la liste devient une phrase. */
+/* ══ LA BOÎTE FILTRE · 15/09/2026 ════════════════════════════════════
+   Elle est une boîte comme les autres — même padding, même graisse —
+   mais elle ne porte pas la couleur de la vue : elle n'est pas une
+   pièce du Totehm, elle est le RÉGLAGE du Totehm. Un gris à peine posé
+   sur le papier, et son titre en Space Mono comme tous les mots de
+   service du produit. */
+.habit.filtre .h-body{background:rgba(255,255,255,.07)}
+.habit.filtre .v-name{font-family:'Space Mono',monospace;font-size:8px;
+  letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.habit.filtre .tick{display:none}
+@media(hover:hover){.habit.filtre .h-body:hover{background:rgba(255,255,255,.1);filter:none}}
 .mg{display:block;margin-top:9px}
 .mg-l{display:block;font-family:'Space Mono',monospace;font-size:8px;
   letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.5);
@@ -648,7 +677,7 @@ body.higher .set-block.higher-only{display:flex!important}
    Même souffle que le T et que le O du wordmark : 2,8 s, ease-in-out.
    Un réglage vide appelle le doigt sans crier, et s'arrête dès qu'il est
    posé. C'est la grammaire du logo, pas un clignotant de plus. */
-.vit{animation:breathe 2.8s ease-in-out infinite}
+.vit{animation:breathe 4.2s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){.vit{animation:none}}
 
 /* ══ ÉCRIRE DANS LA COULEUR DE CE QU'ON POSE ═════════════════════════
@@ -658,7 +687,7 @@ body.higher .set-block.higher-only{display:flex!important}
 .pk-list .pk-o.k-o{background:var(--blue)}
 .pk-list .pk-o.k-r{background:var(--rep)}
 .pk-list .pk-o.k-h{background:var(--navy)}
-.pk-list .pk-o.vit{animation:breathe 3.4s ease-in-out infinite}
+.pk-list .pk-o.vit{animation:breathe 5s ease-in-out infinite}
 .pk-list .pk-o:hover{filter:brightness(1.18);animation:none}
 #habits .in.nw.k-o{background:var(--blue)}
 #habits .in.nw.k-r{background:var(--rep)}
@@ -1369,6 +1398,17 @@ body:not(.gate) #gate{display:none}
 
 /* ── Le carré du logo : taille fixe, aucune variation par viewport ── */
 /* Rangée haute : logo 4-SVG + bouton côte à côte, centrés ensemble */
+/* LA CARTE DE VISITE. Elle vit dans le flux du gate, au-dessus du logo,
+   comme `#conn-bar` : l'atterrissage se lit de haut en bas — qui je suis,
+   le logo, la porte. Les deux réglages de membre (`.gid`) ne paraissent
+   que pour quelqu'un de connecté ; la recherche reste pour tout le monde,
+   c'est la seule chose qui s'adresse à un inconnu. */
+#gate-id{display:flex;flex-direction:column;align-items:center;gap:7px;
+  width:100%;max-width:340px;margin:0 auto 14px;padding:0 18px}
+body:not(.member) #gate-id .gid,
+body:not(.member) #gate-id #set-name,
+body:not(.member) #gate-id #vis-panel,
+body:not(.member) #gate-id #name-note{display:none}
 #gate-top-row{display:flex;flex-direction:column;align-items:center;
   gap:16px;flex-shrink:0}
 #gate-logo{position:relative;flex-shrink:0;
@@ -1824,6 +1864,18 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -1845,6 +1897,7 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
 .h-text:hover::placeholder,
 .h-hint:hover,
 .mini-x:hover,
+.habit.filtre .v-name:hover,
 .mg-l:hover,
 #habits .in.nw:hover::placeholder,
 .pk-say:hover,
@@ -1922,6 +1975,19 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
      depuis le Totehm DÉPLOYÉ : il n'y a rien à déplier, et le
      garder laissait `#terms-corner` (position:fixed) intercepter
      les clics de toute la page. -->
+
+<div id="gate-id" hidden style="display:none">
+    <button class="btn-sig gid" id="name-btn">Name of my Totehm</button>
+    <input class="line-input hide" id="set-name" maxlength="24" placeholder="my Totehm" autocomplete="off" spellcheck="false">
+    <div class="note dim hide" id="name-note"></div>
+
+    <button class="btn-sig gid" id="vis-btn">Visibility</button>
+    <div class="hide" id="vis-panel"><div class="row"><button class="size-btn" id="set-private">Private</button><button class="size-btn" id="set-members">Visible to members</button></div></div>
+
+    <button class="btn-sig" id="search-btn">Search a Totehm</button>
+    <input class="line-input hide" id="search-input" maxlength="24" placeholder="name of a Totehm" autocomplete="off" spellcheck="false">
+    <div class="note dim hide" id="search-note"></div>
+  </div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
@@ -2065,7 +2131,11 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
     </button>
   </div>
 </div>
-<div id="filter-modal" class="hide" role="dialog" aria-label="Filter habits">
+<!-- ⚠️ `#filter-modal` NE S'OUVRE PLUS · 15/09/2026. Le filtre est une
+     boîte en tête de liste (`boiteFiltre()`). Le balisage reste le temps
+     d'un lot pour ne rien casser au câblage voisin, mais rien ne
+     l'affiche : `openFilterModal()` déplie la boîte. -->
+<div id="filter-modal" class="hide" hidden role="dialog" aria-label="Filter habits">
   <div class="hp-card">
     <button class="hp-row" id="fm-freq" type="button">
       <span class="hp-lbl">Time Frequency</span>
@@ -2129,30 +2199,17 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
            Elles vivent ici — dans le menu — et le menu ne s'ouvre que
            depuis l'intérieur du Totehm.
            Retour arrière : ce bloc et les deux câblages en bas du module. -->
-      <!-- Menu en 4 boutons alignés : Name, Visibility, City, Search -->
-      <div class="set-block">
-        <div class="menu-row">
-          <button class="btn-sig" id="name-btn">Name of my Totehm</button>
-          <input class="line-input hide" id="set-name" maxlength="24" placeholder="my Totehm" autocomplete="off" spellcheck="false">
-          <div class="note dim hide" id="name-note"></div>
-        </div>
-      </div>
+      <!-- ══ TROIS BLOCS ONT QUITTÉ L'ESPACE MEMBRE · 15/09/2026 ═══════
+           Le NOM, la VISIBILITÉ et la RECHERCHE sont maintenant sur
+           l'ATTERRISSAGE, au-dessus du logo.
 
-      <div class="set-block">
-        <div class="menu-row">
-          <button class="btn-sig" id="vis-btn">Visibility</button>
-          <div class="hide" id="vis-panel"><div class="row"><button class="size-btn" id="set-private">Private</button><button class="size-btn" id="set-members">Visible to members</button></div></div>
-        </div>
-      </div>
-
-      <!-- Curseur PlayStation — visible uniquement dans les Paramètres -->
-      <div class="set-block">
-        <div class="menu-row">
-          <button class="btn-sig" id="search-btn">Search a Totehm</button>
-          <input class="line-input hide" id="search-input" maxlength="24" placeholder="name of a Totehm" autocomplete="off" spellcheck="false">
-          <div class="note dim hide" id="search-note"></div>
-        </div>
-      </div>
+           Pourquoi : ce sont les trois seules choses qu'on règle AVANT
+           d'entrer, pas pendant. Nommer son Totehm et décider qui le
+           voit, c'est la carte de visite ; chercher celui d'un autre,
+           c'est la porte d'à côté. Rien de tout ça n'est un réglage
+           qu'on va chercher à deux gestes une fois dedans.
+           Ce qui reste ici est ce qui ne concerne QUE le membre connecté :
+           l'abonnement, le bot, le compte. -->
 
       <!-- Abonnement : offre unique Higher Club, peinte par paintSubscription() -->
       <div id="mw-sub"></div>
@@ -2171,7 +2228,7 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
 
       <!-- Bouton [Get Higher with my Totehm] : monte vers Stoner avec animation d'élévation -->
       <div class="set-block higher-only">
-        <a class="btn-sig higher-only" id="btn-get-higher" href="https://www.totehm.space" target="_blank" rel="noopener">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> with my Totehm</a>
+        <a class="btn-sig higher-only" id="btn-get-higher" href="https://www.totehm.com" target="_blank" rel="noopener">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> with my Totehm</a>
       </div>
 
       <!-- Bouton [Wear the dopest branding ever made] : pont vers la boutique -->
@@ -2221,7 +2278,7 @@ async function logTotehmEvent(kind, habitText, detail){
 }
 
 /* Bouton contextuel "Wear my Totehm" :
-   - sur totehm.com -> pousse le pont vers la boutique (comportement par défaut du href)
+   - sur totehm.space -> pousse le pont vers la boutique (comportement par défaut du href)
    - sur higher.boutique -> renvoie au menu boutique local */
 (function(){
   const btn=$('wear-btn'); if(!btn) return;
@@ -2552,14 +2609,12 @@ async function cloudLoad(){
   const {data,error}=await sb.from('totehms').select('*').eq('user_id',me.id);
   if(error||!data||!data.length)return;
   const habits=[];const seen={};
-  /* ⚠️ `o` EST TRANSPORTÉ, PAS DÉDUIT. Il porte le PREMIER objectif que
-     sert cette habitude — celui que le bot lit encore. Le front le tient
-     à jour à chaque attache ou détache (`posePremier` → `save`), et le
-     snapshot `cloudSave` l'écrit dans `steps` en même temps que le reste.
-     Le reconstruire ici en `{t,f,i}` le jetait — et comme `cloudSave`
-     réécrit `steps` EN ENTIER, la liaison disparaissait à la frappe
-     suivante. Même piège que `totehms.bot` le 03/09 : un snapshot qui
-     écrase tout doit transporter tout ce qu'il écrase. */
+  /* ⚠️ `o` EST TRANSPORTÉ, PAS DÉDUIT. Il porte l'objectif que sert cette
+     habitude, et il est écrit par `habit_set_trip()` côté serveur. Le
+     reconstruire en `{t,f,i}` le jetait — et comme `cloudSave` réécrit
+     `steps` EN ENTIER, la liaison disparaissait à la frappe suivante.
+     Même piège que `totehms.bot` le 03/09 : un snapshot qui écrase tout
+     doit transporter tout ce qu'il écrase. */
   /* ⚠️ `is` EST TRANSPORTÉ AUSSI · 09/09/2026 — même piège que `o`, et il
      coûtait les SEPT INTENTIONS : `cloudSave` écrit `state.habits` en
      entier, donc la liste partait bien, mais la reconstruction ici ne
@@ -2856,7 +2911,12 @@ document.addEventListener('keydown',(e)=>{if(e.key==='Escape'&&!$('habit-peek').
 /* ══ FILTRE au tap sur bigT (T.png du haut) ══
    Ouvre une modale même format que habit-peek : Time Frequency + Intention.
    Le filtre choisi s'affiche dans un badge avec × pour retirer. */
-function openFilterModal(){
+/* `openFilterModal()` n'est plus appelée que par la compatibilité : le
+   filtre est une BOÎTE. Elle déplie la boîte au lieu d'ouvrir la
+   fenêtre — une fonction qu'on garde doit faire la bonne chose, pas
+   l'ancienne. */
+function openFilterModal(){ filtreOuvert=true; pk=null; renderZone(); }
+function openFilterModalMORT(){
   $('fm-freq-val').textContent=filterF?flabel(filterF):'any rhythm';
   if(filterI&&INT_BY_ID[filterI]){
     const x=INT_BY_ID[filterI];
@@ -2870,8 +2930,12 @@ function openFilterModal(){
 }
 function closeFilterModal(){$('filter-modal').classList.add('hide');}
 $('bigT').style.cursor='pointer';
-$('bigT').onclick=()=>openFilterModal();
-$('filter-arrow').onclick=()=>openFilterModal();
+/* ⚠️ LE T N'OUVRE PLUS DE FENÊTRE · 15/09/2026. Il déplie la boîte
+   filtre EN TÊTE DE LISTE — dans le Totehm, avec le rail, la couleur et
+   la grammaire de boîte. Voir `boiteFiltre()`. */
+$('bigT').onclick=()=>{ filtreOuvert=!filtreOuvert; pk=null; renderZone();
+  if(filtreOuvert){const sc=$('fv-inner'); if(sc)sc.scrollTop=0;} };
+$('filter-arrow').onclick=()=>{ filtreOuvert=true; pk=null; renderZone(); };
 /* TOTEHM.png cliquable : ouvre le Dashboard, comme la petite flèche du bas */
 $('wordmark').style.cursor='pointer';
 $('wordmark').onclick=()=>openDashboard();
@@ -3226,9 +3290,9 @@ let wDirty=false, wTimer=null;
 
    `apres()` envoyait sans jamais attendre. Supprimer faisait donc :
      1. on retire l'objectif de la liste (immédiat, à l'écran)
-     2. on envoie `objective_close` (parti, pas arrivé)
+     2. on envoie `trip_close` (parti, pas arrivé)
      3. `fermer()` recharge l'arbre — et `my_trips` répond AVANT que
-        `objective_close` ait été commité.
+        `trip_close` ait été commité.
    Le serveur renvoyait donc l'objectif encore actif, et il réapparaissait
    sous les yeux. Rien n'était cassé : c'était une COURSE, et elle se
    gagnait presque toujours du mauvais côté.
@@ -3725,7 +3789,16 @@ $('door-next').onclick=requireMember(()=>{ location.href='vision.html'; });
    déployé, donc le fermer veut dire retourner d'où l'on vient. `#in`
    dit à `totehm.html` de s'ouvrir déjà déployé, sans rejouer le
    dépliage — sinon on paierait l'animation à chaque aller-retour. */
-$('fold-x').onclick=()=>{ location.href='totehm.html#in'; };
+$('fold-x').onclick=()=>{
+  /* ⚠️ UNE FUSION, PAS UN SAUT · 15/09/2026. Le châssis est identique au
+     pixel entre un jumeau et le Totehm : la SEULE chose qui change est la
+     couleur. Alors on la change AVANT de naviguer — 200 ms de fondu vers
+     le navy — et l'œil lit un seul écran qui se repeint, pas deux pages
+     qui se remplacent. Le chargement se fait derrière le fondu, donc il
+     ne coûte rien de plus. */
+  document.body.classList.add('vers-totehm');
+  setTimeout(()=>{ location.href='totehm.html#in'; },200);
+};
 
 /* ══ GESTE VERTICAL — SUPPRIMÉ · 07/09/2026 ══════════════════════════
    Les deux gestes de scroll — vers le haut au sommet pour ouvrir le
@@ -3751,7 +3824,7 @@ function closeMember(){ $('member-window').classList.remove('show'); }
 $('sn-home').onclick =()=>{closeMember();if(!busy&&!hOpen())paint();};
 
 
-/* [Get Higher with my Totehm] est un <a> vers totehm.space. Il n'y a plus
+/* [Get Higher with my Totehm] est un <a> vers totehm.com. Il n'y a plus
    d'écouteur, plus de classe `liftoff`, plus d'overlay #stoner : la méthode
    Stoner a son domaine, ce fichier n'a pas à l'héberger. */
 
@@ -3826,7 +3899,15 @@ window.addEventListener('touchend',(e)=>{
     const now=Date.now(); if(now-t>220)acc=0; t=now;
     acc+=e.deltaX;
     if(Math.abs(acc)<70)return;
-    const i=VIEW_ORDER.indexOf(view)+(acc>0?1:-1);
+    /* ⚠️ LE SENS ÉTAIT INVERSÉ · 15/09/2026. Sur un trackpad, un
+       `deltaX` POSITIF veut dire « je pousse le contenu vers la
+       gauche », donc « montre-moi ce qui est à DROITE ». J'avais lu le
+       delta comme un déplacement de doigt et non comme un déplacement
+       de contenu — c'est l'erreur classique, et elle se voit tout de
+       suite quand on l'a dans les mains.
+       Le balayage tactile, lui, était déjà dans le bon sens : il lit un
+       déplacement de DOIGT. Les deux gestes ne se lisent pas pareil. */
+    const i=VIEW_ORDER.indexOf(view)+(acc>0?-1:1);
     acc=0;
     if(i>=0&&i<VIEW_ORDER.length)setView(VIEW_ORDER[i]);
   },{passive:true});
@@ -3997,7 +4078,7 @@ $('set-members').onclick=()=>{state.vis='members';save();renderSettings();};
    prompt sur le bouton qui dit « mon monde » se comprend tout seul.
 
    La position est écrite dans `totehm_geo_v2`, la clé que map.html relit :
-   même origine (www.totehm.com), même localStorage. Une demande GPS pour
+   même origine (www.totehm.space), même localStorage. Une demande GPS pour
    les deux écrans, et la carte s'ouvre déjà localisée.
    ══════════════════════════════════════════════════════════════════════════ */
 /* Deux besoins, deux fonctions. La météo se contente d'une position d'hier ;
@@ -4024,7 +4105,7 @@ function freshPos(){
 /* ══ CE QUI A COÛTÉ CINQ VAGUES ══
    MESURÉ LE 23/08/2026 sur le DÉPLOYÉ, pas sur le fichier : Vercel servait
    `Permissions-Policy: geolocation=(), microphone=(), camera=()` sur tout
-   totehm.com. Une liste VIDE désactive la géolocalisation pour tout le
+   totehm.space. Une liste VIDE désactive la géolocalisation pour tout le
    monde, la page comprise. Le navigateur répond alors :
 
      code 1 — « Geolocation has been disabled in this document by
@@ -4256,7 +4337,7 @@ function paintSubscription(sub){
       +(CLUB.perks.length?'<ul class="s-perks">'+CLUB.perks.map(x=>'<li>'+x+'</li>').join('')+'</ul>':'')
       +'<button class="s-act" id="mw-sub-change">Manage membership</button>';
     const b=$('mw-sub-change');
-    if(b) b.onclick=()=>window.open('https://totehm.com','_blank','noopener');
+    if(b) b.onclick=()=>window.open('https://totehm.space','_blank','noopener');
   }else{
     box.innerHTML='<div class="s-lab">Membership</div>'
       +'<div class="s-plan s-club">'
@@ -4354,6 +4435,9 @@ function memberPaint(){
   $('mw-out-state').classList.toggle('hide',!!me);
   $('mw-claim-state').classList.toggle('hide',!(me&&!myProfile));
   $('mw-in-state').classList.toggle('hide',!(me&&myProfile));
+  /* `body.member` pilote la carte de visite de l'atterrissage : nommer
+     son Totehm n'a de sens que pour quelqu'un qui en a un. */
+  document.body.classList.toggle('member',!!(me&&myProfile));
   if(me&&myProfile){$('mw-who').textContent=myProfile.pseudo;$('mw-mail').textContent=me.email||'';}
 }
 $('conn-bar').onclick=()=>{$('member-window').classList.add('show');memberPaint();};
@@ -4631,11 +4715,16 @@ window.addEventListener('pageshow',e=>{
   window.addEventListener('resize',()=>{ if(!open) measure(); });
   if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(!open) measure(); });
 
+  /* ⚠️ ON NE SUPPOSE JAMAIS LE NŒUD. Ces deux boutons vivent dans
+     `#gate`, et `#gate` n'existe pas dans les jumeaux (wisdom, vision) :
+     un `.onclick` sur `null` lève À L'ÉVALUATION et emporte TOUT le
+     module — la page s'affiche vide, sans un mot. Deux `if` coûtent
+     moins cher qu'un écran blanc. */
+  const ge=$('gate-enter'), go=$('gate-open');
   /* Le clic sur le logo = la déconstruction */
-  $('gate-enter').onclick=()=>enter();
-
+  if(ge) ge.onclick=()=>enter();
   /* [Open my Totehm] : strictement le même geste que le clic sur le logo */
-  $('gate-open').onclick=()=>enter();
+  if(go) go.onclick=()=>enter();
 
   /* ── Search a Totehm : un bouton, la boîte n'arrive qu'au clic ── */
   const gsb=$('gate-search-btn'), gsi=$('gate-search-input'), gsn=$('gate-search-note');

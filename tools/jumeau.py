@@ -30,18 +30,18 @@ lieu de coller du code à côté de sa place. Il n'écrit qu'à la fin.
 import io, os, sys
 
 SC = os.path.dirname(os.path.abspath(__file__)) + '/'
-SRC = SC + '../com/totehm.html'
+SRC = SC + '../space/totehm.html'
 
 JUMEAUX = [
     dict(nom='wisdom.html', titre='TOTEHM — my wisdom',
          table='wisdom', mot='teaching', bouton='Add a teaching',
          vide='no teaching yet',
-         skin='#743169', paper='#5b2652',
+         skin='#743169', paper='#5b2652', timbre='%23743169',
          dit="What you have learned. One lesson per box."),
     dict(nom='vision.html', titre='TOTEHM — my vision',
          table='visions', mot='vision', bouton='Add a vision',
          vide='no vision yet',
-         skin='#36498c', paper='#2b3a73',
+         skin='#36498c', paper='#2b3a73', timbre='%2336498c',
          dit="Only what you see coming, and only the good of it."),
 ]
 
@@ -193,6 +193,16 @@ def fabrique(src, j):
             '<title>%s</title>' % j['titre'], 'le titre')
 
     # 2 · LA COULEUR — le fond et les boîtes, rien d'autre
+    # ⚠️ SUR ORDINATEUR, CE QU'ON VOIT C'EST LE TIMBRE, PAS LE PAPIER.
+    #    La page est NOIRE (`html,body{background:#000}` dans le bloc
+    #    desktop) et toute la couleur vient du carré perforé `#stage`,
+    #    peint par l'image `--logo-navy`. Je n'avais changé que `--paper`
+    #    — donc sur téléphone le jumeau était bien rouge-violet, et sur
+    #    ordinateur il restait NAVY. C'est exactement ce qui a été
+    #    signalé : « wisdom doit avoir le background du timbre ».
+    s = ech(s, "fill='%23333366'/%3E%3Ccircle",
+            "fill='" + j['timbre'] + "'/%3E%3Ccircle", 'le timbre du jumeau')
+
     s = ech(s, '  --paper:#2b2b57;',
             """  /* LE JUMEAU N'A QU'UNE COULEUR. Le papier recule d'un ton sous
      elle, exactement comme au Totehm : un bloc de la couleur du papier
@@ -226,6 +236,12 @@ def fabrique(src, j):
             """#vname` a disparu : chaque carré porte son nom (voir `.vt-n`). */
 /* LE MOT DU JUMEAU, à la place exacte des trois carrés : même hauteur,
    même bande fixe, donc le même écart avec la première boîte. */
+/* LA FUSION : tout ce qui porte la couleur du jumeau revient au navy du
+   Totehm, ensemble, en 200 ms. Une transition sur `background-color` et
+   sur `--skin` suffit — rien ne bouge, seule la teinte voyage. */
+#stage,.habit .h-body{transition:background-color .2s linear,background-image .2s linear}
+body.vers-totehm{--skin:#333366}
+body.vers-totehm #stage{background-image:none;background-color:#333366}
 #jum-say{position:fixed;top:104px;left:50%;transform:translateX(-50%);
   z-index:33;max-width:min(80vw,420px);text-align:center;
   font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;
@@ -285,7 +301,16 @@ let pk=null;
    déployé, donc le fermer veut dire retourner d'où l'on vient. `#in`
    dit à `totehm.html` de s'ouvrir déjà déployé, sans rejouer le
    dépliage — sinon on paierait l'animation à chaque aller-retour. */
-$('fold-x').onclick=()=>{ location.href='totehm.html#in'; };""",
+$('fold-x').onclick=()=>{
+  /* ⚠️ UNE FUSION, PAS UN SAUT · 15/09/2026. Le châssis est identique au
+     pixel entre un jumeau et le Totehm : la SEULE chose qui change est la
+     couleur. Alors on la change AVANT de naviguer — 200 ms de fondu vers
+     le navy — et l'œil lit un seul écran qui se repeint, pas deux pages
+     qui se remplacent. Le chargement se fait derrière le fondu, donc il
+     ne coûte rien de plus. */
+  document.body.classList.add('vers-totehm');
+  setTimeout(()=>{ location.href='totehm.html#in'; },200);
+};""",
             'la croix ramene au Totehm deploye')
 
     # 6 · LE JUMEAU N'A PAS D'ATTERRISSAGE — ON L'ARRACHE
@@ -298,6 +323,26 @@ $('fold-x').onclick=()=>{ location.href='totehm.html#in'; };""",
     # mention du même texte dans un commentaire, plus bas. Un repère
     # ambigu, c'est un script qui colle du code à côté de sa place.
     s = ech(s, '<body class="gate">\n', '<body>\n', 'le corps sans atterrissage')
+    # ⚠️ LA CARTE DE VISITE SURVIT AU GATE. `#gate-id` (le nom, la
+    #    visibilité, la recherche) vit DANS `#gate` depuis le 15/09 —
+    #    bonne place sur l'atterrissage, mais le module câble ses boutons
+    #    sans condition. Arracher le gate emportait les nœuds et laissait
+    #    les `$('name-btn').onclick` : TypeError à l'évaluation, donc
+    #    MODULE MORT et jumeau blanc. On la garde, cachée.
+    gi = s.find('<div id="gate-id">')
+    # ⚠️ IL FAUT LA BALISE FERMANTE DU CONTENEUR, PAS CELLE DE SON
+    #    DERNIER ENFANT. `#search-note` est un div vide : le premier
+    #    `</div>` rencontré est le SIEN. Couper là rendait un bloc non
+    #    fermé, tout le reste du document se nichait dedans — et
+    #    `#gate-id` est en `display:none`. Symptôme : la croix du jumeau
+    #    « n'est pas visible », et rien n'expliquait pourquoi.
+    gn = s.find('<div class="note dim hide" id="search-note">', gi)
+    gk = s.find('</div>', s.find('</div>', gn) + 6)
+    carte = s[gi:gk + 6] if (gi >= 0 and gn > gi and gk > gn) else ''
+    if carte:
+        carte = carte.replace('<div id="gate-id">',
+                              '<div id="gate-id" hidden style="display:none">', 1)
+
     i = s.find('<div id="gate">')
     k = s.find('<svg width="0" height="0" style="position:absolute"', i)
     if i < 0 or k < 0:
@@ -308,6 +353,7 @@ $('fold-x').onclick=()=>{ location.href='totehm.html#in'; };""",
            '     depuis le Totehm DÉPLOYÉ : il n\'y a rien à déplier, et le\n'
            '     garder laissait `#terms-corner` (position:fixed) intercepter\n'
            '     les clics de toute la page. -->\n\n'
+         + carte + '\n\n'
          + s[k:])
     # Le bloc qui décide de l'atterrissage n'a plus d'objet : un jumeau
     # n'en a pas. On le retire en entier plutôt que d'en neutraliser une
@@ -334,6 +380,30 @@ $('fold-x').onclick=()=>{ location.href='totehm.html#in'; };""",
 
 
 import re
+
+def audit_noeuds(s, nom):
+    """TOUT `$('id')` DOIT TROUVER SON NŒUD.
+
+    Retirer un élément du DOM sans retirer son câblage lève un TypeError
+    À L'ÉVALUATION du module : ce n'est pas la liste qui casse, c'est TOUT
+    le script, et la page s'affiche vide sans un mot. C'est exactement ce
+    qui est arrivé en arrachant `#gate` alors que la carte de visite vivait
+    dedans. La règle est déjà dans CLAUDE.md pour `port_prototype.py` ;
+    elle vaut ici, et elle se mesure."""
+    # ⚠️ ON NE FLAGUE QUE CE QUI DÉRÉFÉRENCE. `const b=$('x'); if(b)…`
+    #    ne lève rien — c'est même la bonne façon d'écrire. Ce qui tue,
+    #    c'est `$('x').onclick=…` sur un nœud absent. Un audit qui crie
+    #    au loup sur les formes SÛRES finit par être désactivé, et le
+    #    jour où il a raison personne ne le lit.
+    cites = set(re.findall(r"\$\('([A-Za-z0-9_-]+)'\)\s*\.", s))
+    poses = set(re.findall(r'id="([A-Za-z0-9_-]+)"', s))
+    manquants = sorted(cites - poses)
+    if manquants:
+        for m in manquants:
+            print('  ! %-14s $(\'%s\') ne trouve aucun noeud' % (nom, m))
+        sys.exit("ARRET · un $('id') sur null leve a l'evaluation et "
+                 'emporte tout le module.')
+
 
 def audit(s, nom):
     """AUCUN NOM DÉCLARÉ DEUX FOIS.
@@ -363,7 +433,8 @@ src = io.open(SRC, encoding='utf-8').read()
 for j in JUMEAUX:
     out = fabrique(src, j)
     audit(out, j['nom'])
-    chemin = SC + '../com/' + j['nom']
+    audit_noeuds(out, j['nom'])
+    chemin = SC + '../space/' + j['nom']
     io.open(chemin, 'w', encoding='utf-8').write(out)
     print('  %-16s %d octets' % (j['nom'], len(out.encode('utf-8'))))
 print('\nles deux jumeaux sont derives de totehm.html')

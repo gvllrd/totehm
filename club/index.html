@@ -1,0 +1,84 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>THE FIGHER CLUB</title>
+<!--
+  ══ figher.club — SQUELETTE · 15/09/2026 ════════════════════════════════
+  Demandé par le COO : centraliser le Radar, l'accès Boutique et
+  l'abonnement sur un quatrième domaine.
+
+  ⚠️ LIS `CLAUDE.md` § « LE QUATRIÈME DOMAINE » AVANT D'ALLER PLUS LOIN.
+  Ce fichier est un SQUELETTE, volontairement inerte : il ne lit aucune
+  session, n'appelle aucune RPC, ne montre aucun prix. La raison est
+  écrite noir sur blanc dans CLAUDE.md et elle tient en une ligne :
+
+      quatre domaines = quatre localStorage = quatre sessions,
+      et IL N'Y A PAS DE SSO.
+
+  Un membre qui se connecte sur totehm.space arrive ici DÉCONNECTÉ.
+  Brancher le Radar, la facturation et la boutique derrière une porte
+  qui redemande l'e-mail à chaque saut, c'est le produit qui a l'air
+  cassé — pas une fois, à chaque visite.
+
+  Tant que le pont de session n'est pas construit
+  (`auth.admin.generateLink` → `token_hash` à usage unique, jamais un
+  jeton de session dans une URL), ce fichier reste une VITRINE : il dit
+  ce qu'est le Club et il renvoie vers totehm.space pour y entrer.
+
+  Root Directory Vercel = `club`. Le dossier est prêt, le domaine peut
+  être posé dessus le jour où il est acheté, sans rien recâbler.
+-->
+<style>
+:root{
+  --fight:#E24B4A;--flow:#e48b31;--enrich:#fcbe21;--love:#639922;
+  --express:#1D9E75;--focus:#378ADD;--celebrate:#7F77DD;
+  --navy:#333366;--g-mid:#909090;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;min-height:100%;background:#000;color:#b0b0b0;
+  font-family:'Quantico',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+#w{min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:34px;padding:max(64px,10vh) 20px}
+/* Le T et le TOTEHM aux mêmes coordonnées que partout : 30 px du haut sur
+   53, 30 px du bas sur 50. Trois domaines, une seule mesure. */
+#t{position:fixed;top:30px;left:50%;transform:translateX(-50%);line-height:0}
+#t svg{height:53px;width:auto;display:block}
+h1{font-family:'Montserrat',sans-serif;font-style:italic;font-weight:900;
+  font-size:clamp(30px,8vw,62px);color:#fff;letter-spacing:-.02em;
+  text-align:center;line-height:1}
+.say{font-size:clamp(14px,3.4vw,17px);color:#b0b0b0;text-align:center;
+  max-width:30ch;line-height:1.6}
+/* LES SEPT INTENTIONS — le Radar se filtrera par elles. Ici elles ne
+   filtrent rien : elles disent ce que le Club classe. */
+.ints{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:430px}
+.i{display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:9px 12px;background:rgba(255,255,255,.05)}
+.i b{width:11px;height:11px;display:block}
+.i span{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(255,255,255,.5)}
+.door{font-family:'Quantico',sans-serif;font-size:14px;color:#b0b0b0;
+  text-decoration:none;padding:10px 4px;transition:color .15s ease}
+.door:hover{color:#fff}
+.note{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(255,255,255,.3);text-align:center;
+  max-width:36ch;line-height:1.9}
+</style>
+
+<div id="t"><svg viewBox="0 0 68 68" role="img" aria-label="T"><rect x="0" y="0" width="68" height="10" fill="#fff"/><rect x="29" y="0" width="10" height="67" fill="#fff"/><rect x="21" y="63" width="27" height="5" fill="#fff"/></svg></div>
+
+<div id="w">
+  <h1>THE FIGHER CLUB</h1>
+  <p class="say">Everything out there that matches what you are becoming — ranked by the seven intentions.</p>
+
+  <div class="ints">
+    <div class="i"><b style="background:var(--fight)"></b><span>fight</span></div>
+    <div class="i"><b style="background:var(--flow)"></b><span>flow</span></div>
+    <div class="i"><b style="background:var(--enrich)"></b><span>enrich</span></div>
+    <div class="i"><b style="background:var(--love)"></b><span>love</span></div>
+    <div class="i"><b style="background:var(--express)"></b><span>express</span></div>
+    <div class="i"><b style="background:var(--focus)"></b><span>focus</span></div>
+    <div class="i"><b style="background:var(--celebrate)"></b><span>celebrate</span></div>
+  </div>
+
+  <a class="door" href="https://www.totehm.space">Enter through my Totehm</a>
+  <p class="note">The club opens from your Totehm — that is where your session lives.</p>
+</div>

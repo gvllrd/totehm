@@ -54,36 +54,83 @@ déjà à la question.
 
 ```
 ~/totehm/
-  com/         →  www.totehm.com        le Figher Club — réseau social privé, porte internationale
-  space/       →  www.totehm.space      expérimentation branding, méthode Stoner
-  boutique/    →  www.higher.boutique   finalité e-commerce
+  totehm.com/  →  totehm.com            (Vercel, Root Directory = totehm.com)
+  space/       →  www.totehm.space      le Figher Club (Vercel, Root Directory = space)
+  boutique/    →  www.higher.boutique   (Vercel, Root Directory = boutique)
   backend/     →  servi par PERSONNE
   oracle/      →  clés SSH, gitignoré
 ```
-
-Chaque dossier est un projet Vercel indépendant (Root Directory = nom du
-dossier). **Le mapping folder → URL est fixe.** Ce qui change, c'est le
-CONTENU des dossiers — voir la note du 15/09/2026 ci-dessous.
-
-**⚠️ INVERSION DES CONTENUS — 15/09/2026.** Les contenus des dossiers `com/`
-et `space/` ont été échangés. La stratégie : `totehm.com` devient la porte
-d'entrée internationale (le réseau social privé, la Higher Map, HigherSelf,
-les jumeaux Wisdom/Vision) ; `totehm.space` devient l'expérimentation
-branding (la méthode Stoner, discover, get_higher, play_lisbon_street) ;
-`higher.boutique` reste la finalité e-commerce de l'écosystème. Toute
-mention historique dans ce document qui décrit un fichier « sur .space » ou
-« sur .com » doit se lire à la lumière de cette inversion — les fichiers
-sont là où ils sont maintenant, les URL suivent.
 
 `backend/` doit **impérativement** rester à la racine. Dans un dossier Vercel,
 le SQL, les Edge Functions et le `docker-compose.yml` deviendraient
 téléchargeables.
 
-**Produits indépendants = fichiers indépendants.** `com/` ne référence
+**Produits indépendants = fichiers indépendants.** `totehm.com/` ne référence
 jamais `space/`. Un contenu commun est copié, pas partagé. Un produit qui casse
 quand un autre bouge n'est pas indépendant.
 
-### Les écrans de totehm.com (ex-totehm.space avant le swap du 15/09/2026) — 09/09/2026
+### ⛔ LE MODÈLE DE DONNÉES EST FERMÉ — 15/09/2026
+
+**CINQ OBJETS, SEPT INTENTIONS. Aucune sixième catégorie, jamais.**
+
+| l'objet | la table | ce qu'il porte en plus |
+|---|---|---|
+| HABITS      | `totehms.steps` (jsonb) | rythme · objectifs · répulsions |
+| OBJECTIVES  | `objectives` | deadline · habitudes · **visions** |
+| REPULSIONS  | `repulsions` | habitudes · **teachings** |
+| VISIONS     | `visions` | — |
+| TEACHINGS   | `wisdom` | **objectifs** |
+
+**Chaque objet porte UNE intention parmi les sept** — fight · flow ·
+enrich · love · express · focus · celebrate. La liste est verrouillée EN
+BASE par une contrainte `check` sur les quatre tables, pas seulement à
+l'écran : un front peut se tromper, une contrainte non. `null` reste
+permis — un objet s'écrit avant de se qualifier, et forcer l'intention à
+la création empêcherait d'écrire.
+
+**Deux axes, deux langages visuels, et il ne faut pas les confondre :**
+la COULEUR DE LA BOÎTE dit le TYPE (navy · bleu clair · rouge-violet) ;
+le TRAIT du bord gauche dit l'INTENTION. Un objet a les deux, toujours.
+
+**Les trois liens croisés** (`objective_visions`, `repulsion_teachings`,
+`teaching_objectives`) sont des tables de jointure, jamais une colonne :
+un lien qui n'en accepte qu'un finit toujours par en accepter plusieurs,
+et c'est là qu'on réécrit la moitié du produit.
+
+### ⚠️ LE QUATRIÈME DOMAINE — pourquoi `figher.club` attend — 15/09/2026
+
+Le COO demande de centraliser sur `figher.club` le Radar, l'accès
+Boutique et la facturation. **Le squelette est prêt (`club/`), il est
+volontairement INERTE, et il doit le rester tant que le pont de session
+n'existe pas.**
+
+La raison tient en une ligne, et elle est déjà dans ce fichier :
+
+> Trois domaines = trois `localStorage` = trois sessions.
+> **Il n'y a pas de SSO.**
+
+Un quatrième domaine en fait quatre. Un membre connecté sur
+`totehm.space` arrive sur `figher.club` **déconnecté**. Y mettre le
+Radar, l'abonnement ET la boutique, c'est mettre les trois choses qu'on
+paie derrière une porte qui redemande l'e-mail — pas une fois, à chaque
+visite. Ça ne se lit pas comme « un autre domaine », ça se lit comme
+« le produit est cassé ».
+
+**Deux chemins, et un seul se tient avant 110 abonnés :**
+
+1. **`totehm.space/club`** — même origine, même session, zéro pont,
+   zéro euro, livrable le jour même. Le nom de marque « Figher Club »
+   ne demande pas un domaine qui s'appelle figher.club.
+2. **`figher.club` + pont de session** — `auth.admin.generateLink` →
+   `token_hash` à usage unique et courte durée, échangé côté serveur.
+   **Jamais un jeton de session dans une URL.** Compter une journée de
+   travail, plus le domaine, plus un quatrième projet Vercel à tenir.
+
+Le chemin 1 est recommandé. Le chemin 2 reste ouvert : `club/` est déjà
+un dossier Vercel valide, Root Directory = `club`, à poser le jour où le
+domaine est acheté — sans rien recâbler.
+
+### Les écrans de totehm.space — 09/09/2026
 
 ```
 LE TOTEHM                                  LE MONDE
@@ -991,7 +1038,7 @@ toujours du mauvais côté.
 
 ```
 1. on retire l'objectif de la liste          immédiat, à l'écran
-2. on envoie `objective_close`               parti, PAS arrivé
+2. on envoie `trip_close`                    parti, PAS arrivé
 3. `fermer()` recharge l'arbre               `my_trips` répond AVANT (2)
 4. le serveur renvoie l'objectif encore actif → il réapparaît
 ```
@@ -1014,64 +1061,6 @@ sur 7 tombent ; avec, zéro.
 
 **La règle : un faux serveur qui répond instantanément ne prouve rien
 sur l'ordre des choses.** Toute panne d'ordonnancement lui échappe.
-
-### Le vocabulaire de la contrainte — 13/09/2026
-
-« La suppression ne marche pas. » Le 09/09 c'était une course, on a
-posé `EN_VOL` et `await calme()`. Le 13/09 c'était l'autre moitié, et
-elle traînait depuis LE JOUR MÊME où le trip a été écrit : **la base
-refusait chaque écriture, et personne ne l'entendait.**
-
-`objectives` porte deux contraintes CHECK depuis longtemps :
-
-```
-status  ∈ {'active','achieved','abandoned','converted'}
-outcome ∈ {'yes','no', NULL}
-```
-
-Les fonctions écrites le 04/09 (`trip_close`, `my_trips`,
-`higherself_state`, `add_objective_admin`) parlaient un autre
-vocabulaire — `'done'`, `'dropped'`, `'closed'`, `'open'`. Aucun n'est
-accepté par la contrainte. Résultat, **mesuré en prod le 13/09** :
-
-- `trip_close` (renommée en `objective_close` le 13/09 — voir plus bas)
-  levait `objectives_outcome_check` à chaque appel. Le front
-  l'envoyait par `apres(sb.rpc('trip_close',…))` — une promesse
-  dont l'erreur ne repartait qu'en `console.error`. Aucun retour
-  utilisateur : la boîte disparaissait localement, l'objectif revenait
-  au premier rechargement. **Aucune suppression n'a jamais abouti en
-  neuf jours.**
-- `my_trips` filtrait `not in ('done','dropped','closed')` — jamais
-  atteignable — donc TOUS les objectifs remontaient comme actifs, y
-  compris ceux qu'on croyait fermés.
-- `add_objective_admin` insérait avec `status='open'` — refus. Toute
-  pose d'objectif depuis Telegram échouait aussi.
-
-Aligné le 13/09 par `20260913140000_supprimer_un_objectif_agit_vraiment.sql` :
-`dropped → abandoned/no`, `done → achieved/yes`, `open → active`. On
-touche les fonctions, pas la contrainte : une contrainte est la loi du
-produit, la relâcher c'est accepter demain n'importe quel texte
-parasite dans une colonne qu'un rapport de progression lira.
-
-**Les règles qui en sortent :**
-
-- **Un `create or replace function` qui écrit une valeur non prévue
-  par un CHECK ne lève pas à la création.** Il ne lève qu'à
-  l'exécution, et seulement quand une donnée essaie de passer. Un
-  test à froid, sans donnée, ne trouve rien. La preuve d'une écriture
-  se prend en INSÉRANT une ligne — en base, avec la session du
-  membre — pas en compilant la fonction.
-- **`apres()` avale les erreurs.** Elle log, pas plus. Une écriture
-  qu'on envoie par `apres()` sans jamais interroger son retour est
-  **structurellement invisible** quand elle échoue. La ligne locale
-  disparaît, la base ne bouge pas, le membre voit ce qu'il croit être
-  une suppression. Toute écriture dont le SUCCÈS conditionne la vue
-  suivante doit être testée en base, pas seulement en console.
-- **Après tout rename ou ajout de status, grepper `pg_constraint`.**
-  Comme pour `pg_proc.prosrc` après un rename de table (bot, 24/08) :
-  une contrainte n'apparaît pas dans le corps d'une fonction, elle
-  garde son vocabulaire dans son coin, et le jour où les deux ne se
-  parlent plus le produit s'arrête sans un mot.
 
 ### La couleur intentionnelle ne s'éteint plus — 09/09/2026
 
@@ -1225,6 +1214,72 @@ commande, pas l'arbre — `body:has(#member-window.show) #conn-bar .dot`.
 Tout style écrit pour un état doit être vérifié DANS cet état, sur
 l'élément réel, par sa valeur calculée.
 
+### LE FILTRE EST UNE BOÎTE — 15/09/2026
+
+**« Tout ce qui concerne le Totehm reste dans le Totehm. »**
+
+Le filtre s'ouvrait en fenêtre plein écran sur un voile noir : on
+QUITTAIT le Totehm pour régler le Totehm, et une fois dedans il n'y
+avait plus un repère — ni rail, ni couleur, ni boîte.
+
+Il est maintenant la PREMIÈRE BOÎTE de la liste, dans la grammaire de
+toutes les autres : un titre, une ligne d'unité qui se touche, et les
+mêmes sélecteurs d'intention et de rythme qui s'ouvrent DEDANS. Le T du
+haut la déplie et la replie. `#filter-modal` ne s'ouvre plus.
+
+Elle ne porte pas la couleur de la vue : elle n'est pas une pièce du
+Totehm, elle en est le RÉGLAGE — un gris à peine posé, et pas de trait
+d'intention.
+
+### LA CARTE DE VISITE EST SUR L'ATTERRISSAGE — 15/09/2026
+
+Le NOM du Totehm, la VISIBILITÉ et la RECHERCHE ont quitté l'espace
+membre pour l'atterrissage, au-dessus du logo (`#gate-id`).
+
+Ce sont les trois seules choses qu'on règle AVANT d'entrer, pas pendant.
+Nommer son Totehm et décider qui le voit, c'est la carte de visite ;
+chercher celui d'un autre, c'est la porte d'à côté. Ce qui reste dans
+l'espace membre est ce qui ne concerne QUE le membre connecté :
+l'abonnement, le bot, le compte.
+
+⚠️ `#gate-id` vit DANS `#gate`, et `tools/jumeau.py` arrache `#gate` des
+jumeaux. Le générateur la met de côté et la replace CACHÉE : retirer un
+nœud sans retirer son câblage lève à l'évaluation et emporte tout le
+module. Il l'AUDITE désormais — tout `$('id').` doit trouver son nœud.
+
+### Le souffle n'est pas un clignotant — 15/09/2026
+
+`breathe` descendait à `.18` d'opacité : l'élément DISPARAISSAIT une
+demi-seconde sur trois, et l'œil le lit comme une alarme, pas comme une
+invitation. Il va de 1 à **.62**, sur **4,2 s** — plus lent qu'une
+respiration au repos, donc calme. Les propositions d'un lookup sont
+encore plus lentes (5 s).
+
+Le LOGO garde un souffle marqué (`respire-logo`, jusqu'à .22) : lui ne
+demande rien, il DIT où l'on est. Une signature peut s'effacer, une
+invitation non.
+
+### Le trackpad ne se lit pas comme un doigt — 15/09/2026
+
+Sur un trackpad, `deltaX` POSITIF veut dire « je pousse le contenu vers
+la gauche », donc « montre-moi ce qui est à DROITE ». Je l'avais lu
+comme un déplacement de doigt : le balayage était inversé. Le geste
+TACTILE, lui, lit bien un déplacement de doigt. **Les deux gestes ne se
+lisent pas dans le même sens, et c'est normal.**
+
+### La croix ne repliait pas en revenant d'un jumeau — 15/09/2026
+
+`fold()` commence par `if(!open||moving) return;`. `open` est l'état
+LOCAL du module GATE, et il n'était jamais posé quand on arrivait déjà
+déplié depuis `wisdom.html` ou `vision.html` (`#in`). La croix ne
+faisait donc RIEN — pas « parfois » : systématiquement sur ce
+chemin-là. On arrive dedans, donc le Totehm est ouvert : on le dit.
+
+Et le retour est une **fusion**, pas un saut : le châssis est identique
+au pixel entre un jumeau et le Totehm, la seule chose qui change est la
+couleur — alors on la change AVANT de naviguer, 200 ms de fondu vers le
+navy. L'œil lit un écran qui se repeint, pas deux pages.
+
 ### La recherche est un geste de MEMBRE — 08/09/2026
 
 `[Search a Totehm]` a quitté l'atterrissage : elle vit dans l'espace
@@ -1373,34 +1428,6 @@ ligne, toujours. Pour agir ailleurs, utilise les options du programme
 Et on ne met **pas** `Bash(cd *)` en `allow` pour contourner : ça
 autoriserait n'importe quoi après le `&&`. La seule règle `cd` est une
 correspondance exacte, sans joker.
-
-### Trip est du VOCABULAIRE, pas une entité — 13/09/2026
-
-**Un Trip est un TRIPLET lu depuis n'importe quel angle** :
-
-- depuis une habitude → elle + ses objectifs + ses répulsions
-- depuis un objectif → lui + ses habitudes + leurs répulsions
-- depuis une répulsion (trigger) → elle + les habitudes à faire à la
-  place + les objectifs qu'elles servent
-
-Ce n'est pas une table, pas une fonction, pas une pièce. C'est un mode
-de lecture. Le seul endroit en base où le mot est juste, c'est
-`my_trips()` : elle rend PLUSIEURS triplets, centrés sur les objectifs,
-plus les habitudes non rattachées (`loose`) et les triplets terminés
-(`done`).
-
-Les autres fonctions agissent sur UNE pièce et portent son nom :
-`objective_create/rename/set_target/close`, `objective_link/unlink`,
-`repulsion_set/retire/link/unlink`. Le préfixe `trip_*` du 04/09 était
-un mauvais mot : cinq fonctions qui touchaient `objectives` déguisées
-en fonctions de « trip ». Renommées le 13/09.
-
-**Une porte future ouverte, pas encore construite.** Le TotehmBot
-composera des affirmations neuro-linguistiques par notification à la
-fréquence de l'habitude, en lisant un triplet autour de N'IMPORTE
-quelle pièce. Ça demandera une fonction `trip_at(kind,id)` symétrique
-— on l'écrira le jour où le bot l'appellera, pas avant. Le mot Trip
-n'est pas réservé, il attend ce moment-là.
 
 ### Le Trip se lit depuis n'importe quelle boîte — 06/09/2026
 
