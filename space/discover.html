@@ -453,7 +453,12 @@ async function hasAccess(){
 }
 
 (async function boot(){
-  if(await hasAccess()) (window.top || window).location.replace(METHOD);
+  if(!(await hasAccess())) return;
+  const btn = document.getElementById('btn-buy');
+  if(!btn) return;
+  btn.dataset.mode = 'owned';
+  btn.setAttribute('aria-label', 'Get Higher');
+  btn.innerHTML = '<span style="font-family:\'Quantico\',sans-serif;font-weight:700;color:var(--coral);letter-spacing:.02em">Get</span> <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>';
 })();
 
 async function toStripe(){
@@ -489,6 +494,7 @@ async function toStripe(){
 document.addEventListener('click', async (ev) => {
   const t = ev.target.closest('#btn-buy');
   if(!t) return;
+  if(t.dataset.mode === 'owned'){ (window.top || window).location.href = METHOD; return; }
   const { data:{ session } } = await sb.auth.getSession();
   if(session?.user?.email){ toStripe(); return; }
   goToSlide(1);

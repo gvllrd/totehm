@@ -968,8 +968,10 @@ Un filet gris entre deux lignes DANS une boîte n'est pas la bordure
 d'une boîte, et le gris est un délimitant autorisé : il reste.
 
 **Le coral `#fbd5ca` ne délimite rien.** Il est réservé au mot **« Get »**
-de `[Get Higher]` et à la méthode Stoner sur `totehm.com`. Jamais un
-cadre, jamais une bordure, jamais sur `.space` ni `.boutique`.
+de `[Get Higher]` et à la méthode Stoner — donc **au domaine qui héberge
+Stoner**, `totehm.space` depuis le swap du 15/09/2026. Jamais un cadre,
+jamais une bordure, jamais sur `totehm.com` (réseau social) ni sur
+`higher.boutique`.
 
 `tools/nobord.py` passe sur les TROIS domaines et retire tout trait
 dessiné de moins de 4 px. **Il garde ce qui n'est pas une bordure** : la
@@ -1730,9 +1732,9 @@ facture mensuelle sans revenu en face. Le gratuit reste déterministe.
 | | |
 |---|---|
 | Navy `#333366` | présent, habitudes, ancrage |
-| Coral `#fbd5ca` | **exclusivement** `totehm.com` — la méthode Stoner. Jamais sur `space` ni `boutique`. |
+| Coral `#fbd5ca` | **exclusivement** le domaine Stoner (`totehm.space` depuis le swap 15/09/2026) — le mot « Get » de `[Get Higher]` et les accents de la méthode. Jamais sur `totehm.com` ni `boutique`. |
 | Rouge-violet `#743169` | répulsions, carburant |
-| Quantico Bold coral | **exclusivement** `totehm.com` — techniques et Intentions |
+| Quantico Bold coral | **exclusivement** le domaine Stoner — techniques et Intentions |
 | Bebas Neue gris | narration |
 | Perforation | padding `0.02em 0.18em` |
 
