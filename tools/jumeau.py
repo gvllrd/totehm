@@ -30,7 +30,7 @@ lieu de coller du code à côté de sa place. Il n'écrit qu'à la fin.
 import io, os, sys
 
 SC = os.path.dirname(os.path.abspath(__file__)) + '/'
-SRC = SC + '../space/totehm.html'
+SRC = SC + '../com/totehm.html'
 
 JUMEAUX = [
     dict(nom='wisdom.html', titre='TOTEHM — my wisdom',
@@ -363,7 +363,7 @@ src = io.open(SRC, encoding='utf-8').read()
 for j in JUMEAUX:
     out = fabrique(src, j)
     audit(out, j['nom'])
-    chemin = SC + '../space/' + j['nom']
+    chemin = SC + '../com/' + j['nom']
     io.open(chemin, 'w', encoding='utf-8').write(out)
     print('  %-16s %d octets' % (j['nom'], len(out.encode('utf-8'))))
 print('\nles deux jumeaux sont derives de totehm.html')

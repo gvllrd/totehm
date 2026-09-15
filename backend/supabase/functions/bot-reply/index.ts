@@ -45,8 +45,8 @@ const admin = createClient(
 );
 
 const TG   = Deno.env.get("TELEGRAM_BOT_TOKEN");
-const MAP  = "https://www.totehm.space/map";
-const APP  = "https://www.totehm.space/higherself";
+const MAP  = "https://www.totehm.com/map";
+const APP  = "https://www.totehm.com/higherself";
 const ok   = () => new Response("ok", { status: 200 });
 
 // Un bouton `web_app` ouvre une page DANS Telegram, plein écran, avec la
@@ -339,7 +339,7 @@ Deno.serve(async (req) => {
       const { data: prof } = await admin
         .from("profiles").select("id").eq("telegram_id", tgId).maybeSingle();
       if (!prof?.id) {
-        await say(chat, "Ouvre ton Totehm sur totehm.space pour lier ton compte.");
+        await say(chat, "Ouvre ton Totehm sur totehm.com pour lier ton compte.");
         return ok();
       }
       const uid = prof.id as string;
@@ -499,7 +499,7 @@ Deno.serve(async (req) => {
           .from("profiles").select("pseudo").eq("telegram_id", tgId).maybeSingle();
         await say(chat, prof
           ? `On est liés, ${prof.pseudo}.\n\n${HELP}`
-          : "Pour lier ton compte : ouvre ton Totehm sur totehm.space, menu membre, « Connect TotehmBot ».",
+          : "Pour lier ton compte : ouvre ton Totehm sur totehm.com, menu membre, « Connect TotehmBot ».",
           prof ? kbApp("Ouvrir mon Totehm") : undefined);
         return ok();
       }
@@ -541,7 +541,7 @@ Deno.serve(async (req) => {
     const { data: prof } = await admin
       .from("profiles").select("id").eq("telegram_id", tgId).maybeSingle();
     if (!prof?.id) {
-      await say(chat, "Ouvre ton Totehm sur totehm.space pour lier ton compte.");
+      await say(chat, "Ouvre ton Totehm sur totehm.com pour lier ton compte.");
       return ok();
     }
     const uid = prof.id as string;
@@ -639,7 +639,7 @@ Deno.serve(async (req) => {
       if (!(await isMember(uid))) {
         await say(chat,
           "La carte fait partie de l'adhésion.\n" +
-          "Ton premier mois s'ouvre depuis ton Totehm, sur totehm.space.");
+          "Ton premier mois s'ouvre depuis ton Totehm, sur totehm.com.");
         return ok();
       }
       await draftSet(tgId, uid, "lieu", {}, "tonight");
@@ -652,7 +652,7 @@ Deno.serve(async (req) => {
       if (!(await canPost(uid))) {
         await say(chat,
           "Poser un lieu est réservé aux membres du Club.\n" +
-          "Ton premier mois s'ouvre depuis ton Totehm, sur totehm.space.");
+          "Ton premier mois s'ouvre depuis ton Totehm, sur totehm.com.");
         return ok();
       }
       await draftSet(tgId, uid, "intention", {});

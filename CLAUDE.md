@@ -54,22 +54,36 @@ déjà à la question.
 
 ```
 ~/totehm/
-  totehm.com/  →  totehm.com            (Vercel, Root Directory = totehm.com)
-  space/       →  www.totehm.space      le Figher Club (Vercel, Root Directory = space)
-  boutique/    →  www.higher.boutique   (Vercel, Root Directory = boutique)
+  com/         →  www.totehm.com        le Figher Club — réseau social privé, porte internationale
+  space/       →  www.totehm.space      expérimentation branding, méthode Stoner
+  boutique/    →  www.higher.boutique   finalité e-commerce
   backend/     →  servi par PERSONNE
   oracle/      →  clés SSH, gitignoré
 ```
+
+Chaque dossier est un projet Vercel indépendant (Root Directory = nom du
+dossier). **Le mapping folder → URL est fixe.** Ce qui change, c'est le
+CONTENU des dossiers — voir la note du 15/09/2026 ci-dessous.
+
+**⚠️ INVERSION DES CONTENUS — 15/09/2026.** Les contenus des dossiers `com/`
+et `space/` ont été échangés. La stratégie : `totehm.com` devient la porte
+d'entrée internationale (le réseau social privé, la Higher Map, HigherSelf,
+les jumeaux Wisdom/Vision) ; `totehm.space` devient l'expérimentation
+branding (la méthode Stoner, discover, get_higher, play_lisbon_street) ;
+`higher.boutique` reste la finalité e-commerce de l'écosystème. Toute
+mention historique dans ce document qui décrit un fichier « sur .space » ou
+« sur .com » doit se lire à la lumière de cette inversion — les fichiers
+sont là où ils sont maintenant, les URL suivent.
 
 `backend/` doit **impérativement** rester à la racine. Dans un dossier Vercel,
 le SQL, les Edge Functions et le `docker-compose.yml` deviendraient
 téléchargeables.
 
-**Produits indépendants = fichiers indépendants.** `totehm.com/` ne référence
+**Produits indépendants = fichiers indépendants.** `com/` ne référence
 jamais `space/`. Un contenu commun est copié, pas partagé. Un produit qui casse
 quand un autre bouge n'est pas indépendant.
 
-### Les écrans de totehm.space — 09/09/2026
+### Les écrans de totehm.com (ex-totehm.space avant le swap du 15/09/2026) — 09/09/2026
 
 ```
 LE TOTEHM                                  LE MONDE

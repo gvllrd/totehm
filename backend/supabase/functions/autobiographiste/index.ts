@@ -19,11 +19,11 @@ const admin = createClient(
 // Un seul endroit pour changer de modele.
 const MODEL = Deno.env.get("AUTOBIO_MODEL") ?? "gpt-4o";
 
-const SITE = "https://www.totehm.space";
+const SITE = "https://www.totehm.com";
 const ALLOWED = [
-  SITE, "https://totehm.space",
+  SITE, "https://totehm.com",
   "https://www.higher.boutique", "https://higher.boutique",
-  "https://totehm.com", "https://www.totehm.com",
+  "https://totehm.space", "https://www.totehm.space",
   "http://localhost:3000",
 ];
 function cors(o: string | null) {

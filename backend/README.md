@@ -5,12 +5,17 @@ Socle commun aux trois domaines. **Un seul projet Supabase** sert `totehm.com`,
 
 ```
 ~/totehm/
-  com/         →  totehm.com            (Vercel, Root Directory = com)
-  space/       →  www.totehm.space      (Vercel, Root Directory = space)
-  boutique/    →  www.higher.boutique   (Vercel, Root Directory = boutique)
+  com/         →  www.totehm.com        le Figher Club (réseau social privé, porte internationale)
+  space/       →  www.totehm.space      expérimentation branding, méthode Stoner
+  boutique/    →  www.higher.boutique   finalité e-commerce
   backend/     →  servi par PERSONNE    ← ce dossier
   oracle/      →  clés SSH, gitignoré
 ```
+
+**Swap 15/09/2026 :** les contenus de `com/` et `space/` ont été échangés.
+Le mapping folder → URL est resté fixe (Vercel Root Directory inchangé), mais
+`totehm.com` sert désormais ce que `totehm.space` servait, et inversement.
+Voir CLAUDE.md pour la doctrine complète.
 
 ⚠️ **`backend/` doit rester à la racine.** Dans un dossier Vercel, le SQL, les
 Edge Functions et le `docker-compose.yml` deviendraient téléchargeables.
@@ -119,7 +124,7 @@ même soirée.
 
 ---
 
-## La boucle de totehm.space
+## La boucle du Totehm (sur totehm.com depuis le swap du 15/09/2026)
 
 ```
    LE TOTEHM            l'habitude est déposée dans le logo (totehms.steps)
@@ -386,7 +391,7 @@ Un bouton `web_app` ouvre une page **dans** Telegram, plein écran, session
 déjà là. Rien à configurer chez BotFather : la seule contrainte est le HTTPS.
 
 C'est ce qui sépare « va sur le site » de « c'est ouvert ». Le bouton pointe
-sur `https://www.totehm.space/higherself` — **HigherSelf**, le Totehm entier :
+sur `https://www.totehm.com/higherself` — **HigherSelf**, le Totehm entier :
 habitudes avec leur série, DONE/MISSED, leçons, objectifs, spots posés,
 recherche de lieux. Telegram cesse d'être un canal de notification et devient
 une **surface du produit**.
@@ -412,9 +417,9 @@ et `totehm.com`. **TotehmManager est abandonné.**
 
 | Domaine | Usage |
 |---|---|
-| `totehm.space` | habitudes, Figher Club, autobiographie, **`/spot`** (production de contenu par les membres) |
+| `totehm.com` | habitudes, Figher Club, autobiographie, **`/spot`** (production de contenu par les membres) — porte internationale |
 | `higher.boutique` | curation des illustrations générées par n8n |
-| `totehm.com` | à venir |
+| `totehm.space` | expérimentation branding, méthode Stoner |
 
 Les workflows n8n qui pointaient vers TotehmManager seront redirigés vers TotehmBot
 au fil des itérations — pas de migration forcée, on le fait au cas par cas.

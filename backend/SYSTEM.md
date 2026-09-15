@@ -34,16 +34,23 @@ produit l'incident du SSO et celui des 70 €/79 €.
 
 ```
 ~/totehm/
-  com/         →  totehm.com            acquisition, TotehmPaper {THP} — Lisbonne €11+, International €77
-  space/       →  www.totehm.space      le Figher Club
+  com/         →  www.totehm.com        le Figher Club — réseau social privé, porte internationale
+  space/       →  www.totehm.space      expérimentation branding, méthode Stoner, TotehmPaper {THP}
   boutique/    →  www.higher.boutique   le Cloth
   backend/     →  servi par PERSONNE
   oracle/      →  clés SSH, gitignoré
 ```
 
+**Swap 15/09/2026 :** les CONTENUS de `com/` et `space/` ont été échangés
+(le mapping Vercel folder → URL reste fixe). `totehm.com` sert maintenant
+ce que `totehm.space` servait, et inversement. Toute section de ce document
+antérieure au 15/09 qui parle de ce qui vit « sur .space » ou « sur .com »
+doit se lire à la lumière de cette inversion.
+
 Le projet Vercel qui sert `higher.boutique` s'appelle **`totehm`** (nom
-historique). Celui qui sert `totehm.space` s'appelle **`space`**. La confusion a
-déjà coûté un incident — **vérifier le domaine, pas le nom**.
+historique). Celui qui sert `totehm.space` s'appelle **`space`** et celui
+qui sert `totehm.com` s'appelle **`com`** — noms Vercel inchangés au 15/09.
+La confusion a déjà coûté un incident — **vérifier le domaine, pas le nom**.
 
 **Trois origines = trois `localStorage` = trois sessions. Il n'y a pas de SSO**,
 et il ne peut pas y en avoir : c'est le modèle de sécurité des navigateurs.

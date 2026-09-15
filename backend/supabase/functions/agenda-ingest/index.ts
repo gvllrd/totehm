@@ -56,7 +56,7 @@ const admin = createClient(
 
 // Beaucoup d'agendas répondent 403 à un client sans User-Agent. Ce n'est
 // pas un contournement : c'est se présenter.
-const UA = "TotehmBot/1.0 (+https://www.totehm.space; agenda ingest)";
+const UA = "TotehmBot/1.0 (+https://www.totehm.com; agenda ingest)";
 const MAX_PER_SOURCE = 120;
 const REQ_TIMEOUT_MS = 7000;
 // pg_net coupe à 55 s. On s'arrête AVANT, avec un rapport complet, plutôt

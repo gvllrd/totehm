@@ -322,7 +322,7 @@ const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUz
 const $=id=>document.getElementById(id);
 /* Back button contextuel selon le domaine :
    - higher.boutique  -> "Back in Time" retourne au menu boutique
-   - totehm.space     -> "Wear my Totehm" pousse le pont vers la boutique */
+   - totehm.com     -> "Wear my Totehm" pousse le pont vers la boutique */
 (function(){
   const btn=$('back-top'); if(!btn) return;
   const isSpace=/(^|\.)totehm\.space$/i.test(location.hostname);

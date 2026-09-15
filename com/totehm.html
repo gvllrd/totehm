@@ -10,7 +10,7 @@
     · au PIED de la liste, geste vers le haut   → le Totehm se replie
       vers l'atterrissage (même geste que la croix #fold-x et Échap)
     · La méthode Stoner n'est plus hébergée ici : [Get Higher] est un
-      lien vers totehm.com
+      lien vers totehm.space
 
   Horizontaux :
     · swipe DROITE → My Wisdom  ·  swipe GAUCHE → My next objective
@@ -42,13 +42,13 @@
      PAPIER d'un ton. Les trois couleurs de marque restent intactes sur
      leurs blocs — navy, bleu clair, rouge-violet — et se détachent
      maintenant par leur VALEUR, comme les blocs empilés du Totehm de
-     totehm.com. Une différence de ton, pas une bordure. */
+     totehm.space. Une différence de ton, pas une bordure. */
   --paper:#2b2b57;
   /* Le navy SOMBRE du logo. Sur le navy clair du papier, un bloc navy
      n'existe pas — celui-ci si, et il ne demande AUCUN filet. */
   --navy-d:#22224a;
   /* LES TROIS COULEURS DES BLOCS : --navy, --blue, --rep. Mesurées sur le
-     Totehm empilé de totehm.com, la référence de la marque.
+     Totehm empilé de totehm.space, la référence de la marque.
      --sky est la version TEXTE du bleu de l'objectif : #36498c en aplat se
      lit sur le papier navy, mais en texte sur une carte sombre il ne se lit
      pas. Un remplissage n'est jamais --sky, un texte n'est jamais --blue.
@@ -214,7 +214,7 @@ body.v-repulsions  #t-foot{animation:breathe 2.8s ease-in-out infinite}
    Slogan, bouton, badge : rien de la marque HIGHER ne paraît tant que
    `body.higher` n'est pas posée — et elle ne l'est que pour un membre
    connecté qui a un abonnement VIVANT **et** la méthode Stoner faite sur
-   totehm.com. Masqué PAR DÉFAUT, en CSS : si la vérification échoue, si le
+   totehm.space. Masqué PAR DÉFAUT, en CSS : si la vérification échoue, si le
    réseau tombe, si le JS casse, rien ne s'affiche. L'inverse — afficher
    puis retirer — laisse toujours une fenêtre où l'exclusivité fuit. */
 .higher-only{display:none!important}
@@ -252,7 +252,7 @@ body.higher .set-block.higher-only{display:flex!important}
 #book.show,#nextobj.show{opacity:1;pointer-events:auto}
 #book iframe,#nextobj iframe{width:100%;height:100%;border:none;display:block}
 
-/* La méthode Stoner vit sur totehm.com. [Get Higher with my Totehm] est un
+/* La méthode Stoner vit sur totehm.space. [Get Higher with my Totehm] est un
    lien, rien de plus : plus d'overlay, plus de décollage, plus de porte
    Lisbonne. Pour les rétablir, ils vivaient ici — #stoner, #stoner-door,
    #street-btn, #stoner-tagline, #lift-hg et body.liftoff. */
@@ -2209,7 +2209,7 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
 
       <!-- Bouton [Get Higher with my Totehm] : monte vers Stoner avec animation d'élévation -->
       <div class="set-block higher-only">
-        <a class="btn-sig higher-only" id="btn-get-higher" href="https://www.totehm.com" target="_blank" rel="noopener">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> with my Totehm</a>
+        <a class="btn-sig higher-only" id="btn-get-higher" href="https://www.totehm.space" target="_blank" rel="noopener">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> with my Totehm</a>
       </div>
 
       <!-- Bouton [Wear the dopest branding ever made] : pont vers la boutique -->
@@ -2259,7 +2259,7 @@ async function logTotehmEvent(kind, habitText, detail){
 }
 
 /* Bouton contextuel "Wear my Totehm" :
-   - sur totehm.space -> pousse le pont vers la boutique (comportement par défaut du href)
+   - sur totehm.com -> pousse le pont vers la boutique (comportement par défaut du href)
    - sur higher.boutique -> renvoie au menu boutique local */
 (function(){
   const btn=$('wear-btn'); if(!btn) return;
@@ -4143,7 +4143,7 @@ function closeMember(){ $('member-window').classList.remove('show'); }
 $('sn-home').onclick =()=>{closeMember();if(!busy&&!hOpen())paint();};
 
 
-/* [Get Higher with my Totehm] est un <a> vers totehm.com. Il n'y a plus
+/* [Get Higher with my Totehm] est un <a> vers totehm.space. Il n'y a plus
    d'écouteur, plus de classe `liftoff`, plus d'overlay #stoner : la méthode
    Stoner a son domaine, ce fichier n'a pas à l'héberger. */
 
@@ -4389,7 +4389,7 @@ $('set-members').onclick=()=>{state.vis='members';save();renderSettings();};
    prompt sur le bouton qui dit « mon monde » se comprend tout seul.
 
    La position est écrite dans `totehm_geo_v2`, la clé que map.html relit :
-   même origine (www.totehm.space), même localStorage. Une demande GPS pour
+   même origine (www.totehm.com), même localStorage. Une demande GPS pour
    les deux écrans, et la carte s'ouvre déjà localisée.
    ══════════════════════════════════════════════════════════════════════════ */
 /* Deux besoins, deux fonctions. La météo se contente d'une position d'hier ;
@@ -4416,7 +4416,7 @@ function freshPos(){
 /* ══ CE QUI A COÛTÉ CINQ VAGUES ══
    MESURÉ LE 23/08/2026 sur le DÉPLOYÉ, pas sur le fichier : Vercel servait
    `Permissions-Policy: geolocation=(), microphone=(), camera=()` sur tout
-   totehm.space. Une liste VIDE désactive la géolocalisation pour tout le
+   totehm.com. Une liste VIDE désactive la géolocalisation pour tout le
    monde, la page comprise. Le navigateur répond alors :
 
      code 1 — « Geolocation has been disabled in this document by
@@ -4648,7 +4648,7 @@ function paintSubscription(sub){
       +(CLUB.perks.length?'<ul class="s-perks">'+CLUB.perks.map(x=>'<li>'+x+'</li>').join('')+'</ul>':'')
       +'<button class="s-act" id="mw-sub-change">Manage membership</button>';
     const b=$('mw-sub-change');
-    if(b) b.onclick=()=>window.open('https://totehm.space','_blank','noopener');
+    if(b) b.onclick=()=>window.open('https://totehm.com','_blank','noopener');
   }else{
     box.innerHTML='<div class="s-lab">Membership</div>'
       +'<div class="s-plan s-club">'

@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
   // ⚠️ Jamais de wildcard ici : cette fonction lit le token du bot. Un
   // `Access-Control-Allow-Origin: *` sur une fonction qui touche un secret,
   // c'est une facture — ou une fuite — signée par n'importe quel site.
-  const cors = corsHeaders(origin, "https://www.totehm.space");
+  const cors = corsHeaders(origin, "https://www.totehm.com");
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
 
   try {

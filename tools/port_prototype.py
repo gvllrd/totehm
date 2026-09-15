@@ -3,7 +3,7 @@
 
     python3 tools/port_prototype.py
 
-Il remplace, dans `space/totehm.html`, la couche des TROIS VUES — le CSS
+Il remplace, dans `com/totehm.html`, la couche des TROIS VUES — le CSS
 des boîtes ouvertes, et tout le rendu objectifs/habitudes/répulsions — par
 celle du prototype (`tools/prototype_totehm.py`), câblée aux VRAIES
 données : `state.habits`, `TRIPS`, `REPS`, et les RPC du serveur.
@@ -23,7 +23,7 @@ CE QUI N'EST PAS TOUCHÉ
 import io, os, re, sys
 
 SC   = os.path.dirname(os.path.abspath(__file__)) + '/'
-CIBLE = SC + '../space/totehm.html'
+CIBLE = SC + '../com/totehm.html'
 src  = io.open(CIBLE, encoding='utf-8').read()
 avant = len(src)
 

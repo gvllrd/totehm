@@ -2,7 +2,7 @@
 """LE PROTOTYPE DU TOTEHM — la source du dépliage.
 
 Ce script COMPOSE le prototype que Wah valide avant tout portage dans
-`space/totehm.html`. Il n'invente aucun dessin : le T, le wordmark et les
+`com/totehm.html`. Il n'invente aucun dessin : le T, le wordmark et les
 trois tuiles perforées viennent du fichier servi, recopiés tels quels.
 
     python3 tools/prototype_totehm.py        # écrit totehm_unfold.html
@@ -18,7 +18,7 @@ logo = json.load(io.open(SC + 'prototype_logo.json', encoding='utf-8'))
 
 # Les trois tuiles perforées : elles vivent dans le fichier servi, et les
 # redessiner serait une occasion de se tromper d'un pixel sur douze cercles.
-SRC = SC + '../space/totehm.html'
+SRC = SC + '../com/totehm.html'
 src = io.open(SRC, encoding='utf-8').read()
 TILES = {}
 for name in ['logo-navy', 'logo-blue', 'logo-rep']:
@@ -31,7 +31,7 @@ HTML = r"""<title>Totehm Unfold</title>
 /* ═══════════════════════════════════════════════════════════════════
    TOTEHM — LE DÉPLIAGE
    Jetons, géométrie, carrés perforés, SVG du logo : tout vient de
-   `space/totehm.html`. Rien n'est redessiné.
+   `com/totehm.html`. Rien n'est redessiné.
 
    LA GÉOMÉTRIE, ET C'EST ELLE QUI COMMANDE
      desktop  #stage est un CARRÉ centré — min(92vh,78vw,640px) — et TOUT
@@ -60,7 +60,7 @@ HTML = r"""<title>Totehm Unfold</title>
   --g-light:#e0e0e0;--g-mid:#909090;--g-dark:#606060;--bg:#000;
   --navy:#333366;--rep:#743169;
   /* LES TROIS COULEURS DES BLOCS : --navy, --blue, --rep. Mesurées sur le
-     Totehm empilé de totehm.com, la référence de la marque.
+     Totehm empilé de totehm.space, la référence de la marque.
      --sky est la version TEXTE du bleu de l'objectif : #36498c en aplat se
      lit sur le papier navy, mais en texte sur une carte sombre il ne se lit
      pas. Un remplissage n'est jamais --sky, un texte n'est jamais --blue. */
@@ -202,7 +202,7 @@ body.f-live  #ui-t {animation:breathe 1.5s ease-in-out infinite}
 .habit .h-body{margin-left:calc(var(--rl) + var(--rw) + 16px);flex:1;min-width:0}
 
 /* ── LA BOÎTE EST UN BLOC PLEIN, SANS OMBRE ──────────────────────────
-   La référence de la marque — le Totehm empilé de totehm.com — n'a AUCUNE
+   La référence de la marque — le Totehm empilé de totehm.space — n'a AUCUNE
    ombre : des blocs pleins posés les uns sur les autres, séparés par du
    noir. C'est le logo, et c'est tout le vocabulaire. Mesuré sur cette
    image : le papier vaut #333366, le bloc de l'objectif #36498c, la barre

@@ -554,11 +554,11 @@ function renderProps(habits){
       +'</button>';
     d.querySelector('.h-T').onclick=()=>openPeek(h);
     /* ══ 09/09/2026 · `/get_higher.html` N'EXISTE PAS SUR .space ══
-       Il vit sur totehm.com. Le lien renvoyait donc un 404 à chaque clic.
+       Il vit sur totehm.space. Le lien renvoyait donc un 404 à chaque clic.
        Et il n'y a plus d'iframe : `window.top` n'a plus de raison d'être.
        La méthode a son domaine ; ce fichier n'a pas à l'héberger. */
     const hi=d.querySelector('.p-hi');
-    if(hi)hi.onclick=()=>{ window.open('https://www.totehm.com','_blank','noopener'); };
+    if(hi)hi.onclick=()=>{ window.open('https://www.totehm.space','_blank','noopener'); };
     d.querySelector('.p-why').onclick=()=>openWhy(h);
     d.querySelector('.p-add').onclick=()=>{
       if(d.classList.contains('added'))return;
