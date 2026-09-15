@@ -194,13 +194,13 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 /* ── XP GALLERY LABEL ── */
 #xp-label{width:min(72vmin,300px);flex-shrink:0;opacity:0;transition:opacity .4s ease .3s}
 #xp-label.in{opacity:1}
-.xp-la{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:#444;text-transform:uppercase;margin-bottom:3px}
+.xp-la{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:#8a8a8a;text-transform:uppercase;margin-bottom:3px}
 .xp-lt{font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,3.5vmin,26px);letter-spacing:.06em;color:#fff;line-height:1;margin-bottom:3px}
-.xp-lm{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;color:#444;text-transform:uppercase;margin-bottom:11px}
+.xp-lm{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;color:#8a8a8a;text-transform:uppercase;margin-bottom:11px}
 .xp-ld{width:100%;height:1px;background:#222;margin-bottom:9px}
 .xp-lr{display:flex;justify-content:space-between;align-items:baseline}
 .xp-lp{font-family:'Space Mono',monospace;font-size:12px;color:var(--coral);letter-spacing:.04em}
-.xp-le{font-family:'Space Mono',monospace;font-size:8px;color:#444;letter-spacing:.1em;text-transform:uppercase}
+.xp-le{font-family:'Space Mono',monospace;font-size:8px;color:#8a8a8a;letter-spacing:.1em;text-transform:uppercase}
 
 /* ─── ROTATE PROMPT (board mode, portrait mobile) ─── */
 #rotate-prompt{
@@ -213,6 +213,26 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 .rotate-spinner{width:52px;height:52px;color:var(--coral);animation:spin 3.2s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 .rotate-hint{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--coral);line-height:1.6;letter-spacing:.02em}
+
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Le gris en survol devient blanc. Généré depuis la feuille
+   elle-même : un nouveau bloc gris entre ici tout seul.        */
+@media(hover:hover){
+.t-futura:hover,
+.btn-sig:hover,
+#sdisc-back:hover,
+#sdisc-board-close:hover,
+.trigger-label:hover,
+.chev:hover,
+#world-close:hover,
+#xp-close:hover,
+#auth-back-btn:hover,
+.line-input:hover::placeholder,
+.xp-la:hover,
+.xp-lm:hover,
+.xp-le:hover{color:#fff}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body>
