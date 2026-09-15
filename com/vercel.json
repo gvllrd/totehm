@@ -1,36 +1,80 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "trailingSlash": false,
-  "rewrites": [
-    {
-      "source": "/",
-      "has": [{ "type": "cookie", "key": "totehm_geo", "value": "lisbon" }],
-      "destination": "/discover_lisbon.html"
-    },
-    {
-      "source": "/",
-      "has": [{ "type": "cookie", "key": "totehm_geo", "value": "global" }],
-      "destination": "/discover.html"
-    },
-    {
-      "source": "/",
-      "has": [{ "type": "header", "key": "x-vercel-ip-country", "value": "PT" }],
-      "destination": "/discover_lisbon.html"
-    },
-    { "source": "/", "destination": "/discover.html" },
-
-    { "source": "/lisbon", "destination": "/discover_lisbon.html" },
-    { "source": "/global", "destination": "/discover.html" }
-  ],
+  "cleanUrls": true,
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/((?!higherself).*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "geolocation=(self), camera=(), microphone=()" },
-        { "key": "X-Frame-Options", "value": "SAMEORIGIN" }
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "geolocation=(self), microphone=(), camera=()"
+        }
       ]
+    },
+    {
+      "source": "/higherself",
+      "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'self' https://telegram.org https://*.telegram.org https://*.t.me"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "geolocation=(self \"https://web.telegram.org\" \"https://webk.telegram.org\" \"https://webz.telegram.org\"), microphone=(), camera=()"
+        }
+      ]
+    },
+    {
+      "source": "/higherself.html",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'self' https://telegram.org https://*.telegram.org https://*.t.me"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "geolocation=(self \"https://web.telegram.org\" \"https://webk.telegram.org\" \"https://webz.telegram.org\"), microphone=(), camera=()"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/totehm",
+      "permanent": false
+    },
+    {
+      "source": "/world",
+      "destination": "/map",
+      "permanent": false
     }
   ]
 }
