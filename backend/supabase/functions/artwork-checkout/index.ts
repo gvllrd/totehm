@@ -127,8 +127,14 @@ Deno.serve(async (req) => {
   const site = resolveOrigin(origin);
 
   try {
+    // payment_method_types explicite : Stripe refuse une session en EUR
+    // si le compte n'a pas activé les moyens de paiement pour cette
+    // devise dans le dashboard. Forcer 'card' passe outre — la carte est
+    // toujours dispo sur un compte live. Élargir (SEPA, Bancontact) se
+    // fait dans Settings → Payment methods puis en ajoutant à cette liste.
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
+      payment_method_types: ["card"],
       customer_email: email,
       line_items: [{
         price_data: {

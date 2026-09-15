@@ -595,9 +595,15 @@ xpBuy.addEventListener('click',async()=>{
     if(r.status===402){ closeAll(); toStripe(); return; }     // no THP → buy THP
     if(r.status===409){ xpBuy.textContent='Unavailable'; return; }
     if(j.url){ (window.top||window).location.href=j.url; return; }
-    xpBuy.textContent=prev; xpBuy.disabled=false;
+    // Sinon (typiquement 502 stripe) : dire au membre que ça a foiré
+    // plutot que de retomber en silence sur le meme bouton.
+    console.error('artwork checkout:', r.status, j);
+    xpBuy.textContent='checkout error — retry'; xpBuy.disabled=false;
+    setTimeout(()=>{ xpBuy.textContent=prev; }, 4000);
   }catch(e){
-    xpBuy.textContent=prev; xpBuy.disabled=false;
+    console.error('artwork checkout:', e);
+    xpBuy.textContent='network error — retry'; xpBuy.disabled=false;
+    setTimeout(()=>{ xpBuy.textContent=prev; }, 4000);
   }
 });
 

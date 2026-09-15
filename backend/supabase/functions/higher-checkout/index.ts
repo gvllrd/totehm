@@ -105,8 +105,12 @@ Deno.serve(async (req) => {
     : "Stoner Method, ten steps, for life. Numbered place.";
 
   try {
+    // payment_method_types explicite : Stripe refuse EUR sans moyens de
+    // paiement activés dans le dashboard. Voir artwork-checkout, même
+    // raison, même correctif.
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
+      payment_method_types: ["card"],
       customer_email: email,
       line_items: [{
         price_data: {

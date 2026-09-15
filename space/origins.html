@@ -207,8 +207,16 @@ async function acquireArtwork(artworkId, btn){
     if(r.status===402){ location.href=j.redirect||'/get_higher.html'; return; }
     if(r.status===409){ btn.textContent='Unavailable'; btn.disabled=true; return; }
     if(j.url){ location.href=j.url; return; }
-    btn.classList.remove('loading'); btn.textContent='Acquire →';
-  }catch(e){ btn.classList.remove('loading'); btn.textContent='Acquire →'; }
+    // Sinon (typiquement 502 stripe) : ne pas laisser retomber en silence,
+    // sinon le membre pense que le clic n'a rien fait.
+    console.error('artwork checkout:', r.status, j);
+    btn.classList.remove('loading'); btn.textContent='checkout error — retry';
+    setTimeout(()=>{ btn.textContent='Acquire →'; }, 4000);
+  }catch(e){
+    console.error('artwork checkout:', e);
+    btn.classList.remove('loading'); btn.textContent='network error — retry';
+    setTimeout(()=>{ btn.textContent='Acquire →'; }, 4000);
+  }
 }
 
 // Populate labels when artworks loaded
