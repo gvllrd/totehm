@@ -346,9 +346,28 @@ async function hasAccess(){
   }catch(e){ return false; }
 }
 
+// Boot : NE PAS auto-rediriger sur METHOD. Le membre veut se promener
+// dans la boutique meme s'il a deja son totehmpaper. La bascule vers la
+// methode se fait uniquement par un click deliberé sur [Get Higher].
+let OWNED = false;
 (async function boot(){
-  if(await hasAccess()) (window.top||window).location.replace(METHOD);
+  OWNED = await hasAccess();
+  if(!OWNED) return;
+  // Mettre a jour le fallback #xp-buy : quand il n'y a pas d'artwork
+  // (sign sans oeuvre associee), au lieu de proposer "Get Higher — $30"
+  // (achat THP), on propose [Get Higher] direct vers la methode.
+  applyOwnedFallback();
 })();
+
+function applyOwnedFallback(){
+  if(!OWNED) return;
+  const b = document.getElementById('xp-buy');
+  if(!b) return;
+  if(b.dataset.artworkId) return;   // ne pas ecraser le label d'une oeuvre
+  b.dataset.mode = 'owned';
+  b.setAttribute('aria-label','Get Higher');
+  b.innerHTML = '<span style="font-family:\'Quantico\',sans-serif;font-weight:700;color:var(--coral);letter-spacing:.02em">Get</span> <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>';
+}
 
 async function toStripe(){
   const err = document.getElementById('err-code');
@@ -530,16 +549,27 @@ function launchXp(id){
     document.getElementById('xp-artw-edition').textContent = isSold ? 'sold out' : avail+' / '+aw.edition_total;
     xpBuy.dataset.artworkId = aw.id;
     xpBuy.dataset.sold = isSold ? '1' : '0';
+    xpBuy.dataset.mode = '';   // pas owned : c'est un achat d'oeuvre
     xpBuy.textContent = isSold ? '— Sold —' : 'Acquire →';
     xpBuy.disabled = isSold;
     xpBuy.style.color = isSold ? '#222' : '';
   } else {
-    // fallback : THP purchase
+    // Fallback : pas d'oeuvre associee au sign.
+    // Membre proprietaire → [Get Higher] direct vers la methode.
+    // Sinon → flow d'achat THP.
     xpBuy.dataset.artworkId = '';
     xpBuy.dataset.sold = '0';
-    xpBuy.textContent = 'Get Higher — $30';
     xpBuy.disabled = false;
     xpBuy.style.color = '';
+    if(OWNED){
+      xpBuy.dataset.mode = 'owned';
+      xpBuy.setAttribute('aria-label','Get Higher');
+      xpBuy.innerHTML = '<span style="font-family:\'Quantico\',sans-serif;font-weight:700;color:var(--coral);letter-spacing:.02em">Get</span> <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>';
+    } else {
+      xpBuy.dataset.mode = '';
+      xpBuy.removeAttribute('aria-label');
+      xpBuy.textContent = 'Get Higher — $30';
+    }
   }
 
   setTimeout(()=>{
@@ -575,6 +605,8 @@ worldClose.addEventListener('click', closeAll);
 
 xpBuy.addEventListener('click',async()=>{
   if(xpBuy.dataset.sold==='1') return;
+  // Membre proprietaire, fallback [Get Higher] : direct vers la methode.
+  if(xpBuy.dataset.mode==='owned'){ (window.top||window).location.href=METHOD; return; }
   const artworkId = xpBuy.dataset.artworkId;
 
   // No artwork linked → THP purchase flow
@@ -891,15 +923,24 @@ function launchXpFromDisc(id){
     document.getElementById('xp-artw-edition').textContent = isSold ? 'sold out' : avail+' / '+aw.edition_total;
     xpBuy.dataset.artworkId = aw.id;
     xpBuy.dataset.sold = isSold ? '1' : '0';
+    xpBuy.dataset.mode = '';
     xpBuy.textContent = isSold ? '— Sold —' : 'Acquire →';
     xpBuy.disabled = isSold;
     xpBuy.style.color = isSold ? '#222' : '';
   } else {
     xpBuy.dataset.artworkId = '';
     xpBuy.dataset.sold = '0';
-    xpBuy.textContent = 'Get Higher — $30';
     xpBuy.disabled = false;
     xpBuy.style.color = '';
+    if(OWNED){
+      xpBuy.dataset.mode = 'owned';
+      xpBuy.setAttribute('aria-label','Get Higher');
+      xpBuy.innerHTML = '<span style="font-family:\'Quantico\',sans-serif;font-weight:700;color:var(--coral);letter-spacing:.02em">Get</span> <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span>';
+    } else {
+      xpBuy.dataset.mode = '';
+      xpBuy.removeAttribute('aria-label');
+      xpBuy.textContent = 'Get Higher — $30';
+    }
   }
 
   setTimeout(()=>{
