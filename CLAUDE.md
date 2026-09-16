@@ -106,6 +106,25 @@ téléchargeables.
 jamais `space/`. Un contenu commun est copié, pas partagé. Un produit qui casse
 quand un autre bouge n'est pas indépendant.
 
+### ⛔ SOUS `cleanUrls`, TOUT LIEN INTERNE EST ABSOLU — 16/09/2026
+
+**C'est la cause du 404 de l'espace créateur.**
+
+`vercel.json` pose `cleanUrls: true`. L'URL du Club est donc `/club`,
+**sans barre oblique finale** — et le répertoire de base d'un document
+servi à `/club` est `/`, pas `/club/`. Un `href="creator.html"` dans
+cette page résout vers **`/creator.html`** : 404 NOT_FOUND. Vérifié en
+production le 16/09 — `/club/creator` rend 200, `/creator.html` rend 404.
+
+Deux liens voisins (`../map.html`, `../totehm.html#in`) marchaient **par
+chance** : remonter d'un cran au-dessus de la racine y reste. C'est le
+pire cas — la moitié des liens marche, donc on ne cherche pas la règle.
+
+> **La règle : un lien vers une autre page du même domaine s'écrit en
+> chemin ABSOLU** — `/club/creator`, `/map`, `/totehm#in`. Un chemin
+> absolu ne dépend pas de la barre oblique finale. Ça vaut aussi pour les
+> `return_url` envoyées à Stripe.
+
 ### ⛔ LE MODÈLE DE DONNÉES EST FERMÉ — 15/09/2026
 
 **CINQ OBJETS, SEPT INTENTIONS. Aucune sixième catégorie, jamais.**
@@ -118,12 +137,24 @@ quand un autre bouge n'est pas indépendant.
 | VISIONS     | `visions` | — |
 | TEACHINGS   | `wisdom` | **objectifs** |
 
-**Chaque objet porte UNE intention parmi les sept** — fight · flow ·
-enrich · love · express · focus · celebrate. La liste est verrouillée EN
-BASE par une contrainte `check` sur les quatre tables, pas seulement à
-l'écran : un front peut se tromper, une contrainte non. `null` reste
-permis — un objet s'écrit avant de se qualifier, et forcer l'intention à
-la création empêcherait d'écrire.
+**Chaque objet porte UNE OU PLUSIEURS intentions parmi les sept** —
+fight · flow · enrich · love · express · focus · celebrate. La liste est
+verrouillée EN BASE par une contrainte `check` sur les quatre tables, pas
+seulement à l'écran : un front peut se tromper, une contrainte non. La
+liste vide reste permise — un objet s'écrit avant de se qualifier, et
+forcer l'intention à la création empêcherait d'écrire.
+
+⚠️ **`is` EST LA LISTE, `i` EST LA PREMIÈRE.** Deux colonnes, une seule
+vérité : `i` vaut toujours `is[1]`, et c'est `intentions_set(kind,id,is)`
+qui pose les deux — jamais une écriture à la main. `i` existe parce que
+le bot et la carte la lisent déjà ; la retirer voudrait dire réécrire les
+deux. Même doctrine que `steps.o` face à `objective_habits` : la colonne
+historique porte le premier lien, la table porte la vérité.
+
+**Un seul verbe côté serveur pour les quatre tables** : `intentions_set`.
+Le nom de table ne vient JAMAIS du client tel quel — il est traduit par
+un `case` fermé, parce qu'un `format(%I)` sur une chaîne reçue laisserait
+écrire dans n'importe quelle table de la base.
 
 **Deux axes, deux langages visuels, et il ne faut pas les confondre :**
 la COULEUR DE LA BOÎTE dit le TYPE (navy · bleu clair · rouge-violet) ;
@@ -133,6 +164,77 @@ le TRAIT du bord gauche dit l'INTENTION. Un objet a les deux, toujours.
 `teaching_objectives`) sont des tables de jointure, jamais une colonne :
 un lien qui n'en accepte qu'un finit toujours par en accepter plusieurs,
 et c'est là qu'on réécrit la moitié du produit.
+
+### ⛔ LE FRONT APPELAIT QUATRE FONCTIONS QUI N'EXISTAIENT PLUS — 16/09/2026
+
+**C'est la cause de « les suppressions ne fonctionnent pas », et elle a
+tenu trois lots.**
+
+`trip_create`, `trip_rename`, `trip_set_target`, `trip_close` ont été
+renommées `objective_*` en base. Personne n'a repointé la page. Mesuré
+dans Supabase le 16/09 : les quatre sont **absentes**. Conséquence
+exacte, et silencieuse :
+
+| le geste | ce qu'il faisait vraiment |
+|---|---|
+| créer un objectif | rien — `data` était `null`, la boîte s'ouvrait vide |
+| le renommer | rien — le texte vivait en mémoire jusqu'au rechargement |
+| poser une deadline | rien |
+| le supprimer | rien — **il revenait au rechargement** |
+
+J'avais diagnostiqué une COURSE (`EN_VOL`, `await calme()`) et le
+correctif était juste — mais ce n'était pas ça. Un appel dans le vide
+ressemble exactement à une course : l'écran fait le geste, le serveur
+n'en sait rien, le rechargement remet l'ancien état.
+
+**La règle qui en sort, et elle est mécanique :**
+
+> ⚠️ **Avant de croire à une course, vérifier que la fonction EXISTE.**
+> Une RPC absente renvoie une erreur PostgREST, pas une exception : si
+> personne ne lit `error`, il ne se passe **rien du tout**, sans un mot.
+> Le contrôle tient en une requête, et il fait partie de tout lot qui
+> touche aux RPC :
+>
+> ```sql
+> select p.proname from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+> where n.nspname='public' and p.proname in ( … la liste du front … );
+> ```
+>
+> La liste du front s'extrait en une ligne :
+> `grep -oE "sb\.rpc\('[a-z_]+'" com/*.html | sed "s/.*rpc('//;s/'//" | sort -u`
+
+**Deux autres clés n'arrivaient jamais non plus.** `my_trips` ne rendait
+ni `h.objectives` (que le front lisait pour remplir `OBJ`) ni les
+répulsions de la table de liens `repulsion_habits` — seulement celles de
+la colonne historique `habit_text`. Donc : un objectif lié par
+`objective_link` et une répulsion liée par `repulsion_link` étaient
+**écrits en base et invisibles à l'écran**. La fonction rend maintenant
+l'arbre entier — cinq objets, tous les liens — en un appel.
+
+### ⛔ UNE RÉPULSION SE CRÉE COMME LES QUATRE AUTRES — 16/09/2026
+
+**C'est la cause de « on ne peut pas ajouter correctement des
+répulsions ».**
+
+On créait une ligne fantôme (`id:'new'`, `brouillon:true`) et on ouvrait
+le lookup d'habitude AVANT le texte, en comptant sur `repulsion_set` pour
+la faire exister au premier lien. Or `repulsion_set` **lève sur un texte
+vide** — et à cet instant le texte est toujours vide. L'erreur partait
+dans la console, la boîte restait à l'écran, et rien n'existait en base.
+
+`repulsion_set` fait AUSSI autre chose : elle **retire** l'ancienne
+répulsion du même obstacle. Utile pour le bot, fatal pour une création —
+la deuxième répulsion vide désactiverait la première. Et appelée à chaque
+frappe pour renommer, elle empilait une ligne morte par lettre tapée.
+
+D'où deux verbes dédiés, `repulsion_create` et `repulsion_rename`, qui ne
+font que ce que leur nom dit. `repulsion_set` garde sa sémantique pour le
+bot et n'est plus appelée par la page.
+
+**La règle : les cinq objets se créent de la même façon** — une ligne
+vide en base, puis on écrit dedans. Le brouillon n'existe plus. Un objet
+qui a besoin d'un rite de naissance particulier est un objet dont on aura
+oublié le rite six semaines plus tard.
 
 ### LE CLUB ET LES CRÉATEURS — 15/09/2026
 
@@ -240,9 +342,34 @@ wisdom.html   My Wisdom                    higherself.html
 vision.html   My vision for the future     HigherSelf — mini-app Telegram
 ```
 
-### Les deux JUMEAUX — 13/09/2026
+### ⛔ LES DEUX JUMEAUX SONT RENTRÉS — 16/09/2026
 
-`wisdom.html` (rouge-violet) et `vision.html` (bleu clair) donnent
+**`wisdom.html` et `vision.html` N'EXISTENT PLUS.** Ce sont deux VUES de
+`com/totehm.html`, au même titre que les habitudes, les objectifs et les
+répulsions. `tools/jumeau.py` n'a plus rien à dériver et s'arrête en le
+disant.
+
+**Pourquoi on les a fusionnés.** Deux copies de 280 ko pour afficher une
+liste de plus. Chaque copie embarquait son `createClient`, sa
+vérification de session, ses SVG de logo — et surtout **sa propre
+session de navigation** : ouvrir sa sagesse voulait dire quitter le
+document, donc perdre la boîte ouverte, le filtre, le classement en
+cours. Trois bugs signalés sur ces deux fichiers venaient tous de là, et
+aucun n'était un bug de code : c'était l'architecture qui les produisait.
+
+**Ce qui reste vrai de l'ancienne doctrine** : le PAPIER de ces deux vues
+change (rouge-violet #5b2652, bleu clair #2b3a73) alors qu'il ne change
+pas entre les trois couches d'une même journée. Ce n'est pas une
+exception arbitraire : ces deux vues sont un AILLEURS DANS LE TEMPS, et
+Wah les reconnaît à leur fond. ⚠️ **Il faut le poser DEUX FOIS** : sur
+`body` (au téléphone, le corps EST le papier) et sur l'image perforée de
+`#stage` (sur ordinateur, le corps est noir et c'est le carré qu'on
+voit). Mesuré le 16/09 : un seul des deux et le fond ne changeait que
+sur un écran.
+
+<details><summary>L'ancienne doctrine des jumeaux (13/09/2026) — archive</summary>
+
+`wisdom.html` (rouge-violet) et `vision.html` (bleu clair) donnaient
 l'impression qu'on a seulement changé le FOND du Totehm. Tout le reste
 est le MÊME objet, à la même place, au pixel : le T en haut, le rail à
 gauche, le TOTEHM en bas, l'accès membre au-dessus du T, la croix en haut
@@ -280,6 +407,46 @@ dérivant ces fichiers j'y suis tombé trois fois de suite — `open`,
 script AUDITE désormais chaque jumeau et refuse d'écrire si un nom est
 déclaré deux fois au niveau du module. On ne cherche plus à la main ce
 qui se mesure.
+
+</details>
+
+### LA CROIX — CINQ OBJETS, DEUX AXES — 16/09/2026
+
+```
+                      MY OBJECTIVES
+                            |
+      MY WISDOM  ---   MY HABITS   ---   MY VISION
+      (past)           (present)         (future)
+                            |
+                      MY REPULSIONS
+```
+
+**L'horizontale est le TEMPS. La verticale est la PROFONDEUR** — ce qui
+tire l'habitude vers le haut (l'objectif), ce qui la tire vers le bas (la
+répulsion). Les deux axes ne veulent pas dire la même chose, et la croix
+le dit sans une phrase d'explication. C'est pour ça qu'elle remplace la
+rangée de trois.
+
+**Une seule table décrit la navigation** : `CROIX` dans `totehm.html`.
+Le doigt, le trackpad, les quatre flèches et les cinq carrés la lisent
+tous. Deux tables finiraient par dire deux choses différentes — c'est
+déjà arrivé avec `VIEW_ORDER`.
+
+**⚠️ LE VERTICAL SE PREND AU BOUT DE LA LISTE, jamais au milieu.** Un
+geste vertical libre entre en concurrence avec le défilement — c'est ce
+qui avait « buggé le filtre » et fait retirer le vertical la première
+fois. Il ne part QUE lorsque la liste ne peut plus défiler : arrivé en
+bas, continuer descend sur les répulsions ; en haut, tirer remonte sur
+les objectifs. Un délai de garde de 700 ms empêche l'inertie d'une
+molette de traverser deux vues.
+
+**⚠️ UN SEUL CHIFFRE POUR LA BANDE HAUTE : `--croix-t`.** Il y en avait
+trois à tenir d'accord par écran (le haut des carrés, le haut de la bande
+de classement, `--band-t`). La croix est plus haute que la rangée, et au
+téléphone son dernier intitulé est passé SOUS la première boîte — parce
+qu'un des trois avait bougé et pas les autres. Les deux autres en
+découlent maintenant : `+82` pour la bande de classement, `+100` pour la
+première boîte.
 
 ### `next_objective.html` est mis de côté — 13/09/2026
 
@@ -1376,6 +1543,22 @@ Et le retour est une **fusion**, pas un saut : le châssis est identique
 au pixel entre un jumeau et le Totehm, la seule chose qui change est la
 couleur — alors on la change AVANT de naviguer, 200 ms de fondu vers le
 navy. L'œil lit un écran qui se repeint, pas deux pages.
+
+### L'ATTERRISSAGE A LA FORME DE GOOGLE — 16/09/2026
+
+Le logo et **[Open my Totehm] EN HAUT**, la **barre de recherche EN
+BAS** — sur téléphone comme sur ordinateur. `#gate-hero` est en
+`space-between` avec DEUX groupes : `#gate-top-row` (logo · bouton · nom
+· visibilité) et `#gate-foot` (la barre · « Think same but opposite »).
+⚠️ Un troisième bloc au milieu recentrerait tout — c'est ce qui se
+passait avant.
+
+**La recherche n'est plus un bouton qui révèle un champ.** Il fallait
+deux gestes pour une intention ; il en faut zéro : on tape. `#search-btn`
+et son `morph()` sont supprimés. ⚠️ Appeler `morph()` sur un nœud absent
+lève au chargement du module — donc page blanche. C'est arrivé trois fois
+en une semaine ; le câblage a été retiré dans le même geste que le
+balisage.
 
 ### La recherche est un geste de MEMBRE — 08/09/2026
 

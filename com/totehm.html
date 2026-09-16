@@ -57,16 +57,34 @@
   --futura:'Futura','Jost',sans-serif;
   --rl:46px;   /* rail left */
   --rw:18px;   /* rail width */
-  --band-t:196px;  /* bande haute : T.svg + les trois carrés + leur nom
-                      + la bande « order by importance ». Elle doit tenir
-                      TOUT ce qui est fixe en haut : la liste commence
-                      après, jamais dessous. */
+  /* ══ UN SEUL CHIFFRE POUR TOUTE LA BANDE HAUTE · 16/09/2026 ════════
+     Il y en avait TROIS à tenir d'accord par écran : le haut des carrés,
+     le haut de la bande de classement, et `--band-t`. Mesuré le 16/09 :
+     la croix à cinq carrés est plus haute que la rangée à trois, et au
+     téléphone son dernier intitulé passait SOUS la première boîte —
+     parce que `#views{top}` avait bougé et pas `--band-t`.
+     Il n'y a plus qu'un chiffre par écran : `--croix-t`, le haut de la
+     croix. Les deux autres en découlent. On ne peut plus en oublier un.
+       croix : --croix-t          hauteur mesurée 78 px
+       bande de classement : +82  (juste sous la croix)
+       première boîte : +100      (22 px d'air, comme sur ordinateur) */
+  --croix-t:96px;
+  --band-t:calc(var(--croix-t) + 100px);
   --band-b:116px;  /* bande basse : TOTEHM.png + flèche menu */
   --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%2336498c'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   /* Le carré perforé du logo (desktop) — même dessin que #gl-bg.
      navy = Habits · bleu clair = Next Objective · rouge-violet = Book */
   --logo-navy:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%232b2b57'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000000'/%3E%3C/svg%3E");
+  /* ══ LE CARRÉ PERFORÉ DES DEUX VUES DU TEMPS · 16/09/2026 ══════════
+     Sur ordinateur le Totehm est un CARRÉ posé sur du noir : ce n'est
+     pas `body` qui porte le papier, c'est l'image perforée de `#stage`.
+     Mesuré le 16/09 : au téléphone le fond devenait bien rouge-violet,
+     sur ordinateur il restait navy — le même réglage ne peint pas la
+     même chose selon l'écran. Deux images de plus, mêmes perforations,
+     seul le fond change. */
+  --logo-wisdom:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%235b2652'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000000'/%3E%3C/svg%3E");
+  --logo-visions:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%232b3a73'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000000'/%3E%3C/svg%3E");
   --logo-blue:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%2336498c'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000000'/%3E%3C/svg%3E");
   --logo-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23743169'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000000'/%3E%3C/svg%3E");
   --tile-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23743169'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
@@ -181,8 +199,22 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
    trop haut pour appartenir à la liste. Ils remontent contre le T, et
    c'est `--band-t` qui ouvre l'écart avec la première boîte — un seul
    chiffre pour toute la respiration du haut. */
-#views{position:fixed;top:96px;left:50%;transform:translateX(-50%);
-  z-index:33;display:flex;flex-direction:row;align-items:flex-start;gap:22px}
+/* ══ LES CARRÉS FORMENT UNE CROIX · 16/09/2026 ═══════════════════════
+   Trois carrés en rangée ne pouvaient dire que « à côté ». Il y a
+   maintenant cinq objets, et deux axes qui ne veulent pas dire la même
+   chose : l'horizontale est le TEMPS (passé · présent · futur), la
+   verticale est la PROFONDEUR (ce qui tire l'habitude vers le haut, ce
+   qui la tire vers le bas). La croix DIT ça sans une phrase
+   d'explication — c'est pour ça qu'elle remplace la rangée.
+   Les deux carrés du haut et du bas sont couchés (carré + mot côte à
+   côte) : debout, ils auraient ajouté deux fois 22 px de hauteur à une
+   bande qui n'en a pas. */
+#views{position:fixed;top:var(--croix-t);left:50%;transform:translateX(-50%);
+  z-index:33;display:flex;flex-direction:column;align-items:center;gap:7px}
+#vt-row{display:flex;flex-direction:row;align-items:flex-start;gap:22px}
+/* Couché : le carré et son mot sur la même ligne. */
+.vt-c.lay{flex-direction:row;align-items:center;gap:7px}
+.vt-c.lay .vt{width:11px;height:11px}
 /* Le bouton EST la colonne : le carré, puis son nom dessous. Cliquer le
    mot revient à cliquer la couleur — deux cibles pour un seul geste. */
 .vt-c{display:flex;flex-direction:column;align-items:center;gap:6px;
@@ -220,6 +252,8 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
 .vt.r{background:var(--rep)}
 .vt.h{background:var(--navy)}
 .vt.o{background:var(--blue)}
+.vt.w{background:var(--rep)}
+.vt.v{background:var(--blue)}
 /* Le nom de la vue, sous les carrés, centré comme eux. */
 /* `#vname` a disparu : chaque carré porte son nom (voir `.vt-n`). */
 .higher-inline{height:1.5em;width:auto;display:inline-block;vertical-align:-.32em}
@@ -433,6 +467,27 @@ body.higher .set-block.higher-only{display:flex!important}
 #stage.v-h{--skin:var(--navy)}
 #stage.v-o{--skin:var(--blue)}
 #stage.v-r{--skin:var(--rep)}
+/* ══ LES DEUX JUMEAUX SONT RENTRÉS · 16/09/2026 ══════════════════════
+   `wisdom.html` et `vision.html` étaient deux COPIES du Totehm avec un
+   autre fond. Deux fichiers de 280 ko pour afficher une liste de plus.
+   Ils sont maintenant deux VUES — même document, même session, même
+   mémoire. `tools/jumeau.py` n'a plus rien à dériver.
+   La famille de couleur porte le sens : le PASSÉ et ce qu'on tue sont
+   rouge-violet, le FUTUR et ce qui le vise sont bleu clair. */
+#stage.v-w{--skin:var(--rep)}
+#stage.v-v{--skin:var(--blue)}
+/* ⚠️ LE PAPIER CHANGE POUR CES DEUX VUES, ET POUR ELLES SEULES. La règle
+   du produit était « le papier ne change pas, ce sont les boîtes qui
+   portent la couleur ». Elle tient pour les trois couches d'une même
+   journée. Elle ne tient plus quand la vue est un AILLEURS dans le
+   temps : Wah reconnaît sa sagesse au fond rouge-violet et sa vision au
+   fond bleu — c'est comme ça qu'il les a lues pendant des semaines dans
+   deux documents séparés. La transition est lente (.5 s) : on doit
+   sentir qu'on se déplace, pas qu'on clignote. */
+body{transition:background-color .5s ease}
+body.v-wisdom {--paper:#5b2652}
+body.v-visions{--paper:#2b3a73}
+@media(prefers-reduced-motion:reduce){body{transition:none}}
 /* La ligne d'ajout n'est pas un objet posé : c'est une invitation. */
 /* LE POINTILLÉ D'UNE PLACE VIDE EST L'EXCEPTION DOCUMENTÉE : il ne
    cerne pas une boîte, il dessine l'ABSENCE d'une boîte. Voir
@@ -635,6 +690,22 @@ body.higher .set-block.higher-only{display:flex!important}
 .m-h{background:var(--navy)}
 .m-o{background:var(--blue)}
 .m-r{background:var(--rep)}
+/* ══ UNE MINI-BOÎTE NE PORTE JAMAIS LA COULEUR DE SON HÔTE · 16/09/2026
+   La règle du produit est « la mini porte la couleur de CE QU'ELLE EST ».
+   Elle tenait tant que les familles ne se touchaient pas. Avec les liens
+   croisés elles se touchent : une VISION dans un OBJECTIF, c'est du bleu
+   dans du bleu — mesuré, la mini disparaissait. Même chose pour une LEÇON
+   dans une RÉPULSION, rouge-violet dans rouge-violet.
+   Pas de couleur inventée : la mini prend alors le PAPIER de sa famille,
+   qui est déjà la couleur de sa vue. Elle reste de sa famille, elle est
+   juste plus sombre que la boîte qui l'accueille — donc lisible, et
+   toujours reconnaissable. */
+.m-v{background:#2b3a73}
+.m-w{background:#5b2652}
+/* Et dans l'autre sens : un objectif posé DANS une vision, une répulsion
+   posée DANS une leçon. Même famille, même remède. */
+#stage.v-v .m-o{background:#2b3a73}
+#stage.v-w .m-r{background:#5b2652}
 .mini-x{background:none;border:none;color:rgba(255,255,255,.55);cursor:pointer;
   font-size:14px;line-height:1;padding:0 1px;transition:color .15s}
 .mini-x:hover{color:#fff}
@@ -673,11 +744,15 @@ body.higher .set-block.higher-only{display:flex!important}
 .pk-list .pk-o.k-o{background:var(--blue)}
 .pk-list .pk-o.k-r{background:var(--rep)}
 .pk-list .pk-o.k-h{background:var(--navy)}
+.pk-list .pk-o.k-v{background:var(--blue)}
+.pk-list .pk-o.k-w{background:var(--rep)}
 .pk-list .pk-o.vit{animation:breathe 5s ease-in-out infinite}
 .pk-list .pk-o:hover{filter:brightness(1.18);animation:none}
 #habits .in.nw.k-o{background:var(--blue)}
 #habits .in.nw.k-r{background:var(--rep)}
 #habits .in.nw.k-h{background:var(--navy)}
+#habits .in.nw.k-v{background:var(--blue)}
+#habits .in.nw.k-w{background:var(--rep)}
 #habits .in.nw::placeholder{color:rgba(255,255,255,.62)}
 
 /* [Delete] EN DESSOUS, PLEINE LARGEUR. Sur le côté il mangeait la moitié
@@ -780,6 +855,11 @@ body.higher .set-block.higher-only{display:flex!important}
 .blk-o{--skin:var(--blue)}
 .blk-h{--skin:var(--navy)}
 .blk-r{--skin:var(--rep)}
+/* Une vision est de la famille du futur (bleu), une lecon de la famille
+   du passe (rouge-violet) : la mini-boite porte la couleur de CE QU'ELLE
+   EST, jamais celle de la boite qui l'accueille. */
+.blk-v{--skin:var(--blue)}
+.blk-w{--skin:var(--rep)}
 /* Le mot de liaison — WHY, HOW, PROTECTS — vit dans la ligne d'unité,
    en tête, exactement là où une habitude porte son intention. */
 .blk-lbl{font-weight:700;letter-spacing:.2em;color:rgba(255,255,255,.55)}
@@ -960,7 +1040,7 @@ body.ordering #ordbtn span{animation:none;opacity:1}
    les trois carrés, à leur place fixe — c'est pour ça qu'ils remontent.
    Elle ne s'affiche qu'en mode classement, et ne prend aucune place
    sinon (`display:none`). */
-#ordbar{position:fixed;top:150px;left:50%;transform:translateX(-50%);
+#ordbar{position:fixed;top:calc(var(--croix-t) + 82px);left:50%;transform:translateX(-50%);
   z-index:33;display:none;white-space:nowrap;pointer-events:none}
 body.ordering #ordbar{display:block}
 #ordbar,.ordbar{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;
@@ -1390,7 +1470,20 @@ body:not(.gate) #gate{display:none}
    que pour quelqu'un de connecté ; la recherche reste pour tout le monde,
    c'est la seule chose qui s'adresse à un inconnu. */
 #gate-id{display:flex;flex-direction:column;align-items:center;gap:7px;
-  width:100%;max-width:340px;margin:0 auto 14px;padding:0 18px}
+  width:100%;max-width:340px;margin:0 auto;padding:0 18px}
+/* ══ LE BAS DE L'ATTERRISSAGE · 16/09/2026 ═══════════════════════════
+   `#gate-hero` est déjà en `space-between` : deux groupes suffisent à
+   pousser l'un en haut et l'autre en bas. Un troisième bloc au milieu
+   aurait recentré le tout — c'est ce qui se passait avant. */
+#gate-foot{display:flex;flex-direction:column;align-items:center;
+  width:100%;flex-shrink:0}
+#gate-search{width:100%;max-width:420px;padding:0 18px;
+  display:flex;flex-direction:column;align-items:center;gap:8px}
+/* La barre prend la largeur qu'on lui donne : une barre de recherche
+   étroite ne se lit pas comme une barre de recherche. */
+#gate-search #search-input{width:100%;max-width:none;font-size:15px;
+  text-align:center}
+#gate-search .note{width:100%}
 body:not(.member) #gate-id .gid,
 body:not(.member) #gate-id #set-name,
 body:not(.member) #gate-id #vis-panel,
@@ -1590,6 +1683,14 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
     background:var(--logo-navy) 0 0/100% 100% no-repeat border-box;
     overflow:hidden;z-index:10;
   }
+  /* ⚠️ LE PAPIER DU CARRÉ SUIT LA VUE, ICI AUSSI. `body.v-wisdom` ne
+     suffit pas sur ordinateur : le corps est NOIR et c'est l'image de
+     `#stage` qu'on voit. Les deux réglages disent la même chose, chacun
+     dans sa langue — l'un une couleur, l'autre une image perforée.
+     `background-image` seul : la taille et la position restent celles du
+     raccourci au-dessus, on ne les répète pas. */
+  #stage.v-w{background-image:var(--logo-wisdom)}
+  #stage.v-v{background-image:var(--logo-visions)}
   /* Le rail s'arrête au T en haut et au wordmark en bas, au lieu de courir
      d'un bord à l'autre : 30px, la même valeur que #bigT et #wordmark. */
   #rail{top:30px;bottom:30px}
@@ -1598,8 +1699,6 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
   #ordbtn{top:30px}
   /* Les carrés sont centrés sous le T dans les deux cas : le T est plus
      petit ici (46px), la rangée remonte d'autant. */
-  #views{top:96px}
-  #ordbar{top:150px}
   #vname{top:124px}
   /* SUPPRIMÉ (05/09) — le papier ne change pas de couleur. Une seule
      tuile, la navy. Ce sont les BOÎTES qui portent les trois couleurs.
@@ -1752,15 +1851,12 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
      devenir une barre. 8 px : un cran au-dessus des 6 px d'origine, et
      l'icône s'y accroche par `--rw`, donc les deux restent taillés dans
      la même mesure. */
-  /* ⚠️ LA BANDE HAUTE, AU TÉLÉPHONE. Les carrés se rangent sous le T
-     (`#views{top:88px}`, bas ≈ 140 avec la seconde ligne de la vue
-     répulsions), la bande de classement se pose à 146, et la première
-     boîte commence à 184 : trente pixels d'air sous le mot le plus bas.
-     Les deux valeurs bougent ENSEMBLE — remonter les carrés sans ouvrir
-     `--band-t`, c'est coller la liste au logo. */
-  :root{--rl:0px;--rw:8px;--band-t:184px}
-  #views{top:88px}
-  #ordbar{top:146px}
+  /* ⚠️ LA BANDE HAUTE, AU TÉLÉPHONE. Un seul chiffre : `--croix-t`.
+     Il y avait ici DEUX paires `#views`/`#ordbar` dans le même bloc —
+     88/146 puis 112/166 — dont la première ne servait à rien : la
+     seconde gagnait. C'est exactement comme ça qu'on perd la trace
+     d'une mesure. Il n'en reste qu'une. */
+  :root{--rl:0px;--rw:8px;--croix-t:112px}
   /* #ordbtn hérite du positionnement de base : centré sur le rail,
      tout en haut. Sur mobile le rail commence à left:0 : le bouton est
      centré sur --rw/2 = 3px. Un peu plus haut qu'en desktop puisqu'il
@@ -1773,8 +1869,6 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
   body:not(.gate) #conn-bar{top:8px;left:50%;right:auto;transform:translateX(-50%);padding:6px 10px}
   #bigT{top:44px}
   #bigT svg{height:48px}
-  #views{top:112px}
-  #ordbar{top:166px}
   #vname{top:142px}
   /* Rail fin et sourd — une trace, pas une bande. Il tient la colonne du
      regard sans peser. */
@@ -1969,19 +2063,6 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
   <!-- LA CARTE DE VISITE, au-dessus du logo : mon nom, qui me voit, et
        la porte vers les autres. Visible pour un membre connecté ; un
        inconnu n'a rien à nommer, il ne voit que la recherche. -->
-  <div id="gate-id">
-    <button class="btn-sig gid" id="name-btn">Name of my Totehm</button>
-    <input class="line-input hide" id="set-name" maxlength="24" placeholder="my Totehm" autocomplete="off" spellcheck="false">
-    <div class="note dim hide" id="name-note"></div>
-
-    <button class="btn-sig gid" id="vis-btn">Visibility</button>
-    <div class="hide" id="vis-panel"><div class="row"><button class="size-btn" id="set-private">Private</button><button class="size-btn" id="set-members">Visible to members</button></div></div>
-
-    <button class="btn-sig" id="search-btn">Search a Totehm</button>
-    <input class="line-input hide" id="search-input" maxlength="24" placeholder="name of a Totehm" autocomplete="off" spellcheck="false">
-    <div class="note dim hide" id="search-note"></div>
-  </div>
-
   <div id="gate-top-row">
   <div id="gate-logo">
     <svg class="glayer" id="gl-bg"   viewBox="0 0 224.88 224.08" preserveAspectRatio="none"    aria-hidden="true"><defs><mask id="tgb_m" maskUnits="userSpaceOnUse" x="-40" y="-40" width="310" height="310"><rect x="-40" y="-40" width="310" height="310" fill="#fff"/><circle cx="56.421" cy="0.000" r="13.86" fill="#000"/><circle cx="56.421" cy="224.078" r="13.86" fill="#000"/><circle cx="112.440" cy="0.000" r="13.86" fill="#000"/><circle cx="112.440" cy="224.078" r="13.86" fill="#000"/><circle cx="168.459" cy="0.000" r="13.86" fill="#000"/><circle cx="168.459" cy="224.078" r="13.86" fill="#000"/><circle cx="0.402" cy="56.020" r="13.86" fill="#000"/><circle cx="224.478" cy="56.020" r="13.86" fill="#000"/><circle cx="0.402" cy="112.039" r="13.86" fill="#000"/><circle cx="224.478" cy="112.039" r="13.86" fill="#000"/><circle cx="0.402" cy="168.059" r="13.86" fill="#000"/><circle cx="224.478" cy="168.059" r="13.86" fill="#000"/></mask></defs><rect x="0.402" y="0.000" width="224.076" height="224.078" fill="#333366" mask="url(#tgb_m)"/></svg>
@@ -1991,6 +2072,17 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
     <button id="gate-enter" aria-label="Enter my Totehm"></button>
   </div>
   <button class="btn-sig" id="gate-open">Open my Totehm</button>
+
+  <!-- Le nom et la visibilité appartiennent à l'identité : ils restent
+       collés sous le bouton, et n'existent que pour un membre. -->
+  <div id="gate-id">
+    <button class="btn-sig gid" id="name-btn">Name of my Totehm</button>
+    <input class="line-input hide" id="set-name" maxlength="24" placeholder="my Totehm" autocomplete="off" spellcheck="false">
+    <div class="note dim hide" id="name-note"></div>
+
+    <button class="btn-sig gid" id="vis-btn">Visibility</button>
+    <div class="hide" id="vis-panel"><div class="row"><button class="size-btn" id="set-private">Private</button><button class="size-btn" id="set-members">Visible to members</button></div></div>
+  </div>
   </div><!-- /gate-top-row -->
 
   <!-- ══ LA RECHERCHE A QUITTÉ L'ATTERRISSAGE · 08/09/2026 ═══════════
@@ -2007,10 +2099,28 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
        la seule promesse de l'écran qui n'était pas tenue.
        La carte n'est plus une porte de ce fichier : elle a la sienne,
        `totehm_world.html`, à retravailler. -->
+  <!-- ══ LA BARRE DE RECHERCHE EST EN BAS · 16/09/2026 ═══════════════
+       Le haut porte l'identité — le logo et la porte. Le bas porte
+       l'action — on cherche quelqu'un. C'est la forme de Google, et
+       elle tient pour la même raison : le pouce est en bas, l'œil est
+       en haut.
+       ⚠️ CE N'EST PLUS UN BOUTON QUI RÉVÈLE UN CHAMP. Il fallait deux
+       gestes pour une intention ; il en faut zéro : on tape. Le bouton
+       `#search-btn` et son `morph()` sont supprimés — le câblage le
+       sait, il ne l'appelle plus. -->
+  <div id="gate-foot">
+    <div id="gate-search">
+      <input class="line-input" id="search-input" maxlength="24"
+             placeholder="search a Totehm" autocomplete="off" spellcheck="false"
+             aria-label="Search a Totehm">
+      <div class="note dim hide" id="search-note"></div>
+    </div>
+
   <button id="ctx-down" type="button" aria-label="Think same but opposite">
     <span class="ctx-label">Think same but opposite</span>
     <svg class="chev bob" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
   </button>
+  </div><!-- /gate-foot -->
 </section>
 
 <!-- ══ L'ÉCRAN SUIVANT — LA VIDÉO ══════════════════════════════════════
@@ -2051,13 +2161,22 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
      ouvrir. Chacun porte maintenant le sien — on lit avant de choisir,
      comme les carrés eux-mêmes montrent la couleur avant le clic.
      Le mot est le clic : `.vt-c` est le bouton, le carré est dedans. -->
-<div id="views" class="sink-el" role="tablist" aria-label="Les trois couches du Totehm">
-  <button class="vt-c" type="button" role="tab" data-v="repulsions" aria-selected="false">
-    <span class="vt r"></span><span class="vt-n vt-n2">repulsions<b>trigger</b></span></button>
-  <button class="vt-c" type="button" role="tab" data-v="habits" aria-selected="true">
-    <span class="vt h"></span><span class="vt-n">habits</span></button>
-  <button class="vt-c" type="button" role="tab" data-v="objectives" aria-selected="false">
-    <span class="vt o"></span><span class="vt-n">objectives</span></button>
+<!-- ══ LA CROIX · 16/09/2026 ═══════════════════════════════════════
+     Horizontale = le temps. Verticale = la profondeur. Chaque carré
+     porte son nom : on lit avant de choisir. -->
+<div id="views" class="sink-el" role="tablist" aria-label="Les cinq objets du Totehm">
+  <button class="vt-c lay" type="button" role="tab" data-v="objectives" aria-selected="false">
+    <span class="vt o"></span><span class="vt-n">my objectives</span></button>
+  <div id="vt-row">
+    <button class="vt-c" type="button" role="tab" data-v="wisdom" aria-selected="false">
+      <span class="vt w"></span><span class="vt-n vt-n2">my wisdom<b>past</b></span></button>
+    <button class="vt-c" type="button" role="tab" data-v="habits" aria-selected="true">
+      <span class="vt h"></span><span class="vt-n vt-n2">my habits<b>present</b></span></button>
+    <button class="vt-c" type="button" role="tab" data-v="visions" aria-selected="false">
+      <span class="vt v"></span><span class="vt-n vt-n2">my vision<b>future</b></span></button>
+  </div>
+  <button class="vt-c lay" type="button" role="tab" data-v="repulsions" aria-selected="false">
+    <span class="vt r"></span><span class="vt-n">my repulsions — habits to kill</span></button>
 </div>
 <div id="ordbar" class="sink-el">order by importance — the bot follows this order</div>
 <button id="filter-arrow" class="sink-el" aria-label="Open filter" hidden>
@@ -2081,10 +2200,14 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
      donc à deux gestes ; elles sont maintenant sous le pouce.
      Le wordmark reste le menu : on ne perd rien. -->
 <div id="bottom-doors" class="sink-el">
+  <!-- ⚠️ CES DEUX PORTES N'OUVRENT PLUS DE DOCUMENT · 16/09/2026. Elles
+       chargeaient `wisdom.html` et `vision.html`. Les deux fichiers sont
+       rentrés dans celui-ci : ce sont deux VUES. La porte fait donc ce
+       que fait un carré de la croix — et la session ne bouge pas. -->
   <button class="door" id="door-book" type="button">My Wisdom</button>
   <button class="door" id="door-next" type="button">My vision for the future</button>
   <!-- ══ LA PORTE DU CLUB · 15/09/2026 ═══════════════════════════════
-       `totehm.com/club` — MÊME ORIGINE, donc même session. C'est
+       `totehm.space/club` — MÊME ORIGINE, donc même session. C'est
        toute la raison pour laquelle le Club n'est pas sur un quatrième
        domaine : on y entre sans se reconnecter.
        `figher.club` est un vanity URL qui redirige ici. -->
@@ -3158,8 +3281,24 @@ function hOpen(){return view!=='habits';}
 let view='habits';
 /* L'ordre AFFICHÉ des trois carrés : c'est lui que suit le doigt et lui
    que suivent les flèches. Une seule liste, sinon les deux divergent. */
-const VIEW_ORDER=['repulsions','habits','objectives'];
-let TRIPS=[], REPS=[], tripsLoaded=false;
+/* ══ LA CROIX · 16/09/2026 ═══════════════════════════════════════════
+   `VIEW_ORDER` decrivait une RANGEE. Il y a maintenant deux axes, et ils
+   ne disent pas la meme chose : l'horizontale est le TEMPS, la verticale
+   est la PROFONDEUR. Une seule table les porte, et tout ce qui navigue —
+   le doigt, le trackpad, les fleches, les carres — la lit. Deux tables
+   finiraient par dire deux choses differentes. */
+const CROIX={
+  wisdom:     {d:'habits'},
+  habits:     {g:'wisdom', d:'visions', h:'objectives', b:'repulsions'},
+  visions:    {g:'habits'},
+  objectives: {b:'habits'},
+  repulsions: {h:'habits'},
+};
+const voisin=d=>(CROIX[view]||{})[d]||null;
+function versVoisin(d){ const v=voisin(d); if(v)setView(v); }
+/* Les cinq listes. `state.habits` vit en local (elle est dans `steps`),
+   les quatre autres viennent du serveur en UN appel — `my_trips`. */
+let TRIPS=[], REPS=[], TEACH=[], VIS=[], tripsLoaded=false;
 
 /* DEUX ÉTATS, ET PAS SIX. Ce qui est OUVERT, et si on est en train de
    classer. Le choix en cours (`pk`) vit avec le rendu, plus haut — il y
@@ -3195,6 +3334,23 @@ const habByT =t =>(state.habits||[]).find(x=>(x.t0!==undefined?x.t0:x.t)===t)
               ||(state.habits||[]).find(x=>x.t===t)||null;
 const tripOf =id=>TRIPS.find(t=>String(t.id)===String(id))||null;
 const repOf  =id=>REPS.find(r=>String(r.id)===String(id))||null;
+const teachOf=id=>TEACH.find(w=>String(w.id)===String(id))||null;
+const visOf  =id=>VIS.find(v=>String(v.id)===String(id))||null;
+/* UN SEUL POINT D'ENTREE POUR LES CINQ. Tout ce qui est generique — les
+   intentions, le renommage, la suppression — passe par ici. Cinq `if`
+   recopies a cinq endroits, c'est cinq endroits ou en oublier un. */
+const objetDe=(k,id)=> k==='h'?habOf(id) : k==='t'?tripOf(id) : k==='r'?repOf(id)
+                     : k==='w'?teachOf(id) : k==='v'?visOf(id) : null;
+/* ══ LES LIENS CROISES · 16/09/2026 ══════════════════════════════════
+   Un objectif sert une VISION. Une repulsion s'eclaire d'une LECON.
+   Les deux tables existaient depuis le 15 ; rien ne pouvait les remplir.
+   On tient les DEUX cotes en memoire (`t.vs` et `v.os`) : sinon poser un
+   lien depuis l'objectif ne se verrait pas dans la vision avant un
+   rechargement, et l'ecran mentirait le temps d'un aller-retour. */
+const visionsOfTrip =t=>(t&&t.vs||[]).map(visOf).filter(Boolean);
+const tripsOfVision =v=>(v&&v.os||[]).map(tripOf).filter(Boolean);
+const teachOfRep    =r=>(r&&r.ws||[]).map(teachOf).filter(Boolean);
+const repsOfTeach   =w=>REPS.filter(r=>(r.ws||[]).includes(String(w.id)));
 /* `hs` porte des TEXTES d'habitudes — c'est ce que rend le serveur. */
 const repsOfHab=id=>{const x=habOf(id); const k=x?(x.t0!==undefined?x.t0:x.t):'';
   return k?REPS.filter(r=>(r.hs||[]).includes(k)):[];};
@@ -3224,12 +3380,17 @@ function paintZone(){
   st.classList.toggle('v-h',view==='habits');
   st.classList.toggle('v-o',view==='objectives');
   st.classList.toggle('v-r',view==='repulsions');
+  st.classList.toggle('v-w',view==='wisdom');
+  st.classList.toggle('v-v',view==='visions');
   /* L'état du logo suit le SUJET, pas la vue : un objectif s'écrit aussi
      depuis la vue habitudes, et c'est encore un objectif. */
   const oLive = view==='objectives' || (open&&open.kind==='t');
   document.body.classList.toggle('v-habits',view==='habits');
   document.body.classList.toggle('v-objectives',view==='objectives');
   document.body.classList.toggle('v-repulsions',view==='repulsions');
+  /* Ces deux-la changent le PAPIER : voir la feuille de style. */
+  document.body.classList.toggle('v-wisdom',view==='wisdom');
+  document.body.classList.toggle('v-visions',view==='visions');
   document.body.classList.toggle('o-live',!!oLive);
   document.body.classList.toggle('ordering',ordering);
   document.querySelectorAll('#views .vt-c').forEach(b=>{
@@ -3249,8 +3410,7 @@ function setView(v){
      l'est plus : tout s'enregistre en écrivant. Il reste juste à POUSSER
      ce qui dort dans la minuterie, puis la boîte se referme d'elle-même.
      Zéro friction : on regarde ailleurs, on ne range pas d'abord. */
-  if(open){ pousse(); open=null; pk=null;
-    REPS=REPS.filter(z=>!z.brouillon); }
+  if(open){ pousse(); open=null; pk=null; }
   /* Les objectifs et les répulsions sont des données du serveur : sans
      session il n'y a rien à montrer, et l'écran vide ne dirait pas
      pourquoi. */
@@ -3268,8 +3428,13 @@ function setView(v){
      C'était ça, « les objectifs et les répulsions ne s'affichent pas ». */
   loadTrips();
 }
-function showBook(on){ setView(on?'repulsions':'habits'); if(on)save(); }
-function showNext(on){ setView(on?'objectives':'habits');  if(on)save(); }
+/* ⚠️ CES DEUX-LÀ POINTAIENT SUR LES MAUVAISES VUES · 16/09/2026.
+   `showBook` ouvrait les RÉPULSIONS et `showNext` les OBJECTIFS — un
+   reste de l'époque où « le livre » et « le prochain objectif » étaient
+   deux documents. Depuis que la sagesse et la vision sont deux vues,
+   les deux portes du bas mènent où leur nom promet. */
+function showBook(on){ setView(on?'wisdom':'habits');  if(on)save(); }
+function showNext(on){ setView(on?'visions':'habits'); if(on)save(); }
 function renderView(){ return renderZone(); }
 
 /* L'arbre entier en UN appel : objectifs, leurs habitudes, les répulsions
@@ -3289,24 +3454,30 @@ async function loadTrips(force){
        vide ne dit pas si le membre n'a rien posé ou si l'appel casse. */
     if(error)throw error;
     if(!data||!data.signed_in)return;
-    TRIPS=data.trips||[];
-    /* Le serveur rend, sur CHAQUE habitude, la liste de ses objectifs.
-       On la range par texte d'habitude : c'est la seule clé que `steps`
-       et la base ont en commun. */
+    TRIPS=(data.trips||[]).map(t=>Object.assign({},t,{
+      is:Array.isArray(t.is)?t.is:[], vs:(t.visions||[]).map(String)}));
+    /* ⚠️ `OBJ` VIENT MAINTENANT DU SERVEUR, ET IL ARRIVE VRAIMENT.
+       On lisait `h.objectives` sur chaque habitude — une clé que
+       `my_trips` n'a JAMAIS rendue. `OBJ` restait donc vide et une
+       habitude ne montrait que l'objectif porté par `steps.o`, un seul,
+       alors que `objective_habits` en portait plusieurs. Les liens
+       étaient écrits en base et invisibles à l'écran.
+       `data.objs` est la table texte-d'habitude → identifiants. */
     OBJ={};
-    (TRIPS.concat([{habits:data.loose||[]}])).forEach(t=>
-      (t.habits||[]).forEach(h=>{
-        if(h&&h.t&&Array.isArray(h.objectives))OBJ[h.t]=h.objectives.map(String);}));
-    /* UNE RÉPULSION, UNE LIGNE — même si elle protège quatre habitudes.
-       Le serveur la renvoie une fois par habitude protégée ; on déduplique
-       sur son id, et `habits` porte la liste complète. Sans ça, la vue
-       répulsions afficherait la même pensée quatre fois. */
-    const vu={}; REPS=[];
-    (TRIPS.concat([{habits:data.loose||[]}])).forEach(t=>
-      (t.habits||[]).forEach(h=>(h.repulsions||[]).forEach(r=>{
-        if(vu[r.id])return; vu[r.id]=1;
-        REPS.push({id:r.id, text:r.repulsion, obstacle:r.obstacle||'',
-                   hs:Array.isArray(r.habits)&&r.habits.length?r.habits.slice():[h.t]});})));
+    const oj=data.objs||{};
+    Object.keys(oj).forEach(k=>{ OBJ[k]=(oj[k]||[]).map(String); });
+    /* UNE RÉPULSION, UNE LIGNE. Le serveur la rend maintenant À PLAT,
+       avec TOUTES ses habitudes — la colonne historique ET la table de
+       liens réunies. Avant, elle n'arrivait que nichée sous l'habitude de
+       sa colonne `habit_text` : un lien posé par `repulsion_link` était
+       écrit en base et invisible ici. */
+    REPS=(data.reps||[]).map(r=>({id:r.id, text:r.text||'', obstacle:r.obstacle||'',
+      hs:(r.hs||[]).slice(), ws:(r.ws||[]).map(String),
+      is:Array.isArray(r.is)?r.is:[]}));
+    TEACH=(data.wisdom||[]).map(w=>({id:String(w.id), t:w.text||'', t0:w.text||'',
+      is:Array.isArray(w.is)?w.is:[], os:(w.os||[]).map(String)}));
+    VIS=(data.visions||[]).map(v=>({id:String(v.id), t:v.text||'', t0:v.text||'',
+      is:Array.isArray(v.is)?v.is:[], os:(v.os||[]).map(String)}));
     tripsLoaded=true;
     renderZone();
   }catch(e){
@@ -3410,10 +3581,20 @@ function pousse(cle){
    PREMIÈRE — c'est elle que le serveur et le bot lisent (`steps.i`), et
    la tenir à jour évite de toucher à la base. */
 const intIds=x=>!x?[]:(Array.isArray(x.is)&&x.is.length?x.is:(x.i?[x.i]:[]));
-function intToggle(x,id){
+/* ══ LES 7 INTENTIONS SE RATTACHENT AUX 5 OBJETS · 16/09/2026 ════════
+   Elles ne vivaient que sur les habitudes. Une intention sur un
+   objectif, une répulsion, une vision ou une leçon dit la même chose —
+   à quoi ça sert dans une vie — et c'est le filtre du produit entier.
+   L'habitude s'écrit dans `steps` (donc `save()`), les quatre autres ont
+   une ligne en base (donc `intentions_set`). Un seul verbe côté serveur
+   pour les quatre : quatre fonctions finiraient par diverger. */
+function intToggle(x,id,kind){
   const l=intIds(x).slice(), k=l.indexOf(id);
   if(k<0)l.push(id); else l.splice(k,1);
-  x.is=l; x.i=l.length?l[0]:null; save();
+  x.is=l; x.i=l.length?l[0]:null;
+  if(!kind||kind==='h'){ save(); return; }
+  wDirty=true;
+  apres(sb.rpc('intentions_set',{p_kind:kind,p_id:String(x.id),p_is:l}));
 }
 const intCols=x=>intIds(x).map(intColor);
 
@@ -3542,10 +3723,10 @@ function freqPicker(x){
 
 /* LES SEPT INTENTIONS — plusieurs à la fois. Pas de surlignage : la tuile
    prend un fondu de sa couleur, et se remplit quand elle est choisie. */
-const intPicker=x=>{const l=intIds(x);
+const intPicker=(x,kind)=>{const l=intIds(x); const kk=kind||'h';
   return '<span class="pkw"><span class="ints">'+INTS.map(z=>
     '<button type="button" class="int'+(l.includes(z.id)?' on':'')+'" data-int="'
-    +esc(String(x.id))+'|'+z.id+'" aria-pressed="'+l.includes(z.id)+'" style="--ic:'+z.color+'">'
+    +kk+'|'+esc(String(x.id))+'|'+z.id+'" aria-pressed="'+l.includes(z.id)+'" style="--ic:'+z.color+'">'
     +'<span class="int-n">'+esc(z.name)+'</span>'
     +'<span class="int-p">'+esc(z.pillar)+'</span></button>').join('')+'</span></span>';};
 
@@ -3646,10 +3827,18 @@ function renderZone(){
     NB=TRIPS.length; h=TRIPS.map((t,k)=>vueObjectif(t,k)).join('');
     if(!TRIPS.length)h+='<div class="void">'+(tripsLoaded?'no objective yet':'loading…')+'</div>';
     h+=ligne('<button type="button" class="add-box" data-add="t">+ <b>Add an Objective</b></button>','add');
-  }else{
+  }else if(view==='repulsions'){
     NB=REPS.length; h=REPS.map((r,k)=>vueRepulsion(r,k)).join('');
     if(!REPS.length)h+='<div class="void">'+(tripsLoaded?'no repulsion yet':'loading…')+'</div>';
     h+=ligne('<button type="button" class="add-box" data-add="r">+ <b>Add a Repulsion</b></button>','add');
+  }else if(view==='wisdom'){
+    NB=TEACH.length; h=TEACH.map((w,k)=>vueTeaching(w,k)).join('');
+    if(!TEACH.length)h+='<div class="void">'+(tripsLoaded?'no teaching yet':'loading…')+'</div>';
+    h+=ligne('<button type="button" class="add-box" data-add="w">+ <b>Add a Teaching</b></button>','add');
+  }else{
+    NB=VIS.length; h=VIS.map((v,k)=>vueVision(v,k)).join('');
+    if(!VIS.length)h+='<div class="void">'+(tripsLoaded?'no vision yet':'loading…')+'</div>';
+    h+=ligne('<button type="button" class="add-box" data-add="v">+ <b>Add a Vision</b></button>','add');
   }
 
   /* La bande « order by importance » a quitté le `innerHTML` : elle
@@ -3660,6 +3849,7 @@ function renderZone(){
   peintTraits();
   window.__totehm_zone={vue:view, session:!!me, arbre_charge:tripsLoaded,
     habitudes:(state.habits||[]).length, objectifs:TRIPS.length, repulsions:REPS.length,
+    lecons:TEACH.length, visions:VIS.length,
     filtre:{rythme:!!filterF, intention:!!filterI},
     boite_ouverte:open?open.kind:null, choix:pk?pk.q:null,
     classement:ordering, ordre_du_membre:!!state.ord};
@@ -3676,13 +3866,10 @@ function vueHabitude(x,k){
      encore une habitude : les deux réglages pulsent comme le T tant qu'ils
      sont vides, et s'arrêtent dès qu'ils sont posés. */
   const unit = ouverte
-    ? '<button type="button" class="v-b'+(l.length?'':' vit')+'" data-pk="int:h:'+esc(String(x.id))+'">'
-      +(l.length?l.map(i=>'<b style="color:'+intColor(i)+'">'+esc(intName(i))+'</b>').join(' · ')
-                :'set intention')+'</button>'
+    ? intBouton(x,'h')
       +'<button type="button" class="v-b'+(x.f?'':' vit')+'" data-pk="freq:h:'+esc(String(x.id))+'">'
       +esc(x.f?flabel(x.f):'set time frequency')+' ▾</button>'
-    : (l.length?l.map(i=>'<span class="v-int" style="color:'+intColor(i)+'">'+esc(intName(i))+'</span>').join('')
-               :'<span class="v-pil vit">set intention</span>')
+    : intMots(x)
       +'<span class="v-frq'+(x.f?'':' vit')+'">'+esc(x.f?flabel(x.f):'set time frequency')+'</span>';
   /* WHY au-dessus des objectifs, PROTECTED BY au-dessus des répulsions :
      la boîte raconte, elle ne liste pas. */
@@ -3702,7 +3889,7 @@ function vueHabitude(x,k){
      qui fait dérailler. */
   const minis = groupe('why',gO) + groupe('trigger',gR);
   let haut='', bas='';
-  if(ouverte&&pkOn('int','h',x.id))  haut=intPicker(x);
+  if(ouverte&&pkOn('int','h',x.id))  haut=intPicker(x,'h');
   if(ouverte&&pkOn('freq','h',x.id)) haut=freqPicker(x);
   if(ouverte&&pkOn('lien','o',x.id)) bas=lienPicker('o',x.id,
       ts.map(t=>String(t.id)), TRIPS.map(t=>({id:t.id,txt:t.text})), 'a new objective','o');
@@ -3719,19 +3906,33 @@ function vueObjectif(t,k){
   const hs=habsOfTrip(t), late=t.days_left!=null&&t.days_left<0;
   /* PLUS DE COMPTEUR. « 3 habits » ne raconte rien — HOW suivi des trois
      habitudes raconte tout. La deadline reste : elle, elle périme. */
+  const vs=visionsOfTrip(t), l=intIds(t);
   const unit = ouverte
     ? '<input class="in date" type="date" data-date="'+esc(String(t.id))+'" value="'+esc(dateIn(t.target_at))+'">'
       +(t.target_at?'<button type="button" class="v-b" data-nodate="'+esc(String(t.id))+'">no deadline</button>':'')
-    : '<span class="v-frq'+(late?' late':'')+'">'+esc(fmtDue(t.days_left))+'</span>';
+      +intBouton(t,'t')
+    : '<span class="v-frq'+(late?' late':'')+'">'+esc(fmtDue(t.days_left))+'</span>'+intMots(t);
+  /* HOW descend vers les habitudes, TOWARDS monte vers la vision : un
+     objectif est le milieu d'une phrase, pas une liste. */
   const minis = groupe('how', ouverte
     ? hs.map(x=>miniDel('h',x.t,'data-unlink="ho:'+esc(String(t.id))+'|'+esc(String(x.id))+'"')).join('')
       + plus('lien','h',t.id,'habit')
-    : hs.map(x=>mini('h',x.t)).join(''));
-  const bas = (ouverte&&pkOn('lien','h',t.id))
-    ? lienPicker('h',t.id, hs.map(x=>String(x.id)),
-        (state.habits||[]).map(x=>({id:x.id,txt:x.t})), 'a new habit','h') : '';
-  return ligne(boiteHTML({kind:'t',id:t.id,titre:t.text,unit,minis,ouverte,bas,tue:'Delete objective'}),
-    ouverte?'open':'', null, k+1, t.id, k===0, k===NB-1);
+    : hs.map(x=>mini('h',x.t)).join(''))
+   + groupe('towards', ouverte
+    ? vs.map(v=>miniDel('v',v.t,'data-unlink="ov:'+esc(String(t.id))+'|'+esc(String(v.id))+'"')).join('')
+      + plus('lien','ov',t.id,'vision')
+    : vs.map(v=>mini('v',v.t)).join(''));
+  let haut='';
+  if(ouverte&&pkOn('int','t',t.id)) haut=intPicker(t,'t');
+  let bas='';
+  if(ouverte&&pkOn('lien','h',t.id))
+    bas=lienPicker('h',t.id, hs.map(x=>String(x.id)),
+        (state.habits||[]).map(x=>({id:x.id,txt:x.t})), 'a new habit','h');
+  if(ouverte&&pkOn('lien','ov',t.id))
+    bas=lienPicker('ov',t.id, vs.map(v=>String(v.id)),
+        VIS.map(v=>({id:v.id,txt:v.t})), 'a new vision','v');
+  return ligne(boiteHTML({kind:'t',id:t.id,titre:t.text,unit,minis,ouverte,haut,bas,tue:'Delete objective'}),
+    ouverte?'open':'', intCols(t), k+1, t.id, k===0, k===NB-1);
 }
 
 /* ── UNE RÉPULSION ───────────────────────────────────────────────────
@@ -3751,23 +3952,90 @@ function vueRepulsion(r,k){
      habitude, on en met une autre à sa place.
      L'invitation, elle, ne vit plus ici : elle a rejoint le bas de la
      boîte, sous CLOSE, là où l'on choisit. */
-  const unit = '';
+  const ws=teachOfRep(r);
+  const unit = ouverte ? intBouton(r,'r') : intMots(r);
   const mot = 'instead';
   const minis = groupe(mot, ouverte
     ? hs.map(x=>miniDel('h',x.t,'data-unlink="hr:'+esc(String(r.id))+'|'+esc(String(x.id))+'"')).join('')
       + plus('lien','hr',r.id,'habit')
-    : hs.map(x=>mini('h',x.t)).join(''));
+    : hs.map(x=>mini('h',x.t)).join(''))
+   /* LEARNED : ce qu'on a compris de cette mauvaise habitude. C'est le
+      seul pont entre le present qu'on tue et le passe qu'on garde. */
+   + groupe('learned', ouverte
+    ? ws.map(w=>miniDel('w',w.t,'data-unlink="rw:'+esc(String(r.id))+'|'+esc(String(w.id))+'"')).join('')
+      + plus('lien','rw',r.id,'teaching')
+    : ws.map(w=>mini('w',w.t)).join(''));
   /* ⚠️ L'INVITATION EST SOUS *CLOSE*, PAS AU-DESSUS · 09/09/2026. Elle
      servait de titre au groupe : posée là, elle parlait de la répulsion
      — alors qu'elle parle des HABITUDES qu'on va choisir. Sous le
      lookup ouvert, juste au-dessus de la liste, elle dit ce que le
      doigt s'apprête à faire. */
-  const bas = (ouverte&&pkOn('lien','hr',r.id))
-    ? '<span class="pk-say">write a new one or pick an existing one</span>'
+  let haut='';
+  if(ouverte&&pkOn('int','r',r.id)) haut=intPicker(r,'r');
+  let bas='';
+  if(ouverte&&pkOn('lien','hr',r.id))
+    bas='<span class="pk-say">write a new one or pick an existing one</span>'
       + lienPicker('hr',r.id, hs.map(x=>String(x.id)),
-        (state.habits||[]).map(x=>({id:x.id,txt:x.t})), 'a new habit','h') : '';
-  return ligne(boiteHTML({kind:'r',id:r.id,titre:r.text,unit,minis,ouverte,bas,tue:'Delete repulsion'}),
-    ouverte?'open':'', null, k+1, r.id, k===0, k===NB-1);
+        (state.habits||[]).map(x=>({id:x.id,txt:x.t})), 'a new habit','h');
+  if(ouverte&&pkOn('lien','rw',r.id))
+    bas=lienPicker('rw',r.id, ws.map(w=>String(w.id)),
+        TEACH.map(w=>({id:w.id,txt:w.t})), 'a new teaching','w');
+  return ligne(boiteHTML({kind:'r',id:r.id,titre:r.text,unit,minis,ouverte,haut,bas,tue:'Delete repulsion'}),
+    ouverte?'open':'', intCols(r), k+1, r.id, k===0, k===NB-1);
+}
+
+/* ── LES DEUX RÉGLAGES D'INTENTION, PARTAGÉS ─────────────────────────
+   Le bouton quand la boîte est ouverte, les mots quand elle est fermée.
+   Quatre boîtes s'en servent : les écrire quatre fois, c'est se garantir
+   que la cinquième sera différente. */
+function intBouton(x,kind){ const l=intIds(x);
+  return '<button type="button" class="v-b'+(l.length?'':' vit')+'" data-pk="int:'+kind+':'+esc(String(x.id))+'">'
+    +(l.length?l.map(i=>'<b style="color:'+intColor(i)+'">'+esc(intName(i))+'</b>').join(' · ')
+              :'set intention')+'</button>'; }
+function intMots(x){ const l=intIds(x);
+  return l.length?l.map(i=>'<span class="v-int" style="color:'+intColor(i)+'">'+esc(intName(i))+'</span>').join('')
+                 :'<span class="v-pil vit">set intention</span>'; }
+
+/* ── UNE LEÇON (MY WISDOM · le passé) ────────────────────────────────
+   Ce qu'on a compris. Elle montre les répulsions qu'elle éclaire : une
+   leçon sans la bêtise qui l'a produite n'est qu'une citation. */
+function vueTeaching(w,k){
+  const ouverte = !!open && open.kind==='w' && String(open.id)===String(w.id);
+  const rs=repsOfTeach(w);
+  const unit = ouverte ? intBouton(w,'w') : intMots(w);
+  const minis = groupe('learned from', ouverte
+    ? rs.map(r=>miniDel('r',r.text,'data-unlink="wr:'+esc(String(w.id))+'|'+esc(String(r.id))+'"')).join('')
+      + plus('lien','wr',w.id,'repulsion')
+    : rs.map(r=>mini('r',r.text)).join(''));
+  let haut='';
+  if(ouverte&&pkOn('int','w',w.id)) haut=intPicker(w,'w');
+  let bas='';
+  if(ouverte&&pkOn('lien','wr',w.id))
+    bas=lienPicker('wr',w.id, rs.map(r=>String(r.id)),
+        REPS.map(r=>({id:r.id,txt:r.text})), 'a new repulsion','r');
+  return ligne(boiteHTML({kind:'w',id:w.id,titre:w.t,unit,minis,ouverte,haut,bas,tue:'Delete teaching'}),
+    ouverte?'open':'', intCols(w), k+1, w.id, k===0, k===NB-1);
+}
+
+/* ── UNE VISION (MY VISION · le futur) ───────────────────────────────
+   Seulement ce qu'on voit venir, et seulement le bon. Elle montre les
+   objectifs qui y mènent. */
+function vueVision(v,k){
+  const ouverte = !!open && open.kind==='v' && String(open.id)===String(v.id);
+  const ts=tripsOfVision(v);
+  const unit = ouverte ? intBouton(v,'v') : intMots(v);
+  const minis = groupe('reached by', ouverte
+    ? ts.map(t=>miniDel('o',t.text,'data-unlink="vo:'+esc(String(v.id))+'|'+esc(String(t.id))+'"')).join('')
+      + plus('lien','vo',v.id,'objective')
+    : ts.map(t=>mini('o',t.text)).join(''));
+  let haut='';
+  if(ouverte&&pkOn('int','v',v.id)) haut=intPicker(v,'v');
+  let bas='';
+  if(ouverte&&pkOn('lien','vo',v.id))
+    bas=lienPicker('vo',v.id, ts.map(t=>String(t.id)),
+        TRIPS.map(t=>({id:t.id,txt:t.text})), 'a new objective','o');
+  return ligne(boiteHTML({kind:'v',id:v.id,titre:v.t,unit,minis,ouverte,haut,bas,tue:'Delete vision'}),
+    ouverte?'open':'', intCols(v), k+1, v.id, k===0, k===NB-1);
 }
 
 /* ══ LA COULEUR INTENTIONNELLE NE S'ÉTEINT PLUS · 09/09/2026 ═════════
@@ -3795,10 +4063,8 @@ function ouvrir(kind,id){
   if(f&&window.innerWidth>700)f.focus();
 }
 function fermer(){
-  /* UN BROUILLON QU'ON FERME N'A JAMAIS EXISTÉ. Le laisser dans la liste
-     ferait croire à une répulsion enregistrée qui disparaîtrait au
-     rechargement — le pire des états : visible et faux. */
-  REPS=REPS.filter(z=>!z.brouillon);
+  /* Il n'y a plus de brouillon de répulsion : elle naît en base comme les
+     quatre autres objets. Voir `creer()`. */
   /* ⚠️ POUSSER AVANT DE RECHARGER · 09/09/2026. L'arbre revient du
      serveur ; si la dernière frappe dort encore dans sa minuterie, le
      serveur répond avec l'ANCIEN texte et l'écran perd ce qu'on venait
@@ -3818,35 +4084,36 @@ async function creer(kind){
   if(!me){$('member-window').classList.add('show');
           if(typeof memberPaint==='function')memberPaint();return;}
   if(kind==='t'){
-    const {data,error}=await sb.rpc('trip_create',{p_text:'',p_target:null});
+    const {data,error}=await sb.rpc('objective_create',{p_text:'',p_target:null});
     if(error){console.error('[totehm] trip_create:',error.message);return;}
     TRIPS.unshift({id:data,text:'',target_at:null,days_left:null,habits:[]});
     wDirty=true; ouvrir('t',data); return;}
-  /* ══ UNE RÉPULSION PROTÈGE QUELQUE CHOSE — C'EST SA DÉFINITION ══════
-     On ne peut donc pas la poser dans le vide : le serveur ne la rendrait
-     plus, elle n'apparaît que PAR ses liens. Avant, on exigeait qu'une
-     habitude existe déjà et on refusait par une alerte — un cul-de-sac.
-     Maintenant on ouvre un BROUILLON : on écrit la répulsion, et c'est la
-     première habitude attachée — reprise OU écrite là — qui la fait
-     exister. Même format que les habitudes, logique différente. */
-  REPS=REPS.filter(z=>z.id!=='new');
-  REPS.unshift({id:'new',text:'',obstacle:'',hs:[],brouillon:true});
-  ouvrir('r','new');
-  /* APRÈS `ouvrir`, jamais avant : `ouvrir` remet le choix à zéro — c'est
-     ce qui garantit qu'ouvrir une boîte n'hérite pas du menu de la
-     précédente. Le brouillon ouvre donc son lookup ensuite. */
-  pk={q:'lien',k:'hr',id:'new'}; renderZone();
-}
-/* Le brouillon devient réel : une répulsion, son premier lien, en un
-   appel. `repulsion_set` crée la ligne ET le trigger pose le lien. */
-async function poseBrouillon(r,habitTexte){
-  const {data,error}=await sb.rpc('repulsion_set',
-    {p_habit:habitTexte,p_repulsion:r.text||'',p_obstacle:''});
-  if(error){console.error('[totehm] repulsion_set:',error.message);return null;}
-  r.id=String(data); r.brouillon=false; r.hs=[habitTexte];
-  if(open&&open.kind==='r')open.id=String(data);
-  if(pk&&pk.k==='hr')pk.id=String(data);
-  wDirty=true; return r.id;
+  /* ══ POURQUOI LE BROUILLON DE RÉPULSION A DISPARU · 16/09/2026 ══════
+     ⚠️ C'EST LA CAUSE DE « ON NE PEUT PAS AJOUTER DE RÉPULSIONS ».
+     On créait une ligne fantôme (`id:'new'`) et on ouvrait le lookup
+     AVANT le texte, en comptant sur `repulsion_set` pour la faire
+     exister au premier lien. Or `repulsion_set` LÈVE sur un texte
+     vide — et à cet instant le texte est toujours vide. L'erreur
+     partait dans la console, la boîte restait à l'écran, et rien
+     n'existait en base. Un cul-de-sac silencieux.
+     Une répulsion se crée maintenant comme les quatre autres objets :
+     une ligne vide en base, puis on écrit dedans. `repulsion_create`
+     n'exige rien et ne retire rien — voir la migration du 16/09. */
+  if(kind==='r'){
+    const {data,error}=await sb.rpc('repulsion_create',{p_text:''});
+    if(error){console.error('[totehm] repulsion_create:',error.message);return;}
+    REPS.unshift({id:String(data),text:'',obstacle:'',hs:[],ws:[],is:[]});
+    wDirty=true; ouvrir('r',String(data)); return;}
+  if(kind==='w'){
+    const {data,error}=await sb.rpc('teaching_create',{p_text:''});
+    if(error){console.error('[totehm] teaching_create:',error.message);return;}
+    TEACH.unshift({id:String(data),t:'',t0:'',is:[],os:[]});
+    wDirty=true; ouvrir('w',String(data)); return;}
+  if(kind==='v'){
+    const {data,error}=await sb.rpc('vision_create',{p_text:''});
+    if(error){console.error('[totehm] vision_create:',error.message);return;}
+    VIS.unshift({id:String(data),t:'',t0:'',is:[],os:[]});
+    wDirty=true; ouvrir('v',String(data)); return;}
 }
 
 /* ══ ATTACHER, DÉTACHER ══════════════════════════════════════════════
@@ -3867,10 +4134,29 @@ function attache(quoi,srcId,cibleId){
   else if(quoi==='r'){ const x=habOf(srcId), r=repOf(cibleId), k=srv(x); if(!x||!k||!r)return;
     if(!(r.hs||[]).includes(k)){r.hs.push(k);
       apres(sb.rpc('repulsion_link',{p_id:r.id,p_habit:k}));} }
-  else { const r=repOf(srcId), x=habOf(cibleId), k=srv(x); if(!r||!x||!k)return;   /* 'hr' */
-    if(r.brouillon){ poseBrouillon(r,k).then(()=>renderZone()); return; }
+  else if(quoi==='hr'){ const r=repOf(srcId), x=habOf(cibleId), k=srv(x); if(!r||!x||!k)return;
     if(!(r.hs||[]).includes(k)){r.hs.push(k);
       apres(sb.rpc('repulsion_link',{p_id:r.id,p_habit:k}));} }
+  /* ══ LES DEUX LIENS CROISÉS · 16/09/2026 ═══════════════════════════
+     ⚠️ ON TIENT LES DEUX CÔTÉS EN MÉMOIRE. `t.vs` et `v.os` décrivent le
+     MÊME lien, vu de chaque bout. N'en écrire qu'un ferait qu'un lien
+     posé depuis l'objectif serait invisible depuis la vision jusqu'au
+     rechargement suivant — l'écran mentirait le temps d'un aller-retour,
+     et c'est exactement la classe de bug qu'on vient de passer trois
+     lots à éteindre. */
+  else if(quoi==='ov'||quoi==='vo'){
+    const t = quoi==='ov' ? tripOf(srcId) : tripOf(cibleId);
+    const v = quoi==='ov' ? visOf(cibleId) : visOf(srcId);
+    if(!t||!v)return;
+    if(!(t.vs||[]).includes(String(v.id)))(t.vs=t.vs||[]).push(String(v.id));
+    if(!(v.os||[]).includes(String(t.id)))(v.os=v.os||[]).push(String(t.id));
+    apres(sb.rpc('objective_vision_link',{p_obj:t.id,p_vision:v.id})); }
+  else { /* 'rw' | 'wr' */
+    const r = quoi==='rw' ? repOf(srcId) : repOf(cibleId);
+    const w = quoi==='rw' ? teachOf(cibleId) : teachOf(srcId);
+    if(!r||!w)return;
+    if(!(r.ws||[]).includes(String(w.id)))(r.ws=r.ws||[]).push(String(w.id));
+    apres(sb.rpc('repulsion_teaching_link',{p_rep:Number(r.id),p_teaching:w.id})); }
   wDirty=true;
 }
 function detache(quoi,aId,bId){
@@ -3883,23 +4169,49 @@ function detache(quoi,aId,bId){
   else if(quoi==='r'){ const x=habOf(aId), r=repOf(bId), k=srv(x); if(!x||!k||!r)return;
     r.hs=(r.hs||[]).filter(t=>t!==k);
     apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:k})); }
-  else { const r=repOf(aId), x=habOf(bId), k=srv(x); if(!r||!x||!k)return;          /* 'hr' */
+  else if(quoi==='hr'){ const r=repOf(aId), x=habOf(bId), k=srv(x); if(!r||!x||!k)return;
     r.hs=(r.hs||[]).filter(t=>t!==k);
     apres(sb.rpc('repulsion_unlink',{p_id:r.id,p_habit:k})); }
+  else if(quoi==='ov'||quoi==='vo'){
+    const t = quoi==='ov' ? tripOf(aId) : tripOf(bId);
+    const v = quoi==='ov' ? visOf(bId)  : visOf(aId);
+    if(!t||!v)return;
+    t.vs=(t.vs||[]).filter(z=>z!==String(v.id));
+    v.os=(v.os||[]).filter(z=>z!==String(t.id));
+    apres(sb.rpc('objective_vision_unlink',{p_obj:t.id,p_vision:v.id})); }
+  else { /* 'rw' | 'wr' */
+    const r = quoi==='rw' ? repOf(aId) : repOf(bId);
+    const w = quoi==='rw' ? teachOf(bId) : teachOf(aId);
+    if(!r||!w)return;
+    r.ws=(r.ws||[]).filter(z=>z!==String(w.id));
+    apres(sb.rpc('repulsion_teaching_unlink',{p_rep:Number(r.id),p_teaching:w.id})); }
   wDirty=true;
 }
 /* Écrire du neuf ET l'attacher, d'un seul geste. */
 async function neufEtAttache(quoi,srcId,txt){
-  if(quoi==='o'){
-    const {data,error}=await sb.rpc('trip_create',{p_text:txt,p_target:null});
-    if(error){console.error('[totehm] trip_create:',error.message);return;}
-    TRIPS.unshift({id:data,text:txt,target_at:null,days_left:null,habits:[]});
-    attache('o',srcId,data);}
-  else if(quoi==='r'){
-    const x=habOf(srcId); if(!x||!x.t)return;
-    const {data,error}=await sb.rpc('repulsion_set',{p_habit:x.t,p_repulsion:txt,p_obstacle:''});
-    if(error){console.error('[totehm] repulsion_set:',error.message);return;}
-    REPS.unshift({id:data,text:txt,obstacle:'',hs:[x.t]});}
+  if(quoi==='o'||quoi==='vo'){
+    const {data,error}=await sb.rpc('objective_create',{p_text:txt,p_target:null});
+    if(error){console.error('[totehm] objective_create:',error.message);return;}
+    TRIPS.unshift({id:String(data),text:txt,target_at:null,days_left:null,habits:[],is:[],vs:[]});
+    attache(quoi,srcId,String(data));}
+  else if(quoi==='r'||quoi==='wr'){
+    /* ⚠️ `repulsion_set` NE SERT PLUS À CRÉER : elle lève sur un texte
+       vide et retire l'ancienne répulsion du même obstacle. Ici le texte
+       n'est pas vide, mais la seconde règle mordrait quand même. */
+    const {data,error}=await sb.rpc('repulsion_create',{p_text:txt});
+    if(error){console.error('[totehm] repulsion_create:',error.message);return;}
+    REPS.unshift({id:String(data),text:txt,obstacle:'',hs:[],ws:[],is:[]});
+    attache(quoi,srcId,String(data));}
+  else if(quoi==='ov'){
+    const {data,error}=await sb.rpc('vision_create',{p_text:txt});
+    if(error){console.error('[totehm] vision_create:',error.message);return;}
+    VIS.unshift({id:String(data),t:txt,t0:txt,is:[],os:[]});
+    attache('ov',srcId,String(data));}
+  else if(quoi==='rw'){
+    const {data,error}=await sb.rpc('teaching_create',{p_text:txt});
+    if(error){console.error('[totehm] teaching_create:',error.message);return;}
+    TEACH.unshift({id:String(data),t:txt,t0:txt,is:[],os:[]});
+    attache('rw',srcId,String(data));}
   else{ /* 'h' depuis un objectif, 'hr' depuis une répulsion */
     const x={id:'h'+(++HSEQ), t:txt, t0:txt, f:null, i:null, is:[], o:null};
     state.habits.unshift(x); state.ord=true; save();
@@ -3947,7 +4259,11 @@ function cable(box){
     if(d.pk){ e.stopPropagation(); const p=d.pk.split(':'); pkSet(p[0],p[1],p[2]); return; }
 
     e.stopPropagation();
-    if(d.int){ const p=d.int.split('|'); const x=habOf(p[0]); if(x)intToggle(x,p[1]); renderZone(); return; }
+    /* `data-int` porte maintenant le GENRE : sans lui on ne saurait pas
+       dans quelle table écrire, et on écrirait dans `steps`. */
+    if(d.int){ const p=d.int.split('|');
+      const kind=p.length>2?p[0]:'h', oid=p.length>2?p[1]:p[0], iid=p[p.length-1];
+      const x=objetDe(kind,oid); if(x)intToggle(x,iid,kind); renderZone(); return; }
     if(d.fq){ const p=d.fq.split('|'); const x=habOf(p[0]);
       if(x){x.f=p[1];save();} pk=null; renderZone(); return; }
     if(d.lien){ const p=d.lien.split('|'), q=p[0].split(':');
@@ -3955,7 +4271,7 @@ function cable(box){
     if(d.unlink){ const p=d.unlink.split('|'), q=p[0].split(':');
       detache(q[0],q[1],p[1]); renderZone(); return; }
     if(d.nodate){ const t=tripOf(d.nodate); if(t){t.target_at=null;t.days_left=null;
-      apres(sb.rpc('trip_set_target',{p_trip:t.id,p_target:null})); wDirty=true;}
+      apres(sb.rpc('objective_set_target',{p_obj:t.id,p_target:null})); wDirty=true;}
       renderZone(); return; }
     if(d.kill){ const p=d.kill.split(':'); tue(p[0],p[1]); return; }
   });
@@ -3993,13 +4309,18 @@ function cable(box){
             apres(sb.rpc('habit_rename_links',{p_old:ancien,p_new:x.t}));}
           x.t0=x.t; }); }
       else if(p[0]==='t'){ const z=tripOf(p[1]); if(!z)return; z.text=v; wDirty=true;
-        differe('t:'+z.id,()=>apres(sb.rpc('trip_rename',{p_trip:z.id,p_text:z.text}))); }
-      else { const r=repOf(p[1]); if(!r)return; r.text=v; wDirty=true;
-        /* Un brouillon s'écrit en mémoire : il n'a pas encore de ligne en
-           base, et `repulsion_set` sans habitude en créerait une invisible. */
-        if(r.brouillon)return;
-        differe('r:'+r.id,()=>apres(sb.rpc('repulsion_set',
-          {p_habit:(r.hs||[])[0]||'', p_repulsion:r.text, p_obstacle:r.obstacle||''}))); }
+        differe('t:'+z.id,()=>apres(sb.rpc('objective_rename',{p_obj:z.id,p_text:z.text}))); }
+      else if(p[0]==='r'){ const r=repOf(p[1]); if(!r)return; r.text=v; wDirty=true;
+        /* ⚠️ `repulsion_rename`, PAS `repulsion_set`. `repulsion_set`
+           RETIRE l'ancienne répulsion du même obstacle avant d'insérer :
+           utilisée à chaque frappe, elle empilait une ligne morte par
+           lettre tapée. */
+        differe('r:'+r.id,()=>apres(sb.rpc('repulsion_rename',
+          {p_id:Number(r.id), p_text:r.text}))); }
+      else if(p[0]==='w'){ const w=teachOf(p[1]); if(!w)return; w.t=v; wDirty=true;
+        differe('w:'+w.id,()=>apres(sb.rpc('teaching_rename',{p_id:w.id,p_text:w.t}))); }
+      else { const z=visOf(p[1]); if(!z)return; z.t=v; wDirty=true;
+        differe('v:'+z.id,()=>apres(sb.rpc('vision_rename',{p_id:z.id,p_text:z.t}))); }
       return;
     }
     /* Le rythme écrit dans sa langue : on devine à la frappe, sans réseau. */
@@ -4015,7 +4336,7 @@ function cable(box){
   box.addEventListener('change',e=>{
     if(e.target.dataset.date){ const t=tripOf(e.target.dataset.date); if(!t)return;
       const v=e.target.value; t.target_at = v ? v+'T00:00:00Z' : null;
-      apres(sb.rpc('trip_set_target',{p_trip:t.id,p_target:t.target_at}));
+      apres(sb.rpc('objective_set_target',{p_obj:t.id,p_target:t.target_at}));
       wDirty=true; }
   });
   box.addEventListener('keydown',e=>{
@@ -4050,10 +4371,21 @@ function tue(kind,id){
     TRIPS=TRIPS.filter(t=>String(t.id)!==String(id));
     (state.habits||[]).forEach(x=>{ const k=srv(x); if(k&&OBJ[k]){
       OBJ[k]=OBJ[k].filter(o=>o!==String(id)); posePremier(x);} });
-    apres(sb.rpc('trip_close',{p_trip:id,p_outcome:'dropped'})); }
-  else { const r=repOf(id); pousse('r:'+id); wSlots.delete('r:'+id);
+    apres(sb.rpc('objective_close',{p_obj:id,p_outcome:'dropped'})); }
+  else if(kind==='r'){ pousse('r:'+id); wSlots.delete('r:'+id);
     REPS=REPS.filter(z=>String(z.id)!==String(id));
-    if(r&&!r.brouillon)apres(sb.rpc('repulsion_retire',{p_id:Number(id)})); }
+    apres(sb.rpc('repulsion_retire',{p_id:Number(id)})); }
+  else if(kind==='w'){ pousse('w:'+id); wSlots.delete('w:'+id);
+    TEACH=TEACH.filter(z=>String(z.id)!==String(id));
+    /* Une leçon supprimée ne doit pas rester accrochée aux répulsions
+       qu'elle éclairait : la table de liens tombe avec la ligne côté
+       serveur, on fait la même chose en mémoire. */
+    REPS.forEach(r=>{r.ws=(r.ws||[]).filter(z=>z!==String(id));});
+    apres(sb.rpc('teaching_delete',{p_id:String(id)})); }
+  else if(kind==='v'){ pousse('v:'+id); wSlots.delete('v:'+id);
+    VIS=VIS.filter(z=>String(z.id)!==String(id));
+    TRIPS.forEach(t=>{t.vs=(t.vs||[]).filter(z=>z!==String(id));});
+    apres(sb.rpc('vision_delete',{p_id:String(id)})); }
   wDirty=true; fermer();
 }
 
@@ -4093,10 +4425,13 @@ function glisse(redessine){
     });
   });});
 }
-const listeDe=v=>v==='habits'?(state.habits||[]):v==='objectives'?TRIPS:REPS;
+const listeDe=v=>v==='habits'?(state.habits||[]):v==='objectives'?TRIPS
+  :v==='repulsions'?REPS:v==='wisdom'?TEACH:VIS;
 function poseListe(v,arr){
   if(v==='habits'){state.habits=arr;state.ord=true;save();}
-  else if(v==='objectives')TRIPS=arr; else REPS=arr;}
+  else if(v==='objectives')TRIPS=arr;
+  else if(v==='repulsions')REPS=arr;
+  else if(v==='wisdom')TEACH=arr; else VIS=arr;}
 
 if($('ordbtn'))$('ordbtn').addEventListener('click',()=>{
   ordering=!ordering;
@@ -4228,12 +4563,13 @@ addEventListener('keydown',e=>{
 /* Arrivée depuis next_objective.html en pleine page : #settings ouvre
    directement le Dashboard membre (les réglages y vivent désormais). En
    iframe, c'est le postMessage 'totehm-goto-settings' qui s'en charge. */
-/* ══ ON REVIENT D'UN JUMEAU DÉJÀ DEDANS · 13/09/2026 ════════════════
-   `wisdom.html` et `vision.html` ne sont accessibles QUE depuis le
-   Totehm déployé. Leur croix renvoie sur `totehm.html#in` : on retombe
-   donc là d'où l'on vient, sans rejouer le dépliage. Le payer à chaque
-   aller-retour, ce serait deux secondes pour revenir en arrière.
-   Le repli reste possible, par la croix : le gate n'est pas détruit. */
+/* ══ ON REVIENT D'AILLEURS, DÉJÀ DEDANS · 13/09/2026 ════════════════
+   Le Club et l'espace créateur renvoient sur `totehm.html#in` : on
+   retombe là d'où l'on vient, sans rejouer le dépliage. Le payer à
+   chaque aller-retour, ce serait deux secondes pour revenir en arrière.
+   Le repli reste possible, par la croix : le gate n'est pas détruit.
+   (Les jumeaux `wisdom.html` et `vision.html` passaient par ici aussi ;
+   ils sont devenus deux vues le 16/09 et ne chargent plus rien.) */
 if(location.hash === '#settings'){
   setTimeout(()=>{
     $('member-window').classList.add('show');
@@ -4251,9 +4587,15 @@ if(location.hash === '#settings'){
 
    À sa place, la VISION : ce que le membre voit venir, et seulement le
    bon côté — c'est là qu'est le visionnaire. */
-$('door-book').onclick=requireMember(()=>{ location.href='wisdom.html'; });
-$('door-next').onclick=requireMember(()=>{ location.href='vision.html'; });
-$('door-club').onclick=requireMember(()=>{ location.href='club/index.html'; });
+/* ⚠️ LES DEUX PREMIÈRES PORTES NE CHARGENT PLUS DE DOCUMENT · 16/09/2026.
+   Elles ouvraient `wisdom.html` et `vision.html` — deux copies de ce
+   fichier avec un autre fond. Les deux sont rentrées : ce sont deux
+   VUES. On ne quitte donc plus la page, on ne recharge pas la session,
+   et la croix garde sa place. La porte du Club, elle, mène bien ailleurs
+   — même origine, donc même session. */
+$('door-book').onclick=requireMember(()=>{ showBook(true); });
+$('door-next').onclick=requireMember(()=>{ showNext(true); });
+$('door-club').onclick=requireMember(()=>{ location.href='/club'; });
 /* La croix : le Totehm se replie et l'atterrissage revient. */
 $('fold-x').onclick=()=>foldToGate();
 
@@ -4326,16 +4668,25 @@ window.addEventListener('touchend',(e)=>{
   if(axis==='h'){
     const dx=e.changedTouches[0].screenX-x0;
     if(Math.abs(dx)<TH)return;
-    /* LE BALAYAGE = LES CARRÉS. Même ordre — rouge, navy, bleu clair — et
-       le doigt le suit : glisser vers la GAUCHE avance dans la rangée.
-       On ne change pas de fichier, on ne recharge rien : seules les boîtes
-       changent. C'est le geste d'avant, sur la nouvelle architecture. */
-    const i=VIEW_ORDER.indexOf(view)+(dx<0?1:-1);
-    if(i>=0&&i<VIEW_ORDER.length)setView(VIEW_ORDER[i]);
+    /* LE BALAYAGE SUIT LE DOIGT : glisser vers la GAUCHE montre ce qui
+       est à droite. L'axe horizontal est le TEMPS — sagesse, habitudes,
+       vision. On ne change pas de fichier, on ne recharge rien. */
+    versVoisin(dx<0?'d':'g');
+    return;
   }
-  /* Le geste VERTICAL ne pilote plus rien : le scroll d'ouverture du
-     filtre et de repli du Totehm bugguait le défilement de la liste.
-     Le T ouvre le filtre, la croix (#fold-x) replie. */
+  /* ══ LE VERTICAL SE PREND AU BOUT DE LA LISTE · 16/09/2026 ═════════
+     ⚠️ CE N'EST PAS UN BALAYAGE LIBRE, ET C'EST TOUTE LA DIFFÉRENCE.
+     Un geste vertical libre entrerait en concurrence avec le défilement
+     de la liste — c'est exactement ce qui avait « buggé le filtre » et
+     fait retirer le vertical la première fois.
+     Ici il ne se déclenche QUE lorsque la liste ne peut plus défiler :
+     arrivé en bas, continuer vers le bas descend sur les répulsions ;
+     en haut, tirer vers le bas remonte sur les objectifs. C'est le
+     geste d'un OS — on tombe dans l'écran suivant, on ne le vise pas. */
+  if(Math.abs(dy)<TH+18)return;
+  const bord=scrollEdges();
+  if(dy<0&&bord.bottom)versVoisin('b');
+  else if(dy>0&&bord.top)versVoisin('h');
 },{passive:true});
 /* ══ LE TRACKPAD FAIT CE QUE FAIT LE POUCE · 09/09/2026 ══════════════
    La molette VERTICALE ne pilote toujours rien — c'est la règle qui a
@@ -4349,9 +4700,30 @@ window.addEventListener('touchend',(e)=>{
    coup. Le compteur se vide après 220 ms d'immobilité : deux gestes
    séparés ne s'additionnent pas. */
 (function(){
-  let acc=0, t=0;
+  let acc=0, t=0, accV=0, tV=0, froid=0;
+  /* ══ LE VERTICAL À LA MOLETTE, AU BORD SEULEMENT · 16/09/2026 ═══════
+     Même règle qu'au doigt : tant que la liste peut défiler, la molette
+     la fait défiler et rien d'autre. Au bord, et au bord seulement, elle
+     fait passer à la vue d'à côté.
+     `froid` est un délai de garde : une molette à inertie envoie des
+     événements pendant une seconde après le geste, et sans lui on
+     traverserait deux vues d'un coup. */
   addEventListener('wheel',e=>{
     if(document.body.classList.contains('gate'))return;
+    if(Math.abs(e.deltaY) > Math.abs(e.deltaX)*1.6){
+      if(navBlocked())return;
+      if(Date.now()<froid){accV=0;return;}
+      const bord=scrollEdges();
+      const versLeBas=e.deltaY>0;
+      if(!(versLeBas?bord.bottom:bord.top)){accV=0;return;}
+      const nowV=Date.now(); if(nowV-tV>260)accV=0; tV=nowV;
+      accV+=e.deltaY;
+      if(Math.abs(accV)<90)return;
+      const cible=versLeBas?'b':'h';
+      accV=0; froid=Date.now()+700;
+      versVoisin(cible);
+      return;
+    }
     if(Math.abs(e.deltaX) < Math.abs(e.deltaY)*1.6) return;
     const now=Date.now(); if(now-t>220)acc=0; t=now;
     acc+=e.deltaX;
@@ -4364,9 +4736,9 @@ window.addEventListener('touchend',(e)=>{
        suite quand on l'a dans les mains.
        Le balayage tactile, lui, était déjà dans le bon sens : il lit un
        déplacement de DOIGT. Les deux gestes ne se lisent pas pareil. */
-    const i=VIEW_ORDER.indexOf(view)+(acc>0?-1:1);
+    const d = acc>0 ? 'g' : 'd';
     acc=0;
-    if(i>=0&&i<VIEW_ORDER.length)setView(VIEW_ORDER[i]);
+    versVoisin(d);
   },{passive:true});
 })();
 /* La molette VERTICALE ne pilote rien : la liste défile normalement. Le
@@ -4385,10 +4757,8 @@ function navBlocked(){
 /* `navLeft`/`navRight` restent : ce sont le balayage et les flèches du
    clavier, pas les carrés. Un carré ne se lit pas comme « précédent » —
    il désigne une couche, et on y va directement. */
-const navLeft =()=>{ if(navBlocked())return;
-  if(view==='objectives')setView('habits'); else setView('repulsions'); };
-const navRight=()=>{ if(navBlocked())return;
-  if(view==='repulsions')setView('habits'); else setView('objectives'); };
+const navLeft =()=>{ if(navBlocked())return; versVoisin('g'); };
+const navRight=()=>{ if(navBlocked())return; versVoisin('d'); };
 document.querySelectorAll('#views .vt-c').forEach(b=>{
   b.onclick=()=>{ if(navBlocked())return; setView(b.dataset.v); };
 });
@@ -4413,12 +4783,18 @@ window.addEventListener('keydown',(e)=>{
     if(hOpen()){showBook(false);showNext(false);return;}
     foldToGate();return;
   }
-  if(e.key==='ArrowDown'){e.preventDefault();if(!hOpen())foldToGate();}
-  else if(e.key==='ArrowUp'){e.preventDefault();if(!hOpen())openFilterModal();}
-  /* Mêmes cibles que le balayage : une flèche parcourt la rangée. */
-  else if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();
-    const i=VIEW_ORDER.indexOf(view)+(e.key==='ArrowRight'?1:-1);
-    if(i>=0&&i<VIEW_ORDER.length)setView(VIEW_ORDER[i]);}
+  /* ⚠️ LES QUATRE FLÈCHES SUIVENT LA CROIX · 16/09/2026. Haut et bas
+     repliaient le Totehm et ouvraient le filtre — deux gestes qui ont
+     maintenant leur propre porte (la croix `#fold-x`, le T). Sur la
+     croix, une flèche ne peut vouloir dire qu'une chose : va voir à
+     côté. Quand il n'y a pas de voisin dans cette direction, on retombe
+     sur l'ancien geste : c'est le seul endroit où il restait utile. */
+  if(e.key==='ArrowDown'){e.preventDefault();
+    if(voisin('b'))versVoisin('b'); else if(!hOpen())foldToGate();}
+  else if(e.key==='ArrowUp'){e.preventDefault();
+    if(voisin('h'))versVoisin('h'); else if(!hOpen())openFilterModal();}
+  else if(e.key==='ArrowLeft'){e.preventDefault();versVoisin('g');}
+  else if(e.key==='ArrowRight'){e.preventDefault();versVoisin('d');}
 });
 /* Le passé et le futur parlent au présent */
 /* ══ LE CONTRAT postMessage A DISPARU · 05/09/2026 ═══════════════════
@@ -4454,7 +4830,10 @@ function morph(btn,input,note,guarded){
   btn.onclick = guarded ? requireMember(open) : open;
 }
 morph($('name-btn'),$('set-name'),$('name-note'),true);        /* réservé aux membres */
-morph($('search-btn'),$('search-input'),$('search-note'),false);
+/* ⚠️ PAS DE `morph` SUR LA RECHERCHE · 16/09/2026. `#search-btn` n'existe
+   plus : la recherche est une BARRE, visible dès l'arrivée. Appeler
+   `morph` sur un nœud absent lèverait ici même — donc au chargement du
+   module, donc page blanche. C'est arrivé trois fois cette semaine. */
 
 /* Visibility : réservé aux membres */
 $('vis-btn').onclick=requireMember(()=>{
@@ -5146,8 +5525,8 @@ window.addEventListener('pageshow',e=>{
 
   /* État 1 (la classe est déjà posée sur <body> dans le HTML : zéro flash)
 
-     ⚠️ SAUF QU'ON REVIENT PEUT-ÊTRE D'UN JUMEAU. `wisdom.html` et
-     `vision.html` renvoient sur `totehm.html#in` : le Totehm doit
+     ⚠️ SAUF QU'ON REVIENT PEUT-ÊTRE DU CLUB. `/club` et
+     `/club/creator` renvoient sur `totehm.html#in` : le Totehm doit
      s'ouvrir DÉJÀ DÉPLOYÉ. Il faut le décider ICI et pas plus haut dans
      le module — c'est cette ligne qui repose la classe, et elle
      s'exécute APRÈS. Mesuré : le drapeau était retiré, puis remis deux
