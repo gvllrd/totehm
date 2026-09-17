@@ -11,14 +11,39 @@
 export const SITE_COM   = "https://www.totehm.com";
 export const SITE_SPACE = "https://www.totehm.space";
 export const SITE_BOUT  = "https://www.higher.boutique";
+/** Le quatrième domaine — le radar et les shorts. 17/09/2026. */
+export const SITE_CLUB  = "https://www.figher.club";
 
-/** Apex + www pour chacun des trois domaines, plus le dev local. */
+/** Apex + www pour chacun des quatre domaines, plus le dev local. */
 export const ALLOWED_ORIGINS: readonly string[] = [
   SITE_COM,   "https://totehm.com",
   SITE_SPACE, "https://totehm.space",
   SITE_BOUT,  "https://higher.boutique",
+  SITE_CLUB,  "https://figher.club",
   "http://localhost:3000",
 ];
+
+/**
+ * ⚠️ LA CIBLE D'UN PASSAGE SSO EST UN NOM DE PRODUIT, JAMAIS UNE URL
+ * REÇUE. Un code émis pour `space` ne doit pas pouvoir être brûlé sur
+ * `boutique` : si la page choisissait librement sa destination, un site
+ * tiers n'aurait qu'à demander un code « pour lui-même ».
+ * Quatre noms, quatre origines, et rien d'autre ne passe.
+ */
+export const CIBLES: Record<string, readonly string[]> = {
+  com:      [SITE_COM,   "https://totehm.com"],
+  space:    [SITE_SPACE, "https://totehm.space"],
+  boutique: [SITE_BOUT,  "https://higher.boutique"],
+  club:     [SITE_CLUB,  "https://figher.club"],
+};
+
+/** L'origine appelante appartient-elle bien à la cible annoncée ? */
+export function origineDe(cible: string, origin: string | null): boolean {
+  const l = CIBLES[cible];
+  if (!l) return false;
+  if (origin === "http://localhost:3000") return true;
+  return !!origin && l.includes(origin);
+}
 
 /**
  * Renvoie l'origine si elle est autorisée, sinon le fallback.

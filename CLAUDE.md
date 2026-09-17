@@ -106,6 +106,78 @@ téléchargeables.
 jamais `space/`. Un contenu commun est copié, pas partagé. Un produit qui casse
 quand un autre bouge n'est pas indépendant.
 
+### ⛔ UN FAUX SERVEUR PLUS PERMISSIF QUE LE VRAI NE PROUVE RIEN — 17/09/2026
+
+**C'est la cause de « impossible d'ajouter des Teaching », signalée
+quatre fois — et de la raison pour laquelle mes tests étaient au vert
+pendant ce temps-là.**
+
+La cause n'était pas dans le code : `wisdom_text_check` exigeait
+`char_length(text) >= 1`. Or les cinq objets se créent VIDES puis
+s'écrivent dedans. `teaching_create('')` violait la contrainte, la
+fonction levait, et la leçon n'existait jamais. `objectives` et `visions`
+n'ont aucune borne basse : c'est pour ça que ces deux-là marchaient.
+**`wisdom` était la seule table à dire non, et c'est pour ça que c'était
+le seul bouton mort.**
+
+Le faux serveur, lui, acceptait tout. Il avait déjà fallu lui donner de
+la LATENCE le 15/09 pour rendre une course visible ; il lui fallait ses
+CONTRAINTES pour rendre un refus visible. Même classe d'erreur, deux
+fois.
+
+> **La règle : un faux serveur doit refuser tout ce que le vrai refuse.**
+> Avant d'écrire un test sur une table, lire ses contraintes et les
+> recopier dans le stub :
+>
+> ```sql
+> select conname, pg_get_constraintdef(oid)
+> from pg_constraint where conrelid='public.<table>'::regclass and contype='c';
+> ```
+>
+> Un test qui ne peut pas échouer ne dit rien. Il coûte même quelque
+> chose : il donne la confiance qui empêche de chercher ailleurs.
+
+### ⛔ LE PONT SSO — QUATRE DOMAINES, UNE IDENTITÉ — 17/09/2026
+
+**Il n'y a toujours pas de session partagée, et il ne peut pas y en
+avoir** : quatre origines, quatre `localStorage`. Ce qui existe depuis le
+17/09, c'est un PONT — on ne contourne pas la frontière, on la traverse.
+
+Le mécanisme, en cinq lignes :
+
+1. sur le domaine A (connecté), la page demande un **code de passage** ;
+2. elle redirige vers B avec le code dans le fragment ;
+3. B **retire le code de l'URL avant tout autre geste**, puis l'échange ;
+4. le serveur vérifie, **brûle** le code, et rend un jeton Supabase ;
+5. B ouvre sa propre session avec ce jeton (`verifyOtp`).
+
+**⚠️ CE CODE N'EST PAS UN JETON DE SESSION.** La règle « jamais un jeton
+de session dans une URL » tient parce qu'un jeton de session vit des
+heures et ouvre tout. Ce code vit **60 secondes**, ne sert **qu'une
+fois**, n'est valable que pour **un domaine cible**, est stocké
+**haché**, et n'ouvre rien par lui-même — il faut l'échanger côté
+serveur. C'est un code d'autorisation. Le confondre avec une clé, ce
+serait s'interdire tout SSO.
+
+**⚠️ ON NE SIGNE PAS DE JETON À LA MAIN.** `auth.admin.generateLink`
+fabrique un jeton que Supabase sait déjà vérifier, et `verifyOtp` ouvre
+une session normale — avec son refresh token et sa déconnexion. Signer
+soi-même un JWT, ce serait réimplémenter l'expiration, le
+rafraîchissement et la révocation, et se tromper quelque part.
+`generateLink` **n'envoie aucun email** : elle génère, c'est sa raison
+d'être.
+
+**Le bloc front se COPIE** (`tools/sso_snippet.js`), il ne s'importe pas
+— règle du projet. Il est posé dans les sept pages qui portent une
+session, et il **bloque au niveau du module** (`await` top-level) : quand
+la page lit sa session, la session est déjà là. Plafond de 2,5 s — si le
+pont tousse, on continue sans session et le membre se connecte par
+email. Dégradé, pas cassé.
+
+**Quatre cibles, jamais une URL reçue** : `com` · `space` · `boutique` ·
+`club`. Une page qui choisirait librement sa destination laisserait
+n'importe quel site demander un code « pour lui-même ».
+
 ### ⛔ SOUS `cleanUrls`, TOUT LIEN INTERNE EST ABSOLU — 16/09/2026
 
 **C'est la cause du 404 de l'espace créateur.**
@@ -235,6 +307,39 @@ bot et n'est plus appelée par la page.
 vide en base, puis on écrit dedans. Le brouillon n'existe plus. Un objet
 qui a besoin d'un rite de naissance particulier est un objet dont on aura
 oublié le rite six semaines plus tard.
+
+### `/verify` — LE REGISTRE D'AUTHENTICITÉ — architecture, 17/09/2026
+
+Pas encore codé. Décidé, pour que le jour où on le code il n'y ait plus
+qu'à écrire.
+
+**Ce que ça doit prouver** : que telle œuvre digitale, achetée sur
+`totehm.space`, appartient à telle personne. Rien de plus. Pas une
+blockchain, pas un NFT : un **registre signé**, sur notre base, dont
+l'URL publique est la preuve.
+
+**La table** : `artwork_owners` — `artwork_id`, `owner_id`,
+`acquired_at`, `stripe_payment_intent`, `edition` (n° sur N), `cert`
+(l'empreinte). Écrite **par le webhook Stripe uniquement**, jamais par
+une page : une ligne de propriété écrite côté client est une ligne
+inventée.
+
+**L'empreinte** : `sha256(artwork_id || owner_id || acquired_at || sel)`
+où le sel est un secret d'Edge Function. Elle ne protège pas l'œuvre —
+elle protège le REGISTRE : on peut vérifier qu'une ligne n'a pas été
+retouchée sans pouvoir en fabriquer une.
+
+**La route** : `totehm.space/verify?c=<cert>` — publique, sans session.
+Elle rend l'œuvre, l'édition, la date, et le **pseudo** du propriétaire
+si son Totehm est partagé, sinon rien d'autre que « vérifié ». ⚠️ Jamais
+un email, jamais un identifiant : une page de vérification est une page
+qu'on envoie à un tiers.
+
+**Ce qui se décide avant d'écrire une ligne** : que se passe-t-il à la
+REVENTE. Soit le certificat est immuable et une revente crée une nouvelle
+ligne qui chaîne la précédente (`supersedes`), soit il n'y a pas de
+revente. Tant que ce n'est pas tranché, le registre ne se code pas — un
+registre qu'on doit migrer n'est plus un registre.
 
 ### LE CLUB ET LES CRÉATEURS — 15/09/2026
 
@@ -447,6 +552,121 @@ téléphone son dernier intitulé est passé SOUS la première boîte — parce
 qu'un des trois avait bougé et pas les autres. Les deux autres en
 découlent maintenant : `+82` pour la bande de classement, `+100` pour la
 première boîte.
+
+### ⛔ UN TITRE, QUATRE CURSEURS — 17/09/2026
+
+La croix à cinq carrés montrait **tout en permanence** : cinq couleurs,
+cinq noms, deux axes, au-dessus d'une liste. Un plan du produit posé sur
+le produit — « fourre-tout », et Wah avait raison.
+
+Il reste **le titre de la vue où l'on est** (`#vnow`) et **quatre
+curseurs**, un par côté du Totehm (`.cur`), chacun portant le nom et la
+couleur de la vue de ce côté-là. Un curseur sans voisin se retire
+(`hidden`) : un bouton qui ne fait rien apprend à ne plus regarder les
+autres.
+
+**La répercussion 3D** : le titre pivote DANS LA DIRECTION DU VOYAGE —
+à droite sur son axe vertical, en bas sur son axe horizontal. Le carré
+est un objet, on vient d'en tourner une face. La perspective vit sur le
+PARENT ; sans elle la rotation se lit comme un écrasement.
+⚠️ Une animation se rejoue à chaque redessin si on se contente de poser
+la classe : on la retire, on force un reflow, on la remet. Sans ça,
+cliquer dans une boîte faisait pivoter le titre.
+
+**⚠️ LES CURSEURS VIVENT HORS DE `#stage`.** Dedans, ils passaient
+par-dessus les boîtes, pour deux raisons qu'il fallait toutes les deux :
+`#stage` porte un transform (il contient donc tout ce qui est `fixed`
+dedans) ET `overflow:hidden` (il rogne ce qui dépasse). Un curseur « à
+l'extérieur du carré » était ramené dedans puis coupé.
+
+**Deux écrans, deux vérités, et c'est assumé.** Sur ORDINATEUR le Totehm
+est un carré posé sur du noir : les quatre curseurs vivent dehors, un par
+côté, à `--side-gap`. Sur TÉLÉPHONE l'écran EST le carré : il n'y a pas
+de dehors, ils se rangent autour du TITRE — jamais par-dessus la liste.
+
+### ⛔ ARRIVER AU BOUT NE FAIT RIEN. IL FAUT REPARTIR. — 17/09/2026
+
+**« Je voulais seulement aller en bas pour ajouter une box et je suis
+passé à une autre vue à mon insu. »**
+
+Descendre au bout de la liste, c'est ce qu'on fait pour atteindre
+[+ Add a …]. Le geste normal et le geste de navigation étaient donc **le
+même geste**, à l'élan près. Monter le seuil n'y change rien : on se
+trompe juste un peu plus fort.
+
+**Ce qui distingue un geste d'un autre, ce n'est pas la force : c'est le
+TROU.** Un trackpad à inertie envoie des événements pendant une seconde
+et demie après que le doigt a quitté la surface — au-delà de n'importe
+quel délai de garde. Des événements d'inertie arrivent toutes les 16 ms ;
+un silence de **200 ms** veut dire que la main est repartie. C'est la
+seule mesure qui sépare « je descends ma liste » de « je veux la vue d'à
+côté ».
+
+Trois conditions, et il les faut toutes : la liste en butée **depuis**
+420 ms, un **silence** de 200 ms avant le nouveau geste, et 260 px
+accumulés. Au doigt : le doigt devait **déjà** être au bord quand il
+s'est posé, et tirer de 110 px.
+
+**⚠️ L'HORLOGE DU SILENCE SE MET À JOUR À CHAQUE ÉVÉNEMENT, AVANT TOUT
+TEST.** Je ne la touchais qu'après le contrôle du bord : tant qu'on
+défilait au milieu elle restait figée, et à l'arrivée en butée l'écart
+calculé valait toute la durée du défilement — donc « nouveau geste »,
+donc navigation. C'était le bug, dans le correctif du bug. *Un compteur
+de silence qui ne compte que quand on l'écoute ne mesure rien.*
+
+Le test ne le voyait pas non plus tant qu'il reproduisait l'ÉTAT (se
+poser au bord, puis molette) au lieu du GESTE (partir du milieu, flux
+continu qui dépasse). **Se poser au bord puis tirer, c'est déjà un
+nouveau geste — et un nouveau geste doit naviguer.**
+
+### ⛔ UNE INTENTION QUALIFIE UN GESTE RÉPÉTÉ — 17/09/2026
+
+**Retour en arrière assumé.** J'avais posé les sept intentions sur les
+CINQ objets le 16/09. C'est faux, et Wah l'a repris : une intention
+qualifie un **geste répété** — pourquoi on le refait. Un objectif est une
+destination, une répulsion est ce qu'on arrête, une vision est ce qu'on
+voit venir : aucun des trois ne se répète, donc aucun n'a d'intention
+propre.
+
+Ce qu'ils ont, c'est la **somme de celles de leurs habitudes**
+(`colsHeritees`). Le trait de gauche d'un objectif lié à trois habitudes
+de trois intentions différentes est tricolore — et il dit quelque chose
+de vrai : *cet objectif tire sur ces trois registres de ma vie*. Une
+leçon hérite par ses répulsions, qui héritent de leurs habitudes : deux
+sauts, et le trait reste vrai.
+
+L'ordre des segments est celui de `INTS`, jamais celui de la rencontre :
+deux objectifs aux mêmes intentions doivent donner le même trait.
+
+Les colonnes `i`/`is` restent en base sur les quatre tables, et
+`intentions_set` aussi : les retirer demanderait une migration pour
+supprimer du code que personne n'appelle.
+
+### ⛔ LE TOTEHM D'UN AUTRE EST LE MÊME TOTEHM — 17/09/2026
+
+**« Le résultat de recherche, c'est le Totehm mais en READ ONLY. Là le
+système est fucked up. »** Il l'était, et pire qu'incomplet :
+
+- `loadRO()` ne chargeait que `steps` — quatre vues sur cinq vides ;
+- changer de vue appelait `loadTrips()`, qui rend l'arbre **de celui qui
+  regarde** : on voyait ses PROPRES objectifs chez quelqu'un d'autre ;
+- `is` était jeté, donc le trait de gauche mentait — et comme les
+  objectifs et répulsions en héritent, le mensonge se propageait.
+
+Une seule fonction serveur, `totehm_of(pseudo)`, même forme que
+`my_trips`, un aller-retour. **La visibilité est vérifiée en base**, pas
+à l'écran : `security definer` court-circuite RLS, donc c'est cette
+fonction qui porte toute la règle.
+
+**Quatre verrous d'écriture, et il les faut tous** : `save()`,
+`cloudSave()` (ils existaient), plus `creer()`, `tue()`, `attache()`,
+`detache()` — qui parlent DIRECTEMENT au serveur. Le CSS masquait le
+bouton [+ Add] ; **masquer n'est pas interdire**, et depuis le 17/09 la
+ligne ne se dessine plus du tout.
+
+Un Totehm qu'on vient lire s'ouvre **déjà déplié** : on arrive d'un
+résultat de recherche pour regarder celui d'un autre, il n'y a rien à
+déplier. ⚠️ Et `replaceState` garde `?ro=` — il désigne ce qu'on lit.
 
 ### `next_objective.html` est mis de côté — 13/09/2026
 

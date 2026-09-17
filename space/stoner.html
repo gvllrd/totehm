@@ -384,6 +384,111 @@ const COHORT_MAX  = 777;
 let   ACCESS  = false;        // jamais true par défaut
 let   SIGNED  = {};           // { 7: url, 8: url, ... }
 const sb = createClient(SB_URL, SB_ANON);
+
+/* ══ LE PONT SSO — LE BLOC À COPIER · 17/09/2026 ══════════════════════
+   Quatre domaines, quatre `localStorage`, quatre sessions. Le compte est
+   unique — l'email est l'identité universelle — mais la session ne l'est
+   pas et ne peut pas l'être : un navigateur ne partage rien entre deux
+   origines. On ne le contourne pas, on le TRAVERSE.
+
+   ⚠️ CE BLOC SE COPIE, IL NE S'IMPORTE PAS. Règle du projet : produits
+   indépendants = fichiers indépendants. Un `<script src>` partagé ferait
+   qu'une panne sur un domaine éteindrait les quatre.
+
+   OÙ LE POSER : dans le module ES de chaque page qui a un `sb`
+   (`createClient`), juste après sa création. La partie ARRIVÉE doit
+   s'exécuter AVANT toute lecture de session.
+
+   CE QUI VOYAGE DANS L'URL N'EST PAS UN JETON DE SESSION. C'est un code
+   d'autorisation : soixante secondes, un seul usage, un seul domaine
+   cible, stocké haché côté serveur, et il n'ouvre rien par lui-même —
+   il faut l'échanger. La règle « jamais un jeton de session dans une
+   URL » vise un jeton qui vit des heures et ouvre tout ; ce n'est pas
+   ce qui passe ici.
+   ═══════════════════════════════════════════════════════════════════ */
+
+const SSO_FN = 'https://abujjbkbbiumxrokozph.supabase.co/functions/v1/';
+
+/* ── ARRIVÉE ────────────────────────────────────────────────────────
+   ⚠️ LE CODE SORT DE L'URL AVANT TOUT AUTRE GESTE. Un code laissé dans
+   la barre d'adresse se retrouve dans un signet, un partage, un
+   historique — et même brûlé, il n'a rien à y faire.
+   On renvoie une promesse : la page doit l'attendre avant de décider si
+   quelqu'un est connecté, sinon elle affiche « déconnecté » une demi-
+   seconde et le membre voit un clignotement de porte fermée. */
+async function ssoArrivee(sb){
+  const m = /[#&?]sso=([a-f0-9]{64})/.exec(location.hash) ||
+            /[#&?]sso=([a-f0-9]{64})/.exec(location.search);
+  if(!m) return false;
+  const code = m[1];
+  history.replaceState(null, '', location.pathname + location.search.replace(/[?&]sso=[a-f0-9]{64}/, ''));
+  try{
+    const r = await fetch(SSO_FN + 'sso-redeem', {
+      method:'POST', headers:{'content-type':'application/json'},
+      body: JSON.stringify({ code })
+    });
+    if(!r.ok){ console.error('[sso] redeem', r.status); return false; }
+    const { token_hash, email } = await r.json();
+    if(!token_hash) return false;
+    /* `verifyOtp` ouvre une session NORMALE dans ce `localStorage` :
+       avec son refresh token, sa déconnexion, sa durée de vie. On ne
+       fabrique aucun jeton à la main. */
+    const { error } = await sb.auth.verifyOtp({ type:'email', token_hash, email });
+    if(error){ console.error('[sso] verify', error.message); return false; }
+    return true;
+  }catch(e){ console.error('[sso]', e && e.message || e); return false; }
+}
+
+/* ── DÉPART ─────────────────────────────────────────────────────────
+   `cible` est un NOM DE PRODUIT — 'com' | 'space' | 'boutique' | 'club' —
+   jamais une URL. Le serveur seul sait à quelle origine chaque nom
+   correspond : une page qui choisirait librement sa destination
+   laisserait n'importe quel site demander un code pour lui-même.
+
+   ⚠️ SI LE PONT ÉCHOUE, ON PART QUAND MÊME. Le membre arrivera
+   déconnecté et se connectera par email — c'est dégradé, ce n'est pas
+   cassé. Bloquer la porte parce que le pont tousse serait pire que le
+   problème qu'on résout. */
+async function ssoVersDomaine(sb, cible, url){
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(session){
+      const r = await fetch(SSO_FN + 'sso-mint', {
+        method:'POST',
+        headers:{ 'authorization':'Bearer '+session.access_token,
+                  'content-type':'application/json' },
+        body: JSON.stringify({ target: cible })
+      });
+      if(r.ok){
+        const { code } = await r.json();
+        if(code){ location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; }
+      } else console.error('[sso] mint', r.status);
+    }
+  }catch(e){ console.error('[sso]', e && e.message || e); }
+  location.href = url;
+}
+
+/* ── LE DÉMARRAGE — ET POURQUOI IL EST BLOQUANT ─────────────────────
+   `await` au NIVEAU DU MODULE : tout ce qui suit dans le fichier attend.
+   C'est voulu, et c'est la seule forme qui marche partout sans recâbler
+   sept pages différentes. Chacune a son propre démarrage ; leur demander
+   à toutes d'appeler la bonne fonction au bon moment, c'est sept
+   occasions de se tromper — et la première oubliée donnerait un membre
+   qui arrive déconnecté sans que rien ne le signale.
+   Ici, quand la page lit sa session, la session est déjà là.
+
+   ⚠️ ET ÇA NE BLOQUE JAMAIS PLUS DE 2,5 SECONDES. Si le pont ne répond
+   pas, on continue SANS session : le membre se connectera par email.
+   Dégradé, pas cassé. Une page qui ne s'affiche pas parce qu'un pont
+   tousse serait bien pire que le problème qu'on résout.
+   Et quand il n'y a pas de code dans l'URL — le cas de loin le plus
+   fréquent — `ssoArrivee` rend `false` immédiatement, sans un octet de
+   réseau. */
+await Promise.race([
+  ssoArrivee(sb),
+  new Promise(r => setTimeout(() => r(false), 2500)),
+]);
+
 const DOPE = '<svg viewBox="100 240 660 320" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M193.16 295.785c0 21.8-17.672 39.476-39.473 39.476-21.805 0-39.477-17.676-39.477-39.476 0-21.801 17.672-39.473 39.477-39.473 21.801 0 39.473 17.672 39.473 39.473m-11.723 0c0-15.325-12.422-27.75-27.75-27.75-15.328 0-27.75 12.425-27.75 27.75 0 15.324 12.422 27.75 27.75 27.75 15.328 0 27.75-12.426 27.75-27.75z"/><path d="M192.027 508.664c0 21.805-17.672 39.476-39.476 39.476-21.797 0-39.473-17.675-39.473-39.476 0-21.801 17.676-39.473 39.473-39.473 21.804 0 39.476 17.672 39.476 39.473m-11.727 0c0-15.325-12.422-27.75-27.75-27.75-15.328 0-27.75 12.425-27.75 27.75 0 15.328 12.422 27.75 27.75 27.75 15.328 0 27.75-12.422 27.75-27.75z"/><path d="M742.289 295.187c0 21.801-17.672 39.473-39.473 39.473-21.801 0-39.477-17.672-39.477-39.473 0-21.8 17.676-39.476 39.477-39.476 21.801 0 39.473 17.676 39.473 39.476m-11.723 0c0-15.324-12.422-27.75-27.75-27.75-15.328 0-27.75 12.426-27.75 27.75 0 15.324 12.422 27.75 27.75 27.75 15.328 0 27.75-12.426 27.75-27.75z"/><path d="M191.777 313.746v.008l-2.754-4.973 59.363 37.101-6.051-.097 88.879-51.614c1.754-1.015 3.907-1.058 5.696-.105l91.769 48.754-5.629.066 98.641-55.562c1.914-1.078 4.273-.992 6.109.219l88.395 58.445-6.133-.203 58.305-33.18c2.812-1.601 6.394-.62 7.996 2.196 1.601 2.812.617 6.39-2.196 7.992l-58.304 33.184c-1.922 1.09-4.289 1.011-6.133-.207l-88.394-58.446 6.109.219-98.637 55.563c-1.742.98-3.863 1.007-5.629.07l-91.773-48.754 5.695-.11-88.879 51.614c-1.879 1.09-4.207 1.05-6.051-.102l-59.363-37.097c-1.715-1.071-2.754-2.95-2.754-4.973v-.008c0-3.238 2.625-5.863 5.863-5.863 3.235 0 5.86 2.625 5.86 5.863z"/><path d="M248.465 354.148v.008l-.001-.098 1.629 98.317-2.82-4.914 91.449 55.511-5.926-.093 94.485-53.379-2.977 5.266-2.929-104.805c-.09-3.234 2.46-5.933 5.699-6.023 3.234-.09 5.933 2.46 6.023 5.695l2.93 104.805c.058 2.172-1.086 4.199-2.977 5.27l-94.484 53.382c-1.848 1.043-4.113 1.008-5.926-.094l-91.453-55.511c-1.723-1.043-2.785-2.899-2.82-4.914l-1.625-98.317-.004-.097v-.008c0-3.238 2.629-5.863 5.863-5.863 3.239 0 5.864 2.625 5.864 5.863z"/><path d="M248.363 454.742v.012c0 2.046-1.07 3.949-2.82 5.011l-59.465 36.067c-2.766 1.675-6.371.793-8.051-1.973-1.68-2.77-.797-6.375 1.973-8.055l59.46-36.066-2.82 5.016v-.012c0-3.238 2.625-5.859 5.86-5.859 3.238 0 5.863 2.621 5.863 5.859z"/></svg>';
 
 /* slogan : 'slogan' classique | 'grind' | 'love' */

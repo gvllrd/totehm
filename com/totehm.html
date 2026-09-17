@@ -65,11 +65,20 @@
      parce que `#views{top}` avait bougé et pas `--band-t`.
      Il n'y a plus qu'un chiffre par écran : `--croix-t`, le haut de la
      croix. Les deux autres en découlent. On ne peut plus en oublier un.
-       croix : --croix-t          hauteur mesurée 78 px
-       bande de classement : +82  (juste sous la croix)
-       première boîte : +100      (22 px d'air, comme sur ordinateur) */
+       titre : --croix-t          hauteur mesurée 24 px
+       curseur du haut : +42      (il n'existe qu'au téléphone à cet
+                                   endroit ; sur ordinateur il est hors
+                                   du carré, mais un seul jeton suffit)
+       bande de classement : +72
+       première boîte : +78
+
+     ⚠️ MESURÉ LE 17/09 : avec +100, hérité de la croix à cinq carrés, la
+     boîte [+ Add a …] tombait SOUS le pli sur ordinateur — 640 px de
+     carré ne laissent que 250 px de liste, et vingt-deux pixels de trop
+     en haut suffisent à manger la dernière ligne. Or c'est la ligne sur
+     laquelle on appuie pour créer. */
   --croix-t:96px;
-  --band-t:calc(var(--croix-t) + 100px);
+  --band-t:calc(var(--croix-t) + 78px);
   --band-b:116px;  /* bande basse : TOTEHM.png + flèche menu */
   --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%2336498c'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
@@ -122,6 +131,9 @@ body:not(.gate) #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
    pièce du Totehm, elle mène au Club. Un blanc plein au lieu d'un gris —
    pas un cadre, la marque n'en veut nulle part. */
 .door-club{color:#fff;font-weight:700}
+/* ⚠️ LE CORAL EST RÉSERVÉ AU « GET » (BRAND.md). Nulle part ailleurs. */
+.door .get{font-family:'Quantico',sans-serif;font-weight:400;color:var(--coral)}
+.door .higher-inline{height:1.15em;vertical-align:-.26em;margin-left:1px}
 .door{background:none;border:none;padding:0;cursor:pointer;
   font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;
   color:#b0b0b0;transition:color .15s ease;-webkit-tap-highlight-color:transparent;
@@ -209,29 +221,98 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
    Les deux carrés du haut et du bas sont couchés (carré + mot côte à
    côte) : debout, ils auraient ajouté deux fois 22 px de hauteur à une
    bande qui n'en a pas. */
+/* ══ UN SEUL TITRE, QUATRE CURSEURS · 17/09/2026 ═════════════════════
+   La croix à cinq carrés montrait tout en permanence — cinq couleurs,
+   cinq noms, deux axes, au-dessus d'une liste. Un plan du produit posé
+   sur le produit.
+   Il ne reste que le TITRE DE LA VUE OÙ L'ON EST. Les quatre cursseurs
+   des quatre côtés disent où l'on peut aller. */
 #views{position:fixed;top:var(--croix-t);left:50%;transform:translateX(-50%);
-  z-index:33;display:flex;flex-direction:column;align-items:center;gap:7px}
-#vt-row{display:flex;flex-direction:row;align-items:flex-start;gap:22px}
-/* Couché : le carré et son mot sur la même ligne. */
-.vt-c.lay{flex-direction:row;align-items:center;gap:7px}
-.vt-c.lay .vt{width:11px;height:11px}
-/* Le bouton EST la colonne : le carré, puis son nom dessous. Cliquer le
-   mot revient à cliquer la couleur — deux cibles pour un seul geste. */
-.vt-c{display:flex;flex-direction:column;align-items:center;gap:6px;
-  background:none;border:none;padding:0;cursor:pointer;
-  -webkit-tap-highlight-color:transparent}
-.vt-n{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;
-  text-transform:uppercase;color:rgba(255,255,255,.34);
-  transition:color .18s ease;white-space:nowrap;text-align:center}
-/* « REPULSIONS — HABITS TO KILL » sur deux lignes : la colonne resterait
-   sinon deux fois plus large que les deux autres et le trio ne serait
-   plus un trio. La seconde ligne est plus discrète — c'est la glose, pas
-   le nom. */
-.vt-n2 b{display:block;font-weight:400;font-size:7px;letter-spacing:.14em;
-  color:rgba(255,255,255,.3);margin-top:2px}
-.vt-c[aria-selected="true"] .vt-n2 b{color:rgba(255,255,255,.62)}
-.vt-c[aria-selected="true"] .vt-n{color:#fff}
-@media(hover:hover){.vt-c:hover .vt-n{color:rgba(255,255,255,.8)}}
+  z-index:33;display:flex;flex-direction:column;align-items:center;
+  /* La perspective vit sur le PARENT : c'est elle qui fait qu'une
+     rotation du titre se lit comme un volume et pas comme un
+     écrasement. 620 px — assez pour que la face tourne, pas assez pour
+     qu'elle parte en fuite. */
+  perspective:620px}
+#vnow{display:flex;flex-direction:column;align-items:center;gap:3px;
+  transform-style:preserve-3d;backface-visibility:hidden;
+  will-change:transform,opacity}
+#vnow b{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.24em;
+  text-transform:uppercase;color:#fff;font-weight:700;white-space:nowrap}
+#vnow i{font-family:'Space Mono',monospace;font-size:7px;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(255,255,255,.4);font-style:normal}
+/* ══ LA RÉPERCUSSION 3D ══════════════════════════════════════════════
+   Le titre pivote DANS LA DIRECTION DU VOYAGE : on est allé à droite, il
+   tourne sur son axe vertical ; on est descendu, sur son axe horizontal.
+   Le carré est un objet, on vient d'en tourner une face.
+   Deux temps : `.out` pousse l'ancienne face hors du champ, `.in` fait
+   revenir la nouvelle. Une seule classe ne suffirait pas — il faut un
+   avant et un après, et le texte change entre les deux. */
+@keyframes face-d{from{transform:rotateY(-62deg) translateX(26px);opacity:0}
+                  to{transform:none;opacity:1}}
+@keyframes face-g{from{transform:rotateY(62deg) translateX(-26px);opacity:0}
+                  to{transform:none;opacity:1}}
+@keyframes face-b{from{transform:rotateX(62deg) translateY(18px);opacity:0}
+                  to{transform:none;opacity:1}}
+@keyframes face-h{from{transform:rotateX(-62deg) translateY(-18px);opacity:0}
+                  to{transform:none;opacity:1}}
+#vnow.f-d{animation:face-d .42s cubic-bezier(.22,.9,.3,1)}
+#vnow.f-g{animation:face-g .42s cubic-bezier(.22,.9,.3,1)}
+#vnow.f-b{animation:face-b .42s cubic-bezier(.22,.9,.3,1)}
+#vnow.f-h{animation:face-h .42s cubic-bezier(.22,.9,.3,1)}
+
+/* ══ LES QUATRE CURSEURS ═════════════════════════════════════════════
+   Un par côté du Totehm. Chacun porte la COULEUR de la vue qu'il ouvre
+   et son nom. `position:fixed` dans `#stage` : sur ordinateur #stage
+   porte un transform, il est donc le bloc conteneur — les curseurs
+   restent collés au carré. Sur téléphone ils se posent sur l'écran.
+   Un seul code, deux résultats justes : c'est déjà comme ça que les
+   carrés vivaient.
+   ⚠️ AUCUNE BORDURE. Ce qui les détache, c'est la couleur du chevron et
+   l'écart, jamais un trait — règle de marque. */
+.cur{position:fixed;z-index:33;background:none;border:none;padding:6px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  display:flex;align-items:center;gap:6px;
+  opacity:.5;transition:opacity .18s ease,transform .18s ease}
+.cur[hidden]{display:none!important}
+@media(hover:hover){.cur:hover{opacity:1}}
+.cur:active{opacity:1}
+.cur svg{width:14px;height:14px;flex:0 0 auto;display:block;
+  stroke:currentColor;fill:none;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round}
+.cur span{font-family:'Space Mono',monospace;font-size:7px;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(255,255,255,.62);white-space:nowrap}
+/* La couleur du chevron EST la couleur de la vue qu'il ouvre : on voit
+   où l'on va avant d'y aller, comme les carrés le faisaient. */
+.cur.to-habits    {color:var(--sky)}
+.cur.to-objectives{color:var(--blue)}
+.cur.to-repulsions{color:var(--rep)}
+.cur.to-wisdom    {color:var(--rep)}
+.cur.to-visions   {color:var(--blue)}
+
+/* ══ LE PLACEMENT DE BASE — CELUI DU TÉLÉPHONE ══════════════════════
+   L'écran EST le carré : il n'y a pas de dehors. Les quatre curseurs se
+   rangent donc autour du TITRE. ⚠️ JAMAIS au milieu de la hauteur : ils
+   se posaient sur les boîtes, mesuré le 17/09.
+   Gauche et droite sont aux deux bords, À LA HAUTEUR DU TITRE — donc
+   sur les côtés du haut de l'écran, là où rien ne défile. */
+#cur-g,#cur-d{top:var(--croix-t);flex-direction:column;gap:3px;text-align:center}
+#cur-g{left:4px}
+#cur-d{right:4px}
+#cur-h,#cur-b{left:50%;transform:translateX(-50%)}
+#cur-h{top:calc(var(--croix-t) + 42px)}
+#cur-b{bottom:calc(var(--band-b) - 30px)}
+@media(hover:hover){
+  #cur-g:hover{transform:translateX(-2px)}
+  #cur-d:hover{transform:translateX(2px)}
+  #cur-h:hover{transform:translateX(-50%) translateY(-2px)}
+  #cur-b:hover{transform:translateX(-50%) translateY(2px)}}
+@media(prefers-reduced-motion:reduce){
+  .cur{transition:none}
+  #vnow.f-d,#vnow.f-g,#vnow.f-b,#vnow.f-h{animation:none}
+}
+/* `.vt-c` / `.vt-n` / `.vt-n2` sont partis avec la croix : le titre
+   (`#vnow`) et les quatre curseurs (`.cur`) les remplacent. */
 /* LES TROIS COULEURS RESSORTENT — les trois, tout le temps, à pleine
    valeur. Une couleur de marque ne se met pas en veilleuse.
    Ce qui marque la vue courante n'est donc PAS la couleur mais un contour
@@ -243,19 +324,10 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
    pas de boutons encadrés. Ce qui marque la vue courante, c'est
    l'intitulé qui s'allume dessous et la pleine opacité du carré : les
    deux autres reculent. Rien ne bouge, rien n'encadre. */
-.vt{width:17px;height:17px;cursor:pointer;padding:0;
-  border:none;outline:none;opacity:.42;
-  -webkit-tap-highlight-color:transparent;transition:opacity .18s ease}
-@media(hover:hover){.vt:hover{opacity:.75}}
-.vt[aria-selected="true"]{opacity:1}
-.vt:focus-visible{opacity:1}
-.vt.r{background:var(--rep)}
-.vt.h{background:var(--navy)}
-.vt.o{background:var(--blue)}
-.vt.w{background:var(--rep)}
-.vt.v{background:var(--blue)}
+/* `.vt`, `.vt-c`, `.vt-n` ont disparu avec la croix — voir `#vnow` et
+   `.cur` plus haut. Les carrés vivent dans git, commit précédent. */
 /* Le nom de la vue, sous les carrés, centré comme eux. */
-/* `#vname` a disparu : chaque carré porte son nom (voir `.vt-n`). */
+/* `#vname` a disparu ; `#vnow` porte le nom de la vue courante. */
 .higher-inline{height:1.5em;width:auto;display:inline-block;vertical-align:-.32em}
 /* ══ HIGHER : EXCLUSIVITÉ ABSOLUE ══
    Slogan, bouton, badge : rien de la marque HIGHER ne paraît tant que
@@ -1040,9 +1112,23 @@ body.ordering #ordbtn span{animation:none;opacity:1}
    les trois carrés, à leur place fixe — c'est pour ça qu'ils remontent.
    Elle ne s'affiche qu'en mode classement, et ne prend aucune place
    sinon (`display:none`). */
-#ordbar{position:fixed;top:calc(var(--croix-t) + 82px);left:50%;transform:translateX(-50%);
+#ordbar{position:fixed;top:calc(var(--croix-t) + 72px);left:50%;transform:translateX(-50%);
   z-index:33;display:none;white-space:nowrap;pointer-events:none}
 body.ordering #ordbar{display:block}
+/* ══ LE TOTEHM DIT UNE PHRASE · 17/09/2026 ══════════════════════════
+   Une seule ligne, a la graisse des etiquettes, posee sous la croix.
+   Pas de cadre, pas de fond, pas de croix pour la fermer : elle s'efface
+   seule en trois secondes. Une alerte qu'il faut congedier est une
+   alerte de trop.
+   `pointer-events:none` : elle ne doit JAMAIS intercepter un doigt --
+   elle apparait exactement la ou l'on vient d'appuyer. */
+#dit{position:fixed;top:calc(var(--croix-t) + 72px);left:50%;
+  transform:translateX(-50%);z-index:34;pointer-events:none;
+  font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;
+  text-transform:uppercase;color:#d59ac4;white-space:nowrap;
+  opacity:0;transition:opacity .22s ease}
+#dit.on{opacity:1}
+@media(prefers-reduced-motion:reduce){#dit{transition:none}}
 #ordbar,.ordbar{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;
   text-transform:uppercase;color:rgba(255,255,255,.72);
   padding:0 0 10px;margin-left:calc(var(--rl) + var(--rw) + 16px)}
@@ -1270,9 +1356,16 @@ body.rk-grab #fv-inner{overscroll-behavior:none}
    T, les mêmes deux voisins. Ce qui change : rien ne s'écrit. Tout ce qui
    écrit est retiré du DOM visible plutôt que désactivé — un champ grisé
    invite encore à essayer, un champ absent ne ment pas. */
+/* ══ CE QUI DISPARAÎT EN LECTURE · 17/09/2026 ════════════════════════
+   Tout ce qui écrit. Les CURSEURS RESTENT : on lit les cinq vues de
+   quelqu'un d'autre exactement comme on lit les siennes — c'est toute
+   la demande. */
 body.ro .habit.add,
 body.ro .h-x,
 body.ro #bottom-doors,
+body.ro #ordbtn,
+body.ro .dash,
+body.ro .mini-x,
 body.ro #fv-status{display:none!important}
 body.ro .h-text{pointer-events:none}
 #ro-bar{position:fixed;top:0;left:0;right:0;z-index:40;display:none;
@@ -1661,6 +1754,24 @@ body.gate.entered #filter-badge{
      raccourci au-dessus, on ne les répète pas. */
   #stage.v-w{background-image:var(--logo-wisdom)}
   #stage.v-v{background-image:var(--logo-visions)}
+  /* ══ LES QUATRE CURSEURS SE POSENT SUR LES QUATRE CÔTÉS DU CARRÉ ═══
+     Ici il y a un DEHORS : le carré fait `--stage` de côté, centré, et
+     le reste est noir. Chaque curseur se pose donc à `--side-gap` de son
+     côté, centré dessus. C'est la demande, au mot près — et c'est la
+     seule disposition où aucun d'eux ne couvre une boîte.
+     `--side-gap` existait déjà pour les anciens chevrons `.tnav` ; il
+     reprend du service au lieu d'inventer une mesure de plus. */
+  #cur-g,#cur-d{top:50%;transform:translateY(-50%)}
+  #cur-g{left:calc(50% - var(--stage)/2 - var(--side-gap));right:auto}
+  #cur-d{right:calc(50% - var(--stage)/2 - var(--side-gap));left:auto}
+  #cur-h,#cur-b{left:50%;transform:translateX(-50%)}
+  #cur-h{top:calc(50% - var(--stage)/2 - 42px);bottom:auto}
+  #cur-b{bottom:calc(50% - var(--stage)/2 - 42px);top:auto}
+  @media(hover:hover){
+    #cur-g:hover{transform:translateY(-50%) translateX(-3px)}
+    #cur-d:hover{transform:translateY(-50%) translateX(3px)}
+    #cur-h:hover{transform:translateX(-50%) translateY(-3px)}
+    #cur-b:hover{transform:translateX(-50%) translateY(3px)}}
   /* Le rail s'arrête au T en haut et au wordmark en bas, au lieu de courir
      d'un bord à l'autre : 30px, la même valeur que #bigT et #wordmark. */
   #rail{top:30px;bottom:30px}
@@ -1936,9 +2047,6 @@ body.gate.entered #filter-badge{
 @media(hover:hover){
 .door:hover,
 #filter-arrow svg:hover,
-.vt-n:hover,
-.vt-n2 b:hover,
-.vt-c[aria-selected="true"] .vt-n2 b:hover,
 .sn-btn:hover,
 .btn-back:hover,
 #conn-bar:hover,
@@ -2077,32 +2185,17 @@ body.gate.entered #filter-badge{
 <div id="stage">
 <div id="rail" class="sink-el"></div>
 
-<!-- Les trois couches du Totehm. Ordre = ordre de lecture : ce que je fais,
-     pourquoi je le fais, ce qui protège le fait de le faire. -->
-<!-- ══ CHAQUE CARRÉ PORTE SON NOM · 09/09/2026 ═══════════════════════
-     Il y avait UN intitulé, celui de la vue courante, posé sous les
-     trois carrés : il fallait cliquer pour savoir ce qu'on allait
-     ouvrir. Chacun porte maintenant le sien — on lit avant de choisir,
-     comme les carrés eux-mêmes montrent la couleur avant le clic.
-     Le mot est le clic : `.vt-c` est le bouton, le carré est dedans. -->
-<!-- ══ LA CROIX · 16/09/2026 ═══════════════════════════════════════
-     Horizontale = le temps. Verticale = la profondeur. Chaque carré
-     porte son nom : on lit avant de choisir. -->
-<div id="views" class="sink-el" role="tablist" aria-label="Les cinq objets du Totehm">
-  <button class="vt-c lay" type="button" role="tab" data-v="objectives" aria-selected="false">
-    <span class="vt o"></span><span class="vt-n">my objectives</span></button>
-  <div id="vt-row">
-    <button class="vt-c" type="button" role="tab" data-v="wisdom" aria-selected="false">
-      <span class="vt w"></span><span class="vt-n vt-n2">my wisdom<b>past</b></span></button>
-    <button class="vt-c" type="button" role="tab" data-v="habits" aria-selected="true">
-      <span class="vt h"></span><span class="vt-n vt-n2">my habits<b>present</b></span></button>
-    <button class="vt-c" type="button" role="tab" data-v="visions" aria-selected="false">
-      <span class="vt v"></span><span class="vt-n vt-n2">my vision<b>future</b></span></button>
-  </div>
-  <button class="vt-c lay" type="button" role="tab" data-v="repulsions" aria-selected="false">
-    <span class="vt r"></span><span class="vt-n">my repulsions — habits to kill</span></button>
+<!-- ══ LE TITRE ET LES QUATRE CURSEURS · 17/09/2026 ══════════════════
+     Un seul titre — celui de la vue où l'on est. Quatre curseurs, un par
+     côté du Totehm, chacun portant le nom et la couleur de la vue de ce
+     côté-là. Un curseur sans voisin se retire (`hidden`) : un bouton
+     qui ne fait rien apprend à ne plus regarder les autres. -->
+<div id="views" class="sink-el" role="group" aria-label="La vue courante">
+  <div id="vnow"><b></b><i></i></div>
 </div>
+
 <div id="ordbar" class="sink-el">order by importance — the bot follows this order</div>
+<div id="dit" class="sink-el" role="status" aria-live="polite"></div>
 <button id="filter-arrow" class="sink-el" aria-label="Open filter" hidden>
   <svg viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L12 3 L22 12"/></svg>
 </button>
@@ -2124,12 +2217,18 @@ body.gate.entered #filter-badge{
      donc à deux gestes ; elles sont maintenant sous le pouce.
      Le wordmark reste le menu : on ne perd rien. -->
 <div id="bottom-doors" class="sink-el">
-  <!-- ⚠️ CES DEUX PORTES N'OUVRENT PLUS DE DOCUMENT · 16/09/2026. Elles
-       chargeaient `wisdom.html` et `vision.html`. Les deux fichiers sont
-       rentrés dans celui-ci : ce sont deux VUES. La porte fait donc ce
-       que fait un carré de la croix — et la session ne bouge pas. -->
-  <button class="door" id="door-book" type="button">My Wisdom</button>
-  <button class="door" id="door-next" type="button">My vision for the future</button>
+  <!-- ══ LES PORTES MÈNENT DEHORS · 17/09/2026 ═══════════════════════
+       [My Wisdom] et [My vision] faisaient double emploi avec les
+       curseurs gauche et droite : deux chemins pour la même vue, dont un
+       plus loin du pouce. Une porte, maintenant, sort du Totehm — c'est
+       sa seule raison d'être.
+       ⚠️ « GET » EST LE SEUL MOT CORAL DU PRODUIT (BRAND.md). Il ne se
+       réutilise nulle part ailleurs, et « Higher » n'est jamais tapé en
+       texte : c'est le slogan, donc le SVG. -->
+  <button class="door" id="door-book" type="button">
+    <span class="get">Get</span> <svg class="higher-inline" viewBox="0 0 600 200"
+      role="img" aria-label="Higher"><use href="#higher-badge"></use></svg></button>
+  <button class="door" id="door-next" type="button">My Higher Self</button>
   <!-- ══ LA PORTE DU CLUB · 15/09/2026 ═══════════════════════════════
        `totehm.space/club` — MÊME ORIGINE, donc même session. C'est
        toute la raison pour laquelle le Club n'est pas sur un quatrième
@@ -2203,6 +2302,24 @@ body.gate.entered #filter-badge{
 
 
 </div><!-- /#stage -->
+
+<!-- ══ LES QUATRE CURSEURS VIVENT HORS DU CARRÉ · 17/09/2026 ══════════
+     ⚠️ ILS ÉTAIENT DANS `#stage`, ET C'EST POUR ÇA QU'ILS PASSAIENT
+     PAR-DESSUS LES BOÎTES. `#stage` porte un transform (donc il contient
+     tout ce qui est `fixed` dedans) ET `overflow:hidden` (donc il rogne
+     ce qui dépasse). Un curseur « à l'extérieur du carré » était ramené
+     dedans puis coupé.
+     Dehors, ils se résolvent sur la fenêtre : sur ordinateur ils se
+     posent sur les quatre côtés du carré, sur téléphone autour du
+     titre. -->
+<button class="cur sink-el" id="cur-h" type="button" hidden>
+  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg><span></span></button>
+<button class="cur sink-el" id="cur-g" type="button" hidden>
+  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg><span></span></button>
+<button class="cur sink-el" id="cur-d" type="button" hidden>
+  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg><span></span></button>
+<button class="cur sink-el" id="cur-b" type="button" hidden>
+  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg><span></span></button>
 
 
 <div id="freq-panel" class="hide">
@@ -2350,6 +2467,111 @@ body.gate.entered #filter-badge{
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
+
+/* ══ LE PONT SSO — LE BLOC À COPIER · 17/09/2026 ══════════════════════
+   Quatre domaines, quatre `localStorage`, quatre sessions. Le compte est
+   unique — l'email est l'identité universelle — mais la session ne l'est
+   pas et ne peut pas l'être : un navigateur ne partage rien entre deux
+   origines. On ne le contourne pas, on le TRAVERSE.
+
+   ⚠️ CE BLOC SE COPIE, IL NE S'IMPORTE PAS. Règle du projet : produits
+   indépendants = fichiers indépendants. Un `<script src>` partagé ferait
+   qu'une panne sur un domaine éteindrait les quatre.
+
+   OÙ LE POSER : dans le module ES de chaque page qui a un `sb`
+   (`createClient`), juste après sa création. La partie ARRIVÉE doit
+   s'exécuter AVANT toute lecture de session.
+
+   CE QUI VOYAGE DANS L'URL N'EST PAS UN JETON DE SESSION. C'est un code
+   d'autorisation : soixante secondes, un seul usage, un seul domaine
+   cible, stocké haché côté serveur, et il n'ouvre rien par lui-même —
+   il faut l'échanger. La règle « jamais un jeton de session dans une
+   URL » vise un jeton qui vit des heures et ouvre tout ; ce n'est pas
+   ce qui passe ici.
+   ═══════════════════════════════════════════════════════════════════ */
+
+const SSO_FN = 'https://abujjbkbbiumxrokozph.supabase.co/functions/v1/';
+
+/* ── ARRIVÉE ────────────────────────────────────────────────────────
+   ⚠️ LE CODE SORT DE L'URL AVANT TOUT AUTRE GESTE. Un code laissé dans
+   la barre d'adresse se retrouve dans un signet, un partage, un
+   historique — et même brûlé, il n'a rien à y faire.
+   On renvoie une promesse : la page doit l'attendre avant de décider si
+   quelqu'un est connecté, sinon elle affiche « déconnecté » une demi-
+   seconde et le membre voit un clignotement de porte fermée. */
+async function ssoArrivee(sb){
+  const m = /[#&?]sso=([a-f0-9]{64})/.exec(location.hash) ||
+            /[#&?]sso=([a-f0-9]{64})/.exec(location.search);
+  if(!m) return false;
+  const code = m[1];
+  history.replaceState(null, '', location.pathname + location.search.replace(/[?&]sso=[a-f0-9]{64}/, ''));
+  try{
+    const r = await fetch(SSO_FN + 'sso-redeem', {
+      method:'POST', headers:{'content-type':'application/json'},
+      body: JSON.stringify({ code })
+    });
+    if(!r.ok){ console.error('[sso] redeem', r.status); return false; }
+    const { token_hash, email } = await r.json();
+    if(!token_hash) return false;
+    /* `verifyOtp` ouvre une session NORMALE dans ce `localStorage` :
+       avec son refresh token, sa déconnexion, sa durée de vie. On ne
+       fabrique aucun jeton à la main. */
+    const { error } = await sb.auth.verifyOtp({ type:'email', token_hash, email });
+    if(error){ console.error('[sso] verify', error.message); return false; }
+    return true;
+  }catch(e){ console.error('[sso]', e && e.message || e); return false; }
+}
+
+/* ── DÉPART ─────────────────────────────────────────────────────────
+   `cible` est un NOM DE PRODUIT — 'com' | 'space' | 'boutique' | 'club' —
+   jamais une URL. Le serveur seul sait à quelle origine chaque nom
+   correspond : une page qui choisirait librement sa destination
+   laisserait n'importe quel site demander un code pour lui-même.
+
+   ⚠️ SI LE PONT ÉCHOUE, ON PART QUAND MÊME. Le membre arrivera
+   déconnecté et se connectera par email — c'est dégradé, ce n'est pas
+   cassé. Bloquer la porte parce que le pont tousse serait pire que le
+   problème qu'on résout. */
+async function ssoVersDomaine(sb, cible, url){
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(session){
+      const r = await fetch(SSO_FN + 'sso-mint', {
+        method:'POST',
+        headers:{ 'authorization':'Bearer '+session.access_token,
+                  'content-type':'application/json' },
+        body: JSON.stringify({ target: cible })
+      });
+      if(r.ok){
+        const { code } = await r.json();
+        if(code){ location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; }
+      } else console.error('[sso] mint', r.status);
+    }
+  }catch(e){ console.error('[sso]', e && e.message || e); }
+  location.href = url;
+}
+
+/* ── LE DÉMARRAGE — ET POURQUOI IL EST BLOQUANT ─────────────────────
+   `await` au NIVEAU DU MODULE : tout ce qui suit dans le fichier attend.
+   C'est voulu, et c'est la seule forme qui marche partout sans recâbler
+   sept pages différentes. Chacune a son propre démarrage ; leur demander
+   à toutes d'appeler la bonne fonction au bon moment, c'est sept
+   occasions de se tromper — et la première oubliée donnerait un membre
+   qui arrive déconnecté sans que rien ne le signale.
+   Ici, quand la page lit sa session, la session est déjà là.
+
+   ⚠️ ET ÇA NE BLOQUE JAMAIS PLUS DE 2,5 SECONDES. Si le pont ne répond
+   pas, on continue SANS session : le membre se connectera par email.
+   Dégradé, pas cassé. Une page qui ne s'affiche pas parce qu'un pont
+   tousse serait bien pire que le problème qu'on résout.
+   Et quand il n'y a pas de code dans l'URL — le cas de loin le plus
+   fréquent — `ssoArrivee` rend `false` immédiatement, sans un octet de
+   réseau. */
+await Promise.race([
+  ssoArrivee(sb),
+  new Promise(r => setTimeout(() => r(false), 2500)),
+]);
+
 const $=id=>document.getElementById(id);
 
 /* ══ JOURNAL DES TRANSFORMATIONS — la matière première du Book of My Totehm ══
@@ -2740,20 +2962,49 @@ async function cloudLoad(){
    ÉTANCHÉITÉ PROUVÉE EN BASE le 24/08 : un membre ne voit pas les leçons
    d'un Totehm privé, un anonyme n'en voit aucune. */
 async function loadRO(){
-  const {data:ps}=await sb.from('profiles').select('id,pseudo').ilike('pseudo',RO).limit(1);
-  const prof=(ps&&ps[0])||null;
-  if(!prof){ roFail('no Totehm by that name'); return false; }
-  const {data:rows}=await sb.from('totehms')
-    .select('steps,totehm_visibility').eq('user_id',prof.id).eq('totehm_visibility','members');
-  if(!rows||!rows.length){ roFail('this Totehm is private'); return false; }
+  /* ⚠️ UN SEUL APPEL, ET IL RAMÈNE LES CINQ LISTES. Avant, on lisait
+     `totehms.steps` à la main et on s'arrêtait là : quatre vues sur cinq
+     restaient vides chez la personne qu'on regarde. `totehm_of` rend la
+     même forme que `my_trips` — c'est le même Totehm, vu du dehors. */
+  const {data,error}=await sb.rpc('totehm_of',{p_pseudo:RO});
+  if(error){ console.error('[totehm] totehm_of:',error.message);
+             roFail('this Totehm could not be read'); return false; }
+  if(!data||!data.ok){
+    roFail(data&&data.why==='nobody'  ? 'no Totehm by that name'
+         : data&&data.why==='signin'  ? 'sign in to read a Totehm'
+         :                              'this Totehm is private');
+    return false; }
+
   const habits=[];const seen={};
-  rows.forEach(r=>{(Array.isArray(r.steps)?r.steps:[]).forEach(x=>{
-    const k=norm(x.t); if(x.t&&!seen[k]){seen[k]=1;
-      habits.push({t:x.t,f:FREQ_BY_ID[x.f]?x.f:null,i:INT_BY_ID[x.i]?x.i:null,o:x.o||null});}});});
+  (Array.isArray(data.steps)?data.steps:[]).forEach(x=>{
+    const k=norm(x.t); if(!x.t||seen[k])return; seen[k]=1;
+    /* `is` EST TRANSPORTÉ. Sans lui, une habitude à trois intentions
+       n'en montrait qu'une et le trait de gauche mentait — c'est ce
+       trait qui porte la couleur héritée des objectifs et des
+       répulsions, donc le mensonge se propageait à trois vues. */
+    const li=Array.isArray(x.is)?x.is.filter(z=>INT_BY_ID[z]):[];
+    habits.push({t:x.t, t0:x.t, f:FREQ_BY_ID[x.f]?x.f:null,
+      i:INT_BY_ID[x.i]?x.i:(li[0]||null), is:li, o:x.o||null});});
   state={habits, vis:'members'};
+
+  TRIPS=(data.trips||[]).map(t=>Object.assign({},t,{
+    is:Array.isArray(t.is)?t.is:[], vs:(t.visions||[]).map(String)}));
+  OBJ={}; const oj=data.objs||{};
+  Object.keys(oj).forEach(k=>{ OBJ[k]=(oj[k]||[]).map(String); });
+  REPS=(data.reps||[]).map(r=>({id:r.id, text:r.text||'', obstacle:r.obstacle||'',
+    hs:(r.hs||[]).slice(), ws:(r.ws||[]).map(String), is:Array.isArray(r.is)?r.is:[]}));
+  TEACH=(data.wisdom||[]).map(w=>({id:String(w.id), t:w.text||'', t0:w.text||'',
+    is:Array.isArray(w.is)?w.is:[], os:(w.os||[]).map(String)}));
+  VIS=(data.visions||[]).map(v=>({id:String(v.id), t:v.text||'', t0:v.text||'',
+    is:Array.isArray(v.is)?v.is:[], os:(v.os||[]).map(String)}));
+  /* ⚠️ `tripsLoaded` À VRAI, ET C'EST ESSENTIEL. C'est ce drapeau qui
+     empêche `loadTrips()` de partir chercher l'arbre DE CELUI QUI
+     REGARDE et de l'afficher dans le Totehm d'un autre. Sans lui, on
+     voyait ses propres objectifs chez quelqu'un d'autre. */
+  tripsLoaded=true;
+
   document.body.classList.add('ro');
-  $('ro-who').textContent=prof.pseudo;
-  if(await isHigher(prof.id))$('ro-who').insertAdjacentHTML('beforeend',HI_SVG);
+  $('ro-who').textContent=data.pseudo||RO;
   renderHabits();
   return true;
 }
@@ -3219,7 +3470,19 @@ const CROIX={
   repulsions: {h:'habits'},
 };
 const voisin=d=>(CROIX[view]||{})[d]||null;
-function versVoisin(d){ const v=voisin(d); if(v)setView(v); }
+/* Le nom et la glose de chaque vue : une seule table, lue par le titre
+   ET par les quatre curseurs. Deux tables finiraient par se contredire. */
+const NOM_VUE={
+  wisdom:    ['my wisdom','past'],
+  habits:    ['my habits','present'],
+  visions:   ['my vision','future'],
+  objectives:['my objectives','what I am heading for'],
+  repulsions:['my repulsions','habits to kill'],
+};
+/* La direction du DERNIER voyage : c'est elle qui décide de quel côté le
+   titre pivote. Null au chargement — on n'arrive de nulle part. */
+let dernierSens=null;
+function versVoisin(d){ const v=voisin(d); if(!v)return; dernierSens=d; setView(v); }
 /* Les cinq listes. `state.habits` vit en local (elle est dans `steps`),
    les quatre autres viennent du serveur en UN appel — `my_trips`. */
 let TRIPS=[], REPS=[], TEACH=[], VIS=[], tripsLoaded=false;
@@ -3317,8 +3580,29 @@ function paintZone(){
   document.body.classList.toggle('v-visions',view==='visions');
   document.body.classList.toggle('o-live',!!oLive);
   document.body.classList.toggle('ordering',ordering);
-  document.querySelectorAll('#views .vt-c').forEach(b=>{
-    b.setAttribute('aria-selected', b.dataset.v===view ? 'true':'false');
+  /* ── LE TITRE ET LES QUATRE CURSEURS ──────────────────────────────
+     Tout se peint ici, à chaque rendu : un curseur qui reste affiché
+     alors que sa vue n'a plus de voisin est un bouton mort. */
+  const nv=$('vnow');
+  if(nv){
+    const [nom,glose]=NOM_VUE[view]||['',''];
+    nv.querySelector('b').textContent=nom;
+    nv.querySelector('i').textContent=glose;
+    /* ⚠️ UNE ANIMATION SE REJOUE À CHAQUE REDESSIN si on se contente de
+       poser la classe. On la retire, on force un reflow, on la remet —
+       c'est le seul moyen de la rejouer À LA DEMANDE et jamais sinon.
+       Sans ça, cliquer dans une boîte faisait pivoter le titre. */
+    nv.className='';
+    if(dernierSens){ void nv.offsetWidth; nv.classList.add('f-'+dernierSens); dernierSens=null; }
+  }
+  [['cur-g','g'],['cur-d','d'],['cur-h','h'],['cur-b','b']].forEach(([id,d])=>{
+    const b=$(id); if(!b)return;
+    const cible=(CROIX[view]||{})[d]||null;
+    b.hidden=!cible;
+    if(!cible)return;
+    b.className='cur sink-el to-'+cible;
+    b.querySelector('span').textContent=(NOM_VUE[cible]||[''])[0];
+    b.setAttribute('aria-label','Go to '+(NOM_VUE[cible]||[''])[0]);
   });
   /* `#vname` n'existe plus : c'est `aria-selected` sur chaque colonne
      qui allume le bon intitulé, et il est déjà posé plus bas. */
@@ -3338,7 +3622,11 @@ function setView(v){
   /* Les objectifs et les répulsions sont des données du serveur : sans
      session il n'y a rien à montrer, et l'écran vide ne dirait pas
      pourquoi. */
-  if(v!=='habits'&&!me){
+  /* ⚠️ EN LECTURE, LES CINQ VUES SONT OUVERTES. Les données sont déjà
+     là — `loadRO` les a toutes ramenées en un appel. Demander une
+     session ici aurait bloqué quatre vues sur cinq chez quelqu'un dont
+     on regarde justement le Totehm. */
+  if(v!=='habits'&&!me&&!RO){
     $('member-window').classList.add('show');
     if(typeof memberPaint==='function')memberPaint();
     return;
@@ -3352,11 +3640,8 @@ function setView(v){
      C'était ça, « les objectifs et les répulsions ne s'affichent pas ». */
   loadTrips();
 }
-/* ⚠️ CES DEUX-LÀ POINTAIENT SUR LES MAUVAISES VUES · 16/09/2026.
-   `showBook` ouvrait les RÉPULSIONS et `showNext` les OBJECTIFS — un
-   reste de l'époque où « le livre » et « le prochain objectif » étaient
-   deux documents. Depuis que la sagesse et la vision sont deux vues,
-   les deux portes du bas mènent où leur nom promet. */
+/* Les deux portes du bas mènent DEHORS depuis le 17/09 ; ces deux
+   fonctions ne servent plus qu'à Échap, qui ramène aux habitudes. */
 function showBook(on){ setView(on?'wisdom':'habits');  if(on)save(); }
 function showNext(on){ setView(on?'visions':'habits'); if(on)save(); }
 function renderView(){ return renderZone(); }
@@ -3365,6 +3650,11 @@ function renderView(){ return renderZone(); }
    de chaque habitude. Chargé à la première ouverture d'une des deux vues,
    pas au démarrage — le Totehm doit s'ouvrir sans attendre le réseau. */
 async function loadTrips(force){
+  /* ⚠️ EN LECTURE, ON NE CHARGE JAMAIS SON PROPRE ARBRE. `my_trips()`
+     rend l'arbre DU DEMANDEUR : appelée ici, elle remplaçait les
+     objectifs de la personne qu'on regarde par les siens. Le verrou est
+     à l'entrée de la fonction, pas chez ses quinze appelants. */
+  if(RO)return;
   if(!me)return;
   if(tripsLoaded&&!force)return;
   try{
@@ -3512,15 +3802,38 @@ const intIds=x=>!x?[]:(Array.isArray(x.is)&&x.is.length?x.is:(x.i?[x.i]:[]));
    L'habitude s'écrit dans `steps` (donc `save()`), les quatre autres ont
    une ligne en base (donc `intentions_set`). Un seul verbe côté serveur
    pour les quatre : quatre fonctions finiraient par diverger. */
-function intToggle(x,id,kind){
+/* ⚠️ UNE INTENTION S'ÉCRIT DANS `steps`, ET NULLE PART AILLEURS.
+   Elle appelait `intentions_set` pour les quatre objets serveur ; ces
+   objets n'en portent plus. La fonction SQL reste en base — la retirer
+   demanderait une migration pour supprimer du code que personne
+   n'appelle, et elle resservira si un jour une vision doit se qualifier
+   seule. */
+function intToggle(x,id){
   const l=intIds(x).slice(), k=l.indexOf(id);
   if(k<0)l.push(id); else l.splice(k,1);
-  x.is=l; x.i=l.length?l[0]:null;
-  if(!kind||kind==='h'){ save(); return; }
-  wDirty=true;
-  apres(sb.rpc('intentions_set',{p_kind:kind,p_id:String(x.id),p_is:l}));
+  x.is=l; x.i=l.length?l[0]:null; save();
 }
 const intCols=x=>intIds(x).map(intColor);
+/* ══ UN OBJET SERVEUR N'A PAS D'INTENTION — IL EN HÉRITE · 17/09/2026 ═
+   ⚠️ J'avais posé les sept intentions sur les CINQ objets. C'est faux.
+   Une intention qualifie un GESTE RÉPÉTÉ — pourquoi on le refait. Un
+   objectif est une destination, une répulsion est ce qu'on arrête, une
+   vision est ce qu'on voit venir : aucun des trois ne se répète, donc
+   aucun des trois n'a d'intention propre.
+   Ce qu'ils ont, c'est la SOMME de celles de leurs habitudes. Le trait
+   de gauche d'un objectif lié à trois habitudes de trois intentions
+   différentes est donc tricolore — et il dit quelque chose de vrai :
+   « cet objectif tire sur ces trois registres de ma vie ».
+   Les colonnes `i`/`is` restent en base sur les quatre tables : elles ne
+   gênent personne, et les y remettre coûterait une migration pour rien.
+   Ce qui compte, c'est que l'ÉCRAN ne les propose plus. */
+const colsHeritees = habs => {
+  const vu = new Set();
+  habs.forEach(x => intIds(x).forEach(i => vu.add(i)));
+  /* L'ordre des sept est celui de `INTS`, jamais celui de la rencontre :
+     deux objectifs aux mêmes intentions doivent donner le même trait. */
+  return INTS.filter(z => vu.has(z.id)).map(z => z.color);
+};
 
 /* ── LES PIÈCES LIÉES, DANS LES DEUX SENS ──────────────────────────
    ⚠️ ON LIT PAR `t0`, LE TEXTE QUE LE SERVEUR CONNAÎT. Les tables de
@@ -3564,7 +3877,12 @@ const groupe=(mot,contenu)=>contenu
    `o.kind` h|t|r · `o.titre` · `o.unit` (HTML) · `o.minis` (HTML)
    · `o.ouverte` · `o.extra` (un choix ouvert : intentions, rythme, lien) */
 function boiteHTML(o){
-  const nom = o.ouverte
+  /* ⚠️ EN LECTURE, UNE BOÎTE OUVERTE RESTE UNE BOÎTE : elle montre ses
+     liens, elle ne se modifie pas. Le titre cesse d'être éditable, et
+     [Delete] disparaît — un bouton qui ne marche pas est pire qu'un
+     bouton absent. */
+  if(RO) o=Object.assign({},o,{tue:null});
+  const nom = (o.ouverte&&!RO)
     ? '<span class="v-name" contenteditable="plaintext-only" spellcheck="false"'
       +' data-edit="'+o.kind+':'+esc(String(o.id))+'">'+esc(o.titre)+'</span>'
     : '<span class="v-name">'+esc(o.titre||'untitled')+'</span>';
@@ -3607,7 +3925,13 @@ const rangHTML=(rank,id,prem,dern)=>'<span class="rk">'
   +(dern?' disabled':'')+' aria-label="Move down">'
   +'<svg viewBox="0 0 16 10" aria-hidden="true"><path d="M2 2 L8 8 L14 2"/></svg></button>'
   +'</span>';
-const ligne=(inner,cls,cols,rank,id,prem,dern)=>'<div class="habit timed '+(cls||'')+'"'
+/* ⚠️ EN LECTURE, LA LIGNE [+ Add a …] NE S'ÉCRIT PAS DU TOUT · 17/09/2026.
+   Le CSS la masquait déjà (`body.ro .habit.add`), mais masquer n'est pas
+   retirer : le bouton restait dans le document, atteignable au clavier et
+   par un script. Le verrou est ici, à l'endroit qui dessine — pas chez les
+   cinq appelants, dont le sixième oublierait. */
+const ligne=(inner,cls,cols,rank,id,prem,dern)=> (RO&&cls==='add') ? '' :
+  '<div class="habit timed '+(cls||'')+'"'
   +(id?' data-row="'+esc(String(id))+'"':'')+'>'
   + tickHTML(cols)
   + (ordering&&rank?rangHTML(rank,id,prem,dern):'')
@@ -3725,6 +4049,20 @@ function boiteFiltre(){
     +'</span></span></div>';
 }
 
+/* ══ DIRE UNE PHRASE ═════════════════════════════════════════════════
+   `dis('…')` pose un mot sous la croix, trois secondes. `dis()` l'efface.
+   ⚠️ ELLE NE DIT JAMAIS UN DETAIL TECHNIQUE. « objective not saved » se
+   comprend ; « PGRST204 » ne se comprend pas, et un message qu'on ne
+   comprend pas fait peur sans aider. Le detail va dans la console. */
+let ditT=null;
+function dis(mot){
+  const e=$('dit'); if(!e)return;
+  clearTimeout(ditT);
+  if(!mot){ e.classList.remove('on'); return; }
+  e.textContent=mot; e.classList.add('on');
+  ditT=setTimeout(()=>e.classList.remove('on'),3000);
+}
+
 /* ══ LES TROIS VUES ══════════════════════════════════════════════════ */
 /* Combien de boîtes dans la vue en cours : c'est ce qui dit à la
    dernière ligne que sa flèche ↓ n'a nulle part où aller. */
@@ -3830,12 +4168,11 @@ function vueObjectif(t,k){
   const hs=habsOfTrip(t), late=t.days_left!=null&&t.days_left<0;
   /* PLUS DE COMPTEUR. « 3 habits » ne raconte rien — HOW suivi des trois
      habitudes raconte tout. La deadline reste : elle, elle périme. */
-  const vs=visionsOfTrip(t), l=intIds(t);
+  const vs=visionsOfTrip(t);
   const unit = ouverte
     ? '<input class="in date" type="date" data-date="'+esc(String(t.id))+'" value="'+esc(dateIn(t.target_at))+'">'
       +(t.target_at?'<button type="button" class="v-b" data-nodate="'+esc(String(t.id))+'">no deadline</button>':'')
-      +intBouton(t,'t')
-    : '<span class="v-frq'+(late?' late':'')+'">'+esc(fmtDue(t.days_left))+'</span>'+intMots(t);
+    : '<span class="v-frq'+(late?' late':'')+'">'+esc(fmtDue(t.days_left))+'</span>';
   /* HOW descend vers les habitudes, TOWARDS monte vers la vision : un
      objectif est le milieu d'une phrase, pas une liste. */
   const minis = groupe('how', ouverte
@@ -3846,9 +4183,7 @@ function vueObjectif(t,k){
     ? vs.map(v=>miniDel('v',v.t,'data-unlink="ov:'+esc(String(t.id))+'|'+esc(String(v.id))+'"')).join('')
       + plus('lien','ov',t.id,'vision')
     : vs.map(v=>mini('v',v.t)).join(''));
-  let haut='';
-  if(ouverte&&pkOn('int','t',t.id)) haut=intPicker(t,'t');
-  let bas='';
+  let haut='', bas='';
   if(ouverte&&pkOn('lien','h',t.id))
     bas=lienPicker('h',t.id, hs.map(x=>String(x.id)),
         (state.habits||[]).map(x=>({id:x.id,txt:x.t})), 'a new habit','h');
@@ -3856,7 +4191,7 @@ function vueObjectif(t,k){
     bas=lienPicker('ov',t.id, vs.map(v=>String(v.id)),
         VIS.map(v=>({id:v.id,txt:v.t})), 'a new vision','v');
   return ligne(boiteHTML({kind:'t',id:t.id,titre:t.text,unit,minis,ouverte,haut,bas,tue:'Delete objective'}),
-    ouverte?'open':'', intCols(t), k+1, t.id, k===0, k===NB-1);
+    ouverte?'open':'', colsHeritees(hs), k+1, t.id, k===0, k===NB-1);
 }
 
 /* ── UNE RÉPULSION ───────────────────────────────────────────────────
@@ -3877,7 +4212,7 @@ function vueRepulsion(r,k){
      L'invitation, elle, ne vit plus ici : elle a rejoint le bas de la
      boîte, sous CLOSE, là où l'on choisit. */
   const ws=teachOfRep(r);
-  const unit = ouverte ? intBouton(r,'r') : intMots(r);
+  const unit = '';
   const mot = 'instead';
   const minis = groupe(mot, ouverte
     ? hs.map(x=>miniDel('h',x.t,'data-unlink="hr:'+esc(String(r.id))+'|'+esc(String(x.id))+'"')).join('')
@@ -3894,9 +4229,7 @@ function vueRepulsion(r,k){
      — alors qu'elle parle des HABITUDES qu'on va choisir. Sous le
      lookup ouvert, juste au-dessus de la liste, elle dit ce que le
      doigt s'apprête à faire. */
-  let haut='';
-  if(ouverte&&pkOn('int','r',r.id)) haut=intPicker(r,'r');
-  let bas='';
+  let haut='', bas='';
   if(ouverte&&pkOn('lien','hr',r.id))
     bas='<span class="pk-say">write a new one or pick an existing one</span>'
       + lienPicker('hr',r.id, hs.map(x=>String(x.id)),
@@ -3905,13 +4238,14 @@ function vueRepulsion(r,k){
     bas=lienPicker('rw',r.id, ws.map(w=>String(w.id)),
         TEACH.map(w=>({id:w.id,txt:w.t})), 'a new teaching','w');
   return ligne(boiteHTML({kind:'r',id:r.id,titre:r.text,unit,minis,ouverte,haut,bas,tue:'Delete repulsion'}),
-    ouverte?'open':'', intCols(r), k+1, r.id, k===0, k===NB-1);
+    ouverte?'open':'', colsHeritees(hs), k+1, r.id, k===0, k===NB-1);
 }
 
-/* ── LES DEUX RÉGLAGES D'INTENTION, PARTAGÉS ─────────────────────────
+/* ── LES DEUX RÉGLAGES D'INTENTION ───────────────────────────────────
    Le bouton quand la boîte est ouverte, les mots quand elle est fermée.
-   Quatre boîtes s'en servent : les écrire quatre fois, c'est se garantir
-   que la cinquième sera différente. */
+   ⚠️ SEULE L'HABITUDE S'EN SERT DEPUIS LE 17/09. Les quatre autres
+   objets HÉRITENT (voir `colsHeritees`). Le paramètre `kind` reste pour
+   que la signature ne mente pas, mais il vaut toujours 'h'. */
 function intBouton(x,kind){ const l=intIds(x);
   return '<button type="button" class="v-b'+(l.length?'':' vit')+'" data-pk="int:'+kind+':'+esc(String(x.id))+'">'
     +(l.length?l.map(i=>'<b style="color:'+intColor(i)+'">'+esc(intName(i))+'</b>').join(' · ')
@@ -3926,19 +4260,21 @@ function intMots(x){ const l=intIds(x);
 function vueTeaching(w,k){
   const ouverte = !!open && open.kind==='w' && String(open.id)===String(w.id);
   const rs=repsOfTeach(w);
-  const unit = ouverte ? intBouton(w,'w') : intMots(w);
+  const unit = '';
   const minis = groupe('learned from', ouverte
     ? rs.map(r=>miniDel('r',r.text,'data-unlink="wr:'+esc(String(w.id))+'|'+esc(String(r.id))+'"')).join('')
       + plus('lien','wr',w.id,'repulsion')
     : rs.map(r=>mini('r',r.text)).join(''));
-  let haut='';
-  if(ouverte&&pkOn('int','w',w.id)) haut=intPicker(w,'w');
-  let bas='';
+  let haut='', bas='';
   if(ouverte&&pkOn('lien','wr',w.id))
     bas=lienPicker('wr',w.id, rs.map(r=>String(r.id)),
         REPS.map(r=>({id:r.id,txt:r.text})), 'a new repulsion','r');
+  /* Une leçon hérite par ses répulsions, qui héritent de leurs
+     habitudes : deux sauts, et le trait reste vrai. */
   return ligne(boiteHTML({kind:'w',id:w.id,titre:w.t,unit,minis,ouverte,haut,bas,tue:'Delete teaching'}),
-    ouverte?'open':'', intCols(w), k+1, w.id, k===0, k===NB-1);
+    ouverte?'open':'',
+    colsHeritees(rs.reduce((a,r)=>a.concat(habsOfRep(r)),[])),
+    k+1, w.id, k===0, k===NB-1);
 }
 
 /* ── UNE VISION (MY VISION · le futur) ───────────────────────────────
@@ -3947,19 +4283,19 @@ function vueTeaching(w,k){
 function vueVision(v,k){
   const ouverte = !!open && open.kind==='v' && String(open.id)===String(v.id);
   const ts=tripsOfVision(v);
-  const unit = ouverte ? intBouton(v,'v') : intMots(v);
+  const unit = '';
   const minis = groupe('reached by', ouverte
     ? ts.map(t=>miniDel('o',t.text,'data-unlink="vo:'+esc(String(v.id))+'|'+esc(String(t.id))+'"')).join('')
       + plus('lien','vo',v.id,'objective')
     : ts.map(t=>mini('o',t.text)).join(''));
-  let haut='';
-  if(ouverte&&pkOn('int','v',v.id)) haut=intPicker(v,'v');
-  let bas='';
+  let haut='', bas='';
   if(ouverte&&pkOn('lien','vo',v.id))
     bas=lienPicker('vo',v.id, ts.map(t=>String(t.id)),
         TRIPS.map(t=>({id:t.id,txt:t.text})), 'a new objective','o');
   return ligne(boiteHTML({kind:'v',id:v.id,titre:v.t,unit,minis,ouverte,haut,bas,tue:'Delete vision'}),
-    ouverte?'open':'', intCols(v), k+1, v.id, k===0, k===NB-1);
+    ouverte?'open':'',
+    colsHeritees(ts.reduce((a,t)=>a.concat(habsOfTrip(t)),[])),
+    k+1, v.id, k===0, k===NB-1);
 }
 
 /* ══ LA COULEUR INTENTIONNELLE NE S'ÉTEINT PLUS · 09/09/2026 ═════════
@@ -4001,43 +4337,98 @@ function fermer(){
 }
 
 /* ══ CRÉER — un bouton par vue, la pièce de CETTE vue ═════════════════ */
+/* ══ CRÉER · 17/09/2026 ══════════════════════════════════════════════
+   DEUX CHANGEMENTS, ET LES DEUX VIENNENT DE CE QUE WAH A SENTI.
+
+   1. ⚠️ LA BOÎTE NAÎT EN BAS, SOUS LE DOIGT. Elle naissait en tête de
+      liste (`unshift`) : on appuie sur [+ Add a Vision], qui est en bas,
+      et la boîte s'ouvre tout en haut — l'écran saute, on perd où on en
+      était, et sur une liste de vingt on ne voit même pas qu'il s'est
+      passé quelque chose. Elle naît maintenant À LA FIN, exactement là
+      où le doigt vient d'appuyer.
+
+   2. ⚠️ PLUS D'ATTENTE. On appelait le serveur et on n'ouvrait la boîte
+      qu'à sa réponse : 300 à 600 ms de rien sur un vrai réseau — le
+      « il y a de la latence » signalé sur [Add a Vision]. Tout le reste
+      du fichier est OPTIMISTE (on pose, on dessine, on envoie) ; la
+      création était la seule exception, sans raison.
+      La boîte s'ouvre donc TOUT DE SUITE avec un identifiant provisoire
+      (`tmp:…`), et l'identifiant réel le remplace quand le serveur
+      répond. Si le serveur refuse, la ligne provisoire disparaît et on
+      le DIT — une boîte fantôme qu'on croit enregistrée est le pire des
+      états.
+
+   ⚠️ CE QUI REND LE PROVISOIRE SÛR : tant que l'identifiant commence par
+   `tmp:`, aucune écriture réseau ne part pour cet objet (`estProvisoire`
+   garde `differe`, `attache` et `tue`). Sans ce verrou on enverrait un
+   `vision_rename` sur un identifiant qui n'existe pas encore. */
+let TSEQ=0;
+const estProvisoire = id => String(id).startsWith('tmp:');
+
+/* Le serveur a répondu : on remplace l'identifiant provisoire PARTOUT —
+   dans la liste, dans la boîte ouverte, et dans le choix en cours. */
+function baptise(liste, tmp, vrai){
+  const o = liste.find(z=>String(z.id)===tmp); if(!o)return null;
+  o.id = String(vrai);
+  if(open && String(open.id)===tmp) open.id = String(vrai);
+  if(pk   && String(pk.id)===tmp)   pk.id   = String(vrai);
+  return o;
+}
+/* Le serveur a refusé : la ligne provisoire n'a jamais existé. */
+function annule(liste, tmp, mot){
+  const i = liste.findIndex(z=>String(z.id)===tmp);
+  if(i>=0) liste.splice(i,1);
+  if(open && String(open.id)===tmp){ open=null; pk=null; }
+  dis(mot);
+  renderZone();
+}
+
 async function creer(kind){
+  /* ⚠️ TROISIÈME VERROU. `save()` et `cloudSave()` bloquent déjà l'écriture
+     locale et nuage, mais `creer` parle DIRECTEMENT au serveur : sans
+     cette ligne, on aurait créé un objectif chez soi en regardant le
+     Totehm d'un autre. La boîte [+ Add] est masquée en CSS — masquer
+     n'est pas interdire. */
+  if(RO)return;
   if(kind==='h'){
     const x={id:'h'+(++HSEQ), t:'', t0:'', f:null, i:null, is:[], o:null};
-    state.habits.unshift(x); state.ord=true; save(); ouvrir('h',x.id); return;}
+    state.habits.push(x); state.ord=true; save(); ouvrir('h',x.id); return;}
   if(!me){$('member-window').classList.add('show');
           if(typeof memberPaint==='function')memberPaint();return;}
+
+  const tmp = 'tmp:'+(++TSEQ);
+
   if(kind==='t'){
+    TRIPS.push({id:tmp,text:'',target_at:null,days_left:null,habits:[],is:[],vs:[]});
+    wDirty=true; ouvrir('t',tmp);
     const {data,error}=await sb.rpc('objective_create',{p_text:'',p_target:null});
-    if(error){console.error('[totehm] trip_create:',error.message);return;}
-    TRIPS.unshift({id:data,text:'',target_at:null,days_left:null,habits:[]});
-    wDirty=true; ouvrir('t',data); return;}
-  /* ══ POURQUOI LE BROUILLON DE RÉPULSION A DISPARU · 16/09/2026 ══════
-     ⚠️ C'EST LA CAUSE DE « ON NE PEUT PAS AJOUTER DE RÉPULSIONS ».
-     On créait une ligne fantôme (`id:'new'`) et on ouvrait le lookup
-     AVANT le texte, en comptant sur `repulsion_set` pour la faire
-     exister au premier lien. Or `repulsion_set` LÈVE sur un texte
-     vide — et à cet instant le texte est toujours vide. L'erreur
-     partait dans la console, la boîte restait à l'écran, et rien
-     n'existait en base. Un cul-de-sac silencieux.
-     Une répulsion se crée maintenant comme les quatre autres objets :
-     une ligne vide en base, puis on écrit dedans. `repulsion_create`
-     n'exige rien et ne retire rien — voir la migration du 16/09. */
+    if(error||!data){console.error('[totehm] objective_create:',error&&error.message);
+      return annule(TRIPS,tmp,'objective not saved — try again');}
+    baptise(TRIPS,tmp,data); renderZone(); return;}
+
   if(kind==='r'){
+    REPS.push({id:tmp,text:'',obstacle:'',hs:[],ws:[],is:[]});
+    wDirty=true; ouvrir('r',tmp);
     const {data,error}=await sb.rpc('repulsion_create',{p_text:''});
-    if(error){console.error('[totehm] repulsion_create:',error.message);return;}
-    REPS.unshift({id:String(data),text:'',obstacle:'',hs:[],ws:[],is:[]});
-    wDirty=true; ouvrir('r',String(data)); return;}
+    if(error||!data){console.error('[totehm] repulsion_create:',error&&error.message);
+      return annule(REPS,tmp,'repulsion not saved — try again');}
+    baptise(REPS,tmp,data); renderZone(); return;}
+
   if(kind==='w'){
+    TEACH.push({id:tmp,t:'',t0:'',is:[],os:[]});
+    wDirty=true; ouvrir('w',tmp);
     const {data,error}=await sb.rpc('teaching_create',{p_text:''});
-    if(error){console.error('[totehm] teaching_create:',error.message);return;}
-    TEACH.unshift({id:String(data),t:'',t0:'',is:[],os:[]});
-    wDirty=true; ouvrir('w',String(data)); return;}
+    if(error||!data){console.error('[totehm] teaching_create:',error&&error.message);
+      return annule(TEACH,tmp,'teaching not saved — try again');}
+    baptise(TEACH,tmp,data); renderZone(); return;}
+
   if(kind==='v'){
+    VIS.push({id:tmp,t:'',t0:'',is:[],os:[]});
+    wDirty=true; ouvrir('v',tmp);
     const {data,error}=await sb.rpc('vision_create',{p_text:''});
-    if(error){console.error('[totehm] vision_create:',error.message);return;}
-    VIS.unshift({id:String(data),t:'',t0:'',is:[],os:[]});
-    wDirty=true; ouvrir('v',String(data)); return;}
+    if(error||!data){console.error('[totehm] vision_create:',error&&error.message);
+      return annule(VIS,tmp,'vision not saved — try again');}
+    baptise(VIS,tmp,data); renderZone(); return;}
 }
 
 /* ══ ATTACHER, DÉTACHER ══════════════════════════════════════════════
@@ -4049,6 +4440,12 @@ async function creer(kind){
    Poser un lien avec le texte affiché pendant qu'un renommage dort dans
    une minuterie créait un lien vers une habitude qui n'existe pas. */
 function attache(quoi,srcId,cibleId){
+  if(RO)return;                      /* même raison que dans `creer` */
+  /* ⚠️ ON NE LIE PAS CE QUI N'EXISTE PAS ENCORE. Une seconde après la
+     création, l'objet a son vrai identifiant ; d'ici là, un lien partirait
+     vers `tmp:3` et le serveur répondrait « not yours ». */
+  if(estProvisoire(srcId)||estProvisoire(cibleId)){
+    dis('one second — still saving'); return; }
   if(quoi==='o'){ const x=habOf(srcId), t=tripOf(cibleId), k=srv(x); if(!x||!k||!t)return;
     OBJ[k]=(OBJ[k]||[]).concat([String(t.id)]); posePremier(x);
     apres(sb.rpc('objective_link',{p_obj:t.id,p_habit:k})); }
@@ -4084,6 +4481,7 @@ function attache(quoi,srcId,cibleId){
   wDirty=true;
 }
 function detache(quoi,aId,bId){
+  if(RO)return;                      /* même raison que dans `creer` */
   if(quoi==='o'){ const x=habOf(aId), k=srv(x); if(!x||!k)return;
     OBJ[k]=(OBJ[k]||[]).filter(o=>o!==String(bId)); posePremier(x);
     apres(sb.rpc('objective_unlink',{p_obj:bId,p_habit:k})); }
@@ -4183,11 +4581,12 @@ function cable(box){
     if(d.pk){ e.stopPropagation(); const p=d.pk.split(':'); pkSet(p[0],p[1],p[2]); return; }
 
     e.stopPropagation();
-    /* `data-int` porte maintenant le GENRE : sans lui on ne saurait pas
-       dans quelle table écrire, et on écrirait dans `steps`. */
+    /* `data-int` vaut « h|<id>|<intention> ». Le genre est toujours 'h'
+       depuis le 17/09 ; il reste dans la chaîne pour que le sélecteur et
+       le dispatch se lisent pareil. */
     if(d.int){ const p=d.int.split('|');
-      const kind=p.length>2?p[0]:'h', oid=p.length>2?p[1]:p[0], iid=p[p.length-1];
-      const x=objetDe(kind,oid); if(x)intToggle(x,iid,kind); renderZone(); return; }
+      const x=habOf(p.length>2?p[1]:p[0]); if(x)intToggle(x,p[p.length-1]);
+      renderZone(); return; }
     if(d.fq){ const p=d.fq.split('|'); const x=habOf(p[0]);
       if(x){x.f=p[1];save();} pk=null; renderZone(); return; }
     if(d.lien){ const p=d.lien.split('|'), q=p[0].split(':');
@@ -4232,19 +4631,27 @@ function cable(box){
             if(OBJ[ancien]){OBJ[x.t]=OBJ[ancien]; delete OBJ[ancien];}
             apres(sb.rpc('habit_rename_links',{p_old:ancien,p_new:x.t}));}
           x.t0=x.t; }); }
+      /* ⚠️ RIEN NE PART TANT QUE L'OBJET EST PROVISOIRE. Le texte
+         s'écrit en mémoire ; la minuterie est posée sur l'identifiant
+         COURANT, qui sera le vrai quand elle se déclenchera (`baptise`
+         l'a remplacé entre-temps). Envoyer un `rename` sur un `tmp:`
+         ferait une erreur serveur et perdrait la frappe. */
       else if(p[0]==='t'){ const z=tripOf(p[1]); if(!z)return; z.text=v; wDirty=true;
-        differe('t:'+z.id,()=>apres(sb.rpc('objective_rename',{p_obj:z.id,p_text:z.text}))); }
+        differe('t:'+z.id,()=>{ if(estProvisoire(z.id))return;
+          apres(sb.rpc('objective_rename',{p_obj:z.id,p_text:z.text})); }); }
       else if(p[0]==='r'){ const r=repOf(p[1]); if(!r)return; r.text=v; wDirty=true;
         /* ⚠️ `repulsion_rename`, PAS `repulsion_set`. `repulsion_set`
            RETIRE l'ancienne répulsion du même obstacle avant d'insérer :
            utilisée à chaque frappe, elle empilait une ligne morte par
            lettre tapée. */
-        differe('r:'+r.id,()=>apres(sb.rpc('repulsion_rename',
-          {p_id:Number(r.id), p_text:r.text}))); }
+        differe('r:'+r.id,()=>{ if(estProvisoire(r.id))return;
+          apres(sb.rpc('repulsion_rename',{p_id:Number(r.id), p_text:r.text})); }); }
       else if(p[0]==='w'){ const w=teachOf(p[1]); if(!w)return; w.t=v; wDirty=true;
-        differe('w:'+w.id,()=>apres(sb.rpc('teaching_rename',{p_id:w.id,p_text:w.t}))); }
+        differe('w:'+w.id,()=>{ if(estProvisoire(w.id))return;
+          apres(sb.rpc('teaching_rename',{p_id:w.id,p_text:w.t})); }); }
       else { const z=visOf(p[1]); if(!z)return; z.t=v; wDirty=true;
-        differe('v:'+z.id,()=>apres(sb.rpc('vision_rename',{p_id:z.id,p_text:z.t}))); }
+        differe('v:'+z.id,()=>{ if(estProvisoire(z.id))return;
+          apres(sb.rpc('vision_rename',{p_id:z.id,p_text:z.t})); }); }
       return;
     }
     /* Le rythme écrit dans sa langue : on devine à la frappe, sans réseau. */
@@ -4276,6 +4683,7 @@ function cable(box){
 
 /* SUPPRIMER — ici, et nulle part ailleurs. */
 function tue(kind,id){
+  if(RO)return;                      /* même raison que dans `creer` */
   if(kind==='h'){ const x=habOf(id); if(!x)return;
     /* ⚠️ ON DÉTRUIT AVEC LE TEXTE DU SERVEUR. Avec le texte affiché, une
        habitude renommée puis supprimée laissait ses liens en base — et
@@ -4295,21 +4703,21 @@ function tue(kind,id){
     TRIPS=TRIPS.filter(t=>String(t.id)!==String(id));
     (state.habits||[]).forEach(x=>{ const k=srv(x); if(k&&OBJ[k]){
       OBJ[k]=OBJ[k].filter(o=>o!==String(id)); posePremier(x);} });
-    apres(sb.rpc('objective_close',{p_obj:id,p_outcome:'dropped'})); }
+    if(!estProvisoire(id))apres(sb.rpc('objective_close',{p_obj:id,p_outcome:'dropped'})); }
   else if(kind==='r'){ pousse('r:'+id); wSlots.delete('r:'+id);
     REPS=REPS.filter(z=>String(z.id)!==String(id));
-    apres(sb.rpc('repulsion_retire',{p_id:Number(id)})); }
+    if(!estProvisoire(id))apres(sb.rpc('repulsion_retire',{p_id:Number(id)})); }
   else if(kind==='w'){ pousse('w:'+id); wSlots.delete('w:'+id);
     TEACH=TEACH.filter(z=>String(z.id)!==String(id));
     /* Une leçon supprimée ne doit pas rester accrochée aux répulsions
        qu'elle éclairait : la table de liens tombe avec la ligne côté
        serveur, on fait la même chose en mémoire. */
     REPS.forEach(r=>{r.ws=(r.ws||[]).filter(z=>z!==String(id));});
-    apres(sb.rpc('teaching_delete',{p_id:String(id)})); }
+    if(!estProvisoire(id))apres(sb.rpc('teaching_delete',{p_id:String(id)})); }
   else if(kind==='v'){ pousse('v:'+id); wSlots.delete('v:'+id);
     VIS=VIS.filter(z=>String(z.id)!==String(id));
     TRIPS.forEach(t=>{t.vs=(t.vs||[]).filter(z=>z!==String(id));});
-    apres(sb.rpc('vision_delete',{p_id:String(id)})); }
+    if(!estProvisoire(id))apres(sb.rpc('vision_delete',{p_id:String(id)})); }
   wDirty=true; fermer();
 }
 
@@ -4479,8 +4887,6 @@ function place(id,cible){
 /* Trois entrées, un seul état : les carrés, le balayage, les flèches.
    Aucune ne charge quoi que ce soit — c'est la même page, la même session,
    la même mémoire. */
-document.querySelectorAll('#views .vt-c').forEach(b=>
-  b.addEventListener('click',()=>setView(b.dataset.v)));
 addEventListener('keydown',e=>{
   if(e.key==='Escape'&&open){e.preventDefault();fermer();}});
 
@@ -4517,8 +4923,20 @@ if(location.hash === '#settings'){
    VUES. On ne quitte donc plus la page, on ne recharge pas la session,
    et la croix garde sa place. La porte du Club, elle, mène bien ailleurs
    — même origine, donc même session. */
-$('door-book').onclick=requireMember(()=>{ showBook(true); });
-$('door-next').onclick=requireMember(()=>{ showNext(true); });
+/* ══ LES DEUX PORTES SORTENT DU DOMAINE · 17/09/2026 ═════════════════
+   ⚠️ [Get Higher] PASSE PAR LE PONT. `totehm.space` est une autre
+   origine, donc un autre `localStorage`, donc une autre session : sans
+   le pont, le membre arrive déconnecté sur ce qu'il a déjà payé.
+   `ssoVersDomaine` frappe un code de passage, redirige avec, et part
+   quand même si le pont tousse — dégradé, pas cassé.
+
+   [My Higher Self] mène au bot Telegram. Pas de pont : Telegram a son
+   propre compte, et c'est le code de liaison (`new_bot_link_code`) qui
+   fait le lien, pas une session web. */
+$('door-book').onclick=requireMember(()=>{
+  ssoVersDomaine(sb,'space','https://www.totehm.space/get_higher'); });
+$('door-next').onclick=requireMember(()=>{
+  window.open('https://t.me/TotehmBot','_blank','noopener'); });
 $('door-club').onclick=requireMember(()=>{ location.href='/club'; });
 /* La croix : le Totehm se replie et l'atterrissage revient. */
 $('fold-x').onclick=()=>foldToGate();
@@ -4555,10 +4973,47 @@ function scrollEdges(){
   const sc=$('fv-inner');
   return {top:sc.scrollTop<=1, bottom:sc.scrollTop+sc.clientHeight>=sc.scrollHeight-1};
 }
+/* ══ ARRIVER AU BOUT NE FAIT RIEN · 17/09/2026 ══════════════════════
+   ⚠️ C'EST LA CORRECTION DE « je change de vue à mon insu ».
+
+   Descendre au bout de la liste, c'est ce qu'on fait pour atteindre
+   [+ Add a …]. Le geste normal et le geste de navigation étaient donc le
+   MÊME GESTE, à l'élan près. Monter le seuil n'y change rien : on se
+   trompe juste un peu plus fort.
+
+   Ce compteur note QUAND la liste a touché son bord. Tout ce qui arrive
+   dans les 420 ms suivantes appartient au geste qui nous a amenés là :
+   ça défile, ça ne navigue pas. Il faut s'arrêter, puis repartir.
+   Deux gestes au lieu d'un geste plus long. */
+const REPOS=420;
+let bordDepuis=0, bordQuel='';
+(function(){
+  const sc=$('fv-inner'); if(!sc)return;
+  sc.addEventListener('scroll',()=>{
+    const b=scrollEdges();
+    const q = b.bottom?'b' : b.top?'h' : '';
+    if(q!==bordQuel){ bordQuel=q; bordDepuis = q?Date.now():0; }
+  },{passive:true});
+})();
+/* Vrai seulement si la liste est au bord DEPUIS assez longtemps pour que
+   l'élan qui l'y a menée soit retombé. Une liste qui tient dans l'écran
+   n'a pas d'élan : elle est au repos par construction. */
+function bordCalme(sens){
+  const b=scrollEdges();
+  if(!(sens==='b'?b.bottom:b.top))return false;
+  const sc=$('fv-inner');
+  if(sc.scrollHeight<=sc.clientHeight+2)return true;
+  return bordDepuis>0 && (Date.now()-bordDepuis)>REPOS;
+}
 /* Molette désactivée pour la navigation : évite les débats inversion naturelle/classique.
    La nav se fait par : (1) tap sur le wordmark / #sn-home  (2) swipe. */
-let y0=0,axis=null,t0el=null,x0=0;
-window.addEventListener('touchstart',(e)=>{x0=e.changedTouches[0].screenX;y0=e.changedTouches[0].screenY;axis=null;t0el=e.target;},{passive:true});
+let y0=0,axis=null,t0el=null,x0=0,bordAuDepart={h:false,b:false};
+/* ⚠️ ON NOTE SI LE DOIGT A COMMENCÉ AU BORD. Un doigt qui part du milieu
+   de la liste et finit au bord est en train de DÉFILER ; il ne navigue
+   pas, même s'il termine sa course en butée. */
+window.addEventListener('touchstart',(e)=>{x0=e.changedTouches[0].screenX;y0=e.changedTouches[0].screenY;
+  axis=null;t0el=e.target;
+  bordAuDepart = {h:bordCalme('h'), b:bordCalme('b')};},{passive:true});
 window.addEventListener('touchmove',(e)=>{if(axis)return;const dx=e.changedTouches[0].screenX-x0,dy=e.changedTouches[0].screenY-y0;if(Math.abs(dx)>8||Math.abs(dy)>8)axis=Math.abs(dx)>Math.abs(dy)?'h':'v';},{passive:true});
 window.addEventListener('touchend',(e)=>{
   if(fpOpen())return;
@@ -4607,10 +5062,12 @@ window.addEventListener('touchend',(e)=>{
      arrivé en bas, continuer vers le bas descend sur les répulsions ;
      en haut, tirer vers le bas remonte sur les objectifs. C'est le
      geste d'un OS — on tombe dans l'écran suivant, on ne le vise pas. */
-  if(Math.abs(dy)<TH+18)return;
-  const bord=scrollEdges();
-  if(dy<0&&bord.bottom)versVoisin('b');
-  else if(dy>0&&bord.top)versVoisin('h');
+  /* 110 px, et le doigt devait DÉJÀ être au bord quand il s'est posé.
+     Trois conditions au lieu d'une : la liste en butée, la butée
+     ancienne, et une traction franche. */
+  if(Math.abs(dy)<110)return;
+  if(dy<0 && bordAuDepart.b && bordCalme('b'))      versVoisin('b');
+  else if(dy>0 && bordAuDepart.h && bordCalme('h')) versVoisin('h');
 },{passive:true});
 /* ══ LE TRACKPAD FAIT CE QUE FAIT LE POUCE · 09/09/2026 ══════════════
    La molette VERTICALE ne pilote toujours rien — c'est la règle qui a
@@ -4624,7 +5081,7 @@ window.addEventListener('touchend',(e)=>{
    coup. Le compteur se vide après 220 ms d'immobilité : deux gestes
    séparés ne s'additionnent pas. */
 (function(){
-  let acc=0, t=0, accV=0, tV=0, froid=0;
+  let acc=0, t=0, accV=0, tV=0, froid=0, neuf=false;
   /* ══ LE VERTICAL À LA MOLETTE, AU BORD SEULEMENT · 16/09/2026 ═══════
      Même règle qu'au doigt : tant que la liste peut défiler, la molette
      la fait défiler et rien d'autre. Au bord, et au bord seulement, elle
@@ -4637,21 +5094,44 @@ window.addEventListener('touchend',(e)=>{
     if(Math.abs(e.deltaY) > Math.abs(e.deltaX)*1.6){
       if(navBlocked())return;
       if(Date.now()<froid){accV=0;return;}
-      const bord=scrollEdges();
       const versLeBas=e.deltaY>0;
-      if(!(versLeBas?bord.bottom:bord.top)){accV=0;return;}
-      const nowV=Date.now(); if(nowV-tV>260)accV=0; tV=nowV;
+      /* ⚠️ `bordCalme` ET PAS `scrollEdges` : il faut que la liste soit
+         en butée depuis un instant, pas seulement à l'instant même. */
+      /* ⚠️ L'HORLOGE SE MET À JOUR À CHAQUE ÉVÉNEMENT, AVANT TOUT TEST.
+         Je ne la touchais qu'APRÈS le contrôle du bord : tant qu'on
+         défilait au milieu, `tV` restait figé, et au moment où la liste
+         arrivait en butée l'écart calculé valait toute la durée du
+         défilement — donc « nouveau geste », donc navigation. C'était le
+         bug, dans le correctif du bug. Un compteur de silence qui ne
+         compte que quand on l'écoute ne mesure rien. */
+      const nowV=Date.now(); const ecart=nowV-tV; tV=nowV;
+      if(!bordCalme(versLeBas?'b':'h')){accV=0;neuf=false;return;}
+      /* ⚠️ ET SURTOUT : IL FAUT QUE LA MOLETTE SE SOIT ARRÊTÉE.
+         Un trackpad à inertie envoie des événements pendant une seconde
+         et demie après que le doigt a quitté la surface — bien au-delà
+         de n'importe quel délai de garde. Tant qu'on lit la SOMME, une
+         lancée un peu franche finit toujours par dépasser le seuil.
+         Ce qui distingue un geste d'un autre, ce n'est pas la force :
+         c'est le TROU. Des événements d'inertie arrivent toutes les 16
+         ms ; un trou de 200 ms veut dire que la main est repartie.
+         C'est la seule mesure qui sépare « je descends ma liste » de
+         « je veux la vue d'à côté ». */
+      if(ecart>200){ accV=0; neuf=true; }
+      if(!neuf)return;
       accV+=e.deltaY;
-      if(Math.abs(accV)<90)return;
+      /* 260 px accumulés : une traction délibérée, pas une fin de course. */
+      if(Math.abs(accV)<260)return;
       const cible=versLeBas?'b':'h';
-      accV=0; froid=Date.now()+700;
+      accV=0; neuf=false; froid=Date.now()+900;
       versVoisin(cible);
       return;
     }
     if(Math.abs(e.deltaX) < Math.abs(e.deltaY)*1.6) return;
     const now=Date.now(); if(now-t>220)acc=0; t=now;
     acc+=e.deltaX;
-    if(Math.abs(acc)<70)return;
+    /* 70 px partait sur un défilement un peu oblique. 130 : il faut
+       vouloir aller à côté. */
+    if(Math.abs(acc)<130)return;
     /* ⚠️ LE SENS ÉTAIT INVERSÉ · 15/09/2026. Sur un trackpad, un
        `deltaX` POSITIF veut dire « je pousse le contenu vers la
        gauche », donc « montre-moi ce qui est à DROITE ». J'avais lu le
@@ -4683,8 +5163,8 @@ function navBlocked(){
    il désigne une couche, et on y va directement. */
 const navLeft =()=>{ if(navBlocked())return; versVoisin('g'); };
 const navRight=()=>{ if(navBlocked())return; versVoisin('d'); };
-document.querySelectorAll('#views .vt-c').forEach(b=>{
-  b.onclick=()=>{ if(navBlocked())return; setView(b.dataset.v); };
+[['cur-g','g'],['cur-d','d'],['cur-h','h'],['cur-b','b']].forEach(([id,d])=>{
+  const b=$(id); if(b)b.onclick=()=>{ if(navBlocked())return; versVoisin(d); };
 });
 /* La peau de départ, posée explicitement : sans elle #stage n'a aucune
    classe v-* au chargement et --skin retombe sur le :root. Ça marche, mais
@@ -5200,7 +5680,17 @@ function memberPaint(){
   document.body.classList.toggle('member',!!(me&&myProfile));
   if(me&&myProfile){$('mw-who').textContent=myProfile.pseudo;$('mw-mail').textContent=me.email||'';}
 }
-$('conn-bar').onclick=()=>{$('member-window').classList.add('show');memberPaint();};
+/* ══ PAS D'ESPACE MEMBRE DANS LE TOTEHM DÉPLIÉ · 17/09/2026 ══════════
+   ⚠️ `#conn-bar` EST UN ÉTAT, PLUS UNE PORTE. Tout ce qui concerne le
+   compte — le nom, la visibilité, la recherche — vit sur l'atterrissage
+   depuis le 15/09. Ouvrir une fenêtre par-dessus le Totehm pour régler
+   ce qui se règle à l'écran d'avant, c'était deux endroits pour une
+   chose. Le point vert dit qu'on est connecté ; il ne fait rien de plus.
+   Sur l'atterrissage, en revanche, il reste la porte — c'est là que la
+   carte de visite vit. */
+$('conn-bar').onclick=()=>{
+  if(!document.body.classList.contains('gate'))return;
+  $('member-window').classList.add('show'); memberPaint(); };
 
 /* Le Dashboard se repeint à chaque ouverture : réglages (nom, visibilité,
    suppression) + abonnement (offre unique). */
@@ -5455,13 +5945,20 @@ window.addEventListener('pageshow',e=>{
      le module — c'est cette ligne qui repose la classe, et elle
      s'exécute APRÈS. Mesuré : le drapeau était retiré, puis remis deux
      lignes plus loin, et l'atterrissage reprenait l'écran. */
-  const dedans = location.hash === '#in';
+  /* ⚠️ UN TOTEHM QU'ON VIENT LIRE S'OUVRE DÉJÀ DÉPLIÉ · 17/09/2026.
+     On arrive ici depuis un résultat de recherche, pour REGARDER celui
+     de quelqu'un d'autre : il n'y a rien à déplier, et l'atterrissage
+     demandait « ouvre MON Totehm » par-dessus celui qu'on venait voir.
+     Mesuré : le gate gardait l'écran et interceptait tous les clics. */
+  const dedans = location.hash === '#in' || !!RO;
   /* ⚠️ IL FAUT LA RETIRER, PAS SEULEMENT NE PAS LA POSER. La classe est
      écrite dans le HTML (`<body class="gate">`) pour éviter le flash au
      chargement : ne pas la rajouter ici ne l'enlève pas. Mesuré —
      l'atterrissage gardait l'écran et interceptait tous les clics. */
   if(dedans){ body.classList.remove('gate');
-              history.replaceState(null,'',location.pathname);
+              /* ⚠️ ON GARDE `?ro=` : il désigne le Totehm qu'on lit. Le
+                 nettoyage ne vise que le `#in`, qui a fait son office. */
+              history.replaceState(null,'',location.pathname+(RO?location.search:''));
     /* ⚠️ ET LA CROIX DOIT POUVOIR REPLIER · 15/09/2026. `fold()` commence
        par `if(!open||moving) return;` — `open` est l'état LOCAL de ce
        module, et il n'était jamais posé quand on arrivait déjà déplié
