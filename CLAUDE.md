@@ -553,6 +553,99 @@ qu'un des trois avait bougé et pas les autres. Les deux autres en
 découlent maintenant : `+82` pour la bande de classement, `+100` pour la
 première boîte.
 
+### ⛔ LE JOYSTICK — LE TOTEHM COMME CONTRÔLEUR — 18/09/2026
+
+**Ce n'est pas un menu, c'est une maquette du Totehm.** C'est la
+différence avec les deux tentatives précédentes, et c'est ce qui la fait
+tenir.
+
+- **Le carré perforé EST le Totehm.** Sa couleur dit où l'on est sur
+  l'axe du TEMPS : rouge-violet (sagesse) · navy (le présent) · bleu
+  (vision). ⚠️ Elle ne change **qu'avec l'axe horizontal** — objectifs et
+  répulsions sont la même colonne que les habitudes, leur fond est le
+  même. Peindre le fond aussi, ce serait dire qu'on a changé d'époque.
+- **La pile de dalles dedans** dit où l'on est sur l'axe de la
+  PROFONDEUR : elle glisse pour amener au centre l'objectif (bleu, haut),
+  l'habitude (navy, milieu) ou la répulsion (rouge-violet, bas). La dalle
+  centrée est pleine, les deux autres reculent.
+- **Sur la sagesse et la vision, il n'y a qu'une dalle.** L'axe vertical
+  n'existe pas là-bas ; en montrer trois serait un mensonge.
+- **Quatre chevrons l'encadrent, sans un mot.** Le carré dit déjà ce
+  qu'il y a de chaque côté, par sa couleur et par la dalle allumée.
+
+**La marque se range à gauche** : le T au-dessus du wordmark, même
+colonne. Le wordmark quitte le bas — `--band-b` passe de 116 à 98 px et
+la liste y gagne.
+
+**Trois collisions mesurées le 18/09, et chacune a sa leçon :**
+
+1. ⚠️ **`#bigT svg` et `#wordmark svg` étaient DÉCLARÉS DEUX FOIS**,
+   séparés par vingt lignes. La seconde gagnait sans un mot, et mes
+   tailles n'avaient aucun effet. *Un sélecteur écrit deux fois n'est pas
+   une redondance, c'est un piège.*
+2. ⚠️ **Le joystick passait sous `#fold-x`** (la croix, `z-index:34`,
+   coin haut droit). Les curseurs étaient visibles et le clic partait
+   dans la croix. La croix est un repère fixe du produit : c'est au
+   nouveau venu de s'écarter — le joystick se pose à 58 px du bord.
+3. ⚠️ **En lecture, `#ro-bar` couvrait tout le haut** (`z-index:40`,
+   pleine largeur). Elle ne se déplace pas — elle dit qui on lit, c'est
+   sa place. C'est le reste qui recule de sa hauteur (`--ro-h`), et
+   `--band-t` en découle donc la liste suit toute seule.
+
+### ⛔ « HIGHER » NE S'ÉCRIT JAMAIS EN TEXTE — 18/09/2026
+
+Règle de marque, sans exception : **`Higher` est un slogan, donc un
+SVG** (`<use href="#higher-badge">`), partout où il paraît. Tapé au
+clavier il devient un mot ordinaire dans la fonte du système, et la
+marque s'éteint à l'endroit exact où elle devrait parler.
+
+Conséquence pour les tests : `textContent` d'une porte qui porte le
+slogan rend un trou — « My  Self ». **C'est la preuve que la règle est
+tenue**, pas un bug d'assertion.
+
+### ⛔ LA VISIBILITÉ EST LE COMMUTATEUR DE MONÉTISATION — 18/09/2026
+
+Le nom et la visibilité étaient passés sur l'atterrissage le 15/09, avec
+cette raison : « on les règle avant d'entrer, pas pendant ». **Elle ne
+tient plus.** Choisir « visible to my paying followers », ce n'est plus
+un réglage de confort — c'est ouvrir sa boutique. Ça se décide dans son
+compte, à côté de l'abonnement et des virements, pas sur un écran
+d'accueil entre deux boutons. Les deux blocs sont donc **retournés dans
+l'espace membre**. La RECHERCHE reste sur l'atterrissage : c'est la porte
+d'à côté, pas un réglage.
+
+⚠️ **Ce sont les mêmes nœuds, déplacés — pas des copies.** Deux champs
+« nom du Totehm » dans le même document finiraient par afficher deux
+valeurs différentes, et `paintNameButton()` n'en peindrait qu'un.
+
+L'espace créateur s'ouvre **avec** la visibilité payante, et il ANNONCE
+`/club/creator` sans refaire son travail : recopier les soldes et le prix
+ici, ce serait deux tableaux de bord à tenir d'accord — et le jour où ils
+divergeront, ça se verra sur un montant.
+
+### ⛔ QUAND RÉESSAYER NE SERT À RIEN, ON NE DIT PAS « RÉESSAIE » — 18/09/2026
+
+**« L'ouverture du Stripe ne marche pas. »** Les logs de la fonction
+donnaient la cause en trente secondes, dans les mots de Stripe :
+
+> *You must complete your platform profile to use Connect and create live
+> connected accounts.*
+
+Connect est activé ; le **questionnaire de profil plateforme** ne l'est
+pas. Aucune ligne de code n'y change quoi que ce soit — et tant qu'il
+n'est pas rempli, **aucun** créateur ne peut ouvrir de compte.
+
+La page disait « Stripe did not answer. Try again in a minute. » C'est un
+mensonge doublé d'une faute : la cause est chez NOUS, et inviter le
+créateur à recommencer le fait douter de lui. `creator-onboard` distingue
+maintenant ce cas (`platform_incomplete`, 503) et la page dit *« Payouts
+aren't open yet — this is on us, not on you. »*
+
+> **La règle : deux échecs qui n'ont rien à voir ne doivent pas dire la
+> même chose.** Un message d'erreur générique transforme un problème
+> connu en mystère — et c'est comme ça qu'un bouton reste mort trois
+> jours.
+
 ### ⛔ UN TITRE, QUATRE CURSEURS — 17/09/2026
 
 La croix à cinq carrés montrait **tout en permanence** : cinq couleurs,

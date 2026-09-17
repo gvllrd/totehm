@@ -65,12 +65,16 @@
      parce que `#views{top}` avait bougé et pas `--band-t`.
      Il n'y a plus qu'un chiffre par écran : `--croix-t`, le haut de la
      croix. Les deux autres en découlent. On ne peut plus en oublier un.
-       titre : --croix-t          hauteur mesurée 24 px
-       curseur du haut : +42      (il n'existe qu'au téléphone à cet
-                                   endroit ; sur ordinateur il est hors
-                                   du carré, mais un seul jeton suffit)
-       bande de classement : +72
-       première boîte : +78
+       le joystick : 24 px du haut, hauteur mesurée 104 px
+       bande de classement : --croix-t + 14
+       première boîte : --croix-t + 40   (soit 136 px : le joystick finit
+                                          à 128, la marque à 96)
+
+     ⚠️ `--croix-t` NE POSITIONNE PLUS RIEN : le joystick a son propre
+     placement (en haut à droite) et le T sa propre colonne (en haut à
+     gauche). Le jeton reste parce que `--band-t`, `#ordbar` et `#dit` en
+     découlent, et qu'un seul chiffre par écran vaut toujours mieux que
+     trois.
 
      ⚠️ MESURÉ LE 17/09 : avec +100, hérité de la croix à cinq carrés, la
      boîte [+ Add a …] tombait SOUS le pli sur ordinateur — 640 px de
@@ -78,8 +82,11 @@
      en haut suffisent à manger la dernière ligne. Or c'est la ligne sur
      laquelle on appuie pour créer. */
   --croix-t:96px;
-  --band-t:calc(var(--croix-t) + 78px);
-  --band-b:116px;  /* bande basse : TOTEHM.png + flèche menu */
+  --band-t:calc(var(--croix-t) + 40px);
+  --band-b:98px;   /* bande basse : les trois portes, et rien d'autre.
+                      Le TOTEHM est remonté à gauche le 18/09. Mesuré :
+                      les portes occupent 59 px à 30 px du bas, il faut
+                      donc 89 px au minimum — 98 laisse respirer. */
   --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%2336498c'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   /* Le carré perforé du logo (desktop) — même dessin que #gl-bg.
@@ -113,16 +120,36 @@ html,body{width:100%;height:100%;background:var(--paper);color:var(--g-light);fo
    l'invitation — et il ouvre le filtre au clic, desktop comme mobile.
    `t-slow` et non `t-pulse` : 4,2 s et un creux à .45, pas un clignotant.
    Un signal qui bat vite dit « urgence » ; celui-ci dit « je suis vivant ». */
-#bigT{position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;transition:opacity .4s;line-height:0;background:none;border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+/* ══ LA MARQUE SE RANGE À GAUCHE · 18/09/2026 ════════════════════════
+   Le T était au centre et le TOTEHM tout en bas : le haut ne portait
+   rien d'autre, et le bas portait deux choses. Les deux se rangent
+   maintenant l'un sur l'autre, à gauche, et la droite revient au
+   contrôleur. La bande basse y gagne : elle n'a plus que les portes. */
+#bigT{position:fixed;top:26px;left:max(16px,5vw);transform:none;z-index:30;user-select:none;transition:opacity .4s;line-height:0;background:none;border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 @keyframes t-slow{0%,100%{opacity:1}50%{opacity:.45}}
 body:not(.gate) #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
 @media(prefers-reduced-motion:reduce){body:not(.gate) #bigT svg{animation:none}}
-#bigT svg{height:53px;width:auto;display:block}
+/* ⚠️ UNE SEULE RÈGLE POUR LA TAILLE DU T. Il y en avait deux, séparées
+   par l'animation : la seconde gagnait sans un mot, et ma valeur de 40 px
+   n'avait aucun effet. Un sélecteur écrit deux fois n'est pas une
+   redondance, c'est un piège. */
+/* 34 px, et le wordmark 34 px plus bas : mesuré le 18/09, à 38 px la
+   hampe du T descendait DANS le « TOT » du wordmark. Deux marques de la
+   même identité empilées doivent se toucher sans se pénétrer. */
+#bigT svg{height:34px;width:auto;display:block}
 /* ⚠️ LE TOTEHM N'EST PLUS AU CENTRE · 09/09/2026 : il se range à gauche
    et laisse la droite aux deux portes. `left` fixe plutôt qu'un
    `translateX(-50%)` — le wordmark garde exactement la même taille et
    la même hauteur, il change seulement d'ancrage. */
-#wordmark{position:fixed;bottom:30px;left:max(18px,6vw);transform:none;z-index:30;user-select:none;transition:opacity .4s;line-height:0}
+/* Le wordmark passe SOUS le T, aligné sur la même colonne gauche. Il
+   reste le menu : on ne perd aucun geste. */
+#wordmark{position:fixed;top:68px;left:max(16px,5vw);bottom:auto;transform:none;z-index:30;user-select:none;transition:opacity .4s;line-height:0;cursor:pointer}
+/* ⚠️ LE JOYSTICK LAISSE LE COIN À LA CROIX. Mesuré le 18/09 : posé à
+   14 px du bord, il passait SOUS `#fold-x` (10 px du coin, 34 px de
+   côté) et le navigateur donnait le clic à la croix — le curseur droit
+   ne répondait plus du tout. La croix est un repère fixe du produit ;
+   c'est au nouveau venu de s'écarter. */
+#joy{top:24px;right:58px;left:auto}
 /* Les deux portes, à droite, à la même hauteur que le wordmark et dans
    la grammaire `.btn-sig` du reste du produit. */
 #bottom-doors{position:fixed;bottom:30px;right:max(18px,6vw);z-index:31;
@@ -139,7 +166,9 @@ body:not(.gate) #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
   color:#b0b0b0;transition:color .15s ease;-webkit-tap-highlight-color:transparent;
   white-space:nowrap}
 @media(hover:hover){.door:hover{color:#fff}}
-#wordmark svg{height:50px;width:auto;display:block}
+/* ⚠️ UNE SEULE RÈGLE ICI AUSSI. Même piège que le T : deux `#wordmark
+   svg` séparés par vingt lignes, et c'est le second qui gagnait. */
+#wordmark svg{height:34px;width:auto;display:block}
 /* ══ LE LOGO DIT OÙ L'ON EST · 06/09/2026 ════════════════════════════
    Le O du wordmark clignote sur les OBJECTIFS, le H sur les HABITUDES.
    C'est la lettre elle-même qui signale, pas une icône posée à côté : le
@@ -221,96 +250,120 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
    Les deux carrés du haut et du bas sont couchés (carré + mot côte à
    côte) : debout, ils auraient ajouté deux fois 22 px de hauteur à une
    bande qui n'en a pas. */
-/* ══ UN SEUL TITRE, QUATRE CURSEURS · 17/09/2026 ═════════════════════
-   La croix à cinq carrés montrait tout en permanence — cinq couleurs,
-   cinq noms, deux axes, au-dessus d'une liste. Un plan du produit posé
-   sur le produit.
-   Il ne reste que le TITRE DE LA VUE OÙ L'ON EST. Les quatre cursseurs
-   des quatre côtés disent où l'on peut aller. */
-#views{position:fixed;top:var(--croix-t);left:50%;transform:translateX(-50%);
-  z-index:33;display:flex;flex-direction:column;align-items:center;
-  /* La perspective vit sur le PARENT : c'est elle qui fait qu'une
-     rotation du titre se lit comme un volume et pas comme un
-     écrasement. 620 px — assez pour que la face tourne, pas assez pour
-     qu'elle parte en fuite. */
-  perspective:620px}
-#vnow{display:flex;flex-direction:column;align-items:center;gap:3px;
-  transform-style:preserve-3d;backface-visibility:hidden;
-  will-change:transform,opacity}
-#vnow b{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.24em;
-  text-transform:uppercase;color:#fff;font-weight:700;white-space:nowrap}
-#vnow i{font-family:'Space Mono',monospace;font-size:7px;letter-spacing:.2em;
-  text-transform:uppercase;color:rgba(255,255,255,.4);font-style:normal}
-/* ══ LA RÉPERCUSSION 3D ══════════════════════════════════════════════
-   Le titre pivote DANS LA DIRECTION DU VOYAGE : on est allé à droite, il
-   tourne sur son axe vertical ; on est descendu, sur son axe horizontal.
-   Le carré est un objet, on vient d'en tourner une face.
-   Deux temps : `.out` pousse l'ancienne face hors du champ, `.in` fait
-   revenir la nouvelle. Une seule classe ne suffirait pas — il faut un
-   avant et un après, et le texte change entre les deux. */
-@keyframes face-d{from{transform:rotateY(-62deg) translateX(26px);opacity:0}
-                  to{transform:none;opacity:1}}
-@keyframes face-g{from{transform:rotateY(62deg) translateX(-26px);opacity:0}
-                  to{transform:none;opacity:1}}
-@keyframes face-b{from{transform:rotateX(62deg) translateY(18px);opacity:0}
-                  to{transform:none;opacity:1}}
-@keyframes face-h{from{transform:rotateX(-62deg) translateY(-18px);opacity:0}
-                  to{transform:none;opacity:1}}
-#vnow.f-d{animation:face-d .42s cubic-bezier(.22,.9,.3,1)}
-#vnow.f-g{animation:face-g .42s cubic-bezier(.22,.9,.3,1)}
-#vnow.f-b{animation:face-b .42s cubic-bezier(.22,.9,.3,1)}
-#vnow.f-h{animation:face-h .42s cubic-bezier(.22,.9,.3,1)}
+/* ══ LE JOYSTICK — LE TOTEHM COMME CONTRÔLEUR · 18/09/2026 ══════════
+   Ce n'est pas un menu, c'est une MAQUETTE DU TOTEHM.
 
-/* ══ LES QUATRE CURSEURS ═════════════════════════════════════════════
-   Un par côté du Totehm. Chacun porte la COULEUR de la vue qu'il ouvre
-   et son nom. `position:fixed` dans `#stage` : sur ordinateur #stage
-   porte un transform, il est donc le bloc conteneur — les curseurs
-   restent collés au carré. Sur téléphone ils se posent sur l'écran.
-   Un seul code, deux résultats justes : c'est déjà comme ça que les
-   carrés vivaient.
-   ⚠️ AUCUNE BORDURE. Ce qui les détache, c'est la couleur du chevron et
-   l'écart, jamais un trait — règle de marque. */
-.cur{position:fixed;z-index:33;background:none;border:none;padding:6px;
-  cursor:pointer;-webkit-tap-highlight-color:transparent;
-  display:flex;align-items:center;gap:6px;
-  opacity:.5;transition:opacity .18s ease,transform .18s ease}
+   Le carré perforé EST le Totehm : sa couleur dit où l'on est sur l'axe
+   du TEMPS — rouge-violet (sagesse), navy (le présent), bleu (vision).
+   La pile de dalles à l'intérieur dit où l'on est sur l'axe de la
+   PROFONDEUR : elle glisse pour amener au centre l'objectif (bleu, en
+   haut), l'habitude (navy, au milieu) ou la répulsion (rouge-violet, en
+   bas).
+
+   Une seule pièce, les deux axes, et elle le dit en IMAGE. C'est ce qui
+   la distingue des cinq carrés d'hier : on ne lit pas un plan, on voit
+   un objet dans une position. */
+#joy{position:fixed;z-index:33;display:flex;flex-direction:column;
+  align-items:center;gap:3px}
+#joy-row{display:flex;flex-direction:row;align-items:center;gap:5px}
+
+/* Le carré perforé. `--joy-tile` change avec la vue : c'est le seul
+   endroit où la couleur du fond est décidée. */
+#joy-box{width:50px;height:50px;flex:0 0 auto;position:relative;
+  background:var(--joy-tile,var(--logo-navy)) 0 0/100% 100% no-repeat;
+  /* La perspective vit sur le PARENT de ce qui tourne : sans elle, la
+     pile s'écrase au lieu de se coucher. */
+  perspective:190px;overflow:hidden;
+  transition:background-image .42s ease}
+
+/* La pile. Elle est COUCHÉE (rotateX) puis glissée (translateY) : deux
+   transformations, une seule ligne, et l'ordre compte — coucher d'abord,
+   glisser ensuite, sinon le glissement part de travers. */
+#joy-stack{position:absolute;left:50%;top:50%;
+  width:34px;height:38px;margin:-19px 0 0 -17px;
+  transform-style:preserve-3d;
+  transform:rotateX(52deg) translateY(var(--joy-y,0px));
+  transition:transform .42s cubic-bezier(.22,.9,.3,1)}
+#joy-stack i{position:absolute;left:0;right:0;height:11px;display:block;
+  transition:opacity .42s ease}
+/* Trois dalles, dans l'ordre de l'axe : l'objectif tire vers le haut,
+   la répulsion vers le bas. */
+#joy-stack .o{top:0;background:var(--blue)}
+#joy-stack .h{top:13px;background:var(--navy);
+  /* Un filet clair sur la tranche : c'est ce qui fait qu'on lit une
+     DALLE et pas un rectangle. Une ombre serait une bordure déguisée ;
+     un filet de la même famille, non. */
+  box-shadow:0 1px 0 rgba(255,255,255,.22)}
+#joy-stack .r{top:26px;background:var(--rep)}
+/* La dalle centrée est pleine, les deux autres reculent. On voit où l'on
+   est sans un mot — c'est tout l'intérêt de la maquette. */
+#joy.v-objectives .h,#joy.v-objectives .r{opacity:.34}
+#joy.v-habits     .o,#joy.v-habits     .r{opacity:.34}
+#joy.v-repulsions .o,#joy.v-repulsions .h{opacity:.34}
+#joy.v-objectives{--joy-y:12px}
+#joy.v-habits    {--joy-y:0px}
+#joy.v-repulsions{--joy-y:-12px}
+/* ⚠️ SUR LA SAGESSE ET LA VISION, IL N'Y A QU'UNE COUCHE. L'axe vertical
+   n'existe pas là-bas : montrer trois dalles y serait un mensonge. On
+   n'en montre qu'une, à la couleur de la vue. */
+#joy.seule .o,#joy.seule .r{opacity:0}
+#joy.seule .h{opacity:1;top:13px}
+#joy.v-wisdom .h{background:var(--rep)}
+#joy.v-visions .h{background:var(--blue)}
+
+/* ══ LES QUATRE CURSEURS ENCADRENT LE CARRÉ ══════════════════════════
+   Plus de mot : le carré dit déjà, par sa couleur et par la dalle
+   allumée, ce qu'il y a de chaque côté. Un chevron, et c'est tout.
+   ⚠️ AUCUNE BORDURE — règle de marque. Ce qui les détache, c'est la
+   couleur du chevron : celle de la vue qu'il ouvre. */
+.cur{background:none;border:none;padding:3px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;display:block;line-height:0;
+  opacity:.55;transition:opacity .18s ease,transform .18s ease}
 .cur[hidden]{display:none!important}
 @media(hover:hover){.cur:hover{opacity:1}}
 .cur:active{opacity:1}
-.cur svg{width:14px;height:14px;flex:0 0 auto;display:block;
-  stroke:currentColor;fill:none;stroke-width:1.7;
+.cur svg{width:12px;height:12px;display:block;
+  stroke:currentColor;fill:none;stroke-width:1.9;
   stroke-linecap:round;stroke-linejoin:round}
-.cur span{font-family:'Space Mono',monospace;font-size:7px;letter-spacing:.18em;
-  text-transform:uppercase;color:rgba(255,255,255,.62);white-space:nowrap}
-/* La couleur du chevron EST la couleur de la vue qu'il ouvre : on voit
-   où l'on va avant d'y aller, comme les carrés le faisaient. */
 .cur.to-habits    {color:var(--sky)}
 .cur.to-objectives{color:var(--blue)}
 .cur.to-repulsions{color:var(--rep)}
 .cur.to-wisdom    {color:var(--rep)}
 .cur.to-visions   {color:var(--blue)}
-
-/* ══ LE PLACEMENT DE BASE — CELUI DU TÉLÉPHONE ══════════════════════
-   L'écran EST le carré : il n'y a pas de dehors. Les quatre curseurs se
-   rangent donc autour du TITRE. ⚠️ JAMAIS au milieu de la hauteur : ils
-   se posaient sur les boîtes, mesuré le 17/09.
-   Gauche et droite sont aux deux bords, À LA HAUTEUR DU TITRE — donc
-   sur les côtés du haut de l'écran, là où rien ne défile. */
-#cur-g,#cur-d{top:var(--croix-t);flex-direction:column;gap:3px;text-align:center}
-#cur-g{left:4px}
-#cur-d{right:4px}
-#cur-h,#cur-b{left:50%;transform:translateX(-50%)}
-#cur-h{top:calc(var(--croix-t) + 42px)}
-#cur-b{bottom:calc(var(--band-b) - 30px)}
 @media(hover:hover){
   #cur-g:hover{transform:translateX(-2px)}
   #cur-d:hover{transform:translateX(2px)}
-  #cur-h:hover{transform:translateX(-50%) translateY(-2px)}
-  #cur-b:hover{transform:translateX(-50%) translateY(2px)}}
+  #cur-h:hover{transform:translateY(-2px)}
+  #cur-b:hover{transform:translateY(2px)}}
+/* Un curseur sans voisin ne laisse pas un trou : sa place est gardée,
+   sinon le carré sauterait d'un côté à l'autre en changeant de vue. */
+#cur-g,#cur-d{width:18px;height:18px}
+#cur-h,#cur-b{height:18px}
+
+/* Le nom de la vue, sous le carré. Le carré montre, le mot nomme. */
+#vnow{line-height:1}
+#vnow b{font-family:'Space Mono',monospace;font-size:7px;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(255,255,255,.72);font-weight:400;
+  white-space:nowrap}
+#vnow i{display:none}
+/* ══ LA RÉPERCUSSION 3D ══════════════════════════════════════════════
+   Le nom pivote DANS LA DIRECTION DU VOYAGE, en même temps que la pile
+   glisse. Deux mouvements, un seul geste : le carré est un objet, on
+   vient d'en tourner une face. */
+@keyframes face-d{from{transform:rotateY(-62deg) translateX(18px);opacity:0}to{transform:none;opacity:1}}
+@keyframes face-g{from{transform:rotateY(62deg) translateX(-18px);opacity:0}to{transform:none;opacity:1}}
+@keyframes face-b{from{transform:rotateX(62deg) translateY(12px);opacity:0}to{transform:none;opacity:1}}
+@keyframes face-h{from{transform:rotateX(-62deg) translateY(-12px);opacity:0}to{transform:none;opacity:1}}
+#vnow.f-d{animation:face-d .42s cubic-bezier(.22,.9,.3,1)}
+#vnow.f-g{animation:face-g .42s cubic-bezier(.22,.9,.3,1)}
+#vnow.f-b{animation:face-b .42s cubic-bezier(.22,.9,.3,1)}
+#vnow.f-h{animation:face-h .42s cubic-bezier(.22,.9,.3,1)}
 @media(prefers-reduced-motion:reduce){
   .cur{transition:none}
+  #joy-box,#joy-stack,#joy-stack i{transition:none}
   #vnow.f-d,#vnow.f-g,#vnow.f-b,#vnow.f-h{animation:none}
 }
+
 /* `.vt-c` / `.vt-n` / `.vt-n2` sont partis avec la croix : le titre
    (`#vnow`) et les quatre curseurs (`.cur`) les remplacent. */
 /* LES TROIS COULEURS RESSORTENT — les trois, tout le temps, à pleine
@@ -1112,7 +1165,7 @@ body.ordering #ordbtn span{animation:none;opacity:1}
    les trois carrés, à leur place fixe — c'est pour ça qu'ils remontent.
    Elle ne s'affiche qu'en mode classement, et ne prend aucune place
    sinon (`display:none`). */
-#ordbar{position:fixed;top:calc(var(--croix-t) + 72px);left:50%;transform:translateX(-50%);
+#ordbar{position:fixed;top:calc(var(--croix-t) + 14px);left:50%;transform:translateX(-50%);
   z-index:33;display:none;white-space:nowrap;pointer-events:none}
 body.ordering #ordbar{display:block}
 /* ══ LE TOTEHM DIT UNE PHRASE · 17/09/2026 ══════════════════════════
@@ -1122,7 +1175,7 @@ body.ordering #ordbar{display:block}
    alerte de trop.
    `pointer-events:none` : elle ne doit JAMAIS intercepter un doigt --
    elle apparait exactement la ou l'on vient d'appuyer. */
-#dit{position:fixed;top:calc(var(--croix-t) + 72px);left:50%;
+#dit{position:fixed;top:calc(var(--croix-t) + 14px);left:50%;
   transform:translateX(-50%);z-index:34;pointer-events:none;
   font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;
   text-transform:uppercase;color:#d59ac4;white-space:nowrap;
@@ -1372,6 +1425,18 @@ body.ro .h-text{pointer-events:none}
   align-items:center;justify-content:center;gap:10px;padding:9px 14px;
   background:rgba(0,0,0,.72);backdrop-filter:blur(6px)}
 body.ro #ro-bar{display:flex}
+/* ══ EN LECTURE, TOUT LE HAUT DESCEND · 18/09/2026 ═══════════════════
+   ⚠️ `#ro-bar` est une barre PLEINE LARGEUR en `z-index:40`, au-dessus
+   du joystick (33) et de la marque (30). Mesuré : les curseurs étaient
+   là, visibles, et le clic partait dans la barre — un contrôleur mort
+   sans un signe. Elle ne se déplace pas (elle dit qui on lit, c'est sa
+   place) : c'est le reste qui recule de sa hauteur, 38 px.
+   `--band-t` en découle, donc la liste suit toute seule. */
+body.ro{--ro-h:38px}
+body.ro #joy{top:calc(24px + var(--ro-h))}
+body.ro #bigT{top:calc(26px + var(--ro-h))}
+body.ro #wordmark{top:calc(68px + var(--ro-h))}
+body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
 #ro-who{font-family:'Quantico',sans-serif;font-weight:700;font-size:13px;color:#fff;
   display:flex;align-items:center;gap:5px}
 #ro-tag{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.16em;
@@ -1562,8 +1627,8 @@ body:not(.gate) #gate{display:none}
    le logo, la porte. Les deux réglages de membre (`.gid`) ne paraissent
    que pour quelqu'un de connecté ; la recherche reste pour tout le monde,
    c'est la seule chose qui s'adresse à un inconnu. */
-#gate-id{display:flex;flex-direction:column;align-items:center;gap:7px;
-  width:100%;max-width:340px;margin:0 auto;padding:0 18px}
+/* `#gate-id` n'existe plus : la recherche a son propre bloc,
+   `#gate-search`, et le nom et la visibilité sont dans l'espace membre. */
 /* ══ LA RECHERCHE VIT DANS LE HAUT · 17/09/2026 ══════════════════════
    Elle était en bas avec un chevron « Think same but opposite » qui
    descendait sur un deuxième écran vidéo. Les deux sont partis : sans
@@ -1754,6 +1819,26 @@ body.gate.entered #filter-badge{
      raccourci au-dessus, on ne les répète pas. */
   #stage.v-w{background-image:var(--logo-wisdom)}
   #stage.v-v{background-image:var(--logo-visions)}
+  /* ⚠️ LA MARQUE ET LE JOYSTICK RESTENT DANS LE CARRÉ · 18/09/2026.
+     `#bigT` et `#wordmark` sont `fixed` DANS `#stage`, donc ils se
+     résolvent sur lui — ils suivent le carré tout seuls. `#joy`, lui,
+     est DEHORS (il serait rogné) : il faut donc le ramener à la main sur
+     le bord droit du carré. C'est la seule pièce qui a besoin des deux
+     mesures, et c'est pour ça qu'elle les porte ici. */
+  /* ⚠️ LA MARQUE COMMENCE APRÈS LE RAIL. Mesuré le 18/09 : à 22 px du
+     bord, le T et le wordmark se posaient SUR le rail et sur le bouton
+     de classement qui le coiffe. Le rail est le logo — rien ne passe
+     dessus. `--rl` (sa gauche) + `--rw` (sa largeur) + de l'air. */
+  #bigT{top:24px;left:calc(var(--rl) + var(--rw) + 18px)}
+  #wordmark{top:66px;left:calc(var(--rl) + var(--rw) + 18px)}
+  /* Même dégagement qu'au téléphone : la croix vit dans le coin haut
+     droit du carré, le joystick se range à sa gauche. */
+  #joy{top:calc(50% - var(--stage)/2 + 22px);
+       right:calc(50% - var(--stage)/2 + 62px)}
+  body.ro #joy{top:calc(50% - var(--stage)/2 + 22px + var(--ro-h))}
+  body.ro #bigT{top:calc(24px + var(--ro-h))}
+  body.ro #wordmark{top:calc(66px + var(--ro-h))}
+
   /* ══ LES QUATRE CURSEURS SE POSENT SUR LES QUATRE CÔTÉS DU CARRÉ ═══
      Ici il y a un DEHORS : le carré fait `--stage` de côté, centré, et
      le reste est noir. Chaque curseur se pose donc à `--side-gap` de son
@@ -1761,17 +1846,8 @@ body.gate.entered #filter-badge{
      seule disposition où aucun d'eux ne couvre une boîte.
      `--side-gap` existait déjà pour les anciens chevrons `.tnav` ; il
      reprend du service au lieu d'inventer une mesure de plus. */
-  #cur-g,#cur-d{top:50%;transform:translateY(-50%)}
-  #cur-g{left:calc(50% - var(--stage)/2 - var(--side-gap));right:auto}
-  #cur-d{right:calc(50% - var(--stage)/2 - var(--side-gap));left:auto}
-  #cur-h,#cur-b{left:50%;transform:translateX(-50%)}
-  #cur-h{top:calc(50% - var(--stage)/2 - 42px);bottom:auto}
-  #cur-b{bottom:calc(50% - var(--stage)/2 - 42px);top:auto}
-  @media(hover:hover){
-    #cur-g:hover{transform:translateY(-50%) translateX(-3px)}
-    #cur-d:hover{transform:translateY(-50%) translateX(3px)}
-    #cur-h:hover{transform:translateX(-50%) translateY(-3px)}
-    #cur-b:hover{transform:translateX(-50%) translateY(3px)}}
+  /* Les curseurs vivent DANS le joystick depuis le 18/09 : ils n'ont
+     plus de placement à eux, ils encadrent le carré. */
   /* Le rail s'arrête au T en haut et au wordmark en bas, au lieu de courir
      d'un bord à l'autre : 30px, la même valeur que #bigT et #wordmark. */
   #rail{top:30px;bottom:30px}
@@ -1948,8 +2024,6 @@ body.gate.entered #filter-badge{
      #conn-bar garde sa place d'origine — le logo composé du gate occupe
      déjà le centre. */
   body:not(.gate) #conn-bar{top:8px;left:50%;right:auto;transform:translateX(-50%);padding:6px 10px}
-  #bigT{top:44px}
-  #bigT svg{height:48px}
   #vname{top:142px}
   /* Rail fin et sourd — une trace, pas une bande. Il tient la colonne du
      regard sans peser. */
@@ -2147,16 +2221,10 @@ body.gate.entered #filter-badge{
   </div>
   <button class="btn-sig" id="gate-open">Open my Totehm</button>
 
-  <!-- Le nom et la visibilité appartiennent à l'identité : ils restent
-       collés sous le bouton, et n'existent que pour un membre. -->
-  <div id="gate-id">
-    <button class="btn-sig gid" id="name-btn">Name of my Totehm</button>
-    <input class="line-input hide" id="set-name" maxlength="24" placeholder="my Totehm" autocomplete="off" spellcheck="false">
-    <div class="note dim hide" id="name-note"></div>
-
-    <button class="btn-sig gid" id="vis-btn">Visibility</button>
-    <div class="hide" id="vis-panel"><div class="row"><button class="size-btn" id="set-private">Private</button><button class="size-btn" id="set-members">Visible to members</button></div></div>
-  </div>
+  <!-- ⚠️ LE NOM ET LA VISIBILITÉ SONT REPARTIS DANS L'ESPACE MEMBRE le
+       18/09 : la visibilité est devenue le commutateur de monétisation,
+       et ça se règle dans son compte, pas sur l'écran d'accueil.
+       `#gate-id` ne porte plus que la recherche. -->
 
   <!-- ══ LA RECHERCHE REMONTE · 16/09/2026 ═══════════════════════════
        Elle vivait en bas de l'écran avec « Think same but opposite »
@@ -2190,9 +2258,11 @@ body.gate.entered #filter-badge{
      côté du Totehm, chacun portant le nom et la couleur de la vue de ce
      côté-là. Un curseur sans voisin se retire (`hidden`) : un bouton
      qui ne fait rien apprend à ne plus regarder les autres. -->
-<div id="views" class="sink-el" role="group" aria-label="La vue courante">
-  <div id="vnow"><b></b><i></i></div>
-</div>
+<!-- ══ LE JOYSTICK · 18/09/2026 ══════════════════════════════════════
+     Une maquette du Totehm : le carré perforé porte la couleur de l'axe
+     du TEMPS, la pile de dalles dedans porte l'axe de la PROFONDEUR.
+     Quatre chevrons l'encadrent, le nom de la vue est dessous. -->
+
 
 <div id="ordbar" class="sink-el">order by importance — the bot follows this order</div>
 <div id="dit" class="sink-el" role="status" aria-live="polite"></div>
@@ -2228,13 +2298,20 @@ body.gate.entered #filter-badge{
   <button class="door" id="door-book" type="button">
     <span class="get">Get</span> <svg class="higher-inline" viewBox="0 0 600 200"
       role="img" aria-label="Higher"><use href="#higher-badge"></use></svg></button>
-  <button class="door" id="door-next" type="button">My Higher Self</button>
-  <!-- ══ LA PORTE DU CLUB · 15/09/2026 ═══════════════════════════════
-       `totehm.space/club` — MÊME ORIGINE, donc même session. C'est
-       toute la raison pour laquelle le Club n'est pas sur un quatrième
-       domaine : on y entre sans se reconnecter.
-       `figher.club` est un vanity URL qui redirige ici. -->
-  <button class="door door-club" id="door-club" type="button">The Figher Club</button>
+  <!-- ⚠️ « HIGHER » NE S'ÉCRIT JAMAIS EN TEXTE — RÈGLE DE MARQUE.
+       C'est un slogan, donc un SVG, partout et sans exception. Tapé au
+       clavier il devient un mot ordinaire dans la fonte du système, et
+       la marque s'éteint à l'endroit exact où elle devrait parler. -->
+  <button class="door" id="door-next" type="button">My <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> Self</button>
+  <!-- ══ LA TROISIÈME PORTE MÈNE À LA BOUTIQUE · 18/09/2026 ══════════
+       Elle menait au Club. Le Club devient une PAGE DE VENTE — il n'a
+       rien à offrir à quelqu'un qui n'est pas encore membre, et une
+       porte vers une page de vente depuis l'intérieur du produit, c'est
+       une publicité chez soi.
+       La boutique, elle, est le geste suivant naturel : on a son Totehm,
+       on le porte. ⚠️ Autre domaine, donc autre session : elle passe par
+       le pont. -->
+  <button class="door door-club" id="door-club" type="button">Totehmize my cloth</button>
 </div>
 
 <!-- La croix : referme le Totehm et rejoue le déploiement à l'envers. -->
@@ -2303,23 +2380,28 @@ body.gate.entered #filter-badge{
 
 </div><!-- /#stage -->
 
-<!-- ══ LES QUATRE CURSEURS VIVENT HORS DU CARRÉ · 17/09/2026 ══════════
-     ⚠️ ILS ÉTAIENT DANS `#stage`, ET C'EST POUR ÇA QU'ILS PASSAIENT
-     PAR-DESSUS LES BOÎTES. `#stage` porte un transform (donc il contient
-     tout ce qui est `fixed` dedans) ET `overflow:hidden` (donc il rogne
-     ce qui dépasse). Un curseur « à l'extérieur du carré » était ramené
-     dedans puis coupé.
-     Dehors, ils se résolvent sur la fenêtre : sur ordinateur ils se
-     posent sur les quatre côtés du carré, sur téléphone autour du
-     titre. -->
-<button class="cur sink-el" id="cur-h" type="button" hidden>
-  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg><span></span></button>
-<button class="cur sink-el" id="cur-g" type="button" hidden>
-  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg><span></span></button>
-<button class="cur sink-el" id="cur-d" type="button" hidden>
-  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg><span></span></button>
-<button class="cur sink-el" id="cur-b" type="button" hidden>
-  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg><span></span></button>
+<!-- ⚠️ LE JOYSTICK VIT HORS DU CARRÉ, même raison qu'hier pour les
+     curseurs : `#stage` porte un transform (il contient tout ce qui est
+     `fixed` dedans) ET `overflow:hidden` (il rogne ce qui dépasse).
+     Dedans, il serait ramené puis coupé. -->
+<div id="joy" class="sink-el" role="group" aria-label="Where I am in my Totehm">
+  <button class="cur" id="cur-h" type="button" hidden>
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
+  <div id="joy-row">
+    <button class="cur" id="cur-g" type="button" hidden>
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
+    <div id="joy-box" aria-hidden="true">
+      <div id="joy-stack"><i class="o"></i><i class="h"></i><i class="r"></i></div>
+    </div>
+    <button class="cur" id="cur-d" type="button" hidden>
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
+  </div>
+  <button class="cur" id="cur-b" type="button" hidden>
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
+  <div id="vnow"><b></b><i></i></div>
+</div>
+
+
 
 
 <div id="freq-panel" class="hide">
@@ -2412,17 +2494,45 @@ body.gate.entered #filter-badge{
            Elles vivent ici — dans le menu — et le menu ne s'ouvre que
            depuis l'intérieur du Totehm.
            Retour arrière : ce bloc et les deux câblages en bas du module. -->
-      <!-- ══ TROIS BLOCS ONT QUITTÉ L'ESPACE MEMBRE · 15/09/2026 ═══════
-           Le NOM, la VISIBILITÉ et la RECHERCHE sont maintenant sur
-           l'ATTERRISSAGE, au-dessus du logo.
+      <!-- ══ LE NOM ET LA VISIBILITÉ REVIENNENT ICI · 18/09/2026 ══════
+           Ils étaient passés sur l'atterrissage le 15/09, avec cette
+           raison : « on les règle avant d'entrer, pas pendant ». Elle ne
+           tient plus. La visibilité n'est plus un réglage de confort,
+           c'est le COMMUTATEUR DE MONÉTISATION : choisir « visible to my
+           paying followers », c'est ouvrir sa boutique. Ça ne se décide
+           pas sur un écran d'accueil entre deux boutons — ça se décide
+           dans son compte, à côté de l'abonnement et des virements.
+           La RECHERCHE, elle, reste sur l'atterrissage : c'est la porte
+           d'à côté, pas un réglage.
 
-           Pourquoi : ce sont les trois seules choses qu'on règle AVANT
-           d'entrer, pas pendant. Nommer son Totehm et décider qui le
-           voit, c'est la carte de visite ; chercher celui d'un autre,
-           c'est la porte d'à côté. Rien de tout ça n'est un réglage
-           qu'on va chercher à deux gestes une fois dedans.
-           Ce qui reste ici est ce qui ne concerne QUE le membre connecté :
-           l'abonnement, le bot, le compte. -->
+           ⚠️ CE SONT LES MÊMES NŒUDS, DÉPLACÉS — pas des copies. Deux
+           champs « nom du Totehm » dans le même document finiraient par
+           afficher deux valeurs différentes, et `paintNameButton()` n'en
+           peindrait qu'un. -->
+      <div class="set-block" id="ident-block">
+        <button class="btn-sig gid" id="name-btn">Name of my Totehm</button>
+        <input class="line-input hide" id="set-name" maxlength="24" placeholder="my Totehm" autocomplete="off" spellcheck="false">
+        <div class="note dim hide" id="name-note"></div>
+
+        <button class="btn-sig gid" id="vis-btn">Visibility</button>
+        <div class="hide" id="vis-panel"><div class="row">
+          <button class="size-btn" id="set-private">Private</button>
+          <!-- ⚠️ LE MOT DIT CE QU'IL FAIT. « Visible to members » ne
+               disait rien de l'argent ; c'est pourtant ce que ça
+               déclenche. -->
+          <button class="size-btn" id="set-members">Visible to my paying followers</button>
+        </div></div>
+      </div>
+
+      <!-- ══ L'ESPACE CRÉATEUR S'OUVRE AVEC LA VISIBILITÉ PAYANTE ══════
+           Il ne s'affiche que si le membre a choisi d'être suivi contre
+           paiement : avant ce choix, il n'a rien à y faire. -->
+      <div class="set-block hide" id="creator-block">
+        <div class="mw-body">Your followers subscribe to your Totehm. You keep
+          <b>80 %</b> of every payment — TOTEHM keeps 20 %.</div>
+        <div class="note dim" id="creator-note"></div>
+        <button class="btn-sig" id="creator-btn" type="button">Open my creator space</button>
+      </div>
 
       <!-- Abonnement : offre unique Higher Club, peinte par paintSubscription() -->
       <div id="mw-sub"></div>
@@ -2491,6 +2601,15 @@ const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUz
    ═══════════════════════════════════════════════════════════════════ */
 
 const SSO_FN = 'https://abujjbkbbiumxrokozph.supabase.co/functions/v1/';
+/* ⚠️ LA CLÉ ANONYME EST OBLIGATOIRE, ET C'EST CE QUI TUAIT LE PONT.
+   Les Edge Functions sont déployées avec `verify_jwt`, donc Supabase
+   rejette la requête AVANT d'atteindre notre code si aucun jeton n'est
+   présenté. Or `sso-redeem` est justement appelée par une page qui n'a
+   PAS de session — c'est tout son objet. Sans en-tête, elle recevait 401
+   et le pont ne fonctionnait pas une seule fois.
+   Cette clé est publique : elle est déjà dans la page, en clair, au
+   `createClient` juste au-dessus. La poser ici n'expose rien de neuf. */
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
 
 /* ── ARRIVÉE ────────────────────────────────────────────────────────
    ⚠️ LE CODE SORT DE L'URL AVANT TOUT AUTRE GESTE. Un code laissé dans
@@ -2507,7 +2626,10 @@ async function ssoArrivee(sb){
   history.replaceState(null, '', location.pathname + location.search.replace(/[?&]sso=[a-f0-9]{64}/, ''));
   try{
     const r = await fetch(SSO_FN + 'sso-redeem', {
-      method:'POST', headers:{'content-type':'application/json'},
+      method:'POST',
+      headers:{'content-type':'application/json',
+               /* `verify_jwt` : sans clé, 401 avant notre code. */
+               'apikey':SB_ANON, 'authorization':'Bearer '+SB_ANON},
       body: JSON.stringify({ code })
     });
     if(!r.ok){ console.error('[sso] redeem', r.status); return false; }
@@ -2539,6 +2661,7 @@ async function ssoVersDomaine(sb, cible, url){
       const r = await fetch(SSO_FN + 'sso-mint', {
         method:'POST',
         headers:{ 'authorization':'Bearer '+session.access_token,
+                  'apikey':SB_ANON,
                   'content-type':'application/json' },
         body: JSON.stringify({ target: cible })
       });
@@ -3585,9 +3708,11 @@ function paintZone(){
      alors que sa vue n'a plus de voisin est un bouton mort. */
   const nv=$('vnow');
   if(nv){
-    const [nom,glose]=NOM_VUE[view]||['',''];
-    nv.querySelector('b').textContent=nom;
-    nv.querySelector('i').textContent=glose;
+    /* ⚠️ PLUS DE GLOSE SOUS LE NOM. « past » / « present » / « future »
+       étaient écrits parce que rien ne les montrait ; le carré les
+       montre maintenant — par sa couleur pour l'époque, par la dalle
+       allumée pour la couche. Les garder, ce serait dire deux fois. */
+    nv.querySelector('b').textContent=(NOM_VUE[view]||[''])[0];
     /* ⚠️ UNE ANIMATION SE REJOUE À CHAQUE REDESSIN si on se contente de
        poser la classe. On la retire, on force un reflow, on la remet —
        c'est le seul moyen de la rejouer À LA DEMANDE et jamais sinon.
@@ -3595,13 +3720,27 @@ function paintZone(){
     nv.className='';
     if(dernierSens){ void nv.offsetWidth; nv.classList.add('f-'+dernierSens); dernierSens=null; }
   }
+  /* ── LE JOYSTICK ──────────────────────────────────────────────────
+     Le carré porte l'axe du TEMPS (sa couleur), la pile porte l'axe de
+     la PROFONDEUR (sa position). Tout se peint ici, à chaque rendu. */
+  const jy=$('joy');
+  if(jy){
+    jy.className='sink-el v-'+view
+      + ((view==='wisdom'||view==='visions') ? ' seule' : '');
+    /* ⚠️ LA COULEUR DU FOND NE CHANGE QU'AVEC L'AXE HORIZONTAL. Les
+       objectifs et les répulsions sont la même colonne que les
+       habitudes : leur fond est le même, seule la dalle allumée change.
+       Peindre le fond aussi, ce serait dire qu'on a changé d'époque. */
+    jy.style.setProperty('--joy-tile',
+      view==='wisdom'  ? 'var(--logo-wisdom)'  :
+      view==='visions' ? 'var(--logo-visions)' : 'var(--logo-navy)');
+  }
   [['cur-g','g'],['cur-d','d'],['cur-h','h'],['cur-b','b']].forEach(([id,d])=>{
     const b=$(id); if(!b)return;
     const cible=(CROIX[view]||{})[d]||null;
     b.hidden=!cible;
     if(!cible)return;
-    b.className='cur sink-el to-'+cible;
-    b.querySelector('span').textContent=(NOM_VUE[cible]||[''])[0];
+    b.className='cur to-'+cible;
     b.setAttribute('aria-label','Go to '+(NOM_VUE[cible]||[''])[0]);
   });
   /* `#vname` n'existe plus : c'est `aria-selected` sur chaque colonne
@@ -4937,7 +5076,8 @@ $('door-book').onclick=requireMember(()=>{
   ssoVersDomaine(sb,'space','https://www.totehm.space/get_higher'); });
 $('door-next').onclick=requireMember(()=>{
   window.open('https://t.me/TotehmBot','_blank','noopener'); });
-$('door-club').onclick=requireMember(()=>{ location.href='/club'; });
+$('door-club').onclick=requireMember(()=>{
+  ssoVersDomaine(sb,'boutique','https://higher.boutique/#menu'); });
 /* La croix : le Totehm se replie et l'atterrissage revient. */
 $('fold-x').onclick=()=>foldToGate();
 
@@ -5299,8 +5439,43 @@ $('set-name').addEventListener('keydown',async e=>{
   /* Le bouton reprend sa place, avec le nom et le look bleu perforé figé */
   setTimeout(()=>{paintNameButton();note.textContent='';note.className='note dim';},900);
 });
-$('set-private').onclick=()=>{state.vis='private';save();renderSettings();};
-$('set-members').onclick=()=>{state.vis='members';save();renderSettings();};
+$('set-private').onclick=()=>{state.vis='private';save();renderSettings();peintCreateur();};
+$('set-members').onclick=()=>{state.vis='members';save();renderSettings();peintCreateur();};
+
+/* ══ L'ESPACE CRÉATEUR · 18/09/2026 ══════════════════════════════════
+   Il n'apparaît qu'une fois la visibilité payante choisie : avant ce
+   choix, un membre n'a rien à y faire, et un bloc qui ne sert à rien
+   apprend à ne plus regarder les autres.
+
+   ⚠️ CE BLOC NE FAIT PAS LE TRAVAIL DE `/club/creator` : il l'ANNONCE et
+   il y mène. Recopier ici les soldes, le prix et l'état Stripe, ce
+   serait deux tableaux de bord à tenir d'accord — et le jour où ils
+   divergeront, c'est sur un montant que ça se verra. */
+async function peintCreateur(){
+  const b=$('creator-block'); if(!b)return;
+  const ouvert = !!me && state.vis==='members';
+  b.classList.toggle('hide',!ouvert);
+  if(!ouvert)return;
+  const n=$('creator-note'); n.className='note dim'; n.textContent='';
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    if(!session)return;
+    const r=await fetch('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/creator-dashboard',{
+      method:'POST',
+      headers:{'authorization':'Bearer '+session.access_token,
+               'apikey':SB_ANON,'content-type':'application/json'},
+      body:'{}'});
+    if(!r.ok){ console.error('[totehm] creator-dashboard',r.status); return; }
+    const d=await r.json();
+    if(d.etat==='aucun'){ n.textContent='not open yet — start with Stripe'; return; }
+    const vivant=d.compte&&d.compte.charges_enabled&&d.compte.payouts_enabled;
+    n.className=vivant?'note ok':'note dim';
+    n.textContent = vivant
+      ? (d.abonnes||0)+' subscriber'+((d.abonnes||0)===1?'':'s')
+      : 'Stripe is still reviewing your account';
+  }catch(e){ console.error('[totehm] creator',e&&e.message||e); }
+}
+$('creator-btn').onclick=()=>{ location.href='/club/creator'; };
 
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -5690,7 +5865,7 @@ function memberPaint(){
    carte de visite vit. */
 $('conn-bar').onclick=()=>{
   if(!document.body.classList.contains('gate'))return;
-  $('member-window').classList.add('show'); memberPaint(); };
+  $('member-window').classList.add('show'); memberPaint(); peintCreateur(); };
 
 /* Le Dashboard se repeint à chaque ouverture : réglages (nom, visibilité,
    suppression) + abonnement (offre unique). */

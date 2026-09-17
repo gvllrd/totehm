@@ -88,11 +88,26 @@ Deno.serve(async (req) => {
     return Response.json({ url: lien.url }, { headers: cors });
   } catch (e) {
     // Une erreur Stripe se JOURNALISE, toujours : sans ce log, un
-    // onboarding qui échoue ressemble à un bouton mort.
-    console.error("[creator-onboard]", e instanceof Error ? e.message : e);
+    // onboarding qui échoue ressemble à un bouton mort. C'est ce log qui
+    // a donné la cause en trente secondes le 18/09 — Stripe disait lui-
+    // même « You must complete your platform profile to use Connect ».
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("[creator-onboard]", msg);
+
+    // ⚠️ DEUX ÉCHECS QUI N'ONT RIEN À VOIR NE DOIVENT PAS DIRE LA MÊME
+    // CHOSE. « Réessaie dans une minute » est un mensonge quand la cause
+    // est chez NOUS et qu'aucune minute n'y changera rien : le profil
+    // plateforme Connect n'est pas rempli, et tant qu'il ne l'est pas,
+    // AUCUN créateur ne peut ouvrir de compte. Le créateur mérite de
+    // savoir que ce n'est pas lui — et nous, de le voir dans la réponse
+    // plutôt que dans les logs.
+    const platforme = /platform profile|complete your platform/i.test(msg);
     return Response.json(
-      { error: "onboarding unavailable" },
-      { status: 502, headers: cors },
+      platforme
+        ? { error: "platform_incomplete",
+            say: "Payouts aren't open yet — this is on us, not on you." }
+        : { error: "onboarding unavailable" },
+      { status: platforme ? 503 : 502, headers: cors },
     );
   }
 });

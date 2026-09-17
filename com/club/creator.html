@@ -361,7 +361,13 @@ $('go-onboard').onclick = $('go-finish').onclick = async (e) => {
   const r = await appelle('creator-onboard');
   if (r && r.url) { location.href = r.url; return; }
   b.disabled = false; b.textContent = 'Continue with Stripe';
-  $('etat-mot').textContent = 'Stripe did not answer. Try again in a minute.';
+  /* ⚠️ ON NE DIT PAS « RÉESSAIE » QUAND RÉESSAYER NE SERT À RIEN. Tant
+     que notre profil plateforme Connect n'est pas rempli chez Stripe,
+     aucun créateur ne peut ouvrir de compte — une minute de plus n'y
+     changera rien, et l'inviter à recommencer le fait douter de lui. */
+  $('etat-mot').textContent = (r && r.say)
+    ? r.say
+    : 'Stripe did not answer. Try again in a minute.';
   show('etat', true);
 };
 

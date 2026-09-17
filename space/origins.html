@@ -165,6 +165,12 @@ const sb = createClient(SB_URL, SB_ANON);
    ce qui passe ici.
    ═══════════════════════════════════════════════════════════════════ */
 
+/* ⚠️ LA CLÉ ANONYME EST OBLIGATOIRE, ET C'EST CE QUI TUAIT LE PONT.
+   Les Edge Functions sont déployées avec `verify_jwt`, donc Supabase
+   rejette la requête AVANT d'atteindre notre code si aucun jeton n'est
+   présenté. Or `sso-redeem` est appelée par une page qui n'a PAS de
+   session — c'est tout son objet. Sans en-tête : 401, à chaque fois.
+   La clé est publique, elle est déjà dans la page au `createClient`. */
 const SSO_FN = 'https://abujjbkbbiumxrokozph.supabase.co/functions/v1/';
 
 /* ── ARRIVÉE ────────────────────────────────────────────────────────
@@ -182,7 +188,10 @@ async function ssoArrivee(sb){
   history.replaceState(null, '', location.pathname + location.search.replace(/[?&]sso=[a-f0-9]{64}/, ''));
   try{
     const r = await fetch(SSO_FN + 'sso-redeem', {
-      method:'POST', headers:{'content-type':'application/json'},
+      method:'POST',
+      headers:{'content-type':'application/json',
+               /* `verify_jwt` : sans clé, 401 avant notre code. */
+               'apikey':SB_ANON, 'authorization':'Bearer '+SB_ANON},
       body: JSON.stringify({ code })
     });
     if(!r.ok){ console.error('[sso] redeem', r.status); return false; }
@@ -214,6 +223,7 @@ async function ssoVersDomaine(sb, cible, url){
       const r = await fetch(SSO_FN + 'sso-mint', {
         method:'POST',
         headers:{ 'authorization':'Bearer '+session.access_token,
+                  'apikey':SB_ANON,
                   'content-type':'application/json' },
         body: JSON.stringify({ target: cible })
       });

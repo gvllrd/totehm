@@ -21,6 +21,15 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 const SSO_FN = 'https://abujjbkbbiumxrokozph.supabase.co/functions/v1/';
+/* ⚠️ LA CLÉ ANONYME EST OBLIGATOIRE, ET C'EST CE QUI TUAIT LE PONT.
+   Les Edge Functions sont déployées avec `verify_jwt`, donc Supabase
+   rejette la requête AVANT d'atteindre notre code si aucun jeton n'est
+   présenté. Or `sso-redeem` est justement appelée par une page qui n'a
+   PAS de session — c'est tout son objet. Sans en-tête, elle recevait 401
+   et le pont ne fonctionnait pas une seule fois.
+   Cette clé est publique : elle est déjà dans la page, en clair, au
+   `createClient` juste au-dessus. La poser ici n'expose rien de neuf. */
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
 
 /* ── ARRIVÉE ────────────────────────────────────────────────────────
    ⚠️ LE CODE SORT DE L'URL AVANT TOUT AUTRE GESTE. Un code laissé dans
@@ -37,7 +46,10 @@ async function ssoArrivee(sb){
   history.replaceState(null, '', location.pathname + location.search.replace(/[?&]sso=[a-f0-9]{64}/, ''));
   try{
     const r = await fetch(SSO_FN + 'sso-redeem', {
-      method:'POST', headers:{'content-type':'application/json'},
+      method:'POST',
+      headers:{'content-type':'application/json',
+               /* `verify_jwt` : sans clé, 401 avant notre code. */
+               'apikey':SB_ANON, 'authorization':'Bearer '+SB_ANON},
       body: JSON.stringify({ code })
     });
     if(!r.ok){ console.error('[sso] redeem', r.status); return false; }
@@ -69,6 +81,7 @@ async function ssoVersDomaine(sb, cible, url){
       const r = await fetch(SSO_FN + 'sso-mint', {
         method:'POST',
         headers:{ 'authorization':'Bearer '+session.access_token,
+                  'apikey':SB_ANON,
                   'content-type':'application/json' },
         body: JSON.stringify({ target: cible })
       });
