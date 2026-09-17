@@ -460,17 +460,16 @@ bon côté. C'est là qu'est le visionnaire.
 
 **`totehm_world.html` est la porte de la carte · 09/09/2026.** Le bouton
 du bas de l'atterrissage disait `[Open my Totehm world]` et partait sur
-`map.html` — c'était la SEULE entrée de la Higher Map. Il dit maintenant
-**« Think same but opposite »** et DESCEND d'un écran, dans le même
-atterrissage, vers une vidéo plein cadre. La carte a donc sa propre porte,
-sortie de `totehm.html` pour être retravaillée à part. La retirer sans
-rien mettre à la place aurait laissé le produit sans entrée.
+`map.html` — c'était la SEULE entrée de la Higher Map. Retirée du
+Totehm, la carte a désormais son propre fichier, `totehm_world.html`.
+Elle a été sortie de `totehm.html` pour être retravaillée à part. La
+retirer sans rien mettre à la place aurait laissé le produit sans
+entrée.
 
-**⚠️ ET LE GESTE NE QUITTE PLUS LA PAGE.** Un balayage vertical de 40 px
-sur l'atterrissage — c'est-à-dire n'importe quel début de défilement —
-envoyait sur `map.html`. Descendre pour LIRE l'atterrissage était donc
-impossible au doigt : on partait ailleurs. Le chevron et le geste font
-maintenant la même chose, et c'est ce qu'ils annonçaient.
+Un chevron « Think same but opposite » a occupé ce rôle transitoirement
+(du 09/09 au 17/09), descendant sur un deuxième écran vidéo dans le
+même atterrissage. Les deux sont partis avec la remontée de la barre
+de recherche : voir « L'ATTERRISSAGE TIENT SUR UN ÉCRAN ».
 
 **`objectives.html` n'existe plus.** Supprimé le 05/09 : son contenu est
 devenu une VUE. Une vue n'est ni un fichier, ni une iframe, ni une page —
@@ -724,12 +723,12 @@ balayage en vingt secteurs dégressifs : le même dessin que `map.html`, copié,
 jamais partagé. Zéro appel réseau, zéro donnée. La boucle s'arrête dès que le
 Totehm est déployé ou l'onglet caché, et repart après un repli.
 
-L'atterrissage tient sur DEUX écrans qui défilent (`#gate-hero`,
-`#gate-context`), le second portant « Think same but opposite » et
-`same_but_opposite.mp4`. Pendant l'animation de déploiement ou de repli, le
-second écran passe en `display:none` : `scrollHeight == clientHeight`, il n'y
-a physiquement plus rien à faire défiler. C'est le TROISIÈME verrou, et le
-seul qui ne soit pas une course.
+L'atterrissage tient sur UN écran (`#gate-hero`) depuis le 17/09/2026.
+Le deuxième écran `#gate-context` (« Think same but opposite » et
+`same_but_opposite.mp4`) est parti avec la remontée de la barre de
+recherche — voir « L'ATTERRISSAGE TIENT SUR UN ÉCRAN ». Le troisième
+verrou (empêcher un deuxième écran de rallonger le gate pendant
+l'animation) est caduque : il n'y a plus qu'un écran.
 
 ### La carte est le produit — 03/09/2026
 
@@ -1544,33 +1543,51 @@ au pixel entre un jumeau et le Totehm, la seule chose qui change est la
 couleur — alors on la change AVANT de naviguer, 200 ms de fondu vers le
 navy. L'œil lit un écran qui se repeint, pas deux pages.
 
-### L'ATTERRISSAGE A LA FORME DE GOOGLE — 16/09/2026
+### L'ATTERRISSAGE TIENT SUR UN ÉCRAN — 17/09/2026
 
-Le logo et **[Open my Totehm] EN HAUT**, la **barre de recherche EN
-BAS** — sur téléphone comme sur ordinateur. `#gate-hero` est en
-`space-between` avec DEUX groupes : `#gate-top-row` (logo · bouton · nom
-· visibilité) et `#gate-foot` (la barre · « Think same but opposite »).
-⚠️ Un troisième bloc au milieu recentrerait tout — c'est ce qui se
-passait avant.
+Le logo, **[Open my Totehm]**, la carte de visite et la **barre de
+recherche** sont TOUS dans le flux du haut, dans cet ordre — sur
+téléphone comme sur ordinateur. `#gate-hero` porte un seul groupe,
+`#gate-top-row`, en `justify-content:flex-start`.
 
-**La recherche n'est plus un bouton qui révèle un champ.** Il fallait
-deux gestes pour une intention ; il en faut zéro : on tape. `#search-btn`
-et son `morph()` sont supprimés. ⚠️ Appeler `morph()` sur un nœud absent
-lève au chargement du module — donc page blanche. C'est arrivé trois fois
-en une semaine ; le câblage a été retiré dans le même geste que le
-balisage.
+**« Think same but opposite » est parti, et le deuxième écran avec.**
+Il y avait `#gate-context` sous l'atterrissage — une vidéo plein cadre
+(`same_but_opposite.mp4`) et une phrase — atteint par un chevron
+`#ctx-down` qui pulsait au-dessus de la barre. Trois choses en même
+temps : la barre de recherche, un curseur qui appelle vers le bas, et
+un écran d'ambiance qui n'ouvre sur rien. Le curseur promettait un
+ailleurs et l'écran d'ambiance ne le tenait pas : il ne portait ni
+information, ni porte, ni action. La carte a son propre fichier
+(`totehm_world.html`) ; l'atterrissage n'a plus à héberger l'un ni
+l'autre.
 
-### La recherche est un geste de MEMBRE — 08/09/2026
+**Ce qui part avec :** `#gate-foot`, `#gate-context`, `#ctx-video`,
+`#ctx-vid`, `#ctx-say`, `#ctx-up`, `#ctx-down`, `.ctx-label`, `.chev`,
+`.bob`, `@keyframes ctx-bob`, l'`IntersectionObserver` de la vidéo, et
+la règle `body.gate.entered #gate-context{display:none}` — le troisième
+verrou de l'atterrissage (empêcher un deuxième écran de rallonger le
+gate pendant l'animation) n'a plus d'objet, puisqu'il n'y a plus qu'un
+écran.
 
-`[Search a Totehm]` a quitté l'atterrissage : elle vit dans l'espace
-membre, à côté de l'abonnement, dans le Club. L'atterrissage ne garde que
-ce qui s'adresse à un inconnu.
+**La recherche n'est toujours pas un bouton qui révèle un champ.** Il
+fallait deux gestes pour une intention ; il en faut zéro : on tape.
+`#search-btn` et son `morph()` restent supprimés. ⚠️ Appeler `morph()`
+sur un nœud absent lève au chargement du module — donc page blanche.
+C'est arrivé trois fois en une semaine ; le câblage a été retiré dans
+le même geste que le balisage.
 
-`[Open my Totehm world]` a quitté l'atterrissage à son tour, le 09/09 :
-le bouton du bas dit désormais « Think same but opposite » et descend d'un
-écran. La porte de la carte n'a pas disparu pour autant — elle a son
-fichier, `totehm_world.html`. **Une porte ne se retire jamais sans en
-poser une autre** : `map.html` sans entrée, c'est le produit sans entrée.
+### La recherche est REVENUE sur l'atterrissage — 15/09/2026
+
+`[Search a Totehm]` avait quitté l'atterrissage le 08/09 pour l'espace
+membre : chercher est un geste de membre. Le 15/09, elle y revient — la
+carte de visite (nom · visibilité · recherche) s'adresse en partie à un
+inconnu (la recherche) et en partie au membre (nom · visibilité). Toutes
+trois se règlent AVANT d'entrer, jamais pendant.
+
+`[Open my Totehm world]` a quitté l'atterrissage le 09/09 : la porte de
+la carte a son propre fichier, `totehm_world.html`. **Une porte ne se
+retire jamais sans en poser une autre** : `map.html` sans entrée, c'est
+le produit sans entrée.
 
 ### UNE SEULE BOÎTE, PARTOUT — 08/09/2026
 

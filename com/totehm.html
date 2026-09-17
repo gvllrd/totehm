@@ -1456,7 +1456,7 @@ body.ro #ro-bar{display:flex}
   transition:opacity .32s ease}
 #gate-hero{width:100%;min-height:100dvh;
   display:flex;flex-direction:column;align-items:center;
-  position:relative;justify-content:space-between;
+  position:relative;justify-content:flex-start;
   padding:max(76px,13vh) 0 max(24px,env(safe-area-inset-bottom,0));overflow:hidden}
 body.gate.entered #gate,body.gate.folding #gate{overflow:hidden;scroll-behavior:auto}
 body:not(.gate) #gate{display:none}
@@ -1471,14 +1471,14 @@ body:not(.gate) #gate{display:none}
    c'est la seule chose qui s'adresse à un inconnu. */
 #gate-id{display:flex;flex-direction:column;align-items:center;gap:7px;
   width:100%;max-width:340px;margin:0 auto;padding:0 18px}
-/* ══ LE BAS DE L'ATTERRISSAGE · 16/09/2026 ═══════════════════════════
-   `#gate-hero` est déjà en `space-between` : deux groupes suffisent à
-   pousser l'un en haut et l'autre en bas. Un troisième bloc au milieu
-   aurait recentré le tout — c'est ce qui se passait avant. */
-#gate-foot{display:flex;flex-direction:column;align-items:center;
-  width:100%;flex-shrink:0}
+/* ══ LA RECHERCHE VIT DANS LE HAUT · 17/09/2026 ══════════════════════
+   Elle était en bas avec un chevron « Think same but opposite » qui
+   descendait sur un deuxième écran vidéo. Les deux sont partis : sans
+   deuxième écran, la barre n'a plus rien à border. Elle rejoint le
+   flux du haut, juste sous la carte de visite. */
 #gate-search{width:100%;max-width:420px;padding:0 18px;
-  display:flex;flex-direction:column;align-items:center;gap:8px}
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  margin-top:6px}
 /* La barre prend la largeur qu'on lui donne : une barre de recherche
    étroite ne se lit pas comme une barre de recherche. */
 #gate-search #search-input{width:100%;max-width:none;font-size:15px;
@@ -1532,7 +1532,6 @@ body.gate.entered #gl-rail{transform:var(--tf-rail,translateX(-30vw))}
 body.gate.entered #gate-enter,
 body.gate.entered #gate-open,
 body.gate.entered #gate-bottom,
-body.gate.entered #ctx-down,
 body.gate.entered #conn-bar{opacity:0;pointer-events:none}
 
 /* ══ L'UI de l'app : masquée pendant l'état 1, fondu entrant pendant l'état 2 ══ */
@@ -1605,42 +1604,13 @@ body.gate.entered #filter-badge{
    `margin-top:auto` la plaquait en bas et ouvrait un trou noir de 350 px
    au milieu de l'atterrissage. Une marge franche, et la page se lit d'un
    trait — logo, portes, Terre. */
-/* L'ÉCRAN SUIVANT. Il occupe la fenêtre entière et vit SOUS le premier :
-   l'atterrissage défile, il ne change pas de page. */
-#gate-context{width:100%;min-height:100dvh;position:relative;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:26px;padding:max(56px,9vh) 18px max(24px,env(safe-area-inset-bottom,0));
-  background:#000;overflow:hidden}
-#ctx-video{width:min(760px,92vw);aspect-ratio:16/9;background:#0b0b0b;
-  overflow:hidden;display:flex;align-items:center;justify-content:center}
-#ctx-vid{width:100%;height:100%;object-fit:cover;display:block}
-#ctx-say{font-family:'Quantico',sans-serif;font-weight:400;font-size:clamp(20px,4.4vw,34px);
-  line-height:1.25;color:#b0b0b0;text-align:center;margin:0;letter-spacing:.01em}
-#ctx-say b{font-weight:700;color:#fff}
-#ctx-up{background:none;border:none;cursor:pointer;padding:6px 14px;
-  -webkit-tap-highlight-color:transparent;color:#909090;transition:color .15s ease}
-@media(hover:hover){#ctx-up:hover{color:#fff}}
-/* ⚠️ PENDANT L'ANIMATION, IL N'Y A PLUS RIEN À FAIRE DÉFILER. C'est le
-   TROISIÈME verrou de l'atterrissage, et le seul qui ne soit pas une
-   course : `display:none` met `scrollHeight == clientHeight`. Sans lui,
-   `#gl-bg` monté à scale(60) rallonge le gate de deux mille pixels et le
-   navigateur pousse les boutons hors de l'écran. */
-body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
-
-#ctx-down{margin-top:2.5vh;margin-bottom:calc(3vh + env(safe-area-inset-bottom,0));flex-shrink:0;
-  background:none;border:none;cursor:pointer;display:flex;flex-direction:column;
-  align-items:center;gap:8px;-webkit-tap-highlight-color:transparent;
-  transition:opacity .25s ease}
-.ctx-label{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
-  color:#b0b0b0;transition:color .15s ease}
-.chev{width:22px;height:22px;color:#909090;transition:color .15s ease}
-@media(hover:hover){#ctx-down:hover .ctx-label,#ctx-down:hover .chev{color:#fff}}
-/* SUPPRIMÉ (29/08) — #ctx-up, le chevron vers le haut. Il avait déjà été
-   annulé en vague 5B ; son bouton et son écouteur partent avec lui. Le
-   retour se fait par le scroll, comme l'aller. */
-@keyframes ctx-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
-.bob{animation:ctx-bob 1.8s ease-in-out infinite}
-@media(prefers-reduced-motion:reduce){.bob{animation:none}#gate{scroll-behavior:auto}}
+/* SUPPRIMÉ (17/09/2026) — `#gate-context`, `#ctx-video`, `#ctx-vid`,
+   `#ctx-say`, `#ctx-up`, `#ctx-down`, `.ctx-label`, `.chev`, `.bob`,
+   `@keyframes ctx-bob`. Le deuxième écran « Think same but opposite »
+   et son curseur sont partis avec la barre de recherche qui remonte.
+   L'atterrissage tient sur UN écran, plus rien à faire défiler — le
+   troisième verrou (`display:none` pendant l'animation) n'a plus d'objet. */
+@media(prefers-reduced-motion:reduce){#gate{scroll-behavior:auto}}
 
 
 /* ══ DESKTOP : le logo habité devient un carré ══════════════════════════════
@@ -2041,11 +2011,7 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
 #terms-corner:hover,
 #gate-search-input:hover::placeholder,
 #search-input:hover::placeholder,
-#fold-x svg:hover,
-#ctx-say:hover,
-#ctx-up:hover,
-.ctx-label:hover,
-.chev:hover{color:#fff}
+#fold-x svg:hover{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
@@ -2083,62 +2049,20 @@ body.gate.entered #gate-context,body.gate.folding #gate-context{display:none}
     <button class="btn-sig gid" id="vis-btn">Visibility</button>
     <div class="hide" id="vis-panel"><div class="row"><button class="size-btn" id="set-private">Private</button><button class="size-btn" id="set-members">Visible to members</button></div></div>
   </div>
-  </div><!-- /gate-top-row -->
 
-  <!-- ══ LA RECHERCHE A QUITTÉ L'ATTERRISSAGE · 08/09/2026 ═══════════
-       Chercher le Totehm de quelqu'un, c'est un geste de MEMBRE : elle
-       vit dans l'espace membre, à côté de l'abonnement, dans le Club.
-       L'atterrissage ne garde que ce qui s'adresse à un inconnu.
-       Le câblage plus bas est gardé par `if(gsb&&gsi)` : retirer le
-       balisage ne lève rien. -->
-
-  <!-- ══ « THINK SAME BUT OPPOSITE » · 09/09/2026 ════════════════════
-       Le bouton menait à `map.html`. Il ne mène plus nulle part ailleurs :
-       il DESCEND, vers l'écran suivant du même atterrissage. Le chevron
-       disait déjà « plus bas » et emmenait sur un autre document — c'est
-       la seule promesse de l'écran qui n'était pas tenue.
-       La carte n'est plus une porte de ce fichier : elle a la sienne,
-       `totehm_world.html`, à retravailler. -->
-  <!-- ══ LA BARRE DE RECHERCHE EST EN BAS · 16/09/2026 ═══════════════
-       Le haut porte l'identité — le logo et la porte. Le bas porte
-       l'action — on cherche quelqu'un. C'est la forme de Google, et
-       elle tient pour la même raison : le pouce est en bas, l'œil est
-       en haut.
-       ⚠️ CE N'EST PLUS UN BOUTON QUI RÉVÈLE UN CHAMP. Il fallait deux
-       gestes pour une intention ; il en faut zéro : on tape. Le bouton
-       `#search-btn` et son `morph()` sont supprimés — le câblage le
-       sait, il ne l'appelle plus. -->
-  <div id="gate-foot">
-    <div id="gate-search">
-      <input class="line-input" id="search-input" maxlength="24"
-             placeholder="search a Totehm" autocomplete="off" spellcheck="false"
-             aria-label="Search a Totehm">
-      <div class="note dim hide" id="search-note"></div>
-    </div>
-
-  <button id="ctx-down" type="button" aria-label="Think same but opposite">
-    <span class="ctx-label">Think same but opposite</span>
-    <svg class="chev bob" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-  </button>
-  </div><!-- /gate-foot -->
-</section>
-
-<!-- ══ L'ÉCRAN SUIVANT — LA VIDÉO ══════════════════════════════════════
-     Un seul plan, plein cadre, sans commande : une vidéo qu'on regarde,
-     pas qu'on pilote. `playsinline` et `muted` sont OBLIGATOIRES pour
-     qu'elle parte seule sur iOS ; `preload="none"` pour qu'elle ne coûte
-     rien tant que personne n'est descendu.
-     Tant que le fichier n'est pas posé, le cadre reste noir et la phrase
-     tient l'écran toute seule — jamais une icône de média cassé. -->
-<section id="gate-context">
-  <div id="ctx-video">
-    <video id="ctx-vid" playsinline muted loop preload="none"
-           poster="assets/img/dope_space.png"></video>
+  <!-- ══ LA RECHERCHE REMONTE · 16/09/2026 ═══════════════════════════
+       Elle vivait en bas de l'écran avec « Think same but opposite »
+       et un deuxième écran vidéo dessous. Le deuxième écran est parti :
+       la carte a son propre fichier, la vidéo n'annonçait plus rien.
+       Sans deuxième écran, la barre n'a plus de raison d'être en bas —
+       elle rejoint l'identité, dans le flux du haut. -->
+  <div id="gate-search">
+    <input class="line-input" id="search-input" maxlength="24"
+           placeholder="search a Totehm" autocomplete="off" spellcheck="false"
+           aria-label="Search a Totehm">
+    <div class="note dim hide" id="search-note"></div>
   </div>
-  <p id="ctx-say">Think same<br><b>but opposite</b></p>
-  <button id="ctx-up" type="button" aria-label="Back to the top">
-    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg>
-  </button>
+  </div><!-- /gate-top-row -->
 </section>
 </div>
 
@@ -5594,33 +5518,10 @@ window.addEventListener('pageshow',e=>{
     runSearch(v, gsn);
   });
 
-  /* ══ NAVIGATION VERS LA HIGHER MAP ══
-     Clic sur #ctx-down ou swipe dans n'importe quelle direction verticale
-     (>40 px) → map.html. Le sélecteur d'intention est sur map.html. */
-  /* ⚠️ LE GESTE NE QUITTE PLUS LA PAGE · 09/09/2026. Un balayage vertical
-     de 40 px — c'est-à-dire n'importe quel début de défilement — envoyait
-     sur `map.html`. Descendre pour LIRE l'atterrissage était donc
-     impossible au doigt : on partait ailleurs. Le chevron et le geste
-     font maintenant la même chose, et c'est ce qu'ils annonçaient :
-     descendre d'un écran. La vidéo ne démarre qu'une fois arrivée —
-     rien ne se télécharge pour quelqu'un qui reste en haut. */
-  {
-    const ctxDown=$('ctx-down'), ctxUp=$('ctx-up'), ctxSec=$('gate-context');
-    const vers=el=>{ if(el&&el.scrollIntoView)el.scrollIntoView({behavior:'smooth',block:'start'}); };
-    if(ctxDown) ctxDown.addEventListener('click',()=>vers(ctxSec));
-    if(ctxUp)   ctxUp.addEventListener('click',()=>vers($('gate-hero')));
-    /* La vidéo se charge quand elle entre dans le cadre, et se met en
-       pause quand elle en sort : une vidéo qui tourne hors écran, c'est
-       de la batterie et de l'egress pour personne. */
-    const v=$('ctx-vid');
-    if(v&&ctxSec&&'IntersectionObserver' in window){
-      new IntersectionObserver(es=>es.forEach(e=>{
-        if(e.isIntersecting){ if(!v.src&&v.dataset.src)v.src=v.dataset.src;
-          const p=v.play(); if(p&&p.catch)p.catch(()=>{}); }
-        else v.pause();
-      }),{threshold:.35}).observe(ctxSec);
-    }
-  }
+  /* SUPPRIMÉ (17/09/2026) — le module `#ctx-down` / `#ctx-up` /
+     `#gate-context` et l'IntersectionObserver de `#ctx-vid`. Le
+     deuxième écran « Think same but opposite » est parti ; il n'y a
+     plus rien à faire descendre ni de vidéo à charger. */
 })();
 
 /* ══ LOUPE SUPPRIMÉE · 07/09/2026 ══════════════════════════════════════
