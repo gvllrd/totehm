@@ -127,7 +127,12 @@ html,body{width:100%;height:100%;background:var(--paper);color:var(--g-light);fo
    contrôleur. La bande basse y gagne : elle n'a plus que les portes. */
 #bigT{position:fixed;top:26px;left:max(16px,5vw);transform:none;z-index:30;user-select:none;transition:opacity .4s;line-height:0;background:none;border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 @keyframes t-slow{0%,100%{opacity:1}50%{opacity:.45}}
-body:not(.gate) #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
+/* ⚠️ LE T NE RESPIRE QUE DANS LES HABITUDES · 19/09/2026. Il EST le
+   filtre, et le filtre ne trie que des habitudes — rythme et intention
+   n'existent que là. Le voir battre dans les quatre autres vues
+   promettait une porte qui n'existe pas. */
+body:not(.gate).v-habits #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
+body:not(.gate):not(.v-habits) #bigT{opacity:.42;cursor:default}
 @media(prefers-reduced-motion:reduce){body:not(.gate) #bigT svg{animation:none}}
 /* ⚠️ UNE SEULE RÈGLE POUR LA TAILLE DU T. Il y en avait deux, séparées
    par l'animation : la seconde gagnait sans un mot, et ma valeur de 40 px
@@ -159,8 +164,22 @@ body:not(.gate) #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
 /* ⚠️ LES PORTES PASSENT À GAUCHE · 18/09/2026, parce que le wordmark
    reprend la droite. `align-items` suit : une colonne alignée à droite
    dans le coin gauche laisserait un escalier. */
-#bottom-doors{position:fixed;bottom:30px;left:max(18px,6vw);right:auto;z-index:31;
-  display:flex;flex-direction:column;align-items:flex-start;gap:7px}
+/* ══ LES TROIS PORTES SUR L'ATTERRISSAGE · 19/09/2026 ════════════════
+   Elles mènent toutes les trois DEHORS — l'autre domaine, la boutique,
+   le bot. Rien de ce qui sort n'a sa place dans la pièce où l'on écrit.
+   Sur l'atterrissage, en revanche, elles sont exactement à leur place :
+   c'est l'écran des choix.
+   Elles ne sont donc plus `fixed` : elles vivent dans le flux du gate,
+   sous la recherche, en RANGÉE — trois choix côte à côte se comparent,
+   trois choix empilés se subissent. Elles reviennent à la colonne quand
+   l'écran est trop étroit pour les tenir. */
+#bottom-doors{display:flex;flex-direction:row;flex-wrap:wrap;
+  align-items:center;justify-content:center;gap:10px 22px;
+  margin-top:26px;padding:0 18px;max-width:520px}
+body:not(.gate) #bottom-doors{display:none!important}
+/* Sur l'atterrissage, une porte est une invitation : elle respire un peu
+   plus que dans la bande basse d'où elle vient. */
+#bottom-doors .door{font-size:15px;padding:4px 2px}
 /* La porte du Club se distingue des deux autres : elle ne mène pas à une
    pièce du Totehm, elle mène au Club. Un blanc plein au lieu d'un gris —
    pas un cadre, la marque n'en veut nulle part. */
@@ -297,48 +316,52 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
 #cur-b  {grid-area:3/2/4/3}
 #vnow   {grid-area:4/1/5/4;margin-top:5px}
 
-/* ══ LE CARRÉ ════════════════════════════════════════════════════════
-   ⚠️ PLUS DE FOND PERFORÉ. Les trous noirs venaient de l'image du logo ;
-   à 62 px ils ne se lisaient plus comme des perforations mais comme des
-   points sales. Le carré perforé était dans la maquette de Wah pour me
-   MONTRER le Totehm, pas pour être recopié à cette taille.
-   Un aplat, et la couleur fait tout le travail. */
-#joy-box{width:62px;height:62px;position:relative;overflow:hidden;
+/* ══ LE PAVÉ — CINQ RONDS, DEUX AXES, UN CENTRE PARTAGÉ · 19/09/2026
+   Trois ronds verticaux (objectifs · habitudes · répulsions) POSÉS SUR
+   trois ronds horizontaux (sagesse · habitudes · vision). Les deux axes
+   partagent leur centre : c'est une croix de CINQ ronds, et celui du
+   milieu appartient aux deux.
+
+   C'est un pad de manette : une base, cinq positions, et celle où l'on
+   est qui ressort en relief. On voit où l'on est comme on voit quelle
+   touche est enfoncée — sans un mot.
+
+   ⚠️ LE FOND DU PAVÉ SUIT L'AXE HORIZONTAL, et lui seul. Objectifs et
+   répulsions sont la même colonne que les habitudes : leur fond est le
+   même, seul le rond allumé change. Peindre le fond aussi, ce serait
+   dire qu'on a changé d'époque. */
+#joy-box{width:62px;height:62px;position:relative;border-radius:50%;
   background:var(--joy-fond,var(--navy));
-  /* La perspective vit sur le parent de ce qui tourne. */
-  perspective:210px;
   transition:background-color .42s ease}
 
-/* La pile : trois dalles couchées, qui glissent pour amener au centre
-   celle où l'on est. C'est le seul mouvement du contrôleur. */
-#joy-stack{position:absolute;left:50%;top:50%;
-  width:42px;height:46px;margin:-23px 0 0 -21px;
-  transform-style:preserve-3d;
-  transform:rotateX(50deg) translateY(var(--joy-y,0px));
-  transition:transform .42s cubic-bezier(.22,.9,.3,1)}
-#joy-stack i{position:absolute;left:0;right:0;height:13px;display:block;
-  transition:opacity .42s ease,background-color .42s ease}
-#joy-stack .o{top:0;background:var(--blue)}
-#joy-stack .h{top:16px;background:var(--sky);
-  /* Un filet clair sur la tranche : c'est ce qui fait qu'on lit une
-     DALLE et pas un rectangle. */
-  box-shadow:0 1px 0 rgba(255,255,255,.3)}
-#joy-stack .r{top:32px;background:var(--rep)}
-/* La dalle où l'on est reste pleine, les deux autres reculent. */
-#joy.v-objectives .h,#joy.v-objectives .r{opacity:.3}
-#joy.v-habits     .o,#joy.v-habits     .r{opacity:.3}
-#joy.v-repulsions .o,#joy.v-repulsions .h{opacity:.3}
-#joy.v-objectives{--joy-y:15px}
-#joy.v-habits    {--joy-y:0px}
-#joy.v-repulsions{--joy-y:-15px}
-/* ⚠️ SUR LA SAGESSE ET LA VISION, IL N'Y A QU'UNE COUCHE. L'axe vertical
-   n'existe pas là-bas ; en montrer trois serait un mensonge. */
-#joy.seule .o,#joy.seule .r{opacity:0}
-#joy.seule .h{opacity:1}
-/* La dalle seule est plus claire que son fond : sur du rouge-violet un
-   rose, sur du bleu un ciel. Sinon elle se fond dans le carré. */
-#joy.v-wisdom  .h{background:#d59ac4}
-#joy.v-visions .h{background:var(--sky)}
+/* Les cinq ronds. Leur place est FIXE — c'est le relief qui bouge, pas
+   la géométrie. `--d` est le diamètre au repos. */
+#joy-stack{position:absolute;inset:0}
+#joy-stack i{--d:13px;position:absolute;display:block;
+  width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
+  border-radius:50%;background:rgba(255,255,255,.22);
+  transition:transform .38s cubic-bezier(.22,.9,.3,1),
+             background-color .38s ease, box-shadow .38s ease}
+#joy-stack .o{left:50%;top:22%}
+#joy-stack .h{left:50%;top:50%}
+#joy-stack .r{left:50%;top:78%}
+#joy-stack .w{left:22%;top:50%}
+#joy-stack .v{left:78%;top:50%}
+
+/* ══ LE RELIEF ══════════════════════════════════════════════════════
+   Le rond où l'on est se soulève : il grossit, il s'éclaire, et une
+   ombre portée le décolle du pavé. Trois effets pour un seul geste —
+   c'est ce qui fait qu'on le lit comme un VOLUME et pas comme une tache
+   plus claire. Un liseré clair sur le haut du rond joue la lumière
+   rasante ; sans lui, la sphère reste un disque. */
+#joy-stack i.on{
+  transform:scale(1.55);
+  background:#fff;
+  box-shadow:0 2px 5px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.9);
+  z-index:2}
+/* Le rond de la famille où l'on est, sans être celui-là : à mi-chemin.
+   C'est ce qui montre l'AXE en plus de la position. */
+#joy-stack i.axe{background:rgba(255,255,255,.52)}
 
 /* ══ LES QUATRE CHEVRONS ═════════════════════════════════════════════
    ⚠️ JAMAIS `display:none`. Un curseur sans voisin garde sa case et
@@ -353,18 +376,11 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
 .cur svg{width:14px;height:14px;display:block;
   stroke:currentColor;fill:none;stroke-width:2.1;
   stroke-linecap:round;stroke-linejoin:round}
-/* ⚠️ LES CHEVRONS VIVENT SUR LE PAPIER, PAS DANS LE CARRÉ. Mesuré :
-   `--blue` (#36498c) et `--rep` (#743169) sur un papier #2b2b57, c'est
-   du sombre sur du sombre — deux des quatre chevrons étaient là et ne se
-   voyaient pas. Ils prennent donc la version CLAIRE de leur famille :
-   le bleu devient ciel, le rouge-violet devient rose. La famille se lit
-   toujours, et le chevron se voit. */
-.cur.to-habits    {color:var(--sky)}
-.cur.to-objectives{color:var(--sky)}
-.cur.to-repulsions{color:#d59ac4}
-.cur.to-wisdom    {color:#d59ac4}
-.cur.to-visions   {color:var(--sky)}
-.cur.mort{color:#fff}
+/* ⚠️ LES CHEVRONS SONT BLANCS. Colorés par famille, ils se battaient
+   avec les cinq ronds du pavé — deux langages de couleur sur trois
+   centimètres, et plus aucun des deux ne parlait. Blancs, ils ENCADRENT
+   et se taisent : c'est le pavé qui dit où l'on est. */
+.cur{color:#fff}
 @media(hover:hover){
   #cur-g:not(.mort):hover{transform:translateX(-2px)}
   #cur-d:not(.mort):hover{transform:translateX(2px)}
@@ -478,6 +494,13 @@ body.higher .set-block.higher-only{display:flex!important}
    `absolute` : le gate défile maintenant sur deux écrans, le menu membre
    ne doit pas partir avec. */
 #conn-bar{position:fixed;top:14px;left:16px;z-index:201;margin:0;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
+/* ⚠️ INVISIBLE DANS LE TOTEHM · 19/09/2026, ET SUR LES DEUX ÉCRANS.
+   La règle vivait dans la requête média du téléphone : sur ordinateur
+   le point vert restait, alors qu'il n'ouvre plus rien depuis le 17/09.
+   Un point qui ne fait rien est une porte peinte sur un mur.
+   ⚠️ Une règle de comportement ne va JAMAIS dans une requête média —
+   seule la mise en page y a sa place. */
+body:not(.gate) #conn-bar{display:none!important}
 #conn-bar:hover{color:#fff}
 /* Accréditation Higher. Elle ne s'affiche que pour qui l'a payée ou reçue :
    la source de vérité est stoner_access, jamais le front. */
@@ -839,6 +862,12 @@ body.v-visions{--paper:#2b3a73}
 /* LE FONDU EST UN SOUFFLE, PAS UNE ENTRÉE EN SCÈNE · 09/09/2026 :
    .16s au lieu des .34s d'avant, et aucun déplacement — une mini-boîte
    qui glisse en apparaissant fait bouger toute la ligne sous le doigt. */
+/* La mini-boîte est un bouton : elle en prend la remise à zéro, pas
+   l'apparence. Aucun cadre — règle de marque. */
+.mini,.mini-t{font:inherit;color:inherit;cursor:pointer;
+  -webkit-tap-highlight-color:transparent}
+.mini-t{background:none;border:none;padding:0;text-align:left}
+.mini-w{cursor:default}
 .mini{display:inline-flex;align-items:center;gap:6px;border:none;
   padding:3px 7px;font-family:'Quantico',sans-serif;font-size:11px;
   line-height:1.4;color:#fff;transition:filter .16s ease,opacity .16s ease}
@@ -1196,8 +1225,16 @@ body.ordering #ordbtn span{animation:none;opacity:1}
    les trois carrés, à leur place fixe — c'est pour ça qu'ils remontent.
    Elle ne s'affiche qu'en mode classement, et ne prend aucune place
    sinon (`display:none`). */
-#ordbar{position:fixed;top:calc(var(--croix-t) + 14px);left:50%;transform:translateX(-50%);
-  z-index:33;display:none;white-space:nowrap;pointer-events:none}
+/* ⚠️ ELLE SE CENTRAIT *ET* SE DÉCALAIT · 19/09/2026. `left:50%` +
+   `translateX(-50%)` la centraient, puis un `margin-left` de la largeur
+   du rail la repoussait à droite — et `white-space:nowrap` finissait de
+   la faire sortir de l'écran au téléphone. Trois règles qui se
+   contredisaient, donc un texte illisible sur ordinateur et invisible au
+   téléphone.
+   Une bande pleine largeur, centrée, juste au-dessus de la première
+   boîte : elle ne peut plus déborder par construction. */
+#ordbar{position:fixed;top:calc(var(--band-t) - 15px);left:0;right:0;
+  transform:none;z-index:33;display:none;pointer-events:none;text-align:center}
 body.ordering #ordbar{display:block}
 /* ══ LE TOTEHM DIT UNE PHRASE · 17/09/2026 ══════════════════════════
    Une seule ligne, a la graisse des etiquettes, posee sous la croix.
@@ -1206,8 +1243,8 @@ body.ordering #ordbar{display:block}
    alerte de trop.
    `pointer-events:none` : elle ne doit JAMAIS intercepter un doigt --
    elle apparait exactement la ou l'on vient d'appuyer. */
-#dit{position:fixed;top:calc(var(--croix-t) + 14px);left:50%;
-  transform:translateX(-50%);z-index:34;pointer-events:none;
+#dit{position:fixed;top:calc(var(--band-t) - 15px);left:0;right:0;
+  text-align:center;z-index:34;pointer-events:none;
   font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;
   text-transform:uppercase;color:#d59ac4;white-space:nowrap;
   opacity:0;transition:opacity .22s ease}
@@ -1215,7 +1252,7 @@ body.ordering #ordbar{display:block}
 @media(prefers-reduced-motion:reduce){#dit{transition:none}}
 #ordbar,.ordbar{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;
   text-transform:uppercase;color:rgba(255,255,255,.72);
-  padding:0 0 10px;margin-left:calc(var(--rl) + var(--rw) + 16px)}
+  padding:0 14px;margin:0}
 /* ⚠️ PLUS AUCUN GESTE N'EST CAPTURÉ EN MODE CLASSEMENT · 09/09/2026.
    `touch-action:none`, `body.grabbing`, `.habit.drag`, `.habit.over` :
    tout le dispositif du glissement est supprimé. On défile normalement,
@@ -1595,6 +1632,58 @@ body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
 .mw-out:hover{color:#fff}
 .mw-sync{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:var(--love);margin-top:8px;min-height:12px}
 
+/* ══ LE TIROIR DU CERCLE · 19/09/2026 ════════════════════════════════
+   Aucune bordure nulle part — règle de marque. Ce qui sépare, c'est
+   l'écart et la surface. */
+#cercle{position:relative;display:flex;flex-direction:column;gap:12px}
+.lbl-s{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(255,255,255,.42);line-height:1.8}
+
+/* ⚠️ LE VOILE EST UNE COUCHE, PAS UN REMPLACEMENT. Le tableau de bord
+   reste DESSOUS, flouté : on voit exactement ce qu'on rate. Le cacher
+   aurait été plus simple et beaucoup moins convaincant. */
+#cercle-voile{position:absolute;inset:-6px;z-index:3;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;padding:16px 12px;text-align:center;
+  background:linear-gradient(180deg,rgba(8,8,20,.86),rgba(8,8,20,.94))}
+#cercle.ouvert #cercle-voile{display:none}
+#cercle-corps{display:flex;flex-direction:column;gap:14px;
+  filter:blur(3px);opacity:.5;pointer-events:none;transition:filter .3s ease,opacity .3s ease}
+#cercle.ouvert #cercle-corps{filter:none;opacity:1;pointer-events:auto}
+
+.cv-hook{font-family:'Montserrat',sans-serif;font-style:italic;font-weight:900;
+  font-size:clamp(17px,5.2vw,22px);line-height:1.05;color:#fff;letter-spacing:-.02em}
+.cv-say{font-size:12px;line-height:1.6;color:var(--g-light);max-width:300px}
+.cv-say b{color:#fff}
+.cv-sim{display:flex;flex-direction:column;gap:4px;width:100%;max-width:280px}
+.cv-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  font-size:12px;color:var(--g-mid)}
+.cv-row b{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;color:var(--love)}
+.cv-bar{width:100%;max-width:280px;height:3px;background:rgba(255,255,255,.14)}
+.cv-bar i{display:block;height:100%;width:0;background:var(--love);transition:width .4s ease}
+.cv-step{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--g-mid)}
+
+.cc-etat{display:flex;align-items:center;gap:8px}
+.cc-etat i{width:8px;height:8px;display:block;flex:0 0 auto;background:var(--g-dark)}
+#cercle.live .cc-etat i{background:var(--love)}
+.cc-etat span{font-size:12px;color:var(--g-light)}
+.cc-bloc{display:flex;flex-direction:column;gap:6px}
+.cc-prix{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cc-prix input{background:rgba(255,255,255,.08);border:none;outline:none;color:#fff;
+  font-family:'Quantico',sans-serif;font-weight:700;font-size:17px;width:84px;
+  padding:7px 9px;text-align:center}
+.cc-cur{font-size:13px;color:var(--g-mid)}
+.cc-split{display:flex;gap:2px;height:5px}
+.cc-split i{display:block;height:100%}
+.cc-split .a{background:var(--love);flex:80}
+.cc-split .b{background:var(--navy);flex:20}
+.cc-kpi{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cc-tile{background:rgba(255,255,255,.05);padding:10px 10px 12px;min-width:0}
+.cc-val{font-family:'Quantico',sans-serif;font-weight:700;font-size:20px;color:#fff;
+  line-height:1;white-space:nowrap}
+.cc-pay{display:flex;gap:8px}
+
 .acct-btn{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:var(--rep);background:none;border:none;cursor:pointer;padding:0 8px;line-height:1.6;display:block;margin:4px auto 0;text-align:center;-webkit-tap-highlight-color:transparent;transition:opacity .2s}
 .acct-btn:hover{opacity:.72}
 
@@ -1724,14 +1813,14 @@ body.gate.entered #conn-bar{opacity:0;pointer-events:none}
 
 /* ══ L'UI de l'app : masquée pendant l'état 1, fondu entrant pendant l'état 2 ══ */
 body.gate #rail,body.gate #bigT,body.gate #wordmark,
-body.gate #floorview,body.gate #bottom-doors,body.gate #ordbar,
+body.gate #floorview,body.gate #ordbar,
 body.gate #filter-arrow,body.gate #fv-status,body.gate #fold-x,
 body.gate #views,body.gate #vname,
 body.gate #filter-badge{
   opacity:0;pointer-events:none;transition:opacity .55s ease}
 body.gate.entered #rail,body.gate.entered #bigT,body.gate.entered #wordmark,
 body.gate.entered #floorview,
-body.gate.entered #bottom-doors,body.gate.entered #filter-arrow,
+body.gate.entered #filter-arrow,
 body.gate.entered #fv-status,body.gate.entered #fold-x,
 body.gate.entered #views,body.gate.entered #ordbar,
 body.gate.entered #filter-badge{
@@ -1743,7 +1832,7 @@ body.gate.entered #filter-badge{
 @media(prefers-reduced-motion:reduce){
   #gate-logo .glayer{transition-duration:.01ms!important}
   body.gate #rail,body.gate #bigT,body.gate #wordmark,
-  body.gate #floorview,body.gate #bottom-doors,body.gate #ordbar,
+  body.gate #floorview,body.gate #ordbar,
   body.gate #filter-arrow,body.gate #fv-status,body.gate #fold-x,
   body.gate #filter-badge{transition-duration:.01ms!important}
 }
@@ -1862,7 +1951,6 @@ body.gate.entered #filter-badge{
   /* Le wordmark est redescendu à droite ; il retrouve son ancrage du
      carré, pas celui de la fenêtre. */
   #wordmark{bottom:26px;right:26px;top:auto;left:auto}
-  #bottom-doors{bottom:26px;left:calc(var(--rl) + var(--rw) + 16px);right:auto}
   /* Même dégagement qu'au téléphone : la croix vit dans le coin haut
      droit du carré, le joystick se range à sa gauche. */
   #joy{top:calc(50% - var(--stage)/2 + 22px);
@@ -2054,8 +2142,7 @@ body.gate.entered #filter-badge{
      au-dessus du T, centré. `body:not(.gate)` : dans l'atterrissage,
      #conn-bar garde sa place d'origine — le logo composé du gate occupe
      déjà le centre. */
-  body:not(.gate) #conn-bar{top:8px;left:50%;right:auto;transform:translateX(-50%);padding:6px 10px}
-  #vname{top:142px}
+    #vname{top:142px}
   /* Rail fin et sourd — une trace, pas une bande. Il tient la colonne du
      regard sans peser. */
   #rail{background:rgba(255,255,255,.16)}
@@ -2269,6 +2356,39 @@ body.gate.entered #filter-badge{
            aria-label="Search a Totehm">
     <div class="note dim hide" id="search-note"></div>
   </div>
+
+  <!-- ══ LES TROIS PORTES VIVENT ICI · 19/09/2026 ═══════════════════
+       Elles mènent toutes les trois DEHORS — l'autre domaine, la
+       boutique, le bot. Rien de ce qui sort n'a sa place dans la pièce
+       où l'on écrit. Sur l'atterrissage, en revanche, elles sont
+       exactement à leur place : c'est l'écran des choix. -->
+<div id="bottom-doors">
+  <!-- ══ LES PORTES MÈNENT DEHORS · 17/09/2026 ═══════════════════════
+       [My Wisdom] et [My vision] faisaient double emploi avec les
+       curseurs gauche et droite : deux chemins pour la même vue, dont un
+       plus loin du pouce. Une porte, maintenant, sort du Totehm — c'est
+       sa seule raison d'être.
+       ⚠️ « GET » EST LE SEUL MOT CORAL DU PRODUIT (BRAND.md). Il ne se
+       réutilise nulle part ailleurs, et « Higher » n'est jamais tapé en
+       texte : c'est le slogan, donc le SVG. -->
+  <button class="door" id="door-book" type="button">
+    <span class="get">Get</span> <svg class="higher-inline" viewBox="0 0 600 200"
+      role="img" aria-label="Higher"><use href="#higher-badge"></use></svg></button>
+  <!-- ⚠️ « HIGHER » NE S'ÉCRIT JAMAIS EN TEXTE — RÈGLE DE MARQUE.
+       C'est un slogan, donc un SVG, partout et sans exception. Tapé au
+       clavier il devient un mot ordinaire dans la fonte du système, et
+       la marque s'éteint à l'endroit exact où elle devrait parler. -->
+  <button class="door" id="door-next" type="button">My <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> Self</button>
+  <!-- ══ LA TROISIÈME PORTE MÈNE À LA BOUTIQUE · 18/09/2026 ══════════
+       Elle menait au Club. Le Club devient une PAGE DE VENTE — il n'a
+       rien à offrir à quelqu'un qui n'est pas encore membre, et une
+       porte vers une page de vente depuis l'intérieur du produit, c'est
+       une publicité chez soi.
+       La boutique, elle, est le geste suivant naturel : on a son Totehm,
+       on le porte. ⚠️ Autre domaine, donc autre session : elle passe par
+       le pont. -->
+  <button class="door door-club" id="door-club" type="button">Totehmize my cloth</button>
+</div>
   </div><!-- /gate-top-row -->
 </section>
 </div>
@@ -2310,40 +2430,7 @@ body.gate.entered #filter-badge{
 <div id="bigT" class="sink-el"><svg id="ui-t" viewBox="79.832 47.921 66.789 66.932" role="img" aria-label="T"><defs><clipPath id="tut_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tut_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tut_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tut_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tut_ffb4264ddd)"><g clip-path="url(#tut_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tut_0eae0d8cca)"><g clip-path="url(#tut_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tut_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tut_92fddf9f0e)"><g clip-path="url(#tut_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g id="t-foot" clip-path="url(#tut_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tut_7d4c700d36)"><g clip-path="url(#tut_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></svg></div>
 <div id="wordmark" class="sink-el"><svg id="ui-wm" viewBox="74.997 121.602 77.584 46.683" role="img" aria-label="TOTEHM"><defs><g/><clipPath id="tuw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g id="wm-O" transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tuw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g id="wm-H" transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg></div>
 
-<!-- ══ LA BARRE DU BAS · 09/09/2026 ═══════════════════════════════════
-     Le petit chevron sous le TOTEHM a disparu : il ne disait rien, et le
-     wordmark lui-même ouvre déjà le menu depuis toujours.
-     Le TOTEHM se décale à GAUCHE et laisse la droite à deux portes —
-     My Wisdom et Habits Generator. Elles vivaient dans le menu membre,
-     donc à deux gestes ; elles sont maintenant sous le pouce.
-     Le wordmark reste le menu : on ne perd rien. -->
-<div id="bottom-doors" class="sink-el">
-  <!-- ══ LES PORTES MÈNENT DEHORS · 17/09/2026 ═══════════════════════
-       [My Wisdom] et [My vision] faisaient double emploi avec les
-       curseurs gauche et droite : deux chemins pour la même vue, dont un
-       plus loin du pouce. Une porte, maintenant, sort du Totehm — c'est
-       sa seule raison d'être.
-       ⚠️ « GET » EST LE SEUL MOT CORAL DU PRODUIT (BRAND.md). Il ne se
-       réutilise nulle part ailleurs, et « Higher » n'est jamais tapé en
-       texte : c'est le slogan, donc le SVG. -->
-  <button class="door" id="door-book" type="button">
-    <span class="get">Get</span> <svg class="higher-inline" viewBox="0 0 600 200"
-      role="img" aria-label="Higher"><use href="#higher-badge"></use></svg></button>
-  <!-- ⚠️ « HIGHER » NE S'ÉCRIT JAMAIS EN TEXTE — RÈGLE DE MARQUE.
-       C'est un slogan, donc un SVG, partout et sans exception. Tapé au
-       clavier il devient un mot ordinaire dans la fonte du système, et
-       la marque s'éteint à l'endroit exact où elle devrait parler. -->
-  <button class="door" id="door-next" type="button">My <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> Self</button>
-  <!-- ══ LA TROISIÈME PORTE MÈNE À LA BOUTIQUE · 18/09/2026 ══════════
-       Elle menait au Club. Le Club devient une PAGE DE VENTE — il n'a
-       rien à offrir à quelqu'un qui n'est pas encore membre, et une
-       porte vers une page de vente depuis l'intérieur du produit, c'est
-       une publicité chez soi.
-       La boutique, elle, est le geste suivant naturel : on a son Totehm,
-       on le porte. ⚠️ Autre domaine, donc autre session : elle passe par
-       le pont. -->
-  <button class="door door-club" id="door-club" type="button">Totehmize my cloth</button>
-</div>
+
 
 <!-- La croix : referme le Totehm et rejoue le déploiement à l'envers. -->
 <div id="ro-bar">
@@ -2426,7 +2513,9 @@ body.gate.entered #filter-badge{
   <button class="cur" id="cur-g" type="button">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
   <div id="joy-box" aria-hidden="true">
-    <div id="joy-stack"><i class="o"></i><i class="h"></i><i class="r"></i></div>
+    <!-- Cinq ronds : trois sur l'axe vertical, trois sur l'horizontal,
+         et celui du milieu appartient aux deux. -->
+    <div id="joy-stack"><i class="o"></i><i class="h"></i><i class="r"></i><i class="w"></i><i class="v"></i></div>
   </div>
   <button class="cur" id="cur-d" type="button">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
@@ -2561,11 +2650,69 @@ body.gate.entered #filter-badge{
       <!-- ══ L'ESPACE CRÉATEUR S'OUVRE AVEC LA VISIBILITÉ PAYANTE ══════
            Il ne s'affiche que si le membre a choisi d'être suivi contre
            paiement : avant ce choix, il n'a rien à y faire. -->
+      <!-- ══ LE TIROIR DU CERCLE · 19/09/2026 ═══════════════════════
+           Il s'ouvre ICI, sous la visibilité payante. Il ne renvoie nulle
+           part : une redirection vers une autre page, c'est perdre la
+           moitié des gens au moment précis où ils disent oui. -->
       <div class="set-block hide" id="creator-block">
-        <div class="mw-body">Your followers subscribe to your Totehm. You keep
-          <b>80 %</b> of every payment — TOTEHM keeps 20 %.</div>
-        <div class="note dim" id="creator-note"></div>
-        <button class="btn-sig" id="creator-btn" type="button">Open my creator space</button>
+        <div id="cercle">
+
+          <!-- LE VOILE — il ne couvre que si le Totehm est incomplet -->
+          <div id="cercle-voile">
+            <div class="cv-hook">TURN YOUR DISCIPLINE<br>INTO CASH FLOW</div>
+            <div class="cv-say">Lock in <b>80 %</b> recurring revenue on every
+              member who accesses your <svg class="higher-inline" viewBox="0 0 600 200"
+              role="img" aria-label="Higher"><use href="#higher-badge"></use></svg>
+              Self and your private spots.</div>
+            <!-- Le simulateur : on ne promet pas, on multiplie. Le chiffre
+                 vient du prix que le créateur vient de poser, ou de 9 €
+                 tant qu'il n'en a pas posé. -->
+            <div class="cv-sim">
+              <div class="cv-row"><span>10 members</span><b id="sim-10">800 €/year</b></div>
+              <div class="cv-row"><span>100 members</span><b id="sim-100">8 000 €/year</b></div>
+            </div>
+            <div class="cv-bar"><i id="cv-fill"></i></div>
+            <div class="cv-step" id="cv-step">0 of 5 views filled</div>
+            <button class="btn-sig" id="cv-go" type="button">Complete my Totehm</button>
+          </div>
+
+          <!-- LE TABLEAU DE BORD — flouté dessous tant que le voile est là -->
+          <div id="cercle-corps">
+            <div class="cc-etat"><i id="cc-dot"></i><span id="cc-mot">Not live yet</span></div>
+
+            <div class="cc-bloc">
+              <div class="lbl-s">Your membership fee</div>
+              <div class="cc-prix">
+                <input id="cc-fee" type="number" inputmode="decimal" min="3" max="500" step="1" placeholder="9">
+                <span class="cc-cur">€ / month</span>
+                <button class="btn-sig" id="cc-save" type="button">Save</button>
+              </div>
+              <div class="cc-split"><i class="a"></i><i class="b"></i></div>
+              <div class="lbl-s" id="cc-split-say">80 % you · 20 % totehm</div>
+              <div class="note-err" id="cc-err"></div>
+            </div>
+
+            <div class="cc-kpi">
+              <div class="cc-tile"><div class="lbl-s">Active paying members</div>
+                <div class="cc-val" id="cc-n">0</div></div>
+              <div class="cc-tile"><div class="lbl-s">Ready for next payout</div>
+                <div class="cc-val" id="cc-eur">0 €</div></div>
+            </div>
+
+            <button class="btn-sig" id="cc-copy" type="button">Monetize it — copy my link</button>
+
+            <div class="cc-bloc">
+              <div class="lbl-s">Where I get paid — 1st of every month</div>
+              <div class="cc-pay">
+                <button class="size-btn" id="pay-iban" type="button">IBAN</button>
+                <button class="size-btn" id="pay-paypal" type="button">PayPal</button>
+              </div>
+              <input class="line-input" id="pay-handle" placeholder="IBAN" autocomplete="off" spellcheck="false">
+              <div class="note dim" id="pay-note"></div>
+            </div>
+          </div>
+
+        </div>
       </div>
 
       <!-- Abonnement : offre unique Higher Club, peinte par paintSubscription() -->
@@ -3306,7 +3453,8 @@ function applyFloorFx(){
   $('rail').style.opacity='1';
   $('bigT').style.opacity='1';
   $('wordmark').style.opacity='1';
-  const bd=$('bottom-doors'); if(bd)bd.style.display='';
+  /* Les portes vivent sur l'atterrissage depuis le 19/09 : plus rien à
+     rétablir à l'ouverture du Totehm. */
   $('filter-arrow').style.display='';
 }
 /* Un seul écran. La Map est partie dans map.html : plus d'étage, plus de
@@ -3437,7 +3585,8 @@ $('bigT').style.cursor='pointer';
 /* ⚠️ LE T N'OUVRE PLUS DE FENÊTRE · 15/09/2026. Il déplie la boîte
    filtre EN TÊTE DE LISTE — dans le Totehm, avec le rail, la couleur et
    la grammaire de boîte. Voir `boiteFiltre()`. */
-$('bigT').onclick=()=>{ filtreOuvert=!filtreOuvert; pk=null; renderZone();
+$('bigT').onclick=()=>{ if(view!=='habits')return;
+  filtreOuvert=!filtreOuvert; pk=null; renderZone();
   if(filtreOuvert){const sc=$('fv-inner'); if(sc)sc.scrollTop=0;} };
 $('filter-arrow').onclick=()=>{ filtreOuvert=true; pk=null; renderZone(); };
 /* TOTEHM.png cliquable : ouvre le Dashboard, comme la petite flèche du bas */
@@ -3619,12 +3768,18 @@ let view='habits';
    est la PROFONDEUR. Une seule table les porte, et tout ce qui navigue —
    le doigt, le trackpad, les fleches, les carres — la lit. Deux tables
    finiraient par dire deux choses differentes. */
+/* ⚠️ L'AXE DU TEMPS EST ACCESSIBLE DES CINQ VUES · 19/09/2026.
+   Depuis les objectifs ou les répulsions, gauche et droite ne menaient
+   nulle part : il fallait remonter aux habitudes d'abord. Or la sagesse
+   et la vision ne sont pas « à côté des habitudes », elles sont à côté
+   du PRÉSENT tout entier — objectifs et répulsions compris. Deux gestes
+   pour un déplacement d'un cran, c'était une marche inventée. */
 const CROIX={
   wisdom:     {d:'habits'},
   habits:     {g:'wisdom', d:'visions', h:'objectives', b:'repulsions'},
   visions:    {g:'habits'},
-  objectives: {b:'habits'},
-  repulsions: {h:'habits'},
+  objectives: {g:'wisdom', d:'visions', b:'habits'},
+  repulsions: {g:'wisdom', d:'visions', h:'habits'},
 };
 const voisin=d=>(CROIX[view]||{})[d]||null;
 /* Le nom et la glose de chaque vue : une seule table, lue par le titre
@@ -3643,6 +3798,16 @@ function versVoisin(d){ const v=voisin(d); if(!v)return; dernierSens=d; setView(
 /* Les cinq listes. `state.habits` vit en local (elle est dans `steps`),
    les quatre autres viennent du serveur en UN appel — `my_trips`. */
 let TRIPS=[], REPS=[], TEACH=[], VIS=[], tripsLoaded=false;
+/* ══ LE SPOT · 19/09/2026 ════════════════════════════════════════════
+   Texte d'habitude → lieu. Une habitude a un ENDROIT où on la fait :
+   « le parc en bas », « la salle de Benfica ». Pas une adresse — un
+   ancrage.
+   ⚠️ INDEXÉ PAR LE TEXTE SERVEUR (`srv(x)`), comme les objectifs et les
+   répulsions. Indexé par le texte affiché, le lieu disparaîtrait à
+   chaque lettre tapée dans le titre — on a mis trois lots à éteindre ce
+   bug-là sur les autres liens. */
+let SPOT={};
+const spotDe=x=>{const k=srv(x); return (k&&SPOT[k])||'';};
 
 /* DEUX ÉTATS, ET PAS SIX. Ce qui est OUVERT, et si on est en train de
    classer. Le choix en cours (`pk`) vit avec le rendu, plus haut — il y
@@ -3759,8 +3924,26 @@ function paintZone(){
      la PROFONDEUR (sa position). Tout se peint ici, à chaque rendu. */
   const jy=$('joy');
   if(jy){
-    jy.className='sink-el v-'+view
-      + ((view==='wisdom'||view==='visions') ? ' seule' : '');
+    jy.className='sink-el v-'+view;
+    /* ⚠️ LE ROND ALLUMÉ EST CELUI DE LA VUE, et les deux autres ronds
+       de son AXE sont à mi-chemin. C'est ce qui montre où l'on peut
+       aller en plus de là où l'on est. */
+    /* ⚠️ L'AXE NE SE RECOPIE PAS, IL SE DÉDUIT DE `CROIX` · 19/09/2026.
+       Il y avait ici une seconde table écrite à la main qui disait la
+       même chose que la croix — et qui a cessé de la dire à la minute
+       où la croix s'est élargie : depuis les objectifs on pouvait
+       partir à gauche, mais les ronds de la sagesse et de la vision
+       restaient éteints. Deux tables qui doivent s'accorder finissent
+       toujours par ne plus s'accorder. Une seule, maintenant : le pad
+       allume ce vers quoi on peut réellement aller. */
+    const ICI={objectives:'o', habits:'h', repulsions:'r', wisdom:'w', visions:'v'};
+    const ici=ICI[view];
+    const axe=[ici].concat(Object.values(CROIX[view]||{}).map(v=>ICI[v]))
+                   .filter(Boolean);
+    ['o','h','r','w','v'].forEach(k=>{
+      const e=jy.querySelector('#joy-stack .'+k); if(!e)return;
+      e.className = k + (k===ici ? ' on' : (axe.includes(k) ? ' axe' : ''));
+    });
     /* ⚠️ LA COULEUR DU FOND NE CHANGE QU'AVEC L'AXE HORIZONTAL. Les
        objectifs et les répulsions sont la même colonne que les
        habitudes : leur fond est le même, seule la dalle allumée change.
@@ -3773,6 +3956,9 @@ function paintZone(){
        FAMILLE. Mesuré : à `var(--paper)` il disparaissait purement et
        simplement — un contrôleur invisible. C'est le même rapport que
        les boîtes de la liste : le papier recule, l'objet avance. */
+    /* ⚠️ LE VRAI NAVY. J'avais glissé `--sky` dans la pile — un bleu
+       clair hors charte. `--navy` (#333366) est la couleur du présent,
+       et elle ne se remplace pas. */
     jy.style.setProperty('--joy-fond',
       view==='wisdom'  ? 'var(--rep)'  :
       view==='visions' ? 'var(--blue)' : 'var(--navy)');
@@ -3817,6 +4003,10 @@ function setView(v){
     if(typeof memberPaint==='function')memberPaint();
     return;
   }
+  /* ⚠️ LE FILTRE SE REFERME EN QUITTANT LES HABITUDES. Laissé ouvert,
+     il serait resté à l'écran dans une vue où ses deux critères ne
+     veulent rien dire — et il aurait continué de filtrer en silence. */
+  if(v!=='habits')filtreOuvert=false;
   view=v; renderZone();
   /* ⚠️ L'ARBRE EST NÉCESSAIRE DANS LES TROIS VUES · 09/09/2026.
      Il ne se chargeait QUE hors de la vue habitudes — vrai avant la
@@ -3879,6 +4069,12 @@ async function loadTrips(force){
     VIS=(data.visions||[]).map(v=>({id:String(v.id), t:v.text||'', t0:v.text||'',
       is:Array.isArray(v.is)?v.is:[], os:(v.os||[]).map(String)}));
     tripsLoaded=true;
+    /* Les spots voyagent à part : une table, une lecture, et `my_trips`
+       reste la fonction de l'arbre. */
+    try{
+      const {data:sp}=await sb.from('habit_spots').select('habit_text,place').eq('user_id',me.id);
+      SPOT={}; (sp||[]).forEach(r=>{SPOT[r.habit_text]=r.place;});
+    }catch(_){}
     renderZone();
   }catch(e){
     console.error('[totehm] my_trips:',e&&e.message||e);
@@ -4045,9 +4241,22 @@ const tickHTML=cols=>'<span class="tick">'
    Une pièce liée, vue depuis une autre. Elle porte la couleur de CE
    QU'ELLE EST, jamais celle de la boîte qui l'accueille : une habitude
    reste navy même posée dans une répulsion. */
-const mini=(kind,txt,attr)=>'<span class="mini m-'+kind+'" '+(attr||'')+'>'
-  +esc(txt||'untitled')+'</span>';
-const miniDel=(kind,txt,data)=>'<span class="mini m-'+kind+'">'+esc(txt||'untitled')
+/* ⚠️ UNE MINI-BOÎTE EST UNE PORTE · 19/09/2026. Elle montrait un lien et
+   ne faisait rien : on lisait « Ship the Higher Map » dans une habitude
+   et il fallait aller le rechercher à la main dans la vue objectifs.
+   `data-go` porte le genre et l'identifiant ; le clic bascule sur la vue
+   native de l'objet et l'ouvre. Ce n'est pas un raccourci — c'est la
+   structure qui devient parcourable. */
+const mini=(kind,id,txt,attr)=>'<button type="button" class="mini m-'+kind+'"'
+  +(id!=null?' data-go="'+kind+':'+esc(String(id))+'"':'')+' '+(attr||'')+'>'
+  +esc(txt||'untitled')+'</button>';
+/* ⚠️ DEUX BOUTONS NE S'IMBRIQUENT PAS. La croix de détachement est un
+   bouton ; le corps de la mini-boîte en devient un aussi. Un `<button>`
+   dans un `<button>` est du HTML invalide et le navigateur le défait en
+   silence — deux frères dans un `<span>`, et chacun garde son clic. */
+const miniDel=(kind,id,txt,data)=>'<span class="mini m-'+kind+' mini-w">'
+  +'<button type="button" class="mini-t"'
+  +(id!=null?' data-go="'+kind+':'+esc(String(id))+'"':'')+'>'+esc(txt||'untitled')+'</button>'
   +'<button type="button" class="mini-x" '+data+' aria-label="Unlink">&times;</button></span>';
 /* ══ LE MOT RACONTE LE LIEN ══════════════════════════════════════════
    WHY au-dessus des objectifs d'une habitude, HOW au-dessus des
@@ -4154,6 +4363,19 @@ function freqPicker(x){
         +'" data-fq="'+esc(String(x.id))+'|'+f.id+'">'+esc(f.label)+'</button>').join('')
     +'</span></span>';
 }
+
+/* ══ LE CHAMP DU SPOT ════════════════════════════════════════════════
+   Un champ, rien d'autre. Pas de carte, pas d'autocomplétion, pas
+   d'autorisation de géolocalisation à demander : on écrit l'endroit
+   comme on le dit. Le point GPS viendra du TotehmBot, quand il y aura un
+   TotehmBot — et il se posera sur la même ligne en base.
+   Vider le champ détache le lieu : c'est le seul moyen de quitter un
+   endroit sans supprimer l'habitude. */
+const spotPicker=x=>'<span class="pkw">'
+  +'<input class="in nw" data-spot="'+esc(String(x.id))+'" autocomplete="off"'
+  +' maxlength="120" placeholder="where I do it" value="'+esc(spotDe(x))+'">'
+  +'<span class="pk-say">the park downstairs · my kitchen · the gym on 5th</span>'
+  +'</span>';
 
 /* LES SEPT INTENTIONS — plusieurs à la fois. Pas de surlignage : la tuile
    prend un fondu de sa couleur, et se remplit quand elle est choisie. */
@@ -4313,22 +4535,32 @@ function vueHabitude(x,k){
   /* CE QUI MANQUE RESPIRE. Une habitude sans intention ni rythme n'est pas
      encore une habitude : les deux réglages pulsent comme le T tant qu'ils
      sont vides, et s'arrêtent dès qu'ils sont posés. */
+  /* ══ LE SPOT · 19/09/2026 ═══════════════════════════════════════════
+     Où je le fais. Troisième réglage de l'habitude, dans la même
+     grammaire que les deux autres : un bouton quand la boîte est
+     ouverte, un mot quand elle est fermée. Il ne respire pas comme
+     l'intention et le rythme — une habitude sans lieu reste une
+     habitude ; une habitude sans intention n'en est pas encore une. */
+  const lieu = spotDe(x);
   const unit = ouverte
     ? intBouton(x,'h')
       +'<button type="button" class="v-b'+(x.f?'':' vit')+'" data-pk="freq:h:'+esc(String(x.id))+'">'
       +esc(x.f?flabel(x.f):'set time frequency')+' ▾</button>'
+      +'<button type="button" class="v-b" data-pk="spot:h:'+esc(String(x.id))+'">'
+      +esc(lieu||'where')+'</button>'
     : intMots(x)
-      +'<span class="v-frq'+(x.f?'':' vit')+'">'+esc(x.f?flabel(x.f):'set time frequency')+'</span>';
+      +'<span class="v-frq'+(x.f?'':' vit')+'">'+esc(x.f?flabel(x.f):'set time frequency')+'</span>'
+      +(lieu?'<span class="v-frq">'+esc(lieu)+'</span>':'');
   /* WHY au-dessus des objectifs, PROTECTED BY au-dessus des répulsions :
      la boîte raconte, elle ne liste pas. */
   const gO = ouverte
-    ? ts.map(t=>miniDel('o',t.text,'data-unlink="o:'+esc(String(x.id))+'|'+esc(String(t.id))+'"')).join('')
+    ? ts.map(t=>miniDel('o',t.id,t.text,'data-unlink="o:'+esc(String(x.id))+'|'+esc(String(t.id))+'"')).join('')
       + plus('lien','o',x.id,'objective')
-    : ts.map(t=>mini('o',t.text)).join('');
+    : ts.map(t=>mini('o',t.id,t.text)).join('');
   const gR = ouverte
-    ? rs.map(r=>miniDel('r',r.text,'data-unlink="r:'+esc(String(x.id))+'|'+esc(String(r.id))+'"')).join('')
+    ? rs.map(r=>miniDel('r',r.id,r.text,'data-unlink="r:'+esc(String(x.id))+'|'+esc(String(r.id))+'"')).join('')
       + plus('lien','r',x.id,'repulsion')
-    : rs.map(r=>mini('r',r.text)).join('');
+    : rs.map(r=>mini('r',r.id,r.text)).join('');
   /* ⚠️ « TRIGGER », PAS « PROTECTED BY » · 09/09/2026. Une répulsion
      n'est pas un garde du corps : c'est une MAUVAISE HABITUDE — celle
      qu'on fait à la place. Vue depuis l'habitude, elle est donc ce qui
@@ -4339,6 +4571,7 @@ function vueHabitude(x,k){
   let haut='', bas='';
   if(ouverte&&pkOn('int','h',x.id))  haut=intPicker(x,'h');
   if(ouverte&&pkOn('freq','h',x.id)) haut=freqPicker(x);
+  if(ouverte&&pkOn('spot','h',x.id)) haut=spotPicker(x);
   if(ouverte&&pkOn('lien','o',x.id)) bas=lienPicker('o',x.id,
       ts.map(t=>String(t.id)), TRIPS.map(t=>({id:t.id,txt:t.text})), 'a new objective','o');
   if(ouverte&&pkOn('lien','r',x.id)) bas=lienPicker('r',x.id,
@@ -4362,13 +4595,13 @@ function vueObjectif(t,k){
   /* HOW descend vers les habitudes, TOWARDS monte vers la vision : un
      objectif est le milieu d'une phrase, pas une liste. */
   const minis = groupe('how', ouverte
-    ? hs.map(x=>miniDel('h',x.t,'data-unlink="ho:'+esc(String(t.id))+'|'+esc(String(x.id))+'"')).join('')
+    ? hs.map(x=>miniDel('h',x.id,x.t,'data-unlink="ho:'+esc(String(t.id))+'|'+esc(String(x.id))+'"')).join('')
       + plus('lien','h',t.id,'habit')
-    : hs.map(x=>mini('h',x.t)).join(''))
+    : hs.map(x=>mini('h',x.id,x.t)).join(''))
    + groupe('towards', ouverte
-    ? vs.map(v=>miniDel('v',v.t,'data-unlink="ov:'+esc(String(t.id))+'|'+esc(String(v.id))+'"')).join('')
+    ? vs.map(v=>miniDel('v',v.id,v.t,'data-unlink="ov:'+esc(String(t.id))+'|'+esc(String(v.id))+'"')).join('')
       + plus('lien','ov',t.id,'vision')
-    : vs.map(v=>mini('v',v.t)).join(''));
+    : vs.map(v=>mini('v',v.id,v.t)).join(''));
   let haut='', bas='';
   if(ouverte&&pkOn('lien','h',t.id))
     bas=lienPicker('h',t.id, hs.map(x=>String(x.id)),
@@ -4401,15 +4634,15 @@ function vueRepulsion(r,k){
   const unit = '';
   const mot = 'instead';
   const minis = groupe(mot, ouverte
-    ? hs.map(x=>miniDel('h',x.t,'data-unlink="hr:'+esc(String(r.id))+'|'+esc(String(x.id))+'"')).join('')
+    ? hs.map(x=>miniDel('h',x.id,x.t,'data-unlink="hr:'+esc(String(r.id))+'|'+esc(String(x.id))+'"')).join('')
       + plus('lien','hr',r.id,'habit')
-    : hs.map(x=>mini('h',x.t)).join(''))
+    : hs.map(x=>mini('h',x.id,x.t)).join(''))
    /* LEARNED : ce qu'on a compris de cette mauvaise habitude. C'est le
       seul pont entre le present qu'on tue et le passe qu'on garde. */
    + groupe('learned', ouverte
-    ? ws.map(w=>miniDel('w',w.t,'data-unlink="rw:'+esc(String(r.id))+'|'+esc(String(w.id))+'"')).join('')
+    ? ws.map(w=>miniDel('w',w.id,w.t,'data-unlink="rw:'+esc(String(r.id))+'|'+esc(String(w.id))+'"')).join('')
       + plus('lien','rw',r.id,'teaching')
-    : ws.map(w=>mini('w',w.t)).join(''));
+    : ws.map(w=>mini('w',w.id,w.t)).join(''));
   /* ⚠️ L'INVITATION EST SOUS *CLOSE*, PAS AU-DESSUS · 09/09/2026. Elle
      servait de titre au groupe : posée là, elle parlait de la répulsion
      — alors qu'elle parle des HABITUDES qu'on va choisir. Sous le
@@ -4448,9 +4681,9 @@ function vueTeaching(w,k){
   const rs=repsOfTeach(w);
   const unit = '';
   const minis = groupe('learned from', ouverte
-    ? rs.map(r=>miniDel('r',r.text,'data-unlink="wr:'+esc(String(w.id))+'|'+esc(String(r.id))+'"')).join('')
+    ? rs.map(r=>miniDel('r',r.id,r.text,'data-unlink="wr:'+esc(String(w.id))+'|'+esc(String(r.id))+'"')).join('')
       + plus('lien','wr',w.id,'repulsion')
-    : rs.map(r=>mini('r',r.text)).join(''));
+    : rs.map(r=>mini('r',r.id,r.text)).join(''));
   let haut='', bas='';
   if(ouverte&&pkOn('lien','wr',w.id))
     bas=lienPicker('wr',w.id, rs.map(r=>String(r.id)),
@@ -4471,9 +4704,9 @@ function vueVision(v,k){
   const ts=tripsOfVision(v);
   const unit = '';
   const minis = groupe('reached by', ouverte
-    ? ts.map(t=>miniDel('o',t.text,'data-unlink="vo:'+esc(String(v.id))+'|'+esc(String(t.id))+'"')).join('')
+    ? ts.map(t=>miniDel('o',t.id,t.text,'data-unlink="vo:'+esc(String(v.id))+'|'+esc(String(t.id))+'"')).join('')
       + plus('lien','vo',v.id,'objective')
-    : ts.map(t=>mini('o',t.text)).join(''));
+    : ts.map(t=>mini('o',t.id,t.text)).join(''));
   let haut='', bas='';
   if(ouverte&&pkOn('lien','vo',v.id))
     bas=lienPicker('vo',v.id, ts.map(t=>String(t.id)),
@@ -4494,6 +4727,19 @@ function vueVision(v,k){
    servait sont supprimés. Pleine valeur, dans les trois vues, en mode
    classement comme en lecture. */
 function peintTraits(){}
+
+/* ══ ALLER VOIR UN OBJET CHEZ LUI · 19/09/2026 ═══════════════════════
+   On touche une mini-boîte : on bascule sur la vue native de l'objet et
+   on l'ouvre. ⚠️ `setView` referme ce qui est ouvert et redessine — il
+   faut donc ouvrir APRÈS, pas avant, sinon la boîte se referme
+   aussitôt. Le `requestAnimationFrame` laisse le rendu de la nouvelle
+   vue se poser avant qu'`ouvrir` n'aille y chercher sa ligne. */
+const VUE_DE={h:'habits', t:'objectives', r:'repulsions', w:'wisdom', v:'visions'};
+function vaVers(kind,id){
+  const cible=VUE_DE[kind]; if(!cible)return;
+  if(cible!==view){ dernierSens=null; setView(cible); }
+  requestAnimationFrame(()=>ouvrir(kind,id));
+}
 
 /* ══ OUVRIR, FERMER ══════════════════════════════════════════════════ */
 function ouvrir(kind,id){
@@ -4741,7 +4987,7 @@ function cable(box){
        les deux flèches de classement ne faisaient rien du tout — le code
        qui les traite existait et n'était jamais atteint. */
     const el=e.target.closest('[data-fint],[data-ffq],[data-fclear],[data-fx],'
-      +'[data-open],[data-add],[data-x],[data-pk],[data-int],[data-mv],'
+      +'[data-open],[data-add],[data-x],[data-pk],[data-int],[data-mv],[data-go],'
       +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill]');
     if(!el)return;
     const d=el.dataset;
@@ -4761,6 +5007,9 @@ function cable(box){
       saveFilter(); pk=null; renderZone(); return; }
     if(d.fclear!==undefined){ e.stopPropagation();
       filterF=null; filterI=null; saveFilter(); pk=null; renderZone(); return; }
+    /* ⚠️ `data-go` PASSE AVANT `data-open` : une mini-boîte vit DANS une
+       boîte ouverte, et le `closest` remonterait sinon sur elle. */
+    if(d.go){ e.stopPropagation(); const p=d.go.split(':'); vaVers(p[0],p[1]); return; }
     if(d.open){ const p=d.open.split(':'); ouvrir(p[0],p[1]); return; }
     if(d.add){ creer(d.add); return; }
     if(d.x!==undefined){ e.stopPropagation(); fermer(); return; }
@@ -4859,6 +5108,14 @@ function cable(box){
   box.addEventListener('keydown',e=>{
     if(e.key!=='Enter')return;
     const t=e.target;
+    /* ⚠️ LE LIEU PART AU SERVEUR AVEC LE TEXTE QUE LE SERVEUR CONNAÎT
+       (`srv`), jamais avec ce qu'on est en train de taper dans le titre. */
+    if(t.dataset.spot!==undefined){ e.preventDefault();
+      const x=habOf(t.dataset.spot); if(!x)return;
+      const v=t.value.trim(), k=srv(x); if(!k)return;
+      if(v)SPOT[k]=v; else delete SPOT[k];
+      apres(sb.rpc('habit_spot_set',{p_habit:k,p_place:v}));
+      pk=null; renderZone(); return; }
     if(t.dataset.nw){ e.preventDefault();
       const v=t.value.trim(); if(!v)return;
       const q=t.dataset.nw.split(':'); neufEtAttache(q[0],q[1],v); return; }
@@ -5489,40 +5746,148 @@ $('set-name').addEventListener('keydown',async e=>{
 $('set-private').onclick=()=>{state.vis='private';save();renderSettings();peintCreateur();};
 $('set-members').onclick=()=>{state.vis='members';save();renderSettings();peintCreateur();};
 
-/* ══ L'ESPACE CRÉATEUR · 18/09/2026 ══════════════════════════════════
-   Il n'apparaît qu'une fois la visibilité payante choisie : avant ce
-   choix, un membre n'a rien à y faire, et un bloc qui ne sert à rien
-   apprend à ne plus regarder les autres.
+/* ══ LE TIROIR DU CERCLE · 19/09/2026 ════════════════════════════════
+   Il s'ouvre sous la visibilité payante, et il ne renvoie nulle part :
+   une redirection vers une autre page, c'est perdre la moitié des gens
+   au moment précis où ils disent oui.
 
-   ⚠️ CE BLOC NE FAIT PAS LE TRAVAIL DE `/club/creator` : il l'ANNONCE et
-   il y mène. Recopier ici les soldes, le prix et l'état Stripe, ce
-   serait deux tableaux de bord à tenir d'accord — et le jour où ils
-   divergeront, c'est sur un montant que ça se verra. */
+   ⚠️ C'EST LE TOTEHM QUI OUVRE LA PORTE, PAS UN ABONNEMENT. Tant qu'une
+   des cinq vues est vide, le tableau de bord reste flouté sous un voile
+   — on voit ce qu'on rate, et le bouton emmène À LA PREMIÈRE VUE VIDE.
+   Pas « quelque part » : là où il manque quelque chose.
+
+   ⚠️ STRIPE CONNECT EST ABANDONNÉ. Il exigeait un profil plateforme qui
+   bloquait tout depuis trois jours, un KYC par créateur, et un compte
+   connecté avant le premier euro. L'argent arrive sur le compte de la
+   plateforme, on vire 80 % le 1er du mois. Dix minutes par mois contre
+   une usine. À cent créateurs, Connect redeviendra le bon outil — les
+   tables ne bougeront pas, seule la sortie changera. */
+let CERCLE=null, ETAT5=null;
+
+/* L'ordre des vues est celui du parcours, pas celui de l'alphabet : on
+   envoie le membre là où il manque quelque chose, en commençant par le
+   présent. */
+const CINQ=[['habits','habits'],['objectives','objectives'],
+            ['repulsions','repulsions'],['wisdom','wisdom'],['visions','visions']];
+
 async function peintCreateur(){
   const b=$('creator-block'); if(!b)return;
   const ouvert = !!me && state.vis==='members';
   b.classList.toggle('hide',!ouvert);
   if(!ouvert)return;
-  const n=$('creator-note'); n.className='note dim'; n.textContent='';
+  try{
+    const [{data:e},{data:c}] = await Promise.all([
+      sb.rpc('totehm_complete'), sb.rpc('creator_cercle')]);
+    ETAT5=e||null; CERCLE=c||null;
+    peintTiroir();
+  }catch(ex){ console.error('[totehm] cercle:',ex&&ex.message||ex); }
+}
+
+function peintTiroir(){
+  const w=$('cercle'); if(!w||!ETAT5)return;
+  const complet=!!ETAT5.complete;
+  w.classList.toggle('ouvert',complet);
+
+  /* ── LE VOILE ── */
+  const n=ETAT5.remplies||0;
+  $('cv-fill').style.width=Math.round(n/5*100)+'%';
+  $('cv-step').textContent=n+' of 5 views filled';
+  /* Le simulateur multiplie le prix RÉEL du créateur — ou 9 € tant qu'il
+     n'en a pas posé. Promettre un chiffre qui n'est pas le sien, ce
+     serait vendre la vitrine de quelqu'un d'autre. */
+  const p=(CERCLE&&CERCLE.prix?CERCLE.prix/100:9);
+  const an=k=>Math.round(p*k*12*0.8).toLocaleString('en-US').replace(/,/g,' ')+' €/year';
+  $('sim-10').textContent=an(10);
+  $('sim-100').textContent=an(100);
+
+  /* ── LE TABLEAU DE BORD ── */
+  if(!CERCLE)return;
+  const dev=(CERCLE.devise||'eur').toUpperCase();
+  const somme=c=>new Intl.NumberFormat(navigator.language||'en',
+    {style:'currency',currency:dev,maximumFractionDigits:0}).format((c||0)/100);
+  const vivant = complet && !!CERCLE.prix && !!CERCLE.payout_method;
+  w.classList.toggle('live',vivant);
+  $('cc-mot').textContent = vivant ? 'Live — your circle is open'
+    : !complet ? 'Complete your Totehm first'
+    : !CERCLE.prix ? 'Set your monthly fee'
+    : 'Tell us where to pay you';
+  if(CERCLE.prix)$('cc-fee').value=String(Math.round(CERCLE.prix/100));
+  $('cc-n').textContent=String(CERCLE.abonnes||0);
+  $('cc-eur').textContent=somme(CERCLE.a_moi);
+  if(CERCLE.payout_method){
+    $('pay-handle').placeholder = CERCLE.payout_method==='iban' ? 'IBAN' : 'PayPal email';
+    $('pay-note').className='note dim';
+    $('pay-note').textContent='paid to ····'+(CERCLE.payout_fin||'');
+    $('pay-iban').classList.toggle('on',CERCLE.payout_method==='iban');
+    $('pay-paypal').classList.toggle('on',CERCLE.payout_method==='paypal');
+  }
+}
+
+/* ── LE BOUTON DU VOILE : À LA PREMIÈRE VUE VIDE ──────────────────────
+   ⚠️ IL FERME L'ESPACE MEMBRE ET IL DÉPLIE LE TOTEHM. On est sur
+   l'atterrissage quand on clique : envoyer sur une vue sans ouvrir le
+   Totehm, ce serait pointer une porte fermée. */
+$('cv-go').onclick=()=>{
+  if(!ETAT5)return;
+  const vide=(CINQ.find(([k])=>!ETAT5[k])||CINQ[0])[1];
+  $('member-window').classList.remove('show');
+  if(document.body.classList.contains('gate')){
+    location.href='totehm.html#in:'+vide; location.reload(); return; }
+  setView(vide);
+};
+
+/* ── LE PRIX ─────────────────────────────────────────────────────── */
+$('cc-save').onclick=async()=>{
+  const e=Number($('cc-fee').value), err=$('cc-err'); err.textContent='';
+  if(!Number.isFinite(e)||e<3||e>500){ err.textContent='Pick something between 3 and 500 €.'; return; }
+  const b=$('cc-save'); b.disabled=true; b.textContent='saving…';
   try{
     const {data:{session}}=await sb.auth.getSession();
-    if(!session)return;
-    const r=await fetch('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/creator-dashboard',{
+    const r=await fetch('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/creator-price',{
       method:'POST',
-      headers:{'authorization':'Bearer '+session.access_token,
-               'apikey':SB_ANON,'content-type':'application/json'},
-      body:'{}'});
-    if(!r.ok){ console.error('[totehm] creator-dashboard',r.status); return; }
-    const d=await r.json();
-    if(d.etat==='aucun'){ n.textContent='not open yet — start with Stripe'; return; }
-    const vivant=d.compte&&d.compte.charges_enabled&&d.compte.payouts_enabled;
-    n.className=vivant?'note ok':'note dim';
-    n.textContent = vivant
-      ? (d.abonnes||0)+' subscriber'+((d.abonnes||0)===1?'':'s')
-      : 'Stripe is still reviewing your account';
-  }catch(e){ console.error('[totehm] creator',e&&e.message||e); }
-}
-$('creator-btn').onclick=()=>{ location.href='/club/creator'; };
+      headers:{'authorization':'Bearer '+session.access_token,'apikey':SB_ANON,
+               'content-type':'application/json'},
+      body:JSON.stringify({cents:Math.round(e*100)})});
+    if(!r.ok)throw new Error(String(r.status));
+    await peintCreateur();
+  }catch(ex){ console.error('[totehm] price',ex&&ex.message||ex);
+              err.textContent='Not saved. Try again.'; }
+  b.disabled=false; b.textContent='Save';
+};
+
+/* ── OÙ J'ENCAISSE ───────────────────────────────────────────────── */
+let payMeth='iban';
+function choisitPay(m){ payMeth=m;
+  $('pay-iban').classList.toggle('on',m==='iban');
+  $('pay-paypal').classList.toggle('on',m==='paypal');
+  $('pay-handle').placeholder = m==='iban' ? 'IBAN' : 'PayPal email';
+  $('pay-handle').focus(); }
+$('pay-iban').onclick  =()=>choisitPay('iban');
+$('pay-paypal').onclick=()=>choisitPay('paypal');
+$('pay-handle').addEventListener('keydown',async e=>{
+  if(e.key!=='Enter')return;
+  const v=$('pay-handle').value.trim(); const n=$('pay-note');
+  if(v.length<6){ n.className='note no'; n.textContent='that does not look complete'; return; }
+  n.className='note dim'; n.textContent='saving…';
+  /* ⚠️ LE CHAMP SE VIDE DÈS QUE C'EST PARTI. Un IBAN qui reste affiché
+     dans un écran ouvert, c'est un IBAN lu par-dessus l'épaule. */
+  apres(sb.rpc('creator_payout_set',{p_method:payMeth,p_handle:v}));
+  $('pay-handle').value='';
+  setTimeout(peintCreateur,500);
+});
+
+/* ── LE LIEN À PARTAGER ──────────────────────────────────────────── */
+$('cc-copy').onclick=async()=>{
+  const nom=(myProfile&&myProfile.pseudo)||'';
+  if(!nom){ dis('name your Totehm first'); return; }
+  const lien='https://www.totehm.com/totehm?ro='+encodeURIComponent(nom);
+  try{ await navigator.clipboard.writeText(lien);
+       const b=$('cc-copy'); b.textContent='copied ✓';
+       setTimeout(()=>{b.textContent='Monetize it — copy my link';},1600);
+  }catch(_){ /* Le presse-papier refuse hors https ou sans geste : on
+                 montre le lien, le membre le copie à la main. */
+    $('cc-err').textContent=lien; }
+};
 
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -5910,6 +6275,9 @@ function memberPaint(){
    chose. Le point vert dit qu'on est connecté ; il ne fait rien de plus.
    Sur l'atterrissage, en revanche, il reste la porte — c'est là que la
    carte de visite vit. */
+/* ⚠️ L'ACCÈS MEMBRE N'EXISTE QUE SUR L'ATTERRISSAGE · 19/09/2026. Il ne
+   s'ouvrait déjà plus depuis le Totehm ; il ne s'y VOIT plus non plus.
+   Un point vert qui ne fait rien est une porte peinte sur un mur. */
 $('conn-bar').onclick=()=>{
   if(!document.body.classList.contains('gate'))return;
   $('member-window').classList.add('show'); memberPaint(); peintCreateur(); };
@@ -6172,7 +6540,14 @@ window.addEventListener('pageshow',e=>{
      de quelqu'un d'autre : il n'y a rien à déplier, et l'atterrissage
      demandait « ouvre MON Totehm » par-dessus celui qu'on venait voir.
      Mesuré : le gate gardait l'écran et interceptait tous les clics. */
-  const dedans = location.hash === '#in' || !!RO;
+  /* ⚠️ `#in:<vue>` OUVRE LE TOTEHM *SUR* UNE VUE · 19/09/2026. Le bouton
+     [Complete my Totehm] du tiroir envoie là où il manque quelque chose :
+     sans cette forme, il aurait fallu déplier puis naviguer, et le membre
+     aurait perdu de vue ce qu'il était venu faire. */
+  const m5 = /^#in(?::([a-z]+))?$/.exec(location.hash||'');
+  const dedans = !!m5 || !!RO;
+  if(m5 && m5[1] && typeof setView==='function'){
+    setTimeout(()=>{ try{ setView(m5[1]); }catch(_){} }, 80); }
   /* ⚠️ IL FAUT LA RETIRER, PAS SEULEMENT NE PAS LA POSER. La classe est
      écrite dans le HTML (`<body class="gate">`) pour éviter le flash au
      chargement : ne pas la rajouter ici ne l'enlève pas. Mesuré —
