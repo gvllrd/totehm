@@ -1,15 +1,17 @@
 // TOTEHM · creator-subscribe
 // ═══════════════════════════════════════════════════════════════════════
-// Un fan s'abonne au HigherSelf d'un créateur. C'est ICI que le 80/20
-// devient automatique — et c'est Stripe qui le fait, pas nous.
+// Un fan s'abonne au Totehm d'un créateur.
 //
-//   transfer_data.destination = le compte connecté du créateur
-//   application_fee_percent   = 20
-//
-// À chaque renouvellement, Stripe verse 80 % au créateur et 20 % à la
-// plateforme, sans virement manuel, sans réconciliation, sans personne au
-// milieu. C'est exactement ce qu'on promet aux influenceurs, et c'est une
-// ligne de configuration, pas un système à construire.
+// ⚠️ LE 80/20 N'EST PLUS AUTOMATIQUE, ET C'EST UN CHOIX · 19/09/2026.
+// Stripe Connect faisait le partage tout seul — mais il exigeait un
+// profil plateforme qui a bloqué TOUS les créateurs pendant trois jours,
+// un KYC par créateur, et un compte connecté avant le premier euro. Pour
+// virer 80 % à une poignée de gens une fois par mois, c'était une usine.
+// L'argent arrive donc ENTIER sur le compte de la plateforme, et les
+// 80 % partent à la main le 1er du mois, vers l'IBAN ou le PayPal que le
+// créateur a posé dans son tiroir.
+// À cent créateurs, Connect redeviendra le bon outil : les tables ne
+// bougeront pas, seule la sortie changera.
 //
 // ⚠️ LE PRIX VIENT DE LA BASE, JAMAIS DU CLIENT. Un montant posté par le
 // navigateur se change en deux clics dans l'inspecteur : quelqu'un
@@ -33,8 +35,10 @@ const sb = createClient(
   { auth: { persistSession: false } },
 );
 
-/** La part de la plateforme. Elle vit ici et dans `creator-dashboard`,
- *  nulle part ailleurs — et les deux doivent dire la même chose. */
+/** La part de la plateforme. Elle vit ici et dans `creator_cercle()`,
+ *  nulle part ailleurs — et les deux doivent dire la même chose.
+ *  ⚠️ Elle ne sert plus à Stripe (les virements sont manuels depuis le
+ *  19/09) : elle sert à CALCULER ce qu'on doit au créateur. */
 const PART_TOTEHM = 20;
 
 Deno.serve(async (req) => {
@@ -63,13 +67,19 @@ Deno.serve(async (req) => {
 
   // Le prix ET le compte viennent de la base, sous service_role : c'est la
   // seule lecture qui fasse autorité.
+  // ⚠️ PLUS DE COMPTE CONNECTÉ EXIGÉ · 19/09/2026. Stripe Connect est
+  // abandonné pour les créateurs : il demandait un profil plateforme qui
+  // a bloqué tout le monde trois jours, un KYC par créateur, et un compte
+  // connecté avant le premier euro. Ce qu'il faut maintenant tient en
+  // deux choses — un PRIX, et un endroit OÙ VIRER. Le reste se fait à la
+  // main le 1er du mois.
   const { data: c } = await sb
     .from("creator_profiles")
-    .select("stripe_account_id,custom_sub_price,currency,charges_enabled")
+    .select("custom_sub_price,currency,payout_method")
     .eq("user_id", creatorId)
     .maybeSingle();
 
-  if (!c?.stripe_account_id || !c.charges_enabled || !c.custom_sub_price) {
+  if (!c?.custom_sub_price || !c.payout_method) {
     return Response.json(
       { error: "this creator is not open yet" },
       { status: 409, headers: cors },
@@ -100,8 +110,13 @@ Deno.serve(async (req) => {
         },
       }],
       subscription_data: {
-        application_fee_percent: PART_TOTEHM,
-        transfer_data: { destination: c.stripe_account_id },
+        // ⚠️ NI `transfer_data` NI `application_fee_percent` : l'argent
+        // arrive ENTIER sur le compte de la plateforme, et les 80 % sont
+        // virés à la main le 1er du mois. C'est un choix, pas un oubli —
+        // et il se voit ici pour que personne ne croie à un reversement
+        // automatique. Le jour où Connect reviendra, ces deux lignes
+        // reviendront avec lui et rien d'autre ne changera.
+        //
         // ⚠️ LA METADATA EN DOUBLE — voir l'en-tête. Sans celle-ci, un
         // renouvellement ou une annulation arrive orphelin.
         metadata: {
