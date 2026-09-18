@@ -133,17 +133,21 @@ body:not(.gate) #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
    par l'animation : la seconde gagnait sans un mot, et ma valeur de 40 px
    n'avait aucun effet. Un sélecteur écrit deux fois n'est pas une
    redondance, c'est un piège. */
-/* 34 px, et le wordmark 34 px plus bas : mesuré le 18/09, à 38 px la
-   hampe du T descendait DANS le « TOT » du wordmark. Deux marques de la
-   même identité empilées doivent se toucher sans se pénétrer. */
-#bigT svg{height:34px;width:auto;display:block}
+/* ⚠️ LE T EST GRAND, ET IL EST SEUL À GAUCHE. Empilé sous le wordmark
+   il devait rapetisser pour ne pas le pénétrer ; le wordmark est reparti
+   en bas à droite, le T récupère sa taille. C'est la marque, elle n'a
+   pas à se faire petite. */
+#bigT svg{height:58px;width:auto;display:block}
 /* ⚠️ LE TOTEHM N'EST PLUS AU CENTRE · 09/09/2026 : il se range à gauche
    et laisse la droite aux deux portes. `left` fixe plutôt qu'un
    `translateX(-50%)` — le wordmark garde exactement la même taille et
    la même hauteur, il change seulement d'ancrage. */
-/* Le wordmark passe SOUS le T, aligné sur la même colonne gauche. Il
-   reste le menu : on ne perd aucun geste. */
-#wordmark{position:fixed;top:68px;left:max(16px,5vw);bottom:auto;transform:none;z-index:30;user-select:none;transition:opacity .4s;line-height:0;cursor:pointer}
+/* ══ LE WORDMARK REDESCEND, À DROITE · 18/09/2026 ════════════════════
+   Je l'avais monté sous le T ; Wah le veut EN BAS À DROITE. Il reste le
+   menu — on ne perd aucun geste — et les trois portes passent donc à
+   gauche, là où il était. Le bas se lit alors de gauche à droite :
+   ce qu'on peut faire, puis qui on est. */
+#wordmark{position:fixed;bottom:28px;right:max(18px,6vw);top:auto;left:auto;transform:none;z-index:30;user-select:none;transition:opacity .4s;line-height:0;cursor:pointer}
 /* ⚠️ LE JOYSTICK LAISSE LE COIN À LA CROIX. Mesuré le 18/09 : posé à
    14 px du bord, il passait SOUS `#fold-x` (10 px du coin, 34 px de
    côté) et le navigateur donnait le clic à la croix — le curseur droit
@@ -152,8 +156,11 @@ body:not(.gate) #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
 #joy{top:24px;right:58px;left:auto}
 /* Les deux portes, à droite, à la même hauteur que le wordmark et dans
    la grammaire `.btn-sig` du reste du produit. */
-#bottom-doors{position:fixed;bottom:30px;right:max(18px,6vw);z-index:31;
-  display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+/* ⚠️ LES PORTES PASSENT À GAUCHE · 18/09/2026, parce que le wordmark
+   reprend la droite. `align-items` suit : une colonne alignée à droite
+   dans le coin gauche laisserait un escalier. */
+#bottom-doors{position:fixed;bottom:30px;left:max(18px,6vw);right:auto;z-index:31;
+  display:flex;flex-direction:column;align-items:flex-start;gap:7px}
 /* La porte du Club se distingue des deux autres : elle ne mène pas à une
    pièce du Totehm, elle mène au Club. Un blanc plein au lieu d'un gris —
    pas un cadre, la marque n'en veut nulle part. */
@@ -168,7 +175,7 @@ body:not(.gate) #bigT svg{animation:t-slow 4.2s ease-in-out infinite}
 @media(hover:hover){.door:hover{color:#fff}}
 /* ⚠️ UNE SEULE RÈGLE ICI AUSSI. Même piège que le T : deux `#wordmark
    svg` séparés par vingt lignes, et c'est le second qui gagnait. */
-#wordmark svg{height:34px;width:auto;display:block}
+#wordmark svg{height:44px;width:auto;display:block}
 /* ══ LE LOGO DIT OÙ L'ON EST · 06/09/2026 ════════════════════════════
    Le O du wordmark clignote sur les OBJECTIFS, le H sur les HABITUDES.
    C'est la lettre elle-même qui signale, pas une icône posée à côté : le
@@ -263,93 +270,118 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
    Une seule pièce, les deux axes, et elle le dit en IMAGE. C'est ce qui
    la distingue des cinq carrés d'hier : on ne lit pas un plan, on voit
    un objet dans une position. */
-#joy{position:fixed;z-index:33;display:flex;flex-direction:column;
-  align-items:center;gap:3px}
-#joy-row{display:flex;flex-direction:row;align-items:center;gap:5px}
+/* ══ UNE GRILLE, ET RIEN NE PEUT PLUS BOUGER · 18/09/2026 ═══════════
+   ⚠️ LE CONTRÔLEUR SAUTAIT D'UNE VUE À L'AUTRE, ET C'ÉTAIT MA FAUTE.
+   `.cur[hidden]{display:none}` retirait le curseur DU FLUX : la colonne
+   se retassait et le carré changeait de place. J'avais cru garder la
+   place en donnant une largeur aux curseurs — une largeur ne garde rien
+   quand l'élément n'est plus affiché.
 
-/* Le carré perforé. `--joy-tile` change avec la vue : c'est le seul
-   endroit où la couleur du fond est décidée. */
-#joy-box{width:50px;height:50px;flex:0 0 auto;position:relative;
-  background:var(--joy-tile,var(--logo-navy)) 0 0/100% 100% no-repeat;
-  /* La perspective vit sur le PARENT de ce qui tourne : sans elle, la
-     pile s'écrase au lieu de se coucher. */
-  perspective:190px;overflow:hidden;
-  transition:background-image .42s ease}
+   C'est maintenant une GRILLE 3×3 à cases FIXES. Le carré est au centre,
+   les quatre chevrons dans les quatre cases du bord, le nom dessous. La
+   position ne dépend plus de ce qui est visible : elle est écrite dans
+   la grille. Un contrôleur qui se déplace n'est pas un contrôleur.
 
-/* La pile. Elle est COUCHÉE (rotateX) puis glissée (translateY) : deux
-   transformations, une seule ligne, et l'ordre compte — coucher d'abord,
-   glisser ensuite, sinon le glissement part de travers. */
+   ⚠️ ET UN CURSEUR SANS VOISIN NE DISPARAÎT PLUS : il s'éteint. C'est ce
+   qui fait un CADRE — quatre points cardinaux autour d'une structure,
+   toujours les quatre. */
+#joy{position:fixed;z-index:33;
+  display:grid;
+  grid-template-columns:20px 62px 20px;
+  grid-template-rows:20px 62px 20px auto;
+  align-items:center;justify-items:center}
+#cur-h  {grid-area:1/2/2/3}
+#cur-g  {grid-area:2/1/3/2}
+#joy-box{grid-area:2/2/3/3}
+#cur-d  {grid-area:2/3/3/4}
+#cur-b  {grid-area:3/2/4/3}
+#vnow   {grid-area:4/1/5/4;margin-top:5px}
+
+/* ══ LE CARRÉ ════════════════════════════════════════════════════════
+   ⚠️ PLUS DE FOND PERFORÉ. Les trous noirs venaient de l'image du logo ;
+   à 62 px ils ne se lisaient plus comme des perforations mais comme des
+   points sales. Le carré perforé était dans la maquette de Wah pour me
+   MONTRER le Totehm, pas pour être recopié à cette taille.
+   Un aplat, et la couleur fait tout le travail. */
+#joy-box{width:62px;height:62px;position:relative;overflow:hidden;
+  background:var(--joy-fond,var(--navy));
+  /* La perspective vit sur le parent de ce qui tourne. */
+  perspective:210px;
+  transition:background-color .42s ease}
+
+/* La pile : trois dalles couchées, qui glissent pour amener au centre
+   celle où l'on est. C'est le seul mouvement du contrôleur. */
 #joy-stack{position:absolute;left:50%;top:50%;
-  width:34px;height:38px;margin:-19px 0 0 -17px;
+  width:42px;height:46px;margin:-23px 0 0 -21px;
   transform-style:preserve-3d;
-  transform:rotateX(52deg) translateY(var(--joy-y,0px));
+  transform:rotateX(50deg) translateY(var(--joy-y,0px));
   transition:transform .42s cubic-bezier(.22,.9,.3,1)}
-#joy-stack i{position:absolute;left:0;right:0;height:11px;display:block;
-  transition:opacity .42s ease}
-/* Trois dalles, dans l'ordre de l'axe : l'objectif tire vers le haut,
-   la répulsion vers le bas. */
+#joy-stack i{position:absolute;left:0;right:0;height:13px;display:block;
+  transition:opacity .42s ease,background-color .42s ease}
 #joy-stack .o{top:0;background:var(--blue)}
-#joy-stack .h{top:13px;background:var(--navy);
+#joy-stack .h{top:16px;background:var(--sky);
   /* Un filet clair sur la tranche : c'est ce qui fait qu'on lit une
-     DALLE et pas un rectangle. Une ombre serait une bordure déguisée ;
-     un filet de la même famille, non. */
-  box-shadow:0 1px 0 rgba(255,255,255,.22)}
-#joy-stack .r{top:26px;background:var(--rep)}
-/* La dalle centrée est pleine, les deux autres reculent. On voit où l'on
-   est sans un mot — c'est tout l'intérêt de la maquette. */
-#joy.v-objectives .h,#joy.v-objectives .r{opacity:.34}
-#joy.v-habits     .o,#joy.v-habits     .r{opacity:.34}
-#joy.v-repulsions .o,#joy.v-repulsions .h{opacity:.34}
-#joy.v-objectives{--joy-y:12px}
+     DALLE et pas un rectangle. */
+  box-shadow:0 1px 0 rgba(255,255,255,.3)}
+#joy-stack .r{top:32px;background:var(--rep)}
+/* La dalle où l'on est reste pleine, les deux autres reculent. */
+#joy.v-objectives .h,#joy.v-objectives .r{opacity:.3}
+#joy.v-habits     .o,#joy.v-habits     .r{opacity:.3}
+#joy.v-repulsions .o,#joy.v-repulsions .h{opacity:.3}
+#joy.v-objectives{--joy-y:15px}
 #joy.v-habits    {--joy-y:0px}
-#joy.v-repulsions{--joy-y:-12px}
+#joy.v-repulsions{--joy-y:-15px}
 /* ⚠️ SUR LA SAGESSE ET LA VISION, IL N'Y A QU'UNE COUCHE. L'axe vertical
-   n'existe pas là-bas : montrer trois dalles y serait un mensonge. On
-   n'en montre qu'une, à la couleur de la vue. */
+   n'existe pas là-bas ; en montrer trois serait un mensonge. */
 #joy.seule .o,#joy.seule .r{opacity:0}
-#joy.seule .h{opacity:1;top:13px}
-#joy.v-wisdom .h{background:var(--rep)}
-#joy.v-visions .h{background:var(--blue)}
+#joy.seule .h{opacity:1}
+/* La dalle seule est plus claire que son fond : sur du rouge-violet un
+   rose, sur du bleu un ciel. Sinon elle se fond dans le carré. */
+#joy.v-wisdom  .h{background:#d59ac4}
+#joy.v-visions .h{background:var(--sky)}
 
-/* ══ LES QUATRE CURSEURS ENCADRENT LE CARRÉ ══════════════════════════
-   Plus de mot : le carré dit déjà, par sa couleur et par la dalle
-   allumée, ce qu'il y a de chaque côté. Un chevron, et c'est tout.
-   ⚠️ AUCUNE BORDURE — règle de marque. Ce qui les détache, c'est la
-   couleur du chevron : celle de la vue qu'il ouvre. */
-.cur{background:none;border:none;padding:3px;cursor:pointer;
-  -webkit-tap-highlight-color:transparent;display:block;line-height:0;
-  opacity:.55;transition:opacity .18s ease,transform .18s ease}
-.cur[hidden]{display:none!important}
-@media(hover:hover){.cur:hover{opacity:1}}
-.cur:active{opacity:1}
-.cur svg{width:12px;height:12px;display:block;
-  stroke:currentColor;fill:none;stroke-width:1.9;
+/* ══ LES QUATRE CHEVRONS ═════════════════════════════════════════════
+   ⚠️ JAMAIS `display:none`. Un curseur sans voisin garde sa case et
+   s'éteint : c'est lui qui fait le cadre, et un cadre à trois côtés
+   n'est pas un cadre. */
+.cur{background:none;border:none;padding:0;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;display:flex;
+  align-items:center;justify-content:center;width:20px;height:20px;
+  opacity:.85;transition:opacity .2s ease,transform .18s ease}
+.cur.mort{opacity:.16;pointer-events:none;cursor:default}
+@media(hover:hover){.cur:not(.mort):hover{opacity:1}}
+.cur svg{width:14px;height:14px;display:block;
+  stroke:currentColor;fill:none;stroke-width:2.1;
   stroke-linecap:round;stroke-linejoin:round}
+/* ⚠️ LES CHEVRONS VIVENT SUR LE PAPIER, PAS DANS LE CARRÉ. Mesuré :
+   `--blue` (#36498c) et `--rep` (#743169) sur un papier #2b2b57, c'est
+   du sombre sur du sombre — deux des quatre chevrons étaient là et ne se
+   voyaient pas. Ils prennent donc la version CLAIRE de leur famille :
+   le bleu devient ciel, le rouge-violet devient rose. La famille se lit
+   toujours, et le chevron se voit. */
 .cur.to-habits    {color:var(--sky)}
-.cur.to-objectives{color:var(--blue)}
-.cur.to-repulsions{color:var(--rep)}
-.cur.to-wisdom    {color:var(--rep)}
-.cur.to-visions   {color:var(--blue)}
+.cur.to-objectives{color:var(--sky)}
+.cur.to-repulsions{color:#d59ac4}
+.cur.to-wisdom    {color:#d59ac4}
+.cur.to-visions   {color:var(--sky)}
+.cur.mort{color:#fff}
 @media(hover:hover){
-  #cur-g:hover{transform:translateX(-2px)}
-  #cur-d:hover{transform:translateX(2px)}
-  #cur-h:hover{transform:translateY(-2px)}
-  #cur-b:hover{transform:translateY(2px)}}
-/* Un curseur sans voisin ne laisse pas un trou : sa place est gardée,
-   sinon le carré sauterait d'un côté à l'autre en changeant de vue. */
-#cur-g,#cur-d{width:18px;height:18px}
-#cur-h,#cur-b{height:18px}
+  #cur-g:not(.mort):hover{transform:translateX(-2px)}
+  #cur-d:not(.mort):hover{transform:translateX(2px)}
+  #cur-h:not(.mort):hover{transform:translateY(-2px)}
+  #cur-b:not(.mort):hover{transform:translateY(2px)}}
 
-/* Le nom de la vue, sous le carré. Le carré montre, le mot nomme. */
-#vnow{line-height:1}
-#vnow b{font-family:'Space Mono',monospace;font-size:7px;letter-spacing:.2em;
-  text-transform:uppercase;color:rgba(255,255,255,.72);font-weight:400;
-  white-space:nowrap}
+/* ══ LE NOM DE LA VUE ════════════════════════════════════════════════
+   ⚠️ 7 px à 72 % d'opacité, c'était une note de bas de page. Le nom de
+   l'endroit où l'on se trouve est l'information la plus importante de
+   l'écran après la liste elle-même. */
+#vnow{line-height:1;text-align:center}
+#vnow b{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;color:#fff;font-weight:700;white-space:nowrap;
+  display:block}
 #vnow i{display:none}
-/* ══ LA RÉPERCUSSION 3D ══════════════════════════════════════════════
-   Le nom pivote DANS LA DIRECTION DU VOYAGE, en même temps que la pile
-   glisse. Deux mouvements, un seul geste : le carré est un objet, on
-   vient d'en tourner une face. */
+/* La répercussion 3D : le nom pivote dans la direction du voyage, en
+   même temps que la pile glisse. */
 @keyframes face-d{from{transform:rotateY(-62deg) translateX(18px);opacity:0}to{transform:none;opacity:1}}
 @keyframes face-g{from{transform:rotateY(62deg) translateX(-18px);opacity:0}to{transform:none;opacity:1}}
 @keyframes face-b{from{transform:rotateX(62deg) translateY(12px);opacity:0}to{transform:none;opacity:1}}
@@ -359,8 +391,7 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
 #vnow.f-b{animation:face-b .42s cubic-bezier(.22,.9,.3,1)}
 #vnow.f-h{animation:face-h .42s cubic-bezier(.22,.9,.3,1)}
 @media(prefers-reduced-motion:reduce){
-  .cur{transition:none}
-  #joy-box,#joy-stack,#joy-stack i{transition:none}
+  .cur,#joy-box,#joy-stack,#joy-stack i{transition:none}
   #vnow.f-d,#vnow.f-g,#vnow.f-b,#vnow.f-h{animation:none}
 }
 
@@ -1435,7 +1466,6 @@ body.ro #ro-bar{display:flex}
 body.ro{--ro-h:38px}
 body.ro #joy{top:calc(24px + var(--ro-h))}
 body.ro #bigT{top:calc(26px + var(--ro-h))}
-body.ro #wordmark{top:calc(68px + var(--ro-h))}
 body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
 #ro-who{font-family:'Quantico',sans-serif;font-weight:700;font-size:13px;color:#fff;
   display:flex;align-items:center;gap:5px}
@@ -1826,18 +1856,19 @@ body.gate.entered #filter-badge{
      le bord droit du carré. C'est la seule pièce qui a besoin des deux
      mesures, et c'est pour ça qu'elle les porte ici. */
   /* ⚠️ LA MARQUE COMMENCE APRÈS LE RAIL. Mesuré le 18/09 : à 22 px du
-     bord, le T et le wordmark se posaient SUR le rail et sur le bouton
-     de classement qui le coiffe. Le rail est le logo — rien ne passe
-     dessus. `--rl` (sa gauche) + `--rw` (sa largeur) + de l'air. */
-  #bigT{top:24px;left:calc(var(--rl) + var(--rw) + 18px)}
-  #wordmark{top:66px;left:calc(var(--rl) + var(--rw) + 18px)}
+     bord, le T se posait SUR le rail et sur le bouton de classement qui
+     le coiffe. Le rail est le logo — rien ne passe dessus. */
+  #bigT{top:22px;left:calc(var(--rl) + var(--rw) + 16px)}
+  /* Le wordmark est redescendu à droite ; il retrouve son ancrage du
+     carré, pas celui de la fenêtre. */
+  #wordmark{bottom:26px;right:26px;top:auto;left:auto}
+  #bottom-doors{bottom:26px;left:calc(var(--rl) + var(--rw) + 16px);right:auto}
   /* Même dégagement qu'au téléphone : la croix vit dans le coin haut
      droit du carré, le joystick se range à sa gauche. */
   #joy{top:calc(50% - var(--stage)/2 + 22px);
        right:calc(50% - var(--stage)/2 + 62px)}
   body.ro #joy{top:calc(50% - var(--stage)/2 + 22px + var(--ro-h))}
-  body.ro #bigT{top:calc(24px + var(--ro-h))}
-  body.ro #wordmark{top:calc(66px + var(--ro-h))}
+  body.ro #bigT{top:calc(22px + var(--ro-h))}
 
   /* ══ LES QUATRE CURSEURS SE POSENT SUR LES QUATRE CÔTÉS DU CARRÉ ═══
      Ici il y a un DEHORS : le carré fait `--stage` de côté, centré, et
@@ -2385,18 +2416,21 @@ body.gate.entered #filter-badge{
      `fixed` dedans) ET `overflow:hidden` (il rogne ce qui dépasse).
      Dedans, il serait ramené puis coupé. -->
 <div id="joy" class="sink-el" role="group" aria-label="Where I am in my Totehm">
-  <button class="cur" id="cur-h" type="button" hidden>
+  <button class="cur" id="cur-h" type="button">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
-  <div id="joy-row">
-    <button class="cur" id="cur-g" type="button" hidden>
-      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
-    <div id="joy-box" aria-hidden="true">
-      <div id="joy-stack"><i class="o"></i><i class="h"></i><i class="r"></i></div>
-    </div>
-    <button class="cur" id="cur-d" type="button" hidden>
-      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
+  <!-- ⚠️ PAS DE RANGÉE INTERMÉDIAIRE. `#joy` est une GRILLE, et une
+       grille ne place que ses enfants DIRECTS : enveloppés dans un
+       `#joy-row`, le carré et les deux chevrons latéraux ignoraient
+       leur `grid-area` et se posaient n'importe où. Les cinq pièces
+       sont donc à plat, chacune dans sa case. -->
+  <button class="cur" id="cur-g" type="button">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
+  <div id="joy-box" aria-hidden="true">
+    <div id="joy-stack"><i class="o"></i><i class="h"></i><i class="r"></i></div>
   </div>
-  <button class="cur" id="cur-b" type="button" hidden>
+  <button class="cur" id="cur-d" type="button">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
+  <button class="cur" id="cur-b" type="button">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
   <div id="vnow"><b></b><i></i></div>
 </div>
@@ -3731,17 +3765,30 @@ function paintZone(){
        objectifs et les répulsions sont la même colonne que les
        habitudes : leur fond est le même, seule la dalle allumée change.
        Peindre le fond aussi, ce serait dire qu'on a changé d'époque. */
-    jy.style.setProperty('--joy-tile',
-      view==='wisdom'  ? 'var(--logo-wisdom)'  :
-      view==='visions' ? 'var(--logo-visions)' : 'var(--logo-navy)');
+    /* ⚠️ UN APLAT, PLUS UNE IMAGE PERFORÉE. Les trous noirs du logo ne
+       se lisaient plus comme des perforations à 62 px : ils se lisaient
+       comme des points sales. Le carré perforé était dans la maquette
+       pour me MONTRER le Totehm, pas pour être recopié à cette taille. */
+    /* ⚠️ LE CARRÉ N'EST PAS LA COULEUR DU PAPIER, IL EST CELLE DE LA
+       FAMILLE. Mesuré : à `var(--paper)` il disparaissait purement et
+       simplement — un contrôleur invisible. C'est le même rapport que
+       les boîtes de la liste : le papier recule, l'objet avance. */
+    jy.style.setProperty('--joy-fond',
+      view==='wisdom'  ? 'var(--rep)'  :
+      view==='visions' ? 'var(--blue)' : 'var(--navy)');
   }
+  /* ⚠️ ON N'EN CACHE AUCUN. Un curseur sans voisin garde sa case et
+     s'éteint (`.mort`) : c'est lui qui fait le CADRE autour du carré, et
+     un cadre à trois côtés n'est pas un cadre. Le cacher retirait sa
+     case de la grille et tout le contrôleur se déplaçait. */
   [['cur-g','g'],['cur-d','d'],['cur-h','h'],['cur-b','b']].forEach(([id,d])=>{
     const b=$(id); if(!b)return;
     const cible=(CROIX[view]||{})[d]||null;
-    b.hidden=!cible;
-    if(!cible)return;
-    b.className='cur to-'+cible;
-    b.setAttribute('aria-label','Go to '+(NOM_VUE[cible]||[''])[0]);
+    b.hidden=false;
+    b.className='cur ' + (cible ? 'to-'+cible : 'mort');
+    b.setAttribute('aria-label', cible ? 'Go to '+(NOM_VUE[cible]||[''])[0] : '');
+    b.setAttribute('aria-hidden', cible ? 'false' : 'true');
+    b.disabled = !cible;
   });
   /* `#vname` n'existe plus : c'est `aria-selected` sur chaque colonne
      qui allume le bon intitulé, et il est déjà posé plus bas. */

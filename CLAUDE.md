@@ -553,6 +553,57 @@ qu'un des trois avait bougé et pas les autres. Les deux autres en
 découlent maintenant : `+82` pour la bande de classement, `+100` pour la
 première boîte.
 
+### ⛔ UN CONTRÔLEUR QUI SE DÉPLACE N'EST PAS UN CONTRÔLEUR — 18/09/2026
+
+**Quatre reproches de Wah, quatre causes, et trois étaient la même.**
+
+1. **« Il y a des points noirs. »** Le fond perforé. Sa maquette montrait
+   le Totehm *de la méthode Stoner* pour me faire comprendre l'objet ;
+   j'ai pris l'illustration pour une consigne de rendu. À 62 px les trous
+   du logo ne se lisent plus comme des perforations — ils se lisent comme
+   des points sales. **Un aplat, et la couleur fait tout le travail.**
+2. **« Il se déplace en fonction des vues. »** `.cur[hidden]{display:none}`
+   retirait le curseur **du flux** : la colonne se retassait et le carré
+   sautait. J'avais cru garder la place en donnant une largeur aux
+   curseurs — *une largeur ne garde rien quand l'élément n'est plus
+   affiché.*
+3. **« On ne voit pas les curseurs. »** Même cause. Ils étaient
+   `display:none` dès qu'il n'y avait pas de voisin.
+4. **« Les titres doivent être plus visibles. »** 7 px à 72 % d'opacité :
+   une note de bas de page pour l'information la plus importante de
+   l'écran après la liste.
+
+**Ce qui répare les trois premiers d'un coup : une GRILLE 3×3 à cases
+fixes.** Le carré au centre, les quatre chevrons dans les quatre cases du
+bord, le nom dessous. **La position ne dépend plus de ce qui est
+visible : elle est écrite dans la grille.** Et un curseur sans voisin ne
+disparaît plus — il s'éteint (`.mort`), garde sa case, et continue de
+faire le CADRE. *Un cadre à trois côtés n'est pas un cadre.*
+
+**⚠️ UNE GRILLE NE PLACE QUE SES ENFANTS DIRECTS.** Le carré et les deux
+chevrons latéraux étaient enveloppés dans un `#joy-row` hérité de la
+version flex : leur `grid-area` était donc ignoré et ils se posaient
+n'importe où. Les cinq pièces sont à plat.
+
+**⚠️ LE CARRÉ N'EST PAS LA COULEUR DU PAPIER, IL EST CELLE DE LA
+FAMILLE.** À `var(--paper)` il disparaissait purement et simplement. Même
+rapport que les boîtes de la liste : le papier recule, l'objet avance.
+
+**⚠️ LES CHEVRONS VIVENT SUR LE PAPIER, PAS DANS LE CARRÉ.** `--blue`
+(#36498c) et `--rep` (#743169) sur un papier #2b2b57, c'est du sombre sur
+du sombre : deux des quatre étaient là et ne se voyaient pas. Ils
+prennent la version CLAIRE de leur famille — le bleu devient ciel, le
+rouge-violet devient rose. La famille se lit toujours, le chevron se
+voit.
+
+**La mise en page, au mot près** : le **T plus grand, à gauche** (58 px —
+seul, il n'a plus à rapetisser pour ne pas pénétrer le wordmark) et le
+**TOTEHM en bas à droite**. Les trois portes passent donc à gauche, là où
+le wordmark était. Le bas se lit de gauche à droite : ce qu'on peut
+faire, puis qui on est.
+
+<details><summary>La version du matin (déplacée, perforée) — archive</summary>
+
 ### ⛔ LE JOYSTICK — LE TOTEHM COMME CONTRÔLEUR — 18/09/2026
 
 **Ce n'est pas un menu, c'est une maquette du Totehm.** C'est la
@@ -591,6 +642,8 @@ la liste y gagne.
    pleine largeur). Elle ne se déplace pas — elle dit qui on lit, c'est
    sa place. C'est le reste qui recule de sa hauteur (`--ro-h`), et
    `--band-t` en découle donc la liste suit toute seule.
+
+</details>
 
 ### ⛔ « HIGHER » NE S'ÉCRIT JAMAIS EN TEXTE — 18/09/2026
 
