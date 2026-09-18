@@ -353,25 +353,40 @@ payer une quatrième session.
 C'est Wah qui a tranché, et c'est la bonne tranche : le nom ne demandait
 pas le domaine.
 
-#### Le split 80/20 est une ligne de configuration, pas un système
+#### Le split 80/20 — ⚠️ CE N'EST PLUS STRIPE QUI LE FAIT · 19/09/2026
+
+**Le taux n'a pas bougé : 80 % au créateur, 20 % à la plateforme. La
+SORTIE a bougé.** Stripe Connect est abandonné pour les créateurs — voir
+**⛔ STRIPE CONNECT EST ABANDONNÉ POUR LES CRÉATEURS — 19/09/2026** plus
+bas, qui fait autorité sur tout ce paragraphe. L'argent arrive entier sur
+le compte de la plateforme et les 80 % partent à la main le 1er.
+
+Et l'IBAN, lui, est bien chez nous maintenant. Ce qui suit était vrai
+jusqu'au 18/09 et ne l'est plus.
+
+<details><summary>La version Connect (15/09) — archive</summary>
+
+Le split était deux paramètres :
 
 ```
 subscription_data.transfer_data.destination = compte connecté du créateur
 subscription_data.application_fee_percent   = 20
 ```
 
-Stripe verse 80 % au créateur et 20 % à la plateforme **à chaque
+Stripe versait 80 % au créateur et 20 % à la plateforme **à chaque
 renouvellement**, sans virement manuel, sans réconciliation. Je l'avais
 sous-estimé : ce n'était pas trois semaines de travail, c'était deux
-paramètres. Ce qui prend du temps, ce n'est pas le code — c'est
-l'activation Connect côté Stripe et la vérification de la plateforme.
+paramètres. *Ce qui prenait du temps, ce n'était pas le code — c'était
+l'activation Connect côté Stripe et la vérification de la plateforme.*
+**Et c'est exactement là que tout a bloqué trois jours.**
 
-#### Le KYC n'est pas chez nous et ne le sera jamais
+**Connect Express** hébergeait l'identité, les pièces, la conformité
+fiscale et les virements. On ne stockait QUE `stripe_account_id` — jamais
+un IBAN, jamais une pièce d'identité, jamais une date de naissance.
+C'était la seule forme de Connect qui tenait dans une timeline de
+75 jours — et elle n'y a pas tenu.
 
-**Connect Express** héberge l'identité, les pièces, la conformité fiscale
-et les virements. On ne stocke QUE `stripe_account_id` — jamais un IBAN,
-jamais une pièce d'identité, jamais une date de naissance. C'est la seule
-forme de Connect qui tienne dans une timeline de 75 jours.
+</details>
 
 #### ⚠️ LA CLÉ SECRÈTE NE TOUCHE JAMAIS LE NAVIGATEUR
 
@@ -553,6 +568,219 @@ qu'un des trois avait bougé et pas les autres. Les deux autres en
 découlent maintenant : `+82` pour la bande de classement, `+100` pour la
 première boîte.
 
+### ⛔ LE TOTEHM EST LE PASSEPORT — 19/09/2026
+
+**Un Totehm complet = AU MOINS UNE BOÎTE REMPLIE DANS CHACUNE DES CINQ
+VUES.** Habitudes, objectifs, répulsions, sagesse, visions. Pas quatre
+sur cinq. Pas « cinq boîtes ». **Cinq vues habitées.**
+
+C'est la clé d'accès de tout l'écosystème, et c'est volontairement la
+même clé partout :
+
+| Qui | Ce qui est fermé sans Totehm complet |
+|---|---|
+| Créateur | TotehmBot · la monétisation |
+| Abonné | la visibilité de son profil · les candidatures Spot |
+| Client galerie | l'achat d'art donne un pass à vie, mais **[Get Higher] reste fermé** tant que son Totehm est vide |
+| Boutique | la génération du visuel textile |
+
+**⚠️ LA RÈGLE VIT DANS LA BASE, PAS DANS LE NAVIGATEUR** —
+`totehm_complete(p_user uuid default null)`, `security definer`. Une page
+peut mentir sur ce qu'elle a affiché ; la base, non. Les quatre produits
+interrogent la MÊME fonction, donc ils disent tous la même chose, et le
+jour où la règle change elle change une fois.
+
+**⚠️ UNE BOÎTE VIDE NE COMPTE PAS.** Les cinq objets naissent sans texte
+puis s'écrivent dedans (c'est la création optimiste : la boîte apparaît,
+on tape après). Compter les LIGNES laisserait passer un Totehm de cinq
+boîtes vides — exactement le contraire d'un passeport. On compte donc les
+lignes **dont le texte n'est pas vide**.
+
+**⚠️ `p_user` LIT LE TOTEHM DE N'IMPORTE QUI** — c'est nécessaire pour le
+webhook et pour `creator_cercle()`. La fonction ne renvoie donc QUE des
+booléens, jamais un contenu. Ça ne doit pas changer.
+
+**Ce qu'on montre au membre qui n'y est pas encore** : `remplies` (0 à 5)
+sort de la même fonction. Le calculer côté page, ce serait cinq additions
+que le serveur a déjà faites.
+
+---
+
+### ⛔ STRIPE CONNECT EST ABANDONNÉ POUR LES CRÉATEURS — 19/09/2026
+
+**Ce n'était pas un bug de code.** Les logs de la fonction rendaient les
+mots de Stripe : *« You must complete your platform profile to use
+Connect. »* Trois jours, tous les créateurs bloqués, et derrière ce
+blocage : un KYC par créateur et un compte connecté exigé **avant le
+premier euro** — pour virer 80 % à une poignée de gens **une fois par
+mois**.
+
+**La sortie est manuelle.** L'argent arrive ENTIER sur le compte de la
+plateforme ; les 80 % partent à la main le 1er, vers l'IBAN ou le PayPal
+que le créateur a posé dans son tiroir (`creator_payout_set`).
+
+Dans `creator-subscribe` : **ni `transfer_data` ni
+`application_fee_percent`**, et un commentaire à l'endroit exact où ils
+étaient — pour que personne ne croie à un reversement automatique.
+`PART_TOTEHM = 20` sert encore, mais à CALCULER ce qu'on doit, plus à
+demander un partage à Stripe.
+
+**⚠️ LES COLONNES CONNECT RESTENT** (`stripe_account_id`,
+`charges_enabled`, `payouts_enabled`). Vides, elles ne coûtent rien, et
+elles reprennent leur rôle le jour où Connect revient. Une colonne
+effacée est une migration de retour à écrire.
+
+**Le palier de bascule : cent créateurs.** En dessous, Connect coûte plus
+de friction qu'il ne fait gagner de temps. Au-dessus, virer à la main
+devient le travail d'une demi-journée par mois et Connect redevient le
+bon outil. Les tables ne bougeront pas ; seule la sortie changera.
+
+**⚠️ L'IBAN EST STOCKÉ EN CLAIR, ET C'EST ÉCRIT DANS LA MIGRATION.**
+Postgres est chiffré au repos, la table est en RLS, et **la lecture ne
+rend JAMAIS que les 4 derniers caractères** (`creator_cercle` →
+`payout_fin`). Assez pour reconnaître le sien, pas assez pour s'en
+servir. Ce n'est pas un coffre-fort : c'est un carnet d'adresses
+bancaires, et il se vide le jour où Connect revient.
+
+---
+
+### ⛔ LE TIROIR DU CERCLE — 19/09/2026
+
+**« Visible to my paying followers » ouvre un tiroir SOUS lui.** Pas un
+onglet, pas une page, pas une redirection : un dépliant en place. *Un
+créateur qui découvre qu'il peut être payé ne doit pas changer d'écran
+pour le croire.*
+
+**Deux états, et un seul décide : le Totehm.**
+
+- **Totehm incomplet** → un voile flouté par-dessus le tableau de bord
+  réel, l'accroche (« TURN YOUR DISCIPLINE INTO CASH FLOW… »), le
+  simulateur (10 abonnés = 800 €/an · 100 = 8 000 €/an), la barre
+  d'avancement, et **[COMPLÉTER MON TOTEHM]** qui défile jusqu'à la
+  PREMIÈRE vue vide. Le bouton ne dit pas « va remplir ton Totehm » : il
+  y emmène.
+- **Totehm complet** → le voile tombe (`#cercle.ouvert`), le badge live,
+  le champ de prix avec le 80/20 écrit à côté, « Active Paying Members »,
+  « Ready for next payout », et **[MONETIZE IT — COPY LINK]**.
+
+**⚠️ ON MONTRE SA PART, PAS LE BRUT.** Un créateur qui lit 1 000 € et
+reçoit 800 € se sent floué, même si le taux était écrit ailleurs sur la
+page. `creator_cercle()` renvoie `a_moi` déjà net.
+
+**⚠️ UN SEUL APPEL POUR TOUT LE TIROIR.** Prix, abonnés, part, méthode de
+virement, et l'état du passeport : cinq requêtes côté page, c'était cinq
+allers-retours pour dessiner un seul écran.
+
+---
+
+### ⛔ LE JOYSTICK PASSE EN RONDS — 19/09/2026
+
+**Wah : « Des ronds, pas des carrés. »** Trois ronds verticaux posés sur
+trois ronds horizontaux — **cinq, pas six** : celui des habitudes est
+commun aux deux axes. C'est le Totehm, pas un pavé numérique.
+
+- **Le fond ne change qu'avec l'axe HORIZONTAL.** Objectifs et répulsions
+  sont la même colonne que les habitudes : même époque, donc même fond.
+  Peindre le fond aussi, ce serait dire qu'on a changé d'époque.
+- **Le vrai Navy est revenu.** J'avais glissé `--sky` dans la pile — un
+  bleu clair hors charte. `--navy` (#333366) est la couleur du présent et
+  elle ne se remplace pas.
+- **Les curseurs sont BLANCS.** Colorés à la famille, ils étaient du
+  sombre sur du sombre. Le blanc se voit sur les trois fonds.
+- **Le swipe horizontal marche AUSSI depuis les vues verticales.** La
+  croix s'élargit : `repulsions` et `objectives` ont maintenant `g` et
+  `d`. On n'est jamais enfermé dans une colonne.
+
+**⚠️ L'AXE NE SE RECOPIE PAS, IL SE DÉDUIT DE `CROIX`.** Il y avait une
+seconde table `AXE` écrite à la main qui disait la même chose que la
+croix — et qui a cessé de la dire **à la minute où la croix s'est
+élargie** : depuis les objectifs on pouvait partir à gauche, mais les
+ronds de la sagesse et de la vision restaient éteints. *Deux tables qui
+doivent s'accorder finissent toujours par ne plus s'accorder.* Le pad
+allume maintenant ce vers quoi on peut RÉELLEMENT aller.
+
+---
+
+### ⛔ IMMERSION TOTALE — 19/09/2026
+
+**Dans le Totehm déplié : rien qui en sorte.** Les trois portes
+([Get Higher], [My Higher Self], [Totehmize my cloth]) et l'espace membre
+(`#conn-bar`) remontent sur l'ATTERRISSAGE et n'y descendent plus.
+
+Une porte mène DEHORS — l'autre domaine, la boutique, le bot. *La pièce
+où l'on écrit n'a aucune raison de porter une sortie.* Sur
+l'atterrissage, en revanche, elles sont exactement à leur place : c'est
+l'écran des choix, et trois choix côte à côte se comparent quand trois
+choix empilés se subissent.
+
+**⚠️ UN BOUTON VISIBLE QUI NE FAIT RIEN EST UN BOUTON CASSÉ.** Le 17/09
+j'avais neutralisé le point vert dans le Totehm en le laissant à l'écran.
+Le 19/09 il est retiré. On enlève, on ne débranche pas.
+
+**⚠️ UNE RÈGLE DE COMPORTEMENT NE VA JAMAIS DANS UN `@media`.**
+`body:not(.gate) #conn-bar{display:none}` était écrit dans la requête
+mobile : le point restait donc visible sur desktop. Une règle qui dit
+« ceci n'existe pas ici » est vraie sur tous les écrans.
+
+---
+
+### ⛔ UNE MINI-BOÎTE EST UNE PORTE — 19/09/2026
+
+Cliquer une mini-boîte **bascule vers la vue native de l'élément ET ouvre
+sa boîte en édition**. Une vision citée dans un objectif n'est plus une
+étiquette : c'est le chemin vers la vision.
+
+**⚠️ `data-go` SE LIT AVANT `data-open`.** Une mini vit À L'INTÉRIEUR
+d'une boîte ouverte : `closest('[data-open]')` remonterait jusqu'à la
+boîte qui la contient et rouvrirait celle-là. L'ordre des deux tests EST
+le comportement.
+
+**⚠️ ON CHANGE DE VUE, PUIS ON OUVRE — À LA FRAME SUIVANTE.** `setView`
+redessine la liste ; ouvrir dans la même frame viserait une boîte qui
+n'existe pas encore.
+
+---
+
+### ⛔ UNE HABITUDE A UN LIEU — 19/09/2026
+
+**Le Spot est un champ de l'habitude, avec la même pureté que les
+autres** : pas d'icône, pas de cadre, un placeholder qui donne le ton
+(« the park downstairs · my kitchen · the gym on 5th »).
+
+Le lieu est le PREMIER déclencheur d'une habitude : « le parc en bas » dit
+quand et comment mieux qu'une heure.
+
+**⚠️ TABLE À PART, PAS UNE COLONNE DANS `totehms`.** Les habitudes vivent
+dans un `jsonb steps` : y glisser un lieu obligerait à réécrire tout le
+tableau pour changer un mot, et rendrait toute recherche par lieu
+impossible.
+
+**⚠️ UN LIEU VIDE EFFACE LE SPOT.** C'est le seul moyen de se détacher
+d'un endroit sans supprimer l'habitude.
+
+**⚠️ LE SPOT SUIT SON HABITUDE QUAND ELLE EST RENOMMÉE.** Comme les
+répulsions et les objectifs — la clé est le TEXTE de l'habitude.
+`habit_rename_links` libère d'abord la place cible, sinon la clé primaire
+`(user_id, habit_text)` refuse le déplacement.
+
+**⚠️ `lat`/`lng` EXISTENT ET RESTENT VIDES.** « la salle du 5e » n'a pas
+de coordonnées et n'en a pas besoin pour déclencher. Les remplir
+maintenant coûterait **un appel de géocodage par habitude** — voir la
+DOCTRINE DE COÛT. Elles attendent le Radar.
+
+---
+
+### ⛔ LE FILTRE NE CONCERNE QUE LES HABITUDES — 19/09/2026
+
+**Le T (`T.svg`) EST le filtre**, et il ne filtre que les habitudes.
+Ailleurs, il ne clignote pas et ne s'ouvre pas. *Un bouton qui s'allume
+sur un écran où il n'agit pas promet quelque chose qu'il ne tiendra pas.*
+
+Et « Order by importance… » : cassé sur desktop, absent sur mobile. Même
+cause que d'habitude — une règle de mise en page écrite dans un `@media`.
+
+---
+
 ### ⛔ UN CONTRÔLEUR QUI SE DÉPLACE N'EST PAS UN CONTRÔLEUR — 18/09/2026
 
 **Quatre reproches de Wah, quatre causes, et trois étaient la même.**
@@ -671,10 +899,14 @@ d'à côté, pas un réglage.
 « nom du Totehm » dans le même document finiraient par afficher deux
 valeurs différentes, et `paintNameButton()` n'en peindrait qu'un.
 
-L'espace créateur s'ouvre **avec** la visibilité payante, et il ANNONCE
-`/club/creator` sans refaire son travail : recopier les soldes et le prix
-ici, ce serait deux tableaux de bord à tenir d'accord — et le jour où ils
-divergeront, ça se verra sur un montant.
+L'espace créateur s'ouvre **avec** la visibilité payante.
+
+**⚠️ IL NE RENVOIE PLUS VERS `/club/creator` · 19/09/2026.** Il DÉPLIE le
+tableau de bord sur place — voir **⛔ LE TIROIR DU CERCLE**. Je craignais
+deux tableaux de bord à tenir d'accord ; il n'y en a qu'un, parce qu'il
+n'y a **qu'une seule source** : `creator_cercle()`. Ce qui divergeait,
+c'étaient deux PAGES qui calculaient chacune de leur côté — pas deux
+endroits où afficher le même appel.
 
 ### ⛔ QUAND RÉESSAYER NE SERT À RIEN, ON NE DIT PAS « RÉESSAIE » — 18/09/2026
 
@@ -698,6 +930,12 @@ aren't open yet — this is on us, not on you. »*
 > même chose.** Un message d'erreur générique transforme un problème
 > connu en mystère — et c'est comme ça qu'un bouton reste mort trois
 > jours.
+
+**⚠️ ÉPILOGUE · 19/09/2026 : le blocage n'a pas été levé, il a été
+CONTOURNÉ.** Connect est abandonné pour les créateurs, donc il n'y a plus
+de profil plateforme à remplir pour que quelqu'un soit payé. La leçon
+sur le message d'erreur reste entière et `creator-onboard` garde son cas
+`platform_incomplete` — le Club, lui, encaisse toujours par Stripe.
 
 ### ⛔ UN TITRE, QUATRE CURSEURS — 17/09/2026
 

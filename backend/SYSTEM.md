@@ -267,6 +267,10 @@ sans rien apporter.
 | `live_budget` | 0 | appels Ticketmaster par jour, plafond 3 000 (quota gratuit 5 000) |
 | `live_sources` | **18 · 0 active, 18 en erreur** | **NOUVELLE 04/09/2026** — les agendas d'une ville, DÉCLARÉS en base. Une salle de plus = une ligne, zéro ligne de code. RLS active, aucune policy. ⚠️ Les 18 sources lisboètes ont été sondées : **aucune ne publie de flux exploitable**. Voir §7 |
 | `edge_tokens` | 31 | **RENOMMÉE 04/09/2026** (ex-`bot_tick_tokens`) — jetons à usage unique de `edge_call()`, 2 min de vie, colonne `purpose` (`bot-tick` / `agenda-ingest`). Purge d'un jour intégrée à `edge_token_consume()` : pas de tâche de nettoyage à oublier |
+| `creator_profiles` | **0 · mesuré 19/09** | prix personnalisé, devise, et depuis le 19/09 `payout_method` + `payout_handle`. Les colonnes Connect (`stripe_account_id`, `charges_enabled`, `payouts_enabled`) RESTENT, vides — voir le journal §10. ⚠️ **Zéro créateur en base : le tiroir n'a encore jamais été rempli par personne.** Le premier qui pose son prix est le premier test réel |
+| `creator_subscriptions` | **0 · mesuré 19/09** | un fan abonné au Totehm d'un créateur. `amount_cents` sert à calculer la part de 80 %. Vide, donc `creator_cercle()` rend `abonnes: 0` et `a_moi: 0` — c'est juste, pas cassé |
+| `habit_spots` | **0 · mesuré 19/09** | **NOUVELLE 19/09/2026** — le lieu d'une habitude, une ligne par `(user_id, habit_text)`. Détail plus bas |
+| `sso_handoff` | **2 · mesuré 19/09** | **NOUVELLE 17/09/2026** — le code de passage entre domaines : 32 octets, stocké HACHÉ en SHA-256, 60 s, usage unique, lié à UN produit cible. Les 2 lignes sont mes tests du pont — `sso_menage()` les balaie |
 
 **Table morte :** `_deprecated_user_roles_20260803` — à dropper après le
 3 septembre 2026.
@@ -605,7 +609,11 @@ son nom.
 | `repulsion_set(text,text,text)` → `bigint` | crée une répulsion sur une habitude | `authenticated` |
 | `repulsion_retire(bigint)` | la désactive | `authenticated` |
 | `repulsion_link(bigint,text)` · `repulsion_unlink(bigint,text)` | **le lookup** : attache / détache une habitude | `authenticated` |
-| `habit_rename_links(text,text)` | suit un renommage d'habitude dans les trois tables de liens | `authenticated` |
+| `habit_rename_links(text,text)` → `boolean` | suit un renommage d'habitude dans les trois tables de liens **et déplace le spot** (19/09). ⚠️ Le `boolean` est imposé : `create or replace` ne peut pas changer un type de retour | `authenticated` |
+| `habit_spot_set(text,text)` | **NOUVELLE 19/09/2026** — pose, change ou (texte vide) efface le lieu d'une habitude | `authenticated` |
+| `totehm_complete(uuid default null)` → `jsonb` | **NOUVELLE 19/09/2026** — le PASSEPORT : une boîte non vide dans chacune des cinq vues. Renvoie les cinq booléens, `complete`, et `remplies` (0–5). Ne rend QUE des booléens, jamais un contenu — le paramètre `p_user` lit le Totehm de n'importe qui | `authenticated`, `service_role` |
+| `creator_payout_set(text,text)` | **NOUVELLE 19/09/2026** — où virer : `iban` ou `paypal` + l'identifiant | `authenticated` |
+| `creator_cercle()` → `jsonb` | **NOUVELLE 19/09/2026** — tout le tiroir créateur en UN appel : prix, abonnés, `a_moi` (déjà net de 20 %), `payout_method`, `payout_fin` (**4 derniers caractères seulement**), `complete` | `authenticated` |
 
 **Une porte future ouverte, pas encore construite.** Le TotehmBot pourra
 composer des affirmations neuro-linguistiques par notification à la
@@ -620,6 +628,30 @@ Totehm de quelqu'un d'autre.
 **`repulsions_of` est écrite UNE fois.** `my_trips` l'appelle deux fois —
 les habitudes d'un objectif, puis les habitudes libres. Le même
 sous-select existait en double : deux copies divergent toujours.
+
+### `habit_spots` — le lieu d'une habitude, créée le 19/09/2026
+
+```
+user_id     uuid              → auth.users(id) on delete cascade
+habit_text  text              not null
+place       text              not null, tronqué à 120 caractères
+lat         double precision  NULL — vide aujourd'hui
+lng         double precision  NULL — vide aujourd'hui
+updated_at  timestamptz       default now()
+primary key (user_id, habit_text)
+RLS : le propriétaire seul, en lecture comme en écriture
+```
+
+**Table à part, pas une colonne dans `totehms`.** Les habitudes vivent
+dans un `jsonb steps` : y glisser un lieu obligerait à réécrire tout le
+tableau pour changer un mot, et rendrait toute recherche par lieu
+impossible.
+
+**⚠️ `lat`/`lng` EXISTENT ET SONT VIDES — MESURÉ LE 19/09/2026.** Le
+picker ne pose qu'un NOM : « la salle du 5e » n'a pas de coordonnées et
+n'en a pas besoin pour déclencher une habitude. Les remplir coûterait un
+appel de géocodage par habitude. Elles attendent le Radar. **Ne pas
+écrire ici qu'elles sont peuplées sans avoir compté.**
 
 ### `repulsion_habits` — le lookup, créée le 06/09/2026
 
@@ -1156,6 +1188,13 @@ Functions sont téléchargeables.
 
 | Date | Décision | Pourquoi |
 |---|---|---|
+| 19/09 | **Le Totehm est le passeport — UNE BOÎTE NON VIDE DANS CHACUNE DES CINQ VUES** | Une seule clé pour TotehmBot, la monétisation, la visibilité, les Spots et le visuel textile. Écrite dans la base (`totehm_complete`), pas dans le navigateur : quatre produits l'interrogent, elle ne peut pas dire quatre choses |
+| 19/09 | **Stripe Connect abandonné pour les créateurs — virements manuels le 1er** | Le profil plateforme a bloqué TOUS les créateurs trois jours, plus un KYC chacun et un compte connecté avant le premier euro. Pour virer 80 % à une poignée de gens une fois par mois, c'était une usine. **Palier de retour : cent créateurs** |
+| 19/09 | **L'IBAN est chez nous, en clair, et c'est écrit** | RLS + chiffrement au repos, et la lecture ne rend QUE les 4 derniers caractères. Ce n'est pas un coffre-fort, c'est un carnet d'adresses bancaires — il se vide le jour où Connect revient |
+| 19/09 | **Le tiroir créateur ne redirige plus** | Une redirection vers `/club/creator`, c'est perdre la moitié des gens à la seconde où ils disent oui. Un seul appel (`creator_cercle`) donne tout le tableau de bord |
+| 19/09 | **L'axe du pad se DÉDUIT de la croix** | Une seconde table écrite à la main a cessé de dire la même chose que la croix à la minute où celle-ci s'est élargie. Deux tables qui doivent s'accorder finissent toujours par ne plus s'accorder |
+| 19/09 | **Le lieu d'une habitude est une TABLE, pas une clé dans le `jsonb`** | Les habitudes vivent dans `totehms.steps` : y glisser un lieu obligerait à réécrire tout le tableau pour changer un mot, et rendrait toute recherche par lieu impossible. `lat`/`lng` restent vides — le géocodage attend le Radar |
+| 19/09 | **Immersion : rien qui sorte du Totehm déplié** | Les trois portes et l'espace membre remontent sur l'atterrissage. Un bouton visible qui ne fait rien est un bouton cassé : on enlève, on ne débranche pas |
 | 04/09 | **La couche locale est faite de FORMATS, pas de sites** | Trois parseurs (ICS · JSON-LD · RSS) et des sources déclarées en base : une salle de plus = une ligne. Un adaptateur par site se casse au premier redesign — trois adaptateurs sont déjà morts en un lot |
 | 04/09 | **`discover` avant d'ingérer** | Les dix premières graines lisboètes ont été devinées à la main : les dix ont rendu 404. On ne devine plus une URL de flux, on sonde onze chemins normalisés et on écrit celui qui répond |
 | 04/09 | **Mesuré : aucune des 18 sources lisboètes ne publie** | Le mécanisme marche (18 assertions passent sur des chaînes réelles), la ville ne publie pas. Problème de terrain → brief Gemini. **Pas de scraper HTML par site** |
