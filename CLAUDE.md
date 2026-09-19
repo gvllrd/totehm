@@ -568,6 +568,186 @@ qu'un des trois avait bougé et pas les autres. Les deux autres en
 découlent maintenant : `+82` pour la bande de classement, `+100` pour la
 première boîte.
 
+### ⛔ DEUX ALPHABETS POUR LA MÊME CHOSE — 20/09/2026
+
+**« La mini-box objectif dans la vue habit ne fonctionne pas. »** Une
+lettre. Une seule.
+
+Une mini-boîte d'objectif est construite avec `o` — c'est sa classe CSS
+(`.m-o`), c'est son `data-unlink="o:…"`. Une boîte OUVERTE d'objectif, elle,
+porte `open.kind === 't'`. **Deux alphabets pour la même chose, écrits à
+six mois d'intervalle**, et personne ne s'en apercevait tant que les deux
+mondes ne se parlaient pas.
+
+Le 19/09 je les ai fait se parler. `VUE_DE` était écrite avec l'alphabet
+des boîtes (`t`) ; `data-go` porte celui des minis (`o`). Donc
+`VUE_DE['o'] === undefined`, la fonction sortait en silence, **le clic ne
+faisait rien.** Les quatre autres lettres coïncidaient — voilà pourquoi
+seul l'objectif était mort, et pourquoi les tests ne l'ont pas vu : ils
+cliquaient sur une répulsion.
+
+`PORTE` dit maintenant les DEUX : où aller, et sous quel nom la boîte
+s'ouvre là-bas. Et un genre inconnu **écrit dans la console** au lieu de
+sortir sans un mot.
+
+> **La règle : traduire explicitement coûte une colonne, supposer que
+> deux alphabets coïncident coûte un bouton mort.** Et un `return` muet
+> sur une valeur absente est la meilleure cachette qui existe pour un
+> bug.
+
+---
+
+### ⛔ UNE BOÎTE NEUVE N'AVAIT AUCUN ENDROIT OÙ ÉCRIRE — 20/09/2026
+
+**« Il y a un problème d'affichage quand je clique add a répulsion. Il
+faut revoir impérativement la fonctionnalité de l'app globale. »** Il
+avait raison sur les deux points — le symptôme ET la portée.
+
+Mesuré : la boîte neuve contient
+`<span class="v-name" contenteditable></span>` — **vide**. Un
+`contenteditable` vide se réduit à un trait de 10 px, sans un mot dedans.
+On appuyait sur « + Add a Repulsion », une boîte s'ouvrait avec
+« instead / + habit / learned / + teaching / Delete repulsion », et
+**rien où poser le curseur**. La boîte existait, l'invitation non.
+
+Et ce n'était pas la répulsion : c'était **les cinq vues**. Les cinq
+objets naissent sans texte (création optimiste depuis le 17/09), donc les
+cinq naissaient muets. Une seule vue a été signalée parce qu'une seule a
+été essayée.
+
+Trois causes, trois corrections :
+
+1. **Pas d'invitation.** Chaque genre dit maintenant ce qu'il attend,
+   dans sa langue : « what I do instead », « what I learned », « what I
+   see ». Pas « Enter text » — *une répulsion n'est pas un titre, c'est
+   ce qu'on fait À LA PLACE, et le mot juste fait la moitié du travail de
+   la boîte.*
+2. **Pas de cible.** Le champ vide garde une largeur de ligne
+   (`min-width`), au lieu d'un trait invisible au pouce.
+3. **Pas de curseur, au téléphone.** `if(f && window.innerWidth > 700)
+   f.focus()` — bonne règle (ne pas faire surgir le clavier quand on
+   ouvre une boîte pour la LIRE), **mauvaise portée** : elle s'appliquait
+   aussi à une boîte qui vient de NAÎTRE. `ouvrir(kind, id, neuve)`
+   sépare les deux gestes.
+
+**⚠️ ET LE BAPTÊME VOLAIT LE CURSEUR.** La boîte naît avec un identifiant
+provisoire et prend le curseur ; 300 à 600 ms plus tard le serveur
+répond, `renderZone()` reconstruit la ligne, **et le champ qui avait le
+curseur n'existe plus**. Au téléphone, le clavier retombait tout seul une
+demi-seconde après s'être ouvert. `rendCurseur()` le repose après le
+redessin — et seulement si le champ est encore vide et que le doigt n'est
+pas ailleurs.
+
+> **La règle : une création n'est pas finie quand la boîte apparaît, elle
+> est finie quand on peut écrire dedans.**
+
+---
+
+### ⛔ LE PAVÉ PASSE EN TROIS COULEURS — 20/09/2026
+
+**« Je ne veux pas des deux points latéraux aux extrémités et les trois
+points verticaux, je veux nos 3 couleurs. »**
+
+Les cinq ronds blancs dessinaient la CROIX — c'est-à-dire **le plan du
+produit**. Un contrôleur n'a pas à montrer le plan : il doit montrer OÙ
+L'ON EST. Et où l'on est se dit en deux mots : **quelle époque** (la
+couleur) et **quelle couche** (le titre).
+
+Trois ronds, les trois couleurs de la marque : rouge-violet le passé,
+navy le présent, bleu clair l'à-venir. La colonne verticale du présent
+(objectifs / habitudes / répulsions) n'a plus de rond à elle — elle se lit
+sur les chevrons haut et bas et dans le titre. *Une information, un seul
+endroit.*
+
+**⚠️ ET LE TITRE A FAILLI REFAIRE BOUGER LE PAVÉ.** Wah m'a reproché deux
+fois qu'il se déplace. En mettant le titre dans une colonne `auto`, je
+l'ai réintroduit par la porte de derrière : « MY REPULSIONS » est plus
+long que « MY HABITS », le contrôleur est ancré par la DROITE, il glissait
+de **38 px** d'une vue à l'autre. Mesuré. La colonne est fixe.
+
+**⚠️ ET À .34 D'OPACITÉ LES TROIS COULEURS ÉTAIENT LE MÊME GRIS** — donc
+la demande entière était perdue. Un rond éteint reste RECONNAISSABLE :
+c'est lui qui dit où l'on peut aller. Il s'efface par la TAILLE, pas par
+la couleur.
+
+**⚠️ ET LE NAVY ALLUMÉ DISPARAISSAIT DANS LE PAPIER.** `--navy` (#333366)
+et `--paper` (#2b2b57) sont à deux doigts l'un de l'autre : le rond du
+présent s'effaçait exactement au moment où il devait se voir. Un anneau
+clair le détoure — seule pièce du pavé qui en a besoin, seule à l'avoir.
+
+---
+
+### ⛔ QUATRE COINS, QUATRE OBJETS — 20/09/2026
+
+**Deuxième tentative d'écarter le joystick de la croix, deuxième
+chevauchement mesuré (27 px).** La cause est structurelle : `#fold-x` se
+résout sur `#stage` (qui porte un `transform`, donc contient ses
+descendants `fixed`) et `#joy` se résout sur la FENÊTRE, parce que dedans
+il serait rogné. **Deux repères différents pour le même coin : aucune
+arithmétique ne les tiendra d'accord à toutes les tailles d'écran.**
+
+J'ai essayé deux fois. La troisième n'est pas un réglage, c'est une
+règle :
+
+| coin | objet |
+|---|---|
+| haut-gauche | le T |
+| haut-droite | la croix |
+| bas-gauche | le wordmark |
+| bas-droite | le contrôleur |
+
+Le wordmark ayant libéré le bas-droit en passant à gauche, il n'y a plus
+rien à calculer — et rien à re-mesurer au prochain changement de largeur.
+
+**⚠️ ET LE BOUTON DE CLASSEMENT DÉBORDAIT DE L'ÉCRAN.** Mesuré : centré
+sur le rail avec 14 px de marge, son bord gauche tombait à **x = −14** au
+téléphone. Un quart de la zone de clic hors de l'écran, et le reste qui
+venait toucher le T (« le T.svg colle l'icône bouton classement »). Il
+s'aligne sur le bord GAUCHE du rail et n'étend sa zone de clic que vers la
+droite — là où il y a de la place.
+
+---
+
+### ⛔ UNE INTENTION A SON SON — 20/09/2026
+
+**Le son appartient à l'INTENTION, pas à l'habitude.** Deux habitudes en
+`focus` entendent la même chose : c'est le propre d'une intention. La clé
+est donc `(user_id, intention)`, et l'écran le DIT — sinon on croit régler
+la musique de cette habitude-là et on change celle de toutes les autres
+sans le savoir.
+
+**⚠️ LA TABLE EXISTAIT DÉJÀ** (`intention_music`, un actif par intention,
+historique conservé). On n'en a pas créé une deuxième : le TYPE va dans
+`title`, le lien dans `url`.
+
+**⚠️ MAIS `set_music` EXIGEAIT UNE URL.** Or « hard techno, 140 bpm » est
+une réponse complète. Le lien devient facultatif et c'est le TYPE qui
+devient obligatoire — l'inverse de l'ancienne fonction, qui reste en place
+pour ce qui l'appelle déjà.
+
+**⚠️ LES DEUX CHAMPS PARTENT ENSEMBLE.** La fonction en base remplace la
+ligne active : envoyer le type seul effacerait le lien posé trois secondes
+plus tôt. Et on ne redessine PAS après l'envoi — `renderZone()`
+reconstruit les champs, donc vole le curseur au milieu d'une saisie.
+
+**⚠️ ET PERSONNE N'APPUIE SUR ENTRÉE DANS LE DEUXIÈME CHAMP.** `focusout`
+(qui remonte, contrairement à `blur`) rattrape la saisie de celui qui tape
+le type, colle le lien, et referme.
+
+---
+
+### ⛔ ÉCHAP REPLIE LE TOTEHM, IL NE FERME PAS UNE BOÎTE — 20/09/2026
+
+Noté parce que ça m'a coûté deux passes de test : `Échap` est le **même
+geste que la croix `#fold-x`** — il ramène à l'atterrissage. Pour fermer
+une BOÎTE, c'est sa propre croix (`data-x`).
+
+Et le corollaire, qui est un bon comportement, pas un bug : **les flèches
+DANS un champ de texte déplacent le curseur, elles ne changent pas de
+vue.** Un test qui navigue doit refermer la boîte d'abord.
+
+---
+
 ### ⛔ LE TOTEHM EST LE PASSEPORT — 19/09/2026
 
 **Un Totehm complet = AU MOINS UNE BOÎTE REMPLIE DANS CHACUNE DES CINQ
@@ -673,7 +853,13 @@ allers-retours pour dessiner un seul écran.
 
 ---
 
-### ⛔ LE JOYSTICK PASSE EN RONDS — 19/09/2026
+### ⛔ LE JOYSTICK PASSE EN RONDS — 19/09/2026 · DÉPASSÉ LE 20/09
+
+> **⚠️ CETTE SECTION A VÉCU UNE JOURNÉE.** Les cinq ronds blancs sont
+> devenus **trois ronds de couleur** le 20/09 — voir **⛔ LE PAVÉ PASSE
+> EN TROIS COULEURS**, qui fait autorité. Ce qui suit reste pour la
+> raison du fond (le vrai navy, les curseurs blancs, le swipe horizontal
+> depuis les vues verticales) : ces trois-là n'ont pas bougé.
 
 **Wah : « Des ronds, pas des carrés. »** Trois ronds verticaux posés sur
 trois ronds horizontaux — **cinq, pas six** : celui des habitudes est
@@ -829,6 +1015,13 @@ seul, il n'a plus à rapetisser pour ne pas pénétrer le wordmark) et le
 **TOTEHM en bas à droite**. Les trois portes passent donc à gauche, là où
 le wordmark était. Le bas se lit de gauche à droite : ce qu'on peut
 faire, puis qui on est.
+
+> **⚠️ RE-INVERSÉ LE 20/09 : LE WORDMARK EST EN BAS À GAUCHE.** Il a fait
+> le tour en trois jours, et cette fois la raison tient : le T est en
+> haut à gauche, donc la marque tient la colonne de gauche d'un bout à
+> l'autre, du côté du rail qui EST le logo. Et le coin bas-droit ainsi
+> libéré est ce qui a permis de sortir le contrôleur de sous la croix —
+> voir **⛔ QUATRE COINS, QUATRE OBJETS**.
 
 <details><summary>La version du matin (déplacée, perforée) — archive</summary>
 

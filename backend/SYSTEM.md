@@ -613,6 +613,8 @@ son nom.
 | `habit_spot_set(text,text)` | **NOUVELLE 19/09/2026** — pose, change ou (texte vide) efface le lieu d'une habitude | `authenticated` |
 | `totehm_complete(uuid default null)` → `jsonb` | **NOUVELLE 19/09/2026** — le PASSEPORT : une boîte non vide dans chacune des cinq vues. Renvoie les cinq booléens, `complete`, et `remplies` (0–5). Ne rend QUE des booléens, jamais un contenu — le paramètre `p_user` lit le Totehm de n'importe qui | `authenticated`, `service_role` |
 | `creator_payout_set(text,text)` | **NOUVELLE 19/09/2026** — où virer : `iban` ou `paypal` + l'identifiant | `authenticated` |
+| `intention_sound_set(text,text,text)` | **NOUVELLE 20/09/2026** — le son d'une intention : un TYPE (obligatoire) + une URL (facultative). Les deux vides retirent le son. Écrit dans `intention_music` : `title` = le type, `url` = le lien | `authenticated` |
+| `intention_sounds()` → `jsonb` | **NOUVELLE 20/09/2026** — le son actif de chaque intention, indexé par intention, en un appel | `authenticated` |
 | `creator_cercle()` → `jsonb` | **NOUVELLE 19/09/2026** — tout le tiroir créateur en UN appel : prix, abonnés, `a_moi` (déjà net de 20 %), `payout_method`, `payout_fin` (**4 derniers caractères seulement**), `complete` | `authenticated` |
 
 **Une porte future ouverte, pas encore construite.** Le TotehmBot pourra
@@ -1188,6 +1190,11 @@ Functions sont téléchargeables.
 
 | Date | Décision | Pourquoi |
 |---|---|---|
+| 20/09 | **Le son appartient à l'INTENTION, pas à l'habitude** | Deux habitudes en `focus` entendent la même chose : c'est le propre d'une intention. La table existait déjà (`intention_music`) — on n'en a pas créé une deuxième, le TYPE va dans `title` et le lien dans `url` |
+| 20/09 | **Le lien musical devient facultatif, le TYPE devient obligatoire** | `set_music` exigeait une URL. Or « hard techno, 140 bpm » est une réponse complète : refuser cette saisie ferait perdre la moitié des réponses |
+| 20/09 | **Le pavé montre TROIS ÉPOQUES, plus cinq vues** | Les cinq ronds blancs dessinaient le plan du produit. Un contrôleur montre où l'on est : la couleur dit l'époque, le titre dit la couche. Une information, un seul endroit |
+| 20/09 | **Quatre coins, quatre objets — le contrôleur quitte le coin de la croix** | `#fold-x` se résout sur `#stage`, `#joy` sur la fenêtre : deux repères pour le même coin, aucune arithmétique ne les tient d'accord. Deux tentatives de réglage, deux chevauchements mesurés. La troisième est une règle, pas un chiffre |
+| 20/09 | **Une création n'est finie que quand on peut écrire dedans** | Les cinq objets naissaient avec un champ vide de 10 px, sans invitation, et sans curseur au téléphone. Et le baptême (l'identifiant réel qui remplace le provisoire) reprenait le curseur 400 ms plus tard |
 | 19/09 | **Le Totehm est le passeport — UNE BOÎTE NON VIDE DANS CHACUNE DES CINQ VUES** | Une seule clé pour TotehmBot, la monétisation, la visibilité, les Spots et le visuel textile. Écrite dans la base (`totehm_complete`), pas dans le navigateur : quatre produits l'interrogent, elle ne peut pas dire quatre choses |
 | 19/09 | **Stripe Connect abandonné pour les créateurs — virements manuels le 1er** | Le profil plateforme a bloqué TOUS les créateurs trois jours, plus un KYC chacun et un compte connecté avant le premier euro. Pour virer 80 % à une poignée de gens une fois par mois, c'était une usine. **Palier de retour : cent créateurs** |
 | 19/09 | **L'IBAN est chez nous, en clair, et c'est écrit** | RLS + chiffrement au repos, et la lecture ne rend QUE les 4 derniers caractères. Ce n'est pas un coffre-fort, c'est un carnet d'adresses bancaires — il se vide le jour où Connect revient |
