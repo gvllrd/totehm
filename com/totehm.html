@@ -160,6 +160,25 @@ body:not(.gate):not(.v-habits) #bigT{opacity:.42;cursor:default}
    EST le logo. Le bas de l'écran se lit alors de gauche à droite : qui
    on est, puis ce qu'on peut faire. */
 #wordmark{position:fixed;bottom:28px;left:max(18px,6vw);top:auto;right:auto;transform:none;z-index:30;user-select:none;transition:opacity .4s;line-height:0;cursor:pointer}
+/* ⚠️ « EN BAS À DROITE DU TOTEHM.SVG » — À CÔTÉ DE LUI, PAS DANS LE
+   COIN. Le wordmark tient le bas-gauche ; la porte du bot se pose à sa
+   droite, sur sa ligne de pied. Les deux se lisent comme une signature
+   suivie d'une phrase : qui je suis, et à qui je parle.
+   ⚠️ ELLE NE VIT QUE DANS LE TOTEHM DÉPLIÉ. Sur l'atterrissage il y a
+   déjà [My Higher Self] dans les trois portes : deux boutons pour la
+   même destination sur le même écran, c'est un de trop. */
+#door-bot{position:fixed;bottom:30px;left:calc(max(18px,6vw) + 92px);
+  z-index:30;background:none;border:none;padding:4px 2px;cursor:pointer;
+  font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
+  color:#b0b0b0;white-space:nowrap;line-height:1.4;
+  -webkit-tap-highlight-color:transparent;transition:color .15s ease}
+@media(hover:hover){#door-bot:hover{color:#fff}}
+#door-bot .higher-inline{height:1.5em;vertical-align:-.36em;margin:0 2px}
+/* L'atterrissage porte déjà la même porte dans `#bottom-doors`. */
+body.gate #door-bot{display:none!important}
+/* En lecture seule, on regarde le Totehm de quelqu'un d'autre : son
+   miroir ne nous regarde pas. */
+body.ro #door-bot{display:none!important}
 /* ⚠️ LE JOYSTICK LAISSE LE COIN À LA CROIX. Mesuré le 18/09 : posé à
    14 px du bord, il passait SOUS `#fold-x` (10 px du coin, 34 px de
    côté) et le navigateur donnait le clic à la croix — le curseur droit
@@ -173,7 +192,14 @@ body:not(.gate):not(.v-habits) #bigT{opacity:.42;cursor:default}
    Sans le disque de fond il ne reste que trois ronds de 14 px : 58 px
    de haut, et il se range dans la bande du titre au lieu de la
    traverser. */
-#joy{--joy-t:104px;--joy-w:66px;--joy-h:22px;top:12px;right:54px;left:auto}
+/* Le pavé est de nouveau un disque de 62 px : la grille porte ses
+   mesures, il n'y a plus de jeton de largeur à régler par écran.
+   ⚠️ 56 px DU BORD, ET C'EST MESURÉ. `#fold-x` occupe les 50 premiers
+   pixels du coin (10 px de marge + 40 px de côté). À 22 px le pavé
+   repassait dessous — troisième fois. La croix est un repère fixe du
+   produit : c'est au contrôleur de s'écarter, et de le faire avec de la
+   marge, pas au pixel. */
+#joy{top:16px;right:56px;left:auto}
 /* Les deux portes, à droite, à la même hauteur que le wordmark et dans
    la grammaire `.btn-sig` du reste du produit. */
 /* ⚠️ LES PORTES PASSENT À GAUCHE · 18/09/2026, parce que le wordmark
@@ -325,99 +351,98 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
    ⚠️ ET UN CURSEUR SANS VOISIN NE DISPARAÎT PLUS : il s'éteint. C'est ce
    qui fait un CADRE — quatre points cardinaux autour d'une structure,
    toujours les quatre. */
-/* ⚠️ LE TITRE PASSE À GAUCHE, ET IL GROSSIT · 20/09/2026.
-   Wah : « les titres de la catégorie doivent être mis en évidence et
-   placés sur le côté gauche. » Sous le pavé il était une légende ; à
-   gauche il devient la PHRASE, et le pavé devient sa ponctuation.
-   Quatre colonnes : le nom, puis le cadre de chevrons autour des trois
-   ronds. Le nom est aligné à DROITE de sa colonne — il vient buter
-   contre le contrôleur au lieu de flotter. */
-/* ⚠️ LA COLONNE DU TITRE EST FIXE, ET C'EST TOUT LE SUJET · 20/09/2026.
-   Posée en `auto`, elle prenait la largeur du mot : « MY REPULSIONS »
-   est plus long que « MY HABITS », et comme le contrôleur est ancré par
-   la DROITE, il glissait de 38 px d'une vue à l'autre. Mesuré.
-   C'est le reproche que Wah m'a fait deux fois — « il se déplace alors
-   que je veux qu'il reste sur sa position » — et je venais de le
-   réintroduire par la porte du titre. Une largeur fixe, et plus aucun
-   mot ne peut bouger le pavé. */
+/* ⚠️ LE TITRE REDESCEND SOUS LE PAVÉ, ET IL GROSSIT ENCORE
+   · 21/09/2026. Je l'avais mis à gauche le 20/09 ; Wah : « les titres de
+   la catégorie ça ne va pas, mets-les en dessous du curseur en plus
+   grand. » Il a raison et la raison est mécanique : à gauche, le titre
+   partageait la ligne du pavé, donc sa largeur entrait dans la largeur
+   du contrôleur — c'est ce qui m'a obligé à figer une colonne, et une
+   colonne figée coupe « MY REPULSIONS ». Dessous, il est LIBRE de faire
+   la largeur qu'il veut sans rien pousser.
+
+   ⚠️ ET IL NE PEUT PLUS DÉPLACER LE PAVÉ. La rangée du titre est posée
+   à `width:0` avec `overflow:visible` : le mot déborde de sa case des
+   deux côtés, centré, et la grille ne le voit pas. C'est ce qui permet
+   d'écrire gros sans jamais bouger le contrôleur — le reproche que Wah
+   m'a fait deux fois. */
 #joy{position:fixed;z-index:33;
   display:grid;
-  grid-template-columns:var(--joy-t,118px) 18px var(--joy-w,74px) 18px;
-  grid-template-rows:16px var(--joy-h,26px) 16px;
-  align-items:center;justify-items:center;
-  column-gap:2px}
-#cur-h  {grid-area:1/3/2/4}
-#vnow   {grid-area:2/1/3/2;justify-self:end;padding-right:6px}
-#cur-g  {grid-area:2/2/3/3}
-#joy-box{grid-area:2/3/3/4}
-#cur-d  {grid-area:2/4/3/5}
-#cur-b  {grid-area:3/3/4/4}
+  grid-template-columns:20px 62px 20px;
+  grid-template-rows:20px 62px 20px auto;
+  align-items:center;justify-items:center}
+#cur-h  {grid-area:1/2/2/3}
+#cur-g  {grid-area:2/1/3/2}
+#joy-box{grid-area:2/2/3/3}
+#cur-d  {grid-area:2/3/3/4}
+#cur-b  {grid-area:3/2/4/3}
+#vnow   {grid-area:4/1/5/4;margin-top:7px;width:0;overflow:visible}
 
-/* ══ LE PAVÉ — TROIS RONDS, TROIS COULEURS · 20/09/2026 ═════════════
-   Wah : « je ne veux pas des deux points latéraux aux extrémités et les
-   trois points verticaux, je veux nos 3 couleurs, rouge-violet, bleu
-   Navy et bleu clair. »
+/* ══ LE PAVÉ — LE DISQUE, ET TROIS RONDS EMPILÉS · 21/09/2026 ══════
+   Wah : « le design du joystick était très bien AVANT, sauf que je ne
+   veux pas des deux points latéraux aux extrémités HORIZONTALES. Garde
+   les trois points verticaux mais avec les 3 couleurs. »
 
-   Il a raison, et la raison est structurelle : les cinq ronds blancs
-   dessinaient la CROIX, c'est-à-dire le plan du produit. Un contrôleur
-   n'a pas à montrer le plan — il doit montrer OÙ L'ON EST. Or où l'on
-   est se dit en deux mots seulement : quelle époque (la couleur), et
-   quelle couche (le titre, maintenant énorme à gauche).
+   Donc : le DISQUE revient (c'est lui qui faisait la manette), les deux
+   ronds latéraux partent, et les trois ronds empilés portent les trois
+   couleurs de la marque — sagesse en haut, habitudes au milieu, vision
+   en bas. Le Totehm, vu de profil.
 
-   Trois ronds, donc, et ce sont les trois couleurs de la marque :
-     rouge-violet  = la sagesse, ce qui est PASSÉ
-     navy          = le présent — habitudes, objectifs, répulsions
-     bleu clair    = la vision, ce qui est À VENIR
-   La colonne verticale du présent (objectifs / habitudes / répulsions)
-   n'a plus de rond à elle : elle se lit sur les chevrons haut et bas et
-   dans le titre. Une information, un seul endroit.
+   ⚠️ LE DISQUE NE CHANGE PLUS DE COULEUR, ET C'EST OBLIGÉ. Avant, il
+   prenait la couleur de l'époque : le rond rouge-violet sur un disque
+   rouge-violet aurait disparu pile au moment où il doit se voir. Les
+   trois ronds portent maintenant la couleur ; le disque redevient ce
+   qu'est la base d'une manette — un socle sombre, neutre, qui ne dit
+   rien et fait ressortir ce qui est posé dessus. Une information, un
+   seul endroit. */
+#joy-box{width:62px;height:62px;position:relative;border-radius:50%;
+  background:#1c1c38;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07), 0 1px 3px rgba(0,0,0,.4)}
 
-   ⚠️ PLUS DE PAVÉ DE FOND. Le disque navy de 62 px portait les ronds ET
-   la couleur de l'époque : deux messages sur le même objet, et c'est ce
-   qui le rendait gros. Les trois ronds se suffisent. */
-#joy-box{width:var(--joy-w,74px);height:var(--joy-h,26px);position:relative;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 3px;background:none}
-#joy-stack{display:contents}
-/* ⚠️ LE ROND PORTE SA COULEUR EN PROPRE, il ne l'emprunte pas à la vue.
-   Éteint il est sombre et mat ; allumé il monte en relief. Le rouge du
-   passé reste le rouge du passé même quand on est dans le futur — c'est
-   ce qui fait qu'on sait où l'on va AVANT d'y aller. */
-/* ⚠️ MESURÉ À L'ŒIL SUR LA CAPTURE : À .34 D'OPACITÉ ET .55 DE
-   SATURATION, LES TROIS COULEURS DEVENAIENT LE MÊME GRIS. Or c'est la
-   demande entière — « je veux nos 3 couleurs ». Un rond éteint doit
-   rester RECONNAISSABLE : c'est lui qui dit où l'on peut aller. Il
-   s'efface par la taille et un léger voile, pas par la couleur. */
-#joy-stack i{--d:13px;display:block;width:var(--d);height:var(--d);
+/* Les trois ronds, empilés sur l'axe vertical du disque. Leur place est
+   FIXE — c'est le relief qui bouge, pas la géométrie. */
+#joy-stack{position:absolute;inset:0}
+#joy-stack i{--d:14px;position:absolute;left:50%;display:block;
+  width:var(--d);height:var(--d);
+  margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
   border-radius:50%;background:var(--c);
-  transform:scale(.82);opacity:.8;
-  box-shadow:inset 0 0 0 1px rgba(0,0,0,.25);
+  transform:scale(.84);opacity:.5;
   transition:transform .38s cubic-bezier(.22,.9,.3,1),
              opacity .38s ease, box-shadow .38s ease}
-#joy-stack .w{--c:var(--rep)}
-#joy-stack .h{--c:var(--navy)}
-#joy-stack .v{--c:#5878c8}
-/* ⚠️ LE NAVY ALLUMÉ SUR UN PAPIER NAVY. `--navy` (#333366) et
-   `--paper` (#2b2b57) sont à deux doigts l'un de l'autre : le rond du
-   présent, allumé, disparaissait dans le fond exactement au moment où
-   il devait se voir. Un anneau clair le détoure — c'est la seule pièce
-   du pavé qui en a besoin, et c'est pour ça qu'elle l'a seule. */
-#joy-stack .h.on{box-shadow:0 2px 7px rgba(0,0,0,.55),
-  inset 0 1px 0 rgba(255,255,255,.6), 0 0 0 1.5px rgba(255,255,255,.72)}
+/* ⚠️ HAUT = SAGESSE (le passé), BAS = VISION (l'à-venir). C'est l'ordre
+   du Totehm empilé de `totehm.com`, pas un choix graphique. */
+#joy-stack .w{top:23%;--c:var(--rep)}
+#joy-stack .h{top:50%;--c:var(--navy)}
+#joy-stack .v{top:77%;--c:#5878c8}
 
 /* ══ LE RELIEF ══════════════════════════════════════════════════════
    Le rond de l'époque où l'on est se soulève : il grossit, il retrouve
-   sa couleur pleine, et une ombre portée le décolle. Le liseré clair sur
-   le haut joue la lumière rasante — sans lui, la sphère reste un disque.
-   ⚠️ LE NAVY EST LE VRAI NAVY (#333366). J'avais glissé `--sky` dans la
-   pile, un bleu clair hors charte : la couleur du présent ne se
-   remplace pas. Le bleu clair est celui de la VISION, et c'est le seul
-   endroit où il a le droit d'être. */
+   sa couleur pleine, et une ombre portée le décolle du disque. Trois
+   effets pour un seul geste — c'est ce qui le fait lire comme un VOLUME
+   et pas comme une tache plus claire. Le liseré clair sur le haut joue
+   la lumière rasante ; sans lui, la sphère reste un disque.
+   ⚠️ LE NAVY EST LE VRAI NAVY (#333366). `--sky` s'était glissé dans la
+   pile — un bleu clair hors charte. La couleur du présent ne se remplace
+   pas ; le bleu clair est celui de la VISION, et c'est le seul endroit
+   où il a le droit d'être. */
 #joy-stack i.on{
-  transform:scale(1.62);
+  transform:scale(1.5);
   opacity:1;
-  box-shadow:0 2px 7px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.6);
+  box-shadow:0 2px 6px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.55);
   z-index:2}
+
+/* ⚠️ LE POINT VERTICAL EN PLUS — « habits (avec le point vertical en
+   plus) ». Dans le présent il y a trois couches : objectifs au-dessus,
+   habitudes, répulsions en dessous. Un petit repère blanc se pose donc
+   SUR le rond navy, en haut quand on est dans les objectifs, en bas
+   quand on est dans les répulsions, et nulle part quand on est sur les
+   habitudes elles-mêmes. C'est la seule chose que le disque dit en plus
+   de l'époque, et elle ne coûte pas un deuxième objet. */
+#joy-box::after{content:'';position:absolute;left:50%;width:4px;height:4px;
+  margin-left:-2px;border-radius:50%;background:#fff;
+  opacity:0;transition:opacity .3s ease, top .3s cubic-bezier(.22,.9,.3,1);
+  top:50%;pointer-events:none;z-index:3}
+#joy-box.couche-h::after{opacity:1;top:31%}
+#joy-box.couche-b::after{opacity:1;top:69%}
 
 /* ══ LES QUATRE CHEVRONS ═════════════════════════════════════════════
    ⚠️ JAMAIS `display:none`. Un curseur sans voisin garde sa case et
@@ -447,15 +472,18 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
    ⚠️ 7 px à 72 % d'opacité, c'était une note de bas de page. Le nom de
    l'endroit où l'on se trouve est l'information la plus importante de
    l'écran après la liste elle-même. */
-#vnow{line-height:1;text-align:right}
-/* ⚠️ 11 px CENTRÉ SOUS LE PAVÉ, C'ÉTAIT ENCORE UNE LÉGENDE. Le nom de
-   l'endroit où l'on se trouve est, après la liste, l'information la
-   plus importante de l'écran : il prend la taille qui va avec. */
-#vnow{width:100%;overflow:hidden}
-#vnow b{font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.14em;
+/* ⚠️ `width:0` + `overflow:visible` : LE MOT DÉBORDE, LA GRILLE NE LE
+   VOIT PAS. C'est ce qui permet d'écrire GROS sans que « MY REPULSIONS »
+   pousse le contrôleur — le reproche que Wah m'a fait deux fois. Le
+   texte se centre sur le pavé et dépasse des deux côtés, à égalité.
+   ⚠️ ET PAS D'ELLIPSE. Couper « MY REPULSI… » serait pire que déborder :
+   le titre est l'information la plus importante de l'écran après la
+   liste, il se lit en entier ou il ne sert à rien. */
+#vnow{line-height:1;text-align:center;display:flex;justify-content:center;
+  overflow:visible}
+#vnow b{font-family:'Space Mono',monospace;font-size:15px;letter-spacing:.16em;
   text-transform:uppercase;color:#fff;font-weight:700;white-space:nowrap;
-  display:block;text-shadow:0 1px 3px rgba(0,0,0,.55);
-  overflow:hidden;text-overflow:ellipsis}
+  display:block;text-shadow:0 1px 4px rgba(0,0,0,.6)}
 #vnow i{display:none}
 /* La répercussion 3D : le nom pivote dans la direction du voyage, en
    même temps que la pile glisse. */
@@ -2047,6 +2075,7 @@ body.gate.entered #filter-badge{
      carré, pas celui de la fenêtre. ⚠️ IL COMMENCE APRÈS LE RAIL, comme
      le T : le rail est le logo, rien ne passe dessus. */
   #wordmark{bottom:26px;left:calc(var(--rl) + var(--rw) + 16px);top:auto;right:auto}
+  #door-bot{bottom:28px;left:calc(var(--rl) + var(--rw) + 16px + 96px)}
   /* ⚠️ LE JOYSTICK CHANGE DE COIN · 20/09/2026 — ET C'EST LA VRAIE
      RÉPONSE, PAS UN RÉGLAGE DE PLUS.
      Deuxième tentative de les écarter dans le même coin, deuxième
@@ -2063,8 +2092,7 @@ body.gate.entered #filter-badge{
        bas-gauche   le wordmark   bas-droite   le contrôleur
      Quatre coins, quatre objets. Une règle qu'on n'a pas besoin de
      re-mesurer au prochain changement de largeur. */
-  #joy{--joy-t:118px;--joy-w:80px;--joy-h:26px;
-       top:auto;bottom:calc(50% - var(--stage)/2 + 26px);
+  #joy{top:auto;bottom:calc(50% - var(--stage)/2 + 26px);
        right:calc(50% - var(--stage)/2 + 18px)}
   body.ro #joy{top:auto}
   body.ro #bigT{top:calc(22px + var(--ro-h))}
@@ -2540,6 +2568,14 @@ body.gate.entered #filter-badge{
 
 <div id="bigT" class="sink-el"><svg id="ui-t" viewBox="79.832 47.921 66.789 66.932" role="img" aria-label="T"><defs><clipPath id="tut_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tut_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tut_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tut_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tut_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tut_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tut_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tut_ffb4264ddd)"><g clip-path="url(#tut_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tut_0eae0d8cca)"><g clip-path="url(#tut_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tut_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tut_92fddf9f0e)"><g clip-path="url(#tut_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g id="t-foot" clip-path="url(#tut_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tut_7d4c700d36)"><g clip-path="url(#tut_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></svg></div>
 <div id="wordmark" class="sink-el"><svg id="ui-wm" viewBox="74.997 121.602 77.584 46.683" role="img" aria-label="TOTEHM"><defs><g/><clipPath id="tuw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g id="wm-O" transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tuw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g id="wm-H" transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg></div>
+<!-- ══ LA SEULE PORTE QUI RESTE DANS LE TOTEHM · 21/09/2026 ═══════════
+     L'immersion du 19/09 dit : rien qui SORTE du Totehm déplié. Celle-ci
+     reste, et la distinction n'est pas un arrangement — TotehmBot ne mène
+     pas ailleurs, c'est le Totehm QUI RÉPOND. Les trois autres portes
+     mènent à un autre domaine, une boutique, un achat ; celle-ci mène au
+     miroir de ce qu'on est en train d'écrire. Elle vit donc à côté de la
+     marque, en bas à gauche, et nulle part ailleurs. -->
+<button id="door-bot" class="sink-el" type="button">My <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> Self</button>
 
 
 
@@ -4071,6 +4107,14 @@ function paintZone(){
       const e=jy.querySelector('#joy-stack .'+k); if(!e)return;
       e.className = k + (k===ici ? ' on' : '');
     });
+    /* ⚠️ LE POINT VERTICAL EN PLUS. Dans le présent il y a trois
+       couches ; le petit repère blanc dit LAQUELLE, sans ajouter un
+       deuxième objet au pavé. Il ne paraît que dans les deux vues
+       verticales — sur les habitudes elles-mêmes, il n'y a rien à
+       préciser, et un repère qui ne dit rien est un repère de trop. */
+    const bx=$('joy-box');
+    if(bx){ bx.className = view==='objectives' ? 'couche-h'
+                        : view==='repulsions' ? 'couche-b' : ''; }
     /* ⚠️ PLUS DE `--joy-fond`. Le disque de fond portait la couleur de
        l'époque EN PLUS des ronds : le même message deux fois, et c'est
        lui qui faisait la masse de 62 px que Wah trouvait trop grosse au
@@ -4247,7 +4291,13 @@ function apres(p){ /* une erreur de RPC se journalise, toujours */
 /* On attend ce qui est parti, et ce qui dort encore dans une minuterie.
    Deux tours : une écriture poussée peut en déclencher une autre. */
 async function calme(){
-  for(let i=0;i<2;i++){
+  /* ⚠️ TROIS TOURS, PLUS DEUX · 21/09/2026. Une frappe qui attend son
+     baptême se résout en LANÇANT l'écriture : elle remplit donc `EN_VOL`
+     APRÈS qu'on l'a vidé. Deux tours suffisaient quand une écriture
+     poussée en déclenchait une autre ; il en faut un de plus maintenant
+     qu'une attente précède l'écriture. Pousser · attendre l'attente ·
+     attendre l'écriture qu'elle a lancée. */
+  for(let i=0;i<3;i++){
     pousse();
     if(!EN_VOL.size)break;
     await Promise.allSettled([...EN_VOL]);
@@ -4264,6 +4314,54 @@ function differe(cle,fn){
   if(typeof cle==='function'){ fn=cle; cle='_'; }
   const old=wSlots.get(cle); if(old)clearTimeout(old.t);
   wSlots.set(cle,{fn,t:setTimeout(()=>{wSlots.delete(cle);fn();},700)});
+}
+/* ══ RIEN NE SE JETTE PARCE QUE LE SERVEUR EST LENT · 21/09/2026 ═════
+   ⚠️ C'EST LA CAUSE DE « je ne peux pas encore rajouter de répulsion ».
+
+   Une boîte neuve s'ouvre avec un identifiant provisoire et le serveur
+   répond 300 à 600 ms plus tard. La frappe, elle, part à 700 ms. Les
+   cinq écritures avaient donc cette ligne : `if(estProvisoire(id))
+   return;` — et c'était un ABANDON. Si la minuterie tombait pendant que
+   la ligne était encore provisoire, le texte n'était jamais envoyé, et
+   RIEN ne le reprogrammait. On tapait « Doom scrolling », on fermait,
+   l'arbre se rechargeait depuis le serveur, et la répulsion revenait
+   vide. Créée, mais muette.
+
+   ⚠️ ET MON CORRECTIF DU 20/09 A RENDU LE BUG SYSTÉMATIQUE. Avant, au
+   téléphone, la boîte neuve n'avait pas le curseur : on ne pouvait pas
+   taper dans les 700 premières millisecondes, donc la minuterie tombait
+   toujours APRÈS la réponse du serveur. En posant le curseur tout de
+   suite, j'ai mis toutes les frappes pile dans la fenêtre où elles
+   étaient jetées. *Un correctif qui découvre un bug dormant n'est pas la
+   cause du bug — mais c'est lui qui doit le réparer.*
+
+   On ne jette plus : on REPROGRAMME. La frappe attend le baptême aussi
+   longtemps qu'il faut, et part dès que la ligne a un vrai identifiant. */
+function quandNomme(o, envoie){
+  if(!estProvisoire(o.id)) return envoie();
+  /* ⚠️ L'ATTENTE COMPTE COMME UNE ÉCRITURE EN VOL, SINON ON N'A RIEN
+     RÉPARÉ. `fermer()` pousse les minuteries puis recharge l'arbre, et
+     `calme()` n'attend que ce qui est dans `EN_VOL`. Une frappe qui
+     attend son baptême n'y serait pas : le rechargement partirait
+     AVANT elle et écraserait le texte avec le vide du serveur — le même
+     bug, déplacé de deux cents millisecondes.
+     On met donc la PROMESSE de l'attente dans `EN_VOL` tout de suite. */
+  let fini;
+  const q = new Promise(r=>{ fini = r; });
+  EN_VOL.add(q);
+  const termine = v => { EN_VOL.delete(q); fini(); return v; };
+  let essais = 0;
+  const attends = () => {
+    if(!estProvisoire(o.id)) return termine(envoie());
+    /* ⚠️ ON ABANDONNE AU BOUT DE 25 ESSAIS (3 s) ET ON LE DIT. Une
+       attente muette et infinie est exactement ce qu'on vient de
+       corriger : si le serveur n'a jamais créé la ligne, le texte est
+       perdu de toute façon — autant que le membre le sache. */
+    if(++essais > 25){ dis('not saved — check your connection'); return termine(); }
+    setTimeout(attends, 120);
+  };
+  setTimeout(attends, 120);
+  return q;
 }
 /* RIEN NE SE PERD QUAND ON QUITTE UNE BOÎTE. La saisie part avec 700 ms
    de retard pour ne pas écrire à chaque lettre ; si on part avant, il faut
@@ -4975,17 +5073,40 @@ function fermer(){
       du fichier est OPTIMISTE (on pose, on dessine, on envoie) ; la
       création était la seule exception, sans raison.
       La boîte s'ouvre donc TOUT DE SUITE avec un identifiant provisoire
-      (`tmp:…`), et l'identifiant réel le remplace quand le serveur
+      (`tmp-…`), et l'identifiant réel le remplace quand le serveur
       répond. Si le serveur refuse, la ligne provisoire disparaît et on
       le DIT — une boîte fantôme qu'on croit enregistrée est le pire des
       états.
 
    ⚠️ CE QUI REND LE PROVISOIRE SÛR : tant que l'identifiant commence par
-   `tmp:`, aucune écriture réseau ne part pour cet objet (`estProvisoire`
+   `tmp-`, aucune écriture réseau ne part pour cet objet (`estProvisoire`
    garde `differe`, `attache` et `tue`). Sans ce verrou on enverrait un
    `vision_rename` sur un identifiant qui n'existe pas encore. */
 let TSEQ=0;
-const estProvisoire = id => String(id).startsWith('tmp:');
+/* ══ ⛔ LE SÉPARATEUR ÉTAIT DANS L'IDENTIFIANT · 21/09/2026 ══════════
+   VOILÀ la cause de « je ne peux pas encore rajouter de répulsion », et
+   ce n'était ni la minuterie ni le serveur.
+
+   Tout le fichier encode une cible en `genre:identifiant` et la relit
+   par `split(':')` — `data-edit`, `data-open`, `data-go`, `data-pk`,
+   `data-kill`. L'identifiant provisoire s'écrivait `tmp:1`. Une boîte
+   neuve portait donc `data-edit="r:tmp:1"`, et le lecteur en tirait
+   `p[1] === 'tmp'`. `repOf('tmp')` ne trouve rien, la fonction sortait
+   sur `if(!r)return;` — **CHAQUE FRAPPE ÉTAIT JETÉE**, sans un mot, tant
+   que le serveur n'avait pas renvoyé le vrai identifiant.
+
+   Mesuré : à 900 ms de latence, on tape « ZZTEST », le texte s'affiche,
+   et il disparaît au redessin qui suit le baptême — parce qu'il n'avait
+   jamais atteint la mémoire. Sur mon faux serveur à 80 ms la fenêtre
+   durait le temps d'une lettre : le bug était invisible en test. C'est
+   la TROISIÈME fois qu'un faux serveur trop gentil cache une panne —
+   après la course de septembre et la contrainte de `wisdom`.
+
+   ⚠️ UN IDENTIFIANT NE CONTIENT JAMAIS LE CARACTÈRE QUI SÉPARE LES
+   CHAMPS. `tmp-1` au lieu de `tmp:1`, et les cinq lecteurs retrouvent
+   leur cible. La règle vaut pour tout ce qu'on encodera dans un
+   `data-*` : le séparateur appartient au format, jamais à la valeur. */
+const estProvisoire = id => String(id).startsWith('tmp-');
 
 /* Le serveur a répondu : on remplace l'identifiant provisoire PARTOUT —
    dans la liste, dans la boîte ouverte, et dans le choix en cours. */
@@ -5040,7 +5161,7 @@ async function creer(kind){
   if(!me){$('member-window').classList.add('show');
           if(typeof memberPaint==='function')memberPaint();return;}
 
-  const tmp = 'tmp:'+(++TSEQ);
+  const tmp = 'tmp-'+(++TSEQ);   /* ⚠️ JAMAIS de « : » — voir `estProvisoire` */
 
   if(kind==='t'){
     TRIPS.push({id:tmp,text:'',target_at:null,days_left:null,habits:[],is:[],vs:[]});
@@ -5087,7 +5208,7 @@ function attache(quoi,srcId,cibleId){
   if(RO)return;                      /* même raison que dans `creer` */
   /* ⚠️ ON NE LIE PAS CE QUI N'EXISTE PAS ENCORE. Une seconde après la
      création, l'objet a son vrai identifiant ; d'ici là, un lien partirait
-     vers `tmp:3` et le serveur répondrait « not yours ». */
+     vers `tmp-3` et le serveur répondrait « not yours ». */
   if(estProvisoire(srcId)||estProvisoire(cibleId)){
     dis('one second — still saving'); return; }
   if(quoi==='o'){ const x=habOf(srcId), t=tripOf(cibleId), k=srv(x); if(!x||!k||!t)return;
@@ -5281,24 +5402,24 @@ function cable(box){
       /* ⚠️ RIEN NE PART TANT QUE L'OBJET EST PROVISOIRE. Le texte
          s'écrit en mémoire ; la minuterie est posée sur l'identifiant
          COURANT, qui sera le vrai quand elle se déclenchera (`baptise`
-         l'a remplacé entre-temps). Envoyer un `rename` sur un `tmp:`
+         l'a remplacé entre-temps). Envoyer un `rename` sur un `tmp-`
          ferait une erreur serveur et perdrait la frappe. */
       else if(p[0]==='t'){ const z=tripOf(p[1]); if(!z)return; z.text=v; wDirty=true;
-        differe('t:'+z.id,()=>{ if(estProvisoire(z.id))return;
-          apres(sb.rpc('objective_rename',{p_obj:z.id,p_text:z.text})); }); }
+        differe('t:'+z.id,()=>quandNomme(z,()=>
+          apres(sb.rpc('objective_rename',{p_obj:z.id,p_text:z.text})))); }
       else if(p[0]==='r'){ const r=repOf(p[1]); if(!r)return; r.text=v; wDirty=true;
         /* ⚠️ `repulsion_rename`, PAS `repulsion_set`. `repulsion_set`
            RETIRE l'ancienne répulsion du même obstacle avant d'insérer :
            utilisée à chaque frappe, elle empilait une ligne morte par
            lettre tapée. */
-        differe('r:'+r.id,()=>{ if(estProvisoire(r.id))return;
-          apres(sb.rpc('repulsion_rename',{p_id:Number(r.id), p_text:r.text})); }); }
+        differe('r:'+r.id,()=>quandNomme(r,()=>
+          apres(sb.rpc('repulsion_rename',{p_id:Number(r.id), p_text:r.text})))); }
       else if(p[0]==='w'){ const w=teachOf(p[1]); if(!w)return; w.t=v; wDirty=true;
-        differe('w:'+w.id,()=>{ if(estProvisoire(w.id))return;
-          apres(sb.rpc('teaching_rename',{p_id:w.id,p_text:w.t})); }); }
+        differe('w:'+w.id,()=>quandNomme(w,()=>
+          apres(sb.rpc('teaching_rename',{p_id:w.id,p_text:w.t})))); }
       else { const z=visOf(p[1]); if(!z)return; z.t=v; wDirty=true;
-        differe('v:'+z.id,()=>{ if(estProvisoire(z.id))return;
-          apres(sb.rpc('vision_rename',{p_id:z.id,p_text:z.t})); }); }
+        differe('v:'+z.id,()=>quandNomme(z,()=>
+          apres(sb.rpc('vision_rename',{p_id:z.id,p_text:z.t})))); }
       return;
     }
     /* Le rythme écrit dans sa langue : on devine à la frappe, sans réseau. */
@@ -5634,6 +5755,50 @@ $('door-next').onclick=requireMember(()=>{
   window.open('https://t.me/TotehmBot','_blank','noopener'); });
 $('door-club').onclick=requireMember(()=>{
   ssoVersDomaine(sb,'boutique','https://higher.boutique/#menu'); });
+
+/* ══ [My Higher Self] DANS LE TOTEHM · 21/09/2026 ════════════════════
+   ⚠️ C'EST LE SERVEUR QUI OUVRE LA PORTE, PAS LA PAGE.
+   `totehmbot_access()` rend UN booléen (`ouvert`) qui vaut « membre du
+   Club ET Totehm complet ». La page ne recompose pas la règle : un `if`
+   côté navigateur se retire en deux clics dans l'inspecteur, et trois
+   écrans qui calculent chacun leur accès finissent par ne plus dire la
+   même chose au même membre le même jour.
+
+   ⚠️ ET LE TOTEHM INCOMPLET N'EST PAS UN REFUS, C'EST UN CHEMIN. Un
+   membre qui paie déjà et dont le Totehm est vide n'a pas à lire « tu
+   n'as pas accès » : il a à voir OÙ il lui manque quelque chose. On
+   l'emmène à la première vue vide, exactement comme le tiroir du
+   cercle. Un miroir sans rien à refléter ne renvoie rien — ce n'est pas
+   une règle commerciale, c'est une contrainte physique. */
+const CINQ_VUES=['habits','objectives','repulsions','wisdom','visions'];
+$('door-bot').onclick=async()=>{
+  let a=null;
+  try{ const {data}=await sb.rpc('totehmbot_access'); a=data; }
+  catch(ex){ console.error('[totehm] totehmbot_access:',ex&&ex.message||ex); }
+  /* Le serveur n'a pas répondu : on envoie sur la page de vente, qui
+     redemandera. Jamais ouvrir par défaut — un accès qu'on donne quand
+     on ne sait pas est un accès qu'on ne contrôle plus. */
+  if(!a || !a.signed_in || !a.club){ location.href='/club/totehmbot'; return; }
+  if(!a.complete){
+    /* Membre du Club, Totehm à trous : on l'emmène là où ça manque. */
+    const e=(a.vides&&a.vides[0]) || premiereVueVide();
+    dis('my mirror needs my Totehm — '+(a.remplies||0)+' of 5 views filled');
+    if(e){ dernierSens=null; setView(e); }
+    return;
+  }
+  window.open('https://t.me/TotehmBot','_blank','noopener');
+};
+/* Quelle vue est encore vide, vue d'ici. Le serveur connaît la vérité
+   (`totehm_complete`), mais il ne rend que des booléens ; pour DÉFILER
+   il faut un nom de vue, et la liste en mémoire suffit à le trouver. */
+function premiereVueVide(){
+  const plein={habits:(state.habits||[]).some(x=>(x.t||'').trim()),
+               objectives:TRIPS.some(t=>(t.text||'').trim()),
+               repulsions:REPS.some(r=>(r.text||'').trim()),
+               wisdom:TEACH.some(w=>(w.t||'').trim()),
+               visions:VIS.some(v=>(v.t||'').trim())};
+  return CINQ_VUES.find(v=>!plein[v])||null;
+}
 /* La croix : le Totehm se replie et l'atterrissage revient. */
 $('fold-x').onclick=()=>foldToGate();
 
