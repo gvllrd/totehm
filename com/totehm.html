@@ -125,7 +125,12 @@ html,body{width:100%;height:100%;background:var(--paper);color:var(--g-light);fo
    rien d'autre, et le bas portait deux choses. Les deux se rangent
    maintenant l'un sur l'autre, à gauche, et la droite revient au
    contrôleur. La bande basse y gagne : elle n'a plus que les portes. */
-#bigT{position:fixed;top:26px;left:max(16px,5vw);transform:none;z-index:30;user-select:none;transition:opacity .4s;line-height:0;background:none;border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+/* ⚠️ LE T COMMENCE APRÈS LE RAIL ET APRÈS SON BOUTON · 20/09/2026.
+   « Mieux placer le T.svg qui colle l'icône bouton classement. » Mesuré :
+   le T à x 20 et le bouton jusqu'à x 22 — ils se touchaient de 2 px, ce
+   qui suffit à faire sale et à voler un clic. Même règle qu'à l'écran
+   large : la marque commence APRÈS la colonne du rail, jamais dessus. */
+#bigT{position:fixed;top:26px;left:calc(var(--rl) + var(--rw) + 26px);transform:none;z-index:30;user-select:none;transition:opacity .4s;line-height:0;background:none;border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 @keyframes t-slow{0%,100%{opacity:1}50%{opacity:.45}}
 /* ⚠️ LE T NE RESPIRE QUE DANS LES HABITUDES · 19/09/2026. Il EST le
    filtre, et le filtre ne trie que des habitudes — rythme et intention
@@ -147,18 +152,28 @@ body:not(.gate):not(.v-habits) #bigT{opacity:.42;cursor:default}
    et laisse la droite aux deux portes. `left` fixe plutôt qu'un
    `translateX(-50%)` — le wordmark garde exactement la même taille et
    la même hauteur, il change seulement d'ancrage. */
-/* ══ LE WORDMARK REDESCEND, À DROITE · 18/09/2026 ════════════════════
-   Je l'avais monté sous le T ; Wah le veut EN BAS À DROITE. Il reste le
-   menu — on ne perd aucun geste — et les trois portes passent donc à
-   gauche, là où il était. Le bas se lit alors de gauche à droite :
-   ce qu'on peut faire, puis qui on est. */
-#wordmark{position:fixed;bottom:28px;right:max(18px,6vw);top:auto;left:auto;transform:none;z-index:30;user-select:none;transition:opacity .4s;line-height:0;cursor:pointer}
+/* ══ LE WORDMARK PASSE EN BAS À GAUCHE · 20/09/2026 ══════════════════
+   Il a fait le tour : sous le T, puis en bas à droite le 18/09, et Wah
+   le veut EN BAS À GAUCHE. C'est la bonne place et elle se démontre :
+   le T est en haut à gauche, le wordmark en bas à gauche — la marque
+   tient la colonne de gauche d'un bout à l'autre, du côté du rail qui
+   EST le logo. Le bas de l'écran se lit alors de gauche à droite : qui
+   on est, puis ce qu'on peut faire. */
+#wordmark{position:fixed;bottom:28px;left:max(18px,6vw);top:auto;right:auto;transform:none;z-index:30;user-select:none;transition:opacity .4s;line-height:0;cursor:pointer}
 /* ⚠️ LE JOYSTICK LAISSE LE COIN À LA CROIX. Mesuré le 18/09 : posé à
    14 px du bord, il passait SOUS `#fold-x` (10 px du coin, 34 px de
    côté) et le navigateur donnait le clic à la croix — le curseur droit
    ne répondait plus du tout. La croix est un repère fixe du produit ;
-   c'est au nouveau venu de s'écarter. */
-#joy{top:24px;right:58px;left:auto}
+   c'est au nouveau venu de s'écarter.
+
+   ⚠️ ET IL REMONTE, ET IL MAIGRIT · 20/09/2026. « Sur mobile trop gros
+   et faut le remonter. » Il l'était : 62 px de disque plus 20 px de
+   chevrons de chaque côté, posé à 24 px du haut — 118 px de haut au
+   total, qui mordaient sur les deux premières boîtes de la liste.
+   Sans le disque de fond il ne reste que trois ronds de 14 px : 58 px
+   de haut, et il se range dans la bande du titre au lieu de la
+   traverser. */
+#joy{--joy-t:104px;--joy-w:66px;--joy-h:22px;top:12px;right:54px;left:auto}
 /* Les deux portes, à droite, à la même hauteur que le wordmark et dans
    la grammaire `.btn-sig` du reste du produit. */
 /* ⚠️ LES PORTES PASSENT À GAUCHE · 18/09/2026, parce que le wordmark
@@ -186,7 +201,13 @@ body:not(.gate) #bottom-doors{display:none!important}
 .door-club{color:#fff;font-weight:700}
 /* ⚠️ LE CORAL EST RÉSERVÉ AU « GET » (BRAND.md). Nulle part ailleurs. */
 .door .get{font-family:'Quantico',sans-serif;font-weight:400;color:var(--coral)}
-.door .higher-inline{height:1.15em;vertical-align:-.26em;margin-left:1px}
+/* ⚠️ LE SLOGAN PREND LE DESSUS SUR LE MOT ORDINAIRE · 20/09/2026.
+   À 1.15em, « Higher » faisait la même taille que « Get » : deux mots
+   de même poids, et la porte se lisait comme une phrase quelconque.
+   « Get » est un verbe de service, « Higher » EST la marque — il doit
+   dominer, pas accompagner. À 1.75em il porte la porte, et le coral du
+   « Get » reste le seul accent. */
+.door .higher-inline{height:1.75em;vertical-align:-.42em;margin-left:3px}
 .door{background:none;border:none;padding:0;cursor:pointer;
   font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;
   color:#b0b0b0;transition:color .15s ease;-webkit-tap-highlight-color:transparent;
@@ -304,64 +325,99 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
    ⚠️ ET UN CURSEUR SANS VOISIN NE DISPARAÎT PLUS : il s'éteint. C'est ce
    qui fait un CADRE — quatre points cardinaux autour d'une structure,
    toujours les quatre. */
+/* ⚠️ LE TITRE PASSE À GAUCHE, ET IL GROSSIT · 20/09/2026.
+   Wah : « les titres de la catégorie doivent être mis en évidence et
+   placés sur le côté gauche. » Sous le pavé il était une légende ; à
+   gauche il devient la PHRASE, et le pavé devient sa ponctuation.
+   Quatre colonnes : le nom, puis le cadre de chevrons autour des trois
+   ronds. Le nom est aligné à DROITE de sa colonne — il vient buter
+   contre le contrôleur au lieu de flotter. */
+/* ⚠️ LA COLONNE DU TITRE EST FIXE, ET C'EST TOUT LE SUJET · 20/09/2026.
+   Posée en `auto`, elle prenait la largeur du mot : « MY REPULSIONS »
+   est plus long que « MY HABITS », et comme le contrôleur est ancré par
+   la DROITE, il glissait de 38 px d'une vue à l'autre. Mesuré.
+   C'est le reproche que Wah m'a fait deux fois — « il se déplace alors
+   que je veux qu'il reste sur sa position » — et je venais de le
+   réintroduire par la porte du titre. Une largeur fixe, et plus aucun
+   mot ne peut bouger le pavé. */
 #joy{position:fixed;z-index:33;
   display:grid;
-  grid-template-columns:20px 62px 20px;
-  grid-template-rows:20px 62px 20px auto;
-  align-items:center;justify-items:center}
-#cur-h  {grid-area:1/2/2/3}
-#cur-g  {grid-area:2/1/3/2}
-#joy-box{grid-area:2/2/3/3}
-#cur-d  {grid-area:2/3/3/4}
-#cur-b  {grid-area:3/2/4/3}
-#vnow   {grid-area:4/1/5/4;margin-top:5px}
+  grid-template-columns:var(--joy-t,118px) 18px var(--joy-w,74px) 18px;
+  grid-template-rows:16px var(--joy-h,26px) 16px;
+  align-items:center;justify-items:center;
+  column-gap:2px}
+#cur-h  {grid-area:1/3/2/4}
+#vnow   {grid-area:2/1/3/2;justify-self:end;padding-right:6px}
+#cur-g  {grid-area:2/2/3/3}
+#joy-box{grid-area:2/3/3/4}
+#cur-d  {grid-area:2/4/3/5}
+#cur-b  {grid-area:3/3/4/4}
 
-/* ══ LE PAVÉ — CINQ RONDS, DEUX AXES, UN CENTRE PARTAGÉ · 19/09/2026
-   Trois ronds verticaux (objectifs · habitudes · répulsions) POSÉS SUR
-   trois ronds horizontaux (sagesse · habitudes · vision). Les deux axes
-   partagent leur centre : c'est une croix de CINQ ronds, et celui du
-   milieu appartient aux deux.
+/* ══ LE PAVÉ — TROIS RONDS, TROIS COULEURS · 20/09/2026 ═════════════
+   Wah : « je ne veux pas des deux points latéraux aux extrémités et les
+   trois points verticaux, je veux nos 3 couleurs, rouge-violet, bleu
+   Navy et bleu clair. »
 
-   C'est un pad de manette : une base, cinq positions, et celle où l'on
-   est qui ressort en relief. On voit où l'on est comme on voit quelle
-   touche est enfoncée — sans un mot.
+   Il a raison, et la raison est structurelle : les cinq ronds blancs
+   dessinaient la CROIX, c'est-à-dire le plan du produit. Un contrôleur
+   n'a pas à montrer le plan — il doit montrer OÙ L'ON EST. Or où l'on
+   est se dit en deux mots seulement : quelle époque (la couleur), et
+   quelle couche (le titre, maintenant énorme à gauche).
 
-   ⚠️ LE FOND DU PAVÉ SUIT L'AXE HORIZONTAL, et lui seul. Objectifs et
-   répulsions sont la même colonne que les habitudes : leur fond est le
-   même, seul le rond allumé change. Peindre le fond aussi, ce serait
-   dire qu'on a changé d'époque. */
-#joy-box{width:62px;height:62px;position:relative;border-radius:50%;
-  background:var(--joy-fond,var(--navy));
-  transition:background-color .42s ease}
+   Trois ronds, donc, et ce sont les trois couleurs de la marque :
+     rouge-violet  = la sagesse, ce qui est PASSÉ
+     navy          = le présent — habitudes, objectifs, répulsions
+     bleu clair    = la vision, ce qui est À VENIR
+   La colonne verticale du présent (objectifs / habitudes / répulsions)
+   n'a plus de rond à elle : elle se lit sur les chevrons haut et bas et
+   dans le titre. Une information, un seul endroit.
 
-/* Les cinq ronds. Leur place est FIXE — c'est le relief qui bouge, pas
-   la géométrie. `--d` est le diamètre au repos. */
-#joy-stack{position:absolute;inset:0}
-#joy-stack i{--d:13px;position:absolute;display:block;
-  width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
-  border-radius:50%;background:rgba(255,255,255,.22);
+   ⚠️ PLUS DE PAVÉ DE FOND. Le disque navy de 62 px portait les ronds ET
+   la couleur de l'époque : deux messages sur le même objet, et c'est ce
+   qui le rendait gros. Les trois ronds se suffisent. */
+#joy-box{width:var(--joy-w,74px);height:var(--joy-h,26px);position:relative;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 3px;background:none}
+#joy-stack{display:contents}
+/* ⚠️ LE ROND PORTE SA COULEUR EN PROPRE, il ne l'emprunte pas à la vue.
+   Éteint il est sombre et mat ; allumé il monte en relief. Le rouge du
+   passé reste le rouge du passé même quand on est dans le futur — c'est
+   ce qui fait qu'on sait où l'on va AVANT d'y aller. */
+/* ⚠️ MESURÉ À L'ŒIL SUR LA CAPTURE : À .34 D'OPACITÉ ET .55 DE
+   SATURATION, LES TROIS COULEURS DEVENAIENT LE MÊME GRIS. Or c'est la
+   demande entière — « je veux nos 3 couleurs ». Un rond éteint doit
+   rester RECONNAISSABLE : c'est lui qui dit où l'on peut aller. Il
+   s'efface par la taille et un léger voile, pas par la couleur. */
+#joy-stack i{--d:13px;display:block;width:var(--d);height:var(--d);
+  border-radius:50%;background:var(--c);
+  transform:scale(.82);opacity:.8;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.25);
   transition:transform .38s cubic-bezier(.22,.9,.3,1),
-             background-color .38s ease, box-shadow .38s ease}
-#joy-stack .o{left:50%;top:22%}
-#joy-stack .h{left:50%;top:50%}
-#joy-stack .r{left:50%;top:78%}
-#joy-stack .w{left:22%;top:50%}
-#joy-stack .v{left:78%;top:50%}
+             opacity .38s ease, box-shadow .38s ease}
+#joy-stack .w{--c:var(--rep)}
+#joy-stack .h{--c:var(--navy)}
+#joy-stack .v{--c:#5878c8}
+/* ⚠️ LE NAVY ALLUMÉ SUR UN PAPIER NAVY. `--navy` (#333366) et
+   `--paper` (#2b2b57) sont à deux doigts l'un de l'autre : le rond du
+   présent, allumé, disparaissait dans le fond exactement au moment où
+   il devait se voir. Un anneau clair le détoure — c'est la seule pièce
+   du pavé qui en a besoin, et c'est pour ça qu'elle l'a seule. */
+#joy-stack .h.on{box-shadow:0 2px 7px rgba(0,0,0,.55),
+  inset 0 1px 0 rgba(255,255,255,.6), 0 0 0 1.5px rgba(255,255,255,.72)}
 
 /* ══ LE RELIEF ══════════════════════════════════════════════════════
-   Le rond où l'on est se soulève : il grossit, il s'éclaire, et une
-   ombre portée le décolle du pavé. Trois effets pour un seul geste —
-   c'est ce qui fait qu'on le lit comme un VOLUME et pas comme une tache
-   plus claire. Un liseré clair sur le haut du rond joue la lumière
-   rasante ; sans lui, la sphère reste un disque. */
+   Le rond de l'époque où l'on est se soulève : il grossit, il retrouve
+   sa couleur pleine, et une ombre portée le décolle. Le liseré clair sur
+   le haut joue la lumière rasante — sans lui, la sphère reste un disque.
+   ⚠️ LE NAVY EST LE VRAI NAVY (#333366). J'avais glissé `--sky` dans la
+   pile, un bleu clair hors charte : la couleur du présent ne se
+   remplace pas. Le bleu clair est celui de la VISION, et c'est le seul
+   endroit où il a le droit d'être. */
 #joy-stack i.on{
-  transform:scale(1.55);
-  background:#fff;
-  box-shadow:0 2px 5px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.9);
+  transform:scale(1.62);
+  opacity:1;
+  box-shadow:0 2px 7px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.6);
   z-index:2}
-/* Le rond de la famille où l'on est, sans être celui-là : à mi-chemin.
-   C'est ce qui montre l'AXE en plus de la position. */
-#joy-stack i.axe{background:rgba(255,255,255,.52)}
 
 /* ══ LES QUATRE CHEVRONS ═════════════════════════════════════════════
    ⚠️ JAMAIS `display:none`. Un curseur sans voisin garde sa case et
@@ -391,10 +447,15 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
    ⚠️ 7 px à 72 % d'opacité, c'était une note de bas de page. Le nom de
    l'endroit où l'on se trouve est l'information la plus importante de
    l'écran après la liste elle-même. */
-#vnow{line-height:1;text-align:center}
-#vnow b{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;
+#vnow{line-height:1;text-align:right}
+/* ⚠️ 11 px CENTRÉ SOUS LE PAVÉ, C'ÉTAIT ENCORE UNE LÉGENDE. Le nom de
+   l'endroit où l'on se trouve est, après la liste, l'information la
+   plus importante de l'écran : il prend la taille qui va avec. */
+#vnow{width:100%;overflow:hidden}
+#vnow b{font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.14em;
   text-transform:uppercase;color:#fff;font-weight:700;white-space:nowrap;
-  display:block}
+  display:block;text-shadow:0 1px 3px rgba(0,0,0,.55);
+  overflow:hidden;text-overflow:ellipsis}
 #vnow i{display:none}
 /* La répercussion 3D : le nom pivote dans la direction du voyage, en
    même temps que la pile glisse. */
@@ -784,8 +845,18 @@ body.v-visions{--paper:#2b3a73}
 .habit.open .v-name[contenteditable]{outline:none;cursor:text;
   padding:1px 5px;margin:-1px -5px;padding-right:30px;
   background:rgba(255,255,255,.06);
+  /* ⚠️ UNE CIBLE, PAS UN TRAIT · 20/09/2026. Vide, le champ mesurait
+     10 px : impossible à viser au pouce, invisible à l'œil. Il garde
+     désormais une largeur de ligne même sans un mot dedans. */
+  display:inline-block;min-width:min(62vw,240px);
   transition:background .15s ease}
 .habit.open .v-name[contenteditable]:focus{background:rgba(255,255,255,.14)}
+/* L'invitation : elle occupe la place du texte à venir et disparaît à la
+   première lettre. `pointer-events:none` — on doit pouvoir cliquer À
+   TRAVERS elle pour poser le curseur derrière. */
+.habit.open .v-name[contenteditable]:empty::before{
+  content:attr(data-say);color:rgba(255,255,255,.34);
+  pointer-events:none;font-style:normal}
 
 /* Le conteneur des enfants : TRANSPARENT, purement fonctionnel. Aucun
    fond, aucun filet, aucun padding — les .blk portent déjà leur couleur
@@ -968,6 +1039,22 @@ body.v-visions{--paper:#2b3a73}
 .pk-say{display:block;font-family:'Space Mono',monospace;font-size:8px;
   letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.5);
   margin-top:9px}
+/* ══ LE SON D'UNE INTENTION · 20/09/2026 ════════════════════════════
+   Une ligne par intention allumée : son nom dans sa couleur, le type,
+   le lien. Pas de cadre, pas d'icône — la grammaire des autres champs.
+   Au téléphone les deux champs passent l'un sous l'autre : côte à côte
+   sur 390 px, le lien devient une fente de 60 px. */
+.snds{display:flex;flex-direction:column;gap:7px;margin-top:9px}
+.snd{display:grid;grid-template-columns:76px 1fr 1fr;gap:6px;align-items:center}
+.snd-n{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--ic);white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.snd .in{width:100%;min-width:0}
+/* Une URL refusée : le champ le dit, il ne se tait pas. */
+.snd .in.faux{color:#e79aa0;border-bottom-color:#e79aa0}
+@media(max-width:600px){
+  .snd{grid-template-columns:76px 1fr;row-gap:5px}
+  .snd .snd-u{grid-column:2/3}}
 /* Un bouton sur la ligne d'unité : on touche ce qu'on lit, et ça ne
    ressemble pas à un bouton — c'est la ligne qui est sensible. */
 /* [Delete] a sa propre ligne, à droite. Collé au « + repulsion » il se
@@ -1189,11 +1276,19 @@ body.v-visions{--paper:#2b3a73}
    segments qui en épousent la largeur — le rail devient une pièce
    du geste de classement.
    Les trois respirent en harmonie comme le T (`t-slow`, 4,2 s). */
+/* ⚠️ IL DÉBORDAIT DE L'ÉCRAN PAR LA GAUCHE · MESURÉ LE 20/09. Centré
+   sur le rail (`translateX(-50%)`) avec 14 px de marge de chaque côté,
+   son bord gauche tombait à x = -14 au téléphone : un quart de la zone
+   de clic hors de l'écran, et le reste qui venait toucher le T.
+   Il s'aligne maintenant sur le BORD GAUCHE du rail et n'étend sa zone
+   de clic que vers la DROITE — là où il y a de la place. Les trois
+   barres gardent la largeur du rail, donc l'alignement ne bouge pas :
+   c'est la zone de confort qui a changé de côté, pas le dessin. */
 #ordbtn{position:absolute;
-  left:calc(var(--rl) + var(--rw)/2);transform:translateX(-50%);
-  top:6px;padding:8px 14px;z-index:44;
+  left:var(--rl);transform:none;
+  top:6px;padding:8px 16px 8px 0;z-index:44;
   background:none;border:none;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;gap:3px;
+  display:flex;flex-direction:column;align-items:flex-start;gap:3px;
   line-height:0;font-size:0;
   -webkit-tap-highlight-color:transparent}
 /* min-height + max-height + flex:0 0 2px : ceinture ET bretelles pour
@@ -1948,14 +2043,30 @@ body.gate.entered #filter-badge{
      bord, le T se posait SUR le rail et sur le bouton de classement qui
      le coiffe. Le rail est le logo — rien ne passe dessus. */
   #bigT{top:22px;left:calc(var(--rl) + var(--rw) + 16px)}
-  /* Le wordmark est redescendu à droite ; il retrouve son ancrage du
-     carré, pas celui de la fenêtre. */
-  #wordmark{bottom:26px;right:26px;top:auto;left:auto}
-  /* Même dégagement qu'au téléphone : la croix vit dans le coin haut
-     droit du carré, le joystick se range à sa gauche. */
-  #joy{top:calc(50% - var(--stage)/2 + 22px);
-       right:calc(50% - var(--stage)/2 + 62px)}
-  body.ro #joy{top:calc(50% - var(--stage)/2 + 22px + var(--ro-h))}
+  /* Le wordmark est passé à gauche le 20/09 ; il retrouve son ancrage du
+     carré, pas celui de la fenêtre. ⚠️ IL COMMENCE APRÈS LE RAIL, comme
+     le T : le rail est le logo, rien ne passe dessus. */
+  #wordmark{bottom:26px;left:calc(var(--rl) + var(--rw) + 16px);top:auto;right:auto}
+  /* ⚠️ LE JOYSTICK CHANGE DE COIN · 20/09/2026 — ET C'EST LA VRAIE
+     RÉPONSE, PAS UN RÉGLAGE DE PLUS.
+     Deuxième tentative de les écarter dans le même coin, deuxième
+     chevauchement mesuré (27 px). La cause est structurelle : `#fold-x`
+     se résout sur `#stage` (qui porte un transform, donc contient ses
+     descendants `fixed`) et `#joy` se résout sur la FENÊTRE, parce que
+     dedans il serait rogné. Deux repères différents pour le même coin :
+     aucune arithmétique ne les tiendra d'accord à toutes les tailles
+     d'écran. J'ai essayé deux fois, ça suffit.
+
+     Le wordmark ayant libéré le bas-droit en passant à gauche, chaque
+     objet prend un coin et il n'y a plus rien à calculer :
+       haut-gauche  le T          haut-droite  la croix
+       bas-gauche   le wordmark   bas-droite   le contrôleur
+     Quatre coins, quatre objets. Une règle qu'on n'a pas besoin de
+     re-mesurer au prochain changement de largeur. */
+  #joy{--joy-t:118px;--joy-w:80px;--joy-h:26px;
+       top:auto;bottom:calc(50% - var(--stage)/2 + 26px);
+       right:calc(50% - var(--stage)/2 + 18px)}
+  body.ro #joy{top:auto}
   body.ro #bigT{top:calc(22px + var(--ro-h))}
 
   /* ══ LES QUATRE CURSEURS SE POSENT SUR LES QUATRE CÔTÉS DU CARRÉ ═══
@@ -2513,9 +2624,13 @@ body.gate.entered #filter-badge{
   <button class="cur" id="cur-g" type="button">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
   <div id="joy-box" aria-hidden="true">
-    <!-- Cinq ronds : trois sur l'axe vertical, trois sur l'horizontal,
-         et celui du milieu appartient aux deux. -->
-    <div id="joy-stack"><i class="o"></i><i class="h"></i><i class="r"></i><i class="w"></i><i class="v"></i></div>
+    <!-- ⚠️ TROIS RONDS, ET CE SONT LES TROIS COULEURS DE LA MARQUE
+         · 20/09/2026. Rouge-violet le passé, navy le présent, bleu clair
+         l'à-venir. Les cinq ronds blancs d'hier dessinaient le PLAN du
+         produit ; un contrôleur montre où l'on est, pas comment c'est
+         fait. La couche (objectif / habitude / répulsion) se lit sur les
+         chevrons et dans le titre — une information, un seul endroit. -->
+    <div id="joy-stack"><i class="w"></i><i class="h"></i><i class="v"></i></div>
   </div>
   <button class="cur" id="cur-d" type="button">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
@@ -3808,6 +3923,13 @@ let TRIPS=[], REPS=[], TEACH=[], VIS=[], tripsLoaded=false;
    bug-là sur les autres liens. */
 let SPOT={};
 const spotDe=x=>{const k=srv(x); return (k&&SPOT[k])||'';};
+/* ══ LE SON D'UNE INTENTION · 20/09/2026 ═════════════════════════════
+   Wah : « un type de musique par intention, un texte ouvert et un lien
+   URL ». `SONS` est indexé par identifiant d'intention, pas par
+   habitude : une intention a UN son, partout. Deux habitudes en `focus`
+   entendent la même chose — c'est le propre d'une intention. */
+let SONS={};
+const sonDe=i=>SONS[i]||{kind:'',url:''};
 
 /* DEUX ÉTATS, ET PAS SIX. Ce qui est OUVERT, et si on est en train de
    classer. Le choix en cours (`pk`) vit avec le rendu, plus haut — il y
@@ -3936,32 +4058,23 @@ function paintZone(){
        restaient éteints. Deux tables qui doivent s'accorder finissent
        toujours par ne plus s'accorder. Une seule, maintenant : le pad
        allume ce vers quoi on peut réellement aller. */
-    const ICI={objectives:'o', habits:'h', repulsions:'r', wisdom:'w', visions:'v'};
-    const ici=ICI[view];
-    const axe=[ici].concat(Object.values(CROIX[view]||{}).map(v=>ICI[v]))
-                   .filter(Boolean);
-    ['o','h','r','w','v'].forEach(k=>{
+    /* ⚠️ TROIS RONDS POUR TROIS ÉPOQUES, PAS CINQ POUR CINQ VUES
+       · 20/09/2026. Le rond allumé est celui de l'ÉPOQUE où l'on se
+       trouve. Les objectifs et les répulsions sont le présent au même
+       titre que les habitudes : ils allument le navy. Ce qui les
+       distingue est écrit en toutes lettres à gauche, et montré par les
+       chevrons haut et bas. */
+    const EPOQUE={wisdom:'w', visions:'v',
+                  habits:'h', objectives:'h', repulsions:'h'};
+    const ici=EPOQUE[view]||'h';
+    ['w','h','v'].forEach(k=>{
       const e=jy.querySelector('#joy-stack .'+k); if(!e)return;
-      e.className = k + (k===ici ? ' on' : (axe.includes(k) ? ' axe' : ''));
+      e.className = k + (k===ici ? ' on' : '');
     });
-    /* ⚠️ LA COULEUR DU FOND NE CHANGE QU'AVEC L'AXE HORIZONTAL. Les
-       objectifs et les répulsions sont la même colonne que les
-       habitudes : leur fond est le même, seule la dalle allumée change.
-       Peindre le fond aussi, ce serait dire qu'on a changé d'époque. */
-    /* ⚠️ UN APLAT, PLUS UNE IMAGE PERFORÉE. Les trous noirs du logo ne
-       se lisaient plus comme des perforations à 62 px : ils se lisaient
-       comme des points sales. Le carré perforé était dans la maquette
-       pour me MONTRER le Totehm, pas pour être recopié à cette taille. */
-    /* ⚠️ LE CARRÉ N'EST PAS LA COULEUR DU PAPIER, IL EST CELLE DE LA
-       FAMILLE. Mesuré : à `var(--paper)` il disparaissait purement et
-       simplement — un contrôleur invisible. C'est le même rapport que
-       les boîtes de la liste : le papier recule, l'objet avance. */
-    /* ⚠️ LE VRAI NAVY. J'avais glissé `--sky` dans la pile — un bleu
-       clair hors charte. `--navy` (#333366) est la couleur du présent,
-       et elle ne se remplace pas. */
-    jy.style.setProperty('--joy-fond',
-      view==='wisdom'  ? 'var(--rep)'  :
-      view==='visions' ? 'var(--blue)' : 'var(--navy)');
+    /* ⚠️ PLUS DE `--joy-fond`. Le disque de fond portait la couleur de
+       l'époque EN PLUS des ronds : le même message deux fois, et c'est
+       lui qui faisait la masse de 62 px que Wah trouvait trop grosse au
+       téléphone. Les trois ronds disent tout. */
   }
   /* ⚠️ ON N'EN CACHE AUCUN. Un curseur sans voisin garde sa case et
      s'éteint (`.mort`) : c'est lui qui fait le CADRE autour du carré, et
@@ -4075,6 +4188,13 @@ async function loadTrips(force){
       const {data:sp}=await sb.from('habit_spots').select('habit_text,place').eq('user_id',me.id);
       SPOT={}; (sp||[]).forEach(r=>{SPOT[r.habit_text]=r.place;});
     }catch(_){}
+    /* Les sons voyagent avec les spots : deux petites lectures en
+       parallèle de l'arbre, et `my_trips` reste la fonction de l'arbre.
+       Un échec ici ne doit jamais empêcher le Totehm de s'afficher. */
+    try{
+      const {data:so}=await sb.rpc('intention_sounds');
+      SONS=so||{};
+    }catch(_){ SONS={}; }
     renderZone();
   }catch(e){
     console.error('[totehm] my_trips:',e&&e.message||e);
@@ -4271,14 +4391,33 @@ const groupe=(mot,contenu)=>contenu
 /* ══ LA BOÎTE ════════════════════════════════════════════════════════
    `o.kind` h|t|r · `o.titre` · `o.unit` (HTML) · `o.minis` (HTML)
    · `o.ouverte` · `o.extra` (un choix ouvert : intentions, rythme, lien) */
+/* ⚠️ L'INVITATION EST DANS LA LANGUE DE L'OBJET, PAS « Enter text ».
+   Une répulsion n'est pas un titre : c'est ce qu'on fait À LA PLACE.
+   Le mot juste fait la moitié du travail de la boîte. */
+const INVITE={
+  h:'what do I do',
+  t:'what am I after',
+  r:'what I do instead',
+  w:'what I learned',
+  v:'what I see'};
 function boiteHTML(o){
   /* ⚠️ EN LECTURE, UNE BOÎTE OUVERTE RESTE UNE BOÎTE : elle montre ses
      liens, elle ne se modifie pas. Le titre cesse d'être éditable, et
      [Delete] disparaît — un bouton qui ne marche pas est pire qu'un
      bouton absent. */
   if(RO) o=Object.assign({},o,{tue:null});
+  /* ⚠️ UNE BOÎTE NEUVE N'AVAIT AUCUN ENDROIT OÙ ÉCRIRE · 20/09/2026.
+     Signalé sur [+ Add a Repulsion], mais c'était TOUTES les vues : les
+     cinq objets naissent sans texte (création optimiste), et un
+     `contenteditable` vide se réduit à un trait de 10 px sans un mot
+     dedans. On appuyait sur « ajouter », une boîte s'ouvrait avec
+     « instead / + habit / learned / + teaching / Delete » — et rien où
+     poser le curseur. La boîte existait, l'invitation non.
+     Chaque genre dit donc ce qu'il attend, dans sa propre langue, et le
+     champ vide garde une largeur de cible. */
   const nom = (o.ouverte&&!RO)
     ? '<span class="v-name" contenteditable="plaintext-only" spellcheck="false"'
+      +' data-say="'+esc(INVITE[o.kind]||'name it')+'"'
       +' data-edit="'+o.kind+':'+esc(String(o.id))+'">'+esc(o.titre)+'</span>'
     : '<span class="v-name">'+esc(o.titre||'untitled')+'</span>';
   return '<span class="v-col"'+(o.ouverte?'':' data-open="'+o.kind+':'+esc(String(o.id))+'" role="button" tabindex="0"')+'>'
@@ -4379,12 +4518,32 @@ const spotPicker=x=>'<span class="pkw">'
 
 /* LES SEPT INTENTIONS — plusieurs à la fois. Pas de surlignage : la tuile
    prend un fondu de sa couleur, et se remplit quand elle est choisie. */
+/* ⚠️ LE SON SE RÈGLE LÀ OÙ ON CHOISIT L'INTENTION, ET IL APPARTIENT À
+   L'INTENTION · 20/09/2026. Il ne s'affiche que pour les intentions
+   ALLUMÉES : sept blocs de deux champs, ce serait un formulaire posé
+   sur une boîte. Et comme le son est global à l'intention, la ligne le
+   DIT — sinon on croit régler la musique de cette habitude-là et on
+   change celle de toutes les autres sans le savoir. */
+const sonLigne=z=>{const so=sonDe(z.id);
+  return '<span class="snd" style="--ic:'+z.color+'">'
+    +'<span class="snd-n">'+esc(z.name)+'</span>'
+    +'<input class="in snd-k" data-son="k|'+z.id+'" autocomplete="off" maxlength="80"'
+    +' placeholder="kind of sound" value="'+esc(so.kind||'')+'">'
+    +'<input class="in snd-u" data-son="u|'+z.id+'" autocomplete="off" inputmode="url"'
+    +' placeholder="link (optional)" value="'+esc(so.url||'')+'">'
+    +'</span>';};
 const intPicker=(x,kind)=>{const l=intIds(x); const kk=kind||'h';
+  const choisies=INTS.filter(z=>l.includes(z.id));
   return '<span class="pkw"><span class="ints">'+INTS.map(z=>
     '<button type="button" class="int'+(l.includes(z.id)?' on':'')+'" data-int="'
     +kk+'|'+esc(String(x.id))+'|'+z.id+'" aria-pressed="'+l.includes(z.id)+'" style="--ic:'+z.color+'">'
     +'<span class="int-n">'+esc(z.name)+'</span>'
-    +'<span class="int-p">'+esc(z.pillar)+'</span></button>').join('')+'</span></span>';};
+    +'<span class="int-p">'+esc(z.pillar)+'</span></button>').join('')+'</span>'
+    +(choisies.length
+      ? '<span class="snds">'+choisies.map(sonLigne).join('')
+        +'<span class="pk-say">the sound belongs to the intention — everywhere I use it</span></span>'
+      : '')
+    +'</span>';};
 
 /* LE LOOKUP — reprendre ce qui existe, ou écrire du neuf. On ne réécrit
    jamais ce qui est déjà là : les pièces déjà liées ne sont pas
@@ -4734,15 +4893,46 @@ function peintTraits(){}
    faut donc ouvrir APRÈS, pas avant, sinon la boîte se referme
    aussitôt. Le `requestAnimationFrame` laisse le rendu de la nouvelle
    vue se poser avant qu'`ouvrir` n'aille y chercher sa ligne. */
-const VUE_DE={h:'habits', t:'objectives', r:'repulsions', w:'wisdom', v:'visions'};
+/* ⚠️ DEUX ALPHABETS DANS LE MÊME FICHIER, ET C'EST LA CAUSE DU BUG
+   · 20/09/2026. Une mini-boîte d'objectif est construite avec la lettre
+   `o` (c'est la classe CSS `.m-o` et le `data-unlink="o:…"`), mais une
+   boîte OUVERTE d'objectif porte `open.kind === 't'`. Deux lettres pour
+   la même chose, écrites à six mois d'intervalle.
+   `VUE_DE` avait été écrite avec l'alphabet des boîtes (`t`) alors que
+   `data-go` porte celui des minis (`o`) : `VUE_DE['o']` valait
+   `undefined`, la fonction sortait en silence, et le clic ne faisait
+   RIEN. Les quatre autres lettres coïncidaient — voilà pourquoi seul
+   l'objectif était mort.
+   La table dit maintenant les DEUX : où aller, et sous quel nom la
+   boîte s'ouvre là-bas. Traduire explicitement coûte une colonne ;
+   supposer que deux alphabets coïncident coûte un bouton mort. */
+const PORTE={
+  h:{vue:'habits',     ouvre:'h'},
+  o:{vue:'objectives', ouvre:'t'},   /* ⚠️ o -> t, la seule traduction */
+  t:{vue:'objectives', ouvre:'t'},   /* on accepte les deux à l'entrée */
+  r:{vue:'repulsions', ouvre:'r'},
+  w:{vue:'wisdom',     ouvre:'w'},
+  v:{vue:'visions',    ouvre:'v'}};
 function vaVers(kind,id){
-  const cible=VUE_DE[kind]; if(!cible)return;
-  if(cible!==view){ dernierSens=null; setView(cible); }
-  requestAnimationFrame(()=>ouvrir(kind,id));
+  const d=PORTE[kind];
+  /* Un genre inconnu ne doit pas mourir en silence : c'est exactement
+     comme ça que le bug a tenu une semaine. */
+  if(!d){ console.warn('[totehm] mini-boite de genre inconnu:',kind); return; }
+  if(d.vue!==view){ dernierSens=null; setView(d.vue); }
+  requestAnimationFrame(()=>ouvrir(d.ouvre,id));
 }
 
 /* ══ OUVRIR, FERMER ══════════════════════════════════════════════════ */
-function ouvrir(kind,id){
+/* ⚠️ NAÎTRE ET OUVRIR NE SONT PAS LE MÊME GESTE · 20/09/2026.
+   Le curseur ne se posait que si `innerWidth > 700` — pour ne pas faire
+   surgir le clavier chaque fois qu'on ouvre une boîte pour la LIRE.
+   Bonne règle, mauvaise portée : elle s'appliquait aussi à une boîte
+   qui vient de NAÎTRE. Au téléphone on appuyait sur « + Add a
+   Repulsion », une boîte vide s'ouvrait, et rien ne se passait — pas de
+   clavier, pas de curseur, pas un mot pour dire quoi faire.
+   On vient d'appuyer sur « ajouter » : le clavier est exactement ce
+   qu'on attend. `neuve` le dit, et seule la création le passe. */
+function ouvrir(kind,id,neuve){
   open={kind,id:String(id)}; pk=null; renderZone();
   const b=$('habits').querySelector('.habit.open');
   if(!b)return;
@@ -4752,7 +4942,7 @@ function ouvrir(kind,id){
   requestAnimationFrame(()=>{const sc=$('fv-inner'); if(!sc)return;
     sc.scrollTop=sc.scrollTop+b.getBoundingClientRect().top-sc.getBoundingClientRect().top-6;});
   const f=b.querySelector('.v-name[contenteditable]');
-  if(f&&window.innerWidth>700)f.focus();
+  if(f&&(neuve||window.innerWidth>700))f.focus();
 }
 function fermer(){
   /* Il n'y a plus de brouillon de répulsion : elle naît en base comme les
@@ -4806,6 +4996,28 @@ function baptise(liste, tmp, vrai){
   if(pk   && String(pk.id)===tmp)   pk.id   = String(vrai);
   return o;
 }
+/* ⚠️ LE BAPTÊME ARRIVE PENDANT QU'ON ÉCRIT, ET IL VOLAIT LE CURSEUR
+   · 20/09/2026. La boîte naît avec un identifiant provisoire et prend le
+   curseur ; 300 à 600 ms plus tard le serveur répond, `renderZone()`
+   reconstruit la ligne, et le champ qui avait le curseur n'existe plus.
+   Au téléphone le clavier retombait tout seul une demi-seconde après
+   s'être ouvert — on croyait que l'application avait planté.
+   On repose donc le curseur APRÈS le redessin, et seulement si le champ
+   est encore vide : quelqu'un qui a déjà tapé a peut-être cliqué
+   ailleurs entre-temps, et lui reprendre le curseur serait pire. */
+function rendCurseur(){
+  requestAnimationFrame(()=>{
+    const f=document.querySelector('#habits .habit.open .v-name[contenteditable]');
+    if(!f || f.textContent.trim()!=='') return;
+    if(document.activeElement===f) return;
+    /* On ne rappelle le clavier que si le doigt n'est pas ailleurs : si
+       l'utilisateur a ouvert un choix ou touché un autre champ, on le
+       laisse tranquille. */
+    const a=document.activeElement;
+    if(a && a!==document.body && !a.classList.contains('v-name')) return;
+    f.focus();
+  });
+}
 /* Le serveur a refusé : la ligne provisoire n'a jamais existé. */
 function annule(liste, tmp, mot){
   const i = liste.findIndex(z=>String(z.id)===tmp);
@@ -4824,7 +5036,7 @@ async function creer(kind){
   if(RO)return;
   if(kind==='h'){
     const x={id:'h'+(++HSEQ), t:'', t0:'', f:null, i:null, is:[], o:null};
-    state.habits.push(x); state.ord=true; save(); ouvrir('h',x.id); return;}
+    state.habits.push(x); state.ord=true; save(); ouvrir('h',x.id,true); return;}
   if(!me){$('member-window').classList.add('show');
           if(typeof memberPaint==='function')memberPaint();return;}
 
@@ -4832,35 +5044,35 @@ async function creer(kind){
 
   if(kind==='t'){
     TRIPS.push({id:tmp,text:'',target_at:null,days_left:null,habits:[],is:[],vs:[]});
-    wDirty=true; ouvrir('t',tmp);
+    wDirty=true; ouvrir('t',tmp,true);
     const {data,error}=await sb.rpc('objective_create',{p_text:'',p_target:null});
     if(error||!data){console.error('[totehm] objective_create:',error&&error.message);
       return annule(TRIPS,tmp,'objective not saved — try again');}
-    baptise(TRIPS,tmp,data); renderZone(); return;}
+    baptise(TRIPS,tmp,data); renderZone(); rendCurseur(); return;}
 
   if(kind==='r'){
     REPS.push({id:tmp,text:'',obstacle:'',hs:[],ws:[],is:[]});
-    wDirty=true; ouvrir('r',tmp);
+    wDirty=true; ouvrir('r',tmp,true);
     const {data,error}=await sb.rpc('repulsion_create',{p_text:''});
     if(error||!data){console.error('[totehm] repulsion_create:',error&&error.message);
       return annule(REPS,tmp,'repulsion not saved — try again');}
-    baptise(REPS,tmp,data); renderZone(); return;}
+    baptise(REPS,tmp,data); renderZone(); rendCurseur(); return;}
 
   if(kind==='w'){
     TEACH.push({id:tmp,t:'',t0:'',is:[],os:[]});
-    wDirty=true; ouvrir('w',tmp);
+    wDirty=true; ouvrir('w',tmp,true);
     const {data,error}=await sb.rpc('teaching_create',{p_text:''});
     if(error||!data){console.error('[totehm] teaching_create:',error&&error.message);
       return annule(TEACH,tmp,'teaching not saved — try again');}
-    baptise(TEACH,tmp,data); renderZone(); return;}
+    baptise(TEACH,tmp,data); renderZone(); rendCurseur(); return;}
 
   if(kind==='v'){
     VIS.push({id:tmp,t:'',t0:'',is:[],os:[]});
-    wDirty=true; ouvrir('v',tmp);
+    wDirty=true; ouvrir('v',tmp,true);
     const {data,error}=await sb.rpc('vision_create',{p_text:''});
     if(error||!data){console.error('[totehm] vision_create:',error&&error.message);
       return annule(VIS,tmp,'vision not saved — try again');}
-    baptise(VIS,tmp,data); renderZone(); return;}
+    baptise(VIS,tmp,data); renderZone(); rendCurseur(); return;}
 }
 
 /* ══ ATTACHER, DÉTACHER ══════════════════════════════════════════════
@@ -5105,6 +5317,13 @@ function cable(box){
       apres(sb.rpc('objective_set_target',{p_obj:t.id,p_target:t.target_at}));
       wDirty=true; }
   });
+  /* ⚠️ PERSONNE N'APPUIE SUR ENTRÉE DANS LE DEUXIÈME CHAMP. On tape le
+     type, on colle le lien, on referme — et sans ceci les deux saisies
+     partaient à la poubelle. `focusout` remonte (contrairement à
+     `blur`), donc un seul écouteur sur la boîte suffit. */
+  box.addEventListener('focusout',e=>{
+    if(e.target&&e.target.dataset&&e.target.dataset.son) ecritSon(e.target);
+  });
   box.addEventListener('keydown',e=>{
     if(e.key!=='Enter')return;
     const t=e.target;
@@ -5116,12 +5335,45 @@ function cable(box){
       if(v)SPOT[k]=v; else delete SPOT[k];
       apres(sb.rpc('habit_spot_set',{p_habit:k,p_place:v}));
       pk=null; renderZone(); return; }
+    /* ⚠️ ENTRÉE NE REFERME PAS LE CHOIX ICI. Sur le lieu, Entrée veut
+       dire « c'est posé, referme » — un seul champ. Le son en a DEUX :
+       refermer après le premier obligerait à rouvrir pour coller le
+       lien. On enregistre et on laisse ouvert. */
+    if(t.dataset.son){ e.preventDefault(); ecritSon(t); return; }
     if(t.dataset.nw){ e.preventDefault();
       const v=t.value.trim(); if(!v)return;
       const q=t.dataset.nw.split(':'); neufEtAttache(q[0],q[1],v); return; }
     if(t.dataset.fqin){ e.preventDefault();
       if(pk&&pk.devine){ const x=habOf(pk.id); if(x){x.f=pk.devine;save();} pk=null; renderZone(); } }
   });
+}
+
+/* ══ ÉCRIRE LE SON · 20/09/2026 ══════════════════════════════════════
+   ⚠️ LES DEUX CHAMPS PARTENT ENSEMBLE. La fonction en base remplace la
+   ligne active de l'intention : envoyer le type seul effacerait le lien
+   posé trois secondes plus tôt. On relit donc les deux champs de la
+   ligne au moment d'envoyer, jamais celui qu'on vient de quitter tout
+   seul.
+   ⚠️ ET ON REDESSINE PAS. `renderZone()` reconstruit les champs, donc
+   vole le curseur au milieu d'une saisie. On met `SONS` à jour en
+   mémoire et on laisse le DOM tranquille. */
+function ecritSon(t){
+  const i=(t.dataset.son||'').split('|')[1]; if(!i)return;
+  const bloc=t.closest('.snd'); if(!bloc)return;
+  const k=(bloc.querySelector('[data-son^="k|"]')||{}).value||'';
+  const u=(bloc.querySelector('[data-son^="u|"]')||{}).value||'';
+  const kind=k.trim(), url=u.trim();
+  if(kind||url) SONS[i]={kind,url}; else delete SONS[i];
+  apres(sb.rpc('intention_sound_set',
+        {p_intention:i, p_kind:kind, p_url:url||null})
+    .then(r=>{
+      /* Une URL refusée par le serveur doit se voir : sinon on croit
+         l'avoir posée et elle n'existe nulle part. */
+      if(r&&r.error&&/bad_url/.test(r.error.message||'')){
+        const c=bloc.querySelector('[data-son^="u|"]');
+        if(c){c.classList.add('faux'); c.placeholder='needs to start with http';}
+      }
+    }));
 }
 
 /* SUPPRIMER — ici, et nulle part ailleurs. */
