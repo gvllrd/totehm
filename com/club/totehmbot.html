@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>TOTEHMBOT — MY HIGHER SELF</title>
+<!--
+  ══ totehm.com/club/totehmbot · 21/09/2026 ══════════════════════════════
+  La page de vente du TotehmBot. On y tombe quand on touche
+  [My Higher Self] dans le Totehm sans être membre du Figher Club.
+
+  ⚠️ CETTE PAGE NE PARLE PAS DE « PNL », ET C'EST DÉLIBÉRÉ.
+  Wah a demandé « des arguments scientifiques qui montrent les effets
+  positifs de la programmation neurolinguistique ». Vérifié avant
+  d'écrire : la revue systématique de référence (Sturt et al., British
+  Journal of General Practice, 2012) a trouvé DIX études exploitables,
+  dont quatre essais randomisés sur cinq sans différence significative,
+  et conclut qu'il y a « peu de preuves que les interventions de PNL
+  améliorent les résultats de santé ».
+
+  Écrire « prouvé scientifiquement » à côté du mot PNL serait donc faux,
+  et faux sur une page de vente c'est un risque juridique en plus d'un
+  risque de marque. On n'en a pas besoin : les MÉCANISMES que le
+  TotehmBot utilise réellement sont, eux, parmi les mieux établis de la
+  psychologie de l'action. Ils sont cités ici avec leur source, et ils
+  disent quelque chose de plus fort que « la PNL marche » — ils disent
+  exactement POURQUOI ce produit-ci marche.
+
+  ⚠️ PAGE STATIQUE, SANS SESSION. Une page de vente qui attend une
+  session met une seconde blanche entre l'envie et l'offre. Le bouton
+  mène au Club, qui vérifie, lui.
+
+  ⚠️ LIENS INTERNES ABSOLUS — `cleanUrls:true` (voir CLAUDE.md).
+-->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,900&family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#333366;--blue:#36498c;--rep:#743169;--coral:#fbd5ca;
+  --ink:#fff;--ink-2:#b0b0b0;--ink-3:rgba(255,255,255,.42);
+  --surface:rgba(255,255,255,.05);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;min-height:100%;background:#000;color:var(--ink-2);
+  font-family:'Quantico',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+
+.wrap{max-width:720px;margin:0 auto;padding:78px 22px 96px}
+
+/* ══ LE HÉROS ══════════════════════════════════════════════════════
+   Le Totehm empilé, en trois blocs pleins séparés par du noir : c'est
+   la grammaire de la marque, et elle dit le produit avant la première
+   phrase — trois couches, une voix. */
+.stack{display:flex;flex-direction:column;gap:3px;width:104px;margin:0 auto 30px}
+.stack i{display:block;height:19px}
+.stack .a{background:var(--rep)}
+.stack .b{background:var(--navy)}
+.stack .c{background:var(--blue)}
+
+h1{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;
+  letter-spacing:.3em;text-transform:uppercase;color:var(--ink);
+  text-align:center;margin-bottom:20px}
+.hook{font-family:'Montserrat',sans-serif;font-style:italic;font-weight:900;
+  font-size:clamp(27px,7vw,44px);line-height:1.08;color:var(--ink);
+  text-align:center;margin-bottom:20px}
+.sub{font-size:16px;line-height:1.62;text-align:center;max-width:520px;
+  margin:0 auto 42px}
+.sub b{color:var(--ink);font-weight:700}
+
+/* ══ CE QU'IL DIT ══════════════════════════════════════════════════
+   Un exemple vaut le paragraphe qu'il remplace. Les trois lignes sont
+   la VRAIE forme d'un message : les mots du membre, son heure, son
+   lieu, sa répulsion. */
+.demo{background:var(--surface);padding:22px 20px;margin:0 auto 14px;max-width:520px}
+.demo .h{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--ink-3);margin-bottom:14px}
+.demo p{font-family:'Montserrat',sans-serif;font-style:italic;font-weight:900;
+  font-size:19px;line-height:1.3;color:var(--ink);margin-bottom:10px}
+.demo p:last-child{margin-bottom:0}
+.demo .when{font-family:'Space Mono',monospace;font-style:normal;font-weight:400;
+  font-size:9px;letter-spacing:.2em;color:var(--ink-3);display:block;
+  margin-bottom:3px;text-transform:uppercase}
+.says{font-size:13px;line-height:1.6;text-align:center;color:var(--ink-3);
+  max-width:520px;margin:0 auto 52px}
+
+/* ══ LA SCIENCE ════════════════════════════════════════════════════
+   Trois mécanismes, trois sources, trois chiffres. Chaque affirmation
+   porte sa référence : c'est ce qui sépare un argument d'un slogan. */
+h2{font-family:'Space Mono',monospace;font-weight:700;font-size:10px;
+  letter-spacing:.28em;text-transform:uppercase;color:var(--ink);
+  text-align:center;margin:0 0 28px}
+.mech{margin:0 auto 26px;max-width:560px}
+.mech .n{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;
+  color:var(--c,var(--navy));text-transform:uppercase;margin-bottom:7px}
+.mech h3{font-family:'Quantico',sans-serif;font-weight:700;font-size:17px;
+  color:var(--ink);margin-bottom:8px;line-height:1.3}
+.mech p{font-size:14px;line-height:1.66;margin-bottom:8px}
+.mech .src{font-family:'Space Mono',monospace;font-size:9px;line-height:1.7;
+  color:var(--ink-3)}
+.mech .src a{color:var(--ink-3);text-decoration:underline}
+@media(hover:hover){.mech .src a:hover{color:var(--ink)}}
+
+/* L'honnêteté est un argument de vente, pas une concession. */
+.honest{max-width:560px;margin:44px auto 0;padding:20px;background:var(--surface)}
+.honest .n{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--ink-3);margin-bottom:9px}
+.honest p{font-size:13px;line-height:1.7}
+.honest b{color:var(--ink);font-weight:700}
+
+/* ══ LE PRIX ═══════════════════════════════════════════════════════ */
+.price{text-align:center;margin:66px auto 0;max-width:520px}
+.price .in{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--ink-3);margin-bottom:16px}
+.price .big{font-family:'Montserrat',sans-serif;font-style:italic;font-weight:900;
+  font-size:clamp(23px,6vw,34px);line-height:1.12;color:var(--ink);
+  margin-bottom:14px}
+.price .note{font-size:13px;line-height:1.62;margin-bottom:30px}
+
+/* La tuile perforée est la TEXTURE de marque — ce n'est pas une
+   bordure. Voir CLAUDE.md § « Aucune bordure autour d'une boîte ». */
+.btn-sig{display:inline-block;width:fit-content;
+  font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;
+  color:var(--ink);background:none;border:6px solid transparent;
+  padding:0 6px;line-height:1.6;cursor:pointer;text-decoration:none;
+  transition:color .15s ease}
+.btn-sig .get{color:var(--coral);font-weight:400}
+.higher-inline{height:1.7em;width:auto;display:inline-block;vertical-align:-.42em;
+  margin:0 2px}
+.back{display:block;text-align:center;margin-top:34px;
+  font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--ink-3);text-decoration:none}
+@media(hover:hover){.back:hover{color:var(--ink)}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="higher-badge" viewBox="0 0 600 200">
+  <text x="300" y="150" text-anchor="middle" font-family="Montserrat,sans-serif"
+        font-style="italic" font-weight="900" font-size="150" fill="currentColor"
+        stroke="currentColor" stroke-width="2">Higher</text>
+</symbol>
+</defs></svg>
+
+<div class="wrap">
+
+  <div class="stack"><i class="a"></i><i class="b"></i><i class="c"></i></div>
+
+  <h1>TotehmBot</h1>
+
+  <p class="hook">It doesn't coach me.<br>It repeats me.</p>
+
+  <p class="sub">Every message it sends is built from <b>my own Totehm</b> —
+  my habits, my intentions, my objectives, my repulsions, my wisdom, my
+  vision. It has no opinion of its own, and that is the entire point.
+  <b>A mentor tells you what to do. A mirror shows you what you already
+  decided.</b></p>
+
+  <div class="demo">
+    <div class="h">what it sends</div>
+    <p><span class="when">07:00 · the park downstairs</span>
+       500 words. That's the deal I made.</p>
+    <p><span class="when">when I send an excuse</span>
+       I don't scroll instead. Scrolling is the thing I said disgusts me.</p>
+    <p><span class="when">11 days before my deadline</span>
+       Ship the Higher Map. Eleven days. I wrote that date myself.</p>
+  </div>
+  <p class="says">Nothing above was written by a machine that decided what
+  is good for me. Every word came out of boxes I filled in, at a time I
+  set, in a place I named.</p>
+
+  <h2>Why a mirror works</h2>
+
+  <div class="mech" style="--c:var(--blue)">
+    <div class="n">Mechanism 01</div>
+    <h3>A plan tied to a time and a place beats a plan that is only a wish</h3>
+    <p>“I will do X” is an intention. “<b>At 07:00, in the park downstairs,
+    I do X</b>” is an implementation intention — and across <b>94 independent
+    tests</b>, that second form produced a medium-to-large effect on
+    actually reaching the goal (<b>d = 0.65</b>).</p>
+    <p>This is exactly what a Totehm stores: every habit carries its time
+    frequency and its spot. TotehmBot doesn't invent the cue — it fires on
+    the one I wrote.</p>
+    <div class="src">Gollwitzer &amp; Sheeran (2006). <em>Implementation
+    intentions and goal achievement: a meta-analysis of effects and
+    processes.</em> Advances in Experimental Social Psychology, 38, 69–119.</div>
+  </div>
+
+  <div class="mech" style="--c:var(--rep)">
+    <div class="n">Mechanism 02</div>
+    <h3>The words you use on yourself change what you can do</h3>
+    <p>Across <b>seven experiments with 585 participants</b>, the pronoun
+    people used to talk to themselves under pressure changed their
+    performance, their anxiety recovery, and whether they read what was
+    coming as a <b>challenge</b> rather than a <b>threat</b>.</p>
+    <p>Self-talk is not decoration. It is a lever with measurable effects —
+    which is why the voice in TotehmBot is engineered, not decorated.</p>
+    <div class="src">Kross, Bruehlman-Senecal, Park, Burson, Dougherty,
+    Shablack, Bremner, Moser &amp; Ayduk (2014). <em>Self-talk as a
+    regulatory mechanism: how you do it matters.</em> Journal of Personality
+    and Social Psychology, 106(2), 304–324.</div>
+  </div>
+
+  <div class="mech" style="--c:var(--navy)">
+    <div class="n">Mechanism 03</div>
+    <h3>The excuse is the moment. Not the morning.</h3>
+    <p>A repulsion is the thing I do <em>instead</em> — written by me, in my
+    words, before I needed it. When I send an excuse, TotehmBot doesn't
+    argue and doesn't encourage. It hands me back the sentence I wrote on a
+    clearer day.</p>
+    <p>That is the one moment a generic reminder cannot cover, and the one
+    moment a mirror can.</p>
+    <div class="src">Built on the repulsion layer of the Totehm — my own
+    text, quoted back. No advice is generated.</div>
+  </div>
+
+  <div class="honest">
+    <div class="n">What we don't claim</div>
+    <p>We don't sell “neuro-linguistic programming”. <b>The evidence for NLP
+    as a branded method is weak</b> — the reference systematic review found
+    ten usable studies, four of five randomised trials showing no
+    significant difference, and concluded there is little evidence it
+    improves health outcomes. We'd rather tell you that than borrow a word
+    that sounds like science. <b>The three mechanisms above are real,
+    replicated, and cited.</b> They are what this is built on.</p>
+  </div>
+
+  <div class="price">
+    <div class="in">TotehmBot is included</div>
+    <p class="big">It comes with the Figher Club.<br>No separate
+    subscription. Ever.</p>
+    <p class="note">One membership: the Club, the Radar, the Spots, and my
+    Higher Self in my pocket. <b>TotehmBot is not an add-on we price
+    separately</b> — it is what a complete Totehm is for.</p>
+    <a class="btn-sig" href="/club"><span class="get">Get</span>
+      <svg class="higher-inline" viewBox="0 0 600 200" role="img"
+           aria-label="Higher"><use href="#higher-badge"></use></svg></a>
+    <a class="back" href="/totehm#in">back to my Totehm</a>
+  </div>
+
+</div>
+</body>
+</html>
