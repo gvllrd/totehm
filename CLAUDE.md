@@ -568,6 +568,153 @@ qu'un des trois avait bougé et pas les autres. Les deux autres en
 découlent maintenant : `+82` pour la bande de classement, `+100` pour la
 première boîte.
 
+### ⛔ LE SÉPARATEUR ÉTAIT DANS L'IDENTIFIANT — 21/09/2026
+
+**« Je ne peux pas encore rajouter de répulsion. »** Troisième signalement,
+et ce n'était ni la minuterie, ni le serveur, ni la contrainte. **C'était
+un caractère.**
+
+Tout le fichier encode une cible en `genre:identifiant` et la relit par
+`split(':')` — `data-edit`, `data-open`, `data-go`, `data-pk`,
+`data-kill`. L'identifiant provisoire d'une boîte neuve s'écrivait
+**`tmp:1`**. Une répulsion neuve portait donc `data-edit="r:tmp:1"`, et le
+lecteur en tirait `p[1] === 'tmp'`. `repOf('tmp')` ne trouve rien, la
+fonction sort sur `if(!r)return;` — **chaque frappe était jetée**, sans un
+mot, tant que le serveur n'avait pas renvoyé le vrai identifiant.
+
+Mesuré, à 900 ms de latence : on tape « ZZTEST », le texte s'affiche, et
+il disparaît au redessin qui suit le baptême. Il n'avait jamais atteint la
+mémoire.
+
+**⚠️ ET ÇA TOUCHAIT LES CINQ VUES**, pas les répulsions. Une seule a été
+signalée parce qu'une seule a été essayée — exactement comme pour
+l'invitation manquante la veille.
+
+**⚠️ MON CORRECTIF DU 20/09 A RENDU LE BUG SYSTÉMATIQUE.** Avant, au
+téléphone, une boîte neuve n'avait pas le curseur : on ne pouvait pas
+taper dans les premières centaines de millisecondes, donc la frappe
+tombait toujours APRÈS la réponse du serveur. En posant le curseur tout de
+suite, j'ai mis toutes les frappes pile dans la fenêtre où elles étaient
+jetées. *Un correctif qui réveille un bug dormant n'en est pas la cause —
+mais c'est lui qui doit le réparer.*
+
+> **La règle : un identifiant ne contient jamais le caractère qui sépare
+> les champs.** `tmp-1`, pas `tmp:1`. Le séparateur appartient au format,
+> jamais à la valeur. Ça vaut pour tout ce qu'on encodera dans un
+> `data-*`.
+
+**⚠️ ET LE FAUX SERVEUR RÉPONDAIT EN 80 ms — TROISIÈME FOIS.** La
+production met 300 à 600 ms sur une création ; la frappe part à 700 ms.
+Toute la fenêtre du bug vit entre ces deux chiffres, et à 80 ms elle
+n'existait pas. Après la course de septembre (il lui fallait de la
+latence) et la contrainte de `wisdom` (il lui fallait les contraintes), il
+lui fallait **la lenteur réelle** : `window.__LAT_W` la règle, et le test
+tourne aux deux vitesses.
+
+**Deux corrections de fond sont restées**, parce qu'elles étaient justes
+même si elles n'étaient pas la cause :
+
+1. **Une frappe ne se jette plus quand la ligne est encore provisoire.**
+   Les cinq écritures faisaient `if(estProvisoire(id)) return;` — un
+   ABANDON, que rien ne reprogrammait. `quandNomme()` attend le baptême et
+   part dès qu'il a lieu ; au bout de 3 s il abandonne **et le dit**.
+2. **Cette attente compte comme une écriture en vol.** Sinon `fermer()`
+   rechargeait l'arbre avant elle et écrasait le texte avec le vide du
+   serveur — le même bug, déplacé de deux cents millisecondes. `calme()`
+   fait trois tours au lieu de deux : pousser · attendre l'attente ·
+   attendre l'écriture qu'elle a lancée.
+
+---
+
+### ⛔ LE PAVÉ REVIENT AU DISQUE — 21/09/2026
+
+**« Le design du joystick était très bien AVANT, sauf que je ne veux pas
+des deux points latéraux aux extrémités horizontales. Garde les trois
+points verticaux mais avec les 3 couleurs. »**
+
+J'avais sur-corrigé : en retirant les deux ronds latéraux le 20/09, j'ai
+aussi retiré le DISQUE — et c'est le disque qui faisait la manette. Il
+revient, avec trois ronds empilés dessus : rouge-violet (sagesse), navy
+(habitudes), bleu clair (vision). Le Totehm vu de profil.
+
+**⚠️ LE DISQUE NE CHANGE PLUS DE COULEUR, ET C'EST OBLIGÉ.** Avant, il
+prenait celle de l'époque : le rond rouge-violet sur un disque
+rouge-violet aurait disparu pile au moment où il doit se voir. Les ronds
+portent la couleur ; le disque redevient ce qu'est la base d'une manette —
+un socle sombre qui ne dit rien et fait ressortir ce qui est posé dessus.
+
+**Le point vertical en plus.** Dans le présent il y a trois couches. Un
+petit repère blanc se pose SUR le disque, en haut dans les objectifs, en
+bas dans les répulsions, nulle part dans les habitudes — *un repère qui ne
+dit rien est un repère de trop.* Ça évite un deuxième objet sur le pavé.
+
+**Le titre redescend SOUS le pavé, en 15 px.** À gauche (20/09) il
+partageait la ligne du pavé, donc sa largeur entrait dans celle du
+contrôleur : c'est ce qui m'a obligé à figer une colonne, et une colonne
+figée coupe « MY REPULSIONS ». Dessous, il est libre.
+
+**⚠️ `width:0` + `overflow:visible` SUR LA RANGÉE DU TITRE.** Le mot
+déborde des deux côtés, centré, et la grille ne le voit pas. C'est ce qui
+permet d'écrire gros **sans jamais déplacer le pavé** — le reproche fait
+deux fois. Et **pas d'ellipse** : couper « MY REPULSI… » serait pire que
+déborder.
+
+---
+
+### ⛔ TOTEHMBOT — CE QU'ON NE DIRA PAS SUR LA PAGE DE VENTE — 21/09/2026
+
+Wah a demandé « des arguments scientifiques qui montrent les effets
+positifs de la programmation neurolinguistique ». **Vérifié avant
+d'écrire, et la réponse est non.**
+
+La revue systématique de référence (Sturt et al., *British Journal of
+General Practice*, 2012) a trouvé **dix études exploitables**, dont
+**quatre essais randomisés sur cinq sans différence significative**, et
+conclut qu'il y a *« peu de preuves que les interventions de PNL améliorent
+les résultats de santé »*. Écrire « prouvé scientifiquement » à côté du mot
+PNL serait faux — et faux sur une page de vente, c'est un risque juridique
+en plus d'un risque de marque.
+
+**On n'en a pas besoin.** Les mécanismes que TotehmBot utilise RÉELLEMENT
+sont parmi les mieux établis de la psychologie de l'action, et ils disent
+quelque chose de plus fort que « la PNL marche » — ils disent pourquoi
+CE produit-ci marche :
+
+| mécanisme | ce que ça vaut | où c'est déjà dans le Totehm |
+|---|---|---|
+| **Implementation intentions** — « à 07:00, au parc en bas, je fais X » | 94 tests indépendants, **d = 0,65** (Gollwitzer & Sheeran, 2006) | la Time Frequency **et le Spot** d'une habitude |
+| **Self-talk distancié** — le pronom qu'on s'applique change la performance | 7 expériences, N = 585 (Kross et al., 2014, *JPSP*) | la voix du bot |
+| **La répulsion citée au moment de l'excuse** | ses propres mots, écrits un jour plus clair | la vue répulsions |
+
+**⚠️ ET LE DEUXIÈME CONTREDIT UNE RÈGLE DU PRODUIT.** Kross mesure que le
+NON-première-personne (« tu », le prénom) bat le « je » pour se réguler
+**sous pression**. Or la règle de Wah est « exclusivement à la première
+personne ». Les deux ont raison sur des moments différents : le « je »
+fait l'IDENTITÉ (c'est ma voix, c'est mon Totehm), le « tu » fait la
+RÉGULATION (le moment de l'excuse). La synthèse retenue — **« je » pour
+les directives, le prénom pour la boucle de correction** — est à mesurer,
+pas à décréter.
+
+**La page le DIT.** Un bloc « what we don't claim » explique qu'on ne vend
+pas de la PNL et pourquoi. *L'honnêteté est un argument de vente, pas une
+concession* : elle est la seule chose qu'un concurrent qui promet monts et
+merveilles ne peut pas copier.
+
+**La porte vit DANS le Totehm** (`#door-bot`, à droite du wordmark), et
+c'est la seule exception à l'immersion du 19/09. La distinction n'est pas
+un arrangement : les trois autres portes mènent à un autre domaine, une
+boutique, un achat ; **celle-ci mène au miroir de ce qu'on est en train
+d'écrire.** Elle est cachée sur l'atterrissage, qui porte déjà la même
+porte dans `#bottom-doors`.
+
+**⚠️ DEUX VERROUS, ET LE SERVEUR REND UN SEUL BOOLÉEN.**
+`totehmbot_access()` → `ouvert` = membre du Club **ET** Totehm complet.
+Le second n'est pas commercial : un miroir sans rien à refléter ne renvoie
+rien. Et un membre qui paie, Totehm à trous, ne lit pas « tu n'as pas
+accès » — il est emmené à la première vue vide.
+
+---
+
 ### ⛔ DEUX ALPHABETS POUR LA MÊME CHOSE — 20/09/2026
 
 **« La mini-box objectif dans la vue habit ne fonctionne pas. »** Une
@@ -643,7 +790,12 @@ pas ailleurs.
 
 ---
 
-### ⛔ LE PAVÉ PASSE EN TROIS COULEURS — 20/09/2026
+### ⛔ LE PAVÉ PASSE EN TROIS COULEURS — 20/09/2026 · CORRIGÉ LE 21/09
+
+> **⚠️ J'AVAIS SUR-CORRIGÉ.** En retirant les deux ronds latéraux, j'ai
+> aussi retiré le DISQUE — et c'est lui qui faisait la manette. Voir
+> **⛔ LE PAVÉ REVIENT AU DISQUE**, qui fait autorité. Ce qui suit reste
+> vrai sur les couleurs et sur la lisibilité des ronds éteints.
 
 **« Je ne veux pas des deux points latéraux aux extrémités et les trois
 points verticaux, je veux nos 3 couleurs. »**

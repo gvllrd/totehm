@@ -615,6 +615,7 @@ son nom.
 | `creator_payout_set(text,text)` | **NOUVELLE 19/09/2026** — où virer : `iban` ou `paypal` + l'identifiant | `authenticated` |
 | `intention_sound_set(text,text,text)` | **NOUVELLE 20/09/2026** — le son d'une intention : un TYPE (obligatoire) + une URL (facultative). Les deux vides retirent le son. Écrit dans `intention_music` : `title` = le type, `url` = le lien | `authenticated` |
 | `intention_sounds()` → `jsonb` | **NOUVELLE 20/09/2026** — le son actif de chaque intention, indexé par intention, en un appel | `authenticated` |
+| `totehmbot_access()` → `jsonb` | **NOUVELLE 21/09/2026** — la porte du TotehmBot. `ouvert` = membre du Club **ET** Totehm complet. Ne rend que des booléens et `remplies` (0–5), jamais un contenu. Ouverte à `anon` : un invité voit la page de vente comme un membre sans Club | `anon`, `authenticated` |
 | `creator_cercle()` → `jsonb` | **NOUVELLE 19/09/2026** — tout le tiroir créateur en UN appel : prix, abonnés, `a_moi` (déjà net de 20 %), `payout_method`, `payout_fin` (**4 derniers caractères seulement**), `complete` | `authenticated` |
 
 **Une porte future ouverte, pas encore construite.** Le TotehmBot pourra
@@ -1190,6 +1191,11 @@ Functions sont téléchargeables.
 
 | Date | Décision | Pourquoi |
 |---|---|---|
+| 21/09 | **Un identifiant ne contient jamais le séparateur de champs** | `tmp:1` dans un `data-edit="r:tmp:1"` relu par `split(':')` donnait `'tmp'` : la cible était introuvable et **chaque frappe d'une boîte neuve était jetée en silence**. `tmp-1`. C'était ça, « je ne peux pas rajouter de répulsion » |
+| 21/09 | **Le faux serveur doit pouvoir être LENT** (`window.__LAT_W`) | La prod met 300–600 ms sur une création, la frappe part à 700 ms : toute la fenêtre du bug vit entre les deux, et à 80 ms elle n'existait pas. Troisième fois qu'un stub trop gentil cache une panne |
+| 21/09 | **Une frappe attend le baptême au lieu d'être jetée** | `if(estProvisoire(id)) return;` était un abandon que rien ne reprogrammait. Et l'attente compte comme une écriture en vol, sinon le rechargement de l'arbre la double |
+| 21/09 | **TotehmBot : on ne vend PAS de la « PNL »** | La revue systématique de référence (Sturt et al., BJGP 2012) conclut à « peu de preuves ». On vend les mécanismes réellement utilisés — implementation intentions (d = 0,65, 94 tests) et self-talk distancié (Kross 2014) — qui sont solides ET qui décrivent exactement ce que le Totehm stocke déjà |
+| 21/09 | **TotehmBot est inclus dans le Figher Club, jamais vendu à part** | Ce n'est pas un module : c'est ce à quoi sert un Totehm complet. Deux verrous côté serveur — membre du Club ET Totehm complet — rendus en UN booléen |
 | 20/09 | **Le son appartient à l'INTENTION, pas à l'habitude** | Deux habitudes en `focus` entendent la même chose : c'est le propre d'une intention. La table existait déjà (`intention_music`) — on n'en a pas créé une deuxième, le TYPE va dans `title` et le lien dans `url` |
 | 20/09 | **Le lien musical devient facultatif, le TYPE devient obligatoire** | `set_music` exigeait une URL. Or « hard techno, 140 bpm » est une réponse complète : refuser cette saisie ferait perdre la moitié des réponses |
 | 20/09 | **Le pavé montre TROIS ÉPOQUES, plus cinq vues** | Les cinq ronds blancs dessinaient le plan du produit. Un contrôleur montre où l'on est : la couleur dit l'époque, le titre dit la couche. Une information, un seul endroit |
