@@ -1,21 +1,21 @@
-# CLAUDE_CODE.md — LOT DU 21/09/2026 bis
+# CLAUDE_CODE.md — LOT DU 22/09/2026
 
-**L'axe du pavé corrigé, le contrôleur qui remonte en haut, et la page de
-vente réécrite sur la stack police.**
+**Entrée enregistre partout · les options sous le [close] · le téléphone
+couché replie le Totehm · le pavé rend aux ronds leurs couleurs.**
 
-Le zip contient tout l'historique du repo. **Ne prends que les six
+Le zip contient tout l'historique du repo. **Ne prends que les trois
 fichiers listés ci-dessous.** Le reste est déjà chez toi.
+
+**Aucune migration, aucune Edge Function dans ce lot.** C'est du front
+et de la documentation.
 
 ---
 
-## 1 · Les six fichiers
+## 1 · Les trois fichiers
 
 ```
 com/totehm.html
-com/club/totehmbot.html                                      ← NOUVEAU
-backend/supabase/migrations/20260921_la_porte_du_totehmbot.sql ← NOUVEAU
 CLAUDE.md
-backend/SYSTEM.md
 CLAUDE_CODE.md
 ```
 
@@ -23,43 +23,63 @@ CLAUDE_CODE.md
 
 ## 2 · Le contrôle AVANT de copier
 
-Colle ce bloc. **Il doit afficher cinq `OK`.** Un seul `VIEUX` et tu as
-une version du 20/09 ou d'avant dans les mains — ne copie rien, redemande
+Colle ce bloc. **Il doit afficher trois `OK`.** Un seul `VIEUX` et tu as
+une version du 21/09 ou d'avant dans les mains — ne copie rien, redemande
 le zip.
 
 ```bash
 cd ~/inbox
-grep -q "LE SEPARATEUR ETAIT DANS L IDENTIFIANT\|LE SÉPARATEUR ÉTAIT DANS L'IDENTIFIANT" com/totehm.html && echo "OK  totehm.html" || echo "VIEUX  totehm.html"
-grep -q "Bebas+Neue" com/club/totehmbot.html && echo "OK  page de vente" || echo "VIEUX  page de vente"
-grep -q "totehmbot_access" backend/supabase/migrations/20260921_la_porte_du_totehmbot.sql && echo "OK  migration" || echo "VIEUX  migration"
-grep -q "JE M.ÉTAIS TROMPÉ D.AXE" CLAUDE.md && echo "OK  CLAUDE.md" || echo "VIEUX  CLAUDE.md"
-grep -q "totehmbot_access" backend/SYSTEM.md && echo "OK  SYSTEM.md" || echo "VIEUX  SYSTEM.md"
+grep -q "beforeinput" com/totehm.html && echo "OK  totehm.html" || echo "VIEUX  totehm.html"
+grep -q "LE TÉLÉPHONE COUCHÉ REPLIE LE TOTEHM" CLAUDE.md && echo "OK  CLAUDE.md" || echo "VIEUX  CLAUDE.md"
+grep -q "LOT DU 22/09/2026" CLAUDE_CODE.md && echo "OK  CLAUDE_CODE.md" || echo "VIEUX  CLAUDE_CODE.md"
 ```
 
-Et deux contrôles de plus, qui vérifient que le vieux code est bien parti :
+Et quatre contrôles de plus, qui vérifient que le vieux code est bien
+parti. **Chacun doit afficher zéro.**
 
 ```bash
-grep -c "tmp:'+(++TSEQ)" com/totehm.html
+grep -c "bas=lienPicker" com/totehm.html
 ```
 
-**Zéro attendu.** L'identifiant provisoire s'écrit `tmp-`, plus `tmp:` —
-c'est LA correction du lot.
+Les options du lookup ne se dessinent plus en bas de la boîte : elles
+sont le dernier enfant du GROUPE qui les a ouvertes, dans le
+prolongement du `[close]`.
 
 ```bash
-grep -c "joy-stack .w{\|joy-stack .v{" com/totehm.html
+grep -c "couche-h\|couche-b" com/totehm.html
 ```
 
-**Zéro attendu.** Les trois ronds sont l'axe VERTICAL — `o`, `h`, `r` —
-et plus les époques. C'est la correction de fond du lot.
+Le petit repère blanc du 21/09 est supprimé — style ET classe, dans le
+même geste.
 
 ```bash
-grep -c "font-family:'Montserrat\|font-family: 'Montserrat" com/club/totehmbot.html
+grep -c 'id="door-bot"' com/totehm.html
+grep -c "\$('door-bot')" com/totehm.html
 ```
 
-**Zéro attendu.** Montserrat n'a droit qu'à `[Get Higher]`, c'est-à-dire
-au seul `font-family=` du `<symbol>` SVG — **jamais une règle CSS**. Une
-seule occurrence en feuille de style voudrait dire qu'elle a fui dans le
-corps de la page, ce qui était le cas de la première version.
+`[My Higher Self]` est ressorti du Totehm déployé. **Les DEUX doivent
+afficher zéro** : balisage et câblage partent ensemble, parce qu'un
+`.onclick` sur un nœud absent lève à l'évaluation du module et la page
+s'affiche **blanche**. (Le nom reste dans un commentaire qui explique
+la suppression — c'est voulu, d'où le `grep` précis.)
+
+```bash
+grep -c "0 0 0 1.5px rgba(255,255,255,.34)" com/totehm.html
+```
+
+Le liseré qui repeignait le rond actif en blanc est parti.
+
+Et deux derniers, qui doivent afficher **`1`** chacun :
+
+```bash
+grep -c "pointer:coarse" com/totehm.html
+grep -c "inset 0 1px 0 rgba(255,255,255,.20)" com/totehm.html
+```
+
+Le premier est le verrou du mode paysage. Sans lui, la règle
+s'appliquerait à **tous les ordinateurs** — `(orientation:landscape)` y
+est toujours vrai. Le second est le relief discret qui a remplacé le
+liseré blanc sur le rond actif.
 
 ---
 
@@ -67,10 +87,7 @@ corps de la page, ce qui était le cas de la première version.
 
 ```bash
 cp ~/inbox/com/totehm.html ~/totehm/com/totehm.html
-cp ~/inbox/com/club/totehmbot.html ~/totehm/com/club/totehmbot.html
-cp ~/inbox/backend/supabase/migrations/20260921_la_porte_du_totehmbot.sql ~/totehm/backend/supabase/migrations/20260921_la_porte_du_totehmbot.sql
 cp ~/inbox/CLAUDE.md ~/totehm/CLAUDE.md
-cp ~/inbox/backend/SYSTEM.md ~/totehm/backend/SYSTEM.md
 cp ~/inbox/CLAUDE_CODE.md ~/totehm/CLAUDE_CODE.md
 ```
 
@@ -93,23 +110,13 @@ git -C ~/totehm diff | grep -iE "sk_live|sk_test|whsec_|re_[A-Za-z0-9]{20}"
 chemin est nommé.
 
 ```bash
-git -C ~/totehm add backend/supabase/migrations/20260921_la_porte_du_totehmbot.sql
-git -C ~/totehm commit -m "base: la porte du TotehmBot — Club ET Totehm complet, un seul booleen"
-```
-
-```bash
 git -C ~/totehm add com/totehm.html
-git -C ~/totehm commit -m "totehm: le pave dit l axe VERTICAL, et le controleur remonte en haut"
+git -C ~/totehm commit -m "totehm: Entree enregistre partout, les options sous le close, le telephone couche replie"
 ```
 
 ```bash
-git -C ~/totehm add com/club/totehmbot.html
-git -C ~/totehm commit -m "club: la page de vente reecrite sur la stack police, moitie plus courte"
-```
-
-```bash
-git -C ~/totehm add CLAUDE.md backend/SYSTEM.md CLAUDE_CODE.md
-git -C ~/totehm commit -m "docs: la stack police, et l axe que j avais pris a l envers"
+git -C ~/totehm add CLAUDE.md CLAUDE_CODE.md
+git -C ~/totehm commit -m "docs: le lot du 22/09, et les trois regles qui en sortent"
 ```
 
 ```bash
@@ -120,21 +127,16 @@ git -C ~/totehm push
 
 ## 6 · Le déploiement
 
-**Rien à déployer côté Edge Functions.**
-
-**La migration est DÉJÀ appliquée en production.** Le fichier n'est là que
-pour que le repo dise la vérité. **Ne lance pas `db push`.**
-
-La nouvelle page est servie par Vercel au premier push, à
-**`/club/totehmbot`** — `cleanUrls` retire le `.html`.
+**Rien à déployer à la main.** Pas de migration, pas d'Edge Function.
+Vercel sert la nouvelle page au premier push.
 
 ---
 
 ## 7 · Le contrôle après déploiement
 
 ```bash
-curl -sL -o /dev/null -w "page de vente ? %{http_code}\n" https://www.totehm.com/club/totehmbot
-curl -sL -o /dev/null -w "backend public ? %{http_code}\n" https://www.totehm.space/backend/README.md
+curl -sL -o /dev/null -w "le Totehm ? %{http_code}\n" https://www.totehm.com/totehm
+curl -sL -o /dev/null -w "backend public ? %{http_code}\n" https://www.totehm.com/backend/README.md
 ```
 
 **200 pour la première, 404 pour la seconde.** Si `backend/` rend 200,

@@ -626,7 +626,220 @@ même si elles n'étaient pas la cause :
 
 ---
 
+### ⛔ ENTRÉE ENREGISTRE, PARTOUT, ET SUR LES DEUX CLAVIERS — 22/09/2026
+
+**« Je peux ajouter une wisdom mais pas une répulsion learned from »,
+« même problème dans la vue habit », « pas possible dans la vue
+répulsion ». Trois signalements, et une seule cause — et ce n'était
+aucune des trois répulsions.**
+
+L'écouteur `keydown` du Totehm connaissait quatre cas : le spot, le son,
+la fréquence, et la création d'un lien (`data-nw`). **Il ne connaissait
+pas le TITRE D'UNE BOÎTE** (`data-edit`) — c'est-à-dire le champ qu'on
+remplit en premier dans les cinq vues. Appuyer sur Entrée dedans
+n'enregistrait rien : ça insérait un RETOUR À LA LIGNE dans le
+`contenteditable`. Le membre voyait son texte partir à la ligne et
+concluait, logiquement, que « ça ne s'ajoute pas ».
+
+**⚠️ ET LE TÉLÉPHONE N'EMPRUNTE PAS LE MÊME CHEMIN.** Un clavier virtuel
+Android n'envoie pas de `keydown` exploitable : `e.keyCode` vaut 229
+pendant toute la composition, et la touche « entrée » n'arrive parfois
+pas du tout. Le seul signal fiable est **`beforeinput` avec
+`inputType:'insertLineBreak'` ou `'insertParagraph'`**. Les deux chemins
+sont donc branchés sur la MÊME fonction, `valide(cible)` :
+
+```js
+box.addEventListener('keydown',e=>{
+  if(e.key!=='Enter' || e.isComposing || e.keyCode===229) return;
+  if(valide(e.target)) e.preventDefault(); });
+box.addEventListener('beforeinput',e=>{
+  if(e.inputType!=='insertLineBreak' && e.inputType!=='insertParagraph') return;
+  e.preventDefault();          /* aucun retour à la ligne, jamais */
+  valide(e.target); });
+```
+
+**⚠️ `e.isComposing` N'EST PAS UNE PRÉCAUTION, C'EST LA RÈGLE.** En
+saisie japonaise, coréenne ou en prédiction Android, Entrée valide LE
+MOT, pas la boîte. L'ignorer fermerait la boîte au milieu d'un mot.
+
+**⚠️ ET UN COLLER PEUT ENCORE APPORTER UNE LIGNE.** `pousse()` aplatit
+donc le texte (`replace(/[\r\n]+/g,' ')`) : la règle est « aucun retour
+à la ligne dans aucune boîte », pas « aucune touche Entrée ».
+
+> **La règle : un raccourci qui vaut « partout » se branche sur la
+> TABLE des cibles, pas sur une liste de cas écrite à la main.** Le cas
+> manquant était le plus courant de tous, et il manquait depuis le
+> début — personne ne l'a vu parce que la souris permet de cliquer
+> ailleurs pour valider, et que c'est ce que je faisais en testant.
+
+---
+
+### ⛔ LES OPTIONS VIVENT DANS LE PROLONGEMENT DU [close] — 22/09/2026
+
+**« Toutes les options qui s'affichent lorsque j'ajoute des mini-box
+dans une box, y compris [A new …], doivent être dans le prolongement du
+[Close]. »**
+
+Le lookup s'écrivait dans `bas`, une fente située **tout en bas de la
+boîte**, après TOUS les groupes. On appuyait sur `+ repulsion` dans le
+groupe TRIGGER, le bouton devenait « close » — et le champ « a new
+repulsion » apparaissait deux rangées plus bas, sous le groupe suivant,
+parfois sous [Delete]. *Le bouton disait « close » ici, et ce qu'il avait
+ouvert était là-bas.*
+
+`groupe(mot, contenu, sous)` prend un troisième argument : le lookup
+ouvert par le bouton **de ce groupe-là**. Il en devient le dernier
+enfant — mini-boîtes, [close], puis les options, dans la même colonne et
+au même bord gauche. Mesuré par `lot22.mjs` : 12 px dessous, 0 px de
+décalage horizontal, aux deux tailles d'écran.
+
+**La fente `bas` reste**, vide : elle servira à ce qui concerne la boîte
+ENTIÈRE et non un groupe. Ce qui concerne un groupe vit dans le groupe.
+
+---
+
+### ⛔ LE TÉLÉPHONE COUCHÉ REPLIE LE TOTEHM — 22/09/2026
+
+**« Retourner son téléphone a la même action que appuyer sur la croix.
+Évidemment pas possible d'ouvrir le Totehm en mode paysage. »**
+
+Le Totehm est un CARRÉ DEBOUT. Couché, la liste tient sur trois lignes,
+le rail mange la moitié de la hauteur, et le clavier recouvre le reste.
+Ce n'est pas une mise en page à corriger, c'est la forme de l'objet.
+
+**⚠️ TROIS CONDITIONS, ET IL LES FAUT TOUTES.**
+`(orientation:landscape)` **seul est vrai sur tous les ordinateurs** :
+la règle aurait interdit le Totehm à tout le monde sauf aux téléphones
+debout. On exige en plus une hauteur de téléphone couché (**≤ 540 px**)
+ET un **pointeur grossier** — un doigt. Une fenêtre écrasée sur un
+ordinateur garde sa souris, donc garde son Totehm.
+
+```js
+const PAYSAGE = window.matchMedia(
+  '(orientation:landscape) and (max-height:540px) and (pointer:coarse)');
+```
+
+**⚠️ LE VERROU VIT DANS `enter()`, PAS SEULEMENT EN CSS.** Masquer le
+bouton n'empêche ni le clavier, ni la porte [My Higher Self], ni un
+`#in` dans l'URL d'ouvrir le Totehm à l'horizontale. La classe
+`body.paysage` et le `return` de `enter()` sortent de la **même**
+condition : une source, deux effets.
+
+**⚠️ ET ON DIT POURQUOI.** « turn your phone upright » remplace
+[Open my Totehm]. Un bouton qui disparaît sans raison est un bouton
+cassé — règle du 19/09, elle vaut aussi quand c'est une orientation qui
+le retire.
+
+**⚠️ `matchMedia` NE SUFFIT PAS SUR IOS**, où la barre d'adresse change
+la hauteur sans changer l'orientation et où l'ordre des événements varie
+d'une version à l'autre. Les trois écoutes (`change`,
+`orientationchange`, `resize`) coûtent un test de booléen, et `fold()`
+sort immédiatement s'il n'y a rien d'ouvert. Et il faut **rejouer** la
+vérification après la branche `#in` : au premier passage `open` valait
+encore `false`, donc il n'y avait rien à replier.
+
+---
+
+### ⛔ LE PAVÉ REND AUX RONDS LEURS COULEURS — 22/09/2026
+
+**« Je t'ai dit les 3 couleurs. Tu m'as enlevé mon bleu navy au milieu.
+Et je ne veux pas de point blanc en zoom mais les points avec leurs
+couleurs respectives en zoom. »**
+
+Il avait raison sur les deux points, et les deux étaient la même faute :
+**j'avais réglé un problème de contraste en effaçant l'information.**
+J'avais éclairci les trois teintes de marque (`--navy` #333366 devenait
+#9a9ae8, une couleur qui n'est nulle part dans la charte) et peint le
+rond ACTIF en blanc.
+
+> **La règle : quand un objet de marque ne se lit pas sur son fond, c'est
+> le FOND qui recule. Jamais la marque qui se dilue.**
+
+Les ronds reprennent `--blue`, `--navy`, `--rep` exactement. Ce sont les
+**trois tuiles** qui descendent d'un cran, chacune gardant sa teinte
+d'époque : `#1d0b1a` (sagesse) · `#101020` (présent) · `#0d1122`
+(vision). C'est d'ailleurs ce qu'est la base d'une manette — un socle
+sombre qui ne dit rien et fait ressortir ce qui est posé dessus.
+
+**⚠️ ET LE CONTRASTE EST MESURÉ, SUR LES CINQ VUES.** `lot20.mjs`
+calcule le rapport de luminance de chacun des trois ronds contre sa
+tuile et échoue sous **1,6**. Deux fois déjà un rond avait disparu dans
+son fond (le navy dans le papier, le rouge-violet dans la sagesse) : une
+règle de lisibilité sans test se recasse au lot suivant.
+
+**⚠️ ET LE LISERÉ REPEIGNAIT LE ROND EN BLANC PAR LA BANDE.** Premier
+correctif : le rond gardait sa couleur, mais le liseré intérieur à .55
+et l'anneau à .34 couvraient la moitié haute d'un rond de 21 px — au
+pixel, le centre ressortait presque blanc. *Retirer le blanc déclaré ne
+sert à rien si le relief le remet.* Le relief se fait par l'OMBRE, qui
+ne repeint rien.
+
+**Le petit repère blanc du 21/09 est supprimé.** Il disait la couche à
+l'époque où les ronds disaient les ÉPOQUES ; depuis que les ronds SONT
+les couches, il répète ce qu'ils disent déjà — et il le dit en blanc.
+Une information, un seul endroit.
+
+---
+
+### ⛔ LA BANDE BASSE S'ARRÊTE AU-DESSUS DU CONTRÔLEUR — 22/09/2026
+
+**« Mets-le en bas au final, en faisant bien attention de son placement
+sur mobile et ordinateur… pas sur les trous noirs par exemple. »**
+
+Le contrôleur descend au **centre du bas** — et cette fois il y reste :
+le T tient le haut-gauche, la croix le haut-droite, le wordmark le
+bas-gauche ; au centre du bas il ne peut croiser aucun des trois, quelle
+que soit la largeur. Le **titre remonte en haut de la fenêtre**, avec son
+sous-titre (`my habits` / `what I repeat`).
+
+**⚠️ MAIS IL MORDAIT LA LISTE.** Mesuré au téléphone : le chevron du
+haut tombait 9 px à l'intérieur de la dernière boîte. C'est la règle du
+17/09 — « aucun curseur ne couvre la liste » — et elle ne se négocie
+pas : *on ne pose pas une commande sur ce qu'on est en train d'écrire.*
+`--band-b` **se déduit** maintenant du contrôleur au lieu d'être
+recopiée : `--joy-b + --joy-d + 36px + 10px` (le pavé, ses deux rangées
+de chevrons, et l'air). Changer la taille du pavé déplace la liste toute
+seule.
+
+**⚠️ ET SUR ORDINATEUR IL TOMBAIT SUR UN TROU.** Le carré porte une
+perforation à **25 %, 50 % et 75 %** de son bord bas — et le contrôleur
+est CENTRÉ, donc pile au-dessus de celle du milieu. Mesuré : le chevron
+du bas était en plein dedans. Une perforation mord de `--pad` vers
+l'intérieur, alors `--joy-b` vaut `--pad + 12px` sur ordinateur et le
+pavé se pose au-dessus de la bande. `croix21.mjs` le vérifie aux six
+largeurs : **51 px de dégagement**.
+
+**⚠️ ET `--band-b` NE REPREND PAS `--pad`, SOUS PEINE DE LE COMPTER
+DEUX FOIS.** `#joy` se mesure sur la FENÊTRE ; la liste, elle, vit DÉJÀ
+dans le carré renfoncé de `--pad` — mesuré, son conteneur s'arrête pile
+sur la ligne des perforations. Mettre `--pad` des deux côtés coûtait
+**40 px de liste pour rien**. C'est exactement le piège de la croix et
+du contrôleur, une troisième fois : *deux repères différents, deux
+calculs différents, et on ne recopie jamais l'un dans l'autre.*
+
+**⚠️ ET LE TITRE NE DOIT PAS VIVRE SOUS UN PARENT TRANSFORMÉ.** `#vnow`
+était un enfant de `#joy`, qui se centre par `translateX(-50%)`. **Un
+`transform` fait de l'élément le bloc conteneur de ses descendants
+`position:fixed`** : `top:22px` se résolvait sur le contrôleur, en bas de
+l'écran. Mesuré — le titre atterrissait à y=760 au lieu de 22. C'est le
+même piège que `#stage`, documenté trois fois dans ce fichier. **Un
+élément qui doit se placer sur la FENÊTRE ne vit jamais sous un parent
+transformé.**
+
+**Et le H ne clignote plus sur les répulsions.** Il disait « même lettre,
+même chose vue par son revers » — mais le membre lit un clignotement
+comme « tu es ici », et il était ici deux fois.
+
+---
+
 ### ⛔ JE M'ÉTAIS TROMPÉ D'AXE — 21/09/2026 bis
+
+> **⚠️ DEUX POINTS DE CETTE SECTION SONT DÉPASSÉS.** Les ronds ne sont
+> plus des tons éclaircis et le rond actif n'est plus blanc — voir
+> **⛔ LE PAVÉ REND AUX RONDS LEURS COULEURS · 22/09**, qui fait
+> autorité. Et le contrôleur n'est plus en haut sur ordinateur : il est
+> au centre du BAS sur les deux écrans. Le reste — l'axe, la tuile qui
+> porte l'époque — n'a pas bougé et reste la raison de fond.
 
 **« C'est une façon de mettre en avant les répulsions, habitudes et
 objectifs, tu comprends ? »**
@@ -653,21 +866,25 @@ défilement reste la même ». Elle se repeint au swipe horizontal :
 rouge-violet sombre sur la sagesse, navy sur le présent, bleu sombre sur
 la vision. **Deux axes, deux langages, aucun ne répète l'autre.**
 
-**⚠️ LES RONDS SONT DES TONS CLAIRS DE LEUR FAMILLE, PAS LES VALEURS
-PLEINES.** Mesuré deux fois : navy `#333366` sur un papier `#2b2b57` est
-invisible, et rouge-violet sur la tuile de la sagesse aussi. Chaque rond
-s'éclaircit juste assez pour se lire sur les TROIS tuiles en gardant sa
-teinte. **Et le rond ACTIF est blanc** — sur trois fonds différents,
-seule une valeur neutre est sûre de ressortir. C'est exactement ce que
-montre la maquette de Wah.
+~~**⚠️ LES RONDS SONT DES TONS CLAIRS DE LEUR FAMILLE, PAS LES VALEURS
+PLEINES.** Chaque rond s'éclaircit juste assez pour se lire sur les
+TROIS tuiles. **Et le rond ACTIF est blanc.**~~
+
+> **⚠️ FAUX, CORRIGÉ LE 22/09.** Le constat était juste — navy `#333366`
+> sur un papier `#2b2b57` est invisible, mesuré deux fois — mais j'en
+> tirais la mauvaise conclusion : j'éclaircissais la MARQUE. Ce sont les
+> tuiles qui reculent. Voir **⛔ LE PAVÉ REND AUX RONDS LEURS
+> COULEURS**, qui fait autorité.
 
 **Sur la sagesse et la vision, aucun rond ne s'allume.** L'axe vertical
 n'existe pas là-bas : il n'y a ni objectif ni répulsion. En allumer un
 serait un mensonge — règle posée le 18/09, elle tient toujours.
 
-**⚠️ LE CONTRÔLEUR REMONTE EN HAUT SUR ORDINATEUR.** Je l'avais descendu
-dans le coin bas-droit le 20/09 parce que je n'arrivais pas à le faire
-cohabiter avec la croix. Ce qui rendait ça difficile reste vrai :
+**⚠️ LE CONTRÔLEUR REMONTE EN HAUT SUR ORDINATEUR.** ~~Je l'avais
+descendu dans le coin bas-droit le 20/09.~~ **Dépassé le 22/09 : il est
+au centre du BAS, sur les deux écrans** — voir **⛔ LA BANDE BASSE
+S'ARRÊTE AU-DESSUS DU CONTRÔLEUR**. Ce qui rendait ça difficile reste
+vrai, et c'est pour ça que la section reste :
 `#fold-x` se résout sur `#stage`, `#joy` sur la FENÊTRE — **les deux
 coins ne se calculent pas dans le même repère, donc aucune formule ne
 les tiendra d'accord.**
@@ -700,21 +917,19 @@ rouge-violet aurait disparu pile au moment où il doit se voir. Les ronds
 portent la couleur ; le disque redevient ce qu'est la base d'une manette —
 un socle sombre qui ne dit rien et fait ressortir ce qui est posé dessus.
 
-**Le point vertical en plus.** Dans le présent il y a trois couches. Un
-petit repère blanc se pose SUR le disque, en haut dans les objectifs, en
-bas dans les répulsions, nulle part dans les habitudes — *un repère qui ne
-dit rien est un repère de trop.* Ça évite un deuxième objet sur le pavé.
+~~**Le point vertical en plus.** Un petit repère blanc se pose SUR le
+disque, en haut dans les objectifs, en bas dans les répulsions.~~
 
-**Le titre redescend SOUS le pavé, en 15 px.** À gauche (20/09) il
-partageait la ligne du pavé, donc sa largeur entrait dans celle du
-contrôleur : c'est ce qui m'a obligé à figer une colonne, et une colonne
-figée coupe « MY REPULSIONS ». Dessous, il est libre.
+> **⚠️ SUPPRIMÉ LE 22/09.** Il avait un sens quand les ronds portaient
+> les ÉPOQUES. Depuis que les ronds SONT les couches, il répète ce
+> qu'ils disent — et en blanc, la seule couleur exclue de ce pavé.
 
-**⚠️ `width:0` + `overflow:visible` SUR LA RANGÉE DU TITRE.** Le mot
-déborde des deux côtés, centré, et la grille ne le voit pas. C'est ce qui
-permet d'écrire gros **sans jamais déplacer le pavé** — le reproche fait
-deux fois. Et **pas d'ellipse** : couper « MY REPULSI… » serait pire que
-déborder.
+~~**Le titre redescend SOUS le pavé, en 15 px.**~~ **Dépassé le 22/09 :
+le titre est EN HAUT DE LA FENÊTRE, avec son sous-titre, et il a quitté
+la grille du contrôleur.** Le problème qu'on contenait avec `width:0` +
+`overflow:visible` — un mot long qui déplace le pavé — **disparaît** au
+lieu d'être contenu : les deux objets ne partagent plus rien. Voir
+**⛔ LA BANDE BASSE S'ARRÊTE AU-DESSUS DU CONTRÔLEUR**.
 
 ---
 
@@ -770,12 +985,17 @@ CARRÉS : la marque interdit le `border-radius`, et des blocs pleins posés
 les uns sur les autres sont déjà sa grammaire. On lit « Telegram » sans
 trahir le Totehm.
 
-**La porte vit DANS le Totehm** (`#door-bot`, à droite du wordmark), et
-c'est la seule exception à l'immersion du 19/09. La distinction n'est pas
-un arrangement : les trois autres portes mènent à un autre domaine, une
-boutique, un achat ; **celle-ci mène au miroir de ce qu'on est en train
-d'écrire.** Elle est cachée sur l'atterrissage, qui porte déjà la même
-porte dans `#bottom-doors`.
+**⚠️ LA PORTE EST RESSORTIE DU TOTEHM · 22/09/2026.** « Tu peux enlever
+le [My Higher Self] dans le Totehm version déployée. » J'en avais fait
+la seule exception à l'immersion du 19/09, au motif qu'elle mène au
+miroir de ce qu'on écrit et non dehors. Wah tranche l'inverse, et
+l'immersion redevient **sans exception** : dans le Totehm déplié, rien
+qui en sorte. `#door-bot` est supprimé — balisage ET câblage, dans le
+même geste : retirer un nœud en laissant son `.onclick` lève à
+l'évaluation du module, donc page blanche. La porte vit sur
+l'atterrissage seule, avec les deux autres (`#door-next` dans
+`#bottom-doors`), et c'est elle qui porte désormais
+`totehmbot_access()`.
 
 **⚠️ DEUX VERROUS, ET LE SERVEUR REND UN SEUL BOOLÉEN.**
 `totehmbot_access()` → `ouvert` = membre du Club **ET** Totehm complet.
