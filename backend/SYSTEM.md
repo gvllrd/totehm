@@ -1191,6 +1191,9 @@ Functions sont téléchargeables.
 
 | Date | Décision | Pourquoi |
 |---|---|---|
+| 21/09 | **La stack police est une règle de marque, et elle se MESURE** | Bebas Neue titres · Quantico boutons et saisies · Space Mono corps et métadonnées · Montserrat EXCLUSIVEMENT le slogan `[Get Higher]`, donc uniquement dans le SVG. Un test relit la `fontFamily` calculée de chaque rôle : une règle de marque sans test est une règle qu'on recassera |
+| 21/09 | **Des ronds EMPILÉS ne peuvent dire que l'axe EMPILÉ** | J'avais mis le temps (sagesse/habitudes/vision) à la verticale du pavé. La croix dit que l'horizontale est le temps et la verticale la profondeur : le pavé montre objectifs / habitudes / répulsions, et la TUILE porte l'époque. Deux axes, deux langages |
+| 21/09 | **Le contrôleur et la croix se gardent par un TEST, pas par une formule** | `#fold-x` se résout sur `#stage`, `#joy` sur la fenêtre : deux repères pour le même coin. `croix21.mjs` vérifie le dégagement à six largeurs — 23 px sur ordinateur, 14 au téléphone |
 | 21/09 | **Un identifiant ne contient jamais le séparateur de champs** | `tmp:1` dans un `data-edit="r:tmp:1"` relu par `split(':')` donnait `'tmp'` : la cible était introuvable et **chaque frappe d'une boîte neuve était jetée en silence**. `tmp-1`. C'était ça, « je ne peux pas rajouter de répulsion » |
 | 21/09 | **Le faux serveur doit pouvoir être LENT** (`window.__LAT_W`) | La prod met 300–600 ms sur une création, la frappe part à 700 ms : toute la fenêtre du bug vit entre les deux, et à 80 ms elle n'existait pas. Troisième fois qu'un stub trop gentil cache une panne |
 | 21/09 | **Une frappe attend le baptême au lieu d'être jetée** | `if(estProvisoire(id)) return;` était un abandon que rien ne reprogrammait. Et l'attente compte comme une écriture en vol, sinon le rechargement de l'arbre la double |

@@ -626,7 +626,64 @@ même si elles n'étaient pas la cause :
 
 ---
 
-### ⛔ LE PAVÉ REVIENT AU DISQUE — 21/09/2026
+### ⛔ JE M'ÉTAIS TROMPÉ D'AXE — 21/09/2026 bis
+
+**« C'est une façon de mettre en avant les répulsions, habitudes et
+objectifs, tu comprends ? »**
+
+J'avais mis sagesse / habitudes / vision dans les trois ronds empilés —
+donc **l'axe du TEMPS, à la verticale**. C'est faux, et c'est faux
+structurellement : la croix du produit dit que l'horizontale est le
+temps et que **la verticale est la profondeur**. Des ronds EMPILÉS ne
+peuvent dire que l'axe EMPILÉ.
+
+```
+        ●  objectifs    bleu clair    ce qui tire vers le haut
+        ●  habitudes    navy          le présent
+        ●  répulsions   rouge-violet  ce qui fait dérailler
+```
+
+**Et les couleurs ne se choisissent pas : on reprend celles des boîtes.**
+Un objectif est bleu clair dans la liste ET sur le contrôleur. Une
+palette inventée pour le pavé aurait fait un deuxième langage à tenir
+d'accord.
+
+**La TUILE porte l'époque** — c'est ce que Wah appelle « la logique de
+défilement reste la même ». Elle se repeint au swipe horizontal :
+rouge-violet sombre sur la sagesse, navy sur le présent, bleu sombre sur
+la vision. **Deux axes, deux langages, aucun ne répète l'autre.**
+
+**⚠️ LES RONDS SONT DES TONS CLAIRS DE LEUR FAMILLE, PAS LES VALEURS
+PLEINES.** Mesuré deux fois : navy `#333366` sur un papier `#2b2b57` est
+invisible, et rouge-violet sur la tuile de la sagesse aussi. Chaque rond
+s'éclaircit juste assez pour se lire sur les TROIS tuiles en gardant sa
+teinte. **Et le rond ACTIF est blanc** — sur trois fonds différents,
+seule une valeur neutre est sûre de ressortir. C'est exactement ce que
+montre la maquette de Wah.
+
+**Sur la sagesse et la vision, aucun rond ne s'allume.** L'axe vertical
+n'existe pas là-bas : il n'y a ni objectif ni répulsion. En allumer un
+serait un mensonge — règle posée le 18/09, elle tient toujours.
+
+**⚠️ LE CONTRÔLEUR REMONTE EN HAUT SUR ORDINATEUR.** Je l'avais descendu
+dans le coin bas-droit le 20/09 parce que je n'arrivais pas à le faire
+cohabiter avec la croix. Ce qui rendait ça difficile reste vrai :
+`#fold-x` se résout sur `#stage`, `#joy` sur la FENÊTRE — **les deux
+coins ne se calculent pas dans le même repère, donc aucune formule ne
+les tiendra d'accord.**
+
+La réponse n'est pas une formule, c'est une **marge mesurée gardée par un
+test** : `croix21.mjs` vérifie l'absence de chevauchement à 1280, 1440,
+1680, 1920, 390 et 430 px. Mesuré : 23 px de dégagement sur ordinateur,
+14 au téléphone. *Si un jour ça retouche, le test le dit avant Wah.*
+
+---
+
+### ⛔ LE PAVÉ REVIENT AU DISQUE — 21/09/2026 · AXE CORRIGÉ LE MÊME JOUR
+
+> **⚠️ LES TROIS RONDS N'ÉTAIENT PAS LES BONS.** Voir **⛔ JE M'ÉTAIS
+> TROMPÉ D'AXE**, qui fait autorité. Ce qui suit reste vrai sur le
+> retour du disque et sur le titre.
 
 **« Le design du joystick était très bien AVANT, sauf que je ne veux pas
 des deux points latéraux aux extrémités horizontales. Garde les trois
@@ -695,10 +752,23 @@ RÉGULATION (le moment de l'excuse). La synthèse retenue — **« je » pour
 les directives, le prénom pour la boucle de correction** — est à mesurer,
 pas à décréter.
 
-**La page le DIT.** Un bloc « what we don't claim » explique qu'on ne vend
-pas de la PNL et pourquoi. *L'honnêteté est un argument de vente, pas une
-concession* : elle est la seule chose qu'un concurrent qui promet monts et
-merveilles ne peut pas copier.
+**⚠️ LA PAGE A MAIGRI DE MOITIÉ · 21/09 bis.** « Trop longue : plus
+minimaliste, percutant, un brin mystérieux. » Trois blocs de mécanisme
+avec leurs citations, c'était un article de blog. Mesuré : 2 806 px de
+haut. Il reste **une conversation Telegram, une phrase qui dit ce qu'on
+fait, une ligne de preuve, le prix** — 1 738 px.
+
+Et le bloc « what we don't claim » est parti avec : **la page ne prononce
+plus le mot « PNL » du tout**, donc elle n'a plus rien à démentir. C'est
+plus court ET plus honnête — on ne se défend pas d'une accusation qu'on
+ne porte pas. La seule preuve gardée est celle des implementation
+intentions (94 tests, d = 0,65), parce qu'elle décrit exactement ce que
+le Totehm stocke déjà : une heure, un lieu, un geste.
+
+**Le format des exemples est celui d'une messagerie** — mais en blocs
+CARRÉS : la marque interdit le `border-radius`, et des blocs pleins posés
+les uns sur les autres sont déjà sa grammaire. On lit « Telegram » sans
+trahir le Totehm.
 
 **La porte vit DANS le Totehm** (`#door-bot`, à droite du wordmark), et
 c'est la seule exception à l'immersion du 19/09. La distinction n'est pas
@@ -2972,6 +3042,32 @@ facture mensuelle sans revenu en face. Le gratuit reste déterministe.
 ---
 
 ## Doctrine visuelle
+
+### ⛔ LA STACK POLICE — QUATRE FAMILLES, QUATRE RÔLES · 21/09/2026
+
+**Donnée par Wah, non négociable, et elle vaut sur les trois domaines.**
+
+| Police | Rôle |
+|---|---|
+| **Bebas Neue** | titres · noms des œuvres |
+| **Quantico** | **boutons et actions** — et les SAISIES du membre |
+| **Space Mono** | texte, labels, prix, navigation, métadonnées |
+| **Montserrat** | **EXCLUSIVEMENT `[Get Higher]`** |
+
+**⚠️ MONTSERRAT N'A DROIT QU'AU SLOGAN.** Et comme « Higher » est
+toujours un SVG (règle du 18/09), Montserrat ne doit apparaître dans
+**aucune balise** d'aucune page : uniquement dans le `<symbol>` du
+badge. La première version de la page TotehmBot l'utilisait pour
+l'accroche et le corps — deux règles cassées d'un coup, et c'est ce qui
+a motivé d'écrire ce tableau ici.
+
+**⚠️ QUANTICO EST LA POLICE DE L'ACTION, PAS DU CORPS.** Un bouton, un
+champ, ce que le membre tape. Un paragraphe en Quantico est une faute de
+grammaire visuelle — le corps est en Space Mono.
+
+**Ça se MESURE, pas ça se promet.** `bot21.mjs` relit la
+`fontFamily` calculée de chaque rôle et échoue si une famille déborde du
+sien. Une règle de marque sans test est une règle qu'on recassera.
 
 | | |
 |---|---|

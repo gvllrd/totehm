@@ -1,7 +1,7 @@
-# CLAUDE_CODE.md — LOT DU 21/09/2026
+# CLAUDE_CODE.md — LOT DU 21/09/2026 bis
 
-**Le séparateur dans l'identifiant, le pavé qui revient au disque, la
-porte du TotehmBot et sa page de vente.**
+**L'axe du pavé corrigé, le contrôleur qui remonte en haut, et la page de
+vente réécrite sur la stack police.**
 
 Le zip contient tout l'historique du repo. **Ne prends que les six
 fichiers listés ci-dessous.** Le reste est déjà chez toi.
@@ -30,9 +30,9 @@ le zip.
 ```bash
 cd ~/inbox
 grep -q "LE SEPARATEUR ETAIT DANS L IDENTIFIANT\|LE SÉPARATEUR ÉTAIT DANS L'IDENTIFIANT" com/totehm.html && echo "OK  totehm.html" || echo "VIEUX  totehm.html"
-grep -qi "What we don.t claim" com/club/totehmbot.html && echo "OK  page de vente" || echo "VIEUX  page de vente"
+grep -q "Bebas+Neue" com/club/totehmbot.html && echo "OK  page de vente" || echo "VIEUX  page de vente"
 grep -q "totehmbot_access" backend/supabase/migrations/20260921_la_porte_du_totehmbot.sql && echo "OK  migration" || echo "VIEUX  migration"
-grep -q "LE PAVÉ REVIENT AU DISQUE" CLAUDE.md && echo "OK  CLAUDE.md" || echo "VIEUX  CLAUDE.md"
+grep -q "JE M.ÉTAIS TROMPÉ D.AXE" CLAUDE.md && echo "OK  CLAUDE.md" || echo "VIEUX  CLAUDE.md"
 grep -q "totehmbot_access" backend/SYSTEM.md && echo "OK  SYSTEM.md" || echo "VIEUX  SYSTEM.md"
 ```
 
@@ -46,10 +46,20 @@ grep -c "tmp:'+(++TSEQ)" com/totehm.html
 c'est LA correction du lot.
 
 ```bash
-grep -c "joy-stack .o{\|joy-stack .r{" com/totehm.html
+grep -c "joy-stack .w{\|joy-stack .v{" com/totehm.html
 ```
 
-**Zéro attendu.** Le pavé n'a que trois ronds : `w`, `h`, `v`.
+**Zéro attendu.** Les trois ronds sont l'axe VERTICAL — `o`, `h`, `r` —
+et plus les époques. C'est la correction de fond du lot.
+
+```bash
+grep -c "font-family:'Montserrat\|font-family: 'Montserrat" com/club/totehmbot.html
+```
+
+**Zéro attendu.** Montserrat n'a droit qu'à `[Get Higher]`, c'est-à-dire
+au seul `font-family=` du `<symbol>` SVG — **jamais une règle CSS**. Une
+seule occurrence en feuille de style voudrait dire qu'elle a fui dans le
+corps de la page, ce qui était le cas de la première version.
 
 ---
 
@@ -89,17 +99,17 @@ git -C ~/totehm commit -m "base: la porte du TotehmBot — Club ET Totehm comple
 
 ```bash
 git -C ~/totehm add com/totehm.html
-git -C ~/totehm commit -m "totehm: le separateur etait dans l identifiant, et le pave revient au disque"
+git -C ~/totehm commit -m "totehm: le pave dit l axe VERTICAL, et le controleur remonte en haut"
 ```
 
 ```bash
 git -C ~/totehm add com/club/totehmbot.html
-git -C ~/totehm commit -m "club: la page de vente du TotehmBot, sur les mecanismes qui tiennent"
+git -C ~/totehm commit -m "club: la page de vente reecrite sur la stack police, moitie plus courte"
 ```
 
 ```bash
 git -C ~/totehm add CLAUDE.md backend/SYSTEM.md CLAUDE_CODE.md
-git -C ~/totehm commit -m "docs: le lot du 21/09, et pourquoi la page ne parle pas de PNL"
+git -C ~/totehm commit -m "docs: la stack police, et l axe que j avais pris a l envers"
 ```
 
 ```bash
