@@ -192,14 +192,16 @@ body.ro #door-bot{display:none!important}
    Sans le disque de fond il ne reste que trois ronds de 14 px : 58 px
    de haut, et il se range dans la bande du titre au lieu de la
    traverser. */
-/* Le pavé est de nouveau un disque de 62 px : la grille porte ses
-   mesures, il n'y a plus de jeton de largeur à régler par écran.
-   ⚠️ 56 px DU BORD, ET C'EST MESURÉ. `#fold-x` occupe les 50 premiers
+/* ⚠️ 56 px DU BORD, ET C'EST MESURÉ. `#fold-x` occupe les 50 premiers
    pixels du coin (10 px de marge + 40 px de côté). À 22 px le pavé
    repassait dessous — troisième fois. La croix est un repère fixe du
    produit : c'est au contrôleur de s'écarter, et de le faire avec de la
-   marge, pas au pixel. */
-#joy{top:16px;right:56px;left:auto}
+   marge, pas au pixel.
+   ⚠️ ET IL REMONTE ENCORE, ET IL MAIGRIT · 21/09 bis. « Sur mobile,
+   remonte-le un peu et réduis-le un peu. » La tuile passe de 62 à 52 px
+   et le haut de 16 à 8 : le contrôleur tient dans la bande du titre au
+   lieu de mordre sur la première boîte. */
+#joy{--joy-d:52px;top:8px;right:64px;left:auto}
 /* Les deux portes, à droite, à la même hauteur que le wordmark et dans
    la grammaire `.btn-sig` du reste du produit. */
 /* ⚠️ LES PORTES PASSENT À GAUCHE · 18/09/2026, parce que le wordmark
@@ -367,8 +369,8 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
    m'a fait deux fois. */
 #joy{position:fixed;z-index:33;
   display:grid;
-  grid-template-columns:20px 62px 20px;
-  grid-template-rows:20px 62px 20px auto;
+  grid-template-columns:18px var(--joy-d,60px) 18px;
+  grid-template-rows:18px var(--joy-d,60px) 18px auto;
   align-items:center;justify-items:center}
 #cur-h  {grid-area:1/2/2/3}
 #cur-g  {grid-area:2/1/3/2}
@@ -377,58 +379,78 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
 #cur-b  {grid-area:3/2/4/3}
 #vnow   {grid-area:4/1/5/4;margin-top:7px;width:0;overflow:visible}
 
-/* ══ LE PAVÉ — LE DISQUE, ET TROIS RONDS EMPILÉS · 21/09/2026 ══════
-   Wah : « le design du joystick était très bien AVANT, sauf que je ne
-   veux pas des deux points latéraux aux extrémités HORIZONTALES. Garde
-   les trois points verticaux mais avec les 3 couleurs. »
+/* ══ LE PAVÉ — LA TUILE, ET LES TROIS COUCHES · 21/09/2026 bis ═════
+   ⚠️ JE ME SUIS TROMPÉ D'AXE, ET C'EST LA CORRECTION DE FOND.
+   J'avais mis sagesse / habitudes / vision dans les trois ronds — donc
+   l'axe du TEMPS, à la verticale. Wah : « c'est une façon de mettre en
+   avant les répulsions, habitudes et objectifs. »
 
-   Donc : le DISQUE revient (c'est lui qui faisait la manette), les deux
-   ronds latéraux partent, et les trois ronds empilés portent les trois
-   couleurs de la marque — sagesse en haut, habitudes au milieu, vision
-   en bas. Le Totehm, vu de profil.
+   Évidemment : des ronds EMPILÉS ne peuvent dire que l'axe EMPILÉ. La
+   croix du produit est explicite — l'horizontale est le temps, la
+   VERTICALE est la profondeur : ce qui tire l'habitude vers le haut
+   (l'objectif) et ce qui la tire vers le bas (la répulsion). Mettre le
+   temps dans une colonne, c'était dessiner le produit de travers.
 
-   ⚠️ LE DISQUE NE CHANGE PLUS DE COULEUR, ET C'EST OBLIGÉ. Avant, il
-   prenait la couleur de l'époque : le rond rouge-violet sur un disque
-   rouge-violet aurait disparu pile au moment où il doit se voir. Les
-   trois ronds portent maintenant la couleur ; le disque redevient ce
-   qu'est la base d'une manette — un socle sombre, neutre, qui ne dit
-   rien et fait ressortir ce qui est posé dessus. Une information, un
-   seul endroit. */
-#joy-box{width:62px;height:62px;position:relative;border-radius:50%;
-  background:#1c1c38;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.07), 0 1px 3px rgba(0,0,0,.4)}
+       objectifs    bleu clair   ↑ ce qui tire vers le haut
+       habitudes    navy           le présent
+       répulsions   rouge-violet ↓ ce qui fait dérailler
 
-/* Les trois ronds, empilés sur l'axe vertical du disque. Leur place est
-   FIXE — c'est le relief qui bouge, pas la géométrie. */
+   Et les trois couleurs sont celles que le modèle de données leur donne
+   déjà (CLAUDE.md § « Le papier ne change pas ») : on ne choisit pas une
+   palette pour le pavé, on reprend celle des boîtes. Un objectif est
+   bleu clair dans la liste ET sur le contrôleur.
+
+   ⚠️ LA TUILE, ELLE, PORTE L'ÉPOQUE — et c'est ce que Wah appelle « la
+   logique de défilement reste la même ». Elle change au swipe
+   HORIZONTAL : rouge-violet sombre sur la sagesse, navy sur le présent,
+   bleu sombre sur la vision. Deux axes, deux langages, aucun des deux ne
+   répète l'autre. */
+#joy-box{width:var(--joy-d,60px);height:var(--joy-d,60px);position:relative;
+  border-radius:50%;background:var(--joy-fond,var(--paper));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 1px 4px rgba(0,0,0,.45);
+  transition:background-color .42s ease}
+
+/* Les trois ronds, empilés. Leur place est FIXE — c'est le relief qui
+   bouge, pas la géométrie. */
 #joy-stack{position:absolute;inset:0}
-#joy-stack i{--d:14px;position:absolute;left:50%;display:block;
+#joy-stack i{--d:13px;position:absolute;left:50%;display:block;
   width:var(--d);height:var(--d);
   margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
   border-radius:50%;background:var(--c);
-  transform:scale(.84);opacity:.5;
+  transform:scale(.8);opacity:.62;
   transition:transform .38s cubic-bezier(.22,.9,.3,1),
              opacity .38s ease, box-shadow .38s ease}
-/* ⚠️ HAUT = SAGESSE (le passé), BAS = VISION (l'à-venir). C'est l'ordre
-   du Totehm empilé de `totehm.com`, pas un choix graphique. */
-#joy-stack .w{top:23%;--c:var(--rep)}
-#joy-stack .h{top:50%;--c:var(--navy)}
-#joy-stack .v{top:77%;--c:#5878c8}
+/* ⚠️ HAUT = OBJECTIFS, BAS = RÉPULSIONS — le même sens que les chevrons
+   et que `CROIX`. Un pavé qui inverserait le haut et le bas ferait
+   mentir le geste.
+   ⚠️ ET CE SONT DES TONS CLAIRS DES TROIS FAMILLES, pas les valeurs
+   pleines. Mesuré deux fois : navy #333366 sur un papier #2b2b57 est
+   invisible, et rouge-violet sur la tuile de la sagesse aussi. Chaque
+   rond s'éclaircit donc juste assez pour se lire sur les TROIS tuiles,
+   en gardant sa teinte — on reconnaît la famille, on voit le rond. */
+#joy-stack .o{top:23%;--c:#6f8fe0}   /* objectifs  — bleu clair éclairci */
+#joy-stack .h{top:50%;--c:#9a9ae8}   /* habitudes  — navy éclairci       */
+#joy-stack .r{top:77%;--c:#c96fb0}   /* répulsions — rouge-violet éclairci */
 
 /* ══ LE RELIEF ══════════════════════════════════════════════════════
-   Le rond de l'époque où l'on est se soulève : il grossit, il retrouve
-   sa couleur pleine, et une ombre portée le décolle du disque. Trois
-   effets pour un seul geste — c'est ce qui le fait lire comme un VOLUME
-   et pas comme une tache plus claire. Le liseré clair sur le haut joue
-   la lumière rasante ; sans lui, la sphère reste un disque.
-   ⚠️ LE NAVY EST LE VRAI NAVY (#333366). `--sky` s'était glissé dans la
-   pile — un bleu clair hors charte. La couleur du présent ne se remplace
-   pas ; le bleu clair est celui de la VISION, et c'est le seul endroit
-   où il a le droit d'être. */
+   La couche où l'on est se soulève : elle grossit, passe au blanc, et
+   une ombre portée la décolle de la tuile. Trois effets pour un seul
+   geste — c'est ce qui la fait lire comme un VOLUME et pas comme une
+   tache plus claire. Le liseré clair sur le haut joue la lumière
+   rasante ; sans lui, la sphère reste un disque.
+   ⚠️ LE ROND ACTIF EST BLANC, pas « sa couleur en plus vif ». Sur trois
+   fonds différents, seule une valeur neutre est sûre de ressortir —
+   c'est exactement ce que montre la maquette de Wah. */
 #joy-stack i.on{
-  transform:scale(1.5);
-  opacity:1;
-  box-shadow:0 2px 6px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.55);
+  transform:scale(1.55);
+  opacity:1;background:#fff;
+  box-shadow:0 2px 6px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.9);
   z-index:2}
+/* Sur la sagesse et la vision, l'axe vertical N'EXISTE PAS : il n'y a ni
+   objectif ni répulsion là-bas. Les trois ronds reculent ensemble et
+   c'est la tuile qui dit où l'on est. En allumer un serait un mensonge —
+   règle déjà posée le 18/09, et elle tient toujours. */
+#joy-box.hors i{opacity:.3}
 
 /* ⚠️ LE POINT VERTICAL EN PLUS — « habits (avec le point vertical en
    plus) ». Dans le présent il y a trois couches : objectifs au-dessus,
@@ -2076,25 +2098,27 @@ body.gate.entered #filter-badge{
      le T : le rail est le logo, rien ne passe dessus. */
   #wordmark{bottom:26px;left:calc(var(--rl) + var(--rw) + 16px);top:auto;right:auto}
   #door-bot{bottom:28px;left:calc(var(--rl) + var(--rw) + 16px + 96px)}
-  /* ⚠️ LE JOYSTICK CHANGE DE COIN · 20/09/2026 — ET C'EST LA VRAIE
-     RÉPONSE, PAS UN RÉGLAGE DE PLUS.
-     Deuxième tentative de les écarter dans le même coin, deuxième
-     chevauchement mesuré (27 px). La cause est structurelle : `#fold-x`
-     se résout sur `#stage` (qui porte un transform, donc contient ses
-     descendants `fixed`) et `#joy` se résout sur la FENÊTRE, parce que
-     dedans il serait rogné. Deux repères différents pour le même coin :
-     aucune arithmétique ne les tiendra d'accord à toutes les tailles
-     d'écran. J'ai essayé deux fois, ça suffit.
+  /* ⚠️ LE JOYSTICK REMONTE EN HAUT · 21/09 bis — DEMANDE EXPLICITE.
+     Je l'avais descendu dans le coin bas-droit le 20/09 parce que je
+     n'arrivais pas à le faire cohabiter avec la croix en haut. Wah le
+     veut en haut : « sur ordinateur, remets le joystick en haut et non
+     en bas. »
 
-     Le wordmark ayant libéré le bas-droit en passant à gauche, chaque
-     objet prend un coin et il n'y a plus rien à calculer :
-       haut-gauche  le T          haut-droite  la croix
-       bas-gauche   le wordmark   bas-droite   le contrôleur
-     Quatre coins, quatre objets. Une règle qu'on n'a pas besoin de
-     re-mesurer au prochain changement de largeur. */
-  #joy{top:auto;bottom:calc(50% - var(--stage)/2 + 26px);
-       right:calc(50% - var(--stage)/2 + 18px)}
-  body.ro #joy{top:auto}
+     Ce qui rendait ça difficile reste vrai et il faut l'écrire :
+     `#fold-x` se résout sur `#stage` (qui porte un `transform`, donc
+     contient ses descendants `fixed`) et `#joy` se résout sur la
+     FENÊTRE, parce que dedans il serait rogné. Les deux coins ne se
+     calculent pas dans le même repère.
+
+     La réponse n'est donc pas une formule, c'est une MARGE MESURÉE et un
+     test qui la garde : `croix21.mjs` vérifie l'absence de chevauchement
+     à 1280, 1440 et 1920 px. Si un jour ça retouche, le test le dit
+     avant Wah. */
+  #joy{--joy-d:60px;
+       top:calc(50% - var(--stage)/2 + 14px);
+       right:calc(50% - var(--stage)/2 + 112px);
+       bottom:auto}
+  body.ro #joy{top:calc(50% - var(--stage)/2 + 14px + var(--ro-h))}
   body.ro #bigT{top:calc(22px + var(--ro-h))}
 
   /* ══ LES QUATRE CURSEURS SE POSENT SUR LES QUATRE CÔTÉS DU CARRÉ ═══
@@ -2660,13 +2684,13 @@ body.gate.entered #filter-badge{
   <button class="cur" id="cur-g" type="button">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
   <div id="joy-box" aria-hidden="true">
-    <!-- ⚠️ TROIS RONDS, ET CE SONT LES TROIS COULEURS DE LA MARQUE
-         · 20/09/2026. Rouge-violet le passé, navy le présent, bleu clair
-         l'à-venir. Les cinq ronds blancs d'hier dessinaient le PLAN du
-         produit ; un contrôleur montre où l'on est, pas comment c'est
-         fait. La couche (objectif / habitude / répulsion) se lit sur les
-         chevrons et dans le titre — une information, un seul endroit. -->
-    <div id="joy-stack"><i class="w"></i><i class="h"></i><i class="v"></i></div>
+    <!-- ⚠️ TROIS RONDS EMPILÉS = L'AXE EMPILÉ · 21/09/2026 bis.
+         Objectifs (bleu clair) · habitudes (navy) · répulsions
+         (rouge-violet), de haut en bas, dans le même sens que les
+         chevrons. J'avais d'abord mis le TEMPS là-dedans — sagesse,
+         habitudes, vision — ce qui revenait à dessiner l'horizontale à
+         la verticale. La tuile, elle, porte l'époque. -->
+    <div id="joy-stack"><i class="o"></i><i class="h"></i><i class="r"></i></div>
   </div>
   <button class="cur" id="cur-d" type="button">
     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
@@ -4100,25 +4124,27 @@ function paintZone(){
        titre que les habitudes : ils allument le navy. Ce qui les
        distingue est écrit en toutes lettres à gauche, et montré par les
        chevrons haut et bas. */
-    const EPOQUE={wisdom:'w', visions:'v',
-                  habits:'h', objectives:'h', repulsions:'h'};
-    const ici=EPOQUE[view]||'h';
-    ['w','h','v'].forEach(k=>{
+    /* ⚠️ DEUX AXES, DEUX LANGAGES, ET AUCUN NE RÉPÈTE L'AUTRE.
+       La TUILE porte l'époque (le swipe horizontal la repeint) ; les
+       trois RONDS portent la couche (le swipe vertical allume l'un
+       d'eux). C'est ce que Wah appelle « la logique de défilement reste
+       la même » : on n'a pas changé le geste, on a remis chaque
+       information sur son axe. */
+    jy.style.setProperty('--joy-fond',
+      view==='wisdom'  ? '#4a2044'
+    : view==='visions' ? '#25325f'
+    :                    '#2b2b57');
+
+    /* La couche où l'on se trouve. Sur la sagesse et la vision il n'y en
+       a pas : l'axe vertical n'existe pas là-bas. */
+    const COUCHE={objectives:'o', habits:'h', repulsions:'r'};
+    const ici=COUCHE[view]||null;
+    ['o','h','r'].forEach(k=>{
       const e=jy.querySelector('#joy-stack .'+k); if(!e)return;
       e.className = k + (k===ici ? ' on' : '');
     });
-    /* ⚠️ LE POINT VERTICAL EN PLUS. Dans le présent il y a trois
-       couches ; le petit repère blanc dit LAQUELLE, sans ajouter un
-       deuxième objet au pavé. Il ne paraît que dans les deux vues
-       verticales — sur les habitudes elles-mêmes, il n'y a rien à
-       préciser, et un repère qui ne dit rien est un repère de trop. */
     const bx=$('joy-box');
-    if(bx){ bx.className = view==='objectives' ? 'couche-h'
-                        : view==='repulsions' ? 'couche-b' : ''; }
-    /* ⚠️ PLUS DE `--joy-fond`. Le disque de fond portait la couleur de
-       l'époque EN PLUS des ronds : le même message deux fois, et c'est
-       lui qui faisait la masse de 62 px que Wah trouvait trop grosse au
-       téléphone. Les trois ronds disent tout. */
+    if(bx) bx.className = ici ? '' : 'hors';
   }
   /* ⚠️ ON N'EN CACHE AUCUN. Un curseur sans voisin garde sa case et
      s'éteint (`.mort`) : c'est lui qui fait le CADRE autour du carré, et
