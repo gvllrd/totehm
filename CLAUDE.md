@@ -626,6 +626,144 @@ même si elles n'étaient pas la cause :
 
 ---
 
+### ⛔ L'INDEX UNIQUE INTERDISAIT LA DEUXIÈME RÉPULSION — 22/09/2026 ter
+
+**LA CAUSE, APRÈS CINQ SIGNALEMENTS. Et elle tenait en une ligne de
+DDL que je n'avais jamais regardée.**
+
+```sql
+repulsions_one_active : UNIQUE (user_id, habit_text) WHERE active
+```
+
+`repulsion_create` insère TOUJOURS `habit_text = ''` — les cinq objets
+naissent vides puis s'écrivent dedans (création optimiste, 17/09). Donc :
+
+- la **première** répulsion créée passe : `('', user)` est libre ;
+- **la DEUXIÈME viole l'index**, la fonction lève, la RPC rend une
+  erreur, la page annule la boîte. *« Je ne peux pas ajouter de
+  répulsion. »*
+
+Mesuré sur le compte de Wah : une ligne active portait déjà
+`habit_text = ''` (ma propre ligne de test du 21/09). **À partir de cet
+instant, plus aucune création ne pouvait aboutir.** Contre-épreuve : les
+deux `repulsion_create` d'affilée, le premier passe, le second lève.
+Après correction, cinq d'affilée passent.
+
+**Le correctif** : l'index protège une vraie règle métier — une seule
+répulsion ACTIVE par habitude. Mais `habit_text = ''` **ne désigne
+aucune habitude**, donc la règle ne s'y applique pas :
+
+```sql
+create unique index repulsions_one_active
+  on public.repulsions (user_id, habit_text)
+  where active and btrim(habit_text) <> '';
+```
+
+C'est le MÊME défaut conceptuel que le trigger corrigé le matin même :
+*un texte d'habitude vide n'est pas une habitude, et rien ne doit le
+traiter comme telle.* Deux bugs, une seule idée fausse, écrite à deux
+endroits à deux moments différents.
+
+> **⚠️ LA RÈGLE, ET C'EST UN TROU DANS MA PROPRE RÈGLE DU 17/09 :
+> « lire les contraintes de la table » NE SUFFIT PAS.** Je lisais
+> `pg_constraint` — les `check`, les clés. **Un index unique n'y est
+> pas** : il vit dans `pg_index`. Cinq lots perdus dans ce trou. La
+> requête complète, à passer avant d'écrire un test sur une table :
+>
+> ```sql
+> select conname, pg_get_constraintdef(oid) from pg_constraint
+>  where conrelid='public.<t>'::regclass;
+> select indexrelid::regclass, pg_get_indexdef(indexrelid) from pg_index
+>  where indrelid='public.<t>'::regclass and (indisunique or indpred is not null);
+> select tgname, pg_get_triggerdef(oid) from pg_trigger
+>  where tgrelid='public.<t>'::regclass and not tgisinternal;
+> ```
+>
+> **Un index unique partiel est une contrainte qui ne se déclare pas
+> comme telle. Un trigger aussi.** Le faux serveur doit reproduire les
+> trois.
+
+**⚠️ ET LE DIAGNOSTIC A ÉCHOUÉ QUATRE FOIS POUR UNE RAISON DE MÉTHODE.**
+Trois fois j'ai trouvé un vrai bug sur ce chemin, donc trois fois j'ai
+cru avoir fini. *Un symptôme qui revient à l'identique après une
+correction vérifiée n'est pas une rechute : c'est une SECONDE cause.*
+Le réflexe juste, dès le deuxième signalement, est de reproduire le
+geste **contre la vraie base**, pas contre un faux serveur — c'est ce
+qui a tranché en dix minutes le cinquième jour.
+
+---
+
+### ⛔ LE PAVÉ ET LE BALAYAGE LISAIENT LE MÊME GESTE — 22/09/2026 ter
+
+**« Quand je vais à gauche ça reste dans HABIT et quand je vais à droite
+ça reste dans Habit. »** Symptôme exact, cause exacte.
+
+Deux gestionnaires lisaient le même glissement, **et ils ne le lisent
+pas dans le même sens** :
+
+| qui | ce qu'il lit | tirer vers la gauche |
+|---|---|---|
+| le manche de la manette | un déplacement de **DOIGT** | va à gauche (sagesse) |
+| le balayage horizontal | un déplacement de **CONTENU** | montre ce qui est à **DROITE** |
+
+Les deux sont justes — la règle du 15/09 sur le sens du balayage tient.
+Mais au-delà de **32 px** de traction, les deux partaient : la manette
+allait sur la sagesse, puis le balayage lisait « à droite » et la
+sagesse renvoie sur les habitudes. **On revenait à son point de départ.**
+Symétriquement à droite, par la vision.
+
+> **La règle : un geste né sur un contrôle appartient à ce contrôle.**
+> `#joy` est en tête de la liste d'exclusion du balayage, et la molette
+> globale ignore ce qui naît dans le pavé.
+
+**⚠️ ET MON TEST TIRAIT 26 px — JUSTE SOUS LE SEUIL DE 32.** Toute la
+fenêtre du bug vivait au-dessus, et mes quatre directions passaient au
+vert. *Un test qui reste en deçà du seuil d'un AUTRE gestionnaire ne
+prouve rien sur leur cohabitation.* `joyfort.mjs` tire à 40, 70 et
+120 px, au doigt et à la souris. Contre-épreuve faite : sans le
+correctif, 8 assertions tombent, toutes avec `obtenu=habits`.
+
+**⚠️ ET IL FAUT `screenX` DANS UN FAUX `Touch`.** Le balayage lit
+`changedTouches[0].screenX` ; un `Touch` construit sans lui rend 0, le
+delta vaut toujours zéro, et le conflit ne se déclenche jamais. Un faux
+événement incomplet est un faux serveur de plus.
+
+---
+
+### ⛔ AUCUNE BORDURE, MÊME DÉGUISÉE EN OMBRE — 22/09/2026 ter
+
+**« Je t'ai pas demandé de bordure sur le joystick, juste le changement
+de couleur de son background avec nos 3 couleurs. »**
+
+J'avais posé un anneau intérieur de la couleur de la vue autour d'un
+fond sombre, en me disant qu'un `box-shadow: inset 0 0 0 3px` n'est pas
+techniquement une bordure. **Ça se voit comme une bordure, donc c'en est
+une.** La règle de marque n'en admet aucune, et elle ne se contourne pas
+par la technique employée pour la dessiner.
+
+**Le fond EST la couleur.** Navy, bleu clair, rouge-violet, pleins.
+Les deux ronds de destination se détachent par une **ombre portée** —
+qui, elle, ne dessine rien autour de l'objet.
+
+**⚠️ ET LE RATIO DE LUMINANCE EST LE MAUVAIS OUTIL SUR DES APLATS DE
+MARQUE.** Rouge-violet sur bleu clair donne **1,04** — et se voit
+parfaitement : ce sont deux teintes opposées, et la luminance ne mesure
+pas la teinte. On mesure donc une **distance de couleur** pondérée, avec
+un plancher à 60. Navy et bleu clair sont à 77 : ce sont les deux bleus
+de la charte, et c'est voulu. *Exiger davantage reviendrait à demander à
+la marque de changer ses couleurs pour satisfaire un test.* Ce qu'on
+interdit, c'est le rond qui DISPARAÎT — distance proche de zéro, navy
+sur navy, le cas mesuré deux fois.
+
+**La barre « order by importance » remonte en haut.** Je l'avais
+descendue en lisant « la barre passe en-dessous comme le TOTEHM.svg sur
+mobile » : Wah parlait de la piste du rail, pas de cette phrase. Elle
+reprend sa place sous la bande haute — et elle y tient, parce que **le
+titre s'est décalé à droite** en même temps (« légèrement abaissé et à
+droite »).
+
+---
+
 ### ⛔ LA MARQUE NE BOUGE PAS QUAND LE CONTENU S'ÉLARGIT — 22/09/2026 bis
 
 **« Quand on appuie sur l'icône classement, PAS besoin de faire bouger
