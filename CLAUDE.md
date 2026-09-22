@@ -626,6 +626,208 @@ même si elles n'étaient pas la cause :
 
 ---
 
+### ⛔ LA MARQUE NE BOUGE PAS QUAND LE CONTENU S'ÉLARGIT — 22/09/2026 bis
+
+**« Quand on appuie sur l'icône classement, PAS besoin de faire bouger
+le T.svg. La barre passe en-dessous comme le TOTEHM.svg sur mobile. »**
+
+`body.ordering` fait passer `--rw` (la largeur du rail) de 18 à 34 px,
+pour que le rang tienne dans le rail. Or `#bigT` et `#wordmark` se
+posaient sur `--rl + --rw` : **la marque sautait de 26 px à chaque
+entrée en mode classement.**
+
+Deux jetons, désormais, et ils ne disent pas la même chose :
+
+| jeton | qui s'y accroche |
+|---|---|
+| `--rw` | le rail, les boîtes, la piste de classement — **ils doivent s'élargir** |
+| `--rw0` | le T et le wordmark — **ils ne doivent pas bouger** |
+
+> **La marque est un repère fixe. C'est au contenu de s'écarter, jamais
+> à elle.** (Même raison qu'au 18/09 pour la croix face au contrôleur.)
+
+**⚠️ ET IL FALLAIT LE CORRIGER À DEUX ENDROITS.** La règle générale était
+passée à `--rw0` ; le bloc ordinateur redéclarait `#bigT{left:…--rw…}`
+et **gagnait par la cascade**. Mesuré : le T sautait encore de 12 px, sur
+ordinateur seulement. *Un jeton qu'on renomme se renomme partout — un
+`grep`, pas une relecture.*
+
+**La barre de classement descend.** Elle était en haut, sous la croix,
+là où le titre de la vue vient de monter. Elle se pose maintenant dans
+la bande libre du bas, **entre la liste et le contrôleur** — et la liste
+recule de 22 px pour lui faire place, uniquement en mode classement.
+*Entre le bas de la liste et le haut du contrôleur il n'y a que dix
+pixels : il faut les prendre, pas s'y glisser.*
+
+**⚠️ ET SUR ORDINATEUR ELLE SE RÉSOLVAIT SUR `#stage`.** `#stage` porte
+un `transform`, il est donc le bloc conteneur de ses descendants
+`position:fixed` : `bottom:26px` visait le bas du CARRÉ — c'est-à-dire
+exactement le contrôleur. Mesuré : 195 px du bas de l'écran, et un
+chevauchement. **Quatrième fois que ce piège coûte une passe** (les
+overlays, `#vnow` sous `#joy`, la croix, et maintenant la barre).
+
+---
+
+### ⛔ LES TITRES RENTRENT DANS LE TOTEHM — 22/09/2026 bis
+
+**« Les titres et sous-titre dans le totehm sur ordinateur, et en plus
+grand pour version ordi et mobile. »**
+
+Le titre était à 22 px du haut de la FENÊTRE : sur ordinateur, ça le
+posait sur le noir, **au-dessus** du carré — à côté du produit, pas
+dedans. Il descend dans le carré, sous la bande de perforations, entre
+le T (haut-gauche) et la croix (haut-droite) ; même calcul que le
+contrôleur, en miroir, depuis les mêmes jetons (`--pad`).
+
+Au téléphone il n'y a pas de carré — l'écran EST le carré — donc la
+règle générale (22 px) reste la bonne.
+
+Et les deux lignes grossissent : **19 px** pour le nom (au lieu de 15),
+**11 px** pour le sous-titre (au lieu de 8).
+
+---
+
+### ⛔ LE CURSEUR PORTE LES TROIS COULEURS, TOUJOURS — 22/09/2026 bis
+
+**« Je t'ai déjà demandé 100 fois à ce que dans le curseur ce soit
+TOUJOURS les 3 couleurs. Dans la vue WISDOM c'est total rouge-violet,
+dans la vue Habit c'est le bleu navy avec le point bleu clair pour
+accéder aux objectifs et le point rouge pour les répulsions, et quand
+c'est la vue Objective le curseur devient bleu clair. »**
+
+J'avais mis l'ÉPOQUE sur la tuile — passé / présent / futur. C'est un
+QUATRIÈME langage visuel, et la marque n'a que trois couleurs.
+
+**La tuile dit LA VUE, dans sa propre couleur :**
+
+| la vue | la tuile |
+|---|---|
+| habitudes | navy |
+| objectifs · vision | bleu clair |
+| répulsions · sagesse | rouge-violet |
+
+**⚠️ ET LE ROND DE LA VUE COURANTE S'EFFACE.** C'est la clé, et c'est ce
+que Wah décrit sans le nommer : il cite **deux** points, jamais trois.
+Le troisième — celui de la vue où l'on est — n'a rien à dire, **la tuile
+le dit déjà, et en grand**. Ce qui reste allumé, ce sont les
+DESTINATIONS : où je peux aller d'ici, chacune dans sa couleur pleine.
+
+*Et ça règle d'un coup le problème qui m'a coûté trois lots :* navy sur
+navy est invisible, donc j'éclaircissais le navy, donc Wah me reprenait.
+**Le rond qui posait problème n'avait simplement pas lieu d'exister.**
+
+> **La règle : quand un objet de marque ne se lit pas sur son fond,
+> c'est le FOND qui recule — ou l'objet qui n'avait rien à dire. Jamais
+> la marque qui se dilue.**
+
+**⚠️ LE PLANCHER DES TUILES EST FIXÉ PAR LE NAVY.** C'est la plus sombre
+des trois couleurs : une tuile lisible pour le bleu clair et le
+rouge-violet peut très bien effacer le navy. Première valeur pour les
+objectifs, `#1f2a52` : le rond navy dessus tombait à **1,20** de
+contraste — invisible. `lot23.mjs` mesure les trois ronds sur les cinq
+tuiles et refuse en dessous de **1,40**.
+
+**⚠️ ET C'EST UNE MANETTE, PAS UN BOUTON.** « Les scroll doivent aussi
+fonctionner DANS la partie curseur. Il y a les flèches, le joystick
+intérieur (ce que tu dois rajouter) et enfin ce que l'on a déjà. »
+Trois moyens, et **ils mènent tous à `versVoisin`** — la table `CROIX`,
+une seule. (Une seconde table finit toujours par dire autre chose : déjà
+vu le 19/09 avec `AXE`.)
+
+1. **Les chevrons** — ils existaient, ils ne bougent pas.
+2. **Le manche** — on l'attrape et on le tire, borné à 15 px. Au-delà de
+   9 px dans une direction **où l'on peut aller**, le chevron de ce
+   côté s'allume : *on voit sa destination avant de lâcher*, et on peut
+   revenir au centre sans rien déclencher.
+3. **La molette sur le pavé** — elle navigue directement, **sans la
+   condition « au bord de la liste »**. Cette condition existe parce que
+   sur la LISTE, défiler et changer de vue sont le même geste (règle du
+   17/09). Sur le pavé il n'y a rien à faire défiler : il n'y a rien à
+   départager.
+
+**⚠️ `touch-action:none` SUR LE SOCLE**, et Pointer Events : règle du
+projet, dès qu'un geste porte une fonction produit on coupe le natif et
+on conduit à la main, même code pour le doigt et la souris.
+
+**⚠️ ET L'ÉTAT DU GESTE SE POSE SUR `#joy`, PAS SUR LA TUILE.** Le
+combinateur `~` ne regarde qu'EN AVANT, et `#cur-g` PRÉCÈDE `#joy-box`
+dans le balisage : la règle n'aurait allumé que deux chevrons sur
+quatre, et seulement par chance.
+
+---
+
+### ⛔ QUATRE FOIS LE MÊME SIGNALEMENT — ET LA VRAIE LEÇON — 22/09/2026 bis
+
+**« Encore une fois je ne peux pas ajouter de répulsion. Je veux que tu
+vérifies toute la logique. »** Quatrième fois. Trois fois j'avais trouvé
+un bug RÉEL — la contrainte `wisdom`, le séparateur dans l'identifiant,
+la touche Entrée — corrigé, testé, déployé. Et le signalement revenait,
+identique.
+
+**La quatrième fois, j'ai changé de méthode, et c'est elle qu'il faut
+garder.** Au lieu de chercher un quatrième bug dans le code, j'ai
+mesuré, dans cet ordre :
+
+| ce que j'ai vérifié | comment | résultat |
+|---|---|---|
+| les RPC existent | `pg_proc` vs `grep rpc(` du front | les 37 sont là |
+| les droits | `has_function_privilege` | bons — mais **3 fonctions ouvertes à `anon`** |
+| les contraintes | `pg_constraint` | aucune ne bloque |
+| **ses données** | `select … from repulsions where user_id=…` | **19 lignes, 5 actives** |
+| ce que le serveur lui rend | `my_trips()` sous `set local role` | 5 répulsions, dont une avec `hs:[""]` |
+| la version déployée | l'API Vercel | **à jour, son dernier lot est en ligne** |
+| le geste, sur SES données | ses données chargées dans le faux serveur | **tout passe** |
+
+**Conclusion : la création de répulsions FONCTIONNE.** Sa dernière
+répulsion a bien été écrite en base, avec son texte, ses liens et tout.
+
+> **⚠️ LA RÈGLE QUI EN SORT, ET ELLE VAUT POUR TOUT SIGNALEMENT
+> RÉPÉTÉ : quand un bug revient après une correction VÉRIFIÉE, la
+> question n'est plus « où est le bug » mais « est-ce que la page
+> ouverte est celle qu'on a livrée ».** Et je n'avais aucun moyen d'y
+> répondre. Un onglet mobile gardé trois jours, un cache, un lot pas
+> appliqué : tout ça ressemble EXACTEMENT à « ce n'est pas corrigé », et
+> ça coûte un lot entier à chaque fois.
+>
+> `BUILD` (une constante, quatre caractères) est maintenant dans
+> `window.__totehm_zone.version`. Trois secondes pour trancher, au lieu
+> d'un lot.
+
+**Deux bugs réels sont quand même sortis de cette inspection**, et
+aucun des deux n'était dans le code de la page :
+
+1. **Le trigger `repulsion_seed_link` posait un lien vers le vide.** Il
+   insère `repulsion_habits(id, habit_text)` à chaque insertion ; or
+   `repulsion_create` écrit `habit_text = ''` — les cinq objets naissent
+   vides depuis la création optimiste du 17/09. Chaque répulsion naissait
+   donc avec un lien vers une habitude de texte vide. Le front le filtre
+   (`.filter(Boolean)`), donc ça ne cassait rien à l'écran — mais c'est
+   une ligne fausse dans une table de liens, et elle se comptait comme
+   un lien réel partout où l'on ne pense pas à écarter la chaîne vide.
+   *Un trigger écrit avant la création optimiste ne connaît pas la
+   création optimiste.*
+2. **Trois fonctions étaient exécutables par `anon`** —
+   `intention_sound_set` (qui ÉCRIT), `intention_sounds`,
+   `totehmbot_access`. Toutes trois créées les 20 et 21/09. C'est
+   exactement la règle écrite dans ce fichier — « `create or replace
+   function` rétablit le GRANT à PUBLIC » — oubliée **trois fois de
+   suite**, parce que rien ne la vérifie. Aucune ne fuit de donnée
+   (elles passent par `auth.uid()`), mais une fonction d'écriture
+   ouverte à l'anonyme est une surface offerte pour rien.
+
+**⚠️ ET LE FAUX SERVEUR A MENTI UNE CINQUIÈME FOIS.** Il ne reproduisait
+pas le trigger, et ses données étaient PROPRES : pas de lien vers une
+habitude supprimée, pas de lien vide, cinq vues habitées. Le Totehm réel
+de Wah a les trois. La règle du 17/09 s'élargit donc :
+
+> **Un faux serveur doit refuser ce que le vrai refuse, ET rendre ce que
+> le vrai rend** — triggers compris. `stub.mjs` accepte maintenant un
+> état injecté (`__DB_OVERRIDE`), et `wahtest.mjs` rejoue le geste sur un
+> relevé de production. C'est le seul test qui prouve quelque chose sur
+> un Totehm vécu.
+
+---
+
 ### ⛔ ENTRÉE ENREGISTRE, PARTOUT, ET SUR LES DEUX CLAVIERS — 22/09/2026
 
 **« Je peux ajouter une wisdom mais pas une répulsion learned from »,
