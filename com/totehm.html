@@ -56,7 +56,8 @@
   --sky:#7fa3e8;--skin:var(--navy);
   --futura:'Futura','Jost',sans-serif;
   --rl:46px;   /* rail left */
-  --rw:18px;   /* rail width */
+  --rw:18px;   /* rail width — il S'ÉLARGIT en mode classement */
+  --rw0:18px;  /* rail AU REPOS — la marque s'y accroche, elle ne bouge pas */
   /* ══ UN SEUL CHIFFRE POUR TOUTE LA BANDE HAUTE · 16/09/2026 ════════
      Il y en avait TROIS à tenir d'accord par écran : le haut des carrés,
      le haut de la bande de classement, et `--band-t`. Mesuré le 16/09 :
@@ -141,7 +142,7 @@ html,body{width:100%;height:100%;background:var(--paper);color:var(--g-light);fo
    le T à x 20 et le bouton jusqu'à x 22 — ils se touchaient de 2 px, ce
    qui suffit à faire sale et à voler un clic. Même règle qu'à l'écran
    large : la marque commence APRÈS la colonne du rail, jamais dessus. */
-#bigT{position:fixed;top:26px;left:calc(var(--rl) + var(--rw) + 26px);transform:none;z-index:30;user-select:none;transition:opacity .4s;line-height:0;background:none;border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#bigT{position:fixed;top:26px;left:calc(var(--rl) + var(--rw0) + 26px);transform:none;z-index:30;user-select:none;transition:opacity .4s;line-height:0;background:none;border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 @keyframes t-slow{0%,100%{opacity:1}50%{opacity:.45}}
 /* ⚠️ LE T NE RESPIRE QUE DANS LES HABITUDES · 19/09/2026. Il EST le
    filtre, et le filtre ne trie que des habitudes — rythme et intention
@@ -423,19 +424,38 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
    contrepartie de leur rendre leurs vraies valeurs : navy sur navy est
    invisible (mesuré deux fois), donc c'est le socle qui descend, pas la
    marque qui se dilue. Même doctrine que le papier sous les boîtes. */
+/* ⚠️ C'EST UNE MANETTE, DONC ELLE A UN SOCLE ET UN MANCHE · 22/09/2026.
+   « C'est un joystick : il y a les flèches, le joystick intérieur (ce
+   que tu dois rajouter) et enfin ce que l'on a déjà. »
+   Le SOCLE (`#joy-box`) ne bouge jamais : il porte la couleur de la vue
+   en anneau, et c'est lui qu'on voit de loin. Le MANCHE (`#joy-stack`)
+   se tire au doigt et revient au centre — voir le module « LA MANETTE ».
+   L'anneau est une COULEUR, pas une bordure dessinée : `box-shadow`
+   ne dessine pas un trait autour d'une boîte, il pose une couronne de
+   la couleur — la règle « aucune bordure » tient. */
 #joy-box{width:var(--joy-d,60px);height:var(--joy-d,60px);position:relative;
-  border-radius:50%;background:var(--joy-fond,#101020);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.07), 0 1px 4px rgba(0,0,0,.5);
-  transition:background-color .42s ease}
+  border-radius:50%;background:var(--joy-fond,#1e1e3d);
+  box-shadow:inset 0 0 0 3px var(--joy-vue,var(--navy)),
+             inset 0 1px 0 rgba(255,255,255,.07),
+             0 2px 6px rgba(0,0,0,.55);
+  transition:background-color .42s ease, box-shadow .42s ease;
+  touch-action:none;cursor:grab}
+#joy-box:active{cursor:grabbing}
 
 /* Les trois ronds, empilés. Leur place est FIXE — c'est le relief qui
    bouge, pas la géométrie. */
-#joy-stack{position:absolute;inset:0}
+/* Le manche porte les trois ronds et se déplace d'un bloc : c'est lui
+   qu'on tient. `--mx/--my` sont posés par le module de la manette. */
+#joy-stack{position:absolute;inset:0;
+  transform:translate(var(--mx,0px),var(--my,0px));
+  transition:transform .26s cubic-bezier(.22,.9,.3,1)}
+#joy-box.tenu #joy-stack{transition:none}
 #joy-stack i{--d:13px;position:absolute;left:50%;display:block;
   width:var(--d);height:var(--d);
   margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
   border-radius:50%;background:var(--c);
-  transform:scale(.8);opacity:.62;
+  transform:scale(1);opacity:1;
+  box-shadow:0 1px 3px rgba(0,0,0,.55);
   transition:transform .38s cubic-bezier(.22,.9,.3,1),
              opacity .38s ease, box-shadow .38s ease}
 /* ⚠️ HAUT = OBJECTIFS, BAS = RÉPULSIONS — le même sens que les chevrons
@@ -457,41 +477,45 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
 #joy-stack .h{top:50%;--c:var(--navy)}   /* habitudes  — navy, le vrai */
 #joy-stack .r{top:77%;--c:var(--rep)}    /* répulsions — rouge-violet  */
 
-/* ══ LE RELIEF ══════════════════════════════════════════════════════
-   La couche où l'on est se soulève : elle grossit, passe au blanc, et
-   une ombre portée la décolle de la tuile. Trois effets pour un seul
-   geste — c'est ce qui la fait lire comme un VOLUME et pas comme une
-   tache plus claire. Le liseré clair sur le haut joue la lumière
-   rasante ; sans lui, la sphère reste un disque.
-   ⚠️ LE ROND ACTIF EST BLANC, pas « sa couleur en plus vif ». Sur trois
-   fonds différents, seule une valeur neutre est sûre de ressortir —
-   c'est exactement ce que montre la maquette de Wah. */
-/* ⚠️ LE ROND ACTIF GARDE SA COULEUR · 22/09/2026. Il passait au BLANC :
-   « je ne veux pas de point blanc en zoom mais les points avec leurs
-   couleurs respectives en zoom. » Le blanc réglait mon problème de
-   contraste en effaçant l'information — au moment précis où elle compte
-   le plus. Ce qui le fait ressortir, c'est le VOLUME : il grossit, une
-   ombre portée le décolle, un liseré clair sur le haut joue la lumière
-   rasante. Trois effets, zéro perte de sens. */
-/* ⚠️ ET LE LISERÉ NE DOIT PAS LE REPEINDRE EN BLANC · 22/09/2026.
-   Premier essai : liseré intérieur à .55 et anneau à .34. Sur un rond
-   de 21 px, ça couvre la moitié haute — mesuré au pixel, le centre
-   sortait presque blanc, exactement ce que Wah refusait. Le relief se
-   fait donc par l'OMBRE, qui ne repeint rien, et par un liseré discret.
-   Le pixel central est MESURÉ par `lot20.mjs` : il doit rester la
-   couleur de la famille. */
-#joy-stack i.on{
-  transform:scale(1.6);
-  opacity:1;
-  box-shadow:0 3px 9px rgba(0,0,0,.7),
-             inset 0 1px 0 rgba(255,255,255,.20),
-             0 0 0 1.5px rgba(255,255,255,.16);
-  z-index:2}
+/* ══ LE ROND DE LA VUE COURANTE S'EFFACE · 22/09/2026 ═══════════════
+   ⚠️ C'EST LA CLÉ DE TOUT LE PAVÉ, et c'est ce que Wah décrit sans le
+   nommer : « dans la vue Habit c'est le bleu navy AVEC le point bleu
+   clair pour accéder aux objectifs et le point rouge pour les
+   répulsions ». Il cite deux points, pas trois. Le troisième — celui de
+   la vue où l'on est — n'a rien à dire : **la tuile le dit déjà**, et
+   elle le dit en grand.
+
+   Ça règle d'un coup le problème qui m'a fait tourner trois jours :
+   navy sur navy est invisible, donc j'éclaircissais le navy, donc Wah
+   me reprenait. Le rond qui posait problème n'avait simplement pas lieu
+   d'exister. Ce qui reste allumé, ce sont les DESTINATIONS — où je peux
+   aller d'ici — chacune dans sa couleur pleine de marque. */
+#joy-stack i.ici{opacity:0;transform:scale(.4)}
 /* Sur la sagesse et la vision, l'axe vertical N'EXISTE PAS : il n'y a ni
-   objectif ni répulsion là-bas. Les trois ronds reculent ensemble et
+   objectif ni répulsion là-bas. Les trois ronds s'effacent ensemble et
    c'est la tuile qui dit où l'on est. En allumer un serait un mensonge —
-   règle déjà posée le 18/09, et elle tient toujours. */
-#joy-box.hors i{opacity:.3}
+   règle posée le 18/09, elle tient toujours. */
+#joy-box.hors i{opacity:0;transform:scale(.4)}
+
+/* ══ CE QU'ON VISE S'ALLUME AVANT QU'ON LÂCHE · 22/09/2026 ══════════
+   Le manche tiré désigne une direction ; le chevron de ce côté passe au
+   blanc plein. C'est ce qui fait la différence entre « j'ai bougé un
+   objet » et « je suis en train de choisir » — on voit où l'on va avant
+   de partir, et on peut revenir au centre sans rien déclencher.
+   Le pavé ne déclenche QUE ce qui mène quelque part : depuis la sagesse,
+   tirer vers la gauche n'allume rien (voir `sens()`). */
+/* ⚠️ L'ÉTAT SE POSE SUR `#joy`, PAS SUR LA TUILE. Le combinateur `~` ne
+   regarde qu'EN AVANT, et `#cur-g` PRÉCÈDE `#joy-box` dans le balisage :
+   la règle n'aurait allumé que deux chevrons sur quatre, et seulement
+   par chance. Un état se pose sur le parent — c'est la grammaire du
+   fichier (`body.gate`, `#stage.v-h`) et ça ne dépend d'aucun ordre. */
+#joy.tenu #joy-box{box-shadow:inset 0 0 0 3px var(--joy-vue,var(--navy)),
+                   inset 0 1px 0 rgba(255,255,255,.07),
+                   0 4px 12px rgba(0,0,0,.6)}
+#joy.vers-g #cur-g,
+#joy.vers-d #cur-d,
+#joy.vers-h #cur-h,
+#joy.vers-b #cur-b{opacity:1;transform:scale(1.3)}
 
 /* ⚠️ LE REPÈRE BLANC SUPPLÉMENTAIRE EST SUPPRIMÉ · 22/09/2026.
    Il datait du 21/09, quand les trois ronds portaient les ÉPOQUES : il
@@ -537,14 +561,17 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
    la grille du contrôleur, donc plus aucun mot ne peut le déplacer. */
 #vnow{position:fixed;top:22px;left:0;right:0;z-index:32;
   text-align:center;line-height:1;pointer-events:none}
-#vnow b{font-family:'Space Mono',monospace;font-size:15px;letter-spacing:.18em;
+/* ⚠️ PLUS GRAND, SUR LES DEUX ÉCRANS · 22/09/2026. « Les titres et
+   sous-titres dans le Totehm sur ordinateur, et en plus grand pour
+   version ordi et mobile. » 15/8 px, c'était encore une légende. */
+#vnow b{font-family:'Space Mono',monospace;font-size:19px;letter-spacing:.2em;
   text-transform:uppercase;color:#fff;font-weight:700;white-space:nowrap;
   display:block;text-shadow:0 1px 4px rgba(0,0,0,.6)}
 /* Le sous-titre : ce que la vue est, en une poignée de mots. Il ne crie
    pas — c'est une légende, pas un deuxième titre. */
-#vnow i{display:block;margin-top:5px;font-style:normal;
-  font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.24em;
-  text-transform:uppercase;color:rgba(255,255,255,.46);white-space:nowrap}
+#vnow i{display:block;margin-top:7px;font-style:normal;
+  font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.24em;
+  text-transform:uppercase;color:rgba(255,255,255,.58);white-space:nowrap}
 /* ⚠️ LE TITRE NE PASSE PAS SOUS LA CROIX NI SOUS LE T. Pleine largeur et
    centré, il croiserait les deux coins hauts sur un écran étroit : on
    lui réserve la bande entre eux. */
@@ -1426,8 +1453,35 @@ body.ordering #ordbtn span{animation:none;opacity:1}
    téléphone.
    Une bande pleine largeur, centrée, juste au-dessus de la première
    boîte : elle ne peut plus déborder par construction. */
-#ordbar{position:fixed;top:calc(var(--band-t) - 15px);left:0;right:0;
+/* ⚠️ LA BARRE PASSE EN DESSOUS · 22/09/2026. « La barre passe en-dessous
+   comme le TOTEHM.svg sur mobile. » Elle était en haut, sous la croix :
+   elle y disputait la place au titre de la vue, qui vient d'y monter.
+   En bas elle a un coin à elle — le bas-droit, le seul des quatre que
+   rien n'occupe depuis que le wordmark est repassé à gauche. Elle
+   s'aligne sur la ligne de pied du wordmark : une seule ligne de base
+   en bas de l'écran, comme une légende de page.
+   ⚠️ ET ELLE S'ARRÊTE AVANT LE CONTRÔLEUR, qui est centré en bas :
+   `max-width` la borne, et le test mesure qu'ils ne se croisent pas. */
+/* ⚠️ ET AU TÉLÉPHONE ELLE NE SE MET PAS À CÔTÉ DU CONTRÔLEUR, MAIS
+   AU-DESSUS. Posée sur la ligne du wordmark, à droite, elle croisait le
+   pavé centré — mesuré. Sur 390 px de large il n'y a pas deux colonnes
+   en bas : il y a une ligne pour la marque et le pavé, et une ligne
+   libre juste au-dessus. C'est celle-là.
+   Elle se déduit du contrôleur, comme `--band-b` : un seul chiffre
+   bouge et les trois suivent. */
+#ordbar{position:fixed;top:auto;
+  bottom:calc(var(--joy-b) + var(--joy-d) + 40px);
+  left:14px;right:14px;
   transform:none;z-index:33;display:none;pointer-events:none;text-align:center}
+/* ⚠️ ET SUR ORDINATEUR ELLE SE RÉSOUT SUR `#stage`, PAS SUR LA FENÊTRE.
+   `#stage` porte un `transform` : il est donc le bloc conteneur de ses
+   descendants `position:fixed`. `bottom:26px` visait le bas du CARRÉ —
+   c'est-à-dire, depuis que le contrôleur y est, exactement dessus.
+   Mesuré : 195 px du bas de l'écran, et un chevauchement.
+   C'est le même piège que `#stage` pour les overlays, que `#vnow` sous
+   `#joy`, et que la croix face au contrôleur. Quatrième fois. La barre
+   se pose donc AU-DESSUS du contrôleur, dans le repère du carré, à
+   gauche de lui — là où il reste de la place. */
 body.ordering #ordbar{display:block}
 /* ══ LE TOTEHM DIT UNE PHRASE · 17/09/2026 ══════════════════════════
    Une seule ligne, a la graisse des etiquettes, posee sous la croix.
@@ -1458,7 +1512,23 @@ body.ordering .habit .h-body{opacity:.92}
    toute la colonne pousse et le rail devient la piste du classement.
    Le nombre est centré sur cette piste — Montserrat italic 900,
    effet slogan comme HIGHER. */
-body.ordering{--rw:34px}
+/* ⚠️ MAIS LE T, LUI, NE BOUGE PAS · 22/09/2026. « Quand on appuie sur
+   l'icône classement, PAS besoin de faire bouger le T.svg. »
+   `#bigT` et `#wordmark` se posaient sur `--rl + --rw`, donc ils
+   glissaient de 26 px à l'instant où le rail s'élargissait. La marque
+   sautait à chaque entrée en mode classement — et la marque est un
+   repère fixe : c'est au contenu de s'écarter, jamais à elle.
+   `--rw0` est la largeur du rail AU REPOS. Le rail, les boîtes et la
+   piste de classement suivent `--rw` (ils doivent s'élargir) ; le T et
+   le wordmark suivent `--rw0` (ils ne doivent pas). Deux jetons, deux
+   comportements, et plus rien à tenir d'accord à la main. */
+/* ⚠️ ET LA LISTE RECULE POUR FAIRE PLACE À LA BARRE. Elle se posait à
+   9 px DANS la dernière boîte — mesuré. Entre le bas de la liste et le
+   haut du contrôleur il n'y a que dix pixels : il faut les PRENDRE, pas
+   s'y glisser. La bande basse gagne donc 22 px, et seulement en mode
+   classement — une place qu'on ne prend que quand on s'en sert. */
+body.ordering{--rw:34px;
+  --band-b:calc(var(--joy-b) + var(--joy-d) + 36px + 10px + 22px)}
 /* LA PISTE DU CLASSEMENT : ↑ · le rang · ↓, empilés dans le rail.
    Le rail s'élargit pour les contenir (`body.ordering{--rw:34px}`) et
    comme #rail, .h-body, .tick et #ordbtn s'y accrochent tous, toute la
@@ -2146,6 +2216,7 @@ body.gate.entered #filter-badge{
     --side-gap:calc(var(--stage) * .085);         /* éloigné du Totehm */
     --rl:max(38px,calc(var(--stage) * .072));   /* dégage les T des perforations */
     --rw:max(16px,calc(var(--stage) * .034));   /* rail de saisie, pas rail de logo */
+    --rw0:max(16px,calc(var(--stage) * .034));
   }
   html,body{background:#000}
   #stage{
@@ -2173,11 +2244,17 @@ body.gate.entered #filter-badge{
   /* ⚠️ LA MARQUE COMMENCE APRÈS LE RAIL. Mesuré le 18/09 : à 22 px du
      bord, le T se posait SUR le rail et sur le bouton de classement qui
      le coiffe. Le rail est le logo — rien ne passe dessus. */
-  #bigT{top:22px;left:calc(var(--rl) + var(--rw) + 16px)}
+  /* ⚠️ `--rw0`, PAS `--rw` · 22/09/2026 — et il fallait le corriger ICI
+     AUSSI. La règle générale était déjà passée à `--rw0` ; celle-ci,
+     dans le bloc ordinateur, redéclarait `left` avec `--rw` et gagnait
+     par la cascade. Mesuré : le T sautait encore de 12 px à l'entrée en
+     mode classement, sur ordinateur seulement. Un jeton qu'on renomme
+     se renomme PARTOUT — un `grep`, pas une relecture. */
+  #bigT{top:22px;left:calc(var(--rl) + var(--rw0) + 16px)}
   /* Le wordmark est passé à gauche le 20/09 ; il retrouve son ancrage du
      carré, pas celui de la fenêtre. ⚠️ IL COMMENCE APRÈS LE RAIL, comme
      le T : le rail est le logo, rien ne passe dessus. */
-  #wordmark{bottom:26px;left:calc(var(--rl) + var(--rw) + 16px);top:auto;right:auto}
+  #wordmark{bottom:26px;left:calc(var(--rl) + var(--rw0) + 16px);top:auto;right:auto}
   /* ⚠️ LE CONTRÔLEUR DESCEND EN BAS DU CARRÉ · 22/09/2026.
      Il a fait le tour — bas-droite le 20/09, haut-droite le 21/09, et
      Wah le veut en bas. Cette fois il est CENTRÉ sur le carré, et c'est
@@ -2189,6 +2266,22 @@ body.gate.entered #filter-badge{
      pose à 20 px du bord et se centre — deux colonnes différentes. */
   #joy{top:auto;bottom:calc(50% - var(--stage)/2 + var(--joy-b));
        left:50%;right:auto;transform:translateX(-50%)}
+  /* La barre vit dans le repère du carré (voir la note plus haut) : on
+     la pose au-dessus du contrôleur, pas au-dessus de la fenêtre. */
+  #ordbar{bottom:calc(var(--joy-b) + var(--joy-d) + 40px);
+          right:var(--pad);left:var(--pad);text-align:center}
+  /* ⚠️ LE TITRE VIT DANS LE TOTEHM SUR ORDINATEUR · 22/09/2026.
+     « Les titres et sous-titre DANS le totehm sur ordinateur. » Il
+     était à 22 px du haut de la FENÊTRE, donc sur le noir, au-dessus
+     du carré — posé à côté du produit, pas dedans. Il descend dans le
+     carré, sous la bande de perforations, entre le T (haut-gauche) et
+     la croix (haut-droite).
+     Même calcul que le contrôleur, en miroir, et depuis les mêmes
+     jetons : `--pad` est la profondeur d'une perforation, et rien ne
+     se pose dessus. Au téléphone il n'y a pas de carré — l'écran EST
+     le carré — donc la règle générale (22 px) reste la bonne. */
+  #vnow{top:calc(50% - var(--stage)/2 + var(--pad) + 10px)}
+  body.ro #vnow{top:calc(50% - var(--stage)/2 + var(--pad) + 10px + var(--ro-h))}
   body.ro #joy{top:auto}
   body.ro #bigT{top:calc(22px + var(--ro-h))}
 
@@ -2366,7 +2459,7 @@ body.gate.entered #filter-badge{
      88/146 puis 112/166 — dont la première ne servait à rien : la
      seconde gagnait. C'est exactement comme ça qu'on perd la trace
      d'une mesure. Il n'en reste qu'une. */
-  :root{--rl:0px;--rw:8px;--croix-t:112px}
+  :root{--rl:0px;--rw:8px;--rw0:8px;--croix-t:112px}
   /* #ordbtn hérite du positionnement de base : centré sur le rail,
      tout en haut. Sur mobile le rail commence à left:0 : le bouton est
      centré sur --rw/2 = 3px. Un peu plus haut qu'en desktop puisqu'il
@@ -4091,6 +4184,24 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    classer. Le choix en cours (`pk`) vit avec le rendu, plus haut — il y
    en avait cinq, chacun oublié à un endroit différent : c'est comme ça
    qu'une boîte gardait un menu ouvert d'une autre. */
+/* ══ QUELLE VERSION TOURNE ? · 22/09/2026 ═══════════════════════════
+   ⚠️ C'EST LA VRAIE LEÇON DE QUATRE LOTS PERDUS. « Je ne peux pas
+   ajouter de répulsion » a été signalé quatre fois. Trois fois j'ai
+   trouvé un bug réel, je l'ai corrigé, je l'ai testé, il est parti en
+   production — et le signalement est revenu à l'identique.
+
+   La quatrième fois, j'ai rejoué le geste exact sur les DONNÉES RÉELLES
+   du compte, relevées en base : tout passait. Le code livré marche.
+   Restait une seule question, et je ne pouvais pas y répondre :
+   **est-ce que la page ouverte est bien celle qu'on a livrée ?**
+
+   Il n'y avait aucun moyen de le savoir. Un onglet mobile gardé trois
+   jours, un cache, un lot pas appliqué : tout ça ressemble exactement
+   à « le bug n'est pas corrigé », et ça coûte un lot entier à chaque
+   fois.
+
+   Cette ligne coûte quatre caractères et répond en trois secondes. */
+const BUILD='2026-09-22';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -4233,20 +4344,45 @@ function paintZone(){
        d'eux). C'est ce que Wah appelle « la logique de défilement reste
        la même » : on n'a pas changé le geste, on a remis chaque
        information sur son axe. */
-    /* ⚠️ LA TUILE EST PLUS SOMBRE QUE LES TROIS RONDS, TOUJOURS
-       · 22/09/2026. « Tu m'as enlevé mon bleu navy au milieu. » J'avais
-       ÉCLAIRCI les trois couleurs de marque pour qu'elles se lisent sur
-       la tuile du présent — `--navy` (#333366) et le papier (#2b2b57)
-       sont à deux doigts l'un de l'autre. C'était résoudre le problème
-       du mauvais côté : les ronds portent la MARQUE, la tuile ne porte
-       rien. Alors les ronds reprennent leurs valeurs exactes et ce sont
-       les TROIS tuiles qui reculent d'un ton, chacune dans sa teinte
-       d'époque. Le contraste est MESURÉ par `lot20.mjs` sur les cinq
-       vues : une règle de lisibilité sans test se recasse. */
-    jy.style.setProperty('--joy-fond',
-      view==='wisdom'  ? '#1d0b1a'
-    : view==='visions' ? '#0d1122'
-    :                    '#101020');
+    /* ⚠️ LA TUILE PORTE LA COULEUR DE LA VUE — LES 3, TOUJOURS
+       · 22/09/2026. « Je t'ai déjà demandé 100 fois à ce que dans le
+       curseur ce soit TOUJOURS les 3 couleurs. Dans la vue WISDOM c'est
+       total rouge-violet, dans la vue Habit c'est le bleu navy avec le
+       point bleu clair pour accéder aux objectifs et le point rouge en
+       ce qui concerne les répulsions, et quand c'est la vue Objective
+       le curseur devient bleu clair. »
+
+       J'avais mis l'ÉPOQUE sur la tuile (passé/présent/futur). C'est un
+       quatrième langage, et il n'y a que trois couleurs dans la marque.
+       La tuile dit maintenant LA VUE, dans sa propre couleur :
+
+         habitudes            navy
+         objectifs · visions  bleu clair
+         répulsions · sagesse rouge-violet
+
+       ⚠️ ET LE ROND DE LA VUE COURANTE S'EFFACE. C'est la conséquence
+       directe, et c'est ce que Wah décrit sans le nommer : il cite le
+       point bleu clair et le point rouge, jamais un point navy au
+       milieu. La tuile EST la vue ; un rond qui la répète est un rond
+       de trop — et navy sur navy est invisible, mesuré deux fois.
+       Ce qui reste allumé, ce sont les DESTINATIONS : où je peux aller
+       depuis ici, chacune dans sa couleur pleine. */
+    const TEINTE={habits:'--navy', objectives:'--blue', repulsions:'--rep',
+                  wisdom:'--rep',  visions:'--blue'};
+    /* La tuile est la couleur de la vue RETENUE D'UN TON : les ronds de
+       destination portent les valeurs pleines de la marque, et il faut
+       qu'ils se détachent. Même doctrine que le papier sous les boîtes —
+       le fond recule, l'objet avance. Le contraste est MESURÉ. */
+    /* ⚠️ MESURÉ, PAS CHOISI À L'ŒIL. Première valeur pour les objectifs :
+       `#1f2a52` — le rond NAVY dessus tombait à 1,20 de contraste,
+       c'est-à-dire invisible, le bug même que Wah signale depuis trois
+       jours. Le navy est la plus sombre des trois couleurs de marque :
+       c'est lui qui fixe le plancher de toutes les tuiles.
+       `lot23.mjs` mesure les trois ronds sur les cinq tuiles. */
+    const SOMBRE={habits:'#1e1e3d', objectives:'#141a33', repulsions:'#2e1229',
+                  wisdom:'#2e1229', visions:'#141a33'};
+    jy.style.setProperty('--joy-fond', SOMBRE[view]||'#1e1e3d');
+    jy.style.setProperty('--joy-vue', 'var('+(TEINTE[view]||'--navy')+')');
 
     /* La couche où l'on se trouve. Sur la sagesse et la vision il n'y en
        a pas : l'axe vertical n'existe pas là-bas. */
@@ -4254,7 +4390,9 @@ function paintZone(){
     const ici=COUCHE[view]||null;
     ['o','h','r'].forEach(k=>{
       const e=jy.querySelector('#joy-stack .'+k); if(!e)return;
-      e.className = k + (k===ici ? ' on' : '');
+      /* `.ici` = la vue courante : le rond s'efface, la tuile le dit.
+         `.mort` = pas de voisin de ce côté (sagesse, vision). */
+      e.className = k + (k===ici ? ' ici' : '');
     });
     const bx=$('joy-box');
     if(bx) bx.className = ici ? '' : 'hors';
@@ -4922,12 +5060,52 @@ function renderZone(){
   if(change){ box.classList.remove('swap'); void box.offsetWidth; box.classList.add('swap'); }
   if(keep!=null&&sc)sc.scrollTop=keep;
   peintTraits();
-  window.__totehm_zone={vue:view, session:!!me, arbre_charge:tripsLoaded,
+  window.__totehm_zone={version:BUILD, vue:view, session:!!me, arbre_charge:tripsLoaded,
     habitudes:(state.habits||[]).length, objectifs:TRIPS.length, repulsions:REPS.length,
     lecons:TEACH.length, visions:VIS.length,
     filtre:{rythme:!!filterF, intention:!!filterI},
     boite_ouverte:open?open.kind:null, choix:pk?pk.q:null,
     classement:ordering, ordre_du_membre:!!state.ord};
+  /* ⚠️ LE RECHARGEMENT DE L'ARBRE EST ATTEIGNABLE DEPUIS UN TEST
+     · 22/09/2026. « Je ne peux pas ajouter de répulsion », quatre fois,
+     avec mes tests au vert : ils vérifiaient que la mini-boîte
+     APPARAÎT. Or le bug de Wah, c'est qu'elle ne SURVIT pas — l'écran
+     fait le geste, le serveur n'en sait rien, et le rechargement remet
+     l'ancien état. Le seul test qui prouve quelque chose relit donc
+     l'arbre depuis le serveur, et c'est cette ligne qui le permet.
+     Elle n'expose aucune donnée : juste le verbe. */
+  window.__rechargeArbre = () => loadTrips(true);
+  /* ══ UN SEUL VERBE DE DIAGNOSTIC · 22/09/2026 ═════════════════════
+     Règle du projet : « bug signalé → UN bloc à coller dans la console
+     qui renvoie tout d'un coup. Une boucle, pas trois. » Encore
+     fallait-il que ce bloc puisse interroger le serveur : il n'y avait
+     aucun moyen de le faire depuis la console sans exposer le client
+     Supabase, ce qu'on ne fait pas.
+     `__totehmDiag()` fait l'aller-retour et rend un objet. Il ne rend
+     que des COMPTEURS et des BOOLÉENS — jamais le texte du membre,
+     jamais une clé — exactement comme `__totehm_zone` depuis le 06/09.
+     La première ligne est celle qui compte : la VERSION. */
+  window.__totehmDiag = async () => {
+    const d = Object.assign({}, window.__totehm_zone, {
+      VERSION: BUILD,
+      url: location.href,
+      ecran: innerWidth + 'x' + innerHeight,
+      boutonAdd: !!document.querySelector('#habits [data-add]'),
+      paysage: document.body.classList.contains('paysage')});
+    try{
+      const {data,error}=await sb.rpc('my_trips');
+      d.serveur = error ? ('ERREUR · '+error.message)
+        : {reps:(data.reps||[]).length, wisdom:(data.wisdom||[]).length,
+           visions:(data.visions||[]).length, trips:(data.trips||[]).length,
+           signed_in:!!data.signed_in};
+    }catch(e){ d.serveur='PAS JOIGNABLE · '+(e&&e.message||e); }
+    try{
+      const {data,error}=await sb.rpc('repulsion_create',{p_text:'ZZ DIAG '+Date.now()});
+      d.creationTest = error ? ('REFUSEE · '+error.message) : ('OK · id '+data);
+      if(!error) await sb.rpc('repulsion_retire',{p_id:data});
+    }catch(e){ d.creationTest='LEVEE · '+(e&&e.message||e); }
+    return d;
+  };
   cable(box);
 }
 
@@ -6247,6 +6425,104 @@ function navBlocked(){
    il désigne une couche, et on y va directement. */
 const navLeft =()=>{ if(navBlocked())return; versVoisin('g'); };
 const navRight=()=>{ if(navBlocked())return; versVoisin('d'); };
+
+/* ══ LA MANETTE — ON TIRE LE MANCHE · 22/09/2026 ════════════════════
+   « C'est un joystick : les scroll doivent aussi fonctionner DANS la
+   partie curseur. Il y a les flèches, le joystick intérieur (ce que tu
+   dois rajouter) et enfin ce que l'on a déjà et qui est bien. »
+
+   Trois moyens, donc, et ils mènent tous à `versVoisin` — la table
+   `CROIX`, une seule, comme le doigt et le clavier. Une deuxième table
+   finirait par dire autre chose (déjà vu le 19/09 avec `AXE`).
+
+   1. LES CHEVRONS  — ils existent, ils ne bougent pas.
+   2. LE MANCHE     — on l'attrape et on le tire. Il suit le doigt, borné
+                      à un rayon ; au relâcher, s'il a dépassé le seuil
+                      dans une direction OÙ L'ON PEUT ALLER, on y va ;
+                      sinon il revient au centre. C'est le geste d'une
+                      vraie manette : on sent la butée, on voit la
+                      destination s'allumer avant de lâcher.
+   3. LA MOLETTE     — sur le pavé, elle navigue directement, sans la
+                      condition « au bord de la liste ». Cette condition
+                      existe parce que sur la LISTE le geste de
+                      navigation et le geste de défilement sont le même
+                      (règle du 17/09) ; sur le pavé il n'y a rien à
+                      faire défiler, donc rien à départager.
+
+   ⚠️ POINTER EVENTS, ET `touch-action:none` SUR LE SOCLE. Règle du
+   projet : dès qu'un geste porte une fonction produit, on coupe le
+   natif et on conduit à la main, avec le MÊME code pour le doigt et la
+   souris. Sans `touch-action:none`, le navigateur avale le glissement
+   avant nous et on ne reçoit qu'un `pointercancel`. */
+(function manette(){
+  const jy=$('joy'), bx=$('joy-box'), st=$('joy-stack');
+  if(!jy||!bx||!st) return;          /* absent des jumeaux : on sort */
+
+  const RAYON=15;                    /* jusqu'où le manche se laisse tirer */
+  const SEUIL=9;                     /* au-delà, on part                   */
+  let id=null, x0=0, y0=0, dx=0, dy=0;
+
+  const pose=(a,b)=>{ st.style.setProperty('--mx',a.toFixed(1)+'px');
+                      st.style.setProperty('--my',b.toFixed(1)+'px'); };
+  /* ⚠️ `#joy` est repeint à chaque rendu par `jy.className='sink-el v-'+view` :
+     on ne peut donc pas poser l'état du geste dans `className`. On
+     ajoute et on retire, jamais on n'écrase. */
+  const vise=v=>{ ['g','d','h','b'].forEach(k=>jy.classList.toggle('vers-'+k, k===v)); };
+  const centre=()=>{ pose(0,0); jy.classList.remove('tenu');
+                     bx.classList.remove('tenu'); vise(null); };
+
+  /* La direction que le geste désigne — et seulement si elle MÈNE
+     quelque part. Tirer vers la sagesse depuis la sagesse ne doit ni
+     allumer, ni naviguer. */
+  const sens=()=>{
+    if(Math.max(Math.abs(dx),Math.abs(dy))<SEUIL) return null;
+    const d = Math.abs(dx)>Math.abs(dy) ? (dx<0?'g':'d') : (dy<0?'h':'b');
+    return voisin(d) ? d : null;
+  };
+
+  bx.addEventListener('pointerdown',e=>{
+    if(navBlocked())return;
+    id=e.pointerId; x0=e.clientX; y0=e.clientY; dx=dy=0;
+    jy.classList.add('tenu'); bx.classList.add('tenu');
+    try{ bx.setPointerCapture(id); }catch(_){}
+  });
+
+  bx.addEventListener('pointermove',e=>{
+    if(id===null||e.pointerId!==id)return;
+    /* Borné au rayon : un manche ne sort pas de son socle. */
+    const ax=e.clientX-x0, ay=e.clientY-y0;
+    const d=Math.hypot(ax,ay), k=d>RAYON ? RAYON/d : 1;
+    dx=ax*k; dy=ay*k; pose(dx,dy);
+    vise(sens());
+  });
+
+  const lache=e=>{
+    if(id===null||(e&&e.pointerId!==id))return;
+    const v=sens();
+    try{ bx.releasePointerCapture(id); }catch(_){}
+    id=null; centre();
+    if(v) versVoisin(v);
+  };
+  bx.addEventListener('pointerup',lache);
+  bx.addEventListener('pointercancel',()=>{ id=null; centre(); });
+
+  /* ⚠️ LA MOLETTE SUR LE PAVÉ NE PASSE PAS PAR `bordCalme`. Sur la
+     liste, il faut distinguer « je défile » de « je change de vue » —
+     c'est le même geste. Ici il n'y a pas de liste : le seul sens
+     possible d'une molette sur une manette, c'est de la bouger.
+     Un délai de garde suffit à ne pas traverser deux vues d'un coup. */
+  let froid=0;
+  jy.addEventListener('wheel',e=>{
+    if(navBlocked())return;
+    if(Date.now()<froid)return;
+    const d = Math.abs(e.deltaX)>Math.abs(e.deltaY)
+      ? (e.deltaX>0?'d':'g')          /* trackpad : contenu, pas doigt */
+      : (e.deltaY>0?'b':'h');
+    if(!voisin(d))return;
+    froid=Date.now()+520;
+    versVoisin(d);
+  },{passive:true});
+})();
 [['cur-g','g'],['cur-d','d'],['cur-h','h'],['cur-b','b']].forEach(([id,d])=>{
   const b=$(id); if(b)b.onclick=()=>{ if(navBlocked())return; versVoisin(d); };
 });
