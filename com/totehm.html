@@ -424,20 +424,19 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
    contrepartie de leur rendre leurs vraies valeurs : navy sur navy est
    invisible (mesuré deux fois), donc c'est le socle qui descend, pas la
    marque qui se dilue. Même doctrine que le papier sous les boîtes. */
-/* ⚠️ C'EST UNE MANETTE, DONC ELLE A UN SOCLE ET UN MANCHE · 22/09/2026.
-   « C'est un joystick : il y a les flèches, le joystick intérieur (ce
-   que tu dois rajouter) et enfin ce que l'on a déjà. »
-   Le SOCLE (`#joy-box`) ne bouge jamais : il porte la couleur de la vue
-   en anneau, et c'est lui qu'on voit de loin. Le MANCHE (`#joy-stack`)
-   se tire au doigt et revient au centre — voir le module « LA MANETTE ».
-   L'anneau est une COULEUR, pas une bordure dessinée : `box-shadow`
-   ne dessine pas un trait autour d'une boîte, il pose une couronne de
-   la couleur — la règle « aucune bordure » tient. */
+/* ⚠️ AUCUNE BORDURE. LE FOND PORTE LA COULEUR, POINT · 22/09 ter.
+   « Je t'ai pas demandé de bordure sur le joystick, juste le changement
+   de couleur de son background avec nos 3 couleurs. »
+   J'avais mis un anneau intérieur de la couleur de la vue autour d'un
+   fond sombre, en me disant qu'un `box-shadow` n'est pas techniquement
+   une bordure. **Ça se voit comme une bordure, donc c'en est une** — et
+   la règle de marque n'en admet aucune. Le fond EST la couleur : navy,
+   bleu clair, rouge-violet. Rien autour.
+   Le MANCHE (`#joy-stack`) se tire au doigt et revient au centre —
+   voir le module « LA MANETTE ». */
 #joy-box{width:var(--joy-d,60px);height:var(--joy-d,60px);position:relative;
-  border-radius:50%;background:var(--joy-fond,#1e1e3d);
-  box-shadow:inset 0 0 0 3px var(--joy-vue,var(--navy)),
-             inset 0 1px 0 rgba(255,255,255,.07),
-             0 2px 6px rgba(0,0,0,.55);
+  border-radius:50%;background:var(--joy-vue,var(--navy));
+  box-shadow:0 2px 7px rgba(0,0,0,.5);
   transition:background-color .42s ease, box-shadow .42s ease;
   touch-action:none;cursor:grab}
 #joy-box:active{cursor:grabbing}
@@ -455,7 +454,12 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
   margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
   border-radius:50%;background:var(--c);
   transform:scale(1);opacity:1;
-  box-shadow:0 1px 3px rgba(0,0,0,.55);
+  /* ⚠️ ILS SE DÉTACHENT PAR L'OMBRE, JAMAIS PAR UN TRAIT. Le fond est
+     maintenant une couleur de marque PLEINE : deux couleurs de marque
+     l'une sur l'autre se distinguent par leur TEINTE (un rouge-violet
+     sur du navy se voit, même à luminance voisine), et l'ombre portée
+     fait le reste du travail en les décollant. */
+  box-shadow:0 2px 5px rgba(0,0,0,.6);
   transition:transform .38s cubic-bezier(.22,.9,.3,1),
              opacity .38s ease, box-shadow .38s ease}
 /* ⚠️ HAUT = OBJECTIFS, BAS = RÉPULSIONS — le même sens que les chevrons
@@ -509,9 +513,7 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
    la règle n'aurait allumé que deux chevrons sur quatre, et seulement
    par chance. Un état se pose sur le parent — c'est la grammaire du
    fichier (`body.gate`, `#stage.v-h`) et ça ne dépend d'aucun ordre. */
-#joy.tenu #joy-box{box-shadow:inset 0 0 0 3px var(--joy-vue,var(--navy)),
-                   inset 0 1px 0 rgba(255,255,255,.07),
-                   0 4px 12px rgba(0,0,0,.6)}
+#joy.tenu #joy-box{box-shadow:0 5px 14px rgba(0,0,0,.65)}
 #joy.vers-g #cur-g,
 #joy.vers-d #cur-d,
 #joy.vers-h #cur-h,
@@ -559,8 +561,13 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
    que la vue EST, pas seulement comment elle s'appelle.
    ⚠️ IL EST CENTRÉ SUR L'ÉCRAN ET PLEINE LARGEUR : plus aucun lien avec
    la grille du contrôleur, donc plus aucun mot ne peut le déplacer. */
-#vnow{position:fixed;top:22px;left:0;right:0;z-index:32;
-  text-align:center;line-height:1;pointer-events:none}
+/* ⚠️ ABAISSÉ ET À DROITE · 22/09 ter. « Le titre et le sous-titre
+   légèrement abaissé et à droite. » Centré en haut, il partageait la
+   ligne du T et de la croix ; posé à droite, sous la croix, il a une
+   colonne à lui — et il libère la bande haute pour la phrase du
+   classement, qui y remonte. */
+#vnow{position:fixed;top:40px;left:auto;right:22px;z-index:32;
+  text-align:right;line-height:1;pointer-events:none}
 /* ⚠️ PLUS GRAND, SUR LES DEUX ÉCRANS · 22/09/2026. « Les titres et
    sous-titres dans le Totehm sur ordinateur, et en plus grand pour
    version ordi et mobile. » 15/8 px, c'était encore une légende. */
@@ -572,11 +579,10 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
 #vnow i{display:block;margin-top:7px;font-style:normal;
   font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.24em;
   text-transform:uppercase;color:rgba(255,255,255,.58);white-space:nowrap}
-/* ⚠️ LE TITRE NE PASSE PAS SOUS LA CROIX NI SOUS LE T. Pleine largeur et
-   centré, il croiserait les deux coins hauts sur un écran étroit : on
-   lui réserve la bande entre eux. */
-#vnow b,#vnow i{padding:0 92px}
-body.ro #vnow{top:calc(22px + var(--ro-h))}
+/* Aligné à droite, il n'a plus de coin à éviter : la croix est
+   au-dessus de lui, pas à côté. */
+#vnow b,#vnow i{padding:0}
+body.ro #vnow{top:calc(40px + var(--ro-h))}
 /* La répercussion 3D : le nom pivote dans la direction du voyage, en
    même temps que la pile glisse. */
 @keyframes face-d{from{transform:rotateY(-62deg) translateX(18px);opacity:0}to{transform:none;opacity:1}}
@@ -1462,26 +1468,15 @@ body.ordering #ordbtn span{animation:none;opacity:1}
    en bas de l'écran, comme une légende de page.
    ⚠️ ET ELLE S'ARRÊTE AVANT LE CONTRÔLEUR, qui est centré en bas :
    `max-width` la borne, et le test mesure qu'ils ne se croisent pas. */
-/* ⚠️ ET AU TÉLÉPHONE ELLE NE SE MET PAS À CÔTÉ DU CONTRÔLEUR, MAIS
-   AU-DESSUS. Posée sur la ligne du wordmark, à droite, elle croisait le
-   pavé centré — mesuré. Sur 390 px de large il n'y a pas deux colonnes
-   en bas : il y a une ligne pour la marque et le pavé, et une ligne
-   libre juste au-dessus. C'est celle-là.
-   Elle se déduit du contrôleur, comme `--band-b` : un seul chiffre
-   bouge et les trois suivent. */
-#ordbar{position:fixed;top:auto;
-  bottom:calc(var(--joy-b) + var(--joy-d) + 40px);
-  left:14px;right:14px;
+/* ⚠️ ELLE REMONTE EN HAUT · 22/09 ter. Je l'avais descendue en lisant
+   « la barre passe en-dessous comme le TOTEHM.svg sur mobile » : Wah
+   parlait de la piste du rail, pas de cette phrase. Elle reprend sa
+   place sous la bande haute — et elle y tient, parce que le titre s'est
+   décalé à droite en même temps.
+   `--croix-t` commande la bande haute : un seul chiffre par écran, et
+   la barre en découle au lieu d'être posée à la main. */
+#ordbar{position:fixed;top:calc(var(--band-t) - 15px);left:0;right:0;
   transform:none;z-index:33;display:none;pointer-events:none;text-align:center}
-/* ⚠️ ET SUR ORDINATEUR ELLE SE RÉSOUT SUR `#stage`, PAS SUR LA FENÊTRE.
-   `#stage` porte un `transform` : il est donc le bloc conteneur de ses
-   descendants `position:fixed`. `bottom:26px` visait le bas du CARRÉ —
-   c'est-à-dire, depuis que le contrôleur y est, exactement dessus.
-   Mesuré : 195 px du bas de l'écran, et un chevauchement.
-   C'est le même piège que `#stage` pour les overlays, que `#vnow` sous
-   `#joy`, et que la croix face au contrôleur. Quatrième fois. La barre
-   se pose donc AU-DESSUS du contrôleur, dans le repère du carré, à
-   gauche de lui — là où il reste de la place. */
 body.ordering #ordbar{display:block}
 /* ══ LE TOTEHM DIT UNE PHRASE · 17/09/2026 ══════════════════════════
    Une seule ligne, a la graisse des etiquettes, posee sous la croix.
@@ -1522,13 +1517,7 @@ body.ordering .habit .h-body{opacity:.92}
    piste de classement suivent `--rw` (ils doivent s'élargir) ; le T et
    le wordmark suivent `--rw0` (ils ne doivent pas). Deux jetons, deux
    comportements, et plus rien à tenir d'accord à la main. */
-/* ⚠️ ET LA LISTE RECULE POUR FAIRE PLACE À LA BARRE. Elle se posait à
-   9 px DANS la dernière boîte — mesuré. Entre le bas de la liste et le
-   haut du contrôleur il n'y a que dix pixels : il faut les PRENDRE, pas
-   s'y glisser. La bande basse gagne donc 22 px, et seulement en mode
-   classement — une place qu'on ne prend que quand on s'en sert. */
-body.ordering{--rw:34px;
-  --band-b:calc(var(--joy-b) + var(--joy-d) + 36px + 10px + 22px)}
+body.ordering{--rw:34px}
 /* LA PISTE DU CLASSEMENT : ↑ · le rang · ↓, empilés dans le rail.
    Le rail s'élargit pour les contenir (`body.ordering{--rw:34px}`) et
    comme #rail, .h-body, .tick et #ordbtn s'y accrochent tous, toute la
@@ -2266,10 +2255,6 @@ body.gate.entered #filter-badge{
      pose à 20 px du bord et se centre — deux colonnes différentes. */
   #joy{top:auto;bottom:calc(50% - var(--stage)/2 + var(--joy-b));
        left:50%;right:auto;transform:translateX(-50%)}
-  /* La barre vit dans le repère du carré (voir la note plus haut) : on
-     la pose au-dessus du contrôleur, pas au-dessus de la fenêtre. */
-  #ordbar{bottom:calc(var(--joy-b) + var(--joy-d) + 40px);
-          right:var(--pad);left:var(--pad);text-align:center}
   /* ⚠️ LE TITRE VIT DANS LE TOTEHM SUR ORDINATEUR · 22/09/2026.
      « Les titres et sous-titre DANS le totehm sur ordinateur. » Il
      était à 22 px du haut de la FENÊTRE, donc sur le noir, au-dessus
@@ -2280,8 +2265,9 @@ body.gate.entered #filter-badge{
      jetons : `--pad` est la profondeur d'une perforation, et rien ne
      se pose dessus. Au téléphone il n'y a pas de carré — l'écran EST
      le carré — donc la règle générale (22 px) reste la bonne. */
-  #vnow{top:calc(50% - var(--stage)/2 + var(--pad) + 10px)}
-  body.ro #vnow{top:calc(50% - var(--stage)/2 + var(--pad) + 10px + var(--ro-h))}
+  #vnow{top:calc(50% - var(--stage)/2 + var(--pad) + 30px);
+        right:calc(50% - var(--stage)/2 + var(--pad))}
+  body.ro #vnow{top:calc(50% - var(--stage)/2 + var(--pad) + 30px + var(--ro-h))}
   body.ro #joy{top:auto}
   body.ro #bigT{top:calc(22px + var(--ro-h))}
 
@@ -4201,7 +4187,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-09-22';
+const BUILD='2026-09-22b';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -4369,19 +4355,9 @@ function paintZone(){
        depuis ici, chacune dans sa couleur pleine. */
     const TEINTE={habits:'--navy', objectives:'--blue', repulsions:'--rep',
                   wisdom:'--rep',  visions:'--blue'};
-    /* La tuile est la couleur de la vue RETENUE D'UN TON : les ronds de
-       destination portent les valeurs pleines de la marque, et il faut
-       qu'ils se détachent. Même doctrine que le papier sous les boîtes —
-       le fond recule, l'objet avance. Le contraste est MESURÉ. */
-    /* ⚠️ MESURÉ, PAS CHOISI À L'ŒIL. Première valeur pour les objectifs :
-       `#1f2a52` — le rond NAVY dessus tombait à 1,20 de contraste,
-       c'est-à-dire invisible, le bug même que Wah signale depuis trois
-       jours. Le navy est la plus sombre des trois couleurs de marque :
-       c'est lui qui fixe le plancher de toutes les tuiles.
-       `lot23.mjs` mesure les trois ronds sur les cinq tuiles. */
-    const SOMBRE={habits:'#1e1e3d', objectives:'#141a33', repulsions:'#2e1229',
-                  wisdom:'#2e1229', visions:'#141a33'};
-    jy.style.setProperty('--joy-fond', SOMBRE[view]||'#1e1e3d');
+    /* ⚠️ UNE SEULE VARIABLE, ET C'EST LE FOND. Il y avait une tuile
+       sombre PLUS un anneau de couleur : deux objets pour dire une
+       seule chose, et l'anneau se lisait comme une bordure. */
     jy.style.setProperty('--joy-vue', 'var('+(TEINTE[view]||'--navy')+')');
 
     /* La couche où l'on se trouve. Sur la sagesse et la vision il n'y en
@@ -6291,7 +6267,20 @@ window.addEventListener('touchend',(e)=>{
   /* `[contenteditable]` : le nom d'une boîte ouverte s'écrit dedans, pas
      dans un <input>. Sans lui, un doigt qui glisse en corrigeant un mot
      partait changer de vue. */
-  if(t0el&&t0el.closest&&t0el.closest('#freq-panel,#habit-peek,#filter-modal,#member-window,input,textarea,select,[contenteditable]'))return;
+  /* ⚠️ `#joy` EN TÊTE DE LISTE · 22/09 ter — ET C'EST LA CAUSE DE
+     « quand je vais à gauche ça reste dans HABIT ».
+     Le manche de la manette et ce balayage lisaient LE MÊME GESTE, et
+     ils ne le lisent pas dans le même sens :
+       · la manette suit le DOIGT   — tirer à gauche = aller à gauche ;
+       · le balayage suit le CONTENU — glisser à gauche montre ce qui
+         est à DROITE (règle du 15/09, et elle est juste).
+     Au-delà de 32 px de traction, les deux partaient. Depuis les
+     habitudes : la manette allait sur la sagesse, puis le balayage
+     lisait « à droite » et la sagesse renvoie sur les habitudes. **On
+     revenait à son point de départ**, exactement ce que Wah décrit — et
+     symétriquement à droite, par la vision.
+     Un geste né sur un contrôle appartient à ce contrôle. */
+  if(t0el&&t0el.closest&&t0el.closest('#joy,#freq-panel,#habit-peek,#filter-modal,#member-window,input,textarea,select,[contenteditable]'))return;
   const _ae=document.activeElement;
   if(_ae&&(_ae.tagName==='TEXTAREA'||_ae.tagName==='INPUT'))return;
   if(document.body.classList.contains('gate'))return;   /* l'atterrissage défile librement */
@@ -6353,6 +6342,8 @@ window.addEventListener('touchend',(e)=>{
      traverserait deux vues d'un coup. */
   addEventListener('wheel',e=>{
     if(document.body.classList.contains('gate'))return;
+    /* Même raison qu'au doigt : le pavé a sa propre molette. */
+    if(e.target&&e.target.closest&&e.target.closest('#joy'))return;
     if(Math.abs(e.deltaY) > Math.abs(e.deltaX)*1.6){
       if(navBlocked())return;
       if(Date.now()<froid){accV=0;return;}
