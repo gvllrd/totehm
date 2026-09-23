@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<!--
+  ══ figher.club/console — LA CONSOLE DU MEMBRE · 23/09/2026 ═════════════
+  MASTER §9 et §86. La page répond, dans cet ordre, à six questions :
+
+      WHAT DO I HAVE?          l'adhésion, le passeport, le THP
+      WHAT CAN I ACCESS?       les portes ouvertes, et ce qui ferme les autres
+      WHAT DO I SUBSCRIBE TO?  les Totehms que je suis — et en trouver un
+      WHO SUBSCRIBES TO ME?    mes abonnés, et « Monetize my TOTEHM »
+      WHAT DO I EARN?          le grand livre : gagné, en attente, versé
+      WHEN DO I GET PAID?      le prochain versement, le seuil, l'historique
+  + BILLING (le portail Stripe) et REVEAL THE BOX (chercher un 0.lenom).
+
+  ⚠️ UN APPEL DESSINE TOUT : `club_console()`. Aucune règle d'accès, aucun
+  montant n'est calculé ici — la page affiche ce que la base a décidé.
+  Un solde calculé dans le navigateur serait un solde inventé (MASTER §23).
+
+  ⚠️ L'IBAN NE REVIENT JAMAIS. Le champ se vide dès l'envoi ; la base ne
+  rend que les 4 derniers caractères.
+
+  ⚠️ LA COMPATIBILITÉ, LES BOÎTES D'UN AUTRE : jamais ici. Un abonné est
+  un pseudo et une date. Le reste appartient au Totehm de chacun.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>FIGHER.CLUB — Console</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#000;--mid:#b0b0b0;--lo:#9a9a9a;--dim:#606060;
+  --navy:#333366;--blue:#36498c;--rep:#743169;--paper:#2b2b57;--wis:#5b2652;--vis:#2b3a73;--on:#639922;
+  --tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000'/%3E%3C/svg%3E");
+  --bebas:'Bebas Neue',Impact,sans-serif;--q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+html,body{background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:13px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.hide{display:none!important}
+
+#member{position:fixed;top:16px;left:16px;z-index:40;display:flex;align-items:center;gap:7px;background:none;border:none;
+  cursor:pointer;font-family:var(--q);font-weight:700;font-size:13px;color:#a0a0a0;padding:6px 4px;transition:color .15s}
+#member i{width:6px;height:6px;border-radius:50%;background:#383838;display:block}
+#member.is-in i{background:var(--on)}
+#terms{position:fixed;top:20px;right:16px;z-index:40;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);transition:color .15s}
+#t{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:39;line-height:0}
+#t svg{height:30px;width:auto;fill:#fff}
+
+.btn{font-family:var(--q);font-size:14px;color:var(--mid);background:none;border:6px solid transparent;cursor:pointer;
+  padding:0 6px;line-height:1.6;display:inline-block;width:fit-content;transition:color .15s ease;-webkit-tap-highlight-color:transparent}
+.btn.main{color:#fff;font-weight:700}
+@media(hover:hover){.btn:hover{color:#fff;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round}}
+.btn:active,.btn.on{color:#fff;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round}
+.btn[disabled]{opacity:.35;pointer-events:none}
+.lnk{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);
+  background:none;border:none;cursor:pointer;padding:3px 2px;transition:color .15s}
+.in{font-family:var(--q);font-size:14px;color:#fff;background:none;outline:none;border:6px solid transparent;
+  border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round;padding:2px 8px;
+  text-align:center;caret-color:#fff;width:100%;max-width:300px}
+.in::placeholder{color:rgba(255,255,255,.35)}
+.note{font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;color:var(--lo)}
+.note.ok{color:var(--on)}.note.no{color:#ff9a9a}
+
+main{width:100%;max-width:600px;margin:0 auto;padding:84px 18px 120px}
+.head{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:26px 0 8px}
+.kick{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
+.who{font-family:var(--bebas);font-size:clamp(54px,14vw,96px);color:#fff;line-height:.9;letter-spacing:.02em;word-break:break-word}
+.status{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--lo)}
+.status b{color:#fff;font-weight:400}
+.idx{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;margin:18px 0 0}
+section{padding:64px 0 0;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+section h2{font-family:var(--bebas);font-weight:400;color:#fff;font-size:clamp(34px,8vw,52px);line-height:.95;letter-spacing:.02em}
+
+/* ── LA BOÎTE — pleine, la couleur fait le cadre, aucune bordure ─── */
+.stack{display:flex;flex-direction:column;gap:5px;width:100%;text-align:left}
+.box{background:var(--navy);color:#fff;padding:13px 15px;display:flex;flex-direction:column;gap:4px}
+.box.b{background:var(--blue)}.box.r{background:var(--rep)}.box.w{background:var(--wis)}.box.v{background:var(--vis)}
+/* ⚠️ LE POINTILLÉ EST L'EXCEPTION DOCUMENTÉE (CLAUDE.md, 09/09) : il ne
+   cerne pas une boîte, il dessine l'ABSENCE d'une boîte. Une porte
+   fermée, une clé manquante : une place vide, pas une surface grise. */
+.box.off{background:none;color:var(--lo);border:1px dashed rgba(255,255,255,.22)}
+.box .nm{font-family:var(--q);font-size:15px;line-height:1.4;word-break:break-word}
+.box .sub{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.72)}
+.box.off .sub{color:var(--dim)}
+.box .line{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.box .big{font-family:var(--bebas);font-size:34px;line-height:1;color:#fff}
+.box .acts{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:6px}
+.box .acts .lnk{color:rgba(255,255,255,.7);padding:2px 0}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;width:100%}
+.trio .box{align-items:center;text-align:center}
+@media(max-width:480px){.trio{grid-template-columns:1fr}}
+.views{display:flex;gap:4px;margin-top:4px}
+.views i{width:12px;height:12px;display:block;background:rgba(0,0,0,.35)}
+.views i.on{background:#fff}
+.pal{display:flex;gap:4px;margin-top:6px}
+.pal i{width:14px;height:14px;display:block}
+.minis{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.mini{font-family:var(--q);font-size:11px;color:#fff;padding:3px 7px;background:var(--navy)}
+.mini.o{background:var(--blue)}.mini.r{background:var(--rep)}.mini.w{background:var(--wis)}.mini.v{background:var(--vis)}
+.empty{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);padding:10px 0}
+
+/* ── Les réglages de monétisation ─────────────────────────────────── */
+.tog{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.ctl{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;padding:8px 0}
+.lbl{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+.ben{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.ben button{font-family:var(--q);font-size:13px;color:var(--lo);background:none;border:1px dashed rgba(255,255,255,.3);padding:6px 10px;cursor:pointer;transition:background .15s,color .15s}
+.ben button.on{background:var(--navy);color:#fff;border-color:transparent}
+.ben button[disabled]{opacity:.4;cursor:default}
+.gate{background:none;border:1px dashed rgba(255,255,255,.22);color:var(--lo);padding:16px;width:100%;text-align:center;font-size:12px}
+.gate b{color:#fff;font-weight:400}
+
+/* ── LA FEUILLE D'ENTRÉE ──────────────────────────────────────────── */
+#signin{min-height:70vh;justify-content:center}
+
+@media(hover:hover){
+  #member:hover,#terms:hover,.lnk:hover,.box .acts .lnk:hover,.status:hover,.kick:hover,.empty:hover,.lbl:hover,.ben button:not(.on):hover{color:#fff}
+  .box.off:hover{color:#fff}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<button id="member" type="button"><i></i><span id="member-txt">Sign in</span></button>
+<a id="terms" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a>
+<a id="t" href="/" aria-label="FIGHER.CLUB"><svg viewBox="0 0 68 68"><rect x="0" y="0" width="68" height="10"/><rect x="29" y="0" width="10" height="67"/><rect x="21" y="63" width="27" height="5"/></svg></a>
+
+<main>
+
+<!-- ══ PAS DE SESSION — une porte, et rien derrière ══ -->
+<section id="signin" class="hide">
+  <div class="kick">FIGHER.CLUB · Console</div>
+  <h2>One account.<br>Four doors.</h2>
+  <input class="in" id="si-email" type="email" placeholder="your@email" autocomplete="email">
+  <input class="in hide" id="si-code" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code">
+  <div class="note" id="si-note"></div>
+  <div id="si-claim" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:8px;width:100%">
+    <div class="lbl">Name your TOTEHM</div>
+    <input class="in" id="si-pseudo" maxlength="24" placeholder="your name">
+    <div class="note" id="si-claim-note"></div>
+  </div>
+</section>
+
+<div id="app" class="hide">
+  <div class="head">
+    <div class="kick">FIGHER.CLUB · Console</div>
+    <div class="who" id="who">—</div>
+    <div class="status" id="status">—</div>
+    <div class="note" id="flash"></div>
+    <nav class="idx" aria-label="Questions">
+      <a class="lnk" href="#have">Have</a><a class="lnk" href="#access">Access</a>
+      <a class="lnk" href="#subscribe">Subscribe</a><a class="lnk" href="#subscribers">Subscribers</a>
+      <a class="lnk" href="#earn">Earn</a><a class="lnk" href="#paid">Paid</a>
+      <a class="lnk" href="#billing">Billing</a><a class="lnk" href="#reveal">Reveal</a>
+    </nav>
+  </div>
+
+  <section id="have">
+    <div class="kick">01</div><h2>What do I have?</h2>
+    <div class="stack" id="have-box"></div>
+    <button class="btn main hide" id="rope-cta" type="button"></button>
+  </section>
+
+  <section id="access">
+    <div class="kick">02</div><h2>What can I access?</h2>
+    <div class="stack" id="access-box"></div>
+  </section>
+
+  <section id="subscribe">
+    <div class="kick">03</div><h2>What do I subscribe to?</h2>
+    <div class="stack" id="subs-box"></div>
+    <div class="ctl">
+      <div class="lbl">Find a TOTEHM</div>
+      <input class="in" id="find" placeholder="a name" autocomplete="off">
+      <div class="stack" id="find-res" style="max-width:420px"></div>
+      <div class="note" id="find-note"></div>
+    </div>
+  </section>
+
+  <section id="subscribers">
+    <div class="kick">04</div><h2>Who subscribes to me?</h2>
+    <div class="stack" id="fans-box"></div>
+    <div class="kick" style="margin-top:22px">Monetize my TOTEHM</div>
+    <div id="mon" class="ctl">
+      <div class="tog"><button class="btn" id="mon-off" type="button">Off</button><button class="btn" id="mon-on" type="button">On</button></div>
+      <div class="lbl">Your price · per month</div>
+      <input class="in" id="mon-price" inputmode="decimal" placeholder="€ / month" style="max-width:160px">
+      <div class="lbl">What your subscribers get</div>
+      <div class="ben" id="mon-ben">
+        <button type="button" data-b="totehm">TOTEHM access</button>
+        <button type="button" data-b="spots">Subscriber-only Spots</button>
+        <button type="button" disabled title="Not built yet — never sold before it exists">Higher Self · soon</button>
+        <button type="button" disabled title="Not built yet — never sold before it exists">TotehmBot · soon</button>
+      </div>
+      <div class="lbl">Where to pay you</div>
+      <div class="tog"><button class="btn" id="pay-iban" type="button">IBAN</button><button class="btn" id="pay-paypal" type="button">PayPal</button></div>
+      <input class="in" id="pay-handle" autocomplete="off" placeholder="IBAN or PayPal email">
+      <div class="note" id="pay-fin"></div>
+      <div class="note" id="mon-note"></div>
+      <div class="note" id="mon-vis"></div>
+      <button class="btn hide" id="mon-link" type="button">Copy my subscription link</button>
+    </div>
+    <div class="gate hide" id="mon-gate">Monetization is a <b>member</b> right. Every member can open it — no audience required.</div>
+  </section>
+
+  <section id="earn">
+    <div class="kick">05</div><h2>What do I earn?</h2>
+    <div id="earn-box" style="width:100%;display:flex;flex-direction:column;gap:5px"></div>
+    <div class="stack" id="ledger-box"></div>
+  </section>
+
+  <section id="paid">
+    <div class="kick">06</div><h2>When do I get paid?</h2>
+    <div class="stack" id="paid-box"></div>
+    <div class="stack" id="payouts-box"></div>
+  </section>
+
+  <section id="billing">
+    <div class="kick">Billing</div><h2>My membership.</h2>
+    <div class="stack" id="bill-box"></div>
+    <button class="btn" id="portal" type="button">Manage billing</button>
+    <div class="note" id="bill-note"></div>
+  </section>
+
+  <section id="reveal">
+    <div class="kick">Reveal the box</div><h2>0.lenom</h2>
+    <p style="max-width:40ch">A TOTEHM Cloth carries its name. Search it: the club reveals the box behind the cloth — as deep as your rights go.</p>
+    <input class="in" id="rv-in" placeholder="0.name" autocomplete="off">
+    <div class="note" id="rv-note"></div>
+    <div class="stack" id="rv-box" style="max-width:460px"></div>
+  </section>
+
+  <section style="padding-top:70px">
+    <button class="lnk" id="signout" type="button">Sign out</button>
+  </section>
+</div>
+
+</main>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL = 'https://abujjbkbbiumxrokozph.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+const sb = createClient(SB_URL, SB_ANON);
+const FN = SB_URL + '/functions/v1/';
+const $ = id => document.getElementById(id);
+const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
+
+/* ══ LE PONT SSO — COPIÉ (tools/sso_snippet.js) ═════════════════════ */
+async function ssoArrivee(sb){
+  const m = /[#&?]sso=([a-f0-9]{64})/.exec(location.hash) || /[#&?]sso=([a-f0-9]{64})/.exec(location.search);
+  if(!m) return false;
+  history.replaceState(null, '', location.pathname + location.search.replace(/[?&]sso=[a-f0-9]{64}/, ''));
+  try{
+    const r = await fetch(FN + 'sso-redeem', { method:'POST',
+      headers:{'content-type':'application/json','apikey':SB_ANON,'authorization':'Bearer '+SB_ANON},
+      body: JSON.stringify({ code: m[1] }) });
+    if(!r.ok){ console.error('[sso] redeem', r.status); return false; }
+    const { token_hash, email } = await r.json();
+    if(!token_hash) return false;
+    const { error } = await sb.auth.verifyOtp({ type:'email', token_hash, email });
+    if(error){ console.error('[sso] verify', error.message); return false; }
+    return true;
+  }catch(e){ console.error('[sso]', e && e.message || e); return false; }
+}
+async function ssoVersDomaine(sb, cible, url){
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(session){
+      const r = await fetch(FN + 'sso-mint', { method:'POST',
+        headers:{'authorization':'Bearer '+session.access_token,'apikey':SB_ANON,'content-type':'application/json'},
+        body: JSON.stringify({ target: cible }) });
+      if(r.ok){ const { code } = await r.json();
+        if(code){ location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; } }
+      else console.error('[sso] mint', r.status);
+    }
+  }catch(e){ console.error('[sso]', e && e.message || e); }
+  location.href = url;
+}
+await Promise.race([ssoArrivee(sb), new Promise(r => setTimeout(() => r(false), 2500))]);
+
+/* ── Outils d'affichage ─────────────────────────────────────────── */
+const money = (c, cur) => ((c||0)/100).toLocaleString('en-GB', {style:'currency', currency:(cur||'eur').toUpperCase(),
+  minimumFractionDigits: (c||0) % 100 ? 2 : 0});
+const day = iso => iso ? new Date(iso).toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}) : '—';
+const VIEW = { habits:['MY HABITS',''], objectives:['MY OBJECTIVES','b'], repulsions:['MY REPULSIONS','r'],
+               wisdom:['MY WISDOM','w'], visions:['MY VISION','v'] };
+const COLOR = { fight:'#E24B4A', flow:'#e48b31', enrich:'#fcbe21', love:'#639922', express:'#1D9E75', focus:'#378ADD', celebrate:'#7F77DD' };
+const BEN = { totehm:'TOTEHM access', spots:'Subscriber-only Spots', higherself:'Higher Self', totehmbot:'TotehmBot' };
+async function fn(name, body){
+  const { data:{ session } } = await sb.auth.getSession();
+  const r = await fetch(FN + name, { method:'POST',
+    headers:{'content-type':'application/json','apikey':SB_ANON,'authorization':'Bearer '+(session?.access_token || SB_ANON)},
+    body: JSON.stringify(body || {}) });
+  let d = {}; try{ d = await r.json(); }catch(_){}
+  return { ok: r.ok, status: r.status, d };
+}
+const PORTES = {
+  com:      ['com',      'https://www.totehm.com/totehm#in'],
+  space:    ['space',    'https://www.totehm.space/'],
+  create:   ['space',    'https://www.totehm.space/#create'],
+  boutique: ['boutique', 'https://www.higher.boutique/streetwear'],
+  thp:      ['boutique', 'https://www.higher.boutique/get_higher'],
+  bot:      ['com',      'https://www.totehm.com/club/totehmbot'],
+};
+const porte = k => { const p = PORTES[k]; if(p) ssoVersDomaine(sb, p[0], p[1]); };
+document.addEventListener('click', e => {
+  const g = e.target.closest('[data-go]'); if(g){ e.preventDefault(); porte(g.dataset.go); }
+});
+
+/* ══ L'ÉTAT — un appel, tout l'écran ════════════════════════════════ */
+let me = null, C = null;
+/* Le diagnostic — des booléens et des compteurs, jamais une valeur de
+   membre. Dans la console : __totehm_club() */
+const BUILD = '2026-09-23';
+window.__totehm_club = () => ({ build: BUILD, page: 'console', signed_in: !!me, loaded: !!C,
+  member: !!C?.figher?.member, remplies: C?.figher?.remplies ?? null,
+  subscriptions: C?.subscriptions?.length ?? null, subscribers: C?.subscribers?.count ?? null,
+  monetized: !!C?.monetization?.enabled, payout_method: !!C?.monetization?.payout_method,
+  balances: C?.earnings?.balances?.length ?? null, payouts: C?.payouts?.length ?? null });
+async function load(){
+  const { data:{ session } } = await sb.auth.getSession();
+  me = session?.user || null;
+  $('member').classList.toggle('is-in', !!me);
+  if(!me){ $('member-txt').textContent = 'Sign in'; showSignin(); return; }
+  const { data, error } = await sb.rpc('club_console');
+  if(error){ console.error('[club_console]', error.message); $('flash').className = 'note no'; $('flash').textContent = 'console unavailable — ' + error.message; return; }
+  C = data;
+  if(!C.pseudo){ showSignin(true); return; }
+  $('member-txt').textContent = C.pseudo;
+  $('signin').classList.add('hide'); $('app').classList.remove('hide');
+  paint();
+}
+function showSignin(claim){
+  $('app').classList.add('hide'); $('signin').classList.remove('hide');
+  $('si-claim').classList.toggle('hide', !claim);
+  $('si-email').classList.toggle('hide', !!claim);
+  if(!claim) setTimeout(() => $('si-email').focus(), 60);
+}
+
+function paint(){
+  const f = C.figher || {}, m = C.membership || {};
+  $('who').textContent = C.pseudo;
+  $('status').innerHTML = f.member
+    ? '<b>Member</b>' + (f.number ? ' · Figher #' + String(f.number).padStart(3,'0') : '') + (f.trial ? ' · trial' : '')
+    : 'Not yet a member · ' + [f.complete ? null : 'TOTEHM ' + (f.remplies||0) + '/5', f.thp ? null : 'no THP', f.annual ? null : 'no membership'].filter(Boolean).join(' · ');
+  paintHave(f, m); paintAccess(f); paintSubs(); paintFans(); paintMon(f); paintEarn(); paintPaid(); paintBill(f, m);
+}
+
+/* ── 01 · WHAT DO I HAVE? ─────────────────────────────────────────── */
+function paintHave(f, m){
+  const v = f.views || {};
+  const sq = ['wisdom','visions','habits','objectives','repulsions'].map(k => '<i class="' + (v[k] ? 'on' : '') + '"></i>').join('');
+  const mem = f.annual
+    ? '<div class="box r"><div class="nm">FIGHER CLUB — annual</div><div class="sub">' + (f.trial ? 'trial until ' + day(m.trial_ends_at) : (m.ending ? 'ends ' : 'renews ') + day(m.until)) + (m.price_cents ? ' · ' + money(m.price_cents) + ' / year, locked' : '') + '</div></div>'
+    : '<div class="box off"><div class="nm">FIGHER CLUB — annual</div><div class="sub">not active</div></div>';
+  $('have-box').innerHTML =
+    '<div class="box' + (f.complete ? '' : ' off') + '"><div class="line"><div class="nm">My TOTEHM — the passport</div><div class="sub">' + (f.remplies||0) + ' / 5</div></div>' +
+      '<div class="views">' + sq + '</div><div class="sub">wisdom · vision · habits · objectives · repulsions</div></div>' +
+    '<div class="box b' + (f.thp ? '' : ' off') + '"><div class="nm">TotehmPaper {THP}</div><div class="sub">' + (f.thp ? 'owned' + (f.number ? ' · #' + String(f.number).padStart(3,'0') : '') : 'not owned') + '</div></div>' +
+    mem;
+  const cta = $('rope-cta');
+  cta.classList.toggle('hide', !!f.member);
+  if(f.member) return;
+  if(!f.complete){ cta.textContent = 'Complete my TOTEHM — ' + (f.remplies||0) + ' / 5'; cta.onclick = () => porte('com'); }
+  else if(!f.thp){ cta.textContent = 'Get my TotehmPaper'; cta.onclick = () => porte('thp'); }
+  else { cta.textContent = 'Join FIGHER'; cta.onclick = join; }
+}
+async function join(){
+  $('rope-cta').disabled = true;
+  const r = await fn('subscription-checkout', {});
+  $('rope-cta').disabled = false;
+  if(r.d.url){ location.href = r.d.url; return; }
+  if(r.d.already){ load(); return; }
+  $('flash').className = 'note no'; $('flash').textContent = r.d.error === 'velvet' ? 'a key is missing' : (r.d.error || 'checkout unavailable');
+}
+
+/* ── 02 · WHAT CAN I ACCESS? — chaque porte dit si elle est ouverte,
+      et sinon POURQUOI : un bouton grisé sans raison est un bouton cassé. */
+function paintAccess(f){
+  const a = C.access || {};
+  const why = f.member ? '' : (!f.complete ? 'complete your TOTEHM' : !f.thp ? 'own the THP' : 'join the club');
+  const row = (open, nm, sub, go, cls, lock) => '<div class="box ' + (open ? (cls||'') : 'off') + '"><div class="line"><div class="nm">' + nm + '</div><div class="sub">' + (open ? 'open' : 'locked') + '</div></div>' +
+    '<div class="sub">' + (open ? sub : (lock || why)) + '</div>' + (open && go ? '<div class="acts"><button class="lnk" data-go="' + go + '">Open</button></div>' : '') + '</div>';
+  $('access-box').innerHTML =
+    row(a.space_create, 'SPACE — create & join Spots', 'a Habit becomes an action with members', 'space') +
+    // Totehmize s'ouvre au Totehm COMPLET, sans le Club (CLAUDE.md, « le
+    // TOTEHM est le passeport ») : la raison affichée est la sienne.
+    row(a.totehmize, 'HIGHER — totehmize a box', 'any box of the five views becomes a TOTEHM Cloth', 'boutique', 'b', 'complete your TOTEHM') +
+    row(a.totehmbot, 'TOTEHMBOT — the mirror', a.bot_linked ? 'linked to Telegram' : 'open — link it from your TOTEHM', 'bot', 'r') +
+    row(a.reveal, 'REVEAL THE BOX', 'search a 0.name below', null) +
+    row(a.subscribe, 'SUBSCRIBE TO A TOTEHM', 'one way — you read theirs, not the other way round', null, 'b') +
+    row(a.monetize, 'MONETIZE MY TOTEHM', C.monetization?.enabled ? 'on' : 'off — switch it on below', null, 'r');
+}
+
+/* ── 03 · WHAT DO I SUBSCRIBE TO? ─────────────────────────────────── */
+function paintSubs(){
+  const l = C.subscriptions || [];
+  $('subs-box').innerHTML = l.length ? l.map(s => {
+    const act = ['active','trialing'].includes(s.status);
+    return '<div class="box b' + (act ? '' : ' off') + '"><div class="line"><div class="nm">' + esc(s.creator || '—') + '</div><div class="sub">' +
+      (s.price_cents ? money(s.price_cents, s.currency) + ' / month' : '') + '</div></div>' +
+      '<div class="sub">' + esc(s.status) + ' · ' + (act ? (s.ending ? 'ends ' : 'renews ') + day(s.renews) : 'since ' + day(s.since)) + '</div>' +
+      '<div class="sub">' + (s.benefits || []).map(b => BEN[b] || b).join(' · ') + '</div>' +
+      (act ? '<div class="acts"><button class="lnk" data-ro="' + esc(s.creator) + '">Open their TOTEHM</button>' +
+        (s.ending ? '' : '<button class="lnk" data-cancel="' + esc(s.creator) + '">Cancel at period end</button>') + '</div>' : '') + '</div>';
+  }).join('') : '<div class="empty">No subscription yet.</div>';
+}
+$('subs-box').addEventListener('click', async e => {
+  const ro = e.target.closest('[data-ro]');
+  if(ro){ ssoVersDomaine(sb, 'com', 'https://www.totehm.com/totehm?ro=' + encodeURIComponent(ro.dataset.ro)); return; }
+  const c = e.target.closest('[data-cancel]'); if(!c) return;
+  c.disabled = true; c.textContent = 'cancelling…';
+  const r = await fn('club-billing', { action:'cancel_creator', pseudo: c.dataset.cancel });
+  if(r.d.ok){ flash('ends on ' + day(r.d.until) + ' — what you paid stays yours', true); load(); }
+  else { flash(r.d.error || 'not cancelled', false); c.disabled = false; c.textContent = 'Cancel at period end'; }
+});
+let findT = null;
+$('find').addEventListener('input', () => {
+  clearTimeout(findT);
+  const v = $('find').value.trim();
+  if(v.length < 2){ $('find-res').innerHTML = ''; $('find-note').textContent = ''; return; }
+  findT = setTimeout(async () => {
+    const { data, error } = await sb.rpc('search_totehms', { p_q: v, p_limit: 6 });
+    if(error){ $('find-note').textContent = 'search unavailable'; return; }
+    const l = (data || []).filter(r => r.pseudo !== C.pseudo);
+    $('find-res').innerHTML = l.length ? l.map(r => '<div class="box"><div class="line"><div class="nm">' + esc(r.pseudo) + '</div><div class="sub">' + (r.habits||0) + ' habits</div></div>' +
+      '<div class="pal">' + (r.intentions||[]).map(i => '<i style="background:' + (COLOR[i]||'#fff') + '"></i>').join('') + '</div>' +
+      '<div class="acts"><button class="lnk" data-card="' + esc(r.pseudo) + '">See the offer</button></div></div>').join('') : '';
+    $('find-note').textContent = l.length ? '' : 'no shared TOTEHM under that name';
+  }, 280);
+});
+$('find-res').addEventListener('click', e => { const c = e.target.closest('[data-card]'); if(c) openCard(c.dataset.card); });
+async function openCard(pseudo){
+  $('find').value = pseudo;
+  const { data: c, error } = await sb.rpc('creator_card', { p_pseudo: pseudo });
+  if(error || !c?.ok){ $('find-note').textContent = c?.why === 'nobody' ? 'nobody by that name' : 'unavailable'; $('find-res').innerHTML = ''; return; }
+  const f = C.figher || {};
+  let act;
+  if(c.me) act = '<div class="sub">this is you</div>';
+  else if(c.subscribed) act = '<div class="sub">subscribed · ' + (c.until ? 'renews ' + day(c.until) : 'active') + '</div>';
+  else if(!c.open) act = '<div class="sub">this TOTEHM is not open to subscriptions</div>';
+  else if(!f.member) act = '<div class="sub">subscribing is a member right</div>';
+  else act = '<div class="acts"><button class="btn main" data-sub="' + esc(c.pseudo) + '">Subscribe — ' + money(c.price_cents, c.currency) + ' / month</button></div>';
+  $('find-res').innerHTML = '<div class="box b"><div class="line"><div class="nm">' + esc(c.pseudo) + '</div><div class="sub">' +
+    (c.price_cents ? money(c.price_cents, c.currency) + ' / month' : '') + '</div></div>' +
+    '<div class="sub">' + (c.benefits || []).map(b => BEN[b] || b).join(' · ') + '</div>' + act + '</div>';
+  $('find-note').textContent = '';
+}
+$('find-res').addEventListener('click', async e => {
+  const s = e.target.closest('[data-sub]'); if(!s) return;
+  s.disabled = true; $('find-note').textContent = 'opening checkout…';
+  const r = await fn('creator-subscribe', { pseudo: s.dataset.sub });
+  if(r.d.url){ location.href = r.d.url; return; }
+  if(r.d.already){ $('find-note').textContent = 'already subscribed'; load(); return; }
+  $('find-note').textContent = ({ figher:'subscribing is a member right', closed:'not open to subscriptions', self:'this is you' })[r.d.error] || r.d.error || 'checkout unavailable';
+  s.disabled = false;
+});
+
+/* ── 04 · WHO SUBSCRIBES TO ME? — et l'interrupteur ──────────────── */
+function paintFans(){
+  const s = C.subscribers || { count:0, list:[] };
+  $('fans-box').innerHTML = '<div class="box"><div class="line"><div class="nm">Active subscribers</div><div class="big">' + (s.count||0) + '</div></div></div>' +
+    (s.list || []).slice(0, 30).map(x => '<div class="box' + (['active','trialing'].includes(x.status) ? '' : ' off') + '"><div class="line"><div class="nm">' + esc(x.pseudo || '—') + '</div><div class="sub">' +
+      esc(x.status) + '</div></div><div class="sub">since ' + day(x.since) + (x.renews ? ' · renews ' + day(x.renews) : '') + '</div></div>').join('');
+}
+let BENS = new Set(['totehm']), PAYM = 'iban';
+function paintMon(f){
+  const mo = C.monetization || {};
+  const member = !!f.member;
+  $('mon').classList.toggle('hide', !member);
+  $('mon-gate').classList.toggle('hide', member);
+  if(!member) return;
+  $('mon-on').classList.toggle('on', !!mo.enabled);
+  $('mon-off').classList.toggle('on', !mo.enabled);
+  if(document.activeElement !== $('mon-price')) $('mon-price').value = mo.price_cents ? (mo.price_cents/100).toString() : '';
+  BENS = new Set(mo.benefits || ['totehm']);
+  $('mon-ben').querySelectorAll('[data-b]').forEach(b => b.classList.toggle('on', BENS.has(b.dataset.b)));
+  PAYM = mo.payout_method || PAYM;
+  $('pay-iban').classList.toggle('on', PAYM === 'iban'); $('pay-paypal').classList.toggle('on', PAYM === 'paypal');
+  $('pay-fin').textContent = mo.payout_fin ? (mo.payout_method === 'paypal' ? 'PayPal' : 'IBAN') + ' ···· ' + mo.payout_fin : 'no payout method yet';
+  $('mon-vis').textContent = mo.enabled
+    ? (BENS.has('totehm') ? 'your TOTEHM is readable by your subscribers only' : 'your TOTEHM stays closed — subscribers get your Spots')
+    : 'off — your TOTEHM is private';
+  $('mon-link').classList.toggle('hide', !mo.enabled);
+}
+async function saveMon(enabled, extra){
+  const n = $('mon-note'); n.className = 'note'; n.textContent = 'saving…';
+  const euros = parseFloat(($('mon-price').value || '').replace(',', '.'));
+  const cents = Number.isFinite(euros) ? Math.round(euros * 100) : null;
+  const { data, error } = await sb.rpc('monetization_set', { p_enabled: enabled, p_price_cents: cents, p_benefits: [...BENS], ...(extra||{}) });
+  if(error){ n.className = 'note no'; n.textContent = error.message; return; }
+  if(!data?.ok){
+    n.className = 'note no';
+    n.textContent = ({ price:'between 3 € and 500 € per month', price_first:'set your price first', payout_first:'tell us where to pay you first',
+      benefits:'choose at least one benefit', figher:'a member right' })[data?.why] || data?.why || 'not saved';
+  } else { n.className = 'note ok'; n.textContent = 'saved'; }
+  await load();
+}
+$('mon-on').onclick = () => saveMon(true);
+$('mon-off').onclick = () => saveMon(false);
+$('mon-price').addEventListener('keydown', e => { if(e.key === 'Enter') saveMon(!!C.monetization?.enabled); });
+$('mon-price').addEventListener('blur', () => { if($('mon-price').value.trim()) saveMon(!!C.monetization?.enabled); });
+$('mon-ben').addEventListener('click', e => {
+  const b = e.target.closest('[data-b]'); if(!b) return;
+  if(BENS.has(b.dataset.b) && BENS.size === 1) return; // au moins un droit
+  BENS.has(b.dataset.b) ? BENS.delete(b.dataset.b) : BENS.add(b.dataset.b);
+  saveMon(!!C.monetization?.enabled);
+});
+$('pay-iban').onclick = () => { PAYM = 'iban'; $('pay-iban').classList.add('on'); $('pay-paypal').classList.remove('on'); $('pay-handle').focus(); };
+$('pay-paypal').onclick = () => { PAYM = 'paypal'; $('pay-paypal').classList.add('on'); $('pay-iban').classList.remove('on'); $('pay-handle').focus(); };
+$('pay-handle').addEventListener('keydown', async e => {
+  if(e.key !== 'Enter') return;
+  const v = $('pay-handle').value.trim(), n = $('mon-note');
+  if(v.length < 6){ n.className = 'note no'; n.textContent = 'that does not look complete'; return; }
+  /* ⚠️ LE CHAMP SE VIDE DÈS QUE C'EST PARTI : un IBAN qui reste affiché
+     est un IBAN lu par-dessus l'épaule. */
+  $('pay-handle').value = '';
+  n.className = 'note'; n.textContent = 'saving…';
+  const { error } = await sb.rpc('creator_payout_set', { p_method: PAYM, p_handle: v });
+  if(error){ n.className = 'note no'; n.textContent = 'not saved'; return; }
+  n.className = 'note ok'; n.textContent = 'saved'; load();
+});
+$('mon-link').onclick = async () => {
+  const link = 'https://www.figher.club/console?to=' + encodeURIComponent(C.pseudo);
+  try{ await navigator.clipboard.writeText(link); $('mon-link').textContent = 'copied'; setTimeout(() => $('mon-link').textContent = 'Copy my subscription link', 1600); }
+  catch(_){ $('mon-note').className = 'note'; $('mon-note').textContent = link; }
+};
+
+/* ── 05 · WHAT DO I EARN? — le grand livre, jamais un calcul local ── */
+function paintEarn(){
+  const e = C.earnings || {};
+  const bals = (e.balances && e.balances.length) ? e.balances : [{ currency:'eur', earned_cents:0, pending_cents:0, paid_cents:0 }];
+  $('earn-box').innerHTML = bals.map(b => '<div class="trio">' +
+    '<div class="box"><div class="sub">Total earned</div><div class="big">' + money(b.earned_cents, b.currency) + '</div></div>' +
+    '<div class="box b"><div class="sub">Pending balance</div><div class="big">' + money(b.pending_cents, b.currency) + '</div></div>' +
+    '<div class="box r"><div class="sub">Paid out</div><div class="big">' + money(b.paid_cents, b.currency) + '</div></div></div>').join('');
+  const r = e.recent || [];
+  /* Une ligne du grand livre EXISTE : c'est une boîte pleine, pas le
+     pointillé de l'absence. Même couleur que sa colonne du trio : gagné
+     navy, versé rouge-violet, ajustement bleu clair. */
+  const LC = { earning:'', payout:' r', adjustment:' b' };
+  $('ledger-box').innerHTML = r.length ? r.map(l => '<div class="box' + (LC[l.kind] ?? '') + '"><div class="line"><div class="sub">' + day(l.at) + ' · ' + esc(l.kind) + '</div><div class="nm">' +
+    (l.amount_cents > 0 ? '+' : '') + money(l.amount_cents, l.currency) + '</div></div></div>').join('')
+    : '<div class="empty">Your share (' + (C.monetization?.part || 80) + ' %) is written here at every paid invoice.</div>';
+}
+
+/* ── 06 · WHEN DO I GET PAID? ─────────────────────────────────────── */
+function paintPaid(){
+  const e = C.earnings || {}, th = e.threshold_cents || 2500;
+  const eur = (e.balances || []).find(b => b.currency === 'eur') || { pending_cents:0 };
+  const ok = eur.pending_cents >= th;
+  $('paid-box').innerHTML = '<div class="box' + (ok ? '' : ' off') + '"><div class="line"><div class="nm">Next payout</div><div class="big">' + day(e.next_payout) + '</div></div>' +
+    '<div class="sub">' + (ok ? money(eur.pending_cents) + ' will leave together' : 'minimum ' + money(th) + ' — below it, your balance is kept') + '</div>' +
+    '<div class="sub">' + (C.monetization?.payout_fin ? 'to ' + (C.monetization.payout_method === 'paypal' ? 'PayPal' : 'IBAN') + ' ···· ' + C.monetization.payout_fin : 'no payout method yet — set it in 04') + '</div></div>';
+  const p = C.payouts || [];
+  $('payouts-box').innerHTML = p.length ? p.map(x => '<div class="box r"><div class="line"><div class="nm">' + money(x.amount_cents, x.currency) + '</div><div class="sub">' + esc(x.period) + '</div></div>' +
+    '<div class="sub">' + esc(x.status) + (x.paid_at ? ' · ' + day(x.paid_at) : '') + (x.fin ? ' · ···· ' + esc(x.fin) : '') + '</div></div>').join('')
+    : '<div class="empty">No payout yet.</div>';
+}
+
+/* ── BILLING ──────────────────────────────────────────────────────── */
+function paintBill(f, m){
+  $('bill-box').innerHTML = m.status
+    ? '<div class="box r"><div class="line"><div class="nm">FIGHER CLUB — annual</div><div class="sub">' + esc(m.status) + '</div></div>' +
+      '<div class="sub">since ' + day(m.since) + (m.until ? ' · ' + (m.ending ? 'ends ' : 'renews ') + day(m.until) : '') + '</div>' +
+      (m.price_cents ? '<div class="sub">' + money(m.price_cents) + ' / year — locked while active</div>' : '') + '</div>' +
+      (C.subscriptions || []).filter(s => ['active','trialing'].includes(s.status)).map(s => '<div class="box b"><div class="line"><div class="nm">TOTEHM · ' + esc(s.creator) + '</div><div class="sub">' +
+        money(s.price_cents, s.currency) + ' / month</div></div></div>').join('')
+    : '<div class="empty">No membership yet.</div>';
+  $('portal').classList.toggle('hide', !m.portal);
+}
+$('portal').onclick = async () => {
+  $('bill-note').className = 'note'; $('bill-note').textContent = 'opening…';
+  const r = await fn('club-billing', { action:'portal' });
+  if(r.d.url){ location.href = r.d.url; return; }
+  $('bill-note').className = 'note no'; $('bill-note').textContent = r.d.error || 'unavailable';
+};
+
+/* ── REVEAL THE BOX — la donnée derrière l'objet, selon les droits ── */
+$('rv-in').addEventListener('keydown', async e => {
+  if(e.key !== 'Enter') return;
+  const v = $('rv-in').value.trim(), n = $('rv-note');
+  if(v.length < 3){ n.textContent = 'a name like 0.river'; return; }
+  n.className = 'note'; n.textContent = 'searching…';
+  const { data: r, error } = await sb.rpc('reveal_cloth', { p_name: v });
+  if(error){ n.className = 'note no'; n.textContent = 'unavailable'; return; }
+  n.textContent = '';
+  if(!r?.found){ $('rv-box').innerHTML = '<div class="empty">No TOTEHM Cloth by that name.</div>'; return; }
+  if(r.legacy){ $('rv-box').innerHTML = '<div class="box"><div class="nm">' + esc(r.message) + '</div><div class="sub">' + esc(r.name) + ' · ' + day(r.created_at) + '</div></div>'; return; }
+  const V = VIEW[r.view] || ['A BOX',''];
+  if(r.level === 'locked'){
+    $('rv-box').innerHTML = '<div class="box ' + V[1] + '"><div class="sub">' + esc(r.name) + ' · ' + day(r.created_at) + '</div><div class="nm">Born in ' + V[0] + '</div>' +
+      '<div class="sub">' + (me ? 'revealing the box is a member right' : 'sign in to reveal') + '</div></div>'; return;
+  }
+  const minis = r.matter ? Object.entries(r.matter).map(([k, arr]) => (arr || []).map(x => '<span class="mini ' + ({objectives:'o',repulsions:'r',wisdom:'w',visions:'v'}[k]||'') + '">' + esc(x.text) + '</span>').join('')).join('') : '';
+  $('rv-box').innerHTML = '<div class="box ' + V[1] + '"><div class="sub">' + esc(r.name) + ' · ' + V[0] + ' · ' + day(r.created_at) + '</div>' +
+    '<div class="nm" style="font-size:18px">' + esc(r.text) + '</div>' +
+    '<div class="pal">' + (r.palette || []).map(c => '<i style="background:' + esc(c) + '"></i>').join('') + '</div>' +
+    (r.owner ? '<div class="sub">' + esc(r.owner) + '</div>' : '') +
+    (minis ? '<div class="minis">' + minis + '</div>' : (r.level === 'member' ? '<div class="sub">what it is connected to — for subscribers of this TOTEHM</div>' : '')) + '</div>';
+});
+
+/* ── Entrée ───────────────────────────────────────────────────────── */
+let mail = '';
+$('si-email').addEventListener('keydown', async e => {
+  if(e.key !== 'Enter') return;
+  const v = $('si-email').value.trim(), n = $('si-note');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ n.className = 'note no'; n.textContent = 'invalid email'; return; }
+  n.className = 'note'; n.textContent = 'sending…';
+  const { error } = await sb.auth.signInWithOtp({ email:v, options:{ shouldCreateUser:true } });
+  if(error){ n.className = 'note no'; n.textContent = 'try again in a minute'; return; }
+  mail = v; n.className = 'note ok'; n.textContent = 'code sent';
+  $('si-code').classList.remove('hide'); setTimeout(() => $('si-code').focus(), 60);
+});
+$('si-code').addEventListener('input', async () => {
+  const t = $('si-code').value.trim(), n = $('si-note');
+  if(t.length !== 6) return;
+  n.className = 'note'; n.textContent = 'verifying…';
+  const { error } = await sb.auth.verifyOtp({ email:mail, token:t, type:'email' });
+  if(error){ n.className = 'note no'; n.textContent = 'wrong code'; return; }
+  n.textContent = ''; $('si-code').value = ''; $('si-code').classList.add('hide');
+});
+$('si-pseudo').addEventListener('keydown', async e => {
+  if(e.key !== 'Enter') return;
+  const v = $('si-pseudo').value.trim(), n = $('si-claim-note');
+  if(v.length < 3 || v.length > 24){ n.className = 'note no'; n.textContent = '3 to 24 characters'; return; }
+  const { error } = await sb.from('profiles').insert({ id: me.id, pseudo: v });
+  if(error){ n.className = 'note no'; n.textContent = error.code === '23505' ? 'already taken' : 'try again'; return; }
+  load();
+});
+$('member').onclick = () => { if(!me) showSignin(); else document.getElementById('have').scrollIntoView({behavior:'smooth'}); };
+$('signout').onclick = async () => { await sb.auth.signOut(); location.href = '/'; };
+sb.auth.onAuthStateChange(ev => { if(ev === 'SIGNED_IN' || ev === 'SIGNED_OUT') load(); });
+
+function flash(t, ok){ $('flash').className = 'note ' + (ok ? 'ok' : 'no'); $('flash').textContent = t; }
+
+await load();
+const P = new URLSearchParams(location.search);
+if(P.get('joined')){
+  /* Le webhook peut arriver une seconde après le retour de Stripe : on
+     relit quelques fois, puis on laisse la page dire la vérité. */
+  flash('welcome — your membership is being written', true);
+  for(let k = 0; k < 5 && C && !C.figher?.annual; k++){ await new Promise(r => setTimeout(r, 1500)); await load(); }
+  if(C?.figher?.annual) flash('welcome to the club', true);
+}
+if(P.get('subscribed')) flash('subscribed to ' + P.get('subscribed'), true);
+if(P.get('to') && C){ document.getElementById('subscribe').scrollIntoView(); openCard(P.get('to')); }
+if(location.hash === '#reveal') setTimeout(() => $('rv-in').focus(), 300);
+</script>
+</body>
+</html>

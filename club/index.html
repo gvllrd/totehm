@@ -1,84 +1,539 @@
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>THE FIGHER CLUB</title>
+<!DOCTYPE html>
 <!--
-  ══ figher.club — SQUELETTE · 15/09/2026 ════════════════════════════════
-  Demandé par le COO : centraliser le Radar, l'accès Boutique et
-  l'abonnement sur un quatrième domaine.
+  ══ figher.club — LA PAGE DE VENTE · 23/09/2026 ══════════════════════════
+  MASTER §8-11 : FIGHER.CLUB est le centre de l'appartenance, des droits,
+  des abonnements et de l'argent du Totehm. Ce fichier VEND ; la console
+  (`/console`) GÈRE. Deux fichiers, deux rôles.
 
-  ⚠️ LIS `CLAUDE.md` § « LE QUATRIÈME DOMAINE » AVANT D'ALLER PLUS LOIN.
-  Ce fichier est un SQUELETTE, volontairement inerte : il ne lit aucune
-  session, n'appelle aucune RPC, ne montre aucun prix. La raison est
-  écrite noir sur blanc dans CLAUDE.md et elle tient en une ligne :
+  THE VELVET ROPE — trois clés, dans cet ordre, et la page les lit en base :
+      01 TOTEHM COMPLET   une boîte non vide dans chacune des cinq vues
+      02 THP POSSÉDÉ       le TotehmPaper, acheté sur higher.boutique
+      03 ANNUEL ACTIF      l'adhésion, achetée ici
+  `figher_access()` rend les trois booléens et `member`. La page n'en
+  recompose aucun : elle affiche, et le bouton unique suit l'état.
 
-      quatre domaines = quatre localStorage = quatre sessions,
-      et IL N'Y A PAS DE SSO.
+  ⚠️ LE PRIX N'EST ÉCRIT NULLE PART ICI. Il vient de Stripe par
+  `subscription-checkout { preview: true }`. SYSTEM.md §3 : « jamais dans
+  le frontend ». Si la lecture échoue, on n'invente pas un chiffre.
 
-  Un membre qui se connecte sur totehm.space arrive ici DÉCONNECTÉ.
-  Brancher le Radar, la facturation et la boutique derrière une porte
-  qui redemande l'e-mail à chaque saut, c'est le produit qui a l'air
-  cassé — pas une fois, à chaque visite.
+  ⚠️ QUATRE DOMAINES, QUATRE SESSIONS, UN PONT. Le bloc SSO est COPIÉ
+  (tools/sso_snippet.js), il ne s'importe pas. Toute porte vers un autre
+  domaine passe par `ssoVersDomaine` : le membre arrive connecté.
 
-  Tant que le pont de session n'est pas construit
-  (`auth.admin.generateLink` → `token_hash` à usage unique, jamais un
-  jeton de session dans une URL), ce fichier reste une VITRINE : il dit
-  ce qu'est le Club et il renvoie vers totehm.space pour y entrer.
-
-  Root Directory Vercel = `club`. Le dossier est prêt, le domaine peut
-  être posé dessus le jour où il est acheté, sans rien recâbler.
+  Typo (CLAUDE.md, STACK POLICE) : Bebas Neue = titres · Quantico =
+  boutons et saisies · Space Mono = texte, labels, prix, navigation.
+  Montserrat n'apparaît pas : cette page n'écrit pas « Higher ».
+  Aucune bordure, aucun arrondi, fond noir, contenu centré.
 -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>FIGHER.CLUB</title>
+<meta name="description" content="The club for people with a strategy. Your TOTEHM is the passport.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
+  --bg:#000;--hi:#fff;--mid:#b0b0b0;--lo:#9a9a9a;--dim:#606060;
+  --navy:#333366;--blue:#36498c;--rep:#743169;--paper:#2b2b57;
+  --wis:#5b2652;--vis:#2b3a73;--on:#639922;
   --fight:#E24B4A;--flow:#e48b31;--enrich:#fcbe21;--love:#639922;
   --express:#1D9E75;--focus:#378ADD;--celebrate:#7F77DD;
-  --navy:#333366;--g-mid:#909090;
+  --tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000'/%3E%3C/svg%3E");
+  --bebas:'Bebas Neue',Impact,sans-serif;--q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;min-height:100%;background:#000;color:#b0b0b0;
-  font-family:'Quantico',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-#w{min-height:100dvh;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:34px;padding:max(64px,10vh) 20px}
-/* Le T et le TOTEHM aux mêmes coordonnées que partout : 30 px du haut sur
-   53, 30 px du bas sur 50. Trois domaines, une seule mesure. */
-#t{position:fixed;top:30px;left:50%;transform:translateX(-50%);line-height:0}
-#t svg{height:53px;width:auto;display:block}
-h1{font-family:'Montserrat',sans-serif;font-style:italic;font-weight:900;
-  font-size:clamp(30px,8vw,62px);color:#fff;letter-spacing:-.02em;
-  text-align:center;line-height:1}
-.say{font-size:clamp(14px,3.4vw,17px);color:#b0b0b0;text-align:center;
-  max-width:30ch;line-height:1.6}
-/* LES SEPT INTENTIONS — le Radar se filtrera par elles. Ici elles ne
-   filtrent rien : elles disent ce que le Club classe. */
-.ints{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:430px}
-.i{display:flex;flex-direction:column;align-items:center;gap:5px;
-  padding:9px 12px;background:rgba(255,255,255,.05)}
-.i b{width:11px;height:11px;display:block}
-.i span{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;
-  text-transform:uppercase;color:rgba(255,255,255,.5)}
-.door{font-family:'Quantico',sans-serif;font-size:14px;color:#b0b0b0;
-  text-decoration:none;padding:10px 4px;transition:color .15s ease}
-.door:hover{color:#fff}
-.note{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;
-  text-transform:uppercase;color:rgba(255,255,255,.3);text-align:center;
-  max-width:36ch;line-height:1.9}
+html{scroll-behavior:smooth}
+html,body{background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:13px;line-height:1.7;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.hide{display:none!important}
+
+/* ── LES QUATRE COINS (BRAND.md §13-9) ────────────────────────────── */
+#member{position:fixed;top:16px;left:16px;z-index:40;display:flex;align-items:center;gap:7px;
+  background:none;border:none;cursor:pointer;font-family:var(--q);font-weight:700;font-size:13px;
+  color:#a0a0a0;padding:6px 4px;-webkit-tap-highlight-color:transparent;transition:color .15s}
+#member i{width:6px;height:6px;border-radius:50%;background:#383838;display:block;transition:background .3s}
+#member.is-in i{background:var(--on)}
+#terms{position:fixed;top:20px;right:16px;z-index:40;font-family:var(--mono);font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--lo);transition:color .15s}
+#t{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:39;line-height:0}
+#t svg{height:30px;width:auto;fill:#fff}
+
+/* ── LE BOUTON — .btn-sig, la même grammaire sur les quatre domaines ── */
+.btn{font-family:var(--q);font-weight:400;font-size:14px;color:var(--mid);background:none;
+  border:6px solid transparent;cursor:pointer;padding:0 6px;line-height:1.6;display:inline-block;
+  width:fit-content;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
+.btn.main{color:#fff;font-weight:700}
+@media(hover:hover){.btn:hover{color:#fff;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round}}
+.btn:active,.btn.on{color:#fff;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round}
+.btn[disabled]{opacity:.35;pointer-events:none}
+.nav-l{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);
+  background:none;border:none;cursor:pointer;padding:4px 2px;transition:color .15s}
+
+/* ── LA COLONNE ───────────────────────────────────────────────────── */
+main{width:100%;max-width:620px;margin:0 auto;padding:0 20px}
+section{padding:92px 0 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px}
+.kick{font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
+h1,h2{font-family:var(--bebas);font-weight:400;color:#fff;letter-spacing:.02em;line-height:.9}
+h1{font-size:clamp(64px,16vw,132px)}
+h2{font-size:clamp(40px,9vw,64px)}
+.say{max-width:44ch;color:var(--mid);font-size:13px}
+.say b{color:#fff;font-weight:400}
+
+/* ── LE HÉROS ─────────────────────────────────────────────────────── */
+#hero{min-height:100svh;justify-content:center;padding-top:80px}
+#hero .say{font-size:13px}
+#price-line{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--lo)}
+#price-line b{font-family:var(--bebas);font-size:30px;letter-spacing:.03em;color:#fff;font-weight:400;
+  vertical-align:-4px;margin-right:4px}
+
+/* ── THE VELVET ROPE — trois boîtes pleines, la couleur fait le cadre ── */
+.rope{display:flex;flex-direction:column;gap:6px;width:100%;max-width:440px;text-align:left}
+.step{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;background:var(--navy);color:#fff}
+.step.s2{background:var(--blue)}.step.s3{background:var(--rep)}
+.step .n{font-family:var(--bebas);font-size:30px;line-height:.9;min-width:28px;color:rgba(255,255,255,.55)}
+.step .b{flex:1;min-width:0}
+.step .t{font-family:var(--q);font-size:15px;line-height:1.35}
+.step .m{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-top:5px}
+.step .ok{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45);align-self:center}
+.step.done .ok{color:#fff}
+.step.done .n{color:#fff}
+/* Les cinq vues : cinq carrés, remplis quand la vue est habitée. */
+.views{display:flex;gap:4px;margin-top:8px}
+.views i{width:12px;height:12px;display:block;background:rgba(0,0,0,.35)}
+.views i.on{background:#fff}
+#cta{margin-top:6px}
+#cta-note{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);min-height:16px}
+
+/* ── CE QUE LE CLUB OUVRE — des boîtes, une grammaire ─────────────── */
+.doors{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;text-align:left}
+/* Une porte est une BOÎTE PLEINE, dans une des trois couleurs de la
+   marque : le fond fait le cadre, aucune bordure (règle du 09/09). */
+.door{background:var(--navy);color:#fff;padding:16px;display:flex;flex-direction:column;gap:6px;min-height:150px;
+  transition:filter .15s ease}
+.door.blue{background:var(--blue)}.door.rep{background:var(--rep)}
+@media(hover:hover){.door:hover{filter:brightness(1.15)}}
+.door .d{font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.door .h{font-family:var(--bebas);font-size:30px;color:#fff;line-height:.95}
+.door p{font-size:12px;color:rgba(255,255,255,.8);flex:1}
+.door .go{font-family:var(--q);font-size:13px;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;
+  padding:0;text-align:left;transition:color .15s}
+@media(max-width:560px){.doors{grid-template-columns:1fr}.door{min-height:0}}
+
+/* ── L'ÉCONOMIE ───────────────────────────────────────────────────── */
+.eco{display:flex;flex-direction:column;gap:6px;width:100%;max-width:440px}
+.eco .row{display:flex;justify-content:space-between;gap:14px;padding:6px 2px;font-size:12px;text-align:left}
+.eco .row b{font-family:var(--mono);color:#fff;font-weight:400}
+.sim{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:8px}
+.sim .ctl{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+.stepper{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--lo)}
+.stepper button{font-family:var(--q);font-size:16px;color:var(--mid);background:none;border:none;cursor:pointer;
+  width:26px;height:26px;transition:color .15s}
+.stepper output{font-family:var(--q);font-size:15px;color:#fff;min-width:44px;text-align:center}
+#sim-out{font-family:var(--bebas);font-size:48px;color:#fff;line-height:1}
+#sim-sub{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+
+/* ── FAQ ──────────────────────────────────────────────────────────── */
+.faq{width:100%;max-width:520px;display:flex;flex-direction:column;gap:4px;text-align:left}
+details{padding:12px 2px}
+summary{font-family:var(--q);font-size:14px;color:#fff;cursor:pointer;list-style:none}
+summary::-webkit-details-marker{display:none}
+details p{margin-top:10px;font-size:12px;color:var(--mid)}
+
+footer{padding:90px 20px 60px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+footer .links{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+footer .wm{font-family:var(--q);font-size:14px;letter-spacing:.2em;color:#fff}
+footer .line{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);max-width:44ch}
+
+/* ── LA FEUILLE MEMBRE — email, code, pseudo ──────────────────────── */
+#sheet{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;padding:20px}
+#sheet.show{display:flex}
+.sh{width:100%;max-width:400px;background:#000;padding:30px 22px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;position:relative}
+.sh .x{position:absolute;top:10px;right:12px}
+.in{font-family:var(--q);font-size:14px;color:#fff;background:none;outline:none;border:6px solid transparent;
+  border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round;padding:2px 8px;
+  text-align:center;caret-color:#fff;width:100%;max-width:280px}
+.in::placeholder{color:rgba(255,255,255,.35)}
+.note{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;color:var(--lo)}
+.note.ok{color:var(--on)}.note.no{color:#ff9a9a}
+
+/* ── Le gris devient blanc au survol — BRAND §13-4, sans exception ── */
+@media(hover:hover){
+  #member:hover,#terms:hover,.nav-l:hover,.door .go:hover,.stepper button:hover,footer a:hover,
+  .say:hover,.kick:hover,#price-line:hover,.eco .row:hover,details p:hover,.door p:hover,.door .d:hover{color:#fff}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style>
+</head>
+<body>
 
-<div id="t"><svg viewBox="0 0 68 68" role="img" aria-label="T"><rect x="0" y="0" width="68" height="10" fill="#fff"/><rect x="29" y="0" width="10" height="67" fill="#fff"/><rect x="21" y="63" width="27" height="5" fill="#fff"/></svg></div>
+<button id="member" type="button" aria-label="Member access"><i></i><span id="member-txt">Sign in</span></button>
+<a id="terms" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a>
+<a id="t" href="#hero" aria-label="FIGHER.CLUB"><svg viewBox="0 0 68 68" role="img" aria-label="T"><rect x="0" y="0" width="68" height="10"/><rect x="29" y="0" width="10" height="67"/><rect x="21" y="63" width="27" height="5"/></svg></a>
 
-<div id="w">
-  <h1>THE FIGHER CLUB</h1>
-  <p class="say">Everything out there that matches what you are becoming — ranked by the seven intentions.</p>
+<main>
 
-  <div class="ints">
-    <div class="i"><b style="background:var(--fight)"></b><span>fight</span></div>
-    <div class="i"><b style="background:var(--flow)"></b><span>flow</span></div>
-    <div class="i"><b style="background:var(--enrich)"></b><span>enrich</span></div>
-    <div class="i"><b style="background:var(--love)"></b><span>love</span></div>
-    <div class="i"><b style="background:var(--express)"></b><span>express</span></div>
-    <div class="i"><b style="background:var(--focus)"></b><span>focus</span></div>
-    <div class="i"><b style="background:var(--celebrate)"></b><span>celebrate</span></div>
+<section id="hero">
+  <div class="kick">FIGHER.CLUB</div>
+  <h1>Your strategy.<br>Your circle.</h1>
+  <p class="say">A club for people with a strategy. Your <b>TOTEHM</b> is the passport. FIGHER is where membership becomes access.</p>
+  <div id="price-line" class="hide"><b id="price-v"></b><span id="price-u">/ year</span> · <span id="price-t">7 days free</span></div>
+  <a class="btn main" href="#rope">The velvet rope</a>
+</section>
+
+<section id="rope">
+  <div class="kick">01 · The velvet rope</div>
+  <h2>Three keys.<br>In this order.</h2>
+  <p class="say">The club is not the first step. It is the circle that comes after a life with a structure.</p>
+  <div class="rope">
+    <div class="step s1" id="st1">
+      <div class="n">1</div>
+      <div class="b"><div class="t">Build your TOTEHM</div>
+        <div class="m">Wisdom · Vision · Habit · Objective · Repulsion — one box in each</div>
+        <div class="views" id="st1-views" aria-label="five views"><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="ok" id="st1-ok">—</div>
+    </div>
+    <div class="step s2" id="st2">
+      <div class="n">2</div>
+      <div class="b"><div class="t">Own the TotehmPaper {THP}</div>
+        <div class="m">The physical rule of the club</div></div>
+      <div class="ok" id="st2-ok">—</div>
+    </div>
+    <div class="step s3" id="st3">
+      <div class="n">3</div>
+      <div class="b"><div class="t">Join FIGHER — annual</div>
+        <div class="m" id="st3-m">Price read from the server</div></div>
+      <div class="ok" id="st3-ok">—</div>
+    </div>
   </div>
+  <button class="btn main" id="cta" type="button">Sign in</button>
+  <div id="cta-note"></div>
+</section>
 
-  <a class="door" href="https://www.totehm.space">Enter through my Totehm</a>
-  <p class="note">The club opens from your Totehm — that is where your session lives.</p>
+<section id="opens">
+  <div class="kick">02 · What membership opens</div>
+  <h2>One club.<br>Every door.</h2>
+  <p class="say">The same TOTEHM is the source of everything below. Each door uses it differently.</p>
+  <div class="doors">
+    <div class="door navy"><div class="d">totehm.space</div><div class="h">Act</div>
+      <p>Turn a Habit into an action lived with other members. Create a Spot, apply to one.</p>
+      <button class="go" data-go="space">Open the space</button></div>
+    <div class="door blue"><div class="d">higher.boutique</div><div class="h">Materialize</div>
+      <p>Any box of your TOTEHM becomes a TOTEHM Cloth, identified by its own 0.name.</p>
+      <button class="go" data-go="boutique">Open the boutique</button></div>
+    <div class="door rep"><div class="d">TotehmBot</div><div class="h">Mirror</div>
+      <p>Your TOTEHM, in the conversation. Your words, your numbers, at the right time.</p>
+      <button class="go" data-go="bot">Discover the bot</button></div>
+    <div class="door navy"><div class="d">figher.club</div><div class="h">Reveal the box</div>
+      <p>Search a 0.name worn in the street. The club reveals the box behind the cloth.</p>
+      <a class="go" href="/console#reveal">Search a cloth</a></div>
+    <div class="door blue"><div class="d">figher.club</div><div class="h">Subscribe</div>
+      <p>Follow the TOTEHM of a member who opens theirs. One way: you see theirs, they do not see yours.</p>
+      <a class="go" href="/console#subscribe">Find a TOTEHM</a></div>
+    <div class="door rep"><div class="d">figher.club</div><div class="h">Monetize yours</div>
+      <p>Every member can open a subscription to their TOTEHM. Your price, your benefits.</p>
+      <a class="go" href="#economy">How it pays</a></div>
+  </div>
+</section>
+
+<section id="economy">
+  <div class="kick">03 · Every member can monetize</div>
+  <h2>Build it.<br>Open it.<br>Get paid.</h2>
+  <p class="say">No creator caste. If you are a member, you can turn your TOTEHM into a subscription. Small amounts add up in your balance and leave together, once a month.</p>
+  <div class="eco">
+    <div class="row"><span>Your share</span><b id="eco-part">80 %</b></div>
+    <div class="row"><span>Paid out</span><b id="eco-day">monthly</b></div>
+    <div class="row"><span>Minimum payout</span><b id="eco-min">—</b></div>
+    <div class="row"><span>Below the minimum</span><b>kept in your balance</b></div>
+  </div>
+  <div class="sim" aria-live="polite">
+    <div class="ctl">
+      <div class="stepper">subscribers <button type="button" data-k="n" data-d="-1" aria-label="fewer">−</button><output id="sim-n">10</output><button type="button" data-k="n" data-d="1" aria-label="more">+</button></div>
+      <div class="stepper">€ / month <button type="button" data-k="p" data-d="-1" aria-label="lower">−</button><output id="sim-p">10</output><button type="button" data-k="p" data-d="1" aria-label="higher">+</button></div>
+    </div>
+    <div id="sim-out">—</div>
+    <div id="sim-sub">your share, per year</div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="kick">04 · Questions</div>
+  <h2>The obvious stuff.</h2>
+  <div class="faq">
+    <details><summary>Why a complete TOTEHM?</summary>
+      <p>Because the TOTEHM is the passport. The club is built around people who already gave their life a structure across the five views. Complete means one written box in each view.</p></details>
+    <details><summary>Why the TotehmPaper?</summary>
+      <p>It is the physical rule of the club: a tangible object for working with your strategy. You get it on higher.boutique.</p></details>
+    <details><summary>Do I need an audience to monetize?</summary>
+      <p>No. Every member can open a subscription to their TOTEHM. A few subscribers are enough: small amounts accumulate in your balance and are paid out together.</p></details>
+    <details><summary>Does a subscriber see my TOTEHM?</summary>
+      <p>Only if you include it in your benefits. And it goes one way: a subscriber reads yours, you do not read theirs.</p></details>
+    <details><summary>Does applying to a Spot open my TOTEHM?</summary>
+      <p>No. The creator sees your name and one compatibility number with that Spot. Never your boxes, never a breakdown.</p></details>
+    <details><summary>Can I leave?</summary>
+      <p>Yes, from your console. Your membership runs until the end of the period you paid for.</p></details>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wm">FIGHER.CLUB</div>
+  <div class="links">
+    <button class="nav-l" data-go="com">totehm.com</button>
+    <button class="nav-l" data-go="space">totehm.space</button>
+    <button class="nav-l" data-go="boutique">higher.boutique</button>
+    <a class="nav-l" href="/console">Console</a>
+  </div>
+  <div class="line">The TOTEHM is the source. Every product is a different way of using it.</div>
+</footer>
+
+<div id="sheet" role="dialog" aria-label="Member access">
+  <div class="sh">
+    <button class="nav-l x" id="sh-x" type="button">Close</button>
+    <div id="sh-out">
+      <div class="kick" style="margin-bottom:10px">One account, four doors</div>
+      <input class="in" id="sh-email" type="email" placeholder="your@email" autocomplete="email">
+      <input class="in hide" id="sh-code" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code" style="margin-top:8px">
+      <div class="note" id="sh-note" style="margin-top:8px"></div>
+    </div>
+    <div id="sh-claim" class="hide">
+      <div class="kick" style="margin-bottom:10px">Name your TOTEHM</div>
+      <input class="in" id="sh-pseudo" maxlength="24" placeholder="your name">
+      <div class="note" id="sh-claim-note" style="margin-top:8px"></div>
+    </div>
+    <div id="sh-in" class="hide">
+      <div class="kick" id="sh-who"></div>
+      <a class="btn main" href="/console">Open my console</a>
+      <button class="nav-l" id="sh-out-btn" type="button">Sign out</button>
+    </div>
+  </div>
 </div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL = 'https://abujjbkbbiumxrokozph.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+const sb = createClient(SB_URL, SB_ANON);
+const FN = SB_URL + '/functions/v1/';
+const $ = id => document.getElementById(id);
+
+/* ══ LE PONT SSO — COPIÉ de tools/sso_snippet.js, jamais importé ══════
+   Le code qui voyage n'est pas un jeton de session : 60 s, un usage, un
+   domaine cible, haché côté serveur, échangé par `sso-redeem`. */
+async function ssoArrivee(sb){
+  const m = /[#&?]sso=([a-f0-9]{64})/.exec(location.hash) || /[#&?]sso=([a-f0-9]{64})/.exec(location.search);
+  if(!m) return false;
+  history.replaceState(null, '', location.pathname + location.search.replace(/[?&]sso=[a-f0-9]{64}/, ''));
+  try{
+    const r = await fetch(FN + 'sso-redeem', { method:'POST',
+      headers:{'content-type':'application/json','apikey':SB_ANON,'authorization':'Bearer '+SB_ANON},
+      body: JSON.stringify({ code: m[1] }) });
+    if(!r.ok){ console.error('[sso] redeem', r.status); return false; }
+    const { token_hash, email } = await r.json();
+    if(!token_hash) return false;
+    const { error } = await sb.auth.verifyOtp({ type:'email', token_hash, email });
+    if(error){ console.error('[sso] verify', error.message); return false; }
+    return true;
+  }catch(e){ console.error('[sso]', e && e.message || e); return false; }
+}
+async function ssoVersDomaine(sb, cible, url){
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(session){
+      const r = await fetch(FN + 'sso-mint', { method:'POST',
+        headers:{'authorization':'Bearer '+session.access_token,'apikey':SB_ANON,'content-type':'application/json'},
+        body: JSON.stringify({ target: cible }) });
+      if(r.ok){ const { code } = await r.json();
+        if(code){ location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; } }
+      else console.error('[sso] mint', r.status);
+    }
+  }catch(e){ console.error('[sso]', e && e.message || e); }
+  location.href = url;
+}
+await Promise.race([ssoArrivee(sb), new Promise(r => setTimeout(() => r(false), 2500))]);
+
+/* Les portes : un NOM de produit et une URL fixe. Jamais une URL reçue. */
+const PORTES = {
+  com:      ['com',      'https://www.totehm.com/totehm#in'],
+  space:    ['space',    'https://www.totehm.space/'],
+  boutique: ['boutique', 'https://www.higher.boutique/streetwear'],
+  thp:      ['boutique', 'https://www.higher.boutique/get_higher'],
+  bot:      ['com',      'https://www.totehm.com/club/totehmbot'],
+};
+document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => {
+  const p = PORTES[b.dataset.go]; if(p) ssoVersDomaine(sb, p[0], p[1]);
+});
+
+/* ── Le prix, lu chez Stripe. Rien d'inventé si la lecture échoue. ── */
+let PRICE = null;
+const money = (c, cur) => (c/100).toLocaleString('en-GB', {style:'currency', currency:(cur||'eur').toUpperCase(),
+  minimumFractionDigits: c % 100 ? 2 : 0});
+async function loadPrice(){
+  try{
+    const r = await fetch(FN + 'subscription-checkout', { method:'POST',
+      headers:{'content-type':'application/json','apikey':SB_ANON,'authorization':'Bearer '+SB_ANON},
+      body: JSON.stringify({ preview:true }) });
+    if(!r.ok) throw new Error(r.status);
+    PRICE = await r.json();
+    if(PRICE.price_cents){
+      $('price-v').textContent = money(PRICE.price_cents, PRICE.currency);
+      $('price-u').textContent = '/ ' + (PRICE.interval || 'year');
+      $('price-t').textContent = (PRICE.trial_days || 7) + ' days free';
+      $('price-line').classList.remove('hide');
+      $('st3-m').textContent = money(PRICE.price_cents, PRICE.currency) + ' / ' + (PRICE.interval||'year') + ' · ' + (PRICE.trial_days||7) + ' days free · price locked while active';
+    }
+  }catch(e){ console.error('[price]', e); $('st3-m').textContent = 'Annual membership'; }
+  paintRope();
+}
+
+/* ── Les règles de versement, lues en base ────────────────────────── */
+let RULES = { threshold_cents:2500, member_part:80, day:1, currency:'eur' };
+async function loadRules(){
+  const { data, error } = await sb.rpc('payout_rules');
+  if(error){ console.error('[rules]', error.message); }
+  else if(data) RULES = data;
+  $('eco-part').textContent = RULES.member_part + ' %';
+  $('eco-min').textContent = money(RULES.threshold_cents, RULES.currency);
+  $('eco-day').textContent = 'on the ' + (RULES.day === 1 ? '1st' : RULES.day + 'th') + ', monthly';
+  paintSim();
+}
+const SIM = { n:10, p:10 };
+function paintSim(){
+  $('sim-n').textContent = SIM.n; $('sim-p').textContent = SIM.p;
+  const y = SIM.n * SIM.p * 12 * (RULES.member_part/100);
+  $('sim-out').textContent = money(Math.round(y*100), RULES.currency);
+}
+document.querySelectorAll('.stepper button').forEach(b => b.onclick = () => {
+  const k = b.dataset.k, d = +b.dataset.d;
+  if(k === 'n') SIM.n = Math.max(1, Math.min(1000, SIM.n + d * (SIM.n >= 50 ? 10 : 1)));
+  else SIM.p = Math.max(3, Math.min(500, SIM.p + d));
+  paintSim();
+});
+
+/* ══ L'ÉTAT — une seule lecture, un seul bouton ═════════════════════ */
+let me = null, F = null;
+/* Le diagnostic — des booléens et des compteurs, jamais une valeur de
+   membre. Dans la console : __totehm_club()  · `build` dit en trois
+   secondes si la page ouverte est celle qu'on a livrée (règle du 22/09). */
+const BUILD = '2026-09-23';
+window.__totehm_club = () => ({ build: BUILD, page: 'door', signed_in: !!me,
+  figher: F ? { complete: !!F.complete, remplies: F.remplies, thp: !!F.thp,
+                annual: !!F.annual, member: !!F.member } : null,
+  price_loaded: PRICE != null });
+async function loadState(){
+  const { data:{ session } } = await sb.auth.getSession();
+  me = session?.user || null;
+  if(me){
+    const { data, error } = await sb.rpc('figher_access');
+    if(error) console.error('[figher_access]', error.message);
+    F = data || null;
+  } else F = null;
+  paintMember(); paintRope();
+}
+function paintMember(){
+  $('member').classList.toggle('is-in', !!me);
+  $('member-txt').textContent = me ? (F?.pseudo || 'Member') : 'Sign in';
+}
+function setStep(n, done, label){
+  $('st'+n).classList.toggle('done', !!done);
+  $('st'+n+'-ok').textContent = label;
+}
+const VIEWS = ['wisdom','visions','habits','objectives','repulsions'];
+function paintRope(){
+  const cta = $('cta'), note = $('cta-note');
+  note.textContent = '';
+  const v = F?.views || {};
+  $('st1-views').querySelectorAll('i').forEach((el, k) => el.classList.toggle('on', !!v[VIEWS[k]]));
+  if(!me){
+    setStep(1, false, '—'); setStep(2, false, '—'); setStep(3, false, '—');
+    cta.textContent = 'Sign in to check your keys'; cta.onclick = openSheet; return;
+  }
+  setStep(1, F?.complete, F?.complete ? 'done' : (F?.remplies ?? 0) + ' / 5');
+  setStep(2, F?.thp, F?.thp ? (F?.number ? '#' + String(F.number).padStart(3,'0') : 'done') : 'missing');
+  setStep(3, F?.annual, F?.annual ? (F?.trial ? 'trial' : 'active') : 'open');
+  if(F?.member){ cta.textContent = 'Enter the console'; cta.onclick = () => location.href = '/console'; return; }
+  if(!F?.complete){
+    cta.textContent = 'Complete my TOTEHM — ' + (F?.remplies ?? 0) + ' / 5';
+    cta.onclick = () => ssoVersDomaine(sb, 'com', 'https://www.totehm.com/totehm#in'); return;
+  }
+  if(!F?.thp){
+    cta.textContent = 'Get my TotehmPaper';
+    cta.onclick = () => ssoVersDomaine(sb, 'boutique', 'https://www.higher.boutique/get_higher'); return;
+  }
+  cta.textContent = PRICE?.price_cents ? 'Join — ' + money(PRICE.price_cents, PRICE.currency) + ' / ' + (PRICE.interval||'year') : 'Join FIGHER';
+  cta.onclick = join;
+}
+async function join(){
+  const note = $('cta-note'), cta = $('cta');
+  const { data:{ session } } = await sb.auth.getSession();
+  if(!session){ openSheet(); return; }
+  cta.disabled = true; note.textContent = 'opening checkout…';
+  try{
+    const r = await fetch(FN + 'subscription-checkout', { method:'POST',
+      headers:{'content-type':'application/json','apikey':SB_ANON,'authorization':'Bearer '+session.access_token},
+      body: '{}' });
+    const d = await r.json().catch(() => ({}));
+    if(d.url){ location.href = d.url; return; }
+    if(d.already){ location.href = '/console'; return; }
+    if(d.error === 'velvet'){ await loadState(); note.textContent = 'a key is missing — see above'; }
+    else note.textContent = d.error || 'checkout unavailable';
+  }catch(e){ note.textContent = 'checkout unavailable'; }
+  cta.disabled = false;
+}
+
+/* ══ LA FEUILLE MEMBRE — email, code à 6 chiffres, pseudo ═══════════ */
+function openSheet(){ $('sheet').classList.add('show'); paintSheet(); }
+function paintSheet(){
+  const hasPseudo = !!F?.pseudo;
+  $('sh-out').classList.toggle('hide', !!me);
+  $('sh-claim').classList.toggle('hide', !(me && !hasPseudo));
+  $('sh-in').classList.toggle('hide', !(me && hasPseudo));
+  if(me && hasPseudo) $('sh-who').textContent = F.pseudo + ' · ' + (me.email || '');
+  if(!me) setTimeout(() => $('sh-email').focus(), 60);
+}
+$('member').onclick = openSheet;
+$('sh-x').onclick = () => $('sheet').classList.remove('show');
+$('sheet').addEventListener('click', e => { if(e.target === $('sheet')) $('sheet').classList.remove('show'); });
+let mail = '';
+$('sh-email').addEventListener('keydown', async e => {
+  if(e.key !== 'Enter') return;
+  const v = $('sh-email').value.trim(), n = $('sh-note');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ n.className = 'note no'; n.textContent = 'invalid email'; return; }
+  n.className = 'note'; n.textContent = 'sending…';
+  const { error } = await sb.auth.signInWithOtp({ email:v, options:{ shouldCreateUser:true } });
+  if(error){ n.className = 'note no'; n.textContent = 'try again in a minute'; return; }
+  mail = v; n.className = 'note ok'; n.textContent = 'code sent';
+  $('sh-code').classList.remove('hide'); setTimeout(() => $('sh-code').focus(), 60);
+});
+$('sh-code').addEventListener('input', async () => {
+  const t = $('sh-code').value.trim(), n = $('sh-note');
+  if(t.length !== 6) return;
+  n.className = 'note'; n.textContent = 'verifying…';
+  const { error } = await sb.auth.verifyOtp({ email:mail, token:t, type:'email' });
+  if(error){ n.className = 'note no'; n.textContent = 'wrong code'; return; }
+  n.textContent = ''; $('sh-code').value = ''; $('sh-code').classList.add('hide');
+});
+$('sh-pseudo').addEventListener('keydown', async e => {
+  if(e.key !== 'Enter') return;
+  const v = $('sh-pseudo').value.trim(), n = $('sh-claim-note');
+  if(v.length < 3 || v.length > 24){ n.className = 'note no'; n.textContent = '3 to 24 characters'; return; }
+  const { error } = await sb.from('profiles').insert({ id: me.id, pseudo: v });
+  if(error){ n.className = 'note no'; n.textContent = error.code === '23505' ? 'already taken' : 'try again'; return; }
+  await loadState(); paintSheet();
+});
+$('sh-out-btn').onclick = async () => { await sb.auth.signOut(); $('sheet').classList.remove('show'); };
+sb.auth.onAuthStateChange(async (ev) => {
+  if(ev === 'SIGNED_IN' || ev === 'SIGNED_OUT'){ await loadState(); if($('sheet').classList.contains('show')) paintSheet(); }
+});
+
+if(new URLSearchParams(location.search).get('cancel')) $('cta-note').textContent = 'checkout cancelled — nothing was charged';
+await loadState();
+loadPrice(); loadRules();
+</script>
+</body>
+</html>
