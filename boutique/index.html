@@ -149,6 +149,12 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 <nav>
   <div id="menu-main" style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%">
 
+    <!-- HIGHER (TotehmPaper) : Get Higher universel · Make the Lisbon Streets Higher (Lisbonne only) -->
+    <a class="btn-sig" id="higher-btn" href="/discover">Get <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></a>
+    <a class="btn-sig hide" id="lisbon-btn" href="/discover_lisbon">Make the Lisbon Streets <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></a>
+
+    <div class="menu-gap"></div>
+
     <!-- 1 : Streetwear -->
     <div class="sw-block">
       <a class="btn-sig" href="streetwear.html">Create my Totehm Streetwear Cloth</a>
@@ -205,7 +211,8 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
   <!-- Dope branding : juste sous la vidéo -->
   <button class="btn-sig" id="brand-btn">Experience our dope branding</button>
   <div id="brand-sub">
-    <a class="btn-sig" href="https://www.totehm.space"><span class="brand-get">Get</span> <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></a>
+    <a class="btn-sig" href="/discover"><span class="brand-get">Get</span> <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></a>
+    <a class="btn-sig" href="/origins">Origins</a>
     <a class="btn-sig" href="https://www.totehm.com"><span class="brand-my">My</span> <img src="assets/img/totehm_logo.png" alt="TOTEHM" class="brand-sub-logo"></a>
   </div>
 </section>
@@ -305,6 +312,41 @@ $('email-input').addEventListener('keydown',async(e)=>{
     document.getElementById('sw-col-desc').textContent=col.description||'';
     document.getElementById('sw-col-sold').textContent=`${sold} pièces vendues`;
     document.getElementById('sw-collection').style.display='flex';
+  }catch(_){}
+})();
+
+/* ══ GET HIGHER — gate check
+   Un guest voit /discover (paywall + why) au clic.
+   Un acheteur (email présent dans stoner_access) voit /stoner direct.
+   Le check dépend de la session Supabase locale (higher.boutique) —
+   sans session, on ne peut pas prouver l'ownership, on reste sur /discover. */
+(()=>{
+  const SB_FN='https://abujjbkbbiumxrokozph.supabase.co/functions/v1/stoner-gate';
+  async function refreshHigher(){
+    let href='/discover';
+    try{
+      const {data:{session}}=await sb.auth.getSession();
+      if(session){
+        const r=await fetch(SB_FN,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token}});
+        if(r.ok){ const j=await r.json(); if(j.access===true) href='/stoner'; }
+      }
+    }catch(_){}
+    $('higher-btn').setAttribute('href',href);
+  }
+  refreshHigher();
+  sb.auth.onAuthStateChange(()=>refreshHigher());
+})();
+
+/* ══ MAKE THE LISBON STREETS HIGHER — géo Lisbonne
+   Le bouton est masqué par défaut. /api/geo lit l'en-tête Vercel
+   x-vercel-ip-country et révèle le bouton si PT. La sortie du test
+   est fail-closed : sans réponse, le bouton reste caché. */
+(async()=>{
+  try{
+    const r=await fetch('/api/geo',{cache:'no-store'});
+    if(!r.ok)return;
+    const j=await r.json();
+    if(j.lisbon===true) $('lisbon-btn').classList.remove('hide');
   }catch(_){}
 })();
 

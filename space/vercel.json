@@ -1,26 +1,24 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "trailingSlash": false,
-  "rewrites": [
-    {
-      "source": "/",
-      "has": [{ "type": "cookie", "key": "totehm_geo", "value": "lisbon" }],
-      "destination": "/discover_lisbon.html"
-    },
-    {
-      "source": "/",
-      "has": [{ "type": "cookie", "key": "totehm_geo", "value": "global" }],
-      "destination": "/discover.html"
-    },
-    {
-      "source": "/",
-      "has": [{ "type": "header", "key": "x-vercel-ip-country", "value": "PT" }],
-      "destination": "/discover_lisbon.html"
-    },
-    { "source": "/", "destination": "/discover.html" },
-
-    { "source": "/lisbon", "destination": "/discover_lisbon.html" },
-    { "source": "/global", "destination": "/discover.html" }
+  "redirects": [
+    { "source": "/", "destination": "https://www.totehm.com/map", "permanent": true },
+    { "source": "/discover", "destination": "https://higher.boutique/discover", "permanent": true },
+    { "source": "/discover.html", "destination": "https://higher.boutique/discover", "permanent": true },
+    { "source": "/discover_lisbon", "destination": "https://higher.boutique/discover_lisbon", "permanent": true },
+    { "source": "/discover_lisbon.html", "destination": "https://higher.boutique/discover_lisbon", "permanent": true },
+    { "source": "/get_higher", "destination": "https://higher.boutique/get_higher", "permanent": true },
+    { "source": "/get_higher.html", "destination": "https://higher.boutique/get_higher", "permanent": true },
+    { "source": "/stoner", "destination": "https://higher.boutique/stoner", "permanent": true },
+    { "source": "/stoner.html", "destination": "https://higher.boutique/stoner", "permanent": true },
+    { "source": "/stoner_terms", "destination": "https://higher.boutique/stoner_terms", "permanent": true },
+    { "source": "/stoner_terms.html", "destination": "https://higher.boutique/stoner_terms", "permanent": true },
+    { "source": "/play_lisbon_street", "destination": "https://higher.boutique/play_lisbon_street", "permanent": true },
+    { "source": "/play_lisbon_street.html", "destination": "https://higher.boutique/play_lisbon_street", "permanent": true },
+    { "source": "/origins", "destination": "https://higher.boutique/origins", "permanent": true },
+    { "source": "/origins.html", "destination": "https://higher.boutique/origins", "permanent": true },
+    { "source": "/lisbon", "destination": "https://higher.boutique/discover_lisbon", "permanent": true },
+    { "source": "/global", "destination": "https://higher.boutique/discover", "permanent": true }
   ],
   "headers": [
     {

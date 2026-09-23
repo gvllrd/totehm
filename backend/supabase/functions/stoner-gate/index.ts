@@ -6,7 +6,9 @@
 // (stoner-deep a été supprimé — plus simple, même résultat.)
 
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders, SITE_SPACE } from "../_shared/origins.ts";
+// L'expérience Stoner et son paywall vivent sur higher.boutique depuis
+// le 23/09/2026 (migration space → boutique). Le fallback CORS suit.
+import { corsHeaders, SITE_BOUT } from "../_shared/origins.ts";
 
 const BUCKET = "stoner-method";
 const TTL_SECONDS = 900;
@@ -26,7 +28,7 @@ const DEEP_STEPS: Record<string, string> = {
 };
 
 Deno.serve(async (req) => {
-  const headers = corsHeaders(req.headers.get("origin"), SITE_SPACE);
+  const headers = corsHeaders(req.headers.get("origin"), SITE_BOUT);
 
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers });
