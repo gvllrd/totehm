@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
-    { "source": "/", "destination": "https://www.totehm.com/map", "permanent": true },
     { "source": "/discover", "destination": "https://higher.boutique/discover", "permanent": true },
     { "source": "/discover.html", "destination": "https://higher.boutique/discover", "permanent": true },
     { "source": "/discover_lisbon", "destination": "https://higher.boutique/discover_lisbon", "permanent": true },

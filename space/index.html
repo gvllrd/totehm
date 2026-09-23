@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<!--
+  ══ TOTEHM.SPACE — HABIT → ACTION → WITH MEMBERS · 23/09/2026 ══════════
+  MASTER §24-48 et §87. Le Spot est l'unité centrale. La page répond à :
+      WHAT CAN I DO?  ·  WHERE?  ·  WHEN?  ·  WITH WHOM?
+
+  TROIS ÉCRANS, UN FICHIER :
+    RADAR      les Spots autour de toi — pas un annuaire de lieux (§43).
+               ≥ 700 px : le radar (canvas, anneaux, balayage, des T).
+               < 700 px : le deck (une carte par Spot, on swipe).
+               Deux rendus, UN état, UNE carte de contenu (règle du 19/08).
+    CREATE     MY TOTEHM en SELECT MODE (§28) — le même Totehm que
+               totehm.com, en lecture : on CHOISIT, on n'écrit pas.
+               Une Habit Box → son contexte → le Spot → (vidéo) → publier.
+               Le résultat est la CARTE : le Spot apparaît sur le radar.
+    MY SPACE   mes Spots, les candidatures reçues, les miennes.
+
+  ⚠️ INTERDIT : Google Maps, Mapbox, Leaflet (§44). Le radar est celui de
+  `com/map.html`, COPIÉ (produits indépendants = fichiers indépendants).
+
+  ⚠️ LA PAGE NE DÉCIDE RIEN. Publier, candidater, accepter, la capacité,
+  la compatibilité, le rendez-vous exact : tout est en base
+  (`spot_publish`, `spots_radar`, `spot_apply`, `spot_decide`, `my_space`).
+  La page envoie des SÉLECTIONS — le texte de l'habitude, ses objectifs,
+  ses répulsions et son son sont relus côté serveur au moment de publier.
+
+  ⚠️ LA COMPATIBILITÉ EST UN SEUL NOMBRE (§38). Jamais une composante.
+  ⚠️ BRAND.md §1 : sur .space on ne dit jamais « le logo est ton
+  planner ». Le Totehm se reconnaît, il ne s'explique pas.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>TOTEHM.SPACE</title>
+<meta name="description" content="A habit becomes an action. With members.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#000;--mid:#b0b0b0;--lo:#9a9a9a;--dim:#606060;
+  --navy:#333366;--blue:#36498c;--rep:#743169;--paper:#2b2b57;--wis:#5b2652;--vis:#2b3a73;--on:#639922;
+  --tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000'/%3E%3C/svg%3E");
+  --bebas:'Bebas Neue',Impact,sans-serif;--q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
+  --rl:46px;--rw:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:13px;
+  line-height:1.6;overflow:hidden;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
+.hide{display:none!important}
+button{font:inherit}
+
+/* ── LES QUATRE COINS ─────────────────────────────────────────────── */
+#member{position:fixed;top:calc(14px + env(safe-area-inset-top,0));left:14px;z-index:90;display:flex;align-items:center;gap:7px;
+  background:none;border:none;cursor:pointer;font-family:var(--q);font-weight:700;font-size:13px;color:#a0a0a0;padding:6px 4px;transition:color .15s}
+#member i{width:6px;height:6px;border-radius:50%;background:#383838;display:block}
+#member.is-in i{background:var(--on)}
+#terms{position:fixed;top:calc(18px + env(safe-area-inset-top,0));right:14px;z-index:90;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--lo);text-decoration:none;transition:color .15s}
+#wm{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0));left:16px;z-index:30;font-family:var(--q);
+  font-size:12px;letter-spacing:.22em;color:#fff;pointer-events:none}
+
+.btn{font-family:var(--q);font-size:14px;color:var(--mid);background:none;border:6px solid transparent;cursor:pointer;
+  padding:0 6px;line-height:1.6;display:inline-block;width:fit-content;transition:color .15s ease;-webkit-tap-highlight-color:transparent}
+.btn.main{color:#fff;font-weight:700}
+@media(hover:hover){.btn:hover{color:#fff;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round}}
+.btn:active,.btn.on{color:#fff;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round}
+.btn[disabled]{opacity:.35;pointer-events:none}
+.lnk{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);
+  background:none;border:none;cursor:pointer;padding:4px 2px;transition:color .15s}
+.in{font-family:var(--q);font-size:14px;color:#fff;background:none;outline:none;border:6px solid transparent;
+  border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round;padding:2px 8px;
+  text-align:center;caret-color:#fff;width:100%}
+.in::placeholder{color:rgba(255,255,255,.35)}
+.in::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.6}
+.note{font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;color:var(--lo);text-align:center}
+.note.ok{color:var(--on)}.note.no{color:#ff9a9a}
+.kick{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
+
+/* ══ RADAR — copié de com/map.html (19/08, 03/09) ══════════════════ */
+#world{position:fixed;inset:0;z-index:1}
+#canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
+#markers{position:absolute;inset:0;pointer-events:none}
+/* TOI : un carré blanc, pas un T — tu n'es pas une destination. */
+#me{position:absolute;left:0;top:0;width:10px;height:10px;margin:-5px 0 0 -5px;background:#fff;pointer-events:none;
+  box-shadow:0 0 10px rgba(255,255,255,.7);animation:pulse 2.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.55}}
+.marker{position:absolute;left:0;top:0;width:34px;height:34px;margin:-17px 0 0 -17px;display:flex;align-items:center;
+  justify-content:center;pointer-events:auto;cursor:pointer;background:none;border:none;padding:0;will-change:transform;
+  -webkit-tap-highlight-color:transparent}
+.marker svg{width:17px;height:17px;display:block;transition:transform .15s ease;animation:ignite .34s cubic-bezier(.2,.8,.3,1) backwards}
+.marker:hover svg,.marker.focus svg{transform:scale(1.5)}
+.marker.live svg{animation:ignite .34s backwards,live 1.4s ease-in-out infinite}
+@keyframes ignite{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:scale(1)}}
+@keyframes live{0%,100%{opacity:1}50%{opacity:.35}}
+.marker .lbl{position:absolute;left:24px;top:50%;transform:translateY(-50%);white-space:nowrap;font-family:var(--q);
+  font-size:12px;color:#fff;background:#000;padding:2px 6px;pointer-events:none;opacity:0;transition:opacity .15s}
+.marker:hover .lbl,.marker.focus .lbl{opacity:1}
+
+/* La barre de recherche et les filtres : en haut, centrés. */
+#bar{position:fixed;top:calc(52px + env(safe-area-inset-top,0));left:50%;transform:translateX(-50%);z-index:30;
+  width:min(440px,calc(100% - 28px));display:flex;flex-direction:column;align-items:center;gap:8px}
+#q{background:rgba(0,0,0,.85)}
+.chips{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}
+.chip{font-family:var(--q);font-size:12px;color:var(--lo);background:none;border:none;padding:3px 9px;cursor:pointer;transition:color .15s,background .15s}
+.chip.on{background:var(--navy);color:#fff}
+#geo-note{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);background:none;border:none;cursor:pointer}
+#empty{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;text-align:center;pointer-events:none;
+  display:flex;flex-direction:column;gap:4px;align-items:center}
+#empty .q4{font-family:var(--bebas);font-size:clamp(28px,6vw,44px);color:rgba(255,255,255,.14);line-height:1}
+#empty .kick{margin-top:10px}
+#zoom{position:fixed;right:16px;bottom:calc(20px + env(safe-area-inset-bottom,0));z-index:30;display:flex;gap:2px}
+#zoom button{width:30px;height:30px;background:none;border:none;color:var(--lo);font-family:var(--q);font-size:18px;cursor:pointer}
+
+/* Les deux portes, en bas au centre — là où est le pouce. */
+#doors{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0));left:50%;transform:translateX(-50%);z-index:35;
+  display:flex;gap:6px;align-items:center}
+
+/* ── LE DECK (< 700 px) — une carte par Spot ───────────────────────── */
+#deck{position:fixed;inset:0;z-index:20;display:none;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
+  scrollbar-width:none;background:#000}
+#deck::-webkit-scrollbar{display:none}
+body.cards #deck{display:flex}
+body.cards #world,body.cards #zoom{display:none}
+.slide{flex:0 0 100%;height:100%;scroll-snap-align:center;display:flex;flex-direction:column;justify-content:center;
+  padding:calc(150px + env(safe-area-inset-top,0)) 22px calc(84px + env(safe-area-inset-bottom,0));overflow-y:auto}
+#count{position:fixed;bottom:calc(64px + env(safe-area-inset-bottom,0));left:50%;transform:translateX(-50%);z-index:24;
+  font-size:10px;letter-spacing:.18em;color:var(--dim);display:none}
+body.cards #count{display:block}
+
+/* ══ LA CARTE — UN balisage, servi au deck ET à la fenêtre du radar ══ */
+.card{width:100%;max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.card h3{font-family:var(--bebas);font-weight:400;font-size:clamp(36px,9vw,54px);line-height:.92;color:#fff;letter-spacing:.02em;word-break:break-word}
+.card .cmp{text-align:right;flex-shrink:0}
+.card .cmp b{display:block;font-family:var(--bebas);font-weight:400;font-size:44px;line-height:1;color:#fff}
+.card .cmp span{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo)}
+.meta{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);line-height:1.9}
+.meta b{color:#fff;font-weight:400}
+.ints{display:flex;gap:8px;flex-wrap:wrap}
+.int{display:flex;align-items:center;gap:5px;font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-weight:700}
+.int svg{width:11px;height:11px}
+.ctx{display:flex;flex-direction:column;gap:4px}
+.ctx .row{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.ctx .w{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);min-width:58px}
+.mini{display:inline-block;font-family:var(--q);font-size:12px;color:#fff;padding:3px 8px;background:var(--navy);line-height:1.4}
+.mini.o{background:var(--blue)}.mini.r{background:var(--rep)}
+.card .say{font-size:12px;color:var(--mid)}
+.card .acts{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin-top:4px}
+.fine{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);line-height:1.8}
+.place{background:var(--navy);color:#fff;padding:10px 12px;font-family:var(--q);font-size:14px}
+.place small{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+
+/* ── LES FENÊTRES PLEIN ÉCRAN — ancrées en haut (règle du 03/09) ─── */
+.sheet{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.92);display:none;overflow-y:auto;
+  padding:calc(64px + env(safe-area-inset-top,0)) 20px calc(40px + env(safe-area-inset-bottom,0))}
+.sheet.show{display:block}
+.sheet .x{position:fixed;top:calc(14px + env(safe-area-inset-top,0));left:50%;transform:translateX(-50%);z-index:75}
+.col{width:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.col h2{font-family:var(--bebas);font-weight:400;font-size:clamp(38px,9vw,60px);line-height:.92;color:#fff;letter-spacing:.02em}
+
+/* ══ SELECT MODE — le Totehm de totehm.com, en lecture ══════════════
+   Même papier, même rail, mêmes boîtes, même croix. Ce qui change, et
+   rien d'autre : on ne peut pas écrire, et seules les boîtes de la vue
+   HABITS se choisissent (§25 : un Spot démarre d'une Habit Box). */
+#sel{position:fixed;inset:0;z-index:60;background:var(--paper);display:none;transition:background-color .5s ease}
+#sel.show{display:block}
+#sel.v-wisdom{background:var(--wis)}#sel.v-visions{background:var(--vis)}
+#rail{position:absolute;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.30)}
+#sel-head{position:absolute;top:calc(56px + env(safe-area-inset-top,0));left:0;right:0;text-align:center;z-index:3;pointer-events:none}
+#sel-title{font-family:var(--bebas);font-size:clamp(34px,8vw,48px);color:#fff;line-height:1;letter-spacing:.03em}
+#sel-sub{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.62)}
+#sel-mode{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:4px}
+#list{position:absolute;top:calc(136px + env(safe-area-inset-top,0));bottom:calc(128px + env(safe-area-inset-bottom,0));left:0;right:0;
+  overflow-y:auto;overscroll-behavior:contain;padding:0 16px 30px 0;display:flex;flex-direction:column;gap:6px}
+#list.swap{animation:swap .26s cubic-bezier(.22,.61,.36,1)}
+@keyframes swap{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.bx{position:relative;margin-left:calc(var(--rl) + var(--rw) + 4px);background:var(--skin,var(--navy));color:#fff;
+  padding:8px 12px 9px 14px;cursor:default;transition:filter .15s ease,transform .28s cubic-bezier(.22,.61,.36,1);flex:0 0 auto}
+.bx .tick{position:absolute;left:0;top:0;bottom:0;width:3px;display:flex;flex-direction:column}
+.bx .tick i{flex:1 1 0;display:block}
+.bx .nm{font-family:var(--q);font-size:15px;line-height:1.5;word-break:break-word}
+.bx .sb{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-top:4px;display:flex;flex-wrap:wrap;gap:0 10px}
+.bx .mn{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;align-items:center}
+.bx .mn .w{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.bx .mn .mini{font-size:11px;padding:2px 7px}
+.bx.pick{cursor:pointer}
+@media(hover:hover){.bx.pick:hover{filter:brightness(1.18)}}
+.bx.dim{opacity:.55}
+.bx.open{transform:scale(1.012) translateY(-2px);filter:brightness(1.07);cursor:default}
+.v-empty{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.5);text-align:center;padding:30px 0 0 60px}
+#sel-x{position:absolute;top:calc(14px + env(safe-area-inset-top,0));right:14px;z-index:5;width:40px;height:40px;
+  background:none;border:none;cursor:pointer;color:#fff}
+#sel-x svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.6;fill:none}
+
+/* La croix comme contrôleur — le disque porte la couleur de la vue. */
+#joy{position:absolute;bottom:calc(18px + env(safe-area-inset-bottom,0));left:50%;transform:translateX(-50%);z-index:4;
+  display:grid;grid-template-columns:22px 52px 22px;grid-template-rows:22px 52px 22px;align-items:center;justify-items:center}
+#cur-h{grid-area:1/2/2/3}#cur-g{grid-area:2/1/3/2}#joy-box{grid-area:2/2/3/3}#cur-d{grid-area:2/3/3/4}#cur-b{grid-area:3/2/4/3}
+.cur{width:22px;height:22px;background:none;border:none;color:#fff;cursor:pointer;opacity:.85;display:flex;align-items:center;justify-content:center}
+.cur svg{width:10px;height:10px;stroke:currentColor;stroke-width:2;fill:none}
+.cur.mort{opacity:0;pointer-events:none}
+#joy-box{width:52px;height:52px;border-radius:50%;background:var(--joy,var(--navy));box-shadow:0 2px 7px rgba(0,0,0,.5);
+  position:relative;touch-action:none;cursor:grab;transition:background-color .42s ease}
+#joy-box i{position:absolute;left:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--c);
+  box-shadow:0 2px 5px rgba(0,0,0,.6);transition:transform .38s,opacity .38s}
+#joy-box .o{top:23%;--c:var(--blue)}#joy-box .h{top:50%;--c:var(--navy)}#joy-box .r{top:77%;--c:var(--rep)}
+#joy-box i.ici,#joy-box i.mort{opacity:0;transform:scale(.4)}
+
+/* L'étape de contexte : la boîte choisie ENFANTE ses pièces, à sa place. */
+#ctx{margin-left:calc(var(--rl) + var(--rw) + 4px);display:flex;flex-direction:column;gap:10px;padding:10px 0 4px;
+  animation:swap .3s cubic-bezier(.22,.61,.36,1)}
+#ctx .grp{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+#ctx .w{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.6);min-width:62px}
+.tg{font-family:var(--q);font-size:12px;color:rgba(255,255,255,.7);background:none;border:1px dashed rgba(255,255,255,.35);
+  padding:3px 8px;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.tg.on{color:#fff;border-color:transparent;background:var(--navy)}
+.tg.on.o{background:var(--blue)}.tg.on.r{background:var(--rep)}.tg.on.m{background:#000}
+.tg .dot{display:inline-block;width:8px;height:8px;margin-right:5px;vertical-align:0}
+#ctx .next{display:flex;gap:10px;align-items:center;margin-top:4px}
+
+/* ── Le formulaire du Spot ─────────────────────────────────────────── */
+.fields{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:12px 10px}
+.fields .f{display:flex;flex-direction:column;align-items:center;gap:4px}
+.fields .full{grid-column:1/-1}
+.fl{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+.two{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
+.stp{display:flex;align-items:center;gap:8px}
+.stp button{width:28px;height:28px;background:none;border:none;color:var(--mid);font-family:var(--q);font-size:18px;cursor:pointer}
+.stp output{font-family:var(--q);font-size:15px;color:#fff;min-width:60px;text-align:center}
+textarea.in{resize:none;min-height:70px;text-align:left;font-size:13px;line-height:1.6}
+.steps{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.steps span{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+.steps span.on{color:#fff}
+.boxline{width:100%;background:var(--navy);color:#fff;padding:10px 12px;text-align:left;font-family:var(--q);font-size:15px}
+.boxline small{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+@media(max-width:480px){.fields{grid-template-columns:1fr}}
+
+/* ── MY SPACE ──────────────────────────────────────────────────────── */
+.tabs{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
+.stack{width:100%;display:flex;flex-direction:column;gap:5px;text-align:left}
+.bk{background:var(--navy);color:#fff;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.bk.b{background:var(--blue)}.bk.r{background:var(--rep)}
+.bk.off{background:none;color:var(--lo);border:1px dashed rgba(255,255,255,.22)}
+.bk .nm{font-family:var(--q);font-size:15px}
+.bk .sb{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.72)}
+.bk.off .sb{color:var(--dim)}
+.bk .ln{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.bk .big{font-family:var(--bebas);font-size:32px;line-height:1}
+.bk .ac{display:flex;gap:4px 14px;flex-wrap:wrap;margin-top:4px}
+.bk .ac .lnk{color:rgba(255,255,255,.75);padding:2px 0}
+.empty{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);padding:14px 0;text-align:center}
+
+/* La porte fermée : une place vide, pas une surface grise (09/09). */
+.rope{width:100%;max-width:420px;display:flex;flex-direction:column;gap:5px}
+.rope .k{display:flex;justify-content:space-between;gap:10px;padding:11px 14px;text-align:left;font-family:var(--q);font-size:14px;color:#fff;background:var(--navy)}
+.rope .k.b{background:var(--blue)}.rope .k.r{background:var(--rep)}
+.rope .k.no{background:none;color:var(--lo);border:1px dashed rgba(255,255,255,.25)}
+.rope .k span{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;align-self:center}
+
+@media(hover:hover){
+  #member:hover,#terms:hover,.lnk:hover,.chip:not(.on):hover,#geo-note:hover,#zoom button:hover,.stp button:hover,
+  .fine:hover,.meta:hover,.kick:hover,.fl:hover,.steps span:hover,.bk .ac .lnk:hover,.empty:hover,.tg:not(.on):hover{color:#fff}
+}
+@media(prefers-reduced-motion:reduce){#me,.marker svg,.marker.live svg,#list.swap,#ctx{animation:none}}
+</style>
+</head>
+<body>
+
+<button id="member" type="button"><i></i><span id="member-txt">Sign in</span></button>
+<a id="terms" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a>
+<div id="wm">TOTEHM.SPACE</div>
+
+<!-- ══ RADAR ══ -->
+<div id="world"><canvas id="canvas" aria-label="Radar of Spots around you"></canvas><div id="markers"><div id="me"></div></div></div>
+<div id="deck" aria-label="Spots around you"></div>
+<div id="count"></div>
+<div id="empty"><div class="q4">What can I do?</div><div class="q4">Where? When?</div><div class="q4">With whom?</div><div class="kick" id="empty-k">looking around you…</div></div>
+<div id="bar">
+  <input class="in" id="q" placeholder="an action — walk, read, train…" autocomplete="off" enterkeyhint="search">
+  <div class="chips" id="chips">
+    <button class="chip on" data-f="all">All</button><button class="chip" data-f="social">Social</button>
+    <button class="chip" data-f="silent">Silent</button><button class="chip" data-f="live">Live</button>
+    <button class="chip" data-f="view">Cards</button>
+  </div>
+  <button id="geo-note" type="button"></button>
+</div>
+<div id="zoom"><button id="z-out" type="button" aria-label="Zoom out">−</button><button id="z-in" type="button" aria-label="Zoom in">+</button></div>
+<div id="doors"><button class="btn main" id="go-create" type="button">Create a Spot</button><button class="btn" id="go-me" type="button">My space</button></div>
+
+<!-- ══ LA FENÊTRE D'UN SPOT ══ -->
+<div id="spot" class="sheet" role="dialog" aria-label="Spot">
+  <button class="lnk x" id="spot-x" type="button">Close</button>
+  <div class="col" id="spot-body"></div>
+</div>
+
+<!-- ══ CREATE — 1 · MY TOTEHM EN SELECT MODE ══ -->
+<div id="sel" role="dialog" aria-label="My TOTEHM — select mode">
+  <div id="rail"></div>
+  <div id="sel-head"><div id="sel-title">my habits</div><div id="sel-sub">what I repeat</div><div id="sel-mode">select mode — choose a habit box</div></div>
+  <button id="sel-x" type="button" aria-label="Close"><svg viewBox="0 0 16 16"><path d="M3 3 L13 13 M13 3 L3 13"/></svg></button>
+  <div id="list"></div>
+  <div id="joy">
+    <button class="cur" id="cur-h" data-d="h" aria-label="Up"><svg viewBox="0 0 10 10"><path d="M1 7 L5 3 L9 7"/></svg></button>
+    <button class="cur" id="cur-g" data-d="g" aria-label="Left"><svg viewBox="0 0 10 10"><path d="M7 1 L3 5 L7 9"/></svg></button>
+    <div id="joy-box" aria-hidden="true"><i class="o"></i><i class="h"></i><i class="r"></i></div>
+    <button class="cur" id="cur-d" data-d="d" aria-label="Right"><svg viewBox="0 0 10 10"><path d="M3 1 L7 5 L3 9"/></svg></button>
+    <button class="cur" id="cur-b" data-d="b" aria-label="Down"><svg viewBox="0 0 10 10"><path d="M1 3 L5 7 L9 3"/></svg></button>
+  </div>
+</div>
+
+<!-- ══ CREATE — 3 · LE SPOT, 4 · VIDÉO, 5 · PUBLIER ══ -->
+<div id="cfg" class="sheet" role="dialog" aria-label="Configure the Spot">
+  <button class="lnk x" id="cfg-x" type="button">Back to my TOTEHM</button>
+  <div class="col">
+    <div class="steps"><span>1 habit</span><span>2 context</span><span class="on" id="stp-3">3 spot</span><span id="stp-4">4 video</span><span id="stp-5">5 publish</span></div>
+    <div class="boxline" id="cfg-habit"></div>
+    <div id="cfg-form" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:14px">
+      <h2>Make it real.</h2>
+      <div class="fields">
+        <div class="f"><div class="fl">Date</div><input class="in" id="f-date" type="date"></div>
+        <div class="f"><div class="fl">Time</div><input class="in" id="f-time" type="time" step="300"></div>
+        <div class="f"><div class="fl">Duration</div><div class="stp"><button type="button" data-s="dur" data-d="-1">−</button><output id="f-dur">45 min</output><button type="button" data-s="dur" data-d="1">+</button></div></div>
+        <div class="f"><div class="fl">Capacity</div><div class="stp"><button type="button" data-s="cap" data-d="-1">−</button><output id="f-cap">6</output><button type="button" data-s="cap" data-d="1">+</button></div></div>
+        <div class="f full"><div class="fl">Meeting point — revealed to accepted members only</div><input class="in" id="f-place" maxlength="120" placeholder="the park downstairs · the steps at Ribeira"></div>
+        <div class="f full"><div class="fl">Position on the radar — rounded to ~100 m for everyone else</div>
+          <button class="btn" id="f-geo" type="button">Use my position</button><div class="note" id="f-geo-note"></div></div>
+        <div class="f"><div class="fl">Mode</div><div class="two"><button class="btn on" data-v="social" data-g="mode" type="button">Social</button><button class="btn" data-v="silent" data-g="mode" type="button">Silent</button></div></div>
+        <div class="f"><div class="fl">Selection</div><div class="two"><button class="btn on" data-v="manual" data-g="sel" type="button">Manual</button><button class="btn" data-v="auto" data-g="sel" type="button">Automatic</button></div></div>
+        <div class="f full"><div class="fl">Access</div><div class="two"><button class="btn on" data-v="club" data-g="acc" type="button">FIGHER Club</button><button class="btn" data-v="subscribers" data-g="acc" type="button" id="f-acc-sub">My subscribers</button></div>
+          <div class="fine" id="f-acc-note"></div></div>
+        <div class="f full"><div class="fl">Comment</div><textarea class="in" id="f-comment" maxlength="400" placeholder="the pace, what to bring, how it goes"></textarea></div>
+      </div>
+      <div class="fine">Social: the action lived with interaction. Silent: together, without seeking to talk.</div>
+      <button class="btn main" id="cfg-next" type="button">Continue</button>
+      <div class="note" id="cfg-note"></div>
+    </div>
+    <div id="cfg-video" class="hide" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:12px">
+      <h2>Show it —<br>if you want.</h2>
+      <p style="max-width:40ch">A Spot never needs a video. It can come later, from My space. Nothing here blocks publication.</p>
+      <div class="two"><button class="btn" id="vid-back" type="button">Back</button><button class="btn main" id="vid-next" type="button">Publish the Spot</button></div>
+      <div class="note" id="pub-note"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MY SPACE ══ -->
+<div id="mine" class="sheet" role="dialog" aria-label="My space">
+  <button class="lnk x" id="mine-x" type="button">Back to the radar</button>
+  <div class="col">
+    <h2>My space.</h2>
+    <div class="tabs"><button class="btn on" data-t="spots" type="button">My Spots</button><button class="btn" data-t="requests" type="button" id="tab-req">Requests</button><button class="btn" data-t="apps" type="button">Applications</button></div>
+    <div class="stack" id="mine-list"></div>
+    <div class="note" id="mine-note"></div>
+    <div class="fine">Only the Spot compatibility is shown. Its parts are never exposed.</div>
+  </div>
+</div>
+
+<!-- ══ LA PORTE — connexion, et la corde de velours ══ -->
+<div id="gate" class="sheet" role="dialog" aria-label="Member access">
+  <button class="lnk x" id="gate-x" type="button">Close</button>
+  <div class="col" id="gate-body">
+    <div id="g-out">
+      <div class="kick" style="margin-bottom:10px">One account, four doors</div>
+      <input class="in" id="g-email" type="email" placeholder="your@email" autocomplete="email" style="max-width:300px">
+      <input class="in hide" id="g-code" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code" style="max-width:300px;margin-top:8px">
+      <div class="note" id="g-note" style="margin-top:8px"></div>
+    </div>
+    <div id="g-claim" class="hide">
+      <div class="kick" style="margin-bottom:10px">Name your TOTEHM</div>
+      <input class="in" id="g-pseudo" maxlength="24" placeholder="your name" style="max-width:300px">
+      <div class="note" id="g-claim-note" style="margin-top:8px"></div>
+    </div>
+    <div id="g-rope" class="hide" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:12px">
+      <h2>The velvet rope.</h2>
+      <p style="max-width:38ch" id="g-why">Spots are lived between FIGHER members.</p>
+      <div class="rope" id="g-keys"></div>
+      <button class="btn main" id="g-cta" type="button"></button>
+    </div>
+    <div id="g-in" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <div class="kick" id="g-who"></div>
+      <button class="lnk" data-go="club" type="button">My FIGHER console</button>
+      <button class="lnk" data-go="com" type="button">My TOTEHM</button>
+      <button class="lnk" id="g-signout" type="button">Sign out</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL = 'https://abujjbkbbiumxrokozph.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+const sb = createClient(SB_URL, SB_ANON);
+const FN = SB_URL + '/functions/v1/';
+const $ = id => document.getElementById(id);
+const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
+
+/* ══ LE PONT SSO — COPIÉ (tools/sso_snippet.js) ═════════════════════ */
+async function ssoArrivee(sb){
+  const m = /[#&?]sso=([a-f0-9]{64})/.exec(location.hash) || /[#&?]sso=([a-f0-9]{64})/.exec(location.search);
+  if(!m) return false;
+  const keep = location.hash.replace(/[#&]?sso=[a-f0-9]{64}/, '').replace(/^#?&/, '#');
+  history.replaceState(null, '', location.pathname + location.search.replace(/[?&]sso=[a-f0-9]{64}/, '') + (keep && keep !== '#' ? keep : ''));
+  try{
+    const r = await fetch(FN + 'sso-redeem', { method:'POST',
+      headers:{'content-type':'application/json','apikey':SB_ANON,'authorization':'Bearer '+SB_ANON},
+      body: JSON.stringify({ code: m[1] }) });
+    if(!r.ok){ console.error('[sso] redeem', r.status); return false; }
+    const { token_hash, email } = await r.json();
+    if(!token_hash) return false;
+    const { error } = await sb.auth.verifyOtp({ type:'email', token_hash, email });
+    if(error){ console.error('[sso] verify', error.message); return false; }
+    return true;
+  }catch(e){ console.error('[sso]', e && e.message || e); return false; }
+}
+async function ssoVersDomaine(sb, cible, url){
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(session){
+      const r = await fetch(FN + 'sso-mint', { method:'POST',
+        headers:{'authorization':'Bearer '+session.access_token,'apikey':SB_ANON,'content-type':'application/json'},
+        body: JSON.stringify({ target: cible }) });
+      if(r.ok){ const { code } = await r.json();
+        if(code){ location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; } }
+      else console.error('[sso] mint', r.status);
+    }
+  }catch(e){ console.error('[sso]', e && e.message || e); }
+  location.href = url;
+}
+await Promise.race([ssoArrivee(sb), new Promise(r => setTimeout(() => r(false), 2500))]);
+const PORTES = {
+  com:  ['com',      'https://www.totehm.com/totehm#in'],
+  club: ['club',     'https://www.figher.club/console'],
+  join: ['club',     'https://www.figher.club/#rope'],
+  thp:  ['boutique', 'https://www.higher.boutique/get_higher'],
+};
+document.addEventListener('click', e => {
+  const g = e.target.closest('[data-go]'); if(!g) return;
+  const p = PORTES[g.dataset.go]; if(p){ e.preventDefault(); ssoVersDomaine(sb, p[0], p[1]); }
+});
+
+/* ══ LES SEPT INTENTIONS — copiées, jamais partagées ═══════════════ */
+const INTS = {
+  fight:{n:'Fight',c:'#E24B4A',p:'BODY'}, flow:{n:'Flow',c:'#e48b31',p:'BODY'},
+  enrich:{n:'Enrich',c:'#fcbe21',p:'MENTAL'}, love:{n:'Love',c:'#639922',p:'SPIRIT'},
+  express:{n:'Express',c:'#1D9E75',p:'SOUL'}, focus:{n:'Focus',c:'#378ADD',p:'MENTAL'},
+  celebrate:{n:'Celebrate',c:'#7F77DD',p:'SOUL'} };
+const icol = i => (INTS[i] || {}).c || '#ffffff';
+const T = (c, s) => '<svg viewBox="0 0 68 68" width="' + (s||15) + '" height="' + (s||15) + '" fill="' + (c||'#fff') + '" aria-hidden="true"><rect x="0.9" y="0" width="66.7" height="9.6"/><rect x="29.4" y="0" width="9.6" height="66.7"/><rect x="21.2" y="62.4" width="26.1" height="5.4"/></svg>';
+const intChips = l => '<div class="ints">' + (l||[]).map(i => '<span class="int" style="color:' + icol(i) + '">' + T(icol(i), 11) + (INTS[i]?.n || i) + '</span>').join('') + '</div>';
+const fmtDist = m => m == null ? '' : m < 1000 ? Math.round(m) + ' m' : (m/1000).toFixed(1) + ' km';
+function fmtWhen(iso){
+  const d = new Date(iso), now = new Date();
+  const hh = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  if(d <= now) return 'now';
+  if(d.toDateString() === now.toDateString()) return 'today ' + hh;
+  const tom = new Date(now); tom.setDate(tom.getDate() + 1);
+  if(d.toDateString() === tom.toDateString()) return 'tomorrow ' + hh;
+  return d.toLocaleDateString([], {weekday:'short', day:'numeric', month:'short'}) + ' ' + hh;
+}
+const human = v => String(v || '').replace(/_/g, ' ').trim();
+
+/* ══ L'ÉTAT DU MEMBRE ═══════════════════════════════════════════════ */
+let me = null, F = null;
+/* Le diagnostic — des booléens et des compteurs, jamais une position ni
+   une valeur de membre. Dans la console : __totehm_space() */
+const BUILD = '2026-09-23';
+window.__totehm_space = () => ({ build: BUILD, signed_in: !!me, member: !!F?.member,
+  located: geoOK, origin: !!RAD.origin,
+  radar_on: !!RAD.on, spots: RAD.spots.length, open_spot: !!OPEN });
+async function loadMe(){
+  const { data:{ session } } = await sb.auth.getSession();
+  me = session?.user || null;
+  F = null;
+  if(me){ const { data, error } = await sb.rpc('figher_access'); if(error) console.error('[figher_access]', error.message); F = data || null; }
+  $('member').classList.toggle('is-in', !!me);
+  $('member-txt').textContent = me ? (F?.pseudo || 'Member') : 'Sign in';
+}
+
+/* ══ LE RADAR ════════════════════════════════════════════════════════ */
+const LISBON = { lat:38.7223, lng:-9.1393 };
+const RAD = { on:false, raf:0, t:0, origin:null, spots:[], hover:null, focus:null, base:1500, zoom:1, cx:0, cy:0, rpx:0, W:0, H:0, dpr:1 };
+const EARTH_R = 6371e3, DEG = Math.PI/180;
+const localEN = (oLat, oLng, lat, lng) => ({ e:(lng-oLng)*DEG*EARTH_R*Math.cos(oLat*DEG), n:(lat-oLat)*DEG*EARTH_R });
+const FILT = { q:'', mode:null, live:false };
+let view = window.matchMedia('(max-width:699px)').matches ? 'cards' : 'map';
+
+function resize(){
+  const cv = $('canvas'), W = innerWidth, H = innerHeight, dpr = Math.max(1, Math.min(2, devicePixelRatio || 1));
+  Object.assign(RAD, { W, H, dpr, cx:W/2, cy:H/2 + 30, rpx:Math.min(W, H)/2*0.74 });
+  cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr); cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  layout();
+}
+const range = () => Math.max(80, RAD.base/RAD.zoom);
+function layout(){
+  const m = $('me'); m.style.left = RAD.cx + 'px'; m.style.top = RAD.cy + 'px';
+  const k = RAD.rpx/range(), pad = 40;
+  RAD.spots.forEach(s => {
+    s._px = RAD.cx + s._e*k; s._py = RAD.cy - s._n*k;
+    if(s._el){
+      s._el.style.transform = 'translate(' + s._px + 'px,' + s._py + 'px)';
+      s._el.style.display = (s._px < -pad || s._py < -pad || s._px > RAD.W + pad || s._py > RAD.H + pad) ? 'none' : 'flex';
+    }
+  });
+}
+function draw(){
+  const cv = $('canvas'); if(!RAD.on){ RAD.raf = 0; return; }
+  const X = cv.getContext('2d'), { W, H, cx, cy, rpx, dpr } = RAD;
+  X.setTransform(dpr, 0, 0, dpr, 0, 0); X.clearRect(0, 0, W, H); RAD.t += 1/60;
+  X.strokeStyle = 'rgba(255,255,255,.05)'; X.lineWidth = 1; X.beginPath();
+  for(let x = cx % 55; x < W; x += 55){ X.moveTo(x + .5, 0); X.lineTo(x + .5, H); }
+  for(let y = cy % 55; y < H; y += 55){ X.moveTo(0, y + .5); X.lineTo(W, y + .5); }
+  X.stroke();
+  X.strokeStyle = 'rgba(255,255,255,.13)';
+  for(let k = 1; k <= 3; k++){ X.beginPath(); X.arc(cx, cy, rpx*k/3, 0, Math.PI*2); X.stroke(); }
+  /* Les anneaux portent leur distance : un radar sans échelle ne dit pas « où ». */
+  X.font = '10px "Space Mono",monospace'; X.fillStyle = 'rgba(255,255,255,.28)'; X.textAlign = 'left';
+  for(let k = 1; k <= 3; k++) X.fillText(fmtDist(range()*k/3), cx + 4, cy - rpx*k/3 - 4);
+  const head = RAD.t*Math.PI/3;
+  for(let i = 0; i < 20; i++){
+    X.beginPath(); X.moveTo(cx, cy); X.arc(cx, cy, rpx, head - i*0.035 - 0.035, head - i*0.035); X.closePath();
+    X.fillStyle = '#ffffff'; X.globalAlpha = 0.035*(1 - i/20); X.fill();
+  }
+  X.globalAlpha = 1;
+  const f = RAD.focus || RAD.hover;
+  if(f && f._px != null){
+    X.save(); X.setLineDash([3, 7]); X.lineDashOffset = -RAD.t*14; X.lineWidth = .8;
+    X.strokeStyle = icol((f.intentions||[])[0]); X.globalAlpha = .5;
+    X.beginPath(); X.moveTo(cx, cy); X.lineTo(f._px, f._py); X.stroke(); X.restore();
+  }
+  RAD.raf = requestAnimationFrame(draw);
+}
+function radarStart(){ if(RAD.on || view !== 'map') return; RAD.on = true; resize(); RAD.raf = requestAnimationFrame(draw); }
+function radarStop(){ RAD.on = false; if(RAD.raf){ cancelAnimationFrame(RAD.raf); RAD.raf = 0; } }
+function autoRange(spots){
+  const far = spots.reduce((m, s) => Math.max(m, s.dist_m || 0), 0);
+  return spots.length ? Math.min(60000, Math.max(500, far*1.15)) : 1500;
+}
+function renderRadar(spots){
+  const box = $('markers'); box.querySelectorAll('.marker').forEach(el => el.remove());
+  RAD.base = autoRange(spots); RAD.zoom = 1;
+  spots.forEach((s, i) => {
+    const el = document.createElement('button');
+    el.type = 'button'; el.className = 'marker' + (s.live ? ' live' : '');
+    el.setAttribute('aria-label', s.habit + ' — ' + fmtWhen(s.starts_at) + ' — ' + fmtDist(s.dist_m));
+    el.innerHTML = T(icol((s.intentions||[])[0]), 17) + '<span class="lbl">' + esc(s.habit) + ' · ' + (s.live ? 'LIVE' : fmtWhen(s.starts_at)) + '</span>';
+    el.querySelector('svg').style.animationDelay = (i*44) + 'ms';
+    el.onclick = ev => { ev.stopPropagation(); openSpot(s); };
+    el.onmouseenter = () => { RAD.hover = s; }; el.onmouseleave = () => { if(RAD.hover === s) RAD.hover = null; };
+    box.appendChild(el); s._el = el;
+  });
+  layout();
+}
+function zoomBy(k){ RAD.zoom = Math.max(.3, Math.min(8, RAD.zoom*k)); layout(); }
+$('z-in').onclick = () => zoomBy(1.35); $('z-out').onclick = () => zoomBy(1/1.35);
+$('canvas').addEventListener('wheel', e => { if(!e.ctrlKey) return; e.preventDefault(); zoomBy(e.deltaY < 0 ? 1.14 : 1/1.14); }, { passive:false });
+(function pinch(){
+  const cv = $('canvas'), pts = new Map(); let base = 0, z0 = 1;
+  const dist = () => { const a = [...pts.values()]; return a.length < 2 ? 0 : Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); };
+  cv.addEventListener('pointerdown', e => { pts.set(e.pointerId, {x:e.clientX, y:e.clientY}); if(pts.size >= 2){ base = dist(); z0 = RAD.zoom; } });
+  cv.addEventListener('pointermove', e => { if(!pts.has(e.pointerId)) return; pts.set(e.pointerId, {x:e.clientX, y:e.clientY});
+    if(pts.size >= 2 && base){ RAD.zoom = Math.max(.3, Math.min(8, z0*dist()/base)); layout(); } });
+  ['pointerup','pointercancel','pointerleave'].forEach(t => cv.addEventListener(t, e => { pts.delete(e.pointerId); if(pts.size < 2) base = 0; }));
+})();
+addEventListener('resize', () => { if(RAD.on) resize(); });
+
+/* ── LA CARTE — un seul balisage pour le deck ET la fenêtre ───────── */
+const WHY = {
+  signin:['Sign in to apply', 'gate'], passport:['Complete my TOTEHM', 'com'], thp:['Get my TotehmPaper', 'thp'],
+  club:['Join FIGHER', 'join'], subscribers:['For subscribers of this TOTEHM', null], full:['Full', null],
+  started:['Already started', null], applied:[null, null], rejected:['Not selected this time', null], mine:[null, null] };
+function cardHTML(s){
+  const ctx = s.context || null;
+  const status = s.my_status === 'accepted' ? 'you are in' : s.my_status === 'pending' ? 'applied — waiting for the creator' : null;
+  let act = '';
+  if(s.mine) act = '<button class="btn" data-mine="1">Manage in My space</button>';
+  else if(s.my_status === 'pending' || s.my_status === 'accepted') act = '<button class="lnk" data-withdraw="' + s.id + '">Withdraw</button>';
+  else if(!s.why_not) act = '<button class="btn main" data-apply="' + s.id + '">Apply to this Spot</button>';
+  else { const w = WHY[s.why_not] || [s.why_not, null];
+    act = w[1] === 'gate' ? '<button class="btn main" data-gate="1">' + w[0] + '</button>'
+        : w[1] ? '<button class="btn main" data-go="' + w[1] + '">' + w[0] + '</button>'
+        : (w[0] ? '<span class="fine">' + w[0] + '</span>' : ''); }
+  return '<div class="card">' +
+    '<div class="top"><div><div class="kick">' + (s.live ? 'LIVE · ' : '') + esc(s.mode) + ' · ' + (s.access === 'subscribers' ? 'subscribers' : 'FIGHER club') + '</div>' +
+      '<h3>' + esc(s.habit) + '</h3></div>' +
+      (s.compat != null ? '<div class="cmp"><b>' + s.compat + '%</b><span>Spot compatibility</span></div>' : '') + '</div>' +
+    intChips(s.intentions) +
+    '<div class="meta"><b>' + fmtWhen(s.starts_at) + '</b> · ' + s.duration_min + ' min · ' + fmtDist(s.dist_m) + ' · <b>' + (s.taken||0) + ' / ' + s.capacity + '</b> places · ' + (s.selection === 'auto' ? 'automatic' : 'manual') + ' selection' +
+      (s.creator ? ' · by <b>' + esc(s.creator) + '</b>' : '') + '</div>' +
+    (ctx ? '<div class="ctx">' +
+      /* §29 : la Music se présente comme MOOD dans l'Espace. Elle porte la
+         couleur de l'intention à laquelle le son appartient (règle du 20/09). */
+      (ctx.mood ? '<div class="row"><span class="w">mood</span><span class="mini" style="background:' + icol(ctx.mood.intention) + ';color:#000">' + esc(ctx.mood.title || '') + '</span></div>' : '') +
+      ((ctx.objectives||[]).length ? '<div class="row"><span class="w">why</span>' + ctx.objectives.map(o => '<span class="mini o">' + esc(o.text) + '</span>').join('') + '</div>' : '') +
+      ((ctx.repulsions||[]).length ? '<div class="row"><span class="w">instead of</span>' + ctx.repulsions.map(r => '<span class="mini r">' + esc(r.text) + '</span>').join('') + '</div>' : '') +
+      '</div>' : (!me ? '<div class="fine">The context of a Spot is shared between members.</div>' : '')) +
+    (s.comment ? '<div class="say">' + esc(s.comment) + '</div>' : '') +
+    (s.place ? '<div class="place"><small>meeting point</small>' + esc(s.place) + '</div>' : '') +
+    (status ? '<div class="fine" style="color:#fff">' + status + '</div>' : '') +
+    '<div class="acts">' + act + '</div>' +
+    (s.compat != null ? '<div class="fine">Your compatibility is measured against this Spot\'s context — never a person-to-person score.</div>' : '') +
+  '</div>';
+}
+function renderDeck(spots){
+  const d = $('deck');
+  d.innerHTML = spots.map(s => '<div class="slide">' + cardHTML(s) + '</div>').join('');
+  d.scrollLeft = 0; paintCount();
+  d.onscroll = () => requestAnimationFrame(paintCount);
+}
+function paintCount(){
+  const d = $('deck'), n = RAD.spots.length, i = Math.round(d.scrollLeft/(d.clientWidth||1));
+  $('count').textContent = n ? String(Math.min(i+1, n)).padStart(2, '0') + ' / ' + String(n).padStart(2, '0') : '';
+}
+
+/* ── LE CHARGEMENT — la géographie filtre en base, pas ici ────────── */
+let geoOK = false;
+function geo(){
+  return new Promise(res => {
+    if(!navigator.geolocation){ res(null); return; }
+    navigator.geolocation.getCurrentPosition(p => res({ lat:p.coords.latitude, lng:p.coords.longitude }), () => res(null),
+      { enableHighAccuracy:false, timeout:7000, maximumAge:300000 });
+  });
+}
+async function locate(){
+  const c = await geo();
+  geoOK = !!c; RAD.origin = c || LISBON;
+  $('geo-note').textContent = c ? '' : 'position unavailable — showing Lisbon · tap to retry';
+}
+$('geo-note').onclick = async () => { await locate(); await loadSpots(); };
+let seq = 0;
+async function loadSpots(focusId){
+  const my = ++seq;
+  $('empty-k').textContent = 'looking around you…';
+  const { data, error } = await sb.rpc('spots_radar', { p_lat:RAD.origin.lat, p_lng:RAD.origin.lng, p_radius:20000,
+    p_q:FILT.q || null, p_mode:FILT.mode, p_live:FILT.live, p_limit:40 });
+  if(my !== seq) return; // une réponse tardive n'écrase jamais un état plus frais
+  if(error){ console.error('[spots_radar]', error.message); $('empty-k').textContent = 'the radar is unavailable'; return; }
+  const spots = (data?.spots || []).map(s => { const en = localEN(RAD.origin.lat, RAD.origin.lng, s.lat, s.lng); return { ...s, _e:en.e, _n:en.n }; });
+  RAD.spots = spots;
+  $('empty').classList.toggle('hide', spots.length > 0);
+  $('empty-k').textContent = spots.length ? '' : (FILT.q || FILT.mode || FILT.live ? 'nothing matches — change the filter' : 'no Spot around you yet — create the first');
+  if(view === 'map') renderRadar(spots); else renderDeck(spots);
+  if(focusId){ const s = spots.find(x => x.id === focusId); if(s){ RAD.focus = s; s._el && s._el.classList.add('focus'); openSpot(s); } }
+}
+function applyView(){
+  document.body.classList.toggle('cards', view === 'cards');
+  document.querySelector('[data-f="view"]').textContent = view === 'cards' ? 'Radar' : 'Cards';
+  if(view === 'map'){ radarStart(); renderRadar(RAD.spots); } else { radarStop(); renderDeck(RAD.spots); }
+}
+let qT = null;
+$('q').addEventListener('input', () => { clearTimeout(qT); qT = setTimeout(() => { FILT.q = $('q').value.trim(); loadSpots(); }, 300); });
+$('chips').addEventListener('click', e => {
+  const c = e.target.closest('.chip'); if(!c) return;
+  const f = c.dataset.f;
+  if(f === 'view'){ view = view === 'map' ? 'cards' : 'map'; applyView(); return; }
+  document.querySelectorAll('.chip[data-f]:not([data-f="view"])').forEach(x => x.classList.toggle('on', x === c));
+  FILT.mode = (f === 'social' || f === 'silent') ? f : null; FILT.live = f === 'live';
+  loadSpots();
+});
+
+/* ── LA FENÊTRE D'UN SPOT ─────────────────────────────────────────── */
+let OPEN = null;
+function openSpot(s){ OPEN = s; $('spot-body').innerHTML = cardHTML(s); $('spot').classList.add('show'); }
+function closeSpot(){ $('spot').classList.remove('show'); if(RAD.focus?._el) RAD.focus._el.classList.remove('focus'); RAD.focus = null; OPEN = null; }
+$('spot-x').onclick = closeSpot;
+async function onCardClick(e){
+  const a = e.target.closest('[data-apply]'), w = e.target.closest('[data-withdraw]');
+  if(e.target.closest('[data-gate]')){ openGate(); return; }
+  if(e.target.closest('[data-mine]')){ closeSpot(); openMine('spots'); return; }
+  if(a){
+    a.disabled = true; a.textContent = 'applying…';
+    const { data, error } = await sb.rpc('spot_apply', { p_spot: a.dataset.apply, p_note: null });
+    if(error || !data?.ok){ a.textContent = ({ full:'Full', started:'Already started', subscribers:'For subscribers', figher:'Members only', applied:'Already applied' })[data?.why] || (error?.message || 'not applied'); return; }
+    await loadSpots(a.dataset.apply);
+  }
+  if(w){
+    w.disabled = true;
+    await sb.rpc('spot_withdraw', { p_spot: w.dataset.withdraw });
+    await loadSpots(w.dataset.withdraw);
+  }
+}
+$('spot-body').addEventListener('click', onCardClick);
+$('deck').addEventListener('click', onCardClick);
+
+/* ══ CREATE · 1 — MY TOTEHM EN SELECT MODE ══════════════════════════
+   Le même Totehm que totehm.com, relu tel quel : `totehms.steps`,
+   `my_trips()`, `habit_spots`, `intention_sounds()`. Rien ne s'écrit ici. */
+const CROIX = { wisdom:{d:'habits'}, habits:{g:'wisdom', d:'visions', h:'objectives', b:'repulsions'}, visions:{g:'habits'},
+  objectives:{g:'wisdom', d:'visions', b:'habits'}, repulsions:{g:'wisdom', d:'visions', h:'habits'} };
+const NOM = { wisdom:['my wisdom','what I learned'], habits:['my habits','what I repeat'], visions:['my vision','what I see coming'],
+  objectives:['my objectives','what pulls me up'], repulsions:['my repulsions','what makes me derail'] };
+const SKIN = { habits:'var(--navy)', objectives:'var(--blue)', repulsions:'var(--rep)', wisdom:'var(--rep)', visions:'var(--blue)' };
+let TOT = null, vue = 'habits', PICK = null;
+async function loadTotehm(){
+  const [st, tr, hs, so] = await Promise.all([
+    sb.from('totehms').select('steps').eq('user_id', me.id).maybeSingle(),
+    sb.rpc('my_trips'),
+    sb.from('habit_spots').select('habit_text,place'),
+    sb.rpc('intention_sounds')]);
+  [st, tr, hs, so].forEach(r => { if(r.error) console.error('[totehm]', r.error.message); });
+  const steps = (st.data?.steps || []).filter(s => (s.t || '').trim());
+  const t = tr.data || {};
+  const place = {}; (hs.data || []).forEach(r => place[r.habit_text] = r.place);
+  TOT = {
+    habits: steps.map(s => ({ t:s.t, f:s.f, is: (Array.isArray(s.is) && s.is.length ? s.is : [s.i].filter(Boolean)).filter(i => INTS[i]), o:s.o, place: place[s.t] || null })),
+    objectives: (t.trips || []).filter(o => (o.text||'').trim()), repulsions: (t.reps || []).filter(r => (r.text||'').trim()),
+    wisdom: (t.wisdom || []).filter(w => (w.text||'').trim()), visions: (t.visions || []).filter(v => (v.text||'').trim()),
+    objs: t.objs || {}, sounds: so.data || {} };
+}
+const objsOf = h => (TOT.objs[h.t] || []).map(id => TOT.objectives.find(o => o.id === id)).filter(Boolean);
+const repsOf = h => TOT.repulsions.filter(r => (r.hs || []).includes(h.t));
+const tick = l => '<span class="tick">' + (l||[]).map(i => '<i style="background:' + icol(i) + '"></i>').join('') + '</span>';
+function boxHTML(kind, o, k){
+  const pick = kind === 'habits';
+  let sb_ = '', mn = '';
+  if(kind === 'habits'){
+    const i0 = o.is[0];
+    sb_ = (i0 ? '<span style="color:' + icol(i0) + ';font-weight:700">' + INTS[i0].n + '</span><span style="color:rgba(255,255,255,.5)">' + INTS[i0].p + '</span>' : '') + (o.f ? '<span>' + esc(human(o.f)) + '</span>' : '') + (o.place ? '<span>' + esc(o.place) + '</span>' : '');
+    const ob = objsOf(o), rp = repsOf(o);
+    mn = (ob.length ? '<span class="w">why</span>' + ob.map(x => '<span class="mini o">' + esc(x.text) + '</span>').join('') : '') +
+         (rp.length ? '<span class="w">trigger</span>' + rp.map(x => '<span class="mini r">' + esc(x.text) + '</span>').join('') : '');
+  } else if(kind === 'objectives'){
+    sb_ = o.days_left != null ? '<span>' + (o.days_left >= 0 ? o.days_left + ' days left' : 'past deadline') + '</span>' : '<span>no deadline</span>';
+    const hs = TOT.habits.filter(h => (TOT.objs[h.t] || []).includes(o.id));
+    mn = hs.length ? '<span class="w">how</span>' + hs.map(h => '<span class="mini">' + esc(h.t) + '</span>').join('') : '';
+  } else if(kind === 'repulsions'){
+    mn = (o.hs || []).length ? '<span class="w">instead</span>' + o.hs.map(h => '<span class="mini">' + esc(h) + '</span>').join('') : '';
+  }
+  return '<div class="bx' + (pick ? ' pick' : ' dim') + '" style="--skin:' + SKIN[kind] + '" data-k="' + k + '">' + tick(kind === 'habits' ? o.is : (o.is || [])) +
+    '<div class="nm">' + esc(kind === 'habits' ? o.t : o.text) + '</div>' + (sb_ ? '<div class="sb">' + sb_ + '</div>' : '') +
+    (mn ? '<div class="mn">' + mn + '</div>' : '') + '</div>';
+}
+function renderSel(dir){
+  const sel = $('sel');
+  sel.classList.toggle('v-wisdom', vue === 'wisdom'); sel.classList.toggle('v-visions', vue === 'visions');
+  $('sel-title').textContent = NOM[vue][0]; $('sel-sub').textContent = NOM[vue][1];
+  $('sel-mode').textContent = vue === 'habits' ? 'select mode — choose a habit box' : 'read only — a Spot starts from a habit';
+  const list = TOT[vue] || [];
+  $('list').innerHTML = list.length ? list.map((o, k) => boxHTML(vue, o, k)).join('') : '<div class="v-empty">nothing written here yet</div>';
+  if(dir){ $('list').classList.remove('swap'); void $('list').offsetWidth; $('list').classList.add('swap'); }
+  $('list').scrollTop = 0; PICK = null;
+  paintJoy();
+}
+function paintJoy(){
+  $('joy-box').style.setProperty('--joy', SKIN[vue]);
+  const couche = { objectives:'o', habits:'h', repulsions:'r' }[vue] || null;
+  ['o','h','r'].forEach(k => { const e = $('joy-box').querySelector('.' + k);
+    e.classList.toggle('ici', k === couche); e.classList.toggle('mort', !couche); });
+  ['h','g','d','b'].forEach(d => $('cur-' + d).classList.toggle('mort', !CROIX[vue][d]));
+}
+function go(d){ const n = CROIX[vue][d]; if(!n) return; vue = n; renderSel(d); }
+document.querySelectorAll('.cur').forEach(b => b.onclick = () => go(b.dataset.d));
+(function joyDrag(){
+  const box = $('joy-box'); let x0 = 0, y0 = 0, on = false;
+  box.addEventListener('pointerdown', e => { on = true; x0 = e.clientX; y0 = e.clientY; try{ box.setPointerCapture(e.pointerId); }catch(_){} });
+  box.addEventListener('pointerup', e => {
+    if(!on) return; on = false;
+    const dx = e.clientX - x0, dy = e.clientY - y0;
+    if(Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+    go(Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 'g' : 'd') : (dy < 0 ? 'h' : 'b'));
+  });
+})();
+addEventListener('keydown', e => {
+  if(!$('sel').classList.contains('show') || /INPUT|TEXTAREA/.test(document.activeElement?.tagName || '')) return;
+  const m = { ArrowUp:'h', ArrowDown:'b', ArrowLeft:'g', ArrowRight:'d' }[e.key];
+  if(m){ e.preventDefault(); go(m); }
+  if(e.key === 'Escape') closeSel();
+});
+
+/* ══ CREATE · 2 — LE CONTEXTE : la boîte choisie ENFANTE ses pièces ══
+   L'habitude reste centrale et ne se décoche pas (§29). Le reste se
+   choisit POUR CE SPOT : ça ne modifie pas le Totehm. */
+const DRAFT = { habit:null, ints:new Set(), objs:new Set(), reps:new Set(), mood:false };
+function pickHabit(k){
+  const h = TOT.habits[k]; if(!h) return;
+  document.querySelectorAll('#list .bx').forEach(b => b.classList.toggle('open', +b.dataset.k === k));
+  $('ctx')?.remove();
+  DRAFT.habit = h; DRAFT.ints = new Set(h.is); DRAFT.objs = new Set(objsOf(h).map(o => o.id)); DRAFT.reps = new Set(repsOf(h).map(r => r.id));
+  const snd = h.is.map(i => TOT.sounds[i] ? { i, kind:TOT.sounds[i].kind } : null).find(Boolean);
+  DRAFT.mood = !!snd;
+  const box = document.querySelector('#list .bx[data-k="' + k + '"]');
+  const c = document.createElement('div'); c.id = 'ctx';
+  c.innerHTML =
+    (h.is.length ? '<div class="grp"><span class="w">intention</span>' + h.is.map(i => '<button class="tg on" data-i="' + i + '"><span class="dot" style="background:' + icol(i) + '"></span>' + INTS[i].n + '</button>').join('') + '</div>' : '') +
+    (snd ? '<div class="grp"><span class="w">mood</span><button class="tg on m" data-mood="1">' + esc(snd.kind || 'my sound') + '</button></div>' : '') +
+    (objsOf(h).length ? '<div class="grp"><span class="w">why</span>' + objsOf(h).map(o => '<button class="tg on o" data-o="' + o.id + '">' + esc(o.text) + '</button>').join('') + '</div>' : '') +
+    (repsOf(h).length ? '<div class="grp"><span class="w">instead of</span>' + repsOf(h).map(r => '<button class="tg on r" data-r="' + r.id + '">' + esc(r.text) + '</button>').join('') + '</div>' : '') +
+    '<div class="next"><button class="btn main" id="ctx-go" type="button">Continue with this habit</button><button class="lnk" id="ctx-x" type="button">Another habit</button></div>';
+  box.after(c);
+  c.querySelectorAll('.tg').forEach(t => t.onclick = () => {
+    if(t.dataset.i){ if(DRAFT.ints.has(t.dataset.i) && DRAFT.ints.size === 1) return; DRAFT.ints.has(t.dataset.i) ? DRAFT.ints.delete(t.dataset.i) : DRAFT.ints.add(t.dataset.i); t.classList.toggle('on', DRAFT.ints.has(t.dataset.i)); }
+    if(t.dataset.o){ DRAFT.objs.has(t.dataset.o) ? DRAFT.objs.delete(t.dataset.o) : DRAFT.objs.add(t.dataset.o); t.classList.toggle('on', DRAFT.objs.has(t.dataset.o)); }
+    if(t.dataset.r){ const id = +t.dataset.r; DRAFT.reps.has(id) ? DRAFT.reps.delete(id) : DRAFT.reps.add(id); t.classList.toggle('on', DRAFT.reps.has(id)); }
+    if(t.dataset.mood){ DRAFT.mood = !DRAFT.mood; t.classList.toggle('on', DRAFT.mood); }
+  });
+  $('ctx-go').onclick = openCfg;
+  $('ctx-x').onclick = () => renderSel();
+  c.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+$('list').addEventListener('click', e => {
+  if(e.target.closest('#ctx')) return;
+  const b = e.target.closest('.bx'); if(!b || vue !== 'habits') return;
+  pickHabit(+b.dataset.k);
+});
+async function openCreate(){
+  if(!me){ openGate(); return; }
+  if(!F?.member){ openGate(); return; }
+  await loadTotehm();
+  vue = 'habits'; renderSel(); $('sel').classList.add('show');
+  history.replaceState(null, '', '#create');
+}
+function closeSel(){ $('sel').classList.remove('show'); if(location.hash === '#create') history.replaceState(null, '', location.pathname); }
+$('sel-x').onclick = closeSel;
+$('go-create').onclick = openCreate;
+
+/* ══ CREATE · 3 — LE SPOT ═════════════════════════════════════════ */
+const CFG = { dur:45, cap:6, mode:'social', sel:'manual', acc:'club', pos:null };
+function openCfg(){
+  const h = DRAFT.habit;
+  $('cfg-habit').innerHTML = '<small>habit · ' + [...DRAFT.ints].map(i => INTS[i]?.n).join(' · ') + '</small>' + esc(h.t);
+  $('f-place').value = h.place || '';
+  const d = new Date(Date.now() + 24*3600e3); d.setMinutes(0, 0, 0);
+  if(!$('f-date').value){ $('f-date').value = d.toISOString().slice(0, 10); $('f-time').value = '08:00'; }
+  $('f-dur').textContent = CFG.dur + ' min'; $('f-cap').textContent = CFG.cap;
+  const subOK = !!F?.spots_benefit;
+  $('f-acc-sub').disabled = !subOK;
+  $('f-acc-note').textContent = subOK ? 'members who subscribe to your TOTEHM' : 'subscriber-only Spots open when you monetize your TOTEHM with that benefit';
+  $('cfg-form').classList.remove('hide'); $('cfg-video').classList.add('hide');
+  $('stp-3').classList.add('on'); $('stp-4').classList.remove('on'); $('stp-5').classList.remove('on');
+  $('cfg').classList.add('show');
+}
+$('cfg-x').onclick = () => $('cfg').classList.remove('show');
+document.querySelectorAll('.stp button').forEach(b => b.onclick = () => {
+  const d = +b.dataset.d;
+  if(b.dataset.s === 'dur'){ CFG.dur = Math.max(15, Math.min(240, CFG.dur + d*15)); $('f-dur').textContent = CFG.dur + ' min'; }
+  else { CFG.cap = Math.max(1, Math.min(50, CFG.cap + d)); $('f-cap').textContent = CFG.cap; }
+});
+document.querySelectorAll('[data-g]').forEach(b => b.onclick = () => {
+  if(b.disabled) return;
+  document.querySelectorAll('[data-g="' + b.dataset.g + '"]').forEach(x => x.classList.toggle('on', x === b));
+  CFG[b.dataset.g] = b.dataset.v;
+});
+$('f-geo').onclick = async () => {
+  const n = $('f-geo-note'); n.className = 'note'; n.textContent = 'locating…';
+  const c = await geo();
+  if(!c){ n.className = 'note no'; n.textContent = 'allow your position, then tap again'; return; }
+  CFG.pos = c; n.className = 'note ok'; n.textContent = 'position set · ' + c.lat.toFixed(3) + ', ' + c.lng.toFixed(3);
+};
+function startsAt(){
+  const d = $('f-date').value, t = $('f-time').value;
+  if(!d || !t) return null;
+  const x = new Date(d + 'T' + t); return isNaN(x) ? null : x;
+}
+$('cfg-next').onclick = () => {
+  const n = $('cfg-note'); n.className = 'note no';
+  const s = startsAt();
+  if(!s || s < new Date(Date.now() - 5*60e3)){ n.textContent = 'choose a date and time to come'; return; }
+  if(!$('f-place').value.trim()){ n.textContent = 'say where you meet'; return; }
+  if(!CFG.pos){ n.textContent = 'set your position — it puts the Spot on the radar'; return; }
+  n.textContent = '';
+  $('cfg-form').classList.add('hide'); $('cfg-video').classList.remove('hide');
+  $('stp-3').classList.remove('on'); $('stp-4').classList.add('on');
+};
+$('vid-back').onclick = () => { $('cfg-form').classList.remove('hide'); $('cfg-video').classList.add('hide'); $('stp-4').classList.remove('on'); $('stp-3').classList.add('on'); };
+
+/* ══ CREATE · 5 — PUBLIER. Le résultat est la CARTE. ════════════════ */
+$('vid-next').onclick = async () => {
+  const n = $('pub-note'); n.className = 'note'; n.textContent = 'publishing…';
+  $('stp-4').classList.remove('on'); $('stp-5').classList.add('on');
+  $('vid-next').disabled = true;
+  const { data, error } = await sb.rpc('spot_publish', {
+    p_habit: DRAFT.habit.t, p_intentions: [...DRAFT.ints], p_objectives: [...DRAFT.objs], p_repulsions: [...DRAFT.reps],
+    p_mood: DRAFT.mood, p_starts_at: startsAt().toISOString(), p_duration_min: CFG.dur,
+    p_place: $('f-place').value.trim(), p_lat: CFG.pos.lat, p_lng: CFG.pos.lng,
+    p_mode: CFG.mode, p_capacity: CFG.cap, p_access: CFG.acc, p_selection: CFG.sel,
+    p_comment: $('f-comment').value.trim() || null });
+  $('vid-next').disabled = false;
+  if(error || !data?.ok){
+    n.className = 'note no';
+    n.textContent = ({ figher:'members only', habit:'that habit is no longer in your TOTEHM', when:'choose a time within 90 days',
+      subscribers:'subscriber-only Spots need the benefit switched on', too_many:'ten upcoming Spots at most', position:'set your position' })[data?.why] || error?.message || 'not published';
+    return;
+  }
+  /* Le Spot apparaît sur le radar, centré sur toi, sa fenêtre ouverte. */
+  $('cfg').classList.remove('show'); closeSel();
+  RAD.origin = CFG.pos; geoOK = true; $('geo-note').textContent = '';
+  $('f-comment').value = ''; CFG.pos = null; $('f-geo-note').textContent = '';
+  if(view !== 'map' && !matchMedia('(max-width:699px)').matches){ view = 'map'; applyView(); }
+  await loadSpots(data.id);
+};
+
+/* ══ MY SPACE ═══════════════════════════════════════════════════════ */
+let MS = null, TAB = 'spots';
+async function openMine(tab){
+  if(!me){ openGate(); return; }
+  TAB = tab || TAB; $('mine').classList.add('show'); history.replaceState(null, '', '#me');
+  await loadMine();
+}
+async function loadMine(){
+  const { data, error } = await sb.rpc('my_space');
+  if(error){ $('mine-note').className = 'note no'; $('mine-note').textContent = error.message; return; }
+  MS = data; paintMine();
+}
+const whenLine = s => fmtWhen(s.starts_at) + ' · ' + s.duration_min + ' min · ' + s.mode;
+function paintMine(){
+  document.querySelectorAll('[data-t]').forEach(b => b.classList.toggle('on', b.dataset.t === TAB));
+  $('tab-req').textContent = 'Requests' + (MS.requests?.length ? ' · ' + MS.requests.length : '');
+  const L = $('mine-list');
+  if(TAB === 'spots'){
+    const l = MS.spots || [];
+    L.innerHTML = l.length ? l.map(s => '<div class="bk' + (s.status !== 'published' || s.past ? ' off' : '') + '"><div class="ln"><div class="nm">' + esc(s.habit) + '</div><div class="big">' + s.taken + '/' + s.capacity + '</div></div>' +
+      '<div class="sb">' + (s.status === 'cancelled' ? 'cancelled' : s.past ? 'done' : s.live ? 'LIVE' : whenLine(s)) + ' · ' + s.pending + ' waiting · ' + (s.selection === 'auto' ? 'automatic' : 'manual') + ' · ' + (s.access === 'subscribers' ? 'subscribers' : 'FIGHER club') + '</div>' +
+      '<div class="sb">meeting point · ' + esc(s.place) + '</div>' +
+      '<div class="sb">video · none — optional</div>' +
+      (s.status === 'published' && !s.past ? '<div class="ac"><button class="lnk" data-show="' + s.id + '">See on the radar</button><button class="lnk" data-cancel="' + s.id + '">Cancel the Spot</button></div>' : '') + '</div>').join('')
+      : '<div class="empty">No Spot yet.</div>';
+  } else if(TAB === 'requests'){
+    const l = MS.requests || [];
+    L.innerHTML = l.length ? l.map(r => '<div class="bk b"><div class="ln"><div class="nm">' + esc(r.pseudo || 'a member') + '</div><div class="big">' + (r.compat != null ? r.compat + '%' : '—') + '</div></div>' +
+      '<div class="sb">' + esc(r.habit) + ' · ' + fmtWhen(r.starts_at) + '</div>' + (r.note ? '<div class="sb" style="text-transform:none;letter-spacing:.04em">' + esc(r.note) + '</div>' : '') +
+      '<div class="ac"><button class="lnk" data-dec="' + r.id + '" data-ok="1">Accept</button><button class="lnk" data-dec="' + r.id + '" data-ok="0">Reject</button></div></div>').join('')
+      : '<div class="empty">Nobody is waiting.</div>';
+  } else {
+    const l = MS.applications || [];
+    L.innerHTML = l.length ? l.map(a => '<div class="bk r' + (['accepted','pending'].includes(a.status) && a.spot_status === 'published' ? '' : ' off') + '"><div class="ln"><div class="nm">' + esc(a.habit) + '</div><div class="sb">' + esc(a.spot_status === 'cancelled' ? 'spot cancelled' : a.status) + '</div></div>' +
+      '<div class="sb">' + whenLine(a) + (a.creator ? ' · by ' + esc(a.creator) : '') + '</div>' +
+      (a.place ? '<div class="place" style="margin-top:6px"><small>meeting point</small>' + esc(a.place) + '</div>' : '') +
+      (['accepted','pending'].includes(a.status) && a.spot_status === 'published' ? '<div class="ac"><button class="lnk" data-wd="' + a.spot_id + '">Withdraw</button></div>' : '') + '</div>').join('')
+      : '<div class="empty">No application yet.</div>';
+  }
+}
+document.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { TAB = b.dataset.t; paintMine(); });
+$('mine-list').addEventListener('click', async e => {
+  const t = e.target, n = $('mine-note'); n.className = 'note'; n.textContent = '';
+  if(t.dataset.dec){
+    t.disabled = true;
+    const { data, error } = await sb.rpc('spot_decide', { p_application: +t.dataset.dec, p_accept: t.dataset.ok === '1' });
+    if(error || !data?.ok){ n.className = 'note no'; n.textContent = data?.why === 'full' ? 'the Spot is full' : (error?.message || data?.why || 'not saved'); }
+    await loadMine();
+  } else if(t.dataset.cancel){
+    if(!confirm('Cancel this Spot? Everyone accepted will be told it is off.')) return;
+    await sb.rpc('spot_cancel', { p_spot: t.dataset.cancel }); await loadMine(); loadSpots();
+  } else if(t.dataset.wd){
+    await sb.rpc('spot_withdraw', { p_spot: t.dataset.wd }); await loadMine(); loadSpots();
+  } else if(t.dataset.show){
+    $('mine').classList.remove('show'); history.replaceState(null, '', location.pathname);
+    const s = (MS.spots || []).find(x => x.id === t.dataset.show);
+    if(s){ RAD.origin = { lat:s.lat, lng:s.lng }; } await loadSpots(t.dataset.show);
+  }
+});
+$('mine-x').onclick = () => { $('mine').classList.remove('show'); history.replaceState(null, '', location.pathname); };
+$('go-me').onclick = () => openMine();
+
+/* ══ LA PORTE — connexion, puis la corde de velours ════════════════ */
+function openGate(){ $('gate').classList.add('show'); paintGate(); }
+function paintGate(){
+  const hasP = !!F?.pseudo;
+  $('g-out').classList.toggle('hide', !!me);
+  $('g-claim').classList.toggle('hide', !(me && !hasP));
+  const rope = me && hasP && !F?.member;
+  $('g-rope').classList.toggle('hide', !rope);
+  $('g-in').classList.toggle('hide', !(me && hasP && F?.member));
+  if(!me) setTimeout(() => $('g-email').focus(), 60);
+  if(me && hasP) $('g-who').textContent = F.pseudo + ' · ' + (me.email || '');
+  if(rope){
+    const k = (ok, t, c, s) => '<div class="k ' + (ok ? c : 'no') + '">' + t + '<span>' + s + '</span></div>';
+    $('g-keys').innerHTML = k(F.complete, 'My TOTEHM — complete', '', (F.remplies||0) + ' / 5') +
+      k(F.thp, 'TotehmPaper {THP}', 'b', F.thp ? 'owned' : 'missing') + k(F.annual, 'FIGHER — annual', 'r', F.annual ? 'active' : 'open');
+    const cta = $('g-cta');
+    if(!F.complete){ cta.textContent = 'Complete my TOTEHM'; cta.dataset.go = 'com'; }
+    else if(!F.thp){ cta.textContent = 'Get my TotehmPaper'; cta.dataset.go = 'thp'; }
+    else { cta.textContent = 'Join FIGHER'; cta.dataset.go = 'join'; }
+  }
+}
+$('gate-x').onclick = () => $('gate').classList.remove('show');
+$('member').onclick = openGate;
+let mail = '';
+$('g-email').addEventListener('keydown', async e => {
+  if(e.key !== 'Enter') return;
+  const v = $('g-email').value.trim(), n = $('g-note');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ n.className = 'note no'; n.textContent = 'invalid email'; return; }
+  n.className = 'note'; n.textContent = 'sending…';
+  const { error } = await sb.auth.signInWithOtp({ email:v, options:{ shouldCreateUser:true } });
+  if(error){ n.className = 'note no'; n.textContent = 'try again in a minute'; return; }
+  mail = v; n.className = 'note ok'; n.textContent = 'code sent'; $('g-code').classList.remove('hide'); setTimeout(() => $('g-code').focus(), 60);
+});
+$('g-code').addEventListener('input', async () => {
+  const t = $('g-code').value.trim(), n = $('g-note'); if(t.length !== 6) return;
+  n.className = 'note'; n.textContent = 'verifying…';
+  const { error } = await sb.auth.verifyOtp({ email:mail, token:t, type:'email' });
+  if(error){ n.className = 'note no'; n.textContent = 'wrong code'; return; }
+  n.textContent = ''; $('g-code').value = ''; $('g-code').classList.add('hide');
+});
+$('g-pseudo').addEventListener('keydown', async e => {
+  if(e.key !== 'Enter') return;
+  const v = $('g-pseudo').value.trim(), n = $('g-claim-note');
+  if(v.length < 3 || v.length > 24){ n.className = 'note no'; n.textContent = '3 to 24 characters'; return; }
+  const { error } = await sb.from('profiles').insert({ id: me.id, pseudo: v });
+  if(error){ n.className = 'note no'; n.textContent = error.code === '23505' ? 'already taken' : 'try again'; return; }
+  await loadMe(); paintGate();
+});
+$('g-signout').onclick = async () => { await sb.auth.signOut(); $('gate').classList.remove('show'); };
+sb.auth.onAuthStateChange(async ev => {
+  if(ev === 'SIGNED_IN' || ev === 'SIGNED_OUT'){ await loadMe(); if($('gate').classList.contains('show')) paintGate(); loadSpots(); }
+});
+
+/* ══ DÉMARRAGE ══════════════════════════════════════════════════════ */
+await loadMe();
+RAD.origin = LISBON;
+applyView();
+await locate();
+await loadSpots();
+if(location.hash === '#create') openCreate();
+if(location.hash === '#me') openMine();
+</script>
+</body>
+</html>
