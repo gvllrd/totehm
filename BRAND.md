@@ -6,9 +6,43 @@ Technical rules live in `CLAUDE.md`. Product state lives in `backend/SYSTEM.md`.
 
 ---
 
+## ⛔ THE FOUR DOMAINS — 23/09/2026 (overrides anything below that disagrees)
+
+Wah's MASTER ARCHITECTURE (`TOTEHM_MASTER.md`) sets four domains and one
+transversal system. **This table wins over any older mapping in this file.**
+
+| domain | what it is | the question it answers first |
+|---|---|---|
+| `totehm.com` | **the SOURCE** — the Totehm, five views, the Boxes. BUILD YOUR LIFE. | who am I, what am I building, what do I want, do, refuse, know? |
+| `figher.club` | **membership · rights · access · subscriptions · money** | what do I have, what can I access, who do I follow, who follows me, what do I earn, when am I paid? |
+| `totehm.space` | **a Habit Box becomes an action lived with members** — the Spot | what can I do, where, when, with whom? |
+| `higher.boutique` | **any Box becomes a Totehm Cloth** — plus the Stoner method and the THP | which Box do I want to materialize? |
+| TotehmBot | transversal, Telegram — the Higher Self as a mirror | — |
+
+```
+TOTEHM        = the source (strategy, data)
+TOTEHM CLOTH  = the physical materialization of ONE Box of that source
+```
+
+**TOTEHM ≠ TOTEHM CLOTH.** Never write one for the other.
+
+**The Totehm is the passport.** A complete Totehm (one non-empty Box in each
+of the five views) opens the premium ecosystem; FIGHER adds the THP and the
+annual membership. Every member of FIGHER can monetize their Totehm — there
+is no separate "creator" caste, in the product or in the words.
+
+**Prices never appear in this file.** They come from the server.
+
+The sections below were written for three domains. Where they name a domain,
+read it through this table: the Stoner method moved to `higher.boutique` on
+23/09; the personal system (SEED/PLANT) lives on `totehm.com` since the
+15/09 swap; `totehm.space` is now the Spot.
+
+---
+
 ## 0. THE NON-NEGOTIABLE
 
-TOTEHM is not one product with three websites.
+TOTEHM is not one product with four websites.
 TOTEHM is an ecosystem of independent products that share one universe.
 
 ```
@@ -30,7 +64,7 @@ Every product must stand alone. A user should understand and want one product
 without knowing the other two exist. Connections deepen the journey — they never
 explain the architecture.
 
-**Three independent products. One world.**
+**Four independent products. One world.**
 
 They differ in: product, audience, promise, experience, acquisition channel,
 commercial model, competitive reference, vocabulary.
@@ -56,20 +90,25 @@ is named and explained.
              \             /                  │
               \           /                   │
                ↓         ↓                    ↓
-              TOTEHM.COM                 TOTEHM.SPACE
-           STONER EXPERIENCE            PERSONAL SYSTEM
+          STONER EXPERIENCE                TOTEHM.COM
+          (on higher.boutique            PERSONAL SYSTEM
+           since 23/09)                  (the Totehm)
 ```
 
-- **EXPERIENCE THE LOGO → totehm.com**
-- **EXPERIENCE THE SLOGAN → totehm.com**
-- **WRITE YOUR STRATEGY IN THE LOGO → totehm.space**
+- **EXPERIENCE THE LOGO → the Stoner experience** (higher.boutique)
+- **EXPERIENCE THE SLOGAN → the Stoner experience** (higher.boutique)
+- **WRITE YOUR STRATEGY IN THE LOGO → totehm.com**
 
-Both branding experiences lead to `.com`. The logo and the slogan are the two
-faces of the same experience: the visual language and `GET HIGHER`. The Stoner
-Experience is where the branding proves it is useful.
+*(Updated 23/09: this diagram said `.com` for the Stoner experience and
+`.space` for the personal system — true before the 15/09 swap and the
+23/09 move, false since.)*
 
-`.space` is entered through a different promise entirely: you are not there to
-experience the branding, you are there to build something.
+Both branding experiences lead to the Stoner experience. The logo and the
+slogan are the two faces of the same experience: the visual language and
+`GET HIGHER`. The Stoner Experience is where the branding proves it is useful.
+
+The Totehm is entered through a different promise entirely: you are not there
+to experience the branding, you are there to build something.
 
 ### The rule that follows
 
@@ -77,12 +116,12 @@ The words "logo" and "slogan" belong to `higher.boutique`.
 They are CTA labels, written on the boutique, where explaining the branding is
 the point.
 
-**Once the user is inside `.com` or `.space`, stop explaining that they are
-experiencing the logo or the slogan.** Inside `.space` in particular: the logo is
-the interface, that is a product-design fact, and it must be *discovered*, never
-narrated.
+**Once the user is inside the Stoner experience or the Totehm, stop explaining
+that they are experiencing the logo or the slogan.** Inside the Totehm
+(`totehm.com`) in particular: the logo is the interface, that is a
+product-design fact, and it must be *discovered*, never narrated.
 
-Never write on `.space`:
+Never write in the Totehm:
 > "Write your life strategy into the TOTEHM logo."
 > "The logo is your life planner."
 
@@ -127,26 +166,40 @@ the public should feel it in the product, not read it on the homepage.
 
 ### Totehm Cloth
 
-Not merch. A physicalization of personal meaning.
+Not merch. A physicalization of personal meaning — **the materialization of
+ONE Box of a Totehm** (MASTER §49-55, 23/09/2026).
 
 ```
-WRITE → TOTEHMIZE → ARTWORK → CLOTH → WEAR → DECODE → STORY
+ANY BOX (5 views) → TOTEHMIZE → ARTWORK → CLOTH + 0.name → WEAR → REVEAL THE BOX
 ```
 
-A personal writing becomes an artwork. The artwork becomes a garment. The garment
-becomes a portal. Decode brings you back to the story.
+The anchor is a Box — a habit, an objective, a repulsion, a lesson, a vision —
+never a free text. What is linked to that Box across the five views, and the
+colors of its intentions, give the artwork its direction; the member picks a
+curated style, never a prompt. The garment carries its illustration and its
+identifier `0.name` (`0.` = year zero of the Totehm). Searching `0.name` on
+FIGHER.CLUB does not show the picture again: it **reveals the Box behind the
+cloth**, as deep as the searcher's rights go.
 
 The physical object is part of the ecosystem, not the end of it.
 
+*(Before 23/09: WRITE → … → DECODE → STORY, from a free text. Pieces made that
+way keep their public Decode — what was promised stays.)*
+
 ---
 
-## 3. TOTEHM.COM — THE STONER EXPERIENCE
+## 3. THE STONER EXPERIENCE — on `higher.boutique` since 23/09/2026
+
+> **⚠️ In this section, `.com` means "the Stoner pages".** They lived on
+> `totehm.com` until the 15/09 swap and moved to `higher.boutique` on 23/09
+> (`discover*`, `get_higher`, `stoner*`, `origins`, `play_lisbon_street`). The
+> doctrine did not move with the URL: it stays word for word.
 
 A standalone experience product.
 
 It sells: **THE STONER EXPERIENCE.**
-It does not sell: `.space`, subscriptions, the social network, the Cloth, or
-generic branding. Those are natural cross-entries, not the offer.
+It does not sell: the Totehm, the Club, the Spots, subscriptions, the Cloth
+(even though it now shares the boutique's domain), or generic branding. Those are natural cross-entries, not the offer.
 
 ### The Stoner Method
 
@@ -164,12 +217,15 @@ Existing voice:
 Le paywall de `.com` n'est pas un formulaire d'achat. C'est un objet.
 
 **Nom officiel :** TotehmPaper {THP}
-**Prix :** 30 $ — fixe, unique, sans palier.
-**Ce que ça donne :** accès à la méthode complète (stoner.html).
+**Prix :** celui que sert `higher-checkout` — jamais écrit dans une page ni
+dans ce fichier (`TOTEHM_MASTER.md` §0.3 ; le MASTER cite « ~33 € » comme
+cible historique, `SYSTEM.md` §2 donne l'état mesuré).
+**Ce que ça donne :** accès à la méthode complète (stoner.html) — et, depuis le
+23/09, **la deuxième des trois clés de FIGHER** (Totehm complet · THP · annuel).
 
 Interface d'achat (get_higher.html au 28/08/2026) :
 - Le logo TOTEHM en grand, centré, comme un carré de papier à tenir entre les doigts.
-- Un seul bouton : `Buy a TotehmPaper {THP} — $30` (perforé, Quantico).
+- Un seul bouton : `Buy a TotehmPaper {THP}` suivi du prix rendu par le serveur (perforé, Quantico).
 - En dessous : `Simple terms of sale` — lien sobre, gris sombre, aucune case à cocher.
 - En dessous : bouton `Play the street ↓` — ouvre le panneau de 22 panneaux de signalisation lisboètes (Play the Street).
 - Rien d'autre. Aucun titre. Aucune description. L'objet parle.
@@ -191,25 +247,27 @@ just scanned a sticker on a Lisbon sign, has no context for it: they read a pun
 whose key they were never given.
 
 The same rule catches a second leak. The `.com` paywall must not describe "places
-and events" — that is Tree, and Tree lives on `.space`. **Two products on one
-payment screen is one product too many.**
+and events" — that is the Map (on `totehm.com`) and the Spots (on
+`totehm.space`). **Two products on one payment screen is one product too many.**
 
 What `.com` may say: `GET HIGHER` (the slogan works with zero context), the
 numbered place, the ten steps, the artistic and neurological framing.
 
-**Figher Club belongs to `totehm.space`.** Not to the boutique — the boutique is
-where a story becomes an object, and Figher is not an object, it is a state of a
-person. The buyer of the Stoner Experience discovers they have become a Figher
-*on arriving at `.space`*, never as a sales argument beforehand. A revelation is
+**Figher Club belongs to `figher.club`** — its own domain since 23/09 (MASTER
+§8). Not to the boutique — the boutique is where a Box becomes an object, and
+Figher is not an object, it is a state of a person. The buyer of the Stoner
+Experience discovers that the THP is one of the three keys of FIGHER *once in
+the club*, never as a sales argument on the Stoner pages. A revelation is
 stronger than a promise.
 
-Mechanically it already works and needs no bridge: `.com` writes to
-`stoner_access` through the Stripe webhook, `.space` reads it. One database,
-three domains — this is what the architecture was built for.
+Mechanically: the Stripe webhook writes `stoner_access` (by email) when the THP
+is paid; `figher.club` reads it through `figher_access()`. One database, four
+domains — this is what the architecture was built for.
 
-As Tree becomes collaborative, Figher becomes **the qualification to contribute**:
-you did the method, so you can publish a spot. A club that does something, rather
-than a club that decorates.
+Figher is **the qualification to act**: complete Totehm + THP + annual
+membership → you can publish and join Spots on `totehm.space`, reveal a Box,
+subscribe to a member, monetize your own Totehm. A club that does something,
+rather than a club that decorates.
 
 ### The status layer, assumed on purpose
 
@@ -235,7 +293,7 @@ Higher becomes a quantity, Plant becomes the thing it was built against.
 
 | Stoner Method | The 7 Intentions |
 |---|---|
-| Lives on `.com` | Live on `.space` |
+| Lives on the Stoner pages (`higher.boutique`) | Live in the Totehm (`totehm.com`) |
 | Performance, perception | Personal system |
 | Neurological / experiential techniques | Attached to habits |
 | Artistic experience | Structure development and recommendations |
@@ -299,7 +357,42 @@ and scientific, not startup.
 
 ---
 
-## 4. TOTEHM.SPACE — THE PERSONAL SYSTEM
+## 4. TOTEHM.SPACE — ACTION WITH MEMBERS · 23/09/2026
+
+**HABIT → ACTION → WITH MEMBERS** (MASTER §24-48). SPACE is the anchor in the
+physical world. The product is not the map: it is **the collective action**.
+
+A Spot starts from a Habit Box of the member's Totehm, chosen in SELECT MODE —
+the Totehm opens as it looks on `totehm.com`, read-only: you choose, you do not
+edit. The habit stays central; its context (intentions, the objectives and
+repulsions linked to it, its sound — shown as **Mood**) is selected for THIS
+Spot, then frozen at publication. Tomorrow's Totehm does not rewrite
+yesterday's Spot.
+
+- **SOCIAL** — lived with interaction. **SILENT** — together, without seeking
+  to talk.
+- **Access**: FIGHER members, or only the subscribers of the member who
+  publishes. **Spot access is never Totehm access** — you can join someone's
+  walk without reading their Totehm.
+- **Spot compatibility: one number.** It measures the viewer's Totehm against
+  THIS Spot — never a person against a person, never a permanent score, never
+  a breakdown. A breakdown would let a creator rebuild a candidate's Totehm.
+- **The radar shows Spots, not a directory of places.** Its public position is
+  "around here" (~110 m); the exact meeting point is for the accepted.
+
+The UI answers, in this order: **WHAT CAN I DO? WHERE? WHEN? WITH WHOM?**
+
+Never turn SPACE into a generic social network.
+
+---
+
+## 4b. TOTEHM.COM — THE PERSONAL SYSTEM
+
+> **⚠️ Until 23/09 this section was titled "TOTEHM.SPACE".** Since the 15/09
+> swap the personal system lives on `totehm.com`: the Totehm is the source of
+> the four domains. SEED and PLANT below describe it. TREE describes the
+> Higher Map, which stays on `totehm.com` (`map.html`); the Spot — people
+> doing a habit together — is `totehm.space`, above.
 
 An independent personal-development ecosystem: build a personal system, organize
 habits, understand time, develop a direction, learn from other people, discover
@@ -629,12 +722,16 @@ SaaS.
 Every Discover is an independent cultural argument. There are **six**, one per
 product, not one per domain:
 
-1. `totehm.com` — Lisbon
-2. `totehm.com` — International
-3. `totehm.space` — SEED
-4. `totehm.space` — PLANT
-5. `totehm.space` — TREE
+1. Stoner — Lisbon (`higher.boutique/discover_lisbon`)
+2. Stoner — International (`higher.boutique/discover`)
+3. `totehm.com` — SEED
+4. `totehm.com` — PLANT
+5. `totehm.com` — TREE (the Higher Map)
 6. `higher.boutique` — Branding / Cloth
+
+*(Updated 23/09 to the four-domain map. `figher.club` and `totehm.space` have
+no Discover yet: the club's front page is its door, and a Spot is discovered
+on the radar. Whether they need one is a copy question — brief ChatGPT.)*
 
 ### Structure
 
@@ -670,9 +767,14 @@ Not: *"Cool website."*
 
 | | |
 |---|---|
-| `totehm.com` | I want to experience this. |
-| `totehm.space` | I want to build myself here. |
+| the Stoner experience | I want to experience this. |
+| `totehm.com` | I want to build myself here. |
+| `totehm.space` | *(MASTER §87)* what can I do, where, when, with whom? |
+| `figher.club` | *(MASTER §86)* what do I have, what can I access, what do I earn? |
 | `higher.boutique` | I want to wear something that actually means something. |
+
+*(Updated 23/09. The two new lines are the MASTER's own questions, not copy:
+the desire sentence for each is to be written — brief ChatGPT.)*
 
 Never replace these with "Join the TOTEHM ecosystem."
 The ecosystem is the underlying architecture. The product desire is the user's
@@ -701,7 +803,10 @@ STRONG TOTEHM ECOSYSTEM
 
 ## 13. VISUAL STYLE — RÈGLES ABSOLUES
 
-Ces règles s'appliquent à `totehm.com`. Certaines sont transverses à tout l'écosystème.
+Ces règles s'appliquent aux pages Stoner et aux Discovers (sur `higher.boutique`
+depuis le 23/09, sur `totehm.com` avant). Certaines sont transverses à tout
+l'écosystème — les quatre coins, le fond noir, le survol, « Higher » en SVG, le
+centrage.
 
 ### Polices
 
@@ -788,7 +893,7 @@ Aucun alignement gauche ou droite pour le contenu principal. Jamais de layout à
 - **Espace membre** : Quantico Bold, `#a0a0a0`, blanc au survol.
 - Ces deux éléments ne bougent pas quels que soient le scroll, les slides ou les overlays.
 
-### Structure typographique du Discover (`totehm.com`)
+### Structure typographique du Discover (pages Stoner)
 
 | Type | Classe CSS | Rendu |
 |---|---|---|

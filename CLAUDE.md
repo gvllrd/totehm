@@ -31,18 +31,27 @@ Tu t'adaptes.
 ## L'architecture documentaire
 
 ```
-space_master_v5.md        totehm.space      LOCKED
-higher_boutique_master    higher.boutique
-totehm.com master         totehm.com
-BRAND.md                  qu'est-ce que TOTEHM et pourquoi
-CLAUDE.md                 comment on construit          ← TRANSVERSE
-backend/SYSTEM.md         ce qui existe vraiment        ← TRANSVERSE
-backend/README.md         comment marche le backend
+BRAND.md             qu'est-ce que TOTEHM et pourquoi   → avant toute copy, naming, UI
+TOTEHM_MASTER.md     l'architecture des quatre domaines, ce qu'on a décidé,
+                     les prix, les arbitrages            → mis à jour à chaque décision
+CLAUDE.md            comment on construit                ← TRANSVERSE (ce fichier)
+backend/SYSTEM.md    ce qui existe VRAIMENT, mesuré et daté
+backend/README.md    comment marche le backend
+CLAUDE_CODE.md       la consigne terminal du dernier lot
 ```
 
-**Un master possède un domaine, et rien d'autre.** Une décision qui touche deux
-domaines va dans `CLAUDE.md`, jamais dupliquée dans deux masters — c'est ce qui a
-produit l'incident du SSO et celui des 70 €/79 €.
+**⚠️ DEPUIS LE 23/09/2026, UN SEUL MASTER.** Le MASTER ARCHITECTURE de Wah
+(`TOTEHM_MASTER.md`) couvre les quatre domaines d'un bloc et remplace
+`TOTEHM_MASTER.html` et les trois masters par domaine
+(`space_master_v5.md`, `higher_boutique_master`, `totehm.com master`) —
+ils décrivaient un découpage qui n'existe plus. Son §0 liste chaque
+endroit où le code ne fait pas exactement ce que dit le MASTER, et
+pourquoi. **Il n'est pas versionné** (`.gitignore` : `TOTEHM_MASTER*`) :
+le dépôt est public et le master porte les prix et les seuils.
+
+**Une décision qui touche plusieurs domaines va dans `CLAUDE.md` (le
+comment) ou dans le §0 du master (le quoi), jamais dupliquée** — c'est ce
+qui a produit l'incident du SSO et celui des 70 €/79 €.
 
 **Un document qui en contredit un autre est un bug.** Il se corrige dans le même
 lot. Ne jamais créer un septième document : le contenu va dans celui qui répond
@@ -52,7 +61,312 @@ déjà à la question.
 
 ## L'architecture technique
 
+### ⛔ QUATRE DOMAINES, UNE SOURCE — ÉTAT AU 23/09/2026 (fait autorité)
+
+```
+~/totehm/
+  com/       →  www.totehm.com       LA SOURCE — le Totehm, cinq vues, les Boxes
+                                     totehm.html · map.html · higherself.html
+                                     totehm_world.html · next_objective.html
+                                     totehm_7_intentions.html · terms.html
+                                     club/ (deux PONTS vers figher.club)
+  club/      →  www.figher.club      APPARTENANCE · DROITS · ABONNEMENTS · ARGENT
+                                     index.html (la porte) · console.html (le membre)
+  space/     →  www.totehm.space     UNE HABIT BOX DEVIENT UNE ACTION À PLUSIEURS
+                                     index.html (radar · Spots · My space)
+                                     + redirections 308 de l'ancien Stoner
+  boutique/  →  www.higher.boutique  UNE BOX, N'IMPORTE LAQUELLE, DEVIENT UN CLOTH
+                                     index.html · streetwear.html (totehmisation)
+                                     + la méthode Stoner et le THP (discover*,
+                                     get_higher, stoner*, origins, play_lisbon_street)
+  backend/   →  servi par PERSONNE
+  oracle/    →  clés SSH, gitignoré
+```
+
+**TotehmBot** est transversal (Telegram) ; il n'a pas de domaine.
+
+Ce tableau remplace celui du swap ci-dessous, qui reste pour son
+histoire. Deux mouvements l'ont rendu faux : **l'expérience Stoner est
+partie sur `higher.boutique`** (commit du 23/09, 12:06 — `space/vercel.json`
+redirige ses anciennes URL) et **`figher.club` est devenu un domaine**
+(MASTER §8) au lieu d'une redirection vers `totehm.com/club`.
+
+**Quatre origines = quatre `localStorage` = quatre sessions.** Aucune
+session n'est partagée ; le PONT les relie (voir **LE PONT SSO** plus
+bas). Toute page qui porte une session et mène à un autre domaine passe
+par `ssoVersDomaine()`, copiée de `tools/sso_snippet.js`.
+
+**Chaque domaine lit ses droits par la même fonction** :
+`figher_access()` — jamais recomposés dans la page à partir de trois
+morceaux.
+
+**Chaque page porte `BUILD` et son diagnostic console** — `__totehm_zone`
+(le Totehm), `__totehm_club()` (la porte et la console), `__totehm_space()`,
+`__totehm_cloth()`. Des booléens et des compteurs, jamais une valeur de
+membre. C'est le bloc à coller quand un écran semble vide, et `build` dit
+en trois secondes si la page ouverte est celle qu'on a livrée (règle du
+22/09).
+
+### ⛔ LE PASSEPORT FIGHER — UNE FONCTION, TROIS CLÉS — 23/09/2026
+
+**MASTER §11 : TOTEHM COMPLET + THP POSSÉDÉ + ANNUEL ACTIF.** Trois clés,
+**une** fonction : `_figher(uuid)`. Le Club, l'Espace, la Boutique et le
+bot la lisent tous ; le jour où la règle change, elle change là.
+
+| la clé | d'où elle vient |
+|---|---|
+| Totehm complet | `totehm_complete()` — une boîte NON VIDE dans chacune des 5 vues (19/09) |
+| THP possédé | `stoner_access`, **par email**, en minuscules des deux côtés |
+| annuel actif | `subscriptions.status in ('active','trialing')` |
+
+**⚠️ LE THP SE RECONNAÎT PAR L'EMAIL, PAS PAR L'UUID.** Le webhook écrit
+`stoner_access` au paiement du TotehmPaper, **avant** que l'acheteur ait
+un compte. L'email est la seule clé commune. Un membre qui a acheté le
+THP avec une autre adresse que celle de son compte n'a pas de THP aux
+yeux du Club — c'est le premier ticket de support à prévoir.
+
+**⚠️ UN SEUL BOOLÉEN SORT : `member`.** La page ne recompose jamais la
+règle à partir des trois morceaux : une page qui le fait finit par en
+oublier un. Les trois morceaux sortent AUSSI, mais pour dire au membre
+ce qui lui manque, jamais pour décider.
+
+| fonction | pour qui | ce qu'elle rend |
+|---|---|---|
+| `_figher(uuid)` | `service_role` seul | le passeport de n'importe qui |
+| `_is_figher(uuid)` | `service_role` seul | le booléen |
+| `figher_access()` | toute page, même sans session | SON passeport + pseudo + monétisé |
+| `totehmbot_access()` | toute page | même forme qu'avant, règle FIGHER |
+| `club_console()` | la console | les six questions du MASTER §86, un appel |
+
+**⚠️ TOTEHMBOT SUIT LA RÈGLE FIGHER ENTIÈRE** (MASTER §61). Avant :
+annuel + complet. Maintenant : + THP. Un membre annuel sans THP perd le
+bot quand la migration passe. Retour arrière : une ligne dans
+`totehmbot_access`.
+
+### ⛔ L'ARGENT EST UN GRAND LIVRE, PAS UN CALCUL — 23/09/2026
+
+**MASTER §18-23.** 80 % au membre, 20 % à TOTEHM, jamais un virement par
+abonnement, un solde qui s'accumule, un versement groupé au-dessus d'un
+seuil. Zéro Stripe Connect (décision du 19/09, confirmée).
+
+**⚠️ LE GRAND LIVRE EST LA SOURCE DE VÉRITÉ.** `member_ledger`. Jamais un
+solde calculé à partir des abonnements en cours : un abonnement annulé a
+quand même payé ses trois premiers mois. Et jamais un solde calculé dans
+la page (MASTER §23).
+
+**⚠️ ON CRÉDITE SUR `invoice.paid`, PAS AU CHECKOUT.** C'est la facture
+qui prouve l'argent, et chaque renouvellement en produit une. Le
+checkout n'ouvre que l'ACCÈS.
+
+**⚠️ LE CRÉATEUR VIENT DE LA METADATA DE L'ABONNEMENT, PAS DE LA TABLE.**
+`invoice.paid` arrive souvent AVANT `checkout.session.completed` : au
+moment où l'argent est là, la ligne `creator_subscriptions` n'existe pas
+encore. D'où, encore, la metadata posée en double dans
+`subscription_data.metadata` (règle du 15/09) — c'est elle que le
+webhook relit sur l'abonnement.
+
+**⚠️ L'IDEMPOTENCE EST UNE CONTRAINTE, PAS UN `if`.** `unique(source,
+kind)` avec `source = 'stripe:<invoice>'` : Stripe rejoue un webhook,
+deux instances peuvent le recevoir en même temps, une facture ne crédite
+qu'une fois. C'est la base qui le garantit.
+
+**⚠️ LE LIVRE NE SE CORRIGE PAS, IL S'AJOUTE.** Un trigger refuse tout
+UPDATE et tout DELETE. Une erreur se répare par une ligne `adjustment`.
+Et `on delete restrict` sur l'utilisateur : on ne supprime pas en silence
+un membre à qui l'on doit de l'argent.
+
+**⚠️ L'ARRONDI VA À LA PLATEFORME.** La part du membre est l'entier
+inférieur ; le centime restant va à TOTEHM. Brut = part membre + part
+TOTEHM, au centime — c'est ce qui se vérifie.
+
+**⚠️ UN SOLDE PAR DEVISE.** Même règle que la balance Stripe du 15/09.
+
+**Les règles du versement sont une FONCTION** (`payout_rules()` : seuil
+25 €, le 1er, 80/20) — pas des chiffres dans une page. Le versement lui-
+même reste manuel : `payouts_due()` → virement → `payout_mark_paid()`,
+qui écrit le versement ET sa ligne de débit dans la même transaction (un
+virement sans débit ferait payer deux fois). Procédure :
+`backend/README.md`.
+
+**⚠️ ET LE WEBHOOK REND SA CHANCE À STRIPE.** `stripe_events` inscrit
+l'événement AVANT de le traiter (idempotence). Si le traitement échoue et
+qu'on rend 500, Stripe rejoue… et l'idempotence avale le rejeu : **la
+facture n'est jamais créditée, sans un mot.** Le webhook efface donc sa
+ligne `stripe_events` avant de rendre 500. *Une idempotence qui retient
+les échecs transforme une panne passagère en perte définitive.*
+
+### ⛔ L'ABONNEMENT EST À SENS UNIQUE — 23/09/2026
+
+**MASTER §13 : Bob → Alice ne donne rien à Alice sur Bob.** Et il y avait
+un trou : `totehm_visibility = 'members'` ouvrait le Totehm à **tout
+membre connecté**, alors que le bouton s'appelle « Visible to my paying
+followers ».
+
+`_shared_with_me(owner)` porte la règle, et les quatre politiques de
+lecture (`totehms`, `objectives`, `wisdom`, `visions`) l'appellent :
+
+| visibilité | monétisé | qui lit |
+|---|---|---|
+| privé | — | le propriétaire |
+| partagé | non | les membres |
+| partagé | oui | **ses abonnés actifs**, et seulement si le bénéfice `totehm` est coché |
+
+**⚠️ `security definer` OBLIGATOIRE** — la fonction est appelée DANS la
+politique de `totehms` et relit `totehms` : sans lui, récursion (règle du
+15/09, `is_subscribed_to`).
+
+**⚠️ LA VISIBILITÉ SUIT L'INTERRUPTEUR** (règle du 18/09).
+`monetization_set(true)` avec `totehm` → partagé ; `monetization_set(false)`
+→ **privé**. Jamais l'inverse : éteindre ne doit pas ouvrir un Totehm à
+tous, gratuitement et en silence. Et éteindre **n'annule personne**.
+
+**⚠️ SEULS LES DROITS QUI EXISTENT SE VENDENT.** La contrainte accepte
+`totehm · spots · higherself · totehmbot` ; `monetization_set` refuse les
+deux derniers tant qu'ils ne sont pas construits.
+
+**Trouvé au passage** : la politique de lecture des `visions` visait
+`public` — donc l'anonyme. Elle vise `authenticated`, comme ses sœurs.
+
+### ⛔ FIGHER.CLUB — LA PORTE ET LA CONSOLE — 23/09/2026
+
+**Deux fichiers, et ils ne font pas la même chose.**
+
+| | `club/index.html` — LA PORTE | `club/console.html` — LE MEMBRE |
+|---|---|---|
+| pour qui | tout le monde | un membre connecté |
+| ce qu'elle dit | ce qu'est le Club, les trois clés, où l'on en est | les six questions du MASTER §86 |
+| ce qu'elle lit | `figher_access()` | `club_console()` — **un seul appel** |
+
+**Les trois clés s'affichent comme un état, pas comme une vente** : ce
+que le membre a, ce qui lui manque, et la porte vers ce qui manque
+(Totehm → `totehm.com/totehm#in`, THP → `higher.boutique`, annuel →
+`subscription-checkout`). Chaque porte vers un autre domaine passe par
+le pont.
+
+**La console lit tout d'un appel** : adhésion, droits, mes abonnements,
+mes abonnés, ma monétisation, mes gains, mes versements, et Reveal the
+Box. Six requêtes côté page, c'était six allers-retours pour dessiner un
+seul écran (même règle que `creator_cercle` le 19/09).
+
+**La facturation passe par le portail Stripe** (`club-billing`,
+`action: 'portal'`) : on ne réécrit pas une gestion de carte bancaire.
+L'annulation d'un abonnement à un membre (`action: 'cancel_creator'`)
+est une annulation **en fin de période** — la colonne `ending` le dit, la
+console affiche « ends on … ».
+
+**Depuis le Totehm**, le lien de monétisation s'écrit
+`https://www.figher.club/console?to=<pseudo>` : la console ouvre
+l'offre de ce membre. Ni `/club/creator`, ni un identifiant.
+
+**⚠️ `creator-price` FAISAIT UN `update` SUR UNE LIGNE QUI N'EXISTAIT
+PAS.** Zéro ligne touchée, zéro erreur : un membre qui posait son prix
+avant sa méthode de virement lisait « ok » et n'avait rien d'enregistré.
+`upsert … onConflict: 'user_id'`. *Un `update` sans ligne n'est pas une
+erreur pour Postgres — c'en est une pour nous.*
+
+### ⛔ TOTEHM.SPACE — UN SPOT EST UNE HABITUDE À PLUSIEURS — 23/09/2026
+
+**MASTER §24-48.** `space/index.html` : le radar des Spots, Create a
+Spot, My space.
+
+**⚠️ LE SPOT RESTE UNE LIGNE DE `spots`.** Le radar historique et
+HigherSelf lisent cette table : ne pas dupliquer (MASTER §71). Ce qui est
+propre à l'Espace vit dans **`spot_plans`**, une table **sans aucune
+politique RLS** — elle ne se lit et ne s'écrit que par fonction. Raison
+mesurée : `spots` accepte l'insertion directe par tout membre connecté et
+se lit par tout membre ; le point de rendez-vous et l'instantané n'y
+seraient pas protégés.
+
+**⚠️ LA POSITION PUBLIQUE EST ARRONDIE À ~110 m.** Le radar dit « c'est
+par là », pas « c'est ici ». Le lieu exact ne se révèle qu'au créateur et
+aux acceptés.
+
+**⚠️ LE CLIENT ENVOIE UNE SÉLECTION, JAMAIS UN CONTENU.** `spot_publish`
+reçoit le texte d'une habitude et des identifiants ; il RELIT dans le
+Totehm du membre le texte, les intentions (sous-ensemble de celles de
+l'habitude), les objectifs et répulsions **reliés à cette habitude**, et
+le son de l'intention. C'est l'instantané (MASTER §42) : le Spot publié
+ne change plus quand le Totehm change.
+
+**⚠️ LA COMPATIBILITÉ NE SORT JAMAIS EN MORCEAUX** (MASTER §38).
+`_spot_compat` est interne (`service_role`) ; seul le total arrondi part
+dans une réponse. Déterministe — trigrammes (`pg_trgm`), zéro LLM, zéro
+API payante — donc 0 € à un million de candidatures, et l'Espace reste
+dans la doctrine de coût. 40 % intentions · 15 % piliers · 30 %
+l'habitude · 15 % le contexte. **Elle mesure le Totehm de celui qui
+regarde contre CE Spot**, jamais une personne contre une personne.
+
+**⚠️ LA CAPACITÉ EST UN VERROU, PAS UN COMPTE** (MASTER §80).
+`spot_apply` prend `for update` sur la ligne du plan avant de compter les
+acceptés ; `spot_decide` et `spot_withdraw` prennent le même. Testé à
+deux candidatures simultanées sur une place : une acceptée, une `full`.
+
+**⚠️ SPOT ACCESS ≠ TOTEHM ACCESS** (MASTER §35). Candidater à un Spot
+« subscribers » exige l'abonnement au créateur ; ça n'ouvre pas son
+Totehm pour autant. Et le créateur voit un pseudo et un pourcentage —
+jamais le Totehm du candidat.
+
+**Pas de tâche cron** : les candidatures en attente d'un Spot commencé
+passent `expired` à la lecture suivante (`_spot_expire`). Une tâche
+qu'on oublie de planifier est une règle qui n'existe pas.
+
+**Le radar est COPIÉ de `com/map.html`** (canvas, grille, anneaux,
+balayage) — MASTER §44 : ni Google Maps, ni Mapbox, ni Leaflet. En
+dessous de 700 px, un deck de cartes : même règle que la Higher Map, deux
+rendus, une seule carte de contenu.
+
+**SELECT MODE ≠ EDIT MODE** (MASTER §28). Le Totehm s'ouvre avec sa
+croix, ses cinq vues, ses boîtes et ses couleurs — **en lecture seule**,
+et copié, pas importé. Dans l'Espace, seule la Habit View se choisit.
+
+### ⛔ HIGHER.BOUTIQUE — N'IMPORTE QUELLE BOX — 23/09/2026
+
+**MASTER §49-57.** `boutique/streetwear.html` : la totehmisation part
+d'une Box, de n'importe laquelle des cinq vues. Plus de message libre.
+
+**⚠️ LA MATIÈRE SE CALCULE CÔTÉ SERVEUR, UNE FOIS.** `_box_matter(user,
+kind, ref)` rend la Box, ses intentions, ce qui lui est relié dans les
+cinq vues, et la **palette** (les couleurs des intentions — le client ne
+choisit pas les couleurs). La page la lit pour l'aperçu
+(`my_box_matter`), `create-checkout` la relit pour l'instantané
+(`totehm_clothes.box_snapshot`). **Ce que le membre voit est exactement
+ce qui part à l'atelier.**
+
+**⚠️ `message` RESTE REMPLI** — avec le texte de la Box d'ancrage. C'est
+ce que lit la chaîne n8n. On ne casse pas l'usine pour changer la
+matière première.
+
+**Le style est curaté** (`artistic_styles`, actif) ; aucune sélection
+manuelle d'intention (MASTER §30, §97).
+
+**REVEAL THE BOX vit dans la console du Club** (`#reveal`, MASTER §55) —
+pas une galerie : on ne rend jamais le visuel, on rend la donnée derrière,
+selon qui cherche (invité → la vue et la date ; membre FIGHER → la Box et
+ses intentions ; propriétaire ou abonné → + la matière). **Et
+`decode_cloth` ne rend plus la matière d'une pièce née d'une Box** : ce
+serait contourner Reveal par la porte de derrière. Les pièces d'avant
+gardent leur Decode public — on ne retire pas ce qui a été promis.
+
+### ⛔ UNE CLASSE D'ÉTAT NE PORTE JAMAIS LE NOM D'UN STYLE — 23/09/2026
+
+Le coin membre posait la classe `in` sur `<body>` quand on était
+connecté. Or `.in` était AUSSI la classe des champs de saisie
+(`.in{width:100%…}`). Le bouton membre devenait un champ pleine largeur,
+invisible, posé sur toute la page : **il interceptait tous les clics.**
+Trois fichiers touchés (`club/index`, `club/console`, `space/index`).
+
+> **La règle : un état se nomme `is-…`** (`is-in`, `is-open`), un style
+> se nomme par ce qu'il est. Deux alphabets qui se croisent font un
+> bouton mort — même leçon que `o`/`t` le 20/09, dans le CSS cette fois.
+> Le test navigateur MESURE le coin membre une fois connecté : moins de
+> 240 px de large, sinon il a repris un style qui n'était pas le sien.
+
 ### ⚠️ LE SWAP DU 15/09/2026 — LE NOM DU DOSSIER NE DIT PLUS CE QU'IL SERT
+
+> **⚠️ HISTOIRE.** Le tableau des dossiers qui suit est dépassé depuis le
+> 23/09 : voir **⛔ QUATRE DOMAINES, UNE SOURCE** juste au-dessus. La
+> règle qui en sort — *un nom de dossier n'est pas une source de vérité* —
+> reste entière.
 
 ```
 ~/totehm/
@@ -169,7 +483,9 @@ d'être.
 
 **Le bloc front se COPIE** (`tools/sso_snippet.js`), il ne s'importe pas
 — règle du projet. Il est posé dans les sept pages qui portent une
-session, et il **bloque au niveau du module** (`await` top-level) : quand
+session (plus, depuis le 23/09, `club/index`, `club/console`,
+`space/index`, `boutique/streetwear` et les deux ponts `com/club/*`), et
+il **bloque au niveau du module** (`await` top-level) : quand
 la page lit sa session, la session est déjà là. Plafond de 2,5 s — si le
 pont tousse, on continue sans session et le membre se connecte par
 email. Dégradé, pas cassé.
@@ -343,6 +659,14 @@ registre qu'on doit migrer n'est plus un registre.
 
 ### LE CLUB ET LES CRÉATEURS — 15/09/2026
 
+> **⚠️ DÉPASSÉ LE 23/09 SUR DEUX POINTS.** `figher.club` n'est plus un
+> vanity URL : c'est un domaine (dossier `club/`), et `totehm.com/club`
+> est un pont vers lui. Et il n'y a plus de « créateurs » : **tout membre
+> FIGHER peut monétiser** (MASTER §16). Voir **⛔ FIGHER.CLUB — LA PORTE
+> ET LA CONSOLE**. Ce qui reste vrai ici : la clé secrète ne touche
+> jamais le navigateur, le compte vient de la session, on affiche SA
+> part, la metadata voyage en double.
+
 **`figher.club` est un VANITY URL.** Le Club vit sur
 **`totehm.com/club`**, c'est-à-dire sur l'origine du Totehm : même
 `localStorage`, donc **même session**. Un membre passe de son Totehm au
@@ -431,6 +755,12 @@ definer` et `stable`, sinon la politique rappelle la RLS de la table
 qu'elle interroge et part en récursion.
 
 ### ⚠️ LE QUATRIÈME DOMAINE — l'arbitrage, et ce qu'il est devenu — 15/09/2026
+
+> **⚠️ TRANCHÉ AUTREMENT LE 23/09.** Le pont existe depuis le 17/09 — la
+> condition qui manquait. Le MASTER fait de `figher.club` un domaine à
+> part entière, et c'est ce qui est construit. Cette section reste pour
+> la raison de fond : un domaine de plus sans pont, c'est un membre qui
+> arrive déconnecté devant ce qu'il paie.
 
 J'ai recommandé de NE PAS acheter un quatrième domaine, pour une raison
 qui reste vraie : quatre domaines = quatre `localStorage` = quatre
@@ -2770,8 +3100,8 @@ passe au blanc et le carré à pleine opacité ; les deux autres reculent à
 
 ### ⛔ AUCUNE BORDURE AUTOUR D'UNE BOÎTE — RÈGLE DE MARQUE · 09/09/2026
 
-**Vaut sur les TROIS domaines, sans exception :** `totehm.com`,
-`totehm.space`, `higher.boutique`. Aucune carte, aucun panneau, aucune
+**Vaut sur les QUATRE domaines, sans exception :** `totehm.com`,
+`figher.club`, `totehm.space`, `higher.boutique`. Aucune carte, aucun panneau, aucune
 fenêtre, aucun bouton, aucune saisie ne porte de trait dessiné autour
 d'elle.
 
@@ -2810,10 +3140,12 @@ Un filet gris entre deux lignes DANS une boîte n'est pas la bordure
 d'une boîte, et le gris est un délimitant autorisé : il reste.
 
 **Le coral `#fbd5ca` ne délimite rien.** Il est réservé au mot **« Get »**
-de `[Get Higher]` et à la méthode Stoner sur `totehm.com`. Jamais un
-cadre, jamais une bordure, jamais sur `.space` ni `.boutique`.
+de `[Get Higher]` et à la méthode Stoner (ses pages vivent sur
+`higher.boutique` depuis le 23/09). Jamais un cadre, jamais une bordure,
+jamais sur la totehmisation, le Club, l'Espace ni le Totehm.
 
-`tools/nobord.py` passe sur les TROIS domaines et retire tout trait
+`tools/nobord.py` passe sur `com/`, `space/` et `boutique/` (⚠️ pas
+encore sur `club/`, né le 23/09 — à ajouter à sa liste) et retire tout trait
 dessiné de moins de 4 px. **Il garde ce qui n'est pas une bordure** : la
 tuile perforée (`6px solid transparent` + `border-image`) et les faces
 d'une boîte en verre. Ce qui n'avait QUE son trait pour exister reçoit
@@ -3502,16 +3834,22 @@ position, session, préférences locales.
 
 ### Contraintes absolues
 
-**Sessions.** Trois domaines = trois `localStorage` = trois sessions.
-**Il n'y a pas de SSO.** Ne jamais l'écrire ni le promettre. Le compte est unique,
-la session ne l'est pas. Le pont, quand il viendra :
-`auth.admin.generateLink` → `token_hash` à usage unique et courte durée.
-**Jamais un token de session dans une URL.**
+**Sessions.** Quatre domaines = quatre `localStorage` = quatre sessions.
+**Aucune session n'est partagée, et il ne faut jamais l'écrire.** Le compte est
+unique, la session ne l'est pas. Ce qui existe depuis le 17/09, c'est un PONT :
+`sso-mint` → code de passage (60 s, usage unique, haché, un domaine cible) →
+`sso-redeem` → `auth.admin.generateLink` → `verifyOtp`. Le membre ne se
+reconnecte pas ; il traverse. **Jamais un token de session dans une URL** — c'est
+pourquoi le « token handoff » du MASTER (§4) n'est PAS appliqué : voir
+`TOTEHM_MASTER.md` §0.1.
 
 **Stripe.** Tous les flux partagent le même webhook. Le routage se fait sur
-`metadata.product` — `higher` · `cloth` · `subscription`. Un `switch` avec
-`default` explicite, **jamais un `if`**. Toute nouvelle fonction de checkout pose
-sa propre `metadata.product`. **Ne jamais retirer ce filtre.**
+`metadata.product` — `higher` · `cloth` · `subscription` · `creator_sub`. Un
+`switch` avec `default` explicite, **jamais un `if`**. Toute nouvelle fonction de
+checkout pose sa propre `metadata.product`. **Ne jamais retirer ce filtre.**
+Depuis le 23/09 le webhook écoute aussi **`invoice.paid`** (le grand livre) : cet
+événement doit être coché sur l'endpoint dans le dashboard Stripe, sinon il
+n'arrive jamais — et rien ne le dit.
 
 **Le piège des abonnements.** Les événements de cycle de vie ne portent pas la
 metadata de session — or ce sont eux qui coupent l'accès. Elle doit être posée
@@ -3605,7 +3943,7 @@ facture mensuelle sans revenu en face. Le gratuit reste déterministe.
 
 ### ⛔ LA STACK POLICE — QUATRE FAMILLES, QUATRE RÔLES · 21/09/2026
 
-**Donnée par Wah, non négociable, et elle vaut sur les trois domaines.**
+**Donnée par Wah, non négociable, et elle vaut sur les quatre domaines.**
 
 | Police | Rôle |
 |---|---|
@@ -3632,15 +3970,15 @@ sien. Une règle de marque sans test est une règle qu'on recassera.
 | | |
 |---|---|
 | Navy `#333366` | présent, habitudes, ancrage |
-| Coral `#fbd5ca` | **exclusivement** `totehm.com` — la méthode Stoner. Jamais sur `space` ni `boutique`. |
+| Coral `#fbd5ca` | **exclusivement** la méthode Stoner et le « Get » de `[Get Higher]`. La méthode vit sur `higher.boutique` depuis le 23/09 (elle était sur `totehm.com`) : le coral la suit, et ne sort pas de ses pages. |
 | Rouge-violet `#743169` | répulsions, carburant |
-| Quantico Bold coral | **exclusivement** `totehm.com` — techniques et Intentions |
+| Quantico Bold coral | **exclusivement** les pages Stoner — techniques et Intentions |
 | Bebas Neue gris | narration |
 | Perforation | padding `0.02em 0.18em` |
 
 ### Composants transverses — règle absolue
 
-**Boutons et saisies suivent le même style sur les trois domaines.**
+**Boutons et saisies suivent le même style sur les quatre domaines.**
 Référence : `boutique/index.html`. Des exceptions existent — lire le contexte avant de copier.
 
 **Bouton — `.btn-sig`**
@@ -3839,7 +4177,8 @@ Une fonctionnalité n'est **jamais** terminée tant que ces quatre points ne son
 pas dans la livraison :
 
 1. Le code est modifié, testé, sécurisé.
-2. Le master du domaine concerné est à jour.
+2. `TOTEHM_MASTER.md` est à jour — son §0 dit ce qui est construit et
+   chaque écart avec ce qui est voulu.
 3. `CLAUDE.md` et/ou `BRAND.md` sont à jour si une règle change.
 4. `backend/SYSTEM.md` et `backend/README.md` sont à jour si la DB ou
    l'architecture changent.

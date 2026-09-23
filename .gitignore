@@ -59,7 +59,8 @@ backend/**/.env
 backend/supabase/.temp/
 /supabase/
 /supabase/
-TOTEHM_MASTER.html
+TOTEHM_MASTER*
+MASTER*.md
 
 # La sortie du prototype : elle se REGENERE (tools/prototype_totehm.py).
 # Un artefact de build dans le depot, c'est une version de plus a garder

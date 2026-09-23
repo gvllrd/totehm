@@ -15,22 +15,117 @@
 
 ---
 
+## 0 · LOT DU 23/09/2026 — ÉCRIT ET TESTÉ, **PAS ENCORE EN PRODUCTION**
+
+> **À lire avant tout le reste.** Ce qui suit décrit un lot **écrit** : la
+> migration, six Edge Functions et quatre pages. **Au 23/09 au soir, rien de
+> tout ça n'est en base ni déployé** — l'application directe en production a
+> été refusée par le garde-fou de permissions de la session, et c'est la
+> bonne règle. Quand les étapes 6 à 9 du `CLAUDE_CODE.md` du 23/09 seront
+> faites, cette section passera au passé et son titre changera. Tant qu'il
+> dit « pas encore », **ne rien affirmer sur ces objets en production**.
+
+**Comment c'est testé.** Une réplique locale du schéma de production
+(Postgres 16, rôles `anon`/`authenticated`/`service_role`, `auth.uid()`
+simulé, les tables, contraintes et fonctions que le lot touche) : la
+migration passe d'un bloc, se rejoue sans erreur, et **109 assertions SQL**
+passent — dont deux candidatures simultanées sur une place. Les quatre
+pages passent en navigateur (Playwright, faux Supabase qui refuse ce que le
+vrai refuse) : **69 vérifications**, zéro erreur JS, zéro défilement
+horizontal au téléphone. Chaque page porte `BUILD='2026-09-23'` et un
+diagnostic console (`__totehm_club()`, `__totehm_space()`,
+`__totehm_cloth()`) — des booléens et des compteurs, jamais une donnée de
+membre.
+
+### Ce que la migration `20260923_le_club_l_espace_la_boite.sql` crée
+
+| bloc | objets | qui y touche |
+|---|---|---|
+| A · passeport FIGHER | `_figher(uuid)` · `_is_figher(uuid)` · `figher_access()` · `totehmbot_access()` réécrite | pages : `figher_access`, `totehmbot_access` (même `anon`) |
+| B · l'argent | tables **`member_ledger`** (append-only, `unique(source,kind)`, RLS lecture propre) et **`member_payouts`** (`unique(user_id,currency,period)`) · colonnes `creator_profiles.monetized`, `.benefits` · `creator_subscriptions.ending` · `payout_rules()` · `ledger_creator_invoice(…)` · `_balances(uuid)` · `payouts_due(text)` · `payout_mark_paid(…)` | webhook et Wah : `service_role` seul |
+| C · lecture à sens unique | `is_subscribed_to(uuid)` réécrite · `_shared_with_me(uuid)` · 4 politiques `… members read` remplacées (`totehms`, `objectives`, `wisdom`, `visions`) · `totehm_of(text)` réécrite · `monetization_set(bool,int,text[])` · `creator_card(text)` · `creator_offer(text,uuid)` | pages connectées ; `creator_offer` : `service_role` |
+| D · la Boîte | colonnes `totehm_clothes.box_kind`, `.box_ref`, `.box_snapshot`, `.palette` · `_box_matter(…)` · `my_box_matter(text,text)` · `reveal_cloth(text)` · `decode_cloth(text)` réécrite | `reveal_cloth`, `decode_cloth` : même `anon` |
+| E · l'Espace | tables **`spot_plans`** (RLS active, **zéro politique**) et **`spot_applications`** (`unique(spot_id,user_id)`) · `_spot_compat` · `_spot_expire` · `spot_publish` · `spots_radar` · `spot_apply` · `spot_withdraw` · `spot_decide` · `spot_cancel` · `my_space()` | `spots_radar` : même `anon` ; le reste : connectés |
+| F · la console | `club_console()` | connectés |
+
+**Extension** : `pg_trgm` (schéma `extensions`) — la compatibilité d'un Spot.
+**Droits** : tous les `revoke`/`grant` sont en fin de fichier, après le
+dernier `create` (règle du GRANT à PUBLIC). Les tables neuves n'acceptent
+aucune écriture directe de `anon`/`authenticated`.
+
+### Ce qu'elle corrige dans l'existant
+
+| avant | après |
+|---|---|
+| `totehm_visibility='members'` ouvrait le Totehm à **tout** membre connecté | partagé + monétisé → **abonnés seulement** |
+| la politique `visions members read` visait `public` (**anon compris**) | `authenticated` |
+| `totehmbot_access` : annuel + complet | la règle FIGHER entière : + THP |
+| `decode_cloth` rendait le texte de toute pièce | une pièce née d'une Box renvoie vers Reveal the Box |
+
+### Edge Functions du lot — à déployer
+
+| fonction | ce qui change |
+|---|---|
+| `stripe-webhook` | `invoice.paid` → `ledger_creator_invoice` ; `ending` sur les abonnements créateur ; efface sa ligne `stripe_events` avant de rendre 500 |
+| `subscription-checkout` | mode `preview` (le prix sans Checkout) ; porte FIGHER ; URLs `SITE_CLUB` |
+| `create-checkout` | session obligatoire ; modèle Box (`box_kind`/`box_ref` → `_box_matter` → `box_snapshot`) ; style curaté ; passeport |
+| `creator-price` | `upsert` au lieu d'`update` (la fiche pouvait ne pas exister) |
+| `creator-subscribe` | par pseudo, via `creator_offer` ; URLs `SITE_CLUB` |
+| `club-billing` | **NOUVELLE** — portail Stripe · annulation en fin de période d'un abonnement à un membre |
+
+`_shared/origins.ts` porte déjà `SITE_CLUB = "https://www.figher.club"` —
+**à vérifier** dans le déployé avant de déployer les autres.
+
+### Pages du lot
+
+`club/index.html` (NOUVELLE version) · `club/console.html` (NOUVEAU) ·
+`space/index.html` (NOUVEAU) · `space/vercel.json` (la redirection `/` →
+`totehm.com/map` retirée) · `boutique/streetwear.html` · `com/club/index.html`
+et `com/club/creator.html` (devenus des ponts) · `com/totehm.html` (lien de
+monétisation vers la console, `BUILD='2026-09-23'`).
+
+---
+
 ## 1 · Architecture documentaire
 
 ```
-space_master_v5.md          totehm.space   — LOCKED, 18/08
-higher_boutique_master      higher.boutique
-totehm.com master           totehm.com
-CLAUDE.md                   comment on construit — TRANSVERSE
-backend/SYSTEM.md           ce qui existe    — TRANSVERSE (ce fichier)
-backend/README.md           comment marche le backend
+BRAND.md             qu'est-ce que TOTEHM et pourquoi
+TOTEHM_MASTER.md     l'architecture des quatre domaines, les décisions,
+                     les prix, les arbitrages (§0) — NON versionné
+CLAUDE.md            comment on construit — TRANSVERSE
+backend/SYSTEM.md    ce qui existe — TRANSVERSE (ce fichier)
+backend/README.md    comment marche le backend
+CLAUDE_CODE.md       la consigne terminal du dernier lot
 ```
 
-**Un master possède un domaine, et rien d'autre.** Une décision qui touche deux
-domaines va dans `CLAUDE.md`, jamais dupliquée dans deux masters — c'est ce qui a
-produit l'incident du SSO et celui des 70 €/79 €.
+**Depuis le 23/09/2026, un seul master** — le MASTER ARCHITECTURE de Wah —
+remplace `TOTEHM_MASTER.html` et les trois masters par domaine. Une décision
+qui touche plusieurs domaines va dans `CLAUDE.md` (le comment) ou dans le §0
+du master (le quoi), jamais dupliquée — c'est ce qui a produit l'incident du
+SSO et celui des 70 €/79 €.
 
-### Les trois domaines
+### Les quatre domaines — état au 23/09/2026
+
+```
+~/totehm/
+  com/         →  www.totehm.com        LA SOURCE : le Totehm, la Map, HigherSelf
+                                        + com/club/* = deux ponts vers figher.club
+  club/        →  www.figher.club       adhésion · droits · abonnements · argent
+  space/       →  www.totehm.space      les Spots (+ 308 de l'ancien Stoner)
+  boutique/    →  www.higher.boutique   le Cloth + la méthode Stoner et le THP
+  backend/     →  servi par PERSONNE
+  oracle/      →  clés SSH, gitignoré
+```
+
+**Le 23/09 à 12:06** (commit « l'expérience stoner rentre à la maison »), les
+pages Stoner et THP sont passées de `space/` à `boutique/`, et
+`space/vercel.json` redirige leurs anciennes URL vers `higher.boutique`.
+
+⚠️ **Le projet Vercel qui sert `www.figher.club` et son dossier racine
+(`club/`) ne sont PAS relevés dans ce document** — à vérifier dans le
+dashboard avant de dire que le Club est en ligne.
+
+<details><summary>Les trois domaines avant le 23/09 — archive</summary>
 
 ```
 ~/totehm/
@@ -40,6 +135,8 @@ produit l'incident du SSO et celui des 70 €/79 €.
   backend/     →  servi par PERSONNE
   oracle/      →  clés SSH, gitignoré
 ```
+
+</details>
 
 **Swap 15/09/2026 :** les CONTENUS de `com/` et `space/` ont été échangés
 (le mapping Vercel folder → URL reste fixe). `totehm.com` sert maintenant
@@ -52,13 +149,25 @@ historique). Celui qui sert `totehm.space` s'appelle **`space`** et celui
 qui sert `totehm.com` s'appelle **`com`** — noms Vercel inchangés au 15/09.
 La confusion a déjà coûté un incident — **vérifier le domaine, pas le nom**.
 
-**Trois origines = trois `localStorage` = trois sessions. Il n'y a pas de SSO**,
-et il ne peut pas y en avoir : c'est le modèle de sécurité des navigateurs.
-Le compte est unique, la session ne l'est pas.
+**Quatre origines = quatre `localStorage` = quatre sessions.** Aucune session
+n'est partagée, et il ne peut pas y en avoir : c'est le modèle de sécurité des
+navigateurs. Le compte est unique, la session ne l'est pas. **Ce qui existe
+depuis le 17/09, c'est un PONT** : `sso-mint` (code 60 s, usage unique, haché,
+un domaine cible parmi `com` · `space` · `boutique` · `club`) → `sso-redeem`
+(`generateLink` → `verifyOtp`). Le membre traverse sans se reconnecter.
+**Jamais un jeton de session dans une URL** — le « token handoff » du MASTER
+§4 n'est pas appliqué (`TOTEHM_MASTER.md` §0.1).
 
 ---
 
 ## 2 · totehm.com — routing Vercel (au 28/08/2026)
+
+> **⚠️ DÉPASSÉ.** Ces pages sont passées sur `space/` au swap du 15/09, puis
+> sur `boutique/` le 23/09. Relevé du dépôt le 23/09 : `boutique/vercel.json`
+> ne porte **que des en-têtes** — le routage par pays et par cookie décrit
+> ci-dessous n'existe plus nulle part ; `/` de `higher.boutique` sert la
+> boutique, et les Discovers se servent à `/discover` et `/discover_lisbon`.
+> Le tableau des prix du THP reste l'état mesuré le 01/09 — non re-mesuré.
 
 ```
 vercel.json (com/vercel.json)
@@ -111,6 +220,17 @@ Stripe affiche : `"TotehmPaper — International"` (global) ou `"Figher Club —
 → pas d'abonnement mensuel
 → pas de Free Plan permanent
 ```
+
+### Gating — LE PASSEPORT FIGHER, 23/09/2026 (écrit, pas encore en base — §0)
+
+MASTER §11 : **FIGHER = Totehm complet + THP possédé + annuel actif**, en
+une fonction (`_figher`) et un booléen (`member`). L'annuel seul ne suffit
+plus pour les droits premium (créer/candidater à un Spot, Reveal the Box,
+s'abonner à un membre, monétiser, TotehmBot) : il reste nécessaire, il n'est
+plus suffisant. Le THP se lit dans `stoner_access` **par email**.
+
+La règle du 18/08 ci-dessous (mur de vente quand l'annuel tombe) reste vraie
+pour l'annuel lui-même.
 
 ### Gating — décision du 18/08/2026
 
@@ -1191,6 +1311,22 @@ Functions sont téléchargeables.
 
 | Date | Décision | Pourquoi |
 |---|---|---|
+| 23/09 | **Un seul master, quatre domaines** — `TOTEHM_MASTER.md` remplace les masters par domaine et `TOTEHM_MASTER.html` | le MASTER de Wah couvre les quatre domaines d'un bloc ; trois masters décrivaient un découpage qui n'existait plus |
+| 23/09 | **FIGHER = une fonction, trois clés** (`_figher`) | le Club, l'Espace, la Boutique et le bot lisent la même règle ; une page qui la recompose finit par oublier une clé |
+| 23/09 | **Le THP n'est PAS verrouillé derrière un Totehm complet** (MASTER §7 non appliqué) | il s'achète avant d'avoir un compte : c'est la porte d'acquisition. Le sas tient par FIGHER, qui exige les deux |
+| 23/09 | **L'argent des membres est un grand livre** (`member_ledger`), crédité sur `invoice.paid` | la facture prouve l'argent et chaque renouvellement en produit une ; un solde calculé depuis les abonnements oublierait ceux qui ont payé puis annulé |
+| 23/09 | **Idempotence par contrainte** (`unique(source, kind)`), livre append-only | Stripe rejoue ; une facture ne doit créditer qu'une fois, et une erreur se corrige par une ligne, jamais par un UPDATE |
+| 23/09 | **Le webhook efface sa ligne `stripe_events` avant de rendre 500** | sinon le rejeu de Stripe est avalé par l'idempotence : une panne passagère devient une facture jamais créditée |
+| 23/09 | **Partagé + monétisé = lisible par les abonnés seulement** | `members` ouvrait le Totehm à tout membre connecté ; l'abonnement est à sens unique (MASTER §13) |
+| 23/09 | **Seuls les bénéfices construits se vendent** (`totehm`, `spots`) | vendre « parler au Higher Self d'un autre » avant qu'il existe, c'est un remboursement programmé |
+| 23/09 | **Le Spot reste une ligne de `spots` ; ce qui lui est propre vit dans `spot_plans`, sans politique RLS** | ne pas dupliquer la table que le radar et HigherSelf lisent ; `spots` est trop ouverte pour porter un rendez-vous exact |
+| 23/09 | **Position publique d'un Spot arrondie à ~110 m** | le radar dit « par là » ; le lieu exact est pour les acceptés |
+| 23/09 | **Compatibilité déterministe (trigrammes), un seul nombre** | zéro LLM, zéro API payante — 0 € à l'échelle ; une décomposition permettrait de reconstruire le Totehm d'un candidat (MASTER §38) |
+| 23/09 | **Capacité par verrou de ligne** | testé à deux candidatures simultanées sur une place : une acceptée, une refusée |
+| 23/09 | **La totehmisation part d'une Box, n'importe laquelle** ; matière et palette calculées côté serveur, figées au Checkout | ce que le membre voit est ce qui part à l'atelier ; le client ne choisit pas les couleurs |
+| 23/09 | **Reveal the Box vit sur figher.club** ; `decode_cloth` ne rend plus la matière d'une pièce née d'une Box | sinon Reveal se contourne par la porte de derrière |
+| 23/09 | **figher.club est un domaine** ; `totehm.com/club*` deviennent des ponts | MASTER §8 ; le pont SSO existe depuis le 17/09, la raison du vanity URL est tombée |
+| 23/09 | **Migration écrite, PAS appliquée en production** | refus du garde-fou de permissions de la session ; application par Wah (éditeur SQL) ou par Claude avec sa permission explicite |
 | 21/09 | **La stack police est une règle de marque, et elle se MESURE** | Bebas Neue titres · Quantico boutons et saisies · Space Mono corps et métadonnées · Montserrat EXCLUSIVEMENT le slogan `[Get Higher]`, donc uniquement dans le SVG. Un test relit la `fontFamily` calculée de chaque rôle : une règle de marque sans test est une règle qu'on recassera |
 | 21/09 | **Des ronds EMPILÉS ne peuvent dire que l'axe EMPILÉ** | J'avais mis le temps (sagesse/habitudes/vision) à la verticale du pavé. La croix dit que l'horizontale est le temps et la verticale la profondeur : le pavé montre objectifs / habitudes / répulsions, et la TUILE porte l'époque. Deux axes, deux langages |
 | 21/09 | **Le contrôleur et la croix se gardent par un TEST, pas par une formule** | `#fold-x` se résout sur `#stage`, `#joy` sur la fenêtre : deux repères pour le même coin. `croix21.mjs` vérifie le dégagement à six largeurs — 23 px sur ordinateur, 14 au téléphone |

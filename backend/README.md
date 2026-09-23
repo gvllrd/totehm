@@ -1,21 +1,26 @@
 # TOTEHM · backend
 
-Socle commun aux trois domaines. **Un seul projet Supabase** sert `totehm.com`,
-`totehm.space` et `higher.boutique`.
+Socle commun aux quatre domaines. **Un seul projet Supabase** sert
+`totehm.com`, `figher.club`, `totehm.space` et `higher.boutique`, et **un seul
+webhook Stripe** route sur `metadata.product`.
 
 ```
 ~/totehm/
-  com/         →  www.totehm.com        le Figher Club (réseau social privé, porte internationale)
-  space/       →  www.totehm.space      expérimentation branding, méthode Stoner
-  boutique/    →  www.higher.boutique   finalité e-commerce
+  com/         →  www.totehm.com        LA SOURCE — le Totehm, la Map, HigherSelf
+  club/        →  www.figher.club       adhésion · droits · abonnements · argent
+  space/       →  www.totehm.space      les Spots — une habitude vécue à plusieurs
+  boutique/    →  www.higher.boutique   le Cloth + la méthode Stoner et le THP
   backend/     →  servi par PERSONNE    ← ce dossier
   oracle/      →  clés SSH, gitignoré
 ```
 
-**Swap 15/09/2026 :** les contenus de `com/` et `space/` ont été échangés.
-Le mapping folder → URL est resté fixe (Vercel Root Directory inchangé), mais
-`totehm.com` sert désormais ce que `totehm.space` servait, et inversement.
-Voir CLAUDE.md pour la doctrine complète.
+Historique : swap des contenus `com/` ↔ `space/` le 15/09 ; Stoner et THP
+partis sur `boutique/` et `club/` créé le 23/09. Le tableau qui fait foi est
+dans `CLAUDE.md` (**QUATRE DOMAINES, UNE SOURCE**).
+
+⚠️ **Le lot du 23/09 (Club, Espace, Boîte) est écrit mais PAS encore en
+base** — voir `SYSTEM.md` §0. Les sections marquées « 23/09 » ci-dessous
+décrivent ce qui tournera une fois la migration appliquée.
 
 ⚠️ **`backend/` doit rester à la racine.** Dans un dossier Vercel, le SQL, les
 Edge Functions et le `docker-compose.yml` deviendraient téléchargeables.
@@ -201,18 +206,23 @@ c'est plus fidèle qu'une génération.
 
 ---
 
-## ⚠️ Trois flux Stripe sur le même compte
+## ⚠️ Quatre flux Stripe sur le même compte
 
-`create-checkout` (Cloth), `higher-checkout` (l'expérience) et
-`subscription-checkout` (Figher Club) créent tous des sessions.
-`stripe-webhook` les reçoit **toutes**.
+`create-checkout` (Cloth), `higher-checkout` (le THP), `subscription-checkout`
+(FIGHER annuel) et `creator-subscribe` (l'abonnement d'un membre au Totehm
+d'un autre) créent tous des sessions. `stripe-webhook` les reçoit **toutes**.
 
 | `metadata.product` | Effet |
 |---|---|
-| `higher` | écrit dans `stoner_access` — TotehmPaper {THP}, 30 $ fixe |
+| `higher` | écrit dans `stoner_access` (par email) — TotehmPaper {THP}, prix servi par `higher-checkout` |
 | `cloth` | commande Printful |
 | `subscription` | écrit dans `subscriptions` |
+| `creator_sub` | ouvre l'accès (`creator_subscriptions`) ; **l'argent s'écrit sur `invoice.paid`** → `member_ledger` (23/09) |
 | *inconnu* | log, 200, **ne déclenche rien** |
+
+⚠️ **`invoice.paid` doit être coché sur l'endpoint du webhook** (Stripe →
+Developers → Webhooks). Sinon le grand livre ne reçoit jamais rien — et rien
+ne le dit.
 
 **Règles :**
 1. Un `switch` avec `default` **explicite**. Jamais un `if` : un quatrième
@@ -236,6 +246,106 @@ création du checkout. Une ligne. **Irrattrapable sur les abonnements déjà cr�
 conflicte, on renvoie 200 et on sort. Sans ça, un rejeu peut déclencher deux
 impressions Printful.
 
+⚠️ **Et si le traitement échoue, on efface la ligne avant de rendre 500**
+(23/09). Sinon Stripe rejoue, l'insert conflicte, on rend 200 — et
+l'événement n'est jamais traité. Une idempotence qui retient les échecs
+transforme une panne passagère en perte définitive.
+
+---
+
+## FIGHER — le passeport, le grand livre, les versements · 23/09
+
+### Le passeport
+
+`_figher(uuid)` : **Totehm complet + THP + annuel actif**, un booléen
+`member`. Tout ce qui est premium le lit — `figher_access()` pour les pages,
+`_is_figher()` dans les fonctions. Le THP se lit dans `stoner_access` **par
+email** (le webhook l'écrit avant que l'acheteur ait un compte).
+
+### Le grand livre
+
+```
+invoice.paid (creator_sub)
+      ↓   metadata de L'ABONNEMENT : creator_id, fan_id
+ledger_creator_invoice()
+      ↓   80 % au membre (entier inférieur), 20 % à TOTEHM
+member_ledger   kind='earning'   source='stripe:<invoice>'   ← unique(source, kind)
+      ↓
+_balances()     par devise : gagné · versé · en attente
+```
+
+- **Append-only** : un trigger refuse UPDATE et DELETE. Une erreur → une
+  ligne `adjustment` (montant signé, `source='manual:<raison>'`).
+- Un **remboursement Stripe n'est pas débité automatiquement** en V1 :
+  écrire l'`adjustment` négatif à la main, le jour même.
+- `on delete restrict` : un compte à qui l'on doit de l'argent ne se
+  supprime pas en silence.
+
+### Le versement du 1er — la procédure
+
+Les règles vivent dans `payout_rules()` : seuil **25 €**, le **1er**, 80/20.
+Elles se changent là, jamais dans une page.
+
+**1 · Qui est dû** (éditeur SQL, rôle `service_role` — c'est la seule
+lecture qui rend l'IBAN/PayPal en entier) :
+
+```sql
+select * from public.payouts_due('2026-10');
+```
+
+Un membre sous le seuil n'apparaît pas : son solde attend le mois suivant.
+
+**2 · Le virement** — à la main, depuis la banque, vers `handle`.
+
+**3 · L'écrire** — le versement ET sa ligne de débit, dans la même
+transaction :
+
+```sql
+select public.payout_mark_paid(
+  '<user_id>', 'eur', <montant_en_centimes>, '2026-10', '<référence bancaire>');
+```
+
+La fonction refuse un montant supérieur au solde. Un versement par membre,
+par devise, par mois (`unique`) : un second appel pour le même mois lève.
+
+**Palier de retour à Stripe Connect : cent membres monétisés** (décision du
+19/09). Les tables ne bougeront pas ; seule la sortie changera.
+
+### Le portail de facturation
+
+`club-billing` : `action:'portal'` ouvre le portail client Stripe (carte,
+factures, annulation FIGHER) ; `action:'cancel_creator'` annule un abonnement
+à un membre **en fin de période** (`cancel_at_period_end`), et le webhook pose
+`creator_subscriptions.ending`. ⚠️ Le portail client doit être **activé**
+dans Stripe (Settings → Billing → Customer portal), sinon la fonction rend
+une erreur Stripe.
+
+---
+
+## L'Espace — les Spots · 23/09
+
+`spots` garde une ligne par Spot (le radar historique et HigherSelf la
+lisent), à position **arrondie ~110 m**. Tout ce qui est propre à l'Espace
+vit dans `spot_plans` — RLS active, **zéro politique**, donc lisible et
+inscriptible **par fonction seulement** : `spot_publish` · `spots_radar` ·
+`spot_apply` · `spot_withdraw` · `spot_decide` · `spot_cancel` · `my_space`.
+
+- **Instantané** : `spot_publish` relit dans le Totehm du membre tout ce qui
+  est publié ; le client n'envoie qu'une sélection.
+- **Capacité** : `for update` sur la ligne du plan dans `spot_apply`,
+  `spot_decide`, `spot_withdraw`.
+- **Compatibilité** : `_spot_compat`, interne, trigrammes (`pg_trgm`) — seul
+  le total arrondi sort. **0 €.**
+- **Expiration** : `_spot_expire`, appelée par les lectures. Aucun cron.
+
+## La Boîte — la totehmisation · 23/09
+
+`_box_matter(user, kind, ref)` → la Box, ses intentions, ce qui lui est relié
+dans les cinq vues, la palette. `my_box_matter` pour l'aperçu,
+`create-checkout` pour l'instantané (`totehm_clothes.box_snapshot`). `message`
+reste rempli avec le texte de la Box : c'est ce que lit n8n.
+`reveal_cloth('0.nom')` — la Box derrière un Cloth, selon les droits.
+
 ---
 
 ## Le Figher Club — une seule adhésion
@@ -244,11 +354,11 @@ Seed / Plant / Tree ne sont plus des paliers publics. Le produit expose **un
 état** : membre, ou pas.
 
 ```
-PREMIER MOIS — GRATUIT
+7 JOURS — GRATUITS          (SYSTEM.md §3 ; ce fichier disait « premier mois »)
 PUIS — ANNUEL
 ```
 
-Le premier mois gratuit est un `trialing` Stripe : **aucune logique de dates à
+L'essai gratuit est un `trialing` Stripe : **aucune logique de dates à
 maintenir de notre côté**, donc aucune dérive possible.
 
 `my_membership()` est le seul appel dont le front a besoin. Aucune ligne = pas
@@ -257,6 +367,11 @@ membre. Un abonnement expiré, impayé ou annulé retombe **automatiquement** à
 
 Les valeurs `seed`/`plant`/`tree` restent lisibles en base pour l'historique de
 développement. **Elles ne sont jamais montrées à l'utilisateur.**
+
+⚠️ **Depuis le 23/09, l'adhésion annuelle est UNE des trois clés** de FIGHER
+(voir plus haut). `my_membership()` dit si l'annuel est actif ; `_figher()`
+dit si la personne est membre FIGHER. Pour un droit premium, c'est toujours
+la seconde qu'on lit.
 
 ---
 
@@ -320,21 +435,25 @@ de la matière sans décision n'a pas de fin.
 ## CORS
 
 Les origines autorisées vivent dans `supabase/functions/_shared/origins.ts` et
-nulle part ailleurs. Apex + `www` pour les trois domaines, plus `localhost:3000`.
+nulle part ailleurs. Apex + `www` pour les quatre domaines (`SITE_CLUB` =
+`https://www.figher.club`), plus `localhost:3000`.
 
 **Jamais de `Access-Control-Allow-Origin: '*'`** sur une fonction qui touche au
 paiement ou à une donnée utilisateur.
 
 ## Sessions
 
-Trois domaines = trois origines = trois `localStorage` = **trois sessions**.
-Il n'y a pas de SSO. C'est le modèle de sécurité des navigateurs, pas une limite
-de Supabase.
+Quatre domaines = quatre origines = quatre `localStorage` = **quatre sessions**.
+Aucune n'est partagée : c'est le modèle de sécurité des navigateurs, pas une
+limite de Supabase.
 
-Le pont, le jour où un second domaine aura besoin d'un utilisateur connecté :
-`auth.admin.generateLink` côté serveur → `token_hash` à usage unique et courte
-durée → `verifyOtp` sur le domaine cible.
-**Jamais un refresh token dans une URL.**
+**Le pont existe depuis le 17/09** : `sso-mint` (session du domaine de départ →
+code de passage 60 s, usage unique, haché, un domaine cible parmi `com` ·
+`space` · `boutique` · `club`) → redirection avec `#sso=<code>` → le domaine
+d'arrivée retire le code de l'URL, puis `sso-redeem` → `auth.admin.generateLink`
+→ `verifyOtp`. Le bloc front se copie depuis `tools/sso_snippet.js`.
+**Jamais un refresh token dans une URL** — c'est pourquoi le « token handoff »
+du MASTER (§4) n'est pas appliqué.
 
 ---
 
@@ -353,8 +472,18 @@ supabase functions deploy generate_objective --no-verify-jwt
 supabase functions deploy prospects --no-verify-jwt
 supabase functions deploy embed-places --no-verify-jwt   # one-shot backfill
 supabase functions deploy agenda-ingest --no-verify-jwt  # appelée par pg_cron
-supabase db push
+# 23/09 — JWT vérifié : les pages envoient toujours un jeton (session ou clé anon)
+supabase functions deploy subscription-checkout
+supabase functions deploy create-checkout
+supabase functions deploy creator-price
+supabase functions deploy creator-subscribe
+supabase functions deploy club-billing
 ```
+
+⚠️ **Pas de `supabase db push`.** L'historique des migrations du dépôt ne suit
+pas celui de la base : `db push` rejouerait des fichiers déjà appliqués. Une
+migration s'applique UNE fois, par l'éditeur SQL de Supabase ou par Claude via
+le MCP, et le fichier du dépôt en garde la trace.
 
 `--no-verify-jwt` sur les webhooks : Stripe et Telegram n'ont pas de JWT
 Supabase. Sans risque — la signature est vérifiée dans le code.
@@ -410,16 +539,19 @@ du bot est mécanique — jamais un centime.
 
 ---
 
-## TotehmBot — bot unique des 3 entités
+## TotehmBot — bot unique, transversal
 
-Un seul bot Telegram (`TELEGRAM_BOT_TOKEN`) sert `totehm.space`, `higher.boutique`
-et `totehm.com`. **TotehmManager est abandonné.**
+Un seul bot Telegram (`TELEGRAM_BOT_TOKEN`) sert les quatre domaines.
+**TotehmManager est abandonné.** Depuis le 23/09 (une fois la migration
+appliquée), `totehmbot_access()` suit la règle FIGHER entière : Totehm complet
++ THP + annuel.
 
 | Domaine | Usage |
 |---|---|
-| `totehm.com` | habitudes, Figher Club, autobiographie, **`/spot`** (production de contenu par les membres) — porte internationale |
+| `totehm.com` | habitudes, autobiographie, **`/spot`** (le lieu posé depuis le bot — l'ancien modèle, sans capacité ni candidature) |
+| `figher.club` | l'accès au bot se lit dans la console |
+| `totehm.space` | les Spots du 23/09 ne passent pas encore par le bot (Proof of Vibe = V2) |
 | `higher.boutique` | curation des illustrations générées par n8n |
-| `totehm.space` | expérimentation branding, méthode Stoner |
 
 Les workflows n8n qui pointaient vers TotehmManager seront redirigés vers TotehmBot
 au fil des itérations — pas de migration forcée, on le fait au cas par cas.
