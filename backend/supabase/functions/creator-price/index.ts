@@ -47,10 +47,14 @@ Deno.serve(async (req) => {
     );
   }
 
+  // ⚠️ UPSERT, PAS UPDATE · 23/09/2026. Un `.update()` sur une fiche qui
+  // n'existe pas encore touche ZÉRO ligne et ne lève RIEN : un créateur
+  // qui posait son prix AVANT sa méthode de virement lisait « ok » et
+  // n'avait rien d'enregistré. `creator_payout_set` faisait déjà un
+  // upsert ; le prix fait maintenant pareil.
   const { error } = await sb
     .from("creator_profiles")
-    .update({ custom_sub_price: cents })
-    .eq("user_id", user.id);
+    .upsert({ user_id: user.id, custom_sub_price: cents }, { onConflict: "user_id" });
 
   if (error) {
     console.error("[creator-price]", error.message);

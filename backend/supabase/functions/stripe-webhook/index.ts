@@ -1,14 +1,22 @@
 // TOTEHM · stripe-webhook
-// Trois flux sur le même compte — routage sur metadata.product :
-//   higher       → stoner_access + email Resend
+// Quatre flux sur le même compte — routage sur metadata.product :
+//   higher       → stoner_access + email Resend (le TotehmPaper {THP})
 //   cloth        → ignoré ici (Printful géré ailleurs)
-//   subscription → subscriptions (Figher Club)
+//   subscription → subscriptions (FIGHER CLUB, l'adhésion annuelle)
+//   creator_sub  → creator_subscriptions (Bob s'abonne au Totehm d'Alice)
+//                  + member_ledger à CHAQUE facture payée (23/09/2026)
 //
 // Events traités :
 //   checkout.session.completed
 //   customer.subscription.updated
 //   customer.subscription.deleted
+//   invoice.paid            ← 23/09 : le grand livre du membre
 //   invoice.payment_failed
+//
+// ⚠️ ACTIVER `invoice.paid` DANS LE DASHBOARD STRIPE (Developers →
+// Webhooks → cet endpoint → événements). Sans lui, un abonné paie et le
+// créateur ne voit jamais son gain : l'accès s'ouvre, l'argent ne se
+// compte pas.
 //
 // verify_jwt = false (Stripe n'a pas de JWT Supabase)
 
@@ -191,10 +199,11 @@ async function handleSubscriptionCheckout(session: Stripe.Checkout.Session) {
   console.log("abonnement créé — user:", userId, "sub:", subId, "status:", sub.status);
 }
 
-// ══ LES CRÉATEURS · 15/09/2026 ═══════════════════════════════════════
-// Stripe a encaissé et réparti (80 % au créateur, 20 % à la plateforme)
-// AVANT d'arriver ici. Ces trois fonctions n'ouvrent et ne ferment que
-// l'ACCÈS — jamais un montant, jamais un virement.
+// ══ LES CRÉATEURS · 15/09/2026 · MAJ 23/09/2026 ══════════════════════
+// ⚠️ PLUS DE SPLIT CHEZ STRIPE depuis le 19/09 : l'argent arrive ENTIER
+// sur le compte de la plateforme. Ces fonctions ouvrent et ferment
+// l'ACCÈS ; le MONTANT dû au créateur s'écrit dans le grand livre, par
+// `handleInvoicePaid`, une ligne par facture — jamais ici.
 
 async function handleCreatorSub(session: Stripe.Checkout.Session) {
   const creator = session.metadata?.creator_id;
@@ -221,9 +230,67 @@ async function handleCreatorSubState(sub: Stripe.Subscription) {
     .update({
       status: sub.status,
       current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
+      // Une annulation demandée n'est pas une annulation : l'abonné garde
+      // ce qu'il a payé jusqu'à la fin de la période. La console le dit.
+      ending: !!sub.cancel_at_period_end,
     })
     .eq("stripe_subscription_id", sub.id);
   if (error) throw error;
+}
+
+// ══ LE GRAND LIVRE — une facture payée = une ligne · 23/09/2026 ═══════
+// MASTER §18-22 : 80 % au membre, 20 % à TOTEHM, accumulés dans un
+// solde, virés en groupe le 1er au-dessus du seuil. Jamais un virement
+// par abonnement.
+//
+// ⚠️ LE CRÉATEUR VIENT DE LA METADATA DE L'ABONNEMENT, pas de
+// `creator_subscriptions` : `invoice.paid` arrive souvent AVANT
+// `checkout.session.completed`. À cet instant la ligne d'abonnement
+// n'existe pas encore — l'argent, lui, est déjà là.
+//
+// ⚠️ L'IDEMPOTENCE EST EN BASE (`unique (source, kind)`). Deux livraisons
+// de la même facture n'écrivent qu'une ligne, même en parallèle.
+async function handleInvoicePaid(invoice: Stripe.Invoice) {
+  const subId = typeof invoice.subscription === "string"
+    ? invoice.subscription
+    : invoice.subscription?.id;
+  if (!subId) return; // un paiement unique (THP, Cloth) n'a pas de facture d'abonnement
+
+  let meta = (invoice as unknown as { subscription_details?: { metadata?: Record<string, string> } })
+    .subscription_details?.metadata ?? {};
+  if (!meta.product) {
+    // Filet : un objet Invoice ancien ou partiel. On relit l'abonnement,
+    // qui porte la metadata posée par `creator-subscribe`.
+    const sub = await stripe.subscriptions.retrieve(subId);
+    meta = (sub.metadata ?? {}) as Record<string, string>;
+  }
+
+  switch (meta.product) {
+    case "creator_sub": {
+      if (!meta.creator_id) {
+        console.error("invoice.paid creator_sub sans creator_id:", invoice.id);
+        return;
+      }
+      const { data, error } = await admin.rpc("ledger_creator_invoice", {
+        p_invoice: invoice.id,
+        p_subscription: subId,
+        p_creator: meta.creator_id,
+        p_fan: meta.fan_id ?? null,
+        p_gross: invoice.amount_paid ?? 0,
+        p_currency: invoice.currency ?? "eur",
+      });
+      // ⚠️ UNE ERREUR DE RPC SE JOURNALISE ET SE REJOUE. Sans le `throw`,
+      // Stripe reçoit 200 et ne relivre jamais : un gain perdu en silence.
+      if (error) throw new Error("ledger: " + error.message);
+      console.log("grand livre:", invoice.id, JSON.stringify(data));
+      break;
+    }
+    case "subscription":
+      // L'adhésion FIGHER : aucun partage, rien à inscrire au grand livre.
+      break;
+    default:
+      console.log("invoice.paid ignoré — produit:", meta.product, invoice.id);
+  }
 }
 
 async function handleAccountUpdated(acc: Stripe.Account) {
@@ -356,9 +423,8 @@ Deno.serve(async (req) => {
           case "subscription":
             await handleSubscriptionCheckout(session);
             break;
-          // L'abonnement d'un fan au HigherSelf d'un créateur. Stripe a
-          // déjà fait le split 80/20 (application_fee_percent +
-          // transfer_data) : ici on n'ouvre que l'ACCÈS.
+          // L'abonnement d'un membre au Totehm d'un autre : ici on
+          // n'ouvre que l'ACCÈS. L'argent s'écrit sur `invoice.paid`.
           case "creator_sub":
             await handleCreatorSub(session);
             break;
@@ -398,6 +464,12 @@ Deno.serve(async (req) => {
         break;
       }
 
+      case "invoice.paid": {
+        const invoice = event.data.object as Stripe.Invoice;
+        await handleInvoicePaid(invoice);
+        break;
+      }
+
       case "invoice.payment_failed": {
         const invoice = event.data.object as Stripe.Invoice;
         await handlePaymentFailed(invoice);
@@ -410,6 +482,12 @@ Deno.serve(async (req) => {
   } catch (err) {
     // 500 → Stripe rejoue : utilisé pour les erreurs DB critiques uniquement
     console.error("erreur handler:", event.type, err.message);
+    // ⚠️ LE REJEU DOIT POUVOIR PASSER · 23/09/2026. L'événement était
+    // inscrit dans `stripe_events` AVANT d'être traité : quand le handler
+    // échouait, Stripe rejouait… et tombait sur « already processed ».
+    // Un 500 ne servait donc à rien — l'événement était perdu. On retire
+    // la marque pour que la relivraison soit réellement traitée.
+    await admin.from("stripe_events").delete().eq("event_id", event.id);
     return new Response("handler error", { status: 500 });
   }
 
