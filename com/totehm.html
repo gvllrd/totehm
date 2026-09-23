@@ -4187,7 +4187,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-09-22b';
+const BUILD='2026-09-23';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -6787,7 +6787,12 @@ $('pay-handle').addEventListener('keydown',async e=>{
 $('cc-copy').onclick=async()=>{
   const nom=(myProfile&&myProfile.pseudo)||'';
   if(!nom){ dis('name your Totehm first'); return; }
-  const lien='https://www.totehm.com/totehm?ro='+encodeURIComponent(nom);
+  /* ⚠️ LE LIEN D'ABONNEMENT MÈNE AU CLUB · 23/09/2026. Il menait à la
+     lecture seule du Totehm — or un Totehm MONÉTISÉ ne se lit plus que par
+     ses abonnés (`_shared_with_me`) : le visiteur tombait sur « private »
+     sans porte pour s'abonner. La console de figher.club ouvre l'offre
+     (`?to=`), et le Checkout part de là. */
+  const lien='https://www.figher.club/console?to='+encodeURIComponent(nom);
   try{ await navigator.clipboard.writeText(lien);
        const b=$('cc-copy'); b.textContent='copied ✓';
        setTimeout(()=>{b.textContent='Monetize it — copy my link';},1600);
