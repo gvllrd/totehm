@@ -685,32 +685,7 @@ SORTIE a bougé.** Stripe Connect est abandonné pour les créateurs — voir
 bas, qui fait autorité sur tout ce paragraphe. L'argent arrive entier sur
 le compte de la plateforme et les 80 % partent à la main le 1er.
 
-Et l'IBAN, lui, est bien chez nous maintenant. Ce qui suit était vrai
-jusqu'au 18/09 et ne l'est plus.
-
-<details><summary>La version Connect (15/09) — archive</summary>
-
-Le split était deux paramètres :
-
-```
-subscription_data.transfer_data.destination = compte connecté du créateur
-subscription_data.application_fee_percent   = 20
-```
-
-Stripe versait 80 % au créateur et 20 % à la plateforme **à chaque
-renouvellement**, sans virement manuel, sans réconciliation. Je l'avais
-sous-estimé : ce n'était pas trois semaines de travail, c'était deux
-paramètres. *Ce qui prenait du temps, ce n'était pas le code — c'était
-l'activation Connect côté Stripe et la vérification de la plateforme.*
-**Et c'est exactement là que tout a bloqué trois jours.**
-
-**Connect Express** hébergeait l'identité, les pièces, la conformité
-fiscale et les virements. On ne stockait QUE `stripe_account_id` — jamais
-un IBAN, jamais une pièce d'identité, jamais une date de naissance.
-C'était la seule forme de Connect qui tenait dans une timeline de
-75 jours — et elle n'y a pas tenu.
-
-</details>
+Et l'IBAN, lui, est bien chez nous maintenant.
 
 #### ⚠️ LA CLÉ SECRÈTE NE TOUCHE JAMAIS LE NAVIGATEUR
 
@@ -816,49 +791,6 @@ Wah les reconnaît à leur fond. ⚠️ **Il faut le poser DEUX FOIS** : sur
 `#stage` (sur ordinateur, le corps est noir et c'est le carré qu'on
 voit). Mesuré le 16/09 : un seul des deux et le fond ne changeait que
 sur un écran.
-
-<details><summary>L'ancienne doctrine des jumeaux (13/09/2026) — archive</summary>
-
-`wisdom.html` (rouge-violet) et `vision.html` (bleu clair) donnaient
-l'impression qu'on a seulement changé le FOND du Totehm. Tout le reste
-est le MÊME objet, à la même place, au pixel : le T en haut, le rail à
-gauche, le TOTEHM en bas, l'accès membre au-dessus du T, la croix en haut
-à droite, la boîte, et la piste de classement dans le rail.
-
-**Ils sont GÉNÉRÉS, pas écrits** — `tools/jumeau.py` les dérive de
-`totehm.html`. Deux copies tenues à la main divergent toujours, et ici la
-divergence se verrait au premier saut de logo : c'est exactement ce qui a
-été signalé deux fois. On COPIE (règle du projet : produits indépendants
-= fichiers indépendants), mais on copie par une machine.
-
-Ce qui change, et rien d'autre : le titre · `--paper` et `--skin` · le
-moteur de liste (une table, un texte, une importance) · les trois carrés
-de vue disparaissent · la croix ramène au Totehm.
-
-**`#gate` est ARRACHÉ des jumeaux.** On n'y arrive QUE depuis le Totehm
-déployé : il n'y a rien à déplier. Retirer la classe ne suffisait pas —
-`#terms-corner` vit dans `#gate` en `position:fixed` et interceptait les
-clics de toute la page, la croix comprise. Le bloc entier part.
-
-**La croix renvoie sur `totehm.html#in`**, et le Totehm s'ouvre DÉJÀ
-DÉPLOYÉ. ⚠️ La décision se prend à la ligne qui POSE la classe (dans le
-module GATE), pas plus haut : elle s'exécute après, et elle reposait le
-drapeau qu'on venait de retirer. Et il faut la RETIRER, pas seulement ne
-pas la poser — elle est écrite dans le HTML (`<body class="gate">`) pour
-éviter le flash au chargement.
-
-**Pas de petit T à gauche du rail dans un jumeau.** Une intention sur une
-leçon ou sur une vision ne voudrait rien dire — même règle que pour les
-objectifs et les répulsions.
-
-**⚠️ UNE REDÉCLARATION EST UNE SyntaxError, ET ELLE EMPORTE TOUT.** En
-dérivant ces fichiers j'y suis tombé trois fois de suite — `open`,
-`rangHTML`, `listeDe` : la page s'affichait, vide, sans un mot. Le
-script AUDITE désormais chaque jumeau et refuse d'écrire si un nom est
-déclaré deux fois au niveau du module. On ne cherche plus à la main ce
-qui se mesure.
-
-</details>
 
 ### LA CROIX — CINQ OBJETS, DEUX AXES — 16/09/2026
 
@@ -1504,13 +1436,6 @@ comme « tu es ici », et il était ici deux fois.
 
 ### ⛔ JE M'ÉTAIS TROMPÉ D'AXE — 21/09/2026 bis
 
-> **⚠️ DEUX POINTS DE CETTE SECTION SONT DÉPASSÉS.** Les ronds ne sont
-> plus des tons éclaircis et le rond actif n'est plus blanc — voir
-> **⛔ LE PAVÉ REND AUX RONDS LEURS COULEURS · 22/09**, qui fait
-> autorité. Et le contrôleur n'est plus en haut sur ordinateur : il est
-> au centre du BAS sur les deux écrans. Le reste — l'axe, la tuile qui
-> porte l'époque — n'a pas bougé et reste la raison de fond.
-
 **« C'est une façon de mettre en avant les répulsions, habitudes et
 objectifs, tu comprends ? »**
 
@@ -1965,40 +1890,6 @@ allers-retours pour dessiner un seul écran.
 
 ---
 
-### ⛔ LE JOYSTICK PASSE EN RONDS — 19/09/2026 · DÉPASSÉ LE 20/09
-
-> **⚠️ CETTE SECTION A VÉCU UNE JOURNÉE.** Les cinq ronds blancs sont
-> devenus **trois ronds de couleur** le 20/09 — voir **⛔ LE PAVÉ PASSE
-> EN TROIS COULEURS**, qui fait autorité. Ce qui suit reste pour la
-> raison du fond (le vrai navy, les curseurs blancs, le swipe horizontal
-> depuis les vues verticales) : ces trois-là n'ont pas bougé.
-
-**Wah : « Des ronds, pas des carrés. »** Trois ronds verticaux posés sur
-trois ronds horizontaux — **cinq, pas six** : celui des habitudes est
-commun aux deux axes. C'est le Totehm, pas un pavé numérique.
-
-- **Le fond ne change qu'avec l'axe HORIZONTAL.** Objectifs et répulsions
-  sont la même colonne que les habitudes : même époque, donc même fond.
-  Peindre le fond aussi, ce serait dire qu'on a changé d'époque.
-- **Le vrai Navy est revenu.** J'avais glissé `--sky` dans la pile — un
-  bleu clair hors charte. `--navy` (#333366) est la couleur du présent et
-  elle ne se remplace pas.
-- **Les curseurs sont BLANCS.** Colorés à la famille, ils étaient du
-  sombre sur du sombre. Le blanc se voit sur les trois fonds.
-- **Le swipe horizontal marche AUSSI depuis les vues verticales.** La
-  croix s'élargit : `repulsions` et `objectives` ont maintenant `g` et
-  `d`. On n'est jamais enfermé dans une colonne.
-
-**⚠️ L'AXE NE SE RECOPIE PAS, IL SE DÉDUIT DE `CROIX`.** Il y avait une
-seconde table `AXE` écrite à la main qui disait la même chose que la
-croix — et qui a cessé de la dire **à la minute où la croix s'est
-élargie** : depuis les objectifs on pouvait partir à gauche, mais les
-ronds de la sagesse et de la vision restaient éteints. *Deux tables qui
-doivent s'accorder finissent toujours par ne plus s'accorder.* Le pad
-allume maintenant ce vers quoi on peut RÉELLEMENT aller.
-
----
-
 ### ⛔ IMMERSION TOTALE — 19/09/2026
 
 **Dans le Totehm déplié : rien qui en sorte.** Les trois portes
@@ -2134,49 +2025,6 @@ faire, puis qui on est.
 > l'autre, du côté du rail qui EST le logo. Et le coin bas-droit ainsi
 > libéré est ce qui a permis de sortir le contrôleur de sous la croix —
 > voir **⛔ QUATRE COINS, QUATRE OBJETS**.
-
-<details><summary>La version du matin (déplacée, perforée) — archive</summary>
-
-### ⛔ LE JOYSTICK — LE TOTEHM COMME CONTRÔLEUR — 18/09/2026
-
-**Ce n'est pas un menu, c'est une maquette du Totehm.** C'est la
-différence avec les deux tentatives précédentes, et c'est ce qui la fait
-tenir.
-
-- **Le carré perforé EST le Totehm.** Sa couleur dit où l'on est sur
-  l'axe du TEMPS : rouge-violet (sagesse) · navy (le présent) · bleu
-  (vision). ⚠️ Elle ne change **qu'avec l'axe horizontal** — objectifs et
-  répulsions sont la même colonne que les habitudes, leur fond est le
-  même. Peindre le fond aussi, ce serait dire qu'on a changé d'époque.
-- **La pile de dalles dedans** dit où l'on est sur l'axe de la
-  PROFONDEUR : elle glisse pour amener au centre l'objectif (bleu, haut),
-  l'habitude (navy, milieu) ou la répulsion (rouge-violet, bas). La dalle
-  centrée est pleine, les deux autres reculent.
-- **Sur la sagesse et la vision, il n'y a qu'une dalle.** L'axe vertical
-  n'existe pas là-bas ; en montrer trois serait un mensonge.
-- **Quatre chevrons l'encadrent, sans un mot.** Le carré dit déjà ce
-  qu'il y a de chaque côté, par sa couleur et par la dalle allumée.
-
-**La marque se range à gauche** : le T au-dessus du wordmark, même
-colonne. Le wordmark quitte le bas — `--band-b` passe de 116 à 98 px et
-la liste y gagne.
-
-**Trois collisions mesurées le 18/09, et chacune a sa leçon :**
-
-1. ⚠️ **`#bigT svg` et `#wordmark svg` étaient DÉCLARÉS DEUX FOIS**,
-   séparés par vingt lignes. La seconde gagnait sans un mot, et mes
-   tailles n'avaient aucun effet. *Un sélecteur écrit deux fois n'est pas
-   une redondance, c'est un piège.*
-2. ⚠️ **Le joystick passait sous `#fold-x`** (la croix, `z-index:34`,
-   coin haut droit). Les curseurs étaient visibles et le clic partait
-   dans la croix. La croix est un repère fixe du produit : c'est au
-   nouveau venu de s'écarter — le joystick se pose à 58 px du bord.
-3. ⚠️ **En lecture, `#ro-bar` couvrait tout le haut** (`z-index:40`,
-   pleine largeur). Elle ne se déplace pas — elle dit qui on lit, c'est
-   sa place. C'est le reste qui recule de sa hauteur (`--ro-h`), et
-   `--band-t` en découle donc la liste suit toute seule.
-
-</details>
 
 ### ⛔ « HIGHER » NE S'ÉCRIT JAMAIS EN TEXTE — 18/09/2026
 
@@ -3322,34 +3170,6 @@ un nœud détruit relâche tout. La ligne porte `data-row` et survit.
 
 Et `pointer-events:none` sur la ligne saisie, sinon elle se vise
 elle-même — leçon déjà payée, ci-dessous.
-
-### On MAINTIENT pour saisir — 09/09/2026 · REMPLACÉ
-
-Trois choses manquaient au classement, et il fallait les trois :
-
-1. **ON DÉFILE.** `touch-action:none` était posé sur toutes les lignes dès
-   l'entrée en mode classement : le doigt ne pouvait plus rien faire
-   d'autre que déplacer, donc impossible de descendre chercher une
-   habitude en bas de liste pour la remonter en haut. Les lignes sont en
-   `pan-y` ; un appui de **340 ms sans bouger** saisit, et c'est seulement
-   à ce moment qu'on coupe le natif (`body.grabbing`). Un défilement du
-   conteneur annule l'appui long — un doigt posé pendant que la liste
-   glisse veut l'arrêter, pas prendre la carte.
-2. **ON VOIT CE QU'ON TIENT.** La boîte suit le doigt (`--dy`).
-3. **LA LISTE DÉFILE SOUS LA BOÎTE.** Tenir une carte contre le bord haut
-   ou bas fait remonter la liste, à une vitesse proportionnelle à la
-   proximité du bord. Sans ça, emmener une habitude du bas vers le haut
-   reste impossible — c'était la demande littérale.
-
-**⚠️ `pointer-events:none` SUR LA BOÎTE SAISIE, sinon rien ne se classe.**
-Elle suit le doigt, donc elle est toujours SOUS lui : `elementFromPoint`
-renvoyait la boîte qu'on tient au lieu de celle qu'on survole, la cible
-restait nulle, et lâcher ne déplaçait rien. Mesuré : le geste marchait, le
-classement non. La capture du pointeur continue de router les événements
-vers elle — les deux mécanismes sont indépendants.
-
-**La règle générale :** tout élément qui suit le curseur pendant un geste
-doit sortir du test de survol. Sinon il se vise lui-même.
 
 ### `--rw` est le jeton unique du rail
 
