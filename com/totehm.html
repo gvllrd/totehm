@@ -569,16 +569,21 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
 #vnow{position:fixed;top:78px;left:0;right:0;z-index:32;
   text-align:center;line-height:1;pointer-events:none}
 body.ordering #vnow{display:none}
-/* ⚠️ TROIS LIGNES · 24/09/2026. Titre (b) + sous-titre 1 (i) + sous-titre 2 (span).
-   top:54px au lieu de 40px : 14 px de marge sous la croix #fold-x. */
-#vnow b{font-family:'Space Mono',monospace;font-size:17px;letter-spacing:.2em;
-  text-transform:uppercase;color:#fff;font-weight:700;white-space:nowrap;
+/* ⚠️ MONTSERRAT · 24/09/2026. Wah : « les titres et sous-titres en
+   Montserrat pour rappeler la police du TOTEHM.svg ». Même famille
+   et même weight (600) que le wordmark TOTEHM (voir .wm-totehm).
+   NOTE : ceci ÉTEND la règle « Montserrat = slogan uniquement » de
+   CLAUDE.md. La nouvelle règle : Montserrat = TOTEHM wordmark ET
+   titres de vue (les deux disent l'identité du produit). À propager
+   dans BRAND.md / CLAUDE.md STACK POLICE. */
+#vnow b{font-family:'Montserrat',sans-serif;font-weight:600;font-size:17px;letter-spacing:.14em;
+  text-transform:uppercase;color:#fff;white-space:nowrap;
   display:block;text-shadow:0 1px 4px rgba(0,0,0,.6)}
 #vnow i{display:block;margin-top:5px;font-style:normal;
-  font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.22em;
+  font-family:'Montserrat',sans-serif;font-weight:600;font-size:10px;letter-spacing:.18em;
   text-transform:uppercase;color:rgba(255,255,255,.52);white-space:nowrap}
 #vnow span{display:block;margin-top:3px;
-  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;
+  font-family:'Montserrat',sans-serif;font-weight:600;font-size:9px;letter-spacing:.16em;
   text-transform:uppercase;color:rgba(255,255,255,.32);white-space:nowrap}
 #vnow b,#vnow i,#vnow span{padding:0}
 body.ro #vnow{top:calc(78px + var(--ro-h))}
