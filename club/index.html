@@ -37,10 +37,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
+  /* ══ PALETTE FIGHER.CLUB · 24/09/2026 ═══════════════════════════════
+     Le club a son identité propre — distinct du Totehm mais dans le
+     même écosystème. Wah : « figher club c'est le love avant tout ».
+     LOVE (green) = identité du club, ENRICH (yellow) = monétisation,
+     NAVY (brand) = ancrage marque. Les 5 couleurs de vues restent
+     disponibles pour représenter les boxes du Totehm là où elles
+     apparaissent — pas pour peindre les structures du club. */
   --bg:#000;--hi:#fff;--mid:#b0b0b0;--lo:#9a9a9a;--dim:#606060;
+  --g1:#0e0e10;--g2:#141416;--g3:#1c1c1f;--g4:#26262b;
   --navy:#333366;--blue:#36498c;--rep:#743169;--paper:#2b2b57;
-  --wis:#5b2652;--vis:#2b3a73;--on:#639922;
-  --fight:#E24B4A;--flow:#e48b31;--enrich:#fcbe21;--love:#639922;
+  --wis:#5b2652;--vis:#2b3a73;
+  --fight:#E24B4A;--flow:#e48b31;--enrich:#fcbe21;--love:#639922;--on:#639922;
   --express:#1D9E75;--focus:#378ADD;--celebrate:#7F77DD;
   --tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000'/%3E%3C/svg%3E");
   --bebas:'Bebas Neue',Impact,sans-serif;--q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
@@ -93,15 +101,24 @@ h2{font-size:clamp(40px,9vw,64px)}
 
 /* ── THE VELVET ROPE — trois boîtes pleines, la couleur fait le cadre ── */
 .rope{display:flex;flex-direction:column;gap:6px;width:100%;max-width:440px;text-align:left}
-.step{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;background:var(--navy);color:#fff}
-.step.s2{background:var(--blue)}.step.s3{background:var(--rep)}
-.step .n{font-family:var(--bebas);font-size:30px;line-height:.9;min-width:28px;color:rgba(255,255,255,.55)}
+/* Trois étapes = trois surfaces GRISES identiques. Ce qui les
+   distingue ce n'est plus la couleur : c'est le NUMÉRO + l'état.
+   Cochée = filet vertical LOVE (green), l'annuel décoché porte un
+   filet ENRICH (yellow) car c'est la porte payante. */
+.step{position:relative;display:flex;gap:14px;align-items:flex-start;
+  padding:14px 16px 14px 18px;background:var(--g2);color:#fff}
+.step::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--g4);transition:background .25s ease}
+.step.s3::before{background:var(--enrich)}
+.step.done::before{background:var(--love)}
+.step .n{font-family:var(--bebas);font-size:30px;line-height:.9;min-width:28px;color:var(--dim)}
 .step .b{flex:1;min-width:0}
 .step .t{font-family:var(--q);font-size:15px;line-height:1.35}
-.step .m{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-top:5px}
-.step .ok{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45);align-self:center}
-.step.done .ok{color:#fff}
+.step .m{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo);margin-top:5px}
+.step .ok{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);align-self:center}
+.step.done .ok{color:var(--love)}
 .step.done .n{color:#fff}
+.step.s3:not(.done) .ok{color:var(--enrich)}
 /* Les cinq vues : cinq carrés, remplis quand la vue est habitée. */
 .views{display:flex;gap:4px;margin-top:8px}
 .views i{width:12px;height:12px;display:block;background:rgba(0,0,0,.35)}
@@ -111,17 +128,23 @@ h2{font-size:clamp(40px,9vw,64px)}
 
 /* ── CE QUE LE CLUB OUVRE — des boîtes, une grammaire ─────────────── */
 .doors{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;text-align:left}
-/* Une porte est une BOÎTE PLEINE, dans une des trois couleurs de la
-   marque : le fond fait le cadre, aucune bordure (règle du 09/09). */
-.door{background:var(--navy);color:#fff;padding:16px;display:flex;flex-direction:column;gap:6px;min-height:150px;
-  transition:filter .15s ease}
-.door.blue{background:var(--blue)}.door.rep{background:var(--rep)}
-@media(hover:hover){.door:hover{filter:brightness(1.15)}}
-.door .d{font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+/* Une porte = une boîte grise pleine. La couleur du filet gauche dit
+   le RÔLE : navy = ancrage marque (les 3 autres domaines), love =
+   natif club (Reveal, Subscribe), enrich = monétisation. Le fond
+   reste unifié — l'accent est ponctuel, lisible, pas hurlant. */
+.door{position:relative;background:var(--g2);color:#fff;padding:16px 16px 16px 20px;
+  display:flex;flex-direction:column;gap:6px;min-height:150px;
+  transition:filter .15s ease,background .25s ease}
+.door::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--navy)}
+.door.love::before{background:var(--love)}
+.door.enrich::before{background:var(--enrich)}
+@media(hover:hover){.door:hover{background:var(--g3)}}
+.door .d{font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--lo)}
 .door .h{font-family:var(--bebas);font-size:30px;color:#fff;line-height:.95}
-.door p{font-size:12px;color:rgba(255,255,255,.8);flex:1}
-.door .go{font-family:var(--q);font-size:13px;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;
+.door p{font-size:12px;color:var(--mid);flex:1}
+.door .go{font-family:var(--q);font-size:13px;color:var(--mid);background:none;border:none;cursor:pointer;
   padding:0;text-align:left;transition:color .15s}
+@media(hover:hover){.door:hover .go{color:#fff}}
 @media(max-width:560px){.doors{grid-template-columns:1fr}.door{min-height:0}}
 
 /* ── L'ÉCONOMIE ───────────────────────────────────────────────────── */
@@ -134,7 +157,8 @@ h2{font-size:clamp(40px,9vw,64px)}
 .stepper button{font-family:var(--q);font-size:16px;color:var(--mid);background:none;border:none;cursor:pointer;
   width:26px;height:26px;transition:color .15s}
 .stepper output{font-family:var(--q);font-size:15px;color:#fff;min-width:44px;text-align:center}
-#sim-out{font-family:var(--bebas);font-size:48px;color:#fff;line-height:1}
+#sim-out{font-family:var(--bebas);font-size:48px;color:var(--enrich);line-height:1;
+  text-shadow:0 0 24px rgba(252,190,33,.14)}
 #sim-sub{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
 
 /* ── FAQ ──────────────────────────────────────────────────────────── */
@@ -219,22 +243,22 @@ footer .line{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:
   <h2>One club.<br>Every door.</h2>
   <p class="say">The same TOTEHM is the source of everything below. Each door uses it differently.</p>
   <div class="doors">
-    <div class="door navy"><div class="d">totehm.space</div><div class="h">Act</div>
+    <div class="door"><div class="d">totehm.space</div><div class="h">Act</div>
       <p>Turn a Habit into an action lived with other members. Create a Spot, apply to one.</p>
       <button class="go" data-go="space">Open the space</button></div>
-    <div class="door blue"><div class="d">higher.boutique</div><div class="h">Materialize</div>
+    <div class="door"><div class="d">higher.boutique</div><div class="h">Materialize</div>
       <p>Any box of your TOTEHM becomes a TOTEHM Cloth, identified by its own 0.name.</p>
       <button class="go" data-go="boutique">Open the boutique</button></div>
-    <div class="door rep"><div class="d">TotehmBot</div><div class="h">Mirror</div>
+    <div class="door"><div class="d">TotehmBot</div><div class="h">Mirror</div>
       <p>Your TOTEHM, in the conversation. Your words, your numbers, at the right time.</p>
       <button class="go" data-go="bot">Discover the bot</button></div>
-    <div class="door navy"><div class="d">figher.club</div><div class="h">Reveal the box</div>
+    <div class="door love"><div class="d">figher.club</div><div class="h">Reveal the box</div>
       <p>Search a 0.name worn in the street. The club reveals the box behind the cloth.</p>
       <a class="go" href="/console#reveal">Search a cloth</a></div>
-    <div class="door blue"><div class="d">figher.club</div><div class="h">Subscribe</div>
+    <div class="door love"><div class="d">figher.club</div><div class="h">Subscribe</div>
       <p>Follow the TOTEHM of a member who opens theirs. One way: you see theirs, they do not see yours.</p>
       <a class="go" href="/console#subscribe">Find a TOTEHM</a></div>
-    <div class="door rep"><div class="d">figher.club</div><div class="h">Monetize yours</div>
+    <div class="door enrich"><div class="d">figher.club</div><div class="h">Monetize yours</div>
       <p>Every member can open a subscription to their TOTEHM. Your price, your benefits.</p>
       <a class="go" href="#economy">How it pays</a></div>
   </div>

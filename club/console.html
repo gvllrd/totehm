@@ -33,8 +33,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
+  /* Palette FIGHER.CLUB — voir index.html · 24/09/2026. Grays pour
+     la structure, LOVE (green) pour l'identité club, ENRICH (yellow)
+     pour la monétisation. Les 5 couleurs de vues restent utilisées
+     pour représenter les BOXES d'un Totehm ailleurs sur la page. */
   --bg:#000;--mid:#b0b0b0;--lo:#9a9a9a;--dim:#606060;
-  --navy:#333366;--blue:#36498c;--rep:#743169;--paper:#2b2b57;--wis:#5b2652;--vis:#2b3a73;--on:#639922;
+  --g1:#0e0e10;--g2:#141416;--g3:#1c1c1f;--g4:#26262b;
+  --navy:#333366;--blue:#36498c;--rep:#743169;--paper:#2b2b57;--wis:#5b2652;--vis:#2b3a73;
+  --love:#639922;--on:#639922;--enrich:#fcbe21;
   --tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000'/%3E%3C/svg%3E");
   --bebas:'Bebas Neue',Impact,sans-serif;--q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
 }
@@ -78,19 +84,29 @@ main{width:100%;max-width:600px;margin:0 auto;padding:84px 18px 120px}
 section{padding:64px 0 0;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
 section h2{font-family:var(--bebas);font-weight:400;color:#fff;font-size:clamp(34px,8vw,52px);line-height:.95;letter-spacing:.02em}
 
-/* ── LA BOÎTE — pleine, la couleur fait le cadre, aucune bordure ─── */
+/* ── LA BOÎTE — grise par défaut (structure), colorée si elle
+   représente une VUE du Totehm (.b .r .w .v). Une box structurelle
+   ACTIVE porte un filet vertical LOVE (green) ; un chiffre d'argent
+   (.big) est en ENRICH (yellow). Aucune bordure — le fond fait
+   le cadre (règle du 09/09) sauf le pointillé qui dessine l'ABSENCE. */
 .stack{display:flex;flex-direction:column;gap:5px;width:100%;text-align:left}
-.box{background:var(--navy);color:#fff;padding:13px 15px;display:flex;flex-direction:column;gap:4px}
-.box.b{background:var(--blue)}.box.r{background:var(--rep)}.box.w{background:var(--wis)}.box.v{background:var(--vis)}
-/* ⚠️ LE POINTILLÉ EST L'EXCEPTION DOCUMENTÉE (CLAUDE.md, 09/09) : il ne
-   cerne pas une boîte, il dessine l'ABSENCE d'une boîte. Une porte
-   fermée, une clé manquante : une place vide, pas une surface grise. */
-.box.off{background:none;color:var(--lo);border:1px dashed rgba(255,255,255,.22)}
+.box{position:relative;background:var(--g2);color:#fff;padding:13px 15px 13px 17px;
+  display:flex;flex-direction:column;gap:4px}
+.box.b{background:var(--blue);padding-left:15px}.box.r{background:var(--rep);padding-left:15px}
+.box.w{background:var(--wis);padding-left:15px}.box.v{background:var(--vis);padding-left:15px}
+/* Filet vertical LOVE sur les boîtes structurelles ACTIVES (l'accès
+   est ouvert, l'abonnement est vivant). Ne s'applique qu'à la box
+   grise — les boxes-vues gardent leur couleur pleine. */
+.box.on::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--love)}
+.box.off{position:relative;background:none;color:var(--lo);border:1px dashed rgba(255,255,255,.22)}
 .box .nm{font-family:var(--q);font-size:15px;line-height:1.4;word-break:break-word}
 .box .sub{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.72)}
 .box.off .sub{color:var(--dim)}
 .box .line{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+/* Les chiffres d'argent (gains, prochain versement, montants) portent
+   ENRICH. Les compteurs neutres (nombre d'abonnés) restent blancs. */
 .box .big{font-family:var(--bebas);font-size:34px;line-height:1;color:#fff}
+.box .big.pay{color:var(--enrich)}
 .box .acts{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:6px}
 .box .acts .lnk{color:rgba(255,255,255,.7);padding:2px 0}
 .trio{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;width:100%}
