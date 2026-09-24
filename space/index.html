@@ -1,32 +1,34 @@
 <!DOCTYPE html>
 <!--
-  ══ TOTEHM.SPACE — HABIT → ACTION → WITH MEMBERS · 23/09/2026 ══════════
-  MASTER §24-48 et §87. Le Spot est l'unité centrale. La page répond à :
+  ══ TOTEHM.SPACE — LE COCKPIT · 24/09/2026 ═════════════════════════════
+  Un réseau social d'ACTIONS : une habitude devient un Spot, et d'autres
+  membres la vivent avec toi. MASTER §24-48, §87 :
       WHAT CAN I DO?  ·  WHERE?  ·  WHEN?  ·  WITH WHOM?
 
-  TROIS ÉCRANS, UN FICHIER :
-    RADAR      les Spots autour de toi — pas un annuaire de lieux (§43).
-               ≥ 700 px : le radar (canvas, anneaux, balayage, des T).
-               < 700 px : le deck (une carte par Spot, on swipe).
-               Deux rendus, UN état, UNE carte de contenu (règle du 19/08).
-    CREATE     MY TOTEHM en SELECT MODE (§28) — le même Totehm que
-               totehm.com, en lecture : on CHOISIT, on n'écrit pas.
-               Une Habit Box → son contexte → le Spot → (vidéo) → publier.
-               Le résultat est la CARTE : le Spot apparaît sur le radar.
-    MY SPACE   mes Spots, les candidatures reçues, les miennes.
+  ⚠️ CE N'EST NI TOTEHM.COM NI LA BOUTIQUE. Pas de papier navy, pas de
+  rail, pas de T, pas de manette, pas de carrousel. Un cockpit : noir, un
+  instrument au centre (le radar), des lectures aux bords, TROIS commandes.
 
-  ⚠️ INTERDIT : Google Maps, Mapbox, Leaflet (§44). Le radar est celui de
-  `com/map.html`, COPIÉ (produits indépendants = fichiers indépendants).
+  ⚠️ TROIS COMMANDES, JAMAIS DIX. Search · Create · My space. Tout le reste
+  apparaît QUAND on en a besoin, à l'endroit où on l'a demandé : un filtre
+  s'ouvre quand on touche son nom, l'étape suivante d'un Spot quand la
+  précédente a une réponse, les options avancées derrière « more ».
 
-  ⚠️ LA PAGE NE DÉCIDE RIEN. Publier, candidater, accepter, la capacité,
-  la compatibilité, le rendez-vous exact : tout est en base
-  (`spot_publish`, `spots_radar`, `spot_apply`, `spot_decide`, `my_space`).
-  La page envoie des SÉLECTIONS — le texte de l'habitude, ses objectifs,
-  ses répulsions et son son sont relus côté serveur au moment de publier.
+  ⚠️ MAIS LA BOÎTE EST CELLE DE TOTEHM.COM, AU PIXEL. Un Spot est une
+  Habit Box : même tick d'intentions, même nom en Quantico 15 px, même
+  ligne d'unité (intentions en couleur · rythme), mêmes groupes WHY /
+  TRIGGER, mêmes mini-boîtes bleu clair et rouge-violet. Le CSS `.habit`,
+  `.h-body`, `.v-name`, `.v-sub`, `.mg`, `.mini` est COPIÉ de
+  `com/totehm.html` (produits indépendants = fichiers indépendants). Seul
+  le rail disparaît : ici la boîte n'est pas posée dans le Totehm, elle est
+  posée dans le cockpit. L'instrumentation du Spot (quand, où, combien,
+  compatibilité) vit SOUS la boîte, jamais dedans.
 
+  ⚠️ LA PAGE NE DÉCIDE RIEN. Recherche, publication, candidature,
+  capacité, compatibilité, rendez-vous exact : tout est en base
+  (`spots_radar`, `spot_publish`, `spot_apply`, `spot_decide`, `my_space`).
   ⚠️ LA COMPATIBILITÉ EST UN SEUL NOMBRE (§38). Jamais une composante.
-  ⚠️ BRAND.md §1 : sur .space on ne dit jamais « le logo est ton
-  planner ». Le Totehm se reconnaît, il ne s'explique pas.
+  ⚠️ Radar COPIÉ de `com/map.html`. Ni Google Maps, ni Mapbox, ni Leaflet (§44).
 -->
 <html lang="en">
 <head>
@@ -41,10 +43,10 @@
 <style>
 :root{
   --bg:#000;--mid:#b0b0b0;--lo:#9a9a9a;--dim:#606060;
-  --navy:#333366;--blue:#36498c;--rep:#743169;--paper:#2b2b57;--wis:#5b2652;--vis:#2b3a73;--on:#639922;
+  --navy:#333366;--blue:#36498c;--rep:#743169;--on:#639922;
   --tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000'/%3E%3C/svg%3E");
   --bebas:'Bebas Neue',Impact,sans-serif;--q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
-  --rl:46px;--rw:18px;
+  --panel:440px;--cmd:64px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:13px;
@@ -52,341 +54,188 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--mid);font-fami
 .hide{display:none!important}
 button{font:inherit}
 
-/* ── LES QUATRE COINS ─────────────────────────────────────────────── */
+/* ══ LES QUATRE COINS — règle de marque ════════════════════════════ */
 #member{position:fixed;top:calc(14px + env(safe-area-inset-top,0));left:14px;z-index:90;display:flex;align-items:center;gap:7px;
   background:none;border:none;cursor:pointer;font-family:var(--q);font-weight:700;font-size:13px;color:#a0a0a0;padding:6px 4px;transition:color .15s}
 #member i{width:6px;height:6px;border-radius:50%;background:#383838;display:block}
 #member.is-in i{background:var(--on)}
 #terms{position:fixed;top:calc(18px + env(safe-area-inset-top,0));right:14px;z-index:90;font-size:10px;letter-spacing:.14em;
   text-transform:uppercase;color:var(--lo);text-decoration:none;transition:color .15s}
-#wm{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0));left:16px;z-index:30;font-family:var(--q);
-  font-size:12px;letter-spacing:.22em;color:#fff;pointer-events:none}
+/* Les deux coins du bas sont des LECTURES d'instrument : qui, où, quelle heure. */
+.ro{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);line-height:1.7}
+.ro b{color:#fff;font-weight:400}
+#bl{position:fixed;left:16px;bottom:calc(18px + env(safe-area-inset-bottom,0));z-index:30;pointer-events:none}
+#bl .wm{font-family:var(--q);font-size:12px;letter-spacing:.24em;color:#fff}
+#br{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom,0));z-index:30;text-align:right;pointer-events:none}
+#br .clk{font-family:var(--bebas);font-size:30px;line-height:1;color:#fff;letter-spacing:.04em}
+/* La ligne d'état, en haut au centre : ce que l'instrument voit. */
+#status{position:fixed;top:calc(20px + env(safe-area-inset-top,0));left:50%;transform:translateX(-50%);z-index:40;
+  white-space:nowrap;text-align:center}
+@media(max-width:599px){#status{top:calc(54px + env(safe-area-inset-top,0))}}
+#status .live{color:#fff;animation:blink 1.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
 
-.btn{font-family:var(--q);font-size:14px;color:var(--mid);background:none;border:6px solid transparent;cursor:pointer;
-  padding:0 6px;line-height:1.6;display:inline-block;width:fit-content;transition:color .15s ease;-webkit-tap-highlight-color:transparent}
-.btn.main{color:#fff;font-weight:700}
-@media(hover:hover){.btn:hover{color:#fff;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round}}
-.btn:active,.btn.on{color:#fff;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round}
-.btn[disabled]{opacity:.35;pointer-events:none}
-.lnk{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);
-  background:none;border:none;cursor:pointer;padding:4px 2px;transition:color .15s}
-.in{font-family:var(--q);font-size:14px;color:#fff;background:none;outline:none;border:6px solid transparent;
-  border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round;padding:2px 8px;
-  text-align:center;caret-color:#fff;width:100%}
-.in::placeholder{color:rgba(255,255,255,.35)}
-.in::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.6}
-.note{font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;color:var(--lo);text-align:center}
-.note.ok{color:var(--on)}.note.no{color:#ff9a9a}
-.kick{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
-
-/* ══ RADAR — copié de com/map.html (19/08, 03/09) ══════════════════ */
-#world{position:fixed;inset:0;z-index:1}
+/* ══ L'INSTRUMENT — le radar, copié de com/map.html ═══════════════ */
+#world{position:fixed;inset:0;z-index:1;transition:opacity .3s ease}
 #canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
 #markers{position:absolute;inset:0;pointer-events:none}
-/* TOI : un carré blanc, pas un T — tu n'es pas une destination. */
-#me{position:absolute;left:0;top:0;width:10px;height:10px;margin:-5px 0 0 -5px;background:#fff;pointer-events:none;
+/* TOI : un carré blanc — tu n'es pas une destination. */
+#me{position:absolute;left:0;top:0;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;background:#fff;pointer-events:none;
   box-shadow:0 0 10px rgba(255,255,255,.7);animation:pulse 2.6s ease-in-out infinite}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.55}}
 .marker{position:absolute;left:0;top:0;width:34px;height:34px;margin:-17px 0 0 -17px;display:flex;align-items:center;
   justify-content:center;pointer-events:auto;cursor:pointer;background:none;border:none;padding:0;will-change:transform;
   -webkit-tap-highlight-color:transparent}
-.marker svg{width:17px;height:17px;display:block;transition:transform .15s ease;animation:ignite .34s cubic-bezier(.2,.8,.3,1) backwards}
-.marker:hover svg,.marker.focus svg{transform:scale(1.5)}
-.marker.live svg{animation:ignite .34s backwards,live 1.4s ease-in-out infinite}
+.marker svg{width:16px;height:16px;display:block;transition:transform .15s ease;animation:ignite .34s cubic-bezier(.2,.8,.3,1) backwards}
+.marker:hover svg,.marker.focus svg{transform:scale(1.55)}
+.marker.live svg{animation:ignite .34s backwards,blink 1.4s ease-in-out infinite}
 @keyframes ignite{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:scale(1)}}
-@keyframes live{0%,100%{opacity:1}50%{opacity:.35}}
 .marker .lbl{position:absolute;left:24px;top:50%;transform:translateY(-50%);white-space:nowrap;font-family:var(--q);
   font-size:12px;color:#fff;background:#000;padding:2px 6px;pointer-events:none;opacity:0;transition:opacity .15s}
 .marker:hover .lbl,.marker.focus .lbl{opacity:1}
+.marker.edge svg{opacity:.45;transform:scale(.8)}
 
-/* La barre de recherche et les filtres : en haut, centrés. */
-#bar{position:fixed;top:calc(52px + env(safe-area-inset-top,0));left:50%;transform:translateX(-50%);z-index:30;
-  width:min(440px,calc(100% - 28px));display:flex;flex-direction:column;align-items:center;gap:8px}
-#q{background:rgba(0,0,0,.85)}
-.chips{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}
-.chip{font-family:var(--q);font-size:12px;color:var(--lo);background:none;border:none;padding:3px 9px;cursor:pointer;transition:color .15s,background .15s}
-.chip.on{background:var(--navy);color:#fff}
-#geo-note{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);background:none;border:none;cursor:pointer}
-#empty{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;text-align:center;pointer-events:none;
-  display:flex;flex-direction:column;gap:4px;align-items:center}
-#empty .q4{font-family:var(--bebas);font-size:clamp(28px,6vw,44px);color:rgba(255,255,255,.14);line-height:1}
-#empty .kick{margin-top:10px}
-#zoom{position:fixed;right:16px;bottom:calc(20px + env(safe-area-inset-bottom,0));z-index:30;display:flex;gap:2px}
-#zoom button{width:30px;height:30px;background:none;border:none;color:var(--lo);font-family:var(--q);font-size:18px;cursor:pointer}
+/* ══ LES TROIS COMMANDES — en bas, au centre, là où est le pouce ═══ */
+#cmd{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0));transform:translateX(-50%);z-index:80;
+  display:flex;gap:4px;align-items:center}
+.btn{font-family:var(--q);font-size:14px;color:var(--mid);background:none;border:6px solid transparent;cursor:pointer;
+  padding:0 6px;line-height:1.6;display:inline-block;width:fit-content;transition:color .15s ease;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+.btn.main{color:#fff;font-weight:700}
+@media(hover:hover){.btn:hover{color:#fff;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round}}
+.btn:active,.btn.on{color:#fff;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round}
+.btn[disabled]{opacity:.35;pointer-events:none}
+#cmd .n{font-family:var(--mono);font-size:10px;color:#fff;margin-left:4px}
+.lnk{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);
+  background:none;border:none;cursor:pointer;padding:4px 2px;transition:color .15s}
+.in{font-family:var(--q);font-size:14px;color:#fff;background:none;outline:none;border:6px solid transparent;
+  border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round;padding:2px 8px;
+  caret-color:#fff;width:100%}
+.in::placeholder{color:rgba(255,255,255,.35)}
+.in::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.6}
+textarea.in{resize:none;min-height:64px;font-size:13px;line-height:1.6}
 
-/* Les deux portes, en bas au centre — là où est le pouce. */
-#doors{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0));left:50%;transform:translateX(-50%);z-index:35;
-  display:flex;gap:6px;align-items:center}
+/* ══ LE PANNEAU — ce qu'une commande ouvre ══════════════════════════
+   Ordinateur : une colonne à droite, l'instrument reste à gauche.
+   Téléphone : un tiroir qui monte du bas, l'instrument se réduit en haut. */
+#panel{position:fixed;z-index:60;background:#000;display:none;overflow-y:auto;overscroll-behavior:contain;
+  top:calc(52px + env(safe-area-inset-top,0));right:0;bottom:calc(var(--cmd) + env(safe-area-inset-bottom,0));width:var(--panel);
+  padding:12px 22px 24px}
+body.p-open #panel{display:block}
+@media(max-width:899px){
+  #panel{left:0;right:0;width:auto;top:auto;height:calc(64vh - var(--cmd));padding:16px 16px 20px}
+  body.p-open #world{opacity:.9}
+  body.p-open #bl,body.p-open #br{display:none}
+}
+@media(max-width:599px){#bl,#br{display:none}}
+.p-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:14px}
+.p-title{font-family:var(--bebas);font-size:30px;line-height:1;color:#fff;letter-spacing:.03em}
+.cap{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
+.cap b{color:#fff;font-weight:400}
+.note{font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;color:var(--lo)}
+.note.ok{color:var(--on)}.note.no{color:#ff9a9a}
+.list{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.empty{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);padding:18px 0}
 
-/* ── LE DECK (< 700 px) — une carte par Spot ───────────────────────── */
-#deck{position:fixed;inset:0;z-index:20;display:none;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
-  scrollbar-width:none;background:#000}
-#deck::-webkit-scrollbar{display:none}
-body.cards #deck{display:flex}
-body.cards #world,body.cards #zoom{display:none}
-.slide{flex:0 0 100%;height:100%;scroll-snap-align:center;display:flex;flex-direction:column;justify-content:center;
-  padding:calc(150px + env(safe-area-inset-top,0)) 22px calc(84px + env(safe-area-inset-bottom,0));overflow-y:auto}
-#count{position:fixed;bottom:calc(64px + env(safe-area-inset-bottom,0));left:50%;transform:translateX(-50%);z-index:24;
-  font-size:10px;letter-spacing:.18em;color:var(--dim);display:none}
-body.cards #count{display:block}
+/* Les choix qui se déplient — une rangée à la fois. */
+.opts{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;margin-top:8px}
+.opt{font-family:var(--q);font-size:12px;color:var(--lo);background:none;border:none;padding:3px 8px;cursor:pointer;transition:color .15s,background .15s}
+.opt.on{background:var(--navy);color:#fff}
+.opt .dot{display:inline-block;width:7px;height:7px;margin-right:6px;vertical-align:1px}
+.facets{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px}
+.facet{background:none;border:none;cursor:pointer;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);padding:2px 0;transition:color .15s}
+.facet b{color:#fff;font-weight:400}
+.facet.is-open{color:#fff}
 
-/* ══ LA CARTE — UN balisage, servi au deck ET à la fenêtre du radar ══ */
-.card{width:100%;max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
-.card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-.card h3{font-family:var(--bebas);font-weight:400;font-size:clamp(36px,9vw,54px);line-height:.92;color:#fff;letter-spacing:.02em;word-break:break-word}
-.card .cmp{text-align:right;flex-shrink:0}
-.card .cmp b{display:block;font-family:var(--bebas);font-weight:400;font-size:44px;line-height:1;color:#fff}
-.card .cmp span{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo)}
-.meta{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);line-height:1.9}
-.meta b{color:#fff;font-weight:400}
-.ints{display:flex;gap:8px;flex-wrap:wrap}
-.int{display:flex;align-items:center;gap:5px;font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-weight:700}
-.int svg{width:11px;height:11px}
-.ctx{display:flex;flex-direction:column;gap:4px}
-.ctx .row{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
-.ctx .w{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);min-width:58px}
-.mini{display:inline-block;font-family:var(--q);font-size:12px;color:#fff;padding:3px 8px;background:var(--navy);line-height:1.4}
-.mini.o{background:var(--blue)}.mini.r{background:var(--rep)}
-.card .say{font-size:12px;color:var(--mid)}
-.card .acts{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin-top:4px}
-.fine{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);line-height:1.8}
-.place{background:var(--navy);color:#fff;padding:10px 12px;font-family:var(--q);font-size:14px}
-.place small{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+/* ══ LA BOÎTE — COPIÉE DE com/totehm.html, AU PIXEL ═════════════════
+   Même tick, même corps, même nom, même ligne d'unité, mêmes groupes,
+   mêmes mini-boîtes. Un seul écart, et il est d'infrastructure : pas de
+   rail, donc la boîte commence à gauche (`margin-left:0`). */
+.habit{position:relative;display:flex;align-items:center;min-height:30px}
+.habit .tick{position:absolute;left:0;top:0;bottom:0;width:1px;background:#000;z-index:3;display:flex;flex-direction:column;overflow:hidden}
+.habit .tick i{flex:1 1 0;display:block;min-height:2px}
+.habit .h-body{margin-left:0;flex:1;position:relative;display:flex;align-items:center;gap:9px;padding:7px 11px;
+  background:var(--skin,var(--navy));border:none;transition:filter .15s ease,transform .28s cubic-bezier(.22,.61,.36,1)}
+.v-col{display:flex;flex-direction:column;width:100%;min-width:0}
+.v-name{font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;line-height:1.5;color:#fff;flex:1;min-width:0;word-break:break-word}
+.v-sub{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.72);
+  margin-top:6px;font-variant-numeric:tabular-nums;display:flex;flex-wrap:wrap;align-items:center;gap:0 10px;line-height:1.5}
+.v-int{font-weight:700;letter-spacing:.2em}
+.v-frq{color:rgba(255,255,255,.72)}
+.minis{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-top:8px}
+.mini{display:inline-flex;align-items:center;gap:6px;border:none;padding:3px 7px;font-family:'Quantico',sans-serif;font-size:11px;
+  line-height:1.4;color:#fff;transition:filter .16s ease,opacity .16s ease}
+.m-h{background:var(--navy)}.m-o{background:var(--blue)}.m-r{background:var(--rep)}
+.mg{display:block;margin-top:9px}
+.mg-l{display:block;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:4px}
+.mg .minis{margin-top:0}
+@media(max-width:700px){.mini{font-size:12px;padding:4px 8px}.habit .tick{width:2px}}
+/* Le seul ajout de l'Espace à la boîte : on peut la TOUCHER pour l'ouvrir,
+   et en création ses pièces se cochent (une pièce décochée s'efface). */
+.it .habit{cursor:pointer}
+@media(hover:hover){.it .habit:hover .h-body{filter:brightness(1.18)}}
+.pickable .v-int,.pickable .mini{cursor:pointer}
+.pickable .is-off{opacity:.28}
 
-/* ── LES FENÊTRES PLEIN ÉCRAN — ancrées en haut (règle du 03/09) ─── */
-.sheet{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.92);display:none;overflow-y:auto;
-  padding:calc(64px + env(safe-area-inset-top,0)) 20px calc(40px + env(safe-area-inset-bottom,0))}
-.sheet.show{display:block}
-.sheet .x{position:fixed;top:calc(14px + env(safe-area-inset-top,0));left:50%;transform:translateX(-50%);z-index:75}
-.col{width:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
-.col h2{font-family:var(--bebas);font-weight:400;font-size:clamp(38px,9vw,60px);line-height:.92;color:#fff;letter-spacing:.02em}
+/* ── L'INSTRUMENTATION D'UN SPOT — sous la boîte, jamais dedans ───── */
+.strip{display:flex;flex-wrap:wrap;gap:2px 12px;margin-top:6px;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--lo)}
+.strip b{color:#fff;font-weight:400}
+.strip .lv{color:#fff;animation:blink 1.4s ease-in-out infinite}
+.strip .dm{color:var(--dim)}
+.more{display:flex;flex-direction:column;gap:10px;margin-top:12px;animation:rise .24s cubic-bezier(.22,.61,.36,1)}
+@keyframes rise{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.gauge{display:flex;align-items:baseline;gap:10px}
+.gauge .v{font-family:var(--bebas);font-size:52px;line-height:.9;color:#fff}
+.say{font-size:12px;color:var(--mid);line-height:1.7}
+.meet{background:var(--navy);color:#fff;padding:10px 12px;font-family:var(--q);font-size:14px}
+.meet small{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+.acts{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center}
 
-/* ══ SELECT MODE — le Totehm de totehm.com, en lecture ══════════════
-   Même papier, même rail, mêmes boîtes, même croix. Ce qui change, et
-   rien d'autre : on ne peut pas écrire, et seules les boîtes de la vue
-   HABITS se choisissent (§25 : un Spot démarre d'une Habit Box). */
-#sel{position:fixed;inset:0;z-index:60;background:var(--paper);display:none;transition:background-color .5s ease}
-#sel.show{display:block}
-#sel.v-wisdom{background:var(--wis)}#sel.v-visions{background:var(--vis)}
-#rail{position:absolute;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.30)}
-#sel-head{position:absolute;top:calc(56px + env(safe-area-inset-top,0));left:0;right:0;text-align:center;z-index:3;pointer-events:none}
-#sel-title{font-family:var(--bebas);font-size:clamp(34px,8vw,48px);color:#fff;line-height:1;letter-spacing:.03em}
-#sel-sub{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.62)}
-#sel-mode{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:4px}
-#list{position:absolute;top:calc(136px + env(safe-area-inset-top,0));bottom:calc(128px + env(safe-area-inset-bottom,0));left:0;right:0;
-  overflow-y:auto;overscroll-behavior:contain;padding:0 16px 30px 0;display:flex;flex-direction:column;gap:6px}
-#list.swap{animation:swap .26s cubic-bezier(.22,.61,.36,1)}
-@keyframes swap{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.bx{position:relative;margin-left:calc(var(--rl) + var(--rw) + 4px);background:var(--skin,var(--navy));color:#fff;
-  padding:8px 12px 9px 14px;cursor:default;transition:filter .15s ease,transform .28s cubic-bezier(.22,.61,.36,1);flex:0 0 auto}
-.bx .tick{position:absolute;left:0;top:0;bottom:0;width:3px;display:flex;flex-direction:column}
-.bx .tick i{flex:1 1 0;display:block}
-.bx .nm{font-family:var(--q);font-size:15px;line-height:1.5;word-break:break-word}
-.bx .sb{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-top:4px;display:flex;flex-wrap:wrap;gap:0 10px}
-.bx .mn{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;align-items:center}
-.bx .mn .w{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.55)}
-.bx .mn .mini{font-size:11px;padding:2px 7px}
-.bx.pick{cursor:pointer}
-@media(hover:hover){.bx.pick:hover{filter:brightness(1.18)}}
-.bx.dim{opacity:.55}
-.bx.open{transform:scale(1.012) translateY(-2px);filter:brightness(1.07);cursor:default}
-.v-empty{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.5);text-align:center;padding:30px 0 0 60px}
-#sel-x{position:absolute;top:calc(14px + env(safe-area-inset-top,0));right:14px;z-index:5;width:40px;height:40px;
-  background:none;border:none;cursor:pointer;color:#fff}
-#sel-x svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.6;fill:none}
-
-/* La croix comme contrôleur — le disque porte la couleur de la vue. */
-#joy{position:absolute;bottom:calc(18px + env(safe-area-inset-bottom,0));left:50%;transform:translateX(-50%);z-index:4;
-  display:grid;grid-template-columns:22px 52px 22px;grid-template-rows:22px 52px 22px;align-items:center;justify-items:center}
-#cur-h{grid-area:1/2/2/3}#cur-g{grid-area:2/1/3/2}#joy-box{grid-area:2/2/3/3}#cur-d{grid-area:2/3/3/4}#cur-b{grid-area:3/2/4/3}
-.cur{width:22px;height:22px;background:none;border:none;color:#fff;cursor:pointer;opacity:.85;display:flex;align-items:center;justify-content:center}
-.cur svg{width:10px;height:10px;stroke:currentColor;stroke-width:2;fill:none}
-.cur.mort{opacity:0;pointer-events:none}
-#joy-box{width:52px;height:52px;border-radius:50%;background:var(--joy,var(--navy));box-shadow:0 2px 7px rgba(0,0,0,.5);
-  position:relative;touch-action:none;cursor:grab;transition:background-color .42s ease}
-#joy-box i{position:absolute;left:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--c);
-  box-shadow:0 2px 5px rgba(0,0,0,.6);transition:transform .38s,opacity .38s}
-#joy-box .o{top:23%;--c:var(--blue)}#joy-box .h{top:50%;--c:var(--navy)}#joy-box .r{top:77%;--c:var(--rep)}
-#joy-box i.ici,#joy-box i.mort{opacity:0;transform:scale(.4)}
-
-/* L'étape de contexte : la boîte choisie ENFANTE ses pièces, à sa place. */
-#ctx{margin-left:calc(var(--rl) + var(--rw) + 4px);display:flex;flex-direction:column;gap:10px;padding:10px 0 4px;
-  animation:swap .3s cubic-bezier(.22,.61,.36,1)}
-#ctx .grp{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
-#ctx .w{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.6);min-width:62px}
-.tg{font-family:var(--q);font-size:12px;color:rgba(255,255,255,.7);background:none;border:1px dashed rgba(255,255,255,.35);
-  padding:3px 8px;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
-.tg.on{color:#fff;border-color:transparent;background:var(--navy)}
-.tg.on.o{background:var(--blue)}.tg.on.r{background:var(--rep)}.tg.on.m{background:#000}
-.tg .dot{display:inline-block;width:8px;height:8px;margin-right:5px;vertical-align:0}
-#ctx .next{display:flex;gap:10px;align-items:center;margin-top:4px}
-
-/* ── Le formulaire du Spot ─────────────────────────────────────────── */
-.fields{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:12px 10px}
-.fields .f{display:flex;flex-direction:column;align-items:center;gap:4px}
-.fields .full{grid-column:1/-1}
-.fl{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
-.two{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
-.stp{display:flex;align-items:center;gap:8px}
+/* ── CRÉER — une étape à la fois, les réponses se rangent en haut ─── */
+.done{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.done button{display:flex;gap:10px;align-items:baseline;background:none;border:none;cursor:pointer;text-align:left;padding:2px 0;color:var(--lo);font-size:9px;letter-spacing:.2em;text-transform:uppercase}
+.done button b{color:#fff;font-weight:400;letter-spacing:.06em;text-transform:none;font-family:var(--q);font-size:13px}
+.step{display:flex;flex-direction:column;gap:10px}
+/* Seule l'étape qui VIENT d'apparaître s'anime : une @keyframes rejoue à
+   chaque redessin, et un « + » sur les places redessine (règle du 09/09). */
+.step.fresh{animation:rise .24s cubic-bezier(.22,.61,.36,1)}
+.q4{font-family:var(--bebas);font-size:26px;line-height:1;color:#fff;letter-spacing:.03em}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.stp{display:flex;align-items:center;gap:6px}
 .stp button{width:28px;height:28px;background:none;border:none;color:var(--mid);font-family:var(--q);font-size:18px;cursor:pointer}
-.stp output{font-family:var(--q);font-size:15px;color:#fff;min-width:60px;text-align:center}
-textarea.in{resize:none;min-height:70px;text-align:left;font-size:13px;line-height:1.6}
-.steps{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.steps span{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
-.steps span.on{color:#fff}
-.boxline{width:100%;background:var(--navy);color:#fff;padding:10px 12px;text-align:left;font-family:var(--q);font-size:15px}
-.boxline small{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7)}
-@media(max-width:480px){.fields{grid-template-columns:1fr}}
+.stp output{font-family:var(--q);font-size:15px;color:#fff;min-width:56px;text-align:center}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 
-/* ── MY SPACE ──────────────────────────────────────────────────────── */
-.tabs{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
-.stack{width:100%;display:flex;flex-direction:column;gap:5px;text-align:left}
-.bk{background:var(--navy);color:#fff;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
-.bk.b{background:var(--blue)}.bk.r{background:var(--rep)}
-.bk.off{background:none;color:var(--lo);border:1px dashed rgba(255,255,255,.22)}
-.bk .nm{font-family:var(--q);font-size:15px}
-.bk .sb{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.72)}
-.bk.off .sb{color:var(--dim)}
-.bk .ln{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
-.bk .big{font-family:var(--bebas);font-size:32px;line-height:1}
-.bk .ac{display:flex;gap:4px 14px;flex-wrap:wrap;margin-top:4px}
-.bk .ac .lnk{color:rgba(255,255,255,.75);padding:2px 0}
-.empty{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);padding:14px 0;text-align:center}
-
-/* La porte fermée : une place vide, pas une surface grise (09/09). */
-.rope{width:100%;max-width:420px;display:flex;flex-direction:column;gap:5px}
-.rope .k{display:flex;justify-content:space-between;gap:10px;padding:11px 14px;text-align:left;font-family:var(--q);font-size:14px;color:#fff;background:var(--navy)}
+/* ── LA PORTE — une place vide, pas une surface grise (09/09) ─────── */
+.rope{display:flex;flex-direction:column;gap:5px;margin-top:10px}
+.rope .k{display:flex;justify-content:space-between;gap:10px;padding:11px 14px;font-family:var(--q);font-size:14px;color:#fff;background:var(--navy)}
 .rope .k.b{background:var(--blue)}.rope .k.r{background:var(--rep)}
 .rope .k.no{background:none;color:var(--lo);border:1px dashed rgba(255,255,255,.25)}
 .rope .k span{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;align-self:center}
 
 @media(hover:hover){
-  #member:hover,#terms:hover,.lnk:hover,.chip:not(.on):hover,#geo-note:hover,#zoom button:hover,.stp button:hover,
-  .fine:hover,.meta:hover,.kick:hover,.fl:hover,.steps span:hover,.bk .ac .lnk:hover,.empty:hover,.tg:not(.on):hover{color:#fff}
+  #member:hover,#terms:hover,.lnk:hover,.opt:not(.on):hover,.facet:hover,.stp button:hover,.done button:hover,
+  .cap:hover,.empty:hover,.strip:hover,.note:hover{color:#fff}
 }
-@media(prefers-reduced-motion:reduce){#me,.marker svg,.marker.live svg,#list.swap,#ctx{animation:none}}
+@media(prefers-reduced-motion:reduce){#me,.marker svg,.marker.live svg,.more,.step.fresh,#status .live,.strip .lv{animation:none}}
 </style>
 </head>
 <body>
 
 <button id="member" type="button"><i></i><span id="member-txt">Sign in</span></button>
 <a id="terms" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a>
-<div id="wm">TOTEHM.SPACE</div>
+<div id="status" class="ro"></div>
+<div id="bl" class="ro"><div class="wm">TOTEHM.SPACE</div><div id="coords"></div></div>
+<div id="br" class="ro"><div class="clk" id="clk"></div><div id="zone">Lisbon time</div></div>
 
-<!-- ══ RADAR ══ -->
 <div id="world"><canvas id="canvas" aria-label="Radar of Spots around you"></canvas><div id="markers"><div id="me"></div></div></div>
-<div id="deck" aria-label="Spots around you"></div>
-<div id="count"></div>
-<div id="empty"><div class="q4">What can I do?</div><div class="q4">Where? When?</div><div class="q4">With whom?</div><div class="kick" id="empty-k">looking around you…</div></div>
-<div id="bar">
-  <input class="in" id="q" placeholder="an action — walk, read, train…" autocomplete="off" enterkeyhint="search">
-  <div class="chips" id="chips">
-    <button class="chip on" data-f="all">All</button><button class="chip" data-f="social">Social</button>
-    <button class="chip" data-f="silent">Silent</button><button class="chip" data-f="live">Live</button>
-    <button class="chip" data-f="view">Cards</button>
-  </div>
-  <button id="geo-note" type="button"></button>
-</div>
-<div id="zoom"><button id="z-out" type="button" aria-label="Zoom out">−</button><button id="z-in" type="button" aria-label="Zoom in">+</button></div>
-<div id="doors"><button class="btn main" id="go-create" type="button">Create a Spot</button><button class="btn" id="go-me" type="button">My space</button></div>
 
-<!-- ══ LA FENÊTRE D'UN SPOT ══ -->
-<div id="spot" class="sheet" role="dialog" aria-label="Spot">
-  <button class="lnk x" id="spot-x" type="button">Close</button>
-  <div class="col" id="spot-body"></div>
-</div>
+<nav id="cmd" aria-label="Commands">
+  <button class="btn" type="button" data-cmd="search">Search</button>
+  <button class="btn main" type="button" data-cmd="create">Create</button>
+  <button class="btn" type="button" data-cmd="mine">My space<span class="n" id="req-n"></span></button>
+</nav>
 
-<!-- ══ CREATE — 1 · MY TOTEHM EN SELECT MODE ══ -->
-<div id="sel" role="dialog" aria-label="My TOTEHM — select mode">
-  <div id="rail"></div>
-  <div id="sel-head"><div id="sel-title">my habits</div><div id="sel-sub">what I repeat</div><div id="sel-mode">select mode — choose a habit box</div></div>
-  <button id="sel-x" type="button" aria-label="Close"><svg viewBox="0 0 16 16"><path d="M3 3 L13 13 M13 3 L3 13"/></svg></button>
-  <div id="list"></div>
-  <div id="joy">
-    <button class="cur" id="cur-h" data-d="h" aria-label="Up"><svg viewBox="0 0 10 10"><path d="M1 7 L5 3 L9 7"/></svg></button>
-    <button class="cur" id="cur-g" data-d="g" aria-label="Left"><svg viewBox="0 0 10 10"><path d="M7 1 L3 5 L7 9"/></svg></button>
-    <div id="joy-box" aria-hidden="true"><i class="o"></i><i class="h"></i><i class="r"></i></div>
-    <button class="cur" id="cur-d" data-d="d" aria-label="Right"><svg viewBox="0 0 10 10"><path d="M3 1 L7 5 L3 9"/></svg></button>
-    <button class="cur" id="cur-b" data-d="b" aria-label="Down"><svg viewBox="0 0 10 10"><path d="M1 3 L5 7 L9 3"/></svg></button>
-  </div>
-</div>
-
-<!-- ══ CREATE — 3 · LE SPOT, 4 · VIDÉO, 5 · PUBLIER ══ -->
-<div id="cfg" class="sheet" role="dialog" aria-label="Configure the Spot">
-  <button class="lnk x" id="cfg-x" type="button">Back to my TOTEHM</button>
-  <div class="col">
-    <div class="steps"><span>1 habit</span><span>2 context</span><span class="on" id="stp-3">3 spot</span><span id="stp-4">4 video</span><span id="stp-5">5 publish</span></div>
-    <div class="boxline" id="cfg-habit"></div>
-    <div id="cfg-form" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:14px">
-      <h2>Make it real.</h2>
-      <div class="fields">
-        <div class="f"><div class="fl">Date</div><input class="in" id="f-date" type="date"></div>
-        <div class="f"><div class="fl">Time</div><input class="in" id="f-time" type="time" step="300"></div>
-        <div class="f"><div class="fl">Duration</div><div class="stp"><button type="button" data-s="dur" data-d="-1">−</button><output id="f-dur">45 min</output><button type="button" data-s="dur" data-d="1">+</button></div></div>
-        <div class="f"><div class="fl">Capacity</div><div class="stp"><button type="button" data-s="cap" data-d="-1">−</button><output id="f-cap">6</output><button type="button" data-s="cap" data-d="1">+</button></div></div>
-        <div class="f full"><div class="fl">Meeting point — revealed to accepted members only</div><input class="in" id="f-place" maxlength="120" placeholder="the park downstairs · the steps at Ribeira"></div>
-        <div class="f full"><div class="fl">Position on the radar — rounded to ~100 m for everyone else</div>
-          <button class="btn" id="f-geo" type="button">Use my position</button><div class="note" id="f-geo-note"></div></div>
-        <div class="f"><div class="fl">Mode</div><div class="two"><button class="btn on" data-v="social" data-g="mode" type="button">Social</button><button class="btn" data-v="silent" data-g="mode" type="button">Silent</button></div></div>
-        <div class="f"><div class="fl">Selection</div><div class="two"><button class="btn on" data-v="manual" data-g="sel" type="button">Manual</button><button class="btn" data-v="auto" data-g="sel" type="button">Automatic</button></div></div>
-        <div class="f full"><div class="fl">Access</div><div class="two"><button class="btn on" data-v="club" data-g="acc" type="button">FIGHER Club</button><button class="btn" data-v="subscribers" data-g="acc" type="button" id="f-acc-sub">My subscribers</button></div>
-          <div class="fine" id="f-acc-note"></div></div>
-        <div class="f full"><div class="fl">Comment</div><textarea class="in" id="f-comment" maxlength="400" placeholder="the pace, what to bring, how it goes"></textarea></div>
-      </div>
-      <div class="fine">Social: the action lived with interaction. Silent: together, without seeking to talk.</div>
-      <button class="btn main" id="cfg-next" type="button">Continue</button>
-      <div class="note" id="cfg-note"></div>
-    </div>
-    <div id="cfg-video" class="hide" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:12px">
-      <h2>Show it —<br>if you want.</h2>
-      <p style="max-width:40ch">A Spot never needs a video. It can come later, from My space. Nothing here blocks publication.</p>
-      <div class="two"><button class="btn" id="vid-back" type="button">Back</button><button class="btn main" id="vid-next" type="button">Publish the Spot</button></div>
-      <div class="note" id="pub-note"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ MY SPACE ══ -->
-<div id="mine" class="sheet" role="dialog" aria-label="My space">
-  <button class="lnk x" id="mine-x" type="button">Back to the radar</button>
-  <div class="col">
-    <h2>My space.</h2>
-    <div class="tabs"><button class="btn on" data-t="spots" type="button">My Spots</button><button class="btn" data-t="requests" type="button" id="tab-req">Requests</button><button class="btn" data-t="apps" type="button">Applications</button></div>
-    <div class="stack" id="mine-list"></div>
-    <div class="note" id="mine-note"></div>
-    <div class="fine">Only the Spot compatibility is shown. Its parts are never exposed.</div>
-  </div>
-</div>
-
-<!-- ══ LA PORTE — connexion, et la corde de velours ══ -->
-<div id="gate" class="sheet" role="dialog" aria-label="Member access">
-  <button class="lnk x" id="gate-x" type="button">Close</button>
-  <div class="col" id="gate-body">
-    <div id="g-out">
-      <div class="kick" style="margin-bottom:10px">One account, four doors</div>
-      <input class="in" id="g-email" type="email" placeholder="your@email" autocomplete="email" style="max-width:300px">
-      <input class="in hide" id="g-code" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code" style="max-width:300px;margin-top:8px">
-      <div class="note" id="g-note" style="margin-top:8px"></div>
-    </div>
-    <div id="g-claim" class="hide">
-      <div class="kick" style="margin-bottom:10px">Name your TOTEHM</div>
-      <input class="in" id="g-pseudo" maxlength="24" placeholder="your name" style="max-width:300px">
-      <div class="note" id="g-claim-note" style="margin-top:8px"></div>
-    </div>
-    <div id="g-rope" class="hide" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:12px">
-      <h2>The velvet rope.</h2>
-      <p style="max-width:38ch" id="g-why">Spots are lived between FIGHER members.</p>
-      <div class="rope" id="g-keys"></div>
-      <button class="btn main" id="g-cta" type="button"></button>
-    </div>
-    <div id="g-in" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:10px">
-      <div class="kick" id="g-who"></div>
-      <button class="lnk" data-go="club" type="button">My FIGHER console</button>
-      <button class="lnk" data-go="com" type="button">My TOTEHM</button>
-      <button class="lnk" id="g-signout" type="button">Sign out</button>
-    </div>
-  </div>
-</div>
+<aside id="panel" aria-live="polite"></aside>
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -441,67 +290,115 @@ document.addEventListener('click', e => {
   const p = PORTES[g.dataset.go]; if(p){ e.preventDefault(); ssoVersDomaine(sb, p[0], p[1]); }
 });
 
-/* ══ LES SEPT INTENTIONS — copiées, jamais partagées ═══════════════ */
+/* ══ LES SEPT INTENTIONS ET LES 33 RYTHMES — copiés de totehm.com ═══ */
 const INTS = {
   fight:{n:'Fight',c:'#E24B4A',p:'BODY'}, flow:{n:'Flow',c:'#e48b31',p:'BODY'},
   enrich:{n:'Enrich',c:'#fcbe21',p:'MENTAL'}, love:{n:'Love',c:'#639922',p:'SPIRIT'},
   express:{n:'Express',c:'#1D9E75',p:'SOUL'}, focus:{n:'Focus',c:'#378ADD',p:'MENTAL'},
   celebrate:{n:'Celebrate',c:'#7F77DD',p:'SOUL'} };
+const FREQ = { every_minute:'every minute', hourly:'every hour', several_daily:'several times a day', every_morning:'every morning',
+  every_afternoon:'every afternoon', daily:'daily', every_evening:'every evening', every_weekday:'every weekday', every_night:'every night',
+  every_other_day:'every other day', twice_week:'twice a week', every_weekend:'every weekend', weekly:'weekly', every_monday:'every monday',
+  every_tuesday:'every tuesday', every_wednesday:'every wednesday', every_thursday:'every thursday', every_friday:'every friday',
+  every_saturday:'every saturday', every_sunday:'every sunday', biweekly:'every two weeks', twice_month:'twice a month', monthly:'monthly',
+  every_1st_month:'every 1st of the month', every_15th_month:'every 15th of the month', seasonal:'every season change',
+  quarterly:'every quarter', semiannual:'every six months', yearly:'yearly', every_birthday:'every birthday',
+  every_newyear:'every new year', randomly:'randomly', sometimes:'sometimes' };
 const icol = i => (INTS[i] || {}).c || '#ffffff';
 const T = (c, s) => '<svg viewBox="0 0 68 68" width="' + (s||15) + '" height="' + (s||15) + '" fill="' + (c||'#fff') + '" aria-hidden="true"><rect x="0.9" y="0" width="66.7" height="9.6"/><rect x="29.4" y="0" width="9.6" height="66.7"/><rect x="21.2" y="62.4" width="26.1" height="5.4"/></svg>';
-const intChips = l => '<div class="ints">' + (l||[]).map(i => '<span class="int" style="color:' + icol(i) + '">' + T(icol(i), 11) + (INTS[i]?.n || i) + '</span>').join('') + '</div>';
-const fmtDist = m => m == null ? '' : m < 1000 ? Math.round(m) + ' m' : (m/1000).toFixed(1) + ' km';
+const fmtDist = m => m == null ? '' : m < 1000 ? Math.round(m/10)*10 + ' m' : (m/1000).toFixed(1) + ' km';
+const hhmm = d => d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', timeZone:'Europe/Lisbon' });
+const dayKey = d => d.toLocaleDateString('en-CA', { timeZone:'Europe/Lisbon' });
 function fmtWhen(iso){
   const d = new Date(iso), now = new Date();
-  const hh = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
   if(d <= now) return 'now';
-  if(d.toDateString() === now.toDateString()) return 'today ' + hh;
-  const tom = new Date(now); tom.setDate(tom.getDate() + 1);
-  if(d.toDateString() === tom.toDateString()) return 'tomorrow ' + hh;
-  return d.toLocaleDateString([], {weekday:'short', day:'numeric', month:'short'}) + ' ' + hh;
+  if(dayKey(d) === dayKey(now)) return 'today ' + hhmm(d);
+  const tom = new Date(now.getTime() + 864e5);
+  if(dayKey(d) === dayKey(tom)) return 'tomorrow ' + hhmm(d);
+  return d.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short', timeZone:'Europe/Lisbon' }) + ' ' + hhmm(d);
 }
-const human = v => String(v || '').replace(/_/g, ' ').trim();
 
-/* ══ L'ÉTAT DU MEMBRE ═══════════════════════════════════════════════ */
-let me = null, F = null;
+/* ══ LA BOÎTE — la même que totehm.com (voir `boiteHTML`, `groupe`, `mini`) ══
+   `o` = { name, ints[], freq, place, objs[{text}], reps[{text}] }
+   `pick` (création) : les intentions et les mini-boîtes se cochent. */
+const tickHTML = l => '<span class="tick">' + (l||[]).map(i => '<i style="background:' + icol(i) + '"></i>').join('') + '</span>';
+const groupe = (mot, contenu) => contenu ? '<span class="mg"><span class="mg-l">' + mot + '</span><span class="minis">' + contenu + '</span></span>' : '';
+function boxHTML(o, pick){
+  const off = (set, k) => pick && set && !set.has(k) ? ' is-off' : '';
+  const unit = (o.ints||[]).map(i => '<span class="v-int' + off(pick?.ints, i) + '" style="color:' + icol(i) + '"' + (pick ? ' data-ti="' + i + '"' : '') + '>' + esc(INTS[i]?.n || i) + '</span>').join('')
+    + (o.freq ? '<span class="v-frq">' + esc(FREQ[o.freq] || String(o.freq).replace(/_/g, ' ')) + '</span>' : '')
+    + (o.place ? '<span class="v-frq">' + esc(o.place) + '</span>' : '');
+  const mo = (o.objs||[]).map((x, k) => '<span class="mini m-o' + off(pick?.objs, x.id ?? k) + '"' + (pick ? ' data-to="' + esc(String(x.id ?? k)) + '"' : '') + '>' + esc(x.text) + '</span>').join('');
+  const mr = (o.reps||[]).map((x, k) => '<span class="mini m-r' + off(pick?.reps, x.id ?? k) + '"' + (pick ? ' data-tr="' + esc(String(x.id ?? k)) + '"' : '') + '>' + esc(x.text) + '</span>').join('');
+  return '<div class="habit timed' + (pick ? ' pickable' : '') + '">' + tickHTML(o.ints) +
+    '<span class="h-body"><span class="v-col"><span class="v-name">' + esc(o.name) + '</span>' +
+    (unit ? '<span class="v-sub">' + unit + '</span>' : '') + groupe('why', mo) + groupe('trigger', mr) +
+    '</span></span></div>';
+}
+/* Un Spot du serveur → la boîte. Le contexte n'arrive qu'aux membres. */
+const spotBox = s => ({ name:s.habit, ints:s.intentions || s.context?.intentions || [], freq:s.freq || s.context?.freq,
+  objs:(s.context?.objectives || []), reps:(s.context?.repulsions || []) });
+
+/* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
+let me = null, F = null, PANEL = null, OPEN = null, MS = null;
+const BUILD = '2026-09-24';
+const LISBON = { lat:38.7223, lng:-9.1393 };
+const RAD = { on:false, raf:0, t:0, origin:{ lat:38.7223, lng:-9.1393 }, spots:[], hover:null, focus:null, base:1500, zoom:1, cx:0, cy:0, rpx:0, W:0, H:0, dpr:1 };
+const FILT = { q:'', when:null, mode:null, int:null };
+let geoOK = false, FACET = null;
 /* Le diagnostic — des booléens et des compteurs, jamais une position ni
    une valeur de membre. Dans la console : __totehm_space() */
-const BUILD = '2026-09-23';
-window.__totehm_space = () => ({ build: BUILD, signed_in: !!me, member: !!F?.member,
-  located: geoOK, origin: !!RAD.origin,
-  radar_on: !!RAD.on, spots: RAD.spots.length, open_spot: !!OPEN });
+window.__totehm_space = () => ({ build: BUILD, signed_in: !!me, member: !!F?.member, comp: !!F?.comp,
+  panel: PANEL, located: geoOK, spots: RAD.spots.length, demo: RAD.spots.filter(s => s.demo).length,
+  filters: Object.values(FILT).filter(Boolean).length, open_spot: !!OPEN });
+
 async function loadMe(){
   const { data:{ session } } = await sb.auth.getSession();
-  me = session?.user || null;
-  F = null;
+  me = session?.user || null; F = null;
   if(me){ const { data, error } = await sb.rpc('figher_access'); if(error) console.error('[figher_access]', error.message); F = data || null; }
   $('member').classList.toggle('is-in', !!me);
   $('member-txt').textContent = me ? (F?.pseudo || 'Member') : 'Sign in';
 }
 
-/* ══ LE RADAR ════════════════════════════════════════════════════════ */
-const LISBON = { lat:38.7223, lng:-9.1393 };
-const RAD = { on:false, raf:0, t:0, origin:null, spots:[], hover:null, focus:null, base:1500, zoom:1, cx:0, cy:0, rpx:0, W:0, H:0, dpr:1 };
+/* ══ LES LECTURES D'INSTRUMENT ═══════════════════════════════════════ */
+function tick(){ $('clk').textContent = hhmm(new Date()); }
+setInterval(tick, 15000); tick();
+function paintStatus(){
+  const n = RAD.spots.length, live = RAD.spots.filter(s => s.live).length;
+  const f = FILT.q || FILT.when || FILT.mode || FILT.int;
+  $('status').innerHTML = n
+    ? '<b>' + n + '</b> ' + (f ? (n > 1 ? 'results' : 'result') : (n > 1 ? 'Spots' : 'Spot')) + (live ? ' · <span class="live">' + live + ' live</span>' : '') + ' · ' + fmtDist(range())
+    : (f ? 'nothing matches' : 'no Spot around you yet');
+  const o = RAD.origin || LISBON;
+  $('coords').textContent = Math.abs(o.lat).toFixed(3) + (o.lat >= 0 ? 'N ' : 'S ') + Math.abs(o.lng).toFixed(3) + (o.lng >= 0 ? 'E' : 'W') + (geoOK ? '' : ' · Lisbon');
+}
+
+/* ══ L'INSTRUMENT ═══════════════════════════════════════════════════ */
 const EARTH_R = 6371e3, DEG = Math.PI/180;
 const localEN = (oLat, oLng, lat, lng) => ({ e:(lng-oLng)*DEG*EARTH_R*Math.cos(oLat*DEG), n:(lat-oLat)*DEG*EARTH_R });
-const FILT = { q:'', mode:null, live:false };
-let view = window.matchMedia('(max-width:699px)').matches ? 'cards' : 'map';
-
+const range = () => Math.max(80, RAD.base/RAD.zoom);
+const wide = () => innerWidth >= 900;
 function resize(){
   const cv = $('canvas'), W = innerWidth, H = innerHeight, dpr = Math.max(1, Math.min(2, devicePixelRatio || 1));
-  Object.assign(RAD, { W, H, dpr, cx:W/2, cy:H/2 + 30, rpx:Math.min(W, H)/2*0.74 });
+  /* Le panneau prend sa place : l'instrument se recentre dans ce qui reste. */
+  const open = !!PANEL;
+  let cx = W/2, cy = H/2, span = Math.min(W, H);
+  if(open && wide()){ const w = W - 440; cx = w/2; span = Math.min(w, H); }
+  else if(open){ const h = H*0.36 - 56; cy = 56 + h/2 + 22; span = Math.min(W, h); }
+  Object.assign(RAD, { W, H, dpr, cx, cy, rpx:span/2*0.78 });
   cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr); cv.style.width = W + 'px'; cv.style.height = H + 'px';
   layout();
 }
-const range = () => Math.max(80, RAD.base/RAD.zoom);
 function layout(){
   const m = $('me'); m.style.left = RAD.cx + 'px'; m.style.top = RAD.cy + 'px';
-  const k = RAD.rpx/range(), pad = 40;
+  const k = RAD.rpx/range();
   RAD.spots.forEach(s => {
-    s._px = RAD.cx + s._e*k; s._py = RAD.cy - s._n*k;
+    let x = s._e*k, y = -s._n*k; const r = Math.hypot(x, y), edge = r > RAD.rpx;
+    if(edge){ x = x/r*RAD.rpx*1.0; y = y/r*RAD.rpx*1.0; }
+    s._px = RAD.cx + x; s._py = RAD.cy + y;
     if(s._el){
       s._el.style.transform = 'translate(' + s._px + 'px,' + s._py + 'px)';
-      s._el.style.display = (s._px < -pad || s._py < -pad || s._px > RAD.W + pad || s._py > RAD.H + pad) ? 'none' : 'flex';
+      s._el.classList.toggle('edge', edge);
     }
   });
 }
@@ -509,14 +406,18 @@ function draw(){
   const cv = $('canvas'); if(!RAD.on){ RAD.raf = 0; return; }
   const X = cv.getContext('2d'), { W, H, cx, cy, rpx, dpr } = RAD;
   X.setTransform(dpr, 0, 0, dpr, 0, 0); X.clearRect(0, 0, W, H); RAD.t += 1/60;
-  X.strokeStyle = 'rgba(255,255,255,.05)'; X.lineWidth = 1; X.beginPath();
-  for(let x = cx % 55; x < W; x += 55){ X.moveTo(x + .5, 0); X.lineTo(x + .5, H); }
-  for(let y = cy % 55; y < H; y += 55){ X.moveTo(0, y + .5); X.lineTo(W, y + .5); }
-  X.stroke();
+  /* La croix du viseur, puis les anneaux, puis les graduations : un cockpit. */
+  X.strokeStyle = 'rgba(255,255,255,.07)'; X.lineWidth = 1; X.beginPath();
+  X.moveTo(cx - rpx*1.15, cy + .5); X.lineTo(cx + rpx*1.15, cy + .5); X.moveTo(cx + .5, cy - rpx*1.15); X.lineTo(cx + .5, cy + rpx*1.15); X.stroke();
   X.strokeStyle = 'rgba(255,255,255,.13)';
   for(let k = 1; k <= 3; k++){ X.beginPath(); X.arc(cx, cy, rpx*k/3, 0, Math.PI*2); X.stroke(); }
-  /* Les anneaux portent leur distance : un radar sans échelle ne dit pas « où ». */
-  X.font = '10px "Space Mono",monospace'; X.fillStyle = 'rgba(255,255,255,.28)'; X.textAlign = 'left';
+  X.strokeStyle = 'rgba(255,255,255,.22)'; X.beginPath();
+  for(let a = 0; a < 72; a++){ const r0 = a % 6 ? rpx*1.02 : rpx*.985, t = a*5*DEG;
+    X.moveTo(cx + Math.cos(t)*r0, cy + Math.sin(t)*r0); X.lineTo(cx + Math.cos(t)*rpx*1.05, cy + Math.sin(t)*rpx*1.05); }
+  X.stroke();
+  X.font = '10px "Space Mono",monospace'; X.fillStyle = 'rgba(255,255,255,.3)'; X.textAlign = 'center';
+  X.fillText('N', cx, cy - rpx*1.09); X.fillText('S', cx, cy + rpx*1.13); X.fillText('E', cx + rpx*1.1, cy + 4); X.fillText('W', cx - rpx*1.1, cy + 4);
+  X.textAlign = 'left'; X.fillStyle = 'rgba(255,255,255,.26)';
   for(let k = 1; k <= 3; k++) X.fillText(fmtDist(range()*k/3), cx + 4, cy - rpx*k/3 - 4);
   const head = RAD.t*Math.PI/3;
   for(let i = 0; i < 20; i++){
@@ -527,35 +428,37 @@ function draw(){
   const f = RAD.focus || RAD.hover;
   if(f && f._px != null){
     X.save(); X.setLineDash([3, 7]); X.lineDashOffset = -RAD.t*14; X.lineWidth = .8;
-    X.strokeStyle = icol((f.intentions||[])[0]); X.globalAlpha = .5;
+    X.strokeStyle = icol((f.intentions||[])[0]); X.globalAlpha = .6;
     X.beginPath(); X.moveTo(cx, cy); X.lineTo(f._px, f._py); X.stroke(); X.restore();
   }
   RAD.raf = requestAnimationFrame(draw);
 }
-function radarStart(){ if(RAD.on || view !== 'map') return; RAD.on = true; resize(); RAD.raf = requestAnimationFrame(draw); }
-function radarStop(){ RAD.on = false; if(RAD.raf){ cancelAnimationFrame(RAD.raf); RAD.raf = 0; } }
-function autoRange(spots){
-  const far = spots.reduce((m, s) => Math.max(m, s.dist_m || 0), 0);
-  return spots.length ? Math.min(60000, Math.max(500, far*1.15)) : 1500;
-}
-function renderRadar(spots){
+function radarStart(){ if(RAD.on) return; RAD.on = true; resize(); RAD.raf = requestAnimationFrame(draw); }
+/* L'ÉCHELLE SUIT LA MAJORITÉ, PAS LE PLUS LOIN. Un Spot à 17 km écrasait
+   trente Spots du centre en une tache. La portée couvre 85 % des Spots ;
+   les autres se posent SUR LE BORD, à leur cap, plus pâles — un instrument
+   dit « il y en a par là », il ne les cache pas. */
+const autoRange = spots => {
+  if(!spots.length) return 1500;
+  const d = spots.map(s => s.dist_m || 0).sort((a, b) => a - b);
+  return Math.min(60000, Math.max(600, d[Math.min(d.length - 1, Math.floor(d.length*0.85))]*1.15));
+};
+function renderMarkers(){
   const box = $('markers'); box.querySelectorAll('.marker').forEach(el => el.remove());
-  RAD.base = autoRange(spots); RAD.zoom = 1;
-  spots.forEach((s, i) => {
+  RAD.spots.forEach((s, i) => {
     const el = document.createElement('button');
-    el.type = 'button'; el.className = 'marker' + (s.live ? ' live' : '');
+    el.type = 'button'; el.className = 'marker' + (s.live ? ' live' : '') + (RAD.focus?.id === s.id ? ' focus' : '');
     el.setAttribute('aria-label', s.habit + ' — ' + fmtWhen(s.starts_at) + ' — ' + fmtDist(s.dist_m));
-    el.innerHTML = T(icol((s.intentions||[])[0]), 17) + '<span class="lbl">' + esc(s.habit) + ' · ' + (s.live ? 'LIVE' : fmtWhen(s.starts_at)) + '</span>';
-    el.querySelector('svg').style.animationDelay = (i*44) + 'ms';
-    el.onclick = ev => { ev.stopPropagation(); openSpot(s); };
+    el.innerHTML = T(icol((s.intentions||[])[0]), 16) + '<span class="lbl">' + esc(s.habit) + ' · ' + (s.live ? 'LIVE' : fmtWhen(s.starts_at)) + '</span>';
+    el.querySelector('svg').style.animationDelay = (i*30) + 'ms';
+    el.onclick = ev => { ev.stopPropagation(); focusSpot(s.id); };
     el.onmouseenter = () => { RAD.hover = s; }; el.onmouseleave = () => { if(RAD.hover === s) RAD.hover = null; };
     box.appendChild(el); s._el = el;
   });
   layout();
 }
-function zoomBy(k){ RAD.zoom = Math.max(.3, Math.min(8, RAD.zoom*k)); layout(); }
-$('z-in').onclick = () => zoomBy(1.35); $('z-out').onclick = () => zoomBy(1/1.35);
-$('canvas').addEventListener('wheel', e => { if(!e.ctrlKey) return; e.preventDefault(); zoomBy(e.deltaY < 0 ? 1.14 : 1/1.14); }, { passive:false });
+function zoomBy(k){ RAD.zoom = Math.max(.3, Math.min(8, RAD.zoom*k)); layout(); paintStatus(); }
+$('canvas').addEventListener('wheel', e => { e.preventDefault(); zoomBy(e.deltaY < 0 ? 1.12 : 1/1.12); }, { passive:false });
 (function pinch(){
   const cv = $('canvas'), pts = new Map(); let base = 0, z0 = 1;
   const dist = () => { const a = [...pts.values()]; return a.length < 2 ? 0 : Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); };
@@ -564,58 +467,9 @@ $('canvas').addEventListener('wheel', e => { if(!e.ctrlKey) return; e.preventDef
     if(pts.size >= 2 && base){ RAD.zoom = Math.max(.3, Math.min(8, z0*dist()/base)); layout(); } });
   ['pointerup','pointercancel','pointerleave'].forEach(t => cv.addEventListener(t, e => { pts.delete(e.pointerId); if(pts.size < 2) base = 0; }));
 })();
-addEventListener('resize', () => { if(RAD.on) resize(); });
+addEventListener('resize', () => resize());
 
-/* ── LA CARTE — un seul balisage pour le deck ET la fenêtre ───────── */
-const WHY = {
-  signin:['Sign in to apply', 'gate'], passport:['Complete my TOTEHM', 'com'], thp:['Get my TotehmPaper', 'thp'],
-  club:['Join FIGHER', 'join'], subscribers:['For subscribers of this TOTEHM', null], full:['Full', null],
-  started:['Already started', null], applied:[null, null], rejected:['Not selected this time', null], mine:[null, null] };
-function cardHTML(s){
-  const ctx = s.context || null;
-  const status = s.my_status === 'accepted' ? 'you are in' : s.my_status === 'pending' ? 'applied — waiting for the creator' : null;
-  let act = '';
-  if(s.mine) act = '<button class="btn" data-mine="1">Manage in My space</button>';
-  else if(s.my_status === 'pending' || s.my_status === 'accepted') act = '<button class="lnk" data-withdraw="' + s.id + '">Withdraw</button>';
-  else if(!s.why_not) act = '<button class="btn main" data-apply="' + s.id + '">Apply to this Spot</button>';
-  else { const w = WHY[s.why_not] || [s.why_not, null];
-    act = w[1] === 'gate' ? '<button class="btn main" data-gate="1">' + w[0] + '</button>'
-        : w[1] ? '<button class="btn main" data-go="' + w[1] + '">' + w[0] + '</button>'
-        : (w[0] ? '<span class="fine">' + w[0] + '</span>' : ''); }
-  return '<div class="card">' +
-    '<div class="top"><div><div class="kick">' + (s.live ? 'LIVE · ' : '') + esc(s.mode) + ' · ' + (s.access === 'subscribers' ? 'subscribers' : 'FIGHER club') + '</div>' +
-      '<h3>' + esc(s.habit) + '</h3></div>' +
-      (s.compat != null ? '<div class="cmp"><b>' + s.compat + '%</b><span>Spot compatibility</span></div>' : '') + '</div>' +
-    intChips(s.intentions) +
-    '<div class="meta"><b>' + fmtWhen(s.starts_at) + '</b> · ' + s.duration_min + ' min · ' + fmtDist(s.dist_m) + ' · <b>' + (s.taken||0) + ' / ' + s.capacity + '</b> places · ' + (s.selection === 'auto' ? 'automatic' : 'manual') + ' selection' +
-      (s.creator ? ' · by <b>' + esc(s.creator) + '</b>' : '') + '</div>' +
-    (ctx ? '<div class="ctx">' +
-      /* §29 : la Music se présente comme MOOD dans l'Espace. Elle porte la
-         couleur de l'intention à laquelle le son appartient (règle du 20/09). */
-      (ctx.mood ? '<div class="row"><span class="w">mood</span><span class="mini" style="background:' + icol(ctx.mood.intention) + ';color:#000">' + esc(ctx.mood.title || '') + '</span></div>' : '') +
-      ((ctx.objectives||[]).length ? '<div class="row"><span class="w">why</span>' + ctx.objectives.map(o => '<span class="mini o">' + esc(o.text) + '</span>').join('') + '</div>' : '') +
-      ((ctx.repulsions||[]).length ? '<div class="row"><span class="w">instead of</span>' + ctx.repulsions.map(r => '<span class="mini r">' + esc(r.text) + '</span>').join('') + '</div>' : '') +
-      '</div>' : (!me ? '<div class="fine">The context of a Spot is shared between members.</div>' : '')) +
-    (s.comment ? '<div class="say">' + esc(s.comment) + '</div>' : '') +
-    (s.place ? '<div class="place"><small>meeting point</small>' + esc(s.place) + '</div>' : '') +
-    (status ? '<div class="fine" style="color:#fff">' + status + '</div>' : '') +
-    '<div class="acts">' + act + '</div>' +
-    (s.compat != null ? '<div class="fine">Your compatibility is measured against this Spot\'s context — never a person-to-person score.</div>' : '') +
-  '</div>';
-}
-function renderDeck(spots){
-  const d = $('deck');
-  d.innerHTML = spots.map(s => '<div class="slide">' + cardHTML(s) + '</div>').join('');
-  d.scrollLeft = 0; paintCount();
-  d.onscroll = () => requestAnimationFrame(paintCount);
-}
-function paintCount(){
-  const d = $('deck'), n = RAD.spots.length, i = Math.round(d.scrollLeft/(d.clientWidth||1));
-  $('count').textContent = n ? String(Math.min(i+1, n)).padStart(2, '0') + ' / ' + String(n).padStart(2, '0') : '';
-}
-
-/* ── LE CHARGEMENT — la géographie filtre en base, pas ici ────────── */
-let geoOK = false;
+/* ══ LE CHARGEMENT — la géographie et la recherche filtrent EN BASE ══ */
 function geo(){
   return new Promise(res => {
     if(!navigator.geolocation){ res(null); return; }
@@ -623,397 +477,440 @@ function geo(){
       { enableHighAccuracy:false, timeout:7000, maximumAge:300000 });
   });
 }
-async function locate(){
-  const c = await geo();
-  geoOK = !!c; RAD.origin = c || LISBON;
-  $('geo-note').textContent = c ? '' : 'position unavailable — showing Lisbon · tap to retry';
-}
-$('geo-note').onclick = async () => { await locate(); await loadSpots(); };
+async function locate(){ const c = await geo(); geoOK = !!c; RAD.origin = c || LISBON; }
 let seq = 0;
-async function loadSpots(focusId){
+async function loadSpots(){
   const my = ++seq;
-  $('empty-k').textContent = 'looking around you…';
   const { data, error } = await sb.rpc('spots_radar', { p_lat:RAD.origin.lat, p_lng:RAD.origin.lng, p_radius:20000,
-    p_q:FILT.q || null, p_mode:FILT.mode, p_live:FILT.live, p_limit:40 });
+    p_q:FILT.q || null, p_mode:FILT.mode, p_live:false, p_limit:60, p_when:FILT.when, p_intention:FILT.int });
   if(my !== seq) return; // une réponse tardive n'écrase jamais un état plus frais
-  if(error){ console.error('[spots_radar]', error.message); $('empty-k').textContent = 'the radar is unavailable'; return; }
-  const spots = (data?.spots || []).map(s => { const en = localEN(RAD.origin.lat, RAD.origin.lng, s.lat, s.lng); return { ...s, _e:en.e, _n:en.n }; });
-  RAD.spots = spots;
-  $('empty').classList.toggle('hide', spots.length > 0);
-  $('empty-k').textContent = spots.length ? '' : (FILT.q || FILT.mode || FILT.live ? 'nothing matches — change the filter' : 'no Spot around you yet — create the first');
-  if(view === 'map') renderRadar(spots); else renderDeck(spots);
-  if(focusId){ const s = spots.find(x => x.id === focusId); if(s){ RAD.focus = s; s._el && s._el.classList.add('focus'); openSpot(s); } }
+  if(error){ console.error('[spots_radar]', error.message); $('status').textContent = 'the radar is unavailable'; return; }
+  RAD.spots = (data?.spots || []).map(s => { const en = localEN(RAD.origin.lat, RAD.origin.lng, s.lat, s.lng); return { ...s, _e:en.e, _n:en.n }; });
+  RAD.base = autoRange(RAD.spots); RAD.zoom = 1;
+  renderMarkers(); paintStatus();
+  if(PANEL === 'search') paintResults();
 }
-function applyView(){
-  document.body.classList.toggle('cards', view === 'cards');
-  document.querySelector('[data-f="view"]').textContent = view === 'cards' ? 'Radar' : 'Cards';
-  if(view === 'map'){ radarStart(); renderRadar(RAD.spots); } else { radarStop(); renderDeck(RAD.spots); }
+
+/* ══ LE PANNEAU ═════════════════════════════════════════════════════ */
+function openPanel(p){
+  PANEL = p; document.body.classList.add('p-open');
+  document.querySelectorAll('[data-cmd]').forEach(b => b.classList.toggle('on', b.dataset.cmd === p));
+  history.replaceState(null, '', p === 'search' ? '#search' : p === 'create' ? '#create' : p === 'mine' ? '#me' : location.pathname);
+  resize(); render();
 }
-let qT = null;
-$('q').addEventListener('input', () => { clearTimeout(qT); qT = setTimeout(() => { FILT.q = $('q').value.trim(); loadSpots(); }, 300); });
-$('chips').addEventListener('click', e => {
-  const c = e.target.closest('.chip'); if(!c) return;
-  const f = c.dataset.f;
-  if(f === 'view'){ view = view === 'map' ? 'cards' : 'map'; applyView(); return; }
-  document.querySelectorAll('.chip[data-f]:not([data-f="view"])').forEach(x => x.classList.toggle('on', x === c));
-  FILT.mode = (f === 'social' || f === 'silent') ? f : null; FILT.live = f === 'live';
-  loadSpots();
+function closePanel(){
+  PANEL = null; OPEN = null; document.body.classList.remove('p-open');
+  document.querySelectorAll('[data-cmd]').forEach(b => b.classList.remove('on'));
+  if(RAD.focus?._el) RAD.focus._el.classList.remove('focus'); RAD.focus = null;
+  history.replaceState(null, '', location.pathname); resize();
+}
+function render(){
+  if(PANEL === 'search') renderSearch();
+  else if(PANEL === 'create') renderCreate();
+  else if(PANEL === 'mine') renderMine();
+  else if(PANEL === 'gate') renderGate();
+}
+const head = (t, c) => '<div class="p-head"><div class="p-title">' + t + '</div><button class="lnk" data-close="1" type="button">' + (c || 'Close') + '</button></div>';
+$('panel').addEventListener('click', e => { if(e.target.closest('[data-close]')) closePanel(); });
+document.querySelectorAll('[data-cmd]').forEach(b => b.onclick = () => {
+  const c = b.dataset.cmd;
+  if(PANEL === c){ closePanel(); return; }
+  if(c === 'create') return openCreate();
+  if(c === 'mine') return openMine();
+  openPanel('search'); setTimeout(() => $('q')?.focus(), 60);
+});
+addEventListener('keydown', e => { if(e.key === 'Escape' && PANEL && !/INPUT|TEXTAREA/.test(document.activeElement?.tagName || '')) closePanel(); });
+
+/* ══ SEARCH ═════════════════════════════════════════════════════════
+   Un champ. Sous lui, trois mots — WHEN · MODE · INTENTION — qui ne
+   s'ouvrent que si on les touche, un à la fois. Puis les Spots. */
+const WHEN = [['now','now'], ['today','today'], ['week','this week']];
+function renderSearch(){
+  $('panel').innerHTML = head('Search.') +
+    '<input class="in" id="q" placeholder="an action — walk, read, box, a name…" autocomplete="off" enterkeyhint="search" value="' + esc(FILT.q) + '">' +
+    '<div class="facets" id="facets"></div><div id="facet-opts"></div>' +
+    '<div class="list" id="res"></div>';
+  let qT = null;
+  $('q').addEventListener('input', () => { clearTimeout(qT); qT = setTimeout(() => { FILT.q = $('q').value.trim(); OPEN = null; loadSpots(); }, 280); });
+  paintFacets(); paintResults();
+}
+function paintFacets(){
+  const lab = (k, name, v) => '<button class="facet' + (FACET === k ? ' is-open' : '') + '" data-facet="' + k + '" type="button">' + name + (v ? ' · <b>' + esc(v) + '</b>' : '') + '</button>';
+  $('facets').innerHTML = lab('when', 'When', WHEN.find(w => w[0] === FILT.when)?.[1]) + lab('mode', 'Mode', FILT.mode) +
+    lab('int', 'Intention', FILT.int ? INTS[FILT.int].n : null) +
+    (FILT.when || FILT.mode || FILT.int ? '<button class="facet" data-facet="clear" type="button">clear</button>' : '');
+  let o = '';
+  if(FACET === 'when') o = [['', 'any time'], ...WHEN].map(w => '<button class="opt' + ((FILT.when || '') === w[0] ? ' on' : '') + '" data-fw="' + w[0] + '" type="button">' + w[1] + '</button>').join('');
+  if(FACET === 'mode') o = [['', 'any'], ['social', 'social'], ['silent', 'silent']].map(w => '<button class="opt' + ((FILT.mode || '') === w[0] ? ' on' : '') + '" data-fm="' + w[0] + '" type="button">' + w[1] + '</button>').join('');
+  if(FACET === 'int') o = '<button class="opt' + (!FILT.int ? ' on' : '') + '" data-fi="" type="button">any</button>' +
+    Object.entries(INTS).map(([k, v]) => '<button class="opt' + (FILT.int === k ? ' on' : '') + '" data-fi="' + k + '" type="button"><span class="dot" style="background:' + v.c + '"></span>' + v.n + '</button>').join('');
+  $('facet-opts').innerHTML = o ? '<div class="opts">' + o + '</div>' : '';
+}
+$('panel').addEventListener('click', e => {
+  if(PANEL !== 'search') return;
+  const f = e.target.closest('[data-facet]');
+  if(f){ if(f.dataset.facet === 'clear'){ FILT.when = FILT.mode = FILT.int = null; FACET = null; loadSpots(); }
+         else FACET = FACET === f.dataset.facet ? null : f.dataset.facet;
+         paintFacets(); return; }
+  const w = e.target.closest('[data-fw]'), m = e.target.closest('[data-fm]'), i = e.target.closest('[data-fi]');
+  if(w || m || i){
+    if(w) FILT.when = w.dataset.fw || null; if(m) FILT.mode = m.dataset.fm || null; if(i) FILT.int = i.dataset.fi || null;
+    FACET = null; OPEN = null; paintFacets(); loadSpots(); return;
+  }
+});
+function paintResults(){
+  const r = $('res'); if(!r) return;
+  const l = RAD.spots;
+  r.innerHTML = l.length ? l.map(itemHTML).join('')
+    : '<div class="empty">' + (FILT.q || FILT.when || FILT.mode || FILT.int ? 'Nothing matches. Try one word.' : 'No Spot around you yet. Create the first.') + '</div>';
+  if(OPEN){ const el = r.querySelector('[data-it="' + OPEN + '"]'); el && el.scrollIntoView({ block:'nearest' }); }
+}
+/* UNE LIGNE DE RÉSULTAT = LA BOÎTE + SON INSTRUMENTATION. Fermée : la
+   boîte et une ligne. Ouverte : la jauge, qui, le mood, le mot du
+   créateur, et UNE action. */
+function stripHTML(s){
+  return '<div class="strip">' + (s.live ? '<span class="lv">live</span>' : '<b>' + fmtWhen(s.starts_at) + '</b>') +
+    '<span>' + s.duration_min + ' min</span>' + (s.dist_m != null ? '<span>' + fmtDist(s.dist_m) + '</span>' : '') +
+    '<span><b>' + (s.taken || 0) + '/' + s.capacity + '</b></span><span>' + esc(s.mode) + '</span>' +
+    (s.access === 'subscribers' ? '<span>subscribers</span>' : '') + (s.demo ? '<span class="dm">demo</span>' : '') + '</div>';
+}
+const WHY = {
+  signin:['Sign in to join', 'gate'], passport:['Complete my TOTEHM', 'com'], thp:['Get my TotehmPaper', 'thp'],
+  club:['Join FIGHER', 'join'], subscribers:['For the subscribers of this TOTEHM', null], full:['Full — every place is taken', null],
+  started:['Already started', null], rejected:['Not selected this time', null] };
+function actionHTML(s){
+  if(s.mine) return '<button class="btn" data-mine="1" type="button">Manage in My space</button>';
+  if(s.my_status === 'accepted') return '<span class="cap"><b>You are in.</b></span><button class="lnk" data-withdraw="' + s.id + '" type="button">Withdraw</button>';
+  if(s.my_status === 'pending') return '<span class="cap">Asked — the creator chooses.</span><button class="lnk" data-withdraw="' + s.id + '" type="button">Withdraw</button>';
+  if(!s.why_not) return '<button class="btn main" data-apply="' + s.id + '" type="button">' + (s.selection === 'auto' ? 'Join' : 'Ask to join') + '</button>';
+  const w = WHY[s.why_not] || [s.why_not, null];
+  if(w[1] === 'gate') return '<button class="btn main" data-gate="1" type="button">' + w[0] + '</button>';
+  if(w[1]) return '<button class="btn main" data-go="' + w[1] + '" type="button">' + w[0] + '</button>';
+  return '<span class="cap">' + w[0] + '</span>';
+}
+function itemHTML(s){
+  const open = OPEN === s.id;
+  return '<div class="it" data-it="' + s.id + '">' + boxHTML(spotBox(s)) + stripHTML(s) +
+    (open ? '<div class="more">' +
+      (s.compat != null ? '<div class="gauge"><span class="v">' + s.compat + '%</span><span class="cap">Spot compatibility<br>your TOTEHM · this Spot</span></div>' : '') +
+      '<div class="cap">' + (s.creator ? 'by <b>' + esc(s.creator) + '</b> · ' : '') + (s.selection === 'auto' ? 'automatic' : 'chosen by the creator') +
+        (s.mood ? ' · mood <b>' + esc(s.mood) + '</b>' : '') + '</div>' +
+      (s.comment ? '<div class="say">' + esc(s.comment) + '</div>' : '') +
+      (s.place ? '<div class="meet"><small>meeting point</small>' + esc(s.place) + '</div>' : '') +
+      (!me ? '<div class="cap">Who, why and the meeting point are shared between members.</div>' : '') +
+      '<div class="acts">' + actionHTML(s) + '</div><div class="note" id="n-' + s.id + '"></div>' +
+    '</div>' : '') + '</div>';
+}
+function focusSpot(id){
+  const s = RAD.spots.find(x => x.id === id);
+  if(RAD.focus?._el) RAD.focus._el.classList.remove('focus');
+  RAD.focus = s || null; s?._el?.classList.add('focus');
+  OPEN = id;
+  if(PANEL !== 'search') openPanel('search'); else paintResults();
+}
+$('panel').addEventListener('click', async e => {
+  if(PANEL !== 'search') return;
+  if(e.target.closest('[data-gate]')){ openGate(); return; }
+  if(e.target.closest('[data-mine]')){ openMine(); return; }
+  const a = e.target.closest('[data-apply]'), w = e.target.closest('[data-withdraw]');
+  if(a){
+    a.disabled = true; a.textContent = '…';
+    const { data, error } = await sb.rpc('spot_apply', { p_spot: a.dataset.apply, p_note: null });
+    if(error || !data?.ok){ const n = $('n-' + a.dataset.apply); if(n){ n.className = 'note no'; n.textContent = ({ full:'full', started:'already started', subscribers:'for subscribers', figher:'members only', applied:'already asked' })[data?.why] || error?.message || 'not sent'; } a.disabled = false; a.textContent = 'Join'; return; }
+    OPEN = a.dataset.apply; await loadSpots(); refreshMineCount(); return;
+  }
+  if(w){ w.disabled = true; await sb.rpc('spot_withdraw', { p_spot: w.dataset.withdraw }); OPEN = w.dataset.withdraw; await loadSpots(); refreshMineCount(); return; }
+  const it = e.target.closest('.it .habit');
+  if(it){ const id = it.closest('.it').dataset.it; OPEN = OPEN === id ? null : id;
+    if(RAD.focus?._el) RAD.focus._el.classList.remove('focus');
+    RAD.focus = RAD.spots.find(x => x.id === OPEN) || null; RAD.focus?._el?.classList.add('focus');
+    paintResults(); }
 });
 
-/* ── LA FENÊTRE D'UN SPOT ─────────────────────────────────────────── */
-let OPEN = null;
-function openSpot(s){ OPEN = s; $('spot-body').innerHTML = cardHTML(s); $('spot').classList.add('show'); }
-function closeSpot(){ $('spot').classList.remove('show'); if(RAD.focus?._el) RAD.focus._el.classList.remove('focus'); RAD.focus = null; OPEN = null; }
-$('spot-x').onclick = closeSpot;
-async function onCardClick(e){
-  const a = e.target.closest('[data-apply]'), w = e.target.closest('[data-withdraw]');
-  if(e.target.closest('[data-gate]')){ openGate(); return; }
-  if(e.target.closest('[data-mine]')){ closeSpot(); openMine('spots'); return; }
-  if(a){
-    a.disabled = true; a.textContent = 'applying…';
-    const { data, error } = await sb.rpc('spot_apply', { p_spot: a.dataset.apply, p_note: null });
-    if(error || !data?.ok){ a.textContent = ({ full:'Full', started:'Already started', subscribers:'For subscribers', figher:'Members only', applied:'Already applied' })[data?.why] || (error?.message || 'not applied'); return; }
-    await loadSpots(a.dataset.apply);
-  }
-  if(w){
-    w.disabled = true;
-    await sb.rpc('spot_withdraw', { p_spot: w.dataset.withdraw });
-    await loadSpots(w.dataset.withdraw);
-  }
-}
-$('spot-body').addEventListener('click', onCardClick);
-$('deck').addEventListener('click', onCardClick);
-
-/* ══ CREATE · 1 — MY TOTEHM EN SELECT MODE ══════════════════════════
-   Le même Totehm que totehm.com, relu tel quel : `totehms.steps`,
-   `my_trips()`, `habit_spots`, `intention_sounds()`. Rien ne s'écrit ici. */
-const CROIX = { wisdom:{d:'habits'}, habits:{g:'wisdom', d:'visions', h:'objectives', b:'repulsions'}, visions:{g:'habits'},
-  objectives:{g:'wisdom', d:'visions', b:'habits'}, repulsions:{g:'wisdom', d:'visions', h:'habits'} };
-const NOM = { wisdom:['my wisdom','what I learned'], habits:['my habits','what I repeat'], visions:['my vision','what I see coming'],
-  objectives:['my objectives','what pulls me up'], repulsions:['my repulsions','what makes me derail'] };
-const SKIN = { habits:'var(--navy)', objectives:'var(--blue)', repulsions:'var(--rep)', wisdom:'var(--rep)', visions:'var(--blue)' };
-let TOT = null, vue = 'habits', PICK = null;
+/* ══ CREATE ═════════════════════════════════════════════════════════
+   Une question à la fois. Chaque réponse se range en haut, en une ligne,
+   et se rouvre d'un toucher. La suivante n'apparaît qu'après.
+     1 · Which habit?  — tes Habit Boxes, telles que dans totehm.com
+     2 · When?         — quatre moments, ou « other »
+     3 · Where?        — le point de rendez-vous et ta position
+     4 · With whom?    — combien, social ou silent ; « more » pour le reste
+   Le Totehm se LIT ici, il ne s'écrit pas (SELECT MODE ≠ EDIT MODE, §28). */
+let TOT = null;
+const CR = { step:1, h:null, ints:new Set(), objs:new Set(), reps:new Set(), mood:false, when:null, whenLbl:'', other:false,
+  place:'', pos:null, cap:6, mode:'social', dur:45, sel:'auto', acc:'club', comment:'', more:false };
 async function loadTotehm(){
   const [st, tr, hs, so] = await Promise.all([
     sb.from('totehms').select('steps').eq('user_id', me.id).maybeSingle(),
-    sb.rpc('my_trips'),
-    sb.from('habit_spots').select('habit_text,place'),
-    sb.rpc('intention_sounds')]);
+    sb.rpc('my_trips'), sb.from('habit_spots').select('habit_text,place'), sb.rpc('intention_sounds')]);
   [st, tr, hs, so].forEach(r => { if(r.error) console.error('[totehm]', r.error.message); });
-  const steps = (st.data?.steps || []).filter(s => (s.t || '').trim());
-  const t = tr.data || {};
-  const place = {}; (hs.data || []).forEach(r => place[r.habit_text] = r.place);
-  TOT = {
-    habits: steps.map(s => ({ t:s.t, f:s.f, is: (Array.isArray(s.is) && s.is.length ? s.is : [s.i].filter(Boolean)).filter(i => INTS[i]), o:s.o, place: place[s.t] || null })),
-    objectives: (t.trips || []).filter(o => (o.text||'').trim()), repulsions: (t.reps || []).filter(r => (r.text||'').trim()),
-    wisdom: (t.wisdom || []).filter(w => (w.text||'').trim()), visions: (t.visions || []).filter(v => (v.text||'').trim()),
-    objs: t.objs || {}, sounds: so.data || {} };
+  const t = tr.data || {}, place = {}; (hs.data || []).forEach(r => place[r.habit_text] = r.place);
+  const trips = (t.trips || []).filter(o => (o.text||'').trim()), reps = (t.reps || []).filter(r => (r.text||'').trim()), objs = t.objs || {};
+  TOT = { sounds: so.data || {},
+    habits: (st.data?.steps || []).filter(s => (s.t || '').trim()).map(s => {
+      const ints = (Array.isArray(s.is) && s.is.length ? s.is : [s.i].filter(Boolean)).filter(i => INTS[i]);
+      return { name:s.t, freq:s.f, ints, place: place[s.t] || null,
+        objs: (objs[s.t] || []).map(id => trips.find(o => o.id === id)).filter(Boolean).map(o => ({ id:o.id, text:o.text })),
+        reps: reps.filter(r => (r.hs || []).includes(s.t)).map(r => ({ id:r.id, text:r.text })) }; }) };
 }
-const objsOf = h => (TOT.objs[h.t] || []).map(id => TOT.objectives.find(o => o.id === id)).filter(Boolean);
-const repsOf = h => TOT.repulsions.filter(r => (r.hs || []).includes(h.t));
-const tick = l => '<span class="tick">' + (l||[]).map(i => '<i style="background:' + icol(i) + '"></i>').join('') + '</span>';
-function boxHTML(kind, o, k){
-  const pick = kind === 'habits';
-  let sb_ = '', mn = '';
-  if(kind === 'habits'){
-    const i0 = o.is[0];
-    sb_ = (i0 ? '<span style="color:' + icol(i0) + ';font-weight:700">' + INTS[i0].n + '</span><span style="color:rgba(255,255,255,.5)">' + INTS[i0].p + '</span>' : '') + (o.f ? '<span>' + esc(human(o.f)) + '</span>' : '') + (o.place ? '<span>' + esc(o.place) + '</span>' : '');
-    const ob = objsOf(o), rp = repsOf(o);
-    mn = (ob.length ? '<span class="w">why</span>' + ob.map(x => '<span class="mini o">' + esc(x.text) + '</span>').join('') : '') +
-         (rp.length ? '<span class="w">trigger</span>' + rp.map(x => '<span class="mini r">' + esc(x.text) + '</span>').join('') : '');
-  } else if(kind === 'objectives'){
-    sb_ = o.days_left != null ? '<span>' + (o.days_left >= 0 ? o.days_left + ' days left' : 'past deadline') + '</span>' : '<span>no deadline</span>';
-    const hs = TOT.habits.filter(h => (TOT.objs[h.t] || []).includes(o.id));
-    mn = hs.length ? '<span class="w">how</span>' + hs.map(h => '<span class="mini">' + esc(h.t) + '</span>').join('') : '';
-  } else if(kind === 'repulsions'){
-    mn = (o.hs || []).length ? '<span class="w">instead</span>' + o.hs.map(h => '<span class="mini">' + esc(h) + '</span>').join('') : '';
-  }
-  return '<div class="bx' + (pick ? ' pick' : ' dim') + '" style="--skin:' + SKIN[kind] + '" data-k="' + k + '">' + tick(kind === 'habits' ? o.is : (o.is || [])) +
-    '<div class="nm">' + esc(kind === 'habits' ? o.t : o.text) + '</div>' + (sb_ ? '<div class="sb">' + sb_ + '</div>' : '') +
-    (mn ? '<div class="mn">' + mn + '</div>' : '') + '</div>';
-}
-function renderSel(dir){
-  const sel = $('sel');
-  sel.classList.toggle('v-wisdom', vue === 'wisdom'); sel.classList.toggle('v-visions', vue === 'visions');
-  $('sel-title').textContent = NOM[vue][0]; $('sel-sub').textContent = NOM[vue][1];
-  $('sel-mode').textContent = vue === 'habits' ? 'select mode — choose a habit box' : 'read only — a Spot starts from a habit';
-  const list = TOT[vue] || [];
-  $('list').innerHTML = list.length ? list.map((o, k) => boxHTML(vue, o, k)).join('') : '<div class="v-empty">nothing written here yet</div>';
-  if(dir){ $('list').classList.remove('swap'); void $('list').offsetWidth; $('list').classList.add('swap'); }
-  $('list').scrollTop = 0; PICK = null;
-  paintJoy();
-}
-function paintJoy(){
-  $('joy-box').style.setProperty('--joy', SKIN[vue]);
-  const couche = { objectives:'o', habits:'h', repulsions:'r' }[vue] || null;
-  ['o','h','r'].forEach(k => { const e = $('joy-box').querySelector('.' + k);
-    e.classList.toggle('ici', k === couche); e.classList.toggle('mort', !couche); });
-  ['h','g','d','b'].forEach(d => $('cur-' + d).classList.toggle('mort', !CROIX[vue][d]));
-}
-function go(d){ const n = CROIX[vue][d]; if(!n) return; vue = n; renderSel(d); }
-document.querySelectorAll('.cur').forEach(b => b.onclick = () => go(b.dataset.d));
-(function joyDrag(){
-  const box = $('joy-box'); let x0 = 0, y0 = 0, on = false;
-  box.addEventListener('pointerdown', e => { on = true; x0 = e.clientX; y0 = e.clientY; try{ box.setPointerCapture(e.pointerId); }catch(_){} });
-  box.addEventListener('pointerup', e => {
-    if(!on) return; on = false;
-    const dx = e.clientX - x0, dy = e.clientY - y0;
-    if(Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
-    go(Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 'g' : 'd') : (dy < 0 ? 'h' : 'b'));
-  });
-})();
-addEventListener('keydown', e => {
-  if(!$('sel').classList.contains('show') || /INPUT|TEXTAREA/.test(document.activeElement?.tagName || '')) return;
-  const m = { ArrowUp:'h', ArrowDown:'b', ArrowLeft:'g', ArrowRight:'d' }[e.key];
-  if(m){ e.preventDefault(); go(m); }
-  if(e.key === 'Escape') closeSel();
-});
-
-/* ══ CREATE · 2 — LE CONTEXTE : la boîte choisie ENFANTE ses pièces ══
-   L'habitude reste centrale et ne se décoche pas (§29). Le reste se
-   choisit POUR CE SPOT : ça ne modifie pas le Totehm. */
-const DRAFT = { habit:null, ints:new Set(), objs:new Set(), reps:new Set(), mood:false };
-function pickHabit(k){
-  const h = TOT.habits[k]; if(!h) return;
-  document.querySelectorAll('#list .bx').forEach(b => b.classList.toggle('open', +b.dataset.k === k));
-  $('ctx')?.remove();
-  DRAFT.habit = h; DRAFT.ints = new Set(h.is); DRAFT.objs = new Set(objsOf(h).map(o => o.id)); DRAFT.reps = new Set(repsOf(h).map(r => r.id));
-  const snd = h.is.map(i => TOT.sounds[i] ? { i, kind:TOT.sounds[i].kind } : null).find(Boolean);
-  DRAFT.mood = !!snd;
-  const box = document.querySelector('#list .bx[data-k="' + k + '"]');
-  const c = document.createElement('div'); c.id = 'ctx';
-  c.innerHTML =
-    (h.is.length ? '<div class="grp"><span class="w">intention</span>' + h.is.map(i => '<button class="tg on" data-i="' + i + '"><span class="dot" style="background:' + icol(i) + '"></span>' + INTS[i].n + '</button>').join('') + '</div>' : '') +
-    (snd ? '<div class="grp"><span class="w">mood</span><button class="tg on m" data-mood="1">' + esc(snd.kind || 'my sound') + '</button></div>' : '') +
-    (objsOf(h).length ? '<div class="grp"><span class="w">why</span>' + objsOf(h).map(o => '<button class="tg on o" data-o="' + o.id + '">' + esc(o.text) + '</button>').join('') + '</div>' : '') +
-    (repsOf(h).length ? '<div class="grp"><span class="w">instead of</span>' + repsOf(h).map(r => '<button class="tg on r" data-r="' + r.id + '">' + esc(r.text) + '</button>').join('') + '</div>' : '') +
-    '<div class="next"><button class="btn main" id="ctx-go" type="button">Continue with this habit</button><button class="lnk" id="ctx-x" type="button">Another habit</button></div>';
-  box.after(c);
-  c.querySelectorAll('.tg').forEach(t => t.onclick = () => {
-    if(t.dataset.i){ if(DRAFT.ints.has(t.dataset.i) && DRAFT.ints.size === 1) return; DRAFT.ints.has(t.dataset.i) ? DRAFT.ints.delete(t.dataset.i) : DRAFT.ints.add(t.dataset.i); t.classList.toggle('on', DRAFT.ints.has(t.dataset.i)); }
-    if(t.dataset.o){ DRAFT.objs.has(t.dataset.o) ? DRAFT.objs.delete(t.dataset.o) : DRAFT.objs.add(t.dataset.o); t.classList.toggle('on', DRAFT.objs.has(t.dataset.o)); }
-    if(t.dataset.r){ const id = +t.dataset.r; DRAFT.reps.has(id) ? DRAFT.reps.delete(id) : DRAFT.reps.add(id); t.classList.toggle('on', DRAFT.reps.has(id)); }
-    if(t.dataset.mood){ DRAFT.mood = !DRAFT.mood; t.classList.toggle('on', DRAFT.mood); }
-  });
-  $('ctx-go').onclick = openCfg;
-  $('ctx-x').onclick = () => renderSel();
-  c.scrollIntoView({ behavior:'smooth', block:'nearest' });
-}
-$('list').addEventListener('click', e => {
-  if(e.target.closest('#ctx')) return;
-  const b = e.target.closest('.bx'); if(!b || vue !== 'habits') return;
-  pickHabit(+b.dataset.k);
-});
 async function openCreate(){
-  if(!me){ openGate(); return; }
-  if(!F?.member){ openGate(); return; }
-  await loadTotehm();
-  vue = 'habits'; renderSel(); $('sel').classList.add('show');
-  history.replaceState(null, '', '#create');
+  if(!me || !F?.member){ openGate(); return; }
+  openPanel('create'); $('panel').innerHTML = head('Create a Spot.') + '<div class="cap">reading my TOTEHM…</div>';
+  await loadTotehm(); CR.step = CR.h ? CR.step : 1; renderCreate();
 }
-function closeSel(){ $('sel').classList.remove('show'); if(location.hash === '#create') history.replaceState(null, '', location.pathname); }
-$('sel-x').onclick = closeSel;
-$('go-create').onclick = openCreate;
-
-/* ══ CREATE · 3 — LE SPOT ═════════════════════════════════════════ */
-const CFG = { dur:45, cap:6, mode:'social', sel:'manual', acc:'club', pos:null };
-function openCfg(){
-  const h = DRAFT.habit;
-  $('cfg-habit').innerHTML = '<small>habit · ' + [...DRAFT.ints].map(i => INTS[i]?.n).join(' · ') + '</small>' + esc(h.t);
-  $('f-place').value = h.place || '';
-  const d = new Date(Date.now() + 24*3600e3); d.setMinutes(0, 0, 0);
-  if(!$('f-date').value){ $('f-date').value = d.toISOString().slice(0, 10); $('f-time').value = '08:00'; }
-  $('f-dur').textContent = CFG.dur + ' min'; $('f-cap').textContent = CFG.cap;
-  const subOK = !!F?.spots_benefit;
-  $('f-acc-sub').disabled = !subOK;
-  $('f-acc-note').textContent = subOK ? 'members who subscribe to your TOTEHM' : 'subscriber-only Spots open when you monetize your TOTEHM with that benefit';
-  $('cfg-form').classList.remove('hide'); $('cfg-video').classList.add('hide');
-  $('stp-3').classList.add('on'); $('stp-4').classList.remove('on'); $('stp-5').classList.remove('on');
-  $('cfg').classList.add('show');
+function whenChoices(){
+  const now = new Date(), at = (d, h, m) => { const x = new Date(now); x.setDate(x.getDate() + d); x.setHours(h, m, 0, 0); return x; };
+  const inH = new Date(Math.ceil((now.getTime() + 3600e3)/(15*60e3))*(15*60e3));
+  const l = [['in 1 hour', inH]];
+  const tonight = at(0, 19, 0); if(tonight > new Date(now.getTime() + 30*60e3)) l.push(['tonight 19:00', tonight]);
+  l.push(['tomorrow 07:00', at(1, 7, 0)], ['tomorrow 18:30', at(1, 18, 30)], ['saturday 10:00', (() => { const d = at(0, 10, 0); d.setDate(d.getDate() + ((6 - d.getDay() + 7) % 7 || 7)); return d; })()]);
+  return l;
 }
-$('cfg-x').onclick = () => $('cfg').classList.remove('show');
-document.querySelectorAll('.stp button').forEach(b => b.onclick = () => {
-  const d = +b.dataset.d;
-  if(b.dataset.s === 'dur'){ CFG.dur = Math.max(15, Math.min(240, CFG.dur + d*15)); $('f-dur').textContent = CFG.dur + ' min'; }
-  else { CFG.cap = Math.max(1, Math.min(50, CFG.cap + d)); $('f-cap').textContent = CFG.cap; }
-});
-document.querySelectorAll('[data-g]').forEach(b => b.onclick = () => {
-  if(b.disabled) return;
-  document.querySelectorAll('[data-g="' + b.dataset.g + '"]').forEach(x => x.classList.toggle('on', x === b));
-  CFG[b.dataset.g] = b.dataset.v;
-});
-$('f-geo').onclick = async () => {
-  const n = $('f-geo-note'); n.className = 'note'; n.textContent = 'locating…';
-  const c = await geo();
-  if(!c){ n.className = 'note no'; n.textContent = 'allow your position, then tap again'; return; }
-  CFG.pos = c; n.className = 'note ok'; n.textContent = 'position set · ' + c.lat.toFixed(3) + ', ' + c.lng.toFixed(3);
-};
-function startsAt(){
-  const d = $('f-date').value, t = $('f-time').value;
-  if(!d || !t) return null;
-  const x = new Date(d + 'T' + t); return isNaN(x) ? null : x;
+function renderCreate(){
+  const P = $('panel');
+  const done = [];
+  if(CR.h && CR.step > 1) done.push(['1', 'habit', CR.h.name]);
+  if(CR.when && CR.step > 2) done.push(['2', 'when', CR.whenLbl]);
+  if(CR.place && CR.pos && CR.step > 3) done.push(['3', 'where', CR.place]);
+  let body = '';
+  if(CR.step === 1){
+    const l = TOT?.habits || [];
+    body = '<div class="step"><div class="q4">Which habit?</div><div class="cap">a Spot starts from one of my habit boxes</div>' +
+      (l.length ? '<div class="list">' + l.map((h, k) => '<div class="it" data-hk="' + k + '">' + boxHTML(h) + '</div>').join('') + '</div>'
+        : '<div class="empty">No habit in my TOTEHM yet.</div><button class="btn" data-go="com" type="button">Write one in my TOTEHM</button>') + '</div>';
+  }
+  if(CR.step >= 2 && CR.step < 5){
+    /* La boîte choisie reste sous les yeux : ses pièces se cochent. */
+    body += '<div class="step"><div class="cap">for this Spot — touch to keep or leave out</div>' +
+      boxHTML({ ...CR.h, place:null }, { ints:CR.ints, objs:CR.objs, reps:CR.reps }) +
+      (CR.moodKind ? '<div class="opts"><button class="opt' + (CR.mood ? ' on' : '') + '" data-mood="1" type="button">mood · ' + esc(CR.moodKind) + '</button></div>' : '') + '</div>';
+  }
+  if(CR.step === 2){
+    body += '<div class="step" style="margin-top:18px"><div class="q4">When?</div><div class="opts">' +
+      whenChoices().map(([l, d]) => '<button class="opt" data-when="' + d.toISOString() + '" data-wl="' + esc(l) + '" type="button">' + l + '</button>').join('') +
+      '<button class="opt' + (CR.other ? ' on' : '') + '" data-other="1" type="button">other</button></div>' +
+      (CR.other ? '<div class="two"><input class="in" id="f-date" type="date"><input class="in" id="f-time" type="time" step="300"></div><button class="btn" id="f-when" type="button">Set</button>' : '') +
+      '<div class="note" id="cr-note"></div></div>';
+  }
+  if(CR.step === 3){
+    body += '<div class="step" style="margin-top:18px"><div class="q4">Where?</div>' +
+      '<input class="in" id="f-place" maxlength="120" placeholder="the meeting point — the steps at Ribeira" value="' + esc(CR.place) + '">' +
+      '<div class="cap">the meeting point is shown only to the members you accept</div>' +
+      '<div class="row"><button class="btn' + (CR.pos ? ' on' : '') + '" id="f-geo" type="button">' + (CR.pos ? 'Position set' : 'Use my position') + '</button>' +
+      '<span class="cap">the radar shows it within ~100 m</span></div>' +
+      '<div class="note" id="cr-note"></div>' +
+      (CR.place && CR.pos ? '<button class="btn main" id="f-where" type="button">Continue</button>' : '') + '</div>';
+  }
+  if(CR.step === 4){
+    body += '<div class="step" style="margin-top:18px"><div class="q4">With whom?</div>' +
+      '<div class="row"><span class="cap" style="min-width:70px">places</span><div class="stp"><button data-s="cap" data-d="-1" type="button">−</button><output>' + CR.cap + '</output><button data-s="cap" data-d="1" type="button">+</button></div></div>' +
+      '<div class="opts"><button class="opt' + (CR.mode === 'social' ? ' on' : '') + '" data-mode="social" type="button">social — together, and we talk</button>' +
+        '<button class="opt' + (CR.mode === 'silent' ? ' on' : '') + '" data-mode="silent" type="button">silent — together, without talking</button></div>' +
+      (CR.more
+        ? '<div class="row"><span class="cap" style="min-width:70px">duration</span><div class="stp"><button data-s="dur" data-d="-1" type="button">−</button><output>' + CR.dur + ' min</output><button data-s="dur" data-d="1" type="button">+</button></div></div>' +
+          '<div class="opts"><button class="opt' + (CR.sel === 'auto' ? ' on' : '') + '" data-sel="auto" type="button">first come, first in</button><button class="opt' + (CR.sel === 'manual' ? ' on' : '') + '" data-sel="manual" type="button">I choose</button></div>' +
+          '<div class="opts"><button class="opt' + (CR.acc === 'club' ? ' on' : '') + '" data-acc="club" type="button">FIGHER members</button>' +
+            (F?.spots_benefit ? '<button class="opt' + (CR.acc === 'subscribers' ? ' on' : '') + '" data-acc="subscribers" type="button">my subscribers</button>' : '') + '</div>' +
+          '<textarea class="in" id="f-comment" maxlength="400" placeholder="a word for the others — pace, what to bring">' + esc(CR.comment) + '</textarea>'
+        : '<button class="lnk" data-more="1" type="button">more — duration · selection · access · a word</button>') +
+      '<button class="btn main" id="f-pub" type="button">Publish the Spot</button><div class="note" id="cr-note"></div></div>';
+  }
+  const fresh = CR.shown !== CR.step; CR.shown = CR.step;
+  if(fresh) body = body.replace(/class="step"(?![^]*class="step")/, 'class="step fresh"');
+  P.innerHTML = head('Create a Spot.') +
+    (done.length ? '<div class="done">' + done.map(d => '<button data-back="' + d[0] + '" type="button">' + d[1] + ' <b>' + esc(d[2]) + '</b></button>').join('') + '</div>' : '') + body;
+  wireCreate();
 }
-$('cfg-next').onclick = () => {
-  const n = $('cfg-note'); n.className = 'note no';
-  const s = startsAt();
-  if(!s || s < new Date(Date.now() - 5*60e3)){ n.textContent = 'choose a date and time to come'; return; }
-  if(!$('f-place').value.trim()){ n.textContent = 'say where you meet'; return; }
-  if(!CFG.pos){ n.textContent = 'set your position — it puts the Spot on the radar'; return; }
-  n.textContent = '';
-  $('cfg-form').classList.add('hide'); $('cfg-video').classList.remove('hide');
-  $('stp-3').classList.remove('on'); $('stp-4').classList.add('on');
-};
-$('vid-back').onclick = () => { $('cfg-form').classList.remove('hide'); $('cfg-video').classList.add('hide'); $('stp-4').classList.remove('on'); $('stp-3').classList.add('on'); };
-
-/* ══ CREATE · 5 — PUBLIER. Le résultat est la CARTE. ════════════════ */
-$('vid-next').onclick = async () => {
-  const n = $('pub-note'); n.className = 'note'; n.textContent = 'publishing…';
-  $('stp-4').classList.remove('on'); $('stp-5').classList.add('on');
-  $('vid-next').disabled = true;
+function wireCreate(){
+  const P = $('panel'), note = t => { const n = $('cr-note'); if(n){ n.className = 'note no'; n.textContent = t; } };
+  P.querySelectorAll('[data-hk]').forEach(el => el.onclick = () => {
+    const h = TOT.habits[+el.dataset.hk];
+    CR.h = h; CR.ints = new Set(h.ints); CR.objs = new Set(h.objs.map(o => o.id)); CR.reps = new Set(h.reps.map(r => r.id));
+    const snd = h.ints.map(i => TOT.sounds[i]).find(Boolean); CR.moodKind = snd ? (snd.kind || snd.title || 'my sound') : null; CR.mood = !!snd;
+    CR.place = h.place || CR.place; CR.step = 2; renderCreate();
+  });
+  P.querySelectorAll('[data-back]').forEach(b => b.onclick = () => { CR.step = +b.dataset.back; renderCreate(); });
+  P.querySelectorAll('.pickable [data-ti]').forEach(el => el.onclick = () => {
+    const i = el.dataset.ti; if(CR.ints.has(i) && CR.ints.size === 1) return; CR.ints.has(i) ? CR.ints.delete(i) : CR.ints.add(i); renderCreate(); });
+  P.querySelectorAll('.pickable [data-to]').forEach(el => el.onclick = () => { const k = el.dataset.to; CR.objs.has(k) ? CR.objs.delete(k) : CR.objs.add(k); renderCreate(); });
+  P.querySelectorAll('.pickable [data-tr]').forEach(el => el.onclick = () => { const k = +el.dataset.tr; CR.reps.has(k) ? CR.reps.delete(k) : CR.reps.add(k); renderCreate(); });
+  P.querySelector('[data-mood]')?.addEventListener('click', () => { CR.mood = !CR.mood; renderCreate(); });
+  P.querySelectorAll('[data-when]').forEach(b => b.onclick = () => { CR.when = new Date(b.dataset.when); CR.whenLbl = b.dataset.wl; CR.other = false; CR.step = 3; renderCreate(); });
+  P.querySelector('[data-other]')?.addEventListener('click', () => { CR.other = !CR.other; renderCreate(); });
+  P.querySelector('#f-when')?.addEventListener('click', () => {
+    const d = $('f-date').value, t = $('f-time').value, x = new Date(d + 'T' + t);
+    if(!d || !t || isNaN(x) || x < new Date(Date.now() + 5*60e3)) return note('a date and a time to come');
+    CR.when = x; CR.whenLbl = fmtWhen(x.toISOString()); CR.step = 3; renderCreate();
+  });
+  const pl = $('f-place');
+  if(pl) pl.addEventListener('input', () => { const had = !!CR.place; CR.place = pl.value.trim(); if(had !== !!CR.place && CR.pos) renderCreateKeep('f-place'); });
+  P.querySelector('#f-geo')?.addEventListener('click', async () => {
+    const n = $('cr-note'); n.className = 'note'; n.textContent = 'locating…';
+    const c = await geo(); if(!c) return note('allow your position, then touch again');
+    CR.pos = c; renderCreate();
+  });
+  P.querySelector('#f-where')?.addEventListener('click', () => { CR.step = 4; renderCreate(); });
+  P.querySelectorAll('.stp button').forEach(b => b.onclick = () => {
+    const d = +b.dataset.d;
+    if(b.dataset.s === 'dur') CR.dur = Math.max(15, Math.min(240, CR.dur + d*15)); else CR.cap = Math.max(1, Math.min(50, CR.cap + d));
+    renderCreateKeep();
+  });
+  P.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { CR.mode = b.dataset.mode; renderCreateKeep(); });
+  P.querySelectorAll('[data-sel]').forEach(b => b.onclick = () => { CR.sel = b.dataset.sel; renderCreateKeep(); });
+  P.querySelectorAll('[data-acc]').forEach(b => b.onclick = () => { CR.acc = b.dataset.acc; renderCreateKeep(); });
+  P.querySelector('[data-more]')?.addEventListener('click', () => { CR.more = true; renderCreateKeep(); });
+  $('f-comment')?.addEventListener('input', e => { CR.comment = e.target.value; });
+  P.querySelector('#f-pub')?.addEventListener('click', publish);
+}
+/* Redessiner sans perdre le champ où l'on écrit. */
+function renderCreateKeep(focusId){ const y = $('panel').scrollTop; renderCreate(); $('panel').scrollTop = y;
+  if(focusId){ const f = $(focusId); if(f){ f.focus(); f.setSelectionRange?.(f.value.length, f.value.length); } } }
+async function publish(){
+  const b = $('f-pub'), n = $('cr-note'); b.disabled = true; n.className = 'note'; n.textContent = 'publishing…';
   const { data, error } = await sb.rpc('spot_publish', {
-    p_habit: DRAFT.habit.t, p_intentions: [...DRAFT.ints], p_objectives: [...DRAFT.objs], p_repulsions: [...DRAFT.reps],
-    p_mood: DRAFT.mood, p_starts_at: startsAt().toISOString(), p_duration_min: CFG.dur,
-    p_place: $('f-place').value.trim(), p_lat: CFG.pos.lat, p_lng: CFG.pos.lng,
-    p_mode: CFG.mode, p_capacity: CFG.cap, p_access: CFG.acc, p_selection: CFG.sel,
-    p_comment: $('f-comment').value.trim() || null });
-  $('vid-next').disabled = false;
+    p_habit: CR.h.name, p_intentions: [...CR.ints], p_objectives: [...CR.objs], p_repulsions: [...CR.reps].map(Number),
+    p_mood: CR.mood, p_starts_at: CR.when.toISOString(), p_duration_min: CR.dur,
+    p_place: CR.place, p_lat: CR.pos.lat, p_lng: CR.pos.lng,
+    p_mode: CR.mode, p_capacity: CR.cap, p_access: CR.acc, p_selection: CR.sel, p_comment: CR.comment.trim() || null });
+  b.disabled = false;
   if(error || !data?.ok){
     n.className = 'note no';
-    n.textContent = ({ figher:'members only', habit:'that habit is no longer in your TOTEHM', when:'choose a time within 90 days',
-      subscribers:'subscriber-only Spots need the benefit switched on', too_many:'ten upcoming Spots at most', position:'set your position' })[data?.why] || error?.message || 'not published';
+    n.textContent = ({ figher:'members only', habit:'that habit is no longer in my TOTEHM', when:'choose a time within 90 days',
+      subscribers:'subscriber-only Spots need that benefit switched on', too_many:'ten upcoming Spots at most', position:'set my position', place:'say where we meet' })[data?.why] || error?.message || 'not published';
     return;
   }
-  /* Le Spot apparaît sur le radar, centré sur toi, sa fenêtre ouverte. */
-  $('cfg').classList.remove('show'); closeSel();
-  RAD.origin = CFG.pos; geoOK = true; $('geo-note').textContent = '';
-  $('f-comment').value = ''; CFG.pos = null; $('f-geo-note').textContent = '';
-  if(view !== 'map' && !matchMedia('(max-width:699px)').matches){ view = 'map'; applyView(); }
-  await loadSpots(data.id);
-};
-
-/* ══ MY SPACE ═══════════════════════════════════════════════════════ */
-let MS = null, TAB = 'spots';
-async function openMine(tab){
-  if(!me){ openGate(); return; }
-  TAB = tab || TAB; $('mine').classList.add('show'); history.replaceState(null, '', '#me');
-  await loadMine();
+  /* Le résultat est l'INSTRUMENT : le Spot apparaît sur le radar, ouvert. */
+  RAD.origin = CR.pos; geoOK = true;
+  Object.assign(CR, { step:1, h:null, when:null, whenLbl:'', other:false, pos:null, comment:'', more:false });
+  FILT.q = ''; FILT.when = FILT.mode = FILT.int = null;
+  await loadSpots(); focusSpot(data.id); refreshMineCount();
 }
+
+/* ══ MY SPACE ═══════════════════════════════════════════════════════
+   Trois listes, et elles ne s'affichent que si elles ont quelque chose à
+   dire : les demandes reçues d'abord (quelqu'un attend), mes Spots, ceux
+   que j'ai rejoints. */
+async function openMine(){ if(!me){ openGate(); return; } openPanel('mine'); $('panel').innerHTML = head('My space.') + '<div class="cap">…</div>'; await loadMine(); }
 async function loadMine(){
   const { data, error } = await sb.rpc('my_space');
-  if(error){ $('mine-note').className = 'note no'; $('mine-note').textContent = error.message; return; }
-  MS = data; paintMine();
+  if(error){ console.error('[my_space]', error.message); $('panel').innerHTML = head('My space.') + '<div class="note no">' + esc(error.message) + '</div>'; return; }
+  MS = data; paintReqN(); if(PANEL === 'mine') renderMine();
 }
-const whenLine = s => fmtWhen(s.starts_at) + ' · ' + s.duration_min + ' min · ' + s.mode;
-function paintMine(){
-  document.querySelectorAll('[data-t]').forEach(b => b.classList.toggle('on', b.dataset.t === TAB));
-  $('tab-req').textContent = 'Requests' + (MS.requests?.length ? ' · ' + MS.requests.length : '');
-  const L = $('mine-list');
-  if(TAB === 'spots'){
-    const l = MS.spots || [];
-    L.innerHTML = l.length ? l.map(s => '<div class="bk' + (s.status !== 'published' || s.past ? ' off' : '') + '"><div class="ln"><div class="nm">' + esc(s.habit) + '</div><div class="big">' + s.taken + '/' + s.capacity + '</div></div>' +
-      '<div class="sb">' + (s.status === 'cancelled' ? 'cancelled' : s.past ? 'done' : s.live ? 'LIVE' : whenLine(s)) + ' · ' + s.pending + ' waiting · ' + (s.selection === 'auto' ? 'automatic' : 'manual') + ' · ' + (s.access === 'subscribers' ? 'subscribers' : 'FIGHER club') + '</div>' +
-      '<div class="sb">meeting point · ' + esc(s.place) + '</div>' +
-      '<div class="sb">video · none — optional</div>' +
-      (s.status === 'published' && !s.past ? '<div class="ac"><button class="lnk" data-show="' + s.id + '">See on the radar</button><button class="lnk" data-cancel="' + s.id + '">Cancel the Spot</button></div>' : '') + '</div>').join('')
-      : '<div class="empty">No Spot yet.</div>';
-  } else if(TAB === 'requests'){
-    const l = MS.requests || [];
-    L.innerHTML = l.length ? l.map(r => '<div class="bk b"><div class="ln"><div class="nm">' + esc(r.pseudo || 'a member') + '</div><div class="big">' + (r.compat != null ? r.compat + '%' : '—') + '</div></div>' +
-      '<div class="sb">' + esc(r.habit) + ' · ' + fmtWhen(r.starts_at) + '</div>' + (r.note ? '<div class="sb" style="text-transform:none;letter-spacing:.04em">' + esc(r.note) + '</div>' : '') +
-      '<div class="ac"><button class="lnk" data-dec="' + r.id + '" data-ok="1">Accept</button><button class="lnk" data-dec="' + r.id + '" data-ok="0">Reject</button></div></div>').join('')
-      : '<div class="empty">Nobody is waiting.</div>';
-  } else {
-    const l = MS.applications || [];
-    L.innerHTML = l.length ? l.map(a => '<div class="bk r' + (['accepted','pending'].includes(a.status) && a.spot_status === 'published' ? '' : ' off') + '"><div class="ln"><div class="nm">' + esc(a.habit) + '</div><div class="sb">' + esc(a.spot_status === 'cancelled' ? 'spot cancelled' : a.status) + '</div></div>' +
-      '<div class="sb">' + whenLine(a) + (a.creator ? ' · by ' + esc(a.creator) : '') + '</div>' +
-      (a.place ? '<div class="place" style="margin-top:6px"><small>meeting point</small>' + esc(a.place) + '</div>' : '') +
-      (['accepted','pending'].includes(a.status) && a.spot_status === 'published' ? '<div class="ac"><button class="lnk" data-wd="' + a.spot_id + '">Withdraw</button></div>' : '') + '</div>').join('')
-      : '<div class="empty">No application yet.</div>';
-  }
+async function refreshMineCount(){ if(!me) return; const { data } = await sb.rpc('my_space'); if(data){ MS = data; paintReqN(); } }
+function paintReqN(){ const n = (MS?.requests || []).length; $('req-n').textContent = n ? '· ' + n : ''; }
+function renderMine(){
+  if(!MS){ return; }
+  const R = MS.requests || [], S = MS.spots || [], A = MS.applications || [];
+  const sec = (t, h) => '<div class="step" style="margin-top:18px"><div class="cap"><b>' + t + '</b></div><div class="list" style="margin-top:6px">' + h + '</div></div>';
+  let h = '';
+  /* Une demande est une PERSONNE, pas une boîte : un pseudo et un nombre.
+     Jamais son Totehm (MASTER §38). */
+  if(R.length) h += sec('Waiting for my answer · ' + R.length, R.map(r =>
+    '<div class="it req"><div class="gauge"><span class="v">' + (r.compat != null ? r.compat + '%' : '—') + '</span>' +
+    '<span class="cap"><b>' + esc(r.pseudo || 'a member') + '</b><br>for ' + esc(r.habit) + ' · ' + fmtWhen(r.starts_at) + '</span></div>' +
+    (r.note ? '<div class="say">' + esc(r.note) + '</div>' : '') +
+    '<div class="acts" style="margin-top:6px"><button class="btn main" data-dec="' + r.id + '" data-ok="1" type="button">Accept</button><button class="lnk" data-dec="' + r.id + '" data-ok="0" type="button">Not this time</button></div></div>').join(''));
+  if(S.length) h += sec('My Spots', S.map(s => '<div class="it">' + boxHTML(spotBox(s)) + stripHTML({ ...s, dist_m:null }) +
+    '<div class="strip"><span>' + (s.status === 'cancelled' ? 'cancelled' : s.past ? 'done' : s.pending + ' waiting') + '</span><span>' + esc(s.place || '') + '</span></div>' +
+    (s.status === 'published' && !s.past ? '<div class="acts" style="margin-top:6px"><button class="lnk" data-show="' + s.id + '" type="button">On the radar</button><button class="lnk" data-cancel="' + s.id + '" type="button">Cancel the Spot</button></div>' : '') + '</div>').join(''));
+  if(A.length) h += sec('Joined', A.map(a => '<div class="it">' + boxHTML(spotBox(a)) + stripHTML({ ...a, dist_m:null, capacity:a.capacity ?? '—' }) +
+    '<div class="strip"><b>' + esc(a.spot_status === 'cancelled' ? 'spot cancelled' : a.status) + '</b>' + (a.creator ? '<span>by ' + esc(a.creator) + '</span>' : '') + '</div>' +
+    (a.place ? '<div class="meet" style="margin-top:6px"><small>meeting point</small>' + esc(a.place) + '</div>' : '') +
+    (['accepted','pending'].includes(a.status) && a.spot_status === 'published' ? '<div class="acts" style="margin-top:6px"><button class="lnk" data-wd="' + a.spot_id + '" type="button">Withdraw</button></div>' : '') + '</div>').join(''));
+  $('panel').innerHTML = head('My space.') + (h || '<div class="empty">Nothing yet.</div><div class="acts"><button class="btn main" data-cmdgo="create" type="button">Create a Spot</button><button class="btn" data-cmdgo="search" type="button">Find one</button></div>') +
+    '<div class="note" id="mine-note" style="margin-top:14px"></div>';
 }
-document.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { TAB = b.dataset.t; paintMine(); });
-$('mine-list').addEventListener('click', async e => {
-  const t = e.target, n = $('mine-note'); n.className = 'note'; n.textContent = '';
+$('panel').addEventListener('click', async e => {
+  if(PANEL !== 'mine') return;
+  const t = e.target.closest('button'); if(!t) return;
+  const n = $('mine-note');
+  if(t.dataset.cmdgo){ t.dataset.cmdgo === 'create' ? openCreate() : (openPanel('search'), setTimeout(() => $('q')?.focus(), 60)); return; }
   if(t.dataset.dec){
     t.disabled = true;
     const { data, error } = await sb.rpc('spot_decide', { p_application: +t.dataset.dec, p_accept: t.dataset.ok === '1' });
     if(error || !data?.ok){ n.className = 'note no'; n.textContent = data?.why === 'full' ? 'the Spot is full' : (error?.message || data?.why || 'not saved'); }
-    await loadMine();
+    await loadMine(); loadSpots();
   } else if(t.dataset.cancel){
-    if(!confirm('Cancel this Spot? Everyone accepted will be told it is off.')) return;
+    if(!confirm('Cancel this Spot? Everyone accepted will see it is off.')) return;
     await sb.rpc('spot_cancel', { p_spot: t.dataset.cancel }); await loadMine(); loadSpots();
   } else if(t.dataset.wd){
     await sb.rpc('spot_withdraw', { p_spot: t.dataset.wd }); await loadMine(); loadSpots();
   } else if(t.dataset.show){
-    $('mine').classList.remove('show'); history.replaceState(null, '', location.pathname);
     const s = (MS.spots || []).find(x => x.id === t.dataset.show);
-    if(s){ RAD.origin = { lat:s.lat, lng:s.lng }; } await loadSpots(t.dataset.show);
+    if(s){ RAD.origin = { lat:s.lat, lng:s.lng }; }
+    FILT.q = ''; FILT.when = FILT.mode = FILT.int = null;
+    await loadSpots(); focusSpot(t.dataset.show);
   }
 });
-$('mine-x').onclick = () => { $('mine').classList.remove('show'); history.replaceState(null, '', location.pathname); };
-$('go-me').onclick = () => openMine();
 
-/* ══ LA PORTE — connexion, puis la corde de velours ════════════════ */
-function openGate(){ $('gate').classList.add('show'); paintGate(); }
-function paintGate(){
-  const hasP = !!F?.pseudo;
-  $('g-out').classList.toggle('hide', !!me);
-  $('g-claim').classList.toggle('hide', !(me && !hasP));
-  const rope = me && hasP && !F?.member;
-  $('g-rope').classList.toggle('hide', !rope);
-  $('g-in').classList.toggle('hide', !(me && hasP && F?.member));
-  if(!me) setTimeout(() => $('g-email').focus(), 60);
-  if(me && hasP) $('g-who').textContent = F.pseudo + ' · ' + (me.email || '');
-  if(rope){
-    const k = (ok, t, c, s) => '<div class="k ' + (ok ? c : 'no') + '">' + t + '<span>' + s + '</span></div>';
-    $('g-keys').innerHTML = k(F.complete, 'My TOTEHM — complete', '', (F.remplies||0) + ' / 5') +
-      k(F.thp, 'TotehmPaper {THP}', 'b', F.thp ? 'owned' : 'missing') + k(F.annual, 'FIGHER — annual', 'r', F.annual ? 'active' : 'open');
-    const cta = $('g-cta');
-    if(!F.complete){ cta.textContent = 'Complete my TOTEHM'; cta.dataset.go = 'com'; }
-    else if(!F.thp){ cta.textContent = 'Get my TotehmPaper'; cta.dataset.go = 'thp'; }
-    else { cta.textContent = 'Join FIGHER'; cta.dataset.go = 'join'; }
-  }
-}
-$('gate-x').onclick = () => $('gate').classList.remove('show');
-$('member').onclick = openGate;
+/* ══ LA PORTE — connexion, pseudo, puis la corde de velours ═════════ */
+function openGate(){ openPanel('gate'); }
 let mail = '';
-$('g-email').addEventListener('keydown', async e => {
-  if(e.key !== 'Enter') return;
-  const v = $('g-email').value.trim(), n = $('g-note');
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ n.className = 'note no'; n.textContent = 'invalid email'; return; }
-  n.className = 'note'; n.textContent = 'sending…';
-  const { error } = await sb.auth.signInWithOtp({ email:v, options:{ shouldCreateUser:true } });
-  if(error){ n.className = 'note no'; n.textContent = 'try again in a minute'; return; }
-  mail = v; n.className = 'note ok'; n.textContent = 'code sent'; $('g-code').classList.remove('hide'); setTimeout(() => $('g-code').focus(), 60);
-});
-$('g-code').addEventListener('input', async () => {
-  const t = $('g-code').value.trim(), n = $('g-note'); if(t.length !== 6) return;
-  n.className = 'note'; n.textContent = 'verifying…';
-  const { error } = await sb.auth.verifyOtp({ email:mail, token:t, type:'email' });
-  if(error){ n.className = 'note no'; n.textContent = 'wrong code'; return; }
-  n.textContent = ''; $('g-code').value = ''; $('g-code').classList.add('hide');
-});
-$('g-pseudo').addEventListener('keydown', async e => {
-  if(e.key !== 'Enter') return;
-  const v = $('g-pseudo').value.trim(), n = $('g-claim-note');
-  if(v.length < 3 || v.length > 24){ n.className = 'note no'; n.textContent = '3 to 24 characters'; return; }
-  const { error } = await sb.from('profiles').insert({ id: me.id, pseudo: v });
-  if(error){ n.className = 'note no'; n.textContent = error.code === '23505' ? 'already taken' : 'try again'; return; }
-  await loadMe(); paintGate();
-});
-$('g-signout').onclick = async () => { await sb.auth.signOut(); $('gate').classList.remove('show'); };
+function renderGate(){
+  const hasP = !!F?.pseudo;
+  let h = head('Member access.');
+  if(!me){
+    h += '<div class="cap">one account, four doors</div><div style="height:10px"></div>' +
+      '<input class="in" id="g-email" type="email" placeholder="your@email" autocomplete="email">' +
+      '<input class="in' + (mail ? '' : ' hide') + '" id="g-code" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code" style="margin-top:8px">' +
+      '<div class="note" id="g-note" style="margin-top:8px"></div>';
+  } else if(!hasP){
+    h += '<div class="cap">name my TOTEHM</div><div style="height:10px"></div><input class="in" id="g-pseudo" maxlength="24" placeholder="my name"><div class="note" id="g-note" style="margin-top:8px"></div>';
+  } else if(!F?.member){
+    const k = (ok, t, c, s) => '<div class="k ' + (ok ? c : 'no') + '">' + t + '<span>' + s + '</span></div>';
+    const go = !F.complete ? ['Complete my TOTEHM', 'com'] : !F.thp ? ['Get my TotehmPaper', 'thp'] : ['Join FIGHER', 'join'];
+    h += '<div class="say">Spots are lived between FIGHER members. Three keys.</div><div class="rope">' +
+      k(F.complete, 'My TOTEHM — complete', '', (F.remplies||0) + ' / 5') + k(F.thp, 'TotehmPaper {THP}', 'b', F.thp ? 'owned' : 'missing') +
+      k(F.annual, 'FIGHER — annual', 'r', F.annual ? 'active' : 'open') + '</div>' +
+      '<div style="margin-top:14px"><button class="btn main" data-go="' + go[1] + '" type="button">' + go[0] + '</button></div>';
+  } else {
+    h += '<div class="cap"><b>' + esc(F.pseudo) + '</b> · ' + esc(me.email || '') + (F.comp ? ' · founder access' : '') + '</div>' +
+      '<div class="acts" style="margin-top:12px"><button class="lnk" data-go="club" type="button">My FIGHER console</button><button class="lnk" data-go="com" type="button">My TOTEHM</button><button class="lnk" id="g-out" type="button">Sign out</button></div>';
+  }
+  $('panel').innerHTML = h;
+  const em = $('g-email');
+  if(em){ setTimeout(() => (mail ? $('g-code') : em).focus(), 60); if(mail) em.value = mail;
+    em.addEventListener('keydown', async e => {
+      if(e.key !== 'Enter') return;
+      const v = em.value.trim(), n = $('g-note');
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ n.className = 'note no'; n.textContent = 'invalid email'; return; }
+      n.className = 'note'; n.textContent = 'sending…';
+      const { error } = await sb.auth.signInWithOtp({ email:v, options:{ shouldCreateUser:true } });
+      if(error){ n.className = 'note no'; n.textContent = 'try again in a minute'; return; }
+      mail = v; n.className = 'note ok'; n.textContent = 'code sent'; $('g-code').classList.remove('hide'); $('g-code').focus();
+    });
+    $('g-code').addEventListener('input', async () => {
+      const t = $('g-code').value.trim(), n = $('g-note'); if(t.length !== 6) return;
+      n.className = 'note'; n.textContent = 'verifying…';
+      const { error } = await sb.auth.verifyOtp({ email:mail, token:t, type:'email' });
+      if(error){ n.className = 'note no'; n.textContent = 'wrong code'; return; }
+      mail = '';
+    });
+  }
+  const ps = $('g-pseudo');
+  if(ps) ps.addEventListener('keydown', async e => {
+    if(e.key !== 'Enter') return;
+    const v = ps.value.trim(), n = $('g-note');
+    if(v.length < 3 || v.length > 24){ n.className = 'note no'; n.textContent = '3 to 24 characters'; return; }
+    const { error } = await sb.from('profiles').insert({ id: me.id, pseudo: v });
+    if(error){ n.className = 'note no'; n.textContent = error.code === '23505' ? 'already taken' : 'try again'; return; }
+    await loadMe(); renderGate();
+  });
+  $('g-out')?.addEventListener('click', async () => { await sb.auth.signOut(); closePanel(); });
+}
+$('member').onclick = () => PANEL === 'gate' ? closePanel() : openGate();
 sb.auth.onAuthStateChange(async ev => {
-  if(ev === 'SIGNED_IN' || ev === 'SIGNED_OUT'){ await loadMe(); if($('gate').classList.contains('show')) paintGate(); loadSpots(); }
+  if(ev === 'SIGNED_IN' || ev === 'SIGNED_OUT'){ await loadMe(); if(PANEL === 'gate') renderGate(); loadSpots(); refreshMineCount(); }
 });
 
 /* ══ DÉMARRAGE ══════════════════════════════════════════════════════ */
 await loadMe();
-RAD.origin = LISBON;
-applyView();
+RAD.origin = LISBON; radarStart(); paintStatus();
 await locate();
 await loadSpots();
+refreshMineCount();
 if(location.hash === '#create') openCreate();
-if(location.hash === '#me') openMine();
+else if(location.hash === '#me') openMine();
+else if(location.hash === '#search') openPanel('search');
 </script>
 </body>
 </html>
