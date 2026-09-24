@@ -1960,8 +1960,17 @@ body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
   line-height:1;white-space:nowrap}
 .cc-pay{display:flex;gap:8px}
 
-.acct-btn{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:var(--rep);background:none;border:none;cursor:pointer;padding:0 8px;line-height:1.6;display:block;margin:4px auto 0;text-align:center;-webkit-tap-highlight-color:transparent;transition:opacity .2s}
-.acct-btn:hover{opacity:.72}
+/* ⚠️ Space Mono, PAS Quantico (règle sacrée : Quantico = inputs Totehm).
+   Petit, gris muté, écarté par du padding-top : un geste destructif ne
+   se lit jamais comme un lien menu. Vire au blanc au survol pour dire
+   « tu peux cliquer si tu es sûr », pas au rouge pour ne pas hurler. */
+.acct-block{padding-top:28px}
+.acct-btn{font-family:'Space Mono',monospace;font-weight:400;font-size:9px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--g-dark);
+  background:none;border:none;cursor:pointer;padding:6px 8px;
+  display:block;margin:0 auto;text-align:center;
+  -webkit-tap-highlight-color:transparent;transition:color .15s ease}
+.acct-btn:hover{color:#fff}
 
 @media(max-width:600px){.h-text,.h-add,.h-hint{font-size:14px}#bigT{font-size:38px}}
 @media(prefers-reduced-motion:reduce){#fv-inner{transition:none!important}}
@@ -3105,20 +3114,25 @@ body.gate.entered #filter-badge{
         </div>
       </div>
 
-      <!-- Bouton [Get Higher with my Totehm] : monte vers Stoner avec animation d'élévation -->
+      <!-- Bouton [Get Higher with my Totehm] : ancrage marque · lien menu Space Mono -->
       <div class="set-block higher-only">
-        <a class="btn-sig higher-only" id="btn-get-higher" href="https://www.totehm.com" target="_blank" rel="noopener">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> with my Totehm</a>
+        <a class="mw-link higher-only" id="btn-get-higher" href="https://www.totehm.com" target="_blank" rel="noopener">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> with my Totehm</a>
       </div>
 
-      <!-- Bouton [Totehmize my cloth] : pont vers la boutique -->
+      <!-- Bouton [Totehmize my cloth] : pont vers la boutique · lien menu -->
       <div class="set-block">
         <div class="menu-row">
-          <a class="btn-sig" id="wear-btn" href="https://higher.boutique/#menu">Totehmize my cloth</a>
+          <a class="mw-link" id="wear-btn" href="https://higher.boutique/#menu">Totehmize my cloth</a>
         </div>
       </div>
 
-      <!-- Gestion du compte : deux gestes distincts, jamais confondus. -->
-      <div class="set-block">
+      <!-- ══ ACTIONS DESTRUCTIVES · discrètes, écartées des liens menu
+           · 24/09/2026. Wah : Totehmize my cloth et Delete my Totehm ne
+           doivent JAMAIS se lire comme deux boutons de même poids. Delete
+           passe en typo utilitaire (comme Sign out), plus petit, sous une
+           ligne d'écart, en gris muté. Un geste destructeur ne se pose
+           pas à côté d'un lien promotionnel. -->
+      <div class="set-block acct-block">
         <div id="acct" class="hide">
           <button class="acct-btn" id="acct-wipe" type="button">Delete my Totehm</button>
           <button class="acct-btn hide" id="acct-cancel" type="button">Cancel my subscription</button>
