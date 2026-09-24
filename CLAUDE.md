@@ -79,7 +79,8 @@ déjà à la question.
   club/      →  www.figher.club      APPARTENANCE · DROITS · ABONNEMENTS · ARGENT
                                      index.html (la porte) · console.html (le membre)
   space/     →  www.totehm.space     UNE HABIT BOX DEVIENT UNE ACTION À PLUSIEURS
-                                     index.html (radar · Spots · My space)
+                                     index.html — le cockpit : un radar, trois
+                                     commandes (Search · Create · My space)
                                      + redirections 308 de l'ancien Stoner
   boutique/  →  www.higher.boutique  UNE BOX, N'IMPORTE LAQUELLE, DEVIENT UN CLOTH
                                      index.html · streetwear.html (totehmisation)
@@ -270,7 +271,129 @@ avant sa méthode de virement lisait « ok » et n'avait rien d'enregistré.
 `upsert … onConflict: 'user_id'`. *Un `update` sans ligne n'est pas une
 erreur pour Postgres — c'en est une pour nous.*
 
+### ⛔ TOTEHM.SPACE EST UN COCKPIT — TROIS COMMANDES, LA BOÎTE DE TOTEHM.COM — 24/09/2026
+
+**La demande de Wah, au mot près :** « un cockpit spatial ultra
+minimaliste, ultra-fonctionnel et SURTOUT ultra-compréhensible — plutôt
+que dix boutons, en mettre trois et afficher les autres au fur et à
+mesure. Il ne doit ressembler ni à totehm.com ni à la boutique : c'est UN
+RÉSEAU SOCIAL. Mais il reprend EXACTEMENT les boîtes de totehm.com, dans
+sa propre infrastructure. »
+
+**Deux couches, et elles ne se mélangent pas :**
+
+| la couche | d'où elle vient | ce qu'elle porte |
+|---|---|---|
+| **l'infrastructure** — le cockpit | propre à l'Espace | noir, un instrument (le radar) au centre, des lectures aux bords (état, coordonnées, heure de Lisbonne), TROIS commandes, un panneau |
+| **le contenu** — la boîte | COPIÉE de `com/totehm.html` au pixel | le tick d'intentions, le nom en Quantico 15 px, la ligne d'unité (intentions en couleur · rythme), les groupes WHY / TRIGGER, les mini-boîtes bleu clair et rouge-violet |
+
+Le CSS `.habit` · `.tick` · `.h-body` · `.v-name` · `.v-sub` · `.v-int` ·
+`.v-frq` · `.mg` · `.mg-l` · `.minis` · `.mini` · `.m-o` · `.m-r` est
+**recopié** de `com/totehm.html` (produits indépendants = fichiers
+indépendants). **Un seul écart, et il est d'infrastructure** : pas de rail,
+donc `margin-left:0` et le tick à `left:0`. Le test navigateur MESURE la
+boîte (police, taille, couleur, padding, groupes) : si `totehm.com`
+change sa boîte, l'Espace doit être recopié — sinon ce ne sont plus les
+mêmes boîtes.
+
+**L'instrumentation d'un Spot vit SOUS la boîte, jamais dedans** :
+`TOMORROW 07:00 · 50 MIN · 1.1 KM · 1/8 · SOCIAL`. La boîte dit QUOI (la
+même chose que dans le Totehm) ; la ligne dit QUAND, OÙ, COMBIEN.
+
+**⚠️ TROIS COMMANDES, JAMAIS DIX.** `Search · Create · My space`, en bas
+au centre. À l'accueil il n'y a rien d'autre à toucher (le test compte
+les boutons visibles : quatre, avec le coin membre). Tout le reste
+apparaît quand on l'a demandé, à l'endroit où on l'a demandé :
+
+- **Search** — un champ. Dessous, trois MOTS (`When · Mode · Intention`)
+  qui ne déplient leurs options que si on les touche, un à la fois. Un
+  filtre posé s'écrit dans son mot (`When · now`).
+- **Un résultat** — fermé : la boîte et sa ligne. Ouvert (on touche la
+  boîte) : la jauge de compatibilité, qui, le mood, le mot du créateur,
+  et **UNE** action (`Join`, `Ask to join`, ou la raison pour laquelle
+  on ne peut pas). Jamais deux boutons côte à côte.
+- **Create** — UNE question à la fois : *Which habit? → When? → Where? →
+  With whom?* Chaque réponse se range en haut en une ligne et se rouvre
+  d'un toucher. Durée, sélection, accès et commentaire sont derrière
+  « more ». La vidéo n'est plus une étape : elle vient plus tard, de My
+  space (MASTER §47).
+- **My space** — trois listes qui ne s'affichent que si elles ont
+  quelque chose à dire, les demandes reçues d'abord (quelqu'un attend).
+  Le nombre de demandes est sur la commande elle-même.
+
+**⚠️ UNE DEMANDE EST UNE PERSONNE, PAS UNE BOÎTE.** Un pseudo et un
+pourcentage. Dessiner une boîte pour une personne ferait croire qu'on
+voit son Totehm (MASTER §38).
+
+**⚠️ LA RECHERCHE EST EN BASE, PAR MOTS, ET ELLE NE CHERCHE QUE CE QU'ON
+PEUT LIRE.** `spots_radar` découpe la requête en mots et exige qu'ils se
+trouvent TOUS (« fight park » → un seul Spot). Tout le monde cherche dans
+l'habitude, les intentions, les piliers, le mode, le rythme, le mood.
+**Un membre** cherche aussi dans le pseudo du créateur, son commentaire,
+ses objectifs et ses répulsions — **un invité non** : sinon la recherche
+deviendrait un moyen de deviner, mot par mot, le contexte qu'on lui cache.
+
+**⚠️ L'ÉCHELLE SUIT LA MAJORITÉ, PAS LE PLUS LOIN.** Un Spot à Carcavelos
+(17 km) écrasait trente Spots du centre en une tache. La portée couvre
+85 % des Spots ; les autres se posent sur le bord, à leur cap, plus
+pâles. Un instrument dit « il y en a par là », il ne les cache pas.
+
+**⚠️ UNE @keyframes SUR UNE ÉTAPE REJOUE À CHAQUE REDESSIN.** Toucher
+« + » sur les places redessine le panneau : l'étape clignotait. Seule
+l'étape qui VIENT d'apparaître porte `.fresh` (règle du 09/09, une
+troisième fois).
+
+**Au téléphone** le panneau monte du bas (64 % de la hauteur) et
+s'arrête AU-DESSUS des commandes — sinon la liste défile sous elles.
+L'instrument se réduit en haut ; la ligne d'état descend sous les coins.
+
+**Le diagnostic** : `__totehm_space()` → build, membre, comp, panneau,
+nombre de Spots et de Spots de démo, filtres actifs.
+
+### ⛔ L'ACCÈS FONDATEUR EST UNE DÉCISION, PAS UN FAUX PAIEMENT — 24/09/2026
+
+« Donne-moi tous les accès pour créer et rechercher. » On n'écrit **pas**
+de fausse ligne dans `subscriptions` ou `stoner_access` : ce serait mentir
+au webhook, au grand livre et aux statistiques. Un accès offert a sa
+table, **`figher_comps`** (email, raison, depuis, jusqu'à), et `_figher`
+la lit : `member = comp OR (les trois clés)`. Les trois clés restent
+VRAIES dans la réponse — on ne prétend pas que le Totehm est complet — et
+`comp: true` dit pourquoi la porte est ouverte.
+
+`spots_radar` teste désormais **le passeport d'abord, en un booléen**, et
+ne regarde les trois clés que pour dire à un non-membre laquelle lui
+manque. Avant, un membre par comp se serait vu répondre « complete my
+TOTEHM ».
+
+Retour arrière : `delete from figher_comps where email = '…'`.
+
+### ⛔ LES SPOTS DE DÉMO SE SAVENT DÉMO — 24/09/2026
+
+`demo_seed()` crée dix membres `*_demo` et 32 Spots à Lisbonne, datés à
+partir de MAINTENANT (jours + heure locale ; une heure déjà passée glisse
+au lendemain ; deux Spots LIVE). Un complet (`Tea, no phones`), un
+réservé aux abonnés (`Sparring Thursday`), des sélections automatiques et
+manuelles. **Pour chaque Spot à venir d'un membre « comp », deux membres
+de démo candidatent** — sinon l'onglet des demandes ne se teste jamais.
+`demo_purge()` efface tout, sans toucher aux Spots réels.
+
+**⚠️ Tout se voit** : pseudo `*_demo`, `spot_plans.demo`, et la ligne
+d'instrument écrit `DEMO`. **⚠️ Les emails sont en `.invalid`** — un
+domaine réservé qui ne reçoit jamais de courrier : personne ne s'y
+connecte, aucun code ne part. **⚠️ `auth.users` : les jetons à `''`, pas
+NULL** — GoTrue les lit comme des chaînes, un NULL casse la liste des
+utilisateurs du dashboard.
+
+Les Spots vieillissent : relancer `select public.demo_seed();` (Claude
+Code, MCP) remet une semaine de Spots à partir de maintenant.
+
 ### ⛔ TOTEHM.SPACE — UN SPOT EST UNE HABITUDE À PLUSIEURS — 23/09/2026
+
+> **⚠️ L'INTERFACE DE CETTE SECTION EST DÉPASSÉE LE 24/09** — voir
+> **TOTEHM.SPACE EST UN COCKPIT**. Le deck sous 700 px, la croix et la
+> manette du SELECT MODE, l'étape vidéo : partis. Les règles de BASE
+> ci-dessous (spot_plans, arrondi, instantané, compatibilité, capacité,
+> accès) sont intactes.
 
 **MASTER §24-48.** `space/index.html` : le radar des Spots, Create a
 Spot, My space.

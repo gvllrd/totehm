@@ -384,6 +384,20 @@ The UI answers, in this order: **WHAT CAN I DO? WHERE? WHEN? WITH WHOM?**
 
 Never turn SPACE into a generic social network.
 
+### The cockpit — 24/09/2026
+
+`totehm.space` looks like **a cockpit**: black, one instrument in the middle
+(the radar of Spots), readouts at the edges, **three commands** —
+`Search · Create · My space`. Everything else appears only when asked for,
+where it was asked for. *Three buttons instead of ten.*
+
+It must look like neither `totehm.com` (no navy paper, no rail, no T, no
+controller) nor the boutique. **But its content is the Totehm's own Box,
+exactly**: a Spot is shown as the Habit Box it came from — same intention
+tick, same name, same unit line, same WHY / TRIGGER mini-boxes. The cockpit
+is the frame; the Box is the language. The same principle will apply to the
+boutique: its own frame, the Totehm's Boxes inside.
+
 ---
 
 ## 4b. TOTEHM.COM — THE PERSONAL SYSTEM

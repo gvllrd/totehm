@@ -322,6 +322,32 @@ une erreur Stripe.
 
 ---
 
+## L'Espace — la recherche, l'accès fondateur, la démo · 24/09
+
+**`spots_radar(p_lat, p_lng, p_radius, p_q, p_mode, p_live, p_limit, p_when, p_intention)`**
+— la v2 a neuf paramètres ; la v1 (sept) est supprimée. `p_q` est découpé
+en mots, TOUS doivent se trouver. Tout le monde cherche dans l'habitude,
+les intentions, les piliers, le mode, le rythme et le mood ; un membre
+aussi dans le pseudo, le commentaire, les objectifs et les répulsions.
+`p_when` : `now` · `today` (Lisbonne) · `week`. `p_intention` : une des sept.
+
+**Accès offert** — `figher_comps` :
+
+```sql
+insert into public.figher_comps(email, reason) values ('x@y.z', 'pourquoi');   -- ouvrir
+delete from public.figher_comps where email = 'x@y.z';                           -- refermer
+```
+
+**Démo** — `service_role` seul (Claude Code, MCP) :
+
+```sql
+select public.demo_seed();    -- (re)crée 10 membres *_demo et 32 Spots à Lisbonne, à partir de maintenant
+select public.demo_purge();   -- efface tout ce qui est démo, rien d'autre
+```
+
+`demo_seed()` fait aussi candidater deux membres de démo à chaque Spot à
+venir d'un membre « comp » : c'est ce qui remplit ses demandes reçues.
+
 ## L'Espace — les Spots · 23/09
 
 `spots` garde une ligne par Spot (le radar historique et HigherSelf la

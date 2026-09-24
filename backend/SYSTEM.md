@@ -15,6 +15,32 @@
 
 ---
 
+## 0 · LOT DU 24/09/2026 — TOTEHM.SPACE COCKPIT · ACCÈS FONDATEUR · DÉMO
+
+> **ÉTAT : appliqué le 24/09/2026 par Claude Code — contrôles : _figher `true·true` · spots_demo `32·10·10·1·9` · radar `1·0·2` · droits `false·false·false·true·false` · advisors : aucune alerte nouvelle.**
+
+**Testé** : réplique locale (schéma du 23/09 + ce lot) — migration passée
+deux fois, **46 assertions SQL** (accès, démo, recherche, candidature,
+publication, reseed, purge, retour arrière) + les **109 du 23/09** toujours
+vertes ; **navigateur** avec les RPC de l'Espace exécutées contre la vraie
+base de la réplique : **59 vérifications**, zéro erreur JS, zéro
+défilement horizontal au téléphone.
+
+| objet | ce qui change |
+|---|---|
+| table **`figher_comps`** | NOUVELLE — accès offerts (email, raison, dates). RLS, zéro politique. Contient `gvallerand5@gmail.com` |
+| `_figher(uuid)` | `member = comp OR trois clés` ; clé `comp` en plus |
+| **`spots_radar`** | **signature v2** (9 paramètres : `+ p_when`, `+ p_intention`) — l'ancienne (7) est SUPPRIMÉE ; recherche par mots, portée selon le rôle ; rend `freq`, `mood`, `demo` ; `why_not` teste le passeport d'abord |
+| `my_space()` | rend `freq`, `context`, `intentions`, `demo`, `capacity`/`taken` des candidatures (pour dessiner la boîte) |
+| colonne `spot_plans.demo` | NOUVELLE, `false` par défaut |
+| table **`demo_members`** | NOUVELLE — les dix membres de démo (pour les purger) |
+| `demo_seed()` · `demo_purge()` | NOUVELLES, `service_role` seul. La migration lance `demo_seed()` |
+| `auth.users` | + 10 lignes `*@demo.totehm.invalid` (supprimées par `demo_purge()`) |
+
+**Page** : `space/index.html` réécrite (cockpit), `BUILD='2026-09-24'`.
+
+---
+
 ## 0 · LOT DU 23/09/2026 — EN LIGNE, TOUS CONTRÔLES VERTS
 
 > **À lire avant tout le reste.** Lot **appliqué le 23/09/2026 au soir,
@@ -1327,6 +1353,10 @@ Functions sont téléchargeables.
 
 | Date | Décision | Pourquoi |
 |---|---|---|
+| 24/09 | **totehm.space devient un cockpit : trois commandes, la boîte de totehm.com** | « Plutôt que dix boutons, trois, et le reste au fur et à mesure » ; un réseau social qui ne ressemble ni au Totehm ni à la boutique, mais dont le CONTENU est la boîte du Totehm, au pixel |
+| 24/09 | **Un accès offert est une table (`figher_comps`), pas une fausse ligne de paiement** | écrire dans `subscriptions` ou `stoner_access` mentirait au webhook, au grand livre et aux chiffres |
+| 24/09 | **La recherche de l'Espace est en base, par mots, et ne cherche que ce qu'on peut lire** | un invité qui chercherait dans les objectifs devinerait le contexte caché un mot à la fois |
+| 24/09 | **Spots de démo marqués, datés à partir de maintenant, purgeables d'un appel** | Wah doit pouvoir tester la recherche, candidater et recevoir des demandes ; rien de faux ne doit se confondre avec un vrai membre |
 | 23/09 | **Un seul master, quatre domaines** — `TOTEHM_MASTER.md` remplace les masters par domaine et `TOTEHM_MASTER.html` | le MASTER de Wah couvre les quatre domaines d'un bloc ; trois masters décrivaient un découpage qui n'existait plus |
 | 23/09 | **FIGHER = une fonction, trois clés** (`_figher`) | le Club, l'Espace, la Boutique et le bot lisent la même règle ; une page qui la recompose finit par oublier une clé |
 | 23/09 | **Le THP n'est PAS verrouillé derrière un Totehm complet** (MASTER §7 non appliqué) | il s'achète avant d'avoir un compte : c'est la porte d'acquisition. Le sas tient par FIGHER, qui exige les deux |
