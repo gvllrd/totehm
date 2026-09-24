@@ -11,7 +11,7 @@ Fuseau    Europe/Lisbon
 Connexion :
 
 ```bash
-ssh -i ~/totehm/oracle/<cle>.key ubuntu@<ip>
+ssh -i ~/totehm/oracle/oracle-vm-ssh ubuntu@<ip>
 ```
 
 Les clés SSH restent dans `~/totehm/oracle/` en `chmod 400`, gitignoré.
