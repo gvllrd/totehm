@@ -2020,7 +2020,7 @@ body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
 #gate{position:fixed;inset:0;z-index:200;background:#000;
   display:block;overflow-x:hidden;overflow-y:auto;
   overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
-  transition:opacity .32s ease}
+  transition:opacity .32s ease,background-color .45s ease}
 #gate-hero{width:100%;min-height:100dvh;
   display:flex;flex-direction:column;align-items:center;
   position:relative;justify-content:flex-start;
@@ -2057,61 +2057,107 @@ body:not(.member) #gate-id #vis-panel,
 body:not(.member) #gate-id #name-note{display:none}
 #gate-top-row{display:flex;flex-direction:column;align-items:center;
   gap:16px;flex-shrink:0}
-/* ══ L'ASTÉROÏDE · 24/09/2026 ══════════════════════════════════════
-   Le Totehm en apesanteur, qui tourne. `#gate-asteroid` = la scène
-   (perspective), `#gate-card` = le solide qui tourne (transform-style
-   preserve-3d + rotation), les 4 faces = les côtés du solide. La face
-   avant contient le logo assemblé (les 4 SVG), la face arrière porte
-   TAP TO OPEN sur la tuile perforée navy. Rotation lente en boucle,
-   pause au survol/tap. Motion sensor par JS pose --tilt-x/y sur la
-   carte. */
-#gate-asteroid{position:relative;flex-shrink:0;
-  width:var(--gate-size);height:var(--gate-size);
-  perspective:1400px;cursor:pointer;-webkit-tap-highlight-color:transparent}
-#gate-asteroid:focus-visible{outline:2px solid rgba(255,255,255,.35);outline-offset:8px}
-#gate-card{position:relative;width:100%;height:100%;
-  transform-style:preserve-3d;
-  transform:rotateY(var(--tilt-y,0deg)) rotateX(var(--tilt-x,0deg));
-  animation:asteroid-spin 22s linear infinite;
-  transition:transform .3s ease}
-#gate-asteroid:hover #gate-card,
-#gate-asteroid.paused #gate-card{animation-play-state:paused}
-@keyframes asteroid-spin{
-  0%  {transform:rotateY(0deg)   rotateX(0deg)}
-  25% {transform:rotateY(90deg)  rotateX(4deg)}
-  50% {transform:rotateY(180deg) rotateX(0deg)}
-  75% {transform:rotateY(270deg) rotateX(-4deg)}
-  100%{transform:rotateY(360deg) rotateX(0deg)}
+/* ══ L'ASTÉROÏDE — UNE CARTE « LSD PAPER » · 24/09/2026 (bis) ══════
+   Un fin carré perforé, DEUX faces, qui se retourne comme une carte à
+   jouer. Il remplace le cube de quatre faces du matin : 110 px sous une
+   perspective de 1 400 px, c'est une projection presque plate — le cube
+   se lisait comme un carré qui s'écrase et s'étire, et quatre faces
+   identiques ne laissaient voir aucune arête. Une carte n'a pas besoin
+   d'arête pour être en 3D : on la voit se retourner.
+
+   ⚠️ TROIS COUCHES, ET CHACUNE A UN SEUL MAÎTRE. Une `animation` CSS
+   ÉCRASE le `transform` du même élément : tant que la rotation vivait
+   sur `#gate-card`, l'inclinaison du capteur (posée sur la même carte)
+   n'existait pas. Donc :
+     `.ast-float`  la dérive en apesanteur    — CSS, 7,8 s aller-retour
+     `#gate-tilt`  l'inclinaison du capteur   — JS (lissée, ±14°)
+     `#gate-card`  le retournement sur l'axe Y — CSS, 12 s le tour
+   Les deux périodes ne tombent jamais juste : le mouvement ne se répète
+   pas à l'œil. Et le retournement s'adoucit à CHAQUE demi-tour (la
+   courbe s'applique entre deux étapes) : la carte s'attarde face au
+   regard, passe vite sur la tranche.
+
+   ⚠️ `preserve-3d` SUR LES TROIS, sinon la première couche qui l'oublie
+   aplatit tout ce qu'elle contient. Et `backface-visibility` AUSSI sur
+   les enfants des faces : Safari compose à part un enfant animé (le
+   souffle de TAP TO OPEN) et le montrerait en miroir à travers le dos. */
+#gate-top-row{margin:auto 0;padding-bottom:max(64px,12vh)}
+#gate-asteroid{--ast-size:clamp(168px,44vmin,232px);
+  position:relative;flex-shrink:0;width:var(--ast-size);height:var(--ast-size);
+  perspective:760px;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:opacity .7s ease .25s,transform 1s cubic-bezier(.2,.7,.2,1) .25s}
+#gate-asteroid:focus-visible{outline:2px solid rgba(255,255,255,.35);outline-offset:10px}
+.ast-float,#gate-tilt,#gate-card{position:absolute;inset:0;transform-style:preserve-3d}
+.ast-float{animation:lsd-drift 7.8s ease-in-out infinite alternate}
+#gate-tilt{will-change:transform}
+#gate-card{animation:lsd-turn 12s cubic-bezier(.45,0,.55,1) infinite}
+@keyframes lsd-turn{
+  0%  {transform:rotateY(0deg)}
+  50% {transform:rotateY(180deg)}
+  100%{transform:rotateY(360deg)}
 }
-@media(prefers-reduced-motion:reduce){
-  #gate-card{animation:none;transform:none}
+@keyframes lsd-drift{
+  0%  {transform:translate3d(0,-5px,0) rotateX(6deg)  rotateZ(-1.5deg)}
+  100%{transform:translate3d(0,6px,0)  rotateX(-5deg) rotateZ(1.8deg)}
 }
-.ast-face{position:absolute;inset:0;
+/* Les deux faces sont écartées d'un pixel (±.5 px) : deux plans
+   confondus scintillent sous Safari au passage de la tranche. */
+.ast-face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   backface-visibility:hidden;-webkit-backface-visibility:hidden}
-.ast-front {transform:rotateY(0deg)   translateZ(calc(var(--gate-size) / 2))}
-.ast-back  {transform:rotateY(180deg) translateZ(calc(var(--gate-size) / 2))}
-.ast-right {transform:rotateY(90deg)  translateZ(calc(var(--gate-size) / 2))}
-.ast-left  {transform:rotateY(-90deg) translateZ(calc(var(--gate-size) / 2))}
+.ast-face>*{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.ast-front{transform:translateZ(.5px)}
+.ast-back {transform:rotateY(180deg) translateZ(.5px)}
 /* La tuile perforée navy — la texture du Totehm. Réutilise le SVG
    inline des jetons du site pour rester fidèle à la charte. */
 .ast-tile{position:absolute;inset:0;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366' mask='url(%23m)'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat}
-.ast-back{display:flex;align-items:center;justify-content:center}
-.ast-cta{position:relative;z-index:2;
-  font-family:'Space Mono',monospace;font-weight:700;font-size:15px;
+/* Aucune ombre sous le texte : blanc sur navy se lit seul (BRAND). Le
+   retrait à gauche compense l'espacement que la dernière lettre porte
+   à droite — sinon le mot n'est pas centré. */
+.ast-cta{position:relative;z-index:2;padding-left:.3em;white-space:nowrap;
+  font-family:'Space Mono',monospace;font-weight:700;
+  font-size:clamp(12px,calc(var(--ast-size) * .066),15px);
   letter-spacing:.3em;text-transform:uppercase;color:#fff;
-  text-shadow:0 1px 6px rgba(0,0,0,.7);
   animation:breathe 4.2s ease-in-out infinite}
+/* LE DOS PORTE LE NOM DU MEMBRE. Une signature, pas une invitation : il
+   ne respire pas. La taille suit la longueur (`--len`, posé par
+   `paintAsteroid()` : les caractères d'UNE ligne) — Space Mono avance de
+   .612 em, plus .12 em d'espacement, dans 74 % de la carte. Au-delà de
+   treize caractères le nom passe sur deux lignes plutôt que de rapetisser
+   sous la lecture. */
+.ast-cta.is-name{--len:8;white-space:pre;
+  text-align:center;line-height:1.25;padding-left:.12em;
+  font-size:clamp(11px,calc(var(--ast-size) * .74 / (var(--len) * .732)),22px);
+  letter-spacing:.12em;text-transform:none;animation:none}
 
-/* Pendant le déploiement, l'astéroïde s'efface — la face avant contient
-   déjà le logo qui va se déconstruire, donc c'est la CARTE 3D qui doit
-   d'abord se plaquer à plat face à la caméra (rotation=0). Ensuite les
-   couches individuelles suivent leur trajet habituel. */
-body.gate.entered #gate-card{animation:none;
-  transform:rotateY(0deg) rotateX(0deg)}
-body.gate.entered .ast-back,
-body.gate.entered .ast-right,
-body.gate.entered .ast-left{opacity:0}
+/* ══ LA CARTE S'EFFACE, LE TOTEHM APPARAÎT ══
+   `enter()` pose `.entered` : le JS (`lsdOut`) a déjà arrêté le
+   retournement et ramène la carte face avant ; ici elle s'efface en
+   avançant d'un souffle, et le NOIR du gate se retire derrière elle.
+   Les quatre calques du logo se déconstruisent toujours, mais hors
+   écran : sans ce retrait du noir, le Totehm se dévoilait SOUS un gate
+   opaque et l'on fixait un écran noir deux secondes. */
+body.gate.entered #gate{background-color:transparent;
+  transition:opacity .32s ease,background-color .6s ease .3s}
+body.gate.entered #gate-asteroid{opacity:0;transform:scale(1.07);pointer-events:none;
+  transition:opacity .45s ease .12s,transform .6s cubic-bezier(.2,.7,.2,1) .12s}
+body.gate.entered .ast-float{animation-play-state:paused}
+body.gate.entered .ast-cta{animation:none}
+/* Au REPLI, le Totehm s'efface sous un noir qui revient (.45 s) : le coin
+   membre et les termes attendent ce noir, sinon le pseudo s'écrit une
+   demi-seconde par-dessus le T. ⚠️ UNE ANIMATION, PAS UNE TRANSITION :
+   dans le Totehm `#conn-bar` est en `display:none`, et une transition
+   ne part jamais d'un `display:none` — il réapparaissait d'un coup.
+   `.folding` ne vit que le temps du repli : l'animation s'en va avec. */
+@keyframes lsd-late{0%,45%{opacity:0}100%{opacity:1}}
+body.gate.folding #conn-bar,
+body.gate.folding #terms-corner{animation:lsd-late .8s ease both}
+/* Mouvement réduit : ni retournement, ni dérive, ni souffle — la face
+   avant, immobile. Le capteur n'est pas branché non plus (JS). */
+@media(prefers-reduced-motion:reduce){
+  .ast-float,#gate-card,.ast-cta{animation:none}
+  #gate-asteroid,body.gate.entered #gate-asteroid{transform:none}
+}
 
 #gate-logo{position:relative;flex-shrink:0;
   width:var(--gate-size);height:var(--gate-size)}
@@ -2737,25 +2783,28 @@ body.gate.entered #filter-badge{
        la porte vers les autres. Visible pour un membre connecté ; un
        inconnu n'a rien à nommer, il ne voit que la recherche. -->
   <div id="gate-top-row">
-  <!-- ══ L'ASTÉROÏDE · 24/09/2026 ═══════════════════════════════════
-       L'atterrissage n'a plus qu'un objet : le Totehm en apesanteur,
-       qui tourne. Sur une face, l'assemblage du logo (T, rail, wordmark
-       sur le carré perforé navy) ; sur l'autre, l'invitation TAP TO
-       OPEN. Motion sensor sur mobile pour la vie organique. Un tap = le
-       même geste que le bouton [Open my Totehm] qu'il remplace. -->
+  <!-- ══ L'ASTÉROÏDE — UNE CARTE « LSD PAPER » · 24/09/2026 (bis) ════
+       L'atterrissage n'a plus qu'un objet : un fin carré perforé navy,
+       en apesanteur, qui se retourne. Devant : TAP TO OPEN. Derrière :
+       le nom du membre s'il en a un, sinon TAP TO OPEN encore. Trois
+       couches emboîtées, un maître chacune (voir le CSS) : la dérive,
+       l'inclinaison du capteur, le retournement. Un tap = `enter()`,
+       le même geste que l'ancien bouton [Open my Totehm]. -->
   <div id="gate-asteroid" role="button" tabindex="0" aria-label="Tap to open my Totehm">
-    <div id="gate-card">
-      <div class="ast-face ast-front">
-        <div class="ast-tile"></div>
-        <span class="ast-cta">TAP TO OPEN</span>
-      </div>
-      <div class="ast-face ast-back">
-        <div class="ast-tile"></div>
-        <span class="ast-cta">TAP TO OPEN</span>
-      </div>
-      <div class="ast-face ast-right"><div class="ast-tile"></div></div>
-      <div class="ast-face ast-left"><div class="ast-tile"></div></div>
-    </div><!-- /#gate-card -->
+    <div class="ast-float">
+      <div id="gate-tilt">
+        <div id="gate-card">
+          <div class="ast-face ast-front">
+            <div class="ast-tile"></div>
+            <span class="ast-cta">TAP TO OPEN</span>
+          </div>
+          <div class="ast-face ast-back">
+            <div class="ast-tile"></div>
+            <span class="ast-cta" id="ast-name">TAP TO OPEN</span>
+          </div>
+        </div><!-- /#gate-card -->
+      </div><!-- /#gate-tilt -->
+    </div><!-- /.ast-float -->
   </div><!-- /#gate-asteroid -->
 
   <!-- ⚠️ #gate-logo (les 4 SVG layers) SUBSISTE POUR LA DÉCONSTRUCTION
@@ -4234,7 +4283,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-09-23';
+const BUILD='2026-09-24';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -5111,7 +5160,8 @@ function renderZone(){
       url: location.href,
       ecran: innerWidth + 'x' + innerHeight,
       boutonAdd: !!document.querySelector('#habits [data-add]'),
-      paysage: document.body.classList.contains('paysage')});
+      paysage: document.body.classList.contains('paysage'),
+      asteroide: window.__totehm_lsd||null});
     try{
       const {data,error}=await sb.rpc('my_trips');
       d.serveur = error ? ('ERREUR · '+error.message)
@@ -6835,6 +6885,36 @@ $('search-input').addEventListener('keydown',e=>{
 function connPaint(){
   const label=(myProfile&&myProfile.pseudo)||(me?'Member':'Guest');
   $('conn-bar').innerHTML='<span class="dot"'+(me?' style="background:#639922"':'')+'></span>'+label+(myHigher?HI_SVG:'');
+  paintAsteroid();
+}
+/* ══ LE DOS DE LA CARTE PORTE LE NOM · 24/09/2026 ═══════════════════
+   Connecté ET nommé : le pseudo. Sinon : TAP TO OPEN, comme la face.
+   Peint depuis `connPaint()`, qui passe à CHAQUE changement de session
+   et de nom (connexion, déconnexion, nom réclamé, Totehm effacé) : un
+   seul point d'entrée, donc le dos ne peut pas retarder sur le coin
+   membre. `textContent`, jamais `innerHTML` — un pseudo est une saisie.
+   Jusqu'à treize caractères, une ligne. Au-delà, deux — coupées sur le
+   séparateur le plus proche du milieu (`_` `-` `.` espace), sinon au
+   milieu exact : laisser le navigateur couper donnait « lisbon_f /
+   ighter ». `--len` = la ligne la plus longue ; le CSS de `.is-name`
+   en tire la taille. */
+function paintAsteroid(){
+  const el=$('ast-name'); if(!el) return;
+  const p=((me&&myProfile&&myProfile.pseudo)||'').trim();
+  el.classList.toggle('is-name',!!p);
+  if(!p){ el.textContent='TAP TO OPEN'; el.style.removeProperty('--len'); return; }
+  let lignes=[p];
+  if(p.length>13){
+    const mi=p.length/2; let cut=Math.ceil(mi);
+    for(let d=0;d<=4;d++){
+      const a=Math.floor(mi)-d, b=Math.ceil(mi)+d;
+      if(/[_\-. ]/.test(p[a]||'')){ cut=a+1; break; }
+      if(/[_\-. ]/.test(p[b-1]||'')){ cut=b; break; }
+    }
+    lignes=[p.slice(0,cut).trim(),p.slice(cut).trim()];
+  }
+  el.textContent=lignes.join('\n');
+  el.style.setProperty('--len',String(Math.max(8,...lignes.map(l=>l.length))));
 }
 async function loadProfile(){
   if(!me){myProfile=null;cloudMode=false;connPaint();return;}
@@ -7224,7 +7304,7 @@ window.addEventListener('pageshow',e=>{
     }
   }
 
-  const DUR=1050, REVEAL=520;
+  const DUR=1050, REVEAL=520, UI_FADE=550;
   let open=false, moving=false, timer=null;
 
   /* ══ LE TÉLÉPHONE COUCHÉ REPLIE LE TOTEHM · 22/09/2026 ═════════════
@@ -7259,10 +7339,133 @@ window.addEventListener('pageshow',e=>{
   window.addEventListener('orientationchange',surRotation);
   window.addEventListener('resize',surRotation);
 
+  /* ══ L'ASTÉROÏDE BOUGE AVEC LE TÉLÉPHONE · 24/09/2026 (bis) ═════════
+     La carte se retourne toute seule (CSS). Le capteur AJOUTE une
+     inclinaison (±14°) sur sa propre couche, `#gate-tilt` — il ne
+     remplace jamais le retournement, il s'y compose.
+
+     ⚠️ ON LISSE, ON NE RECOPIE PAS. `deviceorientation` arrive à 60 Hz
+     avec du bruit : recopier la valeur fait trembler la carte, et une
+     `transition` CSS relancée à chaque événement la fait bégayer. Une
+     cible, et une frame qui s'en rapproche d'un dixième — la boucle
+     s'arrête d'elle-même quand la carte a rejoint sa cible : zéro coût
+     au repos.
+
+     ⚠️ LA RÉFÉRENCE EST LA MAIN DU MEMBRE, PAS L'HORIZON. On ne tient
+     pas un téléphone à plat : la première mesure sert de zéro, puis ce
+     zéro suit lentement la main. La carte répond au GESTE et revient
+     d'elle-même au repos quand la main s'arrête.
+
+     ⚠️ iOS DEMANDE LA PERMISSION DANS UN GESTE — `touchend` ou `click`.
+     `touchstart` ne compte pas comme geste pour Safari : la demande y
+     serait refusée sans dialogue et le capteur ne s'allumerait jamais.
+     Refus = pas d'inclinaison, la carte tourne quand même.
+
+     Ordinateur : la souris fait le même travail (la carte regarde le
+     curseur, ±10°). Mouvement réduit : rien n'est branché. */
+  const RM=window.matchMedia('(prefers-reduced-motion: reduce)');
+  const lsdTilt=$('gate-tilt'), lsdCard=$('gate-card');
+  /* Le diagnostic : des booléens et un état, jamais une valeur. */
+  const LSD={gyro:false, permission:'n/a', souris:false, reduit:RM.matches};
+  window.__totehm_lsd=LSD;
+  let tx=0, ty=0, gx=0, gy=0, raf=0, lsdStill=false, ref=null;
+  const borne=(v,m)=>Math.max(-m,Math.min(m,v||0));
+  function tiltFrame(){
+    raf=0;
+    tx+=(gx-tx)*.1; ty+=(gy-ty)*.1;
+    if(Math.abs(gx-tx)<.01&&Math.abs(gy-ty)<.01){ tx=gx; ty=gy; }
+    lsdTilt.style.transform='rotateX('+tx.toFixed(2)+'deg) rotateY('+ty.toFixed(2)+'deg)';
+    if(tx!==gx||ty!==gy) raf=requestAnimationFrame(tiltFrame);
+  }
+  function viser(x,y,m){
+    if(!lsdTilt) return;
+    gx=borne(x,m||14); gy=borne(y,m||14);
+    if(!raf) raf=requestAnimationFrame(tiltFrame);
+  }
+  /* Le capteur n'agit que sur l'atterrissage au repos : ni pendant le
+     déploiement, ni dans le Totehm ouvert. */
+  const lsdLibre=()=>!lsdStill && !RM.matches
+    && body.classList.contains('gate') && !body.classList.contains('entered');
+  function surOrientation(e){
+    if(e.beta==null&&e.gamma==null) return;      /* ordinateur sans capteur */
+    LSD.gyro=true;
+    if(!lsdLibre()) return;
+    let b=e.beta, g=e.gamma;
+    /* beta/gamma sont donnés dans le repère du téléphone DEBOUT : couché,
+       avant/arrière et gauche/droite échangent leurs axes. */
+    const ang=(screen.orientation&&typeof screen.orientation.angle==='number')
+      ? screen.orientation.angle : (window.orientation||0);
+    if(ang===90){ const t=b; b=-g; g=t; }
+    else if(ang===270||ang===-90){ const t=b; b=g; g=-t; }
+    /* Un saut de plus de 50° (retournement, cardan à la verticale) :
+       on reprend la main comme nouvelle référence plutôt que de jeter
+       la carte d'un bord à l'autre. */
+    if(!ref||Math.abs(b-ref.b)>50||Math.abs(g-ref.g)>50) ref={b,g};
+    ref.b+=(b-ref.b)*.006; ref.g+=(g-ref.g)*.006;
+    viser((b-ref.b)*.6, -(g-ref.g)*.6, 14);
+  }
+  if(lsdTilt && !RM.matches){
+    const DOE=window.DeviceOrientationEvent;
+    const ecouter=()=>window.addEventListener('deviceorientation',surOrientation,{passive:true});
+    if(DOE && typeof DOE.requestPermission==='function'){
+      LSD.permission='pending';
+      const demander=()=>{
+        window.removeEventListener('touchend',demander,true);
+        window.removeEventListener('click',demander,true);
+        /* Appel SYNCHRONE dans le geste : un `await` avant lui ferait
+           perdre le geste, et la demande serait refusée. */
+        DOE.requestPermission()
+          .then(r=>{ LSD.permission=r; if(r==='granted') ecouter(); })
+          .catch(()=>{ LSD.permission='error'; });
+      };
+      window.addEventListener('touchend',demander,{capture:true,passive:true});
+      window.addEventListener('click',demander,true);
+    }else if(DOE){ ecouter(); }
+    if(window.matchMedia('(hover:hover)').matches){
+      LSD.souris=true;
+      document.addEventListener('mousemove',e=>{
+        if(LSD.gyro||!lsdLibre()) return;
+        viser((e.clientY/innerHeight-.5)*-20, (e.clientX/innerWidth-.5)*20, 10);
+      },{passive:true});
+      document.documentElement.addEventListener('mouseleave',()=>{
+        if(lsdLibre()) viser(0,0);
+      });
+    }
+  }
+  /* LA CARTE SE PLAQUE FACE AVANT. Retirer l'animation seule ferait
+     SAUTER la carte à 0° depuis l'angle où elle était : on lit l'angle
+     réel dans la matrice calculée, on l'y fige, puis on la ramène à 0°
+     par le plus court chemin — en même temps qu'elle s'efface (CSS). */
+  function lsdOut(){
+    lsdStill=true; viser(0,0);
+    if(!lsdCard) return;
+    let a=0;
+    try{
+      const t=getComputedStyle(lsdCard).transform;
+      if(t&&t!=='none'){ const m=new DOMMatrixReadOnly(t);
+                         a=Math.atan2(-m.m13,m.m11)*180/Math.PI; }
+    }catch(_){}
+    lsdCard.style.animation='none';
+    lsdCard.style.transition='none';
+    lsdCard.style.transform='rotateY('+a.toFixed(2)+'deg)';
+    void lsdCard.offsetWidth;
+    lsdCard.style.transition='transform '+(.35+Math.abs(a)/180*.35).toFixed(2)
+      +'s cubic-bezier(.2,.7,.2,1)';
+    lsdCard.style.transform='rotateY(0deg)';
+  }
+  /* Au repli la carte repart de sa face avant : on rend la main au CSS,
+     et la main du membre redevient la référence. */
+  function lsdBack(){
+    lsdStill=false; ref=null;
+    if(!lsdCard) return;
+    lsdCard.style.animation=''; lsdCard.style.transition=''; lsdCard.style.transform='';
+  }
+
   function enter(then){
     if(open||moving) return;
     if(PAYSAGE.matches) return;     /* couché, on n'ouvre pas */
     moving=true;
+    lsdOut();                        /* la carte cesse de tourner, face avant */
     gate.classList.remove('no-anim');
     gate.scrollTop=0;                /* on mesure toujours depuis le haut */
     measure();                       /* dernière mesure juste avant le départ */
@@ -7270,6 +7473,13 @@ window.addEventListener('pageshow',e=>{
     body.classList.add('entered');
 
     clearTimeout(timer);
+    /* ⚠️ LE GATE PART QUAND LE TOTEHM EST LÀ, PAS PLUS TARD · 24/09.
+       On attendait DUR+REVEAL+120 (1,69 s) : la fin d'une
+       déconstruction que plus personne ne voit (les calques vivent hors
+       écran depuis l'astéroïde). Le Totehm, lui, a fini d'apparaître à
+       REVEAL + 550 ms (le fondu de l'UI) — au-delà, le gate transparent
+       ne faisait qu'avaler les premiers gestes. `max` garde DUR comme
+       plancher : les calques ont toujours fini leur trajet. */
     timer=setTimeout(()=>{
       gate.classList.add('gate-off');
       timer=setTimeout(()=>{
@@ -7277,7 +7487,7 @@ window.addEventListener('pageshow',e=>{
         open=true; moving=false;
         if(then) then();
       },340);
-    },DUR+REVEAL+120);
+    },Math.max(DUR,REVEAL+UI_FADE)+60);
   }
 
   /* ══ LE REPLI — le déploiement, exactement à l'envers ══
@@ -7303,6 +7513,7 @@ window.addEventListener('pageshow',e=>{
     clearTimeout(timer);
 
     gate.classList.add('no-anim');        /* 1. rien ne bouge              */
+    lsdBack();                            /*    la carte repart face avant */
     gate.classList.remove('gate-off');
     body.classList.add('gate','folding'); /* 2. le gate au repos, opaque,  */
                                           /*    et il NE DÉFILE PAS        */
@@ -7422,46 +7633,8 @@ window.addEventListener('pageshow',e=>{
     ast.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();enter();} };
   }
 
-  /* ══ MOTION SENSOR · 24/09/2026 ════════════════════════════════════
-     La carte tourne toute seule (CSS keyframes), le motion sensor
-     AJOUTE une inclinaison subtile (±14°) qui répond au mouvement du
-     téléphone. iOS 13+ exige une permission via geste utilisateur — on
-     la demande au premier tap sur l'écran, silencieusement. Refus =
-     pas de tilt, la rotation CSS continue seule. Desktop : parallax
-     souris comme repli. */
-  const card=$('gate-card');
-  if(card){
-    const setTilt=(x,y)=>{
-      card.style.setProperty('--tilt-x',(x||0).toFixed(1)+'deg');
-      card.style.setProperty('--tilt-y',(y||0).toFixed(1)+'deg');
-    };
-    const clamp=(v,m)=>Math.max(-m,Math.min(m,v||0));
-    const wireOrient=()=>{
-      window.addEventListener('deviceorientation',e=>{
-        setTilt(clamp((e.beta||0)-45,14), clamp(e.gamma||0,14));
-      },{passive:true});
-    };
-    const askOrient=async()=>{
-      if(typeof DeviceOrientationEvent!=='undefined'
-         && typeof DeviceOrientationEvent.requestPermission==='function'){
-        try{ const s=await DeviceOrientationEvent.requestPermission();
-             if(s==='granted') wireOrient();
-        }catch(_){}
-      }else if('DeviceOrientationEvent' in window){ wireOrient(); }
-    };
-    /* Permission au premier geste — capture avant que enter() ne parte,
-       même si le tap va déplier : le membre revient sur l'atterrissage
-       par la croix et le tilt est déjà en place. */
-    document.addEventListener('touchstart',askOrient,{once:true,passive:true});
-    /* Desktop : parallax souris — un mouvement de repli quand l'appareil
-       n'a pas de gyroscope. */
-    if(matchMedia('(hover:hover)').matches){
-      document.addEventListener('mousemove',e=>{
-        const w=innerWidth,h=innerHeight;
-        setTilt(clamp((e.clientY/h-.5)*-20,10), clamp((e.clientX/w-.5)*20,10));
-      },{passive:true});
-    }
-  }
+  /* Le capteur de mouvement vit au-dessus d'`enter()` (« L'ASTÉROÏDE
+     BOUGE AVEC LE TÉLÉPHONE ») : `enter()` et `fold()` l'appellent. */
 
   /* ── Search a Totehm : un bouton, la boîte n'arrive qu'au clic ── */
   const gsb=$('gate-search-btn'), gsi=$('gate-search-input'), gsn=$('gate-search-note');

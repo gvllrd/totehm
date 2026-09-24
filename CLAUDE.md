@@ -387,6 +387,59 @@ utilisateurs du dashboard.
 Les Spots vieillissent : relancer `select public.demo_seed();` (Claude
 Code, MCP) remet une semaine de Spots à partir de maintenant.
 
+### ⛔ L'ATTERRISSAGE DE TOTEHM.COM EST UNE CARTE « LSD PAPER » — 24/09/2026
+
+**Un seul objet** sur l'atterrissage de `com/totehm.html` : un fin carré
+perforé navy, **deux faces**, qui se retourne sur l'axe Y comme une
+carte à jouer, en apesanteur au centre de l'écran. Devant : `TAP TO
+OPEN`. Derrière : le **pseudo** du membre connecté et nommé, sinon `TAP
+TO OPEN` encore. Un tap (ou Entrée) = `enter()`. Le logo assemblé,
+[Open my Totehm], la recherche et les trois portes ont quitté l'écran
+(la recherche et les portes vivent dans le tiroir membre).
+
+**⚠️ UNE `animation` CSS ÉCRASE LE `transform` DE SON ÉLÉMENT.** Le
+premier astéroïde posait l'inclinaison du capteur sur la carte qui
+tournait : elle n'existait pas. Trois couches emboîtées, un maître
+chacune, `preserve-3d` sur les trois :
+
+| couche | ce qu'elle fait | qui la conduit |
+|---|---|---|
+| `.ast-float` | la dérive (7,8 s aller-retour) | CSS |
+| `#gate-tilt` | l'inclinaison, ±14° (souris ±10°) | JS, lissé frame par frame |
+| `#gate-card` | le retournement (12 s le tour, adouci à chaque demi-tour) | CSS |
+
+**⚠️ UNE PERSPECTIVE SE RÈGLE SUR LA TAILLE DE L'OBJET.** 1 400 px pour
+un cube de 110 px, c'est une projection presque plate : on voyait un
+carré qui s'écrase et s'étire, pas un volume. La carte fait 168–232 px
+sous 760 px.
+
+**⚠️ ON NE RETIRE PAS UNE ANIMATION EN COURS, ON LA FIGE.** Au tap,
+`lsdOut()` lit l'angle réel dans la matrice calculée, y fige la carte
+et la ramène face avant par le plus court chemin pendant qu'elle
+s'efface. Retirer l'animation seule la faisait sauter à 0°.
+
+**⚠️ LE NOIR DU GATE SE RETIRE, SINON ON ENTRE DANS LE NOIR.** Les
+quatre calques du logo se déconstruisent toujours — hors écran
+(`#gate-logo` invisible, gardé pour `measure()`). Tant que le fond du
+gate restait opaque, le Totehm apparaissait DESSOUS et l'on fixait un
+écran noir deux secondes. `body.gate.entered #gate` passe transparent,
+et le gate part à `max(DUR, REVEAL + UI_FADE)` : 1,47 s au lieu de 2,03.
+
+**⚠️ iOS : `requestPermission()` DANS `touchend` OU `click`.** Safari ne
+compte pas `touchstart` comme un geste : la demande y est refusée sans
+dialogue. Refus = pas d'inclinaison, la carte tourne quand même. Le
+zéro du capteur est la main du membre (première mesure, qui dérive
+lentement), pas l'horizon.
+
+**⚠️ UNE TRANSITION NE PART JAMAIS D'UN `display:none`.** Au repli,
+`#conn-bar` sort du `display:none` du Totehm : il réapparaissait d'un
+coup par-dessus le T. Son retour différé est une ANIMATION liée à
+`body.folding`.
+
+Mouvement réduit : ni retournement, ni dérive, ni capteur — la face
+avant, immobile. Diagnostic : `__totehm_lsd` (gyro · permission ·
+souris · réduit), repris dans `__totehmDiag().asteroide`.
+
 ### ⛔ TOTEHM.SPACE — UN SPOT EST UNE HABITUDE À PLUSIEURS — 23/09/2026
 
 > **⚠️ L'INTERFACE DE CETTE SECTION EST DÉPASSÉE LE 24/09** — voir
@@ -2257,6 +2310,11 @@ couleur — alors on la change AVANT de naviguer, 200 ms de fondu vers le
 navy. L'œil lit un écran qui se repeint, pas deux pages.
 
 ### L'ATTERRISSAGE TIENT SUR UN ÉCRAN — 17/09/2026
+
+> **⚠️ LE CONTENU DE L'ÉCRAN EST DÉPASSÉ LE 24/09** — voir **⛔
+> L'ATTERRISSAGE DE TOTEHM.COM EST UNE CARTE « LSD PAPER »**. Le logo,
+> [Open my Totehm] et la recherche ont quitté l'atterrissage. La règle
+> reste : UN écran, rien à faire défiler.
 
 Le logo, **[Open my Totehm]**, la carte de visite et la **barre de
 recherche** sont TOUS dans le flux du haut, dans cet ordre — sur
