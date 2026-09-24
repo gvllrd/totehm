@@ -566,23 +566,21 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
    ligne du T et de la croix ; posé à droite, sous la croix, il a une
    colonne à lui — et il libère la bande haute pour la phrase du
    classement, qui y remonte. */
-#vnow{position:fixed;top:40px;left:auto;right:22px;z-index:32;
+#vnow{position:fixed;top:54px;left:auto;right:22px;z-index:32;
   text-align:right;line-height:1;pointer-events:none}
-/* ⚠️ PLUS GRAND, SUR LES DEUX ÉCRANS · 22/09/2026. « Les titres et
-   sous-titres dans le Totehm sur ordinateur, et en plus grand pour
-   version ordi et mobile. » 15/8 px, c'était encore une légende. */
-#vnow b{font-family:'Space Mono',monospace;font-size:19px;letter-spacing:.2em;
+/* ⚠️ TROIS LIGNES · 24/09/2026. Titre (b) + sous-titre 1 (i) + sous-titre 2 (span).
+   top:54px au lieu de 40px : 14 px de marge sous la croix #fold-x. */
+#vnow b{font-family:'Space Mono',monospace;font-size:17px;letter-spacing:.2em;
   text-transform:uppercase;color:#fff;font-weight:700;white-space:nowrap;
   display:block;text-shadow:0 1px 4px rgba(0,0,0,.6)}
-/* Le sous-titre : ce que la vue est, en une poignée de mots. Il ne crie
-   pas — c'est une légende, pas un deuxième titre. */
-#vnow i{display:block;margin-top:7px;font-style:normal;
-  font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.24em;
-  text-transform:uppercase;color:rgba(255,255,255,.58);white-space:nowrap}
-/* Aligné à droite, il n'a plus de coin à éviter : la croix est
-   au-dessus de lui, pas à côté. */
-#vnow b,#vnow i{padding:0}
-body.ro #vnow{top:calc(40px + var(--ro-h))}
+#vnow i{display:block;margin-top:5px;font-style:normal;
+  font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.22em;
+  text-transform:uppercase;color:rgba(255,255,255,.52);white-space:nowrap}
+#vnow span{display:block;margin-top:3px;
+  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(255,255,255,.32);white-space:nowrap}
+#vnow b,#vnow i,#vnow span{padding:0}
+body.ro #vnow{top:calc(54px + var(--ro-h))}
 /* La répercussion 3D : le nom pivote dans la direction du voyage, en
    même temps que la pile glisse. */
 @keyframes face-d{from{transform:rotateY(-62deg) translateX(18px);opacity:0}to{transform:none;opacity:1}}
@@ -2865,7 +2863,7 @@ body.gate.entered #filter-badge{
      C'est le même piège que `#stage`, documenté trois fois dans
      CLAUDE.md. Un élément qui doit se placer sur la FENÊTRE ne vit
      jamais sous un parent transformé. -->
-<div id="vnow"><b></b><i></i></div>
+<div id="vnow"><b></b><i></i><span></span></div>
 
 
 
@@ -4135,11 +4133,11 @@ const voisin=d=>(CROIX[view]||{})[d]||null;
    vers le haut, ce qui fait dérailler (voir « une répulsion est une
    mauvaise habitude »). */
 const NOM_VUE={
-  wisdom:    ['my wisdom',    'what I learned'],
-  habits:    ['my habits',    'what I repeat'],
-  visions:   ['my vision',    'what I see coming'],
-  objectives:['my objectives','what pulls me up'],
-  repulsions:['my repulsions','what makes me derail'],
+  wisdom:    ['my wisdom',    'why I hold these repulsions',               'past experience'],
+  repulsions:['my repulsions','what triggers my habits',                   'trigger present'],
+  habits:    ['my habits',    'what I execute to achieve my objectives',   'strategic present'],
+  objectives:['my objectives','what I will achieve',                       'future present'],
+  visions:   ['my vision',    'why I hold these objectives',               'dreamed future'],
 };
 /* La direction du DERNIER voyage : c'est elle qui décide de quel côté le
    titre pivote. Null au chargement — on n'arrive de nulle part. */
@@ -4286,14 +4284,11 @@ function paintZone(){
        étaient écrits parce que rien ne les montrait ; le carré les
        montre maintenant — par sa couleur pour l'époque, par la dalle
        allumée pour la couche. Les garder, ce serait dire deux fois. */
-    const nom=NOM_VUE[view]||['',''];
+    const nom=NOM_VUE[view]||['','',''];
     nv.querySelector('b').textContent=nom[0];
-    /* ⚠️ LE SOUS-TITRE EST REVENU · 22/09/2026, et il ne dit plus la
-       même chose que le pavé. Il disait « past / present / future » —
-       l'axe, que le contrôleur montre déjà par sa couleur ; il dit
-       maintenant ce qu'on vient faire là. Deux objets, deux
-       informations. */
     nv.querySelector('i').textContent=nom[1]||'';
+    const sp=nv.querySelector('span');
+    if(sp) sp.textContent=nom[2]||'';
     /* ⚠️ UNE ANIMATION SE REJOUE À CHAQUE REDESSIN si on se contente de
        poser la classe. On la retire, on force un reflow, on la remet —
        c'est le seul moyen de la rejouer À LA DEMANDE et jamais sinon.
