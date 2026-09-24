@@ -15,28 +15,31 @@
 
 ---
 
-## 0 · LOT DU 23/09/2026 — APPLIQUÉ EN PRODUCTION
+## 0 · LOT DU 23/09/2026 — EN LIGNE, TOUS CONTRÔLES VERTS
 
-> **À lire avant tout le reste.** Ce qui suit décrit un lot **appliqué le
-> 23/09/2026 au soir** : migration `20260923_le_club_l_espace_la_boite.sql`
-> passée en base (22 fonctions présentes, les trois contrôles du
-> `CLAUDE_CODE.md` §6 verts — dont `false·false·false·true` sur les
-> privilèges), six Edge Functions déployées sur le projet
-> `abujjbkbbiumxrokozph`, push GitHub fait (`main → 24b2fa5`). **Sept
-> contrôles post-déploiement verts sur huit** (§10 du CLAUDE_CODE).
+> **À lire avant tout le reste.** Lot **appliqué le 23/09/2026 au soir,
+> finalisé le 24/09 au matin** : migration
+> `20260923_le_club_l_espace_la_boite.sql` passée en base (22 fonctions,
+> `false·false·false·true` sur les privilèges), six Edge Functions
+> déployées sur `abujjbkbbiumxrokozph`, push GitHub à jour, **8/8
+> contrôles post-déploiement verts** (§10 du CLAUDE_CODE).
 >
-> **Ce qui reste à Wah** — trois clics dans des dashboards :
-> 1. **Vercel** : rattacher `figher.club` au projet du dossier `club/`
->    (aujourd'hui le domaine sert encore la page parking du registrar, d'où
->    le 8e contrôle qui rend 0 — c'est ça, et rien d'autre).
-> 2. **Stripe → Developers → Webhooks** : cocher `invoice.paid` sur
->    l'endpoint `…supabase.co/functions/v1/stripe-webhook`. Sans lui,
->    `member_ledger` ne reçoit **rien**.
-> 3. **Stripe → Billing** : activer le Customer portal. Sans lui, le bouton
->    « Billing » de la console rend une erreur.
+> **Les trois clics d'admin qui restaient à Wah ont été faits par Claude,
+> par API :**
+> - **Stripe webhook `invoice.paid`** ajouté sur l'endpoint
+>   `…functions/v1/stripe-webhook` (5 events désormais). `member_ledger`
+>   reçoit chaque facture via `ledger_creator_invoice`.
+> - **Stripe Customer portal** — une configuration par défaut a été créée
+>   (features : update email/nom/adresse, historique factures, moyen de
+>   paiement, annulation **en fin de période** — matche `ending` du grand
+>   livre). Retour vers `figher.club/console`.
+> - **Vercel `figher.club`** — le projet `club` et les domaines
+>   `figher.club` (redirige 308 vers `www`) et `www.figher.club` étaient
+>   déjà attachés côté Vercel ; la propagation DNS a rattrapé le 24/09.
 >
-> Tant que les points 2 et 3 ne sont pas cochés, **ne rien affirmer sur les
-> soldes créateur ni sur le portail de facturation**.
+> **Pattern pour toute future action Stripe** : la clé restricted vit
+> dans `~/totehm/oracle/stripe-claude` (chmod 600, gitignoré). Lecture :
+> `KEY=$(cat ~/totehm/oracle/stripe-claude) && curl -u "$KEY:" …`.
 
 **Comment c'est testé.** Une réplique locale du schéma de production
 (Postgres 16, rôles `anon`/`authenticated`/`service_role`, `auth.uid()`
