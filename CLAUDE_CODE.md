@@ -1,5 +1,11 @@
 # CLAUDE_CODE.md — LOT DU 23/09/2026 · LE CLUB, L'ESPACE, LA BOÎTE
 
+> ✅ **LOT APPLIQUÉ LE 23/09/2026 AU SOIR.** Migration en base, six Edge
+> Functions déployées, push fait (`main → 24b2fa5`). Sept contrôles §10
+> verts sur huit — `figher.club` reste à rattacher côté Vercel (section A,
+> point 3). Deux clics Stripe restent à Wah (webhook `invoice.paid`,
+> Customer portal). Voir `backend/SYSTEM.md` §0 pour l'état exact.
+
 **Le MASTER ARCHITECTURE devient le système.** `figher.club` (la porte + la
 console du membre), `totehm.space` (un Spot naît d'une Habit Box), la
 totehmisation de `higher.boutique` depuis n'importe quelle Box, et
@@ -9,8 +15,6 @@ l'argent des membres dans un grand livre.
 fonctions, puis le push.** Les pages appellent des fonctions qui
 n'existent pas encore en base. Poussées avant, elles s'affichent vides —
 une RPC absente ne lève rien (règle du 16/09).
-
-⚠️ **La migration n'est PAS appliquée en production.** Étape 6.
 
 Le zip contient tout l'historique. **Ne prends que les fichiers listés
 ci-dessous.**

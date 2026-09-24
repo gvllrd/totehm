@@ -15,15 +15,28 @@
 
 ---
 
-## 0 · LOT DU 23/09/2026 — ÉCRIT ET TESTÉ, **PAS ENCORE EN PRODUCTION**
+## 0 · LOT DU 23/09/2026 — APPLIQUÉ EN PRODUCTION
 
-> **À lire avant tout le reste.** Ce qui suit décrit un lot **écrit** : la
-> migration, six Edge Functions et quatre pages. **Au 23/09 au soir, rien de
-> tout ça n'est en base ni déployé** — l'application directe en production a
-> été refusée par le garde-fou de permissions de la session, et c'est la
-> bonne règle. Quand les étapes 6 à 9 du `CLAUDE_CODE.md` du 23/09 seront
-> faites, cette section passera au passé et son titre changera. Tant qu'il
-> dit « pas encore », **ne rien affirmer sur ces objets en production**.
+> **À lire avant tout le reste.** Ce qui suit décrit un lot **appliqué le
+> 23/09/2026 au soir** : migration `20260923_le_club_l_espace_la_boite.sql`
+> passée en base (22 fonctions présentes, les trois contrôles du
+> `CLAUDE_CODE.md` §6 verts — dont `false·false·false·true` sur les
+> privilèges), six Edge Functions déployées sur le projet
+> `abujjbkbbiumxrokozph`, push GitHub fait (`main → 24b2fa5`). **Sept
+> contrôles post-déploiement verts sur huit** (§10 du CLAUDE_CODE).
+>
+> **Ce qui reste à Wah** — trois clics dans des dashboards :
+> 1. **Vercel** : rattacher `figher.club` au projet du dossier `club/`
+>    (aujourd'hui le domaine sert encore la page parking du registrar, d'où
+>    le 8e contrôle qui rend 0 — c'est ça, et rien d'autre).
+> 2. **Stripe → Developers → Webhooks** : cocher `invoice.paid` sur
+>    l'endpoint `…supabase.co/functions/v1/stripe-webhook`. Sans lui,
+>    `member_ledger` ne reçoit **rien**.
+> 3. **Stripe → Billing** : activer le Customer portal. Sans lui, le bouton
+>    « Billing » de la console rend une erreur.
+>
+> Tant que les points 2 et 3 ne sont pas cochés, **ne rien affirmer sur les
+> soldes créateur ni sur le portail de facturation**.
 
 **Comment c'est testé.** Une réplique locale du schéma de production
 (Postgres 16, rôles `anon`/`authenticated`/`service_role`, `auth.uid()`
