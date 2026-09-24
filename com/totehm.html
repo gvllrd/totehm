@@ -566,8 +566,9 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
    ligne du T et de la croix ; posé à droite, sous la croix, il a une
    colonne à lui — et il libère la bande haute pour la phrase du
    classement, qui y remonte. */
-#vnow{position:fixed;top:54px;left:0;right:0;z-index:32;
+#vnow{position:fixed;top:78px;left:0;right:0;z-index:32;
   text-align:center;line-height:1;pointer-events:none}
+body.ordering #vnow{display:none}
 /* ⚠️ TROIS LIGNES · 24/09/2026. Titre (b) + sous-titre 1 (i) + sous-titre 2 (span).
    top:54px au lieu de 40px : 14 px de marge sous la croix #fold-x. */
 #vnow b{font-family:'Space Mono',monospace;font-size:17px;letter-spacing:.2em;
@@ -580,7 +581,7 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
   font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;
   text-transform:uppercase;color:rgba(255,255,255,.32);white-space:nowrap}
 #vnow b,#vnow i,#vnow span{padding:0}
-body.ro #vnow{top:calc(54px + var(--ro-h))}
+body.ro #vnow{top:calc(78px + var(--ro-h))}
 /* La répercussion 3D : le nom pivote dans la direction du voyage, en
    même temps que la pile glisse. */
 @keyframes face-d{from{transform:rotateY(-62deg) translateX(18px);opacity:0}to{transform:none;opacity:1}}
@@ -2263,9 +2264,9 @@ body.gate.entered #filter-badge{
      jetons : `--pad` est la profondeur d'une perforation, et rien ne
      se pose dessus. Au téléphone il n'y a pas de carré — l'écran EST
      le carré — donc la règle générale (22 px) reste la bonne. */
-  #vnow{top:calc(50% - var(--stage)/2 + var(--pad) + 52px);
+  #vnow{top:calc(50% - var(--stage)/2 + var(--pad) + 78px);
         left:0;right:0}
-  body.ro #vnow{top:calc(50% - var(--stage)/2 + var(--pad) + 52px + var(--ro-h))}
+  body.ro #vnow{top:calc(50% - var(--stage)/2 + var(--pad) + 78px + var(--ro-h))}
   body.ro #joy{top:auto}
   body.ro #bigT{top:calc(22px + var(--ro-h))}
 
