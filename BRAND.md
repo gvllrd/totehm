@@ -822,14 +822,25 @@ depuis le 23/09, sur `totehm.com` avant). Certaines sont transverses à tout
 l'écosystème — les quatre coins, le fond noir, le survol, « Higher » en SVG, le
 centrage.
 
-### Polices
+### Polices — la stack et ses rôles sacrés
 
-| Famille | Fallback | Usage | Poids |
-|---|---|---|---|
-| **Space Mono** | monospace | Textes narratifs (G — prose, descriptions) | 400 |
-| **Quantico** | sans-serif | Accents (C), boutons, labels, inputs | 400 (accents) · 700 (boutons) |
-| **Space Mono** | monospace | Métadonnées (M), hints, notes | 400 |
-| **Montserrat Italic** | — | SVG `#higher-slogan` uniquement | 900 |
+**Mise à jour majeure · 24/09/2026 :** deux règles ont bougé.
+Quantico se resserre (INPUTS UTILISATEUR DU TOTEHM UNIQUEMENT — sacré),
+et Montserrat s'élargit (wordmark TOTEHM ET titres de vues, pas seulement
+le slogan Higher). Le principe : une police = un rôle, et le rôle dit ce
+que la chose EST.
+
+| Famille | Poids | Rôle |
+|---|---|---|
+| **Bebas Neue** | 400 | Titres de pages (h1, h2), noms d'œuvres, gros display |
+| **Montserrat** | 600 · 900 italic | **Le nom du produit et ses parties.** Wordmark TOTEHM (600), titres de vue MY WISDOM / MY HABITS etc. dans `#vnow` (600), slogan HIGHER dans le SVG `#higher-slogan` (900 italic). |
+| **Quantico** | 400 · 700 | **SACRÉ : ce que le membre TAPE dans son Totehm.** Nom du Totehm (encadré perforé navy), barre de recherche, textes des habits/objectifs/répulsions/wisdom/visions écrits par le membre, inputs des formulaires de contenu. **JAMAIS** pour la navigation, les liens menu, les boutons d'action, les labels ou les titres. |
+| **Space Mono** | 400 · 700 | **Tout le reste** : métadonnées (M), coordonnées, dates, prix, distances, labels, notes, hints, navigation (Sign out, Terms, Back, Close), liens menu (`.mw-link`), boutons destructifs discrets (`.acct-btn`). C'est la police par défaut du produit. |
+| ~~Montserrat Italic slogan only~~ | — | *Ancienne règle (avant 24/09) : Montserrat exclusivement pour le slogan. Étendue au wordmark et aux titres de vue.* |
+
+**⚠️ Le test qui tranche pour Quantico :** avant de poser `font-family:'Quantico'` sur un élément, se demander « est-ce que c'est du texte que le membre TAPE, ou est-ce que c'est de la navigation / du décor » ? Si navigation → Space Mono (grammaire `.mw-out` / `#terms-corner`). Si input Totehm → Quantico OK. Confondre les deux registres brouille la grammaire visuelle : un bouton en Quantico ressemble à un champ à remplir, un label en Quantico prétend être une saisie qui n'existe pas.
+
+**⚠️ Le test qui tranche pour Montserrat :** est-ce que l'élément NOMME le produit ou une de ses parties structurelles ? Le mot TOTEHM (wordmark), le nom d'une vue (MY WISDOM), le slogan HIGHER → oui, Montserrat. Un CTA, un paragraphe, un input → non, Space Mono ou Quantico.
 
 ### Couleurs
 
@@ -876,12 +887,21 @@ Règle d'or : `@media(hover:hover)` — tout élément dont la couleur est un gr
 (trois canaux < 230, ou blanc translucide) passe en `#fff` au survol.
 Sans exception. Les couleurs d'intention et le coral gardent leur teinte.
 
-**5. Deux familles de boutons**
+**5. Trois familles de boutons — la police dit ce que le geste EST**
 
-- **CTA / achat** — `.btn-sig`, `.trigger-label` : Quantico Bold 700, 14px, `#b0b0b0`.
-- **Navigation / retour** — `#disc-back`, `#xp-close`, `#world-close`, `#terms-link` : Space Mono 400, 10px, uppercase, `letter-spacing:.14em`, `#9a9a9a`.
+- **Input Totehm** — le membre TAPE quelque chose (nom du Totehm, recherche, textes) :
+  Quantico 400/700, encadré perforé navy (`.line-input`, `.btn-sig.claimed`).
+  **SACRÉ** : c'est le seul endroit où Quantico apparaît.
+- **CTA / achat** — passer à l'acte (Get Higher, Buy, Join) :
+  ⚠️ MISE À JOUR 24/09 : anciennement Quantico Bold, maintenant Space Mono
+  ou Quantico selon le contexte. Sur les pages de vente (Discover, Club),
+  Quantico Bold 700 reste OK. Dans le TIROIR MEMBRE, tout devient
+  Space Mono (`.mw-link`) — un menu n'est pas un CTA.
+- **Navigation / utilitaire** — Sign out, Terms, Back, Close, liens menu :
+  Space Mono 400, 9-10px, uppercase, `letter-spacing:.14em`, gris moyen.
+  Grammaire de référence : `.mw-out`, `#terms-corner`, `.mw-link`.
 
-Les deux passent en `#fff` au survol sur desktop.
+Les trois passent en `#fff` au survol sur desktop.
 
 **6. Fond noir, aucun fond gris**
 `background: #000` partout. Un gris comme surface fait "application".
