@@ -1883,6 +1883,27 @@ body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
 .mw-out:hover{color:#fff}
 .mw-sync{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:var(--love);margin-top:8px;min-height:12px}
 
+/* ══ MW-LINK · lien discret gris pour progressive disclosure · 24/09/2026
+   Pas d'encadré perforé — celui-là est réservé aux Totehm-names (identité).
+   Ici c'est un LIEN qui déplie une section, grammaire différente. */
+.mw-link{display:inline-flex;align-items:center;gap:8px;
+  background:none;border:none;padding:6px 8px;cursor:pointer;
+  font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:.02em;
+  color:#b0b0b0;text-decoration:none;text-align:left;
+  transition:color .15s ease;-webkit-tap-highlight-color:transparent}
+@media(hover:hover){.mw-link:hover{color:#fff}}
+.mw-link:active{color:#fff}
+.mw-link-sm{font-size:11px;letter-spacing:.14em;color:var(--g-mid);text-transform:uppercase}
+.mw-panel{display:flex;flex-direction:column;gap:10px;padding:8px 6px 4px;
+  border-left:1px solid rgba(255,255,255,.08);margin-left:4px}
+.mw-state{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;
+  color:var(--g-light);text-transform:uppercase}
+
+/* Icône TotehmBot : joystick roté horizontal — navy présent, rouge-violet
+   passé, bleu clair futur. Le SVG vit inline dans le HTML. */
+.tg-link{gap:10px}
+.tg-icon{width:22px;height:22px;flex:0 0 auto;display:block}
+
 /* ══ LE TIROIR DU CERCLE · 19/09/2026 ════════════════════════════════
    Aucune bordure nulle part — règle de marque. Ce qui sépare, c'est
    l'écart et la surface. */
@@ -2670,12 +2691,13 @@ body.gate.entered #filter-badge{
        la carte a son propre fichier, la vidéo n'annonçait plus rien.
        Sans deuxième écran, la barre n'a plus de raison d'être en bas —
        elle rejoint l'identité, dans le flux du haut. -->
-  <div id="gate-search">
-    <input class="line-input" id="search-input" maxlength="24"
-           placeholder="search a Totehm" autocomplete="off" spellcheck="false"
-           aria-label="Search a Totehm">
-    <div class="note dim hide" id="search-note"></div>
-  </div>
+  <!-- ⚠️ #gate-search DÉMÉNAGÉ DANS LE TIROIR MEMBRE · 24/09/2026.
+       Wah : « j'enléverais la barre de recherche de totehm aussi ».
+       L'atterrissage se réduit à l'astéroïde + TAP TO OPEN (Lot 2).
+       La recherche a rejoint l'ident-block du tiroir membre, encadrée
+       navy perforé comme le nom du Totehm : deux Totehm-names, une
+       grammaire visuelle. -->
+
 
   <!-- ══ LES TROIS PORTES VIVENT ICI · 19/09/2026 ═══════════════════
        Elles mènent toutes les trois DEHORS — l'autre domaine, la
@@ -2974,101 +2996,50 @@ body.gate.entered #filter-badge{
            champs « nom du Totehm » dans le même document finiraient par
            afficher deux valeurs différentes, et `paintNameButton()` n'en
            peindrait qu'un. -->
+      <!-- ══ IDENTITÉ · encadré perforé navy ═══════════════════════════
+           Deux champs, deux noms de Totehm : le mien, celui que je cherche.
+           L'encadré perforé navy est LE langage du nom du Totehm — nulle
+           part ailleurs dans ce tiroir. Règle du 24/09/2026. -->
       <div class="set-block" id="ident-block">
         <button class="btn-sig gid" id="name-btn">Name of my Totehm</button>
         <input class="line-input hide" id="set-name" maxlength="24" placeholder="my Totehm" autocomplete="off" spellcheck="false">
         <div class="note dim hide" id="name-note"></div>
 
-        <button class="btn-sig gid" id="vis-btn">Visibility</button>
-        <div class="hide" id="vis-panel"><div class="row">
-          <button class="size-btn" id="set-private">Private</button>
-          <!-- ⚠️ LE MOT DIT CE QU'IL FAIT. « Visible to members » ne
-               disait rien de l'argent ; c'est pourtant ce que ça
-               déclenche. -->
-          <button class="size-btn" id="set-members">Visible to my paying followers</button>
-        </div></div>
+        <input class="line-input" id="search-input" maxlength="24" placeholder="Search a Totehm" autocomplete="off" spellcheck="false">
+        <div class="note dim hide" id="search-note"></div>
       </div>
 
-      <!-- ══ L'ESPACE CRÉATEUR S'OUVRE AVEC LA VISIBILITÉ PAYANTE ══════
-           Il ne s'affiche que si le membre a choisi d'être suivi contre
-           paiement : avant ce choix, il n'a rien à y faire. -->
-      <!-- ══ LE TIROIR DU CERCLE · 19/09/2026 ═══════════════════════
-           Il s'ouvre ICI, sous la visibilité payante. Il ne renvoie nulle
-           part : une redirection vers une autre page, c'est perdre la
-           moitié des gens au moment précis où ils disent oui. -->
-      <div class="set-block hide" id="creator-block">
-        <div id="cercle">
-
-          <!-- LE VOILE — il ne couvre que si le Totehm est incomplet -->
-          <div id="cercle-voile">
-            <div class="cv-hook">TURN YOUR DISCIPLINE<br>INTO CASH FLOW</div>
-            <div class="cv-say">Lock in <b>80 %</b> recurring revenue on every
-              member who accesses your <svg class="higher-inline" viewBox="0 0 600 200"
-              role="img" aria-label="Higher"><use href="#higher-badge"></use></svg>
-              Self and your private spots.</div>
-            <!-- Le simulateur : on ne promet pas, on multiplie. Le chiffre
-                 vient du prix que le créateur vient de poser, ou de 9 €
-                 tant qu'il n'en a pas posé. -->
-            <div class="cv-sim">
-              <div class="cv-row"><span>10 members</span><b id="sim-10">800 €/year</b></div>
-              <div class="cv-row"><span>100 members</span><b id="sim-100">8 000 €/year</b></div>
-            </div>
-            <div class="cv-bar"><i id="cv-fill"></i></div>
-            <div class="cv-step" id="cv-step">0 of 5 views filled</div>
-            <button class="btn-sig" id="cv-go" type="button">Complete my Totehm</button>
-          </div>
-
-          <!-- LE TABLEAU DE BORD — flouté dessous tant que le voile est là -->
-          <div id="cercle-corps">
-            <div class="cc-etat"><i id="cc-dot"></i><span id="cc-mot">Not live yet</span></div>
-
-            <div class="cc-bloc">
-              <div class="lbl-s">Your membership fee</div>
-              <div class="cc-prix">
-                <input id="cc-fee" type="number" inputmode="decimal" min="3" max="500" step="1" placeholder="9">
-                <span class="cc-cur">€ / month</span>
-                <button class="btn-sig" id="cc-save" type="button">Save</button>
-              </div>
-              <div class="cc-split"><i class="a"></i><i class="b"></i></div>
-              <div class="lbl-s" id="cc-split-say">80 % you · 20 % totehm</div>
-              <div class="note-err" id="cc-err"></div>
-            </div>
-
-            <div class="cc-kpi">
-              <div class="cc-tile"><div class="lbl-s">Active paying members</div>
-                <div class="cc-val" id="cc-n">0</div></div>
-              <div class="cc-tile"><div class="lbl-s">Ready for next payout</div>
-                <div class="cc-val" id="cc-eur">0 €</div></div>
-            </div>
-
-            <button class="btn-sig" id="cc-copy" type="button">Monetize it — copy my link</button>
-
-            <div class="cc-bloc">
-              <div class="lbl-s">Where I get paid — 1st of every month</div>
-              <div class="cc-pay">
-                <button class="size-btn" id="pay-iban" type="button">IBAN</button>
-                <button class="size-btn" id="pay-paypal" type="button">PayPal</button>
-              </div>
-              <input class="line-input" id="pay-handle" placeholder="IBAN" autocomplete="off" spellcheck="false">
-              <div class="note dim" id="pay-note"></div>
-            </div>
-          </div>
-
+      <!-- ══ MY CLUB · progressive disclosure ═══════════════════════════
+           Un lien discret gris. Déplié : état membre + monétisation +
+           passerelle SSO vers figher.club/console pour l'IBAN et le reste.
+           Le dashboard complet vit dans le club — ici on montre l'état et
+           on ouvre les commandes principales. -->
+      <div class="set-block" id="club-block">
+        <button class="mw-link" id="club-toggle" type="button" aria-expanded="false">My Club</button>
+        <div class="mw-panel hide" id="club-panel">
+          <div id="mw-sub"></div>
+          <div class="mw-state" id="club-state"></div>
+          <a class="mw-link" id="club-console" href="https://www.figher.club/console" target="_blank" rel="noopener">Manage everything on figher.club →</a>
         </div>
       </div>
 
-      <!-- Abonnement : offre unique Higher Club, peinte par paintSubscription() -->
-      <div id="mw-sub"></div>
-
-      <!-- TotehmBot : le membre pose ses spots depuis Telegram.
-           Rendu par paintTelegram(). Caché tant qu'il n'est pas abonné :
-           bot-reply refuserait /spot, le bouton serait une impasse. -->
+      <!-- ══ TOTEHMBOT · icône + porte Telegram ════════════════════════
+           Fonctionnalité clé du Totehm — pas dans le club. Icône = joystick
+           rotée horizontalement (rouge-violet passé, bleu clair futur, navy
+           présent). Ouvre la conversation Telegram en un tap. -->
       <div class="set-block hide" id="tg-block">
-        <div class="menu-row">
-          <button class="btn-sig" id="tg-btn" type="button">Connect TotehmBot</button>
-          <button class="set-note hide" id="tg-toggle" type="button"
-                  style="background:none;border:none;cursor:pointer;text-align:left"></button>
+        <button class="mw-link tg-link" id="tg-toggle" type="button" aria-expanded="false">
+          <svg class="tg-icon" viewBox="0 0 512 512" aria-hidden="true">
+            <circle cx="256" cy="256" r="210" fill="#333366"/>
+            <circle cx="166" cy="256" r="46" fill="#743169"/>
+            <circle cx="346" cy="256" r="46" fill="#36498c"/>
+          </svg>
+          <span>TotehmBot</span>
+        </button>
+        <div class="mw-panel hide" id="tg-panel">
+          <button class="btn-sig" id="tg-btn" type="button">Open TotehmBot in Telegram ↗</button>
           <div class="note dim" id="tg-note"></div>
+          <a class="mw-link mw-link-sm" href="/club/totehmbot" target="_blank" rel="noopener">what is TotehmBot?</a>
         </div>
       </div>
 
@@ -3775,16 +3746,12 @@ function renderSettings(){
     paintNameButton();  /* affiche le nom claimé + look figé si validé */
   }
   $('name-note').textContent='';$('name-note').className='note dim';
-  $('set-private').classList.toggle('on',(state.vis||'private')!=='members');
-  $('set-members').classList.toggle('on',state.vis==='members');
-  /* Si visibilité déjà définie -> options visibles direct, bouton caché */
-  if(state.vis){
-    $('vis-btn').classList.add('hide');
-    $('vis-panel').classList.remove('hide');
-  }else{
-    $('vis-btn').classList.remove('hide');
-    $('vis-panel').classList.add('hide');
-  }
+  /* ⚠️ VISIBILITÉ + MONÉTISATION DÉMÉNAGÉES DANS FIGHER.CLUB/CONSOLE
+     · 24/09/2026. Wah : « tout le logique de vente du figher club se
+     trouve dans le figher club ». Le tiroir cercle en com/ était un
+     double du dashboard console — deux tableaux à tenir d'accord, exactement
+     le piège qu'on évite. state.vis reste en base pour la RLS, l'UI de
+     réglage vit désormais sur figher.club/console. */
 }
 
 /* Plus d'étage du tout : un seul écran. Cette fonction ne fait plus que
@@ -6586,12 +6553,6 @@ morph($('name-btn'),$('set-name'),$('name-note'),true);        /* réservé aux 
    `morph` sur un nœud absent lèverait ici même — donc au chargement du
    module, donc page blanche. C'est arrivé trois fois cette semaine. */
 
-/* Visibility : réservé aux membres */
-$('vis-btn').onclick=requireMember(()=>{
-  $('vis-btn').classList.add('hide');
-  $('vis-panel').classList.remove('hide');
-});
-
 /* Peint le bouton Name selon l'état :
    - nom claimed  -> bouton avec le nom et look perforé bleu figé
    - pas de nom   -> bouton neutre "Name of my Totehm" */
@@ -6646,155 +6607,35 @@ $('set-name').addEventListener('keydown',async e=>{
   /* Le bouton reprend sa place, avec le nom et le look bleu perforé figé */
   setTimeout(()=>{paintNameButton();note.textContent='';note.className='note dim';},900);
 });
-$('set-private').onclick=()=>{state.vis='private';save();renderSettings();peintCreateur();};
-$('set-members').onclick=()=>{state.vis='members';save();renderSettings();peintCreateur();};
+/* ══ MONÉTISATION DÉMÉNAGÉE DANS FIGHER.CLUB/CONSOLE · 24/09/2026 ═════
+   Tout le tiroir cercle (voile, prix, KPI, IBAN, split, copier-lien) a
+   quitté totehm.com : le dashboard vit sur figher.club/console, un
+   seul endroit, un seul appel `creator_cercle()`. Wah : « L'espace
+   membre n'a plus raison d'être dans com puisque tout le logique de
+   vente se trouve dans le figher club ». Ce qui reste en com/ :
+   l'identité (nom, recherche), l'accès au bot, les portes Higher/Cloth.
+   La visibilité est un COMMUTATEUR DE MONÉTISATION — elle se règle avec
+   les gains, pas dans un tiroir séparé.
+   Retour arrière : commit précédent (git log). Les fonctions serveur
+   (`creator_cercle`, `creator-price`, `creator_payout_set`) sont
+   inchangées et servent la console. */
 
-/* ══ LE TIROIR DU CERCLE · 19/09/2026 ════════════════════════════════
-   Il s'ouvre sous la visibilité payante, et il ne renvoie nulle part :
-   une redirection vers une autre page, c'est perdre la moitié des gens
-   au moment précis où ils disent oui.
-
-   ⚠️ C'EST LE TOTEHM QUI OUVRE LA PORTE, PAS UN ABONNEMENT. Tant qu'une
-   des cinq vues est vide, le tableau de bord reste flouté sous un voile
-   — on voit ce qu'on rate, et le bouton emmène À LA PREMIÈRE VUE VIDE.
-   Pas « quelque part » : là où il manque quelque chose.
-
-   ⚠️ STRIPE CONNECT EST ABANDONNÉ. Il exigeait un profil plateforme qui
-   bloquait tout depuis trois jours, un KYC par créateur, et un compte
-   connecté avant le premier euro. L'argent arrive sur le compte de la
-   plateforme, on vire 80 % le 1er du mois. Dix minutes par mois contre
-   une usine. À cent créateurs, Connect redeviendra le bon outil — les
-   tables ne bougeront pas, seule la sortie changera. */
-let CERCLE=null, ETAT5=null;
-
-/* L'ordre des vues est celui du parcours, pas celui de l'alphabet : on
-   envoie le membre là où il manque quelque chose, en commençant par le
-   présent. */
-const CINQ=[['habits','habits'],['objectives','objectives'],
-            ['repulsions','repulsions'],['wisdom','wisdom'],['visions','visions']];
-
-async function peintCreateur(){
-  const b=$('creator-block'); if(!b)return;
-  const ouvert = !!me && state.vis==='members';
-  b.classList.toggle('hide',!ouvert);
-  if(!ouvert)return;
-  try{
-    const [{data:e},{data:c}] = await Promise.all([
-      sb.rpc('totehm_complete'), sb.rpc('creator_cercle')]);
-    ETAT5=e||null; CERCLE=c||null;
-    peintTiroir();
-  }catch(ex){ console.error('[totehm] cercle:',ex&&ex.message||ex); }
-}
-
-function peintTiroir(){
-  const w=$('cercle'); if(!w||!ETAT5)return;
-  const complet=!!ETAT5.complete;
-  w.classList.toggle('ouvert',complet);
-
-  /* ── LE VOILE ── */
-  const n=ETAT5.remplies||0;
-  $('cv-fill').style.width=Math.round(n/5*100)+'%';
-  $('cv-step').textContent=n+' of 5 views filled';
-  /* Le simulateur multiplie le prix RÉEL du créateur — ou 9 € tant qu'il
-     n'en a pas posé. Promettre un chiffre qui n'est pas le sien, ce
-     serait vendre la vitrine de quelqu'un d'autre. */
-  const p=(CERCLE&&CERCLE.prix?CERCLE.prix/100:9);
-  const an=k=>Math.round(p*k*12*0.8).toLocaleString('en-US').replace(/,/g,' ')+' €/year';
-  $('sim-10').textContent=an(10);
-  $('sim-100').textContent=an(100);
-
-  /* ── LE TABLEAU DE BORD ── */
-  if(!CERCLE)return;
-  const dev=(CERCLE.devise||'eur').toUpperCase();
-  const somme=c=>new Intl.NumberFormat(navigator.language||'en',
-    {style:'currency',currency:dev,maximumFractionDigits:0}).format((c||0)/100);
-  const vivant = complet && !!CERCLE.prix && !!CERCLE.payout_method;
-  w.classList.toggle('live',vivant);
-  $('cc-mot').textContent = vivant ? 'Live — your circle is open'
-    : !complet ? 'Complete your Totehm first'
-    : !CERCLE.prix ? 'Set your monthly fee'
-    : 'Tell us where to pay you';
-  if(CERCLE.prix)$('cc-fee').value=String(Math.round(CERCLE.prix/100));
-  $('cc-n').textContent=String(CERCLE.abonnes||0);
-  $('cc-eur').textContent=somme(CERCLE.a_moi);
-  if(CERCLE.payout_method){
-    $('pay-handle').placeholder = CERCLE.payout_method==='iban' ? 'IBAN' : 'PayPal email';
-    $('pay-note').className='note dim';
-    $('pay-note').textContent='paid to ····'+(CERCLE.payout_fin||'');
-    $('pay-iban').classList.toggle('on',CERCLE.payout_method==='iban');
-    $('pay-paypal').classList.toggle('on',CERCLE.payout_method==='paypal');
-  }
-}
-
-/* ── LE BOUTON DU VOILE : À LA PREMIÈRE VUE VIDE ──────────────────────
-   ⚠️ IL FERME L'ESPACE MEMBRE ET IL DÉPLIE LE TOTEHM. On est sur
-   l'atterrissage quand on clique : envoyer sur une vue sans ouvrir le
-   Totehm, ce serait pointer une porte fermée. */
-$('cv-go').onclick=()=>{
-  if(!ETAT5)return;
-  const vide=(CINQ.find(([k])=>!ETAT5[k])||CINQ[0])[1];
-  $('member-window').classList.remove('show');
-  if(document.body.classList.contains('gate')){
-    location.href='totehm.html#in:'+vide; location.reload(); return; }
-  setView(vide);
+/* ══ MY CLUB · progressive disclosure ════════════════════════════════
+   Un tap déplie le panneau (état + lien SSO vers la console). */
+$('club-toggle').onclick=()=>{
+  const panel=$('club-panel'), btn=$('club-toggle');
+  const open=panel.classList.toggle('hide')===false;
+  btn.setAttribute('aria-expanded', open?'true':'false');
 };
 
-/* ── LE PRIX ─────────────────────────────────────────────────────── */
-$('cc-save').onclick=async()=>{
-  const e=Number($('cc-fee').value), err=$('cc-err'); err.textContent='';
-  if(!Number.isFinite(e)||e<3||e>500){ err.textContent='Pick something between 3 and 500 €.'; return; }
-  const b=$('cc-save'); b.disabled=true; b.textContent='saving…';
-  try{
-    const {data:{session}}=await sb.auth.getSession();
-    const r=await fetch('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/creator-price',{
-      method:'POST',
-      headers:{'authorization':'Bearer '+session.access_token,'apikey':SB_ANON,
-               'content-type':'application/json'},
-      body:JSON.stringify({cents:Math.round(e*100)})});
-    if(!r.ok)throw new Error(String(r.status));
-    await peintCreateur();
-  }catch(ex){ console.error('[totehm] price',ex&&ex.message||ex);
-              err.textContent='Not saved. Try again.'; }
-  b.disabled=false; b.textContent='Save';
-};
-
-/* ── OÙ J'ENCAISSE ───────────────────────────────────────────────── */
-let payMeth='iban';
-function choisitPay(m){ payMeth=m;
-  $('pay-iban').classList.toggle('on',m==='iban');
-  $('pay-paypal').classList.toggle('on',m==='paypal');
-  $('pay-handle').placeholder = m==='iban' ? 'IBAN' : 'PayPal email';
-  $('pay-handle').focus(); }
-$('pay-iban').onclick  =()=>choisitPay('iban');
-$('pay-paypal').onclick=()=>choisitPay('paypal');
-$('pay-handle').addEventListener('keydown',async e=>{
-  if(e.key!=='Enter')return;
-  const v=$('pay-handle').value.trim(); const n=$('pay-note');
-  if(v.length<6){ n.className='note no'; n.textContent='that does not look complete'; return; }
-  n.className='note dim'; n.textContent='saving…';
-  /* ⚠️ LE CHAMP SE VIDE DÈS QUE C'EST PARTI. Un IBAN qui reste affiché
-     dans un écran ouvert, c'est un IBAN lu par-dessus l'épaule. */
-  apres(sb.rpc('creator_payout_set',{p_method:payMeth,p_handle:v}));
-  $('pay-handle').value='';
-  setTimeout(peintCreateur,500);
-});
-
-/* ── LE LIEN À PARTAGER ──────────────────────────────────────────── */
-$('cc-copy').onclick=async()=>{
-  const nom=(myProfile&&myProfile.pseudo)||'';
-  if(!nom){ dis('name your Totehm first'); return; }
-  /* ⚠️ LE LIEN D'ABONNEMENT MÈNE AU CLUB · 23/09/2026. Il menait à la
-     lecture seule du Totehm — or un Totehm MONÉTISÉ ne se lit plus que par
-     ses abonnés (`_shared_with_me`) : le visiteur tombait sur « private »
-     sans porte pour s'abonner. La console de figher.club ouvre l'offre
-     (`?to=`), et le Checkout part de là. */
-  const lien='https://www.figher.club/console?to='+encodeURIComponent(nom);
-  try{ await navigator.clipboard.writeText(lien);
-       const b=$('cc-copy'); b.textContent='copied ✓';
-       setTimeout(()=>{b.textContent='Monetize it — copy my link';},1600);
-  }catch(_){ /* Le presse-papier refuse hors https ou sans geste : on
-                 montre le lien, le membre le copie à la main. */
-    $('cc-err').textContent=lien; }
+/* Le lien vers la console passe par le pont SSO — le membre ne se
+   reconnecte pas. ssoVersDomaine est défini par sso_snippet.js copié
+   plus haut dans le module. */
+$('club-console').onclick=e=>{
+  if(!me)return; /* invité : le href brut ouvre la porte du club */
+  e.preventDefault();
+  if(typeof ssoVersDomaine==='function') ssoVersDomaine('club','/console');
+  else location.href='https://www.figher.club/console';
 };
 
 
@@ -7188,7 +7029,7 @@ function memberPaint(){
    Un point vert qui ne fait rien est une porte peinte sur un mur. */
 $('conn-bar').onclick=()=>{
   if(!document.body.classList.contains('gate'))return;
-  $('member-window').classList.add('show'); memberPaint(); peintCreateur(); };
+  $('member-window').classList.add('show'); memberPaint(); };
 
 /* Le Dashboard se repeint à chaque ouverture : réglages (nom, visibilité,
    suppression) + abonnement (offre unique). */
