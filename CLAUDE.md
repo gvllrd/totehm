@@ -387,58 +387,71 @@ utilisateurs du dashboard.
 Les Spots vieillissent : relancer `select public.demo_seed();` (Claude
 Code, MCP) remet une semaine de Spots à partir de maintenant.
 
-### ⛔ L'ATTERRISSAGE DE TOTEHM.COM EST UNE CARTE « LSD PAPER » — 24/09/2026
+### ⛔ L'ATTERRISSAGE DE TOTEHM.COM EST UN PAPIER — 25/09/2026
 
-**Un seul objet** sur l'atterrissage de `com/totehm.html` : un fin carré
-perforé navy, **deux faces**, qui se retourne sur l'axe Y comme une
-carte à jouer, en apesanteur au centre de l'écran. Devant : `TAP TO
-OPEN`. Derrière : le **pseudo** du membre connecté et nommé, sinon `TAP
-TO OPEN` encore. Un tap (ou Entrée) = `enter()`. Le logo assemblé,
-[Open my Totehm], la recherche et les trois portes ont quitté l'écran
-(la recherche et les portes vivent dans le tiroir membre).
+**Un seul objet** sur l'atterrissage de `com/totehm.html` : un petit
+carré de papier perforé (110 px, `--gate-size`), **deux faces**, en
+apesanteur au centre de l'écran. **Devant : le logo** — les quatre
+calques SVG de `#gate-logo`, ceux-là mêmes qui se déconstruisent en
+Totehm déplié. **Derrière : « Tap to open it »**, ou le **nom du Totehm**
+du membre connecté — Quantico 10 px, gris, discret. L'idée de Wah : toute
+la stratégie d'une vie tient dans ce morceau de papier, et il doit se
+lire comme un objet vrai.
 
-**⚠️ UNE `animation` CSS ÉCRASE LE `transform` DE SON ÉLÉMENT.** Le
-premier astéroïde posait l'inclinaison du capteur sur la carte qui
-tournait : elle n'existait pas. Trois couches emboîtées, un maître
-chacune, `preserve-3d` sur les trois :
+**⚠️ LE TOTEHM DÉPLIÉ NE BOUGE PAS, NI SA DÉCONSTRUCTION.** Le 24/09 le
+logo avait été caché hors écran pour faire tourner une carte vide : la
+déconstruction continuait, invisible, et on entrait dans le noir. C'était
+l'erreur. Les calques SONT la face avant du papier. Au tap, le papier se
+**pose** face logo, à plat, puis `enter()` joue sa séquence d'origine,
+ligne pour ligne (`measure()`, `.entered`, `DUR + REVEAL + 120`). Mesuré :
+chaque calque arrive sur sa pièce du Totehm au dixième de pixel, comme
+avant, quel que soit l'angle du papier au moment du tap.
 
-| couche | ce qu'elle fait | qui la conduit |
-|---|---|---|
-| `.ast-float` | la dérive (7,8 s aller-retour) | CSS |
-| `#gate-tilt` | l'inclinaison, ±14° (souris ±10°) | JS, lissé frame par frame |
-| `#gate-card` | le retournement (12 s le tour, adouci à chaque demi-tour) | CSS |
+**⚠️ ON NE MESURE JAMAIS UN PAPIER INCLINÉ.** `measure()` lit des
+rectangles APRÈS transformation. `PAPIER.poser()` part de la position ET
+de la vitesse du moment (Hermite cubique, 0,3 à 0,78 s selon le chemin),
+arrive face logo à vitesse nulle, puis `aPlat()` pose l'identité EXACTE :
+`transform` vide, `.is-flat` (les deux faces dans le même plan, la
+lumière retirée). Seulement là, `enter()` continue.
 
-**⚠️ UNE PERSPECTIVE SE RÈGLE SUR LA TAILLE DE L'OBJET.** 1 400 px pour
-un cube de 110 px, c'est une projection presque plate : on voyait un
-carré qui s'écrase et s'étire, pas un volume. La carte fait 168–232 px
-sous 760 px.
+**Le moteur (`PAPIER`, module GATE) — une seule matrice par frame :**
 
-**⚠️ ON NE RETIRE PAS UNE ANIMATION EN COURS, ON LA FIGE.** Au tap,
-`lsdOut()` lit l'angle réel dans la matrice calculée, y fige la carte
-et la ramène face avant par le plus court chemin pendant qu'elle
-s'efface. Retirer l'animation seule la faisait sauter à 0°.
+| ce qu'il fait | comment |
+|---|---|
+| il tourne | ~18 s le tour, lent face au regard, vif sur la tranche |
+| il flotte | trois sinus de périodes premières entre elles — jamais la même boucle |
+| il suit | souris (il regarde le curseur, ±15°/±20°, glisse de 7 px) ou téléphone (±16°/±20°), par RESSORT légèrement sous-amorti |
+| on le tient | appuyer l'enfonce (0,965) et le retient ; glisser le fait tourner ; lâcher lui laisse l'élan |
+| il prend la lumière | voile par face selon sa normale face à une lumière d'en haut à gauche — nul à plat. Pas une ombre portée. |
 
-**⚠️ LE NOIR DU GATE SE RETIRE, SINON ON ENTRE DANS LE NOIR.** Les
-quatre calques du logo se déconstruisent toujours — hors écran
-(`#gate-logo` invisible, gardé pour `measure()`). Tant que le fond du
-gate restait opaque, le Totehm apparaissait DESSOUS et l'on fixait un
-écran noir deux secondes. `body.gate.entered #gate` passe transparent,
-et le gate part à `max(DUR, REVEAL + UI_FADE)` : 1,47 s au lieu de 2,03.
+**⚠️ UNE ANIMATION CSS ÉCRASE LE `transform` DE SON ÉLÉMENT.** C'est pour
+ça que tout passe par le JS : rotation, capteur, dérive et doigt doivent
+se composer, et se poser ENSEMBLE face logo. Le moteur ne tourne que sur
+l'atterrissage au repos ; posé (Totehm ouvert, mouvement réduit), il
+s'arrête et ne coûte plus rien. Au repli, il repart de l'arrêt quand le
+logo est revenu (`fold()` → `PAPIER.reveiller()`).
 
-**⚠️ iOS : `requestPermission()` DANS `touchend` OU `click`.** Safari ne
-compte pas `touchstart` comme un geste : la demande y est refusée sans
-dialogue. Refus = pas d'inclinaison, la carte tourne quand même. Le
-zéro du capteur est la main du membre (première mesure, qui dérive
-lentement), pas l'horizon.
+**⚠️ UN GLISSÉ N'EST PAS UN TAP.** Au-delà de 7 px, le geste fait tourner
+le papier et le clic qui suit est avalé (écouteur en capture sur la
+scène). Au clavier, `#gate-enter` reste le vrai bouton, sur la face.
 
-**⚠️ UNE TRANSITION NE PART JAMAIS D'UN `display:none`.** Au repli,
-`#conn-bar` sort du `display:none` du Totehm : il réapparaissait d'un
-coup par-dessus le T. Son retour différé est une ANIMATION liée à
-`body.folding`.
+**⚠️ iOS : `requestPermission()` DANS `touchend` OU `click`, jamais
+`touchstart`** — Safari ne le compte pas comme un geste, la demande
+serait refusée sans dialogue. **Et jamais dans le tap qui ouvre le
+Totehm** : le dialogue tomberait par-dessus le déploiement. Il vient au
+premier autre geste sur l'atterrissage — un glissé sur le papier, ou le
+retour par la croix. Le zéro du capteur est la main du membre (première
+mesure, qui suit lentement), pas l'horizon.
 
-Mouvement réduit : ni retournement, ni dérive, ni capteur — la face
-avant, immobile. Diagnostic : `__totehm_lsd` (gyro · permission ·
-souris · réduit), repris dans `__totehmDiag().asteroide`.
+**Quantico au dos** : c'est la place du NOM du Totehm, et le nom s'écrit
+en Quantico (BRAND, « sacré ») ; « Tap to open it » n'est que cette place
+encore vide. Quantico n'a pas une chasse fixe : `paintAsteroid()` MESURE,
+passe le nom sur deux lignes (coupé au séparateur le plus proche du
+milieu) puis rapetisse jusqu'à 7,5 px s'il le faut.
+
+Mouvement réduit : le papier reste posé, face logo. Diagnostic :
+`__totehm_lsd` (vivant · gyro · permission · souris · lancers · réduit),
+repris dans `__totehmDiag().asteroide`.
 
 ### ⛔ TOTEHM.SPACE — UN SPOT EST UNE HABITUDE À PLUSIEURS — 23/09/2026
 
@@ -1450,8 +1463,8 @@ au-dessus. `floor`, `animateSwap()`, `foldGesture()`, `body.in-map` et
 `body.in-settings` sont supprimés — ne pas les réintroduire.
 
 ```
-ATTERRISSAGE  (body.gate)          le logo assemblé, Search, le radar
-     ↕  clic logo / [Open my Totehm]     ↕  croix #fold-x · geste bas · Échap
+ATTERRISSAGE  (body.gate)          le papier : logo au recto, nom au verso
+     ↕  tap sur le papier (il se pose)   ↕  croix #fold-x · geste bas · Échap
 SAISIE        (body sans .gate)    le rail, les habitudes
 ```
 
@@ -2312,9 +2325,9 @@ navy. L'œil lit un écran qui se repeint, pas deux pages.
 ### L'ATTERRISSAGE TIENT SUR UN ÉCRAN — 17/09/2026
 
 > **⚠️ LE CONTENU DE L'ÉCRAN EST DÉPASSÉ LE 24/09** — voir **⛔
-> L'ATTERRISSAGE DE TOTEHM.COM EST UNE CARTE « LSD PAPER »**. Le logo,
-> [Open my Totehm] et la recherche ont quitté l'atterrissage. La règle
-> reste : UN écran, rien à faire défiler.
+> L'ATTERRISSAGE DE TOTEHM.COM EST UN PAPIER**. Le logo vit sur la face
+> du papier ; [Open my Totehm] et la recherche ont quitté l'atterrissage.
+> La règle reste : UN écran, rien à faire défiler.
 
 Le logo, **[Open my Totehm]**, la carte de visite et la **barre de
 recherche** sont TOUS dans le flux du haut, dans cet ordre — sur

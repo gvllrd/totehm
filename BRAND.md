@@ -834,7 +834,7 @@ que la chose EST.
 |---|---|---|
 | **Bebas Neue** | 400 | Titres de pages (h1, h2), noms d'œuvres, gros display |
 | **Montserrat** | 600 · 900 italic | **Le nom du produit et ses parties.** Wordmark TOTEHM (600), titres de vue MY WISDOM / MY HABITS etc. dans `#vnow` (600), slogan HIGHER dans le SVG `#higher-slogan` (900 italic). |
-| **Quantico** | 400 · 700 | **SACRÉ : ce que le membre TAPE dans son Totehm.** Nom du Totehm (encadré perforé navy), barre de recherche, textes des habits/objectifs/répulsions/wisdom/visions écrits par le membre, inputs des formulaires de contenu. **JAMAIS** pour la navigation, les liens menu, les boutons d'action, les labels ou les titres. |
+| **Quantico** | 400 · 700 | **SACRÉ : ce que le membre TAPE dans son Totehm.** Nom du Totehm (encadré perforé navy, et le dos du papier de l'atterrissage — où « Tap to open it » n'est que la place du nom encore vide), barre de recherche, textes des habits/objectifs/répulsions/wisdom/visions écrits par le membre, inputs des formulaires de contenu. **JAMAIS** pour la navigation, les liens menu, les boutons d'action, les labels ou les titres. |
 | **Space Mono** | 400 · 700 | **Tout le reste** : métadonnées (M), coordonnées, dates, prix, distances, labels, notes, hints, navigation (Sign out, Terms, Back, Close), liens menu (`.mw-link`), boutons destructifs discrets (`.acct-btn`). C'est la police par défaut du produit. |
 | ~~Montserrat Italic slogan only~~ | — | *Ancienne règle (avant 24/09) : Montserrat exclusivement pour le slogan. Étendue au wordmark et aux titres de vue.* |
 
@@ -891,7 +891,8 @@ Sans exception. Les couleurs d'intention et le coral gardent leur teinte.
 
 - **Input Totehm** — le membre TAPE quelque chose (nom du Totehm, recherche, textes) :
   Quantico 400/700, encadré perforé navy (`.line-input`, `.btn-sig.claimed`).
-  **SACRÉ** : c'est le seul endroit où Quantico apparaît.
+  **SACRÉ** : c'est le seul endroit où Quantico apparaît — avec le dos du
+  papier de l'atterrissage, qui porte ce même nom (25/09).
 - **CTA / achat** — passer à l'acte (Get Higher, Buy, Join) :
   ⚠️ MISE À JOUR 24/09 : anciennement Quantico Bold, maintenant Space Mono
   ou Quantico selon le contexte. Sur les pages de vente (Discover, Club),
