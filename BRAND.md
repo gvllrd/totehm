@@ -391,8 +391,27 @@ Never turn SPACE into a generic social network.
 `Search · Create · My space`. Everything else appears only when asked for,
 where it was asked for. *Three buttons instead of ten.*
 
-It must look like neither `totehm.com` (no navy paper, no rail, no T, no
-controller) nor the boutique. **But its content is the Totehm's own Box,
+It must look like neither `totehm.com` (no navy paper, no rail, no T) nor
+the boutique.
+
+> **⚠️ 25/09/2026 — THE CONTROLLER CAME IN.** Wah: "put the joystick of
+> totehm.html directly on the landing of totehm.space, under the radar".
+> The three commands are gone; **the Totehm's own controller** (the round
+> pad, its three stacked dots, four chevrons) drives **five notches**:
+> centre *Live & today* (navy), up *Create a Spot* (light blue), down *My
+> space* (red-violet), left *By intention* (wisdom), right *Tomorrow &
+> beyond* (vision). The controller is a shared LANGUAGE, like the Box —
+> copied, never imported. The radar shrank to leave it the bottom of the
+> screen; the Spots on it are coloured **dots**, and their distance reads
+> in km (miles in the United States). Greys, not pure black, separate the
+> parts (background · radar disc · panel · section).
+>
+> **A Spot is no longer drawn as its Habit Box.** The Habit Box is kept
+> for the CHOICE of the habit. The action box (navy, same format) trades
+> the rhythm for **date · time · duration**, then **the place** (a Google
+> Maps link), **places · automatic/manual**, **social/silent**, and a
+> `[details]` drawer: the member's word (Quantico 400), then WHY and
+> TRIGGER. **But its content is the Totehm's own Box,
 exactly**: a Spot is shown as the Habit Box it came from — same intention
 tick, same name, same unit line, same WHY / TRIGGER mini-boxes. The cockpit
 is the frame; the Box is the language. The same principle will apply to the
@@ -589,6 +608,13 @@ change une fois.
   lisait comme un lieu sans intention.
 - **Le T remplace la pastille.** Dans tous les menus d'intention, le
   glyphe TOTEHM, jamais un rond de couleur.
+  > **⚠️ SAUF SUR `totehm.space` DEPUIS LE 25/09** (Wah : « les Spots, c'est
+  > pas des T que je veux, c'est des points, tout en gardant les
+  > couleurs » ; « la recherche par intention affiche directement les
+  > pastilles de couleur »). Sur le radar de l'Espace, un Spot est un
+  > POINT de la couleur de son intention et « toi » un point blanc ; la
+  > vue By intention montre les sept pastilles. La Higher Map de
+  > `totehm.com` garde ses T : deux produits, deux instruments.
 - **Un seul point d'entrée membre : le point vert en haut à gauche.**
   Aucun bouton natif posé au milieu du vide. Quand la position doit
   être relancée, c'est la ligne de statut elle-même qui devient
@@ -906,6 +932,9 @@ Les trois passent en `#fff` au survol sur desktop.
 **6. Fond noir, aucun fond gris**
 `background: #000` partout. Un gris comme surface fait "application".
 Le gris ne sert qu'au texte secondaire.
+*Exception décidée par Wah le 25/09 : `totehm.space`, le cockpit — « trop
+noir pour délimiter les parties ». Quatre nuances très sombres (fond,
+disque du radar, panneau, section), jamais un trait.*
 
 **7. Pas de flèches dans les boutons**
 Les boutons de navigation (`Back`, `Play the street`, `Close`) n'ont pas d'icône fléchée.

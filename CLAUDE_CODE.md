@@ -1,213 +1,99 @@
-# CLAUDE_CODE.md — LOT DU 24/09/2026 · TOTEHM.SPACE COCKPIT · ACCÈS FONDATEUR · DÉMO
+# CLAUDE_CODE.md — LOT DU 25/09/2026 · TOTEHM.SPACE À LA MANETTE
 
-**totehm.space devient un cockpit** : un radar au centre, trois commandes
-(Search · Create · My space), le reste qui apparaît au fur et à mesure — et
-les Spots affichés comme les Habit Boxes de totehm.com, au pixel. Plus :
-l'accès complet de Wah (`gvallerand5@gmail.com`) par une table de comps, une
-recherche par mots en base, et 32 Spots de démonstration à Lisbonne.
+**totehm.space se pilote à la manette de totehm.com.** La barre
+`Search · Create · My space` disparaît ; le radar rétrécit, la manette vit
+dessous, et ses cinq crans sont cinq vues : *Live & today* (centre),
+*Create a Spot* (haut), *My space* (bas), *By intention* (gauche),
+*Tomorrow & beyond* (droite). Les Spots deviennent des points, la distance
+se lit en km (miles aux États-Unis), la boîte d'un Spot devient une
+boîte-ACTION (date · heure · durée · lieu Google Maps · places · mode, et
+un tiroir [details]), la création s'ouvre comme une Habit Box, la
+boussole fait tourner le radar au téléphone, des gris délimitent les
+parties, et **on peut se déconnecter dans tous les états**.
 
-**Claude Code exécute TOUT** — y compris la migration (MCP Supabase). Rien
-n'est demandé à Wah avant la section B (tests navigateur).
+Plus : l'erreur de la manette de `totehm.html` (la molette horizontale DANS
+le joystick partait à l'envers) est corrigée dans les deux fichiers.
 
-⚠️ **L'ORDRE : la base, puis le push.** La page appelle `spots_radar` avec
-NEUF paramètres ; poussée avant la migration, elle appelle une fonction qui
-n'existe pas encore et le radar reste vide.
-
-Le zip contient tout l'historique. **Ne prends que les fichiers listés.**
+**Ce lot a été exécuté par Claude dans une session cloud** : la migration
+est DÉJÀ en base, les fichiers sont DÉJÀ poussés sur la branche
+`claude/intelligent-galileo-a458ao`. Il reste à fusionner et à tester.
 
 ---
 
 ## 1 · Les fichiers
 
 ```
-space/index.html                                                        ← RÉÉCRIT
-backend/supabase/migrations/20260924_space_cockpit_fondateur_demo.sql   ← NOUVEAU
-CLAUDE.md
-BRAND.md
-backend/SYSTEM.md
-backend/README.md
-CLAUDE_CODE.md
-TOTEHM_MASTER_0-15.md          ← à INSÉRER dans TOTEHM_MASTER.md (non versionné), pas à copier
+space/index.html                                           ← RÉÉCRIT (BUILD 2026-09-25)
+com/totehm.html                                            ← une ligne (la molette du joystick) + BUILD 2026-09-25
+backend/supabase/migrations/20260925_space_manette.sql     ← NOUVEAU — DÉJÀ APPLIQUÉ
+CLAUDE.md · BRAND.md · backend/SYSTEM.md · backend/README.md · CLAUDE_CODE.md
 ```
-
-⚠️ **Base des documents : `main` à `0b7383d`** (« phase 2 — sortir les
-postmortems »). Vérifie :
-
-```bash
-git -C ~/totehm log -1 --format=%h
-```
-
-Si ce n'est PAS `0b7383d`, **ne copie pas les quatre documents à
-l'aveugle** : quelqu'un a écrit dedans depuis. Fais un diff et reporte les
-sections du 24/09 (repère : `24/09/2026`) dans la version courante.
 
 ---
 
-## 2 · Le contrôle AVANT de copier — sept `OK`
+## 2 · LA BASE — déjà appliquée, à VÉRIFIER (MCP Supabase, `execute_sql`)
 
-```bash
-grep -q "const BUILD = '2026-09-24'" ~/inbox/space/index.html && echo "OK  space/index" || echo "VIEUX  space/index"
-grep -q "p_intention" ~/inbox/space/index.html && echo "OK  space/index recherche v2" || echo "VIEUX  space/index recherche"
-grep -q "create table if not exists public.figher_comps" ~/inbox/backend/supabase/migrations/20260924_space_cockpit_fondateur_demo.sql && echo "OK  migration" || echo "VIEUX  migration"
-grep -q "TOTEHM.SPACE EST UN COCKPIT" ~/inbox/CLAUDE.md && echo "OK  CLAUDE.md" || echo "VIEUX  CLAUDE.md"
-grep -q "The cockpit — 24/09/2026" ~/inbox/BRAND.md && echo "OK  BRAND.md" || echo "VIEUX  BRAND.md"
-grep -q "LOT DU 24/09/2026 — TOTEHM.SPACE COCKPIT" ~/inbox/backend/SYSTEM.md && echo "OK  SYSTEM.md" || echo "VIEUX  SYSTEM.md"
-grep -q "la recherche, l'accès fondateur, la démo" ~/inbox/backend/README.md && echo "OK  README.md" || echo "VIEUX  README.md"
-```
-
-Et deux absences :
-
-```bash
-grep -c "joy-box\|data-f=\"view\"" ~/inbox/space/index.html
-```
-
-**Zéro** — la manette et la bascule radar/cartes de la version du 23/09 sont
-parties.
-
----
-
-## 3 · La copie
-
-```bash
-cp ~/inbox/space/index.html ~/totehm/space/index.html
-cp ~/inbox/backend/supabase/migrations/20260924_space_cockpit_fondateur_demo.sql ~/totehm/backend/supabase/migrations/20260924_space_cockpit_fondateur_demo.sql
-cp ~/inbox/CLAUDE.md ~/totehm/CLAUDE.md
-cp ~/inbox/BRAND.md ~/totehm/BRAND.md
-cp ~/inbox/backend/SYSTEM.md ~/totehm/backend/SYSTEM.md
-cp ~/inbox/backend/README.md ~/totehm/backend/README.md
-cp ~/inbox/CLAUDE_CODE.md ~/totehm/CLAUDE_CODE.md
-```
-
-**Le master (non versionné)** : insère le contenu de
-`~/inbox/TOTEHM_MASTER_0-15.md` dans `~/totehm/TOTEHM_MASTER.md`, **juste
-avant** la double ligne `---` qui précède `# MASTER ARCHITECTURE TOTEHM`
-(fin du §0). Puis, dans le même fichier, ajoute sous le titre de §0.9 et de
-§0.10 la ligne : `> Interface remplacée le 24/09 par le cockpit — §0.15.`
-Contrôle :
-
-```bash
-grep -c "0.15 · 24/09" ~/totehm/TOTEHM_MASTER.md
-git -C ~/totehm check-ignore TOTEHM_MASTER.md
-```
-
-**1**, puis **`TOTEHM_MASTER.md`** (il ne doit jamais partir sur le dépôt).
-
----
-
-## 4 · Aucun secret
-
-```bash
-grep -rlE "sk_live_[A-Za-z0-9]{8}|sk_test_[A-Za-z0-9]{8}|rk_live_[A-Za-z0-9]{8}|whsec_[A-Za-z0-9]{8}|re_[A-Za-z0-9]{20}" ~/inbox
-```
-
-Rien ne doit s'afficher.
-
----
-
-## 5 · LA BASE — la migration, par le MCP Supabase
-
-Projet `abujjbkbbiumxrokozph`. **`apply_migration`** avec le nom
-`20260924_space_cockpit_fondateur_demo` et le contenu EXACT du fichier.
-**Pas de `supabase db push`.** La migration est idempotente et lance
-elle-même `demo_seed()`.
-
-⚠️ **Si elle échoue sur `auth.users`** (colonne absente, trigger qui crée un
-profil) : ne bricole pas la table `auth`. Rapporte l'erreur exacte — la
-démo s'écrira autrement.
-
-**Les contrôles, par `execute_sql`, dans cet ordre :**
+⚠️ **L'ORDRE A ÉTÉ RESPECTÉ : la base avant la page.** La migration est
+additive — la page du 24/09 marche avec elle ; la page du 25/09 a BESOIN
+d'elle (`p_when = 'later'` renverrait zéro Spot sans elle).
 
 ```sql
-select (public._figher(u.id))->>'member' as membre, (public._figher(u.id))->>'comp' as comp
-  from auth.users u where lower(u.email) = 'gvallerand5@gmail.com';
+select public.spot_rules() as regles,
+       jsonb_array_length(public.spots_radar(38.7223,-9.1393,20000,null,null,false,60,'later',null)->'spots') as plus_tard,
+       has_function_privilege('anon', 'public.my_space()', 'execute') as anon_myspace,
+       has_function_privilege('anon', 'public.spot_publish(text,text[],uuid[],bigint[],boolean,timestamptz,integer,text,double precision,double precision,text,integer,text,text,text)', 'execute') as anon_publish;
 ```
 
-**`true · true`.** (Si aucune ligne : le compte de Wah n'existe pas encore
-sous cet email — dis-le, ne crée rien.)
-
-```sql
-select (select count(*) from public.spot_plans where demo)                          as spots_demo,
-       (select count(*) from public.demo_members)                                   as membres_demo,
-       (select count(*) from auth.users where email like '%@demo.totehm.invalid')   as auth_demo,
-       (select count(*) from pg_proc where proname = 'spots_radar')                 as radar_versions,
-       (select pronargs from pg_proc where proname = 'spots_radar')                 as radar_args;
-```
-
-**`32 · 10 · 10 · 1 · 9`.** Deux versions de `spots_radar` = l'ancienne n'a
-pas été retirée : arrête-toi.
-
-```sql
-select jsonb_array_length(public.spots_radar(38.7223, -9.1393, 20000, 'box',  null, false, 60, null, null)->'spots') as box,
-       jsonb_array_length(public.spots_radar(38.7223, -9.1393, 20000, 'tiago', null, false, 60, null, null)->'spots') as pseudo_invite,
-       jsonb_array_length(public.spots_radar(38.7223, -9.1393, 20000, null,   null, false, 60, 'now', null)->'spots') as live;
-```
-
-**`1 · 0 · 2`.** (Sous `execute_sql` il n'y a pas de session : c'est la vue
-d'un INVITÉ — il trouve « box », il ne trouve pas un pseudo.)
-
-```sql
-select has_function_privilege('anon', 'public.demo_seed()', 'execute')       as anon_seed,
-       has_function_privilege('authenticated', 'public.demo_purge()', 'execute') as membre_purge,
-       has_function_privilege('anon', 'public._figher(uuid)', 'execute')        as anon_passeport,
-       has_function_privilege('anon', 'public.spots_radar(double precision,double precision,integer,text,text,boolean,integer,text,text)', 'execute') as anon_radar,
-       has_function_privilege('anon', 'public.my_space()', 'execute')           as anon_myspace;
-```
-
-**`false · false · false · true · false`.**
-
-**Les advisors de sécurité** (`get_advisors`, type `security`) : aucune
-alerte NOUVELLE sur `figher_comps`, `demo_members`, `spot_plans`.
-
-Puis, dans `backend/SYSTEM.md` §0 du 24/09, **remplace le bloc « ÉTAT :
-écrit et testé… »** par : `> **ÉTAT : appliqué le <date> par Claude Code —
-contrôles <résultats>.**`
+**`{max_upcoming:10,…}` · un nombre > 0 · `false` · `false`.**
+Relevé le 25/09 après application : `later = 29` (démo relancée).
 
 ---
 
-## 6 · Les commits
+## 3 · La fusion
+
+La branche porte trois commits (base · pages · documents). Fusionne-la sur
+`main` (pull request ou `git merge`) : Vercel redéploie `space` et `com`.
 
 ⚠️ **Jamais `git add .`** — `oracle/` contient les clés.
 
-```bash
-git -C ~/totehm add backend/supabase/migrations/20260924_space_cockpit_fondateur_demo.sql
-git -C ~/totehm commit -m "base: acces fondateur par comps, recherche de l Espace par mots, Spots de demo"
-```
-
-```bash
-git -C ~/totehm add space/index.html
-git -C ~/totehm commit -m "totehm.space: le cockpit - trois commandes, les boites de totehm.com"
-```
-
-```bash
-git -C ~/totehm add CLAUDE.md BRAND.md backend/SYSTEM.md backend/README.md CLAUDE_CODE.md
-git -C ~/totehm commit -m "docs: l Espace est un cockpit, l acces fondateur, la demo"
-```
-
-```bash
-git -C ~/totehm push
-```
-
 ---
 
-## 7 · Le contrôle après déploiement
-
-Attends que Vercel ait déployé le projet `space` (une à deux minutes), puis :
+## 4 · Le contrôle après déploiement
 
 ```bash
-curl -sL https://www.totehm.space/ | grep -c "const BUILD = '2026-09-24'"
-curl -sL https://www.totehm.space/ | grep -c "joy-box"
+curl -sL https://www.totehm.space/ | grep -c "const BUILD = '2026-09-25'"
+curl -sL https://www.totehm.space/ | grep -c 'id="joy-box"'
+curl -sL https://www.totehm.space/ | grep -c 'data-cmd='
+curl -sL https://www.totehm.com/totehm | grep -c "const BUILD='2026-09-25'"
 curl -sL -o /dev/null -w "backend public ? %{http_code}\n" https://www.totehm.space/backend/README.md
 ```
 
-**1 · 0 · 404.**
+**1 · 1 · 0 · 1 · 404.**
 
 ---
 
-## 8 · Les Spots de démo vieillissent
+## 5 · Le master (non versionné)
 
-Ils sont datés à partir du moment de la migration (sur huit jours). Pour
-les rafraîchir plus tard : `execute_sql` → `select public.demo_seed();`.
-Pour tout retirer (avant d'ouvrir l'Espace au public) :
+Dans `~/totehm/TOTEHM_MASTER.md`, §0, ajoute sous la dernière entrée :
+
+> **0.16 · 25/09 — totehm.space à la manette.** Le cockpit n'a plus trois
+> commandes : la manette du Totehm, cinq crans (centre Live & today · haut
+> Create · bas My space · gauche By intention · droite Tomorrow & beyond).
+> Un Spot est une boîte-ACTION (date · heure · durée · lieu · places ·
+> acceptation · mode, tiroir [details] : le mot, WHY, TRIGGER) — la Habit
+> Box ne sert plus qu'au choix de l'habitude. Les règles d'un Spot sont
+> `spot_rules()`. **Écart connu** : les fenêtres « today / tomorrow » sont
+> des jours de LISBONNE côté serveur, alors que la page affiche les heures
+> à l'heure de l'appareil — identique à Lisbonne, décalé ailleurs.
+
+Contrôle : `git -C ~/totehm check-ignore TOTEHM_MASTER.md` → `TOTEHM_MASTER.md`.
+
+---
+
+## 6 · Les Spots de démo vieillissent
+
+Relancés le 25/09 (`select public.demo_seed();`). Pour les rafraîchir :
+même appel. Pour tout retirer avant d'ouvrir l'Espace au public :
 `select public.demo_purge();`.
 
 ---
@@ -222,36 +108,44 @@ rm -rf ~/inbox/*
 
 ## A · AUCUN CLIC DE DASHBOARD
 
-Tout passe par Claude Code.
+## B · LES TESTS NAVIGATEUR — www.totehm.space (après la fusion)
 
-## B · LES TESTS NAVIGATEUR — www.totehm.space
+Navigation privée. Dans la console, `__totehm_space()` doit dire
+`build: "2026-09-25"`.
 
-Navigation privée (l'ancienne redirection de la racine peut être en cache).
-Dans la console, `__totehm_space()` doit dire `build: "2026-09-24"`,
-`member: true`, `comp: true`.
-
-1. **L'accueil** : un radar, une ligne d'état en haut (`32 Spots · 2 live`),
-   l'heure de Lisbonne en bas à droite, **trois commandes** en bas. Rien
-   d'autre à toucher.
-2. **Search** : tape `box`, puis `fight park`, puis `marathon`, puis
-   `tiago`, puis `silent`, puis `afrobeat`. Touche `When` → `now` : les deux
-   LIVE. Touche `Intention` → `Love`.
-3. **Un résultat** : touche la boîte. La compatibilité, qui, le mood, et
-   UN bouton. `Run the river at dawn` → **Join** → « You are in » et le
-   point de rendez-vous apparaît. `Tea, no phones` → « Full ».
-   `Sparring Thursday` → réservé aux abonnés.
-4. **Un T du radar** ouvre son Spot.
-5. **Create** : *Which habit?* (tes Habit Boxes, comme dans totehm.com) →
-   touche WHY / TRIGGER pour garder ou laisser → *When?* → *Where?* (ta
-   position) → *With whom?* → **Publish**. Le Spot s'ouvre sur le radar.
-6. **Les demandes** : demande à Claude (Claude Code) de lancer
-   `select public.demo_seed();` — deux membres de démo candidatent à ton
-   Spot. **My space · 2** : accepte-en un.
-7. **Au téléphone** : le panneau monte du bas, les trois commandes restent
-   visibles, rien ne déborde.
+1. **L'accueil** : *LIVE & TODAY*, le radar plus petit, **la manette
+   dessous**, plus de barre de boutons, plus rien dans les coins du bas.
+   Les Spots sont des **points** de couleur ; toi, un point blanc.
+2. **La distance** : ordinateur — passe la souris sur un point →
+   `0.9 km SE`. Téléphone — **garde le doigt** sur un point → même
+   étiquette, et le Spot ne s'ouvre pas. Un toucher bref l'ouvre.
+3. **La manette** : tire le manche (ou les chevrons, ou les flèches du
+   clavier). Haut = *Create a Spot* (pavé bleu clair). Bas = *My space*
+   (rouge-violet). Gauche = *By intention* : les sept pastilles tout de
+   suite. Droite = *Tomorrow & beyond* : un champ, `tomorrow · next 7 days
+   · all ahead`, `social · silent`. **Toucher le pavé sans tirer** ramène
+   au centre.
+4. **L'erreur corrigée** : sur un Mac, pose deux doigts SUR le joystick et
+   glisse vers la gauche → ça part à GAUCHE (avant : à droite). Pareil dans
+   totehm.com/totehm.
+5. **Une boîte-action** : nom · intentions + date + heure + durée · le lieu
+   (touche-le : Google Maps s'ouvre) · places + automatic/manual · social
+   ou silent · **[details]** : le mot du créateur, WHY, TRIGGER.
+6. **Create** : choisis une habitude (elle a encore sa Habit Box) → la
+   boîte-action s'ouvre, date / heure / durée / point de rendez-vous
+   **respirent** tant qu'ils manquent ; chacun s'ouvre dans la boîte. Touche
+   le radar pour déplacer le point. **Publish the Spot**.
+7. **My space** : *my access* (founder access · `upcoming Spots n / 10`),
+   les demandes, mes Spots (le lieu exact), **Sign out**.
+8. **Se déconnecter sans les trois clés** : avec un compte qui n'est pas
+   membre, le coin haut gauche → **Sign out** est là.
+9. **La boussole (téléphone)** : à gauche de la manette, « align ·
+   compass ». Touche → autorise → le radar tourne avec toi ; les Spots
+   devant toi grossissent, la ligne d'état dit `n ahead`.
+10. **Aux États-Unis** (fuseau de l'appareil) : les distances en `mi`.
 
 Un écran vide ou un bouton mort → colle ça dans la console et envoie tout :
 
 ```js
-console.log(JSON.stringify({diag:window.__totehm_space?.(),url:location.pathname,appels:performance.getEntriesByType('resource').filter(r=>r.name.includes('/rest/v1/rpc/')).map(r=>r.name.split('?')[0].split('/').pop()+' '+Math.round(r.duration)+'ms')},null,2))
+console.log(JSON.stringify({diag:window.__totehm_space?.(),url:location.pathname+location.hash,appels:performance.getEntriesByType('resource').filter(r=>r.name.includes('/rest/v1/rpc/')).map(r=>r.name.split('?')[0].split('/').pop()+' '+Math.round(r.duration)+'ms')},null,2))
 ```

@@ -322,6 +322,27 @@ une erreur Stripe.
 
 ---
 
+## L'Espace — la manette, les fenêtres de temps, les limites · 25/09
+
+La page se pilote par une manette à cinq crans (voir `CLAUDE.md`, « LA
+MANETTE ») ; chaque cran interroge `spots_radar` à sa façon :
+
+| cran | ce que la page envoie |
+|---|---|
+| centre — Live & today | `p_when = 'today'` |
+| gauche — By intention | `p_intention = <une des sept>`, `p_when` nul (tout le temps) |
+| droite — Tomorrow & beyond | `p_when = 'tomorrow' \| 'next7' \| 'later'`, `p_q`, `p_mode` |
+| haut — Create · bas — My space | le radar du centre (`today`) |
+
+**`spot_rules()`** — les règles d'un Spot, une fonction (`anon` peut la
+lire) : `max_upcoming` (10), `capacity_min/max` (1–50),
+`duration_min/max` (5–720), `horizon_days` (90). `spot_publish` les lit ;
+la page aussi, pour ses bornes. **Changer une règle = changer cette
+fonction, et rien d'autre.**
+
+**`my_space()`** rend `limits: {upcoming, max_upcoming}` — ce qui reste
+avant le refus `too_many`.
+
 ## L'Espace — la recherche, l'accès fondateur, la démo · 24/09
 
 **`spots_radar(p_lat, p_lng, p_radius, p_q, p_mode, p_live, p_limit, p_when, p_intention)`**
@@ -329,7 +350,9 @@ une erreur Stripe.
 en mots, TOUS doivent se trouver. Tout le monde cherche dans l'habitude,
 les intentions, les piliers, le mode, le rythme et le mood ; un membre
 aussi dans le pseudo, le commentaire, les objectifs et les répulsions.
-`p_when` : `now` · `today` (Lisbonne) · `week`. `p_intention` : une des sept.
+`p_when` : `now` · `today` (Lisbonne) · `week` — et depuis le 25/09
+`tomorrow` · `next7` · `later` (à partir de minuit, Lisbonne ; jamais
+aujourd'hui). `p_intention` : une des sept.
 
 **Accès offert** — `figher_comps` :
 

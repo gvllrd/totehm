@@ -15,6 +15,44 @@
 
 ---
 
+## 0 · LOT DU 25/09/2026 — TOTEHM.SPACE À LA MANETTE · BOÎTE-ACTION · LIMITES
+
+> **ÉTAT : migration `20260925_space_manette.sql` appliquée le 25/09/2026
+> par Claude (MCP Supabase, projet `abujjbkbbiumxrokozph`) — AVANT la page,
+> et elle est additive : la page du 24/09 marche avec elle.**
+> Contrôles relevés après application : droits `spot_rules` =
+> `anon·authenticated·service_role` · `spot_publish` / `my_space` =
+> `authenticated·service_role` (anon toujours refusé) · `spots_radar` =
+> `anon·authenticated·service_role` · `my_space()->'limits'` =
+> `{upcoming, max_upcoming:10}` · `spots_radar` à Lisbonne après
+> `demo_seed()` : **today 3 · tomorrow 11 · next7 28 · later 29**.
+
+| objet | ce qui change |
+|---|---|
+| **`spot_rules()`** | NOUVELLE, `immutable` — `max_upcoming 10 · capacity 1–50 · duration 5–720 · horizon_days 90`. La page lit ses bornes ici |
+| `spot_publish(…)` | même signature, même corps — les CHIFFRES viennent de `spot_rules()` |
+| **`spots_radar`** | même signature (9) — `p_when` accepte en plus `tomorrow`, `next7`, `later` (bornes = minuits de Lisbonne, jamais aujourd'hui) |
+| **`my_space()` v3** | `limits {upcoming, max_upcoming}` ; mes Spots : `+ comment · mood · exact` ; candidatures : `+ lat/lng publics · exact (accepté seulement) · comment · selection · access · mood` |
+| démo | `demo_seed()` relancé le 25/09 (32 Spots, 10 membres) |
+
+**Pages** : `space/index.html` réécrite (la manette, cinq crans),
+`BUILD='2026-09-25'` ; `com/totehm.html` — une ligne (la molette
+horizontale du joystick suit le doigt), `BUILD='2026-09-25'`.
+
+**Testé** : navigateur (Chromium sans tête, client Supabase simulé avec les
+Spots de démo réels) — **83 vérifications**, desktop 1440 et téléphone
+390 × 844, zéro erreur JS. Non testé ici : la base réelle depuis le
+navigateur (le conteneur ne joint pas `esm.sh`/`supabase.co`) → bloc B du
+`CLAUDE_CODE.md`.
+
+**Retour arrière** : rejouer `spots_radar` et `my_space` depuis
+`20260924_space_cockpit_fondateur_demo.sql`, `spot_publish` depuis
+`20260923_le_club_l_espace_la_boite.sql` (ce sont les versions qui
+tournaient avant ce lot — `spots_radar` relevé identique le 25/09) ;
+`drop function public.spot_rules()` APRÈS `spot_publish`.
+
+---
+
 ## 0 · LOT DU 24/09/2026 — TOTEHM.SPACE COCKPIT · ACCÈS FONDATEUR · DÉMO
 
 > **ÉTAT : appliqué le 24/09/2026 par Claude Code — contrôles : _figher `true·true` · spots_demo `32·10·10·1·9` · radar `1·0·2` · droits `false·false·false·true·false` · advisors : aucune alerte nouvelle.**
@@ -1353,6 +1391,9 @@ Functions sont téléchargeables.
 
 | Date | Décision | Pourquoi |
 |---|---|---|
+| 25/09 | **totehm.space se pilote à la manette de totehm.com : cinq crans, cinq vues** | « le joystick, directement sur l'atterrissage, en dessous du radar » ; la barre Search · Create · My space disparaît, le radar rétrécit |
+| 25/09 | **La boîte-action n'est plus la boîte-habitude** | une action a une date, une heure, une durée, un lieu, des places — pas un rythme ; WHY/TRIGGER passent dans un tiroir |
+| 25/09 | **Les règles d'un Spot sont une fonction (`spot_rules()`)** | la page affiche « 2 / 10 » sans connaître le 10 ; `spot_publish` lit les mêmes chiffres |
 | 24/09 | **totehm.space devient un cockpit : trois commandes, la boîte de totehm.com** | « Plutôt que dix boutons, trois, et le reste au fur et à mesure » ; un réseau social qui ne ressemble ni au Totehm ni à la boutique, mais dont le CONTENU est la boîte du Totehm, au pixel |
 | 24/09 | **Un accès offert est une table (`figher_comps`), pas une fausse ligne de paiement** | écrire dans `subscriptions` ou `stoner_access` mentirait au webhook, au grand livre et aux chiffres |
 | 24/09 | **La recherche de l'Espace est en base, par mots, et ne cherche que ce qu'on peut lire** | un invité qui chercherait dans les objectifs devinerait le contexte caché un mot à la fois |
