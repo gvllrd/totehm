@@ -4283,7 +4283,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-09-24';
+const BUILD='2026-09-25';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -6547,8 +6547,17 @@ const navRight=()=>{ if(navBlocked())return; versVoisin('d'); };
   jy.addEventListener('wheel',e=>{
     if(navBlocked())return;
     if(Date.now()<froid)return;
+    /* ⚠️ L'HORIZONTALE SUIT LE DOIGT · 25/09/2026. C'était
+       `deltaX>0 ? 'd' : 'g'` (« trackpad : contenu, pas doigt »). Or une
+       molette horizontale est presque toujours un trackpad, donc des
+       DOIGTS : deux doigts vers la gauche donnent `deltaX > 0`, et le pavé
+       partait à DROITE — à l'opposé du manche tiré au même endroit
+       (`sens()` suit le doigt). Signalé par Wah : « une erreur au niveau
+       des mouvements horizontaux quand on est DANS le joystick ». La
+       verticale reste celle d'une molette de souris. Même correction dans
+       space/index.html. */
     const d = Math.abs(e.deltaX)>Math.abs(e.deltaY)
-      ? (e.deltaX>0?'d':'g')          /* trackpad : contenu, pas doigt */
+      ? (e.deltaX>0?'g':'d')
       : (e.deltaY>0?'b':'h');
     if(!voisin(d))return;
     froid=Date.now()+520;
