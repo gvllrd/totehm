@@ -322,6 +322,51 @@ une erreur Stripe.
 
 ---
 
+## L'Espace — le monde, la nature d'un Spot · 26/09
+
+Au-dessus de 80 km de portée, la page cesse de demander des Spots un par
+un : elle lit **`spots_globe(p_when, p_intention, p_q, p_mode)`** (`anon`
+peut l'appeler) — des cellules d'un demi-degré, avec position moyenne
+(déjà publique), `n`, `live` et l'intention dominante. Aucune identité,
+aucun contexte. En dessous, `spots_radar` au CENTRE DE LA VUE (plus
+seulement autour de soi), rayon `spot_rules().local_radius_km` (60).
+
+**Nature** — `spot_publish(…, p_venue)` : `public` (défaut) ou `private`.
+Privé = la position publique est arrondie à ~1,1 km (`round_private`),
+public à ~110 m (`round_public`). Refus `venue` si autre chose.
+
+**Démo** : `demo_seed()` sème aussi dix Spots dans le monde
+(`_demo_seed_world()`) et passe trois Spots lisboètes en privé.
+
+**La Terre** — `space/earth.json` et `space/earth50.json` sont
+régénérables depuis Natural Earth (`ne_110m_land`, `ne_50m_land`,
+`ne_50m_populated_places`) : anneaux `[lng, lat, …]` à 2 décimales,
+Douglas-Peucker ε = 0,03° pour le 1:50 M. **Le fond de rue** (création
+seulement) vient de `tile.openstreetmap.org` : attribution obligatoire,
+usage modéré (politique OSMF) — à remplacer par un fournisseur payant ou
+nos tuiles si le volume monte.
+
+## L'Espace — la manette, les fenêtres de temps, les limites · 25/09
+
+La page se pilote par une manette à cinq crans (voir `CLAUDE.md`, « LA
+MANETTE ») ; chaque cran interroge `spots_radar` à sa façon :
+
+| cran | ce que la page envoie |
+|---|---|
+| centre — Live & today | `p_when = 'today'` |
+| gauche — By intention | `p_intention = <une des sept>`, `p_when` nul (tout le temps) |
+| droite — Tomorrow & beyond | `p_when = 'tomorrow' \| 'next7' \| 'later'`, `p_q`, `p_mode` |
+| haut — Create · bas — My space | le radar du centre (`today`) |
+
+**`spot_rules()`** — les règles d'un Spot, une fonction (`anon` peut la
+lire) : `max_upcoming` (10), `capacity_min/max` (1–50),
+`duration_min/max` (5–720), `horizon_days` (90). `spot_publish` les lit ;
+la page aussi, pour ses bornes. **Changer une règle = changer cette
+fonction, et rien d'autre.**
+
+**`my_space()`** rend `limits: {upcoming, max_upcoming}` — ce qui reste
+avant le refus `too_many`.
+
 ## L'Espace — la recherche, l'accès fondateur, la démo · 24/09
 
 **`spots_radar(p_lat, p_lng, p_radius, p_q, p_mode, p_live, p_limit, p_when, p_intention)`**
@@ -329,7 +374,9 @@ une erreur Stripe.
 en mots, TOUS doivent se trouver. Tout le monde cherche dans l'habitude,
 les intentions, les piliers, le mode, le rythme et le mood ; un membre
 aussi dans le pseudo, le commentaire, les objectifs et les répulsions.
-`p_when` : `now` · `today` (Lisbonne) · `week`. `p_intention` : une des sept.
+`p_when` : `now` · `today` (Lisbonne) · `week` — et depuis le 25/09
+`tomorrow` · `next7` · `later` (à partir de minuit, Lisbonne ; jamais
+aujourd'hui). `p_intention` : une des sept.
 
 **Accès offert** — `figher_comps` :
 
