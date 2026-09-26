@@ -79,8 +79,11 @@ déjà à la question.
   club/      →  www.figher.club      APPARTENANCE · DROITS · ABONNEMENTS · ARGENT
                                      index.html (la porte) · console.html (le membre)
   space/     →  www.totehm.space     UNE HABIT BOX DEVIENT UNE ACTION À PLUSIEURS
-                                     index.html — le cockpit : un radar, trois
-                                     commandes (Search · Create · My space)
+                                     index.html — le cockpit : un radar et,
+                                     dessous, la MANETTE de totehm.com à cinq
+                                     crans (25/09)
+                                     · la planète entière (26/09) :
+                                     earth.json · earth50.json
                                      + redirections 308 de l'ancien Stoner
   boutique/  →  www.higher.boutique  UNE BOX, N'IMPORTE LAQUELLE, DEVIENT UN CLOTH
                                      index.html · streetwear.html (totehmisation)
@@ -271,7 +274,194 @@ avant sa méthode de virement lisait « ok » et n'avait rien d'enregistré.
 `upsert … onConflict: 'user_id'`. *Un `update` sans ligne n'est pas une
 erreur pour Postgres — c'en est une pour nous.*
 
+### ⛔ TOTEHM.SPACE À L'ÉCHELLE DU MONDE — LE GESTE PARTOUT, LA COURONNE, LE GLOBE · 26/09/2026
+
+**La demande de Wah :** que la manette marche « comme dans totehm.html »,
+jouable et « PlayStation », sur une plateforme internationale. Neuf
+changements, tous dans `space/index.html` (`BUILD='2026-09-26'`) et la
+migration `20260926_space_monde.sql` :
+
+| | avant (25/09) | depuis (26/09) |
+|---|---|---|
+| naviguer | la manette seule | **partout** : un doigt, deux doigts au trackpad, la souris tirée sur le radar — même table `CROIX` |
+| zoomer | la molette | **le pincement** (doigts ; trackpad = `wheel`+`ctrlKey` ou `gesturechange` Safari) et `+ − ◎ ?` à droite de la manette |
+| la boussole | l'appareil seul | **la couronne se tourne** (inertie, un cran vibré par 45°, deux touchers = nord) ; l'appareil reste une option au téléphone |
+| l'échelle | ≤ 60 km | **de la rue à la planète** : projection orthographique, au-dessus de 80 km des LUMIÈRES (`spots_globe`) ; toucher une lumière = y voler |
+| les fenêtres | une colonne à droite | **chacune de son côté** : gauche ← gauche, droite ← droite, Create descend du haut et y reste, My space monte du bas ; le Spot du centre s'ouvre sur place ; **la manette ne bouge jamais** |
+| le fond | quatre gris | **noir pur** ; les gris ne font que délimiter (disque, fenêtre, section, bulle) |
+| la bulle de survol | dans chaque point, translucide | **une seule `#tip`**, au-dessus des points (`z-index`), d'un gris PLEIN |
+| le rendez-vous | viser à l'aveugle | **un fond de rue sombre** (OpenStreetMap inversé + désaturé) sous le radar, en création seulement, avec l'attribution |
+| un Spot | public par défaut | **une NATURE** : `public` (~110 m) ou `private` (~1,1 km, chez le membre) — sans réponse par défaut |
+
+**⚠️ LA TERRE EST À NOUS, LA RUE NE L'EST PAS.** Le trait de côte et les
+villes viennent de **Natural Earth** (domaine public), servis par nous
+(`space/earth.json` 100 Ko, `space/earth50.json` 360 Ko, chargé sous
+2 500 km) : zéro service, zéro facture. Le fond de rue vient des tuiles
+**OpenStreetMap** : gratuites mais sous **politique d'usage** (usage
+modéré, attribution obligatoire — `#osm`). C'est l'écart assumé au
+MASTER §44 (« ni Google Maps, ni Mapbox, ni Leaflet ») : pas de
+bibliothèque, pas de clé, une image par tuile, et SEULEMENT pendant la
+pose d'un rendez-vous. Le jour où l'Espace dépasse quelques milliers de
+créations par jour, il faut un fournisseur de tuiles payant ou nos
+propres tuiles — **à trancher avant, pas après un blocage**.
+
+**⚠️ UN GESTE SUR UN POINT FAIT PARTIE DU GESTE.** Le radar écoute
+`#world`, pas le canvas : mesuré, un pincement dont un doigt tombait sur
+un Spot n'arrivait jamais. Et pas de `setPointerCapture` sur un point —
+son `click` doit rester le sien. Le premier doigt d'un geste (`isPrimary`)
+vide l'état : un relâcher perdu ne fausse pas le geste suivant.
+
+**⚠️ LE CONTENU DÉFILE, LA VERTICALE NAVIGUE AU BOUT.** Dans une fenêtre
+qui défile, la verticale appartient au défilement ; elle ne navigue qu'au
+bord, après 420 ms de calme (trackpad) ou si le doigt y était déjà
+(tactile). L'inertie d'un trackpad est avalée : 260 ms de silence avant
+la navigation suivante — sinon un geste en fait deux.
+
+**⚠️ UNE FENÊTRE QUI SORT PERD SES IDENTIFIANTS TOUT DE SUITE**
+(`retire()`) et son contenu une fois sortie — sauf si elle est revenue.
+Six fenêtres, un seul `#res`, un seul `#g-email` : sinon c'est la
+mauvaise qui répond.
+
+**⚠️ PRIVÉ = LE QUARTIER.** `spot_publish` arrondit `spots.lat/lng` à 2
+décimales (~1,1 km) pour un Spot `private`, 3 (~110 m) pour `public`
+(`spot_rules().round_private/round_public`). Le lieu exact reste réservé
+au créateur et aux acceptés, comme avant.
+
+**By intention rappelle les sept** : pastille, nom, **le slogan Higher en
+SVG** (`#higher-badge`, recopié de `com/totehm.html`), pilier, et la
+phrase de Wah (« Conquer yourself through harder effort »…). Choisie,
+l'intention reste en tête ; les autres deviennent sept points.
+
+**How it works** (`?`, la touche `?`, les liens des fenêtres) : la
+manette, le zoom, la couronne ; puis Spot, places, automatic/manual,
+public/private (« dans l'infrastructure du membre »), FIGHER
+members/subscribers, social/silent, compatibilité.
+
+**Le balayage ralentit** : un tour en 14 s (il en faisait un en 6).
+
+**Le diagnostic** `__totehm_space()` gagne : `heading`, `scale {range_km,
+mode, at_home, earth, coast50}`, `cells`, `planet`, `draft.map_tiles`,
+`gestures {swipe, trackpad, pinch, ring}`.
+
+### ⛔ TOTEHM.SPACE SE PILOTE À LA MANETTE — CINQ CRANS · 25/09/2026
+
+> **⚠️ DÉPASSÉ LE 26/09 SUR CINQ POINTS** — voir **TOTEHM.SPACE À L'ÉCHELLE
+> DU MONDE** : le zoom n'est plus la molette, la manette ne suit plus le
+> panneau, le fond redevient noir pur, la distance vit dans une bulle
+> unique, le balayage ralentit. Les cinq crans, la boîte-action, les
+> points, les miles et la sortie dans tous les états restent vrais.
+
+**La demande de Wah :** « remets le joystick de totehm.html directement sur
+l'atterrissage de totehm.space, en dessous du radar — diminue le radar,
+supprime la barre de navigation. » La barre `Search · Create · My space`
+n'existe plus ; le radar vit entre le nom de la vue (en haut) et la manette
+(en bas), et `resize()` MESURE ces objets au lieu de recopier leurs chiffres.
+
+**La manette est COPIÉE de `com/totehm.html`** (pavé, pile de trois ronds,
+chevrons, geste, `CROIX`) — produits indépendants, fichiers indépendants.
+Cinq crans, cinq vues, UNE table `CROIX` lue par le manche, les chevrons,
+la molette et les flèches :
+
+| cran | tuile | vue | ce qu'elle demande à `spots_radar` |
+|---|---|---|---|
+| centre (repos) | navy | **Live & today** — le radar | `p_when='today'` |
+| haut | bleu clair | **Create a Spot** | (le radar du centre) |
+| bas | rouge-violet | **My space** — mes accès, mes limites, qui attend | (le radar du centre) |
+| gauche (sagesse) | rouge-violet | **By intention** — les sept pastilles, d'emblée | `p_intention`, tout le temps |
+| droite (vision) | bleu clair | **Tomorrow & beyond** — un jour, un mot | `p_when='tomorrow'\|'next7'\|'later'` + `p_q` + `p_mode` |
+
+Toucher le pavé sans le tirer ramène au centre. Chaque vue a son titre
+(Montserrat 600 — il NOMME une partie du produit), sa raison d'être en
+sous-titre, et la lecture de l'instrument en troisième ligne (Space Mono :
+ça se mesure).
+
+**⚠️ L'ERREUR DE TOTEHM.HTML — LA MOLETTE HORIZONTALE DANS LE PAVÉ.**
+`deltaX > 0 ? 'd' : 'g'` (« contenu, pas doigt ») : deux doigts vers la
+gauche SUR le joystick envoyaient à droite, à l'opposé du manche tiré au
+même endroit. Une molette horizontale est presque toujours un trackpad,
+donc un geste de DOIGTS : `deltaX > 0` → gauche, dans les deux fichiers.
+La verticale reste celle d'une molette de souris.
+
+**⚠️ LA BOÎTE-ACTION N'EST PLUS LA BOÎTE-HABITUDE.** Au CHOIX de l'habitude
+(Create, étape 1) : la Habit Box de totehm.com, rythme compris. Devenue
+action, dans l'ordre, dans une boîte navy au format Habit Box :
+
+1. le nom (Quantico 15) ;
+2. intentions · **date · heure · durée** (plus de rythme) ;
+3. **le lieu, lien Google Maps** (point exact au créateur et aux acceptés,
+   sinon la position publique ~110 m — déjà montrée par le radar) · distance ;
+4. **places** (`taken/capacity`) · **automatic / manual** ;
+5. **social / silent** ;
+6. `[details]` → un TIROIR qui prolonge la boîte : le mot du membre
+   (**Quantico 400**), puis WHY (objectifs) et TRIGGER (répulsions).
+
+Sous la boîte, jamais dedans : la compatibilité, le créateur, UNE action.
+*Ceci remplace « l'instrumentation vit SOUS la boîte » du 24/09 : Wah veut
+QUAND/OÙ/COMBIEN DANS la boîte, c'est ce qui en fait une action.*
+
+**⚠️ CRÉER, C'EST OUVRIR UNE BOÎTE — COMME DANS LE TOTEHM.** La boîte-action
+naît ouverte (soulevée, `scale(1.012) translateY(-2px)`), ce qui manque
+RESPIRE (`.vit` : date, heure, durée, point de rendez-vous), chaque réglage
+s'ouvre DANS la boîte sous la ligne qu'il règle, un seul à la fois, et on
+ne redessine pas en écrivant. Seul `[Publish the Spot]` reste — publier,
+c'est parler au monde. **En création, le radar est un outil** : le toucher
+pose le point de rendez-vous (`unproject`, boussole comprise).
+
+**⚠️ DES POINTS, PLUS DES T.** Un Spot est un point de la couleur de sa
+première intention ; « toi » est un point blanc (plus un carré). Au survol
+(ordinateur) ou au **long appui** (téléphone, 380 ms, n'ouvre pas le Spot),
+l'étiquette dit **la distance en km — en miles aux États-Unis** — et le
+cap (`1.2 km NE`). Les États-Unis, c'est le FUSEAU de l'appareil
+(`America/New_York`…, `Pacific/Honolulu`) : zéro géocodage, zéro permission.
+
+**⚠️ LA BOUSSOLE A UNE CONSÉQUENCE.** Au téléphone (`pointer:coarse`), elle
+se PROPOSE à côté de la manette (« align · compass ») et ne s'allume qu'au
+toucher : iOS exige `requestPermission()` dans un `click`, et un radar qui
+tourne dès l'arrivée désoriente. Allumée, l'instrument tourne avec toi (le
+haut = là où tu regardes), les Spots de ton cône (±22,5°) grossissent et
+la lecture compte `N ahead`. Pas de mesure en 3 s → elle se retire, sans
+un mot. Son interrupteur vit à côté de la manette : sous le radar, il
+passait sous le panneau (mesuré, 390 px).
+
+**⚠️ LES NUANCES DE GRIS.** « Trop noir pour délimiter les parties. »
+Quatre valeurs : fond `#0b0b0d`, disque du radar `#121216`→`#17171c`,
+panneau `#141418`, section `#1c1c21`. Une partie se détache par sa
+VALEUR, jamais par un trait. Les deux coins du bas (wordmark, coordonnées,
+heure de Lisbonne) sont partis : « on s'en fout ».
+
+**⚠️ ON SE DÉCONNECTE DANS TOUS LES ÉTATS.** `[Sign out]` n'existait que
+pour un membre complet : un compte sans pseudo ou sans ses trois clés était
+enfermé. Il est dans la porte membre (trois états) ET dans My space, en
+`signOut({ scope:'local' })` — quitter l'Espace ne déconnecte pas le
+Totehm ouvert ailleurs — et l'état tombe dans la page sans attendre
+l'événement réseau.
+
+**⚠️ UNE ANIMATION ÉCRASE LE `transform`, QUATRIÈME FOIS.** Le point de
+rendez-vous (`#pin`) souffle (`pulse`) : placé par `transform`, il partait
+dans le coin haut gauche. Un élément animé se place par `left/top`.
+
+**⚠️ L'HEURE AFFICHÉE EST CELLE DE L'APPAREIL** (plus « Europe/Lisbon »
+en dur) : les miles supposent qu'on peut être à New York, l'heure doit
+suivre. **Écart connu** : les fenêtres `today` / `tomorrow` du serveur
+restent des jours de LISBONNE — identique à Lisbonne, décalé ailleurs.
+À trancher le jour où un Spot existe hors d'Europe (MASTER §0.16).
+
+**Les règles d'un Spot sont une fonction** : `spot_rules()` (10 Spots à
+venir, 1–50 places, 5–720 min, 90 jours). `spot_publish` et la page la
+lisent ; `my_space().limits` dit ce qui reste.
+
+**Le diagnostic** : `__totehm_space()` → build, vue, panneau, membre, comp,
+unités, boussole (dispo · allumée), Spots (démo · live · devant), filtres,
+tiroirs ouverts, brouillon (complet · manques), demandes.
+
 ### ⛔ TOTEHM.SPACE EST UN COCKPIT — TROIS COMMANDES, LA BOÎTE DE TOTEHM.COM — 24/09/2026
+
+> **⚠️ DÉPASSÉ LE 25/09 SUR TROIS POINTS** — voir **TOTEHM.SPACE SE PILOTE
+> À LA MANETTE**. Les trois commandes sont devenues les cinq crans d'une
+> manette ; l'instrumentation d'un Spot est entrée DANS la boîte (date,
+> heure, durée, lieu, places) ; les T sont devenus des points. Restent
+> vrais : la boîte COPIÉE de totehm.com, la recherche en base par mots,
+> l'échelle qui suit la majorité, une demande = une personne.
 
 **La demande de Wah, au mot près :** « un cockpit spatial ultra
 minimaliste, ultra-fonctionnel et SURTOUT ultra-compréhensible — plutôt
@@ -2825,7 +3015,16 @@ facture mensuelle sans revenu en face. Le gratuit reste déterministe.
 | **Space Mono** | texte, labels, prix, navigation, métadonnées |
 | **Montserrat** | **EXCLUSIVEMENT `[Get Higher]`** |
 
-**⚠️ MONTSERRAT N'A DROIT QU'AU SLOGAN.** Et comme « Higher » est
+> **⚠️ ÉTENDU LE 24/09 PAR `BRAND.md` §13 (« Polices — la stack et ses
+> rôles sacrés »), qui fait autorité.** Montserrat 600 NOMME le produit et
+> ses parties : le wordmark TOTEHM et les **titres de vue** (`#vnow` du
+> Totehm, `#vt` de l'Espace). Quantico se resserre sur ce que le membre
+> TAPE (nom, saisies, textes des boîtes, le mot d'un Spot) ; un bouton de
+> navigation est en Space Mono. Ce tableau n'a pas été mis à jour le
+> 24/09 — c'était une contradiction entre deux documents, corrigée ici le
+> 25/09. Le paragraphe ci-dessous décrit la règle d'avant.
+
+**⚠️ MONTSERRAT N'A DROIT QU'AU SLOGAN** (règle d'avant le 24/09). Et comme « Higher » est
 toujours un SVG (règle du 18/09), Montserrat ne doit apparaître dans
 **aucune balise** d'aucune page : uniquement dans le `<symbol>` du
 badge. La première version de la page TotehmBot l'utilisait pour
