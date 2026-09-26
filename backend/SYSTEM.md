@@ -15,6 +15,45 @@
 
 ---
 
+## 0 · LOT DU 26/09/2026 — TOTEHM.SPACE À L'ÉCHELLE DU MONDE · NATURE D'UN SPOT · GLOBE
+
+> **ÉTAT : migration `20260926_space_monde.sql` appliquée le 26/09/2026
+> par Claude (MCP Supabase, projet `abujjbkbbiumxrokozph`) — AVANT la page.
+> Elle est additive pour la page du 25/09 (`p_venue` a un défaut).**
+> Contrôles relevés après application : `spot_publish` = **une seule
+> version** (16 paramètres), `anon` refusé · `spots_globe` exécutable par
+> `anon` · `spots_globe()` = **11 cellules, 43 Spots** après
+> `demo_seed()` · **5** plans `private` · `spot_rules()->round_private` = 2.
+
+| objet | ce qui change |
+|---|---|
+| **`spot_plans.venue`** | NOUVELLE colonne `text not null default 'public'`, `check in ('public','private')` |
+| `spot_rules()` | `+ round_public 3 · round_private 2 · local_radius_km 60` |
+| **`spot_publish(…, p_venue text default 'public')`** | 16 paramètres ; l'ancienne (15) est SUPPRIMÉE. Refus `venue` ; `spots.lat/lng` arrondis à 3 décimales (public, ~110 m) ou 2 (privé, ~1,1 km) |
+| `spots_radar` · `my_space` | rendent `venue` ; `venue` entre dans les mots cherchés |
+| **`spots_globe(p_when, p_intention, p_q, p_mode)`** | NOUVELLE, `anon` : des CELLULES (½° × ½°) — position moyenne publique, `n`, `live`, intention dominante. **Zéro identité, zéro contexte** |
+| démo | `_demo_seed_world()` : 10 Spots dans le monde (New York, Tokyo, Berlin, Rio, Paris-privé, Londres, Le Cap, Sydney, Mexico, Bali-privé) + 3 Spots lisboètes passés en privé ; `demo_seed()` l'appelle |
+
+**Fichiers servis** : `space/earth.json` (Natural Earth 1:110 M + 1 251
+villes, 100 Ko) et `space/earth50.json` (côtes 1:50 M simplifiées, 360 Ko)
+— domaine public. **Fond de rue** : tuiles `tile.openstreetmap.org`, en
+création seulement, attribution affichée.
+
+**Page** : `space/index.html`, `BUILD='2026-09-26'`.
+
+**Testé** : navigateur (Chromium sans tête, client Supabase simulé, tuiles
+et données Terre servies localement) — **101 vérifications**, desktop 1440
+et téléphone 390 × 844 (vrais événements tactiles : balayage, appui long,
+pincement à deux doigts), zéro erreur JS.
+
+**Retour arrière** : rejouer `spot_publish` (15 paramètres), `spots_radar`
+et `my_space` depuis `20260925_space_manette.sql` APRÈS
+`drop function public.spot_publish(text,text[],uuid[],bigint[],boolean,timestamptz,integer,text,double precision,double precision,text,integer,text,text,text,text)` ;
+`drop function public.spots_globe(text,text,text,text)` ; la colonne
+`venue` peut rester (défaut `public`).
+
+---
+
 ## 0 · LOT DU 25/09/2026 — TOTEHM.SPACE À LA MANETTE · BOÎTE-ACTION · LIMITES
 
 > **ÉTAT : migration `20260925_space_manette.sql` appliquée le 25/09/2026
@@ -1391,6 +1430,9 @@ Functions sont téléchargeables.
 
 | Date | Décision | Pourquoi |
 |---|---|---|
+| 26/09 | **totehm.space va de la rue à la planète** | plateforme internationale : une projection orthographique, des lumières par région (`spots_globe`), la couronne qui fait tourner la carte ou le globe |
+| 26/09 | **Un Spot a une nature : public ou privé** | chez soi, le radar ne doit montrer que le quartier (~1,1 km) — l'arrondi est en base |
+| 26/09 | **Trait de côte Natural Earth servi par nous ; tuiles OpenStreetMap en création seulement** | zéro facture, zéro clé ; OSM a une politique d'usage — un fournisseur payant sera nécessaire à fort volume |
 | 25/09 | **totehm.space se pilote à la manette de totehm.com : cinq crans, cinq vues** | « le joystick, directement sur l'atterrissage, en dessous du radar » ; la barre Search · Create · My space disparaît, le radar rétrécit |
 | 25/09 | **La boîte-action n'est plus la boîte-habitude** | une action a une date, une heure, une durée, un lieu, des places — pas un rythme ; WHY/TRIGGER passent dans un tiroir |
 | 25/09 | **Les règles d'un Spot sont une fonction (`spot_rules()`)** | la page affiche « 2 / 10 » sans connaître le 10 ; `spot_publish` lit les mêmes chiffres |

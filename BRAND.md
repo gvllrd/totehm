@@ -403,8 +403,18 @@ the boutique.
 > beyond* (vision). The controller is a shared LANGUAGE, like the Box —
 > copied, never imported. The radar shrank to leave it the bottom of the
 > screen; the Spots on it are coloured **dots**, and their distance reads
-> in km (miles in the United States). Greys, not pure black, separate the
-> parts (background · radar disc · panel · section).
+> in km (miles in the United States). The background is pure black; greys
+> only separate the parts (radar disc · window · section · hover bubble).
+>
+> **26/09/2026 — THE WHOLE PLANET.** The gesture works everywhere, like in
+> the Totehm (swipe, two fingers, drag the radar); zoom is a pinch (or a
+> discreet `+ −`). Zoomed out, the radar becomes the Earth and the Spots
+> of the world glow on it as lights. The ring around the radar is a
+> **compass you can turn** — a toy first, an instrument second: it aims
+> the map, or spins the planet. Each side view slides in from its own
+> side; the controller never moves. *By intention* recalls the seven, each
+> with the Higher slogan (the SVG) and Wah's line. A Spot has a nature:
+> **public space** or **private** (inside the member's own place).
 >
 > **A Spot is no longer drawn as its Habit Box.** The Habit Box is kept
 > for the CHOICE of the habit. The action box (navy, same format) trades
@@ -932,9 +942,11 @@ Les trois passent en `#fff` au survol sur desktop.
 **6. Fond noir, aucun fond gris**
 `background: #000` partout. Un gris comme surface fait "application".
 Le gris ne sert qu'au texte secondaire.
-*Exception décidée par Wah le 25/09 : `totehm.space`, le cockpit — « trop
-noir pour délimiter les parties ». Quatre nuances très sombres (fond,
-disque du radar, panneau, section), jamais un trait.*
+*Précisé par Wah le 26/09 pour `totehm.space` : « le fond est toujours
+en noir pur ; les gris servent seulement à délimiter ». Le fond, le monde,
+le vide : `#000`. Le disque du radar, une fenêtre, une section, la bulle
+de survol : un gris très sombre, PLEIN (jamais translucide), jamais un
+trait. (Le 25/09, quatre gris y faisaient aussi le fond — c'est fini.)*
 
 **7. Pas de flèches dans les boutons**
 Les boutons de navigation (`Back`, `Play the street`, `Close`) n'ont pas d'icône fléchée.

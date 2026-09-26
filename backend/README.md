@@ -322,6 +322,30 @@ une erreur Stripe.
 
 ---
 
+## L'Espace — le monde, la nature d'un Spot · 26/09
+
+Au-dessus de 80 km de portée, la page cesse de demander des Spots un par
+un : elle lit **`spots_globe(p_when, p_intention, p_q, p_mode)`** (`anon`
+peut l'appeler) — des cellules d'un demi-degré, avec position moyenne
+(déjà publique), `n`, `live` et l'intention dominante. Aucune identité,
+aucun contexte. En dessous, `spots_radar` au CENTRE DE LA VUE (plus
+seulement autour de soi), rayon `spot_rules().local_radius_km` (60).
+
+**Nature** — `spot_publish(…, p_venue)` : `public` (défaut) ou `private`.
+Privé = la position publique est arrondie à ~1,1 km (`round_private`),
+public à ~110 m (`round_public`). Refus `venue` si autre chose.
+
+**Démo** : `demo_seed()` sème aussi dix Spots dans le monde
+(`_demo_seed_world()`) et passe trois Spots lisboètes en privé.
+
+**La Terre** — `space/earth.json` et `space/earth50.json` sont
+régénérables depuis Natural Earth (`ne_110m_land`, `ne_50m_land`,
+`ne_50m_populated_places`) : anneaux `[lng, lat, …]` à 2 décimales,
+Douglas-Peucker ε = 0,03° pour le 1:50 M. **Le fond de rue** (création
+seulement) vient de `tile.openstreetmap.org` : attribution obligatoire,
+usage modéré (politique OSMF) — à remplacer par un fournisseur payant ou
+nos tuiles si le volume monte.
+
 ## L'Espace — la manette, les fenêtres de temps, les limites · 25/09
 
 La page se pilote par une manette à cinq crans (voir `CLAUDE.md`, « LA

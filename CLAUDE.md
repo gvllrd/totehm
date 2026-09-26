@@ -82,6 +82,8 @@ déjà à la question.
                                      index.html — le cockpit : un radar et,
                                      dessous, la MANETTE de totehm.com à cinq
                                      crans (25/09)
+                                     · la planète entière (26/09) :
+                                     earth.json · earth50.json
                                      + redirections 308 de l'ancien Stoner
   boutique/  →  www.higher.boutique  UNE BOX, N'IMPORTE LAQUELLE, DEVIENT UN CLOTH
                                      index.html · streetwear.html (totehmisation)
@@ -272,7 +274,82 @@ avant sa méthode de virement lisait « ok » et n'avait rien d'enregistré.
 `upsert … onConflict: 'user_id'`. *Un `update` sans ligne n'est pas une
 erreur pour Postgres — c'en est une pour nous.*
 
+### ⛔ TOTEHM.SPACE À L'ÉCHELLE DU MONDE — LE GESTE PARTOUT, LA COURONNE, LE GLOBE · 26/09/2026
+
+**La demande de Wah :** que la manette marche « comme dans totehm.html »,
+jouable et « PlayStation », sur une plateforme internationale. Neuf
+changements, tous dans `space/index.html` (`BUILD='2026-09-26'`) et la
+migration `20260926_space_monde.sql` :
+
+| | avant (25/09) | depuis (26/09) |
+|---|---|---|
+| naviguer | la manette seule | **partout** : un doigt, deux doigts au trackpad, la souris tirée sur le radar — même table `CROIX` |
+| zoomer | la molette | **le pincement** (doigts ; trackpad = `wheel`+`ctrlKey` ou `gesturechange` Safari) et `+ − ◎ ?` à droite de la manette |
+| la boussole | l'appareil seul | **la couronne se tourne** (inertie, un cran vibré par 45°, deux touchers = nord) ; l'appareil reste une option au téléphone |
+| l'échelle | ≤ 60 km | **de la rue à la planète** : projection orthographique, au-dessus de 80 km des LUMIÈRES (`spots_globe`) ; toucher une lumière = y voler |
+| les fenêtres | une colonne à droite | **chacune de son côté** : gauche ← gauche, droite ← droite, Create descend du haut et y reste, My space monte du bas ; le Spot du centre s'ouvre sur place ; **la manette ne bouge jamais** |
+| le fond | quatre gris | **noir pur** ; les gris ne font que délimiter (disque, fenêtre, section, bulle) |
+| la bulle de survol | dans chaque point, translucide | **une seule `#tip`**, au-dessus des points (`z-index`), d'un gris PLEIN |
+| le rendez-vous | viser à l'aveugle | **un fond de rue sombre** (OpenStreetMap inversé + désaturé) sous le radar, en création seulement, avec l'attribution |
+| un Spot | public par défaut | **une NATURE** : `public` (~110 m) ou `private` (~1,1 km, chez le membre) — sans réponse par défaut |
+
+**⚠️ LA TERRE EST À NOUS, LA RUE NE L'EST PAS.** Le trait de côte et les
+villes viennent de **Natural Earth** (domaine public), servis par nous
+(`space/earth.json` 100 Ko, `space/earth50.json` 360 Ko, chargé sous
+2 500 km) : zéro service, zéro facture. Le fond de rue vient des tuiles
+**OpenStreetMap** : gratuites mais sous **politique d'usage** (usage
+modéré, attribution obligatoire — `#osm`). C'est l'écart assumé au
+MASTER §44 (« ni Google Maps, ni Mapbox, ni Leaflet ») : pas de
+bibliothèque, pas de clé, une image par tuile, et SEULEMENT pendant la
+pose d'un rendez-vous. Le jour où l'Espace dépasse quelques milliers de
+créations par jour, il faut un fournisseur de tuiles payant ou nos
+propres tuiles — **à trancher avant, pas après un blocage**.
+
+**⚠️ UN GESTE SUR UN POINT FAIT PARTIE DU GESTE.** Le radar écoute
+`#world`, pas le canvas : mesuré, un pincement dont un doigt tombait sur
+un Spot n'arrivait jamais. Et pas de `setPointerCapture` sur un point —
+son `click` doit rester le sien. Le premier doigt d'un geste (`isPrimary`)
+vide l'état : un relâcher perdu ne fausse pas le geste suivant.
+
+**⚠️ LE CONTENU DÉFILE, LA VERTICALE NAVIGUE AU BOUT.** Dans une fenêtre
+qui défile, la verticale appartient au défilement ; elle ne navigue qu'au
+bord, après 420 ms de calme (trackpad) ou si le doigt y était déjà
+(tactile). L'inertie d'un trackpad est avalée : 260 ms de silence avant
+la navigation suivante — sinon un geste en fait deux.
+
+**⚠️ UNE FENÊTRE QUI SORT PERD SES IDENTIFIANTS TOUT DE SUITE**
+(`retire()`) et son contenu une fois sortie — sauf si elle est revenue.
+Six fenêtres, un seul `#res`, un seul `#g-email` : sinon c'est la
+mauvaise qui répond.
+
+**⚠️ PRIVÉ = LE QUARTIER.** `spot_publish` arrondit `spots.lat/lng` à 2
+décimales (~1,1 km) pour un Spot `private`, 3 (~110 m) pour `public`
+(`spot_rules().round_private/round_public`). Le lieu exact reste réservé
+au créateur et aux acceptés, comme avant.
+
+**By intention rappelle les sept** : pastille, nom, **le slogan Higher en
+SVG** (`#higher-badge`, recopié de `com/totehm.html`), pilier, et la
+phrase de Wah (« Conquer yourself through harder effort »…). Choisie,
+l'intention reste en tête ; les autres deviennent sept points.
+
+**How it works** (`?`, la touche `?`, les liens des fenêtres) : la
+manette, le zoom, la couronne ; puis Spot, places, automatic/manual,
+public/private (« dans l'infrastructure du membre »), FIGHER
+members/subscribers, social/silent, compatibilité.
+
+**Le balayage ralentit** : un tour en 14 s (il en faisait un en 6).
+
+**Le diagnostic** `__totehm_space()` gagne : `heading`, `scale {range_km,
+mode, at_home, earth, coast50}`, `cells`, `planet`, `draft.map_tiles`,
+`gestures {swipe, trackpad, pinch, ring}`.
+
 ### ⛔ TOTEHM.SPACE SE PILOTE À LA MANETTE — CINQ CRANS · 25/09/2026
+
+> **⚠️ DÉPASSÉ LE 26/09 SUR CINQ POINTS** — voir **TOTEHM.SPACE À L'ÉCHELLE
+> DU MONDE** : le zoom n'est plus la molette, la manette ne suit plus le
+> panneau, le fond redevient noir pur, la distance vit dans une bulle
+> unique, le balayage ralentit. Les cinq crans, la boîte-action, les
+> points, les miles et la sortie dans tous les états restent vrais.
 
 **La demande de Wah :** « remets le joystick de totehm.html directement sur
 l'atterrissage de totehm.space, en dessous du radar — diminue le radar,
