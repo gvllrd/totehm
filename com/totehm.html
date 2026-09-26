@@ -2020,7 +2020,7 @@ body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
 #gate{position:fixed;inset:0;z-index:200;background:#000;
   display:block;overflow-x:hidden;overflow-y:auto;
   overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
-  transition:opacity .32s ease,background-color .45s ease}
+  transition:opacity .32s ease}
 #gate-hero{width:100%;min-height:100dvh;
   display:flex;flex-direction:column;align-items:center;
   position:relative;justify-content:flex-start;
@@ -2057,107 +2057,71 @@ body:not(.member) #gate-id #vis-panel,
 body:not(.member) #gate-id #name-note{display:none}
 #gate-top-row{display:flex;flex-direction:column;align-items:center;
   gap:16px;flex-shrink:0}
-/* ══ L'ASTÉROÏDE — UNE CARTE « LSD PAPER » · 24/09/2026 (bis) ══════
-   Un fin carré perforé, DEUX faces, qui se retourne comme une carte à
-   jouer. Il remplace le cube de quatre faces du matin : 110 px sous une
-   perspective de 1 400 px, c'est une projection presque plate — le cube
-   se lisait comme un carré qui s'écrase et s'étire, et quatre faces
-   identiques ne laissaient voir aucune arête. Une carte n'a pas besoin
-   d'arête pour être en 3D : on la voit se retourner.
+/* ══ LE PAPIER — L'ATTERRISSAGE · 25/09/2026 ══════════════════════
+   Un petit carré de papier perforé, en apesanteur, qui tourne sur
+   lui-même. DEUX FACES : devant, le LOGO — les quatre calques SVG
+   (`#gate-logo`), ceux-là mêmes qui se déconstruisent en Totehm déplié ;
+   derrière, « Tap to open it » ou le NOM du Totehm du membre connecté.
+   Toute la stratégie d'une vie tient dans ce morceau de papier : on le
+   touche, il se pose face logo, et le Totehm en sort.
 
-   ⚠️ TROIS COUCHES, ET CHACUNE A UN SEUL MAÎTRE. Une `animation` CSS
-   ÉCRASE le `transform` du même élément : tant que la rotation vivait
-   sur `#gate-card`, l'inclinaison du capteur (posée sur la même carte)
-   n'existait pas. Donc :
-     `.ast-float`  la dérive en apesanteur    — CSS, 7,8 s aller-retour
-     `#gate-tilt`  l'inclinaison du capteur   — JS (lissée, ±14°)
-     `#gate-card`  le retournement sur l'axe Y — CSS, 12 s le tour
-   Les deux périodes ne tombent jamais juste : le mouvement ne se répète
-   pas à l'œil. Et le retournement s'adoucit à CHAQUE demi-tour (la
-   courbe s'applique entre deux étapes) : la carte s'attarde face au
-   regard, passe vite sur la tranche.
+   ⚠️ LE LOGO EST SUR LE PAPIER, PAS À CÔTÉ. Le 24/09 on l'avait caché
+   hors écran pour faire tourner une carte vide : la déconstruction
+   continuait, mais invisible, et on entrait dans le noir. Ici les
+   quatre calques SONT la face avant. Au tap, le papier se pose à plat
+   (identité exacte, `.is-flat`), PUIS `measure()` et la déconstruction
+   d'origine partent — inchangées, au pixel.
 
-   ⚠️ `preserve-3d` SUR LES TROIS, sinon la première couche qui l'oublie
-   aplatit tout ce qu'elle contient. Et `backface-visibility` AUSSI sur
-   les enfants des faces : Safari compose à part un enfant animé (le
-   souffle de TAP TO OPEN) et le montrerait en miroir à travers le dos. */
-#gate-top-row{margin:auto 0;padding-bottom:max(64px,12vh)}
-#gate-asteroid{--ast-size:clamp(168px,44vmin,232px);
-  position:relative;flex-shrink:0;width:var(--ast-size);height:var(--ast-size);
-  perspective:760px;cursor:pointer;-webkit-tap-highlight-color:transparent;
-  transition:opacity .7s ease .25s,transform 1s cubic-bezier(.2,.7,.2,1) .25s}
-#gate-asteroid:focus-visible{outline:2px solid rgba(255,255,255,.35);outline-offset:10px}
-.ast-float,#gate-tilt,#gate-card{position:absolute;inset:0;transform-style:preserve-3d}
-.ast-float{animation:lsd-drift 7.8s ease-in-out infinite alternate}
-#gate-tilt{will-change:transform}
-#gate-card{animation:lsd-turn 12s cubic-bezier(.45,0,.55,1) infinite}
-@keyframes lsd-turn{
-  0%  {transform:rotateY(0deg)}
-  50% {transform:rotateY(180deg)}
-  100%{transform:rotateY(360deg)}
-}
-@keyframes lsd-drift{
-  0%  {transform:translate3d(0,-5px,0) rotateX(6deg)  rotateZ(-1.5deg)}
-  100%{transform:translate3d(0,6px,0)  rotateX(-5deg) rotateZ(1.8deg)}
-}
-/* Les deux faces sont écartées d'un pixel (±.5 px) : deux plans
-   confondus scintillent sous Safari au passage de la tranche. */
-.ast-face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+   ⚠️ LE MOUVEMENT EST CONDUIT PAR LE JS, UNE SEULE MATRICE. Rotation,
+   inclinaison (souris, téléphone), dérive, pression du doigt, lancer :
+   une animation CSS écraserait le `transform` que le capteur pose, et
+   deux couches de CSS ne savent pas se poser ensemble face logo. Le
+   moteur (`PAPIER`, module GATE) ne tourne QUE sur l'atterrissage au
+   repos ; posé, il s'arrête et ne coûte plus rien.
+
+   ⚠️ `backface-visibility` AUSSI sur les enfants des faces : Safari
+   compose à part un enfant animé et le montrerait en miroir à travers
+   le dos. Les deux faces sont écartées d'un pixel pendant qu'il tourne
+   (deux plans confondus scintillent sur la tranche) — et remises dans
+   le même plan quand il est posé : `measure()` lit une face sans
+   aucune transformation. */
+#gate-top-row{margin:auto 0;padding-bottom:max(56px,11vh)}
+#gate-asteroid{position:relative;flex-shrink:0;
+  width:var(--gate-size);height:var(--gate-size);
+  perspective:480px;cursor:pointer;touch-action:none;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#gate-asteroid:has(#gate-enter:focus-visible){outline:1px solid rgba(255,255,255,.35);outline-offset:12px}
+#gate-card{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform}
+.ast-face{position:absolute;inset:0;
   backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .ast-face>*{backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .ast-front{transform:translateZ(.5px)}
-.ast-back {transform:rotateY(180deg) translateZ(.5px)}
-/* La tuile perforée navy — la texture du Totehm. Réutilise le SVG
-   inline des jetons du site pour rester fidèle à la charte. */
+.ast-back{transform:rotateY(180deg) translateZ(.5px);
+  display:flex;align-items:center;justify-content:center}
+#gate-card.is-flat .ast-front{transform:none}
+/* Le dos : la même tuile perforée navy que le logo, sans l'encre. Les
+   perforations sont symétriques, donc le dos a exactement la silhouette
+   de la face — un seul morceau de papier, vu des deux côtés. */
 .ast-tile{position:absolute;inset:0;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366' mask='url(%23m)'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat}
-/* Aucune ombre sous le texte : blanc sur navy se lit seul (BRAND). Le
-   retrait à gauche compense l'espacement que la dernière lettre porte
-   à droite — sinon le mot n'est pas centré. */
-.ast-cta{position:relative;z-index:2;padding-left:.3em;white-space:nowrap;
-  font-family:'Space Mono',monospace;font-weight:700;
-  font-size:clamp(12px,calc(var(--ast-size) * .066),15px);
-  letter-spacing:.3em;text-transform:uppercase;color:#fff;
-  animation:breathe 4.2s ease-in-out infinite}
-/* LE DOS PORTE LE NOM DU MEMBRE. Une signature, pas une invitation : il
-   ne respire pas. La taille suit la longueur (`--len`, posé par
-   `paintAsteroid()` : les caractères d'UNE ligne) — Space Mono avance de
-   .612 em, plus .12 em d'espacement, dans 74 % de la carte. Au-delà de
-   treize caractères le nom passe sur deux lignes plutôt que de rapetisser
-   sous la lecture. */
-.ast-cta.is-name{--len:8;white-space:pre;
-  text-align:center;line-height:1.25;padding-left:.12em;
-  font-size:clamp(11px,calc(var(--ast-size) * .74 / (var(--len) * .732)),22px);
-  letter-spacing:.12em;text-transform:none;animation:none}
-
-/* ══ LA CARTE S'EFFACE, LE TOTEHM APPARAÎT ══
-   `enter()` pose `.entered` : le JS (`lsdOut`) a déjà arrêté le
-   retournement et ramène la carte face avant ; ici elle s'efface en
-   avançant d'un souffle, et le NOIR du gate se retire derrière elle.
-   Les quatre calques du logo se déconstruisent toujours, mais hors
-   écran : sans ce retrait du noir, le Totehm se dévoilait SOUS un gate
-   opaque et l'on fixait un écran noir deux secondes. */
-body.gate.entered #gate{background-color:transparent;
-  transition:opacity .32s ease,background-color .6s ease .3s}
-body.gate.entered #gate-asteroid{opacity:0;transform:scale(1.07);pointer-events:none;
-  transition:opacity .45s ease .12s,transform .6s cubic-bezier(.2,.7,.2,1) .12s}
-body.gate.entered .ast-float{animation-play-state:paused}
-body.gate.entered .ast-cta{animation:none}
-/* Au REPLI, le Totehm s'efface sous un noir qui revient (.45 s) : le coin
-   membre et les termes attendent ce noir, sinon le pseudo s'écrit une
-   demi-seconde par-dessus le T. ⚠️ UNE ANIMATION, PAS UNE TRANSITION :
-   dans le Totehm `#conn-bar` est en `display:none`, et une transition
-   ne part jamais d'un `display:none` — il réapparaissait d'un coup.
-   `.folding` ne vit que le temps du repli : l'animation s'en va avec. */
-@keyframes lsd-late{0%,45%{opacity:0}100%{opacity:1}}
-body.gate.folding #conn-bar,
-body.gate.folding #terms-corner{animation:lsd-late .8s ease both}
-/* Mouvement réduit : ni retournement, ni dérive, ni souffle — la face
-   avant, immobile. Le capteur n'est pas branché non plus (JS). */
-@media(prefers-reduced-motion:reduce){
-  .ast-float,#gate-card,.ast-cta{animation:none}
-  #gate-asteroid,body.gate.entered #gate-asteroid{transform:none}
-}
+/* La lumière : un voile posé par le moteur selon l'angle du papier face
+   à une lumière venue d'en haut à gauche — il s'assombrit en se
+   détournant, s'éclaire d'un souffle en s'y tournant. Ce n'est pas une
+   ombre portée (BRAND : aucune ombre) : c'est la surface qui prend la
+   lumière. Nul à plat, et retiré quand le papier est posé. */
+.ast-light{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0}
+#gate-card.is-flat .ast-light{display:none}
+/* LE DOS PARLE BAS. Quantico : c'est la place du NOM du Totehm, et le
+   nom du Totehm s'écrit en Quantico (BRAND, « sacré ») — « Tap to open
+   it » n'est que cette place encore vide. 10 px, gris ; le nom un ton
+   plus clair. Sa taille et ses lignes sont posées par `paintAsteroid()`,
+   à la mesure réelle : Quantico n'a pas une chasse fixe. */
+.ast-say{position:relative;z-index:2;white-space:pre;text-align:center;
+  font-family:'Quantico',sans-serif;font-weight:400;font-size:10px;
+  line-height:1.3;letter-spacing:.04em;color:#b0b0b0;transition:color .15s ease}
+.ast-say.is-name{color:rgba(255,255,255,.88)}
+@media(hover:hover){#gate-asteroid:hover .ast-say{color:#fff}}
+body.gate.entered .ast-back{visibility:hidden}
 
 #gate-logo{position:relative;flex-shrink:0;
   width:var(--gate-size);height:var(--gate-size)}
@@ -2783,43 +2747,32 @@ body.gate.entered #filter-badge{
        la porte vers les autres. Visible pour un membre connecté ; un
        inconnu n'a rien à nommer, il ne voit que la recherche. -->
   <div id="gate-top-row">
-  <!-- ══ L'ASTÉROÏDE — UNE CARTE « LSD PAPER » · 24/09/2026 (bis) ════
-       L'atterrissage n'a plus qu'un objet : un fin carré perforé navy,
-       en apesanteur, qui se retourne. Devant : TAP TO OPEN. Derrière :
-       le nom du membre s'il en a un, sinon TAP TO OPEN encore. Trois
-       couches emboîtées, un maître chacune (voir le CSS) : la dérive,
-       l'inclinaison du capteur, le retournement. Un tap = `enter()`,
-       le même geste que l'ancien bouton [Open my Totehm]. -->
-  <div id="gate-asteroid" role="button" tabindex="0" aria-label="Tap to open my Totehm">
-    <div class="ast-float">
-      <div id="gate-tilt">
-        <div id="gate-card">
-          <div class="ast-face ast-front">
-            <div class="ast-tile"></div>
-            <span class="ast-cta">TAP TO OPEN</span>
-          </div>
-          <div class="ast-face ast-back">
-            <div class="ast-tile"></div>
-            <span class="ast-cta" id="ast-name">TAP TO OPEN</span>
-          </div>
-        </div><!-- /#gate-card -->
-      </div><!-- /#gate-tilt -->
-    </div><!-- /.ast-float -->
+  <!-- ══ LE PAPIER · 25/09/2026 ═══════════════════════════════════
+       Un petit carré de papier, deux faces, qui tourne lentement dans
+       son espace et suit la souris ou le téléphone. Devant : le logo —
+       les QUATRE calques qui se déconstruisent en Totehm déplié. Derrière :
+       « Tap to open it », ou le nom du Totehm du membre connecté.
+       Un tap : le papier se pose face logo, et le Totehm en sort. -->
+  <div id="gate-asteroid">
+    <div id="gate-card">
+      <div class="ast-face ast-front">
+        <div id="gate-logo">
+          <svg class="glayer" id="gl-bg"   viewBox="0 0 224.88 224.08" preserveAspectRatio="none"    aria-hidden="true"><defs><mask id="tgb_m" maskUnits="userSpaceOnUse" x="-40" y="-40" width="310" height="310"><rect x="-40" y="-40" width="310" height="310" fill="#fff"/><circle cx="56.421" cy="0.000" r="13.86" fill="#000"/><circle cx="56.421" cy="224.078" r="13.86" fill="#000"/><circle cx="112.440" cy="0.000" r="13.86" fill="#000"/><circle cx="112.440" cy="224.078" r="13.86" fill="#000"/><circle cx="168.459" cy="0.000" r="13.86" fill="#000"/><circle cx="168.459" cy="224.078" r="13.86" fill="#000"/><circle cx="0.402" cy="56.020" r="13.86" fill="#000"/><circle cx="224.478" cy="56.020" r="13.86" fill="#000"/><circle cx="0.402" cy="112.039" r="13.86" fill="#000"/><circle cx="224.478" cy="112.039" r="13.86" fill="#000"/><circle cx="0.402" cy="168.059" r="13.86" fill="#000"/><circle cx="224.478" cy="168.059" r="13.86" fill="#000"/></mask></defs><rect x="0.402" y="0.000" width="224.076" height="224.078" fill="#333366" mask="url(#tgb_m)"/></svg>
+          <svg class="glayer" id="gl-rail" viewBox="20.689 0.225 17.203 223.630" preserveAspectRatio="none"    aria-hidden="true"><defs><clipPath id="tgr_3a710ebbbe"><path d="M 20.652344 0.261719 L 37.839844 0.261719 L 37.839844 223.816406 L 20.652344 223.816406 Z M 20.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tgr_1b01f8474a"><path d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.816406 L 0.652344 223.816406 Z M 0.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tgr_95349ecf51"><rect x="0" width="18" y="0" height="224"/></clipPath></defs><g clip-path="url(#tgr_3a710ebbbe)"><g transform="matrix(1, 0, 0, 1, 20, -0.000000000000020428)"><g clip-path="url(#tgr_95349ecf51)"><g clip-path="url(#tgr_1b01f8474a)"><path fill="#626286" d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.808594 L 0.652344 223.808594 Z M 0.652344 0.261719 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></svg>
+          <svg class="glayer" id="gl-t"    viewBox="79.832 47.921 66.789 66.932"    preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="tgt_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tgt_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tgt_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tgt_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tgt_ffb4264ddd)"><g clip-path="url(#tgt_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tgt_0eae0d8cca)"><g clip-path="url(#tgt_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tgt_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tgt_92fddf9f0e)"><g clip-path="url(#tgt_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tgt_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tgt_7d4c700d36)"><g clip-path="url(#tgt_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></svg>
+          <svg class="glayer" id="gl-wm"   viewBox="74.997 121.602 77.584 46.683"   preserveAspectRatio="none" aria-hidden="true"><defs><g/><clipPath id="tgw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tgw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg>
+          <button id="gate-enter" aria-label="Enter my Totehm"></button>
+        </div><!-- /#gate-logo -->
+        <div class="ast-light" aria-hidden="true"></div>
+      </div>
+      <div class="ast-face ast-back" aria-hidden="true">
+        <div class="ast-tile"></div>
+        <span class="ast-say" id="ast-name">Tap to open it</span>
+        <div class="ast-light"></div>
+      </div>
+    </div><!-- /#gate-card -->
   </div><!-- /#gate-asteroid -->
 
-  <!-- ⚠️ #gate-logo (les 4 SVG layers) SUBSISTE POUR LA DÉCONSTRUCTION
-       mais VIT HORS DE L'ASTÉROÏDE et hors du flux (position:absolute,
-       hors écran, invisible). Le module GATE lit encore leurs
-       getBoundingClientRect pour son ancien calcul — on les garde en
-       vie sans les montrer. La transition asteroid → Totehm déplié
-       s'appuie sur .gate-off + le fondu du gate entier. -->
-  <div id="gate-logo" style="visibility:hidden;position:absolute;pointer-events:none;left:-9999px;top:0;width:220px;height:220px">
-    <svg class="glayer" id="gl-bg"   viewBox="0 0 224.88 224.08" preserveAspectRatio="none"    aria-hidden="true"><defs><mask id="tgb_m" maskUnits="userSpaceOnUse" x="-40" y="-40" width="310" height="310"><rect x="-40" y="-40" width="310" height="310" fill="#fff"/><circle cx="56.421" cy="0.000" r="13.86" fill="#000"/><circle cx="56.421" cy="224.078" r="13.86" fill="#000"/><circle cx="112.440" cy="0.000" r="13.86" fill="#000"/><circle cx="112.440" cy="224.078" r="13.86" fill="#000"/><circle cx="168.459" cy="0.000" r="13.86" fill="#000"/><circle cx="168.459" cy="224.078" r="13.86" fill="#000"/><circle cx="0.402" cy="56.020" r="13.86" fill="#000"/><circle cx="224.478" cy="56.020" r="13.86" fill="#000"/><circle cx="0.402" cy="112.039" r="13.86" fill="#000"/><circle cx="224.478" cy="112.039" r="13.86" fill="#000"/><circle cx="0.402" cy="168.059" r="13.86" fill="#000"/><circle cx="224.478" cy="168.059" r="13.86" fill="#000"/></mask></defs><rect x="0.402" y="0.000" width="224.076" height="224.078" fill="#333366" mask="url(#tgb_m)"/></svg>
-    <svg class="glayer" id="gl-rail" viewBox="20.689 0.225 17.203 223.630" preserveAspectRatio="none"    aria-hidden="true"><defs><clipPath id="tgr_3a710ebbbe"><path d="M 20.652344 0.261719 L 37.839844 0.261719 L 37.839844 223.816406 L 20.652344 223.816406 Z M 20.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tgr_1b01f8474a"><path d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.816406 L 0.652344 223.816406 Z M 0.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tgr_95349ecf51"><rect x="0" width="18" y="0" height="224"/></clipPath></defs><g clip-path="url(#tgr_3a710ebbbe)"><g transform="matrix(1, 0, 0, 1, 20, -0.000000000000020428)"><g clip-path="url(#tgr_95349ecf51)"><g clip-path="url(#tgr_1b01f8474a)"><path fill="#626286" d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.808594 L 0.652344 223.808594 Z M 0.652344 0.261719 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></svg>
-    <svg class="glayer" id="gl-t"    viewBox="79.832 47.921 66.789 66.932"    preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="tgt_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tgt_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tgt_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tgt_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tgt_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tgt_ffb4264ddd)"><g clip-path="url(#tgt_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tgt_0eae0d8cca)"><g clip-path="url(#tgt_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tgt_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tgt_92fddf9f0e)"><g clip-path="url(#tgt_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tgt_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tgt_7d4c700d36)"><g clip-path="url(#tgt_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></svg>
-    <svg class="glayer" id="gl-wm"   viewBox="74.997 121.602 77.584 46.683"   preserveAspectRatio="none" aria-hidden="true"><defs><g/><clipPath id="tgw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tgw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg>
-    <button id="gate-enter" aria-label="Enter my Totehm"></button>
-  </div><!-- /#gate-logo -->
 
   <!-- ⚠️ LE TOTEHM NE S'OUVRE PAS À L'HORIZONTALE · 22/09/2026.
        Le Totehm est un CARRÉ debout : couché, la liste tient sur trois
@@ -6896,35 +6849,38 @@ function connPaint(){
   $('conn-bar').innerHTML='<span class="dot"'+(me?' style="background:#639922"':'')+'></span>'+label+(myHigher?HI_SVG:'');
   paintAsteroid();
 }
-/* ══ LE DOS DE LA CARTE PORTE LE NOM · 24/09/2026 ═══════════════════
-   Connecté ET nommé : le pseudo. Sinon : TAP TO OPEN, comme la face.
+/* ══ LE DOS DU PAPIER PORTE LE NOM · 25/09/2026 ════════════════════
+   Connecté ET nommé : le nom du Totehm. Sinon : « Tap to open it ».
    Peint depuis `connPaint()`, qui passe à CHAQUE changement de session
-   et de nom (connexion, déconnexion, nom réclamé, Totehm effacé) : un
-   seul point d'entrée, donc le dos ne peut pas retarder sur le coin
-   membre. `textContent`, jamais `innerHTML` — un pseudo est une saisie.
-   Jusqu'à treize caractères, une ligne. Au-delà, deux — coupées sur le
-   séparateur le plus proche du milieu (`_` `-` `.` espace), sinon au
-   milieu exact : laisser le navigateur couper donnait « lisbon_f /
-   ighter ». `--len` = la ligne la plus longue ; le CSS de `.is-name`
-   en tire la taille. */
+   et de nom (connexion, déconnexion, nom réclamé, Totehm effacé), et au
+   réveil du papier. `textContent`, jamais `innerHTML` — un nom est une
+   saisie.
+   ⚠️ QUANTICO N'A PAS UNE CHASSE FIXE : « lisbon_fighter » et
+   « MMMMMMMM » n'ont pas la même largeur pour le même nombre de lettres.
+   On MESURE : trop large pour le papier, le nom passe sur deux lignes,
+   coupé sur le séparateur le plus proche du milieu (`_` `-` `.` espace),
+   puis rapetisse d'un demi-pixel à la fois jusqu'à 7,5 px. Gate caché
+   (Totehm ouvert), rien ne se mesure : le réveil du papier repeint. */
 function paintAsteroid(){
   const el=$('ast-name'); if(!el) return;
   const p=((me&&myProfile&&myProfile.pseudo)||'').trim();
   el.classList.toggle('is-name',!!p);
-  if(!p){ el.textContent='TAP TO OPEN'; el.style.removeProperty('--len'); return; }
-  let lignes=[p];
-  if(p.length>13){
+  el.style.fontSize='';
+  el.textContent=p||'Tap to open it';
+  if(!p||!el.offsetWidth) return;
+  const max=(el.parentElement.clientWidth||110)*.76;
+  if(el.offsetWidth>max&&p.length>3){
     const mi=p.length/2; let cut=Math.ceil(mi);
     for(let d=0;d<=4;d++){
       const a=Math.floor(mi)-d, b=Math.ceil(mi)+d;
       if(/[_\-. ]/.test(p[a]||'')){ cut=a+1; break; }
       if(/[_\-. ]/.test(p[b-1]||'')){ cut=b; break; }
     }
-    lignes=[p.slice(0,cut).trim(),p.slice(cut).trim()];
+    el.textContent=p.slice(0,cut).trim()+'\n'+p.slice(cut).trim();
   }
-  el.textContent=lignes.join('\n');
-  el.style.setProperty('--len',String(Math.max(8,...lignes.map(l=>l.length))));
+  for(let fs=10; el.offsetWidth>max&&fs>7.5;){ fs-=.5; el.style.fontSize=fs+'px'; }
 }
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(paintAsteroid);
 async function loadProfile(){
   if(!me){myProfile=null;cloudMode=false;connPaint();return;}
   loadHigher().then(connPaint);
@@ -7313,7 +7269,7 @@ window.addEventListener('pageshow',e=>{
     }
   }
 
-  const DUR=1050, REVEAL=520, UI_FADE=550;
+  const DUR=1050, REVEAL=520;
   let open=false, moving=false, timer=null;
 
   /* ══ LE TÉLÉPHONE COUCHÉ REPLIE LE TOTEHM · 22/09/2026 ═════════════
@@ -7348,133 +7304,264 @@ window.addEventListener('pageshow',e=>{
   window.addEventListener('orientationchange',surRotation);
   window.addEventListener('resize',surRotation);
 
-  /* ══ L'ASTÉROÏDE BOUGE AVEC LE TÉLÉPHONE · 24/09/2026 (bis) ═════════
-     La carte se retourne toute seule (CSS). Le capteur AJOUTE une
-     inclinaison (±14°) sur sa propre couche, `#gate-tilt` — il ne
-     remplace jamais le retournement, il s'y compose.
+  /* ══ LE PAPIER — SON MOTEUR · 25/09/2026 ════════════════════════════
+     Le papier doit se lire comme un OBJET : il a une masse, il répond,
+     il revient. Tout passe par une seule matrice, calculée à chaque
+     frame (`peindre`), et par trois règles physiques :
 
-     ⚠️ ON LISSE, ON NE RECOPIE PAS. `deviceorientation` arrive à 60 Hz
-     avec du bruit : recopier la valeur fait trembler la carte, et une
-     `transition` CSS relancée à chaque événement la fait bégayer. Une
-     cible, et une frame qui s'en rapproche d'un dixième — la boucle
-     s'arrête d'elle-même quand la carte a rejoint sa cible : zéro coût
-     au repos.
+     1. IL TOURNE, ET IL RESPIRE EN TOURNANT. Environ dix-huit secondes
+        le tour : lent face au regard (≈ 12°/s), plus vif sur la tranche
+        (≈ 34°/s). Une dérive d'apesanteur s'y ajoute — trois sinus de
+        périodes qui ne tombent jamais juste, donc jamais la même boucle.
+     2. IL SUIT, AVEC UN RESSORT. La souris (ordinateur) ou la main
+        (téléphone) donnent une CIBLE d'inclinaison et de glissement ; le
+        papier la rejoint par un ressort un peu sous-amorti — il arrive,
+        dépasse d'un souffle, se pose. Rien n'est recopié tel quel : une
+        valeur recopiée tremble, un ressort vit.
+     3. ON PEUT LE TENIR. Le doigt qui appuie l'enfonce d'un rien et le
+        retient ; glissé, il le fait tourner ; lâché, il garde l'élan et
+        ralentit jusqu'à reprendre son tour. Un tap sans glisser l'ouvre.
 
-     ⚠️ LA RÉFÉRENCE EST LA MAIN DU MEMBRE, PAS L'HORIZON. On ne tient
-     pas un téléphone à plat : la première mesure sert de zéro, puis ce
-     zéro suit lentement la main. La carte répond au GESTE et revient
-     d'elle-même au repos quand la main s'arrête.
+     ⚠️ L'ATTERRISSAGE EST CONTINU. Au tap, `poser()` part de la
+     position ET DE LA VITESSE du moment (Hermite cubique) et arrive
+     face logo, à plat, vitesse nulle — sans à-coup. Il choisit le tour
+     le plus proche en tenant compte de l'élan. Puis `aPlat()` pose
+     l'identité EXACTE (`.is-flat`, `transform` vide) : `measure()` lit
+     alors les calques comme sur l'ancien logo fixe, et la déconstruction
+     part, inchangée.
 
-     ⚠️ iOS DEMANDE LA PERMISSION DANS UN GESTE — `touchend` ou `click`.
-     `touchstart` ne compte pas comme geste pour Safari : la demande y
-     serait refusée sans dialogue et le capteur ne s'allumerait jamais.
-     Refus = pas d'inclinaison, la carte tourne quand même.
+     ⚠️ LA LUMIÈRE VIENT D'EN HAUT À GAUCHE. La normale de chaque face
+     est calculée à partir des mêmes angles, et son voile (`.ast-light`)
+     s'assombrit quand elle se détourne. C'est ce qui fait lire un
+     volume à l'œil — et c'est nul à plat.
 
-     Ordinateur : la souris fait le même travail (la carte regarde le
-     curseur, ±10°). Mouvement réduit : rien n'est branché. */
-  const RM=window.matchMedia('(prefers-reduced-motion: reduce)');
-  const lsdTilt=$('gate-tilt'), lsdCard=$('gate-card');
-  /* Le diagnostic : des booléens et un état, jamais une valeur. */
-  const LSD={gyro:false, permission:'n/a', souris:false, reduit:RM.matches};
-  window.__totehm_lsd=LSD;
-  let tx=0, ty=0, gx=0, gy=0, raf=0, lsdStill=false, ref=null;
-  const borne=(v,m)=>Math.max(-m,Math.min(m,v||0));
-  function tiltFrame(){
-    raf=0;
-    tx+=(gx-tx)*.1; ty+=(gy-ty)*.1;
-    if(Math.abs(gx-tx)<.01&&Math.abs(gy-ty)<.01){ tx=gx; ty=gy; }
-    lsdTilt.style.transform='rotateX('+tx.toFixed(2)+'deg) rotateY('+ty.toFixed(2)+'deg)';
-    if(tx!==gx||ty!==gy) raf=requestAnimationFrame(tiltFrame);
-  }
-  function viser(x,y,m){
-    if(!lsdTilt) return;
-    gx=borne(x,m||14); gy=borne(y,m||14);
-    if(!raf) raf=requestAnimationFrame(tiltFrame);
-  }
-  /* Le capteur n'agit que sur l'atterrissage au repos : ni pendant le
-     déploiement, ni dans le Totehm ouvert. */
-  const lsdLibre=()=>!lsdStill && !RM.matches
-    && body.classList.contains('gate') && !body.classList.contains('entered');
-  function surOrientation(e){
-    if(e.beta==null&&e.gamma==null) return;      /* ordinateur sans capteur */
-    LSD.gyro=true;
-    if(!lsdLibre()) return;
-    let b=e.beta, g=e.gamma;
-    /* beta/gamma sont donnés dans le repère du téléphone DEBOUT : couché,
-       avant/arrière et gauche/droite échangent leurs axes. */
-    const ang=(screen.orientation&&typeof screen.orientation.angle==='number')
-      ? screen.orientation.angle : (window.orientation||0);
-    if(ang===90){ const t=b; b=-g; g=t; }
-    else if(ang===270||ang===-90){ const t=b; b=g; g=-t; }
-    /* Un saut de plus de 50° (retournement, cardan à la verticale) :
-       on reprend la main comme nouvelle référence plutôt que de jeter
-       la carte d'un bord à l'autre. */
-    if(!ref||Math.abs(b-ref.b)>50||Math.abs(g-ref.g)>50) ref={b,g};
-    ref.b+=(b-ref.b)*.006; ref.g+=(g-ref.g)*.006;
-    viser((b-ref.b)*.6, -(g-ref.g)*.6, 14);
-  }
-  if(lsdTilt && !RM.matches){
+     ⚠️ iOS DEMANDE LA PERMISSION DANS UN GESTE (`touchend`/`click`),
+     jamais `touchstart`. Et PAS dans le tap qui ouvre le Totehm : le
+     dialogue tomberait par-dessus le déploiement. Il vient au premier
+     autre geste sur l'atterrissage — un glissé sur le papier, ou le
+     retour par la croix. Le zéro du capteur est la main du membre (sa
+     première mesure, qui suit lentement), pas l'horizon.
+
+     Mouvement réduit : le papier reste posé, face logo. */
+  const PAPIER=(()=>{
+    const scene=$('gate-asteroid'), card=$('gate-card');
+    const RM=window.matchMedia('(prefers-reduced-motion: reduce)');
+    /* Le diagnostic : des booléens et des compteurs, jamais une valeur. */
+    const diag={vivant:false, gyro:false, permission:'n/a', souris:false,
+                lancers:0, reduit:RM.matches};
+    window.__totehm_lsd=diag;
+    if(!scene||!card) return {poser:f=>{ if(f) f(); }, reveiller(){}};
+    const lights=[...card.querySelectorAll('.ast-light')];   /* [face, dos] */
+    const R=Math.PI/180, W0=34;
+    const LUM=(()=>{ const x=-.35,y=-.55,z=1,n=Math.hypot(x,y,z); return [x/n,y/n,z/n]; })();
+    const borne=(v,a,b)=>Math.max(a,Math.min(b,v||0));
+    const res=x=>({x,v:0});
+    const S={rx:res(0), ry:res(0), px:res(0), py:res(0), sc:res(1)};
+    const goal={rx:0, ry:0, px:0, py:0, sc:1};
+    const K={rx:[34,.62], ry:[34,.62], px:[34,.62], py:[34,.62], sc:[170,.5]};
+    const PLAT={th:0, rx:0, ry:0, rz:0, px:0, py:0, sc:1};
+    let mode='plat', raf=0, last=0, clock=0, th=0, om=0, life=0;
+    let cur={...PLAT}, prev=null, vel={...PLAT, sc:0};
+    let appui=null, aGlisse=false, pose=null, centre=null;
+
+    function ressort(s,g,k,z,dt){
+      const a=k*(g-s.x)-2*z*Math.sqrt(k)*s.v; s.v+=a*dt; s.x+=s.v*dt; }
+    function kick(){ if(!raf&&mode!=='plat') raf=requestAnimationFrame(frame); }
+    function frame(now){
+      raf=0;
+      const dt=Math.min(.05,Math.max(0,(now-(last||now))/1000)); last=now;
+      if(mode==='vit') vivre(dt); else if(mode==='pose') poserPas(now);
+      if(mode==='plat') return;
+      peindre();
+      if(!document.hidden) raf=requestAnimationFrame(frame);
+    }
+    function vivre(dt){
+      clock+=dt;
+      life+=(1-life)*(1-Math.exp(-dt/1.4));
+      if(appui&&appui.on){ /* le doigt conduit : `th` bouge dans pointermove */ }
+      else if(appui){ om*=Math.exp(-dt/.15); th+=om*dt; }      /* tenu */
+      else{
+        const s=Math.sin(th*R), nat=W0*(.34+.66*s*s);
+        om+=(nat-om)*(1-Math.exp(-dt/(Math.abs(om)>W0*1.3?1.1:1.6)));
+        th+=om*dt;
+      }
+      if(th>3600||th<-3600) th%=360;
+      for(const k in S) ressort(S[k],goal[k],K[k][0],K[k][1],dt);
+      const f=clock*2*Math.PI;
+      const nx={th, sc:S.sc.x, ry:S.ry.x, px:S.px.x,
+        rx:S.rx.x+life*2.4*Math.sin(f/7.3),
+        rz:life*1.1*Math.sin(f/8.9+1.3),
+        py:S.py.x+life*(2.6*Math.sin(f/6.4)+1.1*Math.sin(f/10.3+.7))};
+      if(prev&&dt>0) for(const k in nx) vel[k]=(nx[k]-prev[k])/dt;
+      vel.th=om; prev=cur=nx;
+    }
+    function peindre(){
+      const c=cur;
+      card.style.transform='translate3d('+c.px.toFixed(2)+'px,'+c.py.toFixed(2)+'px,0)'
+        +' rotateX('+c.rx.toFixed(2)+'deg) rotateY('+c.ry.toFixed(2)+'deg)'
+        +' rotateZ('+c.rz.toFixed(2)+'deg) rotateY('+c.th.toFixed(2)+'deg)'
+        +' scale('+c.sc.toFixed(4)+')';
+      /* La normale de la face : (0,0,1) passée par les mêmes rotations,
+         de la plus intérieure à la plus extérieure. */
+      let x=Math.sin(c.th*R), y=0, z=Math.cos(c.th*R), co, si, t;
+      co=Math.cos(c.rz*R); si=Math.sin(c.rz*R); t=x*co-y*si; y=x*si+y*co; x=t;
+      co=Math.cos(c.ry*R); si=Math.sin(c.ry*R); t=x*co+z*si; z=-x*si+z*co; x=t;
+      co=Math.cos(c.rx*R); si=Math.sin(c.rx*R); t=y*co-z*si; z=y*si+z*co; y=t;
+      const d=(x*LUM[0]+y*LUM[1]+z*LUM[2])/LUM[2];
+      eclairer(lights[0],d); eclairer(lights[1],-d);
+    }
+    function eclairer(el,f){
+      if(!el||f<=0) return;                 /* face détournée : cachée */
+      if(f<1){ el.style.background='#000'; el.style.opacity=Math.min(.5,(1-f)*.6).toFixed(3); }
+      else   { el.style.background='#fff'; el.style.opacity=Math.min(.06,(f-1)*.3).toFixed(3); }
+    }
+    function aPlat(){
+      if(raf){ cancelAnimationFrame(raf); raf=0; }
+      mode='plat'; th=0; om=0; life=0; appui=null; pose=null; prev=null;
+      for(const k in S){ S[k].x=k==='sc'?1:0; S[k].v=0; }
+      cur={...PLAT};
+      card.style.transform='';
+      lights.forEach(l=>{ l.style.background=''; l.style.opacity=''; });
+      card.classList.add('is-flat');
+      diag.vivant=false;
+    }
+    /* L'ATTERRISSAGE : position et vitesse du moment → face logo, à plat,
+       vitesse nulle. La durée suit le chemin à faire. */
+    function poser(cb){
+      if(mode!=='vit'){ aPlat(); if(cb) cb(); return; }
+      const thT=360*Math.round((cur.th+om*.3)/360);
+      const D=Math.min(.78,.3+Math.abs(thT-cur.th)/360*.62);
+      const to={...PLAT, th:thT}, v={};
+      for(const k in to){
+        const span=Math.abs(to[k]-cur[k])*1.5+(k==='sc'?.02:2);
+        v[k]=borne(vel[k]||0,-span/D,span/D);
+      }
+      pose={t0:performance.now(), D, from:{...cur}, to, v, cb};
+      appui=null; mode='pose'; kick();
+    }
+    function poserPas(now){
+      const u=Math.min(1,(now-pose.t0)/1000/pose.D);
+      const h00=2*u*u*u-3*u*u+1, h10=u*u*u-2*u*u+u, h01=-2*u*u*u+3*u*u;
+      const nx={};
+      for(const k in pose.to) nx[k]=h00*pose.from[k]+h10*pose.D*pose.v[k]+h01*pose.to[k];
+      cur=nx;
+      if(u>=1){ const cb=pose.cb; aPlat(); if(cb) cb(); }
+    }
+    /* LE RÉVEIL : après un repli, ou au chargement. Il repart de l'arrêt,
+       face logo — la vitesse et la dérive montent doucement. */
+    function reveiller(){
+      if(typeof paintAsteroid==='function') paintAsteroid();
+      if(RM.matches||mode!=='plat') return;
+      card.classList.remove('is-flat');
+      mode='vit'; clock=0; last=0; life=0; om=0; th=0; prev=null; centre=null;
+      goal.rx=goal.ry=goal.px=goal.py=0; goal.sc=1;
+      diag.vivant=true; kick();
+    }
+    const libre=()=>mode==='vit'&&!appui;
+    function viser(rx,ry,px,py){ goal.rx=rx; goal.ry=ry; goal.px=px; goal.py=py; }
+
+    aPlat();
+    if(RM.matches) return {poser, reveiller};
+
+    document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ last=0; kick(); } });
+
+    /* La souris : le papier regarde le curseur et glisse d'un rien vers lui. */
+    if(window.matchMedia('(hover:hover)').matches){
+      window.addEventListener('resize',()=>{ centre=null; });
+      document.addEventListener('mousemove',e=>{
+        if(!libre()||diag.gyro) return;
+        if(!centre){ const r=scene.getBoundingClientRect();
+                     centre=[r.left+r.width/2, r.top+r.height/2]; }
+        const dx=borne((e.clientX-centre[0])/(innerWidth/2),-1,1),
+              dy=borne((e.clientY-centre[1])/(innerHeight/2),-1,1);
+        viser(-dy*15, dx*20, dx*7, dy*5); diag.souris=true;
+      },{passive:true});
+      document.documentElement.addEventListener('mouseleave',()=>{ if(libre()) viser(0,0,0,0); });
+    }
+
+    /* Le téléphone : la main est la référence, le papier répond au geste. */
+    let ref=null;
+    function surOrientation(e){
+      if(e.beta==null&&e.gamma==null) return;
+      diag.gyro=true;
+      if(!libre()) return;
+      let b=e.beta, g=e.gamma;
+      const ang=(screen.orientation&&typeof screen.orientation.angle==='number')
+        ? screen.orientation.angle : (window.orientation||0);
+      if(ang===90){ const t=b; b=-g; g=t; }
+      else if(ang===270||ang===-90){ const t=b; b=g; g=-t; }
+      if(!ref||Math.abs(b-ref.b)>50||Math.abs(g-ref.g)>50) ref={b,g};
+      ref.b+=(b-ref.b)*.006; ref.g+=(g-ref.g)*.006;
+      const db=b-ref.b, dg=g-ref.g;
+      viser(borne(db*.7,-16,16), borne(-dg*.7,-20,20),
+            borne(dg*.25,-7,7), borne(db*.2,-6,6));
+    }
     const DOE=window.DeviceOrientationEvent;
     const ecouter=()=>window.addEventListener('deviceorientation',surOrientation,{passive:true});
-    if(DOE && typeof DOE.requestPermission==='function'){
-      LSD.permission='pending';
-      const demander=()=>{
-        window.removeEventListener('touchend',demander,true);
-        window.removeEventListener('click',demander,true);
+    if(DOE&&typeof DOE.requestPermission==='function'){
+      diag.permission='pending';
+      const demander=e=>{
+        if(!body.classList.contains('gate')||body.classList.contains('entered')) return;
+        const t=e&&e.target&&e.target.closest?e.target:null;
+        const ok=t&&(t.closest('#fold-x')
+          ||(t.closest('#gate-hero')&&!(t.closest('#gate-asteroid')&&!aGlisse)));
+        if(!ok) return;
+        window.removeEventListener('touchend',demander);
+        window.removeEventListener('click',demander);
         /* Appel SYNCHRONE dans le geste : un `await` avant lui ferait
            perdre le geste, et la demande serait refusée. */
         DOE.requestPermission()
-          .then(r=>{ LSD.permission=r; if(r==='granted') ecouter(); })
-          .catch(()=>{ LSD.permission='error'; });
+          .then(r=>{ diag.permission=r; if(r==='granted') ecouter(); })
+          .catch(()=>{ diag.permission='error'; });
       };
-      window.addEventListener('touchend',demander,{capture:true,passive:true});
-      window.addEventListener('click',demander,true);
+      window.addEventListener('touchend',demander,{passive:true});
+      window.addEventListener('click',demander);
     }else if(DOE){ ecouter(); }
-    if(window.matchMedia('(hover:hover)').matches){
-      LSD.souris=true;
-      document.addEventListener('mousemove',e=>{
-        if(LSD.gyro||!lsdLibre()) return;
-        viser((e.clientY/innerHeight-.5)*-20, (e.clientX/innerWidth-.5)*20, 10);
-      },{passive:true});
-      document.documentElement.addEventListener('mouseleave',()=>{
-        if(lsdLibre()) viser(0,0);
-      });
-    }
-  }
-  /* LA CARTE SE PLAQUE FACE AVANT. Retirer l'animation seule ferait
-     SAUTER la carte à 0° depuis l'angle où elle était : on lit l'angle
-     réel dans la matrice calculée, on l'y fige, puis on la ramène à 0°
-     par le plus court chemin — en même temps qu'elle s'efface (CSS). */
-  function lsdOut(){
-    lsdStill=true; viser(0,0);
-    if(!lsdCard) return;
-    let a=0;
-    try{
-      const t=getComputedStyle(lsdCard).transform;
-      if(t&&t!=='none'){ const m=new DOMMatrixReadOnly(t);
-                         a=Math.atan2(-m.m13,m.m11)*180/Math.PI; }
-    }catch(_){}
-    lsdCard.style.animation='none';
-    lsdCard.style.transition='none';
-    lsdCard.style.transform='rotateY('+a.toFixed(2)+'deg)';
-    void lsdCard.offsetWidth;
-    lsdCard.style.transition='transform '+(.35+Math.abs(a)/180*.35).toFixed(2)
-      +'s cubic-bezier(.2,.7,.2,1)';
-    lsdCard.style.transform='rotateY(0deg)';
-  }
-  /* Au repli la carte repart de sa face avant : on rend la main au CSS,
-     et la main du membre redevient la référence. */
-  function lsdBack(){
-    lsdStill=false; ref=null;
-    if(!lsdCard) return;
-    lsdCard.style.animation=''; lsdCard.style.transition=''; lsdCard.style.transform='';
-  }
+
+    /* Le doigt (ou la souris) : appuyer tient le papier, glisser le fait
+       tourner, lâcher lui laisse l'élan. `touch-action:none` sur la scène :
+       le geste porte une fonction, on le conduit en Pointer Events. */
+    scene.addEventListener('pointerdown',e=>{
+      if(mode!=='vit'||(e.pointerType==='mouse'&&e.button!==0)) return;
+      appui={id:e.pointerId, x0:e.clientX, y0:e.clientY, x:e.clientX, t:performance.now(), on:false};
+      aGlisse=false; goal.sc=.965;
+      try{ scene.setPointerCapture(e.pointerId); }catch(_){}
+    });
+    scene.addEventListener('pointermove',e=>{
+      if(!appui||e.pointerId!==appui.id) return;
+      const dx=e.clientX-appui.x0, dy=e.clientY-appui.y0;
+      if(!appui.on){ if(Math.hypot(dx,dy)<7) return; appui.on=true; aGlisse=true; goal.sc=1.03; }
+      const now=performance.now(), dts=Math.max(.008,(now-appui.t)/1000);
+      const d=(e.clientX-appui.x)*.62;
+      th+=d; om=om*.6+(d/dts)*.4;
+      goal.rx=borne(-dy*.18,-18,18);
+      appui.x=e.clientX; appui.t=now;
+    });
+    const lacher=e=>{
+      if(!appui||e.pointerId!==appui.id) return;
+      const glisse=appui.on; appui=null;
+      viser(0,0,0,0); goal.sc=1;
+      if(glisse){ om=borne(om,-720,720); diag.lancers++; }
+    };
+    scene.addEventListener('pointerup',lacher);
+    scene.addEventListener('pointercancel',lacher);
+    /* Un glissé n'est pas un tap : le clic qui le suit ne doit rien ouvrir. */
+    scene.addEventListener('click',e=>{
+      if(aGlisse){ aGlisse=false; e.stopPropagation(); e.preventDefault(); }
+    },true);
+
+    return {poser, reveiller};
+  })();
 
   function enter(then){
     if(open||moving) return;
     if(PAYSAGE.matches) return;     /* couché, on n'ouvre pas */
     moving=true;
-    lsdOut();                        /* la carte cesse de tourner, face avant */
+    /* ⚠️ LE PAPIER SE POSE D'ABORD, FACE LOGO, À PLAT · 25/09/2026.
+       `measure()` lit des rectangles APRÈS transformation : mesurer un
+       papier incliné donnerait un faux départ à chaque calque. La suite
+       est la déconstruction d'origine, ligne pour ligne. */
+    PAPIER.poser(()=>{
     gate.classList.remove('no-anim');
     gate.scrollTop=0;                /* on mesure toujours depuis le haut */
     measure();                       /* dernière mesure juste avant le départ */
@@ -7482,13 +7569,6 @@ window.addEventListener('pageshow',e=>{
     body.classList.add('entered');
 
     clearTimeout(timer);
-    /* ⚠️ LE GATE PART QUAND LE TOTEHM EST LÀ, PAS PLUS TARD · 24/09.
-       On attendait DUR+REVEAL+120 (1,69 s) : la fin d'une
-       déconstruction que plus personne ne voit (les calques vivent hors
-       écran depuis l'astéroïde). Le Totehm, lui, a fini d'apparaître à
-       REVEAL + 550 ms (le fondu de l'UI) — au-delà, le gate transparent
-       ne faisait qu'avaler les premiers gestes. `max` garde DUR comme
-       plancher : les calques ont toujours fini leur trajet. */
     timer=setTimeout(()=>{
       gate.classList.add('gate-off');
       timer=setTimeout(()=>{
@@ -7496,7 +7576,8 @@ window.addEventListener('pageshow',e=>{
         open=true; moving=false;
         if(then) then();
       },340);
-    },Math.max(DUR,REVEAL+UI_FADE)+60);
+    },DUR+REVEAL+120);
+    });
   }
 
   /* ══ LE REPLI — le déploiement, exactement à l'envers ══
@@ -7522,7 +7603,6 @@ window.addEventListener('pageshow',e=>{
     clearTimeout(timer);
 
     gate.classList.add('no-anim');        /* 1. rien ne bouge              */
-    lsdBack();                            /*    la carte repart face avant */
     gate.classList.remove('gate-off');
     body.classList.add('gate','folding'); /* 2. le gate au repos, opaque,  */
                                           /*    et il NE DÉFILE PAS        */
@@ -7539,6 +7619,7 @@ window.addEventListener('pageshow',e=>{
     timer=setTimeout(()=>{
       body.classList.remove('folding');   /* le défilement redevient normal */
       moving=false;
+      PAPIER.reveiller();                 /* le logo est revenu : il repart */
     },DUR+120);
   }
 
@@ -7599,7 +7680,7 @@ window.addEventListener('pageshow',e=>{
        rien à replier. On la rejoue maintenant que l'état est posé —
        sinon un `#in` ouvert en paysage restait ouvert en paysage. */
     surRotation(); }
-  else { body.classList.add('gate'); }
+  else { body.classList.add('gate'); PAPIER.reveiller(); }
 
   /* Pendant l'état 1, aucun geste ne doit atteindre l'app en dessous — mais
      l'atterrissage a ses propres champs et sa propre vidéo : un geste NÉ
@@ -7623,8 +7704,8 @@ window.addEventListener('pageshow',e=>{
      module — la page s'affiche vide, sans un mot. Deux `if` coûtent
      moins cher qu'un écran blanc. */
   const ge=$('gate-enter'), ast=$('gate-asteroid');
-  /* ⚠️ #gate-open A DISPARU · 24/09/2026 avec l'astéroïde. Le geste est
-     unique désormais : un tap sur l'astéroïde. */
+  /* ⚠️ #gate-open A DISPARU · 24/09/2026 : le dos du papier dit
+     « Tap to open it ». Le geste est unique : un tap sur le papier. */
   /* ⚠️ LE DÉPLOIEMENT DOIT ÊTRE ATTEIGNABLE DE L'EXTÉRIEUR · 22/09/2026.
      `enter()` vit dans ce module et n'en sortait pas. Or la porte
      [My Higher Self] doit pouvoir DÉPLIER le Totehm sur la première vue
@@ -7635,15 +7716,10 @@ window.addEventListener('pageshow',e=>{
   window.__totehmDeplie = then => { if(body.classList.contains('gate')) enter(then);
                                     else if(then) then(); };
   if(ge) ge.onclick=e=>{ e.stopPropagation(); enter(); };
-  /* L'astéroïde entier est cliquable — le tap fonctionne peu importe la
-     face visible au moment du geste. */
-  if(ast){
-    ast.onclick=()=>enter();
-    ast.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();enter();} };
-  }
-
-  /* Le capteur de mouvement vit au-dessus d'`enter()` (« L'ASTÉROÏDE
-     BOUGE AVEC LE TÉLÉPHONE ») : `enter()` et `fold()` l'appellent. */
+  /* Le papier entier s'ouvre au tap, quelle que soit la face tournée
+     vers soi : le dos (le nom) n'a pas de bouton, le clic remonte ici.
+     Au clavier, c'est `#gate-enter` — un vrai bouton, sur la face. */
+  if(ast) ast.onclick=()=>enter();
 
   /* ── Search a Totehm : un bouton, la boîte n'arrive qu'au clic ── */
   const gsb=$('gate-search-btn'), gsi=$('gate-search-input'), gsn=$('gate-search-note');
