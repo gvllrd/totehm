@@ -1,85 +1,86 @@
 <!DOCTYPE html>
 <!--
-  ══ TOTEHM.SPACE — LE COCKPIT, À LA MANETTE · 25/09/2026 ════════════════
+  ══ TOTEHM.SPACE — LE COCKPIT, À LA MANETTE, À L'ÉCHELLE DU MONDE · 26/09/2026 ══
   Un réseau social d'ACTIONS : une habitude devient un Spot, et d'autres
   membres la vivent avec toi. MASTER §24-48, §87 :
       WHAT CAN I DO?  ·  WHERE?  ·  WHEN?  ·  WITH WHOM?
 
-  ⚠️ LA BARRE « Search · Create · My space » EST PARTIE. Wah, 25/09 : « le
-  joystick de totehm.com, directement sur l'atterrissage, en dessous du
-  radar ». Le radar a rétréci pour lui laisser le bas de l'écran. La
-  manette est COPIÉE de `com/totehm.html` (produits indépendants = fichiers
-  indépendants) : même pavé, même pile de trois ronds, mêmes chevrons,
-  même geste — et CINQ CRANS qui sont cinq vues de l'Espace :
+  La manette de `com/totehm.html` (COPIÉE — produits indépendants = fichiers
+  indépendants), cinq crans, cinq vues :
 
-                          CREATE A SPOT   (haut · bleu clair)
+                          CREATE A SPOT   (haut · le panneau descend du haut)
                                  |
       BY INTENTION  ———   LIVE & TODAY  ———   TOMORROW & BEYOND
-      (gauche · sagesse)  (centre · navy)     (droite · vision)
+      (gauche · de gauche) (centre · rien ne bouge) (droite · de droite)
                                  |
-                            MY SPACE      (bas · rouge-violet)
+                            MY SPACE      (bas · le panneau monte du bas)
 
-  ⚠️ L'ERREUR DE TOTEHM.HTML N'EST PAS RECOPIÉE. Dans le pavé, la molette
-  horizontale suivait le CONTENU (`deltaX > 0` → droite), alors que tout le
-  reste de la manette suit le DOIGT. Sur un trackpad, glisser deux doigts
-  vers la gauche DANS le joystick envoyait à droite. Ici l'horizontale suit
-  le doigt (voir `manette()`).
-
-  ⚠️ LA BOÎTE-ACTION N'EST PLUS LA BOÎTE-HABITUDE. Au CHOIX de l'habitude,
-  on garde la Habit Box de totehm.com (intentions · rythme · WHY/TRIGGER).
-  Une fois devenue action, le rythme cède la place à la DATE · L'HEURE · LA
-  DURÉE ; puis le lieu (lien Google Maps), les places et le mode
-  d'acceptation, social ou silent — et [details] ouvre un tiroir qui
-  prolonge la boîte : le mot du membre (Quantico 400), puis WHY et TRIGGER.
+  ⚠️ 26/09 — CE QUI A CHANGÉ, ET POURQUOI
+  · LE GESTE VAUT PARTOUT, comme dans totehm.com : balayer l'écran (doigt,
+    deux doigts au trackpad, souris tirée sur le radar) = tirer le manche.
+    Le zoom n'est plus la molette : c'est le PINCEMENT (doigts ou trackpad),
+    et un petit « + − » à côté de la manette pour qui ne pince pas.
+  · LA MANETTE NE BOUGE JAMAIS. Chaque vue de côté ouvre sa fenêtre DE SON
+    CÔTÉ : gauche de la gauche, droite de la droite, Create descend du haut
+    et y reste accroché, My space monte du bas. Le centre reste le centre.
+  · LE RADAR DEVIENT LA PLANÈTE. On dézoome, la carte devient un globe
+    (projection orthographique), et les Spots du monde entier s'y posent en
+    lumières (`spots_globe` — des cellules, jamais une identité). La
+    plateforme est internationale : la boussole sert à ça.
+  · LA COURONNE SE TOURNE. On saisit l'anneau du radar et on le fait
+    tourner — avec de l'inertie. De près, la carte tourne et le haut devient
+    la direction qu'on VISE (les Spots devant sont comptés). De loin, la
+    planète tourne. Deux touchers : le nord.
+  · POUR POSER LE POINT DE RENDEZ-VOUS on ne vise plus à l'aveugle : un fond
+    de carte sombre et minimaliste (OpenStreetMap, traité en gris) apparaît
+    sous le radar, en création seulement, avec son attribution.
+  · UN SPOT A UNE NATURE : espace public (parc, café) ou privé (chez le
+    membre). Privé : le radar ne montre que le quartier (~1 km).
+  · FOND NOIR PUR. Les gris ne servent qu'à délimiter.
 
   ⚠️ LA PAGE NE DÉCIDE RIEN. Recherche, fenêtres de temps, publication,
-  candidature, capacité, compatibilité, rendez-vous exact, limites : tout
-  est en base (`spots_radar`, `spot_publish`, `spot_apply`, `spot_decide`,
-  `my_space`, `spot_rules`).
+  candidature, capacité, compatibilité, arrondi public/privé, rendez-vous
+  exact, limites : tout est en base (`spots_radar`, `spots_globe`,
+  `spot_publish`, `spot_apply`, `spot_decide`, `my_space`, `spot_rules`).
   ⚠️ LA COMPATIBILITÉ EST UN SEUL NOMBRE (§38). Jamais une composante.
-  ⚠️ Radar COPIÉ de `com/map.html`. Ni Google Maps, ni Mapbox, ni Leaflet
-  (§44) — Google Maps n'est qu'un LIEN sortant, jamais un fond de carte.
+  ⚠️ Ni Google Maps, ni Mapbox, ni Leaflet (§44). Le trait de côte vient de
+  Natural Earth (domaine public, servi par nous : `earth.json`,
+  `earth50.json`) ; le fond de rue d'OpenStreetMap n'apparaît qu'en
+  création. Google Maps reste un LIEN sortant.
 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#0b0b0d">
+<meta name="theme-color" content="#000000">
 <title>TOTEHM.SPACE</title>
-<meta name="description" content="A habit becomes an action. With members.">
+<meta name="description" content="A habit becomes an action. With members, anywhere on Earth.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@600&family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* ══ LES NUANCES DE GRIS · 25/09/2026 ═══════════════════════════════
-   « Il faut des nuances de gris, là c'est trop noir, notamment pour
-   délimiter les parties entre elles. » Le noir absolu ne délimitait rien :
-   le panneau, le radar et le fond étaient le même trou. Quatre valeurs,
-   pas une de plus — le fond, le disque du radar, le panneau, une section.
-   Une partie se détache par sa VALEUR, jamais par un trait (règle de
-   marque : aucune bordure autour d'une boîte). */
+/* ══ LE NOIR, ET LES GRIS QUI DÉLIMITENT · 26/09/2026 ═════════════════
+   « Le fond est toujours en noir pur ; les gris servent seulement à
+   délimiter. » Le fond, le monde, le vide : #000. Un panneau, une
+   section, une bulle : un gris. Une partie se détache par sa VALEUR,
+   jamais par un trait (règle de marque). */
 :root{
-  --bg:#0b0b0d;--disc:#121216;--s1:#141418;--s2:#1c1c21;--s3:#26262c;
+  --bg:#000;--s1:#0b0b0d;--s2:#15151a;--s3:#212127;--tip:#141418;
   --mid:#b4b4b9;--lo:#9a9aa0;--dim:#707077;
   --navy:#333366;--blue:#36498c;--rep:#743169;--on:#639922;
   --tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000'/%3E%3C/svg%3E");
   --bebas:'Bebas Neue',Impact,sans-serif;--mont:'Montserrat',sans-serif;--q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
-  /* La manette : son diamètre, son pied, sa hauteur totale (grille 18 · d · 18). */
   --joy-d:60px;--joy-b:calc(14px + env(safe-area-inset-bottom,0px));--joy-h:calc(var(--joy-d) + 36px);
-  --pw:0px;
+  --side:420px;--ease:cubic-bezier(.2,.9,.25,1);
 }
 @media(max-width:899px){:root{--joy-d:54px}}
-@media(min-width:900px){body.p-open{--pw:440px}}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:13px;
+html,body{width:100%;height:100%;background:#000;color:var(--mid);font-family:var(--mono);font-size:13px;
   line-height:1.6;overflow:hidden;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
 .hide{display:none!important}
 button{font:inherit}
 
-/* ══ LES DEUX COINS DU HAUT — règle de marque ══════════════════════
-   Les deux coins du bas (TOTEHM.SPACE + coordonnées, heure de Lisbonne)
-   sont PARTIS le 25/09 : « on s'en fout total et c'est inutile ». Le bas
-   de l'écran appartient à la manette. */
+/* ══ LES DEUX COINS DU HAUT ═══════════════════════════════════════ */
 #member{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:14px;z-index:90;display:flex;align-items:center;gap:7px;
   background:none;border:none;cursor:pointer;font-family:var(--q);font-weight:700;font-size:13px;color:#a0a0a0;padding:6px 4px;transition:color .15s}
 #member i{width:6px;height:6px;border-radius:50%;background:#44444a;display:block}
@@ -87,12 +88,13 @@ button{font:inherit}
 #terms{position:fixed;top:calc(18px + env(safe-area-inset-top,0px));right:14px;z-index:90;font-size:10px;letter-spacing:.14em;
   text-transform:uppercase;color:var(--lo);text-decoration:none;transition:color .15s}
 
-/* ══ LE NOM DE LA VUE — en haut, au-dessus de l'instrument ═════════
-   Comme `#vnow` dans totehm.com : le titre (Montserrat 600, il NOMME une
-   partie du produit), la raison d'être de la vue, puis la lecture de
-   l'instrument (Space Mono : ça se MESURE). */
-#vnow{position:fixed;top:calc(18px + env(safe-area-inset-top,0px));left:0;right:var(--pw);z-index:40;text-align:center;
-  line-height:1;pointer-events:none;perspective:700px}
+/* ══ LE NOM DE LA VUE ════════════════════════════════════════════════
+   Titre (Montserrat 600 : il NOMME une partie du produit), raison d'être,
+   lecture de l'instrument (Space Mono : ça se MESURE). Sur ordinateur il
+   s'écarte du panneau de côté, il ne passe jamais dessous. */
+#vnow{position:fixed;top:calc(18px + env(safe-area-inset-top,0px));left:0;right:0;z-index:40;text-align:center;
+  line-height:1;pointer-events:none;perspective:700px;transition:left .4s var(--ease),right .4s var(--ease)}
+@media(min-width:900px){body.p-g #vnow{left:var(--side)}body.p-d #vnow{right:var(--side)}}
 #vt{font-family:var(--mont);font-weight:600;font-size:17px;letter-spacing:.14em;text-transform:uppercase;color:#fff;white-space:nowrap;display:block}
 #vs{display:block;margin-top:6px;font-style:normal;font-family:var(--mont);font-weight:600;font-size:10px;letter-spacing:.18em;
   text-transform:uppercase;color:rgba(255,255,255,.52);white-space:nowrap}
@@ -116,27 +118,20 @@ button{font:inherit}
 #vnow.f-b{animation:face-b .42s cubic-bezier(.22,.9,.3,1)}
 #vnow.f-h{animation:face-h .42s cubic-bezier(.22,.9,.3,1)}
 
-/* ══ L'INSTRUMENT — le radar, copié de com/map.html ═══════════════
-   ⚠️ UN <canvas> EST UN ÉLÉMENT REMPLACÉ : `width:100%;height:100%`
-   obligatoires, sinon sa boîte CSS vaut son tampon (règle du projet). */
-#world{position:fixed;inset:0;z-index:1}
-#canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:default}
-body.v-create #canvas{cursor:crosshair}
-#markers{position:absolute;inset:0;pointer-events:none}
-/* TOI : un point blanc — le même objet que les Spots, en blanc. */
+/* ══ L'INSTRUMENT ═══════════════════════════════════════════════════
+   ⚠️ UN <canvas> EST UN ÉLÉMENT REMPLACÉ : `width:100%;height:100%`. */
+#world{position:fixed;inset:0;z-index:1;background:#000}
+#canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:default;background:#000}
+#canvas.ring{cursor:grab}#canvas.ring.held{cursor:grabbing}
+body.map-on #canvas{cursor:crosshair}
+#markers{position:absolute;inset:0;pointer-events:none;z-index:3}
+/* TOI : un point blanc. ⚠️ Placé par left/top : il souffle (animation). */
 #me{position:absolute;left:0;top:0;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#fff;pointer-events:none;
   box-shadow:0 0 12px rgba(255,255,255,.7);animation:pulse 2.6s ease-in-out infinite}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.55}}
-/* Le point du Spot qu'on est en train de créer : on le pose au doigt.
-   ⚠️ PLACÉ PAR left/top, JAMAIS PAR transform : son souffle (`pulse`) est
-   une animation, et une animation ÉCRASE le transform de son élément
-   (règle du 24/09) — mesuré, le point partait dans le coin haut gauche. */
-#pin{position:absolute;left:0;top:0;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;pointer-events:none;
+#pin{position:absolute;left:0;top:0;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;pointer-events:none;z-index:2;
   background:radial-gradient(circle,#fff 0 3px,rgba(255,255,255,0) 3.5px),radial-gradient(circle,rgba(255,255,255,0) 6px,rgba(255,255,255,.9) 6.5px 8px,rgba(255,255,255,0) 8.5px);
   animation:pulse 1.8s ease-in-out infinite}
-/* ⚠️ DES POINTS, PLUS DES T · 25/09/2026. « Les Spots, c'est pas des T
-   que je veux, c'est des points, tout en gardant les couleurs. » La
-   couleur est celle de la PREMIÈRE intention du Spot. */
 .marker{position:absolute;left:0;top:0;width:32px;height:32px;margin:-16px 0 0 -16px;display:flex;align-items:center;
   justify-content:center;pointer-events:auto;cursor:pointer;background:none;border:none;padding:0;will-change:transform;
   -webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:none}
@@ -145,42 +140,41 @@ body.v-create #canvas{cursor:crosshair}
 .marker:hover i,.marker.focus i,.marker.peek i{transform:scale(1.6)}
 .marker.live i{animation:ignite .34s backwards,blink 1.4s ease-in-out infinite}
 .marker.edge i{opacity:.45;transform:scale(.75)}
-.marker.ahead i{transform:scale(1.4)}
+.marker.ahead i{transform:scale(1.45)}
+.marker.off{display:none}
+/* Une LUMIÈRE du globe : plusieurs Spots d'une même région, un nombre. */
+.marker.cell{width:40px;height:40px;margin:-20px 0 0 -20px}
+.marker.cell i{width:var(--s,12px);height:var(--s,12px);opacity:.92}
+.marker.cell b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 9px var(--mono);color:#000;pointer-events:none}
 body.v-create .marker,body.v-mine .marker{opacity:.55}
 @keyframes ignite{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:scale(1)}}
-/* LE SURVOL DIT LA DISTANCE · 25/09. En km — en miles aux États-Unis —
-   et le cap (NE, SW…). Au téléphone : on MAINTIENT le doigt sur le point. */
-.marker .lbl{position:absolute;left:24px;top:50%;transform:translateY(-50%);white-space:nowrap;text-align:left;pointer-events:none;
-  background:rgba(12,12,15,.94);padding:5px 8px;opacity:0;transition:opacity .15s;font-family:var(--mono);font-size:10px;
-  letter-spacing:.14em;text-transform:uppercase;color:var(--mid);line-height:1.5}
-.marker.lft .lbl{left:auto;right:24px}
-.marker .lbl b{display:block;font-family:var(--q);font-weight:400;font-size:13px;letter-spacing:0;text-transform:none;color:#fff}
-.marker .lbl em{font-style:normal;color:#fff}
-.marker:hover .lbl,.marker.focus .lbl,.marker.peek .lbl{opacity:1}
-body.v-create .marker:not(.peek) .lbl{opacity:0}
-/* La boussole : au téléphone, le radar tourne avec toi. Son interrupteur
-   vit À CÔTÉ DE LA MANETTE, pas sous le radar : panneau ouvert, le bas du
-   radar est sous le panneau (mesuré au 390 px) — la manette, jamais. */
-#cmp{position:fixed;z-index:70;right:calc(50% + var(--joy-d)/2 + 26px);bottom:calc(var(--joy-b) + var(--joy-h)/2 - 12px);
-  background:none;border:none;cursor:pointer;font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--lo);padding:6px 4px;white-space:nowrap;-webkit-tap-highlight-color:transparent;text-align:right;line-height:1.3}
-#cmp b{color:#fff;font-weight:400}
+/* ══ LA BULLE · 26/09 ═══════════════════════════════════════════════
+   « Les box de survol doivent être AU-DESSUS des points lumineux, sans
+   transparence, quel que soit le Spot, live ou autre. » UNE seule bulle,
+   hors des points, au-dessus d'eux (z-index), d'un gris PLEIN. */
+#tip{position:absolute;left:0;top:0;z-index:5;pointer-events:none;background:var(--tip);padding:7px 10px 8px;max-width:250px;
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);line-height:1.5;
+  opacity:0;transition:opacity .12s ease;white-space:nowrap}
+#tip.on{opacity:1}
+#tip b{display:block;font-family:var(--q);font-weight:400;font-size:13px;letter-spacing:0;text-transform:none;color:#fff;
+  white-space:normal;overflow-wrap:anywhere}
+#tip em{font-style:normal;color:#fff}
+#osm{position:fixed;left:14px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:65;font-size:9px;letter-spacing:.1em;
+  color:var(--dim);text-decoration:none;display:none}
+body.map-on #osm{display:block}
 
-/* ══ LA MANETTE — COPIÉE DE com/totehm.html · 25/09/2026 ════════════
-   Le pavé porte la couleur de la vue (navy · bleu clair · rouge-violet),
-   la pile de trois ronds porte l'axe VERTICAL — Create en haut (bleu
-   clair), le radar au milieu (navy), My space en bas (rouge-violet). Le
-   rond de la vue où l'on est s'efface : la tuile le dit déjà. Sur les deux
-   vues de côté, l'axe vertical n'existe pas : les trois ronds s'effacent.
-   ⚠️ UNE GRILLE 3×3 À CASES FIXES : un curseur sans voisin s'éteint, il
-   ne disparaît jamais (sinon la grille se retasse et le pavé bouge). */
-#joy{position:fixed;z-index:70;bottom:var(--joy-b);left:calc((100% - var(--pw)) / 2);transform:translateX(-50%);
+/* ══ LA MANETTE — COPIÉE DE com/totehm.html ═════════════════════════
+   ⚠️ ELLE NE BOUGE JAMAIS (26/09) : au centre, en bas, quelle que soit
+   la fenêtre ouverte. */
+#joy{position:fixed;z-index:70;bottom:var(--joy-b);left:50%;transform:translateX(-50%);
   display:grid;grid-template-columns:18px var(--joy-d) 18px;grid-template-rows:18px var(--joy-d) 18px;
   align-items:center;justify-items:center}
 #cur-h{grid-area:1/2/2/3}#cur-g{grid-area:2/1/3/2}#joy-box{grid-area:2/2/3/3}#cur-d{grid-area:2/3/3/4}#cur-b{grid-area:3/2/4/3}
 #joy-box{width:var(--joy-d);height:var(--joy-d);position:relative;border-radius:50%;background:var(--joy-vue,var(--navy));
   box-shadow:0 2px 7px rgba(0,0,0,.5);transition:background-color .42s ease,box-shadow .42s ease;touch-action:none;cursor:grab}
 #joy-box:active{cursor:grabbing}
+#joy-box.pulse{animation:joy-pulse .5s ease-out}
+@keyframes joy-pulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.35)}100%{box-shadow:0 0 0 16px rgba(255,255,255,0)}}
 #joy-stack{position:absolute;inset:0;transform:translate(var(--mx,0px),var(--my,0px));transition:transform .26s cubic-bezier(.22,.9,.3,1)}
 #joy-box.tenu #joy-stack{transition:none}
 #joy-stack i{--d:13px;position:absolute;left:50%;display:block;width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
@@ -202,23 +196,48 @@ body.v-create .marker:not(.peek) .lbl{opacity:0}
   #cur-g:not(.mort):hover{transform:translateX(-2px)}#cur-d:not(.mort):hover{transform:translateX(2px)}
   #cur-h:not(.mort):hover{transform:translateY(-2px)}#cur-b:not(.mort):hover{transform:translateY(2px)}
 }
-/* Le nombre de demandes en attente vit sur le chevron du bas : quelqu'un
-   attend, et c'est par là qu'on va lui répondre. */
 #req-n{position:absolute;left:calc(50% + 14px);bottom:0;font-family:var(--mono);font-size:10px;color:#fff;pointer-events:none;line-height:18px}
-/* Ce que le manche vise, écrit AVANT qu'on lâche. */
-#joy-say{position:fixed;z-index:70;bottom:calc(var(--joy-b) + var(--joy-h) + 3px);left:calc((100% - var(--pw)) / 2);transform:translateX(-50%);
+#joy-say{position:fixed;z-index:70;bottom:calc(var(--joy-b) + var(--joy-h) + 3px);left:50%;transform:translateX(-50%);
   font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#fff;white-space:nowrap;pointer-events:none;
   opacity:0;transition:opacity .15s ease}
 #joy-say.on{opacity:1}
+/* Le zoom pour qui ne pince pas, le retour chez soi, le mode d'emploi —
+   à DROITE de la manette. La boussole à GAUCHE. Discrets : du texte. */
+#zoom{position:fixed;z-index:70;left:calc(50% + var(--joy-d) / 2 + 30px);bottom:calc(var(--joy-b) + var(--joy-h) / 2 - 14px);display:flex;gap:1px}
+#zoom button{width:28px;height:28px;background:none;border:none;cursor:pointer;color:var(--lo);font-family:var(--mono);font-size:15px;
+  line-height:1;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:color .15s}
+#zoom #z-me{font-size:13px}
+#zoom #z-me.away{color:#fff;animation:blink 1.4s ease-in-out infinite}
+#zoom #z-how{font-size:12px}
+#cmp{position:fixed;z-index:70;right:calc(50% + var(--joy-d) / 2 + 30px);bottom:calc(var(--joy-b) + var(--joy-h) / 2 - 12px);
+  background:none;border:none;cursor:pointer;font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--lo);padding:6px 4px;white-space:nowrap;-webkit-tap-highlight-color:transparent;text-align:right;line-height:1.3}
+#cmp b{color:#fff;font-weight:400}
 
-/* ══ LE PANNEAU — ce qu'un cran de la manette ouvre ═════════════════
-   Ordinateur : une colonne à droite, l'instrument et la manette restent
-   à gauche. Téléphone : entre l'instrument (réduit, en haut) et la
-   manette (en bas) — jamais sous elle. */
-#panel{position:fixed;z-index:60;background:var(--s1);display:none;overflow-y:auto;overscroll-behavior:contain}
-body.p-open #panel{display:block}
-@media(min-width:900px){#panel{top:0;right:0;bottom:0;width:440px;padding:58px 22px 28px}}
-@media(max-width:899px){#panel{left:0;right:0;top:38vh;bottom:calc(var(--joy-b) + var(--joy-h) + 20px);padding:14px 14px 22px}}
+/* ══ LES FENÊTRES — CHACUNE ARRIVE DE SON CÔTÉ · 26/09/2026 ══════════
+   Gauche de la gauche, droite de la droite, Create DESCEND du haut et y
+   reste accroché, My space MONTE du bas. Le Spot touché au centre
+   (p-f) et la porte membre (p-m) apparaissent sur place.
+   ⚠️ `visibility` suit la transition : une fenêtre sortie ne se clique
+   plus, ne se tabule plus, et ses identifiants sont retirés (`retire`). */
+.pan{position:fixed;z-index:60;background:var(--s1);overflow-y:auto;overscroll-behavior:contain;visibility:hidden;opacity:1;
+  transition:transform .4s var(--ease),opacity .3s ease,visibility 0s linear .4s}
+.pan.on{visibility:visible;transform:none!important;opacity:1!important;transition:transform .4s var(--ease),opacity .3s ease,visibility 0s}
+@media(min-width:900px){
+  #p-g{top:0;left:0;bottom:0;width:var(--side);padding:58px 22px 28px;transform:translateX(-100%)}
+  #p-d{top:0;right:0;bottom:0;width:var(--side);padding:58px 22px 28px;transform:translateX(100%)}
+  #p-h{top:104px;left:calc(50% - min(360px, 50vw - 24px));width:min(720px, calc(100vw - 48px));max-height:calc(48vh - 50px);
+    padding:16px 18px 18px;transform:translateY(calc(-100% - 170px))}
+  #p-b{bottom:calc(var(--joy-b) + var(--joy-h) + 26px);left:calc(50% - min(360px, 50vw - 24px));width:min(720px, calc(100vw - 48px));
+    max-height:46vh;padding:16px 18px 18px;transform:translateY(calc(100% + 200px))}
+  #p-f{right:24px;bottom:24px;width:390px;max-height:calc(100vh - 150px);padding:16px 18px 18px;transform:translateY(14px);opacity:0}
+  #p-m{left:14px;top:52px;width:360px;max-height:calc(100vh - 80px);padding:16px 18px 18px;transform:translateY(-10px);opacity:0}
+}
+@media(max-width:899px){
+  .pan{left:0;right:0;top:38vh;bottom:calc(var(--joy-b) + var(--joy-h) + 20px);padding:14px 14px 22px}
+  #p-g{transform:translateX(-100%)}#p-d{transform:translateX(100%)}
+  #p-h,#p-m{transform:translateY(-100vh)}#p-b,#p-f{transform:translateY(100vh)}
+}
 .p-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:12px}
 .p-title{font-family:var(--mont);font-weight:600;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:#fff}
 .sec{background:var(--s2);padding:12px 12px 14px;margin-top:12px}
@@ -232,8 +251,9 @@ body.p-open #panel{display:block}
 .list{display:flex;flex-direction:column;gap:18px;margin-top:14px}
 .empty{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);padding:14px 0}
 .say{font-size:12px;color:var(--mid);line-height:1.7}
+.how-l{display:inline-block;margin-top:10px}
 
-/* ── Boutons : Space Mono — un bouton n'est pas une saisie (BRAND 24/09) */
+/* ── Boutons : Space Mono — un bouton n'est pas une saisie ─────────── */
 .btn{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);background:none;
   border:6px solid transparent;cursor:pointer;padding:1px 6px;line-height:1.6;display:inline-block;width:fit-content;
   transition:color .15s ease;-webkit-tap-highlight-color:transparent;white-space:nowrap}
@@ -250,16 +270,29 @@ body.p-open #panel{display:block}
 .in::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.6}
 .acts{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center}
 
-/* ── LES PASTILLES D'INTENTION (vue gauche) — affichées d'emblée ───── */
-.ints{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.int{display:flex;align-items:center;gap:10px;background:var(--s2);border:none;cursor:pointer;padding:10px 12px;text-align:left;
-  color:var(--mid);font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;transition:background .15s,color .15s;
-  -webkit-tap-highlight-color:transparent}
-.int i{width:14px;height:14px;border-radius:50%;background:var(--c);flex:none;box-shadow:0 0 8px var(--c)}
-.int small{margin-left:auto;font-size:8px;letter-spacing:.2em;color:var(--dim)}
-.int.on{background:var(--s3);color:#fff}
-.int.on small{color:#fff}
-.ints.picked .int:not(.on) i{opacity:.4;box-shadow:none}
+/* ══ BY INTENTION — LE RAPPEL DES SEPT · 26/09/2026 ═════════════════
+   Chaque intention dit ce qu'elle est : son nom, le slogan Higher (le SVG,
+   jamais du texte), son pilier, et la phrase de Wah. Choisie, elle reste
+   en tête et les six autres deviennent des points pour changer. */
+.ints{display:flex;flex-direction:column;gap:5px}
+.int{display:grid;grid-template-columns:14px 1fr auto;gap:3px 11px;align-items:center;background:var(--s2);border:none;cursor:pointer;
+  padding:10px 12px 11px;text-align:left;color:var(--mid);transition:background .15s,color .15s;-webkit-tap-highlight-color:transparent;width:100%}
+.int > i{width:14px;height:14px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c);grid-row:1}
+.int .in-n{display:flex;align-items:center;gap:7px;min-width:0}
+.int .in-n b{font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#fff}
+.int .in-n svg{height:15px;width:45px;display:block;flex:none}
+.int small{font-family:var(--mono);font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
+.int .df{grid-column:2 / -1;font-family:var(--mono);font-size:10px;letter-spacing:.02em;line-height:1.5;color:var(--lo)}
+.int.on{background:var(--s3)}
+.int.on small,.int.on .df{color:#fff}
+.int.hero{padding:13px 14px 14px}
+.int.hero > i{width:18px;height:18px}
+.int.hero .in-n b{font-size:13px}
+.int.hero .in-n svg{height:18px;width:54px}
+.dots{display:flex;align-items:center;gap:4px;margin-top:8px;flex-wrap:wrap}
+.dot{width:30px;height:30px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+.dot::before{content:'';width:12px;height:12px;border-radius:50%;background:var(--c);opacity:.55;transition:opacity .15s,transform .15s}
+.dot.on::before{opacity:1;transform:scale(1.25);box-shadow:0 0 8px var(--c)}
 /* ── Les mots qui filtrent (vue droite) ──────────────────────────────── */
 .opts{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:10px}
 .opt{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:var(--s2);border:none;
@@ -267,9 +300,7 @@ body.p-open #panel{display:block}
 .opt.on{background:var(--navy);color:#fff}
 .opt-l{font-size:8px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);margin-right:4px}
 
-/* ══ LA BOÎTE — COPIÉE DE com/totehm.html, AU PIXEL ═════════════════
-   Même tick, même corps, même nom, mêmes groupes, mêmes mini-boîtes. Un
-   seul écart, d'infrastructure : pas de rail, donc `margin-left:0`. */
+/* ══ LA BOÎTE — COPIÉE DE com/totehm.html, AU PIXEL ═════════════════ */
 .habit{position:relative;display:flex;align-items:center;min-height:30px}
 .habit .tick{position:absolute;left:0;top:0;bottom:0;width:1px;background:#000;z-index:3;display:flex;flex-direction:column;overflow:hidden}
 .habit .tick i{flex:1 1 0;display:block;min-height:2px}
@@ -295,12 +326,7 @@ body.p-open #panel{display:block}
 @media(hover:hover){.it .habit:hover .h-body{filter:brightness(1.18)}}
 .it.hl .h-body{filter:brightness(1.22)}
 
-/* ══ LA BOÎTE-ACTION · 25/09/2026 ════════════════════════════════════
-   Navy, le format de la Habit Box — mais le rythme de l'habitude cède la
-   place à ce qui fait une ACTION : la date, l'heure, la durée ; dessous
-   le lieu (un lien Google Maps) ; dessous les places et le mode
-   d'acceptation ; dessous social ou silent. [details] ouvre un tiroir qui
-   PROLONGE la boîte : le mot du membre, puis WHY et TRIGGER. */
+/* ══ LA BOÎTE-ACTION ═════════════════════════════════════════════════ */
 .spot .v-sub + .v-sub{margin-top:4px}
 .spot .v-sub b{color:#fff;font-weight:700}
 .spot .lv{color:#fff;animation:blink 1.4s ease-in-out infinite}
@@ -311,7 +337,6 @@ body.p-open #panel{display:block}
   letter-spacing:.2em;text-transform:uppercase;font-weight:700;text-align:left;width:fit-content;-webkit-tap-highlight-color:transparent}
 .drawer{display:block;margin:9px -11px -7px;padding:10px 11px 11px;background:rgba(0,0,0,.18)}
 .drawer > .mg:first-child{margin-top:0}
-/* Le mot du membre : Quantico NORMAL, pas bold — c'est lui qui l'a tapé. */
 .say-q{display:block;font-family:var(--q);font-weight:400;font-size:13px;line-height:1.6;color:#fff;white-space:pre-wrap;word-break:break-word}
 .act{display:flex;align-items:center;justify-content:space-between;gap:6px 12px;flex-wrap:wrap;padding-top:7px}
 .cmp{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--lo)}
@@ -320,11 +345,7 @@ body.p-open #panel{display:block}
 .meet{background:var(--s2);color:#fff;padding:9px 11px;font-family:var(--q);font-size:14px;margin-top:7px}
 .meet small{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo)}
 
-/* ══ CRÉER — LA BOÎTE S'OUVRE, COMME DANS LE TOTEHM ═════════════════
-   Même fonctionnement que la Habit Box ouverte de totehm.com : la boîte
-   se soulève, ce qui manque RESPIRE (`.vit`), un choix s'ouvre DANS la
-   boîte sous la ligne qu'il règle, un seul à la fois, et rien ne demande
-   [Done]. Seul [Publish] reste : publier, c'est parler au monde. */
+/* ══ CRÉER — LA BOÎTE S'OUVRE, COMME DANS LE TOTEHM ═════════════════ */
 .spot.draft .h-body{transform:scale(1.012) translateY(-2px);filter:brightness(1.07);cursor:default}
 .spot.draft .v-name{padding-right:28px}
 .v-b{background:none;border:none;padding:0;cursor:pointer;color:inherit;font-family:var(--mono);font-size:9px;letter-spacing:.16em;
@@ -339,10 +360,13 @@ body.p-open #panel{display:block}
 .pkw{display:block;margin:8px 0 2px;padding:9px;background:rgba(0,0,0,.24)}
 .pk-say{display:block;font-family:var(--mono);font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.55);margin:8px 0 5px}
 .pk-say:first-child{margin-top:0}
+.pk-say .lnk{font-size:8px;padding:0 0 0 6px;color:#fff}
 .chips{display:flex;flex-wrap:wrap;gap:4px}
 .chip{background:rgba(255,255,255,.08);border:none;color:#fff;cursor:pointer;padding:6px 9px;font-family:var(--mono);font-size:10px;
-  letter-spacing:.1em;text-transform:uppercase;transition:background .15s;-webkit-tap-highlight-color:transparent}
+  letter-spacing:.1em;text-transform:uppercase;transition:background .15s;-webkit-tap-highlight-color:transparent;text-align:left}
+.chip small{display:block;font-size:8px;letter-spacing:.14em;color:rgba(255,255,255,.55);text-transform:none;margin-top:2px}
 .chip.on{background:#fff;color:#1a1a33}
+.chip.on small{color:#1a1a33}
 .pkw .in{border-image-source:none;border:none;background:rgba(255,255,255,.08);padding:7px 9px;margin-top:6px;color-scheme:dark}
 .stp{display:flex;align-items:center;gap:6px;margin-top:6px}
 .stp button{width:30px;height:30px;background:rgba(255,255,255,.08);border:none;color:#fff;font-family:var(--mono);font-size:16px;cursor:pointer}
@@ -353,43 +377,65 @@ body.p-open #panel{display:block}
 .ta::placeholder{color:rgba(255,255,255,.4)}
 .done-l{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}
 
-/* ── LA PORTE — une place vide, pas une surface (09/09) ─────────────── */
+/* ── LA PORTE ─────────────────────────────────────────────────────── */
 .rope{display:flex;flex-direction:column;gap:5px;margin-top:10px}
 .rope .k{display:flex;justify-content:space-between;gap:10px;padding:11px 14px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:#fff;background:var(--navy)}
 .rope .k.b{background:var(--blue)}.rope .k.r{background:var(--rep)}
 .rope .k.no{background:none;color:var(--lo);border:1px dashed rgba(255,255,255,.25)}
 .rope .k span{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;align-self:center}
 
+/* ══ HOW IT WORKS · 26/09/2026 ═══════════════════════════════════════
+   Le mode d'emploi, en une carte : la manette, puis ce qu'est un Spot.
+   Ancré EN HAUT (le clavier d'un téléphone mange le bas). */
+#how{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.84);display:none;align-items:flex-start;justify-content:center;
+  padding:max(44px,8dvh) 16px 24px;overflow-y:auto}
+#how.on{display:flex}
+#how .card{background:var(--s1);width:min(560px,100%);padding:20px 20px 22px}
+#how h2{font-family:var(--mont);font-weight:600;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:#fff}
+#how h3{font-family:var(--mono);font-weight:400;font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);margin:18px 0 8px}
+#how dl{display:grid;grid-template-columns:auto 1fr;gap:9px 14px;background:var(--s2);padding:12px 13px}
+#how dt{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#fff;padding-top:2px;white-space:nowrap}
+#how dd{font-family:var(--mono);font-size:11px;line-height:1.6;color:var(--mid)}
+#how dd em{font-style:normal;color:#fff}
+@media(max-width:520px){#how dl{grid-template-columns:1fr;gap:2px 0}#how dd{margin-bottom:8px}}
+
 @media(hover:hover){
-  #member:hover,#terms:hover,.lnk:hover,.opt:not(.on):hover,.int:hover,.stp button:hover,.cap:hover,.empty:hover,.note:hover,
-  .sec-l:hover,.cmp:hover,#status:hover,#cmp:hover,.w-x:hover,.v-det:hover,.say:hover,.opt-l:hover,.int:hover small{color:#fff}
+  #member:hover,#terms:hover,.lnk:hover,.opt:not(.on):hover,.stp button:hover,.cap:hover,.empty:hover,.note:hover,#osm:hover,
+  .sec-l:hover,.cmp:hover,#status:hover,#cmp:hover,.w-x:hover,.v-det:hover,.say:hover,.opt-l:hover,#zoom button:hover,
+  .int:hover small,.int:hover .df,#how dd:hover,#how h3:hover{color:#fff}
   .v-loc:hover{text-decoration-color:#fff}
   .v-b:hover,.v-int-b:hover{opacity:.75}
   .chip:not(.on):hover{background:rgba(255,255,255,.16)}
   .int:not(.on):hover{background:var(--s3)}
+  .dot:hover::before{opacity:1}
 }
 @media(prefers-reduced-motion:reduce){
-  #me,#pin,.marker i,.marker.live i,.vit,#status .live,.spot .lv{animation:none}
-  .cur,#joy-box,#joy-stack,#joy-stack i{transition:none}
+  #me,#pin,.marker i,.marker.live i,.vit,#status .live,.spot .lv,#z-me.away,#joy-box.pulse{animation:none}
+  .cur,#joy-box,#joy-stack,#joy-stack i,.pan,.pan.on,#vnow{transition:none}
   #vnow.f-d,#vnow.f-g,#vnow.f-b,#vnow.f-h{animation:none}
   .spot.draft .h-body{transform:none}
 }
 </style>
 </head>
 <body class="v-radar">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="higher-badge" viewBox="0 0 600 200"><defs><mask id="hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></symbol></svg>
 
 <button id="member" type="button"><i></i><span id="member-txt">Sign in</span></button>
 <a id="terms" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a>
 <div id="vnow" aria-live="polite"><b id="vt"></b><i id="vs"></i><button id="status" type="button" tabindex="-1"></button></div>
 
-<div id="world"><canvas id="canvas" aria-label="Radar of Spots around you"></canvas>
-  <div id="markers"><div id="me"></div><div id="pin" class="hide"></div></div></div>
+<div id="world"><canvas id="canvas" aria-label="Radar of Spots — pinch to zoom out to the planet"></canvas>
+  <div id="markers"><div id="me" class="hide"></div><div id="pin" class="hide"></div></div>
+  <div id="tip" aria-hidden="true"></div></div>
+<a id="osm" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a>
 
-<aside id="panel" aria-live="polite"></aside>
+<aside class="pan" id="p-g" aria-hidden="true"></aside>
+<aside class="pan" id="p-d" aria-hidden="true"></aside>
+<aside class="pan" id="p-h" aria-hidden="true"></aside>
+<aside class="pan" id="p-b" aria-hidden="true"></aside>
+<aside class="pan" id="p-f" aria-hidden="true"></aside>
+<aside class="pan" id="p-m" aria-hidden="true"></aside>
 
-<!-- ══ LA MANETTE · COPIÉE DE com/totehm.html ═════════════════════════
-     Cinq pièces À PLAT dans la grille : une grille ne place que ses
-     enfants directs. -->
 <div id="joy-say" aria-hidden="true"></div>
 <div id="joy" role="group" aria-label="Where I am in totehm.space">
   <button class="cur" id="cur-h" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
@@ -399,7 +445,36 @@ body.p-open #panel{display:block}
   <button class="cur" id="cur-b" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
   <span id="req-n"></span>
 </div>
-<button id="cmp" type="button" class="hide" aria-label="Compass"></button>
+<button id="cmp" type="button" aria-label="Compass"></button>
+<div id="zoom" role="group" aria-label="Zoom">
+  <button id="z-in" type="button" aria-label="Zoom in">+</button>
+  <button id="z-out" type="button" aria-label="Zoom out">−</button>
+  <button id="z-me" type="button" aria-label="Back to me">◎</button>
+  <button id="z-how" type="button" aria-label="How it works">?</button>
+</div>
+
+<div id="how" role="dialog" aria-modal="true" aria-label="How it works"><div class="card">
+  <div class="p-head"><h2>How it works</h2><button class="lnk" data-hx="1" type="button">Close</button></div>
+  <h3>the controller</h3>
+  <dl>
+    <dt>Move</dt><dd>Push the stick, or swipe anywhere — one finger, two fingers on a trackpad, or drag the radar. <em>Up</em> create · <em>down</em> my space · <em>left</em> by intention · <em>right</em> tomorrow &amp; beyond. Touch the stick: back to <em>live &amp; today</em>.</dd>
+    <dt>Zoom</dt><dd>Pinch — fingers or trackpad — or <em>+ −</em>. Zoom out far enough and the radar becomes the planet: every Spot on Earth, as lights. Touch a light to fly there. <em>◎</em> brings you home.</dd>
+    <dt>The ring</dt><dd>Grab the ring around the radar and turn it. Close up, the map turns and the top is where you aim — the Spots ahead are counted. Far out, the planet spins. Two taps on the ring: north. On a phone, <em>align · compass</em> turns the radar with you.</dd>
+  </dl>
+  <h3>a Spot</h3>
+  <dl>
+    <dt>A Spot</dt><dd>One of a member's habits, at a date, an hour and a place, offered to a few members.</dd>
+    <dt>Places</dt><dd>How many members can come.</dd>
+    <dt>Automatic</dt><dd>First come, first in — until every place is taken.</dd>
+    <dt>Manual</dt><dd>The creator reads who asks — a name and a compatibility — and chooses.</dd>
+    <dt>Public space</dt><dd>A park, a café, a beach, a gym. The radar shows the point within ~100 m; the exact meeting point goes to the members accepted.</dd>
+    <dt>Private</dt><dd>Inside the member's own place — a home, a studio, a garage gym. The radar shows only the neighbourhood (~1 km); the address goes only to the members accepted.</dd>
+    <dt>FIGHER members</dt><dd>Every member of the club can ask to join.</dd>
+    <dt>Subscribers</dt><dd>Only the members who follow this TOTEHM — FIGHER members too.</dd>
+    <dt>Social · Silent</dt><dd>Together, and we talk — or together, without talking.</dd>
+    <dt>Compatibility</dt><dd>One number: my TOTEHM against this Spot. Never a person against a person.</dd>
+  </dl>
+</div></div>
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -454,12 +529,17 @@ document.addEventListener('click', e => {
   const p = PORTES[g.dataset.go]; if(p){ e.preventDefault(); ssoVersDomaine(sb, p[0], p[1]); }
 });
 
-/* ══ LES SEPT INTENTIONS ET LES 33 RYTHMES — copiés de totehm.com ═══ */
+/* ══ LES SEPT INTENTIONS — et ce que chacune veut dire (Wah, 26/09) ══ */
 const INTS = {
-  fight:{n:'Fight',c:'#E24B4A',p:'BODY'}, flow:{n:'Flow',c:'#e48b31',p:'BODY'},
-  enrich:{n:'Enrich',c:'#fcbe21',p:'MENTAL'}, love:{n:'Love',c:'#639922',p:'SPIRIT'},
-  express:{n:'Express',c:'#1D9E75',p:'SOUL'}, focus:{n:'Focus',c:'#378ADD',p:'MENTAL'},
-  celebrate:{n:'Celebrate',c:'#7F77DD',p:'SOUL'} };
+  fight:{n:'Fight',c:'#E24B4A',p:'BODY',d:'Conquer yourself through harder effort'},
+  flow:{n:'Flow',c:'#e48b31',p:'BODY',d:'Liberate energy through movement'},
+  enrich:{n:'Enrich',c:'#fcbe21',p:'MENTAL',d:'Master your wealth through capital & network'},
+  love:{n:'Love',c:'#639922',p:'SPIRIT',d:'Contemplate life through connection & beauty'},
+  express:{n:'Express',c:'#1D9E75',p:'SOUL',d:'Give form to emotion through artistic creation'},
+  focus:{n:'Focus',c:'#378ADD',p:'MENTAL',d:'Master your mind through deep mental focus'},
+  celebrate:{n:'Celebrate',c:'#7F77DD',p:'SOUL',d:'Elevate energy through collective effervescence'} };
+/* « Higher » est TOUJOURS le SVG, jamais du texte (règle du 18/09). */
+const HIGHER = '<svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg>';
 const FREQ = { every_minute:'every minute', hourly:'every hour', several_daily:'several times a day', every_morning:'every morning',
   every_afternoon:'every afternoon', daily:'daily', every_evening:'every evening', every_weekday:'every weekday', every_night:'every night',
   every_other_day:'every other day', twice_week:'twice a week', every_weekend:'every weekend', weekly:'weekly', every_monday:'every monday',
@@ -468,27 +548,33 @@ const FREQ = { every_minute:'every minute', hourly:'every hour', several_daily:'
   every_1st_month:'every 1st of the month', every_15th_month:'every 15th of the month', seasonal:'every season change',
   quarterly:'every quarter', semiannual:'every six months', yearly:'yearly', every_birthday:'every birthday',
   every_newyear:'every new year', randomly:'randomly', sometimes:'sometimes' };
+const VENUE = { public:'public space', private:'private' };
+const ACCESS = { club:'FIGHER members', subscribers:'subscribers' };
 const icol = i => (INTS[i] || {}).c || '#ffffff';
 const inOrder = set => Object.keys(INTS).filter(k => set.has(k));
 
-/* ══ LES UNITÉS — km, ou miles aux États-Unis · 25/09/2026 ══════════
-   « Si on est aux États-Unis » : c'est le FUSEAU de l'appareil qui le dit
-   — il suit l'endroit où l'on se trouve, sans demander la position et
-   sans un appel de géocodage. Un Européen à New York lit des miles ; un
-   Américain à Lisbonne lit des km. */
+/* ══ LES UNITÉS — km, ou miles aux États-Unis (le FUSEAU de l'appareil) */
 const US_TZ = /^(America\/(New_York|Detroit|Chicago|Denver|Phoenix|Los_Angeles|Anchorage|Juneau|Sitka|Yakutat|Nome|Metlakatla|Adak|Boise|Menominee|Indianapolis|Louisville|Indiana\/.+|Kentucky\/.+|North_Dakota\/.+)|Pacific\/Honolulu|US\/.+)$/;
 let UNIT = 'km';
 try{ if(US_TZ.test(Intl.DateTimeFormat().resolvedOptions().timeZone || '')) UNIT = 'mi'; }catch(_){}
 const fmtDist = m => {
   if(m == null || !isFinite(m)) return '';
   const v = UNIT === 'mi' ? m/1609.344 : m/1000;
-  return (v < 10 ? Math.max(.1, v).toFixed(1) : String(Math.round(v))) + ' ' + UNIT;
+  return (v < 10 ? Math.max(.1, v).toFixed(1) : v < 10000 ? String(Math.round(v)) : Math.round(v/1000) + 'k') + ' ' + UNIT;
 };
 const CARD = ['N','NE','E','SE','S','SW','W','NW'];
 const cardOf = deg => CARD[Math.round((((deg % 360) + 360) % 360)/45) % 8];
 const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query=' + Number(lat).toFixed(5) + '%2C' + Number(lng).toFixed(5);
 
-/* ══ LE TEMPS — à l'heure de l'APPAREIL (on lit l'heure là où l'on est) */
+/* ══ LA SPHÈRE — distances et caps au vrai (Haversine) ═══════════════ */
+const EARTH_R = 6371e3, DEG = Math.PI/180;
+const hav = (a, b) => { const p1 = a.lat*DEG, p2 = b.lat*DEG, dp = p2 - p1, dl = (b.lng - a.lng)*DEG;
+  const h = Math.sin(dp/2)**2 + Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2; return 2*EARTH_R*Math.asin(Math.min(1, Math.sqrt(h))); };
+const bearing = (a, b) => { const p1 = a.lat*DEG, p2 = b.lat*DEG, dl = (b.lng - a.lng)*DEG;
+  return (Math.atan2(Math.sin(dl)*Math.cos(p2), Math.cos(p1)*Math.sin(p2) - Math.sin(p1)*Math.cos(p2)*Math.cos(dl))/DEG + 360) % 360; };
+const norm180 = x => ((x + 540) % 360) - 180;
+
+/* ══ LE TEMPS — à l'heure de l'APPAREIL ══════════════════════════════ */
 const pad = n => String(n).padStart(2, '0');
 const hhmm = d => pad(d.getHours()) + ':' + pad(d.getMinutes());
 const dayKey = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
@@ -506,9 +592,9 @@ const fmtDur = m => !m ? '' : m < 60 ? m + ' min' : Math.floor(m/60) + ' h' + (m
 const tickHTML = l => '<span class="tick">' + (l||[]).map(i => '<i style="background:' + icol(i) + '"></i>').join('') + '</span>';
 const groupe = (mot, contenu) => contenu ? '<span class="mg"><span class="mg-l">' + mot + '</span><span class="minis">' + contenu + '</span></span>' : '';
 const miniH = (k, t, attr) => '<span class="mini m-' + k + '"' + (attr || '') + '>' + esc(t) + '</span>';
+const howLink = t => '<button class="lnk how-l" data-how="1" type="button">' + (t || 'how it works') + '</button>';
 
-/* LA HABIT BOX — telle que dans totehm.com : intentions · rythme · lieu,
-   WHY (objectifs), TRIGGER (répulsions). C'est la boîte du CHOIX. */
+/* LA HABIT BOX — la boîte du CHOIX, telle que dans totehm.com. */
 function habitBoxHTML(h){
   const unit = (h.ints||[]).map(i => '<span class="v-int" style="color:' + icol(i) + '">' + esc(INTS[i]?.n || i) + '</span>').join('')
     + (h.freq ? '<span class="v-frq">' + esc(FREQ[h.freq] || String(h.freq).replace(/_/g, ' ')) + '</span>' : '')
@@ -520,7 +606,12 @@ function habitBoxHTML(h){
     '</span></span></div>';
 }
 
-/* LA BOÎTE-ACTION — un Spot, lu. Le tiroir ne s'ouvre que sur [details]. */
+/* LA BOÎTE-ACTION — un Spot, lu.
+   1 · intentions · date · heure · durée
+   2 · le lieu (lien Google Maps) · distance et cap
+   3 · places · automatic/manual · public space/private   ← la NATURE (26/09)
+   4 · social/silent · FIGHER members/subscribers · mood
+   [details] → le mot, WHY, TRIGGER. */
 const DET = new Set();
 function spotBoxHTML(s){
   const ints = (s.intentions && s.intentions.length) ? s.intentions : (s.context?.intentions || []);
@@ -528,16 +619,17 @@ function spotBoxHTML(s){
   const when = s.live ? '<span class="lv">live</span><span>until ' + hhmm(end) + '</span>' : '<span>' + esc(fmtDay(d)) + '</span><span>' + hhmm(d) + '</span>';
   const l1 = ints.map(i => '<span class="v-int" style="color:' + icol(i) + '">' + esc(INTS[i]?.n || i) + '</span>').join('')
     + when + '<span>' + fmtDur(s.duration_min) + '</span>' + (s.demo ? '<span class="dm">demo</span>' : '');
-  /* Le lieu : le point EXACT au créateur et aux acceptés, sinon la position
-     publique (~110 m) — la même que le radar montre déjà à tout le monde. */
   const ex = s.exact && s.exact.lat != null ? s.exact : null;
   const lat = ex ? ex.lat : s.lat, lng = ex ? ex.lng : s.lng;
-  const txt = s.place ? esc(s.place) : 'the area · exact point once in';
+  const priv = s.venue === 'private';
+  const txt = s.place ? esc(s.place) : priv ? 'the neighbourhood · address once in' : 'the area · exact point once in';
   const loc = lat != null ? '<a class="v-loc" href="' + mapsURL(lat, lng) + '" target="_blank" rel="noopener" aria-label="Open in Google Maps">' + txt + '</a>' : '<span>' + txt + '</span>';
-  const far = s.dist_m != null ? '<span>' + fmtDist(s.dist_m) + (s._brg != null ? ' ' + cardOf(s._brg) : '') + '</span>' : '';
+  const r = ref(), dd = s._d != null ? s._d : (r && s.lat != null ? hav(r, s) : s.dist_m);
+  const bb = s._brg != null ? s._brg : (r && s.lat != null ? bearing(r, s) : null);
+  const far = dd != null ? '<span>' + fmtDist(dd) + (bb != null ? ' ' + cardOf(bb) : '') + '</span>' : '';
   const l3 = '<b>' + (s.taken || 0) + '/' + (s.capacity ?? '—') + '</b><span>places</span><span>' + (s.selection === 'manual' ? 'manual' : 'automatic') + '</span>'
-    + (s.access === 'subscribers' ? '<span>subscribers</span>' : '');
-  const l4 = '<span>' + esc(s.mode || '') + '</span>' + (s.mood ? '<span>mood · ' + esc(s.mood) + '</span>' : '');
+    + '<span>' + VENUE[s.venue || 'public'] + '</span>';
+  const l4 = '<span>' + esc(s.mode || '') + '</span><span>' + (ACCESS[s.access] || ACCESS.club) + '</span>' + (s.mood ? '<span>mood · ' + esc(s.mood) + '</span>' : '');
   const open = DET.has(s.id);
   let drawer = '';
   if(open){
@@ -558,21 +650,31 @@ function spotBoxHTML(s){
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
 let me = null, F = null, MS = null, TOT = null;
 let VIEW = 'radar', PANEL = null, FOCUS = null;
-const BUILD = '2026-09-25';
+const BUILD = '2026-09-26';
 const LISBON = { lat:38.7223, lng:-9.1393 };
-const RAD = { on:false, raf:0, t:0, origin:{ ...LISBON }, spots:[], hover:null, base:1500, zoom:1, cx:0, cy:0, rpx:0, W:0, H:0, dpr:1 };
-const FI = { int:null };                          // vue gauche
-const FT = { when:'later', q:'', mode:null };     // vue droite
-let RULES = { max_upcoming:10, capacity_min:1, capacity_max:50, duration_min:5, duration_max:720, horizon_days:90 };
+/* L'échelle : `range` = la distance du centre au bord du disque, en mètres.
+   En dessous de LOCAL_MAX, les Spots un par un ; au-dessus, les lumières
+   du globe. Au-dessus de SPIN_AT, tourner la couronne fait tourner la
+   planète au lieu de la carte. */
+const LOCAL_MAX = 80e3, SPIN_AT = 700e3, MIN_R = 120, MAX_R = 7.6e6;
+const RAD = { on:false, raf:0, t:0, W:0, H:0, dpr:1, cx:0, cy:0, rpx:0, tcx:0, tcy:0, trpx:0,
+  view:{ ...LISBON }, me:null, range:1500, trange:1500, base:1500, head:0, headTo:null, spin:0, grab:false, ringHover:false,
+  spots:[], cells:[], hover:null, tip:null, mode:'local', fly:null, localAt:null, sig:'', settleT:0 };
+const FI = { int:null };
+const FT = { when:'later', q:'', mode:null };
+let RULES = { max_upcoming:10, capacity_min:1, capacity_max:50, duration_min:5, duration_max:720, horizon_days:90, local_radius_km:60 };
 let geoOK = false;
-/* Le diagnostic — des booléens et des compteurs, jamais une position ni
-   une valeur de membre. Dans la console : __totehm_space() */
+const ref = () => RAD.me || RAD.view;
+const items = () => RAD.mode === 'globe' ? RAD.cells : RAD.spots;
+const GEST = { swipe:0, trackpad:0, pinch:0, ring:0 };
 window.__totehm_space = () => ({ build: BUILD, view: VIEW, panel: panelKind(), signed_in: !!me, member: !!F?.member, comp: !!F?.comp,
-  located: geoOK, units: UNIT, compass: { available: CMP.avail, on: CMP.on },
+  located: geoOK, units: UNIT, compass: { available: CMP.avail, on: CMP.on }, heading: Math.round(RAD.head) % 360,
+  scale: { range_km: +(RAD.range/1000).toFixed(1), mode: RAD.mode, at_home: !awayFromHome(), earth: !!EARTH.land, coast50: !!EARTH.land50 },
   spots: RAD.spots.length, demo: RAD.spots.filter(s => s.demo).length, live: RAD.spots.filter(s => s.live).length,
-  ahead: RAD.spots.filter(s => s._ahead).length, filters: { intention: !!FI.int, when: FT.when, word: !!FT.q, mode: !!FT.mode },
-  drawers: DET.size, draft: CR.h ? { complete: draftComplete(), missing: draftMissing().length } : null,
-  requests: (MS?.requests || []).length });
+  ahead: items().filter(s => s._ahead).length, cells: RAD.cells.length, planet: RAD.cells.reduce((a, c) => a + c.n, 0),
+  filters: { intention: !!FI.int, when: FT.when, word: !!FT.q, mode: !!FT.mode },
+  drawers: DET.size, draft: CR.h ? { complete: draftComplete(), missing: draftMissing().length, map_tiles: mapMode() ? TILES.ok : 0 } : null,
+  requests: (MS?.requests || []).length, gestures: { ...GEST } });
 
 async function loadMe(){
   const { data:{ session } } = await sb.auth.getSession();
@@ -583,8 +685,8 @@ async function loadMe(){
 }
 
 /* ══ LES CINQ VUES — UNE SEULE TABLE, LUE PAR TOUT ══════════════════
-   La manette, les chevrons, la molette et les flèches du clavier lisent
-   `CROIX`. Deux tables finiraient par dire deux choses (leçon du 19/09). */
+   La manette, les chevrons, le balayage, le trackpad et les flèches
+   lisent `CROIX`. Deux tables finiraient par dire deux choses. */
 const CROIX = {
   radar:  { h:'create', b:'mine', g:'intent', d:'time' },
   create: { b:'radar', g:'intent', d:'time' },
@@ -592,7 +694,6 @@ const CROIX = {
   intent: { d:'radar' },
   time:   { g:'radar' },
 };
-/* Chaque vue a sa raison d'être : le titre la nomme, le sous-titre la dit. */
 const NOM = {
   radar:  ['Live & today',      'what I can join now, around me'],
   create: ['Create a Spot',     'one of my habits, offered to the world'],
@@ -600,32 +701,35 @@ const NOM = {
   intent: ['By intention',      'the why before the where'],
   time:   ['Tomorrow & beyond', 'what is coming — a day, a word'],
 };
-/* La tuile porte la couleur de la vue ; la pile porte l'axe vertical. */
 const TEINTE = { radar:'--navy', create:'--blue', mine:'--rep', intent:'--rep', time:'--blue' };
 const COUCHE = { create:'o', radar:'h', mine:'r' };
+/* Chaque fenêtre a son côté. */
+const PAN = { intent:'p-g', time:'p-d', create:'p-h', mine:'p-b', focus:'p-f', gate:'p-m' };
 const voisin = d => (CROIX[VIEW] || {})[d] || null;
 let dernierSens = null;
-function versVoisin(d){ const v = voisin(d); if(!v) return; dernierSens = d; setView(v); }
+function versVoisin(d){ const v = voisin(d); if(!v) return false; dernierSens = d; setView(v); return true; }
+const HASH = { create:'create', mine:'me', intent:'intent', time:'later' };
 
 function setView(v){
   if(!NOM[v]) v = 'radar';
   const was = VIEW;
-  VIEW = v; PANEL = null; say(null);
+  VIEW = v; PANEL = null; say(null); howClose();
   if(v !== 'radar') FOCUS = null;
-  document.body.className = document.body.className.replace(/\bv-\w+/g, '').trim() + ' v-' + v;
+  [...document.body.classList].filter(c => c.startsWith('v-')).forEach(c => document.body.classList.remove(c));
+  document.body.classList.add('v-' + v);
   history.replaceState(null, '', location.pathname + (HASH[v] ? '#' + HASH[v] : ''));
-  paintJoy(); paintTitle(); syncPanel();
+  paintJoy(); paintTitle(); syncPanels();
+  if(was !== v){
+    const bx = $('joy-box'); bx.classList.remove('pulse'); void bx.offsetWidth; bx.classList.add('pulse');
+    try{ navigator.vibrate && navigator.vibrate(8); }catch(_){}
+  }
   if(v === 'create') openCreate();
   else if(v === 'mine') loadMine();
-  if(was !== v || !RAD.spots.length) loadSpots();
+  if(was !== v || !RAD.spots.length) reload();
 }
-const HASH = { create:'create', mine:'me', intent:'intent', time:'later' };
-
 function paintTitle(){
   const nv = $('vnow');
   $('vt').textContent = NOM[VIEW][0]; $('vs').textContent = NOM[VIEW][1];
-  /* ⚠️ Une animation se rejoue à chaque redessin si on se contente de
-     poser la classe : on la retire, on force un reflow, on la remet. */
   nv.className = '';
   if(dernierSens){ void nv.offsetWidth; nv.classList.add('f-' + dernierSens); dernierSens = null; }
   paintStatus();
@@ -635,7 +739,7 @@ function paintJoy(){
   jy.style.setProperty('--joy-vue', 'var(' + (TEINTE[VIEW] || '--navy') + ')');
   const ici = COUCHE[VIEW] || null;
   ['o','h','r'].forEach(k => { const e = jy.querySelector('#joy-stack .' + k); if(e) e.className = k + (k === ici ? ' ici' : ''); });
-  $('joy-box').className = ici ? '' : 'hors';
+  $('joy-box').classList.toggle('hors', !ici);
   [['cur-g','g'],['cur-d','d'],['cur-h','h'],['cur-b','b']].forEach(([id, d]) => {
     const b = $(id), cible = voisin(d);
     b.className = 'cur' + (cible ? '' : ' mort'); b.disabled = !cible;
@@ -643,17 +747,11 @@ function paintJoy(){
     b.setAttribute('aria-hidden', cible ? 'false' : 'true');
   });
 }
-/* Ce que le manche vise s'écrit au-dessus de lui, avant qu'on lâche. */
 function say(d){ const t = d && voisin(d); const s = $('joy-say'); s.textContent = t ? NOM[t][0] : ''; s.classList.toggle('on', !!t); }
 
 /* ══ LA MANETTE — ON TIRE LE MANCHE · copiée de totehm.com ═══════════
-   Trois moyens, et ils mènent tous à `versVoisin` : les CHEVRONS, le
-   MANCHE (tiré au doigt, borné à un rayon ; au relâcher, au-delà du
-   seuil, on part — sinon il revient au centre), la MOLETTE sur le pavé.
-   Et un quatrième, propre à l'Espace : TOUCHER le pavé sans le tirer
-   ramène au centre — le cran de repos, le radar.
-   ⚠️ POINTER EVENTS ET `touch-action:none` : le même code pour le doigt et
-   la souris ; sans lui le navigateur avale le glissement. */
+   Chevrons, manche tiré, molette SUR le pavé (elle suit le DOIGT, erreur
+   corrigée le 25/09). Toucher le pavé sans le tirer ramène au centre. */
 (function manette(){
   const jy = $('joy'), bx = $('joy-box'), st = $('joy-stack');
   const RAYON = 15, SEUIL = 9;
@@ -684,21 +782,14 @@ function say(d){ const t = d && voisin(d); const s = $('joy-say'); s.textContent
     id = null; centre();
     if(v) versVoisin(v);
     else if(tape && VIEW !== 'radar'){ dernierSens = null; setView('radar'); }
+    else if(tape && PANEL){ PANEL = null; FOCUS = null; syncPanels(); paintMarkers(); }
   };
   bx.addEventListener('pointerup', lache);
   bx.addEventListener('pointercancel', () => { id = null; centre(); });
-  /* ⚠️ LA MOLETTE DANS LE PAVÉ SUIT LE DOIGT, SUR LES DEUX AXES QUI LE
-     PEUVENT · 25/09/2026 — c'est l'erreur signalée dans totehm.html.
-     Là-bas : `deltaX > 0 ? 'd' : 'g'` (« trackpad : contenu, pas doigt »).
-     Or une molette HORIZONTALE est presque toujours un trackpad, donc un
-     geste de DOIGTS : deux doigts vers la gauche donnent `deltaX > 0` — et
-     la manette partait à DROITE, à l'opposé du manche qu'on tire au même
-     endroit. Ici `deltaX > 0` → gauche : le pavé suit le doigt, comme le
-     manche. La verticale reste celle d'une molette de souris (on la roule
-     vers soi → `deltaY > 0` → vers le bas), c'est presque toujours elle. */
   let froid = 0;
   jy.addEventListener('wheel', e => {
-    e.preventDefault();
+    e.preventDefault(); e.stopPropagation();
+    if(e.ctrlKey) return;
     if(Date.now() < froid) return;
     if(Math.max(Math.abs(e.deltaX), Math.abs(e.deltaY)) < 4) return;
     const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? (e.deltaX > 0 ? 'g' : 'd') : (e.deltaY > 0 ? 'b' : 'h');
@@ -712,30 +803,96 @@ function say(d){ const t = d && voisin(d); const s = $('joy-say'); s.textContent
     b.onmouseenter = () => say(d); b.onmouseleave = () => say(null);
   });
 })();
-/* Les flèches du clavier suivent la croix — jamais dans un champ. */
+
+/* ══ LE GESTE VAUT PARTOUT · 26/09/2026 ══════════════════════════════
+   « Le joystick doit fonctionner comme dans totehm.html : les gestes
+   restent valables en dehors du joystick, y compris sur le radar. »
+   Même logique que totehm.com : on pousse le CONTENU. Doigt vers la
+   gauche (ou deux doigts au trackpad) → ce qui est à DROITE. Doigt vers
+   le haut → ce qui est EN BAS.
+   · Dans une fenêtre qui défile, la verticale appartient au défilement ;
+     elle ne navigue qu'au BOUT de la liste, et seulement si on y était
+     déjà au début du geste (règle du 16/09 : jamais au milieu).
+   · Le zoom n'est PLUS la molette : c'est le pincement. Au trackpad, un
+     pincement arrive en `wheel` avec `ctrlKey` (Chrome, Firefox) ou en
+     `gesturechange` (Safari). */
+const NO_SWIPE = '#joy, #zoom, #cmp, #how, #world, input, textarea, select, [contenteditable="true"]';
+(function balayage(){
+  let T = null;
+  document.addEventListener('touchstart', e => {
+    if(e.touches.length !== 1){ T = null; return; }
+    const t = e.target; if(!(t instanceof Element) || t.closest(NO_SWIPE)){ T = null; return; }
+    const pan = t.closest('.pan'), c = e.touches[0];
+    T = { x:c.clientX, y:c.clientY, pan, top: pan ? pan.scrollTop <= 0 : true,
+      bot: pan ? pan.scrollTop + pan.clientHeight >= pan.scrollHeight - 1 : true };
+  }, { passive:true });
+  document.addEventListener('touchend', e => {
+    if(!T) return; const c = e.changedTouches[0], dx = c.clientX - T.x, dy = c.clientY - T.y, s = T; T = null;
+    if(Math.abs(dx) > Math.abs(dy)*1.3 && Math.abs(dx) >= 44){ if(versVoisin(dx < 0 ? 'd' : 'g')) GEST.swipe++; return; }
+    if(Math.abs(dy) > Math.abs(dx)*1.3){
+      const need = s.pan ? 100 : 56; if(Math.abs(dy) < need) return;
+      if(dy < 0 && s.bot && (!s.pan || s.pan.scrollTop + s.pan.clientHeight >= s.pan.scrollHeight - 1)){ if(versVoisin('b')) GEST.swipe++; }
+      else if(dy > 0 && s.top && (!s.pan || s.pan.scrollTop <= 0)){ if(versVoisin('h')) GEST.swipe++; }
+    }
+  }, { passive:true });
+  document.addEventListener('touchcancel', () => { T = null; }, { passive:true });
+})();
+(function trackpad(){
+  const W = { ax:0, ay:0, t:0, lock:0, calm:0 };
+  const go = d => { W.ax = W.ay = 0; W.lock = performance.now() + 260; if(versVoisin(d)) GEST.trackpad++; };
+  addEventListener('wheel', e => {
+    const t = e.target instanceof Element ? e.target : null;
+    if(t && t.closest('#joy')) return;
+    if(e.ctrlKey){ e.preventDefault(); zoomTo(RAD.trange*Math.exp(e.deltaY*0.012)); GEST.pinch++; return; }
+    if(t && t.closest('#how')) return;
+    const now = performance.now(), k = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1;
+    const dx = e.deltaX*k, dy = e.deltaY*k;
+    /* L'inertie d'un trackpad continue après le geste : on attend 260 ms de
+       calme avant la navigation suivante, sinon un geste en ferait deux. */
+    if(now < W.lock){ W.lock = now + 260; return; }
+    if(now - W.t > 260){ W.ax = W.ay = 0; }
+    W.t = now;
+    const pan = t && t.closest('.pan');
+    if(Math.abs(dx) > Math.abs(dy)){ W.ay = 0; W.ax += dx; if(Math.abs(W.ax) > 80) go(W.ax > 0 ? 'd' : 'g'); return; }
+    if(pan && pan.scrollHeight > pan.clientHeight + 1){
+      const edge = dy > 0 ? pan.scrollTop + pan.clientHeight >= pan.scrollHeight - 1 : pan.scrollTop <= 0;
+      if(!edge){ W.calm = now; W.ay = 0; return; }
+      if(now - W.calm < 420){ W.ay = 0; return; }
+    }
+    W.ax = 0; W.ay += dy; if(Math.abs(W.ay) > 70) go(W.ay > 0 ? 'b' : 'h');
+  }, { passive:false });
+  /* Safari (Mac) : le pincement du trackpad. */
+  let g0 = 0;
+  addEventListener('gesturestart', e => { e.preventDefault(); g0 = RAD.trange; });
+  addEventListener('gesturechange', e => { e.preventDefault(); if(g0 && e.scale) zoomTo(g0/e.scale, true); GEST.pinch++; });
+  addEventListener('gestureend', e => { e.preventDefault(); g0 = 0; });
+})();
 addEventListener('keydown', e => {
   const t = e.target;
   if(t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
   const k = { ArrowLeft:'g', ArrowRight:'d', ArrowUp:'h', ArrowDown:'b' }[e.key];
-  if(k && voisin(k)){ e.preventDefault(); versVoisin(k); return; }
+  if(k && !howOpen() && voisin(k)){ e.preventDefault(); versVoisin(k); return; }
+  if(e.key === '?'){ howOpen() ? howClose() : howShow(); return; }
+  if(e.key === '+' || e.key === '='){ zoomTo(RAD.trange/2.4); return; }
+  if(e.key === '-' || e.key === '_'){ zoomTo(RAD.trange*2.4); return; }
   if(e.key === 'Escape'){
-    if(PANEL){ PANEL = null; FOCUS = null; syncPanel(); paintMarkers(); return; }
+    if(howOpen()){ howClose(); return; }
+    if(PANEL){ PANEL = null; FOCUS = null; syncPanels(); paintMarkers(); return; }
     if(VIEW !== 'radar') setView('radar');
   }
 });
 
-/* ══ LA BOUSSOLE · 25/09/2026 ═══════════════════════════════════════
-   « J'aime bien cet effet de boussole — on devrait pouvoir l'utiliser,
-   avec une conséquence logique sur les Spots. » Au téléphone, le radar
-   TOURNE AVEC TOI : le haut de l'instrument est la direction où tu
-   regardes, et les Spots se placent là où ils sont vraiment. Les Spots
-   dans ton cône (±22,5°) grossissent : ils sont DEVANT toi, la lecture
-   de l'instrument les compte. Chaque Spot dit son cap (NE, SW…), sur
-   ordinateur aussi.
-   ⚠️ iOS : `requestPermission()` dans un `click` — un geste que Safari
-   compte (règle du 24/09, la carte LSD). Android : `deviceorientationabsolute`,
-   sans permission. Pas de mesure en 3 s = pas de boussole, sans un mot.
-   Elle se PROPOSE sur un appareil tactile et ne s'allume qu'au toucher. */
+/* ══ HOW IT WORKS ════════════════════════════════════════════════════ */
+const howOpen = () => $('how').classList.contains('on');
+function howShow(){ $('how').classList.add('on'); $('how').scrollTop = 0; }
+function howClose(){ $('how').classList.remove('on'); }
+$('how').addEventListener('click', e => { if(e.target === $('how') || e.target.closest('[data-hx]')) howClose(); });
+document.addEventListener('click', e => { if(e.target.closest('[data-how]')){ e.preventDefault(); howShow(); } });
+
+/* ══ LA BOUSSOLE DE L'APPAREIL ═══════════════════════════════════════
+   Au téléphone, le radar TOURNE AVEC TOI. ⚠️ iOS : `requestPermission()`
+   dans un `click`. Pas de mesure en 3 s = pas de boussole, sans un mot.
+   Tourner la couronne à la main l'éteint : c'est toi qui vises. */
 const CMP = { avail:false, on:false, h:0, target:0, last:0, src:null };
 CMP.avail = typeof window.DeviceOrientationEvent !== 'undefined' && matchMedia('(pointer:coarse)').matches;
 function onOrient(e){
@@ -745,7 +902,7 @@ function onOrient(e){
   if(h == null || !isFinite(h)) return;
   const so = (screen.orientation && screen.orientation.angle) || window.orientation || 0;
   CMP.target = (((h + so) % 360) + 360) % 360; CMP.last = Date.now();
-  if(!CMP.on){ CMP.on = true; CMP.h = CMP.target; paintCmp(); paintStatus(); }
+  if(!CMP.on){ CMP.on = true; CMP.h = CMP.target; RAD.headTo = null; RAD.spin = 0; paintCmp(); paintStatus(); }
 }
 async function compassOn(){
   try{
@@ -757,185 +914,504 @@ async function compassOn(){
   else { CMP.src = 'deviceorientation'; addEventListener('deviceorientation', onOrient); }
   setTimeout(() => { if(!CMP.last){ compassOff(); CMP.avail = false; paintCmp(); } }, 3000);
 }
-function compassOff(){ if(CMP.src) removeEventListener(CMP.src, onOrient); CMP.src = null; CMP.on = false; CMP.last = 0; CMP.h = 0; layout(); paintCmp(); paintStatus(); }
+function compassOff(){ if(CMP.src) removeEventListener(CMP.src, onOrient); CMP.src = null; CMP.on = false; CMP.last = 0; paintCmp(); paintStatus(); }
+const aiming = () => CMP.on || Math.abs(norm180(RAD.head)) > .5;
 function paintCmp(){
-  const b = $('cmp'); b.classList.toggle('hide', !CMP.avail);
-  if(!CMP.avail) return;
-  b.innerHTML = CMP.on ? '<b>' + String(Math.round(CMP.h) % 360).padStart(3, '0') + '° ' + cardOf(CMP.h) + '</b><br>compass' : 'align<br>compass';
+  const b = $('cmp'), h = ((Math.round(RAD.head) % 360) + 360) % 360;
+  if(CMP.on || aiming()) b.innerHTML = '<b>' + String(h).padStart(3, '0') + '° ' + cardOf(h) + '</b><br>' + (CMP.on ? 'compass' : 'north ↺');
+  else b.innerHTML = CMP.avail ? 'align<br>compass' : 'turn<br>the ring';
 }
-$('cmp').onclick = e => { e.stopPropagation(); CMP.on || CMP.src ? compassOff() : compassOn(); };
+$('cmp').onclick = e => {
+  e.stopPropagation();
+  if(CMP.on || CMP.src){ compassOff(); resetNorth(); return; }
+  if(aiming()){ resetNorth(); return; }
+  if(CMP.avail) compassOn(); else { howShow(); }
+};
 
-/* ══ L'INSTRUMENT ═══════════════════════════════════════════════════ */
-const EARTH_R = 6371e3, DEG = Math.PI/180;
-const localEN = (oLat, oLng, lat, lng) => ({ e:(lng-oLng)*DEG*EARTH_R*Math.cos(oLat*DEG), n:(lat-oLat)*DEG*EARTH_R });
-const range = () => Math.max(80, RAD.base/RAD.zoom);
+/* ══ LA COURONNE — ON LA TOURNE · 26/09/2026 ═════════════════════════
+   « Qu'on puisse jouer avec la boussole, la faire tourner. » On saisit
+   l'anneau (la bande des graduations), on tourne, on lâche : elle
+   continue sur son élan et ralentit. Chaque huitième de tour donne un
+   petit cran (vibration). De près elle fait tourner la CARTE — le haut
+   devient la direction visée. De loin elle fait tourner la PLANÈTE. */
+function turn(deg){
+  if(CMP.on) compassOff();
+  RAD.headTo = null;
+  if(RAD.range > SPIN_AT){ RAD.view.lng = norm180(RAD.view.lng - deg*Math.min(1.4, RAD.range/EARTH_R)); return; }
+  const before = Math.floor(RAD.head/45);
+  RAD.head = (((RAD.head - deg) % 360) + 360) % 360;
+  if(Math.floor(RAD.head/45) !== before){ try{ navigator.vibrate && navigator.vibrate(4); }catch(_){} }
+}
+function resetNorth(){ RAD.spin = 0; RAD.headTo = 0; }
+
+/* ══ L'INSTRUMENT — UNE PROJECTION, DE LA RUE À LA PLANÈTE ═══════════
+   Orthographique : de près, c'est le plan local (écart invisible) ; de
+   loin, c'est le globe vu de l'espace. Une seule formule, donc aucune
+   couture entre la rue et le monde. `head` tourne l'ensemble : le haut de
+   l'écran est le cap `head`. */
+let PJ = null;
+function pjFrame(){
+  const R = EARTH_R*RAD.rpx/RAD.range, p0 = RAD.view.lat*DEG, h = RAD.head*DEG;
+  PJ = { R, s0:Math.sin(p0), c0:Math.cos(p0), l0:RAD.view.lng*DEG, ch:Math.cos(h), sh:Math.sin(h), cx:RAD.cx, cy:RAD.cy };
+}
+function proj(lat, lng, clamp){
+  const P = PJ, p = lat*DEG, dl = lng*DEG - P.l0, cp = Math.cos(p), sp = Math.sin(p), cdl = Math.cos(dl);
+  let ex = P.R*cp*Math.sin(dl), ny = P.R*(P.c0*sp - P.s0*cp*cdl);
+  const v = P.s0*sp + P.c0*cp*cdl > 0;
+  if(!v && clamp){ const m = Math.hypot(ex, ny) || 1; ex = ex/m*P.R; ny = ny/m*P.R; }
+  const x = ex*P.ch - ny*P.sh, y = ny*P.ch + ex*P.sh;
+  return { x:P.cx + x, y:P.cy - y, v, r:Math.hypot(x, y) };
+}
+function unproj(X, Y){
+  const P = PJ, x = X - P.cx, y = P.cy - Y;
+  const ex = x*P.ch + y*P.sh, ny = y*P.ch - x*P.sh, rho = Math.hypot(ex, ny);
+  if(rho > P.R) return null;
+  if(rho < 1e-9) return { lat:RAD.view.lat, lng:RAD.view.lng };
+  const c = Math.asin(rho/P.R), sc = Math.sin(c), cc = Math.cos(c);
+  const lat = Math.asin(cc*P.s0 + ny*sc*P.c0/rho)/DEG;
+  const lng = (P.l0 + Math.atan2(ex*sc, rho*P.c0*cc - ny*P.s0*sc))/DEG;
+  return { lat, lng:norm180(lng) };
+}
 const wide = () => innerWidth >= 900;
-/* L'INSTRUMENT A RÉTRÉCI · 25/09. Il vit dans ce qui reste entre le nom de
-   la vue (en haut) et la manette (en bas) — et, panneau ouvert, entre le
-   nom et le panneau au téléphone, à gauche du panneau sur ordinateur. On
-   MESURE ces trois objets au lieu de recopier leurs chiffres. */
+/* L'instrument vit dans ce qui reste : sous le nom de la vue, au-dessus de
+   la manette, à côté de la fenêtre ouverte. On MESURE ces objets
+   (offset*, qui ignore les transformations en cours) — et le radar glisse
+   vers sa nouvelle place au lieu d'y sauter. */
 function resize(){
   const cv = $('canvas'), W = innerWidth, H = innerHeight, dpr = Math.max(1, Math.min(2, devicePixelRatio || 1));
-  const open = document.body.classList.contains('p-open');
-  const top = $('vnow').getBoundingClientRect().bottom + 14;
-  let bottom = $('joy').getBoundingClientRect().top - 26, left = 0, right = W;
-  if(open && wide()) right = W - 440;
-  else if(open) bottom = $('panel').getBoundingClientRect().top - 6;
-  const zh = Math.max(60, bottom - top), zw = right - left;
-  const span = Math.min(zw, zh);
-  Object.assign(RAD, { W, H, dpr, cx:left + zw/2, cy:top + zh/2, rpx:Math.max(24, span/2*0.8) });
+  const k = panelKind(), el = k ? $(PAN[k]) : null, vn = $('vnow');
+  let top = vn.offsetTop + vn.offsetHeight + 14, bottom = $('joy').offsetTop - 30, left = 0, right = W;
+  if(el){
+    if(wide()){
+      if(el.id === 'p-g') left = el.offsetWidth;
+      else if(el.id === 'p-d') right = W - el.offsetWidth;
+      else if(el.id === 'p-h') top = Math.max(top, el.offsetTop + el.offsetHeight + 16);
+      else if(el.id === 'p-b') bottom = Math.min(bottom, el.offsetTop - 14);
+    } else bottom = el.offsetTop - 6;
+  }
+  const zh = Math.max(60, bottom - top), zw = right - left, span = Math.min(zw, zh);
+  Object.assign(RAD, { W, H, dpr, tcx:left + zw/2, tcy:top + zh/2, trpx:Math.max(24, span/2*0.8) });
+  if(!RAD.rpx){ RAD.cx = RAD.tcx; RAD.cy = RAD.tcy; RAD.rpx = RAD.trpx; }
   cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
-  layout(); paintCmp();
+  RAD.sig = ''; paintCmp();
 }
-const rot = () => CMP.on ? CMP.h*DEG : 0;
-function project(e, n){
-  const k = RAD.rpx/range(), h = rot(), c = Math.cos(h), s = Math.sin(h);
-  return { x:(e*c - n*s)*k, y:-(n*c + e*s)*k };
-}
-function unproject(px, py){
-  const k = RAD.rpx/range(), h = rot(), c = Math.cos(h), s = Math.sin(h);
-  const x = (px - RAD.cx)/k, y = -(py - RAD.cy)/k;
-  const e = x*c + y*s, n = y*c - x*s;
-  const o = RAD.origin;
-  return { lat:o.lat + n/EARTH_R/DEG, lng:o.lng + e/(EARTH_R*Math.cos(o.lat*DEG))/DEG };
-}
+const resizeSoon = () => { requestAnimationFrame(resize); setTimeout(resize, 430); };
+addEventListener('resize', () => resize());
+
+/* Placer les points, toi, le point de rendez-vous et la bulle. */
 function layout(){
-  const m = $('me'); m.style.left = RAD.cx + 'px'; m.style.top = RAD.cy + 'px';
-  RAD.spots.forEach(s => {
-    let { x, y } = project(s._e, s._n); const r = Math.hypot(x, y), edge = r > RAD.rpx;
-    if(edge){ x = x/r*RAD.rpx; y = y/r*RAD.rpx; }
+  pjFrame();
+  const glob = RAD.mode === 'globe', up = aiming();
+  items().forEach(s => {
+    const p = proj(s.lat, s.lng); let x = p.x - RAD.cx, y = p.y - RAD.cy; const r = Math.hypot(x, y);
+    let edge = false, hid = false;
+    if(glob){ hid = !p.v || r > RAD.rpx*1.01; }
+    else if(r > RAD.rpx || !p.v){ edge = true; const m = r || 1; x = x/m*RAD.rpx; y = y/m*RAD.rpx; }
     s._px = RAD.cx + x; s._py = RAD.cy + y;
-    const diff = CMP.on ? Math.abs(((s._brg - CMP.h + 540) % 360) - 180) : 999;
-    s._ahead = CMP.on && diff <= 22.5;
+    s._ahead = up && !hid && Math.abs(Math.atan2(x, -y)/DEG) <= 22.5 && r > 4;
     if(s._el){
-      s._el.style.transform = 'translate(' + s._px + 'px,' + s._py + 'px)';
-      s._el.classList.toggle('edge', edge); s._el.classList.toggle('ahead', s._ahead);
-      s._el.classList.toggle('lft', s._px > RAD.cx + RAD.rpx*.2);
+      s._el.style.transform = 'translate(' + s._px.toFixed(1) + 'px,' + s._py.toFixed(1) + 'px)';
+      s._el.classList.toggle('edge', edge); s._el.classList.toggle('ahead', s._ahead); s._el.classList.toggle('off', hid);
     }
   });
-  const p = $('pin');
-  if(VIEW === 'create' && CR.pos){
-    const en = localEN(RAD.origin.lat, RAD.origin.lng, CR.pos.lat, CR.pos.lng);
-    let { x, y } = project(en.e, en.n); const r = Math.hypot(x, y); if(r > RAD.rpx){ x = x/r*RAD.rpx; y = y/r*RAD.rpx; }
-    p.style.left = (RAD.cx + x) + 'px'; p.style.top = (RAD.cy + y) + 'px'; p.classList.remove('hide');
-  } else p.classList.add('hide');
+  const m = $('me');
+  if(RAD.me){ const p = proj(RAD.me.lat, RAD.me.lng); const ok = p.v && p.r <= RAD.rpx*1.01;
+    m.classList.toggle('hide', !ok); m.style.left = p.x + 'px'; m.style.top = p.y + 'px'; }
+  else m.classList.add('hide');
+  const pn = $('pin');
+  if(VIEW === 'create' && CR.pos){ const p = proj(CR.pos.lat, CR.pos.lng); const ok = p.v && p.r <= RAD.rpx*1.01;
+    pn.classList.toggle('hide', !ok); pn.style.left = p.x + 'px'; pn.style.top = p.y + 'px'; }
+  else pn.classList.add('hide');
+  placeTip();
+  $('z-me').classList.toggle('away', awayFromHome());
 }
+function awayFromHome(){
+  const h = RAD.me || RAD.view0; if(!h) return false;
+  return hav(RAD.view, h) > RAD.range*0.35 + 50 || RAD.range > RAD.base*3.2 || RAD.range < RAD.base/3.2;
+}
+
+/* ══ LA TERRE — Natural Earth, domaine public, servie par nous ═══════
+   `earth.json` : les terres (1:110 M) et 1 251 villes. `earth50.json` :
+   les côtes au 1:50 M, chargées seulement quand on descend sous
+   2 500 km. Zéro appel à un service de cartes. */
+const EARTH = { land:null, land50:null, cities:[], p50:null };
+function prepRings(rings){
+  return rings.map(a => {
+    let x = 0, y = 0, z = 0;
+    for(let i = 0; i < a.length; i += 2){ const la = a[i+1]*DEG, lo = a[i]*DEG, c = Math.cos(la); x += c*Math.cos(lo); y += c*Math.sin(lo); z += Math.sin(la); }
+    const m = Math.hypot(x, y, z) || 1; x /= m; y /= m; z /= m;
+    let rad = 0;
+    for(let i = 0; i < a.length; i += 2){ const la = a[i+1]*DEG, lo = a[i]*DEG, c = Math.cos(la);
+      rad = Math.max(rad, Math.acos(Math.max(-1, Math.min(1, c*Math.cos(lo)*x + c*Math.sin(lo)*y + Math.sin(la)*z)))); }
+    return { p:Float32Array.from(a), x, y, z, rad };
+  });
+}
+async function loadEarth(){
+  try{ const r = await fetch('/earth.json'); if(!r.ok) throw new Error(r.status); const j = await r.json();
+    EARTH.land = prepRings(j.land || []); EARTH.cities = j.cities || []; }
+  catch(e){ console.error('[earth]', e && e.message || e); }
+}
+function loadEarth50(){
+  if(EARTH.p50) return;
+  EARTH.p50 = fetch('/earth50.json').then(r => { if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(j => { EARTH.land50 = prepRings(j.land || []); }).catch(e => console.error('[earth50]', e && e.message || e));
+}
+function drawLand(X, rings){
+  const la = RAD.view.lat*DEG, lo = RAD.view.lng*DEG, c = Math.cos(la), vx = c*Math.cos(lo), vy = c*Math.sin(lo), vz = Math.sin(la);
+  const va = Math.min(Math.PI/2, RAD.range/EARTH_R*1.6) + .02;
+  X.beginPath();
+  for(const g of rings){
+    const ang = Math.acos(Math.max(-1, Math.min(1, g.x*vx + g.y*vy + g.z*vz)));
+    if(ang - g.rad > va) continue;
+    const a = g.p;
+    for(let i = 0; i < a.length; i += 2){ const q = proj(a[i+1], a[i], true); i ? X.lineTo(q.x, q.y) : X.moveTo(q.x, q.y); }
+    X.closePath();
+  }
+  X.fillStyle = '#1a1a20'; X.fill();
+  X.strokeStyle = 'rgba(255,255,255,.17)'; X.lineWidth = .7; X.stroke();
+}
+function drawCities(X){
+  const R = RAD.range, max = R > 4e6 ? 1 : R > 1.5e6 ? 2 : R > 6e5 ? 4 : R > 2e5 ? 6 : 10;
+  const boxes = []; let n = 0;
+  X.font = '9px "Space Mono",monospace'; X.textAlign = 'left'; X.textBaseline = 'middle';
+  for(const c of EARTH.cities){
+    if(c[3] > max) continue;
+    const p = proj(c[1], c[2]); if(!p.v || p.r > RAD.rpx*.96) continue;
+    const t = c[0].toUpperCase(), w = X.measureText(t).width + 8, b = [p.x - 3, p.y - 7, p.x + w, p.y + 7];
+    if(boxes.some(o => b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1])) continue;
+    boxes.push(b);
+    X.fillStyle = 'rgba(255,255,255,.45)'; X.fillRect(p.x - 1, p.y - 1, 2, 2);
+    X.fillStyle = 'rgba(255,255,255,.34)'; X.fillText(t, p.x + 5, p.y);
+    if(++n > 70) break;
+  }
+  X.textBaseline = 'alphabetic';
+}
+function drawGraticule(X){
+  X.strokeStyle = 'rgba(255,255,255,.06)'; X.lineWidth = .7; X.beginPath();
+  const line = pts => { let on = false; for(const [la, lo] of pts){ const q = proj(la, lo); if(q.v){ on ? X.lineTo(q.x, q.y) : X.moveTo(q.x, q.y); on = true; } else on = false; } };
+  for(let lo = -180; lo < 180; lo += 30){ const p = []; for(let la = -90; la <= 90; la += 3) p.push([la, lo]); line(p); }
+  for(let la = -60; la <= 60; la += 30){ const p = []; for(let lo = -180; lo <= 180; lo += 3) p.push([la, lo]); line(p); }
+  X.stroke();
+}
+
+/* ══ LE FOND DE RUE — pour poser le point de rendez-vous · 26/09 ═════
+   « C'est viser à l'aveugle. » En création, près du sol (≤ 40 km), un
+   fond OpenStreetMap passe sous le radar — inversé et désaturé une fois
+   par tuile : sombre, minimaliste, les rues et l'eau comme repères. Hors
+   création, jamais : le radar reste un instrument, pas une carte.
+   ⚠️ Attribution affichée (#osm) — c'est la licence (ODbL). */
+const TILES = new Map(); TILES.ok = 0;
+const mapMode = () => VIEW === 'create' && !!CR.h && RAD.range <= 40e3;
+function tile(z, x, y, fetchOK){
+  const key = z + '/' + x + '/' + y; let t = TILES.get(key); if(t || !fetchOK) return t;
+  t = { ok:false, c:null }; TILES.set(key, t);
+  if(TILES.size > 220){ const k0 = TILES.keys().next().value; const o = TILES.get(k0); if(o && o.ok) TILES.ok--; TILES.delete(k0); }
+  const im = new Image(); im.crossOrigin = 'anonymous'; im.decoding = 'async';
+  im.onload = () => { try{
+      const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d'); g.drawImage(im, 0, 0);
+      g.globalCompositeOperation = 'difference'; g.fillStyle = '#fff'; g.fillRect(0, 0, 256, 256);
+      g.globalCompositeOperation = 'saturation'; g.fillStyle = '#808080'; g.fillRect(0, 0, 256, 256);
+      g.globalCompositeOperation = 'multiply'; g.fillStyle = '#a0a0a6'; g.fillRect(0, 0, 256, 256);
+      t.c = c; t.ok = true; TILES.ok++;
+    }catch(_){ t.err = true; } };
+  im.onerror = () => { t.err = true; };
+  im.src = 'https://tile.openstreetmap.org/' + z + '/' + x + '/' + y + '.png';
+  return t;
+}
+const t2lng = (x, n) => x/n*360 - 180;
+const t2lat = (y, n) => Math.atan(Math.sinh(Math.PI*(1 - 2*y/n)))/DEG;
+function drawTiles(X){
+  const lat = RAD.view.lat, cl = Math.cos(lat*DEG), mpp = RAD.range/RAD.rpx;
+  const z = Math.max(3, Math.min(18, Math.round(Math.log2(156543.034*cl/mpp)))), n = 2**z;
+  const fx = (RAD.view.lng + 180)/360*n, ly = lat*DEG, fy = (1 - Math.log(Math.tan(ly) + 1/Math.cos(ly))/Math.PI)/2*n;
+  const tpx = 256*(156543.034*cl/n)/mpp, m = Math.ceil(RAD.rpx*1.15/tpx) + 1;
+  const fetchOK = !RAD.fly, dpr = RAD.dpr;
+  X.globalAlpha = .9;
+  for(let ty = Math.floor(fy) - m; ty <= Math.floor(fy) + m; ty++){
+    if(ty < 0 || ty >= n) continue;
+    for(let tx = Math.floor(fx) - m; tx <= Math.floor(fx) + m; tx++){
+      const t = tile(z, ((tx % n) + n) % n, ty, fetchOK); if(!t || !t.ok) continue;
+      const nw = proj(t2lat(ty, n), t2lng(tx, n)), ne = proj(t2lat(ty, n), t2lng(tx + 1, n)), sw = proj(t2lat(ty + 1, n), t2lng(tx, n));
+      X.setTransform(dpr*(ne.x - nw.x)/256, dpr*(ne.y - nw.y)/256, dpr*(sw.x - nw.x)/256, dpr*(sw.y - nw.y)/256, dpr*nw.x, dpr*nw.y);
+      X.drawImage(t.c, 0, 0, 256.8, 256.8);
+    }
+  }
+  X.setTransform(dpr, 0, 0, dpr, 0, 0); X.globalAlpha = 1;
+}
+
+/* ══ LE VOL — d'un point du globe à un autre ═════════════════════════
+   On monte, on traverse, on redescend : l'échelle suit un arc, pour que
+   le départ et l'arrivée restent à l'écran en même temps. */
+const ease = t => t < .5 ? 4*t*t*t : 1 - (-2*t + 2)**3/2;
+function flyTo(lat, lng, r, ms){
+  const a = { lat:RAD.view.lat, lng:RAD.view.lng }, r0 = RAD.range, r1 = Math.max(MIN_R, Math.min(MAX_R, r || r0));
+  const d = hav(a, { lat, lng });
+  RAD.fly = { t0:performance.now(), ms: ms || Math.min(1800, 700 + d/8000), a, dlat:lat - a.lat, dl:norm180(lng - a.lng),
+    lr0:Math.log(r0), lr1:Math.log(r1), L:Math.max(0, Math.log(d*1.25/Math.max(r0, r1))) };
+  RAD.spin = 0;
+}
+function zoomTo(r, instant){
+  RAD.trange = Math.max(MIN_R, Math.min(MAX_R, r)); RAD.fly = null;
+  if(instant) RAD.range = RAD.trange;
+}
+function settled(){
+  clearTimeout(RAD.settleT);
+  RAD.settleT = setTimeout(() => {
+    if(RAD.mode === 'local'){
+      if(!RAD.localAt || hav(RAD.view, RAD.localAt) > Math.max(15e3, RAD.range*.6)) loadSpots();
+    } else loadGlobe();
+    if(mapMode()) RAD.sig = '';
+  }, 260);
+}
+
 function draw(){
   const cv = $('canvas'); if(!RAD.on){ RAD.raf = 0; return; }
-  const X = cv.getContext('2d'), { W, H, cx, cy, rpx, dpr } = RAD;
-  X.setTransform(dpr, 0, 0, dpr, 0, 0); X.clearRect(0, 0, W, H); RAD.t += 1/60;
-  if(CMP.on){
-    const d = ((CMP.target - CMP.h + 540) % 360) - 180;
-    if(Math.abs(d) > .2){ CMP.h = (CMP.h + d*.14 + 360) % 360; layout(); if(Math.round(RAD.t*60) % 6 === 0){ paintCmp(); paintStatus(); } }
+  const X = cv.getContext('2d'); RAD.t += 1/60;
+  /* La géométrie glisse vers sa place, l'échelle aussi (en logarithme). */
+  RAD.cx += (RAD.tcx - RAD.cx)*.2; RAD.cy += (RAD.tcy - RAD.cy)*.2; RAD.rpx += (RAD.trpx - RAD.rpx)*.2;
+  if(Math.abs(RAD.tcx - RAD.cx) < .3) RAD.cx = RAD.tcx; if(Math.abs(RAD.tcy - RAD.cy) < .3) RAD.cy = RAD.tcy; if(Math.abs(RAD.trpx - RAD.rpx) < .3) RAD.rpx = RAD.trpx;
+  if(RAD.fly){
+    const f = RAD.fly, t = Math.min(1, (performance.now() - f.t0)/f.ms), e = ease(t);
+    RAD.view.lat = f.a.lat + f.dlat*e; RAD.view.lng = norm180(f.a.lng + f.dl*e);
+    RAD.range = RAD.trange = Math.min(MAX_R, Math.exp(f.lr0 + (f.lr1 - f.lr0)*e + f.L*4*e*(1 - e)));
+    if(t >= 1){ RAD.fly = null; settled(); }
+  } else if(RAD.range !== RAD.trange){
+    const d = Math.log(RAD.trange) - Math.log(RAD.range);
+    if(Math.abs(d) < .003){ RAD.range = RAD.trange; settled(); } else RAD.range = Math.exp(Math.log(RAD.range) + d*.22);
   }
-  const h = rot();
-  /* Le disque : un gris posé sur le fond — l'instrument se détache par sa
-     VALEUR, pas par un trait. */
+  if(Math.abs(RAD.spin) > .03){ turn(RAD.spin); RAD.spin *= .95; if(Math.abs(RAD.spin) <= .03){ RAD.spin = 0; if(RAD.range > SPIN_AT) settled(); } }
+  if(RAD.headTo != null){ const d = norm180(RAD.headTo - RAD.head); if(Math.abs(d) < .15){ RAD.head = RAD.headTo; RAD.headTo = null; paintCmp(); } else RAD.head = (RAD.head + d*.14 + 360) % 360; }
+  if(CMP.on){ const d = norm180(CMP.target - CMP.h); if(Math.abs(d) > .2) CMP.h = (CMP.h + d*.14 + 360) % 360; RAD.head = CMP.h; }
+  const mode = RAD.range > LOCAL_MAX ? 'globe' : 'local';
+  if(mode !== RAD.mode){ RAD.mode = mode; renderMarkers(); settled(); paintStatus(); if(PANEL === 'focus' && mode === 'globe'){ PANEL = null; FOCUS = null; syncPanels(); } }
+  if(RAD.range < 2.5e6 && RAD.range > 12e3) loadEarth50();
+  document.body.classList.toggle('map-on', mapMode());
+  const sig = [RAD.cx|0, RAD.cy|0, RAD.rpx|0, RAD.range.toPrecision(5), RAD.view.lat.toFixed(5), RAD.view.lng.toFixed(5), RAD.head.toFixed(2),
+    CR.pos ? CR.pos.lat + ',' + CR.pos.lng : '', VIEW, items().length].join('|');
+  if(sig !== RAD.sig){ RAD.sig = sig; layout(); if(Math.round(RAD.t*60) % 8 === 0){ paintCmp(); paintStatus(); } } else pjFrame();
+
+  const { W, H, cx, cy, rpx, dpr } = RAD, glob = mode === 'globe', R = PJ.R;
+  X.setTransform(dpr, 0, 0, dpr, 0, 0); X.fillStyle = '#000'; X.fillRect(0, 0, W, H);
+  /* Le disque : un gris qui délimite l'instrument sur le noir. */
   const g = X.createRadialGradient(cx, cy, 0, cx, cy, rpx*1.06);
-  g.addColorStop(0, '#17171c'); g.addColorStop(1, '#101014');
+  g.addColorStop(0, glob ? '#0b0b0e' : '#16161b'); g.addColorStop(1, glob ? '#08080a' : '#0f0f13');
   X.fillStyle = g; X.beginPath(); X.arc(cx, cy, rpx*1.06, 0, Math.PI*2); X.fill();
-  X.strokeStyle = 'rgba(255,255,255,.07)'; X.lineWidth = 1; X.beginPath();
-  X.moveTo(cx - rpx*1.06, cy + .5); X.lineTo(cx + rpx*1.06, cy + .5); X.moveTo(cx + .5, cy - rpx*1.06); X.lineTo(cx + .5, cy + rpx*1.06); X.stroke();
-  X.strokeStyle = 'rgba(255,255,255,.14)';
-  for(let k = 1; k <= 3; k++){ X.beginPath(); X.arc(cx, cy, rpx*k/3, 0, Math.PI*2); X.stroke(); }
-  /* Les graduations tournent avec la boussole : le NORD reste le nord. */
-  X.strokeStyle = 'rgba(255,255,255,.24)'; X.beginPath();
+  X.save(); X.beginPath(); X.arc(cx, cy, rpx, 0, Math.PI*2); X.clip();
+  if(R < rpx*1.4){
+    const pg = X.createRadialGradient(cx - R*.3, cy - R*.35, R*.1, cx, cy, R);
+    pg.addColorStop(0, '#15151b'); pg.addColorStop(1, '#0c0c10');
+    X.fillStyle = pg; X.beginPath(); X.arc(cx, cy, R, 0, Math.PI*2); X.fill();
+  }
+  if(mapMode()) drawTiles(X);
+  else {
+    if(RAD.range > 900e3) drawGraticule(X);
+    const rings = RAD.range < 2.5e6 && EARTH.land50 ? EARTH.land50 : EARTH.land;
+    if(rings && RAD.range > 12e3) drawLand(X, rings);
+    if(EARTH.cities.length && RAD.range > 2.5e3) drawCities(X);
+  }
+  X.restore();
+  if(R < rpx*1.4){ X.strokeStyle = 'rgba(255,255,255,.2)'; X.lineWidth = 1; X.beginPath(); X.arc(cx, cy, Math.min(R, rpx), 0, Math.PI*2); X.stroke(); }
+  const h = RAD.head*DEG;
+  if(!glob){
+    X.strokeStyle = 'rgba(255,255,255,.07)'; X.lineWidth = 1; X.beginPath();
+    X.moveTo(cx - rpx, cy + .5); X.lineTo(cx + rpx, cy + .5); X.moveTo(cx + .5, cy - rpx); X.lineTo(cx + .5, cy + rpx); X.stroke();
+    X.strokeStyle = 'rgba(255,255,255,.14)';
+    for(let k = 1; k <= 3; k++){ X.beginPath(); X.arc(cx, cy, rpx*k/3, 0, Math.PI*2); X.stroke(); }
+    X.font = '10px "Space Mono",monospace'; X.textAlign = 'left'; X.fillStyle = 'rgba(255,255,255,.32)';
+    for(let k = 1; k <= 3; k++) X.fillText(fmtDist(RAD.range*k/3), cx + 5, cy - rpx*k/3 + 13);
+  }
+  /* LA COURONNE : la bande qu'on saisit. Elle s'éclaire au survol et en main. */
+  if(RAD.grab || RAD.ringHover){ X.strokeStyle = RAD.grab ? 'rgba(255,255,255,.085)' : 'rgba(255,255,255,.05)'; X.lineWidth = rpx*.2;
+    X.beginPath(); X.arc(cx, cy, rpx*1.1, 0, Math.PI*2); X.stroke(); }
+  X.strokeStyle = 'rgba(255,255,255,.26)'; X.lineWidth = 1; X.beginPath();
   for(let a = 0; a < 72; a++){ const r0 = a % 6 ? rpx*1.02 : rpx*.985, t = a*5*DEG - h - Math.PI/2;
     X.moveTo(cx + Math.cos(t)*r0, cy + Math.sin(t)*r0); X.lineTo(cx + Math.cos(t)*rpx*1.05, cy + Math.sin(t)*rpx*1.05); }
   X.stroke();
   X.font = '10px "Space Mono",monospace'; X.textAlign = 'center'; X.textBaseline = 'middle';
   [['N', 0], ['E', 90], ['S', 180], ['W', 270]].forEach(([L, b]) => {
     const t = b*DEG - h - Math.PI/2;
-    X.fillStyle = L === 'N' ? 'rgba(255,255,255,.75)' : 'rgba(255,255,255,.32)';
-    X.fillText(L, cx + Math.cos(t)*rpx*1.12, cy + Math.sin(t)*rpx*1.12);
+    X.fillStyle = L === 'N' ? '#fff' : 'rgba(255,255,255,.34)';
+    X.fillText(L, cx + Math.cos(t)*rpx*1.13, cy + Math.sin(t)*rpx*1.13);
   });
   X.textBaseline = 'alphabetic';
-  if(CMP.on){
-    /* Le cône : ce qui est DEVANT moi. Et la ligne de foi, en haut. */
+  if(aiming()){
     X.beginPath(); X.moveTo(cx, cy); X.arc(cx, cy, rpx, -Math.PI/2 - 22.5*DEG, -Math.PI/2 + 22.5*DEG); X.closePath();
     X.fillStyle = 'rgba(255,255,255,.045)'; X.fill();
     X.fillStyle = '#fff'; X.beginPath(); X.moveTo(cx, cy - rpx*.955); X.lineTo(cx - 5, cy - rpx*.955 - 9); X.lineTo(cx + 5, cy - rpx*.955 - 9); X.closePath(); X.fill();
   }
-  /* Les portées s'écrivent SOUS chaque anneau, à l'intérieur : au-dessus,
-     celle du bord mordait sur les graduations. */
-  X.textAlign = 'left'; X.fillStyle = 'rgba(255,255,255,.3)';
-  for(let k = 1; k <= 3; k++) X.fillText(fmtDist(range()*k/3), cx + 5, cy - rpx*k/3 + 13);
-  const head = RAD.t*Math.PI/3;
+  /* LE BALAYAGE, RALENTI · 26/09 : un tour en 14 s (il en faisait un en 6). */
+  const sw = RAD.t*Math.PI/7;
   for(let i = 0; i < 20; i++){
-    X.beginPath(); X.moveTo(cx, cy); X.arc(cx, cy, rpx, head - i*0.035 - 0.035, head - i*0.035); X.closePath();
+    X.beginPath(); X.moveTo(cx, cy); X.arc(cx, cy, rpx, sw - i*0.035 - 0.035, sw - i*0.035); X.closePath();
     X.fillStyle = '#ffffff'; X.globalAlpha = 0.035*(1 - i/20); X.fill();
   }
   X.globalAlpha = 1;
   const f = RAD.hover || (FOCUS && RAD.spots.find(s => s.id === FOCUS));
-  if(f && f._px != null){
+  if(f && f._px != null && !glob){
+    const o = RAD.me ? proj(RAD.me.lat, RAD.me.lng) : { x:cx, y:cy };
     X.save(); X.setLineDash([3, 7]); X.lineDashOffset = -RAD.t*14; X.lineWidth = .8;
-    X.strokeStyle = icol((f.intentions||[])[0]); X.globalAlpha = .7;
-    X.beginPath(); X.moveTo(cx, cy); X.lineTo(f._px, f._py); X.stroke(); X.restore();
+    X.strokeStyle = icol((f.intentions||[f.i])[0]); X.globalAlpha = .7;
+    X.beginPath(); X.moveTo(o.x, o.y); X.lineTo(f._px, f._py); X.stroke(); X.restore();
   }
   RAD.raf = requestAnimationFrame(draw);
 }
 function radarStart(){ if(RAD.on) return; RAD.on = true; resize(); RAD.raf = requestAnimationFrame(draw); }
 document.addEventListener('visibilitychange', () => { if(document.hidden){ RAD.on = false; } else radarStart(); });
-/* L'ÉCHELLE SUIT LA MAJORITÉ, PAS LE PLUS LOIN (24/09) : la portée couvre
-   85 % des Spots ; les autres se posent SUR LE BORD, à leur cap, plus pâles. */
+/* L'ÉCHELLE SUIT LA MAJORITÉ (24/09) : la portée couvre 85 % des Spots. */
 const autoRange = spots => {
   if(!spots.length) return 1500;
-  const d = spots.map(s => s.dist_m || 0).sort((a, b) => a - b);
+  const d = spots.map(s => s._d || 0).sort((a, b) => a - b);
   return Math.min(60000, Math.max(600, d[Math.min(d.length - 1, Math.floor(d.length*0.85))]*1.15));
 };
-/* LE LONG APPUI · 25/09 : au téléphone il n'y a pas de survol — on
-   MAINTIENT le doigt sur un point pour lire sa distance, sans l'ouvrir. */
+
+/* ══ LE RADAR SE TOUCHE ═════════════════════════════════════════════
+   Un doigt qui balaie = la manette. Deux doigts = le zoom. L'anneau =
+   la couronne. Un toucher bref = selon la vue : poser le point de
+   rendez-vous (création), plonger vers un endroit (globe), refermer le
+   Spot ouvert (repos). ⚠️ `touch-action:none` : sans lui le navigateur
+   avale le geste. */
+(function instrument(){
+  /* ⚠️ ON ÉCOUTE LE MONDE, PAS SEULEMENT LE CANVAS : un doigt posé sur un
+     point lumineux fait partie du pincement (mesuré : sinon le zoom à deux
+     doigts échouait dès qu'un doigt tombait sur un Spot). */
+  const cv = $('canvas'), wd = $('world'), pts = new Map(); let G = null, lastRingTap = 0;
+  const polar = (x, y) => ({ r:Math.hypot(x - RAD.cx, y - RAD.cy), a:Math.atan2(y - RAD.cy, x - RAD.cx)/DEG });
+  const onRing = p => p.r > RAD.rpx*.9 && p.r < RAD.rpx*1.26;
+  const gap = () => { const a = [...pts.values()]; return Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); };
+  wd.addEventListener('pointerdown', e => {
+    const onDot = !!(e.target.closest && e.target.closest('.marker'));
+    /* Le premier doigt d'un geste repart de zéro : un relâcher perdu (la
+       vue a changé sous le doigt) ne doit pas fausser le pincement suivant. */
+    if(e.isPrimary){ pts.clear(); if(G && G.kind === 'ring'){ RAD.grab = false; cv.classList.remove('held'); } G = null; }
+    pts.set(e.pointerId, { x:e.clientX, y:e.clientY });
+    /* Pas de capture sur un point : son `click` doit rester le sien. */
+    if(!onDot){ try{ wd.setPointerCapture(e.pointerId); }catch(_){} }
+    if(pts.size === 2){ if(G && G.kind === 'ring') RAD.grab = false; G = { kind:'pinch', d0:gap(), r0:RAD.trange }; return; }
+    if(pts.size > 2) return;
+    const p = polar(e.clientX, e.clientY);
+    if(!onDot && onRing(p)){ G = { kind:'ring', a:p.a, v:0, t:performance.now(), moved:0 }; RAD.grab = true; RAD.spin = 0; cv.classList.add('held'); return; }
+    G = { kind:'swipe', x:e.clientX, y:e.clientY, type:e.pointerType, dot:onDot };
+  });
+  wd.addEventListener('pointermove', e => {
+    if(!pts.has(e.pointerId)){
+      if(e.pointerType === 'mouse'){ const h = onRing(polar(e.clientX, e.clientY)); RAD.ringHover = h; cv.classList.toggle('ring', h); }
+      return;
+    }
+    pts.set(e.pointerId, { x:e.clientX, y:e.clientY });
+    if(!G) return;
+    if(G.kind === 'pinch' && pts.size >= 2){ const d = gap(); if(d > 10 && G.d0 > 10){ zoomTo(G.r0*G.d0/d, true); GEST.pinch++; } return; }
+    if(G.kind === 'ring'){
+      const p = polar(e.clientX, e.clientY), da = norm180(p.a - G.a), now = performance.now(), dt = Math.max(8, now - G.t);
+      G.a = p.a; G.t = now; G.moved += Math.abs(da); turn(da); G.v = G.v*.4 + (da*16.7/dt)*.6;
+    }
+  });
+  const up = e => {
+    if(!pts.has(e.pointerId)) return;
+    pts.delete(e.pointerId);
+    if(!G) return;
+    if(G.kind === 'pinch'){ if(!pts.size){ G = null; settled(); } return; }
+    if(G.kind === 'ring'){
+      RAD.grab = false; cv.classList.remove('held');
+      if(G.moved < 2){ const now = performance.now(); if(now - lastRingTap < 340){ resetNorth(); if(CMP.on) compassOff(); lastRingTap = 0; } else lastRingTap = now; }
+      else { RAD.spin = Math.max(-14, Math.min(14, G.v)); GEST.ring++; if(!RAD.spin && RAD.range > SPIN_AT) settled(); }
+      G = null; return;
+    }
+    if(G.kind === 'swipe' && e.type === 'pointerup'){
+      const G0 = G, dx = e.clientX - G.x, dy = e.clientY - G.y, need = G.type === 'mouse' ? 60 : 44;
+      G = null;
+      if(Math.max(Math.abs(dx), Math.abs(dy)) >= need){
+        const d = Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 'd' : 'g') : (dy < 0 ? 'b' : 'h');
+        if(versVoisin(d)) GEST.swipe++;
+        return;
+      }
+      if(Math.max(Math.abs(dx), Math.abs(dy)) < 8 && !G0.dot) canvasTap(e.clientX, e.clientY);
+    }
+    G = null;
+  };
+  wd.addEventListener('pointerup', up);
+  wd.addEventListener('pointercancel', e => { pts.delete(e.pointerId); if(G && G.kind === 'ring'){ RAD.grab = false; cv.classList.remove('held'); } G = null; });
+  cv.addEventListener('pointerleave', e => { if(e.pointerType === 'mouse' && !pts.size){ RAD.ringHover = false; cv.classList.remove('ring'); } });
+})();
+function canvasTap(x, y){
+  pjFrame();
+  if(Math.hypot(x - RAD.cx, y - RAD.cy) > RAD.rpx*1.02) return;
+  const p = unproj(x, y);
+  if(RAD.mode === 'globe'){ if(p) flyTo(p.lat, p.lng, RAD.range/4 < LOCAL_MAX ? 30e3 : RAD.range/4); return; }
+  if(VIEW === 'create' && CR.h && p){
+    CR.pos = { lat:+p.lat.toFixed(6), lng:+p.lng.toFixed(6) }; CR.posBy = 'radar';
+    if(!CR.pk) CR.pk = 'loc';
+    RAD.sig = ''; renderCreateKeep(); return;
+  }
+  if(PANEL === 'focus'){ PANEL = null; FOCUS = null; syncPanels(); paintMarkers(); }
+}
+
+/* ══ LES POINTS ═════════════════════════════════════════════════════ */
 const LP = { t:0, fired:false, hide:0 };
+function tipHTML(s){
+  if(s.n != null){
+    const near = nearestCity(s);
+    return '<b>' + s.n + ' ' + (s.n > 1 ? 'Spots' : 'Spot') + '</b>' + (s.live ? '<em>' + s.live + ' live</em> · ' : '') + (near ? 'near ' + esc(near) + ' · ' : '') + 'touch to fly';
+  }
+  return '<b>' + esc(s.habit) + '</b>' + (s.live ? '<em>live</em>' : esc(fmtWhen(s.starts_at))) + ' · <em>' + esc(fmtDist(s._d) + (s._brg != null ? ' ' + cardOf(s._brg) : '')) + '</em>'
+    + (s.venue === 'private' ? ' · private' : '');
+}
+function nearestCity(c){
+  let best = null, bd = 6e5;
+  for(const k of EARTH.cities){ if(k[3] > 6) continue; const d = hav(c, { lat:k[1], lng:k[2] }); if(d < bd){ bd = d; best = k[0]; } }
+  return best;
+}
+function tipShow(s){ RAD.tip = s; const t = $('tip'); t.innerHTML = tipHTML(s); t.classList.add('on'); placeTip(); }
+function tipHide(s){ if(!s || RAD.tip === s){ RAD.tip = null; $('tip').classList.remove('on'); } }
+function placeTip(){
+  const s = RAD.tip, t = $('tip'); if(!s) return;
+  if(s._px == null || (s._el && s._el.classList.contains('off'))){ t.classList.remove('on'); return; }
+  const w = t.offsetWidth, h = t.offsetHeight;
+  let x = s._px + 18; if(x + w > RAD.W - 8) x = s._px - 18 - w;
+  const y = Math.max(8, Math.min(RAD.H - h - 8, s._py - h/2));
+  t.style.transform = 'translate(' + Math.max(8, x).toFixed(1) + 'px,' + y.toFixed(1) + 'px)';
+}
 function peek(s, on){
-  RAD.spots.forEach(x => x._el?.classList.remove('peek'));
-  if(on){ s._el?.classList.add('peek'); RAD.hover = s; } else if(RAD.hover === s) RAD.hover = null;
+  items().forEach(x => x._el?.classList.remove('peek'));
+  if(on){ s._el?.classList.add('peek'); RAD.hover = s.n == null ? s : null; tipShow(s); }
+  else { if(RAD.hover === s) RAD.hover = null; tipHide(s); }
 }
 function renderMarkers(){
-  const box = $('markers'); box.querySelectorAll('.marker').forEach(el => el.remove());
-  RAD.spots.forEach((s, i) => {
+  const box = $('markers'); box.querySelectorAll('.marker').forEach(el => el.remove()); tipHide();
+  const glob = RAD.mode === 'globe';
+  items().forEach((s, i) => {
     const el = document.createElement('button');
-    el.type = 'button'; el.className = 'marker' + (s.live ? ' live' : '') + (FOCUS === s.id ? ' focus' : '');
-    const where = fmtDist(s.dist_m) + (s._brg != null ? ' ' + cardOf(s._brg) : '');
-    el.setAttribute('aria-label', s.habit + ' — ' + (s.live ? 'live' : fmtWhen(s.starts_at)) + ' — ' + where);
-    el.style.setProperty('--c', icol((s.intentions||[])[0]));
-    el.innerHTML = '<i></i><span class="lbl"><b>' + esc(s.habit) + '</b>' + (s.live ? 'live' : esc(fmtWhen(s.starts_at))) + ' · <em>' + esc(where) + '</em></span>';
+    el.type = 'button';
+    if(glob){
+      el.className = 'marker cell' + (s.live ? ' live' : '');
+      el.style.setProperty('--c', icol(s.i)); el.style.setProperty('--s', Math.round(10 + 5*Math.log2(Math.max(1, s.n))) + 'px');
+      el.setAttribute('aria-label', s.n + ' Spots here');
+      el.innerHTML = '<i></i>' + (s.n > 1 ? '<b>' + s.n + '</b>' : '');
+    } else {
+      el.className = 'marker' + (s.live ? ' live' : '') + (FOCUS === s.id ? ' focus' : '');
+      el.setAttribute('aria-label', s.habit + ' — ' + (s.live ? 'live' : fmtWhen(s.starts_at)) + ' — ' + fmtDist(s._d) + (s._brg != null ? ' ' + cardOf(s._brg) : ''));
+      el.style.setProperty('--c', icol((s.intentions||[])[0]));
+      el.innerHTML = '<i></i>';
+    }
     el.querySelector('i').style.animationDelay = (i*30) + 'ms';
     el.addEventListener('pointerdown', ev => {
       if(ev.pointerType === 'mouse') return;
       clearTimeout(LP.t); clearTimeout(LP.hide); LP.fired = false;
-      LP.t = setTimeout(() => { LP.fired = true; peek(s, true); }, 380);
+      LP.t = setTimeout(() => { LP.fired = true; peek(s, true); try{ navigator.vibrate && navigator.vibrate(6); }catch(_){} }, 380);
     });
     const up = () => { clearTimeout(LP.t); if(LP.fired){ LP.hide = setTimeout(() => peek(s, false), 1600); } };
     el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
     el.addEventListener('contextmenu', ev => ev.preventDefault());
     el.onclick = ev => { ev.stopPropagation(); if(LP.fired){ LP.fired = false; return; } markerTap(s); };
-    el.onmouseenter = () => { RAD.hover = s; }; el.onmouseleave = () => { if(RAD.hover === s) RAD.hover = null; };
+    el.onmouseenter = () => peek(s, true); el.onmouseleave = () => peek(s, false);
     box.appendChild(el); s._el = el;
   });
-  layout();
+  RAD.sig = ''; layout();
 }
 function paintMarkers(){ RAD.spots.forEach(s => s._el?.classList.toggle('focus', FOCUS === s.id)); }
-function zoomBy(k){ RAD.zoom = Math.max(.3, Math.min(8, RAD.zoom*k)); layout(); paintStatus(); }
-$('canvas').addEventListener('wheel', e => { e.preventDefault(); zoomBy(e.deltaY < 0 ? 1.12 : 1/1.12); }, { passive:false });
-(function pinch(){
-  const cv = $('canvas'), pts = new Map(); let base = 0, z0 = 1;
-  const dist = () => { const a = [...pts.values()]; return a.length < 2 ? 0 : Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); };
-  cv.addEventListener('pointerdown', e => { pts.set(e.pointerId, {x:e.clientX, y:e.clientY}); if(pts.size >= 2){ base = dist(); z0 = RAD.zoom; } });
-  cv.addEventListener('pointermove', e => { if(!pts.has(e.pointerId)) return; pts.set(e.pointerId, {x:e.clientX, y:e.clientY});
-    if(pts.size >= 2 && base){ RAD.zoom = Math.max(.3, Math.min(8, z0*dist()/base)); layout(); } });
-  ['pointerup','pointercancel','pointerleave'].forEach(t => cv.addEventListener(t, e => { pts.delete(e.pointerId); if(pts.size < 2) base = 0; }));
-})();
-/* EN CRÉATION, LE RADAR EST UN OUTIL : on touche l'instrument pour poser
-   le point de rendez-vous. Dans le disque seulement. */
-$('canvas').addEventListener('click', e => {
-  if(VIEW !== 'create' || !CR.h) return;
-  if(Math.hypot(e.clientX - RAD.cx, e.clientY - RAD.cy) > RAD.rpx*1.02) return;
-  const p = unproject(e.clientX, e.clientY);
-  CR.pos = { lat:+p.lat.toFixed(6), lng:+p.lng.toFixed(6) }; CR.posBy = 'radar';
-  if(!CR.pk) CR.pk = 'loc';
-  layout(); renderCreateKeep();
-});
-addEventListener('resize', () => resize());
+$('z-in').onclick = () => zoomTo(RAD.trange/2.4);
+$('z-out').onclick = () => zoomTo(RAD.trange*2.4);
+$('z-me').onclick = () => { const h = RAD.me || RAD.view0 || LISBON; flyTo(h.lat, h.lng, RAD.base); if(!CMP.on) resetNorth(); };
+$('z-how').onclick = () => howShow();
 
 /* ══ LE CHARGEMENT — la géographie, le temps et les mots filtrent EN BASE */
 function geo(){
@@ -945,98 +1421,128 @@ function geo(){
       { enableHighAccuracy:false, timeout:7000, maximumAge:300000 });
   });
 }
-async function locate(){ const c = await geo(); geoOK = !!c; RAD.origin = c || { ...LISBON }; }
-/* Ce que chaque cran demande au radar. Create et My space gardent le
-   radar du repos : on crée et on gère en voyant ce qui se passe AUJOURD'HUI. */
+async function locate(){
+  const c = await geo(); geoOK = !!c; RAD.me = c;
+  RAD.view = { ...(c || LISBON) }; RAD.view0 = { ...RAD.view };
+}
 function params(){
   if(VIEW === 'intent') return { p_when:null, p_q:null, p_mode:null, p_intention:FI.int };
   if(VIEW === 'time') return { p_when:FT.when, p_q:FT.q || null, p_mode:FT.mode, p_intention:null };
   return { p_when:'today', p_q:null, p_mode:null, p_intention:null };
 }
+const decorate = s => { const r = ref(); return { ...s, _d:hav(r, s), _brg:bearing(r, s) }; };
 let seq = 0, lastKey = '', lastAt = 0;
 async function loadSpots(force){
-  const p = params(), key = JSON.stringify([p, RAD.origin.lat, RAD.origin.lng]);
+  const p = params(), at = { lat:+RAD.view.lat.toFixed(4), lng:+RAD.view.lng.toFixed(4) }, key = JSON.stringify([p, at]);
   if(!force && key === lastKey && Date.now() - lastAt < 60e3){ afterSpots(); return; }
   const my = ++seq;
-  const { data, error } = await sb.rpc('spots_radar', { p_lat:RAD.origin.lat, p_lng:RAD.origin.lng, p_radius:20000, p_live:false, p_limit:60, ...p });
+  const { data, error } = await sb.rpc('spots_radar', { p_lat:at.lat, p_lng:at.lng, p_radius:(RULES.local_radius_km || 60)*1000, p_live:false, p_limit:60, ...p });
   if(my !== seq) return; // une réponse tardive n'écrase jamais un état plus frais
   if(error){ console.error('[spots_radar]', error.message); $('status').textContent = 'the radar is unavailable'; return; }
-  lastKey = key; lastAt = Date.now();
-  RAD.spots = (data?.spots || []).map(s => {
-    const en = localEN(RAD.origin.lat, RAD.origin.lng, s.lat, s.lng);
-    return { ...s, _e:en.e, _n:en.n, _brg:(Math.atan2(en.e, en.n)/DEG + 360) % 360 };
-  });
-  RAD.base = autoRange(RAD.spots); RAD.zoom = 1;
+  lastKey = key; lastAt = Date.now(); RAD.localAt = at;
+  RAD.spots = (data?.spots || []).map(decorate);
   if(FOCUS && !RAD.spots.some(s => s.id === FOCUS)) FOCUS = null;
-  renderMarkers(); afterSpots();
+  if(RAD.mode === 'local') renderMarkers();
+  afterSpots();
 }
+let gseq = 0, gKey = '', gAt = 0;
+async function loadGlobe(force){
+  const p = params(), key = JSON.stringify(p);
+  if(!force && key === gKey && Date.now() - gAt < 60e3){ paintStatus(); return; }
+  const my = ++gseq;
+  const { data, error } = await sb.rpc('spots_globe', { p_when:p.p_when, p_intention:p.p_intention, p_q:p.p_q, p_mode:p.p_mode });
+  if(my !== gseq) return;
+  if(error){ console.error('[spots_globe]', error.message); return; }
+  gKey = key; gAt = Date.now();
+  RAD.cells = (data || []).map(c => ({ ...c, lat:+c.lat, lng:+c.lng }));
+  if(RAD.mode === 'globe') renderMarkers();
+  paintStatus();
+}
+function reload(){ loadSpots(); if(RAD.mode === 'globe') loadGlobe(); }
 function afterSpots(){
   paintStatus();
   if(VIEW === 'intent' || VIEW === 'time' || panelKind() === 'focus') paintResults();
 }
 
-/* ══ LA LECTURE DE L'INSTRUMENT — la troisième ligne du nom de la vue ══ */
+/* ══ LA LECTURE DE L'INSTRUMENT ═════════════════════════════════════ */
 function paintStatus(){
-  const s = $('status'), n = RAD.spots.length, live = RAD.spots.filter(x => x.live).length;
-  const ahead = CMP.on ? RAD.spots.filter(x => x._ahead).length : 0;
-  const tail = (live ? ' · <span class="live">' + live + ' live</span>' : '') + (ahead ? ' · <b>' + ahead + '</b> ahead' : '') + ' · ' + fmtDist(range());
+  const s = $('status');
+  const glob = RAD.mode === 'globe';
+  const L = glob ? RAD.cells : RAD.spots;
+  const n = glob ? L.reduce((a, c) => a + c.n, 0) : L.length, live = glob ? L.reduce((a, c) => a + (c.live || 0), 0) : L.filter(x => x.live).length;
+  const ahead = aiming() ? L.filter(x => x._ahead).reduce((a, x) => a + (x.n || 1), 0) : 0;
+  const scale = glob ? (RAD.range > 3e6 ? 'planet' : RAD.range > 7e5 ? 'continent' : 'region') : fmtDist(RAD.range);
+  const tail = (live ? ' · <span class="live">' + live + ' live</span>' : '') + (ahead ? ' · <b>' + ahead + '</b> ahead' : '') + ' · ' + scale;
+  const sp = k => k === 1 ? 'Spot' : 'Spots';
   let h = '', tap = false;
-  if(VIEW === 'radar'){
-    h = n ? '<b>' + n + '</b> ' + (n > 1 ? 'Spots' : 'Spot') + ' today' + tail + ' · list' : 'nothing today · tomorrow is on the right';
+  if(glob){
+    const w = VIEW === 'time' ? 'ahead' : VIEW === 'intent' ? (FI.int ? INTS[FI.int].n : 'ahead') : 'today';
+    h = n ? '<b>' + n + '</b> ' + sp(n) + ' ' + esc(w) + ' on Earth' + tail : 'nothing on Earth yet' + tail;
+  } else if(VIEW === 'radar'){
+    h = n ? '<b>' + n + '</b> ' + sp(n) + ' today' + tail + ' · list' : 'nothing today · tomorrow is on the right';
     tap = n > 0;
   } else if(VIEW === 'intent'){
-    h = FI.int ? '<b>' + n + '</b> ' + esc(INTS[FI.int].n) + tail : '<b>' + n + '</b> ' + (n > 1 ? 'Spots' : 'Spot') + ' · pick a colour';
+    h = FI.int ? '<b>' + n + '</b> ' + esc(INTS[FI.int].n) + tail : '<b>' + n + '</b> ' + sp(n) + ' · pick a colour';
   } else if(VIEW === 'time'){
-    h = '<b>' + n + '</b> ' + (n === 1 ? 'Spot' : 'Spots') + ' ahead' + (FT.q ? ' · “' + esc(FT.q) + '”' : '') + tail;
+    h = '<b>' + n + '</b> ' + sp(n) + ' ahead' + (FT.q ? ' · “' + esc(FT.q) + '”' : '') + tail;
   } else if(VIEW === 'create'){
-    const L = MS?.limits; h = L ? 'my upcoming Spots <b>' + L.upcoming + ' / ' + L.max_upcoming + '</b>' : (n ? '<b>' + n + '</b> Spots today around' : 'the radar shows today');
+    const Lm = MS?.limits; h = mapMode() ? 'touch the map · the meeting point' : Lm ? 'my upcoming Spots <b>' + Lm.upcoming + ' / ' + Lm.max_upcoming + '</b>' : (n ? '<b>' + n + '</b> Spots today around' : 'the radar shows today');
   } else if(VIEW === 'mine'){
     const r = (MS?.requests || []).length; h = me ? (r ? '<b>' + r + '</b> waiting for my answer' : 'nobody waiting') : 'sign in to see my Spots';
   }
   s.innerHTML = h; s.classList.toggle('tap', tap); s.tabIndex = tap ? 0 : -1;
 }
-$('status').onclick = () => { if(VIEW === 'radar' && RAD.spots.length){ PANEL = panelKind() === 'focus' ? null : 'focus'; if(!PANEL) FOCUS = null; syncPanel(); } };
+$('status').onclick = () => { if(VIEW === 'radar' && RAD.mode === 'local' && RAD.spots.length){ PANEL = panelKind() === 'focus' ? null : 'focus'; if(!PANEL) FOCUS = null; syncPanels(); } };
 
-/* ══ LE PANNEAU ═════════════════════════════════════════════════════
-   Un seul panneau, et c'est la VUE qui dit ce qu'il porte. Au repos
-   (Live & today) il n'y en a pas : le radar est la vue. Il s'ouvre sur un
-   Spot touché, ou sur la lecture « list ». La porte membre (coin haut
-   gauche) se pose par-dessus n'importe quelle vue. */
+/* ══ LES FENÊTRES ═══════════════════════════════════════════════════
+   La VUE dit laquelle est ouverte (PAN). Au repos (Live & today) il n'y
+   en a pas : le radar est la vue ; un Spot touché ouvre p-f sur place.
+   La porte membre (p-m) se pose par-dessus n'importe quelle vue. */
 function panelKind(){
   if(PANEL === 'gate') return 'gate';
   if(VIEW === 'radar') return PANEL === 'focus' ? 'focus' : null;
   return VIEW;
 }
+const P = () => { const k = panelKind(); return k ? $(PAN[k]) : null; };
+/* Une fenêtre qui sort perd ses identifiants TOUT DE SUITE (deux `#res`
+   dans le document, c'est le mauvais qui répond) et son contenu une fois
+   sortie — sauf si elle est revenue entre-temps. */
+function retire(el){
+  el.querySelectorAll('[id]').forEach(x => x.removeAttribute('id'));
+  setTimeout(() => { if(!el.classList.contains('on')) el.innerHTML = ''; }, 450);
+}
 let shown = null;
-function syncPanel(){
-  const k = panelKind();
-  document.body.classList.toggle('p-open', !!k);
-  if(k !== shown){ $('panel').scrollTop = 0; shown = k; }
+function syncPanels(){
+  const k = panelKind(), id = k ? PAN[k] : null;
+  document.querySelectorAll('.pan').forEach(el => {
+    const on = el.id === id;
+    if(el.classList.contains('on') && !on) retire(el);
+    el.classList.toggle('on', on); el.setAttribute('aria-hidden', on ? 'false' : 'true');
+  });
+  const b = document.body.classList;
+  ['p-g','p-d','p-h','p-b','p-f','p-m'].forEach(c => b.toggle(c, c === id));
+  b.toggle('p-open', !!id);
+  if(k !== shown){ if(id) $(id).scrollTop = 0; shown = k; }
   render();
-  requestAnimationFrame(resize);
 }
 function render(){
   const k = panelKind();
-  if(k === 'gate') return renderGate();
-  if(k === 'focus') return renderFocus();
-  if(k === 'intent') return renderIntent();
-  if(k === 'time') return renderTime();
-  if(k === 'create') return renderCreate();
-  if(k === 'mine') return renderMine();
-  $('panel').innerHTML = '';
+  if(k === 'gate') renderGate();
+  else if(k === 'focus') renderFocus();
+  else if(k === 'intent') renderIntent();
+  else if(k === 'time') renderTime();
+  else if(k === 'create') renderCreate();
+  else if(k === 'mine') renderMine();
+  resizeSoon();
 }
 const head = (t, c) => '<div class="p-head"><div class="p-title">' + t + '</div><button class="lnk" data-close="1" type="button">' + (c || 'Close') + '</button></div>';
-$('panel').addEventListener('click', e => {
-  if(e.target.closest('[data-close]')){ PANEL = null; FOCUS = null; syncPanel(); paintMarkers(); }
-});
 
 /* ── Toucher un point du radar ───────────────────────────────────── */
 function markerTap(s){
+  if(s.n != null){ tipHide(); flyTo(s.lat, s.lng, 12e3); return; }
   FOCUS = FOCUS === s.id && VIEW !== 'radar' ? null : s.id; paintMarkers();
-  if(VIEW === 'radar'){ PANEL = 'focus'; syncPanel(); return; }
+  if(VIEW === 'radar'){ PANEL = 'focus'; syncPanels(); return; }
   if(VIEW === 'intent' || VIEW === 'time'){ paintResults(); return; }
-  /* En création et dans My space, le panneau a autre chose à dire : le
-     point se lit (sa distance, son cap), il ne remplace pas la vue. */
   peek(s, true); clearTimeout(LP.hide); LP.hide = setTimeout(() => peek(s, false), 1800);
 }
 
@@ -1066,51 +1572,62 @@ function paintResults(){
   const r = $('res'); if(!r) return;
   let l = RAD.spots.slice();
   if(panelKind() === 'focus' && FOCUS){ const i = l.findIndex(s => s.id === FOCUS); if(i > 0) l.unshift(l.splice(i, 1)[0]); }
-  const empty = VIEW === 'intent' ? (FI.int ? 'No Spot for this intention yet.' : 'No Spot around yet.')
+  const empty = VIEW === 'intent' ? (FI.int ? 'No Spot for this intention around.' : 'No Spot around yet.')
     : VIEW === 'time' ? (FT.q ? 'Nothing matches. Try one word.' : 'Nothing ahead yet. Create the first.') : 'Nothing today.';
-  r.innerHTML = l.length ? l.map(itemHTML).join('') : '<div class="empty">' + empty + '</div>';
+  const hint = RAD.mode === 'globe' ? '<div class="cap" style="margin-bottom:8px">the planet · touch a light to fly there</div>' : '';
+  r.innerHTML = hint + (l.length ? l.map(itemHTML).join('') : '<div class="empty">' + empty + '</div>');
   if(FOCUS){ const el = r.querySelector('[data-it="' + CSS.escape(FOCUS) + '"]'); el && el.scrollIntoView({ block:'nearest', behavior:'smooth' }); }
 }
 function renderFocus(){
-  $('panel').innerHTML = head(RAD.spots.length + ' today') + '<div class="list" id="res" style="margin-top:0"></div>';
+  P().innerHTML = head(RAD.spots.length + ' today') + '<div class="list" id="res" style="margin-top:0"></div>';
   paintResults();
 }
-/* ── BY INTENTION (gauche) — les pastilles, tout de suite ────────── */
+/* ── BY INTENTION (gauche) — le rappel des sept, puis les Spots ────── */
+function intRow(k, hero){
+  const v = INTS[k];
+  return '<button class="int' + (hero ? ' hero on' : '') + '" data-fi="' + k + '" type="button" style="--c:' + v.c + '"><i></i>' +
+    '<span class="in-n"><b>' + v.n + '</b>' + HIGHER + '</span><small>' + v.p + '</small><span class="df">' + esc(v.d) + '</span></button>';
+}
 function renderIntent(){
-  $('panel').innerHTML = '<div class="ints' + (FI.int ? ' picked' : '') + '" id="ints">' + Object.entries(INTS).map(([k, v]) =>
-    '<button class="int' + (FI.int === k ? ' on' : '') + '" data-fi="' + k + '" type="button" style="--c:' + v.c + '"><i></i>' + v.n + '<small>' + v.p + '</small></button>').join('') +
-    '</div><div class="list" id="res"></div>';
+  const keys = Object.keys(INTS);
+  const top = FI.int ? intRow(FI.int, true) + '<div class="dots">' + keys.map(k => '<button class="dot' + (k === FI.int ? ' on' : '') +
+      '" data-fi="' + k + '" type="button" style="--c:' + INTS[k].c + '" aria-label="' + INTS[k].n + '"></button>').join('') +
+      '<button class="opt" data-fi="" type="button" style="margin-left:6px">all seven</button></div>'
+    : '<div class="ints">' + keys.map(k => intRow(k)).join('') + '</div>';
+  P().innerHTML = top + howLink() + '<div class="list" id="res"></div>';
   paintResults();
 }
 /* ── TOMORROW & BEYOND (droite) — un mot, un jour ────────────────── */
 const TW = [['tomorrow','tomorrow'], ['next7','next 7 days'], ['later','all ahead']];
 function renderTime(){
-  $('panel').innerHTML =
+  P().innerHTML =
     '<input class="in" id="q" placeholder="a word — walk, read, box, a name…" autocomplete="off" enterkeyhint="search" value="' + esc(FT.q) + '">' +
     '<div class="opts"><span class="opt-l">when</span>' + TW.map(w => '<button class="opt' + (FT.when === w[0] ? ' on' : '') + '" data-fw="' + w[0] + '" type="button">' + w[1] + '</button>').join('') + '</div>' +
     '<div class="opts" style="margin-top:4px"><span class="opt-l">mode</span>' + [['', 'any'], ['social', 'social'], ['silent', 'silent']].map(w =>
       '<button class="opt' + ((FT.mode || '') === w[0] ? ' on' : '') + '" data-fm="' + w[0] + '" type="button">' + w[1] + '</button>').join('') + '</div>' +
     '<div class="list" id="res"></div>';
   let qT = null;
-  $('q').addEventListener('input', () => { clearTimeout(qT); qT = setTimeout(() => { FT.q = $('q').value.trim(); FOCUS = null; loadSpots(); }, 280); });
+  $('q').addEventListener('input', () => { clearTimeout(qT); qT = setTimeout(() => { FT.q = $('q').value.trim(); FOCUS = null; reload(); }, 280); });
   paintResults();
 }
-$('panel').addEventListener('click', async e => {
+async function onPanelClick(e){
+  if(!e.currentTarget.classList.contains('on')) return;
   const k = panelKind();
-  if(k === 'intent'){ const b = e.target.closest('[data-fi]'); if(b){ FI.int = FI.int === b.dataset.fi ? null : b.dataset.fi; FOCUS = null; renderIntent(); loadSpots(); return; } }
+  if(e.target.closest('[data-close]')){ PANEL = null; FOCUS = null; syncPanels(); paintMarkers(); return; }
+  if(k === 'intent'){ const b = e.target.closest('[data-fi]');
+    if(b){ const v = b.dataset.fi; FI.int = !v ? null : FI.int === v ? null : v; FOCUS = null; renderIntent(); reload(); return; } }
   if(k === 'time'){
     const w = e.target.closest('[data-fw]'), m = e.target.closest('[data-fm]');
     if(w || m){ if(w) FT.when = w.dataset.fw; if(m) FT.mode = m.dataset.fm || null; FOCUS = null;
-      e.target.closest('.opts').querySelectorAll('.opt').forEach(o => o.classList.toggle('on', o === (w || m))); loadSpots(); return; }
+      e.target.closest('.opts').querySelectorAll('.opt').forEach(o => o.classList.toggle('on', o === (w || m))); reload(); return; }
   }
-  if(!['focus', 'intent', 'time', 'mine'].includes(k)) return;
+  if(k === 'mine') return onMineClick(e);
+  if(!['focus', 'intent', 'time'].includes(k)) return;
   const det = e.target.closest('[data-det]');
   if(det){ e.stopPropagation(); const id = det.dataset.det; DET.has(id) ? DET.delete(id) : DET.add(id);
-    const it = det.closest('.it'); if(it && k !== 'mine'){ const s = RAD.spots.find(x => x.id === id); if(s){ it.outerHTML = itemHTML(s); } } else if(k === 'mine') renderMine();
-    return; }
+    const it = det.closest('.it'); const s = RAD.spots.find(x => x.id === id); if(it && s) it.outerHTML = itemHTML(s); return; }
   if(e.target.closest('a')) return;
-  if(k === 'mine') return;
-  if(e.target.closest('[data-gate]')){ PANEL = 'gate'; syncPanel(); return; }
+  if(e.target.closest('[data-gate]')){ PANEL = 'gate'; syncPanels(); return; }
   if(e.target.closest('[data-mine]')){ setView('mine'); return; }
   const a = e.target.closest('[data-apply]'), w = e.target.closest('[data-withdraw]');
   if(a){
@@ -1123,24 +1640,27 @@ $('panel').addEventListener('click', async e => {
   if(w){ w.disabled = true; await sb.rpc('spot_withdraw', { p_spot: w.dataset.withdraw }); FOCUS = w.dataset.withdraw; await loadSpots(true); refreshMine(); return; }
   const it = e.target.closest('.it .habit');
   if(it){ const id = it.closest('.it').dataset.it; FOCUS = FOCUS === id ? null : id; paintMarkers();
-    document.querySelectorAll('#res .it').forEach(x => x.classList.toggle('hl', x.dataset.it === FOCUS)); }
-});
+    document.querySelectorAll('#res .it').forEach(x => x.classList.toggle('hl', x.dataset.it === FOCUS));
+    const s = RAD.spots.find(x => x.id === FOCUS); if(s && s._el && s._el.classList.contains('edge')) flyTo(s.lat, s.lng, RAD.range); }
+}
+document.querySelectorAll('.pan').forEach(el => el.addEventListener('click', onPanelClick));
 
 /* ══ CREATE A SPOT (haut) ═══════════════════════════════════════════
    1 · Quelle habitude ? — mes Habit Boxes, telles que dans totehm.com.
-   2 · La boîte-action s'ouvre, EN ÉDITION, comme une Habit Box ouverte :
-       date · heure · durée · lieu · places · acceptation · mode, et le
-       tiroir [details] (le mot, WHY, TRIGGER). Ce qui manque respire.
-   Le Totehm se LIT ici, il ne s'écrit pas (SELECT MODE ≠ EDIT MODE, §28). */
+   2 · La boîte-action s'ouvre, EN ÉDITION ; le radar descend vers moi et
+       le fond de rue apparaît : toucher la carte pose le rendez-vous.
+   Ce qui manque respire ; la NATURE du lieu (public / privé) est une
+   question sans réponse par défaut : c'est elle qui décide de l'arrondi. */
 const CR = { h:null, ints:new Set(), objs:new Set(), reps:new Set(), mood:false, moodKind:null,
-  date:null, time:null, dur:null, place:'', pos:null, posBy:null, cap:6, sel:'auto', mode:'social', acc:'club', comment:'', det:false, pk:null };
+  date:null, time:null, dur:null, place:'', pos:null, posBy:null, cap:6, sel:'auto', venue:null, mode:'social', acc:'club', comment:'', det:false, pk:null };
 function resetDraft(){ Object.assign(CR, { h:null, ints:new Set(), objs:new Set(), reps:new Set(), mood:false, moodKind:null,
-  date:null, time:null, dur:null, place:'', pos:null, posBy:null, cap:6, sel:'auto', mode:'social', acc:'club', comment:'', det:false, pk:null }); }
+  date:null, time:null, dur:null, place:'', pos:null, posBy:null, cap:6, sel:'auto', venue:null, mode:'social', acc:'club', comment:'', det:false, pk:null }); }
 const draftAt = () => CR.date && CR.time ? new Date(CR.date + 'T' + CR.time) : null;
 function draftMissing(){
   const m = [];
   if(!CR.date) m.push('date'); if(!CR.time) m.push('time'); if(!CR.dur) m.push('duration');
   if(!CR.place.trim() || !CR.pos) m.push('meeting point');
+  if(!CR.venue) m.push('nature');
   return m;
 }
 const draftComplete = () => !draftMissing().length;
@@ -1167,33 +1687,31 @@ async function openCreate(){
 }
 function renderCreate(){
   if(panelKind() !== 'create') return;
-  const P = $('panel');
-  if(!me || !F?.member){ P.innerHTML = gateHTML('Spots are created between FIGHER members.'); wireGate(); return; }
-  if(!TOT){ P.innerHTML = '<div class="cap">reading my TOTEHM…</div>'; return; }
+  const el = P();
+  if(!me || !F?.member){ el.innerHTML = gateHTML('Spots are created between FIGHER members.') + howLink(); wireGate(); resizeSoon(); return; }
+  if(!TOT){ el.innerHTML = '<div class="cap">reading my TOTEHM…</div>'; return; }
   if(!CR.h){
-    const l = TOT.habits;
-    const L = MS?.limits;
-    P.innerHTML = '<div class="done-l"><span class="sec-l" style="margin:0">which habit becomes an action?</span>' +
+    const l = TOT.habits, L = MS?.limits;
+    el.innerHTML = '<div class="done-l"><span class="sec-l" style="margin:0">which habit becomes an action?</span>' +
       (L ? '<span class="cap">' + L.upcoming + ' / ' + L.max_upcoming + ' upcoming</span>' : '') + '</div>' +
       (l.length ? '<div class="list" style="margin-top:0">' + l.map((h, k) => '<div class="it" data-hk="' + k + '">' + habitBoxHTML(h) + '</div>').join('') + '</div>'
-        : '<div class="empty">No habit in my TOTEHM yet.</div><button class="btn main" data-go="com" type="button">Write one in my TOTEHM</button>');
-    P.querySelectorAll('[data-hk]').forEach(el => el.onclick = () => pickHabit(TOT.habits[+el.dataset.hk]));
-    return;
+        : '<div class="empty">No habit in my TOTEHM yet.</div><button class="btn main" data-go="com" type="button">Write one in my TOTEHM</button>') + howLink();
+    el.querySelectorAll('[data-hk]').forEach(x => x.onclick = () => pickHabit(TOT.habits[+x.dataset.hk]));
+    resizeSoon(); return;
   }
-  P.innerHTML = '<div class="done-l"><span class="sec-l" style="margin:0">this habit, as an action</span><button class="lnk" data-another="1" type="button">another habit</button></div>' +
+  el.innerHTML = '<div class="done-l"><span class="sec-l" style="margin:0">this habit, as an action</span><button class="lnk" data-another="1" type="button">another habit</button></div>' +
     draftBoxHTML() +
     '<div class="act"><span class="note" id="cr-note"></span><button class="btn main" id="f-pub" type="button"' + (draftComplete() ? '' : ' disabled') + '>Publish the Spot</button></div>';
-  wireCreate(); paintDraftNote();
+  wireCreate(); paintDraftNote(); resizeSoon();
 }
 function pickHabit(h){
   resetDraft(); CR.h = h; CR.ints = new Set(h.ints); CR.objs = new Set(h.objs.map(o => o.id)); CR.reps = new Set(h.reps.map(r => r.id));
   const snd = h.ints.map(i => TOT.sounds[i]).find(Boolean); CR.moodKind = snd ? (snd.kind || snd.title || 'my sound') : null; CR.mood = !!snd;
   CR.place = h.place || ''; CR.pk = 'date';
-  if(geoOK){ CR.pos = { ...RAD.origin }; CR.posBy = 'me'; }
-  renderCreate(); layout();
+  if(geoOK && RAD.me){ CR.pos = { ...RAD.me }; CR.posBy = 'me'; }
+  const at = CR.pos || RAD.view; flyTo(at.lat, at.lng, 1600);
+  renderCreate(); RAD.sig = '';
 }
-/* La boîte en édition. Chaque réglage est un mot de la ligne qu'il règle ;
-   son choix s'ouvre DANS la boîte, juste sous cette ligne. */
 function draftBoxHTML(){
   const vb = (k, label, set) => '<button type="button" class="v-b' + (set ? '' : ' vit') + (CR.pk === k ? ' is-open' : '') + '" data-pk="' + k + '">' + label + ' ▾</button>';
   const ints = CR.h.ints.map(i => '<button type="button" class="v-int-b' + (CR.ints.has(i) ? '' : ' is-off') + '" data-ti="' + i + '" style="color:' + icol(i) + '">' + esc(INTS[i].n) + '</button>').join('');
@@ -1201,8 +1719,8 @@ function draftBoxHTML(){
   const l1 = ints + vb('date', dd ? esc(fmtDay(dd)) : 'set date', !!CR.date) + vb('time', CR.time || 'set time', !!CR.time) + vb('dur', CR.dur ? fmtDur(CR.dur) : 'set duration', !!CR.dur);
   const l2 = vb('loc', CR.place.trim() ? esc(CR.place.trim()) : 'set meeting point', !!(CR.place.trim() && CR.pos)) +
     (CR.pos ? '<a class="v-loc" href="' + mapsURL(CR.pos.lat, CR.pos.lng) + '" target="_blank" rel="noopener" aria-label="Check on Google Maps">maps</a>' : '');
-  const l3 = vb('cap', CR.cap + ' places', true) + vb('sel', CR.sel === 'auto' ? 'automatic' : 'manual', true) + (CR.acc === 'subscribers' ? '<span>subscribers</span>' : '');
-  const l4 = vb('mode', CR.mode, true) + (CR.mood && CR.moodKind ? '<span>mood · ' + esc(CR.moodKind) + '</span>' : '');
+  const l3 = vb('cap', CR.cap + ' places', true) + vb('sel', CR.sel === 'auto' ? 'automatic' : 'manual', true) + vb('venue', CR.venue ? VENUE[CR.venue] : 'set nature', !!CR.venue);
+  const l4 = vb('mode', CR.mode, true) + vb('acc', ACCESS[CR.acc], true) + (CR.mood && CR.moodKind ? '<span>mood · ' + esc(CR.moodKind) + '</span>' : '');
   const pk = keys => keys.includes(CR.pk) ? pickerHTML(CR.pk) : '';
   const objs = CR.h.objs.map(o => miniH('o', o.text, ' data-to="' + esc(o.id) + '"').replace('class="mini m-o', 'class="mini m-o' + (CR.objs.has(o.id) ? '' : ' is-off'))).join('');
   const reps = CR.h.reps.map(r => miniH('r', r.text, ' data-tr="' + r.id + '"').replace('class="mini m-r', 'class="mini m-r' + (CR.reps.has(r.id) ? '' : ' is-off'))).join('');
@@ -1214,15 +1732,15 @@ function draftBoxHTML(){
     '<span class="h-body"><span class="v-col"><span class="v-name">' + esc(CR.h.name) + '</span>' +
     '<span class="v-sub">' + l1 + '</span>' + pk(['date', 'time', 'dur']) +
     '<span class="v-sub">' + l2 + '</span>' + pk(['loc']) +
-    '<span class="v-sub">' + l3 + '</span>' + pk(['cap', 'sel']) +
-    '<span class="v-sub">' + l4 + '</span>' + pk(['mode']) +
+    '<span class="v-sub">' + l3 + '</span>' + pk(['cap', 'sel', 'venue']) +
+    '<span class="v-sub">' + l4 + '</span>' + pk(['mode', 'acc']) +
     '<button class="v-det" type="button" data-cdet="1" aria-expanded="' + CR.det + '">details ' + (CR.det ? '▴' : '▾') + '</button>' + drawer +
     '<button type="button" class="w-x" data-another="1" aria-label="Another habit">&times;</button>' +
     '</span></span></div>';
 }
 function pickerHTML(k){
-  const chip = (attr, label, on) => '<button type="button" class="chip' + (on ? ' on' : '') + '" ' + attr + '>' + label + '</button>';
-  const now = new Date();
+  const chip = (attr, label, on, sub) => '<button type="button" class="chip' + (on ? ' on' : '') + '" ' + attr + '>' + label + (sub ? '<small>' + sub + '</small>' : '') + '</button>';
+  const now = new Date(), how = ' <button class="lnk" data-how="1" type="button">how it works</button>';
   if(k === 'date'){
     const days = []; for(let i = 0; i < 7; i++) days.push(addDays(now, i));
     return '<span class="pkw"><span class="chips">' + days.map(d => chip('data-date="' + dayKey(d) + '"', esc(fmtDay(d)), CR.date === dayKey(d))).join('') + '</span>' +
@@ -1243,9 +1761,9 @@ function pickerHTML(k){
   if(k === 'loc'){
     return '<span class="pkw"><span class="pk-say">the meeting point — shown only to the members I accept</span>' +
       '<input class="in" id="f-place" maxlength="120" placeholder="the steps at Ribeira" value="' + esc(CR.place) + '" style="margin-top:0">' +
-      '<span class="pk-say">the point on the radar — everyone sees it within ~100 m</span><span class="chips">' +
+      '<span class="pk-say">the point — touch the map under the radar</span><span class="chips">' +
       chip('data-geo="1"', CR.posBy === 'me' ? 'my position ✓' : 'use my position', CR.posBy === 'me') +
-      '<span class="cap" style="align-self:center;margin-left:4px">' + (CR.posBy === 'radar' ? '<b>set on the radar</b>' : 'or touch the radar') + '</span></span></span>';
+      '<span class="cap" style="align-self:center;margin-left:4px">' + (CR.posBy === 'radar' ? '<b>set on the map</b>' : 'or touch the map') + '</span></span></span>';
   }
   if(k === 'cap'){
     const C = [2, 4, 6, 8, 12, 20].filter(n => n >= RULES.capacity_min && n <= RULES.capacity_max);
@@ -1253,58 +1771,73 @@ function pickerHTML(k){
       '<span class="stp"><button data-s="cap" data-d="-1" type="button" aria-label="Fewer">−</button><output>' + CR.cap + ' places</output><button data-s="cap" data-d="1" type="button" aria-label="More">+</button></span></span>';
   }
   if(k === 'sel'){
-    return '<span class="pkw"><span class="pk-say">who gets in</span><span class="chips">' + chip('data-sel="auto"', 'automatic — first come, first in', CR.sel === 'auto') +
-      chip('data-sel="manual"', 'manual — I choose', CR.sel === 'manual') + '</span>' +
-      '<span class="pk-say">who can ask</span><span class="chips">' + chip('data-acc="club"', 'FIGHER members', CR.acc === 'club') +
-      (F?.spots_benefit ? chip('data-acc="subscribers"', 'my subscribers', CR.acc === 'subscribers') : '') + '</span></span>';
+    return '<span class="pkw"><span class="pk-say">who gets in' + how + '</span><span class="chips">' +
+      chip('data-sel="auto"', 'automatic', CR.sel === 'auto', 'first come, first in') +
+      chip('data-sel="manual"', 'manual', CR.sel === 'manual', 'I read who asks, I choose') + '</span></span>';
+  }
+  if(k === 'venue'){
+    return '<span class="pkw"><span class="pk-say">the nature of the place' + how + '</span><span class="chips">' +
+      chip('data-venue="public"', 'public space', CR.venue === 'public', 'a park, a café, a beach — shown within ~100 m') +
+      chip('data-venue="private"', 'private', CR.venue === 'private', 'my place — only the neighbourhood (~1 km) is shown') + '</span></span>';
+  }
+  if(k === 'acc'){
+    return '<span class="pkw"><span class="pk-say">who can ask' + how + '</span><span class="chips">' +
+      chip('data-acc="club"', 'FIGHER members', CR.acc === 'club', 'every member of the club') +
+      (F?.spots_benefit ? chip('data-acc="subscribers"', 'my subscribers', CR.acc === 'subscribers', 'members who follow my TOTEHM')
+        : '<span class="cap" style="align-self:center;margin-left:4px">subscribers only · <button class="lnk" data-go="club" type="button">switch on the Spots benefit</button></span>') + '</span></span>';
   }
   if(k === 'mode'){
-    return '<span class="pkw"><span class="chips">' + chip('data-mode="social"', 'social — together, and we talk', CR.mode === 'social') +
-      chip('data-mode="silent"', 'silent — together, without talking', CR.mode === 'silent') + '</span>' +
+    return '<span class="pkw"><span class="chips">' + chip('data-mode="social"', 'social', CR.mode === 'social', 'together, and we talk') +
+      chip('data-mode="silent"', 'silent', CR.mode === 'silent', 'together, without talking') + '</span>' +
       (CR.moodKind ? '<span class="pk-say">the sound of my intention</span><span class="chips">' + chip('data-mood="1"', 'mood · ' + esc(CR.moodKind), CR.mood) + '</span>' : '') + '</span>';
   }
   return '';
 }
+/* Après un choix, le suivant qui MANQUE s'ouvre de lui-même. */
+function nextMissing(){
+  if(!CR.date) return 'date'; if(!CR.time) return 'time'; if(!CR.dur) return 'dur';
+  if(!(CR.pos && CR.place.trim())) return 'loc'; if(!CR.venue) return 'venue'; return null;
+}
 function wireCreate(){
-  const P = $('panel');
-  P.querySelectorAll('[data-another]').forEach(b => b.onclick = () => { resetDraft(); renderCreate(); layout(); });
-  P.querySelectorAll('[data-pk]').forEach(b => b.onclick = () => { CR.pk = CR.pk === b.dataset.pk ? null : b.dataset.pk; renderCreateKeep(); });
-  P.querySelectorAll('[data-ti]').forEach(b => b.onclick = () => { const i = b.dataset.ti; if(CR.ints.has(i) && CR.ints.size === 1) return; CR.ints.has(i) ? CR.ints.delete(i) : CR.ints.add(i); renderCreateKeep(); });
-  P.querySelectorAll('[data-to]').forEach(b => b.onclick = () => { const k = b.dataset.to; CR.objs.has(k) ? CR.objs.delete(k) : CR.objs.add(k); renderCreateKeep(); });
-  P.querySelectorAll('[data-tr]').forEach(b => b.onclick = () => { const k = +b.dataset.tr; CR.reps.has(k) ? CR.reps.delete(k) : CR.reps.add(k); renderCreateKeep(); });
-  P.querySelector('[data-cdet]')?.addEventListener('click', () => { CR.det = !CR.det; renderCreateKeep(); });
-  const next = k => { CR.pk = k; renderCreateKeep(); };
-  P.querySelectorAll('[data-date]').forEach(b => b.onclick = () => { CR.date = b.dataset.date; next(CR.time ? (CR.dur ? null : 'dur') : 'time'); });
-  $('f-date')?.addEventListener('change', e => { if(e.target.value){ CR.date = e.target.value; next(CR.time ? (CR.dur ? null : 'dur') : 'time'); } });
-  P.querySelectorAll('[data-time]').forEach(b => b.onclick = () => { CR.time = b.dataset.time; next(CR.dur ? (CR.pos && CR.place.trim() ? null : 'loc') : 'dur'); });
-  P.querySelector('[data-inh]')?.addEventListener('click', e => { const d = new Date(e.currentTarget.dataset.inh); CR.date = dayKey(d); CR.time = hhmm(d); next(CR.dur ? null : 'dur'); });
-  $('f-time')?.addEventListener('change', e => { if(e.target.value){ CR.time = e.target.value; next(CR.dur ? null : 'dur'); } });
-  P.querySelectorAll('[data-dur]').forEach(b => b.onclick = () => { CR.dur = +b.dataset.dur; next(CR.pos && CR.place.trim() ? null : 'loc'); });
-  P.querySelectorAll('.stp button').forEach(b => b.onclick = () => {
+  const el = P();
+  el.querySelectorAll('[data-another]').forEach(b => b.onclick = () => { resetDraft(); renderCreate(); RAD.sig = ''; });
+  el.querySelectorAll('[data-pk]').forEach(b => b.onclick = () => { CR.pk = CR.pk === b.dataset.pk ? null : b.dataset.pk; renderCreateKeep(); });
+  el.querySelectorAll('[data-ti]').forEach(b => b.onclick = () => { const i = b.dataset.ti; if(CR.ints.has(i) && CR.ints.size === 1) return; CR.ints.has(i) ? CR.ints.delete(i) : CR.ints.add(i); renderCreateKeep(); });
+  el.querySelectorAll('[data-to]').forEach(b => b.onclick = () => { const k = b.dataset.to; CR.objs.has(k) ? CR.objs.delete(k) : CR.objs.add(k); renderCreateKeep(); });
+  el.querySelectorAll('[data-tr]').forEach(b => b.onclick = () => { const k = +b.dataset.tr; CR.reps.has(k) ? CR.reps.delete(k) : CR.reps.add(k); renderCreateKeep(); });
+  el.querySelector('[data-cdet]')?.addEventListener('click', () => { CR.det = !CR.det; renderCreateKeep(); });
+  const next = () => { CR.pk = nextMissing(); renderCreateKeep(); };
+  el.querySelectorAll('[data-date]').forEach(b => b.onclick = () => { CR.date = b.dataset.date; next(); });
+  $('f-date')?.addEventListener('change', e => { if(e.target.value){ CR.date = e.target.value; next(); } });
+  el.querySelectorAll('[data-time]').forEach(b => b.onclick = () => { CR.time = b.dataset.time; next(); });
+  el.querySelector('[data-inh]')?.addEventListener('click', e => { const d = new Date(e.currentTarget.dataset.inh); CR.date = dayKey(d); CR.time = hhmm(d); next(); });
+  $('f-time')?.addEventListener('change', e => { if(e.target.value){ CR.time = e.target.value; next(); } });
+  el.querySelectorAll('[data-dur]').forEach(b => b.onclick = () => { CR.dur = +b.dataset.dur; next(); });
+  el.querySelectorAll('.stp button').forEach(b => b.onclick = () => {
     const d = +b.dataset.d;
     if(b.dataset.s === 'dur') CR.dur = Math.max(RULES.duration_min, Math.min(RULES.duration_max, (CR.dur || 45) + d*15));
     else CR.cap = Math.max(RULES.capacity_min, Math.min(RULES.capacity_max, CR.cap + d));
     renderCreateKeep();
   });
-  P.querySelectorAll('[data-cap]').forEach(b => b.onclick = () => { CR.cap = +b.dataset.cap; renderCreateKeep(); });
-  P.querySelectorAll('[data-sel]').forEach(b => b.onclick = () => { CR.sel = b.dataset.sel; renderCreateKeep(); });
-  P.querySelectorAll('[data-acc]').forEach(b => b.onclick = () => { CR.acc = b.dataset.acc; renderCreateKeep(); });
-  P.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { CR.mode = b.dataset.mode; renderCreateKeep(); });
-  P.querySelector('[data-mood]')?.addEventListener('click', () => { CR.mood = !CR.mood; renderCreateKeep(); });
-  /* ⚠️ ON NE REDESSINE PAS EN ÉCRIVANT (règle du 20/09) : redessiner vole
-     le curseur. Le lieu se recopie sur sa ligne, en place. */
+  el.querySelectorAll('[data-cap]').forEach(b => b.onclick = () => { CR.cap = +b.dataset.cap; renderCreateKeep(); });
+  el.querySelectorAll('[data-sel]').forEach(b => b.onclick = () => { CR.sel = b.dataset.sel; renderCreateKeep(); });
+  el.querySelectorAll('[data-venue]').forEach(b => b.onclick = () => { CR.venue = b.dataset.venue; next(); });
+  el.querySelectorAll('[data-acc]').forEach(b => b.onclick = () => { CR.acc = b.dataset.acc; renderCreateKeep(); });
+  el.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { CR.mode = b.dataset.mode; renderCreateKeep(); });
+  el.querySelector('[data-mood]')?.addEventListener('click', () => { CR.mood = !CR.mood; renderCreateKeep(); });
+  /* ⚠️ ON NE REDESSINE PAS EN ÉCRIVANT (règle du 20/09). */
   $('f-place')?.addEventListener('input', e => { CR.place = e.target.value; paintDraftLive(); });
   $('f-comment')?.addEventListener('input', e => { CR.comment = e.target.value; });
-  P.querySelector('[data-geo]')?.addEventListener('click', async () => {
+  el.querySelector('[data-geo]')?.addEventListener('click', async () => {
     const n = $('cr-note'); n.className = 'note'; n.textContent = 'locating…';
-    const c = await geo(); if(!c){ n.className = 'note no'; n.textContent = 'allow my position — or touch the radar'; return; }
-    CR.pos = c; CR.posBy = 'me'; if(!geoOK){ geoOK = true; RAD.origin = c; loadSpots(true); }
-    layout(); renderCreateKeep();
+    const c = await geo(); if(!c){ n.className = 'note no'; n.textContent = 'allow my position — or touch the map'; return; }
+    CR.pos = c; CR.posBy = 'me'; RAD.me = c; if(!geoOK){ geoOK = true; }
+    flyTo(c.lat, c.lng, 1600); renderCreateKeep();
   });
   $('f-pub')?.addEventListener('click', publish);
 }
 function paintDraftLive(){
-  const b = $('panel').querySelector('[data-pk="loc"]');
+  const b = P()?.querySelector('[data-pk="loc"]');
   if(b){ b.textContent = (CR.place.trim() || 'set meeting point') + ' ▾'; b.classList.toggle('vit', !(CR.place.trim() && CR.pos)); }
   const p = $('f-pub'); if(p) p.disabled = !draftComplete();
   paintDraftNote();
@@ -1314,10 +1847,10 @@ function paintDraftNote(){
   const m = draftMissing(); n.className = 'note'; n.textContent = m.length ? 'set ' + m.join(' · ') : 'ready';
   if(!m.length){ const at = draftAt(); if(at && at < new Date(Date.now() + 5*60e3)){ n.className = 'note no'; n.textContent = 'a time to come'; const p = $('f-pub'); if(p) p.disabled = true; } }
 }
-/* Redessiner sans perdre sa place ni le champ où l'on écrit. */
 function renderCreateKeep(){
-  const P = $('panel'), y = P.scrollTop, a = document.activeElement, id = a && a.id, pos = a && a.selectionStart;
-  renderCreate(); P.scrollTop = y;
+  const el = P(); if(!el) return;
+  const y = el.scrollTop, a = document.activeElement, id = a && a.id, pos = a && a.selectionStart;
+  renderCreate(); el.scrollTop = y;
   if(id && $(id) && (id === 'f-place' || id === 'f-comment')){ const f = $(id); f.focus(); try{ f.setSelectionRange(pos, pos); }catch(_){} }
   if(CR.pk === 'loc' && !CR.place.trim()) setTimeout(() => $('f-place')?.focus({ preventScroll:true }), 30);
 }
@@ -1329,37 +1862,36 @@ async function publish(){
     p_habit: CR.h.name, p_intentions: inOrder(CR.ints), p_objectives: [...CR.objs], p_repulsions: [...CR.reps].map(Number),
     p_mood: CR.mood, p_starts_at: at.toISOString(), p_duration_min: CR.dur,
     p_place: CR.place.trim(), p_lat: CR.pos.lat, p_lng: CR.pos.lng,
-    p_mode: CR.mode, p_capacity: CR.cap, p_access: CR.acc, p_selection: CR.sel, p_comment: CR.comment.trim() || null });
+    p_mode: CR.mode, p_capacity: CR.cap, p_access: CR.acc, p_selection: CR.sel, p_comment: CR.comment.trim() || null, p_venue: CR.venue });
   delete n.dataset.hold;
   if(error || !data?.ok){
     b.disabled = false; n.className = 'note no';
     n.textContent = ({ figher:'members only', habit:'that habit is no longer in my TOTEHM', when:'choose a time within ' + RULES.horizon_days + ' days',
       duration:'a duration between ' + RULES.duration_min + ' and ' + RULES.duration_max + ' min', capacity:'between ' + RULES.capacity_min + ' and ' + RULES.capacity_max + ' places',
-      subscribers:'subscriber-only Spots need that benefit switched on', too_many:RULES.max_upcoming + ' upcoming Spots at most', position:'set the point on the radar', place:'say where we meet' })[data?.why] || error?.message || 'not published';
+      subscribers:'subscriber-only Spots need that benefit switched on', too_many:RULES.max_upcoming + ' upcoming Spots at most', position:'set the point on the map',
+      place:'say where we meet', venue:'public space or private?' })[data?.why] || error?.message || 'not published';
     return;
   }
   /* Le résultat est l'INSTRUMENT : le Spot apparaît sur le radar, ouvert,
      dans le cran qui montre son jour — aujourd'hui au centre, plus tard à droite. */
-  const today = dayKey(at) === dayKey(new Date());
-  RAD.origin = { ...CR.pos }; geoOK = true; resetDraft(); FI.int = null; FT.q = ''; FT.mode = null; FT.when = 'later';
+  const today = dayKey(at) === dayKey(new Date()), pos = { ...CR.pos };
+  resetDraft(); FI.int = null; FT.q = ''; FT.mode = null; FT.when = 'later';
   FOCUS = data.id; DET.add(data.id);
+  RAD.view = pos; RAD.fly = null; zoomTo(RAD.base, true);
   refreshMine();
   dernierSens = today ? 'b' : 'd';
   setView(today ? 'radar' : 'time');
   await loadSpots(true);
-  if(today){ PANEL = 'focus'; syncPanel(); } else paintResults();
+  if(today){ PANEL = 'focus'; syncPanels(); } else paintResults();
   paintMarkers();
 }
 
-/* ══ MY SPACE (bas) — MES ACCÈS, MES LIMITES, QUI ATTEND ═════════════
-   Les demandes reçues d'abord (quelqu'un attend), puis mes Spots, puis
-   ceux que j'ai rejoints — et en tête ce qui me concerne : qui je suis,
-   ce que ma clé ouvre, combien de Spots il me reste. On s'y déconnecte. */
+/* ══ MY SPACE (bas) — MES ACCÈS, MES LIMITES, QUI ATTEND ═════════════ */
 async function loadMine(){
   if(!me){ MS = null; paintReq(); if(panelKind() === 'mine') renderMine(); return; }
-  if(panelKind() === 'mine' && !MS) $('panel').innerHTML = '<div class="cap">…</div>';
+  if(panelKind() === 'mine' && !MS) P().innerHTML = '<div class="cap">…</div>';
   const { data, error } = await sb.rpc('my_space');
-  if(error){ console.error('[my_space]', error.message); if(panelKind() === 'mine') $('panel').innerHTML = '<div class="note no">' + esc(error.message) + '</div>'; return; }
+  if(error){ console.error('[my_space]', error.message); if(panelKind() === 'mine') P().innerHTML = '<div class="note no">' + esc(error.message) + '</div>'; return; }
   MS = data; paintReq(); paintStatus();
   if(panelKind() === 'mine') renderMine();
   if(panelKind() === 'create' && !CR.h) renderCreate();
@@ -1367,9 +1899,9 @@ async function loadMine(){
 const refreshMine = () => { if(me) loadMine(); };
 function paintReq(){ const n = (MS?.requests || []).length; $('req-n').textContent = n ? n : ''; }
 function renderMine(){
-  const P = $('panel');
-  if(!me || !F?.pseudo){ P.innerHTML = gateHTML('My Spots, my requests, my access.'); wireGate(); return; }
-  if(!MS){ P.innerHTML = '<div class="cap">…</div>'; return; }
+  const el = P();
+  if(!me || !F?.pseudo){ el.innerHTML = gateHTML('My Spots, my requests, my access.'); wireGate(); resizeSoon(); return; }
+  if(!MS){ el.innerHTML = '<div class="cap">…</div>'; return; }
   const R = MS.requests || [], S = MS.spots || [], A = MS.applications || [], L = MS.limits;
   const sec = (t, h) => '<div class="sec"><span class="sec-l">' + t + '</span><div class="list" style="margin-top:4px">' + h + '</div></div>';
   let h = '<div class="sec"><span class="sec-l">my access</span>' +
@@ -1377,9 +1909,7 @@ function renderMine(){
     '<div class="cap" style="margin-top:6px">' + (F.member ? (F.comp ? '<b>founder access</b>' : '<b>FIGHER</b> · active') : 'FIGHER · ' + [F.complete ? null : 'TOTEHM', F.thp ? null : 'THP', F.annual ? null : 'annual'].filter(Boolean).join(' · ') + ' missing') +
       (L ? ' · upcoming Spots <b>' + L.upcoming + ' / ' + L.max_upcoming + '</b>' : '') + '</div>' +
     '<div class="acts" style="margin-top:10px">' + (F.member ? '' : '<button class="btn main" data-gatego="1" type="button">My three keys</button>') +
-      '<button class="lnk" data-go="club" type="button">My FIGHER console</button><button class="lnk" data-out="1" type="button">Sign out</button></div></div>';
-  /* Une demande est une PERSONNE, pas une boîte : un pseudo et un nombre.
-     Jamais son Totehm (MASTER §38). */
+      '<button class="lnk" data-go="club" type="button">My FIGHER console</button><button class="lnk" data-how="1" type="button">How it works</button><button class="lnk" data-out="1" type="button">Sign out</button></div></div>';
   if(R.length) h += sec('waiting for my answer · <b>' + R.length + '</b>', R.map(r =>
     '<div class="it req"><div class="cmp"><b>' + (r.compat != null ? r.compat + '%' : '—') + '</b><em>' + esc(r.pseudo || 'a member') + '</em> · for ' + esc(r.habit) + ' · ' + esc(fmtWhen(r.starts_at)) + '</div>' +
     (r.note ? '<div class="say-q" style="margin-top:4px">' + esc(r.note) + '</div>' : '') +
@@ -1391,18 +1921,19 @@ function renderMine(){
     '<div class="act"><span class="cmp"><em>' + esc(a.spot_status === 'cancelled' ? 'spot cancelled' : a.status) + '</em>' + (a.creator ? ' · by ' + esc(a.creator) : '') + '</span>' +
     (['accepted','pending'].includes(a.status) && a.spot_status === 'published' ? '<span class="acts"><button class="lnk" data-wd="' + esc(a.spot_id) + '" type="button">Withdraw</button></span>' : '') + '</div></div>').join(''));
   if(!R.length && !S.length && !A.length) h += '<div class="sec"><span class="sec-l">nothing yet</span><div class="say">Push the controller up to create a Spot, right to find one.</div></div>';
-  P.innerHTML = h + '<div class="note" id="mine-note" style="margin-top:12px"></div>';
+  el.innerHTML = h + '<div class="note" id="mine-note" style="margin-top:12px"></div>';
+  resizeSoon();
 }
-$('panel').addEventListener('click', async e => {
-  if(panelKind() !== 'mine') return;
-  const t = e.target.closest('button'); if(!t || t.dataset.det) return;
+async function onMineClick(e){
+  const t = e.target.closest('button'); if(!t) return;
+  if(t.dataset.det){ const id = t.dataset.det; DET.has(id) ? DET.delete(id) : DET.add(id); renderMine(); return; }
   const n = $('mine-note');
   if(t.dataset.out) return signOut();
-  if(t.dataset.gatego){ PANEL = 'gate'; syncPanel(); return; }
+  if(t.dataset.gatego){ PANEL = 'gate'; syncPanels(); return; }
   if(t.dataset.dec){
     t.disabled = true;
     const { data, error } = await sb.rpc('spot_decide', { p_application: +t.dataset.dec, p_accept: t.dataset.ok === '1' });
-    if(error || !data?.ok){ n.className = 'note no'; n.textContent = data?.why === 'full' ? 'the Spot is full' : (error?.message || data?.why || 'not saved'); }
+    if((error || !data?.ok) && n){ n.className = 'note no'; n.textContent = data?.why === 'full' ? 'the Spot is full' : (error?.message || data?.why || 'not saved'); }
     await loadMine(); loadSpots(true);
   } else if(t.dataset.cancel){
     if(!confirm('Cancel this Spot? Everyone accepted will see it is off.')) return;
@@ -1414,17 +1945,13 @@ $('panel').addEventListener('click', async e => {
     const today = dayKey(new Date(s.starts_at)) === dayKey(new Date());
     FOCUS = s.id; FT.q = ''; FT.mode = null; FT.when = 'later'; FI.int = null;
     dernierSens = today ? 'h' : 'd'; setView(today ? 'radar' : 'time');
-    await loadSpots(true); if(today){ PANEL = 'focus'; syncPanel(); } paintMarkers();
+    if(s.lat != null){ RAD.view = { lat:s.lat, lng:s.lng }; RAD.fly = null; if(RAD.range > LOCAL_MAX) zoomTo(RAD.base, true); }
+    await loadSpots(true); if(today){ PANEL = 'focus'; syncPanels(); } paintMarkers();
   }
-});
+}
 
 /* ══ LA PORTE — connexion, pseudo, les trois clés, et la SORTIE ══════
-   ⚠️ ON SE DÉCONNECTE DANS TOUS LES ÉTATS · 25/09/2026. « On ne peut pas
-   se déconnecter — notamment quand on n'a pas encore rempli toutes les
-   conditions. » [Sign out] n'existait que pour un membre complet : un
-   compte sans pseudo, ou sans ses trois clés, était enfermé dedans.
-   ⚠️ `scope:'local'` : se déconnecter de l'Espace ne déconnecte pas le
-   Totehm ouvert sur un autre domaine (quatre origines, quatre sessions). */
+   ⚠️ ON SE DÉCONNECTE DANS TOUS LES ÉTATS (25/09), en `scope:'local'`. */
 let mail = '';
 function gateHTML(intro){
   const out = '<button class="lnk" data-out="1" type="button">Sign out</button>';
@@ -1447,12 +1974,12 @@ function gateHTML(intro){
   return '<div class="sec"><span class="sec-l"><b>' + esc(F.pseudo) + '</b>' + (F.comp ? ' · founder access' : ' · FIGHER') + '</span><div class="cap">' + esc(me.email || '') + '</div>' +
     '<div class="acts" style="margin-top:12px"><button class="lnk" data-go="club" type="button">My FIGHER console</button><button class="lnk" data-go="com" type="button">My TOTEHM</button>' + out + '</div></div>';
 }
-function renderGate(){ $('panel').innerHTML = head('Member access') + gateHTML(); wireGate(); }
+function renderGate(){ P().innerHTML = head('Member access') + gateHTML(); wireGate(); }
 function wireGate(){
-  const P = $('panel');
-  P.querySelectorAll('[data-out]').forEach(b => b.onclick = signOut);
+  const el = P(); if(!el) return;
+  el.querySelectorAll('[data-out]').forEach(b => b.onclick = signOut);
   const em = $('g-email');
-  if(em){ if(mail) em.value = mail; if(panelKind() === 'gate') setTimeout(() => (mail ? $('g-code') : em).focus(), 60);
+  if(em){ if(mail) em.value = mail; if(panelKind() === 'gate') setTimeout(() => (mail ? $('g-code') : em)?.focus(), 60);
     em.addEventListener('keydown', async e => {
       if(e.key !== 'Enter') return;
       const v = em.value.trim(), n = $('g-note');
@@ -1482,13 +2009,12 @@ function wireGate(){
 }
 async function signOut(){
   try{ const { error } = await sb.auth.signOut({ scope:'local' }); if(error) console.error('[signout]', error.message); }catch(e){ console.error('[signout]', e && e.message || e); }
-  /* L'état tombe ICI, sans attendre l'événement : une sortie qui dépend
-     d'un événement réseau est une sortie qui peut ne pas avoir lieu. */
+  /* L'état tombe ICI, sans attendre l'événement réseau. */
   me = null; F = null; MS = null; TOT = null; resetDraft(); DET.clear(); paintReq();
   $('member').classList.remove('is-in'); $('member-txt').textContent = 'Sign in';
   PANEL = null; FOCUS = null; dernierSens = null; setView('radar'); loadSpots(true);
 }
-$('member').onclick = () => { PANEL = PANEL === 'gate' ? null : 'gate'; syncPanel(); };
+$('member').onclick = () => { PANEL = PANEL === 'gate' ? null : 'gate'; syncPanels(); };
 sb.auth.onAuthStateChange(async ev => {
   if(ev === 'SIGNED_IN' || ev === 'SIGNED_OUT'){
     await loadMe(); if(ev === 'SIGNED_OUT'){ MS = null; TOT = null; resetDraft(); paintReq(); }
@@ -1501,16 +2027,16 @@ sb.auth.onAuthStateChange(async ev => {
 const FROM_HASH = { '#create':'create', '#me':'mine', '#intent':'intent', '#later':'time', '#search':'time' };
 VIEW = FROM_HASH[location.hash] || 'radar';
 document.body.className = 'v-' + VIEW;
-paintJoy(); paintTitle(); syncPanel(); paintCmp();
+paintJoy(); paintTitle(); syncPanels(); paintCmp();
 sb.rpc('spot_rules').then(({ data, error }) => { if(error) console.error('[spot_rules]', error.message); else if(data) RULES = { ...RULES, ...data }; });
+loadEarth();
 await loadMe();
 radarStart();
 if(VIEW === 'create') openCreate(); else if(VIEW === 'mine') loadMine();
 await locate();
 await loadSpots(true);
+RAD.base = autoRange(RAD.spots); zoomTo(RAD.base, true);
 refreshMine();
-/* La boussole ne s'allume pas toute seule : un radar qui tourne à
-   l'arrivée désoriente. On la propose (« align with me »), on la prend. */
 </script>
 </body>
 </html>
