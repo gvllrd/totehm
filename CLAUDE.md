@@ -84,6 +84,8 @@ déjà à la question.
                                      crans (25/09)
                                      · la planète entière (26/09) :
                                      earth.json · earth50.json
+                                     · YESTERDAY · TODAY · TOMORROW, Search
+                                     en bas, My space au coin (27/09)
                                      + redirections 308 de l'ancien Stoner
   boutique/  →  www.higher.boutique  UNE BOX, N'IMPORTE LAQUELLE, DEVIENT UN CLOTH
                                      index.html · streetwear.html (totehmisation)
@@ -274,7 +276,79 @@ avant sa méthode de virement lisait « ok » et n'avait rien d'enregistré.
 `upsert … onConflict: 'user_id'`. *Un `update` sans ligne n'est pas une
 erreur pour Postgres — c'en est une pour nous.*
 
+### ⛔ TOTEHM.SPACE — YESTERDAY · TODAY · TOMORROW · 27/09/2026
+
+**La demande de Wah :** My Space dans le coin membre, la recherche en bas,
+la carte dès l'arrivée, créer un Spot en touchant la carte, un rendez-vous
+qui se pose enfin au téléphone, et une grammaire (polices, saisies, tuile)
+qui vaut aussi pour le Club. `space/index.html` (`BUILD='2026-09-27'`),
+`club/index.html` + `club/console.html` (`BUILD='2026-09-27'`), migration
+`20260927_space_hier.sql`.
+
+| cran | titre (Bebas Neue) | ce qu'il montre | la carte |
+|---|---|---|---|
+| centre | **TODAY** | la carte de ce qui se passe aujourd'hui ; **la toucher hors d'un Spot = créer un Spot ICI, aujourd'hui** | pleine, fond de rue dès l'arrivée |
+| haut | **CREATE A SPOT** | la boîte-action ; le lieu et le jour déjà posés si l'on vient de la carte ou d'hier | **en sourdine** (petite, pâle) |
+| bas | **SEARCH** | la barre, les jours, le mode, les sept intentions (+ Higher, + la phrase) — quittés de la droite | **en sourdine** |
+| gauche | **YESTERDAY** | mes Spots et ceux que j'ai rejoints, sur UN AN (`my_space` v4) ; chacun se **refait** (`Do it again`) | pleine |
+| droite | **TOMORROW** | ce qui vient, jour par jour, sans filtre | pleine |
+
+**⚠️ MY SPACE EST DANS LE COIN MEMBRE (haut gauche).** Mon nom de Totehm
+(Quantico, sur la tuile perforée — il ouvre mon Totehm), mes accès, mes
+limites, **qui attend ma réponse** (le nombre est sur le coin), la
+console, la sortie. Le coin porte un **point blanc**, le même objet que
+« toi » au centre de la carte (plus de point vert).
+
+**⚠️ LE RENDEZ-VOUS SE POSE EN PLEIN ÉCRAN.** « Tap on the map » était un
+timbre-poste au téléphone. [◎ place it on the map] : la carte prend
+l'écran, une **croix FIXE** au centre, et c'est la carte qu'on déplace
+dessous (doigt, souris, deux doigts au trackpad, flèches), on pince, on
+valide [Here]. Précis partout, et la manette disparaît le temps du geste
+(`body.pin`, `PIN.on` : aucune vue ne change pendant qu'on vise).
+
+**⚠️ PRE — CE QU'UNE CRÉATION REÇOIT AVANT SON HABITUDE.** Toucher TODAY
+pose `{lieu, today}` ; `Do it again` pose `{habitude, lieu, heure, durée,
+places, sélection, nature, mode, accès, mot}`. `pickHabit` l'applique ;
+si l'habitude d'hier est encore dans mon Totehm, elle est choisie
+d'office — il ne reste que le JOUR. Un Spot REJOINT se refait avec le
+lieu et le format, mais avec MON habitude (`spot_publish` relit mon
+Totehm, jamais celui d'un autre).
+
+**⚠️ LA TUILE PERFORÉE NAVY = LE NOM D'UN TOTEHM, ET RIEN D'AUTRE**
+(`.tname`, Quantico) : mon nom, `by <créateur>` sous une boîte-action
+(il ouvre ce Totehm via le pont, `?ro=`), les noms dans la console.
+Boutons et saisies : **gris, arrondis** (`border-radius:10px`). Un test
+navigateur MESURE que seuls les `.tname` portent un `border-image`.
+
+**⚠️ LE % DIT CE QU'IL EST** : `62% · match with my TOTEHM`, et « How it
+works » l'explique (un nombre, jamais le détail ; un Spot contre un
+Totehm, jamais une personne contre une personne). How it works met le
+**Spot d'abord**, le site ensuite.
+
+**⚠️ LE SURVOL AGRANDIT, LA LOUPE AU TÉLÉPHONE.** Sur ordinateur, la
+boîte visée grandit (`scale(1.022)`, texte compris) ; au téléphone, une
+loupe sur chaque boîte l'agrandit d'un toucher (`zoom:1.28`).
+
+**⚠️ LA CARTE DÈS L'ARRIVÉE A UN COÛT À SURVEILLER.** Les tuiles
+OpenStreetMap sont gratuites mais sous politique d'usage : on ne les
+demande qu'une fois l'échelle posée (jamais pendant un vol ou un
+pincement), pas en sourdine, 220 en mémoire. Un seul endroit à changer
+pour un fournisseur payant : `TILE_URL`.
+
+**Bebas Neue n'a qu'UNE graisse** : trois niveaux (`.b1` grand + contour
+0,55 px, `.b2` question, `.b3` sous-titre). Voir BRAND.md, Polices.
+
+**Le diagnostic** `__totehm_space()` gagne : `pin`, `muted`, `search`,
+`history {mine, joined}`, `pre`, `scale.map_tiles`, `gestures.pan`.
+
 ### ⛔ TOTEHM.SPACE À L'ÉCHELLE DU MONDE — LE GESTE PARTOUT, LA COURONNE, LE GLOBE · 26/09/2026
+
+> **⚠️ DÉPASSÉ LE 27/09 SUR QUATRE POINTS** — voir **YESTERDAY · TODAY ·
+> TOMORROW** : les vues gauche/bas/droite ont changé de contenu (Yesterday,
+> Search, Tomorrow sans filtre), My space est dans le coin membre, la carte
+> de rue s'affiche dès l'arrivée (plus seulement en création), le rendez-vous
+> se pose en plein écran. Le reste (geste partout, globe, couronne, nature)
+> est intact.
 
 **La demande de Wah :** que la manette marche « comme dans totehm.html »,
 jouable et « PlayStation », sur une plateforme internationale. Neuf
@@ -3015,6 +3089,13 @@ facture mensuelle sans revenu en face. Le gratuit reste déterministe.
 | **Space Mono** | texte, labels, prix, navigation, métadonnées |
 | **Montserrat** | **EXCLUSIVEMENT `[Get Higher]`** |
 
+> **⛔ 27/09/2026 — PLUS DE MONTSERRAT NULLE PART** (Wah). Bebas Neue prend
+> les titres, sous-titres, questions et le wordmark ; une seule graisse,
+> l'intensité par la taille, la lumière et un contour d'une fraction de
+> pixel. Le slogan Higher est un TRACÉ (aucune webfont). Quantico = ce que
+> le membre tape ET le nom d'un Totehm, sur la tuile perforée navy — qui
+> ne sert plus qu'à ça. Voir BRAND.md, Polices (encadré du 27/09).
+>
 > **⚠️ ÉTENDU LE 24/09 PAR `BRAND.md` §13 (« Polices — la stack et ses
 > rôles sacrés »), qui fait autorité.** Montserrat 600 NOMME le produit et
 > ses parties : le wordmark TOTEHM et les **titres de vue** (`#vnow` du
@@ -3074,6 +3155,13 @@ padding: 0 6px; text-align: center; caret-color: var(--coral);
 
 Ne jamais introduire : `border-radius` · `box-shadow` décoratif ·
 placeholder coloré · `border-bottom` seul · animation d'entrée sur un input.
+
+> **⚠️ 27/09/2026 — LES CONTRÔLES S'ARRONDISSENT, PAS LES BOÎTES.** Sur
+> `totehm.space` et `figher.club` : saisies et boutons GRIS, `border-radius:
+> 10px`, sans tuile. La tuile perforée navy est réservée au NOM d'un Totehm
+> (`.tname`). Une BOÎTE (habitude, Spot, section, fenêtre) reste carrée.
+> `totehm.com` et `higher.boutique` gardent `.btn-sig` / `.line-input`
+> perforés : écart connu, à convertir.
 
 **Boxe perforée au survol — règle absolue**
 La bordure `border-image` suit la taille du contenu. Un bouton ou lien perforé

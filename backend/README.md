@@ -322,6 +322,21 @@ une erreur Stripe.
 
 ---
 
+## L'Espace — Yesterday · Today · Tomorrow · 27/09
+
+Cinq crans, et ce que chacun demande à la base :
+
+| cran | titre | RPC |
+|---|---|---|
+| centre | TODAY | `spots_radar(p_when='today')` — toucher la carte = créer un Spot ici |
+| haut | CREATE A SPOT | `spot_publish` (inchangé) |
+| bas | SEARCH | `spots_radar(p_q, p_when, p_mode, p_intention)` — tout combinable |
+| gauche | YESTERDAY | `my_space()` — `spots` et `applications` sur **365 jours** (v4, 27/09) |
+| droite | TOMORROW | `spots_radar(p_when='later')` |
+
+My space (le coin membre) lit `my_space()` aussi : `limits`, `requests`
+(accepter/refuser = `spot_decide`). Aucune nouvelle fonction.
+
 ## L'Espace — le monde, la nature d'un Spot · 26/09
 
 Au-dessus de 80 km de portée, la page cesse de demander des Spots un par

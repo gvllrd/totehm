@@ -860,6 +860,33 @@ centrage.
 
 ### Polices — la stack et ses rôles sacrés
 
+> **⚠️ MISE À JOUR 27/09/2026 — PLUS DE MONTSERRAT, NULLE PART.** Wah :
+> « tous les titres, sous-titres et questions importantes conceptuelles en
+> BEBAS NEUE, en jouant sur l'intensité du bold ; au final, je ne veux pas
+> de Montserrat, y compris dans le totehm.html ».
+> - **Bebas Neue** prend TOUT ce que Montserrat nommait : le wordmark
+>   TOTEHM, les titres de vue (`#vnow`, `#vt`), et en plus les
+>   sous-titres, les questions (« which habit becomes an action? »,
+>   « who can ask? »), les étiquettes de groupe, les questions de FAQ.
+> - **Bebas Neue n'existe qu'en UNE graisse** (Google Fonts). L'intensité
+>   se dit par trois niveaux : grand + blanc + un contour d'une fraction
+>   de pixel (`-webkit-text-stroke`) pour le nom d'une vue ; moyen, blanc
+>   cassé pour une question ; petit, blanc à 55 % pour un sous-titre.
+>   Jamais un faux gras synthétisé par le navigateur.
+> - **Le slogan Higher est un TRACÉ vectoriel** (le symbole `#higher-badge`
+>   de `com/totehm.html`, recopié) : il ne dépend d'aucune webfont. Les
+>   pages qui l'écrivaient en `<text font-family="Montserrat">` (boutique,
+>   HigherSelf, TotehmBot) portent maintenant le tracé.
+> - **Quantico** garde ce que le membre TAPE, et le **NOM d'un Totehm**.
+> - **La tuile perforée navy est RÉSERVÉE au nom d'un Totehm** (le mien,
+>   celui d'un créateur sous sa boîte-action, ceux que je suis). Les
+>   saisies sont **GRISES ET ARRONDIES** ; les boutons aussi. Sur
+>   `totehm.space` et `figher.club` depuis le 27/09 ; `totehm.com` et
+>   `higher.boutique` gardent la tuile sur `.btn-sig` / `.line-input` —
+>   écart connu, à convertir dans un prochain lot.
+> - Le tableau ci-dessous décrit la règle du 24/09 ; la ligne Montserrat
+>   est morte.
+
 **Mise à jour majeure · 24/09/2026 :** deux règles ont bougé.
 Quantico se resserre (INPUTS UTILISATEUR DU TOTEHM UNIQUEMENT — sacré),
 et Montserrat s'élargit (wordmark TOTEHM ET titres de vues, pas seulement
@@ -869,7 +896,7 @@ que la chose EST.
 | Famille | Poids | Rôle |
 |---|---|---|
 | **Bebas Neue** | 400 | Titres de pages (h1, h2), noms d'œuvres, gros display |
-| **Montserrat** | 600 · 900 italic | **Le nom du produit et ses parties.** Wordmark TOTEHM (600), titres de vue MY WISDOM / MY HABITS etc. dans `#vnow` (600), slogan HIGHER dans le SVG `#higher-slogan` (900 italic). |
+| ~~**Montserrat**~~ | — | ***RETIRÉE le 27/09 — voir l'encadré ci-dessus.*** ~~Le nom du produit et ses parties.~~ Wordmark TOTEHM (600), titres de vue MY WISDOM / MY HABITS etc. dans `#vnow` (600), slogan HIGHER dans le SVG `#higher-slogan` (900 italic). |
 | **Quantico** | 400 · 700 | **SACRÉ : ce que le membre TAPE dans son Totehm.** Nom du Totehm (encadré perforé navy, et le dos du papier de l'atterrissage — où « Tap to open it » n'est que la place du nom encore vide), barre de recherche, textes des habits/objectifs/répulsions/wisdom/visions écrits par le membre, inputs des formulaires de contenu. **JAMAIS** pour la navigation, les liens menu, les boutons d'action, les labels ou les titres. |
 | **Space Mono** | 400 · 700 | **Tout le reste** : métadonnées (M), coordonnées, dates, prix, distances, labels, notes, hints, navigation (Sign out, Terms, Back, Close), liens menu (`.mw-link`), boutons destructifs discrets (`.acct-btn`). C'est la police par défaut du produit. |
 | ~~Montserrat Italic slogan only~~ | — | *Ancienne règle (avant 24/09) : Montserrat exclusivement pour le slogan. Étendue au wordmark et aux titres de vue.* |
