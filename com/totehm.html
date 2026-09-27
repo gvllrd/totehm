@@ -2048,10 +2048,6 @@ body:not(.gate) #gate{display:none}
 #gate-search #search-input{width:100%;max-width:none;font-size:15px;
   text-align:center}
 #gate-search .note{width:100%}
-body:not(.member) #gate-id .gid,
-body:not(.member) #gate-id #set-name,
-body:not(.member) #gate-id #vis-panel,
-body:not(.member) #gate-id #name-note{display:none}
 #gate-top-row{display:flex;flex-direction:column;align-items:center;
   gap:16px;flex-shrink:0}
 /* ══ LE PAPIER — L'ATTERRISSAGE · 25/09/2026 ══════════════════════
@@ -2082,8 +2078,16 @@ body:not(.member) #gate-id #name-note{display:none}
    (deux plans confondus scintillent sur la tranche) — et remises dans
    le même plan quand il est posé : `measure()` lit une face sans
    aucune transformation. */
-#gate-top-row{margin:auto 0;padding-bottom:max(56px,11vh)}
-#gate-asteroid{position:relative;flex-shrink:0;
+/* ⚠️ LE TOTEHM MONTE DANS LE HAUT DE L'ÉCRAN · 27/09/2026. Le centre
+   du papier se pose à ~27 % de la hauteur : dessous, l'air, le socle,
+   puis la porte — qui doit rester AU-DESSUS du clavier du téléphone. Un
+   écran de 844 px garde tout dans ses 480 premiers pixels. La colonne est
+   ancrée en haut : ouvrir ou fermer la porte ne déplace pas le papier —
+   `measure()` doit lire un logo immobile. */
+#gate-top-row{margin:0;gap:0;
+  margin-top:max(0px,calc(27dvh - var(--gate-size) / 2 - max(76px,13dvh)))}
+#gate-asteroid{z-index:2;
+  position:relative;flex-shrink:0;
   width:var(--gate-size);height:var(--gate-size);
   perspective:480px;cursor:pointer;touch-action:none;
   -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
@@ -2119,6 +2123,82 @@ body:not(.member) #gate-id #name-note{display:none}
 .ast-say.is-name{color:rgba(255,255,255,.88)}
 @media(hover:hover){#gate-asteroid:hover .ast-say{color:#fff}}
 body.gate.entered .ast-back{visibility:hidden}
+
+/* ══ LE SOCLE · 27/09/2026 ═══════════════════════════════════════════
+   Un palet gris, le plus plat et fin possible : zéro bouton, zéro vis,
+   des lignes pures. Dessiné en SVG (une tranche, un dessus, un
+   logement) : c'est de la géométrie, pas une image — net à toutes les
+   tailles, zéro octet à télécharger.
+
+   ⚠️ LE PAPIER FLOTTE AU-DESSUS, ET LE SOCLE LE SAIT. Le moteur du
+   papier (`PAPIER.peindre`) pose à chaque frame trois lectures : le
+   REFLET navy du papier sur le dessus (il glisse avec lui, et s'amincit
+   quand le papier passe sur la tranche), le CŒUR de l'aimant (plus vif
+   quand le papier descend — l'aimant travaille), et le FAISCEAU. Rien
+   de flashy : tout vit entre 3 et 12 % d'opacité.
+
+   ⚠️ AUCUNE OMBRE PORTÉE (BRAND). Ce qui ancre le papier au socle, ce
+   n'est pas une tache sombre : c'est sa lumière sur le dessus. Le seul
+   trait est l'arête avant, blanche à 7 % — la lumière sur un bord, pas
+   un contour. */
+:root{--socle-w:clamp(176px,46vmin,236px);--air:clamp(34px,6.2vh,58px)}
+#gate-socle{position:relative;z-index:1;flex-shrink:0;width:var(--socle-w);
+  margin-top:var(--air);line-height:0;
+  transition:opacity .7s ease .5s,transform .9s cubic-bezier(.2,.7,.2,1) .5s}
+#gate-socle svg{display:block;width:100%;height:auto;overflow:visible}
+/* Le faisceau : de la gorge de l'aimant jusqu'au dessous du papier. Il
+   ne s'annonce pas — il se devine : une colonne d'air à peine plus
+   claire, qui meurt avant de toucher le papier.
+   ⚠️ UN MASQUE, PAS UN `clip-path`. Le flou (`filter`) passe AVANT la
+   découpe : un faisceau découpé garde des arêtes nettes, et une lueur à
+   arêtes nettes se lit comme une boîte grise (mesuré). Les deux masques
+   se croisent : la hauteur s'éteint vers le haut, les côtés s'effilent. */
+#socle-beam{position:absolute;left:50%;bottom:60.7%;
+  width:calc(var(--gate-size) * .9);
+  height:calc(var(--air) + var(--socle-w) * .0917 + 6px);
+  transform:translateX(-50%);opacity:.7;pointer-events:none;
+  background:linear-gradient(to top,rgba(157,157,224,.10),rgba(157,157,224,.04) 50%,rgba(157,157,224,0));
+  -webkit-mask-image:linear-gradient(to top,#000 20%,transparent 92%),linear-gradient(to right,transparent,#000 32%,#000 68%,transparent);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(to top,#000 20%,transparent 92%),linear-gradient(to right,transparent,#000 32%,#000 68%,transparent);
+  mask-composite:intersect}
+.sc-w{transform-box:fill-box;transform-origin:center;vector-effect:non-scaling-stroke;
+  opacity:0;animation:sc-onde 4.8s cubic-bezier(.3,.1,.3,1) infinite}
+.sc-w:nth-child(2){animation-delay:1.6s}
+.sc-w:nth-child(3){animation-delay:3.2s}
+.sc-coil ellipse{vector-effect:non-scaling-stroke}
+@keyframes sc-onde{0%{transform:scale(.16);opacity:0}20%{opacity:.42}100%{transform:scale(1.06);opacity:0}}
+/* Au tap, l'aimant rend son énergie : un seul éclat, puis le Totehm sort. */
+#gate-socle.is-charge #socle-core{animation:sc-charge .75s ease-out}
+@keyframes sc-charge{0%{opacity:.6}25%{opacity:1}100%{opacity:.2}}
+/* Le Totehm se déplie : le socle s'efface en s'abaissant d'un souffle,
+   et revient quand le logo est rentré dans son papier. */
+body.gate.entered #gate-socle{opacity:0;transform:translateY(10px);
+  transition:opacity .4s ease,transform .6s ease}
+@media(prefers-reduced-motion:reduce){ .sc-w{animation:none} }
+
+/* ══ LA PORTE · 27/09/2026 ═══════════════════════════════════════════
+   Pas inscrit, rien n'est permis. Elle n'existe que demandée (le tap
+   sur le papier) : une question à la fois, sous le socle. Elle se
+   retire en `visibility` APRÈS son fondu, sinon ses champs restent
+   atteignables à la tabulation. */
+#gate-door{display:flex;flex-direction:column;align-items:center;gap:9px;
+  width:min(280px,78vw);margin-top:clamp(20px,3.6vh,32px);
+  opacity:0;transform:translateY(-6px);visibility:hidden;pointer-events:none;
+  transition:opacity .3s ease,transform .45s cubic-bezier(.2,.7,.2,1),visibility 0s linear .45s}
+body.is-door #gate-door{opacity:1;transform:none;visibility:visible;pointer-events:auto;
+  transition:opacity .45s ease .05s,transform .55s cubic-bezier(.2,.7,.2,1),visibility 0s}
+body.gate.entered #gate-door{opacity:0;visibility:hidden}
+#gate-door #mw-out-state,#gate-door #mw-claim-state{width:100%}
+#gate-door .mw-input{margin-bottom:0}
+/* La question est un TITRE (BRAND 27/09 : Bebas Neue). Une seule graisse :
+   l'importance tient dans la taille et la lumière. */
+.door-q{font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:17px;
+  letter-spacing:.14em;color:rgba(255,255,255,.78);text-transform:uppercase;line-height:1}
+#gate-turn{margin-top:20px}
+/* Le coin membre n'existe que pour un inscrit : un point gris qui
+   n'ouvre rien d'utile à un inconnu est une porte peinte sur un mur. */
+body:not(.member) #conn-bar{display:none}
 
 #gate-logo{position:relative;flex-shrink:0;
   width:var(--gate-size);height:var(--gate-size)}
@@ -2770,6 +2850,71 @@ body.gate.entered #filter-badge{
     </div><!-- /#gate-card -->
   </div><!-- /#gate-asteroid -->
 
+  <!-- ══ LE SOCLE · 27/09/2026 ═══════════════════════════════════════
+       Un palet gris, aussi plat et fin que possible : zéro bouton, zéro
+       vis. Dans son dessus, un logement, et dans le logement
+       l'électroaimant — ses spires, et le champ qui en sort. Le papier
+       flotte au-dessus ; le socle le sait : son reflet glisse sur le
+       dessus, le cœur de l'aimant répond à sa hauteur. -->
+  <div id="gate-socle" aria-hidden="true">
+    <div id="socle-beam"></div>
+    <svg viewBox="0 0 240 56" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="sc-rim" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stop-color="#0e0e10"/><stop offset=".16" stop-color="#2a2a2e"/>
+          <stop offset=".42" stop-color="#3d3d43"/><stop offset=".7" stop-color="#2c2c31"/>
+          <stop offset="1" stop-color="#0d0d0f"/>
+        </linearGradient>
+        <radialGradient id="sc-top" cx=".38" cy=".2" r=".95">
+          <stop offset="0" stop-color="#38383e"/><stop offset=".55" stop-color="#29292e"/>
+          <stop offset="1" stop-color="#1c1c20"/>
+        </radialGradient>
+        <radialGradient id="sc-floor" cx=".5" cy=".5" r=".6">
+          <stop offset="0" stop-color="#15151b"/><stop offset="1" stop-color="#09090b"/>
+        </radialGradient>
+        <radialGradient id="sc-glow" cx=".5" cy=".5" r=".5">
+          <stop offset="0" stop-color="#7a7ac8" stop-opacity=".55"/>
+          <stop offset=".6" stop-color="#4b4b92" stop-opacity=".16"/>
+          <stop offset="1" stop-color="#333366" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="sc-core" cx=".5" cy=".5" r=".5">
+          <stop offset="0" stop-color="#b9b9ee" stop-opacity=".9"/>
+          <stop offset=".45" stop-color="#6a6ab8" stop-opacity=".35"/>
+          <stop offset="1" stop-color="#333366" stop-opacity="0"/>
+        </radialGradient>
+        <clipPath id="sc-topclip"><ellipse cx="120" cy="22" rx="112" ry="17"/></clipPath>
+        <clipPath id="sc-wellclip"><ellipse cx="120" cy="22.6" rx="36" ry="5.3"/></clipPath>
+      </defs>
+      <!-- la tranche : l'épaisseur du palet, et rien d'autre -->
+      <path d="M8 22 L8 27.5 A112 17 0 0 0 232 27.5 L232 22 A112 17 0 0 1 8 22 Z" fill="url(#sc-rim)"/>
+      <!-- le dessus -->
+      <ellipse cx="120" cy="22" rx="112" ry="17" fill="url(#sc-top)"/>
+      <!-- le reflet du papier, posé par le moteur -->
+      <g clip-path="url(#sc-topclip)"><g id="socle-refl" transform="translate(120 20)">
+        <ellipse cx="0" cy="0" rx="46" ry="7" fill="url(#sc-glow)"/></g></g>
+      <!-- le logement : une lèvre, un fond -->
+      <ellipse cx="120" cy="22" rx="38" ry="5.9" fill="#0d0d10"/>
+      <ellipse cx="120" cy="22.6" rx="36" ry="5.3" fill="url(#sc-floor)"/>
+      <g clip-path="url(#sc-wellclip)">
+        <!-- les spires de l'aimant, immobiles -->
+        <g class="sc-coil" fill="none" stroke="#2c2c38" stroke-width=".45">
+          <ellipse cx="120" cy="22.6" rx="29" ry="4.25"/>
+          <ellipse cx="120" cy="22.6" rx="22" ry="3.2"/>
+          <ellipse cx="120" cy="22.6" rx="15" ry="2.2"/>
+        </g>
+        <!-- le champ : trois ondes qui partent du cœur -->
+        <g class="sc-field" fill="none" stroke="#9d9de0" stroke-width=".5">
+          <ellipse class="sc-w" cx="120" cy="22.6" rx="34" ry="5"/>
+          <ellipse class="sc-w" cx="120" cy="22.6" rx="34" ry="5"/>
+          <ellipse class="sc-w" cx="120" cy="22.6" rx="34" ry="5"/>
+        </g>
+        <ellipse id="socle-core" cx="120" cy="22.6" rx="16" ry="2.6" fill="url(#sc-core)" opacity=".55"/>
+      </g>
+      <!-- l'arête avant : la lumière sur le bord, pas un trait autour -->
+      <path d="M9 23.2 A111 16.4 0 0 0 231 23.2" fill="none" stroke="#ffffff" stroke-opacity=".07" stroke-width=".6"/>
+    </svg>
+  </div><!-- /#gate-socle -->
+
 
   <!-- ⚠️ LE TOTEHM NE S'OUVRE PAS À L'HORIZONTALE · 22/09/2026.
        Le Totehm est un CARRÉ debout : couché, la liste tient sur trois
@@ -2779,6 +2924,25 @@ body.gate.entered #filter-badge{
        un bouton absent sans raison est un bouton cassé : on dit quoi
        faire, en un mot, et il repart dès que le téléphone se redresse. -->
   <div id="gate-turn">turn your phone upright</div>
+
+  <!-- ══ LA PORTE · 27/09/2026 ═══════════════════════════════════════
+       Pas inscrit, rien n'est permis. Toucher le papier sans compte fait
+       apparaître ICI, sous le socle, une seule question à la fois :
+       l'email, le code reçu, le nom du Totehm — puis le papier s'ouvre.
+       Les champs sont ceux de l'ancienne fenêtre membre, déplacés (mêmes
+       nœuds, mêmes écouteurs). -->
+  <div id="gate-door">
+    <div class="door-q" id="door-q">Sign up to open it</div>
+    <div id="mw-out-state">
+      <input class="mw-input" id="mw-email" type="email" placeholder="your email" autocomplete="email">
+      <input class="mw-input hide" id="mw-code" inputmode="numeric" maxlength="6" placeholder="6-digit code">
+      <div class="mw-note dim" id="mw-note"></div>
+    </div>
+    <div id="mw-claim-state" class="hide">
+      <input class="mw-input" id="mw-pseudo" maxlength="24" placeholder="your Totehm">
+      <div class="mw-note dim" id="mw-claim-note"></div>
+    </div>
+  </div><!-- /#gate-door -->
 
   <!-- ⚠️ LE NOM ET LA VISIBILITÉ SONT REPARTIS DANS L'ESPACE MEMBRE le
        18/09 : la visibilité est devenue le commutateur de monétisation,
@@ -3015,20 +3179,14 @@ body.gate.entered #filter-badge{
   </div>
 </div>
 
-<button id="conn-bar" type="button" aria-label="member space"><span class="dot"></span>Guest</button>
+<button id="conn-bar" type="button" aria-label="member space"><span class="dot"></span></button>
 <div id="member-window">
   <div class="mw-card">
     <button class="mw-close" id="mw-close">Close</button>
-    <div id="mw-out-state">
-      <input class="mw-input" id="mw-email" type="email" placeholder="your email" autocomplete="email">
-      <input class="mw-input hide" id="mw-code" inputmode="numeric" maxlength="6" placeholder="6-digit code">
-      <div class="mw-note dim" id="mw-note"></div>
-    </div>
-    <div id="mw-claim-state" class="hide">
-      <div class="mw-body">Choose the name of your Totehm.</div>
-      <input class="mw-input" id="mw-pseudo" maxlength="24" placeholder="your Totehm">
-      <div class="mw-note dim" id="mw-claim-note"></div>
-    </div>
+    <!-- ⚠️ L'INSCRIPTION A QUITTÉ CETTE FENÊTRE · 27/09/2026. Elle vit
+         sous le socle (#gate-door) : on s'inscrit pour OUVRIR le papier,
+         pas dans un menu. Cette fenêtre n'est plus que le tiroir d'un
+         inscrit. -->
     <div id="mw-in-state" class="hide">
       <!-- Le même carré vert que la barre du haut, en grand et lancé :
            à .22 s le tour, l'œil ne suit plus les angles et le voit rond.
@@ -3276,14 +3434,9 @@ const $=id=>document.getElementById(id);
    Le Book (brique 2) lira ce journal pour détecter les grandes transformations et écrire les chapitres.
    kind: habit_added | habit_removed | intention_changed | freq_changed */
 async function logTotehmEvent(kind, habitText, detail){
-  const ev={kind, habit_text:habitText||null, detail:detail||{}, created_at:new Date().toISOString()};
-  try{
-    const raw=localStorage.getItem('totehm_events');
-    const arr=raw?JSON.parse(raw):[];
-    arr.push(ev);
-    if(arr.length>500)arr.splice(0,arr.length-500); /* garde les 500 derniers en local */
-    localStorage.setItem('totehm_events',JSON.stringify(arr));
-  }catch(e){}
+  /* ⚠️ PLUS DE COPIE LOCALE · 27/09/2026. Elle gardait les 500 derniers
+     événements — des textes d'habitudes — dans le navigateur, que personne
+     ne relisait, et qui survivaient à la déconnexion. Le serveur suffit. */
   try{
     const {data:{session}}=await sb.auth.getSession();
     if(session&&session.user){
@@ -3510,31 +3663,41 @@ function deduceFreq(raw){
   return 'sometimes';
 }
 
-/* ══ STORAGE — dual local+cloud ══ */
+/* ══ STORAGE — LE NUAGE, ET UN CACHE QUI APPARTIENT À UN COMPTE ══
+   ⚠️ PAS INSCRIT, RIEN N'EST PERMIS · 27/09/2026. Il n'y a plus de
+   Totehm d'invité : ni habitudes de démonstration (trois fausses
+   habitudes remplissaient l'écran d'un inconnu), ni écriture locale
+   sans compte, ni migration du local vers le compte à l'inscription.
+   La base est la seule vérité ; `KEY` n'est plus qu'un CACHE du
+   Totehm d'UN compte — il porte son `uid`, il n'est relu que par ce
+   compte, il s'efface à la déconnexion. Avant, un cache sans maître
+   survivait à la déconnexion : sur un appareil partagé, le suivant qui
+   s'inscrivait héritait du Totehm du précédent. (`map.html` le lit
+   encore pour pré-dessiner les intentions : il y trouve `habits`.) */
 const KEY='totehm_habits_v1';
-const KEYP='totehm_profile_v1';
 let me=null, myProfile=null, cloudMode=false, cloudSaveTimer=null, saveTimer=null;
 /* TotehmBot — declare ici et pas plus bas : la remise a zero de la
    deconnexion s'execute avant, et une TDZ y jetterait. */
 const TG_BOT='TotehmBot';
 let tgLinked=false;
-
-function loadState(){
-  try{const r=localStorage.getItem(KEY);if(r)return JSON.parse(r);}catch(e){}
-  /* migration depuis le Grind v5 : on aplatit les steps de tous les trips */
-  try{
-    const r5=localStorage.getItem('totehm_grind_v5');
-    if(r5){
-      const g=JSON.parse(r5)||[];
-      const habits=[];const seen={};
-      g.forEach(t=>{(t.steps||[]).forEach(s=>{const k=norm(s.t);if(s.t&&!seen[k]){seen[k]=1;habits.push({t:s.t,f:FREQ_BY_ID[s.f]?s.f:null,i:INT_BY_ID[s.i]?s.i:null,o:s.o||null});}});});
-      const vis=g.some(t=>t.vis==='members')?'members':'private';
-      if(habits.length)return {habits,vis};
-    }
-  }catch(e){}
-  return null;
+/* Inscrit = un compte ET le nom de son Totehm. Rien d'autre n'ouvre. */
+const inscrit=()=>!!(me&&myProfile);
+function cacheLire(){
+  try{ const c=JSON.parse(localStorage.getItem(KEY)||'null');
+       if(c&&me&&c.uid!==me.id){ cacheOublier(); return null; }   /* celui d'un autre : il part */
+       return c&&me&&Array.isArray(c.habits)?c:null; }catch(e){ return null; }
 }
-const pload=()=>{try{const r=localStorage.getItem(KEYP);return r?JSON.parse(r):null;}catch(e){return null;}};
+function cacheEcrire(){
+  if(!me)return;
+  try{ localStorage.setItem(KEY,JSON.stringify(Object.assign({},state,{uid:me.id}))); }catch(e){}
+}
+function cacheOublier(){
+  try{ localStorage.removeItem(KEY); }catch(e){}
+}
+/* Les restes de l'époque invité : un Totehm sans maître, un nom local,
+   le vieux Grind, le journal. On ne les lit plus ; on ne les laisse pas. */
+try{ ['totehm_profile_v1','totehm_grind_v5','totehm_events'].forEach(k=>localStorage.removeItem(k));
+     const c0=JSON.parse(localStorage.getItem(KEY)||'null'); if(c0&&!c0.uid) cacheOublier(); }catch(e){}
 
 /* ══ ?ro=<pseudo> — LE TOTEHM D'UN AUTRE, DANS CETTE PAGE ══
    Une seule bascule, lue une fois au démarrage. Tout le reste du fichier
@@ -3543,12 +3706,7 @@ const pload=()=>{try{const r=localStorage.getItem(KEYP);return r?JSON.parse(r):n
 const RO=(()=>{try{const v=new URLSearchParams(location.search).get('ro');
   return v&&v.trim()?v.trim().slice(0,32):null;}catch(e){return null;}})();
 
-let state=loadState()||{habits:[
-  {t:'Get Higher',f:'every_minute'},
-  {t:'Read 20 minutes of neuroscience',f:'every_night'},
-  {t:'Drop a street sticker in Lisbon',f:'weekly'}
-],vis:'private'};
-let profile=pload()||{name:'',bot:false};
+let state={habits:[],vis:'private'};
 let busy=false, fpTarget=null, fpStage='freq', pendingF=null, pendingI=null, filterF=null, filterI=null;
 /* `pendingO` : l'objectif que servira la prochaine habitude ecrite.
    Pose par le wizard [Add a trip] d'objectives.html, nul partout
@@ -3584,9 +3742,9 @@ try{const _rf=JSON.parse(localStorage.getItem(KEYF)||'null');
 function save(){
   /* ══ LE VERROU ══ Un seul point de sortie pour toute écriture locale ET
      nuage. Le mode lecture s'arrête ICI : pas plus loin, jamais ailleurs. */
-  if(RO)return;
-  try{localStorage.setItem(KEY,JSON.stringify(state));localStorage.setItem(KEYP,JSON.stringify(profile));}catch(e){}
-  if(cloudMode&&me){scheduleCloudSave();}
+  if(RO||!me)return;
+  cacheEcrire();
+  if(cloudMode){scheduleCloudSave();}
   $('fv-status').textContent='saved';
   setTimeout(()=>{if($('fv-status').textContent==='saved')$('fv-status').textContent='';},1100);
 }
@@ -3616,8 +3774,6 @@ async function cloudSave(){
     setTimeout(()=>{if($('mw-sync').textContent==='synced ✓')$('mw-sync').textContent='';},1400);
   }catch(e){$('mw-sync').textContent='sync failed — will retry';}
 }
-/* Un state venu du localStorage d'avant la migration porte l'ancienne valeur. */
-if(state&&state.vis==='network')state.vis='members';
 function scheduleCloudSave(){clearTimeout(cloudSaveTimer);cloudSaveTimer=setTimeout(cloudSave,900);}
 async function cloudLoad(){
   if(!me)return;
@@ -3648,8 +3804,7 @@ async function cloudLoad(){
   const ordonne = !!(state && state.ord);
   state={habits, vis:data.some(r=>r.totehm_visibility==='members')?'members':'private'};
   if(ordonne)state.ord=true;
-  if(data[0].bot!=null)profile.bot=!!data[0].bot;
-  try{localStorage.setItem(KEY,JSON.stringify(state));localStorage.setItem(KEYP,JSON.stringify(profile));}catch(e){}
+  cacheEcrire();
 }
 /* ══ LE TOTEHM D'UN AUTRE ══
    Trois requêtes, aucune écriture. `totehms` a déjà sa policy « members
@@ -3712,15 +3867,6 @@ function roFail(msg){
   renderHabits();
 }
 $('ro-out').onclick=()=>{ location.href='totehm.html'; };
-
-async function migrateLocalToCloudIfNeeded(){
-  /* En lecture, on ne migre rien et on ne charge pas SON propre Totehm. */
-  if(RO){ await loadRO(); return; }
-  if(!me)return;
-  const {count}=await sb.from('totehms').select('*',{count:'exact',head:true}).eq('user_id',me.id);
-  if((count||0)===0 && state.habits.length){await cloudSave();}
-  else{await cloudLoad();}
-}
 
 /* ══ LES 7 INTENTIONS (source : totehm_map.html) ══ */
 const INTS=[
@@ -3802,11 +3948,13 @@ $('acct-wipe').onclick=async()=>{
     /* Le local doit suivre le serveur, sinon le prochain cloudSave
        reecrirait ce qu'on vient d'effacer. */
     state={habits:[],vis:'private'};
-    profile={name:'',bot:false};
     myProfile=null; cloudMode=false; mySub=null;
     tgLinked=false; { const tb=$('tg-block'); if(tb)tb.classList.add('hide'); }
-    try{localStorage.removeItem(KEY);localStorage.removeItem(KEYP);}catch(_){}
+    cacheOublier();
     renderHabits(); connPaint(); renderSettings();
+    /* Sans nom, plus inscrit : le tiroir se ferme, et la porte du papier
+       redemandera un nom — le compte, lui, existe toujours. */
+    $('member-window').classList.remove('show'); memberPaint();
     b.textContent='erased'; b.disabled=true;
   }catch(e){
     b.disabled=false; b.classList.remove('armed');
@@ -4233,7 +4381,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-09-25';
+const BUILD='2026-09-27';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -4447,15 +4595,11 @@ function setView(v){
   /* Les objectifs et les répulsions sont des données du serveur : sans
      session il n'y a rien à montrer, et l'écran vide ne dirait pas
      pourquoi. */
-  /* ⚠️ EN LECTURE, LES CINQ VUES SONT OUVERTES. Les données sont déjà
-     là — `loadRO` les a toutes ramenées en un appel. Demander une
-     session ici aurait bloqué quatre vues sur cinq chez quelqu'un dont
-     on regarde justement le Totehm. */
-  if(v!=='habits'&&!me&&!RO){
-    $('member-window').classList.add('show');
-    if(typeof memberPaint==='function')memberPaint();
-    return;
-  }
+  /* ⚠️ PLUS DE FENÊTRE MEMBRE ICI · 27/09/2026. On ne demandait
+     l'email que sur quatre vues sur cinq : un invité écrivait ses
+     habitudes, puis tombait sur une porte en passant aux objectifs. On
+     ne peut plus entrer dans le Totehm sans être inscrit (`enter()`) :
+     les cinq vues sont ouvertes à qui est dedans. */
   /* ⚠️ LE FILTRE SE REFERME EN QUITTANT LES HABITUDES. Laissé ouvert,
      il serait resté à l'écran dans une vue où ses deux critères ne
      veulent rien dire — et il aurait continué de filtrer en silence. */
@@ -5508,9 +5652,6 @@ async function creer(kind){
   if(kind==='h'){
     const x={id:'h'+(++HSEQ), t:'', t0:'', f:null, i:null, is:[], o:null};
     state.habits.push(x); state.ord=true; save(); ouvrir('h',x.id,true); return;}
-  if(!me){$('member-window').classList.add('show');
-          if(typeof memberPaint==='function')memberPaint();return;}
-
   const tmp = 'tmp-'+(++TSEQ);   /* ⚠️ JAMAIS de « : » — voir `estProvisoire` */
 
   if(kind==='t'){
@@ -6563,28 +6704,17 @@ window.addEventListener('keydown',(e)=>{
    écriture serveur était effacée par le snapshot suivant. */
 
 /* ══ SETTINGS handlers ══ */
-/* Frustre les non-membres : ouvre la fenêtre membre pour pousser à s'inscrire.
-   Bloque : Name of my Totehm, Visibility, My Livin' Totehm, My Book (autobiography). */
-function requireMember(fn){
-  return (e)=>{
-    if(me){return fn(e);}
-    if(e&&e.preventDefault)e.preventDefault();
-    $('member-window').classList.add('show');
-    if(typeof memberPaint==='function')memberPaint();
-  };
-}
-
 /* Bouton-saisie (morph) : Name of my Totehm + Search a Totehm */
-function morph(btn,input,note,guarded){
+function morph(btn,input,note){
   const open=()=>{
     btn.classList.add('hide');
     input.classList.remove('hide');
     if(note)note.classList.remove('hide');
     setTimeout(()=>{try{input.focus();}catch(e){}},100);
   };
-  btn.onclick = guarded ? requireMember(open) : open;
+  btn.onclick = open;
 }
-morph($('name-btn'),$('set-name'),$('name-note'),true);        /* réservé aux membres */
+morph($('name-btn'),$('set-name'),$('name-note'));  /* le tiroir n'existe que pour un inscrit */
 /* ⚠️ PAS DE `morph` SUR LA RECHERCHE · 16/09/2026. `#search-btn` n'existe
    plus : la recherche est une BARRE, visible dès l'arrivée. Appeler
    `morph` sur un nœud absent lèverait ici même — donc au chargement du
@@ -6594,7 +6724,7 @@ morph($('name-btn'),$('set-name'),$('name-note'),true);        /* réservé aux 
    - nom claimed  -> bouton avec le nom et look perforé bleu figé
    - pas de nom   -> bouton neutre "Name of my Totehm" */
 function paintNameButton(){
-  const name=(myProfile&&myProfile.pseudo)||profile.name||'';
+  const name=(myProfile&&myProfile.pseudo)||'';
   const btn=$('name-btn'), inp=$('set-name');
   if(name){
     btn.textContent=name;
@@ -6612,7 +6742,6 @@ function paintNameButton(){
 let nameTimer=null;
 $('set-name').addEventListener('input',()=>{
   const v=$('set-name').value.trim(), note=$('name-note');
-  if(!me){profile.name=$('set-name').value;save();return;}
   clearTimeout(nameTimer);
   if(myProfile&&v===myProfile.pseudo){note.className='note dim';note.textContent='';return;}
   if(v.length<3){note.className='note dim';note.textContent='at least 3 characters';return;}
@@ -6627,7 +6756,7 @@ $('set-name').addEventListener('input',()=>{
 $('set-name').addEventListener('blur',()=>{setTimeout(paintNameButton,150);});
 $('set-name').addEventListener('keydown',async e=>{
   if(e.key==='Escape'){e.preventDefault();paintNameButton();return;}
-  if(e.key!=='Enter'||!me)return;
+  if(e.key!=='Enter')return;
   e.preventDefault();
   clearTimeout(nameTimer);
   const v=$('set-name').value.trim(), note=$('name-note');
@@ -6637,8 +6766,7 @@ $('set-name').addEventListener('keydown',async e=>{
   note.className='note dim';note.textContent='claiming\u2026';
   const {error}=await sb.from('profiles').update({pseudo:v}).eq('id',me.id);
   if(error){note.className='note no';note.textContent=error.code==='23505'?'already taken':'try again';return;}
-  myProfile={pseudo:v};profile.name=v;
-  try{localStorage.setItem(KEYP,JSON.stringify(profile));}catch(err){}
+  myProfile={pseudo:v};
   note.className='note ok';note.textContent='claimed \u2713';
   connPaint();
   /* Le bouton reprend sa place, avec le nom et le look bleu perforé figé */
@@ -6669,7 +6797,6 @@ $('club-toggle').onclick=()=>{
    reconnecte pas. ssoVersDomaine est défini par sso_snippet.js copié
    plus haut dans le module. */
 $('club-console').onclick=e=>{
-  if(!me)return; /* invité : le href brut ouvre la porte du club */
   e.preventDefault();
   if(typeof ssoVersDomaine==='function') ssoVersDomaine('club','/console');
   else location.href='https://www.figher.club/console';
@@ -6842,8 +6969,11 @@ $('search-input').addEventListener('keydown',e=>{
 
 /* ══ MEMBER SPACE : email-only DNA ══ */
 function connPaint(){
-  const label=(myProfile&&myProfile.pseudo)||(me?'Member':'Guest');
-  $('conn-bar').innerHTML='<span class="dot"'+(me?' style="background:#639922"':'')+'></span>'+label+(myHigher?HI_SVG:'');
+  /* Plus de « Guest » : le coin n'existe que pour un inscrit, et il dit
+     son nom. `body.member` le montre ou le cache (CSS). */
+  const label=(myProfile&&myProfile.pseudo)||'';
+  $('conn-bar').innerHTML='<span class="dot" style="background:#639922"></span>'+esc(label)+(myHigher?HI_SVG:'');
+  document.body.classList.toggle('member',inscrit());
   paintAsteroid();
 }
 /* ══ LE DOS DU PAPIER PORTE LE NOM · 25/09/2026 ════════════════════
@@ -7081,11 +7211,67 @@ function memberPaint(){
   $('mw-out-state').classList.toggle('hide',!!me);
   $('mw-claim-state').classList.toggle('hide',!(me&&!myProfile));
   $('mw-in-state').classList.toggle('hide',!(me&&myProfile));
-  /* `body.member` pilote la carte de visite de l'atterrissage : nommer
-     son Totehm n'a de sens que pour quelqu'un qui en a un. */
-  document.body.classList.toggle('member',!!(me&&myProfile));
+  /* `body.member` : le coin membre n'existe que pour un inscrit. */
+  document.body.classList.toggle('member',inscrit());
   if(me&&myProfile){$('mw-who').textContent=myProfile.pseudo;$('mw-mail').textContent=me.email||'';}
+  peindrePorte();
 }
+/* ══ LA PORTE DU PAPIER · 27/09/2026 ═════════════════════════════════
+   « Pas inscrit. Rien n'est permis. Point. » Inscrit = un compte ET le
+   nom de son Totehm (`inscrit()`). Toucher le papier sans l'être ouvre
+   la porte sous le socle — une question à la fois : l'email, le code,
+   le nom — puis le papier s'ouvre de lui-même : on s'inscrivait pour
+   ÇA, on ne retouche pas le papier une deuxième fois.
+   ⚠️ `enter()` EST LE VERROU, PAS LE BOUTON. Le tap, le clavier, un
+   `#in` dans l'URL, `__totehmDeplie` : tout passe par `enter()`, et
+   `enter()` renvoie ici tant qu'on n'est pas inscrit. Un verrou posé
+   sur un seul bouton se contourne par les trois autres chemins. */
+const LA_PORTE={voulu:false, then:null};
+/* La question du moment et SON champ : une seule table pour les deux,
+   sinon le titre dit « le code » pendant que le curseur attend l'email. */
+function champPorte(){
+  return !me ? ($('mw-code').classList.contains('hide')?$('mw-email'):$('mw-code')) : $('mw-pseudo');
+}
+function peindrePorte(){
+  const q=$('door-q'); if(!q) return;
+  q.textContent= !me ? ($('mw-code').classList.contains('hide')?'Sign up to open it':'The code from your email')
+               : !myProfile ? 'Name your Totehm' : '';
+  /* ⚠️ LA QUESTION CHANGE, LE CURSEUR SUIT. Le code vérifié, son champ
+     disparaît et emporte le focus : sans ça, on tapait son nom dans le
+     vide (mesuré). Au clavier du téléphone, c'est aussi ce qui le garde
+     ouvert d'une question à l'autre. */
+  if(document.body.classList.contains('is-door')&&!inscrit()){
+    const c=champPorte();
+    if(c&&document.activeElement!==c) try{ c.focus({preventScroll:true}); }catch(_){}
+  }
+}
+function ouvrirPorte(then){
+  if(inscrit()) return false;
+  LA_PORTE.voulu=true; if(then!==undefined) LA_PORTE.then=then||null;
+  memberPaint();
+  document.body.classList.add('is-door');
+  const champ=champPorte();
+  setTimeout(()=>{ try{ champ.focus({preventScroll:true}); }catch(_){} },120);
+  return true;
+}
+function fermerPorte(){ LA_PORTE.voulu=false; document.body.classList.remove('is-door'); }
+/* Inscrit : la porte se ferme ; si on l'avait ouverte pour entrer, le
+   papier s'ouvre — après le fondu de la porte (420 ms), pour que rien ne
+   bouge encore quand le papier se pose et que `measure()` lit le logo. */
+function porteFranchie(){
+  if(!inscrit()) return;
+  const voulu=LA_PORTE.voulu, then=LA_PORTE.then;
+  LA_PORTE.then=null; fermerPorte();
+  if(voulu&&window.__totehmDeplie) setTimeout(()=>window.__totehmDeplie(then),420);
+}
+/* Un tap à côté la referme, Échap aussi ; le papier, lui, continue de vivre. */
+$('gate-hero').addEventListener('click',e=>{
+  if(!document.body.classList.contains('is-door'))return;
+  if(e.target.closest&&e.target.closest('#gate-door,#gate-asteroid'))return;
+  fermerPorte();
+});
+$('gate-door').addEventListener('keydown',e=>{
+  if(e.key==='Escape'){ fermerPorte(); if(e.target.blur) e.target.blur(); } });
 /* ══ PAS D'ESPACE MEMBRE DANS LE TOTEHM DÉPLIÉ · 17/09/2026 ══════════
    ⚠️ `#conn-bar` EST UN ÉTAT, PLUS UNE PORTE. Tout ce qui concerne le
    compte — le nom, la visibilité, la recherche — vit sur l'atterrissage
@@ -7124,7 +7310,7 @@ $('mw-email').addEventListener('keydown',async e=>{
   if(error){note.className='mw-note no';note.textContent='try again in a minute';return;}
   mwEmail=v;
   note.className='mw-note ok';note.textContent='code sent — check your email';
-  $('mw-code').classList.remove('hide');setTimeout(()=>$('mw-code').focus(),80);
+  $('mw-code').classList.remove('hide');peindrePorte();setTimeout(()=>$('mw-code').focus(),80);
 });
 $('mw-code').addEventListener('input',async()=>{
   const t=$('mw-code').value.trim(), note=$('mw-note');
@@ -7132,7 +7318,9 @@ $('mw-code').addEventListener('input',async()=>{
   note.className='mw-note dim';note.textContent='verifying…';
   const {error}=await sb.auth.verifyOtp({email:mwEmail,token:t,type:'email'});
   if(error){note.className='mw-note no';note.textContent='wrong code';return;}
-  note.textContent='';$('mw-code').value='';$('mw-code').classList.add('hide');$('mw-email').value='';
+  note.textContent='';$('mw-code').value='';$('mw-email').value='';
+  await sessionChange();
+  $('mw-code').classList.add('hide'); peindrePorte();
 });
 /* L'inscription n'avait aucun controle : on tapait son nom, on validait, et
    on apprenait alors seulement qu'il etait pris. Meme verification que dans
@@ -7157,45 +7345,64 @@ $('mw-pseudo').addEventListener('keydown',async e=>{
   note.className='mw-note dim';note.textContent='…';
   const {error}=await sb.from('profiles').insert({id:me.id,pseudo:v});
   if(error){note.className='mw-note no';note.textContent=error.code==='23505'?'already taken':'try again';return;}
-  note.textContent='';
-  profile.name=v;try{localStorage.setItem(KEYP,JSON.stringify(profile));}catch(e){}
-  await loadProfile();
-  await migrateLocalToCloudIfNeeded();
-  memberPaint();paint();
+  note.textContent='';$('mw-pseudo').value='';
+  await sessionChange();
 });
-$('mw-signout').onclick=async()=>{await sb.auth.signOut();$('member-window').classList.remove('show');};
+$('mw-signout').onclick=async()=>{
+  $('member-window').classList.remove('show');
+  await sb.auth.signOut(); sessionChange(); };
 
-sb.auth.onAuthStateChange(async()=>{
+/* ══ LA SESSION — UN SEUL CHEMIN · 27/09/2026 ══════════════════════════
+   L'arrivée sur la page et chaque changement de session (connexion,
+   code vérifié, nom réclamé, déconnexion, jeton expiré) passent par la
+   MÊME fonction. Il y en avait deux, qui chargeaient chacune de leur
+   côté et pouvaient s'écraser. Le compteur `sesSeq` jette la réponse
+   d'un appel dépassé (règle « une réponse tardive n'écrase jamais un
+   état plus frais »).
+   ⚠️ CHANGER DE COMPTE, C'EST D'ABORD VIDER. Déconnexion ou autre
+   compte : l'état, l'arbre, le cache et le tiroir du précédent partent
+   AVANT de charger quoi que ce soit — sinon le suivant verrait, une
+   frame ou pour de bon, le Totehm de celui d'avant. */
+let sesSeq=0;
+function quitter(){
+  state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; mySub=null; tgLinked=false;
+  TRIPS=[]; REPS=[]; TEACH=[]; VIS=[]; OBJ={}; tripsLoaded=false;
+  cacheOublier();
+  $('member-window').classList.remove('show');
+}
+async function sessionChange(){
+  const n=++sesSeq;
   const {data:{session}}=await sb.auth.getSession();
+  if(n!==sesSeq) return;
+  const avant=me?me.id:null, apres=session&&session.user?session.user.id:null;
+  if(avant&&avant!==apres) quitter();
   me=session?.user||null;
   await loadProfile();
-  if(RO){ if(me)await loadRO(); memberPaint();paint(); return; }
-  if(me&&myProfile){await migrateLocalToCloudIfNeeded();}
-  memberPaint();paint();
-  /* On vient de se connecter : l'arbre n'a jamais été demandé. */
-  loadTrips(true);
-});
-(async()=>{
-  const {data:{session}}=await sb.auth.getSession();
-  me=session?.user||null;
-  await loadProfile();
-  /* En lecture on charge le Totehm VISITÉ et jamais le sien : sans ce
-     branchement, la page afficherait ses propres habitudes sous le nom de
-     quelqu'un d'autre. Les policies exigent une session — sans compte, on
-     dit pourquoi plutôt que d'afficher un écran vide. */
-  if(RO){
-    if(!me){ roFail('sign in to read a Totehm'); }
-    else{ await loadRO(); }
-    paint();
-    return;
+  if(n!==sesSeq) return;
+  if(inscrit()){
+    /* En lecture on charge le Totehm VISITÉ et jamais le sien. */
+    if(RO){ await loadRO(); }
+    else{
+      /* Le cache de CE compte peint tout de suite ; le nuage corrige. */
+      const c=cacheLire();
+      if(c&&!state.habits.length){ state={habits:c.habits, vis:c.vis||'private'}; if(c.ord)state.ord=true; paint(); }
+      await cloudLoad();
+    }
   }
-  if(me&&myProfile){await cloudLoad();}
-  paint();
-  /* L'ARBRE PART TOUT DE SUITE, ET IL NE FAIT PAS ATTENDRE. La liste est
-     déjà peinte depuis le stockage local ; quand l'arbre arrive, les
-     liens apparaissent dedans. On ne retarde rien, on ne bloque rien. */
-  loadTrips();
-})();
+  if(n!==sesSeq) return;
+  memberPaint(); paint();
+  if(inscrit()&&!RO) loadTrips(true);
+  garde();
+}
+/* LA GARDE : inscrit, la porte se franchit ; pas inscrit et Totehm
+   ouvert (un `#in` avec une session sans nom, un jeton expiré en
+   route), il se replie et la porte s'ouvre. */
+function garde(){
+  if(inscrit()){ porteFranchie(); return; }
+  if(!document.body.classList.contains('gate')){ foldToGate(); ouvrirPorte(LA_PORTE.then); }
+}
+sb.auth.onAuthStateChange(()=>{ sessionChange(); });
+sessionChange();
 window.addEventListener('pageshow',e=>{
   if(!e.persisted)return;
   $('member-window').classList.remove('show');
@@ -7345,7 +7552,7 @@ window.addEventListener('pageshow',e=>{
     const RM=window.matchMedia('(prefers-reduced-motion: reduce)');
     /* Le diagnostic : des booléens et des compteurs, jamais une valeur. */
     const diag={vivant:false, gyro:false, permission:'n/a', souris:false,
-                lancers:0, reduit:RM.matches};
+                lancers:0, reduit:RM.matches, socle:!!$('gate-socle')};
     window.__totehm_lsd=diag;
     if(!scene||!card) return {poser:f=>{ if(f) f(); }, reveiller(){}};
     const lights=[...card.querySelectorAll('.ast-light')];   /* [face, dos] */
@@ -7353,13 +7560,19 @@ window.addEventListener('pageshow',e=>{
     const LUM=(()=>{ const x=-.35,y=-.55,z=1,n=Math.hypot(x,y,z); return [x/n,y/n,z/n]; })();
     const borne=(v,a,b)=>Math.max(a,Math.min(b,v||0));
     const res=x=>({x,v:0});
-    const S={rx:res(0), ry:res(0), px:res(0), py:res(0), sc:res(1)};
-    const goal={rx:0, ry:0, px:0, py:0, sc:1};
-    const K={rx:[34,.62], ry:[34,.62], px:[34,.62], py:[34,.62], sc:[170,.5]};
+    /* `lv` : la HAUTEUR de lévitation, à part du suivi — le papier monte
+       quand la main s'approche (il veut être pris), s'enfonce vers le
+       socle quand on appuie dessus (l'aimant résiste). */
+    const S={rx:res(0), ry:res(0), px:res(0), py:res(0), sc:res(1), lv:res(0)};
+    const goal={rx:0, ry:0, px:0, py:0, sc:1, lv:0};
+    const K={rx:[34,.62], ry:[34,.62], px:[34,.62], py:[34,.62], sc:[170,.5], lv:[22,.45]};
     const PLAT={th:0, rx:0, ry:0, rz:0, px:0, py:0, sc:1};
     let mode='plat', raf=0, last=0, clock=0, th=0, om=0, life=0;
     let cur={...PLAT}, prev=null, vel={...PLAT, sc:0};
-    let appui=null, aGlisse=false, pose=null, centre=null;
+    let appui=null, aGlisse=false, pose=null, centre=null, proche=0;
+    /* Le socle : ce que le moteur y lit à chaque frame. */
+    const soc=$('gate-socle'), refl=$('socle-refl'), core=$('socle-core'), beam=$('socle-beam');
+    let socW=0;
 
     function ressort(s,g,k,z,dt){
       const a=k*(g-s.x)-2*z*Math.sqrt(k)*s.v; s.v+=a*dt; s.x+=s.v*dt; }
@@ -7383,12 +7596,16 @@ window.addEventListener('pageshow',e=>{
         th+=om*dt;
       }
       if(th>3600||th<-3600) th%=360;
+      goal.lv=(appui&&!appui.on?6:0)-proche*7;
       for(const k in S) ressort(S[k],goal[k],K[k][0],K[k][1],dt);
       const f=clock*2*Math.PI;
+      /* LA LÉVITATION : une respiration verticale de ~4 s, lente comme un
+         champ qui se rééquilibre, et deux sinus de périodes premières
+         entre elles pour que la boucle ne se voie jamais. */
       const nx={th, sc:S.sc.x, ry:S.ry.x, px:S.px.x,
         rx:S.rx.x+life*2.4*Math.sin(f/7.3),
         rz:life*1.1*Math.sin(f/8.9+1.3),
-        py:S.py.x+life*(2.6*Math.sin(f/6.4)+1.1*Math.sin(f/10.3+.7))};
+        py:S.py.x+S.lv.x+life*(3.4*Math.sin(f/4.2)+.9*Math.sin(f/9.7+.7))};
       if(prev&&dt>0) for(const k in nx) vel[k]=(nx[k]-prev[k])/dt;
       vel.th=om; prev=cur=nx;
     }
@@ -7406,6 +7623,30 @@ window.addEventListener('pageshow',e=>{
       co=Math.cos(c.rx*R); si=Math.sin(c.rx*R); t=y*co-z*si; z=y*si+z*co; y=t;
       const d=(x*LUM[0]+y*LUM[1]+z*LUM[2])/LUM[2];
       eclairer(lights[0],d); eclairer(lights[1],-d);
+      socle(c);
+    }
+    /* LE SOCLE RÉPOND AU PAPIER. `pres` : 0 quand le papier est haut, 1
+       quand il descend vers l'aimant. Le reflet suit sa position et
+       s'amincit quand il passe sur la tranche ; le cœur et le faisceau
+       travaillent plus quand il descend, quand la main approche, quand
+       on appuie. Tout reste sous 12 % d'opacité perçue. */
+    function socle(c){
+      if(!soc) return;
+      if(!socW) socW=soc.getBoundingClientRect().width||200;
+      const pres=borne(.5+c.py/16,0,1);
+      const sx=Math.max(.14,Math.abs(Math.cos((c.th+c.ry)*R)));
+      if(refl){
+        refl.setAttribute('transform','translate('+(120+c.px*240/socW).toFixed(2)+' 20) scale('+sx.toFixed(3)+' 1)');
+        refl.style.opacity=(.35+.45*pres).toFixed(3);
+      }
+      const effort=borne(.3+.35*pres+.3*proche+(appui?.15:0),0,.95);
+      if(core) core.setAttribute('opacity',effort.toFixed(3));
+      if(beam) beam.style.opacity=borne(.45+.35*pres+.2*proche,0,1).toFixed(3);
+    }
+    function socleRepos(){
+      if(refl){ refl.setAttribute('transform','translate(120 20)'); refl.style.opacity='.6'; }
+      if(core) core.setAttribute('opacity','.55');
+      if(beam) beam.style.opacity='';
     }
     function eclairer(el,f){
       if(!el||f<=0) return;                 /* face détournée : cachée */
@@ -7420,6 +7661,7 @@ window.addEventListener('pageshow',e=>{
       card.style.transform='';
       lights.forEach(l=>{ l.style.background=''; l.style.opacity=''; });
       card.classList.add('is-flat');
+      socleRepos();
       diag.vivant=false;
     }
     /* L'ATTERRISSAGE : position et vitesse du moment → face logo, à plat,
@@ -7442,7 +7684,11 @@ window.addEventListener('pageshow',e=>{
       const nx={};
       for(const k in pose.to) nx[k]=h00*pose.from[k]+h10*pose.D*pose.v[k]+h01*pose.to[k];
       cur=nx;
-      if(u>=1){ const cb=pose.cb; aPlat(); if(cb) cb(); }
+      if(u>=1){
+        /* Posé : l'aimant rend son énergie d'un seul éclat, et le Totehm sort. */
+        if(soc){ soc.classList.remove('is-charge'); void soc.offsetWidth; soc.classList.add('is-charge');
+                 setTimeout(()=>soc.classList.remove('is-charge'),800); }
+        const cb=pose.cb; aPlat(); if(cb) cb(); }
     }
     /* LE RÉVEIL : après un repli, ou au chargement. Il repart de l'arrêt,
        face logo — la vitesse et la dérive montent doucement. */
@@ -7450,8 +7696,8 @@ window.addEventListener('pageshow',e=>{
       if(typeof paintAsteroid==='function') paintAsteroid();
       if(RM.matches||mode!=='plat') return;
       card.classList.remove('is-flat');
-      mode='vit'; clock=0; last=0; life=0; om=0; th=0; prev=null; centre=null;
-      goal.rx=goal.ry=goal.px=goal.py=0; goal.sc=1;
+      mode='vit'; clock=0; last=0; life=0; om=0; th=0; prev=null; centre=null; socW=0; proche=0;
+      goal.rx=goal.ry=goal.px=goal.py=goal.lv=0; goal.sc=1;
       diag.vivant=true; kick();
     }
     const libre=()=>mode==='vit'&&!appui;
@@ -7464,7 +7710,7 @@ window.addEventListener('pageshow',e=>{
 
     /* La souris : le papier regarde le curseur et glisse d'un rien vers lui. */
     if(window.matchMedia('(hover:hover)').matches){
-      window.addEventListener('resize',()=>{ centre=null; });
+      window.addEventListener('resize',()=>{ centre=null; socW=0; });
       document.addEventListener('mousemove',e=>{
         if(!libre()||diag.gyro) return;
         if(!centre){ const r=scene.getBoundingClientRect();
@@ -7472,8 +7718,11 @@ window.addEventListener('pageshow',e=>{
         const dx=borne((e.clientX-centre[0])/(innerWidth/2),-1,1),
               dy=borne((e.clientY-centre[1])/(innerHeight/2),-1,1);
         viser(-dy*15, dx*20, dx*7, dy*5); diag.souris=true;
+        /* La main approche : à moins de ~280 px, le papier se soulève
+           d'un rien et l'aimant se réveille — il invite à être pris. */
+        proche=borne(1-(Math.hypot(e.clientX-centre[0],e.clientY-centre[1])-60)/220,0,1);
       },{passive:true});
-      document.documentElement.addEventListener('mouseleave',()=>{ if(libre()) viser(0,0,0,0); });
+      document.documentElement.addEventListener('mouseleave',()=>{ if(libre()){ viser(0,0,0,0); proche=0; } });
     }
 
     /* Le téléphone : la main est la référence, le papier répond au geste. */
@@ -7500,8 +7749,10 @@ window.addEventListener('pageshow',e=>{
       const demander=e=>{
         if(!body.classList.contains('gate')||body.classList.contains('entered')) return;
         const t=e&&e.target&&e.target.closest?e.target:null;
+        /* Jamais dans la porte : le dialogue tomberait au milieu d'un email. */
         const ok=t&&(t.closest('#fold-x')
-          ||(t.closest('#gate-hero')&&!(t.closest('#gate-asteroid')&&!aGlisse)));
+          ||(t.closest('#gate-hero')&&!t.closest('#gate-door')
+             &&!(t.closest('#gate-asteroid')&&!aGlisse)));
         if(!ok) return;
         window.removeEventListener('touchend',demander);
         window.removeEventListener('click',demander);
@@ -7553,6 +7804,10 @@ window.addEventListener('pageshow',e=>{
   function enter(then){
     if(open||moving) return;
     if(PAYSAGE.matches) return;     /* couché, on n'ouvre pas */
+    /* ⚠️ PAS INSCRIT, RIEN N'EST PERMIS · 27/09/2026. Le papier ne
+       s'ouvre pas : la porte s'ouvre sous le socle, et c'est elle qui
+       rappellera `enter(then)` une fois le nom posé. */
+    if(!inscrit()){ ouvrirPorte(then); return; }
     moving=true;
     /* ⚠️ LE PAPIER SE POSE D'ABORD, FACE LOGO, À PLAT · 25/09/2026.
        `measure()` lit des rectangles APRÈS transformation : mesurer un
@@ -7653,9 +7908,18 @@ window.addEventListener('pageshow',e=>{
      sans cette forme, il aurait fallu déplier puis naviguer, et le membre
      aurait perdu de vue ce qu'il était venu faire. */
   const m5 = /^#in(?::([a-z]+))?$/.exec(location.hash||'');
-  const dedans = !!m5 || !!RO;
-  if(m5 && m5[1] && typeof setView==='function'){
-    setTimeout(()=>{ try{ setView(m5[1]); }catch(_){} }, 80); }
+  /* ⚠️ ARRIVER DEDANS SUPPOSE D'ÊTRE QUELQU'UN · 27/09/2026. Un `#in`
+     ou un `?ro=` ouvrait le Totehm AVANT de savoir qui regardait. Sans
+     session rangée dans ce navigateur, on arrive sur le papier, porte
+     ouverte, et l'intention (la vue, le Totehm à lire) attend
+     l'inscription. Avec une session, on entre comme avant — et si elle
+     n'a pas de nom (ou a expiré), `garde()` replie et ouvre la porte. */
+  const sessionRangee=()=>{ try{ return Object.keys(localStorage).some(k=>/^sb-.+-auth-token$/.test(k)); }
+                           catch(_){ return false; } };
+  const voulu = !!m5 || !!RO;
+  const dedans = voulu && sessionRangee();
+  const ensuite = m5&&m5[1] ? ()=>{ try{ setView(m5[1]); }catch(_){} } : null;
+  if(dedans && ensuite){ setTimeout(ensuite, 80); LA_PORTE.then=ensuite; }
   /* ⚠️ IL FAUT LA RETIRER, PAS SEULEMENT NE PAS LA POSER. La classe est
      écrite dans le HTML (`<body class="gate">`) pour éviter le flash au
      chargement : ne pas la rajouter ici ne l'enlève pas. Mesuré —
@@ -7677,7 +7941,9 @@ window.addEventListener('pageshow',e=>{
        rien à replier. On la rejoue maintenant que l'état est posé —
        sinon un `#in` ouvert en paysage restait ouvert en paysage. */
     surRotation(); }
-  else { body.classList.add('gate'); PAPIER.reveiller(); }
+  else { body.classList.add('gate'); PAPIER.reveiller();
+         if(voulu){ history.replaceState(null,'',location.pathname+(RO?location.search:''));
+                    setTimeout(()=>{ if(!inscrit()) ouvrirPorte(ensuite); else if(window.__totehmDeplie) window.__totehmDeplie(ensuite); },250); } }
 
   /* Pendant l'état 1, aucun geste ne doit atteindre l'app en dessous — mais
      l'atterrissage a ses propres champs et sa propre vidéo : un geste NÉ

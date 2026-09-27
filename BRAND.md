@@ -452,6 +452,25 @@ TREE   GO WHERE IT MAKES SENSE FOR YOU
 Three levels, three distinct purposes, three distinct competitive references.
 Never explained all at once.
 
+### The threshold — the Totehm on its pedestal · 27/09/2026
+
+The landing of `totehm.com` holds ONE object: the Totehm — a small
+perforated paper, the logo on its face — floating above a thin grey
+pedestal, like a work of art in an empty gallery. It levitates, its light
+moves on the pedestal, the magnet underneath answers it. Nothing flashes,
+nothing is explained: it has to make you want to touch it, and open it.
+
+**It does not open for a stranger. Not signed up, nothing is allowed.**
+No guest mode, no demo habits, no "try it first". Touching the paper asks,
+one question at a time, for an email, the code, then the name of your
+Totehm — and the paper opens by itself. You come here to build something,
+and you build it under your own name.
+
+- The pedestal is grey, flat, without a button or a screw. **No drop
+  shadow** (§13): what anchors the paper is its light on the pedestal.
+- The door's question is a title: Bebas Neue (§13). The name of the
+  Totehm stays in Quantico, on the back of the paper.
+
 ### SEED — vs self-help tools
 
 Self-improvement products become trackers, reminders, planners, motivation
