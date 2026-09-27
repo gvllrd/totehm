@@ -706,7 +706,7 @@ body:not(.gate) #conn-bar{display:none!important}
    les angles et le voit rond : le carré redevient un point, mais un point
    qui a tourné pour le devenir. Zéro reflow, zéro peinture — une
    transformation composite, le GPU s'en charge. */
-#conn-bar .dot{width:9px;height:9px;border-radius:0;background:#888;
+#conn-bar .dot{width:9px;height:9px;border-radius:0;background:#fff;
   will-change:transform}
 /* ⚠️ IL N'Y A QU'UN SEUL POINT, et il vit dans `#conn-bar` — pas dans
    la fenêtre. `#member-window .dot` ne visait donc RIEN : mesuré le
@@ -726,7 +726,7 @@ body:not(.gate) #conn-bar{display:none!important}
 /* 14 px et non 26 : à 26 il devenait le sujet de l'écran alors qu'il
    n'est qu'un signe de vie. Il tourne toujours aussi vite — c'est la
    VITESSE qui fait le rond, pas la taille. */
-#mw-dot{width:14px;height:14px;border-radius:0;background:#639922;
+#mw-dot{width:14px;height:14px;border-radius:0;background:#fff;
   will-change:transform;animation:vrille .22s linear infinite;
   margin:0 auto 14px;display:block}
 @keyframes vrille{from{transform:rotate(0)}to{transform:rotate(360deg)}}
@@ -2079,13 +2079,14 @@ body:not(.gate) #gate{display:none}
    le même plan quand il est posé : `measure()` lit une face sans
    aucune transformation. */
 /* ⚠️ LE TOTEHM MONTE DANS LE HAUT DE L'ÉCRAN · 27/09/2026. Le centre
-   du papier se pose à ~27 % de la hauteur : dessous, l'air, le socle,
-   puis la porte — qui doit rester AU-DESSUS du clavier du téléphone. Un
-   écran de 844 px garde tout dans ses 480 premiers pixels. La colonne est
+   du papier se pose à ~22 % de la hauteur (27 % le 27/09 ; remonté le
+   28/09 quand l'air sous lui a doublé) : dessous, l'air, le socle, puis
+   la porte — qui doit rester AU-DESSUS du clavier du téléphone. Un
+   écran de 844 px garde tout dans ses 500 premiers pixels. La colonne est
    ancrée en haut : ouvrir ou fermer la porte ne déplace pas le papier —
    `measure()` doit lire un logo immobile. */
 #gate-top-row{margin:0;gap:0;
-  margin-top:max(0px,calc(27dvh - var(--gate-size) / 2 - max(76px,13dvh)))}
+  margin-top:max(0px,calc(22dvh - var(--gate-size) / 2 - max(76px,13dvh)))}
 #gate-asteroid{z-index:2;
   position:relative;flex-shrink:0;
   width:var(--gate-size);height:var(--gate-size);
@@ -2124,58 +2125,58 @@ body:not(.gate) #gate{display:none}
 @media(hover:hover){#gate-asteroid:hover .ast-say{color:#fff}}
 body.gate.entered .ast-back{visibility:hidden}
 
-/* ══ LE SOCLE · 27/09/2026 ═══════════════════════════════════════════
-   Un palet gris, le plus plat et fin possible : zéro bouton, zéro vis,
-   des lignes pures. Dessiné en SVG (une tranche, un dessus, un
-   logement) : c'est de la géométrie, pas une image — net à toutes les
+/* ══ LE SOCLE · 27/09/2026 — ABSTRAIT, BORD À BORD · 28/09/2026 ══════
+   Plus un objet : une PLAQUE DE LUMIÈRE. Un disque gris sans tranche,
+   sans arête, sans logement dessiné, qui s'éteint vers ses bords — et en
+   son centre le point lumineux de l'aimant, dont les ondes courent sur
+   toute la plaque. Dessiné en SVG : de la géométrie, net à toutes les
    tailles, zéro octet à télécharger.
 
-   ⚠️ LE PAPIER FLOTTE AU-DESSUS, ET LE SOCLE LE SAIT. Le moteur du
-   papier (`PAPIER.peindre`) pose à chaque frame trois lectures : le
-   REFLET navy du papier sur le dessus (il glisse avec lui, et s'amincit
-   quand le papier passe sur la tranche), le CŒUR de l'aimant (plus vif
-   quand le papier descend — l'aimant travaille), et le FAISCEAU. Rien
-   de flashy : tout vit entre 3 et 12 % d'opacité.
+   ⚠️ LA STRUCTURE A LA MÊME TAILLE PARTOUT. Au téléphone la plaque va
+   d'un bord à l'autre de l'écran ; à l'ordinateur elle garde EXACTEMENT
+   ces pixels (430 au plus), l'air aussi (112), le papier aussi (110). Le
+   Totehm est unique : on ne le grossit pas pour remplir un grand écran.
 
-   ⚠️ AUCUNE OMBRE PORTÉE (BRAND). Ce qui ancre le papier au socle, ce
-   n'est pas une tache sombre : c'est sa lumière sur le dessus. Le seul
-   trait est l'arête avant, blanche à 7 % — la lumière sur un bord, pas
-   un contour. */
-:root{--socle-w:clamp(176px,46vmin,236px);--air:clamp(34px,6.2vh,58px)}
+   ⚠️ LE FAISCEAU EST L'HOLOGRAMME. Une colonne de lumière navy part du
+   point, s'élargit jusqu'à la largeur du papier et passe DERRIÈRE lui :
+   le papier n'est plus posé dans le vide, il est PROJETÉ. Des lignes de
+   balayage y montent, lentement. Flouté par un filtre SVG — jamais par
+   `filter` + `clip-path`, qui garde des arêtes nettes (27/09, mesuré).
+
+   ⚠️ LE PAPIER FLOTTE, ET LA PLAQUE LE SAIT. `PAPIER.peindre` pose à
+   chaque frame : le REFLET navy du papier sur la plaque (il glisse avec
+   lui, s'amincit quand le papier passe sur la tranche), le CŒUR (plus
+   vif quand le papier descend) et le FAISCEAU.
+
+   ⚠️ AUCUNE OMBRE PORTÉE (BRAND) : ce qui relie le papier à la plaque
+   est de la lumière. */
+:root{--socle-w:min(100vw,430px);--air:min(112px,13.3vh)}
 #gate-socle{position:relative;z-index:1;flex-shrink:0;width:var(--socle-w);
   margin-top:var(--air);line-height:0;
   transition:opacity .7s ease .5s,transform .9s cubic-bezier(.2,.7,.2,1) .5s}
-#gate-socle svg{display:block;width:100%;height:auto;overflow:visible}
-/* Le faisceau : de la gorge de l'aimant jusqu'au dessous du papier. Il
-   ne s'annonce pas — il se devine : une colonne d'air à peine plus
-   claire, qui meurt avant de toucher le papier.
-   ⚠️ UN MASQUE, PAS UN `clip-path`. Le flou (`filter`) passe AVANT la
-   découpe : un faisceau découpé garde des arêtes nettes, et une lueur à
-   arêtes nettes se lit comme une boîte grise (mesuré). Les deux masques
-   se croisent : la hauteur s'éteint vers le haut, les côtés s'effilent. */
-#socle-beam{position:absolute;left:50%;bottom:60.7%;
-  width:calc(var(--gate-size) * .9);
-  height:calc(var(--air) + var(--socle-w) * .0917 + 6px);
-  transform:translateX(-50%);opacity:.7;pointer-events:none;
-  background:linear-gradient(to top,rgba(157,157,224,.10),rgba(157,157,224,.04) 50%,rgba(157,157,224,0));
-  -webkit-mask-image:linear-gradient(to top,#000 20%,transparent 92%),linear-gradient(to right,transparent,#000 32%,#000 68%,transparent);
-  -webkit-mask-composite:source-in;
-  mask-image:linear-gradient(to top,#000 20%,transparent 92%),linear-gradient(to right,transparent,#000 32%,#000 68%,transparent);
-  mask-composite:intersect}
+#socle-plate{display:block;width:100%;height:auto;overflow:visible}
+/* Le faisceau : du point (au centre de la plaque, 50 % de sa hauteur)
+   jusqu'à 26 px DERRIÈRE le papier — l'air, plus la demi-plaque, plus
+   ce recouvrement. Étroit en bas, large comme le papier en haut. */
+#socle-beam{position:absolute;left:50%;bottom:50%;
+  width:calc(var(--gate-size) * 1.08);
+  height:calc(var(--air) + var(--socle-w) / 12 + 26px);
+  transform:translateX(-50%);opacity:.8;pointer-events:none;overflow:visible}
 .sc-w{transform-box:fill-box;transform-origin:center;vector-effect:non-scaling-stroke;
-  opacity:0;animation:sc-onde 4.8s cubic-bezier(.3,.1,.3,1) infinite}
-.sc-w:nth-child(2){animation-delay:1.6s}
-.sc-w:nth-child(3){animation-delay:3.2s}
-.sc-coil ellipse{vector-effect:non-scaling-stroke}
-@keyframes sc-onde{0%{transform:scale(.16);opacity:0}20%{opacity:.42}100%{transform:scale(1.06);opacity:0}}
-/* Au tap, l'aimant rend son énergie : un seul éclat, puis le Totehm sort. */
+  opacity:0;animation:sc-onde 6s cubic-bezier(.25,.1,.3,1) infinite}
+.sc-w:nth-child(2){animation-delay:2s}
+.sc-w:nth-child(3){animation-delay:4s}
+@keyframes sc-onde{0%{transform:scale(.04);opacity:0}12%{opacity:.5}100%{transform:scale(1);opacity:0}}
+/* Le point respire, et au tap il rend son énergie : un seul éclat. */
+#socle-dot{animation:sc-pouls 3.2s ease-in-out infinite}
+@keyframes sc-pouls{0%,100%{opacity:.8}50%{opacity:1}}
 #gate-socle.is-charge #socle-core{animation:sc-charge .75s ease-out}
 @keyframes sc-charge{0%{opacity:.6}25%{opacity:1}100%{opacity:.2}}
-/* Le Totehm se déplie : le socle s'efface en s'abaissant d'un souffle,
+/* Le Totehm se déplie : la plaque s'efface en s'abaissant d'un souffle,
    et revient quand le logo est rentré dans son papier. */
 body.gate.entered #gate-socle{opacity:0;transform:translateY(10px);
   transition:opacity .4s ease,transform .6s ease}
-@media(prefers-reduced-motion:reduce){ .sc-w{animation:none} }
+@media(prefers-reduced-motion:reduce){ .sc-w,#socle-dot{animation:none} #socle-scan{display:none} }
 
 /* ══ LA PORTE · 27/09/2026 ═══════════════════════════════════════════
    Pas inscrit, rien n'est permis. Elle n'existe que demandée (le tap
@@ -2857,20 +2858,41 @@ body.gate.entered #filter-badge{
        flotte au-dessus ; le socle le sait : son reflet glisse sur le
        dessus, le cœur de l'aimant répond à sa hauteur. -->
   <div id="gate-socle" aria-hidden="true">
-    <div id="socle-beam"></div>
-    <svg viewBox="0 0 240 56" preserveAspectRatio="xMidYMid meet">
+    <!-- le faisceau : la lumière navy qui projette le papier -->
+    <svg id="socle-beam" viewBox="0 0 100 100" preserveAspectRatio="none">
       <defs>
-        <linearGradient id="sc-rim" x1="0" x2="1" y1="0" y2="0">
-          <stop offset="0" stop-color="#0e0e10"/><stop offset=".16" stop-color="#2a2a2e"/>
-          <stop offset=".42" stop-color="#3d3d43"/><stop offset=".7" stop-color="#2c2c31"/>
-          <stop offset="1" stop-color="#0d0d0f"/>
+        <linearGradient id="sb-g" x1="0" x2="0" y1="1" y2="0">
+          <stop offset="0" stop-color="#b4b4f0" stop-opacity=".55"/>
+          <stop offset=".18" stop-color="#6a6ab8" stop-opacity=".32"/>
+          <stop offset=".6" stop-color="#4b4b92" stop-opacity=".2"/>
+          <stop offset="1" stop-color="#333366" stop-opacity=".04"/>
         </linearGradient>
-        <radialGradient id="sc-top" cx=".38" cy=".2" r=".95">
-          <stop offset="0" stop-color="#38383e"/><stop offset=".55" stop-color="#29292e"/>
-          <stop offset="1" stop-color="#1c1c20"/>
-        </radialGradient>
-        <radialGradient id="sc-floor" cx=".5" cy=".5" r=".6">
-          <stop offset="0" stop-color="#15151b"/><stop offset="1" stop-color="#09090b"/>
+        <pattern id="sb-scan" width="100" height="7" patternUnits="userSpaceOnUse">
+          <rect width="100" height="1.1" fill="#c9c9ff" opacity=".5"/>
+          <animateTransform attributeName="patternTransform" type="translate"
+            from="0 0" to="0 -7" dur="1.6s" repeatCount="indefinite"/>
+        </pattern>
+        <filter id="sb-flou" x="-30%" y="-10%" width="160%" height="120%">
+          <feGaussianBlur stdDeviation="2.4"/></filter>
+        <linearGradient id="sb-fin" x1="0" x2="0" y1="1" y2="0">
+          <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+          <stop offset=".25" stop-color="#fff" stop-opacity=".9"/>
+          <stop offset=".82" stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+        </linearGradient>
+        <mask id="sb-mask"><rect width="100" height="100" fill="url(#sb-fin)"/></mask>
+      </defs>
+      <polygon points="45,100 55,100 100,0 0,0" fill="url(#sb-g)" filter="url(#sb-flou)"/>
+      <polygon id="socle-scan" points="45,100 55,100 100,0 0,0" fill="url(#sb-scan)" mask="url(#sb-mask)" opacity=".22"/>
+      <!-- le cœur du faisceau : un filet plus clair, du point au papier -->
+      <polygon points="49,100 51,100 58,0 42,0" fill="url(#sb-g)" opacity=".7" filter="url(#sb-flou)"/>
+    </svg>
+    <!-- la plaque : un disque de lumière grise, sans arête -->
+    <svg id="socle-plate" viewBox="0 0 240 40" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <radialGradient id="sc-top" cx=".5" cy=".5" r=".5">
+          <stop offset="0" stop-color="#34343c"/><stop offset=".45" stop-color="#232329"/>
+          <stop offset=".8" stop-color="#141417" stop-opacity=".8"/>
+          <stop offset="1" stop-color="#0a0a0c" stop-opacity="0"/>
         </radialGradient>
         <radialGradient id="sc-glow" cx=".5" cy=".5" r=".5">
           <stop offset="0" stop-color="#7a7ac8" stop-opacity=".55"/>
@@ -2878,40 +2900,24 @@ body.gate.entered #filter-badge{
           <stop offset="1" stop-color="#333366" stop-opacity="0"/>
         </radialGradient>
         <radialGradient id="sc-core" cx=".5" cy=".5" r=".5">
-          <stop offset="0" stop-color="#b9b9ee" stop-opacity=".9"/>
-          <stop offset=".45" stop-color="#6a6ab8" stop-opacity=".35"/>
+          <stop offset="0" stop-color="#c9c9ff" stop-opacity=".95"/>
+          <stop offset=".35" stop-color="#7a7ac8" stop-opacity=".45"/>
           <stop offset="1" stop-color="#333366" stop-opacity="0"/>
         </radialGradient>
-        <clipPath id="sc-topclip"><ellipse cx="120" cy="22" rx="112" ry="17"/></clipPath>
-        <clipPath id="sc-wellclip"><ellipse cx="120" cy="22.6" rx="36" ry="5.3"/></clipPath>
+        <clipPath id="sc-topclip"><ellipse cx="120" cy="20" rx="120" ry="15"/></clipPath>
       </defs>
-      <!-- la tranche : l'épaisseur du palet, et rien d'autre -->
-      <path d="M8 22 L8 27.5 A112 17 0 0 0 232 27.5 L232 22 A112 17 0 0 1 8 22 Z" fill="url(#sc-rim)"/>
-      <!-- le dessus -->
-      <ellipse cx="120" cy="22" rx="112" ry="17" fill="url(#sc-top)"/>
+      <ellipse cx="120" cy="20" rx="120" ry="15" fill="url(#sc-top)"/>
       <!-- le reflet du papier, posé par le moteur -->
       <g clip-path="url(#sc-topclip)"><g id="socle-refl" transform="translate(120 20)">
-        <ellipse cx="0" cy="0" rx="46" ry="7" fill="url(#sc-glow)"/></g></g>
-      <!-- le logement : une lèvre, un fond -->
-      <ellipse cx="120" cy="22" rx="38" ry="5.9" fill="#0d0d10"/>
-      <ellipse cx="120" cy="22.6" rx="36" ry="5.3" fill="url(#sc-floor)"/>
-      <g clip-path="url(#sc-wellclip)">
-        <!-- les spires de l'aimant, immobiles -->
-        <g class="sc-coil" fill="none" stroke="#2c2c38" stroke-width=".45">
-          <ellipse cx="120" cy="22.6" rx="29" ry="4.25"/>
-          <ellipse cx="120" cy="22.6" rx="22" ry="3.2"/>
-          <ellipse cx="120" cy="22.6" rx="15" ry="2.2"/>
-        </g>
-        <!-- le champ : trois ondes qui partent du cœur -->
-        <g class="sc-field" fill="none" stroke="#9d9de0" stroke-width=".5">
-          <ellipse class="sc-w" cx="120" cy="22.6" rx="34" ry="5"/>
-          <ellipse class="sc-w" cx="120" cy="22.6" rx="34" ry="5"/>
-          <ellipse class="sc-w" cx="120" cy="22.6" rx="34" ry="5"/>
-        </g>
-        <ellipse id="socle-core" cx="120" cy="22.6" rx="16" ry="2.6" fill="url(#sc-core)" opacity=".55"/>
+        <ellipse cx="0" cy="0" rx="46" ry="6" fill="url(#sc-glow)"/></g></g>
+      <!-- le champ : trois ondes qui partent du point et courent sur la plaque -->
+      <g class="sc-field" fill="none" stroke="#9d9de0" stroke-width=".6">
+        <ellipse class="sc-w" cx="120" cy="20" rx="112" ry="14"/>
+        <ellipse class="sc-w" cx="120" cy="20" rx="112" ry="14"/>
+        <ellipse class="sc-w" cx="120" cy="20" rx="112" ry="14"/>
       </g>
-      <!-- l'arête avant : la lumière sur le bord, pas un trait autour -->
-      <path d="M9 23.2 A111 16.4 0 0 0 231 23.2" fill="none" stroke="#ffffff" stroke-opacity=".07" stroke-width=".6"/>
+      <ellipse id="socle-core" cx="120" cy="20" rx="20" ry="3.4" fill="url(#sc-core)" opacity=".55"/>
+      <ellipse id="socle-dot" cx="120" cy="20" rx="2.2" ry=".9" fill="#f2f2ff"/>
     </svg>
   </div><!-- /#gate-socle -->
 
@@ -4381,7 +4387,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-09-27';
+const BUILD='2026-09-28';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -6972,7 +6978,7 @@ function connPaint(){
   /* Plus de « Guest » : le coin n'existe que pour un inscrit, et il dit
      son nom. `body.member` le montre ou le cache (CSS). */
   const label=(myProfile&&myProfile.pseudo)||'';
-  $('conn-bar').innerHTML='<span class="dot" style="background:#639922"></span>'+esc(label)+(myHigher?HI_SVG:'');
+  $('conn-bar').innerHTML='<span class="dot" style="background:#fff"></span>'+esc(label)+(myHigher?HI_SVG:'');
   document.body.classList.toggle('member',inscrit());
   paintAsteroid();
 }

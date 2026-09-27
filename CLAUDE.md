@@ -711,6 +711,24 @@ n'est permis. Point. » Tout est dans `com/totehm.html`
 
 #### Mission 1 — le socle
 
+> **⚠️ REPRIS LE 28/09** (`BUILD='2026-09-28'`). Le socle devient une
+> **plaque de lumière abstraite** (plus de tranche, d'arête ni de
+> logement dessinés) qui va **d'un bord à l'autre** de l'écran du
+> téléphone : `--socle-w:min(100vw,430px)`. L'air sous le papier double :
+> `--air:min(112px,13.3vh)`. **La structure a les mêmes pixels à
+> l'ordinateur** — papier 110, air 112, plaque 430 au plus : le Totehm est
+> unique, on ne le grossit pas pour remplir un grand écran. Le papier
+> remonte à ~22 % pour que la porte reste au-dessus du clavier (mesuré :
+> le champ email finit à 508 px sur un écran de 844). **L'hologramme
+> s'accentue** : un faisceau navy (`#socle-beam`, SVG flouté par
+> `feGaussianBlur`) part du point lumineux, s'élargit à la largeur du
+> papier et passe 26 px DERRIÈRE lui, avec des lignes de balayage qui
+> montent. Les ondes du point courent sur toute la plaque. ⚠️
+> `#gate-socle>svg` visait aussi le faisceau (un SVG) et l'écrasait en
+> 390×390 : la plaque porte son propre id, `#socle-plate`. Le coin membre
+> et l'espace membre passent du carré vert au **carré blanc**. Ci-dessous,
+> l'état du 27/09.
+
 **`#gate-socle` : un palet gris en SVG** — une tranche, un dessus, un
 logement. Zéro bouton, zéro vis. Dans le logement, l'électroaimant : trois
 spires immobiles et trois ondes (`.sc-w`, 4,8 s) qui partent du cœur.
