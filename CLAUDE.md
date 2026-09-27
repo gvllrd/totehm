@@ -738,6 +738,14 @@ n'est permis. Point. » Tout est dans `com/totehm.html`
 > (.84) et vacille rarement. Le faisceau monte jusqu'à mi-papier.
 > **Tout tombe d'un coup à `.is-flat`** (pas de transition) : la
 > déconstruction part d'un logo opaque — remesurée, au dixième de pixel.
+>
+> **⚠️ 28/09 ter — UN HOLOGRAMME PERFORÉ, PAS UN CARRÉ** (`BUILD=
+> '2026-09-28c'`). Les lignes et la lumière (`.ast-holo`, `.ast-light`)
+> couvraient tout le carré : les trous devenaient des disques rayés.
+> Chaque couche posée SUR le papier porte la perforation en masque
+> (`--perfo`, la même image que le dos `.ast-tile`) : un trou reste un
+> trou, on voit à travers, sur les deux faces. **Règle : tout ce qui
+> s'ajoute au papier se découpe à sa forme.**
 
 **`#gate-socle` : un palet gris en SVG** — une tranche, un dessus, un
 logement. Zéro bouton, zéro vis. Dans le logement, l'électroaimant : trois
