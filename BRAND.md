@@ -466,8 +466,14 @@ one question at a time, for an email, the code, then the name of your
 Totehm — and the paper opens by itself. You come here to build something,
 and you build it under your own name.
 
-- The pedestal is grey, flat, without a button or a screw. **No drop
-  shadow** (§13): what anchors the paper is its light on the pedestal.
+- The pedestal is a flat plate of light, without a button or a screw.
+  **No drop shadow** (§13): what anchors the paper is its light on the
+  pedestal.
+- **The Totehm keeps its raw navy (#333366). Everything around it takes
+  its color** (28/09): the plate and the beam of light that carries it
+  are navy, never a lilac, never scan lines on the paper. The hologram
+  is the light that holds the logo, not a filter on the logo — and that
+  light follows the paper wherever it floats.
 - The door's question is a title: Bebas Neue (§13). The name of the
   Totehm stays in Quantico, on the back of the paper.
 

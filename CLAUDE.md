@@ -746,6 +746,24 @@ n'est permis. Point. » Tout est dans `com/totehm.html`
 > (`--perfo`, la même image que le dos `.ast-tile`) : un trou reste un
 > trou, on voit à travers, sur les deux faces. **Règle : tout ce qui
 > s'ajoute au papier se découpe à sa forme.**
+>
+> **⚠️ 28/09 quater — LE TOTEHM RESTE LE TOTEHM, LA LUMIÈRE LE SUIT**
+> (`BUILD='2026-09-28d'`). « Le Totehm reste en bleu navy, le Totehm
+> d'origine ; ce sont les deux autres objets qui s'adaptent à sa couleur
+> brute. » **Défait le 28/09 bis sur le papier** : plus de lignes, plus
+> de lumière lilas, plus de transparence ni de vacillement, plus de halo
+> — le papier est le logo, plein, navy, ses trous sont des trous
+> (`.ast-holo` et `#gate-asteroid::before` n'existent plus). **La plaque
+> et le faisceau passent en navy** (#333366 et ses tons clairs près du
+> point), sans lignes de balayage : abstrait, une seule matière. **Le
+> faisceau SUIT le Totehm** : `PAPIER.faisceau()` projette à chaque
+> frame les deux coins du bas du papier par la même chaîne que
+> `peindre()` (échelle, rotations, perspective, translation) et y
+> accroche le haut du faisceau, 1,5 px derrière le bord. Mesuré : le
+> haut du faisceau tombe à 1,4–1,6 px au-dessus du bord bas réel du
+> papier, sur toute sa largeur, à six instants différents, au téléphone
+> et à l'ordinateur. Au repos et en mouvement réduit, il se pose sur le
+> papier à plat ; il se remesure à chaque changement de taille.
 
 **`#gate-socle` : un palet gris en SVG** — une tranche, un dessus, un
 logement. Zéro bouton, zéro vis. Dans le logement, l'électroaimant : trois
