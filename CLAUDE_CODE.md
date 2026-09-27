@@ -1,20 +1,16 @@
-# CLAUDE_CODE.md — LOT DU 27/09/2026 · YESTERDAY · TODAY · TOMORROW · LE CLUB · PLUS DE MONTSERRAT
+# CLAUDE_CODE.md — LOT DU 28/09/2026 · YESTERDAY = TOUS LES ANCIENS SPOTS · LE NAVY = LE TOTEHM
 
-**totehm.space suit le temps.** Gauche YESTERDAY (mes Spots et ceux que
-j'ai rejoints, sur un an, chacun se refait), centre TODAY (la carte de rue
-dès l'arrivée ; la toucher crée un Spot ici, aujourd'hui), droite TOMORROW
-(jour par jour, sans filtre), bas SEARCH (la barre, les jours, le mode, les
-sept intentions), haut CREATE A SPOT (la carte en sourdine). My space est
-dans le coin membre (un point blanc, comme « toi » sur la carte). Le
-rendez-vous se pose en plein écran, la carte sous une croix fixe. Boîtes
-qui grandissent au survol, loupe au téléphone. `by <nom>` sous chaque
-Spot, sur la tuile perforée — qui ne sert plus qu'aux noms de Totehm.
+**totehm.space** : la vue de gauche YESTERDAY montre **tous les Spots
+terminés autour de la carte, depuis un an**, jour par jour et sur la
+carte ; chacun se refait (avec MON habitude). **Mes Spots et ceux que
+j'ai rejoints** sont dans le **coin membre** (My space) : Cancel, On the
+map, Withdraw, Do it again. Les **sept intentions** de Search reprennent
+exactement les rangées du 26/09. **Le navy** (et le bleu clair, le
+rouge-violet) ne sert plus qu'aux boîtes du Totehm : filtres, manette,
+trois clés → gris.
 
-**figher.club** prend la même grammaire (Bebas Neue, saisies et boutons
-gris arrondis, tuile = nom d'un Totehm, point blanc).
-
-**Plus de Montserrat nulle part** : totehm.com, HigherSelf, TotehmBot, la
-boutique. Le slogan Higher est un tracé vectoriel.
+**figher.club** : accès, abonnements, soldes, portes → gris (filet vert =
+actif). Seule Reveal the Box garde la couleur de la boîte qu'elle montre.
 
 **Ce lot a été exécuté par Claude dans une session cloud** : la migration
 est DÉJÀ en base, la branche `claude/intelligent-galileo-a458ao` est
@@ -25,13 +21,9 @@ fusionnée sur `main` (Vercel redéploie les domaines).
 ## 1 · Les fichiers
 
 ```
-space/index.html                                     ← RÉÉCRIT (BUILD 2026-09-27)
-club/index.html · club/console.html                  ← BUILD 2026-09-27
-com/totehm.html                                      ← Montserrat → Bebas Neue (titres de vue, rangs, wordmark, accroche)
-com/higherself.html · com/totehm_7_intentions.html · com/club/totehmbot.html
-boutique/{index,totehm,discover,discover_lisbon,get_higher,play_lisbon_street,stoner}.html
-                                                     ← Montserrat retirée, slogan Higher vectorisé
-backend/supabase/migrations/20260927_space_hier.sql  ← NOUVEAU — DÉJÀ APPLIQUÉ
+space/index.html                                        ← BUILD 2026-09-28
+club/index.html · club/console.html                     ← BUILD 2026-09-28
+backend/supabase/migrations/20260928_space_hier_tous.sql ← NOUVEAU — DÉJÀ APPLIQUÉ
 CLAUDE.md · BRAND.md · backend/SYSTEM.md · backend/README.md · CLAUDE_CODE.md
 ```
 
@@ -40,28 +32,26 @@ CLAUDE.md · BRAND.md · backend/SYSTEM.md · backend/README.md · CLAUDE_CODE.m
 ## 2 · LA BASE — déjà appliquée, à VÉRIFIER (MCP Supabase, `execute_sql`)
 
 ```sql
-select position('365 days' in prosrc) > 0 as un_an,
-       has_function_privilege('anon', 'public.my_space()', 'execute') as anon,
-       has_function_privilege('authenticated', 'public.my_space()', 'execute') as membre
-  from pg_proc where proname = 'my_space';
+select has_function_privilege('anon', 'public.spots_past(double precision,double precision,integer,text,integer)', 'execute') as anon,
+       jsonb_array_length(public.spots_past(38.72, -9.14, 60000, null, 60)->'spots') > 0 as rend_des_spots,
+       (public.spots_past(38.72, -9.14, 60000, null, 60)->'spots'->0->>'creator') is null as invite_sans_createur;
 ```
 
-**`true` · `false` · `true`.** Relevé le 27/09 après application : identique.
+**`true` · `true` · `true`.** Relevé le 28/09 après application : identique (15 Spots).
 
 ---
 
 ## 3 · Le contrôle après déploiement
 
 ```bash
-curl -sL https://www.totehm.space/ | grep -c "const BUILD = '2026-09-27'"
-curl -sL https://www.figher.club/ | grep -c "const BUILD = '2026-09-27'"
-curl -sL https://www.figher.club/console | grep -c "const BUILD = '2026-09-27'"
-curl -sL https://www.totehm.com/totehm | grep -c "family=Montserrat"
-curl -sL https://www.higher.boutique/ | grep -c "family=Montserrat"
+curl -sL https://www.totehm.space/ | grep -c "const BUILD = '2026-09-28'"
+curl -sL https://www.figher.club/ | grep -c "const BUILD = '2026-09-28'"
+curl -sL https://www.figher.club/console | grep -c "const BUILD = '2026-09-28'"
+curl -sL https://www.totehm.space/ | grep -c "spots_past"
 curl -sL -o /dev/null -w "backend public ? %{http_code}\n" https://www.totehm.space/backend/README.md
 ```
 
-**1 · 1 · 1 · 0 · 0 · 404.**
+**1 · 1 · 1 · ≥1 · 404.**
 
 ---
 
@@ -69,19 +59,18 @@ curl -sL -o /dev/null -w "backend public ? %{http_code}\n" https://www.totehm.sp
 
 Dans `~/totehm/TOTEHM_MASTER.md`, §0, ajoute sous la dernière entrée :
 
-> **0.18 · 27/09 — l'Espace suit le temps ; plus de Montserrat.** Les vues
-> latérales sont YESTERDAY (mon histoire, un an, chaque Spot se refait) et
-> TOMORROW (jour par jour) ; TODAY est la carte, qu'on touche pour créer ;
-> SEARCH en bas ; My space dans le coin membre. Le rendez-vous se pose en
-> plein écran. Bebas Neue remplace Montserrat partout (une graisse :
-> l'intensité par la taille et la lumière) ; le slogan Higher est un tracé.
-> La tuile perforée navy est réservée au NOM d'un Totehm ; saisies et
-> boutons gris et arrondis sur l'Espace et le Club. **Écarts connus** :
-> totehm.com et higher.boutique gardent leurs boutons et champs perforés
-> (à convertir) ; la carte de rue OpenStreetMap s'affiche désormais dès
-> l'arrivée — gratuite mais sous politique d'usage : à fort trafic, un
-> fournisseur payant (un seul endroit à changer, `TILE_URL`) ; « today »
-> reste un jour de Lisbonne côté serveur.
+> **0.19 · 28/09 — Yesterday, c'est le passé de tous ; le navy, c'est le
+> Totehm.** YESTERDAY montre tous les Spots terminés autour de la carte
+> depuis un an (`spots_past`, mêmes règles de lecture que le radar) ;
+> chacun se refait avec MON habitude. Mon histoire (mes Spots, ceux que
+> j'ai rejoints) vit dans My space, au coin membre. Les sept intentions
+> de Search sont les rangées du 26/09. Navy, bleu clair et rouge-violet
+> sont réservés aux boîtes du Totehm et au nom d'un Totehm ; filtres,
+> manette, accès, abonnements, soldes : gris. **Écarts connus** : le
+> badge Higher garde son carré navy (c'est le slogan) ; la manette de
+> totehm.com garde ses couleurs (ses tuiles sont les vues du Totehm) ;
+> au-dessus de 80 km, YESTERDAY n'a pas de globe (le globe ne compte que
+> ce qui vient).
 
 Contrôle : `git -C ~/totehm check-ignore TOTEHM_MASTER.md` → `TOTEHM_MASTER.md`.
 
@@ -99,35 +88,23 @@ rm -rf ~/inbox/*
 
 ## B · LES TESTS NAVIGATEUR (navigation privée)
 
-Dans la console, `__totehm_space()` doit dire `build: "2026-09-27"`.
+Dans la console, `__totehm_space()` doit dire `build: "2026-09-28"`.
 
 **totehm.space**
-1. **TODAY** : la carte de rue sombre est là tout de suite ; toi, un point
-   blanc au centre. Touche la carte **hors d'un Spot** → CREATE A SPOT
-   s'ouvre, « here, today », le lieu est posé.
-2. **CREATE** : choisis une habitude → le jour est « today », le point est
-   posé ; ce qui manque respire. `set meeting point` → **◎ place it on the
-   map** : la carte prend l'écran, une croix au centre. **Déplace la carte**
-   du doigt, pince, puis **Here**.
-3. **Bas = SEARCH** : écris un mot, choisis un jour, un mode, une
-   intention (la phrase de l'intention s'affiche).
-4. **Droite = TOMORROW** : les Spots à venir, un titre par jour, aucun filtre.
-5. **Gauche = YESTERDAY** : mes Spots et ceux que j'ai rejoints. **Do it
-   again** → Create avec tout rempli sauf le jour.
-6. **Le coin haut gauche** (point blanc + ton nom) : ton nom sur la tuile
-   perforée, tes accès, qui attend ta réponse (Accept), Sign out.
-7. **Sous un Spot** : `62% match with my TOTEHM`, et `by <nom>` sur la
-   tuile perforée — touche-le : son Totehm s'ouvre.
-8. **Ordinateur** : passe la souris sur une boîte, elle grandit.
-   **Téléphone** : la petite loupe en haut à droite d'une boîte l'agrandit.
-9. **?** : How it works — le Spot d'abord, le site ensuite.
+1. **Gauche = YESTERDAY**, même sans compte : les Spots passés autour de
+   toi, un titre par jour, et leurs points sur la carte. Connecté membre :
+   **Do it again** sur le Spot d'un autre → Create, le lieu et le format
+   posés, tu choisis TON habitude puis le jour.
+2. **Le coin haut gauche** (point blanc + ton nom) : sous tes accès et tes
+   demandes, **my Spots** et **joined** — Cancel, On the map, Withdraw,
+   Do it again.
+3. **Bas = SEARCH** : les sept intentions en rangées (nom, Higher, pilier,
+   la phrase). Touche-en une : elle reste en tête, les autres deviennent
+   sept points ; **all seven** les rend. Un filtre choisi est blanc, plus navy.
+4. La manette est grise.
 
-**figher.club** et **/console** : titres en Bebas Neue, champs gris
-arrondis, ton nom sur la tuile perforée (il ouvre ton Totehm), point blanc.
-
-**totehm.com/totehm** : les titres de vue (MY HABITS…) et le wordmark
-sont en Bebas Neue. **higher.boutique** : le badge Higher s'affiche
-toujours (c'est maintenant un tracé).
+**figher.club/console** : les boîtes d'accès, d'abonnement et de gains
+sont grises ; un filet vert dit « actif ».
 
 Un écran vide ou un geste mort → colle ça dans la console et envoie tout :
 

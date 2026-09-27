@@ -15,7 +15,31 @@
 
 ---
 
-## 0 · LOT DU 27/09/2026 — YESTERDAY · TODAY · TOMORROW · LE CLUB · PLUS DE MONTSERRAT
+## 0 · LOT DU 28/09/2026 — YESTERDAY = TOUS LES ANCIENS SPOTS · LE NAVY = LE TOTEHM
+
+> **ÉTAT : migration `20260928_space_hier_tous.sql` appliquée le 28/09/2026
+> par Claude (MCP Supabase) — AVANT la page.** Avant : aucune fonction
+> `spots_past` n'existait ; `spots_radar` déployé relu (source de la
+> copie). Contrôles après : `anon` peut l'exécuter (lecture publique,
+> comme le radar) ; autour de Lisbonne sur 60 km elle rend 15 Spots
+> terminés, sans créateur ni contexte pour un invité.
+
+| objet | ce qui change |
+|---|---|
+| **`spots_past(lat, lng, radius, q, limit)`** — NOUVELLE | les Spots publiés et TERMINÉS depuis moins d'un an dans la portée, du plus récent au plus ancien, 60 au plus ; mêmes règles de lecture que `spots_radar` ; `again` = le lecteur est membre du Club |
+
+**Pages** : `space/index.html` (`BUILD='2026-09-28'`) — YESTERDAY lit
+`spots_past` (liste jour par jour + carte) ; My Spots et Joined dans le
+coin membre ; les sept intentions de Search reprennent les rangées du
+26/09 ; filtres, manette et trois clés sortent du navy.
+`club/index.html`, `club/console.html` (`BUILD='2026-09-28'`) — les
+boîtes d'accès, d'abonnement, de solde et les portes passent au gris
+(filet vert = actif) ; seule Reveal the Box garde la couleur de la vue.
+
+**Retour arrière** : `drop function public.spots_past(double precision,
+double precision, integer, text, integer);` et redéployer la page du 27/09.
+
+## 0 bis · LOT DU 27/09/2026 — YESTERDAY · TODAY · TOMORROW · LE CLUB · PLUS DE MONTSERRAT
 
 > **ÉTAT : migration `20260927_space_hier.sql` appliquée le 27/09/2026 par
 > Claude (MCP Supabase, projet `abujjbkbbiumxrokozph`) — AVANT la page.**
@@ -1471,6 +1495,9 @@ Functions sont téléchargeables.
 | 27/09 | **Plus de Montserrat nulle part ; Bebas Neue pour titres et questions ; le slogan Higher vectorisé** | décision de marque de Wah ; un slogan qui dépend d'une webfont s'éteint le jour où la police ne charge pas |
 | 27/09 | **La tuile perforée navy = le nom d'un Totehm ; saisies et boutons gris arrondis** (Espace, Club) | une texture de marque qui sert à tout ne signifie plus rien |
 | 27/09 | **`my_space` remonte sur un an** | YESTERDAY doit retrouver ce qu'on refait |
+| 28/09 | **YESTERDAY = tous les anciens Spots (`spots_past`) ; My Spots dans le coin membre** | Wah : hier, c'est ce qui s'est passé autour de moi ; mon histoire est mon compte |
+| 28/09 | **Les intentions de Search reprennent les rangées du 26/09** | la version pastilles du 27/09 changeait un geste que Wah n'avait pas demandé de changer |
+| 28/09 | **Navy / bleu clair / rouge-violet réservés aux boîtes du Totehm** (Espace, Club) | une couleur de boîte qui sert aussi de filtre ou de solde ne dit plus « ceci est mon Totehm » |
 | 26/09 | **totehm.space va de la rue à la planète** | plateforme internationale : une projection orthographique, des lumières par région (`spots_globe`), la couronne qui fait tourner la carte ou le globe |
 | 26/09 | **Un Spot a une nature : public ou privé** | chez soi, le radar ne doit montrer que le quartier (~1,1 km) — l'arrondi est en base |
 | 26/09 | **Trait de côte Natural Earth servi par nous ; tuiles OpenStreetMap en création seulement** | zéro facture, zéro clé ; OSM a une politique d'usage — un fournisseur payant sera nécessaire à fort volume |

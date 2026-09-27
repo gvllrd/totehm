@@ -86,6 +86,8 @@ déjà à la question.
                                      earth.json · earth50.json
                                      · YESTERDAY · TODAY · TOMORROW, Search
                                      en bas, My space au coin (27/09)
+                                     · YESTERDAY = tous les anciens Spots,
+                                     My Spots au coin membre (28/09)
                                      + redirections 308 de l'ancien Stoner
   boutique/  →  www.higher.boutique  UNE BOX, N'IMPORTE LAQUELLE, DEVIENT UN CLOTH
                                      index.html · streetwear.html (totehmisation)
@@ -276,7 +278,54 @@ avant sa méthode de virement lisait « ok » et n'avait rien d'enregistré.
 `upsert … onConflict: 'user_id'`. *Un `update` sans ligne n'est pas une
 erreur pour Postgres — c'en est une pour nous.*
 
+### ⛔ TOTEHM.SPACE — YESTERDAY = TOUS LES ANCIENS SPOTS · LE NAVY = LE TOTEHM · 28/09/2026
+
+**La demande de Wah :** « La partie YESTERDAY, c'est tous les anciens
+Spots. TOUTE la partie My Spots va dans l'espace membre. Remets EXACTEMENT
+le système d'intention comme avant. Le bleu navy, c'est seulement les
+boîtes du Totehm. » `space/index.html`, `club/index.html`,
+`club/console.html` (`BUILD='2026-09-28'`), migration
+`20260928_space_hier_tous.sql`.
+
+| | le 27/09 (faux) | depuis le 28/09 |
+|---|---|---|
+| YESTERDAY (gauche) | MON histoire (`my_space`) | **tous les Spots terminés autour de la carte, depuis un an** (`spots_past`), jour par jour, sur la carte aussi ; chacun se refait |
+| My Spots · joined | la vue YESTERDAY | **le coin membre** (My space) : Cancel, On the map, Withdraw, Do it again |
+| les sept intentions (Search) | des pastilles Bebas | **les rangées du 26/09** (Space Mono, pastille, slogan Higher, pilier, la phrase) ; choisie → en tête + sept points + `all seven` |
+| un filtre choisi | fond navy | fond **blanc**, texte noir |
+| la manette de l'Espace | navy / bleu clair / rouge-violet | **grise** |
+| les trois clés (My space) · le Club | boîtes navy, bleu clair, rouge-violet | **grises** ; filet vert (`.on`) = actif |
+
+**⚠️ LE NAVY, LE BLEU CLAIR ET LE ROUGE-VIOLET SONT LES COULEURS DES
+BOÎTES DU TOTEHM, ET D'ELLES SEULES.** Une habitude (la boîte-action d'un
+Spot est une Habit Box), un objectif, une répulsion, une sagesse, une
+vision, les mini-boîtes, la tuile du NOM d'un Totehm, et Reveal the Box
+(qui montre une boîte). Jamais un filtre, un accès, un abonnement, un
+solde, une porte, une manette. **Exception assumée : le badge Higher**
+(slogan de marque, tracé sur son carré navy perforé) — et la manette de
+`com/totehm.html`, dont les tuiles SONT les vues du Totehm.
+
+**⚠️ `spots_past` EST LE MIROIR DE `spots_radar`, MÊMES RÈGLES DE
+LECTURE.** Position publique arrondie pour tous ; créateur, contexte et
+mot pour un membre ou le créateur ; point exact au créateur et aux
+acceptés ; la compatibilité en un total ; la recherche par mots s'arrête
+à ce que le lecteur peut lire. `again` (le lecteur est membre) sort du
+serveur : la page ne recompose pas le passeport. Refaire le Spot d'un
+autre pose le lieu et le format, **avec MON habitude**.
+
+**Le globe ne montre que ce qui vient** : dans YESTERDAY, au-dessus de
+80 km, la lecture dit « zoom in to read yesterday ».
+
+**Le diagnostic** `__totehm_space()` : `build: "2026-09-28"` ; `spots`
+compte les anciens Spots dans YESTERDAY.
+
 ### ⛔ TOTEHM.SPACE — YESTERDAY · TODAY · TOMORROW · 27/09/2026
+
+> **⚠️ DÉPASSÉ LE 28/09 SUR TROIS POINTS** — YESTERDAY montre TOUS les
+> anciens Spots (plus mon histoire, partie dans My space), les intentions
+> de Search reprennent les rangées du 26/09, et le navy ne sert plus
+> qu'aux boîtes du Totehm. Voir la section du 28/09 juste au-dessus.
+
 
 **La demande de Wah :** My Space dans le coin membre, la recherche en bas,
 la carte dès l'arrivée, créer un Spot en touchant la carte, un rendez-vous
@@ -290,7 +339,7 @@ qui vaut aussi pour le Club. `space/index.html` (`BUILD='2026-09-27'`),
 | centre | **TODAY** | la carte de ce qui se passe aujourd'hui ; **la toucher hors d'un Spot = créer un Spot ICI, aujourd'hui** | pleine, fond de rue dès l'arrivée |
 | haut | **CREATE A SPOT** | la boîte-action ; le lieu et le jour déjà posés si l'on vient de la carte ou d'hier | **en sourdine** (petite, pâle) |
 | bas | **SEARCH** | la barre, les jours, le mode, les sept intentions (+ Higher, + la phrase) — quittés de la droite | **en sourdine** |
-| gauche | **YESTERDAY** | mes Spots et ceux que j'ai rejoints, sur UN AN (`my_space` v4) ; chacun se **refait** (`Do it again`) | pleine |
+| gauche | **YESTERDAY** | ~~mes Spots et ceux que j'ai rejoints~~ → **tous les anciens Spots** depuis le 28/09 (`spots_past`) ; chacun se **refait** (`Do it again`) | pleine |
 | droite | **TOMORROW** | ce qui vient, jour par jour, sans filtre | pleine |
 
 **⚠️ MY SPACE EST DANS LE COIN MEMBRE (haut gauche).** Mon nom de Totehm
