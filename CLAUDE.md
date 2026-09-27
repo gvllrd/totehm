@@ -651,7 +651,129 @@ utilisateurs du dashboard.
 Les Spots vieillissent : relancer `select public.demo_seed();` (Claude
 Code, MCP) remet une semaine de Spots à partir de maintenant.
 
+### ⛔ LE PAPIER LÉVITE SUR SON SOCLE — ET RIEN NE S'OUVRE SANS ÊTRE INSCRIT — 27/09/2026
+
+**La demande de Wah, en deux missions :** « un socle à lévitation
+électromagnétique ultra-épuré ; le Totehm remonté, qui donne l'illusion
+d'un hologramme suspendu, sans lumières flashy ni fioritures — une œuvre
+d'art qu'on a envie de toucher et d'ouvrir » ; et « pas inscrit, rien
+n'est permis. Point. » Tout est dans `com/totehm.html`
+(`BUILD='2026-09-27'`).
+
+#### Mission 1 — le socle
+
+**`#gate-socle` : un palet gris en SVG** — une tranche, un dessus, un
+logement. Zéro bouton, zéro vis. Dans le logement, l'électroaimant : trois
+spires immobiles et trois ondes (`.sc-w`, 4,8 s) qui partent du cœur.
+C'est de la géométrie, pas une image : net à toutes les tailles, zéro
+octet à télécharger.
+
+**Le papier remonte** : son centre est à ~27 % de la hauteur
+(`#gate-top-row`, `margin-top` calculé). La porte vit sous le socle, et
+elle doit rester AU-DESSUS du clavier du téléphone.
+
+**L'hologramme, en quatre subtilités — et rien d'autre :**
+
+| ce qu'il fait | comment |
+|---|---|
+| il lévite | deux sinus lents sur la hauteur, en plus de la dérive du 25/09 ; un ressort `lv` le fait monter de 7 px quand la souris approche, descendre de 6 px quand on appuie |
+| il se reflète | son reflet navy glisse sur le dessus du socle avec lui, et s'amincit quand il passe sur la tranche (`#socle-refl`) |
+| l'aimant travaille | le cœur (`#socle-core`) s'avive quand le papier descend |
+| il est porté | un faisceau à peine plus clair que l'air, qui meurt avant de le toucher |
+
+Au tap d'un inscrit, le cœur rend un seul éclat (`.is-charge`), puis le
+Totehm sort. Tout vit entre 3 et 12 % d'opacité.
+
+**⚠️ AUCUNE OMBRE PORTÉE (BRAND).** Ce qui ancre le papier au socle n'est
+pas une tache sombre : c'est sa lumière sur le dessus. Le seul trait est
+l'arête avant, blanche à 7 % — la lumière sur un bord, pas un contour.
+
+**⚠️ UN FAISCEAU SE DESSINE AU MASQUE, PAS AU `clip-path`.** Le `filter`
+passe AVANT la découpe : un faisceau flouté puis découpé garde des arêtes
+nettes, et une lueur à arêtes nettes se lit comme une boîte grise
+(mesuré). Deux `mask-image` croisés : la hauteur s'éteint vers le haut,
+les côtés s'effilent.
+
+**⚠️ LE SOCLE EST SOUS LE PAPIER** (`z-index` 1 contre 2) : le carré navy
+qui grandit pendant la déconstruction le recouvre. Il s'efface sur
+`.entered` et revient au repli.
+
+**⚠️ LA DÉCONSTRUCTION N'A PAS BOUGÉ.** Mesuré au téléphone et à
+l'ordinateur, à trois angles du papier : chaque calque arrive sur sa
+pièce du Totehm au dixième de pixel, comme le 25/09. La colonne est
+ancrée en HAUT : ouvrir ou fermer la porte ne déplace jamais le papier,
+donc `measure()` lit toujours un logo immobile.
+
+Mouvement réduit : les ondes s'arrêtent, le papier reste posé.
+Diagnostic : `__totehm_lsd.socle`.
+
+#### Mission 2 — pas inscrit, rien n'est permis
+
+**Inscrit = un compte ET le nom de son Totehm** (`inscrit()`). Rien
+d'autre n'ouvre.
+
+**⚠️ `enter()` EST LE VERROU, PAS LE BOUTON.** Le tap, le clavier, un
+`#in` dans l'URL, un `?ro=`, `__totehmDeplie` : tout passe par `enter()`,
+et sans inscription `enter()` ouvre **LA PORTE** (`#gate-door`) sous le
+socle. Un verrou posé sur un seul bouton se contourne par les quatre
+autres chemins.
+
+**La porte pose une question à la fois** (Bebas Neue) : « Sign up to open
+it » (l'email) → « The code from your email » → « Name your Totehm » →
+le papier s'ouvre DE LUI-MÊME, 420 ms après le fondu de la porte. On
+s'inscrivait pour ça : on ne retouche pas le papier une deuxième fois.
+Un membre qui revient : email → code → ouvert. Un tap à côté ou Échap la
+referme ; le papier continue de vivre.
+
+**Ce qui est parti — le mode invité entier :** les trois habitudes de
+démonstration, l'écriture locale sans compte, `loadState`, `pload`,
+`KEYP`, `profile`, `migrateLocalToCloudIfNeeded`, `requireMember`, la
+fenêtre membre qui demandait l'email sur quatre vues sur cinq (on
+écrivait ses habitudes, puis on tombait sur une porte en passant aux
+objectifs), et « Guest » dans le coin membre : le coin n'existe plus que
+pour un inscrit (`body.member`).
+
+**`#mw-out-state` et `#mw-claim-state` sont les MÊMES nœuds**, déplacés de
+la fenêtre membre dans la porte — mêmes écouteurs, pas des copies.
+
+**⚠️ LE CACHE LOCAL APPARTIENT À UN COMPTE.** `totehm_habits_v1` porte son
+`uid`, n'est relu que par ce compte, s'efface à la déconnexion — et quand
+un AUTRE compte le trouve. Les clés de l'époque invité
+(`totehm_profile_v1`, `totehm_grind_v5`, `totehm_events`, un cache sans
+`uid`) sont purgées à l'arrivée. Raison, et c'était une fuite : sur un
+appareil partagé, un cache sans maître survivait à la déconnexion, et le
+suivant qui s'inscrivait héritait du Totehm du précédent (la migration
+du local vers le nuage le recopiait chez lui). `map.html` lit encore
+`habits` dans ce cache : le champ est gardé.
+
+**⚠️ LA SESSION A UN SEUL CHEMIN : `sessionChange()`** — arrivée, code
+vérifié, nom réclamé, déconnexion, jeton expiré. Il y en avait deux, qui
+chargeaient chacun de leur côté. Le compteur `sesSeq` jette la réponse
+d'un appel dépassé. **Changer de compte, c'est d'abord VIDER**
+(`quitter()`) : l'état, l'arbre, le cache et le tiroir du précédent
+partent avant de charger quoi que ce soit.
+
+**⚠️ LA GARDE.** Session perdue pendant que le Totehm est ouvert : il se
+replie, et la porte s'ouvre.
+
+**⚠️ LA QUESTION CHANGE, LE CURSEUR SUIT** (`champPorte()`, une seule
+table pour le titre et le champ). Le code vérifié, son champ disparaît et
+emporte le focus : mesuré, on tapait son nom dans le vide. Au téléphone,
+c'est aussi ce qui garde le clavier ouvert d'une question à l'autre — le
+nom prend le focus AVANT que le code se cache.
+
+Téléphone couché : pas de porte, « turn your phone upright » — le Totehm
+ne s'ouvre pas à l'horizontale, on ne s'inscrit pas devant un papier qui
+ne s'ouvrira pas. Et le dialogue iOS du capteur n'est jamais demandé par
+un geste dans la porte.
+
 ### ⛔ L'ATTERRISSAGE DE TOTEHM.COM EST UN PAPIER — 25/09/2026
+
+> **⚠️ COMPLÉTÉ LE 27/09** — voir **LE PAPIER LÉVITE SUR SON SOCLE**. Le
+> papier n'est plus au centre : il flotte dans le haut de l'écran,
+> au-dessus d'un socle. Un tap sans inscription n'ouvre plus rien : il
+> ouvre la porte. Le moteur, la pose à plat et la déconstruction
+> ci-dessous restent vrais, au dixième de pixel.
 
 **Un seul objet** sur l'atterrissage de `com/totehm.html` : un petit
 carré de papier perforé (110 px, `--gate-size`), **deux faces**, en
@@ -1727,8 +1849,9 @@ au-dessus. `floor`, `animateSwap()`, `foldGesture()`, `body.in-map` et
 `body.in-settings` sont supprimés — ne pas les réintroduire.
 
 ```
-ATTERRISSAGE  (body.gate)          le papier : logo au recto, nom au verso
-     ↕  tap sur le papier (il se pose)   ↕  croix #fold-x · geste bas · Échap
+ATTERRISSAGE  (body.gate)          le papier sur son socle : logo au recto, nom au verso
+     ↕  tap : inscrit → il se pose     ↕  croix #fold-x · geste bas · Échap
+     │        sinon  → la porte (email · code · nom), puis il se pose seul
 SAISIE        (body sans .gate)    le rail, les habitudes
 ```
 
@@ -1805,9 +1928,10 @@ Trois entrées, un seul état : les trois carrés `#views`, le balayage
 horizontal, les flèches du clavier. Aucune ne charge quoi que ce soit :
 c'est la même page, la même session, la même mémoire.
 
-**Sans session, une vue autre qu'`habits` ouvre la fenêtre membre.** Les
-objectifs et les répulsions sont des données du serveur : un écran vide ne
-dirait pas pourquoi il est vide.
+**Il n'y a plus de « sans session » dans la saisie (27/09).** On n'y entre
+pas sans être inscrit (`enter()`), donc les cinq vues sont ouvertes à qui
+est dedans. Avant, la fenêtre membre demandait l'email sur quatre vues
+sur cinq — voir **LE PAPIER LÉVITE SUR SON SOCLE**.
 
 Verticaux, dans la saisie :
 - au **sommet** de la liste, geste vers le haut → le filtre
