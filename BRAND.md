@@ -858,6 +858,19 @@ depuis le 23/09, sur `totehm.com` avant). Certaines sont transverses à tout
 l'écosystème — les quatre coins, le fond noir, le survol, « Higher » en SVG, le
 centrage.
 
+### Couleurs — le navy appartient au Totehm · 28/09/2026
+
+> **Wah : « le bleu navy, c'est seulement les box du Totehm ».** Navy
+> `#333366`, bleu clair `#36498c`, rouge-violet `#743169` (et les papiers
+> sagesse `#5b2652` / vision `#2b3a73`) disent **une boîte du Totehm** :
+> une habitude (donc la boîte-action d'un Spot), un objectif, une
+> répulsion, une sagesse, une vision, leurs mini-boîtes — et la tuile
+> perforée du NOM d'un Totehm. **Tout le reste est gris** : un filtre
+> choisi est blanc, un accès, un abonnement, un solde, une porte, la
+> manette de l'Espace sont gris ; « actif » se dit par un filet vert
+> (love). Exceptions : le badge Higher (le slogan, sur son carré navy) et
+> la manette de `totehm.com`, dont les tuiles SONT les vues du Totehm.
+
 ### Polices — la stack et ses rôles sacrés
 
 > **⚠️ MISE À JOUR 27/09/2026 — PLUS DE MONTSERRAT, NULLE PART.** Wah :

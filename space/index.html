@@ -11,10 +11,16 @@
                           CREATE A SPOT   (haut · la carte en sourdine)
                                  |
       YESTERDAY  ———————————   TODAY   ———————————   TOMORROW
-      mes Spots, ceux que      la carte, ce qui     ce qui vient,
-      j'ai rejoints            se passe aujourd'hui  jour par jour
+      tous les anciens         la carte, ce qui     ce qui vient,
+      Spots (28/09)            se passe aujourd'hui  jour par jour
                                  |
                               SEARCH      (bas · la carte en sourdine)
+
+  ⚠️ 28/09 — YESTERDAY = TOUS LES ANCIENS SPOTS (`spots_past`) ; mes Spots
+    et ceux que j'ai rejoints vivent dans le coin membre. Les sept
+    intentions de Search reprennent les rangées du 26/09. Le navy, le bleu
+    clair et le rouge-violet ne servent qu'aux boîtes du Totehm (et au nom
+    d'un Totehm) : filtres et manette sont gris.
 
   ⚠️ 27/09 — CE QUI A CHANGÉ, ET POURQUOI
   · MY SPACE EST PARTI DANS LE COIN MEMBRE (haut gauche) : mon nom de
@@ -35,7 +41,7 @@
   · Toi : un point blanc, le même objet qu'un Spot — au centre du radar et
     dans le coin membre.
 
-  ⚠️ LA PAGE NE DÉCIDE RIEN : `spots_radar`, `spots_globe`, `spot_publish`,
+  ⚠️ LA PAGE NE DÉCIDE RIEN : `spots_radar`, `spots_past`, `spots_globe`, `spot_publish`,
   `spot_apply`, `spot_decide`, `my_space`, `spot_rules` décident.
   ⚠️ LA COMPATIBILITÉ EST UN SEUL NOMBRE (§38).
   ⚠️ Ni Google Maps, ni Mapbox, ni Leaflet (§44) : côtes Natural Earth
@@ -188,7 +194,7 @@ body.pin #zoom{left:auto;right:14px;bottom:calc(76px + env(safe-area-inset-botto
   display:grid;grid-template-columns:18px var(--joy-d) 18px;grid-template-rows:18px var(--joy-d) 18px;
   align-items:center;justify-items:center}
 #cur-h{grid-area:1/2/2/3}#cur-g{grid-area:2/1/3/2}#joy-box{grid-area:2/2/3/3}#cur-d{grid-area:2/3/3/4}#cur-b{grid-area:3/2/4/3}
-#joy-box{width:var(--joy-d);height:var(--joy-d);position:relative;border-radius:50%;background:var(--joy-vue,var(--navy));
+#joy-box{width:var(--joy-d);height:var(--joy-d);position:relative;border-radius:50%;background:var(--joy-vue,var(--in2));
   box-shadow:0 2px 7px rgba(0,0,0,.5);transition:background-color .42s ease,box-shadow .42s ease;touch-action:none;cursor:grab}
 #joy-box:active{cursor:grabbing}
 #joy-box.pulse{animation:joy-pulse .5s ease-out}
@@ -198,9 +204,11 @@ body.pin #zoom{left:auto;right:14px;bottom:calc(76px + env(safe-area-inset-botto
 #joy-stack i{--d:13px;position:absolute;left:50%;display:block;width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
   border-radius:50%;background:var(--c);transform:scale(1);opacity:1;box-shadow:0 2px 5px rgba(0,0,0,.6);
   transition:transform .38s cubic-bezier(.22,.9,.3,1),opacity .38s ease}
-#joy-stack .o{top:23%;--c:var(--blue)}
-#joy-stack .h{top:50%;--c:var(--navy)}
-#joy-stack .r{top:77%;--c:var(--rep)}
+/* 28/09 — le navy, le bleu clair et le rouge-violet sont les couleurs des
+   BOÎTES du Totehm, et d'elles seules : la manette de l'Espace est en gris. */
+#joy-stack .o{top:23%;--c:#8a8a94}
+#joy-stack .h{top:50%;--c:#f2f2f2}
+#joy-stack .r{top:77%;--c:#5a5a64}
 #joy-stack i.ici{opacity:0;transform:scale(.4)}
 #joy-box.hors i{opacity:0;transform:scale(.4)}
 #joy.tenu #joy-box{box-shadow:0 5px 14px rgba(0,0,0,.65)}
@@ -302,18 +310,30 @@ body.pin #zoom{left:auto;right:14px;bottom:calc(76px + env(safe-area-inset-botto
 .opts{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:10px}
 .opt{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:var(--s2);border:none;
   border-radius:8px;padding:6px 10px;cursor:pointer;transition:color .15s,background .15s,transform .15s;-webkit-tap-highlight-color:transparent}
-.opt.on{background:var(--navy);color:#fff}
+.opt.on{background:#fff;color:#111}   /* le navy est la couleur des boîtes du Totehm, et d'elles seules (28/09) */
 .opt-l{font-size:14px;margin-right:6px;min-width:44px}
-.ichips{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
-.ichip{display:flex;align-items:center;gap:7px;background:var(--s2);border:none;border-radius:8px;cursor:pointer;padding:7px 10px;color:#fff;
-  transition:background .15s,transform .15s;-webkit-tap-highlight-color:transparent}
-.ichip i{width:11px;height:11px;border-radius:50%;background:var(--c);box-shadow:0 0 7px var(--c);flex:none}
-.ichip b{font-family:var(--bebas);font-weight:400;font-size:16px;letter-spacing:.06em;line-height:1}
-.ichip svg{height:13px;width:39px;display:block}
-.ichip.on{background:var(--s3);box-shadow:inset 0 -2px 0 var(--c)}
-.ichips.picked .ichip:not(.on){opacity:.5}
-.ihint{margin-top:8px;font-size:15px;min-height:18px;text-transform:uppercase}
-.ihint small{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--dim);margin-left:6px}
+/* LES SEPT — EXACTEMENT comme le 26/09 (Wah, 28/09) : une rangée par
+   intention, pastille · nom (Space Mono) · slogan Higher · pilier · la
+   phrase. Choisie, elle reste en tête ; les autres deviennent sept points. */
+.ints{display:flex;flex-direction:column;gap:5px;margin-top:12px}
+.int{display:grid;grid-template-columns:14px 1fr auto;gap:3px 11px;align-items:center;background:var(--s2);border:none;cursor:pointer;
+  padding:10px 12px 11px;text-align:left;color:var(--mid);width:100%;-webkit-tap-highlight-color:transparent}
+.int > i{width:14px;height:14px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c);grid-row:1}
+.int .in-n{display:flex;align-items:center;gap:7px;min-width:0}
+.int .in-n b{font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#fff}
+.int .in-n svg{height:15px;width:45px;display:block;flex:none}
+.int small{font-family:var(--mono);font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
+.int .df{grid-column:2 / -1;font-family:var(--mono);font-size:10px;letter-spacing:.02em;line-height:1.5;color:var(--lo)}
+.int.on{background:var(--s3)}
+.int.on small,.int.on .df{color:#fff}
+.int.hero{padding:13px 14px 14px;margin-top:12px}
+.int.hero > i{width:18px;height:18px}
+.int.hero .in-n b{font-size:13px}
+.int.hero .in-n svg{height:18px;width:54px}
+.dots{display:flex;align-items:center;gap:4px;margin-top:8px;flex-wrap:wrap}
+.dot{width:30px;height:30px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+.dot::before{content:'';width:12px;height:12px;border-radius:50%;background:var(--c);opacity:.55;transition:opacity .15s,transform .15s}
+.dot.on::before{opacity:1;transform:scale(1.25);box-shadow:0 0 8px var(--c)}
 
 /* ══ LA BOÎTE — COPIÉE DE com/totehm.html, AU PIXEL ═════════════════ */
 .habit{position:relative;display:flex;align-items:center;min-height:30px}
@@ -347,7 +367,7 @@ body.pin #zoom{left:auto;right:14px;bottom:calc(76px + env(safe-area-inset-botto
 @media(hover:hover){
   .it:hover{transform:scale(1.022);z-index:2}
   .it:hover .h-body{filter:brightness(1.14)}
-  .ichip:hover,.opt:hover,.chip:hover{transform:scale(1.05)}
+  .opt:hover,.chip:hover{transform:scale(1.05)}
   .it[data-hk]:hover{transform:scale(1.02)}
 }
 .lp{display:none;position:absolute;top:5px;right:5px;z-index:4;width:30px;height:30px;border:none;border-radius:50%;background:rgba(0,0,0,.3);
@@ -417,9 +437,8 @@ body.pin #zoom{left:auto;right:14px;bottom:calc(76px + env(safe-area-inset-botto
 /* ── LE COIN MEMBRE, OUVERT ──────────────────────────────────────── */
 .me-id{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:12px}
 .rope{display:flex;flex-direction:column;gap:5px;margin-top:10px}
-.rope .k{display:flex;justify-content:space-between;gap:10px;padding:11px 14px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:#fff;background:var(--navy)}
-.rope .k.b{background:var(--blue)}.rope .k.r{background:var(--rep)}
-.rope .k.no{background:none;color:var(--lo);border:1px dashed rgba(255,255,255,.25)}
+.rope .k{display:flex;justify-content:space-between;gap:10px;padding:11px 14px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:#fff;background:var(--s3);border-radius:var(--r)}
+.rope .k.no{background:var(--s2);color:var(--lo)}
 .rope .k span{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;align-self:center}
 .req{background:var(--s2);padding:10px 11px;border-radius:0}
 
@@ -442,7 +461,9 @@ body.pin #zoom{left:auto;right:14px;bottom:calc(76px + env(safe-area-inset-botto
   .v-loc:hover{text-decoration-color:#fff}
   .v-b:hover,.v-int-b:hover{opacity:.75}
   .chip:not(.on):hover{background:rgba(255,255,255,.16)}
-  .ichip:not(.on):hover{background:var(--s3)}
+  .int:not(.on):hover{background:var(--s3)}
+  .int:hover small,.int:hover .df{color:#fff}
+  .dot:hover::before{opacity:1}
   .b3:hover{color:#fff}
 }
 @media(prefers-reduced-motion:reduce){
@@ -697,7 +718,7 @@ function spotBoxHTML(s){
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
 let me = null, F = null, MS = null, TOT = null;
 let VIEW = 'radar', PANEL = null, FOCUS = null;
-const BUILD = '2026-09-27';
+const BUILD = '2026-09-28';
 const LISBON = { lat:38.7223, lng:-9.1393 };
 const LOCAL_MAX = 80e3, SPIN_AT = 700e3, MIN_R = 120, MAX_R = 7.6e6;
 const RAD = { on:false, raf:0, t:0, W:0, H:0, dpr:1, cx:0, cy:0, rpx:0, tcx:0, tcy:0, trpx:0,
@@ -750,10 +771,10 @@ const NOM = {
   radar:  ['Today',         'touch the map to create a Spot there'],
   create: ['Create a Spot', 'one of my habits, offered to the world'],
   search: ['Search',        'a word, a day, an intention'],
-  past:   ['Yesterday',     'my Spots, and the ones I joined'],
+  past:   ['Yesterday',     'every Spot done here — each one can be done again'],
   time:   ['Tomorrow',      'what is coming, day by day'],
 };
-const TEINTE = { radar:'--navy', create:'--blue', search:'--rep', past:'--rep', time:'--blue' };
+const TEINTE = { radar:'--in2', create:'--s3', search:'--s3', past:'--in', time:'--in' };
 const COUCHE = { create:'o', radar:'h', search:'r' };
 const PAN = { past:'p-g', time:'p-d', create:'p-h', search:'p-b', focus:'p-f', gate:'p-m' };
 /* En haut et en bas, la carte passe en SOURDINE (27/09). */
@@ -778,7 +799,6 @@ function setView(v){
     try{ navigator.vibrate && navigator.vibrate(8); }catch(_){}
   }
   if(v === 'create') openCreate();
-  else if(v === 'past') loadMine();
   if(was !== v || !RAD.spots.length) reload();
 }
 function paintTitle(){
@@ -791,7 +811,7 @@ function paintTitle(){
 }
 function paintJoy(){
   const jy = $('joy');
-  jy.style.setProperty('--joy-vue', 'var(' + (TEINTE[VIEW] || '--navy') + ')');
+  jy.style.setProperty('--joy-vue', 'var(' + (TEINTE[VIEW] || '--in2') + ')');
   const ici = COUCHE[VIEW] || null;
   ['o','h','r'].forEach(k => { const e = jy.querySelector('#joy-stack .' + k); if(e) e.className = k + (k === ici ? ' ici' : ''); });
   $('joy-box').classList.toggle('hors', !ici);
@@ -1465,6 +1485,7 @@ async function locate(){
 function params(){
   if(VIEW === 'search') return { p_when:FS.when, p_q:FS.q || null, p_mode:FS.mode, p_intention:FS.int };
   if(VIEW === 'time') return { p_when:'later', p_q:null, p_mode:null, p_intention:null };
+  if(VIEW === 'past') return { past:true };
   return { p_when:'today', p_q:null, p_mode:null, p_intention:null };
 }
 const decorate = s => { const r = ref(); return { ...s, _d:hav(r, s), _brg:bearing(r, s) }; };
@@ -1473,9 +1494,14 @@ async function loadSpots(force){
   const p = params(), at = { lat:+RAD.view.lat.toFixed(4), lng:+RAD.view.lng.toFixed(4) }, key = JSON.stringify([p, at]);
   if(!force && key === lastKey && Date.now() - lastAt < 60e3){ afterSpots(); return; }
   const my = ++seq;
-  const { data, error } = await sb.rpc('spots_radar', { p_lat:at.lat, p_lng:at.lng, p_radius:(RULES.local_radius_km || 60)*1000, p_live:false, p_limit:60, ...p });
+  /* YESTERDAY lit TOUS les anciens Spots autour de la carte (28/09) — le
+     miroir passé de spots_radar, mêmes règles de lecture. */
+  const fn = p.past ? 'spots_past' : 'spots_radar';
+  const args = p.past ? { p_lat:at.lat, p_lng:at.lng, p_radius:(RULES.local_radius_km || 60)*1000, p_q:null, p_limit:60 }
+                      : { p_lat:at.lat, p_lng:at.lng, p_radius:(RULES.local_radius_km || 60)*1000, p_live:false, p_limit:60, ...p };
+  const { data, error } = await sb.rpc(fn, args);
   if(my !== seq) return; // une réponse tardive n'écrase jamais un état plus frais
-  if(error){ console.error('[spots_radar]', error.message); $('status').textContent = 'the map is unavailable'; return; }
+  if(error){ console.error('[' + fn + ']', error.message); $('status').textContent = 'the map is unavailable'; return; }
   lastKey = key; lastAt = Date.now(); RAD.localAt = at;
   RAD.spots = (data?.spots || []).map(decorate);
   if(FOCUS && !RAD.spots.some(s => s.id === FOCUS)) FOCUS = null;
@@ -1485,6 +1511,7 @@ async function loadSpots(force){
 let gseq = 0, gKey = '', gAt = 0;
 async function loadGlobe(force){
   const p = params(), key = JSON.stringify(p);
+  if(p.past){ RAD.cells = []; gKey = ''; if(RAD.mode === 'globe') renderMarkers(); paintStatus(); return; }
   if(!force && key === gKey && Date.now() - gAt < 60e3){ paintStatus(); return; }
   const my = ++gseq;
   const { data, error } = await sb.rpc('spots_globe', { p_when:p.p_when, p_intention:p.p_intention, p_q:p.p_q, p_mode:p.p_mode });
@@ -1498,7 +1525,7 @@ async function loadGlobe(force){
 function reload(){ loadSpots(); if(RAD.mode === 'globe') loadGlobe(); }
 function afterSpots(){
   paintStatus();
-  if(VIEW === 'search' || VIEW === 'time' || panelKind() === 'focus') paintResults();
+  if(VIEW === 'search' || VIEW === 'time' || VIEW === 'past' || panelKind() === 'focus') paintResults();
 }
 
 /* ══ LA LECTURE DE L'INSTRUMENT ═════════════════════════════════════ */
@@ -1515,7 +1542,7 @@ function paintStatus(){
   if(PIN.on){
     h = 'drag · pinch · then <b>here</b>';
   } else if(VIEW === 'past'){
-    h = me ? (MS ? '<b>' + (MS.spots || []).length + '</b> created · <b>' + (MS.applications || []).length + '</b> joined · one year' : '…') : 'sign in to see my Spots';
+    h = glob ? 'zoom in to read yesterday' : n ? '<b>' + n + '</b> ' + sp(n) + ' done here · one year · ' + scale : 'nothing happened here yet · ' + scale;
   } else if(VIEW === 'create'){
     const Lm = MS?.limits; h = Lm ? 'my upcoming Spots <b>' + Lm.upcoming + ' / ' + Lm.max_upcoming + '</b>' : 'the map is quiet while I write';
   } else if(glob){
@@ -1575,7 +1602,7 @@ function markerTap(s){
   if(s.n != null){ tipHide(); flyTo(s.lat, s.lng, 12e3); return; }
   FOCUS = FOCUS === s.id && VIEW !== 'radar' ? null : s.id; paintMarkers();
   if(VIEW === 'radar'){ PANEL = 'focus'; syncPanels(); return; }
-  if(VIEW === 'search' || VIEW === 'time'){ paintResults(); return; }
+  if(VIEW === 'search' || VIEW === 'time' || VIEW === 'past'){ paintResults(); return; }
   peek(s, true); clearTimeout(LP.hide); LP.hide = setTimeout(() => peek(s, false), 1800);
 }
 
@@ -1585,7 +1612,12 @@ const WHY = {
   club:['Join FIGHER', 'join'], subscribers:['For the subscribers of this TOTEHM', null], full:['Full — every place is taken', null],
   started:['Already started', null], rejected:['Not selected this time', null] };
 function actionHTML(s){
-  if(s.mine) return '<button class="btn" data-mine="1" type="button">My Spot · yesterday</button>';
+  if(s.past){
+    const tag = s.mine ? '<span class="cap">my Spot</span>' : s.my_status === 'accepted' ? '<span class="cap">I was there</span>' : '';
+    if(s.again) return tag + '<button class="btn main" data-again="p:' + esc(s.id) + '" type="button">Do it again</button>';
+    return tag + (me ? '' : '<button class="btn main" data-gate="1" type="button">Sign in to do it again</button>');
+  }
+  if(s.mine) return '<button class="btn" data-gate="1" type="button">My Spot · my space</button>';
   if(s.my_status === 'accepted') return '<span class="cap"><b>You are in.</b></span><button class="lnk" data-withdraw="' + esc(s.id) + '" type="button">Withdraw</button>';
   if(s.my_status === 'pending') return '<span class="cap">Asked — the creator chooses.</span><button class="lnk" data-withdraw="' + esc(s.id) + '" type="button">Withdraw</button>';
   if(!s.why_not) return '<button class="btn main" data-apply="' + esc(s.id) + '" data-sel="' + esc(s.selection) + '" type="button">' + (s.selection === 'auto' ? 'Join' : 'Ask to join') + '</button>';
@@ -1604,14 +1636,15 @@ function paintResults(){
   const r = $('res'); if(!r) return;
   let l = RAD.spots.slice();
   if(VIEW === 'time') l.sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at));
+  if(VIEW === 'past') l.sort((a, b) => new Date(b.starts_at) - new Date(a.starts_at));
   if(panelKind() === 'focus' && FOCUS){ const i = l.findIndex(s => s.id === FOCUS); if(i > 0) l.unshift(l.splice(i, 1)[0]); }
-  const empty = VIEW === 'search' ? (FS.q ? 'Nothing matches. Try one word.' : 'No Spot around yet.')
+  const empty = VIEW === 'past' ? 'Nothing happened here yet. Zoom out — or create the first.' : VIEW === 'search' ? (FS.q ? 'Nothing matches. Try one word.' : 'No Spot around yet.')
     : VIEW === 'time' ? 'Nothing ahead yet. Create the first.' : 'Nothing today.';
   const hint = RAD.mode === 'globe' ? '<div class="cap" style="margin-bottom:8px">the planet · touch a light to fly there</div>' : '';
   let html = '', day = '';
   /* TOMORROW se lit JOUR PAR JOUR : un titre à chaque nouveau jour. */
   l.forEach(s => {
-    if(VIEW === 'time'){ const k = dayKey(new Date(s.starts_at)); if(k !== day){ day = k; html += '<div class="day b2">' + esc(fmtDay(new Date(s.starts_at))) + '</div>'; } }
+    if(VIEW === 'time' || VIEW === 'past'){ const k = dayKey(new Date(s.starts_at)); if(k !== day){ day = k; html += '<div class="day b2">' + esc(fmtDay(new Date(s.starts_at))) + '</div>'; } }
     html += itemHTML(s);
   });
   r.innerHTML = hint + (l.length ? html : '<div class="empty">' + empty + '</div>');
@@ -1628,24 +1661,31 @@ function renderTime(){
 }
 /* ── SEARCH (bas) — la barre, les jours, le mode, les sept ─────────── */
 const SW = [['', 'any day'], ['today', 'today'], ['tomorrow', 'tomorrow'], ['next7', 'next 7 days'], ['later', 'all ahead']];
-function ihintHTML(k){ return k ? esc(INTS[k].n) + ' — ' + esc(INTS[k].d) + '<small>' + INTS[k].p + '</small>' : 'an intention — the why before the where'; }
-function renderSearch(){
+/* Les sept, EXACTEMENT comme le 26/09 (By intention) : même police
+   (Space Mono), même geste — toucher une rangée la choisit et la pose en
+   tête, les autres deviennent sept points ; « all seven » les rend. */
+function intRow(k, hero){
+  const v = INTS[k];
+  return '<button class="int' + (hero ? ' hero on' : '') + '" data-fi="' + k + '" type="button" style="--c:' + v.c + '"><i></i>' +
+    '<span class="in-n"><b>' + v.n + '</b>' + HIGHER + '</span><small>' + v.p + '</small><span class="df">' + esc(v.d) + '</span></button>';
+}
+function intsHTML(){
   const keys = Object.keys(INTS);
+  return FS.int ? intRow(FS.int, true) + '<div class="dots">' + keys.map(k => '<button class="dot' + (k === FS.int ? ' on' : '') +
+      '" data-fi="' + k + '" type="button" style="--c:' + INTS[k].c + '" aria-label="' + INTS[k].n + '"></button>').join('') +
+      '<button class="opt" data-fi="" type="button" style="margin-left:6px">all seven</button></div>'
+    : '<div class="ints">' + keys.map(k => intRow(k)).join('') + '</div>';
+}
+function renderSearch(){
   P().innerHTML =
     '<input class="in" id="q" type="search" placeholder="search — a habit, a word, a name…" autocomplete="off" enterkeyhint="search" value="' + esc(FS.q) + '">' +
     '<div class="opts"><span class="opt-l b3">when</span>' + SW.map(w => '<button class="opt' + ((FS.when || '') === w[0] ? ' on' : '') + '" data-fw="' + w[0] + '" type="button">' + w[1] + '</button>').join('') + '</div>' +
     '<div class="opts" style="margin-top:5px"><span class="opt-l b3">mode</span>' + [['', 'any'], ['social', 'social'], ['silent', 'silent']].map(w =>
       '<button class="opt' + ((FS.mode || '') === w[0] ? ' on' : '') + '" data-fm="' + w[0] + '" type="button">' + w[1] + '</button>').join('') + '</div>' +
-    '<div class="ichips' + (FS.int ? ' picked' : '') + '">' + keys.map(k => '<button class="ichip' + (FS.int === k ? ' on' : '') + '" data-fi="' + k +
-      '" type="button" style="--c:' + INTS[k].c + '" title="' + esc(INTS[k].d) + '"><i></i><b>' + INTS[k].n + '</b>' + HIGHER + '</button>').join('') + '</div>' +
-    '<div class="ihint b2" id="ihint">' + ihintHTML(FS.int) + '</div>' +
+    '<div id="fi-box">' + intsHTML() + '</div>' +
     '<div class="list" id="res"></div>';
   let qT = null;
   $('q').addEventListener('input', () => { clearTimeout(qT); qT = setTimeout(() => { FS.q = $('q').value.trim(); FOCUS = null; reload(); }, 280); });
-  P().querySelectorAll('.ichip').forEach(b => {
-    b.onmouseenter = () => { const h = $('ihint'); if(h) h.innerHTML = ihintHTML(b.dataset.fi); };
-    b.onmouseleave = () => { const h = $('ihint'); if(h) h.innerHTML = ihintHTML(FS.int); };
-  });
   paintResults();
 }
 
@@ -1658,19 +1698,15 @@ async function onPanelClick(e){
   if(lp){ e.stopPropagation(); lp.closest('.it')?.classList.toggle('big'); return; }
   const ag = t.closest('[data-again]'); if(ag){ againFrom(ag.dataset.again); return; }
   if(t.closest('[data-gate]')){ PANEL = 'gate'; syncPanels(); return; }
-  if(t.closest('[data-mine]')){ dernierSens = 'g'; setView('past'); return; }
   if(k === 'search'){
     const w = t.closest('[data-fw]'), m = t.closest('[data-fm]'), i = t.closest('[data-fi]');
     if(w || m){ if(w) FS.when = w.dataset.fw || null; if(m) FS.mode = m.dataset.fm || null; FOCUS = null;
       t.closest('.opts').querySelectorAll('.opt').forEach(o => o.classList.toggle('on', o === (w || m))); reload(); return; }
-    if(i){ FS.int = FS.int === i.dataset.fi ? null : i.dataset.fi; FOCUS = null;
-      const box = i.closest('.ichips'); box.classList.toggle('picked', !!FS.int);
-      box.querySelectorAll('.ichip').forEach(o => o.classList.toggle('on', o.dataset.fi === FS.int));
-      const h = $('ihint'); if(h) h.innerHTML = ihintHTML(FS.int); reload(); return; }
+    if(i){ const v = i.dataset.fi; FS.int = !v ? null : FS.int === v ? null : v; FOCUS = null;
+      const box = $('fi-box'); if(box) box.innerHTML = intsHTML(); reload(); return; }
   }
   if(k === 'gate') return onGateClick(e);
-  if(k === 'past') return onPastClick(e);
-  if(!['focus', 'search', 'time'].includes(k)) return;
+  if(!['focus', 'search', 'time', 'past'].includes(k)) return;
   const det = t.closest('[data-det]');
   if(det){ e.stopPropagation(); const id = det.dataset.det; DET.has(id) ? DET.delete(id) : DET.add(id);
     const it = det.closest('.it'); const s = RAD.spots.find(x => x.id === id);
@@ -1692,60 +1728,52 @@ async function onPanelClick(e){
 }
 document.querySelectorAll('.pan').forEach(el => el.addEventListener('click', onPanelClick));
 
-/* ══ YESTERDAY (gauche) — MES SPOTS, CEUX QUE J'AI REJOINTS ═════════
-   Sur un an (`my_space` v4, 27/09). Chaque Spot se REFAIT : [Do it again]
-   ouvre Create a Spot avec tout ce qui peut l'être déjà posé — l'habitude
-   (si elle est encore dans mon Totehm), le lieu, l'heure, la durée, les
-   places, la nature, le mode. Seul le JOUR reste à choisir. */
+/* ══ YESTERDAY (gauche) — TOUS LES ANCIENS SPOTS (28/09) ════════════
+   « La partie YESTERDAY, c'est tous les anciens Spots. » Ce qui s'est fait
+   autour de la carte, depuis un an, jour par jour du plus récent au plus
+   ancien (`spots_past`). Chacun se REFAIT : [Do it again] ouvre Create a
+   Spot avec le lieu, l'heure, la durée, les places, la nature et le mode
+   déjà posés — mais avec MON habitude. Mon histoire (mes Spots, ceux que
+   j'ai rejoints) vit dans le coin membre. */
 function renderPast(){
-  const el = P();
-  if(!me || !F?.pseudo){ el.innerHTML = gateHTML('My Spots, and the ones I joined.'); wireGate(); return; }
-  if(!MS){ el.innerHTML = '<div class="cap">reading my Spots…</div>'; return; }
+  P().innerHTML = '<div class="list" id="res" style="margin-top:0"></div>';
+  paintResults();
+}
+/* MY SPOTS — dans le coin membre (Wah, 27/09 puis 28/09 : « TOUTE la
+   partie My Spots va dans l'espace membre »). Mes Spots et ceux que j'ai
+   rejoints, sur un an (`my_space` v4) ; chacun se refait. */
+function mineHTML(){
+  if(!MS) return '<div class="sec"><span class="sec-l b2">my Spots</span><div class="cap">reading…</div></div>';
   const S = MS.spots || [], A = MS.applications || [];
   const state = s => s.status === 'cancelled' ? 'cancelled' : s.live ? '<em>live</em>' : s.past ? 'done' : 'upcoming';
   const sec = (t, h) => '<div class="sec"><span class="sec-l b2">' + t + '</span><div class="list" style="margin-top:4px">' + h + '</div></div>';
   let h = '';
   if(S.length) h += sec('my Spots · <b>' + S.length + '</b>', S.map(s => '<div class="it" data-it="' + esc(s.id) + '">' + LOUPE + spotBoxHTML({ ...s, mine:true }) +
-    '<div class="act"><span class="cmp">' + state(s) + (s.pending && !s.past && s.status === 'published' ? ' · <button class="lnk" data-gate="1" type="button"><em>' + s.pending + '</em> waiting</button>' : '') + '</span>' +
+    '<div class="act"><span class="cmp">' + state(s) + (s.pending && !s.past && s.status === 'published' ? ' · <em>' + s.pending + '</em> waiting' : '') + '</span>' +
     '<span class="acts">' + (s.status === 'published' && !s.past ? '<button class="lnk" data-show="' + esc(s.id) + '" type="button">On the map</button><button class="lnk" data-cancel="' + esc(s.id) + '" type="button">Cancel</button>' : '') +
     '<button class="btn main" data-again="m:' + esc(s.id) + '" type="button">Do it again</button></span></div></div>').join(''));
   if(A.length) h += sec('joined · <b>' + A.length + '</b>', A.map(a => '<div class="it" data-it="' + esc(a.spot_id) + '">' + LOUPE + spotBoxHTML({ ...a, id:a.spot_id }) +
     '<div class="act"><span class="who"><span class="cmp"><em>' + esc(a.spot_status === 'cancelled' ? 'spot cancelled' : a.status) + '</em></span>' + byHTML(a.creator) + '</span>' +
     '<span class="acts">' + (['accepted','pending'].includes(a.status) && a.spot_status === 'published' && new Date(a.starts_at) > new Date() ? '<button class="lnk" data-wd="' + esc(a.spot_id) + '" type="button">Withdraw</button>' : '') +
     (F?.member ? '<button class="btn main" data-again="j:' + esc(a.spot_id) + '" type="button">Do it again</button>' : '') + '</span></div></div>').join(''));
-  if(!S.length && !A.length) h += '<div class="sec"><span class="sec-l b2">nothing yet</span><div class="say">Touch the map in Today to create a Spot there — or push the controller up.</div></div>';
-  el.innerHTML = h + '<div class="note" id="past-note" style="margin-top:12px"></div>';
-}
-async function onPastClick(e){
-  const t = e.target.closest('button'); if(!t) return;
-  if(t.dataset.det){ const y = P().scrollTop, id = t.dataset.det; DET.has(id) ? DET.delete(id) : DET.add(id); renderPast(); P().scrollTop = y; return; }
-  const n = $('past-note');
-  if(t.dataset.cancel){
-    if(!confirm('Cancel this Spot? Everyone accepted will see it is off.')) return;
-    await sb.rpc('spot_cancel', { p_spot: t.dataset.cancel }); await loadMine(); loadSpots(true);
-  } else if(t.dataset.wd){
-    await sb.rpc('spot_withdraw', { p_spot: t.dataset.wd }); await loadMine(); loadSpots(true);
-  } else if(t.dataset.show){
-    const s = (MS.spots || []).find(x => x.id === t.dataset.show); if(!s) return;
-    const today = dayKey(new Date(s.starts_at)) === dayKey(new Date());
-    FOCUS = s.id;
-    dernierSens = today ? 'd' : 'd'; setView(today ? 'radar' : 'time');
-    if(s.lat != null){ RAD.view = { lat:s.lat, lng:s.lng }; RAD.fly = null; if(RAD.range > LOCAL_MAX) zoomTo(RAD.base, true); }
-    await loadSpots(true); if(today){ PANEL = 'focus'; syncPanels(); } paintMarkers();
-  } else if(n && t.dataset.x) n.textContent = '';
+  if(!S.length && !A.length) h += '<div class="sec"><span class="sec-l b2">my Spots</span><div class="say">None yet. Touch the map in Today to create one there — or push the controller up.</div></div>';
+  return h;
 }
 /* REFAIRE UN SPOT — tout ce qui peut l'être, déjà posé. */
 function againFrom(key){
   const [kind, id] = key.split(':');
-  const src = kind === 'm' ? (MS?.spots || []).find(s => s.id === id) : (MS?.applications || []).find(a => a.spot_id === id);
+  const src = kind === 'm' ? (MS?.spots || []).find(s => s.id === id)
+            : kind === 'p' ? RAD.spots.find(s => s.id === id)
+            : (MS?.applications || []).find(a => a.spot_id === id);
   if(!src) return;
+  const own = kind === 'm' || (kind === 'p' && src.mine);
   const at = src.exact && src.exact.lat != null ? src.exact : (src.lat != null ? { lat:src.lat, lng:src.lng } : null);
   const d = new Date(src.starts_at);
-  PRE = { from:'again', habit: kind === 'm' ? src.habit : null, ints: src.intentions || [],
+  PRE = { from:'again', habit: own ? src.habit : null, ints: src.intentions || [],
     pos: at ? { lat:+(+at.lat).toFixed(6), lng:+(+at.lng).toFixed(6) } : null, posBy: at ? 'again' : null,
     place: src.place || '', time: hhmm(d), dur: src.duration_min || null,
     cap: src.capacity || null, sel: src.selection || null, venue: src.venue || null, mode: src.mode || null,
-    acc: kind === 'm' ? (src.access || null) : null, comment: kind === 'm' ? (src.comment || '') : '', label: src.habit };
+    acc: own ? (src.access || null) : null, comment: own ? (src.comment || '') : '', label: src.habit };
   resetDraft(); dernierSens = 'h'; setView('create');
 }
 
@@ -2047,8 +2075,7 @@ async function loadMine(){
 }
 function rerenderMine(){
   const k = panelKind();
-  if(k === 'gate') renderGate();
-  else if(k === 'past'){ const y = P().scrollTop; renderPast(); P().scrollTop = y; }
+  if(k === 'gate'){ const y = P().scrollTop; renderGate(); P().scrollTop = y; }
   else if(k === 'create' && !CR.h) renderCreate();
 }
 const refreshMine = () => { if(me) loadMine(); };
@@ -2097,15 +2124,26 @@ function renderGate(){
       '<div class="cap" style="margin-top:6px">for <b>' + esc(r.habit) + '</b> · ' + esc(fmtWhen(r.starts_at)) + '</div>' +
       (r.note ? '<div class="say-q" style="margin-top:4px">' + esc(r.note) + '</div>' : '') +
       '<div class="acts" style="margin-top:8px"><button class="btn main" data-dec="' + r.id + '" data-ok="1" type="button">Accept</button><button class="lnk" data-dec="' + r.id + '" data-ok="0" type="button">Not this time</button></div></div>').join('') + '</div></div>';
+  h += mineHTML();
   h += '<div class="acts" style="margin-top:14px"><button class="lnk" data-go="club" type="button">My FIGHER console</button>' +
-    '<button class="lnk" data-yest="1" type="button">My Spots · yesterday</button><button class="lnk" data-how="1" type="button">How it works</button>' +
+    '<button class="lnk" data-how="1" type="button">How it works</button>' +
     '<button class="lnk" data-out="1" type="button">Sign out</button></div><div class="note" id="mine-note" style="margin-top:10px"></div>';
   el.innerHTML = h; wireGate();
   if(me && !MS) loadMine();
 }
 async function onGateClick(e){
   const t = e.target.closest('button'); if(!t) return;
-  if(t.dataset.yest){ PANEL = null; dernierSens = 'g'; setView('past'); return; }
+  if(t.dataset.det){ const y = P().scrollTop, id = t.dataset.det; DET.has(id) ? DET.delete(id) : DET.add(id); renderGate(); P().scrollTop = y; return; }
+  if(t.dataset.cancel){
+    if(!confirm('Cancel this Spot? Everyone accepted will see it is off.')) return;
+    t.disabled = true; await sb.rpc('spot_cancel', { p_spot: t.dataset.cancel }); await loadMine(); loadSpots(true); return; }
+  if(t.dataset.wd){ t.disabled = true; await sb.rpc('spot_withdraw', { p_spot: t.dataset.wd }); await loadMine(); loadSpots(true); return; }
+  if(t.dataset.show){
+    const s = (MS?.spots || []).find(x => x.id === t.dataset.show); if(!s) return;
+    const today = dayKey(new Date(s.starts_at)) === dayKey(new Date());
+    FOCUS = s.id; PANEL = null; dernierSens = 'd'; setView(today ? 'radar' : 'time');
+    if(s.lat != null){ RAD.view = { lat:s.lat, lng:s.lng }; RAD.fly = null; if(RAD.range > LOCAL_MAX) zoomTo(RAD.base, true); }
+    await loadSpots(true); if(today){ PANEL = 'focus'; syncPanels(); } paintMarkers(); return; }
   if(t.dataset.dec){
     t.disabled = true; const n = $('mine-note');
     const { data, error } = await sb.rpc('spot_decide', { p_application: +t.dataset.dec, p_accept: t.dataset.ok === '1' });
@@ -2169,7 +2207,7 @@ sb.rpc('spot_rules').then(({ data, error }) => { if(error) console.error('[spot_
 loadEarth();
 await loadMe();
 radarStart();
-if(VIEW === 'create') openCreate(); else if(VIEW === 'past') loadMine();
+if(VIEW === 'create') openCreate();
 await locate();
 await loadSpots(true);
 RAD.base = autoRange(RAD.spots); zoomTo(RAD.base, true);

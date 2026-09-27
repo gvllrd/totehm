@@ -322,6 +322,15 @@ une erreur Stripe.
 
 ---
 
+## L'Espace — Yesterday = tous les anciens Spots · 28/09
+
+YESTERDAY (gauche) lit **`spots_past(p_lat, p_lng, p_radius, p_q,
+p_limit)`** — ouverte à `anon`, miroir passé de `spots_radar` (mêmes
+règles de lecture, `past:true`, `again` = membre). Mes Spots et ceux que
+j'ai rejoints (`my_space()`, inchangée) s'affichent dans le **coin
+membre**, avec Cancel (`spot_cancel`), Withdraw (`spot_withdraw`), On the
+map et Do it again. Au-dessus de 80 km, YESTERDAY ne lit pas le globe.
+
 ## L'Espace — Yesterday · Today · Tomorrow · 27/09
 
 Cinq crans, et ce que chacun demande à la base :
@@ -331,7 +340,7 @@ Cinq crans, et ce que chacun demande à la base :
 | centre | TODAY | `spots_radar(p_when='today')` — toucher la carte = créer un Spot ici |
 | haut | CREATE A SPOT | `spot_publish` (inchangé) |
 | bas | SEARCH | `spots_radar(p_q, p_when, p_mode, p_intention)` — tout combinable |
-| gauche | YESTERDAY | `my_space()` — `spots` et `applications` sur **365 jours** (v4, 27/09) |
+| gauche | YESTERDAY | ~~`my_space()`~~ → **`spots_past()`** depuis le 28/09 (tous les anciens Spots) |
 | droite | TOMORROW | `spots_radar(p_when='later')` |
 
 My space (le coin membre) lit `my_space()` aussi : `limits`, `requests`

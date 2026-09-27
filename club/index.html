@@ -147,7 +147,7 @@ h2{font-size:clamp(40px,9vw,64px);-webkit-text-stroke:.7px #fff}
 .door{position:relative;background:var(--g2);color:#fff;padding:16px 16px 16px 20px;
   display:flex;flex-direction:column;gap:6px;min-height:150px;
   transition:filter .15s ease,background .25s ease}
-.door::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--navy)}
+.door::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--lo)}   /* 28/09 : le navy = les boîtes du Totehm, pas une porte */
 .door.love::before{background:var(--love)}
 .door.enrich::before{background:var(--enrich)}
 @media(hover:hover){.door:hover{background:var(--g3);transform:scale(1.025)}}
@@ -458,7 +458,7 @@ let me = null, F = null;
 /* Le diagnostic — des booléens et des compteurs, jamais une valeur de
    membre. Dans la console : __totehm_club()  · `build` dit en trois
    secondes si la page ouverte est celle qu'on a livrée (règle du 22/09). */
-const BUILD = '2026-09-27';
+const BUILD = '2026-09-28';
 window.__totehm_club = () => ({ build: BUILD, page: 'door', signed_in: !!me,
   figher: F ? { complete: !!F.complete, remplies: F.remplies, thp: !!F.thp,
                 annual: !!F.annual, member: !!F.member } : null,
