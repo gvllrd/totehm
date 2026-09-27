@@ -1,52 +1,46 @@
 <!DOCTYPE html>
 <!--
-  ══ TOTEHM.SPACE — LE COCKPIT, À LA MANETTE, À L'ÉCHELLE DU MONDE · 26/09/2026 ══
+  ══ TOTEHM.SPACE — YESTERDAY · TODAY · TOMORROW · 27/09/2026 ════════════
   Un réseau social d'ACTIONS : une habitude devient un Spot, et d'autres
   membres la vivent avec toi. MASTER §24-48, §87 :
       WHAT CAN I DO?  ·  WHERE?  ·  WHEN?  ·  WITH WHOM?
 
-  La manette de `com/totehm.html` (COPIÉE — produits indépendants = fichiers
-  indépendants), cinq crans, cinq vues :
+  La manette de `com/totehm.html` (COPIÉE), cinq crans. L'horizontale est
+  le TEMPS, la verticale est l'ACTE — comme la croix du Totehm :
 
-                          CREATE A SPOT   (haut · le panneau descend du haut)
+                          CREATE A SPOT   (haut · la carte en sourdine)
                                  |
-      BY INTENTION  ———   LIVE & TODAY  ———   TOMORROW & BEYOND
-      (gauche · de gauche) (centre · rien ne bouge) (droite · de droite)
+      YESTERDAY  ———————————   TODAY   ———————————   TOMORROW
+      mes Spots, ceux que      la carte, ce qui     ce qui vient,
+      j'ai rejoints            se passe aujourd'hui  jour par jour
                                  |
-                            MY SPACE      (bas · le panneau monte du bas)
+                              SEARCH      (bas · la carte en sourdine)
 
-  ⚠️ 26/09 — CE QUI A CHANGÉ, ET POURQUOI
-  · LE GESTE VAUT PARTOUT, comme dans totehm.com : balayer l'écran (doigt,
-    deux doigts au trackpad, souris tirée sur le radar) = tirer le manche.
-    Le zoom n'est plus la molette : c'est le PINCEMENT (doigts ou trackpad),
-    et un petit « + − » à côté de la manette pour qui ne pince pas.
-  · LA MANETTE NE BOUGE JAMAIS. Chaque vue de côté ouvre sa fenêtre DE SON
-    CÔTÉ : gauche de la gauche, droite de la droite, Create descend du haut
-    et y reste accroché, My space monte du bas. Le centre reste le centre.
-  · LE RADAR DEVIENT LA PLANÈTE. On dézoome, la carte devient un globe
-    (projection orthographique), et les Spots du monde entier s'y posent en
-    lumières (`spots_globe` — des cellules, jamais une identité). La
-    plateforme est internationale : la boussole sert à ça.
-  · LA COURONNE SE TOURNE. On saisit l'anneau du radar et on le fait
-    tourner — avec de l'inertie. De près, la carte tourne et le haut devient
-    la direction qu'on VISE (les Spots devant sont comptés). De loin, la
-    planète tourne. Deux touchers : le nord.
-  · POUR POSER LE POINT DE RENDEZ-VOUS on ne vise plus à l'aveugle : un fond
-    de carte sombre et minimaliste (OpenStreetMap, traité en gris) apparaît
-    sous le radar, en création seulement, avec son attribution.
-  · UN SPOT A UNE NATURE : espace public (parc, café) ou privé (chez le
-    membre). Privé : le radar ne montre que le quartier (~1 km).
-  · FOND NOIR PUR. Les gris ne servent qu'à délimiter.
+  ⚠️ 27/09 — CE QUI A CHANGÉ, ET POURQUOI
+  · MY SPACE EST PARTI DANS LE COIN MEMBRE (haut gauche) : mon nom de
+    Totehm (Quantico, sur la tuile perforée navy), mes accès, qui attend
+    ma réponse, la sortie. Le bas est libre : il devient SEARCH (la barre,
+    les jours, le mode, les sept intentions). Tomorrow n'a plus de filtres.
+  · LA CARTE EST LÀ DÈS L'ARRIVÉE, et TODAY se touche : toucher la carte
+    hors d'un Spot ouvre Create a Spot avec ce lieu et « today ».
+  · POSER UN RENDEZ-VOUS NE SE FAIT PLUS D'UN DOIGT SUR UN TIMBRE-POSTE.
+    « Place it on the map » ouvre la carte en PLEIN ÉCRAN, une croix fixe
+    au centre : on déplace la carte sous la croix (comme un VTC), on
+    pince, on valide [Here]. Précis au téléphone, identique à l'ordinateur.
+  · Haut et bas mettent la carte EN SOURDINE (petite, pâle) : la place va
+    au formulaire et aux résultats ; la carte vit dans les vues latérales.
+  · Titres, sous-titres et questions en BEBAS NEUE ; plus de Montserrat.
+    La tuile perforée navy est RÉSERVÉE au nom d'un Totehm ; les saisies
+    sont grises et arrondies.
+  · Toi : un point blanc, le même objet qu'un Spot — au centre du radar et
+    dans le coin membre.
 
-  ⚠️ LA PAGE NE DÉCIDE RIEN. Recherche, fenêtres de temps, publication,
-  candidature, capacité, compatibilité, arrondi public/privé, rendez-vous
-  exact, limites : tout est en base (`spots_radar`, `spots_globe`,
-  `spot_publish`, `spot_apply`, `spot_decide`, `my_space`, `spot_rules`).
-  ⚠️ LA COMPATIBILITÉ EST UN SEUL NOMBRE (§38). Jamais une composante.
-  ⚠️ Ni Google Maps, ni Mapbox, ni Leaflet (§44). Le trait de côte vient de
-  Natural Earth (domaine public, servi par nous : `earth.json`,
-  `earth50.json`) ; le fond de rue d'OpenStreetMap n'apparaît qu'en
-  création. Google Maps reste un LIEN sortant.
+  ⚠️ LA PAGE NE DÉCIDE RIEN : `spots_radar`, `spots_globe`, `spot_publish`,
+  `spot_apply`, `spot_decide`, `my_space`, `spot_rules` décident.
+  ⚠️ LA COMPATIBILITÉ EST UN SEUL NOMBRE (§38).
+  ⚠️ Ni Google Maps, ni Mapbox, ni Leaflet (§44) : côtes Natural Earth
+  servies par nous ; tuiles OpenStreetMap (attribution affichée, un seul
+  endroit à changer : `TILE_URL`).
 -->
 <html lang="en">
 <head>
@@ -57,19 +51,15 @@
 <meta name="description" content="A habit becomes an action. With members, anywhere on Earth.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@600&family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* ══ LE NOIR, ET LES GRIS QUI DÉLIMITENT · 26/09/2026 ═════════════════
-   « Le fond est toujours en noir pur ; les gris servent seulement à
-   délimiter. » Le fond, le monde, le vide : #000. Un panneau, une
-   section, une bulle : un gris. Une partie se détache par sa VALEUR,
-   jamais par un trait (règle de marque). */
+/* ══ LE NOIR, ET LES GRIS QUI DÉLIMITENT (26/09) ══════════════════════ */
 :root{
-  --bg:#000;--s1:#0b0b0d;--s2:#15151a;--s3:#212127;--tip:#141418;
+  --s1:#0b0b0d;--s2:#15151a;--s3:#212127;--tip:#141418;--in:#1c1c22;--in2:#26262e;--r:10px;
   --mid:#b4b4b9;--lo:#9a9aa0;--dim:#707077;
-  --navy:#333366;--blue:#36498c;--rep:#743169;--on:#639922;
+  --navy:#333366;--blue:#36498c;--rep:#743169;
   --tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000'/%3E%3C/svg%3E");
-  --bebas:'Bebas Neue',Impact,sans-serif;--mont:'Montserrat',sans-serif;--q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
+  --bebas:'Bebas Neue',Impact,sans-serif;--q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
   --joy-d:60px;--joy-b:calc(14px + env(safe-area-inset-bottom,0px));--joy-h:calc(var(--joy-d) + 36px);
   --side:420px;--ease:cubic-bezier(.2,.9,.25,1);
 }
@@ -80,32 +70,43 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);font-family:va
 .hide{display:none!important}
 button{font:inherit}
 
-/* ══ LES DEUX COINS DU HAUT ═══════════════════════════════════════ */
-#member{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:14px;z-index:90;display:flex;align-items:center;gap:7px;
+/* ══ BEBAS NEUE, UNE SEULE GRAISSE · 27/09 ══════════════════════════
+   « Tous les titres, sous-titres et questions conceptuelles en Bebas
+   Neue, en jouant sur l'intensité du bold. » Bebas Neue (Google Fonts)
+   n'existe qu'en UNE graisse : l'intensité se règle par la TAILLE, la
+   LUMIÈRE et, pour le plus fort seulement, un trait de contour d'une
+   fraction de pixel (`--b1`). Trois niveaux, jamais plus :
+     1 · le nom de la vue, le titre d'une fenêtre   → grand, blanc, épaissi
+     2 · une question (« which habit… », « who can ask ») → moyen, blanc cassé
+     3 · un sous-titre, une étiquette de groupe      → petit, blanc à .55 */
+.b1{font-family:var(--bebas);font-weight:400;color:#fff;-webkit-text-stroke:.55px #fff;letter-spacing:.05em;line-height:1}
+.b2{font-family:var(--bebas);font-weight:400;color:#e4e4e8;letter-spacing:.06em;line-height:1.1}
+.b3{font-family:var(--bebas);font-weight:400;color:rgba(255,255,255,.55);letter-spacing:.08em;line-height:1.1}
+
+/* ══ LE COIN MEMBRE — un point blanc, le même objet qu'un Spot ═══════ */
+#member{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:14px;z-index:90;display:flex;align-items:center;gap:9px;
   background:none;border:none;cursor:pointer;font-family:var(--q);font-weight:700;font-size:13px;color:#a0a0a0;padding:6px 4px;transition:color .15s}
-#member i{width:6px;height:6px;border-radius:50%;background:#44444a;display:block}
-#member.is-in i{background:var(--on)}
+#member i{width:10px;height:10px;border-radius:50%;background:#3a3a40;display:block;flex:none;transition:background .2s,box-shadow .2s}
+#member.is-in i{background:#fff;box-shadow:0 0 9px #fff}
+#member b{font-family:var(--mono);font-size:10px;font-weight:400;color:#000;background:#fff;border-radius:9px;padding:0 6px;line-height:16px}
+#member b:empty{display:none}
 #terms{position:fixed;top:calc(18px + env(safe-area-inset-top,0px));right:14px;z-index:90;font-size:10px;letter-spacing:.14em;
   text-transform:uppercase;color:var(--lo);text-decoration:none;transition:color .15s}
 
-/* ══ LE NOM DE LA VUE ════════════════════════════════════════════════
-   Titre (Montserrat 600 : il NOMME une partie du produit), raison d'être,
-   lecture de l'instrument (Space Mono : ça se MESURE). Sur ordinateur il
-   s'écarte du panneau de côté, il ne passe jamais dessous. */
-#vnow{position:fixed;top:calc(18px + env(safe-area-inset-top,0px));left:0;right:0;z-index:40;text-align:center;
+/* ══ LE NOM DE LA VUE ═══════════════════════════════════════════════ */
+#vnow{position:fixed;top:calc(16px + env(safe-area-inset-top,0px));left:0;right:0;z-index:40;text-align:center;
   line-height:1;pointer-events:none;perspective:700px;transition:left .4s var(--ease),right .4s var(--ease)}
 @media(min-width:900px){body.p-g #vnow{left:var(--side)}body.p-d #vnow{right:var(--side)}}
-#vt{font-family:var(--mont);font-weight:600;font-size:17px;letter-spacing:.14em;text-transform:uppercase;color:#fff;white-space:nowrap;display:block}
-#vs{display:block;margin-top:6px;font-style:normal;font-family:var(--mont);font-weight:600;font-size:10px;letter-spacing:.18em;
-  text-transform:uppercase;color:rgba(255,255,255,.52);white-space:nowrap}
-#status{display:inline-block;margin-top:7px;pointer-events:auto;background:none;border:none;font-family:var(--mono);font-size:9px;
+#vt{display:block;font-size:30px;text-transform:uppercase;white-space:nowrap}
+#vs{display:block;margin-top:4px;font-style:normal;font-size:15px;text-transform:uppercase;white-space:nowrap}
+#status{display:inline-block;margin-top:6px;pointer-events:auto;background:none;border:none;font-family:var(--mono);font-size:9px;
   letter-spacing:.2em;text-transform:uppercase;color:var(--lo);padding:3px 6px;cursor:default;white-space:nowrap}
 #status b{display:inline;font:inherit;color:#fff}
 #status.tap{cursor:pointer}
 #status .live{color:#fff;animation:blink 1.4s ease-in-out infinite}
 @media(max-width:899px){
-  #vnow{top:calc(52px + env(safe-area-inset-top,0px))}
-  #vt{font-size:15px}
+  #vnow{top:calc(50px + env(safe-area-inset-top,0px))}
+  #vt{font-size:26px}#vs{font-size:13px}
   body.p-open #vs{display:none}
 }
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
@@ -121,17 +122,22 @@ button{font:inherit}
 /* ══ L'INSTRUMENT ═══════════════════════════════════════════════════
    ⚠️ UN <canvas> EST UN ÉLÉMENT REMPLACÉ : `width:100%;height:100%`. */
 #world{position:fixed;inset:0;z-index:1;background:#000}
-#canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:default;background:#000}
+#canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:default;background:#000;transition:opacity .4s ease}
 #canvas.ring{cursor:grab}#canvas.ring.held{cursor:grabbing}
-body.map-on #canvas{cursor:crosshair}
-#markers{position:absolute;inset:0;pointer-events:none;z-index:3}
-/* TOI : un point blanc. ⚠️ Placé par left/top : il souffle (animation). */
+body.v-radar #canvas:not(.ring){cursor:crosshair}
+body.pin #canvas{cursor:move}
+#markers{position:absolute;inset:0;pointer-events:none;z-index:3;transition:opacity .4s ease}
+/* LA SOURDINE · 27/09 : en haut (Create) et en bas (Search), la carte
+   devient petite et pâle — la place va au formulaire et aux résultats. */
+body.muted #canvas{opacity:.42}
+body.muted #markers{opacity:.4}
+/* TOI : un point blanc — EXACTEMENT le format d'un Spot (27/09). */
 #me{position:absolute;left:0;top:0;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#fff;pointer-events:none;
-  box-shadow:0 0 12px rgba(255,255,255,.7);animation:pulse 2.6s ease-in-out infinite}
-@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.55}}
+  box-shadow:0 0 9px #fff;z-index:1}
 #pin{position:absolute;left:0;top:0;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;pointer-events:none;z-index:2;
   background:radial-gradient(circle,#fff 0 3px,rgba(255,255,255,0) 3.5px),radial-gradient(circle,rgba(255,255,255,0) 6px,rgba(255,255,255,.9) 6.5px 8px,rgba(255,255,255,0) 8.5px);
   animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.55}}
 .marker{position:absolute;left:0;top:0;width:32px;height:32px;margin:-16px 0 0 -16px;display:flex;align-items:center;
   justify-content:center;pointer-events:auto;cursor:pointer;background:none;border:none;padding:0;will-change:transform;
   -webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:none}
@@ -142,17 +148,13 @@ body.map-on #canvas{cursor:crosshair}
 .marker.edge i{opacity:.45;transform:scale(.75)}
 .marker.ahead i{transform:scale(1.45)}
 .marker.off{display:none}
-/* Une LUMIÈRE du globe : plusieurs Spots d'une même région, un nombre. */
 .marker.cell{width:40px;height:40px;margin:-20px 0 0 -20px}
 .marker.cell i{width:var(--s,12px);height:var(--s,12px);opacity:.92}
 .marker.cell b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 9px var(--mono);color:#000;pointer-events:none}
-body.v-create .marker,body.v-mine .marker{opacity:.55}
+body.pin .marker{pointer-events:none}
 @keyframes ignite{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:scale(1)}}
-/* ══ LA BULLE · 26/09 ═══════════════════════════════════════════════
-   « Les box de survol doivent être AU-DESSUS des points lumineux, sans
-   transparence, quel que soit le Spot, live ou autre. » UNE seule bulle,
-   hors des points, au-dessus d'eux (z-index), d'un gris PLEIN. */
-#tip{position:absolute;left:0;top:0;z-index:5;pointer-events:none;background:var(--tip);padding:7px 10px 8px;max-width:250px;
+/* LA BULLE — une seule, au-dessus des points, d'un gris PLEIN (26/09). */
+#tip{position:absolute;left:0;top:0;z-index:5;pointer-events:none;background:var(--tip);padding:7px 10px 8px;max-width:250px;border-radius:8px;
   font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);line-height:1.5;
   opacity:0;transition:opacity .12s ease;white-space:nowrap}
 #tip.on{opacity:1}
@@ -163,9 +165,25 @@ body.v-create .marker,body.v-mine .marker{opacity:.55}
   color:var(--dim);text-decoration:none;display:none}
 body.map-on #osm{display:block}
 
+/* ══ LE RENDEZ-VOUS EN PLEIN ÉCRAN · 27/09 ══════════════════════════
+   « Tap on the map est défaillant au téléphone : c'est trop petit. » On
+   ne vise plus un point minuscule : la carte prend l'écran, une croix
+   FIXE marque le centre, et c'est la carte qu'on déplace dessous. */
+#cross{position:absolute;left:0;top:0;width:46px;height:46px;margin:-23px 0 0 -23px;pointer-events:none;display:none;z-index:4}
+body.pin #cross{display:block}
+#cross::before,#cross::after{content:'';position:absolute;background:#fff;box-shadow:0 0 6px rgba(0,0,0,.9)}
+#cross::before{left:22px;top:0;width:2px;height:16px;box-shadow:0 30px 0 #fff}
+#cross::after{top:22px;left:0;height:2px;width:16px;box-shadow:30px 0 0 #fff}
+#cross i{position:absolute;left:19px;top:19px;width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 10px #fff}
+#pinbar{position:fixed;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:75;display:none;justify-content:center;
+  align-items:center;gap:10px;padding:0 16px}
+body.pin #pinbar{display:flex}
+body.pin #joy,body.pin #joy-say,body.pin #cmp{display:none}
+body.pin #zoom{left:auto;right:14px;bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+#pinbar .btn{min-width:120px;text-align:center}
+
 /* ══ LA MANETTE — COPIÉE DE com/totehm.html ═════════════════════════
-   ⚠️ ELLE NE BOUGE JAMAIS (26/09) : au centre, en bas, quelle que soit
-   la fenêtre ouverte. */
+   ⚠️ ELLE NE BOUGE JAMAIS : au centre, en bas. */
 #joy{position:fixed;z-index:70;bottom:var(--joy-b);left:50%;transform:translateX(-50%);
   display:grid;grid-template-columns:18px var(--joy-d) 18px;grid-template-rows:18px var(--joy-d) 18px;
   align-items:center;justify-items:center}
@@ -196,16 +214,13 @@ body.map-on #osm{display:block}
   #cur-g:not(.mort):hover{transform:translateX(-2px)}#cur-d:not(.mort):hover{transform:translateX(2px)}
   #cur-h:not(.mort):hover{transform:translateY(-2px)}#cur-b:not(.mort):hover{transform:translateY(2px)}
 }
-#req-n{position:absolute;left:calc(50% + 14px);bottom:0;font-family:var(--mono);font-size:10px;color:#fff;pointer-events:none;line-height:18px}
 #joy-say{position:fixed;z-index:70;bottom:calc(var(--joy-b) + var(--joy-h) + 3px);left:50%;transform:translateX(-50%);
-  font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#fff;white-space:nowrap;pointer-events:none;
+  font-family:var(--bebas);font-size:15px;letter-spacing:.1em;color:#fff;white-space:nowrap;pointer-events:none;
   opacity:0;transition:opacity .15s ease}
 #joy-say.on{opacity:1}
-/* Le zoom pour qui ne pince pas, le retour chez soi, le mode d'emploi —
-   à DROITE de la manette. La boussole à GAUCHE. Discrets : du texte. */
 #zoom{position:fixed;z-index:70;left:calc(50% + var(--joy-d) / 2 + 30px);bottom:calc(var(--joy-b) + var(--joy-h) / 2 - 14px);display:flex;gap:1px}
 #zoom button{width:28px;height:28px;background:none;border:none;cursor:pointer;color:var(--lo);font-family:var(--mono);font-size:15px;
-  line-height:1;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:color .15s}
+  line-height:1;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:color .15s;border-radius:50%}
 #zoom #z-me{font-size:13px}
 #zoom #z-me.away{color:#fff;animation:blink 1.4s ease-in-out infinite}
 #zoom #z-how{font-size:12px}
@@ -214,91 +229,91 @@ body.map-on #osm{display:block}
   color:var(--lo);padding:6px 4px;white-space:nowrap;-webkit-tap-highlight-color:transparent;text-align:right;line-height:1.3}
 #cmp b{color:#fff;font-weight:400}
 
-/* ══ LES FENÊTRES — CHACUNE ARRIVE DE SON CÔTÉ · 26/09/2026 ══════════
-   Gauche de la gauche, droite de la droite, Create DESCEND du haut et y
-   reste accroché, My space MONTE du bas. Le Spot touché au centre
-   (p-f) et la porte membre (p-m) apparaissent sur place.
-   ⚠️ `visibility` suit la transition : une fenêtre sortie ne se clique
-   plus, ne se tabule plus, et ses identifiants sont retirés (`retire`). */
-.pan{position:fixed;z-index:60;background:var(--s1);overflow-y:auto;overscroll-behavior:contain;visibility:hidden;opacity:1;
+/* ══ LES FENÊTRES — CHACUNE ARRIVE DE SON CÔTÉ (26/09) ══════════════ */
+.pan{position:fixed;z-index:60;background:var(--s1);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;visibility:hidden;opacity:1;
   transition:transform .4s var(--ease),opacity .3s ease,visibility 0s linear .4s}
 .pan.on{visibility:visible;transform:none!important;opacity:1!important;transition:transform .4s var(--ease),opacity .3s ease,visibility 0s}
 @media(min-width:900px){
-  #p-g{top:0;left:0;bottom:0;width:var(--side);padding:58px 22px 28px;transform:translateX(-100%)}
-  #p-d{top:0;right:0;bottom:0;width:var(--side);padding:58px 22px 28px;transform:translateX(100%)}
-  #p-h{top:104px;left:calc(50% - min(360px, 50vw - 24px));width:min(720px, calc(100vw - 48px));max-height:calc(48vh - 50px);
-    padding:16px 18px 18px;transform:translateY(calc(-100% - 170px))}
-  #p-b{bottom:calc(var(--joy-b) + var(--joy-h) + 26px);left:calc(50% - min(360px, 50vw - 24px));width:min(720px, calc(100vw - 48px));
-    max-height:46vh;padding:16px 18px 18px;transform:translateY(calc(100% + 200px))}
-  #p-f{right:24px;bottom:24px;width:390px;max-height:calc(100vh - 150px);padding:16px 18px 18px;transform:translateY(14px);opacity:0}
-  #p-m{left:14px;top:52px;width:360px;max-height:calc(100vh - 80px);padding:16px 18px 18px;transform:translateY(-10px);opacity:0}
+  #p-g{top:0;left:0;bottom:0;width:var(--side);padding:62px 22px 28px;transform:translateX(-100%)}
+  #p-d{top:0;right:0;bottom:0;width:var(--side);padding:62px 22px 28px;transform:translateX(100%)}
+  #p-h{top:112px;left:calc(50% - min(380px, 50vw - 24px));width:min(760px, calc(100vw - 48px));
+    max-height:calc(100vh - 112px - var(--joy-b) - var(--joy-h) - 160px);padding:16px 18px 18px;transform:translateY(calc(-100% - 180px))}
+  #p-b{bottom:calc(var(--joy-b) + var(--joy-h) + 26px);left:calc(50% - min(380px, 50vw - 24px));width:min(760px, calc(100vw - 48px));
+    max-height:calc(100vh - 112px - var(--joy-b) - var(--joy-h) - 150px);padding:16px 18px 18px;transform:translateY(calc(100% + 200px))}
+  #p-f{right:24px;bottom:24px;width:400px;max-height:calc(100vh - 150px);padding:16px 18px 18px;transform:translateY(14px);opacity:0}
+  #p-m{left:14px;top:52px;width:390px;max-height:calc(100vh - 80px);padding:16px 18px 18px;transform:translate(-12px,-12px) scale(.97);opacity:0;transform-origin:0 0}
 }
 @media(max-width:899px){
   .pan{left:0;right:0;top:38vh;bottom:calc(var(--joy-b) + var(--joy-h) + 20px);padding:14px 14px 22px}
+  #p-h,#p-b{top:25vh}
+  #p-m{top:calc(46px + env(safe-area-inset-top,0px));z-index:88}
   #p-g{transform:translateX(-100%)}#p-d{transform:translateX(100%)}
   #p-h,#p-m{transform:translateY(-100vh)}#p-b,#p-f{transform:translateY(100vh)}
 }
-.p-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:12px}
-.p-title{font-family:var(--mont);font-weight:600;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:#fff}
+.p-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
+.p-title{font-size:22px;text-transform:uppercase}
 .sec{background:var(--s2);padding:12px 12px 14px;margin-top:12px}
 .sec:first-child{margin-top:0}
-.sec-l{display:block;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--lo);margin-bottom:8px}
+.sec-l{display:block;font-size:17px;text-transform:uppercase;margin-bottom:8px}
 .sec-l b{color:#fff;font-weight:400}
 .cap{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
 .cap b{color:#fff;font-weight:400}
 .note{font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;color:var(--lo)}
-.note.ok{color:var(--on)}.note.no{color:#ff9a9a}
+.note.ok{color:#8fd16a}.note.no{color:#ff9a9a}
 .list{display:flex;flex-direction:column;gap:18px;margin-top:14px}
 .empty{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);padding:14px 0}
 .say{font-size:12px;color:var(--mid);line-height:1.7}
 .how-l{display:inline-block;margin-top:10px}
+.day{font-size:19px;text-transform:uppercase;margin:6px 0 -6px}
+.day:first-child{margin-top:0}
 
-/* ── Boutons : Space Mono — un bouton n'est pas une saisie ─────────── */
+/* ── Boutons : Space Mono, gris, arrondis. La tuile perforée n'est PLUS
+   un bouton (27/09) : elle est réservée au NOM d'un Totehm. ─────────── */
 .btn{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);background:none;
-  border:6px solid transparent;cursor:pointer;padding:1px 6px;line-height:1.6;display:inline-block;width:fit-content;
-  transition:color .15s ease;-webkit-tap-highlight-color:transparent;white-space:nowrap}
-.btn.main{color:#fff;font-weight:700;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round}
-@media(hover:hover){.btn:hover{color:#fff;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round}}
-.btn:active,.btn.on{color:#fff;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round}
+  border:none;border-radius:var(--r);cursor:pointer;padding:8px 12px;line-height:1.4;display:inline-block;width:fit-content;
+  transition:color .15s ease,background .15s ease,transform .15s ease;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+.btn.main{color:#fff;font-weight:700;background:var(--in2)}
+@media(hover:hover){.btn:hover{color:#fff;background:rgba(255,255,255,.07)}.btn.main:hover{background:#34343d}}
+.btn:active{transform:scale(.97)}
 .btn[disabled]{opacity:.35;pointer-events:none}
 .lnk{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);text-decoration:none;
   background:none;border:none;cursor:pointer;padding:4px 2px;transition:color .15s}
-/* ── Saisies : Quantico — c'est le membre qui TAPE ─────────────────── */
-.in{font-family:var(--q);font-size:14px;color:#fff;background:none;outline:none;border:6px solid transparent;
-  border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round;padding:2px 8px;caret-color:#fff;width:100%}
-.in::placeholder{color:rgba(255,255,255,.4)}
+/* ── Saisies : Quantico (c'est le membre qui TAPE), GRISES et ARRONDIES
+   (Wah, 27/09 — plus de tuile perforée autour d'un champ). ─────────── */
+.in{font-family:var(--q);font-size:15px;color:#fff;background:var(--in);outline:none;border:none;border-radius:var(--r);
+  padding:10px 13px;caret-color:#fff;width:100%;transition:background .15s ease;-webkit-appearance:none;appearance:none}
+.in:focus{background:var(--in2)}
+.in::placeholder{color:rgba(255,255,255,.38)}
 .in::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.6}
-.acts{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center}
+.in::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none;display:none}
+.acts{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
 
-/* ══ BY INTENTION — LE RAPPEL DES SEPT · 26/09/2026 ═════════════════
-   Chaque intention dit ce qu'elle est : son nom, le slogan Higher (le SVG,
-   jamais du texte), son pilier, et la phrase de Wah. Choisie, elle reste
-   en tête et les six autres deviennent des points pour changer. */
-.ints{display:flex;flex-direction:column;gap:5px}
-.int{display:grid;grid-template-columns:14px 1fr auto;gap:3px 11px;align-items:center;background:var(--s2);border:none;cursor:pointer;
-  padding:10px 12px 11px;text-align:left;color:var(--mid);transition:background .15s,color .15s;-webkit-tap-highlight-color:transparent;width:100%}
-.int > i{width:14px;height:14px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c);grid-row:1}
-.int .in-n{display:flex;align-items:center;gap:7px;min-width:0}
-.int .in-n b{font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#fff}
-.int .in-n svg{height:15px;width:45px;display:block;flex:none}
-.int small{font-family:var(--mono);font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
-.int .df{grid-column:2 / -1;font-family:var(--mono);font-size:10px;letter-spacing:.02em;line-height:1.5;color:var(--lo)}
-.int.on{background:var(--s3)}
-.int.on small,.int.on .df{color:#fff}
-.int.hero{padding:13px 14px 14px}
-.int.hero > i{width:18px;height:18px}
-.int.hero .in-n b{font-size:13px}
-.int.hero .in-n svg{height:18px;width:54px}
-.dots{display:flex;align-items:center;gap:4px;margin-top:8px;flex-wrap:wrap}
-.dot{width:30px;height:30px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
-.dot::before{content:'';width:12px;height:12px;border-radius:50%;background:var(--c);opacity:.55;transition:opacity .15s,transform .15s}
-.dot.on::before{opacity:1;transform:scale(1.25);box-shadow:0 0 8px var(--c)}
-/* ── Les mots qui filtrent (vue droite) ──────────────────────────────── */
+/* ══ LA TUILE PERFORÉE NAVY = LE NOM D'UN TOTEHM, ET RIEN D'AUTRE ═════
+   « Le box perforé bleu navy est réservé strictement au nom du Totehm. »
+   Le mien dans le coin membre, celui d'un créateur sous sa boîte-action
+   (`by …`, qui ouvre son Totehm). En Quantico : c'est un nom qu'on a tapé. */
+.tname{display:inline-block;width:fit-content;font-family:var(--q);font-weight:400;font-size:13px;color:#fff;line-height:1.5;
+  border:6px solid transparent;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;
+  background:none;cursor:pointer;text-decoration:none;white-space:nowrap;transition:transform .15s ease,filter .15s ease;-webkit-tap-highlight-color:transparent}
+.tname.big{font-size:19px;padding:1px 9px}
+@media(hover:hover){.tname:hover{filter:brightness(1.25);transform:scale(1.04)}}
+
+/* ══ SEARCH — les sept intentions, en puces ════════════════════════ */
 .opts{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:10px}
 .opt{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:var(--s2);border:none;
-  padding:6px 10px;cursor:pointer;transition:color .15s,background .15s;-webkit-tap-highlight-color:transparent}
+  border-radius:8px;padding:6px 10px;cursor:pointer;transition:color .15s,background .15s,transform .15s;-webkit-tap-highlight-color:transparent}
 .opt.on{background:var(--navy);color:#fff}
-.opt-l{font-size:8px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);margin-right:4px}
+.opt-l{font-size:14px;margin-right:6px;min-width:44px}
+.ichips{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
+.ichip{display:flex;align-items:center;gap:7px;background:var(--s2);border:none;border-radius:8px;cursor:pointer;padding:7px 10px;color:#fff;
+  transition:background .15s,transform .15s;-webkit-tap-highlight-color:transparent}
+.ichip i{width:11px;height:11px;border-radius:50%;background:var(--c);box-shadow:0 0 7px var(--c);flex:none}
+.ichip b{font-family:var(--bebas);font-weight:400;font-size:16px;letter-spacing:.06em;line-height:1}
+.ichip svg{height:13px;width:39px;display:block}
+.ichip.on{background:var(--s3);box-shadow:inset 0 -2px 0 var(--c)}
+.ichips.picked .ichip:not(.on){opacity:.5}
+.ihint{margin-top:8px;font-size:15px;min-height:18px;text-transform:uppercase}
+.ihint small{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--dim);margin-left:6px}
 
 /* ══ LA BOÎTE — COPIÉE DE com/totehm.html, AU PIXEL ═════════════════ */
 .habit{position:relative;display:flex;align-items:center;min-height:30px}
@@ -317,14 +332,30 @@ body.map-on #osm{display:block}
   line-height:1.4;color:#fff;transition:filter .16s ease,opacity .16s ease}
 .m-h{background:var(--navy)}.m-o{background:var(--blue)}.m-r{background:var(--rep)}
 .mg{display:block;margin-top:9px}
-.mg-l{display:block;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:4px}
+.mg-l{display:block;font-family:var(--bebas);font-size:13px;letter-spacing:.1em;color:rgba(255,255,255,.55);margin-bottom:4px;text-transform:uppercase}
 .mg .minis{margin-top:0}
 @keyframes breathe{0%,100%{opacity:1}50%{opacity:.62}}
 .vit{animation:breathe 4.2s ease-in-out infinite}
 @media(max-width:700px){.mini{font-size:12px;padding:4px 8px}.habit .tick{width:2px}}
+.it{position:relative;transition:transform .24s var(--ease)}
 .it .habit{cursor:pointer}
-@media(hover:hover){.it .habit:hover .h-body{filter:brightness(1.18)}}
 .it.hl .h-body{filter:brightness(1.22)}
+/* ══ LE SURVOL AGRANDIT · 27/09 ══════════════════════════════════════
+   « Minimaliste, mais très agréable » : sur ordinateur, la boîte que la
+   souris vise grandit doucement, texte compris. Au téléphone il n'y a
+   pas de survol : une LOUPE sur chaque boîte l'agrandit d'un toucher. */
+@media(hover:hover){
+  .it:hover{transform:scale(1.022);z-index:2}
+  .it:hover .h-body{filter:brightness(1.14)}
+  .ichip:hover,.opt:hover,.chip:hover{transform:scale(1.05)}
+  .it[data-hk]:hover{transform:scale(1.02)}
+}
+.lp{display:none;position:absolute;top:5px;right:5px;z-index:4;width:30px;height:30px;border:none;border-radius:50%;background:rgba(0,0,0,.3);
+  color:#fff;cursor:pointer;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+.lp svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+@media(hover:none){.it .lp{display:flex}.it .spot .v-name{padding-right:30px}}
+.it.big{zoom:1.28}
+.it.big .lp{background:#fff;color:#000}
 
 /* ══ LA BOÎTE-ACTION ═════════════════════════════════════════════════ */
 .spot .v-sub + .v-sub{margin-top:4px}
@@ -338,7 +369,11 @@ body.map-on #osm{display:block}
 .drawer{display:block;margin:9px -11px -7px;padding:10px 11px 11px;background:rgba(0,0,0,.18)}
 .drawer > .mg:first-child{margin-top:0}
 .say-q{display:block;font-family:var(--q);font-weight:400;font-size:13px;line-height:1.6;color:#fff;white-space:pre-wrap;word-break:break-word}
-.act{display:flex;align-items:center;justify-content:space-between;gap:6px 12px;flex-wrap:wrap;padding-top:7px}
+.act{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap;padding-top:8px}
+.who{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap}
+.match{display:inline-flex;align-items:baseline;gap:6px;cursor:help}
+.match b{font-family:var(--bebas);font-weight:400;font-size:28px;letter-spacing:.02em;color:#fff;line-height:1}
+.match small{font-family:var(--mono);font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);line-height:1.3;max-width:88px}
 .cmp{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--lo)}
 .cmp b{font-family:var(--bebas);font-weight:400;font-size:26px;letter-spacing:.02em;color:#fff;vertical-align:-4px;margin-right:5px}
 .cmp em{font-style:normal;color:#fff}
@@ -357,75 +392,76 @@ body.map-on #osm{display:block}
 .pickable .mini{cursor:pointer}
 .w-x{position:absolute;top:2px;right:3px;z-index:3;background:none;border:none;color:rgba(255,255,255,.5);font-size:18px;line-height:1;
   cursor:pointer;padding:2px 5px;transition:color .15s}
-.pkw{display:block;margin:8px 0 2px;padding:9px;background:rgba(0,0,0,.24)}
-.pk-say{display:block;font-family:var(--mono);font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.55);margin:8px 0 5px}
+.pkw{display:block;margin:8px 0 2px;padding:10px;background:rgba(0,0,0,.24);border-radius:var(--r)}
+.pk-say{display:block;font-size:14px;text-transform:uppercase;margin:9px 0 6px}
 .pk-say:first-child{margin-top:0}
-.pk-say .lnk{font-size:8px;padding:0 0 0 6px;color:#fff}
-.chips{display:flex;flex-wrap:wrap;gap:4px}
-.chip{background:rgba(255,255,255,.08);border:none;color:#fff;cursor:pointer;padding:6px 9px;font-family:var(--mono);font-size:10px;
-  letter-spacing:.1em;text-transform:uppercase;transition:background .15s;-webkit-tap-highlight-color:transparent;text-align:left}
+.pk-say .lnk{font-family:var(--mono);font-size:8px;padding:0 0 0 8px;color:#fff;-webkit-text-stroke:0}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{background:rgba(255,255,255,.08);border:none;border-radius:8px;color:#fff;cursor:pointer;padding:7px 10px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.1em;text-transform:uppercase;transition:background .15s,transform .15s;-webkit-tap-highlight-color:transparent;text-align:left}
 .chip small{display:block;font-size:8px;letter-spacing:.14em;color:rgba(255,255,255,.55);text-transform:none;margin-top:2px}
 .chip.on{background:#fff;color:#1a1a33}
 .chip.on small{color:#1a1a33}
-.pkw .in{border-image-source:none;border:none;background:rgba(255,255,255,.08);padding:7px 9px;margin-top:6px;color-scheme:dark}
+.pkw .in{margin-top:6px;color-scheme:dark}
 .stp{display:flex;align-items:center;gap:6px;margin-top:6px}
-.stp button{width:30px;height:30px;background:rgba(255,255,255,.08);border:none;color:#fff;font-family:var(--mono);font-size:16px;cursor:pointer}
+.stp button{width:32px;height:32px;background:rgba(255,255,255,.08);border:none;border-radius:8px;color:#fff;font-family:var(--mono);font-size:16px;cursor:pointer}
 .stp output{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:#fff;min-width:74px;text-align:center;text-transform:uppercase}
-.ta{display:block;width:100%;min-height:62px;resize:none;background:rgba(255,255,255,.07);border:none;outline:none;color:#fff;
-  font-family:var(--q);font-weight:400;font-size:13px;line-height:1.6;padding:7px 9px;caret-color:#fff}
+.ta{display:block;width:100%;min-height:62px;resize:none;background:rgba(255,255,255,.07);border:none;border-radius:var(--r);outline:none;color:#fff;
+  font-family:var(--q);font-weight:400;font-size:13px;line-height:1.6;padding:8px 10px;caret-color:#fff}
 .ta:focus{background:rgba(255,255,255,.12)}
 .ta::placeholder{color:rgba(255,255,255,.4)}
 .done-l{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}
+.pre{display:flex;align-items:center;gap:8px;background:var(--s2);border-radius:var(--r);padding:8px 11px;margin-bottom:12px}
+.pre i{width:10px;height:10px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff;flex:none}
 
-/* ── LA PORTE ─────────────────────────────────────────────────────── */
+/* ── LE COIN MEMBRE, OUVERT ──────────────────────────────────────── */
+.me-id{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:12px}
 .rope{display:flex;flex-direction:column;gap:5px;margin-top:10px}
 .rope .k{display:flex;justify-content:space-between;gap:10px;padding:11px 14px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:#fff;background:var(--navy)}
 .rope .k.b{background:var(--blue)}.rope .k.r{background:var(--rep)}
 .rope .k.no{background:none;color:var(--lo);border:1px dashed rgba(255,255,255,.25)}
 .rope .k span{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;align-self:center}
+.req{background:var(--s2);padding:10px 11px;border-radius:0}
 
-/* ══ HOW IT WORKS · 26/09/2026 ═══════════════════════════════════════
-   Le mode d'emploi, en une carte : la manette, puis ce qu'est un Spot.
-   Ancré EN HAUT (le clavier d'un téléphone mange le bas). */
-#how{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.84);display:none;align-items:flex-start;justify-content:center;
+/* ══ HOW IT WORKS — le Spot d'abord, la manette ensuite (27/09) ══════ */
+#how{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.86);display:none;align-items:flex-start;justify-content:center;
   padding:max(44px,8dvh) 16px 24px;overflow-y:auto}
 #how.on{display:flex}
-#how .card{background:var(--s1);width:min(560px,100%);padding:20px 20px 22px}
-#how h2{font-family:var(--mont);font-weight:600;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:#fff}
-#how h3{font-family:var(--mono);font-weight:400;font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);margin:18px 0 8px}
+#how .card{background:var(--s1);width:min(580px,100%);padding:20px 20px 22px}
+#how h2{font-size:32px;text-transform:uppercase}
+#how h3{font-size:18px;text-transform:uppercase;margin:20px 0 8px}
 #how dl{display:grid;grid-template-columns:auto 1fr;gap:9px 14px;background:var(--s2);padding:12px 13px}
-#how dt{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#fff;padding-top:2px;white-space:nowrap}
+#how dt{font-family:var(--bebas);font-size:16px;letter-spacing:.06em;color:#fff;text-transform:uppercase;padding-top:1px;white-space:nowrap}
 #how dd{font-family:var(--mono);font-size:11px;line-height:1.6;color:var(--mid)}
 #how dd em{font-style:normal;color:#fff}
 @media(max-width:520px){#how dl{grid-template-columns:1fr;gap:2px 0}#how dd{margin-bottom:8px}}
 
 @media(hover:hover){
   #member:hover,#terms:hover,.lnk:hover,.opt:not(.on):hover,.stp button:hover,.cap:hover,.empty:hover,.note:hover,#osm:hover,
-  .sec-l:hover,.cmp:hover,#status:hover,#cmp:hover,.w-x:hover,.v-det:hover,.say:hover,.opt-l:hover,#zoom button:hover,
-  .int:hover small,.int:hover .df,#how dd:hover,#how h3:hover{color:#fff}
+  .cmp:hover,#status:hover,#cmp:hover,.w-x:hover,.v-det:hover,.say:hover,#zoom button:hover,#how dd:hover,.match:hover small{color:#fff}
   .v-loc:hover{text-decoration-color:#fff}
   .v-b:hover,.v-int-b:hover{opacity:.75}
   .chip:not(.on):hover{background:rgba(255,255,255,.16)}
-  .int:not(.on):hover{background:var(--s3)}
-  .dot:hover::before{opacity:1}
+  .ichip:not(.on):hover{background:var(--s3)}
+  .b3:hover{color:#fff}
 }
 @media(prefers-reduced-motion:reduce){
-  #me,#pin,.marker i,.marker.live i,.vit,#status .live,.spot .lv,#z-me.away,#joy-box.pulse{animation:none}
-  .cur,#joy-box,#joy-stack,#joy-stack i,.pan,.pan.on,#vnow{transition:none}
+  #pin,.marker i,.marker.live i,.vit,#status .live,.spot .lv,#z-me.away,#joy-box.pulse{animation:none}
+  .cur,#joy-box,#joy-stack,#joy-stack i,.pan,.pan.on,#vnow,.it,.tname{transition:none}
   #vnow.f-d,#vnow.f-g,#vnow.f-b,#vnow.f-h{animation:none}
-  .spot.draft .h-body{transform:none}
+  .spot.draft .h-body,.it:hover{transform:none}
 }
 </style>
 </head>
 <body class="v-radar">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="higher-badge" viewBox="0 0 600 200"><defs><mask id="hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></symbol></svg>
 
-<button id="member" type="button"><i></i><span id="member-txt">Sign in</span></button>
+<button id="member" type="button" aria-label="My space"><i></i><span id="member-txt">Sign in</span><b id="member-n"></b></button>
 <a id="terms" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a>
-<div id="vnow" aria-live="polite"><b id="vt"></b><i id="vs"></i><button id="status" type="button" tabindex="-1"></button></div>
+<div id="vnow" aria-live="polite"><b id="vt" class="b1"></b><i id="vs" class="b3"></i><button id="status" type="button" tabindex="-1"></button></div>
 
-<div id="world"><canvas id="canvas" aria-label="Radar of Spots — pinch to zoom out to the planet"></canvas>
-  <div id="markers"><div id="me" class="hide"></div><div id="pin" class="hide"></div></div>
+<div id="world"><canvas id="canvas" aria-label="Map of Spots — touch it to create one here, pinch to zoom out to the planet"></canvas>
+  <div id="markers"><div id="me" class="hide"></div><div id="pin" class="hide"></div><div id="cross"><i></i></div></div>
   <div id="tip" aria-hidden="true"></div></div>
 <a id="osm" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a>
 
@@ -436,6 +472,8 @@ body.map-on #osm{display:block}
 <aside class="pan" id="p-f" aria-hidden="true"></aside>
 <aside class="pan" id="p-m" aria-hidden="true"></aside>
 
+<div id="pinbar"><button class="btn" id="pin-no" type="button">Cancel</button><button class="btn main" id="pin-ok" type="button">Here</button></div>
+
 <div id="joy-say" aria-hidden="true"></div>
 <div id="joy" role="group" aria-label="Where I am in totehm.space">
   <button class="cur" id="cur-h" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
@@ -443,7 +481,6 @@ body.map-on #osm{display:block}
   <div id="joy-box" aria-hidden="true"><div id="joy-stack"><i class="o"></i><i class="h"></i><i class="r"></i></div></div>
   <button class="cur" id="cur-d" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
   <button class="cur" id="cur-b" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
-  <span id="req-n"></span>
 </div>
 <button id="cmp" type="button" aria-label="Compass"></button>
 <div id="zoom" role="group" aria-label="Zoom">
@@ -454,25 +491,29 @@ body.map-on #osm{display:block}
 </div>
 
 <div id="how" role="dialog" aria-modal="true" aria-label="How it works"><div class="card">
-  <div class="p-head"><h2>How it works</h2><button class="lnk" data-hx="1" type="button">Close</button></div>
-  <h3>the controller</h3>
-  <dl>
-    <dt>Move</dt><dd>Push the stick, or swipe anywhere — one finger, two fingers on a trackpad, or drag the radar. <em>Up</em> create · <em>down</em> my space · <em>left</em> by intention · <em>right</em> tomorrow &amp; beyond. Touch the stick: back to <em>live &amp; today</em>.</dd>
-    <dt>Zoom</dt><dd>Pinch — fingers or trackpad — or <em>+ −</em>. Zoom out far enough and the radar becomes the planet: every Spot on Earth, as lights. Touch a light to fly there. <em>◎</em> brings you home.</dd>
-    <dt>The ring</dt><dd>Grab the ring around the radar and turn it. Close up, the map turns and the top is where you aim — the Spots ahead are counted. Far out, the planet spins. Two taps on the ring: north. On a phone, <em>align · compass</em> turns the radar with you.</dd>
-  </dl>
-  <h3>a Spot</h3>
+  <div class="p-head"><h2 class="b1">How it works</h2><button class="lnk" data-hx="1" type="button">Close</button></div>
+  <h3 class="b3">a Spot</h3>
   <dl>
     <dt>A Spot</dt><dd>One of a member's habits, at a date, an hour and a place, offered to a few members.</dd>
     <dt>Places</dt><dd>How many members can come.</dd>
     <dt>Automatic</dt><dd>First come, first in — until every place is taken.</dd>
-    <dt>Manual</dt><dd>The creator reads who asks — a name and a compatibility — and chooses.</dd>
-    <dt>Public space</dt><dd>A park, a café, a beach, a gym. The radar shows the point within ~100 m; the exact meeting point goes to the members accepted.</dd>
-    <dt>Private</dt><dd>Inside the member's own place — a home, a studio, a garage gym. The radar shows only the neighbourhood (~1 km); the address goes only to the members accepted.</dd>
+    <dt>Manual</dt><dd>The creator reads who asks — a name and a match — and chooses.</dd>
+    <dt>Public space</dt><dd>A park, a café, a beach, a gym. The map shows the point within ~100 m; the exact meeting point goes to the members accepted.</dd>
+    <dt>Private</dt><dd>Inside the member's own place — a home, a studio, a garage gym. The map shows only the neighbourhood (~1 km); the address goes only to the members accepted.</dd>
     <dt>FIGHER members</dt><dd>Every member of the club can ask to join.</dd>
     <dt>Subscribers</dt><dd>Only the members who follow this TOTEHM — FIGHER members too.</dd>
     <dt>Social · Silent</dt><dd>Together, and we talk — or together, without talking.</dd>
-    <dt>Compatibility</dt><dd>One number: my TOTEHM against this Spot. Never a person against a person.</dd>
+    <dt>Match</dt><dd>The number under a Spot — <em>62%</em> — is how close this Spot is to <em>my</em> TOTEHM: my intentions, my pillars, my habits and what they are for. One number, never the detail. It measures a Spot against a TOTEHM — never a person against a person.</dd>
+    <dt>By …</dt><dd>The name of the creator's TOTEHM. Touch it: it opens that TOTEHM.</dd>
+  </dl>
+  <h3 class="b3">the site</h3>
+  <dl>
+    <dt>Today</dt><dd>The map of what happens today around me. <em>Touch the map</em> anywhere outside a Spot: a Spot is created there, for today.</dd>
+    <dt>Move</dt><dd>Push the stick, or swipe anywhere — one finger, two fingers on a trackpad, or drag the map. <em>Up</em> create · <em>down</em> search · <em>left</em> yesterday · <em>right</em> tomorrow. Touch the stick: back to <em>today</em>.</dd>
+    <dt>Meeting point</dt><dd><em>Place it on the map</em>: the map fills the screen with a cross in the middle. Move the map under the cross, pinch, then <em>Here</em>.</dd>
+    <dt>Zoom</dt><dd>Pinch — fingers or trackpad — or <em>+ −</em>. Zoom out far enough and the map becomes the planet: every Spot on Earth, as lights. <em>◎</em> brings you home.</dd>
+    <dt>The ring</dt><dd>Grab the ring around the map and turn it. Close up, the map turns and the top is where you aim. Far out, the planet spins. Two taps on the ring: north.</dd>
+    <dt>My space</dt><dd>Top left, next to the white dot — that dot is me. My TOTEHM, my access, who is waiting for my answer.</dd>
   </dl>
 </div></div>
 
@@ -524,10 +565,16 @@ const PORTES = {
   join: ['club',     'https://www.figher.club/#rope'],
   thp:  ['boutique', 'https://www.higher.boutique/get_higher'],
 };
+/* Les portes vers un autre domaine passent TOUTES par le pont. Le nom d'un
+   Totehm (`data-ro`) ouvre ce Totehm en lecture ; `data-sub` ouvre son
+   offre d'abonnement dans la console du Club. */
 document.addEventListener('click', e => {
-  const g = e.target.closest('[data-go]'); if(!g) return;
-  const p = PORTES[g.dataset.go]; if(p){ e.preventDefault(); ssoVersDomaine(sb, p[0], p[1]); }
-});
+  const t = e.target instanceof Element ? e.target : null; if(!t) return;
+  const g = t.closest('[data-go]'), ro = t.closest('[data-ro]'), su = t.closest('[data-sub]');
+  if(g){ const p = PORTES[g.dataset.go]; if(p){ e.preventDefault(); e.stopPropagation(); ssoVersDomaine(sb, p[0], p[1]); } return; }
+  if(ro){ e.preventDefault(); e.stopPropagation(); ssoVersDomaine(sb, 'com', 'https://www.totehm.com/totehm?ro=' + encodeURIComponent(ro.dataset.ro)); return; }
+  if(su){ e.preventDefault(); e.stopPropagation(); ssoVersDomaine(sb, 'club', 'https://www.figher.club/console?to=' + encodeURIComponent(su.dataset.sub)); }
+}, true);
 
 /* ══ LES SEPT INTENTIONS — et ce que chacune veut dire (Wah, 26/09) ══ */
 const INTS = {
@@ -583,6 +630,7 @@ function fmtDay(d){
   const now = new Date();
   if(dayKey(d) === dayKey(now)) return 'today';
   if(dayKey(d) === dayKey(addDays(now, 1))) return 'tomorrow';
+  if(dayKey(d) === dayKey(addDays(now, -1))) return 'yesterday';
   return d.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' }).replace(',', '');
 }
 const fmtWhen = iso => { const d = new Date(iso); return d <= new Date() ? 'now' : fmtDay(d) + ' ' + hhmm(d); };
@@ -593,8 +641,12 @@ const tickHTML = l => '<span class="tick">' + (l||[]).map(i => '<i style="backgr
 const groupe = (mot, contenu) => contenu ? '<span class="mg"><span class="mg-l">' + mot + '</span><span class="minis">' + contenu + '</span></span>' : '';
 const miniH = (k, t, attr) => '<span class="mini m-' + k + '"' + (attr || '') + '>' + esc(t) + '</span>';
 const howLink = t => '<button class="lnk how-l" data-how="1" type="button">' + (t || 'how it works') + '</button>';
+const LOUPE = '<button class="lp" data-lp="1" type="button" aria-label="Enlarge"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 L14 14"/></svg></button>';
+/* LE NOM D'UN TOTEHM — la tuile perforée navy, et elle seule (27/09). */
+const byHTML = p => p ? '<button class="tname" data-ro="' + esc(p) + '" type="button" title="Open this TOTEHM">by ' + esc(p) + '</button>'
+  + '<button class="lnk" data-sub="' + esc(p) + '" type="button">subscribe</button>' : '';
+const matchHTML = c => c != null ? '<span class="match" title="How close this Spot is to my TOTEHM — see how it works" data-how="1"><b>' + c + '%</b><small>match with my TOTEHM</small></span>' : '';
 
-/* LA HABIT BOX — la boîte du CHOIX, telle que dans totehm.com. */
 function habitBoxHTML(h){
   const unit = (h.ints||[]).map(i => '<span class="v-int" style="color:' + icol(i) + '">' + esc(INTS[i]?.n || i) + '</span>').join('')
     + (h.freq ? '<span class="v-frq">' + esc(FREQ[h.freq] || String(h.freq).replace(/_/g, ' ')) + '</span>' : '')
@@ -606,12 +658,7 @@ function habitBoxHTML(h){
     '</span></span></div>';
 }
 
-/* LA BOÎTE-ACTION — un Spot, lu.
-   1 · intentions · date · heure · durée
-   2 · le lieu (lien Google Maps) · distance et cap
-   3 · places · automatic/manual · public space/private   ← la NATURE (26/09)
-   4 · social/silent · FIGHER members/subscribers · mood
-   [details] → le mot, WHY, TRIGGER. */
+/* LA BOÎTE-ACTION — un Spot, lu (25/09 · nature 26/09). */
 const DET = new Set();
 function spotBoxHTML(s){
   const ints = (s.intentions && s.intentions.length) ? s.intentions : (s.context?.intentions || []);
@@ -650,65 +697,72 @@ function spotBoxHTML(s){
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
 let me = null, F = null, MS = null, TOT = null;
 let VIEW = 'radar', PANEL = null, FOCUS = null;
-const BUILD = '2026-09-26';
+const BUILD = '2026-09-27';
 const LISBON = { lat:38.7223, lng:-9.1393 };
-/* L'échelle : `range` = la distance du centre au bord du disque, en mètres.
-   En dessous de LOCAL_MAX, les Spots un par un ; au-dessus, les lumières
-   du globe. Au-dessus de SPIN_AT, tourner la couronne fait tourner la
-   planète au lieu de la carte. */
 const LOCAL_MAX = 80e3, SPIN_AT = 700e3, MIN_R = 120, MAX_R = 7.6e6;
 const RAD = { on:false, raf:0, t:0, W:0, H:0, dpr:1, cx:0, cy:0, rpx:0, tcx:0, tcy:0, trpx:0,
-  view:{ ...LISBON }, me:null, range:1500, trange:1500, base:1500, head:0, headTo:null, spin:0, grab:false, ringHover:false,
+  view:{ ...LISBON }, view0:null, me:null, range:1500, trange:1500, base:1500, head:0, headTo:null, spin:0, grab:false, ringHover:false,
   spots:[], cells:[], hover:null, tip:null, mode:'local', fly:null, localAt:null, sig:'', settleT:0 };
-const FI = { int:null };
-const FT = { when:'later', q:'', mode:null };
+const FS = { q:'', when:null, mode:null, int:null };   // SEARCH (bas)
 let RULES = { max_upcoming:10, capacity_min:1, capacity_max:50, duration_min:5, duration_max:720, horizon_days:90, local_radius_km:60 };
 let geoOK = false;
+/* Ce qu'une création reçoit avant d'avoir une habitude : un lieu touché
+   sur la carte (+ today), ou un Spot d'hier qu'on refait. */
+let PRE = null;
+const PIN = { on:false };
 const ref = () => RAD.me || RAD.view;
 const items = () => RAD.mode === 'globe' ? RAD.cells : RAD.spots;
-const GEST = { swipe:0, trackpad:0, pinch:0, ring:0 };
-window.__totehm_space = () => ({ build: BUILD, view: VIEW, panel: panelKind(), signed_in: !!me, member: !!F?.member, comp: !!F?.comp,
+const GEST = { swipe:0, trackpad:0, pinch:0, ring:0, pan:0 };
+window.__totehm_space = () => ({ build: BUILD, view: VIEW, panel: panelKind(), pin: PIN.on, muted: muted(), signed_in: !!me, member: !!F?.member, comp: !!F?.comp,
   located: geoOK, units: UNIT, compass: { available: CMP.avail, on: CMP.on }, heading: Math.round(RAD.head) % 360,
-  scale: { range_km: +(RAD.range/1000).toFixed(1), mode: RAD.mode, at_home: !awayFromHome(), earth: !!EARTH.land, coast50: !!EARTH.land50 },
+  scale: { range_km: +(RAD.range/1000).toFixed(1), mode: RAD.mode, at_home: !awayFromHome(), earth: !!EARTH.land, coast50: !!EARTH.land50, map_tiles: TILES.ok },
   spots: RAD.spots.length, demo: RAD.spots.filter(s => s.demo).length, live: RAD.spots.filter(s => s.live).length,
   ahead: items().filter(s => s._ahead).length, cells: RAD.cells.length, planet: RAD.cells.reduce((a, c) => a + c.n, 0),
-  filters: { intention: !!FI.int, when: FT.when, word: !!FT.q, mode: !!FT.mode },
-  drawers: DET.size, draft: CR.h ? { complete: draftComplete(), missing: draftMissing().length, map_tiles: mapMode() ? TILES.ok : 0 } : null,
+  search: { word: !!FS.q, when: FS.when, mode: FS.mode, intention: FS.int },
+  history: MS ? { mine: (MS.spots || []).length, joined: (MS.applications || []).length } : null,
+  drawers: DET.size, pre: PRE ? Object.keys(PRE) : null,
+  draft: CR.h ? { complete: draftComplete(), missing: draftMissing().length, pinned: !!CR.pos } : null,
   requests: (MS?.requests || []).length, gestures: { ...GEST } });
 
 async function loadMe(){
   const { data:{ session } } = await sb.auth.getSession();
   me = session?.user || null; F = null;
   if(me){ const { data, error } = await sb.rpc('figher_access'); if(error) console.error('[figher_access]', error.message); F = data || null; }
+  paintMember();
+}
+function paintMember(){
   $('member').classList.toggle('is-in', !!me);
   $('member-txt').textContent = me ? (F?.pseudo || 'Member') : 'Sign in';
+  const n = (MS?.requests || []).length; $('member-n').textContent = me && n ? n : '';
 }
 
 /* ══ LES CINQ VUES — UNE SEULE TABLE, LUE PAR TOUT ══════════════════
-   La manette, les chevrons, le balayage, le trackpad et les flèches
-   lisent `CROIX`. Deux tables finiraient par dire deux choses. */
+   L'horizontale est le TEMPS (hier · aujourd'hui · demain), la verticale
+   est l'ACTE (créer · chercher). */
 const CROIX = {
-  radar:  { h:'create', b:'mine', g:'intent', d:'time' },
-  create: { b:'radar', g:'intent', d:'time' },
-  mine:   { h:'radar', g:'intent', d:'time' },
-  intent: { d:'radar' },
+  radar:  { h:'create', b:'search', g:'past', d:'time' },
+  create: { b:'radar', g:'past', d:'time' },
+  search: { h:'radar', g:'past', d:'time' },
+  past:   { d:'radar' },
   time:   { g:'radar' },
 };
 const NOM = {
-  radar:  ['Live & today',      'what I can join now, around me'],
-  create: ['Create a Spot',     'one of my habits, offered to the world'],
-  mine:   ['My space',          'my access, my limits, who is waiting'],
-  intent: ['By intention',      'the why before the where'],
-  time:   ['Tomorrow & beyond', 'what is coming — a day, a word'],
+  radar:  ['Today',         'touch the map to create a Spot there'],
+  create: ['Create a Spot', 'one of my habits, offered to the world'],
+  search: ['Search',        'a word, a day, an intention'],
+  past:   ['Yesterday',     'my Spots, and the ones I joined'],
+  time:   ['Tomorrow',      'what is coming, day by day'],
 };
-const TEINTE = { radar:'--navy', create:'--blue', mine:'--rep', intent:'--rep', time:'--blue' };
-const COUCHE = { create:'o', radar:'h', mine:'r' };
-/* Chaque fenêtre a son côté. */
-const PAN = { intent:'p-g', time:'p-d', create:'p-h', mine:'p-b', focus:'p-f', gate:'p-m' };
-const voisin = d => (CROIX[VIEW] || {})[d] || null;
+const TEINTE = { radar:'--navy', create:'--blue', search:'--rep', past:'--rep', time:'--blue' };
+const COUCHE = { create:'o', radar:'h', search:'r' };
+const PAN = { past:'p-g', time:'p-d', create:'p-h', search:'p-b', focus:'p-f', gate:'p-m' };
+/* En haut et en bas, la carte passe en SOURDINE (27/09). */
+const MUTED = { create:1, search:1 };
+const muted = () => !!MUTED[VIEW] && !PIN.on;
+const voisin = d => PIN.on ? null : (CROIX[VIEW] || {})[d] || null;
 let dernierSens = null;
 function versVoisin(d){ const v = voisin(d); if(!v) return false; dernierSens = d; setView(v); return true; }
-const HASH = { create:'create', mine:'me', intent:'intent', time:'later' };
+const HASH = { create:'create', search:'search', past:'yesterday', time:'tomorrow' };
 
 function setView(v){
   if(!NOM[v]) v = 'radar';
@@ -724,12 +778,13 @@ function setView(v){
     try{ navigator.vibrate && navigator.vibrate(8); }catch(_){}
   }
   if(v === 'create') openCreate();
-  else if(v === 'mine') loadMine();
+  else if(v === 'past') loadMine();
   if(was !== v || !RAD.spots.length) reload();
 }
 function paintTitle(){
   const nv = $('vnow');
-  $('vt').textContent = NOM[VIEW][0]; $('vs').textContent = NOM[VIEW][1];
+  const t = PIN.on ? ['Meeting point', 'move the map under the cross'] : NOM[VIEW];
+  $('vt').textContent = t[0]; $('vs').textContent = t[1];
   nv.className = '';
   if(dernierSens){ void nv.offsetWidth; nv.classList.add('f-' + dernierSens); dernierSens = null; }
   paintStatus();
@@ -749,9 +804,7 @@ function paintJoy(){
 }
 function say(d){ const t = d && voisin(d); const s = $('joy-say'); s.textContent = t ? NOM[t][0] : ''; s.classList.toggle('on', !!t); }
 
-/* ══ LA MANETTE — ON TIRE LE MANCHE · copiée de totehm.com ═══════════
-   Chevrons, manche tiré, molette SUR le pavé (elle suit le DOIGT, erreur
-   corrigée le 25/09). Toucher le pavé sans le tirer ramène au centre. */
+/* ══ LA MANETTE — ON TIRE LE MANCHE · copiée de totehm.com ═══════════ */
 (function manette(){
   const jy = $('joy'), bx = $('joy-box'), st = $('joy-stack');
   const RAYON = 15, SEUIL = 9;
@@ -804,23 +857,12 @@ function say(d){ const t = d && voisin(d); const s = $('joy-say'); s.textContent
   });
 })();
 
-/* ══ LE GESTE VAUT PARTOUT · 26/09/2026 ══════════════════════════════
-   « Le joystick doit fonctionner comme dans totehm.html : les gestes
-   restent valables en dehors du joystick, y compris sur le radar. »
-   Même logique que totehm.com : on pousse le CONTENU. Doigt vers la
-   gauche (ou deux doigts au trackpad) → ce qui est à DROITE. Doigt vers
-   le haut → ce qui est EN BAS.
-   · Dans une fenêtre qui défile, la verticale appartient au défilement ;
-     elle ne navigue qu'au BOUT de la liste, et seulement si on y était
-     déjà au début du geste (règle du 16/09 : jamais au milieu).
-   · Le zoom n'est PLUS la molette : c'est le pincement. Au trackpad, un
-     pincement arrive en `wheel` avec `ctrlKey` (Chrome, Firefox) ou en
-     `gesturechange` (Safari). */
-const NO_SWIPE = '#joy, #zoom, #cmp, #how, #world, input, textarea, select, [contenteditable="true"]';
+/* ══ LE GESTE VAUT PARTOUT (26/09) ═══════════════════════════════════ */
+const NO_SWIPE = '#joy, #zoom, #cmp, #how, #world, #pinbar, input, textarea, select, [contenteditable="true"]';
 (function balayage(){
   let T = null;
   document.addEventListener('touchstart', e => {
-    if(e.touches.length !== 1){ T = null; return; }
+    if(e.touches.length !== 1 || PIN.on){ T = null; return; }
     const t = e.target; if(!(t instanceof Element) || t.closest(NO_SWIPE)){ T = null; return; }
     const pan = t.closest('.pan'), c = e.touches[0];
     T = { x:c.clientX, y:c.clientY, pan, top: pan ? pan.scrollTop <= 0 : true,
@@ -845,10 +887,10 @@ const NO_SWIPE = '#joy, #zoom, #cmp, #how, #world, input, textarea, select, [con
     if(t && t.closest('#joy')) return;
     if(e.ctrlKey){ e.preventDefault(); zoomTo(RAD.trange*Math.exp(e.deltaY*0.012)); GEST.pinch++; return; }
     if(t && t.closest('#how')) return;
-    const now = performance.now(), k = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1;
-    const dx = e.deltaX*k, dy = e.deltaY*k;
-    /* L'inertie d'un trackpad continue après le geste : on attend 260 ms de
-       calme avant la navigation suivante, sinon un geste en ferait deux. */
+    const k = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1;
+    /* Au rendez-vous, deux doigts DÉPLACENT la carte sous la croix. */
+    if(PIN.on){ e.preventDefault(); panBy(-e.deltaX*k, -e.deltaY*k); return; }
+    const now = performance.now(), dx = e.deltaX*k, dy = e.deltaY*k;
     if(now < W.lock){ W.lock = now + 260; return; }
     if(now - W.t > 260){ W.ax = W.ay = 0; }
     W.t = now;
@@ -861,7 +903,6 @@ const NO_SWIPE = '#joy, #zoom, #cmp, #how, #world, input, textarea, select, [con
     }
     W.ax = 0; W.ay += dy; if(Math.abs(W.ay) > 70) go(W.ay > 0 ? 'b' : 'h');
   }, { passive:false });
-  /* Safari (Mac) : le pincement du trackpad. */
   let g0 = 0;
   addEventListener('gesturestart', e => { e.preventDefault(); g0 = RAD.trange; });
   addEventListener('gesturechange', e => { e.preventDefault(); if(g0 && e.scale) zoomTo(g0/e.scale, true); GEST.pinch++; });
@@ -870,6 +911,12 @@ const NO_SWIPE = '#joy, #zoom, #cmp, #how, #world, input, textarea, select, [con
 addEventListener('keydown', e => {
   const t = e.target;
   if(t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
+  if(PIN.on){
+    const a = { ArrowLeft:[40,0], ArrowRight:[-40,0], ArrowUp:[0,40], ArrowDown:[0,-40] }[e.key];
+    if(a){ e.preventDefault(); panBy(a[0], a[1]); return; }
+    if(e.key === 'Enter'){ pinEnd(true); return; }
+    if(e.key === 'Escape'){ pinEnd(false); return; }
+  }
   const k = { ArrowLeft:'g', ArrowRight:'d', ArrowUp:'h', ArrowDown:'b' }[e.key];
   if(k && !howOpen() && voisin(k)){ e.preventDefault(); versVoisin(k); return; }
   if(e.key === '?'){ howOpen() ? howClose() : howShow(); return; }
@@ -882,17 +929,14 @@ addEventListener('keydown', e => {
   }
 });
 
-/* ══ HOW IT WORKS ════════════════════════════════════════════════════ */
+/* ══ HOW IT WORKS — le Spot d'abord (27/09) ═════════════════════════ */
 const howOpen = () => $('how').classList.contains('on');
 function howShow(){ $('how').classList.add('on'); $('how').scrollTop = 0; }
 function howClose(){ $('how').classList.remove('on'); }
 $('how').addEventListener('click', e => { if(e.target === $('how') || e.target.closest('[data-hx]')) howClose(); });
-document.addEventListener('click', e => { if(e.target.closest('[data-how]')){ e.preventDefault(); howShow(); } });
+document.addEventListener('click', e => { const t = e.target instanceof Element ? e.target : null; if(t && t.closest('[data-how]')){ e.preventDefault(); howShow(); } });
 
-/* ══ LA BOUSSOLE DE L'APPAREIL ═══════════════════════════════════════
-   Au téléphone, le radar TOURNE AVEC TOI. ⚠️ iOS : `requestPermission()`
-   dans un `click`. Pas de mesure en 3 s = pas de boussole, sans un mot.
-   Tourner la couronne à la main l'éteint : c'est toi qui vises. */
+/* ══ LA BOUSSOLE DE L'APPAREIL ═══════════════════════════════════════ */
 const CMP = { avail:false, on:false, h:0, target:0, last:0, src:null };
 CMP.avail = typeof window.DeviceOrientationEvent !== 'undefined' && matchMedia('(pointer:coarse)').matches;
 function onOrient(e){
@@ -928,12 +972,7 @@ $('cmp').onclick = e => {
   if(CMP.avail) compassOn(); else { howShow(); }
 };
 
-/* ══ LA COURONNE — ON LA TOURNE · 26/09/2026 ═════════════════════════
-   « Qu'on puisse jouer avec la boussole, la faire tourner. » On saisit
-   l'anneau (la bande des graduations), on tourne, on lâche : elle
-   continue sur son élan et ralentit. Chaque huitième de tour donne un
-   petit cran (vibration). De près elle fait tourner la CARTE — le haut
-   devient la direction visée. De loin elle fait tourner la PLANÈTE. */
+/* ══ LA COURONNE — ON LA TOURNE (26/09) ══════════════════════════════ */
 function turn(deg){
   if(CMP.on) compassOff();
   RAD.headTo = null;
@@ -944,11 +983,7 @@ function turn(deg){
 }
 function resetNorth(){ RAD.spin = 0; RAD.headTo = 0; }
 
-/* ══ L'INSTRUMENT — UNE PROJECTION, DE LA RUE À LA PLANÈTE ═══════════
-   Orthographique : de près, c'est le plan local (écart invisible) ; de
-   loin, c'est le globe vu de l'espace. Une seule formule, donc aucune
-   couture entre la rue et le monde. `head` tourne l'ensemble : le haut de
-   l'écran est le cap `head`. */
+/* ══ L'INSTRUMENT — UNE PROJECTION, DE LA RUE À LA PLANÈTE (26/09) ═══ */
 let PJ = null;
 function pjFrame(){
   const R = EARTH_R*RAD.rpx/RAD.range, p0 = RAD.view.lat*DEG, h = RAD.head*DEG;
@@ -972,16 +1007,18 @@ function unproj(X, Y){
   const lng = (P.l0 + Math.atan2(ex*sc, rho*P.c0*cc - ny*P.s0*sc))/DEG;
   return { lat, lng:norm180(lng) };
 }
+/* Déplacer la carte sous la croix : le nouveau centre est le point qui
+   était à (centre − déplacement). */
+function panBy(dx, dy){
+  pjFrame(); const p = unproj(RAD.cx - dx, RAD.cy - dy);
+  if(p){ RAD.view = p; RAD.fly = null; GEST.pan++; }
+}
 const wide = () => innerWidth >= 900;
-/* L'instrument vit dans ce qui reste : sous le nom de la vue, au-dessus de
-   la manette, à côté de la fenêtre ouverte. On MESURE ces objets
-   (offset*, qui ignore les transformations en cours) — et le radar glisse
-   vers sa nouvelle place au lieu d'y sauter. */
 function resize(){
   const cv = $('canvas'), W = innerWidth, H = innerHeight, dpr = Math.max(1, Math.min(2, devicePixelRatio || 1));
   const k = panelKind(), el = k ? $(PAN[k]) : null, vn = $('vnow');
-  let top = vn.offsetTop + vn.offsetHeight + 14, bottom = $('joy').offsetTop - 30, left = 0, right = W;
-  if(el){
+  let top = vn.offsetTop + vn.offsetHeight + (PIN.on ? 8 : 14), bottom = PIN.on ? $('pinbar').offsetTop - 16 : $('joy').offsetTop - 30, left = 0, right = W;
+  if(el && el.id !== 'p-m'){
     if(wide()){
       if(el.id === 'p-g') left = el.offsetWidth;
       else if(el.id === 'p-d') right = W - el.offsetWidth;
@@ -989,8 +1026,8 @@ function resize(){
       else if(el.id === 'p-b') bottom = Math.min(bottom, el.offsetTop - 14);
     } else bottom = el.offsetTop - 6;
   }
-  const zh = Math.max(60, bottom - top), zw = right - left, span = Math.min(zw, zh);
-  Object.assign(RAD, { W, H, dpr, tcx:left + zw/2, tcy:top + zh/2, trpx:Math.max(24, span/2*0.8) });
+  const zh = Math.max(50, bottom - top), zw = right - left, span = Math.min(zw, zh);
+  Object.assign(RAD, { W, H, dpr, tcx:left + zw/2, tcy:top + zh/2, trpx:Math.max(20, span/2*(PIN.on ? .9 : .8)) });
   if(!RAD.rpx){ RAD.cx = RAD.tcx; RAD.cy = RAD.tcy; RAD.rpx = RAD.trpx; }
   cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
   RAD.sig = ''; paintCmp();
@@ -998,7 +1035,6 @@ function resize(){
 const resizeSoon = () => { requestAnimationFrame(resize); setTimeout(resize, 430); };
 addEventListener('resize', () => resize());
 
-/* Placer les points, toi, le point de rendez-vous et la bulle. */
 function layout(){
   pjFrame();
   const glob = RAD.mode === 'globe', up = aiming();
@@ -1014,14 +1050,16 @@ function layout(){
       s._el.classList.toggle('edge', edge); s._el.classList.toggle('ahead', s._ahead); s._el.classList.toggle('off', hid);
     }
   });
-  const m = $('me');
-  if(RAD.me){ const p = proj(RAD.me.lat, RAD.me.lng); const ok = p.v && p.r <= RAD.rpx*1.01;
+  /* TOI — toujours un point blanc ; sans position, au centre de la vue d'arrivée. */
+  const m = $('me'), who = RAD.me || RAD.view0;
+  if(who){ const p = proj(who.lat, who.lng); const ok = p.v && p.r <= RAD.rpx*1.01;
     m.classList.toggle('hide', !ok); m.style.left = p.x + 'px'; m.style.top = p.y + 'px'; }
   else m.classList.add('hide');
-  const pn = $('pin');
-  if(VIEW === 'create' && CR.pos){ const p = proj(CR.pos.lat, CR.pos.lng); const ok = p.v && p.r <= RAD.rpx*1.01;
+  const pn = $('pin'), pp = CR.pos || (PRE && PRE.pos);
+  if(VIEW === 'create' && pp && !PIN.on){ const p = proj(pp.lat, pp.lng); const ok = p.v && p.r <= RAD.rpx*1.01;
     pn.classList.toggle('hide', !ok); pn.style.left = p.x + 'px'; pn.style.top = p.y + 'px'; }
   else pn.classList.add('hide');
+  const cr = $('cross'); cr.style.left = RAD.cx + 'px'; cr.style.top = RAD.cy + 'px';
   placeTip();
   $('z-me').classList.toggle('away', awayFromHome());
 }
@@ -1030,10 +1068,7 @@ function awayFromHome(){
   return hav(RAD.view, h) > RAD.range*0.35 + 50 || RAD.range > RAD.base*3.2 || RAD.range < RAD.base/3.2;
 }
 
-/* ══ LA TERRE — Natural Earth, domaine public, servie par nous ═══════
-   `earth.json` : les terres (1:110 M) et 1 251 villes. `earth50.json` :
-   les côtes au 1:50 M, chargées seulement quand on descend sous
-   2 500 km. Zéro appel à un service de cartes. */
+/* ══ LA TERRE — Natural Earth, domaine public, servie par nous (26/09) */
 const EARTH = { land:null, land50:null, cities:[], p50:null };
 function prepRings(rings){
   return rings.map(a => {
@@ -1094,14 +1129,17 @@ function drawGraticule(X){
   X.stroke();
 }
 
-/* ══ LE FOND DE RUE — pour poser le point de rendez-vous · 26/09 ═════
-   « C'est viser à l'aveugle. » En création, près du sol (≤ 40 km), un
-   fond OpenStreetMap passe sous le radar — inversé et désaturé une fois
-   par tuile : sombre, minimaliste, les rues et l'eau comme repères. Hors
-   création, jamais : le radar reste un instrument, pas une carte.
-   ⚠️ Attribution affichée (#osm) — c'est la licence (ODbL). */
+/* ══ LE FOND DE RUE — DÈS L'ARRIVÉE (27/09) ══════════════════════════
+   « Il faut afficher la carte dès le départ. » Sous 40 km, dans toutes
+   les vues qui ne sont pas en sourdine : un fond OpenStreetMap inversé
+   et désaturé une fois par tuile — sombre, les rues et l'eau comme
+   repères. ⚠️ Gratuit mais sous POLITIQUE D'USAGE (OSMF) : attribution
+   (#osm), pas de téléchargement en masse — on ne demande une tuile
+   qu'une fois l'échelle posée (pas pendant un vol ou un pincement), 220
+   en mémoire au plus. Changer de fournisseur = changer `TILE_URL`. */
+const TILE_URL = (z, x, y) => 'https://tile.openstreetmap.org/' + z + '/' + x + '/' + y + '.png';
 const TILES = new Map(); TILES.ok = 0;
-const mapMode = () => VIEW === 'create' && !!CR.h && RAD.range <= 40e3;
+const mapMode = () => RAD.mode === 'local' && RAD.range <= 40e3 && (PIN.on || !muted());
 function tile(z, x, y, fetchOK){
   const key = z + '/' + x + '/' + y; let t = TILES.get(key); if(t || !fetchOK) return t;
   t = { ok:false, c:null }; TILES.set(key, t);
@@ -1115,7 +1153,7 @@ function tile(z, x, y, fetchOK){
       t.c = c; t.ok = true; TILES.ok++;
     }catch(_){ t.err = true; } };
   im.onerror = () => { t.err = true; };
-  im.src = 'https://tile.openstreetmap.org/' + z + '/' + x + '/' + y + '.png';
+  im.src = TILE_URL(z, x, y);
   return t;
 }
 const t2lng = (x, n) => x/n*360 - 180;
@@ -1125,7 +1163,7 @@ function drawTiles(X){
   const z = Math.max(3, Math.min(18, Math.round(Math.log2(156543.034*cl/mpp)))), n = 2**z;
   const fx = (RAD.view.lng + 180)/360*n, ly = lat*DEG, fy = (1 - Math.log(Math.tan(ly) + 1/Math.cos(ly))/Math.PI)/2*n;
   const tpx = 256*(156543.034*cl/n)/mpp, m = Math.ceil(RAD.rpx*1.15/tpx) + 1;
-  const fetchOK = !RAD.fly, dpr = RAD.dpr;
+  const fetchOK = !RAD.fly && RAD.range === RAD.trange, dpr = RAD.dpr;
   X.globalAlpha = .9;
   for(let ty = Math.floor(fy) - m; ty <= Math.floor(fy) + m; ty++){
     if(ty < 0 || ty >= n) continue;
@@ -1139,9 +1177,7 @@ function drawTiles(X){
   X.setTransform(dpr, 0, 0, dpr, 0, 0); X.globalAlpha = 1;
 }
 
-/* ══ LE VOL — d'un point du globe à un autre ═════════════════════════
-   On monte, on traverse, on redescend : l'échelle suit un arc, pour que
-   le départ et l'arrivée restent à l'écran en même temps. */
+/* ══ LE VOL ══════════════════════════════════════════════════════════ */
 const ease = t => t < .5 ? 4*t*t*t : 1 - (-2*t + 2)**3/2;
 function flyTo(lat, lng, r, ms){
   const a = { lat:RAD.view.lat, lng:RAD.view.lng }, r0 = RAD.range, r1 = Math.max(MIN_R, Math.min(MAX_R, r || r0));
@@ -1158,16 +1194,15 @@ function settled(){
   clearTimeout(RAD.settleT);
   RAD.settleT = setTimeout(() => {
     if(RAD.mode === 'local'){
-      if(!RAD.localAt || hav(RAD.view, RAD.localAt) > Math.max(15e3, RAD.range*.6)) loadSpots();
+      if(!PIN.on && (!RAD.localAt || hav(RAD.view, RAD.localAt) > Math.max(15e3, RAD.range*.6))) loadSpots();
     } else loadGlobe();
-    if(mapMode()) RAD.sig = '';
+    RAD.sig = '';
   }, 260);
 }
 
 function draw(){
   const cv = $('canvas'); if(!RAD.on){ RAD.raf = 0; return; }
   const X = cv.getContext('2d'); RAD.t += 1/60;
-  /* La géométrie glisse vers sa place, l'échelle aussi (en logarithme). */
   RAD.cx += (RAD.tcx - RAD.cx)*.2; RAD.cy += (RAD.tcy - RAD.cy)*.2; RAD.rpx += (RAD.trpx - RAD.rpx)*.2;
   if(Math.abs(RAD.tcx - RAD.cx) < .3) RAD.cx = RAD.tcx; if(Math.abs(RAD.tcy - RAD.cy) < .3) RAD.cy = RAD.tcy; if(Math.abs(RAD.trpx - RAD.rpx) < .3) RAD.rpx = RAD.trpx;
   if(RAD.fly){
@@ -1185,14 +1220,14 @@ function draw(){
   const mode = RAD.range > LOCAL_MAX ? 'globe' : 'local';
   if(mode !== RAD.mode){ RAD.mode = mode; renderMarkers(); settled(); paintStatus(); if(PANEL === 'focus' && mode === 'globe'){ PANEL = null; FOCUS = null; syncPanels(); } }
   if(RAD.range < 2.5e6 && RAD.range > 12e3) loadEarth50();
-  document.body.classList.toggle('map-on', mapMode());
-  const sig = [RAD.cx|0, RAD.cy|0, RAD.rpx|0, RAD.range.toPrecision(5), RAD.view.lat.toFixed(5), RAD.view.lng.toFixed(5), RAD.head.toFixed(2),
-    CR.pos ? CR.pos.lat + ',' + CR.pos.lng : '', VIEW, items().length].join('|');
+  const tiles = mapMode();
+  document.body.classList.toggle('map-on', tiles);
+  const sig = [RAD.cx|0, RAD.cy|0, RAD.rpx|0, RAD.range.toPrecision(5), RAD.view.lat.toFixed(6), RAD.view.lng.toFixed(6), RAD.head.toFixed(2),
+    CR.pos ? CR.pos.lat + ',' + CR.pos.lng : '', PRE && PRE.pos ? 'pre' : '', VIEW, PIN.on, items().length].join('|');
   if(sig !== RAD.sig){ RAD.sig = sig; layout(); if(Math.round(RAD.t*60) % 8 === 0){ paintCmp(); paintStatus(); } } else pjFrame();
 
   const { W, H, cx, cy, rpx, dpr } = RAD, glob = mode === 'globe', R = PJ.R;
   X.setTransform(dpr, 0, 0, dpr, 0, 0); X.fillStyle = '#000'; X.fillRect(0, 0, W, H);
-  /* Le disque : un gris qui délimite l'instrument sur le noir. */
   const g = X.createRadialGradient(cx, cy, 0, cx, cy, rpx*1.06);
   g.addColorStop(0, glob ? '#0b0b0e' : '#16161b'); g.addColorStop(1, glob ? '#08080a' : '#0f0f13');
   X.fillStyle = g; X.beginPath(); X.arc(cx, cy, rpx*1.06, 0, Math.PI*2); X.fill();
@@ -1202,25 +1237,24 @@ function draw(){
     pg.addColorStop(0, '#15151b'); pg.addColorStop(1, '#0c0c10');
     X.fillStyle = pg; X.beginPath(); X.arc(cx, cy, R, 0, Math.PI*2); X.fill();
   }
-  if(mapMode()) drawTiles(X);
+  if(tiles) drawTiles(X);
   else {
     if(RAD.range > 900e3) drawGraticule(X);
     const rings = RAD.range < 2.5e6 && EARTH.land50 ? EARTH.land50 : EARTH.land;
     if(rings && RAD.range > 12e3) drawLand(X, rings);
-    if(EARTH.cities.length && RAD.range > 2.5e3) drawCities(X);
   }
+  if(EARTH.cities.length && RAD.range > 2.5e3 && !tiles) drawCities(X);
   X.restore();
   if(R < rpx*1.4){ X.strokeStyle = 'rgba(255,255,255,.2)'; X.lineWidth = 1; X.beginPath(); X.arc(cx, cy, Math.min(R, rpx), 0, Math.PI*2); X.stroke(); }
   const h = RAD.head*DEG;
-  if(!glob){
-    X.strokeStyle = 'rgba(255,255,255,.07)'; X.lineWidth = 1; X.beginPath();
+  if(!glob && !PIN.on){
+    X.strokeStyle = tiles ? 'rgba(255,255,255,.05)' : 'rgba(255,255,255,.07)'; X.lineWidth = 1; X.beginPath();
     X.moveTo(cx - rpx, cy + .5); X.lineTo(cx + rpx, cy + .5); X.moveTo(cx + .5, cy - rpx); X.lineTo(cx + .5, cy + rpx); X.stroke();
-    X.strokeStyle = 'rgba(255,255,255,.14)';
+    X.strokeStyle = tiles ? 'rgba(255,255,255,.1)' : 'rgba(255,255,255,.14)';
     for(let k = 1; k <= 3; k++){ X.beginPath(); X.arc(cx, cy, rpx*k/3, 0, Math.PI*2); X.stroke(); }
-    X.font = '10px "Space Mono",monospace'; X.textAlign = 'left'; X.fillStyle = 'rgba(255,255,255,.32)';
-    for(let k = 1; k <= 3; k++) X.fillText(fmtDist(RAD.range*k/3), cx + 5, cy - rpx*k/3 + 13);
+    if(rpx > 60){ X.font = '10px "Space Mono",monospace'; X.textAlign = 'left'; X.fillStyle = 'rgba(255,255,255,.36)';
+      for(let k = 1; k <= 3; k++) X.fillText(fmtDist(RAD.range*k/3), cx + 5, cy - rpx*k/3 + 13); }
   }
-  /* LA COURONNE : la bande qu'on saisit. Elle s'éclaire au survol et en main. */
   if(RAD.grab || RAD.ringHover){ X.strokeStyle = RAD.grab ? 'rgba(255,255,255,.085)' : 'rgba(255,255,255,.05)'; X.lineWidth = rpx*.2;
     X.beginPath(); X.arc(cx, cy, rpx*1.1, 0, Math.PI*2); X.stroke(); }
   X.strokeStyle = 'rgba(255,255,255,.26)'; X.lineWidth = 1; X.beginPath();
@@ -1234,20 +1268,22 @@ function draw(){
     X.fillText(L, cx + Math.cos(t)*rpx*1.13, cy + Math.sin(t)*rpx*1.13);
   });
   X.textBaseline = 'alphabetic';
-  if(aiming()){
+  if(aiming() && !PIN.on){
     X.beginPath(); X.moveTo(cx, cy); X.arc(cx, cy, rpx, -Math.PI/2 - 22.5*DEG, -Math.PI/2 + 22.5*DEG); X.closePath();
     X.fillStyle = 'rgba(255,255,255,.045)'; X.fill();
     X.fillStyle = '#fff'; X.beginPath(); X.moveTo(cx, cy - rpx*.955); X.lineTo(cx - 5, cy - rpx*.955 - 9); X.lineTo(cx + 5, cy - rpx*.955 - 9); X.closePath(); X.fill();
   }
-  /* LE BALAYAGE, RALENTI · 26/09 : un tour en 14 s (il en faisait un en 6). */
-  const sw = RAD.t*Math.PI/7;
-  for(let i = 0; i < 20; i++){
-    X.beginPath(); X.moveTo(cx, cy); X.arc(cx, cy, rpx, sw - i*0.035 - 0.035, sw - i*0.035); X.closePath();
-    X.fillStyle = '#ffffff'; X.globalAlpha = 0.035*(1 - i/20); X.fill();
+  if(!PIN.on){
+    /* Le balayage : un tour en 14 s (26/09). */
+    const sw = RAD.t*Math.PI/7;
+    for(let i = 0; i < 20; i++){
+      X.beginPath(); X.moveTo(cx, cy); X.arc(cx, cy, rpx, sw - i*0.035 - 0.035, sw - i*0.035); X.closePath();
+      X.fillStyle = '#ffffff'; X.globalAlpha = 0.035*(1 - i/20); X.fill();
+    }
+    X.globalAlpha = 1;
   }
-  X.globalAlpha = 1;
   const f = RAD.hover || (FOCUS && RAD.spots.find(s => s.id === FOCUS));
-  if(f && f._px != null && !glob){
+  if(f && f._px != null && !glob && !PIN.on){
     const o = RAD.me ? proj(RAD.me.lat, RAD.me.lng) : { x:cx, y:cy };
     X.save(); X.setLineDash([3, 7]); X.lineDashOffset = -RAD.t*14; X.lineWidth = .8;
     X.strokeStyle = icol((f.intentions||[f.i])[0]); X.globalAlpha = .7;
@@ -1257,44 +1293,37 @@ function draw(){
 }
 function radarStart(){ if(RAD.on) return; RAD.on = true; resize(); RAD.raf = requestAnimationFrame(draw); }
 document.addEventListener('visibilitychange', () => { if(document.hidden){ RAD.on = false; } else radarStart(); });
-/* L'ÉCHELLE SUIT LA MAJORITÉ (24/09) : la portée couvre 85 % des Spots. */
 const autoRange = spots => {
   if(!spots.length) return 1500;
   const d = spots.map(s => s._d || 0).sort((a, b) => a - b);
   return Math.min(60000, Math.max(600, d[Math.min(d.length - 1, Math.floor(d.length*0.85))]*1.15));
 };
 
-/* ══ LE RADAR SE TOUCHE ═════════════════════════════════════════════
-   Un doigt qui balaie = la manette. Deux doigts = le zoom. L'anneau =
-   la couronne. Un toucher bref = selon la vue : poser le point de
-   rendez-vous (création), plonger vers un endroit (globe), refermer le
-   Spot ouvert (repos). ⚠️ `touch-action:none` : sans lui le navigateur
-   avale le geste. */
+/* ══ LA CARTE SE TOUCHE ══════════════════════════════════════════════
+   Un doigt qui balaie = la manette ; deux doigts = le zoom ; l'anneau =
+   la couronne. Au RENDEZ-VOUS, un doigt DÉPLACE la carte sous la croix.
+   Un toucher bref : TODAY → un Spot ici, aujourd'hui (27/09) ; le globe
+   → y plonger ; Create en sourdine → poser le rendez-vous en grand.
+   ⚠️ On écoute `#world` (un doigt sur un point fait partie du geste). */
 (function instrument(){
-  /* ⚠️ ON ÉCOUTE LE MONDE, PAS SEULEMENT LE CANVAS : un doigt posé sur un
-     point lumineux fait partie du pincement (mesuré : sinon le zoom à deux
-     doigts échouait dès qu'un doigt tombait sur un Spot). */
   const cv = $('canvas'), wd = $('world'), pts = new Map(); let G = null, lastRingTap = 0;
   const polar = (x, y) => ({ r:Math.hypot(x - RAD.cx, y - RAD.cy), a:Math.atan2(y - RAD.cy, x - RAD.cx)/DEG });
   const onRing = p => p.r > RAD.rpx*.9 && p.r < RAD.rpx*1.26;
   const gap = () => { const a = [...pts.values()]; return Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); };
   wd.addEventListener('pointerdown', e => {
     const onDot = !!(e.target.closest && e.target.closest('.marker'));
-    /* Le premier doigt d'un geste repart de zéro : un relâcher perdu (la
-       vue a changé sous le doigt) ne doit pas fausser le pincement suivant. */
     if(e.isPrimary){ pts.clear(); if(G && G.kind === 'ring'){ RAD.grab = false; cv.classList.remove('held'); } G = null; }
     pts.set(e.pointerId, { x:e.clientX, y:e.clientY });
-    /* Pas de capture sur un point : son `click` doit rester le sien. */
     if(!onDot){ try{ wd.setPointerCapture(e.pointerId); }catch(_){} }
     if(pts.size === 2){ if(G && G.kind === 'ring') RAD.grab = false; G = { kind:'pinch', d0:gap(), r0:RAD.trange }; return; }
     if(pts.size > 2) return;
     const p = polar(e.clientX, e.clientY);
-    if(!onDot && onRing(p)){ G = { kind:'ring', a:p.a, v:0, t:performance.now(), moved:0 }; RAD.grab = true; RAD.spin = 0; cv.classList.add('held'); return; }
-    G = { kind:'swipe', x:e.clientX, y:e.clientY, type:e.pointerType, dot:onDot };
+    if(!onDot && onRing(p) && !muted()){ G = { kind:'ring', a:p.a, v:0, t:performance.now(), moved:0 }; RAD.grab = true; RAD.spin = 0; cv.classList.add('held'); return; }
+    G = { kind: PIN.on ? 'pan' : 'swipe', x:e.clientX, y:e.clientY, lx:e.clientX, ly:e.clientY, moved:0, type:e.pointerType, dot:onDot };
   });
   wd.addEventListener('pointermove', e => {
     if(!pts.has(e.pointerId)){
-      if(e.pointerType === 'mouse'){ const h = onRing(polar(e.clientX, e.clientY)); RAD.ringHover = h; cv.classList.toggle('ring', h); }
+      if(e.pointerType === 'mouse'){ const h = !muted() && onRing(polar(e.clientX, e.clientY)); RAD.ringHover = h; cv.classList.toggle('ring', h); }
       return;
     }
     pts.set(e.pointerId, { x:e.clientX, y:e.clientY });
@@ -1303,7 +1332,9 @@ const autoRange = spots => {
     if(G.kind === 'ring'){
       const p = polar(e.clientX, e.clientY), da = norm180(p.a - G.a), now = performance.now(), dt = Math.max(8, now - G.t);
       G.a = p.a; G.t = now; G.moved += Math.abs(da); turn(da); G.v = G.v*.4 + (da*16.7/dt)*.6;
+      return;
     }
+    if(G.kind === 'pan'){ const dx = e.clientX - G.lx, dy = e.clientY - G.ly; G.lx = e.clientX; G.ly = e.clientY; G.moved += Math.abs(dx) + Math.abs(dy); panBy(dx, dy); }
   });
   const up = e => {
     if(!pts.has(e.pointerId)) return;
@@ -1316,6 +1347,7 @@ const autoRange = spots => {
       else { RAD.spin = Math.max(-14, Math.min(14, G.v)); GEST.ring++; if(!RAD.spin && RAD.range > SPIN_AT) settled(); }
       G = null; return;
     }
+    if(G.kind === 'pan'){ const G0 = G; G = null; if(G0.moved < 6 && e.type === 'pointerup') canvasTap(e.clientX, e.clientY); return; }
     if(G.kind === 'swipe' && e.type === 'pointerup'){
       const G0 = G, dx = e.clientX - G.x, dy = e.clientY - G.y, need = G.type === 'mouse' ? 60 : 44;
       G = null;
@@ -1336,13 +1368,18 @@ function canvasTap(x, y){
   pjFrame();
   if(Math.hypot(x - RAD.cx, y - RAD.cy) > RAD.rpx*1.02) return;
   const p = unproj(x, y);
+  if(PIN.on){ if(p) flyTo(p.lat, p.lng, RAD.range, 420); return; }
   if(RAD.mode === 'globe'){ if(p) flyTo(p.lat, p.lng, RAD.range/4 < LOCAL_MAX ? 30e3 : RAD.range/4); return; }
-  if(VIEW === 'create' && CR.h && p){
-    CR.pos = { lat:+p.lat.toFixed(6), lng:+p.lng.toFixed(6) }; CR.posBy = 'radar';
-    if(!CR.pk) CR.pk = 'loc';
-    RAD.sig = ''; renderCreateKeep(); return;
-  }
-  if(PANEL === 'focus'){ PANEL = null; FOCUS = null; syncPanels(); paintMarkers(); }
+  if(muted()){ if(VIEW === 'create' && CR.h) pinStart(); return; }
+  if(PANEL === 'focus'){ PANEL = null; FOCUS = null; syncPanels(); paintMarkers(); return; }
+  /* TODAY SE TOUCHE (27/09) : un Spot ICI, AUJOURD'HUI. */
+  if(VIEW === 'radar' && p) createAt(p);
+}
+function createAt(p){
+  const pos = { lat:+p.lat.toFixed(6), lng:+p.lng.toFixed(6) }, today = dayKey(new Date());
+  if(CR.h){ CR.pos = pos; CR.posBy = 'map'; CR.date = CR.date || today; CR.pk = nextMissing(); PRE = null; }
+  else PRE = { pos, posBy:'map', date:today, from:'map' };
+  dernierSens = 'h'; setView('create');
 }
 
 /* ══ LES POINTS ═════════════════════════════════════════════════════ */
@@ -1410,7 +1447,7 @@ function renderMarkers(){
 function paintMarkers(){ RAD.spots.forEach(s => s._el?.classList.toggle('focus', FOCUS === s.id)); }
 $('z-in').onclick = () => zoomTo(RAD.trange/2.4);
 $('z-out').onclick = () => zoomTo(RAD.trange*2.4);
-$('z-me').onclick = () => { const h = RAD.me || RAD.view0 || LISBON; flyTo(h.lat, h.lng, RAD.base); if(!CMP.on) resetNorth(); };
+$('z-me').onclick = () => { const h = RAD.me || RAD.view0 || LISBON; flyTo(h.lat, h.lng, PIN.on ? 700 : RAD.base); if(!CMP.on) resetNorth(); };
 $('z-how').onclick = () => howShow();
 
 /* ══ LE CHARGEMENT — la géographie, le temps et les mots filtrent EN BASE */
@@ -1426,8 +1463,8 @@ async function locate(){
   RAD.view = { ...(c || LISBON) }; RAD.view0 = { ...RAD.view };
 }
 function params(){
-  if(VIEW === 'intent') return { p_when:null, p_q:null, p_mode:null, p_intention:FI.int };
-  if(VIEW === 'time') return { p_when:FT.when, p_q:FT.q || null, p_mode:FT.mode, p_intention:null };
+  if(VIEW === 'search') return { p_when:FS.when, p_q:FS.q || null, p_mode:FS.mode, p_intention:FS.int };
+  if(VIEW === 'time') return { p_when:'later', p_q:null, p_mode:null, p_intention:null };
   return { p_when:'today', p_q:null, p_mode:null, p_intention:null };
 }
 const decorate = s => { const r = ref(); return { ...s, _d:hav(r, s), _brg:bearing(r, s) }; };
@@ -1438,7 +1475,7 @@ async function loadSpots(force){
   const my = ++seq;
   const { data, error } = await sb.rpc('spots_radar', { p_lat:at.lat, p_lng:at.lng, p_radius:(RULES.local_radius_km || 60)*1000, p_live:false, p_limit:60, ...p });
   if(my !== seq) return; // une réponse tardive n'écrase jamais un état plus frais
-  if(error){ console.error('[spots_radar]', error.message); $('status').textContent = 'the radar is unavailable'; return; }
+  if(error){ console.error('[spots_radar]', error.message); $('status').textContent = 'the map is unavailable'; return; }
   lastKey = key; lastAt = Date.now(); RAD.localAt = at;
   RAD.spots = (data?.spots || []).map(decorate);
   if(FOCUS && !RAD.spots.some(s => s.id === FOCUS)) FOCUS = null;
@@ -1461,7 +1498,7 @@ async function loadGlobe(force){
 function reload(){ loadSpots(); if(RAD.mode === 'globe') loadGlobe(); }
 function afterSpots(){
   paintStatus();
-  if(VIEW === 'intent' || VIEW === 'time' || panelKind() === 'focus') paintResults();
+  if(VIEW === 'search' || VIEW === 'time' || panelKind() === 'focus') paintResults();
 }
 
 /* ══ LA LECTURE DE L'INSTRUMENT ═════════════════════════════════════ */
@@ -1475,38 +1512,35 @@ function paintStatus(){
   const tail = (live ? ' · <span class="live">' + live + ' live</span>' : '') + (ahead ? ' · <b>' + ahead + '</b> ahead' : '') + ' · ' + scale;
   const sp = k => k === 1 ? 'Spot' : 'Spots';
   let h = '', tap = false;
-  if(glob){
-    const w = VIEW === 'time' ? 'ahead' : VIEW === 'intent' ? (FI.int ? INTS[FI.int].n : 'ahead') : 'today';
-    h = n ? '<b>' + n + '</b> ' + sp(n) + ' ' + esc(w) + ' on Earth' + tail : 'nothing on Earth yet' + tail;
-  } else if(VIEW === 'radar'){
-    h = n ? '<b>' + n + '</b> ' + sp(n) + ' today' + tail + ' · list' : 'nothing today · tomorrow is on the right';
-    tap = n > 0;
-  } else if(VIEW === 'intent'){
-    h = FI.int ? '<b>' + n + '</b> ' + esc(INTS[FI.int].n) + tail : '<b>' + n + '</b> ' + sp(n) + ' · pick a colour';
-  } else if(VIEW === 'time'){
-    h = '<b>' + n + '</b> ' + sp(n) + ' ahead' + (FT.q ? ' · “' + esc(FT.q) + '”' : '') + tail;
+  if(PIN.on){
+    h = 'drag · pinch · then <b>here</b>';
+  } else if(VIEW === 'past'){
+    h = me ? (MS ? '<b>' + (MS.spots || []).length + '</b> created · <b>' + (MS.applications || []).length + '</b> joined · one year' : '…') : 'sign in to see my Spots';
   } else if(VIEW === 'create'){
-    const Lm = MS?.limits; h = mapMode() ? 'touch the map · the meeting point' : Lm ? 'my upcoming Spots <b>' + Lm.upcoming + ' / ' + Lm.max_upcoming + '</b>' : (n ? '<b>' + n + '</b> Spots today around' : 'the radar shows today');
-  } else if(VIEW === 'mine'){
-    const r = (MS?.requests || []).length; h = me ? (r ? '<b>' + r + '</b> waiting for my answer' : 'nobody waiting') : 'sign in to see my Spots';
+    const Lm = MS?.limits; h = Lm ? 'my upcoming Spots <b>' + Lm.upcoming + ' / ' + Lm.max_upcoming + '</b>' : 'the map is quiet while I write';
+  } else if(glob){
+    const w = VIEW === 'time' ? 'ahead' : VIEW === 'search' ? 'found' : 'today';
+    h = n ? '<b>' + n + '</b> ' + sp(n) + ' ' + w + ' on Earth' + tail : 'nothing on Earth yet' + tail;
+  } else if(VIEW === 'radar'){
+    h = n ? '<b>' + n + '</b> ' + sp(n) + ' today' + tail + ' · list' : 'nothing today yet' + ' · ' + scale;
+    tap = n > 0;
+  } else if(VIEW === 'search'){
+    h = '<b>' + n + '</b> ' + sp(n) + ' found' + (FS.q ? ' · “' + esc(FS.q) + '”' : '') + (FS.int ? ' · ' + esc(INTS[FS.int].n) : '') + tail;
+  } else if(VIEW === 'time'){
+    h = '<b>' + n + '</b> ' + sp(n) + ' ahead' + tail;
   }
   s.innerHTML = h; s.classList.toggle('tap', tap); s.tabIndex = tap ? 0 : -1;
 }
 $('status').onclick = () => { if(VIEW === 'radar' && RAD.mode === 'local' && RAD.spots.length){ PANEL = panelKind() === 'focus' ? null : 'focus'; if(!PANEL) FOCUS = null; syncPanels(); } };
 
-/* ══ LES FENÊTRES ═══════════════════════════════════════════════════
-   La VUE dit laquelle est ouverte (PAN). Au repos (Live & today) il n'y
-   en a pas : le radar est la vue ; un Spot touché ouvre p-f sur place.
-   La porte membre (p-m) se pose par-dessus n'importe quelle vue. */
+/* ══ LES FENÊTRES ═══════════════════════════════════════════════════ */
 function panelKind(){
+  if(PIN.on) return null;
   if(PANEL === 'gate') return 'gate';
   if(VIEW === 'radar') return PANEL === 'focus' ? 'focus' : null;
   return VIEW;
 }
 const P = () => { const k = panelKind(); return k ? $(PAN[k]) : null; };
-/* Une fenêtre qui sort perd ses identifiants TOUT DE SUITE (deux `#res`
-   dans le document, c'est le mauvais qui répond) et son contenu une fois
-   sortie — sauf si elle est revenue entre-temps. */
 function retire(el){
   el.querySelectorAll('[id]').forEach(x => x.removeAttribute('id'));
   setTimeout(() => { if(!el.classList.contains('on')) el.innerHTML = ''; }, 450);
@@ -1521,7 +1555,7 @@ function syncPanels(){
   });
   const b = document.body.classList;
   ['p-g','p-d','p-h','p-b','p-f','p-m'].forEach(c => b.toggle(c, c === id));
-  b.toggle('p-open', !!id);
+  b.toggle('p-open', !!id); b.toggle('muted', muted()); b.toggle('pin', PIN.on);
   if(k !== shown){ if(id) $(id).scrollTop = 0; shown = k; }
   render();
 }
@@ -1529,20 +1563,19 @@ function render(){
   const k = panelKind();
   if(k === 'gate') renderGate();
   else if(k === 'focus') renderFocus();
-  else if(k === 'intent') renderIntent();
+  else if(k === 'past') renderPast();
   else if(k === 'time') renderTime();
   else if(k === 'create') renderCreate();
-  else if(k === 'mine') renderMine();
+  else if(k === 'search') renderSearch();
   resizeSoon();
 }
-const head = (t, c) => '<div class="p-head"><div class="p-title">' + t + '</div><button class="lnk" data-close="1" type="button">' + (c || 'Close') + '</button></div>';
+const head = (t, c) => '<div class="p-head"><div class="p-title b1">' + t + '</div><button class="lnk" data-close="1" type="button">' + (c || 'Close') + '</button></div>';
 
-/* ── Toucher un point du radar ───────────────────────────────────── */
 function markerTap(s){
   if(s.n != null){ tipHide(); flyTo(s.lat, s.lng, 12e3); return; }
   FOCUS = FOCUS === s.id && VIEW !== 'radar' ? null : s.id; paintMarkers();
   if(VIEW === 'radar'){ PANEL = 'focus'; syncPanels(); return; }
-  if(VIEW === 'intent' || VIEW === 'time'){ paintResults(); return; }
+  if(VIEW === 'search' || VIEW === 'time'){ paintResults(); return; }
   peek(s, true); clearTimeout(LP.hide); LP.hide = setTimeout(() => peek(s, false), 1800);
 }
 
@@ -1552,7 +1585,7 @@ const WHY = {
   club:['Join FIGHER', 'join'], subscribers:['For the subscribers of this TOTEHM', null], full:['Full — every place is taken', null],
   started:['Already started', null], rejected:['Not selected this time', null] };
 function actionHTML(s){
-  if(s.mine) return '<button class="btn" data-mine="1" type="button">Manage in My space</button>';
+  if(s.mine) return '<button class="btn" data-mine="1" type="button">My Spot · yesterday</button>';
   if(s.my_status === 'accepted') return '<span class="cap"><b>You are in.</b></span><button class="lnk" data-withdraw="' + esc(s.id) + '" type="button">Withdraw</button>';
   if(s.my_status === 'pending') return '<span class="cap">Asked — the creator chooses.</span><button class="lnk" data-withdraw="' + esc(s.id) + '" type="button">Withdraw</button>';
   if(!s.why_not) return '<button class="btn main" data-apply="' + esc(s.id) + '" data-sel="' + esc(s.selection) + '" type="button">' + (s.selection === 'auto' ? 'Join' : 'Ask to join') + '</button>';
@@ -1562,74 +1595,88 @@ function actionHTML(s){
   return '<span class="cap">' + w[0] + '</span>';
 }
 function itemHTML(s){
-  const who = (s.compat != null ? '<b>' + s.compat + '%</b>' : '') + (s.creator ? 'by <em>' + esc(s.creator) + '</em>' : '');
-  return '<div class="it' + (FOCUS === s.id ? ' hl' : '') + '" data-it="' + esc(s.id) + '">' + spotBoxHTML(s) +
-    '<div class="act"><span class="cmp">' + who + '</span><span class="acts">' + actionHTML(s) + '</span></div>' +
+  return '<div class="it' + (FOCUS === s.id ? ' hl' : '') + '" data-it="' + esc(s.id) + '">' + LOUPE + spotBoxHTML(s) +
+    '<div class="act"><span class="who">' + matchHTML(s.compat) + byHTML(s.creator) + '</span><span class="acts">' + actionHTML(s) + '</span></div>' +
     (s.place && s.my_status === 'accepted' ? '<div class="meet"><small>meeting point</small>' + esc(s.place) + '</div>' : '') +
     '<div class="note" id="n-' + esc(s.id) + '"></div></div>';
 }
 function paintResults(){
   const r = $('res'); if(!r) return;
   let l = RAD.spots.slice();
+  if(VIEW === 'time') l.sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at));
   if(panelKind() === 'focus' && FOCUS){ const i = l.findIndex(s => s.id === FOCUS); if(i > 0) l.unshift(l.splice(i, 1)[0]); }
-  const empty = VIEW === 'intent' ? (FI.int ? 'No Spot for this intention around.' : 'No Spot around yet.')
-    : VIEW === 'time' ? (FT.q ? 'Nothing matches. Try one word.' : 'Nothing ahead yet. Create the first.') : 'Nothing today.';
+  const empty = VIEW === 'search' ? (FS.q ? 'Nothing matches. Try one word.' : 'No Spot around yet.')
+    : VIEW === 'time' ? 'Nothing ahead yet. Create the first.' : 'Nothing today.';
   const hint = RAD.mode === 'globe' ? '<div class="cap" style="margin-bottom:8px">the planet · touch a light to fly there</div>' : '';
-  r.innerHTML = hint + (l.length ? l.map(itemHTML).join('') : '<div class="empty">' + empty + '</div>');
+  let html = '', day = '';
+  /* TOMORROW se lit JOUR PAR JOUR : un titre à chaque nouveau jour. */
+  l.forEach(s => {
+    if(VIEW === 'time'){ const k = dayKey(new Date(s.starts_at)); if(k !== day){ day = k; html += '<div class="day b2">' + esc(fmtDay(new Date(s.starts_at))) + '</div>'; } }
+    html += itemHTML(s);
+  });
+  r.innerHTML = hint + (l.length ? html : '<div class="empty">' + empty + '</div>');
   if(FOCUS){ const el = r.querySelector('[data-it="' + CSS.escape(FOCUS) + '"]'); el && el.scrollIntoView({ block:'nearest', behavior:'smooth' }); }
 }
 function renderFocus(){
   P().innerHTML = head(RAD.spots.length + ' today') + '<div class="list" id="res" style="margin-top:0"></div>';
   paintResults();
 }
-/* ── BY INTENTION (gauche) — le rappel des sept, puis les Spots ────── */
-function intRow(k, hero){
-  const v = INTS[k];
-  return '<button class="int' + (hero ? ' hero on' : '') + '" data-fi="' + k + '" type="button" style="--c:' + v.c + '"><i></i>' +
-    '<span class="in-n"><b>' + v.n + '</b>' + HIGHER + '</span><small>' + v.p + '</small><span class="df">' + esc(v.d) + '</span></button>';
-}
-function renderIntent(){
-  const keys = Object.keys(INTS);
-  const top = FI.int ? intRow(FI.int, true) + '<div class="dots">' + keys.map(k => '<button class="dot' + (k === FI.int ? ' on' : '') +
-      '" data-fi="' + k + '" type="button" style="--c:' + INTS[k].c + '" aria-label="' + INTS[k].n + '"></button>').join('') +
-      '<button class="opt" data-fi="" type="button" style="margin-left:6px">all seven</button></div>'
-    : '<div class="ints">' + keys.map(k => intRow(k)).join('') + '</div>';
-  P().innerHTML = top + howLink() + '<div class="list" id="res"></div>';
+/* ── TOMORROW (droite) — ce qui vient, jour par jour, sans filtre ──── */
+function renderTime(){
+  P().innerHTML = '<div class="list" id="res" style="margin-top:0"></div>';
   paintResults();
 }
-/* ── TOMORROW & BEYOND (droite) — un mot, un jour ────────────────── */
-const TW = [['tomorrow','tomorrow'], ['next7','next 7 days'], ['later','all ahead']];
-function renderTime(){
+/* ── SEARCH (bas) — la barre, les jours, le mode, les sept ─────────── */
+const SW = [['', 'any day'], ['today', 'today'], ['tomorrow', 'tomorrow'], ['next7', 'next 7 days'], ['later', 'all ahead']];
+function ihintHTML(k){ return k ? esc(INTS[k].n) + ' — ' + esc(INTS[k].d) + '<small>' + INTS[k].p + '</small>' : 'an intention — the why before the where'; }
+function renderSearch(){
+  const keys = Object.keys(INTS);
   P().innerHTML =
-    '<input class="in" id="q" placeholder="a word — walk, read, box, a name…" autocomplete="off" enterkeyhint="search" value="' + esc(FT.q) + '">' +
-    '<div class="opts"><span class="opt-l">when</span>' + TW.map(w => '<button class="opt' + (FT.when === w[0] ? ' on' : '') + '" data-fw="' + w[0] + '" type="button">' + w[1] + '</button>').join('') + '</div>' +
-    '<div class="opts" style="margin-top:4px"><span class="opt-l">mode</span>' + [['', 'any'], ['social', 'social'], ['silent', 'silent']].map(w =>
-      '<button class="opt' + ((FT.mode || '') === w[0] ? ' on' : '') + '" data-fm="' + w[0] + '" type="button">' + w[1] + '</button>').join('') + '</div>' +
+    '<input class="in" id="q" type="search" placeholder="search — a habit, a word, a name…" autocomplete="off" enterkeyhint="search" value="' + esc(FS.q) + '">' +
+    '<div class="opts"><span class="opt-l b3">when</span>' + SW.map(w => '<button class="opt' + ((FS.when || '') === w[0] ? ' on' : '') + '" data-fw="' + w[0] + '" type="button">' + w[1] + '</button>').join('') + '</div>' +
+    '<div class="opts" style="margin-top:5px"><span class="opt-l b3">mode</span>' + [['', 'any'], ['social', 'social'], ['silent', 'silent']].map(w =>
+      '<button class="opt' + ((FS.mode || '') === w[0] ? ' on' : '') + '" data-fm="' + w[0] + '" type="button">' + w[1] + '</button>').join('') + '</div>' +
+    '<div class="ichips' + (FS.int ? ' picked' : '') + '">' + keys.map(k => '<button class="ichip' + (FS.int === k ? ' on' : '') + '" data-fi="' + k +
+      '" type="button" style="--c:' + INTS[k].c + '" title="' + esc(INTS[k].d) + '"><i></i><b>' + INTS[k].n + '</b>' + HIGHER + '</button>').join('') + '</div>' +
+    '<div class="ihint b2" id="ihint">' + ihintHTML(FS.int) + '</div>' +
     '<div class="list" id="res"></div>';
   let qT = null;
-  $('q').addEventListener('input', () => { clearTimeout(qT); qT = setTimeout(() => { FT.q = $('q').value.trim(); FOCUS = null; reload(); }, 280); });
+  $('q').addEventListener('input', () => { clearTimeout(qT); qT = setTimeout(() => { FS.q = $('q').value.trim(); FOCUS = null; reload(); }, 280); });
+  P().querySelectorAll('.ichip').forEach(b => {
+    b.onmouseenter = () => { const h = $('ihint'); if(h) h.innerHTML = ihintHTML(b.dataset.fi); };
+    b.onmouseleave = () => { const h = $('ihint'); if(h) h.innerHTML = ihintHTML(FS.int); };
+  });
   paintResults();
 }
+
+/* ══ UN SEUL ÉCOUTEUR PAR FENÊTRE, EN DÉLÉGATION ════════════════════ */
 async function onPanelClick(e){
   if(!e.currentTarget.classList.contains('on')) return;
-  const k = panelKind();
-  if(e.target.closest('[data-close]')){ PANEL = null; FOCUS = null; syncPanels(); paintMarkers(); return; }
-  if(k === 'intent'){ const b = e.target.closest('[data-fi]');
-    if(b){ const v = b.dataset.fi; FI.int = !v ? null : FI.int === v ? null : v; FOCUS = null; renderIntent(); reload(); return; } }
-  if(k === 'time'){
-    const w = e.target.closest('[data-fw]'), m = e.target.closest('[data-fm]');
-    if(w || m){ if(w) FT.when = w.dataset.fw; if(m) FT.mode = m.dataset.fm || null; FOCUS = null;
-      e.target.closest('.opts').querySelectorAll('.opt').forEach(o => o.classList.toggle('on', o === (w || m))); reload(); return; }
+  const k = panelKind(), t = e.target;
+  if(t.closest('[data-close]')){ PANEL = null; FOCUS = null; syncPanels(); paintMarkers(); return; }
+  const lp = t.closest('[data-lp]');
+  if(lp){ e.stopPropagation(); lp.closest('.it')?.classList.toggle('big'); return; }
+  const ag = t.closest('[data-again]'); if(ag){ againFrom(ag.dataset.again); return; }
+  if(t.closest('[data-gate]')){ PANEL = 'gate'; syncPanels(); return; }
+  if(t.closest('[data-mine]')){ dernierSens = 'g'; setView('past'); return; }
+  if(k === 'search'){
+    const w = t.closest('[data-fw]'), m = t.closest('[data-fm]'), i = t.closest('[data-fi]');
+    if(w || m){ if(w) FS.when = w.dataset.fw || null; if(m) FS.mode = m.dataset.fm || null; FOCUS = null;
+      t.closest('.opts').querySelectorAll('.opt').forEach(o => o.classList.toggle('on', o === (w || m))); reload(); return; }
+    if(i){ FS.int = FS.int === i.dataset.fi ? null : i.dataset.fi; FOCUS = null;
+      const box = i.closest('.ichips'); box.classList.toggle('picked', !!FS.int);
+      box.querySelectorAll('.ichip').forEach(o => o.classList.toggle('on', o.dataset.fi === FS.int));
+      const h = $('ihint'); if(h) h.innerHTML = ihintHTML(FS.int); reload(); return; }
   }
-  if(k === 'mine') return onMineClick(e);
-  if(!['focus', 'intent', 'time'].includes(k)) return;
-  const det = e.target.closest('[data-det]');
+  if(k === 'gate') return onGateClick(e);
+  if(k === 'past') return onPastClick(e);
+  if(!['focus', 'search', 'time'].includes(k)) return;
+  const det = t.closest('[data-det]');
   if(det){ e.stopPropagation(); const id = det.dataset.det; DET.has(id) ? DET.delete(id) : DET.add(id);
-    const it = det.closest('.it'); const s = RAD.spots.find(x => x.id === id); if(it && s) it.outerHTML = itemHTML(s); return; }
-  if(e.target.closest('a')) return;
-  if(e.target.closest('[data-gate]')){ PANEL = 'gate'; syncPanels(); return; }
-  if(e.target.closest('[data-mine]')){ setView('mine'); return; }
-  const a = e.target.closest('[data-apply]'), w = e.target.closest('[data-withdraw]');
+    const it = det.closest('.it'); const s = RAD.spots.find(x => x.id === id);
+    if(it && s){ const big = it.classList.contains('big'); it.outerHTML = itemHTML(s); if(big) P().querySelector('[data-it="' + CSS.escape(id) + '"]')?.classList.add('big'); } return; }
+  if(t.closest('a')) return;
+  const a = t.closest('[data-apply]'), w = t.closest('[data-withdraw]');
   if(a){
     a.disabled = true; a.textContent = '…';
     const { data, error } = await sb.rpc('spot_apply', { p_spot: a.dataset.apply, p_note: null });
@@ -1638,19 +1685,76 @@ async function onPanelClick(e){
     FOCUS = a.dataset.apply; await loadSpots(true); refreshMine(); return;
   }
   if(w){ w.disabled = true; await sb.rpc('spot_withdraw', { p_spot: w.dataset.withdraw }); FOCUS = w.dataset.withdraw; await loadSpots(true); refreshMine(); return; }
-  const it = e.target.closest('.it .habit');
+  const it = t.closest('.it .habit');
   if(it){ const id = it.closest('.it').dataset.it; FOCUS = FOCUS === id ? null : id; paintMarkers();
     document.querySelectorAll('#res .it').forEach(x => x.classList.toggle('hl', x.dataset.it === FOCUS));
     const s = RAD.spots.find(x => x.id === FOCUS); if(s && s._el && s._el.classList.contains('edge')) flyTo(s.lat, s.lng, RAD.range); }
 }
 document.querySelectorAll('.pan').forEach(el => el.addEventListener('click', onPanelClick));
 
+/* ══ YESTERDAY (gauche) — MES SPOTS, CEUX QUE J'AI REJOINTS ═════════
+   Sur un an (`my_space` v4, 27/09). Chaque Spot se REFAIT : [Do it again]
+   ouvre Create a Spot avec tout ce qui peut l'être déjà posé — l'habitude
+   (si elle est encore dans mon Totehm), le lieu, l'heure, la durée, les
+   places, la nature, le mode. Seul le JOUR reste à choisir. */
+function renderPast(){
+  const el = P();
+  if(!me || !F?.pseudo){ el.innerHTML = gateHTML('My Spots, and the ones I joined.'); wireGate(); return; }
+  if(!MS){ el.innerHTML = '<div class="cap">reading my Spots…</div>'; return; }
+  const S = MS.spots || [], A = MS.applications || [];
+  const state = s => s.status === 'cancelled' ? 'cancelled' : s.live ? '<em>live</em>' : s.past ? 'done' : 'upcoming';
+  const sec = (t, h) => '<div class="sec"><span class="sec-l b2">' + t + '</span><div class="list" style="margin-top:4px">' + h + '</div></div>';
+  let h = '';
+  if(S.length) h += sec('my Spots · <b>' + S.length + '</b>', S.map(s => '<div class="it" data-it="' + esc(s.id) + '">' + LOUPE + spotBoxHTML({ ...s, mine:true }) +
+    '<div class="act"><span class="cmp">' + state(s) + (s.pending && !s.past && s.status === 'published' ? ' · <button class="lnk" data-gate="1" type="button"><em>' + s.pending + '</em> waiting</button>' : '') + '</span>' +
+    '<span class="acts">' + (s.status === 'published' && !s.past ? '<button class="lnk" data-show="' + esc(s.id) + '" type="button">On the map</button><button class="lnk" data-cancel="' + esc(s.id) + '" type="button">Cancel</button>' : '') +
+    '<button class="btn main" data-again="m:' + esc(s.id) + '" type="button">Do it again</button></span></div></div>').join(''));
+  if(A.length) h += sec('joined · <b>' + A.length + '</b>', A.map(a => '<div class="it" data-it="' + esc(a.spot_id) + '">' + LOUPE + spotBoxHTML({ ...a, id:a.spot_id }) +
+    '<div class="act"><span class="who"><span class="cmp"><em>' + esc(a.spot_status === 'cancelled' ? 'spot cancelled' : a.status) + '</em></span>' + byHTML(a.creator) + '</span>' +
+    '<span class="acts">' + (['accepted','pending'].includes(a.status) && a.spot_status === 'published' && new Date(a.starts_at) > new Date() ? '<button class="lnk" data-wd="' + esc(a.spot_id) + '" type="button">Withdraw</button>' : '') +
+    (F?.member ? '<button class="btn main" data-again="j:' + esc(a.spot_id) + '" type="button">Do it again</button>' : '') + '</span></div></div>').join(''));
+  if(!S.length && !A.length) h += '<div class="sec"><span class="sec-l b2">nothing yet</span><div class="say">Touch the map in Today to create a Spot there — or push the controller up.</div></div>';
+  el.innerHTML = h + '<div class="note" id="past-note" style="margin-top:12px"></div>';
+}
+async function onPastClick(e){
+  const t = e.target.closest('button'); if(!t) return;
+  if(t.dataset.det){ const y = P().scrollTop, id = t.dataset.det; DET.has(id) ? DET.delete(id) : DET.add(id); renderPast(); P().scrollTop = y; return; }
+  const n = $('past-note');
+  if(t.dataset.cancel){
+    if(!confirm('Cancel this Spot? Everyone accepted will see it is off.')) return;
+    await sb.rpc('spot_cancel', { p_spot: t.dataset.cancel }); await loadMine(); loadSpots(true);
+  } else if(t.dataset.wd){
+    await sb.rpc('spot_withdraw', { p_spot: t.dataset.wd }); await loadMine(); loadSpots(true);
+  } else if(t.dataset.show){
+    const s = (MS.spots || []).find(x => x.id === t.dataset.show); if(!s) return;
+    const today = dayKey(new Date(s.starts_at)) === dayKey(new Date());
+    FOCUS = s.id;
+    dernierSens = today ? 'd' : 'd'; setView(today ? 'radar' : 'time');
+    if(s.lat != null){ RAD.view = { lat:s.lat, lng:s.lng }; RAD.fly = null; if(RAD.range > LOCAL_MAX) zoomTo(RAD.base, true); }
+    await loadSpots(true); if(today){ PANEL = 'focus'; syncPanels(); } paintMarkers();
+  } else if(n && t.dataset.x) n.textContent = '';
+}
+/* REFAIRE UN SPOT — tout ce qui peut l'être, déjà posé. */
+function againFrom(key){
+  const [kind, id] = key.split(':');
+  const src = kind === 'm' ? (MS?.spots || []).find(s => s.id === id) : (MS?.applications || []).find(a => a.spot_id === id);
+  if(!src) return;
+  const at = src.exact && src.exact.lat != null ? src.exact : (src.lat != null ? { lat:src.lat, lng:src.lng } : null);
+  const d = new Date(src.starts_at);
+  PRE = { from:'again', habit: kind === 'm' ? src.habit : null, ints: src.intentions || [],
+    pos: at ? { lat:+(+at.lat).toFixed(6), lng:+(+at.lng).toFixed(6) } : null, posBy: at ? 'again' : null,
+    place: src.place || '', time: hhmm(d), dur: src.duration_min || null,
+    cap: src.capacity || null, sel: src.selection || null, venue: src.venue || null, mode: src.mode || null,
+    acc: kind === 'm' ? (src.access || null) : null, comment: kind === 'm' ? (src.comment || '') : '', label: src.habit };
+  resetDraft(); dernierSens = 'h'; setView('create');
+}
+
 /* ══ CREATE A SPOT (haut) ═══════════════════════════════════════════
    1 · Quelle habitude ? — mes Habit Boxes, telles que dans totehm.com.
-   2 · La boîte-action s'ouvre, EN ÉDITION ; le radar descend vers moi et
-       le fond de rue apparaît : toucher la carte pose le rendez-vous.
-   Ce qui manque respire ; la NATURE du lieu (public / privé) est une
-   question sans réponse par défaut : c'est elle qui décide de l'arrondi. */
+       Si l'on vient de la carte (TODAY) ou d'hier, le lieu, le jour, et
+       le reste sont DÉJÀ posés : il ne manque que l'habitude.
+   2 · La boîte-action s'ouvre, EN ÉDITION. Le rendez-vous se pose en
+       GRAND (« place it on the map ») : la carte plein écran, une croix. */
 const CR = { h:null, ints:new Set(), objs:new Set(), reps:new Set(), mood:false, moodKind:null,
   date:null, time:null, dur:null, place:'', pos:null, posBy:null, cap:6, sel:'auto', venue:null, mode:'social', acc:'club', comment:'', det:false, pk:null };
 function resetDraft(){ Object.assign(CR, { h:null, ints:new Set(), objs:new Set(), reps:new Set(), mood:false, moodKind:null,
@@ -1683,32 +1787,59 @@ async function openCreate(){
   if(!me || !F?.member){ renderCreate(); return; }
   if(!TOT){ renderCreate(); totP = totP || loadTotehm().finally(() => { totP = null; }); await totP; }
   if(!MS) loadMine();
+  /* Un Spot d'hier dont l'habitude est encore là : on l'ouvre directement. */
+  if(!CR.h && PRE && PRE.habit){ const h = TOT.habits.find(x => x.name === PRE.habit); if(h){ pickHabit(h); return; } }
   if(VIEW === 'create') renderCreate();
+}
+function preHTML(){
+  if(!PRE) return '';
+  const where = PRE.pos ? fmtDist(hav(ref(), PRE.pos)) + ' ' + cardOf(bearing(ref(), PRE.pos)) : '';
+  const t = PRE.from === 'map' ? 'here, today' + (where ? ' · ' + where : '') : 'again: ' + esc(PRE.label || '') + (PRE.time ? ' · ' + PRE.time : '');
+  return '<div class="pre"><i></i><span class="b2" style="font-size:16px">' + t + '</span><button class="lnk" data-nopre="1" type="button" style="margin-left:auto">×</button></div>';
 }
 function renderCreate(){
   if(panelKind() !== 'create') return;
   const el = P();
-  if(!me || !F?.member){ el.innerHTML = gateHTML('Spots are created between FIGHER members.') + howLink(); wireGate(); resizeSoon(); return; }
+  if(!me || !F?.member){ el.innerHTML = gateHTML('Spots are created between FIGHER members.') + howLink(); wireGate(); return; }
   if(!TOT){ el.innerHTML = '<div class="cap">reading my TOTEHM…</div>'; return; }
   if(!CR.h){
     const l = TOT.habits, L = MS?.limits;
-    el.innerHTML = '<div class="done-l"><span class="sec-l" style="margin:0">which habit becomes an action?</span>' +
+    el.innerHTML = preHTML() + '<div class="done-l"><span class="sec-l b2" style="margin:0">which habit becomes an action?</span>' +
       (L ? '<span class="cap">' + L.upcoming + ' / ' + L.max_upcoming + ' upcoming</span>' : '') + '</div>' +
+      (PRE && PRE.from === 'again' && PRE.habit ? '<div class="cap" style="margin-bottom:10px">that habit is no longer in my TOTEHM — pick another</div>' : '') +
       (l.length ? '<div class="list" style="margin-top:0">' + l.map((h, k) => '<div class="it" data-hk="' + k + '">' + habitBoxHTML(h) + '</div>').join('') + '</div>'
         : '<div class="empty">No habit in my TOTEHM yet.</div><button class="btn main" data-go="com" type="button">Write one in my TOTEHM</button>') + howLink();
     el.querySelectorAll('[data-hk]').forEach(x => x.onclick = () => pickHabit(TOT.habits[+x.dataset.hk]));
-    resizeSoon(); return;
+    el.querySelector('[data-nopre]')?.addEventListener('click', () => { PRE = null; renderCreate(); RAD.sig = ''; });
+    return;
   }
-  el.innerHTML = '<div class="done-l"><span class="sec-l" style="margin:0">this habit, as an action</span><button class="lnk" data-another="1" type="button">another habit</button></div>' +
+  el.innerHTML = '<div class="done-l"><span class="sec-l b2" style="margin:0">this habit, as an action</span><button class="lnk" data-another="1" type="button">another habit</button></div>' +
     draftBoxHTML() +
     '<div class="act"><span class="note" id="cr-note"></span><button class="btn main" id="f-pub" type="button"' + (draftComplete() ? '' : ' disabled') + '>Publish the Spot</button></div>';
-  wireCreate(); paintDraftNote(); resizeSoon();
+  wireCreate(); paintDraftNote();
 }
 function pickHabit(h){
-  resetDraft(); CR.h = h; CR.ints = new Set(h.ints); CR.objs = new Set(h.objs.map(o => o.id)); CR.reps = new Set(h.reps.map(r => r.id));
+  resetDraft(); CR.h = h; CR.objs = new Set(h.objs.map(o => o.id)); CR.reps = new Set(h.reps.map(r => r.id));
+  CR.ints = new Set(h.ints);
   const snd = h.ints.map(i => TOT.sounds[i]).find(Boolean); CR.moodKind = snd ? (snd.kind || snd.title || 'my sound') : null; CR.mood = !!snd;
-  CR.place = h.place || ''; CR.pk = 'date';
+  CR.place = h.place || '';
   if(geoOK && RAD.me){ CR.pos = { ...RAD.me }; CR.posBy = 'me'; }
+  const p = PRE; PRE = null;
+  if(p){
+    if(p.pos){ CR.pos = { ...p.pos }; CR.posBy = p.posBy || 'map'; }
+    if(p.date) CR.date = p.date;
+    if(p.time) CR.time = p.time;
+    if(p.dur) CR.dur = p.dur;
+    if(p.cap) CR.cap = p.cap;
+    if(p.sel) CR.sel = p.sel;
+    if(p.venue) CR.venue = p.venue;
+    if(p.mode) CR.mode = p.mode;
+    if(p.acc && (p.acc === 'club' || F?.spots_benefit)) CR.acc = p.acc;
+    if(p.place) CR.place = p.place;
+    if(p.comment) CR.comment = p.comment;
+    if(p.ints && p.ints.length){ const keep = h.ints.filter(i => p.ints.includes(i)); if(keep.length) CR.ints = new Set(keep); }
+  }
+  CR.pk = nextMissing();
   const at = CR.pos || RAD.view; flyTo(at.lat, at.lng, 1600);
   renderCreate(); RAD.sig = '';
 }
@@ -1727,7 +1858,7 @@ function draftBoxHTML(){
   const drawer = CR.det ? '<span class="drawer pickable">' +
       '<textarea class="ta" id="f-comment" maxlength="400" placeholder="a word for the others — pace, what to bring">' + esc(CR.comment) + '</textarea>' +
       groupe('why', objs) + groupe('trigger', reps) +
-      ((objs || reps) ? '<span class="pk-say" style="margin:8px 0 0">touch to keep or leave out</span>' : '') + '</span>' : '';
+      ((objs || reps) ? '<span class="pk-say b3" style="margin:8px 0 0">touch to keep or leave out</span>' : '') + '</span>' : '';
   return '<div class="habit timed spot draft' + (CR.det ? ' det' : '') + '">' + tickHTML(inOrder(CR.ints)) +
     '<span class="h-body"><span class="v-col"><span class="v-name">' + esc(CR.h.name) + '</span>' +
     '<span class="v-sub">' + l1 + '</span>' + pk(['date', 'time', 'dur']) +
@@ -1741,59 +1872,60 @@ function draftBoxHTML(){
 function pickerHTML(k){
   const chip = (attr, label, on, sub) => '<button type="button" class="chip' + (on ? ' on' : '') + '" ' + attr + '>' + label + (sub ? '<small>' + sub + '</small>' : '') + '</button>';
   const now = new Date(), how = ' <button class="lnk" data-how="1" type="button">how it works</button>';
+  const q = t => '<span class="pk-say b2">' + t + '</span>';
   if(k === 'date'){
     const days = []; for(let i = 0; i < 7; i++) days.push(addDays(now, i));
-    return '<span class="pkw"><span class="chips">' + days.map(d => chip('data-date="' + dayKey(d) + '"', esc(fmtDay(d)), CR.date === dayKey(d))).join('') + '</span>' +
+    return '<span class="pkw">' + q('which day?') + '<span class="chips">' + days.map(d => chip('data-date="' + dayKey(d) + '"', esc(fmtDay(d)), CR.date === dayKey(d))).join('') + '</span>' +
       '<input class="in" id="f-date" type="date" min="' + dayKey(now) + '" max="' + dayKey(addDays(now, RULES.horizon_days)) + '" value="' + (CR.date || '') + '"></span>';
   }
   if(k === 'time'){
     const inH = new Date(Math.ceil((now.getTime() + 3600e3)/(15*60e3))*(15*60e3));
     const T = ['07:00', '08:00', '12:30', '18:00', '18:30', '19:00', '20:00'];
-    return '<span class="pkw"><span class="chips">' + chip('data-inh="' + inH.toISOString() + '"', 'in 1 hour', false) +
+    return '<span class="pkw">' + q('what time?') + '<span class="chips">' + chip('data-inh="' + inH.toISOString() + '"', 'in 1 hour', false) +
       T.map(t => chip('data-time="' + t + '"', t, CR.time === t)).join('') + '</span>' +
       '<input class="in" id="f-time" type="time" step="300" value="' + (CR.time || '') + '"></span>';
   }
   if(k === 'dur'){
     const D = [15, 30, 45, 60, 90, 120, 180].filter(m => m >= RULES.duration_min && m <= RULES.duration_max);
-    return '<span class="pkw"><span class="chips">' + D.map(m => chip('data-dur="' + m + '"', fmtDur(m), CR.dur === m)).join('') + '</span>' +
+    return '<span class="pkw">' + q('for how long?') + '<span class="chips">' + D.map(m => chip('data-dur="' + m + '"', fmtDur(m), CR.dur === m)).join('') + '</span>' +
       '<span class="stp"><button data-s="dur" data-d="-1" type="button" aria-label="Shorter">−</button><output>' + (CR.dur ? fmtDur(CR.dur) : '—') + '</output><button data-s="dur" data-d="1" type="button" aria-label="Longer">+</button></span></span>';
   }
   if(k === 'loc'){
-    return '<span class="pkw"><span class="pk-say">the meeting point — shown only to the members I accept</span>' +
+    const where = CR.pos ? fmtDist(hav(ref(), CR.pos)) + ' ' + cardOf(bearing(ref(), CR.pos)) + ' from me' : 'move the map under a cross';
+    return '<span class="pkw">' + q('where do we meet?') +
       '<input class="in" id="f-place" maxlength="120" placeholder="the steps at Ribeira" value="' + esc(CR.place) + '" style="margin-top:0">' +
-      '<span class="pk-say">the point — touch the map under the radar</span><span class="chips">' +
-      chip('data-geo="1"', CR.posBy === 'me' ? 'my position ✓' : 'use my position', CR.posBy === 'me') +
-      '<span class="cap" style="align-self:center;margin-left:4px">' + (CR.posBy === 'radar' ? '<b>set on the map</b>' : 'or touch the map') + '</span></span></span>';
+      '<span class="pk-say b3">shown only to the members I accept</span><span class="chips">' +
+      chip('data-pin="1"', '◎ place it on the map', CR.posBy === 'map' || CR.posBy === 'again', where) +
+      chip('data-geo="1"', 'my position', CR.posBy === 'me') + '</span></span>';
   }
   if(k === 'cap'){
     const C = [2, 4, 6, 8, 12, 20].filter(n => n >= RULES.capacity_min && n <= RULES.capacity_max);
-    return '<span class="pkw"><span class="chips">' + C.map(n => chip('data-cap="' + n + '"', n + '', CR.cap === n)).join('') + '</span>' +
+    return '<span class="pkw">' + q('how many places?') + '<span class="chips">' + C.map(n => chip('data-cap="' + n + '"', n + '', CR.cap === n)).join('') + '</span>' +
       '<span class="stp"><button data-s="cap" data-d="-1" type="button" aria-label="Fewer">−</button><output>' + CR.cap + ' places</output><button data-s="cap" data-d="1" type="button" aria-label="More">+</button></span></span>';
   }
   if(k === 'sel'){
-    return '<span class="pkw"><span class="pk-say">who gets in' + how + '</span><span class="chips">' +
+    return '<span class="pkw">' + q('who gets in?' + how) + '<span class="chips">' +
       chip('data-sel="auto"', 'automatic', CR.sel === 'auto', 'first come, first in') +
       chip('data-sel="manual"', 'manual', CR.sel === 'manual', 'I read who asks, I choose') + '</span></span>';
   }
   if(k === 'venue'){
-    return '<span class="pkw"><span class="pk-say">the nature of the place' + how + '</span><span class="chips">' +
+    return '<span class="pkw">' + q('what kind of place?' + how) + '<span class="chips">' +
       chip('data-venue="public"', 'public space', CR.venue === 'public', 'a park, a café, a beach — shown within ~100 m') +
       chip('data-venue="private"', 'private', CR.venue === 'private', 'my place — only the neighbourhood (~1 km) is shown') + '</span></span>';
   }
   if(k === 'acc'){
-    return '<span class="pkw"><span class="pk-say">who can ask' + how + '</span><span class="chips">' +
+    return '<span class="pkw">' + q('who can ask?' + how) + '<span class="chips">' +
       chip('data-acc="club"', 'FIGHER members', CR.acc === 'club', 'every member of the club') +
       (F?.spots_benefit ? chip('data-acc="subscribers"', 'my subscribers', CR.acc === 'subscribers', 'members who follow my TOTEHM')
         : '<span class="cap" style="align-self:center;margin-left:4px">subscribers only · <button class="lnk" data-go="club" type="button">switch on the Spots benefit</button></span>') + '</span></span>';
   }
   if(k === 'mode'){
-    return '<span class="pkw"><span class="chips">' + chip('data-mode="social"', 'social', CR.mode === 'social', 'together, and we talk') +
+    return '<span class="pkw">' + q('together, and?') + '<span class="chips">' + chip('data-mode="social"', 'social', CR.mode === 'social', 'together, and we talk') +
       chip('data-mode="silent"', 'silent', CR.mode === 'silent', 'together, without talking') + '</span>' +
-      (CR.moodKind ? '<span class="pk-say">the sound of my intention</span><span class="chips">' + chip('data-mood="1"', 'mood · ' + esc(CR.moodKind), CR.mood) + '</span>' : '') + '</span>';
+      (CR.moodKind ? '<span class="pk-say b3">the sound of my intention</span><span class="chips">' + chip('data-mood="1"', 'mood · ' + esc(CR.moodKind), CR.mood) + '</span>' : '') + '</span>';
   }
   return '';
 }
-/* Après un choix, le suivant qui MANQUE s'ouvre de lui-même. */
 function nextMissing(){
   if(!CR.date) return 'date'; if(!CR.time) return 'time'; if(!CR.dur) return 'dur';
   if(!(CR.pos && CR.place.trim())) return 'loc'; if(!CR.venue) return 'venue'; return null;
@@ -1825,12 +1957,12 @@ function wireCreate(){
   el.querySelectorAll('[data-acc]').forEach(b => b.onclick = () => { CR.acc = b.dataset.acc; renderCreateKeep(); });
   el.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { CR.mode = b.dataset.mode; renderCreateKeep(); });
   el.querySelector('[data-mood]')?.addEventListener('click', () => { CR.mood = !CR.mood; renderCreateKeep(); });
-  /* ⚠️ ON NE REDESSINE PAS EN ÉCRIVANT (règle du 20/09). */
+  el.querySelector('[data-pin]')?.addEventListener('click', () => pinStart());
   $('f-place')?.addEventListener('input', e => { CR.place = e.target.value; paintDraftLive(); });
   $('f-comment')?.addEventListener('input', e => { CR.comment = e.target.value; });
   el.querySelector('[data-geo]')?.addEventListener('click', async () => {
     const n = $('cr-note'); n.className = 'note'; n.textContent = 'locating…';
-    const c = await geo(); if(!c){ n.className = 'note no'; n.textContent = 'allow my position — or touch the map'; return; }
+    const c = await geo(); if(!c){ n.className = 'note no'; n.textContent = 'allow my position — or place it on the map'; return; }
     CR.pos = c; CR.posBy = 'me'; RAD.me = c; if(!geoOK){ geoOK = true; }
     flyTo(c.lat, c.lng, 1600); renderCreateKeep();
   });
@@ -1852,8 +1984,25 @@ function renderCreateKeep(){
   const y = el.scrollTop, a = document.activeElement, id = a && a.id, pos = a && a.selectionStart;
   renderCreate(); el.scrollTop = y;
   if(id && $(id) && (id === 'f-place' || id === 'f-comment')){ const f = $(id); f.focus(); try{ f.setSelectionRange(pos, pos); }catch(_){} }
-  if(CR.pk === 'loc' && !CR.place.trim()) setTimeout(() => $('f-place')?.focus({ preventScroll:true }), 30);
+  if(CR.pk === 'loc' && !CR.place.trim() && CR.pos) setTimeout(() => $('f-place')?.focus({ preventScroll:true }), 30);
+  resizeSoon();
 }
+/* ══ LE RENDEZ-VOUS EN PLEIN ÉCRAN (27/09) ═══════════════════════════ */
+function pinStart(){
+  if(!CR.h) return;
+  const at = CR.pos || RAD.me || RAD.view;
+  PIN.on = true; RAD.view = { lat:at.lat, lng:at.lng }; RAD.fly = null; zoomTo(Math.min(Math.max(RAD.trange, 300), 900));
+  RAD.headTo = null; say(null);
+  paintJoy(); paintTitle(); syncPanels(); resizeSoon();
+}
+function pinEnd(ok){
+  if(!PIN.on) return;
+  if(ok){ CR.pos = { lat:+RAD.view.lat.toFixed(6), lng:+RAD.view.lng.toFixed(6) }; CR.posBy = 'map'; CR.pk = CR.place.trim() ? nextMissing() : 'loc'; }
+  PIN.on = false; paintJoy(); paintTitle(); syncPanels(); RAD.sig = '';
+}
+$('pin-ok').onclick = () => pinEnd(true);
+$('pin-no').onclick = () => pinEnd(false);
+
 async function publish(){
   const b = $('f-pub'), n = $('cr-note'), at = draftAt();
   if(!draftComplete() || !at) return;
@@ -1868,14 +2017,13 @@ async function publish(){
     b.disabled = false; n.className = 'note no';
     n.textContent = ({ figher:'members only', habit:'that habit is no longer in my TOTEHM', when:'choose a time within ' + RULES.horizon_days + ' days',
       duration:'a duration between ' + RULES.duration_min + ' and ' + RULES.duration_max + ' min', capacity:'between ' + RULES.capacity_min + ' and ' + RULES.capacity_max + ' places',
-      subscribers:'subscriber-only Spots need that benefit switched on', too_many:RULES.max_upcoming + ' upcoming Spots at most', position:'set the point on the map',
+      subscribers:'subscriber-only Spots need that benefit switched on', too_many:RULES.max_upcoming + ' upcoming Spots at most', position:'place the point on the map',
       place:'say where we meet', venue:'public space or private?' })[data?.why] || error?.message || 'not published';
     return;
   }
-  /* Le résultat est l'INSTRUMENT : le Spot apparaît sur le radar, ouvert,
-     dans le cran qui montre son jour — aujourd'hui au centre, plus tard à droite. */
+  /* Le résultat est la CARTE : aujourd'hui → TODAY, plus tard → TOMORROW. */
   const today = dayKey(at) === dayKey(new Date()), pos = { ...CR.pos };
-  resetDraft(); FI.int = null; FT.q = ''; FT.mode = null; FT.when = 'later';
+  resetDraft(); PRE = null;
   FOCUS = data.id; DET.add(data.id);
   RAD.view = pos; RAD.fly = null; zoomTo(RAD.base, true);
   refreshMine();
@@ -1886,95 +2034,85 @@ async function publish(){
   paintMarkers();
 }
 
-/* ══ MY SPACE (bas) — MES ACCÈS, MES LIMITES, QUI ATTEND ═════════════ */
+/* ══ MY SPACE — DANS LE COIN MEMBRE (27/09) ══════════════════════════
+   « Toute la partie My Space va dans le menu membre en haut à gauche. »
+   Mon nom de Totehm (Quantico, sur la tuile perforée navy — le seul
+   endroit avec le nom d'un créateur où elle existe), mes accès, qui
+   attend ma réponse, et la sortie dans TOUS les états (25/09). */
 async function loadMine(){
-  if(!me){ MS = null; paintReq(); if(panelKind() === 'mine') renderMine(); return; }
-  if(panelKind() === 'mine' && !MS) P().innerHTML = '<div class="cap">…</div>';
+  if(!me){ MS = null; paintMember(); rerenderMine(); return; }
   const { data, error } = await sb.rpc('my_space');
-  if(error){ console.error('[my_space]', error.message); if(panelKind() === 'mine') P().innerHTML = '<div class="note no">' + esc(error.message) + '</div>'; return; }
-  MS = data; paintReq(); paintStatus();
-  if(panelKind() === 'mine') renderMine();
-  if(panelKind() === 'create' && !CR.h) renderCreate();
+  if(error){ console.error('[my_space]', error.message); return; }
+  MS = data; paintMember(); paintStatus(); rerenderMine();
+}
+function rerenderMine(){
+  const k = panelKind();
+  if(k === 'gate') renderGate();
+  else if(k === 'past'){ const y = P().scrollTop; renderPast(); P().scrollTop = y; }
+  else if(k === 'create' && !CR.h) renderCreate();
 }
 const refreshMine = () => { if(me) loadMine(); };
-function paintReq(){ const n = (MS?.requests || []).length; $('req-n').textContent = n ? n : ''; }
-function renderMine(){
-  const el = P();
-  if(!me || !F?.pseudo){ el.innerHTML = gateHTML('My Spots, my requests, my access.'); wireGate(); resizeSoon(); return; }
-  if(!MS){ el.innerHTML = '<div class="cap">…</div>'; return; }
-  const R = MS.requests || [], S = MS.spots || [], A = MS.applications || [], L = MS.limits;
-  const sec = (t, h) => '<div class="sec"><span class="sec-l">' + t + '</span><div class="list" style="margin-top:4px">' + h + '</div></div>';
-  let h = '<div class="sec"><span class="sec-l">my access</span>' +
-    '<div class="cap"><b>' + esc(F.pseudo) + '</b>' + (me.email ? ' · ' + esc(me.email) : '') + '</div>' +
-    '<div class="cap" style="margin-top:6px">' + (F.member ? (F.comp ? '<b>founder access</b>' : '<b>FIGHER</b> · active') : 'FIGHER · ' + [F.complete ? null : 'TOTEHM', F.thp ? null : 'THP', F.annual ? null : 'annual'].filter(Boolean).join(' · ') + ' missing') +
-      (L ? ' · upcoming Spots <b>' + L.upcoming + ' / ' + L.max_upcoming + '</b>' : '') + '</div>' +
-    '<div class="acts" style="margin-top:10px">' + (F.member ? '' : '<button class="btn main" data-gatego="1" type="button">My three keys</button>') +
-      '<button class="lnk" data-go="club" type="button">My FIGHER console</button><button class="lnk" data-how="1" type="button">How it works</button><button class="lnk" data-out="1" type="button">Sign out</button></div></div>';
-  if(R.length) h += sec('waiting for my answer · <b>' + R.length + '</b>', R.map(r =>
-    '<div class="it req"><div class="cmp"><b>' + (r.compat != null ? r.compat + '%' : '—') + '</b><em>' + esc(r.pseudo || 'a member') + '</em> · for ' + esc(r.habit) + ' · ' + esc(fmtWhen(r.starts_at)) + '</div>' +
-    (r.note ? '<div class="say-q" style="margin-top:4px">' + esc(r.note) + '</div>' : '') +
-    '<div class="acts" style="margin-top:6px"><button class="btn main" data-dec="' + r.id + '" data-ok="1" type="button">Accept</button><button class="lnk" data-dec="' + r.id + '" data-ok="0" type="button">Not this time</button></div></div>').join(''));
-  if(S.length) h += sec('my Spots', S.map(s => '<div class="it">' + spotBoxHTML({ ...s, mine:true }) +
-    '<div class="act"><span class="cmp">' + (s.status === 'cancelled' ? 'cancelled' : s.past ? 'done' : s.live ? '<em>live</em>' : '<em>' + (s.pending || 0) + '</em> waiting') + '</span>' +
-    (s.status === 'published' && !s.past ? '<span class="acts"><button class="lnk" data-show="' + esc(s.id) + '" type="button">On the radar</button><button class="lnk" data-cancel="' + esc(s.id) + '" type="button">Cancel the Spot</button></span>' : '') + '</div></div>').join(''));
-  if(A.length) h += sec('joined', A.map(a => '<div class="it">' + spotBoxHTML({ ...a, id:a.spot_id }) +
-    '<div class="act"><span class="cmp"><em>' + esc(a.spot_status === 'cancelled' ? 'spot cancelled' : a.status) + '</em>' + (a.creator ? ' · by ' + esc(a.creator) : '') + '</span>' +
-    (['accepted','pending'].includes(a.status) && a.spot_status === 'published' ? '<span class="acts"><button class="lnk" data-wd="' + esc(a.spot_id) + '" type="button">Withdraw</button></span>' : '') + '</div></div>').join(''));
-  if(!R.length && !S.length && !A.length) h += '<div class="sec"><span class="sec-l">nothing yet</span><div class="say">Push the controller up to create a Spot, right to find one.</div></div>';
-  el.innerHTML = h + '<div class="note" id="mine-note" style="margin-top:12px"></div>';
-  resizeSoon();
-}
-async function onMineClick(e){
-  const t = e.target.closest('button'); if(!t) return;
-  if(t.dataset.det){ const id = t.dataset.det; DET.has(id) ? DET.delete(id) : DET.add(id); renderMine(); return; }
-  const n = $('mine-note');
-  if(t.dataset.out) return signOut();
-  if(t.dataset.gatego){ PANEL = 'gate'; syncPanels(); return; }
-  if(t.dataset.dec){
-    t.disabled = true;
-    const { data, error } = await sb.rpc('spot_decide', { p_application: +t.dataset.dec, p_accept: t.dataset.ok === '1' });
-    if((error || !data?.ok) && n){ n.className = 'note no'; n.textContent = data?.why === 'full' ? 'the Spot is full' : (error?.message || data?.why || 'not saved'); }
-    await loadMine(); loadSpots(true);
-  } else if(t.dataset.cancel){
-    if(!confirm('Cancel this Spot? Everyone accepted will see it is off.')) return;
-    await sb.rpc('spot_cancel', { p_spot: t.dataset.cancel }); await loadMine(); loadSpots(true);
-  } else if(t.dataset.wd){
-    await sb.rpc('spot_withdraw', { p_spot: t.dataset.wd }); await loadMine(); loadSpots(true);
-  } else if(t.dataset.show){
-    const s = (MS.spots || []).find(x => x.id === t.dataset.show); if(!s) return;
-    const today = dayKey(new Date(s.starts_at)) === dayKey(new Date());
-    FOCUS = s.id; FT.q = ''; FT.mode = null; FT.when = 'later'; FI.int = null;
-    dernierSens = today ? 'h' : 'd'; setView(today ? 'radar' : 'time');
-    if(s.lat != null){ RAD.view = { lat:s.lat, lng:s.lng }; RAD.fly = null; if(RAD.range > LOCAL_MAX) zoomTo(RAD.base, true); }
-    await loadSpots(true); if(today){ PANEL = 'focus'; syncPanels(); } paintMarkers();
-  }
-}
-
-/* ══ LA PORTE — connexion, pseudo, les trois clés, et la SORTIE ══════
-   ⚠️ ON SE DÉCONNECTE DANS TOUS LES ÉTATS (25/09), en `scope:'local'`. */
 let mail = '';
-function gateHTML(intro){
-  const out = '<button class="lnk" data-out="1" type="button">Sign out</button>';
-  if(!me) return (intro ? '<div class="say" style="margin-bottom:10px">' + intro + '</div>' : '') +
-    '<div class="sec"><span class="sec-l">one account, four doors</span>' +
+function loginHTML(){
+  return '<div class="sec"><span class="sec-l b2">one account, four doors</span>' +
     '<input class="in" id="g-email" type="email" placeholder="your@email" autocomplete="email" enterkeyhint="send">' +
     '<input class="in' + (mail ? '' : ' hide') + '" id="g-code" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code" style="margin-top:8px">' +
     '<div class="note" id="g-note" style="margin-top:8px"></div></div>';
-  if(!F?.pseudo) return '<div class="sec"><span class="sec-l">name my TOTEHM</span><input class="in" id="g-pseudo" maxlength="24" placeholder="my name" enterkeyhint="done">' +
-    '<div class="note" id="g-note" style="margin-top:8px"></div><div class="acts" style="margin-top:8px"><span class="cap">' + esc(me.email || '') + '</span>' + out + '</div></div>';
-  if(!F?.member){
-    const k = (ok, t, c, s) => '<div class="k ' + (ok ? c : 'no') + '">' + t + '<span>' + s + '</span></div>';
-    const go = !F.complete ? ['Complete my TOTEHM', 'com'] : !F.thp ? ['Get my TotehmPaper', 'thp'] : ['Join FIGHER', 'join'];
-    return (intro ? '<div class="say" style="margin-bottom:10px">' + intro + '</div>' : '') +
-      '<div class="sec"><span class="sec-l">three keys · <b>' + esc(F.pseudo) + '</b></span><div class="rope">' +
-      k(F.complete, 'My TOTEHM — complete', '', (F.remplies||0) + ' / 5') + k(F.thp, 'TotehmPaper {THP}', 'b', F.thp ? 'owned' : 'missing') +
-      k(F.annual, 'FIGHER — annual', 'r', F.annual ? 'active' : 'open') + '</div>' +
-      '<div class="acts" style="margin-top:12px"><button class="btn main" data-go="' + go[1] + '" type="button">' + go[0] + '</button>' + out + '</div></div>';
-  }
-  return '<div class="sec"><span class="sec-l"><b>' + esc(F.pseudo) + '</b>' + (F.comp ? ' · founder access' : ' · FIGHER') + '</span><div class="cap">' + esc(me.email || '') + '</div>' +
-    '<div class="acts" style="margin-top:12px"><button class="lnk" data-go="club" type="button">My FIGHER console</button><button class="lnk" data-go="com" type="button">My TOTEHM</button>' + out + '</div></div>';
 }
-function renderGate(){ P().innerHTML = head('Member access') + gateHTML(); wireGate(); }
+function pseudoHTML(){
+  return '<div class="sec"><span class="sec-l b2">name my TOTEHM</span><input class="in" id="g-pseudo" maxlength="24" placeholder="my name" enterkeyhint="done">' +
+    '<div class="note" id="g-note" style="margin-top:8px"></div><div class="acts" style="margin-top:8px"><span class="cap">' + esc(me.email || '') + '</span>' +
+    '<button class="lnk" data-out="1" type="button">Sign out</button></div></div>';
+}
+function keysHTML(){
+  const k = (ok, t, c, s) => '<div class="k ' + (ok ? c : 'no') + '">' + t + '<span>' + s + '</span></div>';
+  const go = !F.complete ? ['Complete my TOTEHM', 'com'] : !F.thp ? ['Get my TotehmPaper', 'thp'] : ['Join FIGHER', 'join'];
+  return '<div class="sec"><span class="sec-l b2">three keys open FIGHER</span><div class="rope">' +
+    k(F.complete, 'My TOTEHM — complete', '', (F.remplies||0) + ' / 5') + k(F.thp, 'TotehmPaper {THP}', 'b', F.thp ? 'owned' : 'missing') +
+    k(F.annual, 'FIGHER — annual', 'r', F.annual ? 'active' : 'open') + '</div>' +
+    '<div class="acts" style="margin-top:12px"><button class="btn main" data-go="' + go[1] + '" type="button">' + go[0] + '</button></div></div>';
+}
+/* Dans une vue (Create, Yesterday) : ce qui ferme la porte, et rien d'autre. */
+function gateHTML(intro){
+  const say = intro ? '<div class="sec-l b2" style="margin-bottom:10px">' + intro + '</div>' : '';
+  if(!me) return say + loginHTML();
+  if(!F?.pseudo) return pseudoHTML();
+  if(!F?.member) return say + keysHTML() + '<div class="acts" style="margin-top:8px"><button class="lnk" data-out="1" type="button">Sign out</button></div>';
+  return '';
+}
+function renderGate(){
+  const el = P();
+  if(!me){ el.innerHTML = head('Member access') + loginHTML(); wireGate(); return; }
+  if(!F?.pseudo){ el.innerHTML = head('My TOTEHM') + pseudoHTML(); wireGate(); return; }
+  const R = MS?.requests || [], L = MS?.limits;
+  let h = head('My space') +
+    '<div class="me-id"><button class="tname big" data-go="com" type="button" title="Open my TOTEHM">' + esc(F.pseudo) + '</button><span class="cap">' + esc(me.email || '') + '</span></div>';
+  if(!F.member) h += keysHTML();
+  else h += '<div class="sec"><span class="sec-l b2">my access</span><div class="cap">' + (F.comp ? '<b>founder access</b>' : '<b>FIGHER</b> · active') +
+    (L ? ' · upcoming Spots <b>' + L.upcoming + ' / ' + L.max_upcoming + '</b>' : '') + '</div></div>';
+  /* Une demande est une PERSONNE, pas une boîte : un nom et un nombre (§38). */
+  if(R.length) h += '<div class="sec"><span class="sec-l b2">waiting for my answer · <b>' + R.length + '</b></span><div class="list" style="margin-top:4px;gap:8px">' +
+    R.map(r => '<div class="req"><div class="who"><span class="match"><b>' + (r.compat != null ? r.compat + '%' : '—') + '</b><small>match with my Spot</small></span>' +
+      '<button class="tname" data-ro="' + esc(r.pseudo || '') + '" type="button">' + esc(r.pseudo || 'a member') + '</button></div>' +
+      '<div class="cap" style="margin-top:6px">for <b>' + esc(r.habit) + '</b> · ' + esc(fmtWhen(r.starts_at)) + '</div>' +
+      (r.note ? '<div class="say-q" style="margin-top:4px">' + esc(r.note) + '</div>' : '') +
+      '<div class="acts" style="margin-top:8px"><button class="btn main" data-dec="' + r.id + '" data-ok="1" type="button">Accept</button><button class="lnk" data-dec="' + r.id + '" data-ok="0" type="button">Not this time</button></div></div>').join('') + '</div></div>';
+  h += '<div class="acts" style="margin-top:14px"><button class="lnk" data-go="club" type="button">My FIGHER console</button>' +
+    '<button class="lnk" data-yest="1" type="button">My Spots · yesterday</button><button class="lnk" data-how="1" type="button">How it works</button>' +
+    '<button class="lnk" data-out="1" type="button">Sign out</button></div><div class="note" id="mine-note" style="margin-top:10px"></div>';
+  el.innerHTML = h; wireGate();
+  if(me && !MS) loadMine();
+}
+async function onGateClick(e){
+  const t = e.target.closest('button'); if(!t) return;
+  if(t.dataset.yest){ PANEL = null; dernierSens = 'g'; setView('past'); return; }
+  if(t.dataset.dec){
+    t.disabled = true; const n = $('mine-note');
+    const { data, error } = await sb.rpc('spot_decide', { p_application: +t.dataset.dec, p_accept: t.dataset.ok === '1' });
+    if((error || !data?.ok) && n){ n.className = 'note no'; n.textContent = data?.why === 'full' ? 'the Spot is full' : (error?.message || data?.why || 'not saved'); }
+    await loadMine(); loadSpots(true);
+  }
+}
 function wireGate(){
   const el = P(); if(!el) return;
   el.querySelectorAll('[data-out]').forEach(b => b.onclick = signOut);
@@ -2009,30 +2147,29 @@ function wireGate(){
 }
 async function signOut(){
   try{ const { error } = await sb.auth.signOut({ scope:'local' }); if(error) console.error('[signout]', error.message); }catch(e){ console.error('[signout]', e && e.message || e); }
-  /* L'état tombe ICI, sans attendre l'événement réseau. */
-  me = null; F = null; MS = null; TOT = null; resetDraft(); DET.clear(); paintReq();
-  $('member').classList.remove('is-in'); $('member-txt').textContent = 'Sign in';
-  PANEL = null; FOCUS = null; dernierSens = null; setView('radar'); loadSpots(true);
+  me = null; F = null; MS = null; TOT = null; resetDraft(); PRE = null; DET.clear(); paintMember();
+  PANEL = null; FOCUS = null; dernierSens = null; if(PIN.on) pinEnd(false); setView('radar'); loadSpots(true);
 }
-$('member').onclick = () => { PANEL = PANEL === 'gate' ? null : 'gate'; syncPanels(); };
+$('member').onclick = () => { if(PIN.on) return; PANEL = PANEL === 'gate' ? null : 'gate'; syncPanels(); if(PANEL && me) loadMine(); };
 sb.auth.onAuthStateChange(async ev => {
   if(ev === 'SIGNED_IN' || ev === 'SIGNED_OUT'){
-    await loadMe(); if(ev === 'SIGNED_OUT'){ MS = null; TOT = null; resetDraft(); paintReq(); }
+    await loadMe(); if(ev === 'SIGNED_OUT'){ MS = null; TOT = null; resetDraft(); paintMember(); }
     render(); paintStatus(); loadSpots(true); refreshMine();
     if(ev === 'SIGNED_IN' && VIEW === 'create') openCreate();
   }
 });
 
 /* ══ DÉMARRAGE ══════════════════════════════════════════════════════ */
-const FROM_HASH = { '#create':'create', '#me':'mine', '#intent':'intent', '#later':'time', '#search':'time' };
+const FROM_HASH = { '#create':'create', '#search':'search', '#yesterday':'past', '#tomorrow':'time', '#later':'time', '#intent':'search' };
 VIEW = FROM_HASH[location.hash] || 'radar';
+if(location.hash === '#me') PANEL = 'gate';
 document.body.className = 'v-' + VIEW;
 paintJoy(); paintTitle(); syncPanels(); paintCmp();
 sb.rpc('spot_rules').then(({ data, error }) => { if(error) console.error('[spot_rules]', error.message); else if(data) RULES = { ...RULES, ...data }; });
 loadEarth();
 await loadMe();
 radarStart();
-if(VIEW === 'create') openCreate(); else if(VIEW === 'mine') loadMine();
+if(VIEW === 'create') openCreate(); else if(VIEW === 'past') loadMine();
 await locate();
 await loadSpots(true);
 RAD.base = autoRange(RAD.spots); zoomTo(RAD.base, true);
