@@ -15,6 +15,42 @@
 
 ---
 
+## 0 · LOT DU 27/09/2026 — YESTERDAY · TODAY · TOMORROW · LE CLUB · PLUS DE MONTSERRAT
+
+> **ÉTAT : migration `20260927_space_hier.sql` appliquée le 27/09/2026 par
+> Claude (MCP Supabase, projet `abujjbkbbiumxrokozph`) — AVANT la page.**
+> Avant de l'appliquer, le corps déployé de `my_space` a été comparé à
+> celui du dépôt (empreinte md5 identique, `3a53e747…`). Contrôles après :
+> le corps contient `365 days` et plus `30 days` · `anon` ne peut pas
+> l'exécuter · `authenticated` peut.
+
+| objet | ce qui change |
+|---|---|
+| **`my_space()` v4** | mes Spots et mes candidatures sur **365 jours** (au lieu de 30) — la vue YESTERDAY ; mêmes champs, mêmes droits |
+
+**Pages** : `space/index.html` (`BUILD='2026-09-27'`) — Today · Create ·
+Search · Yesterday · Tomorrow, My space au coin membre, carte de rue dès
+l'arrivée, rendez-vous en plein écran ; `club/index.html` et
+`club/console.html` (`BUILD='2026-09-27'`) — Bebas Neue, saisies et
+boutons gris arrondis, la tuile perforée réservée au nom d'un Totehm,
+point blanc, sortie `scope:'local'`.
+**Plus de Montserrat** : `com/totehm.html` (titres de vue, rangs,
+wordmark, accroche du cercle → Bebas Neue), `com/higherself.html`,
+`com/totehm_7_intentions.html`, `com/club/totehmbot.html`, et les sept
+pages `boutique/` qui l'utilisaient — le slogan Higher y est désormais un
+tracé vectoriel (plus de `<text font-family="Montserrat">`).
+
+**Testé** : navigateur (Chromium sans tête, client Supabase simulé) —
+**80 vérifications** pour l'Espace (1440 et 390 × 844, vrais événements
+tactiles : toucher la carte, glisser la carte sous la croix, loupe) et
+**15** pour le Club, zéro erreur JS. Non testé ici : la base réelle depuis
+le navigateur, et `com/totehm.html` / `boutique/` (changements de police
+et de symbole uniquement) → bloc B du `CLAUDE_CODE.md`.
+
+**Retour arrière** : rejouer `my_space` depuis `20260926_space_monde.sql`.
+
+---
+
 ## 0 · LOT DU 26/09/2026 — TOTEHM.SPACE À L'ÉCHELLE DU MONDE · NATURE D'UN SPOT · GLOBE
 
 > **ÉTAT : migration `20260926_space_monde.sql` appliquée le 26/09/2026
@@ -1430,6 +1466,11 @@ Functions sont téléchargeables.
 
 | Date | Décision | Pourquoi |
 |---|---|---|
+| 27/09 | **Les vues de l'Espace suivent le temps : Yesterday · Today · Tomorrow ; Search en bas ; My space au coin membre** | la croix du Totehm (passé · présent · futur) appliquée aux Spots ; « My Space » était une vue de plus alors que c'est MON compte |
+| 27/09 | **Le rendez-vous se pose en plein écran, carte sous une croix fixe** | viser un point sur un radar de 30 px au téléphone était impossible |
+| 27/09 | **Plus de Montserrat nulle part ; Bebas Neue pour titres et questions ; le slogan Higher vectorisé** | décision de marque de Wah ; un slogan qui dépend d'une webfont s'éteint le jour où la police ne charge pas |
+| 27/09 | **La tuile perforée navy = le nom d'un Totehm ; saisies et boutons gris arrondis** (Espace, Club) | une texture de marque qui sert à tout ne signifie plus rien |
+| 27/09 | **`my_space` remonte sur un an** | YESTERDAY doit retrouver ce qu'on refait |
 | 26/09 | **totehm.space va de la rue à la planète** | plateforme internationale : une projection orthographique, des lumières par région (`spots_globe`), la couronne qui fait tourner la carte ou le globe |
 | 26/09 | **Un Spot a une nature : public ou privé** | chez soi, le radar ne doit montrer que le quartier (~1,1 km) — l'arrondi est en base |
 | 26/09 | **Trait de côte Natural Earth servi par nous ; tuiles OpenStreetMap en création seulement** | zéro facture, zéro clé ; OSM a une politique d'usage — un fournisseur payant sera nécessaire à fort volume |
