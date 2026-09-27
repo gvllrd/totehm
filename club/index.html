@@ -20,10 +20,15 @@
   (tools/sso_snippet.js), il ne s'importe pas. Toute porte vers un autre
   domaine passe par `ssoVersDomaine` : le membre arrive connecté.
 
-  Typo (CLAUDE.md, STACK POLICE) : Bebas Neue = titres · Quantico =
-  boutons et saisies · Space Mono = texte, labels, prix, navigation.
-  Montserrat n'apparaît pas : cette page n'écrit pas « Higher ».
-  Aucune bordure, aucun arrondi, fond noir, contenu centré.
+  ══ 27/09/2026 — LA GRAMMAIRE DES QUATRE DOMAINES ══════════════════════
+  Bebas Neue = titres, questions, étiquettes (une seule graisse : la
+  taille, la lumière et un contour d'une fraction de pixel font
+  l'intensité) · Quantico = ce que le membre TAPE, et le NOM d'un Totehm
+  · Space Mono = texte, labels, prix, navigation, boutons. Plus de
+  Montserrat nulle part. Saisies et boutons GRIS et ARRONDIS ; la tuile
+  perforée navy est réservée au nom d'un Totehm (ici : le mien, dans la
+  feuille membre). Le coin membre est un POINT BLANC. Fond noir, contenu
+  centré, aucune bordure autour d'une boîte.
 -->
 <html lang="en">
 <head>
@@ -64,31 +69,37 @@ a{color:inherit;text-decoration:none}
 #member{position:fixed;top:16px;left:16px;z-index:40;display:flex;align-items:center;gap:7px;
   background:none;border:none;cursor:pointer;font-family:var(--q);font-weight:700;font-size:13px;
   color:#a0a0a0;padding:6px 4px;-webkit-tap-highlight-color:transparent;transition:color .15s}
-#member i{width:6px;height:6px;border-radius:50%;background:#383838;display:block;transition:background .3s}
-#member.is-in i{background:var(--on)}
+#member i{width:10px;height:10px;border-radius:50%;background:#3a3a40;display:block;transition:background .3s,box-shadow .3s}
+#member.is-in i{background:#fff;box-shadow:0 0 9px #fff}
 #terms{position:fixed;top:20px;right:16px;z-index:40;font-family:var(--mono);font-size:10px;
   letter-spacing:.14em;text-transform:uppercase;color:var(--lo);transition:color .15s}
 #t{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:39;line-height:0}
 #t svg{height:30px;width:auto;fill:#fff}
 
-/* ── LE BOUTON — .btn-sig, la même grammaire sur les quatre domaines ── */
-.btn{font-family:var(--q);font-weight:400;font-size:14px;color:var(--mid);background:none;
-  border:6px solid transparent;cursor:pointer;padding:0 6px;line-height:1.6;display:inline-block;
-  width:fit-content;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
-.btn.main{color:#fff;font-weight:700}
-@media(hover:hover){.btn:hover{color:#fff;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round}}
-.btn:active,.btn.on{color:#fff;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round}
+/* ── LE BOUTON — gris et arrondi (27/09). La tuile perforée n'est plus
+   un bouton : elle est réservée au NOM d'un Totehm. ─────────────────── */
+.btn{font-family:var(--mono);font-weight:400;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);background:var(--g3);
+  border:none;border-radius:10px;cursor:pointer;padding:10px 16px;line-height:1.4;display:inline-block;
+  width:fit-content;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:color .15s ease,background .15s ease,transform .15s ease}
+.btn.main{color:#fff;font-weight:700;background:var(--g4)}
+@media(hover:hover){.btn:hover{color:#fff;background:#303036;transform:scale(1.03)}}
+.btn:active{transform:scale(.97)}
 .btn[disabled]{opacity:.35;pointer-events:none}
+.tname{display:inline-block;width:fit-content;font-family:var(--q);font-weight:400;font-size:19px;color:#fff;line-height:1.4;
+  border:7px solid transparent;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round;padding:0 10px;cursor:pointer;
+  transition:transform .15s ease,filter .15s ease}
+@media(hover:hover){.tname:hover{filter:brightness(1.25);transform:scale(1.04)}}
 .nav-l{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);
   background:none;border:none;cursor:pointer;padding:4px 2px;transition:color .15s}
 
 /* ── LA COLONNE ───────────────────────────────────────────────────── */
 main{width:100%;max-width:620px;margin:0 auto;padding:0 20px}
 section{padding:92px 0 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px}
-.kick{font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
+.kick{font-family:var(--bebas);font-size:17px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5)}
 h1,h2{font-family:var(--bebas);font-weight:400;color:#fff;letter-spacing:.02em;line-height:.9}
-h1{font-size:clamp(64px,16vw,132px)}
-h2{font-size:clamp(40px,9vw,64px)}
+/* Bebas Neue n'a qu'une graisse : le plus fort reçoit un contour. */
+h1{font-size:clamp(64px,16vw,132px);-webkit-text-stroke:1.4px #fff}
+h2{font-size:clamp(40px,9vw,64px);-webkit-text-stroke:.7px #fff}
 .say{max-width:44ch;color:var(--mid);font-size:13px}
 .say b{color:#fff;font-weight:400}
 
@@ -106,14 +117,15 @@ h2{font-size:clamp(40px,9vw,64px)}
    Cochée = filet vertical LOVE (green), l'annuel décoché porte un
    filet ENRICH (yellow) car c'est la porte payante. */
 .step{position:relative;display:flex;gap:14px;align-items:flex-start;
-  padding:14px 16px 14px 18px;background:var(--g2);color:#fff}
+  padding:14px 16px 14px 18px;background:var(--g2);color:#fff;transition:transform .22s cubic-bezier(.2,.9,.25,1),background .2s}
+@media(hover:hover){.step:hover{transform:scale(1.02);background:var(--g3)}}
 .step::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
   background:var(--g4);transition:background .25s ease}
 .step.s3::before{background:var(--enrich)}
 .step.done::before{background:var(--love)}
 .step .n{font-family:var(--bebas);font-size:30px;line-height:.9;min-width:28px;color:var(--dim)}
 .step .b{flex:1;min-width:0}
-.step .t{font-family:var(--q);font-size:15px;line-height:1.35}
+.step .t{font-family:var(--bebas);font-size:22px;letter-spacing:.04em;line-height:1.05}
 .step .m{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo);margin-top:5px}
 .step .ok{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);align-self:center}
 .step.done .ok{color:var(--love)}
@@ -138,7 +150,8 @@ h2{font-size:clamp(40px,9vw,64px)}
 .door::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--navy)}
 .door.love::before{background:var(--love)}
 .door.enrich::before{background:var(--enrich)}
-@media(hover:hover){.door:hover{background:var(--g3)}}
+@media(hover:hover){.door:hover{background:var(--g3);transform:scale(1.025)}}
+.door{transition:transform .22s cubic-bezier(.2,.9,.25,1),background .25s ease,filter .15s ease}
 .door .d{font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--lo)}
 .door .h{font-family:var(--bebas);font-size:30px;color:#fff;line-height:.95}
 .door p{font-size:12px;color:var(--mid);flex:1}
@@ -164,7 +177,7 @@ h2{font-size:clamp(40px,9vw,64px)}
 /* ── FAQ ──────────────────────────────────────────────────────────── */
 .faq{width:100%;max-width:520px;display:flex;flex-direction:column;gap:4px;text-align:left}
 details{padding:12px 2px}
-summary{font-family:var(--q);font-size:14px;color:#fff;cursor:pointer;list-style:none}
+summary{font-family:var(--bebas);font-size:21px;letter-spacing:.04em;color:#fff;cursor:pointer;list-style:none}
 summary::-webkit-details-marker{display:none}
 details p{margin-top:10px;font-size:12px;color:var(--mid)}
 
@@ -176,12 +189,12 @@ footer .line{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:
 /* ── LA FEUILLE MEMBRE — email, code, pseudo ──────────────────────── */
 #sheet{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;padding:20px}
 #sheet.show{display:flex}
-.sh{width:100%;max-width:400px;background:#000;padding:30px 22px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;position:relative}
+.sh{width:100%;max-width:400px;background:var(--g1);padding:30px 22px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;position:relative}
 .sh .x{position:absolute;top:10px;right:12px}
-.in{font-family:var(--q);font-size:14px;color:#fff;background:none;outline:none;border:6px solid transparent;
-  border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round;padding:2px 8px;
-  text-align:center;caret-color:#fff;width:100%;max-width:280px}
-.in::placeholder{color:rgba(255,255,255,.35)}
+.in{font-family:var(--q);font-size:15px;color:#fff;background:#1c1c22;outline:none;border:none;border-radius:10px;padding:10px 13px;
+  text-align:center;caret-color:#fff;width:100%;max-width:300px;transition:background .15s ease;-webkit-appearance:none;appearance:none}
+.in:focus{background:#26262e}
+.in::placeholder{color:rgba(255,255,255,.38)}
 .note{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;color:var(--lo)}
 .note.ok{color:var(--on)}.note.no{color:#ff9a9a}
 
@@ -330,8 +343,9 @@ footer .line{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:
       <input class="in" id="sh-pseudo" maxlength="24" placeholder="your name">
       <div class="note" id="sh-claim-note" style="margin-top:8px"></div>
     </div>
-    <div id="sh-in" class="hide">
-      <div class="kick" id="sh-who"></div>
+    <div id="sh-in" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:12px">
+      <button class="tname" id="sh-name" type="button" title="Open my TOTEHM"></button>
+      <div class="kick" id="sh-who" style="font-family:var(--mono);font-size:9px;letter-spacing:.2em"></div>
       <a class="btn main" href="/console">Open my console</a>
       <button class="nav-l" id="sh-out-btn" type="button">Sign out</button>
     </div>
@@ -444,7 +458,7 @@ let me = null, F = null;
 /* Le diagnostic — des booléens et des compteurs, jamais une valeur de
    membre. Dans la console : __totehm_club()  · `build` dit en trois
    secondes si la page ouverte est celle qu'on a livrée (règle du 22/09). */
-const BUILD = '2026-09-23';
+const BUILD = '2026-09-27';
 window.__totehm_club = () => ({ build: BUILD, page: 'door', signed_in: !!me,
   figher: F ? { complete: !!F.complete, remplies: F.remplies, thp: !!F.thp,
                 annual: !!F.annual, member: !!F.member } : null,
@@ -517,7 +531,7 @@ function paintSheet(){
   $('sh-out').classList.toggle('hide', !!me);
   $('sh-claim').classList.toggle('hide', !(me && !hasPseudo));
   $('sh-in').classList.toggle('hide', !(me && hasPseudo));
-  if(me && hasPseudo) $('sh-who').textContent = F.pseudo + ' · ' + (me.email || '');
+  if(me && hasPseudo){ $('sh-name').textContent = F.pseudo; $('sh-who').textContent = me.email || ''; }
   if(!me) setTimeout(() => $('sh-email').focus(), 60);
 }
 $('member').onclick = openSheet;
@@ -550,7 +564,10 @@ $('sh-pseudo').addEventListener('keydown', async e => {
   if(error){ n.className = 'note no'; n.textContent = error.code === '23505' ? 'already taken' : 'try again'; return; }
   await loadState(); paintSheet();
 });
-$('sh-out-btn').onclick = async () => { await sb.auth.signOut(); $('sheet').classList.remove('show'); };
+/* `scope:'local'` : quitter le Club ne ferme pas le Totehm ouvert ailleurs. */
+$('sh-out-btn').onclick = async () => { try{ await sb.auth.signOut({ scope:'local' }); }catch(e){ console.error('[signout]', e && e.message || e); }
+  me = null; F = null; paintMember(); paintRope(); $('sheet').classList.remove('show'); };
+$('sh-name').onclick = () => ssoVersDomaine(sb, 'com', 'https://www.totehm.com/totehm#in');
 sb.auth.onAuthStateChange(async (ev) => {
   if(ev === 'SIGNED_IN' || ev === 'SIGNED_OUT'){ await loadState(); if($('sheet').classList.contains('show')) paintSheet(); }
 });
