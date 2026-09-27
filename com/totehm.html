@@ -2101,6 +2101,41 @@ body:not(.gate) #gate{display:none}
 .ast-back{transform:rotateY(180deg) translateZ(.5px);
   display:flex;align-items:center;justify-content:center}
 #gate-card.is-flat .ast-front{transform:none}
+/* ══ LE PAPIER EST UN HOLOGRAMME · 28/09/2026 ════════════════════════
+   « Il y a une forte discontinuité entre le Totehm et les deux autres
+   objets. » Le papier était un objet opaque posé au bout d'une lumière.
+   Il devient FAIT de cette lumière, avec les mêmes trois matières que le
+   faisceau et la plaque :
+   1. les MÊMES lignes de balayage (même couleur, même pas de 5 px, même
+      vitesse) qui montent du faisceau et continuent sur le papier ;
+   2. la lumière du faisceau qui ENTRE par le bas du papier et s'éteint
+      vers le haut (`.ast-holo`, en `screen`) ;
+   3. un halo navy AUTOUR de lui (`::before`), la même lumière que le
+      faisceau — pas une ombre : il éclaire ;
+   4. le papier laisse passer un peu de la lumière qui le porte (.9), et
+      il vacille, rarement, comme une projection. (.84)
+   ⚠️ TOUT TOMBE QUAND LE PAPIER SE POSE (`.is-flat`) : la déconstruction
+   part d'un logo plein et opaque, au pixel, comme avant. */
+.ast-holo{position:absolute;inset:0;z-index:9;pointer-events:none;mix-blend-mode:screen;
+  background:
+    repeating-linear-gradient(to bottom,rgba(201,201,255,.13) 0 1px,transparent 1px 5px),
+    linear-gradient(to top,rgba(157,157,224,.38),rgba(122,122,200,.12) 45%,rgba(122,122,200,0) 80%);
+  background-size:100% 5px,100% 100%;
+  animation:holo-scan .7s linear infinite,holo-vacille 7.3s steps(1,end) infinite;
+  transition:opacity .35s ease}
+@keyframes holo-scan{from{background-position:0 0,0 0}to{background-position:0 -5px,0 0}}
+@keyframes holo-vacille{0%,100%{opacity:1}61%{opacity:.55}62%{opacity:1}63.5%{opacity:.7}64.5%{opacity:1}}
+#gate-card:not(.is-flat) .ast-face{opacity:.84}
+.ast-face{transition:opacity .35s ease}
+#gate-card.is-flat .ast-holo{opacity:0;animation:none}
+/* Posé, il redevient plein D'UN COUP : la déconstruction part d'un logo opaque. */
+#gate-card.is-flat .ast-face,#gate-card.is-flat .ast-holo{transition:none}
+#gate-asteroid::before{content:"";position:absolute;inset:-38% -34% -30%;z-index:-1;
+  pointer-events:none;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(106,106,184,.20),rgba(75,75,146,.09) 55%,rgba(51,51,102,0));
+  transition:opacity .45s ease}
+#gate-asteroid:has(#gate-card.is-flat)::before,body.gate.entered #gate-asteroid::before{opacity:0}
+@media(prefers-reduced-motion:reduce){ .ast-holo{animation:none} }
 /* Le dos : la même tuile perforée navy que le logo, sans l'encre. Les
    perforations sont symétriques, donc le dos a exactement la silhouette
    de la face — un seul morceau de papier, vu des deux côtés. */
@@ -2159,8 +2194,8 @@ body.gate.entered .ast-back{visibility:hidden}
    jusqu'à 26 px DERRIÈRE le papier — l'air, plus la demi-plaque, plus
    ce recouvrement. Étroit en bas, large comme le papier en haut. */
 #socle-beam{position:absolute;left:50%;bottom:50%;
-  width:calc(var(--gate-size) * 1.08);
-  height:calc(var(--air) + var(--socle-w) / 12 + 26px);
+  width:calc(var(--gate-size) * 1.02);
+  height:calc(var(--air) + var(--socle-w) / 12 + 58px);
   transform:translateX(-50%);opacity:.8;pointer-events:none;overflow:visible}
 .sc-w{transform-box:fill-box;transform-origin:center;vector-effect:non-scaling-stroke;
   opacity:0;animation:sc-onde 6s cubic-bezier(.25,.1,.3,1) infinite}
@@ -2842,11 +2877,13 @@ body.gate.entered #filter-badge{
           <button id="gate-enter" aria-label="Enter my Totehm"></button>
         </div><!-- /#gate-logo -->
         <div class="ast-light" aria-hidden="true"></div>
+        <div class="ast-holo" aria-hidden="true"></div>
       </div>
       <div class="ast-face ast-back" aria-hidden="true">
         <div class="ast-tile"></div>
         <span class="ast-say" id="ast-name">Tap to open it</span>
         <div class="ast-light"></div>
+        <div class="ast-holo"></div>
       </div>
     </div><!-- /#gate-card -->
   </div><!-- /#gate-asteroid -->
@@ -2867,10 +2904,10 @@ body.gate.entered #filter-badge{
           <stop offset=".6" stop-color="#4b4b92" stop-opacity=".2"/>
           <stop offset="1" stop-color="#333366" stop-opacity=".04"/>
         </linearGradient>
-        <pattern id="sb-scan" width="100" height="7" patternUnits="userSpaceOnUse">
-          <rect width="100" height="1.1" fill="#c9c9ff" opacity=".5"/>
+        <pattern id="sb-scan" width="100" height="3" patternUnits="userSpaceOnUse">
+          <rect width="100" height=".6" fill="#c9c9ff" opacity=".6"/>
           <animateTransform attributeName="patternTransform" type="translate"
-            from="0 0" to="0 -7" dur="1.6s" repeatCount="indefinite"/>
+            from="0 0" to="0 -3" dur=".7s" repeatCount="indefinite"/>
         </pattern>
         <filter id="sb-flou" x="-30%" y="-10%" width="160%" height="120%">
           <feGaussianBlur stdDeviation="2.4"/></filter>
@@ -4387,7 +4424,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-09-28';
+const BUILD='2026-09-28b';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────

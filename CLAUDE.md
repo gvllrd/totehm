@@ -728,6 +728,16 @@ n'est permis. Point. » Tout est dans `com/totehm.html`
 > 390×390 : la plaque porte son propre id, `#socle-plate`. Le coin membre
 > et l'espace membre passent du carré vert au **carré blanc**. Ci-dessous,
 > l'état du 27/09.
+>
+> **⚠️ 28/09 bis — LE PAPIER EST FAIT DE LA MÊME LUMIÈRE** (`BUILD=
+> '2026-09-28b'`). « Forte discontinuité entre le Totehm et les deux
+> autres objets. » Le papier en vol porte les mêmes lignes de balayage
+> que le faisceau (même couleur, même pas, même vitesse), la lumière du
+> faisceau entre par son bas (`.ast-holo`, `screen`), un halo navy
+> l'entoure (`#gate-asteroid::before`), il laisse passer la lumière
+> (.84) et vacille rarement. Le faisceau monte jusqu'à mi-papier.
+> **Tout tombe d'un coup à `.is-flat`** (pas de transition) : la
+> déconstruction part d'un logo opaque — remesurée, au dixième de pixel.
 
 **`#gate-socle` : un palet gris en SVG** — une tranche, un dessus, un
 logement. Zéro bouton, zéro vis. Dans le logement, l'électroaimant : trois
