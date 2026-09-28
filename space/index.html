@@ -22,6 +22,12 @@
     clair et le rouge-violet ne servent qu'aux boîtes du Totehm (et au nom
     d'un Totehm) : filtres et manette sont gris.
 
+  ⚠️ 28/09 bis — LE LOGO DU TOTEHM ARRIVE TOUT EN HAUT (`#space-mark`,
+    48 px, COPIÉ de com/totehm.html, immobile, sans hologramme). Le nom du
+    membre dessous, même passeport que `#member-txt`. Touché, il ouvre ce
+    Totehm sur com par le pont SSO. `#vnow` descend de 16→88 px (50→102 px
+    au téléphone) pour lui laisser sa place.
+
   ⚠️ 27/09 — CE QUI A CHANGÉ, ET POURQUOI
   · MY SPACE EST PARTI DANS LE COIN MEMBRE (haut gauche) : mon nom de
     Totehm (Quantico, sur la tuile perforée navy), mes accès, qui attend
@@ -99,8 +105,33 @@ button{font:inherit}
 #terms{position:fixed;top:calc(18px + env(safe-area-inset-top,0px));right:14px;z-index:90;font-size:10px;letter-spacing:.14em;
   text-transform:uppercase;color:var(--lo);text-decoration:none;transition:color .15s}
 
+/* ══ LE LOGO DU TOTEHM, TOUT EN HAUT · 28/09/2026 ════════════════════
+   Wah : « mets la version actuelle du totehm dans space comme logo
+   d'atterrissage tout en haut, sans l'hologramme, un peu plus réduit,
+   avec le nom de l'utilisateur. » L'assemblage 4 SVG est COPIÉ de
+   `com/totehm.html` (produits indépendants = fichiers indépendants) —
+   à 48 px contre 110 sur com, IMMOBILE, sans socle ni faisceau : ici
+   c'est une identité, pas un objet qu'on manie. Le nom sous le logo
+   est celui du passeport (`F.pseudo`), peint par `paintMember()` —
+   une seule fonction, comme `#member-txt` juste en dessous. Touché,
+   il ouvre CE Totehm sur `com`, par le pont SSO (`data-go="com"`,
+   même mécanisme que `.tname.big` dans le tiroir membre). */
+#space-mark{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;
+  z-index:41;display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none}
+#space-mark button{pointer-events:auto;background:none;border:none;padding:2px;cursor:default;
+  display:flex;flex-direction:column;align-items:center;gap:4px}
+#space-mark button.go{cursor:pointer}
+.sp-mark-art{width:48px;height:48px;display:block}
+#space-mark-name{font-family:var(--q);font-weight:700;font-size:11px;color:#fff;letter-spacing:.03em;
+  transition:filter .15s,transform .15s}
+@media(hover:hover){#space-mark button.go:hover .sp-mark-art{filter:brightness(1.2)}
+  #space-mark button.go:hover #space-mark-name{filter:brightness(1.2)}}
+
 /* ══ LE NOM DE LA VUE ═══════════════════════════════════════════════ */
-#vnow{position:fixed;top:calc(16px + env(safe-area-inset-top,0px));left:0;right:0;z-index:40;text-align:center;
+/* ⚠️ 88 px REMPLACE 16 px · 28/09/2026 : le logo du Totehm (#space-mark)
+   s'est posé au-dessus, il faut lui laisser sa place — sinon le titre
+   passe dessous. */
+#vnow{position:fixed;top:calc(88px + env(safe-area-inset-top,0px));left:0;right:0;z-index:40;text-align:center;
   line-height:1;pointer-events:none;perspective:700px;transition:left .4s var(--ease),right .4s var(--ease)}
 @media(min-width:900px){body.p-g #vnow{left:var(--side)}body.p-d #vnow{right:var(--side)}}
 #vt{display:block;font-size:30px;text-transform:uppercase;white-space:nowrap}
@@ -111,7 +142,7 @@ button{font:inherit}
 #status.tap{cursor:pointer}
 #status .live{color:#fff;animation:blink 1.4s ease-in-out infinite}
 @media(max-width:899px){
-  #vnow{top:calc(50px + env(safe-area-inset-top,0px))}
+  #vnow{top:calc(102px + env(safe-area-inset-top,0px))}
   #vt{font-size:26px}#vs{font-size:13px}
   body.p-open #vs{display:none}
 }
@@ -477,6 +508,30 @@ body.pin #zoom{left:auto;right:14px;bottom:calc(76px + env(safe-area-inset-botto
 <body class="v-radar">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="higher-badge" viewBox="0 0 600 200"><defs><mask id="hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></symbol></svg>
 
+<!-- ══ LE LOGO DU TOTEHM, COPIÉ de com/totehm.html (#gate-logo), sans
+     hologramme ni socle : ici il est immobile, une identité, pas un
+     objet qu'on manie. -->
+<div id="space-mark">
+  <button type="button" id="space-mark-btn" aria-label="My TOTEHM">
+    <svg class="sp-mark-art" viewBox="0 0 224.88 224.08" aria-hidden="true">
+      <defs><mask id="spm_bg" maskUnits="userSpaceOnUse" x="-40" y="-40" width="310" height="310"><rect x="-40" y="-40" width="310" height="310" fill="#fff"/><circle cx="56.421" cy="0.000" r="13.86" fill="#000"/><circle cx="56.421" cy="224.078" r="13.86" fill="#000"/><circle cx="112.440" cy="0.000" r="13.86" fill="#000"/><circle cx="112.440" cy="224.078" r="13.86" fill="#000"/><circle cx="168.459" cy="0.000" r="13.86" fill="#000"/><circle cx="168.459" cy="224.078" r="13.86" fill="#000"/><circle cx="0.402" cy="56.020" r="13.86" fill="#000"/><circle cx="224.478" cy="56.020" r="13.86" fill="#000"/><circle cx="0.402" cy="112.039" r="13.86" fill="#000"/><circle cx="224.478" cy="112.039" r="13.86" fill="#000"/><circle cx="0.402" cy="168.059" r="13.86" fill="#000"/><circle cx="224.478" cy="168.059" r="13.86" fill="#000"/></mask></defs>
+      <rect x="0.402" y="0.000" width="224.076" height="224.078" fill="#333366" mask="url(#spm_bg)"/>
+      <svg x="20.689" y="0.225" width="17.203" height="223.630" viewBox="20.689 0.225 17.203 223.630" preserveAspectRatio="none">
+        <defs><clipPath id="spm_r1"><path d="M 20.652344 0.261719 L 37.839844 0.261719 L 37.839844 223.816406 L 20.652344 223.816406 Z M 20.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="spm_r2"><path d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.816406 L 0.652344 223.816406 Z M 0.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="spm_r3"><rect x="0" width="18" y="0" height="224"/></clipPath></defs>
+        <g clip-path="url(#spm_r1)"><g transform="matrix(1, 0, 0, 1, 20, -0.000000000000020428)"><g clip-path="url(#spm_r3)"><g clip-path="url(#spm_r2)"><path fill="#626286" d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.808594 L 0.652344 223.808594 Z M 0.652344 0.261719 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g>
+      </svg>
+      <svg x="79.832" y="47.921" width="66.789" height="66.932" viewBox="79.832 47.921 66.789 66.932" preserveAspectRatio="none">
+        <defs><clipPath id="spm_t1"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="spm_t2"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="spm_t3"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="spm_t4"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="spm_t5"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="spm_t6"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="spm_t7"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="spm_t8"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="spm_t9"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="spm_t10"><rect x="0" width="68" y="0" height="68"/></clipPath></defs>
+        <g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#spm_t10)"><g clip-path="url(#spm_t1)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#spm_t3)"><g clip-path="url(#spm_t2)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#spm_t4)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#spm_t6)"><g clip-path="url(#spm_t5)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#spm_t7)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#spm_t9)"><g clip-path="url(#spm_t8)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></g>
+      </svg>
+      <svg x="74.997" y="121.602" width="77.584" height="46.683" viewBox="74.997 121.602 77.584 46.683" preserveAspectRatio="none">
+        <defs><g/><clipPath id="spm_w1"><rect x="0" width="84" y="0" height="39"/></clipPath></defs>
+        <g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#spm_w1)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g>
+      </svg>
+    </svg>
+    <span id="space-mark-name"></span>
+  </button>
+</div>
 <button id="member" type="button" aria-label="My space"><i></i><span id="member-txt">Sign in</span><b id="member-n"></b></button>
 <a id="terms" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a>
 <div id="vnow" aria-live="polite"><b id="vt" class="b1"></b><i id="vs" class="b3"></i><button id="status" type="button" tabindex="-1"></button></div>
@@ -718,7 +773,7 @@ function spotBoxHTML(s){
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
 let me = null, F = null, MS = null, TOT = null;
 let VIEW = 'radar', PANEL = null, FOCUS = null;
-const BUILD = '2026-09-28';
+const BUILD = '2026-09-28b';
 const LISBON = { lat:38.7223, lng:-9.1393 };
 const LOCAL_MAX = 80e3, SPIN_AT = 700e3, MIN_R = 120, MAX_R = 7.6e6;
 const RAD = { on:false, raf:0, t:0, W:0, H:0, dpr:1, cx:0, cy:0, rpx:0, tcx:0, tcy:0, trpx:0,
@@ -755,6 +810,13 @@ function paintMember(){
   $('member').classList.toggle('is-in', !!me);
   $('member-txt').textContent = me ? (F?.pseudo || 'Member') : 'Sign in';
   const n = (MS?.requests || []).length; $('member-n').textContent = me && n ? n : '';
+  /* Le logo du haut lit le MÊME passeport : un seul nom peint à deux
+     endroits, jamais recomposé. Cliquable seulement s'il ouvre quelque
+     chose — un invité n'a pas encore de Totehm à ouvrir. */
+  $('space-mark-name').textContent = me ? (F?.pseudo || '') : 'Sign in';
+  const smb = $('space-mark-btn');
+  smb.classList.toggle('go', !!(me && F?.pseudo));
+  if(me && F?.pseudo) smb.dataset.go = 'com'; else delete smb.dataset.go;
 }
 
 /* ══ LES CINQ VUES — UNE SEULE TABLE, LUE PAR TOUT ══════════════════
