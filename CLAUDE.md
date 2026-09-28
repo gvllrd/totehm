@@ -157,6 +157,103 @@ annuel + complet. Maintenant : + THP. Un membre annuel sans THP perd le
 bot quand la migration passe. Retour arrière : une ligne dans
 `totehmbot_access`.
 
+### ⛔ LE PAPIER EST UN BUVARD — ON LE PREND, ON LE JETTE — 28/09/2026
+
+**La demande de Wah, verbatim :** « on abandonne totalement cette idée
+d'hologramme. On fait plus vrai, plus organique : considère que le logo
+(assemblé en 4 SVG) est comme un buvard de LSD posé à plat sur l'écran
+tel qu'il est en version repos. Pour avoir cet effet 100 % organique
+l'utilisateur doit pouvoir le manier de toutes les manières possible
+comme un vrai buvard de LSD — le prendre, le jeter, le courber, le faire
+glisser, l'étirer — dans les limites de l'écran, aussi bien à
+l'ordinateur qu'au téléphone. » Elle **remplace en totalité** la Mission 1
+de « ⛔ LE PAPIER LÉVITE SUR SON SOCLE » (27/09 → 28/09 quater) : le
+socle, la plaque, le faisceau, l'électroaimant, toute leur CSS et tout
+leur JS ont disparu de `com/totehm.html`. `BUILD='2026-09-28e'`.
+
+**⚠️ AU REPOS, IMMOBILE — C'EST LE RENVERSEMENT.** L'ancien papier
+tournait tout seul en permanence (18 s le tour, dérive d'apesanteur,
+suivi de souris) : c'était un objet qui VIVAIT sans qu'on le touche.
+Un buvard posé sur une table ne fait rien tant que personne n'y touche.
+Le moteur (`PAPIER`, module GATE) ne tourne plus qu'à trois moments —
+`'tenu'` (on le tient), `'vol'` (on l'a lâché, il file), `'pose'` (le tap
+qui l'ouvre) — et reste éteint (`mode:'plat'`, l'ancien `.is-flat`) tout
+le reste du temps : zéro calcul, zéro `requestAnimationFrame`.
+
+**On le prend, on le fait glisser (`'tenu'`).** Le point de contact suit
+le doigt ou la souris AU PIXEL, borné à l'écran (une marge garde toujours
+un bord du papier atteignable) — pas de ressort sur la position : une
+vraie prise ne traîne pas derrière la main. L'inclinaison, la torsion, la
+courbure (un `skew`) et l'étirement (`scaleX`/`scaleY`, façon
+« squash-and-stretch ») suivent, eux, par un ressort amorti-critique
+nourri par la vitesse du geste et le point de prise — pris au bord, le
+papier penche comme une vraie feuille tenue d'un coin ; tiré vite, il
+s'étire et se tord un peu.
+
+**On le jette (`'vol'`).** L'élan porte le papier hors de la main : il
+glisse, tourne sur lui-même, l'étirement retombe — puis une attirance
+légère vers le centre (LE MÊME ressort, cible zéro) freine sa course et
+le ramène, en rebondissant doucement (×0,35) s'il touche un bord de
+l'écran. Vitesse et amplitude sous le seuil → il se repose, EXACTEMENT
+comme avant : identité exacte, `.is-flat`, prêt pour `measure()`.
+
+**⚠️ UNE SEULE FONCTION FAIT LE RESSORT.** `ressort()` (amorti-critique)
+est partagée par les neuf clés de la matrice (`rx,ry,rz,px,py,sc,sx,sy,
+sk`) ; seuls `k,z` (raideur, amortissement) changent par clé — le spin
+rebondit un peu, l'étirement est nerveux et bref, le déplacement est mou.
+C'est le même mécanisme, pas neuf physiques différentes.
+
+**⚠️ LA GARANTIE DU TAP-TO-OPEN N'A PAS BOUGÉ.** `poser()` part de la
+position ET de la vitesse du moment (Hermite cubique, comme le 25/09) et
+rejoint l'identité, à plat, vitesse nulle — depuis `'tenu'`, `'vol'` ou
+déjà `'plat'`, peu importe où le geste a laissé le papier. Puis `aPlat()`
+pose l'identité EXACTE : `measure()` lit toujours des calques non
+transformés, et la déconstruction part inchangée, au pixel. **Vérifié :**
+un tap PENDANT le vol (papier encore en mouvement, `diag.vol===true`)
+déconstruit avec les mêmes écarts sub-pixel (`[0,-0.1,0,0.2]`) qu'un tap
+depuis le repos.
+
+**⚠️ ON NE JOUE PAS AVANT DE S'INSCRIRE, MAIS ON PEUT MANIER.** Mission 2
+n'a pas changé : un tap SANS glisser ouvre la porte si l'on n'est pas
+inscrit. Mais prendre, glisser et jeter le papier restent libres pour un
+invité — c'est un objet physique sur l'écran, pas une fonctionnalité du
+compte. La porte s'ouvre au moment de l'ouvrir, pas au moment d'y jouer.
+
+**⚠️ LA GYROSCOPIE ET LE SUIVI DE SOURIS SONT PARTIS AVEC LE SOCLE.**
+L'ancien papier tournait vers le curseur et vers l'inclinaison du
+téléphone (avec toute la danse de permission iOS que ça demandait) —
+c'était la grammaire de l'ancien objet « suspendu ». Un buvard sur une
+table ne regarde pas qui s'approche : zéro `deviceorientation`, zéro
+`requestPermission()`, zéro écouteur `mousemove`. Ce qui en reste :
+`touch-action:none` sur `#gate-asteroid`, et Pointer Events pour le
+doigt comme pour la souris, un seul chemin pour les deux.
+
+**Mouvement réduit : aucun geste n'est écouté**, le papier reste plat et
+immobile — seul le tap (`#gate-enter`, au clavier aussi) l'ouvre.
+Diagnostic : `__totehm_lsd` → `{tenu, vol, jets, reduit}` — des booléens
+et un compteur, jamais une valeur.
+
+**⚠️ PLUS DE BEBAS NEUE DANS LE TOTEHM.** Wah : « dans le TOTEHM, je ne
+veux pas de Bebas Neue, juste du Space Mono et le Quantico. » Exception
+posée dans `com/totehm.html` à la doctrine générale de police (§ « LA
+STACK POLICE » plus bas, qui reste la règle sur `totehm.space` et
+`figher.club`) : le titre de vue (`#vnow b`), le chiffre de classement
+qui se saisit (`.rk-n`, Quantico — c'est une prise, la police de
+l'action), le label « PRIVATE » d'un Trip (`.tv-private`), l'accroche du
+tiroir de monétisation (`.cv-hook`, Quantico) et la question de la porte
+d'inscription (`.door-q`) sont repassés en Space Mono ou Quantico selon
+leur rôle. `.wm-totehm` (jamais appliquée) est supprimée.
+
+**`totehm.space` reçoit ce même logo, réduit, sans hologramme.** En haut
+du cockpit (`#space-mark`, 48 px contre 110 sur `com`), immobile, avec le
+nom du membre dessous (`F.pseudo`, même passeport que `#member-txt` —
+peint une seule fois, par `paintMember()`). Touché, il ouvre CE Totehm
+sur `com` par le pont SSO (`data-go="com"`, même mécanisme que
+`.tname.big` dans le tiroir membre) — inerte pour un invité, qui n'a rien
+à ouvrir. L'assemblage 4 SVG est COPIÉ de `com/totehm.html`
+(« produits indépendants = fichiers indépendants ») : si `com` change son
+logo, `space` doit être recopié.
+
 ### ⛔ L'ARGENT EST UN GRAND LIVRE, PAS UN CALCUL — 23/09/2026
 
 **MASTER §18-23.** 80 % au membre, 20 % à TOTEHM, jamais un virement par
@@ -702,6 +799,11 @@ Code, MCP) remet une semaine de Spots à partir de maintenant.
 
 ### ⛔ LE PAPIER LÉVITE SUR SON SOCLE — ET RIEN NE S'OUVRE SANS ÊTRE INSCRIT — 27/09/2026
 
+> **⚠️ LE TITRE EST DÉPASSÉ LE 28/09 POUR SA MOITIÉ.** Le papier ne
+> lévite plus sur rien : voir « ⛔ LE PAPIER EST UN BUVARD » plus haut.
+> Seule Mission 2 (pas inscrit, rien n'est permis) reste la vérité de ce
+> titre.
+
 **La demande de Wah, en deux missions :** « un socle à lévitation
 électromagnétique ultra-épuré ; le Totehm remonté, qui donne l'illusion
 d'un hologramme suspendu, sans lumières flashy ni fioritures — une œuvre
@@ -711,104 +813,15 @@ n'est permis. Point. » Tout est dans `com/totehm.html`
 
 #### Mission 1 — le socle
 
-> **⚠️ REPRIS LE 28/09** (`BUILD='2026-09-28'`). Le socle devient une
-> **plaque de lumière abstraite** (plus de tranche, d'arête ni de
-> logement dessinés) qui va **d'un bord à l'autre** de l'écran du
-> téléphone : `--socle-w:min(100vw,430px)`. L'air sous le papier double :
-> `--air:min(112px,13.3vh)`. **La structure a les mêmes pixels à
-> l'ordinateur** — papier 110, air 112, plaque 430 au plus : le Totehm est
-> unique, on ne le grossit pas pour remplir un grand écran. Le papier
-> remonte à ~22 % pour que la porte reste au-dessus du clavier (mesuré :
-> le champ email finit à 508 px sur un écran de 844). **L'hologramme
-> s'accentue** : un faisceau navy (`#socle-beam`, SVG flouté par
-> `feGaussianBlur`) part du point lumineux, s'élargit à la largeur du
-> papier et passe 26 px DERRIÈRE lui, avec des lignes de balayage qui
-> montent. Les ondes du point courent sur toute la plaque. ⚠️
-> `#gate-socle>svg` visait aussi le faisceau (un SVG) et l'écrasait en
-> 390×390 : la plaque porte son propre id, `#socle-plate`. Le coin membre
-> et l'espace membre passent du carré vert au **carré blanc**. Ci-dessous,
-> l'état du 27/09.
->
-> **⚠️ 28/09 bis — LE PAPIER EST FAIT DE LA MÊME LUMIÈRE** (`BUILD=
-> '2026-09-28b'`). « Forte discontinuité entre le Totehm et les deux
-> autres objets. » Le papier en vol porte les mêmes lignes de balayage
-> que le faisceau (même couleur, même pas, même vitesse), la lumière du
-> faisceau entre par son bas (`.ast-holo`, `screen`), un halo navy
-> l'entoure (`#gate-asteroid::before`), il laisse passer la lumière
-> (.84) et vacille rarement. Le faisceau monte jusqu'à mi-papier.
-> **Tout tombe d'un coup à `.is-flat`** (pas de transition) : la
-> déconstruction part d'un logo opaque — remesurée, au dixième de pixel.
->
-> **⚠️ 28/09 ter — UN HOLOGRAMME PERFORÉ, PAS UN CARRÉ** (`BUILD=
-> '2026-09-28c'`). Les lignes et la lumière (`.ast-holo`, `.ast-light`)
-> couvraient tout le carré : les trous devenaient des disques rayés.
-> Chaque couche posée SUR le papier porte la perforation en masque
-> (`--perfo`, la même image que le dos `.ast-tile`) : un trou reste un
-> trou, on voit à travers, sur les deux faces. **Règle : tout ce qui
-> s'ajoute au papier se découpe à sa forme.**
->
-> **⚠️ 28/09 quater — LE TOTEHM RESTE LE TOTEHM, LA LUMIÈRE LE SUIT**
-> (`BUILD='2026-09-28d'`). « Le Totehm reste en bleu navy, le Totehm
-> d'origine ; ce sont les deux autres objets qui s'adaptent à sa couleur
-> brute. » **Défait le 28/09 bis sur le papier** : plus de lignes, plus
-> de lumière lilas, plus de transparence ni de vacillement, plus de halo
-> — le papier est le logo, plein, navy, ses trous sont des trous
-> (`.ast-holo` et `#gate-asteroid::before` n'existent plus). **La plaque
-> et le faisceau passent en navy** (#333366 et ses tons clairs près du
-> point), sans lignes de balayage : abstrait, une seule matière. **Le
-> faisceau SUIT le Totehm** : `PAPIER.faisceau()` projette à chaque
-> frame les deux coins du bas du papier par la même chaîne que
-> `peindre()` (échelle, rotations, perspective, translation) et y
-> accroche le haut du faisceau, 1,5 px derrière le bord. Mesuré : le
-> haut du faisceau tombe à 1,4–1,6 px au-dessus du bord bas réel du
-> papier, sur toute sa largeur, à six instants différents, au téléphone
-> et à l'ordinateur. Au repos et en mouvement réduit, il se pose sur le
-> papier à plat ; il se remesure à chaque changement de taille.
-
-**`#gate-socle` : un palet gris en SVG** — une tranche, un dessus, un
-logement. Zéro bouton, zéro vis. Dans le logement, l'électroaimant : trois
-spires immobiles et trois ondes (`.sc-w`, 4,8 s) qui partent du cœur.
-C'est de la géométrie, pas une image : net à toutes les tailles, zéro
-octet à télécharger.
-
-**Le papier remonte** : son centre est à ~27 % de la hauteur
-(`#gate-top-row`, `margin-top` calculé). La porte vit sous le socle, et
-elle doit rester AU-DESSUS du clavier du téléphone.
-
-**L'hologramme, en quatre subtilités — et rien d'autre :**
-
-| ce qu'il fait | comment |
-|---|---|
-| il lévite | deux sinus lents sur la hauteur, en plus de la dérive du 25/09 ; un ressort `lv` le fait monter de 7 px quand la souris approche, descendre de 6 px quand on appuie |
-| il se reflète | son reflet navy glisse sur le dessus du socle avec lui, et s'amincit quand il passe sur la tranche (`#socle-refl`) |
-| l'aimant travaille | le cœur (`#socle-core`) s'avive quand le papier descend |
-| il est porté | un faisceau à peine plus clair que l'air, qui meurt avant de le toucher |
-
-Au tap d'un inscrit, le cœur rend un seul éclat (`.is-charge`), puis le
-Totehm sort. Tout vit entre 3 et 12 % d'opacité.
-
-**⚠️ AUCUNE OMBRE PORTÉE (BRAND).** Ce qui ancre le papier au socle n'est
-pas une tache sombre : c'est sa lumière sur le dessus. Le seul trait est
-l'arête avant, blanche à 7 % — la lumière sur un bord, pas un contour.
-
-**⚠️ UN FAISCEAU SE DESSINE AU MASQUE, PAS AU `clip-path`.** Le `filter`
-passe AVANT la découpe : un faisceau flouté puis découpé garde des arêtes
-nettes, et une lueur à arêtes nettes se lit comme une boîte grise
-(mesuré). Deux `mask-image` croisés : la hauteur s'éteint vers le haut,
-les côtés s'effilent.
-
-**⚠️ LE SOCLE EST SOUS LE PAPIER** (`z-index` 1 contre 2) : le carré navy
-qui grandit pendant la déconstruction le recouvre. Il s'efface sur
-`.entered` et revient au repli.
-
-**⚠️ LA DÉCONSTRUCTION N'A PAS BOUGÉ.** Mesuré au téléphone et à
-l'ordinateur, à trois angles du papier : chaque calque arrive sur sa
-pièce du Totehm au dixième de pixel, comme le 25/09. La colonne est
-ancrée en HAUT : ouvrir ou fermer la porte ne déplace jamais le papier,
-donc `measure()` lit toujours un logo immobile.
-
-Mouvement réduit : les ondes s'arrêtent, le papier reste posé.
-Diagnostic : `__totehm_lsd.socle`.
+> **⚠️ ABANDONNÉ LE 28/09 — PLUS DE SOCLE, PLUS D'HOLOGRAMME.** Wah :
+> « on abandonne totalement cette idée d'hologramme. On fait plus vrai,
+> plus organique : le logo est comme un buvard de LSD posé à plat sur
+> l'écran tel qu'il est en version repos. » Tout ce qui suivait
+> (28/09 → 28/09 quater : le socle, la plaque, le faisceau, les
+> subtilités de lévitation) a disparu — `#gate-socle`, `#socle-beam` et
+> tout ce qui les peignait sont supprimés de `com/totehm.html`, HTML,
+> CSS et JS. **Voir « ⛔ LE PAPIER EST UN BUVARD » plus haut** pour ce qui
+> remplace Mission 1. Mission 2, ci-dessous, n'a pas bougé.
 
 #### Mission 2 — pas inscrit, rien n'est permis
 
@@ -3331,6 +3344,13 @@ facture mensuelle sans revenu en face. Le gratuit reste déterministe.
 > navigation est en Space Mono. Ce tableau n'a pas été mis à jour le
 > 24/09 — c'était une contradiction entre deux documents, corrigée ici le
 > 25/09. Le paragraphe ci-dessous décrit la règle d'avant.
+>
+> **⚠️ EXCEPTION LE 28/09 : PLUS DE BEBAS NEUE DANS LE TOTEHM.** Wah :
+> « dans le TOTEHM, je ne veux pas de Bebas Neue, juste du Space Mono et
+> le Quantico. » Ce tableau reste la règle pour `totehm.space` et
+> `figher.club` ; dans `com/totehm.html` seul, Bebas Neue a disparu de
+> toute règle CSS — voir « ⛔ LE PAPIER EST UN BUVARD » plus haut pour le
+> détail des sept sites convertis.
 
 **⚠️ MONTSERRAT N'A DROIT QU'AU SLOGAN** (règle d'avant le 24/09). Et comme « Higher » est
 toujours un SVG (règle du 18/09), Montserrat ne doit apparaître dans
