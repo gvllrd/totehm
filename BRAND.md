@@ -452,30 +452,44 @@ TREE   GO WHERE IT MAKES SENSE FOR YOU
 Three levels, three distinct purposes, three distinct competitive references.
 Never explained all at once.
 
-### The threshold — the Totehm on its pedestal · 27/09/2026
+### The threshold — the Totehm as a blotter of paper · 28/09/2026
+
+> **⚠️ SUPERSEDES THE PEDESTAL, ENTIRELY.** From 27/09 to 28/09 the
+> landing held a hologram: a paper levitating above a lit pedestal, a
+> magnet, a beam of light. Wah: "we're dropping the hologram idea
+> entirely. Something more real, more organic: the logo is like a blotter
+> of LSD paper lying flat on the screen, as it is at rest." The pedestal,
+> the plate, the beam, the magnet are gone — code and doctrine both.
 
 The landing of `totehm.com` holds ONE object: the Totehm — a small
-perforated paper, the logo on its face — floating above a thin grey
-pedestal, like a work of art in an empty gallery. It levitates, its light
-moves on the pedestal, the magnet underneath answers it. Nothing flashes,
-nothing is explained: it has to make you want to touch it, and open it.
+perforated paper, the logo on its face — lying flat, still, where it
+rests. Nothing flashes, nothing explains itself: it has to make you want
+to pick it up.
 
-**It does not open for a stranger. Not signed up, nothing is allowed.**
-No guest mode, no demo habits, no "try it first". Touching the paper asks,
-one question at a time, for an email, the code, then the name of your
-Totehm — and the paper opens by itself. You come here to build something,
-and you build it under your own name.
+**It behaves like real paper, not a screen effect.** Touch it and it's in
+your hand: it follows your finger or your mouse exactly, bends and
+stretches a little the way a thin sheet does when it's pulled fast or
+held by a corner. Let go and it keeps the throw — it slides, spins,
+drifts back toward the middle like the table has the faintest pull — and
+it always settles back flat and centered, however hard it was thrown.
+That last guarantee is not decorative: it's what lets the paper open
+correctly no matter where a gesture leaves it.
 
-- The pedestal is a flat plate of light, without a button or a screw.
-  **No drop shadow** (§13): what anchors the paper is its light on the
-  pedestal.
-- **The Totehm keeps its raw navy (#333366). Everything around it takes
-  its color** (28/09): the plate and the beam of light that carries it
-  are navy, never a lilac, never scan lines on the paper. The hologram
-  is the light that holds the logo, not a filter on the logo — and that
-  light follows the paper wherever it floats.
-- The door's question is a title: Bebas Neue (§13). The name of the
-  Totehm stays in Quantico, on the back of the paper.
+**It does not open for a stranger. Not signed up, nothing is allowed** —
+that part hasn't moved. No guest mode, no demo habits, no "try it first".
+A plain tap (no drag) without an account asks, one question at a time,
+for an email, the code, then the name of your Totehm — and the paper
+opens by itself. Picking it up and playing with it, though, is free to
+anyone: it's a physical object on the screen, not an account feature.
+
+- **No drop shadow** (§13): a real sheet doesn't need one at rest, and
+  what would anchor it — the pedestal's light — no longer exists.
+- **The Totehm keeps its raw navy (#333366), always.** There is no
+  hologram layer to disagree with it anymore.
+- The sign-up door's question is a label, Space Mono — the same voice as
+  every other question in the Totehm (§13). Bebas Neue does not appear
+  anywhere in `com/totehm.html` (28/09 exception to the general stack).
+  The name of the Totehm stays in Quantico, on the back of the paper.
 
 ### SEED — vs self-help tools
 
@@ -924,6 +938,16 @@ centrage.
 >   écart connu, à convertir dans un prochain lot.
 > - Le tableau ci-dessous décrit la règle du 24/09 ; la ligne Montserrat
 >   est morte.
+
+> **⚠️ EXCEPTION 28/09/2026 — PLUS DE BEBAS NEUE DANS `com/totehm.html`.**
+> Wah : « dans le TOTEHM, je ne veux pas de Bebas Neue, juste du Space
+> Mono et le Quantico. » La règle ci-dessus (Bebas Neue pour titres,
+> sous-titres, questions) reste vraie pour `totehm.space` et
+> `figher.club`. Dans le Totehm seul, elle n'a plus cours : le titre de
+> vue, les questions et les labels y sont Space Mono ; ce qui se saisit
+> ou se manipule (le chiffre de classement, l'accroche du tiroir de
+> monétisation) est Quantico. Voir CLAUDE.md « ⛔ LE PAPIER EST UN
+> BUVARD » pour le détail des sept sites convertis.
 
 **Mise à jour majeure · 24/09/2026 :** deux règles ont bougé.
 Quantico se resserre (INPUTS UTILISATEUR DU TOTEHM UNIQUEMENT — sacré),

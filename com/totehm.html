@@ -577,19 +577,20 @@ body.v-repulsions  #t-foot{animation:respire-logo 2.8s ease-in-out infinite}
 #vnow{position:fixed;top:78px;left:0;right:0;z-index:32;
   text-align:center;line-height:1;pointer-events:none}
 body.ordering #vnow{display:none}
-/* ⚠️ BEBAS NEUE · 27/09/2026. Wah : « tous les titres, sous-titres et
-   questions conceptuelles en Bebas Neue — au final, pas de Montserrat,
-   y compris dans le totehm.html ». Bebas Neue n'existe qu'en UNE
-   graisse : l'importance se dit par la TAILLE et la LUMIÈRE (blanc,
-   puis blanc à .52, puis .32), jamais par un faux gras. */
-#vnow b{font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:21px;letter-spacing:.1em;
+/* ⚠️ PLUS DE BEBAS NEUE DANS LE TOTEHM · 28/09/2026. Wah : « dans le
+   TOTEHM, je ne veux pas de Bebas Neue, juste du Space Mono et le
+   Quantico. » Le titre de vue redevient Space Mono 700 — la police du
+   reste de l'interface, pas un corps de titre importé d'ailleurs.
+   L'importance se dit toujours par la TAILLE et la LUMIÈRE (blanc, puis
+   blanc à .52, puis .32), jamais par une police à part. */
+#vnow b{font-family:'Space Mono',monospace;font-weight:700;font-size:19px;letter-spacing:.06em;
   text-transform:uppercase;color:#fff;white-space:nowrap;
   display:block;text-shadow:0 1px 4px rgba(0,0,0,.6)}
 #vnow i{display:block;margin-top:3px;font-style:normal;
-  font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:13px;letter-spacing:.14em;
+  font-family:'Space Mono',monospace;font-weight:400;font-size:11px;letter-spacing:.1em;
   text-transform:uppercase;color:rgba(255,255,255,.52);white-space:nowrap}
 #vnow span{display:block;margin-top:2px;
-  font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:11px;letter-spacing:.14em;
+  font-family:'Space Mono',monospace;font-weight:400;font-size:9px;letter-spacing:.1em;
   text-transform:uppercase;color:rgba(255,255,255,.32);white-space:nowrap}
 #vnow b,#vnow i,#vnow span{padding:0}
 body.ro #vnow{top:calc(78px + var(--ro-h))}
@@ -1515,7 +1516,7 @@ body.ordering .habit .h-body{opacity:.92}
    pour le contenir : `body.ordering` redéfinit --rw à 26 px, et
    comme #rail, .h-body, .tick et #ordbtn s'accrochent tous à --rw,
    toute la colonne pousse et le rail devient la piste du classement.
-   Le nombre est centré sur cette piste — en Bebas Neue (27/09). */
+   Le nombre est centré sur cette piste — en Quantico (28/09). */
 /* ⚠️ MAIS LE T, LUI, NE BOUGE PAS · 22/09/2026. « Quand on appuie sur
    l'icône classement, PAS besoin de faire bouger le T.svg. »
    `#bigT` et `#wordmark` se posaient sur `--rl + --rw`, donc ils
@@ -1530,8 +1531,9 @@ body.ordering{--rw:34px}
 /* LA PISTE DU CLASSEMENT : ↑ · le rang · ↓, empilés dans le rail.
    Le rail s'élargit pour les contenir (`body.ordering{--rw:34px}`) et
    comme #rail, .h-body, .tick et #ordbtn s'y accrochent tous, toute la
-   colonne pousse — le rail DEVIENT la piste. Le nombre est en
-   Bebas Neue (27/09 : plus de Montserrat nulle part). */
+   colonne pousse — le rail DEVIENT la piste. Le nombre est en Quantico
+   (28/09 : plus de Bebas Neue dans le Totehm) — c'est une prise, donc
+   la police de l'action. */
 .rk{position:absolute;
   left:calc(var(--rl) + var(--rw)/2);
   top:50%;transform:translate(-50%,-50%);
@@ -1545,8 +1547,8 @@ body.ordering{--rw:34px}
    pas un clignotant de plus.
    Et comme l'accroche est CE POINT-LÀ et pas la boîte entière, le reste
    de la ligne s'édite et la liste défile exactement comme en lecture. */
-.rk-n{font-family:'Bebas Neue',sans-serif;font-weight:400;font-style:normal;
-  font-size:20px;line-height:1;color:#fff;
+.rk-n{font-family:'Quantico',sans-serif;font-weight:700;font-style:normal;
+  font-size:18px;line-height:1;color:#fff;
   font-variant-numeric:tabular-nums;letter-spacing:-.02em;
   cursor:grab;touch-action:none;-webkit-tap-highlight-color:transparent;
   padding:3px 9px;margin:-3px -9px;
@@ -1681,7 +1683,6 @@ body.rk-grab #fv-inner{overscroll-behavior:none}
 /* ══ SETTINGS (noir, prolongement d'index.html : tiroirs + radios boutique) ══ */
 #settings{width:100%;max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:8px;padding:3vh 22px 0;align-items:center}
 .set-block{display:flex;flex-direction:column;gap:7px;align-items:center;width:100%}
-.wm-totehm{font-family:'Bebas Neue',sans-serif;font-weight:400;font-style:normal;color:#fff;letter-spacing:.16em;margin-right:-.16em}
 .drawer{overflow:hidden;max-height:0;opacity:0;transition:max-height .42s ease,opacity .38s ease;width:100%;display:flex;flex-direction:column;align-items:center;gap:11px}
 .drawer.on{max-height:520px;opacity:1;margin-top:2px}
 .set-note{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.14em;color:var(--g-dark);text-transform:uppercase;text-align:center}
@@ -1787,7 +1788,7 @@ body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
 .r-habit.timed .r-tick{background:#fff}
 .r-habit .h-T{background:none;border:none;padding:0;line-height:0;display:block;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .r-text{margin-left:calc(var(--rl) + var(--rw) + 16px);font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;color:#fff;line-height:1.5;padding:4px 2px;flex:1}
-.tv-private{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.14em;color:rgba(255,255,255,.5);text-transform:uppercase}
+.tv-private{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Space Mono',monospace;font-size:15px;letter-spacing:.12em;color:rgba(255,255,255,.5);text-transform:uppercase}
 
 /* ── MEMBER WINDOW ── */
 /* ══ ABONNEMENT dans l'espace membre ══
@@ -1937,8 +1938,9 @@ body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
   filter:blur(3px);opacity:.5;pointer-events:none;transition:filter .3s ease,opacity .3s ease}
 #cercle.ouvert #cercle-corps{filter:none;opacity:1;pointer-events:auto}
 
-.cv-hook{font-family:'Bebas Neue',sans-serif;font-style:normal;font-weight:400;
-  font-size:clamp(22px,6.4vw,28px);line-height:1.02;color:#fff;letter-spacing:.02em}
+.cv-hook{font-family:'Quantico',sans-serif;font-style:normal;font-weight:700;
+  font-size:clamp(18px,5.4vw,23px);line-height:1.12;color:#fff;letter-spacing:.01em;
+  text-transform:uppercase}
 .cv-say{font-size:12px;line-height:1.6;color:var(--g-light);max-width:300px}
 .cv-say b{color:#fff}
 .cv-sim{display:flex;flex-direction:column;gap:4px;width:100%;max-width:280px}
@@ -2058,49 +2060,47 @@ body:not(.gate) #gate{display:none}
 #gate-search .note{width:100%}
 #gate-top-row{display:flex;flex-direction:column;align-items:center;
   gap:16px;flex-shrink:0}
-/* ══ LE PAPIER — L'ATTERRISSAGE · 25/09/2026 ══════════════════════
-   Un petit carré de papier perforé, en apesanteur, qui tourne sur
-   lui-même. DEUX FACES : devant, le LOGO — les quatre calques SVG
-   (`#gate-logo`), ceux-là mêmes qui se déconstruisent en Totehm déplié ;
-   derrière, « Tap to open it » ou le NOM du Totehm du membre connecté.
-   Toute la stratégie d'une vie tient dans ce morceau de papier : on le
-   touche, il se pose face logo, et le Totehm en sort.
+/* ══ LE PAPIER — UN BUVARD, PAS UN HOLOGRAMME · 28/09/2026 ══════════
+   Wah : « le logo est comme un buvard de LSD posé à plat sur l'écran,
+   tel qu'il est en version repos. » Fini le socle, le faisceau, la
+   lévitation qui tourne toute seule : AU REPOS, le papier est immobile,
+   à plat, à sa place. Il ne vit QUE quand on le touche.
+   DEUX FACES : devant, le LOGO — les quatre calques SVG (`#gate-logo`),
+   ceux-là mêmes qui se déconstruisent en Totehm déplié ; derrière,
+   « Tap to open it » ou le NOM du Totehm du membre connecté.
 
-   ⚠️ LE LOGO EST SUR LE PAPIER, PAS À CÔTÉ. Le 24/09 on l'avait caché
-   hors écran pour faire tourner une carte vide : la déconstruction
-   continuait, mais invisible, et on entrait dans le noir. Ici les
-   quatre calques SONT la face avant. Au tap, le papier se pose à plat
-   (identité exacte, `.is-flat`), PUIS `measure()` et la déconstruction
-   d'origine partent — inchangées, au pixel.
+   ⚠️ LE LOGO EST SUR LE PAPIER, PAS À CÔTÉ. Au tap, le papier se pose à
+   plat (identité exacte, `.is-flat`), PUIS `measure()` et la
+   déconstruction d'origine partent — inchangées, au pixel, quelle que
+   soit la position où le geste l'a laissé.
 
-   ⚠️ LE MOUVEMENT EST CONDUIT PAR LE JS, UNE SEULE MATRICE. Rotation,
-   inclinaison (souris, téléphone), dérive, pression du doigt, lancer :
-   une animation CSS écraserait le `transform` que le capteur pose, et
-   deux couches de CSS ne savent pas se poser ensemble face logo. Le
-   moteur (`PAPIER`, module GATE) ne tourne QUE sur l'atterrissage au
-   repos ; posé, il s'arrête et ne coûte plus rien.
+   ⚠️ ON LE PREND, ON LE JETTE, ON LE FAIT GLISSER. Une seule matrice,
+   conduite par le JS (module `PAPIER`) : appuyer le soulève, glisser le
+   déplace (borné à l'écran), lâcher lui laisse l'élan — il glisse,
+   tourne, flotte un instant puis revient se poser, comme un vrai
+   morceau de papier sur une table légèrement magnétique. Le moteur ne
+   tourne QUE pendant qu'on le manie ou qu'il finit sa course : posé, il
+   s'arrête et ne coûte plus rien.
 
    ⚠️ `backface-visibility` AUSSI sur les enfants des faces : Safari
    compose à part un enfant animé et le montrerait en miroir à travers
-   le dos. Les deux faces sont écartées d'un pixel pendant qu'il tourne
-   (deux plans confondus scintillent sur la tranche) — et remises dans
-   le même plan quand il est posé : `measure()` lit une face sans
-   aucune transformation. */
-/* ⚠️ LE TOTEHM MONTE DANS LE HAUT DE L'ÉCRAN · 27/09/2026. Le centre
-   du papier se pose à ~22 % de la hauteur (27 % le 27/09 ; remonté le
-   28/09 quand l'air sous lui a doublé) : dessous, l'air, le socle, puis
-   la porte — qui doit rester AU-DESSUS du clavier du téléphone. Un
-   écran de 844 px garde tout dans ses 500 premiers pixels. La colonne est
-   ancrée en haut : ouvrir ou fermer la porte ne déplace pas le papier —
-   `measure()` doit lire un logo immobile. */
+   le dos. */
+/* ⚠️ LE TOTEHM MONTE DANS LE HAUT DE L'ÉCRAN · 27/09/2026. Le centre du
+   papier se pose à ~22 % de la hauteur : dessous, l'air, puis la porte —
+   qui doit rester AU-DESSUS du clavier du téléphone. Un écran de 844 px
+   garde tout dans ses 500 premiers pixels. La colonne est ancrée en
+   haut : ouvrir ou fermer la porte ne déplace pas le papier — `measure()`
+   doit lire un logo immobile. */
 #gate-top-row{margin:0;gap:0;
   margin-top:max(0px,calc(22dvh - var(--gate-size) / 2 - max(76px,13dvh)))}
 #gate-asteroid{z-index:2;
   position:relative;flex-shrink:0;
   width:var(--gate-size);height:var(--gate-size);
-  perspective:480px;cursor:pointer;touch-action:none;
+  perspective:480px;cursor:grab;touch-action:none;
   -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#gate-asteroid.tenu{cursor:grabbing}
 #gate-asteroid:has(#gate-enter:focus-visible){outline:1px solid rgba(255,255,255,.35);outline-offset:12px}
+@media(prefers-reduced-motion:reduce){#gate-asteroid{cursor:pointer}}
 #gate-card{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform}
 .ast-face{position:absolute;inset:0;
   backface-visibility:hidden;-webkit-backface-visibility:hidden}
@@ -2145,71 +2145,16 @@ body:not(.gate) #gate{display:none}
 @media(hover:hover){#gate-asteroid:hover .ast-say{color:#fff}}
 body.gate.entered .ast-back{visibility:hidden}
 
-/* ══ LE SOCLE · 27/09/2026 — ABSTRAIT, BORD À BORD · 28/09/2026 ══════
-   Plus un objet : une PLAQUE DE LUMIÈRE. Un disque navy sans tranche,
-   sans arête, sans logement dessiné, qui s'éteint vers ses bords — et en
-   son centre le point lumineux de l'aimant, dont les ondes courent sur
-   toute la plaque. Dessiné en SVG : de la géométrie, net à toutes les
-   tailles, zéro octet à télécharger.
-
-   ⚠️ LA STRUCTURE A LA MÊME TAILLE PARTOUT. Au téléphone la plaque va
-   d'un bord à l'autre de l'écran ; à l'ordinateur elle garde EXACTEMENT
-   ces pixels (430 au plus), l'air aussi (112), le papier aussi (110). Le
-   Totehm est unique : on ne le grossit pas pour remplir un grand écran.
-
-   ⚠️ LE FAISCEAU EST L'HOLOGRAMME, ET IL SUIT LE TOTEHM · 28/09 quater.
-   Une lumière de la couleur BRUTE du Totehm (#333366, et ses tons
-   clairs près du point) part du point et monte jusqu'au BORD BAS du
-   papier — là où il est vraiment : `PAPIER` projette à chaque frame les
-   deux coins du bas par la même matrice que le papier (translation,
-   inclinaison, rotation, perspective) et y accroche le haut du
-   faisceau. Le papier glisse, le faisceau glisse ; il tourne sur sa
-   tranche, le faisceau devient un fil ; il penche, le faisceau penche.
-   Plus de lignes de balayage : abstrait, une seule matière, la navy.
-   Flouté par un filtre SVG — jamais `filter` + `clip-path` (27/09).
-
-   ⚠️ LE PAPIER FLOTTE, ET LA PLAQUE LE SAIT. `PAPIER.peindre` pose à
-   chaque frame : le REFLET navy du papier sur la plaque (il glisse avec
-   lui, s'amincit quand le papier passe sur la tranche), le CŒUR (plus
-   vif quand le papier descend) et le FAISCEAU.
-
-   ⚠️ AUCUNE OMBRE PORTÉE (BRAND) : ce qui relie le papier à la plaque
-   est de la lumière. */
-:root{--socle-w:min(100vw,430px);--air:min(112px,13.3vh)}
-#gate-socle{position:relative;z-index:1;flex-shrink:0;width:var(--socle-w);
-  margin-top:var(--air);line-height:0;
-  transition:opacity .7s ease .5s,transform .9s cubic-bezier(.2,.7,.2,1) .5s}
-#socle-plate{display:block;width:100%;height:auto;overflow:visible}
-/* Le faisceau : sa boîte part du point (au centre de la plaque, 50 % de
-   sa hauteur) et monte au-delà du papier ; sa forme, elle, est posée par
-   le moteur, en pixels (`viewBox` = la boîte mesurée). */
-#socle-beam{position:absolute;left:50%;bottom:50%;
-  width:calc(var(--gate-size) * 2.2);
-  height:calc(var(--air) + var(--socle-w) / 12 + 30px);
-  transform:translateX(-50%);opacity:.9;pointer-events:none;overflow:visible}
-.sc-w{transform-box:fill-box;transform-origin:center;vector-effect:non-scaling-stroke;
-  opacity:0;animation:sc-onde 6s cubic-bezier(.25,.1,.3,1) infinite}
-.sc-w:nth-child(2){animation-delay:2s}
-.sc-w:nth-child(3){animation-delay:4s}
-@keyframes sc-onde{0%{transform:scale(.04);opacity:0}12%{opacity:.5}100%{transform:scale(1);opacity:0}}
-/* Le point respire, et au tap il rend son énergie : un seul éclat. */
-#socle-dot{animation:sc-pouls 3.2s ease-in-out infinite}
-@keyframes sc-pouls{0%,100%{opacity:.8}50%{opacity:1}}
-#gate-socle.is-charge #socle-core{animation:sc-charge .75s ease-out}
-@keyframes sc-charge{0%{opacity:.6}25%{opacity:1}100%{opacity:.2}}
-/* Le Totehm se déplie : la plaque s'efface en s'abaissant d'un souffle,
-   et revient quand le logo est rentré dans son papier. */
-body.gate.entered #gate-socle{opacity:0;transform:translateY(10px);
-  transition:opacity .4s ease,transform .6s ease}
-@media(prefers-reduced-motion:reduce){ .sc-w,#socle-dot{animation:none} }
-
 /* ══ LA PORTE · 27/09/2026 ═══════════════════════════════════════════
    Pas inscrit, rien n'est permis. Elle n'existe que demandée (le tap
-   sur le papier) : une question à la fois, sous le socle. Elle se
-   retire en `visibility` APRÈS son fondu, sinon ses champs restent
-   atteignables à la tabulation. */
+   sur le papier) : une question à la fois, sous lui. Elle se retire en
+   `visibility` APRÈS son fondu, sinon ses champs restent atteignables à
+   la tabulation.
+   ⚠️ LA MARGE REMPLACE L'AIR DU SOCLE · 28/09/2026. Le socle réservait
+   ~150 px entre le papier et cette porte ; parti avec lui, l'air se pose
+   ici, en dur — sinon la porte s'ouvre collée au papier. */
 #gate-door{display:flex;flex-direction:column;align-items:center;gap:9px;
-  width:min(280px,78vw);margin-top:clamp(20px,3.6vh,32px);
+  width:min(280px,78vw);margin-top:clamp(52px,13vh,96px);
   opacity:0;transform:translateY(-6px);visibility:hidden;pointer-events:none;
   transition:opacity .3s ease,transform .45s cubic-bezier(.2,.7,.2,1),visibility 0s linear .45s}
 body.is-door #gate-door{opacity:1;transform:none;visibility:visible;pointer-events:auto;
@@ -2217,10 +2162,10 @@ body.is-door #gate-door{opacity:1;transform:none;visibility:visible;pointer-even
 body.gate.entered #gate-door{opacity:0;visibility:hidden}
 #gate-door #mw-out-state,#gate-door #mw-claim-state{width:100%}
 #gate-door .mw-input{margin-bottom:0}
-/* La question est un TITRE (BRAND 27/09 : Bebas Neue). Une seule graisse :
-   l'importance tient dans la taille et la lumière. */
-.door-q{font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:17px;
-  letter-spacing:.14em;color:rgba(255,255,255,.78);text-transform:uppercase;line-height:1}
+/* La question est un LABEL, comme les autres questions du Totehm
+   (`.hp-lbl`, `.wp-q`) — Space Mono, 28/09 : plus de Bebas Neue ici. */
+.door-q{font-family:'Space Mono',monospace;font-weight:400;font-size:13px;
+  letter-spacing:.1em;color:rgba(255,255,255,.78);text-transform:uppercase;line-height:1.3}
 #gate-turn{margin-top:20px}
 /* Le coin membre n'existe que pour un inscrit : un point gris qui
    n'ouvre rien d'utile à un inconnu est une porte peinte sur un mur. */
@@ -2876,72 +2821,6 @@ body.gate.entered #filter-badge{
     </div><!-- /#gate-card -->
   </div><!-- /#gate-asteroid -->
 
-  <!-- ══ LE SOCLE · 27/09/2026 ═══════════════════════════════════════
-       Un palet gris, aussi plat et fin que possible : zéro bouton, zéro
-       vis. Dans son dessus, un logement, et dans le logement
-       l'électroaimant — ses spires, et le champ qui en sort. Le papier
-       flotte au-dessus ; le socle le sait : son reflet glisse sur le
-       dessus, le cœur de l'aimant répond à sa hauteur. -->
-  <div id="gate-socle" aria-hidden="true">
-    <!-- le faisceau : la lumière navy du Totehm, du point à son bord bas.
-         Ses trois formes sont posées par le moteur (PAPIER.faisceau). -->
-    <svg id="socle-beam" viewBox="0 0 242 190" preserveAspectRatio="none" aria-hidden="true">
-      <defs>
-        <linearGradient id="sb-g" x1="0" x2="0" y1="1" y2="0">
-          <stop offset="0" stop-color="#9c9cdc" stop-opacity=".62"/>
-          <stop offset=".14" stop-color="#5c5caa" stop-opacity=".42"/>
-          <stop offset=".6" stop-color="#333366" stop-opacity=".38"/>
-          <stop offset="1" stop-color="#333366" stop-opacity=".62"/>
-        </linearGradient>
-        <linearGradient id="sb-c" x1="0" x2="0" y1="1" y2="0">
-          <stop offset="0" stop-color="#e2e2ff" stop-opacity=".75"/>
-          <stop offset=".35" stop-color="#6a6ab8" stop-opacity=".3"/>
-          <stop offset="1" stop-color="#333366" stop-opacity="0"/>
-        </linearGradient>
-        <filter id="sb-halo" filterUnits="userSpaceOnUse" x="-200" y="-200" width="800" height="800">
-          <feGaussianBlur stdDeviation="7"/></filter>
-        <filter id="sb-flou" filterUnits="userSpaceOnUse" x="-200" y="-200" width="800" height="800">
-          <feGaussianBlur stdDeviation="1.1"/></filter>
-      </defs>
-      <polygon id="sb-aura" points="118,190 124,190 176,52 66,52" fill="url(#sb-g)" opacity=".5" filter="url(#sb-halo)"/>
-      <polygon id="sb-corps" points="118,190 124,190 176,52 66,52" fill="url(#sb-g)" filter="url(#sb-flou)"/>
-      <polygon id="sb-coeur" points="120.4,190 121.6,190 131,52 111,52" fill="url(#sb-c)" filter="url(#sb-flou)"/>
-    </svg>
-    <!-- la plaque : un disque de lumière navy, sans arête -->
-    <svg id="socle-plate" viewBox="0 0 240 40" preserveAspectRatio="xMidYMid meet">
-      <defs>
-        <radialGradient id="sc-top" cx=".5" cy=".5" r=".5">
-          <stop offset="0" stop-color="#333366"/><stop offset=".4" stop-color="#26264d"/>
-          <stop offset=".78" stop-color="#16162e" stop-opacity=".75"/>
-          <stop offset="1" stop-color="#0a0a14" stop-opacity="0"/>
-        </radialGradient>
-        <radialGradient id="sc-glow" cx=".5" cy=".5" r=".5">
-          <stop offset="0" stop-color="#5c5caa" stop-opacity=".6"/>
-          <stop offset=".6" stop-color="#333366" stop-opacity=".25"/>
-          <stop offset="1" stop-color="#333366" stop-opacity="0"/>
-        </radialGradient>
-        <radialGradient id="sc-core" cx=".5" cy=".5" r=".5">
-          <stop offset="0" stop-color="#d4d4ff" stop-opacity=".95"/>
-          <stop offset=".35" stop-color="#5c5caa" stop-opacity=".5"/>
-          <stop offset="1" stop-color="#333366" stop-opacity="0"/>
-        </radialGradient>
-        <clipPath id="sc-topclip"><ellipse cx="120" cy="20" rx="120" ry="15"/></clipPath>
-      </defs>
-      <ellipse cx="120" cy="20" rx="120" ry="15" fill="url(#sc-top)"/>
-      <!-- le reflet du papier, posé par le moteur -->
-      <g clip-path="url(#sc-topclip)"><g id="socle-refl" transform="translate(120 20)">
-        <ellipse cx="0" cy="0" rx="46" ry="6" fill="url(#sc-glow)"/></g></g>
-      <!-- le champ : trois ondes qui partent du point et courent sur la plaque -->
-      <g class="sc-field" fill="none" stroke="#6a6ab8" stroke-width=".7">
-        <ellipse class="sc-w" cx="120" cy="20" rx="112" ry="14"/>
-        <ellipse class="sc-w" cx="120" cy="20" rx="112" ry="14"/>
-        <ellipse class="sc-w" cx="120" cy="20" rx="112" ry="14"/>
-      </g>
-      <ellipse id="socle-core" cx="120" cy="20" rx="20" ry="3.4" fill="url(#sc-core)" opacity=".55"/>
-      <ellipse id="socle-dot" cx="120" cy="20" rx="2.2" ry=".9" fill="#ececff"/>
-    </svg>
-  </div><!-- /#gate-socle -->
-
 
   <!-- ⚠️ LE TOTEHM NE S'OUVRE PAS À L'HORIZONTALE · 22/09/2026.
        Le Totehm est un CARRÉ debout : couché, la liste tient sur trois
@@ -2954,9 +2833,9 @@ body.gate.entered #filter-badge{
 
   <!-- ══ LA PORTE · 27/09/2026 ═══════════════════════════════════════
        Pas inscrit, rien n'est permis. Toucher le papier sans compte fait
-       apparaître ICI, sous le socle, une seule question à la fois :
-       l'email, le code reçu, le nom du Totehm — puis le papier s'ouvre.
-       Les champs sont ceux de l'ancienne fenêtre membre, déplacés (mêmes
+       apparaître ICI, sous lui, une seule question à la fois : l'email,
+       le code reçu, le nom du Totehm — puis le papier s'ouvre. Les
+       champs sont ceux de l'ancienne fenêtre membre, déplacés (mêmes
        nœuds, mêmes écouteurs). -->
   <div id="gate-door">
     <div class="door-q" id="door-q">Sign up to open it</div>
@@ -3211,7 +3090,7 @@ body.gate.entered #filter-badge{
   <div class="mw-card">
     <button class="mw-close" id="mw-close">Close</button>
     <!-- ⚠️ L'INSCRIPTION A QUITTÉ CETTE FENÊTRE · 27/09/2026. Elle vit
-         sous le socle (#gate-door) : on s'inscrit pour OUVRIR le papier,
+         sous le papier (#gate-door) : on s'inscrit pour OUVRIR le papier,
          pas dans un menu. Cette fenêtre n'est plus que le tiroir d'un
          inscrit. -->
     <div id="mw-in-state" class="hide">
@@ -4408,7 +4287,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-09-28d';
+const BUILD='2026-09-28e';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -7246,7 +7125,7 @@ function memberPaint(){
 /* ══ LA PORTE DU PAPIER · 27/09/2026 ═════════════════════════════════
    « Pas inscrit. Rien n'est permis. Point. » Inscrit = un compte ET le
    nom de son Totehm (`inscrit()`). Toucher le papier sans l'être ouvre
-   la porte sous le socle — une question à la fois : l'email, le code,
+   la porte sous lui — une question à la fois : l'email, le code,
    le nom — puis le papier s'ouvre de lui-même : on s'inscrivait pour
    ÇA, on ne retouche pas le papier une deuxième fois.
    ⚠️ `enter()` EST LE VERROU, PAS LE BOUTON. Le tap, le clavier, un
@@ -7535,72 +7414,79 @@ window.addEventListener('pageshow',e=>{
   window.addEventListener('orientationchange',surRotation);
   window.addEventListener('resize',surRotation);
 
-  /* ══ LE PAPIER — SON MOTEUR · 25/09/2026 ════════════════════════════
-     Le papier doit se lire comme un OBJET : il a une masse, il répond,
-     il revient. Tout passe par une seule matrice, calculée à chaque
-     frame (`peindre`), et par trois règles physiques :
+  /* ══ LE PAPIER — SON MOTEUR · 28/09/2026 ════════════════════════════
+     Un buvard, pas un gyroscope. Wah : « posé à plat sur l'écran, tel
+     qu'il est en version repos ». Au repos, IMMOBILE (mode `'plat'`,
+     l'ancien `.is-flat`) — zéro animation tant que personne ne le
+     touche. Il ne vit que sous la main, en trois temps :
 
-     1. IL TOURNE, ET IL RESPIRE EN TOURNANT. Environ dix-huit secondes
-        le tour : lent face au regard (≈ 12°/s), plus vif sur la tranche
-        (≈ 34°/s). Une dérive d'apesanteur s'y ajoute — trois sinus de
-        périodes qui ne tombent jamais juste, donc jamais la même boucle.
-     2. IL SUIT, AVEC UN RESSORT. La souris (ordinateur) ou la main
-        (téléphone) donnent une CIBLE d'inclinaison et de glissement ; le
-        papier la rejoint par un ressort un peu sous-amorti — il arrive,
-        dépasse d'un souffle, se pose. Rien n'est recopié tel quel : une
-        valeur recopiée tremble, un ressort vit.
-     3. ON PEUT LE TENIR. Le doigt qui appuie l'enfonce d'un rien et le
-        retient ; glissé, il le fait tourner ; lâché, il garde l'élan et
-        ralentit jusqu'à reprendre son tour. Un tap sans glisser l'ouvre.
+     1. ON LE PREND (`'tenu'`). Le point de contact suit le doigt (ou la
+        souris) AU PIXEL, borné à l'écran — pas de ressort : une vraie
+        prise ne traîne pas derrière la main. L'inclinaison, la torsion
+        (`rz`), la courbure (`sk`, un `skew`) et l'étirement (`sx`,`sy`)
+        suivent, eux, par ressort, nourris par la vitesse du geste et le
+        point de prise (centre ou bord) : vite = ça se tord et s'étire
+        un peu ; pris au bord = ça penche, comme une vraie feuille tenue
+        d'un coin.
+     2. ON LÂCHE (`'vol'`). L'élan porte le papier : il glisse, tourne
+        sur lui-même, l'étirement retombe — puis une attirance légère
+        vers le centre (le même ressort, cible 0) freine sa course et le
+        ramène, en rebondissant doucement s'il touche un bord de l'écran.
+     3. IL SE POSE. Vitesse et amplitude sous le seuil → `aPlat()`,
+        EXACTEMENT comme avant : identité exacte, `.is-flat`, prêt pour
+        `measure()`. Peu importe où le geste l'a laissé, il finit
+        TOUJOURS au même endroit, à plat, centré — c'est ce qui garantit
+        que le tap-to-open reste juste au pixel depuis n'importe quelle
+        prise.
+
+     ⚠️ UNE SEULE FONCTION FAIT LE RESSORT (`ressort`, amorti-critique).
+     `rx,ry,rz,px,py,sc,sx,sy,sk` la partagent ; seuls `k,z` (raideur,
+     amortissement) changent par clé — c'est ce qui donne à chacune son
+     caractère (le spin rebondit un peu, l'étirement est nerveux et bref)
+     sans dupliquer la physique.
 
      ⚠️ L'ATTERRISSAGE EST CONTINU. Au tap, `poser()` part de la
-     position ET DE LA VITESSE du moment (Hermite cubique) et arrive
-     face logo, à plat, vitesse nulle — sans à-coup. Il choisit le tour
-     le plus proche en tenant compte de l'élan. Puis `aPlat()` pose
-     l'identité EXACTE (`.is-flat`, `transform` vide) : `measure()` lit
-     alors les calques comme sur l'ancien logo fixe, et la déconstruction
-     part, inchangée.
+     position ET DE LA VITESSE du moment (Hermite cubique) et arrive à
+     l'identité, vitesse nulle — sans à-coup, quel que soit l'état
+     (`'tenu'`, `'vol'` ou déjà `'plat'`). Puis `aPlat()` pose l'identité
+     EXACTE (`.is-flat`, `transform` vide) : `measure()` lit alors les
+     calques comme sur l'ancien logo fixe, et la déconstruction part,
+     inchangée.
 
-     ⚠️ LA LUMIÈRE VIENT D'EN HAUT À GAUCHE. La normale de chaque face
-     est calculée à partir des mêmes angles, et son voile (`.ast-light`)
-     s'assombrit quand elle se détourne. C'est ce qui fait lire un
-     volume à l'œil — et c'est nul à plat.
+     ⚠️ LA LUMIÈRE VIENT D'EN HAUT À GAUCHE. La normale de la face est
+     calculée à partir des mêmes angles, et son voile (`.ast-light`)
+     s'assombrit quand elle se détourne — nul à plat, donc nul au repos.
 
-     ⚠️ iOS DEMANDE LA PERMISSION DANS UN GESTE (`touchend`/`click`),
-     jamais `touchstart`. Et PAS dans le tap qui ouvre le Totehm : le
-     dialogue tomberait par-dessus le déploiement. Il vient au premier
-     autre geste sur l'atterrissage — un glissé sur le papier, ou le
-     retour par la croix. Le zéro du capteur est la main du membre (sa
-     première mesure, qui suit lentement), pas l'horizon.
+     ⚠️ BORNÉ À L'ÉCRAN, TOUJOURS. Le point de contact est bridé aux
+     limites de la fenêtre dès la prise ; en vol, un rebond amorti (×.35)
+     empêche toute sortie, même après un jet violent.
 
-     Mouvement réduit : le papier reste posé, face logo. */
+     Mouvement réduit : le papier reste posé, immobile — aucun geste
+     n'est écouté. */
   const PAPIER=(()=>{
     const scene=$('gate-asteroid'), card=$('gate-card');
     const RM=window.matchMedia('(prefers-reduced-motion: reduce)');
     /* Le diagnostic : des booléens et des compteurs, jamais une valeur. */
-    const diag={vivant:false, gyro:false, permission:'n/a', souris:false,
-                lancers:0, reduit:RM.matches, socle:!!$('gate-socle')};
+    const diag={tenu:false, vol:false, jets:0, reduit:RM.matches};
     window.__totehm_lsd=diag;
     if(!scene||!card) return {poser:f=>{ if(f) f(); }, reveiller(){}};
     const lights=[...card.querySelectorAll('.ast-light')];   /* [face, dos] */
-    const R=Math.PI/180, W0=34;
+    const R=Math.PI/180;
     const LUM=(()=>{ const x=-.35,y=-.55,z=1,n=Math.hypot(x,y,z); return [x/n,y/n,z/n]; })();
     const borne=(v,a,b)=>Math.max(a,Math.min(b,v||0));
     const res=x=>({x,v:0});
-    /* `lv` : la HAUTEUR de lévitation, à part du suivi — le papier monte
-       quand la main s'approche (il veut être pris), s'enfonce vers le
-       socle quand on appuie dessus (l'aimant résiste). */
-    const S={rx:res(0), ry:res(0), px:res(0), py:res(0), sc:res(1), lv:res(0)};
-    const goal={rx:0, ry:0, px:0, py:0, sc:1, lv:0};
-    const K={rx:[34,.62], ry:[34,.62], px:[34,.62], py:[34,.62], sc:[170,.5], lv:[22,.45]};
-    const PLAT={th:0, rx:0, ry:0, rz:0, px:0, py:0, sc:1};
-    let mode='plat', raf=0, last=0, clock=0, th=0, om=0, life=0;
-    let cur={...PLAT}, prev=null, vel={...PLAT, sc:0};
-    let appui=null, aGlisse=false, pose=null, centre=null, proche=0;
-    /* Le socle : ce que le moteur y lit à chaque frame. */
-    const soc=$('gate-socle'), refl=$('socle-refl'), core=$('socle-core'), beam=$('socle-beam');
-    const sbA=$('sb-aura'), sbB=$('sb-corps'), sbC=$('sb-coeur');
-    let socW=0, geo=null;
+    const S={rx:res(0), ry:res(0), rz:res(0), px:res(0), py:res(0),
+             sc:res(1), sx:res(1), sy:res(1), sk:res(0)};
+    const goal={rx:0, ry:0, rz:0, px:0, py:0, sc:1, sx:1, sy:1, sk:0};
+    /* [raideur, amortissement] par clé : le déplacement est mou (il
+       voyage avant de revenir), la rotation punchy (spin, puis stop),
+       le reste nerveux et bref. */
+    const K={rx:[30,.5], ry:[30,.5], rz:[22,.32], px:[13,.62], py:[13,.62],
+              sc:[170,.5], sx:[55,.6], sy:[55,.6], sk:[45,.35]};
+    const PLAT={rx:0, ry:0, rz:0, px:0, py:0, sc:1, sx:1, sy:1, sk:0};
+    let mode='plat', raf=0, last=0;
+    let cur={...PLAT};
+    let appui=null, aGlisse=false, pose=null, lim=null;
 
     function ressort(s,g,k,z,dt){
       const a=k*(g-s.x)-2*z*Math.sqrt(k)*s.v; s.v+=a*dt; s.x+=s.v*dt; }
@@ -7608,120 +7494,74 @@ window.addEventListener('pageshow',e=>{
     function frame(now){
       raf=0;
       const dt=Math.min(.05,Math.max(0,(now-(last||now))/1000)); last=now;
-      if(mode==='vit') vivre(dt); else if(mode==='pose') poserPas(now);
+      if(mode==='tenu') tenirPas(dt); else if(mode==='vol') volPas(dt);
+      else if(mode==='pose') poserPas(now);
       if(mode==='plat') return;
       peindre();
       if(!document.hidden) raf=requestAnimationFrame(frame);
     }
-    function vivre(dt){
-      clock+=dt;
-      life+=(1-life)*(1-Math.exp(-dt/1.4));
-      if(appui&&appui.on){ /* le doigt conduit : `th` bouge dans pointermove */ }
-      else if(appui){ om*=Math.exp(-dt/.15); th+=om*dt; }      /* tenu */
-      else{
-        const s=Math.sin(th*R), nat=W0*(.34+.66*s*s);
-        om+=(nat-om)*(1-Math.exp(-dt/(Math.abs(om)>W0*1.3?1.1:1.6)));
-        th+=om*dt;
-      }
-      if(th>3600||th<-3600) th%=360;
-      goal.lv=(appui&&!appui.on?6:0)-proche*7;
+    /* Les bornes de l'écran : le CENTRE du papier y reste, avec une
+       marge qui laisse toujours une prise possible sur un bord. */
+    function limites(){
+      const r=scene.getBoundingClientRect();
+      const ncx=r.left+r.width/2, ncy=r.top+r.height/2;
+      const half=(r.width||110)/2, keep=half*.35;
+      return {minX:20+keep-ncx, maxX:innerWidth-20-keep-ncx,
+              minY:32+keep-ncy, maxY:innerHeight-24-keep-ncy};
+    }
+    function lire(){ cur={rx:S.rx.x,ry:S.ry.x,rz:S.rz.x,px:S.px.x,py:S.py.x,
+                          sc:S.sc.x,sx:S.sx.x,sy:S.sy.x,sk:S.sk.x}; }
+    /* ON TIENT : la position suit le doigt AU PIXEL (pas de ressort —
+       une prise ne traîne pas), le reste (torsion, courbure, étirement)
+       suit par ressort, nourri par la vitesse du geste et le point de
+       prise (centre ou bord). */
+    function tenirPas(dt){
+      if(!appui||!appui.on) return;
+      const px=borne(appui.basePx+(appui.x-appui.x0),lim.minX,lim.maxX);
+      const py=borne(appui.basePy+(appui.y-appui.y0),lim.minY,lim.maxY);
+      const vx=(px-S.px.x)/dt, vy=(py-S.py.x)/dt;
+      S.px.x=px; S.px.v=vx; S.py.x=py; S.py.v=vy;
+      goal.rz=borne(vx*.012+appui.gx*10,-35,35);
+      goal.rx=borne(vy*.01-appui.gy*8,-22,22);
+      goal.ry=borne(vx*.006,-16,16);
+      goal.sk=borne(vx*.01,-10,10);
+      const spd=Math.hypot(vx,vy), str=Math.min(.22,spd/2600);
+      goal.sx=1+str; goal.sy=1-str*.5; goal.sc=1.045;
+      for(const k of ['rx','ry','rz','sk','sx','sy','sc']) ressort(S[k],goal[k],K[k][0],K[k][1],dt);
+      lire();
+    }
+    /* ON A LÂCHÉ : l'élan porte le papier, un ressort mou le ramène au
+       centre, et les bords de l'écran le renvoient (rebond amorti). */
+    function volPas(dt){
+      goal.rx=0; goal.ry=0; goal.rz=0; goal.px=0; goal.py=0;
+      goal.sk=0; goal.sx=1; goal.sy=1; goal.sc=1;
       for(const k in S) ressort(S[k],goal[k],K[k][0],K[k][1],dt);
-      const f=clock*2*Math.PI;
-      /* LA LÉVITATION : une respiration verticale de ~4 s, lente comme un
-         champ qui se rééquilibre, et deux sinus de périodes premières
-         entre elles pour que la boucle ne se voie jamais. */
-      const nx={th, sc:S.sc.x, ry:S.ry.x, px:S.px.x,
-        rx:S.rx.x+life*2.4*Math.sin(f/7.3),
-        rz:life*1.1*Math.sin(f/8.9+1.3),
-        py:S.py.x+S.lv.x+life*(3.4*Math.sin(f/4.2)+.9*Math.sin(f/9.7+.7))};
-      if(prev&&dt>0) for(const k in nx) vel[k]=(nx[k]-prev[k])/dt;
-      vel.th=om; prev=cur=nx;
+      if(!lim) lim=limites();
+      if(S.px.x<lim.minX){ S.px.x=lim.minX; S.px.v=Math.abs(S.px.v)*.35; S.rz.v+=borne(S.py.v*.03,-60,60); }
+      else if(S.px.x>lim.maxX){ S.px.x=lim.maxX; S.px.v=-Math.abs(S.px.v)*.35; S.rz.v-=borne(S.py.v*.03,-60,60); }
+      if(S.py.x<lim.minY){ S.py.x=lim.minY; S.py.v=Math.abs(S.py.v)*.35; }
+      else if(S.py.x>lim.maxY){ S.py.x=lim.maxY; S.py.v=-Math.abs(S.py.v)*.35; }
+      lire();
+      const repos=Math.hypot(S.px.v,S.py.v)<18&&Math.abs(S.rz.v)<14
+        &&Math.abs(S.px.x)<2.5&&Math.abs(S.py.x)<2.5&&Math.abs(S.rz.x)<2
+        &&Math.abs(S.rx.x)<.6&&Math.abs(S.ry.x)<.6&&Math.abs(S.sk.x)<.6
+        &&Math.abs(S.sx.x-1)<.02&&Math.abs(S.sy.x-1)<.02;
+      if(repos) aPlat();
     }
     function peindre(){
       const c=cur;
       card.style.transform='translate3d('+c.px.toFixed(2)+'px,'+c.py.toFixed(2)+'px,0)'
         +' rotateX('+c.rx.toFixed(2)+'deg) rotateY('+c.ry.toFixed(2)+'deg)'
-        +' rotateZ('+c.rz.toFixed(2)+'deg) rotateY('+c.th.toFixed(2)+'deg)'
-        +' scale('+c.sc.toFixed(4)+')';
+        +' rotateZ('+c.rz.toFixed(2)+'deg) skew('+c.sk.toFixed(2)+'deg)'
+        +' scale('+(c.sc*c.sx).toFixed(4)+','+(c.sc*c.sy).toFixed(4)+')';
       /* La normale de la face : (0,0,1) passée par les mêmes rotations,
          de la plus intérieure à la plus extérieure. */
-      let x=Math.sin(c.th*R), y=0, z=Math.cos(c.th*R), co, si, t;
+      let x=0, y=0, z=1, co, si, t;
       co=Math.cos(c.rz*R); si=Math.sin(c.rz*R); t=x*co-y*si; y=x*si+y*co; x=t;
       co=Math.cos(c.ry*R); si=Math.sin(c.ry*R); t=x*co+z*si; z=-x*si+z*co; x=t;
       co=Math.cos(c.rx*R); si=Math.sin(c.rx*R); t=y*co-z*si; z=y*si+z*co; y=t;
       const d=(x*LUM[0]+y*LUM[1]+z*LUM[2])/LUM[2];
       eclairer(lights[0],d); eclairer(lights[1],-d);
-      socle(c);
-    }
-    /* LE SOCLE RÉPOND AU PAPIER. `pres` : 0 quand le papier est haut, 1
-       quand il descend vers l'aimant. Le reflet suit sa position et
-       s'amincit quand il passe sur la tranche ; le cœur et le faisceau
-       travaillent plus quand il descend, quand la main approche, quand
-       on appuie. Tout reste sous 12 % d'opacité perçue. */
-    function socle(c){
-      if(!soc) return;
-      if(!socW) socW=soc.getBoundingClientRect().width||200;
-      const pres=borne(.5+c.py/16,0,1);
-      const sx=Math.max(.14,Math.abs(Math.cos((c.th+c.ry)*R)));
-      if(refl){
-        refl.setAttribute('transform','translate('+(120+c.px*240/socW).toFixed(2)+' 20) scale('+sx.toFixed(3)+' 1)');
-        refl.style.opacity=(.35+.45*pres).toFixed(3);
-      }
-      const effort=borne(.3+.35*pres+.3*proche+(appui?.15:0),0,.95);
-      if(core) core.setAttribute('opacity',effort.toFixed(3));
-      if(beam) beam.style.opacity=borne(.7+.2*pres+.1*proche,0,1).toFixed(3);
-      faisceau(c);
-    }
-    function socleRepos(){
-      if(refl){ refl.setAttribute('transform','translate(120 20)'); refl.style.opacity='.6'; }
-      if(core) core.setAttribute('opacity','.55');
-      if(beam) beam.style.opacity='';
-      faisceau(PLAT);
-    }
-    /* ══ LE FAISCEAU SUIT LE BORD BAS DU PAPIER · 28/09 quater ═══════════
-       La boîte du faisceau est mesurée une fois (elle ne bouge pas) et
-       devient son `viewBox` : on dessine en pixels. Les deux coins du bas
-       du papier passent par la MÊME chaîne que `peindre()` — échelle,
-       rotateY(th), rotateZ, rotateY, rotateX, perspective, translation —
-       et le haut du faisceau s'y accroche, 1,5 px derrière le bord (le
-       papier, opaque, le couvre). ⚠️ On ne mesure jamais pendant
-       `.entered` : le socle y est décalé de 10 px. */
-    function mesurerFaisceau(){
-      if(!beam||document.body.classList.contains('entered')) return null;
-      const b=beam.getBoundingClientRect(), a=scene.getBoundingClientRect();
-      if(!b.width||!b.height||!a.width) return null;
-      beam.setAttribute('viewBox','0 0 '+b.width.toFixed(1)+' '+b.height.toFixed(1));
-      const p=parseFloat(getComputedStyle(scene).perspective)||480;
-      return {W:b.width, H:b.height, cx:a.left+a.width/2-b.left, cy:a.top+a.height/2-b.top,
-              h:a.width/2, p};
-    }
-    function coin(g,c,x0,y0){
-      const s0=c.sc||1; let x=x0*s0, y=y0*s0, z=0, co, si, t;
-      co=Math.cos(c.th*R); si=Math.sin(c.th*R); t=x*co+z*si; z=-x*si+z*co; x=t;
-      co=Math.cos(c.rz*R); si=Math.sin(c.rz*R); t=x*co-y*si; y=x*si+y*co; x=t;
-      co=Math.cos(c.ry*R); si=Math.sin(c.ry*R); t=x*co+z*si; z=-x*si+z*co; x=t;
-      co=Math.cos(c.rx*R); si=Math.sin(c.rx*R); t=y*co-z*si; z=y*si+z*co; y=t;
-      const k=g.p/Math.max(40,g.p-z);
-      return [g.cx+c.px+x*k, g.cy+c.py+y*k];
-    }
-    function faisceau(c){
-      if(!sbB) return;
-      if(!geo) geo=mesurerFaisceau();
-      if(!geo) return;
-      let A=coin(geo,c,-geo.h,geo.h), B=coin(geo,c,geo.h,geo.h);
-      if(A[0]>B[0]){ const t=A; A=B; B=t; }
-      const g=geo, bx=g.W/2, by=g.H, lift=1.5;
-      const f=n=>n.toFixed(1);
-      const pts=(w0,wa)=>{
-        const mx=(A[0]+B[0])/2, my=(A[1]+B[1])/2;
-        const ax=mx+(A[0]-mx)*wa, ay=my+(A[1]-my)*wa-lift,
-              cx=mx+(B[0]-mx)*wa, cy=my+(B[1]-my)*wa-lift;
-        return f(bx-w0)+','+f(by)+' '+f(bx+w0)+','+f(by)+' '+f(cx)+','+f(cy)+' '+f(ax)+','+f(ay);
-      };
-      const corps=pts(3.2,1);
-      sbB.setAttribute('points',corps);
-      if(sbA) sbA.setAttribute('points',corps);
-      if(sbC) sbC.setAttribute('points',pts(.7,.2));
     }
     function eclairer(el,f){
       if(!el||f<=0) return;                 /* face détournée : cachée */
@@ -7730,25 +7570,25 @@ window.addEventListener('pageshow',e=>{
     }
     function aPlat(){
       if(raf){ cancelAnimationFrame(raf); raf=0; }
-      mode='plat'; th=0; om=0; life=0; appui=null; pose=null; prev=null;
-      for(const k in S){ S[k].x=k==='sc'?1:0; S[k].v=0; }
+      mode='plat'; appui=null; pose=null; lim=null;
+      for(const k in S){ S[k].x=(k==='sc'||k==='sx'||k==='sy')?1:0; S[k].v=0; }
       cur={...PLAT};
       card.style.transform='';
       lights.forEach(l=>{ l.style.background=''; l.style.opacity=''; });
       card.classList.add('is-flat');
-      socleRepos();
-      diag.vivant=false;
+      scene.classList.remove('tenu');
+      diag.tenu=false; diag.vol=false;
     }
-    /* L'ATTERRISSAGE : position et vitesse du moment → face logo, à plat,
-       vitesse nulle. La durée suit le chemin à faire. */
+    /* L'ATTERRISSAGE : position et vitesse du moment → identité, à
+       plat, vitesse nulle. La durée suit la distance à parcourir. */
     function poser(cb){
-      if(mode!=='vit'){ aPlat(); if(cb) cb(); return; }
-      const thT=360*Math.round((cur.th+om*.3)/360);
-      const D=Math.min(.78,.3+Math.abs(thT-cur.th)/360*.62);
-      const to={...PLAT, th:thT}, v={};
+      if(mode==='plat'){ aPlat(); if(cb) cb(); return; }
+      const dist=Math.hypot(cur.px/300,cur.py/300,cur.rz/180,cur.rx/90,cur.ry/90);
+      const D=Math.min(.78,.28+dist*.5);
+      const to={...PLAT}, v={};
       for(const k in to){
-        const span=Math.abs(to[k]-cur[k])*1.5+(k==='sc'?.02:2);
-        v[k]=borne(vel[k]||0,-span/D,span/D);
+        const span=Math.abs(to[k]-cur[k])*1.5+((k==='sc'||k==='sx'||k==='sy')?.02:2);
+        v[k]=borne(S[k].v||0,-span/D,span/D);
       }
       pose={t0:performance.now(), D, from:{...cur}, to, v, cb};
       appui=null; mode='pose'; kick();
@@ -7759,115 +7599,50 @@ window.addEventListener('pageshow',e=>{
       const nx={};
       for(const k in pose.to) nx[k]=h00*pose.from[k]+h10*pose.D*pose.v[k]+h01*pose.to[k];
       cur=nx;
-      if(u>=1){
-        /* Posé : l'aimant rend son énergie d'un seul éclat, et le Totehm sort. */
-        if(soc){ soc.classList.remove('is-charge'); void soc.offsetWidth; soc.classList.add('is-charge');
-                 setTimeout(()=>soc.classList.remove('is-charge'),800); }
-        const cb=pose.cb; aPlat(); if(cb) cb(); }
+      if(u>=1){ const cb=pose.cb; aPlat(); if(cb) cb(); }
     }
-    /* LE RÉVEIL : après un repli, ou au chargement. Il repart de l'arrêt,
-       face logo — la vitesse et la dérive montent doucement. */
-    function reveiller(){
-      if(typeof paintAsteroid==='function') paintAsteroid();
-      if(RM.matches||mode!=='plat') return;
-      card.classList.remove('is-flat');
-      mode='vit'; clock=0; last=0; life=0; om=0; th=0; prev=null; centre=null; socW=0; geo=null; proche=0;
-      goal.rx=goal.ry=goal.px=goal.py=goal.lv=0; goal.sc=1;
-      diag.vivant=true; kick();
-    }
-    const libre=()=>mode==='vit'&&!appui;
-    function viser(rx,ry,px,py){ goal.rx=rx; goal.ry=ry; goal.px=px; goal.py=py; }
+    /* LE RÉVEIL : après un repli, ou au chargement — le papier est déjà
+       posé (`aPlat()` le garantit), il n'y a que le dos à repeindre. */
+    function reveiller(){ if(typeof paintAsteroid==='function') paintAsteroid(); }
 
     aPlat();
-    /* Une nouvelle taille d'écran, c'est une nouvelle boîte de faisceau :
-       on la remesure, et au repos on redessine tout de suite. */
-    window.addEventListener('resize',()=>{ geo=null; socW=0; if(mode==='plat') faisceau(PLAT); });
     if(RM.matches) return {poser, reveiller};
 
     document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ last=0; kick(); } });
 
-    /* La souris : le papier regarde le curseur et glisse d'un rien vers lui. */
-    if(window.matchMedia('(hover:hover)').matches){
-      window.addEventListener('resize',()=>{ centre=null; socW=0; });
-      document.addEventListener('mousemove',e=>{
-        if(!libre()||diag.gyro) return;
-        if(!centre){ const r=scene.getBoundingClientRect();
-                     centre=[r.left+r.width/2, r.top+r.height/2]; }
-        const dx=borne((e.clientX-centre[0])/(innerWidth/2),-1,1),
-              dy=borne((e.clientY-centre[1])/(innerHeight/2),-1,1);
-        viser(-dy*15, dx*20, dx*7, dy*5); diag.souris=true;
-        /* La main approche : à moins de ~280 px, le papier se soulève
-           d'un rien et l'aimant se réveille — il invite à être pris. */
-        proche=borne(1-(Math.hypot(e.clientX-centre[0],e.clientY-centre[1])-60)/220,0,1);
-      },{passive:true});
-      document.documentElement.addEventListener('mouseleave',()=>{ if(libre()){ viser(0,0,0,0); proche=0; } });
-    }
-
-    /* Le téléphone : la main est la référence, le papier répond au geste. */
-    let ref=null;
-    function surOrientation(e){
-      if(e.beta==null&&e.gamma==null) return;
-      diag.gyro=true;
-      if(!libre()) return;
-      let b=e.beta, g=e.gamma;
-      const ang=(screen.orientation&&typeof screen.orientation.angle==='number')
-        ? screen.orientation.angle : (window.orientation||0);
-      if(ang===90){ const t=b; b=-g; g=t; }
-      else if(ang===270||ang===-90){ const t=b; b=g; g=-t; }
-      if(!ref||Math.abs(b-ref.b)>50||Math.abs(g-ref.g)>50) ref={b,g};
-      ref.b+=(b-ref.b)*.006; ref.g+=(g-ref.g)*.006;
-      const db=b-ref.b, dg=g-ref.g;
-      viser(borne(db*.7,-16,16), borne(-dg*.7,-20,20),
-            borne(dg*.25,-7,7), borne(db*.2,-6,6));
-    }
-    const DOE=window.DeviceOrientationEvent;
-    const ecouter=()=>window.addEventListener('deviceorientation',surOrientation,{passive:true});
-    if(DOE&&typeof DOE.requestPermission==='function'){
-      diag.permission='pending';
-      const demander=e=>{
-        if(!body.classList.contains('gate')||body.classList.contains('entered')) return;
-        const t=e&&e.target&&e.target.closest?e.target:null;
-        /* Jamais dans la porte : le dialogue tomberait au milieu d'un email. */
-        const ok=t&&(t.closest('#fold-x')
-          ||(t.closest('#gate-hero')&&!t.closest('#gate-door')
-             &&!(t.closest('#gate-asteroid')&&!aGlisse)));
-        if(!ok) return;
-        window.removeEventListener('touchend',demander);
-        window.removeEventListener('click',demander);
-        /* Appel SYNCHRONE dans le geste : un `await` avant lui ferait
-           perdre le geste, et la demande serait refusée. */
-        DOE.requestPermission()
-          .then(r=>{ diag.permission=r; if(r==='granted') ecouter(); })
-          .catch(()=>{ diag.permission='error'; });
-      };
-      window.addEventListener('touchend',demander,{passive:true});
-      window.addEventListener('click',demander);
-    }else if(DOE){ ecouter(); }
-
-    /* Le doigt (ou la souris) : appuyer tient le papier, glisser le fait
-       tourner, lâcher lui laisse l'élan. `touch-action:none` sur la scène :
-       le geste porte une fonction, on le conduit en Pointer Events. */
+    /* Le doigt (ou la souris) : appuyer prend le papier, glisser le
+       déplace, lâcher lui laisse l'élan. `touch-action:none` sur la
+       scène : le geste porte une fonction, on le conduit en Pointer
+       Events. */
     scene.addEventListener('pointerdown',e=>{
-      if(mode!=='vit'||(e.pointerType==='mouse'&&e.button!==0)) return;
-      appui={id:e.pointerId, x0:e.clientX, y0:e.clientY, x:e.clientX, t:performance.now(), on:false};
-      aGlisse=false; goal.sc=.965;
+      if(appui||mode==='pose'||(e.pointerType==='mouse'&&e.button!==0)) return;
+      appui={id:e.pointerId, x0:e.clientX, y0:e.clientY, x:e.clientX, y:e.clientY, on:false};
+      aGlisse=false;
       try{ scene.setPointerCapture(e.pointerId); }catch(_){}
     });
     scene.addEventListener('pointermove',e=>{
       if(!appui||e.pointerId!==appui.id) return;
-      const dx=e.clientX-appui.x0, dy=e.clientY-appui.y0;
-      if(!appui.on){ if(Math.hypot(dx,dy)<7) return; appui.on=true; aGlisse=true; goal.sc=1.03; }
-      const now=performance.now(), dts=Math.max(.008,(now-appui.t)/1000);
-      const d=(e.clientX-appui.x)*.62;
-      th+=d; om=om*.6+(d/dts)*.4;
-      goal.rx=borne(-dy*.18,-18,18);
-      appui.x=e.clientX; appui.t=now;
+      appui.x=e.clientX; appui.y=e.clientY;
+      if(!appui.on){
+        if(Math.hypot(e.clientX-appui.x0,e.clientY-appui.y0)<7) return;
+        appui.on=true; aGlisse=true; diag.tenu=true; diag.vol=false;
+        if(mode==='plat') card.classList.remove('is-flat');
+        mode='tenu'; scene.classList.add('tenu');
+        const r=scene.getBoundingClientRect();
+        const cx=r.left+r.width/2+cur.px, cy=r.top+r.height/2+cur.py;
+        const half=(r.width||110)/2;
+        appui.gx=borne((e.clientX-cx)/half,-1,1);
+        appui.gy=borne((e.clientY-cy)/half,-1,1);
+        appui.basePx=cur.px; appui.basePy=cur.py;
+        lim=limites();
+        kick();
+      }
     });
     const lacher=e=>{
       if(!appui||e.pointerId!==appui.id) return;
-      const glisse=appui.on; appui=null;
-      viser(0,0,0,0); goal.sc=1;
-      if(glisse){ om=borne(om,-720,720); diag.lancers++; }
+      const glisse=appui.on; appui=null; diag.tenu=false;
+      scene.classList.remove('tenu');
+      if(glisse){ diag.jets++; diag.vol=true; mode='vol'; kick(); }
     };
     scene.addEventListener('pointerup',lacher);
     scene.addEventListener('pointercancel',lacher);
@@ -7883,7 +7658,7 @@ window.addEventListener('pageshow',e=>{
     if(open||moving) return;
     if(PAYSAGE.matches) return;     /* couché, on n'ouvre pas */
     /* ⚠️ PAS INSCRIT, RIEN N'EST PERMIS · 27/09/2026. Le papier ne
-       s'ouvre pas : la porte s'ouvre sous le socle, et c'est elle qui
+       s'ouvre pas : la porte s'ouvre sous lui, et c'est elle qui
        rappellera `enter(then)` une fois le nom posé. */
     if(!inscrit()){ ouvrirPorte(then); return; }
     moving=true;
