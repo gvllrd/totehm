@@ -955,14 +955,13 @@ function stopAsteroids(){
 }
 
 let boardMode = false;
-let boardReady = false;
 
 const rotatePrompt = document.getElementById('rotate-prompt');
 const isPortraitMobile = ()=>
   window.matchMedia('(pointer:coarse) and (orientation:portrait)').matches;
 
 function enterBoardMode(){
-  boardMode=true; boardReady=true;
+  boardMode=true;
   sdiscStage.style.display='none';
   sdiscBack.style.display='none';
   sdiscTrig.style.display='none';
@@ -1024,16 +1023,16 @@ function reSnapToBoard(){
 /* Repositionne la manette quand l'écran tourne */
 if(window.matchMedia('(pointer:coarse)').matches){
   const onRotate = ()=>{
-    if(!boardReady) return;
+    if(!boardMode) return;
     if(xp.classList.contains('up')) return;
     if(window.matchMedia('(orientation:landscape)').matches){
       rotatePrompt.classList.remove('active');
-      if(!boardMode) enterBoardMode();
+      sdiscBg.style.opacity='';
+      sdiscBoardClose.style.display='block';
       reSnapToBoard();
     } else {
-      if(boardMode) exitBoardMode();
-      resetRocks();
-      startAsteroids();
+      sdiscBg.style.opacity='0';
+      sdiscBoardClose.style.display='none';
       rotatePrompt.classList.add('active');
     }
   };
