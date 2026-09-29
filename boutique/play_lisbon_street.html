@@ -213,7 +213,13 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 @media(orientation:landscape){#rotate-prompt.active{display:none}}
 .rotate-spinner{width:52px;height:52px;color:var(--coral);animation:spin 3.2s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
-.rotate-hint{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:var(--coral);line-height:1.6;letter-spacing:.02em}
+.rotate-hint{font-family:'Space Mono',monospace;font-weight:400;font-size:11px;color:#606060;line-height:1.6;letter-spacing:.1em;text-transform:uppercase}
+@media(orientation:landscape){
+  .xp{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr auto;align-items:center;justify-items:center;padding:44px 5vw 28px;gap:3vw 5vw}
+  .vbox-scene{grid-column:1;grid-row:1/3;--vbs:min(62vh,40vw)}
+  #xp-label{grid-column:2;grid-row:1;width:100%;max-width:320px;text-align:left}
+  #xp-buy{grid-column:2;grid-row:2;justify-self:start}
+}
 
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
