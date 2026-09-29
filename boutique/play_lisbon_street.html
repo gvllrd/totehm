@@ -955,13 +955,14 @@ function stopAsteroids(){
 }
 
 let boardMode = false;
+let boardReady = false;
 
 const rotatePrompt = document.getElementById('rotate-prompt');
 const isPortraitMobile = ()=>
   window.matchMedia('(pointer:coarse) and (orientation:portrait)').matches;
 
 function enterBoardMode(){
-  boardMode=true;
+  boardMode=true; boardReady=true;
   sdiscStage.style.display='none';
   sdiscBack.style.display='none';
   sdiscTrig.style.display='none';
@@ -1023,16 +1024,24 @@ function reSnapToBoard(){
 /* Repositionne la manette quand l'écran tourne */
 if(window.matchMedia('(pointer:coarse)').matches){
   const onRotate = ()=>{
-    if(!boardMode) return;
+    if(!boardReady) return;
     if(xp.classList.contains('up')) return;
     if(window.matchMedia('(orientation:landscape)').matches){
+      stopAsteroids();
       rotatePrompt.classList.remove('active');
-      sdiscBg.style.opacity='';
       sdiscBoardClose.style.display='block';
+      if(!boardMode) enterBoardMode();
       reSnapToBoard();
     } else {
-      sdiscBg.style.opacity='0';
+      boardMode=false;
       sdiscBoardClose.style.display='none';
+      ROCKS.forEach(r=>{
+        if(r._boardClick){ r.wrap.removeEventListener('click',r._boardClick); r._boardClick=null; }
+        r.img.style.filter=''; r.wrap.style.animation=''; r.wrap.style.translate='';
+        r.uLabel.textContent='Useless'; r.uLabel.style.cssText=r._origLabelCss;
+      });
+      resetRocks();
+      startAsteroids();
       rotatePrompt.classList.add('active');
     }
   };
