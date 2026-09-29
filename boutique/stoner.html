@@ -49,7 +49,19 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   display:flex;align-items:center;justify-content:center;
   backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;
 }
-.vb-inner video{width:100%;height:100%;object-fit:contain;display:block;background:#000;}
+/* ══ DEUX VOIES, UNE COUTURE INVISIBLE · 29/09/2026 ══════════════════════
+   Deux <video> superposés dans la boîte : celui qu'on VOIT (.on) et celui
+   qui se prépare, déjà décodé, en pause sur sa première image. Passer au
+   step suivant n'est plus « changer la source » (écran vide le temps du
+   réseau) : c'est inverser deux calques, en un fondu de 160 ms.
+   ⚠️ `opacity`, jamais `display:none` : un <video> masqué par `display`
+   n'est plus décodé, et la première image ne serait pas prête au tap. */
+.vb-inner video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;background:#000;opacity:0;transition:opacity .16s linear}
+.vb-inner video.on{opacity:1;z-index:2}
+/* La voie sortante reste OPAQUE sous la nouvelle pendant le fondu : deux
+   calques qui s'éteignent et s'allument ensemble passent par 50 % + 50 %,
+   soit un creux sombre. Un raccord ne doit jamais clignoter. */
+.vb-inner video.under{opacity:1;z-index:1;transition:none}
 .vbside{position:absolute;left:0;top:0;background:#000;pointer-events:none;}
 .vb-right{width:var(--vbd);height:var(--vbs);transform:translateX(calc(var(--vbs) - var(--vbhd))) rotateY(-90deg);}
 .vb-left {width:var(--vbd);height:var(--vbs);transform:translateX(calc(-1 * var(--vbhd))) rotateY(90deg);}
@@ -65,8 +77,35 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 #logo-btn{position:absolute;inset:0;background:transparent;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none;z-index:11;pointer-events:none;display:none}
 #logo-btn.show{display:block;pointer-events:auto}
 
-#technique{position:relative;width:90%;max-width:460px;display:none;flex-direction:column;align-items:center;gap:8px}
-#technique.show{display:flex}
+/* ══ UNE SEULE CASE, TROIS OCCUPANTS · 29/09/2026 ════════════════════════
+   `#step0-intro`, `#step0-ui` et `#technique` occupent LA MÊME cellule de
+   grille : la hauteur du bloc est celle du plus grand, elle ne change
+   jamais. On les montre et on les cache par `opacity`/`visibility`, jamais
+   par `display:none` — c'est ce `display:none` qui faisait s'effondrer la
+   page (le bas remontait de ~80 px, le bouton Higher de ~400 px) avant de
+   redescendre quand la vidéo arrivait. */
+#below{width:100%;display:grid;justify-items:center;align-items:start}
+#below>*{grid-area:1/1;display:flex;visibility:hidden;opacity:0;pointer-events:none;
+  transition:opacity .22s ease,visibility 0s linear .22s}
+#below>.show{visibility:visible;opacity:1;pointer-events:auto;transition:opacity .22s ease}
+#technique{position:relative;width:90%;max-width:460px;flex-direction:column;align-items:center;gap:8px}
+/* Le texte du step vit dans `.tech-head`, dont la hauteur minimale est celle
+   du PLUS LONG step (mesurée au démarrage, `reserveHeights()`) : le bouton
+   Higher, dessous, ne bouge donc pas d'un pixel d'un step à l'autre — on
+   peut retaper au même endroit. */
+.tech-head{width:100%;display:flex;flex-direction:column;align-items:center;gap:8px;transition:opacity .11s ease}
+/* Le texte se pose sous la vidéo ; « Neurological reasons » s'accroche au BAS
+   de la réserve, collé à Higher : les deux contrôles forment un bloc fixe. */
+.tech-head .tech-text{margin-bottom:10px}
+.tech-head .neuro-link{margin-top:auto}
+#technique.swap .tech-head,#technique.swap #btn-slogan svg{opacity:0}
+#btn-slogan svg{transition:opacity .11s ease}
+#btn-slogan.busy{animation:bz .9s ease-in-out infinite}
+@keyframes bz{0%,100%{opacity:1}50%{opacity:.45}}
+@media(prefers-reduced-motion:reduce){
+  .vb-inner video,#below>*,#below>.show,.tech-head,#btn-slogan svg{transition:none}
+  #btn-slogan.busy{animation:none;opacity:.6}
+}
 .tech-text{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:var(--coral);text-align:center;line-height:1.7;letter-spacing:0}
 .tech-text .higher-inline{display:inline-flex;align-items:center;width:54px;vertical-align:middle;line-height:0;margin:0 2px}
 .green-text{font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;color:var(--coral);text-align:center;margin-bottom:8px;letter-spacing:.02em}
@@ -89,13 +128,11 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 #btn-slogan{border:none;background:none;padding:0;cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent;display:block;line-height:0;width:min(26vw,100px);margin-top:24px}
 #btn-slogan svg{display:block;width:100%;height:auto}
 
-#step0-intro{position:relative;width:90%;max-width:460px;display:none;text-align:center;font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:var(--coral);line-height:1.7;letter-spacing:.02em;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px}
-#step0-intro.show{display:flex}
+#step0-intro{position:relative;width:90%;max-width:460px;text-align:center;font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:var(--coral);line-height:1.7;letter-spacing:.02em;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px}
 #step0-intro .higher-inline{display:inline-flex;align-items:center;width:54px;vertical-align:middle;line-height:0;margin:0 2px}
 #step0-intro .higher-inline svg{display:block;width:100%;height:auto}
 
-#step0-ui{position:relative;width:90%;max-width:460px;display:none;flex-direction:column;align-items:center;gap:14px}
-#step0-ui.show{display:flex}
+#step0-ui{position:relative;width:90%;max-width:460px;flex-direction:column;align-items:center;gap:14px}
 #step0-text{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:var(--coral);text-align:center;line-height:1.7;letter-spacing:.02em;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px}
 #step0-text .higher-inline{display:inline-flex;align-items:center;width:54px;vertical-align:middle;line-height:0;margin:0 2px}
 #step0-text .higher-inline svg{display:block;width:100%;height:auto}
@@ -268,7 +305,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
     <div class="vbox-scene" id="vidWrap">
       <div class="vbox" id="vidBox">
         <div class="vbf vb-back"></div>
-        <div class="vbf vb-inner"><video id="vid" playsinline muted preload="auto"></video></div>
+        <div class="vbf vb-inner"><video id="vid" playsinline muted preload="auto"></video><video id="vid2" playsinline muted preload="auto"></video></div>
         <div class="vbside vb-right"></div><div class="vbside vb-left"></div>
         <div class="vbside vb-top"></div><div class="vbside vb-bot"></div>
         <div class="vbf vb-front"></div>
@@ -279,22 +316,24 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
     <button id="logo-btn" aria-label="Next"></button>
   </div>
 
-  <div id="step0-intro">Interact with the dope logo / slogan. <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span> Brand</div>
+  <div id="below">
+    <div id="step0-intro">Interact with the dope logo / slogan. <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span> Brand</div>
 
-  <div id="step0-ui">
-    <div id="step0-text">Wassup? <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span> Self-knowledge</div>
-    <div class="choice-row">
-      <button class="choice-btn" id="btn-low">Low</button>
-      <button class="choice-btn" id="btn-high-blue">High</button>
+    <div id="step0-ui">
+      <div id="step0-text">Wassup? <span class="higher-inline"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></span> Self-knowledge</div>
+      <div class="choice-row">
+        <button class="choice-btn" id="btn-low">Low</button>
+        <button class="choice-btn" id="btn-high-blue">High</button>
+      </div>
+      <button class="neuro-link" id="neuro-step0">Neurological reasons</button>
+      <div id="neuro-content-0"></div>
     </div>
-    <button class="neuro-link" id="neuro-step0">Neurological reasons</button>
-    <div id="neuro-content-0"></div>
-  </div>
 
-  <div id="technique">
-    <div class="tech-text" id="tech-text"></div>
-    <div id="neuro-content"></div>
-    <button id="btn-slogan" type="button" aria-label="Higher"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></button>
+    <div id="technique">
+      <div class="tech-head" id="tech-head"><div class="tech-text" id="tech-text"></div></div>
+      <div id="neuro-content"></div>
+      <button id="btn-slogan" type="button" aria-label="Higher"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></button>
+    </div>
   </div>
   <button id="totehm-mid" aria-label="Back to your Totehm"><img class="wm-img" src="assets/img/totehm_logo.png" alt="Totehm"></button>
   <div id="subtitle"></div>
@@ -598,7 +637,9 @@ let currentStep = 0;
 
 const SLOGAN_ID = {slogan:'higher-slogan', grind:'higher-grind', love:'higher-love'};
 
-const vid=document.getElementById('vid');
+/* Les DEUX voies du lecteur. `vid` est toujours celle qu'on voit. */
+const SLOTS=[document.getElementById('vid'),document.getElementById('vid2')];
+let vid=SLOTS[0];
 const zonePlus=document.getElementById('zone-plus');
 const zoneMinus=document.getElementById('zone-minus');
 const logoBtn=document.getElementById('logo-btn');
@@ -620,82 +661,237 @@ function toggleNeuro(){neuroContent.classList.toggle('open');}
 function injectSlogan(htmlStr){
   return htmlStr.replace(/\{H\}/g, '<span class="higher-inline-p"><svg viewBox="0 0 600 200" preserveAspectRatio="xMidYMid meet"><use href="#higher-slogan"></use></svg></span>');
 }
-function buildTechnique(step){
-  techText.innerHTML='';
+/* ── Le TEXTE d'un step, construit dans un conteneur donné ──────────────
+   Un seul constructeur pour deux usages : l'affichage réel (`#tech-head`)
+   et la mesure hors-champ de `reserveHeights()`. Deux constructeurs
+   finiraient par mesurer un texte qu'on n'affiche pas. */
+function fillHead(head, idx, step){
+  const tt=head.querySelector('.tech-text');
+  tt.innerHTML='';
+  head.querySelectorAll('.green-text,.neuro-link').forEach(n=>n.remove());
   // texte vert spécifique (ex: EM sounds like love) au-dessus
-  const gt=document.getElementById('green-text');
-  if(gt) gt.remove();
-  const _green = greenFor(currentStep, step);
-  if(_green){
+  const green=greenFor(idx, step);
+  if(green){
     const g=document.createElement('div');
-    g.className='green-text';g.id='green-text';
-    g.textContent=_green;
-    techText.parentNode.insertBefore(g, techText);
+    g.className='green-text';
+    g.textContent=green;
+    head.insertBefore(g, tt);
   }
-  const sloganId=SLOGAN_ID[sloganFor(currentStep, step)];
-  const tokens=techFor(currentStep, step).split('{H}');
+  const sloganId=SLOGAN_ID[sloganFor(idx, step)];
+  const tokens=techFor(idx, step).split('{H}');
   tokens.forEach((tok,i)=>{
-    if(tok)techText.appendChild(document.createTextNode(tok));
+    if(tok)tt.appendChild(document.createTextNode(tok));
     if(i<tokens.length-1){
       const h=document.createElement('span');h.className='higher-inline';
       h.innerHTML='<svg viewBox="0 0 600 200"><use href="#'+sloganId+'"></use></svg>';
-      techText.appendChild(h);
+      tt.appendChild(h);
     }
   });
-  // bouton slogan en bas = même variante que le step
-  btnSlogan.innerHTML='<svg viewBox="0 0 600 200"><use href="#'+sloganId+'"></use></svg>';
   // bouton Neurological reasons sous le texte → toggle accordion
-  const old=document.getElementById('neuro-tech');
-  if(old) old.remove();
   const n=document.createElement('button');
-  n.className='neuro-link';n.id='neuro-tech';
-  n.innerHTML='Neurological reasons';
+  n.className='neuro-link';
+  n.textContent='Neurological reasons';
+  tt.insertAdjacentElement('afterend',n);
+  return n;
+}
+function buildTechnique(step){
+  const n=fillHead(document.getElementById('tech-head'), currentStep, step);
+  n.id='neuro-tech';
   n.onclick=toggleNeuro;
-  techText.insertAdjacentElement('afterend',n);
+  // bouton slogan en bas = même variante que le step
+  btnSlogan.innerHTML='<svg viewBox="0 0 600 200"><use href="#'+SLOGAN_ID[sloganFor(currentStep, step)]+'"></use></svg>';
   // remplir le contenu accordion pour ce step
   neuroContent.innerHTML = injectSlogan(neuroFor(currentStep));
   neuroContent.classList.remove('open');
 }
 
-async function loadVideoStep(idx){
-  const step=STEPS[idx];
-  zonesShown=false;
-  technique.classList.remove('show');
-  subtitle.classList.remove('show');
-  step0ui.classList.remove('show');
-  step0intro.classList.remove('show');
-  zonePlus.classList.remove('show');
-  zoneMinus.classList.remove('show');
-  logoBtn.classList.remove('show');
-
-  try{
-    const src = SIGNED[idx];   // toujours signé, jamais d'URL publique
-    if(!src){ showGate(); return; }
-    const resp=await fetch(src);
-    const blob=await resp.blob();
-    vid.src=URL.createObjectURL(blob);
-  }catch(e){
-    /* Fallback : on retente en direct sur l'URL signée (le blob peut
-       échouer sur mobile pour des vidéos lourdes). Jamais d'URL publique :
-       le bucket est privé, elle renverrait une 400.
-       Pas de crossOrigin='anonymous' — ça casse Supabase Storage. */
-    console.error('load step '+idx+':', e);
-    const s = SIGNED[idx];
-    if(s){ vid.removeAttribute('crossorigin'); vid.src = s; }
-    else { showGate(); return; }
+/* ══ LA HAUTEUR RÉSERVÉE ═════════════════════════════════════════════════
+   Le texte des dix steps n'a pas la même longueur. Si chaque step avait la
+   hauteur de son texte, le bouton Higher (dessous) changerait de place à
+   chaque tap. On mesure donc, hors-champ, le PLUS LONG texte des deux modes
+   et on réserve cette hauteur : Higher reste où le pouce l'a laissé. */
+function reserveHeights(){
+  const head=document.getElementById('tech-head');
+  if(!head) return;
+  const probe=document.createElement('div');
+  probe.className='tech-head';probe.setAttribute('aria-hidden','true');
+  probe.style.cssText='position:absolute;left:-9999px;top:0;visibility:hidden;width:'+(technique.clientWidth||Math.min(innerWidth*.9,460))+'px';
+  probe.innerHTML='<div class="tech-text"></div>';
+  document.body.appendChild(probe);
+  const saved=MODE;let max=0;
+  for(const m of ['low','high']){
+    MODE=m;
+    for(let i=1;i<STEPS.length;i++){ fillHead(probe,i,STEPS[i]); max=Math.max(max,probe.offsetHeight); }
   }
-  vid.load();
-  loading.classList.add('hidden');
+  MODE=saved;probe.remove();
+  head.style.minHeight=Math.ceil(max)+'px';
+}
+reserveHeights();
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(reserveHeights);
+let _rsz=0;window.addEventListener('resize',()=>{clearTimeout(_rsz);_rsz=setTimeout(reserveHeights,150);});
 
+/* ══ LE LECTEUR À DEUX VOIES · 29/09/2026 ═════════════════════════════════
+   Avant : chaque tap sur Higher masquait tout (`display:none`), repartait
+   de zéro sur le réseau, changeait la source d'UN seul <video> (image
+   vide pendant le décodage) et rallumait tout. La page s'effondrait puis
+   se rouvrait — c'est la « couture » qu'on voyait.
+
+   Maintenant, trois règles :
+   1. PRÉPARER AVANT. Dès qu'un step est à l'écran, le suivant est
+      téléchargé en mémoire (blob) et décodé dans la voie cachée, en pause
+      sur sa première image. Le tap suivant ne coûte plus rien.
+   2. ÉCHANGER, NE PAS CHARGER. Le tap inverse deux calques (fondu 160 ms)
+      et change le texte dans la MÊME frame. Tant que la voie cachée n'est
+      pas prête, l'ancien step reste à l'écran, intact — jamais de noir.
+   3. UN SEUL GESTE À LA FOIS. `busy` avale un deuxième tap pendant
+      l'échange : sinon un double-clic sautait un step.
+
+   ⚠️ ON NE PRÉCHARGE QUE LE STEP SUIVANT, et seulement après que le
+   courant est affiché : chaque octet vient du stockage Supabase (egress
+   payant). Au step 0 on prépare celui du dernier mode déclaré
+   (`totehm_entry_mode`), pas les deux. */
+const BLOBS=new Map();            // step -> { p: Promise<url|null> }
+let SIGNED_AT=0, SIGNED_TTL=900;  // les URLs signées vivent 15 min (stoner-gate)
+let busy=false, warm=null;        // warm = { idx, slot, ready }
+const idleSlot=()=>SLOTS[0]===vid?SLOTS[1]:SLOTS[0];
+
+/* Un step, tout entier, en mémoire. Jamais d'URL publique : le bucket est
+   privé. `resp.ok` est VÉRIFIÉ : une URL périmée rend un 400 JSON, et
+   `resp.blob()` en faisait « une vidéo » — écran mort après 15 minutes. */
+function blobFor(idx){
+  const hit=BLOBS.get(idx); if(hit) return hit.p;
+  const p=(async()=>{
+    if(Date.now()-SIGNED_AT > (SIGNED_TTL-60)*1000) await resign();
+    let src=SIGNED[idx];
+    if(!src) return null;
+    try{
+      let resp=await fetch(src);
+      if(!resp.ok){ await resign(); src=SIGNED[idx]; resp=await fetch(src); }
+      if(!resp.ok) throw new Error('HTTP '+resp.status);
+      return URL.createObjectURL(await resp.blob());
+    }catch(e){
+      /* Repli : on lit en direct l'URL signée (le blob peut échouer sur
+         mobile pour des vidéos lourdes). Pas de crossOrigin='anonymous' —
+         ça casse Supabase Storage. */
+      console.error('load step '+idx+':', e);
+      return SIGNED[idx]||null;
+    }
+  })();
+  BLOBS.set(idx,{p});
+  p.catch(()=>BLOBS.delete(idx));
+  return p;
+}
+function evict(keep){
+  for(const [i,e] of [...BLOBS]) if(i<keep){
+    BLOBS.delete(i);
+    e.p.then(u=>{ if(u&&u.startsWith('blob:')) URL.revokeObjectURL(u); }).catch(()=>{});
+  }
+}
+
+/* Pose le step `idx` dans la voie CACHÉE : décodé, en pause, première image
+   prête. Idempotent — deux appels pour le même step partagent la promesse. */
+function stage(idx){
+  if(warm && warm.idx===idx) return warm.ready;
+  const slot=idleSlot();
+  const t={idx,slot};
+  t.ready=(async()=>{
+    const url=await blobFor(idx);
+    if(!url) return null;                 // pas d'URL signée : le mur
+    if(warm!==t) return undefined;        // supplanté par un autre step
+    await new Promise((res,rej)=>{
+      const clean=()=>{slot.removeEventListener('loadeddata',ok);slot.removeEventListener('error',ko);};
+      const ok=()=>{clean();res();};
+      const ko=()=>{clean();rej(new Error('decode step '+idx));};
+      slot.addEventListener('loadeddata',ok);slot.addEventListener('error',ko);
+      slot.pause();slot.src=url;slot.dataset.step=idx;slot.load();
+    });
+    return warm===t ? slot : undefined;
+  })();
+  warm=t;
+  return t.ready;
+}
+function prepareNext(idx){
+  let next=idx+1;
+  if(idx===0){ let m='low'; try{ m=localStorage.getItem('totehm_entry_mode')==='high'?'high':'low'; }catch(e){} next=START_STEP[m]; }
+  if(next>=STEPS.length) return;
+  stage(next).catch(e=>console.error('prepare '+next+':',e));
+}
+
+/* Le texte et les panneaux : tout passe par les classes `.show`, dans la
+   case unique — la hauteur ne bouge pas. */
+function swapUI(idx){
+  const step=STEPS[idx];
+  zonePlus.classList.remove('show');zoneMinus.classList.remove('show');
   if(idx>=1){
-    buildTechnique(step);
+    step0ui.classList.remove('show');step0intro.classList.remove('show');
     logoBtn.classList.add('show');
-    technique.classList.add('show');
+    const fill=()=>{ buildTechnique(step); technique.classList.add('show'); };
+    if(technique.classList.contains('show') && !matchMedia('(prefers-reduced-motion:reduce)').matches){
+      technique.classList.add('swap');
+      setTimeout(()=>{ fill(); technique.classList.remove('swap'); },110);
+    }else fill();
   }else{
+    logoBtn.classList.remove('show');
+    technique.classList.remove('show');
     step0intro.classList.add('show');
   }
 }
 
+/* Le RACCORD : la voie prête devient la voie visible, en une frame. */
+async function commit(idx, slot){
+  const old=vid;
+  /* La voie préparée est déjà sur sa première image : la « rembobiner »
+     lancerait un seek inutile (l'image disparaît le temps du recalage). */
+  if(slot.currentTime>0.001) slot.currentTime=0;
+  const played=slot.play();
+  /* On ne montre la voie qu'une fois sa première image RÉELLEMENT
+     présentée (Safari ne peint pas toujours une vidéo en pause). */
+  try{ await played; }
+  catch(e){ document.addEventListener('touchstart',()=>slot.play(),{once:true}); }
+  await new Promise(r=>{
+    let done=false;const fin=()=>{ if(!done){ done=true; r(); } };
+    if(slot.requestVideoFrameCallback) slot.requestVideoFrameCallback(fin);
+    setTimeout(fin,220);
+  });
+  old.classList.add('under');old.classList.remove('on');
+  slot.classList.add('on');
+  vid=slot;
+  /* L'état dit ce qu'on VOIT : il ne change qu'à l'échange. */
+  currentStep=idx;zonesShown=false;
+  loading.classList.add('hidden');
+  swapUI(idx);
+  /* La voie sortante est rendue après son fondu ; c'est seulement là que
+     la voie cachée est de nouveau libre pour préparer le step d'après. */
+  await new Promise(r=>setTimeout(r,matchMedia('(prefers-reduced-motion:reduce)').matches?0:230));
+  old.pause();old.removeAttribute('src');old.load();delete old.dataset.step;old.classList.remove('under');
+  evict(idx);
+  prepareNext(idx);
+}
+
+async function go(idx){
+  if(busy) return;
+  busy=true;
+  /* Le réseau est lent : après 220 ms, Higher respire — le tap est
+     entendu, l'ancien step reste à l'écran. */
+  const cue=setTimeout(()=>btnSlogan.classList.add('busy'),220);
+  try{
+    const slot=await stage(idx);
+    if(slot===null){ showGate(); return; }
+    if(slot) await commit(idx,slot);
+  }catch(e){
+    console.error('step '+idx+':',e);
+    warm=null;
+    /* Rien à l'écran (premier chargement) : on le dit, on propose de
+       réessayer. Sinon on reste sur le step courant, Higher se rend. */
+    if(!vid.classList.contains('on')){
+      loading.classList.remove('hidden');
+      loading.textContent='CONNECTION LOST · TAP TO RETRY';
+      loading.onclick=()=>{ loading.onclick=null;loading.textContent='LOADING...';go(idx); };
+    }
+  }finally{
+    clearTimeout(cue);btnSlogan.classList.remove('busy');busy=false;
+  }
+}
 function revealStep0UI(){
   if(zonesShown)return;
   zonesShown=true;
@@ -705,13 +901,17 @@ function revealStep0UI(){
   step0ui.classList.add('show');
 }
 
-vid.addEventListener('loadeddata',()=>{vid.play().catch(()=>{document.addEventListener('touchstart',()=>vid.play(),{once:true});});});
-vid.addEventListener('timeupdate',()=>{
-  if(currentStep===0 && !zonesShown && vid.currentTime>=SHOW_TIME_0){revealStep0UI();}
-});
-vid.addEventListener('ended',()=>{
-  vid.currentTime=vid.duration-0.01;vid.pause();
-  if(currentStep===0 && !zonesShown){revealStep0UI();}
+/* Les deux voies écoutent ; seule celle qu'on VOIT compte. */
+SLOTS.forEach(v=>{
+  v.addEventListener('timeupdate',()=>{
+    if(v!==vid) return;
+    if(currentStep===0 && !zonesShown && v.currentTime>=SHOW_TIME_0){revealStep0UI();}
+  });
+  v.addEventListener('ended',()=>{
+    if(v!==vid) return;
+    v.currentTime=v.duration-0.01;v.pause();
+    if(currentStep===0 && !zonesShown){revealStep0UI();}
+  });
 });
 
 async function goMethod(mode){
@@ -721,8 +921,7 @@ async function goMethod(mode){
     await checkAccess();
     if(!ACCESS){ showPorte(); return; }
   }
-  currentStep = START_STEP[MODE];
-  loadVideoStep(currentStep);
+  go(START_STEP[MODE]);
 }
 
 /* Le mode déclaré est le seul signal de segmentation gratuit.
@@ -821,8 +1020,7 @@ btnVerify.addEventListener('click',async()=>{
   await checkAccess();
   if(ACCESS){                       // déjà membre : il repasse sans repayer
     freeGate.classList.remove('visible');
-    currentStep = START_STEP[MODE];
-    loadVideoStep(currentStep);
+    go(START_STEP[MODE]);
     return;
   }
   toStripe(email);
@@ -852,8 +1050,7 @@ function toStripe(email){
     await checkAccess();
   }
   if(!ACCESS){ window.location.replace(WALL); return; }
-  currentStep = 0;
-  loadVideoStep(0);
+  go(0);
 })();
 /* Les 4 déclencheurs entrent TOUS dans la méthode.
    Avant : zonePlus / btnHighBlue -> goClose, autrement dit
@@ -864,28 +1061,45 @@ zonePlus.addEventListener('click',       ()=>goMethod('high'));
 btnHighBlue.addEventListener('click',    ()=>goMethod('high'));
 
 async function nextStep(){
+  if(busy) return;                       // un échange est en cours : ce tap est de trop
   const target = currentStep + 1;
   if(target >= DEEP_FROM && !ACCESS){
     await checkAccess();                 // re-check : il a peut-être payé entre-temps
     if(!ACCESS){ showGate(); return; }
   }
-  if(currentStep<STEPS.length-1){currentStep=target;loadVideoStep(currentStep);}
+  /* `currentStep` ne bouge PAS ici : il change au raccord (`commit`), quand
+     le nouveau step est réellement à l'écran. */
+  if(currentStep<STEPS.length-1){ go(target); }
   else{closeScreen.classList.add('visible');}
 }
 
 /* Interroge le serveur. La vérité n'est jamais dans le client. */
+async function gateCall(){
+  const { data:{ session } } = await sb.auth.getSession();
+  if(!session) return { access:false };
+  const r = await fetch(GATE_FN, {
+    method:'POST',
+    headers:{ 'Authorization':'Bearer '+session.access_token, 'Content-Type':'application/json' }
+  });
+  return await r.json();
+}
 async function checkAccess(){
   try{
-    const { data:{ session } } = await sb.auth.getSession();
-    if(!session){ ACCESS=false; return; }
-    const r = await fetch(GATE_FN, {
-      method:'POST',
-      headers:{ 'Authorization':'Bearer '+session.access_token, 'Content-Type':'application/json' }
-    });
-    const j = await r.json();
+    const j = await gateCall();
     ACCESS = j.access === true;
     SIGNED = j.urls || {};
+    SIGNED_AT = Date.now(); SIGNED_TTL = j.expires_in || 900;
   }catch(e){ console.error('gate:', e); ACCESS=false; SIGNED={}; }
+}
+/* Renouvelle les URLs signées EN COURS DE ROUTE (elles vivent 15 min).
+   ⚠️ Ne touche JAMAIS à ACCESS : un réseau qui tousse au milieu de
+   l'expérience ne doit pas renvoyer un membre au mur. */
+async function resign(){
+  try{
+    const j = await gateCall();
+    if(j.access === true){ SIGNED = j.urls || {}; SIGNED_AT = Date.now(); SIGNED_TTL = j.expires_in || 900; return true; }
+  }catch(e){ console.error('gate:', e); }
+  return false;
 }
 btnSlogan.addEventListener('click',nextStep);
 // Tap naturel sur la vidéo : pause / play / replay (sans icône)
@@ -950,7 +1164,7 @@ if(goTotehm) goTotehm.onclick=goToTotehm;
 })();
 
 /* L'init est déclenché par bootGate, jamais avant : sans les URLs
-   signées, loadVideoStep(0) partait sur SIGNED[0] undefined. */
+   signées, go(0) partait sur SIGNED[0] undefined. */
 
 /* ══ MEMBER SPACE ══ */
 (()=>{
@@ -1030,6 +1244,17 @@ function _vbTS(e){const t=e.changedTouches[0];vbGrab=true;vbSX=t.clientX;vbSY=t.
 function _vbTM(e){if(!vbGrab)return;const t=e.changedTouches[0];vbRX=Math.max(-80,Math.min(80,vbDRX-(t.clientY-vbSY)*.5));vbRY=vbDRY+(t.clientX-vbSX)*.7;}
 function _vbTE(){vbGrab=false;vbVX=0;vbVY=0;}
 startVidBox();
+
+/* ── DIAGNOSTIC · des booléens et des compteurs, jamais une URL ─────────
+   Bloc à coller dans la console quand un step « rame » ou reste noir. */
+const BUILD='2026-09-29';
+window.__totehm_stoner=()=>({
+  build:BUILD, step:currentStep, busy, access:ACCESS,
+  visible:SLOTS.indexOf(vid), slots:SLOTS.map(v=>({step:v.dataset.step??null,on:v.classList.contains('on'),ready:v.readyState,paused:v.paused})),
+  warm:warm?warm.idx:null, cached:[...BLOBS.keys()],
+  signedAgeS:Math.round((Date.now()-SIGNED_AT)/1000), ttlS:SIGNED_TTL,
+  headMinH:document.getElementById('tech-head').style.minHeight||null
+});
 </script>
 </body>
 </html>
