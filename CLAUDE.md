@@ -157,6 +157,72 @@ annuel + complet. Maintenant : + THP. Un membre annuel sans THP perd le
 bot quand la migration passe. Retour arrière : une ligne dans
 `totehmbot_access`.
 
+### ⛔ STONER — LE LECTEUR À DEUX VOIES, UNE COUTURE INVISIBLE — 29/09/2026
+
+**Le constat de Wah** (`boutique/stoner.html`, `BUILD='2026-09-29'`) : chaque
+tap sur Higher (`#btn-slogan`) faisait « sauter » la page et passer un écran
+noir. **Mesuré avant de toucher au code** (réseau simulé à 400 ms) :
+`#technique` absent ~415 ms, Higher décalé de ~400 px, le bas de page de
+~80 px, aucun préchargement (chaque tap repartait de zéro sur le réseau),
+1 à 2 images vides à l'échange de source. **Après : 0 px, 0 image
+absente, ~90 ms du tap à la nouvelle image.**
+
+**⚠️ `display:none` EFFONDRE LA PAGE.** `#step0-intro`, `#step0-ui` et
+`#technique` occupent LA MÊME cellule de grille (`#below`) : la hauteur est
+celle du plus grand, elle ne change jamais. On les montre par
+`opacity`/`visibility`, jamais par `display`. Même règle que « une
+`@keyframes` rejoue, une `transition` non » : un état se dit par une
+propriété qui se transitionne, pas par la présence dans le flux.
+
+**⚠️ HIGHER NE BOUGE PLUS D'UN PIXEL.** Le texte des dix steps n'a pas la
+même longueur ; `reserveHeights()` mesure hors-champ le PLUS LONG (les deux
+modes) et réserve cette hauteur dans `.tech-head` ; « Neurological reasons »
+s'accroche au bas de la réserve, collé à Higher. On peut retaper au même
+endroit. Un seul constructeur (`fillHead`) sert l'affichage ET la mesure :
+deux constructeurs finiraient par mesurer un texte qu'on n'affiche pas.
+Coût assumé : sur un step court, un vide entre le texte et les contrôles.
+
+**⚠️ DEUX <video>, PAS UN.** `#vid` et `#vid2` sont superposés dans la boîte
+3D ; `vid` est toujours celui qu'on VOIT (`.on`). Le suivant est téléchargé
+en mémoire (blob) et DÉCODÉ dans la voie cachée, en pause sur sa première
+image (`stage()`). Le tap n'est plus « charger » : c'est `commit()`, qui
+inverse deux calques en une frame. Tant que la voie cachée n'est pas
+prête, l'ancien step reste à l'écran, intact ; Higher respire (`.busy`)
+après 220 ms. **Opacité, jamais `display:none`** : un <video> masqué par
+`display` n'est plus décodé, la première image ne serait pas prête.
+
+**⚠️ UN RACCORD NE CLIGNOTE PAS.** Deux calques qui s'éteignent et
+s'allument ensemble passent par 50 % + 50 % : un creux sombre. La voie
+sortante reste OPAQUE dessous (`.under`) pendant que la nouvelle apparaît.
+Et `currentStep` ne change qu'à l'échange : l'état dit ce qu'on VOIT.
+
+**⚠️ UN GESTE À LA FOIS.** `busy` avale un tap pendant l'échange (~230 ms) :
+sans lui, un double-clic sautait un step. On ne met PAS le tap en file —
+une file transformerait le double-clic en deux steps.
+
+**⚠️ ON NE PRÉCHARGE QUE LE STEP SUIVANT.** Chaque octet vient du stockage
+Supabase (egress payant). Le suivant n'est demandé qu'une fois le courant à
+l'écran ; au step 0, celui du dernier mode déclaré (`totehm_entry_mode`),
+pas les deux. Mauvais pronostic = une vidéo de trop, une seule fois.
+Mesuré : chaque step n'est téléchargé qu'UNE fois.
+
+**⚠️ LES URLs SIGNÉES VIVENT 15 MINUTES** (`stoner-gate`, `TTL_SECONDS =
+900`, toutes signées d'un coup au chargement). L'ancien code ne vérifiait
+jamais `resp.ok` : passé ce délai, le « blob » était la page d'erreur JSON
+et la vidéo restait morte, sans un mot. Maintenant : `resp.ok` est vérifié,
+une 400 déclenche `resign()` puis un seul nouvel essai, et les URLs sont
+renouvelées AVANT d'expirer (`SIGNED_AT`, `expires_in − 60 s`).
+**`resign()` ne touche jamais à `ACCESS`** : un réseau qui tousse au milieu
+de l'expérience ne renvoie pas un membre payant au mur.
+
+**Intacts, vérifiés :** SSO (`ssoArrivee`, module bloquant), boîte 3D
+(rotation idle + glisser), pause/lecture au tap sur la vidéo (sur la voie
+visible), le mur (`showGate`), le mode « mouvement réduit » (aucun fondu,
+même comportement). **Diagnostic** : `window.__totehm_stoner()` → build,
+step, busy, voie visible, étape de chaque voie, step préparé, steps en
+cache, âge des URLs signées, hauteur réservée — des booléens et des
+compteurs, jamais une URL.
+
 ### ⛔ LE PAPIER EST UN BUVARD — ON LE PREND, ON LE JETTE — 28/09/2026
 
 **La demande de Wah, verbatim :** « on abandonne totalement cette idée
