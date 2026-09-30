@@ -49,16 +49,26 @@
 | `spot_publish` (19 param.), `moment_publish`, `spot_video_set`, `moments_feed`, `_exact_ok`, `_clip_ok` | l'Espace |
 | `spots_radar`, `spots_past`, `spots_globe`, `my_space` | expériences seules sur le radar ; `state` (will · am · was) ; bouclier ; position publique à 2 décimales |
 
-### Edge Functions du lot
+### Edge Functions du lot — TOUTES DÉPLOYÉES le 30/09 (Claude Code)
 
-| fonction | état au 30/09 |
-|---|---|
-| `sso-mint`, `sso-redeem` | **DÉPLOYÉES v6** (défi et `verifier`) |
-| `stripe-webhook` | **à déployer** (cas `artwork` et `resale` → `art_settle`) — v35 déployée ne connaît pas le marché |
-| `artwork-checkout` | **à déployer** — v13 déployée attend `artwork_id` ; la page du marché envoie `slug` (le nouveau code accepte les deux) |
-| `market-checkout` | **NOUVELLE, à déployer** |
-| `higher-checkout` | **à déployer** — v32 déployée ne rend pas de `quote` : d'ici là, les boutons du THP n'affichent AUCUN prix (jamais un faux) |
-| `creator-subscribe` | **à déployer** (`from:'com'` → retour sur `totehm.com/@nom`) |
+| fonction | version en ligne | verify_jwt |
+|---|---|---|
+| `sso-mint`, `sso-redeem` | v6 | true |
+| `stripe-webhook` | v36 (cas `artwork` et `resale` → `art_settle`) | false |
+| `artwork-checkout` | v14 (réservation, `slug`) | true |
+| `market-checkout` | v1 — NOUVELLE | true |
+| `higher-checkout` | v33 (prix lu dans `artworks`, `quote` sans session) | false |
+| `creator-subscribe` | v8 (`from:'com'` → `totehm.com/@nom`) | true |
+
+**Endpoint Stripe vérifié le 30/09 (connecteur Stripe, compte live
+« Higher »)** : `we_1U2T6Y…`, activé, écoute `checkout.session.completed`,
+`invoice.paid`, `invoice.payment_failed`, `customer.subscription.updated`,
+`customer.subscription.deleted`.
+
+**Après déploiement (Claude Code, 30/09)** : `market_selftest.sql` vert en
+production (rien laissé) ; `higher-checkout` `{quote:true}` →
+`{"amount":1700,"currency":"usd","left":776994}` ; `main` = `8b07207`,
+Vercel READY ; les onze contrôles du runbook verts.
 
 ### Pages du lot
 
