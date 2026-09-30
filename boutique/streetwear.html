@@ -5,7 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Totehm Cloth Streetwear</title>
 <!--
-  ══ higher.boutique/streetwear — LA TOTEHMISATION · MAJ 23/09/2026 ══════
+  ══ higher.boutique/streetwear — LA TOTEHMISATION · MAJ 30/09/2026 ══════
+  ⚠️ 30/09 — PICK UP THE BOX (MASTER BRIEF §33) : la BOX d'abord, le
+  vêtement ensuite. MY TOTEHM → HABIT BOXES → PICK UP A BOX → SELECT (le
+  support) → MATERIALIZE (nom · style · taille) → STREETWEAR (commande).
+  Toucher un vêtement avant d'avoir une Box : on va chercher la Box, et
+  le vêtement touché attend (il sera le support). La lecture de la table
+  `collections` (qui n'existe pas en base : l'en-tête restait vide) est
+  remplacée par le stock des supports eux-mêmes.
   MASTER §49-54 et §88. La page répond d'abord à :
       WHAT BOX DO I WANT TO MATERIALIZE?     puis
       HOW WILL TOTEHM TURN INTO ART?
@@ -59,6 +66,12 @@ html,body{width:100%;min-height:100dvh;background:var(--bg);color:var(--g1);font
 /* HEADER */
 #header{display:flex;align-items:flex-start;justify-content:space-between;padding:16px 18px 12px;position:sticky;top:0;z-index:40;background:rgba(0,0,0,.96);}
 #hdr-left{display:flex;flex-direction:column;gap:3px}
+/* La Box ramassée, au-dessus des vêtements (30/09). */
+#picked{margin-top:8px;background:var(--skin,#333366);padding:8px 10px;max-width:320px;display:flex;flex-direction:column;gap:4px}
+#picked small{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+#picked b{font-family:var(--q);font-weight:400;font-size:14px;color:#fff;line-height:1.35}
+#picked .pal{display:flex;gap:3px}#picked .pal i{width:10px;height:10px;display:block}
+#picked button{align-self:flex-start;font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.7);background:none;border:none;cursor:pointer;padding:0}
 #page-title{font-family:var(--mono);font-size:8px;color:var(--g2);letter-spacing:.18em}
 #collection-slug{font-family:var(--q);font-size:13px;color:var(--g0);min-height:17px}
 #collection-stock{font-family:var(--mono);font-size:8px;color:var(--g2);min-height:10px;margin-top:1px}
@@ -230,8 +243,10 @@ div.style-img{display:flex;align-items:center;justify-content:center;font-family
 <header id="header">
   <div id="hdr-left">
     <div id="page-title">Totehm Cloth Streetwear</div>
-    <div id="collection-slug"></div>
+    <div id="collection-slug">my TOTEHM → a box → a cloth</div>
     <div id="collection-stock"></div>
+    <button class="btn" id="pick-btn" type="button" style="margin-top:8px;color:#fff;font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase">Pick up the box</button>
+    <div id="picked" class="hide"></div>
   </div>
   <button class="btn" id="concept-btn" style="font-size:12px;color:var(--g2)">what is this ?</button>
 </header>
@@ -298,7 +313,7 @@ div.style-img{display:flex;align-items:center;justify-content:center;font-family
 <!-- MY TOTEHM — SELECT MODE : quelle Box matérialiser ? -->
 <div id="sel" role="dialog" aria-label="My TOTEHM — select a box">
   <div id="rail"></div>
-  <div id="sel-head"><div id="sel-q">what box do you want to materialize?</div><div id="sel-title">my habits</div><div id="sel-sub">what I repeat</div></div>
+  <div id="sel-head"><div id="sel-q">pick up the box you want to materialize</div><div id="sel-title">my habits</div><div id="sel-sub">what I repeat</div></div>
   <button id="sel-x" type="button" aria-label="Close"><svg viewBox="0 0 16 16"><path d="M3 3 L13 13 M13 3 L3 13"/></svg></button>
   <div id="list"></div>
   <div id="joy">
@@ -318,12 +333,12 @@ div.style-img{display:flex;align-items:center;justify-content:center;font-family
   <div class="mono" id="pass-n"></div>
   <div class="blind" style="margin-top:0">A TOTEHM Cloth is born from one box of your TOTEHM. Write one box in each of the five views, then come back.</div>
   <button class="btn" id="pass-go">Complete my TOTEHM</button>
-  <button class="btn-back" id="pass-x">back to the collection</button>
+  <button class="btn-back" id="pass-x">back</button>
 </div>
 
 <!-- CONFIG -->
 <div id="config">
-  <button class="btn-back" id="cfg-back">back to my TOTEHM</button>
+  <button class="btn-back" id="cfg-back">back to the cloths</button>
   <div id="anchor"></div>
 
   <div class="cfg-step on" id="step-name">
@@ -486,25 +501,22 @@ let PENDING=null;
 let me=null,myProfile=null;
 /* Le diagnostic — des booléens et des compteurs, jamais le texte d'une Box.
    Dans la console : __totehm_cloth() */
-const BUILD='2026-09-23';
+const BUILD='2026-09-30';
 window.__totehm_cloth=()=>({build:BUILD,signed_in:!!me,support:!!order.support,
   box:order.box?order.box.kind:null,palette:order.box?(order.box.palette||[]).length:0,
-  style:!!order.style,named:!!order.name,size:!!order.size,pending:!!PENDING,styles:styles.length});
+  style:!!order.style,named:!!order.name,size:!!order.size,pending:!!PENDING,styles:styles.length,
+  flow:order.support?'materialize':order.box?'select':'pick',pref:!!PREF});
 
 function epochPrefix(){const d=new Date(),y=d.getFullYear(),ey=d.getMonth()>=5?y:y-1;return Math.max(ey-2026,0)+'.';}
 function avail(s){return Math.max((s.max_pieces||0)-(s.claimed||0),0);}
 function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
 function fmt(s){return Number(s.price)+' €';}
 
-async function loadCollection(){
-  try{
-    const{data:col}=await sb.from('collections').select('id,slug,description').eq('active',true).order('created_at',{ascending:false}).limit(1).maybeSingle();
-    if(!col)return;
-    $('collection-slug').textContent=col.slug||'';
-    const{data:stock}=await sb.from('totehm_cloth_support').select('max_pieces,claimed').eq('collection_id',col.id).eq('active',true);
-    const rem=(stock||[]).reduce((s,r)=>s+Math.max((r.max_pieces||0)-(r.claimed||0),0),0);
-    $('collection-stock').textContent=rem>0?rem+' left':'sold out';
-  }catch(_){}
+/* Le stock : la somme des pièces restantes des supports actifs. Rien
+   d'autre à lire (la table `collections` n'existe pas — 30/09). */
+function paintStock(){
+  const rem=supports.reduce((t,r)=>t+avail(r),0);
+  $('collection-stock').textContent=supports.length?(rem>0?rem+' left':'sold out'):'';
 }
 
 async function preloadImages(list){
@@ -519,7 +531,7 @@ async function preloadImages(list){
 
 async function load(){
   const{data}=await sb.from('totehm_cloth_support').select('*').eq('active',true).order('position');
-  supports=data||[];
+  supports=data||[];paintStock();
   await preloadImages(supports);
   renderDots();render();
 }
@@ -545,10 +557,10 @@ function render(){
     `<div class="sup-title">${esc(s.title||'')}</div>`+
     (s.details?`<button class="btn" id="sup-det-btn" style="font-size:11px;color:var(--g2)">details</button><div class="sup-detail" id="sup-det">${esc(s.details)}</div>`:'')+
     (left>0?`<div class="pieces">${left} / ${s.max_pieces}</div>`:`<div class="soldout">sold out</div>`)+
-    (left>0?`<button class="btn-coral" id="totehmize">Totehmize</button>`:'');
+    (left>0?`<button class="btn-coral" id="totehmize">${order.box?'Materialize my box on it':'Pick up a box for it'}</button>`:'');
 
   if(s.details)card.querySelector('#sup-det-btn').onclick=()=>card.querySelector('#sup-det').classList.toggle('on');
-  const tb=card.querySelector('#totehmize');if(tb)tb.onclick=()=>startTotehmize(s);
+  const tb=card.querySelector('#totehmize');if(tb)tb.onclick=()=>order.box?chooseSupport(s):pickUp(s);
   document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===ci));
 
   if(images.length>1){
@@ -619,7 +631,7 @@ $('member').addEventListener('click',e=>{if(e.target===$('member'))$('member').c
    (MASTER BRIEF §6). Une totehmisation commencée avant la connexion survit
    à l'aller-retour : le support attend dans sessionStorage. */
 const PEND_KEY='totehm_cloth_pending';
-$('mw-login').onclick=()=>{try{if(PENDING)sessionStorage.setItem(PEND_KEY,String(PENDING.id));}catch(_){}ssoLogin(false);};
+$('mw-login').onclick=()=>{try{if(PENDING)sessionStorage.setItem(PEND_KEY,'box'+(PENDING.pref?':'+PENDING.pref.id:''));}catch(_){}ssoLogin(false);};
 $('mw-pseudo').addEventListener('keydown',async e=>{
   if(e.key!=='Enter')return;
   const v=$('mw-pseudo').value.trim(),note=$('mw-claim-note');
@@ -633,15 +645,17 @@ $('mw-signout').onclick=async()=>{await sb.auth.signOut();$('member').classList.
 sb.auth.onAuthStateChange(async()=>{const{data:{session}}=await sb.auth.getSession();me=session?.user||null;await loadProfile();memberPaint();
   /* Une totehmisation commencée avant la connexion reprend là où elle s'est
      arrêtée — pas de retour au carrousel. */
-  if(me&&myProfile&&PENDING){const s=PENDING;PENDING=null;$('member').classList.remove('show');startTotehmize(s);}});
+  if(me&&myProfile&&PENDING){const s=PENDING;PENDING=null;$('member').classList.remove('show');pickUp(s.pref);}});
 (async()=>{const{data:{session}}=await sb.auth.getSession();me=session?.user||null;await loadProfile();})();
 
-/* ══ TOTEHMIZE — 1 · QUELLE BOX ? ══════════════════════════════════
+/* ══ PICK UP THE BOX — 1 · MY TOTEHM → HABIT BOXES (30/09) ══════════
    Connexion d'abord (la Box est dans SON Totehm), puis le passeport,
-   puis le Totehm en SELECT MODE. */
-async function startTotehmize(s){
-  order={support:s,box:null,name:'',size:'',style:null};
-  if(!me||!myProfile){PENDING=s;$('member').classList.add('show');memberPaint();return;}
+   puis le Totehm en SELECT MODE, ouvert sur les HABIT BOXES. `pref` : le
+   vêtement touché avant d'avoir une Box — il sera le support. */
+let PREF=null;
+async function pickUp(pref){
+  PREF=pref||null;
+  if(!me||!myProfile){PENDING={pref:PREF};$('member').classList.add('show');memberPaint();return;}
   const{data:pass,error}=await sb.rpc('totehm_complete');
   if(error){console.error('[totehm_complete]',error.message);}
   if(!pass?.complete){
@@ -653,6 +667,19 @@ async function startTotehmize(s){
   await loadTotehm();
   vue='habits';renderSel();$('sel').classList.add('show');
 }
+$('pick-btn').onclick=()=>pickUp(null);
+/* 2 · SELECT — la Box ramassée reste en haut ; on choisit le vêtement. */
+function paintPicked(){
+  const p=$('picked');
+  if(!order.box){p.classList.add('hide');p.innerHTML='';$('pick-btn').classList.remove('hide');return;}
+  $('pick-btn').classList.add('hide');p.classList.remove('hide');
+  p.style.setProperty('--skin',SKIN[order.box.view]||'#333366');
+  p.innerHTML='<small>my box · now choose the cloth</small><b>'+esc(order.box.text)+'</b><span class="pal">'+(order.box.palette||[]).map(x=>'<i style="background:'+esc(x)+'"></i>').join('')+'</span>'+
+    '<button type="button" id="picked-x">another box</button>';
+  $('picked-x').onclick=()=>pickUp(null);
+}
+/* 3 · MATERIALIZE — le vêtement choisi, la Box dessus. */
+function chooseSupport(s){order.support=s;openConfig();}
 $('pass-x').onclick=()=>$('pass').classList.remove('show');
 $('pass-go').onclick=()=>ssoVersDomaine(sb,'com','https://www.totehm.com/totehm#in');
 
@@ -735,8 +762,10 @@ $('list').addEventListener('click',async e=>{
   c.innerHTML=
     '<div class="grp"><span class="w">palette</span><span class="pal">'+(m.palette||[]).map(x=>'<i style="background:'+esc(x)+'"></i>').join('')+'</span>'+((m.palette||[]).length?'':'<span class="mono">no intention yet — the curated style decides</span>')+'</div>'+
     groups+(extras.length?'<div class="grp"><span class="w">context</span><span class="mono" style="color:rgba(255,255,255,.75)">'+extras.join(' · ')+'</span></div>':'')+
-    '<div class="next"><button class="btn-coral" id="mt-go" style="color:#fff">Totehmize this box</button><button class="btn-back" id="mt-x">another box</button></div>';
-  $('mt-go').onclick=()=>{order.box={kind:KIND[vue],ref:String(o.ref),text:m.text,view:m.view,palette:m.palette||[]};$('sel').classList.remove('show');openConfig();};
+    '<div class="next"><button class="btn-coral" id="mt-go" style="color:#fff">Pick up this box</button><button class="btn-back" id="mt-x">another box</button></div>';
+  $('mt-go').onclick=()=>{order={support:null,box:{kind:KIND[vue],ref:String(o.ref),text:m.text,view:m.view,palette:m.palette||[]},name:'',size:'',style:null};
+    $('sel').classList.remove('show');paintPicked();
+    if(PREF&&avail(PREF)>0){const s=PREF;PREF=null;chooseSupport(s);}else{PREF=null;render();window.scrollTo({top:0,behavior:'smooth'});}};
   $('mt-x').onclick=()=>renderSel();
   c.scrollIntoView({behavior:'smooth',block:'nearest'});
 });
@@ -760,7 +789,7 @@ function openConfig(){
   $('order-note').textContent='';
   $('config').classList.add('show');$('config').scrollTop=0;
 }
-$('cfg-back').onclick=()=>{$('config').classList.remove('show');renderSel();$('sel').classList.add('show');};
+$('cfg-back').onclick=()=>{$('config').classList.remove('show');order.support=null;render();};
 /* Chemin ABSOLU sous cleanUrls (CLAUDE.md, 16/09). */
 $('done-back').onclick=()=>{location.href='/streetwear';};
 
@@ -835,12 +864,13 @@ $('order-btn').onclick=async()=>{
 };
 $('terms-link').onclick=e=>{e.preventDefault();alert('Each Totehm Cloth is a unique, made-to-order piece. All sales are final once the artist begins. No returns, no refunds.');};
 
-loadCollection();
+
 load().then(async()=>{
   let id=null;try{id=sessionStorage.getItem(PEND_KEY);sessionStorage.removeItem(PEND_KEY);}catch(_){}
   if(!id)return;
   const{data:{session}}=await sb.auth.getSession();me=session?.user||null;await loadProfile();
-  const s=supports.find(x=>String(x.id)===id);if(s)startTotehmize(s);
+  if(!id.startsWith('box'))return;
+  const sid=id.split(':')[1];pickUp(sid?supports.find(x=>String(x.id)===sid):null);
 });
 
 (async()=>{
