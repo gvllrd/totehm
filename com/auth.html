@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<!--
+  ══ totehm.com/auth — L'AUTORITÉ D'IDENTITÉ · 30/09/2026 ════════════════
+  MASTER BRIEF §6 : « TOTEHM.COM devient la source d'identité de
+  l'écosystème. » Un satellite (totehm.space, figher.club, higher.boutique)
+  ne demande plus l'email lui-même : il envoie le navigateur ICI, avec le
+  DÉFI PKCE de son `verifier`, un `state` et un chemin de retour.
+
+      1 · ici, une session totehm.com existe → on frappe un code LIÉ au défi
+          et au domaine (`sso-mint`), on renvoie le navigateur chez lui,
+          code dans le FRAGMENT (jamais un en-tête Referer, jamais un log) ;
+      2 · pas de session → email → code à 6 chiffres, UNE fois (c'est ici
+          que naît la session centrale), puis 1 ;
+      3 · `prompt=none` et pas de session → retour immédiat avec
+          `sso_error=login_required` : l'aller-retour silencieux ne montre
+          jamais rien.
+
+  ⚠️ LA DESTINATION N'EST JAMAIS UNE URL REÇUE. `client` est un NOM
+  (space · club · boutique) traduit par une table fixe ; `return` doit être
+  un CHEMIN de ce domaine (« /console », « /#create » refusé : pas de
+  fragment, pas de « // », pas de schéma). Tout le reste : la page le dit,
+  et ne redirige nulle part — une porte d'autorisation qui suivrait
+  n'importe quel lien serait un redirecteur ouvert.
+
+  ⚠️ CETTE PAGE NE SE LAISSE PAS ENCADRER (`X-Frame-Options: SAMEORIGIN`,
+  com/vercel.json) : un site qui l'encadrerait ferait cliquer le membre à
+  son insu.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>TOTEHM — Sign in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#000;--mid:#b0b0b0;--lo:#9a9a9a;--dim:#606060;--g3:#1c1c1f;--g4:#26262b;--no:#ff9a9a;--on:#639922}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--mid);font-family:'Space Mono',monospace;font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100%}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;padding:24px 16px;text-align:center;gap:14px}
+#t svg{height:34px;width:auto;fill:#fff;display:block}
+h1{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:#fff}
+.to{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--lo)}
+.to b{color:#fff;font-weight:400}
+.in{font-family:'Quantico',sans-serif;font-size:15px;color:#fff;background:#1c1c22;outline:none;border:none;border-radius:10px;padding:11px 14px;
+  text-align:center;caret-color:#fff;width:100%;max-width:300px;-webkit-appearance:none;appearance:none}
+.in:focus{background:#26262e}
+.in::placeholder{color:rgba(255,255,255,.38)}
+.btn{font-family:'Space Mono',monospace;font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:var(--g4);
+  border:none;border-radius:10px;cursor:pointer;padding:10px 16px;width:fit-content;transition:background .15s}
+@media(hover:hover){.btn:hover{background:#34343a}.lnk:hover{color:#fff}}
+.lnk{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:none;border:none;cursor:pointer;text-decoration:none}
+.note{font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;color:var(--lo)}
+.note.no{color:var(--no)}.note.ok{color:var(--on)}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<a id="t" href="/totehm" aria-label="TOTEHM"><svg viewBox="0 0 68 68"><rect x="0" y="0" width="68" height="10"/><rect x="29" y="0" width="10" height="67"/><rect x="21" y="63" width="27" height="5"/></svg></a>
+<h1 id="h">One account</h1>
+<div class="to" id="to"></div>
+<form id="f-mail" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:10px;width:100%">
+  <input class="in" id="email" type="email" placeholder="your@email" autocomplete="email" required>
+  <button class="btn" type="submit">Send the code</button>
+</form>
+<form id="f-code" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:10px;width:100%">
+  <input class="in" id="code" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code">
+</form>
+<div class="note" id="note"></div>
+<a class="lnk hide" id="back" href="#">Back without signing in</a>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL = 'https://abujjbkbbiumxrokozph.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+const sb = createClient(SB_URL, SB_ANON);
+const $ = id => document.getElementById(id);
+const BUILD = '2026-09-30';
+
+/* ⚠️ LA TABLE FIXE — un nom, une origine, et rien d'autre ne passe. */
+const CLIENTS = {
+  space:    { origin:'https://www.totehm.space',    name:'TOTEHM.SPACE' },
+  club:     { origin:'https://www.figher.club',     name:'FIGHER.CLUB' },
+  boutique: { origin:'https://www.higher.boutique', name:'HIGHER.BOUTIQUE' },
+};
+const P = new URLSearchParams(location.search);
+const client = P.get('client') || '', challenge = P.get('challenge') || '', state = P.get('state') || '';
+const ret = P.get('return') || '/', silent = P.get('prompt') === 'none';
+const C = CLIENTS[client];
+const ok = !!C && /^[A-Za-z0-9_-]{43}$/.test(challenge) && /^[A-Za-z0-9_-]{16,64}$/.test(state)
+        && /^\/(?![\/\\])[^\s#\\]*$/.test(ret) && ret.length <= 300;
+let STEP = 'boot';
+window.__totehm_auth = () => ({ build: BUILD, client: C ? client : null, valid: ok, silent, step: STEP });
+
+/* Chez lui, avec ce que l'on a à lui dire — dans le FRAGMENT. */
+const home = extra => { STEP = 'leaving'; location.replace(C.origin + ret + '#' + extra + '&state=' + state); };
+
+async function issue(){
+  STEP = 'minting';
+  $('note').className = 'note'; $('note').textContent = 'opening ' + C.name.toLowerCase() + '…';
+  const { data:{ session } } = await sb.auth.getSession();
+  if(!session){ ask(); return; }
+  try{
+    const r = await fetch(SB_URL + '/functions/v1/sso-mint', { method:'POST',
+      headers:{ 'authorization':'Bearer ' + session.access_token, 'apikey':SB_ANON, 'content-type':'application/json' },
+      body: JSON.stringify({ target: client, challenge }) });
+    const j = await r.json().catch(() => ({}));
+    if(r.ok && j.code){ home('sso=' + j.code); return; }
+    console.error('[auth] mint', r.status, j.error);
+  }catch(e){ console.error('[auth]', e && e.message || e); }
+  $('note').className = 'note no'; $('note').textContent = 'the door did not open — try again';
+  $('back').classList.remove('hide');
+}
+
+function ask(){
+  STEP = 'email';
+  $('h').textContent = 'Sign in';
+  $('f-mail').classList.remove('hide'); $('back').classList.remove('hide');
+  $('note').textContent = '';
+  setTimeout(() => $('email').focus(), 60);
+}
+
+let mail = '';
+$('f-mail').addEventListener('submit', async e => {
+  e.preventDefault();
+  const v = $('email').value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ $('note').className = 'note no'; $('note').textContent = 'invalid email'; return; }
+  $('note').className = 'note'; $('note').textContent = 'sending…';
+  const { error } = await sb.auth.signInWithOtp({ email: v, options:{ shouldCreateUser: true } });
+  if(error){ $('note').className = 'note no'; $('note').textContent = 'try again in a minute'; return; }
+  mail = v; STEP = 'code';
+  $('f-mail').classList.add('hide'); $('f-code').classList.remove('hide');
+  $('note').className = 'note ok'; $('note').textContent = 'code sent to ' + v;
+  setTimeout(() => $('code').focus(), 60);
+});
+$('f-code').addEventListener('submit', e => e.preventDefault());
+$('code').addEventListener('input', async () => {
+  const t = $('code').value.trim();
+  if(t.length !== 6) return;
+  $('note').className = 'note'; $('note').textContent = 'verifying…';
+  const { error } = await sb.auth.verifyOtp({ email: mail, token: t, type: 'email' });
+  if(error){ $('note').className = 'note no'; $('note').textContent = 'wrong code'; $('code').value = ''; return; }
+  $('f-code').classList.add('hide');
+  issue();
+});
+$('back').onclick = e => { e.preventDefault(); home('sso_error=cancelled'); };
+
+if(!ok){
+  STEP = 'invalid';
+  $('h').textContent = 'Invalid request';
+  $('to').innerHTML = 'This sign-in link is not valid. <a class="lnk" href="/totehm">Open my TOTEHM</a>';
+}else{
+  $('to').innerHTML = 'to continue to <b>' + C.name + '</b>';
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session) issue();
+  else if(silent) home('sso_error=login_required');
+  else ask();
+}
+</script>
+</body>
+</html>

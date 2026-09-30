@@ -76,5 +76,15 @@
       "destination": "/map",
       "permanent": false
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/@:name",
+      "destination": "/creator"
+    },
+    {
+      "source": "/search",
+      "destination": "/creator"
+    }
   ]
 }

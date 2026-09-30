@@ -2213,6 +2213,16 @@ body.paysage #gate-enter{pointer-events:none}
   text-transform:uppercase;color:#8a8a8a;text-decoration:none;
   padding:6px 2px;transition:color .15s ease,opacity .25s ease}
 body.gate.entered #terms-corner{opacity:0;pointer-events:none}
+/* ══ LA RECHERCHE A SA PAGE · 30/09/2026 ══ MASTER BRIEF §3 : totehm.com
+   est le point d'entrée de la recherche des Totehms. L'atterrissage garde
+   son objet unique (le papier, sans barre de recherche depuis le 24/09) ;
+   un seul mot, en bas, mène à /search — invité compris. */
+#search-corner{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:4;
+  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;
+  text-transform:uppercase;color:#8a8a8a;text-decoration:none;
+  padding:6px 2px;transition:color .15s ease,opacity .25s ease}
+body.gate.entered #search-corner{opacity:0;pointer-events:none}
+@media(hover:hover){#search-corner:hover{color:#fff}}
 
 /* ══ ÉTAT 2 — LA DÉCONSTRUCTION ══
    Les valeurs --tf-* sont mesurées une fois en JS (positions réelles de l'UI)
@@ -2789,6 +2799,7 @@ body.gate.entered #filter-badge{
 
   <!-- Coin haut droit : les termes. -->
   <a id="terms-corner" href="terms.html" target="_blank" rel="noopener">Simple terms of use</a>
+  <a id="search-corner" href="/search">Search a TOTEHM</a>
 
 <section id="gate-hero">
   <!-- LA CARTE DE VISITE, au-dessus du logo : mon nom, qui me voit, et
@@ -3727,6 +3738,9 @@ async function loadRO(){
   const {data,error}=await sb.rpc('totehm_of',{p_pseudo:RO});
   if(error){ console.error('[totehm] totehm_of:',error.message);
              roFail('this Totehm could not be read'); return false; }
+  /* Un Totehm PAYANT, lu par un non-abonné : avant, « private » et rien
+     d'autre. Depuis le 30/09, sa page de vente (totehm.com/@nom). */
+  if(data&&data.why==='subscribe'){ location.replace('/@'+encodeURIComponent(data.pseudo||RO)); return false; }
   if(!data||!data.ok){
     roFail(data&&data.why==='nobody'  ? 'no Totehm by that name'
          : data&&data.why==='signin'  ? 'sign in to read a Totehm'
@@ -4287,7 +4301,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-09-28e';
+const BUILD='2026-09-30';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -6859,7 +6873,9 @@ async function runSearch(q, noteEl){
   noteEl.querySelectorAll('.sr-row').forEach(b=>{
     b.onclick = () => {
       $('member-window').classList.remove('show');
-      location.href = 'totehm.html?ro=' + encodeURIComponent(b.dataset.pseudo);
+      /* SEARCH → TOTEHM → CREATOR (30/09) : la page du Totehm dit ce que
+         CE lecteur peut ouvrir — le lire, s'abonner, rejoindre FIGHER. */
+      location.href = '/@' + encodeURIComponent(b.dataset.pseudo);
     };
   });
 }
