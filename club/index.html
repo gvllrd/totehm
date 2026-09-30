@@ -484,11 +484,13 @@ const PORTES = {
   com:      ['com',      'https://www.totehm.com/totehm#in'],
   space:    ['space',    'https://www.totehm.space/'],
   boutique: ['boutique', 'https://www.higher.boutique/streetwear'],
-  thp:      ['boutique', 'https://www.higher.boutique/get_higher'],
+  /* 30/09 : le THP est une œuvre de la collection TOTEHMPAPER — il s'achète
+     sur le marché de FIGHER, même origine, pas de pont à traverser. */
+  thp:      [null, '/market?art=totehmpaper'],
   bot:      ['com',      'https://www.totehm.com/club/totehmbot'],
 };
 document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => {
-  const p = PORTES[b.dataset.go]; if(p) ssoVersDomaine(sb, p[0], p[1]);
+  const p = PORTES[b.dataset.go]; if(p) p[0] ? ssoVersDomaine(sb, p[0], p[1]) : (location.href = p[1]);
 });
 
 /* ── Le prix, lu chez Stripe. Rien d'inventé si la lecture échoue. ── */
@@ -585,7 +587,7 @@ function paintRope(){
   }
   if(!F?.thp){
     cta.textContent = 'Get my TotehmPaper';
-    cta.onclick = () => ssoVersDomaine(sb, 'boutique', 'https://www.higher.boutique/get_higher'); return;
+    cta.onclick = () => { location.href = '/market?art=totehmpaper'; }; return;
   }
   cta.textContent = PRICE?.price_cents ? 'Join — ' + money(PRICE.price_cents, PRICE.currency) + ' / ' + (PRICE.interval||'year') : 'Join FIGHER';
   cta.onclick = join;

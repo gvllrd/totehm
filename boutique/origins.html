@@ -140,7 +140,6 @@ html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const SB_URL  = 'https://abujjbkbbiumxrokozph.supabase.co';
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
-const ART_FN  = SB_URL + '/functions/v1/artwork-checkout';
 const sb = createClient(SB_URL, SB_ANON);
 
 /* ══ LE PONT SSO — LE BLOC À COPIER · 17/09/2026 ══════════════════════
@@ -309,29 +308,11 @@ for(let i = 0; i < VCOUNT; i++){
   videos.push(document.getElementById(`vid${i}`));
 }
 
-// Artwork acquire
-async function acquireArtwork(artworkId, btn){
-  const {data:{session}} = await sb.auth.getSession();
-  if(!session){ location.href='/get_higher.html?return=origins.html'; return; }
-  btn.classList.add('loading'); btn.textContent='loading…';
-  try{
-    const r = await fetch(ART_FN,{method:'POST',
-      headers:{'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json'},
-      body:JSON.stringify({artwork_id:artworkId})});
-    const j = await r.json();
-    if(r.status===402){ location.href=j.redirect||'/get_higher.html'; return; }
-    if(r.status===409){ btn.textContent='Unavailable'; btn.disabled=true; return; }
-    if(j.url){ location.href=j.url; return; }
-    // Sinon (typiquement 502 stripe) : ne pas laisser retomber en silence,
-    // sinon le membre pense que le clic n'a rien fait.
-    console.error('artwork checkout:', r.status, j);
-    btn.classList.remove('loading'); btn.textContent='checkout error — retry';
-    setTimeout(()=>{ btn.textContent='Acquire →'; }, 4000);
-  }catch(e){
-    console.error('artwork checkout:', e);
-    btn.classList.remove('loading'); btn.textContent='network error — retry';
-    setTimeout(()=>{ btn.textContent='Acquire →'; }, 4000);
-  }
+// Artwork acquire — 30/09 : une œuvre s'acquiert, se possède et se revend
+// sur FIGHER (figher.club/market). La boutique MONTRE ; le marché VEND.
+// Un seul endroit où la propriété s'écrit (le webhook → art_settle).
+function acquireArtwork(slug){
+  ssoVersDomaine(sb, 'club', 'https://www.figher.club/market?art=' + encodeURIComponent(slug));
 }
 
 // Populate labels when artworks loaded
@@ -339,14 +320,14 @@ function populateLabel(i, aw){
   const el = document.getElementById('gl'+i);
   if(!el) return;
   el.querySelector('.gl-t').textContent = aw.title;
-  el.querySelector('.gl-p').textContent = '€ '+(aw.price_cents/100).toLocaleString('fr-FR');
+  el.querySelector('.gl-p').textContent = new Intl.NumberFormat('en', { style:'currency', currency:String(aw.currency || 'eur').toUpperCase(), minimumFractionDigits: aw.price_cents % 100 ? 2 : 0 }).format(aw.price_cents/100);
   const btn = el.querySelector('.gl-btn');
   if(aw.status==='sold'){ btn.textContent='Sold'; btn.disabled=true; }
-  else{ btn.textContent='Acquire →'; btn.disabled=false; btn.addEventListener('click',()=>acquireArtwork(aw.id,btn)); }
+  else{ btn.textContent='Acquire →'; btn.disabled=false; btn.addEventListener('click',()=>acquireArtwork(aw.slug)); }
   el.classList.add('in');
 }
 
-sb.from('artworks').select('id,title,price_cents,status,sort_order').eq('series','quantum')
+sb.from('artworks').select('id,slug,title,price_cents,currency,status,sort_order').eq('series','quantum')
   .then(({data})=>{ if(data) data.forEach(a=>populateLabel(a.sort_order-1, a)); });
 
 /* ── POSITIONING ── */

@@ -216,6 +216,8 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 .mw-card{background:#131316;border:none;max-width:360px;width:100%;padding:30px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;}
 
 
+/* 30/09 : le prix du THP, posé par le serveur (voir le module). */
+.thp-price::after{content:var(--thp,"")}
 </style>
 </head>
 <body>
@@ -262,6 +264,19 @@ const SB_URL  = 'https://abujjbkbbiumxrokozph.supabase.co';
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
 const GATE_FN = SB_URL + '/functions/v1/stoner-gate';
 const PAY_FN  = SB_URL + '/functions/v1/higher-checkout';
+
+/* 30/09 — LE PRIX DU THP VIENT DU SERVEUR, jamais de la page. La ligne
+   `artworks` totehmpaper le porte (777 000 exemplaires) ; higher-checkout
+   le rend sans session (`quote`). Il se pose dans une variable CSS : les
+   boutons dessinés plus tard le reçoivent aussi (.thp-price). Si la
+   lecture échoue, le bouton ne dit pas de prix — jamais un faux. */
+fetch(PAY_FN, { method:'POST', headers:{ 'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer ' + SB_ANON },
+  body: JSON.stringify({ quote:true }) })
+  .then(r => r.ok ? r.json() : null)
+  .then(j => { if(j && j.amount != null && j.currency){
+    const p = new Intl.NumberFormat('en', { style:'currency', currency:String(j.currency).toUpperCase(), minimumFractionDigits: j.amount % 100 ? 2 : 0 }).format(j.amount/100);
+    document.documentElement.style.setProperty('--thp', '" — ' + p + '"'); } })
+  .catch(() => {});
 const METHOD  = '/stoner.html';
 const sb = createClient(SB_URL, SB_ANON);
 
@@ -417,7 +432,7 @@ function buildSlide(slide){
             </div>
           </div>
         </div>
-        <button id="btn-buy" class="btn-sig">Buy a TotehmPaper {THP} — $30</button>
+        <button id="btn-buy" class="btn-sig">Buy a TotehmPaper {THP}<span class="thp-price"></span></button>
         <button id="btn-play-street" class="btn-sig" style="margin-top:14px;">Make the Lisbon Streets <span class="higher-inline" style="width:54px;height:18px;vertical-align:middle;display:inline-flex;align-items:center;"><svg viewBox="0 0 600 200" style="width:100%;height:100%"><use href="#higher-slogan"></use></svg></span></button>
       `;
     } else if(p.t==='mail'){

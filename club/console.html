@@ -202,6 +202,7 @@ section h2{font-family:var(--bebas);font-weight:400;color:#fff;font-size:clamp(3
       <a class="lnk" href="#subscribe">Subscribe</a><a class="lnk" href="#subscribers">Subscribers</a>
       <a class="lnk" href="#earn">Earn</a><a class="lnk" href="#paid">Paid</a>
       <a class="lnk" href="#billing">Billing</a><a class="lnk" href="#reveal">Reveal</a>
+      <a class="lnk" href="/market?tab=mine">My collection</a>
     </nav>
   </div>
 
@@ -425,10 +426,10 @@ const PORTES = {
   space:    ['space',    'https://www.totehm.space/'],
   create:   ['space',    'https://www.totehm.space/#create'],
   boutique: ['boutique', 'https://www.higher.boutique/streetwear'],
-  thp:      ['boutique', 'https://www.higher.boutique/get_higher'],
+  thp:      [null, '/market?art=totehmpaper'],   // 30/09 : le THP s'achète au marché
   bot:      ['com',      'https://www.totehm.com/club/totehmbot'],
 };
-const porte = k => { const p = PORTES[k]; if(p) ssoVersDomaine(sb, p[0], p[1]); };
+const porte = k => { const p = PORTES[k]; if(p) p[0] ? ssoVersDomaine(sb, p[0], p[1]) : (location.href = p[1]); };
 document.addEventListener('click', e => {
   const g = e.target.closest('[data-go]'); if(g){ e.preventDefault(); porte(g.dataset.go); }
 });

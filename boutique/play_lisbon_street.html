@@ -240,6 +240,8 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 .xp-le:hover{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
+/* 30/09 : le prix du THP, posé par le serveur (voir le module). */
+.thp-price::after{content:var(--thp,"")}
 </style>
 </head>
 <body>
@@ -299,7 +301,7 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
       <span class="xp-le" id="xp-artw-edition">—</span>
     </div>
   </div>
-  <button id="xp-buy" class="btn-sig">Get Higher — $30</button>
+  <button id="xp-buy" class="btn-sig">Get Higher<span class="thp-price"></span></button>
 </div>
 
 <div id="rotate-prompt">
@@ -332,7 +334,19 @@ const SB_URL  = 'https://abujjbkbbiumxrokozph.supabase.co';
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
 const GATE_FN = SB_URL + '/functions/v1/stoner-gate';
 const PAY_FN  = SB_URL + '/functions/v1/higher-checkout';
-const ART_FN  = SB_URL + '/functions/v1/artwork-checkout';
+
+/* 30/09 — LE PRIX DU THP VIENT DU SERVEUR, jamais de la page. La ligne
+   `artworks` totehmpaper le porte (777 000 exemplaires) ; higher-checkout
+   le rend sans session (`quote`). Il se pose dans une variable CSS : les
+   boutons dessinés plus tard le reçoivent aussi (.thp-price). Si la
+   lecture échoue, le bouton ne dit pas de prix — jamais un faux. */
+fetch(PAY_FN, { method:'POST', headers:{ 'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer ' + SB_ANON },
+  body: JSON.stringify({ quote:true }) })
+  .then(r => r.ok ? r.json() : null)
+  .then(j => { if(j && j.amount != null && j.currency){
+    const p = new Intl.NumberFormat('en', { style:'currency', currency:String(j.currency).toUpperCase(), minimumFractionDigits: j.amount % 100 ? 2 : 0 }).format(j.amount/100);
+    document.documentElement.style.setProperty('--thp', '" — ' + p + '"'); } })
+  .catch(() => {});
 const METHOD  = '/stoner.html';
 const sb = createClient(SB_URL, SB_ANON);
 
@@ -454,7 +468,7 @@ await Promise.race([
 // Artworks catalogue (video_key → artwork)
 const artworkMap = new Map();
 sb.from('artworks')
-  .select('id,title,price_cents,edition_total,edition_sold,status,video_key')
+  .select('id,slug,title,price_cents,currency,edition_total,edition_sold,status,video_key')
   .eq('series','lisbonne')
   .then(({ data }) => { if(data) data.forEach(a => artworkMap.set(a.video_key, a)); });
 
@@ -477,7 +491,7 @@ let OWNED = false;
   OWNED = await hasAccess();
   if(!OWNED) return;
   // Mettre a jour le fallback #xp-buy : quand il n'y a pas d'artwork
-  // (sign sans oeuvre associee), au lieu de proposer "Get Higher — $30"
+  // (sign sans oeuvre associee), au lieu de proposer "Get Higher — <prix>"
   // (achat THP), on propose [Get Higher] direct vers la methode.
   applyOwnedFallback();
 })();
@@ -692,11 +706,12 @@ function launchXp(id){
   const aw = artworkMap.get(id);
   if(aw){
     document.getElementById('xp-artw-title').textContent = aw.title;
-    document.getElementById('xp-artw-price').textContent = '€ ' + (aw.price_cents/100).toLocaleString('fr-FR');
+    document.getElementById('xp-artw-price').textContent = new Intl.NumberFormat('en', { style:'currency', currency:String(aw.currency || 'eur').toUpperCase(), minimumFractionDigits: aw.price_cents % 100 ? 2 : 0 }).format(aw.price_cents/100);
     const avail = aw.edition_total - aw.edition_sold;
     const isSold = aw.status==='sold' || avail<=0;
     document.getElementById('xp-artw-edition').textContent = isSold ? 'sold out' : avail+' / '+aw.edition_total;
     xpBuy.dataset.artworkId = aw.id;
+    xpBuy.dataset.slug = aw.slug || '';
     xpBuy.dataset.sold = isSold ? '1' : '0';
     xpBuy.dataset.mode = '';
     xpBuy.textContent = isSold ? '— Sold —' : 'Acquire →';
@@ -717,7 +732,7 @@ function launchXp(id){
     } else {
       xpBuy.dataset.mode = '';
       xpBuy.removeAttribute('aria-label');
-      xpBuy.textContent = 'Get Higher — $30';
+      xpBuy.innerHTML = 'Get Higher<span class="thp-price"></span>';
     }
   }
 
@@ -761,31 +776,10 @@ xpBuy.addEventListener('click',async()=>{
   // No artwork linked → THP purchase flow
   if(!artworkId){ closeAll(); const {data:{session}}=await sb.auth.getSession(); if(session?.user?.email){toStripe();return;} openAuth(); return; }
 
-  const {data:{session}} = await sb.auth.getSession();
-  if(!session){ openAuth(); return; }
-
-  const prev = xpBuy.textContent;
-  xpBuy.textContent='loading…'; xpBuy.disabled=true;
-  try{
-    const r = await fetch(ART_FN,{
-      method:'POST',
-      headers:{'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json'},
-      body:JSON.stringify({artwork_id:artworkId})
-    });
-    const j = await r.json();
-    if(r.status===402){ closeAll(); toStripe(); return; }     // no THP → buy THP
-    if(r.status===409){ xpBuy.textContent='Unavailable'; return; }
-    if(j.url){ (window.top||window).location.href=j.url; return; }
-    // Sinon (typiquement 502 stripe) : dire au membre que ça a foiré
-    // plutot que de retomber en silence sur le meme bouton.
-    console.error('artwork checkout:', r.status, j);
-    xpBuy.textContent='checkout error — retry'; xpBuy.disabled=false;
-    setTimeout(()=>{ xpBuy.textContent=prev; }, 4000);
-  }catch(e){
-    console.error('artwork checkout:', e);
-    xpBuy.textContent='network error — retry'; xpBuy.disabled=false;
-    setTimeout(()=>{ xpBuy.textContent=prev; }, 4000);
-  }
+  /* 30/09 — l'œuvre s'acquiert sur FIGHER (figher.club/market) : un seul
+     endroit où la propriété s'écrit et où elle se revend. Le pont y porte
+     la session. */
+  ssoVersDomaine(sb, 'club', 'https://www.figher.club/market?art=' + encodeURIComponent(xpBuy.dataset.slug || ''));
 });
 
 /* ─── STREET DISCOVER ─── */
@@ -1069,11 +1063,12 @@ function launchXpFromDisc(id){
   const aw = artworkMap.get(id);
   if(aw){
     document.getElementById('xp-artw-title').textContent = aw.title;
-    document.getElementById('xp-artw-price').textContent = '€ ' + (aw.price_cents/100).toLocaleString('fr-FR');
+    document.getElementById('xp-artw-price').textContent = new Intl.NumberFormat('en', { style:'currency', currency:String(aw.currency || 'eur').toUpperCase(), minimumFractionDigits: aw.price_cents % 100 ? 2 : 0 }).format(aw.price_cents/100);
     const avail = aw.edition_total - aw.edition_sold;
     const isSold = aw.status==='sold' || avail<=0;
     document.getElementById('xp-artw-edition').textContent = isSold ? 'sold out' : avail+' / '+aw.edition_total;
     xpBuy.dataset.artworkId = aw.id;
+    xpBuy.dataset.slug = aw.slug || '';
     xpBuy.dataset.sold = isSold ? '1' : '0';
     xpBuy.dataset.mode = '';
     xpBuy.textContent = isSold ? '— Sold —' : 'Acquire →';
@@ -1094,7 +1089,7 @@ function launchXpFromDisc(id){
     } else {
       xpBuy.dataset.mode = '';
       xpBuy.removeAttribute('aria-label');
-      xpBuy.textContent = 'Get Higher — $30';
+      xpBuy.innerHTML = 'Get Higher<span class="thp-price"></span>';
     }
   }
 

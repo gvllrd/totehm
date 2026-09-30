@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<!--
+  ══ figher.club/market — LE MARCHÉ · 30/09/2026 ═══════════════════════
+  MASTER BRIEF §22-31 : FIGHER = ART + COLLECTION + MARKETPLACE.
+  DISCOVER → COLLECT → OWN → MY COLLECTION → RESALE.
+
+  ⚠️ CETTE PAGE NE DÉCIDE RIEN. Le prix, le stock, la propriété, la
+  redevance : la base les dit (`market_view`, `my_collection`), Stripe
+  encaisse (`artwork-checkout`, `market-checkout`, `higher-checkout`), le
+  webhook règle (`art_settle`). Un faux marché dans le front serait un
+  marché qui ment — brief : « ne pas construire de fausse marketplace ».
+
+  Trois onglets, une fiche :
+    MARKET        ce qui est en vente : les exemplaires remis en vente
+                  (revente), puis les œuvres qui ont encore des exemplaires
+    COLLECTIONS   TOTEHMPAPER · QUANTUM · PLAY THE LISBON STREET
+    MY COLLECTION ce que je possède, le mettre en vente, mes ventes
+    ?art=<slug>   la fiche : l'œuvre, ses propriétaires, son histoire
+
+  Une seule règle de revente : le vendeur fixe son prix, 7 % vont à
+  TOTEHM, le reste au GRAND LIVRE du vendeur (`member_ledger`), versé par
+  le virement mensuel existant. Pas de Stripe Connect.
+
+  CE QUI N'EXISTE PAS, ET C'EST VOULU : notes, avis, likes, abonnés,
+  enchères, gamification.
+
+  Diagnostic console : __totehm_market() — des compteurs, jamais une
+  valeur de membre.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>FIGHER — The market</title>
+<meta name="description" content="Digital art you own, and can resell. TOTEHMPAPER, QUANTUM, PLAY THE LISBON STREET.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#000;--hi:#fff;--mid:#b0b0b0;--lo:#9a9a9a;--dim:#606060;
+  --g1:#0e0e10;--g2:#141416;--g3:#1c1c1f;--g4:#26262b;
+  --on:#639922;--no:#ff9a9a;--enrich:#fcbe21;
+  --bebas:'Bebas Neue',Impact,sans-serif;--q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:13px;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.hide{display:none!important}
+
+#member{position:fixed;top:16px;left:16px;z-index:40;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;
+  font-family:var(--q);font-weight:700;font-size:13px;color:#a0a0a0;padding:6px 4px;-webkit-tap-highlight-color:transparent;transition:color .15s}
+#member i{width:10px;height:10px;border-radius:50%;background:#3a3a40;display:block;transition:background .3s,box-shadow .3s}
+#member.is-in i{background:#fff;box-shadow:0 0 9px #fff}
+#terms{position:fixed;top:20px;right:16px;z-index:40;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);transition:color .15s}
+#t{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:39;line-height:0}
+#t svg{height:30px;width:auto;fill:#fff}
+
+/* Boutons : Space Mono Bold, gris, arrondis (brief §36 · 27/09). */
+.btn{font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);background:var(--g3);
+  border:none;border-radius:10px;cursor:pointer;padding:10px 16px;line-height:1.4;display:inline-block;width:fit-content;
+  -webkit-tap-highlight-color:transparent;transition:color .15s,background .15s,transform .15s}
+.btn.main{color:#fff;background:var(--g4)}
+@media(hover:hover){.btn:hover{color:#fff;background:#303036;transform:scale(1.03)}#terms:hover,.lnk:hover,.tab:hover{color:#fff}}
+.btn:active{transform:scale(.97)}
+.btn[disabled]{opacity:.35;pointer-events:none}
+.lnk{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:none;border:none;cursor:pointer;padding:2px 0}
+.in{font-family:var(--q);font-size:15px;color:#fff;background:#1c1c22;outline:none;border:none;border-radius:10px;padding:9px 12px;
+  caret-color:#fff;width:100%;-webkit-appearance:none;appearance:none}
+.in:focus{background:#26262e}
+.in::placeholder{color:rgba(255,255,255,.38)}
+select.in{cursor:pointer}
+.note{font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;color:var(--lo)}
+.note.ok{color:var(--on)}.note.no{color:var(--no)}
+.cap{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+.cap b{color:#fff;font-weight:400}
+
+main{width:100%;max-width:980px;margin:0 auto;padding:78px 16px 80px}
+.head{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;margin-bottom:22px}
+.kick{font-family:var(--bebas);font-size:17px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+h1{font-family:var(--bebas);font-weight:400;color:#fff;font-size:clamp(48px,11vw,84px);line-height:.9;-webkit-text-stroke:1px #fff}
+h2{font-family:var(--bebas);font-weight:400;color:#fff;font-size:28px;line-height:1;letter-spacing:.02em}
+.say{max-width:46ch;font-size:12px;color:var(--mid)}
+.say b{color:#fff;font-weight:400}
+
+.tabs{display:flex;justify-content:center;gap:4px;flex-wrap:wrap;margin:6px 0 18px}
+.tab{font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:var(--g2);
+  border:none;border-radius:10px;padding:9px 14px;cursor:pointer;transition:color .15s,background .15s}
+.tab.is-on{background:#fff;color:#111}
+
+.banner{background:var(--g2);padding:14px 16px;margin-bottom:16px;display:flex;flex-direction:column;gap:4px;text-align:center}
+.banner b{font-family:var(--bebas);font-size:26px;color:#fff;font-weight:400;letter-spacing:.03em}
+.sec{margin:6px 0 22px}
+.sec > .cap{display:block;margin-bottom:8px}
+
+/* Une œuvre = une boîte grise pleine ; le fond fait le cadre (aucune bordure). */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.card{background:var(--g2);display:flex;flex-direction:column;cursor:pointer;transition:transform .22s cubic-bezier(.2,.9,.25,1),background .2s;
+  text-align:left;border:none;color:inherit;font:inherit;padding:0}
+@media(hover:hover){.card:hover{transform:scale(1.02);background:var(--g3)}}
+.media{position:relative;width:100%;aspect-ratio:1/1;background:#0a0a0c;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.media .ph{font-family:var(--bebas);font-size:30px;letter-spacing:.06em;color:#fff;text-align:center;line-height:.95;padding:12px}
+.media .ph small{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--lo);margin-top:8px}
+.meta{padding:10px 12px 12px;display:flex;flex-direction:column;gap:3px}
+.meta .ti{font-family:var(--bebas);font-size:22px;color:#fff;line-height:1;letter-spacing:.02em}
+.meta .co{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--lo)}
+.meta .pr{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:4px}
+.meta .pr b{font-family:var(--mono);font-weight:700;font-size:13px;color:#fff}
+.meta .pr span{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.tag{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#111;background:#fff;border-radius:6px;padding:1px 6px;width:fit-content}
+.tag.dim{background:var(--g4);color:var(--mid)}
+
+.cols{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px}
+.col{background:var(--g2);padding:16px;display:flex;flex-direction:column;gap:6px;cursor:pointer;text-align:left;border:none;color:inherit;font:inherit;
+  transition:transform .22s cubic-bezier(.2,.9,.25,1),background .2s}
+@media(hover:hover){.col:hover{transform:scale(1.02);background:var(--g3)}}
+.col .h{font-family:var(--bebas);font-size:32px;color:#fff;line-height:.95}
+.col p{font-size:12px;color:var(--mid)}
+.nums{display:flex;gap:14px;flex-wrap:wrap}
+.nums span{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo)}
+.nums b{font-family:var(--mono);color:#fff;font-weight:400;margin-right:4px}
+
+.rows{display:flex;flex-direction:column;gap:6px}
+.row{background:var(--g2);display:grid;grid-template-columns:84px 1fr;gap:12px;padding:10px;align-items:start}
+.row .media{aspect-ratio:1/1}
+.row .ti{font-family:var(--bebas);font-size:22px;color:#fff;line-height:1}
+.row .acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.row .acts .in{width:120px}
+.kv{display:flex;flex-direction:column;gap:2px;font-size:11px}
+.kv div{display:flex;justify-content:space-between;gap:12px}
+.kv b{color:#fff;font-weight:400}
+
+/* La fiche — plein écran, ancrée en haut (règle des overlays, 03/09). */
+#sheet{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.9);display:none;align-items:flex-start;justify-content:center;
+  padding:max(44px,6dvh) 16px 30px;overflow-y:auto}
+#sheet.is-open{display:flex}
+.sh{width:100%;max-width:560px;background:var(--g1);padding:18px;display:flex;flex-direction:column;gap:12px;position:relative}
+.sh .x{position:absolute;top:10px;right:12px}
+.sh .media{aspect-ratio:1/1}
+.sh .buy{display:flex;flex-direction:column;gap:8px;background:var(--g2);padding:12px}
+.waiver{display:flex;gap:8px;align-items:flex-start;font-size:10px;line-height:1.5;color:var(--lo);cursor:pointer}
+.waiver input{margin-top:2px;accent-color:#fff}
+.own{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 0;font-size:11px}
+.own + .own{border-top:1px solid rgba(255,255,255,.05)}
+.own b{color:#fff;font-weight:400}
+.empty{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);padding:16px 0;text-align:center}
+.row .media .ph{font-size:12px;padding:4px;letter-spacing:.02em}.row .media .ph small{display:none}
+@media(max-width:520px){.grid{grid-template-columns:1fr 1fr}.meta .ti{font-size:18px}.media .ph{font-size:22px}}
+@media(prefers-reduced-motion:reduce){.card,.col,.btn{transition:none}}
+</style>
+</head>
+<body>
+<button id="member" type="button" aria-label="Member access"><i></i><span id="member-txt">Sign in</span></button>
+<a id="terms" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a>
+<a id="t" href="/" aria-label="FIGHER.CLUB"><svg viewBox="0 0 68 68" role="img" aria-label="T"><rect x="0" y="0" width="68" height="10"/><rect x="29" y="0" width="10" height="67"/><rect x="21" y="63" width="27" height="5"/></svg></a>
+
+<main>
+  <div class="head">
+    <div class="kick">FIGHER.CLUB</div>
+    <h1>The market</h1>
+    <p class="say">Own a piece. Resell it when you want. <b>7%</b> goes to TOTEHM, the rest to the seller.</p>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button class="tab" data-tab="market" type="button" role="tab">Market</button>
+    <button class="tab" data-tab="collections" type="button" role="tab">Collections</button>
+    <button class="tab" data-tab="mine" type="button" role="tab">My collection</button>
+  </nav>
+  <div id="banner"></div>
+  <div id="view"><div class="empty">…</div></div>
+</main>
+
+<div id="sheet" role="dialog" aria-modal="true" aria-label="Artwork"><div class="sh" id="sh"></div></div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL = 'https://abujjbkbbiumxrokozph.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+const sb = createClient(SB_URL, SB_ANON);
+const FN = SB_URL + '/functions/v1/';
+const $ = id => document.getElementById(id);
+const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
+
+/* ══ LE PONT SSO v2 — COPIÉ de tools/sso_snippet.js (30/09/2026) ══════
+   totehm.com est l'autorité : se connecter ici = passer PAR totehm.com
+   (authorization code + PKCE). Le lien entre domaines reste le pont. */
+/* LE NOM DE CE DOMAINE — 'space' | 'club' | 'boutique'. Jamais une URL. */
+const SSO_CLIENT = 'club';
+const SSO_AUTH = 'https://www.totehm.com/auth';
+const SSO_KNOWN = 'totehm_sso_known';   // localStorage : ce navigateur s'est déjà connecté ici
+const SSO_TRIED = 'totehm_sso_tried';   // sessionStorage : l'aller-retour silencieux a eu lieu
+const SSO_PKCE  = 'totehm_sso_pkce';    // sessionStorage : { verifier, state } le temps du voyage
+
+const ssoB64 = bytes => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const ssoStore = (s, k, v) => { try{ v === null ? s.removeItem(k) : s.setItem(k, v); }catch(_){} };
+const ssoRead = (s, k) => { try{ return s.getItem(k); }catch(_){ return null; } };
+
+/* ── ARRIVÉE ────────────────────────────────────────────────────────
+   ⚠️ LE CODE SORT DE L'URL AVANT TOUT AUTRE GESTE — et SEULEMENT lui :
+   le reste du fragment (#create, #reveal…) reste à la page. Un code
+   laissé dans la barre d'adresse se retrouve dans un signet, un partage,
+   un historique. Avec un `state`, c'est une connexion centrale : il doit
+   être celui que CE navigateur a envoyé (sinon quelqu'un essaie de nous
+   connecter à SON compte) et le `verifier` part avec le code. */
+async function ssoArrivee(sb){
+  const h = new URLSearchParams(location.hash.replace(/^#/, ''));
+  const q = new URLSearchParams(location.search);
+  const code = h.get('sso') || q.get('sso'), st = h.get('state'), err = h.get('sso_error');
+  if(!code && !err) return false;
+  ['sso','state','sso_error'].forEach(k => { h.delete(k); q.delete(k); });
+  const reste = [...h.keys()].length ? '#' + h.toString().replace(/=(&|$)/g, '$1') : '';
+  history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + reste);
+  const pk = (() => { try{ return JSON.parse(ssoRead(sessionStorage, SSO_PKCE) || 'null'); }catch(_){ return null; } })();
+  ssoStore(sessionStorage, SSO_PKCE, null);
+  if(err || !/^[a-f0-9]{64}$/.test(code || '')) return false;
+  let verifier;
+  if(st){
+    if(!pk || pk.state !== st){ console.error('[sso] state'); return false; }
+    verifier = pk.verifier;
+  }
+  try{
+    const r = await fetch(FN + 'sso-redeem', {
+      method:'POST',
+      headers:{'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer '+SB_ANON},
+      body: JSON.stringify(verifier ? { code, verifier } : { code })
+    });
+    if(!r.ok){ console.error('[sso] redeem', r.status); return false; }
+    const { token_hash, email } = await r.json();
+    if(!token_hash) return false;
+    /* `verifyOtp` ouvre une session NORMALE dans ce `localStorage`. */
+    const { error } = await sb.auth.verifyOtp({ type:'email', token_hash, email });
+    if(error){ console.error('[sso] verify', error.message); return false; }
+    return true;
+  }catch(e){ console.error('[sso]', e && e.message || e); return false; }
+}
+
+/* ── SE CONNECTER — PAR TOTEHM.COM ──────────────────────────────────
+   `silent` : `prompt=none` — totehm.com ne montre rien, il rend un code
+   ou `login_required`. `retour` : un CHEMIN de ce domaine (jamais une
+   URL) ; totehm.com refuse tout le reste. */
+async function ssoLogin(silent, retour){
+  const v = ssoB64(crypto.getRandomValues(new Uint8Array(32)));
+  const c = ssoB64(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v))));
+  const st = ssoB64(crypto.getRandomValues(new Uint8Array(16)));
+  ssoStore(sessionStorage, SSO_PKCE, JSON.stringify({ verifier: v, state: st }));
+  const ret = retour || (location.pathname + location.search);
+  location.href = SSO_AUTH + '?client=' + SSO_CLIENT + '&challenge=' + c + '&state=' + st +
+                  '&return=' + encodeURIComponent(ret) + (silent ? '&prompt=none' : '');
+}
+
+/* ── DÉPART ─────────────────────────────────────────────────────────
+   `cible` est un NOM DE PRODUIT — 'com' | 'space' | 'boutique' | 'club'.
+   ⚠️ SI LE PONT ÉCHOUE, ON PART QUAND MÊME : dégradé, pas cassé. */
+async function ssoVersDomaine(sb, cible, url){
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(session){
+      const r = await fetch(FN + 'sso-mint', {
+        method:'POST',
+        headers:{ 'authorization':'Bearer '+session.access_token, 'apikey':SB_ANON, 'content-type':'application/json' },
+        body: JSON.stringify({ target: cible })
+      });
+      if(r.ok){
+        const { code } = await r.json();
+        if(code){ location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; }
+      } else console.error('[sso] mint', r.status);
+    }
+  }catch(e){ console.error('[sso]', e && e.message || e); }
+  location.href = url;
+}
+
+/* ── LE DÉMARRAGE — BLOQUANT, ET JAMAIS PLUS DE 2,5 S ───────────────
+   `await` au niveau du module : quand la page lit sa session, la session
+   est déjà là. Puis, sans session et si ce navigateur s'est déjà
+   connecté ici : UN aller-retour silencieux par onglet vers totehm.com.
+   La page ne se dessine pas pendant qu'elle part (promesse qui ne se
+   résout pas) : pas de clignotement de porte fermée. Le repère se pose à
+   la connexion et s'efface à la déconnexion — sortir d'ici ne vous y
+   reconnecte pas en silence. */
+await Promise.race([ ssoArrivee(sb), new Promise(r => setTimeout(() => r(false), 2500)) ]);
+sb.auth.onAuthStateChange(ev => {
+  if(ev === 'SIGNED_IN') ssoStore(localStorage, SSO_KNOWN, '1');
+  if(ev === 'SIGNED_OUT') ssoStore(localStorage, SSO_KNOWN, null);
+});
+{
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session) ssoStore(localStorage, SSO_KNOWN, '1');
+  else if(ssoRead(localStorage, SSO_KNOWN) && !ssoRead(sessionStorage, SSO_TRIED)){
+    ssoStore(sessionStorage, SSO_TRIED, '1');
+    await ssoLogin(true);
+    await new Promise(() => {});
+  }
+}
+
+const BUILD = '2026-09-30';
+const THP = 'totehmpaper';
+const S = { me:null, tab:'market', mv:null, mine:null, col:null, detail:null, busy:false, polls:0 };
+window.__totehm_market = () => ({ build: BUILD, signed_in: !!S.me, tab: S.tab, collection: S.col,
+  can_buy_art: !!S.mv?.can_buy_art, collections: (S.mv?.collections || []).length, works: (S.mv?.works || []).length,
+  listings: (S.mv?.listings || []).length, owned: S.mine ? (S.mine.items || []).length : null,
+  listed_by_me: S.mine ? (S.mine.items || []).filter(i => i.listed).length : null,
+  payout_set: S.mine ? !!S.mine.payout?.method : null, detail: S.detail ? S.detail.slug : null, polls: S.polls });
+
+/* Le prix vient du serveur, en centimes et dans SA devise. */
+const money = (c, cur) => c == null ? '—' : new Intl.NumberFormat('en', { style:'currency', currency:(cur || 'eur').toUpperCase(),
+  minimumFractionDigits: c % 100 ? 2 : 0 }).format(c/100);
+const num = n => new Intl.NumberFormat('en').format(n || 0);
+const clip = m => m ? SB_URL + '/storage/v1/object/public/' + m : null;
+const COLNAME = c => (S.mv?.collections || []).find(x => x.slug === c)?.title || String(c || '').replace(/-/g, ' ');
+const seller = (p, bps) => Math.floor(p*(100 - bps)/100);
+
+function mediaHTML(w, big){
+  const u = clip(w.media);
+  if(u) return '<div class="media"><video muted loop playsinline preload="none" data-src="' + esc(u) + '"' + (big ? ' controls' : '') + '></video></div>';
+  return '<div class="media"><div class="ph">' + esc(w.title) + (w.edition ? '<small>№ ' + num(w.edition) + ' / ' + num(w.of || w.edition_total) + '</small>' : '') + '</div></div>';
+}
+/* Une vidéo ne se charge que lorsqu'on la regarde (egress payant). */
+let io = null;
+function wakeMedia(root){
+  io?.disconnect();
+  io = new IntersectionObserver(es => es.forEach(e => {
+    const v = e.target; if(e.isIntersecting){ if(!v.src) v.src = v.dataset.src; v.play().catch(() => {}); } else v.pause();
+  }), { threshold:.5 });
+  (root || document).querySelectorAll('video[data-src]').forEach(v => io.observe(v));
+}
+
+async function loadMV(){
+  const { data, error } = await sb.rpc('market_view', { p_collection: S.col, p_slug: null });
+  if(error){ console.error('[market_view]', error.message); $('view').innerHTML = '<div class="empty">the market is unavailable — try again</div>'; return false; }
+  S.mv = data; return true;
+}
+async function loadMine(){
+  if(!S.me){ S.mine = null; return; }
+  const { data, error } = await sb.rpc('my_collection');
+  if(error){ console.error('[my_collection]', error.message); return; }
+  S.mine = data;
+}
+
+/* ── MARKET ─────────────────────────────────────────────────────────── */
+function listingCard(l){
+  return '<button class="card" type="button" data-art="' + esc(l.slug) + '">' + mediaHTML({ ...l, media: (S.mv.works || []).find(w => w.slug === l.slug)?.media }) +
+    '<div class="meta"><span class="co">' + esc(COLNAME(l.collection)) + ' · resale</span><span class="ti">' + esc(l.title) + '</span>' +
+    '<span class="cap">№ ' + num(l.edition) + ' / ' + num(l.of) + ' · ' + esc(l.seller) + '</span>' +
+    '<span class="pr"><b>' + money(l.price_cents, l.currency) + '</b>' + (l.mine ? '<span class="tag dim">mine</span>' : l.reserved ? '<span>held</span>' : '<span>buy</span>') + '</span></div></button>';
+}
+function workCard(w){
+  const out = w.available <= 0;
+  return '<button class="card" type="button" data-art="' + esc(w.slug) + '">' + mediaHTML(w) +
+    '<div class="meta"><span class="co">' + esc(COLNAME(w.collection)) + '</span><span class="ti">' + esc(w.title) + '</span>' +
+    '<span class="cap">' + (out ? 'all owned' : num(w.available) + ' of ' + num(w.edition_total) + ' left') + (w.listed ? ' · ' + w.listed + ' resale' : '') + '</span>' +
+    '<span class="pr"><b>' + (out ? (w.floor_cents ? 'from ' + money(w.floor_cents, w.currency) : '—') : money(w.price_cents, w.currency)) + '</b><span>' + (out ? (w.listed ? 'resale' : 'owned') : 'collect') + '</span></span></div></button>';
+}
+function renderMarket(){
+  const L = (S.mv.listings || []).filter(l => !S.col || l.collection === S.col), W = (S.mv.works || []).filter(w => !S.col || w.collection === S.col);
+  let h = '';
+  if(S.col) h += '<div class="sec" style="text-align:center"><span class="cap">collection · <b>' + esc(COLNAME(S.col)) + '</b></span> <button class="lnk" data-allcol="1" type="button">all collections</button></div>';
+  if(L.length) h += '<div class="sec"><span class="cap">for resale · <b>' + L.length + '</b></span><div class="grid">' + L.map(listingCard).join('') + '</div></div>';
+  h += '<div class="sec"><span class="cap">collect · <b>' + W.length + '</b></span>' + (W.length ? '<div class="grid">' + W.map(workCard).join('') + '</div>' : '<div class="empty">nothing here yet</div>') + '</div>';
+  $('view').innerHTML = h; wakeMedia($('view'));
+}
+
+/* ── COLLECTIONS ───────────────────────────────────────────────────── */
+function renderCollections(){
+  const C = S.mv.collections || [];
+  $('view').innerHTML = C.length ? '<div class="cols">' + C.map(c => '<button class="col" type="button" data-col="' + esc(c.slug) + '">' +
+    '<span class="cap">' + esc(c.kind || '') + '</span><span class="h">' + esc(c.title) + '</span>' + (c.tagline ? '<p>' + esc(c.tagline) + '</p>' : '') +
+    '<span class="nums"><span><b>' + num(c.works) + '</b>works</span><span><b>' + num(c.owned) + '</b>/ ' + num(c.copies) + ' owned</span>' +
+    '<span><b>' + num(c.listed) + '</b>for resale</span><span><b>' + (c.resale ? c.royalty_pct + '%' : '—') + '</b>royalty</span></span></button>').join('') + '</div>'
+    : '<div class="empty">no collection yet</div>';
+}
+
+/* ── MY COLLECTION ─────────────────────────────────────────────────── */
+function renderMine(){
+  if(!S.me){ $('view').innerHTML = '<div class="head"><h2>My collection</h2><p class="say">What I own lives here — and what I put back on the market.</p>' +
+    '<button class="btn main" data-login="1" type="button">Sign in with TOTEHM</button></div>'; return; }
+  if(!S.mine){ $('view').innerHTML = '<div class="empty">reading my collection…</div>'; return; }
+  const M = S.mine, I = M.items || [], P = M.payout || {};
+  let h = '';
+  /* Le solde vient du GRAND LIVRE (_balances), par devise — jamais calculé ici. */
+  const bal = (Array.isArray(M.balances) ? M.balances : []).filter(b => b.pending_cents || b.earned_cents);
+  h += '<div class="sec"><span class="cap">paid to me · manual transfer on the 1st</span><div class="kv">' +
+    (P.method ? '<div><span>' + esc(P.method === 'iban' ? 'IBAN' : 'PayPal') + '</span><b>…' + esc(P.fin || '') + '</b></div>' : '<div><span>no payout method yet — needed to sell</span></div>') +
+    bal.map(b => '<div><span>to be paid to me</span><b>' + money(b.pending_cents, b.currency) + '</b></div>').join('') + '</div>' +
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><select class="in" id="po-m" style="width:110px"><option value="iban">IBAN</option><option value="paypal">PayPal</option></select>' +
+    '<input class="in" id="po-h" placeholder="' + (P.method ? 'change where I am paid' : 'IBAN or PayPal email') + '" autocomplete="off" style="flex:1;min-width:180px">' +
+    '<button class="btn" data-po="1" type="button">Save</button></div><div class="note" id="po-n"></div></div>';
+  h += '<div class="sec"><span class="cap">owned · <b>' + I.length + '</b></span>' + (I.length ? '<div class="rows">' + I.map(it => {
+      const L = it.listed, royalty = it.royalty_pct ?? 7;
+      const acts = !it.resale ? '<span class="cap">not for resale</span>'
+        : L ? '<span class="cap">listed · <b>' + money(L.price_cents, L.currency) + '</b>' + (L.reserved ? ' · a buyer is paying' : '') + '</span>' +
+              (L.reserved ? '' : '<button class="btn" data-unlist="' + esc(it.edition_id) + '" type="button">Unlist</button>')
+        : '<input class="in" inputmode="decimal" placeholder="price ' + esc((it.currency || 'eur').toUpperCase()) + '" data-pin="' + esc(it.edition_id) + '">' +
+          '<button class="btn main" data-list="' + esc(it.edition_id) + '" data-roy="' + royalty + '" data-cur="' + esc(it.currency || 'eur') + '" type="button">List for resale</button>';
+      return '<div class="row">' + mediaHTML(it) + '<div><span class="cap">' + esc(it.collection_title || COLNAME(it.collection)) + '</span>' +
+        '<div class="ti">' + esc(it.title) + '</div><span class="cap">№ ' + num(it.edition) + ' / ' + num(it.of) + ' · since ' + esc(new Date(it.acquired_at).toLocaleDateString('en-GB')) +
+        (it.paid_cents != null ? ' · paid ' + money(it.paid_cents, it.paid_currency) : '') + '</span>' +
+        '<div class="acts">' + acts + '</div><div class="note" id="n-' + esc(it.edition_id) + '"></div></div></div>';
+    }).join('') + '</div>' : '<div class="empty">nothing yet — collect a first piece</div>') + '</div>';
+  if((M.sales || []).length) h += '<div class="sec"><span class="cap">sold</span><div class="kv">' + M.sales.map(s =>
+    '<div><span>' + esc(s.title) + ' № ' + num(s.edition) + ' · ' + esc(new Date(s.at).toLocaleDateString('en-GB')) + '</span><b>' + money(s.seller_cents, s.currency) + ' to me</b></div>').join('') + '</div></div>';
+  $('view').innerHTML = h; wakeMedia($('view'));
+  $('view').querySelectorAll('[data-pin]').forEach(i => i.addEventListener('input', () => {
+    const c = Math.round(parseFloat(i.value.replace(',', '.'))*100), b = $('view').querySelector('[data-list="' + i.dataset.pin + '"]'), n = $('n-' + i.dataset.pin);
+    n.className = 'note'; n.textContent = c > 0 ? 'I receive ' + money(seller(c, +b.dataset.roy), b.dataset.cur) + ' · ' + b.dataset.roy + '% to TOTEHM' : '';
+  }));
+}
+
+/* ── LA FICHE ─────────────────────────────────────────────────────── */
+async function openArt(slug){
+  $('sh').innerHTML = '<div class="empty">…</div>'; $('sheet').classList.add('is-open');
+  const { data, error } = await sb.rpc('market_view', { p_collection: null, p_slug: slug });
+  if(error || !data?.detail){ $('sh').innerHTML = '<button class="lnk x" data-x="1" type="button">Close</button><div class="empty">this work does not exist</div>'; return; }
+  S.mv = S.mv || data; S.detail = data.detail; paintArt(data);
+  const u = new URL(location.href); u.searchParams.set('art', slug); history.replaceState(null, '', u.pathname + u.search);
+}
+function paintArt(mv){
+  const d = S.detail, thp = d.slug === THP, coll = (mv.collections || []).find(c => c.slug === d.collection) || {};
+  const O = d.owners || [], forSale = O.filter(o => o.price_cents != null && !o.mine), mine = O.filter(o => o.mine);
+  const waiver = '<label class="waiver"><input type="checkbox" id="wv"> I ask for immediate access to this digital work and give up my 14-day withdrawal right.</label>';
+  let buy = '';
+  if(mine.length) buy += '<span class="tag">owned · № ' + mine.map(o => num(o.edition)).join(', ') + '</span>';
+  if(d.available > 0 && !(thp && mine.length)){
+    const gate = !thp && S.me && !mv.can_buy_art;
+    buy += '<div class="kv"><div><span>from the studio</span><b>' + money(d.price_cents, d.currency) + '</b></div><div><span>left</span><b>' + num(d.available) + ' / ' + num(d.edition_total) + '</b></div></div>' +
+      (gate ? '<span class="cap">art is collected by TOTEHMPAPER owners · <button class="lnk" data-art="' + THP + '" type="button">get my TOTEHMPAPER</button></span>'
+            : waiver + '<button class="btn main" data-buy="primary" type="button">' + (S.me ? 'Buy · ' + money(d.price_cents, d.currency) : 'Sign in to buy') + '</button>');
+  } else if(!mine.length) buy += '<span class="cap">every copy from the studio is owned' + (forSale.length ? ' · buy one on resale below' : '') + '</span>';
+  const owners = O.length ? O.map(o => '<div class="own"><span>№ ' + num(o.edition) + ' · <b>' + esc(o.owner) + '</b>' + (o.mine ? ' · mine' : '') + '</span>' +
+      (o.price_cents != null ? (o.mine ? '<span class="cap">listed ' + money(o.price_cents, o.currency) + '</span>'
+        : o.reserved ? '<span class="cap">held</span>' : '<button class="btn" data-resale="' + esc(o.edition_id) + '" data-p="' + o.price_cents + '" data-c="' + esc(o.currency) + '" type="button">Buy · ' + money(o.price_cents, o.currency) + '</button>')
+      : '<span class="cap">' + esc(new Date(o.since).toLocaleDateString('en-GB')) + '</span>') + '</div>').join('')
+    : '<div class="cap">no owner yet</div>';
+  const hist = (d.history || []).map(t => '<div><span>' + esc(new Date(t.at).toLocaleDateString('en-GB')) + ' · № ' + num(t.edition) + ' · ' + esc(t.kind) + '</span><b>' + money(t.price_cents, t.currency) + '</b></div>').join('');
+  $('sh').innerHTML = '<button class="lnk x" data-x="1" type="button">Close</button>' +
+    '<span class="cap">' + esc(coll.title || COLNAME(d.collection)) + (coll.resale ? ' · resale ' + coll.royalty_pct + '% royalty' : '') + '</span>' +
+    '<h2>' + esc(d.title) + '</h2>' + mediaHTML(d, true) +
+    '<div class="buy">' + buy + '<div class="note" id="buy-n"></div></div>' +
+    ((forSale.length || O.length) ? '<div><span class="cap">' + (thp ? 'for resale · and mine' : 'owners') + '</span>' + owners + '</div>' : '') +
+    (hist ? '<div><span class="cap">history</span><div class="kv" style="margin-top:6px">' + hist + '</div></div>' : '');
+  wakeMedia($('sh'));
+}
+async function buy(kind, btn){
+  if(S.busy) return;
+  if(!S.me){ ssoLogin(false); return; }
+  const n = $('buy-n'), wv = $('wv');
+  if(kind === 'primary' && wv && !wv.checked){ n.className = 'note no'; n.textContent = 'tick the box to continue'; return; }
+  const d = S.detail;
+  let fn, body;
+  if(kind === 'primary' && d.slug === THP){ fn = 'higher-checkout'; body = { waiver:true, waiver_ts:new Date().toISOString() }; }
+  else if(kind === 'primary'){ fn = 'artwork-checkout'; body = { slug:d.slug, waiver:true, waiver_ts:new Date().toISOString() }; }
+  else { fn = 'market-checkout'; body = { edition_id: btn.dataset.resale }; }
+  S.busy = true; btn.disabled = true; n.className = 'note'; n.textContent = 'opening the payment…';
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    const r = await fetch(FN + fn, { method:'POST', headers:{ 'authorization':'Bearer ' + session.access_token, 'apikey':SB_ANON, 'content-type':'application/json' }, body: JSON.stringify(body) });
+    const j = await r.json().catch(() => ({}));
+    if(j.url){ location.href = j.url; return; }
+    if(j.already){ n.className = 'note ok'; n.textContent = 'already mine'; await refresh(); return; }
+    n.className = 'note no';
+    n.textContent = ({ thp_required:'art is collected by TOTEHMPAPER owners', thp_door:'the TOTEHMPAPER is bought here, once', sold_out:'every copy is owned',
+      reserved:'someone is paying for it right now — try in 30 minutes', held:'someone is paying for it right now — try in 30 minutes',
+      own:'this one is already mine', mine:'this one is already mine', no_session:'sign in again', unavailable:'not available any more' })[j.error] || 'the payment did not open — try again';
+  }catch(e){ console.error('[buy]', e && e.message || e); n.className = 'note no'; n.textContent = 'the payment did not open — try again'; }
+  finally{ S.busy = false; btn.disabled = false; }
+}
+
+/* ── LA NAVIGATION ─────────────────────────────────────────────────── */
+function setTab(t){
+  S.tab = t; document.querySelectorAll('.tab').forEach(b => b.classList.toggle('is-on', b.dataset.tab === t));
+  const u = new URL(location.href); if(t === 'market') u.searchParams.delete('tab'); else u.searchParams.set('tab', t);
+  history.replaceState(null, '', u.pathname + u.search);
+  paint();
+}
+function paint(){
+  if(!S.mv) return;
+  if(S.tab === 'collections') renderCollections();
+  else if(S.tab === 'mine') renderMine();
+  else renderMarket();
+}
+async function refresh(){ await Promise.all([loadMV(), loadMine()]); paint(); if(S.detail) openArt(S.detail.slug); }
+function closeSheet(){ $('sheet').classList.remove('is-open'); S.detail = null; io?.disconnect(); wakeMedia($('view'));
+  const u = new URL(location.href); u.searchParams.delete('art'); history.replaceState(null, '', u.pathname + u.search); }
+
+document.addEventListener('click', async e => {
+  const t = e.target instanceof Element ? e.target : null; if(!t) return;
+  const tab = t.closest('[data-tab]'); if(tab){ setTab(tab.dataset.tab); return; }
+  if(t.closest('[data-login]')){ ssoLogin(false); return; }
+  if(t.closest('[data-x]') || t === $('sheet')){ closeSheet(); return; }
+  const a = t.closest('[data-art]'); if(a){ e.preventDefault(); openArt(a.dataset.art); return; }
+  const c = t.closest('[data-col]'); if(c){ S.col = c.dataset.col; await loadMV(); setTab('market'); return; }
+  if(t.closest('[data-allcol]')){ S.col = null; await loadMV(); paint(); return; }
+  const b = t.closest('[data-buy]'); if(b){ buy('primary', b); return; }
+  const rs = t.closest('[data-resale]'); if(rs){ buy('resale', rs); return; }
+  if(t.closest('[data-po]')){
+    const n = $('po-n'), h = $('po-h').value.trim();
+    if(!h){ n.className = 'note no'; n.textContent = 'where should I be paid?'; return; }
+    const { error } = await sb.rpc('creator_payout_set', { p_method: $('po-m').value, p_handle: h });
+    if(error){ n.className = 'note no'; n.textContent = 'not saved'; return; }
+    await loadMine(); renderMine(); const n2 = $('po-n'); if(n2){ n2.className = 'note ok'; n2.textContent = 'saved'; } return;
+  }
+  const li = t.closest('[data-list]');
+  if(li){
+    const id = li.dataset.list, inp = $('view').querySelector('[data-pin="' + id + '"]'), n = $('n-' + id);
+    const c = Math.round(parseFloat((inp.value || '').replace(',', '.'))*100);
+    if(!(c > 0)){ n.className = 'note no'; n.textContent = 'a price'; return; }
+    li.disabled = true;
+    const { data, error } = await sb.rpc('art_list', { p_edition: id, p_price_cents: c });
+    li.disabled = false;
+    if(error || !data?.ok){ n.className = 'note no'; n.textContent = ({ payout_first:'first: where I am paid (above)', reserved:'a buyer is paying for it',
+      no_resale:'this collection is not for resale', not_owner:'not mine', price: 'price between ' + money(data?.min ?? 100, li.dataset.cur) + ' and ' + money(data?.max ?? 10000000, li.dataset.cur) })[data?.why] || 'not listed'; return; }
+    await refresh(); return;
+  }
+  const ul = t.closest('[data-unlist]');
+  if(ul){ ul.disabled = true; const { data, error } = await sb.rpc('art_unlist', { p_edition: ul.dataset.unlist });
+    if(error || !data?.ok){ ul.disabled = false; const n = $('n-' + ul.dataset.unlist); if(n){ n.className = 'note no'; n.textContent = data?.why === 'reserved' ? 'a buyer is paying for it' : 'not unlisted'; } return; }
+    await refresh(); return; }
+});
+addEventListener('keydown', e => { if(e.key === 'Escape' && $('sheet').classList.contains('is-open')) closeSheet(); });
+$('member').onclick = () => { if(S.me) setTab('mine'); else ssoLogin(false); };
+function paintMember(){ $('member').classList.toggle('is-in', !!S.me); $('member-txt').textContent = S.me ? (S.mine?.pseudo || 'Member') : 'Sign in'; }
+sb.auth.onAuthStateChange(async ev => {
+  if(ev !== 'SIGNED_IN' && ev !== 'SIGNED_OUT') return;
+  const { data:{ session } } = await sb.auth.getSession(); S.me = session?.user || null;
+  await refresh(); paintMember();
+});
+
+/* ── LE DÉMARRAGE ──────────────────────────────────────────────────── */
+{
+  const { data:{ session } } = await sb.auth.getSession(); S.me = session?.user || null;
+  const q = new URLSearchParams(location.search);
+  S.tab = ['collections', 'mine'].includes(q.get('tab')) ? q.get('tab') : 'market';
+  S.col = q.get('collection') || null;
+  const owned = q.get('owned'), art = q.get('art');
+  await Promise.all([loadMV(), loadMine()]); paintMember();
+  if(owned){
+    /* Retour de Stripe : c'est le WEBHOOK qui écrit la propriété, pas ce
+       retour. On attend qu'elle apparaisse — quelques secondes au plus. */
+    S.tab = 'mine';
+    $('banner').innerHTML = '<div class="banner"><b>Payment received</b><span class="cap" id="bn">writing it in my collection…</span></div>';
+    const has = () => (S.mine?.items || []).some(i => i.slug === owned);
+    for(let k = 0; k < 12 && !has(); k++){ S.polls++; await new Promise(r => setTimeout(r, 2000)); await loadMine(); }
+    const bn = $('bn'); if(bn) bn.textContent = has() ? 'it is mine · below' : 'it will appear in a moment — the payment is confirmed';
+    const u = new URL(location.href); u.searchParams.delete('owned'); history.replaceState(null, '', u.pathname + u.search);
+  }
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('is-on', b.dataset.tab === S.tab));
+  paint();
+  if(art) openArt(art);
+}
+</script>
+</body>
+</html>
