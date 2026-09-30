@@ -615,8 +615,11 @@ du MASTER (§4) n'est pas appliqué.
 
 ## Déployer
 
-Les déploiements ne sont pas opérés à la main. Claude livre les commandes dans
-`CLAUDE_CODE.md`, Claude Code les exécute.
+Les déploiements ne sont pas opérés à la main. Depuis le 30/09/2026, la
+session cloud de Claude déploie elle-même (MCP Supabase `deploy_edge_function`,
+avec `_shared/origins.ts` quand la fonction l'importe, et le `verify_jwt` du
+tableau de `SYSTEM.md` §0). Les commandes CLI ci-dessous restent valables
+depuis un terminal.
 
 ```bash
 supabase functions deploy bot-tick --no-verify-jwt

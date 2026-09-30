@@ -1189,3 +1189,857 @@ sur 7 tombent ; avec, zéro.
 
 **La règle : un faux serveur qui répond instantanément ne prouve rien
 sur l'ordre des choses.** Toute panne d'ordonnancement lui échappe.
+
+
+---
+
+# ARCHIVE — LE TEXTE INTÉGRAL DE L'ANCIEN CLAUDE.md (racine), 30/09/2026
+
+> Le 30/09/2026, `CLAUDE.md` a été découpé : la racine garde les règles
+> transverses en version courte, chaque dossier garde les siennes. Ici, TELLES
+> QU'ÉCRITES, les sections que la racine résume (méthode, architecture, SSO,
+> police, composants, contraintes, livrables…). Référence seulement : en cas
+> de doute, c'est la racine qui fait foi.
+
+## Ton rôle et le mien
+
+Tu es mon CTO et le responsable de toute l'architecture. Carte blanche technique :
+frontend, backend, Supabase, Edge Functions, SQL, Linux, Vercel, sécurité.
+Tu prends les décisions, tu es responsable de la stabilité.
+
+Je suis Wah, le visionnaire fondateur. Je ne suis pas développeur ni ton chef de
+projet. Je gère la vision, l'expérience, le branding. Je change de vision vite.
+Tu t'adaptes.
+
+## La méthode : zéro validation, 100 % exécution
+
+1. Je t'envoie une liste de modifications.
+2. Tu analyses l'ensemble, tu choisis l'architecture, tu identifies les impacts.
+3. **Tu ne me demandes jamais comment coder.** Tu décides et tu exécutes.
+4. Tu refuses les solutions fragiles. Si ma demande présente un risque, tu
+   implémentes plus robuste et tu me dis pourquoi.
+5. **Jamais d'implémentation partielle.** Tu traites la vision complète.
+6. **Tu vérifies avant d'affirmer.** Jamais supposer l'état d'un fichier, d'un
+   secret, d'une table ou d'une fonction déployée : lire le repo, `curl` la prod,
+   interroger la base. **Le repo et le déployé divergent régulièrement.**
+
+## L'architecture documentaire
+
+```
+BRAND.md             qu'est-ce que TOTEHM et pourquoi   → avant toute copy, naming, UI
+TOTEHM_MASTER.md     l'architecture des quatre domaines, ce qu'on a décidé,
+                     les prix, les arbitrages            → mis à jour à chaque décision
+CLAUDE.md            comment on construit                ← TRANSVERSE (ce fichier)
+backend/SYSTEM.md    ce qui existe VRAIMENT, mesuré et daté
+backend/README.md    comment marche le backend
+CLAUDE_CODE.md       la consigne terminal du dernier lot
+```
+
+**⚠️ DEPUIS LE 23/09/2026, UN SEUL MASTER.** Le MASTER ARCHITECTURE de Wah
+(`TOTEHM_MASTER.md`) couvre les quatre domaines d'un bloc et remplace
+`TOTEHM_MASTER.html` et les trois masters par domaine
+(`space_master_v5.md`, `higher_boutique_master`, `totehm.com master`) —
+ils décrivaient un découpage qui n'existe plus. Son §0 liste chaque
+endroit où le code ne fait pas exactement ce que dit le MASTER, et
+pourquoi. **Il n'est pas versionné** (`.gitignore` : `TOTEHM_MASTER*`) :
+le dépôt est public et le master porte les prix et les seuils.
+
+**Une décision qui touche plusieurs domaines va dans `CLAUDE.md` (le
+comment) ou dans le §0 du master (le quoi), jamais dupliquée** — c'est ce
+qui a produit l'incident du SSO et celui des 70 €/79 €.
+
+**Un document qui en contredit un autre est un bug.** Il se corrige dans le même
+lot. Ne jamais créer un septième document : le contenu va dans celui qui répond
+déjà à la question.
+
+
+> **Postmortems déplacés.** L'historique des bugs résolus et des règles
+> qu'ils ont produites vit dans `docs/POSTMORTEMS.md`. Il n'est pas
+> chargé automatiquement. Ouvrir seulement quand un bug ressemble à un
+> ancien.
+
+## L'architecture technique
+
+### ⛔ QUATRE DOMAINES, UNE SOURCE — ÉTAT AU 23/09/2026 (fait autorité)
+
+```
+~/totehm/
+  com/       →  www.totehm.com       LA SOURCE — le Totehm, cinq vues, les Boxes
+                                     totehm.html · map.html · higherself.html
+                                     totehm_world.html · next_objective.html
+                                     totehm_7_intentions.html · terms.html
+                                     club/ (deux PONTS vers figher.club)
+                                     · auth.html (L'AUTORITÉ D'IDENTITÉ, /auth)
+                                     · creator.html (/search · /@nom) (30/09)
+  club/      →  www.figher.club      APPARTENANCE · DROITS · ABONNEMENTS · ARGENT
+                                     · ART · COLLECTION · MARKETPLACE (30/09)
+                                     index.html (la porte) · console.html (le membre)
+                                     · market.html (/market)
+  space/     →  www.totehm.space     UNE HABIT BOX DEVIENT UNE ACTION À PLUSIEURS
+                                     index.html — le cockpit : un radar et,
+                                     dessous, la MANETTE de totehm.com à cinq
+                                     crans (25/09)
+                                     · la planète entière (26/09) :
+                                     earth.json · earth50.json
+                                     · YESTERDAY · TODAY · TOMORROW, Search
+                                     en bas, My space au coin (27/09)
+                                     · YESTERDAY = tous les anciens Spots,
+                                     My Spots au coin membre (28/09)
+                                     · RADAR SANS CARTE · gauche = SHORT-LIVE
+                                     (les moments) · droite = SPOTS (30/09)
+                                     + redirections 308 de l'ancien Stoner
+  boutique/  →  www.higher.boutique  UNE BOX, N'IMPORTE LAQUELLE, DEVIENT UN CLOTH
+                                     index.html · streetwear.html (PICK UP THE BOX)
+                                     + la méthode Stoner et le THP (discover*,
+                                     get_higher, stoner*, origins, play_lisbon_street)
+  backend/   →  servi par PERSONNE
+  oracle/    →  clés SSH, gitignoré
+```
+
+**TotehmBot** est transversal (Telegram) ; il n'a pas de domaine.
+
+Ce tableau remplace celui du swap ci-dessous, qui reste pour son
+histoire. Deux mouvements l'ont rendu faux : **l'expérience Stoner est
+partie sur `higher.boutique`** (commit du 23/09, 12:06 — `space/vercel.json`
+redirige ses anciennes URL) et **`figher.club` est devenu un domaine**
+(MASTER §8) au lieu d'une redirection vers `totehm.com/club`.
+
+**Quatre origines = quatre `localStorage` = quatre sessions.** Aucune
+session n'est partagée ; le PONT les relie (voir **LE PONT SSO** plus
+bas). Toute page qui porte une session et mène à un autre domaine passe
+par `ssoVersDomaine()`, copiée de `tools/sso_snippet.js`.
+
+**Chaque domaine lit ses droits par la même fonction** :
+`figher_access()` — jamais recomposés dans la page à partir de trois
+morceaux.
+
+**Chaque page porte `BUILD` et son diagnostic console** — `__totehm_zone`
+(le Totehm), `__totehm_club()` (la porte et la console), `__totehm_space()`,
+`__totehm_cloth()`. Des booléens et des compteurs, jamais une valeur de
+membre. C'est le bloc à coller quand un écran semble vide, et `build` dit
+en trois secondes si la page ouverte est celle qu'on a livrée (règle du
+22/09).
+
+### ⛔ LA SOURCE UNIQUE — IDENTITÉ · DROITS · PROPRIÉTÉ · MARCHÉ · MOMENTS — 30/09/2026 (fait autorité)
+
+**Le MASTER BRIEF de Wah du 30/09**, en une phrase : *ne rien
+reconstruire, tout reconnecter autour d'une seule source.* Migration
+`20260930_la_source_unique.sql` (APPLIQUÉE le 30/09 par Claude, MCP
+Supabase), six Edge Functions modifiées (`sso-mint` et `sso-redeem` déjà
+déployées, les quatre autres par Claude Code) + `market-checkout`,
+quatorze pages. Ce qui
+suit remplace, là où elles se contredisent, les sections plus bas.
+
+| domaine | son rôle depuis le 30/09 |
+|---|---|
+| `totehm.com` | la SOURCE + **l'autorité d'identité** (`/auth`) + la **recherche des Totehms** (`/search`, ouverte aux invités) + la **page de vente de chaque membre** (`/@nom`) |
+| `figher.club` | appartenance, droits, argent (la console) **+ ART · COLLECTION · MARKETPLACE** (`/market`) |
+| `totehm.space` | le Spot (une EXPÉRIENCE) **+ le Short-Live** (un MOMENT) ; le radar n'a plus de carte |
+| `higher.boutique` | la MATÉRIALISATION — « pick up the box » ; la méthode Stoner ; elle MONTRE l'art, FIGHER le VEND |
+
+**⚠️ TOTEHM.COM EST L'AUTORITÉ D'IDENTITÉ — PKCE, PAS DE COOKIE PARTAGÉ.**
+Un satellite ne demande plus l'email : `ssoLogin()` (snippet **v2**,
+`tools/sso_snippet.js`) crée un `verifier` et un `state` dans SON
+`sessionStorage`, envoie à `totehm.com/auth?client=…&challenge=…&state=…&return=/chemin`.
+`/auth` frappe un code lié au défi (`sso-mint`, colonne
+`sso_handoff.code_challenge`) et renvoie dans le FRAGMENT ; seul le
+satellite qui garde le `verifier` peut l'échanger (`sso-redeem`).
+`client` est un NOM (space · club · boutique) traduit par une table fixe ;
+`return` est un CHEMIN — jamais une URL reçue (pas de redirecteur ouvert).
+Silencieux : un navigateur déjà connecté ici repasse UNE fois par onglet
+(`prompt=none`). Le pont `ssoVersDomaine` (17/09) reste, inchangé.
+
+**⚠️ UN SEUL SYSTÈME DE DROITS.** « Qui suis-je · à qui suis-je abonné ·
+que possède-je · à quoi ai-je droit » se répond par `_figher`,
+`_subscriber_of(créateur, fan)` (la seule définition d'un abonné vivant —
+`is_subscribed_to`, `_spots_subscriber`, `_exact_ok` la lisent),
+`creator_page(pseudo)` et `my_entitlements()`. Aucune page ne recompose.
+
+**⚠️ LA PROPRIÉTÉ EST UN EXEMPLAIRE, PAS UN BOOLÉEN.** `art_editions`
+(une ligne par exemplaire vendu, `edition_no`) est la source ;
+`art_transfers` est son histoire, **en ajout seul** (trigger) ;
+`stoner_access` n'est plus qu'une PROJECTION d'accès, et un trigger frappe
+l'exemplaire du THP à chaque ligne qui y entre (Stripe, cadeau, NFT). Le
+**numéro FIGHER = le numéro d'exemplaire du THP**. Le THP est l'œuvre
+`totehmpaper` (777 000 exemplaires) : **son prix est une ligne de
+`artworks`, lue par `higher-checkout`** — plus aucun prix du THP dans une
+page (le « $30 » et le « €77 » sont partis ; `.thp-price` reçoit le prix
+du serveur, ou rien).
+
+**⚠️ LE MARCHÉ NE S'ÉCRIT QUE PAR LE WEBHOOK.** Réserver (`art_primary_reserve`
+/ `art_resale_reserve`, 31 min, un index unique = un acheteur à la fois)
+→ Stripe Checkout (30 min, donc la réservation survit toujours à la
+session) → `checkout.session.completed` → `art_settle`, idempotent sur la
+session. Revente : le vendeur fixe son prix, **7 % à TOTEHM, le reste
+(arrondi inférieur) au grand livre du vendeur**, versé par le virement
+mensuel. Pas de Stripe Connect. Si `art_settle` échoue en base → 500
+(Stripe rejoue) ; s'il répond `ok:false` (réservation expirée, déjà
+vendu…) → `market_incidents` + 200 : **c'est un remboursement à la main**.
+Une œuvre (hors THP) ne s'achète qu'avec un THP (`thp_required`).
+**Ce qui n'existe pas, et c'est voulu** : notes, avis, likes, abonnés,
+enchères, gamification.
+
+**⚠️ LA BOUTIQUE MONTRE, FIGHER VEND.** « Acquire » (origins,
+play_lisbon_street) ouvre l'œuvre sur `figher.club/market?art=<slug>` par
+le pont. Le THP s'achète encore depuis la méthode (higher-checkout) ; le
+retour de Stripe dépend de l'origine (`origineDe`).
+
+**⚠️ LE RADAR N'A PLUS DE CARTE.** Anneaux, points, la couronne — ni
+terre, ni villes, ni rue. La rue (tuiles OSM) ne revient QUE pour poser un
+rendez-vous (Create → « place it on the map », `mapMode()` = `PIN.on`).
+Toucher le radar ne crée plus rien ; **un Spot ne naît plus d'un Spot**
+(« Do it again » est parti).
+
+**⚠️ SHORT-LIVE = UN MOMENT ; SPOT = UNE EXPÉRIENCE.** Même table
+(`spot_plans.kind`), deux natures. Un moment : 5 s filmées maintenant, une
+Habit Box de MON Totehm pour contexte (relue en base), social/silent, le
+**bouclier GPS** ; une heure « I am here », 24 h dans le fil
+(`moments_feed`), 12 par jour. Personne ne rejoint un moment. La manette
+TOUCHÉE à gauche = REC (`recStart`, une seule machine pour le moment, la
+vidéo d'un Spot à la création, et après, `spot_video_set`). La vidéo va
+dans le seau public `moments`, dossier `<uid>/` (politique d'insertion),
+et **rien ne s'y attache si le fichier n'y est pas** (`_clip_ok`).
+**Egress** : une vidéo ne se télécharge que lorsqu'elle est à l'écran
+(`IntersectionObserver`), jamais le fil entier. La caméra exige
+`camera=(self), microphone=(self)` dans `space/vercel.json`.
+
+**⚠️ LE BOUCLIER.** OFF : la ville et le contenu pour tous, jamais le
+point. ON : le point exact aussi pour les **abonnés vivants** du
+créateur. **ON n'est pas une invitation.** Le point exact d'une
+expérience reste au créateur et aux acceptés, quel que soit le bouclier.
+La position publique est arrondie à ~1,1 km (2 décimales). La ville vient
+de Natural Earth (`cityNear`) : zéro géocodage.
+
+**⚠️ LE TEMPS DIT « I ».** `I will be here` · `I am here` · `I was here`
+(`state` rendu par le serveur) — jamais upcoming, live, archived.
+
+**Search = `[ Habit ▾ ]` et UN contrôle** (habit · mood/music · mode ·
+date · time · distance). Mots, mode, jour, intention filtrent en base ;
+l'heure et la distance filtrent la liste reçue (zéro requête par clic).
+
+**Pick up the box** (`boutique/streetwear.html`) : MY TOTEHM → HABIT
+BOXES → une Box → le vêtement → nom · style · taille → commande. Un
+vêtement touché avant d'avoir une Box attend et devient le support.
+
+**Les tests navigateur sont versionnés** (`tests/browser/` : `space.mjs`,
+`market.mjs`, `streetwear.mjs` — Playwright, Supabase simulé, zéro
+réseau). Le harnais dit comment les préparer. Ils ne remplacent pas le
+test sur l'appareil (caméra réelle, Stripe en mode test).
+
+### ⛔ UNE CLASSE D'ÉTAT NE PORTE JAMAIS LE NOM D'UN STYLE — 23/09/2026
+
+Le coin membre posait la classe `in` sur `<body>` quand on était
+connecté. Or `.in` était AUSSI la classe des champs de saisie
+(`.in{width:100%…}`). Le bouton membre devenait un champ pleine largeur,
+invisible, posé sur toute la page : **il interceptait tous les clics.**
+Trois fichiers touchés (`club/index`, `club/console`, `space/index`).
+
+> **La règle : un état se nomme `is-…`** (`is-in`, `is-open`), un style
+> se nomme par ce qu'il est. Deux alphabets qui se croisent font un
+> bouton mort — même leçon que `o`/`t` le 20/09, dans le CSS cette fois.
+> Le test navigateur MESURE le coin membre une fois connecté : moins de
+> 240 px de large, sinon il a repris un style qui n'était pas le sien.
+
+### ⚠️ LE SWAP DU 15/09/2026 — LE NOM DU DOSSIER NE DIT PLUS CE QU'IL SERT
+
+> **⚠️ HISTOIRE.** Le tableau des dossiers qui suit est dépassé depuis le
+> 23/09 : voir **⛔ QUATRE DOMAINES, UNE SOURCE** juste au-dessus. La
+> règle qui en sort — *un nom de dossier n'est pas une source de vérité* —
+> reste entière.
+
+```
+~/totehm/
+  com/       →  totehm.com           LE RÉSEAU SOCIAL PRIVÉ  ← le produit
+  space/     →  www.totehm.space     le branding, l'expérimentation
+  boutique/  →  www.higher.boutique  le Cloth
+  backend/   →  servi par PERSONNE
+  oracle/    →  clés SSH, gitignoré
+```
+
+**Le contenu des deux dossiers a été ÉCHANGÉ ; le mapping Vercel n'a pas
+bougé** (projet `com` → dossier `com/`, projet `space` → dossier
+`space/`). Ce sont donc les **URL publiques** qui ont changé de rôle :
+
+| avant le 15/09 | depuis |
+|---|---|
+| `totehm.space/totehm` = le réseau social | **`totehm.com/totehm`** |
+| `totehm.com` = le branding | **`totehm.space`** |
+
+```
+com/     totehm.html · wisdom.html · vision.html · map.html
+         higherself.html · totehm_world.html · next_objective.html
+         totehm_7_intentions.html · terms.html · club/ · vercel.json
+space/   discover.html · discover_lisbon.html · get_higher.html
+         origins.html · stoner.html · stoner_terms.html
+         play_lisbon_street.html · vercel.json
+```
+
+**Trois conséquences, et il faut les trois :**
+
+1. **Tout `CLAUDE_CODE.md` préfixe par le dossier RÉEL** — `com__totehm.html`,
+   `space__discover.html` — et les `cp` visent `~/totehm/com/` ou
+   `~/totehm/space/` en cohérence. Un lot écrit contre l'ancien état doit
+   être corrigé à la main, et ça s'est produit une fois.
+2. **Les outils (`tools/*.py`) pointent sur `com/`.** Recalés le 15/09 ;
+   chacun porte la marque du swap en tête.
+3. **Les URL de retour Stripe visent `SITE_COM`.** Une URL de retour qui
+   pointe encore sur `.space` renvoie l'influenceur sur la page de
+   branding AU MILIEU de son onboarding — on ne le voit qu'en production,
+   sur un vrai créateur.
+
+**La règle qui en sort, et elle est générale : un nom de dossier ou de
+projet n'est pas une source de vérité.** Ce qui fait foi, c'est ce
+tableau. Lire avant de déplacer.
+
+`backend/` doit **impérativement** rester à la racine. Dans un dossier Vercel,
+le SQL, les Edge Functions et le `docker-compose.yml` deviendraient
+téléchargeables.
+
+**Produits indépendants = fichiers indépendants.** `totehm.com/` ne référence
+jamais `space/`. Un contenu commun est copié, pas partagé. Un produit qui casse
+quand un autre bouge n'est pas indépendant.
+
+### ⛔ SOUS `cleanUrls`, TOUT LIEN INTERNE EST ABSOLU — 16/09/2026
+
+**C'est la cause du 404 de l'espace créateur.**
+
+`vercel.json` pose `cleanUrls: true`. L'URL du Club est donc `/club`,
+**sans barre oblique finale** — et le répertoire de base d'un document
+servi à `/club` est `/`, pas `/club/`. Un `href="creator.html"` dans
+cette page résout vers **`/creator.html`** : 404 NOT_FOUND. Vérifié en
+production le 16/09 — `/club/creator` rend 200, `/creator.html` rend 404.
+
+Deux liens voisins (`../map.html`, `../totehm.html#in`) marchaient **par
+chance** : remonter d'un cran au-dessus de la racine y reste. C'est le
+pire cas — la moitié des liens marche, donc on ne cherche pas la règle.
+
+> **La règle : un lien vers une autre page du même domaine s'écrit en
+> chemin ABSOLU** — `/club/creator`, `/map`, `/totehm#in`. Un chemin
+> absolu ne dépend pas de la barre oblique finale. Ça vaut aussi pour les
+> `return_url` envoyées à Stripe.
+
+### ⚠️ LE QUATRIÈME DOMAINE — l'arbitrage, et ce qu'il est devenu — 15/09/2026
+
+> **⚠️ TRANCHÉ AUTREMENT LE 23/09.** Le pont existe depuis le 17/09 — la
+> condition qui manquait. Le MASTER fait de `figher.club` un domaine à
+> part entière, et c'est ce qui est construit. Cette section reste pour
+> la raison de fond : un domaine de plus sans pont, c'est un membre qui
+> arrive déconnecté devant ce qu'il paie.
+
+J'ai recommandé de NE PAS acheter un quatrième domaine, pour une raison
+qui reste vraie : quatre domaines = quatre `localStorage` = quatre
+sessions, **et il n'y a pas de SSO**. Un membre connecté sur le Totehm
+serait arrivé déconnecté sur `figher.club`, devant les trois choses qu'il
+paie.
+
+**Wah a tranché autrement et mieux : `figher.club` devient un VANITY
+URL.** Le Club vit sur l'origine du Totehm, le domaine n'est qu'une
+redirection. On garde le nom de marque et on ne paie pas la session.
+C'est la réponse que je n'avais pas vue — je posais le choix comme
+« le domaine OU la session », il l'a résolu en « le nom sans le domaine ».
+
+**Ce qui reste vrai et qu'il ne faut pas oublier :** le jour où un
+service TOTEHM vivra vraiment sur une autre origine, il lui faudra un
+pont — `auth.admin.generateLink` → `token_hash` à usage unique et courte
+durée, échangé côté serveur. **Jamais un jeton de session dans une URL.**
+
+### Les écrans de totehm.space — 09/09/2026
+
+```
+LE TOTEHM                                  LE MONDE
+totehm.html                                totehm_world.html  →  map.html
+trois VUES dans UN fichier                 la porte           la Higher Map
+  répulsions · habitudes · objectifs
+
+DEUX PORTES, en bas à droite               DANS LA POCHE
+wisdom.html   My Wisdom                    higherself.html
+vision.html   My vision for the future     HigherSelf — mini-app Telegram
+```
+
+### ⛔ « HIGHER » NE S'ÉCRIT JAMAIS EN TEXTE — 18/09/2026
+
+Règle de marque, sans exception : **`Higher` est un slogan, donc un
+SVG** (`<use href="#higher-badge">`), partout où il paraît. Tapé au
+clavier il devient un mot ordinaire dans la fonte du système, et la
+marque s'éteint à l'endroit exact où elle devrait parler.
+
+Conséquence pour les tests : `textContent` d'une porte qui porte le
+slogan rend un trou — « My  Self ». **C'est la preuve que la règle est
+tenue**, pas un bug d'assertion.
+
+### Le geste tactile se conduit, il ne se règle pas
+
+Trois lots ont essayé de faire marcher le swipe des cartes en réglant le
+défilement natif : `scroll-snap-type:x mandatory`, puis
+`-webkit-overflow-scrolling:touch`, puis `touch-action:pan-x` par-dessus un
+enfant qui défile en Y. Chacun se comporte différemment selon le moteur, et
+ces trois-là s'annulent entre eux.
+
+**Règle.** Dès qu'un geste porte une fonction produit — changer de carte,
+zoomer, replier — on coupe le natif (`touch-action:none`) et on conduit en
+Pointer Events, avec le MÊME code pour le doigt et la souris. Un seul chemin,
+testable en Chromium headless. Un verrou d'axe posé une fois au
+franchissement du seuil : un pouce n'est jamais droit.
+
+Le corollaire : si on coupe `touch-action`, on doit RENDRE les gestes qu'on
+a retirés. Le défilement vertical d'une carte longue se pousse à la main
+(`slide.scrollTop`), sinon on répare un geste en en cassant un autre.
+
+### Le gris devient blanc au survol — et c'est la machine qui l'écrit
+
+Règle de design, sans exception : sur desktop, tout texte gris passe au blanc
+au survol.
+
+Une liste de sélecteurs tenue à la main a raté trois lots de suite : chaque
+nouveau bloc gris arrivait sans son survol. Elle n'est plus tenue à la main.
+
+`tools/hover.py` lit la feuille de style d'un fichier, trouve toute règle qui
+pose une couleur GRISE sur du texte, et écrit le bloc de survol correspondant
+entre deux marqueurs. Le gris est défini une fois : trois canaux à moins de
+30 d'écart, ou un blanc translucide. Les couleurs d'intention (#E24B4A,
+#378ADD…) ne sont pas grises et gardent leur teinte.
+
+    python3 tools/hover.py space/totehm.html space/map.html \
+                           space/higherself.html
+
+Le bloc généré est délimité par
+`/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */`.
+Ne pas l'éditer : relancer l'outil. Il se remplace lui-même.
+
+**À relancer après toute modification de CSS dans `space/`.**
+
+Un test navigateur relit le CSSOM du fichier servi et échoue s'il reste un
+seul gris sans survol : l'exhaustivité est vérifiée, pas promise.
+
+### Un `<canvas>` est un élément REMPLACÉ — deux fois le même piège
+
+Ses attributs `width`/`height` lui donnent une taille INTRINSÈQUE (le tampon
+de dessin). Ni `position:fixed;inset:0`, ni `position:absolute;inset:0` ne la
+remplacent : sans `width:100%;height:100%` explicites, la boîte CSS vaut le
+tampon, pas le conteneur.
+
+Mesuré deux fois en deux jours : d'abord une vignette de 300×150 en haut à
+gauche, puis un rond dessiné hors de l'écran parce que la boîte CSS valait le
+double du cadre. **Tout canvas porte les deux lignes, sans exception.**
+
+Corollaire : ne jamais poser une hauteur inline sur un canvas depuis une
+mesure de son propre parent — le parent grossit, l'observateur relit, ça
+boucle. Le canvas se met en `absolute` dans un cadre `relative`, et il ne
+pousse plus rien.
+
+### ⛔ AUCUNE BORDURE AUTOUR D'UNE BOÎTE — RÈGLE DE MARQUE · 09/09/2026
+
+**Vaut sur les QUATRE domaines, sans exception :** `totehm.com`,
+`figher.club`, `totehm.space`, `higher.boutique`. Aucune carte, aucun panneau, aucune
+fenêtre, aucun bouton, aucune saisie ne porte de trait dessiné autour
+d'elle.
+
+**Ce qui délimite, et rien d'autre :**
+
+| | |
+|---|---|
+| Navy `#333366` · Bleu clair `#36498c` · Rouge-violet `#743169` | les blocs |
+| Noir absolu `#000` | le vide, les perforations |
+| Le gris et ses nuances | les surfaces secondaires, le texte secondaire |
+
+**Une boîte se détache par sa VALEUR, jamais par un contour.** C'est la
+grammaire du Totehm empilé de `totehm.com` : des blocs pleins posés les
+uns sur les autres, séparés par du noir. Un trait d'un pixel n'est ni le
+bloc ni le vide — c'est un troisième objet, et il gagne en plus un
+demi-pixel gris sur tout écran non entier.
+
+**Quand une boîte n'avait QUE sa bordure pour exister** (`background:none`
++ `border`), elle reçoit une surface grise — `rgba(255,255,255,.06)` à
+`.07`. Elle ne reste jamais invisible : c'est le point de la règle, pas
+son effet de bord. **Et le papier recule d'un ton sous les blocs** :
+`--paper` est plus sombre que `--skin`, sinon un bloc de la couleur du
+papier disparaît (mesuré, deux fois).
+
+**Les trois exceptions, et elles ne sont pas des bordures :**
+1. **La tuile perforée** — `border: 6px solid transparent` +
+   `border-image`. C'est une TEXTURE de marque, pas un trait ; c'est elle
+   qui fait `.btn-sig` et `.line-input`.
+2. **Les arêtes d'une boîte en verre 3D** (`.b-front`, `.bside`,
+   `.vb-front`, `.vbside`). Ce sont les CÔTÉS d'un volume : sans elles la
+   boîte n'est plus une boîte, c'est un carré.
+3. **Le pointillé d'une place vide** — la ligne `+ add`. Elle ne cerne
+   pas une boîte, elle dessine l'absence d'une boîte.
+
+Un filet gris entre deux lignes DANS une boîte n'est pas la bordure
+d'une boîte, et le gris est un délimitant autorisé : il reste.
+
+**Le coral `#fbd5ca` ne délimite rien.** Il est réservé au mot **« Get »**
+de `[Get Higher]` et à la méthode Stoner (ses pages vivent sur
+`higher.boutique` depuis le 23/09). Jamais un cadre, jamais une bordure,
+jamais sur la totehmisation, le Club, l'Espace ni le Totehm.
+
+`tools/nobord.py` passe sur `com/`, `space/` et `boutique/` (⚠️ pas
+encore sur `club/`, né le 23/09 — à ajouter à sa liste) et retire tout trait
+dessiné de moins de 4 px. **Il garde ce qui n'est pas une bordure** : la
+tuile perforée (`6px solid transparent` + `border-image`) et les faces
+d'une boîte en verre. Ce qui n'avait QUE son trait pour exister reçoit
+une surface à la main — jamais en masse.
+
+Passage du 13/09/2026 : **63 traits retirés** sur les quinze fichiers,
+dont les séparateurs de rangée et les soulignés de saisie de l'espace
+membre.
+
+### N'écris jamais `cd ~/totehm && …` — 06/09/2026
+
+Claude Code juge une commande composée **EN ENTIER** contre ses règles de
+permission. `cd ~/totehm && git status` ne matche pas la règle
+`Bash(git status *)` : la ligne commence par `cd`. Résultat, chaque
+commande redemande un oui/non, et `.claude/settings.json` ne sert à rien.
+
+**Tu es déjà dans le dépôt** — la session s'ouvre à sa racine. Écris
+`git status`, pas `cd ~/totehm && git status`. Une commande simple par
+ligne, toujours. Pour agir ailleurs, utilise les options du programme
+(`git -C`, `cp` avec un chemin absolu), jamais un `cd` en préfixe.
+
+Et on ne met **pas** `Bash(cd *)` en `allow` pour contourner : ça
+autoriserait n'importe quoi après le `&&`. La seule règle `cd` est une
+correspondance exacte, sans joker.
+
+### L'interface est en anglais
+
+Vocation internationale : mots courts, aucun idiome, rien à traduire pour
+comprendre. Les termes de marque restent en anglais par nature.
+
+### Les overlays plein-écran s'ancrent EN HAUT · 03/09/2026
+
+Tous les overlays qui s'ouvrent au-dessus d'un contenu (`#member-window`,
+`#freq-panel`, `#habit-peek`, `#filter-modal`, `#wpick`) portent
+`align-items:flex-start` + `padding-top:max(44px,8dvh)`. **Jamais**
+`align-items:center` : le clavier mobile qui s'ouvre au focus mange le
+tiers inférieur de l'écran, et une box centrée verticalement finit sous
+le clavier. Règle identique sur `space/`, `com/`, `boutique/`.
+
+### Une réponse tardive n'écrase jamais un état plus frais
+
+`higher-map` renvoie `origin:{lat,lng,fallback}` — son propre repli Lisbonne
+quand la requête part sans coordonnées. Le front faisait
+`RAD.origin = j.origin` sans condition : une position GPS obtenue PENDANT la
+requête était écrasée par le repli au retour. Définitivement, puisque plus
+rien ne redemandait.
+
+**Règle.** Toute réponse réseau qui pose un état partagé doit vérifier
+qu'elle n'est pas dépassée :
+
+1. un compteur de séquence (`PICK_SEQ`) — la réponse d'une demande périmée
+   se jette, elle ne se fusionne pas ;
+2. une garde de fraîcheur — le serveur ne corrige que ce que le client
+   ignore (`if(j.origin && !RAD.coords)`).
+
+Ça vaut pour toute donnée que le client peut connaître mieux que le serveur :
+position, session, préférences locales.
+
+### Contraintes absolues
+
+**Sessions.** Quatre domaines = quatre `localStorage` = quatre sessions.
+**Aucune session n'est partagée, et il ne faut jamais l'écrire.** Le compte est
+unique, la session ne l'est pas. Ce qui existe depuis le 17/09, c'est un PONT :
+`sso-mint` → code de passage (60 s, usage unique, haché, un domaine cible) →
+`sso-redeem` → `auth.admin.generateLink` → `verifyOtp`. Le membre ne se
+reconnecte pas ; il traverse. **Jamais un token de session dans une URL** — c'est
+pourquoi le « token handoff » du MASTER (§4) n'est PAS appliqué : voir
+`TOTEHM_MASTER.md` §0.1.
+
+**Stripe.** Tous les flux partagent le même webhook. Le routage se fait sur
+`metadata.product` — `higher` · `cloth` · `subscription` · `creator_sub`. Un
+`switch` avec `default` explicite, **jamais un `if`**. Toute nouvelle fonction de
+checkout pose sa propre `metadata.product`. **Ne jamais retirer ce filtre.**
+Depuis le 23/09 le webhook écoute aussi **`invoice.paid`** (le grand livre) : cet
+événement doit être coché sur l'endpoint dans le dashboard Stripe, sinon il
+n'arrive jamais — et rien ne le dit.
+
+**Le piège des abonnements.** Les événements de cycle de vie ne portent pas la
+metadata de session — or ce sont eux qui coupent l'accès. Elle doit être posée
+**aussi** dans `subscription_data.metadata`. Irrattrapable après coup.
+
+**Supabase front.** Toujours le module ES
+(`https://esm.sh/@supabase/supabase-js@2`), **jamais UMD** — le build UMD ne
+définit pas `window.supabase` et la page plante en silence.
+
+**Git.** Jamais `git add .` (`oracle/` contient des clés privées).
+Un commit par changement logique.
+
+**Secrets.** Aucun secret dans une conversation ni un fichier versionné.
+Les Edge Functions lisent tout par `Deno.env.get()`.
+Une clé exposée par accident est une clé à rotationner immédiatement.
+
+**Le prix et l'accès viennent du serveur.** Toujours. Un prix côté client se
+modifie en deux clics dans les devtools.
+
+**`create or replace function` rétablit le GRANT à PUBLIC.** Tout `revoke` suit
+le dernier `create`, jamais l'inverse. Cette erreur a exposé `record_push` à `anon`.
+
+**Esthétique.** Le mot « Higher » est toujours le SVG outlined
+`<use href="#higher-slogan">`, jamais une webfont. En email, un PNG.
+Sur desktop (`@media(hover:hover)`), tout texte gris passe en `#fff` au survol.
+
+**CORS.** Toute Edge Function CORS-restrictive utilise
+`corsHeaders(origin, fallback)` de `_shared/origins.ts`. **Jamais**
+`"Access-Control-Allow-Origin": "*"` — un wildcard sur une fonction qui
+appelle OpenAI/Stripe/Google = facture de n'importe quel site du web.
+Audit du 03/09 : `generate_objective` et `prospects` corrigés (les deux
+utilisaient `*`).
+
+**Stripe SDK init.** `new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!)`.
+**Jamais** `?? ""` : Stripe accepterait la clé vide, échouerait
+silencieusement au premier appel, et un checkout partirait en fantôme.
+Le `!` fait planter le module au démarrage si le secret manque —
+mieux qu'un paiement perdu. Audit du 03/09 : `higher-checkout` et
+`artwork-checkout` corrigés.
+
+**`visions` est le JUMEAU de `wisdom`** (13/09/2026) : mêmes colonnes —
+`text`, `i`, `importance` — mêmes deux politiques RLS (la sienne en
+écriture, lecture par les membres quand le Totehm est partagé). Deux
+formes d'une seule chose : ce que j'ai appris, ce que je vois venir.
+Vérifiée en production sous `set local role authenticated` : zéro ligne
+lisible sans session.
+
+**L'importance est une COLONNE, pas un ordre implicite.** Elle se
+réécrit en entier quand le classement bouge : un rang sur deux qui
+manque produit un ordre instable, et c'est quelques dizaines de lignes.
+
+**Les 7 intentions portent chacune un PILIER** (BODY / MENTAL / SOUL /
+SPIRIT). Mapping non-négociable, cadre mental de tout le produit :
+
+| Intention | Pilier |
+|-----------|--------|
+| fight, flow | **BODY** |
+| enrich, focus | **MENTAL** |
+| express, celebrate | **SOUL** |
+| love | **SPIRIT** |
+
+Le pilier remplace les tags neurotransmetteur dans le sélecteur des 7
+intentions (`.s-int-pillar` dans map, `.pk-pillar` dans book,
+`.wp-pillar`/`.fp-pillar` dans totehm). Space Mono, `.22em`, majuscules,
+un seul mot. Recopié dans les 4 fichiers `space/*.html` — jamais partagé.
+
+## Doctrine de coût — deux régimes
+
+**MÉCANIQUE — jamais un centime.**
+Compter, matcher, décider quand pousser, détecter une récurrence, composer un
+rappel. Du SQL, des embeddings, des gabarits. Le bot fait **zéro appel IA**.
+
+**QUALITÉ — le meilleur modèle.**
+L'autobiographie et les propositions d'objectifs. Ce que le membre achète, c'est
+**la Higher Map** — l'autobiographie est une couche de valeur, pas le produit.
+Un chapitre coûte ~0,017 € contre ~6,37 € net par membre : **3,8 % du revenu même
+avec 14 générations par mois.** Économiser ici, c'est dégrader le produit pour
+rien.
+
+**Le test :** estimer le coût mensuel à 1 000 utilisateurs et le comparer à
+l'ARPU. Ce qui coûte plus que ça ne rapporte ne se construit pas.
+
+**Le piège du gratuit :** toute IA glissée dans le parcours gratuit crée une
+facture mensuelle sans revenu en face. Le gratuit reste déterministe.
+
+## Doctrine visuelle
+
+### ⛔ LA STACK POLICE — QUATRE FAMILLES, QUATRE RÔLES · 21/09/2026
+
+**Donnée par Wah, non négociable, et elle vaut sur les quatre domaines.**
+
+| Police | Rôle |
+|---|---|
+| **Bebas Neue** | titres · noms des œuvres |
+| **Quantico** | **boutons et actions** — et les SAISIES du membre |
+| **Space Mono** | texte, labels, prix, navigation, métadonnées |
+| **Montserrat** | **EXCLUSIVEMENT `[Get Higher]`** |
+
+> **⛔ 27/09/2026 — PLUS DE MONTSERRAT NULLE PART** (Wah). Bebas Neue prend
+> les titres, sous-titres, questions et le wordmark ; une seule graisse,
+> l'intensité par la taille, la lumière et un contour d'une fraction de
+> pixel. Le slogan Higher est un TRACÉ (aucune webfont). Quantico = ce que
+> le membre tape ET le nom d'un Totehm, sur la tuile perforée navy — qui
+> ne sert plus qu'à ça. Voir BRAND.md, Polices (encadré du 27/09).
+>
+> **⚠️ ÉTENDU LE 24/09 PAR `BRAND.md` §13 (« Polices — la stack et ses
+> rôles sacrés »), qui fait autorité.** Montserrat 600 NOMME le produit et
+> ses parties : le wordmark TOTEHM et les **titres de vue** (`#vnow` du
+> Totehm, `#vt` de l'Espace). Quantico se resserre sur ce que le membre
+> TAPE (nom, saisies, textes des boîtes, le mot d'un Spot) ; un bouton de
+> navigation est en Space Mono. Ce tableau n'a pas été mis à jour le
+> 24/09 — c'était une contradiction entre deux documents, corrigée ici le
+> 25/09. Le paragraphe ci-dessous décrit la règle d'avant.
+>
+> **⚠️ EXCEPTION LE 28/09 : PLUS DE BEBAS NEUE DANS LE TOTEHM.** Wah :
+> « dans le TOTEHM, je ne veux pas de Bebas Neue, juste du Space Mono et
+> le Quantico. » Ce tableau reste la règle pour `totehm.space` et
+> `figher.club` ; dans `com/totehm.html` seul, Bebas Neue a disparu de
+> toute règle CSS — voir « ⛔ LE PAPIER EST UN BUVARD » plus haut pour le
+> détail des sept sites convertis.
+
+**⚠️ MONTSERRAT N'A DROIT QU'AU SLOGAN** (règle d'avant le 24/09). Et comme « Higher » est
+toujours un SVG (règle du 18/09), Montserrat ne doit apparaître dans
+**aucune balise** d'aucune page : uniquement dans le `<symbol>` du
+badge. La première version de la page TotehmBot l'utilisait pour
+l'accroche et le corps — deux règles cassées d'un coup, et c'est ce qui
+a motivé d'écrire ce tableau ici.
+
+**⚠️ QUANTICO EST LA POLICE DE L'ACTION, PAS DU CORPS.** Un bouton, un
+champ, ce que le membre tape. Un paragraphe en Quantico est une faute de
+grammaire visuelle — le corps est en Space Mono.
+
+**Ça se MESURE, pas ça se promet.** `bot21.mjs` relit la
+`fontFamily` calculée de chaque rôle et échoue si une famille déborde du
+sien. Une règle de marque sans test est une règle qu'on recassera.
+
+| | |
+|---|---|
+| Navy `#333366` | présent, habitudes, ancrage |
+| Coral `#fbd5ca` | **exclusivement** la méthode Stoner et le « Get » de `[Get Higher]`. La méthode vit sur `higher.boutique` depuis le 23/09 (elle était sur `totehm.com`) : le coral la suit, et ne sort pas de ses pages. |
+| Rouge-violet `#743169` | répulsions, carburant |
+| Quantico Bold coral | **exclusivement** les pages Stoner — techniques et Intentions |
+| Bebas Neue gris | narration |
+| Perforation | padding `0.02em 0.18em` |
+
+### Composants transverses — règle absolue
+
+**Boutons et saisies suivent le même style sur les quatre domaines.**
+Référence : `boutique/index.html`. Des exceptions existent — lire le contexte avant de copier.
+
+**Bouton — `.btn-sig`**
+```css
+font-family: 'Quantico', sans-serif; font-weight: 400; font-size: 14px;
+color: #b0b0b0; background: none; border: 6px solid transparent;
+padding: 0 4px; line-height: 1.5; transition: color .15s ease;
+/* hover / active : */
+color: #fff; border-image-source: var(--tile-btn);
+border-image-slice: 6 fill; border-image-repeat: round;
+```
+
+**Input — `.line-input`**
+```css
+font-family: 'Quantico', sans-serif; font-weight: 400; font-size: 14px;
+color: #fff; background: none; outline: none;
+border: 6px solid transparent;
+border-image-source: var(--tile-btn); border-image-slice: 6 fill; border-image-repeat: round;
+padding: 0 6px; text-align: center; caret-color: var(--coral);
+```
+
+Ne jamais introduire : `border-radius` · `box-shadow` décoratif ·
+placeholder coloré · `border-bottom` seul · animation d'entrée sur un input.
+
+> **⚠️ 27/09/2026 — LES CONTRÔLES S'ARRONDISSENT, PAS LES BOÎTES.** Sur
+> `totehm.space` et `figher.club` : saisies et boutons GRIS, `border-radius:
+> 10px`, sans tuile. La tuile perforée navy est réservée au NOM d'un Totehm
+> (`.tname`). Une BOÎTE (habitude, Spot, section, fenêtre) reste carrée.
+> `totehm.com` et `higher.boutique` gardent `.btn-sig` / `.line-input`
+> perforés : écart connu, à convertir.
+
+**Boxe perforée au survol — règle absolue**
+La bordure `border-image` suit la taille du contenu. Un bouton ou lien perforé
+doit avoir `display:inline-block` (ou `inline-flex`) et `width:fit-content` — jamais
+`width:100%` sauf intention explicite. La boxe couvre le texte, pas la colonne.
+
+**Layout — règles générales**
+- Contenu centré (`margin: 0 auto`, `text-align: center`, `align-items: center`)
+- Pas de bordure sur les conteneurs, cards, sections
+- Le fond fait le cadre — pas la bordure
+
+## Les livrables — le contrat « Tout télécharger »
+
+Je ne lis pas de code dans le chat. Tu génères les fichiers un par un pour que
+je clique sur « Tout télécharger » → `files.zip` que je dépose dans `~/inbox/`.
+
+Le lot inclut **systématiquement** :
+- les fichiers modifiés ;
+- les documents impactés, à jour ;
+- un `CLAUDE_CODE.md` : instructions exactes pour Claude Code.
+
+**Un seul zip, structure plate.** Le zip contient tout l'historique de la
+conversation : `CLAUDE_CODE.md` nomme précisément quoi prendre, avec un `grep` de
+contrôle contre les vieilles versions, et ignore le reste.
+**Dernière ligne toujours : `rm -rf ~/inbox/*`.**
+
+Pour un fichier unique : un `cp` direct, pas de zip.
+
+### Claude Code ne demande plus la permission — 06/09/2026
+
+`.claude/settings.json` est versionné. Il n'accorde QUE ce qu'un lot exécute :
+lire, copier, commiter, pousser, déployer une Edge Function. Pas
+`--dangerously-skip-permissions`, qui est tout ou rien et qui, le jour où il
+se trompe, se trompe en grand.
+
+**Précédence : `deny` > `ask` > `allow`, première règle qui matche. Un `deny`
+n'admet aucune exception** — un `allow` plus large ne le rattrape pas. C'est
+pourquoi `git add .` est en `ask` et non en `deny` : la règle du projet tient
+sans bloquer le travail. Restent en `ask` : `rm`, `git reset`, `git rebase`,
+`git push --force`, `supabase db`, `supabase secrets set`. Reste en `deny` :
+LIRE `oracle/`, `*.pem`, `id_rsa*`, `.env` — second rempart derrière
+`.gitignore`, celui qui empêche de les recopier ailleurs.
+
+**Trois comportements mesurés le 06/09, et chacun change ce qu'on écrit :**
+
+1. **Aucun rechargement à chaud.** Les settings sont lus UNE FOIS au démarrage.
+   Poser le fichier pendant qu'une session tourne ne change rien : il faut
+   quitter et relancer `claude`. Il n'existe pas de `/reload-settings`.
+2. **Une commande composée est évaluée EN ENTIER**, pas segment par segment.
+   `cd ~/totehm && git status` ne matche pas `Bash(git status *)` : la ligne
+   commence par `cd`. **D'où la règle d'écriture de tout `CLAUDE_CODE.md` :
+   une commande SIMPLE par ligne, jamais `cd X && …`, jamais `VAR=… ; …`.**
+   Et surtout pas `Bash(cd *)` en `allow` pour contourner — ce serait
+   autoriser n'importe quoi après le `&&`. La seule règle `cd` est une
+   correspondance EXACTE, `Bash(cd ~/totehm)`, sans joker.
+3. **Un motif relatif (`./**`) ne matche pas toujours** le chemin absolu que
+   l'outil manipule. D'où le doublon `~/totehm/**`, et d'où le fait que ce
+   qui PORTE réellement l'écriture de fichiers soit `defaultMode:
+   acceptEdits` — un mode, pas un motif de chemin. `auto` et
+   `bypassPermissions` sont interdits dans un settings de projet.
+
+## Ce qui reste à moi, à lister séparément
+
+Les clics dans un dashboard et les tests navigateur. Pour chaque action externe,
+tu précises : **QUI · POURQUOI · OÙ · ACTION · VALEUR ATTENDUE · OÙ LA STOCKER**.
+Jamais « configure Google » ou « ajoute la clé API ».
+
+Bug signalé → **un** bloc à coller dans la console qui renvoie tout d'un coup.
+Une boucle, pas trois.
+
+## Communication
+
+Zéro jargon. N'explique pas l'implémentation. Images simples.
+Je veux savoir : ce qui change pour l'utilisateur, pourquoi c'est plus solide,
+quels fichiers ont bougé.
+**Contredis-moi si une idée coûte plus qu'elle ne rapporte.** Signale ce qui va
+coûter cher **avant** que ça arrive.
+
+## L'écosystème des IA
+
+- **Founder :** Wah · **CTO :** Claude · **COO/Growth :** Gemini
+- **CPO :** ChatGPT · **Marketing :** Meta AI · **Legal :** Mistral · **QA :** DeepSeek
+
+Tu ne parles à aucune autre IA. Tu écris un brief prêt à coller, Wah fait le pont
+et rapporte la réponse. Tu intègres, tu tranches, **tu restes responsable**.
+Format : `[POUR X] / CONTEXTE / OBJECTIF / CONTRAINTES / ATTENDU`.
+
+**Tu ne fais pas :** copy marketing · prospection · rédaction juridique ·
+recherche d'influenceurs. Tu délègues avec un brief.
+
+## 🛑 LA RÈGLE D'OR
+
+Une fonctionnalité n'est **jamais** terminée tant que ces quatre points ne sont
+pas dans la livraison :
+
+1. Le code est modifié, testé, sécurisé.
+2. `TOTEHM_MASTER.md` est à jour — son §0 dit ce qui est construit et
+   chaque écart avec ce qui est voulu.
+3. `CLAUDE.md` et/ou `BRAND.md` sont à jour si une règle change.
+4. `backend/SYSTEM.md` et `backend/README.md` sont à jour si la DB ou
+   l'architecture changent.
+
+**Code et documents désynchronisés dans le même lot = livrable refusé.**
+
+## 🚽 RÈGLE INBOX
+
+Après chaque déploiement réussi, `~/inbox/` est vidé sans exception :
+
+```bash
+rm -rf ~/inbox/*
+```
+
+Dernière étape de chaque `CLAUDE_CODE.md`, après tous les commits et push.
+`~/inbox/` repart toujours vide.

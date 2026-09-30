@@ -1,0 +1,170 @@
+# boutique/CLAUDE.md — higher.boutique : le Cloth, la méthode Stoner
+
+> Chargé automatiquement quand on travaille dans `boutique/`. Les règles
+> transverses sont dans le `CLAUDE.md` de la racine ; l'histoire dans
+> `docs/POSTMORTEMS.md`. Sections déplacées TELLES QUELLES de l'ancien
+> `CLAUDE.md` le 30/09/2026, les plus récentes d'abord : un renvoi « plus
+> haut » peut viser la racine ou un autre dossier. Fichiers : `streetwear.html`, `stoner*.html`, `get_higher.html`, `discover*.html`, `origins.html`, `play_lisbon_street.html`.
+
+## ⛔ ÉTAT AU 30/09/2026
+
+**⚠️ LA BOUTIQUE MONTRE, FIGHER VEND.** « Acquire » (origins,
+play_lisbon_street) ouvre l'œuvre sur `figher.club/market?art=<slug>` par
+le pont. Le THP s'achète encore depuis la méthode (higher-checkout) ; le
+retour de Stripe dépend de l'origine (`origineDe`).
+
+**Pick up the box** (`boutique/streetwear.html`) : MY TOTEHM → HABIT
+BOXES → une Box → le vêtement → nom · style · taille → commande. Un
+vêtement touché avant d'avoir une Box attend et devient le support.
+
+
+### ⛔ STONER — LE LECTEUR À DEUX VOIES, UNE COUTURE INVISIBLE — 29/09/2026
+
+**Le constat de Wah** (`boutique/stoner.html`, `BUILD='2026-09-29'`) : chaque
+tap sur Higher (`#btn-slogan`) faisait « sauter » la page et passer un écran
+noir. **Mesuré avant de toucher au code** (réseau simulé à 400 ms) :
+`#technique` absent ~415 ms, Higher décalé de ~400 px, le bas de page de
+~80 px, aucun préchargement (chaque tap repartait de zéro sur le réseau),
+1 à 2 images vides à l'échange de source. **Après : 0 px, 0 image
+absente, ~90 ms du tap à la nouvelle image.**
+
+**⚠️ `display:none` EFFONDRE LA PAGE.** `#step0-intro`, `#step0-ui` et
+`#technique` occupent LA MÊME cellule de grille (`#below`) : la hauteur est
+celle du plus grand, elle ne change jamais. On les montre par
+`opacity`/`visibility`, jamais par `display`. Même règle que « une
+`@keyframes` rejoue, une `transition` non » : un état se dit par une
+propriété qui se transitionne, pas par la présence dans le flux.
+
+**⚠️ HIGHER NE BOUGE PLUS D'UN PIXEL.** Le texte des dix steps n'a pas la
+même longueur ; `reserveHeights()` mesure hors-champ le PLUS LONG (les deux
+modes) et réserve cette hauteur dans `.tech-head` ; « Neurological reasons »
+s'accroche au bas de la réserve, collé à Higher. On peut retaper au même
+endroit. Un seul constructeur (`fillHead`) sert l'affichage ET la mesure :
+deux constructeurs finiraient par mesurer un texte qu'on n'affiche pas.
+Coût assumé : sur un step court, un vide entre le texte et les contrôles.
+
+**⚠️ DEUX <video>, PAS UN.** `#vid` et `#vid2` sont superposés dans la boîte
+3D ; `vid` est toujours celui qu'on VOIT (`.on`). Le suivant est téléchargé
+en mémoire (blob) et DÉCODÉ dans la voie cachée, en pause sur sa première
+image (`stage()`). Le tap n'est plus « charger » : c'est `commit()`, qui
+inverse deux calques en une frame. Tant que la voie cachée n'est pas
+prête, l'ancien step reste à l'écran, intact ; Higher respire (`.busy`)
+après 220 ms. **Opacité, jamais `display:none`** : un <video> masqué par
+`display` n'est plus décodé, la première image ne serait pas prête.
+
+**⚠️ UN RACCORD NE CLIGNOTE PAS.** Deux calques qui s'éteignent et
+s'allument ensemble passent par 50 % + 50 % : un creux sombre. La voie
+sortante reste OPAQUE dessous (`.under`) pendant que la nouvelle apparaît.
+Et `currentStep` ne change qu'à l'échange : l'état dit ce qu'on VOIT.
+
+**⚠️ UN GESTE À LA FOIS.** `busy` avale un tap pendant l'échange (~230 ms) :
+sans lui, un double-clic sautait un step. On ne met PAS le tap en file —
+une file transformerait le double-clic en deux steps.
+
+**⚠️ ON NE PRÉCHARGE QUE LE STEP SUIVANT.** Chaque octet vient du stockage
+Supabase (egress payant). Le suivant n'est demandé qu'une fois le courant à
+l'écran ; au step 0, celui du dernier mode déclaré (`totehm_entry_mode`),
+pas les deux. Mauvais pronostic = une vidéo de trop, une seule fois.
+Mesuré : chaque step n'est téléchargé qu'UNE fois.
+
+**⚠️ LES URLs SIGNÉES VIVENT 15 MINUTES** (`stoner-gate`, `TTL_SECONDS =
+900`, toutes signées d'un coup au chargement). L'ancien code ne vérifiait
+jamais `resp.ok` : passé ce délai, le « blob » était la page d'erreur JSON
+et la vidéo restait morte, sans un mot. Maintenant : `resp.ok` est vérifié,
+une 400 déclenche `resign()` puis un seul nouvel essai, et les URLs sont
+renouvelées AVANT d'expirer (`SIGNED_AT`, `expires_in − 60 s`).
+**`resign()` ne touche jamais à `ACCESS`** : un réseau qui tousse au milieu
+de l'expérience ne renvoie pas un membre payant au mur.
+
+**Intacts, vérifiés :** SSO (`ssoArrivee`, module bloquant), boîte 3D
+(rotation idle + glisser), pause/lecture au tap sur la vidéo (sur la voie
+visible), le mur (`showGate`), le mode « mouvement réduit » (aucun fondu,
+même comportement). **Diagnostic** : `window.__totehm_stoner()` → build,
+step, busy, voie visible, étape de chaque voie, step préparé, steps en
+cache, âge des URLs signées, hauteur réservée — des booléens et des
+compteurs, jamais une URL.
+
+### ⛔ HIGHER.BOUTIQUE — N'IMPORTE QUELLE BOX — 23/09/2026
+
+**MASTER §49-57.** `boutique/streetwear.html` : la totehmisation part
+d'une Box, de n'importe laquelle des cinq vues. Plus de message libre.
+
+**⚠️ LA MATIÈRE SE CALCULE CÔTÉ SERVEUR, UNE FOIS.** `_box_matter(user,
+kind, ref)` rend la Box, ses intentions, ce qui lui est relié dans les
+cinq vues, et la **palette** (les couleurs des intentions — le client ne
+choisit pas les couleurs). La page la lit pour l'aperçu
+(`my_box_matter`), `create-checkout` la relit pour l'instantané
+(`totehm_clothes.box_snapshot`). **Ce que le membre voit est exactement
+ce qui part à l'atelier.**
+
+**⚠️ `message` RESTE REMPLI** — avec le texte de la Box d'ancrage. C'est
+ce que lit la chaîne n8n. On ne casse pas l'usine pour changer la
+matière première.
+
+**Le style est curaté** (`artistic_styles`, actif) ; aucune sélection
+manuelle d'intention (MASTER §30, §97).
+
+**REVEAL THE BOX vit dans la console du Club** (`#reveal`, MASTER §55) —
+pas une galerie : on ne rend jamais le visuel, on rend la donnée derrière,
+selon qui cherche (invité → la vue et la date ; membre FIGHER → la Box et
+ses intentions ; propriétaire ou abonné → + la matière). **Et
+`decode_cloth` ne rend plus la matière d'une pièce née d'une Box** : ce
+serait contourner Reveal par la porte de derrière. Les pièces d'avant
+gardent leur Decode public — on ne retire pas ce qui a été promis.
+
+### totehm.com — boîte en verre et panneau de rues
+
+#### Système `.vbox-scene` — boîte en verre 3D (28/08/2026)
+
+Partagé entre `discover_lisbon.html` et `get_higher.html`. Tailles différentes via
+des propriétés CSS sur le conteneur.
+
+```css
+/* Variables — à poser sur .vbox-scene ou un ancêtre */
+--vbs   /* taille face (carré)          */
+--vbd   /* profondeur de la boîte       */
+--vbhd  /* --vbd / 2 — maintenir cohérent si --vbd change */
+
+/* Math des faces latérales — ne pas modifier */
+.vb-right { transform: translateX(calc(var(--vbs) - var(--vbhd))) rotateY(-90deg); }
+.vb-left  { transform: translateX(calc(-1 * var(--vbhd))) rotateY(90deg); }
+.vb-top   { transform: translateY(calc(-1 * var(--vbhd))) rotateX(90deg); }
+.vb-bot   { transform: translateY(calc(var(--vbs) - var(--vbhd))) rotateX(-90deg); }
+```
+
+**Structure HTML identique dans les deux fichiers :**
+```html
+<div class="vbox-scene" id="vidWrap">
+  <div class="vbox" id="vidBox">
+    <div class="vbf vb-back"></div>
+    <div class="vbf vb-inner"><video id="vid" playsinline preload="none"></video></div>
+    <div class="vbside vb-right"></div><div class="vbside vb-left"></div>
+    <div class="vbside vb-top"></div><div class="vbside vb-bot"></div>
+    <div class="vbf vb-front"></div>
+  </div>
+</div>
+```
+
+**Cycle de vie JS — règle absolue :** `startVidBox()` démarre la boucle RAF (idle +
+drag Pointer/Touch Events). `stopVidBox()` annule le RAF et retire tous les écouteurs.
+Les handlers sont des **fonctions nommées** (`_vbMM`, `_vbML`, `_vbMD`, `_vbWM`,
+`_vbMU`, `_vbTS`, `_vbTM`, `_vbTE`) — jamais des arrow functions, sinon
+`removeEventListener` ne retire rien.
+
+| Fichier | `--vbs` | `--vbd` | `--vbhd` |
+|---|---|---|---|
+| `discover_lisbon.html` | `min(50vmin,260px)` | `36px` | `18px` |
+| `get_higher.html` | `min(72vmin,300px)` | `40px` | `20px` |
+
+#### Panneau de rues — `get_higher.html`
+
+22 panneaux de signalisation lisboètes, `const SIGNS = { sign_id: [x%, y%, size] }`.
+Bouton **"Play the street ↓"** dans le paywall (après btn-buy et lien CGV).
+
+Clic → overlay `#world` (grille `.sign`) → clic sur signe → overlay `#xp` (vidéo
+dans la boîte en verre 3D rotative). Vidéos depuis le bucket public Supabase
+`play-signals/{sign_id}.mp4`.
+
+Le bloc JS du panneau est en `{}` (block scope ES module) — les vars du panneau ne
+polluent pas le module, mais `sb`, `toStripe` et `goToSlide` restent accessibles
+depuis l'extérieur.
