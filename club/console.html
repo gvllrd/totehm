@@ -181,8 +181,8 @@ section h2{font-family:var(--bebas);font-weight:400;color:#fff;font-size:clamp(3
 <section id="signin" class="hide">
   <div class="kick">FIGHER.CLUB · Console</div>
   <h2>One account.<br>Four doors.</h2>
-  <input class="in" id="si-email" type="email" placeholder="your@email" autocomplete="email">
-  <input class="in hide" id="si-code" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code">
+  <!-- 30/09 : on se connecte PAR totehm.com (l'autorité d'identité). -->
+  <button class="btn main" id="si-go" type="button">Sign in with TOTEHM</button>
   <div class="note" id="si-note"></div>
   <div id="si-claim" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:8px;width:100%">
     <div class="lbl">Name your TOTEHM</div>
@@ -219,12 +219,9 @@ section h2{font-family:var(--bebas);font-weight:400;color:#fff;font-size:clamp(3
   <section id="subscribe">
     <div class="kick">03</div><h2>What do I subscribe to?</h2>
     <div class="stack" id="subs-box"></div>
-    <div class="ctl">
-      <div class="lbl">Find a TOTEHM</div>
-      <input class="in" id="find" placeholder="a name" autocomplete="off">
-      <div class="stack" id="find-res" style="max-width:420px"></div>
-      <div class="note" id="find-note"></div>
-    </div>
+    <!-- 30/09 : UNE recherche, sur la source (MASTER BRIEF §3). La page de
+         vente d'un Totehm vit sur totehm.com/@nom ; s'y abonner revient ici. -->
+    <a class="btn" href="https://www.totehm.com/search" id="find-go">Find a TOTEHM on totehm.com</a>
   </section>
 
   <section id="subscribers">
@@ -296,38 +293,116 @@ const FN = SB_URL + '/functions/v1/';
 const $ = id => document.getElementById(id);
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
 
-/* ══ LE PONT SSO — COPIÉ (tools/sso_snippet.js) ═════════════════════ */
+/* ══ LE PONT SSO v2 — COPIÉ de tools/sso_snippet.js (30/09/2026) ══════
+   totehm.com est l'autorité : se connecter ici = passer PAR totehm.com
+   (authorization code + PKCE). Le lien entre domaines reste le pont. */
+/* LE NOM DE CE DOMAINE — 'space' | 'club' | 'boutique'. Jamais une URL. */
+const SSO_CLIENT = 'club';
+const SSO_AUTH = 'https://www.totehm.com/auth';
+const SSO_KNOWN = 'totehm_sso_known';   // localStorage : ce navigateur s'est déjà connecté ici
+const SSO_TRIED = 'totehm_sso_tried';   // sessionStorage : l'aller-retour silencieux a eu lieu
+const SSO_PKCE  = 'totehm_sso_pkce';    // sessionStorage : { verifier, state } le temps du voyage
+
+const ssoB64 = bytes => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const ssoStore = (s, k, v) => { try{ v === null ? s.removeItem(k) : s.setItem(k, v); }catch(_){} };
+const ssoRead = (s, k) => { try{ return s.getItem(k); }catch(_){ return null; } };
+
+/* ── ARRIVÉE ────────────────────────────────────────────────────────
+   ⚠️ LE CODE SORT DE L'URL AVANT TOUT AUTRE GESTE — et SEULEMENT lui :
+   le reste du fragment (#create, #reveal…) reste à la page. Un code
+   laissé dans la barre d'adresse se retrouve dans un signet, un partage,
+   un historique. Avec un `state`, c'est une connexion centrale : il doit
+   être celui que CE navigateur a envoyé (sinon quelqu'un essaie de nous
+   connecter à SON compte) et le `verifier` part avec le code. */
 async function ssoArrivee(sb){
-  const m = /[#&?]sso=([a-f0-9]{64})/.exec(location.hash) || /[#&?]sso=([a-f0-9]{64})/.exec(location.search);
-  if(!m) return false;
-  history.replaceState(null, '', location.pathname + location.search.replace(/[?&]sso=[a-f0-9]{64}/, ''));
+  const h = new URLSearchParams(location.hash.replace(/^#/, ''));
+  const q = new URLSearchParams(location.search);
+  const code = h.get('sso') || q.get('sso'), st = h.get('state'), err = h.get('sso_error');
+  if(!code && !err) return false;
+  ['sso','state','sso_error'].forEach(k => { h.delete(k); q.delete(k); });
+  const reste = [...h.keys()].length ? '#' + h.toString().replace(/=(&|$)/g, '$1') : '';
+  history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + reste);
+  const pk = (() => { try{ return JSON.parse(ssoRead(sessionStorage, SSO_PKCE) || 'null'); }catch(_){ return null; } })();
+  ssoStore(sessionStorage, SSO_PKCE, null);
+  if(err || !/^[a-f0-9]{64}$/.test(code || '')) return false;
+  let verifier;
+  if(st){
+    if(!pk || pk.state !== st){ console.error('[sso] state'); return false; }
+    verifier = pk.verifier;
+  }
   try{
-    const r = await fetch(FN + 'sso-redeem', { method:'POST',
-      headers:{'content-type':'application/json','apikey':SB_ANON,'authorization':'Bearer '+SB_ANON},
-      body: JSON.stringify({ code: m[1] }) });
+    const r = await fetch(FN + 'sso-redeem', {
+      method:'POST',
+      headers:{'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer '+SB_ANON},
+      body: JSON.stringify(verifier ? { code, verifier } : { code })
+    });
     if(!r.ok){ console.error('[sso] redeem', r.status); return false; }
     const { token_hash, email } = await r.json();
     if(!token_hash) return false;
+    /* `verifyOtp` ouvre une session NORMALE dans ce `localStorage`. */
     const { error } = await sb.auth.verifyOtp({ type:'email', token_hash, email });
     if(error){ console.error('[sso] verify', error.message); return false; }
     return true;
   }catch(e){ console.error('[sso]', e && e.message || e); return false; }
 }
+
+/* ── SE CONNECTER — PAR TOTEHM.COM ──────────────────────────────────
+   `silent` : `prompt=none` — totehm.com ne montre rien, il rend un code
+   ou `login_required`. `retour` : un CHEMIN de ce domaine (jamais une
+   URL) ; totehm.com refuse tout le reste. */
+async function ssoLogin(silent, retour){
+  const v = ssoB64(crypto.getRandomValues(new Uint8Array(32)));
+  const c = ssoB64(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v))));
+  const st = ssoB64(crypto.getRandomValues(new Uint8Array(16)));
+  ssoStore(sessionStorage, SSO_PKCE, JSON.stringify({ verifier: v, state: st }));
+  const ret = retour || (location.pathname + location.search);
+  location.href = SSO_AUTH + '?client=' + SSO_CLIENT + '&challenge=' + c + '&state=' + st +
+                  '&return=' + encodeURIComponent(ret) + (silent ? '&prompt=none' : '');
+}
+
+/* ── DÉPART ─────────────────────────────────────────────────────────
+   `cible` est un NOM DE PRODUIT — 'com' | 'space' | 'boutique' | 'club'.
+   ⚠️ SI LE PONT ÉCHOUE, ON PART QUAND MÊME : dégradé, pas cassé. */
 async function ssoVersDomaine(sb, cible, url){
   try{
     const { data:{ session } } = await sb.auth.getSession();
     if(session){
-      const r = await fetch(FN + 'sso-mint', { method:'POST',
-        headers:{'authorization':'Bearer '+session.access_token,'apikey':SB_ANON,'content-type':'application/json'},
-        body: JSON.stringify({ target: cible }) });
-      if(r.ok){ const { code } = await r.json();
-        if(code){ location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; } }
-      else console.error('[sso] mint', r.status);
+      const r = await fetch(FN + 'sso-mint', {
+        method:'POST',
+        headers:{ 'authorization':'Bearer '+session.access_token, 'apikey':SB_ANON, 'content-type':'application/json' },
+        body: JSON.stringify({ target: cible })
+      });
+      if(r.ok){
+        const { code } = await r.json();
+        if(code){ location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; }
+      } else console.error('[sso] mint', r.status);
     }
   }catch(e){ console.error('[sso]', e && e.message || e); }
   location.href = url;
 }
-await Promise.race([ssoArrivee(sb), new Promise(r => setTimeout(() => r(false), 2500))]);
+
+/* ── LE DÉMARRAGE — BLOQUANT, ET JAMAIS PLUS DE 2,5 S ───────────────
+   `await` au niveau du module : quand la page lit sa session, la session
+   est déjà là. Puis, sans session et si ce navigateur s'est déjà
+   connecté ici : UN aller-retour silencieux par onglet vers totehm.com.
+   La page ne se dessine pas pendant qu'elle part (promesse qui ne se
+   résout pas) : pas de clignotement de porte fermée. Le repère se pose à
+   la connexion et s'efface à la déconnexion — sortir d'ici ne vous y
+   reconnecte pas en silence. */
+await Promise.race([ ssoArrivee(sb), new Promise(r => setTimeout(() => r(false), 2500)) ]);
+sb.auth.onAuthStateChange(ev => {
+  if(ev === 'SIGNED_IN') ssoStore(localStorage, SSO_KNOWN, '1');
+  if(ev === 'SIGNED_OUT') ssoStore(localStorage, SSO_KNOWN, null);
+});
+{
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session) ssoStore(localStorage, SSO_KNOWN, '1');
+  else if(ssoRead(localStorage, SSO_KNOWN) && !ssoRead(sessionStorage, SSO_TRIED)){
+    ssoStore(sessionStorage, SSO_TRIED, '1');
+    await ssoLogin(true);
+    await new Promise(() => {});
+  }
+}
 
 /* ── Outils d'affichage ─────────────────────────────────────────── */
 const money = (c, cur) => ((c||0)/100).toLocaleString('en-GB', {style:'currency', currency:(cur||'eur').toUpperCase(),
@@ -362,7 +437,7 @@ document.addEventListener('click', e => {
 let me = null, C = null;
 /* Le diagnostic — des booléens et des compteurs, jamais une valeur de
    membre. Dans la console : __totehm_club() */
-const BUILD = '2026-09-28';
+const BUILD = '2026-09-30';
 window.__totehm_club = () => ({ build: BUILD, page: 'console', signed_in: !!me, loaded: !!C,
   member: !!C?.figher?.member, remplies: C?.figher?.remplies ?? null,
   subscriptions: C?.subscriptions?.length ?? null, subscribers: C?.subscribers?.count ?? null,
@@ -384,8 +459,7 @@ async function load(){
 function showSignin(claim){
   $('app').classList.add('hide'); $('signin').classList.remove('hide');
   $('si-claim').classList.toggle('hide', !claim);
-  $('si-email').classList.toggle('hide', !!claim);
-  if(!claim) setTimeout(() => $('si-email').focus(), 60);
+  $('si-go').classList.toggle('hide', !!claim);
 }
 
 function paint(){
@@ -465,48 +539,6 @@ $('subs-box').addEventListener('click', async e => {
   if(r.d.ok){ flash('ends on ' + day(r.d.until) + ' — what you paid stays yours', true); load(); }
   else { flash(r.d.error || 'not cancelled', false); c.disabled = false; c.textContent = 'Cancel at period end'; }
 });
-let findT = null;
-$('find').addEventListener('input', () => {
-  clearTimeout(findT);
-  const v = $('find').value.trim();
-  if(v.length < 2){ $('find-res').innerHTML = ''; $('find-note').textContent = ''; return; }
-  findT = setTimeout(async () => {
-    const { data, error } = await sb.rpc('search_totehms', { p_q: v, p_limit: 6 });
-    if(error){ $('find-note').textContent = 'search unavailable'; return; }
-    const l = (data || []).filter(r => r.pseudo !== C.pseudo);
-    $('find-res').innerHTML = l.length ? l.map(r => '<div class="box"><div class="line"><button class="tname" data-tot="' + esc(r.pseudo) + '" type="button">' + esc(r.pseudo) + '</button><div class="sub">' + (r.habits||0) + ' habits</div></div>' +
-      '<div class="pal">' + (r.intentions||[]).map(i => '<i style="background:' + (COLOR[i]||'#fff') + '"></i>').join('') + '</div>' +
-      '<div class="acts"><button class="lnk" data-card="' + esc(r.pseudo) + '">See the offer</button></div></div>').join('') : '';
-    $('find-note').textContent = l.length ? '' : 'no shared TOTEHM under that name';
-  }, 280);
-});
-$('find-res').addEventListener('click', e => { const c = e.target.closest('[data-card]'); if(c) openCard(c.dataset.card); });
-async function openCard(pseudo){
-  $('find').value = pseudo;
-  const { data: c, error } = await sb.rpc('creator_card', { p_pseudo: pseudo });
-  if(error || !c?.ok){ $('find-note').textContent = c?.why === 'nobody' ? 'nobody by that name' : 'unavailable'; $('find-res').innerHTML = ''; return; }
-  const f = C.figher || {};
-  let act;
-  if(c.me) act = '<div class="sub">this is you</div>';
-  else if(c.subscribed) act = '<div class="sub">subscribed · ' + (c.until ? 'renews ' + day(c.until) : 'active') + '</div>';
-  else if(!c.open) act = '<div class="sub">this TOTEHM is not open to subscriptions</div>';
-  else if(!f.member) act = '<div class="sub">subscribing is a member right</div>';
-  else act = '<div class="acts"><button class="btn main" data-sub="' + esc(c.pseudo) + '">Subscribe — ' + money(c.price_cents, c.currency) + ' / month</button></div>';
-  $('find-res').innerHTML = '<div class="box"><div class="line"><button class="tname" data-tot="' + esc(c.pseudo) + '" type="button">' + esc(c.pseudo) + '</button><div class="sub">' +
-    (c.price_cents ? money(c.price_cents, c.currency) + ' / month' : '') + '</div></div>' +
-    '<div class="sub">' + (c.benefits || []).map(b => BEN[b] || b).join(' · ') + '</div>' + act + '</div>';
-  $('find-note').textContent = '';
-}
-$('find-res').addEventListener('click', async e => {
-  const s = e.target.closest('[data-sub]'); if(!s) return;
-  s.disabled = true; $('find-note').textContent = 'opening checkout…';
-  const r = await fn('creator-subscribe', { pseudo: s.dataset.sub });
-  if(r.d.url){ location.href = r.d.url; return; }
-  if(r.d.already){ $('find-note').textContent = 'already subscribed'; load(); return; }
-  $('find-note').textContent = ({ figher:'subscribing is a member right', closed:'not open to subscriptions', self:'this is you' })[r.d.error] || r.d.error || 'checkout unavailable';
-  s.disabled = false;
-});
-
 /* ── 04 · WHO SUBSCRIBES TO ME? — et l'interrupteur ──────────────── */
 function paintFans(){
   const s = C.subscribers || { count:0, list:[] };
@@ -572,7 +604,8 @@ $('pay-handle').addEventListener('keydown', async e => {
   n.className = 'note ok'; n.textContent = 'saved'; load();
 });
 $('mon-link').onclick = async () => {
-  const link = 'https://www.figher.club/console?to=' + encodeURIComponent(C.pseudo);
+  /* 30/09 : la page de vente vit sur la source — totehm.com/@nom. */
+  const link = 'https://www.totehm.com/@' + encodeURIComponent(C.pseudo);
   try{ await navigator.clipboard.writeText(link); $('mon-link').textContent = 'copied'; setTimeout(() => $('mon-link').textContent = 'Copy my subscription link', 1600); }
   catch(_){ $('mon-note').className = 'note'; $('mon-note').textContent = link; }
 };
@@ -652,25 +685,8 @@ $('rv-in').addEventListener('keydown', async e => {
 });
 
 /* ── Entrée ───────────────────────────────────────────────────────── */
-let mail = '';
-$('si-email').addEventListener('keydown', async e => {
-  if(e.key !== 'Enter') return;
-  const v = $('si-email').value.trim(), n = $('si-note');
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ n.className = 'note no'; n.textContent = 'invalid email'; return; }
-  n.className = 'note'; n.textContent = 'sending…';
-  const { error } = await sb.auth.signInWithOtp({ email:v, options:{ shouldCreateUser:true } });
-  if(error){ n.className = 'note no'; n.textContent = 'try again in a minute'; return; }
-  mail = v; n.className = 'note ok'; n.textContent = 'code sent';
-  $('si-code').classList.remove('hide'); setTimeout(() => $('si-code').focus(), 60);
-});
-$('si-code').addEventListener('input', async () => {
-  const t = $('si-code').value.trim(), n = $('si-note');
-  if(t.length !== 6) return;
-  n.className = 'note'; n.textContent = 'verifying…';
-  const { error } = await sb.auth.verifyOtp({ email:mail, token:t, type:'email' });
-  if(error){ n.className = 'note no'; n.textContent = 'wrong code'; return; }
-  n.textContent = ''; $('si-code').value = ''; $('si-code').classList.add('hide');
-});
+/* ── Entrée — PAR totehm.com (30/09) : un compte, une porte d'identité. */
+$('si-go').onclick = () => ssoLogin(false);
 $('si-pseudo').addEventListener('keydown', async e => {
   if(e.key !== 'Enter') return;
   const v = $('si-pseudo').value.trim(), n = $('si-claim-note');
@@ -692,8 +708,10 @@ sb.auth.onAuthStateChange(ev => { if(ev === 'SIGNED_IN' || ev === 'SIGNED_OUT') 
 
 function flash(t, ok){ $('flash').className = 'note ' + (ok ? 'ok' : 'no'); $('flash').textContent = t; }
 
-await load();
 const P = new URLSearchParams(location.search);
+/* Les anciens liens « ?to=nom » mènent à la page de vente, sur la source. */
+if(P.get('to')) location.replace('https://www.totehm.com/@' + encodeURIComponent(P.get('to')));
+await load();
 if(P.get('joined')){
   /* Le webhook peut arriver une seconde après le retour de Stripe : on
      relit quelques fois, puis on laisse la page dire la vérité. */
@@ -702,7 +720,6 @@ if(P.get('joined')){
   if(C?.figher?.annual) flash('welcome to the club', true);
 }
 if(P.get('subscribed')) flash('subscribed to ' + P.get('subscribed'), true);
-if(P.get('to') && C){ document.getElementById('subscribe').scrollIntoView(); openCard(P.get('to')); }
 if(location.hash === '#reveal') setTimeout(() => $('rv-in').focus(), 300);
 </script>
 </body>

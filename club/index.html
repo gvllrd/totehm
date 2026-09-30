@@ -219,7 +219,11 @@ footer .line{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:
   <h1>Your strategy.<br>Your circle.</h1>
   <p class="say">A club for people with a strategy. Your <b>TOTEHM</b> is the passport. FIGHER is where membership becomes access.</p>
   <div id="price-line" class="hide"><b id="price-v"></b><span id="price-u">/ year</span> · <span id="price-t">7 days free</span></div>
-  <a class="btn main" href="#rope">The velvet rope</a>
+  <!-- 30/09 : FIGHER = ART + COLLECTION + MARKETPLACE + la console. -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+    <a class="btn main" href="/market">The market</a>
+    <a class="btn" href="#rope">The velvet rope</a>
+  </div>
 </section>
 
 <section id="rope">
@@ -270,7 +274,10 @@ footer .line{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:
       <a class="go" href="/console#reveal">Search a cloth</a></div>
     <div class="door love"><div class="d">figher.club</div><div class="h">Subscribe</div>
       <p>Follow the TOTEHM of a member who opens theirs. One way: you see theirs, they do not see yours.</p>
-      <a class="go" href="/console#subscribe">Find a TOTEHM</a></div>
+      <a class="go" href="https://www.totehm.com/search">Find a TOTEHM</a></div>
+    <div class="door"><div class="d">figher.club</div><div class="h">Collect</div>
+      <p>TotehmPaper, Quantum, Play the Lisbon Street. Buy, own, resell — every copy numbered, every owner named.</p>
+      <a class="go" href="/market">Open the market</a></div>
     <div class="door enrich"><div class="d">figher.club</div><div class="h">Monetize yours</div>
       <p>Every member can open a subscription to their TOTEHM. Your price, your benefits.</p>
       <a class="go" href="#economy">How it pays</a></div>
@@ -324,6 +331,7 @@ footer .line{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:
     <button class="nav-l" data-go="com">totehm.com</button>
     <button class="nav-l" data-go="space">totehm.space</button>
     <button class="nav-l" data-go="boutique">higher.boutique</button>
+    <a class="nav-l" href="/market">Market</a>
     <a class="nav-l" href="/console">Console</a>
   </div>
   <div class="line">The TOTEHM is the source. Every product is a different way of using it.</div>
@@ -334,8 +342,8 @@ footer .line{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:
     <button class="nav-l x" id="sh-x" type="button">Close</button>
     <div id="sh-out">
       <div class="kick" style="margin-bottom:10px">One account, four doors</div>
-      <input class="in" id="sh-email" type="email" placeholder="your@email" autocomplete="email">
-      <input class="in hide" id="sh-code" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code" style="margin-top:8px">
+      <!-- 30/09 : on se connecte PAR totehm.com (l'autorité d'identité). -->
+      <button class="btn main" id="sh-go" type="button">Sign in with TOTEHM</button>
       <div class="note" id="sh-note" style="margin-top:8px"></div>
     </div>
     <div id="sh-claim" class="hide">
@@ -360,40 +368,116 @@ const sb = createClient(SB_URL, SB_ANON);
 const FN = SB_URL + '/functions/v1/';
 const $ = id => document.getElementById(id);
 
-/* ══ LE PONT SSO — COPIÉ de tools/sso_snippet.js, jamais importé ══════
-   Le code qui voyage n'est pas un jeton de session : 60 s, un usage, un
-   domaine cible, haché côté serveur, échangé par `sso-redeem`. */
+/* ══ LE PONT SSO v2 — COPIÉ de tools/sso_snippet.js (30/09/2026) ══════
+   totehm.com est l'autorité : se connecter ici = passer PAR totehm.com
+   (authorization code + PKCE). Le lien entre domaines reste le pont. */
+/* LE NOM DE CE DOMAINE — 'space' | 'club' | 'boutique'. Jamais une URL. */
+const SSO_CLIENT = 'club';
+const SSO_AUTH = 'https://www.totehm.com/auth';
+const SSO_KNOWN = 'totehm_sso_known';   // localStorage : ce navigateur s'est déjà connecté ici
+const SSO_TRIED = 'totehm_sso_tried';   // sessionStorage : l'aller-retour silencieux a eu lieu
+const SSO_PKCE  = 'totehm_sso_pkce';    // sessionStorage : { verifier, state } le temps du voyage
+
+const ssoB64 = bytes => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const ssoStore = (s, k, v) => { try{ v === null ? s.removeItem(k) : s.setItem(k, v); }catch(_){} };
+const ssoRead = (s, k) => { try{ return s.getItem(k); }catch(_){ return null; } };
+
+/* ── ARRIVÉE ────────────────────────────────────────────────────────
+   ⚠️ LE CODE SORT DE L'URL AVANT TOUT AUTRE GESTE — et SEULEMENT lui :
+   le reste du fragment (#create, #reveal…) reste à la page. Un code
+   laissé dans la barre d'adresse se retrouve dans un signet, un partage,
+   un historique. Avec un `state`, c'est une connexion centrale : il doit
+   être celui que CE navigateur a envoyé (sinon quelqu'un essaie de nous
+   connecter à SON compte) et le `verifier` part avec le code. */
 async function ssoArrivee(sb){
-  const m = /[#&?]sso=([a-f0-9]{64})/.exec(location.hash) || /[#&?]sso=([a-f0-9]{64})/.exec(location.search);
-  if(!m) return false;
-  history.replaceState(null, '', location.pathname + location.search.replace(/[?&]sso=[a-f0-9]{64}/, ''));
+  const h = new URLSearchParams(location.hash.replace(/^#/, ''));
+  const q = new URLSearchParams(location.search);
+  const code = h.get('sso') || q.get('sso'), st = h.get('state'), err = h.get('sso_error');
+  if(!code && !err) return false;
+  ['sso','state','sso_error'].forEach(k => { h.delete(k); q.delete(k); });
+  const reste = [...h.keys()].length ? '#' + h.toString().replace(/=(&|$)/g, '$1') : '';
+  history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + reste);
+  const pk = (() => { try{ return JSON.parse(ssoRead(sessionStorage, SSO_PKCE) || 'null'); }catch(_){ return null; } })();
+  ssoStore(sessionStorage, SSO_PKCE, null);
+  if(err || !/^[a-f0-9]{64}$/.test(code || '')) return false;
+  let verifier;
+  if(st){
+    if(!pk || pk.state !== st){ console.error('[sso] state'); return false; }
+    verifier = pk.verifier;
+  }
   try{
-    const r = await fetch(FN + 'sso-redeem', { method:'POST',
-      headers:{'content-type':'application/json','apikey':SB_ANON,'authorization':'Bearer '+SB_ANON},
-      body: JSON.stringify({ code: m[1] }) });
+    const r = await fetch(FN + 'sso-redeem', {
+      method:'POST',
+      headers:{'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer '+SB_ANON},
+      body: JSON.stringify(verifier ? { code, verifier } : { code })
+    });
     if(!r.ok){ console.error('[sso] redeem', r.status); return false; }
     const { token_hash, email } = await r.json();
     if(!token_hash) return false;
+    /* `verifyOtp` ouvre une session NORMALE dans ce `localStorage`. */
     const { error } = await sb.auth.verifyOtp({ type:'email', token_hash, email });
     if(error){ console.error('[sso] verify', error.message); return false; }
     return true;
   }catch(e){ console.error('[sso]', e && e.message || e); return false; }
 }
+
+/* ── SE CONNECTER — PAR TOTEHM.COM ──────────────────────────────────
+   `silent` : `prompt=none` — totehm.com ne montre rien, il rend un code
+   ou `login_required`. `retour` : un CHEMIN de ce domaine (jamais une
+   URL) ; totehm.com refuse tout le reste. */
+async function ssoLogin(silent, retour){
+  const v = ssoB64(crypto.getRandomValues(new Uint8Array(32)));
+  const c = ssoB64(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v))));
+  const st = ssoB64(crypto.getRandomValues(new Uint8Array(16)));
+  ssoStore(sessionStorage, SSO_PKCE, JSON.stringify({ verifier: v, state: st }));
+  const ret = retour || (location.pathname + location.search);
+  location.href = SSO_AUTH + '?client=' + SSO_CLIENT + '&challenge=' + c + '&state=' + st +
+                  '&return=' + encodeURIComponent(ret) + (silent ? '&prompt=none' : '');
+}
+
+/* ── DÉPART ─────────────────────────────────────────────────────────
+   `cible` est un NOM DE PRODUIT — 'com' | 'space' | 'boutique' | 'club'.
+   ⚠️ SI LE PONT ÉCHOUE, ON PART QUAND MÊME : dégradé, pas cassé. */
 async function ssoVersDomaine(sb, cible, url){
   try{
     const { data:{ session } } = await sb.auth.getSession();
     if(session){
-      const r = await fetch(FN + 'sso-mint', { method:'POST',
-        headers:{'authorization':'Bearer '+session.access_token,'apikey':SB_ANON,'content-type':'application/json'},
-        body: JSON.stringify({ target: cible }) });
-      if(r.ok){ const { code } = await r.json();
-        if(code){ location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; } }
-      else console.error('[sso] mint', r.status);
+      const r = await fetch(FN + 'sso-mint', {
+        method:'POST',
+        headers:{ 'authorization':'Bearer '+session.access_token, 'apikey':SB_ANON, 'content-type':'application/json' },
+        body: JSON.stringify({ target: cible })
+      });
+      if(r.ok){
+        const { code } = await r.json();
+        if(code){ location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; }
+      } else console.error('[sso] mint', r.status);
     }
   }catch(e){ console.error('[sso]', e && e.message || e); }
   location.href = url;
 }
-await Promise.race([ssoArrivee(sb), new Promise(r => setTimeout(() => r(false), 2500))]);
+
+/* ── LE DÉMARRAGE — BLOQUANT, ET JAMAIS PLUS DE 2,5 S ───────────────
+   `await` au niveau du module : quand la page lit sa session, la session
+   est déjà là. Puis, sans session et si ce navigateur s'est déjà
+   connecté ici : UN aller-retour silencieux par onglet vers totehm.com.
+   La page ne se dessine pas pendant qu'elle part (promesse qui ne se
+   résout pas) : pas de clignotement de porte fermée. Le repère se pose à
+   la connexion et s'efface à la déconnexion — sortir d'ici ne vous y
+   reconnecte pas en silence. */
+await Promise.race([ ssoArrivee(sb), new Promise(r => setTimeout(() => r(false), 2500)) ]);
+sb.auth.onAuthStateChange(ev => {
+  if(ev === 'SIGNED_IN') ssoStore(localStorage, SSO_KNOWN, '1');
+  if(ev === 'SIGNED_OUT') ssoStore(localStorage, SSO_KNOWN, null);
+});
+{
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session) ssoStore(localStorage, SSO_KNOWN, '1');
+  else if(ssoRead(localStorage, SSO_KNOWN) && !ssoRead(sessionStorage, SSO_TRIED)){
+    ssoStore(sessionStorage, SSO_TRIED, '1');
+    await ssoLogin(true);
+    await new Promise(() => {});
+  }
+}
 
 /* Les portes : un NOM de produit et une URL fixe. Jamais une URL reçue. */
 const PORTES = {
@@ -458,7 +542,7 @@ let me = null, F = null;
 /* Le diagnostic — des booléens et des compteurs, jamais une valeur de
    membre. Dans la console : __totehm_club()  · `build` dit en trois
    secondes si la page ouverte est celle qu'on a livrée (règle du 22/09). */
-const BUILD = '2026-09-28';
+const BUILD = '2026-09-30';
 window.__totehm_club = () => ({ build: BUILD, page: 'door', signed_in: !!me,
   figher: F ? { complete: !!F.complete, remplies: F.remplies, thp: !!F.thp,
                 annual: !!F.annual, member: !!F.member } : null,
@@ -532,30 +616,12 @@ function paintSheet(){
   $('sh-claim').classList.toggle('hide', !(me && !hasPseudo));
   $('sh-in').classList.toggle('hide', !(me && hasPseudo));
   if(me && hasPseudo){ $('sh-name').textContent = F.pseudo; $('sh-who').textContent = me.email || ''; }
-  if(!me) setTimeout(() => $('sh-email').focus(), 60);
 }
 $('member').onclick = openSheet;
 $('sh-x').onclick = () => $('sheet').classList.remove('show');
 $('sheet').addEventListener('click', e => { if(e.target === $('sheet')) $('sheet').classList.remove('show'); });
-let mail = '';
-$('sh-email').addEventListener('keydown', async e => {
-  if(e.key !== 'Enter') return;
-  const v = $('sh-email').value.trim(), n = $('sh-note');
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ n.className = 'note no'; n.textContent = 'invalid email'; return; }
-  n.className = 'note'; n.textContent = 'sending…';
-  const { error } = await sb.auth.signInWithOtp({ email:v, options:{ shouldCreateUser:true } });
-  if(error){ n.className = 'note no'; n.textContent = 'try again in a minute'; return; }
-  mail = v; n.className = 'note ok'; n.textContent = 'code sent';
-  $('sh-code').classList.remove('hide'); setTimeout(() => $('sh-code').focus(), 60);
-});
-$('sh-code').addEventListener('input', async () => {
-  const t = $('sh-code').value.trim(), n = $('sh-note');
-  if(t.length !== 6) return;
-  n.className = 'note'; n.textContent = 'verifying…';
-  const { error } = await sb.auth.verifyOtp({ email:mail, token:t, type:'email' });
-  if(error){ n.className = 'note no'; n.textContent = 'wrong code'; return; }
-  n.textContent = ''; $('sh-code').value = ''; $('sh-code').classList.add('hide');
-});
+/* 30/09 — la connexion passe PAR totehm.com (authorization code + PKCE). */
+$('sh-go').onclick = () => ssoLogin(false);
 $('sh-pseudo').addEventListener('keydown', async e => {
   if(e.key !== 'Enter') return;
   const v = $('sh-pseudo').value.trim(), n = $('sh-claim-note');
