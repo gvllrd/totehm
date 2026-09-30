@@ -32,31 +32,55 @@ async function hache(s: string): Promise<string> {
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+/** Le défi PKCE S256 d'un `verifier` : BASE64URL(SHA256(verifier)), sans
+ *  remplissage — exactement ce que le satellite a envoyé à totehm.com. */
+async function defiDe(verifier: string): Promise<string> {
+  const buf = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier)));
+  let s = "";
+  for (const b of buf) s += String.fromCharCode(b);
+  return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
 Deno.serve(async (req) => {
   const origin = req.headers.get("origin");
   const cors = corsHeaders(origin);
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
 
   let code = "";
+  let verifier = "";
   try {
-    code = String((await req.json())?.code ?? "");
+    const b = await req.json();
+    code = String(b?.code ?? "");
+    verifier = String(b?.verifier ?? "");
   } catch {
     return Response.json({ error: "bad request" }, { status: 400, headers: cors });
   }
   if (code.length < 32) {
     return Response.json({ error: "bad code" }, { status: 400, headers: cors });
   }
+  // PKCE (RFC 7636) : 43 à 128 caractères non réservés.
+  if (verifier && !/^[A-Za-z0-9._~-]{43,128}$/.test(verifier)) {
+    return Response.json({ error: "bad verifier" }, { status: 400, headers: cors });
+  }
 
   // On BRÛLE d'abord. `used_at is null` et `expires_at > now()` sont dans
   // le même UPDATE : la ligne ne revient que si elle était encore bonne,
   // et elle ne peut revenir qu'une fois.
-  const { data: lignes, error } = await sb
+  // ⚠️ LE DÉFI PKCE EST DANS LE MÊME UPDATE (30/09). Un code frappé avec
+  // un défi ne se brûle qu'avec le `verifier` qui le produit : celui qui
+  // l'intercepte ne peut ni l'échanger, ni même le gâcher pour son
+  // destinataire. Un code du pont de lien (sans défi) reste échangeable
+  // sans `verifier`, comme avant.
+  let brule = sb
     .from("sso_handoff")
     .update({ used_at: new Date().toISOString() })
     .eq("code_hash", await hache(code))
     .is("used_at", null)
-    .gt("expires_at", new Date().toISOString())
-    .select("user_id,target");
+    .gt("expires_at", new Date().toISOString());
+  brule = verifier
+    ? brule.or(`code_challenge.is.null,code_challenge.eq.${await defiDe(verifier)}`)
+    : brule.is("code_challenge", null);
+  const { data: lignes, error } = await brule.select("user_id,target");
 
   if (error) {
     console.error("[sso-redeem]", error.message);

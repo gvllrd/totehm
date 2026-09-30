@@ -25,7 +25,7 @@
 // ═══════════════════════════════════════════════════════════════════════
 import Stripe from "npm:stripe@14";
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders, SITE_CLUB } from "../_shared/origins.ts";
+import { corsHeaders, SITE_CLUB, SITE_COM } from "../_shared/origins.ts";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!);
 const sb = createClient(
@@ -46,9 +46,14 @@ Deno.serve(async (req) => {
   }
 
   let pseudo = "";
+  // ══ D'OÙ VIENT LA VENTE · 30/09/2026 ══ La page de vente d'un créateur
+  // vit sur totehm.com (`/@nom`, MASTER BRIEF §4) ; la console du Club
+  // reste une porte. Un NOM de porte, jamais une URL reçue.
+  let depuis = "club";
   try {
     const body = await req.json();
     pseudo = String(body?.pseudo ?? "").trim();
+    if (body?.from === "com") depuis = "com";
     if (!pseudo && body?.creator_id) {
       const { data: p } = await sb.from("profiles").select("pseudo")
         .eq("id", String(body.creator_id)).maybeSingle();
@@ -89,8 +94,12 @@ Deno.serve(async (req) => {
       // Connect reviendra, ces deux lignes reviendront avec lui.
       subscription_data: { metadata: meta },
       metadata: meta,
-      success_url: `${SITE_CLUB}/console?subscribed=${encodeURIComponent(pseudo)}`,
-      cancel_url: `${SITE_CLUB}/console?to=${encodeURIComponent(pseudo)}`,
+      success_url: depuis === "com"
+        ? `${SITE_COM}/@${encodeURIComponent(pseudo)}?subscribed=1`
+        : `${SITE_CLUB}/console?subscribed=${encodeURIComponent(pseudo)}`,
+      cancel_url: depuis === "com"
+        ? `${SITE_COM}/@${encodeURIComponent(pseudo)}`
+        : `${SITE_CLUB}/console?to=${encodeURIComponent(pseudo)}`,
     });
     return Response.json({ url: session.url }, { headers: cors });
   } catch (e) {

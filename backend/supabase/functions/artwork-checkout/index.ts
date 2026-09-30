@@ -1,13 +1,31 @@
-// TOTEHM · artwork-checkout
-// Vérifie stoner_access → réserve l'œuvre → génère le lien Stripe
-// Le prix vit en base, JAMAIS côté client
+// TOTEHM · artwork-checkout — LE PREMIER ACHAT D'UNE ŒUVRE · 30/09/2026
+// ═══════════════════════════════════════════════════════════════════════
+// why : une œuvre (Quantum 1/1, Play the Lisbon Street en édition) se
+//       collectionne sur FIGHER. Le prix, la disponibilité et le droit
+//       d'acheter (le THP) sont décidés EN BASE, jamais ici, jamais côté
+//       client.
+// how : 1 · `art_primary_reserve` tient UN exemplaire 31 minutes (verrou
+//           sur la ligne de l'œuvre : deux acheteurs ne paient jamais le
+//           dernier) ;
+//       2 · Stripe Checkout au prix de la réservation, session de 30 min ;
+//       3 · le webhook (`product: artwork`) appelle `art_settle` : c'est LÀ
+//           que l'exemplaire est frappé et devient la propriété de
+//           l'acheteur. Une page ne fabrique jamais une propriété.
+// what : { url, amount, currency, title } | { error }
+//
+// ⚠️ AVANT LE 30/09, ce paiement n'était JAMAIS enregistré : le webhook
+// n'avait pas de cas `artwork`. Et les pages de retour (`/merci.html`,
+// `/galerie.html`) n'existaient pas. Le retour se fait maintenant sur
+// FIGHER, là où l'œuvre se possède.
+// ═══════════════════════════════════════════════════════════════════════
 
 import Stripe from "npm:stripe@14";
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { corsHeaders, SITE_CLUB } from "../_shared/origins.ts";
 
 // Pas de fallback vide : Stripe accepterait "", échouerait au premier appel,
-// et un checkout partirait en fantôme. Le `!` fait planter le module au démarrage
-// si le secret manque — même règle que higher-checkout.
+// et un checkout partirait en fantôme. Le `!` fait planter le module au
+// démarrage si le secret manque — même règle que higher-checkout.
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!);
 
 const admin = createClient(
@@ -16,159 +34,75 @@ const admin = createClient(
   { auth: { persistSession: false } },
 );
 
-const SITE_COM = "https://www.totehm.com";
-const ALLOWED_ORIGINS = [
-  SITE_COM, "https://totehm.com",
-  "https://www.totehm.space", "https://totehm.space",
-  "https://www.higher.boutique", "https://higher.boutique",
-  "http://localhost:3000",
-];
-
-function resolveOrigin(origin: string | null): string {
-  return origin && ALLOWED_ORIGINS.includes(origin) ? origin : SITE_COM;
-}
-
-function corsHeaders(origin: string | null): Record<string, string> {
-  return {
-    "Access-Control-Allow-Origin": resolveOrigin(origin),
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Vary": "Origin",
-    "Content-Type": "application/json",
-  };
-}
-
-const RESERVE_MS = 10 * 60 * 1000;
+/** Stripe impose au moins 30 minutes ; la réservation en tient 31. */
+const SESSION_MIN = 30;
 
 Deno.serve(async (req) => {
-  const origin = req.headers.get("origin");
-  const headers = corsHeaders(origin);
-  const json = (b: unknown, s = 200) =>
-    new Response(JSON.stringify(b), { status: s, headers });
+  const headers = corsHeaders(req.headers.get("origin"), SITE_CLUB);
+  const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers });
 
   if (req.method === "OPTIONS") return new Response("ok", { headers });
   if (req.method !== "POST") return json({ error: "method" }, 405);
 
-  // 1. Auth JWT
-  const authHeader = req.headers.get("Authorization");
-  if (!authHeader) return json({ error: "no_session" }, 401);
-
-  const asUser = createClient(
-    Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_ANON_KEY")!,
-    { global: { headers: { Authorization: authHeader } } },
+  // L'acheteur vient de la SESSION, jamais du corps.
+  const { data: { user }, error: authErr } = await admin.auth.getUser(
+    (req.headers.get("authorization") ?? "").replace("Bearer ", ""),
   );
-  const { data: { user }, error: authErr } = await asUser.auth.getUser();
   if (authErr || !user?.email) return json({ error: "no_session" }, 401);
-
   const email = user.email.trim().toLowerCase();
 
-  // 2. Body
   let body: Record<string, unknown> = {};
   try { body = await req.json(); } catch (_) { /* body vide */ }
-
-  const artworkId = body?.artwork_id as string;
-  if (!artworkId) return json({ error: "artwork_id_required" }, 400);
-
-  // 3. Vérif stoner_access — gate THP
-  const { data: access } = await admin
-    .from("stoner_access")
-    .select("email")
-    .eq("email", email)
-    .maybeSingle();
-
-  if (!access) {
-    return json({ error: "thp_required", redirect: "/get_higher.html" }, 402);
+  // Un slug (FIGHER) ou l'ancien identifiant (pages de la boutique d'avant).
+  let slug = typeof body.slug === "string" ? body.slug : "";
+  if (!slug && typeof body.artwork_id === "string") {
+    const { data: a } = await admin.from("artworks").select("slug").eq("id", body.artwork_id).maybeSingle();
+    slug = a?.slug ?? "";
   }
+  if (!slug) return json({ error: "artwork_required" }, 400);
 
-  // 4. Charger l'œuvre
-  const { data: artwork, error: artErr } = await admin
-    .from("artworks")
-    .select("*")
-    .eq("id", artworkId)
-    .maybeSingle();
-
-  if (artErr || !artwork) return json({ error: "not_found" }, 404);
-
-  // 5. Vérif disponibilité
-  if (artwork.series === "quantum") {
-    const lockExpired =
-      artwork.status === "reserved" &&
-      artwork.reserved_until &&
-      new Date(artwork.reserved_until) < new Date();
-    if (artwork.status !== "available" && !lockExpired) {
-      return json({ error: "unavailable" }, 409);
-    }
-  } else {
-    if (artwork.edition_sold >= artwork.edition_total) {
-      return json({ error: "sold_out" }, 409);
-    }
+  const { data: r, error: rErr } = await admin.rpc("art_primary_reserve", { p_slug: slug, p_buyer: user.id });
+  if (rErr) {
+    console.error("[artwork-checkout] reserve", rErr.message);
+    return json({ error: "try_again" }, 503);
   }
-
-  // 6. Lock quantum uniquement
-  if (artwork.series === "quantum") {
-    const { error: lockErr } = await admin
-      .from("artworks")
-      .update({
-        status: "reserved",
-        reserved_for: user.id,
-        reserved_until: new Date(Date.now() + RESERVE_MS).toISOString(),
-      })
-      .eq("id", artworkId)
-      .in("status", ["available", "reserved"]);
-
-    if (lockErr) {
-      console.error("lock artwork:", lockErr.message);
-      return json({ error: "unavailable" }, 409);
-    }
+  if (!r?.ok) {
+    const st = r?.why === "thp_required" ? 402 : r?.why === "not_found" ? 404 : 409;
+    return json({ error: r?.why ?? "unavailable" }, st);
   }
-
-  // 7. Stripe Checkout — prix depuis la DB
-  const site = resolveOrigin(origin);
 
   try {
-    // payment_method_types explicite : Stripe refuse une session en EUR
-    // si le compte n'a pas activé les moyens de paiement pour cette
-    // devise dans le dashboard. Forcer 'card' passe outre — la carte est
-    // toujours dispo sur un compte live. Élargir (SEPA, Bancontact) se
-    // fait dans Settings → Payment methods puis en ajoutant à cette liste.
+    const meta = { product: "artwork", reservation: String(r.reservation), artwork_slug: slug,
+                   collection: String(r.collection), user_id: user.id, email };
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
       customer_email: email,
+      expires_at: Math.floor(Date.now() / 1000) + SESSION_MIN * 60,
       line_items: [{
+        quantity: 1,
         price_data: {
-          currency: artwork.currency,
-          unit_amount: artwork.price_cents,
+          currency: r.currency,
+          unit_amount: r.price_cents,
           product_data: {
-            name: artwork.title,
-            description: artwork.series === "quantum"
-              ? "Quantum Series — 1/1 unique digital artwork by Wavywah"
-              : `22 Signaux de Lisbonne — Edition ${artwork.edition_sold + 1}/${artwork.edition_total}`,
+            name: r.title,
+            description: r.edition_total === 1
+              ? "Unique digital artwork · 1/1 · owned on FIGHER.CLUB"
+              : `Edition ${r.edition_next}/${r.edition_total} · owned on FIGHER.CLUB`,
           },
         },
-        quantity: 1,
       }],
-      metadata: {
-        product: "artwork",
-        artwork_id: artwork.id,
-        artwork_slug: artwork.slug,
-        series: artwork.series,
-        user_id: user.id,
-        email,
-      },
-      success_url: `${site}/merci.html?artwork=${artwork.slug}`,
-      cancel_url:  `${site}/galerie.html`,
+      metadata: meta,
+      payment_intent_data: { metadata: meta },
+      success_url: `${SITE_CLUB}/market?owned=${encodeURIComponent(slug)}`,
+      cancel_url: `${SITE_CLUB}/market?art=${encodeURIComponent(slug)}`,
     });
-
-    return json({ url: session.url, amount: artwork.price_cents, title: artwork.title });
+    await admin.rpc("art_reservation_session", { p_reservation: r.reservation, p_session: session.id });
+    return json({ url: session.url, amount: r.price_cents, currency: r.currency, title: r.title });
   } catch (e) {
-    console.error("stripe:", e);
-    if (artwork.series === "quantum") {
-      await admin.from("artworks")
-        .update({ status: "available", reserved_for: null, reserved_until: null })
-        .eq("id", artworkId);
-    }
+    console.error("[artwork-checkout] stripe", e instanceof Error ? e.message : e);
+    // La réservation ne doit pas bloquer l'exemplaire pour rien.
+    await admin.rpc("art_release", { p_reservation: r.reservation });
     return json({ error: "stripe" }, 502);
   }
 });

@@ -1,10 +1,14 @@
 // TOTEHM · stripe-webhook
-// Quatre flux sur le même compte — routage sur metadata.product :
-//   higher       → stoner_access + email Resend (le TotehmPaper {THP})
+// Six flux sur le même compte — routage sur metadata.product :
+//   higher       → stoner_access + email Resend (le TotehmPaper {THP}) ;
+//                  la base frappe l'exemplaire n du THP (30/09/2026)
 //   cloth        → ignoré ici (Printful géré ailleurs)
 //   subscription → subscriptions (FIGHER CLUB, l'adhésion annuelle)
 //   creator_sub  → creator_subscriptions (Bob s'abonne au Totehm d'Alice)
 //                  + member_ledger à CHAQUE facture payée (23/09/2026)
+//   artwork      → art_settle : l'exemplaire n d'une œuvre (30/09/2026)
+//   resale       → art_settle : l'exemplaire change de main, 93 % au
+//                  grand livre du vendeur, 7 % à TOTEHM (30/09/2026)
 //
 // Events traités :
 //   checkout.session.completed
@@ -138,14 +142,22 @@ async function handleHigherCheckout(session: Stripe.Checkout.Session) {
 
   console.log("accès higher accordé:", email);
 
+  // ⚠️ LE NUMÉRO EST CELUI DE L'EXEMPLAIRE · 30/09/2026. L'insertion dans
+  // `stoner_access` frappe l'exemplaire n du THP (déclencheur en base) ;
+  // « Figher #n » est son numéro — il ne bouge plus quand un autre
+  // porteur revend le sien (le rang par date, lui, aurait bougé).
   let status = "KO: numéro introuvable";
   try {
-    const { data: rows } = await admin
-      .from("stoner_access")
-      .select("email")
-      .order("granted_at", { ascending: true });
+    const { data: ed } = await admin
+      .from("art_editions")
+      .select("edition_no, artworks!inner(slug)")
+      .eq("artworks.slug", "totehmpaper")
+      .ilike("owner_email", email)
+      .order("edition_no", { ascending: true })
+      .limit(1)
+      .maybeSingle();
 
-    const num = rows ? rows.findIndex((r) => r.email === email) + 1 : 0;
+    const num = Number((ed as { edition_no?: number } | null)?.edition_no ?? 0);
     if (num > 0) status = await sendWelcome(email, num, amount);
   } catch (e) {
     status = `KO exception: ${String(e).slice(0, 220)}`;
@@ -293,6 +305,45 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   }
 }
 
+// ══ LE MARCHÉ FIGHER — une vente payée devient une propriété · 30/09/2026 ══
+// `artwork` (premier achat d'une œuvre) et `resale` (un exemplaire qui
+// change de main) se règlent par UNE fonction en base, `art_settle`,
+// idempotente sur la session Stripe. Avant ce lot, `artwork-checkout`
+// posait `product: "artwork"` et ce webhook n'avait AUCUN cas pour lui :
+// l'acheteur payait et ne possédait rien, et une Quantum 1/1 réservée
+// retournait en vente dix minutes plus tard.
+//
+// ⚠️ UN ÉTAT IMPOSSIBLE N'EST PAS UNE ERREUR À REJOUER. Réservation
+// perdue, montant différent : `art_settle` l'écrit dans `market_incidents`
+// (remboursement à la main) et répond `ok:false` — Stripe reçoit 200, car
+// le rejouer trois jours ne le rendrait pas possible. Seule une panne de
+// la base (`error`) déclenche le 500 et le rejeu.
+async function handleArtSettle(session: Stripe.Checkout.Session) {
+  if (session.payment_status !== "paid") {
+    console.log("art: session non payée (asynchrone ?) —", session.id, session.payment_status);
+    return;
+  }
+  const m = session.metadata ?? {};
+  const email = (session.customer_details?.email ?? session.customer_email ?? m.email ?? "")
+    .trim().toLowerCase();
+  const { data, error } = await admin.rpc("art_settle", {
+    p_session: session.id,
+    p_payment_intent: typeof session.payment_intent === "string"
+      ? session.payment_intent : session.payment_intent?.id ?? null,
+    p_reservation: m.reservation ?? null,
+    p_buyer: m.user_id ?? null,
+    p_email: email,
+    p_amount: session.amount_total ?? 0,
+    p_currency: session.currency ?? "",
+  });
+  if (error) throw new Error("art_settle: " + error.message);
+  if (!data?.ok) {
+    console.error("MARKET INCIDENT —", session.id, JSON.stringify(data));
+    return;
+  }
+  console.log("marché:", session.id, JSON.stringify(data));
+}
+
 async function handleAccountUpdated(acc: Stripe.Account) {
   if (!acc.id) return;
   const { error } = await admin.from("creator_profiles")
@@ -427,6 +478,11 @@ Deno.serve(async (req) => {
           // n'ouvre que l'ACCÈS. L'argent s'écrit sur `invoice.paid`.
           case "creator_sub":
             await handleCreatorSub(session);
+            break;
+          // Le marché FIGHER : un premier achat d'œuvre, ou une revente.
+          case "artwork":
+          case "resale":
+            await handleArtSettle(session);
             break;
           default:
             console.warn("product inconnu dans metadata:", session.metadata?.product, "session:", session.id);

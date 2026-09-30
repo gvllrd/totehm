@@ -52,8 +52,11 @@ Deno.serve(async (req) => {
   }
 
   let cible = "";
+  let defi: string | null = null;
   try {
-    cible = String((await req.json())?.target ?? "");
+    const b = await req.json();
+    cible = String(b?.target ?? "");
+    defi = b?.challenge == null ? null : String(b.challenge);
   } catch {
     return Response.json({ error: "bad request" }, { status: 400, headers: cors });
   }
@@ -61,6 +64,15 @@ Deno.serve(async (req) => {
   // laisser n'importe quel site demander un code « pour lui-même ».
   if (!CIBLES[cible]) {
     return Response.json({ error: "unknown target" }, { status: 422, headers: cors });
+  }
+  // ══ LE PASSAGE CENTRAL · 30/09/2026 — AUTHORIZATION CODE + PKCE ══
+  // Quand un satellite se connecte PAR totehm.com (`com/auth.html`), il
+  // envoie le défi S256 de son `verifier`. Le code frappé ici lui est
+  // LIÉ : `sso-redeem` ne le brûle qu'avec le bon `verifier`, qui n'a
+  // jamais quitté le satellite. Un code intercepté ne sert à rien.
+  // Sans défi : le pont de lien d'avant, inchangé.
+  if (defi !== null && !/^[A-Za-z0-9_-]{43}$/.test(defi)) {
+    return Response.json({ error: "bad challenge" }, { status: 422, headers: cors });
   }
 
   // 32 octets d'aléa : le code n'est pas devinable, et il est court assez
@@ -72,6 +84,7 @@ Deno.serve(async (req) => {
     code_hash: await hache(brut),
     user_id: user.id,
     target: cible,
+    code_challenge: defi,
     expires_at: new Date(Date.now() + VIE_SECONDES * 1000).toISOString(),
   });
   if (error) {
