@@ -19,6 +19,18 @@ transversal system. **This table wins over any older mapping in this file.**
 | `higher.boutique` | **any Box becomes a Totehm Cloth** — plus the Stoner method and the THP | which Box do I want to materialize? |
 | TotehmBot | transversal, Telegram — the Higher Self as a mirror | — |
 
+> **30/09/2026 — one source, reconnected (Wah's MASTER BRIEF).**
+> `totehm.com` is also **the one door to sign in** (every other domain says
+> *Sign in with TOTEHM*), **the search of every Totehm**, and **each
+> member's page** (`totehm.com/@name`) — the full Totehm opens to their
+> subscribers. `figher.club` is also **art · collection · market**: collect,
+> own, resell (7% to TOTEHM). `totehm.space`: the radar has **no map**;
+> left is **Short-Live** — a *moment*, five seconds, never an invitation;
+> a *Spot* is an *experience*. Time speaks in the first person: **I will be
+> here · I am here · I was here** — never *upcoming · live · archived*.
+> `higher.boutique` **shows** art and **materializes** a Box: *pick up the
+> box*, then the cloth. Buttons: Space Mono Bold. Fewer words.
+
 ```
 TOTEHM        = the source (strategy, data)
 TOTEHM CLOTH  = the physical materialization of ONE Box of that source

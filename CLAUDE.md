@@ -76,8 +76,12 @@ déjà à la question.
                                      totehm_world.html · next_objective.html
                                      totehm_7_intentions.html · terms.html
                                      club/ (deux PONTS vers figher.club)
+                                     · auth.html (L'AUTORITÉ D'IDENTITÉ, /auth)
+                                     · creator.html (/search · /@nom) (30/09)
   club/      →  www.figher.club      APPARTENANCE · DROITS · ABONNEMENTS · ARGENT
+                                     · ART · COLLECTION · MARKETPLACE (30/09)
                                      index.html (la porte) · console.html (le membre)
+                                     · market.html (/market)
   space/     →  www.totehm.space     UNE HABIT BOX DEVIENT UNE ACTION À PLUSIEURS
                                      index.html — le cockpit : un radar et,
                                      dessous, la MANETTE de totehm.com à cinq
@@ -88,9 +92,11 @@ déjà à la question.
                                      en bas, My space au coin (27/09)
                                      · YESTERDAY = tous les anciens Spots,
                                      My Spots au coin membre (28/09)
+                                     · RADAR SANS CARTE · gauche = SHORT-LIVE
+                                     (les moments) · droite = SPOTS (30/09)
                                      + redirections 308 de l'ancien Stoner
   boutique/  →  www.higher.boutique  UNE BOX, N'IMPORTE LAQUELLE, DEVIENT UN CLOTH
-                                     index.html · streetwear.html (totehmisation)
+                                     index.html · streetwear.html (PICK UP THE BOX)
                                      + la méthode Stoner et le THP (discover*,
                                      get_higher, stoner*, origins, play_lisbon_street)
   backend/   →  servi par PERSONNE
@@ -120,6 +126,112 @@ morceaux.
 membre. C'est le bloc à coller quand un écran semble vide, et `build` dit
 en trois secondes si la page ouverte est celle qu'on a livrée (règle du
 22/09).
+
+### ⛔ LA SOURCE UNIQUE — IDENTITÉ · DROITS · PROPRIÉTÉ · MARCHÉ · MOMENTS — 30/09/2026 (fait autorité)
+
+**Le MASTER BRIEF de Wah du 30/09**, en une phrase : *ne rien
+reconstruire, tout reconnecter autour d'une seule source.* Migration
+`20260930_la_source_unique.sql` (APPLIQUÉE le 30/09 par Claude, MCP
+Supabase), six Edge Functions modifiées (`sso-mint` et `sso-redeem` déjà
+déployées, les quatre autres par Claude Code) + `market-checkout`,
+quatorze pages. Ce qui
+suit remplace, là où elles se contredisent, les sections plus bas.
+
+| domaine | son rôle depuis le 30/09 |
+|---|---|
+| `totehm.com` | la SOURCE + **l'autorité d'identité** (`/auth`) + la **recherche des Totehms** (`/search`, ouverte aux invités) + la **page de vente de chaque membre** (`/@nom`) |
+| `figher.club` | appartenance, droits, argent (la console) **+ ART · COLLECTION · MARKETPLACE** (`/market`) |
+| `totehm.space` | le Spot (une EXPÉRIENCE) **+ le Short-Live** (un MOMENT) ; le radar n'a plus de carte |
+| `higher.boutique` | la MATÉRIALISATION — « pick up the box » ; la méthode Stoner ; elle MONTRE l'art, FIGHER le VEND |
+
+**⚠️ TOTEHM.COM EST L'AUTORITÉ D'IDENTITÉ — PKCE, PAS DE COOKIE PARTAGÉ.**
+Un satellite ne demande plus l'email : `ssoLogin()` (snippet **v2**,
+`tools/sso_snippet.js`) crée un `verifier` et un `state` dans SON
+`sessionStorage`, envoie à `totehm.com/auth?client=…&challenge=…&state=…&return=/chemin`.
+`/auth` frappe un code lié au défi (`sso-mint`, colonne
+`sso_handoff.code_challenge`) et renvoie dans le FRAGMENT ; seul le
+satellite qui garde le `verifier` peut l'échanger (`sso-redeem`).
+`client` est un NOM (space · club · boutique) traduit par une table fixe ;
+`return` est un CHEMIN — jamais une URL reçue (pas de redirecteur ouvert).
+Silencieux : un navigateur déjà connecté ici repasse UNE fois par onglet
+(`prompt=none`). Le pont `ssoVersDomaine` (17/09) reste, inchangé.
+
+**⚠️ UN SEUL SYSTÈME DE DROITS.** « Qui suis-je · à qui suis-je abonné ·
+que possède-je · à quoi ai-je droit » se répond par `_figher`,
+`_subscriber_of(créateur, fan)` (la seule définition d'un abonné vivant —
+`is_subscribed_to`, `_spots_subscriber`, `_exact_ok` la lisent),
+`creator_page(pseudo)` et `my_entitlements()`. Aucune page ne recompose.
+
+**⚠️ LA PROPRIÉTÉ EST UN EXEMPLAIRE, PAS UN BOOLÉEN.** `art_editions`
+(une ligne par exemplaire vendu, `edition_no`) est la source ;
+`art_transfers` est son histoire, **en ajout seul** (trigger) ;
+`stoner_access` n'est plus qu'une PROJECTION d'accès, et un trigger frappe
+l'exemplaire du THP à chaque ligne qui y entre (Stripe, cadeau, NFT). Le
+**numéro FIGHER = le numéro d'exemplaire du THP**. Le THP est l'œuvre
+`totehmpaper` (777 000 exemplaires) : **son prix est une ligne de
+`artworks`, lue par `higher-checkout`** — plus aucun prix du THP dans une
+page (le « $30 » et le « €77 » sont partis ; `.thp-price` reçoit le prix
+du serveur, ou rien).
+
+**⚠️ LE MARCHÉ NE S'ÉCRIT QUE PAR LE WEBHOOK.** Réserver (`art_primary_reserve`
+/ `art_resale_reserve`, 31 min, un index unique = un acheteur à la fois)
+→ Stripe Checkout (30 min, donc la réservation survit toujours à la
+session) → `checkout.session.completed` → `art_settle`, idempotent sur la
+session. Revente : le vendeur fixe son prix, **7 % à TOTEHM, le reste
+(arrondi inférieur) au grand livre du vendeur**, versé par le virement
+mensuel. Pas de Stripe Connect. Si `art_settle` échoue en base → 500
+(Stripe rejoue) ; s'il répond `ok:false` (réservation expirée, déjà
+vendu…) → `market_incidents` + 200 : **c'est un remboursement à la main**.
+Une œuvre (hors THP) ne s'achète qu'avec un THP (`thp_required`).
+**Ce qui n'existe pas, et c'est voulu** : notes, avis, likes, abonnés,
+enchères, gamification.
+
+**⚠️ LA BOUTIQUE MONTRE, FIGHER VEND.** « Acquire » (origins,
+play_lisbon_street) ouvre l'œuvre sur `figher.club/market?art=<slug>` par
+le pont. Le THP s'achète encore depuis la méthode (higher-checkout) ; le
+retour de Stripe dépend de l'origine (`origineDe`).
+
+**⚠️ LE RADAR N'A PLUS DE CARTE.** Anneaux, points, la couronne — ni
+terre, ni villes, ni rue. La rue (tuiles OSM) ne revient QUE pour poser un
+rendez-vous (Create → « place it on the map », `mapMode()` = `PIN.on`).
+Toucher le radar ne crée plus rien ; **un Spot ne naît plus d'un Spot**
+(« Do it again » est parti).
+
+**⚠️ SHORT-LIVE = UN MOMENT ; SPOT = UNE EXPÉRIENCE.** Même table
+(`spot_plans.kind`), deux natures. Un moment : 5 s filmées maintenant, une
+Habit Box de MON Totehm pour contexte (relue en base), social/silent, le
+**bouclier GPS** ; une heure « I am here », 24 h dans le fil
+(`moments_feed`), 12 par jour. Personne ne rejoint un moment. La manette
+TOUCHÉE à gauche = REC (`recStart`, une seule machine pour le moment, la
+vidéo d'un Spot à la création, et après, `spot_video_set`). La vidéo va
+dans le seau public `moments`, dossier `<uid>/` (politique d'insertion),
+et **rien ne s'y attache si le fichier n'y est pas** (`_clip_ok`).
+**Egress** : une vidéo ne se télécharge que lorsqu'elle est à l'écran
+(`IntersectionObserver`), jamais le fil entier. La caméra exige
+`camera=(self), microphone=(self)` dans `space/vercel.json`.
+
+**⚠️ LE BOUCLIER.** OFF : la ville et le contenu pour tous, jamais le
+point. ON : le point exact aussi pour les **abonnés vivants** du
+créateur. **ON n'est pas une invitation.** Le point exact d'une
+expérience reste au créateur et aux acceptés, quel que soit le bouclier.
+La position publique est arrondie à ~1,1 km (2 décimales). La ville vient
+de Natural Earth (`cityNear`) : zéro géocodage.
+
+**⚠️ LE TEMPS DIT « I ».** `I will be here` · `I am here` · `I was here`
+(`state` rendu par le serveur) — jamais upcoming, live, archived.
+
+**Search = `[ Habit ▾ ]` et UN contrôle** (habit · mood/music · mode ·
+date · time · distance). Mots, mode, jour, intention filtrent en base ;
+l'heure et la distance filtrent la liste reçue (zéro requête par clic).
+
+**Pick up the box** (`boutique/streetwear.html`) : MY TOTEHM → HABIT
+BOXES → une Box → le vêtement → nom · style · taille → commande. Un
+vêtement touché avant d'avoir une Box attend et devient le support.
+
+**Les tests navigateur sont versionnés** (`tests/browser/` : `space.mjs`,
+`market.mjs`, `streetwear.mjs` — Playwright, Supabase simulé, zéro
+réseau). Le harnais dit comment les préparer. Ils ne remplacent pas le
+test sur l'appareil (caméra réelle, Stripe en mode test).
 
 ### ⛔ LE PASSEPORT FIGHER — UNE FONCTION, TROIS CLÉS — 23/09/2026
 
@@ -443,6 +555,12 @@ erreur pour Postgres — c'en est une pour nous.*
 
 ### ⛔ TOTEHM.SPACE — YESTERDAY = TOUS LES ANCIENS SPOTS · LE NAVY = LE TOTEHM · 28/09/2026
 
+> **⚠️ DÉPASSÉ LE 30/09 SUR TROIS POINTS** — voir **LA SOURCE UNIQUE** plus
+> haut : la gauche n'est plus YESTERDAY mais SHORT-LIVE (les moments,
+> `moments_feed`) ; « Do it again » est parti (un Spot ne naît plus d'un
+> Spot) ; `spots_past` reste en base, plus lu par la page. Le navy
+> réservé au Totehm reste vrai.
+
 **La demande de Wah :** « La partie YESTERDAY, c'est tous les anciens
 Spots. TOUTE la partie My Spots va dans l'espace membre. Remets EXACTEMENT
 le système d'intention comme avant. Le bleu navy, c'est seulement les
@@ -483,6 +601,11 @@ autre pose le lieu et le format, **avec MON habitude**.
 compte les anciens Spots dans YESTERDAY.
 
 ### ⛔ TOTEHM.SPACE — YESTERDAY · TODAY · TOMORROW · 27/09/2026
+
+> **⚠️ DÉPASSÉ LE 30/09** — le centre s'appelle RADAR et n'a plus de
+> carte (plus de rue dès l'arrivée) ; le toucher ne crée plus de Spot ;
+> TOMORROW s'appelle SPOTS. Le rendez-vous en plein écran reste : c'est
+> désormais le SEUL endroit où la rue s'affiche.
 
 > **⚠️ DÉPASSÉ LE 28/09 SUR TROIS POINTS** — YESTERDAY montre TOUS les
 > anciens Spots (plus mon histoire, partie dans My space), les intentions
@@ -1184,6 +1307,10 @@ jamais `space/`. Un contenu commun est copié, pas partagé. Un produit qui cass
 quand un autre bouge n'est pas indépendant.
 
 ### ⛔ LE PONT SSO — QUATRE DOMAINES, UNE IDENTITÉ — 17/09/2026
+
+> **⚠️ COMPLÉTÉ LE 30/09** — la connexion d'un satellite passe par
+> totehm.com (`/auth`, PKCE) : voir **LA SOURCE UNIQUE**. Le pont
+> ci-dessous reste le chemin d'un domaine connecté vers un autre.
 
 **Il n'y a toujours pas de session partagée, et il ne peut pas y en
 avoir** : quatre origines, quatre `localStorage`. Ce qui existe depuis le

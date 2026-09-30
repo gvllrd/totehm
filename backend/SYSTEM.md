@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 4 septembre 2026.** Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 30 septembre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -14,6 +14,69 @@
 > Le vérifier.** Commandes en §8.
 
 ---
+
+## 0 · LOT DU 30/09/2026 — LA SOURCE UNIQUE : IDENTITÉ · DROITS · PROPRIÉTÉ · MARCHÉ · MOMENTS
+
+> **ÉTAT : migration `20260930_la_source_unique.sql` APPLIQUÉE le 30/09/2026
+> par Claude (MCP Supabase), testée d'abord dans une transaction annulée.**
+> Relevé en production après application (30/09) :
+>
+> | mesure | valeur |
+> |---|---|
+> | exemplaires `art_editions` | **6** (les 6 THP existants, numérotés #1–6 dans l'ordre de `granted_at`) |
+> | `art_transfers` | 6 (une ligne `grant`/`primary` par exemplaire rétro-frappé) |
+> | collections actives | **3** (totehmpaper · quantum · play-the-lisbon-street), redevance 700 bps |
+> | œuvres rattachées à une collection | **43** |
+> | prix du THP (`artworks` `totehmpaper`) | **1 700** centimes USD |
+> | `market_incidents` | 0 |
+> | `spot_plans` : expériences / moments | 52 / 0 |
+> | seau `moments` | public, 2 politiques (insertion et suppression dans son dossier) |
+> | versions de `spot_publish` | **1** (l'ancienne à 16 paramètres supprimée) |
+> | `anon` peut exécuter | `market_view`, `moments_feed`, `creator_page`, `my_entitlements` |
+> | `anon` ne peut PAS exécuter | `art_settle`, `art_primary_reserve`, `art_resale_reserve`, `art_list`, `my_collection`, `moment_publish`, `spot_video_set` |
+
+| objet | ce qui change |
+|---|---|
+| `sso_handoff.code_challenge` | le défi PKCE d'une connexion centrale (NULL = code du pont, comme avant) |
+| `_subscriber_of`, `creator_page`, `my_entitlements` | NOUVELLES — un seul système de droits ; `is_subscribed_to` et `totehm_of` réécrites dessus |
+| `art_collections`, `art_editions`, `art_transfers` (ajout seul), `art_reservations`, `market_incidents` | NOUVELLES — la propriété et le marché |
+| `artworks.collection` + ligne `totehmpaper` | le THP devient une œuvre (777 000 exemplaires) |
+| trigger `stoner_access_mint` | chaque ligne de `stoner_access` frappe l'exemplaire THP suivant |
+| `_figher` | la clé THP lit les exemplaires (repli `stoner_access`) ; numéro = n° d'exemplaire |
+| `market_view`, `my_collection`, `art_list`, `art_unlist` | NOUVELLES — lecture et mise en vente |
+| `art_primary_reserve`, `art_resale_reserve`, `art_reservation_session`, `art_release`, `art_settle` | NOUVELLES, `service_role` seul — le cycle d'un achat |
+| `spot_plans.kind · shield · video · city` | un Spot (expérience) ou un moment ; bouclier ; vidéo ; ville |
+| `spot_publish` (19 param.), `moment_publish`, `spot_video_set`, `moments_feed`, `_exact_ok`, `_clip_ok` | l'Espace |
+| `spots_radar`, `spots_past`, `spots_globe`, `my_space` | expériences seules sur le radar ; `state` (will · am · was) ; bouclier ; position publique à 2 décimales |
+
+### Edge Functions du lot
+
+| fonction | état au 30/09 |
+|---|---|
+| `sso-mint`, `sso-redeem` | **DÉPLOYÉES v6** (défi et `verifier`) |
+| `stripe-webhook` | **à déployer** (cas `artwork` et `resale` → `art_settle`) — v35 déployée ne connaît pas le marché |
+| `artwork-checkout` | **à déployer** — v13 déployée attend `artwork_id` ; la page du marché envoie `slug` (le nouveau code accepte les deux) |
+| `market-checkout` | **NOUVELLE, à déployer** |
+| `higher-checkout` | **à déployer** — v32 déployée ne rend pas de `quote` : d'ici là, les boutons du THP n'affichent AUCUN prix (jamais un faux) |
+| `creator-subscribe` | **à déployer** (`from:'com'` → retour sur `totehm.com/@nom`) |
+
+### Pages du lot
+
+`com/auth.html` (nouvelle), `com/creator.html` (nouvelle, `/search` et
+`/@nom`), `com/totehm.html`, `com/vercel.json` · `club/market.html`
+(nouvelle), `club/index.html`, `club/console.html` · `space/index.html`,
+`space/vercel.json` (caméra) · `boutique/streetwear.html`,
+`discover.html`, `discover_lisbon.html`, `get_higher.html`,
+`origins.html`, `play_lisbon_street.html`. `BUILD='2026-09-30'` partout
+où la page en porte un.
+
+**Tests** : `tests/browser/space.mjs` (31), `market.mjs` (14),
+`streetwear.mjs` (11) — verts le 30/09, Supabase simulé.
+
+**Retour arrière** : les pages se redéploient depuis le commit précédent ;
+la base garde ses nouvelles tables (vides ou de 6 lignes) sans effet sur
+l'ancien code, sauf `spot_publish` (16 → 19 paramètres, les anciens gardent
+leurs valeurs par défaut) et la position publique à 2 décimales.
 
 ## 0 · LOT DU 28/09/2026 — YESTERDAY = TOUS LES ANCIENS SPOTS · LE NAVY = LE TOTEHM
 

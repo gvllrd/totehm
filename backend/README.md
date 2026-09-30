@@ -218,6 +218,8 @@ d'un autre) créent tous des sessions. `stripe-webhook` les reçoit **toutes**.
 | `cloth` | commande Printful |
 | `subscription` | écrit dans `subscriptions` |
 | `creator_sub` | ouvre l'accès (`creator_subscriptions`) ; **l'argent s'écrit sur `invoice.paid`** → `member_ledger` (23/09) |
+| `artwork` | (30/09) premier achat d'une œuvre → `art_settle` : l'exemplaire, sa ligne `art_transfers` |
+| `resale` | (30/09) revente sur FIGHER → `art_settle` : la propriété change de main, 93 % au grand livre du vendeur, 7 % à TOTEHM |
 | *inconnu* | log, 200, **ne déclenche rien** |
 
 ⚠️ **`invoice.paid` doit être coché sur l'endpoint du webhook** (Stripe →
@@ -311,6 +313,37 @@ par devise, par mois (`unique`) : un second appel pour le même mois lève.
 **Palier de retour à Stripe Connect : cent membres monétisés** (décision du
 19/09). Les tables ne bougeront pas ; seule la sortie changera.
 
+### Le marché — ce qui se surveille · 30/09
+
+Tout passe par `art_settle(session, …)`, appelé par le webhook seul
+(`service_role`), idempotent sur la session Stripe. Deux issues :
+
+- **erreur SQL** → le webhook rend 500, efface sa ligne `stripe_events`,
+  Stripe rejoue. Rien à faire.
+- **`ok:false`** (réservation expirée, exemplaire déjà vendu, prix changé)
+  → une ligne `market_incidents` et 200. **L'acheteur a payé et n'a rien :
+  c'est un remboursement à la main**, dans le dashboard Stripe, depuis la
+  session nommée dans l'incident.
+
+```sql
+select id, at, kind, stripe_session, detail from public.market_incidents
+ where resolved_at is null order by at desc;
+-- après le remboursement :
+update public.market_incidents set resolved_at = now() where id = <id>;
+```
+
+**Le prix du THP** est la ligne `artworks` `slug = 'totehmpaper'`
+(`price_cents`, `currency`). Le changer là change le checkout ET toutes les
+pages (elles lisent `higher-checkout` `{quote:true}`). Jamais dans une page.
+
+**La redevance** est `art_collections.royalty_bps` (700 = 7 %), par
+collection ; `resale_min_cents` / `resale_max_cents` bornent le prix
+d'une revente (NULL = 1 € à 100 000 €).
+
+**Un exemplaire offert** : une ligne `stoner_access` (source `grant`) —
+le trigger frappe l'exemplaire suivant du THP. On n'écrit jamais
+`art_editions` à la main.
+
 ### Le portail de facturation
 
 `club-billing` : `action:'portal'` ouvre le portail client Stripe (carte,
@@ -321,6 +354,26 @@ dans Stripe (Settings → Billing → Customer portal), sinon la fonction rend
 une erreur Stripe.
 
 ---
+
+## L'Espace — radar sans carte, Short-Live, bouclier · 30/09
+
+- `moments_feed(lat, lng, radius, limit)` — les moments des dernières
+  24 h (ouvert à `anon` : QUOI ; un membre voit QUI, le contexte, la vidéo).
+- `moment_publish(habit, intentions, mode, shield, lat, lng, video, city, comment)`
+  — la Habit Box relue dans le Totehm de la session ; 12 par 24 h
+  (`spot_rules().moment_max_day`) ; la vidéo doit être dans
+  `moments/<uid>/` (`_clip_ok`).
+- `spot_publish(…, p_shield, p_video, p_city)` — 19 paramètres (l'ancienne
+  version à 16 est supprimée) ; `spot_video_set(spot, video)` après coup.
+- `_exact_ok(créateur, lecteur, bouclier, accepté)` — la seule règle du
+  point exact, lue par le radar, le passé, le fil et My space.
+- Seau **public** `moments` (8 Mo, webm/mp4/mov) : insertion et
+  suppression seulement dans son dossier. Public = l'URL suffit ; elle
+  contient deux UUID et n'est rendue qu'aux membres.
+
+**Egress** : 5 s ≈ 0,4 Mo ; une vidéo ne se charge qu'à l'écran. À 1 000
+membres qui regardent 20 moments par jour : ~8 Go/jour. À surveiller dans
+Supabase → Usage avant de dépasser le quota du plan.
 
 ## L'Espace — Yesterday = tous les anciens Spots · 28/09
 
@@ -549,6 +602,12 @@ code de passage 60 s, usage unique, haché, un domaine cible parmi `com` ·
 `space` · `boutique` · `club`) → redirection avec `#sso=<code>` → le domaine
 d'arrivée retire le code de l'URL, puis `sso-redeem` → `auth.admin.generateLink`
 → `verifyOtp`. Le bloc front se copie depuis `tools/sso_snippet.js`.
+
+**Depuis le 30/09, se connecter sur un satellite passe par totehm.com**
+(`/auth`) : `ssoLogin()` → défi PKCE + `state` → `sso-mint` lie le code au
+défi (`sso_handoff.code_challenge`) → retour dans le fragment → `sso-redeem`
+exige le `verifier`. Un code frappé avec un défi ne s'échange jamais sans
+lui ; un code du pont (sans défi) s'échange comme avant.
 **Jamais un refresh token dans une URL** — c'est pourquoi le « token handoff »
 du MASTER (§4) n'est pas appliqué.
 
@@ -575,6 +634,12 @@ supabase functions deploy create-checkout
 supabase functions deploy creator-price
 supabase functions deploy creator-subscribe
 supabase functions deploy club-billing
+# 30/09 — le marché
+supabase functions deploy artwork-checkout
+supabase functions deploy market-checkout
+supabase functions deploy higher-checkout --no-verify-jwt   # la citation du prix est lue sans session
+supabase functions deploy sso-mint
+supabase functions deploy sso-redeem
 ```
 
 ⚠️ **Pas de `supabase db push`.** L'historique des migrations du dépôt ne suit
@@ -590,9 +655,9 @@ Depuis la racine du repo, ces commandes doivent être lancées avec
 `cd backend && supabase functions deploy ...` — sinon la CLI ne trouve
 pas le dossier.
 
-⚠️ **Toujours vérifier l'état déployé avant un `deploy`.** Sur `main`,
-`higher-checkout` porte encore l'ancienne tarification : un redéploiement aveugle
-repasserait le paywall à 17 €.
+⚠️ **Toujours vérifier l'état déployé avant un `deploy`.** Depuis le 30/09,
+`higher-checkout` ne porte plus AUCUN prix : il lit la ligne `artworks`
+`totehmpaper`. Le déployer applique le prix de cette ligne (17 $ au 30/09).
 
 ---
 
