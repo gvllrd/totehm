@@ -66,3 +66,9 @@ MASTER*.md
 # Un artefact de build dans le depot, c'est une version de plus a garder
 # d'accord avec sa source.
 totehm_unfold.html
+
+# ─── Tests navigateur : le bundle et ses dépendances se régénèrent ───
+tests/browser/node_modules/
+tests/browser/supabase.mjs
+tests/browser/entry.js
+tests/browser/package*.json

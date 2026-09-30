@@ -473,6 +473,40 @@ body.pin #zoom{left:auto;right:14px;bottom:calc(76px + env(safe-area-inset-botto
 .rope .k span{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;align-self:center}
 .req{background:var(--s2);padding:10px 11px;border-radius:0}
 
+/* ══ SHORT-LIVE · REC · SEARCH COMPACTE (30/09) ══════════════════════ */
+.spot .st{color:rgba(255,255,255,.8)}
+.v-vid{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:none;border:none;cursor:pointer;padding:0}
+.rec-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.mo-v{position:relative;width:100%;aspect-ratio:9/16;max-height:62vh;background:var(--s2);margin-bottom:6px;cursor:pointer;overflow:hidden;
+  display:flex;align-items:center;justify-content:center}
+.mo-v video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.mo-v i{position:relative;font-style:normal;font-size:22px;color:rgba(255,255,255,.7);transition:opacity .2s}
+.mo-v.on i{opacity:0}
+.mo-v.off{aspect-ratio:auto;height:64px;cursor:default}
+#rec{position:fixed;inset:0;z-index:125;background:rgba(0,0,0,.92);display:none;align-items:flex-start;justify-content:center;
+  padding:max(20px,4dvh) 16px 24px;overflow-y:auto}
+#rec.on{display:flex}
+.rec-card{background:var(--s1);width:min(440px,100%);padding:16px}
+.rec-stage{position:relative;width:100%;aspect-ratio:9/16;max-height:56vh;background:#000;margin:10px 0 12px;overflow:hidden}
+.rec-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#rec-n{position:absolute;top:10px;right:12px;font-family:var(--mono);font-size:28px;color:#fff}
+#rec.live .rec-stage::after{content:'';position:absolute;top:16px;left:14px;width:12px;height:12px;border-radius:50%;background:#E24B4A;animation:blink 1s ease-in-out infinite}
+#rec-body{display:flex;flex-direction:column;gap:8px}
+#rec-body .done{display:flex;flex-direction:column;align-items:flex-start;gap:1px;background:var(--s2);border:none;border-radius:var(--r);color:#fff;
+  font-family:var(--q);font-size:14px;padding:8px 12px;cursor:pointer;text-align:left}
+#rec-body .done small{font-family:var(--mono);font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.rec-go{align-self:center}
+body.rec-on #joy,body.rec-on #zoom{visibility:hidden}
+/* À gauche, la manette FILME : un point rouge dessus, le geste est dit. */
+body.v-past #joy-box::after{content:'';position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#E24B4A;pointer-events:none}
+.srch{display:flex;flex-direction:column;gap:8px}
+.ctx{align-self:flex-start;font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#fff;
+  background:var(--in2);border:none;border-radius:var(--r);padding:9px 14px;cursor:pointer}
+.ctx-menu{display:flex;flex-wrap:wrap;gap:4px}
+.pills{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.pill{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--s3);border:none;border-radius:8px;padding:5px 8px;cursor:pointer}
+@media(hover:hover){.pill:hover,.ctx:hover{background:#34343a}.v-vid:hover{opacity:.75}}
+
 /* ══ HOW IT WORKS — le Spot d'abord, la manette ensuite (27/09) ══════ */
 #how{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.86);display:none;align-items:flex-start;justify-content:center;
   padding:max(44px,8dvh) 16px 24px;overflow-y:auto}
@@ -536,7 +570,7 @@ body.pin #zoom{left:auto;right:14px;bottom:calc(76px + env(safe-area-inset-botto
 <a id="terms" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a>
 <div id="vnow" aria-live="polite"><b id="vt" class="b1"></b><i id="vs" class="b3"></i><button id="status" type="button" tabindex="-1"></button></div>
 
-<div id="world"><canvas id="canvas" aria-label="Map of Spots — touch it to create one here, pinch to zoom out to the planet"></canvas>
+<div id="world"><canvas id="canvas" aria-label="Radar of Spots — pinch to zoom out to the planet"></canvas>
   <div id="markers"><div id="me" class="hide"></div><div id="pin" class="hide"></div><div id="cross"><i></i></div></div>
   <div id="tip" aria-hidden="true"></div></div>
 <a id="osm" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a>
@@ -547,6 +581,13 @@ body.pin #zoom{left:auto;right:14px;bottom:calc(76px + env(safe-area-inset-botto
 <aside class="pan" id="p-b" aria-hidden="true"></aside>
 <aside class="pan" id="p-f" aria-hidden="true"></aside>
 <aside class="pan" id="p-m" aria-hidden="true"></aside>
+
+<div id="rec" role="dialog" aria-modal="true" aria-label="Five seconds" aria-hidden="true"><div class="rec-card">
+  <div class="p-head"><div class="p-title b1" id="rec-t">Short-Live</div><button class="lnk" id="rec-x" type="button">Close</button></div>
+  <div class="rec-stage"><video id="rec-v" playsinline muted></video><b id="rec-n"></b></div>
+  <div id="rec-body"></div>
+  <div class="note" id="rec-note"></div>
+</div></div>
 
 <div id="pinbar"><button class="btn" id="pin-no" type="button">Cancel</button><button class="btn main" id="pin-ok" type="button">Here</button></div>
 
@@ -581,14 +622,23 @@ body.pin #zoom{left:auto;right:14px;bottom:calc(76px + env(safe-area-inset-botto
     <dt>Social · Silent</dt><dd>Together, and we talk — or together, without talking.</dd>
     <dt>Match</dt><dd>The number under a Spot — <em>62%</em> — is how close this Spot is to <em>my</em> TOTEHM: my intentions, my pillars, my habits and what they are for. One number, never the detail. It measures a Spot against a TOTEHM — never a person against a person.</dd>
     <dt>By …</dt><dd>The name of the creator's TOTEHM. Touch it: it opens that TOTEHM.</dd>
+    <dt>I will be here</dt><dd>A Spot to come. <em>I am here</em>: it is happening. <em>I was here</em>: it is done.</dd>
+  </dl>
+  <h3 class="b3">a Short-Live</h3>
+  <dl>
+    <dt>Short-Live</dt><dd>A <em>moment</em>: five seconds filmed where I am, now. A Spot is an <em>experience</em> others join; a moment is only seen.</dd>
+    <dt>Film one</dt><dd>Push the stick left, then touch it. <em>REC</em> — five seconds — then which habit of my TOTEHM it is, social or silent, and the GPS shield.</dd>
+    <dt>GPS shield</dt><dd><em>Off</em>: everyone sees the city and the moment, never the point. <em>On</em>: my subscribers see the exact place too. On is not an invitation.</dd>
+    <dt>24 hours</dt><dd>A moment stays in the feed one day. <em>I am here</em> the first hour, <em>I was here</em> after.</dd>
   </dl>
   <h3 class="b3">the site</h3>
   <dl>
-    <dt>Today</dt><dd>The map of what happens today around me. <em>Touch the map</em> anywhere outside a Spot: a Spot is created there, for today.</dd>
-    <dt>Move</dt><dd>Push the stick, or swipe anywhere — one finger, two fingers on a trackpad, or drag the map. <em>Up</em> create · <em>down</em> search · <em>left</em> yesterday · <em>right</em> tomorrow. Touch the stick: back to <em>today</em>.</dd>
-    <dt>Meeting point</dt><dd><em>Place it on the map</em>: the map fills the screen with a cross in the middle. Move the map under the cross, pinch, then <em>Here</em>.</dd>
-    <dt>Zoom</dt><dd>Pinch — fingers or trackpad — or <em>+ −</em>. Zoom out far enough and the map becomes the planet: every Spot on Earth, as lights. <em>◎</em> brings you home.</dd>
-    <dt>The ring</dt><dd>Grab the ring around the map and turn it. Close up, the map turns and the top is where you aim. Far out, the planet spins. Two taps on the ring: north.</dd>
+    <dt>Radar</dt><dd>What happens today around me — rings, points, no map. Touch a point to read it.</dd>
+    <dt>Move</dt><dd>Push the stick, or swipe anywhere — one finger, two fingers on a trackpad. <em>Up</em> create a Spot · <em>down</em> search · <em>left</em> Short-Live · <em>right</em> every Spot to come. Touch the stick: back to the <em>radar</em>.</dd>
+    <dt>Search</dt><dd>Touch <em>Habit ▾</em> to change what you search by: habit, mood or music, mode, date, time, distance.</dd>
+    <dt>Meeting point</dt><dd>Only when creating a Spot: <em>place it on the map</em>. The street map fills the screen with a cross in the middle. Move it under the cross, pinch, then <em>Here</em>.</dd>
+    <dt>Zoom</dt><dd>Pinch — fingers or trackpad — or <em>+ −</em>. Zoom out far enough and the radar becomes the planet: every Spot on Earth, as lights. <em>◎</em> brings you home.</dd>
+    <dt>The ring</dt><dd>Grab the ring around the radar and turn it. Close up, the top is where you aim. Far out, the planet spins. Two taps on the ring: north.</dd>
     <dt>My space</dt><dd>Top left, next to the white dot — that dot is me. My TOTEHM, my access, who is waiting for my answer.</dd>
   </dl>
 </div></div>
@@ -811,25 +861,37 @@ function habitBoxHTML(h){
     '</span></span></div>';
 }
 
-/* LA BOÎTE-ACTION — un Spot, lu (25/09 · nature 26/09). */
+/* LE TEMPS À LA PREMIÈRE PERSONNE (brief §20) — jamais UPCOMING · LIVE ·
+   ARCHIVED. Le serveur dit `state` (will · am · was) ; à défaut, l'heure. */
+const STATE = { will:'I will be here', am:'I am here', was:'I was here' };
+const stateOf = s => s.state || (s.past ? 'was' : s.live ? 'am' : 'will');
+/* LA VIDÉO — un objet du seau public `moments`, rendu seulement aux membres. */
+const clipURL = path => path ? sb.storage.from('moments').getPublicUrl(path).data.publicUrl : null;
+/* LE LIEU — le point exact pour qui y a droit (créateur, accepté, abonné si
+   le bouclier est ON) ; sinon la VILLE, et rien de plus précis (brief §15). */
+function whereHTML(s){
+  const ex = s.exact && s.exact.lat != null ? s.exact : null;
+  if(ex) return '<a class="v-loc" href="' + mapsURL(ex.lat, ex.lng) + '" target="_blank" rel="noopener" aria-label="Open in Google Maps">' + esc(s.place && s.place !== 'here' ? s.place : 'the exact place') + '</a>';
+  const city = s.city ? esc(s.city) : 'the area';
+  return '<span>' + city + '</span>' + (s.shield === 'on' ? '<span class="cap">exact place · subscribers</span>' : '');
+}
 const DET = new Set();
 function spotBoxHTML(s){
   const ints = (s.intentions && s.intentions.length) ? s.intentions : (s.context?.intentions || []);
   const d = new Date(s.starts_at), end = new Date(d.getTime() + (s.duration_min || 0)*60e3);
-  const when = s.live ? '<span class="lv">live</span><span>until ' + hhmm(end) + '</span>' : '<span>' + esc(fmtDay(d)) + '</span><span>' + hhmm(d) + '</span>';
+  const st = stateOf(s);
+  const when = '<span class="' + (st === 'am' ? 'lv' : 'st') + '">' + STATE[st] + '</span>' +
+    (st === 'am' ? '<span>until ' + hhmm(end) + '</span>' : '<span>' + esc(fmtDay(d)) + '</span><span>' + hhmm(d) + '</span>');
   const l1 = ints.map(i => '<span class="v-int" style="color:' + icol(i) + '">' + esc(INTS[i]?.n || i) + '</span>').join('')
     + when + '<span>' + fmtDur(s.duration_min) + '</span>' + (s.demo ? '<span class="dm">demo</span>' : '');
-  const ex = s.exact && s.exact.lat != null ? s.exact : null;
-  const lat = ex ? ex.lat : s.lat, lng = ex ? ex.lng : s.lng;
-  const priv = s.venue === 'private';
-  const txt = s.place ? esc(s.place) : priv ? 'the neighbourhood · address once in' : 'the area · exact point once in';
-  const loc = lat != null ? '<a class="v-loc" href="' + mapsURL(lat, lng) + '" target="_blank" rel="noopener" aria-label="Open in Google Maps">' + txt + '</a>' : '<span>' + txt + '</span>';
+  const loc = whereHTML(s);
   const r = ref(), dd = s._d != null ? s._d : (r && s.lat != null ? hav(r, s) : s.dist_m);
   const bb = s._brg != null ? s._brg : (r && s.lat != null ? bearing(r, s) : null);
   const far = dd != null ? '<span>' + fmtDist(dd) + (bb != null ? ' ' + cardOf(bb) : '') + '</span>' : '';
   const l3 = '<b>' + (s.taken || 0) + '/' + (s.capacity ?? '—') + '</b><span>places</span><span>' + (s.selection === 'manual' ? 'manual' : 'automatic') + '</span>'
     + '<span>' + VENUE[s.venue || 'public'] + '</span>';
-  const l4 = '<span>' + esc(s.mode || '') + '</span><span>' + (ACCESS[s.access] || ACCESS.club) + '</span>' + (s.mood ? '<span>mood · ' + esc(s.mood) + '</span>' : '');
+  const l4 = '<span>' + esc(s.mode || '') + '</span><span>' + (ACCESS[s.access] || ACCESS.club) + '</span>' + (s.mood ? '<span>mood · ' + esc(s.mood) + '</span>' : '')
+    + (s.video ? '<button class="v-vid" type="button" data-play="' + esc(s.video) + '">▶ video</button>' : '');
   const open = DET.has(s.id);
   let drawer = '';
   if(open){
@@ -850,13 +912,26 @@ function spotBoxHTML(s){
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
 let me = null, F = null, MS = null, TOT = null;
 let VIEW = 'radar', PANEL = null, FOCUS = null;
-const BUILD = '2026-09-28b';
+const BUILD = '2026-09-30';
 const LISBON = { lat:38.7223, lng:-9.1393 };
 const LOCAL_MAX = 80e3, SPIN_AT = 700e3, MIN_R = 120, MAX_R = 7.6e6;
 const RAD = { on:false, raf:0, t:0, W:0, H:0, dpr:1, cx:0, cy:0, rpx:0, tcx:0, tcy:0, trpx:0,
   view:{ ...LISBON }, view0:null, me:null, range:1500, trange:1500, base:1500, head:0, headTo:null, spin:0, grab:false, ringHover:false,
   spots:[], cells:[], hover:null, tip:null, mode:'local', fly:null, localAt:null, sig:'', settleT:0 };
-const FS = { q:'', when:null, mode:null, int:null };   // SEARCH (bas)
+/* SEARCH (bas, 30/09) — UN contexte à la fois : [ HABIT ▾ ]. Mots, mode,
+   jour et intention filtrent EN BASE ; l'heure et la distance filtrent
+   la liste déjà reçue (zéro requête par clic). */
+const FS = { ctx:'habit', q:'', mood:'', when:null, mode:null, int:null, time:null, dist:null };
+const CTX = { habit:'Habit', mood:'Mood · Music', mode:'Mode', date:'Date', time:'Time', dist:'Distance' };
+const TIMES = { morning:[5, 12], afternoon:[12, 18], evening:[18, 24], night:[0, 5] };
+const fsLocal = s => {
+  if(FS.time){ const h = new Date(s.starts_at).getHours(), w = TIMES[FS.time]; if(h < w[0] || h >= w[1]) return false; }
+  if(FS.dist && s._d != null && s._d > FS.dist) return false;
+  return true;
+};
+/* SHORT-LIVE (gauche) — le fil des moments, et l'enregistreur. */
+const MOM = { list:[] };
+const REC = { on:false, kind:null, spot:null, step:null, stream:null, mr:null, blob:null, url:null, mime:'', t:0, h:null, mode:'social', shield:'off', busy:false };
 let RULES = { max_upcoming:10, capacity_min:1, capacity_max:50, duration_min:5, duration_max:720, horizon_days:90, local_radius_km:60 };
 let geoOK = false;
 /* Ce qu'une création reçoit avant d'avoir une habitude : un lieu touché
@@ -871,7 +946,9 @@ window.__totehm_space = () => ({ build: BUILD, view: VIEW, panel: panelKind(), p
   scale: { range_km: +(RAD.range/1000).toFixed(1), mode: RAD.mode, at_home: !awayFromHome(), earth: !!EARTH.land, coast50: !!EARTH.land50, map_tiles: TILES.ok },
   spots: RAD.spots.length, demo: RAD.spots.filter(s => s.demo).length, live: RAD.spots.filter(s => s.live).length,
   ahead: items().filter(s => s._ahead).length, cells: RAD.cells.length, planet: RAD.cells.reduce((a, c) => a + c.n, 0),
-  search: { word: !!FS.q, when: FS.when, mode: FS.mode, intention: FS.int },
+  search: { ctx: FS.ctx, word: !!FS.q, mood: !!FS.mood, when: FS.when, mode: FS.mode, intention: FS.int, time: FS.time, dist: FS.dist },
+  moments: MOM.list.length, moments_here_now: MOM.list.filter(m => m.state === 'am').length, moments_with_video: MOM.list.filter(m => m.video).length,
+  rec: { open: REC.on, kind: REC.kind, step: REC.step, recorder: typeof MediaRecorder !== 'undefined', clip: !!REC.blob },
   history: MS ? { mine: (MS.spots || []).length, joined: (MS.applications || []).length } : null,
   drawers: DET.size, pre: PRE ? Object.keys(PRE) : null,
   draft: CR.h ? { complete: draftComplete(), missing: draftMissing().length, pinned: !!CR.pos } : null,
@@ -906,12 +983,15 @@ const CROIX = {
   past:   { d:'radar' },
   time:   { g:'radar' },
 };
+/* 30/09 (MASTER BRIEF §14-18) : le centre est un RADAR SANS CARTE, la
+   gauche le fil des SHORT-LIVE (touche la manette : REC 5 s), la droite
+   la liste des SPOTS. SHORT-LIVE = un MOMENT ; SPOT = une EXPÉRIENCE. */
 const NOM = {
-  radar:  ['Today',         'touch the map to create a Spot there'],
+  radar:  ['Radar',         'what happens around me today'],
   create: ['Create a Spot', 'one of my habits, offered to the world'],
-  search: ['Search',        'a word, a day, an intention'],
-  past:   ['Yesterday',     'every Spot done here — each one can be done again'],
-  time:   ['Tomorrow',      'what is coming, day by day'],
+  search: ['Search',        'habit · mood · mode · date · time · distance'],
+  past:   ['Short-Live',    'moments, five seconds each · touch the controller to film one'],
+  time:   ['Spots',         'every Spot to come, day by day'],
 };
 const TEINTE = { radar:'--in2', create:'--s3', search:'--s3', past:'--in', time:'--in' };
 const COUCHE = { create:'o', radar:'h', search:'r' };
@@ -922,7 +1002,7 @@ const muted = () => !!MUTED[VIEW] && !PIN.on;
 const voisin = d => PIN.on ? null : (CROIX[VIEW] || {})[d] || null;
 let dernierSens = null;
 function versVoisin(d){ const v = voisin(d); if(!v) return false; dernierSens = d; setView(v); return true; }
-const HASH = { create:'create', search:'search', past:'yesterday', time:'tomorrow' };
+const HASH = { create:'create', search:'search', past:'short-live', time:'spots' };
 
 function setView(v){
   if(!NOM[v]) v = 'radar';
@@ -993,6 +1073,7 @@ function say(d){ const t = d && voisin(d); const s = $('joy-say'); s.textContent
     try{ bx.releasePointerCapture(id); }catch(_){}
     id = null; centre();
     if(v) versVoisin(v);
+    else if(tape && VIEW === 'past'){ recStart('moment'); }
     else if(tape && VIEW !== 'radar'){ dernierSens = null; setView('radar'); }
     else if(tape && PANEL){ PANEL = null; FOCUS = null; syncPanels(); paintMarkers(); }
   };
@@ -1070,6 +1151,7 @@ const NO_SWIPE = '#joy, #zoom, #cmp, #how, #world, #pinbar, input, textarea, sel
 addEventListener('keydown', e => {
   const t = e.target;
   if(t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
+  if(REC.on){ if(e.key === 'Escape') recClose(); return; }
   if(PIN.on){
     const a = { ArrowLeft:[40,0], ArrowRight:[-40,0], ArrowUp:[0,40], ArrowDown:[0,-40] }[e.key];
     if(a){ e.preventDefault(); panBy(a[0], a[1]); return; }
@@ -1298,7 +1380,7 @@ function drawGraticule(X){
    en mémoire au plus. Changer de fournisseur = changer `TILE_URL`. */
 const TILE_URL = (z, x, y) => 'https://tile.openstreetmap.org/' + z + '/' + x + '/' + y + '.png';
 const TILES = new Map(); TILES.ok = 0;
-const mapMode = () => RAD.mode === 'local' && RAD.range <= 40e3 && (PIN.on || !muted());
+const mapMode = () => PIN.on && RAD.mode === 'local' && RAD.range <= 40e3;
 function tile(z, x, y, fetchOK){
   const key = z + '/' + x + '/' + y; let t = TILES.get(key); if(t || !fetchOK) return t;
   t = { ok:false, c:null }; TILES.set(key, t);
@@ -1378,7 +1460,7 @@ function draw(){
   if(CMP.on){ const d = norm180(CMP.target - CMP.h); if(Math.abs(d) > .2) CMP.h = (CMP.h + d*.14 + 360) % 360; RAD.head = CMP.h; }
   const mode = RAD.range > LOCAL_MAX ? 'globe' : 'local';
   if(mode !== RAD.mode){ RAD.mode = mode; renderMarkers(); settled(); paintStatus(); if(PANEL === 'focus' && mode === 'globe'){ PANEL = null; FOCUS = null; syncPanels(); } }
-  if(RAD.range < 2.5e6 && RAD.range > 12e3) loadEarth50();
+  if(PIN.on && RAD.range < 2.5e6 && RAD.range > 12e3) loadEarth50();
   const tiles = mapMode();
   document.body.classList.toggle('map-on', tiles);
   const sig = [RAD.cx|0, RAD.cy|0, RAD.rpx|0, RAD.range.toPrecision(5), RAD.view.lat.toFixed(6), RAD.view.lng.toFixed(6), RAD.head.toFixed(2),
@@ -1396,13 +1478,18 @@ function draw(){
     pg.addColorStop(0, '#15151b'); pg.addColorStop(1, '#0c0c10');
     X.fillStyle = pg; X.beginPath(); X.arc(cx, cy, R, 0, Math.PI*2); X.fill();
   }
-  if(tiles) drawTiles(X);
-  else {
-    if(RAD.range > 900e3) drawGraticule(X);
-    const rings = RAD.range < 2.5e6 && EARTH.land50 ? EARTH.land50 : EARTH.land;
-    if(rings && RAD.range > 12e3) drawLand(X, rings);
+  /* 30/09 — LE RADAR N'A PLUS DE CARTE (brief §17) : un instrument, des
+     anneaux, des points. La terre, les villes et la rue ne reviennent que
+     pour POSER un rendez-vous (Create → place it on the map). */
+  if(PIN.on){
+    if(tiles) drawTiles(X);
+    else {
+      if(RAD.range > 900e3) drawGraticule(X);
+      const rings = RAD.range < 2.5e6 && EARTH.land50 ? EARTH.land50 : EARTH.land;
+      if(rings && RAD.range > 12e3) drawLand(X, rings);
+      if(EARTH.cities.length && RAD.range > 2.5e3) drawCities(X);
+    }
   }
-  if(EARTH.cities.length && RAD.range > 2.5e3 && !tiles) drawCities(X);
   X.restore();
   if(R < rpx*1.4){ X.strokeStyle = 'rgba(255,255,255,.2)'; X.lineWidth = 1; X.beginPath(); X.arc(cx, cy, Math.min(R, rpx), 0, Math.PI*2); X.stroke(); }
   const h = RAD.head*DEG;
@@ -1530,15 +1617,9 @@ function canvasTap(x, y){
   if(PIN.on){ if(p) flyTo(p.lat, p.lng, RAD.range, 420); return; }
   if(RAD.mode === 'globe'){ if(p) flyTo(p.lat, p.lng, RAD.range/4 < LOCAL_MAX ? 30e3 : RAD.range/4); return; }
   if(muted()){ if(VIEW === 'create' && CR.h) pinStart(); return; }
-  if(PANEL === 'focus'){ PANEL = null; FOCUS = null; syncPanels(); paintMarkers(); return; }
-  /* TODAY SE TOUCHE (27/09) : un Spot ICI, AUJOURD'HUI. */
-  if(VIEW === 'radar' && p) createAt(p);
-}
-function createAt(p){
-  const pos = { lat:+p.lat.toFixed(6), lng:+p.lng.toFixed(6) }, today = dayKey(new Date());
-  if(CR.h){ CR.pos = pos; CR.posBy = 'map'; CR.date = CR.date || today; CR.pk = nextMissing(); PRE = null; }
-  else PRE = { pos, posBy:'map', date:today, from:'map' };
-  dernierSens = 'h'; setView('create');
+  /* 30/09 — toucher le radar ne crée plus rien (brief §17) : on crée
+     en montant la manette, le lieu se pose dans Create. */
+  if(PANEL === 'focus'){ PANEL = null; FOCUS = null; syncPanels(); paintMarkers(); }
 }
 
 /* ══ LES POINTS ═════════════════════════════════════════════════════ */
@@ -1546,9 +1627,9 @@ const LP = { t:0, fired:false, hide:0 };
 function tipHTML(s){
   if(s.n != null){
     const near = nearestCity(s);
-    return '<b>' + s.n + ' ' + (s.n > 1 ? 'Spots' : 'Spot') + '</b>' + (s.live ? '<em>' + s.live + ' live</em> · ' : '') + (near ? 'near ' + esc(near) + ' · ' : '') + 'touch to fly';
+    return '<b>' + s.n + ' ' + (s.n > 1 ? 'Spots' : 'Spot') + '</b>' + (s.live ? '<em>' + s.live + ' here now</em> · ' : '') + (near ? 'near ' + esc(near) + ' · ' : '') + 'touch to fly';
   }
-  return '<b>' + esc(s.habit) + '</b>' + (s.live ? '<em>live</em>' : esc(fmtWhen(s.starts_at))) + ' · <em>' + esc(fmtDist(s._d) + (s._brg != null ? ' ' + cardOf(s._brg) : '')) + '</em>'
+  return '<b>' + esc(s.habit) + '</b>' + (stateOf(s) === 'am' ? '<em>I am here</em>' : esc(stateOf(s) === 'was' ? STATE.was : fmtWhen(s.starts_at))) + ' · <em>' + esc(fmtDist(s._d) + (s._brg != null ? ' ' + cardOf(s._brg) : '')) + '</em>'
     + (s.venue === 'private' ? ' · private' : '');
 }
 function nearestCity(c){
@@ -1584,7 +1665,7 @@ function renderMarkers(){
       el.innerHTML = '<i></i>' + (s.n > 1 ? '<b>' + s.n + '</b>' : '');
     } else {
       el.className = 'marker' + (s.live ? ' live' : '') + (FOCUS === s.id ? ' focus' : '');
-      el.setAttribute('aria-label', s.habit + ' — ' + (s.live ? 'live' : fmtWhen(s.starts_at)) + ' — ' + fmtDist(s._d) + (s._brg != null ? ' ' + cardOf(s._brg) : ''));
+      el.setAttribute('aria-label', s.habit + ' — ' + (stateOf(s) === 'will' ? fmtWhen(s.starts_at) : STATE[stateOf(s)]) + ' — ' + fmtDist(s._d) + (s._brg != null ? ' ' + cardOf(s._brg) : ''));
       el.style.setProperty('--c', icol((s.intentions||[])[0]));
       el.innerHTML = '<i></i>';
     }
@@ -1622,9 +1703,9 @@ async function locate(){
   RAD.view = { ...(c || LISBON) }; RAD.view0 = { ...RAD.view };
 }
 function params(){
-  if(VIEW === 'search') return { p_when:FS.when, p_q:FS.q || null, p_mode:FS.mode, p_intention:FS.int };
+  if(VIEW === 'search') return { p_when:FS.when, p_q:[FS.q, FS.mood].filter(Boolean).join(' ') || null, p_mode:FS.mode, p_intention:FS.int };
   if(VIEW === 'time') return { p_when:'later', p_q:null, p_mode:null, p_intention:null };
-  if(VIEW === 'past') return { past:true };
+  if(VIEW === 'past') return { moments:true };
   return { p_when:'today', p_q:null, p_mode:null, p_intention:null };
 }
 const decorate = s => { const r = ref(); return { ...s, _d:hav(r, s), _brg:bearing(r, s) }; };
@@ -1633,16 +1714,18 @@ async function loadSpots(force){
   const p = params(), at = { lat:+RAD.view.lat.toFixed(4), lng:+RAD.view.lng.toFixed(4) }, key = JSON.stringify([p, at]);
   if(!force && key === lastKey && Date.now() - lastAt < 60e3){ afterSpots(); return; }
   const my = ++seq;
-  /* YESTERDAY lit TOUS les anciens Spots autour de la carte (28/09) — le
-     miroir passé de spots_radar, mêmes règles de lecture. */
-  const fn = p.past ? 'spots_past' : 'spots_radar';
-  const args = p.past ? { p_lat:at.lat, p_lng:at.lng, p_radius:(RULES.local_radius_km || 60)*1000, p_q:null, p_limit:60 }
-                      : { p_lat:at.lat, p_lng:at.lng, p_radius:(RULES.local_radius_km || 60)*1000, p_live:false, p_limit:60, ...p };
+  /* SHORT-LIVE (gauche, 30/09) lit les MOMENTS des dernières 24 h autour
+     de la carte (`moments_feed`), mêmes règles de lecture que le radar. */
+  const fn = p.moments ? 'moments_feed' : 'spots_radar';
+  const args = p.moments ? { p_lat:at.lat, p_lng:at.lng, p_radius:(RULES.local_radius_km || 60)*1000, p_limit:40 }
+                         : { p_lat:at.lat, p_lng:at.lng, p_radius:(RULES.local_radius_km || 60)*1000, p_live:false, p_limit:60, ...p };
   const { data, error } = await sb.rpc(fn, args);
   if(my !== seq) return; // une réponse tardive n'écrase jamais un état plus frais
-  if(error){ console.error('[' + fn + ']', error.message); $('status').textContent = 'the map is unavailable'; return; }
+  if(error){ console.error('[' + fn + ']', error.message); $('status').textContent = 'the radar is unavailable'; return; }
   lastKey = key; lastAt = Date.now(); RAD.localAt = at;
-  RAD.spots = (data?.spots || []).map(decorate);
+  if(p.moments){ MOM.list = (data?.moments || []).map(decorate); RAD.raw = MOM.list; }
+  else RAD.raw = (data?.spots || []).map(decorate);
+  RAD.spots = VIEW === 'search' ? RAD.raw.filter(fsLocal) : RAD.raw;
   if(FOCUS && !RAD.spots.some(s => s.id === FOCUS)) FOCUS = null;
   if(RAD.mode === 'local') renderMarkers();
   afterSpots();
@@ -1650,7 +1733,7 @@ async function loadSpots(force){
 let gseq = 0, gKey = '', gAt = 0;
 async function loadGlobe(force){
   const p = params(), key = JSON.stringify(p);
-  if(p.past){ RAD.cells = []; gKey = ''; if(RAD.mode === 'globe') renderMarkers(); paintStatus(); return; }
+  if(p.moments){ RAD.cells = []; gKey = ''; if(RAD.mode === 'globe') renderMarkers(); paintStatus(); return; }
   if(!force && key === gKey && Date.now() - gAt < 60e3){ paintStatus(); return; }
   const my = ++gseq;
   const { data, error } = await sb.rpc('spots_globe', { p_when:p.p_when, p_intention:p.p_intention, p_q:p.p_q, p_mode:p.p_mode });
@@ -1664,7 +1747,8 @@ async function loadGlobe(force){
 function reload(){ loadSpots(); if(RAD.mode === 'globe') loadGlobe(); }
 function afterSpots(){
   paintStatus();
-  if(VIEW === 'search' || VIEW === 'time' || VIEW === 'past' || panelKind() === 'focus') paintResults();
+  if(VIEW === 'past') paintMoments();
+  else if(VIEW === 'search' || VIEW === 'time' || panelKind() === 'focus') paintResults();
 }
 
 /* ══ LA LECTURE DE L'INSTRUMENT ═════════════════════════════════════ */
@@ -1675,13 +1759,15 @@ function paintStatus(){
   const n = glob ? L.reduce((a, c) => a + c.n, 0) : L.length, live = glob ? L.reduce((a, c) => a + (c.live || 0), 0) : L.filter(x => x.live).length;
   const ahead = aiming() ? L.filter(x => x._ahead).reduce((a, x) => a + (x.n || 1), 0) : 0;
   const scale = glob ? (RAD.range > 3e6 ? 'planet' : RAD.range > 7e5 ? 'continent' : 'region') : fmtDist(RAD.range);
-  const tail = (live ? ' · <span class="live">' + live + ' live</span>' : '') + (ahead ? ' · <b>' + ahead + '</b> ahead' : '') + ' · ' + scale;
+  const tail = (live ? ' · <span class="live">' + live + ' here now</span>' : '') + (ahead ? ' · <b>' + ahead + '</b> ahead' : '') + ' · ' + scale;
   const sp = k => k === 1 ? 'Spot' : 'Spots';
   let h = '', tap = false;
   if(PIN.on){
     h = 'drag · pinch · then <b>here</b>';
   } else if(VIEW === 'past'){
-    h = glob ? 'zoom in to read yesterday' : n ? '<b>' + n + '</b> ' + sp(n) + ' done here · one year · ' + scale : 'nothing happened here yet · ' + scale;
+    const k = MOM.list.length, now = MOM.list.filter(m => m.state === 'am').length;
+    h = k ? '<b>' + k + '</b> ' + (k === 1 ? 'moment' : 'moments') + ' · 24 h' + (now ? ' · <span class="live">' + now + ' here now</span>' : '') + ' · ' + scale
+          : 'no moment here yet · touch the controller to film one';
   } else if(VIEW === 'create'){
     const Lm = MS?.limits; h = Lm ? 'my upcoming Spots <b>' + Lm.upcoming + ' / ' + Lm.max_upcoming + '</b>' : 'the map is quiet while I write';
   } else if(glob){
@@ -1741,7 +1827,8 @@ function markerTap(s){
   if(s.n != null){ tipHide(); flyTo(s.lat, s.lng, 12e3); return; }
   FOCUS = FOCUS === s.id && VIEW !== 'radar' ? null : s.id; paintMarkers();
   if(VIEW === 'radar'){ PANEL = 'focus'; syncPanels(); return; }
-  if(VIEW === 'search' || VIEW === 'time' || VIEW === 'past'){ paintResults(); return; }
+  if(VIEW === 'past'){ paintMoments(); return; }
+  if(VIEW === 'search' || VIEW === 'time'){ paintResults(); return; }
   peek(s, true); clearTimeout(LP.hide); LP.hide = setTimeout(() => peek(s, false), 1800);
 }
 
@@ -1751,11 +1838,6 @@ const WHY = {
   club:['Join FIGHER', 'join'], subscribers:['For the subscribers of this TOTEHM', null], full:['Full — every place is taken', null],
   started:['Already started', null], rejected:['Not selected this time', null] };
 function actionHTML(s){
-  if(s.past){
-    const tag = s.mine ? '<span class="cap">my Spot</span>' : s.my_status === 'accepted' ? '<span class="cap">I was there</span>' : '';
-    if(s.again) return tag + '<button class="btn main" data-again="p:' + esc(s.id) + '" type="button">Do it again</button>';
-    return tag + (me ? '' : '<button class="btn main" data-gate="1" type="button">Sign in to do it again</button>');
-  }
   if(s.mine) return '<button class="btn" data-gate="1" type="button">My Spot · my space</button>';
   if(s.my_status === 'accepted') return '<span class="cap"><b>You are in.</b></span><button class="lnk" data-withdraw="' + esc(s.id) + '" type="button">Withdraw</button>';
   if(s.my_status === 'pending') return '<span class="cap">Asked — the creator chooses.</span><button class="lnk" data-withdraw="' + esc(s.id) + '" type="button">Withdraw</button>';
@@ -1775,15 +1857,14 @@ function paintResults(){
   const r = $('res'); if(!r) return;
   let l = RAD.spots.slice();
   if(VIEW === 'time') l.sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at));
-  if(VIEW === 'past') l.sort((a, b) => new Date(b.starts_at) - new Date(a.starts_at));
   if(panelKind() === 'focus' && FOCUS){ const i = l.findIndex(s => s.id === FOCUS); if(i > 0) l.unshift(l.splice(i, 1)[0]); }
-  const empty = VIEW === 'past' ? 'Nothing happened here yet. Zoom out — or create the first.' : VIEW === 'search' ? (FS.q ? 'Nothing matches. Try one word.' : 'No Spot around yet.')
+  const empty = VIEW === 'search' ? (FS.q ? 'Nothing matches. Try one word.' : 'No Spot around yet.')
     : VIEW === 'time' ? 'Nothing ahead yet. Create the first.' : 'Nothing today.';
   const hint = RAD.mode === 'globe' ? '<div class="cap" style="margin-bottom:8px">the planet · touch a light to fly there</div>' : '';
   let html = '', day = '';
   /* TOMORROW se lit JOUR PAR JOUR : un titre à chaque nouveau jour. */
   l.forEach(s => {
-    if(VIEW === 'time' || VIEW === 'past'){ const k = dayKey(new Date(s.starts_at)); if(k !== day){ day = k; html += '<div class="day b2">' + esc(fmtDay(new Date(s.starts_at))) + '</div>'; } }
+    if(VIEW === 'time'){ const k = dayKey(new Date(s.starts_at)); if(k !== day){ day = k; html += '<div class="day b2">' + esc(fmtDay(new Date(s.starts_at))) + '</div>'; } }
     html += itemHTML(s);
   });
   r.innerHTML = hint + (l.length ? html : '<div class="empty">' + empty + '</div>');
@@ -1798,11 +1879,10 @@ function renderTime(){
   P().innerHTML = '<div class="list" id="res" style="margin-top:0"></div>';
   paintResults();
 }
-/* ── SEARCH (bas) — la barre, les jours, le mode, les sept ─────────── */
+/* ── SEARCH (bas) — [ HABIT ▾ ] et UN contrôle (30/09, brief §21) ───── */
 const SW = [['', 'any day'], ['today', 'today'], ['tomorrow', 'tomorrow'], ['next7', 'next 7 days'], ['later', 'all ahead']];
-/* Les sept, EXACTEMENT comme le 26/09 (By intention) : même police
-   (Space Mono), même geste — toucher une rangée la choisit et la pose en
-   tête, les autres deviennent sept points ; « all seven » les rend. */
+/* Les sept : sept points ; une intention choisie reprend sa rangée du
+   26/09 (pastille, nom, slogan Higher, pilier, la phrase de Wah). */
 function intRow(k, hero){
   const v = INTS[k];
   return '<button class="int' + (hero ? ' hero on' : '') + '" data-fi="' + k + '" type="button" style="--c:' + v.c + '"><i></i>' +
@@ -1810,22 +1890,71 @@ function intRow(k, hero){
 }
 function intsHTML(){
   const keys = Object.keys(INTS);
-  return FS.int ? intRow(FS.int, true) + '<div class="dots">' + keys.map(k => '<button class="dot' + (k === FS.int ? ' on' : '') +
-      '" data-fi="' + k + '" type="button" style="--c:' + INTS[k].c + '" aria-label="' + INTS[k].n + '"></button>').join('') +
-      '<button class="opt" data-fi="" type="button" style="margin-left:6px">all seven</button></div>'
-    : '<div class="ints">' + keys.map(k => intRow(k)).join('') + '</div>';
+  return (FS.int ? intRow(FS.int, true) : '') + '<div class="dots">' + keys.map(k => '<button class="dot' + (k === FS.int ? ' on' : '') +
+      '" data-fi="' + k + '" type="button" style="--c:' + INTS[k].c + '" aria-label="' + INTS[k].n + '" title="' + INTS[k].n + '"></button>').join('') +
+      (FS.int ? '<button class="opt" data-fi="" type="button" style="margin-left:6px">all seven</button>' : '') + '</div>';
+}
+const optsHTML = (attr, list, cur) => '<div class="opts" style="margin-top:0">' + list.map(w =>
+  '<button class="opt' + ((cur ?? '') === w[0] ? ' on' : '') + '" ' + attr + '="' + w[0] + '" type="button">' + w[1] + '</button>').join('') + '</div>';
+function ctlHTML(){
+  const c = FS.ctx;
+  if(c === 'habit') return '<input class="in" id="q" type="search" placeholder="a habit, a word, a name…" autocomplete="off" enterkeyhint="search" value="' + esc(FS.q) + '">' +
+    '<div id="fi-box">' + intsHTML() + '</div>';
+  if(c === 'mood') return '<input class="in" id="qm" type="search" placeholder="a mood, a sound — techno, rain, jazz…" autocomplete="off" enterkeyhint="search" value="' + esc(FS.mood) + '">';
+  if(c === 'mode') return optsHTML('data-fm', [['', 'any'], ['social', 'social'], ['silent', 'silent']], FS.mode || '');
+  if(c === 'date') return optsHTML('data-fw', SW, FS.when || '');
+  if(c === 'time') return optsHTML('data-ft', [['', 'any time'], ['morning', 'morning'], ['afternoon', 'afternoon'], ['evening', 'evening'], ['night', 'night']], FS.time || '');
+  if(c === 'dist') return optsHTML('data-fd', [['', 'any distance'], ...[1e3, 5e3, 20e3, 60e3].map(m => [String(m), fmtDist(m)])], FS.dist ? String(FS.dist) : '');
+  return '';
+}
+function pillsHTML(){
+  const P = [];
+  if(FS.q) P.push(['q', '“' + esc(FS.q) + '”']);
+  if(FS.int) P.push(['int', esc(INTS[FS.int].n)]);
+  if(FS.mood) P.push(['mood', 'mood · ' + esc(FS.mood)]);
+  if(FS.mode) P.push(['mode', FS.mode]);
+  if(FS.when) P.push(['when', (SW.find(w => w[0] === FS.when) || [0, FS.when])[1]]);
+  if(FS.time) P.push(['time', FS.time]);
+  if(FS.dist) P.push(['dist', '≤ ' + fmtDist(FS.dist)]);
+  return P.map(([k, t]) => '<button class="pill" data-fx="' + k + '" type="button">' + t + ' ×</button>').join('');
 }
 function renderSearch(){
   P().innerHTML =
-    '<input class="in" id="q" type="search" placeholder="search — a habit, a word, a name…" autocomplete="off" enterkeyhint="search" value="' + esc(FS.q) + '">' +
-    '<div class="opts"><span class="opt-l b3">when</span>' + SW.map(w => '<button class="opt' + ((FS.when || '') === w[0] ? ' on' : '') + '" data-fw="' + w[0] + '" type="button">' + w[1] + '</button>').join('') + '</div>' +
-    '<div class="opts" style="margin-top:5px"><span class="opt-l b3">mode</span>' + [['', 'any'], ['social', 'social'], ['silent', 'silent']].map(w =>
-      '<button class="opt' + ((FS.mode || '') === w[0] ? ' on' : '') + '" data-fm="' + w[0] + '" type="button">' + w[1] + '</button>').join('') + '</div>' +
-    '<div id="fi-box">' + intsHTML() + '</div>' +
+    '<div class="srch"><button class="ctx" id="ctx-b" type="button" aria-haspopup="true" aria-expanded="false">' + CTX[FS.ctx] + ' ▾</button>' +
+    '<div class="ctx-menu hide" id="ctx-m">' + Object.entries(CTX).map(([k, t]) => '<button class="opt' + (k === FS.ctx ? ' on' : '') + '" data-ctx="' + k + '" type="button">' + t + '</button>').join('') + '</div>' +
+    '<div id="ctl">' + ctlHTML() + '</div></div>' +
+    '<div class="pills" id="fs-pills">' + pillsHTML() + '</div>' +
     '<div class="list" id="res"></div>';
+  wireSearch(); paintResults();
+}
+function wireSearch(){
   let qT = null;
-  $('q').addEventListener('input', () => { clearTimeout(qT); qT = setTimeout(() => { FS.q = $('q').value.trim(); FOCUS = null; reload(); }, 280); });
-  paintResults();
+  const on = (id, k) => $(id)?.addEventListener('input', e => { clearTimeout(qT); qT = setTimeout(() => { FS[k] = e.target.value.trim(); FOCUS = null; paintPills(); reload(); }, 280); });
+  on('q', 'q'); on('qm', 'mood');
+}
+const paintPills = () => { const b = $('fs-pills'); if(b) b.innerHTML = pillsHTML(); };
+const paintCtl = () => { const b = $('ctl'); if(b){ b.innerHTML = ctlHTML(); wireSearch(); } };
+/* L'heure et la distance ne repartent pas sur le réseau. */
+function applyLocal(){ RAD.spots = (RAD.raw || []).filter(fsLocal); if(RAD.mode === 'local') renderMarkers(); afterSpots(); }
+function onSearchClick(t){
+  if(t.closest('#ctx-b')){ const m = $('ctx-m'), open = m.classList.toggle('hide'); $('ctx-b').setAttribute('aria-expanded', String(!open)); return true; }
+  const c = t.closest('[data-ctx]');
+  if(c){ FS.ctx = c.dataset.ctx; $('ctx-b').textContent = CTX[FS.ctx] + ' ▾'; $('ctx-m').classList.add('hide');
+    $('ctx-m').querySelectorAll('.opt').forEach(o => o.classList.toggle('on', o === c)); paintCtl();
+    setTimeout(() => ($('q') || $('qm'))?.focus(), 30); return true; }
+  const x = t.closest('[data-fx]');
+  if(x){ const k = x.dataset.fx; FS[k] = k === 'q' || k === 'mood' ? '' : null; paintPills(); paintCtl();
+    if(k === 'time' || k === 'dist') applyLocal(); else reload(); return true; }
+  const w = t.closest('[data-fw]'), m = t.closest('[data-fm]'), tm = t.closest('[data-ft]'), d = t.closest('[data-fd]'), i = t.closest('[data-fi]');
+  if(w){ FS.when = w.dataset.fw || null; }
+  else if(m){ FS.mode = m.dataset.fm || null; }
+  else if(tm){ FS.time = tm.dataset.ft || null; }
+  else if(d){ FS.dist = +d.dataset.fd || null; }
+  else if(i){ const v = i.dataset.fi; FS.int = !v ? null : FS.int === v ? null : v; }
+  else return false;
+  FOCUS = null; paintPills(); paintCtl();
+  if(tm || d) applyLocal(); else reload();
+  return true;
 }
 
 /* ══ UN SEUL ÉCOUTEUR PAR FENÊTRE, EN DÉLÉGATION ════════════════════ */
@@ -1835,15 +1964,9 @@ async function onPanelClick(e){
   if(t.closest('[data-close]')){ PANEL = null; FOCUS = null; syncPanels(); paintMarkers(); return; }
   const lp = t.closest('[data-lp]');
   if(lp){ e.stopPropagation(); lp.closest('.it')?.classList.toggle('big'); return; }
-  const ag = t.closest('[data-again]'); if(ag){ againFrom(ag.dataset.again); return; }
   if(t.closest('[data-gate]')){ PANEL = 'gate'; syncPanels(); return; }
-  if(k === 'search'){
-    const w = t.closest('[data-fw]'), m = t.closest('[data-fm]'), i = t.closest('[data-fi]');
-    if(w || m){ if(w) FS.when = w.dataset.fw || null; if(m) FS.mode = m.dataset.fm || null; FOCUS = null;
-      t.closest('.opts').querySelectorAll('.opt').forEach(o => o.classList.toggle('on', o === (w || m))); reload(); return; }
-    if(i){ const v = i.dataset.fi; FS.int = !v ? null : FS.int === v ? null : v; FOCUS = null;
-      const box = $('fi-box'); if(box) box.innerHTML = intsHTML(); reload(); return; }
-  }
+  if(k === 'search' && onSearchClick(t)) return;
+  if(k === 'past' && onMomentClick(t)) return;
   if(k === 'gate') return onGateClick(e);
   if(!['focus', 'search', 'time', 'past'].includes(k)) return;
   const det = t.closest('[data-det]');
@@ -1867,54 +1990,97 @@ async function onPanelClick(e){
 }
 document.querySelectorAll('.pan').forEach(el => el.addEventListener('click', onPanelClick));
 
-/* ══ YESTERDAY (gauche) — TOUS LES ANCIENS SPOTS (28/09) ════════════
-   « La partie YESTERDAY, c'est tous les anciens Spots. » Ce qui s'est fait
-   autour de la carte, depuis un an, jour par jour du plus récent au plus
-   ancien (`spots_past`). Chacun se REFAIT : [Do it again] ouvre Create a
-   Spot avec le lieu, l'heure, la durée, les places, la nature et le mode
-   déjà posés — mais avec MON habitude. Mon histoire (mes Spots, ceux que
-   j'ai rejoints) vit dans le coin membre. */
+/* ══ SHORT-LIVE (gauche) — LE FIL DES MOMENTS (30/09) ════════════════
+   Brief §14 : « LEFT = Short-Live-Spots, un fil qui défile ; la manette
+   = créer un Short-Live. » Un moment = cinq secondes filmées, une Habit
+   Box de MON Totehm pour contexte, social ou silent, et le BOUCLIER GPS :
+   OFF → la ville et le contenu ; ON → le lieu exact pour mes abonnés.
+   ON n'est PAS une invitation : personne ne « rejoint » un moment.
+   ⚠️ Chaque vidéo vient du stockage (egress payant) : une vidéo ne se
+   télécharge que lorsqu'elle est À L'ÉCRAN, jamais toutes d'un coup. */
 function renderPast(){
-  P().innerHTML = '<div class="list" id="res" style="margin-top:0"></div>';
-  paintResults();
+  P().innerHTML = '<div class="rec-bar"><button class="btn main" data-rec="1" type="button">● REC · 5 s</button>' +
+    '<span class="cap">or touch the controller</span></div><div class="list" id="res" style="margin-top:0"></div>';
+  paintMoments();
+}
+const ago = iso => { const m = Math.max(0, Math.round((Date.now() - new Date(iso))/60e3)); return m < 1 ? 'now' : m < 60 ? m + ' min ago' : Math.floor(m/60) + ' h ago'; };
+function momentHTML(m){
+  const ints = m.intentions || [], st = m.state === 'am' ? 'am' : 'was', open = DET.has(m.id);
+  const r = ref(), far = m._d != null ? '<span>' + fmtDist(m._d) + (m._brg != null ? ' ' + cardOf(m._brg) : '') + '</span>' : '';
+  let drawer = '';
+  if(open){
+    drawer = (m.comment ? '<span class="say-q">' + esc(m.comment) + '</span>' : '')
+      + groupe('why', (m.context?.objectives || []).map(x => miniH('o', x.text)).join(''))
+      + groupe('trigger', (m.context?.repulsions || []).map(x => miniH('r', x.text)).join(''));
+    if(!drawer) drawer = '<span class="mg-l">' + (m.context || m.mine ? 'no why, no trigger' : 'the why is shared between members') + '</span>';
+    drawer = '<span class="drawer">' + drawer + '</span>';
+  }
+  const clip = m.video ? '<div class="mo-v" data-clip="' + esc(m.video) + '"><video playsinline muted loop preload="none"></video><i>▶</i></div>'
+    : '<div class="mo-v off"><span class="cap">' + (me ? 'the moment is for FIGHER members' : 'sign in to watch') + '</span></div>';
+  return '<div class="it mo" data-it="' + esc(m.id) + '">' + clip +
+    '<div class="habit timed spot' + (open ? ' det' : '') + '">' + tickHTML(ints) +
+    '<span class="h-body"><span class="v-col"><span class="v-name">' + esc(m.habit) + '</span>' +
+    '<span class="v-sub">' + ints.map(i => '<span class="v-int" style="color:' + icol(i) + '">' + esc(INTS[i]?.n || i) + '</span>').join('') +
+      '<span class="' + (st === 'am' ? 'lv' : 'st') + '">' + STATE[st] + '</span><span>' + ago(m.starts_at) + '</span>' + (m.demo ? '<span class="dm">demo</span>' : '') + '</span>' +
+    '<span class="v-sub">' + whereHTML(m) + far + '</span>' +
+    '<span class="v-sub"><span>' + esc(m.mode || '') + '</span>' + (m.mood ? '<span>mood · ' + esc(m.mood) + '</span>' : '') + '</span>' +
+    '<button class="v-det" type="button" data-det="' + esc(m.id) + '" aria-expanded="' + open + '">details ' + (open ? '▴' : '▾') + '</button>' +
+    drawer + '</span></span></div>' +
+    '<div class="act"><span class="who">' + byHTML(m.creator) + '</span>' + (m.mine ? '<span class="cap">my moment</span>' : '') + '</div></div>';
+}
+let clipIO = null;
+function paintMoments(){
+  const r = $('res'); if(!r || VIEW !== 'past') return;
+  const l = MOM.list.slice().sort((a, b) => new Date(b.starts_at) - new Date(a.starts_at));
+  if(FOCUS){ const i = l.findIndex(m => m.id === FOCUS); if(i > 0) l.unshift(l.splice(i, 1)[0]); }
+  r.innerHTML = RAD.mode === 'globe' ? '<div class="empty">zoom in to read the moments around</div>'
+    : l.length ? l.map(momentHTML).join('') : '<div class="empty">No moment here in the last 24 hours. Film the first — five seconds.</div>';
+  /* À l'écran on joue, hors de l'écran on s'arrête : l'egress suit le regard. */
+  clipIO?.disconnect();
+  clipIO = new IntersectionObserver(es => es.forEach(e => {
+    const box = e.target, v = box.querySelector('video'); if(!v) return;
+    if(e.isIntersecting && e.intersectionRatio >= .6){ if(!v.src) v.src = clipURL(box.dataset.clip); v.play().then(() => box.classList.add('on')).catch(() => {}); }
+    else if(!v.paused) v.pause();
+  }), { root: P(), threshold:[0, .6] });
+  r.querySelectorAll('[data-clip]').forEach(x => clipIO.observe(x));
+}
+function onMomentClick(t){
+  if(t.closest('[data-rec]')){ recStart('moment'); return true; }
+  const c = t.closest('[data-clip]');
+  if(c){ const v = c.querySelector('video'); if(!v.src) v.src = clipURL(c.dataset.clip); v.muted = !v.muted; if(v.paused) v.play().catch(() => {}); c.classList.toggle('snd', !v.muted); return true; }
+  const d = t.closest('[data-det]');
+  if(d){ const id = d.dataset.det; DET.has(id) ? DET.delete(id) : DET.add(id); const m = MOM.list.find(x => x.id === id), it = d.closest('.it');
+    if(m && it){ it.outerHTML = momentHTML(m); paintMoments(); } return true; }
+  return false;
 }
 /* MY SPOTS — dans le coin membre (Wah, 27/09 puis 28/09 : « TOUTE la
    partie My Spots va dans l'espace membre »). Mes Spots et ceux que j'ai
    rejoints, sur un an (`my_space` v4) ; chacun se refait. */
 function mineHTML(){
   if(!MS) return '<div class="sec"><span class="sec-l b2">my Spots</span><div class="cap">reading…</div></div>';
-  const S = MS.spots || [], A = MS.applications || [];
-  const state = s => s.status === 'cancelled' ? 'cancelled' : s.live ? '<em>live</em>' : s.past ? 'done' : 'upcoming';
+  const S = (MS.spots || []).filter(s => s.kind !== 'moment'), A = MS.applications || [];
+  const Mo = (MS.spots || []).filter(s => s.kind === 'moment');
+  const state = s => s.status === 'cancelled' ? 'cancelled' : stateOf(s) === 'am' ? '<em>' + STATE.am + '</em>' : STATE[stateOf(s)];
   const sec = (t, h) => '<div class="sec"><span class="sec-l b2">' + t + '</span><div class="list" style="margin-top:4px">' + h + '</div></div>';
   let h = '';
   if(S.length) h += sec('my Spots · <b>' + S.length + '</b>', S.map(s => '<div class="it" data-it="' + esc(s.id) + '">' + LOUPE + spotBoxHTML({ ...s, mine:true }) +
     '<div class="act"><span class="cmp">' + state(s) + (s.pending && !s.past && s.status === 'published' ? ' · <em>' + s.pending + '</em> waiting' : '') + '</span>' +
     '<span class="acts">' + (s.status === 'published' && !s.past ? '<button class="lnk" data-show="' + esc(s.id) + '" type="button">On the map</button><button class="lnk" data-cancel="' + esc(s.id) + '" type="button">Cancel</button>' : '') +
-    '<button class="btn main" data-again="m:' + esc(s.id) + '" type="button">Do it again</button></span></div></div>').join(''));
+    (s.status === 'published' && s.kind !== 'moment' && stateOf(s) !== 'was' ? '<button class="btn" data-vid="' + esc(s.id) + '" type="button">' + (s.video ? 'New video' : 'Add a video') + '</button>' : '') +
+    '</span></div></div>').join(''));
   if(A.length) h += sec('joined · <b>' + A.length + '</b>', A.map(a => '<div class="it" data-it="' + esc(a.spot_id) + '">' + LOUPE + spotBoxHTML({ ...a, id:a.spot_id }) +
     '<div class="act"><span class="who"><span class="cmp"><em>' + esc(a.spot_status === 'cancelled' ? 'spot cancelled' : a.status) + '</em></span>' + byHTML(a.creator) + '</span>' +
     '<span class="acts">' + (['accepted','pending'].includes(a.status) && a.spot_status === 'published' && new Date(a.starts_at) > new Date() ? '<button class="lnk" data-wd="' + esc(a.spot_id) + '" type="button">Withdraw</button>' : '') +
-    (F?.member ? '<button class="btn main" data-again="j:' + esc(a.spot_id) + '" type="button">Do it again</button>' : '') + '</span></div></div>').join(''));
-  if(!S.length && !A.length) h += '<div class="sec"><span class="sec-l b2">my Spots</span><div class="say">None yet. Touch the map in Today to create one there — or push the controller up.</div></div>';
+    '</span></div></div>').join(''));
+  /* Mes moments : une ligne chacun — la vidéo, l'habitude, l'état, le bouclier. */
+  if(Mo.length) h += sec('my moments · <b>' + Mo.length + '</b>', Mo.map(m => '<div class="act" style="padding-top:0">' +
+    '<span class="who">' + (m.video ? '<button class="v-vid" data-play="' + esc(m.video) + '" type="button">▶</button> ' : '') + '<span class="cap" style="color:#fff">' + esc(m.habit) + '</span></span>' +
+    '<span class="cap">' + STATE[stateOf(m) === 'am' ? 'am' : 'was'] + ' · ' + esc(m.city || 'here') + ' · shield ' + esc(m.shield || 'off') + '</span></div>').join(''));
+  if(!S.length && !A.length && !Mo.length) h += '<div class="sec"><span class="sec-l b2">my Spots</span><div class="say">None yet. Push the controller up to create one.</div></div>';
   return h;
 }
-/* REFAIRE UN SPOT — tout ce qui peut l'être, déjà posé. */
-function againFrom(key){
-  const [kind, id] = key.split(':');
-  const src = kind === 'm' ? (MS?.spots || []).find(s => s.id === id)
-            : kind === 'p' ? RAD.spots.find(s => s.id === id)
-            : (MS?.applications || []).find(a => a.spot_id === id);
-  if(!src) return;
-  const own = kind === 'm' || (kind === 'p' && src.mine);
-  const at = src.exact && src.exact.lat != null ? src.exact : (src.lat != null ? { lat:src.lat, lng:src.lng } : null);
-  const d = new Date(src.starts_at);
-  PRE = { from:'again', habit: own ? src.habit : null, ints: src.intentions || [],
-    pos: at ? { lat:+(+at.lat).toFixed(6), lng:+(+at.lng).toFixed(6) } : null, posBy: at ? 'again' : null,
-    place: src.place || '', time: hhmm(d), dur: src.duration_min || null,
-    cap: src.capacity || null, sel: src.selection || null, venue: src.venue || null, mode: src.mode || null,
-    acc: own ? (src.access || null) : null, comment: own ? (src.comment || '') : '', label: src.habit };
-  resetDraft(); dernierSens = 'h'; setView('create');
-}
+/* 30/09 — « Do it again » est parti : un Spot ne naît plus d'un Spot
+   (brief §17). Il naît d'une de MES habitudes, dans Create. */
 
 /* ══ CREATE A SPOT (haut) ═══════════════════════════════════════════
    1 · Quelle habitude ? — mes Habit Boxes, telles que dans totehm.com.
@@ -1923,9 +2089,11 @@ function againFrom(key){
    2 · La boîte-action s'ouvre, EN ÉDITION. Le rendez-vous se pose en
        GRAND (« place it on the map ») : la carte plein écran, une croix. */
 const CR = { h:null, ints:new Set(), objs:new Set(), reps:new Set(), mood:false, moodKind:null,
-  date:null, time:null, dur:null, place:'', pos:null, posBy:null, cap:6, sel:'auto', venue:null, mode:'social', acc:'club', comment:'', det:false, pk:null };
+  date:null, time:null, dur:null, place:'', pos:null, posBy:null, cap:6, sel:'auto', venue:null, mode:'social', acc:'club', comment:'', det:false, pk:null,
+  shield:'off', video:null };
 function resetDraft(){ Object.assign(CR, { h:null, ints:new Set(), objs:new Set(), reps:new Set(), mood:false, moodKind:null,
-  date:null, time:null, dur:null, place:'', pos:null, posBy:null, cap:6, sel:'auto', venue:null, mode:'social', acc:'club', comment:'', det:false, pk:null }); }
+  date:null, time:null, dur:null, place:'', pos:null, posBy:null, cap:6, sel:'auto', venue:null, mode:'social', acc:'club', comment:'', det:false, pk:null,
+  shield:'off', video:null }); }
 const draftAt = () => CR.date && CR.time ? new Date(CR.date + 'T' + CR.time) : null;
 function draftMissing(){
   const m = [];
@@ -2019,6 +2187,7 @@ function draftBoxHTML(){
     (CR.pos ? '<a class="v-loc" href="' + mapsURL(CR.pos.lat, CR.pos.lng) + '" target="_blank" rel="noopener" aria-label="Check on Google Maps">maps</a>' : '');
   const l3 = vb('cap', CR.cap + ' places', true) + vb('sel', CR.sel === 'auto' ? 'automatic' : 'manual', true) + vb('venue', CR.venue ? VENUE[CR.venue] : 'set nature', !!CR.venue);
   const l4 = vb('mode', CR.mode, true) + vb('acc', ACCESS[CR.acc], true) + (CR.mood && CR.moodKind ? '<span>mood · ' + esc(CR.moodKind) + '</span>' : '');
+  const l5 = vb('shield', 'GPS shield · ' + CR.shield, true) + vb('video', CR.video ? 'video · 5 s' : 'video · optional', true);
   const pk = keys => keys.includes(CR.pk) ? pickerHTML(CR.pk) : '';
   const objs = CR.h.objs.map(o => miniH('o', o.text, ' data-to="' + esc(o.id) + '"').replace('class="mini m-o', 'class="mini m-o' + (CR.objs.has(o.id) ? '' : ' is-off'))).join('');
   const reps = CR.h.reps.map(r => miniH('r', r.text, ' data-tr="' + r.id + '"').replace('class="mini m-r', 'class="mini m-r' + (CR.reps.has(r.id) ? '' : ' is-off'))).join('');
@@ -2032,6 +2201,7 @@ function draftBoxHTML(){
     '<span class="v-sub">' + l2 + '</span>' + pk(['loc']) +
     '<span class="v-sub">' + l3 + '</span>' + pk(['cap', 'sel', 'venue']) +
     '<span class="v-sub">' + l4 + '</span>' + pk(['mode', 'acc']) +
+    '<span class="v-sub">' + l5 + '</span>' + pk(['shield', 'video']) +
     '<button class="v-det" type="button" data-cdet="1" aria-expanded="' + CR.det + '">details ' + (CR.det ? '▴' : '▾') + '</button>' + drawer +
     '<button type="button" class="w-x" data-another="1" aria-label="Another habit">&times;</button>' +
     '</span></span></div>';
@@ -2086,6 +2256,17 @@ function pickerHTML(k){
       (F?.spots_benefit ? chip('data-acc="subscribers"', 'my subscribers', CR.acc === 'subscribers', 'members who follow my TOTEHM')
         : '<span class="cap" style="align-self:center;margin-left:4px">subscribers only · <button class="lnk" data-go="club" type="button">switch on the Spots benefit</button></span>') + '</span></span>';
   }
+  if(k === 'shield'){
+    return '<span class="pkw">' + q('GPS shield' + how) + '<span class="chips">' +
+      chip('data-shield="off"', 'off', CR.shield === 'off', 'the city for everyone · the exact point for the members I accept') +
+      chip('data-shield="on"', 'on', CR.shield === 'on', 'the exact place for my subscribers too · it is not an invitation') + '</span></span>';
+  }
+  if(k === 'video'){
+    return '<span class="pkw">' + q('five seconds of the place — now or later') + '<span class="chips">' +
+      chip('data-crec="1"', CR.video ? '● film it again' : '● REC · 5 s', false) +
+      (CR.video ? chip('data-play="' + esc(CR.video) + '"', '▶ watch', false) + chip('data-cvx="1"', 'remove', false) : '') + '</span>' +
+      '<span class="pk-say b3">optional · it can be added from my space later</span></span>';
+  }
   if(k === 'mode'){
     return '<span class="pkw">' + q('together, and?') + '<span class="chips">' + chip('data-mode="social"', 'social', CR.mode === 'social', 'together, and we talk') +
       chip('data-mode="silent"', 'silent', CR.mode === 'silent', 'together, without talking') + '</span>' +
@@ -2123,6 +2304,9 @@ function wireCreate(){
   el.querySelectorAll('[data-venue]').forEach(b => b.onclick = () => { CR.venue = b.dataset.venue; next(); });
   el.querySelectorAll('[data-acc]').forEach(b => b.onclick = () => { CR.acc = b.dataset.acc; renderCreateKeep(); });
   el.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { CR.mode = b.dataset.mode; renderCreateKeep(); });
+  el.querySelectorAll('[data-shield]').forEach(b => b.onclick = () => { CR.shield = b.dataset.shield; renderCreateKeep(); });
+  el.querySelector('[data-crec]')?.addEventListener('click', () => recStart('spot'));
+  el.querySelector('[data-cvx]')?.addEventListener('click', () => { CR.video = null; renderCreateKeep(); });
   el.querySelector('[data-mood]')?.addEventListener('click', () => { CR.mood = !CR.mood; renderCreateKeep(); });
   el.querySelector('[data-pin]')?.addEventListener('click', () => pinStart());
   $('f-place')?.addEventListener('input', e => { CR.place = e.target.value; paintDraftLive(); });
@@ -2178,14 +2362,15 @@ async function publish(){
     p_habit: CR.h.name, p_intentions: inOrder(CR.ints), p_objectives: [...CR.objs], p_repulsions: [...CR.reps].map(Number),
     p_mood: CR.mood, p_starts_at: at.toISOString(), p_duration_min: CR.dur,
     p_place: CR.place.trim(), p_lat: CR.pos.lat, p_lng: CR.pos.lng,
-    p_mode: CR.mode, p_capacity: CR.cap, p_access: CR.acc, p_selection: CR.sel, p_comment: CR.comment.trim() || null, p_venue: CR.venue });
+    p_mode: CR.mode, p_capacity: CR.cap, p_access: CR.acc, p_selection: CR.sel, p_comment: CR.comment.trim() || null, p_venue: CR.venue,
+    p_shield: CR.shield, p_video: CR.video, p_city: cityNear(CR.pos) });
   delete n.dataset.hold;
   if(error || !data?.ok){
     b.disabled = false; n.className = 'note no';
     n.textContent = ({ figher:'members only', habit:'that habit is no longer in my TOTEHM', when:'choose a time within ' + RULES.horizon_days + ' days',
       duration:'a duration between ' + RULES.duration_min + ' and ' + RULES.duration_max + ' min', capacity:'between ' + RULES.capacity_min + ' and ' + RULES.capacity_max + ' places',
       subscribers:'subscriber-only Spots need that benefit switched on', too_many:RULES.max_upcoming + ' upcoming Spots at most', position:'place the point on the map',
-      place:'say where we meet', venue:'public space or private?' })[data?.why] || error?.message || 'not published';
+      place:'say where we meet', venue:'public space or private?', shield:'GPS shield: on or off?', video:'the video did not arrive — film it again' })[data?.why] || error?.message || 'not published';
     return;
   }
   /* Le résultat est la CARTE : aujourd'hui → TODAY, plus tard → TOMORROW. */
@@ -2199,6 +2384,174 @@ async function publish(){
   await loadSpots(true);
   if(today){ PANEL = 'focus'; syncPanels(); } else paintResults();
   paintMarkers();
+}
+
+/* ══ REC — CINQ SECONDES (30/09) ════════════════════════════════════
+   UNE machine, trois usages : un MOMENT (Short-Live : REC → CONTEXT →
+   SOCIAL/SILENT → GPS SHIELD), la vidéo d'un Spot en création, la vidéo
+   d'un Spot déjà publié (My space). Le fichier part dans le seau
+   `moments`, dans MON dossier (`<uid>/<uuid>.webm|mp4`) ; le serveur
+   vérifie qu'il y est (`_clip_ok`) avant de l'attacher à quoi que ce soit.
+   ⚠️ La caméra exige `camera=(self)` dans la Permissions-Policy
+   (space/vercel.json) — c'était `camera=()` : la caméra était interdite. */
+const CLIP_MS = 5000;
+const recMime = () => typeof MediaRecorder === 'undefined' ? '' :
+  ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4;codecs=avc1,mp4a', 'video/mp4'].find(t => MediaRecorder.isTypeSupported(t)) || '';
+function cityNear(pos){
+  if(!pos) return null;
+  let best = null, bd = 40e3;
+  for(const k of EARTH.cities){ const d = hav(pos, { lat:k[1], lng:k[2] }); if(d < bd){ bd = d; best = k[0]; } }
+  return best;
+}
+const recNote = (t, no) => { const n = $('rec-note'); n.className = 'note' + (no ? ' no' : ''); n.textContent = t || ''; };
+function recStop(){
+  REC.stream?.getTracks().forEach(t => t.stop()); REC.stream = null;
+  try{ if(REC.mr && REC.mr.state !== 'inactive') REC.mr.stop(); }catch(_){}
+  REC.mr = null; clearInterval(REC.t);
+}
+function recClose(){
+  recStop(); if(REC.url) URL.revokeObjectURL(REC.url);
+  Object.assign(REC, { on:false, kind:null, spot:null, step:null, blob:null, url:null, h:null, busy:false });
+  const v = $('rec-v'); v.pause(); v.removeAttribute('src'); v.srcObject = null; v.controls = false;
+  $('rec').classList.remove('on'); $('rec').setAttribute('aria-hidden', 'true'); document.body.classList.remove('rec-on');
+}
+$('rec-x').onclick = recClose;
+function recOpen(title){
+  REC.on = true; $('rec-t').textContent = title; recNote('');
+  $('rec').classList.add('on'); $('rec').setAttribute('aria-hidden', 'false'); document.body.classList.add('rec-on');
+}
+/* Regarder une vidéo — la même fenêtre, sans caméra. */
+function playClip(path){
+  recOpen('Five seconds'); REC.kind = 'play'; REC.step = 'play';
+  const v = $('rec-v'); v.srcObject = null; v.src = clipURL(path); v.controls = true; v.muted = false; v.loop = true; v.play().catch(() => {});
+  $('rec-n').textContent = ''; $('rec-body').innerHTML = '';
+}
+document.addEventListener('click', e => { const t = e.target instanceof Element ? e.target.closest('[data-play]') : null; if(t){ e.preventDefault(); e.stopPropagation(); playClip(t.dataset.play); } }, true);
+
+async function recStart(kind, spot){
+  if(REC.on) return;
+  if(!me || !F?.member){ PANEL = 'gate'; syncPanels(); return; }
+  recOpen(kind === 'moment' ? 'Short-Live' : 'Spot video');
+  REC.kind = kind; REC.spot = spot || null; REC.mode = 'social'; REC.shield = 'off'; REC.h = null;
+  if(kind === 'moment'){
+    const L = MS?.limits;
+    if(L && L.moment_max_day != null && L.moments_today >= L.moment_max_day){ recNote(L.moment_max_day + ' moments a day at most', true); REC.step = 'limit'; recPaint(); return; }
+    if(!TOT) loadTotehm().catch(e => console.error('[totehm]', e && e.message || e));
+  }
+  REC.mime = recMime();
+  if(!REC.mime || !navigator.mediaDevices?.getUserMedia){ REC.step = 'nocam'; recPaint(); return; }
+  REC.step = 'cam'; recPaint();
+  try{
+    REC.stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment', width:{ ideal:720 }, height:{ ideal:1280 } }, audio:true });
+  }catch(e){ console.error('[rec]', e && e.name); REC.step = 'denied'; recPaint(); return; }
+  if(!REC.on){ recStop(); return; }
+  const v = $('rec-v'); v.controls = false; v.muted = true; v.srcObject = REC.stream; v.play().catch(() => {});
+  REC.step = 'ready'; recPaint();
+}
+function recGo(){
+  if(!REC.stream || REC.step !== 'ready') return;
+  const chunks = [];
+  try{ REC.mr = new MediaRecorder(REC.stream, { mimeType: REC.mime, videoBitsPerSecond: 2e6, audioBitsPerSecond: 64e3 }); }
+  catch(e){ console.error('[rec]', e && e.message); REC.step = 'nocam'; recPaint(); return; }
+  REC.mr.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
+  REC.mr.onstop = () => {
+    const type = (REC.mime.split(';')[0]) || 'video/webm';
+    REC.blob = new Blob(chunks, { type }); recStop();
+    if(!REC.on) return;
+    const v = $('rec-v'); v.srcObject = null; if(REC.url) URL.revokeObjectURL(REC.url);
+    REC.url = URL.createObjectURL(REC.blob); v.src = REC.url; v.loop = true; v.muted = true; v.play().catch(() => {});
+    const max = RULES.clip_max_bytes || 8388608;
+    if(REC.blob.size > max){ recNote('too heavy — film it again', true); REC.blob = null; const k = REC.kind, sp = REC.spot; REC.on = false; recStart(k, sp); return; }
+    REC.step = REC.kind === 'moment' ? 'ctx' : 'keep'; recPaint();
+  };
+  REC.mr.start(250); REC.step = 'rec';
+  const t0 = Date.now();
+  const tick = () => { const left = Math.max(0, CLIP_MS - (Date.now() - t0)); $('rec-n').textContent = Math.ceil(left/1000) || ''; if(!left){ clearInterval(REC.t); try{ REC.mr?.stop(); }catch(_){} } };
+  tick(); REC.t = setInterval(tick, 100); recPaint();
+}
+function recPaint(){
+  const b = $('rec-body'), st = REC.step, chip = (attr, label, on, sub) => '<button type="button" class="chip' + (on ? ' on' : '') + '" ' + attr + '>' + label + (sub ? '<small>' + sub + '</small>' : '') + '</button>';
+  $('rec').classList.toggle('live', st === 'rec');
+  if(st !== 'rec') $('rec-n').textContent = '';
+  const done = [];
+  if(REC.kind === 'moment' && REC.h) done.push('<button class="done" data-rs="ctx" type="button"><small>context</small>' + esc(REC.h.name) + '</button>');
+  if(REC.kind === 'moment' && ['shield', 'send'].includes(st)) done.push('<button class="done" data-rs="social" type="button"><small>together</small>' + REC.mode + '</button>');
+  if(REC.kind === 'moment' && st === 'send') done.push('<button class="done" data-rs="shield" type="button"><small>GPS shield</small>' + REC.shield + '</button>');
+  let h = done.join('');
+  if(st === 'cam') h += '<div class="cap">allow the camera</div>';
+  else if(st === 'denied') h += '<div class="say">The camera is closed for this site. Allow it in the browser, then try again.</div>';
+  else if(st === 'nocam') h += '<div class="say">This browser cannot film. Try Safari or Chrome on the phone.</div>';
+  else if(st === 'limit') h += '';
+  else if(st === 'ready') h += '<button class="btn main rec-go" data-rgo="1" type="button">● REC · 5 s</button>';
+  else if(st === 'rec') h += '<div class="cap">recording</div>';
+  else if(st === 'keep') h += '<div class="acts"><button class="btn" data-ragain="1" type="button">Again</button><button class="btn main" data-rkeep="1" type="button">Keep it</button></div>';
+  else if(st === 'ctx'){
+    const l = TOT?.habits || [];
+    h += '<span class="sec-l b2">which habit is this moment?</span>' + (!TOT ? '<div class="cap">reading my TOTEHM…</div>'
+      : l.length ? '<div class="list" style="margin-top:0">' + l.map((x, k) => '<div class="it" data-rh="' + k + '">' + habitBoxHTML(x) + '</div>').join('') + '</div>'
+      : '<div class="empty">No habit in my TOTEHM yet.</div><button class="btn main" data-go="com" type="button">Write one in my TOTEHM</button>') +
+      '<div class="acts" style="margin-top:8px"><button class="lnk" data-ragain="1" type="button">film it again</button></div>';
+  }
+  else if(st === 'social') h += '<span class="sec-l b2">together, and?</span><div class="chips">' +
+    chip('data-rmode="social"', 'social', REC.mode === 'social', 'I am open to talk') + chip('data-rmode="silent"', 'silent', REC.mode === 'silent', 'I am here in silence') + '</div>';
+  else if(st === 'shield') h += '<span class="sec-l b2">GPS shield</span><div class="chips">' +
+    chip('data-rshield="off"', 'off', REC.shield === 'off', 'the city and the moment — never the point') +
+    chip('data-rshield="on"', 'on', REC.shield === 'on', 'the exact place for my subscribers · not an invitation') + '</div>';
+  else if(st === 'send') h += '<button class="btn main" data-rsend="1" type="button">Publish the moment</button>';
+  b.innerHTML = h;
+  if(st === 'ctx' && !TOT) setTimeout(() => { if(REC.step === 'ctx') recPaint(); }, 400);
+}
+$('rec-body').addEventListener('click', async e => {
+  const t = e.target instanceof Element ? e.target : null; if(!t || REC.busy) return;
+  if(t.closest('[data-rgo]')) return recGo();
+  if(t.closest('[data-ragain]')){ REC.blob = null; const k = REC.kind, sp = REC.spot; recStop(); REC.on = false; recStart(k, sp); return; }
+  const rs = t.closest('[data-rs]'); if(rs){ REC.step = rs.dataset.rs; recPaint(); return; }
+  const rh = t.closest('[data-rh]'); if(rh){ REC.h = TOT.habits[+rh.dataset.rh]; REC.step = 'social'; recPaint(); return; }
+  const rm = t.closest('[data-rmode]'); if(rm){ REC.mode = rm.dataset.rmode; REC.step = 'shield'; recPaint(); return; }
+  const rsh = t.closest('[data-rshield]'); if(rsh){ REC.shield = rsh.dataset.rshield; REC.step = 'send'; recPaint(); return; }
+  if(t.closest('[data-rkeep]')) return recKeep();
+  if(t.closest('[data-rsend]')) return recSend();
+});
+/* Le fichier monte dans MON dossier ; rien ne s'attache s'il n'y est pas. */
+async function recUpload(){
+  const ext = REC.blob.type.includes('mp4') ? 'mp4' : 'webm';
+  const path = me.id + '/' + crypto.randomUUID() + '.' + ext;
+  const { error } = await sb.storage.from('moments').upload(path, REC.blob, { contentType: REC.blob.type, upsert:false });
+  if(error){ console.error('[rec] upload', error.message); return null; }
+  return path;
+}
+async function recKeep(){
+  if(!REC.blob) return;
+  REC.busy = true; recNote('sending…');
+  const path = await recUpload();
+  if(!path){ REC.busy = false; recNote('not sent — try again', true); return; }
+  if(REC.kind === 'spot'){ CR.video = path; REC.busy = false; recClose(); renderCreateKeep(); return; }
+  const { data, error } = await sb.rpc('spot_video_set', { p_spot: REC.spot, p_video: path });
+  REC.busy = false;
+  if(error || !data?.ok){ recNote(error?.message || data?.why || 'not saved', true); sb.storage.from('moments').remove([path]); return; }
+  recClose(); await loadMine(); loadSpots(true);
+}
+async function recSend(){
+  if(!REC.blob || !REC.h) return;
+  REC.busy = true; recNote('locating…');
+  const pos = await geo();
+  if(!pos){ REC.busy = false; recNote('a moment is where I am — allow my position', true); return; }
+  RAD.me = pos; geoOK = true;
+  recNote('sending…');
+  const path = await recUpload();
+  if(!path){ REC.busy = false; recNote('not sent — try again', true); return; }
+  const { data, error } = await sb.rpc('moment_publish', {
+    p_habit: REC.h.name, p_intentions: REC.h.ints, p_mode: REC.mode, p_shield: REC.shield,
+    p_lat: pos.lat, p_lng: pos.lng, p_video: path, p_city: cityNear(pos), p_comment: null });
+  REC.busy = false;
+  if(error || !data?.ok){
+    sb.storage.from('moments').remove([path]);
+    recNote(({ figher:'members only', habit:'that habit is no longer in my TOTEHM', too_many:'the moments of the day are used', video:'the video did not arrive — film it again', position:'allow my position' })[data?.why] || error?.message || 'not published', true);
+    return;
+  }
+  recClose(); FOCUS = data.id; refreshMine();
+  if(VIEW !== 'past'){ dernierSens = 'g'; setView('past'); }
+  RAD.view = { ...pos }; await loadSpots(true);
 }
 
 /* ══ MY SPACE — DANS LE COIN MEMBRE (27/09) ══════════════════════════
@@ -2277,6 +2630,7 @@ async function onGateClick(e){
     if(!confirm('Cancel this Spot? Everyone accepted will see it is off.')) return;
     t.disabled = true; await sb.rpc('spot_cancel', { p_spot: t.dataset.cancel }); await loadMine(); loadSpots(true); return; }
   if(t.dataset.wd){ t.disabled = true; await sb.rpc('spot_withdraw', { p_spot: t.dataset.wd }); await loadMine(); loadSpots(true); return; }
+  if(t.dataset.vid){ recStart('after', t.dataset.vid); return; }
   if(t.dataset.show){
     const s = (MS?.spots || []).find(x => x.id === t.dataset.show); if(!s) return;
     const today = dayKey(new Date(s.starts_at)) === dayKey(new Date());
@@ -2319,7 +2673,7 @@ sb.auth.onAuthStateChange(async ev => {
 });
 
 /* ══ DÉMARRAGE ══════════════════════════════════════════════════════ */
-const FROM_HASH = { '#create':'create', '#search':'search', '#yesterday':'past', '#tomorrow':'time', '#later':'time', '#intent':'search' };
+const FROM_HASH = { '#create':'create', '#search':'search', '#short-live':'past', '#spots':'time', '#yesterday':'past', '#tomorrow':'time', '#later':'time', '#intent':'search' };
 VIEW = FROM_HASH[location.hash] || 'radar';
 if(location.hash === '#me') PANEL = 'gate';
 document.body.className = 'v-' + VIEW;
