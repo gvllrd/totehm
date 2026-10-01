@@ -18,9 +18,7 @@ Historique : swap des contenus `com/` ↔ `space/` le 15/09 ; Stoner et THP
 partis sur `boutique/` et `club/` créé le 23/09. Le tableau qui fait foi est
 dans `CLAUDE.md` (**QUATRE DOMAINES, UNE SOURCE**).
 
-⚠️ **Le lot du 23/09 (Club, Espace, Boîte) est écrit mais PAS encore en
-base** — voir `SYSTEM.md` §0. Les sections marquées « 23/09 » ci-dessous
-décrivent ce qui tournera une fois la migration appliquée.
+Les sections datées du 23/09 sont historiques ; l’état actuel mesuré fait foi dans `SYSTEM.md` §0.
 
 ⚠️ **`backend/` doit rester à la racine.** Dans un dossier Vercel, le SQL, les
 Edge Functions et le `docker-compose.yml` deviendraient téléchargeables.
@@ -364,8 +362,8 @@ Lues par `space/index.html` — tout le reste de l'ancien Espace est RÉVOQUÉ
 
 | fonction | qui | ce qu'elle rend |
 |---|---|---|
-| `spot_rules()` | tous | `clip_seconds` 33 · `clip_max_bytes` 20 Mo · `countdown` 3 · durée 5–720 · `max_day` 24 · `radius_km` 60 · `feed_days` 90 · `horizon_days` 90 · `max_upcoming` 10 |
-| `spot_create(habit, visibility, duration_min, video, lat, lng, city, comment, mode, location)` | connecté | crée MAINTENANT ; relit l'Habit dans MON Totehm (intentions, objectifs, répulsions reliés) ; SHARED exige `mode` et `location` ; la vidéo doit être dans `moments/<mon uid>/` |
+| `spot_rules()` | tous | `clip_seconds` 33 · `clip_max_bytes` 32 Mo · `countdown` 3 · durée 5–720 · `max_day` 24 · `radius_km` 60 · `feed_days` 90 · `horizon_days` 90 · `max_upcoming` 10 |
+| `spot_create(habit, visibility, duration_min, video, lat, lng, city, comment, mode, location)` | connecté | crée MAINTENANT ; relit l'Habit dans MON Totehm (intentions, objectifs, répulsions reliés) ; SHARED exige `location`, et `mode` si ON seulement ; vidéo dans `moments/<mon uid>/` ou référence Bunny possédée, réservée par le serveur |
 | `spots_feed(lat, lng, q, intention, before, limit)` | tous, même anonyme | les SHARED déjà commencés à 60 km (positions arrondies à 0,1° des deux côtés) + les miens ; la ville, jamais le point ni une distance |
 | `spot_schedule(habit, visibility, starts_at, duration_min, place, lat, lng, city, comment, mode, location)` | connecté | futur, sans vidéo obligatoire ; mêmes droits et Habit relue en base ; 10 à venir, horizon 90 jours |
 | `spots_list(q, intention, before, before_id, limit)` | tous | UNIQUEMENT les futurs lisibles ; pagination date + id ; lieu et nom exact seulement si autorisé |
@@ -375,9 +373,45 @@ Lues par `space/index.html` — tout le reste de l'ancien Espace est RÉVOQUÉ
 
 Chaque Spot sort de `_spot_view` : `state` (`will` · `am` · `was`) se DÉDUIT de
 l'heure (starts_at puis ends_at) ; `exact` n'existe que pour `_spot_exact` (propriétaire, ou SHARED·ON
-+ abonné) ; `context` seulement pour le propriétaire ; `mode`/`location`
-(colonne `shield`) seulement pour un SHARED. La vidéo : seau
++ abonné) ; `context` seulement pour le propriétaire ; `location`
+(colonne `shield`) seulement pour un SHARED, `mode` seulement si ON. La vidéo : seau
 `moments` PRIVÉ, URL signée côté page, autorisée par `_clip_readable`.
+
+**Correction du 01/10 (la plus récente)** : `space_habits()` connecté rend
+les mêmes attributs de Box que COM. `space_discover(view, habit, lat, lng,
+before, before_id, limit)` : NOM COMPLET, puis intentions de SA Habit si
+zéro résultat lisible, curseurs/droits conservés. Aucun filtre vertical.
+
+**Bunny Stream** : `videos` (RLS, service_role) → `video_reserve` (quota
+verrouillé) → `create-bunny-upload` (JWT + getUser, signature TUS 1 h) →
+binaire direct de SPACE vers video.bunnycdn.com → `bunny-video` complete
+(propriétaire) → `spot_create` bunny:<UUID>. `bunny-video` playback appelle
+spot_get sous le JWT du lecteur AVANT une URL HLS signée par dossier 10 min.
+Safari HLS natif, Hls.js 1.6.13 chargé seulement si nécessaire. Webhook
+`https://abujjbkbbiumxrokozph.supabase.co/functions/v1/bunny-webhook` : HMAC
+SHA256 corps brut, v1, clé lecture seule ; relit l'API pour le statut courant.
+
+Activation : secrets Edge `BUNNY_CDN_HOSTNAME` (ex. zone.b-cdn.net, sans
+https), `BUNNY_TOKEN_KEY` (URL Token Authentication Key du Pull Zone),
+`BUNNY_READ_ONLY_API_KEY`. Activer Token Authentication sur les fichiers
+CDN et configurer le Webhook URL sur la bibliothèque. Les secrets existants
+BUNNY_LIBRARY_ID / BUNNY_API_KEY fonctionnent mais ne permettent pas de lire
+la configuration du compte (401). Alternative automatisable : compte Bunny
+accessible côté serveur via BUNNY_ACCOUNT_API_KEY, aucun secret dans le front.
+Le diagnostic interne est `video_backend`, enum/booleans sans valeurs de clés.
+Le navigateur signé demande action=status, disponible seulement si le CDN
+refuse les URLs non signées et accepte la signature. Sans cela, `moments`
+privé reste actif, capture HD 6 Mbps et limite 32 Mo. Rafraîchir SPACE après
+configuration ; aucun historique vidéo n'est effacé.
+
+Test HLS local, aucun appel réel :
+```bash
+mkdir -p /tmp/space-hls-fixture
+ffmpeg -hide_banner -loglevel error -f lavfi -i testsrc2=size=1080x1920:rate=24 -t 2 -c:v libx264 -preset ultrafast -crf 24 -pix_fmt yuv420p -an -f hls -hls_time 1 -hls_list_size 0 /tmp/space-hls-fixture/playlist.m3u8
+node tests/browser/space_video.mjs
+```
+Auto-test complet Boxes/droits : `tests/sql/space_habits_video_selftest.sql`,
+annulation volontaire, attendu FAIL={}. Les deux anciens auto-tests restent.
 
 **Le Totehm et la console (01/10)** : `totehm_search(q, limit)` (par nom :
 pseudo · offer · price_cents · subscribed), `visibility_set('private'|'subscribers')`

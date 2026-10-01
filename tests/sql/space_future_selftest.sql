@@ -30,7 +30,7 @@ BEGIN
   IF public.spot_schedule(habit,'private','infinity'::timestamptz,30,'x',38.7,-9.1)->>'why' IS DISTINCT FROM 'when' THEN fails := array_append(fails,'reject_infinite_time'); END IF;
   IF public.spot_schedule(habit,'private',v_at,2,'x',38.7,-9.1)->>'why' IS DISTINCT FROM 'duration' THEN fails := array_append(fails,'duration_bounds'); END IF;
   IF public.spot_schedule(habit,'private',v_at,30,'x','NaN'::float8,-9.1)->>'why' IS DISTINCT FROM 'position' THEN fails := array_append(fails,'reject_nan_coordinate'); END IF;
-  IF public.spot_schedule(habit,'shared',v_at,30,'x',38.7,-9.1)->>'why' IS DISTINCT FROM 'mode' THEN fails := array_append(fails,'shared_needs_mode'); END IF;
+  IF public.spot_schedule(habit,'shared',v_at,30,'x',38.7,-9.1)->>'why' IS DISTINCT FROM 'location' THEN fails := array_append(fails,'shared_needs_location_first'); END IF;
   IF public.spot_schedule(habit,'shared',v_at,30,'x',38.7,-9.1,null,null,'social')->>'why' IS DISTINCT FROM 'location' THEN fails := array_append(fails,'shared_needs_location'); END IF;
   r := public.spots_list(habit,'love');
   IF jsonb_array_length(r->'spots') <> 3 OR EXISTS (SELECT 1 FROM jsonb_array_elements(r->'spots') e WHERE e->>'state' <> 'will' OR e->'exact' = 'null'::jsonb) THEN fails := array_append(fails,'owner_future_exact'); END IF;
