@@ -45,6 +45,10 @@ export async function page(browser, { dir, origin, rpc = {}, tables = {}, sessio
         const v = typeof d === 'function' ? d(url, req) : (d ?? []);
         return route.fulfill({ status:200, contentType:'application/json', body: JSON.stringify(one ? (Array.isArray(v) ? v[0] ?? null : v) : v) });
       }
+      if(p.startsWith('/storage/v1/object/sign/')){
+        log.signed = (log.signed || 0) + 1;
+        return route.fulfill({ status:200, contentType:'application/json', body: JSON.stringify({ signedURL: '/object/sign/' + p.slice(24) + '?token=t' }) });
+      }
       if(p.startsWith('/storage/v1/object/')){
         log.upload.push({ path: p.slice(19), method: req.method(), size: (req.postDataBuffer() || []).length });
         return route.fulfill({ status:200, contentType:'application/json', body: JSON.stringify({ Key: p.slice(19), Id:'x' }) });
