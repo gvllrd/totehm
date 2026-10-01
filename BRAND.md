@@ -21,16 +21,17 @@ transversal system. **This table wins over any older mapping in this file.**
 
 > **01/10/2026 — for oneself, or for oneself and others.** COM and SPACE
 > are free for oneself. `totehm.space` is **DO WITH ME**: one kind of
-> **Spot** — a habit of my TOTEHM, filmed now (33 s max), for a duration,
+> **Spot** — a Habit Box of my TOTEHM, filmed now (33 s max) or planned
+> for a future time and place, for a duration,
 > **PRIVATE** (only me) or **SHARED** (+ **SILENT** *Nobody disturb me* /
-> **SOCIAL** *We can talk*, + **LOCATION ON/OFF**). It lives **I AM HERE**,
-> then **I WAS THERE** — never a future, never a schedule. A creator's
+> **SOCIAL** *We can talk*, + **LOCATION ON/OFF**). It reads **I WILL BE HERE**
+> before its start, **I AM HERE** during its duration, then **I WAS THERE**. A creator's
 > subscription is **yearly**, priced by the creator; it opens their shared
 > TOTEHM and the exact place of their ON spots — **not an invitation**. A
 > TOTEHM is **PRIVATE** or **VISIBLE TO MY SUBSCRIBERS**, nothing else. The
 > console lives on `totehm.com/console`. TotehmBot / Higher Self is a
 > separate monthly offer — a mirror, not a coach. No match %, ever.
-> Words that are gone: Short-Live, moment, experience, *I will be here*,
+> Words that are gone: Short-Live, moment, experience,
 > capacity, apply, accept.
 
 > **30/09/2026 — one source, reconnected (Wah's MASTER BRIEF).** *(Spots:
@@ -933,9 +934,11 @@ centrage.
 > répulsion, une sagesse, une vision, leurs mini-boîtes — et la tuile
 > perforée du NOM d'un Totehm. **Tout le reste est gris** : un filtre
 > choisi est blanc, un accès, un abonnement, un solde, une porte, la
-> manette de l'Espace sont gris ; « actif » se dit par un filet vert
+> commandes sont gris ; « actif » se dit par un filet vert
 > (love). Exceptions : le badge Higher (le slogan, sur son carré navy) et
-> la manette de `totehm.com`, dont les tuiles SONT les vues du Totehm.
+> les manettes de `totehm.com` ET `totehm.space` (dernière demande de Wah,
+> 01/10) : blue `#36498c`, navy `#333366`, rep `#743169`. La manette SPACE
+> se transforme en REC/STOP dans la caméra ; ne jamais la masquer dans le fil.
 
 ### Polices — la stack et ses rôles sacrés
 
@@ -1122,3 +1125,4 @@ Never reduce one product to another.
 Never make one domain depend on another for meaning.
 
 **Independence creates the products. Connection creates the world.**
+

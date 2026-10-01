@@ -34,6 +34,20 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > conditions en dernier dans le menu membre. Migration
 > `20261001_un_spot_deux_reglages.sql`.
 
+### Correction 0.22 — même jour, demande PLUS RÉCENTE de Wah
+
+> Le futur revient dans SPACE. TOP = Spot futur détaillé dans sa Habit Box ;
+> RIGHT = liste des Spots-Habits futurs uniquement ; CENTER = radar +
+> sélection d'une Habit Box (aucune recherche libre) + intention ; BOTTOM =
+> vidéo immédiate, joystick REC/STOP. Restaurer et conserver TOUS les gestes,
+> le joystick COM coloré et les panneaux desktop avec radar réduit.
+> `I WILL BE HERE` → `I AM HERE` → `I WAS THERE`, mêmes droits privés /
+> abonnés que ci-dessus. Définitions des sept intentions identiques à COM.
+> Migration `20261001201525_space_future_navigation.sql`, APPLIQUÉE via
+> MCP (`space_future_navigation`, journal `20261001202914`). Aucun travail
+> Oracle/n8n demandé par ce lot ; pas de réapplication de cette migration.
+
 ## Le rapport
 
 Un tableau : ce qui a été fait, la valeur mesurée, ce qui n'a pas pu l'être.
+

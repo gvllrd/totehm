@@ -6,6 +6,19 @@
 > `CLAUDE.md` le 30/09/2026, les plus récentes d'abord : un renvoi « plus
 > haut » peut viser la racine ou un autre dossier. Procédures : `README.md`. État mesuré : `SYSTEM.md` (§0 d'abord).
 
+## Dernière demande SPACE · 01/10/2026 — le futur revient
+
+Migration additive `20261001201525_space_future_navigation.sql`, appliquée
+sous `space_future_navigation` (journal `20261001202914`). `spot_schedule`
+(authenticated) relit MON Habit, enregistre une date future / lieu sans
+vidéo obligatoire, mêmes droits PRIVATE/SHARED et ON/OFF. `spots_list`
+(anon aussi) rend **uniquement les futurs lisibles**, curseur date + id ;
+`spots_feed` exclut ceux qui n'ont pas encore commencé. `_spot_view` et
+`_bot_memory` distinguent `will` / `am` / `was` ; le nom du lieu précis
+reste dans `exact` uniquement. `spot_habit_context` (authenticated) lit
+les objectifs / répulsions reliés à SA Habit. Pas de nouveau droit Club,
+aucun ancien écrivain ou candidature réactivé. Les droits ci-dessous restent.
+
 ## ⛔ ÉTAT AU 01/10/2026 — un Spot, deux réglages, l'abonnement annuel, le bot à part
 
 Migration `20261001_un_spot_deux_reglages.sql` (appliquée en six morceaux,
@@ -26,7 +39,7 @@ PRIVATE sont inertes ('silent', 'off'), jamais rendus. Les colonnes
 | Totehm d'un autre | lisible si `subscribers` ET abonné vivant de CE créateur | `_shared_with_me` (les politiques de `totehms`, `objectives`, `visions`, `wisdom`) ; la politique « subscribers read » est supprimée |
 | l'offre | ouverte si prix + versement + ON + Totehm visible aux abonnés | `_offer_open` ; `creator_offer` (service_role) sans FIGHER ; `creator-subscribe` en `interval: year` |
 | chercher un Totehm | par NOM seulement ; nom · offre · abonné ? | `totehm_search` (l'ancienne `search_totehms` ne rend plus que le nom) |
-| un Spot | PRIVATE = le propriétaire ; SHARED·OFF = la ville ; SHARED·ON = + le point aux abonnés | `_spot_exact`, `_spot_view`, `spots_feed`, `spots_exact`, `spot_get`, `spot_create` |
+| un Spot | PRIVATE = le propriétaire ; SHARED·OFF = la ville ; SHARED·ON = + le point aux abonnés | `_spot_exact`, `_spot_view`, `spots_feed`, `spots_exact`, `spot_get`, `spot_create`, `spot_schedule`, `spots_list` |
 | une vidéo | URL signée, seulement si le Spot est lisible | seau `moments` privé + politique `moments read readable` → `_clip_readable` |
 | TotehmBot | abonnement mensuel à part, ou un accès offert | `bot_subscriptions` (RLS sans politique), `totehmbot_access()` |
 | la mémoire du bot | Totehm + Spots (privés compris), faits ≠ mots, « completion » et « mood » inconnus | `_bot_memory(uuid)` (service_role) — ne dépend pas de l'abonnement |
@@ -563,3 +576,4 @@ membre, le même jour.
 clé `service_role` la laisserait en clair dans `cron.job.command` et dans chaque
 dump. On passe par un jeton à usage unique créé en base : il ne quitte jamais
 Postgres, et intercepté, il est déjà mort.
+

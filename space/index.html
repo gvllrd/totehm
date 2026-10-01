@@ -2,29 +2,32 @@
 <!--
   ══ TOTEHM.SPACE — DO WITH ME · 01/10/2026 ═════════════════════════════
   Un Spot = une activité intentionnelle, tirée d'une Habit de MON Totehm,
-  filmée MAINTENANT. UN seul type de Spot, deux réglages : PRIVATE (moi
-  seul) ou SHARED (+ SILENT/SOCIAL, + LOCATION ON/OFF). Il naît « I AM
-  HERE » et passe seul « I WAS THERE » à la fin de sa durée (le serveur
-  le DÉDUIT de l'heure : page fermée ou pas).
+  filmée maintenant OU annoncée pour plus tard. Deux réglages : PRIVATE (moi
+  seul) ou SHARED (+ SILENT/SOCIAL, + LOCATION ON/OFF). I WILL BE HERE
+  avant une date annoncée ; I AM HERE pendant la durée ; I WAS THERE
+  après. Le serveur le déduit de l'heure, même page fermée.
 
-                         TOP · la recherche d'Habit (une barre)
+                         TOP · annoncer un Spot futur (I WILL BE HERE)
                                      |
-      LEFT · le fil vidéo  —————  CENTER · le radar  —————  RIGHT · la liste
-      (la ville et autour)        (les points exacts       (les mêmes Spots,
+      LEFT · le fil vidéo  —————  CENTER · le radar  —————  RIGHT · les Spots futurs
+      (la ville et autour)        (les points exacts       (les Spots à venir,
                                    que j'ai le droit       en boîtes)
                                    de voir)
                                      |
                          BOTTOM · la caméra (33 s), puis le Spot
 
-  ⚠️ LE LIEU NE SORT QUE DU SERVEUR. Le radar et la liste lisent
+  ⚠️ LE LIEU NE SORT QUE DU SERVEUR. Le radar lit
     `spots_exact` (mes Spots + les SHARED·ON des créateurs dont je suis
     l'abonné vivant) ; le fil lit `spots_feed` (la VILLE, jamais un point,
     jamais une distance). Aucun Spot non autorisé n'est placé à sa vraie
     position : la page n'en reçoit pas.
   ⚠️ LES VIDÉOS SONT PRIVÉES (seau `moments`) : URL signée, demandée
     seulement quand la vidéo est À L'ÉCRAN (egress).
-  ⚠️ L'INTENTION est commune aux trois vues horizontales, LOVE au premier
-    passage, un choix volontaire est retenu. La recherche aussi persiste.
+  ⚠️ L'INTENTION et le choix d'une Habit Box sont communs aux trois vues
+    horizontales. LOVE par défaut ; un choix volontaire est retenu.
+  RIGHT lit `spots_list` : futurs lisibles ; ville seule
+    sans droit exact. Desktop : panneaux de côté + radar réduit, jamais
+    un radar derrière la vidéo. Joystick COM : blue / navy / rep.
   Polices : Space Mono et Quantico, rien d'autre. Aucun fond blanc.
 -->
 <html lang="en">
@@ -50,11 +53,11 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;background:#000;color:var(--mid);font-family:var(--mono);font-size:13px;
   line-height:1.6;overflow:hidden;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
-button,input,textarea{font:inherit;color:inherit}
+button,input,textarea,select{font:inherit;color:inherit;color-scheme:dark}
 .hide{display:none!important}
 
 /* ══ LE COIN MEMBRE ══════════════════════════════════════════════════ */
-#member{position:fixed;top:calc(12px + var(--top));left:12px;z-index:90;display:flex;align-items:center;gap:8px;
+#member{position:fixed;top:calc(12px + var(--top));left:12px;z-index:96;display:flex;align-items:center;gap:8px;
   background:none;border:none;cursor:pointer;font-family:var(--q);font-weight:700;font-size:12px;color:var(--lo);padding:6px 4px}
 #member i{width:9px;height:9px;border-radius:50%;background:#3a3a40;display:block;flex:none;transition:background .2s,box-shadow .2s}
 #member.is-in i{background:#fff;box-shadow:0 0 8px #fff}
@@ -88,19 +91,25 @@ body.v-feed #ints,body.v-radar #ints,body.v-list #ints{opacity:1;pointer-events:
 .say{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--lo);text-align:center;line-height:1.7}
 .empty{position:absolute;left:0;right:0;top:46%;text-align:center;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
 
-/* TOP — la barre, et rien d'autre */
-#v-search{display:flex;align-items:flex-start;justify-content:center;padding:calc(110px + var(--top)) 22px 0}
-#q-wrap{width:min(520px,100%);display:flex;align-items:center;gap:8px;background:var(--s2);border-radius:var(--r);padding:0 6px 0 14px}
-#q{flex:1;min-width:0;background:none;border:none;outline:none;font-family:var(--q);font-size:16px;color:#fff;padding:13px 0}
-#q::placeholder{color:var(--dim)}
-#q-x{background:none;border:none;color:var(--lo);cursor:pointer;width:34px;height:34px;font-size:16px}
+/* TOP — annoncer un Spot futur, à partir de ma Habit Box */
+#v-plan{padding:calc(112px + var(--top)) 16px calc(112px + var(--bot));background:var(--s1);overflow-y:auto;overscroll-behavior:contain}
+#plan-body{display:flex;flex-direction:column;gap:12px;width:min(640px,100%);margin:auto}
+.field{background:var(--s2);border:none;border-radius:var(--r);padding:9px 11px;color:#fff;outline:none;min-width:0}
+textarea.field{width:100%;min-height:58px;resize:vertical;font-family:var(--q);font-size:14px}
+input[type=number].field{width:84px}
+input[type=date].field,input[type=time].field{max-width:100%}
+.pick-habit{display:block;background:none;border:none;text-align:left;width:100%;cursor:pointer}
+.pick-habit.is-on{outline:1px solid var(--mid);outline-offset:2px}
+#plan-body fieldset{border:none;display:contents}
+#plan-body.is-busy{opacity:.65;pointer-events:none}
+
 
 /* LEFT — le fil vertical, une vidéo à la fois */
 #feed{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none}
 #feed::-webkit-scrollbar{display:none}
 .clip{position:relative;height:100%;width:100%;scroll-snap-align:start;scroll-snap-stop:always;background:var(--s1);overflow:hidden}
 .clip video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
-.clip .info{position:absolute;left:12px;right:52px;bottom:calc(18px + var(--bot));z-index:2}
+.clip .info{position:absolute;left:12px;right:52px;bottom:calc(114px + var(--bot));z-index:2}
 .clip .noclip{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;letter-spacing:.2em;
   text-transform:uppercase;color:var(--dim)}
 
@@ -108,7 +117,7 @@ body.v-feed #ints,body.v-radar #ints,body.v-list #ints{opacity:1;pointer-events:
 #v-radar canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 
 /* RIGHT — la liste */
-#list{position:absolute;inset:0;overflow-y:auto;padding:calc(58px + var(--top)) 50px calc(110px + var(--bot)) 14px;
+#list{position:absolute;inset:0;overflow-y:auto;padding:calc(112px + var(--top)) 50px calc(110px + var(--bot)) 14px;
   display:flex;flex-direction:column;gap:12px;overscroll-behavior:contain}
 .it{cursor:pointer}
 .dist{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo);margin-top:5px}
@@ -121,7 +130,7 @@ body.v-feed #ints,body.v-radar #ints,body.v-list #ints{opacity:1;pointer-events:
 #cam-sec{position:absolute;top:calc(16px + var(--top));right:16px;font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:#fff;
   display:flex;align-items:center;gap:7px}
 #cam-sec i{width:9px;height:9px;border-radius:50%;background:#E24B4A;display:block}
-#cam-body{position:absolute;left:0;right:0;bottom:0;max-height:72%;overflow-y:auto;padding:16px 16px calc(100px + var(--bot));
+#cam-body{position:absolute;left:0;right:0;bottom:0;max-height:72%;overflow-y:auto;padding:16px 16px calc(140px + var(--bot));
   background:linear-gradient(to top,rgba(0,0,0,.92) 70%,rgba(0,0,0,0));display:flex;flex-direction:column;gap:12px}
 body.v-cam.is-rec #cam-body,body.v-cam.is-count #cam-body{background:none}
 .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
@@ -174,19 +183,30 @@ body.v-cam.is-rec #cam-body,body.v-cam.is-count #cam-body{background:none}
 #detail .acts{display:flex;gap:8px;margin-top:12px;align-items:center}
 #detail video{width:100%;max-height:46vh;object-fit:cover;background:#000;display:block;margin-bottom:10px;border-radius:var(--r)}
 
-/* ══ LA MANETTE — copiée de com/totehm.html, grise ═══════════════════ */
+/* ══ LA MANETTE — couleurs et manche de com/totehm.html ═════════════ */
 #joy{position:fixed;z-index:70;bottom:calc(14px + var(--bot));left:50%;transform:translateX(-50%);
   display:grid;grid-template-columns:18px var(--joy-d) 18px;grid-template-rows:18px var(--joy-d) 18px;align-items:center;justify-items:center;
   transition:opacity .25s}
-body.v-feed #joy,body.v-cam.is-rec #joy,body.v-cam.is-count #joy,body.v-cam.is-form #joy{opacity:0;pointer-events:none}
+#joy-say{position:absolute;left:50%;bottom:calc(100% + 4px);transform:translateX(-50%);font-size:9px;letter-spacing:.1em;white-space:nowrap;color:var(--lo);pointer-events:none}
+#joy-box{border:none;padding:0;-webkit-tap-highlight-color:transparent}
+#joy-box:focus-visible{outline:1px solid var(--mid);outline-offset:4px}
+#joy-box.is-camera{cursor:pointer}
+#joy-box.is-camera #joy-stack{display:none}
+#joy-record{display:none;position:absolute;left:50%;top:50%;width:22px;height:22px;transform:translate(-50%,-50%);background:#E24B4A;border-radius:50%;transition:border-radius .15s,width .15s,height .15s}
+#joy-box.is-camera #joy-record{display:block}
+#joy-box.is-recording #joy-record{border-radius:3px;width:19px;height:19px}
+#joy-box.is-camera:disabled{opacity:.45;cursor:default}
+#joy-stack i{transition:opacity .18s,transform .18s}
+#joy-stack i.is-current{opacity:0;transform:scale(.4)}
+#joy-box.is-side #joy-stack{opacity:0}
 #cur-h{grid-area:1/2/2/3}#cur-g{grid-area:2/1/3/2}#joy-box{grid-area:2/2/3/3}#cur-d{grid-area:2/3/3/4}#cur-b{grid-area:3/2/4/3}
-#joy-box{width:var(--joy-d);height:var(--joy-d);position:relative;border-radius:50%;background:var(--s3);box-shadow:0 2px 7px rgba(0,0,0,.5);
+#joy-box{width:var(--joy-d);height:var(--joy-d);position:relative;border-radius:50%;background:var(--joy-vue,var(--navy));box-shadow:0 2px 7px rgba(0,0,0,.5);
   touch-action:none;cursor:grab}
 #joy-stack{position:absolute;inset:0;transform:translate(var(--mx,0px),var(--my,0px));transition:transform .26s cubic-bezier(.22,.9,.3,1)}
 #joy-box.is-held #joy-stack{transition:none}
 #joy-stack i{--d:12px;position:absolute;left:50%;display:block;width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
   border-radius:50%;background:var(--c)}
-#joy-stack .o{top:23%;--c:#8a8a94}#joy-stack .h{top:50%;--c:#f2f2f2}#joy-stack .r{top:77%;--c:#5a5a64}
+#joy-stack .o{top:23%;--c:var(--blue)}#joy-stack .h{top:50%;--c:var(--navy)}#joy-stack .r{top:77%;--c:var(--rep)}
 .cur{background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;width:20px;height:20px;
   opacity:.85;color:#fff;-webkit-tap-highlight-color:transparent}
 .cur.is-dead{opacity:.14;pointer-events:none}
@@ -202,8 +222,6 @@ body.v-feed #joy,body.v-cam.is-rec #joy,body.v-cam.is-count #joy,body.v-cam.is-f
 #menu .m-terms:hover,
 .say:hover,
 .empty:hover,
-#q:hover::placeholder,
-#q-x:hover,
 .clip .noclip:hover,
 .dist:hover,
 .lab:hover,
@@ -217,6 +235,58 @@ body.v-feed #joy,body.v-cam.is-rec #joy,body.v-cam.is-count #joy,body.v-cam.is-f
 .by:hover{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
+
+.plan-draft .v-col{gap:10px}.plan-draft .lab{color:rgba(255,255,255,.65)}.plan-draft .lnk{color:var(--mid)}
+/* Habit Box du radar, et définition exacte de l'intention choisie. */
+#heading{position:fixed;top:calc(14px + var(--top));left:0;right:0;z-index:60;display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none;transition:left .35s var(--ease),right .35s var(--ease)}
+#title{position:static;transform:none}
+#int-def{max-width:min(370px,74vw);font-size:9px;line-height:1.45;color:var(--lo);text-align:center;pointer-events:none}
+#habit-filter{pointer-events:auto;background:var(--s2);border:none;border-radius:var(--r);padding:5px 10px;max-width:min(320px,70vw);font-size:10px;color:var(--mid);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body:not(.v-radar) #habit-filter{visibility:hidden}
+body.v-cam.is-rec #int-def{opacity:0}
+#habit-picker{position:fixed;top:calc(100px + var(--top));left:50%;transform:translateX(-50%);z-index:85;width:min(420px,calc(100vw - 32px));max-height:60vh;overflow-y:auto;background:var(--s1);border:1px solid var(--s3);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;gap:10px}
+#habit-picker .row{justify-content:space-between}
+#joy .cur.is-preview{opacity:1;transform:scale(1.3)}
+.view:not(#v-radar){touch-action:pan-y}
+#radar-empty{top:auto;transform:translate(-50%,-50%);width:240px;right:auto;pointer-events:none}
+#place-picker{position:fixed;inset:0;z-index:100;background:var(--s1);display:flex;flex-direction:column}
+#place-map{flex:1;position:relative;overflow:hidden;touch-action:none;background:var(--s2);cursor:grab}
+#place-map.is-held{cursor:grabbing}
+#map-tiles{position:absolute;inset:0;pointer-events:none}
+#map-tiles img{position:absolute;width:256px;height:256px;filter:invert(1) hue-rotate(180deg) brightness(.72) saturate(.65)}
+#map-pin{position:absolute;top:50%;left:50%;width:18px;height:18px;border:2px solid #fff;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 5px rgba(0,0,0,.4);pointer-events:none}
+#map-pin:after{content:'';position:absolute;inset:5px;border-radius:50%;background:#fff}
+#map-tools{position:absolute;top:calc(14px + var(--top));right:14px;display:flex;flex-direction:column;gap:8px}
+#map-tools button{min-width:40px;min-height:40px}
+#map-credit{position:absolute;bottom:2px;right:5px;font-size:9px;background:var(--s1);padding:2px 5px;color:var(--lo)}
+#map-credit a{color:inherit}
+#place-actions{background:var(--s1);padding:14px 16px calc(14px + var(--bot));display:flex;flex-direction:column;gap:10px}
+#place-actions .row{justify-content:space-between}
+@media(min-width:900px){
+  :root{--panel-w:420px}
+  #v-radar{visibility:visible!important;opacity:1!important;z-index:10;transition:none}
+  .view:not(#v-radar){z-index:20;opacity:1;transition:transform .4s var(--ease),visibility 0s .4s;visibility:hidden;box-shadow:0 0 30px rgba(0,0,0,.4)}
+  .view.is-on:not(#v-radar){visibility:visible;transition:transform .4s var(--ease),visibility 0s}
+  #v-feed{inset:0 auto 0 0;width:var(--panel-w);transform:translateX(-101%);background:var(--s1)}
+  #v-list{inset:0 0 0 auto;width:var(--panel-w);transform:translateX(101%);background:var(--s1)}
+  #v-feed.is-on,#v-list.is-on{transform:none}
+  #v-plan{inset:calc(106px + var(--top)) auto auto 50%;width:min(760px,calc(100vw - 48px));height:auto;max-height:min(42vh,410px);min-height:90px;padding:16px 22px;transform:translate(-50%,-150%);border-radius:var(--r)}
+  #v-plan.is-on{transform:translate(-50%,0)}
+  #v-cam{inset:auto auto calc(124px + var(--bot)) 50%;width:min(760px,calc(100vw - 48px));height:min(42vh,410px);transform:translate(-50%,160%);border-radius:var(--r);overflow:hidden}
+  #v-cam.is-on{transform:translate(-50%,0)}
+  #cam-body{max-height:90%;padding:14px 18px 16px}
+  #cam-sec{top:12px;right:14px}
+  #list{padding:calc(66px + var(--top)) 48px 26px 16px}
+  .clip .info{bottom:26px}
+  body.v-feed #habit-filter,body.v-list #habit-filter{visibility:visible}
+  body.v-feed #heading{left:var(--panel-w)}
+  body.v-list #heading{right:var(--panel-w)}
+  #detail{left:50%;right:auto;width:min(600px,calc(100vw - 40px));border-radius:var(--r) var(--r) 0 0;transform:translate(-50%,104%)}
+  #detail.is-open{transform:translate(-50%,0)}
+}
+@media(max-width:480px){#heading{top:calc(44px + var(--top))}#int-def{max-width:80vw;font-size:8px}#list,#v-plan{padding-top:calc(132px + var(--top))}}
+@media(prefers-reduced-motion:reduce){.view,#heading,#detail,#menu,#joy-stack,#joy-record{transition:none!important}}
+
 </style>
 </head>
 <body class="v-radar">
@@ -224,15 +294,16 @@ body.v-feed #joy,body.v-cam.is-rec #joy,body.v-cam.is-count #joy,body.v-cam.is-f
 
 <button id="member" type="button" aria-label="Member menu"><i></i><span id="member-txt">Sign in</span></button>
 <nav id="menu" aria-label="Member menu"></nav>
-<div id="title" aria-live="polite"><b id="title-int"></b><svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg></div>
+<header id="heading"><div id="title" aria-live="polite"><b id="title-int"></b><svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg></div>
+<p id="int-def"></p><button id="habit-filter" type="button" aria-haspopup="dialog" aria-expanded="false">Habit Box · all</button></header>
+<aside id="habit-picker" class="hide" role="dialog" aria-label="Select my Habit Box"></aside>
 <div id="ints" role="group" aria-label="Intention"></div>
 
-<section class="view" id="v-search" aria-label="Search a habit">
-  <div id="q-wrap"><input id="q" type="search" placeholder="Habit" autocomplete="off" enterkeyhint="search" aria-label="Habit"><button id="q-x" type="button" aria-label="Clear">×</button></div>
-</section>
+<section class="view" id="v-plan" aria-label="Create a future spot"><div id="plan-body"></div></section>
+
 <section class="view" id="v-feed" aria-label="Spots around"><div id="feed"></div></section>
 <section class="view is-on" id="v-radar" aria-label="Radar"><canvas id="canvas"></canvas><div class="empty hide" id="radar-empty"></div></section>
-<section class="view" id="v-list" aria-label="Spots"><div id="list"></div></section>
+<section class="view" id="v-list" aria-label="Future Spot Habits"><div id="list"></div></section>
 <section class="view" id="v-cam" aria-label="Camera">
   <video id="cam-v" playsinline muted></video>
   <div id="cam-n"></div>
@@ -241,11 +312,18 @@ body.v-feed #joy,body.v-cam.is-rec #joy,body.v-cam.is-count #joy,body.v-cam.is-f
 </section>
 
 <aside id="detail" aria-label="Spot"></aside>
+<section id="place-picker" class="hide" role="dialog" aria-modal="true" aria-label="Choose the future spot place">
+  <div id="place-map"><div id="map-tiles"></div><div id="map-pin"></div>
+    <div id="map-tools"><button class="btn" type="button" data-zoom="1" aria-label="Zoom in">+</button><button class="btn" type="button" data-zoom="-1" aria-label="Zoom out">−</button><button class="btn" type="button" data-here="1">Here</button></div>
+    <span id="map-credit">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></span>
+  </div>
+  <div id="place-actions"><p class="note">Move the map to choose the place.</p><input class="field" id="place-name" maxlength="120" placeholder="Place name (optional)" aria-label="Place name"><div class="row"><button class="lnk" id="place-cancel" type="button">Cancel</button><button class="btn" id="place-use" type="button">Use this place</button></div></div>
+</section>
 
 <div id="joy" role="group" aria-label="Where I am in totehm.space">
-  <button class="cur" id="cur-h" type="button" aria-label="Search"><svg viewBox="0 0 16 16"><path d="M3 10 L8 5 L13 10"/></svg></button>
+  <button class="cur" id="cur-h" type="button" aria-label="Future spot"><svg viewBox="0 0 16 16"><path d="M3 10 L8 5 L13 10"/></svg></button>
   <button class="cur" id="cur-g" type="button" aria-label="Feed"><svg viewBox="0 0 16 16"><path d="M10 3 L5 8 L10 13"/></svg></button>
-  <div id="joy-box"><div id="joy-stack"><i class="o"></i><i class="h"></i><i class="r"></i></div></div>
+  <button id="joy-box" type="button" aria-label="Back to radar"><span id="joy-stack" aria-hidden="true"><i class="o"></i><i class="h"></i><i class="r"></i></span><span id="joy-record" aria-hidden="true"></span></button><span id="joy-say"></span>
   <button class="cur" id="cur-d" type="button" aria-label="List"><svg viewBox="0 0 16 16"><path d="M6 3 L11 8 L6 13"/></svg></button>
   <button class="cur" id="cur-b" type="button" aria-label="Camera"><svg viewBox="0 0 16 16"><path d="M3 6 L8 11 L13 6"/></svg></button>
 </div>
@@ -350,8 +428,14 @@ document.addEventListener('click', e => {
 
 /* ══ LES SEPT INTENTIONS — ordre des chakras : violet en haut, rouge en bas ══ */
 const INTS = {
-  fight:{n:'Fight',c:'#E24B4A'}, flow:{n:'Flow',c:'#e48b31'}, enrich:{n:'Enrich',c:'#fcbe21'}, love:{n:'Love',c:'#639922'},
-  express:{n:'Express',c:'#1D9E75'}, focus:{n:'Focus',c:'#378ADD'}, celebrate:{n:'Celebrate',c:'#7F77DD'} };
+  fight:{n:'Fight',c:'#E24B4A',def:'Conquer yourself through harder effort.',pillar:'BODY'},
+  flow:{n:'Flow',c:'#e48b31',def:'Liberate energy through movement.',pillar:'BODY'},
+  enrich:{n:'Enrich',c:'#fcbe21',def:'Master your wealth through capital & network.',pillar:'MENTAL'},
+  love:{n:'Love',c:'#639922',def:'Contemplate life through connection & beauty.',pillar:'SPIRIT'},
+  express:{n:'Express',c:'#1D9E75',def:'Give form to emotion through creation.',pillar:'SOUL'},
+  focus:{n:'Focus',c:'#378ADD',def:'Master your mind through deep mental focus.',pillar:'MENTAL'},
+  celebrate:{n:'Celebrate',c:'#7F77DD',def:'Elevate energy through collective effervescence.',pillar:'SOUL'} };
+
 const CHAKRA = ['celebrate','focus','express','love','enrich','flow','fight'];
 const icol = i => (INTS[i] || {}).c || '#ffffff';
 const FREQ = { daily:'daily', every_morning:'every morning', every_evening:'every evening', weekly:'weekly', every_weekday:'every weekday',
@@ -367,7 +451,8 @@ const dayOf = d => { const n = new Date(), y = new Date(n); y.setDate(n.getDate(
 const fmtDur = m => !m ? '' : m < 60 ? m + ' min' : Math.floor(m/60) + ' h' + (m % 60 ? ' ' + pad(m % 60) : '');
 /* L'état se RECALCULE à chaque dessin depuis `ends_at` : un Spot passe à
    I WAS THERE sous les yeux, sans attendre une requête. */
-const isHere = s => s.ends_at ? Date.now() < new Date(s.ends_at).getTime() : s.state === 'am';
+const spotState = s => s.starts_at && new Date(s.starts_at).getTime() > Date.now() ? 'will' : s.ends_at ? (Date.now() < new Date(s.ends_at).getTime() ? 'am' : 'was') : s.state;
+const isHere = s => spotState(s) === 'am';
 
 /* ══ LA SPHÈRE — seulement pour les points que j'ai le droit de voir ═ */
 const EARTH_R = 6371e3, DEG = Math.PI/180;
@@ -383,25 +468,29 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
 const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query=' + Number(lat).toFixed(5) + '%2C' + Number(lng).toFixed(5);
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD = '2026-10-01';
+const BUILD = '2026-10-01-navigation';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:20971520, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'radar';
-const S = { int: INTS[store.get('space_int')] ? store.get('space_int') : 'love', q: '' };
+const S = { int: INTS[store.get('space_int')] ? store.get('space_int') : 'love', q: '', habit:null };
 const FEED = { list:[], seq:0, more:true, loading:false };
 const EX = { list:[], seq:0 };
-const REC = { step:null, stream:null, mr:null, blob:null, url:null, mime:'', t0:0, timer:0, habit:null, vis: store.get('space_vis') === 'private' ? 'private' : (store.get('space_vis') === 'shared' ? 'shared' : null),
+const LIST = { list:[], seq:0, more:false, loading:false };
+const PLAN = { seq:0, context:null, details:false, habit:null, date:'', time:'', pos:null, place:'', city:null, dur:null, vis:store.get('space_vis'), mode:null, loc:null, say:'', busy:false };
+let habitsPending = null, gestureCount = 0, suppressClickUntil = 0;
+const REC = { seq:0, step:null, stream:null, mr:null, blob:null, url:null, mime:'', t0:0, timer:0, habit:null, vis: store.get('space_vis') === 'private' ? 'private' : (store.get('space_vis') === 'shared' ? 'shared' : null),
   mode:null, loc:null, dur:null, busy:false };
 let HABITS = null, DETAIL = null;
 window.__totehm_space = () => ({ build: BUILD, view: VIEW, signed_in: !!me, located: !!POS, intention: S.int, search: !!S.q,
   feed: FEED.list.length, exact: EX.list.length, playing: [...document.querySelectorAll('#feed video')].filter(v => !v.paused).length,
-  detail: !!DETAIL, rec: { step: REC.step, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis } });
+  list:LIST.list.length, future:LIST.list.filter(s => spotState(s) === 'will').length, gestures:gestureCount, radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx)}, habit_filter:!!S.habit, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis } });
 
 /* ══ LE TITRE ET LES SEPT ════════════════════════════════════════════ */
 function paintInts(){
+  $('int-def').textContent = INTS[S.int].def;
   $('title-int').textContent = INTS[S.int].n; $('title').style.setProperty('--c', icol(S.int));
   $('ints').innerHTML = CHAKRA.map(k => '<button type="button" data-int="' + k + '" style="--c:' + INTS[k].c + '" aria-label="' + INTS[k].n +
-    '" aria-pressed="' + (k === S.int) + '" class="' + (k === S.int ? 'is-on' : '') + '"></button>').join('');
+    ' · ' + esc(INTS[k].def) + '" title="' + esc(INTS[k].def) + '" aria-pressed="' + (k === S.int) + '" class="' + (k === S.int ? 'is-on' : '') + '"></button>').join('');
 }
 $('ints').addEventListener('click', e => {
   const b = e.target.closest('[data-int]'); if(!b || b.dataset.int === S.int) return;
@@ -413,14 +502,14 @@ const tickHTML = l => '<span class="tick">' + (l || []).map(i => '<i style="back
 function placeHTML(s){
   if(s.exact && s.exact.lat != null){
     const d = POS ? fmtDist(hav(POS, s.exact)) : '';
-    return '<a class="v-loc" href="' + mapsURL(s.exact.lat, s.exact.lng) + '" target="_blank" rel="noopener">' + esc(s.city || 'the exact place') + '</a>' + (d ? '<span>' + d + '</span>' : '');
+    return '<a class="v-loc" href="' + mapsURL(s.exact.lat, s.exact.lng) + '" target="_blank" rel="noopener">' + esc(s.exact.place || s.city || 'the exact place') + '</a>' + (d ? '<span>' + d + '</span>' : '');
   }
   return '<span>' + esc(s.city || 'somewhere') + '</span>';
 }
 function spotHTML(s){
-  const here = isHere(s), st = new Date(s.starts_at), end = new Date(s.ends_at || st.getTime() + (s.duration_min || 0)*60e3);
+  const state = spotState(s), here = state === 'am', st = new Date(s.starts_at), end = new Date(s.ends_at || st.getTime() + (s.duration_min || 0)*60e3);
   const ints = (s.intentions || []).map(i => '<span class="v-int" style="color:' + icol(i) + '">' + esc(INTS[i]?.n || i) + '</span>').join('');
-  const when = here ? '<span class="v-st">I AM HERE</span><span>until ' + hhmm(end) + '</span>'
+  const when = state === 'will' ? '<span class="v-st">I WILL BE HERE</span><span>' + esc(dayOf(st)) + ' ' + hhmm(st) + '</span>' : here ? '<span class="v-st">I AM HERE</span><span>until ' + hhmm(end) + '</span>'
                     : '<span class="v-st">I WAS THERE</span><span>' + esc(dayOf(st)) + ' ' + hhmm(st) + '</span>';
   const how = s.visibility === 'private' ? '<span>private</span>'
     : '<span>' + (s.mode === 'silent' ? 'silent · nobody disturb me' : 'social · we can talk') + '</span><span>location ' + esc(s.location || 'off') + '</span>';
@@ -446,7 +535,8 @@ async function clipURL(path){
 const io = new IntersectionObserver(es => es.forEach(async en => {
   const v = en.target.querySelector('video'); if(!v) return;
   if(en.isIntersecting && en.intersectionRatio > .6 && VIEW === 'feed'){
-    if(!v.src){ const u = await clipURL(v.dataset.clip); if(!u) return; v.src = u; }
+    if(!v.src){ const u = await clipURL(v.dataset.clip); if(!u || !en.target.isConnected || VIEW !== 'feed') return; v.src = u; }
+    if(VIEW !== 'feed' || !en.target.isConnected) return;
     v.play().catch(() => {});
     const k = +en.target.dataset.k; if(k >= FEED.list.length - 2) loadFeed(true);
   } else v.pause();
@@ -460,7 +550,7 @@ function paintFeed(){
   f.querySelectorAll('.clip[data-k]').forEach(c => io.observe(c));
 }
 $('feed').addEventListener('click', e => {
-  if(e.target.closest('a,[data-com]')) return;
+  if(Date.now() < suppressClickUntil || e.target.closest('a,[data-com]')) return;
   const o = e.target.closest('[data-open]'); if(o){ openDetail(FEED.list.find(s => s.id === o.dataset.open)); return; }
   const v = e.target.closest('.clip')?.querySelector('video'); if(v){ v.muted = !v.muted; v.play().catch(() => {}); }
 });
@@ -479,46 +569,68 @@ async function loadFeed(more){
   paintFeed();
 }
 
-/* ══ CENTER & RIGHT — LES POINTS AUTORISÉS ═══════════════════════════ */
+/* ══ CENTER — LES POINTS EXACTS AUTORISÉS ══════════════════════════ */
 async function loadExact(){
   const seq = ++EX.seq;
-  if(!me){ EX.list = []; paintList(); paintRadarEmpty(); return; }
-  const { data, error } = await sb.rpc('spots_exact', { p_q: S.q || null, p_intention: S.int });
+  if(!me){ EX.list = []; paintRadarEmpty(); return; }
+  const { data, error } = await sb.rpc('spots_exact', { p_q:S.q || null, p_intention:S.int });
   if(seq !== EX.seq) return;
   if(error){ console.error('[spots_exact]', error.message); return; }
   EX.list = (data?.spots || []).filter(s => s.exact && s.exact.lat != null);
-  RAD.range = radarRange(); paintList(); paintRadarEmpty();
+  RAD.range = radarRange(); paintRadarEmpty();
 }
-function sorted(){
-  return EX.list.slice().sort((a, b) => (isHere(b) - isHere(a)) ||
-    (POS ? hav(POS, a.exact) - hav(POS, b.exact) : new Date(b.starts_at) - new Date(a.starts_at)));
+/* RIGHT — seulement les Spots-Habits futurs. Sans droit exact : la ville. */
+async function loadList(more = false){
+  if(more && (!LIST.more || LIST.loading)) return;
+  const seq = ++LIST.seq; LIST.loading = true;
+  const last = more ? LIST.list.at(-1) : null;
+  const { data, error } = await sb.rpc('spots_list', { p_q:S.q || null, p_intention:S.int, p_before:last?.starts_at || null, p_before_id:last?.id || null, p_limit:50 });
+  if(seq !== LIST.seq) return;
+  LIST.loading = false;
+  if(error){ console.error('[spots_list]', error.message); return; }
+  LIST.list = more ? LIST.list.concat(data?.spots || []) : data?.spots || [];
+  LIST.more = !!data?.more; paintList();
 }
 function paintList(){
-  const l = sorted();
-  $('list').innerHTML = !me ? '<div class="empty">sign in to see my spots</div>'
-    : l.length ? l.map(s => '<div class="it" data-open="' + esc(s.id) + '">' + spotHTML(s) + '</div>').join('')
-    : '<div class="empty">' + (S.q ? 'no spot for this habit' : 'no spot here yet') + '</div>';
+  const upcoming = LIST.list.filter(s => spotState(s) === 'will');
+  $('list').innerHTML = upcoming.length ? upcoming.map(s => '<div class="it" data-open="' + esc(s.id) + '" data-state="' + spotState(s) + '">' + spotHTML(s) + '</div>').join('') +
+    (LIST.more ? '<button class="btn" type="button" data-more="1">More spots</button>' : '')
+    : '<div class="empty">' + (S.q ? 'no spot for this Habit Box' : 'no future spot with this intention yet') + '</div>';
 }
 $('list').addEventListener('click', e => {
-  if(e.target.closest('a,[data-com]')) return;
-  const o = e.target.closest('[data-open]'); if(o) openDetail(EX.list.find(s => s.id === o.dataset.open));
+  if(Date.now() < suppressClickUntil || e.target.closest('a,[data-com]')) return;
+  if(e.target.closest('[data-more]')) return loadList(true);
+  const o = e.target.closest('[data-open]'); if(o) openDetail(LIST.list.find(s => s.id === o.dataset.open));
 });
+
 function paintRadarEmpty(){
   const el = $('radar-empty'), n = EX.list.length;
   el.classList.toggle('hide', n > 0); el.textContent = !me ? 'sign in to see my spots' : S.q ? 'no spot for this habit' : 'no spot on the radar';
 }
 
 /* LE RADAR — anneaux, balayage, des points. Le centre = moi (ou mes Spots). */
-const RAD = { raf:0, W:0, H:0, dpr:1, cx:0, cy:0, rpx:0, range:1000, pts:[] };
+const RAD = { raf:0, W:0, H:0, dpr:1, cx:0, cy:0, rpx:0, tx:0, ty:0, tr:0, range:1000, pts:[] };
 function center(){ if(POS) return POS; const s = EX.list[0]; return s ? s.exact : null; }
+const desktop = () => matchMedia('(min-width:900px)').matches;
 function radarSize(){
   const c = $('canvas'), dpr = Math.min(2, devicePixelRatio || 1);
-  RAD.W = innerWidth; RAD.H = innerHeight; RAD.dpr = dpr;
-  c.width = RAD.W*dpr; c.height = RAD.H*dpr;
-  const top = 64, bottom = 120;
-  RAD.cx = RAD.W/2; RAD.cy = top + (RAD.H - top - bottom)/2;
-  RAD.rpx = Math.max(60, Math.min(RAD.W/2 - 48, (RAD.H - top - bottom)/2 - 8));
+  if(RAD.W !== innerWidth || RAD.H !== innerHeight || RAD.dpr !== dpr){
+    RAD.W = innerWidth; RAD.H = innerHeight; RAD.dpr = dpr; c.width = RAD.W*dpr; c.height = RAD.H*dpr;
+  }
+  let left = 20, right = RAD.W - 48, top = $('heading').getBoundingClientRect().bottom + 18, bottom = $('joy').getBoundingClientRect().top - 24;
+  if(desktop()){
+    if(VIEW === 'feed') left = $('v-feed').offsetWidth + 22;
+    if(VIEW === 'list') right = RAD.W - $('v-list').offsetWidth - 22;
+    if(VIEW === 'plan') top = Math.max(top, parseFloat(getComputedStyle($('v-plan')).top) + $('v-plan').offsetHeight + 16);
+    if(VIEW === 'cam') bottom = Math.min(bottom, RAD.H - parseFloat(getComputedStyle($('v-cam')).bottom) - $('v-cam').offsetHeight - 16);
+  }
+  RAD.tx = (left + right)/2; RAD.ty = (top + bottom)/2;
+  RAD.tr = Math.max(20, Math.min(right - left, bottom - top)*(desktop() && ['feed','list'].includes(VIEW) ? .36 : .43));
+  if(!RAD.rpx){ RAD.cx = RAD.tx; RAD.cy = RAD.ty; RAD.rpx = RAD.tr; }
+  const em = $('radar-empty'); em.style.left = RAD.tx + 'px'; em.style.top = RAD.ty + 'px';
 }
+
+
 function radarRange(){
   const c = center(); if(!c) return 1000;
   const d = EX.list.map(s => hav(c, s.exact)).sort((a, b) => a - b);
@@ -526,7 +638,8 @@ function radarRange(){
   return Math.max(300, d[Math.min(d.length - 1, Math.floor(d.length*.85))]*1.18);
 }
 function draw(t){
-  RAD.raf = 0; if(VIEW !== 'radar') return;
+  RAD.raf = 0; if(VIEW !== 'radar' && !desktop()) return;
+  RAD.cx += (RAD.tx - RAD.cx)*.18; RAD.cy += (RAD.ty - RAD.cy)*.18; RAD.rpx += (RAD.tr - RAD.rpx)*.18;
   const x = $('canvas').getContext('2d'), { dpr, cx, cy, rpx } = RAD;
   x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, RAD.W, RAD.H);
   const g = x.createRadialGradient(cx, cy, 0, cx, cy, rpx); g.addColorStop(0, '#16161b'); g.addColorStop(1, '#0d0d10');
@@ -551,9 +664,10 @@ function draw(t){
   if(POS){ x.fillStyle = '#fff'; x.shadowColor = '#fff'; x.shadowBlur = 8; x.beginPath(); x.arc(cx, cy, 4, 0, Math.PI*2); x.fill(); x.shadowBlur = 0; }
   RAD.raf = requestAnimationFrame(draw);
 }
-function radarOn(){ radarSize(); RAD.range = radarRange(); if(!RAD.raf) RAD.raf = requestAnimationFrame(draw); }
-addEventListener('resize', () => { if(VIEW === 'radar') radarSize(); });
+function radarOn(){ radarSize(); if(!RAD.raf) RAD.raf = requestAnimationFrame(draw); }
+addEventListener('resize', () => { radarSize(); radarOn(); if(MAP.open) mapDraw(); });
 $('canvas').addEventListener('click', e => {
+  if(Date.now() < suppressClickUntil) return;
   let best = null, bd = 22;
   for(const p of RAD.pts){ const d = Math.hypot(p.px - e.clientX, p.py - e.clientY); if(d < bd){ bd = d; best = p.s; } }
   if(best) openDetail(best);
@@ -580,12 +694,176 @@ $('detail').addEventListener('click', async e => {
   }
 });
 
-/* ══ TOP — LA RECHERCHE D'HABIT, COMMUNE AUX TROIS VUES ══════════════ */
-let qT = 0;
-$('q').addEventListener('input', () => { clearTimeout(qT); qT = setTimeout(() => { S.q = $('q').value.trim(); reload(); }, 300); });
-$('q').addEventListener('keydown', e => { if(e.key === 'Enter'){ $('q').blur(); go('radar'); } });
-$('q-x').onclick = () => { $('q').value = ''; S.q = ''; reload(); $('q').focus(); };
-function reload(){ loadFeed(false); loadExact(); }
+/* ══ LA HABIT BOX — même sélection que pour créer un Spot ═══════════ */
+function reload(){ loadFeed(false); loadExact(); loadList(); }
+async function loadHabits(){
+  if(HABITS) return HABITS;
+  if(!me) return [];
+  if(habitsPending) return habitsPending;
+  const uid = me.id;
+  habitsPending = (async () => {
+    const { data, error } = await sb.from('totehms').select('steps').eq('user_id', uid).maybeSingle();
+    if(error){ console.error('[totehm]', error.message); return []; }
+    const habits = (data?.steps || []).filter(s => (s.t || '').trim()).map(s => ({ name:s.t, freq:s.f,
+      ints:(Array.isArray(s.is) && s.is.length ? s.is : [s.i].filter(Boolean)).filter(i => INTS[i]) }));
+    if(me?.id === uid) HABITS = habits;
+    return habits;
+  })();
+  try{ return await habitsPending; }finally{ habitsPending = null; }
+}
+function pickerClose(){ $('habit-picker').classList.add('hide'); $('habit-filter').setAttribute('aria-expanded', 'false'); }
+async function pickerOpen(){
+  const p = $('habit-picker'); p.classList.remove('hide'); $('habit-filter').setAttribute('aria-expanded', 'true');
+  p.innerHTML = '<p class="note">Reading my TOTEHM…</p>';
+  await loadHabits();
+  if(p.classList.contains('hide')) return;
+  p.innerHTML = '<div class="row"><button class="chip" type="button" data-all="1">All Habit Boxes</button><button class="lnk" type="button" data-picker-close="1">Close</button></div>' +
+    (!me ? '<button class="btn" type="button" data-picker-signin="1">Sign in to select my Habit Box</button>' : HABITS?.length ?
+      HABITS.map((h, k) => '<button class="pick-habit' + (S.habit?.name === h.name ? ' is-on' : '') + '" type="button" data-filter-h="' + k + '">' + habitHTML(h) + '</button>').join('') :
+      '<button class="btn" type="button" data-com="/totehm#in">Write a Habit Box in my TOTEHM</button>');
+}
+$('habit-filter').onclick = () => $('habit-picker').classList.contains('hide') ? pickerOpen() : pickerClose();
+$('habit-picker').addEventListener('click', e => {
+  if(e.target.closest('[data-picker-close]')) return pickerClose();
+  if(e.target.closest('[data-picker-signin]')) return ssoLogin(false);
+  const b = e.target.closest('[data-filter-h]');
+  if(b || e.target.closest('[data-all]')){
+    S.habit = b ? HABITS[+b.dataset.filterH] : null; S.q = S.habit?.name || '';
+    $('habit-filter').textContent = S.habit ? S.habit.name : 'Habit Box · all'; pickerClose(); reload();
+  }
+});
+document.addEventListener('pointerdown', e => { if(!e.target.closest('#habit-picker,#habit-filter')) pickerClose(); });
+
+/* ══ TOP — I WILL BE HERE, un Spot annoncé, jamais une fausse vidéo ═ */
+const chip = (a, l, on, sub) => '<button type="button" class="chip' + (on ? ' is-on' : '') + '" ' + a + '>' + l + (sub ? '<small>' + sub + '</small>' : '') + '</button>';
+function planMissing(){
+  const m = [];
+  if(!PLAN.habit) m.push('a Habit Box');
+  const start = new Date(PLAN.date + 'T' + PLAN.time).getTime();
+  if(!Number.isFinite(start) || start <= Date.now() || start > Date.now() + (RULES.horizon_days || 90)*864e5) m.push('a future date and time');
+  if(!PLAN.pos) m.push('a place'); if(!PLAN.dur) m.push('the duration');
+  if(!['private','shared'].includes(PLAN.vis)) m.push('private or shared');
+  if(PLAN.vis === 'shared'){ if(!PLAN.mode) m.push('silent or social'); if(!PLAN.loc) m.push('location on or off'); }
+  return m;
+}
+function planValidity(){
+  const m = planMissing(), send = $('plan-body').querySelector('[data-plan-send]');
+  if(send) send.disabled = !!m.length || PLAN.busy;
+  const n = $('p-note'); if(n) n.textContent = m.length ? 'missing: ' + m.join(' · ') : '';
+}
+function planPaint(){
+  requestAnimationFrame(radarSize);
+  const b = $('plan-body'); b.classList.toggle('is-busy', PLAN.busy);
+  if(!me){ b.innerHTML = '<p class="say">A future spot is a Habit Box of my TOTEHM, with a time and a place.</p><button class="btn" type="button" data-plan-signin="1">Sign in</button>'; return; }
+  if(!PLAN.habit){
+    b.innerHTML = '<span class="lab">Which Habit Box?</span>' + (!HABITS ? '<p class="note">Reading my TOTEHM…</p>' : HABITS.length ?
+      HABITS.map((h,k) => '<button class="pick-habit" type="button" data-plan-h="' + k + '">' + habitHTML(h) + '</button>').join('') :
+      '<button class="btn" type="button" data-com="/totehm#in">Write a Habit Box in my TOTEHM</button>'); return;
+  }
+  const draft = '<div class="habit plan-draft">' + tickHTML(PLAN.habit.ints) + '<span class="h-body"><span class="v-col">' +
+    '<span class="v-name">' + esc(PLAN.habit.name) + '</span><span class="v-sub">' + PLAN.habit.ints.map(i => '<span class="v-int" style="color:' + icol(i) + '">' + INTS[i].n + '</span>').join('') + '</span>' +
+    '<div class="row"><span class="lab">When?</span><input class="field" id="p-date" type="date" aria-label="Date" value="' + PLAN.date + '"><input class="field" id="p-time" type="time" aria-label="Time" value="' + PLAN.time + '"></div>' +
+    '<button class="chip" type="button" data-plan-place="1">' + esc(PLAN.place || PLAN.city || 'Choose the place') + '<small>' + (PLAN.pos ? 'Change the place' : 'Place it on the map') + '</small></button>' +
+    '<div class="row"><span class="lab">For how long?</span>' + DURS.map(d => chip('data-pdur="' + d + '"',fmtDur(d),PLAN.dur === d)).join('') + '<input class="field" id="p-dur" type="number" inputmode="numeric" min="' + RULES.duration_min + '" max="' + RULES.duration_max + '" aria-label="Duration in minutes" placeholder="min" value="' + (PLAN.dur && !DURS.includes(PLAN.dur) ? PLAN.dur : '') + '"></div>' +
+    '<div class="row"><span class="lab">Who sees it?</span>' + chip('data-pvis="private"','private',PLAN.vis === 'private','only me') + chip('data-pvis="shared"','shared',PLAN.vis === 'shared','the activity, for everyone') + '</div>' +
+    (PLAN.vis === 'shared' ? '<div class="row"><span class="lab">Together</span>' + chip('data-pmode="silent"','silent',PLAN.mode === 'silent','Nobody disturb me') + chip('data-pmode="social"','social',PLAN.mode === 'social','We can talk') + '</div>' +
+      '<div class="row"><span class="lab">Location</span>' + chip('data-ploc="off"','off',PLAN.loc === 'off','the city only') + chip('data-ploc="on"','on',PLAN.loc === 'on','the exact place, for my subscribers') + '</div>' : '') +
+    '<button class="lnk" type="button" data-plan-details="1" aria-expanded="' + PLAN.details + '">Details ' + (PLAN.details ? '▴' : '▾') + '</button>' +
+    (PLAN.details ? '<textarea class="field" id="p-say" maxlength="400" placeholder="A word (optional)" aria-label="Comment">' + esc(PLAN.say) + '</textarea>' +
+      (!PLAN.context ? '<p class="note">Reading my Habit Box context…</p>' : ['objectives','repulsions'].map(k => (PLAN.context[k] || []).length ? '<span class="mg"><span class="mg-l">' + (k === 'objectives' ? 'Why' : 'Trigger') + '</span><span class="minis">' + PLAN.context[k].map(x => '<span class="mini m-' + (k === 'objectives' ? 'o' : 'r') + '">' + esc(x.text) + '</span>').join('') + '</span></span>' : '').join('')) : '') +
+    '</span></span></div>';
+  b.innerHTML = '<div class="row"><span class="lab" style="width:auto">This Habit Box, as an action</span><button class="lnk" type="button" data-plan-reh="1">Another Habit Box</button></div>' + draft +
+    '<button class="btn" type="button" data-plan-send="1">I WILL BE HERE</button><p class="note" id="p-note"></p>';
+  planValidity();
+}
+async function planOpen(){
+  if(!PLAN.date){ const d = new Date(Date.now() + 864e5); PLAN.date = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); PLAN.time = hhmm(d); }
+  planPaint(); await loadHabits(); if(VIEW === 'plan') planPaint();
+}
+$('plan-body').addEventListener('input', e => {
+  if(e.target.id === 'p-date') PLAN.date = e.target.value;
+  if(e.target.id === 'p-time') PLAN.time = e.target.value;
+  if(e.target.id === 'p-say') PLAN.say = e.target.value;
+  if(e.target.id === 'p-dur'){ const n = Number(e.target.value); PLAN.dur = Number.isInteger(n) && n >= RULES.duration_min && n <= RULES.duration_max ? n : null; $('plan-body').querySelectorAll('[data-pdur]').forEach(b => b.classList.remove('is-on')); }
+  planValidity();
+});
+$('plan-body').addEventListener('click', e => {
+  if(PLAN.busy) return;
+  const t = e.target;
+  if(t.closest('[data-plan-signin]')) return ssoLogin(false, '/?v=plan');
+  const h = t.closest('[data-plan-h]'); if(h){ PLAN.habit = HABITS[+h.dataset.planH]; PLAN.context = null; PLAN.details = false; planPaint(); const seq = ++PLAN.seq; sb.rpc('spot_habit_context',{p_habit:PLAN.habit.name}).then(({data,error}) => { if(error) console.error('[spot_habit_context]',error.message); if(seq === PLAN.seq && me){ PLAN.context = data?.ok ? data : {}; if(VIEW === 'plan' && PLAN.details) planPaint(); } }); return; }
+  if(t.closest('[data-plan-reh]')){ PLAN.seq++; PLAN.habit = null; PLAN.context = null; return planPaint(); }
+  if(t.closest('[data-plan-details]')){ PLAN.details = !PLAN.details; return planPaint(); }
+  if(t.closest('[data-plan-place]')) return mapOpen();
+  for(const [a,k] of [['pvis','vis'],['pmode','mode'],['ploc','loc'],['pdur','dur']]){
+    const b = t.closest('[data-' + a + ']'); if(b){ PLAN[k] = k === 'dur' ? +b.dataset[a] : b.dataset[a]; if(k === 'vis') store.set('space_vis', PLAN.vis); return planPaint(); }
+  }
+  if(t.closest('[data-plan-send]')) return planSend();
+});
+async function planSend(){
+  if(PLAN.busy || planMissing().length) return;
+  PLAN.busy = true; planPaint(); const shared = PLAN.vis === 'shared';
+  const { data, error } = await sb.rpc('spot_schedule', { p_habit:PLAN.habit.name, p_visibility:PLAN.vis,
+    p_starts_at:new Date(PLAN.date + 'T' + PLAN.time).toISOString(), p_duration_min:PLAN.dur,
+    p_place:PLAN.place || PLAN.city || 'the planned place', p_lat:PLAN.pos.lat, p_lng:PLAN.pos.lng,
+    p_city:PLAN.city, p_comment:PLAN.say.trim() || null, p_mode:shared ? PLAN.mode : null, p_location:shared ? PLAN.loc : null });
+  PLAN.busy = false;
+  if(error || !data?.ok){ if(error) console.error('[spot_schedule]', error.message); planPaint(); const n = $('p-note'); if(n){ n.className = 'note no'; n.textContent = ({when:'Choose a future date within the next 90 days.',habit:'This Habit Box is no longer in my TOTEHM.',too_many:'Enough spots planned for now.',signin:'Sign in again.'})[data?.why] || 'Not saved — try again.'; } return; }
+  PLAN.habit = null; PLAN.say = ''; PLAN.pos = null; PLAN.place = ''; PLAN.city = null; PLAN.dur = null;
+  await Promise.all([loadExact(),loadList()]); loadFeed(false); go('list');
+  const s = LIST.list.find(x => x.id === data.id); if(s) openDetail(s); else { const r = await sb.rpc('spot_get',{p_id:data.id}); if(r.error) console.error('[spot_get]',r.error.message); if(r.data?.ok) openDetail(r.data.spot); }
+}
+/* La carte sert uniquement à choisir MON futur lieu. Les autres Spots
+   restent un radar de coordonnées autorisées, jamais une carte du feed. */
+const MAP = { open:false, lat:0, lng:0, z:16, timer:0, seq:0, drag:null, pointers:new Map(), pinch:null };
+const merc = (p,z) => { const n = 256*2**z, lat = Math.max(-85.0511,Math.min(85.0511,p.lat))*DEG; return {x:(p.lng+180)/360*n,y:(1-Math.log(Math.tan(lat)+1/Math.cos(lat))/Math.PI)/2*n}; };
+const unmerc = (p,z) => { const n = 256*2**z; return {lat:Math.atan(Math.sinh(Math.PI*(1-2*p.y/n)))/DEG,lng:((p.x/n*360+180)%360+360)%360-180}; };
+function mapCenter(p){ const c = unmerc(p,MAP.z); MAP.lat = Math.max(-85.0511,Math.min(85.0511,c.lat)); MAP.lng = c.lng; mapDraw(); }
+function mapDraw(){
+  if(!MAP.open) return;
+  const el = $('place-map'), W = el.clientWidth, H = el.clientHeight, c = merc(MAP,MAP.z), tiles = $('map-tiles'), n = 2**MAP.z;
+  const x0 = Math.floor((c.x-W/2)/256), x1 = Math.floor((c.x+W/2)/256), y0 = Math.floor((c.y-H/2)/256), y1 = Math.floor((c.y+H/2)/256);
+  const wanted = new Set();
+  for(let y=Math.max(0,y0);y<=Math.min(n-1,y1);y++) for(let x=x0;x<=x1;x++){
+    const wx = ((x%n)+n)%n, key = MAP.z + '/' + wx + '/' + y, id = key + ':' + x; wanted.add(id);
+    let img = [...tiles.children].find(i => i.dataset.id === id);
+    if(!img){ img = document.createElement('img'); img.alt = ''; img.dataset.id = id; img.src = 'https://tile.openstreetmap.org/' + key + '.png'; img.referrerPolicy = 'strict-origin-when-cross-origin'; tiles.append(img); }
+    img.style.left = x*256 - c.x + W/2 + 'px'; img.style.top = y*256 - c.y + H/2 + 'px';
+  }
+  [...tiles.children].forEach(i => { if(!wanted.has(i.dataset.id)) i.remove(); });
+}
+function mapOpen(){
+  const p = PLAN.pos || POS || {lat:38.7223,lng:-9.1393}; Object.assign(MAP,{open:true,lat:p.lat,lng:p.lng,z:PLAN.pos || POS ? 16 : 12});
+  $('place-name').value = PLAN.place; $('place-picker').classList.remove('hide'); pickerClose(); mapDraw(); $('place-use').focus();
+}
+function mapClose(){ MAP.open = false; MAP.seq++; MAP.pointers.clear(); MAP.drag = MAP.pinch = null; $('place-picker').classList.add('hide'); $('plan-body').querySelector('[data-plan-place]')?.focus(); }
+$('place-cancel').onclick = mapClose;
+$('place-use').onclick = async () => {
+  const pos = {lat:MAP.lat,lng:MAP.lng}, place = $('place-name').value.trim(), seq = ++MAP.seq;
+  $('place-use').disabled = true;
+  const city = await cityNear(pos); $('place-use').disabled = false;
+  if(!MAP.open || seq !== MAP.seq) return;
+  PLAN.pos = pos; PLAN.place = place; PLAN.city = city; mapClose(); planPaint();
+};
+function mapZoom(d){ MAP.z = Math.max(2,Math.min(19,MAP.z+d)); mapDraw(); }
+$('map-tools').addEventListener('click', async e => {
+  const b = e.target.closest('[data-zoom]'); if(b) return mapZoom(+b.dataset.zoom);
+  if(e.target.closest('[data-here]')){ const seq = ++MAP.seq, p = await geo(); if(p && MAP.open && seq === MAP.seq){ MAP.lat = p.lat; MAP.lng = p.lng; MAP.z = 16; mapDraw(); } }
+});
+$('place-map').addEventListener('wheel', e => { if(e.target.closest('button,a')) return; e.preventDefault(); if(e.ctrlKey){ if(Math.abs(e.deltaY)>2) mapZoom(e.deltaY<0?1:-1); } else { const c = merc(MAP,MAP.z); mapCenter({x:c.x+e.deltaX,y:c.y+e.deltaY}); } },{passive:false});
+$('place-map').addEventListener('pointerdown', e => {
+  if(e.target.closest('button,a') || e.button > 0) return; e.preventDefault();
+  MAP.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY}); $('place-map').setPointerCapture(e.pointerId); $('place-map').classList.add('is-held');
+  if(MAP.pointers.size === 1) MAP.drag = {x:e.clientX,y:e.clientY,c:merc(MAP,MAP.z)};
+  else { const a = [...MAP.pointers.values()]; MAP.pinch = {d:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y),z:MAP.z}; MAP.drag = null; }
+});
+$('place-map').addEventListener('pointermove', e => {
+  if(!MAP.pointers.has(e.pointerId)) return; MAP.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(MAP.pinch && MAP.pointers.size >= 2){ const a=[...MAP.pointers.values()],d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y); MAP.z=Math.max(2,Math.min(19,Math.round(MAP.pinch.z+Math.log2(d/Math.max(1,MAP.pinch.d))))); mapDraw(); }
+  else if(MAP.drag) mapCenter({x:MAP.drag.c.x-(e.clientX-MAP.drag.x),y:MAP.drag.c.y-(e.clientY-MAP.drag.y)});
+});
+for(const event of ['pointerup','pointercancel']) $('place-map').addEventListener(event,e => { MAP.pointers.delete(e.pointerId); if(MAP.pointers.size < 2) MAP.pinch=null; if(!MAP.pointers.size){ MAP.drag=null; $('place-map').classList.remove('is-held'); } });
+
 
 /* ══ BOTTOM — LA CAMÉRA, PUIS LE SPOT ════════════════════════════════
    Aucun formulaire avant la caméra. Décompte (annulable) → REC → arrêt
@@ -597,27 +875,31 @@ const recMime = () => typeof MediaRecorder === 'undefined' ? '' :
 function camState(){ ['is-rec','is-count','is-form'].forEach(c => document.body.classList.remove(c));
   if(REC.step === 'rec') document.body.classList.add('is-rec');
   if(REC.step === 'count') document.body.classList.add('is-count');
-  if(['habit','form','send'].includes(REC.step)) document.body.classList.add('is-form'); }
+  if(['habit','form','send'].includes(REC.step)) document.body.classList.add('is-form');
+  joyPaint(); }
 function camStop(){
   REC.stream?.getTracks().forEach(t => t.stop()); REC.stream = null;
   try{ if(REC.mr && REC.mr.state !== 'inactive') REC.mr.stop(); }catch(_){}
   clearInterval(REC.timer);
 }
 function camReset(){
+  REC.seq++; if(REC.mr){ REC.mr.onstop = null; REC.mr.ondataavailable = null; }
   camStop(); if(REC.url) URL.revokeObjectURL(REC.url);
   Object.assign(REC, { step:null, mr:null, blob:null, url:null, habit:null, mode:null, loc:null, dur:null, busy:false });
   const v = $('cam-v'); v.pause(); v.removeAttribute('src'); v.srcObject = null;
   $('cam-n').textContent = ''; $('cam-sec').classList.add('hide'); camState();
 }
 async function camOpen(){
-  camReset();
+  camReset(); REC.vis = ['private','shared'].includes(store.get('space_vis')) ? store.get('space_vis') : null; const seq = REC.seq;
   if(!me){ REC.step = 'signin'; return camPaint(); }
   REC.mime = recMime();
   if(!REC.mime || !navigator.mediaDevices?.getUserMedia){ REC.step = 'nocam'; return camPaint(); }
   REC.step = 'perm'; camPaint();
-  try{ REC.stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment', width:{ ideal:720 }, height:{ ideal:1280 } }, audio:true }); }
-  catch(e){ console.error('[cam]', e && e.name); REC.step = 'denied'; return camPaint(); }
-  if(VIEW !== 'cam'){ camStop(); return; }
+  let stream;
+  try{ stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment', width:{ ideal:720 }, height:{ ideal:1280 } }, audio:true }); }
+  catch(e){ if(seq !== REC.seq || VIEW !== 'cam') return; console.error('[cam]', e && e.name); REC.step = 'denied'; return camPaint(); }
+  if(seq !== REC.seq || VIEW !== 'cam'){ stream.getTracks().forEach(t => t.stop()); return; }
+  REC.stream = stream;
   const v = $('cam-v'); v.srcObject = REC.stream; v.muted = true; v.play().catch(() => {});
   REC.step = 'count'; camPaint();
   let n = RULES.countdown || 3; $('cam-n').textContent = n;
@@ -625,17 +907,20 @@ async function camOpen(){
     if(n > 0) $('cam-n').textContent = n; else { clearInterval(REC.timer); $('cam-n').textContent = ''; camRec(); } }, 1000);
 }
 function camRec(){
-  const chunks = [];
+  if(!REC.stream || REC.step === 'rec') return;
+  clearInterval(REC.timer); $('cam-n').textContent = '';
+  const chunks = [], seq = REC.seq;
   try{ REC.mr = new MediaRecorder(REC.stream, { mimeType: REC.mime, videoBitsPerSecond: 2.5e6, audioBitsPerSecond: 64e3 }); }
   catch(e){ console.error('[cam]', e && e.message); REC.step = 'nocam'; return camPaint(); }
   REC.mr.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
   REC.mr.onstop = () => {
+    if(seq !== REC.seq || VIEW !== 'cam') return;
     const type = REC.mime.split(';')[0] || 'video/webm';
     REC.blob = new Blob(chunks, { type }); camStop(); $('cam-sec').classList.add('hide');
     if(VIEW !== 'cam') return;
     if(REC.blob.size > (RULES.clip_max_bytes || 20971520)){ REC.blob = null; REC.step = 'heavy'; return camPaint(); }
     const v = $('cam-v'); v.srcObject = null; REC.url = URL.createObjectURL(REC.blob); v.src = REC.url; v.loop = true; v.muted = true; v.play().catch(() => {});
-    REC.step = 'habit'; camPaint(); loadHabits();
+    REC.step = 'habit'; camPaint(); loadHabits().then(() => { if(seq === REC.seq && REC.step === 'habit') camPaint(); });
   };
   REC.mr.start(250); REC.step = 'rec'; REC.t0 = Date.now(); camPaint();
   const max = (RULES.clip_seconds || 33)*1000;
@@ -643,14 +928,6 @@ function camRec(){
   const tick = () => { const el = Date.now() - REC.t0; $('cam-s').textContent = Math.min(33, Math.floor(el/1000)) + ' / ' + (max/1000) + ' s';
     if(el >= max){ clearInterval(REC.timer); try{ REC.mr?.stop(); }catch(_){} } };
   tick(); REC.timer = setInterval(tick, 200);
-}
-async function loadHabits(){
-  if(HABITS) return camPaint();
-  const { data, error } = await sb.from('totehms').select('steps').eq('user_id', me.id).maybeSingle();
-  if(error) console.error('[totehm]', error.message);
-  HABITS = (data?.steps || []).filter(s => (s.t || '').trim()).map(s => ({ name: s.t, freq: s.f,
-    ints: (Array.isArray(s.is) && s.is.length ? s.is : [s.i].filter(Boolean)).filter(i => INTS[i]) }));
-  if(REC.step === 'habit') camPaint();
 }
 const habitHTML = h => '<div class="habit">' + tickHTML(h.ints) + '<span class="h-body"><span class="v-col"><span class="v-name">' + esc(h.name) + '</span><span class="v-sub">' +
   h.ints.map(i => '<span class="v-int" style="color:' + icol(i) + '">' + INTS[i].n + '</span>').join('') + (h.freq ? '<span>' + esc(FREQ[h.freq] || String(h.freq).replace(/_/g, ' ')) + '</span>' : '') + '</span></span></span></div>';
@@ -672,12 +949,11 @@ function camPaint(){
   else if(st === 'nocam') h = '<p class="say">This browser cannot film. Try Safari or Chrome on the phone.</p>';
   else if(st === 'heavy') h = '<p class="say">Too heavy — film it again.</p><button class="btn" type="button" data-again="1">Again</button>';
   else if(st === 'count') h = '<button class="btn" type="button" data-cancel="1">Cancel</button>';
-  else if(st === 'rec') h = '<button class="btn rec" type="button" data-stop="1">Stop</button>';
+  else if(st === 'rec') h = '<p class="say">Tap the joystick to stop.</p>';
   else if(st === 'habit'){
     h = '<span class="lab">which habit?</span>' + (!HABITS ? '<p class="note">reading my TOTEHM…</p>' : HABITS.length
       ? HABITS.map((x, k) => '<div class="it" data-h="' + k + '">' + habitHTML(x) + '</div>').join('')
-      : '<p class="say">No habit in my TOTEHM yet.</p><button class="btn" type="button" data-com="/totehm#in">Write one in my TOTEHM</button>') +
-      '<button class="lnk" type="button" data-again="1">film it again</button>';
+      : '<p class="say">No habit in my TOTEHM yet.</p><button class="btn" type="button" data-com="/totehm#in">Write one in my TOTEHM</button>') ;
   }
   else if(st === 'form' || st === 'send'){
     const m = missing();
@@ -689,8 +965,7 @@ function camPaint(){
         '<input id="c-dur" type="number" inputmode="numeric" min="' + RULES.duration_min + '" max="' + RULES.duration_max + '" placeholder="min" value="' + (REC.dur && !DURS.includes(REC.dur) ? REC.dur : '') + '"></div>' +
       '<textarea id="c-say" maxlength="400" placeholder="a word (optional)">' + esc(REC.say || '') + '</textarea>' +
       '<button class="btn" type="button" data-send="1"' + (m.length || st === 'send' ? ' disabled' : '') + '>I AM HERE</button>' +
-      '<p class="note" id="c-note">' + (m.length ? 'missing: ' + m.join(' · ') : '') + '</p>' +
-      '<button class="lnk" type="button" data-again="1">film it again</button>';
+      '<p class="note" id="c-note">' + (m.length ? 'missing: ' + m.join(' · ') : '') + '</p>' ;
   }
   b.innerHTML = h;
 }
@@ -706,7 +981,6 @@ $('cam-body').addEventListener('click', e => {
   const t = e.target instanceof Element ? e.target : null; if(!t || REC.busy) return;
   if(t.closest('[data-signin]')) return ssoLogin(false, '/?v=cam');
   if(t.closest('[data-cancel]')){ camReset(); return go('radar'); }
-  if(t.closest('[data-stop]')){ clearInterval(REC.timer); try{ REC.mr?.stop(); }catch(_){} return; }
   if(t.closest('[data-again]')) return camOpen();
   const hk = t.closest('[data-h]'); if(hk){ REC.habit = HABITS[+hk.dataset.h]; REC.step = 'form'; return camPaint(); }
   if(t.closest('[data-reh]')){ REC.step = 'habit'; return camPaint(); }
@@ -726,7 +1000,7 @@ async function cityNear(p){
 }
 const note = (t, no) => { const n = $('c-note'); if(n){ n.textContent = t || ''; n.className = 'note' + (no ? ' no' : ''); } };
 async function camSend(){
-  if(missing().length || !REC.blob) return;
+  if(REC.busy || missing().length || !REC.blob || !me) return;
   REC.busy = true; REC.step = 'send'; camPaint(); note('locating…');
   const pos = await geo();
   if(!pos){ REC.busy = false; REC.step = 'form'; camPaint(); return note('a spot is where I am — allow my position', true); }
@@ -740,70 +1014,142 @@ async function camSend(){
     p_mode: shared ? REC.mode : null, p_location: shared ? REC.loc : null });
   if(error) console.error('[spot_create]', error.message);
   if(error || !data?.ok){
-    sb.storage.from('moments').remove([path]);
+    await sb.storage.from('moments').remove([path]);
     REC.busy = false; REC.step = 'form'; camPaint();
     return note(({ habit:'that habit is no longer in my TOTEHM', too_many:'enough spots for today', video:'the video did not arrive — film it again',
       position:'allow my position', duration:'the duration', signin:'sign in again' })[data?.why] || 'not published', true);
   }
-  REC.say = ''; camReset(); await loadExact(); loadFeed(false);
-  go('radar'); openDetail(EX.list.find(s => s.id === data.id));
+  REC.say = ''; camReset(); await Promise.all([loadExact(),loadList()]); loadFeed(false);
+  go('radar'); const s = EX.list.find(s => s.id === data.id); if(s) openDetail(s); else { const r = await sb.rpc('spot_get',{p_id:data.id}); if(r.error) console.error('[spot_get]',r.error.message); if(r.data?.ok) openDetail(r.data.spot); }
 }
 
-/* ══ LES CINQ VUES — UNE TABLE ═══════════════════════════════════════ */
-const CROIX = { radar:{ h:'search', b:'cam', g:'feed', d:'list' }, search:{ b:'radar' }, cam:{ h:'radar' }, feed:{ d:'radar' }, list:{ g:'radar' } };
+/* ══ LES CINQ VUES — joystick, trackpad, souris et écran tactile ═════ */
+const CROIX = { radar:{h:'plan',b:'cam',g:'feed',d:'list'}, plan:{b:'radar',g:'feed',d:'list'}, cam:{h:'radar',g:'feed',d:'list'}, feed:{d:'radar'}, list:{g:'radar'} };
 const voisin = d => CROIX[VIEW][d] || null;
+const recordingLocked = () => VIEW === 'cam' && ['perm','count','rec','send'].includes(REC.step);
+function joyPaint(preview){
+  const bx = $('joy-box'), camera = VIEW === 'cam';
+  bx.style.setProperty('--joy-vue', ({plan:'var(--blue)',radar:'var(--navy)',cam:'var(--rep)',feed:'var(--rep)',list:'var(--blue)'})[voisin(preview) || VIEW]);
+  bx.classList.toggle('is-side',['feed','list'].includes(VIEW));
+  bx.classList.toggle('is-camera',camera); bx.classList.toggle('is-recording',camera && REC.step === 'rec');
+  bx.disabled = camera && ['perm','send','signin','nocam','denied'].includes(REC.step);
+  bx.setAttribute('aria-label',camera ? (REC.step === 'rec' ? 'Stop recording' : ['habit','form','heavy'].includes(REC.step) ? 'Record again' : 'Record video') : 'Back to radar');
+  for(const [cls,v] of [['o','plan'],['h','radar'],['r','cam']]) $('joy-stack').querySelector('.'+cls).classList.toggle('is-current',VIEW === v);
+  for(const d of ['g','d','h','b']){ $('cur-'+d).classList.toggle('is-dead',!voisin(d) || recordingLocked()); $('cur-'+d).classList.toggle('is-preview',preview === d && !!voisin(d)); }
+  $('joy-say').textContent = camera ? (REC.step === 'rec' ? 'STOP' : ['count','habit','form','heavy'].includes(REC.step) ? 'REC' : '') : preview && voisin(preview) ? ({plan:'Future spot',feed:'City feed',radar:'Radar',list:'Future Spots',cam:'Film a spot'})[voisin(preview)] : '';
+}
 function go(v){
-  if(v === VIEW || !CROIX[v]) return;
-  const was = VIEW; VIEW = v; closeDetail();
-  document.body.className = document.body.className.replace(/\bv-\w+/g, '').trim() + ' v-' + v;
-  document.querySelectorAll('.view').forEach(s => s.classList.toggle('is-on', s.id === 'v-' + v));
-  ['g','d','h','b'].forEach(d => $('cur-' + d).classList.toggle('is-dead', !voisin(d)));
+  if(v === VIEW || !CROIX[v] || REC.busy || PLAN.busy) return;
+  const was = VIEW; VIEW = v; closeDetail(); pickerClose();
+  document.body.className = document.body.className.replace(/\bv-\w+/g,'').trim() + ' v-' + v;
+  document.querySelectorAll('.view').forEach(s => s.classList.toggle('is-on',s.id === 'v-'+v));
   if(was === 'cam') camReset();
   if(was === 'feed') document.querySelectorAll('#feed video').forEach(x => x.pause());
-  if(v === 'radar') radarOn();
+  if(v === 'plan') planOpen();
   if(v === 'cam') camOpen();
-  if(v === 'search') setTimeout(() => $('q').focus(), 280);
-  if(v === 'feed') document.querySelectorAll('#feed .clip[data-k]').forEach(c => { io.unobserve(c); io.observe(c); });
-  camState();
+  if(v === 'feed') document.querySelectorAll('#feed .clip[data-k]').forEach(c => {io.unobserve(c);io.observe(c);});
+  camState(); joyPaint(); radarOn();
 }
-const step = d => { const v = voisin(d); if(v) go(v); };
-addEventListener('keydown', e => {
-  if(e.target.closest && e.target.closest('input,textarea')) return;
-  const d = { ArrowLeft:'g', ArrowRight:'d', ArrowUp:'h', ArrowDown:'b', Escape:null }[e.key];
-  if(e.key === 'Escape'){ if(DETAIL) closeDetail(); else if($('menu').classList.contains('is-open')) menu(false); else if(VIEW !== 'radar' && REC.step !== 'rec') go('radar'); return; }
-  if(d && !(VIEW === 'cam' && ['rec','count','send'].includes(REC.step))){ e.preventDefault(); step(d); }
+function step(d){ if(MAP.open || recordingLocked() || PLAN.busy) return; const v = voisin(d); if(v){ gestureCount++; go(v); } }
+function joyTap(){
+  if(VIEW !== 'cam'){ if(VIEW !== 'radar') go('radar'); return; }
+  if(REC.step === 'rec'){ clearInterval(REC.timer); if(REC.mr?.state === 'recording') REC.mr.stop(); }
+  else if(REC.step === 'count') camRec();
+  else if(['habit','form','heavy'].includes(REC.step)) camOpen();
+}
+addEventListener('keydown',e => {
+  if(e.key === 'Escape'){
+    if(MAP.open) mapClose(); else if(!$('habit-picker').classList.contains('hide')) pickerClose(); else if(DETAIL) closeDetail();
+    else if($('menu').classList.contains('is-open')) menu(false); else if(REC.step === 'rec') joyTap(); else if(VIEW !== 'radar' && !REC.busy && !PLAN.busy) go('radar');
+    return;
+  }
+  if(e.target.closest?.('input,textarea,select,[contenteditable]') || MAP.open) return;
+  const d = {ArrowLeft:'g',ArrowRight:'d',ArrowUp:'h',ArrowDown:'b'}[e.key];
+  if(d){ e.preventDefault(); step(d); }
 });
-/* LE GESTE — le doigt part à droite : la vue de gauche arrive. La verticale
-   appartient au défilement (le fil, la liste) ; elle navigue depuis le radar. */
-(function swipe(){
-  let x0 = null, y0 = 0, t0 = 0;
-  addEventListener('pointerdown', e => { if(e.pointerType === 'mouse' || e.target.closest('#joy,input,textarea,#detail,#menu')) return; x0 = e.clientX; y0 = e.clientY; t0 = Date.now(); }, true);
-  addEventListener('pointerup', e => {
-    if(x0 === null) return; const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null;
-    if(Date.now() - t0 > 700 || (VIEW === 'cam' && ['rec','count','send'].includes(REC.step))) return;
-    if(Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)*1.5) return step(dx > 0 ? 'g' : 'd');
-    if(Math.abs(dy) > 70 && Math.abs(dy) > Math.abs(dx)*1.5 && ['radar','search','cam'].includes(VIEW) && !(VIEW === 'cam' && REC.step === 'form'))
-      return step(dy > 0 ? 'h' : 'b');
-  }, true);
-  let cool = 0;
-  addEventListener('wheel', e => {
-    if(e.ctrlKey || Math.abs(e.deltaX) < 30 || Math.abs(e.deltaX) < Math.abs(e.deltaY)*1.5 || Date.now() < cool) return;
-    cool = Date.now() + 700; step(e.deltaX > 0 ? 'd' : 'g');
-  }, { passive:true });
+/* Le contenu défile d'abord. Aux bords, le même geste reprend la croix.
+   Les petits deltas du trackpad s'additionnent ; son inertie ne saute pas
+   une deuxième vue. Les champs, les dialogues et la prise vidéo gardent
+   leurs gestes. Le radar conserve le pincement / ctrl-wheel de zoom. */
+(function gestures(){
+  const pointers = new Map(); let drag = null, pinch = null, pinching = false;
+  const excluded = t => !!t.closest?.('#joy,button,input,textarea,select,a,#detail,#menu,#habit-picker,#place-picker,[contenteditable]');
+  const scroller = t => t.closest?.('#feed,#list,#v-plan,#cam-body');
+  const canScroll = (el,delta) => !!el && el.scrollHeight > el.clientHeight + 3 && (delta > 0 ? el.scrollTop < el.scrollHeight - el.clientHeight - 3 : el.scrollTop > 3);
+  addEventListener('pointerdown',e => {
+    if(e.button > 0 || excluded(e.target) || recordingLocked() || PLAN.busy) return;
+    pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pointers.size === 1){ pinching = false; drag = {id:e.pointerId,x:e.clientX,y:e.clientY,t:Date.now(),el:scroller(e.target),canvas:e.target.id === 'canvas',view:VIEW}; }
+    else {
+      if(drag?.canvas){ const a=[...pointers.values()]; pinch = {d:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y),range:RAD.range}; pinching = true; suppressClickUntil=Date.now()+500; }
+      drag = null;
+    }
+    if(e.target.id === 'canvas') try{ e.target.setPointerCapture(e.pointerId); }catch(_){}
+  },true);
+  addEventListener('pointermove',e => {
+    if(!pointers.has(e.pointerId)) return; pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pinch && pointers.size >= 2){
+      const a=[...pointers.values()], d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);
+      RAD.range=Math.max(100,Math.min(2e7,pinch.range*pinch.d/Math.max(1,d))); suppressClickUntil=Date.now()+500; e.preventDefault();
+    }
+  },{capture:true,passive:false});
+  addEventListener('pointerup',e => {
+    pointers.delete(e.pointerId); const d=drag;
+    if(pointers.size < 2) pinch=null;
+    if(!pointers.size) drag=null;
+    if(pinching || !d || e.pointerId !== d.id || d.view !== VIEW || Date.now()-d.t > 1600) return;
+    const dx=e.clientX-d.x,dy=e.clientY-d.y;
+    if(Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)*1.35){ suppressClickUntil=Date.now()+400; step(dx>0?'g':'d'); }
+    else if(Math.abs(dy)>65 && Math.abs(dy)>Math.abs(dx)*1.35 && !canScroll(d.el,-dy)){
+      suppressClickUntil=Date.now()+400; step(dy>0?'h':'b');
+    }
+  },true);
+  addEventListener('pointercancel',e => { pointers.delete(e.pointerId); drag=null; pinch=null; if(!pointers.size) pinching=false; },true);
+  let axis='',dir='',sum=0,last=0,lockedUntil=0;
+  addEventListener('wheel',e => {
+    if(MAP.open || excluded(e.target) || recordingLocked() || PLAN.busy || DETAIL) return;
+    if(e.ctrlKey && e.target.id === 'canvas'){
+      e.preventDefault(); RAD.range=Math.max(100,Math.min(2e7,RAD.range*Math.exp(e.deltaY*.005))); return;
+    }
+    const factor=e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1;
+    const x=e.deltaX*factor,y=e.deltaY*factor, ax=Math.abs(x)>Math.abs(y)*1.25?'x':Math.abs(y)>Math.abs(x)*1.25?'y':null;
+    if(!ax) return;
+    const delta=ax === 'x'?x:y, direction=ax === 'x'?(delta>0?'d':'g'):(delta>0?'b':'h');
+    if(!voisin(direction)) return;
+    if(ax === 'y' && canScroll(scroller(e.target),delta)){sum=0;last=0;return;}
+    const now=Date.now();
+    if(now < lockedUntil){ e.preventDefault(); lockedUntil=now+260; return; }
+    e.preventDefault();
+    if(now-last>180 || ax !== axis || direction !== dir) sum=0;
+    axis=ax;dir=direction;last=now;sum+=Math.min(160,Math.abs(delta));
+    if(sum >= (ax === 'x'?75:70)){ sum=0;lockedUntil=now+350;step(direction); }
+  },{passive:false});
 })();
-/* LA MANETTE — copiée de com/totehm.html : on tire le manche. */
+/* Le manche est celui de COM : rayon 15px, seuil 9px, sans clic fantôme. */
 (function manette(){
-  const bx = $('joy-box'), st = $('joy-stack'), R = 15, SEUIL = 9;
-  let id = null, x0 = 0, y0 = 0, dx = 0, dy = 0;
-  const pose = (a, b) => { st.style.setProperty('--mx', a.toFixed(1) + 'px'); st.style.setProperty('--my', b.toFixed(1) + 'px'); };
-  bx.addEventListener('pointerdown', e => { id = e.pointerId; x0 = e.clientX; y0 = e.clientY; dx = dy = 0; bx.classList.add('is-held'); try{ bx.setPointerCapture(id); }catch(_){} });
-  bx.addEventListener('pointermove', e => { if(id !== e.pointerId) return; const ax = e.clientX - x0, ay = e.clientY - y0, d = Math.hypot(ax, ay), k = d > R ? R/d : 1; dx = ax*k; dy = ay*k; pose(dx, dy); });
-  const up = e => { if(id === null || (e && e.pointerId !== id)) return; id = null; bx.classList.remove('is-held'); pose(0, 0);
-    if(Math.max(Math.abs(dx), Math.abs(dy)) < SEUIL){ if(VIEW !== 'radar') go('radar'); return; }
-    step(Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 'g' : 'd') : (dy < 0 ? 'h' : 'b')); };
-  bx.addEventListener('pointerup', up); bx.addEventListener('pointercancel', () => { id = null; bx.classList.remove('is-held'); pose(0, 0); });
-  [['cur-g','g'],['cur-d','d'],['cur-h','h'],['cur-b','b']].forEach(([c, d]) => $(c).onclick = () => step(d));
+  const bx=$('joy-box'),st=$('joy-stack'),R=15,threshold=9;
+  let id=null,x0=0,y0=0,dx=0,dy=0,moved=0;
+  const pose=(a,b) => { st.style.setProperty('--mx',a.toFixed(1)+'px');st.style.setProperty('--my',b.toFixed(1)+'px'); };
+  bx.addEventListener('pointerdown',e => {
+    if(e.button>0 || bx.disabled || id!==null) return;
+    id=e.pointerId;x0=e.clientX;y0=e.clientY;dx=dy=moved=0;bx.classList.add('is-held');try{bx.setPointerCapture(id);}catch(_){} e.preventDefault();
+  });
+  bx.addEventListener('pointermove',e => {
+    if(id!==e.pointerId) return;
+    const a=e.clientX-x0,b=e.clientY-y0,d=Math.hypot(a,b),k=d>R?R/d:1;dx=a*k;dy=b*k;moved=Math.max(moved,d);pose(dx,dy);
+    joyPaint(Math.max(Math.abs(dx),Math.abs(dy))>=threshold?(Math.abs(dx)>Math.abs(dy)?(dx<0?'g':'d'):(dy<0?'h':'b')):null);
+  });
+  function finish(e,cancel){
+    if(id===null || e.pointerId!==id) return;id=null;bx.classList.remove('is-held');pose(0,0);joyPaint();
+    if(cancel) return;
+    if(moved<4) joyTap(); else if(Math.max(Math.abs(dx),Math.abs(dy))>=threshold) step(Math.abs(dx)>Math.abs(dy)?(dx<0?'g':'d'):(dy<0?'h':'b'));
+  }
+  bx.addEventListener('pointerup',e => finish(e,false));bx.addEventListener('pointercancel',e => finish(e,true));
+  bx.addEventListener('click',e => {if(e.detail===0) joyTap();});
+  for(const [c,d] of [['cur-g','g'],['cur-d','d'],['cur-h','h'],['cur-b','b']]) $(c).onclick=()=>step(d);
+  bx.addEventListener('wheel',e => { e.preventDefault();e.stopPropagation(); if(Math.max(Math.abs(e.deltaX),Math.abs(e.deltaY))<4) return;step(Math.abs(e.deltaX)>Math.abs(e.deltaY)?(e.deltaX>0?'d':'g'):(e.deltaY>0?'b':'h')); },{passive:false});
 })();
+
 
 /* ══ LE COIN MEMBRE — SIMPLE TERMS OF USE, TOUJOURS EN DERNIER ═══════ */
 function menu(open){ $('menu').classList.toggle('is-open', open); }
@@ -820,7 +1166,7 @@ function paintMember(){
 $('member').onclick = () => menu(!$('menu').classList.contains('is-open'));
 $('menu').addEventListener('click', async e => {
   if(e.target.closest('[data-signin]')) return ssoLogin(false);
-  if(e.target.closest('[data-out]')){ await sb.auth.signOut({ scope:'local' }); me = null; PSEUDO = null; HABITS = null; menu(false); paintMember(); reload(); }
+  if(e.target.closest('[data-out]')){ await sb.auth.signOut({ scope:'local' }); me = null; PSEUDO = null; HABITS = null; S.habit = null; S.q = ''; $('habit-filter').textContent = 'Habit Box · all'; if(VIEW === 'cam') camReset(); PLAN.seq++; PLAN.context = null; PLAN.habit = null; menu(false); pickerClose(); paintMember(); if(VIEW === 'plan') planPaint(); reload(); }
 });
 document.addEventListener('pointerdown', e => { if($('menu').classList.contains('is-open') && !e.target.closest('#menu,#member')) menu(false); });
 
@@ -833,7 +1179,7 @@ async function boot(){
   paintMember(); paintInts();
   sb.rpc('spot_rules').then(({ data, error }) => { if(error) console.error('[spot_rules]', error.message); if(data) RULES = { ...RULES, ...data }; });
   const p = new URLSearchParams(location.search);
-  geo().then(pos => { if(pos){ POS = pos; reload(); if(VIEW === 'radar') radarOn(); } });
+  geo().then(pos => { if(pos){ POS = pos; reload(); radarOn(); } });
   reload(); radarOn();
   ['g','d','h','b'].forEach(d => $('cur-' + d).classList.toggle('is-dead', !voisin(d)));
   if(p.get('spot')){
@@ -841,10 +1187,12 @@ async function boot(){
     if(error) console.error('[spot_get]', error.message);
     if(data?.ok) openDetail(data.spot);
   }
-  if(p.get('v') === 'cam' && me) go('cam');
-  setInterval(() => { if(VIEW === 'list') paintList(); if(VIEW === 'feed') return; }, 30000);
+  if(['cam','plan'].includes(p.get('v')) && me) go(p.get('v'));
+  joyPaint();
+  setInterval(() => { paintList(); planValidity(); const started = LIST.list.some(s => s.state === 'will' && spotState(s) !== 'will'); if(started) reload(); }, 30000);
 }
 boot();
 </script>
 </body>
 </html>
+

@@ -78,7 +78,8 @@ com/      → www.totehm.com       LA SOURCE : le Totehm (5 vues), l'identité (
 club/     → www.figher.club      appartenance FIGHER + art, collections, marché (/market) ;
                                  /console → 308 vers totehm.com/console
 space/    → www.totehm.space     DO WITH ME : UN Spot (PRIVATE / SHARED) naît d'une Habit
-                                 et d'une vidéo de 33 s ; I AM HERE → I WAS THERE
+                                 filmée maintenant (33 s) ou annoncée pour plus tard ;
+                                 I WILL BE HERE → I AM HERE → I WAS THERE
 boutique/ → www.higher.boutique  une Box devient un Cloth (pick up the box) ; méthode
                                  Stoner ; elle MONTRE l'art, FIGHER le VEND
 backend/  → servi par PERSONNE — reste à la racine (sinon SQL et fonctions téléchargeables)
@@ -179,6 +180,12 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 - **Claude Code** (terminal) : une commande simple par ligne, jamais
   `cd X && …` (les permissions jugent la ligne entière).
 
+**SPACE — dernière demande du 01/10 :** préserver les cinq vues, joystick, gestes
+trackpad / souris / tactile et panneaux desktop avec radar réduit. TOP = Spot
+futur détaillé, RIGHT = Spots futurs, CENTER = sélection Habit Box + intentions,
+BOTTOM = caméra commandée par le joystick. Couleurs du joystick = COM
+(blue / navy / rep). Détails et droits : `space/CLAUDE.md`.
+
 ## Règles d'interface qui valent partout
 
 - Une classe d'ÉTAT se nomme `is-…`, jamais comme un style (`.in` a déjà tué
@@ -248,3 +255,4 @@ jour dans le même lot (`CLAUDE.md` racine ou du dossier, `BRAND.md`, `backend/S
 `backend/README.md`) · le §0 de `TOTEHM_MASTER.md` reçoit l'entrée du lot — elle s'écrit dans
 `CLAUDE_CODE.md` (« à reporter ») et Claude Code la reporte à sa prochaine intervention · c'est
 poussé, fusionné, déployé et vérifié en production. Code et documents désynchronisés = lot refusé.
+
