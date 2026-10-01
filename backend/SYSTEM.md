@@ -17,7 +17,7 @@
 
 ## 0 · SPACE — dernière demande du 01/10/2026 : navigation et futur restaurés
 
-**État : base appliquée, interface validée ; déploiement à vérifier après fusion.**
+**État : base appliquée, [PR #12](https://github.com/gvllrd/totehm/pull/12) FUSIONNÉE (`6f525a6`), déployé et vérifié.**
 Ce relevé remplace les règles de navigation et l'interdiction du futur du
 lot précédent ; les droits privé / abonné restent identiques.
 
@@ -31,6 +31,8 @@ lot précédent ; les droits privé / abonné restent identiques.
 | auto-test droits existants | `tests/sql/spots_selftest.sql` : `FAIL={}` (annulation volontaire) |
 | auto-test futur | `tests/sql/space_future_selftest.sql` : `FAIL={}` (création, validations, pagination même date, filtres, droits, transitions, bot, GRANT ; annulation volontaire) |
 | intégrité après tests | 11 Spots réels, 0 Spot `Selftest%`, 0 abonnement créateur ; aucune fixture conservée |
+| Vercel après fusion `6f525a6` | SPACE, COM, boutique et club : **success** (statuts du commit) |
+| version publique vérifiée | `https://www.totehm.space/` **HTTP 200**, `BUILD='2026-10-01-navigation'` ; réponse HTML identique octet pour octet au fichier validé (SHA-256 comparé) ; panneau futur et radar réduit observés dans le navigateur |
 | navigateur Chromium, Supabase simulé | **56/56** ; desktop 1440 et 1024, mobile 390, véritables événements tactiles CDP, souris, trackpad, SDK / vidéo enregistrée |
 | UI / gestes | joystick COM coloré, panneaux desktop et radar réduit, filtre Habit Box central, TOP futur détaillé, RIGHT futurs, BOTTOM REC/STOP sur joystick |
 | identité / paiement / infrastructure | SSO conservé ; aucun prix, abonnement réel, secret, webhook Stripe ou Oracle changé |
