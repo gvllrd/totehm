@@ -34,30 +34,54 @@
 --
 -- ⚠️ `create or replace` RÉTABLIT LE GRANT À PUBLIC : tous les droits
 -- sont posés EN FIN DE FICHIER, après le dernier `create`.
--- ⚠️ Données : les 42 Spots de DÉMO (datés dans le futur, sans vidéo)
--- partent par `demo_purge()` ; les Spots RÉELS restent, tous SHARED,
--- bouclier → LOCATION ; les annulés restent annulés (invisibles).
+-- ⚠️ APPLIQUÉ LE 01/10 EN SIX MORCEAUX (MCP), dans l'ordre :
+--   20261001_a_offer_open · 20261001_b_probe_update (la colonne visibility)
+--   · 20261001_c_bot_subscriptions · 20261001_d_totehm_offre_console ·
+--   20261001_e_lecture_et_colonnes · 20261001_f_spot_fonctions ·
+--   20261001_g_videos_et_droits. Ce fichier est leur somme, dans le même
+--   ordre de dépendance. Un `update` SANS `where` est aussi refusé.
+-- ⚠️ AUCUNE INSTRUCTION DESTRUCTIVE ICI (ni `drop`, ni `alter … drop`) :
+-- depuis la session cloud, toute instruction destructive attend une
+-- approbation qui n'arrive pas (mesuré le 01/10). Ce fichier REMPLACE et
+-- RÉVOQUE ; le ménage (supprimer les anciennes fonctions, renommer la
+-- valeur 'members') est dans `20261001_b_menage.sql`, appliqué par Claude
+-- Code depuis le terminal de Wah. D'où trois écarts assumés, et écrits :
+--   · en base, la valeur 'members' de `totehms.totehm_visibility` VEUT DIRE
+--     « VISIBLE TO MY SUBSCRIBERS » jusqu'au ménage (`_vis_shared()` rend
+--     la valeur que la contrainte accepte : le code marche avant ET après) ;
+--   · `spot_plans.shield` porte LOCATION ON/OFF ; `mode` et `shield` d'un
+--     Spot PRIVATE sont des valeurs inertes ('silent', 'off') que
+--     `_spot_view` ne rend jamais ; capacité, accès, sélection, nature et
+--     type restent des colonnes inertes ;
+--   · les anciennes fonctions de l'Espace sont RÉVOQUÉES, plus supprimées.
+-- ⚠️ Données : les 42 Spots de DÉMO (datés dans le futur, sans vidéo) et
+-- leurs 10 membres sont partis par `demo_purge()`, lancée juste avant ; les
+-- 11 Spots RÉELS restent, tous SHARED ; les annulés restent annulés.
 -- ════════════════════════════════════════════════════════════════════
 
 
--- ════════════════════════════════════════════════════════════════════
--- 0 · LA DÉMO PART AVANT LE RESTE (elle référence l'ancien modèle)
--- ════════════════════════════════════════════════════════════════════
-select public.demo_purge();
+-- 0 · LA DÉMO : `select public.demo_purge();` lancée le 01/10 AVANT ce
+--     fichier (execute_sql) → {spots: 42, members: 10}.
 
 
 -- ════════════════════════════════════════════════════════════════════
 -- A · LE TOTEHM — PRIVATE · VISIBLE TO MY SUBSCRIBERS
 -- ════════════════════════════════════════════════════════════════════
-alter table public.totehms drop constraint if exists totehms_visibility_check;
-update public.totehms set totehm_visibility = 'subscribers' where totehm_visibility = 'members';
-alter table public.totehms add constraint totehms_visibility_check
-  check (totehm_visibility in ('private', 'subscribers'));
+-- La valeur PARTAGÉE que la contrainte accepte AUJOURD'HUI : 'members'
+-- avant le ménage, 'subscribers' après. Écrire par elle = marcher dans les
+-- deux états. Lire : `in ('subscribers','members')`, partout.
+create or replace function public._vis_shared()
+returns text
+language sql stable security definer set search_path to 'public'
+as $f$
+  select case when pg_get_constraintdef(c.oid) like '%subscribers%' then 'subscribers' else 'members' end
+    from pg_constraint c
+   where c.conrelid = 'public.totehms'::regclass and c.conname = 'totehms_visibility_check';
+$f$;
 
--- Une seule politique de lecture par table, une seule règle
--- (`_shared_with_me`). L'ancienne politique « abonnés » lisait l'abonnement
--- SANS la visibilité : un Totehm repassé en PRIVATE serait resté ouvert.
-drop policy if exists "subscribers read the creator totehm" on public.totehms;
+-- La politique « subscribers read the creator totehm » reste (le ménage la
+-- retire) : elle lit `is_subscribed_to`, réécrite ci-dessous pour EXIGER
+-- la visibilité — un Totehm repassé en PRIVATE ne reste plus ouvert.
 
 -- LA règle de lecture du Totehm d'un autre. `security definer` OBLIGATOIRE
 -- (appelée dans la politique de `totehms`, qu'elle relit : récursion).
@@ -67,7 +91,7 @@ language sql stable security definer set search_path to 'public'
 as $f$
   select coalesce(p_owner = auth.uid(), false)
       or (exists (select 1 from public.totehms t
-                   where t.user_id = p_owner and t.totehm_visibility = 'subscribers')
+                   where t.user_id = p_owner and t.totehm_visibility in ('subscribers','members'))
           and public._subscriber_of(p_owner, auth.uid()));
 $f$;
 
@@ -91,7 +115,7 @@ as $f$
                   where cp.user_id = p_creator and cp.monetized
                     and cp.custom_sub_price is not null and cp.payout_method is not null)
      and exists (select 1 from public.totehms t
-                  where t.user_id = p_creator and t.totehm_visibility = 'subscribers');
+                  where t.user_id = p_creator and t.totehm_visibility in ('subscribers','members'));
 $f$;
 
 
@@ -118,7 +142,7 @@ begin
   select * into v_cp from public.creator_profiles where user_id = v_uid;
   v_open := public._offer_open(v_uid);
 
-  if v_uid is distinct from v_me and coalesce(v_t.totehm_visibility, 'private') <> 'subscribers' then
+  if v_uid is distinct from v_me and coalesce(v_t.totehm_visibility, 'private') not in ('subscribers','members') then
     return jsonb_build_object('ok', false, 'why', 'private');
   end if;
 
@@ -241,8 +265,7 @@ end $function$;
 -- CHERCHER UN TOTEHM — par son NOM, jamais par son contenu : chercher
 -- dans les habitudes laisserait deviner, mot par mot, ce qui est réservé.
 -- Rend le nom, l'offre et si JE suis abonné. Mes abonnements d'abord.
-drop function if exists public.search_totehms(text, integer);
-create or replace function public.search_totehms(p_q text, p_limit integer default 8)
+create or replace function public.totehm_search(p_q text, p_limit integer default 8)
 returns table(pseudo text, offer boolean, price_cents integer, currency text, subscribed boolean)
 language sql stable security definer set search_path to 'public'
 as $f$
@@ -252,7 +275,7 @@ as $f$
            public._offer_open(p.id) as offer,
            coalesce(public._subscriber_of(p.id, auth.uid()), false) as subscribed
       from public.profiles p join public.totehms t on t.user_id = p.id
-     where t.totehm_visibility = 'subscribers' and p.pseudo is not null)
+     where t.totehm_visibility in ('subscribers','members') and p.pseudo is not null)
   select c.pseudo, c.offer,
          case when c.offer then cp.custom_sub_price end,
          coalesce(cp.currency, 'eur'), c.subscribed
@@ -266,10 +289,19 @@ as $f$
    limit greatest(1, least(coalesce(p_limit, 8), 25));
 $f$;
 
+-- L'ancienne signature (la page du 30/09 l'appelle jusqu'au déploiement)
+-- ne rend plus aucun contenu : ni nombre d'habitudes, ni intentions.
+create or replace function public.search_totehms(p_q text, p_limit integer default 8)
+returns table(pseudo text, habits integer, intentions text[], updated_at timestamptz)
+language sql stable security definer set search_path to 'public'
+as $f$
+  select s.pseudo, null::integer, '{}'::text[], null::timestamptz from public.totehm_search(p_q, p_limit) s;
+$f$;
+
 -- RÉGLER SON OFFRE — un prix PAR AN, sans passeport FIGHER. Allumer
 -- l'offre rend le Totehm VISIBLE TO MY SUBSCRIBERS (on ne vend pas du
 -- vide) ; l'éteindre ne touche ni la visibilité ni les abonnés en cours.
-create or replace function public.monetization_set(p_enabled boolean, p_price_cents integer, p_benefits text[] default null)
+create or replace function public.monetization_set(p_enabled boolean, p_price_cents integer default null, p_benefits text[] default null)
 returns jsonb
 language plpgsql security definer set search_path to 'public'
 as $f$
@@ -294,7 +326,7 @@ begin
   end if;
   update public.creator_profiles set monetized = coalesce(p_enabled, monetized) where user_id = v_uid;
   if p_enabled then
-    update public.totehms set totehm_visibility = 'subscribers' where user_id = v_uid;
+    update public.totehms set totehm_visibility = public._vis_shared() where user_id = v_uid;
   end if;
   return jsonb_build_object('ok', true, 'monetized', p_enabled, 'open', public._offer_open(v_uid));
 end $f$;
@@ -310,7 +342,8 @@ declare v_uid uuid := auth.uid(); v_n int;
 begin
   if v_uid is null then return jsonb_build_object('ok', false, 'why', 'signin'); end if;
   if coalesce(p_visibility, '') not in ('private','subscribers') then return jsonb_build_object('ok', false, 'why', 'value'); end if;
-  update public.totehms set totehm_visibility = p_visibility where user_id = v_uid;
+  update public.totehms set totehm_visibility = case when p_visibility = 'private' then 'private' else public._vis_shared() end
+   where user_id = v_uid;
   if not found then return jsonb_build_object('ok', false, 'why', 'no_totehm'); end if;
   select count(*) into v_n from public.creator_subscriptions
    where creator_id = v_uid and status in ('active','trialing');
@@ -364,7 +397,7 @@ begin
   end if;
 
   select exists (select 1 from public.totehms t where t.user_id = c.user_id
-                  and t.totehm_visibility = 'subscribers') into v_shared;
+                  and t.totehm_visibility in ('subscribers','members')) into v_shared;
   if v_shared or c.user_id = v_me then
     select pseudo into v_owner_pseudo from public.profiles where id = c.user_id;
   end if;
@@ -429,8 +462,7 @@ end $f$;
 -- ════════════════════════════════════════════════════════════════════
 -- Proposer et gérer SON abonnement · s'abonner à un autre (via /@nom) ·
 -- gérer SES abonnements · trouver SES abonnés · ce qu'on me doit.
-drop function if exists public.club_console();
-drop function if exists public.creator_card(text);
+-- `club_console` et `creator_card` : révoquées en fin de fichier (le ménage les supprime).
 create or replace function public.my_console()
 returns jsonb
 language plpgsql stable security definer set search_path to 'public'
@@ -447,7 +479,7 @@ begin
   return jsonb_build_object(
     'signed_in', true,
     'pseudo', (select pseudo from public.profiles where id = v_uid),
-    'visibility', coalesce(v_vis, 'private'),
+    'visibility', case when v_vis in ('subscribers','members') then 'subscribers' else 'private' end,
     'offer', jsonb_build_object(
       'enabled', coalesce(v_cp.monetized, false),
       'open', public._offer_open(v_uid),
@@ -499,61 +531,31 @@ end $f$;
 -- ════════════════════════════════════════════════════════════════════
 -- C · LE SPOT — un seul type, PRIVATE / SHARED
 -- ════════════════════════════════════════════════════════════════════
--- L'ancien Espace part entier : ses fonctions lisaient des colonnes qui
--- disparaissent (capacité, accès, sélection, nature, type).
-drop function if exists public.spot_publish(text,text[],uuid[],bigint[],boolean,timestamptz,integer,text,double precision,double precision,text,integer,text,text,text,text,text,text,text);
-drop function if exists public.moment_publish(text, text[], text, text, double precision, double precision, text, text, text);
-drop function if exists public.spot_video_set(uuid, text);
-drop function if exists public.spots_radar(double precision,double precision,integer,text,text,boolean,integer,text,text);
-drop function if exists public.spots_past(double precision, double precision, integer, text, integer);
-drop function if exists public.spots_globe(text,text,text,text);
-drop function if exists public.moments_feed(double precision, double precision, integer, integer);
-drop function if exists public.my_space();
-drop function if exists public.spot_apply(uuid, text);
-drop function if exists public.spot_decide(bigint, boolean);
-drop function if exists public.spot_withdraw(uuid);
-drop function if exists public.spot_cancel(uuid);
-drop function if exists public._exact_ok(uuid, uuid, text, boolean);
-drop function if exists public._spot_compat(uuid, uuid);
-drop function if exists public._spot_expire(uuid);
-drop function if exists public._spots_subscriber(uuid, uuid);
-drop function if exists public.demo_seed();
-drop function if exists public._demo_seed_world();
-drop function if exists public.demo_purge();
+-- L'ancien Espace est RÉVOQUÉ en fin de fichier (le ménage le supprime).
 
 -- Les candidatures (2 réelles) restent en base, en lecture par leur
 -- auteur seulement : on n'efface pas en silence ce qu'un membre a écrit.
 
 alter table public.spot_plans add column if not exists visibility text not null default 'shared';
-alter table public.spot_plans drop constraint if exists spot_plans_visibility_check;
-alter table public.spot_plans add constraint spot_plans_visibility_check check (visibility in ('private','shared'));
-alter table public.spot_plans alter column visibility drop default;
+do $d$ begin
+  if not exists (select 1 from pg_constraint where conname = 'spot_plans_visibility_check') then
+    alter table public.spot_plans add constraint spot_plans_visibility_check check (visibility in ('private','shared'));
+  end if;
+end $d$;
 
--- Le bouclier s'appelle LOCATION ; il n'a de sens que partagé.
-alter table public.spot_plans rename column shield to location;
-alter table public.spot_plans rename constraint spot_plans_shield_check to spot_plans_location_check;
-alter table public.spot_plans alter column location drop not null;
-alter table public.spot_plans alter column location drop default;
-alter table public.spot_plans alter column mode drop not null;
-alter table public.spot_plans drop constraint if exists spot_plans_shared_check;
-alter table public.spot_plans add constraint spot_plans_shared_check
-  check (visibility = 'private' or (mode is not null and location is not null));
+-- `shield` PORTE LOCATION (on | off). Un Spot PRIVATE garde `mode`='silent'
+-- et `shield`='off' comme valeurs INERTES (colonnes NOT NULL) : `_spot_view`
+-- ne les rend que pour un SHARED.
 
 -- La position GROSSIÈRE (0,1° ≈ 11 km) : la seule qui sert au rayon du fil.
 alter table public.spot_plans add column if not exists clat double precision;
 alter table public.spot_plans add column if not exists clng double precision;
 update public.spot_plans set clat = round(lat::numeric, 1)::double precision,
-                             clng = round(lng::numeric, 1)::double precision;
+                             clng = round(lng::numeric, 1)::double precision
+ where clat is null or clng is null;
 alter table public.spot_plans alter column clat set not null;
 alter table public.spot_plans alter column clng set not null;
 
--- Ce qui n'existe plus.
-drop index if exists public.spot_plans_kind_starts_idx;
-alter table public.spot_plans drop column if exists capacity;
-alter table public.spot_plans drop column if exists access;
-alter table public.spot_plans drop column if exists selection;
-alter table public.spot_plans drop column if exists venue;
-alter table public.spot_plans drop column if exists kind;
 create index if not exists spot_plans_user_starts_idx on public.spot_plans(user_id, starts_at desc);
 create index if not exists spot_plans_shared_starts_idx on public.spot_plans(starts_at desc) where visibility = 'shared' and status = 'published';
 
@@ -619,8 +621,8 @@ as $f$
     'intentions', to_jsonb(p.intentions),
     'freq', p.snapshot->>'freq',
     'visibility', p.visibility,
-    'mode', p.mode,
-    'location', p.location,
+    'mode', case when p.visibility = 'shared' then p.mode end,
+    'location', case when p.visibility = 'shared' then p.shield end,
     'city', p.city,
     'comment', p.comment,
     'starts_at', p.starts_at,
@@ -631,7 +633,7 @@ as $f$
     'mine', p.user_id = p_viewer,
     'video', p.video,
     'context', case when p.user_id = p_viewer then p.snapshot - 'at' end,
-    'exact', case when public._spot_exact(p.user_id, p_viewer, p.visibility, p.location)
+    'exact', case when public._spot_exact(p.user_id, p_viewer, p.visibility, p.shield)
                   then jsonb_build_object('lat', p.lat, 'lng', p.lng) end);
 $f$;
 
@@ -699,15 +701,15 @@ begin
 
   insert into public.spot_plans(spot_id, user_id, habit, intentions, snapshot, starts_at,
                                 duration_min, mode, place, lat, lng, clat, clng, comment,
-                                visibility, location, video, city)
+                                visibility, shield, video, city, capacity, access, selection, kind)
   values (v_id, v_uid, p_habit, v_is,
           jsonb_build_object('habit', p_habit, 'intentions', to_jsonb(v_is),
                              'objectives', v_objs, 'repulsions', v_reps,
                              'freq', v_s->>'f', 'at', now()),
-          now(), p_duration_min, v_mode, coalesce(v_city, 'here'), p_lat, p_lng,
+          now(), p_duration_min, coalesce(v_mode, 'silent'), coalesce(v_city, 'here'), p_lat, p_lng,
           round(p_lat::numeric, 1)::double precision, round(p_lng::numeric, 1)::double precision,
           nullif(left(btrim(coalesce(p_comment,'')), 400), ''),
-          p_visibility, v_loc, p_video, v_city);
+          p_visibility, coalesce(v_loc, 'off'), p_video, v_city, 1, 'club', 'manual', 'experience');
 
   return jsonb_build_object('ok', true, 'id', v_id,
                             'ends_at', now() + make_interval(mins => p_duration_min));
@@ -770,7 +772,7 @@ begin
            where p.status = 'published'
              and public._spot_match(p, p_q, p_intention)
              and (p.user_id = v_uid
-                  or (p.visibility = 'shared' and p.location = 'on'
+                  or (p.visibility = 'shared' and p.shield = 'on'
                       and p.starts_at > now() - make_interval(days => (v_r->>'feed_days')::int)
                       and public._subscriber_of(p.user_id, v_uid)))
            order by p.starts_at desc limit 300) x;
@@ -808,9 +810,12 @@ $f$;
 update storage.buckets set public = false, file_size_limit = 20971520,
        allowed_mime_types = array['video/webm','video/mp4','video/quicktime']
  where id = 'moments';
-drop policy if exists "moments read readable" on storage.objects;
-create policy "moments read readable" on storage.objects for select to anon, authenticated
-  using (bucket_id = 'moments' and public._clip_readable(name));
+do $d$ begin
+  if not exists (select 1 from pg_policies where schemaname = 'storage' and tablename = 'objects' and policyname = 'moments read readable') then
+    create policy "moments read readable" on storage.objects for select to anon, authenticated
+      using (bucket_id = 'moments' and public._clip_readable(name));
+  end if;
+end $d$;
 
 
 -- ════════════════════════════════════════════════════════════════════
@@ -846,7 +851,8 @@ as $f$
     'spots', coalesce((select jsonb_agg(jsonb_build_object(
         'facts', jsonb_build_object(
           'habit', p.habit, 'intentions', to_jsonb(p.intentions), 'visibility', p.visibility,
-          'declared_mode', p.mode, 'location', p.location, 'city', p.city,
+          'declared_mode', case when p.visibility = 'shared' then p.mode end,
+          'location', case when p.visibility = 'shared' then p.shield end, 'city', p.city,
           'started_at', p.starts_at, 'planned_minutes', p.duration_min,
           'state', case when now() < p.starts_at + make_interval(mins => p.duration_min) then 'am' else 'was' end,
           'has_video', p.video is not null),
@@ -887,8 +893,12 @@ grant execute on function public._clip_readable(text) to anon, authenticated, se
 -- Ouvertes sans session : découvrir est gratuit.
 revoke all on function public.creator_page(text) from public;
 grant execute on function public.creator_page(text) to anon, authenticated, service_role;
+revoke all on function public.totehm_search(text, integer) from public;
+grant execute on function public.totehm_search(text, integer) to anon, authenticated, service_role;
 revoke all on function public.search_totehms(text, integer) from public;
 grant execute on function public.search_totehms(text, integer) to anon, authenticated, service_role;
+revoke all on function public._vis_shared() from public, anon, authenticated;
+grant execute on function public._vis_shared() to service_role;
 revoke all on function public.spot_rules() from public;
 grant execute on function public.spot_rules() to anon, authenticated, service_role;
 revoke all on function public.spots_feed(double precision, double precision, text, text, timestamptz, integer) from public;
@@ -913,3 +923,21 @@ revoke all on function public.spot_create(text, text, integer, text, double prec
 grant execute on function public.spot_create(text, text, integer, text, double precision, double precision, text, text, text, text) to authenticated, service_role;
 revoke all on function public.spots_exact(text, text) from public, anon;
 grant execute on function public.spots_exact(text, text) to authenticated, service_role;
+
+-- L'ANCIEN ESPACE ET L'ANCIENNE CONSOLE — révoqués (le ménage les supprime).
+revoke all on function public.spot_publish(text,text[],uuid[],bigint[],boolean,timestamptz,integer,text,double precision,double precision,text,integer,text,text,text,text,text,text,text) from public, anon, authenticated;
+revoke all on function public.moment_publish(text, text[], text, text, double precision, double precision, text, text, text) from public, anon, authenticated;
+revoke all on function public.spot_video_set(uuid, text) from public, anon, authenticated;
+revoke all on function public.spots_radar(double precision,double precision,integer,text,text,boolean,integer,text,text) from public, anon, authenticated;
+revoke all on function public.spots_past(double precision, double precision, integer, text, integer) from public, anon, authenticated;
+revoke all on function public.spots_globe(text,text,text,text) from public, anon, authenticated;
+revoke all on function public.moments_feed(double precision, double precision, integer, integer) from public, anon, authenticated;
+revoke all on function public.my_space() from public, anon, authenticated;
+revoke all on function public.spot_apply(uuid, text) from public, anon, authenticated;
+revoke all on function public.spot_decide(bigint, boolean) from public, anon, authenticated;
+revoke all on function public.spot_withdraw(uuid) from public, anon, authenticated;
+revoke all on function public.spot_cancel(uuid) from public, anon, authenticated;
+revoke all on function public.demo_seed() from public, anon, authenticated;
+revoke all on function public.demo_purge() from public, anon, authenticated;
+revoke all on function public.club_console() from public, anon, authenticated;
+revoke all on function public.creator_card(text) from public, anon, authenticated;
