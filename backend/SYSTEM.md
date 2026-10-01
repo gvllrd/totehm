@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 30 septembre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 1er octobre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -15,7 +15,34 @@
 
 ---
 
-## 0 · LOT DU 30/09/2026 — LA SOURCE UNIQUE : IDENTITÉ · DROITS · PROPRIÉTÉ · MARCHÉ · MOMENTS
+## 0 · LOT DU 01/10/2026 — UN SPOT, DEUX RÉGLAGES, L'ABONNEMENT ANNUEL
+
+> **ÉTAT : APPLIQUÉ, DÉPLOYÉ, FUSIONNÉ (`main` = 72a93f1), relevé le 01/10.**
+> Migration `20261001_un_spot_deux_reglages.sql` appliquée par la session
+> cloud en six morceaux (`20261001_a…g`), sans rien de destructif. Le ménage
+> `20261001_b_menage.sql` (les `drop`) attend Claude Code (`CLAUDE_CODE.md`).
+>
+> | mesure (production, 01/10) | valeur |
+> |---|---|
+> | `demo_purge()` avant migration | **42** Spots, **10** membres de démo ; `demo_members` = 0 |
+> | `spot_plans` réels | **11** (6 publiés, 5 annulés), tous `shared` |
+> | lignes `spots` actives de l'Espace | **6** ; position à 0,1° : **11/11** |
+> | seau `moments` | **privé**, 20 Mo |
+> | `totehms` | 3 : `members` 2 (= VISIBLE TO MY SUBSCRIBERS jusqu'au ménage), `private` 1 ; `_vis_shared()` = `members` |
+> | `creator_subscriptions` | 0 (le passage à l'annuel ne touche personne) |
+> | droits | anon : `spots_feed` oui, `spots_exact` non, ancien `spots_radar` non ; authenticated : `_bot_memory` non |
+> | auto-test `tests/sql/spots_selftest.sql` (annulé) | `create_private=true · create_shared_off=true · create_shared_on=true · state_now=was · C_totehm=private · page_period=year · vis_private=true · memory_spots=3 · FAIL={}` |
+> | Edge Functions | `club-billing` **v3** (retour totehm.com/console), `creator-subscribe` **v10** (`interval: year`) — verify_jwt true |
+> | Vercel (72a93f1) | `com`, `space`, `boutique` **READY** ; `www.totehm.space` sert `BUILD='2026-10-01'` ; `www.totehm.com/console` **200** |
+> | tests navigateur | space 42/42 · console 12/12 · market 14/14 · streetwear 11/11 |
+>
+> **⚠️ figher.club n'est servi par AUCUN des trois projets de l'équipe Vercel
+> `gvllrds-projects`** (com · space · boutique) : `club/` (dont la redirection
+> `/console` → totehm.com et le marché) n'a pas de cible de déploiement
+> visible d'ici. À relier (projet Vercel `club`, dossier racine `club/`, domaines
+> `figher.club` + `www`) — décision et accès de Wah.
+
+## 0bis · LOT DU 30/09/2026 — LA SOURCE UNIQUE : IDENTITÉ · DROITS · PROPRIÉTÉ · MARCHÉ · MOMENTS
 
 > **ÉTAT : migration `20260930_la_source_unique.sql` APPLIQUÉE le 30/09/2026
 > par Claude (MCP Supabase), testée d'abord dans une transaction annulée.**
