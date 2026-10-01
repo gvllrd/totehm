@@ -3752,7 +3752,7 @@ async function cloudLoad(){
      premier chargement depuis le nuage. L'ordre lui-même voyage dans
      `steps` — c'est l'ordre du tableau ; seul le DRAPEAU se perdait. */
   const ordonne = !!(state && state.ord);
-  state={habits, vis:data.some(r=>r.totehm_visibility==='subscribers')?'subscribers':'private'};
+  state={habits, vis:data.some(r=>['subscribers','members'].includes(r.totehm_visibility))?'subscribers':'private'};
   if(ordonne)state.ord=true;
   cacheEcrire();
 }
@@ -6863,12 +6863,11 @@ $('wpick').addEventListener('click',e=>{if(e.target===$('wpick'))closeWeightPick
       pas, et quand le Totehm existait mais était vide. Trois situations,
       un seul message, aucun moyen de savoir laquelle.
 
-   Une seule RPC, `search_totehms()`, ouverte à `anon` : elle ne rend que
+   Une seule RPC, `totehm_search()` (01/10 ; `search_totehms` avant), ouverte à `anon` : elle ne rend que
    des Totehms explicitement partagés, jamais un e-mail ni un id, et elle
    classe exact > préfixe > sous-chaîne — l'ordre dans lequel un humain
    cherche un nom qu'il connaît déjà. */
 
-const INT_DOT = i => '<span class="sr-dot" style="background:'+intColor(i)+'"></span>';
 
 async function runSearch(q, noteEl){
   noteEl.classList.remove('hide');
@@ -6876,8 +6875,8 @@ async function runSearch(q, noteEl){
   noteEl.textContent = 'searching\u2026';
   let rows = [];
   try{
-    const {data,error} = await sb.rpc('search_totehms',{p_q:q,p_limit:8});
-    if(error) throw error;
+    const {data,error} = await sb.rpc('totehm_search',{p_q:q,p_limit:8});
+    if(error){ console.error('[totehm_search]', error.message); throw error; }
     rows = data || [];
   }catch(e){
     noteEl.className='note no'; noteEl.textContent='search is unreachable right now';
@@ -6894,10 +6893,8 @@ async function runSearch(q, noteEl){
   noteEl.innerHTML = '<div class="sr-list">' + rows.map(r =>
       '<button class="sr-row" type="button" data-pseudo="'+esc(r.pseudo)+'">'
     +   '<span class="sr-name">'+esc(r.pseudo)+'</span>'
-    +   '<span class="sr-ints">'
-    +     (r.intentions||[]).filter(i=>INT_BY_ID[i]).map(INT_DOT).join('')
-    +   '</span>'
-    +   '<span class="sr-meta">'+(r.habits||0)+' habit'+((r.habits||0)===1?'':'s')+'</span>'
+    /* 01/10 : un nom et une offre — jamais un contenu (ni intentions, ni habitudes). */
+    +   '<span class="sr-meta">'+(r.subscribed?'subscribed':r.offer?'subscribe':'')+'</span>'
     +   '</button>').join('') + '</div>';
   noteEl.querySelectorAll('.sr-row').forEach(b=>{
     b.onclick = () => {

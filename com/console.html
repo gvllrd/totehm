@@ -318,8 +318,8 @@ $('find').addEventListener('input', () => {
   clearTimeout(fT); const v = $('find').value.trim();
   if(v.length < 2){ $('found').innerHTML = ''; return; }
   fT = setTimeout(async () => {
-    const { data, error } = await sb.rpc('search_totehms', { p_q: v, p_limit: 8 });
-    if(error){ console.error('[search_totehms]', error.message); return; }
+    const { data, error } = await sb.rpc('totehm_search', { p_q: v, p_limit: 8 });
+    if(error){ console.error('[totehm_search]', error.message); return; }
     $('found').innerHTML = (data || []).map(r => '<div class="row"><a class="tname" href="/@' + encodeURIComponent(r.pseudo) + '">' + esc(r.pseudo) + '</a><span class="sub">' +
       (r.subscribed ? 'subscribed' : r.offer ? money(r.price_cents, r.currency) + ' / year' : 'not open') + '</span></div>').join('') || '<div class="empty">no TOTEHM by that name</div>';
   }, 260);

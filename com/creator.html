@@ -4,7 +4,7 @@
   MASTER BRIEF §3-5 : SEARCH → TOTEHM → CREATOR → PUBLIC / SUBSCRIBER
   ACCESS, sur totehm.com et nulle part ailleurs.
 
-  · `/search`   — la recherche des Totehms partagés (`search_totehms`,
+  · `/search`   — la recherche des Totehms partagés (`totehm_search`,
                   ouverte aux invités). L'atterrissage du Totehm garde son
                   objet unique (le papier) ; la recherche a SA page.
   · `/@nom`     — la page de vente d'un créateur (`creator_page`, ouverte à
@@ -194,8 +194,8 @@ $('q').addEventListener('input', () => {
   const v = $('q').value.trim();
   if(v.length < 2){ $('res').innerHTML = ''; $('q-note').textContent = v ? 'two letters, minimum' : ''; return; }
   qT = setTimeout(async () => {
-    const { data, error } = await sb.rpc('search_totehms', { p_q: v, p_limit: 12 });
-    if(error){ console.error('[search_totehms]', error.message); $('q-note').className = 'note no'; $('q-note').textContent = 'search is unreachable right now'; return; }
+    const { data, error } = await sb.rpc('totehm_search', { p_q: v, p_limit: 12 });
+    if(error){ console.error('[totehm_search]', error.message); $('q-note').className = 'note no'; $('q-note').textContent = 'search is unreachable right now'; return; }
     const l = data || [];
     $('q-note').className = 'note'; $('q-note').textContent = l.length ? '' : 'no TOTEHM by that name';
     /* 01/10 : un NOM et une offre, jamais un contenu (ni habitudes, ni intentions). */

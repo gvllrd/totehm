@@ -12,7 +12,7 @@
 // Cette fonction ne recompose aucune règle : elle demande, et obéit.
 //
 // ⚠️ PAR PSEUDO, JAMAIS PAR IDENTIFIANT. La page connaît un pseudo (la
-// recherche ne rend jamais d'id, règle de `search_totehms`). L'id du
+// recherche ne rend jamais d'id, règle de `totehm_search`). L'id du
 // créateur est résolu ici, côté serveur. `creator_id` reste accepté
 // pour ce qui l'envoyait déjà — il est retraduit en pseudo.
 //

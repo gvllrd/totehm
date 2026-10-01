@@ -11,7 +11,7 @@ const rpc = {
   my_console: () => C,
   visibility_set: b => { C.visibility = b.p_visibility; return { ok:true, visibility:b.p_visibility, subscribers:1, open:false }; },
   monetization_set: b => { C.offer.enabled = b.p_enabled; C.offer.open = b.p_enabled && C.visibility === 'subscribers'; return { ok:true, monetized:b.p_enabled }; },
-  search_totehms: [{ pseudo:'kai', offer:true, price_cents:2400, currency:'eur', subscribed:true }, { pseudo:'kaito', offer:true, price_cents:1200, currency:'eur', subscribed:false }],
+  totehm_search: [{ pseudo:'kai', offer:true, price_cents:2400, currency:'eur', subscribed:true }, { pseudo:'kaito', offer:true, price_cents:1200, currency:'eur', subscribed:false }],
 };
 const browser = await launch();
 const { pg, log } = await page(browser, { dir:'com', origin:'https://www.totehm.com', rpc });
