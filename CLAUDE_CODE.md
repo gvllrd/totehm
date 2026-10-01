@@ -47,6 +47,20 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > MCP (`space_future_navigation`, journal `20261001202914`). Aucun travail
 > Oracle/n8n demandé par ce lot ; pas de réapplication de cette migration.
 
+### Correction 0.23 — même jour, dernière demande de Wah
+
+> SPACE conserve ses cinq vues et tous ses gestes. Boussole et couronne
+> reviennent ; retour horizontal au radar depuis les côtés. Aucun filtre
+> d'intention vertical : choisir SA Habit Box complète de COM, puis repli
+> sur ses intentions s'il n'y a aucun Spot de cette Habit. Titres par vue.
+> PRIVATE/SHARED → ON/OFF si SHARED → SILENT/SOCIAL si ON → durée/commentaire.
+> TOP : Spot futur, lieu choisi puis marqué DANS le radar réduit. BOTTOM :
+> capture HD, joystick remonté NAVY, rond/carré rouge REC/STOP. Boutons ajustés
+> au texte. Migrations appliquées par MCP, ne pas réappliquer. Bunny : code
+> et Edge Functions en place, API d'upload 200, activation CDN protégée encore
+> bloquée par les secrets hostname/token/read-only manquants ; voir README.
+> Cette correction REMPLACE toute règle contredite de 0.21 / 0.22.
+
 ## Le rapport
 
 Un tableau : ce qui a été fait, la valeur mesurée, ce qui n'a pas pu l'être.

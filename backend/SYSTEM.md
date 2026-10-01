@@ -15,7 +15,38 @@
 
 ---
 
-## 0 · SPACE — dernière demande du 01/10/2026 : navigation et futur restaurés
+## 0 · SPACE — 01/10/2026 : boussole, Habit Boxes, création progressive, vidéo HD
+
+**État : migrations et Edge Functions appliquées ; code testé, fusion et contrôle public en cours.**
+BUILD `2026-10-01-compass-habits-bunny`. Ce relevé remplace la section navigation précédente.
+
+| mesure (01/10, ce lot) | résultat |
+|---|---|
+| migration principale | fichier `20261001215826_space_compass_habits_bunny.sql` ; journal `20261001220323` |
+| réservation vidéo | fichier `20261001220550_space_bunny_upload_reservation.sql` ; journal `20261001220647` |
+| Habit exacte | fichier `20261001222515_space_exact_habit_selection.sql` ; journal `20261001222604` |
+| Habit Box COM | `space_habits` : nom, intentions, 33 fréquences, lieu habituel, WHY et TRIGGER reliés ; `space_discover` : nom complet exact puis repli intentions s’il n’existe pas de résultat lisible dans la vue |
+| droits progressifs | PRIVATE / SHARED → ON / OFF → SILENT / SOCIAL seulement si ON ; contexte complet propriétaire seul ; lieu exact protégé inchangé |
+| tables vidéo | `videos`, `video_backend` : RLS activée sans politique ; service_role seul ; `spot_plans.video_id` référence un clip possédé, utilisable une seule fois |
+| règles relues | 33 s, 32 Mo ; durée 5–720 min ; 24 Spots/jour ; 10 futurs, horizon 90 jours ; bucket `moments` toujours privé |
+| Edge Functions ACTIVE | `create-bunny-upload` v3 / `bunny-video` v2 : verify_jwt true ; `bunny-webhook` v2 : verify_jwt false, authentification HMAC-SHA256 obligatoire |
+| Bunny réel | clé bibliothèque présente et API vidéos HTTP 200 ; API configuration compte HTTP 401 ; statut interne `secure_delivery_missing` |
+| activation Bunny restante | `BUNNY_CDN_HOSTNAME`, `BUNNY_TOKEN_KEY`, `BUNNY_READ_ONLY_API_KEY`, protection Token Authentication du CDN et callback bibliothèque ; aucun secret lu, rendu au client ou versionné |
+| comportement en attendant | capture HD 6 Mbps + audio 128 kbps, lecture Storage privée signée ; upload Bunny activé seulement quand une lecture signée protégée est vérifiée |
+| auto-tests SQL annulés | `spots_selftest.sql`, `space_future_selftest.sql`, `space_habits_video_selftest.sql` : chacun `FAIL={}` ; propriété, abonnements, contexte, états, pagination, quota et grants |
+| intégrité après tests | 12 Spots réels, 0 Spot `Selftest%`, 0 vidéo ; aucune fixture conservée |
+| navigateur Chromium simulé | `space.mjs` : 33 contrôles ; `space_video.mjs` : 10 contrôles ; aucun JavaScript en erreur |
+| navigation / radar | retour au centre depuis chaque côté dans les deux sens, tactile CDP réel, souris / trackpad ; boussole rotative ; lieu choisi dans le radar et conversion longitude vérifiée ; panneaux desktop + radar réduit, TOP réduit sur mobile |
+| caméra / HLS local | REC rond → STOP carré rouge, fond navy remonté ; TUS direct vers Bunny sans Storage, reprise offset ; véritable lecture HLS 1080 × 1920 et segments conservant le préfixe signé ; services Bunny simulés |
+| sécurité HTTP réelle | anon upload : 401 ; clip inexistant : 404 ; callback sans signature : 401 ; diagnostic uniquement en table privée |
+| conseiller sécurité | RLS sans politique et RPC SECURITY DEFINER exposées volontairement ; auth / propriété / visibilité vérifiées, search_path fixé ; constats historiques hors lot conservés |
+| autre infrastructure | SSO conservé ; aucun prix, paiement, abonnement réel, webhook Stripe ou Oracle modifié |
+
+Bunny en production n’a PAS été annoncé actif : son encodage et son CDN réels
+restent à vérifier après configuration. Tests caméra limités à 3 s dans le mock ;
+limite réelle 33 s relue en base. Aucun test sur téléphone physique prétendu.
+
+## 0-navigation · LOT PRÉCÉDENT DU 01/10/2026 : navigation et futur restaurés
 
 **État : base appliquée, [PR #12](https://github.com/gvllrd/totehm/pull/12) FUSIONNÉE (`6f525a6`), déployé et vérifié.**
 Ce relevé remplace les règles de navigation et l'interdiction du futur du

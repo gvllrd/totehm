@@ -6,6 +6,31 @@
 > `CLAUDE.md` le 30/09/2026, les plus récentes d'abord : un renvoi « plus
 > haut » peut viser la racine ou un autre dossier. Procédures : `README.md`. État mesuré : `SYSTEM.md` (§0 d'abord).
 
+## Dernière correction SPACE · 01/10/2026 — Habit, partage progressif, Bunny
+
+`space_habits` rend les Boxes personnelles complètes de COM. `space_discover`
+cherche le nom complet puis, s'il n'existe aucun résultat lisible dans cette
+vue, les intentions de SA Habit ; droits identiques aux lecteurs existants.
+SHARED exige ON/OFF ; seulement ON exige SILENT/SOCIAL. OFF et PRIVATE ne
+rendent pas de mode. Snapshot : fréquence, step, lieu habituel et liens,
+contexte complet toujours propriétaire seul. `_spot_match` n'est plus une
+recherche de mots. Migrations additives du 01/10, voir SYSTEM.md §0.
+
+`videos` et `video_backend` : RLS sans politique, aucun GRANT anon/auth,
+service_role seulement. `video_reserve` service_role seul, propriétaire,
+limites / quota verrouillés. `spot_create` accepte aussi bunny:<UUID> d'une
+vidéo possédée, processing/ready, non déjà liée à un autre Spot ; stockage
+via video_id, anciens video paths préservés. `_spot_view` rend un clip local
+(id/status), jamais des clés Bunny ou une URL non signée. Trois Edge Functions :
+create-bunny-upload / bunny-video (JWT + contrôle applicatif), bunny-webhook
+(HMAC brut, custom auth ; JWT gateway désactivé pour le callback signé).
+
+Bunny API confirmé 200 avec les deux secrets existants. Lecture protégée
+encore à configurer : hostname CDN, token key, read-only key / webhook.
+`video_backend` est PRIVÉ ; aucun diagnostic des secrets public. Le client
+connecté obtient seulement available. Pas d'upload Bunny si la lecture
+protégée n'est pas vérifiée. Storage privé HD reste actif (32 Mo / 33 s).
+
 ## Dernière demande SPACE · 01/10/2026 — le futur revient
 
 Migration additive `20261001201525_space_future_navigation.sql`, appliquée

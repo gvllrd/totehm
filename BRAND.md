@@ -23,14 +23,14 @@ transversal system. **This table wins over any older mapping in this file.**
 > are free for oneself. `totehm.space` is **DO WITH ME**: one kind of
 > **Spot** — a Habit Box of my TOTEHM, filmed now (33 s max) or planned
 > for a future time and place, for a duration,
-> **PRIVATE** (only me) or **SHARED** (+ **SILENT** *Nobody disturb me* /
-> **SOCIAL** *We can talk*, + **LOCATION ON/OFF**). It reads **I WILL BE HERE**
+> **PRIVATE** (only me) or **SHARED**, then **LOCATION ON** *for the subscribers* / **OFF** *for the audience*. Only ON asks **SILENT** *Nobody disturb me* / **SOCIAL** *We can talk*. It reads **I WILL BE HERE**
 > before its start, **I AM HERE** during its duration, then **I WAS THERE**. A creator's
 > subscription is **yearly**, priced by the creator; it opens their shared
 > TOTEHM and the exact place of their ON spots — **not an invitation**. A
 > TOTEHM is **PRIVATE** or **VISIBLE TO MY SUBSCRIBERS**, nothing else. The
 > console lives on `totehm.com/console`. TotehmBot / Higher Self is a
 > separate monthly offer — a mirror, not a coach. No match %, ever.
+> SPACE now selects a complete Habit Box, with intention fallback; no vertical intention buttons. Each view names its state; compass and the radar meeting point remain.
 > Words that are gone: Short-Live, moment, experience,
 > capacity, apply, accept.
 

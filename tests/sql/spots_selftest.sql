@@ -44,7 +44,7 @@ begin
   v_on := (r->>'id')::uuid;
   out := out || ' | create_shared_on=' || coalesce(r->>'ok','null');
   r := public.spot_create('Selftest sprint', 'shared', 45, clip_on, lis_lat, lis_lng, 'Lisbon');
-  if r->>'why' <> 'mode' then fails := array_append(fails, 'shared_needs_mode'); end if;
+  if r->>'why' <> 'location' then fails := array_append(fails, 'shared_needs_location'); end if;
   r := public.spot_create('Selftest sprint', 'private', 2, clip_p, lis_lat, lis_lng);
   if r->>'why' <> 'duration' then fails := array_append(fails, 'duration_bounds'); end if;
   r := public.spot_create('Not my habit', 'private', 45, clip_p, lis_lat, lis_lng);
@@ -125,3 +125,4 @@ begin
 
   raise exception 'SELFTEST (rolled back): % | FAIL=%', out, fails;
 end $t$;
+

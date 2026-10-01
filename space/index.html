@@ -3,7 +3,7 @@
   ══ TOTEHM.SPACE — DO WITH ME · 01/10/2026 ═════════════════════════════
   Un Spot = une activité intentionnelle, tirée d'une Habit de MON Totehm,
   filmée maintenant OU annoncée pour plus tard. Deux réglages : PRIVATE (moi
-  seul) ou SHARED (+ SILENT/SOCIAL, + LOCATION ON/OFF). I WILL BE HERE
+  seul) ou SHARED (LOCATION ON/OFF, puis SILENT/SOCIAL seulement si ON). I WILL BE HERE
   avant une date annoncée ; I AM HERE pendant la durée ; I WAS THERE
   après. Le serveur le déduit de l'heure, même page fermée.
 
@@ -21,11 +21,11 @@
     l'abonné vivant) ; le fil lit `spots_feed` (la VILLE, jamais un point,
     jamais une distance). Aucun Spot non autorisé n'est placé à sa vraie
     position : la page n'en reçoit pas.
-  ⚠️ LES VIDÉOS SONT PRIVÉES (seau `moments`) : URL signée, demandée
-    seulement quand la vidéo est À L'ÉCRAN (egress).
-  ⚠️ L'INTENTION et le choix d'une Habit Box sont communs aux trois vues
-    horizontales. LOVE par défaut ; un choix volontaire est retenu.
-  RIGHT lit `spots_list` : futurs lisibles ; ville seule
+  ⚠️ LES VIDÉOS : Bunny en diffusion protégée quand configuré, sinon seau
+    `moments` privé. Lecture signée seulement À L'ÉCRAN (egress).
+  ⚠️ Le choix d'une Habit Box est commun aux trois vues
+    horizontales. La Habit est exacte, sinon ses intentions deviennent le repli.
+  `space_discover` applique le choix aux trois lectures. RIGHT : futurs lisibles ; ville seule
     sans droit exact. Desktop : panneaux de côté + radar réduit, jamais
     un radar derrière la vidéo. Joystick COM : blue / navy / rep.
   Polices : Space Mono et Quantico, rien d'autre. Aucun fond blanc.
@@ -76,15 +76,6 @@ button,input,textarea,select{font:inherit;color:inherit;color-scheme:dark}
 #title svg{height:15px;width:45px;display:block}
 body.v-cam.is-rec #title{opacity:0}
 
-/* ══ LES SEPT, À DROITE — violet en haut, rouge en bas (les chakras) ═ */
-#ints{position:fixed;right:6px;top:50%;transform:translateY(-50%);z-index:55;display:flex;flex-direction:column;gap:2px;
-  transition:opacity .25s;opacity:0;pointer-events:none}
-body.v-feed #ints,body.v-radar #ints,body.v-list #ints{opacity:1;pointer-events:auto}
-#ints button{width:34px;height:34px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  -webkit-tap-highlight-color:transparent}
-#ints button::before{content:'';width:12px;height:12px;border-radius:50%;background:var(--c);opacity:.5;transition:opacity .15s,transform .15s}
-#ints button.is-on::before{opacity:1;transform:scale(1.45);box-shadow:0 0 10px var(--c)}
-
 /* ══ LES CINQ VUES ═══════════════════════════════════════════════════ */
 .view{position:fixed;inset:0;z-index:10;visibility:hidden;opacity:0;transition:opacity .28s ease,visibility 0s .28s}
 .view.is-on{visibility:visible;opacity:1;transition:opacity .28s ease,visibility 0s}
@@ -109,7 +100,7 @@ input[type=date].field,input[type=time].field{max-width:100%}
 #feed::-webkit-scrollbar{display:none}
 .clip{position:relative;height:100%;width:100%;scroll-snap-align:start;scroll-snap-stop:always;background:var(--s1);overflow:hidden}
 .clip video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
-.clip .info{position:absolute;left:12px;right:52px;bottom:calc(114px + var(--bot));z-index:2}
+.clip .info{position:absolute;left:12px;right:12px;bottom:calc(114px + var(--bot));z-index:2}
 .clip .noclip{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;letter-spacing:.2em;
   text-transform:uppercase;color:var(--dim)}
 
@@ -117,7 +108,7 @@ input[type=date].field,input[type=time].field{max-width:100%}
 #v-radar canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 
 /* RIGHT — la liste */
-#list{position:absolute;inset:0;overflow-y:auto;padding:calc(112px + var(--top)) 50px calc(110px + var(--bot)) 14px;
+#list{position:absolute;inset:0;overflow-y:auto;padding:calc(112px + var(--top)) 14px calc(110px + var(--bot)) 14px;
   display:flex;flex-direction:column;gap:12px;overscroll-behavior:contain}
 .it{cursor:pointer}
 .dist{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo);margin-top:5px}
@@ -244,24 +235,41 @@ body.v-cam.is-rec #cam-body,body.v-cam.is-count #cam-body{background:none}
 #habit-filter{pointer-events:auto;background:var(--s2);border:none;border-radius:var(--r);padding:5px 10px;max-width:min(320px,70vw);font-size:10px;color:var(--mid);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 body:not(.v-radar) #habit-filter{visibility:hidden}
 body.v-cam.is-rec #int-def{opacity:0}
-#habit-picker{position:fixed;top:calc(100px + var(--top));left:50%;transform:translateX(-50%);z-index:85;width:min(420px,calc(100vw - 32px));max-height:60vh;overflow-y:auto;background:var(--s1);border:1px solid var(--s3);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;gap:10px}
+#habit-picker{position:fixed;top:calc(100px + var(--top));left:50%;transform:translateX(-50%);z-index:85;width:min(420px,calc(100vw - 32px));max-height:64vh;overflow-y:auto;background:var(--s1);border:1px solid var(--s3);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;gap:10px}
 #habit-picker .row{justify-content:space-between}
 #joy .cur.is-preview{opacity:1;transform:scale(1.3)}
 .view:not(#v-radar){touch-action:pan-y}
 #radar-empty{top:auto;transform:translate(-50%,-50%);width:240px;right:auto;pointer-events:none}
-#place-picker{position:fixed;inset:0;z-index:100;background:var(--s1);display:flex;flex-direction:column}
-#place-map{flex:1;position:relative;overflow:hidden;touch-action:none;background:var(--s2);cursor:grab}
-#place-map.is-held{cursor:grabbing}
+#place-picker{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + var(--bot));z-index:90;width:min(440px,calc(100vw - 32px));background:var(--s1)}
+#place-actions{padding:12px;display:flex;flex-direction:column;gap:8px}
+#place-actions .row{justify-content:space-between}
+#radar-map{position:absolute;overflow:hidden;border-radius:50%;touch-action:none;cursor:grab;z-index:1;background:var(--s2)}
 #map-tiles{position:absolute;inset:0;pointer-events:none}
 #map-tiles img{position:absolute;width:256px;height:256px;filter:invert(1) hue-rotate(180deg) brightness(.72) saturate(.65)}
-#map-pin{position:absolute;top:50%;left:50%;width:18px;height:18px;border:2px solid #fff;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 5px rgba(0,0,0,.4);pointer-events:none}
-#map-pin:after{content:'';position:absolute;inset:5px;border-radius:50%;background:#fff}
-#map-tools{position:absolute;top:calc(14px + var(--top));right:14px;display:flex;flex-direction:column;gap:8px}
-#map-tools button{min-width:40px;min-height:40px}
-#map-credit{position:absolute;bottom:2px;right:5px;font-size:9px;background:var(--s1);padding:2px 5px;color:var(--lo)}
+#map-pin{position:absolute;top:50%;left:50%;width:18px;height:18px;border:2px solid #fff;transform:translate(-50%,-50%);pointer-events:none}
+#map-pin:after{content:'';position:absolute;inset:5px;background:#fff}
+#map-credit{position:absolute;bottom:13%;left:50%;transform:translateX(-50%);font-size:7px;white-space:nowrap;background:var(--s1);padding:1px 3px;color:var(--lo)}
 #map-credit a{color:inherit}
-#place-actions{background:var(--s1);padding:14px 16px calc(14px + var(--bot));display:flex;flex-direction:column;gap:10px}
-#place-actions .row{justify-content:space-between}
+#radar-tools{position:fixed;z-index:65;display:flex;flex-direction:column;align-items:center;gap:6px;max-width:130px}
+#cmp{font-size:8px;line-height:1.6;text-align:center;padding:5px 8px;white-space:nowrap}
+#map-tools{flex-wrap:nowrap;gap:3px}#map-tools .chip{padding:4px 8px;min-width:26px;text-align:center}
+body.v-feed #radar-tools,body.v-list #radar-tools,body.v-cam #radar-tools{display:none}
+body.is-pin #radar-tools{display:flex}
+body.is-pin #v-plan{visibility:hidden!important;opacity:0;pointer-events:none}
+body.is-pin #joy,body.is-pin #radar-empty{display:none}
+body.is-pin #v-radar{visibility:visible;opacity:1}
+.btn,.chip{width:fit-content;max-width:100%;align-self:flex-start;flex:0 0 auto}
+.btn{padding:8px 12px}.chip{padding:6px 9px;letter-spacing:.08em}
+.chip small{max-width:23ch;line-height:1.45}
+#joy{transition:bottom .3s var(--ease)}
+body.v-cam #joy{bottom:calc(64px + var(--bot))}
+body.v-cam.is-form #cam-body{bottom:calc(170px + var(--bot));max-height:calc(100% - 300px);padding:12px 14px;background:rgba(11,11,13,.88)}
+body.v-cam.is-form #joy{bottom:calc(64px + var(--bot))}
+#cam-body .it{flex:none}
+@media(max-width:899px){
+ body.v-plan #v-radar{visibility:visible;opacity:1}
+ #v-plan{inset:auto 0 calc(112px + var(--bot));height:auto;max-height:44vh;padding:12px 14px;box-shadow:0 -8px 24px rgba(0,0,0,.4)}
+}
 @media(min-width:900px){
   :root{--panel-w:420px}
   #v-radar{visibility:visible!important;opacity:1!important;z-index:10;transition:none}
@@ -275,10 +283,12 @@ body.v-cam.is-rec #int-def{opacity:0}
   #v-cam{inset:auto auto calc(124px + var(--bot)) 50%;width:min(760px,calc(100vw - 48px));height:min(42vh,410px);transform:translate(-50%,160%);border-radius:var(--r);overflow:hidden}
   #v-cam.is-on{transform:translate(-50%,0)}
   #cam-body{max-height:90%;padding:14px 18px 16px}
+  body.v-cam.is-form #cam-body{bottom:64px;max-height:calc(100% - 76px);padding:12px 16px}
   #cam-sec{top:12px;right:14px}
-  #list{padding:calc(66px + var(--top)) 48px 26px 16px}
+  #list{padding:calc(66px + var(--top)) 16px 26px 16px}
   .clip .info{bottom:26px}
-  body.v-feed #habit-filter,body.v-list #habit-filter{visibility:visible}
+  body.v-feed #habit-filter,body.v-list #habit-filter{visibility:hidden}
+  body.v-feed #radar-tools,body.v-list #radar-tools{display:flex}
   body.v-feed #heading{left:var(--panel-w)}
   body.v-list #heading{right:var(--panel-w)}
   #detail{left:50%;right:auto;width:min(600px,calc(100vw - 40px));border-radius:var(--r) var(--r) 0 0;transform:translate(-50%,104%)}
@@ -287,6 +297,8 @@ body.v-cam.is-rec #int-def{opacity:0}
 @media(max-width:480px){#heading{top:calc(44px + var(--top))}#int-def{max-width:80vw;font-size:8px}#list,#v-plan{padding-top:calc(132px + var(--top))}}
 @media(prefers-reduced-motion:reduce){.view,#heading,#detail,#menu,#joy-stack,#joy-record{transition:none!important}}
 
+.video-status{position:absolute;top:44%;left:12px;right:12px;text-align:center;pointer-events:none}
+#cam-v,#detail video{object-fit:contain}
 </style>
 </head>
 <body class="v-radar">
@@ -297,12 +309,12 @@ body.v-cam.is-rec #int-def{opacity:0}
 <header id="heading"><div id="title" aria-live="polite"><b id="title-int"></b><svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg></div>
 <p id="int-def"></p><button id="habit-filter" type="button" aria-haspopup="dialog" aria-expanded="false">Habit Box · all</button></header>
 <aside id="habit-picker" class="hide" role="dialog" aria-label="Select my Habit Box"></aside>
-<div id="ints" role="group" aria-label="Intention"></div>
+
 
 <section class="view" id="v-plan" aria-label="Create a future spot"><div id="plan-body"></div></section>
 
 <section class="view" id="v-feed" aria-label="Spots around"><div id="feed"></div></section>
-<section class="view is-on" id="v-radar" aria-label="Radar"><canvas id="canvas"></canvas><div class="empty hide" id="radar-empty"></div></section>
+<section class="view is-on" id="v-radar" aria-label="Radar"><canvas id="canvas"></canvas><div id="radar-map" class="hide"><div id="map-tiles"></div><div id="map-pin"></div><span id="map-credit">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></span></div><div class="empty hide" id="radar-empty"></div></section>
 <section class="view" id="v-list" aria-label="Future Spot Habits"><div id="list"></div></section>
 <section class="view" id="v-cam" aria-label="Camera">
   <video id="cam-v" playsinline muted></video>
@@ -312,13 +324,10 @@ body.v-cam.is-rec #int-def{opacity:0}
 </section>
 
 <aside id="detail" aria-label="Spot"></aside>
-<section id="place-picker" class="hide" role="dialog" aria-modal="true" aria-label="Choose the future spot place">
-  <div id="place-map"><div id="map-tiles"></div><div id="map-pin"></div>
-    <div id="map-tools"><button class="btn" type="button" data-zoom="1" aria-label="Zoom in">+</button><button class="btn" type="button" data-zoom="-1" aria-label="Zoom out">−</button><button class="btn" type="button" data-here="1">Here</button></div>
-    <span id="map-credit">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></span>
-  </div>
-  <div id="place-actions"><p class="note">Move the map to choose the place.</p><input class="field" id="place-name" maxlength="120" placeholder="Place name (optional)" aria-label="Place name"><div class="row"><button class="lnk" id="place-cancel" type="button">Cancel</button><button class="btn" id="place-use" type="button">Use this place</button></div></div>
+<section id="place-picker" class="hide" role="dialog" aria-label="Choose the future spot place">
+  <div id="place-actions"><p class="note">Move the radar under the cross.</p><input class="field" id="place-name" maxlength="120" placeholder="Place name (optional)" aria-label="Place name"><div class="row"><button class="lnk" id="place-cancel" type="button">Cancel</button><button class="btn" id="place-use" type="button">Use this place</button></div></div>
 </section>
+<div id="radar-tools" role="group" aria-label="Radar controls"><button id="cmp" class="chip" type="button" aria-label="Compass">000° N<br>turn the ring</button><div id="map-tools" class="row"><button class="chip" type="button" data-zoom="1" aria-label="Zoom in">+</button><button class="chip" type="button" data-zoom="-1" aria-label="Zoom out">−</button><button class="chip" type="button" data-here="1" aria-label="My position">◎</button></div></div>
 
 <div id="joy" role="group" aria-label="Where I am in totehm.space">
   <button class="cur" id="cur-h" type="button" aria-label="Future spot"><svg viewBox="0 0 16 16"><path d="M3 10 L8 5 L13 10"/></svg></button>
@@ -438,8 +447,7 @@ const INTS = {
 
 const CHAKRA = ['celebrate','focus','express','love','enrich','flow','fight'];
 const icol = i => (INTS[i] || {}).c || '#ffffff';
-const FREQ = { daily:'daily', every_morning:'every morning', every_evening:'every evening', weekly:'weekly', every_weekday:'every weekday',
-  every_weekend:'every weekend', several_daily:'several times a day', twice_week:'twice a week', monthly:'monthly' };
+const FREQ = {"every_minute": "every minute", "hourly": "every hour", "several_daily": "several times a day", "every_morning": "every morning", "every_afternoon": "every afternoon", "daily": "daily", "every_evening": "every evening", "every_weekday": "every weekday", "every_night": "every night", "every_other_day": "every other day", "twice_week": "twice a week", "every_weekend": "every weekend", "weekly": "weekly", "every_monday": "every monday", "every_tuesday": "every tuesday", "every_wednesday": "every wednesday", "every_thursday": "every thursday", "every_friday": "every friday", "every_saturday": "every saturday", "every_sunday": "every sunday", "biweekly": "every two weeks", "twice_month": "twice a month", "monthly": "monthly", "every_1st_month": "every 1st of the month", "every_15th_month": "every 15th of the month", "seasonal": "every season change", "quarterly": "every quarter", "semiannual": "every six months", "yearly": "yearly", "every_birthday": "every birthday", "every_newyear": "every new year", "randomly": "randomly", "sometimes": "sometimes"};
 
 /* ══ LE TEMPS — à l'heure de l'APPAREIL, à la première personne ══════ */
 const pad = n => String(n).padStart(2, '0');
@@ -468,34 +476,31 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
 const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query=' + Number(lat).toFixed(5) + '%2C' + Number(lng).toFixed(5);
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD = '2026-10-01-navigation';
+const BUILD = '2026-10-01-compass-habits-bunny';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
-let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:20971520, countdown:3, duration_min:5, duration_max:720 };
+let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:33554432, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'radar';
-const S = { int: INTS[store.get('space_int')] ? store.get('space_int') : 'love', q: '', habit:null };
-const FEED = { list:[], seq:0, more:true, loading:false };
-const EX = { list:[], seq:0 };
-const LIST = { list:[], seq:0, more:false, loading:false };
+const S = { int:null, q:'', habit:null };
+const FEED = { list:[], seq:0, more:true, loading:false, match:'all' };
+const EX = { list:[], seq:0, match:'all' };
+const LIST = { list:[], seq:0, more:false, loading:false, match:'all' };
 const PLAN = { seq:0, context:null, details:false, habit:null, date:'', time:'', pos:null, place:'', city:null, dur:null, vis:store.get('space_vis'), mode:null, loc:null, say:'', busy:false };
 let habitsPending = null, gestureCount = 0, suppressClickUntil = 0;
-const REC = { seq:0, step:null, stream:null, mr:null, blob:null, url:null, mime:'', t0:0, timer:0, habit:null, vis: store.get('space_vis') === 'private' ? 'private' : (store.get('space_vis') === 'shared' ? 'shared' : null),
+const REC = { seq:0, step:null, stream:null, mr:null, blob:null, url:null, mime:'', t0:0, timer:0, seconds:0, uploaded:null, habit:null, vis: store.get('space_vis') === 'private' ? 'private' : (store.get('space_vis') === 'shared' ? 'shared' : null),
   mode:null, loc:null, dur:null, busy:false };
 let HABITS = null, DETAIL = null;
 window.__totehm_space = () => ({ build: BUILD, view: VIEW, signed_in: !!me, located: !!POS, intention: S.int, search: !!S.q,
   feed: FEED.list.length, exact: EX.list.length, playing: [...document.querySelectorAll('#feed video')].filter(v => !v.paused).length,
-  list:LIST.list.length, future:LIST.list.filter(s => spotState(s) === 'will').length, gestures:gestureCount, radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx)}, habit_filter:!!S.habit, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis } });
+  list:LIST.list.length, future:LIST.list.filter(s => spotState(s) === 'will').length, gestures:gestureCount, radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx),heading:Math.round(norm360(RAD.head)),pin:MAP.open,place:!!PLAN.pos}, habit_filter:!!S.habit, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis } });
 
-/* ══ LE TITRE ET LES SEPT ════════════════════════════════════════════ */
+/* Chaque vue dit où je suis. L'intention vient de la Habit, sans filtre parallèle. */
+const VIEW_WORDS = {radar:['RADAR','Exact places I can see'],feed:['CITY FEED','I AM HERE · I WAS THERE'],list:['FUTURE SPOTS','I WILL BE HERE'],plan:['PLAN A SPOT','I WILL BE HERE'],cam:['FILM A SPOT','I AM HERE · up to 33 seconds']};
 function paintInts(){
-  $('int-def').textContent = INTS[S.int].def;
-  $('title-int').textContent = INTS[S.int].n; $('title').style.setProperty('--c', icol(S.int));
-  $('ints').innerHTML = CHAKRA.map(k => '<button type="button" data-int="' + k + '" style="--c:' + INTS[k].c + '" aria-label="' + INTS[k].n +
-    ' · ' + esc(INTS[k].def) + '" title="' + esc(INTS[k].def) + '" aria-pressed="' + (k === S.int) + '" class="' + (k === S.int ? 'is-on' : '') + '"></button>').join('');
+  const [title,sub] = MAP?.open ? ['MEETING POINT','Move the radar under the cross'] : VIEW_WORDS[VIEW];
+  const source = VIEW === 'feed' ? FEED : VIEW === 'list' ? LIST : EX;
+  $('title-int').textContent = title; $('title').style.setProperty('--c','#fff');
+  $('int-def').textContent = sub + (S.habit && ['feed','radar','list'].includes(VIEW) ? ' · '+ (source.match === 'intention' ? 'Same intention' : S.habit.name) : '');
 }
-$('ints').addEventListener('click', e => {
-  const b = e.target.closest('[data-int]'); if(!b || b.dataset.int === S.int) return;
-  S.int = b.dataset.int; store.set('space_int', S.int); paintInts(); reload();
-});
 
 /* ══ LA BOÎTE D'UN SPOT — ce que CE lecteur a le droit de voir ═══════ */
 const tickHTML = l => '<span class="tick">' + (l || []).map(i => '<i style="background:' + icol(i) + '"></i>').join('') + '</span>';
@@ -506,36 +511,85 @@ function placeHTML(s){
   }
   return '<span>' + esc(s.city || 'somewhere') + '</span>';
 }
+const intHTML = l => (l || []).map(i => '<span class="v-int" style="color:'+icol(i)+'" title="'+esc(INTS[i]?.def)+'">'+esc(INTS[i]?.n || i)+'</span>').join('');
+function contextHTML(h){ return ['objectives','repulsions'].map(k => (h?.[k] || []).length ? '<span class="mg"><span class="mg-l">'+(k === 'objectives' ? 'why' : 'trigger')+'</span><span class="minis">'+h[k].map(x => '<span class="mini m-'+(k === 'objectives' ? 'o' : 'r')+'">'+esc(x.text)+'</span>').join('')+'</span></span>' : '').join(''); }
+function habitInner(h){ return '<span class="v-name">'+esc(h.name)+'</span><span class="v-sub">'+intHTML(h.ints)+(h.freq ? '<span class="v-frq">'+esc(FREQ[h.freq] || h.freq)+'</span>' : '<span class="v-frq">set time frequency</span>')+(h.place ? '<span class="v-frq">'+esc(h.place)+'</span>' : '')+'</span>'+contextHTML(h); }
 function spotHTML(s){
-  const state = spotState(s), here = state === 'am', st = new Date(s.starts_at), end = new Date(s.ends_at || st.getTime() + (s.duration_min || 0)*60e3);
-  const ints = (s.intentions || []).map(i => '<span class="v-int" style="color:' + icol(i) + '">' + esc(INTS[i]?.n || i) + '</span>').join('');
-  const when = state === 'will' ? '<span class="v-st">I WILL BE HERE</span><span>' + esc(dayOf(st)) + ' ' + hhmm(st) + '</span>' : here ? '<span class="v-st">I AM HERE</span><span>until ' + hhmm(end) + '</span>'
-                    : '<span class="v-st">I WAS THERE</span><span>' + esc(dayOf(st)) + ' ' + hhmm(st) + '</span>';
-  const how = s.visibility === 'private' ? '<span>private</span>'
-    : '<span>' + (s.mode === 'silent' ? 'silent · nobody disturb me' : 'social · we can talk') + '</span><span>location ' + esc(s.location || 'off') + '</span>';
-  const ctx = s.context ? ['objectives','repulsions'].map(k => (s.context[k] || []).length ? '<span class="mg"><span class="mg-l">' + (k === 'objectives' ? 'why' : 'trigger') +
-    '</span><span class="minis">' + s.context[k].map(x => '<span class="mini m-' + (k === 'objectives' ? 'o' : 'r') + '">' + esc(x.text) + '</span>').join('') + '</span></span>' : '').join('') : '';
-  return '<div class="habit">' + tickHTML(s.intentions) + '<span class="h-body"><span class="v-col"><span class="v-name">' + esc(s.habit) + '</span>' +
-    '<span class="v-sub">' + ints + '</span><span class="v-sub">' + when + '<span>' + fmtDur(s.duration_min) + '</span></span>' +
-    '<span class="v-sub">' + placeHTML(s) + how + '</span>' +
-    (s.comment ? '<span class="v-say">' + esc(s.comment) + '</span>' : '') + ctx + '</span></span></div>' +
-    (!s.mine && s.creator ? '<div class="by"><span>by</span><button class="tname" type="button" data-com="/@' + encodeURIComponent(s.creator) + '">' + esc(s.creator) + '</button></div>' : '');
+ const state=spotState(s),st=new Date(s.starts_at),end=new Date(s.ends_at || st.getTime()+(s.duration_min||0)*60e3);
+ const when=state==='will' ? 'I WILL BE HERE' : state==='am' ? 'I AM HERE' : 'I WAS THERE';
+ const how=s.visibility==='private' ? '<span>private</span>' : '<span>location '+esc(s.location||'off')+'</span>'+(s.location==='on' && s.mode ? '<span>'+ (s.mode==='silent' ? 'silent · nobody disturb me' : 'social · we can talk')+'</span>' : '');
+ const box={name:s.habit,ints:s.intentions,freq:s.freq,place:s.context?.place,...s.context};
+ return '<div class="habit">'+tickHTML(s.intentions)+'<span class="h-body"><span class="v-col">'+habitInner(box)+'<span class="v-sub"><span class="v-st">'+when+'</span><span>'+ (state==='am' ? 'until '+hhmm(end) : esc(dayOf(st))+' '+hhmm(st))+'</span><span>'+fmtDur(s.duration_min)+'</span></span><span class="v-sub">'+placeHTML(s)+how+'</span>'+(s.comment ? '<span class="v-say">'+esc(s.comment)+'</span>' : '')+'</span></span></div>'+(!s.mine && s.creator ? '<div class="by"><span>by</span><button class="tname" type="button" data-com="/@'+encodeURIComponent(s.creator)+'">'+esc(s.creator)+'</button></div>' : '');
 }
 
 /* ══ LES VIDÉOS — URL signée, et seulement à l'écran ═════════════════ */
-const SIGNED = new Map();
+const SIGNED=new Map();let hlsModule=null;
+async function videoRequest(name,body){const {data,error}=await sb.functions.invoke(name,{body});if(error) throw error;return data;}
 async function clipURL(path){
-  const c = SIGNED.get(path); if(c && c.at > Date.now() - 50*60e3) return c.url;
-  const { data, error } = await sb.storage.from('moments').createSignedUrl(path, 3600);
-  if(error){ console.error('[clip]', error.message); return null; }
-  SIGNED.set(path, { url: data.signedUrl, at: Date.now() }); return data.signedUrl;
+ const c=SIGNED.get(path);if(c && c.at>Date.now()-50*60e3) return c.url;
+ const {data,error}=await sb.storage.from('moments').createSignedUrl(path,3600);if(error){console.error('[clip]',error.message);return null;}
+ SIGNED.set(path,{url:data.signedUrl,at:Date.now()});return data.signedUrl;
+}
+async function playClip(v){
+ if(!v.isConnected) return;
+ if(v.src || v._hls){v.play().catch(()=>{});return;}
+ const fresh=()=>v.isConnected && (v.closest('#detail')?!!DETAIL:VIEW==='feed');
+ try{
+  if(v.dataset.bunny){
+   let data=await videoRequest('bunny-video',{id:v.dataset.bunny,spot:v.dataset.spot});
+   if(!fresh()) return;
+   if(data.status!=='ready'){
+    const label=v.parentElement.querySelector('.video-status');if(label) label.textContent=data.status==='failed'?'Video unavailable':'Preparing the video…';
+    if(data.status!=='failed'){clearTimeout(v._retry);v._retry=setTimeout(()=>{if(fresh()) playClip(v);},5000);}return;
+   }
+   const label=v.parentElement.querySelector('.video-status');if(label) label.remove();
+   if(v.canPlayType('application/vnd.apple.mpegurl')) v.src=data.url;
+   else {
+    hlsModule ||= import('/vendor/hls-1.6.13.mjs');const {default:Hls}=await hlsModule;
+    if(!fresh()) return;
+    if(!Hls.isSupported()) throw new Error('Video playback unsupported');
+    const hls=new Hls({capLevelToPlayerSize:false,startLevel:-1,maxBufferLength:35});v._hls=hls;
+    hls.on(Hls.Events.ERROR,(_,e)=>{if(e.fatal){console.error('[hls]',e.type);hls.destroy();v._hls=null;}});
+    hls.attachMedia(v);hls.loadSource(data.url);
+   }
+  }else {const u=await clipURL(v.dataset.clip);if(!u || !fresh()) return;v.src=u;}
+  if(fresh()) v.play().catch(()=>{});
+ }catch(e){console.error('[video]',e.message);}
+}
+function releaseClip(v){v.pause();clearTimeout(v._retry);v._hls?.destroy();v._hls=null;}
+const videoHTML=s=>s.clip || s.video ? '<video '+(s.clip?'data-bunny="'+esc(s.clip.id)+'" data-spot="'+esc(s.id)+'"':'data-clip="'+esc(s.video)+'"')+' playsinline muted loop preload="none"></video>'+(s.clip?.status!=='ready' && s.clip?'<span class="video-status note">Preparing the video…</span>':'') : '';
+async function bunnyUpload(blob,seconds,onProgress){
+ const c=await videoRequest('create-bunny-upload',{bytes:blob.size,seconds});
+ const headers={...c.headers,'Tus-Resumable':'1.0.0'};
+ const meta='filetype '+btoa(blob.type)+',title '+btoa('Spot '+c.id);
+ const start=await fetch(c.endpoint,{method:'POST',headers:{...headers,'Upload-Length':String(blob.size),'Upload-Metadata':meta}});
+ if(!start.ok) throw new Error('Upload could not start');
+ const url=new URL(start.headers.get('Location'),c.endpoint);
+ if(url.origin!=='https://video.bunnycdn.com') throw new Error('Upload address invalid');
+ let offset=0,retries=0;
+ while(offset<blob.size){
+  try{
+   const r=await fetch(url,{method:'PATCH',headers:{...headers,'Upload-Offset':String(offset),'Content-Type':'application/offset+octet-stream'},body:blob.slice(offset,offset+6*1024*1024)});
+   if(!r.ok) throw new Error('Upload interrupted');
+   const next=Number(r.headers.get('Upload-Offset'));if(!Number.isFinite(next) || next<=offset || next>blob.size) throw new Error('Upload offset invalid');
+   offset=next;retries=0;onProgress(Math.round(offset/blob.size*100));
+  }catch(e){
+   if(++retries>3) throw e;
+   await new Promise(r=>setTimeout(r,Math.min(4000,retries*1000)));
+   const head=await fetch(url,{method:'HEAD',headers});
+   if(!head.ok) continue;const n=Number(head.headers.get('Upload-Offset'));if(Number.isInteger(n) && n>=0 && n<=blob.size) offset=n;
+  }
+ }
+ const data=await videoRequest('bunny-video',{id:c.id,action:'complete'});
+ if(!['processing','ready'].includes(data.status)) throw new Error('Video could not be processed');
+ return 'bunny:'+c.id;
 }
 
 /* ══ LEFT — LE FIL ═══════════════════════════════════════════════════ */
 const io = new IntersectionObserver(es => es.forEach(async en => {
   const v = en.target.querySelector('video'); if(!v) return;
   if(en.isIntersecting && en.intersectionRatio > .6 && VIEW === 'feed'){
-    if(!v.src){ const u = await clipURL(v.dataset.clip); if(!u || !en.target.isConnected || VIEW !== 'feed') return; v.src = u; }
+    await playClip(v);
     if(VIEW !== 'feed' || !en.target.isConnected) return;
     v.play().catch(() => {});
     const k = +en.target.dataset.k; if(k >= FEED.list.length - 2) loadFeed(true);
@@ -544,8 +598,8 @@ const io = new IntersectionObserver(es => es.forEach(async en => {
 function paintFeed(){
   const f = $('feed');
   if(!FEED.list.length){ f.innerHTML = '<div class="clip"><div class="empty">' + (S.q ? 'no spot for this habit' : 'no spot around yet') + '</div></div>'; return; }
-  f.innerHTML = FEED.list.map((s, k) => '<div class="clip" data-k="' + k + '" data-id="' + esc(s.id) + '">' +
-    (s.video ? '<video data-clip="' + esc(s.video) + '" playsinline muted loop preload="none"></video>' : '<div class="noclip">no video</div>') +
+  f.querySelectorAll('video').forEach(releaseClip);f.innerHTML = FEED.list.map((s, k) => '<div class="clip" data-k="' + k + '" data-id="' + esc(s.id) + '">' +
+    (videoHTML(s) || '<div class="noclip">no video</div>') +
     '<div class="info" data-open="' + esc(s.id) + '">' + spotHTML(s) + '</div></div>').join('');
   f.querySelectorAll('.clip[data-k]').forEach(c => io.observe(c));
 }
@@ -559,43 +613,43 @@ async function loadFeed(more){
   const seq = ++FEED.seq; FEED.loading = true;
   const before = more && FEED.list.length ? FEED.list[FEED.list.length - 1].starts_at : null;
   const c = POS ? { p_lat: Math.round(POS.lat*10)/10, p_lng: Math.round(POS.lng*10)/10 } : {};
-  const { data, error } = await sb.rpc('spots_feed', { ...c, p_q: S.q || null, p_intention: S.int, p_before: before, p_limit: 20 });
+  const { data, error } = await sb.rpc('space_discover', {p_view:'feed', ...c, p_habit:S.q || null, p_before:before, p_limit:20});
   if(seq !== FEED.seq) return;
   FEED.loading = false;
   if(error){ console.error('[spots_feed]', error.message); return; }
   const l = data?.spots || [];
   FEED.more = l.length === 20;
   FEED.list = more ? FEED.list.concat(l) : l;
-  paintFeed();
+  FEED.match=data?.match || 'all'; paintFeed(); paintInts();
 }
 
 /* ══ CENTER — LES POINTS EXACTS AUTORISÉS ══════════════════════════ */
 async function loadExact(){
   const seq = ++EX.seq;
   if(!me){ EX.list = []; paintRadarEmpty(); return; }
-  const { data, error } = await sb.rpc('spots_exact', { p_q:S.q || null, p_intention:S.int });
+  const { data, error } = await sb.rpc('space_discover', {p_view:'radar',p_habit:S.q || null,p_limit:300});
   if(seq !== EX.seq) return;
   if(error){ console.error('[spots_exact]', error.message); return; }
   EX.list = (data?.spots || []).filter(s => s.exact && s.exact.lat != null);
-  RAD.range = radarRange(); paintRadarEmpty();
+  if(!MAP.open) RAD.range = radarRange(); EX.match=data?.match || 'all'; paintRadarEmpty(); paintInts();
 }
 /* RIGHT — seulement les Spots-Habits futurs. Sans droit exact : la ville. */
 async function loadList(more = false){
   if(more && (!LIST.more || LIST.loading)) return;
   const seq = ++LIST.seq; LIST.loading = true;
   const last = more ? LIST.list.at(-1) : null;
-  const { data, error } = await sb.rpc('spots_list', { p_q:S.q || null, p_intention:S.int, p_before:last?.starts_at || null, p_before_id:last?.id || null, p_limit:50 });
+  const { data, error } = await sb.rpc('space_discover', {p_view:'list',p_habit:S.q || null,p_before:last?.starts_at || null,p_before_id:last?.id || null,p_limit:50});
   if(seq !== LIST.seq) return;
   LIST.loading = false;
   if(error){ console.error('[spots_list]', error.message); return; }
   LIST.list = more ? LIST.list.concat(data?.spots || []) : data?.spots || [];
-  LIST.more = !!data?.more; paintList();
+  LIST.more = !!data?.more; LIST.match=data?.match || 'all'; paintList(); paintInts();
 }
 function paintList(){
   const upcoming = LIST.list.filter(s => spotState(s) === 'will');
   $('list').innerHTML = upcoming.length ? upcoming.map(s => '<div class="it" data-open="' + esc(s.id) + '" data-state="' + spotState(s) + '">' + spotHTML(s) + '</div>').join('') +
     (LIST.more ? '<button class="btn" type="button" data-more="1">More spots</button>' : '')
-    : '<div class="empty">' + (S.q ? 'no spot for this Habit Box' : 'no future spot with this intention yet') + '</div>';
+    : '<div class="empty">' + (S.q ? 'no spot for this Habit Box' : 'no future spot yet') + '</div>';
 }
 $('list').addEventListener('click', e => {
   if(Date.now() < suppressClickUntil || e.target.closest('a,[data-com]')) return;
@@ -609,16 +663,18 @@ function paintRadarEmpty(){
 }
 
 /* LE RADAR — anneaux, balayage, des points. Le centre = moi (ou mes Spots). */
-const RAD = { raf:0, W:0, H:0, dpr:1, cx:0, cy:0, rpx:0, tx:0, ty:0, tr:0, range:1000, pts:[] };
-function center(){ if(POS) return POS; const s = EX.list[0]; return s ? s.exact : null; }
+const RAD = { raf:0, W:0, H:0, dpr:1, cx:0, cy:0, rpx:0, tx:0, ty:0, tr:0, range:1000, pts:[], head:0, headTo:0, turn:null };
+function center(){ if(MAP.open) return MAP; if(POS) return POS; const s = EX.list[0]; return s ? s.exact : null; }
 const desktop = () => matchMedia('(min-width:900px)').matches;
 function radarSize(){
   const c = $('canvas'), dpr = Math.min(2, devicePixelRatio || 1);
   if(RAD.W !== innerWidth || RAD.H !== innerHeight || RAD.dpr !== dpr){
     RAD.W = innerWidth; RAD.H = innerHeight; RAD.dpr = dpr; c.width = RAD.W*dpr; c.height = RAD.H*dpr;
   }
-  let left = 20, right = RAD.W - 48, top = $('heading').getBoundingClientRect().bottom + 18, bottom = $('joy').getBoundingClientRect().top - 24;
-  if(desktop()){
+  let left = 20, right = RAD.W - 20, top = $('heading').getBoundingClientRect().bottom + 18, bottom = $('joy').getBoundingClientRect().top - 112;
+  if(MAP.open) bottom=$('place-picker').getBoundingClientRect().top-112;
+  else if(!desktop() && VIEW === 'plan') bottom=$('v-plan').getBoundingClientRect().top-112;
+  if(desktop() && !MAP.open){
     if(VIEW === 'feed') left = $('v-feed').offsetWidth + 22;
     if(VIEW === 'list') right = RAD.W - $('v-list').offsetWidth - 22;
     if(VIEW === 'plan') top = Math.max(top, parseFloat(getComputedStyle($('v-plan')).top) + $('v-plan').offsetHeight + 16);
@@ -638,8 +694,12 @@ function radarRange(){
   return Math.max(300, d[Math.min(d.length - 1, Math.floor(d.length*.85))]*1.18);
 }
 function draw(t){
-  RAD.raf = 0; if(VIEW !== 'radar' && !desktop()) return;
+  RAD.raf = 0; if(VIEW !== 'radar' && VIEW !== 'plan' && !MAP.open && !desktop()) return;
   RAD.cx += (RAD.tx - RAD.cx)*.18; RAD.cy += (RAD.ty - RAD.cy)*.18; RAD.rpx += (RAD.tr - RAD.rpx)*.18;
+  if(CMP.on){const delta=norm180(CMP.target-RAD.head);RAD.head=norm360(RAD.head+delta*.15);}
+  else if(RAD.headTo!==null){const delta=norm180(RAD.headTo-RAD.head);RAD.head=norm360(RAD.head+delta*.16);if(Math.abs(delta)<.1) RAD.headTo=null;}
+  const tools=$('radar-tools');tools.style.left=(RAD.cx-Math.min(65,RAD.rpx))+'px';tools.style.top=(RAD.cy+RAD.rpx+24)+'px';paintCmp();
+  const map=$('radar-map');map.style.left=(RAD.cx-RAD.rpx)+'px';map.style.top=(RAD.cy-RAD.rpx)+'px';map.style.width=map.style.height=(RAD.rpx*2)+'px';if(MAP.open && Math.abs(RAD.tr-RAD.rpx)>.1) mapDraw();
   const x = $('canvas').getContext('2d'), { dpr, cx, cy, rpx } = RAD;
   x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, RAD.W, RAD.H);
   const g = x.createRadialGradient(cx, cy, 0, cx, cy, rpx); g.addColorStop(0, '#16161b'); g.addColorStop(1, '#0d0d10');
@@ -653,21 +713,44 @@ function draw(t){
   if(sw){ sw.addColorStop(0, 'rgba(255,255,255,0)'); sw.addColorStop(.0875, 'rgba(255,255,255,.07)'); sw.addColorStop(.0876, 'rgba(255,255,255,0)');
     x.fillStyle = sw; x.beginPath(); x.arc(cx, cy, rpx, 0, Math.PI*2); x.fill(); }
   const c = center(); RAD.pts = [];
-  if(c) for(const s of EX.list){
-    const d = hav(c, s.exact), b = bearing(c, s.exact)*DEG, out = d > RAD.range;
+  if(c && !MAP.open) for(const s of EX.list){
+    const d = hav(c, s.exact), b = (bearing(c, s.exact)-RAD.head)*DEG, out = d > RAD.range;
     const r = Math.min(1, d/RAD.range)*rpx, px = cx + Math.sin(b)*r, py = cy - Math.cos(b)*r, here = isHere(s);
     x.globalAlpha = out ? .35 : here ? 1 : .55;
     x.fillStyle = icol((s.intentions || [])[0]); x.beginPath(); x.arc(px, py, here ? 6 : 4.5, 0, Math.PI*2); x.fill();
     if(here){ x.strokeStyle = icol((s.intentions || [])[0]); x.globalAlpha = .35; x.beginPath(); x.arc(px, py, 10 + 3*Math.sin((t || 0)/500), 0, Math.PI*2); x.stroke(); }
     x.globalAlpha = 1; RAD.pts.push({ s, px, py });
   }
-  if(POS){ x.fillStyle = '#fff'; x.shadowColor = '#fff'; x.shadowBlur = 8; x.beginPath(); x.arc(cx, cy, 4, 0, Math.PI*2); x.fill(); x.shadowBlur = 0; }
+  if(POS && !MAP.open){ x.fillStyle = '#fff'; x.shadowColor = '#fff'; x.shadowBlur = 8; x.beginPath(); x.arc(cx, cy, 4, 0, Math.PI*2); x.fill(); x.shadowBlur = 0; }
+  x.globalAlpha=1;
+  for(let deg=0;deg<360;deg+=5){const a=(deg-RAD.head)*DEG,outer=rpx+12,inner=outer-(deg%45===0?10:deg%15===0?6:3);x.strokeStyle=deg%45===0?'rgba(255,255,255,.65)':'rgba(255,255,255,.25)';x.beginPath();x.moveTo(cx+Math.sin(a)*inner,cy-Math.cos(a)*inner);x.lineTo(cx+Math.sin(a)*outer,cy-Math.cos(a)*outer);x.stroke();}
+  x.textAlign='center';x.textBaseline='middle';x.font='9px "Space Mono"';x.fillStyle='rgba(255,255,255,.65)';
+  for(const [deg,label] of [[0,'N'],[90,'E'],[180,'S'],[270,'W']]){const a=(deg-RAD.head)*DEG;x.fillText(label,cx+Math.sin(a)*(rpx+24),cy-Math.cos(a)*(rpx+24));}
+  if(VIEW==='plan' && PLAN.pos && !MAP.open && c){const d=hav(c,PLAN.pos),a=(bearing(c,PLAN.pos)-RAD.head)*DEG,r=Math.min(.96,d/RAD.range)*rpx,px=cx+Math.sin(a)*r,py=cy-Math.cos(a)*r;x.strokeStyle='#fff';x.lineWidth=2;x.strokeRect(px-6,py-6,12,12);x.fillStyle='#fff';x.font='9px "Space Mono"';x.fillText(PLAN.place || PLAN.city || 'Meeting point',px,py-17);}
   RAD.raf = requestAnimationFrame(draw);
 }
+const norm360=d=>((d%360)+360)%360, norm180=d=>((d+540)%360)-180;
+const CARD=['N','NE','E','SE','S','SW','W','NW'];
+const CMP={on:false,src:null,target:0,last:0,timer:0,available:typeof DeviceOrientationEvent!=='undefined' && matchMedia('(pointer:coarse)').matches};
+function paintCmp(){const h=Math.round(norm360(RAD.head))%360;$('cmp').innerHTML='<b>'+String(h).padStart(3,'0')+'° '+CARD[Math.round(h/45)%8]+'</b><br>'+(CMP.on?'compass':Math.abs(norm180(RAD.head))>.5?'north ↺':CMP.available?'align compass':'turn the ring');}
+function compassOff(){if(CMP.src) removeEventListener(CMP.src,onOrient);CMP.on=false;CMP.src=null;clearTimeout(CMP.timer);}
+function onOrient(e){let h=typeof e.webkitCompassHeading==='number'?e.webkitCompassHeading:e.absolute && typeof e.alpha==='number'?360-e.alpha:null;if(h===null || !Number.isFinite(h)) return;CMP.target=norm360(h+(screen.orientation?.angle || window.orientation || 0));CMP.last=Date.now();CMP.on=true;RAD.headTo=null;}
+$('cmp').onclick=async()=>{
+ if(CMP.on || CMP.src || Math.abs(norm180(RAD.head))>.5){compassOff();RAD.headTo=0;return;}
+ if(!CMP.available) return;
+ try{if(typeof DeviceOrientationEvent.requestPermission==='function' && await DeviceOrientationEvent.requestPermission()!=='granted') return;}
+ catch{CMP.available=false;return;}
+ CMP.last=0;CMP.src='ondeviceorientationabsolute' in window?'deviceorientationabsolute':'deviceorientation';addEventListener(CMP.src,onOrient);
+ CMP.timer=setTimeout(()=>{if(!CMP.last){compassOff();CMP.available=false;paintCmp();}},3000);
+};
+const cv=$('canvas');
+cv.addEventListener('pointerdown',e=>{if(MAP.open) return;const d=Math.hypot(e.clientX-RAD.cx,e.clientY-RAD.cy);if(d<RAD.rpx-18 || d>RAD.rpx+35) return;compassOff();RAD.headTo=null;RAD.turn={id:e.pointerId,a:Math.atan2(e.clientX-RAD.cx,RAD.cy-e.clientY),h:RAD.head};cv.setPointerCapture(e.pointerId);e.stopImmediatePropagation();});
+cv.addEventListener('pointermove',e=>{if(!RAD.turn || e.pointerId!==RAD.turn.id) return;const a=Math.atan2(e.clientX-RAD.cx,RAD.cy-e.clientY);RAD.head=norm360(RAD.turn.h-(a-RAD.turn.a)/DEG);suppressClickUntil=Date.now()+500;e.preventDefault();e.stopImmediatePropagation();});
+for(const name of ['pointerup','pointercancel']) cv.addEventListener(name,e=>{if(RAD.turn?.id===e.pointerId){RAD.turn=null;suppressClickUntil=Date.now()+500;}});
 function radarOn(){ radarSize(); if(!RAD.raf) RAD.raf = requestAnimationFrame(draw); }
 addEventListener('resize', () => { radarSize(); radarOn(); if(MAP.open) mapDraw(); });
 $('canvas').addEventListener('click', e => {
-  if(Date.now() < suppressClickUntil) return;
+  if(MAP.open || Date.now() < suppressClickUntil || RAD.turn) return;
   let best = null, bd = 22;
   for(const p of RAD.pts){ const d = Math.hypot(p.px - e.clientX, p.py - e.clientY); if(d < bd){ bd = d; best = p.s; } }
   if(best) openDetail(best);
@@ -675,15 +758,15 @@ $('canvas').addEventListener('click', e => {
 
 /* ══ UN SPOT, SEUL ═══════════════════════════════════════════════════ */
 async function openDetail(s){
-  if(!s) return; DETAIL = s;
+  if(!s) return;const old=$('detail').querySelector('video');if(old) releaseClip(old);DETAIL=s;
   const share = s.visibility === 'shared' ? '<button class="btn" type="button" data-share="' + esc(s.id) + '">Share</button>' : '';
-  $('detail').innerHTML = (s.video && VIEW !== 'feed' ? '<video playsinline muted loop preload="none" data-clip="' + esc(s.video) + '"></video>' : '') +
+  $('detail').innerHTML = (VIEW !== 'feed' ? videoHTML(s) : '') +
     spotHTML(s) + '<div class="acts">' + share + '<button class="lnk" type="button" data-close="1">close</button></div>';
   $('detail').classList.add('is-open');
-  const v = $('detail').querySelector('video[data-clip]');
-  if(v){ const u = await clipURL(v.dataset.clip); if(u && DETAIL === s){ v.src = u; v.play().catch(() => {}); } }
+  const v = $('detail').querySelector('video');
+  if(v) await playClip(v);
 }
-function closeDetail(){ DETAIL = null; $('detail').classList.remove('is-open'); $('detail').querySelector('video')?.pause(); }
+function closeDetail(){ DETAIL = null; $('detail').classList.remove('is-open'); const v=$('detail').querySelector('video');if(v) releaseClip(v); }
 $('detail').addEventListener('click', async e => {
   if(e.target.closest('[data-close]')) return closeDetail();
   const sh = e.target.closest('[data-share]');
@@ -702,10 +785,9 @@ async function loadHabits(){
   if(habitsPending) return habitsPending;
   const uid = me.id;
   habitsPending = (async () => {
-    const { data, error } = await sb.from('totehms').select('steps').eq('user_id', uid).maybeSingle();
-    if(error){ console.error('[totehm]', error.message); return []; }
-    const habits = (data?.steps || []).filter(s => (s.t || '').trim()).map(s => ({ name:s.t, freq:s.f,
-      ints:(Array.isArray(s.is) && s.is.length ? s.is : [s.i].filter(Boolean)).filter(i => INTS[i]) }));
+    const { data, error } = await sb.rpc('space_habits');
+    if(error){ console.error('[space_habits]', error.message); return []; }
+    const habits = (data?.habits || []).map(s => ({...s,name:s.name,ints:(s.ints || []).filter(i => INTS[i])}));
     if(me?.id === uid) HABITS = habits;
     return habits;
   })();
@@ -736,6 +818,16 @@ document.addEventListener('pointerdown', e => { if(!e.target.closest('#habit-pic
 
 /* ══ TOP — I WILL BE HERE, un Spot annoncé, jamais une fausse vidéo ═ */
 const chip = (a, l, on, sub) => '<button type="button" class="chip' + (on ? ' is-on' : '') + '" ' + a + '>' + l + (sub ? '<small>' + sub + '</small>' : '') + '</button>';
+function sharingHTML(x,prefix){
+ const attr=k=>'data-'+prefix+k;
+ let html='<div class="row"><span class="lab">Who sees it?</span>'+chip(attr('vis')+'="private"','private',x.vis==='private','only me')+chip(attr('vis')+'="shared"','shared',x.vis==='shared','share my activity')+'</div>';
+ if(x.vis==='shared') html+='<div class="row"><span class="lab">Location</span>'+chip(attr('loc')+'="on"','on',x.loc==='on','for the subscribers')+chip(attr('loc')+'="off"','off',x.loc==='off','for the audience')+'</div>';
+ if(x.vis==='shared' && x.loc==='on') html+='<div class="row"><span class="lab">Together</span>'+chip(attr('mode')+'="silent"','silent',x.mode==='silent','Nobody disturb me')+chip(attr('mode')+'="social"','social',x.mode==='social','We can talk')+'</div>';
+ return html;
+}
+const sharingDone=x=>x.vis==='private' || x.vis==='shared' && (x.loc==='off' || x.loc==='on' && !!x.mode);
+function durationHTML(x,prefix,id){ return '<div class="row"><span class="lab">For how long?</span>'+DURS.map(d=>chip('data-'+prefix+'dur="'+d+'"',fmtDur(d),x.dur===d)).join('')+'<input class="field" id="'+id+'" type="number" inputmode="numeric" min="'+RULES.duration_min+'" max="'+RULES.duration_max+'" aria-label="Duration in minutes" placeholder="min" value="'+(x.dur && !DURS.includes(x.dur) ? x.dur : '')+'"></div>'; }
+
 function planMissing(){
   const m = [];
   if(!PLAN.habit) m.push('a Habit Box');
@@ -743,7 +835,7 @@ function planMissing(){
   if(!Number.isFinite(start) || start <= Date.now() || start > Date.now() + (RULES.horizon_days || 90)*864e5) m.push('a future date and time');
   if(!PLAN.pos) m.push('a place'); if(!PLAN.dur) m.push('the duration');
   if(!['private','shared'].includes(PLAN.vis)) m.push('private or shared');
-  if(PLAN.vis === 'shared'){ if(!PLAN.mode) m.push('silent or social'); if(!PLAN.loc) m.push('location on or off'); }
+  if(PLAN.vis === 'shared'){ if(!PLAN.loc) m.push('location on or off'); if(PLAN.loc === 'on' && !PLAN.mode) m.push('silent or social'); }
   return m;
 }
 function planValidity(){
@@ -760,20 +852,9 @@ function planPaint(){
       HABITS.map((h,k) => '<button class="pick-habit" type="button" data-plan-h="' + k + '">' + habitHTML(h) + '</button>').join('') :
       '<button class="btn" type="button" data-com="/totehm#in">Write a Habit Box in my TOTEHM</button>'); return;
   }
-  const draft = '<div class="habit plan-draft">' + tickHTML(PLAN.habit.ints) + '<span class="h-body"><span class="v-col">' +
-    '<span class="v-name">' + esc(PLAN.habit.name) + '</span><span class="v-sub">' + PLAN.habit.ints.map(i => '<span class="v-int" style="color:' + icol(i) + '">' + INTS[i].n + '</span>').join('') + '</span>' +
-    '<div class="row"><span class="lab">When?</span><input class="field" id="p-date" type="date" aria-label="Date" value="' + PLAN.date + '"><input class="field" id="p-time" type="time" aria-label="Time" value="' + PLAN.time + '"></div>' +
-    '<button class="chip" type="button" data-plan-place="1">' + esc(PLAN.place || PLAN.city || 'Choose the place') + '<small>' + (PLAN.pos ? 'Change the place' : 'Place it on the map') + '</small></button>' +
-    '<div class="row"><span class="lab">For how long?</span>' + DURS.map(d => chip('data-pdur="' + d + '"',fmtDur(d),PLAN.dur === d)).join('') + '<input class="field" id="p-dur" type="number" inputmode="numeric" min="' + RULES.duration_min + '" max="' + RULES.duration_max + '" aria-label="Duration in minutes" placeholder="min" value="' + (PLAN.dur && !DURS.includes(PLAN.dur) ? PLAN.dur : '') + '"></div>' +
-    '<div class="row"><span class="lab">Who sees it?</span>' + chip('data-pvis="private"','private',PLAN.vis === 'private','only me') + chip('data-pvis="shared"','shared',PLAN.vis === 'shared','the activity, for everyone') + '</div>' +
-    (PLAN.vis === 'shared' ? '<div class="row"><span class="lab">Together</span>' + chip('data-pmode="silent"','silent',PLAN.mode === 'silent','Nobody disturb me') + chip('data-pmode="social"','social',PLAN.mode === 'social','We can talk') + '</div>' +
-      '<div class="row"><span class="lab">Location</span>' + chip('data-ploc="off"','off',PLAN.loc === 'off','the city only') + chip('data-ploc="on"','on',PLAN.loc === 'on','the exact place, for my subscribers') + '</div>' : '') +
-    '<button class="lnk" type="button" data-plan-details="1" aria-expanded="' + PLAN.details + '">Details ' + (PLAN.details ? '▴' : '▾') + '</button>' +
-    (PLAN.details ? '<textarea class="field" id="p-say" maxlength="400" placeholder="A word (optional)" aria-label="Comment">' + esc(PLAN.say) + '</textarea>' +
-      (!PLAN.context ? '<p class="note">Reading my Habit Box context…</p>' : ['objectives','repulsions'].map(k => (PLAN.context[k] || []).length ? '<span class="mg"><span class="mg-l">' + (k === 'objectives' ? 'Why' : 'Trigger') + '</span><span class="minis">' + PLAN.context[k].map(x => '<span class="mini m-' + (k === 'objectives' ? 'o' : 'r') + '">' + esc(x.text) + '</span>').join('') + '</span></span>' : '').join('')) : '') +
-    '</span></span></div>';
-  b.innerHTML = '<div class="row"><span class="lab" style="width:auto">This Habit Box, as an action</span><button class="lnk" type="button" data-plan-reh="1">Another Habit Box</button></div>' + draft +
-    '<button class="btn" type="button" data-plan-send="1">I WILL BE HERE</button><p class="note" id="p-note"></p>';
+  const ready=sharingDone(PLAN);
+  const draft='<div class="habit plan-draft">'+tickHTML(PLAN.habit.ints)+'<span class="h-body"><span class="v-col">'+habitInner(PLAN.habit)+sharingHTML(PLAN,'p')+(ready ? '<div class="row"><span class="lab">When?</span><input class="field" id="p-date" type="date" aria-label="Date" value="'+PLAN.date+'"><input class="field" id="p-time" type="time" aria-label="Time" value="'+PLAN.time+'"></div><button class="chip" type="button" data-plan-place="1">'+esc(PLAN.place || PLAN.city || 'Choose the place')+'<small>'+(PLAN.pos ? 'Change it in the radar' : 'Place it in the radar')+'</small></button>'+durationHTML(PLAN,'p','p-dur')+'<textarea class="field" id="p-say" maxlength="400" placeholder="A word (optional)">'+esc(PLAN.say)+'</textarea>' : '')+'</span></span></div>';
+  b.innerHTML='<div class="row"><button class="lnk" type="button" data-plan-reh="1">Another Habit Box</button></div>'+draft+(ready ? '<button class="btn" type="button" data-plan-send="1">I WILL BE HERE</button><p class="note" id="p-note"></p>' : '');
   planValidity();
 }
 async function planOpen(){
@@ -791,12 +872,12 @@ $('plan-body').addEventListener('click', e => {
   if(PLAN.busy) return;
   const t = e.target;
   if(t.closest('[data-plan-signin]')) return ssoLogin(false, '/?v=plan');
-  const h = t.closest('[data-plan-h]'); if(h){ PLAN.habit = HABITS[+h.dataset.planH]; PLAN.context = null; PLAN.details = false; planPaint(); const seq = ++PLAN.seq; sb.rpc('spot_habit_context',{p_habit:PLAN.habit.name}).then(({data,error}) => { if(error) console.error('[spot_habit_context]',error.message); if(seq === PLAN.seq && me){ PLAN.context = data?.ok ? data : {}; if(VIEW === 'plan' && PLAN.details) planPaint(); } }); return; }
+  const h=t.closest('[data-plan-h]'); if(h){ PLAN.habit=HABITS[+h.dataset.planH]; PLAN.context=PLAN.habit; return planPaint(); }
   if(t.closest('[data-plan-reh]')){ PLAN.seq++; PLAN.habit = null; PLAN.context = null; return planPaint(); }
   if(t.closest('[data-plan-details]')){ PLAN.details = !PLAN.details; return planPaint(); }
   if(t.closest('[data-plan-place]')) return mapOpen();
   for(const [a,k] of [['pvis','vis'],['pmode','mode'],['ploc','loc'],['pdur','dur']]){
-    const b = t.closest('[data-' + a + ']'); if(b){ PLAN[k] = k === 'dur' ? +b.dataset[a] : b.dataset[a]; if(k === 'vis') store.set('space_vis', PLAN.vis); return planPaint(); }
+    const b = t.closest('[data-' + a + ']'); if(b){ PLAN[k] = k === 'dur' ? +b.dataset[a] : b.dataset[a]; if(k === 'vis'){ PLAN.loc=null; PLAN.mode=null; store.set('space_vis', PLAN.vis); } if(k === 'loc') PLAN.mode=null; return planPaint(); }
   }
   if(t.closest('[data-plan-send]')) return planSend();
 });
@@ -806,7 +887,7 @@ async function planSend(){
   const { data, error } = await sb.rpc('spot_schedule', { p_habit:PLAN.habit.name, p_visibility:PLAN.vis,
     p_starts_at:new Date(PLAN.date + 'T' + PLAN.time).toISOString(), p_duration_min:PLAN.dur,
     p_place:PLAN.place || PLAN.city || 'the planned place', p_lat:PLAN.pos.lat, p_lng:PLAN.pos.lng,
-    p_city:PLAN.city, p_comment:PLAN.say.trim() || null, p_mode:shared ? PLAN.mode : null, p_location:shared ? PLAN.loc : null });
+    p_city:PLAN.city, p_comment:PLAN.say.trim() || null, p_mode:shared && PLAN.loc === 'on' ? PLAN.mode : null, p_location:shared ? PLAN.loc : null });
   PLAN.busy = false;
   if(error || !data?.ok){ if(error) console.error('[spot_schedule]', error.message); planPaint(); const n = $('p-note'); if(n){ n.className = 'note no'; n.textContent = ({when:'Choose a future date within the next 90 days.',habit:'This Habit Box is no longer in my TOTEHM.',too_many:'Enough spots planned for now.',signin:'Sign in again.'})[data?.why] || 'Not saved — try again.'; } return; }
   PLAN.habit = null; PLAN.say = ''; PLAN.pos = null; PLAN.place = ''; PLAN.city = null; PLAN.dur = null;
@@ -817,11 +898,11 @@ async function planSend(){
    restent un radar de coordonnées autorisées, jamais une carte du feed. */
 const MAP = { open:false, lat:0, lng:0, z:16, timer:0, seq:0, drag:null, pointers:new Map(), pinch:null };
 const merc = (p,z) => { const n = 256*2**z, lat = Math.max(-85.0511,Math.min(85.0511,p.lat))*DEG; return {x:(p.lng+180)/360*n,y:(1-Math.log(Math.tan(lat)+1/Math.cos(lat))/Math.PI)/2*n}; };
-const unmerc = (p,z) => { const n = 256*2**z; return {lat:Math.atan(Math.sinh(Math.PI*(1-2*p.y/n)))/DEG,lng:((p.x/n*360+180)%360+360)%360-180}; };
+const unmerc = (p,z) => { const n = 256*2**z; return {lat:Math.atan(Math.sinh(Math.PI*(1-2*p.y/n)))/DEG,lng:((p.x/n*360)%360+360)%360-180}; };
 function mapCenter(p){ const c = unmerc(p,MAP.z); MAP.lat = Math.max(-85.0511,Math.min(85.0511,c.lat)); MAP.lng = c.lng; mapDraw(); }
 function mapDraw(){
   if(!MAP.open) return;
-  const el = $('place-map'), W = el.clientWidth, H = el.clientHeight, c = merc(MAP,MAP.z), tiles = $('map-tiles'), n = 2**MAP.z;
+  const el = $('radar-map'), W = el.clientWidth, H = el.clientHeight, c = merc(MAP,MAP.z), tiles = $('map-tiles'), n = 2**MAP.z;
   const x0 = Math.floor((c.x-W/2)/256), x1 = Math.floor((c.x+W/2)/256), y0 = Math.floor((c.y-H/2)/256), y1 = Math.floor((c.y+H/2)/256);
   const wanted = new Set();
   for(let y=Math.max(0,y0);y<=Math.min(n-1,y1);y++) for(let x=x0;x<=x1;x++){
@@ -834,9 +915,9 @@ function mapDraw(){
 }
 function mapOpen(){
   const p = PLAN.pos || POS || {lat:38.7223,lng:-9.1393}; Object.assign(MAP,{open:true,lat:p.lat,lng:p.lng,z:PLAN.pos || POS ? 16 : 12});
-  $('place-name').value = PLAN.place; $('place-picker').classList.remove('hide'); pickerClose(); mapDraw(); $('place-use').focus();
+  $('place-name').value = PLAN.place; $('place-picker').classList.remove('hide'); $('radar-map').classList.remove('hide'); document.body.classList.add('is-pin'); pickerClose();compassOff();RAD.headTo=0;paintInts();radarOn();mapDraw();$('place-use').focus();
 }
-function mapClose(){ MAP.open = false; MAP.seq++; MAP.pointers.clear(); MAP.drag = MAP.pinch = null; $('place-picker').classList.add('hide'); $('plan-body').querySelector('[data-plan-place]')?.focus(); }
+function mapClose(){ MAP.open = false; MAP.seq++; MAP.pointers.clear(); MAP.drag = MAP.pinch = null; $('place-picker').classList.add('hide');$('radar-map').classList.add('hide');document.body.classList.remove('is-pin');paintInts();radarOn();$('plan-body').querySelector('[data-plan-place]')?.focus(); }
 $('place-cancel').onclick = mapClose;
 $('place-use').onclick = async () => {
   const pos = {lat:MAP.lat,lng:MAP.lng}, place = $('place-name').value.trim(), seq = ++MAP.seq;
@@ -847,22 +928,22 @@ $('place-use').onclick = async () => {
 };
 function mapZoom(d){ MAP.z = Math.max(2,Math.min(19,MAP.z+d)); mapDraw(); }
 $('map-tools').addEventListener('click', async e => {
-  const b = e.target.closest('[data-zoom]'); if(b) return mapZoom(+b.dataset.zoom);
-  if(e.target.closest('[data-here]')){ const seq = ++MAP.seq, p = await geo(); if(p && MAP.open && seq === MAP.seq){ MAP.lat = p.lat; MAP.lng = p.lng; MAP.z = 16; mapDraw(); } }
+  const b = e.target.closest('[data-zoom]'); if(b){if(MAP.open) mapZoom(+b.dataset.zoom);else RAD.range=Math.max(100,Math.min(2e7,RAD.range*Math.pow(1.5,-Number(b.dataset.zoom))));return;}
+  if(e.target.closest('[data-here]')){ const seq = ++MAP.seq, p = await geo(); if(p && seq === MAP.seq){POS=p;RAD.headTo=0;if(MAP.open){MAP.lat=p.lat;MAP.lng=p.lng;MAP.z=16;mapDraw();}else RAD.range=radarRange();} }
 });
-$('place-map').addEventListener('wheel', e => { if(e.target.closest('button,a')) return; e.preventDefault(); if(e.ctrlKey){ if(Math.abs(e.deltaY)>2) mapZoom(e.deltaY<0?1:-1); } else { const c = merc(MAP,MAP.z); mapCenter({x:c.x+e.deltaX,y:c.y+e.deltaY}); } },{passive:false});
-$('place-map').addEventListener('pointerdown', e => {
+$('radar-map').addEventListener('wheel', e => { if(e.target.closest('button,a')) return; e.preventDefault(); if(e.ctrlKey){ if(Math.abs(e.deltaY)>2) mapZoom(e.deltaY<0?1:-1); } else { const c = merc(MAP,MAP.z); mapCenter({x:c.x+e.deltaX,y:c.y+e.deltaY}); } },{passive:false});
+$('radar-map').addEventListener('pointerdown', e => {
   if(e.target.closest('button,a') || e.button > 0) return; e.preventDefault();
-  MAP.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY}); $('place-map').setPointerCapture(e.pointerId); $('place-map').classList.add('is-held');
+  MAP.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY}); $('radar-map').setPointerCapture(e.pointerId); $('radar-map').classList.add('is-held');
   if(MAP.pointers.size === 1) MAP.drag = {x:e.clientX,y:e.clientY,c:merc(MAP,MAP.z)};
   else { const a = [...MAP.pointers.values()]; MAP.pinch = {d:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y),z:MAP.z}; MAP.drag = null; }
 });
-$('place-map').addEventListener('pointermove', e => {
+$('radar-map').addEventListener('pointermove', e => {
   if(!MAP.pointers.has(e.pointerId)) return; MAP.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(MAP.pinch && MAP.pointers.size >= 2){ const a=[...MAP.pointers.values()],d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y); MAP.z=Math.max(2,Math.min(19,Math.round(MAP.pinch.z+Math.log2(d/Math.max(1,MAP.pinch.d))))); mapDraw(); }
   else if(MAP.drag) mapCenter({x:MAP.drag.c.x-(e.clientX-MAP.drag.x),y:MAP.drag.c.y-(e.clientY-MAP.drag.y)});
 });
-for(const event of ['pointerup','pointercancel']) $('place-map').addEventListener(event,e => { MAP.pointers.delete(e.pointerId); if(MAP.pointers.size < 2) MAP.pinch=null; if(!MAP.pointers.size){ MAP.drag=null; $('place-map').classList.remove('is-held'); } });
+for(const event of ['pointerup','pointercancel']) $('radar-map').addEventListener(event,e => { MAP.pointers.delete(e.pointerId); if(MAP.pointers.size < 2) MAP.pinch=null; if(!MAP.pointers.size){ MAP.drag=null; $('radar-map').classList.remove('is-held'); } });
 
 
 /* ══ BOTTOM — LA CAMÉRA, PUIS LE SPOT ════════════════════════════════
@@ -885,7 +966,7 @@ function camStop(){
 function camReset(){
   REC.seq++; if(REC.mr){ REC.mr.onstop = null; REC.mr.ondataavailable = null; }
   camStop(); if(REC.url) URL.revokeObjectURL(REC.url);
-  Object.assign(REC, { step:null, mr:null, blob:null, url:null, habit:null, mode:null, loc:null, dur:null, busy:false });
+  Object.assign(REC, { step:null, mr:null, blob:null, url:null, habit:null, mode:null, loc:null, dur:null, busy:false,seconds:0,uploaded:null });
   const v = $('cam-v'); v.pause(); v.removeAttribute('src'); v.srcObject = null;
   $('cam-n').textContent = ''; $('cam-sec').classList.add('hide'); camState();
 }
@@ -896,7 +977,7 @@ async function camOpen(){
   if(!REC.mime || !navigator.mediaDevices?.getUserMedia){ REC.step = 'nocam'; return camPaint(); }
   REC.step = 'perm'; camPaint();
   let stream;
-  try{ stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment', width:{ ideal:720 }, height:{ ideal:1280 } }, audio:true }); }
+  try{ stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment', width:{ideal:matchMedia('(orientation:portrait)').matches?1080:1920},height:{ideal:matchMedia('(orientation:portrait)').matches?1920:1080}, frameRate:{ideal:30,max:30} }, audio:true }); }
   catch(e){ if(seq !== REC.seq || VIEW !== 'cam') return; console.error('[cam]', e && e.name); REC.step = 'denied'; return camPaint(); }
   if(seq !== REC.seq || VIEW !== 'cam'){ stream.getTracks().forEach(t => t.stop()); return; }
   REC.stream = stream;
@@ -910,15 +991,15 @@ function camRec(){
   if(!REC.stream || REC.step === 'rec') return;
   clearInterval(REC.timer); $('cam-n').textContent = '';
   const chunks = [], seq = REC.seq;
-  try{ REC.mr = new MediaRecorder(REC.stream, { mimeType: REC.mime, videoBitsPerSecond: 2.5e6, audioBitsPerSecond: 64e3 }); }
+  try{ REC.mr = new MediaRecorder(REC.stream, { mimeType: REC.mime, videoBitsPerSecond: 6e6, audioBitsPerSecond: 128e3 }); }
   catch(e){ console.error('[cam]', e && e.message); REC.step = 'nocam'; return camPaint(); }
   REC.mr.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
   REC.mr.onstop = () => {
     if(seq !== REC.seq || VIEW !== 'cam') return;
     const type = REC.mime.split(';')[0] || 'video/webm';
-    REC.blob = new Blob(chunks, { type }); camStop(); $('cam-sec').classList.add('hide');
+    REC.seconds=Math.min(33,(Date.now()-REC.t0)/1000);REC.blob = new Blob(chunks, { type }); camStop(); $('cam-sec').classList.add('hide');
     if(VIEW !== 'cam') return;
-    if(REC.blob.size > (RULES.clip_max_bytes || 20971520)){ REC.blob = null; REC.step = 'heavy'; return camPaint(); }
+    if(REC.blob.size > (RULES.clip_max_bytes || 33554432)){ REC.blob = null; REC.step = 'heavy'; return camPaint(); }
     const v = $('cam-v'); v.srcObject = null; REC.url = URL.createObjectURL(REC.blob); v.src = REC.url; v.loop = true; v.muted = true; v.play().catch(() => {});
     REC.step = 'habit'; camPaint(); loadHabits().then(() => { if(seq === REC.seq && REC.step === 'habit') camPaint(); });
   };
@@ -929,13 +1010,12 @@ function camRec(){
     if(el >= max){ clearInterval(REC.timer); try{ REC.mr?.stop(); }catch(_){} } };
   tick(); REC.timer = setInterval(tick, 200);
 }
-const habitHTML = h => '<div class="habit">' + tickHTML(h.ints) + '<span class="h-body"><span class="v-col"><span class="v-name">' + esc(h.name) + '</span><span class="v-sub">' +
-  h.ints.map(i => '<span class="v-int" style="color:' + icol(i) + '">' + INTS[i].n + '</span>').join('') + (h.freq ? '<span>' + esc(FREQ[h.freq] || String(h.freq).replace(/_/g, ' ')) + '</span>' : '') + '</span></span></span></div>';
+const habitHTML = h => '<div class="habit">'+tickHTML(h.ints)+'<span class="h-body"><span class="v-col">'+habitInner(h)+'</span></span></div>';
 const DURS = [15, 30, 45, 60, 90, 120, 180];
 function missing(){
   const m = [];
   if(!REC.habit) m.push('a habit'); if(!REC.vis) m.push('private or shared');
-  if(REC.vis === 'shared'){ if(!REC.mode) m.push('silent or social'); if(!REC.loc) m.push('location on or off'); }
+  if(REC.vis === 'shared'){ if(!REC.loc) m.push('location on or off'); if(REC.loc === 'on' && !REC.mode) m.push('silent or social'); }
   if(!REC.dur) m.push('the duration');
   return m;
 }
@@ -957,15 +1037,8 @@ function camPaint(){
   }
   else if(st === 'form' || st === 'send'){
     const m = missing();
-    h = '<div class="it" data-reh="1">' + habitHTML(REC.habit) + '</div>' +
-      '<div class="row"><span class="lab">who sees it</span>' + chip('data-vis="private"', 'private', REC.vis === 'private', 'only me') + chip('data-vis="shared"', 'shared', REC.vis === 'shared', 'the activity, for everyone') + '</div>' +
-      (REC.vis === 'shared' ? '<div class="row"><span class="lab">together</span>' + chip('data-mode="silent"', 'silent', REC.mode === 'silent', 'Nobody disturb me') + chip('data-mode="social"', 'social', REC.mode === 'social', 'We can talk') + '</div>' +
-        '<div class="row"><span class="lab">location</span>' + chip('data-loc="off"', 'off', REC.loc === 'off', 'the city only') + chip('data-loc="on"', 'on', REC.loc === 'on', 'the exact place, for my subscribers') + '</div>' : '') +
-      '<div class="row"><span class="lab">for how long</span>' + DURS.map(d => chip('data-dur="' + d + '"', fmtDur(d), REC.dur === d)).join('') +
-        '<input id="c-dur" type="number" inputmode="numeric" min="' + RULES.duration_min + '" max="' + RULES.duration_max + '" placeholder="min" value="' + (REC.dur && !DURS.includes(REC.dur) ? REC.dur : '') + '"></div>' +
-      '<textarea id="c-say" maxlength="400" placeholder="a word (optional)">' + esc(REC.say || '') + '</textarea>' +
-      '<button class="btn" type="button" data-send="1"' + (m.length || st === 'send' ? ' disabled' : '') + '>I AM HERE</button>' +
-      '<p class="note" id="c-note">' + (m.length ? 'missing: ' + m.join(' · ') : '') + '</p>' ;
+    const ready=sharingDone(REC);
+    h='<div class="it" data-reh="1">'+habitHTML(REC.habit)+'</div>'+sharingHTML(REC,'')+(ready ? durationHTML(REC,'','c-dur')+'<textarea id="c-say" maxlength="400" placeholder="A word (optional)">'+esc(REC.say || '')+'</textarea><button class="btn" type="button" data-send="1"'+(m.length || st==='send' ? ' disabled' : '')+'>I AM HERE</button><p class="note" id="c-note">'+(m.length ? 'missing: '+m.join(' · ') : '')+'</p>' : '');
   }
   b.innerHTML = h;
 }
@@ -984,9 +1057,9 @@ $('cam-body').addEventListener('click', e => {
   if(t.closest('[data-again]')) return camOpen();
   const hk = t.closest('[data-h]'); if(hk){ REC.habit = HABITS[+hk.dataset.h]; REC.step = 'form'; return camPaint(); }
   if(t.closest('[data-reh]')){ REC.step = 'habit'; return camPaint(); }
-  const v = t.closest('[data-vis]'); if(v){ REC.vis = v.dataset.vis; store.set('space_vis', REC.vis); return camPaint(); }
+  const v = t.closest('[data-vis]'); if(v){ REC.vis = v.dataset.vis; REC.loc=null; REC.mode=null; store.set('space_vis', REC.vis); return camPaint(); }
   const mo = t.closest('[data-mode]'); if(mo){ REC.mode = mo.dataset.mode; return camPaint(); }
-  const lo = t.closest('[data-loc]'); if(lo){ REC.loc = lo.dataset.loc; return camPaint(); }
+  const lo = t.closest('[data-loc]'); if(lo){ REC.loc = lo.dataset.loc; REC.mode=null; return camPaint(); }
   const du = t.closest('[data-dur]'); if(du){ REC.dur = +du.dataset.dur; return camPaint(); }
   if(t.closest('[data-send]')) return camSend();
 });
@@ -1005,16 +1078,24 @@ async function camSend(){
   const pos = await geo();
   if(!pos){ REC.busy = false; REC.step = 'form'; camPaint(); return note('a spot is where I am — allow my position', true); }
   POS = pos; note('sending…');
-  const ext = REC.blob.type.includes('mp4') ? 'mp4' : 'webm', path = me.id + '/' + crypto.randomUUID() + '.' + ext;
-  const up = await sb.storage.from('moments').upload(path, REC.blob, { contentType: REC.blob.type, upsert:false });
-  if(up.error){ console.error('[upload]', up.error.message); REC.busy = false; REC.step = 'form'; camPaint(); return note('not sent — try again', true); }
+  let path=REC.uploaded;
+  try{
+   if(!path){
+    if(RULES.video_provider==='bunny') path=await bunnyUpload(REC.blob,REC.seconds,p=>note('sending… '+p+'%'));
+    else {
+     const ext=REC.blob.type.includes('mp4')?'mp4':'webm';path=me.id+'/'+crypto.randomUUID()+'.'+ext;
+     const up=await sb.storage.from('moments').upload(path,REC.blob,{contentType:REC.blob.type,upsert:false});if(up.error) throw up.error;
+    }
+    REC.uploaded=path;
+   }
+  }catch(e){console.error('[upload]',e.message);REC.busy=false;REC.step='form';camPaint();return note('Not sent — try again.',true);}
   const shared = REC.vis === 'shared';
   const { data, error } = await sb.rpc('spot_create', { p_habit: REC.habit.name, p_visibility: REC.vis, p_duration_min: REC.dur, p_video: path,
     p_lat: pos.lat, p_lng: pos.lng, p_city: await cityNear(pos), p_comment: (REC.say || '').trim() || null,
-    p_mode: shared ? REC.mode : null, p_location: shared ? REC.loc : null });
+    p_mode: shared && REC.loc === 'on' ? REC.mode : null, p_location: shared ? REC.loc : null });
   if(error) console.error('[spot_create]', error.message);
   if(error || !data?.ok){
-    await sb.storage.from('moments').remove([path]);
+    // Keep the completed upload for a retry; ownership remains server-enforced.
     REC.busy = false; REC.step = 'form'; camPaint();
     return note(({ habit:'that habit is no longer in my TOTEHM', too_many:'enough spots for today', video:'the video did not arrive — film it again',
       position:'allow my position', duration:'the duration', signin:'sign in again' })[data?.why] || 'not published', true);
@@ -1029,7 +1110,7 @@ const voisin = d => CROIX[VIEW][d] || null;
 const recordingLocked = () => VIEW === 'cam' && ['perm','count','rec','send'].includes(REC.step);
 function joyPaint(preview){
   const bx = $('joy-box'), camera = VIEW === 'cam';
-  bx.style.setProperty('--joy-vue', ({plan:'var(--blue)',radar:'var(--navy)',cam:'var(--rep)',feed:'var(--rep)',list:'var(--blue)'})[voisin(preview) || VIEW]);
+  bx.style.setProperty('--joy-vue', ({plan:'var(--blue)',radar:'var(--navy)',cam:'var(--navy)',feed:'var(--rep)',list:'var(--blue)'})[voisin(preview) || VIEW]);
   bx.classList.toggle('is-side',['feed','list'].includes(VIEW));
   bx.classList.toggle('is-camera',camera); bx.classList.toggle('is-recording',camera && REC.step === 'rec');
   bx.disabled = camera && ['perm','send','signin','nocam','denied'].includes(REC.step);
@@ -1044,11 +1125,11 @@ function go(v){
   document.body.className = document.body.className.replace(/\bv-\w+/g,'').trim() + ' v-' + v;
   document.querySelectorAll('.view').forEach(s => s.classList.toggle('is-on',s.id === 'v-'+v));
   if(was === 'cam') camReset();
-  if(was === 'feed') document.querySelectorAll('#feed video').forEach(x => x.pause());
+  if(was === 'feed') document.querySelectorAll('#feed video').forEach(releaseClip);
   if(v === 'plan') planOpen();
   if(v === 'cam') camOpen();
   if(v === 'feed') document.querySelectorAll('#feed .clip[data-k]').forEach(c => {io.unobserve(c);io.observe(c);});
-  camState(); joyPaint(); radarOn();
+  camState(); joyPaint(); paintInts(); radarOn();
 }
 function step(d){ if(MAP.open || recordingLocked() || PLAN.busy) return; const v = voisin(d); if(v){ gestureCount++; go(v); } }
 function joyTap(){
@@ -1073,11 +1154,12 @@ addEventListener('keydown',e => {
    leurs gestes. Le radar conserve le pincement / ctrl-wheel de zoom. */
 (function gestures(){
   const pointers = new Map(); let drag = null, pinch = null, pinching = false;
-  const excluded = t => !!t.closest?.('#joy,button,input,textarea,select,a,#detail,#menu,#habit-picker,#place-picker,[contenteditable]');
+  const excluded = t => !!t.closest?.('#joy,button,input,textarea,select,a,#detail,#menu,#habit-picker,#place-picker,[contenteditable],#radar-map,#radar-tools');
+  const horizontal = dx => {if(['feed','list'].includes(VIEW)){gestureCount++;go('radar');}else step(dx>0?'g':'d');};
   const scroller = t => t.closest?.('#feed,#list,#v-plan,#cam-body');
   const canScroll = (el,delta) => !!el && el.scrollHeight > el.clientHeight + 3 && (delta > 0 ? el.scrollTop < el.scrollHeight - el.clientHeight - 3 : el.scrollTop > 3);
   addEventListener('pointerdown',e => {
-    if(e.button > 0 || excluded(e.target) || recordingLocked() || PLAN.busy) return;
+    if(RAD.turn || e.button > 0 || (e.pointerType === 'touch' && e.target.id !== 'canvas') || excluded(e.target) || recordingLocked() || PLAN.busy) return;
     pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
     if(pointers.size === 1){ pinching = false; drag = {id:e.pointerId,x:e.clientX,y:e.clientY,t:Date.now(),el:scroller(e.target),canvas:e.target.id === 'canvas',view:VIEW}; }
     else {
@@ -1097,24 +1179,42 @@ addEventListener('keydown',e => {
     pointers.delete(e.pointerId); const d=drag;
     if(pointers.size < 2) pinch=null;
     if(!pointers.size) drag=null;
-    if(pinching || !d || e.pointerId !== d.id || d.view !== VIEW || Date.now()-d.t > 1600) return;
+    if(RAD.turn || e.pointerType === 'touch' || pinching || !d || e.pointerId !== d.id || d.view !== VIEW || Date.now()-d.t > 1600) return;
     const dx=e.clientX-d.x,dy=e.clientY-d.y;
-    if(Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)*1.35){ suppressClickUntil=Date.now()+400; step(dx>0?'g':'d'); }
+    if(Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)*1.35){ suppressClickUntil=Date.now()+400; horizontal(dx); }
     else if(Math.abs(dy)>65 && Math.abs(dy)>Math.abs(dx)*1.35 && !canScroll(d.el,-dy)){
       suppressClickUntil=Date.now()+400; step(dy>0?'h':'b');
     }
   },true);
   addEventListener('pointercancel',e => { pointers.delete(e.pointerId); drag=null; pinch=null; if(!pointers.size) pinching=false; },true);
+  let touch=null;
+  const touchExcluded=t=>!!t.closest?.('#joy,input,textarea,select,#detail,#menu,#habit-picker,#place-picker,#radar-tools,#radar-map,[contenteditable]');
+  addEventListener('touchstart',e=>{
+    if(e.touches.length!==1 || touchExcluded(e.target) || recordingLocked() || PLAN.busy || MAP.open || RAD.turn){ touch=null;return; }
+    const p=e.touches[0];touch={x:p.clientX,y:p.clientY,t:Date.now(),el:scroller(e.target),view:VIEW};
+  },{passive:true,capture:true});
+  addEventListener('touchmove',e=>{
+    if(!touch || e.touches.length!==1) return;
+    const p=e.touches[0],dx=p.clientX-touch.x,dy=p.clientY-touch.y;
+    if(Math.abs(dx)>12 && Math.abs(dx)>Math.abs(dy)*1.25) e.preventDefault();
+  },{passive:false,capture:true});
+  addEventListener('touchend',e=>{
+    const d=touch;touch=null;if(!d || d.view!==VIEW || Date.now()-d.t>1800 || !e.changedTouches.length || pinching) return;
+    const p=e.changedTouches[0],dx=p.clientX-d.x,dy=p.clientY-d.y;
+    if(Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)*1.3){ suppressClickUntil=Date.now()+500;horizontal(dx); }
+    else if(Math.abs(dy)>70 && Math.abs(dy)>Math.abs(dx)*1.35 && !canScroll(d.el,-dy)){suppressClickUntil=Date.now()+500;step(dy>0?'h':'b');}
+  },{passive:true,capture:true});
+  addEventListener('touchcancel',()=>{touch=null;},{passive:true});
   let axis='',dir='',sum=0,last=0,lockedUntil=0;
   addEventListener('wheel',e => {
-    if(MAP.open || excluded(e.target) || recordingLocked() || PLAN.busy || DETAIL) return;
+    if(MAP.open || RAD.turn || excluded(e.target) || recordingLocked() || PLAN.busy || DETAIL) return;
     if(e.ctrlKey && e.target.id === 'canvas'){
       e.preventDefault(); RAD.range=Math.max(100,Math.min(2e7,RAD.range*Math.exp(e.deltaY*.005))); return;
     }
     const factor=e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1;
     const x=e.deltaX*factor,y=e.deltaY*factor, ax=Math.abs(x)>Math.abs(y)*1.25?'x':Math.abs(y)>Math.abs(x)*1.25?'y':null;
     if(!ax) return;
-    const delta=ax === 'x'?x:y, direction=ax === 'x'?(delta>0?'d':'g'):(delta>0?'b':'h');
+    const delta=ax === 'x'?x:y, direction=ax === 'x'?(VIEW==='list'?'g':VIEW==='feed'?'d':delta>0?'d':'g'):(delta>0?'b':'h');
     if(!voisin(direction)) return;
     if(ax === 'y' && canScroll(scroller(e.target),delta)){sum=0;last=0;return;}
     const now=Date.now();
@@ -1177,7 +1277,8 @@ async function boot(){
   if(me){ const { data, error } = await sb.from('profiles').select('pseudo').eq('id', me.id).maybeSingle();
     if(error) console.error('[profile]', error.message); PSEUDO = data?.pseudo || null; }
   paintMember(); paintInts();
-  sb.rpc('spot_rules').then(({ data, error }) => { if(error) console.error('[spot_rules]', error.message); if(data) RULES = { ...RULES, ...data }; });
+  if(me) videoRequest('create-bunny-upload',{action:'status'}).then(d=>{if(d?.available) RULES.video_provider='bunny';}).catch(e=>console.error('[video availability]',e.message));
+  sb.rpc('spot_rules').then(({ data, error }) => { if(error) console.error('[spot_rules]', error.message); if(data) RULES = { ...RULES, ...data, video_provider:RULES.video_provider==='bunny'?'bunny':data.video_provider }; });
   const p = new URLSearchParams(location.search);
   geo().then(pos => { if(pos){ POS = pos; reload(); radarOn(); } });
   reload(); radarOn();
@@ -1195,4 +1296,3 @@ boot();
 </script>
 </body>
 </html>
-

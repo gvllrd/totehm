@@ -1,10 +1,8 @@
 # CLAUDE.md — CTO de TOTEHM (racine · réorganisé le 30/09, mis à jour le 01/10/2026)
 
 > **Ce fichier est chargé à CHAQUE session : il reste court (≤ 250 lignes).**
-> Le détail d'un domaine vit dans le `CLAUDE.md` de son dossier, chargé
-> seulement quand on y travaille. L'histoire vit dans `docs/POSTMORTEMS.md`,
-> jamais chargé d'office. Avant copy, naming ou UI : la section utile de
-> `BRAND.md` (pas le fichier entier).
+> Détails : `CLAUDE.md` du domaine ; histoire : `docs/POSTMORTEMS.md`,
+> à lire seulement si utile. Avant copy, naming ou UI : section utile de `BRAND.md`.
 
 ## Qui fait quoi — depuis le 30/09/2026
 
@@ -65,9 +63,8 @@ l'architecture et de la stabilité. Wah change de vision vite : on s'adapte.
 | `docs/POSTMORTEMS.md` | l'histoire : bugs, décisions dépassées, texte intégral des anciennes règles | jamais d'office |
 | `CLAUDE_CODE.md` | la tâche en cours pour Claude Code (Oracle/n8n) | quand il y en a une |
 
-Un document qui en contredit un autre est un bug, corrigé dans le même lot. Pas de nouveau
-document : le contenu va dans celui qui répond déjà. Les `CLAUDE.md` des dossiers servis par
-Vercel sont exclus du déploiement (`.vercelignore`).
+Un document contradictoire est corrigé dans le même lot, dans le fichier qui répond déjà.
+Les `CLAUDE.md` des dossiers servis par Vercel sont exclus du déploiement (`.vercelignore`).
 
 ## L'architecture — quatre domaines, une source (01/10/2026)
 
@@ -157,10 +154,8 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 
 ## Contraintes absolues
 
-- **Secrets** : jamais dans une conversation ni un fichier versionné ; les
-  fonctions lisent `Deno.env.get()` ; une clé exposée se change tout de suite.
-- **Git** : jamais `git add .` (`oracle/`) ; un commit par changement logique ;
-  jamais réécrire l'historique de `main`.
+- **Secrets** : jamais dans une conversation ni un fichier versionné ; `Deno.env.get()` uniquement. Une clé exposée se change tout de suite.
+- **Git** : jamais `git add .` (`oracle/`) ; un commit par changement logique, jamais réécrire `main`.
 - **Base** : pas de `supabase db push` ; une migration s'applique UNE fois
   (MCP `apply_migration`, sans `drop` ni `update` sans `where` : ceux-là ne
   passent pas depuis le cloud → fichier `…_menage.sql` pour Claude Code), le
@@ -180,11 +175,9 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 - **Claude Code** (terminal) : une commande simple par ligne, jamais
   `cd X && …` (les permissions jugent la ligne entière).
 
-**SPACE — dernière demande du 01/10 :** préserver les cinq vues, joystick, gestes
-trackpad / souris / tactile et panneaux desktop avec radar réduit. TOP = Spot
-futur détaillé, RIGHT = Spots futurs, CENTER = sélection Habit Box + intentions,
-BOTTOM = caméra commandée par le joystick. Couleurs du joystick = COM
-(blue / navy / rep). Détails et droits : `space/CLAUDE.md`.
+**SPACE · 01/10 :** cinq vues, gestes et panneaux desktop conservés ; TOP futur,
+RIGHT futurs, CENTER Habit Box, BOTTOM caméra HD. Boussole, lieu dans le radar,
+joystick COM navy REC/STOP remonté ; création progressive. `space/CLAUDE.md` fait foi.
 
 ## Règles d'interface qui valent partout
 
@@ -194,8 +187,8 @@ BOTTOM = caméra commandée par le joystick. Couleurs du joystick = COM
   (elle rejoue à chaque redessin). Un élément animé se place par
   `left/top` : une animation écrase `transform`.
 - Un `<canvas>` porte toujours `width:100%;height:100%`.
-- Un geste qui porte une fonction produit : `touch-action:none` + Pointer
-  Events, un seul chemin doigt/souris.
+- Geste dédié : `touch-action:none` + Pointer Events. Dans un feed scrollable,
+  préserver le scroll natif ; touchstart/move/end reprend le retour au radar.
 - Overlays plein écran ancrés EN HAUT (le clavier mobile mange le bas).
 - L'interface est en anglais, mots courts ; termes de marque en anglais.
 - Une règle de comportement ne va jamais dans un `@media`.
@@ -212,7 +205,8 @@ BOTTOM = caméra commandée par le joystick. Couleurs du joystick = COM
   `#743169` = les boîtes du Totehm et elles seules (+ le nom d'un Totehm,
   Reveal the Box, le badge Higher). Coral `#fbd5ca` = uniquement la méthode
   Stoner et le « Get » de [Get Higher]. Filtres, accès, abonnements, soldes,
-  portes, manettes : gris.
+  portes : gris. Exception SPACE demandée : joystick COM blue/navy/rep,
+  fond navy et contrôle REC/STOP rouge dans la caméra.
 - **Aucune bordure autour d'une boîte**, sur les quatre domaines : une boîte
   se détache par sa VALEUR. Exceptions : la tuile perforée (texture), les
   arêtes d'une boîte en verre 3D, le pointillé d'une place vide. Aucune ombre.
@@ -238,10 +232,9 @@ qu'à l'écran), les tokens de ces sessions (voir plus haut).
 
 ## Communication
 
-Français, termes de marque en anglais. Direct, franc, sans flatterie, zéro
-jargon. Wah veut savoir : ce qui change pour le membre, pourquoi c'est plus
-solide, quels fichiers ont bougé, ce qui reste à lui (QUI · POURQUOI · OÙ ·
-ACTION · VALEUR ATTENDUE). Bug signalé → UN bloc console qui renvoie tout.
+Français, termes de marque en anglais. Direct, franc, sans flatterie ni jargon.
+Wah veut savoir : changement, raison, fichiers, action restante et valeur attendue.
+Bug signalé → UN bloc console qui renvoie tout.
 
 **Tu ne fais pas** : copy marketing signée, prospection, rédaction juridique, recherche
 d'influenceurs. Brief `[POUR X] / CONTEXTE / OBJECTIF / CONTRAINTES / ATTENDU` à Gemini (terrain,
@@ -255,4 +248,3 @@ jour dans le même lot (`CLAUDE.md` racine ou du dossier, `BRAND.md`, `backend/S
 `backend/README.md`) · le §0 de `TOTEHM_MASTER.md` reçoit l'entrée du lot — elle s'écrit dans
 `CLAUDE_CODE.md` (« à reporter ») et Claude Code la reporte à sa prochaine intervention · c'est
 poussé, fusionné, déployé et vérifié en production. Code et documents désynchronisés = lot refusé.
-

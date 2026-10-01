@@ -24,15 +24,16 @@ export async function launch(){
   }
   return chromium.launch({ executablePath:process.env.PLAYWRIGHT_CHROMIUM || undefined, args });
 }
-export async function page(browser, { dir, origin, rpc = {}, tables = {}, session = true, viewport = { width:390, height:844 }, geo = { latitude:38.7223, longitude:-9.1393 }, hasTouch = false }){
+export async function page(browser, { dir, origin, rpc = {}, tables = {}, functions = {}, network = null, session = true, viewport = { width:390, height:844 }, geo = { latitude:38.7223, longitude:-9.1393 }, hasTouch = false }){
   const ctx = await browser.newContext({ viewport, permissions:['geolocation','camera','microphone'], geolocation: geo, hasTouch });
-  const log = { rpc:[], upload:[], tiles:0, other:[], errors:[] };
+  const log = { rpc:[], upload:[], functions:[], network:[], tiles:0, other:[], errors:[] };
   if(session) await ctx.addInitScript(([u]) => {
     localStorage.setItem('sb-abujjbkbbiumxrokozph-auth-token', JSON.stringify({ access_token:'test-at', refresh_token:'test-rt', token_type:'bearer',
       expires_in:3600, expires_at: Math.floor(Date.now()/1000) + 3600, user:u }));
   }, [USER]);
   await ctx.route('**/*', async route => {
     const url = new URL(route.request().url()), req = route.request();
+    if(network){const result=await network(url,req,log);if(result) return route.fulfill(result);}
     if(url.host === 'esm.sh') return route.fulfill({ status:200, contentType:'text/javascript', body:BUNDLE });
     if(url.host.includes('openstreetmap')){ log.tiles++; return route.fulfill({ status:404, body:'' }); }
     if(url.origin === SB){
@@ -60,7 +61,7 @@ export async function page(browser, { dir, origin, rpc = {}, tables = {}, sessio
       }
       if(p.startsWith('/auth/v1/user')) return route.fulfill({ status:200, contentType:'application/json', body: JSON.stringify(USER) });
       if(p.startsWith('/auth/v1/')) return route.fulfill({ status:200, contentType:'application/json', body:'{}' });
-      if(p.startsWith('/functions/v1/')){ log.other.push('fn:' + p.slice(14)); return route.fulfill({ status:200, contentType:'application/json', body:'{}' }); }
+      if(p.startsWith('/functions/v1/')){const name=p.slice(14);let body={};try{body=JSON.parse(req.postData()||'{}');}catch{}log.functions.push({name,body});const handler=functions[name];const result=typeof handler==='function'?await handler(body,log):handler;return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(result||{})});}
       return route.fulfill({ status:404, body:'' });
     }
     if(url.origin === origin){
