@@ -19,7 +19,8 @@ un · ce qu'on me doit · TotehmBot (mensuel, à part) · mes paiements (portail
 Stripe) · Reveal the Box. Connexion par email ICI (totehm.com est l'autorité).
 
 **⚠️ DEUX RÉGLAGES, PAS TROIS.** `private` · `subscribers` (« VISIBLE TO MY
-SUBSCRIBERS »). 'members' (tout membre FIGHER lit) n'existe plus. Allumer
+SUBSCRIBERS »). « Tout membre FIGHER lit » n'existe plus (en base, la valeur
+reste écrite 'members' jusqu'au ménage : voir `backend/CLAUDE.md`). Allumer
 l'offre rend le Totehm visible à ses abonnés ; l'éteindre ne change rien à
 la visibilité. Repasser en PRIVATE ne résilie personne : la console dit
 combien d'abonnés perdent la lecture.
@@ -29,8 +30,8 @@ combien d'abonnés perdent la lecture.
 il aurait rouvert ou refermé un Totehm en douce. Il ne l'écrit plus ; une
 seule porte, la console.
 
-**`/@nom` et `/search` ne révèlent RIEN de réservé.** `search_totehms`
-cherche par NOM seulement (chercher dans les habitudes laissait deviner leur
+**`/@nom`, `/search` et la recherche du Totehm ne révèlent RIEN de réservé.**
+`totehm_search` cherche par NOM seulement (chercher dans les habitudes laissait deviner leur
 contenu mot par mot) et rend `pseudo · offer · price_cents · subscribed` ;
 sans mot, mes abonnements. `creator_page` rend le nom, les couleurs des
 intentions et l'offre (`/ year`) — plus les vues habitées, plus le nombre

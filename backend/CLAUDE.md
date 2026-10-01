@@ -8,13 +8,24 @@
 
 ## ⛔ ÉTAT AU 01/10/2026 — un Spot, deux réglages, l'abonnement annuel, le bot à part
 
-Migration `20261001_un_spot_deux_reglages.sql`, auto-test
-`tests/sql/spots_selftest.sql` (annulé en fin de bloc, « FAIL=[] » attendu).
+Migration `20261001_un_spot_deux_reglages.sql` (appliquée en six morceaux,
+SANS rien de destructif), ménage `20261001_b_menage.sql` (les `drop`, par
+Claude Code), auto-test `tests/sql/spots_selftest.sql` (annulé en fin de
+bloc ; mesuré le 01/10 : « FAIL={} »).
+
+**⚠️ DEUX ÉCARTS JUSQU'AU MÉNAGE.** En base, `totehms.totehm_visibility =
+'members'` VEUT DIRE « VISIBLE TO MY SUBSCRIBERS » (la contrainte ne se
+remplace pas sans `drop`) : toute lecture teste `in ('subscribers','members')`,
+toute écriture passe par `_vis_shared()` (la valeur que la contrainte
+accepte). Et `spot_plans.shield` porte LOCATION ; `mode`/`shield` d'un Spot
+PRIVATE sont inertes ('silent', 'off'), jamais rendus. Les colonnes
+`capacity`, `access`, `selection`, `venue`, `kind` restent, inertes.
 
 | | la règle | où elle vit |
 |---|---|---|
 | Totehm d'un autre | lisible si `subscribers` ET abonné vivant de CE créateur | `_shared_with_me` (les politiques de `totehms`, `objectives`, `visions`, `wisdom`) ; la politique « subscribers read » est supprimée |
-| l'offre | ouverte si prix + versement + ON + Totehm `subscribers` | `_offer_open` ; `creator_offer` (service_role) sans FIGHER ; `creator-subscribe` en `interval: year` |
+| l'offre | ouverte si prix + versement + ON + Totehm visible aux abonnés | `_offer_open` ; `creator_offer` (service_role) sans FIGHER ; `creator-subscribe` en `interval: year` |
+| chercher un Totehm | par NOM seulement ; nom · offre · abonné ? | `totehm_search` (l'ancienne `search_totehms` ne rend plus que le nom) |
 | un Spot | PRIVATE = le propriétaire ; SHARED·OFF = la ville ; SHARED·ON = + le point aux abonnés | `_spot_exact`, `_spot_view`, `spots_feed`, `spots_exact`, `spot_get`, `spot_create` |
 | une vidéo | URL signée, seulement si le Spot est lisible | seau `moments` privé + politique `moments read readable` → `_clip_readable` |
 | TotehmBot | abonnement mensuel à part, ou un accès offert | `bot_subscriptions` (RLS sans politique), `totehmbot_access()` |
@@ -25,13 +36,12 @@ de l'Espace, et un PRIVATE y est `active = false` : la politique « members
 read all spots » (tout connecté) ne peut plus rien en montrer. Le point
 exact vit dans `spot_plans` (RLS sans politique, lu par fonction).
 
-**Supprimées** : `spot_publish`, `moment_publish`, `spot_video_set`,
+**Révoquées le 01/10, supprimées par le ménage** : `spot_publish`, `moment_publish`, `spot_video_set`,
 `spots_radar`, `spots_past`, `spots_globe`, `moments_feed`, `my_space`,
 `spot_apply`, `spot_decide`, `spot_withdraw`, `spot_cancel`, `_exact_ok`,
 `_spot_compat`, `_spot_expire`, `_spots_subscriber`, `demo_seed`,
 `_demo_seed_world`, `demo_purge` (lancée avant : 42 Spots et 10 membres de
-démo), `club_console`, `creator_card`. Colonnes retirées de `spot_plans` :
-`capacity`, `access`, `selection`, `venue`, `kind` ; `shield` → `location`.
+démo), `search_totehms`, `club_console`, `creator_card`.
 Les 2 candidatures réelles restent en base (lues par leur auteur seul).
 
 > La règle « le passeport FIGHER ouvre l'abonnement » (23/09) et le tableau

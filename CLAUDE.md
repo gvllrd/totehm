@@ -11,7 +11,7 @@
 | qui | a accès à | fait |
 |---|---|---|
 | **Claude, session cloud** (claude.ai/code, dépôt `gvllrd/totehm`) | GitHub (push), Supabase MCP, Vercel MCP, Stripe (connecteur, compte live « Higher ») | conçoit ET exécute : code, migrations, Edge Functions, fusion sur `main`, contrôle de la prod, lecture et tests Stripe |
-| **Claude Code, terminal de Wah** | VM Oracle (SSH, clés dans `oracle/`), n8n (MCP), clés locales | SEULEMENT ce qui exige la machine de Wah : VM Oracle, docker compose, caddy, n8n |
+| **Claude Code, terminal de Wah** | VM Oracle (SSH, clés dans `oracle/`), n8n (MCP), Supabase MCP, clés locales | SEULEMENT ce qui exige la machine de Wah : VM Oracle, docker compose, caddy, n8n — et une migration DESTRUCTIVE (`drop`, `update` sans `where`), que la session cloud ne peut pas faire approuver |
 | **Wah** | — | la vision, les demandes, les tests sur téléphone, le « oui » avant l'argent réel |
 
 **Wah fait le minimum.** Jamais « Wah, clique X » : ce qui est automatisable
@@ -65,10 +65,9 @@ l'architecture et de la stabilité. Wah change de vision vite : on s'adapte.
 | `docs/POSTMORTEMS.md` | l'histoire : bugs, décisions dépassées, texte intégral des anciennes règles | jamais d'office |
 | `CLAUDE_CODE.md` | la tâche en cours pour Claude Code (Oracle/n8n) | quand il y en a une |
 
-Un document qui en contredit un autre est un bug, corrigé dans le même lot.
-Pas de nouveau document : le contenu va dans celui qui répond déjà.
-Les `CLAUDE.md` des dossiers servis par Vercel sont exclus du déploiement
-(`.vercelignore`).
+Un document qui en contredit un autre est un bug, corrigé dans le même lot. Pas de nouveau
+document : le contenu va dans celui qui répond déjà. Les `CLAUDE.md` des dossiers servis par
+Vercel sont exclus du déploiement (`.vercelignore`).
 
 ## L'architecture — quatre domaines, une source (01/10/2026)
 
@@ -162,8 +161,9 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 - **Git** : jamais `git add .` (`oracle/`) ; un commit par changement logique ;
   jamais réécrire l'historique de `main`.
 - **Base** : pas de `supabase db push` ; une migration s'applique UNE fois
-  (MCP `apply_migration` — **une DDL attend l'« Approuver » de Wah dans l'app,
-  60 s ; on fusionne APRÈS**), le fichier du dépôt en garde la trace. `create or replace function`
+  (MCP `apply_migration`, sans `drop` ni `update` sans `where` : ceux-là ne
+  passent pas depuis le cloud → fichier `…_menage.sql` pour Claude Code), le
+  fichier du dépôt en garde la trace ; la base d'abord, la fusion ensuite. `create or replace function`
   rend le GRANT à PUBLIC : tout `revoke` vient APRÈS le dernier `create`.
   Après un `rename`, grepper `pg_proc.prosrc`. Tables nouvelles : RLS sans
   politique, lues et écrites par fonction.

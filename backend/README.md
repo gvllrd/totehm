@@ -357,8 +357,8 @@ une erreur Stripe.
 
 ## L'Espace — un Spot, PRIVATE / SHARED · 01/10 (fait autorité sur les sections 23/09 → 30/09 plus bas)
 
-Lues par `space/index.html` — tout le reste de l'ancien Espace est SUPPRIMÉ
-en base (`spot_publish`, `moment_publish`, `spots_radar`, `spots_past`,
+Lues par `space/index.html` — tout le reste de l'ancien Espace est RÉVOQUÉ
+(puis supprimé par `20261001_b_menage.sql`) (`spot_publish`, `moment_publish`, `spots_radar`, `spots_past`,
 `spots_globe`, `moments_feed`, `my_space`, `spot_apply`/`decide`/`withdraw`/
 `cancel`, `demo_seed`, `demo_purge`…) : les sections plus bas sont l'histoire.
 
@@ -372,10 +372,13 @@ en base (`spot_publish`, `moment_publish`, `spots_radar`, `spots_past`,
 
 Chaque Spot sort de `_spot_view` : `state` (`am` · `was`) se DÉDUIT de
 l'heure ; `exact` n'existe que pour `_spot_exact` (propriétaire, ou SHARED·ON
-+ abonné) ; `context` seulement pour le propriétaire. La vidéo : seau
++ abonné) ; `context` seulement pour le propriétaire ; `mode`/`location`
+(colonne `shield`) seulement pour un SHARED. La vidéo : seau
 `moments` PRIVÉ, URL signée côté page, autorisée par `_clip_readable`.
 
-**Le Totehm et la console (01/10)** : `visibility_set('private'|'subscribers')`,
+**Le Totehm et la console (01/10)** : `totehm_search(q, limit)` (par nom :
+pseudo · offer · price_cents · subscribed), `visibility_set('private'|'subscribers')`
+(écrit `_vis_shared()` : 'members' jusqu'au ménage),
 `monetization_set(enabled, price_cents)` (prix PAR AN, 3 € à 1 000 €),
 `creator_payout_set`, `my_console()` — un appel pour la console de
 `totehm.com/console`. `creator-subscribe` : `interval: year`, retour vers

@@ -6,9 +6,15 @@
 > compose, caddy, n8n, le master**. Une commande simple par ligne. Aucun
 > secret dans ce fichier.
 
-## Tâche en cours
+## Tâche en cours — 01/10/2026 · le ménage en base (une approbation)
 
-Aucune.
+La session cloud ne peut pas faire approuver un `drop`. Toi, si.
+
+1. `git pull` dans `~/totehm`
+2. MCP Supabase `apply_migration`, nom `20261001_b_menage`, contenu = `backend/supabase/migrations/20261001_b_menage.sql` (approuve)
+3. MCP Supabase `execute_sql` avec le contenu de `tests/sql/spots_selftest.sql`
+4. Attendu : une erreur « SELFTEST (rolled back): … | FAIL={} » (c'est le succès : tout est annulé)
+5. Rapport : une ligne par étape, la valeur mesurée.
 
 ## À reporter dans `~/totehm/TOTEHM_MASTER.md` §0 (à ta prochaine intervention)
 
