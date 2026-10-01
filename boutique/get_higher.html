@@ -4,11 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>TOTEHM — Get Higher</title>
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
+/* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
+html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
 :root{
   --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#606060;--bg:#000;
-  --futura-light:'Futura','Jost',sans-serif;--rhythm:1;
+  --futura-light:'Space Mono',monospace;--rhythm:1;
   --plus:#36498c;--minus:#743169;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -48,16 +50,16 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 
 
 /* Bouton d'achat style .btn-sig de totehm.html */
-.btn-sig{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-flex; align-items:center; gap:6px; -webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
-.btn-sig.claimed{color:#fff;border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");border-image-slice:6 fill;border-image-repeat:round}
-@media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");border-image-slice:6 fill;border-image-repeat:round}}
-.btn-sig:active{color:#fff;border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");border-image-slice:6 fill;border-image-repeat:round}
+.btn-sig{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;letter-spacing:0;color:#b0b0b0;background:#1f1f24;border-radius:10px;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-flex; align-items:center; gap:6px; -webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
+.btn-sig.claimed{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}
+@media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}}
+.btn-sig:active{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}
 
 .note{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;text-align:center}
 .note.dim{color:#9a9a9a}
 
 /* Input style de totehm.html */
-.line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:none;outline:none;border:6px solid transparent;border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:var(--coral);min-width:260px}
+.line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:#1f1f24;outline:none;border:6px solid transparent;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:var(--coral);min-width:260px;border-radius:10px}
 .line-input::placeholder{color:rgba(255,255,255,.33)}
 
 /* --- GLASS DISPLAY CASE ---
@@ -368,6 +370,35 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 .mw-signout:hover{color:#fff}
 /* 30/09 : le prix du THP, posé par le serveur (voir le module). */
 .thp-price::after{content:var(--thp,"")}
+
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Le gris en survol devient blanc. Généré depuis la feuille
+   elle-même : un nouveau bloc gris entre ici tout seul.        */
+@media(hover:hover){
+.t-futura:hover,
+.t-mono:hover,
+#vhint:hover,
+.btn-sig:hover,
+.note.dim:hover,
+.line-input:hover::placeholder,
+#world-close:hover,
+#xp-close:hover,
+.trigger-label:hover,
+.chev:hover,
+#disc-back:hover,
+#discover .t-coral:hover,
+#disc-hint:hover,
+#terms-link:hover,
+#sdisc-back:hover,
+#sdisc-board-close:hover,
+#conn-bar:hover,
+.mw-close:hover,
+.mw-input:hover::placeholder,
+.mw-note.dim:hover,
+.mw-mail:hover,
+.mw-signout:hover{color:#fff}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body>

@@ -4,11 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Higher — Totehm</title>
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
+/* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
+html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
 :root{
   --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#5a5a5a;--bg:#000;--navy:#333366;--rep:#743169;--blue:#36498c;
-  --futura:'Futura','Jost',sans-serif;
+  --futura:'Space Mono',monospace;
   --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%2336498c'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-full:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Crect width='44' height='44' fill='%23333366'/%3E%3Ccircle cx='22' cy='0' r='6' fill='%23000000'/%3E%3Ccircle cx='22' cy='44' r='6' fill='%23000000'/%3E%3Ccircle cx='0' cy='22' r='6' fill='%23000000'/%3E%3Ccircle cx='44' cy='22' r='6' fill='%23000000'/%3E%3C/svg%3E");
@@ -54,22 +56,22 @@ body{display:flex;flex-direction:column;align-items:center;min-height:100vh;over
 @media(prefers-reduced-motion:reduce){.real.color{animation:none}}
 
 /* boutons de marque */
-.btn-sig{font-family:'Space Mono',monospace;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
+.btn-sig{font-family:'Space Mono',monospace;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:#1f1f24;border-radius:10px;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
 .higher-inline{height:1.5em;width:auto;vertical-align:-.32em;display:inline-block;margin:0 .04em}
-.wm-totehm{font-family:'Bebas Neue',sans-serif;font-weight:400;font-style:normal;color:#fff;letter-spacing:.16em;margin-right:-.16em}
-@media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
-.btn-sig:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+.wm-totehm{font-family:'Space Mono',monospace;font-weight:700;font-style:normal;color:#fff;letter-spacing:.16em;margin-right:-.16em;text-transform:uppercase}
+@media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}}
+.btn-sig:active{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}
 .wm-frame{background:var(--navy);padding:0 3px;margin:0 1px;color:#fff}
 .btn-coral{font-family:'Space Mono',monospace;font-weight:400;font-size:14px;letter-spacing:0;color:var(--coral);background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
-@media(hover:hover){.btn-coral:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
-.btn-coral:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+@media(hover:hover){.btn-coral:hover{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}}
+.btn-coral:active{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}
 .btn-back{font-family:'Space Mono',monospace;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:none;padding:0 2px;line-height:1.4;-webkit-tap-highlight-color:transparent;transition:color .15s ease,background .15s ease}
 .btn-back:hover,.btn-back:active{color:#fff;background:var(--rep)}
 
 nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max-width:540px}
 .menu-row{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
 .menu-gap{width:100%;height:16px}
-.line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:none;outline:none;border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:var(--coral);min-width:230px}
+.line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:#1f1f24;outline:none;border:6px solid transparent;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:var(--coral);min-width:230px;border-radius:10px}
 .note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px;text-align:center}
 .note.ok{color:#639922}.note.no{color:var(--rep)}.note.dim{color:var(--g-dark)}
 
@@ -81,7 +83,7 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 
 /* LUXURY : sous-titre + défilement horizontal logos */
 .lux-block{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
-.brand-subtitle{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.22em;color:var(--g-dark);text-align:center}
+.brand-subtitle{font-family:'Space Mono',monospace;font-size:8.6px;letter-spacing:.22em;color:var(--g-dark);text-align:center;font-weight:700;text-transform:uppercase}
 .brand-scroll{display:flex;gap:18px;overflow-x:auto;padding:0 6px 12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;width:100%;max-width:380px;justify-content:center}
 .brand-scroll::-webkit-scrollbar{display:none}
 .brand-logo{flex:0 0 auto;width:64px;height:64px;object-fit:contain;filter:none;scroll-snap-align:center;border-radius:0;transition:filter .2s}
@@ -124,6 +126,29 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 .mw-mail{font-family:'Space Mono',monospace;font-size:9px;color:#6d6d6d;margin-bottom:12px;word-break:break-all}
 .mw-signout{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#6d6d6d;background:none;border:none;cursor:pointer;padding:2px 0;margin-top:8px}
 .mw-signout:hover{color:#fff}
+
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Le gris en survol devient blanc. Généré depuis la feuille
+   elle-même : un nouveau bloc gris entre ici tout seul.        */
+@media(hover:hover){
+.ctx-label:hover,
+.chev:hover,
+.tagline:hover,
+.btn-sig:hover,
+.btn-back:hover,
+.note.dim:hover,
+.brand-subtitle:hover,
+#sw-col-desc:hover,
+#sw-col-sold:hover,
+#decode-input:hover::placeholder,
+#conn-bar:hover,
+.mw-close:hover,
+.mw-input:hover::placeholder,
+.mw-note.dim:hover,
+.mw-mail:hover,
+.mw-signout:hover{color:#fff}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body>

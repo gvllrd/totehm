@@ -11,7 +11,7 @@
   dans le Totehm sans être membre du Figher Club.
 
   ⚠️ LA STACK POLICE, ET ELLE EST NON NÉGOCIABLE (CLAUDE.md) :
-      Bebas Neue  titres / noms des œuvres
+      Space Mono  titres (Bold, capitales — plus de Bebas Neue, 01/10)
       Quantico    boutons / actions — et RIEN d'autre
       Space Mono  texte, labels, prix, navigation, métadonnées
       (Montserrat : RETIRÉE le 27/09 — le slogan Higher est un tracé vectoriel)
@@ -35,8 +35,10 @@
 
   ⚠️ LIENS INTERNES ABSOLUS — `cleanUrls:true` (voir CLAUDE.md).
 -->
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
+/* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
+html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
 :root{
   --navy:#333366;--blue:#36498c;--rep:#743169;--coral:#fbd5ca;
   --ink:#fff;--ink-2:#b0b0b0;--ink-3:rgba(255,255,255,.4);
@@ -58,10 +60,10 @@ html,body{width:100%;min-height:100%;background:#000;color:var(--ink-2);
 .kick{font-size:9px;letter-spacing:.34em;text-transform:uppercase;
   color:var(--ink-3);text-align:center;margin-bottom:26px}
 
-/* Bebas Neue — les titres, et eux seuls. */
-h1{font-family:'Bebas Neue',sans-serif;font-weight:400;
-  font-size:clamp(40px,11vw,68px);line-height:.94;letter-spacing:.01em;
-  color:var(--ink);text-align:center;margin-bottom:22px}
+/* Les titres — Space Mono Bold (01/10 : plus de Bebas Neue). */
+h1{font-family:'Space Mono',monospace;font-weight:700;
+  font-size:clamp(26.4px,7.3vw,44.9px);line-height:1.1;letter-spacing:.04em;
+  color:var(--ink);text-align:center;margin-bottom:22px;text-transform:uppercase}
 h1 em{font-style:normal;color:var(--ink-3);display:block}
 
 .lede{font-size:13px;line-height:1.85;text-align:center;margin:0 auto 52px;
@@ -89,9 +91,9 @@ h1 em{font-style:normal;color:var(--ink-3);display:block}
   max-width:400px;margin:0 auto 56px}
 
 /* ══ CE QU'ON FAIT ═════════════════════════════════════════════════ */
-h2{font-family:'Bebas Neue',sans-serif;font-weight:400;
-  font-size:clamp(26px,7vw,38px);line-height:1.02;color:var(--ink);
-  text-align:center;margin:0 0 18px}
+h2{font-family:'Space Mono',monospace;font-weight:700;
+  font-size:clamp(17.2px,4.6vw,25.1px);line-height:1.02;color:var(--ink);
+  text-align:center;margin:0 0 18px;text-transform:uppercase}
 .say{font-size:13px;line-height:1.85;text-align:center;margin:0 auto 12px;
   max-width:430px}
 .say b{color:var(--ink);font-weight:700}

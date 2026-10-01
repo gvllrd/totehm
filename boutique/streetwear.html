@@ -33,8 +33,10 @@
   ⚠️ LE PASSEPORT : sans Totehm complet, pas de totehmisation (CLAUDE.md,
   19/09). La page le dit ; le serveur le refuse de toute façon.
 -->
-<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
+/* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
+html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
 :root{
   --coral:#fbd5ca;--navy:#333366;--rep:#743169;
   --g0:#fff;--g1:#b0b0b0;--g2:#5a5a5a;--bg:#000;
@@ -57,8 +59,8 @@ html,body{width:100%;min-height:100dvh;background:var(--bg);color:var(--g1);font
 .btn-back{font-family:var(--q);font-size:13px;color:var(--g2);background:none;border:none;cursor:pointer;padding:2px 4px;-webkit-tap-highlight-color:transparent;transition:color .15s,background .15s}
 .btn-back:hover,.btn-back:active{color:#fff;background:var(--rep)}
 .sz{font-family:var(--q);font-size:13px;color:var(--g1);background:none;border:6px solid transparent;cursor:pointer;padding:2px 11px;-webkit-tap-highlight-color:transparent;transition:color .12s}
-@media(hover:hover){.btn:hover,.btn-coral:hover,.sz:hover{color:#fff;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round}}
-.btn:active,.btn-coral:active,.sz:active,.sz.on{color:#fff;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round}
+@media(hover:hover){.btn:hover,.btn-coral:hover,.sz:hover{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}}
+.btn:active,.btn-coral:active,.sz:active,.sz.on{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}
 
 /* LAYOUT */
 #main{display:flex;flex-direction:column;min-height:100dvh}
@@ -120,6 +122,7 @@ html,body{width:100%;min-height:100dvh;background:var(--bg);color:var(--g1);font
 @media(min-width:580px){#member{align-items:center}.mw-sheet{border:none;padding:30px 26px}}
 .mw-close{position:absolute;top:11px;right:13px;font-family:var(--mono);font-size:8px;color:var(--g2);background:none;border:none;cursor:pointer;padding:4px}
 .mw-close:hover{color:#fff}
+.mw-terms{display:block;margin:22px auto 0;text-decoration:none;width:fit-content}
 .mw-body{font-family:var(--body);font-size:13px;color:var(--g2);line-height:1.7;margin-bottom:12px}
 .mw-input{width:100%;background:none;border:none;outline:none;color:#fff;font-family:var(--q);font-size:14px;padding:7px 2px;caret-color:#fff;text-align:center;margin-bottom:10px}
 .mw-input::placeholder{color:rgba(255,255,255,.25)}
@@ -149,7 +152,7 @@ html,body{width:100%;min-height:100dvh;background:var(--bg);color:var(--g1);font
 #rail{position:absolute;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.30)}
 #sel-head{position:absolute;top:calc(22px + env(safe-area-inset-top,0));left:0;right:0;text-align:center;z-index:3;pointer-events:none}
 #sel-q{font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:8px}
-#sel-title{font-family:'Bebas Neue',Impact,sans-serif;font-size:clamp(34px,8vw,48px);color:#fff;line-height:1;letter-spacing:.03em}
+#sel-title{font-family:'Space Mono',monospace;font-size:clamp(22.4px,5.3vw,31.7px);color:#fff;line-height:1;letter-spacing:.04em;font-weight:700;text-transform:uppercase}
 #sel-sub{font-family:var(--mono);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.62)}
 #list{position:absolute;top:calc(118px + env(safe-area-inset-top,0));bottom:calc(128px + env(safe-area-inset-bottom,0));left:0;right:0;
   overflow-y:auto;overscroll-behavior:contain;padding:0 16px 30px 0;display:flex;flex-direction:column;gap:6px}
@@ -187,7 +190,7 @@ html,body{width:100%;min-height:100dvh;background:var(--bg);color:var(--g1);font
 /* LE PASSEPORT — une porte fermée dit pourquoi, et où aller. */
 #pass{position:fixed;inset:0;z-index:85;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px 24px;text-align:center}
 #pass.show{display:flex}
-#pass .t{font-family:'Bebas Neue',Impact,sans-serif;font-size:clamp(36px,9vw,56px);color:#fff;line-height:.95}
+#pass .t{font-family:'Space Mono',monospace;font-size:clamp(23.8px,5.9vw,37px);color:#fff;line-height:1.1;font-weight:700;text-transform:uppercase}
 #pass .v{display:flex;gap:5px}#pass .v i{width:14px;height:14px;display:block;border:1px dashed rgba(255,255,255,.35)}
 #pass .v i.on{background:#fff;border-color:transparent}
 #anchor{width:100%;max-width:500px;background:var(--skin,#333366);color:#fff;padding:10px 12px;margin-bottom:26px;text-align:left}
@@ -203,7 +206,7 @@ html,body{width:100%;min-height:100dvh;background:var(--bg);color:var(--g1);font
 .cfg-step.on{opacity:1;max-height:640px;overflow:visible}
 .note{font-family:var(--mono);font-size:8px;letter-spacing:.14em;text-transform:uppercase;min-height:11px}
 .note.ok{color:#639922}.note.no{color:var(--rep)}.note.dim{color:var(--g2)}
-.name-box{display:none;align-items:center;border:6px solid transparent;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round;padding:0 8px}
+.name-box{display:none;align-items:center;border:6px solid transparent;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;padding:0 8px;background:#1f1f24;border-radius:10px}
 .name-box.on{display:flex}
 .name-prefix{font-family:var(--q);font-size:14px;color:#fff;opacity:.48;user-select:none}
 .name-box input{font-family:var(--q);font-size:14px;color:#fff;background:none;outline:none;border:none;caret-color:#fff;min-width:160px;padding:0}
@@ -212,7 +215,7 @@ html,body{width:100%;min-height:100dvh;background:var(--bg);color:var(--g1);font
 .style-track{display:flex;gap:16px;overflow-x:auto;padding:10px 6px 14px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .style-track::-webkit-scrollbar{display:none}
 .style-item{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:7px;background:none;border:none;cursor:pointer;scroll-snap-align:center;-webkit-tap-highlight-color:transparent;padding:0}
-.style-img{width:106px;height:106px;object-fit:cover;display:block;border:8px solid transparent;border-image-source:var(--tile);border-image-slice:8 fill;border-image-repeat:round;filter:grayscale(55%);opacity:.6;transition:opacity .2s,filter .2s}
+.style-img{width:106px;height:106px;object-fit:cover;display:block;border:8px solid transparent;border-image-source:none;border-image-slice:8 fill;border-image-repeat:round;filter:grayscale(55%);opacity:.6;transition:opacity .2s,filter .2s;background:#1f1f24;border-radius:10px}
 div.style-img{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:8px;color:#2a2a2a;text-transform:uppercase}
 .style-item .st-name{font-family:var(--q);font-size:11px;color:var(--g2);max-width:120px;text-align:center;line-height:1.3;transition:color .2s}
 .style-item.on .style-img{filter:none;opacity:1}
@@ -235,6 +238,51 @@ div.style-img{display:flex;align-items:center;justify-content:center;font-family
   #card{padding:0 16px}
 }
 @media(prefers-reduced-motion:reduce){#card{transition:none}.cfg-step{transition:none}.sup-detail{transition:none}}
+
+
+
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Le gris en survol devient blanc. Généré depuis la feuille
+   elle-même : un nouveau bloc gris entre ici tout seul.        */
+@media(hover:hover){
+.mono:hover,
+.btn:hover,
+.btn-coral:hover,
+.btn-back:hover,
+.sz:hover,
+#picked small:hover,
+#picked button:hover,
+#page-title:hover,
+#collection-stock:hover,
+.vis-arr:hover,
+.visual .ph:hover,
+.sup-title:hover,
+.sup-detail:hover,
+.pieces:hover,
+#conn-bar:hover,
+.mw-close:hover,
+.mw-body:hover,
+.mw-input:hover::placeholder,
+.mw-row:hover,
+.mw-row .st:hover,
+.mw-mail:hover,
+.mw-out:hover,
+.slide-cap:hover,
+#sel-q:hover,
+#sel-sub:hover,
+.bx .sb:hover,
+.v-empty:hover,
+#matter .w:hover,
+#anchor small:hover,
+.note.dim:hover,
+div.style-img:hover,
+.style-item .st-name:hover,
+.price-big:hover,
+.blind:hover,
+.blind a:hover,
+#done .sub:hover{color:#fff}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body>
@@ -288,6 +336,8 @@ div.style-img{display:flex;align-items:center;justify-content:center;font-family
       <div class="mw-list" id="mw-list"></div>
       <button class="mw-out" id="mw-signout">sign out</button>
     </div>
+    <!-- 01/10 : la DERNIÈRE entrée du menu membre, dans tous les états. -->
+    <a class="mw-out mw-terms" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a>
   </div>
 </div>
 

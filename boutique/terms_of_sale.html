@@ -4,12 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Terms of Sale — HIGHER.BOUTIQUE</title>
-<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
+/* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
+html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
 :root{
   --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#5a5a5a;
   --bg:#000;--navy:#333366;--rep:#743169;--blue:#36498c;
-  --futura:'Futura','Jost',sans-serif;
+  --futura:'Space Mono',monospace;
   --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23743169'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
 }
@@ -37,10 +39,10 @@ a{color:var(--coral);text-decoration:underline;text-underline-offset:2px}
 a:hover{color:#fff}
 
 /* Ce que le client doit avoir lu avant de payer */
-.hard{border:6px solid transparent;border-image-source:var(--tile-btn);
-  border-image-slice:6 fill;border-image-repeat:round;padding:15px 18px;margin:18px 0}
+.hard{border:6px solid transparent;border-image-source:none;
+  border-image-slice:6 fill;border-image-repeat:round;padding:15px 18px;margin:18px 0;background:#1f1f24;border-radius:10px}
 .hard p:last-child{margin-bottom:0}
-.warn{border-image-source:var(--tile-rep)}
+.warn{border-image-source:none;background:#1f1f24;border-radius:10px}
 
 .draft{border:1px dashed var(--g-dark);padding:14px 16px;margin-bottom:30px}
 .draft p{color:var(--g-mid);font-size:13.5px;margin:0}
@@ -55,6 +57,19 @@ a:hover{color:#fff}
   h1{font-size:30px}
   p,li{font-size:16px}
 }
+
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Le gris en survol devient blanc. Généré depuis la feuille
+   elle-même : un nouveau bloc gris entre ici tout seul.        */
+@media(hover:hover){
+.eyebrow:hover,
+.updated:hover,
+h3:hover,
+p:hover,
+li:hover,
+.draft p:hover{color:#fff}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body>

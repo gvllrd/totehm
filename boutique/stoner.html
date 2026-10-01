@@ -4,14 +4,16 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>TOTEHM — Stoner Method</title>
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
+/* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
+html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Futura','Jost',sans-serif;font-weight:300}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Space Mono',monospace;font-weight:300}
 :root{
   --coral:#fbd5ca;--higher-bg:#333366;
-  --futura-light:'Futura','Jost',sans-serif;
-  --futura-bold:'Futura','Jost',sans-serif;
+  --futura-light:'Space Mono',monospace;
+  --futura-bold:'Space Mono',monospace;
   --plus:#36498c;--minus:#743169;
   --g3:#909090;--g4:#606060;
   --tile-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23743169'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
@@ -113,7 +115,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 
 /* NEUROLOGICAL REASONS — en colonne (icône au-dessus), placé sous le texte */
 .neuro-link{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;display:inline-block;border:6px solid transparent;padding:0 3px;line-height:1.4;margin-top:10px;-webkit-tap-highlight-color:transparent;transition:color .18s ease}
-.neuro-link:hover,.neuro-link:focus-visible,.neuro-link:active,.neuro-link.on{color:#fff;border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");border-image-slice:6 fill;border-image-repeat:round}
+.neuro-link:hover,.neuro-link:focus-visible,.neuro-link:active,.neuro-link.on{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}
 /* ── ACCORDION NEURO (contenu rétractable Shopify-style) ── */
 #neuro-content,#neuro-content-0{width:100%;max-width:440px;max-height:0;overflow:hidden;transition:max-height .4s ease;opacity:0}
 #neuro-content.open,#neuro-content-0.open{max-height:1000px;opacity:1;overflow:visible;transition:max-height .5s ease,opacity .4s ease .1s}
@@ -144,24 +146,24 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 #btn-low{background-color:var(--minus)}
 .choice-btn:hover{color:#626286}
 
-#subtitle{display:none;width:90%;max-width:560px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.1em;color:#808080;line-height:1.4;margin:0 auto;padding-top:5vh;flex-shrink:0}
+#subtitle{display:none;width:90%;max-width:560px;text-align:center;font-family:'Space Mono',monospace;font-size:11.2px;letter-spacing:.1em;color:#808080;line-height:1.4;margin:0 auto;padding-top:5vh;flex-shrink:0;font-weight:700;text-transform:uppercase}
 #subtitle.show{display:block}
 
 #close-screen{position:fixed;inset:0;display:none;background:#000;z-index:60;overflow-y:auto;overflow-x:hidden}
 #close-screen.visible{display:flex}
 /* FREE GATE — fin de l'expérience free (Step 6) */
-.fg-buy{background:none;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+.fg-buy{background:#1f1f24;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
   font-family:'Quantico',sans-serif;font-weight:400;font-size:16px;color:#fbd5ca;
   padding:0.02em 0.18em;margin:18px 0 10px;line-height:1;
-  border-image-source:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
-  border-image-slice:6 fill;border-image-repeat:round;border-width:6px;border-style:solid}
+  border-image-source:none;
+  border-image-slice:6 fill;border-image-repeat:round;border-width:6px;border-style:solid;border-radius:10px}
 .fg-buy .higher-inline{display:inline-flex;align-items:center;width:58px;line-height:0}
 .fg-buy .higher-inline svg{display:block;width:100%;height:auto;fill:currentColor}
 .fg-price{font-weight:400;opacity:.85;margin-left:4px}
 .pt-view{display:none;flex-direction:column;align-items:center;gap:14px}
 .pt-view.on{display:flex}
 .pt-count{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.14em;color:#fbd5ca;opacity:.8}
-.pt-line{font-family:'Bebas Neue',Arial Narrow,sans-serif;font-size:13px;letter-spacing:.14em;color:#8f8fae}
+.pt-line{font-family:'Space Mono',monospace;font-size:8.6px;letter-spacing:.14em;color:#8f8fae;font-weight:700;text-transform:uppercase}
 /* La saisie ne se dessine plus par un trait : elle se dessine par sa
    SURFACE, un gris à peine posé. Et `border-radius` part avec — la
    marque n'a pas d'angle arrondi. */
@@ -170,12 +172,12 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
   text-align:center;outline:none}
 .pt-input:focus{background:rgba(255,255,255,.12)}
 .pt-err{font-family:'Space Mono',monospace;font-size:12px;color:#f0997b;min-height:15px}
-.pt-back{background:none;border:none;color:#6f6f9c;font-family:'Bebas Neue',Arial Narrow,sans-serif;
-  font-size:12px;letter-spacing:.12em;cursor:pointer;padding:4px}
+.pt-back{background:none;border:none;color:#6f6f9c;font-family:'Space Mono',monospace;
+  font-size:7.9px;letter-spacing:.12em;cursor:pointer;padding:4px;font-weight:700;text-transform:uppercase}
 #free-gate{position:fixed;inset:0;display:none;background:#000;z-index:70;cursor:pointer}
 #free-gate.visible{display:flex}
 #fg-inner{width:88%;max-width:420px;margin:auto;display:flex;flex-direction:column;align-items:center;gap:22px;text-align:center}
-.fg-bebas{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:.12em;color:#808080;line-height:1.5}
+.fg-bebas{font-family:'Space Mono',monospace;font-size:12.5px;letter-spacing:.12em;color:#808080;line-height:1.5;font-weight:700;text-transform:uppercase}
 .fg-coral{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:#fbd5ca;line-height:1.8;letter-spacing:.02em}
 .fg-hint{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#4a4a4a;margin-top:3vh}
 #close-inner{width:90%;max-width:460px;margin:auto;display:flex;flex-direction:column;align-items:center;padding:6vh 0;gap:10px}
@@ -234,6 +236,27 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Fu
 .mw-mail{font-family:'Space Mono',monospace;font-size:9px;color:#6d6d6d;margin-bottom:12px;word-break:break-all}
 .mw-signout{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#6d6d6d;background:none;border:none;cursor:pointer;padding:2px 0;margin-top:8px}
 .mw-signout:hover{color:#fff}
+
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Le gris en survol devient blanc. Généré depuis la feuille
+   elle-même : un nouveau bloc gris entre ici tout seul.        */
+@media(hover:hover){
+.neuro-link:hover,
+.nb-p:hover,
+.nb-src:hover,
+#subtitle:hover,
+.fg-bebas:hover,
+.fg-hint:hover,
+.wa-label:hover,
+#loading:hover,
+#conn-bar:hover,
+.mw-close:hover,
+.mw-input:hover::placeholder,
+.mw-note.dim:hover,
+.mw-mail:hover,
+.mw-signout:hover{color:#fff}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body>

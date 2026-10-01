@@ -28,8 +28,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#000000">
 <title>TOTEHM — My Totehm</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Jost:wght@300;400;500;700&family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
+/* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
+html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
 :root{
   --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#606060;--bg:#000;
   --navy:#333366;--blue:#36498c;--rep:#743169;--love:#639922;
@@ -54,7 +56,7 @@
      pas. Un remplissage n'est jamais --sky, un texte n'est jamais --blue.
      --skin = la couleur de la vue courante, posée par #stage.v-h|.v-o|.v-r. */
   --sky:#7fa3e8;--skin:var(--navy);
-  --futura:'Futura','Jost',sans-serif;
+  --futura:'Space Mono',monospace;
   --rl:46px;   /* rail left */
   --rw:18px;   /* rail width — il S'ÉLARGIT en mode classement */
   --rw0:18px;  /* rail AU REPOS — la marque s'y accroche, elle ne bouge pas */
@@ -650,8 +652,8 @@ body.higher .set-block.higher-only{display:flex!important}
    2) [My Totehm Book] et [My next Objective] sur la même ligne, centrés */
 #settings-nav{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:380px;margin:0 auto 16px;padding:0 6px}
 .sn-btn{background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;line-height:1.5;text-decoration:none;white-space:nowrap;display:flex;align-items:center;gap:6px;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
-@media(hover:hover){.sn-btn:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
-.sn-btn:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+@media(hover:hover){.sn-btn:hover{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}}
+.sn-btn:active{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}
 /* Le logo seul, sans chevron au-dessus — supprimé le 29/08 avec tous les
    autres chevrons de navigation. */
 .sn-logo{flex-direction:column;gap:6px;padding:0}
@@ -677,8 +679,8 @@ body.higher .set-block.higher-only{display:flex!important}
 
 /* ── BACK IN TIME ── */
 .btn-back{position:fixed;top:14px;left:14px;z-index:46;font-family:'Quantico',sans-serif;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
-@media(hover:hover){.btn-back:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
-.btn-back:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+@media(hover:hover){.btn-back:hover{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}}
+.btn-back:active{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}
 
 /* ── CONNECTION BAR ──
    Point d'entrée membre unique — le Dashboard. Visible sur TOUS les étages
@@ -1171,7 +1173,7 @@ body.v-visions{--paper:#2b3a73}
 /* CE QUE LA MACHINE A COMPRIS. On écrit « tous les matins » et elle
    propose le rythme le plus proche des trente-trois — dans n'importe
    quelle langue, sans un appel de modèle, donc sans facture. */
-.fq-hit{display:block;width:100%;margin-top:6px;background:#fff;color:#000;
+.fq-hit{display:block;width:100%;margin-top:6px;background:#2e2e36;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45);
   border:none;cursor:pointer;padding:8px 10px;font-family:'Quantico',sans-serif;
   font-weight:700;font-size:13px;text-align:left}
 #habits .in.fq{width:100%}
@@ -1327,7 +1329,7 @@ body.v-visions{--paper:#2b3a73}
 .btn{background:rgba(255,255,255,.07);border:none;color:#fff;cursor:pointer;padding:5px 12px;
   font-family:'Quantico',sans-serif;font-weight:700;font-size:12px;white-space:nowrap;
   transition:background .15s,color .15s}
-.btn:hover{background:#fff;color:#000}
+.btn:hover{background:#34343c;color:#fff}
 .btn.g{border-color:rgba(255,255,255,.28);color:rgba(255,255,255,.5)}
 .btn.g:hover{background:none;border-color:#fff;color:#fff}
 .dash{width:100%;background:none;border:1px dashed rgba(255,255,255,.28);
@@ -1692,8 +1694,8 @@ body.rk-grab #fv-inner{overscroll-behavior:none}
 .row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
 /* radios : le pattern size-btn de boutique.html */
 .size-btn{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:2px 10px;-webkit-tap-highlight-color:transparent;transition:color .15s}
-@media(hover:hover){.size-btn:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
-.size-btn:active,.size-btn.on{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+@media(hover:hover){.size-btn:hover{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}}
+.size-btn:active,.size-btn.on{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}
 .bot-txt{font-family:var(--futura);font-weight:300;font-size:12px;color:var(--g-mid);line-height:1.6;text-align:center;max-width:320px}
 .terms-link{color:inherit;text-decoration:underline;text-underline-offset:2px;transition:color .2s ease}
 .terms-link:hover,.terms-link:focus{color:#fff;outline:none}
@@ -1718,13 +1720,15 @@ body.rk-grab #fv-inner{overscroll-behavior:none}
 .sr-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
 
 /* Search a Totehm : le pattern morph d'index.html */
-.btn-sig{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
+.btn-sig{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:#1f1f24;border-radius:10px;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
 /* Bouton "claimed" : nom validé -> look perforé bleu figé (persistant, pas juste au hover) */
-.btn-sig.claimed{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
-@media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}}
-.btn-sig:active{color:#fff;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round}
+.btn-sig.claimed{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}
+@media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}}
+.btn-sig:active{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}
 .wm-frame{background:var(--navy);padding:0 3px;margin:0 1px;color:#fff}
-.line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:none;outline:none;border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:#fff;min-width:230px}
+/* LE NOM DU TOTEHM garde la tuile perforée navy — et lui seul (01/10). */
+#name-btn.claimed,#set-name{border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;background:none;border-radius:0}
+.line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:#1f1f24;outline:none;border:6px solid transparent;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:#fff;min-width:230px;border-radius:10px}
 .note{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;text-align:center}
 /* renderSettings() retire la classe `hide` des notes pour pouvoir ecrire
    dedans : chaque bouton du menu portait donc 14px de note vide + 8px de
@@ -1892,6 +1896,7 @@ body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
 .mw-mail{font-family:'Space Mono',monospace;font-size:9px;color:var(--g-dark);margin-bottom:12px;word-break:break-all}
 .mw-out{margin-top:6px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--g-mid);background:none;border:none;cursor:pointer;transition:color .15s}
 .mw-out:hover{color:#fff}
+.mw-terms{display:block;margin-top:18px;text-decoration:none;color:var(--g-mid)}
 .mw-sync{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:var(--love);margin-top:8px;min-height:12px}
 
 /* ══ MW-LINK · lien menu · 24/09/2026 ═══════════════════════════════
@@ -2708,12 +2713,18 @@ body.gate.entered #filter-badge{
 
 
 
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
 @media(hover:hover){
 .door:hover,
 #filter-arrow svg:hover,
+#vnow i:hover,
+#vnow span:hover,
 .sn-btn:hover,
 .btn-back:hover,
 #conn-bar:hover,
@@ -2725,6 +2736,7 @@ body.gate.entered #filter-badge{
 .v-empty:hover,
 .h-text:hover::placeholder,
 .h-hint:hover,
+.habit.open .v-name[contenteditable]:empty:hover::before,
 .mini-x:hover,
 .habit.filtre .v-name:hover,
 .mg-l:hover,
@@ -2783,7 +2795,23 @@ body.gate.entered #filter-badge{
 .mw-note.dim:hover,
 .mw-mail:hover,
 .mw-out:hover,
+.mw-terms:hover,
+.mw-link:hover,
+.mw-link-sm:hover,
+.mw-state:hover,
+.lbl-s:hover,
+.cv-say:hover,
+.cv-row:hover,
+.cv-step:hover,
+.cc-etat span:hover,
+.cc-cur:hover,
+.acct-btn:hover,
+.ast-say:hover,
+.ast-say.is-name:hover,
+.door-q:hover,
+#gate-turn:hover,
 #terms-corner:hover,
+#search-corner:hover,
 #gate-search-input:hover::placeholder,
 #search-input:hover::placeholder,
 #fold-x svg:hover{color:#fff}
@@ -2798,7 +2826,8 @@ body.gate.entered #filter-badge{
 <div id="gate">
 
   <!-- Coin haut droit : les termes. -->
-  <a id="terms-corner" href="terms.html" target="_blank" rel="noopener">Simple terms of use</a>
+  <!-- 01/10 : « Simple terms of use » est la DERNIÈRE entrée du menu membre
+       (la porte pour un invité, la fenêtre membre pour un inscrit). -->
   <a id="search-corner" href="/search">Search a TOTEHM</a>
 
 <section id="gate-hero">
@@ -2859,6 +2888,7 @@ body.gate.entered #filter-badge{
       <input class="mw-input" id="mw-pseudo" maxlength="24" placeholder="your Totehm">
       <div class="mw-note dim" id="mw-claim-note"></div>
     </div>
+    <a class="mw-out mw-terms" href="terms.html" target="_blank" rel="noopener">Simple terms of use</a>
   </div><!-- /#gate-door -->
 
   <!-- ⚠️ LE NOM ET LA VISIBILITÉ SONT REPARTIS DANS L'ESPACE MEMBRE le
@@ -3169,7 +3199,7 @@ body.gate.entered #filter-badge{
         <div class="mw-panel hide" id="club-panel">
           <div id="mw-sub"></div>
           <div class="mw-state" id="club-state"></div>
-          <a class="mw-link" id="club-console" href="https://www.figher.club/console" target="_blank" rel="noopener">Manage everything on figher.club →</a>
+          <a class="mw-link" id="club-console" href="/console">My console →</a>
         </div>
       </div>
 
@@ -3220,6 +3250,7 @@ body.gate.entered #filter-badge{
       </div>
     </div>
       <button class="mw-out" id="mw-signout">Sign out</button>
+      <a class="mw-out mw-terms" href="terms.html" target="_blank" rel="noopener">Simple terms of use</a>
     </div>
   </div>
 </div>
@@ -3682,7 +3713,9 @@ async function cloudSave(){
        bord de la saisie. Il vit dans `set_bot()`. */
     const {error}=await sb.from('totehms').upsert({
       user_id:me.id,
-      totehm_visibility:(state.vis==='members')?'members':'private',
+      /* 01/10 : la visibilité ne voyage PLUS avec les habitudes. Elle se
+         règle dans la console (`visibility_set`) : un enregistrement
+         d'habitude ne doit jamais rouvrir ni refermer un Totehm. */
       steps:state.habits,
       updated_at:new Date().toISOString()
     },{onConflict:'user_id'});
@@ -3719,7 +3752,7 @@ async function cloudLoad(){
      premier chargement depuis le nuage. L'ordre lui-même voyage dans
      `steps` — c'est l'ordre du tableau ; seul le DRAPEAU se perdait. */
   const ordonne = !!(state && state.ord);
-  state={habits, vis:data.some(r=>r.totehm_visibility==='members')?'members':'private'};
+  state={habits, vis:data.some(r=>r.totehm_visibility==='subscribers')?'subscribers':'private'};
   if(ordonne)state.ord=true;
   cacheEcrire();
 }
@@ -3757,7 +3790,7 @@ async function loadRO(){
     const li=Array.isArray(x.is)?x.is.filter(z=>INT_BY_ID[z]):[];
     habits.push({t:x.t, t0:x.t, f:FREQ_BY_ID[x.f]?x.f:null,
       i:INT_BY_ID[x.i]?x.i:(li[0]||null), is:li, o:x.o||null});});
-  state={habits, vis:'members'};
+  state={habits, vis:'subscribers'};
 
   TRIPS=(data.trips||[]).map(t=>Object.assign({},t,{
     is:Array.isArray(t.is)?t.is:[], vs:(t.visions||[]).map(String)}));
@@ -6716,11 +6749,7 @@ $('club-toggle').onclick=()=>{
 /* Le lien vers la console passe par le pont SSO — le membre ne se
    reconnecte pas. ssoVersDomaine est défini par sso_snippet.js copié
    plus haut dans le module. */
-$('club-console').onclick=e=>{
-  e.preventDefault();
-  if(typeof ssoVersDomaine==='function') ssoVersDomaine('club','/console');
-  else location.href='https://www.figher.club/console';
-};
+/* 01/10 : la console vit sur totehm.com (/console) — même origine, même session. */
 
 
 /* ══════════════════════════════════════════════════════════════════════════

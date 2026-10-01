@@ -40,15 +40,17 @@
 <meta name="theme-color" content="#000000">
 <title>HigherSelf — TOTEHM</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Jost:wght@300;400;700&family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
+/* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
+html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
 :root{
   --coral:#fbd5ca;--navy:#333366;--rep:#743169;
   --g-light:#e0e0e0;--g-mid:#909090;--g-dark:#606060;
   --box:#080808;--box-line:#161616;
   --fight:#E24B4A;--flow:#e48b31;--enrich:#fcbe21;--love:#639922;
   --express:#1D9E75;--focus:#378ADD;--celebrate:#7F77DD;
-  --futura:'Futura','Jost',sans-serif;
+  --futura:'Space Mono',monospace;
   --rl:34px;--rw:12px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -71,17 +73,17 @@ button{font:inherit;color:inherit}
 .sub{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;
   text-transform:uppercase;color:var(--g-dark);text-align:center}
 #who{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:#fff}
-.wm-totehm{font-family:'Bebas Neue',sans-serif;font-weight:400;color:#fff;
-  letter-spacing:.16em;margin-right:-.16em}
+.wm-totehm{font-family:'Space Mono',monospace;font-weight:700;color:#fff;
+  letter-spacing:.16em;margin-right:-.16em;text-transform:uppercase}
 .wm-frame{background:var(--navy);padding:0 3px;margin:0 1px;color:#fff}
 
 /* ── AUTH ────────────────────────────────────────────────────────── */
 #auth{display:flex;flex-direction:column;gap:10px;align-items:center;
   width:100%;max-width:300px;margin:24px auto}
 .line-input{width:100%;font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
-  color:#fff;background:none;outline:none;border:6px solid transparent;
-  border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;
-  padding:0 6px;text-align:center;caret-color:var(--coral)}
+  color:#fff;background:#1f1f24;outline:none;border:6px solid transparent;
+  border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;
+  padding:0 6px;text-align:center;caret-color:var(--coral);border-radius:10px}
 .line-input::placeholder{color:rgba(255,255,255,.33)}
 .note{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
   text-transform:uppercase;min-height:14px;text-align:center}
@@ -125,13 +127,13 @@ button{font:inherit;color:inherit}
 /* ── LES DEUX TAPS ───────────────────────────────────────────────── */
 .answer{display:flex;gap:8px;margin-top:8px}
 .btn-sig{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;
-  color:#b0b0b0;background:none;border:6px solid transparent;padding:0 4px;
+  color:#b0b0b0;background:#1f1f24;border-radius:10px;border:6px solid transparent;padding:0 4px;
   line-height:1.5;cursor:pointer;display:inline-block;width:fit-content;
   -webkit-tap-highlight-color:transparent;transition:color .15s ease}
-.btn-sig:active,.btn-sig.on{color:#fff;border-image-source:var(--tile-btn);
-  border-image-slice:6 fill;border-image-repeat:round}
-@media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:var(--tile-btn);
-  border-image-slice:6 fill;border-image-repeat:round}}
+.btn-sig:active,.btn-sig.on{color:#fff;border-image-source:none;
+  border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}
+@media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:none;
+  border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}}
 
 /* ── LA LIGNE D'AJOUT ────────────────────────────────────────────── */
 .add-row textarea{width:100%;background:none;border:none;
@@ -174,8 +176,8 @@ button{font:inherit;color:inherit}
 .s-go{font-family:'Quantico',sans-serif;font-size:13px;text-decoration:none;
   color:var(--gc,var(--g-mid));border:6px solid transparent;padding:0 4px;
   display:inline-block;width:fit-content;transition:color .15s}
-@media(hover:hover){.s-go:hover{color:#fff;border-image-source:var(--tile-btn);
-  border-image-slice:6 fill;border-image-repeat:round}}
+@media(hover:hover){.s-go:hover{color:#fff;border-image-source:none;
+  border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}}
 
 /* ── LE PIED ─────────────────────────────────────────────────────── */
 #foot{margin-top:34px;padding-top:16px;border-top:1px solid var(--box-line);
@@ -191,6 +193,8 @@ a.foot-link{color:var(--coral);text-decoration:none}
 .sub:hover,.r-meta:hover,.empty:hover,.lbl:hover,.s-why:hover,
 .foot-note:hover,.note.dim:hover,.tab:hover{color:#fff}
 }
+
+
 
 
 
