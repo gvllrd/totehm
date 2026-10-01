@@ -6,6 +6,37 @@
 > `CLAUDE.md` le 30/09/2026, les plus récentes d'abord : un renvoi « plus
 > haut » peut viser la racine ou un autre dossier. Procédures : `README.md`. État mesuré : `SYSTEM.md` (§0 d'abord).
 
+## ⛔ ÉTAT AU 01/10/2026 — un Spot, deux réglages, l'abonnement annuel, le bot à part
+
+Migration `20261001_un_spot_deux_reglages.sql`, auto-test
+`tests/sql/spots_selftest.sql` (annulé en fin de bloc, « FAIL=[] » attendu).
+
+| | la règle | où elle vit |
+|---|---|---|
+| Totehm d'un autre | lisible si `subscribers` ET abonné vivant de CE créateur | `_shared_with_me` (les politiques de `totehms`, `objectives`, `visions`, `wisdom`) ; la politique « subscribers read » est supprimée |
+| l'offre | ouverte si prix + versement + ON + Totehm `subscribers` | `_offer_open` ; `creator_offer` (service_role) sans FIGHER ; `creator-subscribe` en `interval: year` |
+| un Spot | PRIVATE = le propriétaire ; SHARED·OFF = la ville ; SHARED·ON = + le point aux abonnés | `_spot_exact`, `_spot_view`, `spots_feed`, `spots_exact`, `spot_get`, `spot_create` |
+| une vidéo | URL signée, seulement si le Spot est lisible | seau `moments` privé + politique `moments read readable` → `_clip_readable` |
+| TotehmBot | abonnement mensuel à part, ou un accès offert | `bot_subscriptions` (RLS sans politique), `totehmbot_access()` |
+| la mémoire du bot | Totehm + Spots (privés compris), faits ≠ mots, « completion » et « mood » inconnus | `_bot_memory(uuid)` (service_role) — ne dépend pas de l'abonnement |
+
+**⚠️ LA TABLE `spots` NE PORTE PLUS QU'UNE POSITION À 0,1°** pour les Spots
+de l'Espace, et un PRIVATE y est `active = false` : la politique « members
+read all spots » (tout connecté) ne peut plus rien en montrer. Le point
+exact vit dans `spot_plans` (RLS sans politique, lu par fonction).
+
+**Supprimées** : `spot_publish`, `moment_publish`, `spot_video_set`,
+`spots_radar`, `spots_past`, `spots_globe`, `moments_feed`, `my_space`,
+`spot_apply`, `spot_decide`, `spot_withdraw`, `spot_cancel`, `_exact_ok`,
+`_spot_compat`, `_spot_expire`, `_spots_subscriber`, `demo_seed`,
+`_demo_seed_world`, `demo_purge` (lancée avant : 42 Spots et 10 membres de
+démo), `club_console`, `creator_card`. Colonnes retirées de `spot_plans` :
+`capacity`, `access`, `selection`, `venue`, `kind` ; `shield` → `location`.
+Les 2 candidatures réelles restent en base (lues par leur auteur seul).
+
+> La règle « le passeport FIGHER ouvre l'abonnement » (23/09) et le tableau
+> « partagé non monétisé = les membres » sont DÉPASSÉS.
+
 ## ⛔ ÉTAT AU 30/09/2026 — identité, droits, propriété, marché
 
 **⚠️ TOTEHM.COM EST L'AUTORITÉ D'IDENTITÉ — PKCE, PAS DE COOKIE PARTAGÉ.**

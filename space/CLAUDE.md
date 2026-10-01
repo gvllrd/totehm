@@ -1,12 +1,76 @@
-# space/CLAUDE.md — totehm.space : Spots et Short-Live
+# space/CLAUDE.md — totehm.space : DO WITH ME (un Spot, cinq vues)
 
 > Chargé automatiquement quand on travaille dans `space/`. Les règles
 > transverses sont dans le `CLAUDE.md` de la racine ; l'histoire dans
 > `docs/POSTMORTEMS.md`. Sections déplacées TELLES QUELLES de l'ancien
 > `CLAUDE.md` le 30/09/2026, les plus récentes d'abord : un renvoi « plus
-> haut » peut viser la racine ou un autre dossier. Fichier : `index.html` (≈170 Ko : `grep -n` puis lecture par plage).
+> haut » peut viser la racine ou un autre dossier. Fichier : `index.html` (≈62 Ko depuis le 01/10 : `grep -n` puis lecture par plage) ; `cities.json` (Natural Earth, 1 251 villes).
 
-## ⛔ ÉTAT AU 30/09/2026 — fait autorité sur les sections plus bas
+## ⛔ ÉTAT AU 01/10/2026 — fait autorité sur TOUT ce qui suit
+
+**La demande de Wah :** « COM et SPACE fonctionnent pour soi, ou pour soi et
+les autres. SPACE = do with me. » `index.html` réécrit (`BUILD='2026-10-01'`,
+197 → 62 Ko), migration `20261001_un_spot_deux_reglages.sql`, test
+`tests/browser/space.mjs`, auto-test SQL `tests/sql/spots_selftest.sql`.
+
+**⚠️ UN SEUL SPOT.** Plus d'expérience ni de moment, de futur, de capacité,
+de candidature, de sélection auto/manuelle, d'accès par Spot, de %. Un Spot
+= une Habit de MON Totehm + une vidéo filmée MAINTENANT (33 s max) + une
+durée (5–720 min) + PRIVATE ou SHARED. SHARED exige SILENT (« Nobody disturb
+me ») / SOCIAL (« We can talk ») et LOCATION ON/OFF ; PRIVATE n'exige rien
+de plus. Les intentions viennent de l'Habit, relue en base (`spot_create`).
+Gratuit, 24 par 24 h (`spot_rules()`).
+
+**⚠️ LE TEMPS SE DÉDUIT.** `I AM HERE` de la validation à la fin de la
+durée, puis `I WAS THERE` — le serveur le calcule à chaque lecture (`state`)
+et la page le recalcule depuis `ends_at` : page fermée ou ouverte, rien ne
+rate le passage. Un Spot passé ne dit jamais « until », « now », « here ».
+
+| qui regarde | PRIVATE | SHARED · OFF | SHARED · ON |
+|---|---|---|---|
+| le propriétaire | tout, point exact | tout, point exact | tout, point exact |
+| abonné vivant du créateur | rien, nulle part | vidéo, habit, ville | + le point exact |
+| tout autre (même anonyme) | rien, nulle part | vidéo, habit, ville | vidéo, habit, ville |
+
+Lu au moment de la consultation, identique après `I WAS THERE`. **Jamais
+une distance, un cap ni une position de radar pour qui n'a pas le point** :
+`spots_feed` filtre son rayon (60 km) sur des positions ARRONDIES à 0,1° des
+deux côtés (`spot_plans.clat/clng`) et ne rend aucune distance ; le radar et
+la liste ne lisent que `spots_exact` (mes Spots + SHARED·ON de mes créateurs).
+Le contexte (objectifs, répulsions reliés) n'est rendu qu'au propriétaire :
+voir un Spot ≠ lire le Totehm de son auteur.
+
+**⚠️ LES VIDÉOS SONT PRIVÉES.** Seau `moments` privé (20 Mo) ; une vidéo se
+lit par URL signée (`createSignedUrl`, 1 h), que Storage ne délivre que si
+`_clip_readable(name)` le permet. Signée et chargée SEULEMENT à l'écran
+(`IntersectionObserver`) : egress.
+
+**Les cinq vues — une table `CROIX`, la manette (grise), le geste, les flèches :**
+
+| vue | ce qu'elle montre |
+|---|---|
+| TOP | une barre de recherche d'Habit, rien d'autre ; la requête vaut pour les trois vues horizontales |
+| LEFT | le fil vertical (une vidéo à la fois, `scroll-snap`) : la ville et autour + mes Spots ; titre et sept filtres, AUCUN contrôle (ni manette, ni zoom, ni boussole, ni cap), aucun radar derrière |
+| CENTER | le radar des points autorisés ; toucher un point = la boîte de CE Spot seul (`#detail`, partage pour un SHARED) |
+| RIGHT | les mêmes Spots en boîtes, avec la distance (point autorisé) |
+| BOTTOM | la caméra directement : décompte annulable (3 s) → REC → arrêt à la main ou à 33 s → l'Habit → PRIVATE/SHARED (le dernier choix est retenu, `localStorage space_vis`) → SILENT/SOCIAL + LOCATION (SHARED) → durée → un mot → `I AM HERE` |
+
+**Les sept, à droite des trois vues horizontales**, violet en haut, rouge en
+bas : Celebrate · Focus · Express · Love · Enrich · Flow · Fight. Une seule
+intention, commune aux trois vues ; LOVE au premier passage, un choix
+volontaire est retenu (`localStorage space_int`). Le titre = l'intention +
+le badge Higher (SVG). Plus de logo d'atterrissage ; le nom vit dans le menu
+membre (tuile navy), « Console », « Sign out », puis **Simple terms of use
+en dernier**. Space Mono et Quantico seulement ; aucun fond blanc.
+
+**Le diagnostic** `__totehm_space()` → build, vue, connecté, localisé,
+intention, recherche (booléen), compteurs du fil et des points, vidéos qui
+jouent, Spot ouvert, état de la caméra.
+
+> Tout ce qui suit (30/09 et avant) est DÉPASSÉ : moments, expériences,
+> bouclier, futur, radar avec carte, tuiles OSM, candidatures, démo.
+
+## ⛔ ÉTAT AU 30/09/2026 — DÉPASSÉ LE 01/10 (voir au-dessus)
 
 **⚠️ LE RADAR N'A PLUS DE CARTE.** Anneaux, points, la couronne — ni
 terre, ni villes, ni rue. La rue (tuiles OSM) ne revient QUE pour poser un

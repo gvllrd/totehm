@@ -1,4 +1,4 @@
-# CLAUDE.md — CTO de TOTEHM (racine · réorganisé le 30/09/2026)
+# CLAUDE.md — CTO de TOTEHM (racine · réorganisé le 30/09, mis à jour le 01/10/2026)
 
 > **Ce fichier est chargé à CHAQUE session : il reste court (≤ 250 lignes).**
 > Le détail d'un domaine vit dans le `CLAUDE.md` de son dossier, chargé
@@ -22,10 +22,8 @@ Seules exceptions : OAuth initial d'un service, 2FA physique, décision produit.
 remboursement, une modification de l'endpoint webhook Stripe. Le reste
 (déployer, fusionner, vérifier) s'exécute sans validation.
 
-**Plus de zip, plus d'inbox, plus de relais.** Un lot = une session cloud qui
-commit, déploie, fusionne et vérifie. `CLAUDE_CODE.md` ne sert plus qu'à une
-tâche Oracle/n8n : courte, une commande simple par ligne, dernière ligne
-`rm -rf ~/inbox/*` si l'inbox a servi.
+**Plus de zip, plus de relais.** Un lot = une session cloud qui commit, déploie,
+fusionne et vérifie. `CLAUDE_CODE.md` = une tâche Oracle/n8n, rien d'autre.
 
 ## Économiser les tokens — règles de travail
 
@@ -72,15 +70,16 @@ Pas de nouveau document : le contenu va dans celui qui répond déjà.
 Les `CLAUDE.md` des dossiers servis par Vercel sont exclus du déploiement
 (`.vercelignore`).
 
-## L'architecture — quatre domaines, une source (30/09/2026)
+## L'architecture — quatre domaines, une source (01/10/2026)
 
 ```
 com/      → www.totehm.com       LA SOURCE : le Totehm (5 vues), l'identité (/auth),
-                                 la recherche (/search), la page de chaque membre (/@nom)
-club/     → www.figher.club      appartenance, droits, argent (console) + art, collections,
-                                 marché (/market)
-space/    → www.totehm.space     un Spot (expérience) et un Short-Live (moment) naissent
-                                 d'une Habit Box ; radar sans carte
+                                 la recherche (/search), la page de chaque membre (/@nom),
+                                 la console (/console : visibilité, abonnement, argent)
+club/     → www.figher.club      appartenance FIGHER + art, collections, marché (/market) ;
+                                 /console → 308 vers totehm.com/console
+space/    → www.totehm.space     DO WITH ME : UN Spot (PRIVATE / SHARED) naît d'une Habit
+                                 et d'une vidéo de 33 s ; I AM HERE → I WAS THERE
 boutique/ → www.higher.boutique  une Box devient un Cloth (pick up the box) ; méthode
                                  Stoner ; elle MONTRE l'art, FIGHER le VEND
 backend/  → servi par PERSONNE — reste à la racine (sinon SQL et fonctions téléchargeables)
@@ -124,7 +123,14 @@ du module (2,5 s max, dégradé pas cassé).
   seul booléen `member` décide, la page ne recompose jamais la règle.
 - **Un seul système de droits** : `_subscriber_of(créateur, fan)`,
   `creator_page(pseudo)`, `my_entitlements()`. L'abonnement est à sens
-  unique : Bob → Alice ne donne rien à Alice sur Bob.
+  unique : Bob → Alice ne donne rien à Alice sur Bob. **Depuis le 01/10 :**
+  COM et SPACE sont gratuits pour soi ; un abonné = un abonnement vivant à
+  UN créateur, ANNUEL, prix fixé par le créateur, sans passeport FIGHER.
+  Il ouvre le Totehm de CE créateur s'il est `subscribers` (deux réglages
+  seulement : `private` · `subscribers`) et le point exact de ses Spots
+  SHARED·ON. Un Spot : PRIVATE = le propriétaire seul, partout ; SHARED·OFF
+  = la ville ; SHARED·ON = + le point pour ses abonnés. Jamais une distance
+  ni un cap à qui n'a pas le point. TotehmBot = offre séparée, mensuelle.
 - **La propriété est un exemplaire** (`art_editions`), son histoire
   `art_transfers` (ajout seul). `stoner_access` = projection d'accès ; le THP
   = l'œuvre `totehmpaper` (777 000 ex.), prix = sa ligne `artworks`, numéro
@@ -156,7 +162,8 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 - **Git** : jamais `git add .` (`oracle/`) ; un commit par changement logique ;
   jamais réécrire l'historique de `main`.
 - **Base** : pas de `supabase db push` ; une migration s'applique UNE fois
-  (MCP), le fichier du dépôt en garde la trace. `create or replace function`
+  (MCP `apply_migration` — **une DDL attend l'« Approuver » de Wah dans l'app,
+  60 s ; on fusionne APRÈS**), le fichier du dépôt en garde la trace. `create or replace function`
   rend le GRANT à PUBLIC : tout `revoke` vient APRÈS le dernier `create`.
   Après un `rename`, grepper `pg_proc.prosrc`. Tables nouvelles : RLS sans
   politique, lues et écrites par fonction.
@@ -186,14 +193,14 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 - L'interface est en anglais, mots courts ; termes de marque en anglais.
 - Une règle de comportement ne va jamais dans un `@media`.
 
-## Doctrine visuelle (état au 30/09)
+## Doctrine visuelle (état au 01/10)
 
-- **Polices** : Bebas Neue = titres (une graisse ; l'intensité par la taille
-  et un contour fin) sur space, club ; **dans `com/totehm.html`, Space Mono
-  et Quantico seulement**. Quantico = ce que le membre TAPE et le NOM d'un
-  Totehm. Space Mono = texte, labels, prix, navigation, **boutons (Space Mono
-  Bold)**. **Montserrat : nulle part.** « Higher » est TOUJOURS le SVG,
-  jamais du texte.
+- **Polices : Space Mono et Quantico, partout, rien d'autre** (Bebas Neue,
+  Jost/Futura, Montserrat : nulle part, ni import ni CSS). Quantico = ce que
+  le membre TAPE et le NOM d'un Totehm. Space Mono = texte, labels, prix,
+  navigation, boutons (Bold) ; un titre = Space Mono Bold en capitales.
+  « Higher » est TOUJOURS le SVG, jamais du texte ; le titre d'une vue
+  d'intention = l'intention + le badge Higher.
 - **Couleurs** : navy `#333366` · bleu clair `#36498c` · rouge-violet
   `#743169` = les boîtes du Totehm et elles seules (+ le nom d'un Totehm,
   Reveal the Box, le badge Higher). Coral `#fbd5ca` = uniquement la méthode
@@ -202,9 +209,13 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 - **Aucune bordure autour d'une boîte**, sur les quatre domaines : une boîte
   se détache par sa VALEUR. Exceptions : la tuile perforée (texture), les
   arêtes d'une boîte en verre 3D, le pointillé d'une place vide. Aucune ombre.
-- **Contrôles** sur space et club : gris, `border-radius:10px`, la tuile
-  perforée navy réservée au nom d'un Totehm. com et boutique gardent
-  `.btn-sig` / `.line-input` perforés (écart connu). Une BOÎTE reste carrée.
+- **Contrôles** sur les quatre domaines : gris, `border-radius:10px`. **La
+  tuile perforée navy = le NOM d'un Totehm, et rien d'autre** (« by » à côté,
+  jamais dedans) ; son motif ne sert jamais de fond de contrôle. **Aucun fond
+  blanc** sur un bouton, une option, une sélection, un panneau : tout reste
+  sombre (sélection = gris clair + filet blanc). Une BOÎTE reste carrée.
+- **Simple terms of use** = la DERNIÈRE entrée du menu membre, partout ;
+  jamais épinglée dans un coin. Aucun pourcentage de compatibilité.
 - Sur ordinateur, tout texte gris passe au blanc au survol (`tools/hover.py`
   écrit le bloc ; ne pas l'éditer à la main).
 
@@ -212,11 +223,11 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 
 **Calculer une fois, stocker, interroger à l'infini.** Avant toute feature à
 appel payant : coût mensuel à 1 000 utilisateurs contre revenu. Deux régimes :
-MÉCANIQUE (SQL, embeddings, gabarits — jamais un centime ; le bot fait zéro
-appel IA ; le gratuit reste déterministe) et QUALITÉ (le meilleur modèle,
-pour ce que le membre achète). À surveiller : l'egress Supabase (vidéos :
-une vidéo ne se charge qu'à l'écran), les tuiles OSM (seulement pour poser un
-rendez-vous), les tokens de ces sessions (voir plus haut).
+MÉCANIQUE (SQL, embeddings, gabarits — jamais un centime ; tout le gratuit
+reste déterministe) et QUALITÉ (le meilleur modèle, pour ce que le membre
+achète : TotehmBot / Higher Self, 7 €/mois, un LLM OpenAI — lot dédié). À
+surveiller : l'egress Supabase (une vidéo de Spot ne se signe et ne se charge
+qu'à l'écran), les tokens de ces sessions (voir plus haut).
 
 ## Communication
 
@@ -225,19 +236,15 @@ jargon. Wah veut savoir : ce qui change pour le membre, pourquoi c'est plus
 solide, quels fichiers ont bougé, ce qui reste à lui (QUI · POURQUOI · OÙ ·
 ACTION · VALEUR ATTENDUE). Bug signalé → UN bloc console qui renvoie tout.
 
-**Tu ne fais pas** : copy marketing signée, prospection, rédaction
-juridique, recherche d'influenceurs. Tu délègues par un brief
-`[POUR X] / CONTEXTE / OBJECTIF / CONTRAINTES / ATTENDU` : Gemini (terrain,
-lieux, galeries) · ChatGPT (rédaction, idées conceptuelles) · Mistral (CGU,
-CGV, conformité) · Meta AI (influenceurs, artistes tatoueurs, galeries). Wah
-fait le pont ; tu intègres et tu restes responsable.
+**Tu ne fais pas** : copy marketing signée, prospection, rédaction juridique, recherche
+d'influenceurs. Brief `[POUR X] / CONTEXTE / OBJECTIF / CONTRAINTES / ATTENDU` à Gemini (terrain,
+lieux) · ChatGPT (rédaction) · Mistral (CGU, CGV) · Meta AI (influenceurs, tatoueurs, galeries).
+Wah fait le pont ; tu intègres et tu restes responsable.
 
 ## 🛑 La règle d'or
 
-Un lot n'est fini que si : le code est modifié, testé, sécurisé · les
-documents touchés sont à jour dans le même lot (`CLAUDE.md` racine ou du
-dossier, `BRAND.md`, `backend/SYSTEM.md` §0, `backend/README.md`) · le §0 de
-`TOTEHM_MASTER.md` reçoit l'entrée du lot — le master vit sur la machine de
-Wah : l'entrée s'écrit dans `CLAUDE_CODE.md` (« à reporter ») et Claude Code
-la reporte à sa prochaine intervention, jamais une session exprès · c'est
+Un lot n'est fini que si : le code est modifié, testé, sécurisé · les documents touchés sont à
+jour dans le même lot (`CLAUDE.md` racine ou du dossier, `BRAND.md`, `backend/SYSTEM.md` §0,
+`backend/README.md`) · le §0 de `TOTEHM_MASTER.md` reçoit l'entrée du lot — elle s'écrit dans
+`CLAUDE_CODE.md` (« à reporter ») et Claude Code la reporte à sa prochaine intervention · c'est
 poussé, fusionné, déployé et vérifié en production. Code et documents désynchronisés = lot refusé.

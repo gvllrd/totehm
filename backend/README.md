@@ -347,7 +347,7 @@ le trigger frappe l'exemplaire suivant du THP. On n'écrit jamais
 ### Le portail de facturation
 
 `club-billing` : `action:'portal'` ouvre le portail client Stripe (carte,
-factures, annulation FIGHER) ; `action:'cancel_creator'` annule un abonnement
+factures, annulation FIGHER ; retour vers `totehm.com/console` depuis le 01/10) ; `action:'cancel_creator'` annule un abonnement
 à un membre **en fin de période** (`cancel_at_period_end`), et le webhook pose
 `creator_subscriptions.ending`. ⚠️ Le portail client doit être **activé**
 dans Stripe (Settings → Billing → Customer portal), sinon la fonction rend
@@ -355,7 +355,43 @@ une erreur Stripe.
 
 ---
 
-## L'Espace — radar sans carte, Short-Live, bouclier · 30/09
+## L'Espace — un Spot, PRIVATE / SHARED · 01/10 (fait autorité sur les sections 23/09 → 30/09 plus bas)
+
+Lues par `space/index.html` — tout le reste de l'ancien Espace est SUPPRIMÉ
+en base (`spot_publish`, `moment_publish`, `spots_radar`, `spots_past`,
+`spots_globe`, `moments_feed`, `my_space`, `spot_apply`/`decide`/`withdraw`/
+`cancel`, `demo_seed`, `demo_purge`…) : les sections plus bas sont l'histoire.
+
+| fonction | qui | ce qu'elle rend |
+|---|---|---|
+| `spot_rules()` | tous | `clip_seconds` 33 · `clip_max_bytes` 20 Mo · `countdown` 3 · durée 5–720 · `max_day` 24 · `radius_km` 60 · `feed_days` 90 |
+| `spot_create(habit, visibility, duration_min, video, lat, lng, city, comment, mode, location)` | connecté | crée MAINTENANT ; relit l'Habit dans MON Totehm (intentions, objectifs, répulsions reliés) ; SHARED exige `mode` et `location` ; la vidéo doit être dans `moments/<mon uid>/` |
+| `spots_feed(lat, lng, q, intention, before, limit)` | tous, même anonyme | les SHARED à 60 km (positions arrondies à 0,1° des deux côtés) + les miens ; la ville, jamais le point ni une distance |
+| `spots_exact(q, intention)` | connecté | les miens + les SHARED·ON des créateurs dont je suis l'abonné vivant, avec `exact` |
+| `spot_get(id)` | tous | un Spot, selon les mêmes droits (lien partagé) |
+
+Chaque Spot sort de `_spot_view` : `state` (`am` · `was`) se DÉDUIT de
+l'heure ; `exact` n'existe que pour `_spot_exact` (propriétaire, ou SHARED·ON
++ abonné) ; `context` seulement pour le propriétaire. La vidéo : seau
+`moments` PRIVÉ, URL signée côté page, autorisée par `_clip_readable`.
+
+**Le Totehm et la console (01/10)** : `visibility_set('private'|'subscribers')`,
+`monetization_set(enabled, price_cents)` (prix PAR AN, 3 € à 1 000 €),
+`creator_payout_set`, `my_console()` — un appel pour la console de
+`totehm.com/console`. `creator-subscribe` : `interval: year`, retour vers
+`totehm.com/@nom` (ou `/console` si `from:'console'`). `club-billing` :
+retour du portail vers `totehm.com/console`.
+
+**TotehmBot** : `bot_subscriptions` (écrit par le webhook — lot dédié,
+`metadata.product = 'totehmbot'`), `totehmbot_access()`, `_bot_memory(uuid)`
+(service_role) — la mémoire (Totehm + Spots, privés compris) ne dépend pas
+de l'abonnement.
+
+**Auto-test des droits** (production, annulé) : coller
+`tests/sql/spots_selftest.sql` dans `execute_sql` → « SELFTEST (rolled
+back): … | FAIL={} ».
+
+## L'Espace — radar sans carte, Short-Live, bouclier · 30/09 (DÉPASSÉ le 01/10)
 
 - `moments_feed(lat, lng, radius, limit)` — les moments des dernières
   24 h (ouvert à `anon` : QUOI ; un membre voit QUI, le contexte, la vidéo).

@@ -1,11 +1,26 @@
-# club/CLAUDE.md — figher.club : la porte, la console, le marché
+# club/CLAUDE.md — figher.club : la porte, l'art, le marché
 
 > Chargé automatiquement quand on travaille dans `club/`. Les règles
 > transverses sont dans le `CLAUDE.md` de la racine ; l'histoire dans
 > `docs/POSTMORTEMS.md`. Sections déplacées TELLES QUELLES de l'ancien
 > `CLAUDE.md` le 30/09/2026, les plus récentes d'abord : un renvoi « plus
-> haut » peut viser la racine ou un autre dossier. Fichiers : `index.html` (la porte), `console.html` (le membre), `market.html` (le marché — le fonctionnement est écrit en tête du fichier ; la règle du marché est dans `backend/CLAUDE.md`).
+> haut » peut viser la racine ou un autre dossier. Fichiers : `index.html` (la porte), `market.html` (le marché — le fonctionnement est écrit en tête du fichier ; la règle du marché est dans `backend/CLAUDE.md`).
 
+
+## ⛔ ÉTAT AU 01/10/2026 — LA CONSOLE EST PARTIE SUR TOTEHM.COM
+
+`club/console.html` n'existe plus : `figher.club/console` → 308 →
+`totehm.com/console` (`club/vercel.json`). Les portes du Club vers la
+console (`data-go="console"`, Reveal → `#s-reveal`) passent par le pont SSO.
+`club_console()` est supprimée (remplacée par `my_console()`). Le Club garde
+la porte FIGHER (les trois clés), l'art, les collections et le marché.
+
+Bebas Neue est parti (titres → Space Mono Bold capitales, tailles ×0,66) ;
+aucun fond blanc (`.tab.is-on`, `.tag` gris) ; « Simple terms of use » est
+la dernière entrée du menu membre (`#sheet`, `#mmenu` du marché), plus
+épinglée en haut à droite.
+
+> La section ci-dessous (23/09) est DÉPASSÉE pour la console.
 
 ### ⛔ FIGHER.CLUB — LA PORTE ET LA CONSOLE — 23/09/2026
 

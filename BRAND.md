@@ -19,7 +19,22 @@ transversal system. **This table wins over any older mapping in this file.**
 | `higher.boutique` | **any Box becomes a Totehm Cloth** — plus the Stoner method and the THP | which Box do I want to materialize? |
 | TotehmBot | transversal, Telegram — the Higher Self as a mirror | — |
 
-> **30/09/2026 — one source, reconnected (Wah's MASTER BRIEF).**
+> **01/10/2026 — for oneself, or for oneself and others.** COM and SPACE
+> are free for oneself. `totehm.space` is **DO WITH ME**: one kind of
+> **Spot** — a habit of my TOTEHM, filmed now (33 s max), for a duration,
+> **PRIVATE** (only me) or **SHARED** (+ **SILENT** *Nobody disturb me* /
+> **SOCIAL** *We can talk*, + **LOCATION ON/OFF**). It lives **I AM HERE**,
+> then **I WAS THERE** — never a future, never a schedule. A creator's
+> subscription is **yearly**, priced by the creator; it opens their shared
+> TOTEHM and the exact place of their ON spots — **not an invitation**. A
+> TOTEHM is **PRIVATE** or **VISIBLE TO MY SUBSCRIBERS**, nothing else. The
+> console lives on `totehm.com/console`. TotehmBot / Higher Self is a
+> separate monthly offer — a mirror, not a coach. No match %, ever.
+> Words that are gone: Short-Live, moment, experience, *I will be here*,
+> capacity, apply, accept.
+
+> **30/09/2026 — one source, reconnected (Wah's MASTER BRIEF).** *(Spots:
+> superseded on 01/10, above.)*
 > `totehm.com` is also **the one door to sign in** (every other domain says
 > *Sign in with TOTEHM*), **the search of every Totehm**, and **each
 > member's page** (`totehm.com/@name`) — the full Totehm opens to their
@@ -924,6 +939,19 @@ centrage.
 
 ### Polices — la stack et ses rôles sacrés
 
+> **⚠️ 01/10/2026 — SPACE MONO ET QUANTICO, PARTOUT, RIEN D'AUTRE.** Wah :
+> « retirer Bebas Neue de TOUTES les plateformes, y compris imports et CSS
+> (Space Mono et Quantico uniquement). » Bebas Neue, Jost/Futura et
+> Montserrat ne sont plus chargés nulle part. Un titre = Space Mono Bold
+> en capitales ; l'intensité se dit par la taille. Quantico garde ce que le
+> membre TAPE et le NOM d'un Totehm. **La tuile perforée navy est
+> strictement réservée au NOM d'un Totehm** (« by » à côté, jamais dedans) :
+> boutons et saisies sont gris et arrondis sur les QUATRE domaines (l'écart
+> de `.btn-sig` / `.line-input` est fermé) ; le motif du badge Higher ne sert
+> jamais de fond de contrôle. **Aucun fond blanc** sur un bouton, une option,
+> une sélection, un panneau. Les encadrés ci-dessous sont l'histoire ; le
+> tableau des familles l'est aussi pour Bebas Neue.
+
 > **⚠️ MISE À JOUR 27/09/2026 — PLUS DE MONTSERRAT, NULLE PART.** Wah :
 > « tous les titres, sous-titres et questions importantes conceptuelles en
 > BEBAS NEUE, en jouant sur l'intensité du bold ; au final, je ne veux pas
@@ -990,7 +1018,7 @@ que la chose EST.
 | `--g-mid` | `#909090` | Hints (`disc-hint`, `vhint`) |
 | `--g-dark` | `#606060` | Variable de référence — non utilisée directement |
 | `--bg` | `#000` | Fond — noir absolu |
-| `--plus` | `#36498c` | Navy — bordure perforée des boutons |
+| `--plus` | `#36498c` | ~~bordure perforée des boutons~~ (01/10 : boutons gris) |
 
 **Valeurs fixes**
 
@@ -1027,7 +1055,8 @@ Sans exception. Les couleurs d'intention et le coral gardent leur teinte.
 **5. Trois familles de boutons — la police dit ce que le geste EST**
 
 - **Input Totehm** — le membre TAPE quelque chose (nom du Totehm, recherche, textes) :
-  Quantico 400/700, encadré perforé navy (`.line-input`, `.btn-sig.claimed`).
+  Quantico 400/700 ; encadré perforé navy SEULEMENT pour le nom du Totehm
+  (`#name-btn.claimed`, `#set-name`) — les autres saisies sont grises (01/10).
   **SACRÉ** : c'est le seul endroit où Quantico apparaît — avec le dos du
   papier de l'atterrissage, qui porte ce même nom (25/09).
 - **CTA / achat** — passer à l'acte (Get Higher, Buy, Join) :
@@ -1065,7 +1094,7 @@ Aucun alignement gauche ou droite pour le contenu principal. Jamais de layout à
    coin haut gauche          coin haut droit
 ```
 - **Coin haut gauche** : accès espace membre uniquement. Rien d'autre.
-- **Coin haut droit** : lien sobre vers les conditions de vente ou d'utilisation (`Simple terms of sale` / `Simple terms of use`). Rien d'autre.
+- **Coin haut droit** : ~~les conditions~~ — **01/10 : `Simple terms of use` est la DERNIÈRE entrée du menu membre, sur toutes les plateformes, jamais épinglée dans un coin.** Les `Simple terms of sale` (CGV) restent au moment de l'achat.
 - **Simple terms of sale/use** : Space Mono 400, 10px, uppercase, `letter-spacing:.14em`, `#9a9a9a`, blanc au survol.
 - **Espace membre** : Quantico Bold, `#a0a0a0`, blanc au survol.
 - Ces deux éléments ne bougent pas quels que soient le scroll, les slides ou les overlays.

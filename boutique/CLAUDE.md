@@ -6,6 +6,19 @@
 > `CLAUDE.md` le 30/09/2026, les plus récentes d'abord : un renvoi « plus
 > haut » peut viser la racine ou un autre dossier. Fichiers : `streetwear.html`, `stoner*.html`, `get_higher.html`, `discover*.html`, `origins.html`, `play_lisbon_street.html`.
 
+## ⛔ ÉTAT AU 01/10/2026 — Space Mono et Quantico, contrôles gris
+
+Bebas Neue et Jost/Futura sont retirés des onze pages (imports et CSS) : la
+méthode Stoner, les titres et les sous-titres passent en Space Mono (Bold
+capitales pour un titre, tailles ×0,66). `.btn-sig`, `.line-input`, `.sz`,
+`.btn-coral` et `.name-box` n'ont plus la tuile perforée navy (réservée au
+NOM d'un Totehm) : gris, `border-radius:10px`. La carte d'`origins` n'a plus
+de dos blanc. Exceptions gardées : `.fs-perf` (la texture plein écran de
+« Experience our dope branding ») et les cartes `.hard` des conditions
+(perforation blanche, pas navy). Les « Simple terms of SALE » (CGV) restent
+au moment de l'achat ; les conditions d'utilisation sont la dernière entrée
+du menu membre (`#member`).
+
 ## ⛔ ÉTAT AU 30/09/2026
 
 **⚠️ LA BOUTIQUE MONTRE, FIGHER VEND.** « Acquire » (origins,

@@ -7,6 +7,41 @@
 > haut » peut viser la racine ou un autre dossier. Fichiers : `totehm.html` (le Totehm), `map.html`, `higherself.html`, `auth.html`, `creator.html`, `club/` (ponts).
 
 
+## ⛔ ÉTAT AU 01/10/2026 — la console, deux réglages, l'abonnement annuel
+
+**La console vit ICI : `com/console.html` (`/console`).** Elle vivait sur
+`figher.club/console` (supprimé, 308 vers ici, la requête suit). Un appel,
+`my_console()`. Dans l'ordre : qui voit mon TOTEHM (`visibility_set`) · mon
+abonnement — un prix PAR AN, où me payer, ON/OFF (`monetization_set`,
+`creator_payout_set`) et le lien `/@nom` · mes abonnés · mes abonnements
+(arrêt en fin de période, `club-billing` · `cancel_creator`) et en trouver
+un · ce qu'on me doit · TotehmBot (mensuel, à part) · mes paiements (portail
+Stripe) · Reveal the Box. Connexion par email ICI (totehm.com est l'autorité).
+
+**⚠️ DEUX RÉGLAGES, PAS TROIS.** `private` · `subscribers` (« VISIBLE TO MY
+SUBSCRIBERS »). 'members' (tout membre FIGHER lit) n'existe plus. Allumer
+l'offre rend le Totehm visible à ses abonnés ; l'éteindre ne change rien à
+la visibilité. Repasser en PRIVATE ne résilie personne : la console dit
+combien d'abonnés perdent la lecture.
+
+**⚠️ LA VISIBILITÉ NE VOYAGE PLUS AVEC LES HABITUDES.** `cloudSave()`
+(`com/totehm.html`) écrivait `totehm_visibility` à chaque enregistrement :
+il aurait rouvert ou refermé un Totehm en douce. Il ne l'écrit plus ; une
+seule porte, la console.
+
+**`/@nom` et `/search` ne révèlent RIEN de réservé.** `search_totehms`
+cherche par NOM seulement (chercher dans les habitudes laissait deviner leur
+contenu mot par mot) et rend `pseudo · offer · price_cents · subscribed` ;
+sans mot, mes abonnements. `creator_page` rend le nom, les couleurs des
+intentions et l'offre (`/ year`) — plus les vues habitées, plus le nombre
+d'habitudes. S'abonner ne demande qu'un compte (plus de passeport FIGHER).
+
+**Polices, tuile, menu (les quatre domaines, voir la racine).** Bebas Neue
+et Jost/Futura sont partis de com (titres → Space Mono Bold capitales) ;
+`.btn-sig` / `.line-input` sont gris — seul le NOM du Totehm (`#name-btn.claimed`,
+`#set-name`) garde la tuile navy ; « Simple terms of use » est la dernière
+entrée de la porte (invité) et de la fenêtre membre (`#terms-corner` parti).
+
 ### ⛔ LE PAPIER EST UN BUVARD — ON LE PREND, ON LE JETTE — 28/09/2026
 
 **La demande de Wah, verbatim :** « on abandonne totalement cette idée
