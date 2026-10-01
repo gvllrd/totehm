@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<!--
+  ══ totehm.com/console — MA CONSOLE · 01/10/2026 ══════════════════════
+  Elle vivait sur figher.club ; elle vit sur la source (totehm.com, où vit
+  l'identité). figher.club/console redirige ici (308, la requête suit).
+  Un appel : `my_console()`. Six questions, dans l'ordre :
+    1 · qui voit mon TOTEHM      PRIVATE · VISIBLE TO MY SUBSCRIBERS (`visibility_set`)
+    2 · mon abonnement           un prix PAR AN, où me payer, ON/OFF (`monetization_set`,
+                                 `creator_payout_set`) ; le lien /@nom
+    3 · mes abonnés              qui, depuis quand
+    4 · mes abonnements          les TOTEHM que je suis ; arrêter à la fin de la période
+                                 (`club-billing` · cancel_creator) ; en trouver un (/search)
+    5 · ce qu'on me doit         le grand livre, le prochain versement
+    6 · TotehmBot · mes paiements · Reveal the Box
+  ⚠️ LA PAGE NE DÉCIDE RIEN : prix, accès, soldes viennent du serveur.
+  ⚠️ L'abonnement à un créateur (annuel) n'a RIEN à voir avec TotehmBot
+     (mensuel, offre séparée) : deux lignes, deux prix, jamais mêlés.
+  Polices : Space Mono et Quantico. Aucun fond blanc. La tuile perforée
+  navy = un nom de TOTEHM, rien d'autre.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Console — TOTEHM</title>
+<meta name="description" content="Who sees my TOTEHM, my subscription, my subscribers, what I subscribe to.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
+html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
+:root{
+  --bg:#000;--mid:#b0b0b0;--lo:#9a9a9a;--dim:#606060;--g2:#141416;--g3:#1c1c1f;--g4:#26262b;--g5:#34343c;--no:#ff9a9a;--on:#639922;
+  --navy:#333366;--blue:#36498c;--rep:#743169;
+  --tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000'/%3E%3C/svg%3E");
+  --q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.hide{display:none!important}
+#member{position:fixed;top:16px;left:16px;z-index:40;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;
+  font-family:var(--mono);font-weight:700;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#a0a0a0;padding:6px 4px}
+#member i{width:10px;height:10px;border-radius:50%;background:#3a3a40;display:block}
+#member.is-in i{background:#fff;box-shadow:0 0 9px #fff}
+#menu{position:fixed;top:0;left:0;z-index:45;width:min(300px,86vw);background:var(--g2);padding:58px 16px 18px;display:flex;flex-direction:column;gap:6px;
+  transform:translateY(-104%);visibility:hidden;transition:transform .3s ease}
+#menu.is-open{transform:none;visibility:visible}
+#menu .m-it{display:block;text-align:left;background:var(--g3);border:none;border-radius:10px;padding:10px 12px;cursor:pointer;color:var(--mid);
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+#menu .m-terms{background:none;color:var(--dim);margin-top:8px}
+main{width:100%;max-width:560px;margin:0 auto;padding:70px 16px 120px;display:flex;flex-direction:column;gap:30px}
+section{display:flex;flex-direction:column;gap:10px}
+h2{font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#fff}
+.kick{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--lo)}
+.lbl{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--lo);margin-top:4px}
+.in{font-family:var(--q);font-size:15px;color:#fff;background:var(--g3);outline:none;border:none;border-radius:10px;padding:10px 13px;caret-color:#fff;width:100%;max-width:340px}
+.in:focus{background:var(--g4)}
+.in::placeholder{color:rgba(255,255,255,.38)}
+.btn{font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);background:var(--g3);border:none;border-radius:10px;
+  cursor:pointer;padding:10px 14px;width:fit-content}
+.btn.is-on{background:var(--g5);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+.btn[disabled]{opacity:.35;pointer-events:none}
+.tog{display:flex;gap:6px;flex-wrap:wrap}
+.tog .btn small{display:block;font-weight:400;font-size:9px;letter-spacing:.04em;text-transform:none;color:var(--dim);margin-top:2px}
+.lnk{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:none;border:none;cursor:pointer;font-family:var(--mono);width:fit-content}
+.note{font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;color:var(--lo)}
+.note.no{color:var(--no)}.note.ok{color:var(--on)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--g2);padding:10px 12px;border-radius:10px}
+.row .sub{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);text-align:right}
+.big{font-family:var(--mono);font-weight:700;font-size:18px;color:#fff}
+.empty{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.tname{display:inline-block;width:fit-content;max-width:100%;font-family:var(--q);font-weight:400;font-size:14px;color:#fff;line-height:1.4;word-break:break-word;
+  border:6px solid transparent;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round;padding:0 8px;background:none;cursor:pointer}
+.me{font-size:22px;border-width:8px;padding:0 12px}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.trio > div{background:var(--g2);border-radius:10px;padding:10px}
+@media(hover:hover){.btn:hover{background:var(--g4);color:#fff}.lnk:hover,#member:hover,.kick:hover{color:#fff}}
+
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Le gris en survol devient blanc. Généré depuis la feuille
+   elle-même : un nouveau bloc gris entre ici tout seul.        */
+@media(hover:hover){
+#member:hover,
+#menu .m-it:hover,
+#menu .m-terms:hover,
+.kick:hover,
+.lbl:hover,
+.in:hover::placeholder,
+.btn:hover,
+.tog .btn small:hover,
+.lnk:hover,
+.note:hover,
+.row .sub:hover,
+.empty:hover{color:#fff}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
+</style>
+</head>
+<body>
+<button id="member" type="button" aria-label="Member menu"><i></i><span id="member-txt">Sign in</span></button>
+<nav id="menu" aria-label="Member menu"></nav>
+
+<main>
+  <section id="signin" class="hide">
+    <h2>My console</h2>
+    <div class="kick">Sign in with my email</div>
+    <input class="in" id="si-email" type="email" placeholder="your@email" autocomplete="email">
+    <input class="in hide" id="si-code" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code">
+    <div class="note" id="si-note"></div>
+  </section>
+
+  <div id="app" class="hide" style="display:flex;flex-direction:column;gap:30px">
+    <section>
+      <button class="tname me" id="who" type="button" title="Open my TOTEHM">—</button>
+      <div class="note" id="flash"></div>
+    </section>
+
+    <section id="s-vis">
+      <h2>Who sees my TOTEHM</h2>
+      <div class="tog" id="vis">
+        <button class="btn" type="button" data-vis="private">Private<small>only me</small></button>
+        <button class="btn" type="button" data-vis="subscribers">Visible to my subscribers<small>those who subscribe to me</small></button>
+      </div>
+      <div class="note" id="vis-note"></div>
+    </section>
+
+    <section id="s-offer">
+      <h2>My subscription</h2>
+      <div class="kick">My price · per year · I keep <span id="part">80</span> %</div>
+      <input class="in" id="price" inputmode="decimal" placeholder="€ / year" style="max-width:160px">
+      <div class="lbl">Where to pay me</div>
+      <div class="tog"><button class="btn" id="pay-iban" type="button">IBAN</button><button class="btn" id="pay-paypal" type="button">PayPal</button></div>
+      <input class="in" id="pay-handle" autocomplete="off" placeholder="IBAN or PayPal email">
+      <div class="note" id="pay-fin"></div>
+      <div class="lbl">Open to subscriptions</div>
+      <div class="tog"><button class="btn" id="off-off" type="button">Off</button><button class="btn" id="off-on" type="button">On</button></div>
+      <div class="note" id="off-note"></div>
+      <button class="lnk hide" id="link" type="button">Copy my subscription link</button>
+    </section>
+
+    <section id="s-fans">
+      <h2>My subscribers</h2>
+      <div id="fans"></div>
+    </section>
+
+    <section id="s-subs">
+      <h2>My subscriptions</h2>
+      <div id="subs"></div>
+      <div class="lbl">Subscribe to another TOTEHM</div>
+      <input class="in" id="find" placeholder="a name" autocomplete="off" spellcheck="false">
+      <div id="found"></div>
+      <div class="note" id="subs-note"></div>
+    </section>
+
+    <section id="s-earn">
+      <h2>What I earn</h2>
+      <div id="earn"></div>
+      <div id="paid"></div>
+    </section>
+
+    <section id="s-bot">
+      <h2>TotehmBot · Higher Self</h2>
+      <div id="bot"></div>
+    </section>
+
+    <section id="s-bill">
+      <h2>My payments</h2>
+      <div id="bill"></div>
+      <button class="btn hide" id="portal" type="button">Cards and invoices</button>
+      <div class="note" id="bill-note"></div>
+    </section>
+
+    <section id="s-reveal">
+      <h2>Reveal the Box</h2>
+      <input class="in" id="rv-in" placeholder="a cloth name, like 0.river" autocomplete="off" spellcheck="false">
+      <div id="rv-box"></div>
+      <div class="note" id="rv-note"></div>
+    </section>
+  </div>
+</main>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL = 'https://abujjbkbbiumxrokozph.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+const sb = createClient(SB_URL, SB_ANON);
+const FN = SB_URL + '/functions/v1/';
+const $ = id => document.getElementById(id);
+const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
+const BUILD = '2026-10-01';
+const money = (c, cur) => { try{ return new Intl.NumberFormat('en', { style:'currency', currency:(cur||'eur').toUpperCase(), maximumFractionDigits: (c||0) % 100 ? 2 : 0 }).format((c||0)/100); }catch(_){ return ((c||0)/100) + ' ' + cur; } };
+const day = iso => iso ? new Date(iso).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—';
+async function fn(name, body){
+  const { data:{ session } } = await sb.auth.getSession();
+  const r = await fetch(FN + name, { method:'POST', headers:{ 'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer ' + (session?.access_token || SB_ANON) },
+    body: JSON.stringify(body || {}) });
+  let d = {}; try{ d = await r.json(); }catch(_){}
+  return { ok: r.ok, status: r.status, d };
+}
+let me = null, C = null, PAYM = 'iban', SEQ = 0;
+window.__totehm_console = () => ({ build: BUILD, signed_in: !!me, loaded: !!C, visibility: C?.visibility || null, offer_open: !!C?.offer?.open,
+  period: C?.offer?.period || null, subscribers: C?.subscribers?.count ?? null, subscriptions: (C?.subscriptions || []).length, bot: !!C?.bot?.active });
+
+/* ══ LE COIN MEMBRE — SIMPLE TERMS OF USE EN DERNIER ═════════════════ */
+function paintMenu(){
+  $('member').classList.toggle('is-in', !!me);
+  $('member-txt').textContent = me ? 'Console' : 'Sign in';
+  $('menu').innerHTML = (me ? '<a class="m-it" href="/totehm#in">My TOTEHM</a><a class="m-it" href="/search">Search</a><button class="m-it" type="button" data-out="1">Sign out</button>'
+    : '<a class="m-it" href="/search">Search</a>') + '<a class="m-it m-terms" href="/terms" target="_blank" rel="noopener">Simple terms of use</a>';
+}
+$('member').onclick = () => { if(!me){ $('si-email').focus(); return; } $('menu').classList.toggle('is-open'); };
+$('menu').addEventListener('click', async e => { if(e.target.closest('[data-out]')){ await sb.auth.signOut({ scope:'local' }); me = null; C = null; start(); } });
+document.addEventListener('pointerdown', e => { if(!e.target.closest('#menu,#member')) $('menu').classList.remove('is-open'); });
+
+/* ══ LA LECTURE — un appel, la réponse la plus fraîche gagne ══════════ */
+async function load(){
+  const seq = ++SEQ;
+  const { data, error } = await sb.rpc('my_console');
+  if(seq !== SEQ) return;
+  if(error){ console.error('[my_console]', error.message); $('flash').className = 'note no'; $('flash').textContent = 'the console is unreachable right now'; return; }
+  C = data || {};
+  if(!C.signed_in){ me = null; return start(); }
+  paint();
+}
+function paint(){
+  $('who').textContent = C.pseudo || 'name my TOTEHM';
+  $('vis').querySelectorAll('[data-vis]').forEach(b => b.classList.toggle('is-on', b.dataset.vis === C.visibility));
+  const o = C.offer || {};
+  $('part').textContent = o.part || 80;
+  if(o.price_cents && document.activeElement !== $('price')) $('price').value = (o.price_cents/100).toString();
+  PAYM = o.payout_method || PAYM;
+  $('pay-iban').classList.toggle('is-on', PAYM === 'iban'); $('pay-paypal').classList.toggle('is-on', PAYM === 'paypal');
+  $('pay-fin').textContent = o.payout_fin ? (o.payout_method === 'paypal' ? 'PayPal' : 'IBAN') + ' ···· ' + o.payout_fin : 'no payout method yet';
+  $('off-off').classList.toggle('is-on', !o.enabled); $('off-on').classList.toggle('is-on', !!o.enabled);
+  $('off-note').textContent = o.open ? 'open · ' + money(o.price_cents, o.currency) + ' / year'
+    : o.enabled ? 'on — opens when my TOTEHM is visible to my subscribers' : 'off — nobody can subscribe';
+  $('link').classList.toggle('hide', !o.open || !C.pseudo);
+  const f = C.subscribers || {};
+  $('fans').innerHTML = (f.list || []).length ? f.list.map(x => '<div class="row"><a class="tname" href="/@' + encodeURIComponent(x.pseudo || '') + '">' + esc(x.pseudo || '—') + '</a><span class="sub">' +
+    esc(x.status) + ' · since ' + day(x.since) + (x.renews ? '<br>' + (x.ending ? 'ends ' : 'renews ') + day(x.renews) : '') + '</span></div>').join('')
+    : '<div class="empty">Nobody subscribes to me yet.</div>';
+  const subs = C.subscriptions || [];
+  $('subs').innerHTML = subs.length ? subs.map(s => { const live = ['active','trialing'].includes(s.status);
+    return '<div class="row"><a class="tname" href="/@' + encodeURIComponent(s.creator || '') + '">' + esc(s.creator || '—') + '</a><span class="sub">' +
+      money(s.price_cents, s.currency) + ' / year · ' + esc(s.status) + (s.renews ? '<br>' + (s.ending ? 'ends ' : 'renews ') + day(s.renews) : '') +
+      (live && !s.ending ? '<br><button class="lnk" type="button" data-cancel="' + esc(s.creator) + '">Stop at the end of the year</button>' : '') + '</span></div>'; }).join('')
+    : '<div class="empty">I do not subscribe to any TOTEHM yet.</div>';
+  const e = C.earnings || {}, bals = (e.balances && e.balances.length) ? e.balances : [{ currency:'eur', earned_cents:0, pending_cents:0, paid_cents:0 }];
+  $('earn').innerHTML = bals.map(b => '<div class="trio"><div><div class="lbl">earned</div><div class="big">' + money(b.earned_cents, b.currency) + '</div></div>' +
+    '<div><div class="lbl">pending</div><div class="big">' + money(b.pending_cents, b.currency) + '</div></div><div><div class="lbl">paid out</div><div class="big">' + money(b.paid_cents, b.currency) + '</div></div></div>').join('');
+  const th = e.threshold_cents || 2500, eur = bals.find(b => b.currency === 'eur') || { pending_cents:0 };
+  $('paid').innerHTML = '<div class="row"><span>next payout · ' + day(e.next_payout) + '</span><span class="sub">' + (eur.pending_cents >= th ? money(eur.pending_cents) + ' will leave' : 'minimum ' + money(th)) + '</span></div>' +
+    (C.payouts || []).map(x => '<div class="row"><span>' + money(x.amount_cents, x.currency) + '</span><span class="sub">' + esc(x.period) + ' · ' + esc(x.status) + (x.paid_at ? ' · ' + day(x.paid_at) : '') + '</span></div>').join('');
+  const b = C.bot || {};
+  $('bot').innerHTML = '<div class="row"><span>' + (b.active ? (b.comp ? 'open · offered' : 'active') : 'not active') + '</span><span class="sub">' + money(b.price_cents || 700, b.currency || 'eur') + ' / month · separate from any TOTEHM subscription' +
+    (b.until ? '<br>' + (b.ending ? 'ends ' : 'renews ') + day(b.until) : '') + '</span></div><div class="empty">My spots and my TOTEHM stay mine, with or without the bot.</div>';
+  const m = C.membership;
+  $('bill').innerHTML = m && m.status ? '<div class="row"><span>FIGHER CLUB · annual</span><span class="sub">' + esc(m.status) + (m.until ? '<br>' + (m.ending ? 'ends ' : 'renews ') + day(m.until) : '') + '</span></div>' : '';
+  $('portal').classList.toggle('hide', !(m && m.portal));
+}
+
+/* ══ 1 · QUI VOIT MON TOTEHM ═════════════════════════════════════════ */
+$('vis').addEventListener('click', async e => {
+  const b = e.target.closest('[data-vis]'); if(!b || b.dataset.vis === C?.visibility) return;
+  const n = $('vis-note'); n.className = 'note'; n.textContent = 'saving…';
+  const { data, error } = await sb.rpc('visibility_set', { p_visibility: b.dataset.vis });
+  if(error){ console.error('[visibility_set]', error.message); n.className = 'note no'; n.textContent = 'not saved'; return; }
+  if(!data?.ok){ n.className = 'note no'; n.textContent = data?.why === 'no_totehm' ? 'write my TOTEHM first' : 'not saved'; return; }
+  n.className = 'note ok';
+  n.textContent = data.visibility === 'private' && data.subscribers ? 'private — ' + data.subscribers + ' subscriber(s) can no longer read it; their subscription keeps running' : 'saved';
+  load();
+});
+
+/* ══ 2 · MON ABONNEMENT ══════════════════════════════════════════════ */
+async function saveOffer(enabled){
+  const n = $('off-note'); n.className = 'note'; n.textContent = 'saving…';
+  const euros = parseFloat(($('price').value || '').replace(',', '.'));
+  const cents = Number.isFinite(euros) ? Math.round(euros*100) : null;
+  const { data, error } = await sb.rpc('monetization_set', { p_enabled: enabled, p_price_cents: cents });
+  if(error){ console.error('[monetization_set]', error.message); n.className = 'note no'; n.textContent = 'not saved'; return; }
+  if(!data?.ok){ n.className = 'note no'; n.textContent = ({ price:'between 3 € and 1 000 € per year', price_first:'set my price first', payout_first:'tell where to pay me first' })[data.why] || data.why || 'not saved'; return; }
+  await load();
+}
+$('off-on').onclick = () => saveOffer(true);
+$('off-off').onclick = () => saveOffer(false);
+$('price').addEventListener('keydown', e => { if(e.key === 'Enter') saveOffer(!!C?.offer?.enabled); });
+$('price').addEventListener('blur', () => { if($('price').value.trim()) saveOffer(!!C?.offer?.enabled); });
+$('pay-iban').onclick = () => { PAYM = 'iban'; $('pay-iban').classList.add('is-on'); $('pay-paypal').classList.remove('is-on'); $('pay-handle').focus(); };
+$('pay-paypal').onclick = () => { PAYM = 'paypal'; $('pay-paypal').classList.add('is-on'); $('pay-iban').classList.remove('is-on'); $('pay-handle').focus(); };
+$('pay-handle').addEventListener('keydown', async e => {
+  if(e.key !== 'Enter') return;
+  const v = $('pay-handle').value.trim(), n = $('pay-fin');
+  if(v.length < 6){ n.className = 'note no'; n.textContent = 'that does not look complete'; return; }
+  $('pay-handle').value = '';   /* un IBAN affiché est un IBAN lu par-dessus l'épaule */
+  const { error } = await sb.rpc('creator_payout_set', { p_method: PAYM, p_handle: v });
+  if(error){ console.error('[creator_payout_set]', error.message); n.className = 'note no'; n.textContent = 'not saved'; return; }
+  n.className = 'note ok'; load();
+});
+$('link').onclick = async () => {
+  const link = 'https://www.totehm.com/@' + encodeURIComponent(C.pseudo);
+  try{ await navigator.clipboard.writeText(link); $('link').textContent = 'copied'; setTimeout(() => $('link').textContent = 'Copy my subscription link', 1600); }
+  catch(_){ $('off-note').textContent = link; }
+};
+
+/* ══ 4 · MES ABONNEMENTS ═════════════════════════════════════════════ */
+$('subs').addEventListener('click', async e => {
+  const c = e.target.closest('[data-cancel]'); if(!c) return;
+  c.disabled = true; $('subs-note').className = 'note'; $('subs-note').textContent = 'stopping…';
+  const r = await fn('club-billing', { action:'cancel_creator', pseudo: c.dataset.cancel });
+  if(!r.ok){ console.error('[club-billing]', r.status, r.d.error); $('subs-note').className = 'note no'; $('subs-note').textContent = r.d.error || 'not stopped'; c.disabled = false; return; }
+  $('subs-note').className = 'note ok'; $('subs-note').textContent = 'stops on ' + day(r.d.until); load();
+});
+let fT = 0;
+$('find').addEventListener('input', () => {
+  clearTimeout(fT); const v = $('find').value.trim();
+  if(v.length < 2){ $('found').innerHTML = ''; return; }
+  fT = setTimeout(async () => {
+    const { data, error } = await sb.rpc('search_totehms', { p_q: v, p_limit: 8 });
+    if(error){ console.error('[search_totehms]', error.message); return; }
+    $('found').innerHTML = (data || []).map(r => '<div class="row"><a class="tname" href="/@' + encodeURIComponent(r.pseudo) + '">' + esc(r.pseudo) + '</a><span class="sub">' +
+      (r.subscribed ? 'subscribed' : r.offer ? money(r.price_cents, r.currency) + ' / year' : 'not open') + '</span></div>').join('') || '<div class="empty">no TOTEHM by that name</div>';
+  }, 260);
+});
+
+/* ══ MES PAIEMENTS — le portail Stripe ═══════════════════════════════ */
+$('portal').onclick = async () => {
+  $('bill-note').className = 'note'; $('bill-note').textContent = 'opening…';
+  const r = await fn('club-billing', { action:'portal' });
+  if(r.d.url){ location.href = r.d.url; return; }
+  console.error('[club-billing] portal', r.status); $('bill-note').className = 'note no'; $('bill-note').textContent = r.d.error || 'unavailable';
+};
+
+/* ══ REVEAL THE BOX — la donnée derrière l'objet, selon les droits ═══ */
+$('rv-in').addEventListener('keydown', async e => {
+  if(e.key !== 'Enter') return;
+  const v = $('rv-in').value.trim(), n = $('rv-note');
+  if(v.length < 3){ n.textContent = 'a name like 0.river'; return; }
+  const { data: r, error } = await sb.rpc('reveal_cloth', { p_name: v });
+  if(error){ console.error('[reveal_cloth]', error.message); n.className = 'note no'; n.textContent = 'unavailable'; return; }
+  n.textContent = '';
+  if(!r?.found){ $('rv-box').innerHTML = '<div class="empty">No TOTEHM Cloth by that name.</div>'; return; }
+  if(r.legacy || r.level === 'locked'){ $('rv-box').innerHTML = '<div class="row"><span>' + esc(r.legacy ? r.message : r.view || 'a box') + '</span><span class="sub">' + esc(r.name) + ' · ' + day(r.created_at) + '</span></div>'; return; }
+  $('rv-box').innerHTML = '<div class="row"><span style="font-family:var(--q);color:#fff">' + esc(r.text) + '</span><span class="sub">' + esc(r.name) + ' · ' + esc(r.view || '') + (r.owner ? '<br>' + esc(r.owner) : '') + '</span></div>';
+});
+$('who').onclick = () => { location.href = '/totehm#in'; };
+
+/* ══ SE CONNECTER — ici, sur la source de l'identité ═════════════════ */
+let mail = '';
+$('si-email').addEventListener('keydown', async e => {
+  if(e.key !== 'Enter') return;
+  const v = $('si-email').value.trim(), n = $('si-note');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ n.className = 'note no'; n.textContent = 'invalid email'; return; }
+  n.className = 'note'; n.textContent = 'sending…';
+  const { error } = await sb.auth.signInWithOtp({ email: v, options:{ shouldCreateUser: true } });
+  if(error){ console.error('[otp]', error.message); n.className = 'note no'; n.textContent = 'try again in a minute'; return; }
+  mail = v; n.className = 'note ok'; n.textContent = 'code sent';
+  $('si-email').classList.add('hide'); $('si-code').classList.remove('hide'); setTimeout(() => $('si-code').focus(), 60);
+});
+$('si-code').addEventListener('input', async () => {
+  const t = $('si-code').value.trim(), n = $('si-note'); if(t.length !== 6) return;
+  n.className = 'note'; n.textContent = 'verifying…';
+  const { error } = await sb.auth.verifyOtp({ email: mail, token: t, type:'email' });
+  if(error){ n.className = 'note no'; n.textContent = 'wrong code'; return; }
+  start();
+});
+
+async function start(){
+  const { data:{ session } } = await sb.auth.getSession();
+  me = session?.user || null; paintMenu();
+  $('signin').classList.toggle('hide', !!me); $('app').classList.toggle('hide', !me);
+  if(!me) return;
+  await load();
+  const p = new URLSearchParams(location.search);
+  if(p.get('subscribed')){ $('flash').className = 'note ok'; $('flash').textContent = 'subscribed to ' + p.get('subscribed') + ' — it appears below in a moment';
+    history.replaceState(null, '', '/console'); setTimeout(load, 2500); }
+  const to = p.get('to'); if(to) location.replace('/@' + encodeURIComponent(to));
+}
+start();
+</script>
+</body>
+</html>

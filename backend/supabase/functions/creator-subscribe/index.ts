@@ -4,10 +4,11 @@
 //
 //   Bob → Alice  ne donne RIEN à Alice sur Bob. À sens unique.
 //
-// ⚠️ LES RÈGLES VIVENT EN BASE, DANS `creator_offer` · 23/09/2026 :
-//   · l'abonné est FIGHER (Totehm complet + THP + annuel)
-//   · le créateur est FIGHER ET a activé « Monetize my Totehm »
-//   · un prix, un endroit où virer, pas d'abonnement déjà actif
+// ⚠️ LES RÈGLES VIVENT EN BASE, DANS `creator_offer` · 01/10/2026 :
+//   · ouvert à tout compte connecté (plus de passeport FIGHER)
+//   · le créateur a un prix PAR AN, un endroit où virer, l'offre allumée,
+//     et son Totehm VISIBLE TO MY SUBSCRIBERS (`_offer_open`)
+//   · pas d'abonnement déjà actif
 // Cette fonction ne recompose aucune règle : elle demande, et obéit.
 //
 // ⚠️ PAR PSEUDO, JAMAIS PAR IDENTIFIANT. La page connaît un pseudo (la
@@ -25,7 +26,7 @@
 // ═══════════════════════════════════════════════════════════════════════
 import Stripe from "npm:stripe@14";
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders, SITE_CLUB, SITE_COM } from "../_shared/origins.ts";
+import { corsHeaders, SITE_COM } from "../_shared/origins.ts";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!);
 const sb = createClient(
@@ -35,7 +36,7 @@ const sb = createClient(
 );
 
 Deno.serve(async (req) => {
-  const cors = corsHeaders(req.headers.get("origin"), SITE_CLUB);
+  const cors = corsHeaders(req.headers.get("origin"), SITE_COM);
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
 
   const { data: { user }, error: authErr } = await sb.auth.getUser(
@@ -46,14 +47,13 @@ Deno.serve(async (req) => {
   }
 
   let pseudo = "";
-  // ══ D'OÙ VIENT LA VENTE · 30/09/2026 ══ La page de vente d'un créateur
-  // vit sur totehm.com (`/@nom`, MASTER BRIEF §4) ; la console du Club
-  // reste une porte. Un NOM de porte, jamais une URL reçue.
-  let depuis = "club";
+  // ══ D'OÙ VIENT LA VENTE · 01/10/2026 ══ La page de vente (`/@nom`) ET
+  // la console vivent sur totehm.com. Un NOM de porte, jamais une URL reçue.
+  let depuis = "page";
   try {
     const body = await req.json();
     pseudo = String(body?.pseudo ?? "").trim();
-    if (body?.from === "com") depuis = "com";
+    if (body?.from === "console") depuis = "console";
     if (!pseudo && body?.creator_id) {
       const { data: p } = await sb.from("profiles").select("pseudo")
         .eq("id", String(body.creator_id)).maybeSingle();
@@ -85,8 +85,11 @@ Deno.serve(async (req) => {
         price_data: {
           currency: offer.currency ?? "eur",
           unit_amount: offer.price_cents,
-          recurring: { interval: "month" },
-          product_data: { name: `TOTEHM — ${pseudo} · monthly` },
+          // ⚠️ ANNUEL (brief du 01/10) : le créateur fixe un prix PAR AN.
+          // Le grand livre crédite 80/20 sur chaque `invoice.paid`, quelle
+          // que soit la période — rien d'autre ne change.
+          recurring: { interval: "year" },
+          product_data: { name: `TOTEHM — ${pseudo} · yearly` },
         },
       }],
       // ⚠️ NI `transfer_data` NI `application_fee_percent` : l'argent
@@ -94,12 +97,12 @@ Deno.serve(async (req) => {
       // Connect reviendra, ces deux lignes reviendront avec lui.
       subscription_data: { metadata: meta },
       metadata: meta,
-      success_url: depuis === "com"
-        ? `${SITE_COM}/@${encodeURIComponent(pseudo)}?subscribed=1`
-        : `${SITE_CLUB}/console?subscribed=${encodeURIComponent(pseudo)}`,
-      cancel_url: depuis === "com"
-        ? `${SITE_COM}/@${encodeURIComponent(pseudo)}`
-        : `${SITE_CLUB}/console?to=${encodeURIComponent(pseudo)}`,
+      success_url: depuis === "console"
+        ? `${SITE_COM}/console?subscribed=${encodeURIComponent(pseudo)}`
+        : `${SITE_COM}/@${encodeURIComponent(pseudo)}?subscribed=1`,
+      cancel_url: depuis === "console"
+        ? `${SITE_COM}/console`
+        : `${SITE_COM}/@${encodeURIComponent(pseudo)}`,
     });
     return Response.json({ url: session.url }, { headers: cors });
   } catch (e) {

@@ -9,13 +9,13 @@
                   objet unique (le papier) ; la recherche a SA page.
   · `/@nom`     — la page de vente d'un créateur (`creator_page`, ouverte à
                   tous) : son nom, les couleurs de ses intentions, les vues
-                  habitées — JAMAIS une boîte —, l'offre, et UNE action
-                  selon qui regarde : ouvrir, s'abonner, rejoindre FIGHER,
-                  se connecter. Le Totehm complet reste aux abonnés
+                  — JAMAIS une boîte —, l'offre (PAR AN depuis le 01/10), et
+                  UNE action selon qui regarde : ouvrir, s'abonner, se
+                  connecter. Plus de passeport FIGHER pour s'abonner. Le Totehm complet reste aux abonnés
                   (`totehm?ro=nom`, `_shared_with_me`).
-  · s'abonner   — `creator-subscribe` avec `from: 'com'` : Stripe revient
-                  ICI. La console du Club gère ensuite (prix, abonnés,
-                  gains, versements) : même abonnement, mêmes données.
+  · s'abonner   — `creator-subscribe` : Stripe revient ICI (/@nom). La
+                  console (totehm.com/console) gère ensuite : prix, abonnés,
+                  abonnements, gains, versements.
 
   ⚠️ LA PAGE NE DÉCIDE RIEN : `creator_page` dit ce que CE lecteur peut
   faire ; la page le dessine. Un prix n'est jamais écrit ici.
@@ -32,6 +32,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
+/* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
+html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
 :root{
   --bg:#000;--mid:#b0b0b0;--lo:#9a9a9a;--dim:#606060;--g2:#141416;--g3:#1c1c1f;--g4:#26262b;--no:#ff9a9a;--on:#639922;
   --navy:#333366;--blue:#36498c;--rep:#743169;--wis:#5b2652;--vis:#2b3a73;
@@ -46,7 +48,13 @@ a{color:inherit;text-decoration:none}
   font-family:var(--mono);font-weight:700;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#a0a0a0;padding:6px 4px}
 #member i{width:10px;height:10px;border-radius:50%;background:#3a3a40;display:block}
 #member.is-in i{background:#fff;box-shadow:0 0 9px #fff}
-#terms{position:fixed;top:20px;right:16px;z-index:40;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
+/* Le menu membre — SIMPLE TERMS OF USE toujours en dernier (01/10). */
+#menu{position:fixed;top:0;left:0;z-index:45;width:min(300px,86vw);background:var(--g2);padding:58px 16px 18px;display:flex;flex-direction:column;gap:6px;
+  transform:translateY(-104%);visibility:hidden;transition:transform .3s ease}
+#menu.is-open{transform:none;visibility:visible}
+#menu .m-it{display:block;text-align:left;background:var(--g3);border:none;border-radius:10px;padding:10px 12px;cursor:pointer;color:var(--mid);
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+#menu .m-terms{background:none;color:var(--dim);margin-top:8px}
 #t{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:39;line-height:0}
 #t svg{height:30px;width:auto;fill:#fff}
 main{width:100%;max-width:560px;margin:0 auto;padding:96px 16px 120px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
@@ -62,16 +70,13 @@ main{width:100%;max-width:560px;margin:0 auto;padding:96px 16px 120px;display:fl
 .lnk{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:none;border:none;cursor:pointer;font-family:var(--mono)}
 .note{font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;color:var(--lo)}
 .note.no{color:var(--no)}.note.ok{color:var(--on)}
-@media(hover:hover){.btn:hover{background:#34343a}.lnk:hover,#member:hover,#terms:hover,.kick:hover{color:#fff}.row:hover{background:#1a1a1e}}
+@media(hover:hover){.btn:hover{background:#34343a}.lnk:hover,#member:hover,#menu .m-it:hover,.kick:hover{color:#fff}.row:hover{background:#1a1a1e}}
 /* LA TUILE PERFORÉE NAVY = LE NOM D'UN TOTEHM, ET RIEN D'AUTRE. */
 .tname{display:inline-block;width:fit-content;max-width:100%;font-family:var(--q);font-weight:400;color:#fff;line-height:1.4;word-break:break-word;
   border:6px solid transparent;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round;padding:0 8px}
 .who{font-size:clamp(26px,8vw,40px);border-width:9px;padding:0 14px}
 .pal{display:flex;gap:5px;justify-content:center}
 .pal i{width:12px;height:12px;display:block;border-radius:50%}
-.views{display:flex;gap:4px;justify-content:center}
-.views i{width:14px;height:14px;display:block;background:#1c1c1f}
-.views i.on{background:#fff}
 .meta{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
 .offer{background:var(--g2);width:100%;padding:18px 16px;display:flex;flex-direction:column;align-items:center;gap:10px}
 .price{font-family:var(--mono);font-weight:700;font-size:22px;color:#fff}
@@ -80,11 +85,27 @@ main{width:100%;max-width:560px;margin:0 auto;padding:96px 16px 120px;display:fl
 .row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--g2);padding:10px 12px;cursor:pointer;text-align:left;transition:background .15s}
 .row .tname{font-size:14px}
 #signin{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Le gris en survol devient blanc. Généré depuis la feuille
+   elle-même : un nouveau bloc gris entre ici tout seul.        */
+@media(hover:hover){
+#member:hover,
+#menu .m-it:hover,
+#menu .m-terms:hover,
+.kick:hover,
+.in:hover::placeholder,
+.lnk:hover,
+.note:hover,
+.meta:hover,
+.ben:hover{color:#fff}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body>
 <button id="member" type="button"><i></i><span id="member-txt">Sign in</span></button>
-<a id="terms" href="/terms" target="_blank" rel="noopener">Simple terms of use</a>
+<nav id="menu" aria-label="Member menu"></nav>
 <a id="t" href="/totehm" aria-label="TOTEHM"><svg viewBox="0 0 68 68"><rect x="0" y="0" width="68" height="10"/><rect x="29" y="0" width="10" height="67"/><rect x="21" y="63" width="27" height="5"/></svg></a>
 
 <main>
@@ -100,8 +121,6 @@ main{width:100%;max-width:560px;margin:0 auto;padding:96px 16px 120px;display:fl
   <section id="page" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:14px;width:100%">
     <div class="tname who" id="who">—</div>
     <div class="pal" id="pal"></div>
-    <div class="views" id="views" title="wisdom · vision · habits · objectives · repulsions"></div>
-    <div class="meta" id="meta"></div>
     <div class="offer" id="offer"></div>
     <div class="note" id="note"></div>
     <a class="lnk" href="/search">Search another TOTEHM</a>
@@ -124,7 +143,7 @@ const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsIn
 const sb = createClient(SB_URL, SB_ANON);
 const $ = id => document.getElementById(id);
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
-const BUILD = '2026-09-30';
+const BUILD = '2026-10-01';
 
 /* ── DÉPART du pont SSO — copié de tools/sso_snippet.js (le lien) ── */
 async function ssoVersDomaine(sb, cible, url){
@@ -142,8 +161,8 @@ async function ssoVersDomaine(sb, cible, url){
 }
 
 const COLOR = { fight:'#E24B4A', flow:'#e48b31', enrich:'#fcbe21', love:'#639922', express:'#1D9E75', focus:'#378ADD', celebrate:'#7F77DD' };
-const BEN = { totehm:'the full TOTEHM', spots:'subscriber-only Spots · exact places' };
-const VIEWS = ['wisdom','visions','habits','objectives','repulsions'];
+/* Ce qu'un abonnement donne — une phrase, la même pour tous (brief du 01/10). */
+const BEN = 'the shared TOTEHM · the exact place of shared spots with location on';
 const money = (c, cur) => { try{ return new Intl.NumberFormat('en', { style:'currency', currency:(cur||'eur').toUpperCase(), maximumFractionDigits: c % 100 ? 2 : 0 }).format(c/100); }catch(_){ return (c/100) + ' ' + cur; } };
 const day = d => d ? new Date(d).toLocaleDateString('en-GB', { day:'numeric', month:'short' }) : '';
 
@@ -156,13 +175,16 @@ const NAME = (() => {
 let me = null, C = null, PENDING = null;
 window.__totehm_creator = () => ({ build: BUILD, mode: NAME ? 'page' : 'search', signed_in: !!me, loaded: !!C,
   ok: !!C?.ok, why: C?.why || null, open: !!C?.sale?.open, subscribed: !!C?.viewer?.subscribed,
-  member: !!C?.viewer?.member, can_read: !!C?.viewer?.can_read });
+  can_read: !!C?.viewer?.can_read });
 
 async function session(){
   const { data:{ session } } = await sb.auth.getSession();
   me = session?.user || null;
   $('member').classList.toggle('is-in', !!me);
   $('member-txt').textContent = me ? 'My TOTEHM' : 'Sign in';
+  $('menu').innerHTML = (me ? '<a class="m-it" href="/totehm#in">My TOTEHM</a><a class="m-it" href="/console">Console</a>' : '<button class="m-it" type="button" data-signin="1">Sign in</button>') +
+    '<a class="m-it" href="/search">Search</a>' + (me ? '<button class="m-it" type="button" data-out="1">Sign out</button>' : '') +
+    '<a class="m-it m-terms" href="/terms" target="_blank" rel="noopener">Simple terms of use</a>';
 }
 
 /* ══ LA RECHERCHE ════════════════════════════════════════════════════ */
@@ -175,9 +197,10 @@ $('q').addEventListener('input', () => {
     const { data, error } = await sb.rpc('search_totehms', { p_q: v, p_limit: 12 });
     if(error){ console.error('[search_totehms]', error.message); $('q-note').className = 'note no'; $('q-note').textContent = 'search is unreachable right now'; return; }
     const l = data || [];
-    $('q-note').className = 'note'; $('q-note').textContent = l.length ? '' : 'no shared TOTEHM by that name';
+    $('q-note').className = 'note'; $('q-note').textContent = l.length ? '' : 'no TOTEHM by that name';
+    /* 01/10 : un NOM et une offre, jamais un contenu (ni habitudes, ni intentions). */
     $('res').innerHTML = l.map(r => '<a class="row" href="/@' + encodeURIComponent(r.pseudo) + '"><span class="tname">' + esc(r.pseudo) + '</span>' +
-      '<span class="pal">' + (r.intentions || []).filter(i => COLOR[i]).map(i => '<i style="background:' + COLOR[i] + '"></i>').join('') + '</span></a>').join('');
+      '<span class="meta">' + (r.subscribed ? 'subscribed' : r.offer ? money(r.price_cents, r.currency) + ' / year' : '') + '</span></a>').join('');
   }, 260);
 });
 
@@ -194,29 +217,24 @@ async function loadPage(){
   document.title = C.pseudo + ' — TOTEHM';
   $('who').textContent = C.pseudo;
   $('pal').innerHTML = (C.palette || []).map(i => '<i style="background:' + (COLOR[i] || '#fff') + '" title="' + esc(i) + '"></i>').join('');
-  $('views').innerHTML = VIEWS.map(k => '<i class="' + (C.views?.[k] ? 'on' : '') + '"></i>').join('');
-  $('meta').textContent = (C.habits || 0) + ' habit' + (C.habits === 1 ? '' : 's');
   paintOffer();
 }
 function paintOffer(){
   const s = C.sale || {}, v = C.viewer || {};
   const open = '<button class="btn" data-do="open" type="button">Open the TOTEHM</button>';
   let h = '';
-  if(s.open) h += '<div class="price">' + money(s.price_cents, s.currency) + ' <span class="meta">/ month</span></div>' +
-    '<div class="ben">' + (s.benefits || []).map(b => BEN[b] || b).join(' · ') + '</div>';
+  if(s.open) h += '<div class="price">' + money(s.price_cents, s.currency) + ' <span class="meta">/ year</span></div>' +
+    '<div class="ben">' + BEN + '</div>';
   if(v.me){
     h += '<div class="meta">this is your TOTEHM</div><button class="btn" data-do="mine" type="button">Open my TOTEHM</button>' +
-         '<button class="lnk" data-do="console" type="button">Manage it on FIGHER.CLUB</button>';
+         '<a class="lnk" href="/console">Manage it in my console</a>';
   } else if(v.subscribed){
     h += '<div class="meta" style="color:#fff">subscribed' + (v.until ? ' · ' + (v.ending ? 'ends ' : 'renews ') + day(v.until) : '') + '</div>' + (v.can_read ? open : '');
   } else if(v.can_read){
     h += open;
   } else if(s.open){
-    if(!v.signed_in) h += '<button class="btn" data-do="signin" type="button">Sign in to subscribe</button>';
-    else if(!v.member) h += '<div class="meta">subscribing is a FIGHER member right</div><button class="btn" data-do="club" type="button">Join FIGHER</button>';
-    else h += '<button class="btn" data-do="subscribe" type="button">Subscribe</button>';
-  } else if(C.free){
-    h += v.signed_in ? '' : '<button class="btn" data-do="signin" type="button">Sign in to read</button>';
+    h += v.signed_in ? '<button class="btn" data-do="subscribe" type="button">Subscribe</button>'
+                     : '<button class="btn" data-do="signin" type="button">Sign in to subscribe</button>';
   } else {
     h += '<div class="meta">not open to subscriptions yet</div>';
   }
@@ -227,20 +245,18 @@ $('offer').addEventListener('click', async e => {
   const d = b.dataset.do;
   if(d === 'open') location.href = '/totehm?ro=' + encodeURIComponent(C.pseudo);
   if(d === 'mine') location.href = '/totehm#in';
-  if(d === 'console') ssoVersDomaine(sb, 'club', 'https://www.figher.club/console#subscribers');
-  if(d === 'club') ssoVersDomaine(sb, 'club', 'https://www.figher.club/');
-  if(d === 'signin') showSignin(C.sale?.open ? 'Sign in to subscribe' : 'Sign in to read');
+  if(d === 'signin') showSignin('Sign in to subscribe');
   if(d === 'subscribe'){
     b.disabled = true; $('note').className = 'note'; $('note').textContent = 'opening checkout…';
     const { data:{ session } } = await sb.auth.getSession();
     const r = await fetch(SB_URL + '/functions/v1/creator-subscribe', { method:'POST',
       headers:{ 'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer ' + (session?.access_token || SB_ANON) },
-      body: JSON.stringify({ pseudo: C.pseudo, from: 'com' }) });
+      body: JSON.stringify({ pseudo: C.pseudo, from: 'page' }) });
     const j = await r.json().catch(() => ({}));
     if(j.url){ location.href = j.url; return; }
     if(j.already){ await loadPage(); return; }
     $('note').className = 'note no';
-    $('note').textContent = ({ figher:'subscribing is a member right', closed:'not open to subscriptions', self:'this is you' })[j.error] || j.error || 'checkout unavailable';
+    $('note').textContent = ({ closed:'not open to subscriptions', self:'this is you' })[j.error] || j.error || 'checkout unavailable';
     b.disabled = false;
   }
 });
@@ -275,7 +291,12 @@ $('si-code').addEventListener('input', async () => {
   await session(); if(NAME) loadPage();
 });
 $('si-x').onclick = () => { $('signin').classList.add('hide'); PENDING = null; };
-$('member').onclick = () => { if(me) location.href = '/totehm#in'; else showSignin('Sign in'); };
+$('member').onclick = () => $('menu').classList.toggle('is-open');
+$('menu').addEventListener('click', async e => {
+  if(e.target.closest('[data-signin]')){ $('menu').classList.remove('is-open'); showSignin('Sign in'); }
+  if(e.target.closest('[data-out]')){ await sb.auth.signOut({ scope:'local' }); $('menu').classList.remove('is-open'); await session(); if(NAME) loadPage(); }
+});
+document.addEventListener('pointerdown', e => { if(!e.target.closest('#menu,#member')) $('menu').classList.remove('is-open'); });
 
 /* ══ DÉMARRAGE ═══════════════════════════════════════════════════════ */
 await session();

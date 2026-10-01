@@ -20,14 +20,14 @@
 <style>html,body{margin:0;height:100%;background:#000;color:#9a9a9a;font:10px 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;display:flex;align-items:center;justify-content:center}</style>
 </head>
 <body>
-<noscript><a href="https://www.figher.club/console" style="color:#fff">FIGHER.CLUB</a></noscript>
+<noscript><a href="/console" style="color:#fff">FIGHER.CLUB</a></noscript>
 <span id="say">FIGHER.CLUB</span>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const SB_URL = 'https://abujjbkbbiumxrokozph.supabase.co';
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
 const sb = createClient(SB_URL, SB_ANON);
-const DEST = 'https://www.figher.club/console';
+const DEST = '/console';
 /* ── DÉPART du pont SSO — copié de tools/sso_snippet.js ── */
 async function ssoVersDomaine(sb, cible, url){
   try{
@@ -43,7 +43,8 @@ async function ssoVersDomaine(sb, cible, url){
   }catch(e){ console.error('[sso]', e && e.message || e); }
   location.replace(url);
 }
-ssoVersDomaine(sb, 'club', DEST);
+/* 01/10 : la console vit ICI (totehm.com/console) — même origine, pas de pont. */
+location.replace(DEST);
 </script>
 </body>
 </html>

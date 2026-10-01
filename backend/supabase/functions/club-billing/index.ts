@@ -1,4 +1,4 @@
-// TOTEHM · club-billing — BILLING, depuis la console FIGHER · 23/09/2026
+// TOTEHM · club-billing — BILLING, depuis la console (totehm.com/console depuis le 01/10/2026)
 // ═══════════════════════════════════════════════════════════════════════
 // MASTER §14 : pour chaque souscription, « gestion, annulation ».
 // Deux gestes, et rien d'autre :
@@ -21,7 +21,7 @@
 // ═══════════════════════════════════════════════════════════════════════
 import Stripe from "npm:stripe@14";
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders, SITE_CLUB } from "../_shared/origins.ts";
+import { corsHeaders, SITE_COM } from "../_shared/origins.ts";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!);
 const sb = createClient(
@@ -31,7 +31,7 @@ const sb = createClient(
 );
 
 Deno.serve(async (req) => {
-  const cors = corsHeaders(req.headers.get("origin"), SITE_CLUB);
+  const cors = corsHeaders(req.headers.get("origin"), SITE_COM);
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
 
   const { data: { user }, error: authErr } = await sb.auth.getUser(
@@ -56,7 +56,7 @@ Deno.serve(async (req) => {
       try {
         const p = await stripe.billingPortal.sessions.create({
           customer: s.stripe_customer_id,
-          return_url: SITE_CLUB + "/console#billing",
+          return_url: SITE_COM + "/console",
         });
         return Response.json({ url: p.url }, { headers: cors });
       } catch (e) {
