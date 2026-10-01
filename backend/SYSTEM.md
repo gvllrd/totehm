@@ -17,7 +17,7 @@
 
 ## 0 · SPACE — 01/10/2026 : boussole, Habit Boxes, création progressive, vidéo HD
 
-**État : migrations et Edge Functions appliquées ; code testé, fusion et contrôle public en cours.**
+**État : migrations et Edge Functions appliquées ; [PR #13](https://github.com/gvllrd/totehm/pull/13) fusionnée (`daad165`), déployé et vérifié.**
 BUILD `2026-10-01-compass-habits-bunny`. Ce relevé remplace la section navigation précédente.
 
 | mesure (01/10, ce lot) | résultat |
@@ -40,6 +40,10 @@ BUILD `2026-10-01-compass-habits-bunny`. Ce relevé remplace la section navigati
 | caméra / HLS local | REC rond → STOP carré rouge, fond navy remonté ; TUS direct vers Bunny sans Storage, reprise offset ; véritable lecture HLS 1080 × 1920 et segments conservant le préfixe signé ; services Bunny simulés |
 | sécurité HTTP réelle | anon upload : 401 ; clip inexistant : 404 ; callback sans signature : 401 ; diagnostic uniquement en table privée |
 | conseiller sécurité | RLS sans politique et RPC SECURITY DEFINER exposées volontairement ; auth / propriété / visibilité vérifiées, search_path fixé ; constats historiques hors lot conservés |
+| Vercel après fusion `daad165` | SPACE, COM, club, boutique : **success** |
+| HTML public | `https://www.totehm.space/` HTTP 200 ; BUILD attendu ; SHA-256 `1c9a383ae6e3994883c92e39b2badac6d1aed4eb0234132df99fe748a24ebe5b`, identique au fichier validé |
+| module HLS public | `vendor/hls-1.6.13.mjs` HTTP 200, MIME JavaScript, 521 172 octets identiques au module testé |
+| navigateur public | RADAR et boussole 000° N, rotation manuelle puis nord, RIGHT futur avec panneau latéral/radar réduit, retour central, TOP PLAN A SPOT avec contrôle de connexion ; sans session membre |
 | autre infrastructure | SSO conservé ; aucun prix, paiement, abonnement réel, webhook Stripe ou Oracle modifié |
 
 Bunny en production n’a PAS été annoncé actif : son encodage et son CDN réels
