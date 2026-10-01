@@ -364,14 +364,17 @@ Lues par `space/index.html` — tout le reste de l'ancien Espace est RÉVOQUÉ
 
 | fonction | qui | ce qu'elle rend |
 |---|---|---|
-| `spot_rules()` | tous | `clip_seconds` 33 · `clip_max_bytes` 20 Mo · `countdown` 3 · durée 5–720 · `max_day` 24 · `radius_km` 60 · `feed_days` 90 |
+| `spot_rules()` | tous | `clip_seconds` 33 · `clip_max_bytes` 20 Mo · `countdown` 3 · durée 5–720 · `max_day` 24 · `radius_km` 60 · `feed_days` 90 · `horizon_days` 90 · `max_upcoming` 10 |
 | `spot_create(habit, visibility, duration_min, video, lat, lng, city, comment, mode, location)` | connecté | crée MAINTENANT ; relit l'Habit dans MON Totehm (intentions, objectifs, répulsions reliés) ; SHARED exige `mode` et `location` ; la vidéo doit être dans `moments/<mon uid>/` |
-| `spots_feed(lat, lng, q, intention, before, limit)` | tous, même anonyme | les SHARED à 60 km (positions arrondies à 0,1° des deux côtés) + les miens ; la ville, jamais le point ni une distance |
+| `spots_feed(lat, lng, q, intention, before, limit)` | tous, même anonyme | les SHARED déjà commencés à 60 km (positions arrondies à 0,1° des deux côtés) + les miens ; la ville, jamais le point ni une distance |
+| `spot_schedule(habit, visibility, starts_at, duration_min, place, lat, lng, city, comment, mode, location)` | connecté | futur, sans vidéo obligatoire ; mêmes droits et Habit relue en base ; 10 à venir, horizon 90 jours |
+| `spots_list(q, intention, before, before_id, limit)` | tous | UNIQUEMENT les futurs lisibles ; pagination date + id ; lieu et nom exact seulement si autorisé |
+| `spot_habit_context(habit)` | connecté | objectifs et répulsions reliés à SA propre Habit ; ne lit pas un autre Totehm |
 | `spots_exact(q, intention)` | connecté | les miens + les SHARED·ON des créateurs dont je suis l'abonné vivant, avec `exact` |
 | `spot_get(id)` | tous | un Spot, selon les mêmes droits (lien partagé) |
 
-Chaque Spot sort de `_spot_view` : `state` (`am` · `was`) se DÉDUIT de
-l'heure ; `exact` n'existe que pour `_spot_exact` (propriétaire, ou SHARED·ON
+Chaque Spot sort de `_spot_view` : `state` (`will` · `am` · `was`) se DÉDUIT de
+l'heure (starts_at puis ends_at) ; `exact` n'existe que pour `_spot_exact` (propriétaire, ou SHARED·ON
 + abonné) ; `context` seulement pour le propriétaire ; `mode`/`location`
 (colonne `shield`) seulement pour un SHARED. La vidéo : seau
 `moments` PRIVÉ, URL signée côté page, autorisée par `_clip_readable`.
@@ -788,3 +791,4 @@ deploy re-route sans perte : l'ancien callback `s:v:` passe directement
 Ni abandonné, ni développé. Workflows A→E dans `backend/n8n/workflows/`.
 Le pipeline n'est pas nécessaire pour encaisser, il l'est pour scaler.
 On automatise quand le manuel dépasse 5 h/semaine.
+

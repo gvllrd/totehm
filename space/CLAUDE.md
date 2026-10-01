@@ -4,71 +4,98 @@
 > transverses sont dans le `CLAUDE.md` de la racine ; l'histoire dans
 > `docs/POSTMORTEMS.md`. Sections déplacées TELLES QUELLES de l'ancien
 > `CLAUDE.md` le 30/09/2026, les plus récentes d'abord : un renvoi « plus
-> haut » peut viser la racine ou un autre dossier. Fichier : `index.html` (≈62 Ko depuis le 01/10 : `grep -n` puis lecture par plage) ; `cities.json` (Natural Earth, 1 251 villes).
+> haut » peut viser la racine ou un autre dossier. Fichier : `index.html` (≈90 Ko depuis le 01/10, navigation restaurée : `grep -n` puis lecture par plage) ; `cities.json` (Natural Earth, 1 251 villes).
 
-## ⛔ ÉTAT AU 01/10/2026 — fait autorité sur TOUT ce qui suit
+## ⛔ DERNIÈRE DEMANDE DU 01/10/2026 — navigation restaurée et Spots futurs
 
-**La demande de Wah :** « COM et SPACE fonctionnent pour soi, ou pour soi et
-les autres. SPACE = do with me. » `index.html` réécrit (`BUILD='2026-10-01'`,
-197 → 62 Ko), migration `20261001_un_spot_deux_reglages.sql`, test
-`tests/browser/space.mjs`, auto-test SQL `tests/sql/spots_selftest.sql`.
+Cette section fait autorité sur les règles antérieures, notamment « plus de
+futur », « TOP = recherche », « RIGHT = mêmes points exacts » et « manette
+grises / cachée dans le fil ». **Ne jamais enlever la manette, les gestes ni
+les panneaux desktop pour simplifier les contenus.** BUILD :
+`2026-10-01-navigation`. Migration additive :
+`backend/supabase/migrations/20261001201525_space_future_navigation.sql`
+(journal production : `20261001202914`, nom `space_future_navigation`).
 
-**⚠️ UN SEUL SPOT.** Plus d'expérience ni de moment, de futur, de capacité,
-de candidature, de sélection auto/manuelle, d'accès par Spot, de %. Un Spot
-= une Habit de MON Totehm + une vidéo filmée MAINTENANT (33 s max) + une
-durée (5–720 min) + PRIVATE ou SHARED. SHARED exige SILENT (« Nobody disturb
-me ») / SOCIAL (« We can talk ») et LOCATION ON/OFF ; PRIVATE n'exige rien
-de plus. Les intentions viennent de l'Habit, relue en base (`spot_create`).
-Gratuit, 24 par 24 h (`spot_rules()`).
-
-**⚠️ LE TEMPS SE DÉDUIT.** `I AM HERE` de la validation à la fin de la
-durée, puis `I WAS THERE` — le serveur le calcule à chaque lecture (`state`)
-et la page le recalcule depuis `ends_at` : page fermée ou ouverte, rien ne
-rate le passage. Un Spot passé ne dit jamais « until », « now », « here ».
-
-| qui regarde | PRIVATE | SHARED · OFF | SHARED · ON |
-|---|---|---|---|
-| le propriétaire | tout, point exact | tout, point exact | tout, point exact |
-| abonné vivant du créateur | rien, nulle part | vidéo, habit, ville | + le point exact |
-| tout autre (même anonyme) | rien, nulle part | vidéo, habit, ville | vidéo, habit, ville |
-
-Lu au moment de la consultation, identique après `I WAS THERE`. **Jamais
-une distance, un cap ni une position de radar pour qui n'a pas le point** :
-`spots_feed` filtre son rayon (60 km) sur des positions ARRONDIES à 0,1° des
-deux côtés (`spot_plans.clat/clng`) et ne rend aucune distance ; le radar et
-la liste ne lisent que `spots_exact` (mes Spots + SHARED·ON de mes créateurs).
-Le contexte (objectifs, répulsions reliés) n'est rendu qu'au propriétaire :
-voir un Spot ≠ lire le Totehm de son auteur.
-
-**⚠️ LES VIDÉOS SONT PRIVÉES.** Seau `moments` privé (20 Mo) ; une vidéo se
-lit par URL signée (`createSignedUrl`, 1 h), que Storage ne délivre que si
-`_clip_readable(name)` le permet. Signée et chargée SEULEMENT à l'écran
-(`IntersectionObserver`) : egress.
-
-**Les cinq vues — une table `CROIX`, la manette (grise), le geste, les flèches :**
-
-| vue | ce qu'elle montre |
+| position | parcours |
 |---|---|
-| TOP | une barre de recherche d'Habit, rien d'autre ; la requête vaut pour les trois vues horizontales |
-| LEFT | le fil vertical (une vidéo à la fois, `scroll-snap`) : la ville et autour + mes Spots ; titre et sept filtres, AUCUN contrôle (ni manette, ni zoom, ni boussole, ni cap), aucun radar derrière |
-| CENTER | le radar des points autorisés ; toucher un point = la boîte de CE Spot seul (`#detail`, partage pour un SHARED) |
-| RIGHT | les mêmes Spots en boîtes, avec la distance (point autorisé) |
-| BOTTOM | la caméra directement : décompte annulable (3 s) → REC → arrêt à la main ou à 33 s → l'Habit → PRIVATE/SHARED (le dernier choix est retenu, `localStorage space_vis`) → SILENT/SOCIAL + LOCATION (SHARED) → durée → un mot → `I AM HERE` |
+| TOP | créer un Spot-Habit FUTUR : choisir une Habit Box de MON Totehm, puis éditer cette Box (date, heure, lieu choisi sur carte, durée, PRIVATE/SHARED, SILENT/SOCIAL + ON/OFF si partagé). Details : commentaire et contexte personnel relié (objectifs, répulsions). `spot_schedule`, sans vidéo obligatoire |
+| LEFT | fil vidéo vertical de la ville et autour (`spots_feed`), une vidéo à la fois. Aucun radar, carte, zoom, boussole ou cap DANS le fil. La manette de navigation reste |
+| CENTER | radar des coordonnées autorisées (`spots_exact`). **Sélection d'une Habit Box personnelle**, aucun champ de recherche libre, plus filtre d'intention. Cliquer un point ouvre CE Spot seul |
+| RIGHT | **UNIQUEMENT les Spots-Habits FUTURS** lisibles (`spots_list`), pagination stable (date + id). Ville seule sans droit exact, lieu précis seulement si autorisé. Ni les présents ni les passés |
+| BOTTOM | caméra immédiate, décompte annulable 3 s, vidéo ≤33 s, puis Habit Box, durée et droits. Le **centre du joystick est le bouton REC / STOP** : rond rouge puis carré rouge. Aucun bouton Stop séparé ; confirmer ensuite `I AM HERE` |
 
-**Les sept, à droite des trois vues horizontales**, violet en haut, rouge en
-bas : Celebrate · Focus · Express · Love · Enrich · Flow · Fight. Une seule
-intention, commune aux trois vues ; LOVE au premier passage, un choix
-volontaire est retenu (`localStorage space_int`). Le titre = l'intention +
-le badge Higher (SVG). Plus de logo d'atterrissage ; le nom vit dans le menu
-membre (tuile navy), « Console », « Sign out », puis **Simple terms of use
-en dernier**. Space Mono et Quantico seulement ; aucun fond blanc.
+Une Habit Box choisie sur le radar filtre les trois vues horizontales et
+reste sélectionnée pendant la navigation. Sur mobile, son sélecteur est
+visible dans le radar ; sur desktop, dans la zone du radar restée visible
+quand un panneau horizontal est ouvert. L'intention est commune aux trois
+vues, LOVE par défaut ; le choix volontaire reste en `space_int`.
 
-**Le diagnostic** `__totehm_space()` → build, vue, connecté, localisé,
-intention, recherche (booléen), compteurs du fil et des points, vidéos qui
-jouent, Spot ouvert, état de la caméra.
+**Navigation complète** : table `CROIX`, chevrons, joystick glissé (15 px,
+seuil 9 px) ou touché, flèches clavier, glissement doigt / souris, trackpad
+horizontal ET vertical (petits deltas accumulés, inertie verrouillée).
+Défilement des contenus avant changement de vue ; champs, dialogues et
+capture vidéo ne déclenchent pas de navigation accidentelle. Pincement ou
+ctrl-wheel pour le zoom du radar. `pointercancel` ne navigue pas.
 
-> Tout ce qui suit (30/09 et avant) est DÉPASSÉ : moments, expériences,
-> bouclier, futur, radar avec carte, tuiles OSM, candidatures, démo.
+**Desktop ≥900px** : panneau gauche/droit 420 px arrivant du bord ; panneau
+haut/bas centré arrivant de son bord. Le radar reste visible dans la place
+restante et se réduit / se déplace. Sur mobile : une seule vue plein écran,
+pas de radar derrière le fil. La manette reste accessible dans les cinq
+vues. **Couleurs exactes de COM** : blue `#36498c`, navy `#333366`, rep
+`#743169`. La couche de la vue courante disparaît comme dans COM ; en
+capture, la manette se transforme en commande vidéo.
+
+**Les sept intentions** : mêmes couleurs, définitions et piliers que
+`com/totehm.html`. Disposition chakra : Celebrate, Focus, Express, Love,
+Enrich, Flow, Fight ; titre = intention + badge Higher SVG. La définition
+choisie apparaît sous le titre ; chaque filtre porte sa définition.
+
+| intention | définition (COM, inchangée) | pilier |
+|---|---|---|
+| Fight | Conquer yourself through harder effort. | BODY |
+| Flow | Liberate energy through movement. | BODY |
+| Enrich | Master your wealth through capital & network. | MENTAL |
+| Love | Contemplate life through connection & beauty. | SPIRIT |
+| Express | Give form to emotion through creation. | SOUL |
+| Focus | Master your mind through deep mental focus. | MENTAL |
+| Celebrate | Elevate energy through collective effervescence. | SOUL |
+
+**Un seul modèle de Spot** : immédiat filmé ou annoncé pour plus tard, même
+table `spot_plans`. `I WILL BE HERE` avant `starts_at`, `I AM HERE` pendant
+la durée, `I WAS THERE` après. Serveur et page le déduisent de l'heure,
+même page fermée. Une programmation ne prouve ni la présence ni
+l'accomplissement : `_bot_memory` distingue `will` de `am` / `was`.
+
+| lecteur | PRIVATE | SHARED · OFF | SHARED · ON |
+|---|---|---|---|
+| propriétaire | tout, lieu exact | tout, lieu exact | tout, lieu exact |
+| abonné actif de CE créateur | rien | Habit, ville, contenu public | + lieu exact et nom du lieu |
+| tous les autres, même anonymes | rien | Habit, ville, contenu public | Habit, ville, contenu public |
+
+Ces droits restent identiques après expiration. `_spot_view` ne rend le
+nom du lieu précis que DANS `exact`, jamais dans un champ public. Aucun
+point, distance ou cap pour un lecteur non autorisé. La table historique
+`spots` reste grossière à 0,1° ; `spot_plans` reste RLS sans politique.
+Le contexte personnel n'est lisible que par son auteur. Aucun ancien
+`spot_publish`, candidature ou accès FIGHER n'est réactivé.
+
+Vidéo : seau `moments` PRIVÉ, 20 Mo, URL signée quand visible uniquement.
+Création immédiate 24/24 h ; futurs 10 à venir, horizon 90 jours ; durée
+5–720 min. Carte OSM uniquement pour choisir MON lieu futur ; pas de
+nouvelle clé ou service de géocodage (`cities.json`).
+
+UI sombre, Space Mono et Quantico uniquement ; tuile perforée navy réservée
+au NOM du Totehm, « by » à côté ; Simple terms of use toujours en dernier
+dans le menu membre. Console et gestion des abonnements restent sur COM.
+
+Tests : `tests/browser/space.mjs` (desktop, mobile, véritables événements
+tactiles, trackpad, souris, caméra et SDK simulé) ;
+`tests/sql/space_future_selftest.sql` + `tests/sql/spots_selftest.sql`
+(les deux s'annulent volontairement : attendu `FAIL={}`). Diagnostic
+`__totehm_space()` : état, booléens et compteurs, jamais données de membre.
+
+> Les sections du 30/09 et avant sont HISTORIQUES. Le retour du futur ne
+> réactive pas les candidatures, capacités, accès Club, Short-Live ou %.
 
 ## ⛔ ÉTAT AU 30/09/2026 — DÉPASSÉ LE 01/10 (voir au-dessus)
 
@@ -582,3 +609,4 @@ rendus, une seule carte de contenu.
 **SELECT MODE ≠ EDIT MODE** (MASTER §28). Le Totehm s'ouvre avec sa
 croix, ses cinq vues, ses boîtes et ses couleurs — **en lecture seule**,
 et copié, pas importé. Dans l'Espace, seule la Habit View se choisit.
+

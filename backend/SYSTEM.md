@@ -15,7 +15,32 @@
 
 ---
 
-## 0 · LOT DU 01/10/2026 — UN SPOT, DEUX RÉGLAGES, L'ABONNEMENT ANNUEL
+## 0 · SPACE — dernière demande du 01/10/2026 : navigation et futur restaurés
+
+**État : base appliquée, interface validée ; déploiement à vérifier après fusion.**
+Ce relevé remplace les règles de navigation et l'interdiction du futur du
+lot précédent ; les droits privé / abonné restent identiques.
+
+| mesure (01/10, ce lot) | résultat |
+|---|---|
+| migration additive | `20261001201525_space_future_navigation.sql`, journal production `20261001202914` (`space_future_navigation`) |
+| fonctions nouvelles | `spot_schedule` (connecté), `spots_list` (tous, futurs seulement), `spot_habit_context` (SA Habit, connecté) |
+| état calculé | `will` avant starts_at → `am` pendant → `was` après ; aussi dans la mémoire du bot |
+| lieu exact | coordonnées ET nom dans `exact` seulement ; propriétaire / abonnés actifs SHARED·ON |
+| règles production relues | 33 s, décompte 3 s, 20 Mo ; durée 5–720 min ; 24/jour ; 10 futurs, horizon 90 jours |
+| auto-test droits existants | `tests/sql/spots_selftest.sql` : `FAIL={}` (annulation volontaire) |
+| auto-test futur | `tests/sql/space_future_selftest.sql` : `FAIL={}` (création, validations, pagination même date, filtres, droits, transitions, bot, GRANT ; annulation volontaire) |
+| intégrité après tests | 11 Spots réels, 0 Spot `Selftest%`, 0 abonnement créateur ; aucune fixture conservée |
+| navigateur Chromium, Supabase simulé | **56/56** ; desktop 1440 et 1024, mobile 390, véritables événements tactiles CDP, souris, trackpad, SDK / vidéo enregistrée |
+| UI / gestes | joystick COM coloré, panneaux desktop et radar réduit, filtre Habit Box central, TOP futur détaillé, RIGHT futurs, BOTTOM REC/STOP sur joystick |
+| identité / paiement / infrastructure | SSO conservé ; aucun prix, abonnement réel, secret, webhook Stripe ou Oracle changé |
+| conseiller sécurité Supabase | exposition RPC SECURITY DEFINER volontaire pour les 3 fonctions, auth / propriété / visibilité vérifiées, search_path fixé ; [règle du linter](https://supabase.com/docs/guides/database/database-linter) ; constats historiques hors lot conservés |
+
+Tests vidéo raccourcis à 3 s dans le mock ; limite réelle relue en base :
+33 s. Captures et binaire Chromium sont des fichiers de travail, pas du
+contenu produit. Aucun test sur un téléphone physique prétendu.
+
+## 0a · LOT PRÉCÉDENT DU 01/10/2026 — UN SPOT, DEUX RÉGLAGES, L'ABONNEMENT ANNUEL
 
 > **ÉTAT : APPLIQUÉ, DÉPLOYÉ, FUSIONNÉ (`main` = 72a93f1), relevé le 01/10.**
 > Migration `20261001_un_spot_deux_reglages.sql` appliquée par la session
@@ -1854,3 +1879,4 @@ la page d'atterrissage.
 zéro chevron résiduel, curseur au même pixel dans les trois fichiers,
 symétrie autour du T, carte identique dans les quatre, définitions en
 Quantico, les sept définitions mot pour mot, et le pas vertical de la ligne.
+

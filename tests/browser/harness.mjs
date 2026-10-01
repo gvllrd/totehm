@@ -7,8 +7,9 @@
 //   echo 'export * from "@supabase/supabase-js";' > entry.js
 //   npx esbuild entry.js --bundle --format=esm --platform=browser --outfile=supabase.mjs
 // LANCER : node space.mjs /tmp   (captures d'écran dans le dossier donné)
-// Playwright : celui de l'environnement (/opt/node22/…) ; ailleurs, `npm i playwright`.
-import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
+// Playwright : `npm i playwright` ; ou PLAYWRIGHT_MODULE=/chemin/index.mjs.
+// PLAYWRIGHT_CHROMIUM peut désigner le navigateur de l'environnement.
+const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 import fs from 'node:fs'; import path from 'node:path';
 const ROOT = new URL('../..', import.meta.url).pathname.replace(/\/$/, '');
 const SB = 'https://abujjbkbbiumxrokozph.supabase.co';
@@ -16,11 +17,15 @@ const BUNDLE = fs.readFileSync(new URL('./supabase.mjs', import.meta.url));
 const TYPES = { '.html':'text/html', '.js':'text/javascript', '.mjs':'text/javascript', '.json':'application/json', '.svg':'image/svg+xml', '.png':'image/png', '.css':'text/css', '.mp4':'video/mp4' };
 export const USER = { id:'11111111-1111-4111-8111-111111111111', email:'wah@example.test', aud:'authenticated', role:'authenticated' };
 export async function launch(){
-  return chromium.launch({ executablePath:'/opt/pw-browsers/chromium', args:['--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream','--autoplay-policy=no-user-gesture-required'] }).catch(() =>
-    chromium.launch({ args:['--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream'] }));
+  const args = ['--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream','--autoplay-policy=no-user-gesture-required'];
+  if(process.env.CHROMIUM_PROVIDER){
+    const { default: provider } = await import(process.env.CHROMIUM_PROVIDER);
+    return chromium.launch({ executablePath:await provider.executablePath(), args:[...provider.args,...args] });
+  }
+  return chromium.launch({ executablePath:process.env.PLAYWRIGHT_CHROMIUM || undefined, args });
 }
-export async function page(browser, { dir, origin, rpc = {}, tables = {}, session = true, viewport = { width:390, height:844 }, geo = { latitude:38.7223, longitude:-9.1393 } }){
-  const ctx = await browser.newContext({ viewport, permissions:['geolocation','camera','microphone'], geolocation: geo, hasTouch:false });
+export async function page(browser, { dir, origin, rpc = {}, tables = {}, session = true, viewport = { width:390, height:844 }, geo = { latitude:38.7223, longitude:-9.1393 }, hasTouch = false }){
+  const ctx = await browser.newContext({ viewport, permissions:['geolocation','camera','microphone'], geolocation: geo, hasTouch });
   const log = { rpc:[], upload:[], tiles:0, other:[], errors:[] };
   if(session) await ctx.addInitScript(([u]) => {
     localStorage.setItem('sb-abujjbkbbiumxrokozph-auth-token', JSON.stringify({ access_token:'test-at', refresh_token:'test-rt', token_type:'bearer',
@@ -72,3 +77,4 @@ export async function page(browser, { dir, origin, rpc = {}, tables = {}, sessio
   return { pg, ctx, log };
 }
 export const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if(!c) process.exitCode = 1; };
+
