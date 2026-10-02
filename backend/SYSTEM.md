@@ -17,7 +17,7 @@
 
 ## 0 · SPACE — 02/10/2026 : le fichier vidéo devient un vrai Short Full HD
 
-**État : migration et Edge Functions appliquées ; code validé localement, fusion et vérification publique en cours.**
+**État : migration et Edge Functions appliquées ; [PR #14](https://github.com/gvllrd/totehm/pull/14) fusionnée (`d150843`), déployé et vérifié.**
 BUILD `2026-10-02-portrait-full-hd`. Cette section remplace les paramètres
 vidéo du 01/10. Cinq vues, gestes, radar réduit, boussole et joystick gardés.
 
@@ -39,6 +39,10 @@ vidéo du 01/10. Cinq vues, gestes, radar réduit, boussole et joystick gardés.
 | conseiller sécurité | videos et video_backend sans politique, service_role seul ; spot_rules public volontairement, search_path fixé ; aucun accès aux données élargi |
 | Bunny réel, diagnostic du 02/10 06:42 UTC | secure_delivery_missing ; clés bibliothèque présentes et API vidéos 200, API configuration compte 401 ; hostname/token/read-only key manquants ; aucun secret rendu au client ou versionné |
 | fonctionnement réel en attendant | capture portrait haute qualité et lecture originale signée dans moments PRIVÉ ; Bunny reste bloqué tant que la diffusion protégée n'est pas configurée |
+| Vercel après fusion `d150843` | SPACE, COM, club, boutique : success |
+| HTML public | https://www.totehm.space/ HTTP 200, BUILD attendu ; SHA-256 `01dbf34936eea407d9d07a9427e7a4c627561c99fc7e5b5500c8f449a8930533`, identique au fichier testé |
+| module capture public | video-capture.mjs HTTP 200, MIME application/javascript, 3 366 octets ; SHA-256 `b3ebb22ef276c3ecec20a0f9ee22338a9ba72fff9bf7174e7ac37c4f37ce2402`, identique au module testé |
+| navigateur public | FILM A SPOT · I AM HERE · 9:16 · up to 33 seconds ; caméra desktop 292,5 × 520 px (ratio 0,5625 = 9/16), radar réduit au-dessus et joystick navy conservés ; sans session membre ni capture de caméra réelle |
 | limites des tests | caméras et services Bunny simulés ; pas de téléphone physique ni de CDN Bunny réel testé ; la qualité dépend du matériel et de la lumière |
 | autre infrastructure | aucun prix, paiement, abonnement réel, webhook Stripe, Oracle ou n8n modifié |
 
