@@ -15,7 +15,38 @@
 
 ---
 
-## 0 · SPACE — 02/10/2026 : le fichier vidéo devient un vrai Short Full HD
+## 0 · SPACE — 02/10/2026 : fluidité de capture, du feed et de publication
+
+**État : code testé localement ; déploiement à vérifier dans ce lot.**
+BUILD `2026-10-02-fluid-video`. Complète le Full HD ci-dessous ; remplace
+le forçage HLS de qualité maximale. Aucun fichier HTML supplémentaire : les
+cinq vues, panneaux desktop, gestes, boussole et joystick restent présents.
+
+| mesure (02/10, ce lot) | résultat |
+|---|---|
+| référence avant | main `7dae705`, BUILD portrait-full-hd ; même navigateur logiciel et mêmes fichiers de test |
+| capture native | demande 1080 × 1920 / 30 fps ; flux brut portrait directement enregistré, canvas seulement si crop nécessaire ; H.264 préféré si accepté, choix MediaCapabilities avec repli |
+| piège caméra corrigé | crop-and-scale pouvait montrer du portrait et encoder le paysage brut ; contrôle du vrai fichier maintenu, adaptation d'aperçu seule refusée pour le chemin natif |
+| cadence réelle, fixture en mouvement | avant 62 images / 4,553 s = **13,62 fps** ; après 122 / 4,0663 s = **30,00 fps** ; fichier réel 1080 × 1920, audio conservé |
+| première image du clip suivant | **949 → 79 ms**, préchargement avant swipe ; signature artificiellement retardée de 600 ms, réponse média de 150 ms ; pas une mesure réseau de production |
+| premier clip froid | **1 023 → 1 007 ms** dans ce même scénario ; pas de gain revendiqué sur cette étape réseau |
+| rafraîchissement / pagination | avant lecteur remplacé ; après même nœud vidéo et même buffer ; réponse de géolocalisation tardive et page suivante vérifiées |
+| chargement borné | un seul clip joue, au plus précédent/actuel/suivant ; suivant préparé après démarrage du visible ; jamais tout le feed ; metadata Storage/native et petit buffer HLS |
+| économie / vie de page | Save-Data / 2G : pas de lookahead ; exit feed, background et logout libèrent sources/lecteurs ; réponse d'autorisation tardive écartée |
+| radar | dessin réduit à son ancienne surface ; 15 fps derrière feed, 10 fps derrière caméra, transition 60 ; boussole immobile : **35 → 0 mutations DOM / 1,1 s** ; onglet caché suspendu |
+| diffusion HLS | initialisation lecteur et autorisation en parallèle, qualité initiale selon débit, adaptation ensuite ; HLS natif sur master ; connexion lente n'impose plus le segment 8 Mbps |
+| upload / publication | localisation/ville et binaire privés en parallèle après confirmation, aperçu en pause ; spot_create attend les deux ; upload terminé conservé si reprise nécessaire |
+| encoding pending | première relecture après 1 s puis 2/4/5 s ; fixture processing→ready affichée en **1 213 ms**, deux appels, sans erreur JS |
+| diagnostics locaux | __totehm_space().video : délai première image, upload/publication, frames décodées/perdues, lecteurs ; compteurs/enum, aucune donnée de membre |
+| tests performance | space_performance.mjs : **16 contrôles**, mouvement réel encodé, réseau et API simulés, racé d'autorisation, arrière-plan et encodage pending |
+| tests vidéo | space_video.mjs : **19 × 3 + 20 = 77 contrôles** ; paysage, portrait, HLS natif, connexion lente ; vrais fichiers TUS sondés/décodés, 9:16, audio et crop non déformé ; upload commence pendant la géolocalisation |
+| parcours UI | space.mjs : **33 contrôles**, source paysage 4K simulée ; navigation, tactile, boussole, Habit Boxes, futur, lieu, publication Storage et joystick conservés ; zéro erreur JS |
+| Bunny réel, diagnostic lu ce lot | secure_delivery_missing, checked_at 02/10 09:30 UTC ; API bibliothèque 200, paramètres compte 401 ; hostname/token/webhook key absents ; provider storage |
+| blocage restant | vraie diffusion Bunny non activée ; upload 33 s / 10 Mbps + audio ≈42 MB, sa durée dépend du débit montant, puis de l'encodage ; clés bibliothèque seules insuffisantes |
+| limites | mesures desktop avec encodeur logiciel et médias/services simulés ; pas de téléphone physique, CDN Bunny ou upload réel mesuré ; aucune supériorité TikTok annoncée |
+| autres systèmes | aucune migration/Edge Function, donnée réelle, tarification, paiement, Stripe, Oracle/n8n modifié |
+
+## 0-précédent-Full-HD · SPACE — 02/10/2026 : le fichier vidéo devient un vrai Short Full HD
 
 **État : migration et Edge Functions appliquées ; [PR #14](https://github.com/gvllrd/totehm/pull/14) fusionnée (`d150843`), déployé et vérifié.**
 BUILD `2026-10-02-portrait-full-hd`. Cette section remplace les paramètres

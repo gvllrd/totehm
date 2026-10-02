@@ -22,7 +22,7 @@
     jamais une distance). Aucun Spot non autorisé n'est placé à sa vraie
     position : la page n'en reçoit pas.
   ⚠️ LES VIDÉOS : Bunny en diffusion protégée quand configuré, sinon seau
-    `moments` privé. Lecture signée seulement À L'ÉCRAN (egress).
+    `moments` privé. Lecture signée, une vidéo suivante anticipée au maximum.
   ⚠️ Le choix d'une Habit Box est commun aux trois vues
     horizontales. La Habit est exacte, sinon ses intentions deviennent le repli.
   `space_discover` applique le choix aux trois lectures. RIGHT : futurs lisibles ; ville seule
@@ -39,6 +39,7 @@
 <meta name="description" content="Do with me. A habit of my TOTEHM, here and now.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://abujjbkbbiumxrokozph.supabase.co" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -484,22 +485,24 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
 const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query=' + Number(lat).toFixed(5) + '%2C' + Number(lng).toFixed(5);
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD = '2026-10-02-portrait-full-hd';
+const BUILD = '2026-10-02-fluid-video';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'radar';
 const S = { int:null, q:'', habit:null };
-const FEED = { list:[], seq:0, more:true, loading:false, match:'all' };
+const FEED = { list:[], seq:0, more:true, loading:false, match:'all', active:null };
 const EX = { list:[], seq:0, match:'all' };
 const LIST = { list:[], seq:0, more:false, loading:false, match:'all' };
 const PLAN = { seq:0, context:null, details:false, habit:null, date:'', time:'', pos:null, place:'', city:null, dur:null, vis:store.get('space_vis'), mode:null, loc:null, say:'', busy:false };
 let habitsPending = null, gestureCount = 0, suppressClickUntil = 0;
 const REC = { seq:0, step:null, stream:null, mr:null, blob:null, url:null, mime:'', t0:0, timer:0, seconds:0, uploaded:null, habit:null, vis: store.get('space_vis') === 'private' ? 'private' : (store.get('space_vis') === 'shared' ? 'shared' : null),
-  mode:null, loc:null, dur:null, busy:false, capture:null, width:0,height:0,fps:0,bitrate:0 };
+  mode:null, loc:null, dur:null, busy:false, capture:null, width:0,height:0,fps:0,bitrate:0,path:null };
 let HABITS = null, DETAIL = null;
+const VIDEO_METRICS={firstFrameMs:0,uploadMs:0,publishMs:0};
 window.__totehm_space = () => ({ build: BUILD, view: VIEW, signed_in: !!me, located: !!POS, intention: S.int, search: !!S.q,
   feed: FEED.list.length, exact: EX.list.length, playing: [...document.querySelectorAll('#feed video')].filter(v => !v.paused).length,
-  list:LIST.list.length, future:LIST.list.filter(s => spotState(s) === 'will').length, gestures:gestureCount, radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx),heading:Math.round(norm360(RAD.head)),pin:MAP.open,place:!!PLAN.pos}, habit_filter:!!S.habit, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate } });
+  video:{provider:RULES.video_provider || 'storage',buffered:[...document.querySelectorAll('#feed video')].filter(v=>v.getAttribute('src') || v._hls).length,...VIDEO_METRICS,...(()=>{const v=$('feed').querySelector('.clip[data-k="'+FEED.active+'"] video'),q=v?.getVideoPlaybackQuality?.();return {frames:q?.totalVideoFrames || 0,dropped:q?.droppedVideoFrames || 0};})()},
+  list:LIST.list.length, future:LIST.list.filter(s => spotState(s) === 'will').length, gestures:gestureCount, radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx),heading:Math.round(norm360(RAD.head)),pin:MAP.open,place:!!PLAN.pos}, habit_filter:!!S.habit, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
 
 /* Chaque vue dit où je suis. L'intention vient de la Habit, sans filtre parallèle. */
 const VIEW_WORDS = {radar:['RADAR','Exact places I can see'],feed:['CITY FEED','I AM HERE · I WAS THERE'],list:['FUTURE SPOTS','I WILL BE HERE'],plan:['PLAN A SPOT','I WILL BE HERE'],cam:['FILM A SPOT','I AM HERE · 9:16 · up to 33 seconds']};
@@ -530,57 +533,54 @@ function spotHTML(s){
  return '<div class="habit">'+tickHTML(s.intentions)+'<span class="h-body"><span class="v-col">'+habitInner(box)+'<span class="v-sub"><span class="v-st">'+when+'</span><span>'+ (state==='am' ? 'until '+hhmm(end) : esc(dayOf(st))+' '+hhmm(st))+'</span><span>'+fmtDur(s.duration_min)+'</span></span><span class="v-sub">'+placeHTML(s)+how+'</span>'+(s.comment ? '<span class="v-say">'+esc(s.comment)+'</span>' : '')+'</span></span></div>'+(!s.mine && s.creator ? '<div class="by"><span>by</span><button class="tname" type="button" data-com="/@'+encodeURIComponent(s.creator)+'">'+esc(s.creator)+'</button></div>' : '');
 }
 
-/* ══ LES VIDÉOS — URL signée, et seulement à l'écran ═════════════════ */
+/* ══ LES VIDÉOS — lecture autorisée, une seule vidéo anticipée ══════ */
 const SIGNED=new Map();let hlsModule=null;
 async function videoRequest(name,body){const {data,error}=await sb.functions.invoke(name,{body});if(error) throw error;return data;}
 async function clipURL(path){
- const c=SIGNED.get(path);if(c && c.at>Date.now()-50*60e3) return c.url;
+ const uid=me?.id || 'anon',key=uid+':'+path,c=SIGNED.get(key);if(c && c.at>Date.now()-50*60e3) return c.url;
  const {data,error}=await sb.storage.from('moments').createSignedUrl(path,3600);if(error){console.error('[clip]',error.message);return null;}
- SIGNED.set(path,{url:data.signedUrl,at:Date.now()});return data.signedUrl;
+ if((me?.id || 'anon')===uid){SIGNED.set(key,{url:data.signedUrl,at:Date.now()});if(SIGNED.size>64)SIGNED.delete(SIGNED.keys().next().value);}return data.signedUrl;
 }
-async function nativeHlsURL(url){
- try{
-  const response=await fetch(url);if(!response.ok) return url;
-  const lines=(await response.text()).split(/\r?\n/),base=new URL(url),prefix=url.slice(0,url.lastIndexOf('/')+1);let best=null;
-  for(let i=0;i<lines.length;i++){
-   if(!lines[i].startsWith('#EXT-X-STREAM-INF:')) continue;
-   const resolution=lines[i].match(/RESOLUTION=(\d+)x(\d+)/),bandwidth=Number(lines[i].match(/(?:^|[:,])BANDWIDTH=(\d+)/)?.[1] || 0);
-   let j=i+1;while(j<lines.length && (!lines[j].trim() || lines[j].startsWith('#'))) j++;
-   if(j===lines.length) continue;const candidate=new URL(lines[j].trim(),base),area=resolution?Number(resolution[1])*Number(resolution[2]):0;
-   if(candidate.origin!==base.origin || !candidate.href.startsWith(prefix)) continue;
-   if(!best || area>best.area || area===best.area && bandwidth>best.bandwidth) best={url:candidate.href,area,bandwidth};
-  }
-  return best?.url || url;
- }catch{return url;}
-}
-async function playClip(v){
- if(!v.isConnected) return;
- if(v.src || v._hls){v.play().catch(()=>{});return;}
- const fresh=()=>v.isConnected && (v.closest('#detail')?!!DETAIL:VIEW==='feed');
- try{
+const videoWanted=v=>v.isConnected && !document.hidden && (v.closest('#detail')?!!DETAIL:VIEW==='feed' && !!v._wanted);
+const lookAhead=()=>!navigator.connection?.saveData && !['slow-2g','2g'].includes(navigator.connection?.effectiveType);
+const bandwidth=()=>Math.max(400000,Math.min(15000000,(navigator.connection?.downlink || 5)*800000));
+async function prepareClip(v){
+ if(!videoWanted(v)) return;
+ if((v.getAttribute('src') || v._hls) && (!v._expires || v._expires>Date.now()+30000)) return;
+ if(v._expires && v._expires<=Date.now()+30000){const active=v._active;releaseClip(v);v._wanted=true;v._active=active;}
+ if(v._load) return v._load;
+ const epoch=v._epoch || 0,fresh=()=>videoWanted(v) && (v._epoch || 0)===epoch;
+ v._load=(async()=>{try{
   if(v.dataset.bunny){
-   let data=await videoRequest('bunny-video',{id:v.dataset.bunny,spot:v.dataset.spot});
+   const loading=hlsModule ||= import('/vendor/hls-1.6.13.mjs').catch(()=>{hlsModule=null;return null;});
+   const data=await videoRequest('bunny-video',{id:v.dataset.bunny,spot:v.dataset.spot});
    if(!fresh()) return;
    if(data.status!=='ready'){
     const label=v.parentElement.querySelector('.video-status');if(label) label.textContent=data.status==='failed'?'Video unavailable':'Preparing the video…';
-    if(data.status!=='failed'){clearTimeout(v._retry);v._retry=setTimeout(()=>{if(fresh()) playClip(v);},5000);}return;
+    if(data.status!=='failed' && v._active){const delay=Math.min(5000,1000*2**(v._processing || 0));v._processing=Math.min(3,(v._processing || 0)+1);clearTimeout(v._retry);v._retry=setTimeout(()=>{if(fresh()) playClip(v);},delay);}return;
    }
-   const label=v.parentElement.querySelector('.video-status');if(label) label.remove();
-   hlsModule ||= import('/vendor/hls-1.6.13.mjs');const {default:Hls}=await hlsModule;
+   v._processing=0;const label=v.parentElement.querySelector('.video-status');if(label) label.remove();
+   v._expires=Number(data.expires)*1000;
+   const Hls=(await loading)?.default;
    if(!fresh()) return;
-   if(Hls.isSupported()){
+   if(Hls?.isSupported()){
     v.disableRemotePlayback=true;
-    const hls=new Hls({capLevelToPlayerSize:false,autoStartLoad:false,abrEwmaDefaultEstimate:10e6,maxBufferLength:20});v._hls=hls;
-    hls.on(Hls.Events.MANIFEST_PARSED,()=>{if(!fresh()){releaseClip(v);return;}const best=hls.levels.reduce((best,l,i)=>{const b=hls.levels[best];return l.width*l.height>b.width*b.height || l.width*l.height===b.width*b.height && l.bitrate>b.bitrate?i:best;},0);hls.startLevel=best;hls.nextAutoLevel=best;hls.startLoad();});
-    hls.on(Hls.Events.ERROR,(_,e)=>{if(e.fatal){console.error('[hls]',e.type);hls.destroy();v._hls=null;}});
+    const hls=new Hls({capLevelToPlayerSize:false,autoStartLoad:false,abrEwmaDefaultEstimate:bandwidth(),maxBufferLength:v._active?12:2,maxMaxBufferLength:v._active?16:4,maxBufferSize:4000000});v._hls=hls;
+    hls.on(Hls.Events.MANIFEST_PARSED,()=>{if(!fresh()){releaseClip(v);return;}let best=0;hls.levels.forEach((l,i)=>{if(l.bitrate<=bandwidth() && l.bitrate>=hls.levels[best].bitrate)best=i;});hls.startLevel=best;hls.startLoad();});
+    hls.on(Hls.Events.ERROR,(_,e)=>{if(e.fatal){console.error('[hls]',e.type);releaseClip(v);}});
     hls.attachMedia(v);hls.loadSource(data.url);
-   }else if(v.canPlayType('application/vnd.apple.mpegurl')){const native=await nativeHlsURL(data.url);if(!fresh()) return;v.src=native;}
+   }else if(v.canPlayType('application/vnd.apple.mpegurl')){v.preload=v._active?'auto':'metadata';v.src=data.url;}
    else throw new Error('Video playback unsupported');
-  }else {const u=await clipURL(v.dataset.clip);if(!u || !fresh()) return;v.src=u;}
-  if(fresh()) v.play().catch(()=>{});
+  }else {const u=await clipURL(v.dataset.clip);if(!u || !fresh()) return;v.preload=v._active?'auto':'metadata';v.src=u;v._expires=Date.now()+50*60e3;}
  }catch(e){console.error('[video]',e.message);}
+ })();const pending=v._load;try{await pending;}finally{if(v._load===pending)v._load=null;}
 }
-function releaseClip(v){v.pause();clearTimeout(v._retry);v._hls?.destroy();v._hls=null;}
+async function playClip(v){
+ v._wanted=true;v._active=true;await prepareClip(v);if(!videoWanted(v) || !v._active)return;
+ if(v._hls){v._hls.config.maxBufferLength=12;v._hls.config.maxMaxBufferLength=16;v._hls.startLoad(-1);}
+ v.preload='auto';v.play().catch(()=>{});
+}
+function releaseClip(v){v._epoch=(v._epoch || 0)+1;v._wanted=false;v._active=false;v._load=null;v._expires=0;v._processing=0;v.pause();clearTimeout(v._retry);v._hls?.destroy();v._hls=null;v.removeAttribute('src');v.preload='none';v.load();}
 const videoHTML=s=>s.clip || s.video ? '<div class="portrait-media"><video '+(s.clip?'data-bunny="'+esc(s.clip.id)+'" data-spot="'+esc(s.id)+'"':'data-clip="'+esc(s.video)+'"')+' playsinline muted loop preload="none"></video>'+(s.clip?.status!=='ready' && s.clip?'<span class="video-status note">Preparing the video…</span>':'')+'</div>' : '';
 
 async function bunnyUpload(blob,seconds,onProgress){
@@ -611,22 +611,37 @@ async function bunnyUpload(blob,seconds,onProgress){
 }
 
 /* ══ LEFT — LE FIL ═══════════════════════════════════════════════════ */
-const io = new IntersectionObserver(es => es.forEach(async en => {
+function focusClip(k){
+ if(VIEW!=='feed' || document.hidden)return;const changed=FEED.active!==k;FEED.active=k;
+ const videos=[...$('feed').querySelectorAll('video')],active=$('feed').querySelector('.clip[data-k="'+k+'"] video');
+ for(const v of videos){const i=Number(v.closest('.clip').dataset.k);v._active=i===k;
+  if(i===k){v._wanted=true;continue;}
+  v.pause();clearTimeout(v._retry);v._hls?.stopLoad();
+  if(!lookAhead() || i<k-1 || i>k+1)releaseClip(v);else v._wanted=true;
+ }
+ const next=()=>{if(VIEW!=='feed' || FEED.active!==k || document.hidden || !lookAhead())return;const v=$('feed').querySelector('.clip[data-k="'+(k+1)+'"] video');if(v){v._wanted=true;prepareClip(v);}};
+ if(active){if(changed){const started=performance.now();active.addEventListener('playing',()=>{const measure=()=>{if(VIEW==='feed' && FEED.active===k)VIDEO_METRICS.firstFrameMs=Math.round(performance.now()-started);};if(active.requestVideoFrameCallback)active.requestVideoFrameCallback(measure);else measure();},{once:true});}active.addEventListener('playing',next,{once:true});playClip(active);if(active.currentTime>0 && !active.paused)next();}
+ if(k>=FEED.list.length-2)loadFeed(true);
+}
+const io = new IntersectionObserver(es => es.forEach(en => {
   const v = en.target.querySelector('video'); if(!v) return;
   if(en.isIntersecting && en.intersectionRatio > .6 && VIEW === 'feed'){
-    await playClip(v);
-    if(VIEW !== 'feed' || !en.target.isConnected) return;
-    v.play().catch(() => {});
-    const k = +en.target.dataset.k; if(k >= FEED.list.length - 2) loadFeed(true);
+    if(en.target.isConnected)focusClip(+en.target.dataset.k);
   } else v.pause();
 }), { threshold:[0, .6, 1] });
-function paintFeed(){
+function paintFeed(more=false){
   const f = $('feed');
+  const existing=[...f.querySelectorAll('.clip[data-k]')];
+  if(!more && existing.length && existing.length===FEED.list.length && existing.every((c,k)=>{const v=c.querySelector('video'),s=FEED.list[k];return c.dataset.id===s.id && (v?.dataset.bunny || v?.dataset.clip || '')===(s.clip?.id || s.video || '');})){
+    existing.forEach((c,k)=>{const info=c.querySelector('.info'),html=spotHTML(FEED.list[k]);if(info.innerHTML!==html)info.innerHTML=html;});return;
+  }
+  if(!more){io.disconnect();f.querySelectorAll('video').forEach(releaseClip);f.replaceChildren();FEED.active=null;f.scrollTop=0;}
   if(!FEED.list.length){ f.innerHTML = '<div class="clip"><div class="empty">' + (S.q ? 'no spot for this habit' : 'no spot around yet') + '</div></div>'; return; }
-  f.querySelectorAll('video').forEach(releaseClip);f.innerHTML = FEED.list.map((s, k) => '<div class="clip" data-k="' + k + '" data-id="' + esc(s.id) + '">' +
+  const start=more?f.querySelectorAll('.clip[data-k]').length:0;
+  f.insertAdjacentHTML('beforeend',FEED.list.slice(start).map((s, i) => '<div class="clip" data-k="' + (start+i) + '" data-id="' + esc(s.id) + '">' +
     (videoHTML(s) || '<div class="noclip">no video</div>') +
-    '<div class="info" data-open="' + esc(s.id) + '">' + spotHTML(s) + '</div></div>').join('');
-  f.querySelectorAll('.clip[data-k]').forEach(c => io.observe(c));
+    '<div class="info" data-open="' + esc(s.id) + '">' + spotHTML(s) + '</div></div>').join(''));
+  [...f.querySelectorAll('.clip[data-k]')].slice(start).forEach(c => io.observe(c));
 }
 $('feed').addEventListener('click', e => {
   if(Date.now() < suppressClickUntil || e.target.closest('a,[data-com]')) return;
@@ -644,8 +659,8 @@ async function loadFeed(more){
   if(error){ console.error('[spots_feed]', error.message); return; }
   const l = data?.spots || [];
   FEED.more = l.length === 20;
-  FEED.list = more ? FEED.list.concat(l) : l;
-  FEED.match=data?.match || 'all'; paintFeed(); paintInts();
+  FEED.list = more ? [...new Map(FEED.list.concat(l).map(s=>[s.id,s])).values()] : l;
+  FEED.match=data?.match || 'all'; paintFeed(more); paintInts();
 }
 
 /* ══ CENTER — LES POINTS EXACTS AUTORISÉS ══════════════════════════ */
@@ -688,13 +703,13 @@ function paintRadarEmpty(){
 }
 
 /* LE RADAR — anneaux, balayage, des points. Le centre = moi (ou mes Spots). */
-const RAD = { raf:0, W:0, H:0, dpr:1, cx:0, cy:0, rpx:0, tx:0, ty:0, tr:0, range:1000, pts:[], head:0, headTo:0, turn:null };
+const RAD = { raf:0, W:0, H:0, dpr:1, cx:0, cy:0, rpx:0, tx:0, ty:0, tr:0, range:1000, pts:[], head:0, headTo:0, turn:null, last:0, dirty:null };
 function center(){ if(MAP.open) return MAP; if(POS) return POS; const s = EX.list[0]; return s ? s.exact : null; }
 const desktop = () => matchMedia('(min-width:900px)').matches;
 function radarSize(){
   const c = $('canvas'), dpr = Math.min(2, devicePixelRatio || 1);
   if(RAD.W !== innerWidth || RAD.H !== innerHeight || RAD.dpr !== dpr){
-    RAD.W = innerWidth; RAD.H = innerHeight; RAD.dpr = dpr; c.width = RAD.W*dpr; c.height = RAD.H*dpr;
+    RAD.W = innerWidth; RAD.H = innerHeight; RAD.dpr = dpr; c.width = RAD.W*dpr; c.height = RAD.H*dpr;RAD.dirty=null;
   }
   let left = 20, right = RAD.W - 20, top = $('heading').getBoundingClientRect().bottom + 18, bottom = $('joy').getBoundingClientRect().top - 112;
   if(MAP.open) bottom=$('place-picker').getBoundingClientRect().top-112;
@@ -719,14 +734,20 @@ function radarRange(){
   return Math.max(300, d[Math.min(d.length - 1, Math.floor(d.length*.85))]*1.18);
 }
 function draw(t){
-  RAD.raf = 0; if(VIEW !== 'radar' && VIEW !== 'plan' && !MAP.open && !desktop()) return;
-  RAD.cx += (RAD.tx - RAD.cx)*.18; RAD.cy += (RAD.ty - RAD.cy)*.18; RAD.rpx += (RAD.tr - RAD.rpx)*.18;
+  RAD.raf = 0; if(document.hidden || VIEW !== 'radar' && VIEW !== 'plan' && !MAP.open && !desktop()) return;
+  const moving=Math.abs(RAD.tx-RAD.cx)+Math.abs(RAD.ty-RAD.cy)+Math.abs(RAD.tr-RAD.rpx)>1 || RAD.turn || RAD.headTo!==null;
+  const fps=moving?60:VIEW==='cam'?10:VIEW==='feed'?15:30;
+  if(t-RAD.last<1000/fps-1){RAD.raf=requestAnimationFrame(draw);return;}
+  const blend=1-Math.pow(.82,Math.min(100,t-RAD.last)/(1000/60));RAD.last=t;
+  for(const [now,target] of [['cx','tx'],['cy','ty'],['rpx','tr']])RAD[now]=Math.abs(RAD[target]-RAD[now])<.04?RAD[target]:RAD[now]+(RAD[target]-RAD[now])*blend;
   if(CMP.on){const delta=norm180(CMP.target-RAD.head);RAD.head=norm360(RAD.head+delta*.15);}
   else if(RAD.headTo!==null){const delta=norm180(RAD.headTo-RAD.head);RAD.head=norm360(RAD.head+delta*.16);if(Math.abs(delta)<.1) RAD.headTo=null;}
-  const tools=$('radar-tools');tools.style.left=(RAD.cx-Math.min(65,RAD.rpx))+'px';tools.style.top=(RAD.cy+RAD.rpx+24)+'px';paintCmp();
-  const map=$('radar-map');map.style.left=(RAD.cx-RAD.rpx)+'px';map.style.top=(RAD.cy-RAD.rpx)+'px';map.style.width=map.style.height=(RAD.rpx*2)+'px';if(MAP.open && Math.abs(RAD.tr-RAD.rpx)>.1) mapDraw();
+  const tools=$('radar-tools'),positions=[RAD.cx-Math.min(65,RAD.rpx),RAD.cy+RAD.rpx+24,RAD.cx-RAD.rpx,RAD.cy-RAD.rpx,RAD.rpx*2].map(n=>n.toFixed(1)+'px'),layout=positions.join('|');
+  if(tools._layout!==layout){tools._layout=layout;tools.style.left=positions[0];tools.style.top=positions[1];const map=$('radar-map');map.style.left=positions[2];map.style.top=positions[3];map.style.width=map.style.height=positions[4];if(MAP.open && Math.abs(RAD.tr-RAD.rpx)>.1)mapDraw();}paintCmp();
   const x = $('canvas').getContext('2d'), { dpr, cx, cy, rpx } = RAD;
-  x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, RAD.W, RAD.H);
+  x.setTransform(dpr, 0, 0, dpr, 0, 0);if(RAD.dirty)x.clearRect(...RAD.dirty);
+  const margin=VIEW==='plan' && PLAN.pos?Math.max(42,x.measureText(PLAN.place || PLAN.city || 'Meeting point').width/2+32):42;
+  RAD.dirty=[cx-rpx-margin,cy-rpx-margin,(rpx+margin)*2,(rpx+margin)*2];
   const g = x.createRadialGradient(cx, cy, 0, cx, cy, rpx); g.addColorStop(0, '#16161b'); g.addColorStop(1, '#0d0d10');
   x.fillStyle = g; x.beginPath(); x.arc(cx, cy, rpx, 0, Math.PI*2); x.fill();
   x.strokeStyle = 'rgba(255,255,255,.07)'; x.lineWidth = 1;
@@ -757,7 +778,7 @@ function draw(t){
 const norm360=d=>((d%360)+360)%360, norm180=d=>((d+540)%360)-180;
 const CARD=['N','NE','E','SE','S','SW','W','NW'];
 const CMP={on:false,src:null,target:0,last:0,timer:0,available:typeof DeviceOrientationEvent!=='undefined' && matchMedia('(pointer:coarse)').matches};
-function paintCmp(){const h=Math.round(norm360(RAD.head))%360;$('cmp').innerHTML='<b>'+String(h).padStart(3,'0')+'° '+CARD[Math.round(h/45)%8]+'</b><br>'+(CMP.on?'compass':Math.abs(norm180(RAD.head))>.5?'north ↺':CMP.available?'align compass':'turn the ring');}
+function paintCmp(){const h=Math.round(norm360(RAD.head))%360,html='<b>'+String(h).padStart(3,'0')+'° '+CARD[Math.round(h/45)%8]+'</b><br>'+(CMP.on?'compass':Math.abs(norm180(RAD.head))>.5?'north ↺':CMP.available?'align compass':'turn the ring'),el=$('cmp');if(el._heading!==html){el._heading=html;el.innerHTML=html;}}
 function compassOff(){if(CMP.src) removeEventListener(CMP.src,onOrient);CMP.on=false;CMP.src=null;clearTimeout(CMP.timer);}
 function onOrient(e){let h=typeof e.webkitCompassHeading==='number'?e.webkitCompassHeading:e.absolute && typeof e.alpha==='number'?360-e.alpha:null;if(h===null || !Number.isFinite(h)) return;CMP.target=norm360(h+(screen.orientation?.angle || window.orientation || 0));CMP.last=Date.now();CMP.on=true;RAD.headTo=null;}
 $('cmp').onclick=async()=>{
@@ -976,9 +997,7 @@ for(const event of ['pointerup','pointercancel']) $('radar-map').addEventListene
    à la main ou à 33 s → l'Habit → PRIVATE/SHARED (le dernier choix est
    retenu) → SHARED : LOCATION ON/OFF puis SILENT/SOCIAL si ON → la durée →
    un mot → I AM HERE. */
-import {VIDEO,cameraConstraints,cameraReady,portraitCapture} from '/video-capture.mjs';
-const recMime = () => typeof MediaRecorder === 'undefined' ? '' :
-  ['video/mp4;codecs=avc1,mp4a', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4'].find(t => MediaRecorder.isTypeSupported(t)) || '';
+import {VIDEO,cameraConstraints,cameraReady,portraitCapture,recordingMime} from '/video-capture.mjs';
 function camState(){ ['is-rec','is-count','is-form'].forEach(c => document.body.classList.remove(c));
   if(REC.step === 'rec') document.body.classList.add('is-rec');
   if(REC.step === 'count') document.body.classList.add('is-count');
@@ -993,15 +1012,14 @@ function camStop(){
 function camReset(){
   REC.seq++; if(REC.mr){ REC.mr.onstop = null; REC.mr.ondataavailable = null; REC.mr.onstart=null;REC.mr.onerror=null; }
   camStop(); if(REC.url) URL.revokeObjectURL(REC.url);
-  Object.assign(REC, { step:null, mr:null, blob:null, url:null, habit:null, mode:null, loc:null, dur:null, busy:false,seconds:0,uploaded:null,width:0,height:0,fps:0,bitrate:0 });
+  Object.assign(REC, { step:null, mr:null, blob:null, url:null, habit:null, mode:null, loc:null, dur:null, busy:false,seconds:0,uploaded:null,width:0,height:0,fps:0,bitrate:0,path:null });
   const v = $('cam-v'); v.pause(); v.removeAttribute('src'); v.srcObject = null;
   $('cam-n').textContent = ''; $('cam-sec').classList.add('hide'); camState();
 }
 async function camOpen(){
   camReset(); REC.vis = ['private','shared'].includes(store.get('space_vis')) ? store.get('space_vis') : null; const seq = REC.seq;
   if(!me){ REC.step = 'signin'; return camPaint(); }
-  REC.mime = recMime();
-  if(!REC.mime || !navigator.mediaDevices?.getUserMedia){ REC.step = 'nocam'; return camPaint(); }
+  if(typeof MediaRecorder==='undefined' || !navigator.mediaDevices?.getUserMedia){ REC.step = 'nocam'; return camPaint(); }
   REC.step = 'perm'; camPaint();
   let stream;
   try{ stream = await navigator.mediaDevices.getUserMedia(cameraConstraints()); }
@@ -1009,7 +1027,7 @@ async function camOpen(){
   if(seq !== REC.seq || VIEW !== 'cam'){ stream.getTracks().forEach(t => t.stop()); return; }
   REC.stream = stream;
   const v = $('cam-v'); v.srcObject = REC.stream; v.muted = true;
-  try{await v.play();await cameraReady(v);if(seq!==REC.seq || VIEW!=='cam') return;const capture=await portraitCapture(v,stream);if(seq!==REC.seq || VIEW!=='cam'){capture.stop();return;}REC.capture=capture;Object.assign(REC,{width:capture.width,height:capture.height,fps:capture.fps});}
+  try{await v.play();await cameraReady(v);if(seq!==REC.seq || VIEW!=='cam') return;const capture=await portraitCapture(v,stream);if(seq!==REC.seq || VIEW!=='cam'){capture.stop();return;}REC.capture=capture;REC.mime=await recordingMime(capture);if(!REC.mime)throw new Error('Video recording unsupported');if(seq!==REC.seq || VIEW!=='cam')return;Object.assign(REC,{width:capture.width,height:capture.height,fps:capture.fps,path:capture.path});}
   catch(e){if(seq!==REC.seq || VIEW!=='cam') return;console.error('[portrait capture]',e.message);camStop();REC.step='nocam';return camPaint();}
   REC.step = 'count'; camPaint();
   let n = RULES.countdown || 3; $('cam-n').textContent = n;
@@ -1112,10 +1130,9 @@ async function cityNear(p){
 const note = (t, no) => { const n = $('c-note'); if(n){ n.textContent = t || ''; n.className = 'note' + (no ? ' no' : ''); } };
 async function camSend(){
   if(REC.busy || missing().length || !REC.blob || !me) return;
-  REC.busy = true; REC.step = 'send'; camPaint(); note('locating…');
-  const pos = await geo();
-  if(!pos){ REC.busy = false; REC.step = 'form'; camPaint(); return note('a spot is where I am — allow my position', true); }
-  POS = pos; note('sending…');
+  const started=performance.now();REC.busy = true; REC.step = 'send'; camPaint();$('cam-v').pause();note('sending…');
+  // Position/city and binary transfer are independent; publication waits for both.
+  const place=geo().then(async pos=>({pos,city:pos?await cityNear(pos):null}));
   let path=REC.uploaded;
   try{
    if(!path){
@@ -1127,9 +1144,13 @@ async function camSend(){
     REC.uploaded=path;
    }
   }catch(e){console.error('[upload]',e.message);REC.busy=false;REC.step='form';camPaint();return note('Not sent — try again.',true);}
+  VIDEO_METRICS.uploadMs=Math.round(performance.now()-started);
+  const {pos,city}=await place;
+  if(!pos){REC.busy=false;REC.step='form';camPaint();return note('a spot is where I am — allow my position',true);}
+  POS=pos;
   const shared = REC.vis === 'shared';
   const { data, error } = await sb.rpc('spot_create', { p_habit: REC.habit.name, p_visibility: REC.vis, p_duration_min: REC.dur, p_video: path,
-    p_lat: pos.lat, p_lng: pos.lng, p_city: await cityNear(pos), p_comment: (REC.say || '').trim() || null,
+    p_lat: pos.lat, p_lng: pos.lng, p_city: city, p_comment: (REC.say || '').trim() || null,
     p_mode: shared && REC.loc === 'on' ? REC.mode : null, p_location: shared ? REC.loc : null });
   if(error) console.error('[spot_create]', error.message);
   if(error || !data?.ok){
@@ -1138,7 +1159,7 @@ async function camSend(){
     return note(({ habit:'that habit is no longer in my TOTEHM', too_many:'enough spots for today', video:'the video did not arrive — film it again',
       position:'allow my position', duration:'the duration', signin:'sign in again' })[data?.why] || 'not published', true);
   }
-  REC.say = ''; camReset(); await Promise.all([loadExact(),loadList()]); loadFeed(false);
+  VIDEO_METRICS.publishMs=Math.round(performance.now()-started);REC.say = ''; camReset(); await Promise.all([loadExact(),loadList()]); loadFeed(false);
   go('radar'); const s = EX.list.find(s => s.id === data.id); if(s) openDetail(s); else { const r = await sb.rpc('spot_get',{p_id:data.id}); if(r.error) console.error('[spot_get]',r.error.message); if(r.data?.ok) openDetail(r.data.spot); }
 }
 
@@ -1169,6 +1190,10 @@ function go(v){
   if(v === 'feed') document.querySelectorAll('#feed .clip[data-k]').forEach(c => {io.unobserve(c);io.observe(c);});
   camState(); joyPaint(); paintInts(); radarOn();
 }
+document.addEventListener('visibilitychange',()=>{
+ if(document.hidden){cancelAnimationFrame(RAD.raf);RAD.raf=0;document.querySelectorAll('#feed video,#detail video').forEach(releaseClip);}
+ else {radarOn();if(VIEW==='feed'){const f=$('feed'),height=f.querySelector('.clip')?.offsetHeight;if(height)focusClip(Math.round(f.scrollTop/height));}const v=$('detail').querySelector('video');if(DETAIL && v)playClip(v);}
+});
 function step(d){ if(MAP.open || recordingLocked() || PLAN.busy) return; const v = voisin(d); if(v){ gestureCount++; go(v); } }
 function joyTap(){
   if(VIEW !== 'cam'){ if(VIEW !== 'radar') go('radar'); return; }
@@ -1304,7 +1329,7 @@ function paintMember(){
 $('member').onclick = () => menu(!$('menu').classList.contains('is-open'));
 $('menu').addEventListener('click', async e => {
   if(e.target.closest('[data-signin]')) return ssoLogin(false);
-  if(e.target.closest('[data-out]')){ await sb.auth.signOut({ scope:'local' }); me = null; PSEUDO = null; HABITS = null; S.habit = null; S.q = ''; $('habit-filter').textContent = 'Habit Box · all'; if(VIEW === 'cam') camReset(); PLAN.seq++; PLAN.context = null; PLAN.habit = null; menu(false); pickerClose(); paintMember(); if(VIEW === 'plan') planPaint(); reload(); }
+  if(e.target.closest('[data-out]')){ await sb.auth.signOut({ scope:'local' }); me = null; PSEUDO = null; HABITS = null; S.habit = null; S.q = '';SIGNED.clear();closeDetail();FEED.list=[];EX.list=[];LIST.list=[];paintFeed();paintList();paintRadarEmpty();$('habit-filter').textContent = 'Habit Box · all'; if(VIEW === 'cam') camReset(); PLAN.seq++; PLAN.context = null; PLAN.habit = null; menu(false); pickerClose(); paintMember(); if(VIEW === 'plan') planPaint(); reload(); }
 });
 document.addEventListener('pointerdown', e => { if($('menu').classList.contains('is-open') && !e.target.closest('#menu,#member')) menu(false); });
 
