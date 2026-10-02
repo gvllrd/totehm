@@ -26,41 +26,60 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--coral:#fbd5ca;--g1:#141416;--g2:#1f1f24;--g3:#2a2a30;--hi:#fff;--mid:#b0b0b0;--lo:#909090;--dim:#5a5a5a;--rep:#743169;--ok:#639922}
+:root{--coral:#fbd5ca;--c1:#1f1f24;--c2:#2a2a30;--hi:#fff;--mid:#b0b0b0;--lo:#909090;--dim:#5a5a5a;--ok:#639922}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:#000;color:var(--mid);font-family:'Space Mono',monospace;font-size:13px;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input{font-family:inherit}
 a{color:inherit;text-decoration:none}
 .hide{display:none!important}
-main{min-height:100svh;display:flex;flex-direction:column;align-items:center;gap:18px;padding:64px 16px 48px;text-align:center;max-width:520px;margin:0 auto}
-#home{position:fixed;top:14px;left:16px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
+/* 02/10 — UNE COLONNE CENTRÉE, la même que /streetwear. */
+main{min-height:100svh;display:flex;flex-direction:column;align-items:center;gap:16px;padding:64px 16px 48px;text-align:center;max-width:520px;margin:0 auto}
+#home{position:fixed;top:10px;left:12px;z-index:5;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);padding:6px 8px;border-radius:10px;transition:color .15s ease,background .15s ease}
+.kicker{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--lo)}
 h1{font-family:'Space Mono',monospace;font-weight:700;font-size:22px;letter-spacing:.06em;text-transform:uppercase;color:#fff;line-height:1.2}
-.say{max-width:40ch}
+.say{max-width:38ch}
 .names{font-size:12px;color:var(--mid)}
 .legal{font-size:8.6px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
-.btn{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;color:#fff;background:var(--g2);border:none;border-radius:10px;padding:10px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s ease,color .15s ease}
+/* Le chemin, dit en trois temps : ce qui se passe après le paiement aussi. */
+.how{display:flex;flex-direction:column;gap:6px;width:100%;max-width:340px;padding:4px 0}
+.how div{display:flex;gap:10px;align-items:baseline;justify-content:center;font-size:11px;color:var(--lo)}
+.how b{font-weight:700;color:#fff;font-size:10px;letter-spacing:.1em}
+#price{font-weight:700;font-size:15px;color:#fff;letter-spacing:.04em;min-height:24px}
+.btn{font-family:'Space Mono',monospace;font-weight:700;font-size:14px;color:#fff;background:var(--c1);border:none;border-radius:10px;padding:13px 22px;min-width:240px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s ease,color .15s ease}
 .btn:disabled{color:var(--dim);cursor:default}
-.gh{display:inline-flex;align-items:center;gap:.35em;font-weight:400;font-size:14px}
+.gh{display:inline-flex;align-items:center;justify-content:center;gap:.35em;font-weight:400}
 .gh .get{color:var(--coral)}
 .gh svg{height:1.5em;width:auto;display:block}
-.pieces{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;max-width:320px}
-.piece{font-family:'Space Mono',monospace;font-size:12px;color:var(--mid);background:var(--g2);border:1px solid transparent;border-radius:10px;padding:10px;cursor:pointer;transition:background .15s ease,color .15s ease,border-color .15s ease}
-.piece.is-on{background:var(--g3);color:#fff;border-color:#fff}
-.in{font-family:'Quantico',sans-serif;font-size:14px;color:#fff;background:var(--g2);border:none;border-radius:10px;padding:10px 12px;width:100%;max-width:320px;outline:none;caret-color:var(--coral)}
-.tick{display:flex;gap:8px;align-items:center;font-size:10px;letter-spacing:.06em;color:var(--lo)}
+.step-h{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--lo)}
+.pieces{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;max-width:320px}
+.piece{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:var(--mid);background:var(--c1);border:1px solid transparent;border-radius:10px;padding:14px 10px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s ease,color .15s ease,border-color .15s ease}
+.piece svg{width:34px;height:34px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.piece.is-on{background:var(--c2);color:#fff;border-color:#fff}
+.in{font-family:'Quantico',sans-serif;font-size:14px;color:#fff;background:var(--c1);border:none;border-radius:10px;padding:11px 12px;width:100%;max-width:320px;outline:none;caret-color:#fff;text-align:center}
+.in::placeholder{color:var(--dim)}
+.tick{display:flex;gap:8px;align-items:center;font-size:10px;letter-spacing:.06em;color:var(--lo);cursor:pointer}
 .tick a{text-decoration:underline}
+.tick input{accent-color:#fff}
 .note{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);min-height:16px}
-.note.ok{color:var(--ok)}.note.no{color:var(--rep)}
-#form{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
-@media(hover:hover){.btn:not(:disabled):hover,.piece:hover{background:var(--g3);color:#fff}#home:hover,.tick:hover,.legal:hover{color:#fff}}
+.note.ok{color:var(--ok)}.note.no{color:#fff}
+#form{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;padding-top:6px}
+#s-nothp{display:flex;flex-direction:column;align-items:center;gap:12px}
+@media(hover:hover){.btn:not(:disabled):hover,.piece:hover{background:var(--c2);color:#fff}#home:hover{background:var(--c1);color:#fff}.tick:hover,.legal:hover{color:#fff}}
+
+
 
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
 @media(hover:hover){
 #home:hover,
+.kicker:hover,
 .names:hover,
 .legal:hover,
+.how div:hover,
+.step-h:hover,
 .piece:hover,
+.in:hover::placeholder,
 .tick:hover,
 .note:hover{color:#fff}
 }
@@ -83,10 +102,17 @@ h1{font-family:'Space Mono',monospace;font-weight:700;font-size:22px;letter-spac
 </svg>
 <a id="home" href="/">Back</a>
 <main>
+  <div class="kicker">Totehm Cloth · Luxury</div>
   <h1>Totehmize<br>my cloth &amp; stuff</h1>
   <p class="say">Your own piece — a bag, a jacket, shoes — totehmized from one Box of your TOTEHM.</p>
   <div class="names">Hermès · Louis Vuitton · Gucci · any piece you own</div>
   <div class="legal">Independent. Not affiliated with these brands.</div>
+  <div class="how" aria-label="how it works">
+    <div><b>1</b><span>choose your piece, launch</span></div>
+    <div><b>2</b><span>we write to you: your Box, the sending</span></div>
+    <div><b>3</b><span>your piece comes back totehmized</span></div>
+  </div>
+  <div id="price"></div>
 
   <div id="s-wait" class="note">…</div>
 
@@ -94,7 +120,7 @@ h1{font-family:'Space Mono',monospace;font-weight:700;font-size:22px;letter-spac
     <button class="btn" id="signin" type="button">Sign in with TOTEHM</button>
   </div>
 
-  <div id="s-nothp" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:10px">
+  <div id="s-nothp" class="hide">
     <p class="say">The luxury totehmization is for TotehmPaper owners.</p>
     <button class="btn gh" id="get-higher" type="button"><span class="get">Get</span><svg viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-slogan"></use></svg></button>
   </div>
@@ -104,11 +130,12 @@ h1{font-family:'Space Mono',monospace;font-weight:700;font-size:22px;letter-spac
   <div id="s-done" class="hide note ok">launched — we write to you by email</div>
 
   <div id="form" class="hide">
+    <div class="step-h">Your piece</div>
     <div class="pieces" role="radiogroup" aria-label="Your piece">
-      <button class="piece is-on" type="button" data-piece="bag" role="radio" aria-checked="true">Bag</button>
-      <button class="piece" type="button" data-piece="jacket" role="radio" aria-checked="false">Jacket</button>
-      <button class="piece" type="button" data-piece="shoes" role="radio" aria-checked="false">Shoes</button>
-      <button class="piece" type="button" data-piece="other" role="radio" aria-checked="false">Other</button>
+      <button class="piece is-on" type="button" data-piece="bag" role="radio" aria-checked="true"><svg viewBox="0 0 34 34" aria-hidden="true"><path d="M7 13h20l-2 16H9z"/><path d="M12 13c0-4 2-7 5-7s5 3 5 7"/></svg>Bag</button>
+      <button class="piece" type="button" data-piece="jacket" role="radio" aria-checked="false"><svg viewBox="0 0 34 34" aria-hidden="true"><path d="M12 6l5 4 5-4 6 4-2 6-3-1v14H11V15l-3 1-2-6z"/><path d="M17 10v19"/></svg>Jacket</button>
+      <button class="piece" type="button" data-piece="shoes" role="radio" aria-checked="false"><svg viewBox="0 0 34 34" aria-hidden="true"><path d="M5 22c4 0 7-2 9-6l4 3c3 2 7 3 11 3v4H5z"/><path d="M5 26h24"/></svg>Shoes</button>
+      <button class="piece" type="button" data-piece="other" role="radio" aria-checked="false"><svg viewBox="0 0 34 34" aria-hidden="true"><rect x="9" y="9" width="16" height="16" rx="1"/><path d="M17 13v8M13 17h8"/></svg>Other</button>
     </div>
     <input class="in" id="note" maxlength="280" placeholder="your piece, in a few words">
     <label class="tick"><input type="checkbox" id="terms"> I read the <a href="/terms_of_sale" target="_blank" rel="noopener">Simple terms of sale</a></label>
@@ -238,7 +265,7 @@ sb.auth.onAuthStateChange(ev => {
 
 
 /* ══ L'ÉTAT — une lecture, un écran ═════════════════════════════════ */
-const BUILD = '2026-10-02';
+const BUILD = '2026-10-02-centered';
 let A = null, PIECE = 'bag', SEQ = 0, BUSY = false;
 window.__totehm_luxury = () => ({ build: BUILD, signed_in: !!A?.signed_in, thp: !!A?.thp,
   open: !!A?.open, price_loaded: A?.price_cents != null, orders: A?.orders ?? 0, piece: PIECE });
@@ -254,6 +281,7 @@ async function load(){
   if(seq !== SEQ) return;              // une réponse tardive n'écrase pas un état plus frais
   if(error){ console.error('[luxury_access]', error.message); $('s-wait').textContent = 'unavailable — try again'; show('s-wait'); return; }
   A = data;
+  $('price').textContent = A?.price_cents != null ? money(A.price_cents, A.currency) + ' · to launch' : '';
   const launched = new URLSearchParams(location.search).get('launched') === '1';
   if(!A.signed_in){ show('s-out'); return; }
   if(!A.thp){ show('s-nothp'); return; }

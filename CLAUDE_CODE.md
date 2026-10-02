@@ -6,7 +6,22 @@
 > compose, caddy, n8n, le master**. Une commande simple par ligne. Aucun
 > secret dans ce fichier.
 
-## Tâche en cours — 01/10/2026 · le ménage en base (une approbation)
+## Tâche en cours — 02/10/2026 · n8n ne tourne plus (priorité)
+
+Mesuré par la session cloud (MCP n8n, exécution 72 du workflow F) :
+`⚙️ CONFIG` lève `process is not defined` — le task runner de n8n n'expose
+plus `process`. Les six workflows TOTEHM A→F lisent leurs clés ainsi (lu dans
+B et F) : aucun vêtement ne se synchronise depuis Printful
+(`totehm_cloth_support` = 0 ligne), aucune œuvre ne serait générée.
+
+1. Dans chaque nœud `⚙️ CONFIG` (A, B, C, D, E, F) : `process.env.X` → `$env.X`
+2. `docker compose` de n8n : `N8N_BLOCK_ENV_ACCESS_IN_NODE=false`, puis redémarrer n8n
+3. API Printful (`GET /webhooks`) : l'URL doit être `https://n8n.higher.boutique/webhook/b7dc2823-a10d-4985-bae9-faae52ee0c49/printful-product`, types `product_synced`, `product_updated`, `product_deleted`
+4. Rejouer F pour chaque produit du store Printful (`GET /store/products`) : POST sur cette URL avec `{"type":"product_updated","data":{"sync_product":{"id":<id>}}}`
+5. Attendu : une ligne par produit dans `totehm_cloth_support`, `active=false`, `price=0`, `max_pieces=0`. Le prix et le stock = un « oui » de Wah (prix live), posés ensuite par la session cloud.
+6. Rapport : une ligne par étape, la valeur mesurée (nombre de lignes, ids).
+
+## Tâche précédente — 01/10/2026 · le ménage en base (une approbation)
 
 La session cloud ne peut pas faire approuver un `drop`. Toi, si.
 
@@ -103,7 +118,21 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `20261002_figher_club_luxury.sql` APPLIQUÉE par MCP : ne pas réappliquer.
 > Aucun travail Oracle/n8n demandé.
 
-### Correction 0.27 — 02/10/2026 · le papier de totehm.com a deux faces
+### Correction 0.27 — 02/10/2026 · Streetwear et Luxe, centrés
+
+> /streetwear et /luxury : une colonne centrée, minimaliste mais visible ;
+> trois étapes dites en haut (BOX → CLOTH → MATERIALIZE), un seul appel à
+> l'action, contrôles gris (plus de tuile perforée sur les flèches). Prix et
+> tailles Printful visibles sur le vêtement. L'APERÇU n'est pas l'œuvre : la
+> place (`print_area`), la palette de la Box, le style et le nom gravé,
+> dessinés sur la page, sans appel payant ; l'œuvre (n8n, gpt-image-1 ×7,
+> curation Telegram) reste une surprise jusqu'au déballage. Un aperçu IA avant
+> achat coûterait ~0,06 $ par image par visiteur et casserait la promesse :
+> refusé. Luxe : prix serveur affiché d'emblée, pièces dessinées, le chemin
+> en trois temps. Aucune migration. n8n en panne (`process.env`) : tâche
+> Claude Code du 02/10.
+
+### Correction 0.28 — 02/10/2026 · le papier de totehm.com a deux faces
 
 > L'atterrissage de COM reste UN objet : le papier. Recto = MON Totehm (le
 > logo se déconstruit en Totehm déplié, inchangé). Verso = la recherche d'UN

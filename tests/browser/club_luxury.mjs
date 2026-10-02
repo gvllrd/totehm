@@ -57,7 +57,12 @@ for(const f of ['discover', 'discover_lisbon', 'get_higher', 'stoner', 'origins'
   await ctx.route('https://checkout.stripe.test/**', r => r.fulfill({ status:200, contentType:'text/html', body:'<h1>stripe</h1>' }));
   await pg.goto('https://www.higher.boutique/luxury');
   await pg.waitForFunction(() => window.__totehm_luxury && window.__totehm_luxury().price_loaded);
-  ok(/€500/.test(await pg.textContent('#launch')), 'price from the server: €500');
+  ok(/€500/.test(await pg.textContent('#launch')) && /€500 · to launch/.test(await pg.textContent('#price')), 'price from the server: €500, said before the form');
+  const L = await pg.evaluate(() => ({ build: window.__totehm_luxury().build, icons: document.querySelectorAll('.piece svg').length,
+    centre: Math.abs((document.querySelector('#launch').getBoundingClientRect().left + document.querySelector('#launch').getBoundingClientRect().right) / 2 - innerWidth / 2),
+    scroll: document.documentElement.scrollWidth - innerWidth, how: document.querySelectorAll('.how > div').length }));
+  ok(L.build === '2026-10-02-centered' && L.icons === 4 && L.how === 3 && L.centre < 2 && L.scroll <= 0, 'luxury: centered, 4 drawn pieces, 3 steps, no horizontal scroll');
+  await pg.screenshot({ path: OUT + '/luxury_form.png', fullPage:true });
   ok(await pg.isVisible('#form') && !(await pg.isVisible('#s-nothp')), 'THP owner sees the form');
   await pg.click('[data-piece="jacket"]');
   await pg.fill('#note', 'black leather jacket');
