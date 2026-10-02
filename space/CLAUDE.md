@@ -1,5 +1,17 @@
 # space/CLAUDE.md — totehm.space : DO WITH ME (un Spot, cinq vues)
 
+## LE PAPIER · 02/10/2026
+
+- Le papier rotatif remplace visuellement Habit Box · all ; garder `#habit-filter` caché et tout son câblage. Même sélecteur, rendu et RPC.
+- Une seule Habit (`S.habit`), commune aux trois vues horizontales ; All Habit Boxes efface le choix.
+- Premier enfant de `#heading`, au-dessus du titre, à 14 px + zone sûre ; 64/56/48 px. Visible et vivant seulement en radar ; pseudo membre plafonné.
+- Tap sur les deux faces : `poser` puis ouvrir ; re-tap : fermer et réveiller. Glissé >7 px : rotation, clic avalé, aucune navigation.
+- Verso : `me && PSEUDO`, sinon Tap to open it ; `textContent`, Quantico mesuré, peint par `paintMember`, aucune lecture réseau supplémentaire.
+- Copier le moteur du papier du 25/09 : ressort, rotation, dérive, souris, glissé/lancer ; retirer entièrement son gyroscope. La boussole du radar reste seule.
+- Aucun `data-com` : le papier ouvre uniquement les Habits. Exclure la scène des deux chemins de gestes et de la fermeture extérieure.
+- Posé tant que le sélecteur est ouvert ; zéro rAF hors radar, onglet caché ou mouvement réduit. Sélecteur placé sous la hauteur mesurée de l'en-tête.
+- Hint selon la Habit, caché pendant l'ouverture ; diagnostic `paper` = booléens et compteur, jamais le pseudo. Aucun CDN ni fichier ajouté.
+
 > Chargé automatiquement quand on travaille dans `space/`. Les règles
 > transverses sont dans le `CLAUDE.md` de la racine ; l'histoire dans
 > `docs/POSTMORTEMS.md`. Sections déplacées TELLES QUELLES de l'ancien
@@ -10,7 +22,7 @@
 
 Cette section fait autorité sur TOUTES les anciennes consignes SPACE. Ne
 jamais enlever les cinq vues, le joystick, les gestes ni les panneaux
-ordinateur pour simplifier le contenu. BUILD `2026-10-02-fluid-video`.
+ordinateur pour simplifier le contenu. BUILD `2026-10-02-paper`.
 
 | position | titre · sous-titre | parcours |
 |---|---|---|
