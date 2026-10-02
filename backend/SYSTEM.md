@@ -23,6 +23,8 @@
 | n8n F, exécution 72 (rejeu hoodie 455627782) | **error** `process is not defined` au nœud `⚙️ CONFIG` ; même lecture `process.env` dans B (lu) → tâche Claude Code du 02/10 |
 | `artistic_styles` actifs | 6 / 6, image pour chacun |
 | tests navigateur | `streetwear.mjs` 22/22 · `club_luxury.mjs` 30/30 |
+| pont SSO (logs Auth 02/10) | chaque `sso-redeem` 200 suivi de `/auth/v1/verify` **400** « Only the token_hash and type should be provided » · même appel sans `email` → 403 `otp_expired` sur un jeton factice (= validation passée) |
+| pont SSO corrigé (fusion `aa1121f`) | 13 copies sans `email` · prod : boutique `/streetwear` `/luxury`, figher.club `/`, totehm.space `/`, totehm.com `/totehm` → 200, ancien appel absent, nouveau présent |
 | prod (pg_net, fusion `e57f734`, Vercel boutique READY) | `/streetwear` 200, `BUILD='2026-10-02'`, `drawAura` présent, plus de `logo-rep` · `/luxury` 200, `BUILD='2026-10-02-centered'`, `#price` · contenu identique au fichier (64 373 et 21 770 caractères) |
 
 ## 0 · FIGHER.CLUB + LUXE — 02/10/2026 : le branding Higher au Club, deux clés, la totehmisation luxe
