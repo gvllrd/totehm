@@ -82,12 +82,18 @@ Deno.serve(async (req) => {
     return json({ error: "waiver_required" }, 400);
   }
 
-  // D'où vient l'achat, là il revient : le marché FIGHER (l'exemplaire
-  // apparaît dans My collection) ou la boutique (la méthode s'ouvre).
+  // D'où vient l'achat, là il revient. ⚠️ 02/10/2026 : Get Higher et la
+  // méthode vivent sur figher.club. `from` est un NOM (`method` | `market`),
+  // jamais une URL : `method` → la méthode s'ouvre, `market` (défaut sur le
+  // Club, la page du marché ne l'envoie pas) → l'exemplaire apparaît dans
+  // My collection. La boutique garde son retour pour un onglet resté ouvert.
   // Chemins ABSOLUS sur des origines fixes — jamais une URL reçue.
   const duClub = origineDe("club", origin);
-  const retour = duClub ? `${SITE_CLUB}/market?owned=totehmpaper` : `${SITE_BOUT}/stoner.html?checked=1`;
-  const annule = duClub ? `${SITE_CLUB}/market?art=totehmpaper` : `${SITE_BOUT}/get_higher.html`;
+  const versMethode = duClub && body?.from === "method";
+  const retour = versMethode ? `${SITE_CLUB}/stoner?checked=1`
+    : duClub ? `${SITE_CLUB}/market?owned=totehmpaper` : `${SITE_CLUB}/stoner?checked=1`;
+  const annule = versMethode ? `${SITE_CLUB}/get_higher`
+    : duClub ? `${SITE_CLUB}/market?art=totehmpaper` : `${SITE_CLUB}/get_higher`;
 
   try {
     // payment_method_types explicite : Stripe refuse une devise sans
