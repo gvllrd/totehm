@@ -509,21 +509,17 @@ perforated paper, the logo on its face — lying flat, still, where it
 rests. Nothing flashes, nothing explains itself: it has to make you want
 to pick it up.
 
-**It behaves like real paper, not a screen effect.** Touch it and it's in
-your hand: it follows your finger or your mouse exactly, bends and
-stretches a little the way a thin sheet does when it's pulled fast or
-held by a corner. Let go and it keeps the throw — it slides, spins,
-drifts back toward the middle like the table has the faintest pull — and
-it always settles back flat and centered, however hard it was thrown.
-That last guarantee is not decorative: it's what lets the paper open
-correctly no matter where a gesture leaves it.
+**It behaves like real paper, not a screen effect** — since 02/10, a paper
+you turn over rather than one you throw (see below). However it was
+turned, it always settles flat and in place: that guarantee is not
+decorative, it's what lets the paper open correctly every time.
 
 **It does not open for a stranger. Not signed up, nothing is allowed** —
 that part hasn't moved. No guest mode, no demo habits, no "try it first".
-A plain tap (no drag) without an account asks, one question at a time,
+A plain tap on the face without an account asks, one question at a time,
 for an email, the code, then the name of your Totehm — and the paper
-opens by itself. Picking it up and playing with it, though, is free to
-anyone: it's a physical object on the screen, not an account feature.
+opens by itself. Turning it over and searching, though, is free to
+anyone.
 
 - **No drop shadow** (§13): a real sheet doesn't need one at rest, and
   what would anchor it — the pedestal's light — no longer exists.
@@ -533,16 +529,21 @@ anyone: it's a physical object on the screen, not an account feature.
   every other question in the Totehm (§13). Bebas Neue does not appear
   anywhere in `com/totehm.html` (28/09 exception to the general stack).
 
-**The paper has two faces — 02/10/2026.** The face is *my* Totehm. Turn
-it over (the word at the bottom of the screen says so) and the back is the
-search for *another* Totehm: the same perforated navy paper without the
-logo's ink, and two words in Quantico — *search a Totehm*. Two faces, two
-ways of unfolding: the face comes apart into the Totehm (the four layers
-reach their places); the back opens like a sheet — the paper grows until it
-covers the screen, its words grow with it and dissolve, and a field
-appears. Searching needs no account. A result is the **name** of a Totehm
-on its perforated navy tile, and what it offers in Space Mono — never what
-is inside it. The name of the member no longer rides on the back.
+**The paper has two faces, and you turn it — 02/10/2026.** It still rests
+flat and still, face up, and it never turns on its own. The face is *my*
+Totehm: a tap opens it, as before. The back carries the **name** of my
+Totehm in Quantico (*search a Totehm* for a visitor). Turning it over —
+with a finger, a flick, or the word at the bottom of the screen — is the
+search: no second step, the camera dives into the back of the paper, the
+screen becomes its navy perforated sheet, and the name grows until it *is*
+the field, already selected — change the name, find another Totehm.
+Searching needs no account. A result is the **name** of a Totehm on its
+perforated navy tile and what it offers, in Space Mono — never what is
+inside it. Close it and you zoom back out onto the back of the paper, which
+lays itself face up again: the threshold always starts on *my* Totehm. On
+`totehm.space` the same paper turns slowly by itself with the member's
+name — that's Space's grammar, not this one. The blotter gestures of 28/09
+(slide, throw, stretch) are gone: a drag now turns it.
 
 ### SEED — vs self-help tools
 
