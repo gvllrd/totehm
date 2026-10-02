@@ -132,6 +132,18 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > en trois temps. Aucune migration. n8n en panne (`process.env`) : tâche
 > Claude Code du 02/10.
 
+### Correction 0.28 — 02/10/2026 · le papier de totehm.com a deux faces
+
+> L'atterrissage de COM reste UN objet : le papier. Recto = MON Totehm (le
+> logo se déconstruit en Totehm déplié, inchangé). Verso = la recherche d'UN
+> AUTRE Totehm, sans compte : retourner le papier (le mot du bas), puis le
+> toucher — il se déplie jusqu'à couvrir l'écran, la saisie est en Quantico,
+> un résultat = un NOM et une offre, jamais un contenu. `/search` reste la
+> même recherche sur sa page. La console gagne « Copy a post for my
+> networks » (phrase + lien /@nom, aucun prix) ; pas de page « influenceurs »
+> (BRAND : pas de caste créateur). Front seul : aucune migration, aucune
+> Edge Function, aucun travail Oracle/n8n.
+
 ## Le rapport
 
 Un tableau : ce qui a été fait, la valeur mesurée, ce qui n'a pas pu l'être.

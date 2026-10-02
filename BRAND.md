@@ -532,7 +532,17 @@ anyone: it's a physical object on the screen, not an account feature.
 - The sign-up door's question is a label, Space Mono — the same voice as
   every other question in the Totehm (§13). Bebas Neue does not appear
   anywhere in `com/totehm.html` (28/09 exception to the general stack).
-  The name of the Totehm stays in Quantico, on the back of the paper.
+
+**The paper has two faces — 02/10/2026.** The face is *my* Totehm. Turn
+it over (the word at the bottom of the screen says so) and the back is the
+search for *another* Totehm: the same perforated navy paper without the
+logo's ink, and two words in Quantico — *search a Totehm*. Two faces, two
+ways of unfolding: the face comes apart into the Totehm (the four layers
+reach their places); the back opens like a sheet — the paper grows until it
+covers the screen, its words grow with it and dissolve, and a field
+appears. Searching needs no account. A result is the **name** of a Totehm
+on its perforated navy tile, and what it offers in Space Mono — never what
+is inside it. The name of the member no longer rides on the back.
 
 ### SEED — vs self-help tools
 
