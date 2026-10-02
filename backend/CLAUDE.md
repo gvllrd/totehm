@@ -136,7 +136,24 @@ Une œuvre (hors THP) ne s'achète qu'avec un THP (`thp_required`).
 enchères, gamification.
 
 
-### ⛔ LE PASSEPORT FIGHER — UNE FONCTION, TROIS CLÉS — 23/09/2026
+### ⛔ LE PASSEPORT FIGHER — UNE FONCTION, DEUX CLÉS — 02/10/2026
+
+**Wah, 02/10 : « figher.club est accessible à toute personne possédant un
+TotehmPaper et au moins une Habit Box ».** `member = comp OR (thp AND
+habit)` ; `habit` = la vue Habit non vide (`totehm_complete()->habits`).
+L'annuel sort de la règle ; `complete`, `annual`, `trial` restent dans la
+réponse (des pages déployées les lisent). L'achat d'art suit la même porte :
+`art_primary_reserve`, `art_resale_reserve`, `market_view.can_buy_art`
+lisent `_is_figher` (code de refus inchangé : `thp_required`) ;
+`market_view.door` dit ce qui manque. Lecteurs de `member` au 02/10 :
+ces trois-là, `creator_card`, `reveal_cloth`, `my_entitlements`,
+`spots_radar`, `spots_past`, `moments_feed`, et les anciens
+`spot_publish` / `spot_apply` / `moment_publish` (SPACE ne les appelle
+plus). Migration `20261002_figher_club_luxury.sql`.
+
+> Le texte ci-dessous (23/09) décrit l'ancienne règle à trois clés.
+
+#### 23/09/2026 — trois clés (dépassé le 02/10)
 
 **MASTER §11 : TOTEHM COMPLET + THP POSSÉDÉ + ANNUEL ACTIF.** Trois clés,
 **une** fonction : `_figher(uuid)`. Le Club, l'Espace, la Boutique et le
@@ -262,7 +279,7 @@ deux derniers tant qu'ils ne sont pas construits.
 de fausse ligne dans `subscriptions` ou `stoner_access` : ce serait mentir
 au webhook, au grand livre et aux statistiques. Un accès offert a sa
 table, **`figher_comps`** (email, raison, depuis, jusqu'à), et `_figher`
-la lit : `member = comp OR (les trois clés)`. Les trois clés restent
+la lit : `member = comp OR (les clés)` — deux depuis le 02/10. Les trois clés restent
 VRAIES dans la réponse — on ne prétend pas que le Totehm est complet — et
 `comp: true` dit pourquoi la porte est ouverte.
 

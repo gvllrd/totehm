@@ -15,6 +15,28 @@
 
 ---
 
+## 0 · FIGHER.CLUB + LUXE — 02/10/2026 : le branding Higher au Club, deux clés, la totehmisation luxe
+
+Migration `20261002_figher_club_luxury.sql` APPLIQUÉE par MCP (`20261002_figher_club_luxury`).
+
+| vérifié le 02/10 | valeur mesurée |
+|---|---|
+| `_figher.member` | `comp OR (thp AND habit)` ; membres : 1 avant, 1 après (3 comptes) |
+| porte de l'achat d'art | `_art_owns_thp(` restant : 0 · `_is_figher(` : 3 (primaire, revente, `market_view`) |
+| `market_view(null,null)->door` | `{"thp": false, "habit": false}` |
+| `luxury_access()` anonyme | `price_cents 50000 · eur · open true · thp false` |
+| `luxury_settle` (selftest auto-annulé) | idempotent sur la session, pièce inconnue → `other`, note bornée à 280 → `SELFTEST_OK` |
+| droits | `_figher`, `luxury_settle`, `art_*_reserve` : `service_role` seul · RLS active sur `luxury_offer`, `luxury_orders`, aucune politique |
+| `luxury-checkout` v1 (pg_net) | `{quote:true}` → 200 `{price_cents:50000,currency:"eur",open:true}` · sans session → 401 `no_session` |
+| `stripe-webhook` avant déploiement | v38 identique au dépôt (6 marqueurs comparés) |
+| tests navigateur | `club_luxury.mjs` 29/29 · `market.mjs`, `streetwear.mjs`, `console.mjs` : 0 échec |
+
+Pages : 7 pages + `api/geo.js` + `assets/signs/` passent de `boutique/` à `club/` ;
+`boutique/vercel.json` et `space/vercel.json` redirigent (308) vers `www.figher.club/<page>`.
+`higher-checkout` : `from:'method'` (depuis le Club) → `figher.club/stoner?checked=1`.
+`stripe-webhook` : cas `luxury` → `luxury_settle` + email de confirmation ; lien de la
+méthode dans l'email THP → `figher.club/stoner` (il pointait encore sur totehm.space).
+
 ## 0 · SPACE — 02/10/2026 : fluidité de capture, du feed et de publication
 
 **État : [PR #15](https://github.com/gvllrd/totehm/pull/15) fusionnée (`7e86b2a`), déployé et vérifié.**

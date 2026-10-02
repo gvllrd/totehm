@@ -257,7 +257,7 @@ transforme une panne passagère en perte définitive.
 
 ### Le passeport
 
-`_figher(uuid)` : **Totehm complet + THP + annuel actif**, un booléen
+`_figher(uuid)` : **THP + une Habit Box** (02/10 ; avant : Totehm complet + THP + annuel), un booléen
 `member`. Tout ce qui est premium le lit — `figher_access()` pour les pages,
 `_is_figher()` dans les fonctions. Le THP se lit dans `stoner_access` **par
 email** (le webhook l'écrit avant que l'acheteur ait un compte).
@@ -645,8 +645,8 @@ membre. Un abonnement expiré, impayé ou annulé retombe **automatiquement** à
 Les valeurs `seed`/`plant`/`tree` restent lisibles en base pour l'historique de
 développement. **Elles ne sont jamais montrées à l'utilisateur.**
 
-⚠️ **Depuis le 23/09, l'adhésion annuelle est UNE des trois clés** de FIGHER
-(voir plus haut). `my_membership()` dit si l'annuel est actif ; `_figher()`
+⚠️ **Du 23/09 au 02/10, l'adhésion annuelle était une des clés** de FIGHER ;
+depuis le 02/10 la règle est THP + une Habit Box (voir plus haut). `my_membership()` dit si l'annuel est actif ; `_figher()`
 dit si la personne est membre FIGHER. Pour un droit premium, c'est toujours
 la seconde qu'on lit.
 

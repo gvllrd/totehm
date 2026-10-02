@@ -4,9 +4,33 @@
 > transverses sont dans le `CLAUDE.md` de la racine ; l'histoire dans
 > `docs/POSTMORTEMS.md`. Sections déplacées TELLES QUELLES de l'ancien
 > `CLAUDE.md` le 30/09/2026, les plus récentes d'abord : un renvoi « plus
-> haut » peut viser la racine ou un autre dossier. Fichiers : `streetwear.html`, `stoner*.html`, `get_higher.html`, `discover*.html`, `origins.html`, `play_lisbon_street.html`.
+> haut » peut viser la racine ou un autre dossier. Fichiers : `index.html`, `streetwear.html`, `luxury.html`, `totehm.html`, `terms_of_sale.html`. Get Higher, Lisbon, Stoner et Origins sont sur figher.club depuis le 02/10 (`club/CLAUDE.md`).
 
-## ⛔ ÉTAT AU 01/10/2026 — Space Mono et Quantico, contrôles gris
+## ⛔ ÉTAT AU 02/10/2026 — LA TOTEHMISATION : STREETWEAR ET LUXE
+
+**Wah, 02/10 : higher.boutique = la totehmisation Streetwear et Luxe.** Get
+Higher / Make the Lisbon Streets Higher / la méthode / Origins sont partis
+sur figher.club ; `vercel.json` redirige (308) chaque ancien chemin et
+`/assets/signs/*`. Sous la vidéo `same_but_opposite.mp4`, [Get Higher] et
+Origins mènent à figher.club par le pont (`data-club`, cible `club`).
+
+**LE LUXE** (`luxury.html`, `BUILD 2026-10-02`, `__totehm_luxury()`) :
+- réservé aux propriétaires d'un TotehmPaper — vérifié par
+  `luxury-checkout` (`_art_owns_thp`), la page ne fait que le dire ;
+- le prix vient de `luxury_offer` (slug `launch`, 500 € le 02/10), lu par
+  `luxury_access()` ; jamais écrit dans la page ;
+- le membre choisit sa pièce (bag · jacket · shoes · other), une note
+  (280 car.), coche les CGV → Stripe (`metadata.product = 'luxury'`) →
+  le webhook écrit `luxury_orders` (`luxury_settle`) et confirme par email ;
+- Wah reçoit la notification de paiement de Stripe ; la suite (pièce, Box,
+  envoi) se fait par email avec le membre.
+
+**LES MARQUES : des NOMS, jamais des logos** (Hermès · Louis Vuitton ·
+Gucci) + « Independent. Not affiliated with these brands. » Les fichiers
+`hermes.jpg`, `louis_vuitton.jpg`, `gucci.jpg` sont supprimés : un logo
+laisse croire à un partenariat.
+
+## 01/10/2026 — Space Mono et Quantico, contrôles gris
 
 Bebas Neue et Jost/Futura sont retirés des onze pages (imports et CSS) : la
 méthode Stoner, les titres et les sous-titres passent en Space Mono (Bold
@@ -22,8 +46,8 @@ du menu membre (`#member`).
 ## ⛔ ÉTAT AU 30/09/2026
 
 **⚠️ LA BOUTIQUE MONTRE, FIGHER VEND.** « Acquire » (origins,
-play_lisbon_street) ouvre l'œuvre sur `figher.club/market?art=<slug>` par
-le pont. Le THP s'achète encore depuis la méthode (higher-checkout) ; le
+play_lisbon_street — sur figher.club depuis le 02/10) ouvre l'œuvre sur
+`/market?art=<slug>`, même origine. Le THP s'achète encore depuis la méthode (higher-checkout) ; le
 retour de Stripe dépend de l'origine (`origineDe`).
 
 **Pick up the box** (`boutique/streetwear.html`) : MY TOTEHM → HABIT

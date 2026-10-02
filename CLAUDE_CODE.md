@@ -90,6 +90,19 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > TikTok sur téléphone. Bunny attend toujours son CDN protégé ; aucun nouveau
 > paiement, travail Oracle/n8n, ni migration requis. Voir SYSTEM.md §0.
 
+### Correction 0.26 — 02/10/2026 · figher.club = le branding Higher · le luxe
+
+> figher.club = l'expérimentation du branding de higher.boutique : [Get
+> Higher], Make the Lisbon Streets Higher, la méthode Stoner et Origins y
+> vivent (308 depuis la boutique et totehm.space). FIGHER = THP + une Habit
+> Box (l'annuel sort de la règle) ; collectionner/revendre l'art suit cette
+> porte. higher.boutique = la totehmisation Streetwear et Luxe ; le luxe se
+> lance à 500 € (`luxury_offer`), réservé aux propriétaires d'un THP,
+> `metadata.product = 'luxury'`. Marques nommées, jamais leurs logos.
+> L'économie créateur 80/20 reste sur COM/SPACE. Migration
+> `20261002_figher_club_luxury.sql` APPLIQUÉE par MCP : ne pas réappliquer.
+> Aucun travail Oracle/n8n demandé.
+
 ## Le rapport
 
 Un tableau : ce qui a été fait, la valeur mesurée, ce qui n'a pas pu l'être.

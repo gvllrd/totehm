@@ -14,9 +14,9 @@ transversal system. **This table wins over any older mapping in this file.**
 | domain | what it is | the question it answers first |
 |---|---|---|
 | `totehm.com` | **the SOURCE** — the Totehm, five views, the Boxes. BUILD YOUR LIFE. | who am I, what am I building, what do I want, do, refuse, know? |
-| `figher.club` | **membership · rights · access · subscriptions · money** | what do I have, what can I access, who do I follow, who follows me, what do I earn, when am I paid? |
+| `figher.club` | **the Higher branding, lived** — [Get Higher], Make the Lisbon Streets Higher, the Stoner method · art · collection · market (02/10) | what do I collect, and how high do I get? |
 | `totehm.space` | **a Habit Box becomes an action lived with members** — the Spot | what can I do, where, when, with whom? |
-| `higher.boutique` | **any Box becomes a Totehm Cloth** — plus the Stoner method and the THP | which Box do I want to materialize? |
+| `higher.boutique` | **totehmization** — any Box becomes a Streetwear Cloth; with a TotehmPaper, your own luxury piece (02/10) | which Box do I want to materialize, on what? |
 | TotehmBot | transversal, Telegram — the Higher Self as a mirror | — |
 
 > **01/10/2026 — for oneself, or for oneself and others.** COM and SPACE
@@ -65,8 +65,8 @@ TOTEHM CLOTH  = the physical materialization of ONE Box of that source
 **TOTEHM ≠ TOTEHM CLOTH.** Never write one for the other.
 
 **The Totehm is the passport.** A complete Totehm (one non-empty Box in each
-of the five views) opens the premium ecosystem; FIGHER adds the THP and the
-annual membership. Every member of FIGHER can monetize their Totehm — there
+of the five views) opens the premium ecosystem. FIGHER (02/10) = the THP and
+one Habit Box. Every member of FIGHER can monetize their Totehm — there
 is no separate "creator" caste, in the product or in the words.
 
 **Prices never appear in this file.** They come from the server.
@@ -259,7 +259,7 @@ Le paywall de `.com` n'est pas un formulaire d'achat. C'est un objet.
 dans ce fichier (`TOTEHM_MASTER.md` §0.3 ; le MASTER cite « ~33 € » comme
 cible historique, `SYSTEM.md` §2 donne l'état mesuré).
 **Ce que ça donne :** accès à la méthode complète (stoner.html) — et, depuis le
-23/09, **la deuxième des trois clés de FIGHER** (Totehm complet · THP · annuel).
+02/10, **une des deux clés de FIGHER** (THP · une Habit Box) — et la porte du luxe sur higher.boutique.
 
 Interface d'achat (get_higher.html au 28/08/2026) :
 - Le logo TOTEHM en grand, centré, comme un carré de papier à tenir entre les doigts.
@@ -292,20 +292,25 @@ What `.com` may say: `GET HIGHER` (the slogan works with zero context), the
 numbered place, the ten steps, the artistic and neurological framing.
 
 **Figher Club belongs to `figher.club`** — its own domain since 23/09 (MASTER
-§8). Not to the boutique — the boutique is where a Box becomes an object, and
-Figher is not an object, it is a state of a person. The buyer of the Stoner
-Experience discovers that the THP is one of the three keys of FIGHER *once in
-the club*, never as a sales argument on the Stoner pages. A revelation is
-stronger than a promise.
+§8). **Since 02/10 it is where the Higher branding is lived**: [Get Higher],
+Make the Lisbon Streets Higher, the Stoner method and Origins moved there from
+the boutique. The boutique is where a Box becomes an object (Streetwear,
+Luxury); Figher is not an object, it is a state of a person. The buyer
+discovers that the THP is one of the two keys of FIGHER *once in the club*,
+never as a sales argument on the Stoner pages. A revelation is stronger than a
+promise.
 
 Mechanically: the Stripe webhook writes `stoner_access` (by email) when the THP
 is paid; `figher.club` reads it through `figher_access()`. One database, four
 domains — this is what the architecture was built for.
 
-Figher is **the qualification to act**: complete Totehm + THP + annual
-membership → you can publish and join Spots on `totehm.space`, reveal a Box,
-subscribe to a member, monetize your own Totehm. A club that does something,
-rather than a club that decorates.
+Figher is **the qualification to collect** (02/10): the THP + one Habit Box →
+you collect and resell art on the market. The creator economy (subscriptions,
+80/20) lives on `totehm.com` and `totehm.space` and needs no FIGHER passport.
+
+**Luxury brands are named, never shown** (02/10): on higher.boutique, Hermès ·
+Louis Vuitton · Gucci appear as plain words with "Independent. Not affiliated
+with these brands." — never their logos. A logo reads as a partnership.
 
 ### The status layer, assumed on purpose
 

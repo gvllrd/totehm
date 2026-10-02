@@ -8,7 +8,7 @@
 
 | qui | a accès à | fait |
 |---|---|---|
-| **Claude, session cloud** (claude.ai/code, dépôt `gvllrd/totehm`) | GitHub (push), Supabase MCP, Vercel MCP, Stripe (connecteur, compte live « Higher ») | conçoit ET exécute : code, migrations, Edge Functions, fusion sur `main`, contrôle de la prod, lecture et tests Stripe |
+| **Claude, session cloud** (claude.ai/code, dépôt `gvllrd/totehm`) | GitHub (push), Supabase MCP, Vercel MCP, Stripe (connecteur, compte live « Higher »), n8n MCP (lu le 02/10) | conçoit ET exécute : code, migrations, Edge Functions, fusion sur `main`, contrôle de la prod, lecture et tests Stripe |
 | **Claude Code, terminal de Wah** | VM Oracle (SSH, clés dans `oracle/`), n8n (MCP), Supabase MCP, clés locales | SEULEMENT ce qui exige la machine de Wah : VM Oracle, docker compose, caddy, n8n — et une migration DESTRUCTIVE (`drop`, `update` sans `where`), que la session cloud ne peut pas faire approuver |
 | **Wah** | — | la vision, les demandes, les tests sur téléphone, le « oui » avant l'argent réel |
 
@@ -72,13 +72,13 @@ Les `CLAUDE.md` des dossiers servis par Vercel sont exclus du déploiement (`.ve
 com/      → www.totehm.com       LA SOURCE : le Totehm (5 vues), l'identité (/auth),
                                  la recherche (/search), la page de chaque membre (/@nom),
                                  la console (/console : visibilité, abonnement, argent)
-club/     → www.figher.club      appartenance FIGHER + art, collections, marché (/market) ;
-                                 /console → 308 vers totehm.com/console
+club/     → www.figher.club      le branding Higher en expérience : [Get Higher], Lisbon,
+                                 méthode Stoner ; art, marché (/market) ; /console → 308
 space/    → www.totehm.space     DO WITH ME : UN Spot (PRIVATE / SHARED) naît d'une Habit
                                  filmée maintenant (33 s) ou annoncée pour plus tard ;
                                  I WILL BE HERE → I AM HERE → I WAS THERE
-boutique/ → www.higher.boutique  une Box devient un Cloth (pick up the box) ; méthode
-                                 Stoner ; elle MONTRE l'art, FIGHER le VEND
+boutique/ → www.higher.boutique  la totehmisation : Streetwear (pick up the box) et Luxe
+                                 (/luxury, THP requis) ; Get Higher → figher.club (02/10)
 backend/  → servi par PERSONNE — reste à la racine (sinon SQL et fonctions téléchargeables)
 oracle/   → clés, gitignoré, jamais lu ni recopié
 tests/    → tests navigateur (Playwright, Supabase simulé) et SQL (tests/sql/, auto-annulés)
@@ -115,8 +115,8 @@ du module (2,5 s max, dégradé pas cassé).
   SPIRIT. Liens croisés = tables de jointure, jamais une colonne.
 - **Le Totehm est le passeport** : complet = une boîte NON VIDE dans chacune
   des 5 vues (`totehm_complete()`).
-- **Passeport FIGHER** = Totehm complet + THP possédé + annuel actif (ou
-  `figher_comps`). UNE fonction `_figher()`, lue via `figher_access()` ; un
+- **Passeport FIGHER** (02/10) = THP possédé + une Habit Box non vide (ou
+  `figher_comps`) ; l'annuel n'en fait plus partie. UNE fonction `_figher()`, lue via `figher_access()` ; un
   seul booléen `member` décide, la page ne recompose jamais la règle.
 - **Un seul système de droits** : `_subscriber_of(créateur, fan)`,
   `creator_page(pseudo)`, `my_entitlements()`. L'abonnement est à sens
@@ -144,7 +144,7 @@ du module (2,5 s max, dégradé pas cassé).
 
 Un webhook, routé sur `metadata.product` par un `switch` avec `default`
 explicite — **ne jamais retirer ce filtre** : `higher` · `cloth` ·
-`subscription` · `creator_sub` · `artwork` · `resale`. Toute nouvelle
+`subscription` · `creator_sub` · `artwork` · `resale` · `luxury`. Toute nouvelle
 fonction de checkout pose sa propre `metadata.product`. La metadata voyage
 EN DOUBLE (`subscription_data.metadata`). Propriété et argent ne s'écrivent
 QUE par le webhook (`art_settle`, idempotent sur la session). Endpoint
