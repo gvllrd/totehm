@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 2 octobre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 2 octobre 2026, 17:15 UTC** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -12,6 +12,17 @@
 >
 > **Règle : ne jamais affirmer l'état d'une table, d'un secret ou d'une fonction.
 > Le vérifier.** Commandes en §8.
+
+---
+
+## 0 · COM — LE PAPIER QU'ON RETOURNE, EN LIGNE — 02/10/2026 17:15 UTC
+
+| quoi | valeur mesurée |
+|---|---|
+| fusion `ea7a837` (PR #19), déploiement auto | com, space, club **refusés** « Deployment rate limited » (Hobby : 100 déploiements / 24 h glissantes) ; boutique READY |
+| redéploiement manuel 17:10 UTC | com `dpl_HxYQ47Pq8eTbqSo8qydNwyFhwPZ5` READY · space `dpl_7zhuHMxTTM7hJMTYq4tnrY5LQ6NH` READY |
+| prod = fichier de `main` (pg_net + fetch Vercel) | totehm.com `/totehm` 496 485 o, md5 identique, `BUILD='2026-10-02c'`, `#srch-q` présent · `/console` `BUILD='2026-10-02'`, bouton `#post` · totehm.space identique · figher.club 39 067 o, md5 identique |
+| tests navigateur | `com_paper.mjs` 39/39 · `console.mjs` 13/13 |
 
 ---
 
