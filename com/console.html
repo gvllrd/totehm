@@ -79,6 +79,8 @@ h2{font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.2em;te
 .trio > div{background:var(--g2);border-radius:10px;padding:10px}
 @media(hover:hover){.btn:hover{background:var(--g4);color:#fff}.lnk:hover,#member:hover,.kick:hover{color:#fff}}
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -139,6 +141,7 @@ h2{font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.2em;te
       <div class="tog"><button class="btn" id="off-off" type="button">Off</button><button class="btn" id="off-on" type="button">On</button></div>
       <div class="note" id="off-note"></div>
       <button class="lnk hide" id="link" type="button">Copy my subscription link</button>
+      <button class="lnk hide" id="post" type="button">Copy a post for my networks</button>
     </section>
 
     <section id="s-fans">
@@ -190,7 +193,7 @@ const sb = createClient(SB_URL, SB_ANON);
 const FN = SB_URL + '/functions/v1/';
 const $ = id => document.getElementById(id);
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
-const BUILD = '2026-10-01';
+const BUILD = '2026-10-02';
 const money = (c, cur) => { try{ return new Intl.NumberFormat('en', { style:'currency', currency:(cur||'eur').toUpperCase(), maximumFractionDigits: (c||0) % 100 ? 2 : 0 }).format((c||0)/100); }catch(_){ return ((c||0)/100) + ' ' + cur; } };
 const day = iso => iso ? new Date(iso).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—';
 async function fn(name, body){
@@ -238,6 +241,7 @@ function paint(){
   $('off-note').textContent = o.open ? 'open · ' + money(o.price_cents, o.currency) + ' / year'
     : o.enabled ? 'on — opens when my TOTEHM is visible to my subscribers' : 'off — nobody can subscribe';
   $('link').classList.toggle('hide', !o.open || !C.pseudo);
+  $('post').classList.toggle('hide', !o.open || !C.pseudo);
   const f = C.subscribers || {};
   $('fans').innerHTML = (f.list || []).length ? f.list.map(x => '<div class="row"><a class="tname" href="/@' + encodeURIComponent(x.pseudo || '') + '">' + esc(x.pseudo || '—') + '</a><span class="sub">' +
     esc(x.status) + ' · since ' + day(x.since) + (x.renews ? '<br>' + (x.ending ? 'ends ' : 'renews ') + day(x.renews) : '') + '</span></div>').join('')
@@ -303,6 +307,23 @@ $('link').onclick = async () => {
   const link = 'https://www.totehm.com/@' + encodeURIComponent(C.pseudo);
   try{ await navigator.clipboard.writeText(link); $('link').textContent = 'copied'; setTimeout(() => $('link').textContent = 'Copy my subscription link', 1600); }
   catch(_){ $('off-note').textContent = link; }
+};
+
+/* ══ UN POST PRÊT À PUBLIER · 02/10/2026 ═════════════════════════════════
+   Wah : l'audience de quelqu'un qui publie sur ses réseaux doit arriver
+   ICI, sur sa page `/@nom` — « Souscrivez à mon Totehm pour partager des
+   Spots, grind ensemble et se motiver stratégiquement ». La phrase est celle
+   de Wah, en anglais (l'interface l'est) ; le lien est le même que le
+   bouton du dessus. Aucun prix, aucun chiffre dans le texte : le prix se lit
+   sur la page `/@nom`, où il vient du serveur.
+   ⚠️ PAS UNE « PAGE POUR LES INFLUENCEURS » : BRAND dit qu'il n'existe pas de
+   caste « créateur », ni dans le produit ni dans les mots. Tout membre peut
+   ouvrir son offre ; le kit est dans SA console, pas sur une page à part. */
+const POST = 'Subscribe to my TOTEHM to share Spots, grind together and stay strategically motivated.';
+$('post').onclick = async () => {
+  const link = 'https://www.totehm.com/@' + encodeURIComponent(C.pseudo), text = POST + '\n' + link;
+  try{ await navigator.clipboard.writeText(text); $('post').textContent = 'copied'; setTimeout(() => $('post').textContent = 'Copy a post for my networks', 1600); }
+  catch(_){ $('off-note').textContent = text; }
 };
 
 /* ══ 4 · MES ABONNEMENTS ═════════════════════════════════════════════ */

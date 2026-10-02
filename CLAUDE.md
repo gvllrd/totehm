@@ -69,8 +69,8 @@ Les `CLAUDE.md` des dossiers servis par Vercel sont exclus du déploiement (`.ve
 ## L'architecture — quatre domaines, une source (01/10/2026)
 
 ```
-com/      → www.totehm.com       LA SOURCE : le Totehm (5 vues), l'identité (/auth),
-                                 la recherche (/search), la page de chaque membre (/@nom),
+com/      → www.totehm.com       LA SOURCE : le Totehm (5 vues), l'identité (/auth), /search, /@nom ;
+                                 papier à deux faces : recto = mon Totehm, verso = chercher un autre,
                                  la console (/console : visibilité, abonnement, argent)
 club/     → www.figher.club      le branding Higher en expérience : [Get Higher], Lisbon,
                                  méthode Stoner ; art, marché (/market) ; /console → 308
