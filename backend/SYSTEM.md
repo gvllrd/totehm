@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 1er octobre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 2 octobre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -15,7 +15,32 @@
 
 ---
 
-## 0 · SPACE — 01/10/2026 : boussole, Habit Boxes, création progressive, vidéo HD
+## 0 · SPACE — 02/10/2026 : le fichier vidéo devient un vrai Short Full HD
+
+**État : migration et Edge Functions appliquées ; code validé localement, fusion et vérification publique en cours.**
+BUILD `2026-10-02-portrait-full-hd`. Cette section remplace les paramètres
+vidéo du 01/10. Cinq vues, gestes, radar réduit, boussole et joystick gardés.
+
+| mesure (02/10, ce lot) | résultat |
+|---|---|
+| défaut corrigé | la capture suivait l'orientation de l'écran et enregistrait du paysage ; un cadre CSS portrait seul ne changeait pas le fichier |
+| nouvelle capture | source caméra haute résolution, recadrage central des images brutes avant leur seul encodage ; fichier 9:16, cible 1080 × 1920 / 30 fps, 10 Mbps + audio 192 kbps ; pas d'agrandissement artificiel d'une source insuffisante |
+| cadres | feed, détail et caméra 9:16 sur mobile/desktop ; panneau caméra desktop portrait avec radar réduit ; REC/STOP rouge sur fond navy conservé |
+| migration | fichier CLI `20261002071846_space_portrait_hd_video.sql` ; journal `20261002072508`, nom `space_portrait_hd_video`, APPLIQUÉE |
+| plafond vidéo | videos check, video_reserve, spot_rules et bucket moments : **48 000 000 octets** ; 33 s, quota/jour et pending inchangés ; bucket privé ; pas de suppression de contenu |
+| Edge Functions ACTIVE | create-bunny-upload v4 et bunny-video v3 : verify_jwt true ; bunny-webhook v3 : verify_jwt false avec HMAC-SHA256 obligatoire ; seul helper MAX_BYTES modifié |
+| HLS | MSE/ManagedMediaSource : Hls.js local, première qualité maximale puis ABR ; natif sans MSE : meilleure variante du même dossier signé. Le master natif brut démarrait à 270 × 480 ; cette régression est testée |
+| tests vidéo | 18 contrôles × 3 cas : caméra paysage, caméra portrait, HLS natif sans MSE. Fichier TUS réellement capturé/sondé/décodé : 1080 × 1920 avec son ; carré non déformé, cadre rempli ; master HLS 270 × 480 + 1080 × 1920 démarre en Full HD |
+| auto-test SQL annulé | space_habits_video_selftest.sql : FAIL={} ; 47 MB/33 s accepté, >48 MB refusé, Boxes, contexte, propriété et grants conservés |
+| sécurité HTTP après redéploiement | upload anonyme 401 ; clip inexistant 404 ; callback sans signature 401 |
+| intégrité relue | 0 Spot Selftest, 0 vidéo ; aucune fixture conservée en base |
+| conseiller sécurité | videos et video_backend sans politique, service_role seul ; spot_rules public volontairement, search_path fixé ; aucun accès aux données élargi |
+| Bunny réel, diagnostic du 02/10 06:42 UTC | secure_delivery_missing ; clés bibliothèque présentes et API vidéos 200, API configuration compte 401 ; hostname/token/read-only key manquants ; aucun secret rendu au client ou versionné |
+| fonctionnement réel en attendant | capture portrait haute qualité et lecture originale signée dans moments PRIVÉ ; Bunny reste bloqué tant que la diffusion protégée n'est pas configurée |
+| limites des tests | caméras et services Bunny simulés ; pas de téléphone physique ni de CDN Bunny réel testé ; la qualité dépend du matériel et de la lumière |
+| autre infrastructure | aucun prix, paiement, abonnement réel, webhook Stripe, Oracle ou n8n modifié |
+
+## 0-précédent · SPACE — 01/10/2026 : boussole, Habit Boxes, création progressive, vidéo HD
 
 **État : migrations et Edge Functions appliquées ; [PR #13](https://github.com/gvllrd/totehm/pull/13) fusionnée (`daad165`), déployé et vérifié.**
 BUILD `2026-10-01-compass-habits-bunny`. Ce relevé remplace la section navigation précédente.

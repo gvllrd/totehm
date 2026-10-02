@@ -6,11 +6,11 @@
 > `CLAUDE.md` le 30/09/2026, les plus récentes d'abord : un renvoi « plus
 > haut » peut viser la racine ou un autre dossier. Fichier : `index.html` (≈104 Ko depuis le 01/10, navigation restaurée : `rg -n` puis lecture par plage) ; `cities.json` (Natural Earth, 1 251 villes).
 
-## ⛔ DERNIÈRE DEMANDE · 01/10/2026 — boussole, Habit complète, vidéo
+## ⛔ DERNIÈRE DEMANDE · 02/10/2026 — vrais Shorts verticaux Full HD
 
 Cette section fait autorité sur TOUTES les anciennes consignes SPACE. Ne
 jamais enlever les cinq vues, le joystick, les gestes ni les panneaux
-ordinateur pour simplifier le contenu. BUILD `2026-10-01-compass-habits-bunny`.
+ordinateur pour simplifier le contenu. BUILD `2026-10-02-portrait-full-hd`.
 
 | position | titre · sous-titre | parcours |
 |---|---|---|
@@ -18,7 +18,7 @@ ordinateur pour simplifier le contenu. BUILD `2026-10-01-compass-habits-bunny`.
 | LEFT | CITY FEED · I AM HERE / I WAS THERE | vidéo verticale de la ville et alentours ; pas de radar ni de commandes de carte DANS le fil |
 | CENTER | RADAR · Exact places I can see | sélection d'une Habit Box personnelle, sans texte de recherche ni filtres d'intention verticaux ; point cliqué = CE Spot seul |
 | RIGHT | FUTURE SPOTS · I WILL BE HERE | uniquement les futurs lisibles, pagination date + id ; ville ou lieu exact selon le serveur |
-| BOTTOM | FILM A SPOT · I AM HERE / up to 33 seconds | caméra immédiate, décompte annulable, vidéo ≤33 s, puis Habit et droits ; joystick = REC rond rouge / STOP carré rouge |
+| BOTTOM | FILM A SPOT · I AM HERE / 9:16 / up to 33 seconds | caméra immédiate, décompte annulable, vidéo ≤33 s, puis Habit et droits ; joystick = REC rond rouge / STOP carré rouge |
 
 Le badge Higher reste à côté du titre. Une Habit sélectionnée reste commune
 aux trois vues horizontales. `space_discover` cherche le NOM COMPLET de
@@ -82,15 +82,31 @@ starts_at / ends_at. Aucun ancien accès Club, capacité, candidature ou match %
 Le lieu précis ne sort que dans `exact`. La table `spots` reste grossière
 à 0,1° ; `spot_plans` reste RLS sans politique, fonctions avec search_path fixé.
 
-**Vidéo** : capture demandée HD portrait/landscape, 30 fps, 6 Mbps + audio
-128 kbps ; 33 s, enveloppe 32 Mo. Pas de transcodage destructif côté navigateur.
-Bunny : création server-side, signature TUS par vidéo et par propriétaire,
-binaire direct vers Bunny (chunks repris après panne), HLS signé par dossier,
-Safari natif / Hls.js 1.6.13 copié et chargé seulement à la lecture. Rien ne
-part vers Bunny avant configuration de la lecture protégée. Les clips Storage
-existants restent lisibles par URL signée dans `moments` PRIVÉ.
+**Vidéo = Short vertical, toujours 9:16**, téléphone ET ordinateur. La
+caméra demande une source haute définition (jusqu'à 2160 × 3840, 30 fps,
+caméra arrière). `video-capture.mjs` recadre ses images brutes au centre
+AVANT leur unique encodage, cible 1080 × 1920, sans étirer ni agrandir une
+source insuffisante. Le fichier réel reste portrait même si la caméra ou
+l'écran est paysage ; audio conservé. Autofocus/exposition/balance continus
+si le matériel les propose. MediaRecorder demande 10 Mbps + audio 192 kbps ;
+33 s, enveloppe 48 000 000 octets, arrêt avant débordement. Vérifier les
+dimensions du clip enregistré avant de le proposer à la publication.
+Cadres vidéo 9:16 dans le feed, le détail et la caméra desktop ; joystick
+REC/STOP conservé. La qualité finale reste liée au matériel et à la lumière.
 
-État mesuré 01/10 : BUNNY_LIBRARY_ID et BUNNY_API_KEY présents, API vidéos 200 ;
+Bunny : création server-side, signature TUS par vidéo et par propriétaire,
+binaire direct vers Bunny (chunks repris après panne), HLS signé par dossier.
+Hls.js 1.6.13 local chargé à la lecture si MSE/ManagedMediaSource disponible,
+premier segment dans la meilleure résolution puis adaptation au réseau,
+sans cap à la taille CSS du panneau. Si seul HLS natif est disponible,
+choisir la meilleure variante du master DANS le même dossier signé.
+Aucune URL hors du dossier autorisé. Ne plus lancer le lecteur natif
+aveuglément sur le master : il avait commencé à 270 × 480 malgré le Full HD.
+Rien ne part vers Bunny avant configuration de la lecture protégée. Les
+clips Storage restent lisibles par URL signée dans `moments` PRIVÉ ; la
+capture Full HD corrigée fonctionne aussi avec ce stockage.
+
+État mesuré 02/10 : BUNNY_LIBRARY_ID et BUNNY_API_KEY présents, API vidéos 200 ;
 API compte 401. Il manque `BUNNY_CDN_HOSTNAME` et `BUNNY_TOKEN_KEY` (clé de
 signature URL du CDN, pas la clé d'upload), et `BUNNY_READ_ONLY_API_KEY` pour
 le webhook. La protection des fichiers CDN doit être active. `create-bunny-upload`
@@ -105,11 +121,13 @@ UI sombre, Space Mono / Quantico ; perforation navy seulement au NOM du
 Totehm, by à côté ; Simple terms of use toujours en dernier du menu membre.
 Console sur COM, bot séparé ; aucun prix ni paiement changé dans ce lot.
 
-Tests : `tests/browser/space.mjs`, `space_video.mjs` (TUS + vrai HLS HD local,
-Bunny simulé), `tests/sql/spots_selftest.sql`, `space_future_selftest.sql`,
+Tests : `tests/browser/space.mjs`, `space_video.mjs` (caméras portrait ET
+paysage, fichier réellement envoyé décodé et sondé, son/recadrage sans
+déformation, HLS deux résolutions via Hls.js ET natif ; Bunny simulé), `tests/sql/spots_selftest.sql`, `space_future_selftest.sql`,
 `space_habits_video_selftest.sql` (annulés, attendu FAIL={}). Migrations du
 lot : `space_compass_habits_bunny`, `space_bunny_upload_reservation`,
-`space_exact_habit_selection`. État réel / journaux : backend/SYSTEM.md §0.
+`space_exact_habit_selection`, `space_portrait_hd_video` (02/10, déjà appliquée).
+État réel / journaux : backend/SYSTEM.md §0.
 
 | intention | définition COM | pilier |
 |---|---|---|

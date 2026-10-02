@@ -47,5 +47,8 @@ BEGIN
  IF has_function_privilege('anon','public.space_habits()','EXECUTE') OR has_function_privilege('authenticated','public.video_reserve(uuid,bigint,double precision)','EXECUTE')
   OR has_table_privilege('authenticated','public.videos','SELECT') OR has_table_privilege('anon','public.video_backend','SELECT') THEN fails:=array_append(fails,'grants');END IF;
  IF NOT (select relrowsecurity from pg_class c where c.oid='public.videos'::regclass) THEN fails:=array_append(fails,'video_RLS');END IF;
+ IF public.spot_rules()->>'clip_max_bytes'<>'48000000' OR NOT EXISTS(select 1 from storage.buckets where id='moments' and public=false and file_size_limit=48000000) THEN fails:=array_append(fails,'HD_file_envelope');END IF;
+ r:=public.video_reserve(ua,47000000,33);IF NOT coalesce((r->>'ok')::boolean,false) THEN fails:=array_append(fails,'HD_upload_reservation');END IF;
+ r:=public.video_reserve(ua,48000001,33);IF coalesce((r->>'ok')::boolean,false) THEN fails:=array_append(fails,'over_HD_limit');END IF;
  RAISE EXCEPTION 'HABITS VIDEO SELFTEST (rolled back): boxes, fallback, progressive choices, video ownership, rights, grants | FAIL=%',fails;
 END $test$;
