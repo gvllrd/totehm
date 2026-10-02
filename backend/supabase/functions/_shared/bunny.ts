@@ -22,24 +22,29 @@ export async function config():Promise<Config>{
   let status='missing_secrets',key=Deno.env.get('BUNNY_TOKEN_KEY') || '',host=Deno.env.get('BUNNY_CDN_HOSTNAME') || '',readKey=Deno.env.get('BUNNY_READ_ONLY_API_KEY') || '';
   try{
    if(library && api){
-    const probe=await bunny('/videos?page=1&itemsPerPage=1');diag.library_api_status=probe.status;
+    const [probe,settings]=await Promise.all([bunny('/videos?page=1&itemsPerPage=10'),fetch('https://api.bunny.net/videolibrary/'+library,{headers:{AccessKey:account},signal:timeout()})]);diag.library_api_status=probe.status;
     if(probe.ok){
      status='secure_delivery_missing';
-     const settings=await fetch('https://api.bunny.net/videolibrary/'+library,{headers:{AccessKey:account},signal:timeout()});diag.settings_api_status=settings.status;
+     diag.settings_api_status=settings.status;
      if(settings.ok){
       const lib=await settings.json();readKey ||= lib.ReadOnlyApiKey || '';
       diag.resolutions=lib.EnabledResolutions || null;diag.webhook_configured=lib.WebhookUrl===URL_SB+'/functions/v1/bunny-webhook';
       const zone=await fetch('https://api.bunny.net/pullzone/'+lib.PullZoneId,{headers:{AccessKey:account},signal:timeout()});
-      if(zone.ok){const z=await zone.json();key ||= z.ZoneSecurityKey || z.TokenAuthenticationKey || '';host ||= z.Hostnames?.find((h:{Value:string})=>h.Value?.endsWith('.b-cdn.net'))?.Value || '';diag.cdn_protected=z.ZoneSecurityEnabled===true;}
+      if(zone.ok){const z=await zone.json();key ||= z.ZoneSecurityKey || z.TokenAuthenticationKey || '';host ||= z.Hostnames?.find((h:{Value:string})=>h.Value?.endsWith('.b-cdn.net'))?.Value || '';diag.cdn_token_enabled=z.ZoneSecurityEnabled===true;diag.cdn_ip_locked=z.ZoneSecurityIncludeHashRemoteIP===true;}
      }
      // Explicit CDN secrets are also supported when the library key cannot read account settings.
      if(key && /^[a-z0-9.-]+\.b-cdn\.net$/i.test(host)){
-      const first=await probe.json();const guid=first.items?.[0]?.guid || crypto.randomUUID(),empty=!first.items?.length;
+      const first=await probe.json(),usable=first.items?.find((v:{guid:string,status:number,availableResolutions?:string})=>[3,4].includes(v.status) && !!v.availableResolutions);
+      // An uploading newest clip must not disable playback for the whole library.
+      const guid=usable?.guid || crypto.randomUUID(),empty=!usable;
       if(guid && UUID.test(guid)){
-       const unsigned=await fetch('https://'+host+'/'+guid+'/playlist.m3u8',{method:'HEAD',signal:timeout()});
-       diag.cdn_protected=unsigned.status===403 || unsigned.status===401;
-       if(diag.cdn_protected){const signed=await signedHLS(guid,{key,host});const check=await fetch(signed.url,{method:'HEAD',signal:timeout()});diag.signed_playback_status=check.status;if(check.ok || empty && check.status===404) status='ready';}
-      }else if(diag.cdn_protected===true) status='ready';
+       // A Referer bypasses hotlink blocking: a 403 must prove token protection.
+       const signed=await signedHLS(guid,{key,host});
+       const [unsigned,check]=await Promise.all([fetch('https://'+host+'/'+guid+'/playlist.m3u8',{method:'HEAD',headers:{Referer:'https://www.totehm.space/'},signal:timeout()}),fetch(signed.url,{method:'HEAD',signal:timeout()})]);
+       diag.unsigned_playback_status=unsigned.status;diag.signed_playback_status=check.status;
+       diag.cdn_protected=(diag.cdn_token_enabled===true || !settings.ok) && (unsigned.status===403 || unsigned.status===401);
+       if(diag.cdn_protected){if((check.ok || empty && check.status===404) && readKey && (diag.webhook_configured===true || !settings.ok)) status='ready';}
+      }
      }
      diag.cdn_hostname_present=!!host;diag.token_key_present=!!key;diag.webhook_key_present=!!readKey;
     }else status='library_unavailable';
@@ -63,7 +68,10 @@ export async function owner(req:Request){const sb=viewer(req);const {data,error}
 export async function refreshVideo(row:{id:string,bunny_video_id:string}){
  const r=await bunny('/videos/'+row.bunny_video_id);if(!r.ok) throw new Error('video_status_failed');const v=await r.json();
  const failed=[5,8].includes(v.status) || Number(v.length)>34;
- const status=failed?'failed':[3,4].includes(v.status) && Number(v.encodeProgress)>=100 && !!v.availableResolutions?'ready':v.status===6?'uploading':'processing';
+ // Start once an HD rendition is playable; do not wait for every lower rendition.
+ const hd=String(v.availableResolutions || '').split(',').some((q:string)=>Number.parseInt(q,10)>=720);
+ const playable=!!v.availableResolutions && (v.status===3 || v.status===4 && hd);
+ const status=failed?'failed':playable?'ready':v.status===6?'uploading':'processing';
  const {error}=await admin.from('videos').update({status,actual_seconds:v.length || null,width:v.width || null,height:v.height || null,resolutions:v.availableResolutions || null,updated_at:new Date().toISOString()}).eq('id',row.id);
  if(error) throw new Error('video_status_write_failed');return status;
 }

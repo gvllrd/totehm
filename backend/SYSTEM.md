@@ -37,7 +37,26 @@ Pages : 7 pages + `api/geo.js` + `assets/signs/` passent de `boutique/` à `club
 `stripe-webhook` : cas `luxury` → `luxury_settle` + email de confirmation ; lien de la
 méthode dans l'email THP → `figher.club/stoner` (il pointait encore sur totehm.space).
 
-## 0 · SPACE — 02/10/2026 : fluidité de capture, du feed et de publication
+## 0 · Bunny Stream — 02/10/2026 : configuration protégée activée
+
+| vérification réelle (11:23 UTC) | résultat |
+|---|---|
+| accès API | bibliothèque 200, compte 200 ; BUNNY_ACCOUNT_API_KEY en secret serveur |
+| protection CDN | ZoneSecurityEnabled true ; IP locking false ; BlockNoneReferrer false |
+| test d'autorisation CDN | sans jeton avec Referer 403 ; signé sans Referer 404 (bibliothèque vide, signature acceptée) |
+| webhook | URL bunny-webhook configurée ; clé lecture seule disponible ; unsigned/forgé 401 |
+| activation | video_backend ready ; vrai spot_rules HTTP 200, video_provider bunny |
+| contrôles serveur | faux lecteur/spot 404 ; aucun secret transmis au front |
+| performance backend | API bibliothèque/paramètres en parallèle, sondes CDN en parallèle ; sonde sur vidéo déjà prête ; HD >=720p jouable sans attendre toutes les résolutions |
+| fonctions déployées | create-bunny-upload v6 JWT ; bunny-video v5 JWT ; bunny-webhook v5 HMAC, JWT gateway false |
+| maintenance ponctuelle | v3 retirée fonctionnellement : HTTP 410, aucun import/secret/réseau/mutation |
+| tests backend | 12 scénarios, signature vérifiée par une implémentation indépendante ; hotlink faux positif, readiness HD/SD, upload en cours, webhook absent |
+| tests navigateur | portrait + paysage/réseau lent : 39 contrôles passés ; TUS simulé expose correctement Location/Upload-Offset sous CORS ; fichier réellement décodé 1080 × 1920, audio conservé |
+| limite du contrôle | zéro vidéo Bunny enregistrée : pas encore d'upload/encodage/CDN d'un nouveau Spot réel mesuré ; aucune supériorité TikTok revendiquée |
+| test de compte de démonstration | refus auto-review : endpoint privilégié persistant avec créations sans nettoyage ; non déployé, aucun compte/spot créé |
+| retour arrière | restaurer le helper précédent et son gating ; garder Token Authentication ON et webhook configuré ; le fallback Storage et les anciens clips restent disponibles |
+
+## 0-précédent-fluidité · SPACE — 02/10/2026 : fluidité de capture, du feed et de publication
 
 **État : [PR #15](https://github.com/gvllrd/totehm/pull/15) fusionnée (`7e86b2a`), déployé et vérifié.**
 BUILD `2026-10-02-fluid-video`. Complète le Full HD ci-dessous ; remplace

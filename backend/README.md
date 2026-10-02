@@ -388,24 +388,42 @@ binaire direct de SPACE vers video.bunnycdn.com → `bunny-video` complete
 (propriétaire) → `spot_create` bunny:<UUID>. `bunny-video` playback appelle
 spot_get sous le JWT du lecteur AVANT une URL HLS signée par dossier 10 min.
 Hls.js 1.6.13 local si MSE/ManagedMediaSource est disponible : démarrage
-dans la meilleure résolution, puis adaptation au réseau. Sinon HLS natif
-sur la meilleure variante, dans le même dossier signé. Webhook
+selon le débit initial, puis adaptation au réseau. Sinon HLS natif
+sur le master adaptatif, dans le même dossier signé. Webhook
 `https://abujjbkbbiumxrokozph.supabase.co/functions/v1/bunny-webhook` : HMAC
 SHA256 corps brut, v1, clé lecture seule ; relit l'API pour le statut courant.
 
-Activation : secrets Edge `BUNNY_CDN_HOSTNAME` (ex. zone.b-cdn.net, sans
-https), `BUNNY_TOKEN_KEY` (URL Token Authentication Key du Pull Zone),
-`BUNNY_READ_ONLY_API_KEY`. Activer Token Authentication sur les fichiers
-CDN et configurer le Webhook URL sur la bibliothèque. Les secrets existants
-BUNNY_LIBRARY_ID / BUNNY_API_KEY fonctionnent mais ne permettent pas de lire
-la configuration du compte (401). Alternative automatisable : compte Bunny
-accessible côté serveur via BUNNY_ACCOUNT_API_KEY, aucun secret dans le front.
-Le diagnostic interne est `video_backend`, enum/booleans sans valeurs de clés.
-Le navigateur signé demande action=status, disponible seulement si le CDN
-refuse les URLs non signées et accepte la signature. Sans cela, `moments`
-privé reste actif, capture portrait Full HD 10 Mbps + audio 192 kbps et
-limite 48 000 000 octets. Rafraîchir SPACE après
-configuration ; aucun historique vidéo n'est effacé.
+Activation réalisée le 02/10 via `BUNNY_ACCOUNT_API_KEY` en secret Edge :
+le serveur lit la bibliothèque et son Pull Zone, récupère hostname CDN,
+Token Authentication Key et Read-Only API Key sans les exposer. Alternative :
+secrets explicites `BUNNY_CDN_HOSTNAME`, `BUNNY_TOKEN_KEY`,
+`BUNNY_READ_ONLY_API_KEY`. Ne pas confondre ces clés avec la clé d'upload.
+Token Authentication des fichiers CDN ON, IP validation OFF ;
+BlockNoneReferrer OFF pour les lecteurs mobiles ; aucun accès sans jeton.
+Webhook URL configuré, AllowEarlyPlay ON ; résolutions 240/360/480/720/1080p
+conservées, aucun niveau d'encodage payant ni changement de tarif.
+La signature HLS par dossier HMAC-SHA256 était correcte : le 403 venait
+du blocage sans Referer, alors que ZoneSecurityEnabled était false.
+`config()` exige le jeton, la clé webhook et sa configuration. La sonde
+non signée porte un Referer pour ne pas confondre hotlink et autorisation.
+Une vidéo en cours d'upload ne remplace pas la vidéo prête utilisée pour la
+sonde. Bibliothèque sans vidéo prête : GUID synthétique, 404 signé accepté
+uniquement si 403 sans jeton. API/paramètres et sondes CDN en parallèle,
+cache 60 s, diagnostics privés sans clé ni URL.
+`refreshVideo()` accepte la première résolution HD >=720p disponible en
+status 4 ; status 3 rend aussi les sources SD lisibles. Ne pas attendre 100 %
+de toutes les résolutions pour une vidéo HD déjà jouable.
+Provider confirmé bunny via le vrai `spot_rules`. Le prochain enregistrement
+sur SPACE utilisera TUS direct ; les anciens fichiers Storage restent lisibles.
+Test d'un nouveau Spot Bunny réel non effectué (bibliothèque vide au contrôle).
+La fonction de maintenance ponctuelle est retirée fonctionnellement : HTTP 410,
+aucun secret, import, appel réseau ou mutation. Aucun endpoint de test privilégié
+créant des comptes n'a été déployé.
+
+Tests backend : installer esbuild dans l'environnement de test, puis
+`node tests/backend/bunny.mjs` (ou `ESBUILD_MODULE=/chemin/esbuild/lib/main.js`).
+12 scénarios : signature indépendante, absence de Referer, faux positif hotlink,
+webhook/clé absents, vidéo en encodage, bibliothèque vide, readiness HD/SD/échec.
 
 **Capture / fluidité du 02/10** : `space/video-capture.mjs` demande d'abord
 1080 × 1920 / 30 fps. Flux natif si ses images brutes sont déjà portrait,
