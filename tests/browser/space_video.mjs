@@ -10,12 +10,13 @@ const functions={
  'create-bunny-upload':b=>b.action==='status'?{available:true}:{id:clip,endpoint:'https://video.bunnycdn.com/tusupload',headers:{AuthorizationSignature:'test-one-video-signature',AuthorizationExpire:'9999999999',VideoId:guid,LibraryId:'1'}},
  'bunny-video':b=>{if(b.action==='complete')return {status:'processing'};reading++;return {status:'ready',url:'https://test.b-cdn.net/bcdn_token=TEST&expires=9999999999&token_path=%2F'+guid+'%2F/'+guid+'/playlist.m3u8',expires:9999999999};}
 };
+const tusCORS={'Access-Control-Allow-Origin':origin,'Access-Control-Allow-Headers':'*','Access-Control-Allow-Methods':'POST,PATCH,HEAD,OPTIONS','Access-Control-Expose-Headers':'Location,Upload-Offset,Tus-Resumable'};
 const network=async(url,req,log)=>{
  if(url.hostname==='video.bunnycdn.com'){
   log.network.push({host:url.hostname,method:req.method(),headers:req.headers(),at:Date.now()});
-  if(req.method()==='POST')return {status:201,headers:{Location:'https://video.bunnycdn.com/tusupload/resource'}};
-  if(req.method()==='PATCH'){const body=req.postDataBuffer();if(body)buffers.push(body);uploaded+=body?.length || 0;patches++;return {status:204,headers:{'Upload-Offset':String(uploaded)}};}
-  return {status:204,headers:{'Upload-Offset':String(uploaded)}};
+  if(req.method()==='POST')return {status:201,headers:{...tusCORS,Location:'https://video.bunnycdn.com/tusupload/resource'}};
+  if(req.method()==='PATCH'){const body=req.postDataBuffer();if(body)buffers.push(body);uploaded+=body?.length || 0;patches++;return {status:204,headers:{...tusCORS,'Upload-Offset':String(uploaded)}};}
+  return {status:204,headers:{...tusCORS,'Upload-Offset':String(uploaded)}};
  }
  if(url.hostname==='test.b-cdn.net'){
   log.network.push({host:url.hostname,path:url.pathname});const filename=path.basename(url.pathname),file=path.join(fixture,filename);
@@ -47,7 +48,8 @@ try{
  if((await pg.evaluate(()=>window.__totehm_space().rec.step))!=='habit')throw new Error(JSON.stringify({rec:await pg.evaluate(()=>window.__totehm_space().rec),errors:log.errors}));
  await pg.click('[data-h="0"]');await pg.click('[data-vis="private"]');await pg.click('[data-dur="30"]');
  await pg.evaluate(()=>{const locate=navigator.geolocation.getCurrentPosition.bind(navigator.geolocation);navigator.geolocation.getCurrentPosition=(ok,fail,options)=>locate(pos=>setTimeout(()=>ok(pos),1000),fail,options);});
- const publishStart=Date.now();await pg.click('[data-send]');await pg.waitForFunction(()=>window.__totehm_space().view==='radar');
+ const publishStart=Date.now();await pg.click('[data-send]');
+ try{await pg.waitForFunction(()=>window.__totehm_space().view==='radar');}catch(e){console.error(JSON.stringify({diagnostic:await pg.evaluate(()=>window.__totehm_space()),errors:log.errors,functions:log.functions,upload:{uploaded,patches}}));throw e;}
  ok(log.network.find(x=>x.host==='video.bunnycdn.com' && x.method==='POST')?.at<publishStart+950,'upload starts while geolocation is still pending');
  const begin=log.functions.find(x=>x.name==='create-bunny-upload' && x.body.bytes);ok(begin.body.bytes>0 && begin.body.seconds<=33,'Bunny upload reserves a bounded captured clip');
  ok(patches>0 && uploaded===begin.body.bytes,'camera binary goes directly to Bunny via TUS');
