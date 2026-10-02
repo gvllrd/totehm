@@ -35,7 +35,7 @@ await ctx.route('https://checkout.stripe.test/**', r => r.fulfill({ status:200, 
 await pg.goto('https://www.figher.club/market');
 await pg.waitForFunction(() => window.__totehm_market && window.__totehm_market().works > 0);
 let d = await pg.evaluate(() => window.__totehm_market());
-ok(d.build === '2026-09-30' && d.collections === 3, 'market loads 3 collections');
+ok(d.build === '2026-10-02' && d.collections === 3, 'market loads 3 collections');
 ok(/for resale/.test(await pg.textContent('#view')) && /\$17/.test(await pg.textContent('#view')), 'resale shelf + THP at $17 from the server');
 await pg.screenshot({ path: OUT + '/market.png', fullPage:false });
 await pg.click('[data-tab="collections"]');
