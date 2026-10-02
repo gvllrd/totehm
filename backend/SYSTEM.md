@@ -30,6 +30,10 @@ Migration `20261002_figher_club_luxury.sql` APPLIQUÉE par MCP (`20261002_figher
 | `luxury-checkout` v1 (pg_net) | `{quote:true}` → 200 `{price_cents:50000,currency:"eur",open:true}` · sans session → 401 `no_session` |
 | `stripe-webhook` avant déploiement | v38 identique au dépôt (6 marqueurs comparés) |
 | tests navigateur | `club_luxury.mjs` 29/29 · `market.mjs`, `streetwear.mjs`, `console.mjs` : 0 échec |
+| prod (pg_net, après fusion `3272a73`) | `figher.club/` BUILD 2026-10-02 + `#higher-btn` · `/discover`, `/get_higher` portent `from:'method'` · `/stoner` 200 · `/api/geo` → `{"country":"IE","lisbon":false}` |
+| prod boutique | `/luxury` 200 (`__totehm_luxury`) · accueil avec `data-club`, sans `hermes.jpg` · `/assets/img/hermes.jpg` 404 · `/discover` → `www.figher.club/discover` · `/assets/signs/stop.png` → figher.club (image/png, 16 260 o) |
+| fonctions déployées | `stripe-webhook` v39 (POST sans signature → 400 `no signature`) · `higher-checkout` v36 (quote → 200, 1700 usd, 776 994 restants) · `luxury-checkout` v1 (quote → 200, 50000 eur) |
+| non vérifié | un vrai paiement luxe de bout en bout (compte Stripe live seulement, aucun mode test dans la session) |
 
 Pages : 7 pages + `api/geo.js` + `assets/signs/` passent de `boutique/` à `club/` ;
 `boutique/vercel.json` et `space/vercel.json` redirigent (308) vers `www.figher.club/<page>`.
