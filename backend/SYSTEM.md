@@ -15,6 +15,16 @@
 
 ---
 
+## 0 · BOUTIQUE CENTRÉE + n8n EN PANNE — 02/10/2026 (soir)
+
+| quoi | valeur mesurée |
+|---|---|
+| `totehm_cloth_support` | **0 ligne** (le vêtement ajouté n'est jamais arrivé) · bucket `totehm-cloth-support` : `hoodie-455627782/` 5 images (13/08) |
+| n8n F, exécution 72 (rejeu hoodie 455627782) | **error** `process is not defined` au nœud `⚙️ CONFIG` ; même lecture `process.env` dans B (lu) → tâche Claude Code du 02/10 |
+| `artistic_styles` actifs | 6 / 6, image pour chacun |
+| tests navigateur | `streetwear.mjs` 22/22 · `club_luxury.mjs` 30/30 |
+| prod (pg_net, fusion `e57f734`, Vercel boutique READY) | `/streetwear` 200, `BUILD='2026-10-02'`, `drawAura` présent, plus de `logo-rep` · `/luxury` 200, `BUILD='2026-10-02-centered'`, `#price` · contenu identique au fichier (64 373 et 21 770 caractères) |
+
 ## 0 · FIGHER.CLUB + LUXE — 02/10/2026 : le branding Higher au Club, deux clés, la totehmisation luxe
 
 Migration `20261002_figher_club_luxury.sql` APPLIQUÉE par MCP (`20261002_figher_club_luxury`).
