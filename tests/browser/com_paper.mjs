@@ -46,18 +46,26 @@ try{
     focus:document.activeElement&&document.activeElement.id,rows:[...document.querySelectorAll('.srch-name')].map(e=>e.textContent)}));
   ok(/is-open/.test(s2.srch)&&s2.sch,'tap sur le verso : la recherche se déplie et le papier s\'efface dessous');
   ok(s2.focus==='srch-q','la mise au point est dans le champ (clavier du téléphone)');
+  ok(await pg.$eval('#gate',e=>e.inert&&getComputedStyle(e).visibility==='visible'),'#gate est inert mais reste peint (le Totehm dessous ne se révèle jamais)');
   ok(JSON.stringify(s2.rows)==='["wanda_flow"]','sans mot : mes abonnements');
   ok((await pg.$eval('#srch-q',e=>getComputedStyle(e).fontFamily)).includes('Quantico'),'la saisie est en Quantico');
   await pg.keyboard.type('wa',{delay:30});await pg.waitForTimeout(260);await pg.keyboard.type('h',{delay:30});await pg.waitForTimeout(1500);
   const names=await pg.$$eval('.srch-name',e=>e.map(x=>x.textContent));
   ok(JSON.stringify(names)==='["wah"]','course réseau : « wa » (lent) ne recouvre pas « wah » → '+names);
   ok(await pg.$eval('.srch-row',e=>e.getAttribute('href'))==='/@wah'&&/12/.test(await pg.textContent('.srch-meta')),'un résultat = un lien /@nom et son offre');
+  // focus piégé dans la feuille : champ → résultats → croix → champ (et à l'envers)
+  const tab=async(k)=>{await pg.keyboard.press(k);return pg.evaluate(()=>{const e=document.activeElement;return(e.closest('#srch')?e.id||e.getAttribute('href'):'HORS DE LA FEUILLE:'+e.tagName);});};
+  await pg.focus('#srch-q');const ring=[];for(let i=0;i<4;i++)ring.push(await tab('Tab'));
+  ok(JSON.stringify(ring)==='["/@wah","srch-x","srch-q","/@wah"]','Tab tourne dans la feuille → '+ring);
+  ok(await tab('Shift+Tab')==='srch-q'&&await tab('Shift+Tab')==='srch-x','Maj+Tab tourne à l\'envers dans la feuille');
+  await pg.focus('#srch-q');
   await pg.fill('#srch-q','w');await pg.waitForTimeout(400);
   ok(/two letters/.test(await pg.textContent('#srch-note')),'une lettre : « two letters, minimum »');
   await pg.screenshot({path:OUT+'/com_search.png'});
   // repli
   await pg.click('#srch-x');await pg.waitForTimeout(1000);
   ok(await pg.$eval('#srch',e=>e.className)===''&&!await pg.evaluate(()=>document.body.classList.contains('searching')),'la croix replie la recherche');
+  ok(!await pg.$eval('#gate',e=>e.inert),'repli : #gate est de nouveau atteignable');
   ok(JSON.stringify(await R(pg,'#gate-asteroid'))===JSON.stringify(before.paper),'le papier revient exactement où il était');
   await pg.mouse.click(...await centre(pg,'#gate-asteroid'));await pg.waitForTimeout(1000);
   await pg.keyboard.press('Escape');await pg.waitForTimeout(1000);

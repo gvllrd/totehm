@@ -2316,7 +2316,6 @@ body.gate.entered #search-corner{opacity:0;pointer-events:none}
 #srch-x svg{width:20px;height:20px;color:rgba(255,255,255,.5);display:block;fill:none;
   stroke:currentColor;stroke-width:1.7;stroke-linecap:round;transition:color .15s}
 @media(hover:hover){#srch-x:hover svg{color:#fff}}
-body.searching #gate{visibility:hidden}
 @media(prefers-reduced-motion:reduce){#srch-ui,#srch-x{transition:none!important}}
 
 /* ══ ÉTAT 2 — LA DÉCONSTRUCTION ══
@@ -2809,6 +2808,8 @@ body.gate.entered #filter-badge{
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -3026,7 +3027,11 @@ a Totehm</span>
 <!-- ══ LE VERSO DÉPLIÉ : LA RECHERCHE D'UN AUTRE TOTEHM · 02/10/2026 ═══
      Hors de #gate (qui se masque pendant qu'elle est ouverte), mais le
      filtre `swallow` la connaît : sans cela il aurait avalé ses gestes
-     et ses touches. Jamais d'iframe, jamais une autre page : c'est le
+     et ses touches. Pendant qu'elle est ouverte, #gate est `inert` (hors
+     de la tabulation) mais reste PEINT, noir et opaque : le masquer
+     (`visibility:hidden`) aurait révélé le Totehm — son T, son rail, sa
+     manette — derrière le papier qui grandit, dès qu'une minuterie aurait
+     glissé sur une machine lente. Jamais d'iframe, jamais une autre page : c'est le
      papier qui s'ouvre, comme le recto. -->
 <div id="srch" role="dialog" aria-modal="true" aria-label="Search a Totehm" aria-hidden="true">
   <div id="srch-bg"><div id="srch-ground"></div><div id="srch-tile"></div><span id="srch-say" aria-hidden="true">search
@@ -4456,7 +4461,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-02';
+const BUILD='2026-10-02b';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -8003,7 +8008,7 @@ window.addEventListener('pageshow',e=>{
       const g=geometrie();
       srch.style.setProperty('--s',g.S+'px');
       sSay.style.fontSize=(11/g.k).toFixed(1)+'px';
-      const fin=()=>{ document.body.classList.add('searching');
+      const fin=()=>{ document.body.classList.add('searching'); gate.inert=true;
                       srch.classList.add('is-show','is-open');
                       sOpen=true; sMoving=false; window.__totehm_lsd.recherche=true; };
       if(RMQ.matches){
@@ -8032,7 +8037,8 @@ window.addEventListener('pageshow',e=>{
     sMoving=true; sSeq++; clearTimeout(sDebounce); clearTimeout(sTimer);
     try{ sQ.blur(); }catch(_){}
     srch.classList.remove('is-open','is-show');
-    document.body.classList.remove('searching');      /* le papier réapparaît dessous */
+    document.body.classList.remove('searching');
+    gate.inert=false;                                 /* le papier est de nouveau atteignable */
     const fini=()=>{
       srch.classList.remove('is-on'); srch.setAttribute('aria-hidden','true');
       styles(); sBg.style.transform=''; sTile.style.opacity=''; sSay.style.opacity='';
@@ -8087,6 +8093,16 @@ window.addEventListener('pageshow',e=>{
       clearTimeout(sDebounce); lancer(sQ.value.trim()); } });
   }
   if(sX) sX.onclick=()=>fermerRecherche();
+  /* La feuille est modale : Tab tourne entre le champ, les résultats et la
+     croix. Sans cela le focus sortait vers les boutons du Totehm, placés
+     dessous et invisibles — des tabulations pour rien. */
+  if(srch) srch.addEventListener('keydown',e=>{
+    if(e.key!=='Tab'||!sOpen) return;
+    const f=[sQ,...sRes.querySelectorAll('a'),sX].filter(Boolean);
+    const i=f.indexOf(document.activeElement);
+    const j=e.shiftKey ? (i<=0?f.length-1:i-1) : (i<0||i===f.length-1?0:i+1);
+    e.preventDefault(); f[j].focus();
+  });
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&sOpen){ e.preventDefault(); fermerRecherche(); } });
 
   /* Le mot du bas RETOURNE le papier. Sans JavaScript, ou avec un clic

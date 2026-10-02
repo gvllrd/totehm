@@ -55,6 +55,11 @@ la page se replie EN papier. La géométrie est mesurée à chaque ouverture ET
 CLIC** (iOS) : le champ est transparent, pas masqué. **⚠️ `swallow` connaît
 `#srch`** : sans cela le filtre de l'atterrissage avale ses touches et gestes.
 **⚠️ `sSeq`** : « wa » (lent) ne recouvre jamais « wah » (rapide).
+**⚠️ `#gate` EST `inert`, PAS MASQUÉ** pendant la recherche : il reste peint, noir
+et opaque. Le masquer (`visibility:hidden`) révélait le Totehm — T, rail,
+manette — derrière le papier qui grandit, vu en ralenti ; invisible à vitesse
+réelle (mesuré jusqu'à CPU ×8), mais cela tenait à une minuterie. **La feuille
+est modale** : Tab tourne entre le champ, les résultats et la croix.
 
 **Retirés :** `paintAsteroid()` et ses trois appels (le dos ne porte plus le
 nom du membre ; `.ast-say.is-name`, `#ast-name`). Résultats = le NOM d'un
