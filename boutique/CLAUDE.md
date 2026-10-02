@@ -6,6 +6,28 @@
 > `CLAUDE.md` le 30/09/2026, les plus récentes d'abord : un renvoi « plus
 > haut » peut viser la racine ou un autre dossier. Fichiers : `index.html`, `streetwear.html`, `luxury.html`, `totehm.html`, `terms_of_sale.html`. Get Higher, Lisbon, Stoner et Origins sont sur figher.club depuis le 02/10 (`club/CLAUDE.md`).
 
+## ⛔ 02/10/2026 (soir) — CENTRÉ, MINIMALISTE, VISIBLE · L'APERÇU N'EST PAS L'ŒUVRE
+
+**`streetwear.html` (`BUILD 2026-10-02`) et `luxury.html` (`BUILD
+2026-10-02-centered`) : une colonne centrée** (max 520 px), un titre Space
+Mono Bold, les étapes dites en haut (`#flow` : BOX → CLOTH → MATERIALIZE),
+UN appel à l'action (celui du vêtement ; `#pick-btn` seulement si la
+collection est vide). Flèches et contrôles gris `border-radius:10px` : la
+tuile perforée n'habille plus aucun contrôle. MATERIALIZE = une page : le
+nom tout de suite, puis le style, puis les tailles du vêtement
+(`printful_variant_map`, jamais inventées) ; « Order · 77 € ».
+
+**⚠️ L'APERÇU N'EST PAS L'ŒUVRE.** L'œuvre naît après le paiement (n8n B :
+gpt-image-1 ×7, Wah choisit sur Telegram) et reste une surprise jusqu'au
+déballage. L'aperçu (`drawAura`, canvas) montre ce qui est DÉJÀ décidé : la
+place (`print_area`), la palette de la Box, le style choisi, le nom gravé —
+graine = Box + nom, zéro appel. **Un aperçu IA avant achat est refusé** :
+~0,06 $ l'image à chaque visiteur, et il trahirait la surprise.
+
+**Luxe** : prix serveur affiché d'emblée (`#price`, `luxury_access`), quatre
+pièces dessinées (traits, aucun logo), le chemin en trois temps (lancer →
+on vous écrit : la Box, l'envoi → la pièce revient totehmisée).
+
 ## ⛔ ÉTAT AU 02/10/2026 — LA TOTEHMISATION : STREETWEAR ET LUXE
 
 **Wah, 02/10 : higher.boutique = la totehmisation Streetwear et Luxe.** Get
@@ -14,7 +36,7 @@ sur figher.club ; `vercel.json` redirige (308) chaque ancien chemin et
 `/assets/signs/*`. Sous la vidéo `same_but_opposite.mp4`, [Get Higher] et
 Origins mènent à figher.club par le pont (`data-club`, cible `club`).
 
-**LE LUXE** (`luxury.html`, `BUILD 2026-10-02`, `__totehm_luxury()`) :
+**LE LUXE** (`luxury.html`, `BUILD 2026-10-02-centered`, `__totehm_luxury()`) :
 - réservé aux propriétaires d'un TotehmPaper — vérifié par
   `luxury-checkout` (`_art_owns_thp`), la page ne fait que le dire ;
 - le prix vient de `luxury_offer` (slug `launch`, 500 € le 02/10), lu par
