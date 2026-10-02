@@ -354,7 +354,7 @@ fetch(PAY_FN, { method:'POST', headers:{ 'content-type':'application/json', 'api
     const p = new Intl.NumberFormat('en', { style:'currency', currency:String(j.currency).toUpperCase(), minimumFractionDigits: j.amount % 100 ? 2 : 0 }).format(j.amount/100);
     document.documentElement.style.setProperty('--thp', '" — ' + p + '"'); } })
   .catch(() => {});
-const METHOD  = '/stoner.html';
+const METHOD  = '/stoner';
 const sb = createClient(SB_URL, SB_ANON);
 
 /* ══ LE PONT SSO — LE BLOC À COPIER · 17/09/2026 ══════════════════════
@@ -521,7 +521,7 @@ async function toStripe(){
     const r = await fetch(PAY_FN,{
       method:'POST',
       headers:{ 'Authorization':'Bearer '+session.access_token,'Content-Type':'application/json' },
-      body: JSON.stringify({ waiver:true, waiver_ts:new Date().toISOString() })
+      body: JSON.stringify({ from:'method', waiver:true, waiver_ts:new Date().toISOString() })
     });
     const j = await r.json();
     if(j.already){ (window.top||window).location.replace(METHOD); return; }
@@ -783,10 +783,10 @@ xpBuy.addEventListener('click',async()=>{
   // No artwork linked → THP purchase flow
   if(!artworkId){ closeAll(); const {data:{session}}=await sb.auth.getSession(); if(session?.user?.email){toStripe();return;} openAuth(); return; }
 
-  /* 30/09 — l'œuvre s'acquiert sur FIGHER (figher.club/market) : un seul
-     endroit où la propriété s'écrit et où elle se revend. Le pont y porte
-     la session. */
-  ssoVersDomaine(sb, 'club', 'https://www.figher.club/market?art=' + encodeURIComponent(xpBuy.dataset.slug || ''));
+  /* 30/09 — l'œuvre s'acquiert sur le marché FIGHER : un seul endroit où la
+     propriété s'écrit et où elle se revend. 02/10 : même origine, la
+     session est déjà là — plus de pont. */
+  location.href = '/market?art=' + encodeURIComponent(xpBuy.dataset.slug || '');
 });
 
 /* ─── STREET DISCOVER ─── */
@@ -1005,7 +1005,7 @@ function exitBoardMode(){
     if(r._boardClick){ r.wrap.removeEventListener('click',r._boardClick); r._boardClick=null; }
   });
 }
-sdiscBoardClose.addEventListener('click',()=>{ window.location.href='discover_lisbon.html'; });
+sdiscBoardClose.addEventListener('click',()=>{ window.location.href='/discover_lisbon'; });
 
 function reSnapToBoard(){
   const br=getBoardRect();
@@ -1163,7 +1163,7 @@ function sdiscPrev(){
 /* démarrage */
 resetRocks(); sdiscReset(); startAsteroids();
 
-sdiscBack.addEventListener('click',()=>{ window.location.href='discover_lisbon.html'; });
+sdiscBack.addEventListener('click',()=>{ window.location.href='/discover_lisbon'; });
 sdiscTrig.addEventListener('click',sdiscNext);
 
 let sdWlLock=false;
@@ -1181,7 +1181,7 @@ window.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
   if(e.key==='ArrowDown') sdiscNext();
   else if(e.key==='ArrowUp') sdiscPrev();
-  else if(e.key==='Escape') window.location.href='discover_lisbon.html';
+  else if(e.key==='Escape') window.location.href='/discover_lisbon';
 });
 }
 </script>

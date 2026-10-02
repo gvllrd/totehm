@@ -440,7 +440,7 @@ const SB_URL  = 'https://abujjbkbbiumxrokozph.supabase.co';
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
 const GATE_FN = SB_URL + '/functions/v1/stoner-gate';
 const DEEP_FROM = 0;          // tout est derrière le mur
-const WALL = '/get_higher.html';
+const WALL = '/get_higher';
 const PRICE_LABEL = '17 \u20AC';
 const COHORT_MAX  = 777;
 let   ACCESS  = false;        // jamais true par défaut
@@ -1057,7 +1057,9 @@ document.getElementById('pt-email').addEventListener('keydown',e=>{
 });
 
 function toStripe(email){
-  window.location.href = PAY_URL + '?prefilled_email=' + encodeURIComponent(email);
+  /* 02/10 — `PAY_URL` n'existait nulle part (ReferenceError) : l'achat du THP
+     passe par le mur, qui appelle higher-checkout. */
+  window.location.href = WALL;
 }
 
 /* Retour de Stripe : ?checked=1 ne débloque rien, il relance juste le check. */

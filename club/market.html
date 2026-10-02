@@ -157,6 +157,8 @@ h2{font-family:var(--title);font-weight:700;color:#fff;font-size:18.5px;line-hei
 @media(max-width:520px){.grid{grid-template-columns:1fr 1fr}.meta .ti{font-size:18px}.media .ph{font-size:22px}}
 @media(prefers-reduced-motion:reduce){.card,.col,.btn{transition:none}}
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -326,7 +328,7 @@ sb.auth.onAuthStateChange(ev => {
   }
 }
 
-const BUILD = '2026-09-30';
+const BUILD = '2026-10-02';
 const THP = 'totehmpaper';
 const S = { me:null, tab:'market', mv:null, mine:null, col:null, detail:null, busy:false, polls:0 };
 window.__totehm_market = () => ({ build: BUILD, signed_in: !!S.me, tab: S.tab, collection: S.col,
@@ -456,7 +458,10 @@ function paintArt(mv){
   if(d.available > 0 && !(thp && mine.length)){
     const gate = !thp && S.me && !mv.can_buy_art;
     buy += '<div class="kv"><div><span>from the studio</span><b>' + money(d.price_cents, d.currency) + '</b></div><div><span>left</span><b>' + num(d.available) + ' / ' + num(d.edition_total) + '</b></div></div>' +
-      (gate ? '<span class="cap">art is collected by TOTEHMPAPER owners · <button class="lnk" data-art="' + THP + '" type="button">get my TOTEHMPAPER</button></span>'
+      /* 02/10 — la porte FIGHER : THP + une Habit Box. `mv.door` dit ce qui manque. */
+      (gate ? (mv.door?.thp
+                ? '<span class="cap">art is collected by FIGHER · <button class="lnk" data-habit="1" type="button">write one Habit Box</button></span>'
+                : '<span class="cap">art is collected by FIGHER · <button class="lnk" data-art="' + THP + '" type="button">get my TOTEHMPAPER</button></span>')
             : waiver + '<button class="btn main" data-buy="primary" type="button">' + (S.me ? 'Buy · ' + money(d.price_cents, d.currency) : 'Sign in to buy') + '</button>');
   } else if(!mine.length) buy += '<span class="cap">every copy from the studio is owned' + (forSale.length ? ' · buy one on resale below' : '') + '</span>';
   const owners = O.length ? O.map(o => '<div class="own"><span>№ ' + num(o.edition) + ' · <b>' + esc(o.owner) + '</b>' + (o.mine ? ' · mine' : '') + '</span>' +
@@ -491,7 +496,7 @@ async function buy(kind, btn){
     if(j.url){ location.href = j.url; return; }
     if(j.already){ n.className = 'note ok'; n.textContent = 'already mine'; await refresh(); return; }
     n.className = 'note no';
-    n.textContent = ({ thp_required:'art is collected by TOTEHMPAPER owners', thp_door:'the TOTEHMPAPER is bought here, once', sold_out:'every copy is owned',
+    n.textContent = ({ thp_required:'art is collected by FIGHER · TOTEHMPAPER + one Habit Box', thp_door:'the TOTEHMPAPER is bought here, once', sold_out:'every copy is owned',
       reserved:'someone is paying for it right now — try in 30 minutes', held:'someone is paying for it right now — try in 30 minutes',
       own:'this one is already mine', mine:'this one is already mine', no_session:'sign in again', unavailable:'not available any more' })[j.error] || 'the payment did not open — try again';
   }catch(e){ console.error('[buy]', e && e.message || e); n.className = 'note no'; n.textContent = 'the payment did not open — try again'; }
@@ -521,6 +526,7 @@ document.addEventListener('click', async e => {
   if(t.closest('[data-login]')){ ssoLogin(false); return; }
   if(t.closest('[data-x]') || t === $('sheet')){ closeSheet(); return; }
   const a = t.closest('[data-art]'); if(a){ e.preventDefault(); openArt(a.dataset.art); return; }
+  if(t.closest('[data-habit]')){ ssoVersDomaine(sb, 'com', 'https://www.totehm.com/totehm#in'); return; }
   const c = t.closest('[data-col]'); if(c){ S.col = c.dataset.col; await loadMV(); setTab('market'); return; }
   if(t.closest('[data-allcol]')){ S.col = null; await loadMV(); paint(); return; }
   const b = t.closest('[data-buy]'); if(b){ buy('primary', b); return; }

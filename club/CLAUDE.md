@@ -4,10 +4,42 @@
 > transverses sont dans le `CLAUDE.md` de la racine ; l'histoire dans
 > `docs/POSTMORTEMS.md`. Sections déplacées TELLES QUELLES de l'ancien
 > `CLAUDE.md` le 30/09/2026, les plus récentes d'abord : un renvoi « plus
-> haut » peut viser la racine ou un autre dossier. Fichiers : `index.html` (la porte), `market.html` (le marché — le fonctionnement est écrit en tête du fichier ; la règle du marché est dans `backend/CLAUDE.md`).
+> haut » peut viser la racine ou un autre dossier. Fichiers : `index.html` (la porte), `market.html` (le marché — le fonctionnement est écrit en tête du fichier ; la règle du marché est dans `backend/CLAUDE.md`), et depuis le 02/10 `discover*.html`, `get_higher.html`, `play_lisbon_street.html`, `stoner*.html`, `origins.html`, `api/geo.js`, `assets/signs/`.
 
 
-## ⛔ ÉTAT AU 01/10/2026 — LA CONSOLE EST PARTIE SUR TOTEHM.COM
+## ⛔ ÉTAT AU 02/10/2026 — LE BRANDING HIGHER VIT ICI · DEUX CLÉS
+
+**Wah, 02/10 : figher.club = l'expérimentation du branding de
+higher.boutique.** [Get Higher] et Make the Lisbon Streets Higher ont
+quitté la boutique : `discover`, `discover_lisbon`, `get_higher`,
+`play_lisbon_street`, `stoner` (la méthode), `stoner_terms`, `origins`,
+`api/geo.js` et `assets/signs/` sont ici. La boutique (et totehm.space)
+redirigent en 308 chaque ancien chemin vers `www.figher.club/<page>`.
+
+| | public | réservé (`member`) |
+|---|---|---|
+| porte, Get Higher, Lisbon, Origins, parcourir le marché | ✅ (ce sont eux qui vendent le THP) | |
+| collectionner / revendre une œuvre | | THP + une Habit Box (`_is_figher`) |
+| la méthode Stoner | | THP seul (`stoner-gate`) |
+
+- **La porte** (`index.html`, `BUILD 2026-10-02`) : [Get Higher] →
+  `/stoner` si `stoner-gate` dit `access`, sinon `/discover` ; Lisbon
+  révélé par `/api/geo` (PT, fail-closed) ; deux clés (THP · Habit Box)
+  et un bouton qui suit la clé manquante. Plus d'annuel, plus de
+  simulateur 80/20 (l'économie créateur vit sur COM/SPACE), plus de
+  « compatibility number ».
+- **Retour de paiement du THP** : les pages Get Higher envoient
+  `from: 'method'` à `higher-checkout` → `figher.club/stoner?checked=1`.
+  Le marché n'envoie rien → `/market?owned=totehmpaper`.
+- Les pages déplacées se connectent par email (OTP local) et reçoivent le
+  pont (`sso=` dans le fragment) ; même origine que le marché → plus de
+  pont vers `/market`.
+- `stoner.html` : `PAY_URL` n'existait pas (ReferenceError pour un
+  non-acheteur) → `toStripe()` renvoie au mur `/get_higher`.
+
+> La section ci-dessous (01/10) reste vraie pour la console.
+
+### 01/10/2026 — la console est partie sur totehm.com
 
 `club/console.html` n'existe plus : `figher.club/console` → 308 →
 `totehm.com/console` (`club/vercel.json`). Les portes du Club vers la
@@ -20,7 +52,7 @@ aucun fond blanc (`.tab.is-on`, `.tag` gris) ; « Simple terms of use » est
 la dernière entrée du menu membre (`#sheet`, `#mmenu` du marché), plus
 épinglée en haut à droite.
 
-> La section ci-dessous (23/09) est DÉPASSÉE pour la console.
+> La section ci-dessous (23/09) est DÉPASSÉE : la console (01/10) et les trois clés (02/10 : deux clés).
 
 ### ⛔ FIGHER.CLUB — LA PORTE ET LA CONSOLE — 23/09/2026
 

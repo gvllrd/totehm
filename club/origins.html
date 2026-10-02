@@ -313,10 +313,10 @@ for(let i = 0; i < VCOUNT; i++){
 }
 
 // Artwork acquire — 30/09 : une œuvre s'acquiert, se possède et se revend
-// sur FIGHER (figher.club/market). La boutique MONTRE ; le marché VEND.
-// Un seul endroit où la propriété s'écrit (le webhook → art_settle).
+// sur le marché FIGHER. Un seul endroit où la propriété s'écrit (le webhook
+// → art_settle). 02/10 : Origins vit sur figher.club, même origine.
 function acquireArtwork(slug){
-  ssoVersDomaine(sb, 'club', 'https://www.figher.club/market?art=' + encodeURIComponent(slug));
+  location.href = '/market?art=' + encodeURIComponent(slug);
 }
 
 // Populate labels when artworks loaded
