@@ -227,8 +227,8 @@ appel payant : coût mensuel à 1 000 utilisateurs contre revenu. Deux régimes 
 MÉCANIQUE (SQL, embeddings, gabarits — jamais un centime ; tout le gratuit
 reste déterministe) et QUALITÉ (le meilleur modèle, pour ce que le membre
 achète : TotehmBot / Higher Self, 7 €/mois, un LLM OpenAI — lot dédié). À
-surveiller : l'egress Supabase (une vidéo de Spot ne se signe et ne se charge
-qu'à l'écran), les tokens de ces sessions (voir plus haut).
+surveiller : l'egress vidéo (clip visible + UN suivant anticipé, règles dans
+space/CLAUDE.md), les tokens de ces sessions (voir plus haut).
 
 ## Communication
 

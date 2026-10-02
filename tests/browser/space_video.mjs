@@ -12,7 +12,7 @@ const functions={
 };
 const network=async(url,req,log)=>{
  if(url.hostname==='video.bunnycdn.com'){
-  log.network.push({host:url.hostname,method:req.method(),headers:req.headers()});
+  log.network.push({host:url.hostname,method:req.method(),headers:req.headers(),at:Date.now()});
   if(req.method()==='POST')return {status:201,headers:{Location:'https://video.bunnycdn.com/tusupload/resource'}};
   if(req.method()==='PATCH'){const body=req.postDataBuffer();if(body)buffers.push(body);uploaded+=body?.length || 0;patches++;return {status:204,headers:{'Upload-Offset':String(uploaded)}};}
   return {status:204,headers:{'Upload-Offset':String(uploaded)}};
@@ -26,11 +26,13 @@ const rpc={spot_rules:{clip_seconds:2,countdown:1,clip_max_bytes:48000000,durati
 const browser=await launch({videoFile:path.join(fixture,sourceMode+'.y4m')});
 try{
  const {pg,log}=await page(browser,{dir:'space',origin,rpc,functions,network,tables:{profiles:[{pseudo:'wah'}]},viewport:{width:390,height:844},hasTouch:true});
+ await pg.addInitScript(slow=>Object.defineProperty(navigator,'connection',{value:{downlink:slow ? 0.8 : 12,effectiveType:slow?'3g':'4g',saveData:false},configurable:true}),process.argv[3]==='slow');
  if(process.argv[3]==='native') await pg.addInitScript(()=>{window.MediaSource=undefined;window.ManagedMediaSource=undefined;window.WebKitMediaSource=undefined;});
  await pg.goto(origin+'/');await pg.waitForFunction(()=>window.__totehm_space?.().signed_in);await pg.waitForTimeout(700);
  ok(reading===0,'no Bunny playback request before the video view is visible');
  await pg.click('#cur-g');await pg.waitForFunction(()=>{const v=document.querySelector('#feed video');return v?.videoWidth>0;});
- const dimensions=await pg.$eval('#feed video',v=>({w:v.videoWidth,h:v.videoHeight}));ok(dimensions.w===1080 && dimensions.h===1920,'signed HLS starts with the highest available portrait HD resolution');
+ const dimensions=await pg.$eval('#feed video',v=>({w:v.videoWidth,h:v.videoHeight}));ok(['native','slow'].includes(process.argv[3])?dimensions.w>=270:dimensions.w>=720 && dimensions.h>=1280,'signed HLS adapts to the connection and preserves HD on a fast connection');
+ if(process.argv[3]==='slow')ok(log.network.filter(x=>x.host==='test.b-cdn.net' && x.path.endsWith('.ts'))[0]?.path.endsWith('/low00.ts'),'slow connection does not force the 8 Mbps rendition');
  const stage=()=>pg.$eval('#feed .portrait-media',e=>{const r=e.getBoundingClientRect();return r.width/r.height;});
  ok(Math.abs(await stage()-9/16)<.001,'mobile playback frame is 9:16');
  await pg.setViewportSize({width:1440,height:900});await pg.waitForTimeout(300);ok(Math.abs(await stage()-9/16)<.001,'desktop feed keeps its vertical frame');
@@ -41,7 +43,12 @@ try{
  const filming=await pg.evaluate(()=>window.__totehm_space().rec);ok(filming.width===1080 && filming.height===1920 && filming.bitrate>=10000000,'capture targets Full HD 9:16 at a high bitrate');
  await pg.setViewportSize({width:1440,height:900});await pg.waitForTimeout(100);ok(Math.abs(await pg.$eval('#v-cam',e=>{const r=e.getBoundingClientRect();return r.width/r.height;})-9/16)<.001,'desktop camera panel is vertical');
  ok(await pg.$eval('#joy-record',e=>getComputedStyle(e).borderRadius)==='3px','recording uses the red square in the joystick');
- await pg.waitForFunction(()=>window.__totehm_space().rec.step==='habit');await pg.click('[data-h="0"]');await pg.click('[data-vis="private"]');await pg.click('[data-dur="30"]');await pg.click('[data-send]');await pg.waitForFunction(()=>window.__totehm_space().view==='radar');
+ await pg.waitForFunction(()=>['habit','retry','heavy','nocam'].includes(window.__totehm_space().rec.step));
+ if((await pg.evaluate(()=>window.__totehm_space().rec.step))!=='habit')throw new Error(JSON.stringify({rec:await pg.evaluate(()=>window.__totehm_space().rec),errors:log.errors}));
+ await pg.click('[data-h="0"]');await pg.click('[data-vis="private"]');await pg.click('[data-dur="30"]');
+ await pg.evaluate(()=>{const locate=navigator.geolocation.getCurrentPosition.bind(navigator.geolocation);navigator.geolocation.getCurrentPosition=(ok,fail,options)=>locate(pos=>setTimeout(()=>ok(pos),1000),fail,options);});
+ const publishStart=Date.now();await pg.click('[data-send]');await pg.waitForFunction(()=>window.__totehm_space().view==='radar');
+ ok(log.network.find(x=>x.host==='video.bunnycdn.com' && x.method==='POST')?.at<publishStart+950,'upload starts while geolocation is still pending');
  const begin=log.functions.find(x=>x.name==='create-bunny-upload' && x.body.bytes);ok(begin.body.bytes>0 && begin.body.seconds<=33,'Bunny upload reserves a bounded captured clip');
  ok(patches>0 && uploaded===begin.body.bytes,'camera binary goes directly to Bunny via TUS');
  const captured=path.join(out,'recorded-'+sourceMode+'.webm');fs.writeFileSync(captured,Buffer.concat(buffers));

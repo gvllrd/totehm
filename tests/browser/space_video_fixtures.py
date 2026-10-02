@@ -17,7 +17,9 @@ landscape = 'color=c=blue:s=3840x2160:r=30,drawbox=x=0:y=0:w=1310:h=2160:color=r
 portrait = 'color=c=lime:s=1080x1920:r=30,drawbox=x=440:y=860:w=200:h=200:color=white:t=fill'
 for name, source in [('landscape', landscape), ('portrait', portrait)]:
     ffmpeg(['-f', 'lavfi', '-i', source, '-frames:v', '2', '-pix_fmt', 'yuv420p', str(root / (name + '.y4m'))])
-for name, size, bitrate in [('high', '1080x1920', '8000000'), ('low', '270x480', '600000')]:
+ffmpeg(['-f','lavfi','-i','testsrc2=size=1080x1920:rate=30','-frames:v','30','-pix_fmt','yuv420p',str(root/'motion.y4m')])
+ffmpeg(['-f','lavfi','-i','testsrc2=size=1080x1920:rate=30','-t','3','-c:v','libx264','-preset','ultrafast','-crf','24','-pix_fmt','yuv420p','-movflags','+faststart',str(root/'playback.mp4')])
+for name, size, bitrate in [('high', '1080x1920', '8000000'), ('medium','720x1280','2500000'), ('low', '270x480', '600000')]:
     ffmpeg(['-f', 'lavfi', '-i', 'testsrc2=size=' + size + ':rate=24', '-t', '2', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '18', '-pix_fmt', 'yuv420p', '-g', '24', '-f', 'hls', '-hls_time', '1', '-hls_list_size', '0', '-hls_segment_filename', str(root / (name + '%02d.ts')), str(root / (name + '.m3u8'))])
-(root / 'playlist.m3u8').write_text('#EXTM3U\n#EXT-X-STREAM-INF:BANDWIDTH=600000,RESOLUTION=270x480\nlow.m3u8\n#EXT-X-STREAM-INF:BANDWIDTH=8000000,RESOLUTION=1080x1920\nhigh.m3u8\n')
+(root / 'playlist.m3u8').write_text('#EXTM3U\n#EXT-X-STREAM-INF:BANDWIDTH=600000,RESOLUTION=270x480\nlow.m3u8\n#EXT-X-STREAM-INF:BANDWIDTH=2500000,RESOLUTION=720x1280\nmedium.m3u8\n#EXT-X-STREAM-INF:BANDWIDTH=8000000,RESOLUTION=1080x1920\nhigh.m3u8\n')
 print(root)

@@ -6,11 +6,11 @@
 > `CLAUDE.md` le 30/09/2026, les plus récentes d'abord : un renvoi « plus
 > haut » peut viser la racine ou un autre dossier. Fichier : `index.html` (≈104 Ko depuis le 01/10, navigation restaurée : `rg -n` puis lecture par plage) ; `cities.json` (Natural Earth, 1 251 villes).
 
-## ⛔ DERNIÈRE DEMANDE · 02/10/2026 — vrais Shorts verticaux Full HD
+## ⛔ DERNIÈRE DEMANDE · 02/10/2026 — Shorts verticaux et fluidité
 
 Cette section fait autorité sur TOUTES les anciennes consignes SPACE. Ne
 jamais enlever les cinq vues, le joystick, les gestes ni les panneaux
-ordinateur pour simplifier le contenu. BUILD `2026-10-02-portrait-full-hd`.
+ordinateur pour simplifier le contenu. BUILD `2026-10-02-fluid-video`.
 
 | position | titre · sous-titre | parcours |
 |---|---|---|
@@ -83,12 +83,18 @@ Le lieu précis ne sort que dans `exact`. La table `spots` reste grossière
 à 0,1° ; `spot_plans` reste RLS sans politique, fonctions avec search_path fixé.
 
 **Vidéo = Short vertical, toujours 9:16**, téléphone ET ordinateur. La
-caméra demande une source haute définition (jusqu'à 2160 × 3840, 30 fps,
-caméra arrière). `video-capture.mjs` recadre ses images brutes au centre
-AVANT leur unique encodage, cible 1080 × 1920, sans étirer ni agrandir une
-source insuffisante. Le fichier réel reste portrait même si la caméra ou
+caméra demande 1080 × 1920 / 30 fps, caméra arrière. Garder le flux NATIF
+si ses images brutes sont déjà 9:16, sans canvas ni demande 4K systématique.
+Les adaptations `crop-and-scale` du navigateur ne suffisent pas : certains
+encodeurs reprennent le paysage brut malgré l'aperçu vertical. Sinon,
+`video-capture.mjs` recadre au centre AVANT le seul encodage ; une source
+paysage plus grande n'est demandée que si nécessaire au vrai crop Full HD.
+Ne pas étirer ni agrandir une source insuffisante. Le fichier réel reste
+portrait même si la caméra ou
 l'écran est paysage ; audio conservé. Autofocus/exposition/balance continus
-si le matériel les propose. MediaRecorder demande 10 Mbps + audio 192 kbps ;
+si le matériel les propose. Privilégier un codec fluide/économe testé par
+MediaCapabilities quand disponible, H.264 en premier si accepté, pas VP9
+systématique. MediaRecorder demande 10 Mbps + audio 192 kbps ;
 33 s comptées depuis MediaRecorder.onstart (pas le lancement de l’encodeur),
 enveloppe 48 000 000 octets, arrêt avant débordement. Vérifier les
 dimensions du clip enregistré avant de le proposer à la publication. Un
@@ -98,15 +104,42 @@ REC/STOP conservé. La qualité finale reste liée au matériel et à la lumièr
 
 Bunny : création server-side, signature TUS par vidéo et par propriétaire,
 binaire direct vers Bunny (chunks repris après panne), HLS signé par dossier.
-Hls.js 1.6.13 local chargé à la lecture si MSE/ManagedMediaSource disponible,
-premier segment dans la meilleure résolution puis adaptation au réseau,
-sans cap à la taille CSS du panneau. Si seul HLS natif est disponible,
-choisir la meilleure variante du master DANS le même dossier signé.
-Aucune URL hors du dossier autorisé. Ne plus lancer le lecteur natif
-aveuglément sur le master : il avait commencé à 270 × 480 malgré le Full HD.
+Hls.js 1.6.13 local chargé en parallèle de l'autorisation si MSE disponible.
+Qualité initiale selon le débit, puis adaptation automatique : conserver
+le Full HD quand le réseau le permet, sans forcer 8–10 Mbps à tous ni cap
+à la petite taille CSS du panneau. Le HLS natif lit le MASTER adaptatif.
+Aucune URL hors du dossier signé. Une première image basse résolution
+sur réseau lent est acceptable si elle monte ensuite ; éviter les gels.
 Rien ne part vers Bunny avant configuration de la lecture protégée. Les
 clips Storage restent lisibles par URL signée dans `moments` PRIVÉ ; la
 capture Full HD corrigée fonctionne aussi avec ce stockage.
+
+**Feed fluide** : un seul clip joue. Après son démarrage, préparer UN clip
+suivant ; garder au maximum précédent/actuel/suivant, libérer les autres.
+Pas de lookahead en Save-Data/2G ni avant d'ouvrir le feed. HLS suivant :
+petit buffer (2 s visés, un segment peut dépasser) ; Storage/natif : metadata
+seulement, hint que le navigateur peut ignorer. Les lectures anticipées
+passent par les mêmes autorisations serveur. Appender la pagination, ne
+jamais reconstruire les lecteurs existants. Un rafraîchissement aux mêmes
+IDs/médias ne remplace que les informations, garde le défilement et la vidéo.
+Annuler les réponses obsolètes,
+renouveler une signature expirée ; purger lecteurs/cache au logout ou en
+arrière-plan. Le radar reste visible desktop mais son animation descend à
+15 fps derrière le feed, 10 fps derrière la caméra (60 pendant la transition).
+Boussole et positions DOM seulement quand elles changent ; effacer seulement
+la surface précédemment dessinée. Onglet caché : radar/lecteurs suspendus.
+Clip encore en encodage : relire après 1 s, puis 2 s, 4 s, plafond 5 s ;
+annuler ce polling dès que la vidéo n'est plus active. Pas de délai initial
+fixe de 5 s après un encodage déjà terminé.
+
+**Publication** : après confirmation, position/ville et upload se font en
+parallèle, aperçu en pause ; spot_create attend les deux. Un upload terminé
+reste privé et réutilisable si la localisation ou la publication échoue.
+Ne pas annoncer un envoi instantané : 33 s à 10 Mbps ≈42 MB avec le son,
+avant encodage Bunny. Diagnostic __totehm_space().video : millisecondes,
+frames décodées/perdues, nombre de lecteurs ; aucune donnée personnelle.
+Un fichier HTML conserve les cinq vues ; extraire des modules ciblés aide
+l'entretien, ne remplace pas le pipeline capture/encodage/CDN/ABR.
 
 État mesuré 02/10 : BUNNY_LIBRARY_ID et BUNNY_API_KEY présents, API vidéos 200 ;
 API compte 401. Il manque `BUNNY_CDN_HOSTNAME` et `BUNNY_TOKEN_KEY` (clé de
@@ -125,7 +158,10 @@ Console sur COM, bot séparé ; aucun prix ni paiement changé dans ce lot.
 
 Tests : `tests/browser/space.mjs`, `space_video.mjs` (caméras portrait ET
 paysage, fichier réellement envoyé décodé et sondé, son/recadrage sans
-déformation, HLS deux résolutions via Hls.js ET natif ; Bunny simulé), `tests/sql/spots_selftest.sql`, `space_future_selftest.sql`,
+déformation, HLS trois résolutions via Hls.js ET natif, connexion lente ;
+Bunny simulé), `space_performance.mjs` (vrai mouvement, attente réseau
+simulée, anticipation/pagination/libération ; aucune promesse téléphone),
+`tests/sql/spots_selftest.sql`, `space_future_selftest.sql`,
 `space_habits_video_selftest.sql` (annulés, attendu FAIL={}). Migrations du
 lot : `space_compass_habits_bunny`, `space_bunny_upload_reservation`,
 `space_exact_habit_selection`, `space_portrait_hd_video` (02/10, déjà appliquée).
@@ -161,8 +197,8 @@ TOUCHÉE à gauche = REC (`recStart`, une seule machine pour le moment, la
 vidéo d'un Spot à la création, et après, `spot_video_set`). La vidéo va
 dans le seau public `moments`, dossier `<uid>/` (politique d'insertion),
 et **rien ne s'y attache si le fichier n'y est pas** (`_clip_ok`).
-**Egress** : une vidéo ne se télécharge que lorsqu'elle est à l'écran
-(`IntersectionObserver`), jamais le fil entier. La caméra exige
+**Egress (historique, remplacé par le lookahead borné ci-dessus)** :
+`IntersectionObserver`, jamais le fil entier. La caméra exige
 `camera=(self), microphone=(self)` dans `space/vercel.json`.
 
 **⚠️ LE BOUCLIER.** OFF : la ville et le contenu pour tous, jamais le

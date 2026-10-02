@@ -37,6 +37,10 @@ transversal system. **This table wins over any older mapping in this file.**
 > joystick REC/STOP and the five views. The file itself must be portrait,
 > not merely displayed inside a vertical box. Technical checks live in
 > `space/CLAUDE.md`; do not claim TikTok-equivalent quality on every device.
+> **02/10 — fluidity matters as much as resolution.** Keep vertical Full HD
+> where the camera/network permits, anticipate one next clip, adapt streaming
+> quality to the connection. Measure on real phones before claiming superiority
+> to TikTok. Capture, scrolling and publication all count.
 > Words that are gone: Short-Live, moment, experience,
 > capacity, apply, accept.
 
@@ -1131,4 +1135,3 @@ Never reduce one product to another.
 Never make one domain depend on another for meaning.
 
 **Independence creates the products. Connection creates the world.**
-

@@ -76,7 +76,20 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > privé actif en attendant. Aucun travail Oracle/n8n ni nouveau paiement.
 > Cette correction remplace les anciens paramètres capture/limite du 01/10.
 
+### Correction 0.25 — 02/10/2026 · fluidité de la vidéo
+
+> Fluidité pour la capture, le scroll et la publication, sans retirer les
+> cinq vues, le joystick, la boussole ni les panneaux desktop. Flux natif
+> 1080 × 1920 / 30 fps s'il est vraiment portrait ; canvas seulement pour le
+> crop nécessaire. Codec choisi selon le matériel. Préparer UN clip suivant,
+> conserver au plus trois lecteurs, append de pagination sans effacer le clip
+> actif, libération hors vue/arrière-plan. HLS adaptatif, qualité initiale
+> selon connexion : remplace le forçage de la résolution maximale de 0.24.
+> Radar allégé pendant feed/caméra ; localisation et upload en parallèle.
+> Mesures locales avec mouvement et latence simulée : pas une promesse
+> TikTok sur téléphone. Bunny attend toujours son CDN protégé ; aucun nouveau
+> paiement, travail Oracle/n8n, ni migration requis. Voir SYSTEM.md §0.
+
 ## Le rapport
 
 Un tableau : ce qui a été fait, la valeur mesurée, ce qui n'a pas pu l'être.
-

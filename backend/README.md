@@ -407,8 +407,12 @@ privé reste actif, capture portrait Full HD 10 Mbps + audio 192 kbps et
 limite 48 000 000 octets. Rafraîchir SPACE après
 configuration ; aucun historique vidéo n'est effacé.
 
-**Capture du 02/10** : `space/video-capture.mjs` demande une source haute
-résolution et encode ses images brutes recadrées, une seule fois. Fichier
+**Capture / fluidité du 02/10** : `space/video-capture.mjs` demande d'abord
+1080 × 1920 / 30 fps. Flux natif si ses images brutes sont déjà portrait,
+sinon crop central, source paysage haute résolution seulement si nécessaire.
+Pas d'adaptation d'aperçu crop-and-scale prise pour une adaptation du fichier.
+Codec préféré H.264 si accepté, puis choix fluide/économe selon le matériel.
+Fichier
 9:16, cible 1080 × 1920 / 30 fps, même si la caméra fournit du paysage.
 Aucun agrandissement artificiel d'une source faible ; son conservé. La durée
 commence avec MediaRecorder.onstart, et non pendant le démarrage de
@@ -419,18 +423,42 @@ Migration `20261002071846_space_portrait_hd_video.sql`, appliquée en journal
 `20261002072508` : videos check, video_reserve, spot_rules, bucket moments
 privé. Contraintes de propriété, quotas et droits inchangés.
 
+Le feed prépare UN clip suivant après démarrage du visible, garde au plus
+trois lecteurs, sans autoplay du voisin ni rechargement de la pagination.
+Un refresh de géolocalisation aux mêmes IDs/médias conserve aussi le lecteur.
+Save-Data/2G : aucune anticipation. Lecteurs/signatures libérés en sortant,
+en arrière-plan et au logout ; réponses obsolètes écartées. HLS signé reste
+adaptatif (qualité initiale selon connexion, Full HD accessible) ; ne plus
+forcer la meilleure variante sur tous les réseaux. HLS natif lit le master.
+Buffer HLS suivant : 2 s visés, un segment peut dépasser ; Storage/natif :
+preload metadata, simple indication que le navigateur peut ignorer.
+Le radar desktop garde sa place et la boussole, animation réduite pendant
+feed/caméra, sans réécrire le DOM immobile. Position/ville et upload privés
+se font en parallèle après confirmation ; spot_create attend leur succès.
+Encodage pending : polling 1 / 2 / 4 / 5 s, uniquement sur le clip actif.
+
+La limite 48 MB ne rend pas l'upload instantané : 33 s à 10 Mbps + audio
+représentent ≈42 MB. Le débit montant et l'encodage serveur restent des
+étapes distinctes ; séparer leur mesure du temps avant première image.
+__totehm_space().video fournit des compteurs locaux sans contenu membre.
+
 Tests locaux, aucun appel réel à Bunny :
 ```bash
 python3 tests/browser/space_video_fixtures.py
 node tests/browser/space_video.mjs landscape
 node tests/browser/space_video.mjs portrait
 node tests/browser/space_video.mjs landscape native
+node tests/browser/space_video.mjs landscape slow
+node tests/browser/space_performance.mjs
 SPACE_CAMERA_FIXTURE=/tmp/space-portrait-fixtures/landscape.y4m node tests/browser/space.mjs /tmp/space-portrait-ui
 ```
 `ffmpeg`/`ffprobe` requis. Chaque test capture vraiment la caméra simulée,
 reconstitue le fichier binaire envoyé en TUS, le sonde et décode une image :
-1080 × 1920, audio, carré non étiré, cadre rempli. Master HLS avec 270 × 480
-ET 1080 × 1920 : vérifie le Full HD au démarrage pour Hls.js et le natif.
+1080 × 1920, audio, carré non étiré, cadre rempli. Master HLS 270 × 480,
+720 × 1280 et 1080 × 1920 : première qualité selon connexion, puis ABR,
+lecture native possible sans verrouillage sur la variante maximale.
+space_performance : mouvement 1080p30, signature simulée 600 ms + média
+150 ms, anticipation, pagination, libération ; caméra logicielle desktop.
 Bunny API/CDN sont simulés ; aucun test de téléphone physique annoncé.
 Auto-test complet Boxes/droits : `tests/sql/space_habits_video_selftest.sql`,
 annulation volontaire, attendu FAIL={}. Les deux anciens auto-tests restent.
@@ -469,7 +497,8 @@ back): … | FAIL={} ».
   suppression seulement dans son dossier. Public = l'URL suffit ; elle
   contient deux UUID et n'est rendue qu'aux membres.
 
-**Egress** : 5 s ≈ 0,4 Mo ; une vidéo ne se charge qu'à l'écran. À 1 000
+**Egress (historique du 28/09, remplacé par le pipeline ci-dessus)** :
+5 s ≈ 0,4 Mo ; une vidéo ne se charge qu'à l'écran. À 1 000
 membres qui regardent 20 moments par jour : ~8 Go/jour. À surveiller dans
 Supabase → Usage avant de dépasser le quota du plan.
 
@@ -847,4 +876,3 @@ deploy re-route sans perte : l'ancien callback `s:v:` passe directement
 Ni abandonné, ni développé. Workflows A→E dans `backend/n8n/workflows/`.
 Le pipeline n'est pas nécessaire pour encaisser, il l'est pour scaler.
 On automatise quand le manuel dépasse 5 h/semaine.
-
