@@ -104,7 +104,8 @@ autre passe par le pont `ssoVersDomaine()`. Le code : 60 s, usage unique,
 haché, un domaine cible. **Jamais un jeton de session dans une URL. Jamais
 une URL de retour reçue** : `client` est un nom (table fixe), `return` un
 chemin. Le bloc se COPIE depuis `tools/sso_snippet.js` et bloque au niveau
-du module (2,5 s max, dégradé pas cassé).
+du module (2,5 s max, dégradé pas cassé). `verifyOtp({ type, token_hash })`
+SEULS : avec `email`, Auth répond 400 et le pont casse (02/10).
 
 ## Les données, les droits, l'argent
 

@@ -83,8 +83,10 @@ async function ssoArrivee(sb){
     if(!r.ok){ console.error('[sso] redeem', r.status); return false; }
     const { token_hash, email } = await r.json();
     if(!token_hash) return false;
-    /* `verifyOtp` ouvre une session NORMALE dans ce `localStorage`. */
-    const { error } = await sb.auth.verifyOtp({ type:'email', token_hash, email });
+    /* `verifyOtp` ouvre une session NORMALE dans ce `localStorage`.
+       ⚠️ 02/10 : `token_hash` + `type` SEULS — avec `email`, Supabase Auth
+       répond 400 « Only the token_hash and type should be provided ». */
+    const { error } = await sb.auth.verifyOtp({ type:'email', token_hash });
     if(error){ console.error('[sso] verify', error.message); return false; }
     return true;
   }catch(e){ console.error('[sso]', e && e.message || e); return false; }
