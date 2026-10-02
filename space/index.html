@@ -452,7 +452,7 @@ async function ssoArrivee(sb){
     if(!r.ok){ console.error('[sso] redeem', r.status); return false; }
     const { token_hash, email } = await r.json();
     if(!token_hash) return false;
-    const { error } = await sb.auth.verifyOtp({ type:'email', token_hash, email });
+    const { error } = await sb.auth.verifyOtp({ type:'email', token_hash });
     if(error){ console.error('[sso] verify', error.message); return false; }
     return true;
   }catch(e){ console.error('[sso]', e && e.message || e); return false; }

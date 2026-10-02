@@ -504,7 +504,7 @@ async function ssoArrivee(sb){
     /* `verifyOtp` ouvre une session NORMALE dans ce `localStorage` :
        avec son refresh token, sa déconnexion, sa durée de vie. On ne
        fabrique aucun jeton à la main. */
-    const { error } = await sb.auth.verifyOtp({ type:'email', token_hash, email });
+    const { error } = await sb.auth.verifyOtp({ type:'email', token_hash });
     if(error){ console.error('[sso] verify', error.message); return false; }
     return true;
   }catch(e){ console.error('[sso]', e && e.message || e); return false; }
