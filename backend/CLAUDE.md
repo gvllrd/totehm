@@ -25,11 +25,18 @@ via video_id, anciens video paths préservés. `_spot_view` rend un clip local
 create-bunny-upload / bunny-video (JWT + contrôle applicatif), bunny-webhook
 (HMAC brut, custom auth ; JWT gateway désactivé pour le callback signé).
 
-Bunny API confirmé 200 avec les deux secrets existants. Lecture protégée
-encore à configurer : hostname CDN, token key, read-only key / webhook.
-`video_backend` est PRIVÉ ; aucun diagnostic des secrets public. Le client
-connecté obtient seulement available. Pas d'upload Bunny si la lecture
-protégée n'est pas vérifiée. Storage privé HD reste actif (48 000 000 octets / 33 s).
+Bunny activé le 02/10 après ajout de BUNNY_ACCOUNT_API_KEY côté serveur :
+API bibliothèque/compte 200, Token Authentication CDN actif, IP locking OFF,
+BlockNoneReferrer OFF (l'accès repose sur le jeton), webhook HMAC configuré.
+`video_backend` ready ; sonde non signée avec Referer 403, signée sans
+Referer 404 sur bibliothèque vide (jeton accepté, fichier absent).
+Ne jamais confondre un refus de hotlink avec la protection par jeton.
+Le helper exige aussi la clé webhook et sa configuration, et choisit une
+vidéo déjà encodée pour la sonde : un nouvel upload ne ferme pas la bibliothèque.
+Sondes indépendantes en parallèle ; cache Edge 60 s. Une résolution HD >=720p
+terminée peut devenir ready avant la fin des autres résolutions ; un clip SD
+reste lisible après encodage complet. L'historique Storage reste privé et intact.
+Pas encore de nouveau Spot Bunny réel testé ; voir SYSTEM.md §0.
 Migration `20261002071846_space_portrait_hd_video.sql` déjà appliquée
 (journal `20261002072508`) : même enveloppe pour videos, video_reserve,
 spot_rules et bucket privé moments. 10 Mbps + audio 192 kbps, fichier 9:16

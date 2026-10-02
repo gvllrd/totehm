@@ -141,15 +141,17 @@ frames décodées/perdues, nombre de lecteurs ; aucune donnée personnelle.
 Un fichier HTML conserve les cinq vues ; extraire des modules ciblés aide
 l'entretien, ne remplace pas le pipeline capture/encodage/CDN/ABR.
 
-État mesuré 02/10 : BUNNY_LIBRARY_ID et BUNNY_API_KEY présents, API vidéos 200 ;
-API compte 401. Il manque `BUNNY_CDN_HOSTNAME` et `BUNNY_TOKEN_KEY` (clé de
-signature URL du CDN, pas la clé d'upload), et `BUNNY_READ_ONLY_API_KEY` pour
-le webhook. La protection des fichiers CDN doit être active. `create-bunny-upload`
-connecté, action status, sonde cela sans rendre la configuration ; diagnostic
-privé `video_backend`. Seul `ready` active Bunny ; sinon Storage conserve
-les droits et la capture HD. `bunny-webhook` vérifie HMAC-SHA256 du corps
-BRUT avec la clé en lecture seule ; aucun callback anonyme non signé n'écrit.
-Le polling relit l'état Bunny courant, sans régression sur un callback tardif.
+État mesuré 02/10 après connexion du compte : API bibliothèque et compte 200,
+CDN Token Authentication ON, pas d'IP locking ni de dépendance au Referer ;
+webhook HMAC configuré. `video_backend` privé ready, `spot_rules` provider bunny.
+Seul ready active Bunny ; sinon Storage conserve les droits et la capture HD.
+La sonde non signée porte un Referer pour tester vraiment le jeton ; la
+sonde signée fonctionne sans Referer. Une bibliothèque vide renvoie 404 signé,
+403 sans jeton ; ce contrôle ne remplace pas un essai vidéo réel.
+`bunny-webhook` vérifie HMAC-SHA256 du corps BRUT avec la clé lecture seule ;
+aucun callback non signé n'écrit. Une résolution HD terminée peut devenir
+ready sans attendre toutes les autres. Aucune clé ne touche le navigateur.
+Le test d'un nouveau Spot Bunny réel reste à effectuer ; SYSTEM.md §0.
 
 Règles : 24 Spots/jour, 10 futurs, horizon 90 jours ; durée 5–720 min.
 UI sombre, Space Mono / Quantico ; perforation navy seulement au NOM du
