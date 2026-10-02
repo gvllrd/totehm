@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<!--
+  ══ higher.boutique/luxury — LA TOTEHMISATION LUXE · 02/10/2026 ═════════
+  Wah, 02/10 : « la totehmisation luxe — 500 € pour la lancer — et devoir
+  posséder un TotehmPaper ». Le membre apporte SA pièce (sac, veste,
+  chaussures…), totehmisée depuis une Box de son TOTEHM.
+
+  ⚠️ RIEN NE SE DÉCIDE ICI. Le prix vient de `luxury_offer` (luxury_access /
+  luxury-checkout), le THP est vérifié par `luxury-checkout` côté serveur,
+  la commande s'écrit par le webhook seul (`luxury_settle`). La page AFFICHE.
+
+  ⚠️ LES MARQUES : des NOMS en texte, jamais leurs logos, et la mention
+  d'indépendance. Un logo laisse croire à un partenariat.
+
+  Connexion : PAR totehm.com (bloc SSO copié de tools/sso_snippet.js,
+  SSO_CLIENT = 'boutique'). Diagnostic : __totehm_luxury().
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Luxury · HIGHER.BOUTIQUE</title>
+<meta name="description" content="Your own piece, totehmized from one Box of your TOTEHM.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--coral:#fbd5ca;--g1:#141416;--g2:#1f1f24;--g3:#2a2a30;--hi:#fff;--mid:#b0b0b0;--lo:#909090;--dim:#5a5a5a;--rep:#743169;--ok:#639922}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#000;color:var(--mid);font-family:'Space Mono',monospace;font-size:13px;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.hide{display:none!important}
+main{min-height:100svh;display:flex;flex-direction:column;align-items:center;gap:18px;padding:64px 16px 48px;text-align:center;max-width:520px;margin:0 auto}
+#home{position:fixed;top:14px;left:16px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
+h1{font-family:'Space Mono',monospace;font-weight:700;font-size:22px;letter-spacing:.06em;text-transform:uppercase;color:#fff;line-height:1.2}
+.say{max-width:40ch}
+.names{font-size:12px;color:var(--mid)}
+.legal{font-size:8.6px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.btn{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;color:#fff;background:var(--g2);border:none;border-radius:10px;padding:10px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s ease,color .15s ease}
+.btn:disabled{color:var(--dim);cursor:default}
+.gh{display:inline-flex;align-items:center;gap:.35em;font-weight:400;font-size:14px}
+.gh .get{color:var(--coral)}
+.gh svg{height:1.5em;width:auto;display:block}
+.pieces{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;max-width:320px}
+.piece{font-family:'Space Mono',monospace;font-size:12px;color:var(--mid);background:var(--g2);border:1px solid transparent;border-radius:10px;padding:10px;cursor:pointer;transition:background .15s ease,color .15s ease,border-color .15s ease}
+.piece.is-on{background:var(--g3);color:#fff;border-color:#fff}
+.in{font-family:'Quantico',sans-serif;font-size:14px;color:#fff;background:var(--g2);border:none;border-radius:10px;padding:10px 12px;width:100%;max-width:320px;outline:none;caret-color:var(--coral)}
+.tick{display:flex;gap:8px;align-items:center;font-size:10px;letter-spacing:.06em;color:var(--lo)}
+.tick a{text-decoration:underline}
+.note{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);min-height:16px}
+.note.ok{color:var(--ok)}.note.no{color:var(--rep)}
+#form{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
+@media(hover:hover){.btn:not(:disabled):hover,.piece:hover{background:var(--g3);color:#fff}#home:hover,.tick:hover,.legal:hover{color:#fff}}
+
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Le gris en survol devient blanc. Généré depuis la feuille
+   elle-même : un nouveau bloc gris entre ici tout seul.        */
+@media(hover:hover){
+#home:hover,
+.names:hover,
+.legal:hover,
+.piece:hover,
+.tick:hover,
+.note:hover{color:#fff}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="higher-slogan" viewBox="0 0 600 200">
+      <defs><mask id="hmask"><rect width="600" height="200" fill="white"/>
+        <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
+        <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
+        <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
+      </mask></defs>
+      <rect width="600" height="200" fill="#333366" mask="url(#hmask)"/>
+      <!-- Higher : le slogan VECTORISÉ (27/09 — aucune webfont) --><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g>
+    </symbol>
+  </defs>
+</svg>
+<a id="home" href="/">Back</a>
+<main>
+  <h1>Totehmize<br>my cloth &amp; stuff</h1>
+  <p class="say">Your own piece — a bag, a jacket, shoes — totehmized from one Box of your TOTEHM.</p>
+  <div class="names">Hermès · Louis Vuitton · Gucci · any piece you own</div>
+  <div class="legal">Independent. Not affiliated with these brands.</div>
+
+  <div id="s-wait" class="note">…</div>
+
+  <div id="s-out" class="hide">
+    <button class="btn" id="signin" type="button">Sign in with TOTEHM</button>
+  </div>
+
+  <div id="s-nothp" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:10px">
+    <p class="say">The luxury totehmization is for TotehmPaper owners.</p>
+    <button class="btn gh" id="get-higher" type="button"><span class="get">Get</span><svg viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-slogan"></use></svg></button>
+  </div>
+
+  <div id="s-closed" class="hide note">closed for now</div>
+
+  <div id="s-done" class="hide note ok">launched — we write to you by email</div>
+
+  <div id="form" class="hide">
+    <div class="pieces" role="radiogroup" aria-label="Your piece">
+      <button class="piece is-on" type="button" data-piece="bag" role="radio" aria-checked="true">Bag</button>
+      <button class="piece" type="button" data-piece="jacket" role="radio" aria-checked="false">Jacket</button>
+      <button class="piece" type="button" data-piece="shoes" role="radio" aria-checked="false">Shoes</button>
+      <button class="piece" type="button" data-piece="other" role="radio" aria-checked="false">Other</button>
+    </div>
+    <input class="in" id="note" maxlength="280" placeholder="your piece, in a few words">
+    <label class="tick"><input type="checkbox" id="terms"> I read the <a href="/terms_of_sale" target="_blank" rel="noopener">Simple terms of sale</a></label>
+    <button class="btn" id="launch" type="button">Launch</button>
+    <div class="note" id="launch-n"></div>
+  </div>
+</main>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL = 'https://abujjbkbbiumxrokozph.supabase.co';
+const sb = createClient(SB_URL, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
+const $ = id => document.getElementById(id);
+
+const SSO_FN = 'https://abujjbkbbiumxrokozph.supabase.co/functions/v1/';
+/* ⚠️ LA CLÉ ANONYME EST OBLIGATOIRE : les Edge Functions sont déployées
+   avec `verify_jwt` ; sans en-tête, 401 avant notre code. Elle est
+   publique — déjà en clair au `createClient`. */
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+/* LE NOM DE CE DOMAINE — 'space' | 'club' | 'boutique'. Jamais une URL. */
+const SSO_CLIENT = 'boutique';
+const SSO_AUTH = 'https://www.totehm.com/auth';
+const SSO_KNOWN = 'totehm_sso_known';   // localStorage : ce navigateur s'est déjà connecté ici
+const SSO_TRIED = 'totehm_sso_tried';   // sessionStorage : l'aller-retour silencieux a eu lieu
+const SSO_PKCE  = 'totehm_sso_pkce';    // sessionStorage : { verifier, state } le temps du voyage
+
+const ssoB64 = bytes => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const ssoStore = (s, k, v) => { try{ v === null ? s.removeItem(k) : s.setItem(k, v); }catch(_){} };
+const ssoRead = (s, k) => { try{ return s.getItem(k); }catch(_){ return null; } };
+
+/* ── ARRIVÉE ────────────────────────────────────────────────────────
+   ⚠️ LE CODE SORT DE L'URL AVANT TOUT AUTRE GESTE — et SEULEMENT lui :
+   le reste du fragment (#create, #reveal…) reste à la page. Un code
+   laissé dans la barre d'adresse se retrouve dans un signet, un partage,
+   un historique. Avec un `state`, c'est une connexion centrale : il doit
+   être celui que CE navigateur a envoyé (sinon quelqu'un essaie de nous
+   connecter à SON compte) et le `verifier` part avec le code. */
+async function ssoArrivee(sb){
+  const h = new URLSearchParams(location.hash.replace(/^#/, ''));
+  const q = new URLSearchParams(location.search);
+  const code = h.get('sso') || q.get('sso'), st = h.get('state'), err = h.get('sso_error');
+  if(!code && !err) return false;
+  ['sso','state','sso_error'].forEach(k => { h.delete(k); q.delete(k); });
+  const reste = [...h.keys()].length ? '#' + h.toString().replace(/=(&|$)/g, '$1') : '';
+  history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + reste);
+  const pk = (() => { try{ return JSON.parse(ssoRead(sessionStorage, SSO_PKCE) || 'null'); }catch(_){ return null; } })();
+  ssoStore(sessionStorage, SSO_PKCE, null);
+  if(err || !/^[a-f0-9]{64}$/.test(code || '')) return false;
+  let verifier;
+  if(st){
+    if(!pk || pk.state !== st){ console.error('[sso] state'); return false; }
+    verifier = pk.verifier;
+  }
+  try{
+    const r = await fetch(SSO_FN + 'sso-redeem', {
+      method:'POST',
+      headers:{'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer '+SB_ANON},
+      body: JSON.stringify(verifier ? { code, verifier } : { code })
+    });
+    if(!r.ok){ console.error('[sso] redeem', r.status); return false; }
+    const { token_hash, email } = await r.json();
+    if(!token_hash) return false;
+    /* `verifyOtp` ouvre une session NORMALE dans ce `localStorage`. */
+    const { error } = await sb.auth.verifyOtp({ type:'email', token_hash, email });
+    if(error){ console.error('[sso] verify', error.message); return false; }
+    return true;
+  }catch(e){ console.error('[sso]', e && e.message || e); return false; }
+}
+
+/* ── SE CONNECTER — PAR TOTEHM.COM ──────────────────────────────────
+   `silent` : `prompt=none` — totehm.com ne montre rien, il rend un code
+   ou `login_required`. `retour` : un CHEMIN de ce domaine (jamais une
+   URL) ; totehm.com refuse tout le reste. */
+async function ssoLogin(silent, retour){
+  const v = ssoB64(crypto.getRandomValues(new Uint8Array(32)));
+  const c = ssoB64(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v))));
+  const st = ssoB64(crypto.getRandomValues(new Uint8Array(16)));
+  ssoStore(sessionStorage, SSO_PKCE, JSON.stringify({ verifier: v, state: st }));
+  const ret = retour || (location.pathname + location.search);
+  location.href = SSO_AUTH + '?client=' + SSO_CLIENT + '&challenge=' + c + '&state=' + st +
+                  '&return=' + encodeURIComponent(ret) + (silent ? '&prompt=none' : '');
+}
+
+/* ── DÉPART ─────────────────────────────────────────────────────────
+   `cible` est un NOM DE PRODUIT — 'com' | 'space' | 'boutique' | 'club'.
+   ⚠️ SI LE PONT ÉCHOUE, ON PART QUAND MÊME : dégradé, pas cassé. */
+async function ssoVersDomaine(sb, cible, url){
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(session){
+      const r = await fetch(SSO_FN + 'sso-mint', {
+        method:'POST',
+        headers:{ 'authorization':'Bearer '+session.access_token, 'apikey':SB_ANON, 'content-type':'application/json' },
+        body: JSON.stringify({ target: cible })
+      });
+      if(r.ok){
+        const { code } = await r.json();
+        if(code){ location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; }
+      } else console.error('[sso] mint', r.status);
+    }
+  }catch(e){ console.error('[sso]', e && e.message || e); }
+  location.href = url;
+}
+
+/* ── LE DÉMARRAGE — BLOQUANT, ET JAMAIS PLUS DE 2,5 S ───────────────
+   `await` au niveau du module : quand la page lit sa session, la session
+   est déjà là. Puis, sans session et si ce navigateur s'est déjà
+   connecté ici : UN aller-retour silencieux par onglet vers totehm.com.
+   La page ne se dessine pas pendant qu'elle part (promesse qui ne se
+   résout pas) : pas de clignotement de porte fermée. Le repère se pose à
+   la connexion et s'efface à la déconnexion — sortir d'ici ne vous y
+   reconnecte pas en silence. */
+await Promise.race([ ssoArrivee(sb), new Promise(r => setTimeout(() => r(false), 2500)) ]);
+sb.auth.onAuthStateChange(ev => {
+  if(ev === 'SIGNED_IN') ssoStore(localStorage, SSO_KNOWN, '1');
+  if(ev === 'SIGNED_OUT') ssoStore(localStorage, SSO_KNOWN, null);
+});
+{
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session) ssoStore(localStorage, SSO_KNOWN, '1');
+  else if(ssoRead(localStorage, SSO_KNOWN) && !ssoRead(sessionStorage, SSO_TRIED)){
+    ssoStore(sessionStorage, SSO_TRIED, '1');
+    await ssoLogin(true);
+    await new Promise(() => {});
+  }
+}
+
+
+/* ══ L'ÉTAT — une lecture, un écran ═════════════════════════════════ */
+const BUILD = '2026-10-02';
+let A = null, PIECE = 'bag', SEQ = 0, BUSY = false;
+window.__totehm_luxury = () => ({ build: BUILD, signed_in: !!A?.signed_in, thp: !!A?.thp,
+  open: !!A?.open, price_loaded: A?.price_cents != null, orders: A?.orders ?? 0, piece: PIECE });
+
+const money = (c, cur) => (c/100).toLocaleString('en-GB', { style:'currency', currency:(cur||'eur').toUpperCase(),
+  minimumFractionDigits: c % 100 ? 2 : 0 });
+const ETATS = ['s-wait','s-out','s-nothp','s-closed','s-done','form'];
+function show(...on){ ETATS.forEach(id => $(id).classList.toggle('hide', !on.includes(id))); }
+
+async function load(){
+  const seq = ++SEQ;
+  const { data, error } = await sb.rpc('luxury_access');
+  if(seq !== SEQ) return;              // une réponse tardive n'écrase pas un état plus frais
+  if(error){ console.error('[luxury_access]', error.message); $('s-wait').textContent = 'unavailable — try again'; show('s-wait'); return; }
+  A = data;
+  const launched = new URLSearchParams(location.search).get('launched') === '1';
+  if(!A.signed_in){ show('s-out'); return; }
+  if(!A.thp){ show('s-nothp'); return; }
+  if(launched){ show('s-done', 'form'); }
+  else if(!A.open){ show('s-closed'); return; }
+  else show('form');
+  $('launch').textContent = A.price_cents != null ? 'Launch · ' + money(A.price_cents, A.currency) : 'Launch';
+}
+
+document.querySelectorAll('[data-piece]').forEach(b => b.onclick = () => {
+  PIECE = b.dataset.piece;
+  document.querySelectorAll('[data-piece]').forEach(x => { const on = x === b; x.classList.toggle('is-on', on); x.setAttribute('aria-checked', String(on)); });
+});
+$('signin').onclick = () => ssoLogin(false, '/luxury');
+$('get-higher').onclick = () => ssoVersDomaine(sb, 'club', 'https://www.figher.club/discover');
+
+$('launch').onclick = async () => {
+  if(BUSY) return;
+  const n = $('launch-n');
+  if(!$('terms').checked){ n.className = 'note no'; n.textContent = 'tick the box to continue'; return; }
+  const { data:{ session } } = await sb.auth.getSession();
+  if(!session){ ssoLogin(false, '/luxury'); return; }
+  BUSY = true; $('launch').disabled = true; n.className = 'note'; n.textContent = 'opening checkout…';
+  try{
+    const r = await fetch(SSO_FN + 'luxury-checkout', { method:'POST',
+      headers:{ 'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer ' + session.access_token },
+      body: JSON.stringify({ piece: PIECE, note: $('note').value }) });
+    const d = await r.json().catch(() => ({}));
+    if(d.url){ location.href = d.url; return; }
+    console.error('[luxury-checkout]', r.status, d.error);
+    n.className = 'note no';
+    n.textContent = ({ thp_required:'a TotehmPaper is needed', closed:'closed for now', no_session:'sign in again' })[d.error] || 'checkout unavailable';
+    if(d.error === 'thp_required' || d.error === 'closed') await load();
+  }catch(e){ console.error('[luxury-checkout]', e && e.message || e); n.className = 'note no'; n.textContent = 'checkout unavailable'; }
+  BUSY = false; $('launch').disabled = false;
+};
+
+sb.auth.onAuthStateChange(ev => { if(ev === 'SIGNED_IN' || ev === 'SIGNED_OUT') load(); });
+await load();
+</script>
+</body>
+</html>

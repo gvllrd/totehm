@@ -84,10 +84,8 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 /* LUXURY : sous-titre + défilement horizontal logos */
 .lux-block{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
 .brand-subtitle{font-family:'Space Mono',monospace;font-size:8.6px;letter-spacing:.22em;color:var(--g-dark);text-align:center;font-weight:700;text-transform:uppercase}
-.brand-scroll{display:flex;gap:18px;overflow-x:auto;padding:0 6px 12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;width:100%;max-width:380px;justify-content:center}
-.brand-scroll::-webkit-scrollbar{display:none}
-.brand-logo{flex:0 0 auto;width:64px;height:64px;object-fit:contain;filter:none;scroll-snap-align:center;border-radius:0;transition:filter .2s}
-.brand-logo:hover,.brand-logo:active{filter:brightness(1.25)}
+.brand-names{font-family:'Space Mono',monospace;font-size:12px;color:#b0b0b0;text-align:center}
+.brand-legal{font-family:'Space Mono',monospace;font-size:8.6px;letter-spacing:.12em;color:var(--g-dark);text-align:center;text-transform:uppercase;padding-bottom:8px}
 
 /* STREETWEAR : sous-titre + image support */
 .sw-block{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
@@ -127,6 +125,8 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 .mw-signout{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#6d6d6d;background:none;border:none;cursor:pointer;padding:2px 0;margin-top:8px}
 .mw-signout:hover{color:#fff}
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -138,6 +138,8 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 .btn-back:hover,
 .note.dim:hover,
 .brand-subtitle:hover,
+.brand-names:hover,
+.brand-legal:hover,
 #sw-col-desc:hover,
 #sw-col-sold:hover,
 #decode-input:hover::placeholder,
@@ -174,11 +176,8 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 <nav>
   <div id="menu-main" style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%">
 
-    <!-- HIGHER (TotehmPaper) : Get Higher universel · Make the Lisbon Streets Higher (Lisbonne only) -->
-    <a class="btn-sig" id="higher-btn" href="/discover">Get <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></a>
-    <a class="btn-sig hide" id="lisbon-btn" href="/discover_lisbon">Make the Lisbon Streets <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></a>
-
-    <div class="menu-gap"></div>
+    <!-- 02/10 : Get Higher et Make the Lisbon Streets Higher vivent sur
+         figher.club. La boutique = la totehmisation : Streetwear et Luxe. -->
 
     <!-- 1 : Streetwear -->
     <div class="sw-block">
@@ -192,13 +191,11 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 
     <!-- 2 : Luxury -->
     <div class="lux-block">
-      <a class="btn-sig" href="luxury.html">Totehmize my Cloth &amp; stuff</a>
+      <a class="btn-sig" href="/luxury">Totehmize my Cloth &amp; stuff</a>
+      <!-- 02/10 : les NOMS, jamais les logos (droit des marques). -->
       <span class="brand-subtitle">BRAND WE TOTEHMIZE</span>
-      <div class="brand-scroll">
-        <img src="assets/img/hermes.jpg" alt="Hermès" class="brand-logo">
-        <img src="assets/img/louis_vuitton.jpg" alt="Louis Vuitton" class="brand-logo">
-        <img src="assets/img/gucci.jpg" alt="Gucci" class="brand-logo">
-      </div>
+      <div class="brand-names">Hermès · Louis Vuitton · Gucci</div>
+      <div class="brand-legal">Independent. Not affiliated with these brands.</div>
     </div>
 
     <div class="menu-row">
@@ -236,8 +233,9 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
   <!-- Dope branding : juste sous la vidéo -->
   <button class="btn-sig" id="brand-btn">Experience our dope branding</button>
   <div id="brand-sub">
-    <a class="btn-sig" href="/discover"><span class="brand-get">Get</span> <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></a>
-    <a class="btn-sig" href="/origins">Origins</a>
+    <!-- 02/10 : l'expérimentation du branding vit sur figher.club — par le pont. -->
+    <a class="btn-sig" href="https://www.figher.club/discover" data-club="/discover"><span class="brand-get">Get</span> <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></a>
+    <a class="btn-sig" href="https://www.figher.club/origins" data-club="/origins">Origins</a>
     <a class="btn-sig" href="https://www.totehm.com"><span class="brand-my">My</span> <img src="assets/img/totehm_logo.png" alt="TOTEHM" class="brand-sub-logo"></a>
   </div>
 </section>
@@ -340,40 +338,38 @@ $('email-input').addEventListener('keydown',async(e)=>{
   }catch(_){}
 })();
 
-/* ══ GET HIGHER — gate check
-   Un guest voit /discover (paywall + why) au clic.
-   Un acheteur (email présent dans stoner_access) voit /stoner direct.
-   Le check dépend de la session Supabase locale (higher.boutique) —
-   sans session, on ne peut pas prouver l'ownership, on reste sur /discover. */
-(()=>{
-  const SB_FN='https://abujjbkbbiumxrokozph.supabase.co/functions/v1/stoner-gate';
-  async function refreshHigher(){
-    let href='/discover';
-    try{
-      const {data:{session}}=await sb.auth.getSession();
-      if(session){
-        const r=await fetch(SB_FN,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token}});
-        if(r.ok){ const j=await r.json(); if(j.access===true) href='/stoner'; }
-      }
-    }catch(_){}
-    $('higher-btn').setAttribute('href',href);
-  }
-  refreshHigher();
-  sb.auth.onAuthStateChange(()=>refreshHigher());
-})();
-
-/* ══ MAKE THE LISBON STREETS HIGHER — géo Lisbonne
-   Le bouton est masqué par défaut. /api/geo lit l'en-tête Vercel
-   x-vercel-ip-country et révèle le bouton si PT. La sortie du test
-   est fail-closed : sans réponse, le bouton reste caché. */
-(async()=>{
+/* ══ VERS FIGHER.CLUB — LE PONT · 02/10/2026 ═════════════════════════
+   Get Higher et Origins vivent sur figher.club. Un membre connecté ici y
+   arrive connecté : `sso-mint` émet un code (60 s, usage unique, cible
+   `club` — un NOM, jamais une URL). Copié de tools/sso_snippet.js. Si le
+   pont tousse, on part quand même : dégradé, pas cassé. */
+const SSO_FN='https://abujjbkbbiumxrokozph.supabase.co/functions/v1/';
+const SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+async function ssoVersDomaine(sb, cible, url){
   try{
-    const r=await fetch('/api/geo',{cache:'no-store'});
-    if(!r.ok)return;
-    const j=await r.json();
-    if(j.lisbon===true) $('lisbon-btn').classList.remove('hide');
-  }catch(_){}
-})();
+    const { data:{ session } } = await sb.auth.getSession();
+    if(session){
+      const r = await fetch(SSO_FN + 'sso-mint', {
+        method:'POST',
+        headers:{ 'authorization':'Bearer '+session.access_token, 'apikey':SB_ANON, 'content-type':'application/json' },
+        body: JSON.stringify({ target: cible })
+      });
+      if(r.ok){
+        const { code } = await r.json();
+        if(code){ location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; }
+      } else console.error('[sso] mint', r.status);
+    }
+  }catch(e){ console.error('[sso]', e && e.message || e); }
+  location.href = url;
+}
+document.querySelectorAll('[data-club]').forEach(a => a.addEventListener('click', e => {
+  e.preventDefault(); ssoVersDomaine(sb, 'club', 'https://www.figher.club' + a.dataset.club);
+}));
+
+/* Diagnostic — des booléens, jamais une valeur de membre. */
+const BUILD='2026-10-02';
+window.__totehm_boutique=()=>({ build:BUILD, page:'home', luxury_link:!!document.querySelector('a[href="/luxury"]'),
+  club_links:document.querySelectorAll('[data-club]').length, logos:document.querySelectorAll('.brand-logo').length });
 
 /* ══ MEMBER SPACE ══ */
 (()=>{
