@@ -235,6 +235,44 @@ body.v-cam.is-rec #cam-body,body.v-cam.is-count #cam-body{background:none}
 #int-def{max-width:min(370px,74vw);font-size:9px;line-height:1.45;color:var(--lo);text-align:center;pointer-events:none}
 #habit-filter{pointer-events:auto;background:var(--s2);border:none;border-radius:var(--r);padding:5px 10px;max-width:min(320px,70vw);font-size:10px;color:var(--mid);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 body:not(.v-radar) #habit-filter{visibility:hidden}
+
+/* LE PAPIER — copie du papier rotatif COM du 25/09, sans gyroscope. */
+:root{--tp:64px}
+#tp-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none}
+body:not(.v-radar) #tp-wrap{display:none}
+#totehm-paper{position:relative;flex-shrink:0;width:var(--tp);height:var(--tp);
+  perspective:calc(var(--tp) * 4.36);pointer-events:auto;cursor:pointer;touch-action:none;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#tp-card{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform}
+.tp-face{position:absolute;inset:0}
+.tp-face,.tp-face *{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.tp-front{transform:translateZ(.5px)}
+.tp-back{transform:rotateY(180deg) translateZ(.5px);display:flex;align-items:center;justify-content:center}
+#tp-card.is-flat .tp-front{transform:none}
+#tp-card.is-flat .tp-back{transform:rotateY(180deg)}
+.tp-tile{position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='tpb_tile'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366' mask='url(%23tpb_tile)'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat}
+.tp-light{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0}
+#tp-card.is-flat .tp-light{display:none}
+#tp-name{position:relative;z-index:2;white-space:pre;text-align:center;font-family:var(--q);
+  font-weight:400;font-size:10px;line-height:1.3;letter-spacing:.04em;color:#b0b0b0}
+#tp-name.is-name{color:rgba(255,255,255,.88)}
+#tp-logo{position:relative;flex-shrink:0;width:var(--tp);height:var(--tp)}
+#tp-logo .tp-layer{position:absolute;display:block;overflow:visible;transform-origin:50% 50%}
+#tp-gl-bg{left:0;top:0;width:100%;height:100%;z-index:1}
+#tp-gl-rail{left:9.200%;top:.100%;width:7.650%;height:99.799%;z-index:2}
+#tp-gl-t{left:35.501%;top:21.386%;width:29.700%;height:29.870%;z-index:3}
+#tp-gl-wm{left:33.349%;top:54.268%;width:34.500%;height:20.834%;z-index:3}
+#tp-enter{position:absolute;inset:0;z-index:9;background:none;border:none;padding:0;cursor:pointer;
+  outline:none;-webkit-tap-highlight-color:transparent}
+#tp-enter:focus-visible{outline:1px solid rgba(255,255,255,.35);outline-offset:6px}
+#tp-hint{font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--dim);
+  text-transform:uppercase;text-align:center;pointer-events:none;white-space:nowrap}
+#tp-wrap.is-open #tp-hint{visibility:hidden}
+#member-txt{max-width:calc(50vw - var(--tp)/2 - 48px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:480px){:root{--tp:56px}body.v-radar #heading{top:calc(14px + var(--top))}}
+@media(max-width:480px) and (max-height:700px){:root{--tp:48px}}
+@media(prefers-reduced-motion:reduce){#tp-card{will-change:auto}.tp-light{display:none}}
+
 body.v-cam.is-rec #int-def{opacity:0}
 #habit-picker{position:fixed;top:calc(100px + var(--top));left:50%;transform:translateX(-50%);z-index:85;width:min(420px,calc(100vw - 32px));max-height:64vh;overflow-y:auto;background:var(--s1);border:1px solid var(--s3);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;gap:10px}
 #habit-picker .row{justify-content:space-between}
@@ -315,8 +353,31 @@ body.v-cam.is-form #joy{bottom:calc(64px + var(--bot))}
 
 <button id="member" type="button" aria-label="Member menu"><i></i><span id="member-txt">Sign in</span></button>
 <nav id="menu" aria-label="Member menu"></nav>
-<header id="heading"><div id="title" aria-live="polite"><b id="title-int"></b><svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg></div>
-<p id="int-def"></p><button id="habit-filter" type="button" aria-haspopup="dialog" aria-expanded="false">Habit Box · all</button></header>
+<header id="heading">
+<div id="tp-wrap">
+<div id="totehm-paper">
+    <div id="tp-card">
+      <div class="tp-face tp-front">
+        <div id="tp-logo">
+          <svg class="tp-layer" id="tp-gl-bg"   viewBox="0 0 224.88 224.08" preserveAspectRatio="none"    aria-hidden="true"><defs><mask id="tpb_m" maskUnits="userSpaceOnUse" x="-40" y="-40" width="310" height="310"><rect x="-40" y="-40" width="310" height="310" fill="#fff"/><circle cx="56.421" cy="0.000" r="13.86" fill="#000"/><circle cx="56.421" cy="224.078" r="13.86" fill="#000"/><circle cx="112.440" cy="0.000" r="13.86" fill="#000"/><circle cx="112.440" cy="224.078" r="13.86" fill="#000"/><circle cx="168.459" cy="0.000" r="13.86" fill="#000"/><circle cx="168.459" cy="224.078" r="13.86" fill="#000"/><circle cx="0.402" cy="56.020" r="13.86" fill="#000"/><circle cx="224.478" cy="56.020" r="13.86" fill="#000"/><circle cx="0.402" cy="112.039" r="13.86" fill="#000"/><circle cx="224.478" cy="112.039" r="13.86" fill="#000"/><circle cx="0.402" cy="168.059" r="13.86" fill="#000"/><circle cx="224.478" cy="168.059" r="13.86" fill="#000"/></mask></defs><rect x="0.402" y="0.000" width="224.076" height="224.078" fill="#333366" mask="url(#tpb_m)"/></svg>
+          <svg class="tp-layer" id="tp-gl-rail" viewBox="20.689 0.225 17.203 223.630" preserveAspectRatio="none"    aria-hidden="true"><defs><clipPath id="tpr_3a710ebbbe"><path d="M 20.652344 0.261719 L 37.839844 0.261719 L 37.839844 223.816406 L 20.652344 223.816406 Z M 20.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tpr_1b01f8474a"><path d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.816406 L 0.652344 223.816406 Z M 0.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tpr_95349ecf51"><rect x="0" width="18" y="0" height="224"/></clipPath></defs><g clip-path="url(#tpr_3a710ebbbe)"><g transform="matrix(1, 0, 0, 1, 20, -0.000000000000020428)"><g clip-path="url(#tpr_95349ecf51)"><g clip-path="url(#tpr_1b01f8474a)"><path fill="#626286" d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.808594 L 0.652344 223.808594 Z M 0.652344 0.261719 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></svg>
+          <svg class="tp-layer" id="tp-gl-t"    viewBox="79.832 47.921 66.789 66.932"    preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="tpt_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tpt_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tpt_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tpt_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tpt_ffb4264ddd)"><g clip-path="url(#tpt_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tpt_0eae0d8cca)"><g clip-path="url(#tpt_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tpt_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tpt_92fddf9f0e)"><g clip-path="url(#tpt_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tpt_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tpt_7d4c700d36)"><g clip-path="url(#tpt_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></svg>
+          <svg class="tp-layer" id="tp-gl-wm"   viewBox="74.997 121.602 77.584 46.683"   preserveAspectRatio="none" aria-hidden="true"><defs><g/><clipPath id="tpw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tpw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg>
+          <button id="tp-enter" type="button" aria-haspopup="dialog" aria-controls="habit-picker" aria-expanded="false" aria-label="Search with my TOTEHM — select a Habit Box"></button>
+        </div><!-- /#tp-logo -->
+        <div class="tp-light" aria-hidden="true"></div>
+      </div>
+      <div class="tp-face tp-back" aria-hidden="true">
+        <div class="tp-tile"></div>
+        <span class="tp-say" id="tp-name">Tap to open it</span>
+        <div class="tp-light"></div>
+      </div>
+    </div><!-- /#tp-card -->
+  </div><!-- /#totehm-paper -->
+<span id="tp-hint"></span>
+</div>
+<div id="title" aria-live="polite"><b id="title-int"></b><svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg></div>
+<p id="int-def"></p><button id="habit-filter" class="hide" type="button" aria-haspopup="dialog" aria-expanded="false">Habit Box · all</button></header>
 <aside id="habit-picker" class="hide" role="dialog" aria-label="Select my Habit Box"></aside>
 
 
@@ -485,7 +546,7 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
 const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query=' + Number(lat).toFixed(5) + '%2C' + Number(lng).toFixed(5);
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD = '2026-10-02-fluid-video';
+const BUILD = '2026-10-02-paper';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'radar';
@@ -502,7 +563,7 @@ const VIDEO_METRICS={firstFrameMs:0,uploadMs:0,publishMs:0};
 window.__totehm_space = () => ({ build: BUILD, view: VIEW, signed_in: !!me, located: !!POS, intention: S.int, search: !!S.q,
   feed: FEED.list.length, exact: EX.list.length, playing: [...document.querySelectorAll('#feed video')].filter(v => !v.paused).length,
   video:{provider:RULES.video_provider || 'storage',buffered:[...document.querySelectorAll('#feed video')].filter(v=>v.getAttribute('src') || v._hls).length,...VIDEO_METRICS,...(()=>{const v=$('feed').querySelector('.clip[data-k="'+FEED.active+'"] video'),q=v?.getVideoPlaybackQuality?.();return {frames:q?.totalVideoFrames || 0,dropped:q?.droppedVideoFrames || 0};})()},
-  list:LIST.list.length, future:LIST.list.filter(s => spotState(s) === 'will').length, gestures:gestureCount, radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx),heading:Math.round(norm360(RAD.head)),pin:MAP.open,place:!!PLAN.pos}, habit_filter:!!S.habit, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
+  list:LIST.list.length, future:LIST.list.filter(s => spotState(s) === 'will').length, gestures:gestureCount, radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx),heading:Math.round(norm360(RAD.head)),pin:MAP.open,place:!!PLAN.pos}, paper:PAPER.etat(), habit_filter:!!S.habit, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
 
 /* Chaque vue dit où je suis. L'intention vient de la Habit, sans filtre parallèle. */
 const VIEW_WORDS = {radar:['RADAR','Exact places I can see'],feed:['CITY FEED','I AM HERE · I WAS THERE'],list:['FUTURE SPOTS','I WILL BE HERE'],plan:['PLAN A SPOT','I WILL BE HERE'],cam:['FILM A SPOT','I AM HERE · 9:16 · up to 33 seconds']};
@@ -511,6 +572,7 @@ function paintInts(){
   const source = VIEW === 'feed' ? FEED : VIEW === 'list' ? LIST : EX;
   $('title-int').textContent = title; $('title').style.setProperty('--c','#fff');
   $('int-def').textContent = sub + (S.habit && ['feed','radar','list'].includes(VIEW) ? ' · '+ (source.match === 'intention' ? 'Same intention' : S.habit.name) : '');
+  PAPER.hint();
 }
 
 /* ══ LA BOÎTE D'UN SPOT — ce que CE lecteur a le droit de voir ═══════ */
@@ -823,6 +885,212 @@ $('detail').addEventListener('click', async e => {
   }
 });
 
+/* LE PAPIER — moteur original, une seule boucle, radar seulement. */
+  const PAPER=(()=>{
+    const scene=$('totehm-paper'), card=$('tp-card');
+    const RM=window.matchMedia('(prefers-reduced-motion: reduce)');
+    /* Le diagnostic : des booléens et des compteurs, jamais une valeur. */
+    const diag={vivant:false, souris:false, lancers:0};
+    const lights=[...card.querySelectorAll('.tp-light')];   /* [face, dos] */
+    const R=Math.PI/180, W0=34;
+    const LUM=(()=>{ const x=-.35,y=-.55,z=1,n=Math.hypot(x,y,z); return [x/n,y/n,z/n]; })();
+    const borne=(v,a,b)=>Math.max(a,Math.min(b,v||0));
+    const res=x=>({x,v:0});
+    const SPR={rx:res(0), ry:res(0), px:res(0), py:res(0), sc:res(1)};
+    const goal={rx:0, ry:0, px:0, py:0, sc:1};
+    const K={rx:[34,.62], ry:[34,.62], px:[34,.62], py:[34,.62], sc:[170,.5]};
+    const PLAT={th:0, rx:0, ry:0, rz:0, px:0, py:0, sc:1};
+    let mode='plat', raf=0, last=0, clock=0, th=0, om=0, life=0;
+    let cur={...PLAT}, prev=null, vel={...PLAT, sc:0};
+    let appui=null, aGlisse=false, pose=null, centre=null;
+    let ratio=scene.clientWidth/110;
+
+    function ressort(s,g,k,z,dt){
+      const a=k*(g-s.x)-2*z*Math.sqrt(k)*s.v; s.v+=a*dt; s.x+=s.v*dt; }
+    function kick(){ if(!raf&&mode!=='plat') raf=requestAnimationFrame(frame); }
+    function frame(now){
+      raf=0;
+      const dt=Math.min(.05,Math.max(0,(now-(last||now))/1000)); last=now;
+      if(mode==='vit') vivre(dt); else if(mode==='pose') poserPas(now);
+      if(mode==='plat') return;
+      peindre();
+      if(!document.hidden) raf=requestAnimationFrame(frame);
+    }
+    function vivre(dt){
+      clock+=dt;
+      life+=(1-life)*(1-Math.exp(-dt/1.4));
+      if(appui&&appui.on){ /* le doigt conduit : `th` bouge dans pointermove */ }
+      else if(appui){ om*=Math.exp(-dt/.15); th+=om*dt; }      /* tenu */
+      else{
+        const s=Math.sin(th*R), nat=W0*(.34+.66*s*s);
+        om+=(nat-om)*(1-Math.exp(-dt/(Math.abs(om)>W0*1.3?1.1:1.6)));
+        th+=om*dt;
+      }
+      if(th>3600||th<-3600) th%=360;
+      for(const k in SPR) ressort(SPR[k],goal[k],K[k][0],K[k][1],dt);
+      const f=clock*2*Math.PI;
+      const nx={th, sc:SPR.sc.x, ry:SPR.ry.x, px:SPR.px.x,
+        rx:SPR.rx.x+life*2.4*Math.sin(f/7.3),
+        rz:life*1.1*Math.sin(f/8.9+1.3),
+        py:SPR.py.x+life*ratio*(2.6*Math.sin(f/6.4)+1.1*Math.sin(f/10.3+.7))};
+      if(prev&&dt>0) for(const k in nx) vel[k]=(nx[k]-prev[k])/dt;
+      vel.th=om; prev=cur=nx;
+    }
+    function peindre(){
+      const c=cur;
+      card.style.transform='translate3d('+c.px.toFixed(2)+'px,'+c.py.toFixed(2)+'px,0)'
+        +' rotateX('+c.rx.toFixed(2)+'deg) rotateY('+c.ry.toFixed(2)+'deg)'
+        +' rotateZ('+c.rz.toFixed(2)+'deg) rotateY('+c.th.toFixed(2)+'deg)'
+        +' scale('+c.sc.toFixed(4)+')';
+      /* La normale de la face : (0,0,1) passée par les mêmes rotations,
+         de la plus intérieure à la plus extérieure. */
+      let x=Math.sin(c.th*R), y=0, z=Math.cos(c.th*R), co, si, t;
+      co=Math.cos(c.rz*R); si=Math.sin(c.rz*R); t=x*co-y*si; y=x*si+y*co; x=t;
+      co=Math.cos(c.ry*R); si=Math.sin(c.ry*R); t=x*co+z*si; z=-x*si+z*co; x=t;
+      co=Math.cos(c.rx*R); si=Math.sin(c.rx*R); t=y*co-z*si; z=y*si+z*co; y=t;
+      const d=(x*LUM[0]+y*LUM[1]+z*LUM[2])/LUM[2];
+      eclairer(lights[0],d); eclairer(lights[1],-d);
+    }
+    function eclairer(el,f){
+      if(!el||f<=0) return;                 /* face détournée : cachée */
+      if(f<1){ el.style.background='#000'; el.style.opacity=Math.min(.5,(1-f)*.6).toFixed(3); }
+      else   { el.style.background='#fff'; el.style.opacity=Math.min(.06,(f-1)*.3).toFixed(3); }
+    }
+    function aPlat(){
+      if(raf){ cancelAnimationFrame(raf); raf=0; }
+      mode='plat'; th=0; om=0; life=0; appui=null; pose=null; prev=null;
+      for(const k in SPR){ SPR[k].x=k==='sc'?1:0; SPR[k].v=0; }
+      cur={...PLAT};
+      card.style.transform='';
+      lights.forEach(l=>{ l.style.background=''; l.style.opacity=''; });
+      card.classList.add('is-flat');
+      diag.vivant=false;
+    }
+    /* L'ATTERRISSAGE : position et vitesse du moment → face logo, à plat,
+       vitesse nulle. La durée suit le chemin à faire. */
+    function poser(cb){
+      if(mode!=='vit'){ aPlat(); if(cb) cb(); return; }
+      const thT=360*Math.round((cur.th+om*.3)/360);
+      const D=Math.min(.78,.3+Math.abs(thT-cur.th)/360*.62);
+      const to={...PLAT, th:thT}, v={};
+      for(const k in to){
+        const span=Math.abs(to[k]-cur[k])*1.5+(k==='sc'?.02:2);
+        v[k]=borne(vel[k]||0,-span/D,span/D);
+      }
+      pose={t0:performance.now(), D, from:{...cur}, to, v, cb};
+      appui=null; mode='pose'; kick();
+    }
+    function poserPas(now){
+      const u=Math.min(1,(now-pose.t0)/1000/pose.D);
+      const h00=2*u*u*u-3*u*u+1, h10=u*u*u-2*u*u+u, h01=-2*u*u*u+3*u*u;
+      const nx={};
+      for(const k in pose.to) nx[k]=h00*pose.from[k]+h10*pose.D*pose.v[k]+h01*pose.to[k];
+      cur=nx;
+      if(u>=1){ const cb=pose.cb; aPlat(); if(cb) cb(); }
+    }
+    /* LE RÉVEIL : après un repli, ou au chargement. Il repart de l'arrêt,
+       face logo — la vitesse et la dérive montent doucement. */
+    function reveiller(){
+      ratio=scene.clientWidth/110; paintPaper();
+      if(RM.matches||mode!=='plat'||document.hidden||VIEW!=='radar'||ouvert()) return;
+      card.classList.remove('is-flat');
+      mode='vit'; clock=0; last=0; life=0; om=0; th=0; prev=null; centre=null;
+      goal.rx=goal.ry=goal.px=goal.py=0; goal.sc=1;
+      diag.vivant=true; kick();
+    }
+    const libre=()=>mode==='vit'&&!appui&&!document.hidden&&VIEW==='radar'&&!ouvert()&&!RM.matches;
+    function viser(rx,ry,px,py){ goal.rx=rx; goal.ry=ry; goal.px=px; goal.py=py; }
+
+    aPlat();
+
+    document.addEventListener('visibilitychange',()=>{ last=0; sync(); });
+    if(RM.addEventListener) RM.addEventListener('change',sync); else RM.addListener(sync);
+
+    /* La souris : le papier regarde le curseur et glisse d'un rien vers lui. */
+    if(window.matchMedia('(hover:hover)').matches){
+      window.addEventListener('resize',()=>{ centre=null; });
+      document.addEventListener('mousemove',e=>{
+        if(!libre()) return;
+        if(!centre){ const r=scene.getBoundingClientRect();
+                     centre=[r.left+r.width/2, r.top+r.height/2]; }
+        const dx=borne((e.clientX-centre[0])/(innerWidth/2),-1,1),
+              dy=borne((e.clientY-centre[1])/(innerHeight/2),-1,1);
+        viser(-dy*15, dx*20, dx*7*ratio, dy*5*ratio); diag.souris=true;
+      },{passive:true});
+      document.documentElement.addEventListener('mouseleave',()=>{ if(libre()) viser(0,0,0,0); });
+    }
+
+    /* Le doigt (ou la souris) : appuyer tient le papier, glisser le fait
+       tourner, lâcher lui laisse l'élan. `touch-action:none` sur la scène :
+       le geste porte une fonction, on le conduit en Pointer Events. */
+    scene.addEventListener('pointerdown',e=>{
+      if(mode!=='vit'||(e.pointerType==='mouse'&&e.button!==0)) return;
+      appui={id:e.pointerId, x0:e.clientX, y0:e.clientY, x:e.clientX, t:performance.now(), on:false};
+      aGlisse=false; goal.sc=.965;
+      try{ scene.setPointerCapture(e.pointerId); }catch(_){}
+    });
+    scene.addEventListener('pointermove',e=>{
+      if(!appui||e.pointerId!==appui.id) return;
+      const dx=e.clientX-appui.x0, dy=e.clientY-appui.y0;
+      if(!appui.on){ if(Math.hypot(dx,dy)<7) return; appui.on=true; aGlisse=true; goal.sc=1.03; }
+      const now=performance.now(), dts=Math.max(.008,(now-appui.t)/1000);
+      const d=(e.clientX-appui.x)*.62;
+      th+=d; om=om*.6+(d/dts)*.4;
+      goal.rx=borne(-dy*.18,-18,18);
+      appui.x=e.clientX; appui.t=now;
+    });
+    const lacher=e=>{
+      if(!appui||e.pointerId!==appui.id) return;
+      const glisse=appui.on; appui=null;
+      viser(0,0,0,0); goal.sc=1;
+      if(glisse){ om=borne(om,-720,720); diag.lancers++; }
+    };
+    scene.addEventListener('pointerup',lacher);
+    scene.addEventListener('pointercancel',lacher);
+    /* Un glissé n'est pas un tap : le clic qui le suit ne doit rien ouvrir. */
+    scene.addEventListener('click',e=>{
+      if(aGlisse){ aGlisse=false; e.stopPropagation(); e.preventDefault(); }
+    },true);
+
+
+    const ouvert=()=>!$('habit-picker').classList.contains('hide');
+    function hint(){ $('tp-hint').textContent=S.habit ? 'Tap to change my Habit Box' : 'Tap to search with my TOTEHM'; }
+    function sync(){
+      const open=ouvert(); $('tp-wrap').classList.toggle('is-open',open);
+      if(document.hidden||VIEW!=='radar'||!document.body.classList.contains('v-radar')||open||RM.matches){
+        if(mode!=='plat'||raf) aPlat(); aGlisse=false; return;
+      }
+      if(mode==='plat') reveiller();
+    }
+    function etat(){return {alive:!!raf,flat:mode==='plat',open:ouvert(),name:!!(me&&PSEUDO),spins:diag.lancers};}
+    window.addEventListener('resize',()=>{
+      if(VIEW!=='radar') return;
+      ratio=scene.clientWidth/110; paintPaper(); if(ouvert()) tpPickerPosition();
+    },{passive:true});
+    if(document.fonts?.ready) document.fonts.ready.then(paintPaper);
+
+function paintPaper(){
+  const el=$('tp-name'); if(!el) return;
+  const p=((me&&PSEUDO)||'').trim();
+  el.classList.toggle('is-name',!!p);
+  el.style.fontSize='';
+  el.textContent=p||'Tap to open it';
+  if(!p||!el.offsetWidth) return;
+  const max=(el.parentElement.clientWidth||110)*.76;
+  if(el.offsetWidth>max&&p.length>3){
+    const mi=p.length/2; let cut=Math.ceil(mi);
+    for(let d=0;d<=p.length;d++){
+      const a=Math.floor(mi)-d, b=Math.ceil(mi)+d;
+      if(/[_\-. ]/.test(p[a]||'')){ cut=a+1; break; }
+      if(/[_\-. ]/.test(p[b-1]||'')){ cut=b; break; }
+    }
+    el.textContent=p.slice(0,cut).trim()+'\n'+p.slice(cut).trim();
+  }
+  for(let fs=10; el.offsetWidth>max&&fs>7.5;){ fs-=.5; el.style.fontSize=fs+'px'; }
+}
+    return {poser, sync, nommer:paintPaper, hint, etat};
+  })();
+
 /* ══ LA HABIT BOX — même sélection que pour créer un Spot ═══════════ */
 function reload(){ loadFeed(false); loadExact(); loadList(); }
 async function loadHabits(){
@@ -839,9 +1107,18 @@ async function loadHabits(){
   })();
   try{ return await habitsPending; }finally{ habitsPending = null; }
 }
-function pickerClose(){ $('habit-picker').classList.add('hide'); $('habit-filter').setAttribute('aria-expanded', 'false'); }
+function tpPickerPosition(){
+  const p=$('habit-picker'), top=$('heading').getBoundingClientRect().bottom+8;
+  p.style.top=top+'px'; p.style.maxHeight=Math.max(0,innerHeight-top-16)+'px';
+}
+function pickerClose(){
+  $('habit-picker').classList.add('hide'); $('habit-filter').setAttribute('aria-expanded', 'false');
+  $('tp-enter').setAttribute('aria-expanded','false'); PAPER.sync();
+}
 async function pickerOpen(){
+  PAPER.poser();
   const p = $('habit-picker'); p.classList.remove('hide'); $('habit-filter').setAttribute('aria-expanded', 'true');
+  $('tp-enter').setAttribute('aria-expanded','true'); PAPER.sync(); tpPickerPosition();
   p.innerHTML = '<p class="note">Reading my TOTEHM…</p>';
   await loadHabits();
   if(p.classList.contains('hide')) return;
@@ -851,16 +1128,25 @@ async function pickerOpen(){
       '<button class="btn" type="button" data-com="/totehm#in">Write a Habit Box in my TOTEHM</button>');
 }
 $('habit-filter').onclick = () => $('habit-picker').classList.contains('hide') ? pickerOpen() : pickerClose();
+
+/* Le bouton natif donne Entrée/Espace ; la scène donne le tap des deux faces. */
+const tpToggle=()=>{
+  if(!$('habit-picker').classList.contains('hide')) pickerClose();
+  else PAPER.poser(()=>pickerOpen());
+};
+$('tp-enter').onclick=e=>{e.stopPropagation();tpToggle();};
+$('totehm-paper').onclick=tpToggle;
+
 $('habit-picker').addEventListener('click', e => {
   if(e.target.closest('[data-picker-close]')) return pickerClose();
   if(e.target.closest('[data-picker-signin]')) return ssoLogin(false);
   const b = e.target.closest('[data-filter-h]');
   if(b || e.target.closest('[data-all]')){
     S.habit = b ? HABITS[+b.dataset.filterH] : null; S.q = S.habit?.name || '';
-    $('habit-filter').textContent = S.habit ? S.habit.name : 'Habit Box · all'; pickerClose(); reload();
+    $('habit-filter').textContent = S.habit ? S.habit.name : 'Habit Box · all'; PAPER.hint(); pickerClose(); reload();
   }
 });
-document.addEventListener('pointerdown', e => { if(!e.target.closest('#habit-picker,#habit-filter')) pickerClose(); });
+document.addEventListener('pointerdown', e => { if(!e.target.closest('#habit-picker,#habit-filter,#totehm-paper')) pickerClose(); });
 
 /* ══ TOP — I WILL BE HERE, un Spot annoncé, jamais une fausse vidéo ═ */
 const chip = (a, l, on, sub) => '<button type="button" class="chip' + (on ? ' is-on' : '') + '" ' + a + '>' + l + (sub ? '<small>' + sub + '</small>' : '') + '</button>';
@@ -1188,7 +1474,7 @@ function go(v){
   if(v === 'plan') planOpen();
   if(v === 'cam') camOpen();
   if(v === 'feed') document.querySelectorAll('#feed .clip[data-k]').forEach(c => {io.unobserve(c);io.observe(c);});
-  camState(); joyPaint(); paintInts(); radarOn();
+  camState(); joyPaint(); paintInts(); radarOn(); PAPER.sync();
 }
 document.addEventListener('visibilitychange',()=>{
  if(document.hidden){cancelAnimationFrame(RAD.raf);RAD.raf=0;document.querySelectorAll('#feed video,#detail video').forEach(releaseClip);}
@@ -1217,7 +1503,7 @@ addEventListener('keydown',e => {
    leurs gestes. Le radar conserve le pincement / ctrl-wheel de zoom. */
 (function gestures(){
   const pointers = new Map(); let drag = null, pinch = null, pinching = false;
-  const excluded = t => !!t.closest?.('#joy,button,input,textarea,select,a,#detail,#menu,#habit-picker,#place-picker,[contenteditable],#radar-map,#radar-tools');
+  const excluded = t => !!t.closest?.('#joy,button,input,textarea,select,a,#detail,#menu,#habit-picker,#totehm-paper,#place-picker,[contenteditable],#radar-map,#radar-tools');
   const horizontal = dx => {if(['feed','list'].includes(VIEW)){gestureCount++;go('radar');}else step(dx>0?'g':'d');};
   const scroller = t => t.closest?.('#feed,#list,#v-plan,#cam-body');
   const canScroll = (el,delta) => !!el && el.scrollHeight > el.clientHeight + 3 && (delta > 0 ? el.scrollTop < el.scrollHeight - el.clientHeight - 3 : el.scrollTop > 3);
@@ -1251,7 +1537,7 @@ addEventListener('keydown',e => {
   },true);
   addEventListener('pointercancel',e => { pointers.delete(e.pointerId); drag=null; pinch=null; if(!pointers.size) pinching=false; },true);
   let touch=null;
-  const touchExcluded=t=>!!t.closest?.('#joy,input,textarea,select,#detail,#menu,#habit-picker,#place-picker,#radar-tools,#radar-map,[contenteditable]');
+  const touchExcluded=t=>!!t.closest?.('#joy,input,textarea,select,#detail,#menu,#habit-picker,#totehm-paper,#place-picker,#radar-tools,#radar-map,[contenteditable]');
   addEventListener('touchstart',e=>{
     if(e.touches.length!==1 || touchExcluded(e.target) || recordingLocked() || PLAN.busy || MAP.open || RAD.turn){ touch=null;return; }
     const p=e.touches[0];touch={x:p.clientX,y:p.clientY,t:Date.now(),el:scroller(e.target),view:VIEW};
@@ -1319,6 +1605,7 @@ function menu(open){ $('menu').classList.toggle('is-open', open); }
 function paintMember(){
   $('member').classList.toggle('is-in', !!me);
   $('member-txt').textContent = me ? (PSEUDO || 'Member') : 'Sign in';
+  PAPER.nommer();
   $('menu').innerHTML = (me
     ? (PSEUDO ? '<div class="m-name"><button class="tname" type="button" data-com="/totehm#in">' + esc(PSEUDO) + '</button></div>' : '') +
       '<button class="m-it" type="button" data-com="/console">Console</button>' +
@@ -1339,7 +1626,7 @@ async function boot(){
   me = session?.user || null;
   if(me){ const { data, error } = await sb.from('profiles').select('pseudo').eq('id', me.id).maybeSingle();
     if(error) console.error('[profile]', error.message); PSEUDO = data?.pseudo || null; }
-  paintMember(); paintInts();
+  paintMember(); paintInts(); PAPER.hint(); PAPER.sync();
   if(me) videoRequest('create-bunny-upload',{action:'status'}).then(d=>{if(d?.available) RULES.video_provider='bunny';}).catch(e=>console.error('[video availability]',e.message));
   sb.rpc('spot_rules').then(({ data, error }) => { if(error) console.error('[spot_rules]', error.message); if(data) RULES = { ...RULES, ...data, video_provider:RULES.video_provider==='bunny'?'bunny':data.video_provider }; });
   const p = new URLSearchParams(location.search);
