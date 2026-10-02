@@ -18,7 +18,7 @@ const { pg, log } = await page(browser, { dir:'com', origin:'https://www.totehm.
 await pg.goto('https://www.totehm.com/console');
 await pg.waitForFunction(() => window.__totehm_console && window.__totehm_console().loaded, null, { timeout:15000 });
 let d = await pg.evaluate(() => window.__totehm_console());
-ok(d.build === '2026-10-01' && d.period === 'year', 'console on totehm.com, offer per year');
+ok(d.build === '2026-10-02' && d.period === 'year', 'console on totehm.com, offer per year');
 const txt = await pg.evaluate(() => document.body.innerText);
 ok(/Who sees my TOTEHM/i.test(txt) && /Private/i.test(txt) && /Visible to my subscribers/i.test(txt), 'two visibility settings');
 ok(/My subscribers/i.test(txt) && /nia/.test(txt), 'finds my subscribers');
@@ -30,6 +30,9 @@ ok(log.rpc.some(r => r.name === 'visibility_set' && r.body.p_visibility === 'sub
 await pg.click('#off-on');
 await pg.waitForTimeout(300);
 ok(log.rpc.some(r => r.name === 'monetization_set' && r.body.p_enabled === true && r.body.p_price_cents === 3600), 'offer turned on at 36 € / year');
+// 02/10 : un post prêt à publier — la phrase de Wah + le lien /@nom, jamais un prix.
+ok(!await pg.$eval('#post', e => e.classList.contains('hide')) && !await pg.$eval('#link', e => e.classList.contains('hide')), 'offer open: the link AND a ready-to-publish post can be copied');
+
 await pg.fill('#find', 'kai');
 await pg.waitForTimeout(500);
 ok(/subscribed/.test(await pg.textContent('#found')) && /12 \/ year/.test((await pg.textContent('#found')).replace(/€/g, '')), 'search a TOTEHM to subscribe: name + offer only');
