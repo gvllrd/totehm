@@ -14,7 +14,7 @@ const rpc={spot_rules:{clip_seconds:3,clip_max_bytes:33554432,countdown:1,durati
  spot_create:b=>{const s=spot('newclip',0,{habit:b.p_habit,mine:true,visibility:b.p_visibility,location:b.p_location,mode:b.p_mode,video:b.p_video,exact:{lat:b.p_lat,lng:b.p_lng,place:'My place'}});feed.unshift(s);exact.unshift(s);return {ok:true,id:s.id};},
  spot_get:b=>({ok:true,spot:[...feed,...exact,...future].find(s=>s.id===b.p_id)})};
 const tables={profiles:[{pseudo:'wah'}]};
-const browser=await launch();
+const browser=await launch({videoFile:process.env.SPACE_CAMERA_FIXTURE});
 try{
  const {pg,log}=await page(browser,{dir:'space',origin,rpc,tables,viewport:{width:1440,height:900}});
  const state=()=>pg.evaluate(()=>window.__totehm_space());const settle=()=>pg.waitForTimeout(600);

@@ -6,7 +6,7 @@
 > `CLAUDE.md` le 30/09/2026, les plus récentes d'abord : un renvoi « plus
 > haut » peut viser la racine ou un autre dossier. Procédures : `README.md`. État mesuré : `SYSTEM.md` (§0 d'abord).
 
-## Dernière correction SPACE · 01/10/2026 — Habit, partage progressif, Bunny
+## Dernière correction SPACE · 02/10/2026 — Short portrait Full HD
 
 `space_habits` rend les Boxes personnelles complètes de COM. `space_discover`
 cherche le nom complet puis, s'il n'existe aucun résultat lisible dans cette
@@ -29,7 +29,13 @@ Bunny API confirmé 200 avec les deux secrets existants. Lecture protégée
 encore à configurer : hostname CDN, token key, read-only key / webhook.
 `video_backend` est PRIVÉ ; aucun diagnostic des secrets public. Le client
 connecté obtient seulement available. Pas d'upload Bunny si la lecture
-protégée n'est pas vérifiée. Storage privé HD reste actif (32 Mo / 33 s).
+protégée n'est pas vérifiée. Storage privé HD reste actif (48 000 000 octets / 33 s).
+Migration `20261002071846_space_portrait_hd_video.sql` déjà appliquée
+(journal `20261002072508`) : même enveloppe pour videos, video_reserve,
+spot_rules et bucket privé moments. 10 Mbps + audio 192 kbps, fichier 9:16
+cible 1080 × 1920 encodé une seule fois depuis les images caméra recadrées.
+Ne pas réintroduire la capture paysage selon la taille de l’écran. Les
+contrôles caméra/lecture sont dans space/CLAUDE.md ; aucun droit élargi.
 
 ## Dernière demande SPACE · 01/10/2026 — le futur revient
 

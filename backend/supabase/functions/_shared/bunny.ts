@@ -6,7 +6,7 @@ export const library=Deno.env.get('BUNNY_LIBRARY_ID') || '';
 const api=Deno.env.get('BUNNY_API_KEY') || '';
 const account=Deno.env.get('BUNNY_ACCOUNT_API_KEY') || api;
 export const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-export const MAX_BYTES=33554432;
+export const MAX_BYTES=48000000;
 type Config={ready:boolean,key:string,host:string,readKey:string};
 let pending:Promise<Config>|null=null,expires=0;
 const timeout=()=>AbortSignal.timeout(12000);

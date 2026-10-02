@@ -61,6 +61,21 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > bloquée par les secrets hostname/token/read-only manquants ; voir README.
 > Cette correction REMPLACE toute règle contredite de 0.21 / 0.22.
 
+### Correction 0.24 — 02/10/2026 · la vidéo est le fer de lance de SPACE
+
+> Chaque Spot filmé est un vrai Short vertical 9:16, téléphone ET ordinateur.
+> Cible Full HD 1080 × 1920, 30 fps, 10 Mbps + audio 192 kbps ; source caméra
+> haute résolution recadrée avant son unique encodage, sans déformation ni
+> agrandissement artificiel. Enveloppe 48 000 000 octets / 33 s. Cadres 9:16
+> pour le feed, le détail et la caméra desktop, joystick REC/STOP conservé.
+> HLS démarre dans la meilleure résolution disponible. Migration
+> `20261002071846_space_portrait_hd_video.sql` APPLIQUÉE, journal
+> `20261002072508` : ne pas réappliquer. Les fichiers réellement envoyés
+> sont validés avec caméras simulées portrait et paysage. Bunny attend
+> toujours la configuration CDN protégée décrite dans README ; stockage
+> privé actif en attendant. Aucun travail Oracle/n8n ni nouveau paiement.
+> Cette correction remplace les anciens paramètres capture/limite du 01/10.
+
 ## Le rapport
 
 Un tableau : ce qui a été fait, la valeur mesurée, ce qui n'a pas pu l'être.

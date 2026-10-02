@@ -16,11 +16,12 @@ const SB = 'https://abujjbkbbiumxrokozph.supabase.co';
 const BUNDLE = fs.readFileSync(new URL('./supabase.mjs', import.meta.url));
 const TYPES = { '.html':'text/html', '.js':'text/javascript', '.mjs':'text/javascript', '.json':'application/json', '.svg':'image/svg+xml', '.png':'image/png', '.css':'text/css', '.mp4':'video/mp4' };
 export const USER = { id:'11111111-1111-4111-8111-111111111111', email:'wah@example.test', aud:'authenticated', role:'authenticated' };
-export async function launch(){
+export async function launch({videoFile}={}){
   const args = ['--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream','--autoplay-policy=no-user-gesture-required'];
+  if(videoFile) args.push('--use-file-for-fake-video-capture='+videoFile);
   if(process.env.CHROMIUM_PROVIDER){
     const { default: provider } = await import(process.env.CHROMIUM_PROVIDER);
-    return chromium.launch({ executablePath:await provider.executablePath(), args:[...provider.args,...args] });
+    return chromium.launch({ executablePath:process.env.PLAYWRIGHT_CHROMIUM || await provider.executablePath(), args:[...provider.args,...args] });
   }
   return chromium.launch({ executablePath:process.env.PLAYWRIGHT_CHROMIUM || undefined, args });
 }

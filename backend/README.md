@@ -362,7 +362,7 @@ Lues par `space/index.html` — tout le reste de l'ancien Espace est RÉVOQUÉ
 
 | fonction | qui | ce qu'elle rend |
 |---|---|---|
-| `spot_rules()` | tous | `clip_seconds` 33 · `clip_max_bytes` 32 Mo · `countdown` 3 · durée 5–720 · `max_day` 24 · `radius_km` 60 · `feed_days` 90 · `horizon_days` 90 · `max_upcoming` 10 |
+| `spot_rules()` | tous | `clip_seconds` 33 · `clip_max_bytes` 48 000 000 octets · `countdown` 3 · durée 5–720 · `max_day` 24 · `radius_km` 60 · `feed_days` 90 · `horizon_days` 90 · `max_upcoming` 10 |
 | `spot_create(habit, visibility, duration_min, video, lat, lng, city, comment, mode, location)` | connecté | crée MAINTENANT ; relit l'Habit dans MON Totehm (intentions, objectifs, répulsions reliés) ; SHARED exige `location`, et `mode` si ON seulement ; vidéo dans `moments/<mon uid>/` ou référence Bunny possédée, réservée par le serveur |
 | `spots_feed(lat, lng, q, intention, before, limit)` | tous, même anonyme | les SHARED déjà commencés à 60 km (positions arrondies à 0,1° des deux côtés) + les miens ; la ville, jamais le point ni une distance |
 | `spot_schedule(habit, visibility, starts_at, duration_min, place, lat, lng, city, comment, mode, location)` | connecté | futur, sans vidéo obligatoire ; mêmes droits et Habit relue en base ; 10 à venir, horizon 90 jours |
@@ -387,7 +387,9 @@ verrouillé) → `create-bunny-upload` (JWT + getUser, signature TUS 1 h) →
 binaire direct de SPACE vers video.bunnycdn.com → `bunny-video` complete
 (propriétaire) → `spot_create` bunny:<UUID>. `bunny-video` playback appelle
 spot_get sous le JWT du lecteur AVANT une URL HLS signée par dossier 10 min.
-Safari HLS natif, Hls.js 1.6.13 chargé seulement si nécessaire. Webhook
+Hls.js 1.6.13 local si MSE/ManagedMediaSource est disponible : démarrage
+dans la meilleure résolution, puis adaptation au réseau. Sinon HLS natif
+sur la meilleure variante, dans le même dossier signé. Webhook
 `https://abujjbkbbiumxrokozph.supabase.co/functions/v1/bunny-webhook` : HMAC
 SHA256 corps brut, v1, clé lecture seule ; relit l'API pour le statut courant.
 
@@ -401,15 +403,35 @@ accessible côté serveur via BUNNY_ACCOUNT_API_KEY, aucun secret dans le front.
 Le diagnostic interne est `video_backend`, enum/booleans sans valeurs de clés.
 Le navigateur signé demande action=status, disponible seulement si le CDN
 refuse les URLs non signées et accepte la signature. Sans cela, `moments`
-privé reste actif, capture HD 6 Mbps et limite 32 Mo. Rafraîchir SPACE après
+privé reste actif, capture portrait Full HD 10 Mbps + audio 192 kbps et
+limite 48 000 000 octets. Rafraîchir SPACE après
 configuration ; aucun historique vidéo n'est effacé.
 
-Test HLS local, aucun appel réel :
+**Capture du 02/10** : `space/video-capture.mjs` demande une source haute
+résolution et encode ses images brutes recadrées, une seule fois. Fichier
+9:16, cible 1080 × 1920 / 30 fps, même si la caméra fournit du paysage.
+Aucun agrandissement artificiel d'une source faible ; son conservé. La durée
+commence avec MediaRecorder.onstart, et non pendant le démarrage de
+l’encodeur. Un fichier vide/illisible ne peut pas être publié. Les
+lecteurs et la caméra desktop gardent un cadre 9:16. La limite 48 MB est
+inférieure au plafond 50 MB de Supabase Free ; pas de changement de plan.
+Migration `20261002071846_space_portrait_hd_video.sql`, appliquée en journal
+`20261002072508` : videos check, video_reserve, spot_rules, bucket moments
+privé. Contraintes de propriété, quotas et droits inchangés.
+
+Tests locaux, aucun appel réel à Bunny :
 ```bash
-mkdir -p /tmp/space-hls-fixture
-ffmpeg -hide_banner -loglevel error -f lavfi -i testsrc2=size=1080x1920:rate=24 -t 2 -c:v libx264 -preset ultrafast -crf 24 -pix_fmt yuv420p -an -f hls -hls_time 1 -hls_list_size 0 /tmp/space-hls-fixture/playlist.m3u8
-node tests/browser/space_video.mjs
+python3 tests/browser/space_video_fixtures.py
+node tests/browser/space_video.mjs landscape
+node tests/browser/space_video.mjs portrait
+node tests/browser/space_video.mjs landscape native
+SPACE_CAMERA_FIXTURE=/tmp/space-portrait-fixtures/landscape.y4m node tests/browser/space.mjs /tmp/space-portrait-ui
 ```
+`ffmpeg`/`ffprobe` requis. Chaque test capture vraiment la caméra simulée,
+reconstitue le fichier binaire envoyé en TUS, le sonde et décode une image :
+1080 × 1920, audio, carré non étiré, cadre rempli. Master HLS avec 270 × 480
+ET 1080 × 1920 : vérifie le Full HD au démarrage pour Hls.js et le natif.
+Bunny API/CDN sont simulés ; aucun test de téléphone physique annoncé.
 Auto-test complet Boxes/droits : `tests/sql/space_habits_video_selftest.sql`,
 annulation volontaire, attendu FAIL={}. Les deux anciens auto-tests restent.
 

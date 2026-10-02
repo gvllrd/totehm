@@ -1,4 +1,4 @@
-# CLAUDE.md — CTO de TOTEHM (racine · réorganisé le 30/09, mis à jour le 01/10/2026)
+# CLAUDE.md — CTO de TOTEHM (racine · réorganisé le 30/09, mis à jour le 02/10/2026)
 
 > **Ce fichier est chargé à CHAQUE session : il reste court (≤ 250 lignes).**
 > Détails : `CLAUDE.md` du domaine ; histoire : `docs/POSTMORTEMS.md`,
@@ -175,8 +175,8 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 - **Claude Code** (terminal) : une commande simple par ligne, jamais
   `cd X && …` (les permissions jugent la ligne entière).
 
-**SPACE · 01/10 :** cinq vues, gestes et panneaux desktop conservés ; TOP futur,
-RIGHT futurs, CENTER Habit Box, BOTTOM caméra HD. Boussole, lieu dans le radar,
+**SPACE · 02/10 :** cinq vues, gestes et panneaux desktop conservés ; TOP futur,
+RIGHT futurs, CENTER Habit Box, BOTTOM Short 9:16 Full HD. Boussole, lieu dans le radar,
 joystick COM navy REC/STOP remonté ; création progressive. `space/CLAUDE.md` fait foi.
 
 ## Règles d'interface qui valent partout

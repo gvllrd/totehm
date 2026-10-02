@@ -298,7 +298,15 @@ body.v-cam.is-form #joy{bottom:calc(64px + var(--bot))}
 @media(prefers-reduced-motion:reduce){.view,#heading,#detail,#menu,#joy-stack,#joy-record{transition:none!important}}
 
 .video-status{position:absolute;top:44%;left:12px;right:12px;text-align:center;pointer-events:none}
-#cam-v,#detail video{object-fit:contain}
+/* The frame remains 9:16 in a side panel, a wide screen and a phone. */
+.portrait-media{position:relative;aspect-ratio:9/16;background:#000;overflow:hidden}
+.portrait-media>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.clip,#v-cam{container-type:size}
+.clip>.portrait-media,#cam-frame{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100cqw,calc(100cqh * 9 / 16));height:auto}
+#detail .portrait-media{width:min(100%,calc(46dvh * 9 / 16));margin:0 auto 10px}
+#detail .portrait-media>video{max-height:none;margin:0}
+@supports not (width:1cqw){.clip>.portrait-media,#cam-frame{width:min(100%,calc(100vh * 9 / 16))}}
+@media(min-width:900px){#v-cam{height:min(56dvh,520px);width:calc(min(56dvh,520px) * 9 / 16)}}
 </style>
 </head>
 <body class="v-radar">
@@ -317,7 +325,7 @@ body.v-cam.is-form #joy{bottom:calc(64px + var(--bot))}
 <section class="view is-on" id="v-radar" aria-label="Radar"><canvas id="canvas"></canvas><div id="radar-map" class="hide"><div id="map-tiles"></div><div id="map-pin"></div><span id="map-credit">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></span></div><div class="empty hide" id="radar-empty"></div></section>
 <section class="view" id="v-list" aria-label="Future Spot Habits"><div id="list"></div></section>
 <section class="view" id="v-cam" aria-label="Camera">
-  <video id="cam-v" playsinline muted></video>
+  <div id="cam-frame" class="portrait-media"><video id="cam-v" playsinline muted></video></div>
   <div id="cam-n"></div>
   <div id="cam-sec" class="hide"><i></i><span id="cam-s"></span></div>
   <div id="cam-body"></div>
@@ -476,9 +484,9 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
 const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query=' + Number(lat).toFixed(5) + '%2C' + Number(lng).toFixed(5);
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD = '2026-10-01-compass-habits-bunny';
+const BUILD = '2026-10-02-portrait-full-hd';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
-let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:33554432, countdown:3, duration_min:5, duration_max:720 };
+let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'radar';
 const S = { int:null, q:'', habit:null };
 const FEED = { list:[], seq:0, more:true, loading:false, match:'all' };
@@ -487,14 +495,14 @@ const LIST = { list:[], seq:0, more:false, loading:false, match:'all' };
 const PLAN = { seq:0, context:null, details:false, habit:null, date:'', time:'', pos:null, place:'', city:null, dur:null, vis:store.get('space_vis'), mode:null, loc:null, say:'', busy:false };
 let habitsPending = null, gestureCount = 0, suppressClickUntil = 0;
 const REC = { seq:0, step:null, stream:null, mr:null, blob:null, url:null, mime:'', t0:0, timer:0, seconds:0, uploaded:null, habit:null, vis: store.get('space_vis') === 'private' ? 'private' : (store.get('space_vis') === 'shared' ? 'shared' : null),
-  mode:null, loc:null, dur:null, busy:false };
+  mode:null, loc:null, dur:null, busy:false, capture:null, width:0,height:0,fps:0,bitrate:0 };
 let HABITS = null, DETAIL = null;
 window.__totehm_space = () => ({ build: BUILD, view: VIEW, signed_in: !!me, located: !!POS, intention: S.int, search: !!S.q,
   feed: FEED.list.length, exact: EX.list.length, playing: [...document.querySelectorAll('#feed video')].filter(v => !v.paused).length,
-  list:LIST.list.length, future:LIST.list.filter(s => spotState(s) === 'will').length, gestures:gestureCount, radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx),heading:Math.round(norm360(RAD.head)),pin:MAP.open,place:!!PLAN.pos}, habit_filter:!!S.habit, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis } });
+  list:LIST.list.length, future:LIST.list.filter(s => spotState(s) === 'will').length, gestures:gestureCount, radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx),heading:Math.round(norm360(RAD.head)),pin:MAP.open,place:!!PLAN.pos}, habit_filter:!!S.habit, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate } });
 
 /* Chaque vue dit où je suis. L'intention vient de la Habit, sans filtre parallèle. */
-const VIEW_WORDS = {radar:['RADAR','Exact places I can see'],feed:['CITY FEED','I AM HERE · I WAS THERE'],list:['FUTURE SPOTS','I WILL BE HERE'],plan:['PLAN A SPOT','I WILL BE HERE'],cam:['FILM A SPOT','I AM HERE · up to 33 seconds']};
+const VIEW_WORDS = {radar:['RADAR','Exact places I can see'],feed:['CITY FEED','I AM HERE · I WAS THERE'],list:['FUTURE SPOTS','I WILL BE HERE'],plan:['PLAN A SPOT','I WILL BE HERE'],cam:['FILM A SPOT','I AM HERE · 9:16 · up to 33 seconds']};
 function paintInts(){
   const [title,sub] = MAP?.open ? ['MEETING POINT','Move the radar under the cross'] : VIEW_WORDS[VIEW];
   const source = VIEW === 'feed' ? FEED : VIEW === 'list' ? LIST : EX;
@@ -530,6 +538,21 @@ async function clipURL(path){
  const {data,error}=await sb.storage.from('moments').createSignedUrl(path,3600);if(error){console.error('[clip]',error.message);return null;}
  SIGNED.set(path,{url:data.signedUrl,at:Date.now()});return data.signedUrl;
 }
+async function nativeHlsURL(url){
+ try{
+  const response=await fetch(url);if(!response.ok) return url;
+  const lines=(await response.text()).split(/\r?\n/),base=new URL(url),prefix=url.slice(0,url.lastIndexOf('/')+1);let best=null;
+  for(let i=0;i<lines.length;i++){
+   if(!lines[i].startsWith('#EXT-X-STREAM-INF:')) continue;
+   const resolution=lines[i].match(/RESOLUTION=(\d+)x(\d+)/),bandwidth=Number(lines[i].match(/(?:^|[:,])BANDWIDTH=(\d+)/)?.[1] || 0);
+   let j=i+1;while(j<lines.length && (!lines[j].trim() || lines[j].startsWith('#'))) j++;
+   if(j===lines.length) continue;const candidate=new URL(lines[j].trim(),base),area=resolution?Number(resolution[1])*Number(resolution[2]):0;
+   if(candidate.origin!==base.origin || !candidate.href.startsWith(prefix)) continue;
+   if(!best || area>best.area || area===best.area && bandwidth>best.bandwidth) best={url:candidate.href,area,bandwidth};
+  }
+  return best?.url || url;
+ }catch{return url;}
+}
 async function playClip(v){
  if(!v.isConnected) return;
  if(v.src || v._hls){v.play().catch(()=>{});return;}
@@ -543,21 +566,23 @@ async function playClip(v){
     if(data.status!=='failed'){clearTimeout(v._retry);v._retry=setTimeout(()=>{if(fresh()) playClip(v);},5000);}return;
    }
    const label=v.parentElement.querySelector('.video-status');if(label) label.remove();
-   if(v.canPlayType('application/vnd.apple.mpegurl')) v.src=data.url;
-   else {
-    hlsModule ||= import('/vendor/hls-1.6.13.mjs');const {default:Hls}=await hlsModule;
-    if(!fresh()) return;
-    if(!Hls.isSupported()) throw new Error('Video playback unsupported');
-    const hls=new Hls({capLevelToPlayerSize:false,startLevel:-1,maxBufferLength:35});v._hls=hls;
+   hlsModule ||= import('/vendor/hls-1.6.13.mjs');const {default:Hls}=await hlsModule;
+   if(!fresh()) return;
+   if(Hls.isSupported()){
+    v.disableRemotePlayback=true;
+    const hls=new Hls({capLevelToPlayerSize:false,autoStartLoad:false,abrEwmaDefaultEstimate:10e6,maxBufferLength:20});v._hls=hls;
+    hls.on(Hls.Events.MANIFEST_PARSED,()=>{if(!fresh()){releaseClip(v);return;}const best=hls.levels.reduce((best,l,i)=>{const b=hls.levels[best];return l.width*l.height>b.width*b.height || l.width*l.height===b.width*b.height && l.bitrate>b.bitrate?i:best;},0);hls.startLevel=best;hls.nextAutoLevel=best;hls.startLoad();});
     hls.on(Hls.Events.ERROR,(_,e)=>{if(e.fatal){console.error('[hls]',e.type);hls.destroy();v._hls=null;}});
     hls.attachMedia(v);hls.loadSource(data.url);
-   }
+   }else if(v.canPlayType('application/vnd.apple.mpegurl')){const native=await nativeHlsURL(data.url);if(!fresh()) return;v.src=native;}
+   else throw new Error('Video playback unsupported');
   }else {const u=await clipURL(v.dataset.clip);if(!u || !fresh()) return;v.src=u;}
   if(fresh()) v.play().catch(()=>{});
  }catch(e){console.error('[video]',e.message);}
 }
 function releaseClip(v){v.pause();clearTimeout(v._retry);v._hls?.destroy();v._hls=null;}
-const videoHTML=s=>s.clip || s.video ? '<video '+(s.clip?'data-bunny="'+esc(s.clip.id)+'" data-spot="'+esc(s.id)+'"':'data-clip="'+esc(s.video)+'"')+' playsinline muted loop preload="none"></video>'+(s.clip?.status!=='ready' && s.clip?'<span class="video-status note">Preparing the video…</span>':'') : '';
+const videoHTML=s=>s.clip || s.video ? '<div class="portrait-media"><video '+(s.clip?'data-bunny="'+esc(s.clip.id)+'" data-spot="'+esc(s.id)+'"':'data-clip="'+esc(s.video)+'"')+' playsinline muted loop preload="none"></video>'+(s.clip?.status!=='ready' && s.clip?'<span class="video-status note">Preparing the video…</span>':'')+'</div>' : '';
+
 async function bunnyUpload(blob,seconds,onProgress){
  const c=await videoRequest('create-bunny-upload',{bytes:blob.size,seconds});
  const headers={...c.headers,'Tus-Resumable':'1.0.0'};
@@ -949,24 +974,26 @@ for(const event of ['pointerup','pointercancel']) $('radar-map').addEventListene
 /* ══ BOTTOM — LA CAMÉRA, PUIS LE SPOT ════════════════════════════════
    Aucun formulaire avant la caméra. Décompte (annulable) → REC → arrêt
    à la main ou à 33 s → l'Habit → PRIVATE/SHARED (le dernier choix est
-   retenu) → SHARED : SILENT/SOCIAL et LOCATION ON/OFF → la durée →
+   retenu) → SHARED : LOCATION ON/OFF puis SILENT/SOCIAL si ON → la durée →
    un mot → I AM HERE. */
+import {VIDEO,cameraConstraints,cameraReady,portraitCapture} from '/video-capture.mjs';
 const recMime = () => typeof MediaRecorder === 'undefined' ? '' :
   ['video/mp4;codecs=avc1,mp4a', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4'].find(t => MediaRecorder.isTypeSupported(t)) || '';
 function camState(){ ['is-rec','is-count','is-form'].forEach(c => document.body.classList.remove(c));
   if(REC.step === 'rec') document.body.classList.add('is-rec');
   if(REC.step === 'count') document.body.classList.add('is-count');
-  if(['habit','form','send'].includes(REC.step)) document.body.classList.add('is-form');
+  if(['habit','form','send','retry'].includes(REC.step)) document.body.classList.add('is-form');
   joyPaint(); }
 function camStop(){
+  REC.capture?.stop();REC.capture=null;
   REC.stream?.getTracks().forEach(t => t.stop()); REC.stream = null;
   try{ if(REC.mr && REC.mr.state !== 'inactive') REC.mr.stop(); }catch(_){}
   clearInterval(REC.timer);
 }
 function camReset(){
-  REC.seq++; if(REC.mr){ REC.mr.onstop = null; REC.mr.ondataavailable = null; }
+  REC.seq++; if(REC.mr){ REC.mr.onstop = null; REC.mr.ondataavailable = null; REC.mr.onstart=null;REC.mr.onerror=null; }
   camStop(); if(REC.url) URL.revokeObjectURL(REC.url);
-  Object.assign(REC, { step:null, mr:null, blob:null, url:null, habit:null, mode:null, loc:null, dur:null, busy:false,seconds:0,uploaded:null });
+  Object.assign(REC, { step:null, mr:null, blob:null, url:null, habit:null, mode:null, loc:null, dur:null, busy:false,seconds:0,uploaded:null,width:0,height:0,fps:0,bitrate:0 });
   const v = $('cam-v'); v.pause(); v.removeAttribute('src'); v.srcObject = null;
   $('cam-n').textContent = ''; $('cam-sec').classList.add('hide'); camState();
 }
@@ -977,36 +1004,46 @@ async function camOpen(){
   if(!REC.mime || !navigator.mediaDevices?.getUserMedia){ REC.step = 'nocam'; return camPaint(); }
   REC.step = 'perm'; camPaint();
   let stream;
-  try{ stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment', width:{ideal:matchMedia('(orientation:portrait)').matches?1080:1920},height:{ideal:matchMedia('(orientation:portrait)').matches?1920:1080}, frameRate:{ideal:30,max:30} }, audio:true }); }
+  try{ stream = await navigator.mediaDevices.getUserMedia(cameraConstraints()); }
   catch(e){ if(seq !== REC.seq || VIEW !== 'cam') return; console.error('[cam]', e && e.name); REC.step = 'denied'; return camPaint(); }
   if(seq !== REC.seq || VIEW !== 'cam'){ stream.getTracks().forEach(t => t.stop()); return; }
   REC.stream = stream;
-  const v = $('cam-v'); v.srcObject = REC.stream; v.muted = true; v.play().catch(() => {});
+  const v = $('cam-v'); v.srcObject = REC.stream; v.muted = true;
+  try{await v.play();await cameraReady(v);if(seq!==REC.seq || VIEW!=='cam') return;const capture=await portraitCapture(v,stream);if(seq!==REC.seq || VIEW!=='cam'){capture.stop();return;}REC.capture=capture;Object.assign(REC,{width:capture.width,height:capture.height,fps:capture.fps});}
+  catch(e){if(seq!==REC.seq || VIEW!=='cam') return;console.error('[portrait capture]',e.message);camStop();REC.step='nocam';return camPaint();}
   REC.step = 'count'; camPaint();
   let n = RULES.countdown || 3; $('cam-n').textContent = n;
   REC.timer = setInterval(() => { n--; if(REC.step !== 'count') return clearInterval(REC.timer);
     if(n > 0) $('cam-n').textContent = n; else { clearInterval(REC.timer); $('cam-n').textContent = ''; camRec(); } }, 1000);
 }
 function camRec(){
-  if(!REC.stream || REC.step === 'rec') return;
+  if(!REC.stream || !REC.capture || REC.step === 'rec') return;
   clearInterval(REC.timer); $('cam-n').textContent = '';
   const chunks = [], seq = REC.seq;
-  try{ REC.mr = new MediaRecorder(REC.stream, { mimeType: REC.mime, videoBitsPerSecond: 6e6, audioBitsPerSecond: 128e3 }); }
+  try{ REC.mr = new MediaRecorder(REC.capture.stream, { mimeType: REC.mime, videoBitsPerSecond: VIDEO.bitrate, audioBitsPerSecond: VIDEO.audioBitrate }); }
   catch(e){ console.error('[cam]', e && e.message); REC.step = 'nocam'; return camPaint(); }
-  REC.mr.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
-  REC.mr.onstop = () => {
+  REC.bitrate=REC.mr.videoBitsPerSecond;REC.mime=REC.mr.mimeType || REC.mime;let bytes=0,failed=false;
+  REC.mr.onstart=()=>{if(seq===REC.seq && VIEW==='cam' && REC.mr.state==='recording') REC.t0=Date.now();};
+  REC.mr.onerror=e=>{failed=true;console.error('[cam recording]',e.error?.name || 'failed');};
+  REC.mr.ondataavailable = e => {if(e.data?.size){chunks.push(e.data);bytes+=e.data.size;if(bytes>(RULES.clip_max_bytes || VIDEO.maxBytes)*.96 && REC.mr.state==='recording') REC.mr.stop();}};
+  REC.mr.onstop = async () => {
     if(seq !== REC.seq || VIEW !== 'cam') return;
     const type = REC.mime.split(';')[0] || 'video/webm';
-    REC.seconds=Math.min(33,(Date.now()-REC.t0)/1000);REC.blob = new Blob(chunks, { type }); camStop(); $('cam-sec').classList.add('hide');
+    REC.seconds=REC.t0?Math.min(33,(Date.now()-REC.t0)/1000):0;REC.blob = new Blob(chunks, { type }); camStop(); $('cam-sec').classList.add('hide');
     if(VIEW !== 'cam') return;
-    if(REC.blob.size > (RULES.clip_max_bytes || 33554432)){ REC.blob = null; REC.step = 'heavy'; return camPaint(); }
-    const v = $('cam-v'); v.srcObject = null; REC.url = URL.createObjectURL(REC.blob); v.src = REC.url; v.loop = true; v.muted = true; v.play().catch(() => {});
+    if(failed || !REC.blob.size){REC.blob=null;REC.step='retry';return camPaint();}
+    if(REC.blob.size > (RULES.clip_max_bytes || VIDEO.maxBytes)){ REC.blob = null; REC.step = 'heavy'; return camPaint(); }
+    const v = $('cam-v'); v.srcObject = null; REC.url = URL.createObjectURL(REC.blob); v.src = REC.url; v.loop = true; v.muted = true;
+    try{await v.play();await cameraReady(v);if(seq!==REC.seq || VIEW!=='cam') return;if(Math.abs(v.videoWidth*16-v.videoHeight*9)>2) throw new Error('Portrait video required');}
+    catch(e){if(seq!==REC.seq || VIEW!=='cam') return;console.error('[recorded video]',e.message);REC.blob=null;REC.step='retry';return camPaint();}
     REC.step = 'habit'; camPaint(); loadHabits().then(() => { if(seq === REC.seq && REC.step === 'habit') camPaint(); });
   };
-  REC.mr.start(250); REC.step = 'rec'; REC.t0 = Date.now(); camPaint();
+  // Encoder startup must not consume the clip duration or stop an empty recording.
+  REC.t0=0;REC.mr.start(250); REC.step = 'rec'; camPaint();
   const max = (RULES.clip_seconds || 33)*1000;
   $('cam-sec').classList.remove('hide');
-  const tick = () => { const el = Date.now() - REC.t0; $('cam-s').textContent = Math.min(33, Math.floor(el/1000)) + ' / ' + (max/1000) + ' s';
+  $('cam-s').textContent='0 / '+(max/1000)+' s';
+  const tick = () => { if(!REC.t0) return; const el = Date.now() - REC.t0; $('cam-s').textContent = Math.min(33, Math.floor(el/1000)) + ' / ' + (max/1000) + ' s';
     if(el >= max){ clearInterval(REC.timer); try{ REC.mr?.stop(); }catch(_){} } };
   tick(); REC.timer = setInterval(tick, 200);
 }
@@ -1027,6 +1064,7 @@ function camPaint(){
   else if(st === 'perm') h = '<p class="say">allow the camera</p>';
   else if(st === 'denied') h = '<p class="say">The camera is closed for this site. Allow it in the browser, then come back.</p>';
   else if(st === 'nocam') h = '<p class="say">This browser cannot film. Try Safari or Chrome on the phone.</p>';
+  else if(st === 'retry') h = '<p class="say">The recording did not arrive. Film it again.</p><button class="btn" type="button" data-again="1">Again</button>';
   else if(st === 'heavy') h = '<p class="say">Too heavy — film it again.</p><button class="btn" type="button" data-again="1">Again</button>';
   else if(st === 'count') h = '<button class="btn" type="button" data-cancel="1">Cancel</button>';
   else if(st === 'rec') h = '<p class="say">Tap the joystick to stop.</p>';
@@ -1114,10 +1152,10 @@ function joyPaint(preview){
   bx.classList.toggle('is-side',['feed','list'].includes(VIEW));
   bx.classList.toggle('is-camera',camera); bx.classList.toggle('is-recording',camera && REC.step === 'rec');
   bx.disabled = camera && ['perm','send','signin','nocam','denied'].includes(REC.step);
-  bx.setAttribute('aria-label',camera ? (REC.step === 'rec' ? 'Stop recording' : ['habit','form','heavy'].includes(REC.step) ? 'Record again' : 'Record video') : 'Back to radar');
+  bx.setAttribute('aria-label',camera ? (REC.step === 'rec' ? 'Stop recording' : ['habit','form','heavy','retry'].includes(REC.step) ? 'Record again' : 'Record video') : 'Back to radar');
   for(const [cls,v] of [['o','plan'],['h','radar'],['r','cam']]) $('joy-stack').querySelector('.'+cls).classList.toggle('is-current',VIEW === v);
   for(const d of ['g','d','h','b']){ $('cur-'+d).classList.toggle('is-dead',!voisin(d) || recordingLocked()); $('cur-'+d).classList.toggle('is-preview',preview === d && !!voisin(d)); }
-  $('joy-say').textContent = camera ? (REC.step === 'rec' ? 'STOP' : ['count','habit','form','heavy'].includes(REC.step) ? 'REC' : '') : preview && voisin(preview) ? ({plan:'Future spot',feed:'City feed',radar:'Radar',list:'Future Spots',cam:'Film a spot'})[voisin(preview)] : '';
+  $('joy-say').textContent = camera ? (REC.step === 'rec' ? 'STOP' : ['count','habit','form','heavy','retry'].includes(REC.step) ? 'REC' : '') : preview && voisin(preview) ? ({plan:'Future spot',feed:'City feed',radar:'Radar',list:'Future Spots',cam:'Film a spot'})[voisin(preview)] : '';
 }
 function go(v){
   if(v === VIEW || !CROIX[v] || REC.busy || PLAN.busy) return;
@@ -1136,7 +1174,7 @@ function joyTap(){
   if(VIEW !== 'cam'){ if(VIEW !== 'radar') go('radar'); return; }
   if(REC.step === 'rec'){ clearInterval(REC.timer); if(REC.mr?.state === 'recording') REC.mr.stop(); }
   else if(REC.step === 'count') camRec();
-  else if(['habit','form','heavy'].includes(REC.step)) camOpen();
+  else if(['habit','form','heavy','retry'].includes(REC.step)) camOpen();
 }
 addEventListener('keydown',e => {
   if(e.key === 'Escape'){

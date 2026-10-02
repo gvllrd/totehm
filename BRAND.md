@@ -31,6 +31,12 @@ transversal system. **This table wins over any older mapping in this file.**
 > console lives on `totehm.com/console`. TotehmBot / Higher Self is a
 > separate monthly offer — a mirror, not a coach. No match %, ever.
 > SPACE now selects a complete Habit Box, with intention fallback; no vertical intention buttons. Each view names its state; compass and the radar meeting point remain.
+> **02/10/2026 — video is the core of SPACE.** Every new filmed Spot is
+> a beautiful vertical Short, **9:16** on phone and desktop. Full HD target,
+> with the camera image filling the frame without stretching. Keep the
+> joystick REC/STOP and the five views. The file itself must be portrait,
+> not merely displayed inside a vertical box. Technical checks live in
+> `space/CLAUDE.md`; do not claim TikTok-equivalent quality on every device.
 > Words that are gone: Short-Live, moment, experience,
 > capacity, apply, accept.
 
