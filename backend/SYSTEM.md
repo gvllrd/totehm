@@ -17,7 +17,7 @@
 
 ## 0 · SPACE — 02/10/2026 : fluidité de capture, du feed et de publication
 
-**État : code testé localement ; déploiement à vérifier dans ce lot.**
+**État : [PR #15](https://github.com/gvllrd/totehm/pull/15) fusionnée (`7e86b2a`), déployé et vérifié.**
 BUILD `2026-10-02-fluid-video`. Complète le Full HD ci-dessous ; remplace
 le forçage HLS de qualité maximale. Aucun fichier HTML supplémentaire : les
 cinq vues, panneaux desktop, gestes, boussole et joystick restent présents.
@@ -45,6 +45,13 @@ cinq vues, panneaux desktop, gestes, boussole et joystick restent présents.
 | blocage restant | vraie diffusion Bunny non activée ; upload 33 s / 10 Mbps + audio ≈42 MB, sa durée dépend du débit montant, puis de l'encodage ; clés bibliothèque seules insuffisantes |
 | limites | mesures desktop avec encodeur logiciel et médias/services simulés ; pas de téléphone physique, CDN Bunny ou upload réel mesuré ; aucune supériorité TikTok annoncée |
 | autres systèmes | aucune migration/Edge Function, donnée réelle, tarification, paiement, Stripe, Oracle/n8n modifié |
+| Vercel preview + production | SPACE, COM, club, boutique : success ; commit code 75e65dc, fusion 7e86b2a |
+| HTML public | https://www.totehm.space/ HTTP 200, BUILD fluid-video, 111 128 octets ; SHA-256 eb3165f2292b264d955a9cd0a9faee3cb58fc6a66c8ac8994fee55ca190c1820 ; identique au fichier testé |
+| module public | video-capture.mjs HTTP 200, application/javascript, 5 111 octets ; SHA-256 983082f7ee468b788ee4f6a8491ca34d92ea9fda23dbfb524786ac72b799d80e ; identique au module testé |
+| lecture publique réelle | sans session : clip actuel 1080 × 1920, readyState 4, en lecture et sans erreur ; suivant prêt/en pause ; après scroll le visible joue, le précédent se met en pause et un suivant est préparé ; aucun point exact révélé |
+| anciens médias | un ancien clip public reste 1280 × 720 : contenu conservé, cadre 9:16 affiché ; ce lot ne réencode pas les vidéos historiques ni ne fabrique les images qui leur manquent |
+| navigateur public | feed latéral, radar réduit, boussole et joystick conservés ; capture du rendu conservée ; aucune caméra physique ni publication réelle utilisée pour cette vérification |
+
 
 ## 0-précédent-Full-HD · SPACE — 02/10/2026 : le fichier vidéo devient un vrai Short Full HD
 
