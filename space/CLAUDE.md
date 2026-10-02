@@ -89,8 +89,10 @@ AVANT leur unique encodage, cible 1080 × 1920, sans étirer ni agrandir une
 source insuffisante. Le fichier réel reste portrait même si la caméra ou
 l'écran est paysage ; audio conservé. Autofocus/exposition/balance continus
 si le matériel les propose. MediaRecorder demande 10 Mbps + audio 192 kbps ;
-33 s, enveloppe 48 000 000 octets, arrêt avant débordement. Vérifier les
-dimensions du clip enregistré avant de le proposer à la publication.
+33 s comptées depuis MediaRecorder.onstart (pas le lancement de l’encodeur),
+enveloppe 48 000 000 octets, arrêt avant débordement. Vérifier les
+dimensions du clip enregistré avant de le proposer à la publication. Un
+fichier vide/illisible propose Again et ne peut pas être publié.
 Cadres vidéo 9:16 dans le feed, le détail et la caméra desktop ; joystick
 REC/STOP conservé. La qualité finale reste liée au matériel et à la lumière.
 

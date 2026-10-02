@@ -25,11 +25,13 @@ vidéo du 01/10. Cinq vues, gestes, radar réduit, boussole et joystick gardés.
 |---|---|
 | défaut corrigé | la capture suivait l'orientation de l'écran et enregistrait du paysage ; un cadre CSS portrait seul ne changeait pas le fichier |
 | nouvelle capture | source caméra haute résolution, recadrage central des images brutes avant leur seul encodage ; fichier 9:16, cible 1080 × 1920 / 30 fps, 10 Mbps + audio 192 kbps ; pas d'agrandissement artificiel d'une source insuffisante |
+| démarrage enregistrement | la durée démarre sur MediaRecorder.onstart : un encodeur lent ne consomme plus toute la durée avant d’émettre ses images ; fichier vide/illisible rejeté avec reprise possible |
 | cadres | feed, détail et caméra 9:16 sur mobile/desktop ; panneau caméra desktop portrait avec radar réduit ; REC/STOP rouge sur fond navy conservé |
 | migration | fichier CLI `20261002071846_space_portrait_hd_video.sql` ; journal `20261002072508`, nom `space_portrait_hd_video`, APPLIQUÉE |
 | plafond vidéo | videos check, video_reserve, spot_rules et bucket moments : **48 000 000 octets** ; 33 s, quota/jour et pending inchangés ; bucket privé ; pas de suppression de contenu |
 | Edge Functions ACTIVE | create-bunny-upload v4 et bunny-video v3 : verify_jwt true ; bunny-webhook v3 : verify_jwt false avec HMAC-SHA256 obligatoire ; seul helper MAX_BYTES modifié |
 | HLS | MSE/ManagedMediaSource : Hls.js local, première qualité maximale puis ABR ; natif sans MSE : meilleure variante du même dossier signé. Le master natif brut démarrait à 270 × 480 ; cette régression est testée |
+| navigateur parcours complet | space.mjs : 33 contrôles ; radar, boussole, cinq vues/panneaux, lieu futur, publication Storage, retour tactile RIGHT/CENTER, défilement natif ; aucun JavaScript en erreur |
 | tests vidéo | 18 contrôles × 3 cas : caméra paysage, caméra portrait, HLS natif sans MSE. Fichier TUS réellement capturé/sondé/décodé : 1080 × 1920 avec son ; carré non déformé, cadre rempli ; master HLS 270 × 480 + 1080 × 1920 démarre en Full HD |
 | auto-test SQL annulé | space_habits_video_selftest.sql : FAIL={} ; 47 MB/33 s accepté, >48 MB refusé, Boxes, contexte, propriété et grants conservés |
 | sécurité HTTP après redéploiement | upload anonyme 401 ; clip inexistant 404 ; callback sans signature 401 |

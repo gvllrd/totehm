@@ -982,7 +982,7 @@ const recMime = () => typeof MediaRecorder === 'undefined' ? '' :
 function camState(){ ['is-rec','is-count','is-form'].forEach(c => document.body.classList.remove(c));
   if(REC.step === 'rec') document.body.classList.add('is-rec');
   if(REC.step === 'count') document.body.classList.add('is-count');
-  if(['habit','form','send'].includes(REC.step)) document.body.classList.add('is-form');
+  if(['habit','form','send','retry'].includes(REC.step)) document.body.classList.add('is-form');
   joyPaint(); }
 function camStop(){
   REC.capture?.stop();REC.capture=null;
@@ -991,7 +991,7 @@ function camStop(){
   clearInterval(REC.timer);
 }
 function camReset(){
-  REC.seq++; if(REC.mr){ REC.mr.onstop = null; REC.mr.ondataavailable = null; }
+  REC.seq++; if(REC.mr){ REC.mr.onstop = null; REC.mr.ondataavailable = null; REC.mr.onstart=null;REC.mr.onerror=null; }
   camStop(); if(REC.url) URL.revokeObjectURL(REC.url);
   Object.assign(REC, { step:null, mr:null, blob:null, url:null, habit:null, mode:null, loc:null, dur:null, busy:false,seconds:0,uploaded:null,width:0,height:0,fps:0,bitrate:0 });
   const v = $('cam-v'); v.pause(); v.removeAttribute('src'); v.srcObject = null;
@@ -1022,23 +1022,28 @@ function camRec(){
   const chunks = [], seq = REC.seq;
   try{ REC.mr = new MediaRecorder(REC.capture.stream, { mimeType: REC.mime, videoBitsPerSecond: VIDEO.bitrate, audioBitsPerSecond: VIDEO.audioBitrate }); }
   catch(e){ console.error('[cam]', e && e.message); REC.step = 'nocam'; return camPaint(); }
-  REC.bitrate=REC.mr.videoBitsPerSecond;REC.mime=REC.mr.mimeType || REC.mime;let bytes=0;
+  REC.bitrate=REC.mr.videoBitsPerSecond;REC.mime=REC.mr.mimeType || REC.mime;let bytes=0,failed=false;
+  REC.mr.onstart=()=>{if(seq===REC.seq && VIEW==='cam' && REC.mr.state==='recording') REC.t0=Date.now();};
+  REC.mr.onerror=e=>{failed=true;console.error('[cam recording]',e.error?.name || 'failed');};
   REC.mr.ondataavailable = e => {if(e.data?.size){chunks.push(e.data);bytes+=e.data.size;if(bytes>(RULES.clip_max_bytes || VIDEO.maxBytes)*.96 && REC.mr.state==='recording') REC.mr.stop();}};
   REC.mr.onstop = async () => {
     if(seq !== REC.seq || VIEW !== 'cam') return;
     const type = REC.mime.split(';')[0] || 'video/webm';
-    REC.seconds=Math.min(33,(Date.now()-REC.t0)/1000);REC.blob = new Blob(chunks, { type }); camStop(); $('cam-sec').classList.add('hide');
+    REC.seconds=REC.t0?Math.min(33,(Date.now()-REC.t0)/1000):0;REC.blob = new Blob(chunks, { type }); camStop(); $('cam-sec').classList.add('hide');
     if(VIEW !== 'cam') return;
+    if(failed || !REC.blob.size){REC.blob=null;REC.step='retry';return camPaint();}
     if(REC.blob.size > (RULES.clip_max_bytes || VIDEO.maxBytes)){ REC.blob = null; REC.step = 'heavy'; return camPaint(); }
     const v = $('cam-v'); v.srcObject = null; REC.url = URL.createObjectURL(REC.blob); v.src = REC.url; v.loop = true; v.muted = true;
     try{await v.play();await cameraReady(v);if(seq!==REC.seq || VIEW!=='cam') return;if(Math.abs(v.videoWidth*16-v.videoHeight*9)>2) throw new Error('Portrait video required');}
-    catch(e){if(seq!==REC.seq || VIEW!=='cam') return;console.error('[recorded video]',e.message);REC.blob=null;REC.step='nocam';return camPaint();}
+    catch(e){if(seq!==REC.seq || VIEW!=='cam') return;console.error('[recorded video]',e.message);REC.blob=null;REC.step='retry';return camPaint();}
     REC.step = 'habit'; camPaint(); loadHabits().then(() => { if(seq === REC.seq && REC.step === 'habit') camPaint(); });
   };
-  REC.mr.start(250); REC.step = 'rec'; REC.t0 = Date.now(); camPaint();
+  // Encoder startup must not consume the clip duration or stop an empty recording.
+  REC.t0=0;REC.mr.start(250); REC.step = 'rec'; camPaint();
   const max = (RULES.clip_seconds || 33)*1000;
   $('cam-sec').classList.remove('hide');
-  const tick = () => { const el = Date.now() - REC.t0; $('cam-s').textContent = Math.min(33, Math.floor(el/1000)) + ' / ' + (max/1000) + ' s';
+  $('cam-s').textContent='0 / '+(max/1000)+' s';
+  const tick = () => { if(!REC.t0) return; const el = Date.now() - REC.t0; $('cam-s').textContent = Math.min(33, Math.floor(el/1000)) + ' / ' + (max/1000) + ' s';
     if(el >= max){ clearInterval(REC.timer); try{ REC.mr?.stop(); }catch(_){} } };
   tick(); REC.timer = setInterval(tick, 200);
 }
@@ -1059,6 +1064,7 @@ function camPaint(){
   else if(st === 'perm') h = '<p class="say">allow the camera</p>';
   else if(st === 'denied') h = '<p class="say">The camera is closed for this site. Allow it in the browser, then come back.</p>';
   else if(st === 'nocam') h = '<p class="say">This browser cannot film. Try Safari or Chrome on the phone.</p>';
+  else if(st === 'retry') h = '<p class="say">The recording did not arrive. Film it again.</p><button class="btn" type="button" data-again="1">Again</button>';
   else if(st === 'heavy') h = '<p class="say">Too heavy — film it again.</p><button class="btn" type="button" data-again="1">Again</button>';
   else if(st === 'count') h = '<button class="btn" type="button" data-cancel="1">Cancel</button>';
   else if(st === 'rec') h = '<p class="say">Tap the joystick to stop.</p>';
@@ -1146,10 +1152,10 @@ function joyPaint(preview){
   bx.classList.toggle('is-side',['feed','list'].includes(VIEW));
   bx.classList.toggle('is-camera',camera); bx.classList.toggle('is-recording',camera && REC.step === 'rec');
   bx.disabled = camera && ['perm','send','signin','nocam','denied'].includes(REC.step);
-  bx.setAttribute('aria-label',camera ? (REC.step === 'rec' ? 'Stop recording' : ['habit','form','heavy'].includes(REC.step) ? 'Record again' : 'Record video') : 'Back to radar');
+  bx.setAttribute('aria-label',camera ? (REC.step === 'rec' ? 'Stop recording' : ['habit','form','heavy','retry'].includes(REC.step) ? 'Record again' : 'Record video') : 'Back to radar');
   for(const [cls,v] of [['o','plan'],['h','radar'],['r','cam']]) $('joy-stack').querySelector('.'+cls).classList.toggle('is-current',VIEW === v);
   for(const d of ['g','d','h','b']){ $('cur-'+d).classList.toggle('is-dead',!voisin(d) || recordingLocked()); $('cur-'+d).classList.toggle('is-preview',preview === d && !!voisin(d)); }
-  $('joy-say').textContent = camera ? (REC.step === 'rec' ? 'STOP' : ['count','habit','form','heavy'].includes(REC.step) ? 'REC' : '') : preview && voisin(preview) ? ({plan:'Future spot',feed:'City feed',radar:'Radar',list:'Future Spots',cam:'Film a spot'})[voisin(preview)] : '';
+  $('joy-say').textContent = camera ? (REC.step === 'rec' ? 'STOP' : ['count','habit','form','heavy','retry'].includes(REC.step) ? 'REC' : '') : preview && voisin(preview) ? ({plan:'Future spot',feed:'City feed',radar:'Radar',list:'Future Spots',cam:'Film a spot'})[voisin(preview)] : '';
 }
 function go(v){
   if(v === VIEW || !CROIX[v] || REC.busy || PLAN.busy) return;
@@ -1168,7 +1174,7 @@ function joyTap(){
   if(VIEW !== 'cam'){ if(VIEW !== 'radar') go('radar'); return; }
   if(REC.step === 'rec'){ clearInterval(REC.timer); if(REC.mr?.state === 'recording') REC.mr.stop(); }
   else if(REC.step === 'count') camRec();
-  else if(['habit','form','heavy'].includes(REC.step)) camOpen();
+  else if(['habit','form','heavy','retry'].includes(REC.step)) camOpen();
 }
 addEventListener('keydown',e => {
   if(e.key === 'Escape'){

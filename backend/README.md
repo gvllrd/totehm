@@ -410,7 +410,9 @@ configuration ; aucun historique vidéo n'est effacé.
 **Capture du 02/10** : `space/video-capture.mjs` demande une source haute
 résolution et encode ses images brutes recadrées, une seule fois. Fichier
 9:16, cible 1080 × 1920 / 30 fps, même si la caméra fournit du paysage.
-Aucun agrandissement artificiel d'une source faible ; son conservé. Les
+Aucun agrandissement artificiel d'une source faible ; son conservé. La durée
+commence avec MediaRecorder.onstart, et non pendant le démarrage de
+l’encodeur. Un fichier vide/illisible ne peut pas être publié. Les
 lecteurs et la caméra desktop gardent un cadre 9:16. La limite 48 MB est
 inférieure au plafond 50 MB de Supabase Free ; pas de changement de plan.
 Migration `20261002071846_space_portrait_hd_video.sql`, appliquée en journal
