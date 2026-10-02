@@ -144,6 +144,20 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > (BRAND : pas de caste créateur). Front seul : aucune migration, aucune
 > Edge Function, aucun travail Oracle/n8n.
 
+### Correction 0.29 — 02/10/2026 · le papier de COM : on le retourne, il cherche
+
+> REMPLACE la mécanique de 0.28 (le mot du bas, puis un second tap). Le
+> papier de totehm.com est POSÉ, recto, immobile ; il ne tourne jamais tout
+> seul. Un tap sur le recto déploie MON Totehm (inchangé). Le retourner — au
+> doigt, d'une pichenette ou par le mot du bas — lance la recherche tout de
+> suite : on zoome dans son dos, l'écran devient le papier navy, le NOM du
+> Totehm (en Quantico, au dos) devient la saisie, déjà sélectionnée ; on le
+> change pour trouver un autre Totehm, sans compte. Fermée, la recherche
+> dézoome sur le dos et le papier se remet sur son recto. Le buvard du 28/09
+> (glisser, jeter, étirer) est retiré. Sur totehm.space, le papier tourne
+> seul avec le nom du membre (autre lot). Front seul : aucune migration,
+> aucun travail Oracle/n8n.
+
 ## Le rapport
 
 Un tableau : ce qui a été fait, la valeur mesurée, ce qui n'a pas pu l'être.

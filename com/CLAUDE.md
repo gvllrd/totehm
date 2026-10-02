@@ -7,67 +7,61 @@
 > haut » peut viser la racine ou un autre dossier. Fichiers : `totehm.html` (le Totehm), `map.html`, `higherself.html`, `auth.html`, `creator.html`, `club/` (ponts).
 
 
-## ⛔ ÉTAT AU 02/10/2026 — LE PAPIER A DEUX FACES : MON TOTEHM / UN AUTRE
+## ⛔ ÉTAT AU 02/10/2026 — LE PAPIER : ON LE RETOURNE, IL CHERCHE
 
-**La demande de Wah :** « retourner le Totehm (face verso) pour qu'il se
-déploie en mode recherche d'un autre Totehm, en Quantico. Deux modes, deux
-faces, deux systèmes de déploiement. » `com/totehm.html` `BUILD='2026-10-02'`,
-test `tests/browser/com_paper.mjs` (32 mesures).
+**La demande de Wah, en trois messages :** « je veux le Totehm animé que tu
+avais envoyé à ChatGPT, sauf qu'ici quand on le retourne ça lance
+automatiquement la recherche, directement sur le fond bleu, comme si on
+zoomait et que l'on changeait le nom » · « il ne faut pas qu'il tourne tout
+seul, c'est à l'utilisateur de le retourner — il tourne automatiquement
+avec le nom du membre sur Space » · « au début il est toujours en mode
+recto, prêt à être déployé au clic ». `com/totehm.html` `BUILD='2026-10-02c'`,
+test `tests/browser/com_paper.mjs` (39 mesures).
 
-| | RECTO | VERSO |
+| | RECTO — mon Totehm | VERSO — le nom |
 |---|---|---|
-| c'est | MON Totehm (le logo, 4 SVG) | la recherche d'UN AUTRE (« search a Totehm », Quantico) |
-| déploiement | les 4 calques rejoignent l'UI (`enter()`, `measure()`) — **inchangé au pixel** | le papier perforé GRANDIT jusqu'à couvrir l'écran, son mot grandit avec lui puis se dissout, la saisie apparaît (`ouvrirRecherche()`) |
-| compte | exigé (porte d'inscription) | aucun : `totehm_search` est ouverte à `anon` |
-| sortie | croix `#fold-x`, Échap | croix `#srch-x`, Échap — le papier revient AU PIXEL |
+| au repos | posé, immobile, TOUJOURS au départ | jamais au repos sur l'atterrissage |
+| on y arrive | au chargement, et après chaque recherche | en le retournant : la main (glissé horizontal), une pichenette, ou le mot du bas |
+| l'action | un tap le déconstruit en Totehm déplié — **inchangé au pixel** (mesuré contre l'original, téléphone ET ordinateur) | AUTOMATIQUE : on zoome dans le dos, l'écran devient le papier navy perforé, le nom grandit et devient LA saisie (Quantico), déjà sélectionné : on le change, on trouve un autre Totehm |
+| compte | exigé (porte d'inscription) | aucun (`totehm_search` est ouverte à `anon`) ; un invité lit « search a Totehm » au dos |
+| sortie | croix `#fold-x`, Échap | croix `#srch-x`, Échap : dézoom sur le dos, puis le papier se remet sur son recto |
 
-**Comment on le retourne :** le mot du bas (`#search-corner`) dit le geste
-SUIVANT (« Turn it over · search a TOTEHM » / « Turn it back · my TOTEHM »).
-C'est un vrai lien `/search` : sans JS ou en clic modifié, la même recherche
-sur sa page. Il n'y a PAS de geste caché : un glissé sur le papier est déjà
-« le prendre, le jeter » (buvard) — lui faire aussi changer de face aurait
-rendu chaque lancer imprévisible.
+**Le moteur (`PAPIER`)** : `'plat'` (repos, zéro rAF) · `'tenu'` (le doigt
+le tourne AU PIXEL, 0,72°/px, il se soulève et s'incline) · `'pose'`
+(Hermite depuis l'angle ET la vitesse, soulèvement à mi-course quand il
+part du repos). Le buvard du 28/09 (glisser, jeter, étirer) est parti : un
+glissé sert désormais à le retourner. Ni rotation spontanée, ni suivi de
+souris, ni gyroscope.
 
-**⚠️ LE VERSO POSÉ N'EST PAS UN PAPIER À 180°.** `face` (0/1) est l'état
-LOGIQUE ; posé, la face visible n'a AUCUNE transformation (`.is-back` :
-verso dans son plan naturel, recto `visibility:hidden`) — même invariant que
-le recto, « on ne mesure jamais un papier incliné ». Le demi-tour n'existe
-que pendant `PAPIER.retourner()` (smootherstep 0,78 s, toujours dans le même
-sens, il se soulève à mi-course) ; à l'arrivée on ÉCHANGE les classes (`face^=1`,
-`aPlat()`) au lieu de garder un `rotateY(180deg)` éternel. Mesuré : le papier
-ne bouge pas d'un pixel en se retournant ; retour au recto = mêmes `--tf-*`.
+**⚠️ ON DÉCIDE PAR RAPPORT À LA FACE DE DÉPART, PAS PAR L'ANGLE PROJETÉ.**
+Plus d'un quart de tour (90°–270°) = l'autre face ; une pichenette (≥ 30°,
+≥ 350°/s, en s'éloignant) aussi ; presque un tour entier = la même face.
+Mesuré à la souris : projeter l'angle avec l'élan faisait faire un tour
+entier au papier et le reposait sur le recto. L'élan = la vitesse des 100
+dernières ms lue au relâché (fenêtre, pas l'écart entre deux événements),
+et l'élan ne peut ajouter qu'un tiers de demi-tour à l'atterrissage.
 
-**⚠️ UNE SEULE FACE ATTEIGNABLE.** `inert` sur l'autre face (clavier : deux
-vrais boutons, `#gate-enter` / `#gate-search-go`, un seul à la fois).
-**⚠️ UN GESTE À LA FOIS** : `PAPIER.occupe()` (atterrissage, retournement)
-et `sMoving` avalent le tap, ils ne le mettent pas en file. **⚠️ `enter()`
-EST LE VERROU** : si la recherche est ouverte il la replie, si le papier est
-sur son verso il le retourne, PUIS reprend — `#in`, `?ro=`, la porte
-[My Higher Self] et la porte d'inscription passent tous par là.
+**⚠️ LE VERSO POSÉ N'EST PAS UN PAPIER À 180°** (`.is-back`) : la face
+visible sans aucune transformation, le même invariant que le recto ; le
+demi-tour n'existe que pendant qu'il tourne. **⚠️ LA RECHERCHE S'OUVRE
+DANS LE GESTE** : `surVerso()` est appelé dans le `pointerup` (le clic pour
+le mot du bas) et la saisie prend le focus là — iOS n'ouvre le clavier qu'à
+cette condition ; la feuille est transparente (`.is-prep`) le temps que le
+papier finisse de se poser, puis le zoom part d'EXACTEMENT le papier et de
+son nom (mesurés à chaque fois, transformations retirées). **⚠️ UNE ÉCHELLE
+UNIFORME** : le fond est un carré (`--s` = plus grand côté +20 %), sinon les
+perforations s'étirent. **⚠️ `#gate` EST `inert`, PAS MASQUÉ** pendant la
+recherche (le masquer révélait le Totehm derrière le papier qui grandit
+dès qu'une minuterie glissait). La feuille est modale (Tab y tourne).
+**⚠️ `sSeq`** : « wa » (lent) ne recouvre jamais « wah ». Un résultat = le
+NOM d'un Totehm sur sa tuile perforée + son offre (`/ year`), jamais un
+contenu. `paintAsteroid()` repeint le nom au dos (Quantico mesuré, deux
+lignes puis 7,5 px). Diagnostic `__totehm_lsd` : `tenu`, `gestes`,
+`retournements`, `face`, `recherche`, `resultats`.
 
-**⚠️ LE FOND DE LA RECHERCHE EST UN CARRÉ À ÉCHELLE UNIFORME** (`--s` = plus
-grand côté de l'écran +20 %, `k = papier / --s`). Un fond à la taille de
-l'écran écrasé à celle du papier étirait perforations et mot en ellipses.
-Le sol (`--paper`, découpé aux mêmes perforations que la tuile, sinon ses
-trous montrent une autre couleur) et la tuile voyagent ENSEMBLE : au repli
-la page se replie EN papier. La géométrie est mesurée à chaque ouverture ET
-à chaque repli (clavier, rotation). **⚠️ LA MISE AU POINT SE FAIT DANS LE
-CLIC** (iOS) : le champ est transparent, pas masqué. **⚠️ `swallow` connaît
-`#srch`** : sans cela le filtre de l'atterrissage avale ses touches et gestes.
-**⚠️ `sSeq`** : « wa » (lent) ne recouvre jamais « wah » (rapide).
-
-**Retirés :** `paintAsteroid()` et ses trois appels (le dos ne porte plus le
-nom du membre ; `.ast-say.is-name`, `#ast-name`). Résultats = le NOM d'un
-Totehm sur sa tuile perforée navy + son offre en Space Mono (`/ year`),
-jamais un contenu. Diagnostic : `__totehm_lsd` gagne `face`, `flips`,
-`recherche`, `resultats` — des booléens et des compteurs.
-
-**La console gagne « Copy a post for my networks »** (`#post`, offre ouverte) :
-la phrase de Wah (« Subscribe to my TOTEHM to share Spots, grind together
-and stay strategically motivated. ») + le lien `/@nom`, aucun prix. **Pas de
-« page pour les influenceurs »** : BRAND dit qu'il n'y a pas de caste
-« créateur », ni dans le produit ni dans les mots ; la page de vente de
-chacun est `/@nom`, le kit de partage est dans SA console.
+**La console garde « Copy a post for my networks »** (`#post`) : la phrase
+de Wah + le lien `/@nom`, aucun prix. Pas de « page pour les influenceurs »
+(BRAND : pas de caste « créateur ») — la page de vente de chacun est `/@nom`.
 
 ## ⛔ ÉTAT AU 01/10/2026 — la console, deux réglages, l'abonnement annuel
 
@@ -107,9 +101,9 @@ entrée de la porte (invité) et de la fenêtre membre (`#terms-corner` parti).
 
 ### ⛔ LE PAPIER EST UN BUVARD — ON LE PREND, ON LE JETTE — 28/09/2026
 
-> **⚠️ COMPLÉTÉ LE 02/10 : le dos ne porte plus le nom du membre, il porte la
-> recherche.** Voir « LE PAPIER A DEUX FACES » plus haut. Le moteur du buvard
-> (prendre, jeter, poser) est intact.
+> **⚠️ REMPLACÉ LE 02/10 :** on ne prend plus le papier pour le jeter, on le
+> RETOURNE — et retourné, il cherche un autre Totehm. Voir « LE PAPIER : ON
+> LE RETOURNE, IL CHERCHE » plus haut. Le tap qui le déploie est intact.
 
 **La demande de Wah, verbatim :** « on abandonne totalement cette idée
 d'hologramme. On fait plus vrai, plus organique : considère que le logo

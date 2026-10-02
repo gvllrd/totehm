@@ -2065,27 +2065,17 @@ body:not(.gate) #gate{display:none}
 #gate-search .note{width:100%}
 #gate-top-row{display:flex;flex-direction:column;align-items:center;
   gap:16px;flex-shrink:0}
-/* ══ LE PAPIER — UN BUVARD, PAS UN HOLOGRAMME · 28/09/2026 ══════════
-   Wah : « le logo est comme un buvard de LSD posé à plat sur l'écran,
-   tel qu'il est en version repos. » Fini le socle, le faisceau, la
-   lévitation qui tourne toute seule : AU REPOS, le papier est immobile,
-   à plat, à sa place. Il ne vit QUE quand on le touche.
-   DEUX FACES : devant, le LOGO — les quatre calques SVG (`#gate-logo`),
-   ceux-là mêmes qui se déconstruisent en Totehm déplié ; derrière,
-   « Tap to open it » ou le NOM du Totehm du membre connecté.
+/* ══ LE PAPIER — ON LE RETOURNE · 02/10/2026 ═════════════════════════
+   Un petit carré de papier perforé, deux faces. Au repos il est POSÉ,
+   immobile : il ne tourne jamais tout seul (Wah : « c'est à l'utilisateur
+   de le retourner »). Recto : le logo, MON Totehm — un tap le déconstruit
+   en Totehm déplié. Verso : le NOM du Totehm (ou « search a Totehm »
+   pour un invité) — le retourner, c'est chercher un autre Totehm.
 
-   ⚠️ LE LOGO EST SUR LE PAPIER, PAS À CÔTÉ. Au tap, le papier se pose à
-   plat (identité exacte, `.is-flat`), PUIS `measure()` et la
-   déconstruction d'origine partent — inchangées, au pixel, quelle que
-   soit la position où le geste l'a laissé.
-
-   ⚠️ ON LE PREND, ON LE JETTE, ON LE FAIT GLISSER. Une seule matrice,
-   conduite par le JS (module `PAPIER`) : appuyer le soulève, glisser le
-   déplace (borné à l'écran), lâcher lui laisse l'élan — il glisse,
-   tourne, flotte un instant puis revient se poser, comme un vrai
-   morceau de papier sur une table légèrement magnétique. Le moteur ne
-   tourne QUE pendant qu'on le manie ou qu'il finit sa course : posé, il
-   s'arrête et ne coûte plus rien.
+   Le doigt (ou la souris) le fait tourner sur son axe vertical, au
+   pixel ; lâché, il finit son demi-tour du côté où il penche, avec son
+   élan, et se pose. Il ne glisse plus, ne se jette plus, ne s'étire plus
+   (le buvard du 28/09) : un glissé sert désormais à le RETOURNER.
 
    ⚠️ `backface-visibility` AUSSI sur les enfants des faces : Safari
    compose à part un enfant animé et le montrerait en miroir à travers
@@ -2138,29 +2128,25 @@ body:not(.gate) #gate{display:none}
    lumière. Nul à plat, et retiré quand le papier est posé. */
 .ast-light{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0}
 #gate-card.is-flat .ast-light{display:none}
-/* ══ LE VERSO EST LA RECHERCHE · 02/10/2026 ═══════════════════════════
-   « Deux modes, deux faces, deux systèmes de déploiement » (Wah). Le
-   recto est MON Totehm — il se déconstruit en Totehm déplié, inchangé.
-   Le verso est la recherche d'UN AUTRE Totehm : même papier perforé
-   navy, sans l'encre du logo, et le mot « search a Totehm » en Quantico
-   (c'est le nom du geste, il s'écrit dans la langue de ce qu'on tape).
-   Il ne porte plus le nom du membre : le dos du papier ne dit plus ce
-   qu'on a, il dit ce qu'on peut aller chercher.
+/* ══ LE VERSO : LE NOM, ET LA RECHERCHE · 02/10/2026 ═══════════════════
+   « Deux modes, deux faces, deux systèmes de déploiement » (Wah). Recto =
+   MON Totehm, il se déconstruit en Totehm déplié, inchangé. Verso = le NOM
+   du Totehm en Quantico ; le retourner zoome dedans et le nom devient la
+   saisie : on le change, on trouve un AUTRE Totehm.
 
-   ⚠️ LE VERSO POSÉ N'EST PAS UN PAPIER RETOURNÉ À 180°. Posé, il est
-   la face visible, sans AUCUNE transformation (`.is-back`) : `card`
-   a `transform:''` et le dos est dans son plan naturel — le même
-   invariant que le recto (« on ne mesure jamais un papier incliné »).
-   Le demi-tour n'existe que PENDANT le retournement (`retourner()`),
-   et à son arrivée les deux états se confondent au pixel : on échange
-   les classes au lieu de laisser un `rotateY(180deg)` éternel que les
-   mesures et les clics auraient à compenser. */
+   ⚠️ LE VERSO POSÉ N'EST PAS UN PAPIER RETOURNÉ À 180°. Posé, il est la
+   face visible, sans AUCUNE transformation (`.is-back`) : `card` a
+   `transform:''` et le dos est dans son plan naturel — le même invariant
+   que le recto (« on ne mesure jamais un papier incliné »). Le demi-tour
+   n'existe que PENDANT qu'on le tourne ; à l'arrivée, on échange les
+   classes au lieu de garder un `rotateY(180deg)` éternel. */
 #gate-card.is-back .ast-front{visibility:hidden}
 #gate-card.is-back .ast-back{transform:translateZ(.5px)}
 #gate-card.is-back.is-flat .ast-back{transform:none}
 .ast-say{position:relative;z-index:2;white-space:pre;text-align:center;
-  font-family:'Quantico',sans-serif;font-weight:400;font-size:11px;
-  line-height:1.3;letter-spacing:.04em;color:rgba(255,255,255,.9);transition:color .15s ease}
+  font-family:'Quantico',sans-serif;font-weight:400;font-size:10px;
+  line-height:1.3;letter-spacing:.04em;color:#b0b0b0;transition:color .15s ease}
+.ast-say.is-name{color:rgba(255,255,255,.88)}
 @media(hover:hover){#gate-asteroid:hover .ast-say{color:#fff}}
 /* La zone cliquable du verso : un vrai bouton, comme #gate-enter sur le
    recto. `inert` (posé par le moteur) retire la face cachée de la
@@ -2241,65 +2227,58 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
    est le point d'entrée de la recherche des Totehms. L'atterrissage garde
    son objet unique (le papier, sans barre de recherche depuis le 24/09) ;
    un seul mot, en bas, mène à /search — invité compris. */
-#search-corner{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:4;
+#search-corner{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:4;white-space:nowrap;
   font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;
   text-transform:uppercase;color:#8a8a8a;text-decoration:none;
   padding:6px 2px;transition:color .15s ease,opacity .25s ease}
 body.gate.entered #search-corner{opacity:0;pointer-events:none}
 @media(hover:hover){#search-corner:hover{color:#fff}}
 
-/* ══ LE VERSO SE DÉPLOIE : LA RECHERCHE D'UN AUTRE TOTEHM · 02/10/2026 ══
-   Deux faces, deux déploiements. Le recto se DÉCONSTRUIT (quatre calques
-   qui rejoignent l'UI du Totehm). Le verso se DÉPLIE : le papier perforé
-   grandit jusqu'à couvrir l'écran, son mot « search a Totehm » grandit
-   avec lui puis se dissout, et la saisie apparaît dessus. Aucun rapport
-   avec les calques du logo : c'est un autre objet, d'où un autre geste.
+/* ══ LE VERSO RETOURNÉ : ON ZOOME DANS LE PAPIER · 02/10/2026 ═════════
+   Wah : « directement sur le fond bleu, comme si on zoomait et que l'on
+   changeait le nom ». Le papier retourné grandit jusqu'à couvrir l'écran
+   — l'écran DEVIENT le dos du papier, navy perforé — et le nom écrit
+   dessus grandit avec lui jusqu'à devenir LA saisie : on change le nom,
+   on trouve un autre Totehm. Aucun cadre, aucune boîte grise : le champ
+   est le nom, posé sur le papier.
 
-   ⚠️ UNE ÉCHELLE UNIFORME, PARTOUT. Le fond est un CARRÉ (`--s` px, posé
-   par le JS : le plus grand côté de l'écran, +20 %) centré sur l'écran,
-   et c'est lui qu'on met à l'échelle `k = papier / --s`. Un fond à la
-   taille de l'écran, écrasé à la taille du papier, aurait étiré les
-   perforations et le mot en ellipses — deux échelles différentes pour
-   un objet qui doit rester un carré. Au repos de fin (`scale(1)`) ses
-   bords sont hors de l'écran : aucune perforation n'y reste visible.
+   ⚠️ UNE ÉCHELLE UNIFORME. Le fond est un CARRÉ (`--s` : le plus grand
+   côté de l'écran +20 %) centré, mis à l'échelle `k = papier / --s` ; un
+   fond à la taille de l'écran écrasé à celle du papier étirait les
+   perforations en ellipses. Au repos de fin (`scale(1)`) ses bords et
+   leurs trous sont hors de l'écran.
 
-   ⚠️ LE CHAMP EXISTE DÈS LE TAP. Il est transparent (opacity), pas
-   masqué : iOS n'ouvre le clavier que pour une mise au point faite DANS
-   le geste, et un champ `display:none` ne la prend pas. La mise au point
-   se fait donc dans le clic, le champ apparaît 0,4 s plus tard. */
+   ⚠️ LE CHAMP EXISTE DÈS LE GESTE (`.is-prep` : transparent, pas
+   masqué). iOS n'ouvre le clavier que pour une mise au point faite DANS
+   le geste ; le papier finit son demi-tour APRÈS. */
 #srch{position:fixed;inset:0;z-index:220;visibility:hidden;pointer-events:none}
 #srch.is-on{visibility:visible;pointer-events:auto}
 #srch-bg{position:absolute;left:50%;top:50%;width:var(--s,1200px);height:var(--s,1200px);
   margin:calc(var(--s,1200px) / -2) 0 0 calc(var(--s,1200px) / -2);transform-origin:50% 50%;
-  will-change:transform;display:flex;align-items:center;justify-content:center}
-/* Deux couches qui se déplient ENSEMBLE, comme un seul papier : le sol
-   (la couleur du papier du Totehm, #2b2b57, découpée aux MÊMES
-   perforations que la tuile — sinon ses trous laisseraient voir une autre
-   couleur) et, par-dessus, la tuile navy qui s'efface en route. Au repli,
-   le sol rapetisse avec elle : la page se replie en papier, elle ne
-   disparaît pas. */
-#srch-ground,#srch-tile{position:absolute;inset:0}
-#srch-ground{background:var(--paper);-webkit-mask:var(--perfo) center/100% 100% no-repeat;
-  mask:var(--perfo) center/100% 100% no-repeat}
-#srch-tile{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366' mask='url(%23m)'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat}
-#srch-say{position:relative;white-space:pre;text-align:center;font-family:'Quantico',sans-serif;font-weight:400;
-  line-height:1.3;letter-spacing:.04em;color:rgba(255,255,255,.9);pointer-events:none}
-#srch-ui{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;gap:14px;
-  padding:max(64px,9dvh) 16px 0;opacity:0;pointer-events:none;transition:opacity .15s ease}
-#srch.is-show #srch-ui{opacity:1;transition:opacity .34s ease .42s}
+  will-change:transform;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366' mask='url(%23m)'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat}
+#srch-ui{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;gap:10px;
+  padding:max(72px,14dvh) 16px 0;pointer-events:none}
 #srch.is-open #srch-ui{pointer-events:auto}
-/* Ce qu'on TAPE s'écrit en Quantico ; la saisie est un contrôle gris,
-   arrondi à 10 px (règle des quatre domaines). */
-#srch-q{width:min(420px,100%);font-family:'Quantico',sans-serif;font-weight:400;font-size:20px;
-  color:#fff;background:#1f1f24;border:none;border-radius:10px;padding:12px 14px;
-  outline:none;caret-color:#fff;text-align:center;-webkit-appearance:none;appearance:none}
-#srch-q::placeholder{color:rgba(255,255,255,.5)}
+#srch.is-prep #srch-bg,#srch.is-prep #srch-q{opacity:0}
+/* Le NOM est la saisie : Quantico (ce qu'on tape, et le nom d'un Totehm),
+   blanc, centré, sans fond ni trait — posé sur le papier. */
+#srch-q{width:min(560px,100%);font-family:'Quantico',sans-serif;font-weight:400;
+  font-size:clamp(26px,7.5vw,40px);line-height:1.25;color:#fff;background:none;border:none;
+  outline:none;caret-color:#fff;text-align:center;padding:2px 0;border-radius:0;
+  transform-origin:50% 50%;will-change:transform;-webkit-appearance:none;appearance:none}
+#srch-q::placeholder{color:rgba(255,255,255,.42)}
+#srch-q::selection{background:rgba(255,255,255,.22);color:#fff}
+/* Ce qui n'est pas le nom arrive après le zoom. */
+.srch-after{opacity:0;transition:opacity .15s ease}
+#srch.is-show .srch-after{opacity:1;transition:opacity .34s ease .42s}
+.srch-hint{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.55);text-align:center}
 #srch-note{width:min(420px,100%)}
 #srch-res{width:min(420px,100%);flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;
-  -webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:10px;
+  -webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:10px;margin-top:6px;
   padding:4px 0 max(24px,env(safe-area-inset-bottom))}
-/* Un résultat = le NOM d'un Totehm sur sa tuile perforée navy (la seule
-   place de la tuile : le nom d'un Totehm), et son offre en Space Mono. */
+/* Un résultat = le NOM d'un Totehm sur sa tuile perforée (la seule place
+   de la tuile : le nom d'un Totehm), et son offre en Space Mono. */
 .srch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;
   text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .srch-name{display:inline-block;max-width:68%;font-family:'Quantico',sans-serif;font-weight:400;
@@ -2307,17 +2286,15 @@ body.gate.entered #search-corner{opacity:0;pointer-events:none}
   border:6px solid transparent;border-image-source:var(--tile-btn);border-image-slice:6 fill;
   border-image-repeat:round;padding:0 8px;transition:filter .15s}
 .srch-meta{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
-  text-transform:uppercase;color:#9a9a9a;white-space:nowrap}
+  text-transform:uppercase;color:#a9a9c4;white-space:nowrap}
 @media(hover:hover){.srch-row:hover .srch-name{filter:brightness(1.3)}}
 #srch-x{position:fixed;top:10px;right:10px;z-index:2;background:none;border:none;cursor:pointer;
-  padding:10px;line-height:0;-webkit-tap-highlight-color:transparent;opacity:0;pointer-events:none;
-  transition:opacity .25s ease}
-#srch.is-open #srch-x{opacity:1;pointer-events:auto}
-#srch-x svg{width:20px;height:20px;color:rgba(255,255,255,.5);display:block;fill:none;
+  padding:10px;line-height:0;-webkit-tap-highlight-color:transparent;pointer-events:none}
+#srch.is-open #srch-x{pointer-events:auto}
+#srch-x svg{width:20px;height:20px;color:rgba(255,255,255,.55);display:block;fill:none;
   stroke:currentColor;stroke-width:1.7;stroke-linecap:round;transition:color .15s}
 @media(hover:hover){#srch-x:hover svg{color:#fff}}
-body.searching #gate{visibility:hidden}
-@media(prefers-reduced-motion:reduce){#srch-ui,#srch-x{transition:none!important}}
+@media(prefers-reduced-motion:reduce){.srch-after{transition:none!important}}
 
 /* ══ ÉTAT 2 — LA DÉCONSTRUCTION ══
    Les valeurs --tf-* sont mesurées une fois en JS (positions réelles de l'UI)
@@ -2809,6 +2786,12 @@ body.gate.entered #filter-badge{
 
 
 
+
+
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -2899,12 +2882,13 @@ body.gate.entered #filter-badge{
 .cc-cur:hover,
 .acct-btn:hover,
 .ast-say:hover,
+.ast-say.is-name:hover,
 .door-q:hover,
 #gate-turn:hover,
 #terms-corner:hover,
 #search-corner:hover,
-#srch-say:hover,
 #srch-q:hover::placeholder,
+.srch-hint:hover,
 .srch-meta:hover,
 #srch-x svg:hover,
 #gate-search-input:hover::placeholder,
@@ -2950,12 +2934,12 @@ body.gate.entered #filter-badge{
         </div><!-- /#gate-logo -->
         <div class="ast-light" aria-hidden="true"></div>
       </div>
-      <!-- ⚠️ LE VERSO · 02/10/2026 : la recherche d'un autre Totehm. `inert`
-           tant que le recto est dessus (le moteur l'échange à chaque
-           retournement) : une seule face atteignable à la fois. -->
+      <!-- ⚠️ LE VERSO · 02/10/2026 : le NOM du Totehm (« search a Totehm »
+           pour un invité). Le retourner = chercher un autre Totehm. `inert`
+           tant que le recto est dessus : une seule face atteignable. -->
       <div class="ast-face ast-back" id="ast-back" inert>
         <div class="ast-tile"></div>
-        <span class="ast-say" id="ast-say">search
+        <span class="ast-say" id="ast-name">search
 a Totehm</span>
         <button id="gate-search-go" type="button" aria-label="Search a Totehm"></button>
         <div class="ast-light"></div>
@@ -3026,19 +3010,23 @@ a Totehm</span>
 <!-- ══ LE VERSO DÉPLIÉ : LA RECHERCHE D'UN AUTRE TOTEHM · 02/10/2026 ═══
      Hors de #gate (qui se masque pendant qu'elle est ouverte), mais le
      filtre `swallow` la connaît : sans cela il aurait avalé ses gestes
-     et ses touches. Jamais d'iframe, jamais une autre page : c'est le
+     et ses touches. Pendant qu'elle est ouverte, #gate est `inert` (hors
+     de la tabulation) mais reste PEINT, noir et opaque : le masquer
+     (`visibility:hidden`) aurait révélé le Totehm — son T, son rail, sa
+     manette — derrière le papier qui grandit, dès qu'une minuterie aurait
+     glissé sur une machine lente. Jamais d'iframe, jamais une autre page : c'est le
      papier qui s'ouvre, comme le recto. -->
 <div id="srch" role="dialog" aria-modal="true" aria-label="Search a Totehm" aria-hidden="true">
-  <div id="srch-bg"><div id="srch-ground"></div><div id="srch-tile"></div><span id="srch-say" aria-hidden="true">search
-a Totehm</span></div>
+  <div id="srch-bg"></div>
   <div id="srch-ui">
     <input id="srch-q" type="text" inputmode="search" enterkeyhint="search" maxlength="24"
-           placeholder="search a Totehm" autocomplete="off" autocapitalize="off" spellcheck="false"
+           placeholder="a Totehm" autocomplete="off" autocapitalize="off" spellcheck="false"
            aria-label="Search a Totehm by name">
-    <div class="note dim" id="srch-note" role="status" aria-live="polite"></div>
-    <div id="srch-res"></div>
+    <div class="srch-hint srch-after" id="srch-hint">change the name · find another TOTEHM</div>
+    <div class="note dim srch-after" id="srch-note" role="status" aria-live="polite"></div>
+    <div id="srch-res" class="srch-after"></div>
   </div>
-  <button id="srch-x" type="button" aria-label="Close the search">
+  <button id="srch-x" class="srch-after" type="button" aria-label="Close the search">
     <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
   </button>
 </div>
@@ -4456,7 +4444,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-02';
+const BUILD='2026-10-02c';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -7044,15 +7032,38 @@ function connPaint(){
   const label=(myProfile&&myProfile.pseudo)||'';
   $('conn-bar').innerHTML='<span class="dot" style="background:#fff"></span>'+esc(label)+(myHigher?HI_SVG:'');
   document.body.classList.toggle('member',inscrit());
+  paintAsteroid();
 }
-/* ══ LE DOS DU PAPIER NE PORTE PLUS LE NOM · 02/10/2026 ═════════════
-   Il portait « le nom du Totehm, sinon Tap to open it » (25/09) et
-   `paintAsteroid()` MESURAIT Quantico pour le faire tenir. Le verso est
-   désormais la recherche d'un autre Totehm : son mot est FIXE (« search
-   a Totehm », dans le HTML), il n'y a plus rien à peindre ni à mesurer,
-   et `connPaint()` n'a plus à le réveiller. Retiré avec ses trois
-   appels : une fonction morte dont l'appelant demeure lève à
-   l'évaluation du module, une qui n'a plus d'appelant s'efface seule. */
+/* ══ LE DOS DU PAPIER PORTE LE NOM · 25/09 → 02/10/2026 ════════════
+   Connecté ET nommé : le nom du Totehm. Sinon : « search a Totehm » —
+   le dos est la recherche, un invité y cherche aussi. Peint depuis
+   `connPaint()` (chaque changement de session et de nom) et au réveil du
+   papier. `textContent`, jamais `innerHTML` — un nom est une saisie.
+   ⚠️ QUANTICO N'A PAS UNE CHASSE FIXE : on MESURE. Trop large pour le
+   papier, le nom passe sur deux lignes, coupé sur le séparateur le plus
+   proche du milieu (`_` `-` `.` espace), puis rapetisse d'un demi-pixel à
+   la fois jusqu'à 7,5 px. Retourné, c'est CE nom qui grandit et devient
+   la saisie de la recherche. */
+function paintAsteroid(){
+  const el=$('ast-name'); if(!el) return;
+  const p=((me&&myProfile&&myProfile.pseudo)||'').trim();
+  el.classList.toggle('is-name',!!p);
+  el.style.fontSize='';
+  el.textContent=p||'search\na Totehm';
+  if(!p||!el.offsetWidth) return;
+  const max=(el.parentElement.clientWidth||110)*.76;
+  if(el.offsetWidth>max&&p.length>3){
+    const mi=p.length/2; let cut=Math.ceil(mi);
+    for(let d=0;d<=4;d++){
+      const a=Math.floor(mi)-d, b=Math.ceil(mi)+d;
+      if(/[_\-. ]/.test(p[a]||'')){ cut=a+1; break; }
+      if(/[_\-. ]/.test(p[b-1]||'')){ cut=b; break; }
+    }
+    el.textContent=p.slice(0,cut).trim()+'\n'+p.slice(cut).trim();
+  }
+  for(let fs=10; el.offsetWidth>max&&fs>7.5;){ fs-=.5; el.style.fontSize=fs+'px'; }
+}
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(paintAsteroid);
 async function loadProfile(){
   if(!me){myProfile=null;cloudMode=false;connPaint();return;}
   loadHigher().then(connPaint);
@@ -7553,180 +7564,85 @@ window.addEventListener('pageshow',e=>{
   window.addEventListener('orientationchange',surRotation);
   window.addEventListener('resize',surRotation);
 
-  /* ══ LE PAPIER — SON MOTEUR · 28/09/2026 ════════════════════════════
-     Un buvard, pas un gyroscope. Wah : « posé à plat sur l'écran, tel
-     qu'il est en version repos ». Au repos, IMMOBILE (mode `'plat'`,
-     l'ancien `.is-flat`) — zéro animation tant que personne ne le
-     touche. Il ne vit que sous la main, en trois temps :
+  /* ══ LE PAPIER — SON MOTEUR · 02/10/2026 ═════════════════════════════
+     Au repos, IMMOBILE (`'plat'`) : zéro calcul, zéro rAF. Il ne tourne
+     jamais tout seul — Wah : « c'est à l'utilisateur de le retourner ».
+     Trois temps, et rien d'autre :
 
-     1. ON LE PREND (`'tenu'`). Le point de contact suit le doigt (ou la
-        souris) AU PIXEL, borné à l'écran — pas de ressort : une vraie
-        prise ne traîne pas derrière la main. L'inclinaison, la torsion
-        (`rz`), la courbure (`sk`, un `skew`) et l'étirement (`sx`,`sy`)
-        suivent, eux, par ressort, nourris par la vitesse du geste et le
-        point de prise (centre ou bord) : vite = ça se tord et s'étire
-        un peu ; pris au bord = ça penche, comme une vraie feuille tenue
-        d'un coin.
-     2. ON LÂCHE (`'vol'`). L'élan porte le papier : il glisse, tourne
-        sur lui-même, l'étirement retombe — puis une attirance légère
-        vers le centre (le même ressort, cible 0) freine sa course et le
-        ramène, en rebondissant doucement s'il touche un bord de l'écran.
-     3. IL SE POSE. Vitesse et amplitude sous le seuil → `aPlat()`,
-        EXACTEMENT comme avant : identité exacte, `.is-flat`, prêt pour
-        `measure()`. Peu importe où le geste l'a laissé, il finit
-        TOUJOURS au même endroit, à plat, centré — c'est ce qui garantit
-        que le tap-to-open reste juste au pixel depuis n'importe quelle
-        prise.
+     1. ON LE TIENT (`'tenu'`). Le doigt ou la souris le fait tourner sur
+        son axe vertical, AU PIXEL (0,72° par pixel : un demi-tour pour
+        250 px) ; il se soulève d'un rien (ressort `sc`) et s'incline selon
+        le geste vertical (ressort `rx`).
+     2. ON LÂCHE. Il finit son demi-tour du côté où il penche — angle du
+        moment + son élan —, et se pose (`'pose'`, Hermite depuis l'angle
+        ET la vitesse : pas d'à-coup). Arrivé du recto sur le verso, c'est
+        la RECHERCHE, tout de suite : `surVerso()` est appelé DANS le
+        `pointerup` (iOS n'ouvre le clavier que dans un geste) et le
+        papier finit sa course pendant que la recherche se prépare.
+     3. IL EST POSÉ (`aPlat(face)`). Identité EXACTE, `.is-flat` ; le verso
+        posé, c'est `.is-back` — la face visible sans aucune rotation.
+        `measure()` lit donc toujours un papier non transformé.
 
-     ⚠️ UNE SEULE FONCTION FAIT LE RESSORT (`ressort`, amorti-critique).
-     `rx,ry,rz,px,py,sc,sx,sy,sk` la partagent ; seuls `k,z` (raideur,
-     amortissement) changent par clé — c'est ce qui donne à chacune son
-     caractère (le spin rebondit un peu, l'étirement est nerveux et bref)
-     sans dupliquer la physique.
+     Un retournement demandé par un bouton (le mot du bas, la croix de la
+     recherche, `enter()` depuis le verso) est le même atterrissage, parti
+     du repos, avec un soulèvement à mi-course. Un tap sans glisser n'est
+     pas un geste du moteur : le clic ouvre la face visible (module GATE).
 
-     ⚠️ L'ATTERRISSAGE EST CONTINU. Au tap, `poser()` part de la
-     position ET DE LA VITESSE du moment (Hermite cubique) et arrive à
-     l'identité, vitesse nulle — sans à-coup, quel que soit l'état
-     (`'tenu'`, `'vol'` ou déjà `'plat'`). Puis `aPlat()` pose l'identité
-     EXACTE (`.is-flat`, `transform` vide) : `measure()` lit alors les
-     calques comme sur l'ancien logo fixe, et la déconstruction part,
-     inchangée.
+     ⚠️ LA LUMIÈRE VIENT D'EN HAUT À GAUCHE : la normale de la face passe
+     par le demi-tour puis l'inclinaison ; nulle à plat, donc au repos.
 
-     ⚠️ LA LUMIÈRE VIENT D'EN HAUT À GAUCHE. La normale de la face est
-     calculée à partir des mêmes angles, et son voile (`.ast-light`)
-     s'assombrit quand elle se détourne — nul à plat, donc nul au repos.
-
-     ⚠️ BORNÉ À L'ÉCRAN, TOUJOURS. Le point de contact est bridé aux
-     limites de la fenêtre dès la prise ; en vol, un rebond amorti (×.35)
-     empêche toute sortie, même après un jet violent.
-
-     Mouvement réduit : le papier reste posé, immobile — aucun geste
-     n'est écouté. */
+     Mouvement réduit : aucun geste n'est écouté ; le mot du bas et les
+     taps retournent le papier sans animation. */
   const PAPIER=(()=>{
     const scene=$('gate-asteroid'), card=$('gate-card');
     const RM=window.matchMedia('(prefers-reduced-motion: reduce)');
     /* Le diagnostic : des booléens et des compteurs, jamais une valeur. */
-    const diag={tenu:false, vol:false, jets:0, reduit:RM.matches,
-                face:0, flips:0, recherche:false};
+    const diag={tenu:false, gestes:0, retournements:0, face:0, recherche:false, resultats:0, reduit:RM.matches};
     window.__totehm_lsd=diag;
-    if(!scene||!card) return {poser:f=>{ if(f) f(); }, reveiller(){},
-                              retourner:f=>{ if(f) f(); }, face:()=>0, occupe:()=>false};
+    const api={poser:f=>{ if(f) f(); }, poserDos:f=>{ if(f) f(); }, retourner:f=>{ if(f) f(); },
+               reveiller(){}, face:()=>0, occupe:()=>false, surVerso:null, surFace:null};
+    if(!scene||!card) return api;
     const lights=[...card.querySelectorAll('.ast-light')];   /* [face, dos] */
-    const R=Math.PI/180;
+    const elF=$('ast-front'), elB=$('ast-back');
+    const R=Math.PI/180, DEG_PX=.72;
     const LUM=(()=>{ const x=-.35,y=-.55,z=1,n=Math.hypot(x,y,z); return [x/n,y/n,z/n]; })();
     const borne=(v,a,b)=>Math.max(a,Math.min(b,v||0));
-    const res=x=>({x,v:0});
-    const S={rx:res(0), ry:res(0), rz:res(0), px:res(0), py:res(0),
-             sc:res(1), sx:res(1), sy:res(1), sk:res(0)};
-    const goal={rx:0, ry:0, rz:0, px:0, py:0, sc:1, sx:1, sy:1, sk:0};
-    /* [raideur, amortissement] par clé : le déplacement est mou (il
-       voyage avant de revenir), la rotation punchy (spin, puis stop),
-       le reste nerveux et bref. */
-    const K={rx:[30,.5], ry:[30,.5], rz:[22,.32], px:[13,.62], py:[13,.62],
-              sc:[170,.5], sx:[55,.6], sy:[55,.6], sk:[45,.35]};
-    const PLAT={rx:0, ry:0, rz:0, px:0, py:0, sc:1, sx:1, sy:1, sk:0, th:0};
-    let mode='plat', raf=0, last=0;
-    let cur={...PLAT};
-    let appui=null, aGlisse=false, pose=null, lim=null;
-    /* LA FACE · 02/10/2026. 0 = recto (le logo, MON Totehm), 1 = verso (la
-       recherche d'un autre). C'est l'état LOGIQUE : le papier posé montre
-       toujours sa face visible sans aucune rotation (`.is-back`) ; le
-       demi-tour (`th`) n'existe que pendant `retourner()`. */
-    let face=0, flip=null;
-    const elF=$('ast-front'), elB=$('ast-back');
+    let mode='plat', raf=0, last=0, face=0;
+    let th=0, om=0, rx=0, vrx=0, sc=1, vsc=0;
+    let appui=null, aGlisse=false, pose=null;
 
-    function ressort(s,g,k,z,dt){
-      const a=k*(g-s.x)-2*z*Math.sqrt(k)*s.v; s.v+=a*dt; s.x+=s.v*dt; }
     function kick(){ if(!raf&&mode!=='plat') raf=requestAnimationFrame(frame); }
     function frame(now){
       raf=0;
       const dt=Math.min(.05,Math.max(0,(now-(last||now))/1000)); last=now;
-      if(mode==='tenu') tenirPas(dt); else if(mode==='vol') volPas(dt);
-      else if(mode==='pose') poserPas(now);
-      else if(mode==='flip') flipPas(now);
+      if(mode==='tenu') tenirPas(dt); else if(mode==='pose') poserPas(now);
       if(mode==='plat') return;
       peindre();
       if(!document.hidden) raf=requestAnimationFrame(frame);
     }
-    /* Les bornes de l'écran : le CENTRE du papier y reste, avec une
-       marge qui laisse toujours une prise possible sur un bord. */
-    function limites(){
-      const r=scene.getBoundingClientRect();
-      const ncx=r.left+r.width/2, ncy=r.top+r.height/2;
-      const half=(r.width||110)/2, keep=half*.35;
-      return {minX:20+keep-ncx, maxX:innerWidth-20-keep-ncx,
-              minY:32+keep-ncy, maxY:innerHeight-24-keep-ncy};
-    }
-    function lire(){ cur={rx:S.rx.x,ry:S.ry.x,rz:S.rz.x,px:S.px.x,py:S.py.x,
-                          sc:S.sc.x,sx:S.sx.x,sy:S.sy.x,sk:S.sk.x,th:0}; }
-    /* ON TIENT : la position suit le doigt AU PIXEL (pas de ressort —
-       une prise ne traîne pas), le reste (torsion, courbure, étirement)
-       suit par ressort, nourri par la vitesse du geste et le point de
-       prise (centre ou bord). */
+    function ressort(x,v,g,k,z,dt){ const a=k*(g-x)-2*z*Math.sqrt(k)*v; v+=a*dt; return [x+v*dt,v]; }
     function tenirPas(dt){
-      if(!appui||!appui.on) return;
-      const px=borne(appui.basePx+(appui.x-appui.x0),lim.minX,lim.maxX);
-      const py=borne(appui.basePy+(appui.y-appui.y0),lim.minY,lim.maxY);
-      const vx=(px-S.px.x)/dt, vy=(py-S.py.x)/dt;
-      S.px.x=px; S.px.v=vx; S.py.x=py; S.py.v=vy;
-      goal.rz=borne(vx*.012+appui.gx*10,-35,35);
-      goal.rx=borne(vy*.01-appui.gy*8,-22,22);
-      goal.ry=borne(vx*.006,-16,16);
-      goal.sk=borne(vx*.01,-10,10);
-      const spd=Math.hypot(vx,vy), str=Math.min(.22,spd/2600);
-      goal.sx=1+str; goal.sy=1-str*.5; goal.sc=1.045;
-      for(const k of ['rx','ry','rz','sk','sx','sy','sc']) ressort(S[k],goal[k],K[k][0],K[k][1],dt);
-      lire();
-    }
-    /* ON A LÂCHÉ : l'élan porte le papier, un ressort mou le ramène au
-       centre, et les bords de l'écran le renvoient (rebond amorti). */
-    function volPas(dt){
-      goal.rx=0; goal.ry=0; goal.rz=0; goal.px=0; goal.py=0;
-      goal.sk=0; goal.sx=1; goal.sy=1; goal.sc=1;
-      for(const k in S) ressort(S[k],goal[k],K[k][0],K[k][1],dt);
-      if(!lim) lim=limites();
-      if(S.px.x<lim.minX){ S.px.x=lim.minX; S.px.v=Math.abs(S.px.v)*.35; S.rz.v+=borne(S.py.v*.03,-60,60); }
-      else if(S.px.x>lim.maxX){ S.px.x=lim.maxX; S.px.v=-Math.abs(S.px.v)*.35; S.rz.v-=borne(S.py.v*.03,-60,60); }
-      if(S.py.x<lim.minY){ S.py.x=lim.minY; S.py.v=Math.abs(S.py.v)*.35; }
-      else if(S.py.x>lim.maxY){ S.py.x=lim.maxY; S.py.v=-Math.abs(S.py.v)*.35; }
-      lire();
-      const repos=Math.hypot(S.px.v,S.py.v)<18&&Math.abs(S.rz.v)<14
-        &&Math.abs(S.px.x)<2.5&&Math.abs(S.py.x)<2.5&&Math.abs(S.rz.x)<2
-        &&Math.abs(S.rx.x)<.6&&Math.abs(S.ry.x)<.6&&Math.abs(S.sk.x)<.6
-        &&Math.abs(S.sx.x-1)<.02&&Math.abs(S.sy.x-1)<.02;
-      if(repos) aPlat();
+      [rx,vrx]=ressort(rx,vrx,appui?appui.rx:0,90,.62,dt);
+      [sc,vsc]=ressort(sc,vsc,1.05,170,.55,dt);
     }
     function peindre(){
-      const c=cur;
-      card.style.transform='translate3d('+c.px.toFixed(2)+'px,'+c.py.toFixed(2)+'px,0)'
-        +' rotateX('+c.rx.toFixed(2)+'deg) rotateY('+c.ry.toFixed(2)+'deg)'
-        +' rotateZ('+c.rz.toFixed(2)+'deg) rotateY('+(c.th||0).toFixed(2)+'deg)'
-        +' skew('+c.sk.toFixed(2)+'deg)'
-        +' scale('+(c.sc*c.sx).toFixed(4)+','+(c.sc*c.sy).toFixed(4)+')';
-      /* La normale de la face : (0,0,1) passée par les mêmes rotations,
-         de la plus intérieure (le demi-tour du retournement) à la plus
-         extérieure. */
-      const th=(c.th||0)*R;
-      let x=Math.sin(th), y=0, z=Math.cos(th), co, si, t;
-      co=Math.cos(c.rz*R); si=Math.sin(c.rz*R); t=x*co-y*si; y=x*si+y*co; x=t;
-      co=Math.cos(c.ry*R); si=Math.sin(c.ry*R); t=x*co+z*si; z=-x*si+z*co; x=t;
-      co=Math.cos(c.rx*R); si=Math.sin(c.rx*R); t=y*co-z*si; z=y*si+z*co; y=t;
+      card.style.transform='rotateX('+rx.toFixed(2)+'deg) rotateY('+th.toFixed(2)+'deg) scale('+sc.toFixed(4)+')';
+      /* La normale de la face : (0,0,1) passée par le demi-tour, puis
+         par l'inclinaison. */
+      let x=Math.sin(th*R), y=0, z=Math.cos(th*R);
+      const co=Math.cos(rx*R), si=Math.sin(rx*R), t=y*co-z*si; z=y*si+z*co; y=t;
       const d=(x*LUM[0]+y*LUM[1]+z*LUM[2])/LUM[2];
-      /* Posé sur le verso (`.is-back`, pas de demi-tour), la face qui
-         regarde l'écran est le dos : c'est son voile qui suit `d`. */
-      if(face===1&&mode!=='flip'){ eclairer(lights[1],d); eclairer(lights[0],-d); }
-      else{ eclairer(lights[0],d); eclairer(lights[1],-d); }
+      eclairer(lights[0],d); eclairer(lights[1],-d);
     }
     function eclairer(el,f){
       if(!el||f<=0) return;                 /* face détournée : cachée */
       if(f<1){ el.style.background='#000'; el.style.opacity=Math.min(.5,(1-f)*.6).toFixed(3); }
       else   { el.style.background='#fff'; el.style.opacity=Math.min(.06,(f-1)*.3).toFixed(3); }
     }
-    function aPlat(){
+    function aPlat(f){
       if(raf){ cancelAnimationFrame(raf); raf=0; }
-      mode='plat'; appui=null; pose=null; lim=null;
-      for(const k in S){ S[k].x=(k==='sc'||k==='sx'||k==='sy')?1:0; S[k].v=0; }
-      cur={...PLAT};
+      const avant=face;
+      mode='plat'; face=f?1:0; th=0; om=0; rx=0; vrx=0; sc=1; vsc=0; appui=null; pose=null;
       card.style.transform='';
       lights.forEach(l=>{ l.style.background=''; l.style.opacity=''; });
       card.classList.add('is-flat');
@@ -7736,103 +7652,115 @@ window.addEventListener('pageshow',e=>{
       if(elF) elF.inert=face===1;
       if(elB) elB.inert=face===0;
       scene.classList.remove('tenu');
-      diag.tenu=false; diag.vol=false; diag.face=face;
+      diag.tenu=false; diag.face=face;
+      if(avant!==face&&typeof api.surFace==='function') api.surFace(face);
     }
-    /* L'ATTERRISSAGE : position et vitesse du moment → identité, à
-       plat, vitesse nulle. La durée suit la distance à parcourir. */
-    function poser(cb){
-      if(mode==='flip'){ const prev=flip.cb; flip.cb=()=>{ if(prev) prev(); poser(cb); }; return; }
-      if(mode==='plat'){ aPlat(); if(cb) cb(); return; }
-      const dist=Math.hypot(cur.px/300,cur.py/300,cur.rz/180,cur.rx/90,cur.ry/90);
-      const D=Math.min(.78,.28+dist*.5);
-      const to={...PLAT}, v={};
-      for(const k in to){
-        const span=Math.abs(to[k]-cur[k])*1.5+((k==='sc'||k==='sx'||k==='sy')?.02:2);
-        v[k]=borne((S[k]&&S[k].v)||0,-span/D,span/D);   /* `th` n'a pas de ressort : vitesse nulle */
+    /* Quitter le repos : il redevient un objet en 3D, la face visible
+       gardée telle quelle (le verso posé = un demi-tour, au pixel près). */
+    function quitterRepos(){ card.classList.remove('is-flat','is-back'); th=face?180:0; rx=0; vrx=0; sc=1; vsc=0; }
+    function atterrir(cible, cb){
+      cible=cible?1:0;
+      /* Un atterrissage déjà en route : on enchaîne, on ne perd jamais une
+         suite (sinon `enter()` resterait bloqué sur `moving`). */
+      if(mode==='pose'){ const prev=pose.cb; pose.cb=()=>{ if(prev) prev(); atterrir(cible,cb); }; return; }
+      const deRepos=mode==='plat';
+      if(deRepos){
+        if(face===cible){ aPlat(cible); if(cb) cb(); return; }
+        if(RM.matches){ aPlat(cible); diag.retournements++; if(cb) cb(); return; }
+        quitterRepos(); om=0;
       }
-      pose={t0:performance.now(), D, from:{...cur}, to, v, cb};
-      appui=null; mode='pose'; kick();
-    }
-    /* LE RETOURNEMENT · 02/10/2026. Un demi-tour autour de l'axe vertical
-       du papier, toujours dans le même sens (comme on tourne une page) :
-       recto → verso = 0 → 180°, verso → recto = 180 → 360°. Il se soulève
-       à mi-course (une feuille qu'on retourne ne reste pas collée à la
-       table) puis se repose. À l'arrivée, `face` change, `aPlat()` rend
-       la face visible SANS transformation : le papier reste prêt à être
-       mesuré, tapé, déployé. Pris en vol, il se pose d'abord. Mouvement
-       réduit : l'échange est instantané. */
-    function retourner(cb){
-      if(mode==='pose'||mode==='flip') return;
-      if(mode!=='plat'){ poser(()=>retourner(cb)); return; }
-      diag.flips++;
-      if(RM.matches){ face^=1; aPlat(); if(cb) cb(); return; }
-      const a0=face?180:0;
-      card.classList.remove('is-flat','is-back');
-      if(elF) elF.inert=true; if(elB) elB.inert=true;
-      flip={t0:performance.now(), D:.78, a0, a1:a0+180, cb};
-      cur={...PLAT, th:a0};
-      mode='flip'; peindre(); kick();
-    }
-    function flipPas(now){
-      const u=Math.min(1,(now-flip.t0)/1000/flip.D);
-      const e=u*u*u*(u*(6*u-15)+10);                 /* smootherstep */
-      const l=Math.sin(Math.PI*u);                   /* 0 → 1 → 0 : le soulèvement */
-      cur={...PLAT, th:flip.a0+(flip.a1-flip.a0)*e,
-           sc:1+.18*l, py:-14*l, rx:-10*l, rz:3.5*Math.sin(2*Math.PI*u)};
-      if(u>=1){ const cb=flip.cb; flip=null; face^=1; aPlat(); if(cb) cb(); }
+      /* La face d'arrivée la plus proche dans le sens du geste — l'élan
+         compte, mais il ne peut pas ajouter plus d'un tiers de demi-tour. */
+      const base=cible?180:0, p=th+borne(om*.12,-60,60);
+      const tT=base+360*Math.round((p-base)/360);
+      const span=Math.abs(tT-th);
+      const D=Math.min(.75,Math.max(.36,.3+span/180*.32));
+      pose={t0:performance.now(), D, th0:th, tT, v:borne(om,-span*2/D,span*2/D),
+            rx0:rx, sc0:sc, depuis:face, cible, cb, leve:deRepos};
+      appui=null; mode='pose'; diag.tenu=false; scene.classList.remove('tenu'); kick();
     }
     function poserPas(now){
       const u=Math.min(1,(now-pose.t0)/1000/pose.D);
       const h00=2*u*u*u-3*u*u+1, h10=u*u*u-2*u*u+u, h01=-2*u*u*u+3*u*u;
-      const nx={};
-      for(const k in pose.to) nx[k]=h00*pose.from[k]+h10*pose.D*pose.v[k]+h01*pose.to[k];
-      cur=nx;
-      if(u>=1){ const cb=pose.cb; aPlat(); if(cb) cb(); }
+      th=h00*pose.th0+h10*pose.D*pose.v+h01*pose.tT;
+      const l=pose.leve?Math.sin(Math.PI*u):0;     /* une feuille qu'on retourne se soulève */
+      rx=pose.rx0*(1-u)-9*l;
+      sc=pose.sc0+(1-pose.sc0)*u+.14*l;
+      if(u>=1){
+        const {cb,cible,depuis}=pose;
+        aPlat(cible);
+        if(cible!==depuis) diag.retournements++;
+        if(cb) cb();
+      }
     }
-    /* LE RÉVEIL : après un repli, ou au chargement — le papier est déjà
-       posé (`aPlat()` le garantit), il n'y a que le dos à repeindre. */
-    function reveiller(){}
 
-    const api={poser, reveiller, retourner, face:()=>face,
-               occupe:()=>mode==='pose'||mode==='flip'};
-    aPlat();
+    api.poser=cb=>atterrir(0,cb);
+    api.poserDos=cb=>atterrir(1,cb);
+    api.retourner=cb=>atterrir(face?0:1,cb);
+    api.face=()=>mode==='plat'?face:(Math.cos(th*R)<0?1:0);
+    api.occupe=()=>mode==='pose'||mode==='tenu';
+    api.reveiller=()=>{ if(typeof paintAsteroid==='function') paintAsteroid(); };
+    aPlat(0);
     if(RM.matches) return api;
 
     document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ last=0; kick(); } });
 
-    /* Le doigt (ou la souris) : appuyer prend le papier, glisser le
-       déplace, lâcher lui laisse l'élan. `touch-action:none` sur la
-       scène : le geste porte une fonction, on le conduit en Pointer
-       Events. */
+    /* Le doigt (ou la souris) le tourne. `touch-action:none` sur la scène :
+       le geste porte une fonction, on le conduit en Pointer Events — un
+       seul chemin pour le doigt et la souris. */
     scene.addEventListener('pointerdown',e=>{
       if(appui||mode==='pose'||(e.pointerType==='mouse'&&e.button!==0)) return;
-      appui={id:e.pointerId, x0:e.clientX, y0:e.clientY, x:e.clientX, y:e.clientY, on:false};
+      appui={id:e.pointerId, x0:e.clientX, y0:e.clientY, x:e.clientX, t:performance.now(), on:false, rx:0};
       aGlisse=false;
       try{ scene.setPointerCapture(e.pointerId); }catch(_){}
     });
     scene.addEventListener('pointermove',e=>{
       if(!appui||e.pointerId!==appui.id) return;
-      appui.x=e.clientX; appui.y=e.clientY;
       if(!appui.on){
         if(Math.hypot(e.clientX-appui.x0,e.clientY-appui.y0)<7) return;
-        appui.on=true; aGlisse=true; diag.tenu=true; diag.vol=false;
-        if(mode==='plat') card.classList.remove('is-flat');
-        mode='tenu'; scene.classList.add('tenu');
-        const r=scene.getBoundingClientRect();
-        const cx=r.left+r.width/2+cur.px, cy=r.top+r.height/2+cur.py;
-        const half=(r.width||110)/2;
-        appui.gx=borne((e.clientX-cx)/half,-1,1);
-        appui.gy=borne((e.clientY-cy)/half,-1,1);
-        appui.basePx=cur.px; appui.basePy=cur.py;
-        lim=limites();
-        kick();
+        appui.on=true; aGlisse=true; diag.tenu=true; diag.gestes++;
+        if(mode==='plat') quitterRepos();
+        appui.th0=th; appui.hist=[]; om=0;
+        mode='tenu'; scene.classList.add('tenu'); kick();
       }
+      /* Tout le geste compte, depuis le point touché (pas depuis le seuil). */
+      const now=performance.now();
+      th=appui.th0+(e.clientX-appui.x0)*DEG_PX;
+      appui.hist.push({t:now,th}); if(appui.hist.length>12) appui.hist.shift();
+      appui.rx=borne(-(e.clientY-appui.y0)*.12,-14,14);
     });
+    /* L'élan = la vitesse des 100 dernières ms, lue au relâché. Une moyenne
+       sur une fenêtre, pas l'écart entre deux événements : la cadence des
+       événements varie d'un appareil à l'autre, et un doigt qui s'arrête
+       avant de lâcher n'a plus d'élan. */
+    function elan(now){
+      const h=(appui&&appui.hist)||[]; let s=null;
+      for(const p of h){ if(now-p.t<=100){ s=p; break; } }
+      if(!s||now-s.t<8) return 0;
+      return (th-s.th)/((now-s.t)/1000);
+    }
     const lacher=e=>{
       if(!appui||e.pointerId!==appui.id) return;
-      const glisse=appui.on; appui=null; diag.tenu=false;
-      scene.classList.remove('tenu');
-      if(glisse){ diag.jets++; diag.vol=true; mode='vol'; kick(); }
+      if(!appui.on){ appui=null; return; }          /* un tap : le clic s'en charge */
+      om=elan(performance.now());
+      /* ⚠️ TOURNÉ D'UN QUART, IL CHANGE DE FACE — JAMAIS D'UN TOUR ENTIER.
+         On décide par rapport à la face de DÉPART, pas par l'angle projeté
+         avec l'élan : mesuré à la souris, un geste vif projetait le papier
+         au-delà d'un tour et le faisait retomber sur le recto. Une
+         pichenette (≥ 30°, ≥ 350°/s, qui s'éloigne de la face de départ)
+         le retourne aussi ; un glissé lent qui n'a pas fait un quart de
+         tour revient sur sa face. */
+      const d=th-appui.th0, a=Math.abs(d)%360;
+      const pichenette=a>=30&&a<90&&Math.abs(om)>=350&&Math.sign(om)===Math.sign(d);
+      const cible=(a>90&&a<270)||pichenette ? 1-face : face;
+      /* RETOURNÉ, IL CHERCHE. Du recto au verso par la main : la recherche
+         s'ouvre ICI, dans le geste, et pose elle-même le papier. */
+      if(e.type==='pointerup'&&cible===1&&face===0&&typeof api.surVerso==='function'){
+        api.surVerso();
+        if(mode==='tenu') atterrir(1);              /* si la recherche a refusé, il se pose quand même */
+        return;
+      }
+      atterrir(cible);
     };
     scene.addEventListener('pointerup',lacher);
     scene.addEventListener('pointercancel',lacher);
@@ -7849,14 +7777,13 @@ window.addEventListener('pageshow',e=>{
     if(PAYSAGE.matches) return;     /* couché, on n'ouvre pas */
     /* ⚠️ DEUX FACES, UN SEUL DÉPLOIEMENT À LA FOIS · 02/10/2026. Le Totehm
        se déconstruit depuis le RECTO : si la recherche est ouverte on la
-       replie d'abord, si le papier est sur son verso on le retourne
-       d'abord — puis on reprend ICI, avec la même suite. Tous les
+       replie d'abord, puis on reprend ICI, avec la même suite ; et si le
+       papier est sur son verso, `PAPIER.poser()` le retourne avant. Tous les
        appelants (`#in`, `?ro=`, la porte [My Higher Self], la porte
        d'inscription) passent par `enter()` : le verrou est donc ici, pas
        dans le bouton. */
     if(sMoving) return;
     if(sOpen){ fermerRecherche(()=>enter(then)); return; }
-    if(PAPIER.face()===1){ PAPIER.retourner(()=>{ paintFlip(); enter(then); }); return; }
     /* ⚠️ PAS INSCRIT, RIEN N'EST PERMIS · 27/09/2026. Le papier ne
        s'ouvre pas : la porte s'ouvre sous lui, et c'est elle qui
        rappellera `enter(then)` une fois le nom posé. */
@@ -7931,136 +7858,134 @@ window.addEventListener('pageshow',e=>{
   /* Le reste du script replie par ici. */
   foldToGate=fold;
 
-  /* ══ LE VERSO SE DÉPLIE : LA RECHERCHE D'UN AUTRE TOTEHM · 02/10/2026 ═════
-     Wah : « retourner le Totehm (face verso) pour qu'il se déploie en mode
-     recherche d'un autre Totehm, en Quantico. Deux modes, deux faces, deux
-     systèmes de déploiement. »
+  /* ══ LE VERSO RETOURNÉ : ON ZOOME DANS LE PAPIER · 02/10/2026 ════════
+     Wah : « retourner le Totehm lance automatiquement la recherche… sur le
+     fond bleu, comme si on zoomait et que l'on changeait le nom ».
 
-       RECTO · MON Totehm   → les quatre calques du logo rejoignent l'UI
-                              (`enter()`, `measure()`, inchangés)
-       VERSO · UN AUTRE     → le papier perforé GRANDIT jusqu'à couvrir
-                              l'écran, son mot grandit avec lui puis se
-                              dissout, la saisie apparaît dessus
-                              (`ouvrirRecherche()`, ci-dessous)
+       RECTO · MON Totehm   → un tap : les quatre calques du logo rejoignent
+                              l'UI (`enter()`, `measure()`, inchangés)
+       VERSO · LE NOM       → le retourner (la main, le mot du bas) ou le
+                              toucher : le papier GRANDIT jusqu'à couvrir
+                              l'écran, son nom grandit avec lui et devient
+                              LA saisie, déjà sélectionné : on le change.
 
-     La recherche n'exige AUCUN compte (invité compris) : `totehm_search`
-     est ouverte à `anon` et ne rend que des noms et une offre. Le recto,
-     lui, garde sa porte d'inscription.
+     La recherche n'exige AUCUN compte : `totehm_search` est ouverte à
+     `anon` et ne rend que des noms et une offre. Le recto garde sa porte.
 
-     ⚠️ UN SEUL GESTE À LA FOIS. `sMoving` pendant le dépliage et le
-     repli, `PAPIER.occupe()` pendant l'atterrissage et le retournement :
-     un tap pendant l'animation est avalé, pas mis en file (une file ferait
-     d'un double-clic deux gestes — leçon du lecteur Stoner).
-
-     ⚠️ LA MISE AU POINT SE FAIT DANS LE CLIC. iOS n'ouvre le clavier que
-     pour un `focus()` exécuté dans le geste de l'utilisateur ; après le
-     dépliage il serait trop tard. Le champ existe donc dès le tap (il est
-     transparent, pas masqué) et apparaît 0,42 s plus tard.
-
-     ⚠️ UNE RÉPONSE TARDIVE N'ÉCRASE JAMAIS UN ÉTAT PLUS FRAIS (`sSeq`) :
-     taper « wa » puis « wah » ne doit pas montrer les résultats de « wa »
-     si le réseau les rend dans le désordre. */
-  const srch=$('srch'), sBg=$('srch-bg'), sSay=$('srch-say'), sTile=$('srch-tile'),
-        sQ=$('srch-q'), sNote=$('srch-note'), sRes=$('srch-res'), sX=$('srch-x'),
-        flipLink=$('search-corner');
+     ⚠️ UN SEUL GESTE À LA FOIS : `sMoving` pendant le zoom et le dézoom,
+     `PAPIER.occupe()` pendant qu'on le tient ou qu'il se pose ; un tap
+     pendant une animation est avalé, pas mis en file.
+     ⚠️ LA MISE AU POINT SE FAIT DANS LE GESTE (clic, `pointerup`) : le
+     champ existe dès le geste (`.is-prep`, transparent), le papier finit
+     de se poser, PUIS le zoom part d'exactement le papier et son nom.
+     ⚠️ `sSeq` : une réponse tardive n'écrase jamais une frappe plus
+     récente (« wa » lent ne recouvre pas « wah »).
+     ⚠️ #gate devient `inert` (hors tabulation) mais reste PEINT, noir et
+     opaque : le masquer révélait le Totehm derrière le papier qui grandit
+     dès qu'une minuterie glissait. La feuille est modale (Tab y tourne). */
+  const srch=$('srch'), sBg=$('srch-bg'), sQ=$('srch-q'), sNote=$('srch-note'),
+        sRes=$('srch-res'), sX=$('srch-x'), flipLink=$('search-corner');
   const RMQ=window.matchMedia('(prefers-reduced-motion: reduce)');
   const SDUR=640;
   let sOpen=false, sMoving=false, sTimer=0, sSeq=0, sDebounce=0;
   const argent=(c,cur)=>{ try{ return new Intl.NumberFormat('en',{style:'currency',
       currency:(cur||'eur').toUpperCase(),maximumFractionDigits:c%100?2:0}).format(c/100); }
     catch(_){ return (c/100)+' '+(cur||''); } };
+  const monNom=()=>((me&&myProfile&&myProfile.pseudo)||'').trim();
 
-  /* Le mot sous le papier dit le geste SUIVANT, pas l'état courant. */
+  /* Le mot du bas dit le geste SUIVANT. */
   function paintFlip(){
     if(!flipLink) return;
     flipLink.textContent=PAPIER.face()===1 ? 'Turn it back · my TOTEHM'
                                            : 'Turn it over · search a TOTEHM';
   }
-  /* Où est le papier, et de combien le fond doit-il être réduit pour lui
-     ressembler ? Mesuré À CHAQUE FOIS (jamais mémorisé) : le clavier, la
-     rotation ou un redimensionnement déplacent le papier entre l'ouverture
-     et le repli. */
+  /* Où sont le papier et son nom, où va la saisie — mesuré À CHAQUE FOIS,
+     transformations retirées (le clavier, la rotation ou un
+     redimensionnement déplacent tout entre le zoom et le dézoom). */
   function geometrie(){
     const R=srch.getBoundingClientRect(), W=R.width, H=R.height;
     const t=document.querySelector('#ast-back .ast-tile').getBoundingClientRect();
+    const nm=$('ast-name'), n=nm.getBoundingClientRect(), q=sQ.getBoundingClientRect();
+    const fsN=parseFloat(getComputedStyle(nm).fontSize)||10, fsQ=parseFloat(getComputedStyle(sQ).fontSize)||32;
     const S=Math.ceil(Math.max(W,H)*1.2), w=t.width||110;
-    return {S, k:w/S, w,
-            dx:(t.left+t.width/2)-(R.left+W/2), dy:(t.top+t.height/2)-(R.top+H/2)};
+    return {S, k:w/S, kq:fsN/fsQ,
+            dx:(t.left+t.width/2)-(R.left+W/2), dy:(t.top+t.height/2)-(R.top+H/2),
+            qx:(n.left+n.width/2)-(q.left+q.width/2), qy:(n.top+n.height/2)-(q.top+q.height/2)};
   }
-  function styles(on){
-    for(const el of [sBg,sTile,sSay]){ el.style.transition=on||'none'; }
+  const sansTransition=()=>{ sBg.style.transition='none'; sQ.style.transition='none'; };
+  const avecTransition=()=>{ sBg.style.transition=sQ.style.transition='transform '+SDUR+'ms var(--gate-ease)'; };
+  /* Le fond et le nom posés EXACTEMENT sur le papier et sur son nom. */
+  function surLePapier(g){
+    srch.style.setProperty('--s',g.S+'px');
+    sBg.style.transform='translate('+g.dx.toFixed(2)+'px,'+g.dy.toFixed(2)+'px) scale('+g.k.toFixed(5)+')';
+    sQ.style.transform='translate('+g.qx.toFixed(2)+'px,'+g.qy.toFixed(2)+'px) scale('+g.kq.toFixed(4)+')';
   }
+  const pleinEcran=()=>{ sBg.style.transform='translate(0px,0px) scale(1)'; sQ.style.transform='translate(0px,0px) scale(1)'; };
 
   function ouvrirRecherche(){
     if(open||moving||sOpen||sMoving) return;
-    if(PAPIER.face()!==1){ PAPIER.retourner(()=>{ paintFlip(); ouvrirRecherche(); }); return; }
     sMoving=true; fermerPorte();
-    /* Le papier se pose d'abord, à plat (le verso, sans transformation) :
-       on mesure un papier immobile, jamais un papier incliné. */
-    PAPIER.poser(()=>{
-      srch.classList.add('is-on'); srch.setAttribute('aria-hidden','false');
-      try{ sQ.focus({preventScroll:true}); }catch(_){}
-      const g=geometrie();
-      srch.style.setProperty('--s',g.S+'px');
-      sSay.style.fontSize=(11/g.k).toFixed(1)+'px';
-      const fin=()=>{ document.body.classList.add('searching');
-                      srch.classList.add('is-show','is-open');
-                      sOpen=true; sMoving=false; window.__totehm_lsd.recherche=true; };
-      if(RMQ.matches){
-        styles(); sBg.style.transform='none'; sTile.style.opacity=0; sSay.style.opacity=0;
-        fin();
-      }else{
-        styles();
-        sBg.style.transform='translate('+g.dx.toFixed(2)+'px,'+g.dy.toFixed(2)+'px) scale('+g.k.toFixed(5)+')';
-        sTile.style.opacity=1; sSay.style.opacity=1;
-        void sBg.offsetWidth;                         /* le point de départ est posé */
-        sBg.style.transition='transform '+SDUR+'ms var(--gate-ease)';
-        sTile.style.transition='opacity .35s ease .42s';
-        sSay.style.transition='opacity .3s ease .08s';
-        sBg.style.transform='translate(0,0) scale(1)';
-        sTile.style.opacity=0; sSay.style.opacity=0;
-        srch.classList.add('is-show');                /* la saisie : CSS, +0,42 s */
-        clearTimeout(sTimer); sTimer=setTimeout(fin,SDUR+140);
-      }
-      lancer('');                                    /* mes abonnements, si je suis connecté */
-    });
+    sQ.value=monNom(); sRes.innerHTML=''; sNote.textContent='';
+    srch.classList.add('is-on','is-prep'); srch.setAttribute('aria-hidden','false');
+    /* DANS le geste. Le nom est sélectionné : taper le remplace. */
+    try{ sQ.focus({preventScroll:true}); sQ.select(); }catch(_){}
+    PAPIER.poserDos(zoomer);
   }
-
-  /* Le repli est le dépliage à l'envers : la page rapetisse EN papier. */
+  function zoomer(){
+    const fin=()=>{ document.body.classList.add('searching'); gate.inert=true;
+                    srch.classList.add('is-show','is-open');
+                    sOpen=true; sMoving=false; window.__totehm_lsd.recherche=true; };
+    sansTransition(); sBg.style.transform=''; sQ.style.transform='';
+    if(RMQ.matches){ srch.classList.remove('is-prep'); pleinEcran(); fin(); lancer(''); return; }
+    const g=geometrie();
+    surLePapier(g);
+    void sBg.offsetWidth;
+    srch.classList.remove('is-prep');                /* identique au papier : rien ne saute */
+    void sBg.offsetWidth;
+    avecTransition(); pleinEcran();
+    srch.classList.add('is-show');                   /* le reste arrive à +0,42 s (CSS) */
+    clearTimeout(sTimer); sTimer=setTimeout(fin,SDUR+140);
+    lancer('');                                      /* mes abonnements, si je suis connecté */
+  }
+  /* Le dézoom : la page redevient le dos du papier, le nom y revient, puis
+     le papier se remet sur son recto — l'atterrissage retrouve son départ. */
   function fermerRecherche(then){
     if(!sOpen||sMoving) return;
     sMoving=true; sSeq++; clearTimeout(sDebounce); clearTimeout(sTimer);
     try{ sQ.blur(); }catch(_){}
     srch.classList.remove('is-open','is-show');
-    document.body.classList.remove('searching');      /* le papier réapparaît dessous */
+    document.body.classList.remove('searching');
+    gate.inert=false;
+    sQ.value=monNom();                               /* c'est MON nom qui revient sur le papier */
     const fini=()=>{
-      srch.classList.remove('is-on'); srch.setAttribute('aria-hidden','true');
-      styles(); sBg.style.transform=''; sTile.style.opacity=''; sSay.style.opacity='';
+      srch.classList.remove('is-on','is-prep'); srch.setAttribute('aria-hidden','true');
+      sansTransition(); sBg.style.transform=''; sQ.style.transform='';
       sQ.value=''; sRes.innerHTML=''; sNote.textContent='';
-      sOpen=false; sMoving=false; window.__totehm_lsd.recherche=false; window.__totehm_lsd.resultats=0;
-      if(then) then();
+      sOpen=false; sMoving=false;
+      window.__totehm_lsd.recherche=false; window.__totehm_lsd.resultats=0;
+      /* « Au début, il est toujours en mode recto » (Wah) : dézoomé sur son
+         dos, le papier se remet sur son recto — la suite du geste qui a
+         fermé la recherche, pas une rotation spontanée. */
+      PAPIER.poser(()=>{ paintFlip(); if(then) then(); });
     };
     if(RMQ.matches){ fini(); return; }
-    /* Deux frames : le temps que le clavier se retire et que la mise en
-       page rende au papier sa vraie place, AVANT de le mesurer. */
+    /* Deux frames : le temps que le clavier se retire, AVANT de mesurer. */
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      sansTransition(); sBg.style.transform=''; sQ.style.transform='';
       const g=geometrie();
-      sBg.style.transition='transform '+SDUR+'ms var(--gate-ease)';
-      sTile.style.transition='opacity .22s ease';
-      sSay.style.transition='opacity .25s ease .4s';
-      sBg.style.transform='translate('+g.dx.toFixed(2)+'px,'+g.dy.toFixed(2)+'px) scale('+g.k.toFixed(5)+')';
-      sTile.style.opacity=1; sSay.style.opacity=1;
+      pleinEcran(); void sBg.offsetWidth;
+      avecTransition(); surLePapier(g);
       clearTimeout(sTimer); sTimer=setTimeout(fini,SDUR+60);
     }));
   }
 
-  /* La saisie. Deux lettres au minimum (une lettre rendrait la moitié de
-     la base) ; vide, la RPC rend MES abonnements — la liste par défaut. */
+  /* La saisie. Deux lettres au minimum ; vide, la RPC rend MES abonnements.
+     Le nom pré-rempli (le mien) ne se cherche pas : on cherche ce qu'on tape. */
   async function lancer(q){
     const mon=++sSeq;
-    if(q&&q.length<2){ sRes.innerHTML=''; sNote.className='note dim'; sNote.textContent='two letters, minimum'; return; }
-    if(!q&&!me){ sRes.innerHTML=''; sNote.textContent=''; return; }   /* un invité n'a pas d'abonnements */
-    if(q){ sNote.className='note dim'; sNote.textContent='searching\u2026'; }
+    if(q&&q.length<2){ sRes.innerHTML=''; sNote.className='note dim srch-after'; sNote.textContent='two letters, minimum'; return; }
+    if(!q&&!me){ sRes.innerHTML=''; sNote.textContent=''; return; }  /* un invité n'a pas d'abonnements */
+    if(q){ sNote.className='note dim srch-after'; sNote.textContent='searching\u2026'; }
     let rows;
     try{
       const {data,error}=await sb.rpc('totehm_search',{p_q:q,p_limit:12});
@@ -8068,10 +7993,10 @@ window.addEventListener('pageshow',e=>{
       rows=data||[];
     }catch(e){
       if(mon!==sSeq) return;
-      sNote.className='note no'; sNote.textContent='search is unreachable right now'; return;
+      sNote.className='note no srch-after'; sNote.textContent='search is unreachable right now'; return;
     }
     if(mon!==sSeq) return;                            /* réponse tardive : on la jette */
-    sNote.className='note dim';
+    sNote.className='note dim srch-after';
     sNote.textContent=rows.length||!q ? '' : 'no shared Totehm by that name';
     window.__totehm_lsd.resultats=rows.length;
     /* Un NOM et une offre — jamais un contenu (ni habitudes ni intentions). */
@@ -8087,18 +8012,29 @@ window.addEventListener('pageshow',e=>{
       clearTimeout(sDebounce); lancer(sQ.value.trim()); } });
   }
   if(sX) sX.onclick=()=>fermerRecherche();
+  /* La feuille est modale : Tab tourne entre le nom, les résultats et la
+     croix — jamais vers les boutons du Totehm, dessous et invisibles. */
+  if(srch) srch.addEventListener('keydown',e=>{
+    if(e.key!=='Tab'||!sOpen) return;
+    const f=[sQ,...sRes.querySelectorAll('a'),sX].filter(Boolean);
+    const i=f.indexOf(document.activeElement);
+    const j=e.shiftKey ? (i<=0?f.length-1:i-1) : (i<0||i===f.length-1?0:i+1);
+    e.preventDefault(); f[j].focus();
+  });
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&sOpen){ e.preventDefault(); fermerRecherche(); } });
 
-  /* Le mot du bas RETOURNE le papier. Sans JavaScript, ou avec un clic
-     modifié (nouvel onglet), c'est toujours un lien vers /search : la même
-     recherche, sur sa propre page. */
+  /* Le mot du bas : sur le recto, il RETOURNE le papier — donc il cherche ;
+     sur le verso, il le remet sur son recto, sans rien ouvrir. Sans
+     JavaScript, ou en clic modifié, c'est toujours un lien vers /search. */
   if(flipLink) flipLink.addEventListener('click',e=>{
     if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button) return;
     e.preventDefault();
     if(open||moving||sOpen||sMoving||PAPIER.occupe()) return;
     fermerPorte();
-    PAPIER.retourner(paintFlip);
+    if(PAPIER.face()===1) PAPIER.retourner(); else ouvrirRecherche();
   });
+  PAPIER.surFace=paintFlip;
+  PAPIER.surVerso=ouvrirRecherche;
   paintFlip();
 
   /* ══ LE SECOND VERROU ══
