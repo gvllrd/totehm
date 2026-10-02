@@ -177,7 +177,7 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 
 **SPACE · 02/10 :** cinq vues, gestes et panneaux desktop conservés ; TOP futur,
 RIGHT futurs, CENTER Habit Box, BOTTOM Short 9:16 Full HD. Boussole, lieu dans le radar,
-joystick COM navy REC/STOP remonté ; création progressive. `space/CLAUDE.md` fait foi.
+joystick COM navy REC/STOP remonté ; création progressive. `space/CLAUDE.md` fait foi. Le papier rotatif navy de SPACE fait exception à la tuile réservée au nom : logo au recto, nom au verso ; il ouvre seulement le sélecteur Habit en vue radar.
 
 ## Règles d'interface qui valent partout
 
