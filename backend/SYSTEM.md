@@ -23,6 +23,7 @@
 | auto-tests SQL (annulés) | `PHOTO WHY SELFTEST FAIL={}` · `FUTURE VIDEO SELFTEST FAIL={}` · `HABITS VIDEO SELFTEST FAIL={}` après les deux migrations |
 | droits | `spot_why_set` authenticated oui / anon non ; `_spot_view`, `_clip_ok` service_role seul ; `spot_create` anon non |
 | tests navigateur | `space.mjs` 35/35 · `spaces_ui.mjs` 57/57 · `space_top_left.mjs` 47/47 · `space.mjs` caméra paysage 35/35 |
+| prod (pg_net), `main` `df91849` | space `dpl_8NFZxEwjBwSQfJfDz2nQ9WD1gvRr` READY, alias `www.totehm.space` ; `/` 200, md5 = `main`, `BUILD='2026-10-03-spaces-ter'`, `data-start="photo"`, `spot_why_set`, `data-ics` présents |
 
 ## 0 · SPACE — TOP = BOTTOM, VIDÉO FUTURE, LEFT FILTRÉ — 03/10/2026
 
