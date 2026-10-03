@@ -6,6 +6,20 @@
 > `CLAUDE.md` le 30/09/2026, les plus récentes d'abord : un renvoi « plus
 > haut » peut viser la racine ou un autre dossier. Procédures : `README.md`. État mesuré : `SYSTEM.md` (§0 d'abord).
 
+## SPACE · 03/10/2026 (ter) — photo et WHY · TRIGGER
+
+Migrations `20261003170000_space_photo_why.sql` (`space_photo_why`) puis
+`20261003171000_space_photo_column.sql` (`space_photo_column`), additives.
+`spot_plans.photo` (contrainte `<uid>/<uuid>.jpg`) : `spot_plans_video_check`
+refusait `.jpg` et le relâcher exigeait un drop — la photo a donc SA colonne.
+`_clip_ok` accepte `.jpg` ; seau `moments` + `image/jpeg` ; `spot_create` (même
+signature) et `spot_video_attach` rangent un `.jpg` dans `photo` ; `_clip_readable`
+signe la photo d'un space lisible. `spot_plans.show_why` (défaut false) +
+`spot_why_set(spot, show)` (authenticated, propriétaire, refuse `empty`) ;
+`_spot_view` rend `photo`, `show_why` (propriétaire seul) et `why` = les TEXTES
+des objectifs/répulsions du snapshot, seulement SHARED et choisi. Le contexte
+complet reste au propriétaire.
+
 ## SPACE · 03/10/2026 — la vidéo d'un space futur
 
 `spot_video_attach(spot, video)` (authenticated, pas anon) : propriétaire seul,

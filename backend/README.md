@@ -374,7 +374,9 @@ Lues par `space/index.html` — tout le reste de l'ancien Espace est RÉVOQUÉ
 | `spot_create(habit, visibility, duration_min, video, lat, lng, city, comment, mode, location)` | connecté | crée MAINTENANT ; relit l'Habit dans MON Totehm (intentions, objectifs, répulsions reliés) ; SHARED exige `location`, et `mode` si ON seulement ; vidéo dans `moments/<mon uid>/` ou référence Bunny possédée, réservée par le serveur |
 | `spots_feed(lat, lng, q, intention, before, limit)` | tous, même anonyme | les SHARED déjà commencés à 60 km (positions arrondies à 0,1° des deux côtés) + les miens ; la ville, jamais le point ni une distance |
 | `spot_schedule(habit, visibility, starts_at, duration_min, place, lat, lng, city, comment, mode, location)` | connecté | futur, sans vidéo obligatoire ; mêmes droits et Habit relue en base ; 10 à venir, horizon 90 jours ; ville seule (PRIVATE, SHARED·OFF) = centre de la ville |
-| `spot_video_attach(spot, video)` | connecté | relie APRÈS coup une vidéo envoyée (`bunny:<uuid>` ou chemin Storage) à SON space ; vidéo possédée et libre ; idempotente ; `why` = signin · video · not_mine |
+| `spot_video_attach(spot, video)` | connecté | relie APRÈS coup un média envoyé (`bunny:<uuid>`, chemin Storage vidéo ou `.jpg` → colonne `photo`) à SON space ; possédé et libre ; idempotente ; `why` = signin · video · not_mine |
+| `spot_why_set(spot, show)` | connecté | l'auteur montre ou cache le WHY · TRIGGER (textes des objectifs/répulsions du snapshot) de SON space SHARED ; `why` = signin · not_mine · empty |
+| `spot_create(…, video, …)` | connecté | `video` = `bunny:<uuid>`, chemin Storage vidéo, ou photo `<uid>/<uuid>.jpg` (03/10) |
 | `spots_list(q, intention, before, before_id, limit)` | tous | UNIQUEMENT les futurs lisibles ; pagination date + id ; lieu et nom exact seulement si autorisé |
 | `spot_habit_context(habit)` | connecté | objectifs et répulsions reliés à SA propre Habit ; ne lit pas un autre Totehm |
 | `spots_exact(q, intention)` | connecté | les miens + les SHARED·ON des créateurs dont je suis l'abonné vivant, avec `exact` |
