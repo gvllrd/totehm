@@ -6,6 +6,15 @@
 > `CLAUDE.md` le 30/09/2026, les plus récentes d'abord : un renvoi « plus
 > haut » peut viser la racine ou un autre dossier. Procédures : `README.md`. État mesuré : `SYSTEM.md` (§0 d'abord).
 
+## SPACE · 03/10/2026 — la vidéo d'un space futur
+
+`spot_video_attach(spot, video)` (authenticated, pas anon) : propriétaire seul,
+vidéo `bunny:<uuid>` ou chemin Storage possédée et libre (`_space_video_owned`,
+index unique `spot_plans_video_id`), idempotente. Fonction NEUVE : l'ancienne
+`spot_video_set` reste révoquée et part au ménage. Migration
+`20261003150000_space_future_video.sql` (appliquée sous `space_future_video`).
+`spot_schedule` est inchangée : une ville seule = le centre de la ville.
+
 ## Dernière correction SPACE · 02/10/2026 — Short portrait Full HD
 
 `space_habits` rend les Boxes personnelles complètes de COM. `space_discover`
