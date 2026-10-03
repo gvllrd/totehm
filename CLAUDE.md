@@ -176,7 +176,8 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 CENTER Habit Box, BOTTOM Short 9:16 Full HD. Aucun titre/sous-titre de vue. Papier radar agrandi,
 filtre réduit dans les vues latérales ; REC volontaire, formulaire vidéo plein écran isolé.
 Boussole aux coins du radar abaissé ; détail glissé vers le bas, joystick en sourdine ; GO vérifie
-les droits exacts. `space/CLAUDE.md` fait foi. COM : My spaces = historique propriétaire paginé.
+les droits exacts. TOP : Habit Box + configuration noire/grise, ville ET/OU carte (SHARED·ON = point exact),
+vidéo de fichier ou filmée. LEFT : bloc de données noir/gris + filtre à côté du papier. `space/CLAUDE.md` fait foi. COM : My spaces = historique propriétaire paginé.
 
 ## Règles d'interface qui valent partout
 

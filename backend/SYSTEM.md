@@ -15,6 +15,16 @@
 
 ---
 
+## 0 · SPACE — TOP = BOTTOM, VIDÉO FUTURE, LEFT FILTRÉ — 03/10/2026
+
+| quoi | valeur mesurée |
+|---|---|
+| migration `20261003150000_space_future_video.sql` | appliquée une fois (`space_future_video`) ; `spot_video_attach` authenticated oui, anon non |
+| `tests/sql/space_future_video_selftest.sql` | `FUTURE VIDEO SELFTEST (rolled back): FAIL={}` (ville seule, lien Bunny, idempotence, une vidéo = un space, vidéo d'autrui, space d'autrui, sans session) |
+| tests navigateur | `space.mjs` 34/34 · `spaces_ui.mjs` 55/55 · `space_top_left.mjs` 27/27 · `space.mjs` caméra paysage 34/34 |
+| non concluants dans le conteneur | `space_video.mjs`, `space_performance.mjs` : le Chromium de test ne décode pas H.264 → délai dépassé AVANT et APRÈS le lot, au même endroit |
+| `cities.json` | 1 251 → 7 342 lieux (Natural Earth 10m), 249 Ko, 109 Ko gzip |
+
 ## 0 · SPACES — ACCÈS PROPRIÉTAIRE ET INTERFACE — 03/10/2026
 
 - `my_spaces` absent avant ce lot ; ancien `my_space()` non exécutable par authenticated/anon (mesuré).

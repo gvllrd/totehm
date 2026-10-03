@@ -174,6 +174,10 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 
 Un tableau : ce qui a été fait, la valeur mesurée, ce qui n'a pas pu l'être.
 
+### Correction 0.32 — 03/10/2026 · TOP = BOTTOM, vidéo future, LEFT filtré
+
+À reporter dans TOTEHM_MASTER.md §0 : créer un space futur (TOP) = la Habit Box, puis une configuration noire et grise comme après une vidéo. Le lieu : une ville ET/OU le point sur la carte ; seul SHARED·ON (le point pour les abonnés) exige le point exact, PRIVATE et SHARED·OFF se contentent de la ville, sans demander la position. Une vidéo peut finir le parcours : depuis les fichiers (verticale, ≤ 33 s, ≤ 48 Mo) ou filmée par la caméra SPACE. LEFT : chaque space = Habit Box + bloc de données noir et gris ; un filtre à côté du papier (now/before · location on/off · silent/social), gratuit (navigateur). Prix et droits inchangés.
+
 ### Correction 0.31 — 03/10/2026 · espaces et identité Coral
 
 À reporter dans TOTEHM_MASTER.md §0 : le space est une Habit vécue ou planifiée dans un lieu, privé ou partagé. COM My spaces retrouve l'historique propriétaire avec des liens SSO vers SPACE. Filmer demande un REC volontaire ; après la prise, formulaire noir transparent plein écran, DURATION, sans gestes parasites. SPACE conserve cinq vues/gestes/panneaux desktop, enlève les titres, rapproche le radar du joystick et agrandit le papier ; les côtés montrent le petit filtre seul. Détail à poignée descendante et joystick en sourdine ; GO respecte les droits exacts ON. Noms en Quantico Coral, noir arrondi en recherche/verso, plus de points/carrés ni T statiques centrés. Prix et droits d'abonnement inchangés.
