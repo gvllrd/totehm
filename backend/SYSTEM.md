@@ -24,6 +24,7 @@
 | tests navigateur | `space.mjs` 34/34 · `spaces_ui.mjs` 55/55 · `space_top_left.mjs` 27/27 · `space.mjs` caméra paysage 34/34 |
 | non concluants dans le conteneur | `space_video.mjs`, `space_performance.mjs` : le Chromium de test ne décode pas H.264 → délai dépassé AVANT et APRÈS le lot, au même endroit |
 | `cities.json` | 1 251 → 7 342 lieux (Natural Earth 10m), 249 Ko, 109 Ko gzip |
+| prod (pg_net), `main` `a21c763` | space `dpl_2rSBgZ6h8N9WY5DvAMdmtv5jSde1` READY, alias `www.totehm.space` ; `/` 200, 156 127 o, md5 = `main`, `BUILD='2026-10-03-spaces-top'`, `#sf-btn`, `spot_video_attach`, `is-placed` présents ; `/cities.json` 200, md5 = `main` ; `/CLAUDE.md` 404 |
 
 ## 0 · SPACES — ACCÈS PROPRIÉTAIRE ET INTERFACE — 03/10/2026
 
