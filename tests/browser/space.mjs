@@ -55,7 +55,7 @@ try{
  await pg.screenshot({path:OUT+'/space_future_editor.png'});await pg.click('[data-plan-send]');await view('list');
  const scheduled=log.rpc.find(c=>c.name==='spot_schedule');ok(Math.abs(scheduled.body.p_lat-38.7223)<.1 && Math.abs(scheduled.body.p_lng+9.1393)<.1,'radar place picking preserves actual coordinates');ok(scheduled?.body.p_place==='Ribeira steps' && scheduled.body.p_mode==='social' && scheduled.body.p_location==='on','future location and progressive choices are submitted');
  await pg.keyboard.press('Escape');await pg.click('#joy-box');await view('radar');
- await pg.click('#cur-b');await view('cam');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='ready');await pg.waitForTimeout(1500);ok((await state()).rec.step==='ready','entering the camera never starts recording automatically');await pg.click('#joy-box');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='habit');
+ await pg.click('#cur-b');await view('cam');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='idle');ok(!(await state()).rec.camera,'entering the camera never turns the sensor on');await pg.click('#joy-box');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='ready');await pg.waitForTimeout(1500);ok((await state()).rec.step==='ready','the red point turns the sensor on, never recording automatically');await pg.click('#joy-box');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='habit');
  const joy=await box('joy');ok(joy.y+joy.h<840,'camera joystick moves upward');
  ok(await pg.$eval('#joy-box',e=>getComputedStyle(e).backgroundColor)==='rgb(51, 51, 102)','camera joystick remains navy');
  await pg.click('[data-h="0"]');await pg.click('[data-vis="shared"]');await pg.click('[data-loc="off"]');

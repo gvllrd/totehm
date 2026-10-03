@@ -346,7 +346,6 @@ body.v-plan #heading,body.v-cam #heading{display:none}
 body.v-feed #radar-tools,body.v-list #radar-tools,body.v-cam #radar-tools{display:none}
 body.is-pin #radar-tools{display:contents}
 #feed .info .habit{box-shadow:0 5px 22px rgba(0,0,0,.65),0 1px 4px rgba(0,0,0,.5)}
-.feed-go{margin-top:8px;background:rgba(11,11,13,.8);color:#fff}
 #detail{max-height:84dvh;padding-top:0;overscroll-behavior:contain;touch-action:pan-y;transition:transform .32s var(--ease),visibility 0s .32s}
 #detail.is-open{transform:translateY(var(--sheet-y,0px));transition:transform .32s var(--ease),visibility 0s}
 #detail.is-dragging{transition:none}
@@ -409,6 +408,37 @@ body.v-feed #sf-btn{display:block}
 
 
 
+
+/* 03/10 ter — le contexte d'une Habit Box (où, quand, avec qui) dans une boîte
+   plus ronde, légèrement détachée ; les gestes en boutons, sans crochets ;
+   BOTTOM lisible : textes et boutons dans des boîtes noires à faible marge. */
+.sdata{border-radius:16px;margin-top:7px;padding:8px 11px 9px}
+.acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+.acts-note{margin-top:6px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.acts-note[hidden]{display:none}
+.btn small{display:block;font-weight:400;font-size:9px;letter-spacing:.04em;text-transform:none;color:var(--mid);margin-top:2px}
+#feed .info .acts .btn{background:rgba(11,11,13,.86)}
+.portrait-media>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000;display:block}
+#cam-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000;z-index:1}
+#list .it{display:flex;flex-direction:column}
+#list .it-media .portrait-media{width:min(100%,calc(46dvh * 9 / 16));margin:0 auto 10px;border-radius:var(--r)}
+#list .it.is-new .habit .h-body{box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+.pick-head{justify-content:space-between;width:100%}
+body.v-cam:not(.is-form) #cam-body .say,body.v-cam:not(.is-form) #cam-body .note{display:inline-block;width:fit-content;max-width:100%;
+  background:rgba(0,0,0,.82);border-radius:var(--r);padding:3px 8px;color:#fff;margin:2px auto}
+body.v-cam:not(.is-form) #cam-body .btn{background:rgba(0,0,0,.82);padding:5px 10px}
+body.v-cam #cam-body .cam-actions{justify-content:center;flex-wrap:wrap;gap:8px;padding-top:8px}
+body.v-cam.is-form #cam-body .cam-actions{justify-content:flex-start}
+#cam-sec{background:rgba(0,0,0,.82);border-radius:var(--r);padding:3px 8px}
+body.v-cam #joy-say{background:rgba(0,0,0,.82);border-radius:var(--r);padding:1px 6px;color:#fff}
+@media(max-width:899px){
+ #habit-picker{inset:0;top:0!important;left:0;transform:none;width:auto;max-height:none!important;border:0;border-radius:0;
+   padding:calc(18px + var(--top)) 16px calc(24px + var(--bot));background:rgba(0,0,0,.94);z-index:120}
+ body.is-pick #v-plan{inset:0;height:100dvh;max-height:none;padding:calc(18px + var(--top)) 16px calc(130px + var(--bot));z-index:60;box-shadow:none}
+ body.is-pick #radar-tools,body.is-pick #member{display:none}
+}
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -437,7 +467,8 @@ body.v-feed #sf-btn{display:block}
 #tp-hint:hover,
 #map-credit:hover,
 .sd-tag:hover,
-#sf-btn:hover{color:#fff}
+#sf-btn:hover,
+.btn small:hover{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
@@ -477,13 +508,13 @@ body.v-feed #sf-btn{display:block}
 <aside id="sf-panel" class="hide" role="dialog" aria-label="Filter the spaces"></aside>
 
 
-<section class="view" id="v-plan" aria-label="Create a future spot"><div id="plan-body"></div><input id="p-file" class="hide" type="file" accept="video/mp4,video/quicktime,video/webm" aria-label="A video from my files"></section>
+<section class="view" id="v-plan" aria-label="Create a future spot"><div id="plan-body"></div><input id="p-file" class="hide" type="file" accept="video/mp4,video/quicktime,video/webm,image/*" aria-label="A video or a photo from my files"></section>
 
 <section class="view" id="v-feed" aria-label="Spots around"><div id="feed"></div></section>
 <section class="view is-on" id="v-radar" aria-label="Radar"><canvas id="canvas"></canvas><div id="radar-map" class="hide"><div id="map-tiles"></div><div id="map-pin"></div><span id="map-credit">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></span></div><div class="empty hide" id="radar-empty"></div></section>
 <section class="view" id="v-list" aria-label="Future Spot Habits"><div id="list"></div></section>
 <section class="view" id="v-cam" aria-label="Camera">
-  <div id="cam-frame" class="portrait-media"><video id="cam-v" playsinline muted></video></div>
+  <div id="cam-frame" class="portrait-media"><video id="cam-v" playsinline muted></video><img id="cam-photo" class="hide" alt=""></div>
   <div id="cam-n"></div>
   <div id="cam-sec" class="hide"><i></i><span id="cam-s"></span></div>
 </section>
@@ -642,7 +673,7 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
 const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query=' + Number(lat).toFixed(5) + '%2C' + Number(lng).toFixed(5);
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD = '2026-10-03-spaces-top';
+const BUILD = '2026-10-03-spaces-ter';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'radar';
@@ -653,13 +684,13 @@ const LIST = { list:[], seq:0, more:false, loading:false, match:'all' };
 const PLAN = { seq:0, context:null, details:false, habit:null, date:'', time:'', pos:null, place:'', city:null, cityText:'', cityPos:null, video:null, fileSeq:0, dur:null, vis:store.get('space_vis'), mode:null, loc:null, say:'', busy:false };
 let habitsPending = null, gestureCount = 0, suppressClickUntil = 0;
 const REC = { seq:0, step:null, stream:null, mr:null, blob:null, url:null, mime:'', t0:0, timer:0, seconds:0, uploaded:null, habit:null, vis: store.get('space_vis') === 'private' ? 'private' : (store.get('space_vis') === 'shared' ? 'shared' : null),
-  mode:null, loc:null, dur:null, busy:false, capture:null, width:0,height:0,fps:0,bitrate:0,path:null, forPlan:false };
+  mode:null, loc:null, dur:null, busy:false, capture:null, width:0,height:0,fps:0,bitrate:0,path:null, forPlan:false, kind:null, why:false };
 let HABITS = null, DETAIL = null;
 const VIDEO_METRICS={firstFrameMs:0,uploadMs:0,publishMs:0};
 window.__totehm_space = () => ({ build: BUILD, view: VIEW, signed_in: !!me, located: !!POS, intention: S.int, search: !!S.q,
   feed: FEED.list.length, exact: EX.list.length, playing: [...document.querySelectorAll('#feed video')].filter(v => !v.paused).length,
   video:{provider:RULES.video_provider || 'storage',buffered:[...document.querySelectorAll('#feed video')].filter(v=>v.getAttribute('src') || v._hls).length,...VIDEO_METRICS,...(()=>{const v=$('feed').querySelector('.clip[data-k="'+FEED.active+'"] video'),q=v?.getVideoPlaybackQuality?.();return {frames:q?.totalVideoFrames || 0,dropped:q?.droppedVideoFrames || 0};})()},
-  list:LIST.list.length, future:LIST.list.filter(s => spotState(s) === 'will').length, gestures:gestureCount, radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx),heading:Math.round(norm360(RAD.head)),pin:MAP.open,place:!!PLAN.pos}, paper:PAPER.etat(), habit_filter:!!S.habit, spot_filter:sfCount(), feed_shown:FEED.shown.length, plan:{city:!!PLAN.cityPos,exact:!!PLAN.pos,video:!!PLAN.video,uploaded:!!PLAN.video?.ref}, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
+  list:LIST.list.length, future:LIST.list.filter(s => spotState(s) === 'will').length, gestures:gestureCount, radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx),heading:Math.round(norm360(RAD.head)),pin:MAP.open,place:!!PLAN.pos}, paper:PAPER.etat(), habit_filter:!!S.habit, spot_filter:sfCount(), feed_shown:FEED.shown.length, plan:{city:!!PLAN.cityPos,exact:!!PLAN.pos,video:!!PLAN.video,uploaded:!!PLAN.video?.ref}, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, kind: REC.kind, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
 
 /* Chaque vue dit où je suis. L'intention vient de la Habit, sans filtre parallèle. */
 const VIEW_WORDS = {radar:['RADAR','Exact places I can see'],feed:['CITY FEED','I AM HERE · I WAS THERE'],list:['FUTURE SPOTS','I WILL BE HERE'],plan:['PLAN A SPOT','I WILL BE HERE'],cam:['FILM A SPOT','I AM HERE · 9:16 · up to 33 seconds']};
@@ -689,12 +720,68 @@ function habitInner(h){ return '<span class="v-name">'+esc(h.name)+'</span><span
 function spotHTML(s){
  const state=spotState(s),st=new Date(s.starts_at),end=new Date(s.ends_at || st.getTime()+(s.duration_min||0)*60e3);
  const when=state==='will' ? 'I WILL BE HERE' : state==='am' ? 'I AM HERE' : 'I WAS THERE';
- const how=s.visibility==='private' ? sdTag('private') : sdTag('shared')+sdTag('location '+esc(s.location||'off'))+(s.location==='on' && s.mode ? sdTag(s.mode==='silent' ? 'silent · nobody disturb me' : 'social · we can talk') : '');
- const box={name:s.habit,ints:s.intentions,freq:s.freq,place:s.context?.place,...s.context};
+ const how=s.visibility==='private' ? sdTag('private') : sdTag('shared')+sdTag('location '+esc(s.location||'off'))+(s.location==='on' && s.mode ? sdTag(s.mode==='silent' ? 'silent · nobody disturb me' : 'social · we can talk') : '')+(s.mine && s.show_why ? sdTag('why · trigger shown') : '');
+ const why=s.context || s.why || {};
+ const box={name:s.habit,ints:s.intentions,freq:s.freq,place:s.context?.place,objectives:why.objectives,repulsions:why.repulsions};
  return '<div class="habit">'+tickHTML(s.intentions)+'<span class="h-body"><span class="v-col">'+habitInner(box)+'</span></span></div>'
-  +'<div class="sdata"><div class="sd-row">'+sdTag(when,'is-st')+sdTag(state==='am' ? 'until '+hhmm(end) : esc(dayOf(st))+' '+hhmm(st))+(s.duration_min ? sdTag(fmtDur(s.duration_min)) : '')+'</div>'
+  +'<div class="sdata" aria-label="Where and when"><div class="sd-row">'+sdTag(when,'is-st')+sdTag(state==='am' ? 'until '+hhmm(end) : esc(dayOf(st))+' '+hhmm(st))+(s.duration_min ? sdTag(fmtDur(s.duration_min)) : '')+'</div>'
   +'<div class="sd-row">'+placeHTML(s)+how+'</div>'+(s.comment ? '<p class="sd-say">'+esc(s.comment)+'</p>' : '')+'</div>'
   +(!s.mine && s.creator ? '<div class="by"><span>by</span><button class="tname" type="button" data-com="/@'+encodeURIComponent(s.creator)+'">'+esc(s.creator)+'</button></div>' : '');
+}
+/* LES GESTES D'UN SPACE — en ligne, là où il est lu : jamais une fiche qui
+   répète la même boîte. GO résout les droits ACTUELS au moment du geste. */
+const hasMedia = s => !!(s.clip || s.video || s.photo);
+const hasWhy = s => !!((s.why || (s.mine && s.show_why && s.context)) && [...((s.why || s.context).objectives || []),...((s.why || s.context).repulsions || [])].length);
+function actsHTML(s, where){
+  const id = esc(s.id), b = [];
+  if(s.visibility === 'shared' && s.location === 'on' || s.mine && s.exact) b.push('<button class="btn" type="button" data-go="' + id + '">GO</button>');
+  if(where === 'list' && hasMedia(s)) b.push('<button class="btn" type="button" data-watch="' + id + '">WATCH</button>');
+  if(spotState(s) === 'will') b.push('<button class="btn" type="button" data-ics="' + id + '">CALENDAR</button>');
+  if(s.visibility === 'shared') b.push('<button class="btn" type="button" data-share="' + id + '">SHARE</button>');
+  if(where === 'detail') b.push('<button class="btn" type="button" data-close="1">CLOSE</button>');
+  return b.length ? '<div class="acts">' + b.join('') + '</div><p class="note acts-note" hidden></p>' : '';
+}
+const spotById = id => DETAIL?.id === id ? DETAIL : [...FEED.list, ...LIST.list, ...EX.list].find(x => x.id === id);
+function actsSay(button, text, creator){
+  const n = button.closest('.acts')?.nextElementSibling; if(!n) return;
+  n.hidden = false; n.innerHTML = esc(text) + (creator ? ' <button class="btn" type="button" data-com="/@' + encodeURIComponent(creator) + '">SUBSCRIBE</button>' : '');
+}
+async function goSpace(button){
+  if(button.disabled) return; button.disabled = true;
+  const user = me?.id, id = button.dataset.go;
+  try{
+    const { data, error } = await sb.rpc('spot_get', { p_id:id });
+    if(user !== me?.id || !button.isConnected) return;
+    if(error || !data?.ok){ if(error) console.error('[spot_get]', error.message); return actsSay(button, 'Try again.'); }
+    const s = data.spot;
+    if(s.exact && Number.isFinite(s.exact.lat) && Number.isFinite(s.exact.lng)){
+      location.assign('https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(s.exact.lat + ',' + s.exact.lng)); return;
+    }
+    actsSay(button, 'The exact place is for ' + (s.creator ? s.creator + '’s' : 'the') + ' subscribers.', s.creator);
+  }catch(e){ console.error('[go]', e && e.message); if(button.isConnected) actsSay(button, 'Try again.'); }
+  finally{ button.disabled = false; }
+}
+function icsFor(s){
+  const d = t => new Date(t).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  const x = t => String(t || '').replace(/\\/g, '\\\\').replace(/[,;]/g, m => '\\' + m).replace(/\r?\n/g, '\\n');
+  const end = s.ends_at || new Date(new Date(s.starts_at).getTime() + (s.duration_min || 0)*60e3).toISOString(), where = s.exact?.place || s.city || '';
+  return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//TOTEHM//SPACE//EN','BEGIN:VEVENT','UID:' + s.id + '@totehm.space','DTSTAMP:' + d(Date.now()),
+    'DTSTART:' + d(s.starts_at),'DTEND:' + d(end),'SUMMARY:' + x(s.habit), where ? 'LOCATION:' + x(where) : '',
+    s.exact && Number.isFinite(s.exact.lat) ? 'GEO:' + s.exact.lat + ';' + s.exact.lng : '',
+    'URL:https://www.totehm.space/?spot=' + encodeURIComponent(s.id),'END:VEVENT','END:VCALENDAR'].filter(Boolean).join('\r\n');
+}
+async function actsClick(e){
+  const t = e.target instanceof Element ? e.target : null; if(!t) return false;
+  const g = t.closest('[data-go]'); if(g){ goSpace(g); return true; }
+  const c = t.closest('[data-ics]');
+  if(c){ const s = spotById(c.dataset.ics); if(!s) return true;
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([icsFor(s)], { type:'text/calendar' })); a.download = 'space.ics';
+    document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); return true; }
+  const sh = t.closest('[data-share]');
+  if(sh){ const url = 'https://www.totehm.space/?spot=' + encodeURIComponent(sh.dataset.share);
+    try{ if(navigator.share) await navigator.share({ title:'TOTEHM.SPACE', url }); else { await navigator.clipboard.writeText(url); sh.textContent = 'LINK COPIED'; } }
+    catch(_){} return true; }
+  return false;
 }
 
 /* ══ LES VIDÉOS — lecture autorisée, une seule vidéo anticipée ══════ */
@@ -705,7 +792,7 @@ async function clipURL(path){
  const {data,error}=await sb.storage.from('moments').createSignedUrl(path,3600);if(error){console.error('[clip]',error.message);return null;}
  if((me?.id || 'anon')===uid){SIGNED.set(key,{url:data.signedUrl,at:Date.now()});if(SIGNED.size>64)SIGNED.delete(SIGNED.keys().next().value);}return data.signedUrl;
 }
-const videoWanted=v=>v.isConnected && !document.hidden && (v.closest('#detail')?!!DETAIL:VIEW==='feed' && !!v._wanted);
+const videoWanted=v=>v.isConnected && !document.hidden && (v.closest('#detail')?!!DETAIL:v.closest('#list')?VIEW==='list' && !!v._wanted:VIEW==='feed' && !!v._wanted);
 const lookAhead=()=>!navigator.connection?.saveData && !['slow-2g','2g'].includes(navigator.connection?.effectiveType);
 const bandwidth=()=>Math.max(400000,Math.min(15000000,(navigator.connection?.downlink || 5)*800000));
 async function prepareClip(v){
@@ -746,6 +833,10 @@ async function playClip(v){
 }
 function releaseClip(v){v._epoch=(v._epoch || 0)+1;v._wanted=false;v._active=false;v._load=null;v._expires=0;v._processing=0;v.pause();clearTimeout(v._retry);v._hls?.destroy();v._hls=null;v.removeAttribute('src');v.preload='none';v.load();}
 const videoHTML=s=>s.clip || s.video ? '<div class="portrait-media"><video '+(s.clip?'data-bunny="'+esc(s.clip.id)+'" data-spot="'+esc(s.id)+'"':'data-clip="'+esc(s.video)+'"')+' playsinline muted loop preload="none"></video>'+(s.clip?.status!=='ready' && s.clip?'<span class="video-status note">Preparing the video…</span>':'')+'</div>' : '';
+/* Une PHOTO porte aussi un space (« boire de l'eau » se photographie mieux qu'il ne se filme) :
+   même cadre 9:16, même lecture signée, quelques centaines de Ko au lieu d'une vidéo. */
+const mediaHTML=s=>s.photo ? '<div class="portrait-media"><img data-photo="'+esc(s.photo)+'" alt="" decoding="async"></div>' : videoHTML(s);
+async function loadPhoto(img){if(!img || img.getAttribute('src') || img._loading) return;img._loading=true;try{const u=await clipURL(img.dataset.photo);if(u && img.isConnected) img.src=u;}finally{img._loading=false;}}
 
 async function bunnyUpload(blob,seconds,onProgress){
  const c=await videoRequest('create-bunny-upload',{bytes:blob.size,seconds});
@@ -785,35 +876,19 @@ function focusClip(k){
  }
  const next=()=>{if(VIEW!=='feed' || FEED.active!==k || document.hidden || !lookAhead())return;const v=$('feed').querySelector('.clip[data-k="'+(k+1)+'"] video');if(v){v._wanted=true;prepareClip(v);}};
  if(active){if(changed){const started=performance.now();active.addEventListener('playing',()=>{const measure=()=>{if(VIEW==='feed' && FEED.active===k)VIDEO_METRICS.firstFrameMs=Math.round(performance.now()-started);};if(active.requestVideoFrameCallback)active.requestVideoFrameCallback(measure);else measure();},{once:true});}active.addEventListener('playing',next,{once:true});playClip(active);if(active.currentTime>0 && !active.paused)next();}
+ for(const c of $('feed').querySelectorAll('.clip[data-k] img[data-photo]')){const i=Number(c.closest('.clip').dataset.k);if(i>=k-1 && i<=k+1)loadPhoto(c);}
  if(k>=FEED.shown.length-2)loadFeed(true);
 }
 const io = new IntersectionObserver(es => es.forEach(en => {
-  const v = en.target.querySelector('video'); if(!v) return;
   if(en.isIntersecting && en.intersectionRatio > .6 && VIEW === 'feed'){
     if(en.target.isConnected)focusClip(+en.target.dataset.k);
-  } else v.pause();
+  } else en.target.querySelector('video')?.pause();
 }), { threshold:[0, .6, 1] });
-function feedInfo(s){return spotHTML(s)+(s.location==='on' && s.visibility==='shared' ? '<button class="lnk feed-go" type="button" data-go="'+esc(s.id)+'">[go]</button>' : '');}
-async function feedGo(button){
-  if(button.disabled) return;button.disabled=true;
-  const user=me?.id, view=VIEW, id=button.dataset.go;
-  try{
-    const {data,error}=await sb.rpc('spot_get',{p_id:id});
-    if(view!==VIEW || user!==me?.id || !button.isConnected) return;
-    if(error || !data?.ok){if(error)console.error('[spot_get]',error.message);button.textContent='Try again';return;}
-    const s=data.spot;
-    if(s.exact && Number.isFinite(s.exact.lat) && Number.isFinite(s.exact.lng)){
-      location.assign('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(s.exact.lat+','+s.exact.lng));return;
-    }
-    await openDetail(s);
-    if(DETAIL?.id===id){const n=document.createElement('p');n.className='note';n.textContent='The exact place is for this creator’s subscribers.';$('detail').append(n);}
-  }catch(_){if(button.isConnected)button.textContent='Try again';}
-  finally{button.disabled=false;}
-}
+function feedInfo(s){return spotHTML(s)+actsHTML(s,'feed');}
 function paintFeed(more=false){
   const f = $('feed'), L = FEED.list.filter(sfMatch); FEED.shown = L;
   const existing=[...f.querySelectorAll('.clip[data-k]')];
-  if(!more && existing.length && existing.length===L.length && existing.every((c,k)=>{const v=c.querySelector('video'),s=L[k];return c.dataset.id===s.id && (v?.dataset.bunny || v?.dataset.clip || '')===(s.clip?.id || s.video || '');})){
+  if(!more && existing.length && existing.length===L.length && existing.every((c,k)=>{const m=c.querySelector('video,img[data-photo]'),s=L[k];return c.dataset.id===s.id && (m?.dataset.bunny || m?.dataset.clip || m?.dataset.photo || '')===(s.clip?.id || s.video || s.photo || '');})){
     existing.forEach((c,k)=>{const info=c.querySelector('.info'),html=feedInfo(L[k]);if(info.innerHTML!==html)info.innerHTML=html;});return;
   }
   if(!more){io.disconnect();f.querySelectorAll('video').forEach(releaseClip);f.replaceChildren();FEED.active=null;f.scrollTop=0;}
@@ -821,29 +896,31 @@ function paintFeed(more=false){
   if(!L.length){ f.innerHTML = '<div class="clip"><div class="empty">' + (sfCount() ? 'no space for this filter' : S.q ? 'no space for this habit' : 'no space around yet') + '</div></div>'; sfMore(); return; }
   const start=more?f.querySelectorAll('.clip[data-k]').length:0;
   f.insertAdjacentHTML('beforeend',L.slice(start).map((s, i) => '<div class="clip" data-k="' + (start+i) + '" data-id="' + esc(s.id) + '">' +
-    (videoHTML(s) || '<div class="noclip">no video</div>') +
-    '<div class="info" data-open="' + esc(s.id) + '">' + feedInfo(s) + '</div></div>').join(''));
+    (hasMedia(s) ? mediaHTML(s) : '<div class="noclip">no video</div>') +
+    '<div class="info">' + feedInfo(s) + '</div></div>').join(''));
   [...f.querySelectorAll('.clip[data-k]')].slice(start).forEach(c => io.observe(c));
   sfMore();
 }
-/* LE FILTRE DES DONNÉES « SPACE » — à côté du papier, dans le navigateur :
-   aucune requête de plus ; s'il reste trop peu de spaces, la page suivante
-   est demandée (5 au plus par changement de filtre). */
-const SF = { when:null, loc:null, mode:null, auto:0 };
-const sfCount = () => ['when','loc','mode'].filter(k => SF[k]).length;
-const sfMatch = s => (!SF.when || spotState(s) === (SF.when === 'now' ? 'am' : 'was'))
-  && (!SF.loc || (SF.loc === 'on') === (s.location === 'on'))
-  && (!SF.mode || s.mode === SF.mode);
+/* LE FILTRE DU FIL — il parle comme le membre : que veux-je ? REJOINDRE
+   (ça se passe maintenant, le point exact existe) ou M'INSPIRER (ce que les
+   gens vivent autour, en vidéo ou en photo) ; ensemble comment ; ce que le
+   space montre, dont son WHY · TRIGGER. Dans le navigateur, aucune requête ;
+   s'il reste moins de 3 spaces, jusqu'à 5 pages suivantes par changement. */
+const SF = { want:null, mode:null, shows:null, auto:0 };
+const sfCount = () => ['want','mode','shows'].filter(k => SF[k]).length;
+const sfMatch = s => (!SF.want || (SF.want === 'join' ? spotState(s) === 'am' && s.location === 'on' : hasMedia(s)))
+  && (!SF.mode || s.mode === SF.mode)
+  && (!SF.shows || (SF.shows === 'video' ? !!(s.clip || s.video) : SF.shows === 'photo' ? !!s.photo : hasWhy(s)));
 function sfMore(){ if(sfCount() && FEED.shown.length < 3 && FEED.more && !FEED.loading && SF.auto < 5){ SF.auto++; loadFeed(true); } }
 function sfPaint(){
   const n = sfCount(), b = $('sf-btn'), open = !$('sf-panel').classList.contains('hide');
   b.textContent = n ? 'Filter · ' + n : 'Filter'; b.classList.toggle('is-on', !!n); b.setAttribute('aria-expanded', String(open));
   if(!open) return;
   const c = (k, v, l, sub) => chip('data-sf-' + k + '="' + v + '"', l, SF[k] === v, sub);
-  $('sf-panel').innerHTML = '<span class="lab">When</span><div class="row">' + c('when','now','now','I am here') + c('when','before','before','I was there') + '</div>' +
-    '<span class="lab">Location</span><div class="row">' + c('loc','on','on','for the subscribers') + c('loc','off','off','for the audience') + '</div>' +
-    '<span class="lab">Together</span><div class="row">' + c('mode','silent','silent','Nobody disturb me') + c('mode','social','social','We can talk') + '</div>' +
-    '<div class="row sf-acts"><button class="lnk" type="button" data-sf-all="1">All spaces</button><button class="lnk" type="button" data-sf-close="1">Close</button></div>';
+  $('sf-panel').innerHTML = '<span class="lab">I want to</span><div class="row">' + c('want','join','join','happening now · the exact place') + c('want','inspire','get inspired','what people live around') + '</div>' +
+    '<span class="lab">Together</span><div class="row">' + c('mode','social','we can talk','social') + c('mode','silent','nobody disturb me','silent') + '</div>' +
+    '<span class="lab">It shows</span><div class="row">' + c('shows','video','video') + c('shows','photo','photo') + c('shows','why','why · trigger','its goal, what it fights') + '</div>' +
+    '<div class="row sf-acts"><button class="btn" type="button" data-sf-all="1">ALL SPACES</button><button class="btn" type="button" data-sf-close="1">CLOSE</button></div>';
 }
 function sfOpen(open){
   const p = $('sf-panel'); p.classList.toggle('hide', !open);
@@ -853,19 +930,19 @@ function sfOpen(open){
 $('sf-btn').onclick = () => sfOpen($('sf-panel').classList.contains('hide'));
 $('sf-panel').addEventListener('click', e => {
   if(e.target.closest('[data-sf-close]')) return sfOpen(false);
-  if(e.target.closest('[data-sf-all]')){ SF.when = SF.loc = SF.mode = null; }
+  if(e.target.closest('[data-sf-all]')){ SF.want = SF.mode = SF.shows = null; }
   else {
-    const b = e.target.closest('[data-sf-when],[data-sf-loc],[data-sf-mode]'); if(!b) return;
-    const k = 'sfWhen' in b.dataset ? 'when' : 'sfLoc' in b.dataset ? 'loc' : 'mode', v = b.dataset['sf' + k[0].toUpperCase() + k.slice(1)];
+    const b = e.target.closest('[data-sf-want],[data-sf-mode],[data-sf-shows]'); if(!b) return;
+    const k = 'sfWant' in b.dataset ? 'want' : 'sfMode' in b.dataset ? 'mode' : 'shows', v = b.dataset['sf' + k[0].toUpperCase() + k.slice(1)];
     SF[k] = SF[k] === v ? null : v;
   }
   SF.auto = 0; sfPaint(); paintFeed();
 });
 document.addEventListener('pointerdown', e => { if(!$('sf-panel').classList.contains('hide') && !e.target.closest('#sf-panel,#sf-btn')) sfOpen(false); });
-$('feed').addEventListener('click', e => {
+$('feed').addEventListener('click', async e => {
   if(Date.now() < suppressClickUntil || e.target.closest('a,[data-com]')) return;
-  const gb=e.target.closest('[data-go]');if(gb){feedGo(gb);return;}
-  const o = e.target.closest('[data-open]'); if(o){ openDetail(FEED.list.find(s => s.id === o.dataset.open)); return; }
+  if(await actsClick(e)) return;
+  if(e.target.closest('button')) return;
   const v = e.target.closest('.clip')?.querySelector('video'); if(v){ v.muted = !v.muted; v.play().catch(() => {}); }
 });
 async function loadFeed(more){
@@ -905,16 +982,35 @@ async function loadList(more = false){
   LIST.list = more ? LIST.list.concat(data?.spots || []) : data?.spots || [];
   LIST.more = !!data?.more; LIST.match=data?.match || 'all'; paintList(); paintInts();
 }
+/* RIGHT — l'agenda : chaque space porte ses gestes (GO, WATCH, CALENDAR, SHARE).
+   Un rafraîchissement aux mêmes IDs ne remplace que les informations : une
+   vidéo ouverte par WATCH continue de jouer. */
 function paintList(){
-  const upcoming = LIST.list.filter(s => spotState(s) === 'will');
-  $('list').innerHTML = upcoming.length ? upcoming.map(s => '<div class="it" data-open="' + esc(s.id) + '" data-state="' + spotState(s) + '">' + spotHTML(s) + '</div>').join('') +
-    (LIST.more ? '<button class="btn" type="button" data-more="1">More spots</button>' : '')
-    : '<div class="empty">' + (S.q ? 'no spot for this Habit Box' : 'no future spot yet') + '</div>';
+  const l = $('list'), upcoming = LIST.list.filter(s => spotState(s) === 'will'), items = [...l.querySelectorAll('.it[data-id]')];
+  if(upcoming.length && items.length === upcoming.length && items.every((it, k) => it.dataset.id === upcoming[k].id)){
+    items.forEach((it, k) => { const info = it.querySelector('.it-info'), html = spotHTML(upcoming[k]) + actsHTML(upcoming[k], 'list'); if(info.innerHTML !== html) info.innerHTML = html; });
+  } else {
+    l.querySelectorAll('video').forEach(releaseClip);
+    l.innerHTML = upcoming.length ? upcoming.map(s => '<div class="it" data-id="' + esc(s.id) + '" data-state="' + spotState(s) + '"><div class="it-media"></div><div class="it-info">' + spotHTML(s) + actsHTML(s, 'list') + '</div></div>').join('')
+      : '<div class="empty">' + (S.q ? 'no spot for this Habit Box' : 'no future spot yet') + '</div>';
+  }
+  l.querySelector('[data-more]')?.remove();
+  if(upcoming.length && LIST.more) l.insertAdjacentHTML('beforeend', '<button class="btn" type="button" data-more="1">MORE SPACES</button>');
 }
-$('list').addEventListener('click', e => {
+function listWatch(button){
+  const it = button.closest('.it'), box = it?.querySelector('.it-media'), s = spotById(it?.dataset.id); if(!box || !s) return;
+  const open = !!box.firstChild;
+  $('list').querySelectorAll('.it-media').forEach(m => { m.querySelectorAll('video').forEach(releaseClip); m.replaceChildren(); });
+  $('list').querySelectorAll('[data-watch]').forEach(b => b.textContent = 'WATCH');
+  if(open) return;
+  box.innerHTML = mediaHTML(s); button.textContent = 'HIDE';
+  const v = box.querySelector('video'); if(v) playClip(v); else loadPhoto(box.querySelector('img'));
+}
+$('list').addEventListener('click', async e => {
   if(Date.now() < suppressClickUntil || e.target.closest('a,[data-com]')) return;
   if(e.target.closest('[data-more]')) return loadList(true);
-  const o = e.target.closest('[data-open]'); if(o) openDetail(LIST.list.find(s => s.id === o.dataset.open));
+  const w = e.target.closest('[data-watch]'); if(w) return listWatch(w);
+  await actsClick(e);
 });
 
 function paintRadarEmpty(){
@@ -1024,25 +1120,24 @@ $('canvas').addEventListener('click', e => {
 });
 
 /* ══ UN SPOT, SEUL ═══════════════════════════════════════════════════ */
+/* UN SPACE SEUL — seulement quand rien ne le montre déjà : un point du radar,
+   un lien partagé. Le fil et l'agenda gardent leurs gestes en ligne. */
 async function openDetail(s){
-  if(!s) return;const old=$('detail').querySelector('video');if(old) releaseClip(old);DETAIL=s;
-  const share = s.visibility === 'shared' ? '<button class="btn" type="button" data-share="' + esc(s.id) + '">Share</button>' : '';
+  if(!s) return;detailSeq++;const old=$('detail').querySelector('video');if(old) releaseClip(old);DETAIL=s;
   $('detail').style.removeProperty('--sheet-y');$('detail').classList.remove('is-dragging');
-  $('detail').innerHTML = '<button class="sheet-grab" type="button" data-close="1" aria-label="Close this space, or drag down"><span aria-hidden="true"></span></button>' + (VIEW !== 'feed' ? videoHTML(s) : '') +
-    spotHTML(s) + '<div class="acts">' + share + '<button class="lnk" type="button" data-close="1">[CLOSE]</button></div>';
+  $('detail').innerHTML = '<button class="sheet-grab" type="button" data-close="1" aria-label="Close this space, or drag down"><span aria-hidden="true"></span></button>' + (hasMedia(s) ? mediaHTML(s) : '') + spotHTML(s) + actsHTML(s, 'detail');
   $('detail').classList.add('is-open');$('detail').scrollTop=0;joyPaint();
+  loadPhoto($('detail').querySelector('img[data-photo]'));
   const v = $('detail').querySelector('video');
   if(v) await playClip(v);
 }
-function closeDetail(){ DETAIL = null; $('detail').classList.remove('is-open','is-dragging');$('detail').style.removeProperty('--sheet-y'); const v=$('detail').querySelector('video');if(v) releaseClip(v);joyPaint(); }
+let detailSeq = 0;
+function closeDetail(){ DETAIL = null; const seq = ++detailSeq; $('detail').classList.remove('is-open','is-dragging');$('detail').style.removeProperty('--sheet-y'); const v=$('detail').querySelector('video');if(v) releaseClip(v);joyPaint();
+  // Once the sheet has slid away, its gestures leave the page (no hidden duplicate GO).
+  setTimeout(() => { if(!DETAIL && seq === detailSeq) $('detail').replaceChildren(); }, 400); }
 $('detail').addEventListener('click', async e => {
   if(e.target.closest('[data-close]')) return closeDetail();
-  const sh = e.target.closest('[data-share]');
-  if(sh){
-    const url = 'https://www.totehm.space/?spot=' + encodeURIComponent(sh.dataset.share);
-    try{ if(navigator.share) await navigator.share({ title:'TOTEHM.SPACE', url }); else { await navigator.clipboard.writeText(url); sh.textContent = 'Link copied'; } }
-    catch(_){}
-  }
+  await actsClick(e);
 });
 
 /* Drag the handle, or pull the sheet down when its own scroll is at the top. */
@@ -1331,8 +1426,10 @@ function sharingHTML(x,prefix){
  let html='<div class="row"><span class="lab">Who sees it?</span>'+chip(attr('vis')+'="private"','private',x.vis==='private','only me')+chip(attr('vis')+'="shared"','shared',x.vis==='shared','share my activity')+'</div>';
  if(x.vis==='shared') html+='<div class="row"><span class="lab">Location</span>'+chip(attr('loc')+'="on"','on',x.loc==='on','for the subscribers')+chip(attr('loc')+'="off"','off',x.loc==='off','for the audience')+'</div>';
  if(x.vis==='shared' && x.loc==='on') html+='<div class="row"><span class="lab">Together</span>'+chip(attr('mode')+'="silent"','silent',x.mode==='silent','Nobody disturb me')+chip(attr('mode')+'="social"','social',x.mode==='social','We can talk')+'</div>';
+ if(x.vis==='shared' && sharingDone(x) && habitWhy(x.habit)) html+='<div class="row"><span class="lab">Why · trigger</span>'+chip(attr('why')+'="1"','show',x.why===true,'my goal and what I fight, on this space')+chip(attr('why')+'="0"','hide',x.why!==true,'the Habit alone')+'</div>';
  return html;
 }
+const habitWhy=h=>!!(h?.objectives?.length || h?.repulsions?.length);
 const sharingDone=x=>x.vis==='private' || x.vis==='shared' && (x.loc==='off' || x.loc==='on' && !!x.mode);
 function durationHTML(x,prefix,id){ return '<div class="row"><span class="lab">DURATION</span>'+DURS.map(d=>chip('data-'+prefix+'dur="'+d+'"',fmtDur(d),x.dur===d)).join('')+'<input class="field" id="'+id+'" type="number" inputmode="numeric" min="'+RULES.duration_min+'" max="'+RULES.duration_max+'" aria-label="Duration in minutes" placeholder="min" value="'+(x.dur && !DURS.includes(x.dur) ? x.dur : '')+'"></div>'; }
 
@@ -1387,9 +1484,10 @@ function planNote(t){ const n = $('p-note'); if(n){ n.className = 'note no'; n.t
 function planPaint(){
   requestAnimationFrame(radarSize);
   const b = $('plan-body'); b.classList.toggle('is-busy', PLAN.busy);
+  document.body.classList.toggle('is-pick', VIEW === 'plan' && !!me && !PLAN.habit);
   if(!me){ b.innerHTML = '<p class="say">A future space is a Habit Box of my TOTEHM, with a time and a place.</p><button class="btn" type="button" data-plan-signin="1">Sign in</button>'; return; }
   if(!PLAN.habit){
-    b.innerHTML = '<span class="lab">Which Habit Box?</span>' + (!HABITS ? '<p class="note">Reading my TOTEHM…</p>' : HABITS.length ?
+    b.innerHTML = '<div class="row pick-head"><span class="lab">Which Habit Box?</span><button class="btn" type="button" data-plan-cancel="1">CANCEL</button></div>' + (!HABITS ? '<p class="note">Reading my TOTEHM…</p>' : HABITS.length ?
       HABITS.map((h,k) => '<button class="pick-habit" type="button" data-plan-h="' + k + '">' + habitHTML(h) + '</button>').join('') :
       '<button class="btn" type="button" data-com="/totehm#in">Write a Habit Box in my TOTEHM</button>'); return;
   }
@@ -1401,8 +1499,8 @@ function planPaint(){
       chip('data-plan-place="1"', PLAN.pos ? esc(PLAN.place || 'Exact point') : 'On the map', !!PLAN.pos, PLAN.pos ? 'Change it in the radar' : exact ? 'required for the subscribers' : 'the exact point · optional') +
       (PLAN.pos ? '<button class="lnk" type="button" data-plan-unpin="1">Remove the point</button>' : '') + '</div><div class="row" id="p-cities">' + citySuggestHTML() + '</div>' +
       durationHTML(PLAN,'p','p-dur') + '<textarea class="field" id="p-say" maxlength="400" placeholder="A word (optional)">' + esc(PLAN.say) + '</textarea>' +
-      '<span class="lab">Video</span><div class="row">' + chip('data-plan-file="1"', 'From my files', false, '9:16 · up to ' + secs + ' s') + chip('data-plan-film="1"', 'Film it', false, 'the SPACE camera') + '</div>' +
-      (v ? '<div class="plan-video"><div class="portrait-media"><video src="' + esc(v.url) + '" muted loop playsinline autoplay></video></div><span class="note">' + Math.round(v.seconds) + ' s · ' + (v.size/1e6).toFixed(1) + ' MB' + (v.ref ? ' · sent' : '') + '</span><button class="lnk" type="button" data-plan-novideo="1">Remove the video</button></div>' : '');
+      '<span class="lab">Video or photo</span><div class="row">' + chip('data-plan-file="1"', 'From my files', false, 'vertical · video up to ' + secs + ' s') + chip('data-plan-film="video"', 'Film it', false, 'the SPACE camera') + chip('data-plan-film="photo"', 'Take a photo', false, 'the SPACE camera') + '</div>' +
+      (v ? '<div class="plan-video"><div class="portrait-media">' + (v.photo ? '<img src="' + esc(v.url) + '" alt="">' : '<video src="' + esc(v.url) + '" muted loop playsinline autoplay></video>') + '</div><span class="note">' + (v.photo ? 'photo' : Math.round(v.seconds) + ' s') + ' · ' + (v.size/1e6).toFixed(1) + ' MB' + (v.ref ? ' · sent' : '') + '</span><button class="btn" type="button" data-plan-novideo="1">REMOVE</button></div>' : '');
   }
   b.innerHTML = h + '</div>' + (ready ? '<button class="btn" type="button" data-plan-send="1">I WILL BE HERE</button><p class="note" id="p-note"></p>' : '');
   planValidity();
@@ -1434,16 +1532,17 @@ $('plan-body').addEventListener('click', e => {
   if(PLAN.busy) return;
   const t = e.target;
   if(t.closest('[data-plan-signin]')) return ssoLogin(false, '/?v=plan');
-  const h=t.closest('[data-plan-h]'); if(h){ PLAN.habit=HABITS[+h.dataset.planH]; PLAN.context=PLAN.habit; return planPaint(); }
+  const h=t.closest('[data-plan-h]'); if(h){ PLAN.habit=HABITS[+h.dataset.planH]; PLAN.context=PLAN.habit; PLAN.why=false; return planPaint(); }
+  if(t.closest('[data-plan-cancel]')) return go('radar');
   if(t.closest('[data-plan-reh]')){ PLAN.seq++; PLAN.habit = null; PLAN.context = null; return planPaint(); }
   if(t.closest('[data-plan-place]')) return mapOpen();
   if(t.closest('[data-plan-unpin]')){ PLAN.pos = null; PLAN.place = ''; return planPaint(); }
   const c = t.closest('[data-pcity]'); if(c){ planCity(CITIES[+c.dataset.pcity]); return planPaint(); }
   if(t.closest('[data-plan-file]')) return $('p-file').click();
-  if(t.closest('[data-plan-film]')){ REC.forPlan = true; return go('cam'); }
+  const film = t.closest('[data-plan-film]'); if(film){ REC.forPlan = film.dataset.planFilm; return go('cam'); }
   if(t.closest('[data-plan-novideo]')){ planVideoDrop(); return planPaint(); }
-  for(const [a,k] of [['pvis','vis'],['pmode','mode'],['ploc','loc'],['pdur','dur']]){
-    const b = t.closest('[data-' + a + ']'); if(b){ PLAN[k] = k === 'dur' ? +b.dataset[a] : b.dataset[a]; if(k === 'vis'){ PLAN.loc=null; PLAN.mode=null; store.set('space_vis', PLAN.vis); } if(k === 'loc') PLAN.mode=null; return planPaint(); }
+  for(const [a,k] of [['pvis','vis'],['pmode','mode'],['ploc','loc'],['pdur','dur'],['pwhy','why']]){
+    const b = t.closest('[data-' + a + ']'); if(b){ PLAN[k] = k === 'dur' ? +b.dataset[a] : k === 'why' ? b.dataset[a] === '1' : b.dataset[a]; if(k === 'vis'){ PLAN.loc=null; PLAN.mode=null; PLAN.why=false; store.set('space_vis', PLAN.vis); } if(k === 'loc') PLAN.mode=null; return planPaint(); }
   }
   if(t.closest('[data-plan-send]')) return planSend();
 });
@@ -1452,6 +1551,7 @@ $('plan-body').addEventListener('click', e => {
 $('p-file').addEventListener('change', e => { const f = e.target.files?.[0]; e.target.value = ''; if(f) planFile(f); });
 async function planFile(file){
   const seq = ++PLAN.fileSeq, max = RULES.clip_max_bytes || 48e6, secs = RULES.clip_seconds || 33;
+  if(/^image\//.test(file.type) || /\.(jpe?g|png|webp|heic|heif)$/i.test(file.name)) return planPhoto(file, seq);
   const ext = (file.name.match(/\.(mp4|mov|webm)$/i)?.[1] || '').toLowerCase();
   const type = /^video\/(mp4|quicktime|webm)$/.test(file.type) ? file.type : ({mp4:'video/mp4',mov:'video/quicktime',webm:'video/webm'})[ext];
   const refuse = t => { if(seq === PLAN.fileSeq && VIEW === 'plan'){ planPaint(); planNote(t); } };
@@ -1471,15 +1571,45 @@ async function planFile(file){
   PLAN.video = { blob:file.type === type ? file : file.slice(0, file.size, type), seconds:Math.max(.5, Math.min(secs, meta.d)), size:file.size, url, ref:null };
   planPaint();
 }
-/* Film it : la caméra SPACE, puis retour au TOP avec le clip vérifié. */
+/* Une photo de la galerie : verticale, décodée ici, ré-encodée en JPEG ≤ 1080 px
+   de large (quelques centaines de Ko). Une HEIC que le navigateur ne sait pas
+   lire est refusée avec la caméra comme issue. */
+async function planPhoto(file, seq){
+  const refuse = t => { if(seq === PLAN.fileSeq && VIEW === 'plan'){ planPaint(); planNote(t); } };
+  let blob = null;
+  try{ blob = await photoJPEG(file); }catch(e){ console.error('[plan photo]', e && e.message); }
+  if(seq !== PLAN.fileSeq || VIEW !== 'plan' || PLAN.busy) return;
+  if(!blob) return refuse('This photo cannot be read here — take it with the camera.');
+  if(blob.portrait === false) return refuse('Vertical photo only.');
+  planVideoDrop();
+  PLAN.video = { blob, photo:true, seconds:0, size:blob.size, url:URL.createObjectURL(blob), ref:null };
+  planPaint();
+}
+async function photoJPEG(source){
+  let img, w, h;
+  if(typeof createImageBitmap === 'function'){ try{ img = await createImageBitmap(source); w = img.width; h = img.height; }catch(_){ img = null; } }
+  if(!img){ const u = URL.createObjectURL(source); try{ img = await new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ko(new Error('Photo unreadable')); i.src = u; }); w = img.naturalWidth; h = img.naturalHeight; } finally{ URL.revokeObjectURL(u); } }
+  if(!w || !h) return null;
+  if(h <= w){ const r = new Blob([]); r.portrait = false; img.close?.(); return r; }
+  const W = Math.min(1080, w), H = Math.round(h * W / w), c = document.createElement('canvas'); c.width = W; c.height = H;
+  c.getContext('2d').drawImage(img, 0, 0, W, H); img.close?.();
+  return await new Promise(r => c.toBlob(r, 'image/jpeg', .88));
+}
+/* Film it / Take a photo : la caméra SPACE, puis retour au TOP avec le média vérifié. */
 function planTakeClip(){
   planVideoDrop();
-  PLAN.video = { blob:REC.blob, seconds:Math.max(.5, Math.min(RULES.clip_seconds || 33, REC.seconds || 1)), size:REC.blob.size, url:URL.createObjectURL(REC.blob), ref:null };
+  const photo = REC.kind === 'photo';
+  PLAN.video = { blob:REC.blob, photo, seconds:photo ? 0 : Math.max(.5, Math.min(RULES.clip_seconds || 33, REC.seconds || 1)), size:REC.blob.size, url:URL.createObjectURL(REC.blob), ref:null };
   REC.forPlan = false; go('plan');
 }
 /* Ordre d'envoi : la vidéo (privée tant qu'elle n'est liée à rien), puis le
    space, puis le lien. Un envoi réussi est gardé pour un nouvel essai. */
 async function videoSend(blob, seconds, onProgress){
+  if(/^image\//.test(blob.type)){
+    const path = me.id + '/' + crypto.randomUUID() + '.jpg';
+    const up = await sb.storage.from('moments').upload(path, blob, { contentType:'image/jpeg', upsert:false }); if(up.error) throw up.error;
+    return path;
+  }
   if(RULES.video_provider === 'bunny') return bunnyUpload(blob, seconds, onProgress);
   const t = blob.type || '', ext = t.includes('mp4') ? 'mp4' : t.includes('quicktime') ? 'mov' : 'webm', path = me.id + '/' + crypto.randomUUID() + '.' + ext;
   const up = await sb.storage.from('moments').upload(path, blob, { contentType:t || 'video/' + ext, upsert:false }); if(up.error) throw up.error;
@@ -1489,9 +1619,9 @@ async function planSend(){
   if(PLAN.busy || planMissing().length) return;
   PLAN.busy = true; planPaint(); const shared = PLAN.vis === 'shared', v = PLAN.video;
   if(v && !v.ref){
-    planNote('sending the video…');
+    planNote('sending the ' + (v.photo ? 'photo' : 'video') + '…');
     try{ v.ref = await videoSend(v.blob, v.seconds, n => planNote('sending the video… ' + n + '%')); }
-    catch(e){ console.error('[plan video]', e && e.message); PLAN.busy = false; planPaint(); return planNote('The video was not sent — try again, or remove it.'); }
+    catch(e){ console.error('[plan media]', e && e.message); PLAN.busy = false; planPaint(); return planNote('The ' + (v.photo ? 'photo' : 'video') + ' was not sent — try again, or remove it.'); }
   }
   const at = PLAN.pos || PLAN.cityPos;
   const { data, error } = await sb.rpc('spot_schedule', { p_habit:PLAN.habit.name, p_visibility:PLAN.vis,
@@ -1499,13 +1629,16 @@ async function planSend(){
     p_place:PLAN.pos ? (PLAN.place || PLAN.city || 'the planned place') : PLAN.city, p_lat:at.lat, p_lng:at.lng,
     p_city:PLAN.city, p_comment:PLAN.say.trim() || null, p_mode:shared && PLAN.loc === 'on' ? PLAN.mode : null, p_location:shared ? PLAN.loc : null });
   if(error || !data?.ok){ if(error) console.error('[spot_schedule]', error.message); PLAN.busy = false; planPaint(); return planNote(({when:'Choose a future date within the next 90 days.',habit:'This Habit Box is no longer in my TOTEHM.',too_many:'Enough spots planned for now.',signin:'Sign in again.',place:'Choose a city or a point on the map.',position:'Choose a city or a point on the map.'})[data?.why] || 'Not saved — try again.'); }
-  let linked = true;
+  let linked = true, why = true;
   if(v?.ref){ const r = await sb.rpc('spot_video_attach', { p_spot:data.id, p_video:v.ref }); if(r.error) console.error('[spot_video_attach]', r.error.message); linked = !r.error && !!r.data?.ok; }
+  if(shared && PLAN.why){ const r = await sb.rpc('spot_why_set', { p_spot:data.id, p_show:true }); if(r.error) console.error('[spot_why_set]', r.error.message); why = !r.error && !!r.data?.ok; }
   PLAN.busy = false;
-  PLAN.habit = null; PLAN.say = ''; PLAN.pos = null; PLAN.place = ''; PLAN.dur = null; planVideoDrop();
+  PLAN.habit = null; PLAN.say = ''; PLAN.pos = null; PLAN.place = ''; PLAN.dur = null; PLAN.why = false; planVideoDrop();
   await Promise.all([loadExact(),loadList()]); loadFeed(false); go('list');
-  const s = LIST.list.find(x => x.id === data.id); if(s) await openDetail(s); else { const r = await sb.rpc('spot_get',{p_id:data.id}); if(r.error) console.error('[spot_get]',r.error.message); if(r.data?.ok) await openDetail(r.data.spot); }
-  if(!linked && DETAIL?.id === data.id){ const n = document.createElement('p'); n.className = 'note no'; n.textContent = 'The video could not be attached to this space.'; $('detail').append(n); }
+  // The new space appears in the agenda, with its own gestures — no second sheet.
+  const it = $('list').querySelector('.it[data-id="' + CSS.escape(data.id) + '"]');
+  if(it){ it.classList.add('is-new'); it.scrollIntoView({ block:'center' });
+    if(!linked || !why){ const n = document.createElement('p'); n.className = 'note no'; n.textContent = !linked ? 'The media could not be attached to this space.' : 'The why · trigger stays hidden.'; it.querySelector('.it-info').append(n); } }
 }
 /* La carte sert uniquement à choisir MON futur lieu. Les autres Spots
    restent un radar de coordonnées autorisées, jamais une carte du feed. */
@@ -1582,24 +1715,45 @@ function camStop(){
 function camReset(){
   REC.seq++; if(REC.mr){ REC.mr.onstop = null; REC.mr.ondataavailable = null; REC.mr.onstart=null;REC.mr.onerror=null; }
   camStop(); if(REC.url) URL.revokeObjectURL(REC.url);
-  Object.assign(REC, { step:null, mr:null, blob:null, url:null, habit:null, mode:null, loc:null, dur:null, busy:false,seconds:0,uploaded:null,width:0,height:0,fps:0,bitrate:0,path:null });
+  Object.assign(REC, { step:null, kind:null, why:false, mr:null, blob:null, url:null, habit:null, mode:null, loc:null, dur:null, busy:false,seconds:0,uploaded:null,width:0,height:0,fps:0,bitrate:0,path:null });
   const v = $('cam-v'); v.pause(); v.removeAttribute('src'); v.srcObject = null;
+  const ph = $('cam-photo'); ph.classList.add('hide'); ph.removeAttribute('src');
   $('cam-n').textContent = ''; $('cam-sec').classList.add('hide'); camState();
 }
-async function camOpen(){
+/* Le capteur ne s'allume QU'APRÈS un appui : VIDEO, PHOTO (ou le point rouge,
+   qui vaut VIDEO). Arriver dans la vue n'ouvre jamais la caméra. */
+async function camOpen(kind){
   camReset(); REC.vis = ['private','shared'].includes(store.get('space_vis')) ? store.get('space_vis') : null; const seq = REC.seq;
   if(!me){ REC.step = 'signin'; return camPaint(); }
-  if(typeof MediaRecorder==='undefined' || !navigator.mediaDevices?.getUserMedia){ REC.step = 'nocam'; return camPaint(); }
+  if(!kind){ REC.step = 'idle'; return camPaint(); }
+  REC.kind = kind;
+  if(!navigator.mediaDevices?.getUserMedia || kind === 'video' && typeof MediaRecorder === 'undefined'){ REC.step = 'nocam'; return camPaint(); }
   REC.step = 'perm'; camPaint();
+  const constraints = cameraConstraints(); if(kind === 'photo') constraints.audio = false;
   let stream;
-  try{ stream = await navigator.mediaDevices.getUserMedia(cameraConstraints()); }
+  try{ stream = await navigator.mediaDevices.getUserMedia(constraints); }
   catch(e){ if(seq !== REC.seq || VIEW !== 'cam') return; console.error('[cam]', e && e.name); REC.step = 'denied'; return camPaint(); }
   if(seq !== REC.seq || VIEW !== 'cam'){ stream.getTracks().forEach(t => t.stop()); return; }
   REC.stream = stream;
   const v = $('cam-v'); v.srcObject = REC.stream; v.muted = true;
-  try{await v.play();await cameraReady(v);if(seq!==REC.seq || VIEW!=='cam') return;const capture=await portraitCapture(v,stream);if(seq!==REC.seq || VIEW!=='cam'){capture.stop();return;}REC.capture=capture;REC.mime=await recordingMime(capture);if(!REC.mime)throw new Error('Video recording unsupported');if(seq!==REC.seq || VIEW!=='cam')return;Object.assign(REC,{width:capture.width,height:capture.height,fps:capture.fps,path:capture.path});}
+  try{await v.play();await cameraReady(v);if(seq!==REC.seq || VIEW!=='cam') return;
+    if(kind === 'video'){const capture=await portraitCapture(v,stream);if(seq!==REC.seq || VIEW!=='cam'){capture.stop();return;}REC.capture=capture;REC.mime=await recordingMime(capture);if(!REC.mime)throw new Error('Video recording unsupported');if(seq!==REC.seq || VIEW!=='cam')return;Object.assign(REC,{width:capture.width,height:capture.height,fps:capture.fps,path:capture.path});}}
   catch(e){if(seq!==REC.seq || VIEW!=='cam') return;console.error('[portrait capture]',e.message);camStop();REC.step='nocam';return camPaint();}
   REC.step = 'ready'; camPaint();
+}
+/* La photo : l'image de la caméra recadrée au centre en 9:16, ≤ 1080 × 1920, JPEG. */
+async function camShot(){
+  const v = $('cam-v'), w = v.videoWidth, h = v.videoHeight, seq = REC.seq; if(REC.step !== 'ready' || !w || !h) return;
+  const cw = Math.min(w, h*9/16), ch = cw*16/9, W = Math.max(2, Math.round(Math.min(1080, cw)/2)*2), H = Math.round(W*16/9/2)*2;
+  const c = document.createElement('canvas'); c.width = W; c.height = H; c.getContext('2d').drawImage(v, (w-cw)/2, (h-ch)/2, cw, ch, 0, 0, W, H);
+  REC.step = 'shot'; joyPaint(); const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', .88));
+  if(seq !== REC.seq || VIEW !== 'cam') return;
+  camStop(); v.srcObject = null;
+  if(!blob?.size){ REC.step = 'retry'; return camPaint(); }
+  REC.blob = blob; REC.seconds = 0; REC.width = W; REC.height = H; REC.url = URL.createObjectURL(blob);
+  const ph = $('cam-photo'); ph.src = REC.url; ph.classList.remove('hide');
+  if(REC.forPlan) return planTakeClip();
+  REC.step = 'habit'; camPaint(); loadHabits().then(() => { if(seq === REC.seq && REC.step === 'habit') camPaint(); });
 }
 function camRec(){
   if(!REC.stream || !REC.capture || REC.step !== 'ready') return;
@@ -1644,19 +1798,20 @@ function missing(){
 }
 function camPaint(){
   camState();
-  const b = $('cam-body'), chip = (a, l, on, sub) => '<button type="button" class="chip' + (on ? ' is-on' : '') + '" ' + a + '>' + l + (sub ? '<small>' + sub + '</small>' : '') + '</button>';
-  const st = REC.step; let h = '';
-  if(st === 'signin') h = '<p class="say">A space is a habit of my TOTEHM, filmed now.</p><button class="btn" type="button" data-signin="1">Sign in</button>';
-  else if(st === 'perm') h = '<p class="say">allow the camera</p>';
-  else if(st === 'denied') h = '<p class="say">The camera is closed for this site. Allow it in the browser, then come back.</p>';
-  else if(st === 'nocam') h = '<p class="say">This browser cannot film. Try Safari or Chrome on the phone.</p>';
-  else if(st === 'retry') h = '<p class="say">The recording did not arrive. Film it again.</p><button class="btn" type="button" data-again="1">Again</button>';
-  else if(st === 'heavy') h = '<p class="say">Too heavy — film it again.</p><button class="btn" type="button" data-again="1">Again</button>';
-  else if(st === 'ready') h = REC.forPlan ? '<p class="say">Film the video of my future space</p><p class="note">Tap the red point to start filming · up to 33 seconds</p><button class="lnk" type="button" data-cancel="1">Back</button>' : '<p class="say">Share a space to your Totehm</p><p class="note">Tap the red point to start filming · up to 33 seconds</p>';
-  else if(st === 'count') h = '<button class="btn" type="button" data-cancel="1">Cancel</button>';
-  else if(st === 'rec') h = '<p class="say">Tap the joystick to stop.</p>';
+  const b = $('cam-body'), st = REC.step, photo = REC.kind === 'photo', cancel = '<button class="btn" type="button" data-cancel="1">CANCEL</button>';
+  const forPlan = REC.forPlan ? '<p class="note">for my future space</p>' : '';
+  let h = '';
+  if(st === 'signin') h = '<p class="say">A space is a habit of my TOTEHM, lived out of home.</p><div class="cam-actions"><button class="btn" type="button" data-signin="1">SIGN IN</button></div>';
+  else if(st === 'idle') h = '<p class="say">Share a space to your Totehm</p><div class="cam-actions"><button class="btn" type="button" data-start="video">VIDEO<small>up to ' + (RULES.clip_seconds || 33) + ' s</small></button><button class="btn" type="button" data-start="photo">PHOTO<small>one image</small></button>' + cancel + '</div>';
+  else if(st === 'perm') h = '<p class="say">Allow the camera</p><div class="cam-actions">' + cancel + '</div>';
+  else if(st === 'denied') h = '<p class="say">The camera is closed for this site. Allow it in the browser, then come back.</p><div class="cam-actions">' + cancel + '</div>';
+  else if(st === 'nocam') h = '<p class="say">This browser cannot ' + (photo ? 'take the photo' : 'film') + '. Try Safari or Chrome on the phone.</p><div class="cam-actions">' + cancel + '</div>';
+  else if(st === 'retry') h = '<p class="say">The ' + (photo ? 'photo' : 'recording') + ' did not arrive. Take it again.</p>';
+  else if(st === 'heavy') h = '<p class="say">Too heavy — film it again.</p>';
+  else if(st === 'ready' || st === 'shot') h = '<p class="say">' + (photo ? 'Tap the red point to take the photo' : 'Tap the red point to film · up to ' + (RULES.clip_seconds || 33) + ' s') + '</p>' + forPlan + '<div class="cam-actions">' + cancel + '</div>';
+  else if(st === 'rec') h = '<p class="say">Tap the red point to stop</p>';
   else if(st === 'habit'){
-    h = '<span class="lab">which habit?</span>' + (!HABITS ? '<p class="note">reading my TOTEHM…</p>' : HABITS.length
+    h = '<div class="row pick-head"><span class="lab">Which Habit Box?</span></div>' + (!HABITS ? '<p class="note">reading my TOTEHM…</p>' : HABITS.length
       ? HABITS.map((x, k) => '<button type="button" class="pick-habit" data-h="' + k + '">' + habitHTML(x) + '</button>').join('')
       : '<p class="say">No habit in my TOTEHM yet.</p><button class="btn" type="button" data-com="/totehm#in">Write one in my TOTEHM</button>') ;
   }
@@ -1665,7 +1820,7 @@ function camPaint(){
     const ready=sharingDone(REC);
     h='<div class="it" data-reh="1">'+habitHTML(REC.habit)+'</div>'+sharingHTML(REC,'')+(ready ? durationHTML(REC,'','c-dur')+'<textarea id="c-say" maxlength="400" placeholder="A word (optional)">'+esc(REC.say || '')+'</textarea><button class="btn" type="button" data-send="1"'+(m.length || st==='send' ? ' disabled' : '')+'>I AM HERE</button><p class="note" id="c-note">'+(m.length ? 'missing: '+m.join(' · ') : '')+'</p>' : '');
   }
-  if(['habit','form','retry','heavy'].includes(st)) h+='<div class="cam-actions"><button class="lnk" type="button" data-again="1">Record again</button><button class="lnk" type="button" data-cancel="1">Cancel</button></div>';
+  if(['habit','form','retry','heavy'].includes(st)) h+='<div class="cam-actions"><button class="btn" type="button" data-again="1">' + (photo ? 'TAKE AGAIN' : 'RECORD AGAIN') + '</button>' + cancel + '</div>';
   b.innerHTML = h;
   if(document.body.classList.contains('is-form') && !b.contains(document.activeElement)) b.focus({preventScroll:true});
 }
@@ -1681,10 +1836,12 @@ $('cam-body').addEventListener('click', e => {
   const t = e.target instanceof Element ? e.target : null; if(!t || REC.busy) return;
   if(t.closest('[data-signin]')) return ssoLogin(false, '/?v=cam');
   if(t.closest('[data-cancel]')){ const back = REC.forPlan ? 'plan' : 'radar'; camReset(); return go(back); }
-  if(t.closest('[data-again]')) return camOpen();
-  const hk = t.closest('[data-h]'); if(hk){ REC.habit = HABITS[+hk.dataset.h]; REC.step = 'form'; return camPaint(); }
+  const start = t.closest('[data-start]'); if(start) return camOpen(start.dataset.start);
+  if(t.closest('[data-again]')) return camOpen(REC.kind || 'video');
+  const hk = t.closest('[data-h]'); if(hk){ REC.habit = HABITS[+hk.dataset.h]; REC.why = false; REC.step = 'form'; return camPaint(); }
+  const wh = t.closest('[data-why]'); if(wh){ REC.why = wh.dataset.why === '1'; return camPaint(); }
   if(t.closest('[data-reh]')){ REC.step = 'habit'; return camPaint(); }
-  const v = t.closest('[data-vis]'); if(v){ REC.vis = v.dataset.vis; REC.loc=null; REC.mode=null; store.set('space_vis', REC.vis); return camPaint(); }
+  const v = t.closest('[data-vis]'); if(v){ REC.vis = v.dataset.vis; REC.loc=null; REC.mode=null; REC.why=false; store.set('space_vis', REC.vis); return camPaint(); }
   const mo = t.closest('[data-mode]'); if(mo){ REC.mode = mo.dataset.mode; return camPaint(); }
   const lo = t.closest('[data-loc]'); if(lo){ REC.loc = lo.dataset.loc; REC.mode=null; return camPaint(); }
   const du = t.closest('[data-dur]'); if(du){ REC.dur = +du.dataset.dur; return camPaint(); }
@@ -1714,9 +1871,10 @@ async function camSend(){
   if(error || !data?.ok){
     // Keep the completed upload for a retry; ownership remains server-enforced.
     REC.busy = false; REC.step = 'form'; camPaint();
-    return note(({ habit:'that habit is no longer in my TOTEHM', too_many:'enough spots for today', video:'the video did not arrive — film it again',
+    return note(({ habit:'that habit is no longer in my TOTEHM', too_many:'enough spots for today', video:'the media did not arrive — take it again',
       position:'allow my position', duration:'the duration', signin:'sign in again' })[data?.why] || 'not published', true);
   }
+  if(shared && REC.why){ const w = await sb.rpc('spot_why_set', { p_spot:data.id, p_show:true }); if(w.error) console.error('[spot_why_set]', w.error.message); }
   VIDEO_METRICS.publishMs=Math.round(performance.now()-started);REC.say = ''; camReset(); await Promise.all([loadExact(),loadList()]); loadFeed(false);
   go('radar'); const s = EX.list.find(s => s.id === data.id); if(s) openDetail(s); else { const r = await sb.rpc('spot_get',{p_id:data.id}); if(r.error) console.error('[spot_get]',r.error.message); if(r.data?.ok) openDetail(r.data.spot); }
 }
@@ -1724,18 +1882,19 @@ async function camSend(){
 /* ══ LES CINQ VUES — joystick, trackpad, souris et écran tactile ═════ */
 const CROIX = { radar:{h:'plan',b:'cam',g:'feed',d:'list'}, plan:{b:'radar',g:'feed',d:'list'}, cam:{h:'radar',g:'feed',d:'list'}, feed:{d:'radar'}, list:{g:'radar'} };
 const voisin = d => VIEW === 'cam' && REC.forPlan && d === 'h' ? 'plan' : CROIX[VIEW][d] || null;
-const recordingLocked = () => VIEW === 'cam' && ['perm','count','rec','habit','form','send','retry','heavy'].includes(REC.step);
+const recordingLocked = () => VIEW === 'cam' && ['perm','count','rec','shot','habit','form','send','retry','heavy'].includes(REC.step);
 function joyPaint(preview){
   const bx = $('joy-box'), camera = VIEW === 'cam';
   bx.style.setProperty('--joy-vue', ({plan:'var(--blue)',radar:'var(--navy)',cam:'var(--navy)',feed:'var(--rep)',list:'var(--blue)'})[voisin(preview) || VIEW]);
   bx.classList.toggle('is-side',['feed','list'].includes(VIEW));
   bx.classList.toggle('is-camera',camera); bx.classList.toggle('is-recording',camera && REC.step === 'rec');
   const muted=!!DETAIL || camera && ['habit','form','send','retry','heavy'].includes(REC.step);
-  $('joy').classList.toggle('is-muted',muted);bx.disabled=muted || camera && ['perm','signin','nocam','denied'].includes(REC.step);
-  bx.setAttribute('aria-label',camera ? (REC.step === 'rec' ? 'Stop recording' : ['habit','form','heavy','retry'].includes(REC.step) ? 'Record again' : 'Record video') : 'Back to radar');
+  $('joy').classList.toggle('is-muted',muted);bx.disabled=muted || camera && ['perm','signin','nocam','denied','shot'].includes(REC.step);
+  const photo = REC.kind === 'photo';
+  bx.setAttribute('aria-label',camera ? (REC.step === 'rec' ? 'Stop recording' : ['habit','form','heavy','retry'].includes(REC.step) ? (photo ? 'Take the photo again' : 'Record again') : REC.step === 'ready' && photo ? 'Take the photo' : 'Record video') : 'Back to radar');
   for(const [cls,v] of [['o','plan'],['h','radar'],['r','cam']]) $('joy-stack').querySelector('.'+cls).classList.toggle('is-current',VIEW === v);
   for(const d of ['g','d','h','b']){ $('cur-'+d).classList.toggle('is-dead',!voisin(d) || recordingLocked() || !!DETAIL); $('cur-'+d).classList.toggle('is-preview',preview === d && !!voisin(d)); }
-  $('joy-say').textContent = camera ? (REC.step === 'rec' ? 'STOP' : ['ready','count','habit','form','heavy','retry'].includes(REC.step) ? 'REC' : '') : preview && voisin(preview) ? ({plan:'Future space',feed:'City feed',radar:'Radar',list:'Future spaces',cam:'Film a space'})[voisin(preview)] : '';
+  $('joy-say').textContent = camera ? (REC.step === 'rec' ? 'STOP' : REC.step === 'idle' ? 'VIDEO' : REC.step === 'ready' ? (photo ? 'PHOTO' : 'REC') : ['habit','form','heavy','retry'].includes(REC.step) ? 'AGAIN' : '') : preview && voisin(preview) ? ({plan:'Future space',feed:'City feed',radar:'Radar',list:'Future spaces',cam:'Film a space'})[voisin(preview)] : '';
 }
 function go(v){
   if(v === VIEW || !CROIX[v] || REC.busy || PLAN.busy) return;
@@ -1743,9 +1902,11 @@ function go(v){
   document.body.className = document.body.className.replace(/\bv-\w+/g,'').trim() + ' v-' + v;
   document.querySelectorAll('.view').forEach(s => s.classList.toggle('is-on',s.id === 'v-'+v));
   if(was === 'cam'){ camReset(); REC.forPlan = false; }
+  if(was === 'list') $('list').querySelectorAll('.it-media').forEach(m => { m.querySelectorAll('video').forEach(releaseClip); m.replaceChildren(); });
+  if(was === 'plan') document.body.classList.remove('is-pick');
   if(was === 'feed'){ document.querySelectorAll('#feed video').forEach(releaseClip); sfOpen(false); }
   if(v === 'plan') planOpen();
-  if(v === 'cam') camOpen();
+  if(v === 'cam') camOpen(REC.forPlan || null);
   if(v === 'feed') document.querySelectorAll('#feed .clip[data-k]').forEach(c => {io.unobserve(c);io.observe(c);});
   camState(); joyPaint(); paintInts(); radarOn(); PAPER.sync();
 }
@@ -1757,8 +1918,9 @@ function step(d){ if(MAP.open || recordingLocked() || PLAN.busy || DETAIL) retur
 function joyTap(){
   if(VIEW !== 'cam'){ if(VIEW !== 'radar') go('radar'); return; }
   if(REC.step === 'rec'){ clearInterval(REC.timer); if(REC.mr?.state === 'recording') REC.mr.stop(); }
-  else if(REC.step === 'ready') camRec();
-  else if(['habit','form','heavy','retry'].includes(REC.step)) camOpen();
+  else if(REC.step === 'ready'){ if(REC.kind === 'photo') camShot(); else camRec(); }
+  else if(REC.step === 'idle') camOpen('video');
+  else if(['habit','form','heavy','retry'].includes(REC.step)) camOpen(REC.kind || 'video');
 }
 addEventListener('keydown',e => {
   if(e.key==='Tab' && VIEW==='cam' && document.body.classList.contains('is-form')){const f=[...$('cam-body').querySelectorAll('button:not(:disabled),input,textarea,a[href]')].filter(x=>x.getClientRects().length);if(f.length){const i=f.indexOf(document.activeElement);if(e.shiftKey && i<=0 || !e.shiftKey && (i<0 || i===f.length-1)){e.preventDefault();(e.shiftKey?f.at(-1):f[0]).focus();}}return;}

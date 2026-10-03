@@ -1,5 +1,28 @@
 # space/CLAUDE.md — totehm.space : DO WITH ME (un Spot, cinq vues)
 
+## ⛔ ÉTAT AU 03/10/2026 (ter) — CE QUE VEUT LE MEMBRE, VUE PAR VUE
+
+BUILD `2026-10-03-spaces-ter`. Complète les deux sections suivantes. **L'idée de SPACE (Wah) :
+vivre une habitude hors de chez soi, c'est la rendre agréable, pas ennuyeuse.**
+
+| vue | le membre veut… | ce que la vue lui donne |
+|---|---|---|
+| CENTER radar | REJOINDRE, maintenant, près de lui | les points exacts qu'il a le droit de voir (les siens, ceux de ses créateurs SHARED·ON) ; un point → la fiche (seul cas avec la fiche, + un lien `?spot=`) |
+| LEFT fil de la ville | REJOINDRE (JOIN) ou S'INSPIRER (GET INSPIRED) | Shorts vidéo ou photo ; GO résout les droits au geste ; sans droit : « for nia's subscribers » + SUBSCRIBE → `/@nia` sur COM (le tunnel de l'économie des créateurs) |
+| RIGHT agenda | prévoir de rejoindre | GO, WATCH (le média se déplie DANS la liste), CALENDAR (`.ics` local, lieu exact seulement si autorisé), SHARE |
+| TOP | annoncer | voir section bis ; vidéo OU photo (fichier, Film it, Take a photo) |
+| BOTTOM | vivre et partager | capteur éteint à l'arrivée : VIDEO · PHOTO · CANCEL ; le point rouge vaut VIDEO |
+
+- **Plus de fiche en double** : dans LEFT et RIGHT, taper une boîte n'ouvre rien ; les gestes sont sous la boîte (`actsHTML`). Après I WILL BE HERE : l'agenda, le nouveau space marqué (`is-new`), pas de fiche. Après I AM HERE : le radar et la fiche du point (rien d'autre ne le montre).
+- **Boutons sans crochets** : GO, SHARE, CALENDAR, WATCH, CLOSE, CANCEL… = `.btn`.
+- **Boîte de contexte** (`.sdata`) : rayon 16 px, détachée de 7 px de la Habit Box — elle dit OÙ, QUAND, AVEC QUI de CETTE Habit.
+- **Photo** : un space peut porter une photo (« boire de l'eau » se photographie mieux qu'il ne se filme) : 9:16 recadré au centre, ≤ 1080 × 1920, JPEG 0,88, Storage `moments` (jamais Bunny), colonne `photo`. Galerie : photo verticale décodée puis ré-encodée ; HEIC illisible → la caméra.
+- **WHY · TRIGGER** : sur un space SHARED, l'auteur choisit (défaut : caché) de montrer les objectifs et répulsions de la Habit, dans la Habit Box (`spot_why_set`). C'est le format des contrats de marque (« Drink Monchique water · why: beautiful skin · trigger: alcohol ») ; filtre « It shows · WHY · TRIGGER ». Un contrat payé exigera la mention de partenariat (loi) — pas encore construit.
+- **Filtre LEFT** : I want to JOIN (now + ON) / GET INSPIRED (avec média) · Together WE CAN TALK / NOBODY DISTURB ME · It shows VIDEO / PHOTO / WHY · TRIGGER. Navigateur seul.
+- **Téléphone** : choisir une Habit = plein écran (papier → `#habit-picker` ; TOP → `body.is-pick`, CANCEL ; BOTTOM l'était déjà).
+- **Caméra** : textes et boutons dans des boîtes noires `rgba(0,0,0,.82)`, marge faible ; minuteur et libellé du joystick aussi.
+- Tests : `tests/browser/space_top_left.mjs` (47), `tests/sql/space_photo_why_selftest.sql`.
+
 ## ⛔ ÉTAT AU 03/10/2026 (bis) — TOP = BOTTOM, LEFT FILTRÉ
 
 BUILD `2026-10-03-spaces-top`. Complète la section suivante, ne la remplace pas.
