@@ -205,30 +205,8 @@ body.v-cam.is-rec #cam-body,body.v-cam.is-count #cam-body{background:none}
 .cur svg{width:14px;height:14px;display:block;stroke:currentColor;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
 @media(hover:hover){.cur:not(.is-dead):hover{opacity:1}}
 
-/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
-/* Le gris en survol devient blanc. Généré depuis la feuille
-   elle-même : un nouveau bloc gris entre ici tout seul.        */
-@media(hover:hover){
-#member:hover,
-#menu .m-it:hover,
-#menu .m-terms:hover,
-.say:hover,
-.empty:hover,
-.clip .noclip:hover,
-.dist:hover,
-.lab:hover,
-.chip:hover,
-.chip small:hover,
-.chip.is-on small:hover,
-.lnk:hover,
-.note:hover,
-.v-sub:hover,
-.mg-l:hover,
-.by:hover{color:#fff}
-}
-/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 
-.plan-draft .v-col{gap:10px}.plan-draft .lab{color:rgba(255,255,255,.65)}.plan-draft .lnk{color:var(--mid)}
+
 /* Habit Box du radar, et définition exacte de l'intention choisie. */
 #heading{position:fixed;top:calc(14px + var(--top));left:0;right:0;z-index:60;display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none;transition:left .35s var(--ease),right .35s var(--ease)}
 #title{position:static;transform:none}
@@ -358,7 +336,7 @@ body.v-plan #heading,body.v-cam #heading{display:none}
 #member,#member:hover,#member-txt{font-family:var(--q);font-weight:400;color:#fbd5ca}
 #member i{display:none}
 .tname,.tname:hover{font-family:var(--q);font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
-#tp-name,#tp-name.is-name{color:#fbd5ca;background:#000;border-radius:7px;padding:4px 6px;max-width:82%;box-sizing:border-box}
+#tp-name,#tp-name.is-name,#tp-name:hover,#tp-name.is-name:hover{color:#fbd5ca;background:#000;border-radius:7px;padding:4px 6px;max-width:82%;box-sizing:border-box}
 #tp-hint{margin-top:6px;letter-spacing:.1em;font-size:8px}
 #radar-tools{display:contents}
 #cmp,#map-tools{position:fixed;z-index:65}
@@ -399,6 +377,69 @@ body.v-cam.is-form #joy{opacity:.18;pointer-events:none}
  #v-plan{top:calc(24px + var(--top));max-height:48dvh}
 }
 
+/* 03/10 bis — TOP = BOTTOM : la Habit Box, puis la configuration noire et grise.
+   LEFT : la Habit Box + le bloc de données noir et gris, filtré à côté du papier. */
+#v-plan{background:rgba(0,0,0,.92)}
+#plan-body{width:min(520px,100%)}
+#plan-body .plan-habit{flex:none}
+.plan-conf{display:flex;flex-direction:column;gap:10px}
+.plan-conf>.lab{margin-top:4px}
+#p-city{font-family:var(--q);font-size:14px;width:min(220px,100%)}
+#p-cities:empty{display:none}
+.plan-video{display:flex;align-items:flex-end;gap:12px}
+.plan-video .portrait-media{width:72px;flex:none;border-radius:var(--r)}
+.sdata{background:rgba(0,0,0,.86);padding:8px 10px 9px;display:flex;flex-direction:column;gap:6px}
+.sd-row{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.sd-tag{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);background:var(--s2);border-radius:var(--r);
+  padding:3px 8px;line-height:1.5;font-variant-numeric:tabular-nums;text-decoration:none}
+.sd-tag.is-st{background:var(--s4);color:#fff;font-weight:700}
+a.sd-tag{color:#fff;text-decoration:underline;text-decoration-color:rgba(255,255,255,.45);text-underline-offset:3px}
+.sd-say{font-family:var(--q);font-size:13px;color:#fff;line-height:1.45}
+#feed .info .sdata{box-shadow:0 5px 22px rgba(0,0,0,.65),0 1px 4px rgba(0,0,0,.5)}
+#sf-btn{display:none;position:absolute;top:calc(var(--tp) / 2);left:calc(50% + var(--tp) / 2 + 12px);transform:translateY(-50%);pointer-events:auto;
+  font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:var(--s2);border:none;
+  border-radius:var(--r);padding:6px 9px;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+body.v-feed #sf-btn{display:block}
+#sf-btn.is-on{color:#fff;background:var(--s4);box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+#sf-panel{position:fixed;z-index:85;width:min(340px,calc(100vw - 32px));transform:translateX(-50%);background:rgba(0,0,0,.92);border-radius:var(--r);
+  padding:12px;display:flex;flex-direction:column;gap:8px;max-height:70dvh;overflow-y:auto;overscroll-behavior:contain}
+#sf-panel .sf-acts{justify-content:space-between;margin-top:4px}
+#radar-tools:not(.is-placed) #cmp,#radar-tools:not(.is-placed) #map-tools{visibility:hidden}
+
+
+
+
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Le gris en survol devient blanc. Généré depuis la feuille
+   elle-même : un nouveau bloc gris entre ici tout seul.        */
+@media(hover:hover){
+#member:hover,
+#menu .m-it:hover,
+#menu .m-terms:hover,
+.say:hover,
+.empty:hover,
+.clip .noclip:hover,
+.dist:hover,
+.lab:hover,
+.chip:hover,
+.chip small:hover,
+.chip.is-on small:hover,
+.lnk:hover,
+.note:hover,
+.v-sub:hover,
+.mg-l:hover,
+.by:hover,
+#joy-say:hover,
+#int-def:hover,
+#habit-filter:hover,
+#tp-name:hover,
+#tp-name.is-name:hover,
+#tp-hint:hover,
+#map-credit:hover,
+.sd-tag:hover,
+#sf-btn:hover{color:#fff}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
 </head>
 <body class="v-radar">
@@ -429,12 +470,14 @@ body.v-cam.is-form #joy{opacity:.18;pointer-events:none}
   </div><!-- /#totehm-paper -->
 <span id="tp-hint"></span>
 </div>
+<button id="sf-btn" type="button" aria-haspopup="dialog" aria-controls="sf-panel" aria-expanded="false">Filter</button>
 <div id="title" aria-live="polite"><b id="title-int"></b><svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg></div>
 <p id="int-def"></p><button id="habit-filter" class="hide" type="button" aria-haspopup="dialog" aria-expanded="false">Habit Box · all</button></header>
 <aside id="habit-picker" class="hide" role="dialog" aria-label="Select my Habit Box"></aside>
+<aside id="sf-panel" class="hide" role="dialog" aria-label="Filter the spaces"></aside>
 
 
-<section class="view" id="v-plan" aria-label="Create a future spot"><div id="plan-body"></div></section>
+<section class="view" id="v-plan" aria-label="Create a future spot"><div id="plan-body"></div><input id="p-file" class="hide" type="file" accept="video/mp4,video/quicktime,video/webm" aria-label="A video from my files"></section>
 
 <section class="view" id="v-feed" aria-label="Spots around"><div id="feed"></div></section>
 <section class="view is-on" id="v-radar" aria-label="Radar"><canvas id="canvas"></canvas><div id="radar-map" class="hide"><div id="map-tiles"></div><div id="map-pin"></div><span id="map-credit">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></span></div><div class="empty hide" id="radar-empty"></div></section>
@@ -599,24 +642,24 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
 const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query=' + Number(lat).toFixed(5) + '%2C' + Number(lng).toFixed(5);
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD = '2026-10-03-spaces';
+const BUILD = '2026-10-03-spaces-top';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'radar';
 const S = { int:null, q:'', habit:null };
-const FEED = { list:[], seq:0, more:true, loading:false, match:'all', active:null };
+const FEED = { list:[], shown:[], seq:0, more:true, loading:false, match:'all', active:null };
 const EX = { list:[], seq:0, match:'all' };
 const LIST = { list:[], seq:0, more:false, loading:false, match:'all' };
-const PLAN = { seq:0, context:null, details:false, habit:null, date:'', time:'', pos:null, place:'', city:null, dur:null, vis:store.get('space_vis'), mode:null, loc:null, say:'', busy:false };
+const PLAN = { seq:0, context:null, details:false, habit:null, date:'', time:'', pos:null, place:'', city:null, cityText:'', cityPos:null, video:null, fileSeq:0, dur:null, vis:store.get('space_vis'), mode:null, loc:null, say:'', busy:false };
 let habitsPending = null, gestureCount = 0, suppressClickUntil = 0;
 const REC = { seq:0, step:null, stream:null, mr:null, blob:null, url:null, mime:'', t0:0, timer:0, seconds:0, uploaded:null, habit:null, vis: store.get('space_vis') === 'private' ? 'private' : (store.get('space_vis') === 'shared' ? 'shared' : null),
-  mode:null, loc:null, dur:null, busy:false, capture:null, width:0,height:0,fps:0,bitrate:0,path:null };
+  mode:null, loc:null, dur:null, busy:false, capture:null, width:0,height:0,fps:0,bitrate:0,path:null, forPlan:false };
 let HABITS = null, DETAIL = null;
 const VIDEO_METRICS={firstFrameMs:0,uploadMs:0,publishMs:0};
 window.__totehm_space = () => ({ build: BUILD, view: VIEW, signed_in: !!me, located: !!POS, intention: S.int, search: !!S.q,
   feed: FEED.list.length, exact: EX.list.length, playing: [...document.querySelectorAll('#feed video')].filter(v => !v.paused).length,
   video:{provider:RULES.video_provider || 'storage',buffered:[...document.querySelectorAll('#feed video')].filter(v=>v.getAttribute('src') || v._hls).length,...VIDEO_METRICS,...(()=>{const v=$('feed').querySelector('.clip[data-k="'+FEED.active+'"] video'),q=v?.getVideoPlaybackQuality?.();return {frames:q?.totalVideoFrames || 0,dropped:q?.droppedVideoFrames || 0};})()},
-  list:LIST.list.length, future:LIST.list.filter(s => spotState(s) === 'will').length, gestures:gestureCount, radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx),heading:Math.round(norm360(RAD.head)),pin:MAP.open,place:!!PLAN.pos}, paper:PAPER.etat(), habit_filter:!!S.habit, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
+  list:LIST.list.length, future:LIST.list.filter(s => spotState(s) === 'will').length, gestures:gestureCount, radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx),heading:Math.round(norm360(RAD.head)),pin:MAP.open,place:!!PLAN.pos}, paper:PAPER.etat(), habit_filter:!!S.habit, spot_filter:sfCount(), feed_shown:FEED.shown.length, plan:{city:!!PLAN.cityPos,exact:!!PLAN.pos,video:!!PLAN.video,uploaded:!!PLAN.video?.ref}, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
 
 /* Chaque vue dit où je suis. L'intention vient de la Habit, sans filtre parallèle. */
 const VIEW_WORDS = {radar:['RADAR','Exact places I can see'],feed:['CITY FEED','I AM HERE · I WAS THERE'],list:['FUTURE SPOTS','I WILL BE HERE'],plan:['PLAN A SPOT','I WILL BE HERE'],cam:['FILM A SPOT','I AM HERE · 9:16 · up to 33 seconds']};
@@ -630,22 +673,28 @@ function paintInts(){
 
 /* ══ LA BOÎTE D'UN SPOT — ce que CE lecteur a le droit de voir ═══════ */
 const tickHTML = l => '<span class="tick">' + (l || []).map(i => '<i style="background:' + icol(i) + '"></i>').join('') + '</span>';
+const sdTag = (t, cls) => '<span class="sd-tag' + (cls ? ' ' + cls : '') + '">' + t + '</span>';
 function placeHTML(s){
   if(s.exact && s.exact.lat != null){
     const d = POS ? fmtDist(hav(POS, s.exact)) : '';
-    return '<a class="v-loc" href="' + mapsURL(s.exact.lat, s.exact.lng) + '" target="_blank" rel="noopener">' + esc(s.exact.place || s.city || 'the exact place') + '</a>' + (d ? '<span>' + d + '</span>' : '');
+    return '<a class="sd-tag v-loc" href="' + mapsURL(s.exact.lat, s.exact.lng) + '" target="_blank" rel="noopener">' + esc(s.exact.place || s.city || 'the exact place') + '</a>' + (d ? sdTag(d) : '');
   }
-  return '<span>' + esc(s.city || 'somewhere') + '</span>';
+  return sdTag(esc(s.city || 'somewhere'));
 }
 const intHTML = l => (l || []).map(i => '<span class="v-int" style="color:'+icol(i)+'" title="'+esc(INTS[i]?.def)+'">'+esc(INTS[i]?.n || i)+'</span>').join('');
 function contextHTML(h){ return ['objectives','repulsions'].map(k => (h?.[k] || []).length ? '<span class="mg"><span class="mg-l">'+(k === 'objectives' ? 'why' : 'trigger')+'</span><span class="minis">'+h[k].map(x => '<span class="mini m-'+(k === 'objectives' ? 'o' : 'r')+'">'+esc(x.text)+'</span>').join('')+'</span></span>' : '').join(''); }
 function habitInner(h){ return '<span class="v-name">'+esc(h.name)+'</span><span class="v-sub">'+intHTML(h.ints)+(h.freq ? '<span class="v-frq">'+esc(FREQ[h.freq] || h.freq)+'</span>' : '<span class="v-frq">set time frequency</span>')+(h.place ? '<span class="v-frq">'+esc(h.place)+'</span>' : '')+'</span>'+contextHTML(h); }
+/* La Habit Box reste la boîte de COM ; tout ce qui est « space » vit dessous,
+   noir et gris, identique dans LEFT, RIGHT et le détail. */
 function spotHTML(s){
  const state=spotState(s),st=new Date(s.starts_at),end=new Date(s.ends_at || st.getTime()+(s.duration_min||0)*60e3);
  const when=state==='will' ? 'I WILL BE HERE' : state==='am' ? 'I AM HERE' : 'I WAS THERE';
- const how=s.visibility==='private' ? '<span>private</span>' : '<span>location '+esc(s.location||'off')+'</span>'+(s.location==='on' && s.mode ? '<span>'+ (s.mode==='silent' ? 'silent · nobody disturb me' : 'social · we can talk')+'</span>' : '');
+ const how=s.visibility==='private' ? sdTag('private') : sdTag('shared')+sdTag('location '+esc(s.location||'off'))+(s.location==='on' && s.mode ? sdTag(s.mode==='silent' ? 'silent · nobody disturb me' : 'social · we can talk') : '');
  const box={name:s.habit,ints:s.intentions,freq:s.freq,place:s.context?.place,...s.context};
- return '<div class="habit">'+tickHTML(s.intentions)+'<span class="h-body"><span class="v-col">'+habitInner(box)+'<span class="v-sub"><span class="v-st">'+when+'</span><span>'+ (state==='am' ? 'until '+hhmm(end) : esc(dayOf(st))+' '+hhmm(st))+'</span><span>'+fmtDur(s.duration_min)+'</span></span><span class="v-sub">'+placeHTML(s)+how+'</span>'+(s.comment ? '<span class="v-say">'+esc(s.comment)+'</span>' : '')+'</span></span></div>'+(!s.mine && s.creator ? '<div class="by"><span>by</span><button class="tname" type="button" data-com="/@'+encodeURIComponent(s.creator)+'">'+esc(s.creator)+'</button></div>' : '');
+ return '<div class="habit">'+tickHTML(s.intentions)+'<span class="h-body"><span class="v-col">'+habitInner(box)+'</span></span></div>'
+  +'<div class="sdata"><div class="sd-row">'+sdTag(when,'is-st')+sdTag(state==='am' ? 'until '+hhmm(end) : esc(dayOf(st))+' '+hhmm(st))+(s.duration_min ? sdTag(fmtDur(s.duration_min)) : '')+'</div>'
+  +'<div class="sd-row">'+placeHTML(s)+how+'</div>'+(s.comment ? '<p class="sd-say">'+esc(s.comment)+'</p>' : '')+'</div>'
+  +(!s.mine && s.creator ? '<div class="by"><span>by</span><button class="tname" type="button" data-com="/@'+encodeURIComponent(s.creator)+'">'+esc(s.creator)+'</button></div>' : '');
 }
 
 /* ══ LES VIDÉOS — lecture autorisée, une seule vidéo anticipée ══════ */
@@ -736,7 +785,7 @@ function focusClip(k){
  }
  const next=()=>{if(VIEW!=='feed' || FEED.active!==k || document.hidden || !lookAhead())return;const v=$('feed').querySelector('.clip[data-k="'+(k+1)+'"] video');if(v){v._wanted=true;prepareClip(v);}};
  if(active){if(changed){const started=performance.now();active.addEventListener('playing',()=>{const measure=()=>{if(VIEW==='feed' && FEED.active===k)VIDEO_METRICS.firstFrameMs=Math.round(performance.now()-started);};if(active.requestVideoFrameCallback)active.requestVideoFrameCallback(measure);else measure();},{once:true});}active.addEventListener('playing',next,{once:true});playClip(active);if(active.currentTime>0 && !active.paused)next();}
- if(k>=FEED.list.length-2)loadFeed(true);
+ if(k>=FEED.shown.length-2)loadFeed(true);
 }
 const io = new IntersectionObserver(es => es.forEach(en => {
   const v = en.target.querySelector('video'); if(!v) return;
@@ -762,19 +811,57 @@ async function feedGo(button){
   finally{button.disabled=false;}
 }
 function paintFeed(more=false){
-  const f = $('feed');
+  const f = $('feed'), L = FEED.list.filter(sfMatch); FEED.shown = L;
   const existing=[...f.querySelectorAll('.clip[data-k]')];
-  if(!more && existing.length && existing.length===FEED.list.length && existing.every((c,k)=>{const v=c.querySelector('video'),s=FEED.list[k];return c.dataset.id===s.id && (v?.dataset.bunny || v?.dataset.clip || '')===(s.clip?.id || s.video || '');})){
-    existing.forEach((c,k)=>{const info=c.querySelector('.info'),html=feedInfo(FEED.list[k]);if(info.innerHTML!==html)info.innerHTML=html;});return;
+  if(!more && existing.length && existing.length===L.length && existing.every((c,k)=>{const v=c.querySelector('video'),s=L[k];return c.dataset.id===s.id && (v?.dataset.bunny || v?.dataset.clip || '')===(s.clip?.id || s.video || '');})){
+    existing.forEach((c,k)=>{const info=c.querySelector('.info'),html=feedInfo(L[k]);if(info.innerHTML!==html)info.innerHTML=html;});return;
   }
   if(!more){io.disconnect();f.querySelectorAll('video').forEach(releaseClip);f.replaceChildren();FEED.active=null;f.scrollTop=0;}
-  if(!FEED.list.length){ f.innerHTML = '<div class="clip"><div class="empty">' + (S.q ? 'no space for this habit' : 'no space around yet') + '</div></div>'; return; }
+  f.querySelectorAll('.clip:not([data-k])').forEach(n => n.remove());
+  if(!L.length){ f.innerHTML = '<div class="clip"><div class="empty">' + (sfCount() ? 'no space for this filter' : S.q ? 'no space for this habit' : 'no space around yet') + '</div></div>'; sfMore(); return; }
   const start=more?f.querySelectorAll('.clip[data-k]').length:0;
-  f.insertAdjacentHTML('beforeend',FEED.list.slice(start).map((s, i) => '<div class="clip" data-k="' + (start+i) + '" data-id="' + esc(s.id) + '">' +
+  f.insertAdjacentHTML('beforeend',L.slice(start).map((s, i) => '<div class="clip" data-k="' + (start+i) + '" data-id="' + esc(s.id) + '">' +
     (videoHTML(s) || '<div class="noclip">no video</div>') +
     '<div class="info" data-open="' + esc(s.id) + '">' + feedInfo(s) + '</div></div>').join(''));
   [...f.querySelectorAll('.clip[data-k]')].slice(start).forEach(c => io.observe(c));
+  sfMore();
 }
+/* LE FILTRE DES DONNÉES « SPACE » — à côté du papier, dans le navigateur :
+   aucune requête de plus ; s'il reste trop peu de spaces, la page suivante
+   est demandée (5 au plus par changement de filtre). */
+const SF = { when:null, loc:null, mode:null, auto:0 };
+const sfCount = () => ['when','loc','mode'].filter(k => SF[k]).length;
+const sfMatch = s => (!SF.when || spotState(s) === (SF.when === 'now' ? 'am' : 'was'))
+  && (!SF.loc || (SF.loc === 'on') === (s.location === 'on'))
+  && (!SF.mode || s.mode === SF.mode);
+function sfMore(){ if(sfCount() && FEED.shown.length < 3 && FEED.more && !FEED.loading && SF.auto < 5){ SF.auto++; loadFeed(true); } }
+function sfPaint(){
+  const n = sfCount(), b = $('sf-btn'), open = !$('sf-panel').classList.contains('hide');
+  b.textContent = n ? 'Filter · ' + n : 'Filter'; b.classList.toggle('is-on', !!n); b.setAttribute('aria-expanded', String(open));
+  if(!open) return;
+  const c = (k, v, l, sub) => chip('data-sf-' + k + '="' + v + '"', l, SF[k] === v, sub);
+  $('sf-panel').innerHTML = '<span class="lab">When</span><div class="row">' + c('when','now','now','I am here') + c('when','before','before','I was there') + '</div>' +
+    '<span class="lab">Location</span><div class="row">' + c('loc','on','on','for the subscribers') + c('loc','off','off','for the audience') + '</div>' +
+    '<span class="lab">Together</span><div class="row">' + c('mode','silent','silent','Nobody disturb me') + c('mode','social','social','We can talk') + '</div>' +
+    '<div class="row sf-acts"><button class="lnk" type="button" data-sf-all="1">All spaces</button><button class="lnk" type="button" data-sf-close="1">Close</button></div>';
+}
+function sfOpen(open){
+  const p = $('sf-panel'); p.classList.toggle('hide', !open);
+  if(open){ pickerClose(); const h = $('heading').getBoundingClientRect(), t = $('totehm-paper').getBoundingClientRect(); p.style.top = Math.round(t.bottom + 10) + 'px'; p.style.left = Math.round(h.left + h.width/2) + 'px'; }
+  sfPaint();
+}
+$('sf-btn').onclick = () => sfOpen($('sf-panel').classList.contains('hide'));
+$('sf-panel').addEventListener('click', e => {
+  if(e.target.closest('[data-sf-close]')) return sfOpen(false);
+  if(e.target.closest('[data-sf-all]')){ SF.when = SF.loc = SF.mode = null; }
+  else {
+    const b = e.target.closest('[data-sf-when],[data-sf-loc],[data-sf-mode]'); if(!b) return;
+    const k = 'sfWhen' in b.dataset ? 'when' : 'sfLoc' in b.dataset ? 'loc' : 'mode', v = b.dataset['sf' + k[0].toUpperCase() + k.slice(1)];
+    SF[k] = SF[k] === v ? null : v;
+  }
+  SF.auto = 0; sfPaint(); paintFeed();
+});
+document.addEventListener('pointerdown', e => { if(!$('sf-panel').classList.contains('hide') && !e.target.closest('#sf-panel,#sf-btn')) sfOpen(false); });
 $('feed').addEventListener('click', e => {
   if(Date.now() < suppressClickUntil || e.target.closest('a,[data-com]')) return;
   const gb=e.target.closest('[data-go]');if(gb){feedGo(gb);return;}
@@ -877,7 +964,7 @@ function draw(t){
   if(CMP.on){const delta=norm180(CMP.target-RAD.head);RAD.head=norm360(RAD.head+delta*.15);}
   else if(RAD.headTo!==null){const delta=norm180(RAD.headTo-RAD.head);RAD.head=norm360(RAD.head+delta*.16);if(Math.abs(delta)<.1) RAD.headTo=null;}
   const tools=$('radar-tools'),positions=[RAD.cx-RAD.rpx*.82,RAD.cx+RAD.rpx*.82,RAD.cy+RAD.rpx*.67,RAD.cx-RAD.rpx,RAD.cy-RAD.rpx,RAD.rpx*2].map(n=>n.toFixed(1)+'px'),layout=positions.join('|');
-  if(tools._layout!==layout){tools._layout=layout;$('cmp').style.left=positions[0];$('cmp').style.top=positions[2];$('map-tools').style.left=positions[1];$('map-tools').style.top=positions[2];const map=$('radar-map');map.style.left=positions[3];map.style.top=positions[4];map.style.width=map.style.height=positions[5];if(MAP.open && Math.abs(RAD.tr-RAD.rpx)>.1)mapDraw();}paintCmp();
+  if(tools._layout!==layout){tools._layout=layout;tools.classList.add('is-placed');$('cmp').style.left=positions[0];$('cmp').style.top=positions[2];$('map-tools').style.left=positions[1];$('map-tools').style.top=positions[2];const map=$('radar-map');map.style.left=positions[3];map.style.top=positions[4];map.style.width=map.style.height=positions[5];if(MAP.open && Math.abs(RAD.tr-RAD.rpx)>.1)mapDraw();}paintCmp();
   const x = $('canvas').getContext('2d'), { dpr, cx, cy, rpx } = RAD;
   x.setTransform(dpr, 0, 0, dpr, 0, 0);if(RAD.dirty)x.clearRect(...RAD.dirty);
   const margin=VIEW==='plan' && PLAN.pos?Math.max(42,x.measureText(PLAN.place || PLAN.city || 'Meeting point').width/2+32):42;
@@ -1249,21 +1336,54 @@ function sharingHTML(x,prefix){
 const sharingDone=x=>x.vis==='private' || x.vis==='shared' && (x.loc==='off' || x.loc==='on' && !!x.mode);
 function durationHTML(x,prefix,id){ return '<div class="row"><span class="lab">DURATION</span>'+DURS.map(d=>chip('data-'+prefix+'dur="'+d+'"',fmtDur(d),x.dur===d)).join('')+'<input class="field" id="'+id+'" type="number" inputmode="numeric" min="'+RULES.duration_min+'" max="'+RULES.duration_max+'" aria-label="Duration in minutes" placeholder="min" value="'+(x.dur && !DURS.includes(x.dur) ? x.dur : '')+'"></div>'; }
 
+/* WHERE? — une ville (saisie, suggestions locales) ET/OU le point exact sur
+   la carte. SHARED·ON exige le point ; PRIVATE et SHARED·OFF se contentent
+   de la ville, sans aucune demande de position. */
+const planExact = () => PLAN.vis === 'shared' && PLAN.loc === 'on';
 function planMissing(){
   const m = [];
   if(!PLAN.habit) m.push('a Habit Box');
-  const start = new Date(PLAN.date + 'T' + PLAN.time).getTime();
-  if(!Number.isFinite(start) || start <= Date.now() || start > Date.now() + (RULES.horizon_days || 90)*864e5) m.push('a future date and time');
-  if(!PLAN.pos) m.push('a place'); if(!PLAN.dur) m.push('the duration');
   if(!['private','shared'].includes(PLAN.vis)) m.push('private or shared');
   if(PLAN.vis === 'shared'){ if(!PLAN.loc) m.push('location on or off'); if(PLAN.loc === 'on' && !PLAN.mode) m.push('silent or social'); }
+  const start = new Date(PLAN.date + 'T' + PLAN.time).getTime();
+  if(!Number.isFinite(start) || start <= Date.now() || start > Date.now() + (RULES.horizon_days || 90)*864e5) m.push('a future date and time');
+  if(planExact() && !PLAN.pos) m.push('the exact point on the map'); else if(!PLAN.pos && !PLAN.cityPos) m.push('a city or a point on the map');
+  if(!PLAN.dur) m.push('the duration');
   return m;
 }
 function planValidity(){
   const m = planMissing(), send = $('plan-body').querySelector('[data-plan-send]');
   if(send) send.disabled = !!m.length || PLAN.busy;
-  const n = $('p-note'); if(n) n.textContent = m.length ? 'missing: ' + m.join(' · ') : '';
+  const n = $('p-note'); if(n && !PLAN.busy){ n.className = 'note'; n.textContent = m.length ? 'missing: ' + m.join(' · ') : ''; }
 }
+let CITIES = null, CITY_KEYS = [], citiesLoading = null;
+const fold = t => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+function loadCities(){
+  if(CITIES) return Promise.resolve(CITIES);
+  return citiesLoading ||= fetch('/cities.json').then(r => r.ok ? r.json() : {cities:[]}).then(d => d.cities || []).catch(() => [])
+    .then(l => { CITIES = l; CITY_KEYS = l.map(c => fold(c[0])); return l; });
+}
+async function nearestCity(p){
+  await loadCities(); let best = null, bd = 40e3;
+  for(const k of CITIES){ const d = hav(p, { lat:k[1], lng:k[2] }); if(d < bd){ bd = d; best = k; } }
+  return best;
+}
+const cityNear = async p => (await nearestCity(p))?.[0] || null;
+function citySuggestHTML(){
+  const q = fold(PLAN.cityText); if(!CITIES || !q) return '';
+  const hits = [];
+  CITY_KEYS.forEach((k, i) => { const at = k === q ? 0 : k.startsWith(q) ? 1 : k.includes(' ' + q) ? 2 : -1; if(at >= 0) hits.push([at, CITIES[i][3] || 0, i]); });
+  if(!hits.length) return '<span class="note">No city with this name here — use the map.</span>';
+  // One exact name already chosen: nothing to propose. Homonyms stay listed.
+  if(PLAN.city && fold(PLAN.city) === q && hits.filter(h => h[0] === 0).length < 2) return '';
+  return hits.sort((a, b) => a[0] - b[0] || a[1] - b[1]).slice(0, 6).map(([,, i]) => chip('data-pcity="' + i + '"', esc(CITIES[i][0]), PLAN.cityIdx === i, esc(CITIES[i][4] || ''))).join('');
+}
+function planCity(c){
+  PLAN.city = c ? c[0] : null; PLAN.cityPos = c ? { lat:c[1], lng:c[2] } : null; PLAN.cityIdx = c && CITIES ? CITIES.indexOf(c) : -1;
+  if(c){ PLAN.cityText = c[0]; if(PLAN.pos && hav(PLAN.pos, PLAN.cityPos) > 40e3){ PLAN.pos = null; PLAN.place = ''; } }
+}
+function planVideoDrop(){ if(PLAN.video?.url) URL.revokeObjectURL(PLAN.video.url); PLAN.video = null; PLAN.fileSeq++; }
+function planNote(t){ const n = $('p-note'); if(n){ n.className = 'note no'; n.textContent = t; } }
 function planPaint(){
   requestAnimationFrame(radarSize);
   const b = $('plan-body'); b.classList.toggle('is-busy', PLAN.busy);
@@ -1273,19 +1393,40 @@ function planPaint(){
       HABITS.map((h,k) => '<button class="pick-habit" type="button" data-plan-h="' + k + '">' + habitHTML(h) + '</button>').join('') :
       '<button class="btn" type="button" data-com="/totehm#in">Write a Habit Box in my TOTEHM</button>'); return;
   }
-  const ready=sharingDone(PLAN);
-  const draft='<div class="habit plan-draft">'+tickHTML(PLAN.habit.ints)+'<span class="h-body"><span class="v-col">'+habitInner(PLAN.habit)+sharingHTML(PLAN,'p')+(ready ? '<div class="row"><span class="lab">When?</span><input class="field" id="p-date" type="date" aria-label="Date" value="'+PLAN.date+'"><input class="field" id="p-time" type="time" aria-label="Time" value="'+PLAN.time+'"></div><button class="chip" type="button" data-plan-place="1">'+esc(PLAN.place || PLAN.city || 'Choose the place')+'<small>'+(PLAN.pos ? 'Change it in the radar' : 'Place it in the radar')+'</small></button>'+durationHTML(PLAN,'p','p-dur')+'<textarea class="field" id="p-say" maxlength="400" placeholder="A word (optional)">'+esc(PLAN.say)+'</textarea>' : '')+'</span></span></div>';
-  b.innerHTML='<div class="row"><button class="lnk" type="button" data-plan-reh="1">Another Habit Box</button></div>'+draft+(ready ? '<button class="btn" type="button" data-plan-send="1">I WILL BE HERE</button><p class="note" id="p-note"></p>' : '');
+  const ready = sharingDone(PLAN), exact = planExact(), secs = RULES.clip_seconds || 33, v = PLAN.video;
+  let h = '<button class="pick-habit plan-habit" type="button" data-plan-reh="1" aria-label="Change the Habit Box">' + habitHTML(PLAN.habit) + '</button><div class="plan-conf">' + sharingHTML(PLAN,'p');
+  if(ready){
+    h += '<span class="lab">When?</span><div class="row"><input class="field" id="p-date" type="date" aria-label="Date" value="' + PLAN.date + '"><input class="field" id="p-time" type="time" aria-label="Time" value="' + PLAN.time + '"></div>' +
+      '<span class="lab">Where?</span><div class="row"><input class="field" id="p-city" type="text" autocomplete="off" maxlength="80" placeholder="City" aria-label="City" value="' + esc(PLAN.cityText) + '">' +
+      chip('data-plan-place="1"', PLAN.pos ? esc(PLAN.place || 'Exact point') : 'On the map', !!PLAN.pos, PLAN.pos ? 'Change it in the radar' : exact ? 'required for the subscribers' : 'the exact point · optional') +
+      (PLAN.pos ? '<button class="lnk" type="button" data-plan-unpin="1">Remove the point</button>' : '') + '</div><div class="row" id="p-cities">' + citySuggestHTML() + '</div>' +
+      durationHTML(PLAN,'p','p-dur') + '<textarea class="field" id="p-say" maxlength="400" placeholder="A word (optional)">' + esc(PLAN.say) + '</textarea>' +
+      '<span class="lab">Video</span><div class="row">' + chip('data-plan-file="1"', 'From my files', false, '9:16 · up to ' + secs + ' s') + chip('data-plan-film="1"', 'Film it', false, 'the SPACE camera') + '</div>' +
+      (v ? '<div class="plan-video"><div class="portrait-media"><video src="' + esc(v.url) + '" muted loop playsinline autoplay></video></div><span class="note">' + Math.round(v.seconds) + ' s · ' + (v.size/1e6).toFixed(1) + ' MB' + (v.ref ? ' · sent' : '') + '</span><button class="lnk" type="button" data-plan-novideo="1">Remove the video</button></div>' : '');
+  }
+  b.innerHTML = h + '</div>' + (ready ? '<button class="btn" type="button" data-plan-send="1">I WILL BE HERE</button><p class="note" id="p-note"></p>' : '');
   planValidity();
 }
 async function planOpen(){
   if(!PLAN.date){ const d = new Date(Date.now() + 864e5); PLAN.date = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); PLAN.time = hhmm(d); }
-  planPaint(); await loadHabits(); if(VIEW === 'plan') planPaint();
+  planPaint();
+  loadCities().then(async () => {
+    // A position already known prefills the city; TOP never asks for one.
+    const c = !PLAN.cityText && POS ? await nearestCity(POS) : null;
+    if(c && !PLAN.cityText){ planCity(c); const i = $('p-city'); if(i && document.activeElement !== i) i.value = c[0]; }
+    if(VIEW === 'plan'){ const l = $('p-cities'); if(l) l.innerHTML = citySuggestHTML(); planValidity(); }
+  });
+  await loadHabits(); if(VIEW === 'plan') planPaint();
 }
 $('plan-body').addEventListener('input', e => {
   if(e.target.id === 'p-date') PLAN.date = e.target.value;
   if(e.target.id === 'p-time') PLAN.time = e.target.value;
   if(e.target.id === 'p-say') PLAN.say = e.target.value;
+  if(e.target.id === 'p-city'){
+    PLAN.cityText = e.target.value; const q = fold(PLAN.cityText), i = CITY_KEYS.indexOf(q);
+    planCity(q && i >= 0 ? CITIES[i] : null); PLAN.cityText = e.target.value;
+    $('p-cities').innerHTML = citySuggestHTML();
+  }
   if(e.target.id === 'p-dur'){ const n = Number(e.target.value); PLAN.dur = Number.isInteger(n) && n >= RULES.duration_min && n <= RULES.duration_max ? n : null; $('plan-body').querySelectorAll('[data-pdur]').forEach(b => b.classList.remove('is-on')); }
   planValidity();
 });
@@ -1295,25 +1436,76 @@ $('plan-body').addEventListener('click', e => {
   if(t.closest('[data-plan-signin]')) return ssoLogin(false, '/?v=plan');
   const h=t.closest('[data-plan-h]'); if(h){ PLAN.habit=HABITS[+h.dataset.planH]; PLAN.context=PLAN.habit; return planPaint(); }
   if(t.closest('[data-plan-reh]')){ PLAN.seq++; PLAN.habit = null; PLAN.context = null; return planPaint(); }
-  if(t.closest('[data-plan-details]')){ PLAN.details = !PLAN.details; return planPaint(); }
   if(t.closest('[data-plan-place]')) return mapOpen();
+  if(t.closest('[data-plan-unpin]')){ PLAN.pos = null; PLAN.place = ''; return planPaint(); }
+  const c = t.closest('[data-pcity]'); if(c){ planCity(CITIES[+c.dataset.pcity]); return planPaint(); }
+  if(t.closest('[data-plan-file]')) return $('p-file').click();
+  if(t.closest('[data-plan-film]')){ REC.forPlan = true; return go('cam'); }
+  if(t.closest('[data-plan-novideo]')){ planVideoDrop(); return planPaint(); }
   for(const [a,k] of [['pvis','vis'],['pmode','mode'],['ploc','loc'],['pdur','dur']]){
     const b = t.closest('[data-' + a + ']'); if(b){ PLAN[k] = k === 'dur' ? +b.dataset[a] : b.dataset[a]; if(k === 'vis'){ PLAN.loc=null; PLAN.mode=null; store.set('space_vis', PLAN.vis); } if(k === 'loc') PLAN.mode=null; return planPaint(); }
   }
   if(t.closest('[data-plan-send]')) return planSend();
 });
+/* VIDEO — From my files : vertical, ≤ 33 s, ≤ 48 Mo (limites du serveur),
+   vérifiés AVANT l'envoi ; le fichier part tel quel, sans ré-encodage. */
+$('p-file').addEventListener('change', e => { const f = e.target.files?.[0]; e.target.value = ''; if(f) planFile(f); });
+async function planFile(file){
+  const seq = ++PLAN.fileSeq, max = RULES.clip_max_bytes || 48e6, secs = RULES.clip_seconds || 33;
+  const ext = (file.name.match(/\.(mp4|mov|webm)$/i)?.[1] || '').toLowerCase();
+  const type = /^video\/(mp4|quicktime|webm)$/.test(file.type) ? file.type : ({mp4:'video/mp4',mov:'video/quicktime',webm:'video/webm'})[ext];
+  const refuse = t => { if(seq === PLAN.fileSeq && VIEW === 'plan'){ planPaint(); planNote(t); } };
+  if(!type) return refuse('mp4, mov or webm only.');
+  if(file.size > max) return refuse('Too heavy — up to ' + Math.floor(max/1e6) + ' MB. Film it here instead.');
+  const url = URL.createObjectURL(file), probe = document.createElement('video'); probe.muted = true; probe.preload = 'metadata';
+  const meta = await new Promise(res => { const timer = setTimeout(() => res(null), 10000);
+    probe.onloadedmetadata = () => { clearTimeout(timer); res({ w:probe.videoWidth, h:probe.videoHeight, d:probe.duration }); };
+    probe.onerror = () => { clearTimeout(timer); res(null); }; probe.src = url; });
+  probe.removeAttribute('src'); probe.load();
+  const fail = t => { URL.revokeObjectURL(url); refuse(t); };
+  if(seq !== PLAN.fileSeq || VIEW !== 'plan' || PLAN.busy){ URL.revokeObjectURL(url); return; }
+  if(!meta || !meta.w || !meta.h || !Number.isFinite(meta.d) || meta.d <= 0) return fail('This video cannot be read here — film it instead.');
+  if(meta.d > secs + .5) return fail('Up to ' + secs + ' seconds — cut it, or film it here.');
+  if(meta.h <= meta.w) return fail('Vertical video only (9:16).');
+  planVideoDrop();
+  PLAN.video = { blob:file.type === type ? file : file.slice(0, file.size, type), seconds:Math.max(.5, Math.min(secs, meta.d)), size:file.size, url, ref:null };
+  planPaint();
+}
+/* Film it : la caméra SPACE, puis retour au TOP avec le clip vérifié. */
+function planTakeClip(){
+  planVideoDrop();
+  PLAN.video = { blob:REC.blob, seconds:Math.max(.5, Math.min(RULES.clip_seconds || 33, REC.seconds || 1)), size:REC.blob.size, url:URL.createObjectURL(REC.blob), ref:null };
+  REC.forPlan = false; go('plan');
+}
+/* Ordre d'envoi : la vidéo (privée tant qu'elle n'est liée à rien), puis le
+   space, puis le lien. Un envoi réussi est gardé pour un nouvel essai. */
+async function videoSend(blob, seconds, onProgress){
+  if(RULES.video_provider === 'bunny') return bunnyUpload(blob, seconds, onProgress);
+  const t = blob.type || '', ext = t.includes('mp4') ? 'mp4' : t.includes('quicktime') ? 'mov' : 'webm', path = me.id + '/' + crypto.randomUUID() + '.' + ext;
+  const up = await sb.storage.from('moments').upload(path, blob, { contentType:t || 'video/' + ext, upsert:false }); if(up.error) throw up.error;
+  return path;
+}
 async function planSend(){
   if(PLAN.busy || planMissing().length) return;
-  PLAN.busy = true; planPaint(); const shared = PLAN.vis === 'shared';
+  PLAN.busy = true; planPaint(); const shared = PLAN.vis === 'shared', v = PLAN.video;
+  if(v && !v.ref){
+    planNote('sending the video…');
+    try{ v.ref = await videoSend(v.blob, v.seconds, n => planNote('sending the video… ' + n + '%')); }
+    catch(e){ console.error('[plan video]', e && e.message); PLAN.busy = false; planPaint(); return planNote('The video was not sent — try again, or remove it.'); }
+  }
+  const at = PLAN.pos || PLAN.cityPos;
   const { data, error } = await sb.rpc('spot_schedule', { p_habit:PLAN.habit.name, p_visibility:PLAN.vis,
     p_starts_at:new Date(PLAN.date + 'T' + PLAN.time).toISOString(), p_duration_min:PLAN.dur,
-    p_place:PLAN.place || PLAN.city || 'the planned place', p_lat:PLAN.pos.lat, p_lng:PLAN.pos.lng,
+    p_place:PLAN.pos ? (PLAN.place || PLAN.city || 'the planned place') : PLAN.city, p_lat:at.lat, p_lng:at.lng,
     p_city:PLAN.city, p_comment:PLAN.say.trim() || null, p_mode:shared && PLAN.loc === 'on' ? PLAN.mode : null, p_location:shared ? PLAN.loc : null });
+  if(error || !data?.ok){ if(error) console.error('[spot_schedule]', error.message); PLAN.busy = false; planPaint(); return planNote(({when:'Choose a future date within the next 90 days.',habit:'This Habit Box is no longer in my TOTEHM.',too_many:'Enough spots planned for now.',signin:'Sign in again.',place:'Choose a city or a point on the map.',position:'Choose a city or a point on the map.'})[data?.why] || 'Not saved — try again.'); }
+  let linked = true;
+  if(v?.ref){ const r = await sb.rpc('spot_video_attach', { p_spot:data.id, p_video:v.ref }); if(r.error) console.error('[spot_video_attach]', r.error.message); linked = !r.error && !!r.data?.ok; }
   PLAN.busy = false;
-  if(error || !data?.ok){ if(error) console.error('[spot_schedule]', error.message); planPaint(); const n = $('p-note'); if(n){ n.className = 'note no'; n.textContent = ({when:'Choose a future date within the next 90 days.',habit:'This Habit Box is no longer in my TOTEHM.',too_many:'Enough spots planned for now.',signin:'Sign in again.'})[data?.why] || 'Not saved — try again.'; } return; }
-  PLAN.habit = null; PLAN.say = ''; PLAN.pos = null; PLAN.place = ''; PLAN.city = null; PLAN.dur = null;
+  PLAN.habit = null; PLAN.say = ''; PLAN.pos = null; PLAN.place = ''; PLAN.dur = null; planVideoDrop();
   await Promise.all([loadExact(),loadList()]); loadFeed(false); go('list');
-  const s = LIST.list.find(x => x.id === data.id); if(s) openDetail(s); else { const r = await sb.rpc('spot_get',{p_id:data.id}); if(r.error) console.error('[spot_get]',r.error.message); if(r.data?.ok) openDetail(r.data.spot); }
+  const s = LIST.list.find(x => x.id === data.id); if(s) await openDetail(s); else { const r = await sb.rpc('spot_get',{p_id:data.id}); if(r.error) console.error('[spot_get]',r.error.message); if(r.data?.ok) await openDetail(r.data.spot); }
+  if(!linked && DETAIL?.id === data.id){ const n = document.createElement('p'); n.className = 'note no'; n.textContent = 'The video could not be attached to this space.'; $('detail').append(n); }
 }
 /* La carte sert uniquement à choisir MON futur lieu. Les autres Spots
    restent un radar de coordonnées autorisées, jamais une carte du feed. */
@@ -1335,7 +1527,7 @@ function mapDraw(){
   [...tiles.children].forEach(i => { if(!wanted.has(i.dataset.id)) i.remove(); });
 }
 function mapOpen(){
-  const p = PLAN.pos || POS || {lat:38.7223,lng:-9.1393}; Object.assign(MAP,{open:true,lat:p.lat,lng:p.lng,z:PLAN.pos || POS ? 16 : 12});
+  const p = PLAN.pos || PLAN.cityPos || POS || {lat:38.7223,lng:-9.1393}; Object.assign(MAP,{open:true,lat:p.lat,lng:p.lng,z:PLAN.pos || !PLAN.cityPos && POS ? 16 : PLAN.cityPos ? 13 : 12});
   $('place-name').value = PLAN.place; $('place-picker').classList.remove('hide'); $('radar-map').classList.remove('hide'); document.body.classList.add('is-pin'); pickerClose();compassOff();RAD.headTo=0;paintInts();radarOn();mapDraw();$('place-use').focus();
 }
 function mapClose(){ MAP.open = false; MAP.seq++; MAP.pointers.clear(); MAP.drag = MAP.pinch = null; $('place-picker').classList.add('hide');$('radar-map').classList.add('hide');document.body.classList.remove('is-pin');paintInts();radarOn();$('plan-body').querySelector('[data-plan-place]')?.focus(); }
@@ -1343,9 +1535,9 @@ $('place-cancel').onclick = mapClose;
 $('place-use').onclick = async () => {
   const pos = {lat:MAP.lat,lng:MAP.lng}, place = $('place-name').value.trim(), seq = ++MAP.seq;
   $('place-use').disabled = true;
-  const city = await cityNear(pos); $('place-use').disabled = false;
+  const city = await nearestCity(pos); $('place-use').disabled = false;
   if(!MAP.open || seq !== MAP.seq) return;
-  PLAN.pos = pos; PLAN.place = place; PLAN.city = city; mapClose(); planPaint();
+  PLAN.pos = pos; PLAN.place = place; if(city) planCity(city); mapClose(); planPaint();
 };
 function mapZoom(d){ MAP.z = Math.max(2,Math.min(19,MAP.z+d)); mapDraw(); }
 $('map-tools').addEventListener('click', async e => {
@@ -1429,6 +1621,7 @@ function camRec(){
     const v = $('cam-v'); v.srcObject = null; REC.url = URL.createObjectURL(REC.blob); v.src = REC.url; v.loop = true; v.muted = true;
     try{await v.play();await cameraReady(v);if(seq!==REC.seq || VIEW!=='cam') return;if(Math.abs(v.videoWidth*16-v.videoHeight*9)>2) throw new Error('Portrait video required');}
     catch(e){if(seq!==REC.seq || VIEW!=='cam') return;console.error('[recorded video]',e.message);REC.blob=null;REC.step='retry';return camPaint();}
+    if(REC.forPlan) return planTakeClip();
     REC.step = 'habit'; camPaint(); loadHabits().then(() => { if(seq === REC.seq && REC.step === 'habit') camPaint(); });
   };
   // Encoder startup must not consume the clip duration or stop an empty recording.
@@ -1459,7 +1652,7 @@ function camPaint(){
   else if(st === 'nocam') h = '<p class="say">This browser cannot film. Try Safari or Chrome on the phone.</p>';
   else if(st === 'retry') h = '<p class="say">The recording did not arrive. Film it again.</p><button class="btn" type="button" data-again="1">Again</button>';
   else if(st === 'heavy') h = '<p class="say">Too heavy — film it again.</p><button class="btn" type="button" data-again="1">Again</button>';
-  else if(st === 'ready') h = '<p class="say">Share a space to your Totehm</p><p class="note">Tap the red point to start filming · up to 33 seconds</p>';
+  else if(st === 'ready') h = REC.forPlan ? '<p class="say">Film the video of my future space</p><p class="note">Tap the red point to start filming · up to 33 seconds</p><button class="lnk" type="button" data-cancel="1">Back</button>' : '<p class="say">Share a space to your Totehm</p><p class="note">Tap the red point to start filming · up to 33 seconds</p>';
   else if(st === 'count') h = '<button class="btn" type="button" data-cancel="1">Cancel</button>';
   else if(st === 'rec') h = '<p class="say">Tap the joystick to stop.</p>';
   else if(st === 'habit'){
@@ -1487,7 +1680,7 @@ $('cam-body').addEventListener('input', e => {
 $('cam-body').addEventListener('click', e => {
   const t = e.target instanceof Element ? e.target : null; if(!t || REC.busy) return;
   if(t.closest('[data-signin]')) return ssoLogin(false, '/?v=cam');
-  if(t.closest('[data-cancel]')){ camReset(); return go('radar'); }
+  if(t.closest('[data-cancel]')){ const back = REC.forPlan ? 'plan' : 'radar'; camReset(); return go(back); }
   if(t.closest('[data-again]')) return camOpen();
   const hk = t.closest('[data-h]'); if(hk){ REC.habit = HABITS[+hk.dataset.h]; REC.step = 'form'; return camPaint(); }
   if(t.closest('[data-reh]')){ REC.step = 'habit'; return camPaint(); }
@@ -1499,12 +1692,6 @@ $('cam-body').addEventListener('click', e => {
 });
 const geo = () => new Promise(res => { if(!navigator.geolocation) return res(null);
   navigator.geolocation.getCurrentPosition(p => res({ lat:p.coords.latitude, lng:p.coords.longitude }), () => res(null), { enableHighAccuracy:true, timeout:9000, maximumAge:60000 }); });
-let CITIES = null;
-async function cityNear(p){
-  if(!CITIES){ try{ const r = await fetch('/cities.json'); CITIES = r.ok ? (await r.json()).cities : []; }catch(_){ CITIES = []; } }
-  let best = null, bd = 40e3; for(const k of CITIES){ const d = hav(p, { lat:k[1], lng:k[2] }); if(d < bd){ bd = d; best = k[0]; } }
-  return best;
-}
 const note = (t, no) => { const n = $('c-note'); if(n){ n.textContent = t || ''; n.className = 'note' + (no ? ' no' : ''); } };
 async function camSend(){
   if(REC.busy || missing().length || !REC.blob || !me) return;
@@ -1513,14 +1700,7 @@ async function camSend(){
   const place=geo().then(async pos=>({pos,city:pos?await cityNear(pos):null}));
   let path=REC.uploaded;
   try{
-   if(!path){
-    if(RULES.video_provider==='bunny') path=await bunnyUpload(REC.blob,REC.seconds,p=>note('sending… '+p+'%'));
-    else {
-     const ext=REC.blob.type.includes('mp4')?'mp4':'webm';path=me.id+'/'+crypto.randomUUID()+'.'+ext;
-     const up=await sb.storage.from('moments').upload(path,REC.blob,{contentType:REC.blob.type,upsert:false});if(up.error) throw up.error;
-    }
-    REC.uploaded=path;
-   }
+   if(!path){path=await videoSend(REC.blob,REC.seconds,p=>note('sending… '+p+'%'));REC.uploaded=path;}
   }catch(e){console.error('[upload]',e.message);REC.busy=false;REC.step='form';camPaint();return note('Not sent — try again.',true);}
   VIDEO_METRICS.uploadMs=Math.round(performance.now()-started);
   const {pos,city}=await place;
@@ -1543,7 +1723,7 @@ async function camSend(){
 
 /* ══ LES CINQ VUES — joystick, trackpad, souris et écran tactile ═════ */
 const CROIX = { radar:{h:'plan',b:'cam',g:'feed',d:'list'}, plan:{b:'radar',g:'feed',d:'list'}, cam:{h:'radar',g:'feed',d:'list'}, feed:{d:'radar'}, list:{g:'radar'} };
-const voisin = d => CROIX[VIEW][d] || null;
+const voisin = d => VIEW === 'cam' && REC.forPlan && d === 'h' ? 'plan' : CROIX[VIEW][d] || null;
 const recordingLocked = () => VIEW === 'cam' && ['perm','count','rec','habit','form','send','retry','heavy'].includes(REC.step);
 function joyPaint(preview){
   const bx = $('joy-box'), camera = VIEW === 'cam';
@@ -1562,8 +1742,8 @@ function go(v){
   const was = VIEW; VIEW = v; closeDetail(); pickerClose();
   document.body.className = document.body.className.replace(/\bv-\w+/g,'').trim() + ' v-' + v;
   document.querySelectorAll('.view').forEach(s => s.classList.toggle('is-on',s.id === 'v-'+v));
-  if(was === 'cam') camReset();
-  if(was === 'feed') document.querySelectorAll('#feed video').forEach(releaseClip);
+  if(was === 'cam'){ camReset(); REC.forPlan = false; }
+  if(was === 'feed'){ document.querySelectorAll('#feed video').forEach(releaseClip); sfOpen(false); }
   if(v === 'plan') planOpen();
   if(v === 'cam') camOpen();
   if(v === 'feed') document.querySelectorAll('#feed .clip[data-k]').forEach(c => {io.unobserve(c);io.observe(c);});
@@ -1583,7 +1763,7 @@ function joyTap(){
 addEventListener('keydown',e => {
   if(e.key==='Tab' && VIEW==='cam' && document.body.classList.contains('is-form')){const f=[...$('cam-body').querySelectorAll('button:not(:disabled),input,textarea,a[href]')].filter(x=>x.getClientRects().length);if(f.length){const i=f.indexOf(document.activeElement);if(e.shiftKey && i<=0 || !e.shiftKey && (i<0 || i===f.length-1)){e.preventDefault();(e.shiftKey?f.at(-1):f[0]).focus();}}return;}
   if(e.key === 'Escape'){
-    if(MAP.open) mapClose(); else if(!$('habit-picker').classList.contains('hide')) pickerClose(); else if(DETAIL) closeDetail();
+    if(MAP.open) mapClose(); else if(!$('habit-picker').classList.contains('hide')) pickerClose(); else if(!$('sf-panel').classList.contains('hide')) sfOpen(false); else if(DETAIL) closeDetail();
     else if($('menu').classList.contains('is-open')) menu(false); else if(REC.step === 'rec') joyTap(); else if(VIEW !== 'radar' && !REC.busy && !PLAN.busy) go('radar');
     return;
   }
@@ -1597,7 +1777,7 @@ addEventListener('keydown',e => {
    leurs gestes. Le radar conserve le pincement / ctrl-wheel de zoom. */
 (function gestures(){
   const pointers = new Map(); let drag = null, pinch = null, pinching = false;
-  const excluded = t => !!t.closest?.('#cam-body,#v-plan,#joy,button,input,textarea,select,a,#detail,#menu,#habit-picker,#totehm-paper,#place-picker,[contenteditable],#radar-map,#radar-tools');
+  const excluded = t => !!t.closest?.('#cam-body,#v-plan,#joy,button,input,textarea,select,a,#detail,#menu,#habit-picker,#sf-panel,#totehm-paper,#place-picker,[contenteditable],#radar-map,#radar-tools');
   const horizontal = dx => {if(['feed','list'].includes(VIEW)){gestureCount++;go('radar');}else step(dx>0?'g':'d');};
   const scroller = t => t.closest?.('#feed,#list,#v-plan,#cam-body');
   const canScroll = (el,delta) => !!el && el.scrollHeight > el.clientHeight + 3 && (delta > 0 ? el.scrollTop < el.scrollHeight - el.clientHeight - 3 : el.scrollTop > 3);
@@ -1631,7 +1811,7 @@ addEventListener('keydown',e => {
   },true);
   addEventListener('pointercancel',e => { pointers.delete(e.pointerId); drag=null; pinch=null; if(!pointers.size) pinching=false; },true);
   let touch=null;
-  const touchExcluded=t=>!!t.closest?.('#cam-body,#v-plan,#joy,input,textarea,select,#detail,#menu,#habit-picker,#totehm-paper,#place-picker,#radar-tools,#radar-map,[contenteditable]');
+  const touchExcluded=t=>!!t.closest?.('#cam-body,#v-plan,#joy,input,textarea,select,#detail,#menu,#habit-picker,#sf-panel,#sf-btn,#totehm-paper,#place-picker,#radar-tools,#radar-map,[contenteditable]');
   addEventListener('touchstart',e=>{
     if(e.touches.length!==1 || touchExcluded(e.target) || recordingLocked() || PLAN.busy || MAP.open || RAD.turn || DETAIL){ touch=null;return; }
     const p=e.touches[0];touch={x:p.clientX,y:p.clientY,t:Date.now(),el:scroller(e.target),view:VIEW};
@@ -1710,7 +1890,7 @@ function paintMember(){
 $('member').onclick = () => menu(!$('menu').classList.contains('is-open'));
 $('menu').addEventListener('click', async e => {
   if(e.target.closest('[data-signin]')) return ssoLogin(false);
-  if(e.target.closest('[data-out]')){ await sb.auth.signOut({ scope:'local' }); me = null; PSEUDO = null; HABITS = null; S.habit = null; S.q = '';SIGNED.clear();closeDetail();FEED.list=[];EX.list=[];LIST.list=[];paintFeed();paintList();paintRadarEmpty();$('habit-filter').textContent = 'Habit Box · all'; if(VIEW === 'cam') camReset(); PLAN.seq++; PLAN.context = null; PLAN.habit = null; menu(false); pickerClose(); paintMember(); if(VIEW === 'plan') planPaint(); reload(); }
+  if(e.target.closest('[data-out]')){ await sb.auth.signOut({ scope:'local' }); me = null; PSEUDO = null; HABITS = null; S.habit = null; S.q = '';SIGNED.clear();closeDetail();FEED.list=[];EX.list=[];LIST.list=[];paintFeed();paintList();paintRadarEmpty();$('habit-filter').textContent = 'Habit Box · all'; if(VIEW === 'cam') camReset(); PLAN.seq++; PLAN.context = null; PLAN.habit = null; planVideoDrop(); planCity(null); PLAN.cityText = ''; menu(false); pickerClose(); paintMember(); if(VIEW === 'plan') planPaint(); reload(); }
 });
 document.addEventListener('pointerdown', e => { if($('menu').classList.contains('is-open') && !e.target.closest('#menu,#member')) menu(false); });
 

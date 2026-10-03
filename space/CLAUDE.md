@@ -1,5 +1,18 @@
 # space/CLAUDE.md — totehm.space : DO WITH ME (un Spot, cinq vues)
 
+## ⛔ ÉTAT AU 03/10/2026 (bis) — TOP = BOTTOM, LEFT FILTRÉ
+
+BUILD `2026-10-03-spaces-top`. Complète la section suivante, ne la remplace pas.
+
+- **TOP (créer un space futur)** : la Habit Box seule (un tap la change), puis la configuration sur fond noir `rgba(0,0,0,.92)`, sélections grises — le même rendu que le formulaire BOTTOM.
+- **WHERE?** : une ville tapée (suggestions locales `cities.json`, homonymes distingués par le pays) ET/OU « On the map » (le point exact dans le radar). SHARED·ON exige le point ; PRIVATE et SHARED·OFF se contentent de la ville, centre de la ville envoyé à `spot_schedule`. TOP ne demande JAMAIS la position : une position déjà connue préremplit seulement la ville. Choisir une ville à plus de 40 km du point retire le point.
+- **VIDEO** en fin de parcours, facultative : « From my files » (mp4/mov/webm, vertical, ≤ 33 s, ≤ 48 Mo, vérifiés avant l'envoi, aucun ré-encodage) ou « Film it » (la caméra SPACE, `REC.forPlan`, joystick haut = retour TOP, puis retour TOP avec le clip ; le brouillon est conservé). Ordre : envoi de la vidéo (Bunny ou Storage, `videoSend`) → `spot_schedule` → `spot_video_attach`. Un envoi réussi est gardé (`ref`) pour un nouvel essai.
+- **Le bloc d'un space** (LEFT, RIGHT, détail) : la Habit Box navy, puis `.sdata` noir avec des étiquettes grises `.sd-tag` (état, heure, durée, lieu, partage, mode) et le mot du membre en Quantico.
+- **LEFT** : bouton `#sf-btn` à droite du papier, panneau `#sf-panel` — When now/before · Location on/off · Together silent/social ; re-tap = retirer. Filtre dans le navigateur, zéro requête ; si moins de 3 spaces restent, jusqu'à 5 pages suivantes par changement.
+- **Radar** : `#cmp` et `#map-tools` invisibles tant que `draw()` ne les a pas placés (`#radar-tools.is-placed`) — plus de saut en haut à gauche au chargement déconnecté.
+- `cities.json` = Natural Earth 10m, 7 342 lieux `[nom, lat, lng, scalerank, iso_a2]` (249 Ko, 109 Ko gzip, chargé à l'ouverture de TOP ou à la publication).
+- Diagnostic : `spot_filter` (compteur), `feed_shown`, `plan:{city,exact,video,uploaded}` (booléens). Test : `tests/browser/space_top_left.mjs`, `tests/sql/space_future_video_selftest.sql`.
+
 ## ⛔ ÉTAT AU 03/10/2026 — LES SPACES, SANS TITRES DE VUE
 
 Cette demande de Wah remplace les intitulés, l'auto-enregistrement et les dimensions du papier du 02/10. BUILD `2026-10-03-spaces`.
@@ -33,7 +46,7 @@ Cette demande de Wah remplace les intitulés, l'auto-enregistrement et les dimen
 > transverses sont dans le `CLAUDE.md` de la racine ; l'histoire dans
 > `docs/POSTMORTEMS.md`. Sections déplacées TELLES QUELLES de l'ancien
 > `CLAUDE.md` le 30/09/2026, les plus récentes d'abord : un renvoi « plus
-> haut » peut viser la racine ou un autre dossier. Fichier : `index.html` (≈104 Ko depuis le 01/10, navigation restaurée : `rg -n` puis lecture par plage) ; `cities.json` (Natural Earth, 1 251 villes).
+> haut » peut viser la racine ou un autre dossier. Fichier : `index.html` (≈104 Ko depuis le 01/10, navigation restaurée : `rg -n` puis lecture par plage) ; `cities.json` (Natural Earth 10m, 7 342 lieux depuis le 03/10).
 
 ## ⛔ DERNIÈRE DEMANDE · 02/10/2026 — Shorts verticaux et fluidité
 
