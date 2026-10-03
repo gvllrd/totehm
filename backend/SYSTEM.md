@@ -15,6 +15,15 @@
 
 ---
 
+## 0 · SPACE — PHOTO, WHY · TRIGGER, GESTES EN LIGNE, CAPTEUR À LA DEMANDE — 03/10/2026 (ter)
+
+| quoi | valeur mesurée |
+|---|---|
+| migrations | `space_photo_why` puis `space_photo_column` appliquées une fois ; `spot_plans_video_check` refusait `.jpg` → colonne `photo` |
+| auto-tests SQL (annulés) | `PHOTO WHY SELFTEST FAIL={}` · `FUTURE VIDEO SELFTEST FAIL={}` · `HABITS VIDEO SELFTEST FAIL={}` après les deux migrations |
+| droits | `spot_why_set` authenticated oui / anon non ; `_spot_view`, `_clip_ok` service_role seul ; `spot_create` anon non |
+| tests navigateur | `space.mjs` 35/35 · `spaces_ui.mjs` 57/57 · `space_top_left.mjs` 47/47 · `space.mjs` caméra paysage 35/35 |
+
 ## 0 · SPACE — TOP = BOTTOM, VIDÉO FUTURE, LEFT FILTRÉ — 03/10/2026
 
 | quoi | valeur mesurée |

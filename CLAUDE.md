@@ -172,12 +172,12 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 - **Claude Code** (terminal) : une commande simple par ligne, jamais
   `cd X && …` (les permissions jugent la ligne entière).
 
-**SPACE · 03/10 :** cinq vues, gestes et panneaux desktop conservés ; TOP futur, RIGHT futurs,
-CENTER Habit Box, BOTTOM Short 9:16 Full HD. Aucun titre/sous-titre de vue. Papier radar agrandi,
-filtre réduit dans les vues latérales ; REC volontaire, formulaire vidéo plein écran isolé.
-Boussole aux coins du radar abaissé ; détail glissé vers le bas, joystick en sourdine ; GO vérifie
-les droits exacts. TOP : Habit Box + configuration noire/grise, ville ET/OU carte (SHARED·ON = point exact),
-vidéo de fichier ou filmée. LEFT : bloc de données noir/gris + filtre à côté du papier. `space/CLAUDE.md` fait foi. COM : My spaces = historique propriétaire paginé.
+**SPACE · 03/10 :** « vivre une habitude hors de chez soi, la rendre agréable ». Cinq vues, gestes, panneaux
+desktop ; CENTER rejoindre maintenant · LEFT rejoindre ou s'inspirer (filtre JOIN/INSPIRED) · RIGHT
+l'agenda · TOP planifier · BOTTOM vivre (capteur éteint jusqu'à VIDEO/PHOTO). Un space = vidéo OU photo ;
+WHY · TRIGGER montré au choix de l'auteur. Gestes en ligne (GO, WATCH, CALENDAR, SHARE), fiche seulement
+pour un point du radar ou un lien. Choix d'une Habit plein écran sur téléphone. `space/CLAUDE.md` fait foi.
+COM : My spaces = historique propriétaire paginé.
 
 ## Règles d'interface qui valent partout
 
@@ -204,8 +204,8 @@ vidéo de fichier ou filmée. LEFT : bloc de données noir/gris + filtre à côt
 - **Couleurs** : navy `#333366` · bleu clair `#36498c` · rouge-violet
   `#743169` = les boîtes du Totehm et elles seules (+ le papier et le badge Higher). Coral `#fbd5ca` = le NOM du Totehm (Quantico), la méthode
   Stoner et le « Get » de [Get Higher]. Filtres, accès, abonnements, soldes,
-  portes : gris. Exception SPACE demandée : joystick COM blue/navy/rep,
-  fond navy et contrôle REC/STOP rouge dans la caméra.
+  portes : gris. Exceptions SPACE demandées : joystick COM blue/navy/rep, fond navy et REC/STOP
+  rouge dans la caméra ; boîte de contexte d'un space arrondie ; textes caméra en boîtes noires.
 - **Aucune bordure autour d'une boîte**, sur les quatre domaines : une boîte
   se détache par sa VALEUR. Exceptions : la tuile perforée (texture), les
   arêtes d'une boîte en verre 3D, le pointillé d'une place vide. Ombre autorisée sur les Habit Boxes du feed SPACE.

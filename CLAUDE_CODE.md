@@ -174,6 +174,10 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 
 Un tableau : ce qui a été fait, la valeur mesurée, ce qui n'a pas pu l'être.
 
+### Correction 0.33 — 03/10/2026 · ce que veut le membre, vue par vue
+
+À reporter dans TOTEHM_MASTER.md §0 : l'idée de SPACE = vivre une habitude hors de chez soi, la rendre agréable. Radar = rejoindre maintenant ; fil = rejoindre (JOIN) ou s'inspirer (GET INSPIRED) ; agenda = prévoir (GO, WATCH, CALENDAR, SHARE) ; TOP = annoncer ; BOTTOM = vivre, caméra éteinte jusqu'à VIDEO ou PHOTO. Un space porte une vidéo OU une photo. Sur un space partagé, l'auteur peut montrer le WHY (objectifs) et le TRIGGER (répulsions) de sa Habit : le format natif des partenariats de marque (mention de partenariat payé à prévoir). GO sans abonnement → SUBSCRIBE vers la page du créateur sur COM. Plus de fiche qui répète la boîte. Prix et droits inchangés.
+
 ### Correction 0.32 — 03/10/2026 · TOP = BOTTOM, vidéo future, LEFT filtré
 
 À reporter dans TOTEHM_MASTER.md §0 : créer un space futur (TOP) = la Habit Box, puis une configuration noire et grise comme après une vidéo. Le lieu : une ville ET/OU le point sur la carte ; seul SHARED·ON (le point pour les abonnés) exige le point exact, PRIVATE et SHARED·OFF se contentent de la ville, sans demander la position. Une vidéo peut finir le parcours : depuis les fichiers (verticale, ≤ 33 s, ≤ 48 Mo) ou filmée par la caméra SPACE. LEFT : chaque space = Habit Box + bloc de données noir et gris ; un filtre à côté du papier (now/before · location on/off · silent/social), gratuit (navigateur). Prix et droits inchangés.

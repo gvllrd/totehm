@@ -7,6 +7,9 @@
 - Lower the mobile landing radar toward the joystick, with compass and map controls at its left/right corners. A detail is one space, with a handle, downward dismissal and [CLOSE]; mute joystick while open.
 - Filming starts only with a deliberate tap on the red joystick point. Opening the camera says **Share a space to your Totehm**. After filming, progressive options occupy a translucent black full-screen dialogue; **DURATION** is the label. Scroll never changes view from these forms.
 - A dark shadow is allowed on Habit Boxes over feed videos. [go] for SHARED·ON resolves exact-location entitlement at use time, including past spaces; no coordinates or exact map for unauthorized viewers.
+- **SPACE's promise: take a habit out of home — living it outside makes it a pleasure, not a chore.** Each view answers one wish: radar = join now; city feed = join (JOIN) or get inspired (GET INSPIRED); future list = plan to join; TOP = announce; BOTTOM = live it (video or photo, the camera wakes only on VIDEO/PHOTO).
+- A space's context (where, when, with whom) sits in a rounder box, detached under its Habit Box. Gestures are plain buttons (GO, SHARE, CALENDAR, WATCH) — no brackets, no second sheet repeating the box.
+- A shared space may show its Habit's WHY (goals) and TRIGGER (repulsions) when its author chooses: the native format for brand partnerships (a habit with a reason). Paid partnerships will need an explicit disclosure.
 - **Space** is the interface name for one Habit lived/planned in a place and time. Existing Spot APIs/data remain compatible. COM **My spaces** retrieves only the member's own private/shared history, with SSO links to SPACE.
 
 **Source of truth for product, brand and ecosystem.**
