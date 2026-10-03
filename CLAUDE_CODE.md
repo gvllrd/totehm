@@ -158,6 +158,18 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > seul avec le nom du membre (autre lot). Front seul : aucune migration,
 > aucun travail Oracle/n8n.
 
+### Correction 0.30 — 03/10/2026 · la bouche : le papier sur la langue
+
+> S'AJOUTE à 0.29 (le tap et le retournement sont inchangés). En bas de
+> l'atterrissage de totehm.com, une bouche fermée (gris, le dessin de Wah).
+> Un appui prolongé prend le papier : on le porte où l'on veut. Approché,
+> la bouche s'ouvre et la langue se tire ; posé sur la langue, il rapetisse
+> et « Get [Higher] » apparaît à sa place de repos. Lâché dessus : la langue
+> rentre avec lui, la bouche se ferme → figher.club/get_higher (par le pont
+> SSO). Lâché ailleurs : il rentre chez lui. Le paiement reste le clic
+> « Buy » de la page d'achat (renonciation au droit de rétractation). Front
+> seul : aucune migration, aucune Edge Function, aucun travail Oracle/n8n.
+
 ## Le rapport
 
 Un tableau : ce qui a été fait, la valeur mesurée, ce qui n'a pas pu l'être.

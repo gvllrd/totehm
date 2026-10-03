@@ -7,6 +7,61 @@
 > haut » peut viser la racine ou un autre dossier. Fichiers : `totehm.html` (le Totehm), `map.html`, `higherself.html`, `auth.html`, `creator.html`, `club/` (ponts).
 
 
+## ⛔ ÉTAT AU 03/10/2026 — LA BOUCHE : LE PAPIER SUR LA LANGUE
+
+**La demande de Wah :** « une bouche, fermée en bas du Totehm, ouverte
+langue tirée comme sur le fichier joint ; un maintien du clic (appui
+prolongé au téléphone) déplace le Totehm ; rapproché de la bouche, elle
+s'ouvre et la langue se tire pour le recevoir ; il se réduit en se posant
+sur la langue, « Get [Higher] » apparaît en haut à la place du Totehm au
+repos ; relâché sur la langue, ça lance [Get Higher] — l'achat du
+TotehmPaper. Une animation métaphorique du LSD paper posé sur la langue. »
+`com/totehm.html` `BUILD='2026-10-03'`, test `tests/browser/com_mouth.mjs`
+(29 mesures) ; `com_paper.mjs` inchangé (39/39).
+
+| geste sur le papier | effet |
+|---|---|
+| tap | inchangé : recto → mon Totehm (ou la porte), verso → recherche |
+| glissé AVANT 380 ms | inchangé : il se retourne |
+| appui 380 ms SANS bouger | PRIS (`'pris'`) : il se soulève (×1,08), suit le doigt au pixel, penche dans le sens du geste ; la porte d'inscription s'efface |
+| porté vers la bouche | à 70 % du chemin elle s'entrouvre, la langue suit ; au-dessus de la langue (`arme`) : il rapetisse à 60 % de la largeur de la langue, `#gate-get` (« Get » Quantico corail + badge `#higher-badge`) apparaît centré sur sa place de repos |
+| lâché ailleurs | `'rentre'` : chez lui en 420 ms, bouche refermée ; on peut le reprendre au vol |
+| lâché sur la langue | `'avale'` : posé au milieu de la langue (300 ms), un temps (220 ms), la langue rentre avec lui (600 ms, il s'efface en passant les lèvres), la bouche se ferme → `'parti'` → `ssoVersDomaine(sb,'club','https://www.figher.club/get_higher')` |
+
+**La bouche (`BOUCHE`, `#gate-mouth`)** : deux nombres, `o` (mâchoire) et
+`t` (langue). Quatre bords en suites de points, interpolés FERMÉE ↔
+OUVERTE (le dessin de Wah, gris au code près : lèvres `#1f1f1f`, intérieur
+`#111111`, dents `#3c3c3c`, langue `#2a2a2a`, raie `#232323`), lissés
+Catmull-Rom → Bézier, réécrits en `d` (une transition CSS de `d` n'existe
+pas sur Safari). La langue GLISSE (découpée sous la lèvre du haut,
+`#m-clip`, devant la lèvre du bas, derrière les dents) : elle sort par sa
+pointe, jamais plus que la bouche n'est ouverte. Le balisage porte la
+bouche FERMÉE (le module attend le pont SSO). Ressorts éteints au repos ;
+pendant qu'on avale, le papier la conduit (`forcer`) : une ligne de temps.
+`ressort()` est désormais au niveau du module GATE : papier et bouche.
+
+**⚠️ LE PAIEMENT RESTE UN CLIC SUR LA PAGE D'ACHAT.** La langue mène à
+`figher.club/get_higher` (par le pont : un membre y arrive connecté),
+jamais directement à Stripe : la renonciation au droit de rétractation
+(`waiver`, exigée par `higher-checkout`) se donne en cliquant « Buy »,
+pas par un geste sur un autre site. Un propriétaire du THP y trouve
+[Get Higher] vers la méthode.
+
+**⚠️ IL DÉPLACE LA SCÈNE, JAMAIS LA CARTE.** `#gate-asteroid` porte la
+translation, la carte reste posée sur sa face (`aPlat`) ; `atterrir()`
+remet d'abord un papier porté chez lui (`lacherTout`) : `enter()` part
+toujours d'un papier à plat, `measure()` reste juste. `occupe()` = tout
+mode autre que `'plat'`. Retour arrière (`pageshow` persisted) ou
+navigation qui n'a pas lieu (12 s) : `remettre()`.
+
+**Clavier / mouvement réduit** : `#gate-mouth` est un bouton (« Get
+Higher ») ; Entrée y envoie le papier de lui-même (`offrir()`) ; en
+mouvement réduit, aucun geste, la bouche mène tout droit à Get Higher. Un
+tap sur les lèvres l'entrouvre (l'invitation), sans rien ouvrir. Paysage :
+pas de bouche. Porte d'inscription ouverte ou Totehm déplié : bouche
+retirée (`visibility`). Diagnostic `__totehm_lsd` : `pris`, `prises`,
+`langue`, `avale`, `bouche`.
+
 ## ⛔ ÉTAT AU 02/10/2026 — LE PAPIER : ON LE RETOURNE, IL CHERCHE
 
 **La demande de Wah, en trois messages :** « je veux le Totehm animé que tu

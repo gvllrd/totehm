@@ -70,8 +70,8 @@ Les `CLAUDE.md` des dossiers servis par Vercel sont exclus du déploiement (`.ve
 
 ```
 com/      → www.totehm.com       LA SOURCE : le Totehm (5 vues), l'identité (/auth), /search, /@nom ;
-                                 papier à deux faces : recto = mon Totehm, verso = chercher un autre,
-                                 la console (/console : visibilité, abonnement, argent)
+                                 papier à deux faces (recto = mon Totehm, verso = chercher un autre),
+                                 posé sur la langue de la bouche → [Get Higher] (03/10) ; la console (/console)
 club/     → www.figher.club      le branding Higher en expérience : [Get Higher], Lisbon,
                                  méthode Stoner ; art, marché (/market) ; /console → 308
 space/    → www.totehm.space     DO WITH ME : UN Spot (PRIVATE / SHARED) naît d'une Habit

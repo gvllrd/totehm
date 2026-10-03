@@ -28,6 +28,9 @@ redirigent en 308 chaque ancien chemin vers `www.figher.club/<page>`.
   et un bouton qui suit la clé manquante. Plus d'annuel, plus de
   simulateur 80/20 (l'économie créateur vit sur COM/SPACE), plus de
   « compatibility number ».
+- **Depuis le 03/10, la bouche de totehm.com** (le papier posé sur la
+  langue) arrive sur `/get_higher` par le pont (`sso=`) : la page est
+  inchangée, l'achat reste le clic « Buy ».
 - **Retour de paiement du THP** : les pages Get Higher envoient
   `from: 'method'` à `higher-checkout` → `figher.club/stoner?checked=1`.
   Le marché n'envoie rien → `/market?owned=totehmpaper`.

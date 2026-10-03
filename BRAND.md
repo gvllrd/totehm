@@ -545,6 +545,19 @@ lays itself face up again: the threshold always starts on *my* Totehm. On
 name — that's Space's grammar, not this one. The blotter gestures of 28/09
 (slide, throw, stretch) are gone: a drag now turns it.
 
+**The paper goes on the tongue — 03/10/2026.** At the bottom of the
+landing, a mouth, closed, in the greys of the dark (no colour: it is a
+door, §13). Hold the paper (a long press, a held click) and you *carry*
+it anywhere on the screen. Bring it near the mouth: it opens, the tongue
+comes out to receive it. Laid on the tongue, the paper shrinks to the size
+of a tab, and **Get [Higher]** — "Get" in Quantico coral, Higher the badge,
+never text — appears where the paper rested. Let go on the tongue: the
+tongue takes it in, the mouth closes, and you are on [Get Higher] (the
+TotehmPaper, on `figher.club`). Let go anywhere else: it goes home. The
+metaphor is the point — *getting higher with my Totehm is worth more than
+any drug you can imagine*. The purchase itself stays an explicit click on
+the [Get Higher] page: a gesture never pays.
+
 ### SEED — vs self-help tools
 
 Self-improvement products become trackers, reminders, planners, motivation
