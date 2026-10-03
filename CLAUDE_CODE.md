@@ -173,3 +173,7 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 ## Le rapport
 
 Un tableau : ce qui a été fait, la valeur mesurée, ce qui n'a pas pu l'être.
+
+### Correction 0.31 — 03/10/2026 · espaces et identité Coral
+
+À reporter dans TOTEHM_MASTER.md §0 : le space est une Habit vécue ou planifiée dans un lieu, privé ou partagé. COM My spaces retrouve l'historique propriétaire avec des liens SSO vers SPACE. Filmer demande un REC volontaire ; après la prise, formulaire noir transparent plein écran, DURATION, sans gestes parasites. SPACE conserve cinq vues/gestes/panneaux desktop, enlève les titres, rapproche le radar du joystick et agrandit le papier ; les côtés montrent le petit filtre seul. Détail à poignée descendante et joystick en sourdine ; GO respecte les droits exacts ON. Noms en Quantico Coral, noir arrondi en recherche/verso, plus de points/carrés ni T statiques centrés. Prix et droits d'abonnement inchangés.

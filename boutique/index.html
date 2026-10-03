@@ -151,6 +151,11 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 .mw-signout:hover{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
+
+/* 03/10 — the member's TOTEHM name: Quantico Coral, without status dots. */
+#conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
+#conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
+.tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
 </style>
 </head>
 <body>
@@ -373,12 +378,15 @@ window.__totehm_boutique=()=>({ build:BUILD, page:'home', luxury_link:!!document
 
 /* ══ MEMBER SPACE ══ */
 (()=>{
-  let me=null,mbEmail='';
-  function mbPaint(){
-    $('conn-bar').innerHTML='<span class="dot" style="background:'+(me?'#639922':'#888')+'"></span>'+(me?(me.email||'').split('@')[0]:'Guest');
+  let me=null,mbEmail='',mbSeq=0;
+  async function mbPaint(){
+    const seq=++mbSeq,uid=me?.id;let name=me?'My TOTEHM':'Guest';
+    if(uid){const {data,error}=await sb.from('profiles').select('pseudo').eq('id',uid).maybeSingle();if(error)console.error('[member profile]',error.message);if(seq!==mbSeq || me?.id!==uid)return;name=data?.pseudo || name;}
+    if(seq!==mbSeq)return;
+    $('conn-bar').textContent=name;
     $('mw-out-state').style.display=me?'none':'';
     $('mw-in-state').style.display=me?'':'none';
-    if(me){$('mw-who').textContent=(me.email||'').split('@')[0];$('mw-mail').textContent=me.email||'';}
+    $('mw-who').textContent=me?name:'';$('mw-mail').textContent=me?(me.email||''):'';
   }
   $('conn-bar').onclick=()=>$('member-window').classList.add('show');
   $('mw-close').onclick=()=>$('member-window').classList.remove('show');
@@ -403,8 +411,8 @@ window.__totehm_boutique=()=>({ build:BUILD, page:'home', luxury_link:!!document
     $('member-window').classList.remove('show');
   });
   $('mw-signout').onclick=async()=>{await sb.auth.signOut();$('member-window').classList.remove('show');};
-  sb.auth.onAuthStateChange(async()=>{
-    const {data:{session}}=await sb.auth.getSession();me=session?.user||null;mbPaint();
+  sb.auth.onAuthStateChange((_event,session)=>{
+    me=session?.user||null;setTimeout(mbPaint,0);
   });
   sb.auth.getSession().then(({data:{session}})=>{me=session?.user||null;mbPaint();});
 })();

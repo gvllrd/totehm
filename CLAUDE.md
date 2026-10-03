@@ -1,17 +1,13 @@
-# CLAUDE.md — CTO de TOTEHM (racine · réorganisé le 30/09, mis à jour le 02/10/2026)
-
+# CLAUDE.md — CTO de TOTEHM (racine · réorganisé le 30/09, mis à jour le 03/10/2026)
 > **Ce fichier est chargé à CHAQUE session : il reste court (≤ 250 lignes).**
 > Détails : `CLAUDE.md` du domaine ; histoire : `docs/POSTMORTEMS.md`,
 > à lire seulement si utile. Avant copy, naming ou UI : section utile de `BRAND.md`.
-
 ## Qui fait quoi — depuis le 30/09/2026
-
 | qui | a accès à | fait |
 |---|---|---|
 | **Claude, session cloud** (claude.ai/code, dépôt `gvllrd/totehm`) | GitHub (push), Supabase MCP, Vercel MCP, Stripe (connecteur, compte live « Higher »), n8n MCP (lu le 02/10) | conçoit ET exécute : code, migrations, Edge Functions, fusion sur `main`, contrôle de la prod, lecture et tests Stripe |
 | **Claude Code, terminal de Wah** | VM Oracle (SSH, clés dans `oracle/`), n8n (MCP), Supabase MCP, clés locales | SEULEMENT ce qui exige la machine de Wah : VM Oracle, docker compose, caddy, n8n — et une migration DESTRUCTIVE (`drop`, `update` sans `where`), que la session cloud ne peut pas faire approuver |
 | **Wah** | — | la vision, les demandes, les tests sur téléphone, le « oui » avant l'argent réel |
-
 **Wah fait le minimum.** Jamais « Wah, clique X » : ce qui est automatisable
 se fait par Claude cloud (ou, si ça touche Oracle/n8n, par Claude Code).
 Seules exceptions : OAuth initial d'un service, 2FA physique, décision produit.
@@ -176,9 +172,11 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 - **Claude Code** (terminal) : une commande simple par ligne, jamais
   `cd X && …` (les permissions jugent la ligne entière).
 
-**SPACE · 02/10 :** cinq vues, gestes et panneaux desktop conservés ; TOP futur,
-RIGHT futurs, CENTER Habit Box, BOTTOM Short 9:16 Full HD. Boussole, lieu dans le radar,
-joystick COM navy REC/STOP remonté ; création progressive. `space/CLAUDE.md` fait foi. Le papier rotatif navy de SPACE fait exception à la tuile réservée au nom : logo au recto, nom au verso ; il ouvre seulement le sélecteur Habit en vue radar.
+**SPACE · 03/10 :** cinq vues, gestes et panneaux desktop conservés ; TOP futur, RIGHT futurs,
+CENTER Habit Box, BOTTOM Short 9:16 Full HD. Aucun titre/sous-titre de vue. Papier radar agrandi,
+filtre réduit dans les vues latérales ; REC volontaire, formulaire vidéo plein écran isolé.
+Boussole aux coins du radar abaissé ; détail glissé vers le bas, joystick en sourdine ; GO vérifie
+les droits exacts. `space/CLAUDE.md` fait foi. COM : My spaces = historique propriétaire paginé.
 
 ## Règles d'interface qui valent partout
 
@@ -194,31 +192,31 @@ joystick COM navy REC/STOP remonté ; création progressive. `space/CLAUDE.md` f
 - L'interface est en anglais, mots courts ; termes de marque en anglais.
 - Une règle de comportement ne va jamais dans un `@media`.
 
-## Doctrine visuelle (état au 01/10)
+## Doctrine visuelle (état au 03/10)
 
 - **Polices : Space Mono et Quantico, partout, rien d'autre** (Bebas Neue,
   Jost/Futura, Montserrat : nulle part, ni import ni CSS). Quantico = ce que
   le membre TAPE et le NOM d'un Totehm. Space Mono = texte, labels, prix,
   navigation, boutons (Bold) ; un titre = Space Mono Bold en capitales.
   « Higher » est TOUJOURS le SVG, jamais du texte ; le titre d'une vue
-  d'intention = l'intention + le badge Higher.
+  d'intention = l'intention + le badge Higher (SPACE n'affiche plus de titres de vue).
 - **Couleurs** : navy `#333366` · bleu clair `#36498c` · rouge-violet
-  `#743169` = les boîtes du Totehm et elles seules (+ le nom d'un Totehm,
-  Reveal the Box, le badge Higher). Coral `#fbd5ca` = uniquement la méthode
+  `#743169` = les boîtes du Totehm et elles seules (+ le papier et le badge Higher). Coral `#fbd5ca` = le NOM du Totehm (Quantico), la méthode
   Stoner et le « Get » de [Get Higher]. Filtres, accès, abonnements, soldes,
   portes : gris. Exception SPACE demandée : joystick COM blue/navy/rep,
   fond navy et contrôle REC/STOP rouge dans la caméra.
 - **Aucune bordure autour d'une boîte**, sur les quatre domaines : une boîte
   se détache par sa VALEUR. Exceptions : la tuile perforée (texture), les
-  arêtes d'une boîte en verre 3D, le pointillé d'une place vide. Aucune ombre.
-- **Contrôles** sur les quatre domaines : gris, `border-radius:10px`. **La
-  tuile perforée navy = le NOM d'un Totehm, et rien d'autre** (« by » à côté,
-  jamais dedans) ; son motif ne sert jamais de fond de contrôle. **Aucun fond
+  arêtes d'une boîte en verre 3D, le pointillé d'une place vide. Ombre autorisée sur les Habit Boxes du feed SPACE.
+- **Contrôles** sur les quatre domaines : gris, `border-radius:10px`. **Le
+  nom du Totehm en recherche et au verso = noir arrondi + Quantico Coral**,
+  accès membre sans point/carré ni T statique centré. Le papier conserve son navy
+  perforé ; « by » reste à côté. Aucun motif perforé comme fond de contrôle. **Aucun fond
   blanc** sur un bouton, une option, une sélection, un panneau : tout reste
   sombre (sélection = gris clair + filet blanc). Une BOÎTE reste carrée.
 - **Simple terms of use** = la DERNIÈRE entrée du menu membre, partout ;
   jamais épinglée dans un coin. Aucun pourcentage de compatibilité.
-- Sur ordinateur, tout texte gris passe au blanc au survol (`tools/hover.py`
+- Sur ordinateur, texte gris → blanc au survol ; les noms restent Coral (`tools/hover.py`
   écrit le bloc ; ne pas l'éditer à la main).
 
 ## Doctrine de coût

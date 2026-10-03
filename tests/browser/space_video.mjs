@@ -39,7 +39,7 @@ try{
  await pg.setViewportSize({width:1440,height:900});await pg.waitForTimeout(300);ok(Math.abs(await stage()-9/16)<.001,'desktop feed keeps its vertical frame');
  await pg.setViewportSize({width:390,height:844});await pg.waitForTimeout(300);
  ok(log.network.filter(x=>x.host==='test.b-cdn.net').every(x=>x.path.includes('bcdn_token=')),'HLS playlist and segments retain the signed directory prefix');
- await pg.click('#joy-box');await pg.waitForTimeout(550);await pg.click('#cur-b');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='rec');
+ await pg.click('#joy-box');await pg.waitForTimeout(550);await pg.click('#cur-b');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='ready');await pg.click('#joy-box');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='rec');
  await pg.waitForTimeout(220);
  const filming=await pg.evaluate(()=>window.__totehm_space().rec);ok(filming.width===1080 && filming.height===1920 && filming.bitrate>=10000000,'capture targets Full HD 9:16 at a high bitrate');
  await pg.setViewportSize({width:1440,height:900});await pg.waitForTimeout(100);ok(Math.abs(await pg.$eval('#v-cam',e=>{const r=e.getBoundingClientRect();return r.width/r.height;})-9/16)<.001,'desktop camera panel is vertical');

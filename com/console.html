@@ -99,6 +99,11 @@ h2{font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.2em;te
 .empty:hover{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
+
+/* 03/10 — the member's TOTEHM name: Quantico Coral, without status dots. */
+#conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
+#conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
+.tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
 </style>
 </head>
 <body>
@@ -210,7 +215,7 @@ window.__totehm_console = () => ({ build: BUILD, signed_in: !!me, loaded: !!C, v
 /* ══ LE COIN MEMBRE — SIMPLE TERMS OF USE EN DERNIER ═════════════════ */
 function paintMenu(){
   $('member').classList.toggle('is-in', !!me);
-  $('member-txt').textContent = me ? 'Console' : 'Sign in';
+  $('member-txt').textContent = me ? (C?.pseudo || 'My TOTEHM') : 'Sign in';
   $('menu').innerHTML = (me ? '<a class="m-it" href="/totehm#in">My TOTEHM</a><a class="m-it" href="/search">Search</a><button class="m-it" type="button" data-out="1">Sign out</button>'
     : '<a class="m-it" href="/search">Search</a>') + '<a class="m-it m-terms" href="/terms" target="_blank" rel="noopener">Simple terms of use</a>';
 }
@@ -229,6 +234,7 @@ async function load(){
   paint();
 }
 function paint(){
+  paintMenu();
   $('who').textContent = C.pseudo || 'name my TOTEHM';
   $('vis').querySelectorAll('[data-vis]').forEach(b => b.classList.toggle('is-on', b.dataset.vis === C.visibility));
   const o = C.offer || {};

@@ -257,6 +257,11 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Sp
 .mw-signout:hover{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
+
+/* 03/10 — the member's TOTEHM name: Quantico Coral, without status dots. */
+#conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
+#conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
+.tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
 </style>
 </head>
 <body>
@@ -1194,12 +1199,15 @@ if(goTotehm) goTotehm.onclick=goToTotehm;
 /* ══ MEMBER SPACE ══ */
 (()=>{
   const _$=id=>document.getElementById(id);
-  let me=null,mbEmail='';
-  function mbPaint(){
-    _$('conn-bar').innerHTML='<span class="dot" style="background:'+(me?'#639922':'#888')+'"></span>'+(me?(me.email||'').split('@')[0]:'Guest');
+  let me=null,mbEmail='',mbSeq=0;
+  async function mbPaint(){
+    const seq=++mbSeq,uid=me?.id;let name=me?'My TOTEHM':'Guest';
+    if(uid){const {data,error}=await sb.from('profiles').select('pseudo').eq('id',uid).maybeSingle();if(error)console.error('[member profile]',error.message);if(seq!==mbSeq || me?.id!==uid)return;name=data?.pseudo || name;}
+    if(seq!==mbSeq)return;
+    _$('conn-bar').textContent=name;
     _$('mw-out-state').style.display=me?'none':'';
     _$('mw-in-state').style.display=me?'':'none';
-    if(me){_$('mw-who').textContent=(me.email||'').split('@')[0];_$('mw-mail').textContent=me.email||'';}
+    _$('mw-who').textContent=me?name:'';_$('mw-mail').textContent=me?(me.email||''):'';
   }
   _$('conn-bar').onclick=()=>_$('member-window').classList.add('show');
   _$('mw-close').onclick=()=>_$('member-window').classList.remove('show');
@@ -1224,8 +1232,8 @@ if(goTotehm) goTotehm.onclick=goToTotehm;
     _$('member-window').classList.remove('show');
   });
   _$('mw-signout').onclick=async()=>{await sb.auth.signOut();_$('member-window').classList.remove('show');};
-  sb.auth.onAuthStateChange(async()=>{
-    const {data:{session}}=await sb.auth.getSession();me=session?.user||null;mbPaint();
+  sb.auth.onAuthStateChange((_event,session)=>{
+    me=session?.user||null;setTimeout(mbPaint,0);
   });
   sb.auth.getSession().then(({data:{session}})=>{me=session?.user||null;mbPaint();});
 })();
