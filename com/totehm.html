@@ -2940,6 +2940,32 @@ body.gate.entered #filter-badge{
 #fold-x svg:hover{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
+
+/* 03/10 — the member's TOTEHM name: Quantico Coral, without status dots. */
+#conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
+#conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
+.tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
+
+.ast-say,.ast-say.is-name,#gate-asteroid:hover .ast-say,.ast-say:hover,.ast-say.is-name:hover{color:#fbd5ca;background:#000;border-radius:7px;padding:4px 6px}
+.sr-name,.srch-name,.srch-row:hover .srch-name,.srch-name:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
+#srch-q{color:#fbd5ca;caret-color:#fbd5ca;background:#000;border-radius:10px;padding:8px 12px}
+#name-btn.claimed,#set-name{font-family:'Quantico',sans-serif;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px}
+
+/* Personal spaces: owner-only history, opened from the member menu. */
+#myspaces{position:fixed;inset:0;z-index:260;display:none;background:rgba(0,0,0,.94);overflow-y:auto;overscroll-behavior:contain;padding:24px 16px 40px}
+#myspaces.is-open{display:block}
+#myspaces-inner{width:min(560px,100%);margin:0 auto;display:flex;flex-direction:column;gap:16px}
+#myspaces-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#myspaces-title{font-family:'Space Mono',monospace;font-size:13px;font-weight:400;letter-spacing:.08em}
+#myspaces-name{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca}
+#myspaces-close{width:fit-content;font-size:11px;background:none;border:none;color:#b0b0b0;padding:6px;cursor:pointer}
+#myspaces-list{display:flex;flex-direction:column;gap:8px}
+.my-space{display:flex;flex-direction:column;gap:6px;align-items:flex-start;background:#111114;border:0;border-radius:10px;padding:14px;font-size:11px;color:#b0b0b0;text-align:left;cursor:pointer;width:100%}
+.my-space-habit{font-family:'Quantico',sans-serif;font-size:15px;color:#fff}
+.my-space-state{font-family:'Space Mono',monospace;font-size:9px;color:#9a9a9a}
+#myspaces-note{font-family:'Space Mono',monospace;font-size:11px;color:#9a9a9a}
+#myspaces-more,#myspaces-open-space{width:fit-content;font-family:'Space Mono',monospace;font-size:11px;color:#b0b0b0;background:#16161a;border:0;border-radius:8px;padding:8px 12px;cursor:pointer}
+@media(hover:hover){.my-space:hover{background:#1c1c22}#myspaces-close:hover,#myspaces-more:hover,#myspaces-open-space:hover{color:#fff}}
 </style>
 </head>
 <body class="gate">
@@ -3313,7 +3339,7 @@ a Totehm</span>
       <!-- Le même carré vert que la barre du haut, en grand et lancé :
            à .22 s le tour, l'œil ne suit plus les angles et le voit rond.
            C'est le signe qu'on est DEDANS. -->
-      <span id="mw-dot" aria-hidden="true"></span>
+      
       <div class="mw-pseudo" id="mw-who"></div>
       <div class="mw-mail" id="mw-mail"></div>
       <div class="mw-sync" id="mw-sync"></div>
@@ -3410,6 +3436,8 @@ a Totehm</span>
         </div>
       </div>
 
+      <div class="set-block"><button class="mw-link" id="myspaces-open" type="button">My spaces</button></div>
+
       <!-- ══ ACTIONS DESTRUCTIVES · discrètes, écartées des liens menu
            · 24/09/2026. Wah : Totehmize my cloth et Delete my Totehm ne
            doivent JAMAIS se lire comme deux boutons de même poids. Delete
@@ -3429,6 +3457,16 @@ a Totehm</span>
     </div>
   </div>
 </div>
+<section id="myspaces" role="dialog" aria-modal="true" aria-labelledby="myspaces-title" tabindex="-1">
+  <div id="myspaces-inner">
+    <div id="myspaces-head"><h2 id="myspaces-title">My spaces</h2><button id="myspaces-close" type="button">[CLOSE]</button></div>
+    <div id="myspaces-name"></div>
+    <div id="myspaces-list"></div>
+    <p id="myspaces-note" role="status"></p>
+    <button id="myspaces-more" class="hide" type="button">More</button>
+    <button id="myspaces-open-space" type="button">Create a space ↗</button>
+  </div>
+</section>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
@@ -4509,7 +4547,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-03';
+const BUILD='2026-10-03-spaces';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -7095,7 +7133,7 @@ function connPaint(){
   /* Plus de « Guest » : le coin n'existe que pour un inscrit, et il dit
      son nom. `body.member` le montre ou le cache (CSS). */
   const label=(myProfile&&myProfile.pseudo)||'';
-  $('conn-bar').innerHTML='<span class="dot" style="background:#fff"></span>'+esc(label)+(myHigher?HI_SVG:'');
+  $('conn-bar').innerHTML=esc(label)+(myHigher?HI_SVG:'');
   document.body.classList.toggle('member',inscrit());
   paintAsteroid();
 }
@@ -7418,6 +7456,37 @@ memberPaint=function(){
   if(!me){ box.innerHTML=''; $('tg-block').classList.add('hide'); return; }
   loadSubscription().then(sub=>{ paintSubscription(sub); paintTelegram(sub); });
 };
+/* COM retrieves only the member's own private/shared spaces. Detail and video stay on SPACE. */
+const MYSPACES={seq:0,rows:[],more:false,busy:false,inert:[]};
+const spacesState=s=>{const start=Date.parse(s.starts_at),end=Date.parse(s.ends_at),now=Date.now();return start>now?'I WILL BE HERE':now<end?'I AM HERE':'I WAS THERE';};
+function spacesClose(){
+ MYSPACES.seq++;MYSPACES.busy=false;$('myspaces').classList.remove('is-open');
+ MYSPACES.inert.forEach(([e,was])=>e.inert=was);MYSPACES.inert=[];
+ if(me){$('member-window').classList.add('show');$('myspaces-open').focus();}
+}
+async function spacesLoad(more=false){
+ if(!me || MYSPACES.busy)return;MYSPACES.busy=true;const seq=++MYSPACES.seq,uid=me.id,last=more?MYSPACES.rows.at(-1):null;
+ $('myspaces-note').textContent='Reading my spaces…';$('myspaces-more').disabled=true;
+ try{
+  const {data,error}=await sb.rpc('my_spaces',{p_before:last?.starts_at || null,p_before_id:last?.id || null,p_limit:30});
+  if(seq!==MYSPACES.seq || me?.id!==uid || !$('myspaces').classList.contains('is-open'))return;
+  if(error || !data?.ok){if(error)console.error('[my_spaces]',error.message);$('myspaces-note').textContent='My spaces could not load. Reopen this window to try again.';return;}
+  MYSPACES.rows=more?MYSPACES.rows.concat(data.spaces || []):data.spaces || [];MYSPACES.more=!!data.more;
+  $('myspaces-list').innerHTML=MYSPACES.rows.map(x=>{const date=new Date(x.starts_at),when=Number.isNaN(date.getTime())?'':date.toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});return '<button class="my-space" type="button" data-space="'+esc(x.id)+'"><span class="my-space-habit">'+esc(x.habit)+'</span><span class="my-space-state">'+spacesState(x)+' · '+(x.visibility==='private'?'PRIVATE':'SHARED')+'</span><span>'+esc(when)+'</span>'+(x.place || x.city?'<span>'+esc(x.place || x.city)+'</span>':'')+'<span>Open in SPACE ↗</span></button>';}).join('');
+  $('myspaces-more').classList.toggle('hide',!MYSPACES.more);$('myspaces-note').textContent=MYSPACES.rows.length?'':'No spaces yet. Record your first one on SPACE.';
+ }catch(_){if(seq===MYSPACES.seq)$('myspaces-note').textContent='My spaces could not load. Reopen this window to try again.';}
+ finally{if(seq===MYSPACES.seq){MYSPACES.busy=false;$('myspaces-more').disabled=false;}}
+}
+$('myspaces-open').onclick=()=>{
+ if(!me)return;MYSPACES.rows=[];MYSPACES.more=false;$('myspaces-list').replaceChildren();$('myspaces-more').classList.add('hide');$('myspaces-name').textContent=myProfile?.pseudo || '';
+ $('member-window').classList.remove('show');$('myspaces').classList.add('is-open');
+ MYSPACES.inert=['gate','stage','conn-bar','member-window'].map(id=>$(id)).filter(Boolean).map(e=>[e,e.inert]);MYSPACES.inert.forEach(([e])=>e.inert=true);
+ $('myspaces-close').focus();spacesLoad();
+};
+$('myspaces-close').onclick=spacesClose;$('myspaces-more').onclick=()=>spacesLoad(true);
+$('myspaces-open-space').onclick=()=>ssoVersDomaine(sb,'space','https://www.totehm.space/?v=cam');
+$('myspaces-list').onclick=e=>{const b=e.target.closest('[data-space]');if(b)ssoVersDomaine(sb,'space','https://www.totehm.space/?spot='+encodeURIComponent(b.dataset.space));};
+window.addEventListener('keydown',e=>{if(!$('myspaces').classList.contains('is-open'))return;e.stopImmediatePropagation();if(e.key==='Escape'){e.preventDefault();spacesClose();return;}if(e.key==='Tab'){const f=[...$('myspaces').querySelectorAll('button:not(:disabled),a[href],input')].filter(x=>x.getClientRects().length);const i=f.indexOf(document.activeElement);if(e.shiftKey && i<=0 || !e.shiftKey && (i<0 || i===f.length-1)){e.preventDefault();(e.shiftKey?f.at(-1):f[0]).focus();}}},true);
 $('mw-close').onclick=()=>{clearTimeout(mwNameTimer);$('member-window').classList.remove('show');};
 $('member-window').addEventListener('click',e=>{if(e.target===$('member-window'))$('member-window').classList.remove('show');});
 
@@ -7486,6 +7555,7 @@ $('mw-signout').onclick=async()=>{
    frame ou pour de bon, le Totehm de celui d'avant. */
 let sesSeq=0;
 function quitter(){
+  if($('myspaces').classList.contains('is-open')){MYSPACES.seq++;MYSPACES.busy=false;MYSPACES.rows=[];$('myspaces-list').replaceChildren();$('myspaces-name').textContent='';$('myspaces').classList.remove('is-open');MYSPACES.inert.forEach(([e,was])=>e.inert=was);MYSPACES.inert=[];}
   state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; mySub=null; tgLinked=false;
   TRIPS=[]; REPS=[]; TEACH=[]; VIS=[]; OBJ={}; tripsLoaded=false;
   cacheOublier();

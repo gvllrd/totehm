@@ -1,5 +1,13 @@
 # TOTEHM · backend
 
+## 03/10/2026 — COM My spaces
+
+`public.my_spaces(p_before timestamptz, p_before_id uuid, p_limit integer)` reads only published `spot_plans` owned by `auth.uid()`, private or shared, without a time-history cutoff. It returns `ok`, `spaces`, `more`; each space has id, Habit, visibility, start/end, place/city. No coordinates, video, creator content or legacy applications. Paging: starts_at DESC + spot_id DESC, limit clamped 1–100. Existing user/starts_at index supports owner access. SECURITY DEFINER with empty search_path, all references qualified; EXECUTE authenticated only.
+
+Migration `20261003105748_my_spaces.sql` applied once (journal 20261003105748, name my_spaces). Do not reactivate the revoked legacy `my_space`. COM uses existing SSO to SPACE `?spot=id`; `spot_get` and Bunny keep their current authorization. GO from the city feed also rechecks `spot_get` at use time.
+
+Checks: `tests/sql/my_spaces_selftest.sql` is read-only and self-rolls back; expected `FAIL={}`. Browser `spaces_ui.mjs` tests forms, mobile plan/radar stacking, sheets, GO, actual Coral names and history/SSO, with mocked accounts and network. The existing paper, SPACE navigation, Bunny portrait and performance suites remain applicable.
+
 Socle commun aux quatre domaines. **Un seul projet Supabase** sert
 `totehm.com`, `figher.club`, `totehm.space` et `higher.boutique`, et **un seul
 webhook Stripe** route sur `metadata.product`.

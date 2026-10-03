@@ -75,8 +75,6 @@ a{color:inherit;text-decoration:none}
 #member.is-in i{background:#fff;box-shadow:0 0 9px #fff}
 #sheet .sh-terms{display:block;margin-top:22px;font-family:var(--mono);font-size:10px;
   letter-spacing:.14em;text-transform:uppercase;color:var(--lo);text-decoration:none}
-#t{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:39;line-height:0}
-#t svg{height:30px;width:auto;fill:#fff}
 
 /* ── LE BOUTON — gris et arrondi (27/09). La tuile perforée n'est plus
    un bouton : elle est réservée au NOM d'un Totehm. ─────────────────── */
@@ -236,6 +234,11 @@ footer .line:hover,
 .note:hover{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
+
+/* 03/10 — the member's TOTEHM name: Quantico Coral, without status dots. */
+#conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
+#conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
+.tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
 </style>
 </head>
 <body>
@@ -257,7 +260,6 @@ footer .line:hover,
 </svg>
 
 <button id="member" type="button" aria-label="Member access"><i></i><span id="member-txt">Sign in</span></button>
-<a id="t" href="#hero" aria-label="FIGHER.CLUB"><svg viewBox="0 0 68 68" role="img" aria-label="T"><rect x="0" y="0" width="68" height="10"/><rect x="29" y="0" width="10" height="67"/><rect x="21" y="63" width="27" height="5"/></svg></a>
 
 <main>
 

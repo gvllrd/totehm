@@ -1,10 +1,27 @@
 # space/CLAUDE.md — totehm.space : DO WITH ME (un Spot, cinq vues)
 
+## ⛔ ÉTAT AU 03/10/2026 — LES SPACES, SANS TITRES DE VUE
+
+Cette demande de Wah remplace les intitulés, l'auto-enregistrement et les dimensions du papier du 02/10. BUILD `2026-10-03-spaces`.
+
+- Cinq vues, joystick, gestes, boussole, radar réduit et panneaux ordinateur : conserver. TOP planifie un space futur ; RIGHT liste les futurs ; LEFT city feed ; CENTER radar exact ; BOTTOM vidéo portrait.
+- Aucun titre ou sous-titre visible de vue. Le choix d'une Habit complète reste commun aux trois vues ; fallback par ses intentions en serveur. Les définitions d'intention restent dans les Habit Boxes.
+- Radar landing : papier rotatif 110 px (90 px sur petit écran court), hint et membre conservés. Radar abaissé à proximité du joystick ; boussole en coin gauche, zoom/recentrage en coin droit. Le papier navy reste une exception de marque.
+- LEFT/RIGHT : papier-filtre réduit 58 px, posé (zéro animation pendant la vidéo), sans membre et sans hint. Il ouvre exactement le même sélecteur Habit. Habit Boxes du feed : ombre sombre autorisée.
+- Identité : Quantico Coral #fbd5ca. Verso : nom dans une box noire arrondie ; les noms de créateurs aussi. Aucun point/carré membre. Pas de T statique centré ajouté.
+- BOTTOM prépare la caméra ; texte « Share a space to your Totehm ». Aucun décompte ni REC automatique : appui volontaire sur le point rouge navy. STOP = le carré rouge du joystick. Vidéo ≤33 secondes, portrait Full HD et pipeline Bunny préservés.
+- Après la vidéo : `#cam-body` est un frère des vues, hors de leur ancêtre transformé ; plein écran 100dvh, noir rgba(0,0,0,.86), défilement natif contenu, label DURATION. Aucune navigation derrière le formulaire (gestes, wheel, flèches, joystick), focus/Tab dans le dialogue ; Record again et Cancel explicites.
+- TOP mobile : `#v-plan` z-index 20 au-dessus du canvas z-index 10 ; tout son panneau est exclu des gestes de navigation. Date/heure, lieu dans le radar et droits progressifs restent fonctionnels.
+- Détail radar : un space seul, poignée visible et glissé vers le bas (poignée ou contenu au sommet du scroll). Garder [CLOSE], animation montée/descente ; joystick désactivé en sourdine et retour après fermeture. Le scroll du détail reste natif.
+- City feed [go] seulement pour SHARED·ON : `spot_get` à l'appui, droits ACTUELS du créateur vérifiés. Coordonnées autorisées → itinéraire ; sans abonnement → détail ville/explication, aucun lien exact ni coordonnées dans le DOM.
+- UI : « space » / « spaces ». Les noms internes Spot, tables, RPC, liens `?spot=id` et contrats Bunny restent compatibles. COM propose My spaces, historique propriétaire paginé.
+- Vérifier `tests/browser/space.mjs`, `spaces_ui.mjs`, `space_video.mjs`, `space_performance.mjs`. Comptes/réseau simulés ; vidéos locales encodées/ffprobe, pas de compte QA ni contenu de production créé.
+
 ## LE PAPIER · 02/10/2026
 
 - Le papier rotatif remplace visuellement Habit Box · all ; garder `#habit-filter` caché et tout son câblage. Même sélecteur, rendu et RPC.
 - Une seule Habit (`S.habit`), commune aux trois vues horizontales ; All Habit Boxes efface le choix.
-- Premier enfant de `#heading`, au-dessus du titre, à 14 px + zone sûre ; 64/56/48 px. Visible et vivant seulement en radar ; pseudo membre plafonné.
+- Premier enfant de `#heading` : dimensions et visibilité remplacées par la demande du 03/10 ci-dessus. Rotation seulement sur radar ; petit filtre posé dans les vues latérales.
 - Tap sur les deux faces : `poser` puis ouvrir ; re-tap : fermer et réveiller. Glissé >7 px : rotation, clic avalé, aucune navigation.
 - Verso : `me && PSEUDO`, sinon Tap to open it ; `textContent`, Quantico mesuré, peint par `paintMember`, aucune lecture réseau supplémentaire.
 - Copier le moteur du papier du 25/09 : ressort, rotation, dérive, souris, glissé/lancer ; retirer entièrement son gyroscope. La boussole du radar reste seule.
@@ -30,9 +47,9 @@ ordinateur pour simplifier le contenu. BUILD `2026-10-02-paper`.
 | LEFT | CITY FEED · I AM HERE / I WAS THERE | vidéo verticale de la ville et alentours ; pas de radar ni de commandes de carte DANS le fil |
 | CENTER | RADAR · Exact places I can see | sélection d'une Habit Box personnelle, sans texte de recherche ni filtres d'intention verticaux ; point cliqué = CE Spot seul |
 | RIGHT | FUTURE SPOTS · I WILL BE HERE | uniquement les futurs lisibles, pagination date + id ; ville ou lieu exact selon le serveur |
-| BOTTOM | FILM A SPOT · I AM HERE / 9:16 / up to 33 seconds | caméra immédiate, décompte annulable, vidéo ≤33 s, puis Habit et droits ; joystick = REC rond rouge / STOP carré rouge |
+| BOTTOM | FILM A SPOT · I AM HERE / 9:16 / up to 33 seconds | caméra préparée, REC volontaire, vidéo ≤33 s, puis Habit et droits ; joystick = REC rond rouge / STOP carré rouge |
 
-Le badge Higher reste à côté du titre. Une Habit sélectionnée reste commune
+Les titres et sous-titres de cette table sont historiques et masqués depuis le 03/10. Une Habit sélectionnée reste commune
 aux trois vues horizontales. `space_discover` cherche le NOM COMPLET de
 cette Habit ; seulement si aucun Spot lisible ne correspond dans cette vue,
 il cherche les intentions de MA Habit. Le sous-titre dit « Same intention ».

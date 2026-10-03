@@ -15,6 +15,16 @@
 
 ---
 
+## 0 · SPACES — ACCÈS PROPRIÉTAIRE ET INTERFACE — 03/10/2026
+
+- `my_spaces` absent avant ce lot ; ancien `my_space()` non exécutable par authenticated/anon (mesuré).
+- Migration `20261003105748_my_spaces.sql` appliquée une fois, journal 20261003105748 / my_spaces.
+- Lecture `spot_plans` du seul auth.uid(), privées/partagées publiées, pagination date+id, limites 1–100 ; payload minimal sans vidéo/coordonnées. Authenticated peut exécuter, anon ne peut pas.
+- Test SQL read-only : `MY SPACES SELFTEST (rolled back) … FAIL={}` ; aucun compte/contenu créé ou modifié.
+- Interface : REC volontaire, formulaire vidéo plein écran, TOP mobile au-dessus du canvas, radar abaissé, papier agrandi et filtre réduit latéral, noms Coral, détail à poignée/joystick sourdine, GO avec lecture autorisée fraîche. Tests navigateur du lot : navigation SPACE, formulaires/GO/identité/historique, papier COM, vidéo Bunny, fluidité et parcours club/boutique ; détails dans les suites versionnées. Les contrôles Vercel et le contenu servi sont vérifiés lors de la publication.
+
+---
+
 ## 0 · COM — LA BOUCHE, EN LIGNE — 03/10/2026 11:20 UTC
 
 | quoi | valeur mesurée |

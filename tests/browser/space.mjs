@@ -22,7 +22,7 @@ try{
  const box=id=>pg.$eval('#'+id,e=>{const r=e.getBoundingClientRect();return{x:r.x,y:r.y,w:r.width,h:r.height};});
  async function drag(id,dx,dy){const r=await box(id),x=r.x+r.w/2,y=r.y+r.h/2;await pg.mouse.move(x,y);await pg.mouse.down();await pg.mouse.move(x+dx,y+dy,{steps:8});await pg.mouse.up();}
  await pg.goto(origin+'/');await pg.waitForFunction(()=>window.__totehm_space?.().exact>0);await settle();
- ok(await pg.textContent('#title-int')==='RADAR','radar title describes the view');
+ ok(!await pg.isVisible('#title') && !await pg.isVisible('#int-def'),'SPACE has no visible view titles or subtitles');
  ok(await pg.locator('#ints').count()===0,'no vertical intentions selector');
  ok(await pg.textContent('#cmp')==='000° Nturn the ring','compass heading and manual ring restored');
  const initial=await state();
@@ -30,16 +30,16 @@ try{
  ok((await state()).radar.heading>30,'manual crown rotation changes compass heading');
  await pg.click('#cmp');await settle();ok((await state()).radar.heading<2 || (await state()).radar.heading>358,'compass tap returns north');
  await pg.mouse.click(initial.radar.cx,initial.radar.cy);await settle();ok((await state()).detail && await pg.locator('#detail .habit').count()===1,'one radar point opens one Spot alone');await pg.keyboard.press('Escape');
- await pg.click('#habit-filter');await pg.waitForSelector('[data-filter-h]');
+ {const p=await box('totehm-paper');await pg.mouse.click(p.x+p.w/2,p.y+p.h/2);}await pg.waitForSelector('[data-filter-h]');
  const text=await pg.textContent('[data-filter-h="0"]');ok(['every morning','Hill trail','why','Enjoy Lisbon together','trigger','Stay indoors'].every(x=>text.includes(x)),'Habit Box includes every COM attribute and linked group');
  ok(await pg.locator('[data-filter-h="0"] .v-int[title]').count()===2,'exact intention definitions remain in the Box');
  await pg.click('[data-filter-h="1"]');await settle();ok((await state()).exact>0 && /Same intention/.test(await pg.textContent('#int-def')),'a missing exact Habit falls back to its intentions');
  ok(log.rpc.filter(c=>c.name==='space_discover').slice(-3).every(c=>c.body.p_habit==='Walk the river'),'same Habit choice reaches all three views');
  await drag('joy-box',-28,0);await view('feed');let r=(await state()).radar,pan=await box('v-feed');ok(pan.w===420 && r.cx-r.radius>420 && r.radius<initial.radar.radius,'desktop side feed keeps a reduced radar beside it');
- ok(await pg.textContent('#title-int')==='CITY FEED','city feed view heading');
+ ok(!await pg.isVisible('#member') && !await pg.isVisible('#tp-hint') && await pg.isVisible('#totehm-paper'),'city feed has only the reduced Habit filter paper');
  await pg.screenshot({path:OUT+'/space_desktop_city.png'});await pg.click('#joy-box');await view('radar');
  await pg.mouse.move(740,400);for(let i=0;i<10;i++) await pg.mouse.wheel(10,0);await view('list');
- ok(await pg.textContent('#title-int')==='FUTURE SPOTS' && await pg.locator('#list .it').count()===2,'future list has its own title and future Spots');
+ ok(!await pg.isVisible('#title') && await pg.locator('#list .it').count()===2,'future spaces list has no title and keeps future Spaces');
  r=(await state()).radar;pan=await box('v-list');ok(r.cx+r.radius<pan.x,'right desktop list preserves the reduced radar');
  await pg.click('#joy-box');await view('radar');await pg.click('#cur-h');await view('plan');
  await pg.click('[data-plan-h="0"]');
@@ -55,7 +55,7 @@ try{
  await pg.screenshot({path:OUT+'/space_future_editor.png'});await pg.click('[data-plan-send]');await view('list');
  const scheduled=log.rpc.find(c=>c.name==='spot_schedule');ok(Math.abs(scheduled.body.p_lat-38.7223)<.1 && Math.abs(scheduled.body.p_lng+9.1393)<.1,'radar place picking preserves actual coordinates');ok(scheduled?.body.p_place==='Ribeira steps' && scheduled.body.p_mode==='social' && scheduled.body.p_location==='on','future location and progressive choices are submitted');
  await pg.keyboard.press('Escape');await pg.click('#joy-box');await view('radar');
- await pg.click('#cur-b');await view('cam');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='habit');
+ await pg.click('#cur-b');await view('cam');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='ready');await pg.waitForTimeout(1500);ok((await state()).rec.step==='ready','entering the camera never starts recording automatically');await pg.click('#joy-box');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='habit');
  const joy=await box('joy');ok(joy.y+joy.h<840,'camera joystick moves upward');
  ok(await pg.$eval('#joy-box',e=>getComputedStyle(e).backgroundColor)==='rgb(51, 51, 102)','camera joystick remains navy');
  await pg.click('[data-h="0"]');await pg.click('[data-vis="shared"]');await pg.click('[data-loc="off"]');

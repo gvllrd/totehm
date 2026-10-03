@@ -1,5 +1,14 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## ⛔ ÉTAT AU 03/10/2026 — QUANTICO CORAL ET MY SPACES
+
+- BUILD `2026-10-03-spaces`. Préserver intégralement le papier recto/verso du 02/10 : posé au repos, glissé volontaire, zoom de recherche, déconstruction au tap.
+- Noms de Totehm : Quantico Coral #fbd5ca, sans changement de teinte au survol. Verso et résultats des deux recherches : fond noir, coins arrondis ; saisie de recherche Coral sur noir. Accès membre sans point/carré.
+- Retirer les T statiques centrés des espaces membres (`creator`), conserver le moteur de déconstruction et le logo du papier.
+- My spaces dans le menu membre : dialogue propriétaire privé/partagé, présent/passé/futur, lecture `my_spaces`, pagination starts_at + id. Aucun autre compte comme argument. Métadonnées minimales ; détail et vidéo sur SPACE via `?spot=id`, pont SSO cible space conservé.
+- Dialogue accessible au clavier, fermeture [CLOSE]/Échap vers le menu ; ignorer réponses tardives et purger les données sur changement de compte. Aucun ancien RPC `my_space` réactivé.
+- `my_spaces` est défini par `backend/supabase/migrations/20261003105748_my_spaces.sql` ; lecture seule, auth.uid(), grants authenticated seulement. Tests `tests/sql/my_spaces_selftest.sql`, `tests/browser/spaces_ui.mjs` et `com_paper.mjs`.
+
 > Chargé automatiquement quand on travaille dans `com/`. Les règles
 > transverses sont dans le `CLAUDE.md` de la racine ; l'histoire dans
 > `docs/POSTMORTEMS.md`. Sections déplacées TELLES QUELLES de l'ancien
@@ -16,7 +25,7 @@ s'ouvre et la langue se tire pour le recevoir ; il se réduit en se posant
 sur la langue, « Get [Higher] » apparaît en haut à la place du Totehm au
 repos ; relâché sur la langue, ça lance [Get Higher] — l'achat du
 TotehmPaper. Une animation métaphorique du LSD paper posé sur la langue. »
-`com/totehm.html` `BUILD='2026-10-03'`, test `tests/browser/com_mouth.mjs`
+`com/totehm.html` `BUILD='2026-10-03-spaces'` (avec identité et historique), test `tests/browser/com_mouth.mjs`
 (29 mesures) ; `com_paper.mjs` inchangé (39/39).
 
 | geste sur le papier | effet |

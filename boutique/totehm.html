@@ -29,8 +29,6 @@ html,body{width:100%;height:100%;background:var(--navy);color:var(--g-light);fon
 
 /* ══ LE LOGO HABITÉ ══ */
 #rail{position:fixed;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.30);z-index:1;transition:opacity .4s}
-#bigT{position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;transition:opacity .4s;line-height:0}
-#bigT img{height:52px;width:auto;display:block;-webkit-user-drag:none}
 #wordmark{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:30;user-select:none;transition:opacity .4s;line-height:0}
 #wordmark img{height:58px;width:auto;display:block;-webkit-user-drag:none}
 
@@ -181,7 +179,7 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 .mw-out:hover{color:#fff}
 .mw-sync{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:var(--love);margin-top:8px;min-height:12px}
 
-@media(max-width:600px){.h-text,.h-add,.h-hint{font-size:14px}#bigT{font-size:38px}}
+@media(max-width:600px){.h-text,.h-add,.h-hint{font-size:14px}}
 @media(prefers-reduced-motion:reduce){#fv-inner{transition:none!important}}
 
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
@@ -220,6 +218,11 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 .mw-out:hover{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
+
+/* 03/10 — the member's TOTEHM name: Quantico Coral, without status dots. */
+#conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
+#conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
+.tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
 </style>
 </head>
 <body>
@@ -239,7 +242,6 @@ body.liftoff #lift-hg{animation:lifthg .95s ease forwards}
 </svg>
 
 <div id="rail" class="sink-el"></div>
-<div id="bigT" class="sink-el"><img src="assets/img/T.png" alt="T"></div>
 <div id="wordmark" class="sink-el"><img src="assets/img/TOTEHM.png" alt="TOTEHM"></div>
 
 <button class="btn-back sink-el" id="back-top">Back in Time</button>
@@ -739,7 +741,6 @@ function paint(){
   $('settings').classList.toggle('hide',!isSet);
   $('floorview').style.backgroundColor=isSet?'#000':'transparent';
   $('rail').style.opacity=isSet?'0':'1';
-  $('bigT').style.opacity=isSet?'0':'1';
   $('wordmark').style.opacity=isSet?'0':'1';
   $('get-higher').style.display=isSet?'none':'';
   $('go-settings').style.display=isSet?'none':'';
@@ -1025,11 +1026,15 @@ $('tv-back').onclick=()=>$('tview').classList.remove('show');
 /* ══ MEMBER SPACE : email-only DNA ══ */
 function connPaint(){
   const label=(myProfile&&myProfile.pseudo)||(me?'Member':'Guest');
-  $('conn-bar').innerHTML='<span class="dot"'+(me?' style="background:#639922"':'')+'></span>'+label;
+  $('conn-bar').textContent=label;
 }
+let profileSeq=0;
 async function loadProfile(){
+  const seq=++profileSeq,uid=me?.id;
   if(!me){myProfile=null;cloudMode=false;connPaint();return;}
-  const {data}=await sb.from('profiles').select('pseudo').eq('id',me.id).maybeSingle();
+  const {data,error}=await sb.from('profiles').select('pseudo').eq('id',uid).maybeSingle();
+  if(error)console.error('[member profile]',error.message);
+  if(seq!==profileSeq || me?.id!==uid)return;
   myProfile=data||null;
   cloudMode=!!myProfile;
   connPaint();
@@ -1079,12 +1084,11 @@ $('mw-pseudo').addEventListener('keydown',async e=>{
 });
 $('mw-signout').onclick=async()=>{await sb.auth.signOut();$('member-window').classList.remove('show');};
 
-sb.auth.onAuthStateChange(async()=>{
-  const {data:{session}}=await sb.auth.getSession();
+sb.auth.onAuthStateChange((_event,session)=>{
   me=session?.user||null;
-  await loadProfile();
-  if(me&&myProfile){await migrateLocalToCloudIfNeeded();}
-  memberPaint();paint();
+  setTimeout(async()=>{const uid=me?.id;await loadProfile();if(uid!==me?.id)return;
+    if(me&&myProfile){await migrateLocalToCloudIfNeeded();}memberPaint();paint();
+  },0);
 });
 (async()=>{
   const {data:{session}}=await sb.auth.getSession();

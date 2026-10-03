@@ -1,5 +1,14 @@
 # BRAND.md — TOTEHM
 
+## ⛔ CURRENT UPDATE — 03/10/2026 (overrides older identity and SPACE rules)
+
+- A TOTEHM name is Quantico **Coral #fbd5ca**, including member access, paper verso and search. Names on the verso and in search sit in a **black rounded box**. No member dot/square. Remove centered static T logos from member pages; keep the genuine paper, deconstructed TOTEHM and Higher artwork.
+- SPACE has no view headings or subtitles. Large rotating paper + member + hint on radar landing; reduced flat Habit-filter paper alone on left/right. Preserve five-view gestures and desktop panels with reduced radar.
+- Lower the mobile landing radar toward the joystick, with compass and map controls at its left/right corners. A detail is one space, with a handle, downward dismissal and [CLOSE]; mute joystick while open.
+- Filming starts only with a deliberate tap on the red joystick point. Opening the camera says **Share a space to your Totehm**. After filming, progressive options occupy a translucent black full-screen dialogue; **DURATION** is the label. Scroll never changes view from these forms.
+- A dark shadow is allowed on Habit Boxes over feed videos. [go] for SHARED·ON resolves exact-location entitlement at use time, including past spaces; no coordinates or exact map for unauthorized viewers.
+- **Space** is the interface name for one Habit lived/planned in a place and time. Existing Spot APIs/data remain compatible. COM **My spaces** retrieves only the member's own private/shared history, with SSO links to SPACE.
+
 **Source of truth for product, brand and ecosystem.**
 Read this before writing any copy, naming anything, or designing any UI.
 Technical rules live in `CLAUDE.md`. Product state lives in `backend/SYSTEM.md`.
@@ -15,7 +24,7 @@ transversal system. **This table wins over any older mapping in this file.**
 |---|---|---|
 | `totehm.com` | **the SOURCE** — the Totehm, five views, the Boxes. BUILD YOUR LIFE. | who am I, what am I building, what do I want, do, refuse, know? |
 | `figher.club` | **the Higher branding, lived** — [Get Higher], Make the Lisbon Streets Higher, the Stoner method · art · collection · market (02/10) | what do I collect, and how high do I get? |
-| `totehm.space` | **a Habit Box becomes an action lived with members** — the Spot | what can I do, where, when, with whom? |
+| `totehm.space` | **a Habit Box becomes an action lived or planned** — a space | what can I do, where, when, with whom? |
 | `higher.boutique` | **totehmization** — any Box becomes a Streetwear Cloth; with a TotehmPaper, your own luxury piece (02/10) | which Box do I want to materialize, on what? |
 | TotehmBot | transversal, Telegram — the Higher Self as a mirror | — |
 
