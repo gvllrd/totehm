@@ -15,6 +15,16 @@
 
 ---
 
+## 0 · COM — LA BOUCHE ENTROUVERTE, EN TRANSE AU CLIC — 04/10/2026 (bis)
+
+| quoi | valeur mesurée |
+|---|---|
+| `main` en avance rapide `8c6ae2c..a6d57fc`, déploiement auto | com `dpl_2g8Jkj3huN3CxZBnFUX2mnTWLETj` READY, alias `www.totehm.com` |
+| prod = fichier de `main` (pg_net) | totehm.com `/totehm` 200, 529 233 o, md5 identique, `BUILD='2026-10-04b'`, langue au repos `translate(0,-748.8)`, `transePas` présent, `#m-shut` et `taquiner` absents |
+| tests navigateur | `com_mouth.mjs` 36/36 (transe : 39 formes en 8,8 s, 28 ouverte / 12 refermée) · `com_paper.mjs` 39/39 |
+
+---
+
 ## 0 · COM — LA BOUCHE EN HAUT, ELLE TIRE LA LANGUE — 04/10/2026
 
 | quoi | valeur mesurée |
