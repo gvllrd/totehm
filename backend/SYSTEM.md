@@ -40,6 +40,16 @@
 
 ---
 
+## 0 · COM — LA BOUCHE EN QUATRE TEMPS — 04/10/2026 (ter)
+
+| quoi | valeur mesurée |
+|---|---|
+| `main` en avance rapide `3536af2..f78f3ef`, déploiement auto | com `dpl_2hWoMV6gmFf5du6ErfTjJCLYfEEC` READY, alias `www.totehm.com` |
+| prod = fichier de `main` (pg_net) | totehm.com `/totehm` 200, 550 275 o, md5 identique, `BUILD='2026-10-04c'`, bouche fermée au balisage, `taquiner`, `api.jouir`, `TAB=.36` présents, `transePas` absent |
+| tests navigateur | `com_mouth.mjs` 35/35 (buvard 44 px pour 110 ; extase : 13 formes en 2,8 s, langue rentrée) · `com_paper.mjs` 39/39 · `com_discovery.mjs` 50/50 |
+
+---
+
 ## 0 · COM — LA BOUCHE EN HAUT, ELLE TIRE LA LANGUE — 04/10/2026
 
 | quoi | valeur mesurée |
