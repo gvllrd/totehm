@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 3 octobre 2026, 11:20 UTC** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 4 octobre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -12,6 +12,16 @@
 >
 > **Règle : ne jamais affirmer l'état d'une table, d'un secret ou d'une fonction.
 > Le vérifier.** Commandes en §8.
+
+---
+
+## 0 · COM — LA BOUCHE EN HAUT, ELLE TIRE LA LANGUE — 04/10/2026
+
+| quoi | valeur mesurée |
+|---|---|
+| `main` en avance rapide `ca2bb19..abab32b`, déploiement auto | com `dpl_GxsNeTixxgpVW6CUjp1sKrDqj5r3` READY, alias `www.totehm.com` |
+| prod = fichier de `main` (pg_net) | totehm.com `/totehm` 200, 530 559 o, md5 identique, `BUILD='2026-10-04'`, `#m-up`, bouche `top:max(52px,6dvh)`, `taquiner` présents |
+| tests navigateur | `com_mouth.mjs` 32/32 · `com_paper.mjs` 39/39 |
 
 ---
 
