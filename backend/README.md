@@ -1,5 +1,16 @@
 # TOTEHM · backend
 
+
+## 03/10/2026 — COM search and reviewed copies
+
+`totehm_discover(p_q, p_scope, p_kind, p_intention, p_offset, p_limit)` returns `{items,total,more}`. Scopes: names / subscriptions / boxes. Public discovery contains identity and offer only; authenticated box previews use `_shared_with_me`. Exact/prefix/substring names precede trigram suggestions; accents and case normalized, @profile links accepted, literal box words, pagination 12 (clamped 1–24), up to 3 box hits per result. Kind h/t/r/w/v and the existing seven intentions filter boxes.
+
+`totehm_import_boxes(p_pseudo, p_selection)` accepts 1–50 `{kind,key}` references, never content from the browser. It checks current access, validates the complete selection before touching destination, locks the member's tree, creates or reuses own boxes and remaps only links whose endpoints were selected. Source boxes and locations/history remain untouched. Result `{ok,created,reused,total}`; `why=access/changed/signin` is an explicit refusal. Retry is safe even after an uncertain response. `my_box_sources()` returns only the viewer's copy provenance.
+
+Migration `20261003155911_search_and_box_import.sql` applied once as `search_and_box_import`, journal `20261003164312`; helpers and copy ledger are inaccessible to anon/auth directly, ledger RLS deliberately has no policies. Existing visibility/subscription, annual creator price and 80/20 rules remain authoritative. Regression test `tests/sql/totehm_discovery_selftest.sql` ends with `TOTEHM DISCOVERY SELFTEST (rolled back): FAIL={}`; fixtures/imports are rolled back. UI suite `tests/browser/com_discovery.mjs` covers search → reader → review → import and logout.
+
+Rollback of the UI: restore the two COM HTML files from the parent commit. Keep the additive backend and any members' own copied boxes; do not rerun the migration or delete members' content.
+
 ## 03/10/2026 — COM My spaces
 
 `public.my_spaces(p_before timestamptz, p_before_id uuid, p_limit integer)` reads only published `spot_plans` owned by `auth.uid()`, private or shared, without a time-history cutoff. It returns `ok`, `spaces`, `more`; each space has id, Habit, visibility, start/end, place/city. No coordinates, video, creator content or legacy applications. Paging: starts_at DESC + spot_id DESC, limit clamped 1–100. Existing user/starts_at index supports owner access. SECURITY DEFINER with empty search_path, all references qualified; EXECUTE authenticated only.

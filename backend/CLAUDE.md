@@ -6,6 +6,15 @@
 > `CLAUDE.md` le 30/09/2026, les plus récentes d'abord : un renvoi « plus
 > haut » peut viser la racine ou un autre dossier. Procédures : `README.md`. État mesuré : `SYSTEM.md` (§0 d'abord).
 
+
+## COM · 03/10/2026 — découverte et import de boxes
+
+Migration additive `20261003155911_search_and_box_import.sql` appliquée sous `search_and_box_import` (journal `20261003164312`). `totehm_discover` expose les noms à anon/auth ; boxes et abonnements exigent auth.uid(), `_shared_with_me` reste la source des droits. Helpers `_totehm_search_text` / `_totehm_box_index` révoqués anon/auth. Fonctions nouvelles : search_path vide, références qualifiées.
+
+`totehm_import_boxes(p_pseudo,p_selection)` authenticated seulement ; 1–50 références, accès source actuel, refus de soi, validation de tout le lot, verrou de destination, cinq types, déduplication, remapping des cinq jonctions entre les seules boxes choisies. `totehm_box_copies` est un registre interne : RLS sans politique, aucun grant direct anon/auth ; `my_box_sources()` ne rend que la provenance de auth.uid(). Retenter ne duplique pas ; les copies appartiennent ensuite au membre, même si l'abonnement cesse. Aucun changement aux prix, paiements, visibilité ou contenus source.
+
+Auto-test `tests/sql/totehm_discovery_selftest.sql` : exception finale attendue `FAIL={}`, tout annulé. Lints d'exposition SECURITY DEFINER attendus pour ces RPC contrôlées ; RLS sans politique volontaire pour le registre. Vérifier les grants, pas supprimer les accès nécessaires au produit.
+
 ## SPACE · 03/10/2026 (ter) — photo et WHY · TRIGGER
 
 Migrations `20261003170000_space_photo_why.sql` (`space_photo_why`) puis

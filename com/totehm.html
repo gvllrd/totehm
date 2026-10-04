@@ -2975,6 +2975,60 @@ body.gate.entered #filter-badge{
 #myspaces-note{font-family:'Space Mono',monospace;font-size:11px;color:#9a9a9a}
 #myspaces-more,#myspaces-open-space{width:fit-content;font-family:'Space Mono',monospace;font-size:11px;color:#b0b0b0;background:#16161a;border:0;border-radius:8px;padding:8px 12px;cursor:pointer}
 @media(hover:hover){.my-space:hover{background:#1c1c22}#myspaces-close:hover,#myspaces-more:hover,#myspaces-open-space:hover{color:#fff}}
+/* READ ONLY + COPIES — native boxes, separate destination. */
+body.ro{--ro-h:84px}
+body.ro #conn-bar,body.ro #fold-x{display:none}
+#ro-bar{flex-direction:column;gap:6px;padding:10px 12px;background:rgba(0,0,0,.94)}
+.ro-head,.ro-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;max-width:780px}
+#ro-who{max-width:48%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:#000;border-radius:10px;padding:4px 8px;color:#fbd5ca;font-weight:400}
+.ro-action,.ro-copy{font:700 10px 'Space Mono',monospace;color:#b0b0b0;background:#242428;border:0;border-radius:10px;padding:9px 11px;cursor:pointer;line-height:1.5;text-decoration:none}
+.ro-action:disabled{opacity:.4;cursor:default}
+.ro-action:focus-visible,.ro-copy:focus-visible{outline:1px solid #fff;outline-offset:3px}
+.ro-copy{align-self:flex-start;margin-top:8px;font-size:9px}
+.ro-copy[aria-pressed=true]{color:#fff;background:#404046}
+#ro-tag{font-size:9px;white-space:nowrap}
+body.ro .rk,body.ro [data-pk],body.ro [data-lien],body.ro [data-unlink],body.ro [data-nodate],body.ro [data-edit],body.ro [data-add]{display:none}
+#ro-access{position:fixed;inset:calc(var(--ro-h) + 150px) 12px auto;z-index:41;max-width:520px;margin:auto;background:#151518;padding:24px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;font:12px/1.7 'Space Mono',monospace}
+#ro-access p{color:#b0b0b0}#ro-access strong{color:#fff}
+#ro-import{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.92);overflow:auto;overscroll-behavior:contain;padding:calc(18px + env(safe-area-inset-top)) 14px 24px}
+.ro-import-panel{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:18px;color:#b0b0b0}
+.ro-import-head,.ro-import-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.ro-import-head h2{font:700 14px/1.5 'Space Mono',monospace;text-transform:uppercase}
+.ro-explain,#ro-import-note{font:11px/1.7 'Space Mono',monospace}
+#ro-import-list{display:flex;flex-direction:column;gap:8px}
+.ro-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px;background:#333366}
+.ro-item[data-kind=t]{background:#36498c}.ro-item[data-kind=r]{background:#743169}.ro-item[data-kind=w]{background:#5b2652}.ro-item[data-kind=v]{background:#2b3a73}
+.ro-item-title{font:14px/1.5 'Quantico',sans-serif;color:#fff;overflow-wrap:anywhere}
+.ro-item-kind{display:block;font:9px 'Space Mono',monospace;color:#ddd;margin-bottom:4px;text-transform:uppercase}
+@media(hover:hover){.ro-action:hover,.ro-copy:hover{color:#fff}}
+@media(max-width:380px){.ro-action{padding:7px;font-size:9px}.ro-head,.ro-tools{gap:5px}#ro-tag{font-size:8px}}
+/* TOTEHM SEARCH: gray controls, Coral identity, colors only on actual boxes. */
+.ts-modes{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.ts-control{font:700 10px/1.5 'Space Mono',monospace;color:#b0b0b0;background:#242428;border:0;border-radius:10px;padding:9px 10px;cursor:pointer}
+.ts-control[aria-pressed=true]{color:#fff;background:#404046;box-shadow:inset 0 -1px #fff}
+.ts-control:focus-visible,.ts-open:focus-visible,.ts-box:focus-visible{outline:1px solid #fff;outline-offset:3px}
+.ts-filters{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.ts-filters label{display:flex;align-items:center;gap:5px;font:9px 'Space Mono',monospace;color:#b0b0b0}
+.ts-filters select{max-width:180px;color-scheme:dark}
+.ts-result{padding:14px 12px;background:#141416;display:flex;flex-direction:column;gap:8px;text-align:left}
+.ts-result .srch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;color:inherit;text-decoration:none}
+.ts-result .srch-name{font:400 18px/1.5 'Quantico',sans-serif;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:10px;padding:5px 10px;max-width:90%;overflow-wrap:anywhere;filter:none}
+.ts-arrow{font:16px 'Space Mono',monospace;color:#b0b0b0}
+.ts-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font:9px/1.6 'Space Mono',monospace;color:#b0b0b0}
+.ts-meta .srch-meta{font:inherit;letter-spacing:0;text-transform:none;color:inherit;white-space:normal}
+.ts-box{display:flex;flex-direction:column;gap:3px;background:#333366;padding:10px 12px;text-decoration:none;color:#fff}
+.ts-box[data-kind=t]{background:#36498c}.ts-box[data-kind=r]{background:#743169}.ts-box[data-kind=w]{background:#5b2652}.ts-box[data-kind=v]{background:#2b3a73}
+.ts-box-kind{font:9px 'Space Mono',monospace;color:#ddd;text-transform:uppercase}
+.ts-box-text{font:14px/1.6 'Quantico',sans-serif;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ts-section{font:700 10px 'Space Mono',monospace;text-transform:uppercase;color:#b0b0b0;padding:12px 4px 0}
+.ts-link{color:#fff;text-decoration:underline}
+#srch-controls,#srch-more{width:min(520px,100%)}
+#srch-res{width:min(520px,100%)}
+#srch-ui{gap:12px}#srch-note{letter-spacing:0;text-transform:none;font-size:10px}
+#q{background:#000;color:#fbd5ca;caret-color:#fbd5ca;max-width:100%;font-size:24px}
+#search{max-width:620px}#search-controls,#search-more{width:100%}#res{gap:10px}
+@media(hover:hover){.ts-control:hover,.ts-arrow:hover,.ts-meta:hover{color:#fff}.ts-result .srch-name:hover{color:#fbd5ca;filter:none}}
+
 </style>
 </head>
 <body class="gate">
@@ -3125,7 +3179,9 @@ a Totehm</span>
            aria-label="Search a Totehm by name">
     <div class="srch-hint srch-after" id="srch-hint">change the name · find another TOTEHM</div>
     <div class="note dim srch-after" id="srch-note" role="status" aria-live="polite"></div>
+    <div id="srch-controls" class="srch-after"></div>
     <div id="srch-res" class="srch-after"></div>
+    <button id="srch-more" class="ts-control srch-after hide" type="button">More TOTEHMs</button>
   </div>
   <button id="srch-x" class="srch-after" type="button" aria-label="Close the search">
     <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
@@ -3182,10 +3238,11 @@ a Totehm</span>
 
 <!-- La croix : referme le Totehm et rejoue le déploiement à l'envers. -->
 <div id="ro-bar">
-  <span id="ro-tag">Reading</span>
-  <span id="ro-who"></span>
-  <button id="ro-out" type="button">back to mine</button>
+  <div class="ro-head"><a class="ro-action" href="/search">Back to search</a><span id="ro-who"></span><a class="ro-action" href="/totehm#in">My TOTEHM</a></div>
+  <div class="ro-tools"><span id="ro-tag">Read only</span><button class="ro-action" id="ro-select" type="button">Copy this view</button><button class="ro-action" id="ro-review" type="button" disabled>Review copies · 0</button></div>
 </div>
+<section id="ro-access" class="hide" aria-live="polite"></section>
+
 <button id="fold-x" class="sink-el" type="button" aria-label="Close my Totehm">
   <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
 </button>
@@ -3467,6 +3524,16 @@ a Totehm</span>
     </div>
   </div>
 </div>
+<div id="ro-import" role="dialog" aria-modal="true" aria-labelledby="ro-import-title" class="hide">
+  <div class="ro-import-panel">
+    <div class="ro-import-head"><h2 id="ro-import-title">Copy into my TOTEHM</h2><button class="ro-action" id="ro-import-close" type="button">Close</button></div>
+    <p class="ro-explain">Your boxes stay. Links between the boxes you copy stay together.</p>
+    <div id="ro-import-list"></div>
+    <p id="ro-import-note" role="status" aria-live="polite"></p>
+    <div class="ro-import-foot"><button class="ro-action" id="ro-import-clear" type="button">Clear copies</button><button class="ro-action" id="ro-import-go" type="button">Import into my TOTEHM</button><a class="ro-action hide" id="ro-import-mine" href="/totehm#in">Open my TOTEHM</a></div>
+  </div>
+</div>
+
 <section id="myspaces" role="dialog" aria-modal="true" aria-labelledby="myspaces-title" tabindex="-1">
   <div id="myspaces-inner">
     <div id="myspaces-head"><h2 id="myspaces-title">My spaces</h2><button id="myspaces-close" type="button">[CLOSE]</button></div>
@@ -3876,6 +3943,9 @@ try{ ['totehm_profile_v1','totehm_grind_v5','totehm_events'].forEach(k=>localSto
    `cloudSave`) et le rendu de la barre. */
 const RO=(()=>{try{const v=new URLSearchParams(location.search).get('ro');
   return v&&v.trim()?v.trim().slice(0,32):null;}catch(e){return null;}})();
+let roSeq=0,roReady=false,roSame=false;
+const COPIES={items:new Map(),busy:false,inert:[],focus:null};
+let boxSources=new Map();
 
 let state={habits:[],vis:'private'};
 let busy=false, fpTarget=null, fpStage='freq', pendingF=null, pendingI=null, filterF=null, filterI=null;
@@ -3899,7 +3969,7 @@ const isTyping=e=>{const t=e&&e.target;
 /* Le filtre survit au rechargement : sans persistance, on retrouvait son
    Totehm entier alors qu'on l'avait laissé filtré. Il ne sort plus de ce
    fichier — My next objective n'a plus de fenêtre de filtre. */
-const KEYF='totehm_filter_v1';
+const KEYF=RO?'totehm_reader_filter_v1':'totehm_filter_v1';
 let lastFilterSaved=null;
 function saveFilter(){
   const v=JSON.stringify({f:filterF,i:filterI});
@@ -3979,28 +4049,22 @@ async function cloudLoad(){
   if(ordonne)state.ord=true;
   cacheEcrire();
 }
-/* ══ LE TOTEHM D'UN AUTRE ══
-   Trois requêtes, aucune écriture. `totehms` a déjà sa policy « members
-   read » ; `wisdom` et `objectives` en ont reçu une le 24/08, restreinte à
-   `authenticated` et adossée à la MÊME visibilité — un seul interrupteur
-   pour les trois volets, celui que le membre connaît déjà.
-   ÉTANCHÉITÉ PROUVÉE EN BASE le 24/08 : un membre ne voit pas les leçons
-   d'un Totehm privé, un anonyme n'en voit aucune. */
+/* THE SAME FIVE NATIVE VIEWS, read through current creator entitlements. */
 async function loadRO(){
+  const seq=++roSeq,uid=me?.id;
+  roReady=false;
   /* ⚠️ UN SEUL APPEL, ET IL RAMÈNE LES CINQ LISTES. Avant, on lisait
      `totehms.steps` à la main et on s'arrêtait là : quatre vues sur cinq
      restaient vides chez la personne qu'on regarde. `totehm_of` rend la
      même forme que `my_trips` — c'est le même Totehm, vu du dehors. */
   const {data,error}=await sb.rpc('totehm_of',{p_pseudo:RO});
+  if(seq!==roSeq||uid!==me?.id)return false;
   if(error){ console.error('[totehm] totehm_of:',error.message);
              roFail('this Totehm could not be read'); return false; }
-  /* Un Totehm PAYANT, lu par un non-abonné : avant, « private » et rien
-     d'autre. Depuis le 30/09, sa page de vente (totehm.com/@nom). */
-  if(data&&data.why==='subscribe'){ location.replace('/@'+encodeURIComponent(data.pseudo||RO)); return false; }
+  /* Keep the access gate inside the reader; subscription details are explicit. */
+  if(data&&data.why==='subscribe'){ await roLocked('subscribe'); return false; }
   if(!data||!data.ok){
-    roFail(data&&data.why==='nobody'  ? 'no Totehm by that name'
-         : data&&data.why==='signin'  ? 'sign in to read a Totehm'
-         :                              'this Totehm is private');
+    await roLocked(data?.why||'private');
     return false; }
 
   const habits=[];const seen={};
@@ -4033,16 +4097,133 @@ async function loadRO(){
 
   document.body.classList.add('ro');
   $('ro-who').textContent=data.pseudo||RO;
+  roReady=true;roSame=(myProfile?.pseudo||'').toLowerCase()===(data.pseudo||RO).toLowerCase();
+  $('ro-access').classList.add('hide');
+  document.title=(data.pseudo||RO)+' — TOTEHM';
+  if(!COPIES.items.size){filterF=null;filterI=null;}
   renderHabits();
+  copiesPaint();
+  const qp=new URLSearchParams(location.search),kind=qp.get('box_kind'),key=qp.get('box_key');
+  if(kind&&key){const hit=roBoxByKey(kind,key);if(hit)vaVers(kind,hit.id);}
   return true;
 }
 function roFail(msg){
   document.body.classList.add('ro');
   $('ro-who').textContent=msg;
   state={habits:[],vis:'private'};
+  TRIPS=[];REPS=[];TEACH=[];VIS=[];OBJ={};tripsLoaded=true;roReady=false;
+  COPIES.items.clear();copiesClose(true);$('ro-import-list').replaceChildren();copiesPaint();
   renderHabits();
 }
-$('ro-out').onclick=()=>{ location.href='totehm.html'; };
+
+/* COPIES: references stay in this reader's memory; the server copies current content. */
+const BOX_LABEL={h:'Habit',t:'Objective',r:'Repulsion',w:'Teaching',v:'Vision'};
+function roBoxByKey(kind,key){
+  const list={h:state.habits,t:TRIPS,r:REPS,w:TEACH,v:VIS}[kind]||[];
+  return list.find(x=>String(kind==='h'?srv(x):x.id)===String(key));
+}
+function roBox(kind,id){
+  const list={h:state.habits,t:TRIPS,r:REPS,w:TEACH,v:VIS}[kind]||[];
+  return list.find(x=>String(x.id)===String(id));
+}
+function boxCopyHTML(o){
+  const x=roBox(o.kind,o.id);if(!x)return '';
+  const key=String(o.kind==='h'?srv(x):x.id),mark=JSON.stringify([o.kind,key]);
+  if(!RO){
+    const source=boxSources.get(mark);
+    return source&&o.ouverte?'<a class="box-source ro-action" href="/totehm?ro='+encodeURIComponent(source)+'">Copied from '+esc(source)+'</a>':'';
+  }
+  if(!roReady||roSame)return '';
+  const chosen=COPIES.items.has(mark);
+  return '<button class="ro-copy" type="button" data-copy="'+o.kind+':'+esc(String(o.id))+'" aria-pressed="'+chosen+'">'+(chosen?'Copied · remove':'Copy box')+'</button>';
+}
+function copyToggle(ref){
+  if(!RO||!roReady||roSame||COPIES.busy)return;
+  const cut=ref.indexOf(':'),kind=ref.slice(0,cut),x=roBox(kind,ref.slice(cut+1));if(!x)return;
+  const key=String(kind==='h'?srv(x):x.id),mark=JSON.stringify([kind,key]);
+  if(COPIES.items.has(mark))COPIES.items.delete(mark);
+  else{if(COPIES.items.size>=50){dis('50 boxes at a time');return;}
+    COPIES.items.set(mark,{kind,key,title:x.t||x.text||''});}
+  renderZone();copiesPaint();
+}
+function copiesPaint(){
+  $('ro-review').disabled=!COPIES.items.size||COPIES.busy;
+  $('ro-review').textContent='Review copies · '+COPIES.items.size;
+  $('ro-select').classList.toggle('hide',!roReady||roSame);
+  $('ro-review').classList.toggle('hide',!roReady||roSame);
+  window.__totehm_copies=()=>({build:BUILD,read_only:!!RO,readable:roReady,selected:COPIES.items.size,importing:COPIES.busy,dialog:!$('ro-import').classList.contains('hide')});
+}
+function copiesList(){
+  $('ro-import-list').innerHTML=Array.from(COPIES.items.values()).map((x,i)=>'<div class="ro-item" data-kind="'+x.kind+'"><div><span class="ro-item-kind">'+BOX_LABEL[x.kind]+'</span><span class="ro-item-title">'+esc(x.title)+'</span></div><button class="ro-action" type="button" data-remove-copy="'+i+'" aria-label="Remove '+esc(x.title)+'">Remove</button></div>').join('');
+  $('ro-import-go').disabled=!COPIES.items.size||COPIES.busy;
+}
+function copiesOpen(){
+  if(!COPIES.items.size||COPIES.busy)return;
+  COPIES.focus=document.activeElement;
+  COPIES.inert=Array.from(document.body.children).filter(e=>e!==$('ro-import')&&e.tagName!=='SCRIPT').map(e=>[e,e.inert]);
+  COPIES.inert.forEach(([e])=>e.inert=true);
+  $('ro-import').classList.remove('hide');
+  $('ro-import-note').textContent='';$('ro-import-go').classList.remove('hide');$('ro-import-mine').classList.add('hide');
+  copiesList();$('ro-import-close').focus();
+}
+function copiesClose(force=false){
+  if(COPIES.busy&&!force)return;
+  $('ro-import').classList.add('hide');COPIES.inert.forEach(([e,was])=>e.inert=was);COPIES.inert=[];
+  const target=COPIES.focus?.isConnected&&!COPIES.focus.disabled?COPIES.focus:$('ro-select');
+  target.focus({preventScroll:true});
+}
+async function roLocked(why){
+  const seq=roSeq,uid=me?.id;
+  roFail(RO);$('ro-access').classList.remove('hide');
+  const message={nobody:'No TOTEHM by that name.',signin:'Sign in to read this TOTEHM.',private:'This TOTEHM is private.',subscribe:'Subscribe to read and copy this TOTEHM.'}[why]||'This TOTEHM could not be read.';
+  $('ro-access').innerHTML='<p>'+message+'</p><a class="ro-action" href="/search">Find another TOTEHM</a>';
+  if(why==='subscribe'){
+    const {data,error}=await sb.rpc('creator_page',{p_pseudo:RO});
+    if(seq!==roSeq||uid!==me?.id)return;
+    if(error){console.error('[reader offer]',error.message);return;}
+    const s=data?.sale;
+    if(s?.open){const p=new Intl.NumberFormat('en',{style:'currency',currency:(s.currency||'eur').toUpperCase()}).format(s.price_cents/100);
+      $('ro-access').innerHTML='<p><strong>'+esc(p)+' / year</strong></p><p>Read this TOTEHM. Copy its boxes into yours. Access the exact places of its shared spaces with location on.</p><a class="ro-action" href="/@'+encodeURIComponent(RO)+'">View subscription</a><a class="ro-action" href="/search">Back to search</a>';}
+  }
+}
+async function loadBoxSources(){
+  if(RO||!me)return;const uid=me.id;
+  const {data,error}=await sb.rpc('my_box_sources');
+  if(uid!==me?.id)return;if(error){console.error('[box sources]',error.message);return;}
+  boxSources=new Map((data||[]).map(x=>[JSON.stringify([x.kind,x.key]),x.pseudo]));renderZone();
+}
+$('ro-select').onclick=()=>{
+  if(!roReady||roSame||COPIES.busy)return;
+  const kind={habits:'h',objectives:'t',repulsions:'r',wisdom:'w',visions:'v'}[view];
+  const list=kind==='h'?state.habits.filter(x=>(!filterF||x.f===filterF)&&(!filterI||intIds(x).includes(filterI))):{t:TRIPS,r:REPS,w:TEACH,v:VIS}[kind];
+  for(const x of list){if(COPIES.items.size>=50)break;const key=String(kind==='h'?srv(x):x.id);COPIES.items.set(JSON.stringify([kind,key]),{kind,key,title:x.t||x.text||''});}
+  renderZone();copiesPaint();
+};
+$('ro-review').onclick=copiesOpen;$('ro-import-close').onclick=()=>copiesClose();
+$('ro-import-clear').onclick=()=>{if(COPIES.busy)return;COPIES.items.clear();copiesList();renderZone();copiesPaint();};
+$('ro-import-list').onclick=e=>{const b=e.target.closest('[data-remove-copy]');if(!b||COPIES.busy)return;
+  COPIES.items.delete(Array.from(COPIES.items.keys())[Number(b.dataset.removeCopy)]);copiesList();renderZone();copiesPaint();};
+window.addEventListener('keydown',e=>{
+  if($('ro-import').classList.contains('hide'))return;
+  e.stopPropagation();
+  if(e.key==='Escape'){e.preventDefault();e.stopPropagation();copiesClose();}
+  if(e.key==='Tab'){const f=Array.from($('ro-import').querySelectorAll('button:not(:disabled),a[href]')).filter(x=>!x.closest('.hide'));const i=f.indexOf(document.activeElement);e.preventDefault();f[(i+(e.shiftKey?-1:1)+f.length)%f.length]?.focus();}
+},true);
+$('ro-import-go').onclick=async()=>{
+  if(!RO||!roReady||!me||!COPIES.items.size||COPIES.busy)return;
+  const uid=me.id,seq=roSeq,selection=Array.from(COPIES.items.values()).map(({kind,key})=>({kind,key}));
+  COPIES.busy=true;copiesPaint();copiesList();$('ro-import-note').textContent='Importing…';
+  ['ro-import-clear','ro-import-close'].forEach(id=>$(id).disabled=true);
+  try{
+    const {data,error}=await sb.rpc('totehm_import_boxes',{p_pseudo:RO,p_selection:selection});
+    if(seq!==roSeq||uid!==me?.id)return;
+    if(error){console.error('[box import]',error.message);throw error;}
+    if(!data?.ok){$('ro-import-note').textContent=data?.why==='changed'?'A box changed. Reopen this TOTEHM and choose again.':'Access changed. Reopen this TOTEHM to continue.';return;}
+    $('ro-import-note').textContent=data.created+' boxes imported'+(data.reused?' · '+data.reused+' already in your TOTEHM':'')+'.';
+    COPIES.items.clear();$('ro-import-go').classList.add('hide');$('ro-import-mine').classList.remove('hide');$('ro-import-mine').focus();renderZone();
+  }catch(e){if(seq===roSeq&&uid===me?.id)$('ro-import-note').textContent='Import unavailable. Your copies are here — try again.';}
+  finally{COPIES.busy=false;copiesPaint();copiesList();['ro-import-clear','ro-import-close'].forEach(id=>$(id).disabled=false);}
+};
 
 /* ══ LES 7 INTENTIONS (source : totehm_map.html) ══ */
 const INTS=[
@@ -4557,7 +4738,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-04b';
+const BUILD='2026-10-04-search-boxes';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -4759,7 +4940,7 @@ function paintZone(){
 /* Changer de vue ne charge rien et ne quitte rien : c'est la même page,
    la même session, la même mémoire. C'est tout l'intérêt de la fusion. */
 function setView(v){
-  if(busy)return;
+  if(busy||!$('ro-import').classList.contains('hide'))return;
   if(v===view)return;
   /* ══ CHANGER DE VUE NE DEMANDE PLUS DE FERMER · 09/09/2026 ══════════
      Ici on refusait tant qu'une boîte était ouverte, « pour ne pas perdre
@@ -5153,6 +5334,7 @@ function boiteHTML(o){
     + (o.haut||'')
     + (o.minis?'<span class="minis">'+o.minis+'</span>':'')
     + (o.bas||'')
+    + boxCopyHTML(o)
     /* [Delete] EST LE DERNIER ENFANT DE LA COLONNE. Posé à côté de la
        boîte il flottait à droite et mangeait la largeur — sur un
        téléphone, la moitié de la ligne pour la commande la plus grave.
@@ -5988,9 +6170,11 @@ function cable(box){
        qui les traite existait et n'était jamais atteint. */
     const el=e.target.closest('[data-fint],[data-ffq],[data-fclear],[data-fx],'
       +'[data-open],[data-add],[data-x],[data-pk],[data-int],[data-mv],[data-go],'
-      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill]');
+      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-copy]');
     if(!el)return;
     const d=el.dataset;
+    if(d.copy){e.stopPropagation();copyToggle(d.copy);return;}
+    if(RO&&!['open','go','x','fint','ffq','fclear','fx'].some(k=>d[k]!==undefined))return;
 
     /* ⚠️ ON PEUT OUVRIR UNE BOÎTE EN MODE CLASSEMENT · 09/09/2026.
        Les deux gestes se disputaient le même doigt tant que classer était
@@ -6036,6 +6220,7 @@ function cable(box){
 
   /* Le clavier ouvre ce que le doigt ouvre. */
   box.addEventListener('keydown',e=>{
+    if(e.target.closest('button,a'))return;
     const el=e.target.closest&&e.target.closest('[data-open]');
     if(el&&(e.key==='Enter'||e.key===' ')){e.preventDefault();
       const p=el.dataset.open.split(':'); ouvrir(p[0],p[1]);}
@@ -6044,6 +6229,7 @@ function cable(box){
   /* ══ LA SAISIE — TOUT S'ENREGISTRE EN ÉCRIVANT ═════════════════════
      Aucun bouton [Done] nulle part : ce qu'on écrit est posé. */
   box.addEventListener('input',e=>{
+    if(RO)return;
     const t=e.target;
     if(t.dataset.edit){
       /* ⚠️ ON APLATIT, MÊME CE QUI VIENT D'UN COLLER. `beforeinput`
@@ -6588,7 +6774,7 @@ window.addEventListener('touchend',(e)=>{
      revenait à son point de départ**, exactement ce que Wah décrit — et
      symétriquement à droite, par la vision.
      Un geste né sur un contrôle appartient à ce contrôle. */
-  if(t0el&&t0el.closest&&t0el.closest('#joy,#freq-panel,#habit-peek,#filter-modal,#member-window,input,textarea,select,[contenteditable]'))return;
+  if(t0el&&t0el.closest&&t0el.closest('#joy,#ro-import,#ro-bar,#ro-access,[data-copy],#freq-panel,#habit-peek,#filter-modal,#member-window,input,textarea,select,[contenteditable]'))return;
   const _ae=document.activeElement;
   if(_ae&&(_ae.tagName==='TEXTAREA'||_ae.tagName==='INPUT'))return;
   if(document.body.classList.contains('gate'))return;   /* l'atterrissage défile librement */
@@ -6651,7 +6837,7 @@ window.addEventListener('touchend',(e)=>{
   addEventListener('wheel',e=>{
     if(document.body.classList.contains('gate'))return;
     /* Même raison qu'au doigt : le pavé a sa propre molette. */
-    if(e.target&&e.target.closest&&e.target.closest('#joy'))return;
+    if(e.target&&e.target.closest&&e.target.closest('#joy,#ro-import,#ro-bar,#ro-access'))return;
     if(Math.abs(e.deltaY) > Math.abs(e.deltaX)*1.6){
       if(navBlocked())return;
       if(Date.now()<froid){accV=0;return;}
@@ -6713,7 +6899,7 @@ window.addEventListener('touchend',(e)=>{
    Ils passent sous Book et Next (z-index) : on ouvre par eux, on referme par
    le T de la page ouverte, les flèches du clavier ou Échap. */
 function navBlocked(){
-  return busy||fpOpen()
+  return busy||fpOpen()||!$('ro-import').classList.contains('hide')
     ||$('member-window').classList.contains('show')
     ||false
     ||!$('habit-peek').classList.contains('hide')
@@ -6840,6 +7026,7 @@ const navRight=()=>{ if(navBlocked())return; versVoisin('d'); };
 paintZone();
 
 window.addEventListener('keydown',(e)=>{
+  if(!$('ro-import').classList.contains('hide'))return;
   if(fpOpen()){if(e.key==='Escape')closeFreqPanel();return;}
   /* LE FIX CLAVIER. Une flèche dans un champ déplace le curseur, point.
      Les habitudes sont des <textarea> : ne tester que INPUT laissait la
@@ -7072,6 +7259,64 @@ function closeWeightPick(){ $('wpick').classList.remove('show'); }
 $('wp-skip').onclick=()=>replyIntention(null);
 $('wpick').addEventListener('click',e=>{if(e.target===$('wpick'))closeWeightPick();});
 
+/* TOTEHM SEARCH · copied into the independent COM pages, never imported. */
+const searchViews=new Set();
+function TotehmSearch({input,results,note,controls,more,onResults=()=>{}}){
+  let seq=0,timer=0,scope='names',kind='',intention='',query='',offset=0,rows=[],running=false;
+  const labels={h:'Habit',t:'Objective',r:'Repulsion',w:'Teaching',v:'Vision'};
+  const money=(c,cur)=>{try{return new Intl.NumberFormat('en',{style:'currency',currency:(cur||'eur').toUpperCase(),maximumFractionDigits:c%100?2:0}).format(c/100);}catch{return c/100+' '+(cur||'eur');}};
+  const href=(r,b)=>'/totehm?ro='+encodeURIComponent(r.pseudo)+(b?'&box_kind='+b.kind+'&box_key='+encodeURIComponent(b.key):'');
+  controls.innerHTML='<div class="ts-modes" aria-label="Search mode">'+[['names','Names'],['subscriptions','My subscriptions'],['boxes','Boxes I can read']].map(([id,label])=>'<button class="ts-control" type="button" data-search-scope="'+id+'" aria-pressed="false">'+label+'</button>').join('')+'</div><div class="ts-filters hide"><label>Box<select class="ts-control" data-search-kind><option value="">All boxes</option>'+Object.entries(labels).map(([id,label])=>'<option value="'+id+'">'+label+'</option>').join('')+'</select></label><label>Intention<select class="ts-control" data-search-intention><option value="">All intentions</option>'+['fight','flow','enrich','love','express','focus','celebrate'].map(i=>'<option value="'+i+'">'+i[0].toUpperCase()+i.slice(1)+'</option>').join('')+'</select></label></div>';
+  results.setAttribute('aria-live','polite');results.setAttribute('aria-label','TOTEHM search results');
+  function paintModes(){
+    controls.querySelectorAll('[data-search-scope]').forEach(b=>b.setAttribute('aria-pressed',String(scope===b.dataset.searchScope)));
+    controls.querySelector('.ts-filters').classList.toggle('hide',scope!=='boxes');
+    input.placeholder=scope==='boxes'?'words in a box':'a name or @link';
+    input.maxLength=scope==='boxes'?96:80;
+    input.setAttribute('aria-label',scope==='boxes'?'Search inside TOTEHMs I can read':'Search a TOTEHM by name or link');
+  }
+  function draw(){
+    let similar=false;
+    results.innerHTML=rows.map(r=>{
+      let h='';if(r.match==='similar'&&!similar){similar=true;h='<div class="ts-section">Similar names</div>';}
+      const status=r.own?'Your TOTEHM':r.can_read?'Subscribed · read & copy':r.offer?'Subscription required':'Read access unavailable';
+      const price=r.offer&&!r.can_read&&r.price_cents?money(r.price_cents,r.currency)+' / year':'';
+      h+='<article class="ts-result"><a class="srch-row ts-open" href="'+href(r)+'"><span class="srch-name tname">'+esc(r.pseudo)+'</span><span class="ts-arrow" aria-hidden="true">↗</span></a><div class="ts-meta"><span class="srch-meta">'+status+'</span>'+(price?'<span>'+esc(price)+'</span>':'')+'</div>';
+      if(r.can_read&&Array.isArray(r.boxes))h+=r.boxes.map(b=>'<a class="ts-box" data-kind="'+b.kind+'" href="'+href(r,b)+'"><span class="ts-box-kind">'+(labels[b.kind]||'Box')+'</span><span class="ts-box-text">'+esc(b.text)+'</span></a>').join('');
+      return h+'</article>';
+    }).join('');onResults(rows.length);
+  }
+  function cancel(){seq++;clearTimeout(timer);running=false;results.setAttribute('aria-busy','false');more.disabled=false;}
+  async function run(reset=true){
+    clearTimeout(timer);const current=++seq,uid=me?.id||null;
+    if(reset){offset=0;rows=[];results.replaceChildren();more.classList.add('hide');onResults(0);}
+    running=true;results.setAttribute('aria-busy','true');more.disabled=true;note.textContent='Searching…';
+    try{
+      const {data,error}=await sb.rpc('totehm_discover',{p_q:query,p_scope:scope,p_kind:scope==='boxes'?kind:'',p_intention:scope==='boxes'?intention:'',p_offset:offset,p_limit:12});
+      if(current!==seq||uid!==(me?.id||null))return;
+      if(error){console.error('[totehm_discover]',error.message);throw error;}
+      const items=Array.isArray(data?.items)?data.items:[];
+      const seen=new Set(rows.map(x=>x.pseudo));rows=rows.concat(items.filter(x=>!seen.has(x.pseudo)));offset+=items.length;
+      draw();more.classList.toggle('hide',!data?.more);
+      if(data?.why==='signin'){note.innerHTML='Sign in to search your subscriptions and their boxes. <a class="ts-link" href="/totehm#in">Sign in</a>';}
+      else note.textContent=rows.length?(data.total||rows.length)+' TOTEHMs'+(scope==='boxes'?' · your accessible boxes':''):scope==='subscriptions'?'Your subscriptions will appear here. Search a name to find a TOTEHM.':scope==='boxes'?'No accessible box matches. Try other words or clear the filters.':'No matching name. Try part of the name or an @link.';
+    }catch(e){if(current===seq){note.textContent='Search unavailable. Try again.';more.classList.remove('hide');more.textContent='Retry';}}
+    finally{if(current===seq){running=false;results.setAttribute('aria-busy','false');more.disabled=false;}}
+  }
+  controls.addEventListener('click',e=>{const b=e.target.closest('[data-search-scope]');if(!b)return;
+    cancel();scope=b.dataset.searchScope;query=query||'';input.value=query;paintModes();more.textContent='More TOTEHMs';run();});
+  controls.addEventListener('change',e=>{if(e.target.matches('[data-search-kind]'))kind=e.target.value;if(e.target.matches('[data-search-intention]'))intention=e.target.value;cancel();run();});
+  input.addEventListener('input',()=>{cancel();query=input.value.trim();results.replaceChildren();more.classList.add('hide');onResults(0);note.textContent='Searching…';timer=setTimeout(()=>run(),240);});
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();query=input.value.trim();run();}
+    if(e.key==='ArrowDown'){e.preventDefault();results.querySelector('a')?.focus();}});
+  results.addEventListener('keydown',e=>{if(!['ArrowDown','ArrowUp'].includes(e.key))return;const f=Array.from(results.querySelectorAll('a'));const i=f.indexOf(document.activeElement);e.preventDefault();const j=i+(e.key==='ArrowDown'?1:-1);if(j<0)input.focus();else f[Math.min(j,f.length-1)]?.focus();});
+  more.onclick=()=>{if(running)return;if(more.textContent==='Retry'){more.textContent='More TOTEHMs';run(rows.length===0);}else run(false);};
+  paintModes();
+  const controller={start(q='',s='names'){cancel();query=q;scope=['names','subscriptions','boxes'].includes(s)?s:'names';kind='';intention='';controls.querySelectorAll('select').forEach(e=>e.value='');paintModes();run();},cancel,authChanged(){cancel();rows=[];results.replaceChildren();more.classList.add('hide');onResults(0);note.textContent='';if(getComputedStyle(controls).visibility==='visible'&&controls.getClientRects().length)run();},reset(){cancel();rows=[];results.replaceChildren();more.classList.add('hide');onResults(0);note.textContent='';}};
+  searchViews.add(controller);return controller;
+}
+
+
 /* ══ SEARCH A TOTEHM — RÉÉCRITE LE 04/09/2026 ═══════════════════════
    CE QUI N'ALLAIT PAS, et qui se voyait tout de suite :
 
@@ -7092,51 +7337,17 @@ $('wpick').addEventListener('click',e=>{if(e.target===$('wpick'))closeWeightPick
    cherche un nom qu'il connaît déjà. */
 
 
-async function runSearch(q, noteEl){
-  noteEl.classList.remove('hide');
-  noteEl.className = 'note dim';
-  noteEl.textContent = 'searching\u2026';
-  let rows = [];
-  try{
-    const {data,error} = await sb.rpc('totehm_search',{p_q:q,p_limit:8});
-    if(error){ console.error('[totehm_search]', error.message); throw error; }
-    rows = data || [];
-  }catch(e){
-    noteEl.className='note no'; noteEl.textContent='search is unreachable right now';
-    return;
-  }
-  if(!rows.length){
-    noteEl.className='note dim';
-    /* On dit ce qui est vrai : soit personne ne porte ce nom, soit
-       personne ne l'a partagé. Jamais « privé » par défaut. */
-    noteEl.textContent='no shared Totehm by that name';
-    return;
-  }
-  noteEl.className='note dim';
-  noteEl.innerHTML = '<div class="sr-list">' + rows.map(r =>
-      '<button class="sr-row" type="button" data-pseudo="'+esc(r.pseudo)+'">'
-    +   '<span class="sr-name">'+esc(r.pseudo)+'</span>'
-    /* 01/10 : un nom et une offre — jamais un contenu (ni intentions, ni habitudes). */
-    +   '<span class="sr-meta">'+(r.subscribed?'subscribed':r.offer?'subscribe':'')+'</span>'
-    +   '</button>').join('') + '</div>';
-  noteEl.querySelectorAll('.sr-row').forEach(b=>{
-    b.onclick = () => {
-      $('member-window').classList.remove('show');
-      /* SEARCH → TOTEHM → CREATOR (30/09) : la page du Totehm dit ce que
-         CE lecteur peut ouvrir — le lire, s'abonner, rejoindre FIGHER. */
-      location.href = '/@' + encodeURIComponent(b.dataset.pseudo);
-    };
-  });
+let memberSearchSeq=0,memberSearchTimer=0;
+async function runSearch(q,noteEl){
+  const seq=++memberSearchSeq,uid=me?.id;noteEl.classList.remove('hide');noteEl.className='note dim';noteEl.textContent='Searching…';
+  const {data,error}=await sb.rpc('totehm_discover',{p_q:q,p_scope:q?'names':'subscriptions',p_limit:8});
+  if(seq!==memberSearchSeq||uid!==me?.id)return;
+  if(error){console.error('[member search]',error.message);noteEl.textContent='Search unavailable. Try again.';return;}
+  const rows=data?.items||[];
+  noteEl.innerHTML='<div class="sr-list">'+rows.map(r=>'<a class="sr-row" href="/totehm?ro='+encodeURIComponent(r.pseudo)+'"><span class="sr-name">'+esc(r.pseudo)+'</span><span class="sr-meta">'+(r.can_read?'read & copy':r.offer?'subscription required':'')+'</span></a>').join('')+'</div><a class="ts-link" href="/search">Names · subscriptions · boxes</a>';
 }
-
-$('search-input').addEventListener('keydown',e=>{
-  if(e.key!=='Enter')return;
-  const v=$('search-input').value.trim();
-  const n=$('search-note');
-  if(v.length<2){n.className='note dim';n.textContent='two letters, minimum';return;}
-  runSearch(v, n);
-});
-
+$('search-input').addEventListener('input',()=>{memberSearchSeq++;clearTimeout(memberSearchTimer);const v=$('search-input').value.trim();$('search-note').textContent='Searching…';memberSearchTimer=setTimeout(()=>runSearch(v,$('search-note')),240);});
+$('search-input').addEventListener('keydown',e=>{if(e.key==='Enter'){clearTimeout(memberSearchTimer);runSearch($('search-input').value.trim(),$('search-note'));}});
 
 /* ══ MEMBER SPACE : email-only DNA ══ */
 function connPaint(){
@@ -7565,11 +7776,13 @@ $('mw-signout').onclick=async()=>{
    frame ou pour de bon, le Totehm de celui d'avant. */
 let sesSeq=0;
 function quitter(){
+  roSeq++;roReady=false;COPIES.busy=false;COPIES.items.clear();copiesClose(true);boxSources.clear();
+  $('ro-import-list').replaceChildren();$('ro-import-note').textContent='';$('ro-access').replaceChildren();
   if($('myspaces').classList.contains('is-open')){MYSPACES.seq++;MYSPACES.busy=false;MYSPACES.rows=[];$('myspaces-list').replaceChildren();$('myspaces-name').textContent='';$('myspaces').classList.remove('is-open');MYSPACES.inert.forEach(([e,was])=>e.inert=was);MYSPACES.inert=[];}
-  state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; mySub=null; tgLinked=false;
+  state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; mySub=null; tgLinked=false; memberSearchSeq++;clearTimeout(memberSearchTimer);$('search-note').textContent='';
   TRIPS=[]; REPS=[]; TEACH=[]; VIS=[]; OBJ={}; tripsLoaded=false;
   cacheOublier();
-  $('member-window').classList.remove('show');
+  $('member-window').classList.remove('show');copiesPaint();
 }
 async function sessionChange(){
   const n=++sesSeq;
@@ -7578,6 +7791,7 @@ async function sessionChange(){
   const avant=me?me.id:null, apres=session&&session.user?session.user.id:null;
   if(avant&&avant!==apres) quitter();
   me=session?.user||null;
+  if(avant!==apres)searchViews.forEach(c=>c.authChanged());
   await loadProfile();
   if(n!==sesSeq) return;
   if(inscrit()){
@@ -7592,7 +7806,7 @@ async function sessionChange(){
   }
   if(n!==sesSeq) return;
   memberPaint(); paint();
-  if(inscrit()&&!RO) loadTrips(true);
+  if(inscrit()&&!RO){loadTrips(true);loadBoxSources();}
   garde();
 }
 /* LA GARDE : inscrit, la porte se franchit ; pas inscrit et Totehm
@@ -8320,10 +8534,9 @@ window.addEventListener('pageshow',e=>{
         sRes=$('srch-res'), sX=$('srch-x'), flipLink=$('search-corner');
   const RMQ=window.matchMedia('(prefers-reduced-motion: reduce)');
   const SDUR=640;
-  let sOpen=false, sMoving=false, sTimer=0, sSeq=0, sDebounce=0;
-  const argent=(c,cur)=>{ try{ return new Intl.NumberFormat('en',{style:'currency',
-      currency:(cur||'eur').toUpperCase(),maximumFractionDigits:c%100?2:0}).format(c/100); }
-    catch(_){ return (c/100)+' '+(cur||''); } };
+  let sOpen=false, sMoving=false, sTimer=0;
+  const searchCtl=TotehmSearch({input:sQ,results:sRes,note:sNote,controls:$('srch-controls'),more:$('srch-more'),onResults:n=>window.__totehm_lsd.resultats=n});
+
   const monNom=()=>((me&&myProfile&&myProfile.pseudo)||'').trim();
 
   /* Le mot du bas dit le geste SUIVANT. */
@@ -8378,13 +8591,13 @@ window.addEventListener('pageshow',e=>{
     avecTransition(); pleinEcran();
     srch.classList.add('is-show');                   /* le reste arrive à +0,42 s (CSS) */
     clearTimeout(sTimer); sTimer=setTimeout(fin,SDUR+140);
-    lancer('');                                      /* mes abonnements, si je suis connecté */
+    lancer('');                                      /* own, subscriptions and available creators */
   }
   /* Le dézoom : la page redevient le dos du papier, le nom y revient, puis
      le papier se remet sur son recto — l'atterrissage retrouve son départ. */
   function fermerRecherche(then){
     if(!sOpen||sMoving) return;
-    sMoving=true; sSeq++; clearTimeout(sDebounce); clearTimeout(sTimer);
+    sMoving=true; searchCtl.reset(); clearTimeout(sTimer);
     try{ sQ.blur(); }catch(_){}
     srch.classList.remove('is-open','is-show');
     document.body.classList.remove('searching');
@@ -8412,44 +8625,13 @@ window.addEventListener('pageshow',e=>{
     }));
   }
 
-  /* La saisie. Deux lettres au minimum ; vide, la RPC rend MES abonnements.
-     Le nom pré-rempli (le mien) ne se cherche pas : on cherche ce qu'on tape. */
-  async function lancer(q){
-    const mon=++sSeq;
-    if(q&&q.length<2){ sRes.innerHTML=''; sNote.className='note dim srch-after'; sNote.textContent='two letters, minimum'; return; }
-    if(!q&&!me){ sRes.innerHTML=''; sNote.textContent=''; return; }  /* un invité n'a pas d'abonnements */
-    if(q){ sNote.className='note dim srch-after'; sNote.textContent='searching\u2026'; }
-    let rows;
-    try{
-      const {data,error}=await sb.rpc('totehm_search',{p_q:q,p_limit:12});
-      if(error){ console.error('[totehm_search]',error.message); throw error; }
-      rows=data||[];
-    }catch(e){
-      if(mon!==sSeq) return;
-      sNote.className='note no srch-after'; sNote.textContent='search is unreachable right now'; return;
-    }
-    if(mon!==sSeq) return;                            /* réponse tardive : on la jette */
-    sNote.className='note dim srch-after';
-    sNote.textContent=rows.length||!q ? '' : 'no shared Totehm by that name';
-    window.__totehm_lsd.resultats=rows.length;
-    /* Un NOM et une offre — jamais un contenu (ni habitudes ni intentions). */
-    sRes.innerHTML=rows.map(r=>'<a class="srch-row" href="/@'+encodeURIComponent(r.pseudo)+'">'
-      +'<span class="srch-name">'+esc(r.pseudo)+'</span>'
-      +'<span class="srch-meta">'+(r.subscribed?'subscribed'
-        :(r.offer&&r.price_cents)?argent(r.price_cents,r.currency)+' / year':'')+'</span></a>').join('');
-  }
-  if(sQ){
-    sQ.addEventListener('input',()=>{ clearTimeout(sDebounce);
-      const v=sQ.value.trim(); sDebounce=setTimeout(()=>lancer(v),260); });
-    sQ.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault();
-      clearTimeout(sDebounce); lancer(sQ.value.trim()); } });
-  }
+  function lancer(q){ searchCtl.start(q); }
   if(sX) sX.onclick=()=>fermerRecherche();
   /* La feuille est modale : Tab tourne entre le nom, les résultats et la
      croix — jamais vers les boutons du Totehm, dessous et invisibles. */
   if(srch) srch.addEventListener('keydown',e=>{
     if(e.key!=='Tab'||!sOpen) return;
-    const f=[sQ,...sRes.querySelectorAll('a'),sX].filter(Boolean);
+    const f=Array.from(srch.querySelectorAll('input,select,button:not(:disabled),a[href]')).filter(e=>e.getClientRects().length&&!e.closest('.hide'));
     const i=f.indexOf(document.activeElement);
     const j=e.shiftKey ? (i<=0?f.length-1:i-1) : (i<0||i===f.length-1?0:i+1);
     e.preventDefault(); f[j].focus();
