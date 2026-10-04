@@ -10,6 +10,7 @@
 - **SPACE's promise: take a habit out of home — living it outside makes it a pleasure, not a chore.** Each view answers one wish: radar = join now; city feed = join (JOIN) or get inspired (GET INSPIRED); future list = plan to join; TOP = announce; BOTTOM = live it (video or photo, the camera wakes only on VIDEO/PHOTO).
 - A space's context (where, when, with whom) sits in a rounder box, detached under its Habit Box. Gestures are plain buttons (GO, SHARE, CALENDAR, WATCH) — no brackets, no second sheet repeating the box.
 - A shared space may show its Habit's WHY (goals) and TRIGGER (repulsions) when its author chooses: the native format for brand partnerships (a habit with a reason). Paid partnerships will need an explicit disclosure.
+- **Discover → read → copy → make it yours:** a search result opens the actual five-view TOTEHM in read-only mode. Public names are discoverable; box text is searchable only within the viewer's current access. Reviewed copies retain their creator provenance and links between selected boxes, then become the member's independent practice. Names stay Coral; controls gray; actual boxes keep their native colours.
 - **Space** is the interface name for one Habit lived/planned in a place and time. Existing Spot APIs/data remain compatible. COM **My spaces** retrieves only the member's own private/shared history, with SSO links to SPACE.
 
 **Source of truth for product, brand and ecosystem.**

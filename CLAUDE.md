@@ -177,7 +177,7 @@ desktop ; CENTER rejoindre maintenant · LEFT rejoindre ou s'inspirer (filtre JO
 l'agenda · TOP planifier · BOTTOM vivre (capteur éteint jusqu'à VIDEO/PHOTO). Un space = vidéo OU photo ;
 WHY · TRIGGER montré au choix de l'auteur. Gestes en ligne (GO, WATCH, CALENDAR, SHARE), fiche seulement
 pour un point du radar ou un lien. Choix d'une Habit plein écran sur téléphone. `space/CLAUDE.md` fait foi.
-COM : My spaces = historique propriétaire paginé.
+COM : My spaces = historique propriétaire paginé ; recherche noms/abonnements/boxes accessibles → TOTEHM natif read-only → copies revues et importées. `com/CLAUDE.md` fait foi.
 
 ## Règles d'interface qui valent partout
 

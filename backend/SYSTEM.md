@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 3 octobre 2026, 11:20 UTC** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 3 octobre 2026, 16:45 UTC** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -14,6 +14,19 @@
 > Le vérifier.** Commandes en §8.
 
 ---
+
+
+## 0 · COM — RECHERCHE, LECTEUR NATIF ET COPIES — 03/10/2026
+
+| quoi | valeur mesurée |
+|---|---|
+| migration | `search_and_box_import` appliquée une fois ; journal `20261003164312`, fichier `20261003155911_search_and_box_import.sql` |
+| auto-test local PostgreSQL/PGlite puis base réelle | `TOTEHM DISCOVERY SELFTEST (rolled back): FAIL={}` ; cinq types/jonctions, droits privés/annulés, pagination, accents/fautes, filtre, batch invalide, retry, déduplication du contenu personnel, import partiel, limite 50 |
+| grants mesurés | discover anon oui ; import authenticated oui / anon non ; helper authenticated non ; registre aucun SELECT anon/auth, RLS true sans politique |
+| après auto-test réel | registre 0 ligne : aucun compte, contenu ou import de test conservé |
+| tests navigateur | `com_discovery.mjs` 50/50 · `com_paper.mjs` 39/39 · `com_mouth.mjs` 29/29 · `spaces_ui.mjs` 57/57 ; comptes/réseau simulés, captures mobile et desktop inspectées |
+| interfaces | mêmes cinq vues et joystick ; recherche du papier conservée ; résultat → `/totehm?ro=nom`, hit → box native ; revue hors de stage, focus/inert/Échap, purge à la déconnexion |
+| lints nouveaux vérifiés | [RPC SECURITY DEFINER publiques](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable) : names public volontaire ; [RPC authenticated](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable) : accès source/owner contrôlés ; [RLS sans politique](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy) : registre fermé volontaire |
 
 ## 0 · SPACE — PHOTO, WHY · TRIGGER, GESTES EN LIGNE, CAPTEUR À LA DEMANDE — 03/10/2026 (ter)
 

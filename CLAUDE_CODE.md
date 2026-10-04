@@ -174,6 +174,10 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 
 Un tableau : ce qui a été fait, la valeur mesurée, ce qui n'a pas pu l'être.
 
+### Correction 0.34 — 03/10/2026 · découvrir, lire, copier, pratiquer
+
+> COM : recherche par nom avec accents/fautes/liens, abonnements, boxes accessibles (type/intention). Le résultat EST le TOTEHM natif à cinq vues, en read-only ; copies individuelles ou de vue, revue, import personnel avec provenance, déduplication et liens remappés entre boxes sélectionnées. Accès source actuel requis ; aucune copie de coordonnées/statistiques/historique. Noms publics seulement sans abonnement. Migration `search_and_box_import` appliquée (journal `20261003164312`), ne pas réappliquer. Modèle annuel créateur et 80/20 conservé. Aucun travail Oracle/n8n demandé ; reporter la vision dans le master.
+
 ### Correction 0.33 — 03/10/2026 · ce que veut le membre, vue par vue
 
 À reporter dans TOTEHM_MASTER.md §0 : l'idée de SPACE = vivre une habitude hors de chez soi, la rendre agréable. Radar = rejoindre maintenant ; fil = rejoindre (JOIN) ou s'inspirer (GET INSPIRED) ; agenda = prévoir (GO, WATCH, CALENDAR, SHARE) ; TOP = annoncer ; BOTTOM = vivre, caméra éteinte jusqu'à VIDEO ou PHOTO. Un space porte une vidéo OU une photo. Sur un space partagé, l'auteur peut montrer le WHY (objectifs) et le TRIGGER (répulsions) de sa Habit : le format natif des partenariats de marque (mention de partenariat payé à prévoir). GO sans abonnement → SUBSCRIBE vers la page du créateur sur COM. Plus de fiche qui répète la boîte. Prix et droits inchangés.

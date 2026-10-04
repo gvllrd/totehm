@@ -11,8 +11,8 @@ const ROWS=[{pseudo:'wa',offer:false,price_cents:null,currency:'eur',subscribed:
             {pseudo:'wah',offer:true,price_cents:1200,currency:'eur',subscribed:false},
             {pseudo:'wanda_flow',offer:false,price_cents:null,currency:'eur',subscribed:true}];
 // « wa » répond lentement : si l'on tape « wah » entre-temps, seule la dernière frappe doit compter.
-const rpc={totehm_search:async b=>{const q=b.p_q||'';if(q==='wa')await new Promise(r=>setTimeout(r,600));
-  return q?ROWS.filter(r=>r.pseudo.startsWith(q)):ROWS.filter(r=>r.subscribed);}};
+const rpc={totehm_discover:async b=>{const q=b.p_q||'';if(q==='wa')await new Promise(r=>setTimeout(r,600));
+  const items=q?ROWS.filter(r=>r.pseudo.startsWith(q)):ROWS.filter(r=>r.subscribed);return {items:items.map(r=>({...r,can_read:r.subscribed,own:false,match:'name'})),more:false,total:items.length};}};
 const tables={profiles:[{pseudo:'wahigher'}]};
 const browser=await launch();
 const R=(pg,sel)=>pg.$eval(sel,e=>{const r=e.getBoundingClientRect();return[r.x,r.y,r.width,r.height].map(v=>+v.toFixed(2));});
@@ -56,13 +56,13 @@ try{
   await pg.keyboard.type('wa',{delay:30});await pg.waitForTimeout(260);await pg.keyboard.type('h',{delay:30});await pg.waitForTimeout(1500);
   const names=await pg.$$eval('.srch-name',e=>e.map(x=>x.textContent));
   ok(JSON.stringify(names)==='["wah"]','course réseau : « wa » (lent) ne recouvre pas « wah » → '+names);
-  ok(await pg.$eval('.srch-row',e=>e.getAttribute('href'))==='/@wah'&&/12/.test(await pg.textContent('.srch-meta')),'un résultat = un lien /@nom et son offre');
+  ok(await pg.$eval('.srch-row',e=>e.getAttribute('href'))==='/totehm?ro=wah'&&/12/.test(await pg.textContent('.ts-meta')),'un résultat ouvre le lecteur natif et indique l’accès');
   // focus piégé dans la feuille
-  const tab=async k=>{await pg.keyboard.press(k);return pg.evaluate(()=>{const e=document.activeElement;return e.closest('#srch')?(e.id||e.getAttribute('href')):'HORS:'+e.tagName;});};
+  const tab=async k=>{await pg.keyboard.press(k);return pg.evaluate(()=>{const e=document.activeElement;return e.closest('#srch')?(e.id||e.getAttribute('href')||e.tagName):'HORS:'+e.tagName;});};
   await pg.focus('#srch-q');const ring=[];for(let i=0;i<4;i++)ring.push(await tab('Tab'));
-  ok(JSON.stringify(ring)==='["/@wah","srch-x","srch-q","/@wah"]','Tab tourne dans la feuille → '+ring);
+  ok(ring.every(x=>!x.startsWith('HORS:')),'Tab reste dans la feuille avec ses nouveaux modes → '+ring);
   await pg.fill('#srch-q','w');await pg.waitForTimeout(400);
-  ok(/two letters/.test(await pg.textContent('#srch-note')),'une lettre : « two letters, minimum »');
+  ok(await pg.locator('.srch-name').count()===3,'une lettre : recherche par préfixe disponible');
   await pg.screenshot({path:OUT+'/com_search.png'});
   // fermer : dézoom sur le dos, puis il se remet sur son recto
   await pg.click('#srch-x');await pg.waitForTimeout(2000);

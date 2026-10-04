@@ -1,5 +1,16 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+
+## ÉTAT AU 03/10/2026 — RECHERCHE, LECTURE ET COPIES
+
+- BUILD `2026-10-03-search-boxes` dans `totehm.html` et `creator.html`. Papier, bouche, déconstruction, joystick et cinq vues conservés.
+- Un résultat ouvre `/totehm?ro=nom` : le vrai TOTEHM en lecture seule. Un hit de box ajoute `box_kind` / `box_key` et ouvre sa box native. L'offre inaccessible reste dans ce lecteur ; `/@nom` est le lien explicite de souscription.
+- Recherche : Names (ordre exact, préfixe, contenu, noms similaires), My subscriptions, Boxes I can read. Noms tolérants aux accents, à la casse, aux fautes et aux liens `@nom` ; pagination. Boxes : mots littéraux, type, sept intentions ; aperçu de trois boxes maximum par TOTEHM, seulement si le compte a la lecture. Aucun pourcentage ni classement de personnes.
+- Même contrôleur COPIÉ dans les deux pages COM indépendantes. Réponses invalidées dès la frappe et sur changement de compte ; purge des résultats déjà affichés à la déconnexion.
+- Copy box / Copy this view → Review copies → Import into my TOTEHM. Sélection en mémoire seulement, maximum 50 ; dialogue hors de `#stage` avec fond inert, focus piégé et Échap. Les cinq types se copient ; pas de self-import. Lecture et sélection ne font aucune écriture sur la source.
+- Import côté serveur : accès actuel revérifié, références uniquement, lot atomique, nouveaux identifiants chez auth.uid(), contenu existant réutilisé sans remplacement, liens entre endpoints sélectionnés remappés, retries idempotents. Provenance visible dans la box personnelle ouverte via `my_box_sources`. Pas de statistiques, coordonnées, historique ou IDs du créateur copiés.
+- Migration `20261003155911_search_and_box_import.sql`, appliquée UNE FOIS sous `search_and_box_import`, journal `20261003164312`. Tests : `com_discovery.mjs` (50), `com_paper.mjs` (39), `com_mouth.mjs` (29), `spaces_ui.mjs` (57) et `totehm_discovery_selftest.sql` (annulation complète, FAIL={}). Mesures dans SYSTEM.md §0.
+
 ## ⛔ ÉTAT AU 03/10/2026 — QUANTICO CORAL ET MY SPACES
 
 - BUILD `2026-10-03-spaces`. Préserver intégralement le papier recto/verso du 02/10 : posé au repos, glissé volontaire, zoom de recherche, déconstruction au tap.
@@ -150,12 +161,11 @@ combien d'abonnés perdent la lecture.
 il aurait rouvert ou refermé un Totehm en douce. Il ne l'écrit plus ; une
 seule porte, la console.
 
-**`/@nom`, `/search` et la recherche du Totehm ne révèlent RIEN de réservé.**
-`totehm_search` cherche par NOM seulement (chercher dans les habitudes laissait deviner leur
-contenu mot par mot) et rend `pseudo · offer · price_cents · subscribed` ;
-sans mot, mes abonnements. `creator_page` rend le nom, les couleurs des
-intentions et l'offre (`/ year`) — plus les vues habitées, plus le nombre
-d'habitudes. S'abonner ne demande qu'un compte (plus de passeport FIGHER).
+**La découverte publique ne révèle aucun contenu réservé.** `totehm_discover`
+cherche les NOMS pour tous ; son mode boxes exige une session et la lecture
+actuelle de chaque TOTEHM. `totehm_search` reste compatible (noms seulement).
+`creator_page` expose l'identité et l'offre annuelle, jamais les boxes.
+S'abonner exige seulement un compte, sans passeport FIGHER.
 
 **Polices, tuile, menu (les quatre domaines, voir la racine).** Bebas Neue
 et Jost/Futura sont partis de com (titres → Space Mono Bold capitales) ;
