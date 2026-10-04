@@ -174,6 +174,10 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 
 Un tableau : ce qui a été fait, la valeur mesurée, ce qui n'a pas pu l'être.
 
+### Correction 0.34 — 04/10/2026 · la bouche en haut, elle tire la langue
+
+À reporter dans TOTEHM_MASTER.md §0 (complète 0.30) : sur l'atterrissage de totehm.com, la bouche passe EN HAUT et le Totehm plus bas (on monte le papier vers la langue) ; la porte d'inscription s'ouvre au-dessus du papier. Fermée, la bouche se lit enfin comme une bouche (deux lèvres, deux gris, commissures). À l'arrivée, elle s'ouvre, tire la langue et se referme, une seule fois par chargement (pas en mouvement réduit). Front seul : aucune migration, aucun travail Oracle/n8n.
+
 ### Correction 0.33 — 03/10/2026 · ce que veut le membre, vue par vue
 
 À reporter dans TOTEHM_MASTER.md §0 : l'idée de SPACE = vivre une habitude hors de chez soi, la rendre agréable. Radar = rejoindre maintenant ; fil = rejoindre (JOIN) ou s'inspirer (GET INSPIRED) ; agenda = prévoir (GO, WATCH, CALENDAR, SHARE) ; TOP = annoncer ; BOTTOM = vivre, caméra éteinte jusqu'à VIDEO ou PHOTO. Un space porte une vidéo OU une photo. Sur un space partagé, l'auteur peut montrer le WHY (objectifs) et le TRIGGER (répulsions) de sa Habit : le format natif des partenariats de marque (mention de partenariat payé à prévoir). GO sans abonnement → SUBSCRIBE vers la page du créateur sur COM. Plus de fiche qui répète la boîte. Prix et droits inchangés.

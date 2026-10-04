@@ -1,5 +1,21 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## ⛔ ÉTAT AU 04/10/2026 — LA BOUCHE EN HAUT, ELLE TIRE LA LANGUE
+
+Wah : « on ne voit pas assez que c'est une bouche fermée » · « qu'elle
+s'ouvre et tire la langue une première fois au chargement en se
+refermant — provocateur, underground » · « elle en haut, le Totehm plus
+bas ». `BUILD='2026-10-04'` (remplace `2026-10-03-spaces`, rien d'autre
+ne change), `tests/browser/com_mouth.mjs` 32/32, `com_paper.mjs` 39/39.
+
+| quoi | règle |
+|---|---|
+| bouche fermée | large (3:1), deux lèvres (`#m-up` `#303030`, `#m-down` `#3d3d3d`, plus pleine), trait des lèvres `#080808` (14), commissures et reflet (`#m-shut`, s'efface à l'ouverture). Ouverte : les gris du dessin de Wah, au code près |
+| place | `#gate-mouth` en HAUT (`top:max(52px,6dvh)`), la langue pend vers le papier ; centre du papier à 60 % de la hauteur |
+| porte d'inscription | AU-DESSUS du papier (`#gate-door` absolue, centrée) : dessous, le clavier la couvrirait ; la bouche se retire pendant ce temps |
+| à l'arrivée | `BOUCHE.indice(1,1,650,fin)` : grande ouverte, langue tirée 650 ms, refermée — UNE fois par chargement, jamais en boucle. Pas en mouvement réduit, ni dedans (`#in`, `?ro=`), ni porte / recherche / geste déjà en cours ; un onglet caché attend d'être vu. `__totehm_lsd.accueil` 0 → 1 → 2 (2 = vraiment au repos : la suite d'un `indice` attend les ressorts, pas une minuterie) |
+| « Get [Higher] » | toujours à la place du papier au repos (donc désormais SOUS la bouche) |
+
 ## ⛔ ÉTAT AU 03/10/2026 — QUANTICO CORAL ET MY SPACES
 
 - BUILD `2026-10-03-spaces`. Préserver intégralement le papier recto/verso du 02/10 : posé au repos, glissé volontaire, zoom de recherche, déconstruction au tap.
@@ -17,6 +33,10 @@
 
 
 ## ⛔ ÉTAT AU 03/10/2026 — LA BOUCHE : LE PAPIER SUR LA LANGUE
+
+> **⚠️ 04/10 :** la bouche est EN HAUT, le Totehm plus bas, la porte
+> au-dessus du papier, et la bouche fermée est redessinée — voir plus haut.
+> La mécanique ci-dessous (prendre, porter, avaler) est inchangée.
 
 **La demande de Wah :** « une bouche, fermée en bas du Totehm, ouverte
 langue tirée comme sur le fichier joint ; un maintien du clic (appui

@@ -1,4 +1,6 @@
-// COM : la bouche (03/10). Fermée en bas de l'atterrissage. Un appui prolongé
+// COM : la bouche (03/10, en haut depuis le 04/10). Fermée en haut de
+// l'atterrissage, le Totehm plus bas ; au chargement elle tire la langue une
+// fois et se referme. Un appui prolongé
 // PREND le papier ; porté vers la bouche, elle s'ouvre et la langue se tire ;
 // posé sur la langue, il rapetisse et « Get [Higher] » apparaît à sa place ;
 // lâché dessus, il est avalé → figher.club/get_higher (par le pont SSO).
@@ -28,10 +30,18 @@ const porter=async(pg,[x0,y0],[x,y],n=14)=>{for(let i=1;i<=n;i++){await pg.mouse
 try{
  // ── MEMBRE, téléphone ─────────────────────────────────────────────
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,functions,network:club(),viewport:{width:390,height:844},hasTouch:true});
-  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);
+  await pg.goto(origin+'/totehm');
+  const d0=await pg.$eval('#m-up',e=>e.getAttribute('d'));   // le balisage : la bouche fermée, avant tout script
+  await pg.waitForSelector('body.member');
+  // à l'arrivée : elle s'ouvre, tire la langue, se referme — une fois
+  await pg.waitForFunction(()=>window.__totehm_lsd&&window.__totehm_lsd.accueil===1,null,{timeout:4000}).catch(()=>{});
+  const tiree=await pg.waitForFunction(()=>+document.getElementById('m-tongue').getAttribute('transform').match(/,(-?[\d.]+)/)[1]>-150,null,{timeout:1500}).then(()=>true,()=>false);
+  await pg.screenshot({path:OUT+'/com_mouth_hello.png'});
+  await pg.waitForFunction(()=>window.__totehm_lsd.accueil===2,null,{timeout:3000}).catch(()=>{});await pg.waitForTimeout(300);
+  ok(tiree&&!(await lsd(pg)).bouche&&await pg.$eval('#m-up',e=>e.getAttribute('d'))===d0,'à l\'arrivée : elle tire la langue, puis se referme EXACTEMENT comme le balisage');
   const chez=await R(pg,'#gate-asteroid'),m=await R(pg,'#gate-mouth');
-  ok(m[1]>chez[1]+chez[3]+150&&m[1]+m[3]<=844-40&&Math.abs(m[0]+m[2]/2-195)<1,'la bouche est en bas, centrée, sous le papier ('+m.map(Math.round)+')');
-  const d0=await pg.$eval('#m-lips',e=>e.getAttribute('d'));
+  ok(m[1]>=50&&m[1]+m[3]<chez[1]&&Math.abs(m[0]+m[2]/2-195)<1&&Math.abs(chez[1]+chez[3]/2-844*.6)<2,'la bouche est en haut, centrée ; le papier dessous, à 60 % ('+m.map(Math.round)+' / '+chez.map(Math.round)+')');
+  ok(await pg.evaluate(()=>{const g=id=>document.getElementById(id);return g('m-up').getAttribute('fill')==='#303030'&&g('m-down').getAttribute('fill')==='#3d3d3d'&&g('m-shut').getAttribute('opacity')==='1';}),'fermée : deux lèvres, deux gris (#303030 · #3d3d3d), reflet et commissures');
   ok(!(await lsd(pg)).bouche&&!await get(pg)&&(await pg.$eval('#m-tongue',e=>e.getAttribute('transform')))==='translate(0,-960)','au repos : bouche fermée, langue rentrée, slogan absent');
   // un appui long sans bouger : pris, puis rendu ; aucun clic n'ouvre le Totehm
   let p=await prendre(pg);
@@ -42,7 +52,7 @@ try{
   p=await prendre(pg);const L=await langue(pg);
   await porter(pg,p,[p[0],p[1]+(L[1]-p[1])*.62]);await pg.waitForTimeout(350);
   let s=await lsd(pg);
-  ok(s.bouche&&!s.langue&&!await get(pg)&&await pg.$eval('#m-lips',e=>e.getAttribute('d'))!==d0,'à mi-chemin : la bouche s\'ouvre, il n\'est pas encore sur la langue');
+  ok(s.bouche&&!s.langue&&!await get(pg)&&await pg.$eval('#m-up',e=>e.getAttribute('d'))!==d0,'à mi-chemin : la bouche s\'ouvre, il n\'est pas encore sur la langue');
   // sur la langue : il rapetisse, « Get [Higher] » apparaît à sa place
   await porter(pg,[p[0],p[1]+(L[1]-p[1])*.62],L,8);await pg.waitForTimeout(600);
   s=await lsd(pg);const w=(await R(pg,'#gate-asteroid'))[2],g=await R(pg,'#gate-get');
@@ -51,11 +61,11 @@ try{
   ok(await pg.$eval('.gg-get',e=>{const c=getComputedStyle(e);return /Quantico/.test(c.fontFamily)&&c.color==='rgb(251, 213, 202)';})&&await pg.$eval('#gate-get use',e=>e.getAttribute('href'))==='#higher-badge','« Get » en Quantico corail, Higher = le badge SVG');
   ok(+(await pg.$eval('#m-tongue',e=>e.getAttribute('transform').match(/,(-?[\d.]+)/)[1]))>-60,'la langue est tirée');
   await pg.screenshot({path:OUT+'/com_mouth_open.png'});
-  // ramené vers le haut et lâché : il rentre, la bouche se ferme
-  await porter(pg,L,[195,300],8);await pg.mouse.up();await pg.waitForTimeout(1200);
+  // ramené loin de la bouche et lâché : il rentre, la bouche se ferme
+  await porter(pg,L,[60,760],8);await pg.mouse.up();await pg.waitForTimeout(1200);
   s=await lsd(pg);
   ok(!s.pris&&!s.bouche&&!await get(pg)&&await tf(pg)===''&&JSON.stringify(await R(pg,'#gate-asteroid'))===JSON.stringify(chez),'lâché hors de la langue : chez lui, bouche fermée, slogan parti');
-  ok(await pg.$eval('#m-lips',e=>e.getAttribute('d'))===d0,'refermée, la bouche est EXACTEMENT celle du départ');
+  ok(await pg.$eval('#m-up',e=>e.getAttribute('d'))===d0&&await pg.$eval('#m-down',e=>e.getAttribute('fill'))==='#3d3d3d','refermée, la bouche est EXACTEMENT celle du départ');
   // posé et lâché sur la langue : avalé → figher.club/get_higher, par le pont
   p=await prendre(pg);await porter(pg,p,await langue(pg));await pg.waitForTimeout(300);
   await pg.mouse.up();await pg.waitForTimeout(500);
@@ -66,8 +76,9 @@ try{
   ok(!log.errors.length,'aucune erreur console : '+log.errors.join(' | '));}
  // ── le tap ouvre toujours ; les lèvres invitent ; le retour arrière le rend ──
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,functions,network:club(true),viewport:{width:390,height:844}});
-  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);
-  const[mx,my]=await (async()=>{const r=await R(pg,'#gate-mouth');return[r[0]+r[2]/2,r[1]+r[2]*(560-310)/1020];})();
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');
+  await pg.waitForFunction(()=>window.__totehm_lsd&&window.__totehm_lsd.accueil===2,null,{timeout:5000}).catch(()=>{});await pg.waitForTimeout(300);
+  const[mx,my]=await (async()=>{const r=await R(pg,'#gate-mouth');return[r[0]+r[2]/2,r[1]+r[2]*(680-310)/1020];})();
   await pg.mouse.click(mx,my);await pg.waitForTimeout(180);
   const ouvert=(await lsd(pg)).bouche;await pg.waitForTimeout(900);
   ok(ouvert&&!(await lsd(pg)).bouche&&pg.url().startsWith(origin),'un tap sur les lèvres : elle s\'entrouvre puis se referme, on reste ici');
@@ -85,6 +96,8 @@ try{
   await pg.goto(origin+'/totehm');await pg.waitForTimeout(900);
   await pg.mouse.click(...await centre(pg));await pg.waitForTimeout(500);
   ok(await pg.evaluate(()=>document.body.classList.contains('is-door'))&&await pg.$eval('#gate-mouth',e=>getComputedStyle(e).visibility)==='hidden','invité : la porte d\'inscription ouverte, la bouche se retire');
+  {const d=await R(pg,'#gate-door'),a=await R(pg,'#gate-asteroid');
+   ok(d[1]>=40&&d[1]+d[3]<a[1]-20&&Math.abs(d[0]+d[2]/2-(a[0]+a[2]/2))<1,'invité : la porte s\'ouvre AU-DESSUS du papier, centrée, hors du clavier ('+d.map(Math.round)+')');}
   const p=await prendre(pg);
   ok(!await pg.evaluate(()=>document.body.classList.contains('is-door'))&&(await lsd(pg)).pris,'invité : prendre le papier ferme la porte');
   await porter(pg,p,await langue(pg));await pg.waitForTimeout(400);await pg.mouse.up();
@@ -102,7 +115,7 @@ try{
  {const{pg}=await page(browser,{dir:'com',origin,tables,functions,network:club(),viewport:{width:390,height:844}});
   await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
   const p=await prendre(pg);await pg.waitForTimeout(100);
-  ok(!(await lsd(pg)).pris&&await tf(pg)==='','mouvement réduit : un appui long ne prend pas le papier');
+  ok(!(await lsd(pg)).pris&&await tf(pg)===''&&(await lsd(pg)).accueil===0,'mouvement réduit : pas de langue à l\'arrivée, un appui long ne prend pas le papier');
   await pg.mouse.up();await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
   await pg.click('#m-lips');
   await pg.waitForURL(/figher\.club/,{timeout:4000}).catch(()=>{});

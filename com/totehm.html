@@ -2086,8 +2086,14 @@ body:not(.gate) #gate{display:none}
    garde tout dans ses 500 premiers pixels. La colonne est ancrée en
    haut : ouvrir ou fermer la porte ne déplace pas le papier — `measure()`
    doit lire un logo immobile. */
+/* ⚠️ 04/10 : LA BOUCHE EN HAUT, LE TOTEHM PLUS BAS (Wah). Le centre du
+   papier passe à 60 % de la hauteur : au-dessus, la bouche et la place de
+   sa langue ; on monte le papier vers elle. La porte d'inscription ne
+   peut plus s'ouvrir SOUS lui (le clavier la couvrirait) : elle s'ouvre
+   AU-DESSUS, à la place de la bouche, qui se retire pendant ce temps
+   (`#gate-door`, absolue : le papier ne bouge toujours pas). */
 #gate-top-row{margin:0;gap:0;
-  margin-top:max(0px,calc(22dvh - var(--gate-size) / 2 - max(76px,13dvh)))}
+  margin-top:max(0px,calc(60dvh - var(--gate-size) / 2 - max(76px,13dvh)))}
 #gate-asteroid{z-index:2;
   position:relative;flex-shrink:0;
   width:var(--gate-size);height:var(--gate-size);
@@ -2171,10 +2177,11 @@ body.gate.entered .ast-back{visibility:hidden}
    balisage porte déjà la bouche FERMÉE (le module attend le pont SSO
    jusqu'à 2,5 s : elle ne doit pas attendre avec lui).
    La boîte réserve la place de la langue tirée : fermée, la bouche
-   occupe sa moitié haute. Seules les lèvres sont touchables. */
+   occupe son haut. Seules les lèvres sont touchables.
+   04/10 : EN HAUT de l'écran, la langue pend vers le papier. */
 :root{--mouth-w:clamp(110px,22dvh,190px)}
 #gate-mouth{position:absolute;left:50%;z-index:1;
-  bottom:calc(max(16px,env(safe-area-inset-bottom)) + 34px);
+  top:max(52px,6dvh);
   width:var(--mouth-w);height:calc(var(--mouth-w) * 1.2353);transform:translateX(-50%);
   background:none;border:none;padding:0;margin:0;pointer-events:none;outline:none;
   -webkit-tap-highlight-color:transparent;transition:opacity .3s ease}
@@ -2201,14 +2208,16 @@ body.paysage #gate-mouth{display:none}
 
 /* ══ LA PORTE · 27/09/2026 ═══════════════════════════════════════════
    Pas inscrit, rien n'est permis. Elle n'existe que demandée (le tap
-   sur le papier) : une question à la fois, sous lui. Elle se retire en
+   sur le papier) : une question à la fois, AU-DESSUS de lui depuis le
+   04/10 (le papier est descendu ; dessous, le clavier la couvrirait). Elle se retire en
    `visibility` APRÈS son fondu, sinon ses champs restent atteignables à
    la tabulation.
    ⚠️ LA MARGE REMPLACE L'AIR DU SOCLE · 28/09/2026. Le socle réservait
    ~150 px entre le papier et cette porte ; parti avec lui, l'air se pose
    ici, en dur — sinon la porte s'ouvre collée au papier. */
 #gate-door{display:flex;flex-direction:column;align-items:center;gap:9px;
-  width:min(280px,78vw);margin-top:clamp(52px,13vh,96px);
+  width:min(280px,78vw);position:absolute;left:50%;margin:0 0 0 calc(min(280px,78vw) / -2);
+  bottom:calc(100% + clamp(28px,5dvh,56px));z-index:3;
   opacity:0;transform:translateY(-6px);visibility:hidden;pointer-events:none;
   transition:opacity .3s ease,transform .45s cubic-bezier(.2,.7,.2,1),visibility 0s linear .45s}
 body.is-door #gate-door{opacity:1;transform:none;visibility:visible;pointer-events:auto;
@@ -3085,14 +3094,21 @@ a Totehm</span>
        ci-dessous sont la bouche FERMÉE ; le moteur `BOUCHE` les redessine. -->
   <button id="gate-mouth" type="button" aria-label="Get Higher">
     <svg viewBox="30 310 1020 1260" aria-hidden="true">
-      <defs><clipPath id="m-clip"><path id="m-clip-p" d="M110,740C125,737.3 168.3,729 200,724C231.7,719 263.3,713.7 300,710C336.7,706.3 380,701.3 420,702C460,702.7 500,714 540,714C580,714 620,702.7 660,702C700,701.3 743.3,706.3 780,710C816.7,713.7 848.3,719 880,724C911.7,729 955,737.3 970,740L1050,1570L30,1570Z"/></clipPath></defs>
-      <path id="m-lips" fill="#1f1f1f" stroke="#1f1f1f" stroke-width="18" stroke-linejoin="round" d="M47,740C55,728 77.8,694.7 95,668C112.2,641.3 131.7,609.7 150,580C168.3,550.3 186.3,518.3 205,490C223.7,461.7 243.2,432.5 262,410C280.8,387.5 298.7,367.7 318,355C337.3,342.3 354.3,335.5 378,334C401.7,332.5 433,341.7 460,346C487,350.3 513.3,360 540,360C566.7,360 593,350.3 620,346C647,341.7 678.3,332.5 702,334C725.7,335.5 742.7,342.3 762,355C781.3,367.7 799.2,387.5 818,410C836.8,432.5 856.3,461.7 875,490C893.7,518.3 911.7,550.3 930,580C948.3,609.7 967.8,641.3 985,668C1002.2,694.7 1025,728 1033,740L1033,740C1024.2,750 1000.5,778.7 980,800C959.5,821.3 937.5,847 910,868C882.5,889 853.3,910.3 815,926C776.7,941.7 725.8,954.3 680,962C634.2,969.7 586.7,972 540,972C493.3,972 445.8,969.7 400,962C354.2,954.3 303.3,941.7 265,926C226.7,910.3 197.5,889 170,868C142.5,847 120.5,821.3 100,800C79.5,778.7 55.8,750 47,740Z"/>
-      <path id="m-cav" fill="#111111" stroke="#111111" stroke-width="10" stroke-linejoin="round" d="M110,740C125,737.3 168.3,729 200,724C231.7,719 263.3,713.7 300,710C336.7,706.3 380,701.3 420,702C460,702.7 500,714 540,714C580,714 620,702.7 660,702C700,701.3 743.3,706.3 780,710C816.7,713.7 848.3,719 880,724C911.7,729 955,737.3 970,740L970,740C955,737.3 911.7,729 880,724C848.3,719 816.7,713.7 780,710C743.3,706.3 700,701.3 660,702C620,702.7 580,714 540,714C500,714 460,702.7 420,702C380,701.3 336.7,706.3 300,710C263.3,713.7 231.7,719 200,724C168.3,729 125,737.3 110,740Z"/>
+      <defs><clipPath id="m-clip"><path id="m-clip-p" d="M110,742C125,741.3 168.3,739.5 200,738C231.7,736.5 263.3,734.7 300,733C336.7,731.3 380,727.2 420,728C460,728.8 500,738 540,738C580,738 620,728.8 660,728C700,727.2 743.3,731.3 780,733C816.7,734.7 848.3,736.5 880,738C911.7,739.5 955,741.3 970,742L1050,1570L30,1570Z"/></clipPath></defs>
+      <g id="m-lips">
+        <path id="m-down" fill="#3d3d3d" stroke="#3d3d3d" stroke-width="18" stroke-linejoin="round" d="M47,740C55.8,745.3 79.5,760 100,772C120.5,784 142.5,799 170,812C197.5,825 226.7,838 265,850C303.3,862 354.2,876.3 400,884C445.8,891.7 493.3,896 540,896C586.7,896 634.2,891.7 680,884C725.8,876.3 776.7,862 815,850C853.3,838 882.5,825 910,812C937.5,799 959.5,784 980,772C1000.5,760 1024.2,745.3 1033,740L970,742C955,741.3 911.7,739.5 880,738C848.3,736.5 816.7,734.7 780,733C743.3,731.3 700,727.2 660,728C620,728.8 580,738 540,738C500,738 460,728.8 420,728C380,727.2 336.7,731.3 300,733C263.3,734.7 231.7,736.5 200,738C168.3,739.5 125,741.3 110,742Z"/>
+        <path id="m-up" fill="#303030" stroke="#303030" stroke-width="18" stroke-linejoin="round" d="M47,740C55,736 77.8,725 95,716C112.2,707 131.7,696.3 150,686C168.3,675.7 186.3,664.7 205,654C223.7,643.3 243.2,632 262,622C280.8,612 298.7,601.3 318,594C337.3,586.7 354.3,578.7 378,578C401.7,577.3 433,585.3 460,590C487,594.7 513.3,606 540,606C566.7,606 593,594.7 620,590C647,585.3 678.3,577.3 702,578C725.7,578.7 742.7,586.7 762,594C781.3,601.3 799.2,612 818,622C836.8,632 856.3,643.3 875,654C893.7,664.7 911.7,675.7 930,686C948.3,696.3 967.8,707 985,716C1002.2,725 1025,736 1033,740L970,742C955,741.3 911.7,739.5 880,738C848.3,736.5 816.7,734.7 780,733C743.3,731.3 700,727.2 660,728C620,728.8 580,738 540,738C500,738 460,728.8 420,728C380,727.2 336.7,731.3 300,733C263.3,734.7 231.7,736.5 200,738C168.3,739.5 125,741.3 110,742Z"/>
+      </g>
+      <g id="m-shut" opacity="1" pointer-events="none">
+        <path fill="#4a4a4a" d="M400,800C470,784 610,784 680,800C610,814 470,814 400,800Z"/>
+        <path fill="none" stroke="#080808" stroke-width="8" stroke-linecap="round" d="M80,728C92,734 98,742 96,752M1000,728C988,734 982,742 984,752"/>
+      </g>
+      <path id="m-cav" fill="#111111" stroke="#080808" stroke-width="14" stroke-linejoin="round" d="M110,742C125,741.3 168.3,739.5 200,738C231.7,736.5 263.3,734.7 300,733C336.7,731.3 380,727.2 420,728C460,728.8 500,738 540,738C580,738 620,728.8 660,728C700,727.2 743.3,731.3 780,733C816.7,734.7 848.3,736.5 880,738C911.7,739.5 955,741.3 970,742L970,742C955,741.3 911.7,739.5 880,738C848.3,736.5 816.7,734.7 780,733C743.3,731.3 700,727.2 660,728C620,728.8 580,738 540,738C500,738 460,728.8 420,728C380,727.2 336.7,731.3 300,733C263.3,734.7 231.7,736.5 200,738C168.3,739.5 125,741.3 110,742Z"/>
       <g clip-path="url(#m-clip)"><g id="m-tongue" transform="translate(0,-960)">
         <path fill="#2a2a2a" d="M540,762C505,738 460,727 410,727C300,727 207,770 207,880L207,1190C207,1390 360,1540 540,1540C720,1540 872,1390 872,1190L872,880C872,770 780,727 670,727C620,727 575,738 540,762Z"/>
         <path fill="none" stroke="#232323" stroke-width="10" stroke-linecap="round" d="M540,792L540,1340"/>
       </g></g>
-      <path id="m-teeth" fill="#3c3c3c" d="M300,710C320,708.7 380,701.3 420,702C460,702.7 500,714 540,714C580,714 620,702.7 660,702C700,701.3 760,708.7 780,710L780,710C760,708.7 700,701.3 660,702C620,702.7 580,714 540,714C500,714 460,702.7 420,702C380,701.3 320,708.7 300,710Z"/>
+      <path id="m-teeth" fill="#3c3c3c" d="M300,733C320,732.2 380,727.2 420,728C460,728.8 500,738 540,738C580,738 620,728.8 660,728C700,727.2 760,732.2 780,733L780,733C760,732.2 700,727.2 660,728C620,728.8 580,738 540,738C500,738 460,728.8 420,728C380,727.2 320,732.2 300,733Z"/>
     </svg>
   </button>
 </section>
@@ -4547,7 +4563,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-03-spaces';
+const BUILD='2026-10-04';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -7749,19 +7765,30 @@ window.addEventListener('pageshow',e=>{
     const btn=$('gate-mouth');
     const api={dispo:()=>false, geo:()=>null, viser:()=>({arme:false,p:0}), etat:()=>[0,0],
                relacher(){}, forcer(){}, remettre(){}, indice(){}};
-    const pL=$('m-lips'), pC=$('m-cav'), pT=$('m-teeth'), pK=$('m-clip-p'), gL=$('m-tongue');
-    if(!btn||!pL||!pC||!pT||!pK||!gL) return api;
+    const pH=$('m-up'), pB=$('m-down'), gF=$('m-shut'), pC=$('m-cav'), pT=$('m-teeth'), pK=$('m-clip-p'), gL=$('m-tongue');
+    if(!btn||!pH||!pB||!gF||!pC||!pT||!pK||!gL) return api;
     const VX=30, VY=310, VW=1020;               /* le viewBox */
-    const TOP=[[47,740],[95,668],[150,580],[205,490],[262,410],[318,355],[378,334],[460,346],[540,360],
+    /* ⚠️ FERMÉE, C'EST UNE BOUCHE · 04/10. La première fermée était la
+       silhouette OUVERTE aux lèvres jointes : trop haute (1,5:1), lèvre
+       du haut plus épaisse que celle du bas, un seul gris — « on ne voit
+       pas que c'est une bouche ». Fermée, elle est large (3:1), la lèvre
+       du bas plus pleine et plus claire, la commissure creusée, un reflet
+       sur la lèvre du bas (`#m-shut`). En s'ouvrant, tout rejoint les gris
+       du dessin de Wah (`#1f1f1f`), au code près. */
+    const TOP=[[47,740],[95,716],[150,686],[205,654],[262,622],[318,594],[378,578],[460,590],[540,606],
+               [620,590],[702,578],[762,594],[818,622],[875,654],[930,686],[985,716],[1033,740]];
+    const TOP1=[[47,740],[95,668],[150,580],[205,490],[262,410],[318,355],[378,334],[460,346],[540,360],
                [620,346],[702,334],[762,355],[818,410],[875,490],[930,580],[985,668],[1033,740]];
-    const U0=[[110,740],[200,724],[300,710],[420,702],[540,714],[660,702],[780,710],[880,724],[970,740]];
+    const U0=[[110,742],[200,738],[300,733],[420,728],[540,738],[660,728],[780,733],[880,738],[970,742]];
     const U1=[[110,740],[195,694],[285,648],[405,590],[540,608],[675,590],[795,648],[885,694],[970,740]];
     const D1=[[110,740],[200,786],[290,826],[400,852],[540,862],[680,852],[790,826],[880,786],[970,740]];
-    const B0=[[47,740],[100,800],[170,868],[265,926],[400,962],[540,972],[680,962],[815,926],[910,868],[980,800],[1033,740]];
+    const B0=[[47,740],[100,772],[170,812],[265,850],[400,884],[540,896],[680,884],[815,850],[910,812],[980,772],[1033,740]];
     const B1=[[47,740],[92,825],[140,915],[195,1005],[300,1080],[540,1120],[780,1080],[885,1005],[940,915],[988,825],[1033,740]];
     const DENTS=[0,80,72,80,0], LONG=960, POSE=[540,1150];
     const mix=(A,B,u)=>A.map((p,i)=>[p[0]+(B[i][0]-p[0])*u, p[1]+(B[i][1]-p[1])*u]);
     const f=n=>Math.round(n*10)/10, rev=P=>P.slice().reverse();
+    const gris=(a,b,u)=>{ const v=Math.round(a+(b-a)*u).toString(16).padStart(2,'0'); return '#'+v+v+v; };
+    const peint=(el,c)=>{ el.setAttribute('fill',c); el.setAttribute('stroke',c); };
     function courbe(P,debut){
       let s=(debut?'M':'L')+f(P[0][0])+','+f(P[0][1]);
       for(let i=0;i<P.length-1;i++){
@@ -7771,13 +7798,20 @@ window.addEventListener('pageshow',e=>{
       }
       return s;
     }
-    let o=0, vo=0, t=0, vt=0, go=0, gt=0, raf=0, last=0, conduite=false, tIndice=0;
+    let o=0, vo=0, t=0, vt=0, go=0, gt=0, raf=0, last=0, conduite=false, tIndice=0, auRepos=null;
+    /* La suite d'un `indice` ne part qu'une fois la bouche VRAIMENT au repos,
+       fermée — pas sur une minuterie : la langue a de l'élan. */
+    function reposee(){ if(auRepos&&go===0&&gt===0&&!raf){ const f_=auRepos; auRepos=null; f_(); } }
     function dessiner(){
       const oo=Math.max(0,Math.min(1.08,o));
-      const U=mix(U0,U1,oo), D=mix(U0,D1,oo), B=mix(B0,B1,oo);
+      const T=mix(TOP,TOP1,oo), U=mix(U0,U1,oo), D=mix(U0,D1,oo), B=mix(B0,B1,oo), c=Math.min(1,oo);
       const haut=U.slice(2,7), bas=haut.map((p,i)=>[p[0],p[1]+DENTS[i]*oo]);
-      pL.setAttribute('d',courbe(TOP,1)+courbe(rev(B),0)+'Z');
+      pH.setAttribute('d',courbe(T,1)+courbe(rev(U),0)+'Z');
+      pB.setAttribute('d',courbe(B,1)+courbe(rev(D),0)+'Z');
+      peint(pH,gris(0x30,0x1f,c)); peint(pB,gris(0x3d,0x1f,c));
+      gF.setAttribute('opacity',f(Math.max(0,1-oo*2.5)*100)/100);
       pC.setAttribute('d',courbe(U,1)+courbe(rev(D),0)+'Z');
+      pC.setAttribute('stroke',gris(0x08,0x11,c));
       pT.setAttribute('d',courbe(haut,1)+courbe(rev(bas),0)+'Z');
       pK.setAttribute('d',courbe(U,1)+'L1050,1570L30,1570Z');
       gL.setAttribute('transform','translate(0,'+f(-(1-Math.min(t,oo*1.1))*LONG)+')');
@@ -7789,7 +7823,7 @@ window.addEventListener('pageshow',e=>{
       const dt=Math.min(.05,Math.max(0,(now-(last||now))/1000)); last=now;
       [o,vo]=ressort(o,vo,go,150,.8,dt);
       [t,vt]=ressort(t,vt,gt,120,.55,dt);      /* la langue : un rien d'élan */
-      if(Math.abs(o-go)+Math.abs(t-gt)+Math.abs(vo)+Math.abs(vt)<1e-3){ o=go; t=gt; vo=vt=0; dessiner(); return; }
+      if(Math.abs(o-go)+Math.abs(t-gt)+Math.abs(vo)+Math.abs(vt)<1e-3){ o=go; t=gt; vo=vt=0; dessiner(); reposee(); return; }
       dessiner();
       if(!document.hidden) raf=requestAnimationFrame(pas);
     }
@@ -7819,13 +7853,16 @@ window.addEventListener('pageshow',e=>{
     api.forcer=(o2,t2)=>{ conduite=true; if(raf){ cancelAnimationFrame(raf); raf=0; }
                           o=go=o2; t=gt=t2; vo=vt=0; dessiner(); };
     api.remettre=()=>{ conduite=false; if(raf){ cancelAnimationFrame(raf); raf=0; }
-                       o=t=vo=vt=go=gt=0; dessiner(); };
+                       o=t=vo=vt=go=gt=0; dessiner(); reposee(); };
     /* Un tap sur les lèvres : elle s'entrouvre, la langue pointe, et se
-       referme — l'invitation à y porter le papier, sans rien ouvrir. */
-    api.indice=()=>{
+       referme — l'invitation à y porter le papier, sans rien ouvrir.
+       Au chargement (`indice(1,1,650,fin)`) : grande ouverte, langue tirée,
+       puis refermée — une fois. */
+    api.indice=(o2=.5,t2=.3,ms=420,fin)=>{
       if(conduite) return;
-      go=.5; gt=.3; kick(); clearTimeout(tIndice);
-      tIndice=setTimeout(()=>{ if(!conduite){ go=0; gt=0; kick(); } },420);
+      go=o2; gt=t2; kick(); clearTimeout(tIndice);
+      tIndice=setTimeout(()=>{ if(fin) auRepos=fin;
+                               if(!conduite){ go=0; gt=0; kick(); } },ms);
     };
     return api;
   })();
@@ -7835,7 +7872,7 @@ window.addEventListener('pageshow',e=>{
     const RM=window.matchMedia('(prefers-reduced-motion: reduce)');
     /* Le diagnostic : des booléens et des compteurs, jamais une valeur. */
     const diag={tenu:false, gestes:0, retournements:0, face:0, recherche:false, resultats:0, reduit:RM.matches,
-                pris:false, prises:0, langue:false, avale:0, bouche:false};
+                pris:false, prises:0, langue:false, avale:0, bouche:false, accueil:0};
     window.__totehm_lsd=diag;
     const api={poser:f=>{ if(f) f(); }, poserDos:f=>{ if(f) f(); }, retourner:f=>{ if(f) f(); },
                reveiller(){}, face:()=>0, occupe:()=>false, surVerso:null, surFace:null,
@@ -8441,6 +8478,25 @@ window.addEventListener('pageshow',e=>{
     if(e.detail===0||window.matchMedia('(prefers-reduced-motion: reduce)').matches) PAPIER.offrir();
     else BOUCHE.indice();
   });
+  /* ══ À L'ARRIVÉE, ELLE TIRE LA LANGUE · 04/10/2026 ═══════════════════
+     Wah : « qu'elle s'ouvre et tire la langue une première fois au
+     chargement, en se refermant — provocateur, underground ». UNE fois par
+     chargement, jamais en boucle (un tic lasse, et use la batterie) : elle
+     montre aussi OÙ va le papier. Pas en mouvement réduit, pas si l'on
+     arrive dedans (`#in`, `?ro=`), ni si la porte, la recherche ou un geste
+     ont déjà pris la scène. Un onglet ouvert en arrière-plan attend d'être
+     vu. Diagnostic `__totehm_lsd.accueil` : 0 → 1 (elle tire) → 2 (fermée). */
+  const taquiner=()=>{
+    const d=window.__totehm_lsd;
+    if(!d||d.accueil||!body.classList.contains('gate')||body.classList.contains('is-door')
+       ||open||moving||sOpen||sMoving||PAPIER.occupe()||!BOUCHE.dispo()
+       ||window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    d.accueil=1; BOUCHE.indice(1,1,650,()=>{ d.accueil=2; });
+  };
+  if(!document.hidden) setTimeout(taquiner,700);
+  else document.addEventListener('visibilitychange',function vu(){
+    if(document.hidden) return;
+    document.removeEventListener('visibilitychange',vu); setTimeout(taquiner,500); });
   paintFlip();
 
   /* ══ LE SECOND VERROU ══
