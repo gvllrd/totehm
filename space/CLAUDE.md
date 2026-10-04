@@ -1,5 +1,22 @@
 # space/CLAUDE.md — totehm.space : DO WITH ME (un Spot, cinq vues)
 
+## SPACE · 04/10/2026 — le joystick devient la prise vidéo
+
+BUILD `2026-10-04-camera-joystick`. La demande de Wah remplace l'ancienne
+remontée de 50 px en mode caméra : conserver exactement la position et les
+dimensions du joystick radar, y compris sur téléphone et avec les safe areas.
+
+Le même bouton `#joy-box` sert à la navigation et à la prise. En caméra,
+son fond reste navy `#333366`, même pendant un geste de navigation.
+Le point est la couleur rouge-violet du joystick `--rep: #743169`, centré
+dans le bouton. REC le transforme en carré 19 px, coins 3 px, toujours
+centré ; la fin de la prise rend le rond. Pas de bouton REC/STOP séparé.
+
+Le capteur reste éteint à l'arrivée, la prise démarre volontairement.
+Conserver le formulaire plein écran après la prise et tous les parcours,
+gestes, photos, vidéo portrait et préchargement du feed. Correction CSS,
+sans changement de capture, d'upload ou de droits.
+
 ## SPACE · 04/10/2026 — la vidéo suivante prête avant le swipe
 
 BUILD `2026-10-04-instant-feed`. Cette correction complète les parcours du

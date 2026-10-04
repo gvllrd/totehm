@@ -182,9 +182,9 @@ body.v-cam.is-rec #cam-body,body.v-cam.is-count #cam-body{background:none}
 #joy-say{position:absolute;left:50%;bottom:calc(100% + 4px);transform:translateX(-50%);font-size:9px;letter-spacing:.1em;white-space:nowrap;color:var(--lo);pointer-events:none}
 #joy-box{border:none;padding:0;-webkit-tap-highlight-color:transparent}
 #joy-box:focus-visible{outline:1px solid var(--mid);outline-offset:4px}
-#joy-box.is-camera{cursor:pointer}
+#joy-box.is-camera{background:var(--navy);cursor:pointer}
 #joy-box.is-camera #joy-stack{display:none}
-#joy-record{display:none;position:absolute;left:50%;top:50%;width:22px;height:22px;transform:translate(-50%,-50%);background:#E24B4A;border-radius:50%;transition:border-radius .15s,width .15s,height .15s}
+#joy-record{display:none;position:absolute;left:50%;top:50%;width:22px;height:22px;transform:translate(-50%,-50%);background:var(--rep);border-radius:50%;transition:border-radius .15s,width .15s,height .15s}
 #joy-box.is-camera #joy-record{display:block}
 #joy-box.is-recording #joy-record{border-radius:3px;width:19px;height:19px}
 #joy-box.is-camera:disabled{opacity:.45;cursor:default}
@@ -278,10 +278,7 @@ body.is-pin #v-radar{visibility:visible;opacity:1}
 .btn,.chip{width:fit-content;max-width:100%;align-self:flex-start;flex:0 0 auto}
 .btn{padding:8px 12px}.chip{padding:6px 9px;letter-spacing:.08em}
 .chip small{max-width:23ch;line-height:1.45}
-#joy{transition:bottom .3s var(--ease)}
-body.v-cam #joy{bottom:calc(64px + var(--bot))}
 body.v-cam.is-form #cam-body{bottom:calc(170px + var(--bot));max-height:calc(100% - 300px);padding:12px 14px;background:rgba(11,11,13,.88)}
-body.v-cam.is-form #joy{bottom:calc(64px + var(--bot))}
 #cam-body .it{flex:none}
 @media(max-width:899px){
  body.v-plan #v-radar{visibility:visible;opacity:1}
@@ -673,7 +670,7 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
 const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query=' + Number(lat).toFixed(5) + '%2C' + Number(lng).toFixed(5);
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD = '2026-10-04-instant-feed';
+const BUILD = '2026-10-04-camera-joystick';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'radar';
