@@ -25,7 +25,7 @@ try{
  ok(!await pg.isVisible('#title') && !await pg.isVisible('#int-def'),'SPACE has no visible view titles or subtitles');
  ok(await pg.locator('#ints').count()===0,'no vertical intentions selector');
  ok(await pg.textContent('#cmp')==='000° Nturn the ring','compass heading and manual ring restored');
- const initial=await state();
+ const initial=await state(),radarJoystick=await box('joy-box');
  await pg.mouse.move(initial.radar.cx,initial.radar.cy-initial.radar.radius-7);await pg.mouse.down();await pg.mouse.move(initial.radar.cx+initial.radar.radius+7,initial.radar.cy,{steps:10});await pg.mouse.up();await settle();
  ok((await state()).radar.heading>30,'manual crown rotation changes compass heading');
  await pg.click('#cmp');await settle();ok((await state()).radar.heading<2 || (await state()).radar.heading>358,'compass tap returns north');
@@ -55,8 +55,13 @@ try{
  await pg.screenshot({path:OUT+'/space_future_editor.png'});await pg.click('[data-plan-send]');await view('list');
  const scheduled=log.rpc.find(c=>c.name==='spot_schedule');ok(Math.abs(scheduled.body.p_lat-38.7223)<.1 && Math.abs(scheduled.body.p_lng+9.1393)<.1,'radar place picking preserves actual coordinates');ok(scheduled?.body.p_place==='Ribeira steps' && scheduled.body.p_mode==='social' && scheduled.body.p_location==='on','future location and progressive choices are submitted');
  await pg.keyboard.press('Escape');await pg.click('#joy-box');await view('radar');
- await pg.click('#cur-b');await view('cam');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='idle');ok(!(await state()).rec.camera,'entering the camera never turns the sensor on');await pg.click('#joy-box');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='ready');await pg.waitForTimeout(1500);ok((await state()).rec.step==='ready','the red point turns the sensor on, never recording automatically');await pg.click('#joy-box');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='habit');
- const joy=await box('joy');ok(joy.y+joy.h<840,'camera joystick moves upward');
+ await pg.click('#cur-b');await view('cam');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='idle');ok(!(await state()).rec.camera,'entering the camera never turns the sensor on');await pg.click('#joy-box');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='ready');await pg.waitForTimeout(1500);ok((await state()).rec.step==='ready','the red point turns the sensor on, never recording automatically');
+ const joy=await box('joy-box');ok(['x','y','w','h'].every(k=>Math.abs(joy[k]-radarJoystick[k])<.1),'camera control keeps the radar joystick position and dimensions');
+ const centered=()=>pg.evaluate(()=>{const b=document.querySelector('#joy-box').getBoundingClientRect(),e=document.querySelector('#joy-record'),r=e.getBoundingClientRect(),s=getComputedStyle(e);return {x:Math.abs(r.x+r.width/2-b.x-b.width/2),y:Math.abs(r.y+r.height/2-b.y-b.height/2),width:r.width,height:r.height,color:s.backgroundColor,radius:s.borderRadius};});
+ let rec=await centered();ok(rec.x<.1 && rec.y<.1 && rec.color==='rgb(116, 49, 105)' && rec.radius==='50%','ready camera has the centered red-violet joystick point');
+ await pg.screenshot({path:OUT+'/space_camera_ready.png'});await pg.click('#joy-box');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='rec');await pg.waitForTimeout(200);
+ rec=await centered();ok(rec.x<.1 && rec.y<.1 && rec.width===19 && rec.height===19 && rec.radius==='3px','recording turns the same centered point into a stop square');
+ await pg.screenshot({path:OUT+'/space_camera_recording.png'});await pg.waitForFunction(()=>window.__totehm_space().rec.step==='habit');
  ok(await pg.$eval('#joy-box',e=>getComputedStyle(e).backgroundColor)==='rgb(51, 51, 102)','camera joystick remains navy');
  await pg.click('[data-h="0"]');await pg.click('[data-vis="shared"]');await pg.click('[data-loc="off"]');
  ok(await pg.locator('[data-mode]').count()===0 && await pg.locator('#c-dur').count()===1,'shared OFF skips mode and goes to duration');
