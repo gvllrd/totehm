@@ -1,15 +1,33 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
 
-## ÉTAT AU 03/10/2026 — RECHERCHE, LECTURE ET COPIES
+## ÉTAT AU 04/10/2026 — RECHERCHE, LECTURE ET COPIES
 
-- BUILD `2026-10-03-search-boxes` dans `totehm.html` et `creator.html`. Papier, bouche, déconstruction, joystick et cinq vues conservés.
+- BUILD `2026-10-04-search-boxes` dans `totehm.html` et `creator.html`. Papier, bouche, déconstruction, joystick et cinq vues conservés.
 - Un résultat ouvre `/totehm?ro=nom` : le vrai TOTEHM en lecture seule. Un hit de box ajoute `box_kind` / `box_key` et ouvre sa box native. L'offre inaccessible reste dans ce lecteur ; `/@nom` est le lien explicite de souscription.
 - Recherche : Names (ordre exact, préfixe, contenu, noms similaires), My subscriptions, Boxes I can read. Noms tolérants aux accents, à la casse, aux fautes et aux liens `@nom` ; pagination. Boxes : mots littéraux, type, sept intentions ; aperçu de trois boxes maximum par TOTEHM, seulement si le compte a la lecture. Aucun pourcentage ni classement de personnes.
 - Même contrôleur COPIÉ dans les deux pages COM indépendantes. Réponses invalidées dès la frappe et sur changement de compte ; purge des résultats déjà affichés à la déconnexion.
 - Copy box / Copy this view → Review copies → Import into my TOTEHM. Sélection en mémoire seulement, maximum 50 ; dialogue hors de `#stage` avec fond inert, focus piégé et Échap. Les cinq types se copient ; pas de self-import. Lecture et sélection ne font aucune écriture sur la source.
 - Import côté serveur : accès actuel revérifié, références uniquement, lot atomique, nouveaux identifiants chez auth.uid(), contenu existant réutilisé sans remplacement, liens entre endpoints sélectionnés remappés, retries idempotents. Provenance visible dans la box personnelle ouverte via `my_box_sources`. Pas de statistiques, coordonnées, historique ou IDs du créateur copiés.
-- Migration `20261003155911_search_and_box_import.sql`, appliquée UNE FOIS sous `search_and_box_import`, journal `20261003164312`. Tests : `com_discovery.mjs` (50), `com_paper.mjs` (39), `com_mouth.mjs` (29), `spaces_ui.mjs` (57) et `totehm_discovery_selftest.sql` (annulation complète, FAIL={}). Mesures dans SYSTEM.md §0.
+- Migration `20261003155911_search_and_box_import.sql`, appliquée UNE FOIS sous `search_and_box_import`, journal `20261003164312`. Tests : `com_discovery.mjs` (50), `com_paper.mjs` (39), `com_mouth.mjs` (36), `spaces_ui.mjs` (57) et `totehm_discovery_selftest.sql` (annulation complète, FAIL={}). Mesures dans SYSTEM.md §0.
+
+## ⛔ ÉTAT AU 04/10/2026 — LA BOUCHE EN HAUT, ENTROUVERTE, EN TRANSE AU CLIC
+
+Wah, en deux temps : « la bouche en haut, le Totehm plus bas » puis
+« bof la bouche au repos : on garde le design sans le changer, plutôt un
+peu entrouverte, et quand on clique dessus elle s'ouvre et se referme
+indéfiniment, comme si c'était orgasmique ». `BUILD='2026-10-04b'`,
+`tests/browser/com_mouth.mjs` 36/36, `com_paper.mjs` 39/39.
+
+| quoi | règle |
+|---|---|
+| dessin | celui de Wah, ses gris au code près (`#m-lips` `#1f1f1f`, `#m-cav` `#111111`, dents `#3c3c3c`, langue `#2a2a2a`). La bouche fermée « lisible » du 04/10 matin (deux lèvres, deux gris, reflet) est RETIRÉE |
+| au repos | ENTROUVERTE : `REPOS` = mâchoire 0,34, langue 0,22 (sa pointe posée sur la lèvre du bas). Le balisage porte ce dessin ; rien ne bouge à l'arrivée. Fermée (0) seulement en avalant |
+| au clic | `BOUCHE.transe()` bascule : une vague de 9,4 s qui recommence — 6,4 s de montée (0,55 → 1,5 Hz, amplitude 0,62 → 1, la langue sort à chaque sommet), 1,2 s d'acmé (grande ouverte, langue au bout, un frisson), 1,8 s de relâchement jusqu'au repos. Conduite par le temps (un ressort traîne derrière un rythme) |
+| fin de la transe | second clic · on prend le papier (`viser`) · porte, recherche ou Totehm à l'écran · on avale ; un onglet caché la suspend. Elle ne repart jamais seule |
+| place | `#gate-mouth` en HAUT (`top:max(52px,6dvh)`), la langue pend vers le papier ; centre du papier à 60 % de la hauteur ; la porte d'inscription s'ouvre AU-DESSUS du papier (dessous, le clavier la couvrirait) |
+| clavier / mouvement réduit | inchangé : le bouton porte le papier sur la langue de lui-même |
+| diagnostic | `__totehm_lsd.bouche` = plus ouverte que le repos · `transe` (booléen) |
 
 ## ⛔ ÉTAT AU 03/10/2026 — QUANTICO CORAL ET MY SPACES
 
@@ -28,6 +46,10 @@
 
 
 ## ⛔ ÉTAT AU 03/10/2026 — LA BOUCHE : LE PAPIER SUR LA LANGUE
+
+> **⚠️ 04/10 :** la bouche est EN HAUT, ENTROUVERTE au repos, en transe au
+> clic ; le Totehm plus bas, la porte au-dessus du papier — voir plus haut.
+> La mécanique ci-dessous (prendre, porter, avaler) est inchangée.
 
 **La demande de Wah :** « une bouche, fermée en bas du Totehm, ouverte
 langue tirée comme sur le fichier joint ; un maintien du clic (appui

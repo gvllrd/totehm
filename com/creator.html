@@ -174,7 +174,7 @@ const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsIn
 const sb = createClient(SB_URL, SB_ANON);
 const $ = id => document.getElementById(id);
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
-const BUILD = '2026-10-03-search-boxes';
+const BUILD = '2026-10-04-search-boxes';
 
 /* ── DÉPART du pont SSO — copié de tools/sso_snippet.js (le lien) ── */
 async function ssoVersDomaine(sb, cible, url){

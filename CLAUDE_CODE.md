@@ -174,9 +174,17 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 
 Un tableau : ce qui a été fait, la valeur mesurée, ce qui n'a pas pu l'être.
 
-### Correction 0.34 — 03/10/2026 · découvrir, lire, copier, pratiquer
+### Correction 0.36 — 04/10/2026 · découvrir, lire, copier, pratiquer
 
 > COM : recherche par nom avec accents/fautes/liens, abonnements, boxes accessibles (type/intention). Le résultat EST le TOTEHM natif à cinq vues, en read-only ; copies individuelles ou de vue, revue, import personnel avec provenance, déduplication et liens remappés entre boxes sélectionnées. Accès source actuel requis ; aucune copie de coordonnées/statistiques/historique. Noms publics seulement sans abonnement. Migration `search_and_box_import` appliquée (journal `20261003164312`), ne pas réappliquer. Modèle annuel créateur et 80/20 conservé. Aucun travail Oracle/n8n demandé ; reporter la vision dans le master.
+
+### Correction 0.35 — 04/10/2026 · la bouche entrouverte, en transe au clic
+
+À reporter dans TOTEHM_MASTER.md §0 (REMPLACE la partie « bouche fermée lisible, langue tirée au chargement » de 0.34 ; la place en haut et la porte au-dessus du papier restent) : la bouche garde le dessin de Wah sans changement ; au repos elle est entrouverte, la pointe de la langue sur la lèvre ; un clic la lance dans une transe sans fin (montée de plus en plus rapide, acmé, relâchement, et ça recommence) qu'un second clic arrête — prendre le papier l'arrête aussi. Plus rien ne bouge au chargement. Front seul : aucune migration, aucun travail Oracle/n8n.
+
+### Correction 0.34 — 04/10/2026 · la bouche en haut, elle tire la langue
+
+À reporter dans TOTEHM_MASTER.md §0 (complète 0.30) : sur l'atterrissage de totehm.com, la bouche passe EN HAUT et le Totehm plus bas (on monte le papier vers la langue) ; la porte d'inscription s'ouvre au-dessus du papier. Fermée, la bouche se lit enfin comme une bouche (deux lèvres, deux gris, commissures). À l'arrivée, elle s'ouvre, tire la langue et se referme, une seule fois par chargement (pas en mouvement réduit). Front seul : aucune migration, aucun travail Oracle/n8n.
 
 ### Correction 0.33 — 03/10/2026 · ce que veut le membre, vue par vue
 

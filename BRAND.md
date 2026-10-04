@@ -558,9 +558,13 @@ lays itself face up again: the threshold always starts on *my* Totehm. On
 name — that's Space's grammar, not this one. The blotter gestures of 28/09
 (slide, throw, stretch) are gone: a drag now turns it.
 
-**The paper goes on the tongue — 03/10/2026.** At the bottom of the
-landing, a mouth, closed, in the greys of the dark (no colour: it is a
-door, §13). Hold the paper (a long press, a held click) and you *carry*
+**The paper goes on the tongue — 03/10/2026.** At the top of the
+landing (04/10), a mouth in the greys of the dark (no colour: it is a
+door, §13), drawn as Wah drew it — and the Totehm lower down. At rest it is
+**ajar**, the tip of the tongue on the lower lip. Click it and it goes into
+a trance: it opens and closes without end, faster and wider, the tongue out
+at every peak, a climax, a release — again — until you click it again or
+take the paper. Provocative, underground, on purpose. Hold the paper (a long press, a held click) and you *carry*
 it anywhere on the screen. Bring it near the mouth: it opens, the tongue
 comes out to receive it. Laid on the tongue, the paper shrinks to the size
 of a tab, and **Get [Higher]** — "Get" in Quantico coral, Higher the badge,

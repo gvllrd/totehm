@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 3 octobre 2026, 16:45 UTC** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 4 octobre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -16,7 +16,7 @@
 ---
 
 
-## 0 · COM — RECHERCHE, LECTEUR NATIF ET COPIES — 03/10/2026
+## 0 · COM — RECHERCHE, LECTEUR NATIF ET COPIES — 04/10/2026
 
 | quoi | valeur mesurée |
 |---|---|
@@ -24,9 +24,29 @@
 | auto-test local PostgreSQL/PGlite puis base réelle | `TOTEHM DISCOVERY SELFTEST (rolled back): FAIL={}` ; cinq types/jonctions, droits privés/annulés, pagination, accents/fautes, filtre, batch invalide, retry, déduplication du contenu personnel, import partiel, limite 50 |
 | grants mesurés | discover anon oui ; import authenticated oui / anon non ; helper authenticated non ; registre aucun SELECT anon/auth, RLS true sans politique |
 | après auto-test réel | registre 0 ligne : aucun compte, contenu ou import de test conservé |
-| tests navigateur | `com_discovery.mjs` 50/50 · `com_paper.mjs` 39/39 · `com_mouth.mjs` 29/29 · `spaces_ui.mjs` 57/57 ; comptes/réseau simulés, captures mobile et desktop inspectées |
+| tests navigateur | `com_discovery.mjs` 50/50 · `com_paper.mjs` 39/39 · `com_mouth.mjs` 36/36 · `spaces_ui.mjs` 57/57 ; comptes/réseau simulés, captures mobile et desktop inspectées |
 | interfaces | mêmes cinq vues et joystick ; recherche du papier conservée ; résultat → `/totehm?ro=nom`, hit → box native ; revue hors de stage, focus/inert/Échap, purge à la déconnexion |
 | lints nouveaux vérifiés | [RPC SECURITY DEFINER publiques](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable) : names public volontaire ; [RPC authenticated](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable) : accès source/owner contrôlés ; [RLS sans politique](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy) : registre fermé volontaire |
+
+## 0 · COM — LA BOUCHE ENTROUVERTE, EN TRANSE AU CLIC — 04/10/2026 (bis)
+
+| quoi | valeur mesurée |
+|---|---|
+| `main` en avance rapide `8c6ae2c..a6d57fc`, déploiement auto | com `dpl_2g8Jkj3huN3CxZBnFUX2mnTWLETj` READY, alias `www.totehm.com` |
+| prod = fichier de `main` (pg_net) | totehm.com `/totehm` 200, 529 233 o, md5 identique, `BUILD='2026-10-04b'`, langue au repos `translate(0,-748.8)`, `transePas` présent, `#m-shut` et `taquiner` absents |
+| tests navigateur | `com_mouth.mjs` 36/36 (transe : 39 formes en 8,8 s, 28 ouverte / 12 refermée) · `com_paper.mjs` 39/39 |
+
+---
+
+## 0 · COM — LA BOUCHE EN HAUT, ELLE TIRE LA LANGUE — 04/10/2026
+
+| quoi | valeur mesurée |
+|---|---|
+| `main` en avance rapide `ca2bb19..abab32b`, déploiement auto | com `dpl_GxsNeTixxgpVW6CUjp1sKrDqj5r3` READY, alias `www.totehm.com` |
+| prod = fichier de `main` (pg_net) | totehm.com `/totehm` 200, 530 559 o, md5 identique, `BUILD='2026-10-04'`, `#m-up`, bouche `top:max(52px,6dvh)`, `taquiner` présents |
+| tests navigateur | `com_mouth.mjs` 32/32 · `com_paper.mjs` 39/39 |
+
+---
 
 ## 0 · SPACE — PHOTO, WHY · TRIGGER, GESTES EN LIGNE, CAPTEUR À LA DEMANDE — 03/10/2026 (ter)
 
