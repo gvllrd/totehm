@@ -51,6 +51,9 @@ export async function config():Promise<Config>{
    }
   }catch{status='library_unavailable';}
   const {error}=await admin.from('video_backend').upsert({id:true,status,diagnostics:diag,checked_at:new Date().toISOString()});if(error) console.error('video_backend_write_failed');
+  // Validated CDN configuration is shared by warm playback requests. Access rights
+  // are still checked on each Spot; an unavailable configuration retries promptly.
+  expires=Date.now()+(status==='ready'?300000:30000);
   return {ready:status==='ready',key,host,readKey};
  })();return pending;
 }

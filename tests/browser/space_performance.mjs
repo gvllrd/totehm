@@ -36,8 +36,8 @@ try{
  await pg.evaluate(()=>window.__paginationVideo=document.querySelectorAll('#feed video')[18]);await pg.$eval('#feed',e=>e.scrollTop=e.querySelector('.clip').offsetHeight*18);
  await pg.waitForFunction(()=>window.__totehm_space().feed===21);await pg.waitForTimeout(400);report.paginationPreservesVideo=await pg.evaluate(()=>window.__paginationVideo===document.querySelectorAll('#feed video')[18]);
  if(!baseline)ok(report.paginationPreservesVideo,'pagination preserves the active video and its buffer');
- await pg.click('#joy-box');await pg.waitForTimeout(300);report.released=await pg.$$eval('#feed video',vs=>vs.every(v=>v.paused&&!v.getAttribute('src')&&!v._hls));
- if(!baseline)ok(report.released,'leaving the feed releases all video sources');
+ await pg.click('#joy-box');await pg.waitForTimeout(300);report.outsideFeed=await pg.$$eval('#feed video',vs=>({paused:vs.every(v=>v.paused),retained:vs.filter(v=>v.getAttribute('src')||v._hls).length}));
+ if(!baseline)ok(report.outsideFeed.paused&&report.outsideFeed.retained<=3,'leaving the feed pauses playback and retains at most three prepared videos');
  if(!baseline){
   await pg.$eval('#feed',e=>e.scrollTop=e.querySelector('.clip').offsetHeight*7);
   await pg.click('#cur-g');await pg.waitForTimeout(80);await pg.click('#joy-box');await pg.waitForTimeout(850);

@@ -1,5 +1,30 @@
 # space/CLAUDE.md — totehm.space : DO WITH ME (un Spot, cinq vues)
 
+## SPACE · 04/10/2026 — la vidéo suivante prête avant le swipe
+
+BUILD `2026-10-04-instant-feed`. Cette correction complète les parcours du
+03/10, sans changer les cinq vues, le joystick, le papier, la caméra, les
+photos, les Habits ni les droits. Elle remplace les anciennes règles de
+préchargement ci-dessous : préparer la première image du suivant pendant
+le démarrage du visible sur un bon réseau, conserver les lecteurs prêts
+pendant un aller-retour au radar (20 s maximum), les purger en arrière-plan.
+
+Le runtime Hls.js local chauffe à la découverte de clips Bunny, sans
+autorisation ni chargement de média avant d'ouvrir le feed. L'autorisation
+du visible et du suivant peut partager un appel `bunny-video` (deux clips
+maximum), chacun contrôlé séparément par le serveur. Chrome utilise Hls.js
+quand MSE est disponible ; Safari conserve le master HLS natif. Première
+image adaptée au débit, puis HD automatique, sans plafond permanent.
+
+Preuve locale : `tests/browser/space_feed_latency.mjs`, vrais HLS/MP4
+décodés avec délais réseau simulés identiques ; médiane du swipe suivant
+1 198 ms avant → 61 ms après (trois passages). Ce n'est ni une mesure
+sur téléphone ni une comparaison avec TikTok. Fichiers générés par
+`space_video_fixtures.py /tmp/space-portrait-fixtures` ; pour mesurer
+l'ancien code, `SPACE_FEED_BASELINE=<ancien dossier space>` et `--baseline`.
+37 contrôles : HD, retour radar, expiration, réseaux contraints, pagination,
+arrière-plan et réponse tardive. État de publication : SYSTEM.md §0.
+
 ## ⛔ ÉTAT AU 03/10/2026 (ter) — CE QUE VEUT LE MEMBRE, VUE PAR VUE
 
 BUILD `2026-10-03-spaces-ter`. Complète les deux sections suivantes. **L'idée de SPACE (Wah) :
@@ -179,17 +204,22 @@ Rien ne part vers Bunny avant configuration de la lecture protégée. Les
 clips Storage restent lisibles par URL signée dans `moments` PRIVÉ ; la
 capture Full HD corrigée fonctionne aussi avec ce stockage.
 
-**Feed fluide** : un seul clip joue. Après son démarrage, préparer UN clip
-suivant ; garder au maximum précédent/actuel/suivant, libérer les autres.
-Pas de lookahead en Save-Data/2G ni avant d'ouvrir le feed. HLS suivant :
-petit buffer (2 s visés, un segment peut dépasser) ; Storage/natif : metadata
-seulement, hint que le navigateur peut ignorer. Les lectures anticipées
+**Feed fluide** : un seul clip joue. Préparer UN clip suivant en parallèle
+sur bon réseau ; sur 3G, attendre la première image du visible. Garder au
+maximum précédent/actuel/suivant, libérer les autres. Pas de lookahead en
+Save-Data/2G ni avant d'ouvrir le feed. HLS suivant : petit buffer (1,5 s
+visées, un segment peut dépasser), arrêt après le premier segment préparé ;
+Storage/natif : preload auto pour préparer des images, hint que le navigateur
+peut ignorer. Un swipe bascule au clip le plus proche sans trou de pause
+entre deux seuils d'intersection. Les lectures anticipées
 passent par les mêmes autorisations serveur. Appender la pagination, ne
 jamais reconstruire les lecteurs existants. Un rafraîchissement aux mêmes
 IDs/médias ne remplace que les informations, garde le défilement et la vidéo.
 Annuler les réponses obsolètes,
-renouveler une signature expirée ; purger lecteurs/cache au logout ou en
-arrière-plan. Le radar reste visible desktop mais son animation descend à
+renouveler une signature expirée. Hors feed : pause et arrêt des chargements ;
+conserver les lecteurs déjà prêts 20 s maximum pour un retour rapide, puis
+libérer. Save-Data/2G, logout et arrière-plan libèrent immédiatement ; purge
+du cache au logout et en arrière-plan. Le radar reste visible desktop mais son animation descend à
 15 fps derrière le feed, 10 fps derrière la caméra (60 pendant la transition).
 Boussole et positions DOM seulement quand elles changent ; effacer seulement
 la surface précédemment dessinée. Onglet caché : radar/lecteurs suspendus.
