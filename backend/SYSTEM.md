@@ -25,6 +25,8 @@
 | grants mesurés | discover anon oui ; import authenticated oui / anon non ; helper authenticated non ; registre aucun SELECT anon/auth, RLS true sans politique |
 | après auto-test réel | registre 0 ligne : aucun compte, contenu ou import de test conservé |
 | tests navigateur | `com_discovery.mjs` 50/50 · `com_paper.mjs` 39/39 · `com_mouth.mjs` 36/36 · `spaces_ui.mjs` 57/57 ; comptes/réseau simulés, captures mobile et desktop inspectées |
+| prod, `main` `f3832ff` (PR #22 fusionnée) | com `dpl_HaboXdqrQReNHJqrQ61xTp2UGi77` READY, target production, alias `www.totehm.com` ; `/search` et `/totehm` HTTP 200, identiques aux fichiers testés, BUILD `2026-10-04-search-boxes` |
+| empreintes servies | `/search` 29 379 o, md5 `4a4d97cc7b586c4c437b87d511a750c0` ; `/totehm` 548 804 o, md5 `0b1a0ecefbec1e6e1f7f3c51ebff2d02` |
 | interfaces | mêmes cinq vues et joystick ; recherche du papier conservée ; résultat → `/totehm?ro=nom`, hit → box native ; revue hors de stage, focus/inert/Échap, purge à la déconnexion |
 | lints nouveaux vérifiés | [RPC SECURITY DEFINER publiques](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable) : names public volontaire ; [RPC authenticated](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable) : accès source/owner contrôlés ; [RLS sans politique](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy) : registre fermé volontaire |
 
