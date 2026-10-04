@@ -1,20 +1,22 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
-## ⛔ ÉTAT AU 04/10/2026 — LA BOUCHE EN HAUT, ELLE TIRE LA LANGUE
+## ⛔ ÉTAT AU 04/10/2026 — LA BOUCHE EN HAUT, ENTROUVERTE, EN TRANSE AU CLIC
 
-Wah : « on ne voit pas assez que c'est une bouche fermée » · « qu'elle
-s'ouvre et tire la langue une première fois au chargement en se
-refermant — provocateur, underground » · « elle en haut, le Totehm plus
-bas ». `BUILD='2026-10-04'` (remplace `2026-10-03-spaces`, rien d'autre
-ne change), `tests/browser/com_mouth.mjs` 32/32, `com_paper.mjs` 39/39.
+Wah, en deux temps : « la bouche en haut, le Totehm plus bas » puis
+« bof la bouche au repos : on garde le design sans le changer, plutôt un
+peu entrouverte, et quand on clique dessus elle s'ouvre et se referme
+indéfiniment, comme si c'était orgasmique ». `BUILD='2026-10-04b'`,
+`tests/browser/com_mouth.mjs` 36/36, `com_paper.mjs` 39/39.
 
 | quoi | règle |
 |---|---|
-| bouche fermée | large (3:1), deux lèvres (`#m-up` `#303030`, `#m-down` `#3d3d3d`, plus pleine), trait des lèvres `#080808` (14), commissures et reflet (`#m-shut`, s'efface à l'ouverture). Ouverte : les gris du dessin de Wah, au code près |
-| place | `#gate-mouth` en HAUT (`top:max(52px,6dvh)`), la langue pend vers le papier ; centre du papier à 60 % de la hauteur |
-| porte d'inscription | AU-DESSUS du papier (`#gate-door` absolue, centrée) : dessous, le clavier la couvrirait ; la bouche se retire pendant ce temps |
-| à l'arrivée | `BOUCHE.indice(1,1,650,fin)` : grande ouverte, langue tirée 650 ms, refermée — UNE fois par chargement, jamais en boucle. Pas en mouvement réduit, ni dedans (`#in`, `?ro=`), ni porte / recherche / geste déjà en cours ; un onglet caché attend d'être vu. `__totehm_lsd.accueil` 0 → 1 → 2 (2 = vraiment au repos : la suite d'un `indice` attend les ressorts, pas une minuterie) |
-| « Get [Higher] » | toujours à la place du papier au repos (donc désormais SOUS la bouche) |
+| dessin | celui de Wah, ses gris au code près (`#m-lips` `#1f1f1f`, `#m-cav` `#111111`, dents `#3c3c3c`, langue `#2a2a2a`). La bouche fermée « lisible » du 04/10 matin (deux lèvres, deux gris, reflet) est RETIRÉE |
+| au repos | ENTROUVERTE : `REPOS` = mâchoire 0,34, langue 0,22 (sa pointe posée sur la lèvre du bas). Le balisage porte ce dessin ; rien ne bouge à l'arrivée. Fermée (0) seulement en avalant |
+| au clic | `BOUCHE.transe()` bascule : une vague de 9,4 s qui recommence — 6,4 s de montée (0,55 → 1,5 Hz, amplitude 0,62 → 1, la langue sort à chaque sommet), 1,2 s d'acmé (grande ouverte, langue au bout, un frisson), 1,8 s de relâchement jusqu'au repos. Conduite par le temps (un ressort traîne derrière un rythme) |
+| fin de la transe | second clic · on prend le papier (`viser`) · porte, recherche ou Totehm à l'écran · on avale ; un onglet caché la suspend. Elle ne repart jamais seule |
+| place | `#gate-mouth` en HAUT (`top:max(52px,6dvh)`), la langue pend vers le papier ; centre du papier à 60 % de la hauteur ; la porte d'inscription s'ouvre AU-DESSUS du papier (dessous, le clavier la couvrirait) |
+| clavier / mouvement réduit | inchangé : le bouton porte le papier sur la langue de lui-même |
+| diagnostic | `__totehm_lsd.bouche` = plus ouverte que le repos · `transe` (booléen) |
 
 ## ⛔ ÉTAT AU 03/10/2026 — QUANTICO CORAL ET MY SPACES
 
@@ -34,8 +36,8 @@ ne change), `tests/browser/com_mouth.mjs` 32/32, `com_paper.mjs` 39/39.
 
 ## ⛔ ÉTAT AU 03/10/2026 — LA BOUCHE : LE PAPIER SUR LA LANGUE
 
-> **⚠️ 04/10 :** la bouche est EN HAUT, le Totehm plus bas, la porte
-> au-dessus du papier, et la bouche fermée est redessinée — voir plus haut.
+> **⚠️ 04/10 :** la bouche est EN HAUT, ENTROUVERTE au repos, en transe au
+> clic ; le Totehm plus bas, la porte au-dessus du papier — voir plus haut.
 > La mécanique ci-dessous (prendre, porter, avaler) est inchangée.
 
 **La demande de Wah :** « une bouche, fermée en bas du Totehm, ouverte
