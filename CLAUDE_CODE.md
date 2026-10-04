@@ -174,6 +174,10 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 
 Un tableau : ce qui a été fait, la valeur mesurée, ce qui n'a pas pu l'être.
 
+### Correction 0.36 — 04/10/2026 · la bouche raconte quatre temps
+
+À reporter dans TOTEHM_MASTER.md §0 (REMPLACE 0.35 ; la place en haut et la porte au-dessus du papier de 0.34 restent) : à l'arrivée, la bouche tire la langue une fois ; puis elle est fermée, immobile (le dessin de Wah) ; le Totehm approché, elle s'ouvre et tire la langue ; posé dessus, le papier n'est plus qu'un buvard (36 % de la largeur de la langue) ; avalé, la bouche seule, sans la langue, bouge comme une femme qui jouit (3,6 s), puis [Get Higher]. Plus de transe au clic : un tap sur les lèvres rejoue la langue. Front seul : aucune migration, aucun travail Oracle/n8n.
+
 ### Correction 0.36 — 04/10/2026 · découvrir, lire, copier, pratiquer
 
 > COM : recherche par nom avec accents/fautes/liens, abonnements, boxes accessibles (type/intention). Le résultat EST le TOTEHM natif à cinq vues, en read-only ; copies individuelles ou de vue, revue, import personnel avec provenance, déduplication et liens remappés entre boxes sélectionnées. Accès source actuel requis ; aucune copie de coordonnées/statistiques/historique. Noms publics seulement sans abonnement. Migration `search_and_box_import` appliquée (journal `20261003164312`), ne pas réappliquer. Modèle annuel créateur et 80/20 conservé. Aucun travail Oracle/n8n demandé ; reporter la vision dans le master.

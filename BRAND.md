@@ -560,14 +560,15 @@ name — that's Space's grammar, not this one. The blotter gestures of 28/09
 
 **The paper goes on the tongue — 03/10/2026.** At the top of the
 landing (04/10), a mouth in the greys of the dark (no colour: it is a
-door, §13), drawn as Wah drew it — and the Totehm lower down. At rest it is
-**ajar**, the tip of the tongue on the lower lip. Click it and it goes into
-a trance: it opens and closes without end, faster and wider, the tongue out
-at every peak, a climax, a release — again — until you click it again or
-take the paper. Provocative, underground, on purpose. Hold the paper (a long press, a held click) and you *carry*
+door, §13), drawn as Wah drew it — and the Totehm lower down. It tells a
+story in four beats: when the page arrives it sticks its tongue out, once;
+then it is **closed**, still; bring the Totehm near and it opens, the tongue
+comes out for it; once it has swallowed the paper, the mouth alone — no
+tongue — moves like a woman coming: a breath, gasps that quicken, the held
+"O", the release. Provocative, underground, on purpose. Hold the paper (a long press, a held click) and you *carry*
 it anywhere on the screen. Bring it near the mouth: it opens, the tongue
 comes out to receive it. Laid on the tongue, the paper shrinks to the size
-of a tab, and **Get [Higher]** — "Get" in Quantico coral, Higher the badge,
+of a tab — small, like the real thing (04/10), and **Get [Higher]** — "Get" in Quantico coral, Higher the badge,
 never text — appears where the paper rested. Let go on the tongue: the
 tongue takes it in, the mouth closes, and you are on [Get Higher] (the
 TotehmPaper, on `figher.club`). Let go anywhere else: it goes home. The

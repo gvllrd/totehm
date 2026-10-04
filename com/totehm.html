@@ -2174,8 +2174,8 @@ body.gate.entered .ast-back{visibility:hidden}
    Les gris de la bouche sont ceux du dessin de Wah, au code près. Elle
    est dessinée par le moteur (`BOUCHE`, points interpolés entre fermée et
    ouverte) : une transition CSS de `d` n'existe pas sur Safari. Le
-   balisage porte déjà la bouche AU REPOS, entrouverte (le module attend
-   le pont SSO jusqu'à 2,5 s : elle ne doit pas attendre avec lui).
+   balisage porte déjà la bouche FERMÉE, au repos (le module attend le
+   pont SSO jusqu'à 2,5 s : elle ne doit pas attendre avec lui).
    La boîte réserve la place de la langue tirée : fermée, la bouche
    occupe son haut. Seules les lèvres sont touchables.
    04/10 : EN HAUT de l'écran, la langue pend vers le papier. */
@@ -3142,21 +3142,21 @@ a Totehm</span>
   </div><!-- /gate-top-row -->
 
   <!-- ══ LA BOUCHE · 03/10/2026 ═══════════════════════════════════════
-       Entrouverte au repos (04/10). Un clic : elle s'ouvre et se referme
-       sans fin, un second l'arrête. On y porte le papier (appui prolongé) :
-       elle s'ouvre, la langue se tire, on l'y pose → [Get Higher]. Au
+       Fermée au repos (04/10) ; à l'arrivée, elle tire la langue une
+       fois. On y porte le papier (appui prolongé) : elle s'ouvre, la langue
+       se tire, on l'y pose → elle l'avale, jouit → [Get Higher]. Au
        clavier, ce bouton y porte le papier de lui-même. Les chemins
-       ci-dessous sont la bouche AU REPOS ; le moteur `BOUCHE` les redessine. -->
+       ci-dessous sont la bouche FERMÉE ; le moteur `BOUCHE` les redessine. -->
   <button id="gate-mouth" type="button" aria-label="Get Higher">
     <svg viewBox="30 310 1020 1260" aria-hidden="true">
-      <defs><clipPath id="m-clip"><path id="m-clip-p" d="M110,740C124.7,735.6 167.5,722.3 198.3,713.8C229.1,705.3 258.8,697.2 294.9,688.9C331,680.6 374,665.7 414.9,663.9C455.8,662.1 498.3,678 540,678C581.7,678 624.3,662.1 665.1,663.9C706,665.7 749,680.6 785.1,688.9C821.2,697.2 850.9,705.3 881.7,713.8C912.5,722.3 955.3,735.6 970,740L1050,1570L30,1570Z"/></clipPath></defs>
-      <path id="m-lips" fill="#1f1f1f" stroke="#1f1f1f" stroke-width="18" stroke-linejoin="round" d="M47,740C55,728 77.8,694.7 95,668C112.2,641.3 131.7,609.7 150,580C168.3,550.3 186.3,518.3 205,490C223.7,461.7 243.2,432.5 262,410C280.8,387.5 298.7,367.7 318,355C337.3,342.3 354.3,335.5 378,334C401.7,332.5 433,341.7 460,346C487,350.3 513.3,360 540,360C566.7,360 593,350.3 620,346C647,341.7 678.3,332.5 702,334C725.7,335.5 742.7,342.3 762,355C781.3,367.7 799.2,387.5 818,410C836.8,432.5 856.3,461.7 875,490C893.7,518.3 911.7,550.3 930,580C948.3,609.7 967.8,641.3 985,668C1002.2,694.7 1025,728 1033,740L1033,740C1024.6,751.4 1001.5,784.5 982.7,808.5C963.9,832.5 944.2,859.9 920.2,884C896.2,908 873.2,933.2 838.8,952.9C804.4,972.6 763.8,990.5 714,1002.1C664.2,1013.7 598,1022.3 540,1022.3C482,1022.3 415.8,1013.7 366,1002.1C316.2,990.5 275.6,972.6 241.2,952.9C206.8,933.2 183.8,908 159.8,884C135.8,859.9 116.1,832.5 97.3,808.5C78.5,784.5 55.4,751.4 47,740Z"/>
-      <path id="m-cav" fill="#111111" stroke="#111111" stroke-width="10" stroke-linejoin="round" d="M110,740C124.7,735.6 167.5,722.3 198.3,713.8C229.1,705.3 258.8,697.2 294.9,688.9C331,680.6 374,665.7 414.9,663.9C455.8,662.1 498.3,678 540,678C581.7,678 624.3,662.1 665.1,663.9C706,665.7 749,680.6 785.1,688.9C821.2,697.2 850.9,705.3 881.7,713.8C912.5,722.3 955.3,735.6 970,740L970,740C955,740.8 911.1,743.5 880,745.1C848.9,746.7 818.9,748.1 783.4,749.4C747.9,750.8 707.4,750.5 666.8,753C626.2,755.5 582.3,764.3 540,764.3C497.7,764.3 453.8,755.5 413.2,753C372.6,750.5 332.1,750.8 296.6,749.4C261.1,748.1 231.1,746.7 200,745.1C168.9,743.5 125,740.8 110,740Z"/>
-      <g clip-path="url(#m-clip)"><g id="m-tongue" transform="translate(0,-748.8)">
+      <defs><clipPath id="m-clip"><path id="m-clip-p" d="M110,740C125,737.3 168.3,729 200,724C231.7,719 263.3,713.7 300,710C336.7,706.3 380,701.3 420,702C460,702.7 500,714 540,714C580,714 620,702.7 660,702C700,701.3 743.3,706.3 780,710C816.7,713.7 848.3,719 880,724C911.7,729 955,737.3 970,740L1050,1570L30,1570Z"/></clipPath></defs>
+      <path id="m-lips" fill="#1f1f1f" stroke="#1f1f1f" stroke-width="18" stroke-linejoin="round" d="M47,740C55,728 77.8,694.7 95,668C112.2,641.3 131.7,609.7 150,580C168.3,550.3 186.3,518.3 205,490C223.7,461.7 243.2,432.5 262,410C280.8,387.5 298.7,367.7 318,355C337.3,342.3 354.3,335.5 378,334C401.7,332.5 433,341.7 460,346C487,350.3 513.3,360 540,360C566.7,360 593,350.3 620,346C647,341.7 678.3,332.5 702,334C725.7,335.5 742.7,342.3 762,355C781.3,367.7 799.2,387.5 818,410C836.8,432.5 856.3,461.7 875,490C893.7,518.3 911.7,550.3 930,580C948.3,609.7 967.8,641.3 985,668C1002.2,694.7 1025,728 1033,740L1033,740C1024.2,750 1000.5,778.7 980,800C959.5,821.3 937.5,847 910,868C882.5,889 853.3,910.3 815,926C776.7,941.7 725.8,954.3 680,962C634.2,969.7 586.7,972 540,972C493.3,972 445.8,969.7 400,962C354.2,954.3 303.3,941.7 265,926C226.7,910.3 197.5,889 170,868C142.5,847 120.5,821.3 100,800C79.5,778.7 55.8,750 47,740Z"/>
+      <path id="m-cav" fill="#111111" stroke="#111111" stroke-width="10" stroke-linejoin="round" d="M110,740C125,737.3 168.3,729 200,724C231.7,719 263.3,713.7 300,710C336.7,706.3 380,701.3 420,702C460,702.7 500,714 540,714C580,714 620,702.7 660,702C700,701.3 743.3,706.3 780,710C816.7,713.7 848.3,719 880,724C911.7,729 955,737.3 970,740L970,740C955,737.3 911.7,729 880,724C848.3,719 816.7,713.7 780,710C743.3,706.3 700,701.3 660,702C620,702.7 580,714 540,714C500,714 460,702.7 420,702C380,701.3 336.7,706.3 300,710C263.3,713.7 231.7,719 200,724C168.3,729 125,737.3 110,740Z"/>
+      <g clip-path="url(#m-clip)"><g id="m-tongue" transform="translate(0,-960)">
         <path fill="#2a2a2a" d="M540,762C505,738 460,727 410,727C300,727 207,770 207,880L207,1190C207,1390 360,1540 540,1540C720,1540 872,1390 872,1190L872,880C872,770 780,727 670,727C620,727 575,738 540,762Z"/>
         <path fill="none" stroke="#232323" stroke-width="10" stroke-linecap="round" d="M540,792L540,1340"/>
       </g></g>
-      <path id="m-teeth" fill="#3c3c3c" d="M294.9,688.9C314.9,684.8 374,665.7 414.9,663.9C455.8,662.1 498.3,678 540,678C581.7,678 624.3,662.1 665.1,663.9C706,665.7 765.1,684.8 785.1,688.9L785.1,688.9C765.1,689.3 706,688.9 665.1,691.1C624.3,693.4 581.7,702.4 540,702.4C498.3,702.4 455.8,693.4 414.9,691.1C374,688.9 314.9,689.3 294.9,688.9Z"/>
+      <path id="m-teeth" fill="#3c3c3c" d="M300,710C320,708.7 380,701.3 420,702C460,702.7 500,714 540,714C580,714 620,702.7 660,702C700,701.3 760,708.7 780,710L780,710C760,708.7 700,701.3 660,702C620,702.7 580,714 540,714C500,714 460,702.7 420,702C380,701.3 320,708.7 300,710Z"/>
     </svg>
   </button>
 </section>
@@ -4738,7 +4738,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-04-search-boxes';
+const BUILD='2026-10-04c';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -7967,26 +7967,20 @@ window.addEventListener('pageshow',e=>{
      derrière les dents — elle sort par sa pointe. Jamais plus tirée que la
      bouche n'est ouverte.
 
-     ⚠️ AU REPOS, ELLE EST ENTROUVERTE (04/10, Wah : « on garde le design
-     sans le changer, plutôt un peu entrouverte ») : `REPOS` = la mâchoire à
-     0,34, la pointe de la langue posée sur la lèvre du bas. Le balisage
-     porte ce dessin-là. Fermée (0), elle ne l'est plus qu'en avalant.
-     Ses ressorts ne vivent que le temps d'aller vers leur cible.
-
-     ⚠️ AU CLIC, ELLE S'EMBALLE (`transe`, Wah : « s'ouvrir et se refermer
-     indéfiniment, comme si c'était orgasmique »). Une vague de 9,4 s qui
-     recommence tant qu'on ne la touche pas : la montée (de plus en plus
-     vite, de plus en plus grand, la langue sort à chaque sommet), l'acmé
-     (grande ouverte, langue au bout, un frisson), le relâchement (lent,
-     jusqu'à entrouverte). Conduite par le temps, pas par des ressorts :
-     un ressort traîne derrière un rythme. Elle s'arrête au second clic,
-     quand on prend le papier, quand la porte, la recherche ou le Totehm
-     prennent l'écran ; un onglet caché la suspend.
-     Pendant qu'on avale, c'est le papier qui la conduit (`forcer`). */
+     ⚠️ L'HISTOIRE, EN QUATRE TEMPS (04/10, Wah : « on fait plus simple »).
+     1. À l'arrivée, elle tire la langue UNE fois (`indice(1,1,650,fin)`).
+     2. Puis elle est FERMÉE, immobile — zéro rAF.
+     3. Le Totehm approche : elle s'ouvre, la langue se tire (`viser`).
+     4. Avalé, la langue rentrée : la bouche SEULE bouge, comme une femme
+        qui jouit (`jouir(s)`, 3,6 s, conduit par le papier), puis on part.
+     La transe au clic du 04/10 (bis) est retirée : un tap sur les lèvres
+     rejoue seulement le 1. Ses ressorts ne vivent que le temps d'aller
+     vers leur cible ; pendant qu'on avale, c'est le papier qui la conduit
+     (`forcer`) : une seule ligne de temps pour les deux. */
   const BOUCHE=(()=>{
     const btn=$('gate-mouth');
     const api={dispo:()=>false, geo:()=>null, viser:()=>({arme:false,p:0}), etat:()=>[0,0],
-               relacher(){}, forcer(){}, remettre(){}, transe(){ return false; }};
+               relacher(){}, forcer(){}, remettre(){}, indice(){}, jouir:()=>null, JOUIR:0};
     const pL=$('m-lips'), pC=$('m-cav'), pT=$('m-teeth'), pK=$('m-clip-p'), gL=$('m-tongue');
     if(!btn||!pL||!pC||!pT||!pK||!gL) return api;
     const VX=30, VY=310, VW=1020;               /* le viewBox */
@@ -7997,7 +7991,7 @@ window.addEventListener('pageshow',e=>{
     const D1=[[110,740],[200,786],[290,826],[400,852],[540,862],[680,852],[790,826],[880,786],[970,740]];
     const B0=[[47,740],[100,800],[170,868],[265,926],[400,962],[540,972],[680,962],[815,926],[910,868],[980,800],[1033,740]];
     const B1=[[47,740],[92,825],[140,915],[195,1005],[300,1080],[540,1120],[780,1080],[885,1005],[940,915],[988,825],[1033,740]];
-    const DENTS=[0,80,72,80,0], LONG=960, POSE=[540,1150], RO=.34, RT=.22;
+    const DENTS=[0,80,72,80,0], LONG=960, POSE=[540,1150];
     const mix=(A,B,u)=>A.map((p,i)=>[p[0]+(B[i][0]-p[0])*u, p[1]+(B[i][1]-p[1])*u]);
     const f=n=>Math.round(n*10)/10, rev=P=>P.slice().reverse();
     function courbe(P,debut){
@@ -8009,7 +8003,10 @@ window.addEventListener('pageshow',e=>{
       }
       return s;
     }
-    let o=RO, vo=0, t=RT, vt=0, go=RO, gt=RT, raf=0, last=0, conduite=false, tr=null;
+    let o=0, vo=0, t=0, vt=0, go=0, gt=0, raf=0, last=0, conduite=false, tIndice=0, auRepos=null;
+    /* La suite d'un `indice` ne part qu'une fois la bouche VRAIMENT au repos,
+       fermée — pas sur une minuterie : la langue a de l'élan. */
+    function reposee(){ if(auRepos&&go===0&&gt===0&&!raf){ const f_=auRepos; auRepos=null; f_(); } }
     function dessiner(){
       const oo=Math.max(0,Math.min(1.08,o));
       const U=mix(U0,U1,oo), D=mix(U0,D1,oo), B=mix(B0,B1,oo);
@@ -8019,47 +8016,19 @@ window.addEventListener('pageshow',e=>{
       pT.setAttribute('d',courbe(haut,1)+courbe(rev(bas),0)+'Z');
       pK.setAttribute('d',courbe(U,1)+'L1050,1570L30,1570Z');
       gL.setAttribute('transform','translate(0,'+f(-(1-Math.min(t,oo*1.1))*LONG)+')');
-      const d=window.__totehm_lsd; if(d){ d.bouche=oo>RO+.05; d.transe=!!tr; }
+      const d=window.__totehm_lsd; if(d) d.bouche=oo>.02;
     }
     function kick(){ if(!raf){ last=0; raf=requestAnimationFrame(pas); } }
     function pas(now){
       raf=0; if(conduite) return;
       const dt=Math.min(.05,Math.max(0,(now-(last||now))/1000)); last=now;
-      if(tr){
-        const b=document.body.classList;
-        if(!b.contains('gate')||b.contains('entered')||b.contains('is-door')
-           ||($('srch')&&$('srch').classList.contains('is-on'))){ api.transe(false); return; }
-        transePas(now,dt); dessiner();
-        if(!document.hidden) raf=requestAnimationFrame(pas);
-        return;
-      }
       [o,vo]=ressort(o,vo,go,150,.8,dt);
       [t,vt]=ressort(t,vt,gt,120,.55,dt);      /* la langue : un rien d'élan */
-      if(Math.abs(o-go)+Math.abs(t-gt)+Math.abs(vo)+Math.abs(vt)<1e-3){ o=go; t=gt; vo=vt=0; dessiner(); return; }
+      if(Math.abs(o-go)+Math.abs(t-gt)+Math.abs(vo)+Math.abs(vt)<1e-3){ o=go; t=gt; vo=vt=0; dessiner(); reposee(); return; }
       dessiner();
       if(!document.hidden) raf=requestAnimationFrame(pas);
     }
     const lisse=u=>u*u*(3-2*u);
-    /* La vague : 6,4 s de montée, 1,2 s d'acmé, 1,8 s de relâchement. */
-    const VAGUE=9.4;
-    function transePas(now,dt){
-      const s=((now-tr.t0)/1000)%VAGUE, w=2*Math.PI*now/1000;
-      let oT, tT;
-      if(s<6.4){
-        const k=s/6.4, fr=.55+.95*k*k, amp=.62+.4*k;
-        tr.ph+=2*Math.PI*fr*dt;
-        const v=Math.pow(.5-.5*Math.cos(tr.ph),1.25);
-        oT=.12+(amp-.12)*v; tT=Math.max(0,(v-.3)/.7)*(.7+.38*k);
-      } else if(s<7.6){
-        const e=Math.min(1,(s-6.4)/.25);
-        oT=1+.035*Math.sin(w*9)*e; tT=1.05+.04*Math.sin(w*7)*e; tr.ph=0;
-      } else {
-        const e=lisse((s-7.6)/(VAGUE-7.6));
-        oT=1+(RO-1)*e; tT=1.05+(RT-1.05)*e;
-      }
-      o+=(oT-o)*Math.min(1,dt*18); t+=(tT-t)*Math.min(1,dt*14);
-    }
-    document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&tr) kick(); });
     /* Les repères, en pixels d'écran : la bouche ne bouge pas pendant un
        geste, on les lit UNE fois quand on prend le papier. */
     api.geo=()=>{
@@ -8069,30 +8038,54 @@ window.addEventListener('pageshow',e=>{
               entree:Y(770), zone:{l:X(117), r:X(962), t:Y(760), b:Y(1600)}};
     };
     api.dispo=()=>btn.getBoundingClientRect().width>0;
-    /* Le papier approche : à 70 % du chemin elle s'ouvre plus grand, la
+    /* Le papier approche : à 70 % du chemin la bouche s'entrouvre, la
        langue suit ; au-dessus de la langue, il est « posé » (`arme`). */
     api.viser=(x,y,g,D0)=>{
       if(!g) return {arme:false,p:0};
-      tr=null;
       const z=g.zone, arme=x>=z.l&&x<=z.r&&y>=z.t&&y<=z.b;
       const r0=g.large*.6, loin=Math.max(r0+60,D0*.72);
       const p=arme?1:Math.max(0,Math.min(1,1-(Math.hypot(x-g.mx,y-g.my)-r0)/(loin-r0)));
-      go=arme?1:Math.max(RO,lisse(Math.min(1,p/.8))); gt=arme?1:Math.max(RT,Math.min(1,(p-.45)/.55));
+      go=arme?1:lisse(Math.min(1,p/.8)); gt=arme?1:Math.max(0,Math.min(1,(p-.45)/.55));
       conduite=false; kick();
       return {arme,p};
     };
     api.etat=()=>[o,t];
-    api.relacher=()=>{ tr=null; conduite=false; go=RO; gt=RT; kick(); };
-    api.forcer=(o2,t2)=>{ tr=null; conduite=true; if(raf){ cancelAnimationFrame(raf); raf=0; }
+    api.relacher=()=>{ conduite=false; go=0; gt=0; kick(); };
+    api.forcer=(o2,t2)=>{ conduite=true; if(raf){ cancelAnimationFrame(raf); raf=0; }
                           o=go=o2; t=gt=t2; vo=vt=0; dessiner(); };
-    api.remettre=()=>{ tr=null; conduite=false; if(raf){ cancelAnimationFrame(raf); raf=0; }
-                       o=go=RO; t=gt=RT; vo=vt=0; dessiner(); };
-    /* `transe()` bascule, `transe(true|false)` impose ; rend l'état. */
-    api.transe=on=>{
-      if(on===undefined) on=!tr;
-      if(on&&!tr&&!conduite){ tr={t0:performance.now(), ph:0}; vo=vt=0; kick(); }
-      else if(!on&&tr){ tr=null; go=RO; gt=RT; vo=vt=0; kick(); }
-      dessiner(); return !!tr;
+    api.remettre=()=>{ conduite=false; if(raf){ cancelAnimationFrame(raf); raf=0; }
+                       o=t=vo=vt=go=gt=0; dessiner(); reposee(); };
+    /* La langue tirée : à l'arrivée (une fois), puis à chaque tap sur les
+       lèvres — grande ouverte, langue au bout, refermée. */
+    api.indice=(o2=1,t2=1,ms=650,fin)=>{
+      if(conduite) return;
+      go=o2; gt=t2; kick(); clearTimeout(tIndice);
+      tIndice=setTimeout(()=>{ if(fin) auRepos=fin;
+                               if(!conduite){ go=0; gt=0; kick(); } },ms);
+    };
+    /* ══ ELLE JOUIT · 04/10 ══ La bouche seule, la langue rentrée (elle
+       vient d'avaler). `jouir(s)` rend l'ouverture à l'instant `s` (en
+       secondes), `null` quand c'est fini. Quatre temps, irréguliers comme
+       un souffle : les lèvres s'entrouvrent (une inspiration) · des
+       halètements qui s'accélèrent et s'amplifient · le « O » tenu, un
+       frisson · le relâchement, un dernier souffle, fermée. */
+    api.JOUIR=3.6;
+    /* Les halètements : 2 → 4,4 Hz, la bouche de moins en moins fermée
+       entre deux souffles, de plus en plus grande à chaque souffle. */
+    const halete=k=>{
+      const ph=2*Math.PI*(2*k+1.2*k*k)*1.7, v=Math.pow(.5-.5*Math.cos(ph),1.4);
+      const bas=.24+.12*k, haut=.62+.26*k+.05*Math.sin(ph*.37);
+      return bas+(haut-bas)*v;
+    };
+    const O22=halete(1);
+    api.jouir=s=>{
+      if(s>=api.JOUIR) return null;
+      if(s<.5) return .24*lisse(s/.5);                                  /* l'inspiration */
+      if(s<2.2) return halete((s-.5)/1.7);                              /* les halètements */
+      if(s<2.9){ const e=lisse(Math.min(1,(s-2.2)/.18));                /* le « O », un frisson */
+                 return O22+(.94-O22)*e+.025*Math.sin(2*Math.PI*10*(s-2.2))*e; }
+      const k=(s-2.9)/(api.JOUIR-2.9);                                  /* le relâchement */
+      return Math.max(0,.94*(1-lisse(k))+.12*Math.sin(Math.PI*Math.min(1,k*1.6))*(1-k));
     };
     return api;
   })();
@@ -8102,7 +8095,7 @@ window.addEventListener('pageshow',e=>{
     const RM=window.matchMedia('(prefers-reduced-motion: reduce)');
     /* Le diagnostic : des booléens et des compteurs, jamais une valeur. */
     const diag={tenu:false, gestes:0, retournements:0, face:0, recherche:false, resultats:0, reduit:RM.matches,
-                pris:false, prises:0, langue:false, avale:0, bouche:false, transe:false};
+                pris:false, prises:0, langue:false, avale:0, bouche:false, extase:false, accueil:0};
     window.__totehm_lsd=diag;
     const api={poser:f=>{ if(f) f(); }, poserDos:f=>{ if(f) f(); }, retourner:f=>{ if(f) f(); },
                reveiller(){}, face:()=>0, occupe:()=>false, surVerso:null, surFace:null,
@@ -8120,7 +8113,7 @@ window.addEventListener('pageshow',e=>{
        rentre ou qu'il est avalé. Il déplace la SCÈNE (`#gate-asteroid`),
        jamais la carte : la carte reste posée, sur sa face, sans rotation. */
     let porte=null;
-    const HOLD=380, gget=$('gate-get');
+    const HOLD=380, TAB=.36, gget=$('gate-get');
 
     function kick(){ if(!raf&&mode!=='plat'&&mode!=='parti') raf=requestAnimationFrame(frame); }
     function frame(now){
@@ -8252,9 +8245,10 @@ window.addEventListener('pageshow',e=>{
       const b=BOUCHE.viser(x,y,porte.g,porte.D0);
       porte.arme=b.arme; diag.langue=b.arme;
       if(gget) gget.classList.toggle('is-on',b.arme);
-      /* Sur la langue : à 60 % de sa largeur. En approchant : il descend
-         déjà un peu, comme une feuille qui s'éloigne de l'œil. */
-      const sT=b.arme ? porte.g.large*.6/porte.w : 1.08-.18*b.p*b.p;
+      /* Sur la langue : un buvard, à 36 % de sa largeur (04/10, Wah :
+         « rétrécir encore » — 60 % le 03/10). En approchant, il rapetisse
+         déjà, comme une feuille qui s'éloigne de l'œil. */
+      const sT=b.arme ? porte.g.large*TAB/porte.w : 1.06-.36*Math.pow(b.p,1.5);
       [porte.s,porte.vs]=ressort(porte.s,porte.vs,sT,170,.62,dt);
       [porte.rz,porte.vrz]=ressort(porte.rz,porte.vrz,b.arme?0:borne(vx*.012,-10,10),110,.55,dt);
     }
@@ -8280,7 +8274,7 @@ window.addEventListener('pageshow',e=>{
     function avaler(depuisChezLui){
       const [o0,l0]=BOUCHE.etat();
       porte.v={t0:performance.now(), A:depuisChezLui?820:300, x0:porte.x, y0:porte.y, s0:porte.s, rz0:porte.rz,
-               o0, l0, k:porte.g.large*.6/porte.w};
+               o0, l0, k:porte.g.large*TAB/porte.w};
       mode='avale'; scene.classList.remove('is-pris');
       if(gget) gget.classList.add('is-on'); diag.langue=true; kick();
     }
@@ -8293,21 +8287,23 @@ window.addEventListener('pageshow',e=>{
         BOUCHE.forcer(v.o0+(1-v.o0)*lisse(ent(u/.6)), v.l0+(1-v.l0)*lisse(ent((u-.2)/.7)));
       } else if(ms<v.A+TIENT){                  /* un temps, posé */
         porte.x=g.lx; porte.y=g.ly; porte.s=v.k; porte.rz=0; BOUCHE.forcer(1,1);
-      } else {                                  /* la langue rentre avec lui */
+      } else if(ms<v.A+TIENT+RENTRE){           /* la langue rentre avec lui */
         const u=ent((ms-v.A-TIENT)/RENTRE), lt=1-lisse(u);
         BOUCHE.forcer(u<.5?1:1-lisse((u-.5)/.5), lt);
         porte.x=g.lx; porte.y=g.ly-(1-lt)*g.long;
         porte.a=ent((porte.y-g.entree)/(g.ly-g.entree)); porte.s=v.k*(.7+.3*porte.a);
-        if(u>=1){
-          porte.a=0; peindrePorte(); mode='parti'; diag.avale++; diag.langue=false;
-          if(typeof api.surLangue==='function') api.surLangue();
-        }
+      } else {                                  /* avalé : elle jouit, la bouche seule */
+        if(!v.avale){ v.avale=true; porte.a=0; diag.avale++; diag.langue=false; diag.extase=true; }
+        const o=BOUCHE.jouir((ms-v.A-TIENT-RENTRE)/1000);
+        if(o!==null){ BOUCHE.forcer(o,0); return; }
+        BOUCHE.forcer(0,0); peindrePorte(); mode='parti'; diag.extase=false;
+        if(typeof api.surLangue==='function') api.surLangue();
       }
     }
     function finPorte(){
       porte=null; scene.style.transform=''; scene.style.opacity='';
       scene.classList.remove('is-pris'); if(gget) gget.classList.remove('is-on');
-      diag.pris=false; diag.langue=false;
+      diag.pris=false; diag.langue=false; diag.extase=false;
       aPlat(face);
     }
     function lacherTout(){
@@ -8668,15 +8664,33 @@ window.addEventListener('pageshow',e=>{
   /* Revenu par le bouton « précédent » (page restaurée telle quelle) : le
      papier est de nouveau chez lui, la bouche fermée. */
   window.addEventListener('pageshow',e=>{ if(e.persisted) PAPIER.remettre(); });
-  /* Les lèvres : un clic la lance dans sa transe (04/10) — elle s'ouvre
-     et se referme sans fin — un second clic l'arrête. Au clavier, ou sans
-     mouvement, le bouton porte le papier sur la langue de lui-même. */
+  /* Les lèvres : un tap rejoue la langue tirée (04/10) ; au clavier, ou
+     sans mouvement, le bouton porte le papier sur la langue de lui-même. */
   const bouche=$('gate-mouth');
   if(bouche) bouche.addEventListener('click',e=>{
     if(open||moving||sOpen||sMoving||PAPIER.occupe()) return;
     if(e.detail===0||window.matchMedia('(prefers-reduced-motion: reduce)').matches) PAPIER.offrir();
-    else BOUCHE.transe();
+    else BOUCHE.indice();
   });
+  /* ══ À L'ARRIVÉE, ELLE TIRE LA LANGUE · 04/10/2026 ═══════════════════
+     Wah : « le démarrage, tirage de langue une fois, on ferme la bouche ».
+     UNE fois par chargement, jamais en boucle : elle montre aussi OÙ va le
+     papier. Pas en mouvement réduit, pas si l'on arrive dedans (`#in`,
+     `?ro=`), ni si la porte, la recherche ou un geste ont déjà pris la
+     scène. Un onglet ouvert en arrière-plan attend d'être vu.
+     Diagnostic `__totehm_lsd.accueil` : 0 → 1 (elle tire) → 2 (fermée, au
+     repos : la suite d'un `indice` attend les ressorts, pas une minuterie). */
+  const taquiner=()=>{
+    const d=window.__totehm_lsd;
+    if(!d||d.accueil||!body.classList.contains('gate')||body.classList.contains('is-door')
+       ||open||moving||sOpen||sMoving||PAPIER.occupe()||!BOUCHE.dispo()
+       ||window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    d.accueil=1; BOUCHE.indice(1,1,650,()=>{ d.accueil=2; });
+  };
+  if(!document.hidden) setTimeout(taquiner,700);
+  else document.addEventListener('visibilitychange',function vu(){
+    if(document.hidden) return;
+    document.removeEventListener('visibilitychange',vu); setTimeout(taquiner,500); });
   paintFlip();
 
   /* ══ LE SECOND VERROU ══
