@@ -1,5 +1,25 @@
 # backend/CLAUDE.md — la base, les fonctions, l'argent, le bot
 
+## SPACE · 05/10/2026 — mini-boxes indépendantes et futurs ON
+
+Migration `20261005103704_space_box_visibility_location_on.sql`, appliquée
+sous `space_box_visibility_location_on`. Aucun contenu migré/supprimé.
+`spot_create`/`spot_schedule` refusent les nouvelles visibilités autres que
+shared ; OFF exige ville et média possédé ; `spot_schedule` impose ON+mode.
+`spots_list` exclut shield OFF, y compris les anciens futurs du propriétaire.
+Snapshot JSON : `show_objectives` et `show_repulsions`, absents = fallback
+historique show_why. `spot_box_visibility_set(uuid,boolean,boolean)` :
+auth.uid(), propriétaire, verrou, refus d'un groupe vide, grant authenticated
+seulement ; `_spot_view` retire effectivement les textes masqués des réponses
+publiques, contexte complet propriétaire seul. `spot_why_set` synchronise les
+deux flags pour garder le masquage des anciens clients. Search_path vide,
+références qualifiées, helper de rendu révoqué aux clients. Historique privé
+et droits exacts de l'abonnement au créateur conservés.
+`tests/sql/space_boxes_location_selftest.sql` : exception finale attendue
+`FAIL={}`, tous les fixtures annulés. Lint SECURITY DEFINER de la RPC
+intentionnel (tables internes RLS sans accès direct) ; propriété/grants testés.
+
+
 > Chargé automatiquement quand on travaille dans `backend/`. Les règles
 > transverses sont dans le `CLAUDE.md` de la racine ; l'histoire dans
 > `docs/POSTMORTEMS.md`. Sections déplacées TELLES QUELLES de l'ancien

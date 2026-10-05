@@ -1,5 +1,18 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## COM · 05/10/2026 — loupes et connexion commune
+
+BUILD `2026-10-05-spaces-boxes`. Règles UI : racine `CLAUDE.md`.
+Les cinq types de Box ont une loupe ; copie en lecture seule du contenu
+visible, attributs configurés seulement, sans sélection/import/écriture.
+Le lecteur d'un autre TOTEHM ne montre pas Set Time Frequency, Set Intention
+ou No deadline si ces attributs ne sont pas renseignés. L'édition personnelle
+conserve ses invitations de configuration. Aucun T.svg statique d'interface ;
+le papier et ses coordonnées de morphing restent intacts. Auth email sur
+COM uniquement ; CTA `CONNECT WITH MY TOTEHM`. My spaces conserve aussi
+l'historique privé antérieur (les nouveaux spaces sont partagés).
+
+
 
 ## ÉTAT AU 04/10/2026 — RECHERCHE, LECTURE ET COPIES
 

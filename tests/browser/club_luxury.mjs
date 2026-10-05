@@ -15,7 +15,7 @@ const geo = lisbon => async url => url.pathname === '/api/geo'
   await pg.goto('https://www.figher.club/');
   await pg.waitForFunction(() => window.__totehm_club && window.__totehm_club().higher_gate === true && window.__totehm_club().lisbon === true);
   const d = await pg.evaluate(() => window.__totehm_club());
-  ok(d.build === '2026-10-02' && d.figher.thp && !d.figher.habit && !d.figher.member, 'door reads two keys from figher_access');
+  ok(d.build === '2026-10-05-spaces-boxes' && d.figher.thp && !d.figher.habit && !d.figher.member, 'door reads two keys from figher_access');
   ok(await pg.getAttribute('#higher-btn', 'href') === '/stoner', 'Get Higher sends a buyer straight to the method');
   ok(await pg.isVisible('#lisbon-btn'), 'Lisbon button revealed in PT');
   ok(/#007/.test(await pg.textContent('#st1-ok')) && /missing/.test(await pg.textContent('#st2-ok')), 'keys: THP #007 · Habit missing');
@@ -33,7 +33,7 @@ const geo = lisbon => async url => url.pathname === '/api/geo'
   await pg.waitForTimeout(300);
   ok(await pg.getAttribute('#higher-btn', 'href') === '/discover', 'guest: Get Higher opens the wall');
   ok(!(await pg.isVisible('#lisbon-btn')), 'guest outside PT: Lisbon stays hidden');
-  ok(/Sign in/.test(await pg.textContent('#cta')), 'guest: sign in to check keys');
+  ok(/CONNECT WITH MY TOTEHM/.test(await pg.textContent('#cta')), 'guest: connect to check keys');
   ok(log.errors.length === 0, 'guest door: no page error ' + log.errors.join(' | '));
 }
 

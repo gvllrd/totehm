@@ -94,7 +94,7 @@ const tables = { totehm_cloth_support: [{ max_pieces:50, claimed:3 }], profiles:
   const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc:{ ...rpc, luxury_access:{ ...rpc.luxury_access, signed_in:false, thp:false } }, tables, session:false, viewport:{ width:1280, height:800 } });
   await pg.goto('https://www.higher.boutique/#luxury');
   await pg.waitForFunction(() => window.__totehm_boutique && window.__totehm_boutique().view === 'luxury');
-  ok((await pg.textContent('#member')) === 'Guest', 'guest: Guest, the doors still open');
+  ok((await pg.textContent('#member')) === 'CONNECT WITH MY TOTEHM', 'guest: CONNECT WITH MY TOTEHM, the doors still open');
   await pg.click('#member');
   await pg.waitForTimeout(400);
   ok(await pg.isVisible('#m-signin') && /Simple terms of use/.test(await pg.evaluate(() => document.querySelector('#menu').lastElementChild.textContent)), 'menu: Sign in with TOTEHM, terms last');

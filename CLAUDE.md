@@ -1,4 +1,4 @@
-# CLAUDE.md — CTO de TOTEHM (racine · réorganisé le 30/09, mis à jour le 03/10/2026)
+# CLAUDE.md — CTO de TOTEHM (racine · réorganisé le 30/09, mis à jour le 05/10/2026)
 > **Ce fichier est chargé à CHAQUE session : il reste court (≤ 250 lignes).**
 > Détails : `CLAUDE.md` du domaine ; histoire : `docs/POSTMORTEMS.md`,
 > à lire seulement si utile. Avant copy, naming ou UI : section utile de `BRAND.md`.
@@ -32,7 +32,6 @@ fusionne et vérifie. `CLAUDE_CODE.md` = une tâche Oracle/n8n, rien d'autre.
    n'afficher que les échecs.
 5. **Une demande de Wah = un lot complet dans la même session** : pas de
    plan envoyé pour validation, pas de relecture de ce qui vient d'être écrit.
-
 ## La méthode
 
 Wah est le fondateur et le visionnaire ; Claude est le CTO, responsable de
@@ -45,7 +44,6 @@ l'architecture et de la stabilité. Wah change de vision vite : on s'adapte.
    le déployé. Le repo et la prod divergent régulièrement.
 4. Contredis Wah si une idée coûte plus qu'elle ne rapporte ; signale ce qui
    va coûter cher AVANT.
-
 ## Les documents — une question, un document
 
 | document | répond à | chargé |
@@ -102,6 +100,7 @@ une URL de retour reçue** : `client` est un nom (table fixe), `return` un
 chemin. Le bloc se COPIE depuis `tools/sso_snippet.js` et bloque au niveau
 du module (2,5 s max, dégradé pas cassé). `verifyOtp({ type, token_hash })`
 SEULS : avec `email`, Auth répond 400 et le pont casse (02/10).
+CTA partout : **CONNECT WITH MY TOTEHM** ; plus d’OTP local sur les satellites.
 
 ## Les données, les droits, l'argent
 
@@ -173,12 +172,11 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 - **CORS** : `corsHeaders(origin, fallback)` de `_shared/origins.ts`, jamais `*`.
 - **Claude Code** (terminal) : une commande simple par ligne, jamais
   `cd X && …` (les permissions jugent la ligne entière).
-
-**SPACE · 03/10 :** « vivre une habitude hors de chez soi, la rendre agréable ». Cinq vues, gestes, panneaux
-desktop ; CENTER rejoindre maintenant · LEFT rejoindre ou s'inspirer (filtre JOIN/INSPIRED) · RIGHT
-l'agenda · TOP planifier · BOTTOM vivre (capteur éteint jusqu'à VIDEO/PHOTO). Un space = vidéo OU photo ;
-WHY · TRIGGER montré au choix de l'auteur. Gestes en ligne (GO, WATCH, CALENDAR, SHARE), fiche seulement
-pour un point du radar ou un lien. Choix d'une Habit plein écran sur téléphone. `space/CLAUDE.md` fait foi.
+**SPACE · 05/10 :** un Higher spot, action stratégique chez soi, dans un lieu privé ou dehors.
+Cinq vues, gestes, boussole, panneaux desktop et joystick caméra du 04/10 conservés.
+Nouveaux spaces partagés ; OFF = ville actuelle, ON = for my subscribers ; TOP toujours ON, RIGHT sans OFF.
+Mini-boxes OBJECTIVES/REPULSIONS activables séparément dans la Habit, droits en serveur.
+Hint Habit → space et définition coin droit. Détails : `space/CLAUDE.md`, copy : `BRAND.md`.
 COM : My spaces = historique propriétaire paginé ; recherche noms/abonnements/boxes accessibles → TOTEHM natif read-only → copies revues et importées. `com/CLAUDE.md` fait foi.
 
 ## Règles d'interface qui valent partout
@@ -218,11 +216,13 @@ COM : My spaces = historique propriétaire paginé ; recherche noms/abonnements/
   perforé ; « by » reste à côté. Aucun motif perforé comme fond de contrôle. **Aucun fond
   blanc** sur un bouton, une option, une sélection, un panneau : tout reste
   sombre (sélection = gris clair + filet blanc). Une BOÎTE reste carrée.
+- Boutons de texte ajustés au label, padding proportionnel ; aucun T.svg statique d'interface.
+  Toute Box a une loupe en lecture seule ; attributs non renseignés dans COM absents des miroirs.
+  Blocs copiés : `tools/ecosystem_ui.css` et `ecosystem_ui_snippet.js`, aucun import runtime.
 - **Simple terms of use** = la DERNIÈRE entrée du menu membre, partout ;
   jamais épinglée dans un coin. Aucun pourcentage de compatibilité.
 - Sur ordinateur, texte gris → blanc au survol ; les noms restent Coral (`tools/hover.py`
   écrit le bloc ; ne pas l'éditer à la main).
-
 ## Doctrine de coût
 
 **Calculer une fois, stocker, interroger à l'infini.** Avant toute feature à
