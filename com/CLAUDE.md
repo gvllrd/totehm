@@ -1,6 +1,32 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## ⛔ COM · 05/10/2026 (Claude) — REMIS D'APLOMB : CE QUI FAIT FOI
+
+Wah : « ChatGPT m'a enlevé le T.svg au déploiement, changé le format des
+mini-box réglé au millimètre, agrandi leur padding ; la loupe ouvre une
+fenêtre hideuse — remets le zoom d'avant ; la recherche et la souscription
+sont hideuses, je ne comprends pas les réglages : je veux juste taper le nom
+et ouvrir son Totehm en lecture seule ; la page de vente, tu peux mieux
+faire ; la console est à chier (encore des Reveal the Box) ; lie SPACE à COM
+par les spots dans les habits. » BUILD `2026-10-05-com-aplomb`
+(`totehm.html`, `creator.html`, `console.html`, `monetize.html`).
+
+| quoi | règle |
+|---|---|
+| bloc `ecosystem_ui` | RETIRÉ de toutes les pages de `com/` ; ne JAMAIS le recopier ici (il masquait le T, remplaçait `T_SVG`, imposait un padding aux mini-boxes, posait la loupe) |
+| le T, les mini-boxes | `T_SVG` d'origine ; mini-boxes `3px 7px`, Quantico 11 px ; une Box s'ouvre EN PLACE dans sa liste, sans loupe ni fenêtre (idem sur les satellites) |
+| lire un autre Totehm | `/totehm?ro=nom` : barre « Reading · nom · back to mine », rien d'éditable ; abonnement requis → `location.replace('/@nom')` ; inconnu / non connecté / privé = trois messages |
+| chercher | `NameSearch` (copié dans `creator.html` pour `/search`) : un champ, des NOMS (`totehm_search`, 12), Entrée = le nom exact sinon le premier, `@nom` / lien collé nettoyés, vide = mes abonnements, une lettre = « two letters, minimum ». Plus de modes, filtres, pages ni copies |
+| SPACE dans les habits | `habit_spaces(p_pseudo)` : fermée, la boîte dit « N spaces » ; ouverte, un groupe `spaces` (3 au plus : en cours, à venir, passés ; « spaces · 3 of N »), mini `.m-s` noir translucide = état + lieu/ville · date. Tap → SPACE `?spot=id` par le pont SSO ; « + a space » (le mien seulement) → `?v=plan`. Droits = ceux de SPACE (`_spot_view`) ; réponse tardive jetée (`HSPACES.seq`), vidé au changement de compte |
+| `/@nom` | le papier navy et le nom Coral, ses intentions, ce qu'un abonné ouvre (la croix des cinq vues, le point d'un space ON), le prix PAR AN du serveur, UNE action : Open · Subscribe · Renews/Ends · This is your page (console, lien) · Not open yet. Subscribe sans compte : email + code ICI, puis le paiement part seul (`WANT`) ; retour Stripe : 8 × 1,5 s d'attente du webhook |
+| `/console` | Mon abonnement en trois étapes qui disent si elles sont faites (prix · où me payer · l'ouvrir ; ouvrir = TOTEHM lisible par les abonnés) puis ma page, le lien, le post ; qui lit mon TOTEHM ; abonnés ; gains ; abonnements (arrêt fin d'année) + Find a TOTEHM → `/search` ; TotehmBot ; paiements. Reveal the Box parti (boutique) |
+| `/monetize` | publique, ne lit rien pour un invité ; même grammaire que `/@nom` ; plus de promesse de copie |
+| tests | `com_creator.mjs` 29 · `console.mjs` 18 · `com_paper.mjs` 39 · `com_mouth.mjs` 35 · `com_member_menu.mjs` 27 · `space_boxes_ecosystem.mjs` 22 · `spaces_ui.mjs --identity` 27 · `tests/sql/habit_spaces_selftest.sql` FAIL={} ; `com_discovery.mjs` supprimé |
+
+
 ## COM · 05/10/2026 — menu de l'écosystème et offre aux créateurs
+
+> **⚠️ REMPLACÉ LE 05/10 (Claude), sauf le menu membre :** voir « REMIS D'APLOMB » en haut.
 
 BUILD `2026-10-05-member-ecosystem` : `totehm.html`, `creator.html`,
 `console.html`, `monetize.html`. `/monetize` présente publiquement la creator
@@ -32,6 +58,8 @@ Tests : `tests/browser/com_member_menu.mjs`, `com_paper.mjs`, `com_discovery.mjs
 
 ## COM · 05/10/2026 — loupes et connexion commune
 
+> **⚠️ REMPLACÉ LE 05/10 (Claude), sauf le menu membre :** voir « REMIS D'APLOMB » en haut.
+
 BUILD `2026-10-05-spaces-boxes`. Règles UI : racine `CLAUDE.md`.
 Les cinq types de Box ont une loupe ; copie en lecture seule du contenu
 visible, attributs configurés seulement, sans sélection/import/écriture.
@@ -45,6 +73,8 @@ l'historique privé antérieur (les nouveaux spaces sont partagés).
 
 
 ## ÉTAT AU 04/10/2026 — RECHERCHE, LECTURE ET COPIES
+
+> **⚠️ REMPLACÉ LE 05/10 (Claude), sauf le menu membre :** voir « REMIS D'APLOMB » en haut.
 
 - BUILD `2026-10-04-search-boxes` dans `creator.html` (dans `totehm.html` jusqu'au lot bouche `2026-10-04c`, ci-dessous). Papier, bouche, déconstruction, joystick et cinq vues conservés.
 - Un résultat ouvre `/totehm?ro=nom` : le vrai TOTEHM en lecture seule. Un hit de box ajoute `box_kind` / `box_key` et ouvre sa box native. L'offre inaccessible reste dans ce lecteur ; `/@nom` est le lien explicite de souscription.

@@ -218,6 +218,25 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
+### Correction 0.39 — 05/10/2026 · totehm.com remis d'aplomb (REMPLACE 0.36 « découvrir, lire, copier »)
+
+> Ce que l'agent ChatGPT avait posé le 05/10 sur totehm.com est retiré : le T
+> du Totehm déplié revient ; les mini-boxes reprennent leur format et leur
+> padding d'origine ; une Box s'ouvre EN PLACE, dans sa liste — plus aucune
+> loupe ni fenêtre, sur les quatre domaines. Chercher un Totehm = taper un
+> NOM : il s'ouvre en lecture seule (sans abonnement requis → sa page
+> /@nom). Plus de modes, de filtres ni de copies (le serveur les garde, le
+> front ne les appelle plus). Les spaces d'une Habit apparaissent dans sa
+> boîte sur COM (trois au plus, état I WILL BE HERE / I AM HERE / I WAS
+> THERE, droits de SPACE ; un tap ouvre le space sur SPACE). /@nom = le
+> papier et le nom, ce qu'un abonné ouvre, le prix par an, une action ;
+> s'abonner sans compte : email, code, puis paiement. La console = mon
+> abonnement en trois étapes (prix · où me payer · l'ouvrir), qui lit mon
+> Totehm, abonnés, gains, abonnements, TotehmBot, paiements — sans Reveal
+> the Box. /monetize refaite dans la même grammaire. Migration
+> `20261005200000_habit_spaces.sql` APPLIQUÉE (`habit_spaces`) : ne pas
+> réappliquer. Prix et droits inchangés. Aucun travail Oracle/n8n.
+
 ## Le rapport
 
 Un tableau : ce qui a été fait, la valeur mesurée, ce qui n'a pas pu l'être.
