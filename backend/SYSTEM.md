@@ -25,7 +25,7 @@
 | Edge Functions | `create-checkout` v38 · `luxury-checkout` v3 (clé test, `test_unavailable` si absente) · `stripe-webhook` v41 (secret test en second ; en test : `cloth`/`luxury` seuls ; signature fausse → 400 `invalid signature`) |
 | secrets Stripe test | **absents** → tâche Claude Code (CLAUDE_CODE.md) ; d'ici là un testeur reçoit `test_unavailable`, jamais le live |
 | tests navigateur | `boutique_home.mjs` 10/10 · `club_luxury.mjs` 35/35 · `streetwear.mjs` 25/25 |
-| prod | voir la ligne « prod » ajoutée à la fusion |
+| prod (pg_net, fusion `68a622d`) | `/` 200 `BUILD 2026-10-05-landing` (Totehm x Champion 2026, branding `data-com`, sans manche, `reveal_cloth`) · `/luxury` 200 (`test_mode`) · `/streetwear` 200 · identique au dépôt (45 502 · 66 757 · 83 500 caractères) |
 
 ## 0 · LA BOUTIQUE OPÉRATIONNELLE — 05/10/2026 : la manette, le luxe sur devis, Decode, le banc d'essai
 
