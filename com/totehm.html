@@ -1085,6 +1085,17 @@ body.v-visions{--paper:#2b3a73}
 .m-h{background:var(--navy)}
 .m-o{background:var(--blue)}
 .m-r{background:var(--rep)}
+/* ══ UN SPACE DANS UNE HABITUDE · 05/10/2026 ═══════════════════════════
+   Ce n'est pas une boîte du Totehm : c'est un moment vécu ailleurs, sur
+   SPACE. Il ne prend donc aucune des trois couleurs — un sombre posé sur
+   la boîte, comme une porte (gris = porte). Même format que les autres
+   mini-boîtes, au millimètre : 3 × 7 px, Quantico 11. L'état en Space
+   Mono au-dessus, le lieu et l'heure dessous. */
+.m-s{background:rgba(0,0,0,.30);flex-direction:column;align-items:flex-start;gap:1px;text-align:left}
+.ms-st{font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.55)}
+.ms-st.is-live{color:#fff}
+.ms-w{font-family:'Quantico',sans-serif;font-size:11px;line-height:1.4}
 /* ══ UNE MINI-BOÎTE NE PORTE JAMAIS LA COULEUR DE SON HÔTE · 16/09/2026
    La règle du produit est « la mini porte la couleur de CE QU'ELLE EST ».
    Elle tenait tant que les familles ne se touchaient pas. Avec les liens
@@ -1753,6 +1764,8 @@ body.ro #bottom-doors,
 body.ro #ordbtn,
 body.ro .dash,
 body.ro .mini-x,
+body.ro .rk,body.ro [data-pk],body.ro [data-lien],body.ro [data-unlink],
+body.ro [data-nodate],body.ro [data-edit],body.ro [data-add],
 body.ro #fv-status{display:none!important}
 body.ro .h-text{pointer-events:none}
 #ro-bar{position:fixed;top:0;left:0;right:0;z-index:40;display:none;
@@ -2340,6 +2353,8 @@ body.gate.entered #search-corner{opacity:0;pointer-events:none}
   border-image-repeat:round;padding:0 8px;transition:filter .15s}
 .srch-meta{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;
   text-transform:uppercase;color:#a9a9c4;white-space:nowrap}
+.ns-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.55);text-align:left}
 @media(hover:hover){.srch-row:hover .srch-name{filter:brightness(1.3)}}
 #srch-x{position:fixed;top:10px;right:10px;z-index:2;background:none;border:none;cursor:pointer;
   padding:10px;line-height:0;-webkit-tap-highlight-color:transparent;pointer-events:none}
@@ -2845,6 +2860,35 @@ body.gate.entered #filter-badge{
 
 
 
+
+
+/* 03/10 — the member's TOTEHM name: Quantico Coral, without status dots. */
+#conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
+#conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
+.tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
+
+.ast-say,.ast-say.is-name,#gate-asteroid:hover .ast-say,.ast-say:hover,.ast-say.is-name:hover{color:#fbd5ca;background:#000;border-radius:7px;padding:4px 6px}
+.sr-name,.srch-name,.srch-row:hover .srch-name,.srch-name:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
+#srch-q{color:#fbd5ca;caret-color:#fbd5ca;background:#000;border-radius:10px;padding:8px 12px}
+#name-btn.claimed,#set-name{font-family:'Quantico',sans-serif;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px}
+
+/* Personal spaces: owner-only history, opened from the member menu. */
+#myspaces{position:fixed;inset:0;z-index:260;display:none;background:rgba(0,0,0,.94);overflow-y:auto;overscroll-behavior:contain;padding:24px 16px 40px}
+#myspaces.is-open{display:block}
+#myspaces-inner{width:min(560px,100%);margin:0 auto;display:flex;flex-direction:column;gap:16px}
+#myspaces-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#myspaces-title{font-family:'Space Mono',monospace;font-size:13px;font-weight:400;letter-spacing:.08em}
+#myspaces-name{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca}
+#myspaces-close{width:fit-content;font-size:11px;background:none;border:none;color:#b0b0b0;padding:6px;cursor:pointer}
+#myspaces-list{display:flex;flex-direction:column;gap:8px}
+.my-space{display:flex;flex-direction:column;gap:6px;align-items:flex-start;background:#111114;border:0;border-radius:10px;padding:14px;font-size:11px;color:#b0b0b0;text-align:left;cursor:pointer;width:100%}
+.my-space-habit{font-family:'Quantico',sans-serif;font-size:15px;color:#fff}
+.my-space-state{font-family:'Space Mono',monospace;font-size:9px;color:#9a9a9a}
+#myspaces-note{font-family:'Space Mono',monospace;font-size:11px;color:#9a9a9a}
+#myspaces-more,#myspaces-open-space{width:fit-content;font-family:'Space Mono',monospace;font-size:11px;color:#b0b0b0;background:#16161a;border:0;border-radius:8px;padding:8px 12px;cursor:pointer}
+@media(hover:hover){.my-space:hover{background:#1c1c22}#myspaces-close:hover,#myspaces-more:hover,#myspaces-open-space:hover{color:#fff}}
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -2865,6 +2909,7 @@ body.gate.entered #filter-badge{
 .h-text:hover::placeholder,
 .h-hint:hover,
 .habit.open .v-name[contenteditable]:empty:hover::before,
+.ms-st:hover,
 .mini-x:hover,
 .habit.filtre .v-name:hover,
 .mg-l:hover,
@@ -2943,121 +2988,19 @@ body.gate.entered #filter-badge{
 #srch-q:hover::placeholder,
 .srch-hint:hover,
 .srch-meta:hover,
+.ns-label:hover,
 #srch-x svg:hover,
 #gate-search-input:hover::placeholder,
 #search-input:hover::placeholder,
-#fold-x svg:hover{color:#fff}
+#fold-x svg:hover,
+#myspaces-close:hover,
+.my-space:hover,
+.my-space-state:hover,
+#myspaces-note:hover,
+#myspaces-more:hover,
+#myspaces-open-space:hover{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
-
-/* 03/10 — the member's TOTEHM name: Quantico Coral, without status dots. */
-#conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
-#conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
-.tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
-
-.ast-say,.ast-say.is-name,#gate-asteroid:hover .ast-say,.ast-say:hover,.ast-say.is-name:hover{color:#fbd5ca;background:#000;border-radius:7px;padding:4px 6px}
-.sr-name,.srch-name,.srch-row:hover .srch-name,.srch-name:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
-#srch-q{color:#fbd5ca;caret-color:#fbd5ca;background:#000;border-radius:10px;padding:8px 12px}
-#name-btn.claimed,#set-name{font-family:'Quantico',sans-serif;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px}
-
-/* Personal spaces: owner-only history, opened from the member menu. */
-#myspaces{position:fixed;inset:0;z-index:260;display:none;background:rgba(0,0,0,.94);overflow-y:auto;overscroll-behavior:contain;padding:24px 16px 40px}
-#myspaces.is-open{display:block}
-#myspaces-inner{width:min(560px,100%);margin:0 auto;display:flex;flex-direction:column;gap:16px}
-#myspaces-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
-#myspaces-title{font-family:'Space Mono',monospace;font-size:13px;font-weight:400;letter-spacing:.08em}
-#myspaces-name{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca}
-#myspaces-close{width:fit-content;font-size:11px;background:none;border:none;color:#b0b0b0;padding:6px;cursor:pointer}
-#myspaces-list{display:flex;flex-direction:column;gap:8px}
-.my-space{display:flex;flex-direction:column;gap:6px;align-items:flex-start;background:#111114;border:0;border-radius:10px;padding:14px;font-size:11px;color:#b0b0b0;text-align:left;cursor:pointer;width:100%}
-.my-space-habit{font-family:'Quantico',sans-serif;font-size:15px;color:#fff}
-.my-space-state{font-family:'Space Mono',monospace;font-size:9px;color:#9a9a9a}
-#myspaces-note{font-family:'Space Mono',monospace;font-size:11px;color:#9a9a9a}
-#myspaces-more,#myspaces-open-space{width:fit-content;font-family:'Space Mono',monospace;font-size:11px;color:#b0b0b0;background:#16161a;border:0;border-radius:8px;padding:8px 12px;cursor:pointer}
-@media(hover:hover){.my-space:hover{background:#1c1c22}#myspaces-close:hover,#myspaces-more:hover,#myspaces-open-space:hover{color:#fff}}
-/* READ ONLY + COPIES — native boxes, separate destination. */
-body.ro{--ro-h:84px}
-body.ro #conn-bar,body.ro #fold-x{display:none}
-#ro-bar{flex-direction:column;gap:6px;padding:10px 12px;background:rgba(0,0,0,.94)}
-.ro-head,.ro-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;max-width:780px}
-#ro-who{max-width:48%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:#000;border-radius:10px;padding:4px 8px;color:#fbd5ca;font-weight:400}
-.ro-action,.ro-copy{font:700 10px 'Space Mono',monospace;color:#b0b0b0;background:#242428;border:0;border-radius:10px;padding:9px 11px;cursor:pointer;line-height:1.5;text-decoration:none}
-.ro-action:disabled{opacity:.4;cursor:default}
-.ro-action:focus-visible,.ro-copy:focus-visible{outline:1px solid #fff;outline-offset:3px}
-.ro-copy{align-self:flex-start;margin-top:8px;font-size:9px}
-.ro-copy[aria-pressed=true]{color:#fff;background:#404046}
-#ro-tag{font-size:9px;white-space:nowrap}
-body.ro .rk,body.ro [data-pk],body.ro [data-lien],body.ro [data-unlink],body.ro [data-nodate],body.ro [data-edit],body.ro [data-add]{display:none}
-#ro-access{position:fixed;inset:calc(var(--ro-h) + 150px) 12px auto;z-index:41;max-width:520px;margin:auto;background:#151518;padding:24px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;font:12px/1.7 'Space Mono',monospace}
-#ro-access p{color:#b0b0b0}#ro-access strong{color:#fff}
-#ro-import{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.92);overflow:auto;overscroll-behavior:contain;padding:calc(18px + env(safe-area-inset-top)) 14px 24px}
-.ro-import-panel{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:18px;color:#b0b0b0}
-.ro-import-head,.ro-import-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.ro-import-head h2{font:700 14px/1.5 'Space Mono',monospace;text-transform:uppercase}
-.ro-explain,#ro-import-note{font:11px/1.7 'Space Mono',monospace}
-#ro-import-list{display:flex;flex-direction:column;gap:8px}
-.ro-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px;background:#333366}
-.ro-item[data-kind=t]{background:#36498c}.ro-item[data-kind=r]{background:#743169}.ro-item[data-kind=w]{background:#5b2652}.ro-item[data-kind=v]{background:#2b3a73}
-.ro-item-title{font:14px/1.5 'Quantico',sans-serif;color:#fff;overflow-wrap:anywhere}
-.ro-item-kind{display:block;font:9px 'Space Mono',monospace;color:#ddd;margin-bottom:4px;text-transform:uppercase}
-@media(hover:hover){.ro-action:hover,.ro-copy:hover{color:#fff}}
-@media(max-width:380px){.ro-action{padding:7px;font-size:9px}.ro-head,.ro-tools{gap:5px}#ro-tag{font-size:8px}}
-/* TOTEHM SEARCH: gray controls, Coral identity, colors only on actual boxes. */
-.ts-modes{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
-.ts-control{font:700 10px/1.5 'Space Mono',monospace;color:#b0b0b0;background:#242428;border:0;border-radius:10px;padding:9px 10px;cursor:pointer}
-.ts-control[aria-pressed=true]{color:#fff;background:#404046;box-shadow:inset 0 -1px #fff}
-.ts-control:focus-visible,.ts-open:focus-visible,.ts-box:focus-visible{outline:1px solid #fff;outline-offset:3px}
-.ts-filters{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:10px}
-.ts-filters label{display:flex;align-items:center;gap:5px;font:9px 'Space Mono',monospace;color:#b0b0b0}
-.ts-filters select{max-width:180px;color-scheme:dark}
-.ts-result{padding:14px 12px;background:#141416;display:flex;flex-direction:column;gap:8px;text-align:left}
-.ts-result .srch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;color:inherit;text-decoration:none}
-.ts-result .srch-name{font:400 18px/1.5 'Quantico',sans-serif;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:10px;padding:5px 10px;max-width:90%;overflow-wrap:anywhere;filter:none}
-.ts-arrow{font:16px 'Space Mono',monospace;color:#b0b0b0}
-.ts-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font:9px/1.6 'Space Mono',monospace;color:#b0b0b0}
-.ts-meta .srch-meta{font:inherit;letter-spacing:0;text-transform:none;color:inherit;white-space:normal}
-.ts-box{display:flex;flex-direction:column;gap:3px;background:#333366;padding:10px 12px;text-decoration:none;color:#fff}
-.ts-box[data-kind=t]{background:#36498c}.ts-box[data-kind=r]{background:#743169}.ts-box[data-kind=w]{background:#5b2652}.ts-box[data-kind=v]{background:#2b3a73}
-.ts-box-kind{font:9px 'Space Mono',monospace;color:#ddd;text-transform:uppercase}
-.ts-box-text{font:14px/1.6 'Quantico',sans-serif;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.ts-section{font:700 10px 'Space Mono',monospace;text-transform:uppercase;color:#b0b0b0;padding:12px 4px 0}
-.ts-link{color:#fff;text-decoration:underline}
-#srch-controls,#srch-more{width:min(520px,100%)}
-#srch-res{width:min(520px,100%)}
-#srch-ui{gap:12px}#srch-note{letter-spacing:0;text-transform:none;font-size:10px}
-#q{background:#000;color:#fbd5ca;caret-color:#fbd5ca;max-width:100%;font-size:24px}
-#search{max-width:620px}#search-controls,#search-more{width:100%}#res{gap:10px}
-@media(hover:hover){.ts-control:hover,.ts-arrow:hover,.ts-meta:hover{color:#fff}.ts-result .srch-name:hover{color:#fbd5ca;filter:none}}
-
-</style>
-<style data-ecosystem-ui="2026-10-05">
-/* 05/10/2026 — copied into the four platforms. Text buttons fit their label. */
-button.eco-text-btn,a.eco-text-btn{inline-size:fit-content!important;max-inline-size:100%;min-inline-size:0!important;flex:0 1 auto!important;padding:.65em .95em!important;line-height:1.45;box-sizing:border-box}
-.eco-connect,.eco-connect #member-txt,.eco-connect #conn-txt{font-family:'Space Mono',monospace!important;font-weight:700!important;font-size:10px!important;color:#b0b0b0!important;letter-spacing:.06em;text-transform:uppercase!important}
-button.eco-connect{background:#252529!important;border:0!important;border-radius:10px!important;cursor:pointer}
-#menu .eco-text-btn,#mmenu .eco-text-btn,.mw-card .eco-text-btn{align-self:flex-start}
-#member.eco-connect,#conn-bar.eco-connect{max-width:calc(50vw - 70px);text-align:left}
-#member.eco-connect #member-txt,#conn-bar.eco-connect #conn-txt{white-space:normal;max-width:100%;overflow:visible;text-overflow:clip}
-#member>i,#conn-bar>.dot,#conn-bar>.dc{display:none!important}
-.habit:not(.add):not(.filtre),.r-habit,.bx{position:relative}
-.eco-box-zoom{position:absolute;right:6px;top:6px;z-index:3;display:flex;align-items:center;justify-content:center;width:26px;height:26px;padding:5px;border:0;border-radius:8px;background:rgba(0,0,0,.55);color:#e0e0e0;cursor:pointer;touch-action:manipulation}
-.eco-box-zoom svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8}
-.habit.open>.eco-box-zoom{top:auto;bottom:6px}
-.eco-sheet{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.94);display:flex;justify-content:center;align-items:flex-start;padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(18px + env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;text-align:left}
-.eco-card{width:min(720px,100%);min-width:0;display:flex;flex-direction:column;gap:18px;margin:auto;touch-action:pan-y}
-.eco-close{align-self:flex-end!important;border:0;border-radius:10px;background:#252529;color:#ddd;font:700 11px 'Space Mono',monospace;cursor:pointer}
-.eco-box-copy{width:100%!important;max-width:none!important;height:auto!important;max-height:none!important;padding:24px!important;overflow:visible!important;transform:none!important;animation:none!important}
-.eco-box-copy .v-name,.eco-box-copy .nm,.eco-box-copy .r-text{font:400 clamp(20px,3vw,28px) 'Quantico',sans-serif!important;white-space:pre-wrap!important;overflow:visible!important;max-height:none!important;overflow-wrap:anywhere}
-.eco-box-copy .v-sub,.eco-box-copy .sb{font-size:13px!important;line-height:1.7!important;white-space:normal!important;overflow:visible!important}
-.eco-box-copy .minis{flex-wrap:wrap!important;max-height:none!important;overflow:visible!important}
-.eco-box-copy .mini{font-size:16px!important;line-height:1.6!important;white-space:normal!important;max-width:100%!important;overflow-wrap:anywhere}
-.eco-box-copy .tick{display:none}
-body.eco-modal #joy{pointer-events:none!important;opacity:.2!important}
-body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,body[data-eco-auth="central"] #in-email,body[data-eco-auth="central"] #in-otp,body[data-eco-auth="central"] #pt-email,body[data-eco-auth="central"] #pt-otp,body[data-eco-auth="central"] #pt-verify,body[data-eco-auth="central"] #btn-send,body[data-eco-auth="central"] #pt-send,body[data-eco-auth="central"] #btn-verify{display:none!important}
-/* Standalone interface T glyphs are forbidden. The rotating TOTEHM paper keeps its brand artwork. */
-#bigT>svg{visibility:hidden!important}.tv-T{display:none!important}
-@media(hover:hover){.eco-box-zoom:hover,.eco-close:hover{background:#34343a;color:#fff}.eco-connect:hover{color:#fff!important}}
-
 </style>
 <style data-com-member-menu="2026-10-05">
 /* Normal dark text buttons, with the landing gesture outside their background. */
@@ -3222,9 +3165,7 @@ a Totehm</span>
            aria-label="Search a Totehm by name">
     <div class="srch-hint srch-after" id="srch-hint">change the name · find another TOTEHM</div>
     <div class="note dim srch-after" id="srch-note" role="status" aria-live="polite"></div>
-    <div id="srch-controls" class="srch-after"></div>
     <div id="srch-res" class="srch-after"></div>
-    <button id="srch-more" class="ts-control srch-after hide" type="button">More TOTEHMs</button>
   </div>
   <button id="srch-x" class="srch-after" type="button" aria-label="Close the search">
     <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
@@ -3280,11 +3221,14 @@ a Totehm</span>
 
 
 <!-- La croix : referme le Totehm et rejoue le déploiement à l'envers. -->
+<!-- ⚠️ 05/10 : la lecture redevient SIMPLE (Wah : « on tape le nom et ça
+     ouvre son Totehm en read only, simple »). Une barre : qui on lit, et
+     le retour au sien. Plus de copies, plus de revue, plus d'import. -->
 <div id="ro-bar">
-  <div class="ro-head"><a class="ro-action" href="/search">Back to search</a><span id="ro-who"></span><a class="ro-action" href="/totehm#in">My TOTEHM</a></div>
-  <div class="ro-tools"><span id="ro-tag">Read only</span><button class="ro-action" id="ro-select" type="button">Copy this view</button><button class="ro-action" id="ro-review" type="button" disabled>Review copies · 0</button></div>
+  <span id="ro-tag">Reading</span>
+  <span id="ro-who"></span>
+  <button id="ro-out" type="button">back to mine</button>
 </div>
-<section id="ro-access" class="hide" aria-live="polite"></section>
 
 <button id="fold-x" class="sink-el" type="button" aria-label="Close my Totehm">
   <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
@@ -3478,15 +3422,6 @@ a Totehm</span>
       <button class="mw-out" id="mw-signout">Sign out</button>
       <a class="mw-out mw-terms" href="/terms" target="_blank" rel="noopener">Simple terms of use</a>
     </div>
-  </div>
-</div>
-<div id="ro-import" role="dialog" aria-modal="true" aria-labelledby="ro-import-title" class="hide">
-  <div class="ro-import-panel">
-    <div class="ro-import-head"><h2 id="ro-import-title">Copy into my TOTEHM</h2><button class="ro-action" id="ro-import-close" type="button">Close</button></div>
-    <p class="ro-explain">Your boxes stay. Links between the boxes you copy stay together.</p>
-    <div id="ro-import-list"></div>
-    <p id="ro-import-note" role="status" aria-live="polite"></p>
-    <div class="ro-import-foot"><button class="ro-action" id="ro-import-clear" type="button">Clear copies</button><button class="ro-action" id="ro-import-go" type="button">Import into my TOTEHM</button><a class="ro-action hide" id="ro-import-mine" href="/totehm#in">Open my TOTEHM</a></div>
   </div>
 </div>
 
@@ -3968,9 +3903,9 @@ try{ ['totehm_profile_v1','totehm_grind_v5','totehm_events'].forEach(k=>localSto
    `cloudSave`) et le rendu de la barre. */
 const RO=(()=>{try{const v=new URLSearchParams(location.search).get('ro');
   return v&&v.trim()?v.trim().slice(0,32):null;}catch(e){return null;}})();
-let roSeq=0,roReady=false,roSame=false;
-const COPIES={items:new Map(),busy:false,inert:[],focus:null};
-let boxSources=new Map();
+let roSeq=0;
+/* Les spaces de SPACE, par habitude (`habit_spaces`) : clé = norm(texte). */
+const HSPACES={seq:0, par:new Map()};
 
 let state={habits:[],vis:'private'};
 let busy=false, fpTarget=null, fpStage='freq', pendingF=null, pendingI=null, filterF=null, filterI=null;
@@ -4074,22 +4009,26 @@ async function cloudLoad(){
   if(ordonne)state.ord=true;
   cacheEcrire();
 }
-/* THE SAME FIVE NATIVE VIEWS, read through current creator entitlements. */
+/* ══ LE TOTEHM D'UN AUTRE · LECTURE SEULE ══
+   Un appel, aucune écriture : `totehm_of` rend les cinq listes, sous les
+   droits du moment (`_shared_with_me`).
+   ⚠️ 05/10/2026 — LA LECTURE REDEVIENT SIMPLE. Wah : « je veux juste qu'on
+   tape le nom de l'utilisateur et ça ouvre son Totehm en read only ». Plus
+   de copies, de revue ni d'import (le 04/10 les avait ajoutés) ; plus de
+   saut vers une boîte. Un Totehm à abonnement, lu par un non-abonné : sa
+   page de vente (`/@nom`), comme le 30/09. Une réponse tardive (compte
+   changé entre-temps) est jetée (`roSeq`). */
 async function loadRO(){
   const seq=++roSeq,uid=me?.id;
-  roReady=false;
-  /* ⚠️ UN SEUL APPEL, ET IL RAMÈNE LES CINQ LISTES. Avant, on lisait
-     `totehms.steps` à la main et on s'arrêtait là : quatre vues sur cinq
-     restaient vides chez la personne qu'on regarde. `totehm_of` rend la
-     même forme que `my_trips` — c'est le même Totehm, vu du dehors. */
   const {data,error}=await sb.rpc('totehm_of',{p_pseudo:RO});
   if(seq!==roSeq||uid!==me?.id)return false;
   if(error){ console.error('[totehm] totehm_of:',error.message);
              roFail('this Totehm could not be read'); return false; }
-  /* Keep the access gate inside the reader; subscription details are explicit. */
-  if(data&&data.why==='subscribe'){ await roLocked('subscribe'); return false; }
+  if(data&&data.why==='subscribe'){ location.replace('/@'+encodeURIComponent(data.pseudo||RO)); return false; }
   if(!data||!data.ok){
-    await roLocked(data?.why||'private');
+    roFail(data&&data.why==='nobody' ? 'no Totehm by that name'
+         : data&&data.why==='signin' ? 'connect to read a Totehm'
+         :                             'this Totehm is private');
     return false; }
 
   const habits=[];const seen={};
@@ -4122,133 +4061,49 @@ async function loadRO(){
 
   document.body.classList.add('ro');
   $('ro-who').textContent=data.pseudo||RO;
-  roReady=true;roSame=(myProfile?.pseudo||'').toLowerCase()===(data.pseudo||RO).toLowerCase();
-  $('ro-access').classList.add('hide');
-  document.title=(data.pseudo||RO)+' — TOTEHM';
-  if(!COPIES.items.size){filterF=null;filterI=null;}
+  document.title=(data.pseudo||RO)+' · TOTEHM';
+  filterF=null;filterI=null;
   renderHabits();
-  copiesPaint();
-  const qp=new URLSearchParams(location.search),kind=qp.get('box_kind'),key=qp.get('box_key');
-  if(kind&&key){const hit=roBoxByKey(kind,key);if(hit)vaVers(kind,hit.id);}
+  loadHabitSpaces();
   return true;
 }
 function roFail(msg){
   document.body.classList.add('ro');
   $('ro-who').textContent=msg;
   state={habits:[],vis:'private'};
-  TRIPS=[];REPS=[];TEACH=[];VIS=[];OBJ={};tripsLoaded=true;roReady=false;
-  COPIES.items.clear();copiesClose(true);$('ro-import-list').replaceChildren();copiesPaint();
+  TRIPS=[];REPS=[];TEACH=[];VIS=[];OBJ={};tripsLoaded=true;
   renderHabits();
 }
+$('ro-out').onclick=()=>{ location.href='/totehm#in'; };
 
-/* COPIES: references stay in this reader's memory; the server copies current content. */
-const BOX_LABEL={h:'Habit',t:'Objective',r:'Repulsion',w:'Teaching',v:'Vision'};
-function roBoxByKey(kind,key){
-  const list={h:state.habits,t:TRIPS,r:REPS,w:TEACH,v:VIS}[kind]||[];
-  return list.find(x=>String(kind==='h'?srv(x):x.id)===String(key));
+/* ══ SPACE APPARAÎT DANS LES HABITUDES · 05/10/2026 ═════════════════════
+   Wah : « il faut lier SPACE à COM avec l'apparition des spots dans les
+   habits ». Un space porte le TEXTE de l'habitude qu'il vit ; le serveur
+   les regroupe (`habit_spaces`), trois au plus par habitude, sous les
+   droits de SPACE (`_spot_view` : privé = le propriétaire ; partagé = la
+   ville ; le point exact seulement à qui y a droit). Mon Totehm : tous
+   mes spaces publiés ; le Totehm d'un autre : ses spaces partagés.
+   Fermée, la boîte dit combien (« 3 SPACES ») ; ouverte, elle les montre
+   (I WILL BE HERE · I AM HERE · I WAS THERE), un tap ouvre le space sur
+   SPACE par le pont. Une réponse tardive est jetée (`HSPACES.seq`). */
+async function loadHabitSpaces(){
+  if(!me) return;
+  const seq=++HSPACES.seq, uid=me.id;
+  const {data,error}=await sb.rpc('habit_spaces',{p_pseudo:RO||null});
+  if(seq!==HSPACES.seq||uid!==me?.id) return;
+  if(error){ console.error('[habit_spaces]',error.message); return; }
+  if(!data||!data.ok) return;
+  HSPACES.par=new Map((data.habits||[]).map(h=>[norm(h.habit),{total:h.total|0,spaces:Array.isArray(h.spaces)?h.spaces:[]}]));
+  renderZone();
 }
-function roBox(kind,id){
-  const list={h:state.habits,t:TRIPS,r:REPS,w:TEACH,v:VIS}[kind]||[];
-  return list.find(x=>String(x.id)===String(id));
-}
-function boxCopyHTML(o){
-  const x=roBox(o.kind,o.id);if(!x)return '';
-  const key=String(o.kind==='h'?srv(x):x.id),mark=JSON.stringify([o.kind,key]);
-  if(!RO){
-    const source=boxSources.get(mark);
-    return source&&o.ouverte?'<a class="box-source ro-action" href="/totehm?ro='+encodeURIComponent(source)+'">Copied from '+esc(source)+'</a>':'';
-  }
-  if(!roReady||roSame)return '';
-  const chosen=COPIES.items.has(mark);
-  return '<button class="ro-copy" type="button" data-copy="'+o.kind+':'+esc(String(o.id))+'" aria-pressed="'+chosen+'">'+(chosen?'Copied · remove':'Copy box')+'</button>';
-}
-function copyToggle(ref){
-  if(!RO||!roReady||roSame||COPIES.busy)return;
-  const cut=ref.indexOf(':'),kind=ref.slice(0,cut),x=roBox(kind,ref.slice(cut+1));if(!x)return;
-  const key=String(kind==='h'?srv(x):x.id),mark=JSON.stringify([kind,key]);
-  if(COPIES.items.has(mark))COPIES.items.delete(mark);
-  else{if(COPIES.items.size>=50){dis('50 boxes at a time');return;}
-    COPIES.items.set(mark,{kind,key,title:x.t||x.text||''});}
-  renderZone();copiesPaint();
-}
-function copiesPaint(){
-  $('ro-review').disabled=!COPIES.items.size||COPIES.busy;
-  $('ro-review').textContent='Review copies · '+COPIES.items.size;
-  $('ro-select').classList.toggle('hide',!roReady||roSame);
-  $('ro-review').classList.toggle('hide',!roReady||roSame);
-  window.__totehm_copies=()=>({build:BUILD,read_only:!!RO,readable:roReady,selected:COPIES.items.size,importing:COPIES.busy,dialog:!$('ro-import').classList.contains('hide')});
-}
-function copiesList(){
-  $('ro-import-list').innerHTML=Array.from(COPIES.items.values()).map((x,i)=>'<div class="ro-item" data-kind="'+x.kind+'"><div><span class="ro-item-kind">'+BOX_LABEL[x.kind]+'</span><span class="ro-item-title">'+esc(x.title)+'</span></div><button class="ro-action" type="button" data-remove-copy="'+i+'" aria-label="Remove '+esc(x.title)+'">Remove</button></div>').join('');
-  $('ro-import-go').disabled=!COPIES.items.size||COPIES.busy;
-}
-function copiesOpen(){
-  if(!COPIES.items.size||COPIES.busy)return;
-  COPIES.focus=document.activeElement;
-  COPIES.inert=Array.from(document.body.children).filter(e=>e!==$('ro-import')&&e.tagName!=='SCRIPT').map(e=>[e,e.inert]);
-  COPIES.inert.forEach(([e])=>e.inert=true);
-  $('ro-import').classList.remove('hide');
-  $('ro-import-note').textContent='';$('ro-import-go').classList.remove('hide');$('ro-import-mine').classList.add('hide');
-  copiesList();$('ro-import-close').focus();
-}
-function copiesClose(force=false){
-  if(COPIES.busy&&!force)return;
-  $('ro-import').classList.add('hide');COPIES.inert.forEach(([e,was])=>e.inert=was);COPIES.inert=[];
-  const target=COPIES.focus?.isConnected&&!COPIES.focus.disabled?COPIES.focus:$('ro-select');
-  target.focus({preventScroll:true});
-}
-async function roLocked(why){
-  const seq=roSeq,uid=me?.id;
-  roFail(RO);$('ro-access').classList.remove('hide');
-  const message={nobody:'No TOTEHM by that name.',signin:'CONNECT WITH MY TOTEHM',private:'This TOTEHM is private.',subscribe:'Subscribe to read and copy this TOTEHM.'}[why]||'This TOTEHM could not be read.';
-  $('ro-access').innerHTML='<p>'+message+'</p><a class="ro-action" href="/search">Find another TOTEHM</a>';
-  if(why==='subscribe'){
-    const {data,error}=await sb.rpc('creator_page',{p_pseudo:RO});
-    if(seq!==roSeq||uid!==me?.id)return;
-    if(error){console.error('[reader offer]',error.message);return;}
-    const s=data?.sale;
-    if(s?.open){const p=new Intl.NumberFormat('en',{style:'currency',currency:(s.currency||'eur').toUpperCase()}).format(s.price_cents/100);
-      $('ro-access').innerHTML='<p><strong>'+esc(p)+' / year</strong></p><p>Read this TOTEHM. Copy its boxes into yours. Access the exact places of its shared spaces with location on.</p><a class="ro-action" href="/@'+encodeURIComponent(RO)+'">View subscription</a><a class="ro-action" href="/search">Back to search</a>';}
-  }
-}
-async function loadBoxSources(){
-  if(RO||!me)return;const uid=me.id;
-  const {data,error}=await sb.rpc('my_box_sources');
-  if(uid!==me?.id)return;if(error){console.error('[box sources]',error.message);return;}
-  boxSources=new Map((data||[]).map(x=>[JSON.stringify([x.kind,x.key]),x.pseudo]));renderZone();
-}
-$('ro-select').onclick=()=>{
-  if(!roReady||roSame||COPIES.busy)return;
-  const kind={habits:'h',objectives:'t',repulsions:'r',wisdom:'w',visions:'v'}[view];
-  const list=kind==='h'?state.habits.filter(x=>(!filterF||x.f===filterF)&&(!filterI||intIds(x).includes(filterI))):{t:TRIPS,r:REPS,w:TEACH,v:VIS}[kind];
-  for(const x of list){if(COPIES.items.size>=50)break;const key=String(kind==='h'?srv(x):x.id);COPIES.items.set(JSON.stringify([kind,key]),{kind,key,title:x.t||x.text||''});}
-  renderZone();copiesPaint();
-};
-$('ro-review').onclick=copiesOpen;$('ro-import-close').onclick=()=>copiesClose();
-$('ro-import-clear').onclick=()=>{if(COPIES.busy)return;COPIES.items.clear();copiesList();renderZone();copiesPaint();};
-$('ro-import-list').onclick=e=>{const b=e.target.closest('[data-remove-copy]');if(!b||COPIES.busy)return;
-  COPIES.items.delete(Array.from(COPIES.items.keys())[Number(b.dataset.removeCopy)]);copiesList();renderZone();copiesPaint();};
-window.addEventListener('keydown',e=>{
-  if($('ro-import').classList.contains('hide'))return;
-  e.stopPropagation();
-  if(e.key==='Escape'){e.preventDefault();e.stopPropagation();copiesClose();}
-  if(e.key==='Tab'){const f=Array.from($('ro-import').querySelectorAll('button:not(:disabled),a[href]')).filter(x=>!x.closest('.hide'));const i=f.indexOf(document.activeElement);e.preventDefault();f[(i+(e.shiftKey?-1:1)+f.length)%f.length]?.focus();}
-},true);
-$('ro-import-go').onclick=async()=>{
-  if(!RO||!roReady||!me||!COPIES.items.size||COPIES.busy)return;
-  const uid=me.id,seq=roSeq,selection=Array.from(COPIES.items.values()).map(({kind,key})=>({kind,key}));
-  COPIES.busy=true;copiesPaint();copiesList();$('ro-import-note').textContent='Importing…';
-  ['ro-import-clear','ro-import-close'].forEach(id=>$(id).disabled=true);
-  try{
-    const {data,error}=await sb.rpc('totehm_import_boxes',{p_pseudo:RO,p_selection:selection});
-    if(seq!==roSeq||uid!==me?.id)return;
-    if(error){console.error('[box import]',error.message);throw error;}
-    if(!data?.ok){$('ro-import-note').textContent=data?.why==='changed'?'A box changed. Reopen this TOTEHM and choose again.':'Access changed. Reopen this TOTEHM to continue.';return;}
-    $('ro-import-note').textContent=data.created+' boxes imported'+(data.reused?' · '+data.reused+' already in your TOTEHM':'')+'.';
-    COPIES.items.clear();$('ro-import-go').classList.add('hide');$('ro-import-mine').classList.remove('hide');$('ro-import-mine').focus();renderZone();
-  }catch(e){if(seq===roSeq&&uid===me?.id)$('ro-import-note').textContent='Import unavailable. Your copies are here — try again.';}
-  finally{COPIES.busy=false;copiesPaint();copiesList();['ro-import-clear','ro-import-close'].forEach(id=>$(id).disabled=false);}
-};
+const ETAT_SPACE={will:'I will be here',am:'I am here',was:'I was there'};
+const quandSpace=s=>{ const d=new Date(s.starts_at); if(isNaN(d)) return '';
+  return d.toLocaleDateString('en',{day:'numeric',month:'short'})+' · '
+        +d.toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit',hour12:false}); };
+const miniSpace=s=>'<button type="button" class="mini m-s" data-space="'+esc(String(s.id))+'">'
+  +'<span class="ms-st'+(s.state==='am'?' is-live':'')+'">'+esc(ETAT_SPACE[s.state]||'space')+'</span>'
+  +'<span class="ms-w">'+esc([(s.exact&&s.exact.place)||s.city||'', quandSpace(s)].filter(Boolean).join(' · '))+'</span></button>';
+const spacesDe=x=>HSPACES.par.get(norm(srv(x)))||null;
 
 /* ══ LES 7 INTENTIONS (source : totehm_map.html) ══ */
 const INTS=[
@@ -4270,7 +4125,7 @@ const intPillar=i=>(INT_BY_ID[i]||{}).pillar||'';
 
 /* ══ RENDER ══ */
 const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;};
-const T_SVG='<svg class="clock-glyph" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor"/><path d="M12 6v6l4 3" fill="none" stroke="currentColor"/></svg>';
+const T_SVG='<svg class="tglyph" viewBox="0 0 624 636" aria-hidden="true"><path fill="currentColor" d="M0 0 H624 V92 H358 V592 H434 V636 H190 V592 H266 V92 H0 Z"/></svg>';
 /* les habits sans Time frequency coulent en bas, juste au-dessus de la ligne d'ajout */
 const fw2=f=>f?fw(f):1e12;
 function sortHabits(){state.habits.sort((a,b)=>fw2(a.f)-fw2(b.f));}
@@ -4762,7 +4617,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-05-member-ecosystem';
+const BUILD='2026-10-05-com-aplomb';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -4964,7 +4819,7 @@ function paintZone(){
 /* Changer de vue ne charge rien et ne quitte rien : c'est la même page,
    la même session, la même mémoire. C'est tout l'intérêt de la fusion. */
 function setView(v){
-  if(busy||!$('ro-import').classList.contains('hide'))return;
+  if(busy)return;
   if(v===view)return;
   /* ══ CHANGER DE VUE NE DEMANDE PLUS DE FERMER · 09/09/2026 ══════════
      Ici on refusait tant qu'une boîte était ouverte, « pour ne pas perdre
@@ -5358,7 +5213,6 @@ function boiteHTML(o){
     + (o.haut||'')
     + (o.minis?'<span class="minis">'+o.minis+'</span>':'')
     + (o.bas||'')
-    + boxCopyHTML(o)
     /* [Delete] EST LE DERNIER ENFANT DE LA COLONNE. Posé à côté de la
        boîte il flottait à droite et mangeait la largeur — sur un
        téléphone, la moitié de la ligne pour la commande la plus grave.
@@ -5671,6 +5525,7 @@ function vueHabitude(x,k){
      l'intention et le rythme — une habitude sans lieu reste une
      habitude ; une habitude sans intention n'en est pas encore une. */
   const lieu = spotDe(x);
+  const sp = spacesDe(x), nS = sp ? sp.total : 0;
   const unit = ouverte&&!RO
     ? intBouton(x,'h')
       +'<button type="button" class="v-b'+(x.f?'':' vit')+'" data-pk="freq:h:'+esc(String(x.id))+'">'
@@ -5679,7 +5534,8 @@ function vueHabitude(x,k){
       +esc(lieu||'where')+'</button>'
     : intMots(x)
       +(x.f||!RO?'<span class="v-frq'+(x.f?'':' vit')+'">'+esc(x.f?flabel(x.f):'set time frequency')+'</span>':'')
-      +(lieu?'<span class="v-frq">'+esc(lieu)+'</span>':'');
+      +(lieu?'<span class="v-frq">'+esc(lieu)+'</span>':'')
+      +(nS?'<span class="v-frq v-spc">'+nS+(nS>1?' spaces':' space')+'</span>':'');
   /* WHY au-dessus des objectifs, PROTECTED BY au-dessus des répulsions :
      la boîte raconte, elle ne liste pas. */
   const gO = ouverte
@@ -5701,7 +5557,13 @@ function vueHabitude(x,k){
       ts.map(t=>String(t.id)), TRIPS.map(t=>({id:t.id,txt:t.text})), 'a new objective','o') : '';
   const pkR = (ouverte&&pkOn('lien','r',x.id)) ? lienPicker('r',x.id,
       rs.map(r=>String(r.id)), REPS.map(r=>({id:r.id,txt:r.text})), 'a new repulsion','r') : '';
-  const minis = groupe('why',gO,pkO) + groupe('trigger',gR,pkR);
+  /* SPACES sous TRIGGER : ce que l'habitude a VÉCU (ou va vivre) dehors. */
+  const gS = ouverte
+    ? (sp?sp.spaces.map(miniSpace).join(''):'')
+      + (RO?'':'<button type="button" class="dash" data-newspace="1">+ a space</button>')
+    : '';
+  const minis = groupe('why',gO,pkO) + groupe('trigger',gR,pkR)
+    + groupe(nS>3?'spaces · 3 of '+nS:'spaces',gS);
   let haut='', bas='';
   if(ouverte&&pkOn('int','h',x.id))  haut=intPicker(x,'h');
   if(ouverte&&pkOn('freq','h',x.id)) haut=freqPicker(x);
@@ -6194,10 +6056,12 @@ function cable(box){
        qui les traite existait et n'était jamais atteint. */
     const el=e.target.closest('[data-fint],[data-ffq],[data-fclear],[data-fx],'
       +'[data-open],[data-add],[data-x],[data-pk],[data-int],[data-mv],[data-go],'
-      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-copy]');
+      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-newspace]');
     if(!el)return;
     const d=el.dataset;
-    if(d.copy){e.stopPropagation();copyToggle(d.copy);return;}
+    /* Un space s'ouvre sur SPACE, par le pont (même en lecture). */
+    if(d.space){ e.stopPropagation(); ssoVersDomaine(sb,'space','https://www.totehm.space/?spot='+encodeURIComponent(d.space)); return; }
+    if(d.newspace!==undefined){ e.stopPropagation(); if(!RO) ssoVersDomaine(sb,'space','https://www.totehm.space/?v=plan'); return; }
     if(RO&&!['open','go','x','fint','ffq','fclear','fx'].some(k=>d[k]!==undefined))return;
 
     /* ⚠️ ON PEUT OUVRIR UNE BOÎTE EN MODE CLASSEMENT · 09/09/2026.
@@ -6797,7 +6661,7 @@ window.addEventListener('touchend',(e)=>{
      revenait à son point de départ**, exactement ce que Wah décrit — et
      symétriquement à droite, par la vision.
      Un geste né sur un contrôle appartient à ce contrôle. */
-  if(t0el&&t0el.closest&&t0el.closest('#joy,#ro-import,#ro-bar,#ro-access,[data-copy],#freq-panel,#habit-peek,#filter-modal,#member-window,input,textarea,select,[contenteditable]'))return;
+  if(t0el&&t0el.closest&&t0el.closest('#joy,#ro-bar,#freq-panel,#habit-peek,#filter-modal,#member-window,input,textarea,select,[contenteditable]'))return;
   const _ae=document.activeElement;
   if(_ae&&(_ae.tagName==='TEXTAREA'||_ae.tagName==='INPUT'))return;
   if(document.body.classList.contains('gate'))return;   /* l'atterrissage défile librement */
@@ -6860,7 +6724,7 @@ window.addEventListener('touchend',(e)=>{
   addEventListener('wheel',e=>{
     if(document.body.classList.contains('gate'))return;
     /* Même raison qu'au doigt : le pavé a sa propre molette. */
-    if(e.target&&e.target.closest&&e.target.closest('#joy,#ro-import,#ro-bar,#ro-access'))return;
+    if(e.target&&e.target.closest&&e.target.closest('#joy,#ro-bar'))return;
     if(Math.abs(e.deltaY) > Math.abs(e.deltaX)*1.6){
       if(navBlocked())return;
       if(Date.now()<froid){accV=0;return;}
@@ -6922,7 +6786,7 @@ window.addEventListener('touchend',(e)=>{
    Ils passent sous Book et Next (z-index) : on ouvre par eux, on referme par
    le T de la page ouverte, les flèches du clavier ou Échap. */
 function navBlocked(){
-  return busy||fpOpen()||!$('ro-import').classList.contains('hide')
+  return busy||fpOpen()
     ||$('member-window').classList.contains('show')
     ||false
     ||!$('habit-peek').classList.contains('hide')
@@ -7049,7 +6913,6 @@ const navRight=()=>{ if(navBlocked())return; versVoisin('d'); };
 paintZone();
 
 window.addEventListener('keydown',(e)=>{
-  if(!$('ro-import').classList.contains('hide'))return;
   if(fpOpen()){if(e.key==='Escape')closeFreqPanel();return;}
   /* LE FIX CLAVIER. Une flèche dans un champ déplace le curseur, point.
      Les habitudes sont des <textarea> : ne tester que INPUT laissait la
@@ -7268,61 +7131,62 @@ function closeWeightPick(){ $('wpick').classList.remove('show'); }
 $('wp-skip').onclick=()=>replyIntention(null);
 $('wpick').addEventListener('click',e=>{if(e.target===$('wpick'))closeWeightPick();});
 
-/* TOTEHM SEARCH · copied into the independent COM pages, never imported. */
+/* ══ CHERCHER UN TOTEHM : UN NOM, ET C'EST TOUT · 05/10/2026 ═══════════
+   Wah : « je veux juste qu'on tape le nom de l'utilisateur et ça ouvre son
+   Totehm en mode read only, simple ». Remplace la recherche à trois modes
+   du 04/10 (noms · abonnements · boîtes, filtres, pages, copies).
+   Un champ, des NOMS. Un nom ouvre `/totehm?ro=nom` ; un Totehm à
+   abonnement que je n'ai pas renvoie de lui-même vers `/@nom`. Entrée
+   ouvre le nom exact, sinon le premier. Vide : mes abonnements. Collé
+   « @nom » ou « totehm.com/@nom » : le nom seul. `totehm_search` cherche
+   par NOM seulement (jamais dans les boîtes) et ne voit que les Totehms
+   ouverts à leurs abonnés. Une réponse tardive est jetée (`seq`).
+   Le même bloc est COPIÉ dans `creator.html` (/search), jamais importé. */
 const searchViews=new Set();
-function TotehmSearch({input,results,note,controls,more,onResults=()=>{}}){
-  let seq=0,timer=0,scope='names',kind='',intention='',query='',offset=0,rows=[],running=false;
-  const labels={h:'Habit',t:'Objective',r:'Repulsion',w:'Teaching',v:'Vision'};
-  const money=(c,cur)=>{try{return new Intl.NumberFormat('en',{style:'currency',currency:(cur||'eur').toUpperCase(),maximumFractionDigits:c%100?2:0}).format(c/100);}catch{return c/100+' '+(cur||'eur');}};
-  const href=(r,b)=>'/totehm?ro='+encodeURIComponent(r.pseudo)+(b?'&box_kind='+b.kind+'&box_key='+encodeURIComponent(b.key):'');
-  controls.innerHTML='<div class="ts-modes" aria-label="Search mode">'+[['names','Names'],['subscriptions','My subscriptions'],['boxes','Boxes I can read']].map(([id,label])=>'<button class="ts-control" type="button" data-search-scope="'+id+'" aria-pressed="false">'+label+'</button>').join('')+'</div><div class="ts-filters hide"><label>Box<select class="ts-control" data-search-kind><option value="">All boxes</option>'+Object.entries(labels).map(([id,label])=>'<option value="'+id+'">'+label+'</option>').join('')+'</select></label><label>Intention<select class="ts-control" data-search-intention><option value="">All intentions</option>'+['fight','flow','enrich','love','express','focus','celebrate'].map(i=>'<option value="'+i+'">'+i[0].toUpperCase()+i.slice(1)+'</option>').join('')+'</select></label></div>';
-  results.setAttribute('aria-live','polite');results.setAttribute('aria-label','TOTEHM search results');
-  function paintModes(){
-    controls.querySelectorAll('[data-search-scope]').forEach(b=>b.setAttribute('aria-pressed',String(scope===b.dataset.searchScope)));
-    controls.querySelector('.ts-filters').classList.toggle('hide',scope!=='boxes');
-    input.placeholder=scope==='boxes'?'words in a box':'a name or @link';
-    input.maxLength=scope==='boxes'?96:80;
-    input.setAttribute('aria-label',scope==='boxes'?'Search inside TOTEHMs I can read':'Search a TOTEHM by name or link');
+function NameSearch({input,results,note,onResults=()=>{}}){
+  let seq=0,timer=0,rows=[];
+  const href=p=>'/totehm?ro='+encodeURIComponent(p);
+  const propre=v=>String(v||'').trim().replace(/^https?:\/\/[^/]+\//i,'').replace(/^@/,'').replace(/[/?#].*$/,'');
+  const dire=t=>{ note.textContent=t; };
+  function draw(q){
+    results.innerHTML=(!q&&rows.length?'<div class="ns-label">My subscriptions</div>':'')
+      +rows.map(r=>'<a class="srch-row" href="'+href(r.pseudo)+'"><span class="srch-name">'+esc(r.pseudo)+'</span>'
+        +'<span class="srch-meta">'+(r.subscribed?'subscribed':'')+'</span></a>').join('');
+    onResults(rows.length);
   }
-  function draw(){
-    let similar=false;
-    results.innerHTML=rows.map(r=>{
-      let h='';if(r.match==='similar'&&!similar){similar=true;h='<div class="ts-section">Similar names</div>';}
-      const status=r.own?'Your TOTEHM':r.can_read?'Subscribed · read & copy':r.offer?'Subscription required':'Read access unavailable';
-      const price=r.offer&&!r.can_read&&r.price_cents?money(r.price_cents,r.currency)+' / year':'';
-      h+='<article class="ts-result"><a class="srch-row ts-open" href="'+href(r)+'"><span class="srch-name tname">'+esc(r.pseudo)+'</span><span class="ts-arrow" aria-hidden="true">↗</span></a><div class="ts-meta"><span class="srch-meta">'+status+'</span>'+(price?'<span>'+esc(price)+'</span>':'')+'</div>';
-      if(r.can_read&&Array.isArray(r.boxes))h+=r.boxes.map(b=>'<a class="ts-box" data-kind="'+b.kind+'" href="'+href(r,b)+'"><span class="ts-box-kind">'+(labels[b.kind]||'Box')+'</span><span class="ts-box-text">'+esc(b.text)+'</span></a>').join('');
-      return h+'</article>';
-    }).join('');onResults(rows.length);
+  async function run(q,ouvrir=false){
+    clearTimeout(timer); const mon=++seq, uid=me?.id||null;
+    if(q.length===1){ rows=[]; draw(q); dire('two letters, minimum'); return; }
+    if(!q&&!me){ rows=[]; draw(q); dire(''); return; }
+    if(q) dire('searching\u2026');
+    const {data,error}=await sb.rpc('totehm_search',{p_q:q,p_limit:12});
+    if(mon!==seq||uid!==(me?.id||null)) return;               /* réponse tardive : jetée */
+    if(error){ console.error('[totehm_search]',error.message); dire('search is unreachable right now'); return; }
+    rows=Array.isArray(data)?data:[];
+    dire(rows.length||!q?'':'no TOTEHM by that name');
+    draw(q);
+    if(ouvrir&&rows.length){
+      const pile=rows.find(r=>r.pseudo.toLowerCase()===q.toLowerCase())||rows[0];
+      location.href=href(pile.pseudo);
+    }
   }
-  function cancel(){seq++;clearTimeout(timer);running=false;results.setAttribute('aria-busy','false');more.disabled=false;}
-  async function run(reset=true){
-    clearTimeout(timer);const current=++seq,uid=me?.id||null;
-    if(reset){offset=0;rows=[];results.replaceChildren();more.classList.add('hide');onResults(0);}
-    running=true;results.setAttribute('aria-busy','true');more.disabled=true;note.textContent='Searching…';
-    try{
-      const {data,error}=await sb.rpc('totehm_discover',{p_q:query,p_scope:scope,p_kind:scope==='boxes'?kind:'',p_intention:scope==='boxes'?intention:'',p_offset:offset,p_limit:12});
-      if(current!==seq||uid!==(me?.id||null))return;
-      if(error){console.error('[totehm_discover]',error.message);throw error;}
-      const items=Array.isArray(data?.items)?data.items:[];
-      const seen=new Set(rows.map(x=>x.pseudo));rows=rows.concat(items.filter(x=>!seen.has(x.pseudo)));offset+=items.length;
-      draw();more.classList.toggle('hide',!data?.more);
-      if(data?.why==='signin'){note.innerHTML='Sign in to search your subscriptions and their boxes. <a class="ts-link" href="/totehm#in">CONNECT WITH MY TOTEHM</a>';}
-      else note.textContent=rows.length?(data.total||rows.length)+' TOTEHMs'+(scope==='boxes'?' · your accessible boxes':''):scope==='subscriptions'?'Your subscriptions will appear here. Search a name to find a TOTEHM.':scope==='boxes'?'No accessible box matches. Try other words or clear the filters.':'No matching name. Try part of the name or an @link.';
-    }catch(e){if(current===seq){note.textContent='Search unavailable. Try again.';more.classList.remove('hide');more.textContent='Retry';}}
-    finally{if(current===seq){running=false;results.setAttribute('aria-busy','false');more.disabled=false;}}
-  }
-  controls.addEventListener('click',e=>{const b=e.target.closest('[data-search-scope]');if(!b)return;
-    cancel();scope=b.dataset.searchScope;query=query||'';input.value=query;paintModes();more.textContent='More TOTEHMs';run();});
-  controls.addEventListener('change',e=>{if(e.target.matches('[data-search-kind]'))kind=e.target.value;if(e.target.matches('[data-search-intention]'))intention=e.target.value;cancel();run();});
-  input.addEventListener('input',()=>{cancel();query=input.value.trim();results.replaceChildren();more.classList.add('hide');onResults(0);note.textContent='Searching…';timer=setTimeout(()=>run(),240);});
-  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();query=input.value.trim();run();}
-    if(e.key==='ArrowDown'){e.preventDefault();results.querySelector('a')?.focus();}});
-  results.addEventListener('keydown',e=>{if(!['ArrowDown','ArrowUp'].includes(e.key))return;const f=Array.from(results.querySelectorAll('a'));const i=f.indexOf(document.activeElement);e.preventDefault();const j=i+(e.key==='ArrowDown'?1:-1);if(j<0)input.focus();else f[Math.min(j,f.length-1)]?.focus();});
-  more.onclick=()=>{if(running)return;if(more.textContent==='Retry'){more.textContent='More TOTEHMs';run(rows.length===0);}else run(false);};
-  paintModes();
-  const controller={start(q='',s='names'){cancel();query=q;scope=['names','subscriptions','boxes'].includes(s)?s:'names';kind='';intention='';controls.querySelectorAll('select').forEach(e=>e.value='');paintModes();run();},cancel,authChanged(){cancel();rows=[];results.replaceChildren();more.classList.add('hide');onResults(0);note.textContent='';if(getComputedStyle(controls).visibility==='visible'&&controls.getClientRects().length)run();},reset(){cancel();rows=[];results.replaceChildren();more.classList.add('hide');onResults(0);note.textContent='';}};
-  searchViews.add(controller);return controller;
+  input.addEventListener('input',()=>{ clearTimeout(timer); const v=propre(input.value); timer=setTimeout(()=>run(v),220); });
+  input.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){ e.preventDefault(); run(propre(input.value),true); }
+    if(e.key==='ArrowDown'){ const a0=results.querySelector('a'); if(a0){ e.preventDefault(); a0.focus(); } }
+  });
+  results.addEventListener('keydown',e=>{
+    if(!['ArrowDown','ArrowUp'].includes(e.key)) return;
+    const f=Array.from(results.querySelectorAll('a')), i=f.indexOf(document.activeElement);
+    e.preventDefault(); const j=i+(e.key==='ArrowDown'?1:-1);
+    (j<0?input:f[Math.min(j,f.length-1)]).focus();
+  });
+  const controller={
+    start(q=''){ run(propre(q)); },
+    reset(){ seq++; clearTimeout(timer); rows=[]; results.replaceChildren(); onResults(0); dire(''); },
+    authChanged(){ seq++; clearTimeout(timer); rows=[]; results.replaceChildren(); onResults(0); dire(''); }
+  };
+  searchViews.add(controller); return controller;
 }
 
 
@@ -7645,13 +7509,12 @@ $('mw-signout').onclick=async()=>{
    frame ou pour de bon, le Totehm de celui d'avant. */
 let sesSeq=0;
 function quitter(){
-  roSeq++;roReady=false;COPIES.busy=false;COPIES.items.clear();copiesClose(true);boxSources.clear();
-  $('ro-import-list').replaceChildren();$('ro-import-note').textContent='';$('ro-access').replaceChildren();
+  roSeq++; HSPACES.seq++; HSPACES.par=new Map();
   if($('myspaces').classList.contains('is-open')){MYSPACES.seq++;MYSPACES.busy=false;MYSPACES.rows=[];$('myspaces-list').replaceChildren();$('myspaces-name').textContent='';$('myspaces').classList.remove('is-open');MYSPACES.inert.forEach(([e,was])=>e.inert=was);MYSPACES.inert=[];}
   state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; mySub=null; resetComMemberOffer();
   TRIPS=[]; REPS=[]; TEACH=[]; VIS=[]; OBJ={}; tripsLoaded=false;
   cacheOublier();
-  $('member-window').classList.remove('show');copiesPaint();
+  $('member-window').classList.remove('show');
 }
 async function sessionChange(){
   const n=++sesSeq;
@@ -7675,7 +7538,7 @@ async function sessionChange(){
   }
   if(n!==sesSeq) return;
   memberPaint(); paint();
-  if(inscrit()&&!RO){loadTrips(true);loadBoxSources();}
+  if(inscrit()&&!RO){loadTrips(true);loadHabitSpaces();}
   garde();
   if(n===sesSeq&&inscrit()&&!RO&&openRequestedSpaces){openRequestedSpaces=false;$('myspaces-open').click();}
 }
@@ -8401,7 +8264,7 @@ window.addEventListener('pageshow',e=>{
   const RMQ=window.matchMedia('(prefers-reduced-motion: reduce)');
   const SDUR=640;
   let sOpen=false, sMoving=false, sTimer=0;
-  const searchCtl=TotehmSearch({input:sQ,results:sRes,note:sNote,controls:$('srch-controls'),more:$('srch-more'),onResults:n=>window.__totehm_lsd.resultats=n});
+  const searchCtl=NameSearch({input:sQ,results:sRes,note:sNote,onResults:n=>window.__totehm_lsd.resultats=n});
 
   const monNom=()=>((me&&myProfile&&myProfile.pseudo)||'').trim();
 
@@ -8457,7 +8320,7 @@ window.addEventListener('pageshow',e=>{
     avecTransition(); pleinEcran();
     srch.classList.add('is-show');                   /* le reste arrive à +0,42 s (CSS) */
     clearTimeout(sTimer); sTimer=setTimeout(fin,SDUR+140);
-    lancer('');                                      /* own, subscriptions and available creators */
+    lancer('');                                      /* vide : mes abonnements */
   }
   /* Le dézoom : la page redevient le dos du papier, le nom y revient, puis
      le papier se remet sur son recto — l'atterrissage retrouve son départ. */
@@ -8705,112 +8568,6 @@ window.addEventListener('pageshow',e=>{
    retirée : elle troublait la lecture au lieu de la guider. La liste
    se lit d'un coup d'œil, aucune ligne n'a besoin d'être « en avant »
    par défaut. */
-</script>
-<script data-ecosystem-ui="2026-10-05">
-/* 05/10/2026 — copied into each independent page; no runtime import. */
-(() => {
-  const roots = '.habit:not(.add):not(.filtre),.r-habit,.bx';
-  const glass = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 6 6"/></svg>';
-  let sheet = null, previous = null, inert = [], overflow = '';
-  function close() {
-    if (!sheet) return;
-    sheet.remove(); sheet = null;
-    inert.forEach(([el, before]) => { if (el.isConnected) el.inert = before; }); inert = [];
-    document.body.style.overflow = overflow; document.body.classList.remove('eco-modal');
-    if (previous?.isConnected) previous.focus({preventScroll:true});
-  }
-  function open(content, title, source) {
-    if (sheet) close();
-    previous = source || document.activeElement; overflow = document.body.style.overflow;
-    sheet = document.createElement('div'); sheet.className = 'eco-sheet'; sheet.setAttribute('role','dialog');
-    sheet.setAttribute('aria-modal','true'); sheet.setAttribute('aria-label',title); sheet.tabIndex = -1;
-    const card = document.createElement('section'); card.className = 'eco-card';
-    const exit = document.createElement('button'); exit.type = 'button'; exit.className = 'eco-text-btn eco-close';
-    exit.textContent = 'CLOSE'; exit.addEventListener('click',close);
-    card.append(exit,content); sheet.append(card);
-    inert = Array.from(document.body.children).filter(el => !['SCRIPT','STYLE'].includes(el.tagName)).map(el => [el,el.inert]);
-    inert.forEach(([el]) => el.inert = true);
-    document.body.append(sheet); document.body.style.overflow = 'hidden'; document.body.classList.add('eco-modal');
-    sheet.addEventListener('click',e => { if (e.target === sheet) close(); }); exit.focus();
-  }
-  function zoom(box, source) {
-    const copy = box.cloneNode(true); copy.classList.add('eco-box-copy'); copy.classList.remove('open','is-on');
-    const sourceNodes = box.querySelectorAll('*'), copyNodes = copy.querySelectorAll('*');
-    sourceNodes.forEach((el,i) => { if (getComputedStyle(el).display === 'none') copyNodes[i].remove(); });
-    copy.querySelectorAll('[data-box-zoom],.w-x,.h-x,[data-kill],[data-x],.box-copy,.ro-copy,.pk-list,.pkw,.rk,.mini-x,.dash').forEach(el => el.remove());
-    const originals = box.querySelectorAll('textarea,input');
-    copy.querySelectorAll('textarea,input').forEach((el,i) => { const text = document.createElement('span'); text.className = 'v-name'; text.textContent = originals[i]?.value || ''; el.replaceWith(text); });
-    [copy,...copy.querySelectorAll('*')].forEach(el => {
-      for (const attr of Array.from(el.attributes)) if (/^(id|name|for|data-|on|tabindex|contenteditable|autofocus)/.test(attr.name)) el.removeAttribute(attr.name);
-      el.removeAttribute('role'); el.style.removeProperty('height'); el.style.removeProperty('max-height');
-    });
-    copy.querySelectorAll('button,a,select').forEach(el => { const span = document.createElement('span'); span.className = el.className; span.innerHTML = el.innerHTML; el.replaceWith(span); });
-    open(copy,'Enlarged TOTEHM box',source);
-  }
-  function enhance(scope) {
-    if (!(scope instanceof Element) || scope.closest('.eco-sheet')) return;
-    const parentBox = scope.closest(roots);
-    const boxes = [...(parentBox ? [parentBox] : []),...scope.querySelectorAll(roots)];
-    boxes.forEach(box => {
-      if (box.closest('.eco-sheet') || box.querySelector('[data-box-zoom]')) return;
-      const text = box.querySelector('.v-name,.h-text,.r-text,.nm')?.textContent?.trim() || box.querySelector('textarea')?.value?.trim();
-      if (!text) return;
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'eco-box-zoom'; b.dataset.boxZoom = '1';
-      b.setAttribute('aria-label','Enlarge this box'); b.innerHTML = glass; box.append(b);
-    });
-    const buttonSelector = 'button,a.m-it,a.mw-link,a.btn-sig,a.btn,a.ro-action';
-    const parentButton = scope.closest(buttonSelector);
-    const buttons = [...(parentButton ? [parentButton] : []),...scope.querySelectorAll(buttonSelector)];
-    buttons.forEach(b => {
-      if (b.closest('#joy,#totehm-paper,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,.eco-box-zoom,.mini-toggle,.rk-a')) return;
-      const text = b.textContent.trim(); if (!text || /^[×+−\-↑↓←→↔↕✕✖?°\d\s]+$/.test(text)) return;
-      if (/^sign\s*in\b/i.test(text)) {
-        const leaf = b.querySelector('#member-txt,#conn-txt') || b;
-        leaf.textContent = 'CONNECT WITH MY TOTEHM'; b.classList.add('eco-connect');
-      } else if (text !== 'CONNECT WITH MY TOTEHM') b.classList.remove('eco-connect');
-      if (b.textContent.trim() === 'CONNECT WITH MY TOTEHM') b.classList.add('eco-connect');
-      b.classList.add('eco-text-btn');
-    });
-    if (document.body.dataset.ecoAuth === 'central') {
-      for (const input of scope.querySelectorAll('#mw-email,#in-email,#pt-email')) {
-        if (input.parentElement.querySelector('[data-eco-connect]')) continue;
-        const b = document.createElement('button'); b.type = 'button'; b.dataset.ecoConnect = '1';
-        b.className = 'eco-text-btn eco-connect'; b.textContent = 'CONNECT WITH MY TOTEHM'; input.before(b);
-      }
-    }
-  }
-  document.addEventListener('click',e => {
-    const zoomButton = e.target.closest?.('[data-box-zoom]');
-    if (zoomButton) { e.preventDefault(); e.stopImmediatePropagation(); const box = zoomButton.closest(roots); if (box) zoom(box,zoomButton); return; }
-    const definition = e.target.closest?.('[data-space-about]');
-    if (definition) { e.preventDefault(); e.stopImmediatePropagation(); const content = document.querySelector('#space-definition')?.content?.cloneNode(true); if (content) open(content,'What is a space?',definition); }
-  },true);
-  document.addEventListener('keydown',e => {
-    if (!sheet) return;
-    e.stopImmediatePropagation();
-    if (e.key === 'Escape') { e.preventDefault(); close(); }
-    if (e.key === 'Tab') {
-      const list = [...sheet.querySelectorAll('button,a[href],input,textarea,select,[tabindex="0"]')].filter(el => !el.disabled && el.getClientRects().length);
-      const first = list[0], last = list.at(-1);
-      if (!first) { e.preventDefault(); sheet.focus(); }
-      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-    }
-  },true);
-  for (const name of ['pointerdown','touchstart','touchmove','touchend','wheel']) document.addEventListener(name,e => { if (sheet) e.stopImmediatePropagation(); },{capture:true,passive:true});
-  const start = () => {
-    enhance(document.body);
-    new MutationObserver(records => {
-      const scopes = new Set();
-      for (const r of records) {
-        if (r.target instanceof Element && !r.target.closest('.eco-sheet')) scopes.add(r.target);
-        for (const node of r.addedNodes) if (node instanceof Element) scopes.add(node);
-      }
-      scopes.forEach(enhance);
-    }).observe(document.body,{childList:true,subtree:true});
-  };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
-})();
 </script>
 </body>
 </html>
