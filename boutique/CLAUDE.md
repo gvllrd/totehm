@@ -1,5 +1,17 @@
 # boutique/CLAUDE.md — higher.boutique : le Cloth, la méthode Stoner
 
+## 05/10/2026 — connexion COM et UI commune
+
+BUILD `2026-10-05-spaces-boxes`. Lire les règles UI de la racine.
+Toutes les pages satellites, y compris les anciennes pages déplacées,
+passent par COM/auth avec PKCE+state. Plus d'email OTP demandé localement ;
+les ponts sso existants restent compatibles. CTA `CONNECT WITH MY TOTEHM`,
+fond sombre ajusté au texte. Pas de T.svg statique d'interface. Chaque Box
+reprise de COM propose une loupe en lecture seule, sans sélectionner la Box
+ni déclencher la totehmisation. Attributs absents de COM absents du miroir.
+Prix, commandes, THP et droits existants inchangés.
+
+
 ## ⛔ IDENTITÉ MEMBRE · 03/10/2026
 
 Noms du Totehm en Quantico Coral #fbd5ca, y compris au survol, sans point/carré d'état. Lire le vrai pseudo depuis le profil du compte, jamais fabriquer un nom avec le préfixe de l'email. Supprimer les T statiques centrés dans les espaces membres ; conserver Higher, les œuvres et le papier de marque. Quand un nom est encadré, fond noir arrondi, sans tuile perforée. Cette règle de Wah remplace les anciennes restrictions « Coral seulement Stoner/Get » pour l'identité. Protocoles de connexion/SSO, accès THP et prix inchangés. Sur les anciens menus de Get Higher, Stoner et Boutique, le callback auth reste synchrone ; lecture profil différée avec setTimeout pour éviter le verrou Supabase (getSession/RPC dans un callback async pouvait figer le nom sur Guest).
