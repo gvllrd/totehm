@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 4 octobre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 5 octobre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -15,6 +15,16 @@
 
 ---
 
+
+## 0 · TOTEHM.COM REMIS D'APLOMB — 05/10/2026 (nuit) : T, mini-boxes, lecture par nom, spaces dans les habits, vente, console
+
+| quoi | valeur mesurée |
+|---|---|
+| migration `20261005200000_habit_spaces.sql` | APPLIQUÉE (`habit_spaces`) · EXECUTE : authenticated + service_role seulement · auto-test `habit_spaces_selftest.sql` : propriétaire 7 habits / 14 spaces, lecteur 12 partagés, `FAIL={}` (annulé) · base : 14 spaces publiés avec Habit, 12 partagés |
+| bloc `ecosystem_ui` | 0 page COM (11 retirées) · loupe-fenêtre : 0 sur 15 pages satellites + `tools/` |
+| tests navigateur | `com_creator` 29/29 · `console` 18/18 · `com_paper` 39/39 · `com_mouth` 35/35 · `com_member_menu` 27/27 · `space_boxes_ecosystem` 22/22 · `spaces_ui --identity` 27/27 · `space` 40/40 · `boutique_home` 10/10 · `streetwear` 25/25 · `club_luxury` 35/35 · `com_discovery` supprimé |
+| connu, hors lot | `spaces_ui` (volet SPACE) attend `[data-pvis="private"]`, retiré par le lot SPACE du 05/10 : test périmé sur `main` avant ce lot |
+| prod (pg_net, `a523f92`, Vercel READY) | `/totehm` 200 `BUILD 2026-10-05-com-aplomb`, `T_SVG` présent, `habit_spaces` appelé, ni bloc eco ni `totehm_discover` · `/search` et `/@wah` 200 (même fichier) · `/console` 200 (aucun Reveal dans l'interface) · `/monetize` 200 · totehm.space 200 `2026-10-05-in-place` sans loupe · higher.boutique et figher.club 200 sans loupe · md5 = dépôt pour les 7 |
 
 ## 0 · LA BOUTIQUE — 05/10/2026 (soir) : l'accueil d'avant, Totehm x Champion 2026, le mode test Stripe
 
