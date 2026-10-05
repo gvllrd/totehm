@@ -1,5 +1,35 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## COM · 05/10/2026 — menu de l'écosystème et offre aux créateurs
+
+BUILD `2026-10-05-member-ecosystem` : `totehm.html`, `creator.html`,
+`console.html`, `monetize.html`. `/monetize` présente publiquement la creator
+economy aux influenceurs et aux membres : abonnement ANNUEL choisi par le
+membre, split 80/20, TOTEHM partagé et lieux des spaces ON. Aucun prix créé,
+aucune offre activée ni paiement lancé par cette page. `/@nom` reste la page
+qui vend l'abonnement de CE membre ; `/console` gère l'offre et les abonnements.
+
+Le menu COM reprend sept actions, dans cet ordre : Open my TOTEHM (Tap on
+it), Search a TOTEHM (Turn it over ; My subscriptions reste un mode de
+recherche), Get Higher (Put it on your tongue), Reflect with my TOTEHM
+(Higher Self · TotehmBot → `/higherself`), My TOTEHM spaces (My TOTEHM,
+right now, right here · in SPACE), Totehmize my cloth (HIGHER BOUTIQUE),
+Monetize my TOTEHM ecosystem (`/monetize`). Lorsque `my_console().offer.enabled`
+est vrai, la dernière action devient Manage my subscriptions (`/console`).
+L'abonnement payé par le membre et le passeport FIGHER ne décident pas de ce
+libellé. Réponse illisible → console, sans inventer un état. Ignorer les
+réponses tardives après changement de compte.
+
+Plus de My Club dans le menu. My TOTEHM spaces réutilise l'historique
+propriétaire (lien direct `/totehm?spaces=1`) et ses accès SSO à SPACE.
+Les liens Get Higher et Boutique passent par leur pont SSO respectif ;
+le papier, la langue, les gestes et la recherche restent inchangés.
+Boutons sombres ajustés au label ; indication sous le bouton, hors de son
+fond. SIMPLE TERMS OF USE reste la dernière entrée. Sources COPIÉES :
+`tools/com_member_menu.js` et `.css`, aucun import runtime.
+Tests : `tests/browser/com_member_menu.mjs`, `com_paper.mjs`, `com_discovery.mjs`.
+
+
 ## COM · 05/10/2026 — loupes et connexion commune
 
 BUILD `2026-10-05-spaces-boxes`. Règles UI : racine `CLAUDE.md`.
@@ -171,8 +201,8 @@ lignes puis 7,5 px). Diagnostic `__totehm_lsd` : `tenu`, `gestes`,
 `retournements`, `face`, `recherche`, `resultats`.
 
 **La console garde « Copy a post for my networks »** (`#post`) : la phrase
-de Wah + le lien `/@nom`, aucun prix. Pas de « page pour les influenceurs »
-(BRAND : pas de caste « créateur ») — la page de vente de chacun est `/@nom`.
+de Wah + le lien `/@nom`, aucun prix. `/monetize` présente l’offre aux influenceurs et à tous les
+membres ; la page de vente de chacun reste `/@nom` (05/10).
 
 ## ⛔ ÉTAT AU 01/10/2026 — la console, deux réglages, l'abonnement annuel
 

@@ -102,8 +102,12 @@ TOTEHM CLOTH  = the physical materialization of ONE Box of that source
 
 **The Totehm is the passport.** A complete Totehm (one non-empty Box in each
 of the five views) opens the premium ecosystem. FIGHER (02/10) = the THP and
-one Habit Box. Every member of FIGHER can monetize their Totehm — there
-is no separate "creator" caste, in the product or in the words.
+one Habit Box. The creator economy on COM and SPACE is open to members
+without a FIGHER passport. `/monetize` invites influencers and their audiences
+into this offer: an annual subscription, a price chosen by the member and an
+80/20 split. `/@name` sells that member's subscription; `/console` manages it.
+There is no separate creator access class. Higher Self / TotehmBot remains a
+separate personal offer.
 
 **Prices never appear in this file.** They come from the server.
 
