@@ -1,6 +1,12 @@
 # TOTEHM · backend
 
 
+## 05/10/2026 — `habit_spaces`: SPACE inside COM's Habit Boxes
+
+`habit_spaces(p_pseudo text default null)` returns `{ok, mine, habits:[{habit, total, spaces}]}` (`why=signin|nobody`). Empty pseudo = my published spaces (private and shared); another member = their `shared` spaces only. Grouped by `lower(btrim(habit))`; at most 3 per Habit (live, next upcoming, latest past) + total. Every space is `_spot_view(p, auth.uid())`, the SPACE rights unchanged (exact place only when `_spot_exact` allows). Authenticated only. Migration `20261005200000_habit_spaces.sql` applied once as `habit_spaces`. Test `tests/sql/habit_spaces_selftest.sql` (rolled back, `FAIL={}`). COM front: a closed Habit Box says "N spaces"; open, up to three minis; a tap opens SPACE `?spot=id` through the SSO bridge.
+
+Since 05/10 the COM front no longer calls `totehm_discover`, `totehm_import_boxes` or `my_box_sources` (search = a name via `totehm_search`, copies removed). The functions stay in the database, unused; `com_discovery.mjs` is deleted.
+
 ## 03/10/2026 — COM search and reviewed copies
 
 `totehm_discover(p_q, p_scope, p_kind, p_intention, p_offset, p_limit)` returns `{items,total,more}`. Scopes: names / subscriptions / boxes. Public discovery contains identity and offer only; authenticated box previews use `_shared_with_me`. Exact/prefix/substring names precede trigram suggestions; accents and case normalized, @profile links accepted, literal box words, pagination 12 (clamped 1–24), up to 3 box hits per result. Kind h/t/r/w/v and the existing seven intentions filter boxes.
