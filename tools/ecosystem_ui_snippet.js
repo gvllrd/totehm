@@ -1,7 +1,5 @@
 /* 05/10/2026 — copied into each independent page; no runtime import. */
 (() => {
-  const roots = '.habit:not(.add):not(.filtre),.r-habit,.bx';
-  const glass = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 6 6"/></svg>';
   let sheet = null, previous = null, inert = [], overflow = '';
   function close() {
     if (!sheet) return;
@@ -24,36 +22,13 @@
     document.body.append(sheet); document.body.style.overflow = 'hidden'; document.body.classList.add('eco-modal');
     sheet.addEventListener('click',e => { if (e.target === sheet) close(); }); exit.focus();
   }
-  function zoom(box, source) {
-    const copy = box.cloneNode(true); copy.classList.add('eco-box-copy'); copy.classList.remove('open','is-on');
-    const sourceNodes = box.querySelectorAll('*'), copyNodes = copy.querySelectorAll('*');
-    sourceNodes.forEach((el,i) => { if (getComputedStyle(el).display === 'none') copyNodes[i].remove(); });
-    copy.querySelectorAll('[data-box-zoom],.w-x,.h-x,[data-kill],[data-x],.box-copy,.ro-copy,.pk-list,.pkw,.rk,.mini-x,.dash').forEach(el => el.remove());
-    const originals = box.querySelectorAll('textarea,input');
-    copy.querySelectorAll('textarea,input').forEach((el,i) => { const text = document.createElement('span'); text.className = 'v-name'; text.textContent = originals[i]?.value || ''; el.replaceWith(text); });
-    [copy,...copy.querySelectorAll('*')].forEach(el => {
-      for (const attr of Array.from(el.attributes)) if (/^(id|name|for|data-|on|tabindex|contenteditable|autofocus)/.test(attr.name)) el.removeAttribute(attr.name);
-      el.removeAttribute('role'); el.style.removeProperty('height'); el.style.removeProperty('max-height');
-    });
-    copy.querySelectorAll('button,a,select').forEach(el => { const span = document.createElement('span'); span.className = el.className; span.innerHTML = el.innerHTML; el.replaceWith(span); });
-    open(copy,'Enlarged TOTEHM box',source);
-  }
   function enhance(scope) {
     if (!(scope instanceof Element) || scope.closest('.eco-sheet')) return;
-    const parentBox = scope.closest(roots);
-    const boxes = [...(parentBox ? [parentBox] : []),...scope.querySelectorAll(roots)];
-    boxes.forEach(box => {
-      if (box.closest('.eco-sheet') || box.querySelector('[data-box-zoom]')) return;
-      const text = box.querySelector('.v-name,.h-text,.r-text,.nm')?.textContent?.trim() || box.querySelector('textarea')?.value?.trim();
-      if (!text) return;
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'eco-box-zoom'; b.dataset.boxZoom = '1';
-      b.setAttribute('aria-label','Enlarge this box'); b.innerHTML = glass; box.append(b);
-    });
     const buttonSelector = 'button,a.m-it,a.mw-link,a.btn-sig,a.btn,a.ro-action';
     const parentButton = scope.closest(buttonSelector);
     const buttons = [...(parentButton ? [parentButton] : []),...scope.querySelectorAll(buttonSelector)];
     buttons.forEach(b => {
-      if (b.closest('#joy,#totehm-paper,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,.eco-box-zoom,.mini-toggle,.rk-a')) return;
+      if (b.closest('#joy,#totehm-paper,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,.mini-toggle,.rk-a')) return;
       const text = b.textContent.trim(); if (!text || /^[×+−\-↑↓←→↔↕✕✖?°\d\s]+$/.test(text)) return;
       if (/^sign\s*in\b/i.test(text)) {
         const leaf = b.querySelector('#member-txt,#conn-txt') || b;
@@ -71,8 +46,6 @@
     }
   }
   document.addEventListener('click',e => {
-    const zoomButton = e.target.closest?.('[data-box-zoom]');
-    if (zoomButton) { e.preventDefault(); e.stopImmediatePropagation(); const box = zoomButton.closest(roots); if (box) zoom(box,zoomButton); return; }
     const definition = e.target.closest?.('[data-space-about]');
     if (definition) { e.preventDefault(); e.stopImmediatePropagation(); const content = document.querySelector('#space-definition')?.content?.cloneNode(true); if (content) open(content,'What is a space?',definition); }
   },true);

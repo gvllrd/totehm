@@ -24,11 +24,11 @@ hors de chez soi, PRIVATE/SHARED, WHY/TRIGGER et futurs OFF ci-dessous.
   Le snapshot complet reste propriétaire seul ; les textes masqués ne
   figurent pas dans les réponses publiques. Anciens `spot_why_set` compatibles.
 - `habitInner` affiche uniquement les attributs renseignés dans COM : pas
-  de Set Time Frequency, rythme, lieu ou intention inventé. Les loupes
-  agrandissent le contenu affiché, sans choisir la Habit ni modifier la source.
+  de Set Time Frequency, rythme, lieu ou intention inventé. Plus de loupe
+  (05/10, Wah : jamais de fenêtre) : une Box se lit et s'ouvre en place.
 - Navigation, boussole, papier, panneau ordinateur/radar réduit, capture
   verticale, joystick navy à la même position (rond/square) et pipeline Bunny
-  du 04/10 : conserver. Formulaires et loupes ne laissent aucun geste agir
+  du 04/10 : conserver. Formulaires et définition ne laissent aucun geste agir
   derrière leur dialogue ; fermeture restaure le focus et la navigation.
 - UI et connexion transverses : `CLAUDE.md` racine ; blocs copiés depuis
   `tools/ecosystem_ui.css` / `ecosystem_ui_snippet.js`, sans import runtime.
