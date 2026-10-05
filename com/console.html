@@ -1,83 +1,118 @@
 <!DOCTYPE html>
 <!--
-  ══ totehm.com/console — MA CONSOLE · 01/10/2026 ══════════════════════
-  Elle vivait sur figher.club ; elle vit sur la source (totehm.com, où vit
-  l'identité). figher.club/console redirige ici (308, la requête suit).
-  Un appel : `my_console()`. Six questions, dans l'ordre :
-    1 · qui voit mon TOTEHM      PRIVATE · VISIBLE TO MY SUBSCRIBERS (`visibility_set`)
-    2 · mon abonnement           un prix PAR AN, où me payer, ON/OFF (`monetization_set`,
-                                 `creator_payout_set`) ; le lien /@nom
-    3 · mes abonnés              qui, depuis quand
-    4 · mes abonnements          les TOTEHM que je suis ; arrêter à la fin de la période
-                                 (`club-billing` · cancel_creator) ; en trouver un (/search)
-    5 · ce qu'on me doit         le grand livre, le prochain versement
-    6 · TotehmBot · mes paiements · Reveal the Box
+  ══ totehm.com/console — MA CONSOLE · RÉÉCRITE LE 05/10/2026 ══════════
+  Wah : « la console pour les influenceurs est à chier (il y a encore des
+  Reveal the Box de higher.boutique dedans) ; je ne comprends pas les
+  réglages ». Un appel, `my_console()` ; dans l'ordre de ce qu'un créateur
+  fait :
+    1 · mon abonnement   UN parcours en trois étapes, chacune dit si elle est
+                         faite : mon prix PAR AN · où me payer · l'ouvrir
+                         (`monetization_set`, `creator_payout_set`). Ouvert :
+                         ma page /@nom, le lien, un post prêt à publier.
+    2 · qui lit mon TOTEHM   moi seul · moi et mes abonnés (`visibility_set`)
+    3 · mes abonnés · 4 · ce que je gagne (grand livre, prochain versement)
+    5 · mes abonnements (arrêter en fin d'année : `club-billing` cancel_creator)
+    6 · TotehmBot (mensuel, à part) · 7 · mes paiements (portail Stripe)
+  Reveal the Box est parti : c'est la boutique, pas la console (05/10).
   ⚠️ LA PAGE NE DÉCIDE RIEN : prix, accès, soldes viennent du serveur.
-  ⚠️ L'abonnement à un créateur (annuel) n'a RIEN à voir avec TotehmBot
-     (mensuel, offre séparée) : deux lignes, deux prix, jamais mêlés.
-  Polices : Space Mono et Quantico. Aucun fond blanc. La tuile perforée
-  navy = un nom de TOTEHM, rien d'autre.
+  L'offre est OUVERTE quand le serveur le dit (`offer.open` = prix + où
+  payer + ON + TOTEHM lisible par les abonnés : `_offer_open`).
 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-<title>Console — TOTEHM</title>
-<meta name="description" content="Who sees my TOTEHM, my subscription, my subscribers, what I subscribe to.">
+<title>Console · TOTEHM</title>
+<meta name="description" content="My subscription, my subscribers, what I earn, what I subscribe to.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
+/* POLICES : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
 html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
 :root{
-  --bg:#000;--mid:#b0b0b0;--lo:#9a9a9a;--dim:#606060;--g2:#141416;--g3:#1c1c1f;--g4:#26262b;--g5:#34343c;--no:#ff9a9a;--on:#639922;
-  --navy:#333366;--blue:#36498c;--rep:#743169;
-  --tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000'/%3E%3C/svg%3E");
-  --q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
+  --bg:#000;--mid:#b0b0b0;--lo:#8d8d96;--dim:#5f5f66;--g1:#0c0c0e;--g2:#121214;--g3:#1b1b1f;--g4:#26262b;--g5:#34343a;
+  --no:#ff9a9a;--on:#a9d67c;--coral:#fbd5ca;--q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
 .hide{display:none!important}
-#member{position:fixed;top:16px;left:16px;z-index:40;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;
-  font-family:var(--mono);font-weight:700;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#a0a0a0;padding:6px 4px}
-#member i{width:10px;height:10px;border-radius:50%;background:#3a3a40;display:block}
-#member.is-in i{background:#fff;box-shadow:0 0 9px #fff}
-#menu{position:fixed;top:0;left:0;z-index:45;width:min(300px,86vw);background:var(--g2);padding:58px 16px 18px;display:flex;flex-direction:column;gap:6px;
-  transform:translateY(-104%);visibility:hidden;transition:transform .3s ease}
-#menu.is-open{transform:none;visibility:visible}
-#menu .m-it{display:block;text-align:left;background:var(--g3);border:none;border-radius:10px;padding:10px 12px;cursor:pointer;color:var(--mid);
-  font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
-#menu .m-terms{background:none;color:var(--dim);margin-top:8px}
-main{width:100%;max-width:560px;margin:0 auto;padding:70px 16px 120px;display:flex;flex-direction:column;gap:30px}
-section{display:flex;flex-direction:column;gap:10px}
-h2{font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#fff}
-.kick{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--lo)}
-.lbl{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--lo);margin-top:4px}
-.in{font-family:var(--q);font-size:15px;color:#fff;background:var(--g3);outline:none;border:none;border-radius:10px;padding:10px 13px;caret-color:#fff;width:100%;max-width:340px}
-.in:focus{background:var(--g4)}
-.in::placeholder{color:rgba(255,255,255,.38)}
-.btn{font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);background:var(--g3);border:none;border-radius:10px;
-  cursor:pointer;padding:10px 14px;width:fit-content}
-.btn.is-on{background:var(--g5);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
-.btn[disabled]{opacity:.35;pointer-events:none}
-.tog{display:flex;gap:6px;flex-wrap:wrap}
-.tog .btn small{display:block;font-weight:400;font-size:9px;letter-spacing:.04em;text-transform:none;color:var(--dim);margin-top:2px}
-.lnk{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:none;border:none;cursor:pointer;font-family:var(--mono);width:fit-content}
-.note{font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;color:var(--lo)}
+:focus-visible{outline:1px solid #fff;outline-offset:3px}
+
+#member{position:fixed;top:14px;left:12px;z-index:40;display:flex;align-items:center;background:none;border:none;cursor:pointer;
+  font-family:var(--mono);font-weight:700;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);padding:8px 6px}
+#member.is-in{font-family:var(--q);font-weight:400;font-size:13px;letter-spacing:0;text-transform:none;color:var(--coral)}
+#menu{position:fixed;top:0;left:0;z-index:45;width:min(320px,88vw);background:var(--g2);padding:58px 16px 18px;display:flex;flex-direction:column;gap:6px;
+  transform:translateY(-104%);visibility:hidden;transition:transform .3s ease,visibility 0s linear .3s}
+#menu.is-open{transform:none;visibility:visible;transition:transform .3s ease}
+#menu .m-it{display:block;width:fit-content;text-align:left;background:var(--g4);border:none;border-radius:10px;padding:8px 12px;cursor:pointer;color:var(--mid);
+  font-family:var(--mono);font-weight:700;font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+#menu .m-terms{background:none;font-weight:400;color:var(--lo);margin-top:8px;padding-left:2px}
+
+main{width:100%;max-width:600px;margin:0 auto;padding:max(76px,10dvh) 16px 110px;display:flex;flex-direction:column;gap:14px}
+.head{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-bottom:6px}
+.kick{font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--lo)}
+.tname{display:inline-block;max-width:100%;font-family:var(--q);font-weight:400;color:var(--coral);background:#000;border:none;border-radius:10px;
+  padding:5px 11px;line-height:1.35;overflow-wrap:anywhere;cursor:pointer}
+.me{font-size:clamp(24px,7vw,34px);padding:6px 14px;background:var(--g2)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);background:var(--g2);border-radius:10px;padding:5px 9px}
+.chip.is-on{color:#fff}
+
+/* Un panneau par question : sombre, carré, sans bordure. */
+section.pan{background:var(--g2);padding:18px 16px;display:flex;flex-direction:column;gap:12px}
+h2{display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:700;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#fff}
+h2 .st{font-size:9px;font-weight:700;letter-spacing:.16em;color:var(--lo);background:var(--g4);border-radius:10px;padding:3px 8px}
+h2 .st.is-on{color:#fff;background:var(--g5)}
+.lead{font-size:10.5px;line-height:1.7;color:var(--lo)}
+.note{font-size:9.5px;letter-spacing:.08em;min-height:15px;color:var(--lo)}
 .note.no{color:var(--no)}.note.ok{color:var(--on)}
-.row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--g2);padding:10px 12px;border-radius:10px}
-.row .sub{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);text-align:right}
-.big{font-family:var(--mono);font-weight:700;font-size:18px;color:#fff}
-.empty{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
-.tname{display:inline-block;width:fit-content;max-width:100%;font-family:var(--q);font-weight:400;font-size:14px;color:#fff;line-height:1.4;word-break:break-word;
-  border:6px solid transparent;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round;padding:0 8px;background:none;cursor:pointer}
-.me{font-size:22px;border-width:8px;padding:0 12px}
-.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.trio > div{background:var(--g2);border-radius:10px;padding:10px}
-@media(hover:hover){.btn:hover{background:var(--g4);color:#fff}.lnk:hover,#member:hover,.kick:hover{color:#fff}}
+
+/* Les étapes de l'abonnement */
+.step{background:var(--g1);padding:12px 12px 13px;display:flex;flex-direction:column;gap:9px}
+.step-h{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--mid)}
+.step-h .ok{font-size:9px;letter-spacing:.14em;color:var(--dim)}
+.step.is-done .step-h .ok{color:var(--on)}
+.line{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.in{font-family:var(--q);font-size:15px;color:#fff;background:var(--g3);outline:none;border:none;border-radius:10px;padding:9px 12px;caret-color:#fff;
+  -webkit-appearance:none;appearance:none;min-width:0}
+.in:focus{background:var(--g4)}
+.in::placeholder{color:rgba(255,255,255,.32)}
+.unit{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
+.btn{display:inline-flex;align-items:center;justify-content:center;width:fit-content;max-width:100%;font-family:var(--mono);font-weight:700;font-size:10.5px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--mid);background:var(--g4);border:none;border-radius:10px;cursor:pointer;padding:9px 13px;
+  transition:background .15s,color .15s,transform .15s}
+.btn.is-main{color:#fff;background:var(--g5);padding:12px 18px;font-size:11.5px}
+.btn.is-on{color:#fff;background:var(--g5);box-shadow:inset 0 0 0 1px rgba(255,255,255,.5)}
+.btn:active{transform:scale(.97)}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.lnk{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:none;border:none;cursor:pointer;padding:4px 0;width:fit-content}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.seg .btn{width:100%;flex-direction:column;align-items:flex-start;text-align:left;padding:11px 12px;gap:3px}
+.seg .btn small{font-weight:400;font-size:9.5px;letter-spacing:.02em;text-transform:none;color:var(--lo)}
+.seg .btn.is-on small{color:var(--mid)}
+.url{font-family:var(--q);font-size:14px;color:var(--coral);overflow-wrap:anywhere}
+
+.list{display:flex;flex-direction:column;gap:2px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--g1);padding:9px 10px}
+.row .tname{font-size:14px}
+.row .sub{font-size:9px;line-height:1.7;letter-spacing:.12em;text-transform:uppercase;color:var(--lo);text-align:right}
+.empty{font-size:10px;letter-spacing:.06em;color:var(--dim)}
+.row > span:first-child{font-size:11px;letter-spacing:.04em;color:#fff}
+.pan .note:empty,.step .note:empty{display:none}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.trio > div{background:var(--g1);padding:10px}
+.lbl{font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--lo)}
+.big{font-weight:700;font-size:18px;color:#fff;line-height:1.3}
+#signin{background:var(--g2);padding:26px 18px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+#signin .in{width:100%;max-width:340px;text-align:center}
+@media(max-width:420px){.seg{grid-template-columns:1fr}.big{font-size:15px}}
+@media(hover:hover){
+  .btn:hover{background:var(--g5);color:#fff}.btn.is-main:hover{background:#44444b}
+  #menu .m-it:hover{background:var(--g5)}
+}
 
 
 
@@ -89,50 +124,23 @@ h2{font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.2em;te
 #menu .m-it:hover,
 #menu .m-terms:hover,
 .kick:hover,
-.lbl:hover,
-.in:hover::placeholder,
-.btn:hover,
-.tog .btn small:hover,
-.lnk:hover,
+.chip:hover,
+h2 .st:hover,
+.lead:hover,
 .note:hover,
+.step-h:hover,
+.step-h .ok:hover,
+.in:hover::placeholder,
+.unit:hover,
+.btn:hover,
+.lnk:hover,
+.seg .btn small:hover,
+.seg .btn.is-on small:hover,
 .row .sub:hover,
-.empty:hover{color:#fff}
+.empty:hover,
+.lbl:hover{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
-
-/* 03/10 — the member's TOTEHM name: Quantico Coral, without status dots. */
-#conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
-#conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
-.tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
-</style>
-<style data-ecosystem-ui="2026-10-05">
-/* 05/10/2026 — copied into the four platforms. Text buttons fit their label. */
-button.eco-text-btn,a.eco-text-btn{inline-size:fit-content!important;max-inline-size:100%;min-inline-size:0!important;flex:0 1 auto!important;padding:.65em .95em!important;line-height:1.45;box-sizing:border-box}
-.eco-connect,.eco-connect #member-txt,.eco-connect #conn-txt{font-family:'Space Mono',monospace!important;font-weight:700!important;font-size:10px!important;color:#b0b0b0!important;letter-spacing:.06em;text-transform:uppercase!important}
-button.eco-connect{background:#252529!important;border:0!important;border-radius:10px!important;cursor:pointer}
-#menu .eco-text-btn,#mmenu .eco-text-btn,.mw-card .eco-text-btn{align-self:flex-start}
-#member.eco-connect,#conn-bar.eco-connect{max-width:calc(50vw - 70px);text-align:left}
-#member.eco-connect #member-txt,#conn-bar.eco-connect #conn-txt{white-space:normal;max-width:100%;overflow:visible;text-overflow:clip}
-#member>i,#conn-bar>.dot,#conn-bar>.dc{display:none!important}
-.habit:not(.add):not(.filtre),.r-habit,.bx{position:relative}
-.eco-box-zoom{position:absolute;right:6px;top:6px;z-index:3;display:flex;align-items:center;justify-content:center;width:26px;height:26px;padding:5px;border:0;border-radius:8px;background:rgba(0,0,0,.55);color:#e0e0e0;cursor:pointer;touch-action:manipulation}
-.eco-box-zoom svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8}
-.habit.open>.eco-box-zoom{top:auto;bottom:6px}
-.eco-sheet{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.94);display:flex;justify-content:center;align-items:flex-start;padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(18px + env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;text-align:left}
-.eco-card{width:min(720px,100%);min-width:0;display:flex;flex-direction:column;gap:18px;margin:auto;touch-action:pan-y}
-.eco-close{align-self:flex-end!important;border:0;border-radius:10px;background:#252529;color:#ddd;font:700 11px 'Space Mono',monospace;cursor:pointer}
-.eco-box-copy{width:100%!important;max-width:none!important;height:auto!important;max-height:none!important;padding:24px!important;overflow:visible!important;transform:none!important;animation:none!important}
-.eco-box-copy .v-name,.eco-box-copy .nm,.eco-box-copy .r-text{font:400 clamp(20px,3vw,28px) 'Quantico',sans-serif!important;white-space:pre-wrap!important;overflow:visible!important;max-height:none!important;overflow-wrap:anywhere}
-.eco-box-copy .v-sub,.eco-box-copy .sb{font-size:13px!important;line-height:1.7!important;white-space:normal!important;overflow:visible!important}
-.eco-box-copy .minis{flex-wrap:wrap!important;max-height:none!important;overflow:visible!important}
-.eco-box-copy .mini{font-size:16px!important;line-height:1.6!important;white-space:normal!important;max-width:100%!important;overflow-wrap:anywhere}
-.eco-box-copy .tick{display:none}
-body.eco-modal #joy{pointer-events:none!important;opacity:.2!important}
-body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,body[data-eco-auth="central"] #in-email,body[data-eco-auth="central"] #in-otp,body[data-eco-auth="central"] #pt-email,body[data-eco-auth="central"] #pt-otp,body[data-eco-auth="central"] #pt-verify,body[data-eco-auth="central"] #btn-send,body[data-eco-auth="central"] #pt-send,body[data-eco-auth="central"] #btn-verify{display:none!important}
-/* Standalone interface T glyphs are forbidden. The rotating TOTEHM paper keeps its brand artwork. */
-#bigT>svg{visibility:hidden!important}.tv-T{display:none!important}
-@media(hover:hover){.eco-box-zoom:hover,.eco-close:hover{background:#34343a;color:#fff}.eco-connect:hover{color:#fff!important}}
-
 </style>
 <style data-com-member-menu="2026-10-05">
 /* Normal dark text buttons, with the landing gesture outside their background. */
@@ -150,85 +158,102 @@ body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,b
 </style>
 </head>
 <body>
-<button id="member" type="button" aria-label="Member menu"><i></i><span id="member-txt">CONNECT WITH MY TOTEHM</span></button>
+<button id="member" type="button" aria-label="Member menu"><span id="member-txt">CONNECT WITH MY TOTEHM</span></button>
 <nav id="menu" aria-label="Member menu"></nav>
 
 <main>
   <section id="signin" class="hide">
-    <h2>My console</h2>
-    <div class="kick">CONNECT WITH MY TOTEHM</div>
-    <input class="in" id="si-email" type="email" placeholder="your@email" autocomplete="email">
-    <input class="in hide" id="si-code" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code">
-    <div class="note" id="si-note"></div>
+    <div class="kick">My console</div>
+    <p class="lead">My subscription, my subscribers, what I earn.</p>
+    <div class="kick" style="color:#fff">CONNECT WITH MY TOTEHM</div>
+    <input class="in" id="si-email" type="email" placeholder="your@email" autocomplete="email" enterkeyhint="send" aria-label="Your email">
+    <input class="in hide" id="si-code" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code" aria-label="The code from your email">
+    <div class="note" id="si-note" aria-live="polite"></div>
   </section>
 
-  <div id="app" class="hide" style="display:flex;flex-direction:column;gap:30px">
-    <section>
+  <div id="app" class="hide" style="display:flex;flex-direction:column;gap:14px">
+    <div class="head">
+      <div class="kick">My console</div>
       <button class="tname me" id="who" type="button" title="Open my TOTEHM">—</button>
-      <div class="note" id="flash"></div>
+      <div class="chips" id="chips"></div>
+      <div class="note" id="flash" aria-live="polite"></div>
+    </div>
+
+    <!-- 1 · MON ABONNEMENT -->
+    <section class="pan" id="s-offer">
+      <h2>My subscription <span class="st" id="o-st">off</span></h2>
+      <p class="lead">People subscribe to my TOTEHM for a year. They read it, read only, and see where my shared spaces happen when location is on. I keep <b id="part" style="color:#fff">80</b>%.</p>
+      <div class="step" id="st-price">
+        <div class="step-h"><span>1 · My price</span><span class="ok" id="ok-price">to set</span></div>
+        <div class="line"><span class="unit">€</span><input class="in" id="price" inputmode="decimal" placeholder="24" aria-label="My price per year, in euros" style="width:96px">
+          <span class="unit">/ year</span><button class="btn" id="price-save" type="button">Save</button></div>
+        <div class="note" id="price-note"></div>
+      </div>
+      <div class="step" id="st-pay">
+        <div class="step-h"><span>2 · Where to pay me</span><span class="ok" id="ok-pay">to set</span></div>
+        <div class="line"><button class="btn" id="pay-iban" type="button">IBAN</button><button class="btn" id="pay-paypal" type="button">PayPal</button></div>
+        <div class="line"><input class="in" id="pay-handle" autocomplete="off" placeholder="my IBAN" aria-label="Where to pay me" style="flex:1 1 200px">
+          <button class="btn" id="pay-save" type="button">Save</button></div>
+        <div class="note" id="pay-note"></div>
+      </div>
+      <div class="step" id="st-open">
+        <div class="step-h"><span>3 · Open it</span><span class="ok" id="ok-open">off</span></div>
+        <div class="line"><button class="btn is-main" id="open-on" type="button">Open my subscription</button>
+          <button class="btn hide" id="open-off" type="button">Close it</button></div>
+        <div class="note" id="open-note"></div>
+      </div>
+      <div class="step hide" id="st-page">
+        <div class="step-h"><span>My page</span><span class="ok" style="color:var(--on)">live</span></div>
+        <a class="url" id="page-url" href="/"></a>
+        <div class="line"><a class="btn" id="page-see" href="/">See my page</a><button class="btn" id="link" type="button">Copy my link</button>
+          <button class="btn" id="post" type="button">Copy a post</button></div>
+        <div class="note" id="page-note"></div>
+      </div>
     </section>
 
-    <section id="s-vis">
-      <h2>Who sees my TOTEHM</h2>
-      <div class="tog" id="vis">
-        <button class="btn" type="button" data-vis="private">Private<small>only me</small></button>
-        <button class="btn" type="button" data-vis="subscribers">Visible to my subscribers<small>those who subscribe to me</small></button>
+    <!-- 2 · QUI LIT MON TOTEHM -->
+    <section class="pan" id="s-vis">
+      <h2>Who reads my TOTEHM</h2>
+      <div class="seg" id="vis">
+        <button class="btn" type="button" data-vis="private">Only me<small>private, nobody else reads it</small></button>
+        <button class="btn" type="button" data-vis="subscribers">Me and my subscribers<small>read only, nobody else</small></button>
       </div>
       <div class="note" id="vis-note"></div>
     </section>
 
-    <section id="s-offer">
-      <h2>My subscription</h2>
-      <div class="kick">My price · per year · I keep <span id="part">80</span> %</div>
-      <input class="in" id="price" inputmode="decimal" placeholder="€ / year" style="max-width:160px">
-      <div class="lbl">Where to pay me</div>
-      <div class="tog"><button class="btn" id="pay-iban" type="button">IBAN</button><button class="btn" id="pay-paypal" type="button">PayPal</button></div>
-      <input class="in" id="pay-handle" autocomplete="off" placeholder="IBAN or PayPal email">
-      <div class="note" id="pay-fin"></div>
-      <div class="lbl">Open to subscriptions</div>
-      <div class="tog"><button class="btn" id="off-off" type="button">Off</button><button class="btn" id="off-on" type="button">On</button></div>
-      <div class="note" id="off-note"></div>
-      <button class="lnk hide" id="link" type="button">Copy my subscription link</button>
-      <button class="lnk hide" id="post" type="button">Copy a post for my networks</button>
+    <!-- 3 · MES ABONNÉS -->
+    <section class="pan" id="s-fans">
+      <h2>My subscribers <span class="st" id="fans-n">0</span></h2>
+      <div class="list" id="fans"></div>
     </section>
 
-    <section id="s-fans">
-      <h2>My subscribers</h2>
-      <div id="fans"></div>
+    <!-- 4 · CE QUE JE GAGNE -->
+    <section class="pan" id="s-earn">
+      <h2>What I earn</h2>
+      <div id="earn"></div>
+      <div class="list" id="paid"></div>
     </section>
 
-    <section id="s-subs">
+    <!-- 5 · MES ABONNEMENTS -->
+    <section class="pan" id="s-subs">
       <h2>My subscriptions</h2>
-      <div id="subs"></div>
-      <div class="lbl">Subscribe to another TOTEHM</div>
-      <input class="in" id="find" placeholder="a name" autocomplete="off" spellcheck="false">
-      <div id="found"></div>
+      <div class="list" id="subs"></div>
+      <a class="btn" href="/search">Find a TOTEHM</a>
       <div class="note" id="subs-note"></div>
     </section>
 
-    <section id="s-earn">
-      <h2>What I earn</h2>
-      <div id="earn"></div>
-      <div id="paid"></div>
-    </section>
-
-    <section id="s-bot">
+    <!-- 6 · TOTEHMBOT -->
+    <section class="pan" id="s-bot">
       <h2>TotehmBot · Higher Self</h2>
-      <div id="bot"></div>
+      <div class="list" id="bot"></div>
     </section>
 
-    <section id="s-bill">
+    <!-- 7 · MES PAIEMENTS -->
+    <section class="pan" id="s-bill">
       <h2>My payments</h2>
-      <div id="bill"></div>
+      <div class="list" id="bill"></div>
       <button class="btn hide" id="portal" type="button">Cards and invoices</button>
       <div class="note" id="bill-note"></div>
-    </section>
-
-    <section id="s-reveal">
-      <h2>Reveal the Box</h2>
-      <input class="in" id="rv-in" placeholder="a cloth name, like 0.river" autocomplete="off" spellcheck="false">
-      <div id="rv-box"></div>
-      <div class="note" id="rv-note"></div>
     </section>
   </div>
 </main>
@@ -310,8 +335,8 @@ async function comMemberBridge(sb, target, url, apiURL, publicKey) {
 wireComMemberMenu($('menu'),{bridge:(target,url)=>comMemberBridge(sb,target,url,SB_URL,SB_ANON)});
 
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
-const BUILD='2026-10-05-member-ecosystem';
-const money = (c, cur) => { try{ return new Intl.NumberFormat('en', { style:'currency', currency:(cur||'eur').toUpperCase(), maximumFractionDigits: (c||0) % 100 ? 2 : 0 }).format((c||0)/100); }catch(_){ return ((c||0)/100) + ' ' + cur; } };
+const BUILD='2026-10-05-com-aplomb';
+const money = (c, cur) => { try{ return new Intl.NumberFormat('en', { style:'currency', currency:(cur||'eur').toUpperCase(), maximumFractionDigits: (c||0) % 100 ? 2 : 0 }).format((c||0)/100); }catch(_){ return ((c||0)/100) + ' ' + (cur||'eur'); } };
 const day = iso => iso ? new Date(iso).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—';
 async function fn(name, body){
   const { data:{ session } } = await sb.auth.getSession();
@@ -320,9 +345,11 @@ async function fn(name, body){
   let d = {}; try{ d = await r.json(); }catch(_){}
   return { ok: r.ok, status: r.status, d };
 }
+const say = (id, t, k) => { $(id).className = 'note' + (k ? ' ' + k : ''); $(id).textContent = t || ''; };
 let me = null, C = null, PAYM = 'iban', SEQ = 0;
 window.__totehm_console = () => ({ build: BUILD, signed_in: !!me, loaded: !!C, visibility: C?.visibility || null, offer_open: !!C?.offer?.open,
-  period: C?.offer?.period || null, subscribers: C?.subscribers?.count ?? null, subscriptions: (C?.subscriptions || []).length, bot: !!C?.bot?.active });
+  period: C?.offer?.period || null, subscribers: C?.subscribers?.count ?? null, subscriptions: (C?.subscriptions || []).length, bot: !!C?.bot?.active,
+  steps: C ? { price: !!C.offer?.price_cents, payout: !!C.offer?.payout_fin, on: !!C.offer?.enabled } : null, reveal: !!document.getElementById('rv-in') });
 
 /* ══ LE COIN MEMBRE — SIMPLE TERMS OF USE EN DERNIER ═════════════════ */
 function paintMenu(){
@@ -330,179 +357,174 @@ function paintMenu(){
   $('member-txt').textContent = me ? (C?.pseudo || 'My TOTEHM') : 'CONNECT WITH MY TOTEHM';
   $('menu').innerHTML=comMemberLinks(false,me?(typeof C?.offer?.enabled==='boolean'?C.offer.enabled:null):false)+(me?'<button class="m-it" type="button" data-out="1">Sign out</button>':'')+
     '<a class="m-it m-terms" href="/terms" target="_blank" rel="noopener">Simple terms of use</a>';
-
 }
 $('member').onclick = () => { if(!me){ $('si-email').focus(); return; } $('menu').classList.toggle('is-open'); };
-$('menu').addEventListener('click', async e => { if(e.target.closest('[data-out]')){ await sb.auth.signOut({ scope:'local' }); me = null; C = null; start(); } });
+$('menu').addEventListener('click', async e => { if(e.target.closest('[data-out]')){ await sb.auth.signOut({ scope:'local' }); me = null; C = null; $('menu').classList.remove('is-open'); start(); } });
 document.addEventListener('pointerdown', e => { if(!e.target.closest('#menu,#member')) $('menu').classList.remove('is-open'); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') $('menu').classList.remove('is-open'); });
 
 /* ══ LA LECTURE — un appel, la réponse la plus fraîche gagne ══════════ */
 async function load(){
-  const seq = ++SEQ;
+  const seq = ++SEQ, uid = me?.id || null;
   const { data, error } = await sb.rpc('my_console');
-  if(seq !== SEQ) return;
-  if(error){ console.error('[my_console]', error.message); $('flash').className = 'note no'; $('flash').textContent = 'the console is unreachable right now'; return; }
+  if(seq !== SEQ || uid !== (me?.id || null)) return;
+  if(error){ console.error('[my_console]', error.message); say('flash', 'the console is unreachable right now', 'no'); return; }
   C = data || {};
-  if(!C.signed_in){ me = null; return start(); }
+  if(!C.signed_in){ me = null; C = null; return start(); }
   paint();
 }
+const row = (left, right) => '<div class="row">' + left + '<span class="sub">' + right + '</span></div>';
+const nom = p => '<a class="tname" href="/@' + encodeURIComponent(p || '') + '">' + esc(p || '—') + '</a>';
 function paint(){
   paintMenu();
+  const o = C.offer || {}, f = C.subscribers || {}, cur = o.currency || 'eur';
   $('who').textContent = C.pseudo || 'name my TOTEHM';
-  $('vis').querySelectorAll('[data-vis]').forEach(b => b.classList.toggle('is-on', b.dataset.vis === C.visibility));
-  const o = C.offer || {};
+  /* ── 1 · mon abonnement : trois étapes, chacune dit si elle est faite ── */
+  const hasPrice = !!o.price_cents, hasPay = !!o.payout_fin;
   $('part').textContent = o.part || 80;
-  if(o.price_cents && document.activeElement !== $('price')) $('price').value = (o.price_cents/100).toString();
-  PAYM = o.payout_method || PAYM;
-  $('pay-iban').classList.toggle('is-on', PAYM === 'iban'); $('pay-paypal').classList.toggle('is-on', PAYM === 'paypal');
-  $('pay-fin').textContent = o.payout_fin ? (o.payout_method === 'paypal' ? 'PayPal' : 'IBAN') + ' ···· ' + o.payout_fin : 'no payout method yet';
-  $('off-off').classList.toggle('is-on', !o.enabled); $('off-on').classList.toggle('is-on', !!o.enabled);
-  $('off-note').textContent = o.open ? 'open · ' + money(o.price_cents, o.currency) + ' / year'
-    : o.enabled ? 'on — opens when my TOTEHM is visible to my subscribers' : 'off — nobody can subscribe';
-  $('link').classList.toggle('hide', !o.open || !C.pseudo);
-  $('post').classList.toggle('hide', !o.open || !C.pseudo);
-  const f = C.subscribers || {};
-  $('fans').innerHTML = (f.list || []).length ? f.list.map(x => '<div class="row"><a class="tname" href="/@' + encodeURIComponent(x.pseudo || '') + '">' + esc(x.pseudo || '—') + '</a><span class="sub">' +
-    esc(x.status) + ' · since ' + day(x.since) + (x.renews ? '<br>' + (x.ending ? 'ends ' : 'renews ') + day(x.renews) : '') + '</span></div>').join('')
-    : '<div class="empty">Nobody subscribes to me yet.</div>';
-  const subs = C.subscriptions || [];
-  $('subs').innerHTML = subs.length ? subs.map(s => { const live = ['active','trialing'].includes(s.status);
-    return '<div class="row"><a class="tname" href="/@' + encodeURIComponent(s.creator || '') + '">' + esc(s.creator || '—') + '</a><span class="sub">' +
-      money(s.price_cents, s.currency) + ' / year · ' + esc(s.status) + (s.renews ? '<br>' + (s.ending ? 'ends ' : 'renews ') + day(s.renews) : '') +
-      (live && !s.ending ? '<br><button class="lnk" type="button" data-cancel="' + esc(s.creator) + '">Stop at the end of the year</button>' : '') + '</span></div>'; }).join('')
-    : '<div class="empty">I do not subscribe to any TOTEHM yet.</div>';
+  $('o-st').textContent = o.open ? 'open' : o.enabled ? 'paused' : 'off'; $('o-st').classList.toggle('is-on', !!o.open);
+  if(hasPrice && document.activeElement !== $('price')) $('price').value = String(o.price_cents/100);
+  $('st-price').classList.toggle('is-done', hasPrice); $('ok-price').textContent = hasPrice ? money(o.price_cents, cur) + ' / year' : 'to set';
+  if(o.payout_method) PAYM = o.payout_method;
+  paintPay();
+  $('st-pay').classList.toggle('is-done', hasPay); $('ok-pay').textContent = hasPay ? (o.payout_method === 'paypal' ? 'PayPal' : 'IBAN') + ' ···· ' + o.payout_fin : 'to set';
+  $('st-open').classList.toggle('is-done', !!o.open);
+  $('ok-open').textContent = o.open ? 'open' : o.enabled ? 'paused' : 'off';
+  $('open-on').classList.toggle('hide', !!o.enabled); $('open-off').classList.toggle('hide', !o.enabled);
+  $('open-on').disabled = !hasPrice || !hasPay;
+  if(!$('open-note').classList.contains('no'))
+    $('open-note').textContent = o.open ? 'Anyone can subscribe on my page.'
+      : o.enabled ? 'Paused: my TOTEHM is private. Let my subscribers read it to reopen.'
+      : !hasPrice ? 'Set my price first.' : !hasPay ? 'Tell where to pay me first.' : 'Opening makes my TOTEHM readable by my subscribers.';
+  const url = C.pseudo ? 'https://www.totehm.com/@' + encodeURIComponent(C.pseudo) : '';
+  $('st-page').classList.toggle('hide', !o.open || !C.pseudo);
+  $('page-url').textContent = url.replace('https://', ''); $('page-url').href = '/@' + encodeURIComponent(C.pseudo || '');
+  $('page-see').href = '/@' + encodeURIComponent(C.pseudo || '');
+  /* ── 2 · qui lit ── */
+  $('vis').querySelectorAll('[data-vis]').forEach(b => b.classList.toggle('is-on', b.dataset.vis === C.visibility));
+  /* ── en tête : où j'en suis, en trois mots ── */
+  const eur = ((C.earnings || {}).balances || []).find(b => b.currency === 'eur') || { pending_cents:0 };
+  $('chips').innerHTML = '<span class="chip' + (o.open ? ' is-on' : '') + '">subscription ' + (o.open ? 'open' : o.enabled ? 'paused' : 'off') + '</span>' +
+    '<span class="chip">' + (f.count || 0) + ' subscriber' + ((f.count || 0) === 1 ? '' : 's') + '</span>' +
+    '<span class="chip">' + money(eur.pending_cents, 'eur') + ' to be paid</span>';
+  /* ── 3 · mes abonnés ── */
+  $('fans-n').textContent = f.count || 0;
+  $('fans').innerHTML = (f.list || []).length ? f.list.map(x => row(nom(x.pseudo),
+      esc(x.status) + ' · since ' + day(x.since) + (x.renews ? '<br>' + (x.ending ? 'ends ' : 'renews ') + day(x.renews) : ''))).join('')
+    : '<div class="empty">' + (o.open ? 'Nobody yet. Share my page: the link and a post are above.' : 'Nobody yet. Open my subscription first.') + '</div>';
+  /* ── 4 · ce que je gagne ── */
   const e = C.earnings || {}, bals = (e.balances && e.balances.length) ? e.balances : [{ currency:'eur', earned_cents:0, pending_cents:0, paid_cents:0 }];
   $('earn').innerHTML = bals.map(b => '<div class="trio"><div><div class="lbl">earned</div><div class="big">' + money(b.earned_cents, b.currency) + '</div></div>' +
-    '<div><div class="lbl">pending</div><div class="big">' + money(b.pending_cents, b.currency) + '</div></div><div><div class="lbl">paid out</div><div class="big">' + money(b.paid_cents, b.currency) + '</div></div></div>').join('');
-  const th = e.threshold_cents || 2500, eur = bals.find(b => b.currency === 'eur') || { pending_cents:0 };
-  $('paid').innerHTML = '<div class="row"><span>next payout · ' + day(e.next_payout) + '</span><span class="sub">' + (eur.pending_cents >= th ? money(eur.pending_cents) + ' will leave' : 'minimum ' + money(th)) + '</span></div>' +
-    (C.payouts || []).map(x => '<div class="row"><span>' + money(x.amount_cents, x.currency) + '</span><span class="sub">' + esc(x.period) + ' · ' + esc(x.status) + (x.paid_at ? ' · ' + day(x.paid_at) : '') + '</span></div>').join('');
+    '<div><div class="lbl">to be paid</div><div class="big">' + money(b.pending_cents, b.currency) + '</div></div><div><div class="lbl">paid out</div><div class="big">' + money(b.paid_cents, b.currency) + '</div></div></div>').join('');
+  const th = e.threshold_cents || 2500;
+  $('paid').innerHTML = row('<span>Next payout · ' + day(e.next_payout) + '</span>', eur.pending_cents >= th ? money(eur.pending_cents) + ' will leave' : 'from ' + money(th) + ' · on the 1st') +
+    (C.payouts || []).map(x => row('<span>' + money(x.amount_cents, x.currency) + '</span>', esc(x.period) + ' · ' + esc(x.status) + (x.paid_at ? ' · ' + day(x.paid_at) : ''))).join('');
+  /* ── 5 · mes abonnements ── */
+  const subs = C.subscriptions || [];
+  $('subs').innerHTML = subs.length ? subs.map(s => { const live = ['active','trialing'].includes(s.status);
+    return row(nom(s.creator), money(s.price_cents, s.currency) + ' / year · ' + esc(s.status) + (s.renews ? '<br>' + (s.ending ? 'ends ' : 'renews ') + day(s.renews) : '') +
+      (live && !s.ending ? '<br><button class="lnk" type="button" data-cancel="' + esc(s.creator) + '">Stop at the end of the year</button>' : '')); }).join('')
+    : '<div class="empty">I do not subscribe to any TOTEHM yet.</div>';
+  /* ── 6 · TotehmBot ── */
   const b = C.bot || {};
-  $('bot').innerHTML = '<div class="row"><span>' + (b.active ? (b.comp ? 'open · offered' : 'active') : 'not active') + '</span><span class="sub">' + money(b.price_cents || 700, b.currency || 'eur') + ' / month · separate from any TOTEHM subscription' +
-    (b.until ? '<br>' + (b.ending ? 'ends ' : 'renews ') + day(b.until) : '') + '</span></div><div class="empty">My spots and my TOTEHM stay mine, with or without the bot.</div>';
+  $('bot').innerHTML = row('<span>' + (b.active ? (b.comp ? 'Open · offered' : 'Active') : 'Not active') + '</span>',
+      money(b.price_cents || 700, b.currency || 'eur') + ' / month · separate from any TOTEHM subscription' + (b.until ? '<br>' + (b.ending ? 'ends ' : 'renews ') + day(b.until) : '')) +
+    '<div class="empty" style="padding-top:6px">' + (b.active ? '<a class="lnk" href="/higherself">Open Higher Self</a>' : '<a class="lnk" href="/club/totehmbot">What TotehmBot does</a>') + '</div>';
+  /* ── 7 · mes paiements ── */
   const m = C.membership;
-  $('bill').innerHTML = m && m.status ? '<div class="row"><span>FIGHER CLUB · annual</span><span class="sub">' + esc(m.status) + (m.until ? '<br>' + (m.ending ? 'ends ' : 'renews ') + day(m.until) : '') + '</span></div>' : '';
+  $('bill').innerHTML = m && m.status ? row('<span>FIGHER CLUB · yearly</span>', esc(m.status) + (m.until ? '<br>' + (m.ending ? 'ends ' : 'renews ') + day(m.until) : '')) : '<div class="empty">Every payment I make is in Stripe: cards and invoices.</div>';
   $('portal').classList.toggle('hide', !(m && m.portal));
 }
+function paintPay(){
+  $('pay-iban').classList.toggle('is-on', PAYM === 'iban'); $('pay-paypal').classList.toggle('is-on', PAYM === 'paypal');
+  $('pay-handle').placeholder = PAYM === 'paypal' ? 'my PayPal email' : 'my IBAN';
+}
 
-/* ══ 1 · QUI VOIT MON TOTEHM ═════════════════════════════════════════ */
+/* ══ 1 · MON ABONNEMENT ══════════════════════════════════════════════ */
+const WHY = { price:'between €3 and €1,000 a year', price_first:'set my price first', payout_first:'tell where to pay me first', signin:'connect first' };
+async function offer(enabled, noteId){
+  const euros = parseFloat(($('price').value || '').replace(',', '.').replace(/[^\d.]/g, ''));
+  const cents = Number.isFinite(euros) ? Math.round(euros*100) : null;
+  say(noteId, 'saving…');
+  const { data, error } = await sb.rpc('monetization_set', { p_enabled: enabled, p_price_cents: cents });
+  if(error){ console.error('[monetization_set]', error.message); say(noteId, 'not saved, try again', 'no'); return false; }
+  if(!data?.ok){ say(noteId, WHY[data?.why] || 'not saved', 'no'); return false; }
+  say(noteId, noteId === 'price-note' ? 'saved' : '', noteId === 'price-note' ? 'ok' : '');
+  await load(); return true;
+}
+$('price-save').onclick = () => offer(!!C?.offer?.enabled, 'price-note');
+$('price').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); offer(!!C?.offer?.enabled, 'price-note'); } });
+$('pay-iban').onclick = () => { PAYM = 'iban'; paintPay(); $('pay-handle').focus(); };
+$('pay-paypal').onclick = () => { PAYM = 'paypal'; paintPay(); $('pay-handle').focus(); };
+async function savePay(){
+  const v = $('pay-handle').value.trim();
+  if(v.length < 6){ say('pay-note', 'that does not look complete', 'no'); return; }
+  say('pay-note', 'saving…');
+  const { error } = await sb.rpc('creator_payout_set', { p_method: PAYM, p_handle: v });
+  if(error){ console.error('[creator_payout_set]', error.message); say('pay-note', 'not saved, try again', 'no'); return; }
+  $('pay-handle').value = '';   /* un IBAN affiché est un IBAN lu par-dessus l'épaule */
+  say('pay-note', 'saved', 'ok'); load();
+}
+$('pay-save').onclick = savePay;
+$('pay-handle').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); savePay(); } });
+$('open-on').onclick = async () => { $('open-note').className = 'note'; if(await offer(true, 'open-note')) say('flash', 'my subscription is open', 'ok'); };
+$('open-off').onclick = async () => { $('open-note').className = 'note'; await offer(false, 'open-note'); };
+async function copy(text, noteId, okText){
+  try{ await navigator.clipboard.writeText(text); say(noteId, okText, 'ok'); }
+  catch(_){ say(noteId, text); }
+}
+$('link').onclick = () => copy('https://www.totehm.com/@' + encodeURIComponent(C.pseudo), 'page-note', 'link copied');
+/* Le post prêt à publier (02/10) : la phrase de Wah + le lien /@nom, aucun
+   prix — il se lit sur la page, où il vient du serveur. */
+const POST = 'Subscribe to my TOTEHM to share Spots, grind together and stay strategically motivated.';
+$('post').onclick = () => copy(POST + '\n' + 'https://www.totehm.com/@' + encodeURIComponent(C.pseudo), 'page-note', 'post copied: paste it on my networks');
+
+/* ══ 2 · QUI LIT MON TOTEHM ══════════════════════════════════════════ */
 $('vis').addEventListener('click', async e => {
   const b = e.target.closest('[data-vis]'); if(!b || b.dataset.vis === C?.visibility) return;
-  const n = $('vis-note'); n.className = 'note'; n.textContent = 'saving…';
+  say('vis-note', 'saving…');
   const { data, error } = await sb.rpc('visibility_set', { p_visibility: b.dataset.vis });
-  if(error){ console.error('[visibility_set]', error.message); n.className = 'note no'; n.textContent = 'not saved'; return; }
-  if(!data?.ok){ n.className = 'note no'; n.textContent = data?.why === 'no_totehm' ? 'write my TOTEHM first' : 'not saved'; return; }
-  n.className = 'note ok';
-  n.textContent = data.visibility === 'private' && data.subscribers ? 'private — ' + data.subscribers + ' subscriber(s) can no longer read it; their subscription keeps running' : 'saved';
+  if(error){ console.error('[visibility_set]', error.message); say('vis-note', 'not saved, try again', 'no'); return; }
+  if(!data?.ok){ say('vis-note', data?.why === 'no_totehm' ? 'write my TOTEHM first' : 'not saved', 'no'); return; }
+  say('vis-note', data.visibility === 'private' && data.subscribers ? 'Private. ' + data.subscribers + ' subscriber' + (data.subscribers === 1 ? '' : 's') + ' can no longer read it; their subscription keeps running.' : 'saved', 'ok');
   load();
 });
 
-/* ══ 2 · MON ABONNEMENT ══════════════════════════════════════════════ */
-async function saveOffer(enabled){
-  const n = $('off-note'); n.className = 'note'; n.textContent = 'saving…';
-  const euros = parseFloat(($('price').value || '').replace(',', '.'));
-  const cents = Number.isFinite(euros) ? Math.round(euros*100) : null;
-  const { data, error } = await sb.rpc('monetization_set', { p_enabled: enabled, p_price_cents: cents });
-  if(error){ console.error('[monetization_set]', error.message); n.className = 'note no'; n.textContent = 'not saved'; return; }
-  if(!data?.ok){ n.className = 'note no'; n.textContent = ({ price:'between 3 € and 1 000 € per year', price_first:'set my price first', payout_first:'tell where to pay me first' })[data.why] || data.why || 'not saved'; return; }
-  await load();
-}
-$('off-on').onclick = () => saveOffer(true);
-$('off-off').onclick = () => saveOffer(false);
-$('price').addEventListener('keydown', e => { if(e.key === 'Enter') saveOffer(!!C?.offer?.enabled); });
-$('price').addEventListener('blur', () => { if($('price').value.trim()) saveOffer(!!C?.offer?.enabled); });
-$('pay-iban').onclick = () => { PAYM = 'iban'; $('pay-iban').classList.add('is-on'); $('pay-paypal').classList.remove('is-on'); $('pay-handle').focus(); };
-$('pay-paypal').onclick = () => { PAYM = 'paypal'; $('pay-paypal').classList.add('is-on'); $('pay-iban').classList.remove('is-on'); $('pay-handle').focus(); };
-$('pay-handle').addEventListener('keydown', async e => {
-  if(e.key !== 'Enter') return;
-  const v = $('pay-handle').value.trim(), n = $('pay-fin');
-  if(v.length < 6){ n.className = 'note no'; n.textContent = 'that does not look complete'; return; }
-  $('pay-handle').value = '';   /* un IBAN affiché est un IBAN lu par-dessus l'épaule */
-  const { error } = await sb.rpc('creator_payout_set', { p_method: PAYM, p_handle: v });
-  if(error){ console.error('[creator_payout_set]', error.message); n.className = 'note no'; n.textContent = 'not saved'; return; }
-  n.className = 'note ok'; load();
-});
-$('link').onclick = async () => {
-  const link = 'https://www.totehm.com/@' + encodeURIComponent(C.pseudo);
-  try{ await navigator.clipboard.writeText(link); $('link').textContent = 'copied'; setTimeout(() => $('link').textContent = 'Copy my subscription link', 1600); }
-  catch(_){ $('off-note').textContent = link; }
-};
-
-/* ══ UN POST PRÊT À PUBLIER · 02/10/2026 ═════════════════════════════════
-   Wah : l'audience de quelqu'un qui publie sur ses réseaux doit arriver
-   ICI, sur sa page `/@nom` — « Souscrivez à mon Totehm pour partager des
-   Spots, grind ensemble et se motiver stratégiquement ». La phrase est celle
-   de Wah, en anglais (l'interface l'est) ; le lien est le même que le
-   bouton du dessus. Aucun prix, aucun chiffre dans le texte : le prix se lit
-   sur la page `/@nom`, où il vient du serveur.
-   La présentation de l'offre aux créateurs vit sur /monetize ; elle est
-   ouverte à tous. /@nom reste la vente de l'abonnement de CE membre. */
-const POST = 'Subscribe to my TOTEHM to share Spots, grind together and stay strategically motivated.';
-$('post').onclick = async () => {
-  const link = 'https://www.totehm.com/@' + encodeURIComponent(C.pseudo), text = POST + '\n' + link;
-  try{ await navigator.clipboard.writeText(text); $('post').textContent = 'copied'; setTimeout(() => $('post').textContent = 'Copy a post for my networks', 1600); }
-  catch(_){ $('off-note').textContent = text; }
-};
-
-/* ══ 4 · MES ABONNEMENTS ═════════════════════════════════════════════ */
+/* ══ 5 · MES ABONNEMENTS ═════════════════════════════════════════════ */
 $('subs').addEventListener('click', async e => {
   const c = e.target.closest('[data-cancel]'); if(!c) return;
-  c.disabled = true; $('subs-note').className = 'note'; $('subs-note').textContent = 'stopping…';
+  c.disabled = true; say('subs-note', 'stopping…');
   const r = await fn('club-billing', { action:'cancel_creator', pseudo: c.dataset.cancel });
-  if(!r.ok){ console.error('[club-billing]', r.status, r.d.error); $('subs-note').className = 'note no'; $('subs-note').textContent = r.d.error || 'not stopped'; c.disabled = false; return; }
-  $('subs-note').className = 'note ok'; $('subs-note').textContent = 'stops on ' + day(r.d.until); load();
-});
-let fT = 0;
-$('find').addEventListener('input', () => {
-  clearTimeout(fT); const v = $('find').value.trim();
-  if(v.length < 2){ $('found').innerHTML = ''; return; }
-  fT = setTimeout(async () => {
-    const { data, error } = await sb.rpc('totehm_search', { p_q: v, p_limit: 8 });
-    if(error){ console.error('[totehm_search]', error.message); return; }
-    $('found').innerHTML = (data || []).map(r => '<div class="row"><a class="tname" href="/@' + encodeURIComponent(r.pseudo) + '">' + esc(r.pseudo) + '</a><span class="sub">' +
-      (r.subscribed ? 'subscribed' : r.offer ? money(r.price_cents, r.currency) + ' / year' : 'not open') + '</span></div>').join('') || '<div class="empty">no TOTEHM by that name</div>';
-  }, 260);
+  if(!r.ok){ console.error('[club-billing]', r.status, r.d.error); say('subs-note', r.d.error || 'not stopped, try again', 'no'); c.disabled = false; return; }
+  say('subs-note', 'stops on ' + day(r.d.until), 'ok'); load();
 });
 
-/* ══ MES PAIEMENTS — le portail Stripe ═══════════════════════════════ */
+/* ══ 7 · MES PAIEMENTS — le portail Stripe ═══════════════════════════ */
 $('portal').onclick = async () => {
-  $('bill-note').className = 'note'; $('bill-note').textContent = 'opening…';
+  say('bill-note', 'opening…');
   const r = await fn('club-billing', { action:'portal' });
   if(r.d.url){ location.href = r.d.url; return; }
-  console.error('[club-billing] portal', r.status); $('bill-note').className = 'note no'; $('bill-note').textContent = r.d.error || 'unavailable';
+  console.error('[club-billing] portal', r.status); say('bill-note', r.d.error || 'unavailable', 'no');
 };
-
-/* ══ REVEAL THE BOX — la donnée derrière l'objet, selon les droits ═══ */
-$('rv-in').addEventListener('keydown', async e => {
-  if(e.key !== 'Enter') return;
-  const v = $('rv-in').value.trim(), n = $('rv-note');
-  if(v.length < 3){ n.textContent = 'a name like 0.river'; return; }
-  const { data: r, error } = await sb.rpc('reveal_cloth', { p_name: v });
-  if(error){ console.error('[reveal_cloth]', error.message); n.className = 'note no'; n.textContent = 'unavailable'; return; }
-  n.textContent = '';
-  if(!r?.found){ $('rv-box').innerHTML = '<div class="empty">No TOTEHM Cloth by that name.</div>'; return; }
-  if(r.legacy || r.level === 'locked'){ $('rv-box').innerHTML = '<div class="row"><span>' + esc(r.legacy ? r.message : r.view || 'a box') + '</span><span class="sub">' + esc(r.name) + ' · ' + day(r.created_at) + '</span></div>'; return; }
-  $('rv-box').innerHTML = '<div class="row"><span style="font-family:var(--q);color:#fff">' + esc(r.text) + '</span><span class="sub">' + esc(r.name) + ' · ' + esc(r.view || '') + (r.owner ? '<br>' + esc(r.owner) : '') + '</span></div>';
-});
 $('who').onclick = () => { location.href = '/totehm#in'; };
 
 /* ══ SE CONNECTER — ici, sur la source de l'identité ═════════════════ */
 let mail = '';
 $('si-email').addEventListener('keydown', async e => {
   if(e.key !== 'Enter') return;
-  const v = $('si-email').value.trim(), n = $('si-note');
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ n.className = 'note no'; n.textContent = 'invalid email'; return; }
-  n.className = 'note'; n.textContent = 'sending…';
+  const v = $('si-email').value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ say('si-note', 'invalid email', 'no'); return; }
+  say('si-note', 'sending…');
   const { error } = await sb.auth.signInWithOtp({ email: v, options:{ shouldCreateUser: true } });
-  if(error){ console.error('[otp]', error.message); n.className = 'note no'; n.textContent = 'try again in a minute'; return; }
-  mail = v; n.className = 'note ok'; n.textContent = 'code sent';
+  if(error){ console.error('[otp]', error.message); say('si-note', 'try again in a minute', 'no'); return; }
+  mail = v; say('si-note', 'code sent to ' + v, 'ok');
   $('si-email').classList.add('hide'); $('si-code').classList.remove('hide'); setTimeout(() => $('si-code').focus(), 60);
 });
 $('si-code').addEventListener('input', async () => {
-  const t = $('si-code').value.trim(), n = $('si-note'); if(t.length !== 6) return;
-  n.className = 'note'; n.textContent = 'verifying…';
+  const t = $('si-code').value.trim(); if(t.length !== 6) return;
+  say('si-note', 'verifying…');
   const { error } = await sb.auth.verifyOtp({ email: mail, token: t, type:'email' });
-  if(error){ n.className = 'note no'; n.textContent = 'wrong code'; return; }
+  if(error){ console.error('[otp]', error.message); say('si-note', 'wrong code', 'no'); return; }
   start();
 });
 
@@ -510,120 +532,15 @@ async function start(){
   const { data:{ session } } = await sb.auth.getSession();
   me = session?.user || null; paintMenu();
   $('signin').classList.toggle('hide', !!me); $('app').classList.toggle('hide', !me);
-  if(!me) return;
+  if(!me){ setTimeout(() => $('si-email').focus(), 60); return; }
   await load();
   const p = new URLSearchParams(location.search);
-  if(p.get('subscribed')){ $('flash').className = 'note ok'; $('flash').textContent = 'subscribed to ' + p.get('subscribed') + ' — it appears below in a moment';
+  if(p.get('subscribed')){ say('flash', 'subscribed to ' + p.get('subscribed') + ' · it appears below in a moment', 'ok');
     history.replaceState(null, '', '/console'); setTimeout(load, 2500); }
   const to = p.get('to'); if(to) location.replace('/@' + encodeURIComponent(to));
 }
 start();
-</script>
-<script data-ecosystem-ui="2026-10-05">
-/* 05/10/2026 — copied into each independent page; no runtime import. */
-(() => {
-  const roots = '.habit:not(.add):not(.filtre),.r-habit,.bx';
-  const glass = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 6 6"/></svg>';
-  let sheet = null, previous = null, inert = [], overflow = '';
-  function close() {
-    if (!sheet) return;
-    sheet.remove(); sheet = null;
-    inert.forEach(([el, before]) => { if (el.isConnected) el.inert = before; }); inert = [];
-    document.body.style.overflow = overflow; document.body.classList.remove('eco-modal');
-    if (previous?.isConnected) previous.focus({preventScroll:true});
-  }
-  function open(content, title, source) {
-    if (sheet) close();
-    previous = source || document.activeElement; overflow = document.body.style.overflow;
-    sheet = document.createElement('div'); sheet.className = 'eco-sheet'; sheet.setAttribute('role','dialog');
-    sheet.setAttribute('aria-modal','true'); sheet.setAttribute('aria-label',title); sheet.tabIndex = -1;
-    const card = document.createElement('section'); card.className = 'eco-card';
-    const exit = document.createElement('button'); exit.type = 'button'; exit.className = 'eco-text-btn eco-close';
-    exit.textContent = 'CLOSE'; exit.addEventListener('click',close);
-    card.append(exit,content); sheet.append(card);
-    inert = Array.from(document.body.children).filter(el => !['SCRIPT','STYLE'].includes(el.tagName)).map(el => [el,el.inert]);
-    inert.forEach(([el]) => el.inert = true);
-    document.body.append(sheet); document.body.style.overflow = 'hidden'; document.body.classList.add('eco-modal');
-    sheet.addEventListener('click',e => { if (e.target === sheet) close(); }); exit.focus();
-  }
-  function zoom(box, source) {
-    const copy = box.cloneNode(true); copy.classList.add('eco-box-copy'); copy.classList.remove('open','is-on');
-    const sourceNodes = box.querySelectorAll('*'), copyNodes = copy.querySelectorAll('*');
-    sourceNodes.forEach((el,i) => { if (getComputedStyle(el).display === 'none') copyNodes[i].remove(); });
-    copy.querySelectorAll('[data-box-zoom],.w-x,.h-x,[data-kill],[data-x],.box-copy,.ro-copy,.pk-list,.pkw,.rk,.mini-x,.dash').forEach(el => el.remove());
-    const originals = box.querySelectorAll('textarea,input');
-    copy.querySelectorAll('textarea,input').forEach((el,i) => { const text = document.createElement('span'); text.className = 'v-name'; text.textContent = originals[i]?.value || ''; el.replaceWith(text); });
-    [copy,...copy.querySelectorAll('*')].forEach(el => {
-      for (const attr of Array.from(el.attributes)) if (/^(id|name|for|data-|on|tabindex|contenteditable|autofocus)/.test(attr.name)) el.removeAttribute(attr.name);
-      el.removeAttribute('role'); el.style.removeProperty('height'); el.style.removeProperty('max-height');
-    });
-    copy.querySelectorAll('button,a,select').forEach(el => { const span = document.createElement('span'); span.className = el.className; span.innerHTML = el.innerHTML; el.replaceWith(span); });
-    open(copy,'Enlarged TOTEHM box',source);
-  }
-  function enhance(scope) {
-    if (!(scope instanceof Element) || scope.closest('.eco-sheet')) return;
-    const parentBox = scope.closest(roots);
-    const boxes = [...(parentBox ? [parentBox] : []),...scope.querySelectorAll(roots)];
-    boxes.forEach(box => {
-      if (box.closest('.eco-sheet') || box.querySelector('[data-box-zoom]')) return;
-      const text = box.querySelector('.v-name,.h-text,.r-text,.nm')?.textContent?.trim() || box.querySelector('textarea')?.value?.trim();
-      if (!text) return;
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'eco-box-zoom'; b.dataset.boxZoom = '1';
-      b.setAttribute('aria-label','Enlarge this box'); b.innerHTML = glass; box.append(b);
-    });
-    const buttonSelector = 'button,a.m-it,a.mw-link,a.btn-sig,a.btn,a.ro-action';
-    const parentButton = scope.closest(buttonSelector);
-    const buttons = [...(parentButton ? [parentButton] : []),...scope.querySelectorAll(buttonSelector)];
-    buttons.forEach(b => {
-      if (b.closest('#joy,#totehm-paper,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,.eco-box-zoom,.mini-toggle,.rk-a')) return;
-      const text = b.textContent.trim(); if (!text || /^[×+−\-↑↓←→↔↕✕✖?°\d\s]+$/.test(text)) return;
-      if (/^sign\s*in\b/i.test(text)) {
-        const leaf = b.querySelector('#member-txt,#conn-txt') || b;
-        leaf.textContent = 'CONNECT WITH MY TOTEHM'; b.classList.add('eco-connect');
-      } else if (text !== 'CONNECT WITH MY TOTEHM') b.classList.remove('eco-connect');
-      if (b.textContent.trim() === 'CONNECT WITH MY TOTEHM') b.classList.add('eco-connect');
-      b.classList.add('eco-text-btn');
-    });
-    if (document.body.dataset.ecoAuth === 'central') {
-      for (const input of scope.querySelectorAll('#mw-email,#in-email,#pt-email')) {
-        if (input.parentElement.querySelector('[data-eco-connect]')) continue;
-        const b = document.createElement('button'); b.type = 'button'; b.dataset.ecoConnect = '1';
-        b.className = 'eco-text-btn eco-connect'; b.textContent = 'CONNECT WITH MY TOTEHM'; input.before(b);
-      }
-    }
-  }
-  document.addEventListener('click',e => {
-    const zoomButton = e.target.closest?.('[data-box-zoom]');
-    if (zoomButton) { e.preventDefault(); e.stopImmediatePropagation(); const box = zoomButton.closest(roots); if (box) zoom(box,zoomButton); return; }
-    const definition = e.target.closest?.('[data-space-about]');
-    if (definition) { e.preventDefault(); e.stopImmediatePropagation(); const content = document.querySelector('#space-definition')?.content?.cloneNode(true); if (content) open(content,'What is a space?',definition); }
-  },true);
-  document.addEventListener('keydown',e => {
-    if (!sheet) return;
-    e.stopImmediatePropagation();
-    if (e.key === 'Escape') { e.preventDefault(); close(); }
-    if (e.key === 'Tab') {
-      const list = [...sheet.querySelectorAll('button,a[href],input,textarea,select,[tabindex="0"]')].filter(el => !el.disabled && el.getClientRects().length);
-      const first = list[0], last = list.at(-1);
-      if (!first) { e.preventDefault(); sheet.focus(); }
-      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-    }
-  },true);
-  for (const name of ['pointerdown','touchstart','touchmove','touchend','wheel']) document.addEventListener(name,e => { if (sheet) e.stopImmediatePropagation(); },{capture:true,passive:true});
-  const start = () => {
-    enhance(document.body);
-    new MutationObserver(records => {
-      const scopes = new Set();
-      for (const r of records) {
-        if (r.target instanceof Element && !r.target.closest('.eco-sheet')) scopes.add(r.target);
-        for (const node of r.addedNodes) if (node instanceof Element) scopes.add(node);
-      }
-      scopes.forEach(enhance);
-    }).observe(document.body,{childList:true,subtree:true});
-  };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
-})();
+sb.auth.onAuthStateChange(event => { if(event === 'INITIAL_SESSION') return; setTimeout(start, 0); });
 </script>
 </body>
 </html>
