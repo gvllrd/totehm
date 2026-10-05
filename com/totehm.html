@@ -3059,6 +3059,20 @@ body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,b
 @media(hover:hover){.eco-box-zoom:hover,.eco-close:hover{background:#34343a;color:#fff}.eco-connect:hover{color:#fff!important}}
 
 </style>
+<style data-com-member-menu="2026-10-05">
+/* Normal dark text buttons, with the landing gesture outside their background. */
+.cm-menu{display:flex;flex-direction:column;align-items:flex-start;gap:17px;width:100%}
+.cm-item{display:flex;flex-direction:column;align-items:flex-start;gap:6px;max-width:100%}
+.cm-action{display:inline-flex;align-items:center;justify-content:center;gap:5px;inline-size:fit-content;max-inline-size:100%;padding:8px 12px;border:0;border-radius:10px;background:#242428;color:#b0b0b0;font:700 11px/1.6 'Space Mono',monospace;letter-spacing:0;text-align:left;text-decoration:none;cursor:pointer;white-space:normal;overflow-wrap:anywhere}
+.cm-action svg{width:57px;height:19px;flex-shrink:0}
+.cm-hint{margin:0;padding:0 2px;font:400 9px/1.65 'Space Mono',monospace;color:#85858e;letter-spacing:0;text-align:left;max-width:100%;overflow-wrap:anywhere}
+.cm-action:focus-visible{outline:1px solid #fff;outline-offset:3px}
+#menu:has(.cm-menu){max-height:calc(100dvh - 16px);overflow-y:auto;overscroll-behavior:contain}
+#menu .cm-menu{margin:0 0 12px}
+#member-window .cm-menu{padding:0 0 16px}
+@media(hover:hover){.cm-action:hover{background:#34343a;color:#fff}}
+
+</style>
 </head>
 <body class="gate">
 
@@ -3139,7 +3153,7 @@ a Totehm</span>
       <input class="mw-input" id="mw-pseudo" maxlength="24" placeholder="your Totehm">
       <div class="mw-note dim" id="mw-claim-note"></div>
     </div>
-    <a class="mw-out mw-terms" href="terms.html" target="_blank" rel="noopener">Simple terms of use</a>
+    <a class="mw-out mw-terms" href="/terms" target="_blank" rel="noopener">Simple terms of use</a>
   </div><!-- /#gate-door -->
 
   <!-- ⚠️ LE NOM ET LA VISIBILITÉ SONT REPARTIS DANS L'ESPACE MEMBRE le
@@ -3440,99 +3454,12 @@ a Totehm</span>
       <div class="mw-mail" id="mw-mail"></div>
       <div class="mw-sync" id="mw-sync"></div>
     <div id="settings" class="mw-dash">
-      <!-- Rangée haute du menu. Masquée (#mw-in-state #settings-nav) : la
-           navigation passe par les trois carrés #views, en haut à gauche. -->
-      <div id="settings-nav">
-        <!-- [My Totehm] logo-image centré. Le chevron ↑ qui le surmontait a
-             été supprimé le 29/08 avec tous les autres. -->
-        <button id="sn-home" class="sn-btn sn-logo" aria-label="Back to my Totehm">
-          <img src="assets/img/totehm_logo.png" alt="My Totehm">
-        </button>
-      </div>
-
-      <!-- ══ MES DEUX PAGES · 09/09/2026 ═══════════════════════════════
-           `book.html` et `next_objective.html` sont revenus. Ce ne sont
-           ni des vues ni des cadres : ce sont DEUX PAGES, à la même
-           origine, donc la même session. On y va, on en revient par le T
-           ou par le TOTEHM du bas.
-           Elles vivent ici — dans le menu — et le menu ne s'ouvre que
-           depuis l'intérieur du Totehm.
-           Retour arrière : ce bloc et les deux câblages en bas du module. -->
-      <!-- ══ LE NOM ET LA VISIBILITÉ REVIENNENT ICI · 18/09/2026 ══════
-           Ils étaient passés sur l'atterrissage le 15/09, avec cette
-           raison : « on les règle avant d'entrer, pas pendant ». Elle ne
-           tient plus. La visibilité n'est plus un réglage de confort,
-           c'est le COMMUTATEUR DE MONÉTISATION : choisir « visible to my
-           paying followers », c'est ouvrir sa boutique. Ça ne se décide
-           pas sur un écran d'accueil entre deux boutons — ça se décide
-           dans son compte, à côté de l'abonnement et des virements.
-           La RECHERCHE, elle, reste sur l'atterrissage : c'est la porte
-           d'à côté, pas un réglage.
-
-           ⚠️ CE SONT LES MÊMES NŒUDS, DÉPLACÉS — pas des copies. Deux
-           champs « nom du Totehm » dans le même document finiraient par
-           afficher deux valeurs différentes, et `paintNameButton()` n'en
-           peindrait qu'un. -->
-      <!-- ══ IDENTITÉ · encadré perforé navy ═══════════════════════════
-           Deux champs, deux noms de Totehm : le mien, celui que je cherche.
-           L'encadré perforé navy est LE langage du nom du Totehm — nulle
-           part ailleurs dans ce tiroir. Règle du 24/09/2026. -->
+      <div class="set-block" id="totehm-menu"></div>
       <div class="set-block" id="ident-block">
-        <button class="btn-sig gid" id="name-btn">Name of my Totehm</button>
-        <input class="line-input hide" id="set-name" maxlength="24" placeholder="my Totehm" autocomplete="off" spellcheck="false">
+        <button class="btn-sig gid" id="name-btn">Name of my TOTEHM</button>
+        <input class="line-input hide" id="set-name" maxlength="24" placeholder="my TOTEHM" autocomplete="off" spellcheck="false">
         <div class="note dim hide" id="name-note"></div>
-
-        <input class="line-input" id="search-input" maxlength="24" placeholder="Search a Totehm" autocomplete="off" spellcheck="false">
-        <div class="note dim hide" id="search-note"></div>
       </div>
-
-      <!-- ══ MY CLUB · progressive disclosure ═══════════════════════════
-           Un lien discret gris. Déplié : état membre + monétisation +
-           passerelle SSO vers figher.club/console pour l'IBAN et le reste.
-           Le dashboard complet vit dans le club — ici on montre l'état et
-           on ouvre les commandes principales. -->
-      <div class="set-block" id="club-block">
-        <button class="mw-link" id="club-toggle" type="button" aria-expanded="false">My Club</button>
-        <div class="mw-panel hide" id="club-panel">
-          <div id="mw-sub"></div>
-          <div class="mw-state" id="club-state"></div>
-          <a class="mw-link" id="club-console" href="/console">My console →</a>
-        </div>
-      </div>
-
-      <!-- ══ TOTEHMBOT · icône + porte Telegram ════════════════════════
-           Fonctionnalité clé du Totehm — pas dans le club. Icône = joystick
-           rotée horizontalement (rouge-violet passé, bleu clair futur, navy
-           présent). Ouvre la conversation Telegram en un tap. -->
-      <div class="set-block hide" id="tg-block">
-        <button class="mw-link tg-link" id="tg-toggle" type="button" aria-expanded="false">
-          <svg class="tg-icon" viewBox="0 0 512 512" aria-hidden="true">
-            <circle cx="256" cy="256" r="210" fill="#333366"/>
-            <circle cx="166" cy="256" r="46" fill="#743169"/>
-            <circle cx="346" cy="256" r="46" fill="#36498c"/>
-          </svg>
-          <span>TotehmBot</span>
-        </button>
-        <div class="mw-panel hide" id="tg-panel">
-          <button class="btn-sig" id="tg-btn" type="button">Open TotehmBot in Telegram ↗</button>
-          <div class="note dim" id="tg-note"></div>
-          <a class="mw-link mw-link-sm" href="/club/totehmbot" target="_blank" rel="noopener">what is TotehmBot?</a>
-        </div>
-      </div>
-
-      <!-- Bouton [Get Higher with my Totehm] : ancrage marque · lien menu Space Mono -->
-      <div class="set-block higher-only">
-        <a class="mw-link higher-only" id="btn-get-higher" href="https://www.totehm.com" target="_blank" rel="noopener">Get <svg class="higher-inline" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg> with my Totehm</a>
-      </div>
-
-      <!-- Bouton [Totehmize my cloth] : pont vers la boutique · lien menu -->
-      <div class="set-block">
-        <div class="menu-row">
-          <a class="mw-link" id="wear-btn" href="https://higher.boutique/#menu">Totehmize my cloth</a>
-        </div>
-      </div>
-
-      <div class="set-block"><button class="mw-link" id="myspaces-open" type="button">My spaces</button></div>
 
       <!-- ══ ACTIONS DESTRUCTIVES · discrètes, écartées des liens menu
            · 24/09/2026. Wah : Totehmize my cloth et Delete my Totehm ne
@@ -3549,7 +3476,7 @@ a Totehm</span>
       </div>
     </div>
       <button class="mw-out" id="mw-signout">Sign out</button>
-      <a class="mw-out mw-terms" href="terms.html" target="_blank" rel="noopener">Simple terms of use</a>
+      <a class="mw-out mw-terms" href="/terms" target="_blank" rel="noopener">Simple terms of use</a>
     </div>
   </div>
 </div>
@@ -3565,7 +3492,7 @@ a Totehm</span>
 
 <section id="myspaces" role="dialog" aria-modal="true" aria-labelledby="myspaces-title" tabindex="-1">
   <div id="myspaces-inner">
-    <div id="myspaces-head"><h2 id="myspaces-title">My spaces</h2><button id="myspaces-close" type="button">[CLOSE]</button></div>
+    <div id="myspaces-head"><h2 id="myspaces-title">My TOTEHM spaces</h2><button id="myspaces-close" type="button">[CLOSE]</button></div>
     <div id="myspaces-name"></div>
     <div id="myspaces-list"></div>
     <p id="myspaces-note" role="status"></p>
@@ -3695,6 +3622,80 @@ await Promise.race([
 ]);
 
 const $=id=>document.getElementById(id);
+/* COM MEMBER MENU · 2026-10-05 · source: tools/com_member_menu.js */
+/* COM member navigation. Copied into independent pages; no runtime import. */
+const COM_HIGHER_BADGE = '<svg viewBox="0 0 600 200" role="img" aria-label="Higher"><defs><mask id="cm-hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#cm-hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></svg>';
+function comMemberLinks(home = false, enabled = null) {
+  const item = (content, hint) => '<div class="cm-item">' + content + '<p class="cm-hint">' + hint + '</p></div>';
+  return '<nav class="cm-menu" aria-label="My TOTEHM ecosystem">' +
+    item('<a class="cm-action" data-com-open href="/totehm#in">Open my TOTEHM</a>', 'Tap on it') +
+    item('<a class="cm-action" href="/search">Search a TOTEHM</a>', 'Turn it over') +
+    item('<a class="cm-action" id="btn-get-higher" data-com-bridge="club" href="https://www.figher.club/get_higher">Get ' + COM_HIGHER_BADGE + '</a>', 'Put it on your tongue') +
+    item('<a class="cm-action" href="/higherself">Reflect with my TOTEHM</a>', 'Higher Self · TotehmBot') +
+    item(home ? '<button class="cm-action" id="myspaces-open" type="button">My TOTEHM spaces</button>' : '<a class="cm-action" href="/totehm?spaces=1">My TOTEHM spaces</a>', 'My TOTEHM, right now, right here · in SPACE') +
+    item('<a class="cm-action" id="wear-btn" data-com-bridge="boutique" href="https://www.higher.boutique/">Totehmize my cloth</a>', 'HIGHER BOUTIQUE') +
+    item('<a class="cm-action" data-com-monetize href="' + (enabled === false ? '/monetize' : '/console') + '">' + (enabled === false ? 'Monetize my TOTEHM ecosystem' : 'Manage my subscriptions') + '</a>', '<span data-com-offer-hint>' + (enabled === false ? 'Your audience · your annual subscription' : enabled === true ? 'My offer · my subscribers · my subscriptions' : 'Subscription settings') + '</span>') +
+    '</nav>';
+}
+function paintComMemberOffer(enabled) {
+  document.querySelectorAll('[data-com-monetize]').forEach(link => {
+    link.href = enabled === false ? '/monetize' : '/console';
+    link.textContent = enabled === false ? 'Monetize my TOTEHM ecosystem' : 'Manage my subscriptions';
+  });
+  document.querySelectorAll('[data-com-offer-hint]').forEach(hint => {
+    hint.textContent = enabled === false ? 'Your audience · your annual subscription' : enabled === true ? 'My offer · my subscribers · my subscriptions' : 'Subscription settings';
+  });
+}
+let comOfferSeq = 0;
+function resetComMemberOffer() { comOfferSeq++; paintComMemberOffer(null); }
+async function readComMemberOffer(sb, currentUser) {
+  const uid = currentUser()?.id || null, seq = ++comOfferSeq;
+  if (!uid) { paintComMemberOffer(false); return false; }
+  try {
+    const { data, error } = await sb.rpc('my_console');
+    if (seq !== comOfferSeq || uid !== currentUser()?.id) return;
+    if (error) { console.error('[member offer]', error.message); paintComMemberOffer(null); return; }
+    const enabled=data?.signed_in && typeof data.offer?.enabled === 'boolean' ? data.offer.enabled : null;
+    paintComMemberOffer(enabled);return enabled;
+  } catch (error) {
+    if (seq !== comOfferSeq || uid !== currentUser()?.id) return;
+    console.error('[member offer]', error?.message || error); paintComMemberOffer(null);
+  }
+}
+function wireComMemberMenu(host, { open, bridge } = {}) {
+  host.addEventListener('click', event => {
+    const link = event.target.closest('a');
+    if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button > 0) return;
+    if (link.hasAttribute('data-com-open') && open) { event.preventDefault(); open(link); }
+    else if (link.dataset.comBridge && bridge) { event.preventDefault(); bridge(link.dataset.comBridge, link.href); }
+  });
+}
+/* Same 60s, one-use SSO bridge as tools/sso_snippet.js. No session in URLs. */
+async function comMemberBridge(sb, target, url, apiURL, publicKey) {
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      const response = await fetch(apiURL + '/functions/v1/sso-mint', {
+        method: 'POST', headers: { authorization: 'Bearer ' + session.access_token, apikey: publicKey, 'content-type': 'application/json' },
+        body: JSON.stringify({ target })
+      });
+      if (response.ok) {
+        const { code } = await response.json();
+        if (code) { location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; }
+      } else console.error('[member bridge]', response.status);
+    }
+  } catch (error) { console.error('[member bridge]', error?.message || error); }
+  location.href = url;
+}
+
+/* END COM MEMBER MENU */
+$('totehm-menu').innerHTML=comMemberLinks(true);
+wireComMemberMenu($('totehm-menu'),{
+  open:()=>{closeMember();if(!RO&&inscrit()&&window.__totehmDeplie)window.__totehmDeplie();else location.href='/totehm#in';},
+  bridge:(target,url)=>ssoVersDomaine(sb,target,url)
+});
+let openRequestedSpaces=new URLSearchParams(location.search).get('spaces')==='1';
+
 
 /* ══ JOURNAL DES TRANSFORMATIONS — la matière première du Book of My Totehm ══
    Chaque mutation d'habitude est journalisée : en local (toujours) et dans Supabase (si loggé).
@@ -3715,11 +3716,7 @@ async function logTotehmEvent(kind, habitText, detail){
 /* Bouton contextuel "Wear my Totehm" :
    - sur totehm.space -> pousse le pont vers la boutique (comportement par défaut du href)
    - sur higher.boutique -> renvoie au menu boutique local */
-(function(){
-  const btn=$('wear-btn'); if(!btn) return;
-  const isSpace=/(^|\.)totehm\.space$/i.test(location.hostname);
-  if(!isSpace){ btn.href='index.html#menu'; }
-})();
+
 
 /* ══ FREQUENCY ENGINE — 33 rythmes humains, moteur multilingue ══ */
 const FREQS=[
@@ -3945,8 +3942,7 @@ const KEY='totehm_habits_v1';
 let me=null, myProfile=null, cloudMode=false, cloudSaveTimer=null, saveTimer=null;
 /* TotehmBot — declare ici et pas plus bas : la remise a zero de la
    deconnexion s'execute avant, et une TDZ y jetterait. */
-const TG_BOT='TotehmBot';
-let tgLinked=false;
+
 /* Inscrit = un compte ET le nom de son Totehm. Rien d'autre n'ouvre. */
 const inscrit=()=>!!(me&&myProfile);
 function cacheLire(){
@@ -4335,7 +4331,6 @@ $('acct-wipe').onclick=async()=>{
        reecrirait ce qu'on vient d'effacer. */
     state={habits:[],vis:'private'};
     myProfile=null; cloudMode=false; mySub=null;
-    tgLinked=false; { const tb=$('tg-block'); if(tb)tb.classList.add('hide'); }
     cacheOublier();
     renderHabits(); connPaint(); renderSettings();
     /* Sans nom, plus inscrit : le tiroir se ferme, et la porte du papier
@@ -4767,7 +4762,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-05-spaces-boxes';
+const BUILD='2026-10-05-member-ecosystem';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -6723,7 +6718,6 @@ function closeMember(){ $('member-window').classList.remove('show'); }
    jamais — donc invisibles.
    `showBook()` / `showNext()` restent : elles servent la touche Échap et
    la bascule de vue. */
-$('sn-home').onclick =()=>{closeMember();if(!busy&&!hOpen())paint();};
 
 
 /* [Get Higher with my Totehm] est un <a> vers totehm.com. Il n'y a plus
@@ -7177,20 +7171,6 @@ $('set-name').addEventListener('keydown',async e=>{
    (`creator_cercle`, `creator-price`, `creator_payout_set`) sont
    inchangées et servent la console. */
 
-/* ══ MY CLUB · progressive disclosure ════════════════════════════════
-   Un tap déplie le panneau (état + lien SSO vers la console). */
-$('club-toggle').onclick=()=>{
-  const panel=$('club-panel'), btn=$('club-toggle');
-  const open=panel.classList.toggle('hide')===false;
-  btn.setAttribute('aria-expanded', open?'true':'false');
-};
-
-/* Le lien vers la console passe par le pont SSO — le membre ne se
-   reconnecte pas. ssoVersDomaine est défini par sso_snippet.js copié
-   plus haut dans le module. */
-/* 01/10 : la console vit sur totehm.com (/console) — même origine, même session. */
-
-
 /* ══════════════════════════════════════════════════════════════════════════
    LA LOCALISATION — POURQUOI ELLE NE MARCHAIT PAS SUR .space
    ══════════════════════════════════════════════════════════════════════════
@@ -7366,17 +7346,6 @@ function TotehmSearch({input,results,note,controls,more,onResults=()=>{}}){
    cherche un nom qu'il connaît déjà. */
 
 
-let memberSearchSeq=0,memberSearchTimer=0;
-async function runSearch(q,noteEl){
-  const seq=++memberSearchSeq,uid=me?.id;noteEl.classList.remove('hide');noteEl.className='note dim';noteEl.textContent='Searching…';
-  const {data,error}=await sb.rpc('totehm_discover',{p_q:q,p_scope:q?'names':'subscriptions',p_limit:8});
-  if(seq!==memberSearchSeq||uid!==me?.id)return;
-  if(error){console.error('[member search]',error.message);noteEl.textContent='Search unavailable. Try again.';return;}
-  const rows=data?.items||[];
-  noteEl.innerHTML='<div class="sr-list">'+rows.map(r=>'<a class="sr-row" href="/totehm?ro='+encodeURIComponent(r.pseudo)+'"><span class="sr-name">'+esc(r.pseudo)+'</span><span class="sr-meta">'+(r.can_read?'read & copy':r.offer?'subscription required':'')+'</span></a>').join('')+'</div><a class="ts-link" href="/search">Names · subscriptions · boxes</a>';
-}
-$('search-input').addEventListener('input',()=>{memberSearchSeq++;clearTimeout(memberSearchTimer);const v=$('search-input').value.trim();$('search-note').textContent='Searching…';memberSearchTimer=setTimeout(()=>runSearch(v,$('search-note')),240);});
-$('search-input').addEventListener('keydown',e=>{if(e.key==='Enter'){clearTimeout(memberSearchTimer);runSearch($('search-input').value.trim(),$('search-note'));}});
 
 /* ══ MEMBER SPACE : email-only DNA ══ */
 function connPaint(){
@@ -7437,20 +7406,6 @@ async function loadProfile(){
    NOM : le brief disait « Figher Club ». Je l'ai lu « Higher Club » — cohérent
    avec la marque HIGHER omniprésente (asset #higher-word, « Get Higher »…).
    Pour revenir en arrière : change simplement CLUB.name ci-dessous. */
-const CLUB={
-  key:'higher',
-  name:'Higher Club',
-  trial:'7-day free trial',
-  price:'€7 / month',
-  priceAlt:'€70 / year',
-  /* Le palier se vendait en un paragraphe et trois puces. Le nom, l'essai et
-     le prix suffisent : qui est déjà dans son Totehm n'a pas besoin qu'on lui
-     explique ce qu'il y trouve. Pour rétablir l'argumentaire, il suffit de
-     remplir `why` et `perks` — paintSubscription() les affiche dès qu'ils
-     ne sont pas vides. */
-  why:'',
-  perks:[]
-};
 
 /* Lit l'abonnement de l'utilisateur. Rien n'est écrit depuis le client :
    c'est le webhook du fournisseur de paiement qui fait foi. */
@@ -7503,118 +7458,6 @@ async function loadSubscription(){
     return data||null;
   }catch(e){ return null; }
 }
-
-function paintSubscription(sub){
-  const box=$('mw-sub'); if(!box) return;
-  const live=sub && ['active','trialing','past_due'].includes(sub.status);
-  if(live){
-    /* Un seul palier : quel que soit le `tier` en base (y compris d'anciens
-       seed/plant/tree), c'est le Higher Club. */
-    const end=sub.current_period_end?new Date(sub.current_period_end):null;
-    const when=end?end.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}):'';
-    const meta=sub.cancel_at_period_end
-      ? (when?'ends '+when:'ending')
-      : (sub.status==='trialing'?(when?'trial ends '+when:'trial')
-        :(sub.status==='past_due'?'payment failed':(when?'renews '+when:'active')));
-    box.innerHTML='<div class="s-lab">Your membership</div>'
-      +'<div class="s-tier">'+esc(CLUB.name)+'</div>'
-      +'<div class="s-meta">'+esc(meta)+'</div>'
-      +(CLUB.perks.length?'<ul class="s-perks">'+CLUB.perks.map(x=>'<li>'+x+'</li>').join('')+'</ul>':'')
-      +'<button class="s-act" id="mw-sub-change">Manage membership</button>';
-    const b=$('mw-sub-change');
-    if(b) b.onclick=()=>window.open('https://totehm.space','_blank','noopener');
-  }else{
-    box.innerHTML='<div class="s-lab">Membership</div>'
-      +'<div class="s-plan s-club">'
-      +'<span class="p-top"><span class="p-name">'+esc(CLUB.name)+'</span>'
-      +'<span class="p-price">'+esc(CLUB.trial)
-      +'<span class="p-alt">then '+esc(CLUB.price)+' \u00b7 '+esc(CLUB.priceAlt)+'</span></span></span>'
-      +(CLUB.why?'<span class="p-why">'+esc(CLUB.why)+'</span>':'')
-      +(CLUB.perks.length?'<ul class="s-perks">'+CLUB.perks.map(x=>'<li>'+x+'</li>').join('')+'</ul>':'')
-      +'<button class="s-act" id="mw-club">Start '+esc(CLUB.trial)+'</button>'
-      +'</div>';
-    const btn=$('mw-club');
-    if(btn) btn.onclick=()=>{
-      /* Point d'accroche de subscription-checkout. La redirection devra viser
-         window.top : lancee depuis une iframe, Stripe est annule en silence. */
-      btn.blur();
-    };
-  }
-}
-/* ══ TOTEHMBOT ══════════════════════════════════════════════════════
-   Le membre pose un spot depuis Telegram : /spot, sept boutons, une
-   position native. Aucun geocodage, donc aucune API payante.
-
-   La liaison passe par un code a usage unique, valable 10 minutes, cree
-   par new_bot_link_code() et lu par bot-reply au /start. Le compte n'est
-   JAMAIS transmis par le message : le bot le retrouve en base.
-
-   telegram_id n'est ni lisible ni ecrivable par le membre (GRANT par
-   colonne) — sans quoi n'importe qui pouvait s'attribuer le Telegram
-   d'un autre et recevoir ses questions a sa place. D'ou bot_linked(),
-   qui ne rend qu'un booleen sur SA ligne. */
-
-async function paintTelegram(sub){
-  const box=$('tg-block'); if(!box) return;
-  const live = sub && ['active','trialing','past_due'].includes(sub.status);
-  /* Pas d'abonnement = /spot repondrait « reserve aux membres du Club ».
-     On ne montre pas une porte qui se ferme. */
-  box.classList.toggle('hide', !(me && live));
-  if(!(me && live)) return;
-  /* `bot_state()` rend TROIS choses en un appel : lié, actif, en attente.
-     `bot_linked()` n'en rendait qu'une — et le membre voyait « connected »
-     sur un bot qui n'avait pas le droit de parler. */
-  let st=null;
-  try{ const {data}=await sb.rpc('bot_state'); st=data||null; }catch(_){ st=null; }
-  tgLinked=!!(st&&st.linked);
-  botOn=!!(st&&st.on);
-  const b=$('tg-btn'), n=$('tg-note');
-  b.classList.toggle('claimed', tgLinked);
-  b.textContent = tgLinked ? 'TotehmBot connected' : 'Connect TotehmBot';
-  const t=$('tg-toggle');
-  if(t){
-    t.classList.toggle('hide', !tgLinked);
-    t.textContent = botOn ? 'pause the daily question' : 'resume the daily question';
-  }
-  if(n) n.textContent = !tgLinked ? ''
-    : (botOn ? 'send /tonight for what is on around you · /spot to post a place'
-             : 'paused — /tonight and /spot still work');
-}
-let botOn=false;
-/* Le membre coupe et rallume depuis la page. Le bot en fait autant avec
-   /pause et /reprendre : deux portes, un seul interrupteur en base. */
-if($('tg-toggle')) $('tg-toggle').onclick=async()=>{
-  const next=!botOn;
-  const {error}=await sb.rpc('set_bot',{p_on:next});
-  if(error)return;
-  botOn=next;
-  const t=$('tg-toggle');
-  t.textContent = botOn ? 'pause the daily question' : 'resume the daily question';
-  const n=$('tg-note');
-  if(n) n.textContent = botOn
-    ? 'send /tonight for what is on around you · /spot to post a place'
-    : 'paused — /tonight and /spot still work';
-};
-
-$('tg-btn').onclick=async()=>{
-  const n=$('tg-note');
-  if(tgLinked){ window.open('https://t.me/'+TG_BOT,'_blank','noopener'); return; }
-  n.className='note dim'; n.textContent='opening telegram…';
-  /* La fenetre s'ouvre AVANT l'await : ouverte apres, elle n'est plus
-     rattachee au clic et Safari la bloque. On la remplit ensuite. */
-  const w=window.open('','_blank');
-  const {data,error}=await sb.rpc('new_bot_link_code');
-  if(error||!data){
-    if(w)w.close();
-    n.className='note no'; n.textContent='try again in a minute';
-    return;
-  }
-  const url='https://t.me/'+TG_BOT+'?start='+encodeURIComponent(data);
-  if(w){ w.opener=null; w.location=url; } else { location.href=url; }
-  n.className='note dim'; n.textContent='say /start in telegram, then come back';
-  /* Le code vit 10 min. On represente l'etat au retour d'onglet. */
-  setTimeout(()=>{ loadSubscription().then(paintTelegram); }, 4000);
-};
 
 function memberPaint(){
   $('mw-out-state').classList.toggle('hide',!!me);
@@ -7694,7 +7537,7 @@ $('gate-door').addEventListener('keydown',e=>{
    Un point vert qui ne fait rien est une porte peinte sur un mur. */
 $('conn-bar').onclick=()=>{
   if(!document.body.classList.contains('gate'))return;
-  $('member-window').classList.add('show'); memberPaint(); };
+  $('member-window').classList.add('show'); memberPaint(); readComMemberOffer(sb,()=>me); };
 
 /* Le Dashboard se repeint à chaque ouverture : réglages (nom, visibilité,
    suppression) + abonnement (offre unique). */
@@ -7702,9 +7545,6 @@ const _mpOrig=memberPaint;
 memberPaint=function(){
   _mpOrig();
   if(me&&myProfile&&typeof renderSettings==='function')renderSettings();
-  const box=$('mw-sub'); if(!box) return;
-  if(!me){ box.innerHTML=''; $('tg-block').classList.add('hide'); return; }
-  loadSubscription().then(sub=>{ paintSubscription(sub); paintTelegram(sub); });
 };
 /* COM retrieves only the member's own private/shared spaces. Detail and video stay on SPACE. */
 const MYSPACES={seq:0,rows:[],more:false,busy:false,inert:[]};
@@ -7808,7 +7648,7 @@ function quitter(){
   roSeq++;roReady=false;COPIES.busy=false;COPIES.items.clear();copiesClose(true);boxSources.clear();
   $('ro-import-list').replaceChildren();$('ro-import-note').textContent='';$('ro-access').replaceChildren();
   if($('myspaces').classList.contains('is-open')){MYSPACES.seq++;MYSPACES.busy=false;MYSPACES.rows=[];$('myspaces-list').replaceChildren();$('myspaces-name').textContent='';$('myspaces').classList.remove('is-open');MYSPACES.inert.forEach(([e,was])=>e.inert=was);MYSPACES.inert=[];}
-  state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; mySub=null; tgLinked=false; memberSearchSeq++;clearTimeout(memberSearchTimer);$('search-note').textContent='';
+  state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; mySub=null; resetComMemberOffer();
   TRIPS=[]; REPS=[]; TEACH=[]; VIS=[]; OBJ={}; tripsLoaded=false;
   cacheOublier();
   $('member-window').classList.remove('show');copiesPaint();
@@ -7837,6 +7677,7 @@ async function sessionChange(){
   memberPaint(); paint();
   if(inscrit()&&!RO){loadTrips(true);loadBoxSources();}
   garde();
+  if(n===sesSeq&&inscrit()&&!RO&&openRequestedSpaces){openRequestedSpaces=false;$('myspaces-open').click();}
 }
 /* LA GARDE : inscrit, la porte se franchit ; pas inscrit et Totehm
    ouvert (un `#in` avec une session sans nom, un jeton expiré en
@@ -8850,7 +8691,7 @@ window.addEventListener('pageshow',e=>{
     if(v.length<2){ if(gsn){gsn.classList.remove('hide');gsn.textContent='two letters, minimum';} return; }
     /* L'atterrissage cherche SANS se déployer : on ne fait pas entrer
        quelqu'un dans son Totehm pour lui montrer une liste de noms. */
-    runSearch(v, gsn);
+    location.href='/search?q='+encodeURIComponent(v);
   });
 
   /* SUPPRIMÉ (17/09/2026) — le module `#ctx-down` / `#ctx-up` /

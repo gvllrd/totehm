@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Monetize my TOTEHM ecosystem</title>
+<meta name="description" content="Turn your influence into intentional action. Share your TOTEHM and spaces with your subscribers. Set your annual price. Keep 80%.">
+<link rel="canonical" href="https://www.totehm.com/monetize">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#000;color:#b0b0b0;font:13px/1.8 'Space Mono',monospace}
+button,input{font:inherit}a{color:inherit;text-decoration:none}
+.hide{display:none!important}
+#member{position:fixed;top:14px;left:14px;z-index:40;background:#1c1c1f;border:0;border-radius:10px;color:#b0b0b0;padding:8px 12px;font:700 10px/1.5 'Space Mono',monospace;cursor:pointer;max-width:calc(100vw - 28px)}
+#member.is-in{font:400 14px/1.5 'Quantico',sans-serif;color:#fbd5ca;background:#000}
+#menu{position:fixed;top:0;left:0;z-index:45;width:min(320px,92vw);background:#141416;padding:56px 16px 18px;display:none;flex-direction:column;gap:12px}
+#menu.is-open{display:flex}
+.menu-close,.m-it{background:#242428;color:#b0b0b0;border:0;border-radius:10px;padding:8px 12px;font:700 10px/1.6 'Space Mono',monospace;cursor:pointer;width:fit-content}
+main{max-width:960px;margin:auto;padding:112px 24px 72px}
+.eyebrow{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#85858e;margin-bottom:20px}
+h1{font:700 clamp(27px,5.4vw,52px)/1.25 'Space Mono',monospace;color:#fff;max-width:840px;letter-spacing:-.04em}
+.lead{margin:24px 0;max-width:660px;font-size:14px;line-height:1.9}
+.actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:24px}
+.cta{display:inline-flex;align-items:center;inline-size:fit-content;padding:10px 14px;background:#303036;border:0;border-radius:10px;color:#fff;font:700 12px/1.6 'Space Mono',monospace;text-decoration:none;max-width:100%}
+.quiet{font-size:10px;text-decoration:underline;text-underline-offset:4px}
+.terms{font-size:10px;color:#85858e;margin-top:16px;max-width:660px}
+.section{margin-top:64px}
+h2{color:#fff;font:700 18px/1.5 'Space Mono',monospace;margin-bottom:18px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.card{background:#141416;border-radius:10px;padding:22px 20px}
+.card h3{color:#fff;font:700 12px/1.7 'Space Mono',monospace;margin:0 0 12px}
+.card p{font-size:11px;line-height:1.9}
+.split{display:flex;gap:48px;flex-wrap:wrap;margin:20px 0}
+.split strong{font:700 46px/1.2 'Space Mono',monospace;color:#fff;display:block}
+.split span{display:block;font-size:11px;margin-top:8px}
+.steps{display:flex;flex-direction:column;gap:18px;list-style:none;counter-reset:step}
+.steps li{counter-increment:step;display:flex;gap:16px;align-items:baseline;max-width:720px;font-size:12px}
+.steps li::before{content:counter(step) '.';font-weight:700;color:#fff}
+.last{background:#141416;border-radius:10px;padding:28px;margin-top:64px}
+.last h2{margin-bottom:10px}.last p{font-size:12px;max-width:660px}
+footer{margin-top:40px;font-size:10px;color:#85858e}
+@media(max-width:700px){main{padding:98px 18px 48px}.cards{grid-template-columns:1fr}.section{margin-top:46px}.last{padding:22px}.lead{font-size:13px}}
+@media(hover:hover){.cta:hover,.m-it:hover,.menu-close:hover{background:#404046;color:#fff}.quiet:hover{color:#fff}}
+</style>
+<style data-com-member-menu="2026-10-05">
+/* Normal dark text buttons, with the landing gesture outside their background. */
+.cm-menu{display:flex;flex-direction:column;align-items:flex-start;gap:17px;width:100%}
+.cm-item{display:flex;flex-direction:column;align-items:flex-start;gap:6px;max-width:100%}
+.cm-action{display:inline-flex;align-items:center;justify-content:center;gap:5px;inline-size:fit-content;max-inline-size:100%;padding:8px 12px;border:0;border-radius:10px;background:#242428;color:#b0b0b0;font:700 11px/1.6 'Space Mono',monospace;letter-spacing:0;text-align:left;text-decoration:none;cursor:pointer;white-space:normal;overflow-wrap:anywhere}
+.cm-action svg{width:57px;height:19px;flex-shrink:0}
+.cm-hint{margin:0;padding:0 2px;font:400 9px/1.65 'Space Mono',monospace;color:#85858e;letter-spacing:0;text-align:left;max-width:100%;overflow-wrap:anywhere}
+.cm-action:focus-visible{outline:1px solid #fff;outline-offset:3px}
+#menu:has(.cm-menu){max-height:calc(100dvh - 16px);overflow-y:auto;overscroll-behavior:contain}
+#menu .cm-menu{margin:0 0 12px}
+#member-window .cm-menu{padding:0 0 16px}
+@media(hover:hover){.cm-action:hover{background:#34343a;color:#fff}}
+
+</style>
+<style data-ecosystem-ui="2026-10-05">
+/* 05/10/2026 — copied into the four platforms. Text buttons fit their label. */
+button.eco-text-btn,a.eco-text-btn{inline-size:fit-content!important;max-inline-size:100%;min-inline-size:0!important;flex:0 1 auto!important;padding:.65em .95em!important;line-height:1.45;box-sizing:border-box}
+.eco-connect,.eco-connect #member-txt,.eco-connect #conn-txt{font-family:'Space Mono',monospace!important;font-weight:700!important;font-size:10px!important;color:#b0b0b0!important;letter-spacing:.06em;text-transform:uppercase!important}
+button.eco-connect{background:#252529!important;border:0!important;border-radius:10px!important;cursor:pointer}
+#menu .eco-text-btn,#mmenu .eco-text-btn,.mw-card .eco-text-btn{align-self:flex-start}
+#member.eco-connect,#conn-bar.eco-connect{max-width:calc(50vw - 70px);text-align:left}
+#member.eco-connect #member-txt,#conn-bar.eco-connect #conn-txt{white-space:normal;max-width:100%;overflow:visible;text-overflow:clip}
+#member>i,#conn-bar>.dot,#conn-bar>.dc{display:none!important}
+.habit:not(.add):not(.filtre),.r-habit,.bx{position:relative}
+.eco-box-zoom{position:absolute;right:6px;top:6px;z-index:3;display:flex;align-items:center;justify-content:center;width:26px;height:26px;padding:5px;border:0;border-radius:8px;background:rgba(0,0,0,.55);color:#e0e0e0;cursor:pointer;touch-action:manipulation}
+.eco-box-zoom svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8}
+.habit.open>.eco-box-zoom{top:auto;bottom:6px}
+.eco-sheet{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.94);display:flex;justify-content:center;align-items:flex-start;padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(18px + env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;text-align:left}
+.eco-card{width:min(720px,100%);min-width:0;display:flex;flex-direction:column;gap:18px;margin:auto;touch-action:pan-y}
+.eco-close{align-self:flex-end!important;border:0;border-radius:10px;background:#252529;color:#ddd;font:700 11px 'Space Mono',monospace;cursor:pointer}
+.eco-box-copy{width:100%!important;max-width:none!important;height:auto!important;max-height:none!important;padding:24px!important;overflow:visible!important;transform:none!important;animation:none!important}
+.eco-box-copy .v-name,.eco-box-copy .nm,.eco-box-copy .r-text{font:400 clamp(20px,3vw,28px) 'Quantico',sans-serif!important;white-space:pre-wrap!important;overflow:visible!important;max-height:none!important;overflow-wrap:anywhere}
+.eco-box-copy .v-sub,.eco-box-copy .sb{font-size:13px!important;line-height:1.7!important;white-space:normal!important;overflow:visible!important}
+.eco-box-copy .minis{flex-wrap:wrap!important;max-height:none!important;overflow:visible!important}
+.eco-box-copy .mini{font-size:16px!important;line-height:1.6!important;white-space:normal!important;max-width:100%!important;overflow-wrap:anywhere}
+.eco-box-copy .tick{display:none}
+body.eco-modal #joy{pointer-events:none!important;opacity:.2!important}
+body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,body[data-eco-auth="central"] #in-email,body[data-eco-auth="central"] #in-otp,body[data-eco-auth="central"] #pt-email,body[data-eco-auth="central"] #pt-otp,body[data-eco-auth="central"] #pt-verify,body[data-eco-auth="central"] #btn-send,body[data-eco-auth="central"] #pt-send,body[data-eco-auth="central"] #btn-verify{display:none!important}
+/* Standalone interface T glyphs are forbidden. The rotating TOTEHM paper keeps its brand artwork. */
+#bigT>svg{visibility:hidden!important}.tv-T{display:none!important}
+@media(hover:hover){.eco-box-zoom:hover,.eco-close:hover{background:#34343a;color:#fff}.eco-connect:hover{color:#fff!important}}
+
+</style>
+</head>
+<body>
+<button id="member" type="button" aria-controls="menu" aria-expanded="false">CONNECT WITH MY TOTEHM</button>
+<nav id="menu" aria-label="Member menu"></nav>
+<main>
+  <p class="eyebrow">TOTEHM · creator economy</p>
+  <h1>Make your influence actionable.</h1>
+  <p class="lead">Invite your audience into the strategy you live. Share your TOTEHM, turn your Habits into spaces, and build an annual subscription around your real influence.</p>
+  <div class="actions"><a class="cta" data-setup href="/console">Set up my annual subscription</a><a class="quiet" href="/totehm#in">Build my TOTEHM</a></div>
+  <p class="terms">You choose your annual price. You keep 80% of the subscription fees. TOTEHM takes 20%.</p>
+  <section class="section" aria-labelledby="share-title">
+    <h2 id="share-title">Give your audience a way to move with you.</h2>
+    <div class="cards">
+      <article class="card"><h3>Your TOTEHM</h3><p>Share your goals, Habits, repulsions, Wisdom and Vision with your active subscribers. They can read your TOTEHM and copy the boxes they want into their own.</p></article>
+      <article class="card"><h3>Your spaces</h3><p>Turn a Habit into an intentional action in a place. Your subscribers can see the exact places of your shared ON spaces: planned, happening now or already lived.</p></article>
+      <article class="card"><h3>Your audience</h3><p>Let your public OFF spaces introduce your world, with the city only. Share your personal subscription page on your existing social channels.</p></article>
+    </div>
+    <p class="terms">A space respects everyone's space. SOCIAL or SILENT sets the interaction mode. Subscribing does not guarantee a meeting or personal availability.</p>
+  </section>
+  <section class="section" aria-labelledby="annual-title">
+    <h2 id="annual-title">One annual subscription. Your price.</h2>
+    <div class="split"><div><strong>80%</strong><span>For you</span></div><div><strong>20%</strong><span>For TOTEHM</span></div></div>
+    <p>Build your offer around your own TOTEHM and the shared ON spaces you publish. Manage your offer, subscribers, subscriptions and earnings on COM.</p>
+  </section>
+  <section class="section" aria-labelledby="start-title">
+    <h2 id="start-title">Build it. Open it. Share it.</h2>
+    <ol class="steps">
+      <li>Build your own TOTEHM: the strategy your audience wants to discover.</li>
+      <li>Set your annual price and payout details in your console. Activate your offer with your TOTEHM visible to your subscribers.</li>
+      <li>Share your personal subscription link. Publish spaces that bring your Habits to life.</li>
+    </ol>
+  </section>
+  <section class="last" aria-labelledby="final-title">
+    <h2 id="final-title">Your TOTEHM. Your audience. Your ecosystem.</h2>
+    <p>Give your influence a strategy, a place and an action.</p>
+    <div class="actions"><a class="cta" data-setup href="/console">Set up my annual subscription</a></div>
+    <p class="terms">Higher Self · TotehmBot is a separate personal offer. It is not included in a subscription to another member's TOTEHM.</p>
+  </section>
+  <footer><a href="/terms" target="_blank" rel="noopener">Simple terms of use</a></footer>
+</main>
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL = 'https://abujjbkbbiumxrokozph.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+const sb=createClient(SB_URL,SB_ANON);
+const $=id=>document.getElementById(id);
+/* COM MEMBER MENU · 2026-10-05 · source: tools/com_member_menu.js */
+/* COM member navigation. Copied into independent pages; no runtime import. */
+const COM_HIGHER_BADGE = '<svg viewBox="0 0 600 200" role="img" aria-label="Higher"><defs><mask id="cm-hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#cm-hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></svg>';
+function comMemberLinks(home = false, enabled = null) {
+  const item = (content, hint) => '<div class="cm-item">' + content + '<p class="cm-hint">' + hint + '</p></div>';
+  return '<nav class="cm-menu" aria-label="My TOTEHM ecosystem">' +
+    item('<a class="cm-action" data-com-open href="/totehm#in">Open my TOTEHM</a>', 'Tap on it') +
+    item('<a class="cm-action" href="/search">Search a TOTEHM</a>', 'Turn it over') +
+    item('<a class="cm-action" id="btn-get-higher" data-com-bridge="club" href="https://www.figher.club/get_higher">Get ' + COM_HIGHER_BADGE + '</a>', 'Put it on your tongue') +
+    item('<a class="cm-action" href="/higherself">Reflect with my TOTEHM</a>', 'Higher Self · TotehmBot') +
+    item(home ? '<button class="cm-action" id="myspaces-open" type="button">My TOTEHM spaces</button>' : '<a class="cm-action" href="/totehm?spaces=1">My TOTEHM spaces</a>', 'My TOTEHM, right now, right here · in SPACE') +
+    item('<a class="cm-action" id="wear-btn" data-com-bridge="boutique" href="https://www.higher.boutique/">Totehmize my cloth</a>', 'HIGHER BOUTIQUE') +
+    item('<a class="cm-action" data-com-monetize href="' + (enabled === false ? '/monetize' : '/console') + '">' + (enabled === false ? 'Monetize my TOTEHM ecosystem' : 'Manage my subscriptions') + '</a>', '<span data-com-offer-hint>' + (enabled === false ? 'Your audience · your annual subscription' : enabled === true ? 'My offer · my subscribers · my subscriptions' : 'Subscription settings') + '</span>') +
+    '</nav>';
+}
+function paintComMemberOffer(enabled) {
+  document.querySelectorAll('[data-com-monetize]').forEach(link => {
+    link.href = enabled === false ? '/monetize' : '/console';
+    link.textContent = enabled === false ? 'Monetize my TOTEHM ecosystem' : 'Manage my subscriptions';
+  });
+  document.querySelectorAll('[data-com-offer-hint]').forEach(hint => {
+    hint.textContent = enabled === false ? 'Your audience · your annual subscription' : enabled === true ? 'My offer · my subscribers · my subscriptions' : 'Subscription settings';
+  });
+}
+let comOfferSeq = 0;
+function resetComMemberOffer() { comOfferSeq++; paintComMemberOffer(null); }
+async function readComMemberOffer(sb, currentUser) {
+  const uid = currentUser()?.id || null, seq = ++comOfferSeq;
+  if (!uid) { paintComMemberOffer(false); return false; }
+  try {
+    const { data, error } = await sb.rpc('my_console');
+    if (seq !== comOfferSeq || uid !== currentUser()?.id) return;
+    if (error) { console.error('[member offer]', error.message); paintComMemberOffer(null); return; }
+    const enabled=data?.signed_in && typeof data.offer?.enabled === 'boolean' ? data.offer.enabled : null;
+    paintComMemberOffer(enabled);return enabled;
+  } catch (error) {
+    if (seq !== comOfferSeq || uid !== currentUser()?.id) return;
+    console.error('[member offer]', error?.message || error); paintComMemberOffer(null);
+  }
+}
+function wireComMemberMenu(host, { open, bridge } = {}) {
+  host.addEventListener('click', event => {
+    const link = event.target.closest('a');
+    if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button > 0) return;
+    if (link.hasAttribute('data-com-open') && open) { event.preventDefault(); open(link); }
+    else if (link.dataset.comBridge && bridge) { event.preventDefault(); bridge(link.dataset.comBridge, link.href); }
+  });
+}
+/* Same 60s, one-use SSO bridge as tools/sso_snippet.js. No session in URLs. */
+async function comMemberBridge(sb, target, url, apiURL, publicKey) {
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      const response = await fetch(apiURL + '/functions/v1/sso-mint', {
+        method: 'POST', headers: { authorization: 'Bearer ' + session.access_token, apikey: publicKey, 'content-type': 'application/json' },
+        body: JSON.stringify({ target })
+      });
+      if (response.ok) {
+        const { code } = await response.json();
+        if (code) { location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; }
+      } else console.error('[member bridge]', response.status);
+    }
+  } catch (error) { console.error('[member bridge]', error?.message || error); }
+  location.href = url;
+}
+
+/* END COM MEMBER MENU */
+let me=null,offerEnabled=null,seq=0;
+const BUILD='2026-10-05-member-ecosystem';
+window.__totehm_monetize=()=>({build:BUILD,signed_in:!!me,offer_enabled:offerEnabled});
+wireComMemberMenu($('menu'),{bridge:(target,url)=>comMemberBridge(sb,target,url,SB_URL,SB_ANON)});
+function closeMenu(){ $('menu').classList.remove('is-open');$('member').setAttribute('aria-expanded','false'); }
+function paintMenu(){
+  $('menu').innerHTML='<button class="menu-close" type="button" data-menu-close>Close</button>'+comMemberLinks(false,me?null:false)+(me?'<button class="m-it" type="button" data-out>Sign out</button>':'<a class="m-it" href="/totehm#in">CONNECT WITH MY TOTEHM</a>')+'<a class="m-it" href="/terms" target="_blank" rel="noopener">Simple terms of use</a>';
+}
+async function sessionChange(){
+  const n=++seq;resetComMemberOffer();offerEnabled=null;
+  const {data:{session}}=await sb.auth.getSession();if(n!==seq)return;
+  me=session?.user||null;paintMenu();
+  $('member').classList.toggle('is-in',!!me);$('member').textContent=me?'My TOTEHM':'CONNECT WITH MY TOTEHM';
+  document.querySelectorAll('[data-setup]').forEach(a=>a.textContent='Set up my annual subscription');
+  const uid=me?.id;
+  if(me){
+    const {data,error}=await sb.from('profiles').select('pseudo').eq('id',uid).maybeSingle();
+    if(n!==seq||uid!==me?.id)return;
+    if(error)console.error('[monetize profile]',error.message);
+    $('member').textContent=data?.pseudo||'My TOTEHM';
+  }
+  const enabled=await readComMemberOffer(sb,()=>me);if(n!==seq||uid!==me?.id)return;
+  offerEnabled=typeof enabled==='boolean'?enabled:null;
+  if(enabled===true)document.querySelectorAll('[data-setup]').forEach(a=>a.textContent='Manage my subscriptions');
+}
+$('member').onclick=()=>{$('menu').classList.toggle('is-open');$('member').setAttribute('aria-expanded',String($('menu').classList.contains('is-open')));};
+$('menu').addEventListener('click',async e=>{if(e.target.closest('[data-menu-close]'))closeMenu();if(e.target.closest('[data-out]')){closeMenu();resetComMemberOffer();await sb.auth.signOut({scope:'local'});sessionChange();}});
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('#member,#menu'))closeMenu();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu();$('member').focus();}});
+sb.auth.onAuthStateChange(event=>{if(event!=='INITIAL_SESSION')setTimeout(sessionChange,0);});
+sessionChange();
+</script>
+<script data-ecosystem-ui="2026-10-05">
+/* 05/10/2026 — copied into each independent page; no runtime import. */
+(() => {
+  const roots = '.habit:not(.add):not(.filtre),.r-habit,.bx';
+  const glass = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 6 6"/></svg>';
+  let sheet = null, previous = null, inert = [], overflow = '';
+  function close() {
+    if (!sheet) return;
+    sheet.remove(); sheet = null;
+    inert.forEach(([el, before]) => { if (el.isConnected) el.inert = before; }); inert = [];
+    document.body.style.overflow = overflow; document.body.classList.remove('eco-modal');
+    if (previous?.isConnected) previous.focus({preventScroll:true});
+  }
+  function open(content, title, source) {
+    if (sheet) close();
+    previous = source || document.activeElement; overflow = document.body.style.overflow;
+    sheet = document.createElement('div'); sheet.className = 'eco-sheet'; sheet.setAttribute('role','dialog');
+    sheet.setAttribute('aria-modal','true'); sheet.setAttribute('aria-label',title); sheet.tabIndex = -1;
+    const card = document.createElement('section'); card.className = 'eco-card';
+    const exit = document.createElement('button'); exit.type = 'button'; exit.className = 'eco-text-btn eco-close';
+    exit.textContent = 'CLOSE'; exit.addEventListener('click',close);
+    card.append(exit,content); sheet.append(card);
+    inert = Array.from(document.body.children).filter(el => !['SCRIPT','STYLE'].includes(el.tagName)).map(el => [el,el.inert]);
+    inert.forEach(([el]) => el.inert = true);
+    document.body.append(sheet); document.body.style.overflow = 'hidden'; document.body.classList.add('eco-modal');
+    sheet.addEventListener('click',e => { if (e.target === sheet) close(); }); exit.focus();
+  }
+  function zoom(box, source) {
+    const copy = box.cloneNode(true); copy.classList.add('eco-box-copy'); copy.classList.remove('open','is-on');
+    const sourceNodes = box.querySelectorAll('*'), copyNodes = copy.querySelectorAll('*');
+    sourceNodes.forEach((el,i) => { if (getComputedStyle(el).display === 'none') copyNodes[i].remove(); });
+    copy.querySelectorAll('[data-box-zoom],.w-x,.h-x,[data-kill],[data-x],.box-copy,.ro-copy,.pk-list,.pkw,.rk,.mini-x,.dash').forEach(el => el.remove());
+    const originals = box.querySelectorAll('textarea,input');
+    copy.querySelectorAll('textarea,input').forEach((el,i) => { const text = document.createElement('span'); text.className = 'v-name'; text.textContent = originals[i]?.value || ''; el.replaceWith(text); });
+    [copy,...copy.querySelectorAll('*')].forEach(el => {
+      for (const attr of Array.from(el.attributes)) if (/^(id|name|for|data-|on|tabindex|contenteditable|autofocus)/.test(attr.name)) el.removeAttribute(attr.name);
+      el.removeAttribute('role'); el.style.removeProperty('height'); el.style.removeProperty('max-height');
+    });
+    copy.querySelectorAll('button,a,select').forEach(el => { const span = document.createElement('span'); span.className = el.className; span.innerHTML = el.innerHTML; el.replaceWith(span); });
+    open(copy,'Enlarged TOTEHM box',source);
+  }
+  function enhance(scope) {
+    if (!(scope instanceof Element) || scope.closest('.eco-sheet')) return;
+    const parentBox = scope.closest(roots);
+    const boxes = [...(parentBox ? [parentBox] : []),...scope.querySelectorAll(roots)];
+    boxes.forEach(box => {
+      if (box.closest('.eco-sheet') || box.querySelector('[data-box-zoom]')) return;
+      const text = box.querySelector('.v-name,.h-text,.r-text,.nm')?.textContent?.trim() || box.querySelector('textarea')?.value?.trim();
+      if (!text) return;
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'eco-box-zoom'; b.dataset.boxZoom = '1';
+      b.setAttribute('aria-label','Enlarge this box'); b.innerHTML = glass; box.append(b);
+    });
+    const buttonSelector = 'button,a.m-it,a.mw-link,a.btn-sig,a.btn,a.ro-action';
+    const parentButton = scope.closest(buttonSelector);
+    const buttons = [...(parentButton ? [parentButton] : []),...scope.querySelectorAll(buttonSelector)];
+    buttons.forEach(b => {
+      if (b.closest('#joy,#totehm-paper,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,.eco-box-zoom,.mini-toggle,.rk-a')) return;
+      const text = b.textContent.trim(); if (!text || /^[×+−\-↑↓←→↔↕✕✖?°\d\s]+$/.test(text)) return;
+      if (/^sign\s*in\b/i.test(text)) {
+        const leaf = b.querySelector('#member-txt,#conn-txt') || b;
+        leaf.textContent = 'CONNECT WITH MY TOTEHM'; b.classList.add('eco-connect');
+      } else if (text !== 'CONNECT WITH MY TOTEHM') b.classList.remove('eco-connect');
+      if (b.textContent.trim() === 'CONNECT WITH MY TOTEHM') b.classList.add('eco-connect');
+      b.classList.add('eco-text-btn');
+    });
+    if (document.body.dataset.ecoAuth === 'central') {
+      for (const input of scope.querySelectorAll('#mw-email,#in-email,#pt-email')) {
+        if (input.parentElement.querySelector('[data-eco-connect]')) continue;
+        const b = document.createElement('button'); b.type = 'button'; b.dataset.ecoConnect = '1';
+        b.className = 'eco-text-btn eco-connect'; b.textContent = 'CONNECT WITH MY TOTEHM'; input.before(b);
+      }
+    }
+  }
+  document.addEventListener('click',e => {
+    const zoomButton = e.target.closest?.('[data-box-zoom]');
+    if (zoomButton) { e.preventDefault(); e.stopImmediatePropagation(); const box = zoomButton.closest(roots); if (box) zoom(box,zoomButton); return; }
+    const definition = e.target.closest?.('[data-space-about]');
+    if (definition) { e.preventDefault(); e.stopImmediatePropagation(); const content = document.querySelector('#space-definition')?.content?.cloneNode(true); if (content) open(content,'What is a space?',definition); }
+  },true);
+  document.addEventListener('keydown',e => {
+    if (!sheet) return;
+    e.stopImmediatePropagation();
+    if (e.key === 'Escape') { e.preventDefault(); close(); }
+    if (e.key === 'Tab') {
+      const list = [...sheet.querySelectorAll('button,a[href],input,textarea,select,[tabindex="0"]')].filter(el => !el.disabled && el.getClientRects().length);
+      const first = list[0], last = list.at(-1);
+      if (!first) { e.preventDefault(); sheet.focus(); }
+      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  },true);
+  for (const name of ['pointerdown','touchstart','touchmove','touchend','wheel']) document.addEventListener(name,e => { if (sheet) e.stopImmediatePropagation(); },{capture:true,passive:true});
+  const start = () => {
+    enhance(document.body);
+    new MutationObserver(records => {
+      const scopes = new Set();
+      for (const r of records) {
+        if (r.target instanceof Element && !r.target.closest('.eco-sheet')) scopes.add(r.target);
+        for (const node of r.addedNodes) if (node instanceof Element) scopes.add(node);
+      }
+      scopes.forEach(enhance);
+    }).observe(document.body,{childList:true,subtree:true});
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
+})();
+
+</script>
+</body>
+</html>
