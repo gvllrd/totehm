@@ -1,5 +1,28 @@
 # BRAND.md — TOTEHM
 
+## CURRENT UPDATE — 05/10/2026 (overrides older conflicting rules)
+
+- A space is a **Higher spot**: an action consistent with one's TOTEHM,
+  habits, goals and vision, at home, in a private venue or outside. Alone or
+  with like-minded people whose positive group energy is collective
+  effervescence. SOCIAL or SILENT; respect each person's space and boundaries.
+  Higher is always the brand SVG. SPACE's invitation is **Tap on your TOTEHM
+  to turn a habit into a space**; small **What is a space?** in the top right.
+- New spaces are shared. LOCATION ON: **for my subscribers**; OFF:
+  **for my audience**, WHERE = current city. Planned spaces are always ON;
+  RIGHT shows future ON spaces only. Existing private history stays private.
+- OBJECTIVES and REPULSIONS can be displayed independently as mini-boxes
+  inside the selected Habit Box; hidden by default, checked by the server.
+  Mirrored boxes show only configured COM attributes, with a magnifier.
+- Login CTA everywhere: **CONNECT WITH MY TOTEHM**. COM is the sole email
+  authority; satellites use COM SSO/PKCE. All text-button backgrounds fit their
+  labels, with proportional padding and dark backgrounds. No standalone
+  T.svg interface logos, including on login; keep the genuine rotating
+  TOTEHM paper and Higher artwork. Names remain Quantico Coral.
+- Preserve all five SPACE views, gestures, compass, desktop panels and
+  the camera joystick from 04/10. TOP says simply **Plan a space**.
+
+
 ## ⛔ CURRENT UPDATE — 03/10/2026 (overrides older identity and SPACE rules)
 
 - A TOTEHM name is Quantico **Coral #fbd5ca**, including member access, paper verso and search. Names on the verso and in search sit in a **black rounded box**. No member dot/square. Remove centered static T logos from member pages; keep the genuine paper, deconstructed TOTEHM and Higher artwork.

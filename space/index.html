@@ -469,12 +469,62 @@ body.v-cam #joy-say{background:rgba(0,0,0,.82);border-radius:var(--r);padding:1p
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
-</head>
+<style data-ecosystem-ui="2026-10-05">
+/* 05/10/2026 — copied into the four platforms. Text buttons fit their label. */
+button.eco-text-btn,a.eco-text-btn{inline-size:fit-content!important;max-inline-size:100%;min-inline-size:0!important;flex:0 1 auto!important;padding:.65em .95em!important;line-height:1.45;box-sizing:border-box}
+.eco-connect,.eco-connect #member-txt,.eco-connect #conn-txt{font-family:'Space Mono',monospace!important;font-weight:700!important;font-size:10px!important;color:#b0b0b0!important;letter-spacing:.06em;text-transform:uppercase!important}
+button.eco-connect{background:#252529!important;border:0!important;border-radius:10px!important;cursor:pointer}
+#menu .eco-text-btn,#mmenu .eco-text-btn,.mw-card .eco-text-btn{align-self:flex-start}
+#member.eco-connect,#conn-bar.eco-connect{max-width:calc(50vw - 70px);text-align:left}
+#member.eco-connect #member-txt,#conn-bar.eco-connect #conn-txt{white-space:normal;max-width:100%;overflow:visible;text-overflow:clip}
+#member>i,#conn-bar>.dot,#conn-bar>.dc{display:none!important}
+.habit:not(.add):not(.filtre),.r-habit,.bx{position:relative}
+.eco-box-zoom{position:absolute;right:6px;top:6px;z-index:3;display:flex;align-items:center;justify-content:center;width:26px;height:26px;padding:5px;border:0;border-radius:8px;background:rgba(0,0,0,.55);color:#e0e0e0;cursor:pointer;touch-action:manipulation}
+.eco-box-zoom svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8}
+.habit.open>.eco-box-zoom{top:auto;bottom:6px}
+.eco-sheet{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.94);display:flex;justify-content:center;align-items:flex-start;padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(18px + env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;text-align:left}
+.eco-card{width:min(720px,100%);min-width:0;display:flex;flex-direction:column;gap:18px;margin:auto;touch-action:pan-y}
+.eco-close{align-self:flex-end!important;border:0;border-radius:10px;background:#252529;color:#ddd;font:700 11px 'Space Mono',monospace;cursor:pointer}
+.eco-box-copy{width:100%!important;max-width:none!important;height:auto!important;max-height:none!important;padding:24px!important;overflow:visible!important;transform:none!important;animation:none!important}
+.eco-box-copy .v-name,.eco-box-copy .nm,.eco-box-copy .r-text{font:400 clamp(20px,3vw,28px) 'Quantico',sans-serif!important;white-space:pre-wrap!important;overflow:visible!important;max-height:none!important;overflow-wrap:anywhere}
+.eco-box-copy .v-sub,.eco-box-copy .sb{font-size:13px!important;line-height:1.7!important;white-space:normal!important;overflow:visible!important}
+.eco-box-copy .minis{flex-wrap:wrap!important;max-height:none!important;overflow:visible!important}
+.eco-box-copy .mini{font-size:16px!important;line-height:1.6!important;white-space:normal!important;max-width:100%!important;overflow-wrap:anywhere}
+.eco-box-copy .tick{display:none}
+body.eco-modal #joy{pointer-events:none!important;opacity:.2!important}
+body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,body[data-eco-auth="central"] #in-email,body[data-eco-auth="central"] #in-otp,body[data-eco-auth="central"] #pt-email,body[data-eco-auth="central"] #pt-otp,body[data-eco-auth="central"] #pt-verify,body[data-eco-auth="central"] #btn-send,body[data-eco-auth="central"] #pt-send,body[data-eco-auth="central"] #btn-verify{display:none!important}
+/* Standalone interface T glyphs are forbidden. The rotating TOTEHM paper keeps its brand artwork. */
+#bigT>svg{visibility:hidden!important}.tv-T{display:none!important}
+@media(hover:hover){.eco-box-zoom:hover,.eco-close:hover{background:#34343a;color:#fff}.eco-connect:hover{color:#fff!important}}
+
+</style>
+<style>
+#tp-hint{max-width:min(340px,calc(100vw - 32px));white-space:normal;text-align:center;line-height:1.5}
+#space-about{position:fixed;top:calc(12px + var(--top));right:12px;z-index:96;border:0;border-radius:10px;background:var(--s2);color:var(--lo);font:700 8px var(--mono);letter-spacing:.04em;max-width:calc(50vw - 70px);cursor:pointer}
+#space-about.eco-text-btn{max-inline-size:calc(50vw - 70px)}
+.space-definition{font:400 12px/1.85 var(--mono);color:var(--mid);display:flex;flex-direction:column;gap:18px;text-align:center}
+.space-definition h2{font:700 13px var(--mono);color:#fff}
+.space-higher{width:57px;height:19px;vertical-align:-5px}
+.mini-toggle{width:fit-content;padding:6px 8px;border:0;border-radius:4px;background:var(--s2);color:var(--lo);font:700 9px var(--mono);letter-spacing:.08em;cursor:pointer}
+.mini-toggle.m-o.is-on{background:var(--plus);color:#fff}.mini-toggle.m-r.is-on{background:var(--rep);color:#fff}
+.mg{align-items:flex-start}.mg .minis{width:100%}
+.habit .v-col{padding-right:26px}
+.pick-habit[role=button]:focus-visible{outline:1px solid var(--mid);outline-offset:3px}
+#member.eco-connect{max-width:calc(50vw - var(--tp)/2 - 22px)}
+body.v-cam.is-rec #space-about,body.is-pick #space-about{display:none}
+</style></head>
 <body class="v-radar">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="higher-badge" viewBox="0 0 600 200"><defs><mask id="hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></symbol></svg>
 
-<button id="member" type="button" aria-label="Member menu"><i></i><span id="member-txt">Sign in</span></button>
+<button id="member" type="button" aria-label="Member menu"><i></i><span id="member-txt">CONNECT WITH MY TOTEHM</span></button>
 <nav id="menu" aria-label="Member menu"></nav>
+<button id="space-about" type="button" data-space-about="1">What is a space?</button>
+<template id="space-definition"><div class="space-definition">
+<h2>What is a space?</h2>
+<p>A space is a <svg viewBox="0 0 600 200" class="space-higher" aria-label="Higher"><use href="#higher-badge"/></svg> spot: a place where you put your TOTEHM into action, in line with your habits, goals and vision.</p>
+<p>At home, in a private venue or outside. Alone or alongside like-minded people, whose shared energy can lift the group: collective effervescence.</p>
+<p>SOCIAL: we can talk. SILENT: nobody disturb me. Respect everyone's space, boundaries and chosen mode. A location is never an invitation to enter a private place.</p>
+</div></template>
 <header id="heading">
 <div id="tp-wrap">
 <div id="totehm-paper">
@@ -485,7 +535,7 @@ body.v-cam #joy-say{background:rgba(0,0,0,.82);border-radius:var(--r);padding:1p
           <svg class="tp-layer" id="tp-gl-rail" viewBox="20.689 0.225 17.203 223.630" preserveAspectRatio="none"    aria-hidden="true"><defs><clipPath id="tpr_3a710ebbbe"><path d="M 20.652344 0.261719 L 37.839844 0.261719 L 37.839844 223.816406 L 20.652344 223.816406 Z M 20.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tpr_1b01f8474a"><path d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.816406 L 0.652344 223.816406 Z M 0.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tpr_95349ecf51"><rect x="0" width="18" y="0" height="224"/></clipPath></defs><g clip-path="url(#tpr_3a710ebbbe)"><g transform="matrix(1, 0, 0, 1, 20, -0.000000000000020428)"><g clip-path="url(#tpr_95349ecf51)"><g clip-path="url(#tpr_1b01f8474a)"><path fill="#626286" d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.808594 L 0.652344 223.808594 Z M 0.652344 0.261719 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></svg>
           <svg class="tp-layer" id="tp-gl-t"    viewBox="79.832 47.921 66.789 66.932"    preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="tpt_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tpt_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tpt_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tpt_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tpt_ffb4264ddd)"><g clip-path="url(#tpt_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tpt_0eae0d8cca)"><g clip-path="url(#tpt_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tpt_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tpt_92fddf9f0e)"><g clip-path="url(#tpt_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tpt_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tpt_7d4c700d36)"><g clip-path="url(#tpt_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></svg>
           <svg class="tp-layer" id="tp-gl-wm"   viewBox="74.997 121.602 77.584 46.683"   preserveAspectRatio="none" aria-hidden="true"><defs><g/><clipPath id="tpw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tpw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg>
-          <button id="tp-enter" type="button" aria-haspopup="dialog" aria-controls="habit-picker" aria-expanded="false" aria-label="Search with my TOTEHM — select a Habit Box"></button>
+          <button id="tp-enter" type="button" aria-haspopup="dialog" aria-controls="habit-picker" aria-expanded="false" aria-label="Turn a habit into a space — select a Habit Box"></button>
         </div><!-- /#tp-logo -->
         <div class="tp-light" aria-hidden="true"></div>
       </div>
@@ -670,7 +720,7 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
 const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query=' + Number(lat).toFixed(5) + '%2C' + Number(lng).toFixed(5);
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD = '2026-10-04-camera-joystick';
+const BUILD='2026-10-05-spaces-boxes';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'radar';
@@ -678,16 +728,16 @@ const S = { int:null, q:'', habit:null };
 const FEED = { list:[], shown:[], seq:0, more:true, loading:false, match:'all', active:null };
 const EX = { list:[], seq:0, match:'all' };
 const LIST = { list:[], seq:0, more:false, loading:false, match:'all' };
-const PLAN = { seq:0, context:null, details:false, habit:null, date:'', time:'', pos:null, place:'', city:null, cityText:'', cityPos:null, video:null, fileSeq:0, dur:null, vis:store.get('space_vis'), mode:null, loc:null, say:'', busy:false };
+const PLAN = { seq:0, context:null, details:false, habit:null, date:'', time:'', pos:null, place:'', city:null, cityText:'', cityPos:null, video:null, fileSeq:0, dur:null, vis:'shared', mode:null, loc:'on', boxOptions:{objectives:false,repulsions:false}, say:'', busy:false };
 let habitsPending = null, gestureCount = 0, suppressClickUntil = 0;
-const REC = { seq:0, step:null, stream:null, mr:null, blob:null, url:null, mime:'', t0:0, timer:0, seconds:0, uploaded:null, habit:null, vis: store.get('space_vis') === 'private' ? 'private' : (store.get('space_vis') === 'shared' ? 'shared' : null),
+const REC = { seq:0, step:null, stream:null, mr:null, blob:null, url:null, mime:'', t0:0, timer:0, seconds:0, uploaded:null, habit:null, vis:'shared', boxOptions:{objectives:false,repulsions:false}, pos:null, city:null, placeAt:0, placePromise:null, placeError:false,
   mode:null, loc:null, dur:null, busy:false, capture:null, width:0,height:0,fps:0,bitrate:0,path:null, forPlan:false, kind:null, why:false };
 let HABITS = null, DETAIL = null;
 const VIDEO_METRICS={firstFrameMs:0,uploadMs:0,publishMs:0,warmStarts:0,coldStarts:0,stalls:0};
 window.__totehm_space = () => ({ build: BUILD, view: VIEW, signed_in: !!me, located: !!POS, intention: S.int, search: !!S.q,
   feed: FEED.list.length, exact: EX.list.length, playing: [...document.querySelectorAll('#feed video')].filter(v => !v.paused).length,
   video:{provider:RULES.video_provider || 'storage',buffered:[...document.querySelectorAll('#feed video')].filter(v=>v.getAttribute('src') || v._hls).length,...VIDEO_METRICS,...(()=>{const v=$('feed').querySelector('.clip[data-k="'+FEED.active+'"] video'),q=v?.getVideoPlaybackQuality?.();return {frames:q?.totalVideoFrames || 0,dropped:q?.droppedVideoFrames || 0};})()},
-  list:LIST.list.length, future:LIST.list.filter(s => spotState(s) === 'will').length, gestures:gestureCount, radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx),heading:Math.round(norm360(RAD.head)),pin:MAP.open,place:!!PLAN.pos}, paper:PAPER.etat(), habit_filter:!!S.habit, spot_filter:sfCount(), feed_shown:FEED.shown.length, plan:{city:!!PLAN.cityPos,exact:!!PLAN.pos,video:!!PLAN.video,uploaded:!!PLAN.video?.ref}, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, kind: REC.kind, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
+  list:LIST.list.length, future:LIST.list.filter(s => spotState(s) === 'will' && s.location === 'on').length, gestures:gestureCount, radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx),heading:Math.round(norm360(RAD.head)),pin:MAP.open,place:!!PLAN.pos}, paper:PAPER.etat(), habit_filter:!!S.habit, spot_filter:sfCount(), feed_shown:FEED.shown.length, plan:{city:!!PLAN.cityPos,exact:!!PLAN.pos,video:!!PLAN.video,uploaded:!!PLAN.video?.ref}, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, kind: REC.kind, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
 
 /* Chaque vue dit où je suis. L'intention vient de la Habit, sans filtre parallèle. */
 const VIEW_WORDS = {radar:['RADAR','Exact places I can see'],feed:['CITY FEED','I AM HERE · I WAS THERE'],list:['FUTURE SPOTS','I WILL BE HERE'],plan:['PLAN A SPOT','I WILL BE HERE'],cam:['FILM A SPOT','I AM HERE · 9:16 · up to 33 seconds']};
@@ -703,6 +753,7 @@ function paintInts(){
 const tickHTML = l => '<span class="tick">' + (l || []).map(i => '<i style="background:' + icol(i) + '"></i>').join('') + '</span>';
 const sdTag = (t, cls) => '<span class="sd-tag' + (cls ? ' ' + cls : '') + '">' + t + '</span>';
 function placeHTML(s){
+  if(s.location === 'off') return sdTag(esc(s.city || 'City unavailable'));
   if(s.exact && s.exact.lat != null){
     const d = POS ? fmtDist(hav(POS, s.exact)) : '';
     return '<a class="sd-tag v-loc" href="' + mapsURL(s.exact.lat, s.exact.lng) + '" target="_blank" rel="noopener">' + esc(s.exact.place || s.city || 'the exact place') + '</a>' + (d ? sdTag(d) : '');
@@ -710,17 +761,29 @@ function placeHTML(s){
   return sdTag(esc(s.city || 'somewhere'));
 }
 const intHTML = l => (l || []).map(i => '<span class="v-int" style="color:'+icol(i)+'" title="'+esc(INTS[i]?.def)+'">'+esc(INTS[i]?.n || i)+'</span>').join('');
-function contextHTML(h){ return ['objectives','repulsions'].map(k => (h?.[k] || []).length ? '<span class="mg"><span class="mg-l">'+(k === 'objectives' ? 'why' : 'trigger')+'</span><span class="minis">'+h[k].map(x => '<span class="mini m-'+(k === 'objectives' ? 'o' : 'r')+'">'+esc(x.text)+'</span>').join('')+'</span></span>' : '').join(''); }
-function habitInner(h){ return '<span class="v-name">'+esc(h.name)+'</span><span class="v-sub">'+intHTML(h.ints)+(h.freq ? '<span class="v-frq">'+esc(FREQ[h.freq] || h.freq)+'</span>' : '<span class="v-frq">set time frequency</span>')+(h.place ? '<span class="v-frq">'+esc(h.place)+'</span>' : '')+'</span>'+contextHTML(h); }
+function contextHTML(h,options,prefix){
+ return ['objectives','repulsions'].map(k => {
+  const list=(h?.[k] || []).filter(x => String(x.text || '').trim()); if(!list.length) return '';
+  const label=k === 'objectives' ? 'OBJECTIVES' : 'REPULSIONS', active=!!options?.[k];
+  const head=options ? '<button type="button" class="mini-toggle m-'+(k === 'objectives' ? 'o' : 'r')+(active ? ' is-on' : '')+'" data-box-group="'+k+'" data-box-scope="'+prefix+'" aria-pressed="'+active+'">'+label+'</button>' : '<span class="mg-l">'+label+'</span>';
+  return '<span class="mg">'+head+(!options || active ? '<span class="minis">'+list.map(x => '<span class="mini m-'+(k === 'objectives' ? 'o' : 'r')+'">'+esc(x.text)+'</span>').join('')+'</span>' : '')+'</span>';
+ }).join('');
+}
+function habitInner(h,options,prefix){
+ const configured=h.step ? (Array.isArray(h.step.is) ? h.step.is : h.step.i ? [h.step.i] : []) : h.ints;
+ const meta=intHTML(configured)+(String(h.freq || '').trim() ? '<span class="v-frq">'+esc(FREQ[h.freq] || h.freq)+'</span>' : '')+(String(h.place || '').trim() ? '<span class="v-frq">'+esc(h.place)+'</span>' : '');
+ return '<span class="v-name">'+esc(h.name)+'</span>'+(meta ? '<span class="v-sub">'+meta+'</span>' : '')+contextHTML(h,options,prefix);
+}
+const boxZoomHTML=()=>'<button class="eco-box-zoom" type="button" data-box-zoom="1" aria-label="Enlarge this box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 6 6"/></svg></button>';
 /* La Habit Box reste la boîte de COM ; tout ce qui est « space » vit dessous,
    noir et gris, identique dans LEFT, RIGHT et le détail. */
 function spotHTML(s){
  const state=spotState(s),st=new Date(s.starts_at),end=new Date(s.ends_at || st.getTime()+(s.duration_min||0)*60e3);
  const when=state==='will' ? 'I WILL BE HERE' : state==='am' ? 'I AM HERE' : 'I WAS THERE';
- const how=s.visibility==='private' ? sdTag('private') : sdTag('shared')+sdTag('location '+esc(s.location||'off'))+(s.location==='on' && s.mode ? sdTag(s.mode==='silent' ? 'silent · nobody disturb me' : 'social · we can talk') : '')+(s.mine && s.show_why ? sdTag('why · trigger shown') : '');
- const why=s.context || s.why || {};
+ const how=s.visibility==='private' ? sdTag('private') : sdTag('shared')+sdTag('location '+esc(s.location||'off'))+(s.location==='on' && s.mode ? sdTag(s.mode==='silent' ? 'silent · nobody disturb me' : 'social · we can talk') : '');
+ const why=s.why || {}; // Published box options apply to the owner's preview too.
  const box={name:s.habit,ints:s.intentions,freq:s.freq,place:s.context?.place,objectives:why.objectives,repulsions:why.repulsions};
- return '<div class="habit">'+tickHTML(s.intentions)+'<span class="h-body"><span class="v-col">'+habitInner(box)+'</span></span></div>'
+ return '<div class="habit">'+tickHTML(s.intentions)+'<span class="h-body"><span class="v-col">'+habitInner(box)+'</span></span>'+boxZoomHTML()+'</div>'
   +'<div class="sdata" aria-label="Where and when"><div class="sd-row">'+sdTag(when,'is-st')+sdTag(state==='am' ? 'until '+hhmm(end) : esc(dayOf(st))+' '+hhmm(st))+(s.duration_min ? sdTag(fmtDur(s.duration_min)) : '')+'</div>'
   +'<div class="sd-row">'+placeHTML(s)+how+'</div>'+(s.comment ? '<p class="sd-say">'+esc(s.comment)+'</p>' : '')+'</div>'
   +(!s.mine && s.creator ? '<div class="by"><span>by</span><button class="tname" type="button" data-com="/@'+encodeURIComponent(s.creator)+'">'+esc(s.creator)+'</button></div>' : '');
@@ -731,7 +794,7 @@ const hasMedia = s => !!(s.clip || s.video || s.photo);
 const hasWhy = s => !!((s.why || (s.mine && s.show_why && s.context)) && [...((s.why || s.context).objectives || []),...((s.why || s.context).repulsions || [])].length);
 function actsHTML(s, where){
   const id = esc(s.id), b = [];
-  if(s.visibility === 'shared' && s.location === 'on' || s.mine && s.exact) b.push('<button class="btn" type="button" data-go="' + id + '">GO</button>');
+  if(s.location === 'on') b.push('<button class="btn" type="button" data-go="' + id + '">GO</button>');
   if(where === 'list' && hasMedia(s)) b.push('<button class="btn" type="button" data-watch="' + id + '">WATCH</button>');
   if(spotState(s) === 'will') b.push('<button class="btn" type="button" data-ics="' + id + '">CALENDAR</button>');
   if(s.visibility === 'shared') b.push('<button class="btn" type="button" data-share="' + id + '">SHARE</button>');
@@ -983,7 +1046,7 @@ function sfPaint(){
   const c = (k, v, l, sub) => chip('data-sf-' + k + '="' + v + '"', l, SF[k] === v, sub);
   $('sf-panel').innerHTML = '<span class="lab">I want to</span><div class="row">' + c('want','join','join','happening now · the exact place') + c('want','inspire','get inspired','what people live around') + '</div>' +
     '<span class="lab">Together</span><div class="row">' + c('mode','social','we can talk','social') + c('mode','silent','nobody disturb me','silent') + '</div>' +
-    '<span class="lab">It shows</span><div class="row">' + c('shows','video','video') + c('shows','photo','photo') + c('shows','why','why · trigger','its goal, what it fights') + '</div>' +
+    '<span class="lab">It shows</span><div class="row">' + c('shows','video','video') + c('shows','photo','photo') + c('shows','why','objectives · repulsions','its goals and what it avoids') + '</div>' +
     '<div class="row sf-acts"><button class="btn" type="button" data-sf-all="1">ALL SPACES</button><button class="btn" type="button" data-sf-close="1">CLOSE</button></div>';
 }
 function sfOpen(open){
@@ -1051,7 +1114,7 @@ async function loadList(more = false){
    Un rafraîchissement aux mêmes IDs ne remplace que les informations : une
    vidéo ouverte par WATCH continue de jouer. */
 function paintList(){
-  const l = $('list'), upcoming = LIST.list.filter(s => spotState(s) === 'will'), items = [...l.querySelectorAll('.it[data-id]')];
+  const l = $('list'), upcoming = LIST.list.filter(s => spotState(s) === 'will' && s.location === 'on'), items = [...l.querySelectorAll('.it[data-id]')];
   if(upcoming.length && items.length === upcoming.length && items.every((it, k) => it.dataset.id === upcoming[k].id)){
     items.forEach((it, k) => { const info = it.querySelector('.it-info'), html = spotHTML(upcoming[k]) + actsHTML(upcoming[k], 'list'); if(info.innerHTML !== html) info.innerHTML = html; });
   } else {
@@ -1390,7 +1453,7 @@ $('detail').addEventListener('click', async e => {
 
 
     const ouvert=()=>!$('habit-picker').classList.contains('hide');
-    function hint(){ $('tp-hint').textContent=S.habit ? 'Tap to change my Habit Box' : 'Tap to search with my TOTEHM'; }
+    function hint(){ $('tp-hint').textContent='Tap on your TOTEHM to turn a habit into a space'; }
     function sync(){
       const open=ouvert(); $('tp-wrap').classList.toggle('is-open',open);
       if(document.hidden||VIEW!=='radar'||!document.body.classList.contains('v-radar')||open||RM.matches){
@@ -1459,8 +1522,8 @@ async function pickerOpen(){
   await loadHabits();
   if(p.classList.contains('hide')) return;
   p.innerHTML = '<div class="row"><button class="chip" type="button" data-all="1">All Habit Boxes</button><button class="lnk" type="button" data-picker-close="1">Close</button></div>' +
-    (!me ? '<button class="btn" type="button" data-picker-signin="1">Sign in to select my Habit Box</button>' : HABITS?.length ?
-      HABITS.map((h, k) => '<button class="pick-habit' + (S.habit?.name === h.name ? ' is-on' : '') + '" type="button" data-filter-h="' + k + '">' + habitHTML(h) + '</button>').join('') :
+    (!me ? '<button class="btn" type="button" data-picker-signin="1">CONNECT WITH MY TOTEHM</button>' : HABITS?.length ?
+      HABITS.map((h,k)=>pickHabitHTML(h,'data-filter-h="'+k+'"',S.habit?.name===h.name)).join('') :
       '<button class="btn" type="button" data-com="/totehm#in">Write a Habit Box in my TOTEHM</button>');
 }
 $('habit-filter').onclick = () => $('habit-picker').classList.contains('hide') ? pickerOpen() : pickerClose();
@@ -1487,26 +1550,34 @@ document.addEventListener('pointerdown', e => { if(!e.target.closest('#habit-pic
 /* ══ TOP — I WILL BE HERE, un Spot annoncé, jamais une fausse vidéo ═ */
 const chip = (a, l, on, sub) => '<button type="button" class="chip' + (on ? ' is-on' : '') + '" ' + a + '>' + l + (sub ? '<small>' + sub + '</small>' : '') + '</button>';
 function sharingHTML(x,prefix){
- const attr=k=>'data-'+prefix+k;
- let html='<div class="row"><span class="lab">Who sees it?</span>'+chip(attr('vis')+'="private"','private',x.vis==='private','only me')+chip(attr('vis')+'="shared"','shared',x.vis==='shared','share my activity')+'</div>';
- if(x.vis==='shared') html+='<div class="row"><span class="lab">Location</span>'+chip(attr('loc')+'="on"','on',x.loc==='on','for the subscribers')+chip(attr('loc')+'="off"','off',x.loc==='off','for the audience')+'</div>';
- if(x.vis==='shared' && x.loc==='on') html+='<div class="row"><span class="lab">Together</span>'+chip(attr('mode')+'="silent"','silent',x.mode==='silent','Nobody disturb me')+chip(attr('mode')+'="social"','social',x.mode==='social','We can talk')+'</div>';
- if(x.vis==='shared' && sharingDone(x) && habitWhy(x.habit)) html+='<div class="row"><span class="lab">Why · trigger</span>'+chip(attr('why')+'="1"','show',x.why===true,'my goal and what I fight, on this space')+chip(attr('why')+'="0"','hide',x.why!==true,'the Habit alone')+'</div>';
+ const attr=k=>'data-'+prefix+k, planned=prefix==='p';
+ let html='<div class="row"><span class="lab">Location</span>'+(planned ? '<span class="chip is-on">ON<small>for my subscribers</small></span>' : chip(attr('loc')+'="on"','on',x.loc==='on','for my subscribers')+chip(attr('loc')+'="off"','off',x.loc==='off','for my audience'))+'</div>';
+ if(x.loc==='on') html+='<div class="row"><span class="lab">Together</span>'+chip(attr('mode')+'="silent"','silent',x.mode==='silent','Nobody disturb me')+chip(attr('mode')+'="social"','social',x.mode==='social','We can talk')+'</div>';
+ if(!planned && x.loc) html+='<div class="row"><span class="lab">WHERE</span><span class="sd-tag">'+esc(x.city || (x.placeError ? 'Allow your location to find your city' : 'Finding your city…'))+'</span>'+(x.placeError ? '<button class="btn" type="button" data-locate="1">TRY AGAIN</button>' : '')+'</div>';
  return html;
 }
 const habitWhy=h=>!!(h?.objectives?.length || h?.repulsions?.length);
-const sharingDone=x=>x.vis==='private' || x.vis==='shared' && (x.loc==='off' || x.loc==='on' && !!x.mode);
+const sharingDone=x=>x.loc==='off' || x.loc==='on' && !!x.mode;
+function boxOptionsClick(t,x){
+ const b=t.closest('[data-box-group]'); if(!b) return false;
+ const k=b.dataset.boxGroup; if(!['objectives','repulsions'].includes(k)) return false;
+ x.boxOptions ||= {objectives:false,repulsions:false}; x.boxOptions[k]=!x.boxOptions[k]; return true;
+}
+async function publishBoxOptions(id,x){
+ if(!x.boxOptions?.objectives && !x.boxOptions?.repulsions) return true;
+ const r=await sb.rpc('spot_box_visibility_set',{p_spot:id,p_objectives:!!x.boxOptions.objectives,p_repulsions:!!x.boxOptions.repulsions});
+ if(r.error) console.error('[spot_box_visibility_set]',r.error.message); return !r.error && !!r.data?.ok;
+}
 function durationHTML(x,prefix,id){ return '<div class="row"><span class="lab">DURATION</span>'+DURS.map(d=>chip('data-'+prefix+'dur="'+d+'"',fmtDur(d),x.dur===d)).join('')+'<input class="field" id="'+id+'" type="number" inputmode="numeric" min="'+RULES.duration_min+'" max="'+RULES.duration_max+'" aria-label="Duration in minutes" placeholder="min" value="'+(x.dur && !DURS.includes(x.dur) ? x.dur : '')+'"></div>'; }
 
 /* WHERE? — une ville (saisie, suggestions locales) ET/OU le point exact sur
    la carte. SHARED·ON exige le point ; PRIVATE et SHARED·OFF se contentent
    de la ville, sans aucune demande de position. */
-const planExact = () => PLAN.vis === 'shared' && PLAN.loc === 'on';
+const planExact = () => true;
 function planMissing(){
   const m = [];
   if(!PLAN.habit) m.push('a Habit Box');
-  if(!['private','shared'].includes(PLAN.vis)) m.push('private or shared');
-  if(PLAN.vis === 'shared'){ if(!PLAN.loc) m.push('location on or off'); if(PLAN.loc === 'on' && !PLAN.mode) m.push('silent or social'); }
+  if(!PLAN.mode) m.push('silent or social');
   const start = new Date(PLAN.date + 'T' + PLAN.time).getTime();
   if(!Number.isFinite(start) || start <= Date.now() || start > Date.now() + (RULES.horizon_days || 90)*864e5) m.push('a future date and time');
   if(planExact() && !PLAN.pos) m.push('the exact point on the map'); else if(!PLAN.pos && !PLAN.cityPos) m.push('a city or a point on the map');
@@ -1550,18 +1621,18 @@ function planPaint(){
   requestAnimationFrame(radarSize);
   const b = $('plan-body'); b.classList.toggle('is-busy', PLAN.busy);
   document.body.classList.toggle('is-pick', VIEW === 'plan' && !!me && !PLAN.habit);
-  if(!me){ b.innerHTML = '<p class="say">A future space is a Habit Box of my TOTEHM, with a time and a place.</p><button class="btn" type="button" data-plan-signin="1">Sign in</button>'; return; }
+  if(!me){ b.innerHTML = '<p class="say">Plan a space</p><button class="btn" type="button" data-plan-signin="1">CONNECT WITH MY TOTEHM</button>'; return; }
   if(!PLAN.habit){
     b.innerHTML = '<div class="row pick-head"><span class="lab">Which Habit Box?</span><button class="btn" type="button" data-plan-cancel="1">CANCEL</button></div>' + (!HABITS ? '<p class="note">Reading my TOTEHM…</p>' : HABITS.length ?
-      HABITS.map((h,k) => '<button class="pick-habit" type="button" data-plan-h="' + k + '">' + habitHTML(h) + '</button>').join('') :
+      HABITS.map((h,k)=>pickHabitHTML(h,'data-plan-h="'+k+'"')).join('') :
       '<button class="btn" type="button" data-com="/totehm#in">Write a Habit Box in my TOTEHM</button>'); return;
   }
   const ready = sharingDone(PLAN), exact = planExact(), secs = RULES.clip_seconds || 33, v = PLAN.video;
-  let h = '<button class="pick-habit plan-habit" type="button" data-plan-reh="1" aria-label="Change the Habit Box">' + habitHTML(PLAN.habit) + '</button><div class="plan-conf">' + sharingHTML(PLAN,'p');
+  let h = '<div class="pick-habit plan-habit" role="button" tabindex="0" data-plan-reh="1" aria-label="Change the Habit Box">' + habitHTML(PLAN.habit,PLAN.boxOptions,'p') + '</div><div class="plan-conf">' + sharingHTML(PLAN,'p');
   if(ready){
     h += '<span class="lab">When?</span><div class="row"><input class="field" id="p-date" type="date" aria-label="Date" value="' + PLAN.date + '"><input class="field" id="p-time" type="time" aria-label="Time" value="' + PLAN.time + '"></div>' +
       '<span class="lab">Where?</span><div class="row"><input class="field" id="p-city" type="text" autocomplete="off" maxlength="80" placeholder="City" aria-label="City" value="' + esc(PLAN.cityText) + '">' +
-      chip('data-plan-place="1"', PLAN.pos ? esc(PLAN.place || 'Exact point') : 'On the map', !!PLAN.pos, PLAN.pos ? 'Change it in the radar' : exact ? 'required for the subscribers' : 'the exact point · optional') +
+      chip('data-plan-place="1"', PLAN.pos ? esc(PLAN.place || 'Exact point') : 'On the map', !!PLAN.pos, PLAN.pos ? 'Change it in the radar' : exact ? 'required for my subscribers' : 'the exact point · optional') +
       (PLAN.pos ? '<button class="lnk" type="button" data-plan-unpin="1">Remove the point</button>' : '') + '</div><div class="row" id="p-cities">' + citySuggestHTML() + '</div>' +
       durationHTML(PLAN,'p','p-dur') + '<textarea class="field" id="p-say" maxlength="400" placeholder="A word (optional)">' + esc(PLAN.say) + '</textarea>' +
       '<span class="lab">Video or photo</span><div class="row">' + chip('data-plan-file="1"', 'From my files', false, 'vertical · video up to ' + secs + ' s') + chip('data-plan-film="video"', 'Film it', false, 'the SPACE camera') + chip('data-plan-film="photo"', 'Take a photo', false, 'the SPACE camera') + '</div>' +
@@ -1571,6 +1642,7 @@ function planPaint(){
   planValidity();
 }
 async function planOpen(){
+  PLAN.vis='shared'; PLAN.loc='on';
   if(!PLAN.date){ const d = new Date(Date.now() + 864e5); PLAN.date = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); PLAN.time = hhmm(d); }
   planPaint();
   loadCities().then(async () => {
@@ -1595,9 +1667,10 @@ $('plan-body').addEventListener('input', e => {
 });
 $('plan-body').addEventListener('click', e => {
   if(PLAN.busy) return;
+  if(boxOptionsClick(e.target,PLAN)) return planPaint();
   const t = e.target;
   if(t.closest('[data-plan-signin]')) return ssoLogin(false, '/?v=plan');
-  const h=t.closest('[data-plan-h]'); if(h){ PLAN.habit=HABITS[+h.dataset.planH]; PLAN.context=PLAN.habit; PLAN.why=false; return planPaint(); }
+  const h=t.closest('[data-plan-h]'); if(h){ PLAN.habit=HABITS[+h.dataset.planH]; PLAN.context=PLAN.habit; PLAN.boxOptions={objectives:false,repulsions:false}; return planPaint(); }
   if(t.closest('[data-plan-cancel]')) return go('radar');
   if(t.closest('[data-plan-reh]')){ PLAN.seq++; PLAN.habit = null; PLAN.context = null; return planPaint(); }
   if(t.closest('[data-plan-place]')) return mapOpen();
@@ -1606,8 +1679,8 @@ $('plan-body').addEventListener('click', e => {
   if(t.closest('[data-plan-file]')) return $('p-file').click();
   const film = t.closest('[data-plan-film]'); if(film){ REC.forPlan = film.dataset.planFilm; return go('cam'); }
   if(t.closest('[data-plan-novideo]')){ planVideoDrop(); return planPaint(); }
-  for(const [a,k] of [['pvis','vis'],['pmode','mode'],['ploc','loc'],['pdur','dur'],['pwhy','why']]){
-    const b = t.closest('[data-' + a + ']'); if(b){ PLAN[k] = k === 'dur' ? +b.dataset[a] : k === 'why' ? b.dataset[a] === '1' : b.dataset[a]; if(k === 'vis'){ PLAN.loc=null; PLAN.mode=null; PLAN.why=false; store.set('space_vis', PLAN.vis); } if(k === 'loc') PLAN.mode=null; return planPaint(); }
+  for(const [a,k] of [['pmode','mode'],['pdur','dur']]){
+    const b = t.closest('[data-' + a + ']'); if(b){ PLAN[k] = k === 'dur' ? +b.dataset[a] : k === 'why' ? b.dataset[a] === '1' : b.dataset[a];  return planPaint(); }
   }
   if(t.closest('[data-plan-send]')) return planSend();
 });
@@ -1682,6 +1755,7 @@ async function videoSend(blob, seconds, onProgress){
 }
 async function planSend(){
   if(PLAN.busy || planMissing().length) return;
+  PLAN.vis='shared'; PLAN.loc='on';
   PLAN.busy = true; planPaint(); const shared = PLAN.vis === 'shared', v = PLAN.video;
   if(v && !v.ref){
     planNote('sending the ' + (v.photo ? 'photo' : 'video') + '…');
@@ -1696,14 +1770,14 @@ async function planSend(){
   if(error || !data?.ok){ if(error) console.error('[spot_schedule]', error.message); PLAN.busy = false; planPaint(); return planNote(({when:'Choose a future date within the next 90 days.',habit:'This Habit Box is no longer in my TOTEHM.',too_many:'Enough spots planned for now.',signin:'Sign in again.',place:'Choose a city or a point on the map.',position:'Choose a city or a point on the map.'})[data?.why] || 'Not saved — try again.'); }
   let linked = true, why = true;
   if(v?.ref){ const r = await sb.rpc('spot_video_attach', { p_spot:data.id, p_video:v.ref }); if(r.error) console.error('[spot_video_attach]', r.error.message); linked = !r.error && !!r.data?.ok; }
-  if(shared && PLAN.why){ const r = await sb.rpc('spot_why_set', { p_spot:data.id, p_show:true }); if(r.error) console.error('[spot_why_set]', r.error.message); why = !r.error && !!r.data?.ok; }
+  why=await publishBoxOptions(data.id,PLAN);
   PLAN.busy = false;
-  PLAN.habit = null; PLAN.say = ''; PLAN.pos = null; PLAN.place = ''; PLAN.dur = null; PLAN.why = false; planVideoDrop();
+  PLAN.habit = null; PLAN.say = ''; PLAN.pos = null; PLAN.place = ''; PLAN.dur = null; PLAN.boxOptions={objectives:false,repulsions:false}; planVideoDrop();
   await Promise.all([loadExact(),loadList()]); loadFeed(false); go('list');
   // The new space appears in the agenda, with its own gestures — no second sheet.
   const it = $('list').querySelector('.it[data-id="' + CSS.escape(data.id) + '"]');
   if(it){ it.classList.add('is-new'); it.scrollIntoView({ block:'center' });
-    if(!linked || !why){ const n = document.createElement('p'); n.className = 'note no'; n.textContent = !linked ? 'The media could not be attached to this space.' : 'The why · trigger stays hidden.'; it.querySelector('.it-info').append(n); } }
+    if(!linked || !why){ const n = document.createElement('p'); n.className = 'note no'; n.textContent = !linked ? 'The media could not be attached to this space.' : 'These mini-boxes were kept hidden.'; it.querySelector('.it-info').append(n); } }
 }
 /* La carte sert uniquement à choisir MON futur lieu. Les autres Spots
    restent un radar de coordonnées autorisées, jamais une carte du feed. */
@@ -1780,7 +1854,7 @@ function camStop(){
 function camReset(){
   REC.seq++; if(REC.mr){ REC.mr.onstop = null; REC.mr.ondataavailable = null; REC.mr.onstart=null;REC.mr.onerror=null; }
   camStop(); if(REC.url) URL.revokeObjectURL(REC.url);
-  Object.assign(REC, { step:null, kind:null, why:false, mr:null, blob:null, url:null, habit:null, mode:null, loc:null, dur:null, busy:false,seconds:0,uploaded:null,width:0,height:0,fps:0,bitrate:0,path:null });
+  Object.assign(REC, { step:null, kind:null, why:false, boxOptions:{objectives:false,repulsions:false}, pos:null,city:null,placeAt:0,placePromise:null,placeError:false, mr:null, blob:null, url:null, habit:null, mode:null, loc:null, dur:null, busy:false,seconds:0,uploaded:null,width:0,height:0,fps:0,bitrate:0,path:null });
   const v = $('cam-v'); v.pause(); v.removeAttribute('src'); v.srcObject = null;
   const ph = $('cam-photo'); ph.classList.add('hide'); ph.removeAttribute('src');
   $('cam-n').textContent = ''; $('cam-sec').classList.add('hide'); camState();
@@ -1788,7 +1862,7 @@ function camReset(){
 /* Le capteur ne s'allume QU'APRÈS un appui : VIDEO, PHOTO (ou le point rouge,
    qui vaut VIDEO). Arriver dans la vue n'ouvre jamais la caméra. */
 async function camOpen(kind){
-  camReset(); REC.vis = ['private','shared'].includes(store.get('space_vis')) ? store.get('space_vis') : null; const seq = REC.seq;
+  camReset(); REC.vis='shared'; const seq = REC.seq;
   if(!me){ REC.step = 'signin'; return camPaint(); }
   if(!kind){ REC.step = 'idle'; return camPaint(); }
   REC.kind = kind;
@@ -1852,12 +1926,15 @@ function camRec(){
     if(el >= max){ clearInterval(REC.timer); try{ REC.mr?.stop(); }catch(_){} } };
   tick(); REC.timer = setInterval(tick, 200);
 }
-const habitHTML = h => '<div class="habit">'+tickHTML(h.ints)+'<span class="h-body"><span class="v-col">'+habitInner(h)+'</span></span></div>';
+const habitHTML=(h,options,prefix)=>'<div class="habit">'+tickHTML(h.ints)+'<span class="h-body"><span class="v-col">'+habitInner(h,options,prefix)+'</span></span>'+boxZoomHTML()+'</div>';
+const pickHabitHTML=(h,attr,on)=>'<div class="pick-habit'+(on ? ' is-on' : '')+'" role="button" tabindex="0" '+attr+'>'+habitHTML(h)+'</div>';
+document.addEventListener('keydown',e=>{const b=e.target.closest('.pick-habit[role="button"]');if(b && e.target===b && ['Enter',' '].includes(e.key)){e.preventDefault();b.click();}});
 const DURS = [15, 30, 45, 60, 90, 120, 180];
 function missing(){
   const m = [];
-  if(!REC.habit) m.push('a habit'); if(!REC.vis) m.push('private or shared');
+  if(!REC.habit) m.push('a habit');
   if(REC.vis === 'shared'){ if(!REC.loc) m.push('location on or off'); if(REC.loc === 'on' && !REC.mode) m.push('silent or social'); }
+  if(REC.loc==='off' && !REC.city) m.push('your current city');
   if(!REC.dur) m.push('the duration');
   return m;
 }
@@ -1866,8 +1943,8 @@ function camPaint(){
   const b = $('cam-body'), st = REC.step, photo = REC.kind === 'photo', cancel = '<button class="btn" type="button" data-cancel="1">CANCEL</button>';
   const forPlan = REC.forPlan ? '<p class="note">for my future space</p>' : '';
   let h = '';
-  if(st === 'signin') h = '<p class="say">A space is a habit of my TOTEHM, lived out of home.</p><div class="cam-actions"><button class="btn" type="button" data-signin="1">SIGN IN</button></div>';
-  else if(st === 'idle') h = '<p class="say">Share a space to your Totehm</p><div class="cam-actions"><button class="btn" type="button" data-start="video">VIDEO<small>up to ' + (RULES.clip_seconds || 33) + ' s</small></button><button class="btn" type="button" data-start="photo">PHOTO<small>one image</small></button>' + cancel + '</div>';
+  if(st === 'signin') h = '<p class="say">Put your TOTEHM into action. At home or anywhere else.</p><div class="cam-actions"><button class="btn" type="button" data-signin="1">CONNECT WITH MY TOTEHM</button></div>';
+  else if(st === 'idle') h = '<p class="say">Share a space from your TOTEHM</p><div class="cam-actions"><button class="btn" type="button" data-start="video">VIDEO<small>up to ' + (RULES.clip_seconds || 33) + ' s</small></button><button class="btn" type="button" data-start="photo">PHOTO<small>one image</small></button>' + cancel + '</div>';
   else if(st === 'perm') h = '<p class="say">Allow the camera</p><div class="cam-actions">' + cancel + '</div>';
   else if(st === 'denied') h = '<p class="say">The camera is closed for this site. Allow it in the browser, then come back.</p><div class="cam-actions">' + cancel + '</div>';
   else if(st === 'nocam') h = '<p class="say">This browser cannot ' + (photo ? 'take the photo' : 'film') + '. Try Safari or Chrome on the phone.</p><div class="cam-actions">' + cancel + '</div>';
@@ -1877,13 +1954,13 @@ function camPaint(){
   else if(st === 'rec') h = '<p class="say">Tap the red point to stop</p>';
   else if(st === 'habit'){
     h = '<div class="row pick-head"><span class="lab">Which Habit Box?</span></div>' + (!HABITS ? '<p class="note">reading my TOTEHM…</p>' : HABITS.length
-      ? HABITS.map((x, k) => '<button type="button" class="pick-habit" data-h="' + k + '">' + habitHTML(x) + '</button>').join('')
+      ? HABITS.map((x,k)=>pickHabitHTML(x,'data-h="'+k+'"')).join('')
       : '<p class="say">No habit in my TOTEHM yet.</p><button class="btn" type="button" data-com="/totehm#in">Write one in my TOTEHM</button>') ;
   }
   else if(st === 'form' || st === 'send'){
     const m = missing();
     const ready=sharingDone(REC);
-    h='<div class="it" data-reh="1">'+habitHTML(REC.habit)+'</div>'+sharingHTML(REC,'')+(ready ? durationHTML(REC,'','c-dur')+'<textarea id="c-say" maxlength="400" placeholder="A word (optional)">'+esc(REC.say || '')+'</textarea><button class="btn" type="button" data-send="1"'+(m.length || st==='send' ? ' disabled' : '')+'>I AM HERE</button><p class="note" id="c-note">'+(m.length ? 'missing: '+m.join(' · ') : '')+'</p>' : '');
+    h='<div class="it" data-reh="1">'+habitHTML(REC.habit,REC.boxOptions,'')+'</div>'+sharingHTML(REC,'')+(ready ? durationHTML(REC,'','c-dur')+'<textarea id="c-say" maxlength="400" placeholder="A word (optional)">'+esc(REC.say || '')+'</textarea><button class="btn" type="button" data-send="1"'+(m.length || st==='send' ? ' disabled' : '')+'>I AM HERE</button><p class="note" id="c-note">'+(m.length ? 'missing: '+m.join(' · ') : '')+'</p>' : '');
   }
   if(['habit','form','retry','heavy'].includes(st)) h+='<div class="cam-actions"><button class="btn" type="button" data-again="1">' + (photo ? 'TAKE AGAIN' : 'RECORD AGAIN') + '</button>' + cancel + '</div>';
   b.innerHTML = h;
@@ -1899,34 +1976,45 @@ $('cam-body').addEventListener('input', e => {
 });
 $('cam-body').addEventListener('click', e => {
   const t = e.target instanceof Element ? e.target : null; if(!t || REC.busy) return;
+  if(boxOptionsClick(t,REC)) return camPaint();
+  if(t.closest('[data-locate]')) return recResolvePlace(true);
   if(t.closest('[data-signin]')) return ssoLogin(false, '/?v=cam');
   if(t.closest('[data-cancel]')){ const back = REC.forPlan ? 'plan' : 'radar'; camReset(); return go(back); }
   const start = t.closest('[data-start]'); if(start) return camOpen(start.dataset.start);
   if(t.closest('[data-again]')) return camOpen(REC.kind || 'video');
-  const hk = t.closest('[data-h]'); if(hk){ REC.habit = HABITS[+hk.dataset.h]; REC.why = false; REC.step = 'form'; return camPaint(); }
-  const wh = t.closest('[data-why]'); if(wh){ REC.why = wh.dataset.why === '1'; return camPaint(); }
+  const hk = t.closest('[data-h]'); if(hk){ REC.habit = HABITS[+hk.dataset.h]; REC.boxOptions={objectives:false,repulsions:false}; REC.step = 'form'; return camPaint(); }
   if(t.closest('[data-reh]')){ REC.step = 'habit'; return camPaint(); }
-  const v = t.closest('[data-vis]'); if(v){ REC.vis = v.dataset.vis; REC.loc=null; REC.mode=null; REC.why=false; store.set('space_vis', REC.vis); return camPaint(); }
   const mo = t.closest('[data-mode]'); if(mo){ REC.mode = mo.dataset.mode; return camPaint(); }
-  const lo = t.closest('[data-loc]'); if(lo){ REC.loc = lo.dataset.loc; REC.mode=null; return camPaint(); }
+  const lo = t.closest('[data-loc]'); if(lo){ REC.loc = lo.dataset.loc; REC.mode=null; camPaint(); recResolvePlace(); return; }
   const du = t.closest('[data-dur]'); if(du){ REC.dur = +du.dataset.dur; return camPaint(); }
   if(t.closest('[data-send]')) return camSend();
 });
 const geo = () => new Promise(res => { if(!navigator.geolocation) return res(null);
   navigator.geolocation.getCurrentPosition(p => res({ lat:p.coords.latitude, lng:p.coords.longitude }), () => res(null), { enableHighAccuracy:true, timeout:9000, maximumAge:60000 }); });
 const note = (t, no) => { const n = $('c-note'); if(n){ n.textContent = t || ''; n.className = 'note' + (no ? ' no' : ''); } };
+async function recResolvePlace(force=false){
+ if(REC.placePromise) return REC.placePromise;
+ if(!force && REC.pos && REC.city && Date.now()-REC.placeAt<60000) return {pos:REC.pos,city:REC.city};
+ const seq=REC.seq; REC.placeError=false;
+ const promise=geo().then(async pos=>({pos,city:pos ? await cityNear(pos) : null})).then(r=>{
+  if(seq===REC.seq){REC.pos=r.pos;REC.city=r.city;REC.placeAt=Date.now();REC.placeError=!r.pos || !r.city;if(['form','send'].includes(REC.step))camPaint();}
+  return r;
+ }).finally(()=>{if(seq===REC.seq && REC.placePromise===promise)REC.placePromise=null;});
+ REC.placePromise=promise; return promise;
+}
 async function camSend(){
   if(REC.busy || missing().length || !REC.blob || !me) return;
+  REC.vis='shared';
   const started=performance.now();REC.busy = true; REC.step = 'send'; camPaint();$('cam-v').pause();note('sending…');
   // Position/city and binary transfer are independent; publication waits for both.
-  const place=geo().then(async pos=>({pos,city:pos?await cityNear(pos):null}));
+  const place=recResolvePlace();
   let path=REC.uploaded;
   try{
    if(!path){path=await videoSend(REC.blob,REC.seconds,p=>note('sending… '+p+'%'));REC.uploaded=path;}
   }catch(e){console.error('[upload]',e.message);REC.busy=false;REC.step='form';camPaint();return note('Not sent — try again.',true);}
   VIDEO_METRICS.uploadMs=Math.round(performance.now()-started);
   const {pos,city}=await place;
-  if(!pos){REC.busy=false;REC.step='form';camPaint();return note('a spot is where I am — allow my position',true);}
+  if(!pos || REC.loc==='off' && !city){REC.busy=false;REC.step='form';camPaint();return note('Allow your location to find your current city.',true);}
   POS=pos;
   const shared = REC.vis === 'shared';
   const { data, error } = await sb.rpc('spot_create', { p_habit: REC.habit.name, p_visibility: REC.vis, p_duration_min: REC.dur, p_video: path,
@@ -1939,9 +2027,10 @@ async function camSend(){
     return note(({ habit:'that habit is no longer in my TOTEHM', too_many:'enough spots for today', video:'the media did not arrive — take it again',
       position:'allow my position', duration:'the duration', signin:'sign in again' })[data?.why] || 'not published', true);
   }
-  if(shared && REC.why){ const w = await sb.rpc('spot_why_set', { p_spot:data.id, p_show:true }); if(w.error) console.error('[spot_why_set]', w.error.message); }
+  const boxesSaved=await publishBoxOptions(data.id,REC);
   VIDEO_METRICS.publishMs=Math.round(performance.now()-started);REC.say = ''; camReset(); await Promise.all([loadExact(),loadList()]); loadFeed(false);
   go('radar'); const s = EX.list.find(s => s.id === data.id); if(s) openDetail(s); else { const r = await sb.rpc('spot_get',{p_id:data.id}); if(r.error) console.error('[spot_get]',r.error.message); if(r.data?.ok) openDetail(r.data.spot); }
+  if(!boxesSaved && DETAIL) $('detail').insertAdjacentHTML('beforeend','<p class="note">These mini-boxes were kept hidden.</p>');
 }
 
 /* ══ LES CINQ VUES — joystick, trackpad, souris et écran tactile ═════ */
@@ -2004,7 +2093,7 @@ addEventListener('keydown',e => {
    leurs gestes. Le radar conserve le pincement / ctrl-wheel de zoom. */
 (function gestures(){
   const pointers = new Map(); let drag = null, pinch = null, pinching = false;
-  const excluded = t => !!t.closest?.('#cam-body,#v-plan,#joy,button,input,textarea,select,a,#detail,#menu,#habit-picker,#sf-panel,#totehm-paper,#place-picker,[contenteditable],#radar-map,#radar-tools');
+  const excluded = t => !!t.closest?.('.eco-sheet,#cam-body,#v-plan,#joy,button,input,textarea,select,a,#detail,#menu,#habit-picker,#sf-panel,#totehm-paper,#place-picker,[contenteditable],#radar-map,#radar-tools');
   const horizontal = dx => {if(['feed','list'].includes(VIEW)){gestureCount++;go('radar');}else step(dx>0?'g':'d');};
   const scroller = t => t.closest?.('#feed,#list,#v-plan,#cam-body');
   const canScroll = (el,delta) => !!el && el.scrollHeight > el.clientHeight + 3 && (delta > 0 ? el.scrollTop < el.scrollHeight - el.clientHeight - 3 : el.scrollTop > 3);
@@ -2038,7 +2127,7 @@ addEventListener('keydown',e => {
   },true);
   addEventListener('pointercancel',e => { pointers.delete(e.pointerId); drag=null; pinch=null; if(!pointers.size) pinching=false; },true);
   let touch=null;
-  const touchExcluded=t=>!!t.closest?.('#cam-body,#v-plan,#joy,input,textarea,select,#detail,#menu,#habit-picker,#sf-panel,#sf-btn,#totehm-paper,#place-picker,#radar-tools,#radar-map,[contenteditable]');
+  const touchExcluded=t=>!!t.closest?.('.eco-sheet,#cam-body,#v-plan,#joy,input,textarea,select,#detail,#menu,#habit-picker,#sf-panel,#sf-btn,#totehm-paper,#place-picker,#radar-tools,#radar-map,[contenteditable]');
   addEventListener('touchstart',e=>{
     if(e.touches.length!==1 || touchExcluded(e.target) || recordingLocked() || PLAN.busy || MAP.open || RAD.turn || DETAIL){ touch=null;return; }
     const p=e.touches[0];touch={x:p.clientX,y:p.clientY,t:Date.now(),el:scroller(e.target),view:VIEW};
@@ -2105,13 +2194,13 @@ addEventListener('keydown',e => {
 function menu(open){ $('menu').classList.toggle('is-open', open); }
 function paintMember(){
   $('member').classList.toggle('is-in', !!me);
-  $('member-txt').textContent = me ? (PSEUDO || 'Member') : 'Sign in';
+  $('member-txt').textContent = me ? (PSEUDO || 'Member') : 'CONNECT WITH MY TOTEHM';
   PAPER.nommer();
   $('menu').innerHTML = (me
     ? (PSEUDO ? '<div class="m-name"><button class="tname" type="button" data-com="/totehm#in">' + esc(PSEUDO) + '</button></div>' : '') +
       '<button class="m-it" type="button" data-com="/console">Console</button>' +
       '<button class="m-it" type="button" data-out="1">Sign out</button>'
-    : '<button class="m-it" type="button" data-signin="1">Sign in</button>') +
+    : '<button class="m-it" type="button" data-signin="1">CONNECT WITH MY TOTEHM</button>') +
     '<a class="m-it m-terms" href="' + COM + '/terms" target="_blank" rel="noopener">Simple terms of use</a>';
 }
 $('member').onclick = () => menu(!$('menu').classList.contains('is-open'));
@@ -2144,6 +2233,112 @@ async function boot(){
   setInterval(() => { paintList(); planValidity(); const started = LIST.list.some(s => s.state === 'will' && spotState(s) !== 'will'); if(started) reload(); }, 30000);
 }
 boot();
+</script>
+<script data-ecosystem-ui="2026-10-05">
+/* 05/10/2026 — copied into each independent page; no runtime import. */
+(() => {
+  const roots = '.habit:not(.add):not(.filtre),.r-habit,.bx';
+  const glass = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 6 6"/></svg>';
+  let sheet = null, previous = null, inert = [], overflow = '';
+  function close() {
+    if (!sheet) return;
+    sheet.remove(); sheet = null;
+    inert.forEach(([el, before]) => { if (el.isConnected) el.inert = before; }); inert = [];
+    document.body.style.overflow = overflow; document.body.classList.remove('eco-modal');
+    if (previous?.isConnected) previous.focus({preventScroll:true});
+  }
+  function open(content, title, source) {
+    if (sheet) close();
+    previous = source || document.activeElement; overflow = document.body.style.overflow;
+    sheet = document.createElement('div'); sheet.className = 'eco-sheet'; sheet.setAttribute('role','dialog');
+    sheet.setAttribute('aria-modal','true'); sheet.setAttribute('aria-label',title); sheet.tabIndex = -1;
+    const card = document.createElement('section'); card.className = 'eco-card';
+    const exit = document.createElement('button'); exit.type = 'button'; exit.className = 'eco-text-btn eco-close';
+    exit.textContent = 'CLOSE'; exit.addEventListener('click',close);
+    card.append(exit,content); sheet.append(card);
+    inert = Array.from(document.body.children).filter(el => !['SCRIPT','STYLE'].includes(el.tagName)).map(el => [el,el.inert]);
+    inert.forEach(([el]) => el.inert = true);
+    document.body.append(sheet); document.body.style.overflow = 'hidden'; document.body.classList.add('eco-modal');
+    sheet.addEventListener('click',e => { if (e.target === sheet) close(); }); exit.focus();
+  }
+  function zoom(box, source) {
+    const copy = box.cloneNode(true); copy.classList.add('eco-box-copy'); copy.classList.remove('open','is-on');
+    const sourceNodes = box.querySelectorAll('*'), copyNodes = copy.querySelectorAll('*');
+    sourceNodes.forEach((el,i) => { if (getComputedStyle(el).display === 'none') copyNodes[i].remove(); });
+    copy.querySelectorAll('[data-box-zoom],.w-x,.h-x,[data-kill],[data-x],.box-copy,.ro-copy,.pk-list,.pkw,.rk,.mini-x,.dash').forEach(el => el.remove());
+    const originals = box.querySelectorAll('textarea,input');
+    copy.querySelectorAll('textarea,input').forEach((el,i) => { const text = document.createElement('span'); text.className = 'v-name'; text.textContent = originals[i]?.value || ''; el.replaceWith(text); });
+    [copy,...copy.querySelectorAll('*')].forEach(el => {
+      for (const attr of Array.from(el.attributes)) if (/^(id|name|for|data-|on|tabindex|contenteditable|autofocus)/.test(attr.name)) el.removeAttribute(attr.name);
+      el.removeAttribute('role'); el.style.removeProperty('height'); el.style.removeProperty('max-height');
+    });
+    copy.querySelectorAll('button,a,select').forEach(el => { const span = document.createElement('span'); span.className = el.className; span.innerHTML = el.innerHTML; el.replaceWith(span); });
+    open(copy,'Enlarged TOTEHM box',source);
+  }
+  function enhance(scope) {
+    if (!(scope instanceof Element) || scope.closest('.eco-sheet')) return;
+    const parentBox = scope.closest(roots);
+    const boxes = [...(parentBox ? [parentBox] : []),...scope.querySelectorAll(roots)];
+    boxes.forEach(box => {
+      if (box.closest('.eco-sheet') || box.querySelector('[data-box-zoom]')) return;
+      const text = box.querySelector('.v-name,.h-text,.r-text,.nm')?.textContent?.trim() || box.querySelector('textarea')?.value?.trim();
+      if (!text) return;
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'eco-box-zoom'; b.dataset.boxZoom = '1';
+      b.setAttribute('aria-label','Enlarge this box'); b.innerHTML = glass; box.append(b);
+    });
+    const buttonSelector = 'button,a.m-it,a.mw-link,a.btn-sig,a.btn,a.ro-action';
+    const parentButton = scope.closest(buttonSelector);
+    const buttons = [...(parentButton ? [parentButton] : []),...scope.querySelectorAll(buttonSelector)];
+    buttons.forEach(b => {
+      if (b.closest('#joy,#totehm-paper,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,.eco-box-zoom,.mini-toggle,.rk-a')) return;
+      const text = b.textContent.trim(); if (!text || /^[×+−\-↑↓←→↔↕✕✖?°\d\s]+$/.test(text)) return;
+      if (/^sign\s*in\b/i.test(text)) {
+        const leaf = b.querySelector('#member-txt,#conn-txt') || b;
+        leaf.textContent = 'CONNECT WITH MY TOTEHM'; b.classList.add('eco-connect');
+      } else if (text !== 'CONNECT WITH MY TOTEHM') b.classList.remove('eco-connect');
+      if (b.textContent.trim() === 'CONNECT WITH MY TOTEHM') b.classList.add('eco-connect');
+      b.classList.add('eco-text-btn');
+    });
+    if (document.body.dataset.ecoAuth === 'central') {
+      for (const input of scope.querySelectorAll('#mw-email,#in-email,#pt-email')) {
+        if (input.parentElement.querySelector('[data-eco-connect]')) continue;
+        const b = document.createElement('button'); b.type = 'button'; b.dataset.ecoConnect = '1';
+        b.className = 'eco-text-btn eco-connect'; b.textContent = 'CONNECT WITH MY TOTEHM'; input.before(b);
+      }
+    }
+  }
+  document.addEventListener('click',e => {
+    const zoomButton = e.target.closest?.('[data-box-zoom]');
+    if (zoomButton) { e.preventDefault(); e.stopImmediatePropagation(); const box = zoomButton.closest(roots); if (box) zoom(box,zoomButton); return; }
+    const definition = e.target.closest?.('[data-space-about]');
+    if (definition) { e.preventDefault(); e.stopImmediatePropagation(); const content = document.querySelector('#space-definition')?.content?.cloneNode(true); if (content) open(content,'What is a space?',definition); }
+  },true);
+  document.addEventListener('keydown',e => {
+    if (!sheet) return;
+    e.stopImmediatePropagation();
+    if (e.key === 'Escape') { e.preventDefault(); close(); }
+    if (e.key === 'Tab') {
+      const list = [...sheet.querySelectorAll('button,a[href],input,textarea,select,[tabindex="0"]')].filter(el => !el.disabled && el.getClientRects().length);
+      const first = list[0], last = list.at(-1);
+      if (!first) { e.preventDefault(); sheet.focus(); }
+      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  },true);
+  for (const name of ['pointerdown','touchstart','touchmove','touchend','wheel']) document.addEventListener(name,e => { if (sheet) e.stopImmediatePropagation(); },{capture:true,passive:true});
+  const start = () => {
+    enhance(document.body);
+    new MutationObserver(records => {
+      const scopes = new Set();
+      for (const r of records) {
+        if (r.target instanceof Element && !r.target.closest('.eco-sheet')) scopes.add(r.target);
+        for (const node of r.addedNodes) if (node instanceof Element) scopes.add(node);
+      }
+      scopes.forEach(enhance);
+    }).observe(document.body,{childList:true,subtree:true});
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
+})();
 </script>
 </body>
 </html>

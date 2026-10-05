@@ -1,5 +1,44 @@
 # space/CLAUDE.md — totehm.space : DO WITH ME (un Spot, cinq vues)
 
+## SPACE · 05/10/2026 — une Habit devient un space
+
+BUILD `2026-10-05-spaces-boxes`. Cette demande remplace les anciennes règles
+hors de chez soi, PRIVATE/SHARED, WHY/TRIGGER et futurs OFF ci-dessous.
+- Hint : `Tap on your TOTEHM to turn a habit into a space`. Coin haut droit :
+  `What is a space?`, définition dans `#space-definition`, Higher en SVG.
+  Action conforme à la stratégie, aux Habits, objectifs et vision ; chez soi,
+  dans un lieu privé ou dehors ; seul ou avec des personnes dans le même
+  esprit, effervescence collective ; SOCIAL/SILENT et respect des spaces.
+- Nouveaux spaces partagés : plus de choix PRIVATE/SHARED. Garder les
+  anciens privés dans leur historique propriétaire, sans les rendre publics.
+- BOTTOM : média puis Habit, ON `for my subscribers` / OFF `for my audience`.
+  ON demande SILENT/SOCIAL ; OFF ne montre pas de mode. WHERE OFF est la ville
+  actuelle résolue depuis la géolocalisation, jamais le lieu exact dans l'UI.
+  Refuser OFF sans ville ou média. Durée puis commentaire ; confirmation.
+- TOP : `Plan a space`. Toujours ON (UI et `spot_schedule`), point exact
+  choisi dans le radar, mode obligatoire, date/heure, durée/commentaire,
+  média facultatif. RIGHT : futurs ON seulement, filtre serveur et client.
+- Habit sélectionnée : OBJECTIVES et REPULSIONS sont deux mini-box activables
+  indépendamment DANS la Box, cachées par défaut, sans SHOW/HIDE séparé.
+  `spot_box_visibility_set` publie seulement les catégories choisies.
+  Le snapshot complet reste propriétaire seul ; les textes masqués ne
+  figurent pas dans les réponses publiques. Anciens `spot_why_set` compatibles.
+- `habitInner` affiche uniquement les attributs renseignés dans COM : pas
+  de Set Time Frequency, rythme, lieu ou intention inventé. Les loupes
+  agrandissent le contenu affiché, sans choisir la Habit ni modifier la source.
+- Navigation, boussole, papier, panneau ordinateur/radar réduit, capture
+  verticale, joystick navy à la même position (rond/square) et pipeline Bunny
+  du 04/10 : conserver. Formulaires et loupes ne laissent aucun geste agir
+  derrière leur dialogue ; fermeture restaure le focus et la navigation.
+- UI et connexion transverses : `CLAUDE.md` racine ; blocs copiés depuis
+  `tools/ecosystem_ui.css` / `ecosystem_ui_snippet.js`, sans import runtime.
+- Migration `20261005103704_space_box_visibility_location_on.sql`, appliquée
+  sous `space_box_visibility_location_on` : fonctions seulement, aucun contenu
+  réel migré/supprimé. Auto-test `space_boxes_location_selftest.sql` annulé
+  intégralement, résultat attendu `FAIL={}`. Tests navigateur : `space.mjs`,
+  `space_boxes_ecosystem.mjs`, `com_discovery.mjs`, `streetwear.mjs`.
+
+
 ## SPACE · 04/10/2026 — le joystick devient la prise vidéo
 
 BUILD `2026-10-04-camera-joystick`. La demande de Wah remplace l'ancienne
