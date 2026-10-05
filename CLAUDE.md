@@ -73,8 +73,8 @@ club/     → www.figher.club      le branding Higher en expérience : [Get High
 space/    → www.totehm.space     DO WITH ME : UN Spot (PRIVATE / SHARED) naît d'une Habit
                                  filmée maintenant (33 s) ou annoncée pour plus tard ;
                                  I WILL BE HERE → I AM HERE → I WAS THERE
-boutique/ → www.higher.boutique  la totehmisation : Streetwear (pick up the box) et Luxe
-                                 (/luxury, THP requis) ; Get Higher → figher.club (02/10)
+boutique/ → www.higher.boutique  la manette (05/10) : ↑ Streetwear · → Luxe SUR DEVIS (/luxury,
+                                 THP requis, Wah pose le prix) · ↓ Decode · ← News ; Get Higher → figher.club
 backend/  → servi par PERSONNE — reste à la racine (sinon SQL et fonctions téléchargeables)
 oracle/   → clés, gitignoré, jamais lu ni recopié
 tests/    → tests navigateur (Playwright, Supabase simulé) et SQL (tests/sql/, auto-annulés)
@@ -141,7 +141,9 @@ SEULS : avec `email`, Auth répond 400 et le pont casse (02/10).
 
 Un webhook, routé sur `metadata.product` par un `switch` avec `default`
 explicite — **ne jamais retirer ce filtre** : `higher` · `cloth` ·
-`subscription` · `creator_sub` · `artwork` · `resale` · `luxury`. Toute nouvelle
+`subscription` · `creator_sub` · `artwork` · `resale` · `luxury` (`cloth` : payé →
+génération n8n, ici depuis le 05/10 ; `luxury` : sur devis). Banc d'essai = un prix
+d'essai PAR COMPTE (`boutique_testers`), l'allumer = un « oui ». Toute nouvelle
 fonction de checkout pose sa propre `metadata.product`. La metadata voyage
 EN DOUBLE (`subscription_data.metadata`). Propriété et argent ne s'écrivent
 QUE par le webhook (`art_settle`, idempotent sur la session). Endpoint
@@ -205,7 +207,8 @@ COM : My spaces = historique propriétaire paginé ; recherche noms/abonnements/
   `#743169` = les boîtes du Totehm et elles seules (+ le papier et le badge Higher). Coral `#fbd5ca` = le NOM du Totehm (Quantico), la méthode
   Stoner et le « Get » de [Get Higher]. Filtres, accès, abonnements, soldes,
   portes : gris. Exceptions SPACE demandées : joystick COM blue/navy/rep, fond navy et REC/STOP
-  rouge dans la caméra ; boîte de contexte d'un space arrondie ; textes caméra en boîtes noires.
+  rouge dans la caméra ; boîte de contexte d'un space arrondie ; textes caméra en boîtes noires ;
+  le même joystick blue/navy/rep sur la boutique (05/10).
 - **Aucune bordure autour d'une boîte**, sur les quatre domaines : une boîte
   se détache par sa VALEUR. Exceptions : la tuile perforée (texture), les
   arêtes d'une boîte en verre 3D, le pointillé d'une place vide. Ombre autorisée sur les Habit Boxes du feed SPACE.

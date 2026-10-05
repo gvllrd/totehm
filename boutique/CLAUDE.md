@@ -10,6 +10,55 @@ Noms du Totehm en Quantico Coral #fbd5ca, y compris au survol, sans point/carré
 > `CLAUDE.md` le 30/09/2026, les plus récentes d'abord : un renvoi « plus
 > haut » peut viser la racine ou un autre dossier. Fichiers : `index.html`, `streetwear.html`, `luxury.html`, `totehm.html`, `terms_of_sale.html`. Get Higher, Lisbon, Stoner et Origins sont sur figher.club depuis le 02/10 (`club/CLAUDE.md`).
 
+## ⛔ 05/10/2026 — LA MANETTE · LE LUXE SUR DEVIS · DECODE · LE BANC D'ESSAI
+
+**L'accueil (`index.html`, `BUILD 2026-10-05-joystick`, `__totehm_boutique()`)
+est une manette, style SPACE** : HIGHER au centre (la croix des quatre portes,
+la vidéo de marque au centre), ↑ STREETWEAR · → LUXURY · ↓ DECODE · ← NEWS.
+Le manche est celui de COM/SPACE (rayon 15 px, seuil 9 px, flèches, molette,
+clavier, glissé horizontal sur la scène) ; une direction opposée ramène au
+centre ; pousser NOMME et COLORE la porte (et l'allume dans la croix) avant
+d'y aller ; le CENTRE AGIT : PLAY · GO · QUOTE · DECODE · SEND. Le même
+manche (copié, `#nav-*`) est en bas de `/streetwear` (centre : BOX → GO →
+NAME → ORDER) et de `/luxury` (BOX → QUOTE → PAY). `/#luxury`, `/#decode`…
+ouvrent la bonne porte. **Couleurs du manche : blue / navy / rep —
+l'exception « joystick COM » de SPACE étendue à la boutique** ; un Cloth
+décodé prête sa palette aux trois points.
+
+**Connexion de l'accueil : PAR totehm.com** (SSO copié, `ssoLogin('/')`) ; l'ancien
+email → code à 6 chiffres sur la boutique est retiré.
+
+**La collaboration en cours, au format des marques** : « COLLABORATION IN
+PROGRESS · Totehm x Champion · Limited collection » — un NOM, jamais le logo
+(`assets/img/champion.jpg` n'est affiché nulle part).
+
+**DECODE lit `reveal_cloth`** — la MÊME règle que Reveal the Box (invité : la
+vue et la date ; FIGHER : la Box et ses intentions ; propriétaire/abonné : + la
+matière ; pièce d'avant les Box : son message). Avant : lecture directe de
+`totehm_clothes`, que la RLS réserve au propriétaire — rien ne se trouvait.
+
+**LE LUXE SUR DEVIS** (`luxury.html`, `BUILD 2026-10-05-quote`,
+`__totehm_luxury()`) : THP requis ; pièce · marque (Hermès · Louis Vuitton ·
+Gucci · autre) · quelques mots · LA BOX (le Totehm en SELECT MODE, copié de
+/streetwear) → `luxury-quote` (`request`, trois demandes ouvertes au plus) →
+email au membre et aux administrateurs. **Wah répond sur /luxury** (section
+« Quotes to answer », visible des seuls `boutique_admins`) : un prix en € +
+un mot → `luxury-quote` (`price` | `decline`) → email. Le membre coche les CGV
+et accepte → `luxury-checkout {quote_id}` (prix du DEVIS relu en base) →
+webhook : `luxury_settle` puis `luxury_quote_paid`. `luxury_offer` = « à
+partir de » (500 €).
+
+**STREETWEAR** : le nom est vérifié par `name_available` (serveur) ; le
+paiement est traité par `stripe-webhook` (cas `cloth`). Le stock et les
+tailles viennent de `totehm_cloth_support` — **0 vêtement tant que n8n F ne
+synchronise pas Printful** (CLAUDE_CODE.md, 05/10).
+
+**LE BANC D'ESSAI** : `boutique_testers` (un prix d'essai PAR COMPTE, éteint
+par défaut). Allumé, le compte paie ce prix partout (Streetwear et devis), la
+page le dit (« test mode · you pay €1 »), Stripe affiche « TEST · », la pièce
+et la commande portent `test = true`. L'allumer est un prix live : « oui » de
+Wah. Procédure : `backend/README.md`.
+
 ## ⛔ 02/10/2026 (soir) — CENTRÉ, MINIMALISTE, VISIBLE · L'APERÇU N'EST PAS L'ŒUVRE
 
 **`streetwear.html` (`BUILD 2026-10-02`) et `luxury.html` (`BUILD
@@ -44,7 +93,8 @@ Origins mènent à figher.club par le pont (`data-club`, cible `club`).
 - réservé aux propriétaires d'un TotehmPaper — vérifié par
   `luxury-checkout` (`_art_owns_thp`), la page ne fait que le dire ;
 - le prix vient de `luxury_offer` (slug `launch`, 500 € le 02/10), lu par
-  `luxury_access()` ; jamais écrit dans la page ;
+  `luxury_access()` ; jamais écrit dans la page — **depuis le 05/10 : « à
+  partir de », le prix réel est le devis** (voir plus haut) ;
 - le membre choisit sa pièce (bag · jacket · shoes · other), une note
   (280 car.), coche les CGV → Stripe (`metadata.product = 'luxury'`) →
   le webhook écrit `luxury_orders` (`luxury_settle`) et confirme par email ;

@@ -232,7 +232,8 @@ d'un autre) créent tous des sessions. `stripe-webhook` les reçoit **toutes**.
 | `metadata.product` | Effet |
 |---|---|
 | `higher` | écrit dans `stoner_access` (par email) — TotehmPaper {THP}, prix servi par `higher-checkout` |
-| `cloth` | commande Printful |
+| `cloth` | (05/10) la pièce passe `paid` (trigger : stock et style consommés), POST n8n `/webhook/streetwear-generate`, email « Your Totehm Cloth is born » |
+| `luxury` | (05/10) `luxury_settle` (la commande) puis `luxury_quote_paid` (le devis payé, la commande reliée) ; `metadata.test = '1'` → `test = true` |
 | `subscription` | écrit dans `subscriptions` |
 | `creator_sub` | ouvre l'accès (`creator_subscriptions`) ; **l'argent s'écrit sur `invoice.paid`** → `member_ledger` (23/09) |
 | `artwork` | (30/09) premier achat d'une œuvre → `art_settle` : l'exemplaire, sa ligne `art_transfers` |
@@ -299,6 +300,22 @@ _balances()     par devise : gagné · versé · en attente
   écrire l'`adjustment` négatif à la main, le jour même.
 - `on delete restrict` : un compte à qui l'on doit de l'argent ne se
   supprime pas en silence.
+
+### La boutique — devis luxe et banc d'essai (05/10/2026)
+
+**Répondre à un devis** : Wah ouvre `higher.boutique/luxury` connecté (son
+compte est dans `boutique_admins`) → « Quotes to answer » → prix en € + un
+mot → Send quote (ou Decline). Le membre reçoit l'email, accepte, paie.
+Ajouter un administrateur : `insert into boutique_admins(user_id) select id from profiles where pseudo = '…';`
+
+**Allumer le banc d'essai** (prix live → « oui » de Wah) :
+`update boutique_testers set active = true, price_cents = 100 where user_id = (select id from profiles where pseudo = '…');`
+Éteindre : `… set active = false …`. Les pièces/commandes d'essai : `where test`.
+
+**Relancer une génération** (n8n en panne au moment du paiement) : POST
+`https://n8n.higher.boutique/webhook/streetwear-generate` `{"cloth_id":"<uuid>"}`
+(depuis une session Claude ou Claude Code ; la pièce doit être `paid`).
+Auto-test : `tests/sql/luxury_quote_selftest.sql` → `FAIL={}`.
 
 ### Le versement du 1er — la procédure
 

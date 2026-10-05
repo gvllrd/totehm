@@ -6,20 +6,28 @@
 > compose, caddy, n8n, le master**. Une commande simple par ligne. Aucun
 > secret dans ce fichier.
 
-## Tâche en cours — 02/10/2026 · n8n ne tourne plus (priorité)
+## Tâche en cours — 05/10/2026 · n8n : publier, cacher les clés, Printful (priorité)
 
-Mesuré par la session cloud (MCP n8n, exécution 72 du workflow F) :
-`⚙️ CONFIG` lève `process is not defined` — le task runner de n8n n'expose
-plus `process`. Les six workflows TOTEHM A→F lisent leurs clés ainsi (lu dans
-B et F) : aucun vêtement ne se synchronise depuis Printful
-(`totehm_cloth_support` = 0 ligne), aucune œuvre ne serait générée.
+Mesuré par la session cloud le 05/10. Les six `⚙️ CONFIG` lisent bien `$env`
+(ta correction du 02/10) MAIS **la version publiée est encore l'ancienne**
+(`process.env`) : en production, A→F plantent toujours. Et l'essai manuel
+(exécution 73, workflow F) montre deux choses :
 
-1. Dans chaque nœud `⚙️ CONFIG` (A, B, C, D, E, F) : `process.env.X` → `$env.X`
-2. `docker compose` de n8n : `N8N_BLOCK_ENV_ACCESS_IN_NODE=false`, puis redémarrer n8n
-3. API Printful (`GET /webhooks`) : l'URL doit être `https://n8n.higher.boutique/webhook/b7dc2823-a10d-4985-bae9-faae52ee0c49/printful-product`, types `product_synced`, `product_updated`, `product_deleted`
-4. Rejouer F pour chaque produit du store Printful (`GET /store/products`) : POST sur cette URL avec `{"type":"product_updated","data":{"sync_product":{"id":<id>}}}`
-5. Attendu : une ligne par produit dans `totehm_cloth_support`, `active=false`, `price=0`, `max_pieces=0`. Le prix et le stock = un « oui » de Wah (prix live), posés ensuite par la session cloud.
-6. Rapport : une ligne par étape, la valeur mesurée (nombre de lignes, ids).
+**⚠️ LES CLÉS SONT EXPOSÉES.** `⚙️ CONFIG` recopie SB_KEY, PRINTFUL_TOKEN,
+STRIPE_KEY (live), OPENAI_KEY, RESEND_KEY dans les données de l'item : chaque
+exécution les écrit en clair dans la base de n8n, lisibles par quiconque lit
+les exécutions (MCP compris). Considère-les comme compromises.
+
+1. Wah génère de nouvelles clés (2FA) : Stripe live (Developers → API keys → roll), OpenAI, Printful, Resend ; toi : la clé secrète Supabase (`sb_secret_…`, API de gestion)
+2. Mets-les dans le `.env` de n8n (VM Oracle) ET dans les secrets Supabase quand elles y sont (`STRIPE_SECRET_KEY`, `RESEND_API_KEY`, `OPENAI_API_KEY`) ; redémarre n8n
+3. Dans les six workflows : supprime le nœud `⚙️ CONFIG` comme porteur de clés — chaque nœud lit `{{ $env.X }}` au moment où il en a besoin ; RIEN de secret dans un item
+4. Paramètres n8n : ne plus enregistrer les données des exécutions réussies (`EXECUTIONS_DATA_SAVE_ON_SUCCESS=none`) et supprime les exécutions 72 et 73
+5. Publie les six workflows (version active = version corrigée)
+6. Workflow B (`/webhook/streetwear-generate`) : ajoute une authentification par en-tête (`x-totehm-key`, valeur dans `.env` ET dans un secret Supabase `N8N_GENERATE_KEY`) — aujourd'hui n'importe qui peut déclencher une génération payante. Dis-le à la session cloud : elle ajoutera l'en-tête dans `stripe-webhook`.
+7. Workflow A (`stripe-streetwear`) : à ARCHIVER. Stripe ne l'appelle pas (un seul endpoint : Supabase `stripe-webhook`, qui traite désormais `cloth` lui-même et appelle B).
+8. Workflow F : l'essai manuel rend **400** chez Printful ou Supabase (corps non visible d'ici). Lis la réponse ; si Printful exige `X-PF-Store-Id`, ajoute-le. Puis rejoue F pour chaque produit du store (`GET /store/products`), dont le produit Champion ajouté par Wah.
+9. Attendu : une ligne par produit dans `totehm_cloth_support` (`active=false`, `price=0`, `max_pieces=0`). Prix et stock = un « oui » de Wah, posés par la session cloud.
+10. Rapport : une ligne par étape, la valeur mesurée (versions publiées, lignes, ids). Aucune clé dans le rapport.
 
 ## Tâche précédente — 01/10/2026 · le ménage en base (une approbation)
 
@@ -169,6 +177,24 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > SSO). Lâché ailleurs : il rentre chez lui. Le paiement reste le clic
 > « Buy » de la page d'achat (renonciation au droit de rétractation). Front
 > seul : aucune migration, aucune Edge Function, aucun travail Oracle/n8n.
+
+### Correction 0.37 — 05/10/2026 · la boutique opérationnelle, la manette
+
+> higher.boutique devient une manette (style SPACE) : HIGHER au centre, quatre
+> portes — ↑ STREETWEAR, → LUXURY, ↓ DECODE, ← NEWS ; le joystick COM nomme
+> et colore la porte avant d'y aller, le centre agit (GO · QUOTE · DECODE ·
+> SEND · PLAY), un Cloth décodé prête sa palette au manche. Collaboration en
+> cours écrite au format des marques : « Totehm x Champion · Limited
+> collection » (un nom, jamais le logo). Le LUXE passe SUR DEVIS : le membre
+> (THP) décrit sa pièce, sa marque et choisit la Box ; Wah répond par un prix
+> sur /luxury (administrateur) ; le membre paie CE prix ; « à partir de
+> 500 € ». DECODE lit `reveal_cloth` (invité · FIGHER · propriétaire). Le
+> paiement Streetwear est enfin traité (`stripe-webhook`, cas `cloth` :
+> payé → génération n8n → email) ; le nom d'un Cloth est vérifié par le
+> serveur. Banc d'essai : un prix d'essai PAR COMPTE (`boutique_testers`,
+> éteint ; l'allumer = un « oui » de Wah). Migration
+> `20261005_boutique_operationnelle.sql` APPLIQUÉE (`boutique_operationnelle`) :
+> ne pas réappliquer. n8n : tâche du 05/10.
 
 ## Le rapport
 
