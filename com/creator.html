@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <!--
-  ══ totehm.com/@nom · totehm.com/search — LA SOURCE VEND ET SE CHERCHE · 30/09/2026 ══
-  MASTER BRIEF §3-5 : SEARCH → TOTEHM → CREATOR → PUBLIC / SUBSCRIBER
-  ACCESS, sur totehm.com et nulle part ailleurs.
+  ══ totehm.com/@nom · totehm.com/search — RÉÉCRITE LE 05/10/2026 ══
+  Wah : « le système de recherche et de souscription est hideux (je ne
+  comprends pas les réglages) ; je veux juste qu'on tape le nom de
+  l'utilisateur et ça ouvre son Totehm en lecture seule, simple ; la page de
+  vente, tu peux mieux faire ».
 
-  · `/search`   — la recherche des Totehms (`totehm_discover`,
-                  noms publics, boxes selon droits). L'atterrissage garde son
-                  objet unique (le papier) ; la recherche a SA page.
-  · `/@nom`     — la page de vente d'un créateur (`creator_page`, ouverte à
-                  tous) : son nom, les couleurs de ses intentions, les vues
-                  — JAMAIS une boîte —, l'offre (PAR AN depuis le 01/10), et
-                  UNE action selon qui regarde : ouvrir, s'abonner, se
-                  connecter. Plus de passeport FIGHER pour s'abonner. Le Totehm complet reste aux abonnés
-                  (`totehm?ro=nom`, `_shared_with_me`).
-  · s'abonner   — `creator-subscribe` : Stripe revient ICI (/@nom). La
-                  console (totehm.com/console) gère ensuite : prix, abonnés,
-                  abonnements, gains, versements.
+  · `/search` — UN champ, des NOMS (`NameSearch`, copié de `totehm.html`,
+                jamais importé). Un nom ouvre `/totehm?ro=nom` ; Entrée ouvre
+                le nom exact, sinon le premier ; vide = mes abonnements.
+  · `/@nom`   — la page de vente de CE membre (`creator_page`, ouverte à
+                tous) : son papier (le verso, son nom), ses intentions, ce
+                que l'abonnement ouvre, le prix PAR AN, UNE action selon qui
+                regarde. Pas connecté : « Subscribe » demande l'email puis le
+                code ICI, puis part tout seul au paiement (`creator-subscribe`,
+                Stripe revient sur /@nom?subscribed=1, on attend le webhook).
 
   ⚠️ LA PAGE NE DÉCIDE RIEN : `creator_page` dit ce que CE lecteur peut
   faire ; la page le dessine. Un prix n'est jamais écrit ici.
-  ⚠️ PAS DE COMPTEUR COMPARABLE (BRAND §3) : ni abonnés, ni « likes ».
+  ⚠️ JAMAIS UNE BOÎTE NI UN COMPTEUR COMPARABLE (BRAND §3) : ni abonnés, ni
+  « likes ». La croix des cinq vues est une forme, pas un contenu.
 -->
 <html lang="en">
 <head>
@@ -27,62 +27,110 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <title>TOTEHM</title>
-<meta name="description" content="Search a TOTEHM. Subscribe to the one you want to learn from.">
+<meta name="description" content="Search a TOTEHM. Subscribe to the one you want to grow with.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
+/* POLICES : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
 html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
 :root{
-  --bg:#000;--mid:#b0b0b0;--lo:#9a9a9a;--dim:#606060;--g2:#141416;--g3:#1c1c1f;--g4:#26262b;--no:#ff9a9a;--on:#639922;
+  --bg:#000;--hi:#fff;--mid:#b0b0b0;--lo:#8d8d96;--dim:#5f5f66;--g1:#0c0c0e;--g2:#121214;--g3:#1b1b1f;--g4:#26262b;--g5:#34343a;
+  --no:#ff9a9a;--on:#a9d67c;--coral:#fbd5ca;
   --navy:#333366;--blue:#36498c;--rep:#743169;--wis:#5b2652;--vis:#2b3a73;
-  --tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000'/%3E%3C/svg%3E");
   --q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
+  --paper:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='m'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366' mask='url(%23m)'/%3E%3C/svg%3E");
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
 .hide{display:none!important}
-#member{position:fixed;top:16px;left:16px;z-index:40;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;
-  font-family:var(--mono);font-weight:700;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#a0a0a0;padding:6px 4px}
-#member i{width:10px;height:10px;border-radius:50%;background:#3a3a40;display:block}
-#member.is-in i{background:#fff;box-shadow:0 0 9px #fff}
-/* Le menu membre — SIMPLE TERMS OF USE toujours en dernier (01/10). */
-#menu{position:fixed;top:0;left:0;z-index:45;width:min(300px,86vw);background:var(--g2);padding:58px 16px 18px;display:flex;flex-direction:column;gap:6px;
-  transform:translateY(-104%);visibility:hidden;transition:transform .3s ease}
-#menu.is-open{transform:none;visibility:visible}
-#menu .m-it{display:block;text-align:left;background:var(--g3);border:none;border-radius:10px;padding:10px 12px;cursor:pointer;color:var(--mid);
-  font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
-#menu .m-terms{background:none;color:var(--dim);margin-top:8px}
-main{width:100%;max-width:560px;margin:0 auto;padding:96px 16px 120px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
-.kick{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--lo)}
-.in{font-family:var(--q);font-size:15px;color:#fff;background:#1c1c22;outline:none;border:none;border-radius:10px;padding:11px 14px;text-align:center;
-  caret-color:#fff;width:100%;max-width:340px;-webkit-appearance:none;appearance:none}
-.in:focus{background:#26262e}
-.in::placeholder{color:rgba(255,255,255,.38)}
-.btn{font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:var(--g4);border:none;border-radius:10px;
-  cursor:pointer;padding:11px 18px;width:fit-content;transition:background .15s,transform .15s}
-.btn:active{transform:scale(.97)}
-.btn[disabled]{opacity:.35;pointer-events:none}
-.lnk{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:none;border:none;cursor:pointer;font-family:var(--mono)}
-.note{font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;color:var(--lo)}
+:focus-visible{outline:1px solid #fff;outline-offset:3px}
+
+/* L'accès membre (haut gauche) : le NOM du Totehm en Quantico Coral, sans point. */
+#member{position:fixed;top:14px;left:12px;z-index:40;display:flex;align-items:center;background:none;border:none;cursor:pointer;
+  font-family:var(--mono);font-weight:700;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);padding:8px 6px}
+#member.is-in{font-family:var(--q);font-weight:400;font-size:13px;letter-spacing:0;text-transform:none;color:var(--coral)}
+/* Le menu membre — SIMPLE TERMS OF USE toujours en dernier. */
+#menu{position:fixed;top:0;left:0;z-index:45;width:min(320px,88vw);background:var(--g2);padding:58px 16px 18px;display:flex;flex-direction:column;gap:6px;
+  transform:translateY(-104%);visibility:hidden;transition:transform .3s ease,visibility 0s linear .3s}
+#menu.is-open{transform:none;visibility:visible;transition:transform .3s ease}
+#menu .m-it{display:block;width:fit-content;text-align:left;background:var(--g4);border:none;border-radius:10px;padding:8px 12px;cursor:pointer;color:var(--mid);
+  font-family:var(--mono);font-weight:700;font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+#menu .m-terms{background:none;font-weight:400;color:var(--lo);margin-top:8px;padding-left:2px}
+
+main{width:100%;max-width:520px;margin:0 auto;padding:max(84px,11dvh) 16px 96px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.kick{font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--lo)}
+.note{font-size:10px;letter-spacing:.1em;text-transform:uppercase;min-height:16px;color:var(--lo)}
 .note.no{color:var(--no)}.note.ok{color:var(--on)}
-@media(hover:hover){.btn:hover{background:#34343a}.lnk:hover,#member:hover,#menu .m-it:hover,.kick:hover{color:#fff}.row:hover{background:#1a1a1e}}
-/* LA TUILE PERFORÉE NAVY = LE NOM D'UN TOTEHM, ET RIEN D'AUTRE. */
-.tname{display:inline-block;width:fit-content;max-width:100%;font-family:var(--q);font-weight:400;color:#fff;line-height:1.4;word-break:break-word;
-  border:6px solid transparent;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round;padding:0 8px}
-.who{font-size:clamp(26px,8vw,40px);border-width:9px;padding:0 14px}
-.pal{display:flex;gap:5px;justify-content:center}
-.pal i{width:12px;height:12px;display:block;border-radius:50%}
-.meta{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
-.offer{background:var(--g2);width:100%;padding:18px 16px;display:flex;flex-direction:column;align-items:center;gap:10px}
-.price{font-family:var(--mono);font-weight:700;font-size:22px;color:#fff}
-.ben{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mid)}
-.list{display:flex;flex-direction:column;gap:5px;width:100%}
-.row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--g2);padding:10px 12px;cursor:pointer;text-align:left;transition:background .15s}
-.row .tname{font-size:14px}
-#signin{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+.btn{display:inline-flex;align-items:center;justify-content:center;width:fit-content;max-width:100%;font-family:var(--mono);font-weight:700;font-size:11px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--mid);background:var(--g4);border:none;border-radius:10px;cursor:pointer;padding:10px 16px;
+  transition:background .15s,color .15s,transform .15s}
+.btn.is-main{color:#fff;background:var(--g5);font-size:12px;padding:13px 22px}
+.btn:active{transform:scale(.97)}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.lnk{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:none;border:none;cursor:pointer;padding:6px 2px}
+.in{width:100%;font-family:var(--q);font-size:16px;color:#fff;background:var(--g1);outline:none;border:none;border-radius:10px;padding:12px 14px;text-align:center;
+  caret-color:#fff;-webkit-appearance:none;appearance:none}
+.in:focus{background:#000}
+.in::placeholder{color:rgba(255,255,255,.34)}
+
+/* ══ LE PAPIER — le verso du Totehm : le papier navy perforé, et le NOM ══ */
+.paper{position:relative;width:min(232px,64vw);aspect-ratio:1;background:var(--paper) 0 0/100% 100% no-repeat;
+  display:flex;align-items:center;justify-content:center;padding:14%}
+.tname{display:inline-block;max-width:100%;font-family:var(--q);font-weight:400;color:var(--coral);background:#000;border-radius:10px;
+  padding:6px 12px;line-height:1.3;overflow-wrap:anywhere}
+.paper .tname{font-size:var(--fs,26px)}
+.ints{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;margin-top:18px;min-height:18px}
+.ints span{display:inline-flex;align-items:center;gap:6px;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--mid)}
+.ints i{width:8px;height:8px;border-radius:50%;display:block}
+
+/* ══ L'OFFRE — un panneau sombre, carré, sans bordure ══ */
+.offer{width:100%;margin-top:28px;background:var(--g2);padding:22px 18px 20px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.price{display:flex;align-items:baseline;gap:8px;color:#fff;font-weight:700;font-size:30px;line-height:1.1}
+.price small{font-size:11px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
+.gets{width:100%;display:flex;flex-direction:column;gap:2px;margin:4px 0 2px;text-align:left}
+.get{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:center;background:var(--g1);padding:12px 14px}
+.get b{display:block;font-size:11px;letter-spacing:.06em;color:#fff}
+.get p{font-size:10px;line-height:1.55;color:var(--lo)}
+/* La croix des cinq vues (une forme, jamais un contenu) */
+.croix{display:grid;grid-template-columns:repeat(3,8px);grid-template-rows:repeat(3,8px);gap:2px;justify-content:center}
+.croix i{display:block}
+.croix .c-t{grid-area:1/2;background:var(--blue)}.croix .c-w{grid-area:2/1;background:var(--wis)}.croix .c-h{grid-area:2/2;background:var(--navy)}
+.croix .c-v{grid-area:2/3;background:var(--vis)}.croix .c-r{grid-area:3/2;background:var(--rep)}
+/* Le point d'un space : là où il est, maintenant */
+.pt{position:relative;width:12px;height:12px;margin:0 auto;border-radius:50%;background:#fff}
+.pt::after{content:"";position:absolute;inset:-7px;border-radius:50%;background:rgba(255,255,255,.14)}
+.fine{font-size:9px;line-height:1.7;letter-spacing:.06em;color:var(--lo);max-width:380px}
+.state{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#fff}
+.state.is-off{color:var(--lo)}
+.mine{width:100%;display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+#si-note{text-transform:none;letter-spacing:.04em}
+#signin{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;background:var(--g2);padding:0 18px 20px}
+.foot{margin-top:26px;display:flex;flex-direction:column;align-items:center;gap:4px}
+
+/* ══ LA RECHERCHE — un champ, des noms ══ */
+#search{width:100%;display:flex;flex-direction:column;align-items:center;gap:12px}
+#q{font-size:clamp(22px,6.4vw,30px);color:var(--coral);caret-color:var(--coral);background:var(--g1);padding:14px 16px;margin-top:6px}
+#q:focus{background:#000}
+#q::placeholder{color:rgba(251,213,202,.32)}
+.hint{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+#res{width:100%;display:flex;flex-direction:column;gap:4px;margin-top:4px;text-align:left}
+.ns-label{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--lo);padding:6px 2px 4px}
+.srch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--g2);padding:10px 12px;transition:background .15s}
+.srch-name{font-family:var(--q);font-size:17px;color:var(--coral);background:#000;border-radius:10px;padding:5px 11px;line-height:1.35;max-width:72%;overflow-wrap:anywhere}
+.srch-meta{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo);white-space:nowrap;margin-left:auto}
+.srch-row::after{content:"\2192";font-size:14px;color:var(--dim)}
+.srch-meta:empty+*,.srch-row:has(.srch-meta:empty)::after{margin-left:auto}
+.srch-meta:empty{display:none}
+
+@media(hover:hover){
+  .btn:hover{background:var(--g5);color:#fff}.btn.is-main:hover{background:#44444b}
+  .srch-row:hover{background:var(--g3)}.srch-row:hover::after{color:#fff}
+  #menu .m-it:hover{background:var(--g5)}
+}
+
+
 
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
@@ -92,74 +140,22 @@ main{width:100%;max-width:560px;margin:0 auto;padding:96px 16px 120px;display:fl
 #menu .m-it:hover,
 #menu .m-terms:hover,
 .kick:hover,
-.in:hover::placeholder,
-.lnk:hover,
 .note:hover,
-.meta:hover,
-.ben:hover{color:#fff}
+.btn:hover,
+.lnk:hover,
+.in:hover::placeholder,
+.ints span:hover,
+.price small:hover,
+.get p:hover,
+.fine:hover,
+.state.is-off:hover,
+#q:hover::placeholder,
+.hint:hover,
+.ns-label:hover,
+.srch-meta:hover,
+.srch-row:hover::after{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
-
-/* 03/10 — the member's TOTEHM name: Quantico Coral, without status dots. */
-#conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
-#conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
-.tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
-/* TOTEHM SEARCH: gray controls, Coral identity, colors only on actual boxes. */
-.ts-modes{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
-.ts-control{font:700 10px/1.5 'Space Mono',monospace;color:#b0b0b0;background:#242428;border:0;border-radius:10px;padding:9px 10px;cursor:pointer}
-.ts-control[aria-pressed=true]{color:#fff;background:#404046;box-shadow:inset 0 -1px #fff}
-.ts-control:focus-visible,.ts-open:focus-visible,.ts-box:focus-visible{outline:1px solid #fff;outline-offset:3px}
-.ts-filters{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:10px}
-.ts-filters label{display:flex;align-items:center;gap:5px;font:9px 'Space Mono',monospace;color:#b0b0b0}
-.ts-filters select{max-width:180px;color-scheme:dark}
-.ts-result{padding:14px 12px;background:#141416;display:flex;flex-direction:column;gap:8px;text-align:left}
-.ts-result .srch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;color:inherit;text-decoration:none}
-.ts-result .srch-name{font:400 18px/1.5 'Quantico',sans-serif;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:10px;padding:5px 10px;max-width:90%;overflow-wrap:anywhere;filter:none}
-.ts-arrow{font:16px 'Space Mono',monospace;color:#b0b0b0}
-.ts-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font:9px/1.6 'Space Mono',monospace;color:#b0b0b0}
-.ts-meta .srch-meta{font:inherit;letter-spacing:0;text-transform:none;color:inherit;white-space:normal}
-.ts-box{display:flex;flex-direction:column;gap:3px;background:#333366;padding:10px 12px;text-decoration:none;color:#fff}
-.ts-box[data-kind=t]{background:#36498c}.ts-box[data-kind=r]{background:#743169}.ts-box[data-kind=w]{background:#5b2652}.ts-box[data-kind=v]{background:#2b3a73}
-.ts-box-kind{font:9px 'Space Mono',monospace;color:#ddd;text-transform:uppercase}
-.ts-box-text{font:14px/1.6 'Quantico',sans-serif;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.ts-section{font:700 10px 'Space Mono',monospace;text-transform:uppercase;color:#b0b0b0;padding:12px 4px 0}
-.ts-link{color:#fff;text-decoration:underline}
-#srch-controls,#srch-more{width:min(520px,100%)}
-#srch-res{width:min(520px,100%)}
-#srch-ui{gap:12px}#srch-note{letter-spacing:0;text-transform:none;font-size:10px}
-#q{background:#000;color:#fbd5ca;caret-color:#fbd5ca;max-width:100%;font-size:24px}
-#search{max-width:620px}#search-controls,#search-more{width:100%}#res{gap:10px}
-@media(hover:hover){.ts-control:hover,.ts-arrow:hover,.ts-meta:hover{color:#fff}.ts-result .srch-name:hover{color:#fbd5ca;filter:none}}
-
-</style>
-<style data-ecosystem-ui="2026-10-05">
-/* 05/10/2026 — copied into the four platforms. Text buttons fit their label. */
-button.eco-text-btn,a.eco-text-btn{inline-size:fit-content!important;max-inline-size:100%;min-inline-size:0!important;flex:0 1 auto!important;padding:.65em .95em!important;line-height:1.45;box-sizing:border-box}
-.eco-connect,.eco-connect #member-txt,.eco-connect #conn-txt{font-family:'Space Mono',monospace!important;font-weight:700!important;font-size:10px!important;color:#b0b0b0!important;letter-spacing:.06em;text-transform:uppercase!important}
-button.eco-connect{background:#252529!important;border:0!important;border-radius:10px!important;cursor:pointer}
-#menu .eco-text-btn,#mmenu .eco-text-btn,.mw-card .eco-text-btn{align-self:flex-start}
-#member.eco-connect,#conn-bar.eco-connect{max-width:calc(50vw - 70px);text-align:left}
-#member.eco-connect #member-txt,#conn-bar.eco-connect #conn-txt{white-space:normal;max-width:100%;overflow:visible;text-overflow:clip}
-#member>i,#conn-bar>.dot,#conn-bar>.dc{display:none!important}
-.habit:not(.add):not(.filtre),.r-habit,.bx{position:relative}
-.eco-box-zoom{position:absolute;right:6px;top:6px;z-index:3;display:flex;align-items:center;justify-content:center;width:26px;height:26px;padding:5px;border:0;border-radius:8px;background:rgba(0,0,0,.55);color:#e0e0e0;cursor:pointer;touch-action:manipulation}
-.eco-box-zoom svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8}
-.habit.open>.eco-box-zoom{top:auto;bottom:6px}
-.eco-sheet{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.94);display:flex;justify-content:center;align-items:flex-start;padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(18px + env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;text-align:left}
-.eco-card{width:min(720px,100%);min-width:0;display:flex;flex-direction:column;gap:18px;margin:auto;touch-action:pan-y}
-.eco-close{align-self:flex-end!important;border:0;border-radius:10px;background:#252529;color:#ddd;font:700 11px 'Space Mono',monospace;cursor:pointer}
-.eco-box-copy{width:100%!important;max-width:none!important;height:auto!important;max-height:none!important;padding:24px!important;overflow:visible!important;transform:none!important;animation:none!important}
-.eco-box-copy .v-name,.eco-box-copy .nm,.eco-box-copy .r-text{font:400 clamp(20px,3vw,28px) 'Quantico',sans-serif!important;white-space:pre-wrap!important;overflow:visible!important;max-height:none!important;overflow-wrap:anywhere}
-.eco-box-copy .v-sub,.eco-box-copy .sb{font-size:13px!important;line-height:1.7!important;white-space:normal!important;overflow:visible!important}
-.eco-box-copy .minis{flex-wrap:wrap!important;max-height:none!important;overflow:visible!important}
-.eco-box-copy .mini{font-size:16px!important;line-height:1.6!important;white-space:normal!important;max-width:100%!important;overflow-wrap:anywhere}
-.eco-box-copy .tick{display:none}
-body.eco-modal #joy{pointer-events:none!important;opacity:.2!important}
-body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,body[data-eco-auth="central"] #in-email,body[data-eco-auth="central"] #in-otp,body[data-eco-auth="central"] #pt-email,body[data-eco-auth="central"] #pt-otp,body[data-eco-auth="central"] #pt-verify,body[data-eco-auth="central"] #btn-send,body[data-eco-auth="central"] #pt-send,body[data-eco-auth="central"] #btn-verify{display:none!important}
-/* Standalone interface T glyphs are forbidden. The rotating TOTEHM paper keeps its brand artwork. */
-#bigT>svg{visibility:hidden!important}.tv-T{display:none!important}
-@media(hover:hover){.eco-box-zoom:hover,.eco-close:hover{background:#34343a;color:#fff}.eco-connect:hover{color:#fff!important}}
-
 </style>
 <style data-com-member-menu="2026-10-05">
 /* Normal dark text buttons, with the landing gesture outside their background. */
@@ -177,36 +173,35 @@ body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,b
 </style>
 </head>
 <body>
-<button id="member" type="button"><i></i><span id="member-txt">CONNECT WITH MY TOTEHM</span></button>
+<button id="member" type="button"><span id="member-txt">CONNECT WITH MY TOTEHM</span></button>
 <nav id="menu" aria-label="Member menu"></nav>
 
 <main>
   <!-- ══ SEARCH ══ -->
-  <section id="search" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%">
+  <section id="search" class="hide" aria-label="Search a TOTEHM">
     <div class="kick">Search a TOTEHM</div>
-    <input class="in" id="q" maxlength="24" placeholder="a name" autocomplete="off" spellcheck="false">
-    <div id="search-controls"></div>
-    <div class="list" id="res"></div>
-    <button class="ts-control hide" id="search-more" type="button">More TOTEHMs</button>
-    <div class="note" id="q-note"></div>
+    <input class="in" id="q" maxlength="80" placeholder="a name" aria-label="A TOTEHM name" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go">
+    <div class="hint">type a name · enter opens it</div>
+    <div class="note" id="q-note" aria-live="polite"></div>
+    <div id="res" aria-label="TOTEHMs"></div>
   </section>
 
-  <!-- ══ LA PAGE D'UN CRÉATEUR ══ -->
-  <section id="page" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:14px;width:100%">
-    <div class="tname who" id="who">—</div>
-    <div class="pal" id="pal"></div>
-    <div class="offer" id="offer"></div>
-    <div class="note" id="note"></div>
-    <a class="lnk" href="/search">Search another TOTEHM</a>
-  </section>
-
-  <!-- ══ SE CONNECTER — ici, sur la source de l'identité ══ -->
-  <section id="signin" class="hide">
-    <div class="kick" id="si-why">CONNECT WITH MY TOTEHM</div>
-    <input class="in" id="si-email" type="email" placeholder="your@email" autocomplete="email">
-    <input class="in hide" id="si-code" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code">
-    <div class="note" id="si-note"></div>
-    <button class="lnk" id="si-x" type="button">Not now</button>
+  <!-- ══ LA PAGE D'UN MEMBRE ══ -->
+  <section id="page" class="hide" style="width:100%;display:flex;flex-direction:column;align-items:center">
+    <div class="paper" id="paper"><span class="tname" id="who"></span></div>
+    <div class="ints" id="ints"></div>
+    <div class="offer" id="offer" aria-live="polite"></div>
+    <!-- Se connecter ICI (totehm.com est la source de l'identité) : un nœud fixe, jamais redessiné. -->
+    <form id="signin" class="hide" novalidate>
+      <div class="kick">CONNECT WITH MY TOTEHM</div>
+      <p class="fine">Your email, then the code we send. Checkout opens right after.</p>
+      <input class="in" id="si-email" type="email" placeholder="your@email" autocomplete="email" enterkeyhint="send" aria-label="Your email">
+      <input class="in hide" id="si-code" inputmode="numeric" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code" aria-label="The code from your email">
+      <div class="note" id="si-note" aria-live="polite"></div>
+      <button class="lnk" id="si-x" type="button">Not now</button>
+    </form>
+    <div class="note" id="note" aria-live="polite" style="margin-top:12px"></div>
+    <div class="foot"><a class="lnk" href="/search">Search another TOTEHM</a></div>
   </section>
 </main>
 
@@ -286,338 +281,266 @@ async function comMemberBridge(sb, target, url, apiURL, publicKey) {
 wireComMemberMenu($('menu'),{bridge:(target,url)=>comMemberBridge(sb,target,url,SB_URL,SB_ANON)});
 
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
-const BUILD='2026-10-05-member-ecosystem';
-
-/* ── DÉPART du pont SSO — copié de tools/sso_snippet.js (le lien) ── */
-async function ssoVersDomaine(sb, cible, url){
-  try{
-    const { data:{ session } } = await sb.auth.getSession();
-    if(session){
-      const r = await fetch(SB_URL + '/functions/v1/sso-mint', { method:'POST',
-        headers:{'authorization':'Bearer '+session.access_token,'apikey':SB_ANON,'content-type':'application/json'},
-        body: JSON.stringify({ target: cible }) });
-      if(r.ok){ const { code } = await r.json(); if(code){ location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; } }
-      else console.error('[sso] mint', r.status);
-    }
-  }catch(e){ console.error('[sso]', e && e.message || e); }
-  location.href = url;
-}
+const BUILD='2026-10-05-com-aplomb';
 
 const COLOR = { fight:'#E24B4A', flow:'#e48b31', enrich:'#fcbe21', love:'#639922', express:'#1D9E75', focus:'#378ADD', celebrate:'#7F77DD' };
-/* Ce qu'un abonnement donne — une phrase, la même pour tous (brief du 01/10). */
-const BEN = 'the shared TOTEHM · the exact place of shared spots with location on';
-const money = (c, cur) => { try{ return new Intl.NumberFormat('en', { style:'currency', currency:(cur||'eur').toUpperCase(), maximumFractionDigits: c % 100 ? 2 : 0 }).format(c/100); }catch(_){ return (c/100) + ' ' + cur; } };
-const day = d => d ? new Date(d).toLocaleDateString('en-GB', { day:'numeric', month:'short' }) : '';
+const money = (c, cur) => { try{ return new Intl.NumberFormat('en', { style:'currency', currency:(cur||'eur').toUpperCase(), maximumFractionDigits: c % 100 ? 2 : 0 }).format(c/100); }catch(_){ return (c/100) + ' ' + (cur||'eur'); } };
+const day = d => d ? new Date(d).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '';
 
 /* Le nom vient du chemin (/@nom) ou de ?n= ; sans nom, c'est la recherche. */
 const NAME = (() => {
   const m = /^\/@([^/?#]{1,32})\/?$/.exec(location.pathname);
   const n = m ? decodeURIComponent(m[1]) : new URLSearchParams(location.search).get('n');
-  return n && n.trim() ? n.trim().slice(0, 32) : null;
+  return n && n.trim() ? n.trim().replace(/^@/,'').slice(0, 32) : null;
 })();
-let me = null, C = null, PENDING = null;
+let me = null, C = null, WANT = null, pageSeq = 0;
 window.__totehm_creator = () => ({ build: BUILD, mode: NAME ? 'page' : 'search', signed_in: !!me, loaded: !!C,
   ok: !!C?.ok, why: C?.why || null, open: !!C?.sale?.open, subscribed: !!C?.viewer?.subscribed,
-  can_read: !!C?.viewer?.can_read });
+  can_read: !!C?.viewer?.can_read, me: !!C?.viewer?.me, signin_open: !$('signin').classList.contains('hide'),
+  results: $('res')?.querySelectorAll('.srch-row').length || 0 });
 
+/* ══ LA SESSION — un seul chemin ═════════════════════════════════════ */
 let sessionSeq=0;
 async function session(){
-  const seq=++sessionSeq,previous=me?.id||null;
+  const seq=++sessionSeq, avant=me?.id||null;
   const { data:{ session } } = await sb.auth.getSession();
-  if(seq!==sessionSeq)return;
+  if(seq!==sessionSeq) return;
   me = session?.user || null;
-  if(searchBooted&&previous!==(me?.id||null))searchCtl.authChanged();
+  if(avant!==(me?.id||null)) searchViews.forEach(c=>c.authChanged());
   $('member').classList.toggle('is-in', !!me);
   $('member-txt').textContent = me ? 'My TOTEHM' : 'CONNECT WITH MY TOTEHM';
-  if(me){const uid=me.id;const {data,error}=await sb.from('profiles').select('pseudo').eq('id',uid).maybeSingle();if(error)console.error('[member profile]',error.message);if(seq!==sessionSeq||me?.id!==uid)return;$('member-txt').textContent=data?.pseudo || 'My TOTEHM';}
   $('menu').innerHTML=comMemberLinks(false,me?null:false)+(me?'<button class="m-it" type="button" data-out="1">Sign out</button>':'<button class="m-it" type="button" data-signin="1">CONNECT WITH MY TOTEHM</button>')+
     '<a class="m-it m-terms" href="/terms" target="_blank" rel="noopener">Simple terms of use</a>';
+  if(me){
+    const uid=me.id;
+    const {data,error}=await sb.from('profiles').select('pseudo').eq('id',uid).maybeSingle();
+    if(error) console.error('[member profile]',error.message);
+    if(seq!==sessionSeq||me?.id!==uid) return;
+    if(data?.pseudo) $('member-txt').textContent=data.pseudo;
+  }
   readComMemberOffer(sb,()=>me);
-
 }
 
-/* TOTEHM SEARCH · copied into the independent COM pages, never imported. */
+/* ══ CHERCHER UN TOTEHM : UN NOM, ET C'EST TOUT — copié de totehm.html ══ */
 const searchViews=new Set();
-function TotehmSearch({input,results,note,controls,more,onResults=()=>{}}){
-  let seq=0,timer=0,scope='names',kind='',intention='',query='',offset=0,rows=[],running=false;
-  const labels={h:'Habit',t:'Objective',r:'Repulsion',w:'Teaching',v:'Vision'};
-  const money=(c,cur)=>{try{return new Intl.NumberFormat('en',{style:'currency',currency:(cur||'eur').toUpperCase(),maximumFractionDigits:c%100?2:0}).format(c/100);}catch{return c/100+' '+(cur||'eur');}};
-  const href=(r,b)=>'/totehm?ro='+encodeURIComponent(r.pseudo)+(b?'&box_kind='+b.kind+'&box_key='+encodeURIComponent(b.key):'');
-  controls.innerHTML='<div class="ts-modes" aria-label="Search mode">'+[['names','Names'],['subscriptions','My subscriptions'],['boxes','Boxes I can read']].map(([id,label])=>'<button class="ts-control" type="button" data-search-scope="'+id+'" aria-pressed="false">'+label+'</button>').join('')+'</div><div class="ts-filters hide"><label>Box<select class="ts-control" data-search-kind><option value="">All boxes</option>'+Object.entries(labels).map(([id,label])=>'<option value="'+id+'">'+label+'</option>').join('')+'</select></label><label>Intention<select class="ts-control" data-search-intention><option value="">All intentions</option>'+['fight','flow','enrich','love','express','focus','celebrate'].map(i=>'<option value="'+i+'">'+i[0].toUpperCase()+i.slice(1)+'</option>').join('')+'</select></label></div>';
-  results.setAttribute('aria-live','polite');results.setAttribute('aria-label','TOTEHM search results');
-  function paintModes(){
-    controls.querySelectorAll('[data-search-scope]').forEach(b=>b.setAttribute('aria-pressed',String(scope===b.dataset.searchScope)));
-    controls.querySelector('.ts-filters').classList.toggle('hide',scope!=='boxes');
-    input.placeholder=scope==='boxes'?'words in a box':'a name or @link';
-    input.maxLength=scope==='boxes'?96:80;
-    input.setAttribute('aria-label',scope==='boxes'?'Search inside TOTEHMs I can read':'Search a TOTEHM by name or link');
+function NameSearch({input,results,note,onResults=()=>{}}){
+  let seq=0,timer=0,rows=[];
+  const href=p=>'/totehm?ro='+encodeURIComponent(p);
+  const propre=v=>String(v||'').trim().replace(/^https?:\/\/[^/]+\//i,'').replace(/^@/,'').replace(/[/?#].*$/,'');
+  const dire=t=>{ note.textContent=t; };
+  function draw(q){
+    results.innerHTML=(!q&&rows.length?'<div class="ns-label">My subscriptions</div>':'')
+      +rows.map(r=>'<a class="srch-row" href="'+href(r.pseudo)+'"><span class="srch-name">'+esc(r.pseudo)+'</span>'
+        +'<span class="srch-meta">'+(r.subscribed?'subscribed':'')+'</span></a>').join('');
+    onResults(rows.length);
   }
-  function draw(){
-    let similar=false;
-    results.innerHTML=rows.map(r=>{
-      let h='';if(r.match==='similar'&&!similar){similar=true;h='<div class="ts-section">Similar names</div>';}
-      const status=r.own?'Your TOTEHM':r.can_read?'Subscribed · read & copy':r.offer?'Subscription required':'Read access unavailable';
-      const price=r.offer&&!r.can_read&&r.price_cents?money(r.price_cents,r.currency)+' / year':'';
-      h+='<article class="ts-result"><a class="srch-row ts-open" href="'+href(r)+'"><span class="srch-name tname">'+esc(r.pseudo)+'</span><span class="ts-arrow" aria-hidden="true">↗</span></a><div class="ts-meta"><span class="srch-meta">'+status+'</span>'+(price?'<span>'+esc(price)+'</span>':'')+'</div>';
-      if(r.can_read&&Array.isArray(r.boxes))h+=r.boxes.map(b=>'<a class="ts-box" data-kind="'+b.kind+'" href="'+href(r,b)+'"><span class="ts-box-kind">'+(labels[b.kind]||'Box')+'</span><span class="ts-box-text">'+esc(b.text)+'</span></a>').join('');
-      return h+'</article>';
-    }).join('');onResults(rows.length);
+  async function run(q,ouvrir=false){
+    clearTimeout(timer); const mon=++seq, uid=me?.id||null;
+    if(q.length===1){ rows=[]; draw(q); dire('two letters, minimum'); return; }
+    if(!q&&!me){ rows=[]; draw(q); dire(''); return; }
+    if(q) dire('searching\u2026');
+    const {data,error}=await sb.rpc('totehm_search',{p_q:q,p_limit:12});
+    if(mon!==seq||uid!==(me?.id||null)) return;               /* réponse tardive : jetée */
+    if(error){ console.error('[totehm_search]',error.message); dire('search is unreachable right now'); return; }
+    rows=Array.isArray(data)?data:[];
+    dire(rows.length||!q?'':'no TOTEHM by that name');
+    draw(q);
+    if(ouvrir&&rows.length){
+      const pile=rows.find(r=>r.pseudo.toLowerCase()===q.toLowerCase())||rows[0];
+      location.href=href(pile.pseudo);
+    }
   }
-  function cancel(){seq++;clearTimeout(timer);running=false;results.setAttribute('aria-busy','false');more.disabled=false;}
-  async function run(reset=true){
-    clearTimeout(timer);const current=++seq,uid=me?.id||null;
-    if(reset){offset=0;rows=[];results.replaceChildren();more.classList.add('hide');onResults(0);}
-    running=true;results.setAttribute('aria-busy','true');more.disabled=true;note.textContent='Searching…';
-    try{
-      const {data,error}=await sb.rpc('totehm_discover',{p_q:query,p_scope:scope,p_kind:scope==='boxes'?kind:'',p_intention:scope==='boxes'?intention:'',p_offset:offset,p_limit:12});
-      if(current!==seq||uid!==(me?.id||null))return;
-      if(error){console.error('[totehm_discover]',error.message);throw error;}
-      const items=Array.isArray(data?.items)?data.items:[];
-      const seen=new Set(rows.map(x=>x.pseudo));rows=rows.concat(items.filter(x=>!seen.has(x.pseudo)));offset+=items.length;
-      draw();more.classList.toggle('hide',!data?.more);
-      if(data?.why==='signin'){note.innerHTML='Sign in to search your subscriptions and their boxes. <a class="ts-link" href="/totehm#in">CONNECT WITH MY TOTEHM</a>';}
-      else note.textContent=rows.length?(data.total||rows.length)+' TOTEHMs'+(scope==='boxes'?' · your accessible boxes':''):scope==='subscriptions'?'Your subscriptions will appear here. Search a name to find a TOTEHM.':scope==='boxes'?'No accessible box matches. Try other words or clear the filters.':'No matching name. Try part of the name or an @link.';
-    }catch(e){if(current===seq){note.textContent='Search unavailable. Try again.';more.classList.remove('hide');more.textContent='Retry';}}
-    finally{if(current===seq){running=false;results.setAttribute('aria-busy','false');more.disabled=false;}}
-  }
-  controls.addEventListener('click',e=>{const b=e.target.closest('[data-search-scope]');if(!b)return;
-    cancel();scope=b.dataset.searchScope;query=query||'';input.value=query;paintModes();more.textContent='More TOTEHMs';run();});
-  controls.addEventListener('change',e=>{if(e.target.matches('[data-search-kind]'))kind=e.target.value;if(e.target.matches('[data-search-intention]'))intention=e.target.value;cancel();run();});
-  input.addEventListener('input',()=>{cancel();query=input.value.trim();results.replaceChildren();more.classList.add('hide');onResults(0);note.textContent='Searching…';timer=setTimeout(()=>run(),240);});
-  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();query=input.value.trim();run();}
-    if(e.key==='ArrowDown'){e.preventDefault();results.querySelector('a')?.focus();}});
-  results.addEventListener('keydown',e=>{if(!['ArrowDown','ArrowUp'].includes(e.key))return;const f=Array.from(results.querySelectorAll('a'));const i=f.indexOf(document.activeElement);e.preventDefault();const j=i+(e.key==='ArrowDown'?1:-1);if(j<0)input.focus();else f[Math.min(j,f.length-1)]?.focus();});
-  more.onclick=()=>{if(running)return;if(more.textContent==='Retry'){more.textContent='More TOTEHMs';run(rows.length===0);}else run(false);};
-  paintModes();
-  const controller={start(q='',s='names'){cancel();query=q;scope=['names','subscriptions','boxes'].includes(s)?s:'names';kind='';intention='';controls.querySelectorAll('select').forEach(e=>e.value='');paintModes();run();},cancel,authChanged(){cancel();rows=[];results.replaceChildren();more.classList.add('hide');onResults(0);note.textContent='';if(getComputedStyle(controls).visibility==='visible'&&controls.getClientRects().length)run();},reset(){cancel();rows=[];results.replaceChildren();more.classList.add('hide');onResults(0);note.textContent='';}};
-  searchViews.add(controller);return controller;
+  input.addEventListener('input',()=>{ clearTimeout(timer); const v=propre(input.value); timer=setTimeout(()=>run(v),220); });
+  input.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){ e.preventDefault(); run(propre(input.value),true); }
+    if(e.key==='ArrowDown'){ const a0=results.querySelector('a'); if(a0){ e.preventDefault(); a0.focus(); } }
+  });
+  results.addEventListener('keydown',e=>{
+    if(!['ArrowDown','ArrowUp'].includes(e.key)) return;
+    const f=Array.from(results.querySelectorAll('a')), i=f.indexOf(document.activeElement);
+    e.preventDefault(); const j=i+(e.key==='ArrowDown'?1:-1);
+    (j<0?input:f[Math.min(j,f.length-1)]).focus();
+  });
+  const controller={
+    start(q=''){ run(propre(q)); },
+    reset(){ seq++; clearTimeout(timer); rows=[]; results.replaceChildren(); onResults(0); dire(''); },
+    authChanged(){ seq++; clearTimeout(timer); rows=[]; results.replaceChildren(); onResults(0); dire(''); }
+  };
+  searchViews.add(controller); return controller;
 }
 
-
-/* ══ LA RECHERCHE ════════════════════════════════════════════════════ */
-let searchBooted=false;
-const searchCtl=TotehmSearch({input:$('q'),results:$('res'),note:$('q-note'),controls:$('search-controls'),more:$('search-more')});
-
-/* ══ LA PAGE D'UN CRÉATEUR ═══════════════════════════════════════════ */
+/* ══ LA PAGE D'UN MEMBRE ═════════════════════════════════════════════ */
+function paintName(n){
+  $('who').textContent = n;
+  const L = [...n].length;
+  $('paper').style.setProperty('--fs', (L <= 8 ? 28 : L <= 13 ? 22 : L <= 20 ? 17 : 14) + 'px');
+}
 async function loadPage(){
+  const seq = ++pageSeq, uid = me?.id || null;
   const { data, error } = await sb.rpc('creator_page', { p_pseudo: NAME });
-  if(error){ console.error('[creator_page]', error.message); $('note').className = 'note no'; $('note').textContent = 'this page is unreachable right now'; return; }
+  if(seq !== pageSeq || uid !== (me?.id || null)) return false;      /* réponse tardive : jetée */
+  if(error){ console.error('[creator_page]', error.message); say('this page is unreachable right now', 'no'); return false; }
   C = data || {};
   if(!C.ok){
-    $('who').textContent = NAME;
-    $('offer').innerHTML = '<div class="meta">' + (C.why === 'nobody' ? 'no TOTEHM by that name' : 'this TOTEHM is private') + '</div>';
-    return;
+    paintName(NAME); $('ints').innerHTML = '';
+    $('offer').innerHTML = '<div class="state is-off">' + (C.why === 'nobody' ? 'No TOTEHM by that name' : 'This TOTEHM is private') + '</div>' +
+      '<a class="btn" href="/search' + (C.why === 'nobody' ? '?q=' + encodeURIComponent(NAME) : '') + '">Search a TOTEHM</a>';
+    document.title = 'TOTEHM';
+    return true;
   }
-  document.title = C.pseudo + ' — TOTEHM';
-  $('who').textContent = C.pseudo;
-  $('pal').innerHTML = (C.palette || []).map(i => '<i style="background:' + (COLOR[i] || '#fff') + '" title="' + esc(i) + '"></i>').join('');
+  document.title = C.pseudo + ' · TOTEHM';
+  paintName(C.pseudo);
+  $('ints').innerHTML = (C.palette || []).map(i => '<span><i style="background:' + (COLOR[i] || '#fff') + '"></i>' + esc(i) + '</span>').join('');
   paintOffer();
+  const v = C.viewer || {};
+  if(WANT === 'subscribe' && me){
+    WANT = null;
+    if(C.sale?.open && !v.me && !v.subscribed && !v.can_read) subscribe(null);
+  }
+  return true;
 }
+
+const GETS = n =>
+  '<div class="gets">' +
+    '<div class="get"><span class="croix" aria-hidden="true"><i class="c-t"></i><i class="c-w"></i><i class="c-h"></i><i class="c-v"></i><i class="c-r"></i></span>' +
+      '<span><b>' + esc(n) + '’s whole TOTEHM</b><p>habits · objectives · repulsions · vision · wisdom — read only, as it grows</p></span></div>' +
+    '<div class="get"><span class="pt" aria-hidden="true"></span>' +
+      '<span><b>Where ' + esc(n) + ' is, right now</b><p>the exact place of their shared spaces in SPACE, when they turn location on</p></span></div>' +
+  '</div>';
+const PRICE = s => '<div class="price">' + esc(money(s.price_cents, s.currency)) + '<small>/ year</small></div>';
+const FINE = n => '<p class="fine">One payment a year, by Stripe. Stop anytime in your console: it runs to the end of the year. 80% goes to ' + esc(n) + '.</p>';
+
 function paintOffer(){
-  const s = C.sale || {}, v = C.viewer || {};
-  const open = '<button class="btn" data-do="open" type="button">Open the TOTEHM</button>';
+  const s = C.sale || {}, v = C.viewer || {}, n = C.pseudo;
+  const ouvrir = '<button class="btn is-main" data-do="open" type="button">Open the TOTEHM</button>';
   let h = '';
-  if(s.open) h += '<div class="price">' + money(s.price_cents, s.currency) + ' <span class="meta">/ year</span></div>' +
-    '<div class="ben">' + BEN + '</div>';
   if(v.me){
-    h += '<div class="meta">this is your TOTEHM</div><button class="btn" data-do="mine" type="button">Open my TOTEHM</button>' +
-         '<a class="lnk" href="/console">Manage it in my console</a>';
+    h = '<div class="kick">This is your page</div>' +
+        '<div class="mine"><button class="btn is-main" data-do="mine" type="button">Open my TOTEHM</button>' +
+        '<a class="btn" href="/console">My console</a><button class="btn" data-do="copy" type="button">Copy my link</button></div>' +
+        (s.open ? '<div class="kick" style="margin-top:6px">What visitors see</div>' + PRICE(s) + GETS(n) + FINE(n)
+                : '<div class="state is-off">Your subscription is off</div><p class="fine">Set a yearly price and where to pay you in your console. This page sells it.</p>');
   } else if(v.subscribed){
-    h += '<div class="meta" style="color:#fff">subscribed' + (v.until ? ' · ' + (v.ending ? 'ends ' : 'renews ') + day(v.until) : '') + '</div>' + (v.can_read ? open : '');
+    h = '<div class="kick">Your subscription</div>' +
+        '<div class="state">' + (v.until ? (v.ending ? 'Ends ' : 'Renews ') + esc(day(v.until)) : 'Active') + '</div>' +
+        (v.can_read ? ouvrir : '<p class="fine">' + esc(n) + ' keeps their TOTEHM private for now.</p>') +
+        '<a class="lnk" href="/console">Manage in my console</a>';
   } else if(v.can_read){
-    h += open;
+    h = '<div class="kick">You can read this TOTEHM</div>' + ouvrir;
   } else if(s.open){
-    h += v.signed_in ? '<button class="btn" data-do="subscribe" type="button">Subscribe</button>'
-                     : '<button class="btn" data-do="signin" type="button">CONNECT WITH MY TOTEHM</button>';
+    h = '<div class="kick">Yearly subscription</div>' + PRICE(s) + GETS(n) +
+        '<button class="btn is-main" data-do="subscribe" type="button">Subscribe</button>' + FINE(n);
   } else {
-    h += '<div class="meta">not open to subscriptions yet</div>';
+    h = '<div class="kick">Yearly subscription</div><div class="state is-off">Not open yet</div>' +
+        '<p class="fine">' + esc(n) + ' has not opened subscriptions. Come back soon.</p>';
   }
   $('offer').innerHTML = h;
+}
+function say(t, k){ $('note').className = 'note' + (k ? ' ' + k : ''); $('note').textContent = t || ''; }
+
+async function subscribe(b){
+  if(b) b.disabled = true; say('opening checkout…');
+  try{
+    const { data:{ session:s } } = await sb.auth.getSession();
+    if(!s){ WANT = 'subscribe'; showSignin(); if(b) b.disabled = false; say(''); return; }
+    const r = await fetch(SB_URL + '/functions/v1/creator-subscribe', { method:'POST',
+      headers:{ 'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer ' + s.access_token },
+      body: JSON.stringify({ pseudo: C.pseudo, from: 'page' }) });
+    const j = await r.json().catch(() => ({}));
+    if(j.url){ location.href = j.url; return; }
+    if(j.already){ say('you are already subscribed', 'ok'); await loadPage(); return; }
+    if(!r.ok) console.error('[creator-subscribe]', r.status, j.error || '');
+    say(({ closed:'not open to subscriptions', self:'this is your own TOTEHM', signin:'connect first', nobody:'no TOTEHM by that name' })[j.error] || 'checkout is unavailable, try again', 'no');
+  }catch(e){ console.error('[creator-subscribe]', e && e.message || e); say('checkout is unavailable, try again', 'no'); }
+  if(b) b.disabled = false;
 }
 $('offer').addEventListener('click', async e => {
   const b = e.target.closest('[data-do]'); if(!b) return;
   const d = b.dataset.do;
   if(d === 'open') location.href = '/totehm?ro=' + encodeURIComponent(C.pseudo);
   if(d === 'mine') location.href = '/totehm#in';
-  if(d === 'signin') showSignin('CONNECT WITH MY TOTEHM');
-  if(d === 'subscribe'){
-    b.disabled = true; $('note').className = 'note'; $('note').textContent = 'opening checkout…';
-    const { data:{ session } } = await sb.auth.getSession();
-    const r = await fetch(SB_URL + '/functions/v1/creator-subscribe', { method:'POST',
-      headers:{ 'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer ' + (session?.access_token || SB_ANON) },
-      body: JSON.stringify({ pseudo: C.pseudo, from: 'page' }) });
-    const j = await r.json().catch(() => ({}));
-    if(j.url){ location.href = j.url; return; }
-    if(j.already){ await loadPage(); return; }
-    $('note').className = 'note no';
-    $('note').textContent = ({ closed:'not open to subscriptions', self:'this is you' })[j.error] || j.error || 'checkout unavailable';
-    b.disabled = false;
+  if(d === 'subscribe') subscribe(b);
+  if(d === 'copy'){
+    const url = 'https://www.totehm.com/@' + encodeURIComponent(C.pseudo);
+    try{ await navigator.clipboard.writeText(url); say('link copied', 'ok'); }
+    catch(_){ say(url); }
   }
 });
 
-/* ══ SE CONNECTER — totehm.com est la source de l'identité ═══════════ */
-function showSignin(why){
-  PENDING = true;
-  $('si-why').textContent = why || 'CONNECT WITH MY TOTEHM';
+/* ══ SE CONNECTER — ici, sur la source de l'identité ═════════════════
+   « Subscribe » sans compte : l'email, le code, puis le paiement part
+   tout seul (WANT), une fois la page relue sous la nouvelle session. */
+function showSignin(){
   $('signin').classList.remove('hide');
-  $('si-email').classList.remove('hide'); $('si-code').classList.add('hide');
+  $('offer').querySelector('[data-do=subscribe]')?.classList.add('hide');
+  $('si-email').classList.remove('hide'); $('si-code').classList.add('hide'); $('si-code').value = '';
+  $('si-note').className = 'note'; $('si-note').textContent = '';
   setTimeout(() => $('si-email').focus(), 60);
-  $('signin').scrollIntoView({ behavior:'smooth', block:'center' });
 }
+function hideSignin(){
+  $('signin').classList.add('hide');
+  $('offer').querySelector('[data-do=subscribe]')?.classList.remove('hide');
+}
+$('si-x').onclick = () => { WANT = null; hideSignin(); };
+$('signin').addEventListener('submit', e => e.preventDefault());
 let mail = '';
 $('si-email').addEventListener('keydown', async e => {
   if(e.key !== 'Enter') return;
+  e.preventDefault();
   const v = $('si-email').value.trim(), n = $('si-note');
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ n.className = 'note no'; n.textContent = 'invalid email'; return; }
   n.className = 'note'; n.textContent = 'sending…';
   const { error } = await sb.auth.signInWithOtp({ email: v, options:{ shouldCreateUser: true } });
-  if(error){ n.className = 'note no'; n.textContent = 'try again in a minute'; return; }
-  mail = v; n.className = 'note ok'; n.textContent = 'code sent';
-  $('si-email').classList.add('hide'); $('si-code').classList.remove('hide'); setTimeout(() => $('si-code').focus(), 60);
+  if(error){ console.error('[otp]', error.message); n.className = 'note no'; n.textContent = 'try again in a minute'; return; }
+  mail = v; n.className = 'note ok'; n.textContent = 'code sent to ' + v;
+  $('si-code').classList.remove('hide'); $('si-code').focus(); $('si-email').classList.add('hide');
 });
 $('si-code').addEventListener('input', async () => {
   const t = $('si-code').value.trim(), n = $('si-note');
   if(t.length !== 6) return;
   n.className = 'note'; n.textContent = 'verifying…';
   const { error } = await sb.auth.verifyOtp({ email: mail, token: t, type: 'email' });
-  if(error){ n.className = 'note no'; n.textContent = 'wrong code'; return; }
-  n.textContent = ''; $('signin').classList.add('hide'); PENDING = null;
+  if(error){ console.error('[otp]', error.message); n.className = 'note no'; n.textContent = 'wrong code'; return; }
+  n.textContent = ''; $('signin').classList.add('hide');
   await session(); if(NAME) loadPage();
 });
-$('si-x').onclick = () => { $('signin').classList.add('hide'); PENDING = null; };
+
+/* ══ LE MENU ═════════════════════════════════════════════════════════ */
 $('member').onclick = () => $('menu').classList.toggle('is-open');
 $('menu').addEventListener('click', async e => {
-  if(e.target.closest('[data-signin]')){ $('menu').classList.remove('is-open'); showSignin('CONNECT WITH MY TOTEHM'); }
-  if(e.target.closest('[data-out]')){ await sb.auth.signOut({ scope:'local' }); $('menu').classList.remove('is-open'); await session(); if(NAME) loadPage(); }
+  if(e.target.closest('[data-signin]')){
+    $('menu').classList.remove('is-open');
+    if(NAME && C?.ok && C.sale?.open && !C.viewer?.subscribed && !C.viewer?.can_read){ WANT = null; showSignin(); }
+    else location.href = '/totehm#in';
+  }
+  if(e.target.closest('[data-out]')){ await sb.auth.signOut({ scope:'local' }); $('menu').classList.remove('is-open'); await session(); if(NAME) loadPage(); else searchCtl.start($('q').value); }
 });
 document.addEventListener('pointerdown', e => { if(!e.target.closest('#menu,#member')) $('menu').classList.remove('is-open'); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') $('menu').classList.remove('is-open'); });
 
 /* ══ DÉMARRAGE ═══════════════════════════════════════════════════════ */
+const searchCtl = NameSearch({ input:$('q'), results:$('res'), note:$('q-note') });
 await session();
 if(NAME){
   $('page').classList.remove('hide');
+  paintName(NAME);
   await loadPage();
   if(new URLSearchParams(location.search).get('subscribed')){
-    /* Le webhook peut arriver une seconde après le retour de Stripe. */
-    $('note').className = 'note ok'; $('note').textContent = 'welcome — your subscription is being written';
-    for(let k = 0; k < 6 && C?.ok && !C.viewer?.subscribed; k++){ await new Promise(r => setTimeout(r, 1500)); await loadPage(); }
-    $('note').textContent = C?.viewer?.subscribed ? 'subscribed' : 'payment received — refresh in a moment';
+    /* Le webhook peut arriver quelques secondes après le retour de Stripe. */
+    say('welcome · your subscription is being written', 'ok');
+    for(let k = 0; k < 8 && C?.ok && !C.viewer?.subscribed; k++){ await new Promise(r => setTimeout(r, 1500)); await loadPage(); }
+    say(C?.viewer?.subscribed ? 'you are subscribed' : 'payment received · refresh in a moment', 'ok');
+    history.replaceState(null, '', location.pathname);
   }
 }else{
   $('search').classList.remove('hide');
-  const q0 = new URLSearchParams(location.search).get('q');
-  if(q0)$('q').value=q0;
-  searchBooted=true;
-  searchCtl.start(q0||'','names');
+  const q0 = new URLSearchParams(location.search).get('q') || '';
+  $('q').value = q0;
+  searchCtl.start(q0);
   setTimeout(() => $('q').focus(), 60);
 }
-sb.auth.onAuthStateChange(event=>{if(event==='INITIAL_SESSION')return;setTimeout(async()=>{await session();if(NAME)loadPage();},0);});
-</script>
-<script data-ecosystem-ui="2026-10-05">
-/* 05/10/2026 — copied into each independent page; no runtime import. */
-(() => {
-  const roots = '.habit:not(.add):not(.filtre),.r-habit,.bx';
-  const glass = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 6 6"/></svg>';
-  let sheet = null, previous = null, inert = [], overflow = '';
-  function close() {
-    if (!sheet) return;
-    sheet.remove(); sheet = null;
-    inert.forEach(([el, before]) => { if (el.isConnected) el.inert = before; }); inert = [];
-    document.body.style.overflow = overflow; document.body.classList.remove('eco-modal');
-    if (previous?.isConnected) previous.focus({preventScroll:true});
-  }
-  function open(content, title, source) {
-    if (sheet) close();
-    previous = source || document.activeElement; overflow = document.body.style.overflow;
-    sheet = document.createElement('div'); sheet.className = 'eco-sheet'; sheet.setAttribute('role','dialog');
-    sheet.setAttribute('aria-modal','true'); sheet.setAttribute('aria-label',title); sheet.tabIndex = -1;
-    const card = document.createElement('section'); card.className = 'eco-card';
-    const exit = document.createElement('button'); exit.type = 'button'; exit.className = 'eco-text-btn eco-close';
-    exit.textContent = 'CLOSE'; exit.addEventListener('click',close);
-    card.append(exit,content); sheet.append(card);
-    inert = Array.from(document.body.children).filter(el => !['SCRIPT','STYLE'].includes(el.tagName)).map(el => [el,el.inert]);
-    inert.forEach(([el]) => el.inert = true);
-    document.body.append(sheet); document.body.style.overflow = 'hidden'; document.body.classList.add('eco-modal');
-    sheet.addEventListener('click',e => { if (e.target === sheet) close(); }); exit.focus();
-  }
-  function zoom(box, source) {
-    const copy = box.cloneNode(true); copy.classList.add('eco-box-copy'); copy.classList.remove('open','is-on');
-    const sourceNodes = box.querySelectorAll('*'), copyNodes = copy.querySelectorAll('*');
-    sourceNodes.forEach((el,i) => { if (getComputedStyle(el).display === 'none') copyNodes[i].remove(); });
-    copy.querySelectorAll('[data-box-zoom],.w-x,.h-x,[data-kill],[data-x],.box-copy,.ro-copy,.pk-list,.pkw,.rk,.mini-x,.dash').forEach(el => el.remove());
-    const originals = box.querySelectorAll('textarea,input');
-    copy.querySelectorAll('textarea,input').forEach((el,i) => { const text = document.createElement('span'); text.className = 'v-name'; text.textContent = originals[i]?.value || ''; el.replaceWith(text); });
-    [copy,...copy.querySelectorAll('*')].forEach(el => {
-      for (const attr of Array.from(el.attributes)) if (/^(id|name|for|data-|on|tabindex|contenteditable|autofocus)/.test(attr.name)) el.removeAttribute(attr.name);
-      el.removeAttribute('role'); el.style.removeProperty('height'); el.style.removeProperty('max-height');
-    });
-    copy.querySelectorAll('button,a,select').forEach(el => { const span = document.createElement('span'); span.className = el.className; span.innerHTML = el.innerHTML; el.replaceWith(span); });
-    open(copy,'Enlarged TOTEHM box',source);
-  }
-  function enhance(scope) {
-    if (!(scope instanceof Element) || scope.closest('.eco-sheet')) return;
-    const parentBox = scope.closest(roots);
-    const boxes = [...(parentBox ? [parentBox] : []),...scope.querySelectorAll(roots)];
-    boxes.forEach(box => {
-      if (box.closest('.eco-sheet') || box.querySelector('[data-box-zoom]')) return;
-      const text = box.querySelector('.v-name,.h-text,.r-text,.nm')?.textContent?.trim() || box.querySelector('textarea')?.value?.trim();
-      if (!text) return;
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'eco-box-zoom'; b.dataset.boxZoom = '1';
-      b.setAttribute('aria-label','Enlarge this box'); b.innerHTML = glass; box.append(b);
-    });
-    const buttonSelector = 'button,a.m-it,a.mw-link,a.btn-sig,a.btn,a.ro-action';
-    const parentButton = scope.closest(buttonSelector);
-    const buttons = [...(parentButton ? [parentButton] : []),...scope.querySelectorAll(buttonSelector)];
-    buttons.forEach(b => {
-      if (b.closest('#joy,#totehm-paper,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,.eco-box-zoom,.mini-toggle,.rk-a')) return;
-      const text = b.textContent.trim(); if (!text || /^[×+−\-↑↓←→↔↕✕✖?°\d\s]+$/.test(text)) return;
-      if (/^sign\s*in\b/i.test(text)) {
-        const leaf = b.querySelector('#member-txt,#conn-txt') || b;
-        leaf.textContent = 'CONNECT WITH MY TOTEHM'; b.classList.add('eco-connect');
-      } else if (text !== 'CONNECT WITH MY TOTEHM') b.classList.remove('eco-connect');
-      if (b.textContent.trim() === 'CONNECT WITH MY TOTEHM') b.classList.add('eco-connect');
-      b.classList.add('eco-text-btn');
-    });
-    if (document.body.dataset.ecoAuth === 'central') {
-      for (const input of scope.querySelectorAll('#mw-email,#in-email,#pt-email')) {
-        if (input.parentElement.querySelector('[data-eco-connect]')) continue;
-        const b = document.createElement('button'); b.type = 'button'; b.dataset.ecoConnect = '1';
-        b.className = 'eco-text-btn eco-connect'; b.textContent = 'CONNECT WITH MY TOTEHM'; input.before(b);
-      }
-    }
-  }
-  document.addEventListener('click',e => {
-    const zoomButton = e.target.closest?.('[data-box-zoom]');
-    if (zoomButton) { e.preventDefault(); e.stopImmediatePropagation(); const box = zoomButton.closest(roots); if (box) zoom(box,zoomButton); return; }
-    const definition = e.target.closest?.('[data-space-about]');
-    if (definition) { e.preventDefault(); e.stopImmediatePropagation(); const content = document.querySelector('#space-definition')?.content?.cloneNode(true); if (content) open(content,'What is a space?',definition); }
-  },true);
-  document.addEventListener('keydown',e => {
-    if (!sheet) return;
-    e.stopImmediatePropagation();
-    if (e.key === 'Escape') { e.preventDefault(); close(); }
-    if (e.key === 'Tab') {
-      const list = [...sheet.querySelectorAll('button,a[href],input,textarea,select,[tabindex="0"]')].filter(el => !el.disabled && el.getClientRects().length);
-      const first = list[0], last = list.at(-1);
-      if (!first) { e.preventDefault(); sheet.focus(); }
-      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-    }
-  },true);
-  for (const name of ['pointerdown','touchstart','touchmove','touchend','wheel']) document.addEventListener(name,e => { if (sheet) e.stopImmediatePropagation(); },{capture:true,passive:true});
-  const start = () => {
-    enhance(document.body);
-    new MutationObserver(records => {
-      const scopes = new Set();
-      for (const r of records) {
-        if (r.target instanceof Element && !r.target.closest('.eco-sheet')) scopes.add(r.target);
-        for (const node of r.addedNodes) if (node instanceof Element) scopes.add(node);
-      }
-      scopes.forEach(enhance);
-    }).observe(document.body,{childList:true,subtree:true});
-  };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
-})();
+sb.auth.onAuthStateChange(event => { if(event === 'INITIAL_SESSION') return;
+  setTimeout(async () => { await session(); if(NAME) loadPage(); else searchCtl.start($('q').value); }, 0); });
 </script>
 </body>
 </html>
