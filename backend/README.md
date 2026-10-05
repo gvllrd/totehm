@@ -308,9 +308,16 @@ compte est dans `boutique_admins`) → « Quotes to answer » → prix en € + 
 mot → Send quote (ou Decline). Le membre reçoit l'email, accepte, paie.
 Ajouter un administrateur : `insert into boutique_admins(user_id) select id from profiles where pseudo = '…';`
 
-**Allumer le banc d'essai** (prix live → « oui » de Wah) :
-`update boutique_testers set active = true, price_cents = 100 where user_id = (select id from profiles where pseudo = '…');`
-Éteindre : `… set active = false …`. Les pièces/commandes d'essai : `where test`.
+**Le mode test Stripe** (05/10 soir, sans « oui » : aucun argent réel) : un
+compte actif de `boutique_testers` paie avec la clé TEST (carte
+`4242 4242 4242 4242`, date future, CVC quelconque), au vrai prix.
+Allumer : `update boutique_testers set active = true where user_id = (select id from profiles where pseudo = '…');`
+(absent : `insert into boutique_testers(user_id, active) select id, true from profiles where pseudo = '…';`).
+Éteindre : `… set active = false …`. Pré-requis (Claude Code) : secrets
+`STRIPE_TEST_SECRET_KEY` et `STRIPE_TEST_WEBHOOK_SECRET` (endpoint du mode test →
+`…/functions/v1/stripe-webhook`, `checkout.session.completed`). Sans eux :
+`test_unavailable`. Les pièces/commandes d'essai : `where test` (aucune
+génération n8n, aucune commande Printful, email « [TEST] »).
 
 **Relancer une génération** (n8n en panne au moment du paiement) : POST
 `https://n8n.higher.boutique/webhook/streetwear-generate` `{"cloth_id":"<uuid>"}`

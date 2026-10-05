@@ -22,6 +22,28 @@ Noms du Totehm en Quantico Coral #fbd5ca, y compris au survol, sans point/carré
 > `CLAUDE.md` le 30/09/2026, les plus récentes d'abord : un renvoi « plus
 > haut » peut viser la racine ou un autre dossier. Fichiers : `index.html`, `streetwear.html`, `luxury.html`, `totehm.html`, `terms_of_sale.html`. Get Higher, Lisbon, Stoner et Origins sont sur figher.club depuis le 02/10 (`club/CLAUDE.md`).
 
+## ⛔ 05/10/2026 (soir) — L'ACCUEIL D'AVANT · LA COLLECTION DU MOMENT · LE MODE TEST STRIPE
+
+**Wah a refusé la manette sur l'accueil** (« on oublie le curseur ici »).
+`index.html` (`BUILD 2026-10-05-landing`) = la page d'avant (base `2ca0aeb`) :
+la vidéo, [Create my Totehm Streetwear Cloth], **sous lui la collection du
+moment « Totehm x Champion 2026 »** (`#collab`, au format des marques : un NOM,
+jamais un logo ; `#sw-col-sold` = pièces restantes de `totehm_cloth_support`),
+puis le Luxe et Decode (`reveal_cloth`). **[Experience our dope branding] →
+totehm.com** par le pont (`data-com`, `ssoVersDomaine`) ; plus aucun lien
+figher.club sur l'accueil. Le manche reste sur `/streetwear` et `/luxury`
+seulement. La section « manette » ci-dessous vaut pour ces deux pages.
+
+**LE MODE TEST STRIPE remplace le prix d'essai.** Un compte ACTIF de
+`boutique_testers` paie avec `STRIPE_TEST_SECRET_KEY` (carte 4242 4242 4242
+4242), au VRAI prix : `create-checkout` et `luxury-checkout` lisent
+`_boutique_test_mode()` (serveur) ; Stripe affiche « TEST · » ; la page luxe
+le dit (`luxury_access().test_mode`). Le webhook vérifie aussi
+`STRIPE_TEST_WEBHOOK_SECRET` et, en mode test, n'écrit que `cloth`/`luxury`
+(`test = true`), sans génération n8n ni Printful, email « [TEST] ».
+Clé test absente → `test_unavailable` (jamais un repli sur le live).
+`price_cents` de `boutique_testers` est inerte. Allumer un testeur = sans « oui ».
+
 ## ⛔ 05/10/2026 — LA MANETTE · LE LUXE SUR DEVIS · DECODE · LE BANC D'ESSAI
 
 **L'accueil (`index.html`, `BUILD 2026-10-05-joystick`, `__totehm_boutique()`)
@@ -65,7 +87,7 @@ paiement est traité par `stripe-webhook` (cas `cloth`). Le stock et les
 tailles viennent de `totehm_cloth_support` — **0 vêtement tant que n8n F ne
 synchronise pas Printful** (CLAUDE_CODE.md, 05/10).
 
-**LE BANC D'ESSAI** : `boutique_testers` (un prix d'essai PAR COMPTE, éteint
+**LE BANC D'ESSAI** (remplacé le 05/10 soir par le mode test, ci-dessus) : `boutique_testers` (un prix d'essai PAR COMPTE, éteint
 par défaut). Allumé, le compte paie ce prix partout (Streetwear et devis), la
 page le dit (« test mode · you pay €1 »), Stripe affiche « TEST · », la pièce
 et la commande portent `test = true`. L'allumer est un prix live : « oui » de

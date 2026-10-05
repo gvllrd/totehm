@@ -29,6 +29,17 @@ les exécutions (MCP compris). Considère-les comme compromises.
 9. Attendu : une ligne par produit dans `totehm_cloth_support` (`active=false`, `price=0`, `max_pieces=0`). Prix et stock = un « oui » de Wah, posés par la session cloud.
 10. Rapport : une ligne par étape, la valeur mesurée (versions publiées, lignes, ids). Aucune clé dans le rapport.
 
+## Tâche 2 — 05/10/2026 (soir) · le mode test Stripe (avant ou après la tâche n8n)
+
+La boutique sait payer en MODE TEST (code déployé). Il manque les deux secrets.
+1. Wah ouvre dashboard.stripe.com en **mode test** (bascule « Test mode ») → Developers → API keys → copie la `sk_test_…` dans TON terminal (jamais dans une conversation cloud)
+2. `supabase secrets set STRIPE_TEST_SECRET_KEY=… --project-ref abujjbkbbiumxrokozph`
+3. Toujours en mode test : crée UN endpoint webhook → `https://abujjbkbbiumxrokozph.supabase.co/functions/v1/stripe-webhook`, événement `checkout.session.completed` seul (l'endpoint LIVE ne bouge pas)
+4. `supabase secrets set STRIPE_TEST_WEBHOOK_SECRET=whsec_… --project-ref abujjbkbbiumxrokozph`
+5. Contrôle : depuis le dashboard test, « Send test event » `checkout.session.completed` → réponse 200 `test ignored` (pas de `metadata.product`) ; puis Wah achète un Cloth avec 4242 4242 4242 4242 → pièce `paid`, `test = true`, email « [TEST] »
+6. Workflow D (n8n) : ne jamais commander chez Printful une pièce `totehm_clothes.test = true`
+7. Rapport : une ligne par étape (secrets présents oui/non, id de l'endpoint test, statut de l'événement). Aucune clé.
+
 ## Tâche précédente — 01/10/2026 · le ménage en base (une approbation)
 
 La session cloud ne peut pas faire approuver un `drop`. Toi, si.
@@ -195,6 +206,17 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > éteint ; l'allumer = un « oui » de Wah). Migration
 > `20261005_boutique_operationnelle.sql` APPLIQUÉE (`boutique_operationnelle`) :
 > ne pas réappliquer. n8n : tâche du 05/10.
+
+### Correction 0.38 — 05/10/2026 (soir) · l'accueil d'avant, le mode test
+
+> Wah refuse la manette sur l'accueil : higher.boutique reprend sa page
+> d'avant ; sous [Create my Totehm Streetwear Cloth], la collection du
+> moment « Totehm x Champion 2026 » (un nom, jamais le logo) ;
+> [Experience our dope branding] mène à totehm.com. Le manche reste sur
+> /streetwear et /luxury. Le prix d'essai à 1 € disparaît : un testeur paie
+> en MODE TEST Stripe, au vrai prix, sans argent réel (pièces et commandes
+> `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
+> APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
 ## Le rapport
 

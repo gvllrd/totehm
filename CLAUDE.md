@@ -71,8 +71,8 @@ club/     → www.figher.club      le branding Higher en expérience : [Get High
 space/    → www.totehm.space     DO WITH ME : UN Spot (PRIVATE / SHARED) naît d'une Habit
                                  filmée maintenant (33 s) ou annoncée pour plus tard ;
                                  I WILL BE HERE → I AM HERE → I WAS THERE
-boutique/ → www.higher.boutique  la manette (05/10) : ↑ Streetwear · → Luxe SUR DEVIS (/luxury,
-                                 THP requis, Wah pose le prix) · ↓ Decode · ← News ; Get Higher → figher.club
+boutique/ → www.higher.boutique  l'accueil d'avant (05/10 soir) : Streetwear + collection du moment, Luxe SUR
+                                 DEVIS (/luxury, THP, Wah pose le prix), Decode ; branding → totehm.com
 backend/  → servi par PERSONNE — reste à la racine (sinon SQL et fonctions téléchargeables)
 oracle/   → clés, gitignoré, jamais lu ni recopié
 tests/    → tests navigateur (Playwright, Supabase simulé) et SQL (tests/sql/, auto-annulés)
@@ -140,7 +140,7 @@ CTA partout : **CONNECT WITH MY TOTEHM** ; plus d’OTP local sur les satellites
 
 Un webhook, routé sur `metadata.product` par un `switch` avec `default`
 explicite — **ne jamais retirer ce filtre** : `higher` · `cloth` ·
-`subscription` · `creator_sub` · `artwork` · `resale` · `luxury` (05/10 : `cloth` traité ici, `luxury` sur devis ; prix d'essai par compte = `boutique_testers`, l'allumer = un « oui »). Toute nouvelle
+`subscription` · `creator_sub` · `artwork` · `resale` · `luxury` (05/10 : `cloth` traité ici, `luxury` sur devis ; un testeur actif de `boutique_testers` paie en MODE TEST Stripe : `STRIPE_TEST_SECRET_KEY` / `STRIPE_TEST_WEBHOOK_SECRET`, seuls `cloth`/`luxury` test s'écrivent, marqués `test`). Toute nouvelle
 fonction de checkout pose sa propre `metadata.product`. La metadata voyage
 EN DOUBLE (`subscription_data.metadata`). Propriété et argent ne s'écrivent
 QUE par le webhook (`art_settle`, idempotent sur la session). Endpoint

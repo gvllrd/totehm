@@ -16,6 +16,17 @@
 ---
 
 
+## 0 · LA BOUTIQUE — 05/10/2026 (soir) : l'accueil d'avant, Totehm x Champion 2026, le mode test Stripe
+
+| quoi | valeur mesurée |
+|---|---|
+| migration `20261005b_stripe_test_mode.sql` | APPLIQUÉE (`stripe_test_mode`) · `_boutique_test_mode(uuid)` service_role seul · `luxury_access()` rend `test_mode` (plus `test_price_cents`) |
+| `boutique_testers` | 1 ligne, **active** (Wah, `Vallerand`) · `price_cents` inerte |
+| Edge Functions | `create-checkout` v38 · `luxury-checkout` v3 (clé test, `test_unavailable` si absente) · `stripe-webhook` v41 (secret test en second ; en test : `cloth`/`luxury` seuls ; signature fausse → 400 `invalid signature`) |
+| secrets Stripe test | **absents** → tâche Claude Code (CLAUDE_CODE.md) ; d'ici là un testeur reçoit `test_unavailable`, jamais le live |
+| tests navigateur | `boutique_home.mjs` 10/10 · `club_luxury.mjs` 35/35 · `streetwear.mjs` 25/25 |
+| prod | voir la ligne « prod » ajoutée à la fusion |
+
 ## 0 · LA BOUTIQUE OPÉRATIONNELLE — 05/10/2026 : la manette, le luxe sur devis, Decode, le banc d'essai
 
 | quoi | valeur mesurée |
