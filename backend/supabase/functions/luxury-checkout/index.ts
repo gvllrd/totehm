@@ -1,14 +1,17 @@
-// TOTEHM · luxury-checkout — LANCER UNE TOTEHMISATION LUXE · 02/10/2026
-// why : Wah, 02/10 — « la totehmisation luxe : 500 € pour la lancer, et
-//       devoir posséder un TotehmPaper ». Le membre apporte SA pièce
-//       (sac, veste, chaussures…) ; ce paiement lance le projet.
-// how : le prix vit dans `luxury_offer` (slug `launch`), jamais dans la
-//       page. Le THP se vérifie ICI, côté serveur (`_art_owns_thp`) — la
-//       page ne fait que le dire. `metadata.product = 'luxury'` : le
-//       webhook écrit `luxury_orders` (`luxury_settle`, idempotent sur la
-//       session). Retour sur la boutique, chemin ABSOLU fixe.
+// TOTEHM · luxury-checkout — PAYER UN DEVIS LUXE · 05/10/2026
+// why : Wah, 05/10 — « le luxe en mode devis ». Le prix n'est plus un
+//       lancement fixe : c'est le devis que Wah a posé sur la demande du
+//       membre (`luxury_quotes.quote_cents`, via luxury-quote). Le membre
+//       accepte et paie CE prix.
+// how : le devis est relu ICI : il doit être au membre de la session, en
+//       statut `quoted`, avec un prix. Le THP se vérifie ICI (`_art_owns_thp`).
+//       Un compte du banc d'essai (`boutique_testers`, actif) paie son prix
+//       d'essai à la place — `metadata.test = '1'`, la commande porte `test`.
+//       `metadata.product = 'luxury'` + `quote_id` : le webhook écrit
+//       `luxury_orders` (`luxury_settle`) puis ferme le devis
+//       (`luxury_quote_paid`). Retour sur la boutique, chemin ABSOLU fixe.
 // what : { url } — ou { price_cents, currency, open } si body.quote
-//       (sans session : un prix affiché, pas un achat)
+//       (sans session : le « à partir de », pas un achat)
 
 import Stripe from "npm:stripe@14";
 import { createClient } from "npm:@supabase/supabase-js@2";
@@ -21,8 +24,6 @@ const admin = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   { auth: { persistSession: false } },
 );
-
-const PIECES = ["bag", "jacket", "shoes", "other"] as const;
 
 Deno.serve(async (req) => {
   const origin = req.headers.get("origin");
@@ -58,9 +59,25 @@ Deno.serve(async (req) => {
   }
   if (thp !== true) return json({ error: "thp_required" }, 402);
 
-  const piece = PIECES.includes(body?.piece as typeof PIECES[number]) ? String(body.piece) : "other";
-  const note = String(body?.note ?? "").replace(/\s+/g, " ").trim().slice(0, 280);
+  // Le devis : à ce membre, posé par Wah, pas encore payé.
+  const quoteId = String(body?.quote_id ?? "");
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(quoteId)) return json({ error: "no_quote" }, 409);
+  const { data: q, error: qErr } = await admin.from("luxury_quotes")
+    .select("id, piece, brand, note, status, quote_cents, currency")
+    .eq("id", quoteId).eq("user_id", user.id).maybeSingle();
+  if (qErr) {
+    console.error("[luxury-checkout] devis:", qErr.message);
+    return json({ error: "unavailable" }, 503);
+  }
+  if (!q || q.status !== "quoted" || !q.quote_cents) return json({ error: "no_quote" }, 409);
+
+  // Le banc d'essai : un prix d'essai pour CE compte, ou rien.
+  const { data: testCents, error: tErr } = await admin.rpc("_boutique_test_price", { p_user: user.id });
+  if (tErr) console.error("[luxury-checkout] test price:", tErr.message);
+  const test = Number.isInteger(testCents) && testCents >= 50;
+  const amount = test ? testCents as number : q.quote_cents;
   const email = user.email.trim().toLowerCase();
+  const note = String(q.note ?? "").slice(0, 280);
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -69,18 +86,18 @@ Deno.serve(async (req) => {
       customer_email: email,
       line_items: [{
         price_data: {
-          currency: o.currency,
-          unit_amount: o.price_cents,
+          currency: q.currency || o.currency,
+          unit_amount: amount,
           product_data: {
-            name: "Luxury totehmization · launch",
-            description: "Your own piece, totehmized from one Box of your TOTEHM.",
+            name: (test ? "TEST · " : "") + `Luxury totehmization · ${q.brand}`,
+            description: `Your ${q.piece}, totehmized from one Box of your TOTEHM.`,
           },
         },
         quantity: 1,
       }],
-      metadata: { product: "luxury", user_id: user.id, email, piece, note },
-      payment_intent_data: { metadata: { product: "luxury", user_id: user.id, piece } },
-      success_url: `${SITE_BOUT}/luxury?launched=1`,
+      metadata: { product: "luxury", user_id: user.id, email, piece: q.piece, note, quote_id: q.id, test: test ? "1" : "0" },
+      payment_intent_data: { metadata: { product: "luxury", user_id: user.id, piece: q.piece, quote_id: q.id, test: test ? "1" : "0" } },
+      success_url: `${SITE_BOUT}/luxury?paid=1`,
       cancel_url:  `${SITE_BOUT}/luxury`,
     });
     return json({ url: session.url });

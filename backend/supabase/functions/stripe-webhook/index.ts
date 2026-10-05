@@ -2,14 +2,17 @@
 // Six flux sur le même compte — routage sur metadata.product :
 //   higher       → stoner_access + email Resend (le TotehmPaper {THP}) ;
 //                  la base frappe l'exemplaire n du THP (30/09/2026)
-//   cloth        → ignoré ici (Printful géré ailleurs)
+//   cloth        → la pièce passe `paid` (la base consomme le stock), la
+//                  génération n8n part, le membre reçoit son email (05/10/2026 —
+//                  avant : « géré ailleurs », et l'ailleurs n'était pas branché)
 //   subscription → subscriptions (FIGHER CLUB, l'adhésion annuelle)
 //   creator_sub  → creator_subscriptions (Bob s'abonne au Totehm d'Alice)
 //                  + member_ledger à CHAQUE facture payée (23/09/2026)
 //   artwork      → art_settle : l'exemplaire n d'une œuvre (30/09/2026)
 //   resale       → art_settle : l'exemplaire change de main, 93 % au
 //                  grand livre du vendeur, 7 % à TOTEHM (30/09/2026)
-//   luxury       → luxury_settle : une totehmisation luxe lancée (02/10/2026)
+//   luxury       → luxury_settle : une totehmisation luxe payée (02/10/2026) ;
+//                  depuis le 05/10, sur devis : luxury_quote_paid ferme le devis
 //
 // Events traités :
 //   checkout.session.completed
@@ -353,6 +356,80 @@ async function handleArtSettle(session: Stripe.Checkout.Session) {
 // écrit la commande (`luxury_settle`, idempotent sur la session) et on
 // confirme au membre par email. Stripe prévient Wah du paiement lui-même.
 // Une panne de la base → 500 → Stripe rejoue ; un email raté ne rejoue pas.
+// ─── Streetwear : une pièce payée ─────────────────────────────────────────────
+// ⚠️ 05/10/2026 — AVANT, CE CAS ÉTAIT « GÉRÉ AILLEURS » ET L'AILLEURS N'EXISTAIT
+// PAS : Stripe n'a qu'un endpoint (celui-ci) et le workflow n8n A n'y était pas
+// abonné. Une pièce payée restait `draft`, sans génération, sans email.
+// Idempotent : on ne passe `paid` qu'une pièce encore `draft` ; le trigger
+// `trg_consume_capacities` compte la pièce et le style une seule fois.
+const N8N_GENERATE = "https://n8n.higher.boutique/webhook/streetwear-generate";
+
+async function handleCloth(session: Stripe.Checkout.Session) {
+  if (session.payment_status !== "paid") {
+    console.log("cloth: session non payée —", session.id, session.payment_status);
+    return;
+  }
+  const m = session.metadata ?? {};
+  const id = m.cloth_id;
+  if (!id) { console.warn("cloth: pas de cloth_id —", session.id); return; }
+  // La forme de l'adresse dépend de la version d'API de l'endpoint (2026 :
+  // collected_information) — on lit les deux.
+  const s = session as unknown as Record<string, any>;
+  const shipping = s.collected_information?.shipping_details ?? s.shipping_details ?? s.customer_details ?? null;
+  const email = (session.customer_details?.email ?? session.customer_email ?? "").trim().toLowerCase();
+  const { data, error } = await admin.from("totehm_clothes").update({
+    status: "paid",
+    paid_at: new Date().toISOString(),
+    stripe_payment_intent: typeof session.payment_intent === "string" ? session.payment_intent : null,
+    stripe_session_id: session.id,
+    shipping,
+    test: m.test === "1",
+    ...(email ? { email } : {}),
+  }).eq("id", id).eq("status", "draft").select("id, name, size, email").maybeSingle();
+  if (error) throw new Error("cloth paid: " + error.message);
+  if (!data) { console.log("cloth déjà payée ou inconnue:", id); return; }
+  console.log("cloth payée:", id, m.test === "1" ? "(test)" : "");
+
+  // La génération : n8n B. Une panne ici ne rend pas 500 — la pièce EST
+  // payée ; on relance la génération à la main (backend/README.md).
+  try {
+    const r = await fetch(N8N_GENERATE, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ cloth_id: id }),
+    });
+    if (!r.ok) console.error("cloth: génération n8n KO", r.status);
+  } catch (e) {
+    console.error("cloth: génération n8n exception", String(e).slice(0, 200));
+  }
+
+  const to = data.email || email;
+  const key = Deno.env.get("RESEND_API_KEY");
+  if (!to || !key) { console.error("cloth: email impossible (destinataire ou clé)"); return; }
+  try {
+    const r = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        from: FROM,
+        to: [to],
+        subject: "Your Totehm Cloth is born",
+        html: `<!DOCTYPE html><html><body style="margin:0;padding:40px 16px;background:#000;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
+<table role="presentation" width="100%" style="max-width:460px;" cellpadding="0" cellspacing="0">
+<tr><td align="center" style="padding-bottom:26px;"><img src="${LOGO}" width="70" alt="TOTEHM" style="display:block;border:0;"></td></tr>
+<tr><td align="center" style="font-family:'Courier New',monospace;font-size:15px;letter-spacing:2px;color:#fff;padding-bottom:18px;">${String(data.name).replace(/[<>&"]/g, "")}</td></tr>
+<tr><td align="center" style="font-family:Arial,sans-serif;font-size:14px;line-height:1.8;color:#b8b8c8;">
+Your box becomes an original artwork. You will not see it before it lands. That is the point.</td></tr>
+</table></td></tr></table></body></html>`,
+      }),
+    });
+    if (!r.ok) console.error("cloth email KO", r.status, (await r.text()).slice(0, 200));
+  } catch (e) {
+    console.error("cloth email exception", String(e).slice(0, 200));
+  }
+}
+
 async function handleLuxury(session: Stripe.Checkout.Session) {
   if (session.payment_status !== "paid") {
     console.log("luxury: session non payée —", session.id, session.payment_status);
@@ -372,6 +449,13 @@ async function handleLuxury(session: Stripe.Checkout.Session) {
   });
   if (error) throw new Error("luxury_settle: " + error.message);
   console.log("luxe:", session.id, JSON.stringify(data));
+  // 05/10 : le luxe se paie sur devis — la commande ferme son devis.
+  if (m.quote_id) {
+    const { error: qErr } = await admin.rpc("luxury_quote_paid", {
+      p_quote: m.quote_id, p_session: session.id, p_test: m.test === "1",
+    });
+    if (qErr) throw new Error("luxury_quote_paid: " + qErr.message);
+  }
   if (!data?.new || !email) return;
 
   const key = Deno.env.get("RESEND_API_KEY");
@@ -383,14 +467,14 @@ async function handleLuxury(session: Stripe.Checkout.Session) {
       body: JSON.stringify({
         from: FROM,
         to: [email],
-        subject: "Your luxury totehmization is launched",
+        subject: "Your luxury totehmization is paid",
         html: `<!DOCTYPE html><html><body style="margin:0;padding:40px 16px;background:#000;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
 <table role="presentation" width="100%" style="max-width:460px;" cellpadding="0" cellspacing="0">
 <tr><td align="center" style="padding-bottom:26px;"><img src="${LOGO}" width="70" alt="TOTEHM" style="display:block;border:0;"></td></tr>
-<tr><td align="center" style="font-family:'Courier New',monospace;font-size:15px;letter-spacing:2px;color:#fff;padding-bottom:18px;">LAUNCHED</td></tr>
+<tr><td align="center" style="font-family:'Courier New',monospace;font-size:15px;letter-spacing:2px;color:#fff;padding-bottom:18px;">PAID</td></tr>
 <tr><td align="center" style="font-family:Arial,sans-serif;font-size:14px;line-height:1.8;color:#b8b8c8;">
-We write to you by email to start: your piece, your Box, the next steps.</td></tr>
+We write to you by email to organize the sending of your piece.</td></tr>
 </table></td></tr></table></body></html>`,
       }),
     });
@@ -525,7 +609,7 @@ Deno.serve(async (req) => {
             await handleHigherCheckout(session);
             break;
           case "cloth":
-            console.log("cloth checkout — géré ailleurs:", session.id);
+            await handleCloth(session);
             break;
           case "subscription":
             await handleSubscriptionCheckout(session);
