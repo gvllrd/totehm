@@ -1,5 +1,5 @@
 // 02/10/2026 — figher.club (porte : Get Higher, Lisbon, deux clés) et
-// higher.boutique (accueil Streetwear + Luxe, page /luxury). Zéro réseau.
+// higher.boutique (page /luxury sur devis, 05/10 ; l'accueil : boutique_home.mjs). Zéro réseau.
 // LANCER : node club_luxury.mjs /tmp
 import { launch, page, ok } from './harness.mjs';
 const OUT = process.argv[2] || '.';
@@ -46,57 +46,91 @@ for(const f of ['discover', 'discover_lisbon', 'get_higher', 'stoner', 'origins'
   await pg.context().close();
 }
 
-// ── 4. Luxe : propriétaire du THP → pièce, note, conditions, paiement
+// ── 4. Luxe SUR DEVIS (05/10) : THP → pièce, marque, Box → demande ; un devis prêt → paiement
 {
+  const QUOTED = { id:'q2', piece:'jacket', brand:'Gucci', note:'black leather', status:'quoted', quote_cents:80000, currency:'eur',
+    quote_note:'Ready in 3 weeks', view:'habits', text:'Run the hill', palette:['#E24B4A'], created_at:'2026-10-05T10:00:00Z' };
+  let quotes = [QUOTED];
+  const access = () => ({ mode:'quote', signed_in:true, thp:true, open:true, price_cents:50000, currency:'eur', orders:0, admin:false, test_price_cents:null, quotes });
   const { pg, ctx, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique',
-    rpc: { luxury_access: { signed_in:true, thp:true, open:true, price_cents:50000, currency:'eur', orders:0 } } });
-  const bodies = [];
+    rpc: { luxury_access: access, my_trips: { trips:[], reps:[], wisdom:[], visions:[] },
+           my_box_matter: { text:'Run the hill', view:'habits', palette:['#E24B4A'], matter:{}, extra:{} } },
+    tables: { profiles:[{ pseudo:'Vallerand' }], totehms:[{ steps:[{ t:'Run the hill', f:'every_morning', is:['fight'] }] }] } });
+  const bodies = { quote:[], checkout:[] };
+  await ctx.route('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/luxury-quote', r => {
+    const b = JSON.parse(r.request().postData() || '{}'); bodies.quote.push(b);
+    if(b.action === 'request') quotes = [{ id:'q3', piece:b.piece, brand:b.brand, note:b.note, status:'requested', quote_cents:null, currency:'eur', view:'habits', text:'Run the hill', palette:['#E24B4A'], created_at:'2026-10-05T11:00:00Z' }, ...quotes];
+    r.fulfill({ status:200, contentType:'application/json', body: JSON.stringify({ ok:true, id:'q3', status:'requested' }) }); });
   await ctx.route('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/luxury-checkout', r => {
-    bodies.push(JSON.parse(r.request().postData() || '{}'));
+    bodies.checkout.push(JSON.parse(r.request().postData() || '{}'));
     r.fulfill({ status:200, contentType:'application/json', body: JSON.stringify({ url:'https://checkout.stripe.test/lux' }) }); });
   await ctx.route('https://checkout.stripe.test/**', r => r.fulfill({ status:200, contentType:'text/html', body:'<h1>stripe</h1>' }));
   await pg.goto('https://www.higher.boutique/luxury');
   await pg.waitForFunction(() => window.__totehm_luxury && window.__totehm_luxury().price_loaded);
-  ok(/€500/.test(await pg.textContent('#launch')) && /€500 · to launch/.test(await pg.textContent('#price')), 'price from the server: €500, said before the form');
-  const L = await pg.evaluate(() => ({ build: window.__totehm_luxury().build, icons: document.querySelectorAll('.piece svg').length,
-    centre: Math.abs((document.querySelector('#launch').getBoundingClientRect().left + document.querySelector('#launch').getBoundingClientRect().right) / 2 - innerWidth / 2),
-    scroll: document.documentElement.scrollWidth - innerWidth, how: document.querySelectorAll('.how > div').length }));
-  ok(L.build === '2026-10-02-centered' && L.icons === 4 && L.how === 3 && L.centre < 2 && L.scroll <= 0, 'luxury: centered, 4 drawn pieces, 3 steps, no horizontal scroll');
-  await pg.screenshot({ path: OUT + '/luxury_form.png', fullPage:true });
-  ok(await pg.isVisible('#form') && !(await pg.isVisible('#s-nothp')), 'THP owner sees the form');
-  await pg.click('[data-piece="jacket"]');
-  await pg.fill('#note', 'black leather jacket');
-  await pg.click('#launch');
-  ok(/tick the box/.test(await pg.textContent('#launch-n')) && bodies.length === 0, 'terms must be ticked first');
-  await pg.check('#terms');
-  await pg.click('#launch');
+  const d0 = await pg.evaluate(() => window.__totehm_luxury());
+  ok(d0.build === '2026-10-05-quote' && d0.mode === 'quote' && d0.quoted === 1 && d0.joystick, 'luxury: quote mode, one quote ready, joystick');
+  ok(/on quote · from €500/.test(await pg.textContent('#price')), 'the floor price from the server: on quote · from €500');
+  ok(/€800/.test(await pg.textContent('#quotes')) && /Ready in 3 weeks/.test(await pg.textContent('#quotes')), 'my quote: €800 and Wah\'s word');
+  ok((await pg.textContent('#nav-say')) === 'Pay', 'joystick center says PAY when a quote is ready');
+  await pg.screenshot({ path: OUT + '/luxury_quote.png', fullPage:true });
+  // la demande : pièce, marque, Box
+  await pg.click('[data-piece="shoes"]'); await pg.click('[data-brand="Louis Vuitton"]');
+  await pg.fill('#note', 'white sneakers');
+  await pg.click('#ask');
+  ok(/pick up the box/.test(await pg.textContent('#ask-n')) && bodies.quote.length === 0, 'no box, no request');
+  await pg.click('#pick-box');
+  await pg.waitForSelector('#sel.is-open #list .bx');
+  await pg.click('#list .bx'); await pg.waitForSelector('#mt-go'); await pg.click('#mt-go');
+  await pg.waitForSelector('#picked:not(.hide)');
+  ok(/Run the hill/.test(await pg.textContent('#picked')), 'the box is picked from my TOTEHM (select mode)');
+  await pg.click('#ask');
+  await pg.waitForFunction(() => window.__totehm_luxury().quotes === 2);
+  const q = bodies.quote[0];
+  ok(q.action === 'request' && q.piece === 'shoes' && q.brand === 'Louis Vuitton' && q.note === 'white sneakers' && q.box.kind === 'habit' && q.box.ref === 'Run the hill' && q.price === undefined,
+    'request sends piece, brand, note and a box REFERENCE — never a price');
+  ok(/waiting for our quote/.test(await pg.textContent('#quotes')), 'the new request waits for the quote');
+  // payer le devis prêt : conditions d'abord
+  await pg.click('[data-pay="q2"]');
+  ok(/tick the box/.test(await pg.textContent('[data-n="q2"]')) && bodies.checkout.length === 0, 'terms must be ticked first');
+  await pg.check('[data-terms="q2"]');
+  await pg.click('[data-pay="q2"]');
   await pg.waitForURL('https://checkout.stripe.test/lux');
-  ok(bodies.length === 1 && bodies[0].piece === 'jacket' && bodies[0].note === 'black leather jacket' && bodies[0].price_cents === undefined,
-    'checkout gets piece + note, never a price');
+  ok(bodies.checkout.length === 1 && bodies.checkout[0].quote_id === 'q2' && bodies.checkout[0].price_cents === undefined, 'checkout gets the quote id, never a price');
   ok(log.errors.length === 0, 'luxury: no page error ' + log.errors.join(' | '));
 }
 
-// ── 5. Luxe : sans THP → Get Higher, pas de formulaire
+// ── 5. Luxe : sans THP → Get Higher, pas de formulaire ; un administrateur répond par un prix
 {
   const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique',
-    rpc: { luxury_access: { signed_in:true, thp:false, open:true, price_cents:50000, currency:'eur', orders:0 } } });
+    rpc: { luxury_access: { mode:'quote', signed_in:true, thp:false, open:true, price_cents:50000, currency:'eur', orders:0, admin:false, test_price_cents:null, quotes:[] } } });
   await pg.goto('https://www.higher.boutique/luxury');
   await pg.waitForFunction(() => window.__totehm_luxury && window.__totehm_luxury().signed_in);
-  ok(await pg.isVisible('#s-nothp') && !(await pg.isVisible('#form')), 'no THP: Get Higher instead of the form');
+  ok(await pg.isVisible('#s-nothp') && !(await pg.isVisible('#form')) && (await pg.textContent('#nav-say')) === 'Get Higher', 'no THP: Get Higher instead of the form, joystick says so');
   ok(log.errors.length === 0, 'luxury no THP: no page error ' + log.errors.join(' | '));
   await pg.screenshot({ path: OUT + '/luxury_nothp.png', fullPage:true });
+  await pg.context().close();
+}
+{
+  const REQ = { id:'q9', pseudo:'nia', email:'nia@example.test', piece:'bag', brand:'Hermès', note:'Birkin 30', status:'requested', quote_cents:null, currency:'eur', view:'wisdom', text:'Less is more', palette:['#7F77DD'], test:false, created_at:'2026-10-05T09:00:00Z' };
+  const { pg, ctx, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique',
+    rpc: { luxury_access: { mode:'quote', signed_in:true, thp:true, open:true, price_cents:50000, currency:'eur', orders:0, admin:true, test_price_cents:100, quotes:[] },
+           luxury_quotes_admin: { quotes:[REQ] } } });
+  const sent = [];
+  await ctx.route('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/luxury-quote', r => { sent.push(JSON.parse(r.request().postData() || '{}'));
+    r.fulfill({ status:200, contentType:'application/json', body: JSON.stringify({ ok:true, status:'quoted' }) }); });
+  await pg.goto('https://www.higher.boutique/luxury');
+  await pg.waitForFunction(() => window.__totehm_luxury && window.__totehm_luxury().to_answer === 1);
+  ok(/test mode · you pay €1/.test(await pg.textContent('#test-badge')), 'a tester sees the test price, said plainly');
+  await pg.click('[data-price="q9"]');
+  ok(/a price, in €/.test(await pg.textContent('[data-a="q9"]')) && sent.length === 0, 'admin: no price, nothing sent');
+  await pg.fill('[data-cents="q9"]', '1200'); await pg.fill('[data-word="q9"]', 'Four weeks');
+  await pg.click('[data-price="q9"]');
+  for(let i = 0; i < 40 && !sent.length; i++) await pg.waitForTimeout(100);
+  ok(sent.length === 1 && sent[0].action === 'price' && sent[0].quote_id === 'q9' && sent[0].cents === 120000 && sent[0].note === 'Four weeks', 'admin: the price leaves in cents with a word');
+  await pg.screenshot({ path: OUT + '/luxury_admin.png', fullPage:true });
+  ok(log.errors.length === 0, 'luxury admin: no page error ' + log.errors.join(' | '));
 }
 
-// ── 6. L'accueil de la boutique : Streetwear + Luxe, plus de Get Higher en tête, plus de logos
-{
-  const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', session:false });
-  await pg.goto('https://www.higher.boutique/');
-  await pg.waitForFunction(() => window.__totehm_boutique);
-  const d = await pg.evaluate(() => window.__totehm_boutique());
-  ok(d.build === '2026-10-02' && d.luxury_link && d.club_links === 2 && d.logos === 0, 'boutique home: /luxury, 2 club links, 0 logo');
-  ok(!(await pg.$('#higher-btn')) && !(await pg.$('#lisbon-btn')), 'Get Higher / Lisbon left the boutique menu');
-  ok(/Not affiliated/.test(await pg.textContent('.lux-block')), 'brand names + independence line');
-  ok(log.errors.length === 0, 'boutique home: no page error ' + log.errors.join(' | '));
-}
+// ── 6. L'accueil de la boutique — voir boutique_home.mjs (la manette, 05/10)
 
 await browser.close();

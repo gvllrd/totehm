@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <!--
-  ══ higher.boutique/luxury — LA TOTEHMISATION LUXE · 02/10/2026 ═════════
-  Wah, 02/10 : « la totehmisation luxe — 500 € pour la lancer — et devoir
-  posséder un TotehmPaper ». Le membre apporte SA pièce (sac, veste,
-  chaussures…), totehmisée depuis une Box de son TOTEHM.
+  ══ higher.boutique/luxury — LE LUXE SUR DEVIS · 05/10/2026 ═══════════════
+  Wah, 05/10 : « pour luxury, en mode devis ». Le membre (propriétaire d'un
+  TotehmPaper) décrit SA pièce — type, marque, quelques mots — et choisit
+  la Box de son TOTEHM qui la totehmise (le Totehm en SELECT MODE, copié de
+  /streetwear). Wah répond par un prix ; le membre accepte et paie CE prix.
 
-  ⚠️ RIEN NE SE DÉCIDE ICI. Le prix vient de `luxury_offer` (luxury_access /
-  luxury-checkout), le THP est vérifié par `luxury-checkout` côté serveur,
-  la commande s'écrit par le webhook seul (`luxury_settle`). La page AFFICHE.
+  ⚠️ RIEN NE SE DÉCIDE ICI. La demande s'écrit par `luxury-quote` (THP et
+  Box relus côté serveur), le prix est posé par un administrateur
+  (`boutique_admins`) — c'est le « oui » de Wah —, le paiement passe par
+  `luxury-checkout` (le prix du DEVIS, relu en base), la commande s'écrit
+  par le webhook seul. La page AFFICHE. Un compte du banc d'essai
+  (`boutique_testers`, actif) paie son prix d'essai : la page le dit.
 
   ⚠️ LES MARQUES : des NOMS en texte, jamais leurs logos, et la mention
   d'indépendance. Un logo laisse croire à un partenariat.
-
-  Connexion : PAR totehm.com (bloc SSO copié de tools/sso_snippet.js,
-  SSO_CLIENT = 'boutique'). Diagnostic : __totehm_luxury().
+  Style : SPACE (puces, cartes, manette). Connexion : PAR totehm.com (bloc
+  SSO copié de tools/sso_snippet.js, SSO_CLIENT = 'boutique').
+  Diagnostic : __totehm_luxury().
 -->
 <html lang="en">
 <head>
@@ -21,50 +25,162 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <title>Luxury · HIGHER.BOUTIQUE</title>
-<meta name="description" content="Your own piece, totehmized from one Box of your TOTEHM.">
+<meta name="description" content="Your own piece, totehmized from one Box of your TOTEHM. On quote.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--coral:#fbd5ca;--c1:#1f1f24;--c2:#2a2a30;--hi:#fff;--mid:#b0b0b0;--lo:#909090;--dim:#5a5a5a;--ok:#639922}
+:root{
+  --s1:#0b0b0d;--s2:#15151a;--s3:#212127;--s4:#2e2e36;--r:10px;
+  --mid:#b4b4b9;--lo:#9a9aa0;--dim:#707077;
+  --navy:#333366;--blue:#36498c;--rep:#743169;--coral:#fbd5ca;--ok:#639922;
+  --q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
+  --top:env(safe-area-inset-top,0px);--bot:env(safe-area-inset-bottom,0px);
+  --joy-d:56px;--ease:cubic-bezier(.2,.9,.25,1);
+}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:#000;color:var(--mid);font-family:'Space Mono',monospace;font-size:13px;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-button,input{font-family:inherit}
+html,body{background:#000;color:var(--mid);font-family:var(--mono);font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input{font:inherit;color:inherit;color-scheme:dark}
 a{color:inherit;text-decoration:none}
 .hide{display:none!important}
-/* 02/10 — UNE COLONNE CENTRÉE, la même que /streetwear. */
-main{min-height:100svh;display:flex;flex-direction:column;align-items:center;gap:16px;padding:64px 16px 48px;text-align:center;max-width:520px;margin:0 auto}
-#home{position:fixed;top:10px;left:12px;z-index:5;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);padding:6px 8px;border-radius:10px;transition:color .15s ease,background .15s ease}
+.mono{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo)}
+
+/* LA BARRE — retour à gauche, le nom du Totehm à droite (Quantico Coral, 03/10) */
+#top{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;justify-content:space-between;align-items:center;
+  padding:calc(10px + var(--top)) 12px 10px;background:linear-gradient(#000 60%,rgba(0,0,0,0))}
+#member{background:none;border:none;cursor:pointer;font-family:var(--q);font-size:13px;color:var(--coral);padding:6px 4px;max-width:44vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lnk{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:var(--s2);border:none;border-radius:var(--r);
+  padding:7px 11px;cursor:pointer;display:inline-flex;align-items:center;gap:.4em;transition:background .15s,color .15s}
+.btn-back{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:none;border:none;border-radius:var(--r);padding:6px 8px;cursor:pointer}
+
+/* UNE COLONNE CENTRÉE */
+main{min-height:100svh;display:flex;flex-direction:column;align-items:center;gap:14px;padding:64px 16px 150px;text-align:center;max-width:540px;margin:0 auto}
 .kicker{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--lo)}
-h1{font-family:'Space Mono',monospace;font-weight:700;font-size:22px;letter-spacing:.06em;text-transform:uppercase;color:#fff;line-height:1.2}
-.say{max-width:38ch}
-.names{font-size:12px;color:var(--mid)}
+h1{font-weight:700;font-size:20px;letter-spacing:.06em;text-transform:uppercase;color:#fff;line-height:1.2}
+.say{max-width:38ch;font-size:12.5px}
+.sub{font-size:8.6px;letter-spacing:.22em;color:var(--dim);font-weight:700;text-transform:uppercase}
+.names{font-size:12px}
 .legal{font-size:8.6px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
-/* Le chemin, dit en trois temps : ce qui se passe après le paiement aussi. */
-.how{display:flex;flex-direction:column;gap:6px;width:100%;max-width:340px;padding:4px 0}
-.how div{display:flex;gap:10px;align-items:baseline;justify-content:center;font-size:11px;color:var(--lo)}
-.how b{font-weight:700;color:#fff;font-size:10px;letter-spacing:.1em}
-#price{font-weight:700;font-size:15px;color:#fff;letter-spacing:.04em;min-height:24px}
-.btn{font-family:'Space Mono',monospace;font-weight:700;font-size:14px;color:#fff;background:var(--c1);border:none;border-radius:10px;padding:13px 22px;min-width:240px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s ease,color .15s ease}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.chip{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);background:var(--s2);border:1px solid transparent;border-radius:var(--r);padding:5px 10px;cursor:default}
+button.chip{cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+button.chip.is-on{background:var(--s3);color:#fff;border-color:#fff}
+#price{font-weight:700;font-size:14px;color:#fff;letter-spacing:.04em;min-height:22px}
+#test-badge{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#fff;background:var(--s3);border-radius:var(--r);padding:5px 10px}
+.btn{font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--s3);border:none;border-radius:var(--r);
+  padding:13px 20px;min-width:220px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s,color .15s}
 .btn:disabled{color:var(--dim);cursor:default}
-.gh{display:inline-flex;align-items:center;justify-content:center;gap:.35em;font-weight:400}
-.gh .get{color:var(--coral)}
-.gh svg{height:1.5em;width:auto;display:block}
-.step-h{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--lo)}
+.gh{display:inline-flex;align-items:center;justify-content:center;gap:.35em;text-transform:none;letter-spacing:0;font-weight:400;font-size:14px}
+.gh .get{color:var(--coral)}.gh svg{height:1.5em;width:auto;display:block}
+.step-h{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--lo);margin-top:6px}
 .pieces{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;max-width:320px}
-.piece{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:var(--mid);background:var(--c1);border:1px solid transparent;border-radius:10px;padding:14px 10px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s ease,color .15s ease,border-color .15s ease}
-.piece svg{width:34px;height:34px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
-.piece.is-on{background:var(--c2);color:#fff;border-color:#fff}
-.in{font-family:'Quantico',sans-serif;font-size:14px;color:#fff;background:var(--c1);border:none;border-radius:10px;padding:11px 12px;width:100%;max-width:320px;outline:none;caret-color:#fff;text-align:center}
-.in::placeholder{color:var(--dim)}
-.tick{display:flex;gap:8px;align-items:center;font-size:10px;letter-spacing:.06em;color:var(--lo);cursor:pointer}
-.tick a{text-decoration:underline}
-.tick input{accent-color:#fff}
-.note{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);min-height:16px}
+.piece{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:var(--mid);background:var(--s2);border:1px solid transparent;
+  border-radius:var(--r);padding:14px 10px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s,color .15s,border-color .15s}
+.piece svg{width:32px;height:32px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.piece.is-on{background:var(--s3);color:#fff;border-color:#fff}
+.field{font-family:var(--q);font-size:14px;color:#fff;background:var(--s2);border:none;border-radius:var(--r);padding:11px 12px;width:100%;max-width:320px;
+  outline:none;caret-color:#fff;text-align:center}
+.field::placeholder{color:var(--dim)}
+.tick{display:flex;gap:8px;align-items:center;justify-content:center;font-size:10px;letter-spacing:.06em;color:var(--lo);cursor:pointer}
+.tick a{text-decoration:underline}.tick input{accent-color:#fff}
+.note{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--lo);min-height:16px}
 .note.ok{color:var(--ok)}.note.no{color:#fff}
-#form{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;padding-top:6px}
-#s-nothp{display:flex;flex-direction:column;align-items:center;gap:12px}
-@media(hover:hover){.btn:not(:disabled):hover,.piece:hover{background:var(--c2);color:#fff}#home:hover{background:var(--c1);color:#fff}.tick:hover,.legal:hover{color:#fff}}
+#form,#s-nothp,#quotes,#admin{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+/* La Box ramassée — une boîte du Totehm : sa couleur, sans bordure */
+#picked{background:var(--skin,var(--navy));color:#fff;padding:10px 14px;width:100%;max-width:340px;display:flex;flex-direction:column;align-items:center;gap:5px}
+#picked small{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.65)}
+#picked b{font-family:var(--q);font-weight:400;font-size:15px;line-height:1.35}
+#picked button{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.75);background:none;border:none;cursor:pointer}
+.pals{display:flex;gap:4px;justify-content:center}.pals i{width:12px;height:12px;display:block}
+/* Un devis — la Box qui le porte, sa couleur */
+.qt{width:100%;max-width:380px;background:var(--skin,var(--navy));color:#fff;padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:7px}
+.qt small{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+.qt .nm{font-family:var(--q);font-size:14px;line-height:1.4}
+.qt .st{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#fff;background:rgba(0,0,0,.3);border-radius:var(--r);padding:3px 9px}
+.qt .amount{font-weight:700;font-size:18px;letter-spacing:.04em}
+.qt .qn{font-size:12px;color:rgba(255,255,255,.85)}
+.qt .btn{background:rgba(0,0,0,.42);min-width:200px}
+.qt .lnk{background:rgba(0,0,0,.3);color:rgba(255,255,255,.85)}
+/* L'administrateur — répondre par un prix */
+.qa{width:100%;max-width:420px;background:var(--s2);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:7px}
+.qa small{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
+.qa .nm{font-family:var(--q);font-size:13px;color:#fff}
+.qa .row{display:flex;gap:6px;width:100%;justify-content:center;flex-wrap:wrap}
+.qa .field{max-width:150px;padding:9px 10px;font-size:13px;background:var(--s3)}
+.qa .btn{min-width:0;padding:10px 14px;font-size:11px}
+
+@media(hover:hover){.btn:not(:disabled):hover,.piece:hover,button.chip:hover,.lnk:hover{background:var(--s4);color:#fff}.btn-back:hover{color:#fff;background:var(--s2)}}
+
+/* ══ LA MANETTE — le manche de SPACE/COM ═════════════════════════════ */
+#nav{position:fixed;z-index:70;bottom:calc(18px + var(--bot));left:50%;transform:translateX(-50%);
+  display:grid;grid-template-columns:22px var(--joy-d) 22px;grid-template-rows:22px var(--joy-d) 22px;align-items:center;justify-items:center}
+#nav-say{position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);font-size:9px;letter-spacing:.18em;white-space:nowrap;
+  color:var(--lo);pointer-events:none;text-transform:uppercase;transition:color .15s}
+#nav-say.is-preview{color:#fff}
+/* Un voile noir sous le manche : le texte qui défile dessous ne se lit pas à travers. */
+#nav::before{content:'';position:absolute;left:-90px;right:-90px;top:-34px;bottom:-30px;background:radial-gradient(closest-side,#000 62%,rgba(0,0,0,0));z-index:-1;pointer-events:none}
+#nav-h{grid-area:1/2/2/3}#nav-g{grid-area:2/1/3/2}#nav-box{grid-area:2/2/3/3}#nav-d{grid-area:2/3/3/4}#nav-b{grid-area:3/2/4/3}
+#nav-box{width:var(--joy-d);height:var(--joy-d);position:relative;border:none;padding:0;border-radius:50%;background:var(--joy-vue,var(--navy));
+  touch-action:none;cursor:grab;-webkit-tap-highlight-color:transparent;transition:background-color .3s ease}
+#nav-box:focus-visible{outline:1px solid var(--mid);outline-offset:4px}
+#nav-stack{position:absolute;inset:0;transform:translate(var(--mx,0px),var(--my,0px));transition:transform .26s cubic-bezier(.22,.9,.3,1)}
+#nav-box.is-held #nav-stack{transition:none}
+#nav-stack i{--d:12px;position:absolute;left:50%;display:block;width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
+  border-radius:50%;background:var(--c);transition:opacity .18s,transform .18s,background-color .4s ease}
+#nav-stack .o{top:23%;--c:var(--blue)}#nav-stack .h{top:50%;--c:var(--navy)}#nav-stack .r{top:77%;--c:var(--rep)}
+#nav-stack i.is-current{opacity:0;transform:scale(.4)}
+.nav-cur{background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;width:22px;height:22px;
+  opacity:.85;color:#fff;-webkit-tap-highlight-color:transparent;transition:opacity .15s,transform .15s}
+.nav-cur.is-dead{opacity:.14;pointer-events:none}
+.nav-cur.is-preview{opacity:1;transform:scale(1.3)}
+.nav-cur svg{width:14px;height:14px;display:block;stroke:currentColor;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+
+
+/* ══ SELECT MODE — le Totehm de totehm.com, en lecture · 23/09/2026 ══
+   Copié de totehm.space (produits indépendants = fichiers indépendants).
+   Même papier, même rail, mêmes boîtes, même croix. Ici, CONTRAIREMENT à
+   l'Espace, les cinq vues se choisissent : n'importe quelle Box (§51). */
+#sel{position:fixed;inset:0;z-index:80;background:#2b2b57;display:none;--rl:46px;--rw:18px;transition:background-color .5s ease}
+#sel.is-open{display:block}
+#sel.v-wisdom{background:#5b2652}#sel.v-visions{background:#2b3a73}
+#rail{position:absolute;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.30)}
+#sel-head{position:absolute;top:calc(22px + env(safe-area-inset-top,0));left:0;right:0;text-align:center;z-index:3;pointer-events:none}
+#sel-q{font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:8px}
+#sel-title{font-family:'Space Mono',monospace;font-size:clamp(22.4px,5.3vw,31.7px);color:#fff;line-height:1;letter-spacing:.04em;font-weight:700;text-transform:uppercase}
+#sel-sub{font-family:var(--mono);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.62)}
+#list{position:absolute;top:calc(118px + env(safe-area-inset-top,0));bottom:calc(128px + env(safe-area-inset-bottom,0));left:0;right:0;
+  overflow-y:auto;overscroll-behavior:contain;padding:0 16px 30px 0;display:flex;flex-direction:column;gap:6px}
+#list.swap{animation:swap .26s cubic-bezier(.22,.61,.36,1)}
+@keyframes swap{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.bx{position:relative;margin-left:calc(var(--rl) + var(--rw) + 4px);background:var(--skin,#333366);color:#fff;
+  padding:8px 12px 9px 14px;cursor:pointer;transition:filter .15s ease,transform .28s cubic-bezier(.22,.61,.36,1);flex:0 0 auto}
+@media(hover:hover){.bx:hover{filter:brightness(1.18)}}
+.bx .tick{position:absolute;left:0;top:0;bottom:0;width:3px;display:flex;flex-direction:column}
+.bx .tick i{flex:1 1 0;display:block}
+.bx .nm{font-family:var(--q);font-size:15px;line-height:1.5;word-break:break-word}
+.bx .sb{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-top:4px;display:flex;flex-wrap:wrap;gap:0 10px}
+.bx.open{transform:scale(1.012) translateY(-2px);filter:brightness(1.07);cursor:default}
+.v-empty{font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.5);text-align:center;padding:30px 0 0 60px}
+#sel-x{position:absolute;top:calc(12px + env(safe-area-inset-top,0));right:12px;z-index:5;width:40px;height:40px;background:none;border:none;cursor:pointer;color:#fff}
+#sel-x svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.6;fill:none}
+#joy{position:absolute;bottom:calc(18px + env(safe-area-inset-bottom,0));left:50%;transform:translateX(-50%);z-index:4;
+  display:grid;grid-template-columns:22px 52px 22px;grid-template-rows:22px 52px 22px;align-items:center;justify-items:center}
+#cur-h{grid-area:1/2/2/3}#cur-g{grid-area:2/1/3/2}#joy-box{grid-area:2/2/3/3}#cur-d{grid-area:2/3/3/4}#cur-b{grid-area:3/2/4/3}
+.cur{width:22px;height:22px;background:none;border:none;color:#fff;cursor:pointer;opacity:.85;display:flex;align-items:center;justify-content:center}
+.cur svg{width:10px;height:10px;stroke:currentColor;stroke-width:2;fill:none}
+.cur.mort{opacity:0;pointer-events:none}
+#joy-box{width:52px;height:52px;border-radius:50%;background:var(--joy,#333366);box-shadow:0 2px 7px rgba(0,0,0,.5);position:relative;touch-action:none;cursor:grab;transition:background-color .42s ease}
+#joy-box i{position:absolute;left:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--c);box-shadow:0 2px 5px rgba(0,0,0,.6);transition:transform .38s,opacity .38s}
+#joy-box .o{top:23%;--c:#36498c}#joy-box .h{top:50%;--c:#333366}#joy-box .r{top:77%;--c:#743169}
+#joy-box i.ici,#joy-box i.mort{opacity:0;transform:scale(.4)}
+/* LA MATIÈRE : la Box choisie ENFANTE ce qui lui est relié, à sa place. */
+#matter{margin-left:calc(var(--rl) + var(--rw) + 4px);display:flex;flex-direction:column;gap:9px;padding:10px 0 4px;animation:swap .3s cubic-bezier(.22,.61,.36,1)}
+#matter .grp{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+#matter .w{font-family:var(--mono);font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.6);min-width:64px}
+.mi{font-family:var(--q);font-size:11px;color:#fff;padding:2px 7px;background:#333366}
+.mi.o{background:#36498c}.mi.r{background:#743169}.mi.w{background:#5b2652}.mi.v{background:#2b3a73}
+.pal{display:flex;gap:4px}.pal i{width:18px;height:18px;display:block}
+#matter .next{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:4px}
 
 
 
@@ -72,16 +188,30 @@ h1{font-family:'Space Mono',monospace;font-weight:700;font-size:22px;letter-spac
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
 @media(hover:hover){
-#home:hover,
+.mono:hover,
+.lnk:hover,
+.btn-back:hover,
 .kicker:hover,
-.names:hover,
+.sub:hover,
 .legal:hover,
-.how div:hover,
+.chip:hover,
 .step-h:hover,
 .piece:hover,
-.in:hover::placeholder,
+.field:hover::placeholder,
 .tick:hover,
-.note:hover{color:#fff}
+.note:hover,
+#picked small:hover,
+#picked button:hover,
+.qt small:hover,
+.qt .qn:hover,
+.qt .lnk:hover,
+.qa small:hover,
+#nav-say:hover,
+#sel-q:hover,
+#sel-sub:hover,
+.bx .sb:hover,
+.v-empty:hover,
+#matter .w:hover{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
@@ -100,49 +230,87 @@ h1{font-family:'Space Mono',monospace;font-weight:700;font-size:22px;letter-spac
     </symbol>
   </defs>
 </svg>
-<a id="home" href="/">Back</a>
+<header id="top">
+  <a class="btn-back" id="home" href="/#luxury">Back</a>
+  <button id="member" type="button" aria-label="Member">Guest</button>
+</header>
 <main>
-  <div class="kicker">Totehm Cloth · Luxury</div>
+  <div class="kicker">Totehm · Luxury · On quote</div>
   <h1>Totehmize<br>my cloth &amp; stuff</h1>
   <p class="say">Your own piece — a bag, a jacket, shoes — totehmized from one Box of your TOTEHM.</p>
+  <span class="sub">Brands we totehmize</span>
   <div class="names">Hermès · Louis Vuitton · Gucci · any piece you own</div>
   <div class="legal">Independent. Not affiliated with these brands.</div>
-  <div class="how" aria-label="how it works">
-    <div><b>1</b><span>choose your piece, launch</span></div>
-    <div><b>2</b><span>we write to you: your Box, the sending</span></div>
-    <div><b>3</b><span>your piece comes back totehmized</span></div>
-  </div>
+  <div class="chips"><span class="chip">1 · Describe</span><span class="chip">2 · Quote</span><span class="chip">3 · Pay</span></div>
   <div id="price"></div>
+  <div id="test-badge" class="hide"></div>
 
   <div id="s-wait" class="note">…</div>
-
-  <div id="s-out" class="hide">
-    <button class="btn" id="signin" type="button">Sign in with TOTEHM</button>
-  </div>
-
+  <div id="s-out" class="hide"><button class="btn" id="signin" type="button">Sign in with TOTEHM</button></div>
   <div id="s-nothp" class="hide">
     <p class="say">The luxury totehmization is for TotehmPaper owners.</p>
     <button class="btn gh" id="get-higher" type="button"><span class="get">Get</span><svg viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-slogan"></use></svg></button>
   </div>
-
   <div id="s-closed" class="hide note">closed for now</div>
+  <div id="s-paid" class="hide note ok">paid — we write to you to organize the sending</div>
 
-  <div id="s-done" class="hide note ok">launched — we write to you by email</div>
+  <!-- MES DEVIS -->
+  <section id="quotes" class="hide" aria-label="My quotes"></section>
 
-  <div id="form" class="hide">
-    <div class="step-h">Your piece</div>
+  <!-- LA DEMANDE -->
+  <section id="form" class="hide" aria-label="Ask for my quote">
+    <div class="step-h">1 · Your piece</div>
     <div class="pieces" role="radiogroup" aria-label="Your piece">
       <button class="piece is-on" type="button" data-piece="bag" role="radio" aria-checked="true"><svg viewBox="0 0 34 34" aria-hidden="true"><path d="M7 13h20l-2 16H9z"/><path d="M12 13c0-4 2-7 5-7s5 3 5 7"/></svg>Bag</button>
       <button class="piece" type="button" data-piece="jacket" role="radio" aria-checked="false"><svg viewBox="0 0 34 34" aria-hidden="true"><path d="M12 6l5 4 5-4 6 4-2 6-3-1v14H11V15l-3 1-2-6z"/><path d="M17 10v19"/></svg>Jacket</button>
       <button class="piece" type="button" data-piece="shoes" role="radio" aria-checked="false"><svg viewBox="0 0 34 34" aria-hidden="true"><path d="M5 22c4 0 7-2 9-6l4 3c3 2 7 3 11 3v4H5z"/><path d="M5 26h24"/></svg>Shoes</button>
       <button class="piece" type="button" data-piece="other" role="radio" aria-checked="false"><svg viewBox="0 0 34 34" aria-hidden="true"><rect x="9" y="9" width="16" height="16" rx="1"/><path d="M17 13v8M13 17h8"/></svg>Other</button>
     </div>
-    <input class="in" id="note" maxlength="280" placeholder="your piece, in a few words">
-    <label class="tick"><input type="checkbox" id="terms"> I read the <a href="/terms_of_sale" target="_blank" rel="noopener">Simple terms of sale</a></label>
-    <button class="btn" id="launch" type="button">Launch</button>
-    <div class="note" id="launch-n"></div>
-  </div>
+    <div class="step-h">2 · The brand</div>
+    <div class="chips" role="radiogroup" aria-label="The brand">
+      <button class="chip is-on" type="button" data-brand="Hermès">Hermès</button>
+      <button class="chip" type="button" data-brand="Louis Vuitton">Louis Vuitton</button>
+      <button class="chip" type="button" data-brand="Gucci">Gucci</button>
+      <button class="chip" type="button" data-brand="">Other</button>
+    </div>
+    <input class="field hide" id="brand-other" maxlength="40" placeholder="the brand">
+    <input class="field" id="note" maxlength="280" placeholder="your piece, in a few words">
+    <div class="step-h">3 · The box that totehmizes it</div>
+    <button class="btn" id="pick-box" type="button">Pick up the box</button>
+    <div id="picked" class="hide"></div>
+    <button class="btn" id="ask" type="button">Ask for my quote</button>
+    <div class="note" id="ask-n"></div>
+  </section>
+
+  <!-- L'ADMINISTRATEUR -->
+  <section id="admin" class="hide" aria-label="Quotes to answer">
+    <div class="step-h">Quotes to answer</div>
+    <div id="admin-list" style="display:flex;flex-direction:column;align-items:center;gap:10px;width:100%"></div>
+  </section>
 </main>
+
+<!-- MY TOTEHM — SELECT MODE : quelle Box matérialiser ? -->
+<div id="sel" role="dialog" aria-label="My TOTEHM — select a box">
+  <div id="rail"></div>
+  <div id="sel-head"><div id="sel-q">pick up the box you want to materialize</div><div id="sel-title">my habits</div><div id="sel-sub">what I repeat</div></div>
+  <button id="sel-x" type="button" aria-label="Close"><svg viewBox="0 0 16 16"><path d="M3 3 L13 13 M13 3 L3 13"/></svg></button>
+  <div id="list"></div>
+  <div id="joy">
+    <button class="cur" id="cur-h" data-d="h" aria-label="Up"><svg viewBox="0 0 10 10"><path d="M1 7 L5 3 L9 7"/></svg></button>
+    <button class="cur" id="cur-g" data-d="g" aria-label="Left"><svg viewBox="0 0 10 10"><path d="M7 1 L3 5 L7 9"/></svg></button>
+    <div id="joy-box" aria-hidden="true"><i class="o"></i><i class="h"></i><i class="r"></i></div>
+    <button class="cur" id="cur-d" data-d="d" aria-label="Right"><svg viewBox="0 0 10 10"><path d="M3 1 L7 5 L3 9"/></svg></button>
+    <button class="cur" id="cur-b" data-d="b" aria-label="Down"><svg viewBox="0 0 10 10"><path d="M1 3 L5 7 L9 3"/></svg></button>
+  </div>
+</div>
+
+<div id="nav" role="group" aria-label="The boutique joystick">
+  <button class="nav-cur" id="nav-h" type="button" aria-label="Streetwear"><svg viewBox="0 0 16 16"><path d="M3 10 L8 5 L13 10"/></svg></button>
+  <button class="nav-cur" id="nav-g" type="button" aria-label="Higher"><svg viewBox="0 0 16 16"><path d="M10 3 L5 8 L10 13"/></svg></button>
+  <button id="nav-box" type="button" aria-label="Act"><span id="nav-stack" aria-hidden="true"><i class="o"></i><i class="h"></i><i class="r"></i></span></button><span id="nav-say"></span>
+  <button class="nav-cur is-dead" id="nav-d" type="button" aria-label="Right"><svg viewBox="0 0 16 16"><path d="M6 3 L11 8 L6 13"/></svg></button>
+  <button class="nav-cur" id="nav-b" type="button" aria-label="Decode"><svg viewBox="0 0 16 16"><path d="M3 6 L8 11 L13 6"/></svg></button>
+</div>
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -265,61 +433,335 @@ sb.auth.onAuthStateChange(ev => {
 
 
 /* ══ L'ÉTAT — une lecture, un écran ═════════════════════════════════ */
-const BUILD = '2026-10-02-centered';
-let A = null, PIECE = 'bag', SEQ = 0, BUSY = false;
-window.__totehm_luxury = () => ({ build: BUILD, signed_in: !!A?.signed_in, thp: !!A?.thp,
-  open: !!A?.open, price_loaded: A?.price_cents != null, orders: A?.orders ?? 0, piece: PIECE });
+const BUILD = '2026-10-05-quote';
+let A = null, ADM = [], PIECE = 'bag', BRAND = 'Hermès', PICK = null, SEQ = 0, BUSY = false;
+window.__totehm_luxury = () => ({ build: BUILD, signed_in: !!A?.signed_in, thp: !!A?.thp, open: !!A?.open,
+  price_loaded: A?.price_cents != null, mode: A?.mode || null, quotes: (A?.quotes || []).length,
+  quoted: (A?.quotes || []).filter(q => q.status === 'quoted').length, admin: !!A?.admin, to_answer: ADM.length,
+  test: A?.test_price_cents != null, piece: PIECE, brand: !!BRAND, box: !!PICK, joystick: !!$('nav-box') });
 
-const money = (c, cur) => (c/100).toLocaleString('en-GB', { style:'currency', currency:(cur||'eur').toUpperCase(),
-  minimumFractionDigits: c % 100 ? 2 : 0 });
-const ETATS = ['s-wait','s-out','s-nothp','s-closed','s-done','form'];
+const money = (c, cur) => (c/100).toLocaleString('en-GB', { style:'currency', currency:(cur||'eur').toUpperCase(), minimumFractionDigits: c % 100 ? 2 : 0 });
+const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
+const okColor = c => /^#[0-9a-f]{3,8}$/i.test(String(c || ''));
+const SKINQ = { habits:'var(--navy)', objectives:'var(--blue)', repulsions:'var(--rep)', wisdom:'var(--rep)', visions:'var(--blue)' };
+const STATUS = { requested:'waiting for our quote', quoted:'your quote', paid:'paid', declined:'not this time', cancelled:'cancelled' };
+const ETATS = ['s-wait','s-out','s-nothp','s-closed','form','quotes'];
 function show(...on){ ETATS.forEach(id => $(id).classList.toggle('hide', !on.includes(id))); }
+async function call(fn, body){
+  const { data:{ session } } = await sb.auth.getSession();
+  if(!session){ ssoLogin(false, '/luxury'); return { status: 401, d: { error: 'no_session' } }; }
+  try{
+    const r = await fetch(SSO_FN + fn, { method:'POST',
+      headers:{ 'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer ' + session.access_token },
+      body: JSON.stringify(body) });
+    const d = await r.json().catch(() => ({}));
+    if(!r.ok) console.error('[' + fn + ']', r.status, d.error);
+    return { status: r.status, d };
+  }catch(e){ console.error('[' + fn + ']', e && e.message || e); return { status: 0, d: { error: 'network' } }; }
+}
 
 async function load(){
   const seq = ++SEQ;
   const { data, error } = await sb.rpc('luxury_access');
   if(seq !== SEQ) return;              // une réponse tardive n'écrase pas un état plus frais
   if(error){ console.error('[luxury_access]', error.message); $('s-wait').textContent = 'unavailable — try again'; show('s-wait'); return; }
-  A = data;
-  $('price').textContent = A?.price_cents != null ? money(A.price_cents, A.currency) + ' · to launch' : '';
-  const launched = new URLSearchParams(location.search).get('launched') === '1';
-  if(!A.signed_in){ show('s-out'); return; }
-  if(!A.thp){ show('s-nothp'); return; }
-  if(launched){ show('s-done', 'form'); }
-  else if(!A.open){ show('s-closed'); return; }
-  else show('form');
-  $('launch').textContent = A.price_cents != null ? 'Launch · ' + money(A.price_cents, A.currency) : 'Launch';
+  A = data || {};
+  $('price').textContent = A.price_cents != null ? 'on quote · from ' + money(A.price_cents, A.currency) : 'on quote';
+  $('test-badge').classList.toggle('hide', A.test_price_cents == null);
+  $('test-badge').textContent = A.test_price_cents != null ? 'test mode · you pay ' + money(A.test_price_cents, A.currency) : '';
+  $('s-paid').classList.toggle('hide', new URLSearchParams(location.search).get('paid') !== '1');
+  if(!A.signed_in) show('s-out');
+  else if(!A.thp) show('s-nothp');
+  else if(!A.open) show('s-closed', 'quotes');
+  else show('form', 'quotes');
+  paintQuotes();
+  if(A.admin) loadAdmin(); else $('admin').classList.add('hide');
+  joyPaint();
 }
 
+/* ── MES DEVIS — la Box qui le porte, son statut, le prix posé par Wah ── */
+function paintQuotes(){
+  const l = (A?.quotes || []).filter(q => q.status !== 'cancelled');
+  $('quotes').classList.toggle('hide', !l.length || !A?.signed_in);
+  $('quotes').innerHTML = (l.length ? '<div class="step-h">My quotes</div>' : '') + l.map(q => {
+    const pal = (q.palette || []).filter(okColor);
+    return '<div class="qt" style="--skin:' + (SKINQ[q.view] || 'var(--navy)') + '">' +
+      '<small>' + esc(q.brand) + ' · ' + esc(q.piece) + ' · ' + esc(String(q.created_at || '').slice(0, 10)) + '</small>' +
+      (q.text ? '<div class="nm">' + esc(q.text) + '</div>' : '') +
+      (pal.length ? '<div class="pals">' + pal.map(c => '<i style="background:' + c + '"></i>').join('') + '</div>' : '') +
+      '<span class="st">' + esc(STATUS[q.status] || q.status) + '</span>' +
+      (q.status === 'quoted' ? '<div class="amount">' + money(q.quote_cents, q.currency) + '</div>' +
+        (q.quote_note ? '<div class="qn">' + esc(q.quote_note) + '</div>' : '') +
+        '<label class="tick"><input type="checkbox" data-terms="' + q.id + '"> I read the <a href="/terms_of_sale" target="_blank" rel="noopener">Simple terms of sale</a></label>' +
+        '<button class="btn" type="button" data-pay="' + q.id + '">Accept · ' + money(A.test_price_cents ?? q.quote_cents, q.currency) + '</button>' : '') +
+      (q.status === 'declined' && q.quote_note ? '<div class="qn">' + esc(q.quote_note) + '</div>' : '') +
+      (['requested','quoted'].includes(q.status) ? '<button class="lnk" type="button" data-cancel="' + q.id + '">Cancel</button>' : '') +
+      '<div class="note" data-n="' + q.id + '"></div></div>';
+  }).join('');
+  $('quotes').querySelectorAll('[data-pay]').forEach(b => b.onclick = () => pay(b.dataset.pay));
+  $('quotes').querySelectorAll('[data-cancel]').forEach(b => b.onclick = () => cancel(b.dataset.cancel));
+}
+const qNote = (id, t, cls) => { const n = document.querySelector('[data-n="' + id + '"]'); if(n){ n.className = 'note ' + (cls || ''); n.textContent = t; } };
+async function pay(id){
+  if(BUSY) return;
+  if(!document.querySelector('[data-terms="' + id + '"]')?.checked){ qNote(id, 'tick the box to continue', 'no'); return; }
+  BUSY = true; qNote(id, 'opening checkout…');
+  const { d } = await call('luxury-checkout', { quote_id: id });
+  BUSY = false;
+  if(d.url){ location.href = d.url; return; }
+  qNote(id, ({ thp_required:'a TotehmPaper is needed', closed:'closed for now', no_quote:'this quote changed', no_session:'sign in again' })[d.error] || 'checkout unavailable', 'no');
+  if(['no_quote','thp_required','closed'].includes(d.error)) await load();
+}
+async function cancel(id){
+  if(BUSY) return; BUSY = true;
+  const { d } = await call('luxury-quote', { action:'cancel', quote_id: id });
+  BUSY = false;
+  if(d.ok) await load(); else qNote(id, 'try again', 'no');
+}
+
+/* ── LA DEMANDE ── */
 document.querySelectorAll('[data-piece]').forEach(b => b.onclick = () => {
   PIECE = b.dataset.piece;
   document.querySelectorAll('[data-piece]').forEach(x => { const on = x === b; x.classList.toggle('is-on', on); x.setAttribute('aria-checked', String(on)); });
 });
+document.querySelectorAll('[data-brand]').forEach(b => b.onclick = () => {
+  BRAND = b.dataset.brand;
+  document.querySelectorAll('[data-brand]').forEach(x => x.classList.toggle('is-on', x === b));
+  $('brand-other').classList.toggle('hide', !!BRAND);
+  if(!BRAND) setTimeout(() => $('brand-other').focus(), 60);
+});
+$('ask').onclick = async () => {
+  if(BUSY) return;
+  const n = $('ask-n'), brand = BRAND || $('brand-other').value.trim();
+  if(!brand){ n.className = 'note no'; n.textContent = 'name the brand'; $('brand-other').focus(); return; }
+  if(!PICK){ n.className = 'note no'; n.textContent = 'pick up the box first'; return; }
+  BUSY = true; $('ask').disabled = true; n.className = 'note'; n.textContent = 'sending…';
+  const { d } = await call('luxury-quote', { action:'request', piece: PIECE, brand, note: $('note').value, box: { kind: PICK.kind, ref: PICK.ref } });
+  BUSY = false; $('ask').disabled = false;
+  if(d.ok){
+    n.className = 'note ok'; n.textContent = 'asked — we answer by email';
+    $('note').value = ''; PICK = null; paintPicked(); await load(); return;
+  }
+  n.className = 'note no';
+  n.textContent = ({ thp_required:'a TotehmPaper is needed', closed:'closed for now', choose_a_box:'pick up the box first', box_not_found:'that box changed — pick it again',
+    too_many:'three requests are waiting already', no_session:'sign in again' })[d.error] || 'try again';
+};
 $('signin').onclick = () => ssoLogin(false, '/luxury');
 $('get-higher').onclick = () => ssoVersDomaine(sb, 'club', 'https://www.figher.club/discover');
+$('member').onclick = () => { if(!ME) ssoLogin(false, '/luxury'); else location.href = '/#luxury'; };
 
-$('launch').onclick = async () => {
+/* ── L'ADMINISTRATEUR — Wah répond par un prix (c'est son « oui ») ── */
+let admSeq = 0;
+async function loadAdmin(){
+  const seq = ++admSeq;
+  const { data, error } = await sb.rpc('luxury_quotes_admin');
+  if(seq !== admSeq) return;
+  if(error || data?.error){ console.error('[luxury_quotes_admin]', error?.message || data?.error); $('admin').classList.add('hide'); return; }
+  ADM = data?.quotes || [];
+  $('admin').classList.toggle('hide', !ADM.length);
+  $('admin-list').innerHTML = ADM.map(q => {
+    const pal = (q.palette || []).filter(okColor);
+    return '<div class="qa"><small>' + esc(q.pseudo || 'member') + ' · ' + esc(q.email) + ' · ' + esc(String(q.created_at || '').slice(0, 10)) + (q.test ? ' · test' : '') + '</small>' +
+      '<div class="nm">' + esc(q.brand) + ' · ' + esc(q.piece) + '</div>' + (q.note ? '<div>' + esc(q.note) + '</div>' : '') +
+      (q.text ? '<div class="nm" style="color:var(--mid)">' + esc(q.text) + '</div>' : '') +
+      (pal.length ? '<div class="pals">' + pal.map(c => '<i style="background:' + c + '"></i>').join('') + '</div>' : '') +
+      (q.status === 'quoted' ? '<span class="mono">quoted · ' + money(q.quote_cents, q.currency) + '</span>' : '') +
+      '<div class="row"><input class="field" type="number" min="0.5" step="0.01" inputmode="decimal" placeholder="price €" data-cents="' + q.id + '">' +
+      '<input class="field" maxlength="280" placeholder="a word (optional)" data-word="' + q.id + '"></div>' +
+      '<div class="row"><button class="btn" type="button" data-price="' + q.id + '">Send quote</button><button class="lnk" type="button" data-decline="' + q.id + '">Decline</button></div>' +
+      '<div class="note" data-a="' + q.id + '"></div></div>';
+  }).join('');
+  $('admin-list').querySelectorAll('[data-price]').forEach(b => b.onclick = () => answer(b.dataset.price, 'price'));
+  $('admin-list').querySelectorAll('[data-decline]').forEach(b => b.onclick = () => answer(b.dataset.decline, 'decline'));
+}
+async function answer(id, action){
   if(BUSY) return;
-  const n = $('launch-n');
-  if(!$('terms').checked){ n.className = 'note no'; n.textContent = 'tick the box to continue'; return; }
-  const { data:{ session } } = await sb.auth.getSession();
-  if(!session){ ssoLogin(false, '/luxury'); return; }
-  BUSY = true; $('launch').disabled = true; n.className = 'note'; n.textContent = 'opening checkout…';
-  try{
-    const r = await fetch(SSO_FN + 'luxury-checkout', { method:'POST',
-      headers:{ 'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer ' + session.access_token },
-      body: JSON.stringify({ piece: PIECE, note: $('note').value }) });
-    const d = await r.json().catch(() => ({}));
-    if(d.url){ location.href = d.url; return; }
-    console.error('[luxury-checkout]', r.status, d.error);
-    n.className = 'note no';
-    n.textContent = ({ thp_required:'a TotehmPaper is needed', closed:'closed for now', no_session:'sign in again' })[d.error] || 'checkout unavailable';
-    if(d.error === 'thp_required' || d.error === 'closed') await load();
-  }catch(e){ console.error('[luxury-checkout]', e && e.message || e); n.className = 'note no'; n.textContent = 'checkout unavailable'; }
-  BUSY = false; $('launch').disabled = false;
-};
+  const n = document.querySelector('[data-a="' + id + '"]');
+  const eur = Number(String(document.querySelector('[data-cents="' + id + '"]').value).replace(',', '.'));
+  const cents = Math.round(eur * 100);
+  if(action === 'price' && !(cents >= 50)){ n.className = 'note no'; n.textContent = 'a price, in €'; return; }
+  BUSY = true; n.className = 'note'; n.textContent = '…';
+  const { d } = await call('luxury-quote', { action, quote_id: id, cents, note: document.querySelector('[data-word="' + id + '"]').value });
+  BUSY = false;
+  if(d.ok){ n.className = 'note ok'; n.textContent = action === 'price' ? 'sent' : 'declined'; await load(); return; }
+  n.className = 'note no'; n.textContent = ({ forbidden:'not an administrator', price:'a price between €0.50 and €50,000', not_found:'already answered' })[d.error] || 'try again';
+}
 
-sb.auth.onAuthStateChange(ev => { if(ev === 'SIGNED_IN' || ev === 'SIGNED_OUT') load(); });
+/* ══ LA BOX — le Totehm de totehm.com, en SELECT MODE (copié de /streetwear) ══ */
+let ME = null;
+async function pickUp(){
+  if(!ME){ ssoLogin(false, '/luxury'); return; }
+  await loadTotehm();
+  vue = 'habits'; renderSel(); $('sel').classList.add('is-open');
+}
+$('pick-box').onclick = pickUp;
+function paintPicked(){
+  const p = $('picked');
+  $('pick-box').classList.toggle('hide', !!PICK);
+  if(!PICK){ p.classList.add('hide'); p.innerHTML = ''; return; }
+  p.classList.remove('hide'); p.style.setProperty('--skin', SKIN[PICK.view] || '#333366');
+  p.innerHTML = '<small>the box · ' + esc(NOM[PICK.view]?.[0] || '') + '</small><b>' + esc(PICK.text) + '</b><span class="pals">' +
+    (PICK.palette || []).filter(okColor).map(x => '<i style="background:' + x + '"></i>').join('') + '</span><button type="button" id="picked-x">another box</button>';
+  $('picked-x').onclick = pickUp;
+}
+
+const INTS={fight:['Fight','#E24B4A','BODY'],flow:['Flow','#e48b31','BODY'],enrich:['Enrich','#fcbe21','MENTAL'],love:['Love','#639922','SPIRIT'],
+  express:['Express','#1D9E75','SOUL'],focus:['Focus','#378ADD','MENTAL'],celebrate:['Celebrate','#7F77DD','SOUL']};
+const icol=i=>(INTS[i]||[])[1]||'#ffffff';
+const CROIX={wisdom:{d:'habits'},habits:{g:'wisdom',d:'visions',h:'objectives',b:'repulsions'},visions:{g:'habits'},
+  objectives:{g:'wisdom',d:'visions',b:'habits'},repulsions:{g:'wisdom',d:'visions',h:'habits'}};
+const NOM={wisdom:['my wisdom','what I learned'],habits:['my habits','what I repeat'],visions:['my vision','what I see coming'],
+  objectives:['my objectives','what pulls me up'],repulsions:['my repulsions','what makes me derail']};
+const SKIN={habits:'#333366',objectives:'#36498c',repulsions:'#743169',wisdom:'#743169',visions:'#36498c'};
+const KIND={habits:'habit',objectives:'objective',repulsions:'repulsion',wisdom:'wisdom',visions:'vision'};
+let TOT=null,vue='habits';
+async function loadTotehm(){
+  const[st,tr]=await Promise.all([sb.from('totehms').select('steps').eq('user_id',ME.id).maybeSingle(),sb.rpc('my_trips')]);
+  [st,tr].forEach(r=>{if(r.error)console.error('[totehm]',r.error.message);});
+  const t=tr.data||{};
+  TOT={
+    habits:(st.data?.steps||[]).filter(x=>(x.t||'').trim()).map(x=>({ref:x.t,text:x.t,f:x.f,is:(Array.isArray(x.is)&&x.is.length?x.is:[x.i].filter(Boolean)).filter(i=>INTS[i])})),
+    objectives:(t.trips||[]).filter(o=>(o.text||'').trim()).map(o=>({ref:o.id,text:o.text,is:o.is||[],days:o.days_left})),
+    repulsions:(t.reps||[]).filter(r=>(r.text||'').trim()).map(r=>({ref:String(r.id),text:r.text,is:r.is||[],hs:r.hs||[]})),
+    wisdom:(t.wisdom||[]).filter(w=>(w.text||'').trim()).map(w=>({ref:w.id,text:w.text,is:w.is||[]})),
+    visions:(t.visions||[]).filter(v=>(v.text||'').trim()).map(v=>({ref:v.id,text:v.text,is:v.is||[]}))};
+}
+const tick=l=>'<span class="tick">'+(l||[]).map(i=>'<i style="background:'+icol(i)+'"></i>').join('')+'</span>';
+function boxHTML(o,k){
+  const i0=(o.is||[])[0];
+  const sub=(i0?'<span style="color:'+icol(i0)+';font-weight:700">'+INTS[i0][0]+'</span><span style="color:rgba(255,255,255,.5)">'+INTS[i0][2]+'</span>':'')+
+    (vue==='habits'&&o.f?'<span>'+esc(String(o.f).replace(/_/g,' '))+'</span>':'')+
+    (vue==='objectives'&&o.days!=null?'<span>'+(o.days>=0?o.days+' days left':'past deadline')+'</span>':'');
+  return '<div class="bx" style="--skin:'+SKIN[vue]+'" data-k="'+k+'">'+tick(o.is)+'<div class="nm">'+esc(o.text)+'</div>'+(sub?'<div class="sb">'+sub+'</div>':'')+'</div>';
+}
+function renderSel(dir){
+  const sel=$('sel');
+  sel.classList.toggle('v-wisdom',vue==='wisdom');sel.classList.toggle('v-visions',vue==='visions');
+  $('sel-title').textContent=NOM[vue][0];$('sel-sub').textContent=NOM[vue][1];
+  const l=TOT[vue]||[];
+  $('list').innerHTML=l.length?l.map((o,k)=>boxHTML(o,k)).join(''):'<div class="v-empty">nothing written here yet</div>';
+  if(dir){$('list').classList.remove('swap');void $('list').offsetWidth;$('list').classList.add('swap');}
+  $('list').scrollTop=0;
+  $('joy-box').style.setProperty('--joy',SKIN[vue]);
+  const couche={objectives:'o',habits:'h',repulsions:'r'}[vue]||null;
+  ['o','h','r'].forEach(k=>{const e=$('joy-box').querySelector('.'+k);e.classList.toggle('ici',k===couche);e.classList.toggle('mort',!couche);});
+  ['h','g','d','b'].forEach(d=>$('cur-'+d).classList.toggle('mort',!CROIX[vue][d]));
+}
+function goVue(d){const n=CROIX[vue][d];if(!n)return;vue=n;renderSel(d);}
+document.querySelectorAll('.cur').forEach(b=>b.onclick=()=>goVue(b.dataset.d));
+(function joyDrag(){
+  const box=$('joy-box');let x0=0,y0=0,on=false;
+  box.addEventListener('pointerdown',e=>{on=true;x0=e.clientX;y0=e.clientY;try{box.setPointerCapture(e.pointerId);}catch(_){}});
+  box.addEventListener('pointerup',e=>{if(!on)return;on=false;const dx=e.clientX-x0,dy=e.clientY-y0;
+    if(Math.max(Math.abs(dx),Math.abs(dy))<24)return;goVue(Math.abs(dx)>Math.abs(dy)?(dx<0?'g':'d'):(dy<0?'h':'b'));});
+})();
+window.addEventListener('keydown',e=>{
+  if(!isOpen('sel'))return;
+  const m={ArrowUp:'h',ArrowDown:'b',ArrowLeft:'g',ArrowRight:'d'}[e.key];
+  if(m){e.preventDefault();goVue(m);}
+  if(e.key==='Escape')$('sel').classList.remove('is-open');
+});
+$('sel-x').onclick=()=>$('sel').classList.remove('is-open');
+/* ══ LA MATIÈRE — copiée de /streetwear : ce que la Box emporte avec elle ══
+   Ce qui est relié à la Box dans les cinq vues, et la palette de ses
+   intentions — calculés en base (`my_box_matter`), jamais ici. */
+const MI={habits:['',''],objectives:['o','why'],repulsions:['r','instead'],wisdom:['w','learned'],visions:['v','sees']};
+$('list').addEventListener('click',async e=>{
+  if(e.target.closest('#matter'))return;
+  const b=e.target.closest('.bx');if(!b)return;
+  const o=(TOT[vue]||[])[+b.dataset.k];if(!o)return;
+  document.querySelectorAll('#list .bx').forEach(x=>x.classList.toggle('open',x===b));
+  $('matter')?.remove();
+  const c=document.createElement('div');c.id='matter';c.innerHTML='<div class="mono">reading the matter…</div>';b.after(c);
+  const{data:m,error}=await sb.rpc('my_box_matter',{p_kind:KIND[vue],p_ref:String(o.ref)});
+  if(error)console.error('[my_box_matter]',error.message);
+  if(error||!m){c.innerHTML='<div class="mono">'+(error?'unavailable':'this box is empty')+'</div>';return;}
+  const groups=Object.entries(m.matter||{}).filter(([,a])=>(a||[]).length).map(([k,a])=>
+    '<div class="grp"><span class="w">'+(k==='habits'?'how':(MI[k]||['',''])[1]||k)+'</span>'+a.map(x=>'<span class="mi '+(MI[k]||[''])[0]+'">'+esc(x.text)+'</span>').join('')+'</div>').join('');
+  const ex=m.extra||{};
+  const extras=[ex.place?'place · '+esc(ex.place):null,ex.mood?'mood · '+esc(ex.mood):null,ex.freq?'rhythm · '+esc(String(ex.freq).replace(/_/g,' ')):null,ex.obstacle?'obstacle · '+esc(ex.obstacle):null].filter(Boolean);
+  c.innerHTML=
+    '<div class="grp"><span class="w">palette</span><span class="pal">'+(m.palette||[]).map(x=>'<i style="background:'+esc(x)+'"></i>').join('')+'</span>'+((m.palette||[]).length?'':'<span class="mono">no intention yet — the curated style decides</span>')+'</div>'+
+    groups+(extras.length?'<div class="grp"><span class="w">context</span><span class="mono" style="color:rgba(255,255,255,.75)">'+extras.join(' · ')+'</span></div>':'')+
+    '<div class="next"><button class="btn" id="mt-go" type="button">Pick up this box</button><button class="btn-back" id="mt-x" type="button" style="color:#fff">another box</button></div>';
+  $('mt-go').onclick=()=>{PICK={kind:KIND[vue],ref:String(o.ref),text:m.text,view:m.view,palette:m.palette||[]};
+    $('sel').classList.remove('is-open');paintPicked();joyPaint();$('picked').scrollIntoView({behavior:'smooth',block:'center'});};
+  $('mt-x').onclick=()=>renderSel();
+  c.scrollIntoView({behavior:'smooth',block:'nearest'});
+});
+
+/* ══ LA MANETTE — la porte luxury de la boutique (05/10/2026) ═══════════
+   Le même manche que l'accueil (rayon 15 px, seuil 9 px) : pousser vers une
+   direction la nomme et la colore AVANT d'y aller ; relâcher y va. Le
+   centre AGIT : l'action principale de la page. Copié, pas importé. */
+const NAV_TO = { g:'home', h:'streetwear', b:'decode' };
+const NAV_COLOR = { home:'var(--navy)', streetwear:'var(--blue)', luxury:'var(--rep)', decode:'var(--navy)', news:'var(--blue)' };
+const NAV_NAME = { home:'Higher', streetwear:'Streetwear', luxury:'Luxury', decode:'Decode', news:'News' };
+const NAV_URL = { home:'/', streetwear:'/streetwear', luxury:'/luxury', decode:'/#decode', news:'/#news' };
+const NAV_DOT = { home:'h', streetwear:'o', luxury:'r', decode:'h', news:'o' };
+let NAV_MOVES = 0;
+function joyPaint(preview){
+  const t = preview && NAV_TO[preview];
+  $('nav-box').style.setProperty('--joy-vue', NAV_COLOR[t || 'luxury']);
+  const cur = NAV_DOT[t || 'luxury'];
+  for(const k of ['o','h','r']) $('nav-stack').querySelector('.'+k).classList.toggle('is-current', k === cur);
+  for(const d of ['h','g','d','b']){ $('nav-'+d).classList.toggle('is-dead', !NAV_TO[d]); $('nav-'+d).classList.toggle('is-preview', preview === d && !!NAV_TO[d]); }
+  const say = $('nav-say'), act = navAction();
+  say.textContent = t ? NAV_NAME[t] : (act ? act[0] : NAV_NAME['luxury']);
+  say.classList.toggle('is-preview', !!t);
+  $('nav-box').setAttribute('aria-label', act ? act[0] : 'Act');
+}
+function navStep(d){ const t = NAV_TO[d]; if(!t) return; NAV_MOVES++; location.href = NAV_URL[t]; }
+function navTap(){ const a = navAction(); if(a) a[1](); }
+(function manette(){
+  const bx = $('nav-box'), st = $('nav-stack'), R = 15, threshold = 9;
+  let id = null, x0 = 0, y0 = 0, dx = 0, dy = 0, moved = 0;
+  const pose = (a, b) => { st.style.setProperty('--mx', a.toFixed(1)+'px'); st.style.setProperty('--my', b.toFixed(1)+'px'); };
+  const dirOf = () => Math.max(Math.abs(dx), Math.abs(dy)) >= threshold ? (Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 'g' : 'd') : (dy < 0 ? 'h' : 'b')) : null;
+  bx.addEventListener('pointerdown', e => {
+    if(e.button > 0 || id !== null) return;
+    id = e.pointerId; x0 = e.clientX; y0 = e.clientY; dx = dy = moved = 0; bx.classList.add('is-held');
+    try{ bx.setPointerCapture(id); }catch(_){} e.preventDefault();
+  });
+  bx.addEventListener('pointermove', e => {
+    if(id !== e.pointerId) return;
+    const a = e.clientX - x0, b = e.clientY - y0, d = Math.hypot(a, b), k = d > R ? R / d : 1;
+    dx = a * k; dy = b * k; moved = Math.max(moved, d); pose(dx, dy); joyPaint(dirOf());
+  });
+  function finish(e, cancel){
+    if(id === null || e.pointerId !== id) return;
+    id = null; bx.classList.remove('is-held'); pose(0, 0); const d = dirOf(); joyPaint();
+    if(cancel) return;
+    if(moved < 4) navTap(); else if(d) navStep(d);
+  }
+  bx.addEventListener('pointerup', e => finish(e, false));
+  bx.addEventListener('pointercancel', e => finish(e, true));
+  bx.addEventListener('click', e => { if(e.detail === 0) navTap(); });
+  for(const d of ['h','g','d','b']) $('nav-'+d).onclick = () => navStep(d);
+})();
+
+/* Le centre : payer un devis prêt, sinon prendre la Box, sinon demander. */
+function navAction(){
+  const vis = id => !$(id).classList.contains('hide');
+  if(document.querySelector('[data-pay]')) return ['Pay', () => { const b = document.querySelector('[data-pay]'); b.scrollIntoView({ behavior:'smooth', block:'center' }); b.click(); }];
+  if(vis('form')) return PICK ? ['Quote', () => $('ask').click()] : ['Box', pickUp];
+  if(vis('s-out')) return ['Sign in', () => ssoLogin(false, '/luxury')];
+  if(vis('s-nothp')) return ['Get Higher', () => $('get-higher').click()];
+  return null;
+}
+const isOpen = id => $(id).classList.contains('is-open');
+
+/* ── La session : le vrai pseudo (03/10), puis l'état ── */
+let meSeq = 0;
+async function mePaint(){
+  const seq = ++meSeq, uid = ME?.id; let name = ME ? 'My TOTEHM' : 'Guest';
+  if(uid){ const { data, error } = await sb.from('profiles').select('pseudo').eq('id', uid).maybeSingle();
+    if(error) console.error('[profiles]', error.message); if(seq !== meSeq || ME?.id !== uid) return; name = data?.pseudo || name; }
+  $('member').textContent = name;
+}
+sb.auth.onAuthStateChange((ev, session) => { ME = session?.user || null; setTimeout(mePaint, 0); if(ev === 'SIGNED_IN' || ev === 'SIGNED_OUT') setTimeout(load, 0); });
+{ const { data:{ session } } = await sb.auth.getSession(); ME = session?.user || null; mePaint(); }
+joyPaint();
 await load();
 </script>
 </body>

@@ -1,129 +1,160 @@
 <!DOCTYPE html>
+<!--
+  ══ higher.boutique — LA MANETTE · 05/10/2026 ══════════════════════════
+  Wah, 05/10 : « tout opérationnel, avec comme référence le style de SPACE ;
+  remettre le joystick et faire quelque chose de sympa avec ». L'accueil
+  devient une manette : HIGHER au centre, quatre portes autour.
+      ↑ STREETWEAR  create my Totehm Streetwear Cloth (→ /streetwear)
+      → LUXURY      totehmize my cloth & stuff, sur devis (→ /luxury)
+      ↓ DECODE      decode a Totehm Cloth — `reveal_cloth`, la MÊME règle
+                    que Reveal the Box (invité · FIGHER · propriétaire)
+      ← NEWS        email for dope news (`subscribers`)
+  Le manche est celui de SPACE/COM (rayon 15 px, seuil 9 px, flèches,
+  molette, clavier, glissé horizontal sur la scène). Pousser vers une porte
+  la colore et la nomme AVANT d'y aller ; une porte opposée ramène au
+  centre. Le centre AGIT : GO · QUOTE · DECODE · SEND · PLAY. Un Cloth
+  décodé prête sa palette aux trois points du manche.
+
+  ⚠️ Couleurs du manche : blue / navy / rep — l'exception « joystick COM »
+  de SPACE, étendue à la boutique (boutique/CLAUDE.md, 05/10).
+  ⚠️ Les marques sont des NOMS, jamais des logos. La collab en cours
+  (« Totehm x Champion ») suit le même format.
+  Connexion : PAR totehm.com (bloc SSO copié de tools/sso_snippet.js,
+  SSO_CLIENT = 'boutique'). Diagnostic : __totehm_boutique().
+-->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Higher — Totehm</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>HIGHER.BOUTIQUE</title>
+<meta name="description" content="The totehmization: Streetwear, Luxury on quote, Decode a Totehm Cloth.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
-html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
 :root{
-  --coral:#fbd5ca;--g-light:#e0e0e0;--g-mid:#909090;--g-dark:#5a5a5a;--bg:#000;--navy:#333366;--rep:#743169;--blue:#36498c;
-  --futura:'Space Mono',monospace;
-  --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
-  --tile-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%2336498c'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
-  --tile-full:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Crect width='44' height='44' fill='%23333366'/%3E%3Ccircle cx='22' cy='0' r='6' fill='%23000000'/%3E%3Ccircle cx='22' cy='44' r='6' fill='%23000000'/%3E%3Ccircle cx='0' cy='22' r='6' fill='%23000000'/%3E%3Ccircle cx='44' cy='22' r='6' fill='%23000000'/%3E%3C/svg%3E");
-  --tile-rep:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23743169'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
+  --s1:#0b0b0d;--s2:#15151a;--s3:#212127;--s4:#2e2e36;--r:10px;
+  --mid:#b4b4b9;--lo:#9a9aa0;--dim:#707077;
+  --navy:#333366;--blue:#36498c;--rep:#743169;--coral:#fbd5ca;--ok:#639922;
+  --q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
+  --top:env(safe-area-inset-top,0px);--bot:env(safe-area-inset-bottom,0px);
+  --joy-d:56px;--ease:cubic-bezier(.2,.9,.25,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--bg);min-height:100%;-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
-html{scroll-snap-type:y mandatory}
-body{display:flex;flex-direction:column;align-items:center;min-height:100vh;overflow-y:auto}
+html,body{width:100%;height:100%;background:#000;color:var(--mid);font-family:var(--mono);font-size:13px;line-height:1.6;
+  overflow:hidden;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit;color-scheme:dark}
+a{color:inherit;text-decoration:none}
 .hide{display:none!important}
 
-/* SECTIONS : hero (atterrissage) + context (vidéo de marque) + footer (no social) */
-.hero,.context{width:100%;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;scroll-snap-align:start;scroll-snap-stop:always;position:relative}
-.hero{padding:7vh 22px 4vh}
-.context{padding:5vh 22px}
-.ctx-down{margin-top:4vh;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;-webkit-tap-highlight-color:transparent}
-.ctx-label{font-family:'Space Mono',monospace;font-weight:400;font-size:14px;color:#b0b0b0;transition:color .15s ease}
-.ctx-down:hover .ctx-label{color:#fff}
-.chev{width:22px;height:22px;color:var(--g-mid);transition:color .15s ease}
-.ctx-down:hover .chev,.ctx-up:hover .chev{color:#fff}
-.ctx-up{position:absolute;top:22px;left:50%;transform:translateX(-50%);background:none;border:none;cursor:pointer;padding:8px 14px;-webkit-tap-highlight-color:transparent}
-.ctx-up .chev{width:26px;height:26px}
-.ctx-vid{height:5cm;width:auto;max-width:84vw;display:block;background:#000;margin-bottom:3vh}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
-.bob{animation:bob 1.8s ease-in-out infinite}
-@media(prefers-reduced-motion:reduce){.bob{animation:none}html,body{scroll-behavior:auto}}
+/* ══ LE COIN MEMBRE — le nom du Totehm, Quantico Coral (03/10) ═══════ */
+#member{position:fixed;top:calc(12px + var(--top));left:12px;z-index:96;background:none;border:none;cursor:pointer;
+  font-family:var(--q);font-size:13px;color:var(--coral);padding:6px 4px;max-width:34vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#menu{position:fixed;top:0;left:0;z-index:95;width:min(320px,86vw);background:var(--s1);padding:calc(54px + var(--top)) 18px 22px;
+  display:flex;flex-direction:column;gap:6px;transform:translateY(-104%);transition:transform .35s var(--ease),visibility .35s;visibility:hidden}
+#menu.is-open{transform:none;visibility:visible}
+.m-it{display:block;width:100%;text-align:left;background:var(--s2);border:none;border-radius:var(--r);padding:11px 13px;cursor:pointer;
+  color:var(--mid);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;transition:background .15s,color .15s}
+.m-who{font-family:var(--q);font-size:15px;color:var(--coral);padding:0 2px 2px}
+.m-mail{font-size:9px;color:var(--dim);word-break:break-all;padding:0 2px 8px}
+.m-terms{background:none;color:var(--dim);font-size:10px;margin-top:10px;padding:8px 2px}
 
-.slogan{width:min(52vw,200px);margin-bottom:13px}
-.slogan svg{display:block;width:100%;height:auto}
-.tagline{font-family:'Space Mono',monospace;font-weight:400;font-size:14px;color:var(--g-mid);letter-spacing:0;text-align:center;margin-bottom:5vh}
-.realwrap{margin-top:6vh;display:flex;justify-content:center}
-.real{width:min(44vw,170px);height:auto;display:block;opacity:1;filter:grayscale(0);transition:filter .2s ease}
-@media(hover:hover){.real:hover{filter:brightness(1.9) contrast(1.05)}}
-.real:active{filter:brightness(1.9) contrast(1.05)}
-.real.color{filter:none;opacity:1;width:85px;animation:paper-float 9s ease-in-out infinite}
-@keyframes paper-float{
-  0%{transform:translate(0,0) rotate(0deg)}
-  25%{transform:translate(3px,-4px) rotate(1deg)}
-  50%{transform:translate(-2px,3px) rotate(-1deg)}
-  75%{transform:translate(4px,2px) rotate(.6deg)}
-  100%{transform:translate(0,0) rotate(0deg)}
-}
-@media(prefers-reduced-motion:reduce){.real.color{animation:none}}
+/* ══ HIGHER — en haut, il ramène au centre ═══════════════════════════ */
+#head{position:fixed;top:calc(12px + var(--top));left:50%;transform:translateX(-50%);z-index:40;display:flex;flex-direction:column;align-items:center;gap:6px}
+#head-home{background:none;border:none;cursor:pointer;padding:0;width:118px;-webkit-tap-highlight-color:transparent}
+#head-home svg{display:block;width:100%;height:auto}
+.tagline{font-size:8.6px;letter-spacing:.16em;color:var(--dim);white-space:nowrap}
 
-/* boutons de marque */
-.btn-sig{font-family:'Space Mono',monospace;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:#1f1f24;border-radius:10px;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
-.higher-inline{height:1.5em;width:auto;vertical-align:-.32em;display:inline-block;margin:0 .04em}
-.wm-totehm{font-family:'Space Mono',monospace;font-weight:700;font-style:normal;color:#fff;letter-spacing:.16em;margin-right:-.16em;text-transform:uppercase}
-@media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}}
-.btn-sig:active{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}
-.wm-frame{background:var(--navy);padding:0 3px;margin:0 1px;color:#fff}
-.btn-coral{font-family:'Space Mono',monospace;font-weight:400;font-size:14px;letter-spacing:0;color:var(--coral);background:none;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
-@media(hover:hover){.btn-coral:hover{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}}
-.btn-coral:active{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}
-.btn-back{font-family:'Space Mono',monospace;font-weight:400;font-size:14px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:none;padding:0 2px;line-height:1.4;-webkit-tap-highlight-color:transparent;transition:color .15s ease,background .15s ease}
-.btn-back:hover,.btn-back:active{color:#fff;background:var(--rep)}
+/* ══ LA SCÈNE — cinq vues, une à la fois ═════════════════════════════ */
+#stage{position:fixed;left:0;right:0;top:calc(88px + var(--top));bottom:calc(128px + var(--bot))}
+.view{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;align-items:center;
+  gap:12px;padding:10px 16px 22px;text-align:center;opacity:0;visibility:hidden;transform:translate(var(--vx,0px),var(--vy,0px));
+  transition:opacity .12s ease,transform .32s var(--ease),visibility .12s;touch-action:pan-y}
+/* La vue sortante s'efface d'abord, l'entrante arrive ensuite : jamais deux textes l'un sur l'autre. */
+.view.is-on{opacity:1;visibility:visible;transform:none;transition:opacity .26s ease .1s,transform .34s var(--ease) .1s,visibility 0s}
+.view>.fill{flex:1 0 0}
+.kicker{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--lo)}
+h1{font-family:var(--mono);font-weight:700;font-size:20px;letter-spacing:.06em;text-transform:uppercase;color:#fff;line-height:1.2;max-width:22ch}
+.say{max-width:36ch;font-size:12.5px}
+.sub{font-size:8.6px;letter-spacing:.22em;color:var(--dim);font-weight:700;text-transform:uppercase}
+.names{font-size:12px;color:var(--mid)}
+.names b{color:#fff;font-weight:700}
+.legal{font-size:8.6px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.chip{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);background:var(--s2);border-radius:var(--r);padding:4px 9px}
+.chip.is-on{background:var(--s3);color:#fff}
+.chip i{opacity:.5;font-style:normal;margin:0 2px}
+.btn{font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--s3);
+  border:none;border-radius:var(--r);padding:13px 20px;min-width:220px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s,color .15s}
+.btn:disabled{color:var(--dim);cursor:default}
+.field{font-family:var(--q);font-size:15px;color:#fff;background:var(--s2);border:none;border-radius:var(--r);padding:11px 12px;
+  width:100%;max-width:300px;outline:none;caret-color:#fff;text-align:center}
+.field::placeholder{color:var(--dim)}
+.note{font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;color:var(--lo)}
+.note.ok{color:var(--ok)}.note.no{color:#fff}
 
-nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max-width:540px}
-.menu-row{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
-.menu-gap{width:100%;height:16px}
-.line-input{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;letter-spacing:0;color:#fff;background:#1f1f24;outline:none;border:6px solid transparent;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;text-align:center;caret-color:var(--coral);min-width:230px;border-radius:10px}
-.note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px;text-align:center}
-.note.ok{color:#639922}.note.no{color:var(--rep)}.note.dim{color:var(--g-dark)}
+/* LE CENTRE — la croix des quatre portes, l'image du manche */
+#cross{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;max-width:420px}
+.door{background:var(--s2);border:none;border-radius:var(--r);padding:13px 6px 11px;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;gap:5px;color:var(--mid);-webkit-tap-highlight-color:transparent;transition:background .18s,color .18s,transform .18s var(--ease)}
+.door i{width:10px;height:10px;border-radius:50%;background:var(--c);display:block}
+.door b{font-size:10.5px;letter-spacing:.14em;color:#fff;font-weight:700}
+.door span{font-size:9px;line-height:1.35;color:var(--lo)}
+.door.is-preview{background:var(--s4);transform:scale(1.04)}
+#door-h{grid-area:1/2/2/3}#door-g{grid-area:2/1/3/2}#door-c{grid-area:2/2/3/3}#door-d{grid-area:2/3/3/4}#door-b{grid-area:3/2/4/3}
+#door-c{background:none;padding:0;justify-content:center}
+#door-c img{width:100%;max-width:96px;aspect-ratio:1/1;object-fit:cover;display:block;border-radius:var(--r);filter:grayscale(1);transition:filter .2s}
+#brand-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;margin-top:4px}
+.lnk{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:var(--s2);border:none;border-radius:var(--r);
+  padding:7px 11px;cursor:pointer;display:inline-flex;align-items:center;gap:.4em;transition:background .15s,color .15s}
+.lnk .get{color:var(--coral);text-transform:none;letter-spacing:0;font-size:12px}
+.lnk svg{height:1.6em;width:auto;display:block}
 
-/* FULL-SCREEN perforé : résultat Decode */
-.fs-perf{position:fixed;inset:0;z-index:80;background:var(--navy);border:11px solid transparent;border-image-source:var(--tile-full);border-image-slice:11;border-image-repeat:round;display:none;flex-direction:column;align-items:center;justify-content:center;padding:60px 30px 40px}
-.fs-perf.show{display:flex}
-.fs-perf .fs-back{position:fixed;top:16px;left:16px;z-index:82}
-.fs-msg{font-family:'Quantico',sans-serif;font-weight:400;font-size:clamp(18px,4.4vw,26px);color:#fff;line-height:1.55;text-align:center;max-width:640px;font-style:italic;white-space:pre-wrap;overflow-y:auto;max-height:78vh}
+/* DECODE — le Cloth, la Box derrière, selon qui cherche */
+#dc-card{width:100%;max-width:380px;background:var(--skin,var(--navy));color:#fff;padding:12px 14px;display:flex;flex-direction:column;gap:6px;text-align:left}
+#dc-card .nm{font-family:var(--q);font-size:16px;line-height:1.35}
+#dc-card small{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+#dc-card .txt{font-family:var(--q);font-size:14px;line-height:1.5}
+#dc-card .pal{display:flex;gap:4px}#dc-card .pal i{width:14px;height:14px;display:block}
+#dc-card .grp{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+#dc-card .w{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.62);min-width:60px}
+#dc-card .mi{font-family:var(--q);font-size:11px;padding:2px 7px;background:rgba(0,0,0,.28)}
+#dc-card .lock{font-size:11px;color:rgba(255,255,255,.8)}
 
-/* LUXURY : sous-titre + défilement horizontal logos */
-.lux-block{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
-.brand-subtitle{font-family:'Space Mono',monospace;font-size:8.6px;letter-spacing:.22em;color:var(--g-dark);text-align:center;font-weight:700;text-transform:uppercase}
-.brand-names{font-family:'Space Mono',monospace;font-size:12px;color:#b0b0b0;text-align:center}
-.brand-legal{font-family:'Space Mono',monospace;font-size:8.6px;letter-spacing:.12em;color:var(--g-dark);text-align:center;text-transform:uppercase;padding-bottom:8px}
+/* LA VIDÉO DE MARQUE — chargée au premier geste, jamais avant (egress) */
+#film{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.94);display:none;flex-direction:column;align-items:center;justify-content:flex-start;
+  gap:14px;padding:calc(64px + var(--top)) 16px 24px}
+#film.is-open{display:flex}
+#film video{width:100%;max-width:440px;max-height:62vh;background:#000;border-radius:var(--r)}
+#film-x{position:fixed;top:calc(12px + var(--top));right:12px}
 
-/* STREETWEAR : sous-titre + image support */
-.sw-block{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
-#sw-collection{display:none;flex-direction:column;align-items:center;gap:3px;padding-top:2px}
-#sw-col-name{font-family:'Quantico',sans-serif;font-size:13px;color:var(--coral);letter-spacing:.04em}
-#sw-col-desc{font-family:var(--futura);font-size:11px;color:var(--g-mid);text-align:center;max-width:280px;line-height:1.4}
-#sw-col-sold{font-family:'Space Mono',monospace;font-size:10px;color:var(--g-dark);letter-spacing:.12em;text-transform:uppercase}
+/* ══ LA MANETTE — le manche de SPACE/COM ═════════════════════════════ */
+#nav{position:fixed;z-index:70;bottom:calc(18px + var(--bot));left:50%;transform:translateX(-50%);
+  display:grid;grid-template-columns:22px var(--joy-d) 22px;grid-template-rows:22px var(--joy-d) 22px;align-items:center;justify-items:center}
+#nav-say{position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);font-size:9px;letter-spacing:.18em;white-space:nowrap;
+  color:var(--lo);pointer-events:none;text-transform:uppercase;transition:color .15s}
+#nav-say.is-preview{color:#fff}
+/* Un voile noir sous le manche : le texte qui défile dessous ne se lit pas à travers. */
+#nav::before{content:'';position:absolute;left:-90px;right:-90px;top:-34px;bottom:-30px;background:radial-gradient(closest-side,#000 62%,rgba(0,0,0,0));z-index:-1;pointer-events:none}
+#nav-h{grid-area:1/2/2/3}#nav-g{grid-area:2/1/3/2}#nav-box{grid-area:2/2/3/3}#nav-d{grid-area:2/3/3/4}#nav-b{grid-area:3/2/4/3}
+#nav-box{width:var(--joy-d);height:var(--joy-d);position:relative;border:none;padding:0;border-radius:50%;background:var(--joy-vue,var(--navy));
+  touch-action:none;cursor:grab;-webkit-tap-highlight-color:transparent;transition:background-color .3s ease}
+#nav-box:focus-visible{outline:1px solid var(--mid);outline-offset:4px}
+#nav-stack{position:absolute;inset:0;transform:translate(var(--mx,0px),var(--my,0px));transition:transform .26s cubic-bezier(.22,.9,.3,1)}
+#nav-box.is-held #nav-stack{transition:none}
+#nav-stack i{--d:12px;position:absolute;left:50%;display:block;width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
+  border-radius:50%;background:var(--c);transition:opacity .18s,transform .18s,background-color .4s ease}
+#nav-stack .o{top:23%;--c:var(--blue)}#nav-stack .h{top:50%;--c:var(--navy)}#nav-stack .r{top:77%;--c:var(--rep)}
+#nav-stack i.is-current{opacity:0;transform:scale(.4)}
+.nav-cur{background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;width:22px;height:22px;
+  opacity:.85;color:#fff;-webkit-tap-highlight-color:transparent;transition:opacity .15s,transform .15s}
+.nav-cur.is-dead{opacity:.14;pointer-events:none}
+.nav-cur.is-preview{opacity:1;transform:scale(1.3)}
+.nav-cur svg{width:14px;height:14px;display:block;stroke:currentColor;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
 
-
-@media(max-width:600px){.slogan{width:min(60vw,185px)}.tagline{font-size:13px}}
-
-/* La barre de recherche : box rectangulaire pleine #626283, pas la tuile
-   perforee navy des boutons. `border-image:none` est obligatoire — sans lui
-   la tuile heritee de .line-input reste peinte PAR-DESSUS le fond. */
-#decode-input{background:#626283;border:6px solid #626283;border-image:none;
-  color:#fff;caret-color:#fff}
-#decode-input::placeholder{color:rgba(255,255,255,.55)}
-#brand-sub{display:none;flex-direction:column;align-items:center;gap:8px}
-.brand-sub-logo{height:3.5em;width:auto;vertical-align:-.9em;display:inline-block}
-.brand-get{color:var(--coral)}
-.brand-my{font-family:'Quantico',sans-serif;font-weight:400}
-#conn-bar{position:fixed;top:14px;left:16px;z-index:85;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;padding:4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
-#conn-bar:hover{color:#fff}
-#conn-bar .dot{width:8px;height:8px;border-radius:50%;background:#888}
-#member-window{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.84);display:none;align-items:flex-start;justify-content:center;padding:max(44px,8dvh) 24px 24px}
-#member-window.show{display:flex}
-.mw-card{background:#131316;border:none;max-width:360px;width:100%;padding:30px 24px;text-align:center;position:relative;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.mw-card::-webkit-scrollbar{display:none}
-.mw-close{position:absolute;top:12px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:#b4b4b4;background:none;border:none;cursor:pointer;padding:0}
-.mw-close:hover{color:#fff}
-.mw-input{width:100%;background:none;border:none;outline:none;color:#fff;font-family:'Quantico',sans-serif;font-weight:400;font-size:15px;padding:6px 2px;caret-color:#fff;text-align:center;margin-bottom:10px}
-.mw-input::placeholder{color:rgba(255,255,255,.33)}
-.mw-note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:12px;margin-top:6px}
-.mw-note.ok{color:#639922}.mw-note.no{color:#b06a9f}.mw-note.dim{color:#6d6d6d}
-.mw-who{font-family:'Quantico',sans-serif;font-weight:700;font-size:16px;color:#fff;margin-bottom:4px}
-.mw-mail{font-family:'Space Mono',monospace;font-size:9px;color:#6d6d6d;margin-bottom:12px;word-break:break-all}
-.mw-signout{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#6d6d6d;background:none;border:none;cursor:pointer;padding:2px 0;margin-top:8px}
-.mw-signout:hover{color:#fff}
+@media(hover:hover){.btn:not(:disabled):hover,.door:hover,.m-it:hover,.lnk:hover{background:var(--s4);color:#fff}#door-c:hover{background:none}#door-c:hover img{filter:none}}
+@media(prefers-reduced-motion:reduce){.view,#menu,#nav-stack,.door{transition:none}}
 
 
 
@@ -131,35 +162,29 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
 @media(hover:hover){
-.ctx-label:hover,
-.chev:hover,
+.m-it:hover,
+.m-mail:hover,
+.m-terms:hover,
 .tagline:hover,
-.btn-sig:hover,
-.btn-back:hover,
-.note.dim:hover,
-.brand-subtitle:hover,
-.brand-names:hover,
-.brand-legal:hover,
-#sw-col-desc:hover,
-#sw-col-sold:hover,
-#decode-input:hover::placeholder,
-#conn-bar:hover,
-.mw-close:hover,
-.mw-input:hover::placeholder,
-.mw-note.dim:hover,
-.mw-mail:hover,
-.mw-signout:hover{color:#fff}
+.kicker:hover,
+.sub:hover,
+.names:hover,
+.legal:hover,
+.chip:hover,
+.field:hover::placeholder,
+.note:hover,
+.door:hover,
+.door span:hover,
+.lnk:hover,
+#dc-card small:hover,
+#dc-card .w:hover,
+#dc-card .lock:hover,
+#nav-say:hover{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
-
-/* 03/10 — the member's TOTEHM name: Quantico Coral, without status dots. */
-#conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
-#conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
-.tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
 </style>
 </head>
 <body>
-
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <symbol id="higher-slogan" viewBox="0 0 600 200">
@@ -173,183 +198,193 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
     </symbol>
   </defs>
 </svg>
-
-<section class="hero" id="hero">
-<div class="slogan"><svg viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></div>
-<div class="tagline">OWN/YOUR/TIME&nbsp;&nbsp;&nbsp;NOW:WON&nbsp;&nbsp;&nbsp;<span id="tag-loc">WRLD</span></div>
-
-<nav>
-  <div id="menu-main" style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%">
-
-    <!-- 02/10 : Get Higher et Make the Lisbon Streets Higher vivent sur
-         figher.club. La boutique = la totehmisation : Streetwear et Luxe. -->
-
-    <!-- 1 : Streetwear -->
-    <div class="sw-block">
-      <a class="btn-sig" href="streetwear.html">Create my Totehm Streetwear Cloth</a>
-      <div id="sw-collection">
-        <div id="sw-col-name"></div>
-        <div id="sw-col-desc"></div>
-        <div id="sw-col-sold"></div>
-      </div>
-    </div>
-
-    <!-- 2 : Luxury -->
-    <div class="lux-block">
-      <a class="btn-sig" href="/luxury">Totehmize my Cloth &amp; stuff</a>
-      <!-- 02/10 : les NOMS, jamais les logos (droit des marques). -->
-      <span class="brand-subtitle">BRAND WE TOTEHMIZE</span>
-      <div class="brand-names">Hermès · Louis Vuitton · Gucci</div>
-      <div class="brand-legal">Independent. Not affiliated with these brands.</div>
-    </div>
-
-    <div class="menu-row">
-      <button class="btn-sig" id="decode-btn">Decode a Totehm Cloth</button>
-      <input class="line-input hide" id="decode-input" maxlength="40" placeholder="ex: 0.Test">
-      <div class="note dim hide" id="decode-note"></div>
-    </div>
-
-    <div class="menu-gap"></div>
-
-    <div class="menu-row">
-      <button class="btn-sig" id="email-btn">Email for dope news</button>
-      <input class="line-input hide" id="email-input" type="email" maxlength="120" placeholder="your@email">
-      <div class="note dim hide" id="email-note"></div>
-    </div>
-
-  </div>
+<button id="member" type="button" aria-label="Member menu">Guest</button>
+<nav id="menu" aria-label="Member">
+  <div id="m-in" class="hide"><div class="m-who" id="m-who"></div><div class="m-mail" id="m-mail"></div></div>
+  <button class="m-it" id="m-signin" type="button">Sign in with TOTEHM</button>
+  <a class="m-it hide" id="m-totehm" href="https://www.totehm.com/totehm">My TOTEHM</a>
+  <a class="m-it" href="/streetwear">My Totehm Cloths</a>
+  <button class="m-it hide" id="m-signout" type="button">Sign out</button>
+  <!-- 01/10 : la DERNIÈRE entrée du menu membre. -->
+  <a class="m-it m-terms" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a>
 </nav>
 
-<div class="realwrap"><a href="https://www.totehm.com" target="_blank" rel="noopener"><img src="assets/img/no_social_media.jpg" alt="No Social Media" class="real" id="real-img"></a></div>
-  
-  <!-- accès au contexte de marque -->
-  <button class="ctx-down" id="ctx-down" aria-label="Think same but opposite">
-    <span class="ctx-label">Think same but opposite</span>
-    <svg class="chev bob" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-  </button>
-</section>
+<header id="head">
+  <button id="head-home" type="button" aria-label="Higher — the center"><svg viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-slogan"></use></svg></button>
+  <div class="tagline">OWN/YOUR/TIME&nbsp;&nbsp;NOW:WON&nbsp;&nbsp;WRLD</div>
+</header>
 
-<!-- SECTION CONTEXTE : vidéo de marque -->
-<section class="context" id="context">
-  <button class="ctx-up" id="ctx-up" aria-label="Remonter">
-    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
-  </button>
-  <video class="ctx-vid" id="ctx-vid" playsinline muted controls preload="none"></video>
-  <!-- Dope branding : juste sous la vidéo -->
-  <button class="btn-sig" id="brand-btn">Experience our dope branding</button>
-  <div id="brand-sub">
-    <!-- 02/10 : l'expérimentation du branding vit sur figher.club — par le pont. -->
-    <a class="btn-sig" href="https://www.figher.club/discover" data-club="/discover"><span class="brand-get">Get</span> <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></a>
-    <a class="btn-sig" href="https://www.figher.club/origins" data-club="/origins">Origins</a>
-    <a class="btn-sig" href="https://www.totehm.com"><span class="brand-my">My</span> <img src="assets/img/totehm_logo.png" alt="TOTEHM" class="brand-sub-logo"></a>
-  </div>
-</section>
+<main id="stage">
+  <!-- LE CENTRE -->
+  <section class="view is-on" id="v-home" aria-label="Higher boutique">
+    <div class="fill"></div>
+    <div class="kicker">The totehmization</div>
+    <div id="cross" role="group" aria-label="Four doors">
+      <button class="door" id="door-h" type="button" data-go="streetwear" style="--c:var(--blue)"><i></i><b>STREETWEAR</b><span>Create my Totehm Streetwear Cloth</span></button>
+      <button class="door" id="door-g" type="button" data-go="news" style="--c:var(--blue)"><i></i><b>NEWS</b><span>Email for dope news</span></button>
+      <button class="door" id="door-c" type="button" aria-label="Think same but opposite"><img src="assets/img/no_social_media.jpg" alt="No Social Media"></button>
+      <button class="door" id="door-d" type="button" data-go="luxury" style="--c:var(--rep)"><i></i><b>LUXURY</b><span>Totehmize my Cloth &amp; stuff</span></button>
+      <button class="door" id="door-b" type="button" data-go="decode" style="--c:var(--navy)"><i></i><b>DECODE</b><span>Decode a Totehm Cloth</span></button>
+    </div>
+    <div class="say" style="font-size:11px;color:var(--lo)">Push the joystick toward a door. The center acts.</div>
+    <div id="brand-row">
+      <!-- 02/10 : l'expérience de marque vit sur figher.club — par le pont. -->
+      <a class="lnk" href="https://www.figher.club/discover" data-club="/discover"><span class="get">Get</span><svg viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-slogan"></use></svg></a>
+      <a class="lnk" href="https://www.figher.club/origins" data-club="/origins">Origins</a>
+      <a class="lnk" href="https://www.totehm.com" data-com="/">My TOTEHM</a>
+    </div>
+    <div class="fill"></div>
+  </section>
 
-<!-- FULL-SCREEN : résultat Decode -->
-<div class="fs-perf" id="decode-fs">
-  <button class="btn-back fs-back" id="decode-back">Back in Time</button>
-  <div class="fs-msg" id="decode-msg"></div>
+  <!-- ↑ STREETWEAR -->
+  <section class="view" id="v-streetwear" aria-label="Streetwear">
+    <div class="fill"></div>
+    <div class="kicker">Totehm Cloth · Streetwear</div>
+    <h1>Create my Totehm Streetwear Cloth</h1>
+    <p class="say">One Box of your TOTEHM becomes an original artwork, on a limited cloth.</p>
+    <!-- 05/10 : la collaboration en cours, au format des marques — un NOM, jamais un logo. -->
+    <span class="sub">Collaboration in progress</span>
+    <div class="names" id="collab"><b>Totehm x Champion</b> · Limited collection</div>
+    <div class="chips"><span class="chip">Box</span><span class="chip">Cloth</span><span class="chip">Materialize</span></div>
+    <div class="note" id="sw-stock"></div>
+    <a class="btn" id="sw-go" href="/streetwear">Create my cloth</a>
+    <div class="fill"></div>
+  </section>
+
+  <!-- → LUXURY -->
+  <section class="view" id="v-luxury" aria-label="Luxury">
+    <div class="fill"></div>
+    <div class="kicker">Totehm · Luxury · On quote</div>
+    <h1>Totehmize my Cloth &amp; stuff</h1>
+    <p class="say">Your own piece — a bag, a jacket, shoes — totehmized from one Box of your TOTEHM.</p>
+    <!-- 02/10 : les NOMS, jamais les logos (droit des marques). -->
+    <span class="sub">Brands we totehmize</span>
+    <div class="names">Hermès · Louis Vuitton · Gucci</div>
+    <div class="legal">Independent. Not affiliated with these brands.</div>
+    <div class="chips"><span class="chip">Describe</span><span class="chip">Quote</span><span class="chip">Pay</span></div>
+    <div class="note" id="lx-from"></div>
+    <a class="btn" id="lx-go" href="/luxury">Ask for my quote</a>
+    <div class="fill"></div>
+  </section>
+
+  <!-- ↓ DECODE -->
+  <section class="view" id="v-decode" aria-label="Decode a Totehm Cloth">
+    <div class="fill"></div>
+    <div class="kicker">Reveal the box</div>
+    <h1>Decode a Totehm Cloth</h1>
+    <p class="say">Every Totehm Cloth carries its name. Type it: the box behind it answers — as much as you may read.</p>
+    <input class="field" id="dc-in" maxlength="44" placeholder="0.name" autocomplete="off" enterkeyhint="search">
+    <button class="btn" id="dc-go" type="button">Decode</button>
+    <div class="note" id="dc-note"></div>
+    <div id="dc-card" class="hide" aria-live="polite"></div>
+    <div class="fill"></div>
+  </section>
+
+  <!-- ← NEWS -->
+  <section class="view" id="v-news" aria-label="Email for dope news">
+    <div class="fill"></div>
+    <div class="kicker">No social media</div>
+    <h1>Email for dope news</h1>
+    <p class="say">Drops, collaborations, the next door. Nothing else.</p>
+    <input class="field" id="nw-in" type="email" maxlength="120" placeholder="your@email" autocomplete="email" enterkeyhint="send">
+    <button class="btn" id="nw-go" type="button">Keep me posted</button>
+    <div class="note" id="nw-note"></div>
+    <div class="fill"></div>
+  </section>
+</main>
+
+<div id="film" role="dialog" aria-label="Think same but opposite">
+  <button class="lnk" id="film-x" type="button">Close</button>
+  <div class="kicker">Think same but opposite</div>
+  <video id="film-vid" playsinline controls preload="none"></video>
 </div>
 
-<button id="conn-bar" type="button" aria-label="member space"><span class="dot"></span>Guest</button>
-<div id="member-window">
-  <div class="mw-card">
-    <button class="mw-close" id="mw-close">Close</button>
-    <div id="mw-out-state">
-      <input class="mw-input" id="mw-email" type="email" placeholder="your email" autocomplete="email">
-      <input class="mw-input" id="mw-code" inputmode="numeric" maxlength="6" placeholder="6-digit code" style="display:none">
-      <div class="mw-note dim" id="mw-note"></div>
-    </div>
-    <div id="mw-in-state" style="display:none">
-      <div class="mw-who" id="mw-who"></div>
-      <div class="mw-mail" id="mw-mail"></div>
-      <button class="mw-signout" id="mw-signout">Sign out</button>
-    </div>
-  </div>
+<div id="nav" role="group" aria-label="The boutique joystick">
+  <button class="nav-cur" id="nav-h" type="button" aria-label="Up"><svg viewBox="0 0 16 16"><path d="M3 10 L8 5 L13 10"/></svg></button>
+  <button class="nav-cur" id="nav-g" type="button" aria-label="Left"><svg viewBox="0 0 16 16"><path d="M10 3 L5 8 L10 13"/></svg></button>
+  <button id="nav-box" type="button" aria-label="Act"><span id="nav-stack" aria-hidden="true"><i class="o"></i><i class="h"></i><i class="r"></i></span></button><span id="nav-say"></span>
+  <button class="nav-cur" id="nav-d" type="button" aria-label="Right"><svg viewBox="0 0 16 16"><path d="M6 3 L11 8 L6 13"/></svg></button>
+  <button class="nav-cur" id="nav-b" type="button" aria-label="Down"><svg viewBox="0 0 16 16"><path d="M3 6 L8 11 L13 6"/></svg></button>
 </div>
+
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-const sb=createClient('https://abujjbkbbiumxrokozph.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
-const $=id=>document.getElementById(id);
-const SBURL='https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/higher_boutique/';
+const SB_URL = 'https://abujjbkbbiumxrokozph.supabase.co';
+const sb = createClient(SB_URL, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us');
+const $ = id => document.getElementById(id);
 
-window.addEventListener('pageshow',e=>{
-  if(!e.persisted)return;
-  $('decode-fs').classList.remove('show');
-});
+const SSO_FN = 'https://abujjbkbbiumxrokozph.supabase.co/functions/v1/';
+/* ⚠️ LA CLÉ ANONYME EST OBLIGATOIRE : les Edge Functions sont déployées
+   avec `verify_jwt` ; sans en-tête, 401 avant notre code. Elle est
+   publique — déjà en clair au `createClient`. */
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+/* LE NOM DE CE DOMAINE — 'space' | 'club' | 'boutique'. Jamais une URL. */
+const SSO_CLIENT = 'boutique';
+const SSO_AUTH = 'https://www.totehm.com/auth';
+const SSO_KNOWN = 'totehm_sso_known';   // localStorage : ce navigateur s'est déjà connecté ici
+const SSO_TRIED = 'totehm_sso_tried';   // sessionStorage : l'aller-retour silencieux a eu lieu
+const SSO_PKCE  = 'totehm_sso_pkce';    // sessionStorage : { verifier, state } le temps du voyage
 
-function morph(btn,input,note){btn.onclick=()=>{btn.classList.add('hide');input.classList.remove('hide');if(note){note.classList.remove('hide');}setTimeout(()=>input.focus(),100);};}
+const ssoB64 = bytes => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const ssoStore = (s, k, v) => { try{ v === null ? s.removeItem(k) : s.setItem(k, v); }catch(_){} };
+const ssoRead = (s, k) => { try{ return s.getItem(k); }catch(_){ return null; } };
 
-/* DECODE a Totehm Cloth */
-morph($('decode-btn'),$('decode-input'),$('decode-note'));
-$('decode-input').addEventListener('keydown',async(e)=>{
-  if(e.key!=='Enter')return;
-  const v=$('decode-input').value.trim();const note=$('decode-note');
-  if(v.length<2){note.className='note dim';note.textContent='name of the cloth';return;}
-  note.className='note dim';note.textContent='decoding…';
-  const {data,error}=await sb.from('totehm_clothes').select('name,message').ilike('name',v).limit(1);
-  if(error){note.className='note dim';note.textContent='try again';return;}
-  if(data&&data.length){
-    note.textContent='';
-    $('decode-msg').textContent='"'+data[0].message+'"';
-    $('decode-fs').classList.add('show');
-  }else{
-    note.className='note no';note.textContent='no Totehm Cloth by that name';
+/* ── ARRIVÉE ────────────────────────────────────────────────────────
+   ⚠️ LE CODE SORT DE L'URL AVANT TOUT AUTRE GESTE — et SEULEMENT lui :
+   le reste du fragment (#create, #reveal…) reste à la page. Un code
+   laissé dans la barre d'adresse se retrouve dans un signet, un partage,
+   un historique. Avec un `state`, c'est une connexion centrale : il doit
+   être celui que CE navigateur a envoyé (sinon quelqu'un essaie de nous
+   connecter à SON compte) et le `verifier` part avec le code. */
+async function ssoArrivee(sb){
+  const h = new URLSearchParams(location.hash.replace(/^#/, ''));
+  const q = new URLSearchParams(location.search);
+  const code = h.get('sso') || q.get('sso'), st = h.get('state'), err = h.get('sso_error');
+  if(!code && !err) return false;
+  ['sso','state','sso_error'].forEach(k => { h.delete(k); q.delete(k); });
+  const reste = [...h.keys()].length ? '#' + h.toString().replace(/=(&|$)/g, '$1') : '';
+  history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + reste);
+  const pk = (() => { try{ return JSON.parse(ssoRead(sessionStorage, SSO_PKCE) || 'null'); }catch(_){ return null; } })();
+  ssoStore(sessionStorage, SSO_PKCE, null);
+  if(err || !/^[a-f0-9]{64}$/.test(code || '')) return false;
+  let verifier;
+  if(st){
+    if(!pk || pk.state !== st){ console.error('[sso] state'); return false; }
+    verifier = pk.verifier;
   }
-});
-$('decode-back').onclick=()=>{$('decode-fs').classList.remove('show');};
-
-/* EXPERIENCE OUR BRANDING */
-$('brand-btn').onclick=()=>{$('brand-btn').classList.add('hide');$('brand-sub').style.display='flex';};
-
-/* EMAIL for dope news */
-morph($('email-btn'),$('email-input'),$('email-note'));
-$('email-input').addEventListener('keydown',async(e)=>{
-  if(e.key!=='Enter')return;
-  const v=$('email-input').value.trim();const note=$('email-note');
-  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){note.className='note no';note.textContent='invalid email';return;}
-  note.className='note dim';note.textContent='…';
-  const {error}=await sb.from('subscribers').insert({email:v});
-  if(error){note.className= error.code==='23505'?'note ok':'note no';note.textContent= error.code==='23505'?'already in':'try again';return;}
-  note.className='note ok';note.textContent="you're in";$('email-input').disabled=true;
-});
-
-/* CONTEXTE DE MARQUE */
-(function(){
-  const ctx=$('context'),hero=$('hero'),v=$('ctx-vid');
-  let vloaded=false;
-  const loadVid=()=>{ if(!vloaded){ v.src=SBURL+'same_but_opposite.mp4'; vloaded=true; } };
-  $('ctx-down').addEventListener('click',()=>{ loadVid(); v.muted=false; ctx.scrollIntoView({behavior:'smooth'}); v.play().catch(()=>{}); });
-  $('ctx-up').addEventListener('click',()=>{ hero.scrollIntoView({behavior:'smooth'}); });
-  const io=new IntersectionObserver(entries=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting){ loadVid(); v.play().catch(()=>{}); }
-      else{ v.pause(); }
-    });
-  },{threshold:0.55});
-  io.observe(ctx);
-})();
-
-(async()=>{
   try{
-    const {data:col,error}=await sb.from('collections').select('id,slug,description').eq('active',true).order('created_at',{ascending:false}).limit(1).maybeSingle();
-    if(error||!col)return;
-    const {data:rows}=await sb.from('totehm_cloth_support').select('claimed').eq('collection_id',col.id).eq('active',true);
-    const sold=(rows||[]).reduce((s,r)=>s+(r.claimed||0),0);
-    document.getElementById('sw-col-name').textContent=col.slug||'';
-    document.getElementById('sw-col-desc').textContent=col.description||'';
-    document.getElementById('sw-col-sold').textContent=`${sold} pièces vendues`;
-    document.getElementById('sw-collection').style.display='flex';
-  }catch(_){}
-})();
+    const r = await fetch(SSO_FN + 'sso-redeem', {
+      method:'POST',
+      headers:{'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer '+SB_ANON},
+      body: JSON.stringify(verifier ? { code, verifier } : { code })
+    });
+    if(!r.ok){ console.error('[sso] redeem', r.status); return false; }
+    const { token_hash, email } = await r.json();
+    if(!token_hash) return false;
+    /* `verifyOtp` ouvre une session NORMALE dans ce `localStorage`. */
+    const { error } = await sb.auth.verifyOtp({ type:'email', token_hash });
+    if(error){ console.error('[sso] verify', error.message); return false; }
+    return true;
+  }catch(e){ console.error('[sso]', e && e.message || e); return false; }
+}
 
-/* ══ VERS FIGHER.CLUB — LE PONT · 02/10/2026 ═════════════════════════
-   Get Higher et Origins vivent sur figher.club. Un membre connecté ici y
-   arrive connecté : `sso-mint` émet un code (60 s, usage unique, cible
-   `club` — un NOM, jamais une URL). Copié de tools/sso_snippet.js. Si le
-   pont tousse, on part quand même : dégradé, pas cassé. */
-const SSO_FN='https://abujjbkbbiumxrokozph.supabase.co/functions/v1/';
-const SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+/* ── SE CONNECTER — PAR TOTEHM.COM ──────────────────────────────────
+   `silent` : `prompt=none` — totehm.com ne montre rien, il rend un code
+   ou `login_required`. `retour` : un CHEMIN de ce domaine (jamais une
+   URL) ; totehm.com refuse tout le reste. */
+async function ssoLogin(silent, retour){
+  const v = ssoB64(crypto.getRandomValues(new Uint8Array(32)));
+  const c = ssoB64(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v))));
+  const st = ssoB64(crypto.getRandomValues(new Uint8Array(16)));
+  ssoStore(sessionStorage, SSO_PKCE, JSON.stringify({ verifier: v, state: st }));
+  const ret = retour || (location.pathname + location.search);
+  location.href = SSO_AUTH + '?client=' + SSO_CLIENT + '&challenge=' + c + '&state=' + st +
+                  '&return=' + encodeURIComponent(ret) + (silent ? '&prompt=none' : '');
+}
+
+/* ── DÉPART ─────────────────────────────────────────────────────────
+   `cible` est un NOM DE PRODUIT — 'com' | 'space' | 'boutique' | 'club'.
+   ⚠️ SI LE PONT ÉCHOUE, ON PART QUAND MÊME : dégradé, pas cassé. */
 async function ssoVersDomaine(sb, cible, url){
   try{
     const { data:{ session } } = await sb.auth.getSession();
@@ -367,55 +402,285 @@ async function ssoVersDomaine(sb, cible, url){
   }catch(e){ console.error('[sso]', e && e.message || e); }
   location.href = url;
 }
-document.querySelectorAll('[data-club]').forEach(a => a.addEventListener('click', e => {
-  e.preventDefault(); ssoVersDomaine(sb, 'club', 'https://www.figher.club' + a.dataset.club);
-}));
 
-/* Diagnostic — des booléens, jamais une valeur de membre. */
-const BUILD='2026-10-02';
-window.__totehm_boutique=()=>({ build:BUILD, page:'home', luxury_link:!!document.querySelector('a[href="/luxury"]'),
-  club_links:document.querySelectorAll('[data-club]').length, logos:document.querySelectorAll('.brand-logo').length });
-
-/* ══ MEMBER SPACE ══ */
-(()=>{
-  let me=null,mbEmail='',mbSeq=0;
-  async function mbPaint(){
-    const seq=++mbSeq,uid=me?.id;let name=me?'My TOTEHM':'Guest';
-    if(uid){const {data,error}=await sb.from('profiles').select('pseudo').eq('id',uid).maybeSingle();if(error)console.error('[member profile]',error.message);if(seq!==mbSeq || me?.id!==uid)return;name=data?.pseudo || name;}
-    if(seq!==mbSeq)return;
-    $('conn-bar').textContent=name;
-    $('mw-out-state').style.display=me?'none':'';
-    $('mw-in-state').style.display=me?'':'none';
-    $('mw-who').textContent=me?name:'';$('mw-mail').textContent=me?(me.email||''):'';
+/* ── LE DÉMARRAGE — BLOQUANT, ET JAMAIS PLUS DE 2,5 S ───────────────
+   `await` au niveau du module : quand la page lit sa session, la session
+   est déjà là. Puis, sans session et si ce navigateur s'est déjà
+   connecté ici : UN aller-retour silencieux par onglet vers totehm.com.
+   La page ne se dessine pas pendant qu'elle part (promesse qui ne se
+   résout pas) : pas de clignotement de porte fermée. Le repère se pose à
+   la connexion et s'efface à la déconnexion — sortir d'ici ne vous y
+   reconnecte pas en silence. */
+await Promise.race([ ssoArrivee(sb), new Promise(r => setTimeout(() => r(false), 2500)) ]);
+sb.auth.onAuthStateChange(ev => {
+  if(ev === 'SIGNED_IN') ssoStore(localStorage, SSO_KNOWN, '1');
+  if(ev === 'SIGNED_OUT') ssoStore(localStorage, SSO_KNOWN, null);
+});
+{
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session) ssoStore(localStorage, SSO_KNOWN, '1');
+  else if(ssoRead(localStorage, SSO_KNOWN) && !ssoRead(sessionStorage, SSO_TRIED)){
+    ssoStore(sessionStorage, SSO_TRIED, '1');
+    await ssoLogin(true);
+    await new Promise(() => {});
   }
-  $('conn-bar').onclick=()=>$('member-window').classList.add('show');
-  $('mw-close').onclick=()=>$('member-window').classList.remove('show');
-  $('member-window').addEventListener('click',e=>{if(e.target===$('member-window'))$('member-window').classList.remove('show');});
-  $('mw-email').addEventListener('keydown',async e=>{
-    if(e.key!=='Enter')return;
-    const v=$('mw-email').value.trim(),note=$('mw-note');
-    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){note.className='mw-note no';note.textContent='invalid email';return;}
-    note.className='mw-note dim';note.textContent='sending…';
-    const {error}=await sb.auth.signInWithOtp({email:v,options:{shouldCreateUser:true}});
-    if(error){note.className='mw-note no';note.textContent='try again in a minute';return;}
-    mbEmail=v;note.className='mw-note ok';note.textContent='code sent — check your email';
-    $('mw-code').style.display='';setTimeout(()=>$('mw-code').focus(),80);
+}
+
+
+/* ══ L'ÉTAT — une vue à la fois ═════════════════════════════════════ */
+const BUILD = '2026-10-05-joystick';
+const VIEWS = ['home', 'streetwear', 'luxury', 'decode', 'news'];
+/* La croix : HIGHER au centre, quatre portes ; la direction opposée ramène
+   au centre, les deux autres mènent aux portes voisines. */
+const CROIX = {
+  home:       { h:'streetwear', d:'luxury', b:'decode', g:'news' },
+  streetwear: { b:'home', d:'luxury', g:'news' },
+  luxury:     { g:'home', h:'streetwear', b:'decode' },
+  decode:     { h:'home', d:'luxury', g:'news' },
+  news:       { d:'home', h:'streetwear', b:'decode' },
+};
+const COLOR = { home:'var(--navy)', streetwear:'var(--blue)', luxury:'var(--rep)', decode:'var(--navy)', news:'var(--blue)' };
+const DOT = { home:'h', streetwear:'o', luxury:'r', decode:'h', news:'o' };
+const NAME = { home:'Higher', streetwear:'Streetwear', luxury:'Luxury', decode:'Decode', news:'News' };
+const ACT = { home:'Play', streetwear:'Go', luxury:'Quote', decode:'Decode', news:'Send' };
+const ENTER = { h:[0,-28], b:[0,28], g:[-28,0], d:[28,0] };
+let VIEW = 'home', MOVES = 0, ME = null, DECODED = null, NEWS_OK = false;
+window.__totehm_boutique = () => ({ build: BUILD, page: 'home', view: VIEW, moves: MOVES, joystick: !!$('nav-box'),
+  luxury_link: !!document.querySelector('a[href="/luxury"]'), streetwear_link: !!document.querySelector('a[href="/streetwear"]'),
+  club_links: document.querySelectorAll('[data-club]').length, logos: document.querySelectorAll('.brand-logo,img[src*="champion"]').length,
+  collab: /Champion/.test($('collab').textContent), signed_in: !!ME,
+  decode: DECODED ? { found: !!DECODED.found, level: DECODED.level || null, palette: (DECODED.palette || []).length } : null, news: NEWS_OK });
+
+const voisin = d => CROIX[VIEW][d] || null;
+
+function joyPaint(preview){
+  const t = preview && voisin(preview);
+  $('nav-box').style.setProperty('--joy-vue', COLOR[t || VIEW]);
+  const cur = DOT[t || VIEW];
+  for(const k of ['o','h','r']) $('nav-stack').querySelector('.'+k).classList.toggle('is-current', k === cur && !DECODED?.palette?.length);
+  for(const d of ['h','g','d','b']){
+    $('nav-'+d).classList.toggle('is-dead', !voisin(d));
+    $('nav-'+d).classList.toggle('is-preview', preview === d && !!voisin(d));
+  }
+  const say = $('nav-say');
+  say.textContent = t ? NAME[t] : ACT[VIEW];
+  say.classList.toggle('is-preview', !!t);
+  $('nav-box').setAttribute('aria-label', ACT[VIEW]);
+  /* Au centre, la porte visée s'allume AVANT d'y aller. */
+  document.querySelectorAll('#cross .door[data-go]').forEach(b => b.classList.toggle('is-preview', VIEW === 'home' && !!t && b.dataset.go === t));
+}
+
+function go(v, dir){
+  if(v === VIEW || !CROIX[v]) return;
+  const el = $('v-'+v), e = ENTER[dir] || [0, 18];
+  el.style.setProperty('--vx', e[0]+'px'); el.style.setProperty('--vy', e[1]+'px');
+  void el.offsetWidth;
+  document.querySelectorAll('.view').forEach(s => s.classList.toggle('is-on', s === el));
+  VIEW = v; MOVES++;
+  try{ history.replaceState(null, '', location.pathname + location.search + (v === 'home' ? '' : '#'+v)); }catch(_){}
+  menu(false); joyPaint();
+  if(v === 'luxury') loadFrom();
+  if(v === 'streetwear') loadStock();
+}
+function step(d){ const v = voisin(d); if(!v) return; try{ navigator.userActivation?.isActive && navigator.vibrate?.(8); }catch(_){} go(v, d); }
+
+/* Le centre AGIT. */
+function act(){
+  if(VIEW === 'home') return film(true);
+  if(VIEW === 'streetwear') return void (location.href = '/streetwear');
+  if(VIEW === 'luxury') return void (location.href = '/luxury');
+  if(VIEW === 'decode') return decode();
+  if(VIEW === 'news') return news();
+}
+
+/* ── Le manche : celui de COM — rayon 15 px, seuil 9 px, sans clic fantôme ── */
+(function manette(){
+  const bx = $('nav-box'), st = $('nav-stack'), R = 15, threshold = 9;
+  let id = null, x0 = 0, y0 = 0, dx = 0, dy = 0, moved = 0;
+  const pose = (a, b) => { st.style.setProperty('--mx', a.toFixed(1)+'px'); st.style.setProperty('--my', b.toFixed(1)+'px'); };
+  const dirOf = () => Math.max(Math.abs(dx), Math.abs(dy)) >= threshold ? (Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 'g' : 'd') : (dy < 0 ? 'h' : 'b')) : null;
+  bx.addEventListener('pointerdown', e => {
+    if(e.button > 0 || id !== null) return;
+    id = e.pointerId; x0 = e.clientX; y0 = e.clientY; dx = dy = moved = 0; bx.classList.add('is-held');
+    try{ bx.setPointerCapture(id); }catch(_){} e.preventDefault();
   });
-  $('mw-code').addEventListener('input',async()=>{
-    const t=$('mw-code').value.trim(),note=$('mw-note');
-    if(t.length!==6)return;
-    note.className='mw-note dim';note.textContent='verifying…';
-    const {error}=await sb.auth.verifyOtp({email:mbEmail,token:t,type:'email'});
-    if(error){note.className='mw-note no';note.textContent='wrong code';return;}
-    note.textContent='';$('mw-code').value='';$('mw-code').style.display='none';$('mw-email').value='';
-    $('member-window').classList.remove('show');
+  bx.addEventListener('pointermove', e => {
+    if(id !== e.pointerId) return;
+    const a = e.clientX - x0, b = e.clientY - y0, d = Math.hypot(a, b), k = d > R ? R / d : 1;
+    dx = a * k; dy = b * k; moved = Math.max(moved, d); pose(dx, dy); joyPaint(dirOf());
   });
-  $('mw-signout').onclick=async()=>{await sb.auth.signOut();$('member-window').classList.remove('show');};
-  sb.auth.onAuthStateChange((_event,session)=>{
-    me=session?.user||null;setTimeout(mbPaint,0);
-  });
-  sb.auth.getSession().then(({data:{session}})=>{me=session?.user||null;mbPaint();});
+  function finish(e, cancel){
+    if(id === null || e.pointerId !== id) return;
+    id = null; bx.classList.remove('is-held'); pose(0, 0); const d = dirOf(); joyPaint();
+    if(cancel) return;
+    if(moved < 4) act(); else if(d) step(d);
+  }
+  bx.addEventListener('pointerup', e => finish(e, false));
+  bx.addEventListener('pointercancel', e => finish(e, true));
+  bx.addEventListener('click', e => { if(e.detail === 0) act(); });
+  for(const d of ['h','g','d','b']) $('nav-'+d).onclick = () => step(d);
+  bx.addEventListener('wheel', e => {
+    e.preventDefault(); if(Math.max(Math.abs(e.deltaX), Math.abs(e.deltaY)) < 4) return;
+    step(Math.abs(e.deltaX) > Math.abs(e.deltaY) ? (e.deltaX > 0 ? 'd' : 'g') : (e.deltaY > 0 ? 'b' : 'h'));
+  }, { passive: false });
 })();
+
+/* Le clavier, et le glissé horizontal sur la scène (le défilement vertical reste natif). */
+addEventListener('keydown', e => {
+  if(e.key === 'Escape'){ if($('film').classList.contains('is-open')) film(false); else if($('menu').classList.contains('is-open')) menu(false); else go('home'); return; }
+  if(e.target.closest?.('input,textarea,select,[contenteditable]')) return;
+  const d = { ArrowUp:'h', ArrowDown:'b', ArrowLeft:'g', ArrowRight:'d' }[e.key];
+  if(d){ e.preventDefault(); step(d); }
+});
+(function swipe(){
+  let x0 = 0, y0 = 0, on = false;
+  $('stage').addEventListener('touchstart', e => { if(e.target.closest('input,button,a')){ on = false; return; } on = true; x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+  $('stage').addEventListener('touchend', e => {
+    if(!on) return; on = false;
+    const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+    if(Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.6) step(dx < 0 ? 'd' : 'g');
+  }, { passive: true });
+})();
+document.querySelectorAll('#cross .door[data-go]').forEach(b => b.onclick = () => go(b.dataset.go, { streetwear:'h', luxury:'d', decode:'b', news:'g' }[b.dataset.go]));
+$('door-c').onclick = () => film(true);
+$('head-home').onclick = () => go('home');
+
+/* ── La vidéo de marque : chargée au premier geste, coupée en sortant ── */
+const FILM = 'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/public/higher_boutique/same_but_opposite.mp4';
+function film(open){
+  const v = $('film-vid');
+  $('film').classList.toggle('is-open', open);
+  if(open){ if(!v.src) v.src = FILM; v.play().catch(() => {}); } else v.pause();
+}
+$('film-x').onclick = () => film(false);
+
+/* ══ STREETWEAR — le stock vient des vêtements actifs, jamais d'un chiffre écrit ══ */
+let stockSeq = 0;
+async function loadStock(){
+  const seq = ++stockSeq;
+  const { data, error } = await sb.from('totehm_cloth_support').select('max_pieces,claimed').eq('active', true);
+  if(seq !== stockSeq) return;
+  if(error){ console.error('[totehm_cloth_support]', error.message); $('sw-stock').textContent = ''; return; }
+  const left = (data || []).reduce((t, r) => t + Math.max((r.max_pieces || 0) - (r.claimed || 0), 0), 0);
+  $('sw-stock').textContent = !data?.length ? 'collection coming soon' : left > 0 ? left + ' pieces left' : 'sold out';
+}
+
+/* ══ LUXURY — le « à partir de » vient du serveur ══ */
+let fromSeq = 0;
+const money = (c, cur) => (c/100).toLocaleString('en-GB', { style:'currency', currency:(cur||'eur').toUpperCase(), minimumFractionDigits: c % 100 ? 2 : 0 });
+async function loadFrom(){
+  const seq = ++fromSeq;
+  const { data, error } = await sb.rpc('luxury_access');
+  if(seq !== fromSeq) return;
+  if(error){ console.error('[luxury_access]', error.message); return; }
+  $('lx-from').textContent = !data?.open ? 'closed for now' : data.price_cents != null ? 'on quote · from ' + money(data.price_cents, data.currency) : 'on quote';
+}
+
+/* ══ DECODE — `reveal_cloth` : la MÊME règle que Reveal the Box ═══════
+   invité → la vue et la date ; membre FIGHER → la Box et ses intentions ;
+   propriétaire ou abonné → + la matière. Une pièce d'avant les Box garde
+   son message public. La page n'ajoute rien, ne retire rien. */
+const INTS = { fight:'Fight', flow:'Flow', enrich:'Enrich', love:'Love', express:'Express', focus:'Focus', celebrate:'Celebrate' };
+const SKIN = { habits:'var(--navy)', objectives:'var(--blue)', repulsions:'var(--rep)', wisdom:'var(--rep)', visions:'var(--blue)' };
+const VUE = { habits:'my habits', objectives:'my objectives', repulsions:'my repulsions', wisdom:'my wisdom', visions:'my vision' };
+const MI = { objectives:'why', repulsions:'instead', wisdom:'learned', visions:'sees', habits:'how' };
+const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
+const okColor = c => /^#[0-9a-f]{3,8}$/i.test(String(c || ''));
+let decSeq = 0;
+async function decode(){
+  const v = $('dc-in').value.trim(), note = $('dc-note');
+  if(v.length < 2){ note.className = 'note'; note.textContent = 'type the name of the cloth'; $('dc-in').focus(); return; }
+  const seq = ++decSeq;
+  note.className = 'note'; note.textContent = 'decoding…'; $('dc-go').disabled = true;
+  const { data, error } = await sb.rpc('reveal_cloth', { p_name: v });
+  if(seq !== decSeq) return;
+  $('dc-go').disabled = false;
+  if(error){ console.error('[reveal_cloth]', error.message); note.textContent = 'unavailable — try again'; return; }
+  DECODED = data || { found:false };
+  paintPalette();
+  const card = $('dc-card');
+  if(!data?.found){ card.classList.add('hide'); note.className = 'note no'; note.textContent = 'no Totehm Cloth by that name'; joyPaint(); return; }
+  note.textContent = '';
+  card.style.setProperty('--skin', SKIN[data.view] || 'var(--navy)');
+  const when = data.created_at ? ' · ' + esc(data.created_at) : '';
+  if(data.legacy){
+    card.innerHTML = '<small>the message' + when + '</small><div class="nm">' + esc(data.name) + '</div><div class="txt">“' + esc(data.message) + '”</div>';
+  } else {
+    const pal = (data.palette || []).filter(okColor);
+    const ints = (data.is || []).map(i => INTS[i]).filter(Boolean);
+    const matter = data.matter && typeof data.matter === 'object' ? Object.entries(data.matter).filter(([, a]) => Array.isArray(a) && a.length) : [];
+    card.innerHTML = '<small>' + esc(VUE[data.view] || 'a box') + when + (data.owner ? ' · by ' + esc(data.owner) : '') + '</small>' +
+      '<div class="nm">' + esc(data.name) + '</div>' +
+      (data.level === 'locked'
+        ? '<div class="lock">The box behind this cloth opens to FIGHER members.</div><a class="lnk" href="https://www.figher.club/discover" data-club="/discover"><span class="get">Get</span><svg viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-slogan"></use></svg></a>'
+        : '<div class="txt">' + esc(data.text) + '</div>' +
+          (pal.length ? '<div class="pal">' + pal.map(c => '<i style="background:' + c + '"></i>').join('') + '</div>' : '') +
+          (ints.length ? '<div class="grp"><span class="w">intentions</span>' + ints.map(i => '<span class="mi">' + esc(i) + '</span>').join('') + '</div>' : '') +
+          matter.map(([k, a]) => '<div class="grp"><span class="w">' + esc(MI[k] || k) + '</span>' + a.map(x => '<span class="mi">' + esc(x?.text ?? x) + '</span>').join('') + '</div>').join(''));
+  }
+  card.querySelectorAll('[data-club]').forEach(bridgeClub);
+  card.classList.remove('hide');
+  joyPaint();
+}
+/* Le manche prend la palette du Cloth décodé. */
+function paintPalette(){
+  const pal = (DECODED?.palette || []).filter(okColor).slice(0, 3);
+  const dots = ['o','h','r'], base = { o:'var(--blue)', h:'var(--navy)', r:'var(--rep)' };
+  dots.forEach((k, i) => $('nav-stack').querySelector('.'+k).style.setProperty('--c', pal.length ? pal[i % pal.length] : base[k]));
+}
+$('dc-go').onclick = decode;
+$('dc-in').addEventListener('keydown', e => { if(e.key === 'Enter') decode(); });
+
+/* ══ NEWS — un email, une ligne (`subscribers`), rien d'autre ══ */
+async function news(){
+  const v = $('nw-in').value.trim(), note = $('nw-note');
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){ note.className = 'note no'; note.textContent = v ? 'invalid email' : 'your email first'; $('nw-in').focus(); return; }
+  note.className = 'note'; note.textContent = '…'; $('nw-go').disabled = true;
+  const { error } = await sb.from('subscribers').insert({ email: v.toLowerCase() });
+  $('nw-go').disabled = false;
+  if(error && error.code !== '23505'){ console.error('[subscribers]', error.message); note.className = 'note no'; note.textContent = 'try again'; return; }
+  NEWS_OK = true; note.className = 'note ok'; note.textContent = error ? 'already in' : "you're in"; $('nw-in').disabled = true;
+}
+$('nw-go').onclick = news;
+$('nw-in').addEventListener('keydown', e => { if(e.key === 'Enter') news(); });
+
+/* ══ LE MEMBRE — le vrai pseudo, lu dans le profil (03/10) ══ */
+let meSeq = 0;
+function menu(open){ $('menu').classList.toggle('is-open', open ?? !$('menu').classList.contains('is-open')); }
+$('member').onclick = () => menu();
+$('m-signin').onclick = () => ssoLogin(false, '/');
+$('m-signout').onclick = async () => { await sb.auth.signOut(); menu(false); };
+async function mePaint(){
+  const seq = ++meSeq, uid = ME?.id;
+  let name = ME ? 'My TOTEHM' : 'Guest';
+  if(uid){
+    const { data, error } = await sb.from('profiles').select('pseudo').eq('id', uid).maybeSingle();
+    if(error) console.error('[profiles]', error.message);
+    if(seq !== meSeq || ME?.id !== uid) return;
+    name = data?.pseudo || name;
+  }
+  $('member').textContent = name;
+  $('m-in').classList.toggle('hide', !ME); $('m-who').textContent = ME ? name : ''; $('m-mail').textContent = ME?.email || '';
+  $('m-signin').classList.toggle('hide', !!ME); $('m-signout').classList.toggle('hide', !ME); $('m-totehm').classList.toggle('hide', !ME);
+}
+sb.auth.onAuthStateChange((_e, session) => { ME = session?.user || null; setTimeout(mePaint, 0); });
+{ const { data:{ session } } = await sb.auth.getSession(); ME = session?.user || null; mePaint(); }
+
+/* ── Vers figher.club et totehm.com : PAR LE PONT (dégradé, pas cassé) ── */
+function bridgeClub(a){ a.addEventListener('click', e => { e.preventDefault(); ssoVersDomaine(sb, 'club', 'https://www.figher.club' + a.dataset.club); }); }
+document.querySelectorAll('[data-club]').forEach(bridgeClub);
+document.querySelectorAll('[data-com]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); ssoVersDomaine(sb, 'com', 'https://www.totehm.com' + a.dataset.com); }));
+$('m-totehm').addEventListener('click', e => { e.preventDefault(); ssoVersDomaine(sb, 'com', 'https://www.totehm.com/totehm'); });
+
+/* ── L'arrivée : /#luxury, /#decode… ouvrent la bonne porte (les pages
+   Streetwear et Luxury y renvoient). Retour arrière du navigateur : la
+   page revient vierge (bfcache). ── */
+{
+  const h = location.hash.replace(/^#/, '').split('&')[0];
+  if(VIEWS.includes(h) && h !== 'home') go(h, { streetwear:'h', luxury:'d', decode:'b', news:'g' }[h]);
+  else joyPaint();
+  addEventListener('pageshow', e => { if(e.persisted) film(false); });
+}
 </script>
 </body>
 </html>
