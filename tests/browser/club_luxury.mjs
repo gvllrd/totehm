@@ -51,7 +51,7 @@ for(const f of ['discover', 'discover_lisbon', 'get_higher', 'stoner', 'origins'
   const QUOTED = { id:'q2', piece:'jacket', brand:'Gucci', note:'black leather', status:'quoted', quote_cents:80000, currency:'eur',
     quote_note:'Ready in 3 weeks', view:'habits', text:'Run the hill', palette:['#E24B4A'], created_at:'2026-10-05T10:00:00Z' };
   let quotes = [QUOTED];
-  const access = () => ({ mode:'quote', signed_in:true, thp:true, open:true, price_cents:50000, currency:'eur', orders:0, admin:false, test_price_cents:null, quotes });
+  const access = () => ({ mode:'quote', signed_in:true, thp:true, open:true, price_cents:50000, currency:'eur', orders:0, admin:false, test_mode:false, quotes });
   const { pg, ctx, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique',
     rpc: { luxury_access: access, my_trips: { trips:[], reps:[], wisdom:[], visions:[] },
            my_box_matter: { text:'Run the hill', view:'habits', palette:['#E24B4A'], matter:{}, extra:{} } },
@@ -102,7 +102,7 @@ for(const f of ['discover', 'discover_lisbon', 'get_higher', 'stoner', 'origins'
 // ── 5. Luxe : sans THP → Get Higher, pas de formulaire ; un administrateur répond par un prix
 {
   const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique',
-    rpc: { luxury_access: { mode:'quote', signed_in:true, thp:false, open:true, price_cents:50000, currency:'eur', orders:0, admin:false, test_price_cents:null, quotes:[] } } });
+    rpc: { luxury_access: { mode:'quote', signed_in:true, thp:false, open:true, price_cents:50000, currency:'eur', orders:0, admin:false, test_mode:false, quotes:[] } } });
   await pg.goto('https://www.higher.boutique/luxury');
   await pg.waitForFunction(() => window.__totehm_luxury && window.__totehm_luxury().signed_in);
   ok(await pg.isVisible('#s-nothp') && !(await pg.isVisible('#form')) && (await pg.textContent('#nav-say')) === 'Get Higher', 'no THP: Get Higher instead of the form, joystick says so');
@@ -113,14 +113,14 @@ for(const f of ['discover', 'discover_lisbon', 'get_higher', 'stoner', 'origins'
 {
   const REQ = { id:'q9', pseudo:'nia', email:'nia@example.test', piece:'bag', brand:'Hermès', note:'Birkin 30', status:'requested', quote_cents:null, currency:'eur', view:'wisdom', text:'Less is more', palette:['#7F77DD'], test:false, created_at:'2026-10-05T09:00:00Z' };
   const { pg, ctx, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique',
-    rpc: { luxury_access: { mode:'quote', signed_in:true, thp:true, open:true, price_cents:50000, currency:'eur', orders:0, admin:true, test_price_cents:100, quotes:[] },
+    rpc: { luxury_access: { mode:'quote', signed_in:true, thp:true, open:true, price_cents:50000, currency:'eur', orders:0, admin:true, test_mode:true, quotes:[] },
            luxury_quotes_admin: { quotes:[REQ] } } });
   const sent = [];
   await ctx.route('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/luxury-quote', r => { sent.push(JSON.parse(r.request().postData() || '{}'));
     r.fulfill({ status:200, contentType:'application/json', body: JSON.stringify({ ok:true, status:'quoted' }) }); });
   await pg.goto('https://www.higher.boutique/luxury');
   await pg.waitForFunction(() => window.__totehm_luxury && window.__totehm_luxury().to_answer === 1);
-  ok(/test mode · you pay €1/.test(await pg.textContent('#test-badge')), 'a tester sees the test price, said plainly');
+  ok(/test mode · card 4242/.test(await pg.textContent('#test-badge')), 'a tester sees Stripe test mode, said plainly');
   await pg.click('[data-price="q9"]');
   ok(/a price, in €/.test(await pg.textContent('[data-a="q9"]')) && sent.length === 0, 'admin: no price, nothing sent');
   await pg.fill('[data-cents="q9"]', '1200'); await pg.fill('[data-word="q9"]', 'Four weeks');

@@ -24,8 +24,8 @@
 // chaîne n8n. On change la matière première sans casser l'usine.
 //
 // 05/10 : le paiement est traité par `stripe-webhook` (cas `cloth`) — la
-// pièce passe `paid`, la génération n8n est déclenchée. Un compte du banc
-// d'essai paie son prix d'essai (`_boutique_test_price`), la pièce porte `test`.
+// pièce passe `paid`, la génération n8n est déclenchée. Un testeur actif
+// (`_boutique_test_mode`) paie en MODE TEST Stripe, la pièce porte `test`.
 // ═══════════════════════════════════════════════════════════════════════
 import Stripe from 'npm:stripe@14';
 import { createClient } from 'npm:@supabase/supabase-js@2';
@@ -101,16 +101,22 @@ Deno.serve(async (req) => {
   const { data: free } = await sb.rpc('name_available', { candidate: name });
   if (!free) return Response.json({ error: 'name taken' }, { status: 409, headers: cors });
 
-  // ── Le banc d'essai (05/10) : un prix d'essai pour CE compte, ou rien.
-  //    Activer un testeur est un prix live : un « oui » de Wah.
-  const { data: testCents, error: tErr } = await sb.rpc('_boutique_test_price', { p_user: user.id });
-  if (tErr) console.error('[create-checkout] test price', tErr.message);
-  const test = Number.isInteger(testCents) && (testCents as number) >= 50;
+  // ── Le mode test (05/10 soir) : un testeur actif paie avec la clé TEST de
+  //    Stripe (carte 4242…), au vrai prix — aucun argent réel. Sans la clé
+  //    test, on refuse : jamais un testeur débité en live par erreur.
+  const { data: test, error: tErr } = await sb.rpc('_boutique_test_mode', { p_user: user.id });
+  if (tErr) {
+    console.error('[create-checkout] test mode', tErr.message);
+    return Response.json({ error: 'try again' }, { status: 503, headers: cors });
+  }
+  const testKey = Deno.env.get('STRIPE_TEST_SECRET_KEY');
+  if (test === true && !testKey) return Response.json({ error: 'test_unavailable' }, { status: 503, headers: cors });
+  const pay = test === true ? new Stripe(testKey!) : stripe;
 
   // ── Brouillon
   const { data: cloth, error } = await sb.from('totehm_clothes')
     .insert({
-      garment_id, name, size, style_id, price: g.price, status: 'draft', test,
+      garment_id, name, size, style_id, price: g.price, status: 'draft', test: test === true,
       user_id: user.id, email: user.email,
       message: snap.text,
       box_kind: box.kind, box_ref: String(box.ref),
@@ -124,13 +130,13 @@ Deno.serve(async (req) => {
     return Response.json({ error: taken ? 'name taken' : 'db' }, { status: taken ? 409 : 500, headers: cors });
   }
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await pay.checkout.sessions.create({
     mode: 'payment',
     customer_email: user.email ?? undefined,
     line_items: [{
       price_data: {
         currency: 'eur',
-        unit_amount: test ? testCents as number : Math.round(Number(g.price) * 100),
+        unit_amount: Math.round(Number(g.price) * 100),
         product_data: { name: `${test ? 'TEST · ' : ''}Totehm Cloth — ${name}`, description: `${g.title} · ${size} · Limited Original Piece` },
       },
       quantity: 1,
@@ -138,7 +144,7 @@ Deno.serve(async (req) => {
     shipping_address_collection: { allowed_countries: ['PT','FR','ES','DE','IT','BE','NL','GB','US','CA'] },
     // SÉCURITÉ : product:'cloth' isole ce flux dans le webhook (routage
     // sur metadata.product — ne jamais retirer ce filtre).
-    metadata: { cloth_id: cloth.id, product: 'cloth', test: test ? '1' : '0' },
+    metadata: { cloth_id: cloth.id, product: 'cloth', test: test === true ? '1' : '0' },
     // Chemins ABSOLUS sous cleanUrls (CLAUDE.md, 16/09).
     success_url: SITE_BOUT + '/streetwear?paid=1&cloth=' + cloth.id,
     cancel_url: SITE_BOUT + '/streetwear?cancel=1',

@@ -5,8 +5,8 @@
 //       accepte et paie CE prix.
 // how : le devis est relu ICI : il doit être au membre de la session, en
 //       statut `quoted`, avec un prix. Le THP se vérifie ICI (`_art_owns_thp`).
-//       Un compte du banc d'essai (`boutique_testers`, actif) paie son prix
-//       d'essai à la place — `metadata.test = '1'`, la commande porte `test`.
+//       Un testeur actif (`boutique_testers`) paie en MODE TEST Stripe (clé
+//       `STRIPE_TEST_SECRET_KEY`) — `metadata.test = '1'`, la commande porte `test`.
 //       `metadata.product = 'luxury'` + `quote_id` : le webhook écrit
 //       `luxury_orders` (`luxury_settle`) puis ferme le devis
 //       (`luxury_quote_paid`). Retour sur la boutique, chemin ABSOLU fixe.
@@ -71,16 +71,23 @@ Deno.serve(async (req) => {
   }
   if (!q || q.status !== "quoted" || !q.quote_cents) return json({ error: "no_quote" }, 409);
 
-  // Le banc d'essai : un prix d'essai pour CE compte, ou rien.
-  const { data: testCents, error: tErr } = await admin.rpc("_boutique_test_price", { p_user: user.id });
-  if (tErr) console.error("[luxury-checkout] test price:", tErr.message);
-  const test = Number.isInteger(testCents) && testCents >= 50;
-  const amount = test ? testCents as number : q.quote_cents;
+  // Le mode test (05/10 soir) : un testeur actif paie avec la clé TEST de
+  // Stripe, au prix du devis — aucun argent réel. Sans la clé test : refus.
+  const { data: tm, error: tErr } = await admin.rpc("_boutique_test_mode", { p_user: user.id });
+  if (tErr) {
+    console.error("[luxury-checkout] test mode:", tErr.message);
+    return json({ error: "unavailable" }, 503);
+  }
+  const test = tm === true;
+  const testKey = Deno.env.get("STRIPE_TEST_SECRET_KEY");
+  if (test && !testKey) return json({ error: "test_unavailable" }, 503);
+  const pay = test ? new Stripe(testKey!) : stripe;
+  const amount = q.quote_cents;
   const email = user.email.trim().toLowerCase();
   const note = String(q.note ?? "").slice(0, 280);
 
   try {
-    const session = await stripe.checkout.sessions.create({
+    const session = await pay.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
       customer_email: email,

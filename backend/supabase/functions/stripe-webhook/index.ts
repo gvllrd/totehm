@@ -392,7 +392,10 @@ async function handleCloth(session: Stripe.Checkout.Session) {
 
   // La génération : n8n B. Une panne ici ne rend pas 500 — la pièce EST
   // payée ; on relance la génération à la main (backend/README.md).
-  try {
+  // ⚠️ Une pièce de TEST ne lance pas la génération : 7 images payantes et,
+  // si Wah en choisit une sur Telegram, une vraie commande Printful.
+  if (m.test === "1") console.log("cloth test: génération non lancée", id);
+  else try {
     const r = await fetch(N8N_GENERATE, {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -413,7 +416,7 @@ async function handleCloth(session: Stripe.Checkout.Session) {
       body: JSON.stringify({
         from: FROM,
         to: [to],
-        subject: "Your Totehm Cloth is born",
+        subject: (m.test === "1" ? "[TEST] " : "") + "Your Totehm Cloth is born",
         html: `<!DOCTYPE html><html><body style="margin:0;padding:40px 16px;background:#000;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
 <table role="presentation" width="100%" style="max-width:460px;" cellpadding="0" cellspacing="0">
@@ -467,7 +470,7 @@ async function handleLuxury(session: Stripe.Checkout.Session) {
       body: JSON.stringify({
         from: FROM,
         to: [email],
-        subject: "Your luxury totehmization is paid",
+        subject: (m.test === "1" ? "[TEST] " : "") + "Your luxury totehmization is paid",
         html: `<!DOCTYPE html><html><body style="margin:0;padding:40px 16px;background:#000;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
 <table role="presentation" width="100%" style="max-width:460px;" cellpadding="0" cellspacing="0">
@@ -576,14 +579,36 @@ Deno.serve(async (req) => {
 
   const raw = await req.text();
 
+  // 05/10 (soir) : deux secrets possibles — l'endpoint LIVE et l'endpoint
+  // TEST (mode test Stripe, pour les essais de la boutique). Une signature
+  // valide pour l'un ou l'autre ; rien d'autre ne passe.
   let event: Stripe.Event;
   try {
     event = await stripe.webhooks.constructEventAsync(
       raw, signature, Deno.env.get("STRIPE_WEBHOOK_SECRET")!, undefined, cryptoProvider,
     );
   } catch (err) {
-    console.error("signature invalide:", err.message);
-    return new Response("invalid signature", { status: 400 });
+    const testSecret = Deno.env.get("STRIPE_TEST_WEBHOOK_SECRET");
+    try {
+      if (!testSecret) throw err;
+      event = await stripe.webhooks.constructEventAsync(raw, signature, testSecret, undefined, cryptoProvider);
+    } catch (_) {
+      console.error("signature invalide:", err.message);
+      return new Response("invalid signature", { status: 400 });
+    }
+  }
+
+  // ⚠️ UN ÉVÉNEMENT DE TEST N'OUVRE RIEN DE RÉEL. En mode test, seuls les
+  // essais de la boutique (`cloth`, `luxury`) s'écrivent — marqués `test`.
+  // Jamais un THP, un abonnement, une œuvre ou une ligne du grand livre.
+  if (!event.livemode) {
+    const obj = event.data.object as { metadata?: Record<string, string> };
+    const product = obj.metadata?.product;
+    if (event.type !== "checkout.session.completed" || !["cloth", "luxury"].includes(product ?? "")) {
+      console.log("test ignoré:", event.type, product, event.id);
+      return new Response("test ignored", { status: 200 });
+    }
+    obj.metadata = { ...obj.metadata, test: "1" };
   }
 
   // Idempotence — PK conflict = déjà traité

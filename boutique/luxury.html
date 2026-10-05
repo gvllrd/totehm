@@ -10,8 +10,8 @@
   Box relus côté serveur), le prix est posé par un administrateur
   (`boutique_admins`) — c'est le « oui » de Wah —, le paiement passe par
   `luxury-checkout` (le prix du DEVIS, relu en base), la commande s'écrit
-  par le webhook seul. La page AFFICHE. Un compte du banc d'essai
-  (`boutique_testers`, actif) paie son prix d'essai : la page le dit.
+  par le webhook seul. La page AFFICHE. Un testeur actif
+  (`boutique_testers`) paie en MODE TEST Stripe : la page le dit.
 
   ⚠️ LES MARQUES : des NOMS en texte, jamais leurs logos, et la mention
   d'indépendance. Un logo laisse croire à un partenariat.
@@ -469,7 +469,7 @@ let A = null, ADM = [], PIECE = 'bag', BRAND = 'Hermès', PICK = null, SEQ = 0, 
 window.__totehm_luxury = () => ({ build: BUILD, signed_in: !!A?.signed_in, thp: !!A?.thp, open: !!A?.open,
   price_loaded: A?.price_cents != null, mode: A?.mode || null, quotes: (A?.quotes || []).length,
   quoted: (A?.quotes || []).filter(q => q.status === 'quoted').length, admin: !!A?.admin, to_answer: ADM.length,
-  test: A?.test_price_cents != null, piece: PIECE, brand: !!BRAND, box: !!PICK, joystick: !!$('nav-box') });
+  test: !!A?.test_mode, piece: PIECE, brand: !!BRAND, box: !!PICK, joystick: !!$('nav-box') });
 
 const money = (c, cur) => (c/100).toLocaleString('en-GB', { style:'currency', currency:(cur||'eur').toUpperCase(), minimumFractionDigits: c % 100 ? 2 : 0 });
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
@@ -498,8 +498,9 @@ async function load(){
   if(error){ console.error('[luxury_access]', error.message); $('s-wait').textContent = 'unavailable — try again'; show('s-wait'); return; }
   A = data || {};
   $('price').textContent = A.price_cents != null ? 'on quote · from ' + money(A.price_cents, A.currency) : 'on quote';
-  $('test-badge').classList.toggle('hide', A.test_price_cents == null);
-  $('test-badge').textContent = A.test_price_cents != null ? 'test mode · you pay ' + money(A.test_price_cents, A.currency) : '';
+  /* 05/10 (soir) : un testeur paie en MODE TEST Stripe — aucun argent réel. */
+  $('test-badge').classList.toggle('hide', !A.test_mode);
+  $('test-badge').textContent = A.test_mode ? 'test mode · card 4242 4242 4242 4242 · no real money' : '';
   $('s-paid').classList.toggle('hide', new URLSearchParams(location.search).get('paid') !== '1');
   if(!A.signed_in) show('s-out');
   else if(!A.thp) show('s-nothp');
@@ -524,7 +525,7 @@ function paintQuotes(){
       (q.status === 'quoted' ? '<div class="amount">' + money(q.quote_cents, q.currency) + '</div>' +
         (q.quote_note ? '<div class="qn">' + esc(q.quote_note) + '</div>' : '') +
         '<label class="tick"><input type="checkbox" data-terms="' + q.id + '"> I read the <a href="/terms_of_sale" target="_blank" rel="noopener">Simple terms of sale</a></label>' +
-        '<button class="btn" type="button" data-pay="' + q.id + '">Accept · ' + money(A.test_price_cents ?? q.quote_cents, q.currency) + '</button>' : '') +
+        '<button class="btn" type="button" data-pay="' + q.id + '">Accept · ' + money(q.quote_cents, q.currency) + '</button>' : '') +
       (q.status === 'declined' && q.quote_note ? '<div class="qn">' + esc(q.quote_note) + '</div>' : '') +
       (['requested','quoted'].includes(q.status) ? '<button class="lnk" type="button" data-cancel="' + q.id + '">Cancel</button>' : '') +
       '<div class="note" data-n="' + q.id + '"></div></div>';
