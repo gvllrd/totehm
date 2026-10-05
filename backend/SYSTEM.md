@@ -16,6 +16,21 @@
 ---
 
 
+## 0 · LA BOUTIQUE OPÉRATIONNELLE — 05/10/2026 : la manette, le luxe sur devis, Decode, le banc d'essai
+
+| quoi | valeur mesurée |
+|---|---|
+| migration `20261005_boutique_operationnelle.sql` | APPLIQUÉE (`boutique_operationnelle`) · `boutique_admins` 1 (Wah) · `boutique_testers` 1, **actif 0** (prix d'essai 1 € éteint : « oui » de Wah) · grants : `_boutique_admin`, `_boutique_test_price`, `luxury_quote_paid` service_role seul ; `luxury_quotes_admin` authenticated |
+| auto-test `tests/sql/luxury_quote_selftest.sql` | `FAIL={}` (annulé) |
+| Edge Functions | `luxury-quote` v1 (sans session → 401 `no_session`) · `luxury-checkout` v2 (`{quote:true}` → 200 50000 eur ; sans session → 401) · `create-checkout` v37 (sans session → 401 `signin`) · `stripe-webhook` v40 (sans signature → 400) |
+| Stripe | un seul endpoint (Supabase `stripe-webhook`) ; avant ce lot `cloth` y était ignoré → **aucun Cloth payé n'aurait été traité** ; le workflow n8n A n'était abonné à rien |
+| Decode (avant) | lecture directe de `totehm_clothes` : RLS = propriétaire seul → rien ne se trouvait ; désormais `reveal_cloth` |
+| nom d'un Cloth (avant) | même RLS : un nom pris par un autre passait pour libre ; désormais `name_available` |
+| n8n | `$env` dans les brouillons (02/10) mais **versions publiées = `process.env`** ; exécution manuelle 73 (F) : 400 ; `⚙️ CONFIG` écrit les clés en clair dans les exécutions → rotation demandée (CLAUDE_CODE.md) · `totehm_cloth_support` = **0 ligne** |
+| webhook n8n B | `GET /webhook/streetwear-generate` → 404 « not registered for GET » (= chemin enregistré, POST attendu) |
+| tests navigateur | `boutique_home.mjs` 23/23 · `club_luxury.mjs` 35/35 · `streetwear.mjs` 25/25 · `space.mjs` 40/40 · `com_paper.mjs` 39/39 · **`console.mjs` 1 échec (« offer per year ») et `market.mjs` 1 échec (« 3 collections ») déjà présents sur `main` avant ce lot (COM/Club non touchés)** |
+| prod (pg_net, fusion `ae6960d`) | `/` 200 `BUILD 2026-10-05-joystick` (manche, Champion, `reveal_cloth`) · `/luxury` 200 `2026-10-05-quote` · `/streetwear` 200 `2026-10-05-joystick` (`name_available`) · contenu identique au dépôt (56 581 · 66 762 · 83 500 caractères) |
+
 ## 0 · COM — RECHERCHE, LECTEUR NATIF ET COPIES — 04/10/2026
 
 | quoi | valeur mesurée |

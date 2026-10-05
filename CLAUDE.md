@@ -140,9 +140,7 @@ CTA partout : **CONNECT WITH MY TOTEHM** ; plus d’OTP local sur les satellites
 
 Un webhook, routé sur `metadata.product` par un `switch` avec `default`
 explicite — **ne jamais retirer ce filtre** : `higher` · `cloth` ·
-`subscription` · `creator_sub` · `artwork` · `resale` · `luxury` (`cloth` : payé →
-génération n8n, ici depuis le 05/10 ; `luxury` : sur devis). Banc d'essai = un prix
-d'essai PAR COMPTE (`boutique_testers`), l'allumer = un « oui ». Toute nouvelle
+`subscription` · `creator_sub` · `artwork` · `resale` · `luxury` (05/10 : `cloth` traité ici, `luxury` sur devis ; prix d'essai par compte = `boutique_testers`, l'allumer = un « oui »). Toute nouvelle
 fonction de checkout pose sa propre `metadata.product`. La metadata voyage
 EN DOUBLE (`subscription_data.metadata`). Propriété et argent ne s'écrivent
 QUE par le webhook (`art_settle`, idempotent sur la session). Endpoint
@@ -205,8 +203,7 @@ COM : My spaces = historique propriétaire paginé ; recherche noms/abonnements/
   `#743169` = les boîtes du Totehm et elles seules (+ le papier et le badge Higher). Coral `#fbd5ca` = le NOM du Totehm (Quantico), la méthode
   Stoner et le « Get » de [Get Higher]. Filtres, accès, abonnements, soldes,
   portes : gris. Exceptions SPACE demandées : joystick COM blue/navy/rep, fond navy et REC/STOP
-  rouge dans la caméra ; boîte de contexte d'un space arrondie ; textes caméra en boîtes noires ;
-  le même joystick blue/navy/rep sur la boutique (05/10).
+  rouge dans la caméra ; boîte de contexte d'un space arrondie ; textes caméra en boîtes noires ; joystick aussi sur la boutique (05/10).
 - **Aucune bordure autour d'une boîte**, sur les quatre domaines : une boîte
   se détache par sa VALEUR. Exceptions : la tuile perforée (texture), les
   arêtes d'une boîte en verre 3D, le pointillé d'une place vide. Ombre autorisée sur les Habit Boxes du feed SPACE.
