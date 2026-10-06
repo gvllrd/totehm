@@ -31,7 +31,7 @@ compose-artwork utilise une bibliothèque Deno et le vrai logo `/assets/img/tote
 
 `test/streetwear` isole le code. Elle utilise encore le projet Supabase de production : une branche Git ne crée ni base ni compte Stripe séparés. Les tests navigateur du dépôt simulent intégralement Supabase et Stripe. Les tests SQL annulent tous leurs fixtures avec l'exception finale attendue `FAIL={}`.
 
-Pour les essais sur higher.boutique, le compte Vallerand est déjà dans boutique_testers. Le serveur décide du mode TEST ; aucun champ envoyé par le navigateur ne peut allumer ce mode. Le badge TEST MODE apparaît à la commande et My clothes indique TEST. Sélectionner Box, vêtement, nom unique, style et taille se teste déjà.
+Pour les essais sur higher.boutique, le compte Vallerand est déjà dans boutique_testers. Le serveur décide du mode TEST ; aucun champ envoyé par le navigateur ne peut allumer ce mode. Le front préparé dans la branche ajoute TEST MODE à la commande et TEST dans My clothes ; il n’est pas encore publié sur higher.boutique. Sélectionner Box, vêtement, nom unique, style et taille se teste déjà.
 
 Le paiement test attend STRIPE_TEST_SECRET_KEY et STRIPE_TEST_WEBHOOK_SECRET, absentes au dernier contrôle. La tâche de configuration locale est dans CLAUDE_CODE.md. Une fois les clés posées : carte 4242 4242 4242 4242, expiration future, CVC 123 ; reçu TEST payé, stock/capacités identiques, aucune génération/commande Printful. Le mode TEST s'arrête volontairement après paiement : tester les vrais fournisseurs demande une pièce pilote séparément autorisée.
 
@@ -39,6 +39,6 @@ T peut être exécuté manuellement sans risque de commande. Le dernier diagnost
 
 ## Publication restante
 
-Le contrôle automatique a rejeté les déploiements partagés stripe-webhook et bot-reply et la configuration d'email de E : impacts sur paiements/abonnements, fonctions transverses du bot et communications aux clients. Ils sont préparés pour relecture dans la PR de test/streetwear, sans déploiement indirect. Aucune modification de checkout ou fermeture des ventes n'a été appliquée.
+Le contrôle automatique a rejeté les déploiements partagés stripe-webhook et bot-reply et la configuration d'email de E : impacts sur paiements/abonnements, fonctions transverses du bot et communications aux clients. Ils sont préparés pour relecture dans la PR de test/streetwear, sans déploiement indirect. La mise à jour de main a aussi été rejetée pour préserver l’isolation des tests ; les changements frontend restent sur la branche. Aucune modification de checkout ou fermeture des ventes n'a été appliquée.
 
 Après autorisation explicite : déployer les seuls handlers modifiés, publier B/C/D/E ensemble avec R, configurer le webhook Telegram unique vers C (messages normaux transmis au bot partagé), ajouter package_shipped à la même URL F, puis vérifier un événement signé et un doublon sur un pilote autorisé. Ne pas publier les vieux exports A.

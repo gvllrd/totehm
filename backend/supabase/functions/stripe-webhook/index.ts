@@ -377,29 +377,26 @@ async function handleCloth(session: Stripe.Checkout.Session) {
   const s = session as unknown as Record<string, any>;
   const shipping = s.collected_information?.shipping_details ?? s.shipping_details ?? s.customer_details ?? null;
   const email = (session.customer_details?.email ?? session.customer_email ?? "").trim().toLowerCase();
-  const { data, error } = await admin.from("totehm_clothes").update({
-    status: "paid",
-    paid_at: new Date().toISOString(),
-    stripe_payment_intent: typeof session.payment_intent === "string" ? session.payment_intent : null,
-    stripe_session_id: session.id,
-    shipping,
-    test: m.test === "1",
-    ...(email ? { email } : {}),
-  }).eq("id", id).eq("status", "draft").select("id, name, size, email").maybeSingle();
-  if (error) throw new Error("cloth paid: " + error.message);
-  if (!data) { console.log("cloth déjà payée ou inconnue:", id); return; }
+  if(session.currency !== 'eur')throw new Error('cloth currency mismatch');
+  const {data,error}=await admin.rpc('streetwear_settle_cloth',{
+    p_cloth:id,p_session:session.id,p_intent:typeof session.payment_intent==='string'?session.payment_intent:null,
+    p_shipping:shipping,p_email:email,p_test:m.test==='1',p_amount:session.amount_total,
+  });
+  if(error)throw new Error('cloth paid: '+error.message);
+  if(!data){throw new Error('cloth settlement missing');}
+  if(!data.settled){console.log('cloth already settled:',id);return;}
   console.log("cloth payée:", id, m.test === "1" ? "(test)" : "");
 
-  // La génération : n8n B. Une panne ici ne rend pas 500 — la pièce EST
-  // payée ; on relance la génération à la main (backend/README.md).
+  // The paid transition atomically queues generation. R retries delivery if n8n is offline.
   // ⚠️ Une pièce de TEST ne lance pas la génération : 7 images payantes et,
   // si Wah en choisit une sur Telegram, une vraie commande Printful.
   if (m.test === "1") console.log("cloth test: génération non lancée", id);
   else try {
     const r = await fetch(N8N_GENERATE, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: { "content-type": "application/json", apikey:Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")! },
       body: JSON.stringify({ cloth_id: id }),
+      signal:AbortSignal.timeout(10000),
     });
     if (!r.ok) console.error("cloth: génération n8n KO", r.status);
   } catch (e) {
@@ -412,7 +409,7 @@ async function handleCloth(session: Stripe.Checkout.Session) {
   try {
     const r = await fetch("https://api.resend.com/emails", {
       method: "POST",
-      headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
+      headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json", "Idempotency-Key":"cloth-paid-"+id },
       body: JSON.stringify({
         from: FROM,
         to: [to],
@@ -423,7 +420,7 @@ async function handleCloth(session: Stripe.Checkout.Session) {
 <tr><td align="center" style="padding-bottom:26px;"><img src="${LOGO}" width="70" alt="TOTEHM" style="display:block;border:0;"></td></tr>
 <tr><td align="center" style="font-family:'Courier New',monospace;font-size:15px;letter-spacing:2px;color:#fff;padding-bottom:18px;">${String(data.name).replace(/[<>&"]/g, "")}</td></tr>
 <tr><td align="center" style="font-family:Arial,sans-serif;font-size:14px;line-height:1.8;color:#b8b8c8;">
-Your box becomes an original artwork. You will not see it before it lands. That is the point.</td></tr>
+${m.test === "1" ? "Test payment received. No garment will be made." : "Your box becomes an original artwork. You will not see it before it lands. That is the point."}</td></tr>
 </table></td></tr></table></body></html>`,
       }),
     });
@@ -718,3 +715,4 @@ Deno.serve(async (req) => {
 
   return new Response("ok", { status: 200 });
 });
+

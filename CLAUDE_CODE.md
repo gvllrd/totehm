@@ -2,7 +2,7 @@
 
 ## 06/10/2026 — clés Stripe TEST uniquement
 
-Les anciennes tâches de réparation de F et de publication globale sont remplacées par cette note. La session cloud a corrigé F, le catalogue/photos, les protections SQL et les fonctions de composition/URL. État exact : backend/SYSTEM.md §0. Les changements partagés Stripe, bot-reply et n8n E sont préparés dans la PR test/streetwear ; leur déploiement a été rejeté par contrôle automatique et attend l'accord explicite de Wah. Ne pas les déployer indirectement avant cet accord.
+Les anciennes tâches de réparation de F et de publication globale sont remplacées par cette note. La session cloud a corrigé F, le catalogue/photos, les protections SQL et les fonctions de composition/URL. État exact : backend/SYSTEM.md §0. Le front TEST est préparé sur la branche, non publié. Les changements partagés Stripe, bot-reply et n8n E sont préparés dans la PR test/streetwear ; leur déploiement a été rejeté par contrôle automatique et attend l'accord explicite de Wah. Ne pas les déployer indirectement avant cet accord.
 
 Le compte Vallerand est déjà testeur. Les clés STRIPE_TEST_SECRET_KEY et STRIPE_TEST_WEBHOOK_SECRET sont ABSENTES (vérification serveur le 06/10). Aucun secret dans Git, le chat ou le rapport.
 

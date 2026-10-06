@@ -27,10 +27,11 @@
 | fonctions | compose-artwork v34 (bibliothèque Deno ; la bibliothèque npm Node faisait planter le worker), streetwear-assets v1 (liens privés renouvelés) ; Stripe v41, checkout v38, bot-reply v24 inchangés |
 | n8n préparé | B/C/D corrigés en brouillon seulement ; E rejeté par contrôle automatique ; R code préparé, non créé/non actif ; les anciennes versions de B/C/D/E restent publiées |
 | T | `cDhaaRiJCHtf9lG5`, manuel, projet personnel Guillaume Vallerand ; diagnostics réduits à booléens/statut HTTP, aucun secret enregistré ; setup catalogue temporaire archivé |
+| frontend | BUILD 2026-10-06-streetwear-test préparé sur la branche, non publié ; mise à jour main rejetée automatiquement |
 | tests navigateur | Streetwear 32 assertions passées, Supabase/Stripe simulés : parcours, TEST, clé manquante, reçu payé TEST, faux retour payé ; aucune génération/commande/paiement réel |
 | TEST disponible | compte Vallerand actif, my_streetwear_test_mode côté serveur, sélection/nom/style/tailles testables ; STRIPE_TEST_SECRET_KEY et STRIPE_TEST_WEBHOOK_SECRET absentes, paiement test non disponible |
 | Telegram | TotehmBot, aucun webhook enregistré ; clé partagée du bot indisponible ou invalide côté Supabase au health ; raccordement normal du bot préparé, non appliqué |
-| limites | trois déploiements partagés rejetés automatiquement : stripe-webhook (paiements/abonnements), bot-reply (bot transversal), E (emails clients) ; attente d'accord explicite. Aucune fermeture de checkout appliquée |
+| limites | trois déploiements partagés rejetés automatiquement : stripe-webhook (paiements/abonnements), bot-reply (bot transversal), E (emails clients) ; attente d'accord explicite. fusion main également rejetée (isolation des tests) ; aucune fermeture de checkout appliquée |
 | sécurité linter | tables internes sans politique et RPC de lecture de son propre mode TEST en SECURITY DEFINER intentionnelles ; grants vérifiés. Index FK et initplan RLS préexistants non modifiés |
 
 Les mesures ci-dessus remplacent l'état courant des anciens relevés datés ci-dessous. Procédures : n8n/streetwear_pipeline.md. Code en attente : branche test/streetwear, PR brouillon ; ne pas considérer cette chaîne après paiement comme validée en production.

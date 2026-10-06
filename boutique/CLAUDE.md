@@ -2,7 +2,7 @@
 
 ## STREETWEAR · 06/10/2026 — essais et reçus vérifiés
 
-BUILD 2026-10-06-streetwear-test : TEST MODE dans l'étape de commande, déterminé par my_streetwear_test_mode (session serveur) ; My clothes marque TEST. test_unavailable explique les clés manquantes. Le retour payé relit paid_at avant de promettre une pièce, le reçu TEST ne promet aucune fabrication. Tests navigateur : 32 assertions, aucun service facturable. Le catalogue/photos existant reste identique. La branche test/streetwear isole le code ; la base reste commune. État des fournisseurs/paiements : backend/SYSTEM.md §0 ; procédure : backend/n8n/streetwear_pipeline.md.
+Préparé sur test/streetwear, non publié (mise à jour main rejetée automatiquement). BUILD 2026-10-06-streetwear-test : TEST MODE dans l'étape de commande, déterminé par my_streetwear_test_mode (session serveur) ; My clothes marque TEST. test_unavailable explique les clés manquantes. Le retour payé relit paid_at avant de promettre une pièce, le reçu TEST ne promet aucune fabrication. Tests navigateur : 32 assertions, aucun service facturable. Le catalogue/photos existant reste identique. La branche test/streetwear isole le code ; la base reste commune. État des fournisseurs/paiements : backend/SYSTEM.md §0 ; procédure : backend/n8n/streetwear_pipeline.md.
 
 
 ## BOUTIQUE · 06/10/2026 — nouveau support et photo différée
