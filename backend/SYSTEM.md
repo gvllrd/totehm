@@ -16,6 +16,16 @@
 ---
 
 
+## 0 · TOUTE LA BOUCHE, LE STYLE ET LE NOM DU CLOTH, DECODE PERFORÉ — 06/10/2026 (ter)
+
+| quoi | valeur mesurée |
+|---|---|
+| base | migration `luxury_style_name` (additive) : `luxury_quotes.name` + `style_id`, index `luxury_quotes_name_live`, `name_available` / `reveal_cloth` / `luxury_access` / `luxury_quotes_admin` ; `tests/sql/luxury_name_selftest.sql` → `FAIL={}` (annulé) ; 6 `artistic_styles` actifs (capacité 7/7) |
+| fonction | `luxury-quote` v2 (verify_jwt false, auth applicative) : sans session → 401 `no_session` (pg_net) ; webhook, checkout, prix inchangés |
+| tests navigateur | `club_luxury` 43/43 · `boutique_home` 10/10 · `streetwear` 25/25 · `com_mouth` 35/35 · `com_paper` 39/39 · `com_read_copy` 20/20 · `com_member_menu` 27/27 · `spaces_loupe` 26/26 |
+| mesures UI | bouche 236 × 292 px à 390 × 844 (186 avant), bas à 344 px, papier à 451 ; buvard 44 px (`TAB=.285`) ; Decode survol + saisie : fond `rgb(51,51,102)`, tuile `6 fill`, carré |
+| prod (pg_net, `7f58e7e`, Vercel READY) | totehm.com/totehm 200 `2026-10-06-bouche` · higher.boutique / 200 `2026-10-06-decode` · /luxury, /streetwear 200 `2026-10-06-cloth-name` · md5 = dépôt pour les 4 |
+
 ## 0 · TROIS GESTES, LIRE ET COPIER, MENU DE LA BOUTIQUE — 06/10/2026 (bis)
 
 | quoi | valeur mesurée |
