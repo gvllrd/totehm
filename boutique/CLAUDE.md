@@ -1,5 +1,14 @@
 # boutique/CLAUDE.md — higher.boutique : le Cloth, la méthode Stoner
 
+## BOUTIQUE · 06/10/2026 — police un peu plus petite, boutons sur une ligne
+
+Wah : « réduis un peu la police ; à chaque fois, les boutons sur une ligne ».
+Les tailles de 12 à 18 px des cinq pages ont perdu 1 px ; le bloc
+`<style data-boutique-type>` (fin de `<head>`) interdit le retour à la ligne
+dans un bouton (sous 350 px, `.btn-sig` passe à 11,5 px). Mesuré : aucun
+bouton sur deux lignes ni débordant à 360 et 320 px. BUILD `2026-10-06-type`.
+
+
 ## 05/10/2026 — connexion COM et UI commune
 
 BUILD `2026-10-05-spaces-boxes`. Lire les règles UI de la racine.

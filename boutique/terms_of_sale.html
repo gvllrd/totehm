@@ -17,7 +17,7 @@ html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--bg);color:var(--g-light);font-family:var(--futura);
-  font-weight:300;font-size:15px;-webkit-font-smoothing:antialiased}
+  font-weight:300;font-size:14px;-webkit-font-smoothing:antialiased}
 
 #wrap{max-width:720px;margin:0 auto;padding:40px 22px 90px}
 
@@ -27,7 +27,7 @@ h1{font-family:'Quantico',sans-serif;font-weight:700;font-size:24px;color:#fff;l
 .updated{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;
   text-transform:uppercase;color:var(--g-mid);margin:8px 0 30px}
 
-h2{font-family:'Quantico',sans-serif;font-weight:700;font-size:15px;color:#fff;
+h2{font-family:'Quantico',sans-serif;font-weight:700;font-size:14px;color:#fff;
   margin:34px 0 10px;padding-top:22px;}
 h3{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;
   text-transform:uppercase;color:var(--g-mid);margin:20px 0 7px}
@@ -49,13 +49,13 @@ a:hover{color:#fff}
 .draft b{color:var(--coral)}
 
 #back{display:inline-block;margin-top:36px;font-family:'Quantico',sans-serif;
-  font-size:14px;color:var(--coral);text-decoration:none}
+  font-size:13px;color:var(--coral);text-decoration:none}
 #back:hover{color:#fff}
 
 @media(min-width:700px){
   #wrap{padding-top:60px}
   h1{font-size:30px}
-  p,li{font-size:16px}
+  p,li{font-size:15px}
 }
 
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
@@ -96,6 +96,13 @@ body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,b
 #bigT>svg{visibility:hidden!important}.tv-T{display:none!important}
 @media(hover:hover){.eco-close:hover{background:#34343a;color:#fff}.eco-connect:hover{color:#fff!important}}
 
+</style>
+<style data-boutique-type="2026-10-06">
+/* 06/10 — Wah : « réduis un peu la police sur higher.boutique ; le texte d'un
+   bouton reste sur UNE ligne ». Les tailles de 12 à 18 px ont perdu 1 px ;
+   un bouton ne passe jamais à la ligne (sous 350 px, il rapetisse encore). */
+button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-space:nowrap!important}
+@media(max-width:350px){.btn-sig,a.btn-sig{font-size:11.5px!important}}
 </style>
 </head>
 <body>

@@ -68,7 +68,7 @@ for(const f of ['discover', 'discover_lisbon', 'get_higher', 'stoner', 'origins'
   await pg.goto('https://www.higher.boutique/luxury');
   await pg.waitForFunction(() => window.__totehm_luxury && window.__totehm_luxury().price_loaded);
   const d0 = await pg.evaluate(() => window.__totehm_luxury());
-  ok(d0.build === '2026-10-05-quote' && d0.mode === 'quote' && d0.quoted === 1 && d0.joystick, 'luxury: quote mode, one quote ready, joystick');
+  ok(d0.build === '2026-10-06-type' && d0.mode === 'quote' && d0.quoted === 1 && d0.joystick, 'luxury: quote mode, one quote ready, joystick');
   ok(/on quote · from €500/.test(await pg.textContent('#price')), 'the floor price from the server: on quote · from €500');
   ok(/€800/.test(await pg.textContent('#quotes')) && /Ready in 3 weeks/.test(await pg.textContent('#quotes')), 'my quote: €800 and Wah\'s word');
   ok((await pg.textContent('#nav-say')) === 'Pay', 'joystick center says PAY when a quote is ready');
