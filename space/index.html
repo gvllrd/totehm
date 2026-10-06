@@ -329,7 +329,7 @@ body.v-cam.is-form #cam-body{bottom:calc(170px + var(--bot));max-height:calc(100
 body.v-feed #heading,body.v-list #heading{top:calc(14px + var(--top));--tp:58px}
 body.v-feed #tp-wrap,body.v-list #tp-wrap{display:flex}
 body.v-feed #tp-hint,body.v-list #tp-hint,body.v-feed #member,body.v-list #member{display:none}
-body.v-plan #heading,body.v-cam #heading{display:none}
+body.v-plan #heading,body.v-cam #heading{display:flex}
 #member,#member:hover,#member-txt{font-family:var(--q);font-weight:400;color:#fbd5ca}
 #member i{display:none}
 .tname,.tname:hover{font-family:var(--q);font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
@@ -436,6 +436,8 @@ body.v-cam #joy-say{background:rgba(0,0,0,.82);border-radius:var(--r);padding:1p
 }
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -479,6 +481,12 @@ button.eco-connect{background:#252529!important;border:0!important;border-radius
 #member.eco-connect #member-txt,#conn-bar.eco-connect #conn-txt{white-space:normal;max-width:100%;overflow:visible;text-overflow:clip}
 #member>i,#conn-bar>.dot,#conn-bar>.dc{display:none!important}
 .habit:not(.add):not(.filtre),.r-habit,.bx{position:relative}
+.eco-box-zoom{position:absolute;right:4px;top:4px;z-index:3;display:flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:0;border-radius:8px;background:none;color:rgba(255,255,255,.55);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.eco-box-zoom svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.eco-box-zoom[aria-pressed=true]{color:#fff}
+.habit:has(> .eco-box-zoom) .v-name,.r-habit:has(> .eco-box-zoom) .r-text,.bx:has(> .eco-box-zoom) .nm{padding-right:22px}
+.habit.is-zoom>.h-body,.r-habit.is-zoom,.bx.is-zoom{zoom:1.25}
+@media(hover:hover){.eco-box-zoom:hover{color:#fff}}
 .eco-sheet{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.94);display:flex;justify-content:center;align-items:flex-start;padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(18px + env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;text-align:left}
 .eco-card{width:min(720px,100%);min-width:0;display:flex;flex-direction:column;gap:18px;margin:auto;touch-action:pan-y}
 .eco-close{align-self:flex-end!important;border:0;border-radius:10px;background:#252529;color:#ddd;font:700 11px 'Space Mono',monospace;cursor:pointer}
@@ -502,6 +510,40 @@ body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,b
 .pick-habit[role=button]:focus-visible{outline:1px solid var(--mid);outline-offset:3px}
 #member.eco-connect{max-width:calc(50vw - var(--tp)/2 - 22px)}
 body.v-cam.is-rec #space-about,body.is-pick #space-about{display:none}
+/* MY SPACES · 06/10 — l'historique de MES spaces : ouvrir, supprimer. Plein écran, ancré en haut. */
+#my-spaces{position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.95);overflow-y:auto;overscroll-behavior:contain;padding:calc(16px + var(--top)) 16px calc(28px + var(--bot))}
+.msp-in{width:min(560px,100%);margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.msp-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#msp-title{font:700 12px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:#fff}
+#msp-name{width:fit-content;font-size:15px}
+#msp-list{display:flex;flex-direction:column;gap:6px}
+.msp-row{display:flex;align-items:center;gap:6px;background:var(--s2);border-radius:var(--r);padding-right:6px}
+.msp-open{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;background:none;border:0;border-radius:var(--r);padding:12px 13px;cursor:pointer;color:var(--mid);font:400 10px/1.5 var(--mono)}
+.msp-h{font:400 15px/1.35 var(--q);color:#fff;overflow-wrap:anywhere}
+.msp-s{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
+.msp-s b{font-weight:700;color:var(--mid)}.msp-s b.is-live{color:#fff}
+.msp-row>.msp-del{background:none;color:var(--lo);flex:none}
+[data-del].is-arm{color:#ff9a9a!important}
+/* LE PAPIER RESPIRE D'UNE VUE À L'AUTRE · 06/10 — Wah : « quand on change de vue, le logo
+   TOTEHM rapetisse ou s'agrandit, pour faire plus vrai et organique ». `--tp` est une
+   propriété ENREGISTRÉE : elle se transitionne (un léger rebond) au lieu de sauter.
+   Radar 110 px · fil / liste 58 px · plan / caméra : il se replie à 0 et s'efface. */
+@property --tp{syntax:'<length>';inherits:true;initial-value:110px}
+#heading{transition:left .35s var(--ease),right .35s var(--ease),--tp .55s cubic-bezier(.3,1.35,.55,1),opacity .35s ease,visibility 0s linear 0s}
+body:not(.v-radar) #tp-wrap{display:flex}
+body.v-plan #heading,body.v-cam #heading{--tp:0px;opacity:0;visibility:hidden;pointer-events:none;
+  transition:left .35s var(--ease),right .35s var(--ease),--tp .4s ease-in,opacity .3s ease,visibility 0s linear .4s}
+body.v-plan #tp-hint,body.v-cam #tp-hint,body.v-plan #sf-btn,body.v-cam #sf-btn{display:none}
+@media(prefers-reduced-motion:reduce){#heading,body.v-plan #heading,body.v-cam #heading{transition:none}}
+/* L'INVITATION SE LIT · 06/10 — Wah : « Tap on your TOTEHM… doit être beaucoup plus visible ».
+   Blanc, gras, sur sa boîte noire (la grammaire des textes de la caméra), et elle respire. */
+#tp-hint{margin-top:12px;padding:7px 12px;border-radius:10px;background:rgba(0,0,0,.74);color:#fff;
+  font:700 11px/1.55 var(--mono);letter-spacing:.08em;text-transform:uppercase;white-space:normal;
+  max-width:min(520px,calc(100vw - 40px));animation:tp-souffle 4.2s ease-in-out infinite}
+@keyframes tp-souffle{0%,100%{opacity:1}50%{opacity:.62}}
+@media(prefers-reduced-motion:reduce){#tp-hint{animation:none}}
+body.is-msp #joy{pointer-events:none;opacity:.2}
+@media(hover:hover){.msp-row:hover{background:var(--s3)}.msp-row>.msp-del:hover{color:#fff}}
 </style></head>
 <body class="v-radar">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="higher-badge" viewBox="0 0 600 200"><defs><mask id="hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></symbol></svg>
@@ -558,6 +600,15 @@ body.v-cam.is-rec #space-about,body.is-pick #space-about{display:none}
 <div id="cam-body" tabindex="-1" aria-label="Create my space"></div>
 
 <aside id="detail" aria-label="Spot"></aside>
+<aside id="my-spaces" class="hide" role="dialog" aria-modal="true" aria-labelledby="msp-title" tabindex="-1">
+  <div class="msp-in">
+    <div class="msp-head"><h2 id="msp-title">My spaces</h2><button class="btn" id="msp-x" type="button">CLOSE</button></div>
+    <span class="tname hide" id="msp-name"></span>
+    <div id="msp-list" aria-label="My spaces, newest first"></div>
+    <p class="note" id="msp-note" role="status"></p>
+    <button class="btn hide" id="msp-more" type="button">MORE</button>
+  </div>
+</aside>
 <section id="place-picker" class="hide" role="dialog" aria-label="Choose the future spot place">
   <div id="place-actions"><p class="note">Move the radar under the cross.</p><input class="field" id="place-name" maxlength="120" placeholder="Place name (optional)" aria-label="Place name"><div class="row"><button class="lnk" id="place-cancel" type="button">Cancel</button><button class="btn" id="place-use" type="button">Use this place</button></div></div>
 </section>
@@ -710,7 +761,7 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
 const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query=' + Number(lat).toFixed(5) + '%2C' + Number(lng).toFixed(5);
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD='2026-10-05-in-place';
+const BUILD='2026-10-06-spaces-loupe';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'radar';
@@ -787,6 +838,7 @@ function actsHTML(s, where){
   if(where === 'list' && hasMedia(s)) b.push('<button class="btn" type="button" data-watch="' + id + '">WATCH</button>');
   if(spotState(s) === 'will') b.push('<button class="btn" type="button" data-ics="' + id + '">CALENDAR</button>');
   if(s.visibility === 'shared') b.push('<button class="btn" type="button" data-share="' + id + '">SHARE</button>');
+  if(where === 'detail' && s.mine) b.push('<button class="btn" type="button" data-del="' + id + '">DELETE</button>');
   if(where === 'detail') b.push('<button class="btn" type="button" data-close="1">CLOSE</button>');
   return b.length ? '<div class="acts">' + b.join('') + '</div><p class="note acts-note" hidden></p>' : '';
 }
@@ -822,6 +874,7 @@ function icsFor(s){
 async function actsClick(e){
   const t = e.target instanceof Element ? e.target : null; if(!t) return false;
   const g = t.closest('[data-go]'); if(g){ goSpace(g); return true; }
+  const del = t.closest('[data-del]'); if(del){ if(await spaceDelete(del, del.dataset.del) === 'failed') actsSay(del, 'Not deleted. Try again.'); return true; }
   const c = t.closest('[data-ics]');
   if(c){ const s = spotById(c.dataset.ics); if(!s) return true;
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([icsFor(s)], { type:'text/calendar' })); a.download = 'space.ics';
@@ -1169,6 +1222,7 @@ function radarRange(){
 }
 function draw(t){
   RAD.raf = 0; if(document.hidden || VIEW !== 'radar' && VIEW !== 'plan' && !MAP.open && !desktop()) return;
+  if(RAD.morph && t < RAD.morph) radarSize();
   const moving=Math.abs(RAD.tx-RAD.cx)+Math.abs(RAD.ty-RAD.cy)+Math.abs(RAD.tr-RAD.rpx)>1 || RAD.turn || RAD.headTo!==null;
   const fps=moving?60:VIEW==='cam'?10:VIEW==='feed'?15:30;
   if(t-RAD.last<1000/fps-1){RAD.raf=requestAnimationFrame(draw);return;}
@@ -2052,6 +2106,8 @@ function go(v){
   if(v === 'cam') camOpen(REC.forPlan || null);
   if(v === 'feed'){focusVisibleClip();document.querySelectorAll('#feed .clip[data-k]').forEach(c => {io.unobserve(c);io.observe(c);});}
   camState(); joyPaint(); paintInts(); radarOn(); PAPER.sync();
+  RAD.morph = performance.now() + 700; clearTimeout(RAD.morphT);
+  RAD.morphT = setTimeout(() => dispatchEvent(new Event('resize')), 720);
 }
 document.addEventListener('visibilitychange',()=>{
  if(document.hidden){cancelAnimationFrame(RAD.raf);RAD.raf=0;clearTimeout(feedReleaseTimer);SIGNED.clear();document.querySelectorAll('#feed video,#detail video,#list video').forEach(releaseClip);}
@@ -2067,6 +2123,12 @@ function joyTap(){
 }
 addEventListener('keydown',e => {
   if(e.key==='Tab' && VIEW==='cam' && document.body.classList.contains('is-form')){const f=[...$('cam-body').querySelectorAll('button:not(:disabled),input,textarea,a[href]')].filter(x=>x.getClientRects().length);if(f.length){const i=f.indexOf(document.activeElement);if(e.shiftKey && i<=0 || !e.shiftKey && (i<0 || i===f.length-1)){e.preventDefault();(e.shiftKey?f.at(-1):f[0]).focus();}}return;}
+  if(!$('my-spaces').classList.contains('hide')){
+    if(e.key === 'Escape'){ e.preventDefault(); mspClose(); }
+    else if(e.key === 'Tab'){ const f=[...$('my-spaces').querySelectorAll('button:not(:disabled)')].filter(x=>x.getClientRects().length), i=f.indexOf(document.activeElement);
+      if(f.length && (e.shiftKey ? i<=0 : i<0 || i===f.length-1)){ e.preventDefault(); (e.shiftKey ? f.at(-1) : f[0]).focus(); } }
+    return;
+  }
   if(e.key === 'Escape'){
     if(MAP.open) mapClose(); else if(!$('habit-picker').classList.contains('hide')) pickerClose(); else if(!$('sf-panel').classList.contains('hide')) sfOpen(false); else if(DETAIL) closeDetail();
     else if($('menu').classList.contains('is-open')) menu(false); else if(REC.step === 'rec') joyTap(); else if(VIEW !== 'radar' && !REC.busy && !PLAN.busy) go('radar');
@@ -2082,7 +2144,7 @@ addEventListener('keydown',e => {
    leurs gestes. Le radar conserve le pincement / ctrl-wheel de zoom. */
 (function gestures(){
   const pointers = new Map(); let drag = null, pinch = null, pinching = false;
-  const excluded = t => !!t.closest?.('.eco-sheet,#cam-body,#v-plan,#joy,button,input,textarea,select,a,#detail,#menu,#habit-picker,#sf-panel,#totehm-paper,#place-picker,[contenteditable],#radar-map,#radar-tools');
+  const excluded = t => !!t.closest?.('#my-spaces,.eco-sheet,#cam-body,#v-plan,#joy,button,input,textarea,select,a,#detail,#menu,#habit-picker,#sf-panel,#totehm-paper,#place-picker,[contenteditable],#radar-map,#radar-tools');
   const horizontal = dx => {if(['feed','list'].includes(VIEW)){gestureCount++;go('radar');}else step(dx>0?'g':'d');};
   const scroller = t => t.closest?.('#feed,#list,#v-plan,#cam-body');
   const canScroll = (el,delta) => !!el && el.scrollHeight > el.clientHeight + 3 && (delta > 0 ? el.scrollTop < el.scrollHeight - el.clientHeight - 3 : el.scrollTop > 3);
@@ -2116,7 +2178,7 @@ addEventListener('keydown',e => {
   },true);
   addEventListener('pointercancel',e => { pointers.delete(e.pointerId); drag=null; pinch=null; if(!pointers.size) pinching=false; },true);
   let touch=null;
-  const touchExcluded=t=>!!t.closest?.('.eco-sheet,#cam-body,#v-plan,#joy,input,textarea,select,#detail,#menu,#habit-picker,#sf-panel,#sf-btn,#totehm-paper,#place-picker,#radar-tools,#radar-map,[contenteditable]');
+  const touchExcluded=t=>!!t.closest?.('#my-spaces,.eco-sheet,#cam-body,#v-plan,#joy,input,textarea,select,#detail,#menu,#habit-picker,#sf-panel,#sf-btn,#totehm-paper,#place-picker,#radar-tools,#radar-map,[contenteditable]');
   addEventListener('touchstart',e=>{
     if(e.touches.length!==1 || touchExcluded(e.target) || recordingLocked() || PLAN.busy || MAP.open || RAD.turn || DETAIL){ touch=null;return; }
     const p=e.touches[0];touch={x:p.clientX,y:p.clientY,t:Date.now(),el:scroller(e.target),view:VIEW};
@@ -2179,6 +2241,80 @@ addEventListener('keydown',e => {
 })();
 
 
+/* ══ MY SPACES · 06/10/2026 ════════════════════════════════════════════
+   Wah : « une rubrique My Spaces avec tout l'historique des spaces publiés
+   sur SPACE ; et on doit pouvoir supprimer des spaces ». `my_spaces` (MES
+   spaces publiés, privés et partagés, du plus récent au plus ancien, 30 par
+   page) ; un tap ouvre la fiche (`spot_get`, droits de SPACE) ; DELETE puis
+   DELETE FOR GOOD → `space-delete` (le serveur décide sous MA session, efface
+   la vidéo et les fichiers ; le space disparaît partout). Réponse tardive
+   jetée (`MSP.seq`), vidé à la déconnexion. */
+const MSP = { seq:0, rows:[], more:false, busy:false, prev:null };
+const mspState = s => { const a = Date.parse(s.starts_at), b = Date.parse(s.ends_at), n = Date.now(); return a > n ? 'I WILL BE HERE' : n < b ? 'I AM HERE' : 'I WAS THERE'; };
+function mspPaint(){
+  $('msp-list').innerHTML = MSP.rows.map(x => {
+    const d = new Date(x.starts_at), when = Number.isNaN(d.getTime()) ? '' : d.toLocaleString(undefined, { dateStyle:'medium', timeStyle:'short' }), st = mspState(x), id = esc(String(x.id));
+    return '<div class="msp-row" data-row="' + id + '"><button class="msp-open" type="button" data-open-space="' + id + '"><span class="msp-h">' + esc(x.habit) + '</span>' +
+      '<span class="msp-s"><b' + (st === 'I AM HERE' ? ' class="is-live"' : '') + '>' + st + '</b> · ' + (x.visibility === 'private' ? 'PRIVATE' : 'SHARED') + '</span>' +
+      '<span>' + esc([when, x.place || x.city || ''].filter(Boolean).join(' · ')) + '</span></button>' +
+      '<button class="btn msp-del" type="button" data-del="' + id + '" aria-label="Delete this space">DELETE</button></div>';
+  }).join('');
+  $('msp-more').classList.toggle('hide', !MSP.more);
+}
+async function mspLoad(more = false){
+  if(!me || MSP.busy) return; MSP.busy = true; const seq = ++MSP.seq, uid = me.id, last = more ? MSP.rows.at(-1) : null;
+  $('msp-note').textContent = 'reading my spaces…'; $('msp-more').disabled = true;
+  try{
+    const { data, error } = await sb.rpc('my_spaces', { p_before: last?.starts_at || null, p_before_id: last?.id || null, p_limit: 30 });
+    if(seq !== MSP.seq || uid !== me?.id) return;
+    if(error || !data?.ok){ if(error) console.error('[my_spaces]', error.message); $('msp-note').textContent = 'My spaces could not load. Try again.'; return; }
+    MSP.rows = more ? MSP.rows.concat(data.spaces || []) : (data.spaces || []); MSP.more = !!data.more; mspPaint();
+    $('msp-note').textContent = MSP.rows.length ? '' : 'No space yet. Tap your TOTEHM to turn a habit into a space.';
+  }catch(e){ if(seq === MSP.seq){ console.error('[my_spaces]', e?.message || e); $('msp-note').textContent = 'My spaces could not load. Try again.'; } }
+  finally{ if(seq === MSP.seq){ MSP.busy = false; $('msp-more').disabled = false; } }
+}
+function mspOpen(){
+  if(!me) return; menu(false); closeDetail(); pickerClose(); MSP.prev = document.activeElement;
+  MSP.rows = []; MSP.more = false; $('msp-list').replaceChildren(); $('msp-more').classList.add('hide');
+  $('msp-name').textContent = PSEUDO || ''; $('msp-name').classList.toggle('hide', !PSEUDO);
+  $('my-spaces').classList.remove('hide'); document.body.classList.add('is-msp'); joyPaint(); $('msp-x').focus(); mspLoad();
+}
+function mspClose(){
+  if($('my-spaces').classList.contains('hide')) return;
+  MSP.seq++; MSP.busy = false; $('my-spaces').classList.add('hide'); document.body.classList.remove('is-msp'); joyPaint();
+  if(MSP.prev?.isConnected) MSP.prev.focus({ preventScroll:true });
+}
+/* DELETE → DELETE FOR GOOD → supprimé, partout, tout de suite. */
+async function spaceDelete(btn, id){
+  if(!btn.classList.contains('is-arm')){
+    document.querySelectorAll('[data-del].is-arm').forEach(x => { x.classList.remove('is-arm'); x.textContent = 'DELETE'; });
+    btn.classList.add('is-arm'); btn.textContent = 'DELETE FOR GOOD'; return 'armed';
+  }
+  btn.disabled = true; btn.textContent = 'DELETING…'; const uid = me?.id;
+  try{ await videoRequest('space-delete', { spot:id }); }
+  catch(e){ console.error('[space-delete]', e?.message || e); if(btn.isConnected){ btn.disabled = false; btn.classList.remove('is-arm'); btn.textContent = 'DELETE'; } return 'failed'; }
+  if(uid !== me?.id) return 'done';
+  FEED.list = FEED.list.filter(x => x.id !== id); LIST.list = LIST.list.filter(x => x.id !== id); EX.list = EX.list.filter(x => x.id !== id);
+  MSP.rows = MSP.rows.filter(x => String(x.id) !== id); mspPaint();
+  if(!$('my-spaces').classList.contains('hide')) $('msp-note').textContent = MSP.rows.length ? 'Space deleted.' : 'No space yet. Tap your TOTEHM to turn a habit into a space.';
+  if(DETAIL?.id === id) closeDetail();
+  paintFeed(); paintList(); reload();
+  return 'done';
+}
+$('msp-x').onclick = mspClose;
+$('msp-more').onclick = () => mspLoad(true);
+$('msp-list').addEventListener('click', async e => {
+  const del = e.target.closest('[data-del]');
+  if(del){ if(await spaceDelete(del, del.dataset.del) === 'failed') $('msp-note').textContent = 'Not deleted. Try again.'; return; }
+  const o = e.target.closest('[data-open-space]'); if(!o) return;
+  const id = o.dataset.openSpace, seq = MSP.seq;
+  const { data, error } = await sb.rpc('spot_get', { p_id: id });
+  if(error) console.error('[spot_get]', error.message);
+  if(seq !== MSP.seq) return;
+  if(!data?.ok){ $('msp-note').textContent = 'This space cannot open right now.'; return; }
+  mspClose(); openDetail(data.spot);
+});
+
 /* ══ LE COIN MEMBRE — SIMPLE TERMS OF USE, TOUJOURS EN DERNIER ═══════ */
 function menu(open){ $('menu').classList.toggle('is-open', open); }
 function paintMember(){
@@ -2187,6 +2323,7 @@ function paintMember(){
   PAPER.nommer();
   $('menu').innerHTML = (me
     ? (PSEUDO ? '<div class="m-name"><button class="tname" type="button" data-com="/totehm#in">' + esc(PSEUDO) + '</button></div>' : '') +
+      '<button class="m-it" type="button" data-myspaces="1">My spaces</button>' +
       '<button class="m-it" type="button" data-com="/console">Console</button>' +
       '<button class="m-it" type="button" data-out="1">Sign out</button>'
     : '<button class="m-it" type="button" data-signin="1">CONNECT WITH MY TOTEHM</button>') +
@@ -2195,7 +2332,8 @@ function paintMember(){
 $('member').onclick = () => menu(!$('menu').classList.contains('is-open'));
 $('menu').addEventListener('click', async e => {
   if(e.target.closest('[data-signin]')) return ssoLogin(false);
-  if(e.target.closest('[data-out]')){ await sb.auth.signOut({ scope:'local' }); me = null; PSEUDO = null; HABITS = null; S.habit = null; S.q = '';SIGNED.clear();closeDetail();FEED.list=[];EX.list=[];LIST.list=[];paintFeed();paintList();paintRadarEmpty();$('habit-filter').textContent = 'Habit Box · all'; if(VIEW === 'cam') camReset(); PLAN.seq++; PLAN.context = null; PLAN.habit = null; planVideoDrop(); planCity(null); PLAN.cityText = ''; menu(false); pickerClose(); paintMember(); if(VIEW === 'plan') planPaint(); reload(); }
+  if(e.target.closest('[data-myspaces]')) return mspOpen();
+  if(e.target.closest('[data-out]')){ mspClose(); await sb.auth.signOut({ scope:'local' }); me = null; PSEUDO = null; HABITS = null; S.habit = null; S.q = '';SIGNED.clear();closeDetail();FEED.list=[];EX.list=[];LIST.list=[];paintFeed();paintList();paintRadarEmpty();$('habit-filter').textContent = 'Habit Box · all'; if(VIEW === 'cam') camReset(); PLAN.seq++; PLAN.context = null; PLAN.habit = null; planVideoDrop(); planCity(null); PLAN.cityText = ''; menu(false); pickerClose(); paintMember(); if(VIEW === 'plan') planPaint(); reload(); }
 });
 document.addEventListener('pointerdown', e => { if($('menu').classList.contains('is-open') && !e.target.closest('#menu,#member')) menu(false); });
 
@@ -2227,6 +2365,9 @@ boot();
 /* 05/10/2026 — copied into each independent page; no runtime import. */
 (() => {
   let sheet = null, previous = null, inert = [], overflow = '';
+  /* 06/10 — a small magnifier on each Box: its content grows a little, IN PLACE. Never a window. */
+  const roots = '.habit:not(.add):not(.filtre),.r-habit,.bx';
+  const glass = on => '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M7.5 10h5' + (on ? '' : 'M10 7.5v5') + '"/></svg>';
   function close() {
     if (!sheet) return;
     sheet.remove(); sheet = null;
@@ -2250,11 +2391,21 @@ boot();
   }
   function enhance(scope) {
     if (!(scope instanceof Element) || scope.closest('.eco-sheet')) return;
+    const parentBox = scope.closest(roots);
+    const boxes = [...(parentBox ? [parentBox] : []),...scope.querySelectorAll(roots)];
+    boxes.forEach(box => {
+      if (box.querySelector(':scope > .eco-box-zoom')) return;
+      const text = box.querySelector('.v-name,.h-text,.r-text,.nm')?.textContent?.trim() || box.querySelector('textarea')?.value?.trim();
+      if (!text) return;
+      const on = box.classList.contains('is-zoom'), b = document.createElement('button');
+      b.type = 'button'; b.className = 'eco-box-zoom'; b.dataset.boxZoom = '1';
+      b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? 'Smaller' : 'Bigger'); b.innerHTML = glass(on); box.append(b);
+    });
     const buttonSelector = 'button,a.m-it,a.mw-link,a.btn-sig,a.btn,a.ro-action';
     const parentButton = scope.closest(buttonSelector);
     const buttons = [...(parentButton ? [parentButton] : []),...scope.querySelectorAll(buttonSelector)];
     buttons.forEach(b => {
-      if (b.closest('#joy,#totehm-paper,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,.mini-toggle,.rk-a')) return;
+      if (b.closest('#joy,#totehm-paper,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,.eco-box-zoom,.mini-toggle,.rk-a')) return;
       const text = b.textContent.trim(); if (!text || /^[×+−\-↑↓←→↔↕✕✖?°\d\s]+$/.test(text)) return;
       if (/^sign\s*in\b/i.test(text)) {
         const leaf = b.querySelector('#member-txt,#conn-txt') || b;
@@ -2272,6 +2423,14 @@ boot();
     }
   }
   document.addEventListener('click',e => {
+    const zoomButton = e.target.closest?.('[data-box-zoom]');
+    if (zoomButton) {
+      e.preventDefault(); e.stopImmediatePropagation();
+      const box = zoomButton.closest(roots); if (!box) return;
+      const on = box.classList.toggle('is-zoom');
+      zoomButton.setAttribute('aria-pressed', String(on)); zoomButton.setAttribute('aria-label', on ? 'Smaller' : 'Bigger'); zoomButton.innerHTML = glass(on);
+      return;
+    }
     const definition = e.target.closest?.('[data-space-about]');
     if (definition) { e.preventDefault(); e.stopImmediatePropagation(); const content = document.querySelector('#space-definition')?.content?.cloneNode(true); if (content) open(content,'What is a space?',definition); }
   },true);
