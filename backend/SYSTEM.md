@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 5 octobre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 6 octobre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -15,6 +15,16 @@
 
 ---
 
+
+## 0 · LOUPE EN PLACE, MY SPACES, SUPPRIMER UN SPACE — 06/10/2026
+
+| quoi | valeur mesurée |
+|---|---|
+| migration `20261006100000_space_delete.sql` | APPLIQUÉE (`space_delete`) · EXECUTE authenticated seulement · auto-test `space_delete_selftest.sql` : étranger refusé, propriétaire → `cancelled`, médias vidés, my_spaces 14 → 13, absent d'habit_spaces et de spot_get, deux fois = not_found, `FAIL={}` (annulé) |
+| Edge Function `space-delete` | v1 ACTIVE, JWT exigé · sans membre (clé anon) → 401 `{"error":"signin"}` |
+| tests navigateur | `spaces_loupe` 26/26 · `com_mouth` 35/35 · `com_paper` 39/39 · `com_member_menu` 27/27 · `com_creator` 29/29 · `console` 18/18 · `space` 40/40 · `space_boxes_ecosystem` 22/22 · `spaces_ui --identity` 27/27 · `boutique_home` 10/10 · `streetwear` 25/25 · `club_luxury` 35/35 |
+| mesures UI (tests) | loupe COM : 97 → 121 px (×1,25) sur les cinq vues, sans ouvrir ni fenêtre ; loupe SPACE 105 → 131 px ; papier SPACE 110 → 70 → 58 px en glissant ; invitation 11 px gras blanc sur boîte noire |
+| prod (pg_net, `fc92330`, Vercel READY) | totehm.com/totehm 200 `2026-10-06-spaces-loupe` (loupe, langue `m-tongue-big`, `space-delete`) · totehm.space 200 `2026-10-06-spaces-loupe` (My spaces, `@property --tp`, loupe) · higher.boutique et figher.club 200 (loupe en place) · md5 = dépôt pour les 4 |
 
 ## 0 · TOTEHM.COM REMIS D'APLOMB — 05/10/2026 (nuit) : T, mini-boxes, lecture par nom, spaces dans les habits, vente, console
 
