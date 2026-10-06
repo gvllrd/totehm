@@ -218,6 +218,17 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
+### Correction 0.42 — 06/10/2026 (ter) · toute la bouche, le style et le nom du Cloth, Decode perforé
+
+> Sur totehm.com, c'est toute la bouche qui grandit (lèvres et langue, ×1,27),
+> plus la langue seule ; le buvard garde sa taille. Sur higher.boutique, la
+> totehmisation Luxury demande, comme Streetwear, le style artistique du moment
+> (`artistic_styles`) et le nom du Totehm Cloth, `0.{Nom}` (0 = l'année de la
+> collection, posé par le serveur) ; un nom ne sert qu'une fois, Streetwear et
+> Luxury confondus, et une pièce Luxury payée se décode. [Decode a Totehm
+> Cloth] : survol et saisie en boîte perforée navy. Migration additive
+> `luxury_style_name` ; prix, paiement, webhook inchangés. Aucun travail Oracle/n8n.
+
 ### Correction 0.41 — 06/10/2026 (bis) · trois gestes, lire et copier, menu de la boutique
 
 > En bas de l'atterrissage de totehm.com, les trois gestes du papier défilent :

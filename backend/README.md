@@ -319,6 +319,11 @@ _balances()     par devise : gagné · versé · en attente
 compte est dans `boutique_admins`) → « Quotes to answer » → prix en € + un
 mot → Send quote (ou Decline). Le membre reçoit l'email, accepte, paie.
 Ajouter un administrateur : `insert into boutique_admins(user_id) select id from profiles where pseudo = '…';`
+Depuis le 06/10 (ter), une demande porte aussi le NOM du Totehm Cloth (`0.{Nom}`,
+préfixe posé par `luxury-quote`) et son style (`artistic_styles`) : la carte
+admin les montre ; payé, Decode trouve la pièce (`reveal_cloth`). Un devis
+retiré ou refusé rend son nom (`luxury_quotes_name_live`).
+Auto-test du nom : `tests/sql/luxury_name_selftest.sql` → `FAIL={}`.
 
 **Le mode test Stripe** (05/10 soir, sans « oui » : aucun argent réel) : un
 compte actif de `boutique_testers` paie avec la clé TEST (carte

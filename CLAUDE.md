@@ -210,7 +210,7 @@ My spaces (COM, SPACE) + `space-delete` ; chercher = un NOM → son TOTEHM en le
 - **Contrôles** sur les quatre domaines : gris, `border-radius:10px`. **Le
   nom du Totehm en recherche et au verso = noir arrondi + Quantico Coral**,
   accès membre sans point/carré ni T statique centré. Le papier conserve son navy
-  perforé ; « by » reste à côté. Aucun motif perforé comme fond de contrôle. **Aucun fond
+  perforé ; « by » reste à côté. Aucun motif perforé comme fond de contrôle, sauf [Decode a Totehm Cloth] au survol et en saisie (tuile navy, 06/10). **Aucun fond
   blanc** sur un bouton, une option, une sélection, un panneau : tout reste
   sombre (sélection = gris clair + filet blanc). Une BOÎTE reste carrée.
 - Boutons ajustés au label. **Chaque Box a une petite loupe : un tap agrandit son contenu EN PLACE

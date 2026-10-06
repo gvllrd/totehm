@@ -1,5 +1,16 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## COM · 06/10/2026 (ter) — toute la bouche grandit
+
+BUILD `2026-10-06-bouche` (`totehm.html`). Wah : « pas la langue seule :
+l'ensemble, la bouche ET la langue — la structure complète ». L'échelle de la
+langue seule (`#m-tongue-big`, `ly()`, découpe à 1950) est RETIRÉE : le dessin
+reprend ses proportions d'origine (découpe 1570, `POSE=[540,1150]`, `long`,
+zone jusqu'à 1600) et c'est la boîte qui grandit : `--mouth-w:clamp(140px,
+28dvh,240px)` (×1,27 ; 236 px au téléphone 390 × 844, bas à 344 px, papier à
+451). Le buvard garde ses 44 px : `TAB=.285` (36 % avant). `com_mouth.mjs`
+35/35 (mi-chemin = 50 % de la course : la bouche descend plus près du papier).
+
 ## COM · 06/10/2026 (bis) — les trois gestes, le verso, lire et copier, le menu de la boutique
 
 BUILD `2026-10-06-lecture-copie` (`totehm.html`), `2026-10-06-menu` (`creator`,
@@ -41,7 +52,7 @@ peu » · « pouvoir supprimer des spaces » · « la langue plus grande ».
   `data-open` dans `cable()`.
 - **My spaces** : chaque ligne = ouvrir (SPACE) + Delete → « Delete for good »
   → `space-delete` ; la ligne part, `habit_spaces` est relu.
-- **La langue** : `#m-tongue-big` l'agrandit depuis sa base (540,727), ×1,22
+- **La langue** (⚠️ REMPLACÉ le 06/10 ter : toute la bouche grandit, voir plus haut) : `#m-tongue-big` l'agrandit depuis sa base (540,727), ×1,22
   en largeur, ×1,3 en longueur ; le point de pose (`POSE`), la course quand
   elle rentre (`long`) et la zone « posé » suivent (`ly()`). Le buvard garde
   sa taille (`large`), la découpe descend à 1950. `com_mouth.mjs` : mi-chemin

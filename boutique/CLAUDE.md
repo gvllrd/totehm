@@ -1,5 +1,27 @@
 # boutique/CLAUDE.md — higher.boutique : le Cloth, la méthode Stoner
 
+## BOUTIQUE · 06/10/2026 (ter) — le style du moment et le nom, Decode perforé
+
+Wah : « pour la totehmisation Streetwear et Luxury, choisir un style artistique
+du moment (la table Supabase) et le nom du Totehm Cloth : Decode utilise ce
+nom, `0.{Nom}`, 0 = l'année en cours » · « [Decode a Totehm Cloth] : le survol
+et la saisie en encadré box perforé bleu navy ».
+- **Streetwear** (`streetwear.html`, BUILD `2026-10-06-cloth-name`) : avait
+  déjà 1 · le nom (`0.` + saisie, `name_available`) et 2 · le style ; le
+  style ne montre plus que les `artistic_styles` actifs ET `status='active'`.
+- **Luxury** (`luxury.html`, BUILD `2026-10-06-cloth-name`) : 4 · The style
+  of the moment (les mêmes cartes) · 5 · Engrave its name (`0.` affiché,
+  `name_available` en direct, réponse tardive jetée). La demande part avec
+  `style` (id) et `name` SANS préfixe : `luxury-quote` pose `0.` (année de
+  collection, juin → mai), relit le style, refuse un nom pris (`name_taken`).
+  Mes devis et la carte admin montrent le nom et le style.
+- **Decode** (`index.html`, BUILD `2026-10-06-decode`) : survol / focus du
+  bouton et saisie = la tuile navy perforée (`--tile-btn`, 6 px remplie,
+  carrée) — exception demandée à « aucun motif perforé comme fond de
+  contrôle ». Le résultat dit aussi le style ; une pièce Luxury payée se
+  décode comme une Streetwear.
+- Tests : `club_luxury.mjs` 43/43, `boutique_home.mjs` 10/10, `streetwear.mjs` 25/25.
+
 ## BOUTIQUE · 06/10/2026 — police un peu plus petite, boutons sur une ligne
 
 Wah : « réduis un peu la police ; à chaque fois, les boutons sur une ligne ».

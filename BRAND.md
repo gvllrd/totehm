@@ -254,8 +254,10 @@ ANY BOX (5 views) → TOTEHMIZE → ARTWORK → CLOTH + 0.name → WEAR → REVE
 The anchor is a Box — a habit, an objective, a repulsion, a lesson, a vision —
 never a free text. What is linked to that Box across the five views, and the
 colors of its intentions, give the artwork its direction; the member picks a
-curated style, never a prompt. The garment carries its illustration and its
-identifier `0.name` (`0.` = year zero of the Totehm). Searching `0.name` on
+curated style, never a prompt — Streetwear AND Luxury: the style of the moment
+(`artistic_styles`) and the name, both chosen before ordering or asking for a
+quote. The garment carries its illustration and its identifier `0.name`
+(`0.` = year zero of the Totehm, set by the server, never typed). Searching `0.name` on
 FIGHER.CLUB does not show the picture again: it **reveals the Box behind the
 cloth**, as deep as the searcher's rights go.
 
