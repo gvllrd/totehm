@@ -6,8 +6,8 @@ BUILD `2026-10-05-spaces-boxes`. Lire les règles UI de la racine.
 Toutes les pages satellites, y compris les anciennes pages déplacées,
 passent par COM/auth avec PKCE+state. Plus d'email OTP demandé localement ;
 les ponts sso existants restent compatibles. CTA `CONNECT WITH MY TOTEHM`,
-fond sombre ajusté au texte. Pas de T.svg statique d'interface. Plus de
-loupe ni de fenêtre sur une Box (05/10, Wah) : elle se lit en place.
+fond sombre ajusté au texte. Pas de T.svg statique d'interface. Une petite
+loupe agrandit chaque Box EN PLACE (06/10, Wah), jamais une fenêtre.
 Attributs absents de COM absents du miroir.
 Prix, commandes, THP et droits existants inchangés.
 

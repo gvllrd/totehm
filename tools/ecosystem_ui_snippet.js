@@ -1,6 +1,9 @@
 /* 05/10/2026 — copied into each independent page; no runtime import. */
 (() => {
   let sheet = null, previous = null, inert = [], overflow = '';
+  /* 06/10 — a small magnifier on each Box: its content grows a little, IN PLACE. Never a window. */
+  const roots = '.habit:not(.add):not(.filtre),.r-habit,.bx';
+  const glass = on => '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M7.5 10h5' + (on ? '' : 'M10 7.5v5') + '"/></svg>';
   function close() {
     if (!sheet) return;
     sheet.remove(); sheet = null;
@@ -24,11 +27,21 @@
   }
   function enhance(scope) {
     if (!(scope instanceof Element) || scope.closest('.eco-sheet')) return;
+    const parentBox = scope.closest(roots);
+    const boxes = [...(parentBox ? [parentBox] : []),...scope.querySelectorAll(roots)];
+    boxes.forEach(box => {
+      if (box.querySelector(':scope > .eco-box-zoom')) return;
+      const text = box.querySelector('.v-name,.h-text,.r-text,.nm')?.textContent?.trim() || box.querySelector('textarea')?.value?.trim();
+      if (!text) return;
+      const on = box.classList.contains('is-zoom'), b = document.createElement('button');
+      b.type = 'button'; b.className = 'eco-box-zoom'; b.dataset.boxZoom = '1';
+      b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? 'Smaller' : 'Bigger'); b.innerHTML = glass(on); box.append(b);
+    });
     const buttonSelector = 'button,a.m-it,a.mw-link,a.btn-sig,a.btn,a.ro-action';
     const parentButton = scope.closest(buttonSelector);
     const buttons = [...(parentButton ? [parentButton] : []),...scope.querySelectorAll(buttonSelector)];
     buttons.forEach(b => {
-      if (b.closest('#joy,#totehm-paper,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,.mini-toggle,.rk-a')) return;
+      if (b.closest('#joy,#totehm-paper,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,.eco-box-zoom,.mini-toggle,.rk-a')) return;
       const text = b.textContent.trim(); if (!text || /^[×+−\-↑↓←→↔↕✕✖?°\d\s]+$/.test(text)) return;
       if (/^sign\s*in\b/i.test(text)) {
         const leaf = b.querySelector('#member-txt,#conn-txt') || b;
@@ -46,6 +59,14 @@
     }
   }
   document.addEventListener('click',e => {
+    const zoomButton = e.target.closest?.('[data-box-zoom]');
+    if (zoomButton) {
+      e.preventDefault(); e.stopImmediatePropagation();
+      const box = zoomButton.closest(roots); if (!box) return;
+      const on = box.classList.toggle('is-zoom');
+      zoomButton.setAttribute('aria-pressed', String(on)); zoomButton.setAttribute('aria-label', on ? 'Smaller' : 'Bigger'); zoomButton.innerHTML = glass(on);
+      return;
+    }
     const definition = e.target.closest?.('[data-space-about]');
     if (definition) { e.preventDefault(); e.stopImmediatePropagation(); const content = document.querySelector('#space-definition')?.content?.cloneNode(true); if (content) open(content,'What is a space?',definition); }
   },true);

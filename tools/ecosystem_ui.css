@@ -7,6 +7,12 @@ button.eco-connect{background:#252529!important;border:0!important;border-radius
 #member.eco-connect #member-txt,#conn-bar.eco-connect #conn-txt{white-space:normal;max-width:100%;overflow:visible;text-overflow:clip}
 #member>i,#conn-bar>.dot,#conn-bar>.dc{display:none!important}
 .habit:not(.add):not(.filtre),.r-habit,.bx{position:relative}
+.eco-box-zoom{position:absolute;right:4px;top:4px;z-index:3;display:flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:0;border-radius:8px;background:none;color:rgba(255,255,255,.55);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.eco-box-zoom svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.eco-box-zoom[aria-pressed=true]{color:#fff}
+.habit:has(> .eco-box-zoom) .v-name,.r-habit:has(> .eco-box-zoom) .r-text,.bx:has(> .eco-box-zoom) .nm{padding-right:22px}
+.habit.is-zoom>.h-body,.r-habit.is-zoom,.bx.is-zoom{zoom:1.25}
+@media(hover:hover){.eco-box-zoom:hover{color:#fff}}
 .eco-sheet{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.94);display:flex;justify-content:center;align-items:flex-start;padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(18px + env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;text-align:left}
 .eco-card{width:min(720px,100%);min-width:0;display:flex;flex-direction:column;gap:18px;margin:auto;touch-action:pan-y}
 .eco-close{align-self:flex-end!important;border:0;border-radius:10px;background:#252529;color:#ddd;font:700 11px 'Space Mono',monospace;cursor:pointer}

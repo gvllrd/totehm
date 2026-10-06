@@ -1,5 +1,5 @@
 // Product checks: displayed Box data, independent mini-boxes, definition and central SSO.
-// 05/10 (Wah): no magnifier window on a Box, anywhere — a Box opens IN PLACE.
+// 06/10 (Wah): a small magnifier on every Box; its content grows IN PLACE — never a window.
 // All API, video and account responses are fixtures; no production writes.
 import fs from 'node:fs';
 import {launch,page,ok} from './harness.mjs';
@@ -25,7 +25,8 @@ try{
   await pg.click('#totehm-paper');await pg.waitForSelector('[data-filter-h]');
   const picker=pg.locator('[data-filter-h="0"]');
   ok(!/set time frequency|any rhythm|place ·/i.test(await picker.textContent()),'unconfigured frequency and place never appear in the mirrored Box');
-  ok(await pg.locator('[data-box-zoom],.eco-box-zoom').count()===0,'no magnifier window on SPACE boxes');
+  await picker.locator('.eco-box-zoom').click();await pg.waitForTimeout(150);
+  ok(await picker.locator('.habit.is-zoom').count()===1&&await pg.locator('.eco-sheet').count()===0&&!(await pg.evaluate(()=>window.__totehm_space().habit_filter)),'SPACE magnifier enlarges the Box in place: no window, Habit not chosen');
   await picker.click();await pg.waitForTimeout(500);
   await pg.click('#cur-d');await pg.waitForFunction(()=>window.__totehm_space().view==='list');await pg.waitForTimeout(500);
   ok(await pg.locator('#list .it').count()===1&&await pg.locator('#list [data-spot="off"]').count()===0,'RIGHT excludes OFF spaces even in a stale API response');
@@ -37,7 +38,7 @@ try{
   const com=await page(browser,{dir:'com',origin:'https://www.totehm.com',tables:{profiles:[{pseudo:'wah'}]},rpc:{totehm_of:source,habit_spaces:{ok:true,mine:false,habits:[]}}});
   await com.pg.emulateMedia({reducedMotion:'reduce'});await com.pg.goto('https://www.totehm.com/totehm?ro=studio');await com.pg.waitForSelector('body.ro:not(.gate)');await com.pg.waitForTimeout(400);
   ok(!/set time frequency|set intention|no deadline/i.test(await com.pg.locator('#vnow').textContent()),'COM reader never invents unconfigured attributes');
-  ok(await com.pg.locator('[data-box-zoom],.eco-box-zoom,.eco-sheet').count()===0,'COM reader: no magnifier, no window');
+  ok(await com.pg.locator('#habits .loupe').count()>=1&&await com.pg.locator('.eco-sheet').count()===0,'COM reader: a magnifier on each Box, never a window');
   await com.pg.locator('#habits [data-open]').first().evaluate(e=>e.click());await com.pg.waitForTimeout(400);
   ok(await com.pg.evaluate(()=>window.__totehm_zone?.boite_ouverte)==='h'&&await com.pg.locator('.eco-sheet,[role=dialog]:visible').count()===0,'a Box opens in place, in the list');
   ok(!com.log.rpc.some(x=>/rename|_create|_set|_delete|totehm_save/.test(x.name)),'reading never edits the COM source');await com.ctx.close();
