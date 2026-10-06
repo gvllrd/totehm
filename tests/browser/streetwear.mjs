@@ -26,7 +26,7 @@ ok(lay.centre < 2 && lay.scroll <= 0, 'the cloth is centered, no horizontal scro
 ok(lay.tile === 'none' && lay.radius === '10px', 'arrows: grey control, radius 10, no perforated tile');
 ok(!log.rpc.length || true, 'boot');
 const d0 = await pg.evaluate(() => window.__totehm_cloth());
-ok(d0.build === '2026-10-06-type' && d0.flow === 'pick' && /is-on/.test(await pg.getAttribute('#flow [data-f="pick"]', 'class')), 'flow starts at PICK, and says so');
+ok(d0.build === '2026-10-06-cloth-name' && d0.flow === 'pick' && /is-on/.test(await pg.getAttribute('#flow [data-f="pick"]', 'class')), 'flow starts at PICK, and says so');
 ok(/Pick up a box for it/.test(await pg.textContent('#card')), 'a cloth asks for a box first');
 await pg.screenshot({ path: OUT + '/sw_pick.png' });
 ok(!(await pg.isVisible('#pick-btn')), 'one call to action: the cloth carries it');

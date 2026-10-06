@@ -81,6 +81,19 @@ button.chip.is-on{background:var(--s3);color:#fff;border-color:#fff}
 .field{font-family:var(--q);font-size:13px;color:#fff;background:var(--s2);border:none;border-radius:var(--r);padding:11px 12px;width:100%;max-width:320px;
   outline:none;caret-color:#fff;text-align:center}
 .field::placeholder{color:var(--dim)}
+/* 06/10 (ter) — le style du moment et le nom 0.{Nom} (copiés de /streetwear). */
+.style-track{display:flex;gap:10px;overflow-x:auto;padding:4px 4px 8px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;max-width:100%}
+.style-track::-webkit-scrollbar{display:none}
+.style-item{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:pointer;scroll-snap-align:center;-webkit-tap-highlight-color:transparent;padding:0}
+.style-img{width:84px;height:84px;object-fit:cover;display:block;border-radius:10px;border:1px solid transparent;filter:grayscale(55%);opacity:.6;transition:opacity .2s ease,filter .2s ease,border-color .2s ease;background:var(--s2)}
+.style-item .st-name{font-size:10px;color:var(--lo);max-width:96px;line-height:1.3;white-space:nowrap;transition:color .2s ease}
+.style-item.is-on .style-img{filter:none;opacity:1;border-color:#fff}
+.style-item.is-on .st-name{color:#fff}
+.name-box{display:flex;align-items:center;background:var(--s2);border-radius:var(--r);padding:0 12px;width:100%;max-width:320px}
+.name-prefix{font-family:var(--q);font-size:13px;color:#fff;opacity:.5;user-select:none}
+.name-box input{font-family:var(--q);font-size:13px;color:#fff;background:none;outline:none;border:none;caret-color:#fff;width:100%;padding:11px 2px}
+.name-box input::placeholder{color:var(--dim)}
+.cloth-n{font-family:var(--q);font-size:13px;color:#fff}
 .tick{display:flex;gap:8px;align-items:center;justify-content:center;font-size:10px;letter-spacing:.06em;color:var(--lo);cursor:pointer}
 .tick a{text-decoration:underline}.tick input{accent-color:#fff}
 .note{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--lo);min-height:16px}
@@ -188,6 +201,8 @@ button.chip.is-on{background:var(--s3);color:#fff;border-color:#fff}
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -202,6 +217,8 @@ button.chip.is-on{background:var(--s3);color:#fff;border-color:#fff}
 .step-h:hover,
 .piece:hover,
 .field:hover::placeholder,
+.style-item .st-name:hover,
+.name-box input:hover::placeholder,
 .tick:hover,
 .note:hover,
 #picked small:hover,
@@ -315,6 +332,11 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
     <div class="step-h">3 · The box that totehmizes it</div>
     <button class="btn" id="pick-box" type="button">Pick up the box</button>
     <div id="picked" class="hide"></div>
+    <div class="step-h">4 · The style of the moment</div>
+    <div class="style-track" id="style-track" role="radiogroup" aria-label="The style"></div>
+    <div class="step-h">5 · Engrave its name</div>
+    <div class="name-box"><span class="name-prefix" id="name-prefix">0.</span><input id="name-input" maxlength="40" placeholder="name it" autocomplete="off" aria-label="The name of the Totehm Cloth"></div>
+    <div class="note" id="name-note"></div>
     <button class="btn" id="ask" type="button">Ask for my quote</button>
     <div class="note" id="ask-n"></div>
   </section>
@@ -470,12 +492,14 @@ sb.auth.onAuthStateChange(ev => {
 
 
 /* ══ L'ÉTAT — une lecture, un écran ═════════════════════════════════ */
-const BUILD = '2026-10-06-type';
+const BUILD = '2026-10-06-cloth-name';
 let A = null, ADM = [], PIECE = 'bag', BRAND = 'Hermès', PICK = null, SEQ = 0, BUSY = false;
+let STYLES = [], STYLE = null, STYLES_SEQ = 0, NAME_OK = false, NAME_SEQ = 0, nameTimer = null;
 window.__totehm_luxury = () => ({ build: BUILD, signed_in: !!A?.signed_in, thp: !!A?.thp, open: !!A?.open,
   price_loaded: A?.price_cents != null, mode: A?.mode || null, quotes: (A?.quotes || []).length,
   quoted: (A?.quotes || []).filter(q => q.status === 'quoted').length, admin: !!A?.admin, to_answer: ADM.length,
-  test: !!A?.test_mode, piece: PIECE, brand: !!BRAND, box: !!PICK, joystick: !!$('nav-box') });
+  test: !!A?.test_mode, piece: PIECE, brand: !!BRAND, box: !!PICK, styles: STYLES.length, style: !!STYLE, named: NAME_OK,
+  joystick: !!$('nav-box') });
 
 const money = (c, cur) => (c/100).toLocaleString('en-GB', { style:'currency', currency:(cur||'eur').toUpperCase(), minimumFractionDigits: c % 100 ? 2 : 0 });
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
@@ -511,7 +535,7 @@ async function load(){
   if(!A.signed_in) show('s-out');
   else if(!A.thp) show('s-nothp');
   else if(!A.open) show('s-closed', 'quotes');
-  else show('form', 'quotes');
+  else { show('form', 'quotes'); loadStyles(); }
   paintQuotes();
   if(A.admin) loadAdmin(); else $('admin').classList.add('hide');
   joyPaint();
@@ -525,7 +549,9 @@ function paintQuotes(){
     const pal = (q.palette || []).filter(okColor);
     return '<div class="qt" style="--skin:' + (SKINQ[q.view] || 'var(--navy)') + '">' +
       '<small>' + esc(q.brand) + ' · ' + esc(q.piece) + ' · ' + esc(String(q.created_at || '').slice(0, 10)) + '</small>' +
+      (q.name ? '<div class="cloth-n">' + esc(q.name) + '</div>' : '') +
       (q.text ? '<div class="nm">' + esc(q.text) + '</div>' : '') +
+      (q.style ? '<small>' + esc(q.style) + '</small>' : '') +
       (pal.length ? '<div class="pals">' + pal.map(c => '<i style="background:' + c + '"></i>').join('') + '</div>' : '') +
       '<span class="st">' + esc(STATUS[q.status] || q.status) + '</span>' +
       (q.status === 'quoted' ? '<div class="amount">' + money(q.quote_cents, q.currency) + '</div>' +
@@ -573,17 +599,64 @@ $('ask').onclick = async () => {
   const n = $('ask-n'), brand = BRAND || $('brand-other').value.trim();
   if(!brand){ n.className = 'note no'; n.textContent = 'name the brand'; $('brand-other').focus(); return; }
   if(!PICK){ n.className = 'note no'; n.textContent = 'pick up the box first'; return; }
+  if(!STYLE){ n.className = 'note no'; n.textContent = 'choose the style'; return; }
+  const bare = $('name-input').value.trim();
+  if(!NAME_OK){ n.className = 'note no'; n.textContent = bare.length < 2 ? 'engrave its name' : 'another name'; $('name-input').focus(); return; }
   BUSY = true; $('ask').disabled = true; n.className = 'note'; n.textContent = 'sending…';
-  const { d } = await call('luxury-quote', { action:'request', piece: PIECE, brand, note: $('note').value, box: { kind: PICK.kind, ref: PICK.ref } });
+  /* Le nom part SANS son préfixe : le serveur pose l'année (`luxury-quote`). */
+  const { d } = await call('luxury-quote', { action:'request', piece: PIECE, brand, note: $('note').value, box: { kind: PICK.kind, ref: PICK.ref },
+    style: STYLE.id, name: bare });
   BUSY = false; $('ask').disabled = false;
   if(d.ok){
-    n.className = 'note ok'; n.textContent = 'asked — we answer by email';
-    $('note').value = ''; PICK = null; paintPicked(); await load(); return;
+    n.className = 'note ok'; n.textContent = (d.name || 'asked') + ' — we answer by email';
+    $('note').value = ''; PICK = null; paintPicked(); resetCloth(); await load(); return;
   }
   n.className = 'note no';
   n.textContent = ({ thp_required:'a TotehmPaper is needed', closed:'closed for now', choose_a_box:'pick up the box first', box_not_found:'that box changed — pick it again',
-    too_many:'three requests are waiting already', no_session:'sign in again' })[d.error] || 'try again';
+    too_many:'three requests are waiting already', no_session:'sign in again', choose_a_style:'choose the style',
+    name:'engrave its name', name_taken:'that name is taken' })[d.error] || 'try again';
+  if(d.error === 'name_taken'){ NAME_OK = false; $('name-note').className = 'note no'; $('name-note').textContent = 'already taken'; }
 };
+/* ── LE STYLE DU MOMENT — curaté (`artistic_styles`), ouvert ; relu par le serveur ── */
+async function loadStyles(){
+  if(STYLES.length) return;
+  const seq = ++STYLES_SEQ;
+  const { data, error } = await sb.from('artistic_styles').select('id,name,image_url,status,position').eq('active', true).order('position');
+  if(seq !== STYLES_SEQ) return;
+  if(error) console.error('[artistic_styles]', error.message);
+  STYLES = (data || []).filter(s => !s.status || s.status === 'active');
+  const t = $('style-track'); t.innerHTML = '';
+  if(!STYLES.length){ t.innerHTML = '<div class="mono" style="padding:14px 6px">styles coming soon</div>'; return; }
+  t.style.justifyContent = STYLES.length <= 3 ? 'center' : 'flex-start';
+  STYLES.forEach(s => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'style-item'; b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', 'false');
+    b.innerHTML = (s.image_url ? '<img class="style-img" src="' + esc(s.image_url) + '" alt="">' : '<div class="style-img"></div>') + '<div class="st-name">' + esc(s.name || '') + '</div>';
+    b.onclick = () => { t.querySelectorAll('.style-item').forEach(x => { const on = x === b; x.classList.toggle('is-on', on); x.setAttribute('aria-checked', String(on)); }); STYLE = s; $('ask-n').textContent = ''; };
+    t.appendChild(b);
+  });
+}
+/* ── LE NOM — 0.{Nom}, 0 = l'année de la collection ; vérifié en direct (`name_available`) ── */
+function epochPrefix(){ const d = new Date(), y = d.getFullYear(), ey = d.getMonth() >= 5 ? y : y - 1; return Math.max(ey - 2026, 0) + '.'; }
+$('name-prefix').textContent = epochPrefix();
+function resetCloth(){
+  STYLE = null; NAME_OK = false; $('name-input').value = ''; $('name-note').textContent = '';
+  $('style-track').querySelectorAll('.style-item').forEach(x => { x.classList.remove('is-on'); x.setAttribute('aria-checked', 'false'); });
+}
+$('name-input').addEventListener('input', () => {
+  NAME_OK = false; clearTimeout(nameTimer);
+  const v = $('name-input').value.trim().replace(/^\d+\./, ''), note = $('name-note');
+  if(v.length < 2){ note.className = 'note'; note.textContent = v ? 'at least 2 characters' : ''; return; }
+  note.className = 'note'; note.textContent = 'checking…';
+  const seq = ++NAME_SEQ;
+  nameTimer = setTimeout(async () => {
+    const { data, error } = await sb.rpc('name_available', { candidate: epochPrefix() + v });
+    if(seq !== NAME_SEQ) return;       // une réponse tardive n'écrase pas un nom plus frais
+    if(error){ console.error('[name_available]', error.message); note.className = 'note'; note.textContent = 'try again'; return; }
+    NAME_OK = data === true;
+    note.className = 'note ' + (NAME_OK ? 'ok' : 'no'); note.textContent = NAME_OK ? 'available' : 'already taken';
+    if(NAME_OK) $('ask-n').textContent = '';
+  }, 420);
+});
 $('signin').onclick = () => ssoLogin(false, '/luxury');
 $('get-higher').onclick = () => ssoVersDomaine(sb, 'club', 'https://www.figher.club/discover');
 $('member').onclick = () => { if(!ME) ssoLogin(false, '/luxury'); else location.href = '/#luxury'; };
@@ -600,7 +673,8 @@ async function loadAdmin(){
   $('admin-list').innerHTML = ADM.map(q => {
     const pal = (q.palette || []).filter(okColor);
     return '<div class="qa"><small>' + esc(q.pseudo || 'member') + ' · ' + esc(q.email) + ' · ' + esc(String(q.created_at || '').slice(0, 10)) + (q.test ? ' · test' : '') + '</small>' +
-      '<div class="nm">' + esc(q.brand) + ' · ' + esc(q.piece) + '</div>' + (q.note ? '<div>' + esc(q.note) + '</div>' : '') +
+      (q.name ? '<div class="cloth-n">' + esc(q.name) + '</div>' : '') +
+      '<div class="nm">' + esc(q.brand) + ' · ' + esc(q.piece) + (q.style ? ' · ' + esc(q.style) : '') + '</div>' + (q.note ? '<div>' + esc(q.note) + '</div>' : '') +
       (q.text ? '<div class="nm" style="color:var(--mid)">' + esc(q.text) + '</div>' : '') +
       (pal.length ? '<div class="pals">' + pal.map(c => '<i style="background:' + c + '"></i>').join('') + '</div>' : '') +
       (q.status === 'quoted' ? '<span class="mono">quoted · ' + money(q.quote_cents, q.currency) + '</span>' : '') +

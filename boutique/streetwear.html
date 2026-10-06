@@ -273,6 +273,8 @@ h1{font-family:var(--mono);font-weight:700;font-size:22px;letter-spacing:.06em;t
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -622,7 +624,7 @@ let PENDING=null;
 let me=null,myProfile=null;
 /* Le diagnostic — des booléens et des compteurs, jamais le texte d'une Box.
    Dans la console : __totehm_cloth() */
-const BUILD='2026-10-06-type';
+const BUILD='2026-10-06-cloth-name';
 let PREVIEWS=0;
 window.__totehm_cloth=()=>({build:BUILD,signed_in:!!me,support:!!order.support,
   box:order.box?order.box.kind:null,palette:order.box?(order.box.palette||[]).length:0,
@@ -991,7 +993,7 @@ async function loadStyles(){
   if(stylesLoaded)return;
   const{data,error}=await sb.from('artistic_styles').select('*').eq('active',true).order('position');
   if(error)console.error('[artistic_styles]',error.message);
-  styles=data||[];stylesLoaded=!error;renderStyles();
+  styles=(data||[]).filter(s=>!s.status||s.status==='active');stylesLoaded=!error;renderStyles();
 }
 function renderStyles(){
   const t=$('style-track');t.innerHTML='';

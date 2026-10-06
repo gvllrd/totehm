@@ -94,11 +94,15 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 
 @media(max-width:600px){.slogan{width:min(60vw,185px)}.tagline{font-size:12px}}
 
-/* La barre de recherche : box rectangulaire pleine #626283, pas la tuile
-   perforee navy des boutons. `border-image:none` est obligatoire — sans lui
-   la tuile heritee de .line-input reste peinte PAR-DESSUS le fond. */
-#decode-input{background:#626283;border:6px solid #626283;border-image:none;
-  color:#fff;caret-color:#fff}
+/* 06/10 (ter) — Wah : « quand on appuie sur [Decode a Totehm Cloth], le survol
+   et le mode saisie en encadré box perforé bleu Navy ». Exception DEMANDÉE à
+   « aucun motif perforé comme fond de contrôle » : ce bouton-là et sa saisie
+   seuls. La tuile navy perforée (`--tile-btn`, 6 px, remplie) : une BOÎTE,
+   donc carrée. */
+#decode-btn:hover,#decode-btn:focus-visible{color:#fff;background:var(--navy);border:6px solid transparent;
+  border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;border-radius:0;outline:none}
+#decode-input{color:#fff;caret-color:#fff;background:var(--navy);border:6px solid transparent;
+  border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;border-radius:0}
 #decode-input::placeholder{color:rgba(255,255,255,.55)}
 #conn-bar{position:fixed;top:14px;left:16px;z-index:85;display:flex;align-items:center;gap:7px;background:none;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-weight:400;font-size:12px;letter-spacing:0;color:#b0b0b0;padding:4px;-webkit-tap-highlight-color:transparent;transition:color .2s}
 #conn-bar:hover{color:#fff}
@@ -126,6 +130,8 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 #conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
 #conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
 .tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
+
+
 
 
 
@@ -431,11 +437,11 @@ $('decode-input').addEventListener('keydown',async(e)=>{
   const INT={fight:'Fight',flow:'Flow',enrich:'Enrich',love:'Love',express:'Express',focus:'Focus',celebrate:'Celebrate'};
   let t;
   if(data.legacy) t='"'+(data.message||'')+'"';
-  else if(data.level==='locked') t=data.name+'\n'+(VUE[data.view]||'a box')+' · '+(data.created_at||'')+'\n\nThe box behind this cloth opens to FIGHER members.';
+  else if(data.level==='locked') t=data.name+'\n'+(VUE[data.view]||'a box')+' · '+(data.created_at||'')+(data.style?' · '+data.style:'')+'\n\nThe box behind this cloth opens to FIGHER members.';
   else{
     const ints=(data.is||[]).map(i=>INT[i]).filter(Boolean).join(' · ');
     const mat=data.matter&&typeof data.matter==='object'?Object.values(data.matter).flat().map(x=>x?.text||'').filter(Boolean):[];
-    t=data.name+'\n'+(VUE[data.view]||'')+(data.owner?' · by '+data.owner:'')+'\n\n"'+(data.text||'')+'"'+(ints?'\n'+ints:'')+(mat.length?'\n\n'+mat.join(' · '):'');
+    t=data.name+'\n'+(VUE[data.view]||'')+(data.owner?' · by '+data.owner:'')+(data.style?' · '+data.style:'')+'\n\n"'+(data.text||'')+'"'+(ints?'\n'+ints:'')+(mat.length?'\n\n'+mat.join(' · '):'');
   }
   $('decode-msg').textContent=t;
   $('decode-fs').classList.add('show');
@@ -510,7 +516,7 @@ document.querySelectorAll('[data-club]').forEach(a => a.addEventListener('click'
 }));
 
 /* Diagnostic — des booléens, jamais une valeur de membre. */
-const BUILD='2026-10-06-type';
+const BUILD='2026-10-06-decode';
 window.__totehm_boutique=()=>({ build:BUILD, page:'home', luxury_link:!!document.querySelector('a[href="/luxury"]'),
   club_links:document.querySelectorAll('[data-club]').length, logos:document.querySelectorAll('.brand-logo,img[src*="champion"]').length,
   collab:/Champion 2026/.test(document.getElementById('collab')?.textContent||''), branding_com:document.getElementById('brand-btn')?.dataset.com==='/',

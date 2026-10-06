@@ -54,13 +54,16 @@ for(const f of ['discover', 'discover_lisbon', 'get_higher', 'stoner', 'origins'
   const access = () => ({ mode:'quote', signed_in:true, thp:true, open:true, price_cents:50000, currency:'eur', orders:0, admin:false, test_mode:false, quotes });
   const { pg, ctx, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique',
     rpc: { luxury_access: access, my_trips: { trips:[], reps:[], wisdom:[], visions:[] },
-           my_box_matter: { text:'Run the hill', view:'habits', palette:['#E24B4A'], matter:{}, extra:{} } },
-    tables: { profiles:[{ pseudo:'Vallerand' }], totehms:[{ steps:[{ t:'Run the hill', f:'every_morning', is:['fight'] }] }] } });
+           my_box_matter: { text:'Run the hill', view:'habits', palette:['#E24B4A'], matter:{}, extra:{} },
+           name_available: b => !/^0\.taken$/i.test(b.candidate) },
+    tables: { profiles:[{ pseudo:'Vallerand' }], totehms:[{ steps:[{ t:'Run the hill', f:'every_morning', is:['fight'] }] }],
+              artistic_styles:[{ id:'11111111-1111-4111-8111-111111111111', name:'Ink Realism', image_url:null, status:'active', position:1, active:true },
+                               { id:'22222222-2222-4222-8222-222222222222', name:'Neon Glitch', image_url:null, status:'active', position:2, active:true }] } });
   const bodies = { quote:[], checkout:[] };
   await ctx.route('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/luxury-quote', r => {
     const b = JSON.parse(r.request().postData() || '{}'); bodies.quote.push(b);
-    if(b.action === 'request') quotes = [{ id:'q3', piece:b.piece, brand:b.brand, note:b.note, status:'requested', quote_cents:null, currency:'eur', view:'habits', text:'Run the hill', palette:['#E24B4A'], created_at:'2026-10-05T11:00:00Z' }, ...quotes];
-    r.fulfill({ status:200, contentType:'application/json', body: JSON.stringify({ ok:true, id:'q3', status:'requested' }) }); });
+    if(b.action === 'request') quotes = [{ id:'q3', piece:b.piece, brand:b.brand, note:b.note, status:'requested', quote_cents:null, currency:'eur', view:'habits', text:'Run the hill', palette:['#E24B4A'], created_at:'2026-10-05T11:00:00Z', name:'0.' + b.name, style:'Neon Glitch' }, ...quotes];
+    r.fulfill({ status:200, contentType:'application/json', body: JSON.stringify({ ok:true, id:'q3', status:'requested', name:'0.' + b.name }) }); });
   await ctx.route('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/luxury-checkout', r => {
     bodies.checkout.push(JSON.parse(r.request().postData() || '{}'));
     r.fulfill({ status:200, contentType:'application/json', body: JSON.stringify({ url:'https://checkout.stripe.test/lux' }) }); });
@@ -68,7 +71,7 @@ for(const f of ['discover', 'discover_lisbon', 'get_higher', 'stoner', 'origins'
   await pg.goto('https://www.higher.boutique/luxury');
   await pg.waitForFunction(() => window.__totehm_luxury && window.__totehm_luxury().price_loaded);
   const d0 = await pg.evaluate(() => window.__totehm_luxury());
-  ok(d0.build === '2026-10-06-type' && d0.mode === 'quote' && d0.quoted === 1 && d0.joystick, 'luxury: quote mode, one quote ready, joystick');
+  ok(d0.build === '2026-10-06-cloth-name' && d0.mode === 'quote' && d0.quoted === 1 && d0.joystick, 'luxury: quote mode, one quote ready, joystick');
   ok(/on quote · from €500/.test(await pg.textContent('#price')), 'the floor price from the server: on quote · from €500');
   ok(/€800/.test(await pg.textContent('#quotes')) && /Ready in 3 weeks/.test(await pg.textContent('#quotes')), 'my quote: €800 and Wah\'s word');
   ok((await pg.textContent('#nav-say')) === 'Pay', 'joystick center says PAY when a quote is ready');
@@ -83,11 +86,26 @@ for(const f of ['discover', 'discover_lisbon', 'get_higher', 'stoner', 'origins'
   await pg.click('#list .bx'); await pg.waitForSelector('#mt-go'); await pg.click('#mt-go');
   await pg.waitForSelector('#picked:not(.hide)');
   ok(/Run the hill/.test(await pg.textContent('#picked')), 'the box is picked from my TOTEHM (select mode)');
+  // 06/10 (ter) : le style du moment et le nom 0.{Nom}, exigés avant la demande
+  ok((await pg.$$eval('#style-track .style-item', l => l.map(e => e.textContent))).join('|') === 'Ink Realism|Neon Glitch', 'the styles of the moment, from artistic_styles');
+  await pg.click('#ask');
+  ok(/choose the style/.test(await pg.textContent('#ask-n')) && bodies.quote.length === 0, 'no style, no request');
+  await pg.click('#style-track .style-item >> nth=1');
+  await pg.click('#ask');
+  ok(/engrave its name/.test(await pg.textContent('#ask-n')) && bodies.quote.length === 0, 'no name, no request');
+  ok((await pg.textContent('#name-prefix')) === '0.', 'the name starts with 0. (this year of the collection)');
+  await pg.fill('#name-input', 'taken'); await pg.waitForFunction(() => /already taken/.test(document.getElementById('name-note').textContent));
+  ok(!(await pg.evaluate(() => window.__totehm_luxury().named)), 'a taken name is refused live (name_available)');
+  await pg.fill('#name-input', 'Sneaker Run'); await pg.waitForFunction(() => /available/.test(document.getElementById('name-note').textContent));
+  ok(/available/.test(await pg.textContent('#name-note')) && (await pg.textContent('#ask-n')) === '', 'a free name: available, the old warning leaves');
+  await pg.screenshot({ path: OUT + '/luxury_style_name.png', fullPage:true });
   await pg.click('#ask');
   await pg.waitForFunction(() => window.__totehm_luxury().quotes === 2);
   const q = bodies.quote[0];
   ok(q.action === 'request' && q.piece === 'shoes' && q.brand === 'Louis Vuitton' && q.note === 'white sneakers' && q.box.kind === 'habit' && q.box.ref === 'Run the hill' && q.price === undefined,
     'request sends piece, brand, note and a box REFERENCE — never a price');
+  ok(q.style === '22222222-2222-4222-8222-222222222222' && q.name === 'Sneaker Run', 'request sends the style id and the name WITHOUT its prefix (the server sets 0.)');
+  ok(/0\.Sneaker Run/.test(await pg.textContent('#quotes')) && /Neon Glitch/.test(await pg.textContent('#quotes')), 'my quote shows its cloth name and its style');
   ok(/waiting for our quote/.test(await pg.textContent('#quotes')), 'the new request waits for the quote');
   // payer le devis prêt : conditions d'abord
   await pg.click('[data-pay="q2"]');
