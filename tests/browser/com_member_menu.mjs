@@ -20,8 +20,8 @@ try{
    ok((await pg.textContent('[data-com-monetize]'))==='Monetize my TOTEHM ecosystem','an active paid membership does not turn off the creator sales invitation');
    ok(await pg.getAttribute('#totehm-menu a[href="/search"]','href')==='/search','Search keeps the full names/subscriptions/boxes controller');
    ok(await pg.locator('#btn-get-higher svg[aria-label="Higher"]').count()===1,'Get Higher uses the actual Higher badge');
-   const widths=await pg.locator('#totehm-menu .cm-action').evaluateAll(items=>items.every(e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return r.width<=e.parentElement.getBoundingClientRect().width+1&&s.backgroundColor==='rgb(36, 36, 40)'&&parseFloat(s.paddingLeft)+parseFloat(s.paddingRight)<=28;}));
-   ok(widths,'all seven dark buttons fit mobile text with proportional padding');
+   const widths=await pg.locator('#totehm-menu .cm-action').evaluateAll(items=>items.every(e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return r.width<=e.parentElement.getBoundingClientRect().width+1&&s.backgroundColor==='rgb(31, 31, 36)'&&s.whiteSpace==='nowrap'&&s.fontSize==='12.5px';}));
+   ok(widths,'06/10: all seven buttons are higher.boutique buttons, centred, on one line');
    ok(await pg.$eval('#mw-in-state',e=>e.lastElementChild.textContent.trim().toLowerCase())==='simple terms of use','terms remain the final member entry');
    await pg.screenshot({path:OUT+'/com_member_mobile.png'});
    await pg.click('[data-com-open]');await pg.waitForSelector('body:not(.gate)');

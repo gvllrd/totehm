@@ -24,7 +24,7 @@ const { pg, log } = await page(browser, { dir:'com', origin:'https://www.totehm.
 await pg.goto('https://www.totehm.com/console');
 await pg.waitForFunction(() => window.__totehm_console && window.__totehm_console().loaded, null, { timeout:15000 });
 let d = await pg.evaluate(() => window.__totehm_console());
-ok(d.build === '2026-10-05-com-aplomb' && d.period === 'year', 'console on totehm.com, offer per year');
+ok(d.build === '2026-10-06-menu' && d.period === 'year', 'console on totehm.com, offer per year');
 ok(!d.reveal && !/Reveal the Box/i.test(await pg.evaluate(() => document.body.innerText)), 'no Reveal the Box (the boutique is not the console)');
 ok(await pg.isDisabled('#open-on') && /Set my price first/i.test(await pg.textContent('#open-note')), 'step 3 waits for steps 1 and 2, and says why');
 await pg.screenshot({ path: OUT + '/console_start.png', fullPage:true });

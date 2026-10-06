@@ -1,11 +1,17 @@
-/* Normal dark text buttons, with the landing gesture outside their background. */
-.cm-menu{display:flex;flex-direction:column;align-items:flex-start;gap:17px;width:100%}
-.cm-item{display:flex;flex-direction:column;align-items:flex-start;gap:6px;max-width:100%}
-.cm-action{display:inline-flex;align-items:center;justify-content:center;gap:5px;inline-size:fit-content;max-inline-size:100%;padding:8px 12px;border:0;border-radius:10px;background:#242428;color:#b0b0b0;font:700 11px/1.6 'Space Mono',monospace;letter-spacing:0;text-align:left;text-decoration:none;cursor:pointer;white-space:normal;overflow-wrap:anywhere}
+/* 06/10 — Wah : « le menu de higher.boutique dans le menu espace membre de
+   totehm.com : les mêmes boutons, centré, plein écran ». Boutons gris
+   arrondis Space Mono (le `.btn-sig` de la boutique), légende dessous en
+   petites capitales, le tout centré ; le texte d'un bouton ne passe jamais
+   à la ligne. Source : tools/com_member_menu.css (copiée, jamais importée). */
+.cm-menu{display:flex;flex-direction:column;align-items:center;gap:18px;width:100%}
+.cm-item{display:flex;flex-direction:column;align-items:center;gap:7px;max-width:100%}
+.cm-action{display:inline-flex;align-items:center;justify-content:center;gap:6px;inline-size:fit-content;max-inline-size:100%;padding:12px 20px;border:0;border-radius:10px;background:#1f1f24;color:#b0b0b0;font:400 12.5px/1.4 'Space Mono',monospace;letter-spacing:0;text-align:center;text-decoration:none;cursor:pointer;white-space:nowrap}
 .cm-action svg{width:57px;height:19px;flex-shrink:0}
-.cm-hint{margin:0;padding:0 2px;font:400 9px/1.65 'Space Mono',monospace;color:#85858e;letter-spacing:0;text-align:left;max-width:100%;overflow-wrap:anywhere}
+.cm-hint{margin:0;font:700 8.6px/1.6 'Space Mono',monospace;letter-spacing:.22em;text-transform:uppercase;color:#6b6b72;text-align:center;max-width:100%}
 .cm-action:focus-visible{outline:1px solid #fff;outline-offset:3px}
-#menu:has(.cm-menu){max-height:calc(100dvh - 16px);overflow-y:auto;overscroll-behavior:contain}
-#menu .cm-menu{margin:0 0 12px}
-#member-window .cm-menu{padding:0 0 16px}
-@media(hover:hover){.cm-action:hover{background:#34343a;color:#fff}}
+#menu:has(.cm-menu){inset:0;width:100%;height:100dvh;max-height:none;background:#000;align-items:center;padding:max(64px,9dvh) 16px 40px;overflow-y:auto;overscroll-behavior:contain}
+#menu:has(.cm-menu) .m-it{width:fit-content;align-self:center;text-align:center;background:none;color:#8a8a92;font-size:10px}
+#menu .cm-menu{margin:0 0 26px}
+.cm-close{position:fixed;top:14px;right:16px;z-index:2;background:none;border:0;padding:6px;cursor:pointer;font:400 10px 'Space Mono',monospace;letter-spacing:.12em;color:#b0b0b0}
+#member-window .cm-menu{padding:0 0 22px}
+@media(hover:hover){.cm-action:hover{background:#2c2c32;color:#fff}.cm-close:hover,#menu:has(.cm-menu) .m-it:hover{color:#fff}}

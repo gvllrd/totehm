@@ -132,6 +132,8 @@ main{width:100%;max-width:520px;margin:0 auto;padding:max(84px,11dvh) 16px 96px;
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -157,19 +159,24 @@ main{width:100%;max-width:520px;margin:0 auto;padding:max(84px,11dvh) 16px 96px;
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
-<style data-com-member-menu="2026-10-05">
-/* Normal dark text buttons, with the landing gesture outside their background. */
-.cm-menu{display:flex;flex-direction:column;align-items:flex-start;gap:17px;width:100%}
-.cm-item{display:flex;flex-direction:column;align-items:flex-start;gap:6px;max-width:100%}
-.cm-action{display:inline-flex;align-items:center;justify-content:center;gap:5px;inline-size:fit-content;max-inline-size:100%;padding:8px 12px;border:0;border-radius:10px;background:#242428;color:#b0b0b0;font:700 11px/1.6 'Space Mono',monospace;letter-spacing:0;text-align:left;text-decoration:none;cursor:pointer;white-space:normal;overflow-wrap:anywhere}
+<style data-com-member-menu="2026-10-06">
+/* 06/10 — Wah : « le menu de higher.boutique dans le menu espace membre de
+   totehm.com : les mêmes boutons, centré, plein écran ». Boutons gris
+   arrondis Space Mono (le `.btn-sig` de la boutique), légende dessous en
+   petites capitales, le tout centré ; le texte d'un bouton ne passe jamais
+   à la ligne. Source : tools/com_member_menu.css (copiée, jamais importée). */
+.cm-menu{display:flex;flex-direction:column;align-items:center;gap:18px;width:100%}
+.cm-item{display:flex;flex-direction:column;align-items:center;gap:7px;max-width:100%}
+.cm-action{display:inline-flex;align-items:center;justify-content:center;gap:6px;inline-size:fit-content;max-inline-size:100%;padding:12px 20px;border:0;border-radius:10px;background:#1f1f24;color:#b0b0b0;font:400 12.5px/1.4 'Space Mono',monospace;letter-spacing:0;text-align:center;text-decoration:none;cursor:pointer;white-space:nowrap}
 .cm-action svg{width:57px;height:19px;flex-shrink:0}
-.cm-hint{margin:0;padding:0 2px;font:400 9px/1.65 'Space Mono',monospace;color:#85858e;letter-spacing:0;text-align:left;max-width:100%;overflow-wrap:anywhere}
+.cm-hint{margin:0;font:700 8.6px/1.6 'Space Mono',monospace;letter-spacing:.22em;text-transform:uppercase;color:#6b6b72;text-align:center;max-width:100%}
 .cm-action:focus-visible{outline:1px solid #fff;outline-offset:3px}
-#menu:has(.cm-menu){max-height:calc(100dvh - 16px);overflow-y:auto;overscroll-behavior:contain}
-#menu .cm-menu{margin:0 0 12px}
-#member-window .cm-menu{padding:0 0 16px}
-@media(hover:hover){.cm-action:hover{background:#34343a;color:#fff}}
-
+#menu:has(.cm-menu){inset:0;width:100%;height:100dvh;max-height:none;background:#000;align-items:center;padding:max(64px,9dvh) 16px 40px;overflow-y:auto;overscroll-behavior:contain}
+#menu:has(.cm-menu) .m-it{width:fit-content;align-self:center;text-align:center;background:none;color:#8a8a92;font-size:10px}
+#menu .cm-menu{margin:0 0 26px}
+.cm-close{position:fixed;top:14px;right:16px;z-index:2;background:none;border:0;padding:6px;cursor:pointer;font:400 10px 'Space Mono',monospace;letter-spacing:.12em;color:#b0b0b0}
+#member-window .cm-menu{padding:0 0 22px}
+@media(hover:hover){.cm-action:hover{background:#2c2c32;color:#fff}.cm-close:hover,#menu:has(.cm-menu) .m-it:hover{color:#fff}}
 </style>
 </head>
 <body>
@@ -281,7 +288,7 @@ async function comMemberBridge(sb, target, url, apiURL, publicKey) {
 wireComMemberMenu($('menu'),{bridge:(target,url)=>comMemberBridge(sb,target,url,SB_URL,SB_ANON)});
 
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
-const BUILD='2026-10-05-com-aplomb';
+const BUILD='2026-10-06-menu';
 
 const COLOR = { fight:'#E24B4A', flow:'#e48b31', enrich:'#fcbe21', love:'#639922', express:'#1D9E75', focus:'#378ADD', celebrate:'#7F77DD' };
 const money = (c, cur) => { try{ return new Intl.NumberFormat('en', { style:'currency', currency:(cur||'eur').toUpperCase(), maximumFractionDigits: c % 100 ? 2 : 0 }).format(c/100); }catch(_){ return (c/100) + ' ' + (cur||'eur'); } };
@@ -309,7 +316,7 @@ async function session(){
   if(avant!==(me?.id||null)) searchViews.forEach(c=>c.authChanged());
   $('member').classList.toggle('is-in', !!me);
   $('member-txt').textContent = me ? 'My TOTEHM' : 'CONNECT WITH MY TOTEHM';
-  $('menu').innerHTML=comMemberLinks(false,me?null:false)+(me?'<button class="m-it" type="button" data-out="1">Sign out</button>':'<button class="m-it" type="button" data-signin="1">CONNECT WITH MY TOTEHM</button>')+
+  $('menu').innerHTML='<button class="cm-close" type="button" data-menu-close="1">Close</button>'+comMemberLinks(false,me?null:false)+(me?'<button class="m-it" type="button" data-out="1">Sign out</button>':'<button class="m-it" type="button" data-signin="1">CONNECT WITH MY TOTEHM</button>')+
     '<a class="m-it m-terms" href="/terms" target="_blank" rel="noopener">Simple terms of use</a>';
   if(me){
     const uid=me.id;
@@ -323,7 +330,7 @@ async function session(){
 
 /* ══ CHERCHER UN TOTEHM : UN NOM, ET C'EST TOUT — copié de totehm.html ══ */
 const searchViews=new Set();
-function NameSearch({input,results,note,onResults=()=>{}}){
+function NameSearch({input,results,note,vide=true,onResults=()=>{}}){
   let seq=0,timer=0,rows=[];
   const href=p=>'/totehm?ro='+encodeURIComponent(p);
   const propre=v=>String(v||'').trim().replace(/^https?:\/\/[^/]+\//i,'').replace(/^@/,'').replace(/[/?#].*$/,'');
@@ -337,7 +344,7 @@ function NameSearch({input,results,note,onResults=()=>{}}){
   async function run(q,ouvrir=false){
     clearTimeout(timer); const mon=++seq, uid=me?.id||null;
     if(q.length===1){ rows=[]; draw(q); dire('two letters, minimum'); return; }
-    if(!q&&!me){ rows=[]; draw(q); dire(''); return; }
+    if(!q&&(!me||!vide)){ rows=[]; draw(q); dire(''); return; }   /* vide=false : rien avant la première lettre */
     if(q) dire('searching\u2026');
     const {data,error}=await sb.rpc('totehm_search',{p_q:q,p_limit:12});
     if(mon!==seq||uid!==(me?.id||null)) return;               /* réponse tardive : jetée */
@@ -508,6 +515,7 @@ $('si-code').addEventListener('input', async () => {
 /* ══ LE MENU ═════════════════════════════════════════════════════════ */
 $('member').onclick = () => $('menu').classList.toggle('is-open');
 $('menu').addEventListener('click', async e => {
+  if(e.target.closest('[data-menu-close]')){ $('menu').classList.remove('is-open'); return; }
   if(e.target.closest('[data-signin]')){
     $('menu').classList.remove('is-open');
     if(NAME && C?.ok && C.sale?.open && !C.viewer?.subscribed && !C.viewer?.can_read){ WANT = null; showSignin(); }

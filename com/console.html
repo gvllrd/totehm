@@ -116,6 +116,8 @@ h2 .st.is-on{color:#fff;background:var(--g5)}
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -142,19 +144,24 @@ h2 .st:hover,
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
-<style data-com-member-menu="2026-10-05">
-/* Normal dark text buttons, with the landing gesture outside their background. */
-.cm-menu{display:flex;flex-direction:column;align-items:flex-start;gap:17px;width:100%}
-.cm-item{display:flex;flex-direction:column;align-items:flex-start;gap:6px;max-width:100%}
-.cm-action{display:inline-flex;align-items:center;justify-content:center;gap:5px;inline-size:fit-content;max-inline-size:100%;padding:8px 12px;border:0;border-radius:10px;background:#242428;color:#b0b0b0;font:700 11px/1.6 'Space Mono',monospace;letter-spacing:0;text-align:left;text-decoration:none;cursor:pointer;white-space:normal;overflow-wrap:anywhere}
+<style data-com-member-menu="2026-10-06">
+/* 06/10 — Wah : « le menu de higher.boutique dans le menu espace membre de
+   totehm.com : les mêmes boutons, centré, plein écran ». Boutons gris
+   arrondis Space Mono (le `.btn-sig` de la boutique), légende dessous en
+   petites capitales, le tout centré ; le texte d'un bouton ne passe jamais
+   à la ligne. Source : tools/com_member_menu.css (copiée, jamais importée). */
+.cm-menu{display:flex;flex-direction:column;align-items:center;gap:18px;width:100%}
+.cm-item{display:flex;flex-direction:column;align-items:center;gap:7px;max-width:100%}
+.cm-action{display:inline-flex;align-items:center;justify-content:center;gap:6px;inline-size:fit-content;max-inline-size:100%;padding:12px 20px;border:0;border-radius:10px;background:#1f1f24;color:#b0b0b0;font:400 12.5px/1.4 'Space Mono',monospace;letter-spacing:0;text-align:center;text-decoration:none;cursor:pointer;white-space:nowrap}
 .cm-action svg{width:57px;height:19px;flex-shrink:0}
-.cm-hint{margin:0;padding:0 2px;font:400 9px/1.65 'Space Mono',monospace;color:#85858e;letter-spacing:0;text-align:left;max-width:100%;overflow-wrap:anywhere}
+.cm-hint{margin:0;font:700 8.6px/1.6 'Space Mono',monospace;letter-spacing:.22em;text-transform:uppercase;color:#6b6b72;text-align:center;max-width:100%}
 .cm-action:focus-visible{outline:1px solid #fff;outline-offset:3px}
-#menu:has(.cm-menu){max-height:calc(100dvh - 16px);overflow-y:auto;overscroll-behavior:contain}
-#menu .cm-menu{margin:0 0 12px}
-#member-window .cm-menu{padding:0 0 16px}
-@media(hover:hover){.cm-action:hover{background:#34343a;color:#fff}}
-
+#menu:has(.cm-menu){inset:0;width:100%;height:100dvh;max-height:none;background:#000;align-items:center;padding:max(64px,9dvh) 16px 40px;overflow-y:auto;overscroll-behavior:contain}
+#menu:has(.cm-menu) .m-it{width:fit-content;align-self:center;text-align:center;background:none;color:#8a8a92;font-size:10px}
+#menu .cm-menu{margin:0 0 26px}
+.cm-close{position:fixed;top:14px;right:16px;z-index:2;background:none;border:0;padding:6px;cursor:pointer;font:400 10px 'Space Mono',monospace;letter-spacing:.12em;color:#b0b0b0}
+#member-window .cm-menu{padding:0 0 22px}
+@media(hover:hover){.cm-action:hover{background:#2c2c32;color:#fff}.cm-close:hover,#menu:has(.cm-menu) .m-it:hover{color:#fff}}
 </style>
 </head>
 <body>
@@ -335,7 +342,7 @@ async function comMemberBridge(sb, target, url, apiURL, publicKey) {
 wireComMemberMenu($('menu'),{bridge:(target,url)=>comMemberBridge(sb,target,url,SB_URL,SB_ANON)});
 
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
-const BUILD='2026-10-05-com-aplomb';
+const BUILD='2026-10-06-menu';
 const money = (c, cur) => { try{ return new Intl.NumberFormat('en', { style:'currency', currency:(cur||'eur').toUpperCase(), maximumFractionDigits: (c||0) % 100 ? 2 : 0 }).format((c||0)/100); }catch(_){ return ((c||0)/100) + ' ' + (cur||'eur'); } };
 const day = iso => iso ? new Date(iso).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—';
 async function fn(name, body){
@@ -355,11 +362,11 @@ window.__totehm_console = () => ({ build: BUILD, signed_in: !!me, loaded: !!C, v
 function paintMenu(){
   $('member').classList.toggle('is-in', !!me);
   $('member-txt').textContent = me ? (C?.pseudo || 'My TOTEHM') : 'CONNECT WITH MY TOTEHM';
-  $('menu').innerHTML=comMemberLinks(false,me?(typeof C?.offer?.enabled==='boolean'?C.offer.enabled:null):false)+(me?'<button class="m-it" type="button" data-out="1">Sign out</button>':'')+
+  $('menu').innerHTML='<button class="cm-close" type="button" data-menu-close="1">Close</button>'+comMemberLinks(false,me?(typeof C?.offer?.enabled==='boolean'?C.offer.enabled:null):false)+(me?'<button class="m-it" type="button" data-out="1">Sign out</button>':'')+
     '<a class="m-it m-terms" href="/terms" target="_blank" rel="noopener">Simple terms of use</a>';
 }
 $('member').onclick = () => { if(!me){ $('si-email').focus(); return; } $('menu').classList.toggle('is-open'); };
-$('menu').addEventListener('click', async e => { if(e.target.closest('[data-out]')){ await sb.auth.signOut({ scope:'local' }); me = null; C = null; $('menu').classList.remove('is-open'); start(); } });
+$('menu').addEventListener('click', async e => { if(e.target.closest('[data-menu-close]')){ $('menu').classList.remove('is-open'); return; } if(e.target.closest('[data-out]')){ await sb.auth.signOut({ scope:'local' }); me = null; C = null; $('menu').classList.remove('is-open'); start(); } });
 document.addEventListener('pointerdown', e => { if(!e.target.closest('#menu,#member')) $('menu').classList.remove('is-open'); });
 document.addEventListener('keydown', e => { if(e.key === 'Escape') $('menu').classList.remove('is-open'); });
 
