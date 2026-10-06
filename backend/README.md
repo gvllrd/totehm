@@ -1,6 +1,12 @@
 # TOTEHM · backend
 
 
+## 06/10/2026 — delete a space: `space_delete` + Edge Function `space-delete`
+
+`space_delete(p_spot uuid)` (authenticated, owner only) sets the space `cancelled` (existing status), clears its media references and returns them (`{ok, media:{video_id, bunny, paths}}`, `why=signin|not_found`); media still used by another published space is not returned. Every reader filters `published`, so the space disappears everywhere at once. Migration `20261006100000_space_delete.sql` applied once as `space_delete`; test `tests/sql/space_delete_selftest.sql` (rolled back, `FAIL={}`).
+
+Edge Function `space-delete` (verify_jwt): POST `{spot}` with the member's JWT → calls the RPC under that session → deletes the Bunny video (+ its `videos` row) and the owner's files in bucket `moments`; returns `{ok, removed:{clip, files}}`, 401 `signin`, 400 `spot`, 404 `not_found`, 503 `try_again`. Deploy with `_shared/origins.ts` and `_shared/bunny.ts`. Called by COM My spaces and SPACE (My spaces, a space's sheet).
+
 ## 05/10/2026 — `habit_spaces`: SPACE inside COM's Habit Boxes
 
 `habit_spaces(p_pseudo text default null)` returns `{ok, mine, habits:[{habit, total, spaces}]}` (`why=signin|nobody`). Empty pseudo = my published spaces (private and shared); another member = their `shared` spaces only. Grouped by `lower(btrim(habit))`; at most 3 per Habit (live, next upcoming, latest past) + total. Every space is `_spot_view(p, auth.uid())`, the SPACE rights unchanged (exact place only when `_spot_exact` allows). Authenticated only. Migration `20261005200000_habit_spaces.sql` applied once as `habit_spaces`. Test `tests/sql/habit_spaces_selftest.sql` (rolled back, `FAIL={}`). COM front: a closed Habit Box says "N spaces"; open, up to three minis; a tap opens SPACE `?spot=id` through the SSO bridge.

@@ -27,6 +27,12 @@ intentionnel (tables internes RLS sans accès direct) ; propriété/grants test�
 > haut » peut viser la racine ou un autre dossier. Procédures : `README.md`. État mesuré : `SYSTEM.md` (§0 d'abord).
 
 
+## SPACE · 06/10/2026 — supprimer un space : `space_delete` + `space-delete`
+
+Migration additive `20261006100000_space_delete.sql`, appliquée UNE fois sous `space_delete`. `space_delete(p_spot uuid)` : security definer, authenticated seulement (public/anon révoqués), propriétaire seul (`auth.uid()`), `why=signin|not_found`. Le space passe `cancelled` (le statut existant, la contrainte ne change pas) : tous les lecteurs ne lisent que `published` (my_spaces, habit_spaces, spot_get, fil, radar, liste, `_clip_readable`) → il disparaît partout. Ses références média (`video`, `photo`, `video_id`) sont vidées sur la ligne et RENDUES (`media:{video_id, bunny, paths}`), sauf si un autre space publié les utilise encore. `spots.active=false`, candidatures héritées annulées. Auto-test `tests/sql/space_delete_selftest.sql` (annulé) : `FAIL={}` (un étranger ne supprime rien ; deux fois = not_found).
+
+Edge Function `space-delete` (v1, JWT exigé) : appelle `space_delete` SOUS la session du membre (jamais d'après le corps), puis efface le média rendu — la vidéo Bunny (`DELETE /videos/{id}`, 404 accepté) et sa ligne `videos` (propriétaire), les fichiers du seau `moments` rangés dans SON dossier. Un média qui résiste est journalisé, la suppression tient (le space ne se lit déjà plus). CORS `corsHeaders(origin, SITE_SPACE)`. COM et SPACE l'appellent.
+
 ## COM · 05/10/2026 — `habit_spaces` : SPACE dans les habitudes de COM
 
 Migration additive `20261005200000_habit_spaces.sql` appliquée UNE fois sous `habit_spaces`. `habit_spaces(p_pseudo text default null)` : security definer, stable, authenticated seulement (public/anon révoqués). Vide = MES spaces publiés (privés et partagés) ; un autre membre = ses spaces `shared` seulement. Regroupés par `lower(btrim(habit))`, trois au plus (en cours, à venir le plus proche, passés les plus récents) + `total`. Chaque space passe par `_spot_view(p, auth.uid())` : AUCUNE règle nouvelle (le point exact seulement si `_spot_exact` l'accorde). Rend `{ok, mine, habits:[{habit,total,spaces}]}` ; `why=signin|nobody`. Auto-test `tests/sql/habit_spaces_selftest.sql` (annulé) : `FAIL={}`.
