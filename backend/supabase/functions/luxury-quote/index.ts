@@ -6,7 +6,10 @@
 // how : une fonction, quatre gestes, le compte vient TOUJOURS de la session :
 //       request — le membre (THP vérifié ici, `_art_owns_thp`) ; la Box est
 //                 relue en base dans SON Totehm (`_box_matter`), jamais reçue ;
-//                 trois demandes ouvertes au plus.
+//                 trois demandes ouvertes au plus. 06/10 (ter) : le style du
+//                 moment (`artistic_styles` actif) et le NOM du Totehm Cloth —
+//                 le membre écrit {Nom}, le serveur pose le préfixe de l'année
+//                 (`0.` = 2026-27) : « 0.{Nom} », celui que Decode lit.
 //       price   — un administrateur (`boutique_admins`) pose le prix : c'est
 //                 le « oui » de Wah sur un prix live, par construction.
 //       decline — un administrateur refuse, avec un mot.
@@ -32,6 +35,9 @@ const PAGE = SITE_BOUT + "/luxury";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const clean = (v: unknown, n: number) => String(v ?? "").replace(/\s+/g, " ").trim().slice(0, n);
+// L'année de la collection, comme `epochPrefix()` de la boutique : 0 de juin
+// 2026 à mai 2027, 1 l'année suivante.
+const epoch = () => { const d = new Date(), y = d.getUTCFullYear(); return Math.max((d.getUTCMonth() >= 5 ? y : y - 1) - 2026, 0); };
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 const money = (c: number, cur: string) =>
   (c / 100).toLocaleString("en-GB", { style: "currency", currency: cur.toUpperCase(), minimumFractionDigits: c % 100 ? 2 : 0 });
@@ -109,22 +115,36 @@ Deno.serve(async (req) => {
     if (cErr) { console.error("[luxury-quote] count:", cErr.message); return json({ error: "unavailable" }, 503); }
     if ((count ?? 0) >= 3) return json({ error: "too_many" }, 429);
 
+    // Le style : curaté, ouvert (MASTER §53), relu ici. Le nom : préfixé ici.
+    const styleId = String(body.style ?? "");
+    if (!UUID.test(styleId)) return json({ error: "choose_a_style" }, 422);
+    const { data: st, error: stErr } = await admin.from("artistic_styles").select("id, active, status").eq("id", styleId).maybeSingle();
+    if (stErr) { console.error("[luxury-quote] style:", stErr.message); return json({ error: "unavailable" }, 503); }
+    if (!st?.active || (st.status && st.status !== "active")) return json({ error: "choose_a_style" }, 422);
+    const bare = clean(body.name, 40).replace(/^\d+\./, "").trim();
+    if (bare.length < 2) return json({ error: "name" }, 422);
+    const name = `${epoch()}.${bare}`;
+    const { data: free, error: nErr } = await admin.rpc("name_available", { candidate: name });
+    if (nErr) { console.error("[luxury-quote] name:", nErr.message); return json({ error: "unavailable" }, 503); }
+    if (free !== true) return json({ error: "name_taken" }, 409);
+
     const piece = PIECES.includes(body.piece as typeof PIECES[number]) ? String(body.piece) : "other";
     const brand = clean(body.brand, 40) || "Other";
     const note = clean(body.note, 280) || null;
     const email = user.email.trim().toLowerCase();
     const { data: q, error } = await admin.from("luxury_quotes").insert({
       user_id: user.id, email, piece, brand, note, box_kind: box.kind, box_ref: String(box.ref),
-      box_snapshot: snap, palette: snap.palette ?? [],
+      box_snapshot: snap, palette: snap.palette ?? [], name, style_id: styleId,
     }).select("id").single();
+    if (error?.code === "23505") return json({ error: "name_taken" }, 409);   // deux demandes, un nom : l'index tranche
     if (error) { console.error("[luxury-quote] insert:", error.message); return json({ error: "db" }, 500); }
 
     await send([email], "Your luxury quote request is in",
-      mail("REQUEST RECEIVED", [`${brand} · ${piece}`, "We study your piece and your Box, then we answer with a price."]));
+      mail("REQUEST RECEIVED", [name, `${brand} · ${piece}`, "We study your piece and your Box, then we answer with a price."]));
     await send(await adminEmails(), `Luxury quote · ${brand} · ${piece}`,
-      mail("NEW QUOTE REQUEST", [`${brand} · ${piece}`, note ?? "", `Box: ${String(snap.text).slice(0, 140)}`],
+      mail("NEW QUOTE REQUEST", [name, `${brand} · ${piece}`, note ?? "", `Box: ${String(snap.text).slice(0, 140)}`],
         { href: PAGE + "#admin", label: "Answer with a price" }));
-    return json({ ok: true, id: q.id, status: "requested" });
+    return json({ ok: true, id: q.id, status: "requested", name });
   }
 
   // ── LE RETRAIT — le membre, sa demande seulement ────────────────────────
