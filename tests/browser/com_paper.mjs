@@ -44,15 +44,15 @@ try{
   await tourner(pg,260);
   ok(await pg.evaluate(()=>document.activeElement.id)==='srch-q','retourné à la main : la saisie a le focus dès le relâché (clavier du téléphone)');
   await pg.waitForTimeout(1500);
-  const z=await pg.evaluate(()=>{const q=document.getElementById('srch-q');return{srch:document.getElementById('srch').className,v:q.value,sel:[q.selectionStart,q.selectionEnd],
+  const z=await pg.evaluate(()=>{const q=document.getElementById('srch-q');return{srch:document.getElementById('srch').className,v:q.value,ph:q.placeholder,sel:[q.selectionStart,q.selectionEnd],
     ff:getComputedStyle(q).fontFamily,tq:getComputedStyle(q).transform,tb:getComputedStyle(document.getElementById('srch-bg')).transform,
     bg:getComputedStyle(document.getElementById('srch-bg')).backgroundImage.includes('333366')};});
   ok(/is-open/.test(z.srch),'la recherche est dépliée');
-  ok(z.v==='wahigher'&&z.sel[0]===0&&z.sel[1]===8,'le champ EST le nom, déjà sélectionné : taper le change');
+  ok(z.v===''&&z.ph==="a member's name",'06/10 : le champ est vide, on tape le nom d\'un membre');
   ok(/Quantico/.test(z.ff)&&z.tq==='matrix(1, 0, 0, 1, 0, 0)'&&z.tb==='matrix(1, 0, 0, 1, 0, 0)'&&z.bg,'zoom fini : le fond est le papier navy, le nom en Quantico à sa taille');
   c=await card(pg);ok((await lsd(pg)).face===1&&c.cls==='is-back is-flat'&&c.tf==='','dessous, le papier est posé sur son verso, sans transformation');
   ok(await pg.$eval('#gate',e=>e.inert&&getComputedStyle(e).visibility==='visible'),'#gate est inert mais reste peint (le Totehm dessous ne se révèle jamais)');
-  ok(JSON.stringify(await pg.$$eval('.srch-name',e=>e.map(x=>x.textContent)))==='["wanda_flow"]','sans frappe : mes abonnements');
+  ok((await pg.$$eval('.srch-name',e=>e.length))===0,'06/10 : sans frappe, rien (une recherche, pas une liste)');
   await pg.keyboard.type('wa',{delay:30});await pg.waitForTimeout(260);await pg.keyboard.type('h',{delay:30});await pg.waitForTimeout(1500);
   const names=await pg.$$eval('.srch-name',e=>e.map(x=>x.textContent));
   ok(JSON.stringify(names)==='["wah"]','course réseau : « wa » (lent) ne recouvre pas « wah » → '+names);
@@ -71,7 +71,7 @@ try{
   ok(!await pg.$eval('#gate',e=>e.inert)&&JSON.stringify(await R(pg,'#gate-asteroid'))===JSON.stringify(paper),'le papier est de nouveau atteignable, exactement à sa place');
   ok(await pg.textContent('#ast-name')==='wahigher','son dos porte de nouveau MON nom');
   // le mot du bas : retourner = chercher ; Échap ferme
-  await pg.click('#search-corner',{force:true});
+  await pg.$eval('#search-corner',e=>e.click());
   ok(await pg.evaluate(()=>document.activeElement.id)==='srch-q','le mot du bas : le focus est pris dans le clic');
   await pg.waitForTimeout(1700);ok(/is-open/.test(await srch(pg)),'le mot du bas retourne le papier et ouvre la recherche');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(2000);
@@ -121,7 +121,7 @@ try{
   await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
   await tourner(pg,260);await pg.waitForTimeout(200);
   ok(await srch(pg)===''&&(await card(pg)).tf==='','mouvement réduit : aucun geste n\'est écouté');
-  await pg.click('#search-corner',{force:true});await pg.waitForTimeout(150);
+  await pg.$eval('#search-corner',e=>e.click());await pg.waitForTimeout(150);
   ok(/is-open/.test(await srch(pg)),'mouvement réduit : le mot du bas ouvre la recherche sans animation');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(150);
   ok(await srch(pg)===''&&(await lsd(pg)).face===0,'mouvement réduit : fermée, le papier est de nouveau sur son recto');}

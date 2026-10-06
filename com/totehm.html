@@ -1276,6 +1276,12 @@ body.v-visions{--paper:#2b3a73}
 .v-col>.v-name{padding-right:18px}
 .habit.open .v-col>.v-name,.habit.open .v-col>.v-name[contenteditable]{padding-right:56px}
 .v-col.is-zoom{zoom:1.25}
+/* COPIER (lecture seule) : au bout de la ligne d'unité, un contrôle gris arrondi. */
+.v-sub .copie{margin-left:auto;background:rgba(16,16,20,.55);border:0;border-radius:10px;padding:3px 9px;cursor:pointer;
+  font-family:'Space Mono',monospace;font-weight:700;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:#fff;white-space:nowrap}
+.v-sub .copie.is-done{background:none;color:rgba(255,255,255,.72);cursor:default}
+.v-sub .copie[disabled]:not(.is-done){opacity:.6}
+@media(hover:hover){.v-sub .copie:not(.is-done):hover{background:rgba(16,16,20,.85)}}
 .v-col.is-zoom .loupe{zoom:.8}
 @media(hover:hover){.loupe:hover{color:#fff}}
 
@@ -1797,8 +1803,10 @@ body.ro #ro-bar{display:flex}
    place) : c'est le reste qui recule de sa hauteur, 38 px.
    `--band-t` en découle, donc la liste suit toute seule. */
 body.ro{--ro-h:38px}
-body.ro #joy{top:calc(24px + var(--ro-h))}
+/* 06/10 : le joystick vit EN BAS (#joy{top:auto;bottom}) ; la règle qui le
+   descendait sous la barre de lecture le remontait EN HAUT, sur le titre. */
 body.ro #bigT{top:calc(26px + var(--ro-h))}
+body.ro #fold-x{top:calc(10px + var(--ro-h))}   /* 06/10 : la croix passait sous la barre de lecture */
 body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
 #ro-who{font-family:'Quantico',sans-serif;font-weight:700;font-size:13px;color:#fff;
   display:flex;align-items:center;gap:5px}
@@ -1904,6 +1912,11 @@ body.ro #fv-inner{top:calc(var(--band-t) + var(--ro-h))}
 #member-window.show{display:flex}
 .mw-card{background:#131316;border:none;max-width:360px;width:100%;padding:30px 24px;text-align:center;position:relative;max-height:88vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .mw-card::-webkit-scrollbar{width:0;display:none}
+/* 06/10 — Wah : le menu espace membre = le menu de higher.boutique : PLEIN ÉCRAN,
+   centré, les mêmes boutons (voir le bloc copié `data-com-member-menu`). */
+#member-window{background:#000;align-items:flex-start;padding:0;overflow-y:auto;overscroll-behavior:contain}
+#member-window .mw-card{background:none;max-width:560px;margin:0 auto;padding:max(60px,9dvh) 16px 48px;max-height:none;overflow:visible}
+#member-window .mw-close{position:fixed;top:14px;right:16px;font-size:10px;letter-spacing:.12em;padding:6px}
 /* ══ LE DASHBOARD : #settings vit désormais dans la fenêtre membre ══
    Tous les réglages (nom, visibilité, abonnement, suppression) sous un seul toit. */
 #mw-in-state #settings.mw-dash{max-width:none;margin:0;padding:16px 0 0;gap:12px;background:none}
@@ -2310,12 +2323,22 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
    est le point d'entrée de la recherche des Totehms. L'atterrissage garde
    son objet unique (le papier, sans barre de recherche depuis le 24/09) ;
    un seul mot, en bas, mène à /search — invité compris. */
-#search-corner{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:4;white-space:nowrap;
-  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;
-  text-transform:uppercase;color:#8a8a8a;text-decoration:none;
-  padding:6px 2px;transition:color .15s ease,opacity .25s ease}
-body.gate.entered #search-corner{opacity:0;pointer-events:none}
-@media(hover:hover){#search-corner:hover{color:#fff}}
+/* ══ LES TROIS GESTES · 06/10/2026 ═══════════════════════════════════
+   Wah : « en bas, le texte change avec les trois commandes du Totehm ».
+   Un seul visible à la fois (fondu, `is-on`), toutes les 3,4 s ; survolé
+   ou au clavier, il s'arrête sur celui qu'on vise. Verso : « Turn it back ». */
+#gestes{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:4;
+  width:min(100vw,520px);height:30px;transition:opacity .25s ease}
+.geste{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:center;gap:6px;height:30px;
+  background:none;border:none;margin:0;padding:6px 2px;cursor:pointer;white-space:nowrap;
+  font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:#9a9aa2;text-decoration:none;opacity:0;pointer-events:none;transition:opacity .45s ease,color .15s ease}
+.geste.is-on,.geste:focus-visible{opacity:1;pointer-events:auto}
+.geste svg{width:42px;height:14px;flex:none}
+body.gate.entered #gestes{opacity:0;pointer-events:none}
+body.gate.entered .geste{pointer-events:none}
+@media(prefers-reduced-motion:reduce){.geste{transition:none}}
+@media(hover:hover){.geste:hover{color:#fff}}
 
 /* ══ LE VERSO RETOURNÉ : ON ZOOME DANS LE PAPIER · 02/10/2026 ═════════
    Wah : « directement sur le fond bleu, comme si on zoomait et que l'on
@@ -2912,6 +2935,8 @@ body.gate.entered #filter-badge{
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -2940,6 +2965,7 @@ body.gate.entered #filter-badge{
 .pk-say:hover,
 .w-x:hover,
 .loupe:hover,
+.v-sub .copie.is-done:hover,
 .blk-lbl:hover,
 .blk-x:hover,
 .blk-u:hover,
@@ -3008,7 +3034,7 @@ body.gate.entered #filter-badge{
 .door-q:hover,
 #gate-turn:hover,
 #terms-corner:hover,
-#search-corner:hover,
+.geste:hover,
 #srch-q:hover::placeholder,
 .srch-hint:hover,
 .srch-meta:hover,
@@ -3027,19 +3053,24 @@ body.gate.entered #filter-badge{
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
-<style data-com-member-menu="2026-10-05">
-/* Normal dark text buttons, with the landing gesture outside their background. */
-.cm-menu{display:flex;flex-direction:column;align-items:flex-start;gap:17px;width:100%}
-.cm-item{display:flex;flex-direction:column;align-items:flex-start;gap:6px;max-width:100%}
-.cm-action{display:inline-flex;align-items:center;justify-content:center;gap:5px;inline-size:fit-content;max-inline-size:100%;padding:8px 12px;border:0;border-radius:10px;background:#242428;color:#b0b0b0;font:700 11px/1.6 'Space Mono',monospace;letter-spacing:0;text-align:left;text-decoration:none;cursor:pointer;white-space:normal;overflow-wrap:anywhere}
+<style data-com-member-menu="2026-10-06">
+/* 06/10 — Wah : « le menu de higher.boutique dans le menu espace membre de
+   totehm.com : les mêmes boutons, centré, plein écran ». Boutons gris
+   arrondis Space Mono (le `.btn-sig` de la boutique), légende dessous en
+   petites capitales, le tout centré ; le texte d'un bouton ne passe jamais
+   à la ligne. Source : tools/com_member_menu.css (copiée, jamais importée). */
+.cm-menu{display:flex;flex-direction:column;align-items:center;gap:18px;width:100%}
+.cm-item{display:flex;flex-direction:column;align-items:center;gap:7px;max-width:100%}
+.cm-action{display:inline-flex;align-items:center;justify-content:center;gap:6px;inline-size:fit-content;max-inline-size:100%;padding:12px 20px;border:0;border-radius:10px;background:#1f1f24;color:#b0b0b0;font:400 12.5px/1.4 'Space Mono',monospace;letter-spacing:0;text-align:center;text-decoration:none;cursor:pointer;white-space:nowrap}
 .cm-action svg{width:57px;height:19px;flex-shrink:0}
-.cm-hint{margin:0;padding:0 2px;font:400 9px/1.65 'Space Mono',monospace;color:#85858e;letter-spacing:0;text-align:left;max-width:100%;overflow-wrap:anywhere}
+.cm-hint{margin:0;font:700 8.6px/1.6 'Space Mono',monospace;letter-spacing:.22em;text-transform:uppercase;color:#6b6b72;text-align:center;max-width:100%}
 .cm-action:focus-visible{outline:1px solid #fff;outline-offset:3px}
-#menu:has(.cm-menu){max-height:calc(100dvh - 16px);overflow-y:auto;overscroll-behavior:contain}
-#menu .cm-menu{margin:0 0 12px}
-#member-window .cm-menu{padding:0 0 16px}
-@media(hover:hover){.cm-action:hover{background:#34343a;color:#fff}}
-
+#menu:has(.cm-menu){inset:0;width:100%;height:100dvh;max-height:none;background:#000;align-items:center;padding:max(64px,9dvh) 16px 40px;overflow-y:auto;overscroll-behavior:contain}
+#menu:has(.cm-menu) .m-it{width:fit-content;align-self:center;text-align:center;background:none;color:#8a8a92;font-size:10px}
+#menu .cm-menu{margin:0 0 26px}
+.cm-close{position:fixed;top:14px;right:16px;z-index:2;background:none;border:0;padding:6px;cursor:pointer;font:400 10px 'Space Mono',monospace;letter-spacing:.12em;color:#b0b0b0}
+#member-window .cm-menu{padding:0 0 22px}
+@media(hover:hover){.cm-action:hover{background:#2c2c32;color:#fff}.cm-close:hover,#menu:has(.cm-menu) .m-it:hover{color:#fff}}
 </style>
 </head>
 <body class="gate">
@@ -3053,7 +3084,13 @@ body.gate.entered #filter-badge{
        (la porte pour un invité, la fenêtre membre pour un inscrit). -->
   <!-- 02/10 : ce mot RETOURNE le papier (JS) ; sans JS, il mène toujours à
        /search, la même recherche sur sa propre page. -->
-  <a id="search-corner" href="/search">Turn it over · search a TOTEHM</a>
+  <!-- 06/10 : les TROIS gestes du papier, l'un après l'autre (Wah). Chacun
+       FAIT ce qu'il dit : ouvrir, le poser sur la langue, le retourner. -->
+  <div id="gestes">
+    <button class="geste is-on" id="geste-tap" type="button">Tap it to open it</button>
+    <button class="geste" id="geste-tongue" type="button">Put it on your tongue to Get<svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg></button>
+    <a class="geste" id="search-corner" href="/search">Turn it over to search a member's TOTEHM</a>
+  </div>
 
 <section id="gate-hero">
   <!-- LA CARTE DE VISITE, au-dessus du logo : mon nom, qui me voit, et
@@ -3186,9 +3223,9 @@ a Totehm</span>
   <div id="srch-bg"></div>
   <div id="srch-ui">
     <input id="srch-q" type="text" inputmode="search" enterkeyhint="search" maxlength="24"
-           placeholder="a Totehm" autocomplete="off" autocapitalize="off" spellcheck="false"
-           aria-label="Search a Totehm by name">
-    <div class="srch-hint srch-after" id="srch-hint">change the name · find another TOTEHM</div>
+           placeholder="a member's name" autocomplete="off" autocapitalize="off" spellcheck="false"
+           aria-label="Search a member's TOTEHM by name">
+    <div class="srch-hint srch-after" id="srch-hint">search a member's TOTEHM · enter opens it</div>
     <div class="note dim srch-after" id="srch-note" role="status" aria-live="polite"></div>
     <div id="srch-res" class="srch-after"></div>
   </div>
@@ -4044,7 +4081,7 @@ async function cloudLoad(){
    page de vente (`/@nom`), comme le 30/09. Une réponse tardive (compte
    changé entre-temps) est jetée (`roSeq`). */
 async function loadRO(){
-  ZOOM.clear();
+  ZOOM.clear(); COPIES.clear();
   const seq=++roSeq,uid=me?.id;
   const {data,error}=await sb.rpc('totehm_of',{p_pseudo:RO});
   if(seq!==roSeq||uid!==me?.id)return false;
@@ -4643,7 +4680,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-06-spaces-loupe';
+const BUILD='2026-10-06-lecture-copie';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -5231,7 +5268,7 @@ function boiteHTML(o){
     : '<span class="v-name">'+esc(o.titre||'untitled')+'</span>';
   return '<span class="v-col'+(ZOOM.has(o.kind+':'+String(o.id))?' is-zoom':'')+'"'+(o.ouverte?'':' data-open="'+o.kind+':'+esc(String(o.id))+'" role="button" tabindex="0"')+'>'
     + nom
-    + (o.unit ?'<span class="v-sub">'+o.unit+'</span>':'')
+    + ((o.unit||RO) ?'<span class="v-sub">'+(o.unit||'')+(RO?copieHTML(o.kind+':'+String(o.id)):'')+'</span>':'')
     /* LE CHOIX SE POSE AU-DESSUS DE CE QU'IL CONCERNE. Régler l'intention
        ou le rythme, c'est régler L'HABITUDE : le choix s'ouvre sous sa
        ligne, avant ses objectifs et ses répulsions. Un lookup, lui,
@@ -5249,6 +5286,29 @@ function boiteHTML(o){
     + (o.ouverte?'<button type="button" class="w-x" data-x="1" aria-label="Close">&times;</button>':'')
     + loupeHTML(o.kind+':'+String(o.id))
     +'</span>';
+}
+/* ══ COPIER UNE BOX DANS MON TOTEHM · 06/10/2026 ══════════════════════
+   Wah : « parcourir le Totehm de l'autre, avec dans chaque box une seule
+   fonction : la copier dans mon Totehm ». En LECTURE seulement. Le serveur
+   (`totehm_import_boxes`) revérifie la lecture, ne reçoit que des
+   RÉFÉRENCES (jamais un texte du navigateur) et réutilise une box identique
+   déjà à moi. Une habitude se désigne par son texte, les autres par leur id. */
+const COPIES=new Map();
+const copieHTML=k=>{ const fait=COPIES.get(k);
+  return '<button type="button" class="copie'+(fait?' is-done':'')+'" data-copy="'+esc(k)+'"'+(fait?' disabled':'')+'>'+esc(fait||'Copy to my TOTEHM')+'</button>'; };
+async function copierBox(btn,k){
+  if(!RO||btn.disabled) return;
+  const i=k.indexOf(':'), kind=k.slice(0,i), id=k.slice(i+1);
+  const key=kind==='h' ? srv(habOf(id)) : id;
+  if(!key){ btn.textContent='Not available'; return; }
+  btn.disabled=true; btn.textContent='Copying…'; const seq=roSeq, uid=me?.id;
+  const {data,error}=await sb.rpc('totehm_import_boxes',{p_pseudo:RO,p_selection:[{kind,key}]});
+  if(seq!==roSeq||uid!==me?.id) return;                       /* réponse tardive : jetée */
+  if(error){ console.error('[totehm_import_boxes]',error.message); btn.disabled=false; btn.textContent='Not copied · retry'; return; }
+  if(!data?.ok){ btn.disabled=false;
+    btn.textContent=({access:'Subscribe to copy',changed:'It changed · retry',signin:'Connect to copy'})[data?.why]||'Not copied · retry'; return; }
+  const fait=data.created?'Copied to my TOTEHM':'Already in my TOTEHM';
+  COPIES.set(k,fait); btn.textContent=fait; btn.classList.add('is-done');
 }
 /* La loupe : un état par boîte (`ZOOM`), qui survit aux redessins. */
 const ZOOM=new Set();
@@ -5378,7 +5438,8 @@ function lienPicker(k,id,dejaIds,liste,ph,col){
           +'|'+esc(String(z.id))+'">'+esc(z.txt||'untitled')+'</button>').join('')
     +'</span></span>';
 }
-const plus=(q,k,id,mot)=>'<button type="button" class="dash'+(pkOn(q,k,id)?' on':'')+'"'
+/* En lecture : aucun « + lien » — absent, pas seulement caché (06/10). */
+const plus=(q,k,id,mot)=>RO?'':'<button type="button" class="dash'+(pkOn(q,k,id)?' on':'')+'"'
   +' data-pk="'+q+':'+k+':'+esc(String(id))+'">'+(pkOn(q,k,id)?'close':'+ '+mot)+'</button>';
 
 /* ══ LE FILTRE EST UNE BOÎTE · 15/09/2026 ════════════════════════════
@@ -6088,9 +6149,10 @@ function cable(box){
        qui les traite existait et n'était jamais atteint. */
     const el=e.target.closest('[data-fint],[data-ffq],[data-fclear],[data-fx],'
       +'[data-open],[data-add],[data-x],[data-pk],[data-int],[data-mv],[data-go],'
-      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-newspace],[data-zoom]');
+      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-newspace],[data-zoom],[data-copy]');
     if(!el)return;
     const d=el.dataset;
+    if(d.copy){ e.stopPropagation(); copierBox(el,d.copy); return; }
     /* La loupe agrandit la boîte EN PLACE, sans l'ouvrir ni la redessiner. */
     if(d.zoom){ e.stopPropagation(); const k=d.zoom, on=!ZOOM.has(k); if(on)ZOOM.add(k); else ZOOM.delete(k);
       const col=el.closest('.v-col'); if(col)col.classList.toggle('is-zoom',on);
@@ -7180,7 +7242,7 @@ $('wpick').addEventListener('click',e=>{if(e.target===$('wpick'))closeWeightPick
    ouverts à leurs abonnés. Une réponse tardive est jetée (`seq`).
    Le même bloc est COPIÉ dans `creator.html` (/search), jamais importé. */
 const searchViews=new Set();
-function NameSearch({input,results,note,onResults=()=>{}}){
+function NameSearch({input,results,note,vide=true,onResults=()=>{}}){
   let seq=0,timer=0,rows=[];
   const href=p=>'/totehm?ro='+encodeURIComponent(p);
   const propre=v=>String(v||'').trim().replace(/^https?:\/\/[^/]+\//i,'').replace(/^@/,'').replace(/[/?#].*$/,'');
@@ -7194,7 +7256,7 @@ function NameSearch({input,results,note,onResults=()=>{}}){
   async function run(q,ouvrir=false){
     clearTimeout(timer); const mon=++seq, uid=me?.id||null;
     if(q.length===1){ rows=[]; draw(q); dire('two letters, minimum'); return; }
-    if(!q&&!me){ rows=[]; draw(q); dire(''); return; }
+    if(!q&&(!me||!vide)){ rows=[]; draw(q); dire(''); return; }   /* vide=false : rien avant la première lettre */
     if(q) dire('searching\u2026');
     const {data,error}=await sb.rpc('totehm_search',{p_q:q,p_limit:12});
     if(mon!==seq||uid!==(me?.id||null)) return;               /* réponse tardive : jetée */
@@ -7569,7 +7631,7 @@ $('mw-signout').onclick=async()=>{
    frame ou pour de bon, le Totehm de celui d'avant. */
 let sesSeq=0;
 function quitter(){
-  roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ZOOM.clear();
+  roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ZOOM.clear(); COPIES.clear();
   if($('myspaces').classList.contains('is-open')){MYSPACES.seq++;MYSPACES.busy=false;MYSPACES.rows=[];$('myspaces-list').replaceChildren();$('myspaces-name').textContent='';$('myspaces').classList.remove('is-open');MYSPACES.inert.forEach(([e,was])=>e.inert=was);MYSPACES.inert=[];}
   state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; mySub=null; resetComMemberOffer();
   TRIPS=[]; REPS=[]; TEACH=[]; VIS=[]; OBJ={}; tripsLoaded=false;
@@ -8330,15 +8392,34 @@ window.addEventListener('pageshow',e=>{
   const RMQ=window.matchMedia('(prefers-reduced-motion: reduce)');
   const SDUR=640;
   let sOpen=false, sMoving=false, sTimer=0;
-  const searchCtl=NameSearch({input:sQ,results:sRes,note:sNote,onResults:n=>window.__totehm_lsd.resultats=n});
+  const searchCtl=NameSearch({input:sQ,results:sRes,note:sNote,vide:false,onResults:n=>window.__totehm_lsd.resultats=n});
 
   const monNom=()=>((me&&myProfile&&myProfile.pseudo)||'').trim();
 
+  const GESTES=(()=>{
+    const els=['geste-tap','geste-tongue','search-corner'].map(id=>$(id)).filter(Boolean);
+    let i=0, tenu=false;
+    function montrer(e){ const k=els.indexOf(e); if(k<0) return; i=k; els.forEach((x,j)=>x.classList.toggle('is-on',j===k)); }
+    els.forEach(e=>{
+      e.addEventListener('focus',()=>{ tenu=true; montrer(e); });
+      e.addEventListener('blur',()=>{ tenu=false; });
+      e.addEventListener('pointerenter',()=>{ tenu=true; });
+      e.addEventListener('pointerleave',()=>{ tenu=false; });
+    });
+    setInterval(()=>{
+      if(tenu||document.hidden||sOpen||sMoving||PAPIER.face()===1) return;
+      if(!document.body.classList.contains('gate')||document.body.classList.contains('entered')) return;
+      montrer(els[(i+1)%els.length]);
+    },3400);
+    window.__totehm_gestes=()=>({n:els.length, actif:i});
+    return {montrer};
+  })();
   /* Le mot du bas dit le geste SUIVANT. */
   function paintFlip(){
     if(!flipLink) return;
     flipLink.textContent=PAPIER.face()===1 ? 'Turn it back · my TOTEHM'
-                                           : 'Turn it over · search a TOTEHM';
+                                           : 'Turn it over to search a member\'s TOTEHM';
+    if(PAPIER.face()===1) GESTES.montrer(flipLink);
   }
   /* Où sont le papier et son nom, où va la saisie — mesuré À CHAQUE FOIS,
      transformations retirées (le clavier, la rotation ou un
@@ -8366,9 +8447,9 @@ window.addEventListener('pageshow',e=>{
   function ouvrirRecherche(){
     if(open||moving||sOpen||sMoving) return;
     sMoving=true; fermerPorte();
-    sQ.value=monNom(); sRes.innerHTML=''; sNote.textContent='';
+    sQ.value=''; sRes.innerHTML=''; sNote.textContent='';  /* 06/10 : une recherche, vide */
     srch.classList.add('is-on','is-prep'); srch.setAttribute('aria-hidden','false');
-    /* DANS le geste. Le nom est sélectionné : taper le remplace. */
+    /* DANS le geste : le clavier s'ouvre, on tape le nom d'un membre. */
     try{ sQ.focus({preventScroll:true}); sQ.select(); }catch(_){}
     PAPIER.poserDos(zoomer);
   }
@@ -8377,7 +8458,7 @@ window.addEventListener('pageshow',e=>{
                     srch.classList.add('is-show','is-open');
                     sOpen=true; sMoving=false; window.__totehm_lsd.recherche=true; };
     sansTransition(); sBg.style.transform=''; sQ.style.transform='';
-    if(RMQ.matches){ srch.classList.remove('is-prep'); pleinEcran(); fin(); lancer(''); return; }
+    if(RMQ.matches){ srch.classList.remove('is-prep'); pleinEcran(); fin(); return; }
     const g=geometrie();
     surLePapier(g);
     void sBg.offsetWidth;
@@ -8386,7 +8467,6 @@ window.addEventListener('pageshow',e=>{
     avecTransition(); pleinEcran();
     srch.classList.add('is-show');                   /* le reste arrive à +0,42 s (CSS) */
     clearTimeout(sTimer); sTimer=setTimeout(fin,SDUR+140);
-    lancer('');                                      /* vide : mes abonnements */
   }
   /* Le dézoom : la page redevient le dos du papier, le nom y revient, puis
      le papier se remet sur son recto — l'atterrissage retrouve son départ. */
@@ -8420,7 +8500,6 @@ window.addEventListener('pageshow',e=>{
     }));
   }
 
-  function lancer(q){ searchCtl.start(q); }
   if(sX) sX.onclick=()=>fermerRecherche();
   /* La feuille est modale : Tab tourne entre le nom, les résultats et la
      croix — jamais vers les boutons du Totehm, dessous et invisibles. */
@@ -8445,6 +8524,13 @@ window.addEventListener('pageshow',e=>{
   });
   PAPIER.surFace=paintFlip;
   PAPIER.surVerso=ouvrirRecherche;
+  /* Les deux autres gestes font ce qu'ils disent. Sans bouche (paysage,
+     clavier), la langue mène tout droit à Get Higher, par le pont. */
+  $('geste-tap')?.addEventListener('click',()=>{ if(!open&&!moving&&!sOpen&&!sMoving) $('gate-enter')?.click(); });
+  $('geste-tongue')?.addEventListener('click',()=>{
+    if(open||moving||sOpen||sMoving||PAPIER.occupe()) return;
+    if(!PAPIER.offrir()) ssoVersDomaine(sb,'club','https://www.figher.club/get_higher');
+  });
 
   /* ══ SUR LA LANGUE : [GET HIGHER] · 03/10/2026 ═══════════════════════
      Le papier avalé, on part vers l'achat du TotehmPaper, là où il vit :
