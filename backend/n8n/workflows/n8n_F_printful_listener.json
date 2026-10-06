@@ -19,7 +19,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const SB_KEY = $env.SB_KEY;\nconst PRINTFUL_TOKEN = $env.PRINTFUL_TOKEN;\nconst PF_STORE_ID = $env.PF_STORE_ID;\nconst body = $input.first().json.body || {};\nconst type = body?.type;\n\nconst SB_URL = 'https://abujjbkbbiumxrokozph.supabase.co';\n\nconst sbh = {\n  apikey: SB_KEY,\n  Authorization: `Bearer ${SB_KEY}`,\n  'Content-Type': 'application/json'\n};\n\nconst pfh = {\n  Authorization: `Bearer ${PRINTFUL_TOKEN}`,\n  'X-PF-Store-Id': PF_STORE_ID\n};\n\nconst BUCKET = 'totehm-cloth-support';\n\nconst slugify = s => (s || '')\n  .toLowerCase()\n  .normalize('NFD').replace(/[̀-ͯ]/g, '')\n  .replace(/[^a-z0-9]+/g, '-')\n  .replace(/^-+|-+$/g, '')\n  .slice(0, 40) || 'product';\n\n\nif (type === 'product_deleted') {\n  const pf_id = body.data?.sync_product?.id;\n  if (!pf_id) return [{ json: { action: 'ignored', reason: 'no product id' } }];\n\n  const support = await this.helpers.httpRequest({\n    method: 'GET',\n    url: `${SB_URL}/rest/v1/totehm_cloth_support?printful_product_id=eq.${pf_id}&select=id`,\n    headers: sbh, json: true\n  });\n\n  if (!support?.length) return [{ json: { action: 'not_found', printful_product_id: pf_id } }];\n\n  const support_id = support[0].id;\n\n  const orders = await this.helpers.httpRequest({\n    method: 'GET',\n    url: `${SB_URL}/rest/v1/totehm_clothes?garment_id=eq.${support_id}&select=id&limit=1`,\n    headers: sbh, json: true\n  });\n\n  if (orders?.length) {\n    await this.helpers.httpRequest({\n      method: 'PATCH',\n      url: `${SB_URL}/rest/v1/totehm_cloth_support?id=eq.${support_id}`,\n      headers: sbh, body: { active: false }, json: true\n    });\n    return [{ json: { action: 'deactivated', reason: 'has_orders', printful_product_id: pf_id } }];\n  }\n\n  await this.helpers.httpRequest({\n    method: 'DELETE',\n    url: `${SB_URL}/rest/v1/totehm_cloth_support?id=eq.${support_id}`,\n    headers: sbh, json: true\n  });\n  return [{ json: { action: 'deleted', printful_product_id: pf_id } }];\n}\n\n\nif (!['product_synced', 'product_updated'].includes(type)) {\n  return [{ json: { action: 'ignored', type } }];\n}\n\nconst pf_id = body.data?.sync_product?.id;\nif (!pf_id) return [{ json: { action: 'ignored', reason: 'no product id' } }];\n\n\nconst storeRes = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `https://api.printful.com/store/products/${pf_id}`,\n  headers: pfh, json: true\n});\n\nconst product = storeRes.result?.sync_product;\nconst variants = storeRes.result?.sync_variants || [];\n\nif (!product) throw new Error(`Printful product ${pf_id} not found`);\n\n\nconst variantMap = {};\nfor (const v of variants) {\n  if (!v.size) continue;\n  variantMap[v.size] = {\n    variant_id: v.variant_id,\n    sync_variant_id: v.id,\n    retail_price: parseFloat(v.retail_price),\n    availability: v.availability_status || 'active',\n    color: v.color || null,\n    color_code: v.color_code || null\n  };\n}\n\n\nconst catalogProductId = variants[0]?.product?.product_id;\n\nlet description = null;\nlet avgFulfillmentTime = null;\nlet techniques = [];\n\nif (catalogProductId) {\n  try {\n    const catRes = await this.helpers.httpRequest({\n      method: 'GET',\n      url: `https://api.printful.com/products/${catalogProductId}`,\n      headers: pfh, json: true\n    });\n    const cat = catRes.result?.product;\n    description = cat?.description || null;\n    avgFulfillmentTime = cat?.avg_fulfillment_time || null;\n    techniques = (cat?.techniques || []).map(t => t.key).filter(Boolean);\n  } catch (_) {}\n}\n\n\nlet printArea = {\n  method: techniques.includes('DTG') ? 'dtg' : 'embroidery',\n  placement: 'back',\n  width_in: 12, height_in: 16, dpi: 300\n};\n\nif (catalogProductId) {\n  try {\n    const pfRes = await this.helpers.httpRequest({\n      method: 'GET',\n      url: `https://api.printful.com/mockup-generator/printfiles/${catalogProductId}`,\n      headers: pfh, json: true\n    });\n    const pfiles = pfRes.result?.printfiles || [];\n    const backFile =\n      pfiles.find(p =>\n        p.placement?.toLowerCase().includes('back') ||\n        p.type?.toLowerCase().includes('back')\n      ) || pfiles[0];\n    if (backFile) {\n      const dpi = backFile.dpi || 300;\n      printArea = {\n        method: techniques.includes('DTG') ? 'dtg' : 'embroidery',\n        placement: backFile.placement || backFile.type || 'back',\n        width_in: backFile.width ? Math.round((backFile.width / dpi) * 10) / 10 : 12,\n        height_in: backFile.height ? Math.round((backFile.height / dpi) * 10) / 10 : 16,\n        dpi,\n        width_px: backFile.width || null,\n        height_px: backFile.height || null\n      };\n    }\n  } catch (_) {}\n}\n\n\nconst storageFolder = `${slugify(product.name)}-${pf_id}`;\n\ntry {\n  await this.helpers.httpRequest({\n    method: 'POST',\n    url: `${SB_URL}/storage/v1/object/${BUCKET}/${storageFolder}/.keep`,\n    headers: {\n      apikey: SB_KEY,\n      Authorization: `Bearer ${SB_KEY}`,\n      'Content-Type': 'text/plain',\n      'x-upsert': 'true'\n    },\n    body: `printful_product_id: ${pf_id}\\nproduct: ${product.name}`,\n    json: false\n  });\n} catch (_) {}\n\n\nconst upsertData = {\n  printful_product_id: pf_id,\n  printful_variant_map: variantMap,\n  title: product.name,\n  details: description,\n  print_area: printArea,\n  avg_fulfillment_days: avgFulfillmentTime ? Math.ceil(avgFulfillmentTime) : null,\n  storage_folder: storageFolder\n};\n\nconst existing = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `${SB_URL}/rest/v1/totehm_cloth_support?printful_product_id=eq.${pf_id}&select=id,image_url`,\n  headers: sbh, json: true\n});\n\nconst exists = Array.isArray(existing) && existing.length > 0;\n\n// Keep curated product photos; use Printful's preview for new supports.\nif (!existing?.[0]?.image_url && product.thumbnail_url) {\n  upsertData.image_url = product.thumbnail_url;\n}\n\nif (!exists) {\n  upsertData.price = 0;\n  upsertData.max_pieces = 0;\n  upsertData.active = false;\n  upsertData.claimed = 0;\n  upsertData.position = 0;\n}\n\nawait this.helpers.httpRequest({\n  method: 'POST',\n  url: `${SB_URL}/rest/v1/totehm_cloth_support?on_conflict=printful_product_id`,\n  headers: {\n    ...sbh,\n    Prefer: 'resolution=merge-duplicates,return=representation'\n  },\n  body: upsertData, json: true\n});\n\nreturn [{\n  json: {\n    ok: true,\n    action: exists ? 'updated' : 'created',\n    printful_product_id: pf_id,\n    title: product.name,\n    catalog_product_id: catalogProductId,\n    sizes: Object.keys(variantMap),\n    print_area: printArea,\n    avg_fulfillment_days: avgFulfillmentTime ? Math.ceil(avgFulfillmentTime) : null,\n    storage_folder: storageFolder\n  }\n}];"
+        "jsCode": "const SB_KEY = $env.SB_KEY;\nconst PRINTFUL_TOKEN = $env.PRINTFUL_TOKEN;\nconst PF_STORE_ID = $env.PF_STORE_ID;\nconst input = $input.first().json || {};\nconst body = input.body || {};\nconst isPhotoRetry = !body.type && input.image_pending === true && !!input.source_event;\nconst type = body.type || (isPhotoRetry ? input.source_event : undefined);\nconst pf_id = body.data?.sync_product?.id || (isPhotoRetry ? input.printful_product_id : undefined);\nconst imageRetry = isPhotoRetry ? Math.min(Number(input.image_retry || 0) + 1, 5) : 0;\n\nconst SB_URL = 'https://abujjbkbbiumxrokozph.supabase.co';\n\nconst sbh = {\n  apikey: SB_KEY,\n  Authorization: `Bearer ${SB_KEY}`,\n  'Content-Type': 'application/json'\n};\n\nconst pfh = {\n  Authorization: `Bearer ${PRINTFUL_TOKEN}`,\n  'X-PF-Store-Id': PF_STORE_ID\n};\n\nconst BUCKET = 'totehm-cloth-support';\n\nconst slugify = s => (s || '')\n  .toLowerCase()\n  .normalize('NFD').replace(/[̀-ͯ]/g, '')\n  .replace(/[^a-z0-9]+/g, '-')\n  .replace(/^-+|-+$/g, '')\n  .slice(0, 40) || 'product';\n\n\nif (type === 'product_deleted') {\n  if (!pf_id) return [{ json: { action: 'ignored', reason: 'no product id' } }];\n\n  const support = await this.helpers.httpRequest({\n    method: 'GET',\n    url: `${SB_URL}/rest/v1/totehm_cloth_support?printful_product_id=eq.${pf_id}&select=id`,\n    headers: sbh, json: true\n  });\n\n  if (!support?.length) return [{ json: { action: 'not_found', printful_product_id: pf_id } }];\n\n  const support_id = support[0].id;\n\n  const orders = await this.helpers.httpRequest({\n    method: 'GET',\n    url: `${SB_URL}/rest/v1/totehm_clothes?garment_id=eq.${support_id}&select=id&limit=1`,\n    headers: sbh, json: true\n  });\n\n  if (orders?.length) {\n    await this.helpers.httpRequest({\n      method: 'PATCH',\n      url: `${SB_URL}/rest/v1/totehm_cloth_support?id=eq.${support_id}`,\n      headers: sbh, body: { active: false }, json: true\n    });\n    return [{ json: { action: 'deactivated', reason: 'has_orders', printful_product_id: pf_id } }];\n  }\n\n  await this.helpers.httpRequest({\n    method: 'DELETE',\n    url: `${SB_URL}/rest/v1/totehm_cloth_support?id=eq.${support_id}`,\n    headers: sbh, json: true\n  });\n  return [{ json: { action: 'deleted', printful_product_id: pf_id } }];\n}\n\n\nif (!['product_synced', 'product_updated'].includes(type)) {\n  return [{ json: { action: 'ignored', type } }];\n}\n\nif (!pf_id) return [{ json: { action: 'ignored', reason: 'no product id' } }];\n\n\nconst storeRes = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `https://api.printful.com/store/products/${pf_id}`,\n  headers: pfh, json: true\n});\n\nconst product = storeRes.result?.sync_product;\nconst variants = storeRes.result?.sync_variants || [];\n\nif (!product) throw new Error(`Printful product ${pf_id} not found`);\n\n\nconst variantMap = {};\nfor (const v of variants) {\n  if (!v.size) continue;\n  variantMap[v.size] = {\n    variant_id: v.variant_id,\n    sync_variant_id: v.id,\n    retail_price: parseFloat(v.retail_price),\n    availability: v.availability_status || 'active',\n    color: v.color || null,\n    color_code: v.color_code || null\n  };\n}\n\n\nconst catalogProductId = variants[0]?.product?.product_id;\n\nlet description = null;\nlet avgFulfillmentTime = null;\nlet techniques = [];\n\nif (catalogProductId) {\n  try {\n    const catRes = await this.helpers.httpRequest({\n      method: 'GET',\n      url: `https://api.printful.com/products/${catalogProductId}`,\n      headers: pfh, json: true\n    });\n    const cat = catRes.result?.product;\n    description = cat?.description || null;\n    avgFulfillmentTime = cat?.avg_fulfillment_time || null;\n    techniques = (cat?.techniques || []).map(t => t.key).filter(Boolean);\n  } catch (_) {}\n}\n\n\nlet printArea = {\n  method: techniques.includes('DTG') ? 'dtg' : 'embroidery',\n  placement: 'back',\n  width_in: 12, height_in: 16, dpi: 300\n};\n\nif (catalogProductId) {\n  try {\n    const pfRes = await this.helpers.httpRequest({\n      method: 'GET',\n      url: `https://api.printful.com/mockup-generator/printfiles/${catalogProductId}`,\n      headers: pfh, json: true\n    });\n    const pfiles = pfRes.result?.printfiles || [];\n    const backFile =\n      pfiles.find(p =>\n        p.placement?.toLowerCase().includes('back') ||\n        p.type?.toLowerCase().includes('back')\n      ) || pfiles[0];\n    if (backFile) {\n      const dpi = backFile.dpi || 300;\n      printArea = {\n        method: techniques.includes('DTG') ? 'dtg' : 'embroidery',\n        placement: backFile.placement || backFile.type || 'back',\n        width_in: backFile.width ? Math.round((backFile.width / dpi) * 10) / 10 : 12,\n        height_in: backFile.height ? Math.round((backFile.height / dpi) * 10) / 10 : 16,\n        dpi,\n        width_px: backFile.width || null,\n        height_px: backFile.height || null\n      };\n    }\n  } catch (_) {}\n}\n\n\nconst storageFolder = `${slugify(product.name)}-${pf_id}`;\n\ntry {\n  await this.helpers.httpRequest({\n    method: 'POST',\n    url: `${SB_URL}/storage/v1/object/${BUCKET}/${storageFolder}/.keep`,\n    headers: {\n      apikey: SB_KEY,\n      Authorization: `Bearer ${SB_KEY}`,\n      'Content-Type': 'text/plain',\n      'x-upsert': 'true'\n    },\n    body: `printful_product_id: ${pf_id}\\nproduct: ${product.name}`,\n    json: false\n  });\n} catch (_) {}\n\n\nconst upsertData = {\n  printful_product_id: pf_id,\n  printful_variant_map: variantMap,\n  title: product.name,\n  details: description,\n  print_area: printArea,\n  avg_fulfillment_days: avgFulfillmentTime ? Math.ceil(avgFulfillmentTime) : null,\n  storage_folder: storageFolder\n};\n\nconst existing = await this.helpers.httpRequest({\n  method: 'GET',\n  url: `${SB_URL}/rest/v1/totehm_cloth_support?printful_product_id=eq.${pf_id}&select=id,image_url`,\n  headers: sbh, json: true\n});\n\nconst exists = Array.isArray(existing) && existing.length > 0;\n\n// Keep curated product photos; use Printful's preview for new supports.\nif (!existing?.[0]?.image_url && product.thumbnail_url) {\n  upsertData.image_url = product.thumbnail_url;\n}\n\nif (!exists) {\n  upsertData.price = 0;\n  upsertData.max_pieces = 0;\n  upsertData.active = false;\n  upsertData.claimed = 0;\n  upsertData.position = 0;\n}\n\nawait this.helpers.httpRequest({\n  method: 'POST',\n  url: `${SB_URL}/rest/v1/totehm_cloth_support?on_conflict=printful_product_id`,\n  headers: {\n    ...sbh,\n    Prefer: 'resolution=merge-duplicates,return=representation'\n  },\n  body: upsertData, json: true\n});\n\nreturn [{\n  json: {\n    ok: true,\n    action: exists ? 'updated' : 'created',\n    printful_product_id: pf_id,\n    title: product.name,\n    source_event: type,\n    image_url: upsertData.image_url || existing?.[0]?.image_url || null,\n    image_pending: !(upsertData.image_url || existing?.[0]?.image_url),\n    image_retry: imageRetry,\n    catalog_product_id: catalogProductId,\n    sizes: Object.keys(variantMap),\n    print_area: printArea,\n    avg_fulfillment_days: avgFulfillmentTime ? Math.ceil(avgFulfillmentTime) : null,\n    storage_folder: storageFolder\n  }\n}];"
       },
       "id": "de4ace37-2da4-416b-928e-80aed9cb9124",
       "name": "Sync Product",
@@ -29,10 +29,94 @@
         336,
         -32
       ]
+    },
+    {
+      "id": "0faf7655-0ef6-4db1-b11e-2557bc1e2105",
+      "name": "Photo pending?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        840,
+        240
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "photo-pending-retry",
+              "leftValue": "={{ $json.image_pending === true && $json.image_retry < 5 }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "notes": "Retry only when no curated image or Printful thumbnail is available. Five retries maximum."
+    },
+    {
+      "id": "378417e8-168c-4221-a8bc-0ed4a8f5174b",
+      "name": "Wait for Printful photo",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        840,
+        460
+      ],
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "notes": "Give Printful one minute to finish the product preview before syncing again.",
+      "webhookId": "c744b56a-f4c3-46ba-9c58-43a3d59609ec"
     }
   ],
   "connections": {
     "Printful Webhook": {
+      "main": [
+        [
+          {
+            "node": "Sync Product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sync Product": {
+      "main": [
+        [
+          {
+            "node": "Photo pending?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Photo pending?": {
+      "main": [
+        [
+          {
+            "node": "Wait for Printful photo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Printful photo": {
       "main": [
         [
           {

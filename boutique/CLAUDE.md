@@ -1,5 +1,23 @@
 # boutique/CLAUDE.md — higher.boutique : le Cloth, la méthode Stoner
 
+## BOUTIQUE · 06/10/2026 — nouveau support et photo différée
+
+Wah a remplacé le précédent Champion. Support courant : `Higher Champion
+Sweatshirt`, Printful `478633385`, Supabase
+`c615b050-cd3e-4560-a1aa-ce943192f34e`. Valeurs existantes conservées : actif,
+170 €, édition 177, claimed 0, tailles S/M/L/XL/2XL. Son dossier
+`higher-champion-sweatshirt-478633385` ne contient que `.keep` : la photo
+principale vient de `image_url`, récupérée par F à la resynchronisation 91.
+
+F réessaie désormais une photo encore absente toutes les minutes, cinq
+reprises maximum. Les photos personnalisées existantes restent prioritaires.
+F renseigne l'URL de la photo principale Printful ; il ne copie pas une
+galerie complète de mockups dans Storage. Pour des vues supplémentaires
+choisies, les fichiers du dossier Storage restent le mécanisme existant.
+Front inchangé (`2026-10-06-streetwear-photo`). Navigateur public : image
+chargée 800 × 800, 170 €, 177 / 177 left, cinq tailles. Détails et preuves
+n8n dans `backend/SYSTEM.md` §0.
+
 ## BOUTIQUE · 06/10/2026 — Streetwear : support actif et photo Printful
 
 Le support Champion `478625396` était filtré par `active=false`, malgré son

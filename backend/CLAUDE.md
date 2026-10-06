@@ -1,5 +1,22 @@
 # backend/CLAUDE.md — la base, les fonctions, l'argent, le bot
 
+## BOUTIQUE · 06/10/2026 — F : attendre la photo Printful
+
+F publié `c9638e70-0d0f-4dba-adb1-a78f2ccb8ec8` : `Printful Webhook` →
+`Sync Product` → `Photo pending?` ; branche vraie → `Wait for Printful
+photo` (une minute) → `Sync Product`. Le compteur `image_retry` va de 0 à
+5 ; la condition exige `image_pending=true` ET `image_retry<5`. Après cinq
+reprises sans photo, la boucle s'arrête avec `image_pending=true` : aucune
+image inventée, une nouvelle synchronisation peut réessayer.
+
+L'item de reprise ne porte que les données publiques du produit et
+`source_event` ; aucun secret recopié. Les nouvelles lignes restent
+inactives avec prix/édition à zéro. Sur les lignes existantes, aucune
+écriture des champs active/price/max_pieces/claimed ni remplacement d'une
+photo choisie. Succès non sauvegardés après validation (`none`) ; erreurs
+et tests manuels conservés. Snapshot :
+`n8n/workflows/n8n_F_printful_listener.json`. Preuves : SYSTEM §0.
+
 ## SPACE · 05/10/2026 — mini-boxes indépendantes et futurs ON
 
 Migration `20261005103704_space_box_visibility_location_on.sql`, appliquée

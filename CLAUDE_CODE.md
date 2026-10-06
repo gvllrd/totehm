@@ -1,5 +1,22 @@
 # CLAUDE_CODE.md — la tâche de Claude Code (terminal de Wah)
 
+## Mise à jour · 06/10/2026 — le nouveau produit récupère sa photo
+
+Le précédent Champion a été remplacé par Wah. Produit courant Printful
+`478633385`, Higher Champion Sweatshirt ; support
+`c615b050-cd3e-4560-a1aa-ce943192f34e` actif, prix préexistant 170 €,
+édition préexistante 177. Une resynchronisation (91) a rempli la photo
+absente. F attend maintenant une minute puis réessaie une photo absente,
+jusqu'à cinq reprises ; boucle bornée, photos choisies/prix/stock conservés.
+Version publiée : `c9638e70-0d0f-4dba-adb1-a78f2ccb8ec8` ; tests 92
+(attente réelle de 60 s dans le brouillon) et 94 (webhook publié) réussis.
+Image visible dans le navigateur public. Aucun changement Oracle requis.
+
+À reporter dans `~/totehm/TOTEHM_MASTER.md` §0 : photo principale Printful
+automatique, avec reprise si absente à l'import ; les photos supplémentaires
+choisies restent dans le dossier Storage du support. Les notes précédentes
+sur `478625396` et l'édition 12 décrivent l'ancien produit, supprimé par Wah.
+
 > Depuis le 30/09/2026, la session cloud de Claude fait tout ce qui passe par
 > Internet (code, base, fonctions, fusion, Vercel, Stripe). Claude Code ne
 > reçoit ici que ce qui exige la machine de Wah : **la VM Oracle, docker

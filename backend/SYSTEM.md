@@ -16,6 +16,18 @@
 ---
 
 
+## 0 · NOUVEAU CHAMPION, PHOTO RÉCUPÉRÉE ET REPRISE AUTOMATIQUE — 06/10/2026
+
+| quoi | valeur mesurée |
+|---|---|
+| support courant | `c615b050-cd3e-4560-a1aa-ce943192f34e` · Higher Champion Sweatshirt · Printful `478633385` ; remplace l'ancien produit supprimé par Wah |
+| base | actif, prix préexistant 170 €, édition préexistante 177, claimed 0 ; `image_url` null avant resynchronisation, puis aperçu Printful renseigné ; dossier `higher-champion-sweatshirt-478633385` avec `.keep` seulement |
+| n8n F publié | `c9638e70-0d0f-4dba-adb1-a78f2ccb8ec8` · quatre nœuds : Webhook, Sync Product, Photo pending?, Wait for Printful photo ; une minute entre reprises, cinq reprises maximum ; succès non sauvegardés après test |
+| validations réelles | 91 resynchronisation manuelle : photo récupérée ; 92 attente forcée une fois dans le brouillon : 60 002 ms, deux Sync Product, sortie après reprise 1 ; 94 webhook publié : success, photo disponible, image_pending false, image_retry 0 |
+| simulations du code final | photo au 2e retry → arrêt ; photo toujours absente → arrêt à 5 ; photo choisie → zéro reprise ; aucun écrasement de prix/édition/activation/claimed |
+| navigateur public | higher.boutique/streetwear : image 800 × 800 chargée, titre Higher Champion Sweatshirt, 170 €, 177 / 177 left, S · M · L · XL · 2XL ; front inchangé |
+| limite explicite | seule la photo principale Printful est automatique ; pas d'import de toute la galerie dans Storage ; si la photo reste absente après cinq reprises, image_pending reste true et la boucle s'arrête |
+
 ## 0 · F DÉBLOQUÉ, SUPPORT STREETWEAR ACTIF ET PHOTO DE SECOURS — 06/10/2026
 
 | quoi | valeur mesurée |
