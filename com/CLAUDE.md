@@ -1,5 +1,31 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## COM · 06/10/2026 (bis) — les trois gestes, le verso, lire et copier, le menu de la boutique
+
+BUILD `2026-10-06-lecture-copie` (`totehm.html`), `2026-10-06-menu` (`creator`,
+`console`, `monetize`).
+- **Les trois gestes** (`#gestes`, en bas de l'atterrissage) : « Tap it to open
+  it » · « Put it on your tongue to Get [Higher] » (le badge SVG) · « Turn it
+  over to search a member's TOTEHM ». Un seul visible, fondu, toutes les 3,4 s ;
+  survol ou focus = il s'arrête. Chacun FAIT ce qu'il dit (`#gate-enter`,
+  `PAPIER.offrir()` sinon Get Higher par le pont, retourner). Verso posé :
+  « Turn it back · my TOTEHM ». `#search-corner` reste le geste « retourner ».
+- **Le verso** = une recherche de membre, VIDE (« a member's name »), rien avant
+  la première lettre (`NameSearch({vide:false})` ; `/search` garde ses
+  abonnements par défaut).
+- **Le Totehm d'un membre** (`?ro=`) : le joystick reste EN BAS (la règle
+  `body.ro #joy{top}` le remontait sur le titre), la croix descend sous la barre
+  de lecture ; aucun « + lien » rendu (absent, pas caché). Chaque Box : la loupe
+  et **Copy to my TOTEHM** au bout de sa ligne d'unité → `totehm_import_boxes`
+  (une RÉFÉRENCE : texte de l'habitude, id sinon) → « Copied to my TOTEHM » /
+  « Already in my TOTEHM » (`COPIES`, vidé à chaque lecture et au changement de
+  compte). Les spaces partagés de ses Habits restent dans ses boîtes.
+- **Le menu membre** = le menu de higher.boutique : `#member-window` plein
+  écran noir, centré ; bouton `#1f1f24` Space Mono 12,5 px sur une ligne,
+  légende en petites capitales dessous. Même bloc copié (`tools/com_member_menu.css`)
+  sur `/search`, `/console`, `/monetize`, plein écran avec **Close**.
+- Tests : `com_read_copy.mjs` 20/20, `com_paper.mjs` 39/39, `com_member_menu.mjs` 27/27.
+
 ## COM · 06/10/2026 — la loupe en place, supprimer un space, la langue plus grande
 
 BUILD `2026-10-06-spaces-loupe` (`totehm.html`). Wah : « une petite loupe sur

@@ -175,7 +175,7 @@ Cinq vues, gestes, boussole, panneaux desktop et joystick caméra du 04/10 conse
 Nouveaux spaces partagés ; OFF = ville actuelle, ON = for my subscribers ; TOP toujours ON, RIGHT sans OFF.
 Mini-boxes OBJECTIVES/REPULSIONS activables séparément dans la Habit, droits en serveur.
 Hint Habit → space et définition coin droit. Détails : `space/CLAUDE.md`, copy : `BRAND.md`.
-My spaces (COM et SPACE) = historique propriétaire, supprimer = `space-delete` ; chercher = un NOM → son TOTEHM read-only ; spaces d'une Habit dans sa boîte.
+My spaces (COM, SPACE) + `space-delete` ; chercher = un NOM → son TOTEHM en lecture (spaces, loupe, COPY d'une Box). Menu membre COM = format higher.boutique.
 
 ## Règles d'interface qui valent partout
 

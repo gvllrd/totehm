@@ -11,7 +11,7 @@ Edge Function `space-delete` (verify_jwt): POST `{spot}` with the member's JWT â
 
 `habit_spaces(p_pseudo text default null)` returns `{ok, mine, habits:[{habit, total, spaces}]}` (`why=signin|nobody`). Empty pseudo = my published spaces (private and shared); another member = their `shared` spaces only. Grouped by `lower(btrim(habit))`; at most 3 per Habit (live, next upcoming, latest past) + total. Every space is `_spot_view(p, auth.uid())`, the SPACE rights unchanged (exact place only when `_spot_exact` allows). Authenticated only. Migration `20261005200000_habit_spaces.sql` applied once as `habit_spaces`. Test `tests/sql/habit_spaces_selftest.sql` (rolled back, `FAIL={}`). COM front: a closed Habit Box says "N spaces"; open, up to three minis; a tap opens SPACE `?spot=id` through the SSO bridge.
 
-Since 05/10 the COM front no longer calls `totehm_discover`, `totehm_import_boxes` or `my_box_sources` (search = a name via `totehm_search`, copies removed). The functions stay in the database, unused; `com_discovery.mjs` is deleted.
+Since 05/10 the COM front no longer calls `totehm_discover` or `my_box_sources` (search = a name via `totehm_search`). On 06/10 `totehm_import_boxes` is called again, one box at a time ("Copy to my TOTEHM" on each Box of a read TOTEHM), unchanged on the server.
 
 ## 03/10/2026 â€” COM search and reviewed copies
 

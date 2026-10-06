@@ -37,7 +37,7 @@ Edge Function `space-delete` (v1, JWT exigé) : appelle `space_delete` SOUS la s
 
 Migration additive `20261005200000_habit_spaces.sql` appliquée UNE fois sous `habit_spaces`. `habit_spaces(p_pseudo text default null)` : security definer, stable, authenticated seulement (public/anon révoqués). Vide = MES spaces publiés (privés et partagés) ; un autre membre = ses spaces `shared` seulement. Regroupés par `lower(btrim(habit))`, trois au plus (en cours, à venir le plus proche, passés les plus récents) + `total`. Chaque space passe par `_spot_view(p, auth.uid())` : AUCUNE règle nouvelle (le point exact seulement si `_spot_exact` l'accorde). Rend `{ok, mine, habits:[{habit,total,spaces}]}` ; `why=signin|nobody`. Auto-test `tests/sql/habit_spaces_selftest.sql` (annulé) : `FAIL={}`.
 
-**Depuis le 05/10, le front n'appelle plus** `totehm_discover`, `totehm_import_boxes` ni `my_box_sources` (recherche = un nom, `totehm_search` ; plus de copies). Ils restent en base, inertes ; les retirer = un `…_menage.sql` pour Claude Code, plus tard, si les copies ne reviennent pas.
+**Front depuis le 05/10** : `totehm_discover` et `my_box_sources` ne sont plus appelés (recherche = un nom, `totehm_search`). **06/10 : `totehm_import_boxes` revient**, une Box à la fois (« Copy to my TOTEHM » dans le Totehm lu), sans changement serveur.
 
 ## COM · 03/10/2026 — découverte et import de boxes
 

@@ -218,6 +218,18 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
+### Correction 0.41 — 06/10/2026 (bis) · trois gestes, lire et copier, menu de la boutique
+
+> En bas de l'atterrissage de totehm.com, les trois gestes du papier défilent :
+> Tap it to open it · Put it on your tongue to Get Higher · Turn it over to
+> search a member's TOTEHM ; chacun fait ce qu'il dit. Retourné, le papier
+> ouvre une recherche vide d'un membre. Le Totehm d'un membre se parcourt en
+> lecture (joystick en bas, spaces, loupe) et chaque Box se copie dans mon
+> Totehm. Le menu membre de totehm.com prend le format du menu de
+> higher.boutique (plein écran, centré, mêmes boutons). Sur higher.boutique,
+> police un peu plus petite et boutons sur une ligne. Aucune migration, prix et
+> droits inchangés. Aucun travail Oracle/n8n.
+
 ### Correction 0.40 — 06/10/2026 · loupe en place, My spaces sur SPACE, supprimer un space
 
 > Chaque Box, sur les cinq vues de COM et dans SPACE, porte une petite loupe :
