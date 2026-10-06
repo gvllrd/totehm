@@ -1,51 +1,106 @@
 {
- "name": "TOTEHM E — Tracking",
- "nodes": [
-  {
-   "parameters": {
-    "httpMethod": "POST",
-    "path": "printful-events",
-    "responseMode": "onReceived",
-    "options": {}
-   },
-   "id": "3d0f7c0a-cde1-4534-b0af-34d75a33774b",
-   "name": "Printful Webhook",
-   "type": "n8n-nodes-base.webhook",
-   "typeVersion": 2,
-   "position": [
-    0,
-    0
-   ]
+  "name": "TOTEHM E — Tracking (Config Node)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "streetwear-tracking",
+        "options": {},
+        "responseMode": "responseNode"
+      },
+      "id": "1f588747-1d72-41f6-a303-f4369ca5b605",
+      "name": "Printful Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "4443c72c-6b71-4765-a22a-f7836f23c86e"
+    },
+    {
+      "name": "Authenticate and claim",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        350,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Shared source, embedded into each workflow by the exporter. No secrets in items.\nconst SB_URL='https://abujjbkbbiumxrokozph.supabase.co';\nconst N8N_URL='https://n8n.higher.boutique';\nconst uuid=value=>/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(value||''));\nconst sbHeaders={apikey:$env.SB_KEY,'Content-Type':'application/json'};\nconst pfHeaders={Authorization:'Bearer '+$env.PRINTFUL_TOKEN,'X-PF-Store-Id':String($env.PF_STORE_ID),'Content-Type':'application/json'};\nconst request=async options=>{\n  let response;\n  try{response=await this.helpers.httpRequest({...options,json:options.json!==false,\n    returnFullResponse:true,ignoreHttpStatusErrors:true,timeout:options.timeout||30000});}\n  catch{throw new Error('transport_'+String(options.method||'GET').toLowerCase());}\n  if(response.statusCode>=400){const error=new Error('http_'+response.statusCode);error.status=response.statusCode;throw error;}\n  return response.body;\n};\nconst rpc=(name,body={})=>request({method:'POST',url:SB_URL+'/rest/v1/rpc/'+name,headers:sbHeaders,body});\nconst db=(path,method='GET',body,extra={})=>request({method,url:SB_URL+'/rest/v1/'+path,headers:{...sbHeaders,...extra},...(body!==undefined?{body}:{})});\nconst serviceAuth=async headers=>{\n  const key=headers?.apikey||String(headers?.authorization||'').replace(/^Bearer\\s+/i,'');\n  if(!key)return false;\n  const backendHeaders={apikey:key,'Content-Type':'application/json',...(!key.startsWith('sb_')?{Authorization:'Bearer '+key}:{})};\n  try{return await request({method:'POST',url:SB_URL+'/rest/v1/rpc/streetwear_service_ready',headers:backendHeaders,body:{},timeout:5000})===true;}\n  catch{return false;}\n};\nconst failResult=(reason,http_status=400)=>[{json:{ok:false,reason,http_status}}];\nconst ticketResult=ticket=>[{json:{...ticket,http_status:ticket.ok?202:(ticket.reason==='not_found'?404:200)}}];\nconst checkpoint=(ticket,data,wait=false)=>rpc('streetwear_checkpoint',{p_cloth:ticket.cloth.id,p_stage:ticket.stage,p_token:ticket.token,p_data:data,p_wait:wait});\nconst complete=(ticket,result={})=>rpc('streetwear_complete',{p_cloth:ticket.cloth.id,p_stage:ticket.stage,p_token:ticket.token,p_result:result});\nconst fail=(ticket,code,retry=false)=>rpc('streetwear_fail',{p_cloth:ticket.cloth.id,p_stage:ticket.stage,p_token:ticket.token,p_code:String(code).slice(0,160),p_retry:retry});\nconst callFlow=(path,body)=>request({method:'POST',url:N8N_URL+'/webhook/'+path,headers:sbHeaders,body,timeout:10000});\nconst refreshAsset=body=>request({method:'POST',url:SB_URL+'/functions/v1/streetwear-assets',headers:sbHeaders,body});\nconst tg=(method,body)=>request({method:'POST',url:'https://api.telegram.org/bot'+$env.TG_TOKEN+'/'+method,body});\nconst escapeHtml=value=>String(value||'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[c]));\n\n// SHA-256 only derives a separate provider webhook token; it never signs artwork.\nfunction sha256(ascii){\n  const rightRotate=(value,amount)=>(value>>>amount)|(value<<(32-amount));\n  const maxWord=2**32,words=[],bitLength=ascii.length*8;\n  let hash=[],constants=[],primeCounter=0;\n  const composite={};\n  for(let candidate=2;primeCounter<64;candidate++)if(!composite[candidate]){\n    for(let i=0;i<313;i+=candidate)composite[i]=candidate;\n    hash[primeCounter]=(Math.sqrt(candidate)*maxWord)|0;\n    constants[primeCounter++]=(Math.cbrt(candidate)*maxWord)|0;\n  }\n  ascii+='\\x80';while(ascii.length%64!==56)ascii+='\\x00';\n  for(let i=0;i<ascii.length;i++)words[i>>2]|=ascii.charCodeAt(i)<<(24-(i%4)*8);\n  words.push((bitLength/maxWord)|0,bitLength);\n  hash=hash.slice(0,8);\n  for(let j=0;j<words.length;){\n    const w=words.slice(j,j+=16),oldHash=hash.slice();\n    for(let i=0;i<64;i++){\n      const w15=w[i-15],w2=w[i-2],a=hash[0],e=hash[4];\n      const temp1=hash[7]+(rightRotate(e,6)^rightRotate(e,11)^rightRotate(e,25))+((e&hash[5])^((~e)&hash[6]))+constants[i]+\n        (w[i]=i<16?w[i]:(w[i-16]+(rightRotate(w15,7)^rightRotate(w15,18)^(w15>>>3))+w[i-7]+(rightRotate(w2,17)^rightRotate(w2,19)^(w2>>>10)))|0);\n      const temp2=(rightRotate(a,2)^rightRotate(a,13)^rightRotate(a,22))+((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));\n      hash=[(temp1+temp2)|0,a,hash[1],hash[2],(hash[3]+temp1)|0,hash[4],hash[5],hash[6]];\n    }\n    for(let i=0;i<8;i++)hash[i]=(hash[i]+oldHash[i])|0;\n  }\n  return hash.map(value=>(value>>>0).toString(16).padStart(8,'0')).join('');\n}\n\nconst input=$input.first().json,body=input.body||{};\nif(!await serviceAuth(input.headers))return failResult('unauthorized',401);\nif(body.type!=='package_shipped')return [{json:{ok:false,reason:'ignored',http_status:200}}];\nconst id=String(body.data?.order?.id||'');\nif(!/^\\d+$/.test(id))return failResult('order_id');\nconst cloth=(await db('totehm_clothes?printful_order_id=eq.'+id+'&select=*'))[0];\nif(!cloth||cloth.test)return failResult(cloth?.test?'test_blocked':'not_found',200);\nconst order=(await request({url:'https://api.printful.com/orders/'+id,headers:pfHeaders})).result;\nif(String(order?.id)!==id||String(order.external_id)!==cloth.id)return failResult('order_mismatch',200);\nconst shipment=(order.shipments||[]).find(s=>s.tracking_number&&/^https:\\/\\//.test(String(s.tracking_url||'')));\nif(!shipment)return failResult('not_shipped',200);\nconst ticket=await rpc('streetwear_claim',{p_cloth:cloth.id,p_stage:'tracking',p_concept:null});\nif(ticket.ok){\n  await db('totehm_clothes?id=eq.'+cloth.id+'&test=eq.false','PATCH',{\n    status:'shipped',printful_status:order.status,tracking_number:String(shipment.tracking_number),tracking_url:String(shipment.tracking_url),\n  });\n}\nreturn ticketResult({...ticket,tracking_number:shipment.tracking_number,tracking_url:shipment.tracking_url});\n"
+      }
+    },
+    {
+      "name": "Respond to caller",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        600,
+        0
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: $json.ok, reason: $json.reason }) }}",
+        "options": {
+          "responseCode": "={{ $json.http_status || 200 }}"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Shared source, embedded into each workflow by the exporter. No secrets in items.\nconst SB_URL='https://abujjbkbbiumxrokozph.supabase.co';\nconst N8N_URL='https://n8n.higher.boutique';\nconst uuid=value=>/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(value||''));\nconst sbHeaders={apikey:$env.SB_KEY,'Content-Type':'application/json'};\nconst pfHeaders={Authorization:'Bearer '+$env.PRINTFUL_TOKEN,'X-PF-Store-Id':String($env.PF_STORE_ID),'Content-Type':'application/json'};\nconst request=async options=>{\n  let response;\n  try{response=await this.helpers.httpRequest({...options,json:options.json!==false,\n    returnFullResponse:true,ignoreHttpStatusErrors:true,timeout:options.timeout||30000});}\n  catch{throw new Error('transport_'+String(options.method||'GET').toLowerCase());}\n  if(response.statusCode>=400){const error=new Error('http_'+response.statusCode);error.status=response.statusCode;throw error;}\n  return response.body;\n};\nconst rpc=(name,body={})=>request({method:'POST',url:SB_URL+'/rest/v1/rpc/'+name,headers:sbHeaders,body});\nconst db=(path,method='GET',body,extra={})=>request({method,url:SB_URL+'/rest/v1/'+path,headers:{...sbHeaders,...extra},...(body!==undefined?{body}:{})});\nconst serviceAuth=async headers=>{\n  const key=headers?.apikey||String(headers?.authorization||'').replace(/^Bearer\\s+/i,'');\n  if(!key)return false;\n  const backendHeaders={apikey:key,'Content-Type':'application/json',...(!key.startsWith('sb_')?{Authorization:'Bearer '+key}:{})};\n  try{return await request({method:'POST',url:SB_URL+'/rest/v1/rpc/streetwear_service_ready',headers:backendHeaders,body:{},timeout:5000})===true;}\n  catch{return false;}\n};\nconst failResult=(reason,http_status=400)=>[{json:{ok:false,reason,http_status}}];\nconst ticketResult=ticket=>[{json:{...ticket,http_status:ticket.ok?202:(ticket.reason==='not_found'?404:200)}}];\nconst checkpoint=(ticket,data,wait=false)=>rpc('streetwear_checkpoint',{p_cloth:ticket.cloth.id,p_stage:ticket.stage,p_token:ticket.token,p_data:data,p_wait:wait});\nconst complete=(ticket,result={})=>rpc('streetwear_complete',{p_cloth:ticket.cloth.id,p_stage:ticket.stage,p_token:ticket.token,p_result:result});\nconst fail=(ticket,code,retry=false)=>rpc('streetwear_fail',{p_cloth:ticket.cloth.id,p_stage:ticket.stage,p_token:ticket.token,p_code:String(code).slice(0,160),p_retry:retry});\nconst callFlow=(path,body)=>request({method:'POST',url:N8N_URL+'/webhook/'+path,headers:sbHeaders,body,timeout:10000});\nconst refreshAsset=body=>request({method:'POST',url:SB_URL+'/functions/v1/streetwear-assets',headers:sbHeaders,body});\nconst tg=(method,body)=>request({method:'POST',url:'https://api.telegram.org/bot'+$env.TG_TOKEN+'/'+method,body});\nconst escapeHtml=value=>String(value||'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[c]));\n\n// SHA-256 only derives a separate provider webhook token; it never signs artwork.\nfunction sha256(ascii){\n  const rightRotate=(value,amount)=>(value>>>amount)|(value<<(32-amount));\n  const maxWord=2**32,words=[],bitLength=ascii.length*8;\n  let hash=[],constants=[],primeCounter=0;\n  const composite={};\n  for(let candidate=2;primeCounter<64;candidate++)if(!composite[candidate]){\n    for(let i=0;i<313;i+=candidate)composite[i]=candidate;\n    hash[primeCounter]=(Math.sqrt(candidate)*maxWord)|0;\n    constants[primeCounter++]=(Math.cbrt(candidate)*maxWord)|0;\n  }\n  ascii+='\\x80';while(ascii.length%64!==56)ascii+='\\x00';\n  for(let i=0;i<ascii.length;i++)words[i>>2]|=ascii.charCodeAt(i)<<(24-(i%4)*8);\n  words.push((bitLength/maxWord)|0,bitLength);\n  hash=hash.slice(0,8);\n  for(let j=0;j<words.length;){\n    const w=words.slice(j,j+=16),oldHash=hash.slice();\n    for(let i=0;i<64;i++){\n      const w15=w[i-15],w2=w[i-2],a=hash[0],e=hash[4];\n      const temp1=hash[7]+(rightRotate(e,6)^rightRotate(e,11)^rightRotate(e,25))+((e&hash[5])^((~e)&hash[6]))+constants[i]+\n        (w[i]=i<16?w[i]:(w[i-16]+(rightRotate(w15,7)^rightRotate(w15,18)^(w15>>>3))+w[i-7]+(rightRotate(w2,17)^rightRotate(w2,19)^(w2>>>10)))|0);\n      const temp2=(rightRotate(a,2)^rightRotate(a,13)^rightRotate(a,22))+((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));\n      hash=[(temp1+temp2)|0,a,hash[1],hash[2],(hash[3]+temp1)|0,hash[4],hash[5],hash[6]];\n    }\n    for(let i=0;i<8;i++)hash[i]=(hash[i]+oldHash[i])|0;\n  }\n  return hash.map(value=>(value>>>0).toString(16).padStart(8,'0')).join('');\n}\n\nconst ticket=$input.first().json;\nif(!ticket.ok)return [];\ntry{\n  const result=await request({method:'POST',url:'https://api.resend.com/emails',\n    headers:{Authorization:'Bearer '+$env.RESEND_KEY,'Content-Type':'application/json',\n      'Idempotency-Key':'streetwear-shipped-'+ticket.cloth.id},body:{\n      from:'TOTEHM <totehm@higher.boutique>',to:[ticket.cloth.email],subject:'Your TOTEHM Cloth is on its way.',\n      html:'<p>Your physical garment has been encoded and shipped.</p><p>Track its arrival here: <a href=\"'+\n        escapeHtml(ticket.tracking_url)+'\">'+escapeHtml(ticket.tracking_number)+'</a></p><p>— TOTEHM</p>',\n    }});\n  if(!result.id)throw new Error('tracking_email');\n  await complete(ticket,{email_id:result.id});\n  return [{json:{ok:true,cloth_id:ticket.cloth.id}}];\n}catch(error){\n  const code=String(error.message||'tracking_failed');await fail(ticket,code,true);\n  throw new Error('Streetwear tracking failed: '+code);\n}\n"
+      },
+      "id": "9a37de36-33a1-48e2-a09c-b0acb777177d",
+      "name": "Send verified tracking",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        850,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Printful Webhook": {
+      "main": [
+        [
+          {
+            "node": "Authenticate and claim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Authenticate and claim": {
+      "main": [
+        [
+          {
+            "node": "Respond to caller",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to caller": {
+      "main": [
+        [
+          {
+            "node": "Send verified tracking",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
-  {
-   "parameters": {
-    "jsCode": "\nconst ev = $input.first().json.body;\nif (ev.type !== 'package_shipped') return [];\nconst ship = ev.data.shipment, orderExt = ev.data.order.external_id;\nconst sbh = { apikey: $vars.SB_SERVICE_KEY, Authorization: `Bearer ${$vars.SB_SERVICE_KEY}`, 'Content-Type': 'application/json', Prefer: 'return=representation' };\nconst updated = await this.helpers.httpRequest({ method: 'PATCH',\n  url: `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_clothes?id=eq.${orderExt}`,\n  headers: sbh, json: true,\n  body: { status: 'shipped', tracking_number: ship.tracking_number, tracking_url: ship.tracking_url } });\nconst c = updated[0];\nawait this.helpers.httpRequest({ method: 'POST', url: 'https://api.resend.com/emails', json: true,\n  headers: { Authorization: `Bearer ${$vars.RESEND_KEY}`, 'Content-Type': 'application/json' },\n  body: {\n    from: 'TOTEHM <totehm@higher.boutique>', to: [c.email],\n    subject: `\\u3010${c.name}\\u3011 has left the atelier.`,\n    html: `<p>Your Totehm Cloth \\u3010${c.name}\\u3011 is on its way.</p><p><a href=\"${c.tracking_url}\">Track it</a></p><p>Do not open it like a package. Open it like a painting.</p><p>\\u2014 TOTEHM</p>`,\n  }});\nreturn [{ json: { ok: true } }];\n"
-   },
-   "id": "0e42bd4e-bc34-4642-9422-abe26c0faf3d",
-   "name": "Ship + Resend",
-   "type": "n8n-nodes-base.code",
-   "typeVersion": 2,
-   "position": [
-    220,
-    0
-   ]
-  }
- ],
- "connections": {
-  "Printful Webhook": {
-   "main": [
-    [
-     {
-      "node": "Ship + Resend",
-      "type": "main",
-      "index": 0
-     }
-    ]
-   ]
-  }
- },
- "settings": {
-  "executionOrder": "v1"
- },
- "active": false
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": false,
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "executionTimeout": 1200
+  },
+  "active": false
 }

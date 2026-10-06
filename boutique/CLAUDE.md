@@ -1,5 +1,10 @@
 # boutique/CLAUDE.md — higher.boutique : le Cloth, la méthode Stoner
 
+## STREETWEAR · 06/10/2026 — essais et reçus vérifiés
+
+Préparé sur test/streetwear, non publié (mise à jour main rejetée automatiquement). BUILD 2026-10-06-streetwear-test : TEST MODE dans l'étape de commande, déterminé par my_streetwear_test_mode (session serveur) ; My clothes marque TEST. test_unavailable explique les clés manquantes. Le retour payé relit paid_at avant de promettre une pièce, le reçu TEST ne promet aucune fabrication. Tests navigateur : 32 assertions, aucun service facturable. Le catalogue/photos existant reste identique. La branche test/streetwear isole le code ; la base reste commune. État des fournisseurs/paiements : backend/SYSTEM.md §0 ; procédure : backend/n8n/streetwear_pipeline.md.
+
+
 ## BOUTIQUE · 06/10/2026 — nouveau support et photo différée
 
 Wah a remplacé le précédent Champion. Support courant : `Higher Champion
@@ -382,3 +387,4 @@ dans la boîte en verre 3D rotative). Vidéos depuis le bucket public Supabase
 Le bloc JS du panneau est en `{}` (block scope ES module) — les vars du panneau ne
 polluent pas le module, mais `sb`, `toStripe` et `goToSlide` restent accessibles
 depuis l'extérieur.
+

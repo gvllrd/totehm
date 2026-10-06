@@ -4,6 +4,7 @@ const supports = [ { id:1, title:'Hoodie black', max_pieces:10, claimed:3, price
                    { id:2, title:'Tee white', max_pieces:5, claimed:5, price:44, active:true, position:2 } ];
 const NAMES = [];
 const rpc = {
+  my_streetwear_test_mode: false,
   name_available: b => { NAMES.push(b.candidate); return !/taken/i.test(b.candidate); },
   totehm_complete: { complete:true, remplies:5, habits:true, objectives:true, repulsions:true, wisdom:true, visions:true },
   my_trips: { trips:[], reps:[], wisdom:[], visions:[] },
@@ -24,9 +25,9 @@ const lay = await pg.evaluate(() => { const v = document.querySelector('#card .v
   return { centre: Math.abs((v.left + v.right) / 2 - innerWidth / 2), tile: a.backgroundImage, radius: a.borderRadius, scroll: document.documentElement.scrollWidth - innerWidth }; });
 ok(lay.centre < 2 && lay.scroll <= 0, 'the cloth is centered, no horizontal scroll (' + lay.centre.toFixed(1) + ' px)');
 ok(lay.tile === 'none' && lay.radius === '10px', 'arrows: grey control, radius 10, no perforated tile');
-ok(!log.rpc.length || true, 'boot');
+ok(!(await pg.isVisible('#test-mode')), 'regular member has no test badge');
 const d0 = await pg.evaluate(() => window.__totehm_cloth());
-ok(d0.build === '2026-10-06-streetwear-photo' && d0.flow === 'pick' && /is-on/.test(await pg.getAttribute('#flow [data-f="pick"]', 'class')), 'flow starts at PICK, and says so');
+ok(d0.build === '2026-10-06-streetwear-test' && d0.flow === 'pick' && /is-on/.test(await pg.getAttribute('#flow [data-f="pick"]', 'class')), 'flow starts at PICK, and says so');
 ok(/Pick up a box for it/.test(await pg.textContent('#card')), 'a cloth asks for a box first');
 await pg.screenshot({ path: OUT + '/sw_pick.png' });
 ok(!(await pg.isVisible('#pick-btn')), 'one call to action: the cloth carries it');
@@ -79,4 +80,39 @@ ok(!log.errors.length, 'no page error: ' + log.errors.join(' | '));
   ok(!log.errors.length, 'empty collection: no page error ' + log.errors.join(' | '));
   await pg.screenshot({ path: OUT + '/sw_empty_desktop.png' });
 }
+// Account-controlled test mode and an unavailable test payment must stay readable.
+{
+  const { pg, ctx, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc:{...rpc,my_streetwear_test_mode:true}, tables:{...tables,totehm_clothes:[{name:'0.test-receipt',status:'paid',test:true}]} });
+  await ctx.route('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/create-checkout', r=>r.fulfill({status:503,contentType:'application/json',body:'{"error":"test_unavailable"}'}));
+  await pg.goto('https://www.higher.boutique/streetwear');
+  await pg.click('#totehmize');
+  await pg.waitForSelector('#sel.is-open #list .bx');
+  await pg.click('#list .bx'); await pg.waitForSelector('#mt-go'); await pg.click('#mt-go');
+  await pg.waitForSelector('#config.is-open');
+  await pg.fill('#name-input','safe-test'); await pg.waitForSelector('#step-style.is-on');
+  await pg.click('.style-item'); await pg.waitForSelector('#step-dim.is-on .sz'); await pg.click('.sz');
+  await pg.waitForSelector('#test-mode:not(.hide)');
+  ok(/TEST MODE/.test(await pg.textContent('#test-mode')), 'server-authorized tester sees the test badge');
+  await pg.click('#order-btn');
+  await pg.waitForFunction(()=>/test payments are being configured/i.test(document.querySelector('#order-note').textContent));
+  ok(/streetwear$/.test(pg.url()), 'missing test keys keep the tester on Streetwear');
+  ok(await pg.isEnabled('#order-btn'), 'the test payment failure leaves the order button usable');
+  ok(!log.errors.filter(e=>!/503|Failed to load|\[create-checkout\] 503 test_unavailable/.test(e)).length, 'test mode has no page errors');
+}
+// A paid=true URL is only a return marker, never a payment confirmation.
+{
+  const receipt={name:'0.test-receipt',size:'M',test:true,paid_at:'2026-10-06T00:00:00Z'};
+  const {pg,log}=await page(browser,{dir:'boutique',origin:'https://www.higher.boutique',rpc:{...rpc,my_streetwear_test_mode:true},tables:{...tables,totehm_clothes:[receipt]}});
+  await pg.goto('https://www.higher.boutique/streetwear?paid=true&cloth=11111111-1111-4111-8111-111111111111');
+  await pg.waitForFunction(()=>/Test payment received/.test(document.querySelector('#done-note').textContent));
+  ok(/No garment will be made/.test(await pg.textContent('#done-note')), 'a paid TEST receipt makes no production promise');
+  ok(!log.errors.length, 'the verified test receipt has no page errors');
+}
+{
+  const {pg}=await page(browser,{dir:'boutique',origin:'https://www.higher.boutique',rpc,tables});
+  await pg.goto('https://www.higher.boutique/streetwear?paid=true');
+  await pg.waitForFunction(()=>/Check My clothes/.test(document.querySelector('#done-note').textContent));
+  ok(!/In process/.test(await pg.textContent('#done-note')), 'an unverified return URL does not claim payment');
+}
 await browser.close();
+

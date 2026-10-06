@@ -1,51 +1,106 @@
 {
- "name": "TOTEHM C — Curation",
- "nodes": [
-  {
-   "parameters": {
-    "httpMethod": "POST",
-    "path": "curation",
-    "responseMode": "onReceived",
-    "options": {}
-   },
-   "id": "7836d7ba-ce6a-4abb-bb0a-c97d7988c7a0",
-   "name": "Telegram Callback",
-   "type": "n8n-nodes-base.webhook",
-   "typeVersion": 2,
-   "position": [
-    0,
-    0
-   ]
+  "name": "TOTEHM C — Curation (Config Node)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "curation",
+        "options": {},
+        "responseMode": "responseNode"
+      },
+      "id": "c0381dcb-0fc6-4505-930d-e4b47a5d8467",
+      "name": "Telegram Callback",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "734951fc-8b16-4103-ac9a-27b764a47e89"
+    },
+    {
+      "name": "Authenticate and claim",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        350,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Shared source, embedded into each workflow by the exporter. No secrets in items.\nconst SB_URL='https://abujjbkbbiumxrokozph.supabase.co';\nconst N8N_URL='https://n8n.higher.boutique';\nconst uuid=value=>/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(value||''));\nconst sbHeaders={apikey:$env.SB_KEY,'Content-Type':'application/json'};\nconst pfHeaders={Authorization:'Bearer '+$env.PRINTFUL_TOKEN,'X-PF-Store-Id':String($env.PF_STORE_ID),'Content-Type':'application/json'};\nconst request=async options=>{\n  let response;\n  try{response=await this.helpers.httpRequest({...options,json:options.json!==false,\n    returnFullResponse:true,ignoreHttpStatusErrors:true,timeout:options.timeout||30000});}\n  catch{throw new Error('transport_'+String(options.method||'GET').toLowerCase());}\n  if(response.statusCode>=400){const error=new Error('http_'+response.statusCode);error.status=response.statusCode;throw error;}\n  return response.body;\n};\nconst rpc=(name,body={})=>request({method:'POST',url:SB_URL+'/rest/v1/rpc/'+name,headers:sbHeaders,body});\nconst db=(path,method='GET',body,extra={})=>request({method,url:SB_URL+'/rest/v1/'+path,headers:{...sbHeaders,...extra},...(body!==undefined?{body}:{})});\nconst serviceAuth=async headers=>{\n  const key=headers?.apikey||String(headers?.authorization||'').replace(/^Bearer\\s+/i,'');\n  if(!key)return false;\n  const backendHeaders={apikey:key,'Content-Type':'application/json',...(!key.startsWith('sb_')?{Authorization:'Bearer '+key}:{})};\n  try{return await request({method:'POST',url:SB_URL+'/rest/v1/rpc/streetwear_service_ready',headers:backendHeaders,body:{},timeout:5000})===true;}\n  catch{return false;}\n};\nconst failResult=(reason,http_status=400)=>[{json:{ok:false,reason,http_status}}];\nconst ticketResult=ticket=>[{json:{...ticket,http_status:ticket.ok?202:(ticket.reason==='not_found'?404:200)}}];\nconst checkpoint=(ticket,data,wait=false)=>rpc('streetwear_checkpoint',{p_cloth:ticket.cloth.id,p_stage:ticket.stage,p_token:ticket.token,p_data:data,p_wait:wait});\nconst complete=(ticket,result={})=>rpc('streetwear_complete',{p_cloth:ticket.cloth.id,p_stage:ticket.stage,p_token:ticket.token,p_result:result});\nconst fail=(ticket,code,retry=false)=>rpc('streetwear_fail',{p_cloth:ticket.cloth.id,p_stage:ticket.stage,p_token:ticket.token,p_code:String(code).slice(0,160),p_retry:retry});\nconst callFlow=(path,body)=>request({method:'POST',url:N8N_URL+'/webhook/'+path,headers:sbHeaders,body,timeout:10000});\nconst refreshAsset=body=>request({method:'POST',url:SB_URL+'/functions/v1/streetwear-assets',headers:sbHeaders,body});\nconst tg=(method,body)=>request({method:'POST',url:'https://api.telegram.org/bot'+$env.TG_TOKEN+'/'+method,body});\nconst escapeHtml=value=>String(value||'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[c]));\n\n// SHA-256 only derives a separate provider webhook token; it never signs artwork.\nfunction sha256(ascii){\n  const rightRotate=(value,amount)=>(value>>>amount)|(value<<(32-amount));\n  const maxWord=2**32,words=[],bitLength=ascii.length*8;\n  let hash=[],constants=[],primeCounter=0;\n  const composite={};\n  for(let candidate=2;primeCounter<64;candidate++)if(!composite[candidate]){\n    for(let i=0;i<313;i+=candidate)composite[i]=candidate;\n    hash[primeCounter]=(Math.sqrt(candidate)*maxWord)|0;\n    constants[primeCounter++]=(Math.cbrt(candidate)*maxWord)|0;\n  }\n  ascii+='\\x80';while(ascii.length%64!==56)ascii+='\\x00';\n  for(let i=0;i<ascii.length;i++)words[i>>2]|=ascii.charCodeAt(i)<<(24-(i%4)*8);\n  words.push((bitLength/maxWord)|0,bitLength);\n  hash=hash.slice(0,8);\n  for(let j=0;j<words.length;){\n    const w=words.slice(j,j+=16),oldHash=hash.slice();\n    for(let i=0;i<64;i++){\n      const w15=w[i-15],w2=w[i-2],a=hash[0],e=hash[4];\n      const temp1=hash[7]+(rightRotate(e,6)^rightRotate(e,11)^rightRotate(e,25))+((e&hash[5])^((~e)&hash[6]))+constants[i]+\n        (w[i]=i<16?w[i]:(w[i-16]+(rightRotate(w15,7)^rightRotate(w15,18)^(w15>>>3))+w[i-7]+(rightRotate(w2,17)^rightRotate(w2,19)^(w2>>>10)))|0);\n      const temp2=(rightRotate(a,2)^rightRotate(a,13)^rightRotate(a,22))+((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));\n      hash=[(temp1+temp2)|0,a,hash[1],hash[2],(hash[3]+temp1)|0,hash[4],hash[5],hash[6]];\n    }\n    for(let i=0;i<8;i++)hash[i]=(hash[i]+oldHash[i])|0;\n  }\n  return hash.map(value=>(value>>>0).toString(16).padStart(8,'0')).join('');\n}\n\nconst input=$input.first().json,body=input.body||{};\nconst internal=await serviceAuth(input.headers);\nconst expected=$env.TG_WEBHOOK_SECRET||sha256('totehm-telegram-webhook-v1:'+$env.TG_TOKEN);\nconst telegram=!!$env.TG_TOKEN&&input.headers?.['x-telegram-bot-api-secret-token']===expected;\nif(!internal&&!telegram)return failResult('unauthorized',401);\nif(internal&&uuid(body.resume_cloth_id)){\n  const cloth=(await db('totehm_clothes?id=eq.'+body.resume_cloth_id+'&select=selected_concept_id'))[0];\n  if(!uuid(cloth?.selected_concept_id))return failResult('not_selected',200);\n  return ticketResult(await rpc('streetwear_claim',{p_cloth:body.resume_cloth_id,p_stage:'curation',p_concept:cloth.selected_concept_id}));\n}\nconst cb=body.callback_query;\nif(!cb||!/^(pick|regen):/.test(String(cb.data||'')))return [{json:{ok:true,http_status:200,route:'bot',update:body}}];\nconst [action,id]=String(cb.data).split(':');\nconst chat=String(cb.message?.chat?.id||''),who=String(cb.from?.id||'');\nconst allowed=String($env.TG_ADMIN_IDS||'').split(',').map(x=>x.trim()).filter(Boolean);\nif(!uuid(id)||chat!==String($env.TG_CHAT)||!who||\n  (Number($env.TG_CHAT)>0?who!==String($env.TG_CHAT):!allowed.includes(who)))return failResult('curator_only',403);\nlet clothId=id;\nif(action==='pick'){\n  const concept=(await db('cloth_concepts?id=eq.'+id+'&select=cloth_id'))[0];\n  if(!concept)return failResult('not_found',404);clothId=concept.cloth_id;\n}\nconst inbox=(await db('streetwear_jobs?cloth_id=eq.'+clothId+'&stage=eq.notify&select=state,data'))[0];\nif(inbox?.state!=='done'||String(inbox.data?.curation_message_id)!==String(cb.message?.message_id))return failResult('stale_button',200);\nif(action==='regen'){\n  const ok=await rpc('streetwear_regenerate',{p_cloth:clothId});\n  return [{json:{ok,http_status:200,route:'regen',cloth_id:clothId,callback_id:cb.id}}];\n}\nconst ticket=await rpc('streetwear_claim',{p_cloth:clothId,p_stage:'curation',p_concept:id});\nif(!ticket.ok){try{await tg('answerCallbackQuery',{callback_query_id:cb.id,text:'Already processing or expired.'});}catch{} }\nreturn ticketResult({...ticket,callback_id:cb.id});\n"
+      }
+    },
+    {
+      "name": "Respond to caller",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        600,
+        0
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: $json.ok, reason: $json.reason }) }}",
+        "options": {
+          "responseCode": "={{ $json.http_status || 200 }}"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Shared source, embedded into each workflow by the exporter. No secrets in items.\nconst SB_URL='https://abujjbkbbiumxrokozph.supabase.co';\nconst N8N_URL='https://n8n.higher.boutique';\nconst uuid=value=>/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(value||''));\nconst sbHeaders={apikey:$env.SB_KEY,'Content-Type':'application/json'};\nconst pfHeaders={Authorization:'Bearer '+$env.PRINTFUL_TOKEN,'X-PF-Store-Id':String($env.PF_STORE_ID),'Content-Type':'application/json'};\nconst request=async options=>{\n  let response;\n  try{response=await this.helpers.httpRequest({...options,json:options.json!==false,\n    returnFullResponse:true,ignoreHttpStatusErrors:true,timeout:options.timeout||30000});}\n  catch{throw new Error('transport_'+String(options.method||'GET').toLowerCase());}\n  if(response.statusCode>=400){const error=new Error('http_'+response.statusCode);error.status=response.statusCode;throw error;}\n  return response.body;\n};\nconst rpc=(name,body={})=>request({method:'POST',url:SB_URL+'/rest/v1/rpc/'+name,headers:sbHeaders,body});\nconst db=(path,method='GET',body,extra={})=>request({method,url:SB_URL+'/rest/v1/'+path,headers:{...sbHeaders,...extra},...(body!==undefined?{body}:{})});\nconst serviceAuth=async headers=>{\n  const key=headers?.apikey||String(headers?.authorization||'').replace(/^Bearer\\s+/i,'');\n  if(!key)return false;\n  const backendHeaders={apikey:key,'Content-Type':'application/json',...(!key.startsWith('sb_')?{Authorization:'Bearer '+key}:{})};\n  try{return await request({method:'POST',url:SB_URL+'/rest/v1/rpc/streetwear_service_ready',headers:backendHeaders,body:{},timeout:5000})===true;}\n  catch{return false;}\n};\nconst failResult=(reason,http_status=400)=>[{json:{ok:false,reason,http_status}}];\nconst ticketResult=ticket=>[{json:{...ticket,http_status:ticket.ok?202:(ticket.reason==='not_found'?404:200)}}];\nconst checkpoint=(ticket,data,wait=false)=>rpc('streetwear_checkpoint',{p_cloth:ticket.cloth.id,p_stage:ticket.stage,p_token:ticket.token,p_data:data,p_wait:wait});\nconst complete=(ticket,result={})=>rpc('streetwear_complete',{p_cloth:ticket.cloth.id,p_stage:ticket.stage,p_token:ticket.token,p_result:result});\nconst fail=(ticket,code,retry=false)=>rpc('streetwear_fail',{p_cloth:ticket.cloth.id,p_stage:ticket.stage,p_token:ticket.token,p_code:String(code).slice(0,160),p_retry:retry});\nconst callFlow=(path,body)=>request({method:'POST',url:N8N_URL+'/webhook/'+path,headers:sbHeaders,body,timeout:10000});\nconst refreshAsset=body=>request({method:'POST',url:SB_URL+'/functions/v1/streetwear-assets',headers:sbHeaders,body});\nconst tg=(method,body)=>request({method:'POST',url:'https://api.telegram.org/bot'+$env.TG_TOKEN+'/'+method,body});\nconst escapeHtml=value=>String(value||'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[c]));\n\n// SHA-256 only derives a separate provider webhook token; it never signs artwork.\nfunction sha256(ascii){\n  const rightRotate=(value,amount)=>(value>>>amount)|(value<<(32-amount));\n  const maxWord=2**32,words=[],bitLength=ascii.length*8;\n  let hash=[],constants=[],primeCounter=0;\n  const composite={};\n  for(let candidate=2;primeCounter<64;candidate++)if(!composite[candidate]){\n    for(let i=0;i<313;i+=candidate)composite[i]=candidate;\n    hash[primeCounter]=(Math.sqrt(candidate)*maxWord)|0;\n    constants[primeCounter++]=(Math.cbrt(candidate)*maxWord)|0;\n  }\n  ascii+='\\x80';while(ascii.length%64!==56)ascii+='\\x00';\n  for(let i=0;i<ascii.length;i++)words[i>>2]|=ascii.charCodeAt(i)<<(24-(i%4)*8);\n  words.push((bitLength/maxWord)|0,bitLength);\n  hash=hash.slice(0,8);\n  for(let j=0;j<words.length;){\n    const w=words.slice(j,j+=16),oldHash=hash.slice();\n    for(let i=0;i<64;i++){\n      const w15=w[i-15],w2=w[i-2],a=hash[0],e=hash[4];\n      const temp1=hash[7]+(rightRotate(e,6)^rightRotate(e,11)^rightRotate(e,25))+((e&hash[5])^((~e)&hash[6]))+constants[i]+\n        (w[i]=i<16?w[i]:(w[i-16]+(rightRotate(w15,7)^rightRotate(w15,18)^(w15>>>3))+w[i-7]+(rightRotate(w2,17)^rightRotate(w2,19)^(w2>>>10)))|0);\n      const temp2=(rightRotate(a,2)^rightRotate(a,13)^rightRotate(a,22))+((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));\n      hash=[(temp1+temp2)|0,a,hash[1],hash[2],(hash[3]+temp1)|0,hash[4],hash[5],hash[6]];\n    }\n    for(let i=0;i<8;i++)hash[i]=(hash[i]+oldHash[i])|0;\n  }\n  return hash.map(value=>(value>>>0).toString(16).padStart(8,'0')).join('');\n}\n\nconst ticket=$input.first().json;\nif(!ticket.ok)return [];\nif(ticket.route==='bot'){\n  await request({method:'POST',url:SB_URL+'/functions/v1/bot-reply',headers:{...sbHeaders,'x-totehm-telegram-token':$env.TG_TOKEN},body:ticket.update});\n  return [{json:{ok:true,route:'bot'}}];\n}\nif(ticket.callback_id)try{await tg('answerCallbackQuery',{callback_query_id:ticket.callback_id,text:ticket.route==='regen'?'Regenerating…':'Processing your choice…'});}catch{}\nif(ticket.route==='regen'){\n  try{await callFlow('streetwear-generate',{cloth_id:ticket.cloth_id});}catch{ /* queued in DB */ }\n  return [{json:{ok:true,route:'regen'}}];\n}\nconst cloth=ticket.cloth,saved=ticket.job.data||{};\nlet retryable=!!saved.prediction_id||!!saved.upscaled_url;\ntry{\n  let source=saved.upscaled_url;\n  if(!source){\n    let prediction;\n    if(saved.prediction_id){\n      prediction=await request({url:'https://api.replicate.com/v1/predictions/'+encodeURIComponent(saved.prediction_id),\n        headers:{Authorization:'Bearer '+$env.REPLICATE_KEY}});\n    }else{\n      if(saved.prediction_request_started)throw new Error('prediction_outcome_unknown');\n      if(!$env.REPLICATE_KEY||!$env.REPLICATE_VERSION)throw new Error('upscale_configuration');\n      const signed=await refreshAsset({cloth_id:cloth.id,concept_id:ticket.concept.id});\n      await checkpoint(ticket,{prediction_request_started:true});\n      prediction=await request({method:'POST',url:'https://api.replicate.com/v1/predictions',\n        headers:{Authorization:'Bearer '+$env.REPLICATE_KEY,'Content-Type':'application/json',Prefer:'wait=5','Cancel-After':'10m'},\n        body:{version:$env.REPLICATE_VERSION,input:{image:signed.url,scale:4}},timeout:20000});\n      if(!prediction.id)throw new Error('prediction_missing_id');\n      await checkpoint(ticket,{prediction_id:prediction.id});retryable=true;\n    }\n    if(['failed','canceled'].includes(prediction.status)){retryable=false;throw new Error('prediction_'+prediction.status);}\n    if(prediction.status!=='succeeded'){\n      await checkpoint(ticket,{prediction_id:prediction.id},true);\n      return [{json:{ok:true,pending:true,cloth_id:cloth.id}}];\n    }\n    source=Array.isArray(prediction.output)?prediction.output[0]:prediction.output;\n    if(typeof source!=='string'||!/^https:\\/\\//.test(source))throw new Error('upscale_output');\n    await checkpoint(ticket,{upscaled_url:source});\n  }\n  const composed=await request({method:'POST',url:SB_URL+'/functions/v1/compose-artwork',headers:sbHeaders,\n    body:{cloth_id:cloth.id,source_url:source},timeout:200000});\n  if(!composed.print_url||!composed.final_url||!composed.storage_path)throw new Error('compose_output');\n  if(!await complete(ticket,composed))throw new Error('curation_lease');\n  try{await callFlow('streetwear-printful',{cloth_id:cloth.id});}catch{ /* durable Printful job */ }\n  return [{json:{ok:true,cloth_id:cloth.id}}];\n}catch(error){\n  const code=String(error.message||'curation_failed');\n  await fail(ticket,code,retryable);\n  throw new Error('Streetwear curation failed: '+code);\n}\n"
+      },
+      "id": "ac9436cb-781f-44c6-adbf-f9160da7ac1a",
+      "name": "Upscale and compose",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        850,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Telegram Callback": {
+      "main": [
+        [
+          {
+            "node": "Authenticate and claim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Authenticate and claim": {
+      "main": [
+        [
+          {
+            "node": "Respond to caller",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to caller": {
+      "main": [
+        [
+          {
+            "node": "Upscale and compose",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
-  {
-   "parameters": {
-    "jsCode": "\n// why: un tap du curateur pilote tout : pick -> upscale -> compose -> printful ; regen -> nouvelle génération\nconst cb = $input.first().json.body.callback_query;\nif (!cb) return [];\nconst [action, id] = cb.data.split(':');\nconst tg = `https://api.telegram.org/bot${$vars.TG_TOKEN}`;\nconst sbh = { apikey: $vars.SB_SERVICE_KEY, Authorization: `Bearer ${$vars.SB_SERVICE_KEY}`, 'Content-Type': 'application/json' };\nif (action === 'regen') {\n  await this.helpers.httpRequest({ method: 'POST', url: `${$vars.N8N_BASE_URL}/webhook/streetwear-generate`, json: true, body: { cloth_id: id } });\n  await this.helpers.httpRequest({ method: 'POST', url: `${tg}/answerCallbackQuery`, json: true, body: { callback_query_id: cb.id, text: 'regenerating\\u2026' } });\n  return [];\n}\n// pick\nconst concept = (await this.helpers.httpRequest({ method: 'GET', url: `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/cloth_concepts?id=eq.${id}&select=*`, headers: sbh, json: true }))[0];\nawait this.helpers.httpRequest({ method: 'PATCH', url: `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/cloth_concepts?id=eq.${id}`, headers: sbh, json: true, body: { selected: true } });\n// upscale via replicate real-esrgan x4\nconst pred = await this.helpers.httpRequest({ method: 'POST', url: 'https://api.replicate.com/v1/predictions', json: true,\n  headers: { Authorization: `Bearer ${$vars.REPLICATE_KEY}`, 'Content-Type': 'application/json', Prefer: 'wait=60' },\n  body: { version: $vars.REPLICATE_ESRGAN_VERSION, input: { image: concept.image_url, scale: 4 } } });\nconst upscaled = Array.isArray(pred.output) ? pred.output[0] : pred.output;\n// compose : artwork + logo + totehm cloth name (edge function)\nconst composed = await this.helpers.httpRequest({ method: 'POST',\n  url: 'https://abujjbkbbiumxrokozph.supabase.co/functions/v1/compose-artwork', json: true,\n  headers: { Authorization: `Bearer ${$vars.SB_SERVICE_KEY}`, 'Content-Type': 'application/json' },\n  body: { cloth_id: concept.cloth_id, source_url: upscaled } });\nawait this.helpers.httpRequest({ method: 'PATCH', url: `https://abujjbkbbiumxrokozph.supabase.co/rest/v1/totehm_clothes?id=eq.${concept.cloth_id}`, headers: sbh, json: true,\n  body: { status: 'approved', artwork_final_url: composed.final_url, artwork_print_url: composed.print_url } });\nawait this.helpers.httpRequest({ method: 'POST', url: `${$vars.N8N_BASE_URL}/webhook/streetwear-printful`, json: true, body: { cloth_id: concept.cloth_id } });\nawait this.helpers.httpRequest({ method: 'POST', url: `${tg}/answerCallbackQuery`, json: true, body: { callback_query_id: cb.id, text: '\\u2713 encoded' } });\nreturn [{ json: { ok: true } }];\n"
-   },
-   "id": "3ad62b70-93fe-4a0e-bb06-deae6eccf2c1",
-   "name": "Route + Process",
-   "type": "n8n-nodes-base.code",
-   "typeVersion": 2,
-   "position": [
-    220,
-    0
-   ]
-  }
- ],
- "connections": {
-  "Telegram Callback": {
-   "main": [
-    [
-     {
-      "node": "Route + Process",
-      "type": "main",
-      "index": 0
-     }
-    ]
-   ]
-  }
- },
- "settings": {
-  "executionOrder": "v1"
- },
- "active": false
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": false,
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "executionTimeout": 1200
+  },
+  "active": false
 }

@@ -1,0 +1,59 @@
+{
+  "name": "TOTEHM R — Streetwear recovery",
+  "active": false,
+  "nodes": [
+    {
+      "id": "streetwear-minute",
+      "name": "Every minute",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "streetwear-recover",
+      "name": "Deliver and poll durable jobs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Shared source, embedded into each workflow by the exporter. No secrets in items.\nconst SB_URL='https://abujjbkbbiumxrokozph.supabase.co';\nconst N8N_URL='https://n8n.higher.boutique';\nconst uuid=value=>/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(value||''));\nconst sbHeaders={apikey:$env.SB_KEY,'Content-Type':'application/json'};\nconst pfHeaders={Authorization:'Bearer '+$env.PRINTFUL_TOKEN,'X-PF-Store-Id':String($env.PF_STORE_ID),'Content-Type':'application/json'};\nconst request=async options=>{\n  let response;\n  try{response=await this.helpers.httpRequest({...options,json:options.json!==false,\n    returnFullResponse:true,ignoreHttpStatusErrors:true,timeout:options.timeout||30000});}\n  catch{throw new Error('transport_'+String(options.method||'GET').toLowerCase());}\n  if(response.statusCode>=400){const error=new Error('http_'+response.statusCode);error.status=response.statusCode;throw error;}\n  return response.body;\n};\nconst rpc=(name,body={})=>request({method:'POST',url:SB_URL+'/rest/v1/rpc/'+name,headers:sbHeaders,body});\nconst db=(path,method='GET',body,extra={})=>request({method,url:SB_URL+'/rest/v1/'+path,headers:{...sbHeaders,...extra},...(body!==undefined?{body}:{})});\nconst serviceAuth=async headers=>{\n  const key=headers?.apikey||String(headers?.authorization||'').replace(/^Bearer\\s+/i,'');\n  if(!key)return false;\n  const backendHeaders={apikey:key,'Content-Type':'application/json',...(!key.startsWith('sb_')?{Authorization:'Bearer '+key}:{})};\n  try{return await request({method:'POST',url:SB_URL+'/rest/v1/rpc/streetwear_service_ready',headers:backendHeaders,body:{},timeout:5000})===true;}\n  catch{return false;}\n};\nconst failResult=(reason,http_status=400)=>[{json:{ok:false,reason,http_status}}];\nconst ticketResult=ticket=>[{json:{...ticket,http_status:ticket.ok?202:(ticket.reason==='not_found'?404:200)}}];\nconst checkpoint=(ticket,data,wait=false)=>rpc('streetwear_checkpoint',{p_cloth:ticket.cloth.id,p_stage:ticket.stage,p_token:ticket.token,p_data:data,p_wait:wait});\nconst complete=(ticket,result={})=>rpc('streetwear_complete',{p_cloth:ticket.cloth.id,p_stage:ticket.stage,p_token:ticket.token,p_result:result});\nconst fail=(ticket,code,retry=false)=>rpc('streetwear_fail',{p_cloth:ticket.cloth.id,p_stage:ticket.stage,p_token:ticket.token,p_code:String(code).slice(0,160),p_retry:retry});\nconst callFlow=(path,body)=>request({method:'POST',url:N8N_URL+'/webhook/'+path,headers:sbHeaders,body,timeout:10000});\nconst refreshAsset=body=>request({method:'POST',url:SB_URL+'/functions/v1/streetwear-assets',headers:sbHeaders,body});\nconst tg=(method,body)=>request({method:'POST',url:'https://api.telegram.org/bot'+$env.TG_TOKEN+'/'+method,body});\nconst escapeHtml=value=>String(value||'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[c]));\n\n// SHA-256 only derives a separate provider webhook token; it never signs artwork.\nfunction sha256(ascii){\n  const rightRotate=(value,amount)=>(value>>>amount)|(value<<(32-amount));\n  const maxWord=2**32,words=[],bitLength=ascii.length*8;\n  let hash=[],constants=[],primeCounter=0;\n  const composite={};\n  for(let candidate=2;primeCounter<64;candidate++)if(!composite[candidate]){\n    for(let i=0;i<313;i+=candidate)composite[i]=candidate;\n    hash[primeCounter]=(Math.sqrt(candidate)*maxWord)|0;\n    constants[primeCounter++]=(Math.cbrt(candidate)*maxWord)|0;\n  }\n  ascii+='\\x80';while(ascii.length%64!==56)ascii+='\\x00';\n  for(let i=0;i<ascii.length;i++)words[i>>2]|=ascii.charCodeAt(i)<<(24-(i%4)*8);\n  words.push((bitLength/maxWord)|0,bitLength);\n  hash=hash.slice(0,8);\n  for(let j=0;j<words.length;){\n    const w=words.slice(j,j+=16),oldHash=hash.slice();\n    for(let i=0;i<64;i++){\n      const w15=w[i-15],w2=w[i-2],a=hash[0],e=hash[4];\n      const temp1=hash[7]+(rightRotate(e,6)^rightRotate(e,11)^rightRotate(e,25))+((e&hash[5])^((~e)&hash[6]))+constants[i]+\n        (w[i]=i<16?w[i]:(w[i-16]+(rightRotate(w15,7)^rightRotate(w15,18)^(w15>>>3))+w[i-7]+(rightRotate(w2,17)^rightRotate(w2,19)^(w2>>>10)))|0);\n      const temp2=(rightRotate(a,2)^rightRotate(a,13)^rightRotate(a,22))+((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));\n      hash=[(temp1+temp2)|0,a,hash[1],hash[2],(hash[3]+temp1)|0,hash[4],hash[5],hash[6]];\n    }\n    for(let i=0;i<8;i++)hash[i]=(hash[i]+oldHash[i])|0;\n  }\n  return hash.map(value=>(value>>>0).toString(16).padStart(8,'0')).join('');\n}\n\n// Durable delivery and polling, never replay an ambiguous image generation.\nawait rpc('streetwear_recover_stalled');\nconst events=await db('streetwear_events?state=eq.queued&next_attempt_at=lte.'+encodeURIComponent(new Date().toISOString())+'&attempts=lt.20&select=id,payload&limit=12&order=next_attempt_at');\nconst jobs=await db('streetwear_jobs?state=in.(queued,waiting)&next_attempt_at=lte.'+encodeURIComponent(new Date().toISOString())+'&attempts=lt.20&select=cloth_id,stage&limit=12&order=next_attempt_at');\nlet dispatched=0,failed=0;\nfor(const event of events)try{await callFlow('printful-product',{...event.payload,_inbox_id:event.id});dispatched++;}catch{failed++;}\nfor(const job of jobs){\n  try{\n    if(job.stage==='generation'||job.stage==='notify')await callFlow('streetwear-generate',{cloth_id:job.cloth_id,...(job.stage==='notify'?{stage:'notify'}:{})});\n    else if(job.stage==='curation')await callFlow('curation',{resume_cloth_id:job.cloth_id});\n    else if(job.stage==='printful')await callFlow('streetwear-printful',{cloth_id:job.cloth_id});\n    else if(job.stage==='tracking'){\n      const cloth=(await db('totehm_clothes?id=eq.'+job.cloth_id+'&select=printful_order_id'))[0];\n      if(cloth?.printful_order_id)await callFlow('streetwear-tracking',{type:'package_shipped',data:{order:{id:cloth.printful_order_id}}});\n    }\n    dispatched++;\n  }catch{failed++;}\n}\nreturn [{json:{ok:failed===0,dispatched,failed}}];\n"
+      }
+    }
+  ],
+  "connections": {
+    "Every minute": {
+      "main": [
+        [
+          {
+            "node": "Deliver and poll durable jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 120,
+    "saveManualExecutions": false,
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none"
+  }
+}

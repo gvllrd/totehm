@@ -1,5 +1,10 @@
 # backend/CLAUDE.md — la base, les fonctions, l'argent, le bot
 
+## STREETWEAR · 06/10/2026 — catalogue actif, paiements préparés
+
+F est publié avec authentification, reçu durable et synchronisation atomique. compose-artwork et streetwear-assets sont déployés ; jobs et droits serveur en base sont appliqués. B/C/D sont des brouillons, E/Stripe/bot-reply attendent approbation automatique explicite, R est du code préparé seulement. Ne pas publier les anciens CONFIG. Voir SYSTEM.md §0 et n8n/streetwear_pipeline.md pour l'état mesuré et la procédure. Les TEST ne consomment aucune capacité ; les clés Stripe de test restent absentes. Les données d'exécution des workflows corrigés ne sont pas conservées : les tables privées portent le diagnostic.
+
+
 ## BOUTIQUE · 06/10/2026 — F : attendre la photo Printful
 
 F publié `c9638e70-0d0f-4dba-adb1-a78f2ccb8ec8` : `Printful Webhook` →
@@ -716,4 +721,5 @@ membre, le même jour.
 clé `service_role` la laisserait en clair dans `cron.job.command` et dans chaque
 dump. On passe par un jeton à usage unique créé en base : il ne quitte jamais
 Postgres, et intercepté, il est déjà mort.
+
 

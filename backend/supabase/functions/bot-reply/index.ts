@@ -1,3 +1,6 @@
+import { AsyncLocalStorage } from 'node:async_hooks';
+import { streetwearServiceRequest } from '../_shared/streetwear-auth.ts';
+const telegramRequest=new AsyncLocalStorage<string>();
 // TOTEHM · bot-reply v6 — TOTEHMBOT, LE TOTEHM DANS LA POCHE
 // why  : Telegram n'accepte QU'UN webhook par bot. Le geste quotidien
 //        (DONE/MISSED/WHY), la production de contenu (/spot) et la lecture
@@ -58,7 +61,7 @@ const kbApp = (label = "Ouvrir mon Totehm") => ({
 });
 
 async function tg(method: string, payload: unknown) {
-  const r = await fetch(`https://api.telegram.org/bot${TG}/${method}`, {
+  const r = await fetch(`https://api.telegram.org/bot${telegramRequest.getStore()||TG}/${method}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -313,11 +316,12 @@ async function tonight(chat: string, uid: string, lat: number, lng: number) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────
-Deno.serve(async (req) => {
+const handleBotReply=async (req:Request) => {
   if (req.method !== "POST") return ok();
 
+  const internal=await streetwearServiceRequest(req);
   const expected = Deno.env.get("TELEGRAM_WEBHOOK_SECRET");
-  if (expected && req.headers.get("x-telegram-bot-api-secret-token") !== expected) {
+  if (!internal && (!expected || req.headers.get("x-telegram-bot-api-secret-token") !== expected)) {
     return new Response("forbidden", { status: 403 });
   }
 
@@ -804,4 +808,9 @@ Deno.serve(async (req) => {
     console.error("bot-reply:", e);
     return ok();
   }
+};
+Deno.serve(async req=>{
+  const internal=await streetwearServiceRequest(req);
+  const token=internal?req.headers.get('x-totehm-telegram-token'):null;
+  return telegramRequest.run(token||TG||'',()=>handleBotReply(req));
 });

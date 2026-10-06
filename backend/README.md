@@ -336,9 +336,7 @@ Allumer : `update boutique_testers set active = true where user_id = (select id 
 `test_unavailable`. Les pièces/commandes d'essai : `where test` (aucune
 génération n8n, aucune commande Printful, email « [TEST] »).
 
-**Relancer une génération** (n8n en panne au moment du paiement) : POST
-`https://n8n.higher.boutique/webhook/streetwear-generate` `{"cloth_id":"<uuid>"}`
-(depuis une session Claude ou Claude Code ; la pièce doit être `paid`).
+**Streetwear (06/10)** : procédure et état des brouillons dans `n8n/streetwear_pipeline.md`, état mesuré dans SYSTEM.md §0. Le trigger payé conserve une tâche même si n8n tombe. Les TEST ne consomment ni stock ni capacité de style. La future reprise n8n utilise une clé serveur en en-tête apikey, jamais dans les items ou les URLs ; ne pas relancer automatiquement une génération dont l'appel payant a peut-être déjà eu lieu.
 Auto-test : `tests/sql/luxury_quote_selftest.sql` → `FAIL={}`.
 
 ### Le versement du 1er — la procédure
@@ -952,8 +950,7 @@ deploy re-route sans perte : l'ancien callback `s:v:` passe directement
 
 ---
 
-## n8n — statut : gelé
+## n8n — Streetwear
 
-Ni abandonné, ni développé. Workflows A→E dans `backend/n8n/workflows/`.
-Le pipeline n'est pas nécessaire pour encaisser, il l'est pour scaler.
-On automatise quand le manuel dépasse 5 h/semaine.
+F alimente le catalogue et ses photos. B/C/D/E concernent la génération, la curation, la commande et l'expédition ; leur publication cohérente reste à finir. T vérifie manuellement la configuration sans facturation. Procédure actuelle : `n8n/streetwear_pipeline.md` ; versions réellement actives : SYSTEM.md §0. Les exports préparés ne sont pas une preuve de déploiement.
+
