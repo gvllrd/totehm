@@ -52,14 +52,14 @@ try{
   ok((await lsd(pg)).pris&&await pg.$eval('#gate-asteroid',e=>e.classList.contains('is-pris')),'appui de 500 ms : le papier est PRIS');
   await pg.mouse.up();await pg.waitForTimeout(700);
   ok(!(await lsd(pg)).pris&&await tf(pg)===''&&JSON.stringify(await R(pg,'#gate-asteroid'))===JSON.stringify(chez)&&!await pg.evaluate(()=>document.body.classList.contains('entered'))&&await pg.evaluate(()=>document.body.classList.contains('gate')),'relâché sans bouger : il est chez lui, rien ne s\'ouvre');
-  // porté à mi-chemin : la bouche s'ouvre, pas encore posé (06/10 : la langue est 1,3 fois plus
-  // longue, on la touche plus tôt — mi-chemin = la moitié de la course, plus 62 %)
+  // porté à mi-chemin : la bouche s'ouvre, pas encore posé (06/10 ter : toute la bouche grandit
+  // ×1,27, elle descend plus près du papier — mi-chemin = la moitié de la course)
   p=await prendre(pg);const L=await langue(pg);
   await porter(pg,p,[p[0],p[1]+(L[1]-p[1])*.5]);await pg.waitForTimeout(350);
   let s=await lsd(pg);
   ok(s.bouche&&!s.langue&&!await get(pg)&&await pg.$eval('#m-lips',e=>e.getAttribute('d'))!==d0,'à mi-chemin : la bouche s\'ouvre, il n\'est pas encore sur la langue');
   // sur la langue : il rapetisse, « Get [Higher] » apparaît à sa place
-  await porter(pg,[p[0],p[1]+(L[1]-p[1])*.62],L,8);await pg.waitForTimeout(600);
+  await porter(pg,[p[0],p[1]+(L[1]-p[1])*.5],L,8);await pg.waitForTimeout(600);
   s=await lsd(pg);const w=(await R(pg,'#gate-asteroid'))[2],g=await R(pg,'#gate-get');
   ok(s.langue&&await get(pg)&&w<chez[2]*.5,'sur la langue : posé, il rapetisse en buvard ('+Math.round(w)+' px pour '+chez[2]+'), le slogan apparaît');
   ok(Math.abs(g[0]+g[2]/2-(chez[0]+chez[2]/2))<1&&Math.abs(g[1]+g[3]/2-(chez[1]+chez[3]/2))<1,'« Get [Higher] » est centré EXACTEMENT là où le papier reposait');

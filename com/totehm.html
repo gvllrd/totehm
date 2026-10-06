@@ -2222,7 +2222,7 @@ body.gate.entered .ast-back{visibility:hidden}
    La boîte réserve la place de la langue tirée : fermée, la bouche
    occupe son haut. Seules les lèvres sont touchables.
    04/10 : EN HAUT de l'écran, la langue pend vers le papier. */
-:root{--mouth-w:clamp(110px,22dvh,190px)}
+:root{--mouth-w:clamp(140px,28dvh,240px)}   /* 06/10 (ter) : toute la bouche ×1,27 */
 #gate-mouth{position:absolute;left:50%;z-index:1;
   top:max(52px,6dvh);
   width:var(--mouth-w);height:calc(var(--mouth-w) * 1.2353);transform:translateX(-50%);
@@ -2937,6 +2937,8 @@ body.gate.entered #filter-badge{
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -3197,13 +3199,13 @@ a Totehm</span>
        ci-dessous sont la bouche FERMÉE ; le moteur `BOUCHE` les redessine. -->
   <button id="gate-mouth" type="button" aria-label="Get Higher">
     <svg viewBox="30 310 1020 1260" aria-hidden="true">
-      <defs><clipPath id="m-clip"><path id="m-clip-p" d="M110,740C125,737.3 168.3,729 200,724C231.7,719 263.3,713.7 300,710C336.7,706.3 380,701.3 420,702C460,702.7 500,714 540,714C580,714 620,702.7 660,702C700,701.3 743.3,706.3 780,710C816.7,713.7 848.3,719 880,724C911.7,729 955,737.3 970,740L1050,1950L30,1950Z"/></clipPath></defs>
+      <defs><clipPath id="m-clip"><path id="m-clip-p" d="M110,740C125,737.3 168.3,729 200,724C231.7,719 263.3,713.7 300,710C336.7,706.3 380,701.3 420,702C460,702.7 500,714 540,714C580,714 620,702.7 660,702C700,701.3 743.3,706.3 780,710C816.7,713.7 848.3,719 880,724C911.7,729 955,737.3 970,740L1050,1570L30,1570Z"/></clipPath></defs>
       <path id="m-lips" fill="#1f1f1f" stroke="#1f1f1f" stroke-width="18" stroke-linejoin="round" d="M47,740C55,728 77.8,694.7 95,668C112.2,641.3 131.7,609.7 150,580C168.3,550.3 186.3,518.3 205,490C223.7,461.7 243.2,432.5 262,410C280.8,387.5 298.7,367.7 318,355C337.3,342.3 354.3,335.5 378,334C401.7,332.5 433,341.7 460,346C487,350.3 513.3,360 540,360C566.7,360 593,350.3 620,346C647,341.7 678.3,332.5 702,334C725.7,335.5 742.7,342.3 762,355C781.3,367.7 799.2,387.5 818,410C836.8,432.5 856.3,461.7 875,490C893.7,518.3 911.7,550.3 930,580C948.3,609.7 967.8,641.3 985,668C1002.2,694.7 1025,728 1033,740L1033,740C1024.2,750 1000.5,778.7 980,800C959.5,821.3 937.5,847 910,868C882.5,889 853.3,910.3 815,926C776.7,941.7 725.8,954.3 680,962C634.2,969.7 586.7,972 540,972C493.3,972 445.8,969.7 400,962C354.2,954.3 303.3,941.7 265,926C226.7,910.3 197.5,889 170,868C142.5,847 120.5,821.3 100,800C79.5,778.7 55.8,750 47,740Z"/>
       <path id="m-cav" fill="#111111" stroke="#111111" stroke-width="10" stroke-linejoin="round" d="M110,740C125,737.3 168.3,729 200,724C231.7,719 263.3,713.7 300,710C336.7,706.3 380,701.3 420,702C460,702.7 500,714 540,714C580,714 620,702.7 660,702C700,701.3 743.3,706.3 780,710C816.7,713.7 848.3,719 880,724C911.7,729 955,737.3 970,740L970,740C955,737.3 911.7,729 880,724C848.3,719 816.7,713.7 780,710C743.3,706.3 700,701.3 660,702C620,702.7 580,714 540,714C500,714 460,702.7 420,702C380,701.3 336.7,706.3 300,710C263.3,713.7 231.7,719 200,724C168.3,729 125,737.3 110,740Z"/>
-      <g clip-path="url(#m-clip)"><g id="m-tongue-big" transform="translate(540 727) scale(1.22 1.3) translate(-540 -727)"><g id="m-tongue" transform="translate(0,-960)">
+      <g clip-path="url(#m-clip)"><g id="m-tongue" transform="translate(0,-960)">
         <path fill="#2a2a2a" d="M540,762C505,738 460,727 410,727C300,727 207,770 207,880L207,1190C207,1390 360,1540 540,1540C720,1540 872,1390 872,1190L872,880C872,770 780,727 670,727C620,727 575,738 540,762Z"/>
         <path fill="none" stroke="#232323" stroke-width="10" stroke-linecap="round" d="M540,792L540,1340"/>
-      </g></g></g>
+      </g></g>
       <path id="m-teeth" fill="#3c3c3c" d="M300,710C320,708.7 380,701.3 420,702C460,702.7 500,714 540,714C580,714 620,702.7 660,702C700,701.3 760,708.7 780,710L780,710C760,708.7 700,701.3 660,702C620,702.7 580,714 540,714C500,714 460,702.7 420,702C380,701.3 320,708.7 300,710Z"/>
     </svg>
   </button>
@@ -4680,7 +4682,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-06-lecture-copie';
+const BUILD='2026-10-06-bouche';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -7846,13 +7848,10 @@ window.addEventListener('pageshow',e=>{
     const D1=[[110,740],[200,786],[290,826],[400,852],[540,862],[680,852],[790,826],[880,786],[970,740]];
     const B0=[[47,740],[100,800],[170,868],[265,926],[400,962],[540,972],[680,962],[815,926],[910,868],[980,800],[1033,740]];
     const B1=[[47,740],[92,825],[140,915],[195,1005],[300,1080],[540,1120],[780,1080],[885,1005],[940,915],[988,825],[1033,740]];
-    /* LA LANGUE EST PLUS GRANDE · 06/10/2026 (Wah : « la langue plus grande »).
-       Le dessin ne change pas : `#m-tongue-big` l'agrandit depuis la base
-       (540,727), ×1,22 en largeur, ×1,3 en longueur. Ce qui suit la langue
-       suit l'échelle : le point de pose, la course quand elle rentre, la
-       zone où le papier est « posé ». Le buvard garde sa taille (`large`). */
-    const LY=1.3, BASE=727, ly=y=>BASE+(y-BASE)*LY;
-    const DENTS=[0,80,72,80,0], LONG=960, POSE=[540,ly(1150)];
+    /* 06/10 (ter) — Wah : « pas la langue seule : l'ensemble, la bouche ET la
+       langue ». Le dessin garde ses proportions ; c'est la boîte qui grandit
+       (`--mouth-w`). Le point de pose, la course et la zone suivent d'eux-mêmes. */
+    const DENTS=[0,80,72,80,0], LONG=960, POSE=[540,1150];
     const mix=(A,B,u)=>A.map((p,i)=>[p[0]+(B[i][0]-p[0])*u, p[1]+(B[i][1]-p[1])*u]);
     const f=n=>Math.round(n*10)/10, rev=P=>P.slice().reverse();
     function courbe(P,debut){
@@ -7875,7 +7874,7 @@ window.addEventListener('pageshow',e=>{
       pL.setAttribute('d',courbe(TOP,1)+courbe(rev(B),0)+'Z');
       pC.setAttribute('d',courbe(U,1)+courbe(rev(D),0)+'Z');
       pT.setAttribute('d',courbe(haut,1)+courbe(rev(bas),0)+'Z');
-      pK.setAttribute('d',courbe(U,1)+'L1050,1950L30,1950Z');
+      pK.setAttribute('d',courbe(U,1)+'L1050,1570L30,1570Z');
       gL.setAttribute('transform','translate(0,'+f(-(1-Math.min(t,oo*1.1))*LONG)+')');
       const d=window.__totehm_lsd; if(d) d.bouche=oo>.02;
     }
@@ -7895,8 +7894,8 @@ window.addEventListener('pageshow',e=>{
     api.geo=()=>{
       const r=btn.getBoundingClientRect(); if(!r.width) return null;
       const k=r.width/VW, X=x=>r.left+(x-VX)*k, Y=y=>r.top+(y-VY)*k;
-      return {lx:X(POSE[0]), ly:Y(POSE[1]), mx:X(540), my:Y(740), long:LONG*LY*k, large:665*k,
-              entree:Y(770), zone:{l:X(117), r:X(962), t:Y(760), b:Y(ly(1600))}};
+      return {lx:X(POSE[0]), ly:Y(POSE[1]), mx:X(540), my:Y(740), long:LONG*k, large:665*k,
+              entree:Y(770), zone:{l:X(117), r:X(962), t:Y(760), b:Y(1600)}};
     };
     api.dispo=()=>btn.getBoundingClientRect().width>0;
     /* Le papier approche : à 70 % du chemin la bouche s'entrouvre, la
@@ -7974,7 +7973,9 @@ window.addEventListener('pageshow',e=>{
        rentre ou qu'il est avalé. Il déplace la SCÈNE (`#gate-asteroid`),
        jamais la carte : la carte reste posée, sur sa face, sans rotation. */
     let porte=null;
-    const HOLD=380, TAB=.36, gget=$('gate-get');
+    /* TAB : le buvard = 28,5 % de la largeur de la langue (36 % avant le 06/10 ter :
+       la bouche a grandi ×1,27, le buvard garde ses 44 px au téléphone). */
+    const HOLD=380, TAB=.285, gget=$('gate-get');
 
     function kick(){ if(!raf&&mode!=='plat'&&mode!=='parti') raf=requestAnimationFrame(frame); }
     function frame(now){
