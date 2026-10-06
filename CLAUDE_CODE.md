@@ -6,7 +6,32 @@
 > compose, caddy, n8n, le master**. Une commande simple par ligne. Aucun
 > secret dans ce fichier.
 
-## Tâche en cours — 05/10/2026 · n8n : publier, cacher les clés, Printful (priorité)
+## Mise à jour · 06/10/2026 — F débloqué et Streetwear visible
+
+F a été corrigé et publié par la session cloud. Version active :
+`10ab0cbc-4698-4962-a457-945ad5d58e42`. Plus de nœud `CONFIG` : les clés
+sont lues via `$env` dans `Sync Product`, sans les recopier dans les items.
+Les variables Oracle étaient accessibles ; la panne venait de l'ancienne
+version publiée utilisant `process.env`. Aucune modification du runner
+Oracle n'a été nécessaire. Les succès de production ne sauvegardent plus
+leurs données (`saveDataSuccessExecution=none`).
+
+Store Printful `18517279` ; produit courant `478625396` (Champion
+Sweatshirt), l'ancien `478320451` renvoie 404. Exécutions 84 (création),
+85 (webhook publié), 86 (photo), 87 (webhook avec prix/édition déjà réglés)
+réussies. Support `3387332a-a258-4a7e-9391-803fe446cfa6` actif, prix
+préexistant 170 €, édition préexistante 12, tailles S/M/L/XL/2XL.
+F remplit une photo manquante avec l'aperçu Printful ; la page utilise cette
+photo si le dossier Storage est vide, sans remplacer les photos choisies.
+
+À reporter dans `~/totehm/TOTEHM_MASTER.md` §0 : F et l'affichage Streetwear
+sont réparés ; la note du 05/10 ci-dessous ne décrit plus leur état actuel.
+B/C/D/E avaient encore un ancien `CONFIG process.env` publié lors de la
+lecture du 06/10 : ils restent à traiter. A n'était pas accessible par le
+connecteur ; son archivage reste à vérifier. Rotation et purge des anciennes
+clés/exécutions restent une tâche distincte sur Oracle.
+
+## Tâche restante — 05/10/2026 · n8n : publier, cacher les clés, Printful (priorité)
 
 Mesuré par la session cloud le 05/10. Les six `⚙️ CONFIG` lisent bien `$env`
 (ta correction du 02/10) MAIS **la version publiée est encore l'ancienne**

@@ -16,6 +16,18 @@
 ---
 
 
+## 0 · F DÉBLOQUÉ, SUPPORT STREETWEAR ACTIF ET PHOTO DE SECOURS — 06/10/2026
+
+| quoi | valeur mesurée |
+|---|---|
+| n8n F | actif, version publiée `10ab0cbc-4698-4962-a457-945ad5d58e42` ; `Printful Webhook` → `Sync Product`, `$env` accessible ; plus de `CONFIG process.env` ; succès non sauvegardés après validation |
+| Printful | store `18517279` ; produit courant `478625396`, Champion Sweatshirt ; ancien produit `478320451` → 404 |
+| exécutions | 84 création manuelle · 85 webhook publié · 86 photo manuelle · 87 webhook publié : success |
+| support Supabase | `3387332a-a258-4a7e-9391-803fe446cfa6` : actif, prix préexistant 170 €, édition préexistante 12, claimed 0 ; variantes S/M/L/XL/2XL ; folder `champion-sweatshirt-478625396` |
+| images | folder ne contient que `.keep` ; `image_url` renseignée avec l'aperçu réel Printful ; front BUILD `2026-10-06-streetwear-photo` : photos Storage prioritaires, URL de secours si dossier vide ou inaccessible |
+| contrôle avant publication front | navigateur public : Champion Sweatshirt, 170 €, 12 / 12 left, S · M · L · XL · 2XL ; exécution 87 conserve activation/prix/édition ; aucun paiement ni génération |
+| hors ce lot | B/C/D/E : ancienne version `CONFIG process.env` publiée à la lecture du 06/10 ; A inaccessible via connecteur, archivage à vérifier ; rotation/purge historiques non exécutées |
+
 ## 0 · TOUTE LA BOUCHE, LE STYLE ET LE NOM DU CLOTH, DECODE PERFORÉ — 06/10/2026 (ter)
 
 | quoi | valeur mesurée |

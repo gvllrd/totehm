@@ -624,7 +624,7 @@ let PENDING=null;
 let me=null,myProfile=null;
 /* Le diagnostic — des booléens et des compteurs, jamais le texte d'une Box.
    Dans la console : __totehm_cloth() */
-const BUILD='2026-10-06-cloth-name';
+const BUILD='2026-10-06-streetwear-photo';
 let PREVIEWS=0;
 window.__totehm_cloth=()=>({build:BUILD,signed_in:!!me,support:!!order.support,
   box:order.box?order.box.kind:null,palette:order.box?(order.box.palette||[]).length:0,
@@ -692,8 +692,9 @@ async function preloadImages(list){
     try{
       const{data:files,error}=await sb.storage.from('totehm-cloth-support').list(s.storage_folder,{sortBy:{column:'name',order:'asc'}});
       if(error)console.error('[cloth images]',error.message);
-      supportImages[s.id]=(files||[]).filter(f=>/\.(png|jpe?g|webp)$/i.test(f.name)).map(f=>sb.storage.from('totehm-cloth-support').getPublicUrl(`${s.storage_folder}/${f.name}`).data.publicUrl);
-    }catch(e){console.error('[cloth images]',e&&e.message||e);supportImages[s.id]=[];}
+      const images=(files||[]).filter(f=>/\.(png|jpe?g|webp)$/i.test(f.name)).map(f=>sb.storage.from('totehm-cloth-support').getPublicUrl(`${s.storage_folder}/${f.name}`).data.publicUrl);
+      supportImages[s.id]=images.length?images:(s.image_url?[s.image_url]:[]);
+    }catch(e){console.error('[cloth images]',e&&e.message||e);supportImages[s.id]=s.image_url?[s.image_url]:[];}
   }));
 }
 
