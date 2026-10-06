@@ -16,6 +16,15 @@
 ---
 
 
+## 0 · TROIS GESTES, LIRE ET COPIER, MENU DE LA BOUTIQUE — 06/10/2026 (bis)
+
+| quoi | valeur mesurée |
+|---|---|
+| base | aucune migration · `totehm_import_boxes` réutilisée telle quelle (une Box, une référence) |
+| tests navigateur | `com_read_copy` 20/20 · `com_paper` 39/39 · `com_mouth` 35/35 · `com_member_menu` 27/27 · `com_creator` 29/29 · `console` 18/18 · `spaces_loupe` 26/26 · `space_boxes_ecosystem` 22/22 · `space` 40/40 · `boutique_home` 10/10 · `streetwear` 25/25 · `club_luxury` 35/35 |
+| mesures UI (tests) | gestes : « Tap » → 3,4 s → « Tongue » → « Turn » ; verso vide, 0 résultat avant la 1re lettre ; Totehm lu : joystick à 738/844 px (en haut avant), Copy → `[{"kind":"h","key":"Deep practice"}]` puis `[{"kind":"t","key":"o1"}]` ; menu membre 390 × 844 px plein écran, 7 boutons centrés 12,5 px sans retour ; boutique : 0 bouton sur deux lignes ou débordant à 360 et 320 px |
+| prod (pg_net, `76f0c79`, Vercel READY) | totehm.com/totehm 200 `2026-10-06-lecture-copie` (`#gestes`, copie, menu) · /search, /console, /monetize 200 `2026-10-06-menu` · higher.boutique /, /streetwear, /luxury 200 `2026-10-06-type` · md5 = dépôt pour les 7 |
+
 ## 0 · LOUPE EN PLACE, MY SPACES, SUPPRIMER UN SPACE — 06/10/2026
 
 | quoi | valeur mesurée |
