@@ -478,12 +478,13 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
     <div class="cfg-step" id="step-order">
       <button class="btn big" id="order-btn" type="button">Order</button>
       <div class="blind">By ordering, you accept the <a id="terms-link">terms of sale</a>. We control the design entirely. No returns, no refunds.</div>
+      <div class="note dim hide" id="test-mode">TEST MODE · no charge · no garment</div>
       <div class="note dim" id="order-note"></div>
     </div>
 
     <div id="done" class="hide">
       <div class="big" id="done-name"></div>
-      <div class="sub">In process. You will not see the artwork before it arrives.</div>
+      <div class="sub" id="done-note">Confirming your payment…</div>
       <button class="btn" id="done-back" type="button">Back to the collection</button>
     </div>
   </div>
@@ -621,10 +622,10 @@ const supportImages={};
 let order={support:null,box:null,name:'',size:'',style:null};
 /* Une totehmisation commencée avant la connexion : le support attend ici. */
 let PENDING=null;
-let me=null,myProfile=null;
+let me=null,myProfile=null,TEST_MODE=false;
 /* Le diagnostic — des booléens et des compteurs, jamais le texte d'une Box.
    Dans la console : __totehm_cloth() */
-const BUILD='2026-10-06-streetwear-photo';
+const BUILD='2026-10-06-streetwear-test';
 let PREVIEWS=0;
 window.__totehm_cloth=()=>({build:BUILD,signed_in:!!me,support:!!order.support,
   box:order.box?order.box.kind:null,palette:order.box?(order.box.palette||[]).length:0,
@@ -769,9 +770,14 @@ $('concept-btn').onclick=()=>$('concept').classList.add('is-open');
 $('concept-back').onclick=()=>$('concept').classList.remove('is-open');
 
 function connPaint(){$('conn-txt').textContent=(myProfile?.pseudo)||(me?'Member':'CONNECT WITH MY TOTEHM');$('conn-dot').classList.toggle('is-in',!!me);}
-async function loadProfile(){if(!me){myProfile=null;connPaint();return;}
-  const{data,error}=await sb.from('profiles').select('pseudo').eq('id',me.id).maybeSingle();
-  if(error)console.error('[profiles]',error.message);myProfile=data||null;connPaint();}
+async function loadProfile(){if(!me){myProfile=null;TEST_MODE=false;$('test-mode').classList.add('hide');connPaint();return;}
+  const who=me.id;
+  const [profile,mode]=await Promise.all([sb.from('profiles').select('pseudo').eq('id',who).maybeSingle(),sb.rpc('my_streetwear_test_mode')]);
+  if(me?.id!==who)return;
+  if(profile.error)console.error('[profiles]',profile.error.message);
+  if(mode.error)console.error('[my_streetwear_test_mode]',mode.error.message);
+  myProfile=profile.data||null;TEST_MODE=mode.data===true;
+  $('test-mode').classList.toggle('hide',!TEST_MODE);connPaint();}
 function memberPaint(){
   $('mw-out-state').classList.toggle('hide',!!me);
   $('mw-claim-state').classList.toggle('hide',!(me&&!myProfile));
@@ -780,11 +786,11 @@ function memberPaint(){
 }
 async function loadCloths(){
   const box=$('mw-list');box.innerHTML='<div class="note dim">…</div>';
-  const{data,error}=await sb.from('totehm_clothes').select('name,status').eq('user_id',me.id).order('created_at',{ascending:false});
+  const{data,error}=await sb.from('totehm_clothes').select('name,status,test,printful_status').eq('user_id',me.id).order('created_at',{ascending:false});
   if(error)console.error('[totehm_clothes]',error.message);
   if(!data?.length){box.innerHTML='<div class="note dim" style="text-align:center">none yet</div>';return;}
   box.innerHTML='';
-  data.forEach(c=>{const d=document.createElement('div');d.className='mw-row';d.innerHTML='<span>'+esc(c.name)+'</span><span class="st">'+esc(c.status||'')+'</span>';box.appendChild(d);});
+  data.forEach(c=>{const d=document.createElement('div');d.className='mw-row';const state=c.printful_status==='draft'?'awaiting confirmation':c.status==='error_locked'?'needs attention':c.status||'';d.innerHTML='<span>'+esc(c.name)+'</span><span class="st">'+esc((c.test?'TEST · ':'')+state)+'</span>';box.appendChild(d);});
 }
 const openMember=()=>{$('member').classList.add('is-open');memberPaint();};
 $('conn-bar').onclick=openMember;
@@ -1039,7 +1045,7 @@ $('order-btn').onclick=async()=>{
   }catch(e){console.error('[create-checkout]',e&&e.message||e);data={};}
   ORDERING=false;$('order-btn').disabled=false;
   if(!data?.url){console.error('[create-checkout]',status,data?.error);note.className='note no';note.textContent=({'sold out':'sold out','name taken':'that name was just taken',passport:'complete your TOTEHM first',
-    'box not found':'that box changed — choose it again','choose a box':'choose a box',style:'choose a style',size:'choose a size',name:'name it: 2 to 40 characters',signin:'sign in again'})[data?.error]||'error, try again';return;}
+    'box not found':'that box changed — choose it again','choose a box':'choose a box',style:'choose a style',size:'choose a size',name:'name it: 2 to 40 characters',signin:'sign in again',test_unavailable:'test payments are being configured',production_unavailable:'orders are being prepared — try again soon'})[data?.error]||'error, try again';return;}
   try{sessionStorage.setItem('tc_pending','"'+order.name+'" — '+order.size);}catch(_){}
   window.top.location.href=data.url;
 };
@@ -1059,11 +1065,18 @@ load().then(async()=>{
   if(!p.get('paid'))return;
   const clothId=p.get('cloth');
   let label='';try{label=sessionStorage.getItem('tc_pending')||'';sessionStorage.removeItem('tc_pending');}catch(_){}
-  if(clothId){const{data,error}=await sb.from('totehm_clothes').select('name,size').eq('id',clothId).maybeSingle();
-    if(error)console.error('[paid]',error.message);if(data)label=`"${data.name}" — ${data.size}`;}
+  let confirmed=null;
+  if(clothId){const{data,error}=await sb.from('totehm_clothes').select('name,size,test,paid_at').eq('id',clothId).maybeSingle();
+    if(error)console.error('[paid]',error.message);if(data){label=`"${data.name}" — ${data.size}`;confirmed=data;}}
   ['step-name','step-style','step-dim','step-order'].forEach(id=>$(id).classList.remove('is-on'));
   $('preview-wrap').innerHTML='';$('anchor').classList.add('hide');document.querySelector('.pv-cap').classList.add('hide');
   $('done-name').textContent=label;$('done').classList.remove('hide');$('config').classList.add('is-open');
+  for(let attempt=0;clothId&&!confirmed?.paid_at&&attempt<15;attempt++){
+    await new Promise(resolve=>setTimeout(resolve,1000));
+    const{data,error}=await sb.from('totehm_clothes').select('name,size,test,paid_at').eq('id',clothId).maybeSingle();
+    if(error)console.error('[paid]',error.message);if(data)confirmed=data;
+  }
+  $('done-note').textContent=confirmed?.paid_at?(confirmed.test?'Test payment received. No garment will be made.':'In process. You will not see the artwork before it arrives.'):'Check My clothes for payment confirmation.';
 })();
 
 /* ══ LA MANETTE — la porte streetwear de la boutique (05/10/2026) ═══════════

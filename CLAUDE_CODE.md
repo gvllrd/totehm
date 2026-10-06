@@ -1,86 +1,28 @@
-# CLAUDE_CODE.md — la tâche de Claude Code (terminal de Wah)
+# CLAUDE_CODE.md — tâches locales de Claude Code
 
-## Mise à jour · 06/10/2026 — le nouveau produit récupère sa photo
+## 06/10/2026 — clés Stripe TEST uniquement
 
-Le précédent Champion a été remplacé par Wah. Produit courant Printful
-`478633385`, Higher Champion Sweatshirt ; support
-`c615b050-cd3e-4560-a1aa-ce943192f34e` actif, prix préexistant 170 €,
-édition préexistante 177. Une resynchronisation (91) a rempli la photo
-absente. F attend maintenant une minute puis réessaie une photo absente,
-jusqu'à cinq reprises ; boucle bornée, photos choisies/prix/stock conservés.
-Version publiée : `c9638e70-0d0f-4dba-adb1-a78f2ccb8ec8` ; tests 92
-(attente réelle de 60 s dans le brouillon) et 94 (webhook publié) réussis.
-Image visible dans le navigateur public. Aucun changement Oracle requis.
+Les anciennes tâches de réparation de F et de publication globale sont remplacées par cette note. La session cloud a corrigé F, le catalogue/photos, les protections SQL et les fonctions de composition/URL. État exact : backend/SYSTEM.md §0. Les changements partagés Stripe, bot-reply et n8n E sont préparés dans la PR test/streetwear ; leur déploiement a été rejeté par contrôle automatique et attend l'accord explicite de Wah. Ne pas les déployer indirectement avant cet accord.
 
-À reporter dans `~/totehm/TOTEHM_MASTER.md` §0 : photo principale Printful
-automatique, avec reprise si absente à l'import ; les photos supplémentaires
-choisies restent dans le dossier Storage du support. Les notes précédentes
-sur `478625396` et l'édition 12 décrivent l'ancien produit, supprimé par Wah.
+Le compte Vallerand est déjà testeur. Les clés STRIPE_TEST_SECRET_KEY et STRIPE_TEST_WEBHOOK_SECRET sont ABSENTES (vérification serveur le 06/10). Aucun secret dans Git, le chat ou le rapport.
 
-> Depuis le 30/09/2026, la session cloud de Claude fait tout ce qui passe par
-> Internet (code, base, fonctions, fusion, Vercel, Stripe). Claude Code ne
-> reçoit ici que ce qui exige la machine de Wah : **la VM Oracle, docker
-> compose, caddy, n8n, le master**. Une commande simple par ligne. Aucun
-> secret dans ce fichier.
+1. Récupérer la clé sk_test du compte Higher dans le contexte de test, depuis la machine de Wah. Stocker STRIPE_TEST_SECRET_KEY dans Supabase via l'outil local sécurisé ; ne pas modifier STRIPE_SECRET_KEY.
+2. Créer/vérifier, dans ce même contexte Stripe TEST, un endpoint vers https://abujjbkbbiumxrokozph.supabase.co/functions/v1/stripe-webhook, événement checkout.session.completed. L'endpoint LIVE reste inchangé.
+3. Stocker son secret whsec dans STRIPE_TEST_WEBHOOK_SECRET via l'outil local sécurisé.
+4. Confirmer la présence des deux secrets avec T — Streetwear safety checks, sans rendre leur valeur. Faire le test avec la carte 4242 4242 4242 4242, date future, CVC 123.
+5. Attendu : pièce test=true et paid, confirmation TEST, ni stock/style consommé, ni concepts/jobs/fabrication Printful. Signaler uniquement les compteurs/statuts et l'identifiant non secret du test.
 
-## Mise à jour · 06/10/2026 — F débloqué et Streetwear visible
+Le mode TEST ne fabrique pas de pièce : tester OpenAI/Replicate/Printful réclame un pilote séparément autorisé et la publication complète de la chaîne. Ne pas changer boutique_testers pour contourner le mode TEST.
 
-F a été corrigé et publié par la session cloud. Version active :
-`10ab0cbc-4698-4962-a457-945ad5d58e42`. Plus de nœud `CONFIG` : les clés
-sont lues via `$env` dans `Sync Product`, sans les recopier dans les items.
-Les variables Oracle étaient accessibles ; la panne venait de l'ancienne
-version publiée utilisant `process.env`. Aucune modification du runner
-Oracle n'a été nécessaire. Les succès de production ne sauvegardent plus
-leurs données (`saveDataSuccessExecution=none`).
+## Oracle — anciens secrets et purge
 
-Store Printful `18517279` ; produit courant `478625396` (Champion
-Sweatshirt), l'ancien `478320451` renvoie 404. Exécutions 84 (création),
-85 (webhook publié), 86 (photo), 87 (webhook avec prix/édition déjà réglés)
-réussies. Support `3387332a-a258-4a7e-9391-803fe446cfa6` actif, prix
-préexistant 170 €, édition préexistante 12, tailles S/M/L/XL/2XL.
-F remplit une photo manquante avec l'aperçu Printful ; la page utilise cette
-photo si le dossier Storage est vide, sans remplacer les photos choisies.
+Les anciennes versions CONFIG sauvegardaient les clés dans les items. La rotation/purge historique reste une tâche locale à traiter avec les accès/2FA de Wah. N'imprimer aucune ancienne clé. Aligner les clés rotées entre Oracle et Supabase, supprimer les exécutions historiques concernées selon la politique de rétention. Ne pas rouvrir la conservation de données d'exécution des workflows sécurisés.
 
-À reporter dans `~/totehm/TOTEHM_MASTER.md` §0 : F et l'affichage Streetwear
-sont réparés ; la note du 05/10 ci-dessous ne décrit plus leur état actuel.
-B/C/D/E avaient encore un ancien `CONFIG process.env` publié lors de la
-lecture du 06/10 : ils restent à traiter. A n'était pas accessible par le
-connecteur ; son archivage reste à vérifier. Rotation et purge des anciennes
-clés/exécutions restent une tâche distincte sur Oracle.
+Toute rotation Printful invalide la signature dérivée : réenregistrer le même webhook de catalogue signé côté serveur avant de considérer F connecté. Telegram sera raccordé après approbation du bot partagé. Ce travail est distinct des clés TEST et n'a pas été fait par la session cloud.
 
-## Tâche restante — 05/10/2026 · n8n : publier, cacher les clés, Printful (priorité)
+## Master privé
 
-Mesuré par la session cloud le 05/10. Les six `⚙️ CONFIG` lisent bien `$env`
-(ta correction du 02/10) MAIS **la version publiée est encore l'ancienne**
-(`process.env`) : en production, A→F plantent toujours. Et l'essai manuel
-(exécution 73, workflow F) montre deux choses :
-
-**⚠️ LES CLÉS SONT EXPOSÉES.** `⚙️ CONFIG` recopie SB_KEY, PRINTFUL_TOKEN,
-STRIPE_KEY (live), OPENAI_KEY, RESEND_KEY dans les données de l'item : chaque
-exécution les écrit en clair dans la base de n8n, lisibles par quiconque lit
-les exécutions (MCP compris). Considère-les comme compromises.
-
-1. Wah génère de nouvelles clés (2FA) : Stripe live (Developers → API keys → roll), OpenAI, Printful, Resend ; toi : la clé secrète Supabase (`sb_secret_…`, API de gestion)
-2. Mets-les dans le `.env` de n8n (VM Oracle) ET dans les secrets Supabase quand elles y sont (`STRIPE_SECRET_KEY`, `RESEND_API_KEY`, `OPENAI_API_KEY`) ; redémarre n8n
-3. Dans les six workflows : supprime le nœud `⚙️ CONFIG` comme porteur de clés — chaque nœud lit `{{ $env.X }}` au moment où il en a besoin ; RIEN de secret dans un item
-4. Paramètres n8n : ne plus enregistrer les données des exécutions réussies (`EXECUTIONS_DATA_SAVE_ON_SUCCESS=none`) et supprime les exécutions 72 et 73
-5. Publie les six workflows (version active = version corrigée)
-6. Workflow B (`/webhook/streetwear-generate`) : ajoute une authentification par en-tête (`x-totehm-key`, valeur dans `.env` ET dans un secret Supabase `N8N_GENERATE_KEY`) — aujourd'hui n'importe qui peut déclencher une génération payante. Dis-le à la session cloud : elle ajoutera l'en-tête dans `stripe-webhook`.
-7. Workflow A (`stripe-streetwear`) : à ARCHIVER. Stripe ne l'appelle pas (un seul endpoint : Supabase `stripe-webhook`, qui traite désormais `cloth` lui-même et appelle B).
-8. Workflow F : l'essai manuel rend **400** chez Printful ou Supabase (corps non visible d'ici). Lis la réponse ; si Printful exige `X-PF-Store-Id`, ajoute-le. Puis rejoue F pour chaque produit du store (`GET /store/products`), dont le produit Champion ajouté par Wah.
-9. Attendu : une ligne par produit dans `totehm_cloth_support` (`active=false`, `price=0`, `max_pieces=0`). Prix et stock = un « oui » de Wah, posés par la session cloud.
-10. Rapport : une ligne par étape, la valeur mesurée (versions publiées, lignes, ids). Aucune clé dans le rapport.
-
-## Tâche 2 — 05/10/2026 (soir) · le mode test Stripe (avant ou après la tâche n8n)
-
-La boutique sait payer en MODE TEST (code déployé). Il manque les deux secrets.
-1. Wah ouvre dashboard.stripe.com en **mode test** (bascule « Test mode ») → Developers → API keys → copie la `sk_test_…` dans TON terminal (jamais dans une conversation cloud)
-2. `supabase secrets set STRIPE_TEST_SECRET_KEY=… --project-ref abujjbkbbiumxrokozph`
-3. Toujours en mode test : crée UN endpoint webhook → `https://abujjbkbbiumxrokozph.supabase.co/functions/v1/stripe-webhook`, événement `checkout.session.completed` seul (l'endpoint LIVE ne bouge pas)
-4. `supabase secrets set STRIPE_TEST_WEBHOOK_SECRET=whsec_… --project-ref abujjbkbbiumxrokozph`
-5. Contrôle : depuis le dashboard test, « Send test event » `checkout.session.completed` → réponse 200 `test ignored` (pas de `metadata.product`) ; puis Wah achète un Cloth avec 4242 4242 4242 4242 → pièce `paid`, `test = true`, email « [TEST] »
-6. Workflow D (n8n) : ne jamais commander chez Printful une pièce `totehm_clothes.test = true`
-7. Rapport : une ligne par étape (secrets présents oui/non, id de l'endpoint test, statut de l'événement). Aucune clé.
+Reporter : catalogue Higher Champion Sweatshirt, photo principale Printful automatique, tests Stripe isolés logiquement, aucune production TEST ; B/C/D/E et le bot partagé restent en attente de publication. Les anciennes notes sur l'édition de 12 et le produit 478625396 sont historiques.
 
 ## Tâche précédente — 01/10/2026 · le ménage en base (une approbation)
 
@@ -345,3 +287,4 @@ Un tableau : ce qui a été fait, la valeur mesurée, ce qui n'a pas pu l'être.
 ### Correction 0.31 — 03/10/2026 · espaces et identité Coral
 
 À reporter dans TOTEHM_MASTER.md §0 : le space est une Habit vécue ou planifiée dans un lieu, privé ou partagé. COM My spaces retrouve l'historique propriétaire avec des liens SSO vers SPACE. Filmer demande un REC volontaire ; après la prise, formulaire noir transparent plein écran, DURATION, sans gestes parasites. SPACE conserve cinq vues/gestes/panneaux desktop, enlève les titres, rapproche le radar du joystick et agrandit le papier ; les côtés montrent le petit filtre seul. Détail à poignée descendante et joystick en sourdine ; GO respecte les droits exacts ON. Noms en Quantico Coral, noir arrondi en recherche/verso, plus de points/carrés ni T statiques centrés. Prix et droits d'abonnement inchangés.
+

@@ -16,6 +16,25 @@
 ---
 
 
+## 0 · STREETWEAR SÉCURISÉ EN BASE, F PROTÉGÉ, TESTS PARALLÈLES — 06/10/2026 (18 h 40 Lisbonne)
+
+| quoi | valeur mesurée |
+|---|---|
+| migrations appliquées | streetwear_secure_pipeline, streetwear_webhook_recovery, streetwear_lock_order ; jobs privés, reçus Printful privés, stock/style exclus des TEST, réservations uniques par étape |
+| SQL | streetwear_pipeline_selftest : exception finale attendue `FAIL={}` ; fixtures annulés, aucun paiement ni fournisseur déclenché |
+| catalogue | support actif Higher Champion Sweatshirt `478633385`, photo présente, 170 €, édition 177, claimed 0 ; aucune modification commerciale |
+| F actif | version `7b434d99-dd6d-43e4-bcc6-10244f912a6c`, authentification + reçu avant réponse + synchronisation atomique + photo différée ; événements Printful catalogue uniquement |
+| fonctions | compose-artwork v34 (bibliothèque Deno ; la bibliothèque npm Node faisait planter le worker), streetwear-assets v1 (liens privés renouvelés) ; Stripe v41, checkout v38, bot-reply v24 inchangés |
+| n8n préparé | B/C/D corrigés en brouillon seulement ; E rejeté par contrôle automatique ; R code préparé, non créé/non actif ; les anciennes versions de B/C/D/E restent publiées |
+| T | `cDhaaRiJCHtf9lG5`, manuel, projet personnel Guillaume Vallerand ; diagnostics réduits à booléens/statut HTTP, aucun secret enregistré ; setup catalogue temporaire archivé |
+| tests navigateur | Streetwear 32 assertions passées, Supabase/Stripe simulés : parcours, TEST, clé manquante, reçu payé TEST, faux retour payé ; aucune génération/commande/paiement réel |
+| TEST disponible | compte Vallerand actif, my_streetwear_test_mode côté serveur, sélection/nom/style/tailles testables ; STRIPE_TEST_SECRET_KEY et STRIPE_TEST_WEBHOOK_SECRET absentes, paiement test non disponible |
+| Telegram | TotehmBot, aucun webhook enregistré ; clé partagée du bot indisponible ou invalide côté Supabase au health ; raccordement normal du bot préparé, non appliqué |
+| limites | trois déploiements partagés rejetés automatiquement : stripe-webhook (paiements/abonnements), bot-reply (bot transversal), E (emails clients) ; attente d'accord explicite. Aucune fermeture de checkout appliquée |
+| sécurité linter | tables internes sans politique et RPC de lecture de son propre mode TEST en SECURITY DEFINER intentionnelles ; grants vérifiés. Index FK et initplan RLS préexistants non modifiés |
+
+Les mesures ci-dessus remplacent l'état courant des anciens relevés datés ci-dessous. Procédures : n8n/streetwear_pipeline.md. Code en attente : branche test/streetwear, PR brouillon ; ne pas considérer cette chaîne après paiement comme validée en production.
+
 ## 0 · NOUVEAU CHAMPION, PHOTO RÉCUPÉRÉE ET REPRISE AUTOMATIQUE — 06/10/2026
 
 | quoi | valeur mesurée |
@@ -2229,4 +2248,5 @@ la page d'atterrissage.
 zéro chevron résiduel, curseur au même pixel dans les trois fichiers,
 symétrie autour du T, carte identique dans les quatre, définitions en
 Quantico, les sept définitions mot pour mot, et le pas vertical de la ligne.
+
 
