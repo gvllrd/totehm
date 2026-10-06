@@ -52,9 +52,10 @@ try{
   ok((await lsd(pg)).pris&&await pg.$eval('#gate-asteroid',e=>e.classList.contains('is-pris')),'appui de 500 ms : le papier est PRIS');
   await pg.mouse.up();await pg.waitForTimeout(700);
   ok(!(await lsd(pg)).pris&&await tf(pg)===''&&JSON.stringify(await R(pg,'#gate-asteroid'))===JSON.stringify(chez)&&!await pg.evaluate(()=>document.body.classList.contains('entered'))&&await pg.evaluate(()=>document.body.classList.contains('gate')),'relâché sans bouger : il est chez lui, rien ne s\'ouvre');
-  // porté à mi-chemin : la bouche s'ouvre, pas encore posé
+  // porté à mi-chemin : la bouche s'ouvre, pas encore posé (06/10 : la langue est 1,3 fois plus
+  // longue, on la touche plus tôt — mi-chemin = la moitié de la course, plus 62 %)
   p=await prendre(pg);const L=await langue(pg);
-  await porter(pg,p,[p[0],p[1]+(L[1]-p[1])*.62]);await pg.waitForTimeout(350);
+  await porter(pg,p,[p[0],p[1]+(L[1]-p[1])*.5]);await pg.waitForTimeout(350);
   let s=await lsd(pg);
   ok(s.bouche&&!s.langue&&!await get(pg)&&await pg.$eval('#m-lips',e=>e.getAttribute('d'))!==d0,'à mi-chemin : la bouche s\'ouvre, il n\'est pas encore sur la langue');
   // sur la langue : il rapetisse, « Get [Higher] » apparaît à sa place

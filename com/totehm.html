@@ -1261,6 +1261,23 @@ body.v-visions{--paper:#2b3a73}
   color:rgba(255,255,255,.5);font-size:18px;line-height:1;cursor:pointer;
   padding:2px 5px;transition:color .15s}
 .w-x:hover{color:#fff}
+/* ══ LA LOUPE · 06/10/2026 ══════════════════════════════════════════════
+   Wah : « une petite loupe sur chaque box de chaque vue ; on appuie, le
+   contenu de la box s'agrandit un peu ». EN PLACE : la boîte grandit dans
+   sa liste (`zoom`, le contenu se remet en page), jamais une fenêtre. Les
+   mini-boxes gardent leur format : elles grandissent avec la boîte, à la
+   même proportion. Fermée : coin haut droit ; ouverte : à gauche de ×.
+   Le titre lui laisse sa place (un élément en absolu ne pousse rien). */
+.loupe{position:absolute;top:3px;right:3px;z-index:3;width:24px;height:24px;display:flex;align-items:center;justify-content:center;
+  background:none;border:none;padding:0;cursor:pointer;color:rgba(255,255,255,.5);transition:color .15s;-webkit-tap-highlight-color:transparent}
+.loupe svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.loupe[aria-pressed=true]{color:#fff}
+.habit.open .loupe{right:30px}
+.v-col>.v-name{padding-right:18px}
+.habit.open .v-col>.v-name,.habit.open .v-col>.v-name[contenteditable]{padding-right:56px}
+.v-col.is-zoom{zoom:1.25}
+.v-col.is-zoom .loupe{zoom:.8}
+@media(hover:hover){.loupe:hover{color:#fff}}
 
 /* ══ LES TROIS BLOCS DU TRIP ═════════════════════════════════════════
    Ouvrir n'importe quelle boîte montre le TRIP ENTIER, dans ses trois
@@ -2881,12 +2898,18 @@ body.gate.entered #filter-badge{
 #myspaces-name{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca}
 #myspaces-close{width:fit-content;font-size:11px;background:none;border:none;color:#b0b0b0;padding:6px;cursor:pointer}
 #myspaces-list{display:flex;flex-direction:column;gap:8px}
-.my-space{display:flex;flex-direction:column;gap:6px;align-items:flex-start;background:#111114;border:0;border-radius:10px;padding:14px;font-size:11px;color:#b0b0b0;text-align:left;cursor:pointer;width:100%}
+.my-space{display:flex;align-items:stretch;gap:2px;width:100%}
+.my-space-open{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:6px;align-items:flex-start;background:#111114;border:0;border-radius:10px 0 0 10px;padding:14px;font-size:11px;color:#b0b0b0;text-align:left;cursor:pointer;font-family:'Space Mono',monospace}
+.my-space-del{flex:0 0 auto;background:#111114;border:0;border-radius:0 10px 10px 0;padding:0 14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#7c7c84;cursor:pointer}
+.my-space-del.is-arm{color:#ff9a9a}
+.my-space-del[disabled]{opacity:.4;pointer-events:none}
 .my-space-habit{font-family:'Quantico',sans-serif;font-size:15px;color:#fff}
 .my-space-state{font-family:'Space Mono',monospace;font-size:9px;color:#9a9a9a}
 #myspaces-note{font-family:'Space Mono',monospace;font-size:11px;color:#9a9a9a}
 #myspaces-more,#myspaces-open-space{width:fit-content;font-family:'Space Mono',monospace;font-size:11px;color:#b0b0b0;background:#16161a;border:0;border-radius:8px;padding:8px 12px;cursor:pointer}
-@media(hover:hover){.my-space:hover{background:#1c1c22}#myspaces-close:hover,#myspaces-more:hover,#myspaces-open-space:hover{color:#fff}}
+@media(hover:hover){.my-space-open:hover,.my-space-del:hover{background:#1c1c22}#myspaces-close:hover,#myspaces-more:hover,#myspaces-open-space:hover{color:#fff}}
+
+
 
 
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
@@ -2916,6 +2939,7 @@ body.gate.entered #filter-badge{
 #habits .in.nw:hover::placeholder,
 .pk-say:hover,
 .w-x:hover,
+.loupe:hover,
 .blk-lbl:hover,
 .blk-x:hover,
 .blk-u:hover,
@@ -2994,7 +3018,8 @@ body.gate.entered #filter-badge{
 #search-input:hover::placeholder,
 #fold-x svg:hover,
 #myspaces-close:hover,
-.my-space:hover,
+.my-space-open:hover,
+.my-space-del:hover,
 .my-space-state:hover,
 #myspaces-note:hover,
 #myspaces-more:hover,
@@ -3135,13 +3160,13 @@ a Totehm</span>
        ci-dessous sont la bouche FERMÉE ; le moteur `BOUCHE` les redessine. -->
   <button id="gate-mouth" type="button" aria-label="Get Higher">
     <svg viewBox="30 310 1020 1260" aria-hidden="true">
-      <defs><clipPath id="m-clip"><path id="m-clip-p" d="M110,740C125,737.3 168.3,729 200,724C231.7,719 263.3,713.7 300,710C336.7,706.3 380,701.3 420,702C460,702.7 500,714 540,714C580,714 620,702.7 660,702C700,701.3 743.3,706.3 780,710C816.7,713.7 848.3,719 880,724C911.7,729 955,737.3 970,740L1050,1570L30,1570Z"/></clipPath></defs>
+      <defs><clipPath id="m-clip"><path id="m-clip-p" d="M110,740C125,737.3 168.3,729 200,724C231.7,719 263.3,713.7 300,710C336.7,706.3 380,701.3 420,702C460,702.7 500,714 540,714C580,714 620,702.7 660,702C700,701.3 743.3,706.3 780,710C816.7,713.7 848.3,719 880,724C911.7,729 955,737.3 970,740L1050,1950L30,1950Z"/></clipPath></defs>
       <path id="m-lips" fill="#1f1f1f" stroke="#1f1f1f" stroke-width="18" stroke-linejoin="round" d="M47,740C55,728 77.8,694.7 95,668C112.2,641.3 131.7,609.7 150,580C168.3,550.3 186.3,518.3 205,490C223.7,461.7 243.2,432.5 262,410C280.8,387.5 298.7,367.7 318,355C337.3,342.3 354.3,335.5 378,334C401.7,332.5 433,341.7 460,346C487,350.3 513.3,360 540,360C566.7,360 593,350.3 620,346C647,341.7 678.3,332.5 702,334C725.7,335.5 742.7,342.3 762,355C781.3,367.7 799.2,387.5 818,410C836.8,432.5 856.3,461.7 875,490C893.7,518.3 911.7,550.3 930,580C948.3,609.7 967.8,641.3 985,668C1002.2,694.7 1025,728 1033,740L1033,740C1024.2,750 1000.5,778.7 980,800C959.5,821.3 937.5,847 910,868C882.5,889 853.3,910.3 815,926C776.7,941.7 725.8,954.3 680,962C634.2,969.7 586.7,972 540,972C493.3,972 445.8,969.7 400,962C354.2,954.3 303.3,941.7 265,926C226.7,910.3 197.5,889 170,868C142.5,847 120.5,821.3 100,800C79.5,778.7 55.8,750 47,740Z"/>
       <path id="m-cav" fill="#111111" stroke="#111111" stroke-width="10" stroke-linejoin="round" d="M110,740C125,737.3 168.3,729 200,724C231.7,719 263.3,713.7 300,710C336.7,706.3 380,701.3 420,702C460,702.7 500,714 540,714C580,714 620,702.7 660,702C700,701.3 743.3,706.3 780,710C816.7,713.7 848.3,719 880,724C911.7,729 955,737.3 970,740L970,740C955,737.3 911.7,729 880,724C848.3,719 816.7,713.7 780,710C743.3,706.3 700,701.3 660,702C620,702.7 580,714 540,714C500,714 460,702.7 420,702C380,701.3 336.7,706.3 300,710C263.3,713.7 231.7,719 200,724C168.3,729 125,737.3 110,740Z"/>
-      <g clip-path="url(#m-clip)"><g id="m-tongue" transform="translate(0,-960)">
+      <g clip-path="url(#m-clip)"><g id="m-tongue-big" transform="translate(540 727) scale(1.22 1.3) translate(-540 -727)"><g id="m-tongue" transform="translate(0,-960)">
         <path fill="#2a2a2a" d="M540,762C505,738 460,727 410,727C300,727 207,770 207,880L207,1190C207,1390 360,1540 540,1540C720,1540 872,1390 872,1190L872,880C872,770 780,727 670,727C620,727 575,738 540,762Z"/>
         <path fill="none" stroke="#232323" stroke-width="10" stroke-linecap="round" d="M540,792L540,1340"/>
-      </g></g>
+      </g></g></g>
       <path id="m-teeth" fill="#3c3c3c" d="M300,710C320,708.7 380,701.3 420,702C460,702.7 500,714 540,714C580,714 620,702.7 660,702C700,701.3 760,708.7 780,710L780,710C760,708.7 700,701.3 660,702C620,702.7 580,714 540,714C500,714 460,702.7 420,702C380,701.3 320,708.7 300,710Z"/>
     </svg>
   </button>
@@ -4019,6 +4044,7 @@ async function cloudLoad(){
    page de vente (`/@nom`), comme le 30/09. Une réponse tardive (compte
    changé entre-temps) est jetée (`roSeq`). */
 async function loadRO(){
+  ZOOM.clear();
   const seq=++roSeq,uid=me?.id;
   const {data,error}=await sb.rpc('totehm_of',{p_pseudo:RO});
   if(seq!==roSeq||uid!==me?.id)return false;
@@ -4617,7 +4643,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-05-com-aplomb';
+const BUILD='2026-10-06-spaces-loupe';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -5203,7 +5229,7 @@ function boiteHTML(o){
       +' data-say="'+esc(INVITE[o.kind]||'name it')+'"'
       +' data-edit="'+o.kind+':'+esc(String(o.id))+'">'+esc(o.titre)+'</span>'
     : '<span class="v-name">'+esc(o.titre||'untitled')+'</span>';
-  return '<span class="v-col"'+(o.ouverte?'':' data-open="'+o.kind+':'+esc(String(o.id))+'" role="button" tabindex="0"')+'>'
+  return '<span class="v-col'+(ZOOM.has(o.kind+':'+String(o.id))?' is-zoom':'')+'"'+(o.ouverte?'':' data-open="'+o.kind+':'+esc(String(o.id))+'" role="button" tabindex="0"')+'>'
     + nom
     + (o.unit ?'<span class="v-sub">'+o.unit+'</span>':'')
     /* LE CHOIX SE POSE AU-DESSUS DE CE QU'IL CONCERNE. Régler l'intention
@@ -5221,8 +5247,14 @@ function boiteHTML(o){
     + (o.ouverte&&o.tue?'<button type="button" class="btn g" data-kill="'+o.kind+':'
         +esc(String(o.id))+'">'+o.tue+'</button>':'')
     + (o.ouverte?'<button type="button" class="w-x" data-x="1" aria-label="Close">&times;</button>':'')
+    + loupeHTML(o.kind+':'+String(o.id))
     +'</span>';
 }
+/* La loupe : un état par boîte (`ZOOM`), qui survit aux redessins. */
+const ZOOM=new Set();
+const loupeHTML=k=>{ const on=ZOOM.has(k);
+  return '<button type="button" class="loupe" data-zoom="'+esc(k)+'" aria-pressed="'+on+'" aria-label="'+(on?'Smaller':'Bigger')+'">'
+    +'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M7.5 10h5'+(on?'':'M10 7.5v5')+'"/></svg></button>'; };
 /* ══ LE CLASSEMENT SE FAIT À DEUX FLÈCHES · 09/09/2026 ═══════════════
    Le glissement au doigt ne marchait pas au téléphone, et un classement
    qui rate une fois sur deux est pire que pas de classement : on ne sait
@@ -6056,9 +6088,14 @@ function cable(box){
        qui les traite existait et n'était jamais atteint. */
     const el=e.target.closest('[data-fint],[data-ffq],[data-fclear],[data-fx],'
       +'[data-open],[data-add],[data-x],[data-pk],[data-int],[data-mv],[data-go],'
-      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-newspace]');
+      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-newspace],[data-zoom]');
     if(!el)return;
     const d=el.dataset;
+    /* La loupe agrandit la boîte EN PLACE, sans l'ouvrir ni la redessiner. */
+    if(d.zoom){ e.stopPropagation(); const k=d.zoom, on=!ZOOM.has(k); if(on)ZOOM.add(k); else ZOOM.delete(k);
+      const col=el.closest('.v-col'); if(col)col.classList.toggle('is-zoom',on);
+      el.setAttribute('aria-pressed',String(on)); el.setAttribute('aria-label',on?'Smaller':'Bigger');
+      el.querySelector('path')?.setAttribute('d','M15 15l6 6M7.5 10h5'+(on?'':'M10 7.5v5')); return; }
     /* Un space s'ouvre sur SPACE, par le pont (même en lecture). */
     if(d.space){ e.stopPropagation(); ssoVersDomaine(sb,'space','https://www.totehm.space/?spot='+encodeURIComponent(d.space)); return; }
     if(d.newspace!==undefined){ e.stopPropagation(); if(!RO) ssoVersDomaine(sb,'space','https://www.totehm.space/?v=plan'); return; }
@@ -7426,7 +7463,7 @@ async function spacesLoad(more=false){
   if(seq!==MYSPACES.seq || me?.id!==uid || !$('myspaces').classList.contains('is-open'))return;
   if(error || !data?.ok){if(error)console.error('[my_spaces]',error.message);$('myspaces-note').textContent='My spaces could not load. Reopen this window to try again.';return;}
   MYSPACES.rows=more?MYSPACES.rows.concat(data.spaces || []):data.spaces || [];MYSPACES.more=!!data.more;
-  $('myspaces-list').innerHTML=MYSPACES.rows.map(x=>{const date=new Date(x.starts_at),when=Number.isNaN(date.getTime())?'':date.toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});return '<button class="my-space" type="button" data-space="'+esc(x.id)+'"><span class="my-space-habit">'+esc(x.habit)+'</span><span class="my-space-state">'+spacesState(x)+' · '+(x.visibility==='private'?'PRIVATE':'SHARED')+'</span><span>'+esc(when)+'</span>'+(x.place || x.city?'<span>'+esc(x.place || x.city)+'</span>':'')+'<span>Open in SPACE ↗</span></button>';}).join('');
+  $('myspaces-list').innerHTML=MYSPACES.rows.map(x=>{const date=new Date(x.starts_at),when=Number.isNaN(date.getTime())?'':date.toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});return '<div class="my-space" data-row="'+esc(x.id)+'"><button class="my-space-open" type="button" data-space="'+esc(x.id)+'"><span class="my-space-habit">'+esc(x.habit)+'</span><span class="my-space-state">'+spacesState(x)+' · '+(x.visibility==='private'?'PRIVATE':'SHARED')+'</span><span>'+esc(when)+'</span>'+(x.place || x.city?'<span>'+esc(x.place || x.city)+'</span>':'')+'<span>Open in SPACE ↗</span></button><button class="my-space-del" type="button" data-del="'+esc(x.id)+'" aria-label="Delete this space">Delete</button></div>';}).join('');
   $('myspaces-more').classList.toggle('hide',!MYSPACES.more);$('myspaces-note').textContent=MYSPACES.rows.length?'':'No spaces yet. Record your first one on SPACE.';
  }catch(_){if(seq===MYSPACES.seq)$('myspaces-note').textContent='My spaces could not load. Reopen this window to try again.';}
  finally{if(seq===MYSPACES.seq){MYSPACES.busy=false;$('myspaces-more').disabled=false;}}
@@ -7439,7 +7476,30 @@ $('myspaces-open').onclick=()=>{
 };
 $('myspaces-close').onclick=spacesClose;$('myspaces-more').onclick=()=>spacesLoad(true);
 $('myspaces-open-space').onclick=()=>ssoVersDomaine(sb,'space','https://www.totehm.space/?v=cam');
-$('myspaces-list').onclick=e=>{const b=e.target.closest('[data-space]');if(b)ssoVersDomaine(sb,'space','https://www.totehm.space/?spot='+encodeURIComponent(b.dataset.space));};
+/* SUPPRIMER UN SPACE · 06/10/2026 — deux taps (Delete → Delete for good), puis
+   `space-delete` : le serveur décide sous MA session, efface le média, et le
+   space disparaît partout (historique, habits, SPACE). */
+async function spaceDelete(id){
+ const {data:{session}}=await sb.auth.getSession();if(!session)return {ok:false,error:'signin'};
+ try{
+  const r=await fetch('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/space-delete',{method:'POST',
+   headers:{'content-type':'application/json',apikey:SB_ANON,authorization:'Bearer '+session.access_token},body:JSON.stringify({spot:id})});
+  const j=await r.json().catch(()=>({}));if(!r.ok)console.error('[space-delete]',r.status,j.error||'');return r.ok?{ok:true}:{ok:false,error:j.error||'try_again'};
+ }catch(e){console.error('[space-delete]',e?.message||e);return {ok:false,error:'try_again'};}
+}
+$('myspaces-list').onclick=async e=>{
+ const d=e.target.closest('[data-del]');
+ if(d){
+  if(!d.classList.contains('is-arm')){$('myspaces-list').querySelectorAll('.my-space-del.is-arm').forEach(x=>{x.classList.remove('is-arm');x.textContent='Delete';});d.classList.add('is-arm');d.textContent='Delete for good';return;}
+  d.disabled=true;d.textContent='Deleting…';const id=d.dataset.del,uid=me?.id;
+  const r=await spaceDelete(id);if(uid!==me?.id)return;
+  if(!r.ok){d.disabled=false;d.classList.remove('is-arm');d.textContent='Delete';$('myspaces-note').textContent=r.error==='not_found'?'This space is already gone.':'Not deleted. Try again.';return;}
+  MYSPACES.rows=MYSPACES.rows.filter(x=>String(x.id)!==id);d.closest('.my-space')?.remove();
+  $('myspaces-note').textContent=MYSPACES.rows.length?'Space deleted.':'No spaces yet. Record your first one on SPACE.';
+  loadHabitSpaces();return;
+ }
+ const b=e.target.closest('[data-space]');if(b)ssoVersDomaine(sb,'space','https://www.totehm.space/?spot='+encodeURIComponent(b.dataset.space));
+};
 window.addEventListener('keydown',e=>{if(!$('myspaces').classList.contains('is-open'))return;e.stopImmediatePropagation();if(e.key==='Escape'){e.preventDefault();spacesClose();return;}if(e.key==='Tab'){const f=[...$('myspaces').querySelectorAll('button:not(:disabled),a[href],input')].filter(x=>x.getClientRects().length);const i=f.indexOf(document.activeElement);if(e.shiftKey && i<=0 || !e.shiftKey && (i<0 || i===f.length-1)){e.preventDefault();(e.shiftKey?f.at(-1):f[0]).focus();}}},true);
 $('mw-close').onclick=()=>{clearTimeout(mwNameTimer);$('member-window').classList.remove('show');};
 $('member-window').addEventListener('click',e=>{if(e.target===$('member-window'))$('member-window').classList.remove('show');});
@@ -7509,7 +7569,7 @@ $('mw-signout').onclick=async()=>{
    frame ou pour de bon, le Totehm de celui d'avant. */
 let sesSeq=0;
 function quitter(){
-  roSeq++; HSPACES.seq++; HSPACES.par=new Map();
+  roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ZOOM.clear();
   if($('myspaces').classList.contains('is-open')){MYSPACES.seq++;MYSPACES.busy=false;MYSPACES.rows=[];$('myspaces-list').replaceChildren();$('myspaces-name').textContent='';$('myspaces').classList.remove('is-open');MYSPACES.inert.forEach(([e,was])=>e.inert=was);MYSPACES.inert=[];}
   state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; mySub=null; resetComMemberOffer();
   TRIPS=[]; REPS=[]; TEACH=[]; VIS=[]; OBJ={}; tripsLoaded=false;
@@ -7724,7 +7784,13 @@ window.addEventListener('pageshow',e=>{
     const D1=[[110,740],[200,786],[290,826],[400,852],[540,862],[680,852],[790,826],[880,786],[970,740]];
     const B0=[[47,740],[100,800],[170,868],[265,926],[400,962],[540,972],[680,962],[815,926],[910,868],[980,800],[1033,740]];
     const B1=[[47,740],[92,825],[140,915],[195,1005],[300,1080],[540,1120],[780,1080],[885,1005],[940,915],[988,825],[1033,740]];
-    const DENTS=[0,80,72,80,0], LONG=960, POSE=[540,1150];
+    /* LA LANGUE EST PLUS GRANDE · 06/10/2026 (Wah : « la langue plus grande »).
+       Le dessin ne change pas : `#m-tongue-big` l'agrandit depuis la base
+       (540,727), ×1,22 en largeur, ×1,3 en longueur. Ce qui suit la langue
+       suit l'échelle : le point de pose, la course quand elle rentre, la
+       zone où le papier est « posé ». Le buvard garde sa taille (`large`). */
+    const LY=1.3, BASE=727, ly=y=>BASE+(y-BASE)*LY;
+    const DENTS=[0,80,72,80,0], LONG=960, POSE=[540,ly(1150)];
     const mix=(A,B,u)=>A.map((p,i)=>[p[0]+(B[i][0]-p[0])*u, p[1]+(B[i][1]-p[1])*u]);
     const f=n=>Math.round(n*10)/10, rev=P=>P.slice().reverse();
     function courbe(P,debut){
@@ -7747,7 +7813,7 @@ window.addEventListener('pageshow',e=>{
       pL.setAttribute('d',courbe(TOP,1)+courbe(rev(B),0)+'Z');
       pC.setAttribute('d',courbe(U,1)+courbe(rev(D),0)+'Z');
       pT.setAttribute('d',courbe(haut,1)+courbe(rev(bas),0)+'Z');
-      pK.setAttribute('d',courbe(U,1)+'L1050,1570L30,1570Z');
+      pK.setAttribute('d',courbe(U,1)+'L1050,1950L30,1950Z');
       gL.setAttribute('transform','translate(0,'+f(-(1-Math.min(t,oo*1.1))*LONG)+')');
       const d=window.__totehm_lsd; if(d) d.bouche=oo>.02;
     }
@@ -7767,8 +7833,8 @@ window.addEventListener('pageshow',e=>{
     api.geo=()=>{
       const r=btn.getBoundingClientRect(); if(!r.width) return null;
       const k=r.width/VW, X=x=>r.left+(x-VX)*k, Y=y=>r.top+(y-VY)*k;
-      return {lx:X(POSE[0]), ly:Y(POSE[1]), mx:X(540), my:Y(740), long:LONG*k, large:665*k,
-              entree:Y(770), zone:{l:X(117), r:X(962), t:Y(760), b:Y(1600)}};
+      return {lx:X(POSE[0]), ly:Y(POSE[1]), mx:X(540), my:Y(740), long:LONG*LY*k, large:665*k,
+              entree:Y(770), zone:{l:X(117), r:X(962), t:Y(760), b:Y(ly(1600))}};
     };
     api.dispo=()=>btn.getBoundingClientRect().width>0;
     /* Le papier approche : à 70 % du chemin la bouche s'entrouvre, la
