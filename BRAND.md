@@ -13,7 +13,7 @@
   RIGHT shows future ON spaces only. Existing private history stays private.
 - OBJECTIVES and REPULSIONS can be displayed independently as mini-boxes
   inside the selected Habit Box; hidden by default, checked by the server.
-  Mirrored boxes show only configured COM attributes. A Box opens in place, never in a window (no magnifier, 05/10).
+  Mirrored boxes show only configured COM attributes. Every Box has a small magnifier: a tap enlarges its content in place, never a window (06/10).
 - Login CTA everywhere: **CONNECT WITH MY TOTEHM**. COM is the sole email
   authority; satellites use COM SSO/PKCE. All text-button backgrounds fit their
   labels, with proportional padding and dark backgrounds. No standalone

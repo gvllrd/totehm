@@ -1,5 +1,32 @@
 # space/CLAUDE.md — totehm.space : DO WITH ME (un Spot, cinq vues)
 
+## SPACE · 06/10/2026 — My spaces, supprimer, le papier qui respire, la loupe
+
+BUILD `2026-10-06-spaces-loupe`. Wah : « une rubrique My Spaces avec tout
+l'historique ; pouvoir supprimer des spaces ; le texte Tap on your TOTEHM
+beaucoup plus visible ; le logo qui rapetisse ou s'agrandit d'une vue à
+l'autre, plus vrai et organique ; une petite loupe sur chaque box ».
+- **My spaces** : menu membre → `#my-spaces` (plein écran, ancré en haut,
+  modal : Échap, Tab piégé, gestes et joystick coupés). `my_spaces` (MES
+  spaces publiés, privés et partagés, 30 par page, `MSP.seq`) ; un tap →
+  `spot_get` → la fiche. Vidé à la déconnexion.
+- **Supprimer** : DELETE puis DELETE FOR GOOD (dans My spaces, et dans la
+  fiche d'un space à moi : `s.mine`) → Edge Function `space-delete` ; il
+  sort aussitôt du fil, de la liste, du radar. Le serveur décide (voir
+  `backend/CLAUDE.md`).
+- **Le papier respire** : `--tp` est une propriété enregistrée (`@property`)
+  et se transitionne sur `#heading` (0,55 s, léger rebond) : radar 110 px,
+  fil / liste 58 px, plan / caméra 0 (il se replie et s'efface au lieu de
+  `display:none`). Le radar se recalcule à chaque image pendant 700 ms
+  (`RAD.morph`) puis un `resize` remet tout d'aplomb. Mouvement réduit : saut.
+- **L'invitation** `#tp-hint` : blanc, Space Mono Bold 11 px, boîte noire
+  arrondie, souffle 1 → .62 sur 4,2 s ; une ligne sur ordinateur.
+- **La loupe** : le bloc copié (`tools/ecosystem_ui_snippet.js`) pose
+  `.eco-box-zoom` sur chaque Box ; un tap → `.is-zoom` (×1,25) EN PLACE, sans
+  choisir la Habit ; jamais `.eco-sheet`.
+- Tests : `tests/browser/spaces_loupe.mjs` 26/26, `space.mjs` 40/40,
+  `space_boxes_ecosystem.mjs` 22/22.
+
 ## SPACE · 05/10/2026 — une Habit devient un space
 
 BUILD `2026-10-05-spaces-boxes`. Cette demande remplace les anciennes règles
@@ -24,8 +51,8 @@ hors de chez soi, PRIVATE/SHARED, WHY/TRIGGER et futurs OFF ci-dessous.
   Le snapshot complet reste propriétaire seul ; les textes masqués ne
   figurent pas dans les réponses publiques. Anciens `spot_why_set` compatibles.
 - `habitInner` affiche uniquement les attributs renseignés dans COM : pas
-  de Set Time Frequency, rythme, lieu ou intention inventé. Plus de loupe
-  (05/10, Wah : jamais de fenêtre) : une Box se lit et s'ouvre en place.
+  de Set Time Frequency, rythme, lieu ou intention inventé. Une petite loupe
+  sur chaque Box agrandit son contenu EN PLACE (06/10), jamais une fenêtre.
 - Navigation, boussole, papier, panneau ordinateur/radar réduit, capture
   verticale, joystick navy à la même position (rond/square) et pipeline Bunny
   du 04/10 : conserver. Formulaires et définition ne laissent aucun geste agir

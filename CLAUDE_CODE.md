@@ -218,6 +218,18 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
+### Correction 0.40 — 06/10/2026 · loupe en place, My spaces sur SPACE, supprimer un space
+
+> Chaque Box, sur les cinq vues de COM et dans SPACE, porte une petite loupe :
+> un tap agrandit son contenu en place, jamais une fenêtre. SPACE a sa
+> rubrique My spaces (tout l'historique de mes spaces publiés) ; on peut
+> supprimer un space (COM, SPACE) : il disparaît partout, sa vidéo et ses
+> fichiers sont effacés. Dans SPACE, le papier TOTEHM rapetisse et regrandit
+> en glissant d'une vue à l'autre, et « Tap on your TOTEHM… » se lit (blanc,
+> gras, boîte noire). Sur totehm.com, la langue est plus grande. Migration
+> `20261006100000_space_delete.sql` APPLIQUÉE (`space_delete`) : ne pas
+> réappliquer. Prix et droits inchangés. Aucun travail Oracle/n8n.
+
 ### Correction 0.39 — 05/10/2026 · totehm.com remis d'aplomb (REMPLACE 0.36 « découvrir, lire, copier »)
 
 > Ce que l'agent ChatGPT avait posé le 05/10 sur totehm.com est retiré : le T

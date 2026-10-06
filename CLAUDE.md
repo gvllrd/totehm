@@ -175,7 +175,7 @@ Cinq vues, gestes, boussole, panneaux desktop et joystick caméra du 04/10 conse
 Nouveaux spaces partagés ; OFF = ville actuelle, ON = for my subscribers ; TOP toujours ON, RIGHT sans OFF.
 Mini-boxes OBJECTIVES/REPULSIONS activables séparément dans la Habit, droits en serveur.
 Hint Habit → space et définition coin droit. Détails : `space/CLAUDE.md`, copy : `BRAND.md`.
-COM : My spaces = historique propriétaire ; chercher = un NOM → son TOTEHM read-only ; les spaces d'une Habit dans sa boîte (`habit_spaces`). `com/CLAUDE.md` fait foi.
+My spaces (COM et SPACE) = historique propriétaire, supprimer = `space-delete` ; chercher = un NOM → son TOTEHM read-only ; spaces d'une Habit dans sa boîte.
 
 ## Règles d'interface qui valent partout
 
@@ -213,9 +213,9 @@ COM : My spaces = historique propriétaire ; chercher = un NOM → son TOTEHM re
   perforé ; « by » reste à côté. Aucun motif perforé comme fond de contrôle. **Aucun fond
   blanc** sur un bouton, une option, une sélection, un panneau : tout reste
   sombre (sélection = gris clair + filet blanc). Une BOÎTE reste carrée.
-- Boutons ajustés au label. **Une Box s'ouvre EN PLACE, jamais dans une fenêtre ni par une loupe**
-  (Wah, 05/10) ; mini-boxes COM au format d'origine ; le T du Totehm déplié reste. Attributs non
-  renseignés absents des miroirs. Satellites seulement : `tools/ecosystem_ui.css` / `_snippet.js` copiés.
+- Boutons ajustés au label. **Chaque Box a une petite loupe : un tap agrandit son contenu EN PLACE
+  (×1,25), jamais une fenêtre** (Wah, 06/10) ; mini-boxes COM au format d'origine ; le T du Totehm
+  déplié reste. Attributs non renseignés absents des miroirs. Satellites : `tools/ecosystem_ui.*` copiés.
 - **Simple terms of use** = la DERNIÈRE entrée du menu membre, partout ;
   jamais épinglée dans un coin. Aucun pourcentage de compatibilité.
 - Sur ordinateur, texte gris → blanc au survol ; les noms restent Coral (`tools/hover.py`

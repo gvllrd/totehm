@@ -1,5 +1,27 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## COM · 06/10/2026 — la loupe en place, supprimer un space, la langue plus grande
+
+BUILD `2026-10-06-spaces-loupe` (`totehm.html`). Wah : « une petite loupe sur
+chaque box de chaque view ; on appuie, le contenu de la box s'agrandit un
+peu » · « pouvoir supprimer des spaces » · « la langue plus grande ».
+- **La loupe** (`.loupe`, `data-zoom`, dernier enfant de `.v-col`) : sur les
+  cinq vues, chez soi et en lecture. Un tap → `.v-col.is-zoom` (`zoom:1.25`),
+  la boîte grandit DANS sa liste, ne s'ouvre pas ; un deuxième tap la rend.
+  État `ZOOM` (clés `kind:id`) qui survit aux redessins, vidé au changement de
+  compte et à chaque lecture d'un autre Totehm. Fermée : coin haut droit ;
+  ouverte : à gauche de ×. Le titre lui laisse 18 / 56 px ; les mini-boxes
+  ne changent pas (3px 7px, 4px 8px au téléphone). Traitée AVANT `data-go` /
+  `data-open` dans `cable()`.
+- **My spaces** : chaque ligne = ouvrir (SPACE) + Delete → « Delete for good »
+  → `space-delete` ; la ligne part, `habit_spaces` est relu.
+- **La langue** : `#m-tongue-big` l'agrandit depuis sa base (540,727), ×1,22
+  en largeur, ×1,3 en longueur ; le point de pose (`POSE`), la course quand
+  elle rentre (`long`) et la zone « posé » suivent (`ly()`). Le buvard garde
+  sa taille (`large`), la découpe descend à 1950. `com_mouth.mjs` : mi-chemin
+  = 50 % de la course (la langue est touchée plus tôt).
+- Tests : `spaces_loupe.mjs` 26/26, `com_mouth.mjs` 35/35, `com_paper.mjs` 39/39.
+
 ## ⛔ COM · 05/10/2026 (Claude) — REMIS D'APLOMB : CE QUI FAIT FOI
 
 Wah : « ChatGPT m'a enlevé le T.svg au déploiement, changé le format des
