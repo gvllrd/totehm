@@ -13,6 +13,8 @@
 //                  grand livre du vendeur, 7 % à TOTEHM (30/09/2026)
 //   luxury       → luxury_settle : une totehmisation luxe payée (02/10/2026) ;
 //                  depuis le 05/10, sur devis : luxury_quote_paid ferme le devis
+//   higher_sub   → bot_subscriptions par higher_sub_sync : l'abonnement Higher
+//                  (TotehmSM, mensuel) — checkout ET cycle de vie (07/10/2026)
 //
 // Events traités :
 //   checkout.session.completed
@@ -307,6 +309,9 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
     case "subscription":
       // L'adhésion FIGHER : aucun partage, rien à inscrire au grand livre.
       break;
+    case "higher_sub":
+      // L'abonnement Higher : revenu de la plateforme, rien au grand livre.
+      break;
     default:
       console.log("invoice.paid ignoré — produit:", meta.product, invoice.id);
   }
@@ -487,6 +492,46 @@ We write to you by email to organize the sending of your piece.</td></tr>
   }
 }
 
+// ══ L'ABONNEMENT HIGHER (TotehmSM) · 07/10/2026 ═══════════════════════
+// `higher-sub` ouvre le Checkout avec `metadata.product = 'higher_sub'` et
+// `user_id`, EN DOUBLE sur l'abonnement : le checkout ET chaque changement
+// d'état (`customer.subscription.updated|deleted`) réécrivent la ligne de
+// `bot_subscriptions` — l'accès (`totehmbot_access`) la lit. Rien au grand
+// livre : c'est un revenu de la plateforme, pas une part de membre.
+async function higherSubSync(userId: string, sub: Stripe.Subscription) {
+  const status = sub.status === "incomplete_expired" ? "canceled" : sub.status;
+  // ⚠️ La fin de période vit sur l'abonnement (API 2024-06-20, celle du SDK)
+  // OU sur ses lignes (versions 2025+ de l'endpoint, qui signe les événements) :
+  // on lit les deux, jamais `new Date(NaN)` (un RangeError ferait rejouer Stripe).
+  const s = sub as unknown as { current_period_end?: number; items?: { data?: { current_period_end?: number }[] } };
+  const fin = s.current_period_end ?? s.items?.data?.[0]?.current_period_end ?? null;
+  const { data, error } = await admin.rpc("higher_sub_sync", {
+    p_user: userId,
+    p_sub: sub.id,
+    p_status: status,
+    p_period_end: fin ? new Date(fin * 1000).toISOString() : null,
+    p_ending: !!sub.cancel_at_period_end,
+    p_price: sub.items?.data?.[0]?.price?.unit_amount ?? null,
+    p_currency: sub.currency ?? "eur",
+  });
+  if (error) throw new Error("higher_sub_sync: " + error.message);
+  if (!data?.ok) console.error("higher_sub_sync refusé:", sub.id, JSON.stringify(data));
+  else console.log("abonnement Higher:", sub.id, "→", status);
+}
+
+async function handleHigherSub(session: Stripe.Checkout.Session) {
+  const userId = session.metadata?.user_id;
+  const subId = typeof session.subscription === "string" ? session.subscription : session.subscription?.id;
+  if (!userId || !subId) { console.error("higher_sub sans metadata:", session.id); return; }
+  await higherSubSync(userId, await stripe.subscriptions.retrieve(subId));
+}
+
+async function handleHigherSubState(sub: Stripe.Subscription) {
+  const userId = sub.metadata?.user_id;
+  if (!userId) { console.error("higher_sub sans user_id:", sub.id); return; }
+  await higherSubSync(userId, sub);
+}
+
 async function handleAccountUpdated(acc: Stripe.Account) {
   if (!acc.id) return;
   const { error } = await admin.from("creator_profiles")
@@ -653,6 +698,10 @@ Deno.serve(async (req) => {
           case "luxury":
             await handleLuxury(session);
             break;
+          // L'abonnement Higher (TotehmSM) : l'accès, par `bot_subscriptions`.
+          case "higher_sub":
+            await handleHigherSub(session);
+            break;
           default:
             console.warn("product inconnu dans metadata:", session.metadata?.product, "session:", session.id);
         }
@@ -665,6 +714,7 @@ Deno.serve(async (req) => {
         // finit toujours par oublier le troisième.
         switch (sub.metadata?.product) {
           case "creator_sub": await handleCreatorSubState(sub); break;
+          case "higher_sub":  await handleHigherSubState(sub); break;
           default:            await handleSubscriptionUpdated(sub);
         }
         break;
@@ -674,6 +724,7 @@ Deno.serve(async (req) => {
         const sub = event.data.object as Stripe.Subscription;
         switch (sub.metadata?.product) {
           case "creator_sub": await handleCreatorSubState(sub); break;
+          case "higher_sub":  await handleHigherSubState(sub); break;
           default:            await handleSubscriptionDeleted(sub);
         }
         break;
