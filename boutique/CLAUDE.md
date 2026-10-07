@@ -1,5 +1,41 @@
 # boutique/CLAUDE.md — higher.boutique : le Cloth, la méthode Stoner
 
+## BOUTIQUE · 06/10/2026 — nouveau support et photo différée
+
+Wah a remplacé le précédent Champion. Support courant : `Higher Champion
+Sweatshirt`, Printful `478633385`, Supabase
+`c615b050-cd3e-4560-a1aa-ce943192f34e`. Valeurs existantes conservées : actif,
+170 €, édition 177, claimed 0, tailles S/M/L/XL/2XL. Son dossier
+`higher-champion-sweatshirt-478633385` ne contient que `.keep` : la photo
+principale vient de `image_url`, récupérée par F à la resynchronisation 91.
+
+F réessaie désormais une photo encore absente toutes les minutes, cinq
+reprises maximum. Les photos personnalisées existantes restent prioritaires.
+F renseigne l'URL de la photo principale Printful ; il ne copie pas une
+galerie complète de mockups dans Storage. Pour des vues supplémentaires
+choisies, les fichiers du dossier Storage restent le mécanisme existant.
+Front inchangé (`2026-10-06-streetwear-photo`). Navigateur public : image
+chargée 800 × 800, 170 €, 177 / 177 left, cinq tailles. Détails et preuves
+n8n dans `backend/SYSTEM.md` §0.
+
+## BOUTIQUE · 06/10/2026 — Streetwear : support actif et photo Printful
+
+Le support Champion `478625396` était filtré par `active=false`, malgré son
+prix déjà configuré à 170 € et son édition de 12 pièces. Il est maintenant
+actif ; prix et quantité conservés. Support Supabase :
+`3387332a-a258-4a7e-9391-803fe446cfa6`, tailles S · M · L · XL · 2XL.
+
+`streetwear.html` (BUILD `2026-10-06-streetwear-photo`) conserve la priorité
+des photos de `storage_folder`, puis utilise `image_url` si ce dossier est
+vide ou inaccessible. F renseigne cette URL avec `thumbnail_url` Printful
+seulement si aucune photo personnalisée n'est déjà définie. F reste chargé
+de créer les nouveaux supports inactifs, prix et édition à zéro : une
+synchronisation ne modifie pas les réglages commerciaux existants.
+
+Vérifié : exécution F 87 en production réussie, support toujours actif à
+170 € / 12 pièces ; navigateur public : titre, prix, stock et cinq tailles
+visibles. Aucun paiement ni génération d'œuvre exécuté pour ce contrôle.
+
 ## BOUTIQUE · 06/10/2026 (ter) — le style du moment et le nom, Decode perforé
 
 Wah : « pour la totehmisation Streetwear et Luxury, choisir un style artistique
