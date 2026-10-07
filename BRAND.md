@@ -1,5 +1,30 @@
 # BRAND.md — TOTEHM
 
+## CURRENT UPDATE — 07/10/2026 · the totehm.com landing is a cross
+
+- Five landing views, driven by the same joystick and gestures as the unfolded
+  TOTEHM. Centre: my TOTEHM (no mouth), **[Higher] Strategy**, *Click to open
+  it*, my TOTEHM's name and who reads it (**Private** by default · **Visible to
+  my subscribers** → *My subscription program*).
+- Up · **Get [Higher]**: the paper lands on the tip of the tongue; *Get* is
+  Quantico Coral. Without a THP: « The TotehmPaper {THP} distills selected
+  mental-performance techniques informed by modern neuroscience research,
+  including EEG studies, into an experience designed to prepare your brain for
+  efficient action. » On figher.club the THP has four powers: neurological
+  performance · a digital artwork (one of 777,000) · tradeable · the key to
+  luxury. Its value is said by what it opens — **never "investment"**.
+- Down · **TotehmSM** (my SuperMirror): « Speak to your [Higher] Self » and
+  « [Higher] your social media ». Not a coach: it rewrites what I say in the
+  first person (« I … »). Its bubbles take the Box colours (habit navy,
+  objective light blue, repulsion red-violet); mine is grey; both sides
+  Quantico. Proof is cited, never claimed: implementation intentions
+  (Gollwitzer & Sheeran 2006, d = 0.65), self-talk (Kross et al. 2014). Never
+  "scientifically proven NLP". Paying **Higher** members only (7 €/month).
+- Left · search a TOTEHM, *Subscribe* (yearly price). Right · SPACE and HIGHER
+  BOUTIQUE side by side, [Higher] placed on the garment of the moment.
+- The member space is about the member: picture, Higher subscription, my
+  subscriptions, my spaces, TotehmBot; *Simple terms of use* last.
+
 ## CURRENT UPDATE — 05/10/2026 (overrides older conflicting rules)
 
 - A space is a **Higher spot**: an action consistent with one's TOTEHM,

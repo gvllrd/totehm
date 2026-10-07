@@ -218,6 +218,22 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
+### Correction 0.43 — 07/10/2026 · l'atterrissage en croix, TotehmSM, l'abonnement Higher (à reporter)
+
+> totehm.com : l'atterrissage devient une croix de cinq vues pilotée par la
+> manette du Totehm déplié (mêmes gestes ; le trackpad change de vue dans les
+> quatre sens, aussi dans le Totehm déplié). Centre : mon Totehm, [Higher]
+> Strategy, le nom et la visibilité (Private par défaut ; abonnés → le
+> programme). Haut : Get Higher sur la langue, le THP expliqué. Bas : TotehmSM,
+> « Speak to your Higher Self », reflet à la première personne par un LLM
+> (OpenAI, quota 30/jour), Telegram / WhatsApp ; réservé à l'abonnement
+> Higher 7 €/mois (prix live `higher_month` à créer après le « oui » de Wah).
+> Gauche : chercher + Subscribe. Droite : SPACE, la boutique, [Higher] sur le
+> vêtement du moment. L'espace membre = l'utilisateur (vignette, Higher,
+> souscriptions). figher.club : le THP en quatre pouvoirs, jamais
+> « investment ». Migrations additives `higher_self` (×4) et
+> `landing_cloth_spot` APPLIQUÉES : ne pas réappliquer. Aucun travail Oracle/n8n.
+
 ### Correction 0.42 — 06/10/2026 (ter) · toute la bouche, le style et le nom du Cloth, Decode perforé
 
 > Sur totehm.com, c'est toute la bouche qui grandit (lèvres et langue, ×1,27),
