@@ -165,13 +165,13 @@ try{
   ok(v1!==v0&&v2===v0,'Totehm déplié : ↓ au trackpad change de vue, ↑ revient ('+v0+' → '+v1+' → '+v2+')');
   ok(!erreurs(log).length,'déplié : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
- // ── 9 · figher.club : le THP en quatre pouvoirs ──
+ // ── 9 · figher.club : le Discover historique, avant migration ──
  {const{pg,log}=await page(browser,{dir:'club',origin:'https://www.figher.club',tables:{},session:false,viewport:{width:390,height:844}});
   await pg.goto('https://www.figher.club/get_higher');await pg.waitForTimeout(600);
   await pg.click('#down-trigger');await pg.waitForTimeout(400);
-  const t=await pg.$$eval('#disc-stage .disc-block',l=>l.map(b=>b.textContent.replace(/\s+/g,' ').trim()));
-  ok(/One paper\. ?Four powers/.test(t[0])&&/^A · Neurological performance.*EEG/.test(t[1])&&/^B · A digital artwork.*777,000/.test(t[2])&&/^C · Tradeable/.test(t[3])&&/^D · The key to luxury.*What it opens is what it is worth/.test(t[4]),
-    'discover : A performance neurologique · B œuvre d\'art digitale · C tradeable · D la clé du luxe');
+  const t=await pg.$eval('#disc-stage .disc-block',l=>l.map(b=>b.textContent.replace(/\s+/g,' ').trim()));
+  ok(/Most people think they're just losing energy/.test(t[0])&&/They're losing years/.test(t.join(' ')),
+    'discover : le récit d\'origine est restauré, de l\'énergie aux années perdues');
   ok(!t.join(' ').match(/invest/i),'jamais « investment » (MiCA) : la valeur se dit par ce que le THP ouvre');
   ok(!erreurs(log).length,'club : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 }finally{await browser.close();}
