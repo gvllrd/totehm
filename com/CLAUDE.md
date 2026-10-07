@@ -1,5 +1,47 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## COM · 07/10/2026 — l'atterrissage en croix : cinq vues, une manette
+
+BUILD `2026-10-07-croix` (`totehm.html`). Wah : « le joystick du Totehm déplié
+sur l'atterrissage, cinq vues, exactement les mêmes mouvements et clics ».
+- **La manette `#ljoy`** (copie de `#joy`, hors de `#gate` pour rester au-dessus
+  de la recherche) : chevrons `#lcur-h/g/d/b`, manche tiré, molette, centre =
+  retour. Teinte par vue (`TEINTE_L`), légende `#ljoy-say` (`NOMS`). Un chevron
+  sans voisin s'éteint (`.mort`) : la croix ne se traverse pas en diagonale.
+- **Mêmes gestes partout sur l'atterrissage** : flèches, Échap, trackpad dans
+  les QUATRE sens (trou de 200 ms + 130 px, garde 800 ms ; un fil qui défile
+  garde la molette), doigt (glisser vers le haut = descendre). Pas sur le papier.
+- **Centre `c`** : le Totehm sans bouche, [Higher] Strategy, « Click to open it »
+  (« Tap » au toucher) ; `#lv-card` = le nom (`#ident-block`, déplacé du tiroir)
+  et la visibilité : Private par défaut · Visible to my subscribers
+  (`visibility_set`) → bouton `#lv-prog` vers `/monetize`.
+- **Haut `h` · Get Higher** : le papier monte en rapetissant sur le bout de la
+  langue PENDANT que la bouche s'ouvre et que la langue se tire ; [Higher]
+  glisse dessous, « Get » Quantico corail ; sans THP, le texte du TotehmPaper.
+  [Get Higher] = `#lv-slogan` (le seul bouton) : avalé, extase, figher.club
+  `/get_higher` par le pont. L'appui long ne prend plus le papier.
+- **Bas `b` · TotehmSM** : le papier devient la vignette du fil (T sur navy).
+  « Speak to your [Higher] Self » + le double « [Higher] your social media ».
+  Bulles Quantico : habit navy, objective bleu clair, repulsion rouge-violet ;
+  moi gris `#2a2a30` + ma vignette. Abonné Higher : `sm_thread`, envoi →
+  `higher-self` (`say`), Telegram (`telegram`, sinon lien TotehmBot), WhatsApp =
+  partage `wa.me` (pas d'API). Sinon le concept (démo, preuve Gollwitzer &
+  Sheeran 2006 · Kross 2014 — jamais « PNL prouvée ») + Get Higher Self →
+  `higher-sub` ; invité → CONNECT WITH MY TOTEHM. `?higher=paid` = la vue du bas
+  et l'attente du webhook (8 × 1,5 s).
+- **Gauche `g`** : la feuille `#srch` (vide), plus **Subscribe · prix/an**
+  (`totehm_search`, vente `/@nom`). `#gestes` et `#search-corner` : RETIRÉS.
+- **Droite `d`** : le papier tourne en haut (comme SPACE) ; le vêtement du
+  moment (`totehm_cloth_support`, 1er actif) et [Higher] posé à son
+  `logo_spot` {x,y,w} (0..1, défaut poitrine .5/.3/.3) ; SPACE et la boutique
+  de part et d'autre, par `ssoVersDomaine`.
+- **L'espace membre = l'utilisateur** : vignette (256 px JPEG, `avatar_set`),
+  My Higher subscription (état, Cancel/Keep), My subscriptions → `/console`, My
+  TOTEHM spaces, Connect TotehmBot ; Simple terms of use en dernier.
+- Données : `my_landing()` (une lecture, `landSeq` jette la tardive).
+  Diagnostic `__totehm_lv()`. Tests : `com_croix.mjs` 40/40, `com_mouth.mjs`
+  30/30, `com_read_copy.mjs` 20/20, `com_paper.mjs` 40/40, `com_member_menu.mjs` 28/28.
+
 ## COM · 06/10/2026 (ter) — toute la bouche grandit
 
 BUILD `2026-10-06-bouche` (`totehm.html`). Wah : « pas la langue seule :

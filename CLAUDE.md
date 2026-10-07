@@ -64,8 +64,8 @@ Les `CLAUDE.md` des dossiers servis par Vercel sont exclus du déploiement (`.ve
 
 ```
 com/      → www.totehm.com       LA SOURCE : le Totehm (5 vues), l'identité (/auth), /search, /@nom ;
-                                 papier à deux faces (recto = mon Totehm, verso = chercher un autre),
-                                 posé sur la langue de la bouche → [Get Higher] (03/10) ; la console (/console)
+                                 l'atterrissage en croix (07/10, manette) : mon Totehm · ↑ Get Higher (la langue)
+                                 · ↓ TotehmSM (Higher Self, abonnement) · ← chercher · → SPACE et boutique ; /console
 club/     → www.figher.club      le branding Higher en expérience : [Get Higher], Lisbon,
                                  méthode Stoner ; art, marché (/market) ; /console → 308
 space/    → www.totehm.space     DO WITH ME : UN Spot (PRIVATE / SHARED) naît d'une Habit
@@ -140,10 +140,9 @@ CTA partout : **CONNECT WITH MY TOTEHM** ; plus d’OTP local sur les satellites
 
 Un webhook, routé sur `metadata.product` par un `switch` avec `default`
 explicite — **ne jamais retirer ce filtre** : `higher` · `cloth` ·
-`subscription` · `creator_sub` · `artwork` · `resale` · `luxury` (05/10 : `cloth` traité ici, `luxury` sur devis ; un testeur actif de `boutique_testers` paie en MODE TEST Stripe : `STRIPE_TEST_SECRET_KEY` / `STRIPE_TEST_WEBHOOK_SECRET`, seuls `cloth`/`luxury` test s'écrivent, marqués `test`). Toute nouvelle
-fonction de checkout pose sa propre `metadata.product`. La metadata voyage
-EN DOUBLE (`subscription_data.metadata`). Propriété et argent ne s'écrivent
-QUE par le webhook (`art_settle`, idempotent sur la session). Endpoint
+`subscription` · `creator_sub` · `artwork` · `resale` · `luxury` · `higher_sub` (07/10 : Higher 7 €/mois, `bot_subscriptions`) (05/10 : `cloth` traité ici, `luxury` sur devis ; un testeur actif de `boutique_testers` paie en MODE TEST Stripe : `STRIPE_TEST_SECRET_KEY` / `STRIPE_TEST_WEBHOOK_SECRET`, seuls `cloth`/`luxury` test s'écrivent, marqués `test`). Toute nouvelle
+fonction de checkout pose sa propre `metadata.product`. La metadata voyage EN DOUBLE
+(`subscription_data.metadata`). Propriété et argent ne s'écrivent QUE par le webhook (`art_settle`, idempotent). Endpoint
 vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 `invoice.payment_failed`, `customer.subscription.updated|deleted`.
 `new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!)` — jamais `?? ""`.
@@ -171,11 +170,10 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 - **Claude Code** (terminal) : une commande simple par ligne, jamais
   `cd X && …` (les permissions jugent la ligne entière).
 **SPACE · 05/10 :** un Higher spot, action stratégique chez soi, dans un lieu privé ou dehors.
-Cinq vues, gestes, boussole, panneaux desktop et joystick caméra du 04/10 conservés.
-Nouveaux spaces partagés ; OFF = ville actuelle, ON = for my subscribers ; TOP toujours ON, RIGHT sans OFF.
-Mini-boxes OBJECTIVES/REPULSIONS activables séparément dans la Habit, droits en serveur.
-Hint Habit → space et définition coin droit. Détails : `space/CLAUDE.md`, copy : `BRAND.md`.
-My spaces (COM, SPACE) + `space-delete` ; chercher = un NOM → son TOTEHM en lecture (spaces, loupe, COPY d'une Box). Menu membre COM = format higher.boutique.
+Cinq vues, gestes, boussole, panneaux desktop, joystick caméra (04/10). Spaces partagés : OFF = ville, ON = for my
+subscribers ; TOP toujours ON, RIGHT sans OFF. Mini-boxes OBJECTIVES/REPULSIONS séparées (droits serveur).
+Hint Habit → space, définition coin droit. Détails : `space/CLAUDE.md`, copy : `BRAND.md`.
+My spaces (COM, SPACE) + `space-delete` ; chercher = un NOM → son TOTEHM en lecture (spaces, loupe, COPY d'une Box). Espace membre COM = l'utilisateur (vignette, Higher, souscriptions), format higher.boutique.
 
 ## Règles d'interface qui valent partout
 
@@ -187,6 +185,8 @@ My spaces (COM, SPACE) + `space-delete` ; chercher = un NOM → son TOTEHM en le
 - Un `<canvas>` porte toujours `width:100%;height:100%`.
 - Geste dédié : `touch-action:none` + Pointer Events. Dans un feed scrollable,
   préserver le scroll natif ; touchstart/move/end reprend le retour au radar.
+  **Le trackpad change de vue dans les QUATRE sens** (07/10), hors manette aussi :
+  nouveau geste (trou de 200 ms) + 130 px ; une liste qui peut défiler garde la molette.
 - Overlays plein écran ancrés EN HAUT (le clavier mobile mange le bas).
 - L'interface est en anglais, mots courts ; termes de marque en anglais.
 - Une règle de comportement ne va jamais dans un `@media`.

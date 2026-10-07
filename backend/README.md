@@ -1,6 +1,14 @@
 # TOTEHM · backend
 
 
+## 07/10/2026 — TotehmSM (Higher Self) and the Higher subscription
+
+Migrations `20261007100000_higher_self.sql` and `20261007110000_landing_cloth_spot.sql` (applied once). `my_landing()` (anon/auth) returns the whole COM landing in one read; `avatar_set(p_data)` stores a ≤140 KB JPEG data URL; `sm_thread(p_before, p_limit)` returns the member's TotehmSM thread newest first; `higher_sub_sync(...)` (service_role) is the only writer of `bot_subscriptions` for this product. Test `tests/sql/higher_self_selftest.sql` (rolled back, `FAIL={}`).
+
+Edge `higher-self` (verify_jwt): `{action:'say', text}` → access via `totehmbot_access()` under the member's session (403 `higher_required`), quota 30 per 24 h (429 `quota`), OpenAI JSON-schema reply `{kind: habit|objective|repulsion, text}` in the first person; `{action:'telegram', id}` → sends that reflection to the linked Telegram (409 `not_linked`, 410 `blocked`). Secrets: `OPENAI_API_KEY`, `TELEGRAM_BOT_TOKEN`, optional `HIGHER_SELF_MODEL`.
+
+Edge `higher-sub` (verify_jwt): `checkout` | `cancel` | `resume`. **Procedure to open sales**: create in Stripe live ONE recurring price, 7 € / month, `lookup_key = higher_month` (Wah's « oui » first). Until then `checkout` answers 503 `not_ready` and the page says "opening soon". The webhook routes `metadata.product = 'higher_sub'` (checkout + subscription updated/deleted) to `higher_sub_sync`; `invoice.paid` writes nothing for it.
+
 ## 06/10/2026 — delete a space: `space_delete` + Edge Function `space-delete`
 
 `space_delete(p_spot uuid)` (authenticated, owner only) sets the space `cancelled` (existing status), clears its media references and returns them (`{ok, media:{video_id, bunny, paths}}`, `why=signin|not_found`); media still used by another published space is not returned. Every reader filters `published`, so the space disappears everywhere at once. Migration `20261006100000_space_delete.sql` applied once as `space_delete`; test `tests/sql/space_delete_selftest.sql` (rolled back, `FAIL={}`).

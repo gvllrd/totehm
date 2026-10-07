@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 6 octobre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 7 octobre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -15,6 +15,20 @@
 
 ---
 
+
+## 0 · L'ATTERRISSAGE EN CROIX, TOTEHMSM, L'ABONNEMENT HIGHER — 07/10/2026
+
+| quoi | valeur mesurée |
+|---|---|
+| base | migrations `higher_self` (×4) + `landing_cloth_spot` : 4 fonctions (`my_landing`, `avatar_set`, `sm_thread`, `higher_sub_sync`), 2 tables RLS sans politique (`sm_messages`, `member_avatars`), `logo_spot` présent ; `tests/sql/higher_self_selftest.sql` → `FAIL={}` (annulé) |
+| droits | anon : `my_landing` oui (→ `{signed_in:false, thp:false, higher:{700 eur, month}}`), `avatar_set` non, `sm_thread` non ; authenticated : `higher_sub_sync` non (service_role seul) |
+| fonctions | `higher-self` v1, `higher-sub` v1 (verify_jwt) : sans jeton → 401 (pg_net) ; `stripe-webhook` v42 (`higher_sub`), endpoint inchangé |
+| Stripe live | aucun prix `higher_month` : `higher-sub` répond `not_ready` → « opening soon » (prix = « oui » de Wah) |
+| vêtement | `totehm_cloth_support` : 1 ligne active avec image ; `logo_spot` vide → poitrine par défaut (.5/.3/.3) |
+| tests navigateur | `com_croix` 40/40 (nouveau) · `com_mouth` 30/30 · `com_paper` 40/40 · `com_read_copy` 20/20 · `com_member_menu` 28/28 · `com_creator` 29/29 · `console` 18/18 · `club_luxury` 43/43 · `boutique_home` 10/10 · `streetwear` 25/25 · `market` 14/14 · `spaces_loupe` 26/26 · `space` 40/40 · `space_boxes_ecosystem` 22/22 · `spaces_ui --identity` 27/27 |
+| connu, hors lot | `spaces_ui` (volet SPACE) et `space_top_left` attendent `[data-pvis]`, retiré le 05/10 : périmés |
+| prod (pg_net, `3be449b`, Vercel READY com · space · boutique) | totehm.com/totehm 200 `2026-10-07-croix`, md5 = dépôt ; figher.club/get_higher 200, md5 = dépôt (quatre pouvoirs) |
+| non mesuré | l'appel LLM réel (exige une session membre ; Wah a l'accès offert) |
 
 ## 0 · NOUVEAU CHAMPION, PHOTO RÉCUPÉRÉE ET REPRISE AUTOMATIQUE — 06/10/2026
 

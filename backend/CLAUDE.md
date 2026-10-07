@@ -1,5 +1,34 @@
 # backend/CLAUDE.md — la base, les fonctions, l'argent, le bot
 
+## COM · 07/10/2026 — TotehmSM (Higher Self), l'abonnement Higher, l'atterrissage
+
+Migrations additives `20261007100000_higher_self.sql` (appliquée en quatre :
+`higher_self`, `higher_self_landing`, `higher_self_avatar_thread`,
+`higher_self_sub_sync`) et `20261007110000_landing_cloth_spot.sql`
+(`landing_cloth_spot`). Tables RLS sans politique : `sm_messages` (role
+me|sm, kind habit|objective|repulsion, 1..1200), `member_avatars` (JPEG en
+data URL ≤ 140 000). `totehm_cloth_support.logo_spot jsonb` ({x,y,w} 0..1).
+- `my_landing()` (anon + auth) : tout l'atterrissage en UNE lecture — pseudo,
+  vignette, visibilité, offre, `higher` (actif, offert, statut, fin, prix
+  700 eur/mois), Telegram lié, THP (`_art_owns_thp`), compteurs.
+- `avatar_set(p_data)` (auth) : remplace seulement (pas de suppression depuis le
+  cloud : un `delete` exige une approbation). `sm_thread(p_before,p_limit)`
+  (auth) : le plus récent d'abord. `higher_sub_sync(...)` (service_role) : le
+  webhook écrit `bot_subscriptions`.
+- Accès = `totehmbot_access()` (abonnement vivant OU `figher_comps`), lu SOUS la
+  session du membre. Auto-test `tests/sql/higher_self_selftest.sql` : `FAIL={}`.
+- Edge `higher-self` (JWT) : `say` = quota 30 / 24 h, contexte `_bot_memory`
+  + 6 derniers messages, OpenAI (`OPENAI_API_KEY`, `HIGHER_SELF_MODEL` sinon
+  gpt-5 → gpt-4.1 → gpt-4o), sortie `json_schema` {kind,text} à la PREMIÈRE
+  personne, les deux lignes écrites après succès ; `telegram` = renvoie un
+  reflet au `telegram_id` (409 `not_linked`). CORS `SITE_COM`.
+- Edge `higher-sub` (JWT) : `checkout` (prix par `lookup_key` `higher_month`,
+  503 `not_ready` tant qu'il n'existe pas ; `metadata.product='higher_sub'` en
+  double), `cancel` / `resume` (`cancel_at_period_end`).
+- `stripe-webhook` v42 : `higher_sub` sur `checkout.session.completed` et
+  `customer.subscription.updated|deleted` → `higher_sub_sync` ; `invoice.paid`
+  ne crédite rien (pas de 80/20 : c'est TOTEHM qui vend). Endpoint inchangé.
+
 ## BOUTIQUE · 06/10/2026 — F : attendre la photo Printful
 
 F publié `c9638e70-0d0f-4dba-adb1-a78f2ccb8ec8` : `Printful Webhook` →

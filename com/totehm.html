@@ -2239,15 +2239,8 @@ body.paysage #gate-mouth{display:none}
 /* Pris : il passe devant tout, et l'appui long n'appelle aucun menu. */
 #gate-asteroid{-webkit-touch-callout:none}
 #gate-asteroid.is-pris{cursor:grabbing;z-index:5}
-/* « Get » (Quantico, corail : le « Get » de [Get Higher]) + le badge
-   Higher (SVG, jamais du texte), à la place exacte du papier au repos. */
 #gate-top-row{position:relative}
-#gate-get{position:absolute;left:50%;top:calc(var(--gate-size) / 2);z-index:1;
-  display:flex;align-items:center;gap:8px;transform:translate(-50%,-50%) scale(.94);
-  opacity:0;pointer-events:none;transition:opacity .28s ease,transform .4s cubic-bezier(.2,.7,.2,1)}
-#gate-get.is-on{opacity:1;transform:translate(-50%,-50%)}
-.gg-get{font-family:'Quantico',sans-serif;font-weight:700;font-size:28px;line-height:1;color:#fbd5ca}
-#gate-get svg{display:block;width:96px;height:32px}
+/* 07/10 : « Get [Higher] » n'apparaît plus à la place du papier — le slogan voyage (`#lv-slogan`). */
 
 /* ══ LA PORTE · 27/09/2026 ═══════════════════════════════════════════
    Pas inscrit, rien n'est permis. Elle n'existe que demandée (le tap
@@ -2323,22 +2316,7 @@ body.gate.entered #terms-corner{opacity:0;pointer-events:none}
    est le point d'entrée de la recherche des Totehms. L'atterrissage garde
    son objet unique (le papier, sans barre de recherche depuis le 24/09) ;
    un seul mot, en bas, mène à /search — invité compris. */
-/* ══ LES TROIS GESTES · 06/10/2026 ═══════════════════════════════════
-   Wah : « en bas, le texte change avec les trois commandes du Totehm ».
-   Un seul visible à la fois (fondu, `is-on`), toutes les 3,4 s ; survolé
-   ou au clavier, il s'arrête sur celui qu'on vise. Verso : « Turn it back ». */
-#gestes{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:4;
-  width:min(100vw,520px);height:30px;transition:opacity .25s ease}
-.geste{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:center;gap:6px;height:30px;
-  background:none;border:none;margin:0;padding:6px 2px;cursor:pointer;white-space:nowrap;
-  font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
-  color:#9a9aa2;text-decoration:none;opacity:0;pointer-events:none;transition:opacity .45s ease,color .15s ease}
-.geste.is-on,.geste:focus-visible{opacity:1;pointer-events:auto}
-.geste svg{width:42px;height:14px;flex:none}
-body.gate.entered #gestes{opacity:0;pointer-events:none}
-body.gate.entered .geste{pointer-events:none}
-@media(prefers-reduced-motion:reduce){.geste{transition:none}}
-@media(hover:hover){.geste:hover{color:#fff}}
+/* 07/10 : les trois gestes du bas sont partis — la croix et sa manette les remplacent. */
 
 /* ══ LE VERSO RETOURNÉ : ON ZOOME DANS LE PAPIER · 02/10/2026 ═════════
    Wah : « directement sur le fond bleu, comme si on zoomait et que l'on
@@ -2939,6 +2917,10 @@ body.gate.entered #filter-badge{
 
 
 
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -3036,7 +3018,6 @@ body.gate.entered #filter-badge{
 .door-q:hover,
 #gate-turn:hover,
 #terms-corner:hover,
-.geste:hover,
 #srch-q:hover::placeholder,
 .srch-hint:hover,
 .srch-meta:hover,
@@ -3074,6 +3055,144 @@ body.gate.entered #filter-badge{
 #member-window .cm-menu{padding:0 0 22px}
 @media(hover:hover){.cm-action:hover{background:#2c2c32;color:#fff}.cm-close:hover,#menu:has(.cm-menu) .m-it:hover{color:#fff}}
 </style>
+<style data-lv="2026-10-07">
+/* ══ L'ATTERRISSAGE EST UNE CROIX DE CINQ VUES · 07/10/2026 ═══════════════
+   Wah : « le joystick sur la page d'atterrissage, avec les 5 vues et
+   exactement les mêmes mouvements et clic que dans le Totehm déployé ».
+       ↑ GET HIGHER  le papier va se poser sur la langue tirée
+   ← SEARCH   ·   MY TOTEHM (centre)   ·   SPACE + BOUTIQUE →
+       ↓ TOTEHMSM    le papier devient la vignette d'une conversation
+   L'état est UN mot posé sur <body> (`lv-c|h|b|g|d`) ; chaque vue est un
+   panneau plein écran qui se fond (opacité + visibilité, jamais display) ;
+   le papier et le slogan [Higher] voyagent d'une vue à l'autre. */
+:root{--lv-y:40dvh}
+#gate{overflow:hidden}
+#gate-top-row{margin-top:max(0px,calc(var(--lv-y) - var(--gate-size) / 2 - max(76px,13dvh)))}
+/* La bouche n'existe que là-haut (vue Get Higher) : opacité seule, sa boîte ne
+   bouge pas — `BOUCHE.geo()` la mesure pendant qu'elle apparaît. */
+#gate-mouth{opacity:0;visibility:hidden;transition:opacity .45s ease,visibility 0s linear .45s}
+body.lv-h:not(.is-door):not(.entered) #gate-mouth{opacity:1;visibility:visible;transition:opacity .35s ease}
+/* En bas, le papier devient une vignette : le T seul, sur son navy perforé. */
+body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
+#lv{position:fixed;inset:0;z-index:5;pointer-events:none}
+body:not(.gate) #lv,body.entered #lv,body.is-door #lv{display:none}
+.lv-pane{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .4s ease,visibility 0s linear .4s}
+body.lv-c #lv-c,body.lv-h #lv-h,body.lv-b #lv-b,body.lv-d #lv-d{opacity:1;visibility:visible;transition:opacity .45s ease .18s}
+.lv-pane .lv-act{pointer-events:auto}
+.lv-mono{font-family:'Space Mono',monospace;font-size:11px;line-height:1.6;color:#9a9aa2;text-align:center}
+.lv-h2{font-family:'Space Mono',monospace;font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#fff}
+.lv-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;inline-size:fit-content;padding:11px 18px;border:0;border-radius:10px;background:#1f1f24;color:#b0b0b0;font:400 12px/1.4 'Space Mono',monospace;text-decoration:none;white-space:nowrap;cursor:pointer}
+.lv-btn:focus-visible{outline:1px solid #fff;outline-offset:3px}
+.lv-btn svg{width:48px;height:16px;flex:none}
+.lv-note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#6d6d74;min-height:12px;text-align:center}
+/* ── LE SLOGAN : un seul [Higher] qui voyage. Ses mots changent avec la vue :
+   « [Higher] Strategy » · « Get [Higher] » · « Speak to your [Higher] Self ». */
+#lv-slogan,#lv-slogan2{position:fixed;left:0;top:0;z-index:6;width:96px;height:32px;
+  transform-origin:50% 50%;transition:transform .7s var(--gate-ease),opacity .45s ease;
+  background:none;border:0;padding:0;margin:0;color:#fff;pointer-events:none;-webkit-tap-highlight-color:transparent}
+#lv-slogan svg,#lv-slogan2 svg{display:block;width:96px;height:32px}
+.lvs-pre,.lvs-post{position:absolute;top:50%;white-space:nowrap;transform:translateY(-50%)}
+.lvs-pre{right:calc(100% + 8px)}.lvs-post{left:calc(100% + 8px)}
+.lvs-pre>span,.lvs-post>span{position:absolute;top:50%;transform:translateY(-50%);opacity:0;transition:opacity .35s ease}
+.lvs-pre>span{right:0}.lvs-post>span{left:0}
+.lvs-get{font-family:'Quantico',sans-serif;font-size:24px;color:#fbd5ca}
+.lvs-speak,.lvs-self,.lvs-strat,.lvs-social{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#fff}
+#lv-slogan.is-c .lvs-strat,#lv-slogan.is-h .lvs-get,#lv-slogan.is-b .lvs-speak,#lv-slogan.is-b .lvs-self,#lv-slogan2.is-b .lvs-social{opacity:1;transition-delay:.3s}
+#lv-slogan.is-h{pointer-events:auto;cursor:pointer}
+#lv-slogan.is-g,#lv-slogan.is-x,#lv-slogan2:not(.is-b){opacity:0}
+body:not(.gate) #lv-slogan,body.entered #lv-slogan,body.is-door #lv-slogan,
+body:not(.gate) #lv-slogan2,body.entered #lv-slogan2,body.is-door #lv-slogan2{display:none}
+/* ── CENTRE : mon TOTEHM, son nom, qui le voit ── */
+#lv-card{position:absolute;left:50%;top:calc(var(--lv-y) + var(--gate-size) / 2 + 64px);transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:9px;width:min(92vw,420px)}
+#lv-card #ident-block{display:flex;flex-direction:column;align-items:center;gap:6px}
+#lv-card #name-btn,#lv-card #name-btn.claimed,#lv-card #set-name{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:#fbd5ca;
+  background:#000;border:0;border-image:none;border-radius:8px;padding:6px 12px;filter:none;min-width:0;text-align:center}
+#lv-card #set-name{outline:1px solid #2a2a30;caret-color:#fbd5ca;width:200px}
+.lv-vis{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.lv-vis button{border:0;border-radius:10px;padding:8px 12px;background:#16161a;color:#8a8a92;font:400 10.5px/1.3 'Space Mono',monospace;cursor:pointer;white-space:nowrap}
+.lv-vis button.is-on{background:#3a3a42;color:#fff;box-shadow:0 0 0 1px #fff}
+#lv-tap{position:absolute;left:50%;bottom:calc(max(16px,env(safe-area-inset-bottom)) + 104px);transform:translateX(-50%);
+  background:none;border:0;padding:6px 10px;font:700 9.5px/1.4 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#9a9aa2;cursor:pointer;white-space:nowrap}
+/* ── EN HAUT : Get Higher ── */
+#lv-h-say{position:absolute;left:50%;transform:translateX(-50%);top:calc(var(--lv-ht,60dvh) + 44px);width:min(88vw,440px);display:flex;flex-direction:column;align-items:center;gap:12px}
+/* ── EN BAS : TotehmSM ── */
+#lv-b-head{position:absolute;left:16px;top:58px;display:flex;align-items:center;gap:10px}
+#lv-thumb{width:44px;height:44px;flex:none}
+.lv-who{font-family:'Space Mono',monospace;font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#fff}
+.lv-who small{display:block;font-weight:400;letter-spacing:.06em;text-transform:none;color:#6d6d74;font-size:10px}
+#lv-b-body{position:absolute;left:50%;transform:translateX(-50%);top:186px;bottom:calc(max(16px,env(safe-area-inset-bottom)) + 108px);
+  width:min(94vw,560px);display:flex;flex-direction:column;gap:10px}
+#lv-social{display:flex;align-items:center;justify-content:center;gap:8px;min-height:22px}
+#lv-social-say{font-family:'Space Mono',monospace;font-size:10px;color:#6d6d74;white-space:nowrap}
+#lv-say{display:flex;gap:8px;align-items:stretch}
+#lv-say textarea{flex:1;min-height:44px;max-height:120px;resize:none;border:0;border-radius:10px;background:#16161a;color:#fff;
+  font:400 14px/1.45 'Quantico',sans-serif;padding:11px 12px;outline:none;caret-color:#fff}
+#lv-say textarea::placeholder{color:#5c5c64}
+#lv-thread{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:8px;padding:4px 2px 12px;scrollbar-width:none}
+#lv-thread::-webkit-scrollbar{display:none}
+.sm-row{display:flex;gap:8px;align-items:flex-end}
+.sm-row.me{justify-content:flex-end}
+.sm-av{width:26px;height:26px;flex:none;border-radius:50%;background:#1f1f24 center/cover no-repeat}
+.sm-av.sm{border-radius:0;background:#333366;color:#fff;display:flex;align-items:center;justify-content:center}
+.sm-av.sm svg{width:12px;height:12px}
+.sm-b{max-width:78%;padding:10px 12px;font:400 14px/1.45 'Quantico',sans-serif;color:#fff;word-wrap:break-word}
+.sm-row.me .sm-b{background:#2a2a30;color:#e6e6ea}
+.sm-b.k-habit{background:#333366}.sm-b.k-objective{background:#36498c}.sm-b.k-repulsion{background:#743169}
+.sm-acts{display:flex;gap:10px;margin:2px 0 0 34px}
+.sm-acts button{background:none;border:0;padding:2px 0;font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#6d6d74;cursor:pointer}
+.sm-pitch{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:6px 0 10px}
+.sm-pitch p{margin:0}
+.sm-pitch .sm-big{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;letter-spacing:.06em;color:#fff;line-height:1.55}
+.sm-pitch .sm-proof{font-family:'Space Mono',monospace;font-size:10px;color:#8a8a92;line-height:1.7;max-width:440px}
+.sm-demo{display:flex;flex-direction:column;gap:6px;width:100%;opacity:.9}
+/* ── À DROITE : SPACE · le vêtement · la boutique ── */
+#lv-d-wrap{position:absolute;left:50%;transform:translateX(-50%);top:168px;width:min(94vw,860px);
+  display:grid;grid-template-columns:1fr 1fr;grid-template-areas:"cloth cloth" "space shop";gap:14px 12px;align-items:start}
+#lv-cloth{grid-area:cloth;justify-self:center;position:relative;width:min(62vw,300px,calc(100dvh - 430px));aspect-ratio:1/1;background:#0b0b0e}
+#lv-cloth img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .5s ease}
+#lv-cloth img.is-on{opacity:1}
+.lv-side{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+#lv-space{grid-area:space}#lv-shop{grid-area:shop}
+@media(min-width:760px){#lv-d-wrap{grid-template-columns:1fr auto 1fr;grid-template-areas:"space cloth shop";align-items:center;top:150px}
+  #lv-cloth{width:min(34vw,340px,calc(100dvh - 300px))}}
+/* ── LA MANETTE DE L'ATTERRISSAGE : celle du Totehm déplié, copiée ── */
+#ljoy{position:fixed;z-index:230;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);
+  display:grid;grid-template-columns:18px 56px 18px;grid-template-rows:18px 56px 18px;align-items:center;justify-items:center}
+body:not(.gate) #ljoy,body.entered #ljoy,body.is-door #ljoy{display:none}
+#lcur-h{grid-area:1/2/2/3}#lcur-g{grid-area:2/1/3/2}#ljoy-box{grid-area:2/2/3/3}#lcur-d{grid-area:2/3/3/4}#lcur-b{grid-area:3/2/4/3}
+#ljoy-box{width:56px;height:56px;position:relative;border-radius:50%;background:var(--ljoy,var(--navy));box-shadow:0 2px 7px rgba(0,0,0,.5);
+  transition:background-color .42s ease,box-shadow .42s ease;touch-action:none;cursor:grab;border:0;padding:0}
+#ljoy-box:active{cursor:grabbing}
+#ljoy-stack{position:absolute;inset:0;transform:translate(var(--mx,0px),var(--my,0px));transition:transform .26s cubic-bezier(.22,.9,.3,1);pointer-events:none}
+#ljoy-box.tenu #ljoy-stack{transition:none}
+#ljoy-stack i{--d:12px;position:absolute;left:50%;display:block;width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
+  border-radius:50%;background:var(--c);box-shadow:0 2px 5px rgba(0,0,0,.6);transition:transform .38s cubic-bezier(.22,.9,.3,1),opacity .38s ease}
+#ljoy-stack .o{top:23%;--c:var(--blue)}#ljoy-stack .h{top:50%;--c:var(--navy)}#ljoy-stack .r{top:77%;--c:var(--rep)}
+#ljoy-stack i.ici,#ljoy-box.hors i{opacity:0;transform:scale(.4)}
+#ljoy .cur{color:#fff}
+#ljoy.vers-g #lcur-g,#ljoy.vers-d #lcur-d,#ljoy.vers-h #lcur-h,#ljoy.vers-b #lcur-b{opacity:1;transform:scale(1.3)}
+#ljoy.tenu #ljoy-box{box-shadow:0 5px 14px rgba(0,0,0,.65)}
+/* Le nom de la vue, juste au-dessus de la manette (un mot, la boîte noire de SPACE). */
+#ljoy-say{position:fixed;z-index:230;left:50%;bottom:calc(max(16px,env(safe-area-inset-bottom)) + 96px);transform:translateX(-50%);
+  font:700 9px/1.4 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#6d6d74;white-space:nowrap;pointer-events:none}
+body:not(.gate) #ljoy-say,body.entered #ljoy-say,body.is-door #ljoy-say,body.lv-c #ljoy-say{display:none}
+/* La recherche (à gauche) garde la manette par-dessus : c'est le chemin du retour. */
+body.searching #ljoy{z-index:230}
+/* ── LE MEMBRE : sa vignette ── */
+#conn-bar .lv-av{width:22px;height:22px;border-radius:50%;background:#1f1f24 center/cover no-repeat;flex:none}
+#mw-me{display:flex;flex-direction:column;align-items:center;gap:6px}
+#mw-avatar{width:84px;height:84px;border-radius:50%;border:0;padding:0;cursor:pointer;background:#1f1f24 center/cover no-repeat;
+  display:flex;align-items:center;justify-content:center;color:#6d6d74;font:400 9px/1.3 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
+#mw-avatar:focus-visible{outline:1px solid #fff;outline-offset:3px}
+#mw-menu .cm-hint b{font-weight:700;color:#9a9aa2}
+.mw-sub-act{background:none;border:0;padding:2px 0;font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#6d6d74;cursor:pointer}
+#srch-res .srch-open{display:flex;align-items:center;text-decoration:none;min-width:0}
+#srch-res .srch-sub{flex:none;font:400 10.5px/1.3 'Space Mono',monospace;color:#b0b0b0;background:#1f1f24;border-radius:10px;padding:7px 10px;text-decoration:none;white-space:nowrap}
+@media (prefers-reduced-motion: reduce){#lv-slogan,#lv-slogan2,.lv-pane{transition:none!important}}
+/* Sur ordinateur, le gris passe au blanc au survol (hover.py ne lit que le premier <style>). */
+@media(hover:hover){.lv-btn:hover,.lv-vis button:hover,#lv-tap:hover,.sm-acts button:hover,#srch-res .srch-sub:hover,.mw-sub-act:hover,#mw-avatar:hover{color:#fff}}
+</style>
 </head>
 <body class="gate">
 
@@ -3086,14 +3205,6 @@ body.gate.entered #filter-badge{
        (la porte pour un invité, la fenêtre membre pour un inscrit). -->
   <!-- 02/10 : ce mot RETOURNE le papier (JS) ; sans JS, il mène toujours à
        /search, la même recherche sur sa propre page. -->
-  <!-- 06/10 : les TROIS gestes du papier, l'un après l'autre (Wah). Chacun
-       FAIT ce qu'il dit : ouvrir, le poser sur la langue, le retourner. -->
-  <div id="gestes">
-    <button class="geste is-on" id="geste-tap" type="button">Tap it to open it</button>
-    <button class="geste" id="geste-tongue" type="button">Put it on your tongue to Get<svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg></button>
-    <a class="geste" id="search-corner" href="/search">Turn it over to search a member's TOTEHM</a>
-  </div>
-
 <section id="gate-hero">
   <!-- LA CARTE DE VISITE, au-dessus du logo : mon nom, qui me voit, et
        la porte vers les autres. Visible pour un membre connecté ; un
@@ -3129,9 +3240,7 @@ a Totehm</span>
       </div>
     </div><!-- /#gate-card -->
   </div><!-- /#gate-asteroid -->
-  <!-- 03/10 : « Get [Higher] » apparaît ICI, à la place du papier, quand
-       on le pose sur la langue. -->
-  <div id="gate-get" aria-hidden="true"><span class="gg-get">Get</span><svg viewBox="0 0 600 200"><use href="#higher-badge"></use></svg></div>
+
 
 
   <!-- ⚠️ LE TOTEHM NE S'OUVRE PAS À L'HORIZONTALE · 22/09/2026.
@@ -3210,6 +3319,74 @@ a Totehm</span>
     </svg>
   </button>
 </section>
+
+  <!-- ══ LA CROIX DE L'ATTERRISSAGE · 07/10/2026 ═══════════════════════
+       Cinq vues, la manette du Totehm déplié (`#ljoy`) et ses gestes. Le
+       papier (`#gate-asteroid`) et le slogan [Higher] (`#lv-slogan`) voyagent
+       d'une vue à l'autre ; chaque panneau ne porte que ce qui lui est propre.
+       La gauche (chercher) est la feuille `#srch`, inchangée. -->
+  <div id="lv">
+    <section class="lv-pane" id="lv-c" aria-label="My TOTEHM">
+      <div id="lv-card" class="lv-act hide">
+        <div id="ident-block">
+          <button class="btn-sig gid" id="name-btn">Name of my TOTEHM</button>
+          <input class="line-input hide" id="set-name" maxlength="24" placeholder="my TOTEHM" autocomplete="off" spellcheck="false">
+          <div class="note dim hide" id="name-note"></div>
+        </div>
+        <!-- Le nom et la visibilité de MON Totehm vivent ici (Wah, 07/10) :
+             les nœuds de l'ancien tiroir, déplacés (`#ident-block`). -->
+        <div class="lv-vis" role="radiogroup" aria-label="Who reads my TOTEHM">
+          <button type="button" data-lvvis="private" role="radio" aria-checked="true">Private</button>
+          <button type="button" data-lvvis="subscribers" role="radio" aria-checked="false">Visible to my subscribers</button>
+        </div>
+        <a class="lv-btn hide" id="lv-prog" href="/monetize">My subscription program</a>
+        <div class="lv-note" id="lv-vis-note" role="status"></div>
+      </div>
+      <button class="lv-act" id="lv-tap" type="button">Click to open it</button>
+    </section>
+
+    <section class="lv-pane" id="lv-h" aria-label="Get Higher">
+      <div id="lv-h-say">
+        <p class="lv-mono" id="lv-thp-say">The TotehmPaper {THP} distills selected mental-performance techniques informed by modern neuroscience research, including EEG studies, into an experience designed to prepare your brain for efficient action.</p>
+      </div>
+    </section>
+
+    <section class="lv-pane" id="lv-b" aria-label="TotehmSM · Speak to your Higher Self">
+      <div id="lv-b-head"><span id="lv-thumb" aria-hidden="true"></span><span class="lv-who">TotehmSM<small>my SuperMirror</small></span></div>
+      <div id="lv-b-body" class="lv-act">
+        <div id="lv-social"><span id="lv-social-say">my reflections, sent to Telegram or WhatsApp</span></div>
+        <form id="lv-say" class="hide" autocomplete="off">
+          <textarea id="lv-say-in" maxlength="600" rows="1" placeholder="write as you are" aria-label="Write to my Higher Self"></textarea>
+          <button class="lv-btn" id="lv-say-go" type="submit">Send</button>
+        </form>
+        <div class="lv-note" id="lv-say-note" role="status" aria-live="polite"></div>
+        <div id="lv-thread" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="lv-pane" id="lv-d" aria-label="SPACE and HIGHER BOUTIQUE">
+      <div id="lv-d-wrap" class="lv-act">
+        <div id="lv-cloth"><img id="lv-cloth-img" alt=""></div>
+        <div class="lv-side" id="lv-space">
+          <div class="lv-h2">SPACE</div>
+          <p class="lv-mono">Do with me. Film a Habit now, or announce it for later. I will be here · I am here · I was there.</p>
+          <button class="lv-btn" id="lv-go-space" type="button">Open SPACE</button>
+        </div>
+        <div class="lv-side" id="lv-shop">
+          <div class="lv-h2">HIGHER BOUTIQUE</div>
+          <p class="lv-mono">One Box of my TOTEHM becomes a cloth. Streetwear, and luxury on quote. Each piece is named 0.Name and decodes back to its Box.</p>
+          <button class="lv-btn" id="lv-go-shop" type="button">Open the boutique</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Le slogan qui voyage. Dans la vue du haut, c'est LE bouton [Get Higher]. -->
+    <button id="lv-slogan" class="is-c" type="button" tabindex="-1" aria-label="Get Higher">
+      <span class="lvs-pre"><span class="lvs-get">Get</span><span class="lvs-speak">Speak to your</span></span><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg><span class="lvs-post"><span class="lvs-strat">Strategy</span><span class="lvs-self">Self</span></span>
+    </button>
+    <!-- Son double : en bas, il devient « [Higher] your social media ». -->
+    <div id="lv-slogan2" aria-hidden="true"><svg viewBox="0 0 600 200"><use href="#higher-badge"></use></svg><span class="lvs-post"><span class="lvs-social">your social media</span></span></div>
+  </div>
 </div>
 
 <!-- ══ LE VERSO DÉPLIÉ : LA RECHERCHE D'UN AUTRE TOTEHM · 02/10/2026 ═══
@@ -3235,6 +3412,18 @@ a Totehm</span>
     <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg>
   </button>
 </div>
+
+<!-- ══ LA MANETTE DE L'ATTERRISSAGE · 07/10/2026 ══ La même que celle du Totehm
+     déplié (`#joy`) : quatre chevrons, le manche qu'on tire, la molette ; elle
+     vit hors de #gate pour rester au-dessus de la recherche (la vue de gauche). -->
+<div id="ljoy" role="group" aria-label="Where I am on the landing">
+  <button class="cur" id="lcur-h" type="button" aria-label="Get Higher"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
+  <button class="cur" id="lcur-g" type="button" aria-label="Search a TOTEHM"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
+  <button id="ljoy-box" type="button" aria-label="Back to my TOTEHM"><span id="ljoy-stack" aria-hidden="true"><i class="o"></i><i class="h ici"></i><i class="r"></i></span></button>
+  <button class="cur" id="lcur-d" type="button" aria-label="SPACE and the boutique"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
+  <button class="cur" id="lcur-b" type="button" aria-label="TotehmSM"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
+</div>
+<div id="ljoy-say" aria-hidden="true"></div>
 
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -3454,35 +3643,39 @@ a Totehm</span>
          pas dans un menu. Cette fenêtre n'est plus que le tiroir d'un
          inscrit. -->
     <div id="mw-in-state" class="hide">
-      <!-- Le même carré vert que la barre du haut, en grand et lancé :
-           à .22 s le tour, l'œil ne suit plus les angles et le voit rond.
-           C'est le signe qu'on est DEDANS. -->
-      
-      <div class="mw-pseudo" id="mw-who"></div>
-      <div class="mw-mail" id="mw-mail"></div>
-      <div class="mw-sync" id="mw-sync"></div>
-    <div id="settings" class="mw-dash">
-      <div class="set-block" id="totehm-menu"></div>
-      <div class="set-block" id="ident-block">
-        <button class="btn-sig gid" id="name-btn">Name of my TOTEHM</button>
-        <input class="line-input hide" id="set-name" maxlength="24" placeholder="my TOTEHM" autocomplete="off" spellcheck="false">
-        <div class="note dim hide" id="name-note"></div>
+      <!-- ══ L'ESPACE MEMBRE, C'EST L'UTILISATEUR · 07/10/2026 ══ Wah : « ça
+           devient vraiment à propos de l'utilisateur : ses souscriptions,
+           l'abonnement Higher, une vignette profil qu'il peut modifier ».
+           Le nom et la visibilité du Totehm sont partis au centre de
+           l'atterrissage ; les portes de l'écosystème sont ses quatre vues. -->
+      <div id="mw-me">
+        <button id="mw-avatar" type="button" aria-label="Change my picture">picture</button>
+        <input id="mw-avatar-file" type="file" accept="image/*" hidden>
+        <div class="mw-pseudo" id="mw-who"></div>
+        <div class="mw-mail" id="mw-mail"></div>
+        <div class="mw-sync" id="mw-sync"></div>
+        <div class="lv-note" id="mw-avatar-note" role="status"></div>
       </div>
+      <div id="settings" class="mw-dash">
+        <nav class="cm-menu" id="mw-menu" aria-label="Me">
+          <div class="cm-item"><button class="cm-action" id="mw-higher" type="button">My Higher subscription</button><p class="cm-hint" id="mw-higher-hint">TotehmSM</p><div id="mw-higher-acts"></div></div>
+          <div class="cm-item"><a class="cm-action" id="mw-subs" href="/console">My subscriptions</a><p class="cm-hint" id="mw-subs-hint">the TOTEHMs I follow · my subscribers</p></div>
+          <div class="cm-item"><button class="cm-action" id="myspaces-open" type="button">My TOTEHM spaces</button><p class="cm-hint">my history · in SPACE</p></div>
+          <div class="cm-item"><button class="cm-action" id="mw-telegram" type="button">Connect TotehmBot</button><p class="cm-hint" id="mw-tg-hint">Telegram · my reflections land there</p></div>
+        </nav>
+        <div class="lv-note" id="mw-note" role="status"></div>
 
-      <!-- ══ ACTIONS DESTRUCTIVES · discrètes, écartées des liens menu
-           · 24/09/2026. Wah : Totehmize my cloth et Delete my Totehm ne
-           doivent JAMAIS se lire comme deux boutons de même poids. Delete
-           passe en typo utilitaire (comme Sign out), plus petit, sous une
-           ligne d'écart, en gris muté. Un geste destructeur ne se pose
-           pas à côté d'un lien promotionnel. -->
-      <div class="set-block acct-block">
-        <div id="acct" class="hide">
-          <button class="acct-btn" id="acct-wipe" type="button">Delete my Totehm</button>
-          <button class="acct-btn hide" id="acct-cancel" type="button">Cancel my subscription</button>
-          <div class="acct-note hide" id="acct-note"></div>
+        <!-- ══ ACTIONS DESTRUCTIVES · discrètes, écartées des liens menu
+             · 24/09/2026. Un geste destructeur ne se pose pas à côté d'un
+             lien promotionnel. -->
+        <div class="set-block acct-block">
+          <div id="acct" class="hide">
+            <button class="acct-btn" id="acct-wipe" type="button">Delete my Totehm</button>
+            <button class="acct-btn hide" id="acct-cancel" type="button">Cancel my subscription</button>
+            <div class="acct-note hide" id="acct-note"></div>
+          </div>
         </div>
       </div>
-    </div>
       <button class="mw-out" id="mw-signout">Sign out</button>
       <a class="mw-out mw-terms" href="/terms" target="_blank" rel="noopener">Simple terms of use</a>
     </div>
@@ -3621,78 +3814,9 @@ await Promise.race([
 ]);
 
 const $=id=>document.getElementById(id);
-/* COM MEMBER MENU · 2026-10-05 · source: tools/com_member_menu.js */
-/* COM member navigation. Copied into independent pages; no runtime import. */
-const COM_HIGHER_BADGE = '<svg viewBox="0 0 600 200" role="img" aria-label="Higher"><defs><mask id="cm-hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#cm-hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></svg>';
-function comMemberLinks(home = false, enabled = null) {
-  const item = (content, hint) => '<div class="cm-item">' + content + '<p class="cm-hint">' + hint + '</p></div>';
-  return '<nav class="cm-menu" aria-label="My TOTEHM ecosystem">' +
-    item('<a class="cm-action" data-com-open href="/totehm#in">Open my TOTEHM</a>', 'Tap on it') +
-    item('<a class="cm-action" href="/search">Search a TOTEHM</a>', 'Turn it over') +
-    item('<a class="cm-action" id="btn-get-higher" data-com-bridge="club" href="https://www.figher.club/get_higher">Get ' + COM_HIGHER_BADGE + '</a>', 'Put it on your tongue') +
-    item('<a class="cm-action" href="/higherself">Reflect with my TOTEHM</a>', 'Higher Self · TotehmBot') +
-    item(home ? '<button class="cm-action" id="myspaces-open" type="button">My TOTEHM spaces</button>' : '<a class="cm-action" href="/totehm?spaces=1">My TOTEHM spaces</a>', 'My TOTEHM, right now, right here · in SPACE') +
-    item('<a class="cm-action" id="wear-btn" data-com-bridge="boutique" href="https://www.higher.boutique/">Totehmize my cloth</a>', 'HIGHER BOUTIQUE') +
-    item('<a class="cm-action" data-com-monetize href="' + (enabled === false ? '/monetize' : '/console') + '">' + (enabled === false ? 'Monetize my TOTEHM ecosystem' : 'Manage my subscriptions') + '</a>', '<span data-com-offer-hint>' + (enabled === false ? 'Your audience · your annual subscription' : enabled === true ? 'My offer · my subscribers · my subscriptions' : 'Subscription settings') + '</span>') +
-    '</nav>';
-}
-function paintComMemberOffer(enabled) {
-  document.querySelectorAll('[data-com-monetize]').forEach(link => {
-    link.href = enabled === false ? '/monetize' : '/console';
-    link.textContent = enabled === false ? 'Monetize my TOTEHM ecosystem' : 'Manage my subscriptions';
-  });
-  document.querySelectorAll('[data-com-offer-hint]').forEach(hint => {
-    hint.textContent = enabled === false ? 'Your audience · your annual subscription' : enabled === true ? 'My offer · my subscribers · my subscriptions' : 'Subscription settings';
-  });
-}
-let comOfferSeq = 0;
-function resetComMemberOffer() { comOfferSeq++; paintComMemberOffer(null); }
-async function readComMemberOffer(sb, currentUser) {
-  const uid = currentUser()?.id || null, seq = ++comOfferSeq;
-  if (!uid) { paintComMemberOffer(false); return false; }
-  try {
-    const { data, error } = await sb.rpc('my_console');
-    if (seq !== comOfferSeq || uid !== currentUser()?.id) return;
-    if (error) { console.error('[member offer]', error.message); paintComMemberOffer(null); return; }
-    const enabled=data?.signed_in && typeof data.offer?.enabled === 'boolean' ? data.offer.enabled : null;
-    paintComMemberOffer(enabled);return enabled;
-  } catch (error) {
-    if (seq !== comOfferSeq || uid !== currentUser()?.id) return;
-    console.error('[member offer]', error?.message || error); paintComMemberOffer(null);
-  }
-}
-function wireComMemberMenu(host, { open, bridge } = {}) {
-  host.addEventListener('click', event => {
-    const link = event.target.closest('a');
-    if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button > 0) return;
-    if (link.hasAttribute('data-com-open') && open) { event.preventDefault(); open(link); }
-    else if (link.dataset.comBridge && bridge) { event.preventDefault(); bridge(link.dataset.comBridge, link.href); }
-  });
-}
-/* Same 60s, one-use SSO bridge as tools/sso_snippet.js. No session in URLs. */
-async function comMemberBridge(sb, target, url, apiURL, publicKey) {
-  try {
-    const { data: { session } } = await sb.auth.getSession();
-    if (session) {
-      const response = await fetch(apiURL + '/functions/v1/sso-mint', {
-        method: 'POST', headers: { authorization: 'Bearer ' + session.access_token, apikey: publicKey, 'content-type': 'application/json' },
-        body: JSON.stringify({ target })
-      });
-      if (response.ok) {
-        const { code } = await response.json();
-        if (code) { location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; }
-      } else console.error('[member bridge]', response.status);
-    }
-  } catch (error) { console.error('[member bridge]', error?.message || error); }
-  location.href = url;
-}
-
-/* END COM MEMBER MENU */
-$('totehm-menu').innerHTML=comMemberLinks(true);
-wireComMemberMenu($('totehm-menu'),{
-  open:()=>{closeMember();if(!RO&&inscrit()&&window.__totehmDeplie)window.__totehmDeplie();else location.href='/totehm#in';},
-  bridge:(target,url)=>ssoVersDomaine(sb,target,url)
-});
+/* 07/10/2026 : le menu de l'écosystème (tools/com_member_menu.js) a quitté
+   l'espace membre de cette page — ses portes sont devenues les quatre vues de
+   l'atterrissage. /search, /console et /monetize gardent leur copie. */
 let openRequestedSpaces=new URLSearchParams(location.search).get('spaces')==='1';
 
 
@@ -3939,6 +4063,10 @@ function deduceFreq(raw){
    encore pour pré-dessiner les intentions : il y trouve `habits`.) */
 const KEY='totehm_habits_v1';
 let me=null, myProfile=null, cloudMode=false, cloudSaveTimer=null, saveTimer=null;
+/* 07/10 : l'atterrissage lit UN appel (`my_landing`) — ma vignette, la visibilité
+   et l'offre de mon Totehm, mon abonnement Higher, mon THP, Telegram. Peint par
+   la croix (`lvRefresh`), vidé au changement de compte (`lvQuitter`). */
+let LAND=null, lvRefresh=null, lvQuitter=null;
 /* TotehmBot — declare ici et pas plus bas : la remise a zero de la
    deconnexion s'execute avant, et une TDZ y jetterait. */
 
@@ -4682,7 +4810,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-06-bouche';
+const BUILD='2026-10-07-croix';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -6840,7 +6968,14 @@ window.addEventListener('touchend',(e)=>{
          bug, dans le correctif du bug. Un compteur de silence qui ne
          compte que quand on l'écoute ne mesure rien. */
       const nowV=Date.now(); const ecart=nowV-tV; tV=nowV;
-      if(!bordCalme(versLeBas?'b':'h')){accV=0;neuf=false;return;}
+      /* ⚠️ 07/10 — LE TRACKPAD CHANGE DE VUE EN HAUT ET EN BAS AUSSI (Wah :
+         « ça marche pour la gauche et la droite mais pas pour le haut et le
+         bas »). Les trois verrous (liste en butée depuis 420 ms, nouveau
+         geste, 260 px) rendaient le geste introuvable. Il en reste deux,
+         ceux de l'horizontale : la liste ne peut plus défiler dans ce sens,
+         et c'est un NOUVEAU geste (le trou de 200 ms) de 130 px. */
+      const b0=scrollEdges();
+      if(!(versLeBas?b0.bottom:b0.top)){accV=0;neuf=false;return;}
       /* ⚠️ ET SURTOUT : IL FAUT QUE LA MOLETTE SE SOIT ARRÊTÉE.
          Un trackpad à inertie envoie des événements pendant une seconde
          et demie après que le doigt a quitté la surface — bien au-delà
@@ -6854,8 +6989,8 @@ window.addEventListener('touchend',(e)=>{
       if(ecart>200){ accV=0; neuf=true; }
       if(!neuf)return;
       accV+=e.deltaY;
-      /* 260 px accumulés : une traction délibérée, pas une fin de course. */
-      if(Math.abs(accV)<260)return;
+      /* 130 px accumulés, comme l'horizontale : une traction, pas une fin de course. */
+      if(Math.abs(accV)<130)return;
       const cible=versLeBas?'b':'h';
       accV=0; neuf=false; froid=Date.now()+900;
       versVoisin(cible);
@@ -7251,8 +7386,12 @@ function NameSearch({input,results,note,vide=true,onResults=()=>{}}){
   const dire=t=>{ note.textContent=t; };
   function draw(q){
     results.innerHTML=(!q&&rows.length?'<div class="ns-label">My subscriptions</div>':'')
-      +rows.map(r=>'<a class="srch-row" href="'+href(r.pseudo)+'"><span class="srch-name">'+esc(r.pseudo)+'</span>'
-        +'<span class="srch-meta">'+(r.subscribed?'subscribed':'')+'</span></a>').join('');
+      +rows.map(r=>'<div class="srch-row"><a class="srch-open" href="'+href(r.pseudo)+'"><span class="srch-name">'+esc(r.pseudo)+'</span></a>'
+        /* 07/10 : la vue de gauche porte aussi « Subscribe to a TOTEHM » (Wah) —
+           le prix PAR AN vient du serveur (`totehm_search`), la vente est /@nom. */
+        +(r.subscribed?'<span class="srch-meta">subscribed</span>'
+          :r.offer?'<a class="srch-sub" href="/@'+encodeURIComponent(r.pseudo)+'">Subscribe'+(r.price_cents?' · '+prixAn(r.price_cents,r.currency):'')+'</a>':'')
+        +'</div>').join('');
     onResults(rows.length);
   }
   async function run(q,ouvrir=false){
@@ -7317,7 +7456,8 @@ function connPaint(){
   /* Plus de « Guest » : le coin n'existe que pour un inscrit, et il dit
      son nom. `body.member` le montre ou le cache (CSS). */
   const label=(myProfile&&myProfile.pseudo)||'';
-  $('conn-bar').innerHTML=esc(label)+(myHigher?HI_SVG:'');
+  const av=avatarOk(LAND&&LAND.avatar);
+  $('conn-bar').innerHTML=(av?'<span class="lv-av" style="background-image:url('+av+')"></span>':'')+esc(label)+(myHigher?HI_SVG:'');
   document.body.classList.toggle('member',inscrit());
   paintAsteroid();
 }
@@ -7443,7 +7583,7 @@ function memberPaint(){
    `#in` dans l'URL, `__totehmDeplie` : tout passe par `enter()`, et
    `enter()` renvoie ici tant qu'on n'est pas inscrit. Un verrou posé
    sur un seul bouton se contourne par les trois autres chemins. */
-const LA_PORTE={voulu:false, then:null};
+const LA_PORTE={voulu:false, then:null, reste:null};
 /* La question du moment et SON champ : une seule table pour les deux,
    sinon le titre dit « le code » pendant que le curseur attend l'email. */
 function champPorte(){
@@ -7471,14 +7611,17 @@ function ouvrirPorte(then){
   setTimeout(()=>{ try{ champ.focus({preventScroll:true}); }catch(_){} },120);
   return true;
 }
-function fermerPorte(){ LA_PORTE.voulu=false; document.body.classList.remove('is-door'); }
+function fermerPorte(){ LA_PORTE.voulu=false; LA_PORTE.reste=null; document.body.classList.remove('is-door'); }
 /* Inscrit : la porte se ferme ; si on l'avait ouverte pour entrer, le
    papier s'ouvre — après le fondu de la porte (420 ms), pour que rien ne
    bouge encore quand le papier se pose et que `measure()` lit le logo. */
 function porteFranchie(){
   if(!inscrit()) return;
-  const voulu=LA_PORTE.voulu, then=LA_PORTE.then;
+  const voulu=LA_PORTE.voulu, then=LA_PORTE.then, reste=LA_PORTE.reste;
   LA_PORTE.then=null; fermerPorte();
+  /* 07/10 : ouverte depuis une vue de l'atterrissage (TotehmSM), elle y rend
+     le membre, connecté — elle n'ouvre pas le Totehm à sa place. */
+  if(voulu&&reste){ setTimeout(reste,420); return; }
   if(voulu&&window.__totehmDeplie) setTimeout(()=>window.__totehmDeplie(then),420);
 }
 /* Un tap à côté la referme, Échap aussi ; le papier, lui, continue de vivre. */
@@ -7502,10 +7645,91 @@ $('gate-door').addEventListener('keydown',e=>{
    Un point vert qui ne fait rien est une porte peinte sur un mur. */
 $('conn-bar').onclick=()=>{
   if(!document.body.classList.contains('gate'))return;
-  $('member-window').classList.add('show'); memberPaint(); readComMemberOffer(sb,()=>me); };
+  $('member-window').classList.add('show'); memberPaint(); paintMe(); if(lvRefresh) lvRefresh(); };
 
 /* Le Dashboard se repeint à chaque ouverture : réglages (nom, visibilité,
    suppression) + abonnement (offre unique). */
+
+/* ══ L'ESPACE MEMBRE, C'EST L'UTILISATEUR · 07/10/2026 ══════════════════
+   Sa vignette (modifiable, elle parle pour lui dans TotehmSM), son
+   abonnement Higher, ses abonnements, ses spaces, son TotehmBot. Tout vient
+   de `my_landing()` (LAND) ; une écriture passe par sa fonction serveur. */
+const avatarOk=d=>typeof d==='string'&&/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(d)?d:'';
+function prixFmt(c,cur){ try{ return (c/100).toLocaleString('en-GB',{style:'currency',currency:String(cur||'eur').toUpperCase(),minimumFractionDigits:c%100?2:0}); }catch(_){ return ''; } }
+function prixAn(c,cur){ const p=prixFmt(c,cur); return p?p+' / year':''; }
+function prixMois(h){ return h&&h.price_cents!=null?prixFmt(h.price_cents,h.currency)+' / month':''; }
+const jourFmt=d=>{ try{ return d?new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):''; }catch(_){ return ''; } };
+/* Une Edge Function sous MA session ; l'erreur se journalise, toujours. */
+async function fnAppel(fn,body){
+  const {data:{session}}=await sb.auth.getSession(); if(!session) return {status:401,d:{error:'no_session'}};
+  try{
+    const r=await fetch('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/'+fn,{method:'POST',
+      headers:{'content-type':'application/json',apikey:SB_ANON,authorization:'Bearer '+session.access_token},body:JSON.stringify(body)});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok) console.error('['+fn+']',r.status,d.error||'');
+    return {status:r.status,d};
+  }catch(e){ console.error('['+fn+']',e?.message||e); return {status:0,d:{error:'network'}}; }
+}
+const mwNote=t=>{ $('mw-note').textContent=t||''; };
+function paintMe(){
+  if(!me) return;
+  const L=LAND||{}, av=avatarOk(L.avatar), b=$('mw-avatar'), h=L.higher||{};
+  b.style.backgroundImage=av?'url('+av+')':''; b.textContent=av?'':'picture';
+  const btn=$('mw-higher'), hint=$('mw-higher-hint'), acts=$('mw-higher-acts');
+  if(h.comp){ btn.textContent='My Higher subscription'; hint.textContent='offered · TotehmSM is open'; acts.innerHTML=''; }
+  else if(h.active){ btn.textContent='My Higher subscription'; hint.textContent=(h.ending?'ends ':'renews ')+jourFmt(h.until)+' · '+prixMois(h);
+    acts.innerHTML='<button class="mw-sub-act" type="button" data-hsub="'+(h.ending?'resume':'cancel')+'">'+(h.ending?'Keep it':'Stop at the end of the month')+'</button>'; }
+  else { btn.textContent='Get Higher Self'; hint.textContent='TotehmSM · '+prixMois(h); acts.innerHTML=''; }
+  const n=x=>Number(x)||0;
+  $('mw-subs-hint').textContent=n(L.subscriptions)+' TOTEHM'+(n(L.subscriptions)===1?'':'s')+' I follow · '+n(L.subscribers)+' subscriber'+(n(L.subscribers)===1?'':'s');
+  $('mw-telegram').textContent=L.telegram?'TotehmBot connected':'Connect TotehmBot';
+}
+/* La vignette : un JPEG 256 px recadré au centre, écrit par `avatar_set`. */
+$('mw-avatar').onclick=()=>$('mw-avatar-file').click();
+$('mw-avatar-file').onchange=async e=>{
+  const f=e.target.files&&e.target.files[0]; e.target.value=''; if(!f||!me) return;
+  const note=$('mw-avatar-note'); note.textContent='…';
+  try{
+    const img=await new Promise((ok,ko)=>{ const i=new Image(); i.onload=()=>ok(i); i.onerror=ko; i.src=URL.createObjectURL(f); });
+    const c=document.createElement('canvas'); c.width=c.height=256;
+    const k=Math.min(img.naturalWidth,img.naturalHeight), g=c.getContext('2d');
+    g.drawImage(img,(img.naturalWidth-k)/2,(img.naturalHeight-k)/2,k,k,0,0,256,256);
+    URL.revokeObjectURL(img.src);
+    const data=c.toDataURL('image/jpeg',.82);
+    const {data:r,error}=await sb.rpc('avatar_set',{p_data:data});
+    if(error){ console.error('[avatar_set]',error.message); note.textContent='try again'; return; }
+    if(!r?.ok){ note.textContent='a picture, please'; return; }
+    LAND={...(LAND||{}),avatar:data}; note.textContent=''; paintMe(); connPaint(); if(window.__lvPeindreSM) window.__lvPeindreSM();
+  }catch(_){ note.textContent='a picture, please'; }
+};
+/* Mon abonnement Higher : actif → TotehmSM ; sinon le Checkout (prix chez Stripe). */
+$('mw-higher').onclick=async()=>{
+  const h=(LAND&&LAND.higher)||{};
+  if(h.active){ closeMember(); if(window.__lvAller) window.__lvAller('b'); return; }
+  mwNote('opening checkout…');
+  const {d}=await fnAppel('higher-sub',{action:'checkout'});
+  if(d.url){ location.href=d.url; return; }
+  mwNote(({not_ready:'opening soon',active:'already active',no_session:'sign in again'})[d.error]||'try again');
+  if(d.error==='active'&&lvRefresh) lvRefresh();
+};
+$('mw-higher-acts').onclick=async e=>{
+  const a=e.target.closest('[data-hsub]'); if(!a) return;
+  mwNote('…');
+  const {d}=await fnAppel('higher-sub',{action:a.dataset.hsub});
+  if(d.ok){ mwNote(d.ending?'it ends on '+jourFmt(d.until):'it continues'); LAND&&LAND.higher&&(LAND.higher.ending=!!d.ending,LAND.higher.until=d.until); paintMe(); return; }
+  mwNote('try again');
+};
+/* TotehmBot : un code de liaison (10 min), puis Telegram. */
+async function lierTelegram(){
+  const {data,error}=await sb.rpc('new_bot_link_code');
+  if(error||!data){ if(error) console.error('[new_bot_link_code]',error.message); return false; }
+  window.open('https://t.me/TotehmBot?start='+encodeURIComponent(data),'_blank','noopener');
+  return true;
+}
+$('mw-telegram').onclick=async()=>{
+  if(LAND&&LAND.telegram){ mwNote('TotehmBot is connected'); return; }
+  mwNote(await lierTelegram()?'in Telegram, press Start':'try again');
+};
 const _mpOrig=memberPaint;
 memberPaint=function(){
   _mpOrig();
@@ -7635,7 +7859,7 @@ let sesSeq=0;
 function quitter(){
   roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ZOOM.clear(); COPIES.clear();
   if($('myspaces').classList.contains('is-open')){MYSPACES.seq++;MYSPACES.busy=false;MYSPACES.rows=[];$('myspaces-list').replaceChildren();$('myspaces-name').textContent='';$('myspaces').classList.remove('is-open');MYSPACES.inert.forEach(([e,was])=>e.inert=was);MYSPACES.inert=[];}
-  state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; mySub=null; resetComMemberOffer();
+  state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; mySub=null; LAND=null; if(lvQuitter) lvQuitter();
   TRIPS=[]; REPS=[]; TEACH=[]; VIS=[]; OBJ={}; tripsLoaded=false;
   cacheOublier();
   $('member-window').classList.remove('show');
@@ -7664,6 +7888,7 @@ async function sessionChange(){
   memberPaint(); paint();
   if(inscrit()&&!RO){loadTrips(true);loadHabitSpaces();}
   garde();
+  if(n===sesSeq&&lvRefresh) lvRefresh();
   if(n===sesSeq&&inscrit()&&!RO&&openRequestedSpaces){openRequestedSpaces=false;$('myspaces-open').click();}
 }
 /* LA GARDE : inscrit, la porte se franchit ; pas inscrit et Totehm
@@ -7959,7 +8184,9 @@ window.addEventListener('pageshow',e=>{
     window.__totehm_lsd=diag;
     const api={poser:f=>{ if(f) f(); }, poserDos:f=>{ if(f) f(); }, retourner:f=>{ if(f) f(); },
                reveiller(){}, face:()=>0, occupe:()=>false, surVerso:null, surFace:null,
-               offrir:()=>false, remettre(){}, surLangue:null};
+               offrir:()=>false, remettre(){}, surLangue:null,
+               prise:false, glisser:(c,o)=>{ if(o&&o.fin) o.fin(); return true; }, tourner(){}, arreter:f=>{ if(f) f(); },
+               vue:()=>false, chez:()=>null, cibleLangue:()=>null, avalerIci:()=>false};
     if(!scene||!card) return api;
     const lights=[...card.querySelectorAll('.ast-light')];   /* [face, dos] */
     const elF=$('ast-front'), elB=$('ast-back');
@@ -7984,8 +8211,13 @@ window.addEventListener('pageshow',e=>{
       if(mode==='tenu') tenirPas(dt); else if(mode==='pose') poserPas(now);
       else if(mode==='pris') prisPas(dt); else if(mode==='rentre') rentrePas(now);
       else if(mode==='avale') avalePas(now);
+      else if(mode==='glisse') glissePas(now);
+      else if(mode==='tourne') th+=dt*TOUR;
+      else if(mode==='freine') freinePas(now);
       if(mode==='plat'||mode==='parti') return;
-      if(porte) peindrePorte(); else peindre();
+      if(porte) peindrePorte();
+      if(!porte||mode==='tourne'||mode==='freine') peindre();
+      if(mode==='vue') return;                       /* posée dans sa vue : zéro rAF */
       if(!document.hidden) raf=requestAnimationFrame(frame);
     }
     function tenirPas(dt){
@@ -8173,6 +8405,33 @@ window.addEventListener('pageshow',e=>{
       appui=null; BOUCHE.remettre(); finPorte();
     }
 
+    /* ══ LA CROIX DE L'ATTERRISSAGE · 07/10/2026 ══════════════════════
+       Le papier voyage d'une vue à l'autre : la SCÈNE se déplace et
+       rapetisse (translate + scale), la carte reste posée sur sa face.
+       `porte` (03/10) garde la position, la bouche suit LE MÊME temps (vers
+       le haut : elle s'ouvre et la langue se tire pendant qu'il monte).
+       Modes : `glisse` (il voyage) · `vue` (posé dans sa vue, zéro rAF) ·
+       `tourne` (à droite, il tourne comme sur SPACE) · `freine` (il finit
+       son tour, face logo). Un retour chez lui efface tout (`finPorte`). */
+    const TOUR=24;                                  /* degrés par seconde */
+    let fr=null;
+    function glissePas(now){
+      const g=porte.gl, u=ent((now-g.t0)/g.D), e=lisse(u);
+      porte.x=g.x0+(g.x1-g.x0)*e; porte.y=g.y0+(g.y1-g.y0)*e; porte.s=g.s0+(g.s1-g.s0)*e;
+      if(g.bouche) BOUCHE.forcer(g.o0+(g.o1-g.o0)*lisse(ent(u/.8)), g.l0+(g.l1-g.l0)*lisse(ent((u-.2)/.8)));
+      if(u<1) return;
+      const fin=g.fin; porte.gl=null;
+      if(g.retour){ finPorte(); if(g.bouche) BOUCHE.remettre(); }
+      else mode='vue';
+      if(fin) fin();
+    }
+    function freinePas(now){
+      const u=ent((now-fr.t0)/fr.D), e=1-Math.pow(1-u,3);
+      th=fr.th0+(fr.th1-fr.th0)*e;
+      if(u<1) return;
+      const cb=fr.cb; fr=null; aPlat(0); mode='vue'; if(cb) cb();
+    }
+
     api.poser=cb=>atterrir(0,cb);
     api.poserDos=cb=>atterrir(1,cb);
     api.retourner=cb=>atterrir(face?0:1,cb);
@@ -8181,13 +8440,46 @@ window.addEventListener('pageshow',e=>{
     api.reveiller=()=>{ if(typeof paintAsteroid==='function') paintAsteroid(); };
     /* La bouche, au clavier ou sans mouvement : le papier y va de lui-même
        (mouvement réduit : [Get Higher] tout de suite, sans animation). */
+    api.prise=false;
     api.offrir=()=>{
       if(mode!=='plat'||!BOUCHE.dispo()) return false;
       if(RM.matches){ if(typeof api.surLangue==='function') api.surLangue(); return true; }
       porte=chezLui(); if(!porte.g){ porte=null; return false; }
       diag.prises++; avaler(true); return true;
     };
-    api.remettre=()=>{ if(porte||mode==='parti') lacherTout(); };
+    api.remettre=()=>{ fr=null; if(porte||mode==='parti') lacherTout(); else if(mode!=='plat') aPlat(face); };
+    /* La croix (07/10). `cible` = {x, y, s} à l'écran, ou null : chez lui.
+       `bouche` = [ouverture, langue] à atteindre pendant le voyage. */
+    api.glisser=(cible,opt={})=>{
+      if(mode==='tourne'){ api.arreter(()=>api.glisser(cible,opt)); return true; }
+      if(mode!=='plat'&&mode!=='vue') return false;
+      if(!porte){ if(!cible){ if(opt.fin) opt.fin(); return true; } porte=chezLui(); }
+      const [o0,l0]=BOUCHE.etat(), b=opt.bouche;
+      porte.gl={t0:performance.now(), D:RM.matches?1:(opt.ms||720), x0:porte.x, y0:porte.y, s0:porte.s,
+                x1:cible?cible.x:porte.hx, y1:cible?cible.y:porte.hy, s1:cible?cible.s:1,
+                bouche:!!b||(!cible&&(o0>.001||l0>.001)), o0, l0, o1:b?b[0]:0, l1:b?b[1]:0, retour:!cible, fin:opt.fin};
+      mode='glisse'; last=0; kick(); return true;
+    };
+    api.tourner=()=>{ if(mode!=='vue'||RM.matches) return false; quitterRepos(); mode='tourne'; last=0; kick(); return true; };
+    api.arreter=cb=>{
+      if(mode!=='tourne'){ if(cb) cb(); return; }
+      const th1=360*Math.ceil((th+1)/360);
+      fr={t0:performance.now(), D:Math.max(260,(th1-th)/360*900), th0:th, th1, cb};
+      mode='freine'; kick();
+    };
+    api.vue=()=>mode==='vue'||mode==='tourne'||mode==='glisse'||mode==='freine';
+    /* Où il habite (centre et largeur AU REPOS), même s'il est en voyage. */
+    api.chez=()=>{ if(porte) return {x:porte.hx, y:porte.hy, w:porte.w};
+                   const r=scene.getBoundingClientRect(); return {x:r.left+r.width/2, y:r.top+r.height/2, w:r.width}; };
+    /* Le point de pose sur la langue, et sa taille de buvard. */
+    api.cibleLangue=()=>{ const g=BOUCHE.geo(); if(!g) return null; const w=api.chez().w||1;
+                          return {x:g.lx, y:g.ly, s:g.large*TAB/w, bas:g.zone.b}; };
+    /* [Get Higher] : posé sur la langue, il est avalé (la suite du 03/10). */
+    api.avalerIci=()=>{
+      if(mode!=='vue'||!porte||!porte.g) return false;
+      if(RM.matches){ if(typeof api.surLangue==='function') api.surLangue(); return true; }
+      avaler(false); return true;
+    };
     aPlat(0);
     if(RM.matches) return api;
 
@@ -8206,7 +8498,8 @@ window.addEventListener('pageshow',e=>{
       /* Il rentrait : on le reprend au vol, sans attendre. Au repos : un
          appui qui dure sans bouger le PREND (un glissé le retourne). */
       if(mode==='rentre'){ aGlisse=true; prendre(); return; }
-      if(BOUCHE.dispo()) appui.tHold=setTimeout(prendre,HOLD);
+      /* 07/10 : on ne le porte plus à la bouche — la vue du haut l'y pose. */
+      if(api.prise&&BOUCHE.dispo()) appui.tHold=setTimeout(prendre,HOLD);
     });
     /* L'appui long d'Android appelle un menu : pas sur le papier. */
     scene.addEventListener('contextmenu',e=>e.preventDefault());
@@ -8289,6 +8582,9 @@ window.addEventListener('pageshow',e=>{
        dans le bouton. */
     if(sMoving) return;
     if(sOpen){ fermerRecherche(()=>enter(then)); return; }
+    /* 07/10 : le Totehm se déconstruit depuis le CENTRE de la croix — d'une
+       autre vue, le papier rentre chez lui d'abord. */
+    if(LV.vue()!=='c'){ LV.aller('c',()=>enter(then)); return; }
     /* ⚠️ PAS INSCRIT, RIEN N'EST PERMIS · 27/09/2026. Le papier ne
        s'ouvre pas : la porte s'ouvre sous lui, et c'est elle qui
        rappellera `enter(then)` une fois le nom posé. */
@@ -8397,30 +8693,15 @@ window.addEventListener('pageshow',e=>{
 
   const monNom=()=>((me&&myProfile&&myProfile.pseudo)||'').trim();
 
-  const GESTES=(()=>{
-    const els=['geste-tap','geste-tongue','search-corner'].map(id=>$(id)).filter(Boolean);
-    let i=0, tenu=false;
-    function montrer(e){ const k=els.indexOf(e); if(k<0) return; i=k; els.forEach((x,j)=>x.classList.toggle('is-on',j===k)); }
-    els.forEach(e=>{
-      e.addEventListener('focus',()=>{ tenu=true; montrer(e); });
-      e.addEventListener('blur',()=>{ tenu=false; });
-      e.addEventListener('pointerenter',()=>{ tenu=true; });
-      e.addEventListener('pointerleave',()=>{ tenu=false; });
-    });
-    setInterval(()=>{
-      if(tenu||document.hidden||sOpen||sMoving||PAPIER.face()===1) return;
-      if(!document.body.classList.contains('gate')||document.body.classList.contains('entered')) return;
-      montrer(els[(i+1)%els.length]);
-    },3400);
-    window.__totehm_gestes=()=>({n:els.length, actif:i});
-    return {montrer};
-  })();
+  /* 07/10 : les trois gestes du bas sont partis — la croix les remplace
+     (↑ Get Higher · ← chercher · tap : l'ouvrir). `lvSync` dit à la croix
+     que la recherche s'est ouverte ou refermée (par la main, la croix, Échap). */
+  let lvSync=()=>{};
   /* Le mot du bas dit le geste SUIVANT. */
   function paintFlip(){
     if(!flipLink) return;
     flipLink.textContent=PAPIER.face()===1 ? 'Turn it back · my TOTEHM'
                                            : 'Turn it over to search a member\'s TOTEHM';
-    if(PAPIER.face()===1) GESTES.montrer(flipLink);
   }
   /* Où sont le papier et son nom, où va la saisie — mesuré À CHAQUE FOIS,
      transformations retirées (le clavier, la rotation ou un
@@ -8457,7 +8738,7 @@ window.addEventListener('pageshow',e=>{
   function zoomer(){
     const fin=()=>{ document.body.classList.add('searching'); gate.inert=true;
                     srch.classList.add('is-show','is-open');
-                    sOpen=true; sMoving=false; window.__totehm_lsd.recherche=true; };
+                    sOpen=true; sMoving=false; window.__totehm_lsd.recherche=true; lvSync('g'); };
     sansTransition(); sBg.style.transform=''; sQ.style.transform='';
     if(RMQ.matches){ srch.classList.remove('is-prep'); pleinEcran(); fin(); return; }
     const g=geometrie();
@@ -8488,6 +8769,7 @@ window.addEventListener('pageshow',e=>{
       /* « Au début, il est toujours en mode recto » (Wah) : dézoomé sur son
          dos, le papier se remet sur son recto — la suite du geste qui a
          fermé la recherche, pas une rotation spontanée. */
+      lvSync('c');
       PAPIER.poser(()=>{ paintFlip(); if(then) then(); });
     };
     if(RMQ.matches){ fini(); return; }
@@ -8525,14 +8807,6 @@ window.addEventListener('pageshow',e=>{
   });
   PAPIER.surFace=paintFlip;
   PAPIER.surVerso=ouvrirRecherche;
-  /* Les deux autres gestes font ce qu'ils disent. Sans bouche (paysage,
-     clavier), la langue mène tout droit à Get Higher, par le pont. */
-  $('geste-tap')?.addEventListener('click',()=>{ if(!open&&!moving&&!sOpen&&!sMoving) $('gate-enter')?.click(); });
-  $('geste-tongue')?.addEventListener('click',()=>{
-    if(open||moving||sOpen||sMoving||PAPIER.occupe()) return;
-    if(!PAPIER.offrir()) ssoVersDomaine(sb,'club','https://www.figher.club/get_higher');
-  });
-
   /* ══ SUR LA LANGUE : [GET HIGHER] · 03/10/2026 ═══════════════════════
      Le papier avalé, on part vers l'achat du TotehmPaper, là où il vit :
      `figher.club/get_higher` (le branding Higher est sur le Club, 02/10).
@@ -8550,34 +8824,371 @@ window.addEventListener('pageshow',e=>{
   /* Revenu par le bouton « précédent » (page restaurée telle quelle) : le
      papier est de nouveau chez lui, la bouche fermée. */
   window.addEventListener('pageshow',e=>{ if(e.persisted) PAPIER.remettre(); });
-  /* Les lèvres : un tap rejoue la langue tirée (04/10) ; au clavier, ou
-     sans mouvement, le bouton porte le papier sur la langue de lui-même. */
+  /* 07/10 : les lèvres, dans la vue du haut, sont [Get Higher] — le papier
+     posé sur la langue est avalé. La langue ne se tire plus à l'arrivée : la
+     bouche n'existe que là-haut. */
   const bouche=$('gate-mouth');
-  if(bouche) bouche.addEventListener('click',e=>{
-    if(open||moving||sOpen||sMoving||PAPIER.occupe()) return;
-    if(e.detail===0||window.matchMedia('(prefers-reduced-motion: reduce)').matches) PAPIER.offrir();
-    else BOUCHE.indice();
-  });
-  /* ══ À L'ARRIVÉE, ELLE TIRE LA LANGUE · 04/10/2026 ═══════════════════
-     Wah : « le démarrage, tirage de langue une fois, on ferme la bouche ».
-     UNE fois par chargement, jamais en boucle : elle montre aussi OÙ va le
-     papier. Pas en mouvement réduit, pas si l'on arrive dedans (`#in`,
-     `?ro=`), ni si la porte, la recherche ou un geste ont déjà pris la
-     scène. Un onglet ouvert en arrière-plan attend d'être vu.
-     Diagnostic `__totehm_lsd.accueil` : 0 → 1 (elle tire) → 2 (fermée, au
-     repos : la suite d'un `indice` attend les ressorts, pas une minuterie). */
-  const taquiner=()=>{
-    const d=window.__totehm_lsd;
-    if(!d||d.accueil||!body.classList.contains('gate')||body.classList.contains('is-door')
-       ||open||moving||sOpen||sMoving||PAPIER.occupe()||!BOUCHE.dispo()
-       ||window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    d.accueil=1; BOUCHE.indice(1,1,650,()=>{ d.accueil=2; });
-  };
-  if(!document.hidden) setTimeout(taquiner,700);
-  else document.addEventListener('visibilitychange',function vu(){
-    if(document.hidden) return;
-    document.removeEventListener('visibilitychange',vu); setTimeout(taquiner,500); });
+  if(bouche) bouche.addEventListener('click',()=>{ if(LV.vue()==='h') LV.getHigher(); });
   paintFlip();
+
+
+  /* ══ LA CROIX DE L'ATTERRISSAGE · 07/10/2026 ═════════════════════════
+     Wah : « le joystick sur la page d'atterrissage, avec les 5 vues et
+     exactement les mêmes mouvements et clic que dans le Totehm déployé ».
+       c  MY TOTEHM    le papier, [Higher] Strategy, son nom, qui le voit
+       h  GET HIGHER   il monte se poser sur la langue tirée ; [Get Higher]
+       b  TOTEHMSM     il devient la vignette d'une conversation (le T, navy)
+       g  SEARCH       il se retourne : la recherche d'un membre (`#srch`)
+       d  SPACE · BOUTIQUE  il tourne en haut, [Higher] se pose sur le vêtement
+     UNE table (`CROIX_L`), UNE fonction (`aller`) : la manette (manche,
+     chevrons, molette), le trackpad, le doigt et les flèches y mènent tous.
+     Les sens sont ceux du Totehm déplié : le manche et le trackpad
+     horizontal suivent les DOIGTS, le doigt sur l'écran suit le CONTENU, la
+     molette verticale descend vers le bas (deltaY > 0 → ↓). */
+  const LV=(()=>{
+    const CROIX_L={c:{h:'h',b:'b',g:'g',d:'d'}, h:{b:'c'}, b:{h:'c'}, g:{d:'c'}, d:{g:'c'}};
+    const NOMS={c:'my TOTEHM', h:'Get Higher', b:'TotehmSM', g:'search a TOTEHM', d:'SPACE · boutique'};
+    const TEINTE_L={c:'--navy', h:'--blue', b:'--rep', g:'--rep', d:'--blue'};
+    const slo=$('lv-slogan'), slo2=$('lv-slogan2'), jy=$('ljoy'), jb=$('ljoy-box'), js=$('ljoy-stack');
+    const diag={allers:0, sm:0, envois:0, telegram:0, whatsapp:0};
+    let vue='c', bouge=false;
+    const voisin=d=>(CROIX_L[vue]||{})[d]||null;
+    window.__totehm_lv=()=>({build:BUILD, vue, bouge, allers:diag.allers, papier:PAPIER.vue(),
+      membre:inscrit(), higher:!!(LAND&&LAND.higher&&LAND.higher.active), thp:!!(LAND&&LAND.thp),
+      sm:SM.msgs.length, envois:diag.envois, telegram:diag.telegram, whatsapp:diag.whatsapp,
+      visibilite:LAND?LAND.visibility:null, vignette:!!avatarOk(LAND&&LAND.avatar), vetement:!!CLOTH.src});
+    window.__lvAller=v=>aller(v);
+    body.classList.add('lv-c');
+
+    /* ── LE SLOGAN : un seul [Higher] qui voyage ── */
+    const W=()=>innerWidth, H=()=>innerHeight;
+    const larg=sel=>{ const e=slo.querySelector(sel)||slo2.querySelector(sel); return e?e.offsetWidth:0; };
+    function placer(el,x,y,w){
+      const k=(w||96)/96;
+      el.style.transform='translate('+(x-48).toFixed(1)+'px,'+(y-16).toFixed(1)+'px) scale('+k.toFixed(3)+')';
+    }
+    function sloganPour(v){
+      const c=PAPIER.chez()||{x:W()/2,y:H()*.4,w:110};
+      slo.className='is-'+v; slo2.className='is-'+v;
+      slo.tabIndex=v==='h'?0:-1;
+      if(v==='c'||v==='g'){
+        /* Le double est posé SOUS l'original : en descendant, il s'en détache. */
+        const x=W()/2-(8+larg('.lvs-strat'))/2, y=c.y+c.w/2+30;
+        placer(slo, x, y, 96); placer(slo2, x, y, 96);
+      } else if(v==='h'){
+        const l=PAPIER.cibleLangue(), y=l?l.bas+28:H()*.42;
+        placer(slo, W()/2+(larg('.lvs-get')+8)/2, y, 96);
+        $('lv-h').style.setProperty('--lv-ht', (y+4)+'px');
+      } else if(v==='b'){
+        const sp=larg('.lvs-speak'), se=larg('.lvs-self');
+        placer(slo, W()/2+((sp+8)-(se+8))/2, 128, 84);
+        placer(slo2, W()/2-(8+larg('.lvs-social'))*(54/96)/2, 162, 54);
+      } else if(v==='d'){
+        const r=$('lv-cloth').getBoundingClientRect(), sp=CLOTH.spot;
+        placer(slo, r.left+r.width*sp.x, r.top+r.height*sp.y, Math.max(40,r.width*sp.w));
+      }
+    }
+
+    /* ── LA MANETTE : la tuile prend la couleur de la vue ; un chevron sans voisin s'éteint ── */
+    function peindreJoy(){
+      jy.style.setProperty('--ljoy','var('+(TEINTE_L[vue]||'--navy')+')');
+      ['h','g','d','b'].forEach(d=>$('lcur-'+d).classList.toggle('mort',!voisin(d)));
+      const [o,h,r]=js.children;
+      jb.classList.toggle('hors',vue==='g'||vue==='d');
+      o.classList.toggle('ici',vue!=='c'); h.classList.toggle('ici',vue==='c'); r.classList.toggle('ici',vue!=='c');
+      jb.setAttribute('aria-label',vue==='c'?'My TOTEHM':'Back to my TOTEHM');
+      $('ljoy-say').textContent=NOMS[vue]||'';
+    }
+    function poser(v){
+      ['c','h','b','g','d'].forEach(k=>body.classList.toggle('lv-'+k,k===v));
+      sloganPour(v); peindreJoy();
+    }
+
+    /* ── ALLER : une vue voisine, ou le centre ── */
+    function aller(v,then){
+      if(v===vue){ if(then) then(); return; }
+      if(bouge||open||moving||sMoving) return;
+      if(body.classList.contains('is-door')||!body.classList.contains('gate')) return;
+      if(v!=='c'&&!Object.values(CROIX_L[vue]||{}).includes(v)) return;
+      if(vue==='g'){ if(!sOpen) return; fermerRecherche(()=>{ if(v!=='c') aller(v,then); else if(then) then(); }); return; }
+      /* À gauche, la recherche : elle pose elle-même le papier (même tenu à
+         la main, retourné — `surVerso` arrive DANS le geste). */
+      if(v==='g'){ diag.allers++; fermerPorte(); ouvrirRecherche(); return; }   /* `lvSync('g')` à la fin du zoom */
+      if(PAPIER.occupe()&&!PAPIER.vue()) return;
+      diag.allers++;
+      bouge=true; const de=vue; vue=v; poser(v);
+      const fini=()=>{ bouge=false; peindreJoy(); sloganPour(vue); if(then) then(); };
+      if(v==='c') return PAPIER.glisser(null,{ms:640,fin:fini});
+      if(v==='h'){
+        const l=PAPIER.cibleLangue();
+        return PAPIER.glisser(l?{x:l.x,y:l.y,s:l.s}:{x:W()/2,y:H()*.26,s:.5},{ms:760,bouche:l?[1,1]:null,fin:fini});
+      }
+      if(v==='b'){
+        const t=$('lv-thumb').getBoundingClientRect(), c=PAPIER.chez();
+        smEtat();
+        return PAPIER.glisser({x:t.left+t.width/2,y:t.top+t.height/2,s:t.width/(c.w||110)},{ms:720,fin:fini});
+      }
+      if(v==='d'){
+        chargerVetement();
+        return PAPIER.glisser({x:W()/2,y:96,s:.62},{ms:720,fin:()=>{ PAPIER.tourner(); fini(); }});
+      }
+    }
+    /* La recherche s'ouvre ou se ferme par un autre chemin (le papier
+       retourné à la main, la croix de la feuille, Échap) : la croix suit. */
+    lvSync=v=>{ if(v===vue) return; vue=v; poser(v); };
+    PAPIER.surVerso=()=>aller('g');
+    /* [Get Higher] : le papier posé sur la langue est avalé, puis le Club. */
+    function getHigher(){
+      if(vue!=='h'||bouge) return;
+      if(!PAPIER.avalerIci()) ssoVersDomaine(sb,'club','https://www.figher.club/get_higher');
+    }
+    PAPIER.surLangue=()=>{
+      ssoVersDomaine(sb,'club','https://www.figher.club/get_higher');
+      /* La navigation n'a pas lieu (bloquée, annulée) : tout revient au centre. */
+      setTimeout(()=>{ if(document.visibilityState==='visible'){ PAPIER.remettre(); reset(); } },12000);
+    };
+    function reset(){ bouge=false; vue='c'; poser('c'); }
+    window.addEventListener('pageshow',e=>{ if(e.persisted){ PAPIER.remettre(); reset(); } });
+    slo.addEventListener('click',()=>{ if(vue==='h') getHigher(); });
+    window.addEventListener('resize',()=>{ if(!bouge) sloganPour(vue); });
+
+    /* ── LA MANETTE : le manche (rayon 15 px, seuil 9 px), les chevrons, la molette — copiée du Totehm déplié ── */
+    (function manette(){
+      const R=15, SEUIL=9; let id=null, x0=0, y0=0, dx=0, dy=0, loin=0, froid=0;
+      const pose=(a,b)=>{ js.style.setProperty('--mx',a.toFixed(1)+'px'); js.style.setProperty('--my',b.toFixed(1)+'px'); };
+      const vise=v=>{ ['g','d','h','b'].forEach(k=>jy.classList.toggle('vers-'+k,k===v)); };
+      const sens=()=>{ if(Math.max(Math.abs(dx),Math.abs(dy))<SEUIL) return null;
+                       const d=Math.abs(dx)>Math.abs(dy)?(dx<0?'g':'d'):(dy<0?'h':'b'); return voisin(d)?d:null; };
+      jb.addEventListener('pointerdown',e=>{ if(e.button>0||id!==null) return; id=e.pointerId; x0=e.clientX; y0=e.clientY; dx=dy=loin=0;
+        jy.classList.add('tenu'); jb.classList.add('tenu'); try{ jb.setPointerCapture(id); }catch(_){} });
+      jb.addEventListener('pointermove',e=>{ if(id!==e.pointerId) return;
+        const a=e.clientX-x0, b=e.clientY-y0, d=Math.hypot(a,b), k=d>R?R/d:1; dx=a*k; dy=b*k; loin=Math.max(loin,d); pose(dx,dy); vise(sens()); });
+      const lache=(e,annule)=>{ if(id===null||e.pointerId!==id) return; const v=annule?null:sens();
+        try{ jb.releasePointerCapture(id); }catch(_){} id=null; pose(0,0); jy.classList.remove('tenu'); jb.classList.remove('tenu'); vise(null);
+        if(annule) return;
+        if(v) aller(voisin(v)); else if(loin<4&&vue!=='c') aller('c'); };
+      jb.addEventListener('pointerup',e=>lache(e,false));
+      jb.addEventListener('pointercancel',e=>lache(e,true));
+      /* Au clavier, le centre de la manette ramène au centre. */
+      jb.addEventListener('click',e=>{ if(e.detail===0&&vue!=='c') aller('c'); });
+      [['lcur-g','g'],['lcur-d','d'],['lcur-h','h'],['lcur-b','b']].forEach(([i,d])=>{ $(i).onclick=()=>{ const v=voisin(d); if(v) aller(v); }; });
+      jy.addEventListener('wheel',e=>{ e.preventDefault(); e.stopPropagation(); if(Date.now()<froid) return;
+        if(Math.max(Math.abs(e.deltaX),Math.abs(e.deltaY))<4) return;
+        const d=Math.abs(e.deltaX)>Math.abs(e.deltaY)?(e.deltaX>0?'g':'d'):(e.deltaY>0?'b':'h');
+        const v=voisin(d); if(!v) return; froid=Date.now()+520; aller(v); },{passive:false});
+    })();
+
+    /* ── LES AUTRES GESTES : flèches, trackpad, doigt — sur tout l'atterrissage ── */
+    const libre=()=>body.classList.contains('gate')&&!body.classList.contains('entered')&&!body.classList.contains('is-door')
+      &&!$('member-window').classList.contains('show')&&!$('myspaces').classList.contains('is-open');
+    const saisie=t=>!!(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable));
+    const fil=$('lv-thread');
+    const filDefile=(t,dy)=>{ if(!t||!t.closest||!t.closest('#lv-thread,#srch-res')) return false;
+      const el=t.closest('#lv-thread,#srch-res'); if(el.scrollHeight<=el.clientHeight+2) return false;
+      return dy>0 ? el.scrollTop+el.clientHeight<el.scrollHeight-1 : el.scrollTop>1; };
+    window.addEventListener('keydown',e=>{
+      if(!libre()||saisie(e.target)||e.metaKey||e.ctrlKey||e.altKey) return;
+      const d={ArrowLeft:'g',ArrowRight:'d',ArrowUp:'h',ArrowDown:'b'}[e.key];
+      if(d){ const v=voisin(d); if(v){ e.preventDefault(); aller(v); } return; }
+      if(e.key==='Escape'&&vue!=='c'&&vue!=='g'){ e.preventDefault(); aller('c'); }
+    },{capture:true});
+    /* ⚠️ LE TRACKPAD CHANGE DE VUE DANS LES QUATRE SENS (Wah, 07/10 : « ça
+       marche pour la gauche et la droite mais pas pour le haut et le bas »).
+       Un geste = un trou de plus de 200 ms avant lui (l'inertie d'un trackpad
+       envoie des événements pendant une seconde) et 130 px accumulés ; puis
+       une garde de 800 ms. Une liste qui peut encore défiler garde la molette. */
+    (function trackpad(){
+      let acc=0, axe='', t=0, neuf=false, froid=0;
+      window.addEventListener('wheel',e=>{
+        if(!libre()||bouge) return;
+        if(e.target&&e.target.closest&&e.target.closest('#ljoy')) return;
+        const now=Date.now(), trou=now-t; t=now;
+        if(now<froid){ acc=0; return; }
+        const f=e.deltaMode===1?16:e.deltaMode===2?innerHeight:1, x=e.deltaX*f, y=e.deltaY*f;
+        const a=Math.abs(x)>Math.abs(y)*1.4?'x':Math.abs(y)>Math.abs(x)*1.4?'y':'';
+        if(!a) return;
+        if(a==='y'&&filDefile(e.target,y)){ acc=0; neuf=false; return; }
+        if(trou>200||a!==axe){ acc=0; neuf=true; axe=a; }
+        if(!neuf) return;
+        acc+=a==='x'?x:y;
+        if(Math.abs(acc)<130) return;
+        const d=a==='x'?(acc>0?'g':'d'):(acc>0?'b':'h');
+        acc=0; neuf=false;
+        const v=voisin(d); if(!v) return;
+        froid=now+800; aller(v);
+      },{passive:true,capture:true});
+    })();
+    /* Le doigt : celui du Totehm déplié — glisser à gauche montre ce qui est
+       à droite ; glisser vers le haut descend. Pas sur le papier (il se
+       retourne), ni sur la manette, ni dans un fil qui défile. */
+    (function doigt(){
+      let p=null;
+      window.addEventListener('touchstart',e=>{
+        const t=e.target; p=null;
+        if(!libre()||e.touches.length>1) return;
+        if(t&&t.closest&&t.closest('#gate-asteroid,#ljoy,input,textarea,select,[contenteditable]')) return;
+        p={x:e.touches[0].clientX, y:e.touches[0].clientY, t:Date.now(), el:t};
+      },{passive:true,capture:true});
+      window.addEventListener('touchend',e=>{
+        const q=p; p=null; if(!q||!libre()||bouge||Date.now()-q.t>900) return;
+        const dx=e.changedTouches[0].clientX-q.x, dy=e.changedTouches[0].clientY-q.y;
+        let d=null;
+        if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3) d=dx<0?'d':'g';
+        else if(Math.abs(dy)>60&&Math.abs(dy)>Math.abs(dx)*1.3&&!filDefile(q.el,-dy)) d=dy<0?'b':'h';
+        const v=d&&voisin(d); if(v) aller(v);
+      },{passive:true,capture:true});
+    })();
+
+    /* ── LE CENTRE : le nom de mon Totehm (nœuds déplacés), qui le lit ── */
+    let visSeq=0;
+    function peindreCarte(){
+      const m=inscrit()&&!RO;
+      $('lv-card').classList.toggle('hide',!m);
+      $('lv-tap').textContent=window.matchMedia('(hover:hover)').matches?'Click to open it':'Tap to open it';
+      if(!m) return;
+      const v=(LAND&&LAND.visibility)||'private';
+      document.querySelectorAll('[data-lvvis]').forEach(b=>{ const on=b.dataset.lvvis===v;
+        b.classList.toggle('is-on',on); b.setAttribute('aria-checked',String(on)); });
+      $('lv-prog').classList.toggle('hide',v!=='subscribers');
+    }
+    $('lv-card').addEventListener('click',async e=>{
+      const b=e.target.closest('[data-lvvis]'); if(!b||!me) return;
+      const v=b.dataset.lvvis; if(LAND&&LAND.visibility===v) return;
+      const seq=++visSeq, uid=me.id, note=$('lv-vis-note');
+      note.textContent='…';
+      const {data,error}=await sb.rpc('visibility_set',{p_visibility:v});
+      if(seq!==visSeq||me?.id!==uid) return;
+      if(error){ console.error('[visibility_set]',error.message); note.textContent='try again'; return; }
+      if(!data?.ok){ note.textContent=data?.why==='no_totehm'?'write my TOTEHM first':'try again'; return; }
+      LAND={...(LAND||{}),visibility:data.visibility};
+      note.textContent=data.visibility==='private'?'only me':'my subscribers read it';
+      peindreCarte();
+    });
+    $('lv-tap').onclick=()=>{ if(!PAPIER.occupe()) enter(); };
+
+    /* ── EN HAUT : ce que dit Get Higher (le THP, ou la méthode) ── */
+    function peindreHaut(){
+      $('lv-thp-say').textContent=LAND&&LAND.thp
+        ? 'My TotehmPaper is mine. Get Higher: the method, whenever I want.'
+        : 'The TotehmPaper {THP} distills selected mental-performance techniques informed by modern neuroscience research, including EEG studies, into an experience designed to prepare your brain for efficient action.';
+    }
+
+    /* ── EN BAS : TOTEHMSM — le fil, la saisie, ou le concept ── */
+    const SM={seq:0, msgs:[], charge:false, busy:false, attente:null};
+    const acces=()=>!!(LAND&&LAND.higher&&LAND.higher.active);
+    const DEMO=[['me',null,'I am always late, I hate mornings.'],['sm','habit','I set my alarm 15 minutes earlier and I leave at 8:10.'],
+                ['me',null,'I want to stop scrolling at night.'],['sm','repulsion','I leave my phone outside the bedroom at 22:30.'],
+                ['me',null,'One day I would like to run a marathon.'],['sm','objective','I run my first 10 km on 30 November.']];
+    function bulle(role,kind,text,id,actions){
+      const av=avatarOk(LAND&&LAND.avatar);
+      if(role==='me') return '<div class="sm-row me"><div class="sm-b">'+esc(text)+'</div><span class="sm-av"'+(av?' style="background-image:url('+av+')"':'')+'></span></div>';
+      return '<div><div class="sm-row"><span class="sm-av sm">'+T_SVG+'</span><div class="sm-b k-'+esc(kind||'habit')+'">'+esc(text)+'</div></div>'
+        +(actions&&id?'<div class="sm-acts"><button type="button" data-tg="'+id+'">Telegram</button><button type="button" data-wa="'+id+'">WhatsApp</button></div>':'')+'</div>';
+    }
+    function pitch(){
+      const h=(LAND&&LAND.higher)||{}, prix=prixMois(h);
+      return '<div class="sm-pitch">'
+        +'<p class="sm-big">I write as I am.<br>It answers as I will be — in my words, in the first person.</p>'
+        +'<p class="lv-mono">Not a coach. Not advice. A mirror that upgrades what I say into what I do.</p>'
+        +'<div class="sm-demo">'+DEMO.map(x=>bulle(x[0],x[1],x[2])).join('')+'</div>'
+        +'<p class="sm-proof">Why it works · a “when, where, what” plan raises follow-through: 94 studies, d = 0.65 (Gollwitzer &amp; Sheeran, 2006). The words I tell myself change how I perform under pressure (Kross et al., 2014).</p>'
+        +'<p class="sm-proof">Higher your social media · my reflections, sent to my Telegram or my WhatsApp.</p>'
+        +(me&&inscrit()
+          ? '<button class="lv-btn" type="button" data-sm-sub>Get Higher Self'+(prix?' · '+esc(prix):'')+'</button>'
+          : '<button class="lv-btn" type="button" data-sm-connect>CONNECT WITH MY TOTEHM</button>')
+        +'</div>';
+    }
+    function smPeindre(){
+      const ok=me&&inscrit()&&acces();
+      $('lv-say').classList.toggle('hide',!ok);
+      if(!ok){ fil.innerHTML=pitch(); return; }
+      /* Le plus récent en haut, sous la saisie ; dans un échange, ma phrase puis son reflet. */
+      const asc=SM.msgs.slice().reverse(), ech=[];
+      for(const m of asc){ if(m.role==='me'||!ech.length) ech.push([m]); else ech[ech.length-1].push(m); }
+      let html=SM.attente?bulle('me',null,SM.attente)+'<div class="sm-row"><span class="sm-av sm">'+T_SVG+'</span><div class="sm-b k-habit">…</div></div>':'';
+      html+=ech.reverse().map(e=>e.map(m=>bulle(m.role,m.kind,m.text,m.id,m.role==='sm')).join('')).join('');
+      fil.innerHTML=html||'<p class="lv-mono">Write as you are. Your Higher Self answers.</p>';
+    }
+    window.__lvPeindreSM=smPeindre;
+    async function smEtat(){
+      smPeindre();
+      if(!(me&&inscrit()&&acces())||SM.charge) return;
+      const seq=++SM.seq, uid=me.id;
+      const {data,error}=await sb.rpc('sm_thread',{p_before:null,p_limit:30});
+      if(seq!==SM.seq||me?.id!==uid) return;
+      if(error||!data?.ok){ if(error) console.error('[sm_thread]',error.message); $('lv-say-note').textContent='my thread could not load'; return; }
+      SM.msgs=data.messages||[]; SM.charge=true; diag.sm++; smPeindre();
+    }
+    const smNote=t=>{ $('lv-say-note').textContent=t||''; };
+    $('lv-say').addEventListener('submit',async e=>{
+      e.preventDefault(); if(SM.busy) return;
+      const inp=$('lv-say-in'), t=inp.value.trim(); if(t.length<2){ smNote('a few words'); return; }
+      SM.busy=true; SM.attente=t; inp.value=''; smNote(''); smPeindre();
+      const uid=me&&me.id, {d}=await fnAppel('higher-self',{action:'say',text:t});
+      SM.busy=false; SM.attente=null;
+      if(me?.id!==uid) return;
+      if(d.ok&&d.sm){ SM.msgs=[d.sm,d.me,...SM.msgs].filter(Boolean); diag.envois++; smPeindre(); smNote(d.left<=5?d.left+' left today':''); return; }
+      inp.value=t; smPeindre();
+      smNote(({higher_required:'Higher subscription needed',quota:'30 a day · back tomorrow',empty:'a few words',no_session:'sign in again'})[d.error]||'try again');
+      if(d.error==='higher_required'&&lvRefresh) lvRefresh();
+    });
+    $('lv-say-in').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); $('lv-say').requestSubmit(); } });
+    fil.addEventListener('click',async e=>{
+      const tg=e.target.closest('[data-tg]'), wa=e.target.closest('[data-wa]');
+      if(wa){ const m=SM.msgs.find(x=>String(x.id)===wa.dataset.wa); if(!m) return; diag.whatsapp++;
+              window.open('https://wa.me/?text='+encodeURIComponent(m.text),'_blank','noopener'); return; }
+      if(tg){ smNote('…'); const {d}=await fnAppel('higher-self',{action:'telegram',id:Number(tg.dataset.tg)});
+              if(d.ok){ diag.telegram++; smNote('sent to my Telegram'); return; }
+              if(d.error==='not_linked'){ smNote(await lierTelegram()?'in Telegram, press Start, then send again':'try again'); return; }
+              smNote(d.error==='blocked'?'TotehmBot is blocked in Telegram':'try again'); return; }
+      if(e.target.closest('[data-sm-connect]')){ LA_PORTE.reste=()=>aller('b'); ouvrirPorte(null); return; }
+      if(e.target.closest('[data-sm-sub]')){ smNote('opening checkout…'); const {d}=await fnAppel('higher-sub',{action:'checkout'});
+              if(d.url){ location.href=d.url; return; }
+              smNote(({not_ready:'opening soon',active:'already active',no_session:'sign in again'})[d.error]||'try again');
+              if(d.error==='active'&&lvRefresh) lvRefresh(); }
+    });
+
+    /* ── À DROITE : le vêtement du moment (`totehm_cloth_support`), [Higher] dessus ── */
+    const CLOTH={src:'', spot:{x:.5,y:.3,w:.3}, charge:false};
+    async function chargerVetement(){
+      if(CLOTH.charge) return; CLOTH.charge=true;
+      const {data,error}=await sb.from('totehm_cloth_support').select('title,image_url,logo_spot').eq('active',true).order('position').limit(1);
+      if(error){ console.error('[totehm_cloth_support]',error.message); CLOTH.charge=false; return; }
+      const c=data&&data[0]; if(!c||!c.image_url) return;
+      const sp=c.logo_spot||{}; const n=(v,d)=>Number.isFinite(+v)&&+v>0&&+v<=1?+v:d;
+      CLOTH.spot={x:n(sp.x,.5), y:n(sp.y,.3), w:n(sp.w,.3)};
+      const img=$('lv-cloth-img'); img.alt=c.title||''; img.onload=()=>{ img.classList.add('is-on'); if(vue==='d'&&!bouge) sloganPour('d'); };
+      img.src=CLOTH.src=c.image_url;
+      if(vue==='d'&&!bouge) sloganPour('d');
+    }
+    $('lv-go-space').onclick=()=>ssoVersDomaine(sb,'space','https://www.totehm.space/');
+    $('lv-go-shop').onclick=()=>ssoVersDomaine(sb,'boutique','https://www.higher.boutique/');
+
+    /* ── LES DONNÉES : `my_landing()`, une réponse tardive ne gagne jamais ── */
+    let landSeq=0;
+    lvRefresh=async()=>{
+      const seq=++landSeq, uid=me?me.id:null;
+      const {data,error}=await sb.rpc('my_landing');
+      if(seq!==landSeq||(me?me.id:null)!==uid) return;
+      if(error){ console.error('[my_landing]',error.message); return; }
+      LAND=data||null;
+      peindreCarte(); peindreHaut(); connPaint(); paintMe();
+      if(vue==='b') smEtat(); else smPeindre();
+    };
+    lvQuitter=()=>{ landSeq++; SM.seq++; SM.msgs=[]; SM.charge=false; SM.attente=null; visSeq++;
+                    $('lv-vis-note').textContent=''; smNote(''); };
+    peindreCarte(); peindreHaut(); poser('c');
+    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(!bouge) sloganPour(vue); });
+
+    /* Retour de Stripe (`?higher=paid`) : la vue du bas, et l'attente du webhook. */
+    if(new URLSearchParams(location.search).get('higher')==='paid'){
+      history.replaceState(null,'',location.pathname);
+      setTimeout(()=>{ aller('b'); smNote('payment received · opening TotehmSM');
+        let n=0; const t=setInterval(async()=>{ n++; if(lvRefresh) await lvRefresh();
+          if(acces()||n>=8){ clearInterval(t); smNote(acces()?'':'it takes a moment · reopen this view soon'); } },1500); },600);
+    }
+    return {vue:()=>vue, aller, getHigher, poser, reset};
+  })();
 
   /* ══ LE SECOND VERROU ══
      `overflow:hidden` empêche l'utilisateur de faire défiler, PAS le
@@ -8653,7 +9264,7 @@ window.addEventListener('pageshow',e=>{
   const swallow=e=>{
     if(!body.classList.contains('gate')) return;
     const t=e.target;
-    if(t&&t.closest&&t.closest('#gate,#member-window,#srch')) return;
+    if(t&&t.closest&&t.closest('#gate,#member-window,#srch,#ljoy')) return;
     e.stopPropagation();
   };
   ['touchstart','touchmove','touchend','wheel','keydown'].forEach(t=>

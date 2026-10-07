@@ -11,7 +11,8 @@ Pages : `stoner.html`, `play_lisbon_street.html`, `origins.html`,
 `get_higher.html`, `discover.html`, `discover_lisbon.html`.
 CSS, balisage, SVG, textes, menus et interactions retrouvent leurs sources
 dans `boutique/`. Les ajouts visuels `ecosystem_ui` des 05–06/10 sont retirés
-de ces six pages : ne plus les y appliquer. Les règles UI communes ci-dessous
+de ces six pages : ne plus les y appliquer. Cette restauration remplace aussi le Discover « quatre pouvoirs » ajouté
+le 07/10 dans get_higher.html. Les règles UI communes ci-dessous
 restent valables pour les autres pages. La connexion locale d'origine de ces
 expériences est restaurée ; les ponts SSO entre domaines restent reçus.
 
@@ -25,6 +26,15 @@ Vérification : les CSS sont identiques octet pour octet aux six sources ;
 le balisage statique est identique sauf le href des conditions migrées.
 Tous les scripts inline passent `node --check`.
 La comparaison visuelle automatisée locale est indisponible (Chromium absent).
+
+## Historique du 07/10/2026 — Discover « quatre pouvoirs » (remplacé par la restauration ci-dessus)
+
+`get_higher.html` `DSLIDES` : « One paper. Four powers. » puis A · Neurological
+performance (le texte EEG de COM) · B · A digital artwork (Wah, un des 777 000,
+son numéro = le numéro FIGHER) · C · Tradeable (marché FIGHER, historique) ·
+D · The key to luxury (« What it opens is what it is worth. »), puis la marque.
+**Jamais « investment »** (MiCA) : la valeur se dit par ce que le THP ouvre.
+COM y mène depuis la vue du haut ([Get Higher]). Test : `com_croix.mjs` §9.
 
 ## 05/10/2026 — connexion COM et UI commune
 
