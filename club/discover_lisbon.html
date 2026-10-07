@@ -240,34 +240,8 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
-<style data-ecosystem-ui="2026-10-05">
-/* 05/10/2026 — copied into the four platforms. Text buttons fit their label. */
-button.eco-text-btn,a.eco-text-btn{inline-size:fit-content!important;max-inline-size:100%;min-inline-size:0!important;flex:0 1 auto!important;padding:.65em .95em!important;line-height:1.45;box-sizing:border-box}
-.eco-connect,.eco-connect #member-txt,.eco-connect #conn-txt{font-family:'Space Mono',monospace!important;font-weight:700!important;font-size:10px!important;color:#b0b0b0!important;letter-spacing:.06em;text-transform:uppercase!important}
-button.eco-connect{background:#252529!important;border:0!important;border-radius:10px!important;cursor:pointer}
-#menu .eco-text-btn,#mmenu .eco-text-btn,.mw-card .eco-text-btn{align-self:flex-start}
-#member.eco-connect,#conn-bar.eco-connect{max-width:calc(50vw - 70px);text-align:left}
-#member.eco-connect #member-txt,#conn-bar.eco-connect #conn-txt{white-space:normal;max-width:100%;overflow:visible;text-overflow:clip}
-#member>i,#conn-bar>.dot,#conn-bar>.dc{display:none!important}
-.habit:not(.add):not(.filtre),.r-habit,.bx{position:relative}
-.eco-box-zoom{position:absolute;right:4px;top:4px;z-index:3;display:flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:0;border-radius:8px;background:none;color:rgba(255,255,255,.55);cursor:pointer;-webkit-tap-highlight-color:transparent}
-.eco-box-zoom svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
-.eco-box-zoom[aria-pressed=true]{color:#fff}
-.habit:has(> .eco-box-zoom) .v-name,.r-habit:has(> .eco-box-zoom) .r-text,.bx:has(> .eco-box-zoom) .nm{padding-right:22px}
-.habit.is-zoom>.h-body,.r-habit.is-zoom,.bx.is-zoom{zoom:1.25}
-@media(hover:hover){.eco-box-zoom:hover{color:#fff}}
-.eco-sheet{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.94);display:flex;justify-content:center;align-items:flex-start;padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(18px + env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;text-align:left}
-.eco-card{width:min(720px,100%);min-width:0;display:flex;flex-direction:column;gap:18px;margin:auto;touch-action:pan-y}
-.eco-close{align-self:flex-end!important;border:0;border-radius:10px;background:#252529;color:#ddd;font:700 11px 'Space Mono',monospace;cursor:pointer}
-body.eco-modal #joy{pointer-events:none!important;opacity:.2!important}
-body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,body[data-eco-auth="central"] #in-email,body[data-eco-auth="central"] #in-otp,body[data-eco-auth="central"] #pt-email,body[data-eco-auth="central"] #pt-otp,body[data-eco-auth="central"] #pt-verify,body[data-eco-auth="central"] #btn-send,body[data-eco-auth="central"] #pt-send,body[data-eco-auth="central"] #btn-verify{display:none!important}
-/* Standalone interface T glyphs are forbidden. The rotating TOTEHM paper keeps its brand artwork. */
-#bigT>svg{visibility:hidden!important}.tv-T{display:none!important}
-@media(hover:hover){.eco-close:hover{background:#34343a;color:#fff}.eco-connect:hover{color:#fff!important}}
-
-</style>
 </head>
-<body data-eco-auth="central">
+<body>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
@@ -326,109 +300,6 @@ fetch(PAY_FN, { method:'POST', headers:{ 'content-type':'application/json', 'api
   .catch(() => {});
 const METHOD  = '/stoner';
 const sb = createClient(SB_URL, SB_ANON);
-/* 05/10 — every satellite connection goes through totehm.com/auth. */
-const ECO_AUTH=await(async()=>{
-const SSO_FN = 'https://abujjbkbbiumxrokozph.supabase.co/functions/v1/';
-
-const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
-
-const SSO_CLIENT = 'club';
-const SSO_AUTH = 'https://www.totehm.com/auth';
-const SSO_KNOWN = 'totehm_sso_known';   // localStorage : ce navigateur s'est déjà connecté ici
-const SSO_TRIED = 'totehm_sso_tried';   // sessionStorage : l'aller-retour silencieux a eu lieu
-const SSO_PKCE  = 'totehm_sso_pkce';    // sessionStorage : { verifier, state } le temps du voyage
-
-const ssoB64 = bytes => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-const ssoStore = (s, k, v) => { try{ v === null ? s.removeItem(k) : s.setItem(k, v); }catch(_){} };
-const ssoRead = (s, k) => { try{ return s.getItem(k); }catch(_){ return null; } };
-
-
-async function ssoArrivee(sb){
-  const h = new URLSearchParams(location.hash.replace(/^#/, ''));
-  const q = new URLSearchParams(location.search);
-  const code = h.get('sso') || q.get('sso'), st = h.get('state'), err = h.get('sso_error');
-  if(!code && !err) return false;
-  ['sso','state','sso_error'].forEach(k => { h.delete(k); q.delete(k); });
-  const reste = [...h.keys()].length ? '#' + h.toString().replace(/=(&|$)/g, '$1') : '';
-  history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + reste);
-  const pk = (() => { try{ return JSON.parse(ssoRead(sessionStorage, SSO_PKCE) || 'null'); }catch(_){ return null; } })();
-  ssoStore(sessionStorage, SSO_PKCE, null);
-  if(err || !/^[a-f0-9]{64}$/.test(code || '')) return false;
-  let verifier;
-  if(st){
-    if(!pk || pk.state !== st){ console.error('[sso] state'); return false; }
-    verifier = pk.verifier;
-  }
-  try{
-    const r = await fetch(SSO_FN + 'sso-redeem', {
-      method:'POST',
-      headers:{'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer '+SB_ANON},
-      body: JSON.stringify(verifier ? { code, verifier } : { code })
-    });
-    if(!r.ok){ console.error('[sso] redeem', r.status); return false; }
-    const { token_hash, email } = await r.json();
-    if(!token_hash) return false;
-    
-    const { error } = await sb.auth.verifyOtp({ type:'email', token_hash });
-    if(error){ console.error('[sso] verify', error.message); return false; }
-    return true;
-  }catch(e){ console.error('[sso]', e && e.message || e); return false; }
-}
-
-
-async function ssoLogin(silent, retour){
-  const v = ssoB64(crypto.getRandomValues(new Uint8Array(32)));
-  const c = ssoB64(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v))));
-  const st = ssoB64(crypto.getRandomValues(new Uint8Array(16)));
-  ssoStore(sessionStorage, SSO_PKCE, JSON.stringify({ verifier: v, state: st }));
-  const ret = retour || (location.pathname + location.search);
-  location.href = SSO_AUTH + '?client=' + SSO_CLIENT + '&challenge=' + c + '&state=' + st +
-                  '&return=' + encodeURIComponent(ret) + (silent ? '&prompt=none' : '');
-}
-
-
-async function ssoVersDomaine(sb, cible, url){
-  try{
-    const { data:{ session } } = await sb.auth.getSession();
-    if(session){
-      const r = await fetch(SSO_FN + 'sso-mint', {
-        method:'POST',
-        headers:{ 'authorization':'Bearer '+session.access_token, 'apikey':SB_ANON, 'content-type':'application/json' },
-        body: JSON.stringify({ target: cible })
-      });
-      if(r.ok){
-        const { code } = await r.json();
-        if(code){ location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; }
-      } else console.error('[sso] mint', r.status);
-    }
-  }catch(e){ console.error('[sso]', e && e.message || e); }
-  location.href = url;
-}
-
-
-await Promise.race([ ssoArrivee(sb), new Promise(r => setTimeout(() => r(false), 2500)) ]);
-sb.auth.onAuthStateChange(ev => {
-  if(ev === 'SIGNED_IN') ssoStore(localStorage, SSO_KNOWN, '1');
-  if(ev === 'SIGNED_OUT') ssoStore(localStorage, SSO_KNOWN, null);
-});
-{
-  const { data:{ session } } = await sb.auth.getSession();
-  if(session) ssoStore(localStorage, SSO_KNOWN, '1');
-  else if(ssoRead(localStorage, SSO_KNOWN) && !ssoRead(sessionStorage, SSO_TRIED)){
-    ssoStore(sessionStorage, SSO_TRIED, '1');
-    await ssoLogin(true);
-    await new Promise(() => {});
-  }
-}
-
-return {login:ssoLogin};
-})();
-document.addEventListener('click',e=>{
- if(e.target.closest('[data-eco-connect],#mw-login,#btn-send,#pt-send')){
-  e.preventDefault();e.stopImmediatePropagation();ECO_AUTH.login(false);
- }
-},true);
-
 
 /* ══ LE PONT SSO — LE BLOC À COPIER · 17/09/2026 ══════════════════════
    Quatre domaines, quatre `localStorage`, quatre sessions. Le compte est
@@ -539,7 +410,10 @@ async function ssoVersDomaine(sb, cible, url){
    Et quand il n'y a pas de code dans l'URL — le cas de loin le plus
    fréquent — `ssoArrivee` rend `false` immédiatement, sans un octet de
    réseau. */
-/* Arrival is handled by the PKCE central-authority block above. */
+await Promise.race([
+  ssoArrivee(sb),
+  new Promise(r => setTimeout(() => r(false), 2500)),
+]);
 
 
 const G=(x)=>({t:"g",x});const C=(x)=>({t:"c",x});const M=(x)=>({t:"m",x});
@@ -839,9 +713,9 @@ const CTA_D = {t:"cta"};
 const DSLIDES = [
   {parts:[G("Most people think they're just losing energy."),G("That it was just a bad day.\nThat tomorrow will be better."),C("They're losing years.")]},
   {parts:[G("Not to disease.\nNot to age.\nNot to genetics."),C("To internal stress\nand external stimulation.")]},
-  {parts:[C("Inside."),G("Anxiety.\nPressure.\nNegativity.\nOverthinking.\nExcess cortisol."),C("Time seems to never end.")]},
-  {parts:[C("Outside."),G("Notifications.\nScrolling.\nInstant rewards.\nChemical highs.\nDopamine traps."),C("Time just vanishes in an instant.")]},
-  {parts:[G("Stress makes the present unbearable.\nStimulation keeps the future perpetually ahead."),C("But neither allows Temporal coherence."),G("Between the past, the present and the future.\nBetween our wisdom, our presence, and our objectives.")]},
+  {parts:[C("Inside."),G("Anxiety.\nPressure.\nNegativity.\nOverthinking.\nExcess cortisol."),C("<svg style='display:inline-block;height:.82em;width:auto;vertical-align:-.1em' viewBox='0 0 624 636' aria-hidden='true'><use href='#t-glyph'/></svg>ime seems to never end.")]},
+  {parts:[C("Outside."),G("Notifications.\nScrolling.\nInstant rewards.\nChemical highs.\nDopamine traps."),C("<svg style='display:inline-block;height:.82em;width:auto;vertical-align:-.1em' viewBox='0 0 624 636' aria-hidden='true'><use href='#t-glyph'/></svg>ime just vanishes in an instant.")]},
+  {parts:[G("Stress makes the present unbearable.\nStimulation keeps the future perpetually ahead."),C("But neither allows <svg style='display:inline-block;height:.82em;width:auto;vertical-align:-.1em' viewBox='0 0 624 636' aria-hidden='true'><use href='#t-glyph'/></svg>emporal coherence."),G("Between the past, the present and the future.\nBetween our wisdom, our presence, and our objectives.")]},
   {parts:[G("When time becomes coherent :"),G("Deep focus lasts.\nDecisions sharpen.\nActions align.\nPerformance follows."),C("Reality becomes playful.")]},
   {parts:[G("Created by the artist Wah, The Stoner Experience© merges digital art with cognitive optimization."),C("Backed by the most advanced neurological protocols and EEG research,\nit delivers a powerful hourly protocol that primes the brain for peak performance."),G("The artwork is a functional cognitive trigger designed to push you <span class=\"higher-inline\"><svg viewBox=\"0 0 600 200\"><use href=\"#higher-slogan\"></use></svg></span>"),CTA_D]},
   {parts:[G("From it emerged a brand."),C("A Dope one."),G("Its thinking?"),G("Not differently."),C("Opposite."),G("From traditional branding."),CTA_D]}
@@ -990,106 +864,6 @@ document.addEventListener('click', ev=>{
   if(ev.target.closest('#btn-play-street')) window.location.href='/play_lisbon_street';
 });
 
-</script>
-<script data-ecosystem-ui="2026-10-05">
-/* 05/10/2026 — copied into each independent page; no runtime import. */
-(() => {
-  let sheet = null, previous = null, inert = [], overflow = '';
-  /* 06/10 — a small magnifier on each Box: its content grows a little, IN PLACE. Never a window. */
-  const roots = '.habit:not(.add):not(.filtre),.r-habit,.bx';
-  const glass = on => '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M7.5 10h5' + (on ? '' : 'M10 7.5v5') + '"/></svg>';
-  function close() {
-    if (!sheet) return;
-    sheet.remove(); sheet = null;
-    inert.forEach(([el, before]) => { if (el.isConnected) el.inert = before; }); inert = [];
-    document.body.style.overflow = overflow; document.body.classList.remove('eco-modal');
-    if (previous?.isConnected) previous.focus({preventScroll:true});
-  }
-  function open(content, title, source) {
-    if (sheet) close();
-    previous = source || document.activeElement; overflow = document.body.style.overflow;
-    sheet = document.createElement('div'); sheet.className = 'eco-sheet'; sheet.setAttribute('role','dialog');
-    sheet.setAttribute('aria-modal','true'); sheet.setAttribute('aria-label',title); sheet.tabIndex = -1;
-    const card = document.createElement('section'); card.className = 'eco-card';
-    const exit = document.createElement('button'); exit.type = 'button'; exit.className = 'eco-text-btn eco-close';
-    exit.textContent = 'CLOSE'; exit.addEventListener('click',close);
-    card.append(exit,content); sheet.append(card);
-    inert = Array.from(document.body.children).filter(el => !['SCRIPT','STYLE'].includes(el.tagName)).map(el => [el,el.inert]);
-    inert.forEach(([el]) => el.inert = true);
-    document.body.append(sheet); document.body.style.overflow = 'hidden'; document.body.classList.add('eco-modal');
-    sheet.addEventListener('click',e => { if (e.target === sheet) close(); }); exit.focus();
-  }
-  function enhance(scope) {
-    if (!(scope instanceof Element) || scope.closest('.eco-sheet')) return;
-    const parentBox = scope.closest(roots);
-    const boxes = [...(parentBox ? [parentBox] : []),...scope.querySelectorAll(roots)];
-    boxes.forEach(box => {
-      if (box.querySelector(':scope > .eco-box-zoom')) return;
-      const text = box.querySelector('.v-name,.h-text,.r-text,.nm')?.textContent?.trim() || box.querySelector('textarea')?.value?.trim();
-      if (!text) return;
-      const on = box.classList.contains('is-zoom'), b = document.createElement('button');
-      b.type = 'button'; b.className = 'eco-box-zoom'; b.dataset.boxZoom = '1';
-      b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? 'Smaller' : 'Bigger'); b.innerHTML = glass(on); box.append(b);
-    });
-    const buttonSelector = 'button,a.m-it,a.mw-link,a.btn-sig,a.btn,a.ro-action';
-    const parentButton = scope.closest(buttonSelector);
-    const buttons = [...(parentButton ? [parentButton] : []),...scope.querySelectorAll(buttonSelector)];
-    buttons.forEach(b => {
-      if (b.closest('#joy,#totehm-paper,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,.eco-box-zoom,.mini-toggle,.rk-a')) return;
-      const text = b.textContent.trim(); if (!text || /^[×+−\-↑↓←→↔↕✕✖?°\d\s]+$/.test(text)) return;
-      if (/^sign\s*in\b/i.test(text)) {
-        const leaf = b.querySelector('#member-txt,#conn-txt') || b;
-        leaf.textContent = 'CONNECT WITH MY TOTEHM'; b.classList.add('eco-connect');
-      } else if (text !== 'CONNECT WITH MY TOTEHM') b.classList.remove('eco-connect');
-      if (b.textContent.trim() === 'CONNECT WITH MY TOTEHM') b.classList.add('eco-connect');
-      b.classList.add('eco-text-btn');
-    });
-    if (document.body.dataset.ecoAuth === 'central') {
-      for (const input of scope.querySelectorAll('#mw-email,#in-email,#pt-email')) {
-        if (input.parentElement.querySelector('[data-eco-connect]')) continue;
-        const b = document.createElement('button'); b.type = 'button'; b.dataset.ecoConnect = '1';
-        b.className = 'eco-text-btn eco-connect'; b.textContent = 'CONNECT WITH MY TOTEHM'; input.before(b);
-      }
-    }
-  }
-  document.addEventListener('click',e => {
-    const zoomButton = e.target.closest?.('[data-box-zoom]');
-    if (zoomButton) {
-      e.preventDefault(); e.stopImmediatePropagation();
-      const box = zoomButton.closest(roots); if (!box) return;
-      const on = box.classList.toggle('is-zoom');
-      zoomButton.setAttribute('aria-pressed', String(on)); zoomButton.setAttribute('aria-label', on ? 'Smaller' : 'Bigger'); zoomButton.innerHTML = glass(on);
-      return;
-    }
-    const definition = e.target.closest?.('[data-space-about]');
-    if (definition) { e.preventDefault(); e.stopImmediatePropagation(); const content = document.querySelector('#space-definition')?.content?.cloneNode(true); if (content) open(content,'What is a space?',definition); }
-  },true);
-  document.addEventListener('keydown',e => {
-    if (!sheet) return;
-    e.stopImmediatePropagation();
-    if (e.key === 'Escape') { e.preventDefault(); close(); }
-    if (e.key === 'Tab') {
-      const list = [...sheet.querySelectorAll('button,a[href],input,textarea,select,[tabindex="0"]')].filter(el => !el.disabled && el.getClientRects().length);
-      const first = list[0], last = list.at(-1);
-      if (!first) { e.preventDefault(); sheet.focus(); }
-      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-    }
-  },true);
-  for (const name of ['pointerdown','touchstart','touchmove','touchend','wheel']) document.addEventListener(name,e => { if (sheet) e.stopImmediatePropagation(); },{capture:true,passive:true});
-  const start = () => {
-    enhance(document.body);
-    new MutationObserver(records => {
-      const scopes = new Set();
-      for (const r of records) {
-        if (r.target instanceof Element && !r.target.closest('.eco-sheet')) scopes.add(r.target);
-        for (const node of r.addedNodes) if (node instanceof Element) scopes.add(node);
-      }
-      scopes.forEach(enhance);
-    }).observe(document.body,{childList:true,subtree:true});
-  };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
-})();
 </script>
 </body>
 </html>
