@@ -56,11 +56,12 @@ try{
   await pg.keyboard.type('wa',{delay:30});await pg.waitForTimeout(260);await pg.keyboard.type('h',{delay:30});await pg.waitForTimeout(1500);
   const names=await pg.$$eval('.srch-name',e=>e.map(x=>x.textContent));
   ok(JSON.stringify(names)==='["wah"]','course réseau : « wa » (lent) ne recouvre pas « wah » → '+names);
-  ok(await pg.$eval('.srch-row',e=>e.getAttribute('href'))==='/totehm?ro=wah','un résultat = un NOM qui ouvre son Totehm en lecture seule (/totehm?ro=nom)');
+  ok(await pg.$eval('.srch-row .srch-open',e=>e.getAttribute('href'))==='/totehm?ro=wah','un résultat = un NOM qui ouvre son Totehm en lecture seule (/totehm?ro=nom)');
+  ok(await pg.$eval('.srch-row .srch-sub',e=>e.getAttribute('href')+' '+e.textContent)==='/@wah Subscribe · €12 / year','07/10 : une offre → « Subscribe · €12 / year » vers /@nom (la vente)');
   // focus piégé dans la feuille
   const tab=async k=>{await pg.keyboard.press(k);return pg.evaluate(()=>{const e=document.activeElement;return e.closest('#srch')?(e.id||e.getAttribute('href')||e.tagName):'HORS:'+e.tagName;});};
   await pg.focus('#srch-q');const ring=[];for(let i=0;i<4;i++)ring.push(await tab('Tab'));
-  ok(JSON.stringify(ring)==='["/totehm?ro=wah","srch-x","srch-q","/totehm?ro=wah"]','Tab tourne dans la feuille → '+ring);
+  ok(JSON.stringify(ring)==='["/totehm?ro=wah","/@wah","srch-x","srch-q"]','Tab tourne dans la feuille → '+ring);
   await pg.fill('#srch-q','w');await pg.waitForTimeout(400);
   ok(/two letters/.test(await pg.textContent('#srch-note')),'une lettre : « two letters, minimum »');
   await pg.screenshot({path:OUT+'/com_search.png'});
@@ -70,22 +71,22 @@ try{
   ok(await srch(pg)===''&&(await lsd(pg)).face===0&&c.cls==='is-flat'&&c.tf==='','la croix : dézoom, puis le papier se remet sur son recto');
   ok(!await pg.$eval('#gate',e=>e.inert)&&JSON.stringify(await R(pg,'#gate-asteroid'))===JSON.stringify(paper),'le papier est de nouveau atteignable, exactement à sa place');
   ok(await pg.textContent('#ast-name')==='wahigher','son dos porte de nouveau MON nom');
-  // le mot du bas : retourner = chercher ; Échap ferme
-  await pg.$eval('#search-corner',e=>e.click());
-  ok(await pg.evaluate(()=>document.activeElement.id)==='srch-q','le mot du bas : le focus est pris dans le clic');
-  await pg.waitForTimeout(1700);ok(/is-open/.test(await srch(pg)),'le mot du bas retourne le papier et ouvre la recherche');
+  // 07/10 : la manette, à gauche : retourner = chercher ; Échap ferme
+  await pg.$eval('#lcur-g',e=>e.click());
+  ok(await pg.evaluate(()=>document.activeElement.id)==='srch-q','la manette, à gauche : le focus est pris dans le clic');
+  await pg.waitForTimeout(1700);ok(/is-open/.test(await srch(pg)),'la manette, à gauche, retourne le papier et ouvre la recherche');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(2000);
   ok(await srch(pg)===''&&(await lsd(pg)).face===0,'Échap : dézoom et retour au recto');
   // recto : le Totehm se déploie comme avant
   ok(await vars(pg)===v0,'les mesures de déconstruction sont celles du départ');
   await pg.mouse.click(...await centre(pg));await pg.waitForTimeout(2400);
-  ok(await pg.evaluate(()=>document.body.className)==='v-habits member','tap sur le recto : le Totehm se déploie');
+  ok(await pg.evaluate(()=>!document.body.classList.contains('gate')&&/\bv-habits\b/.test(document.body.className)),'tap sur le recto : le Totehm se déploie');
   await pg.click('#fold-x');await pg.waitForTimeout(1500);
   ok(JSON.stringify(await R(pg,'#gate-asteroid'))===JSON.stringify(paper)&&(await card(pg)).tf==='','repli : le papier revient posé, recto, à sa place');
   // déployer le Totehm pendant que la recherche est ouverte (#in, ?ro=, porte [My Higher Self])
   await tourner(pg,260);await pg.waitForTimeout(1500);
   await pg.evaluate(()=>window.__totehmDeplie());await pg.waitForTimeout(5000);
-  ok(await pg.evaluate(()=>document.body.className)==='v-habits member'&&await srch(pg)==='','enter() pendant la recherche : dézoom, recto, puis déploiement');
+  ok(await pg.evaluate(()=>!document.body.classList.contains('gate')&&/\bv-habits\b/.test(document.body.className))&&await srch(pg)==='','enter() pendant la recherche : dézoom, recto, puis déploiement');
   ok(!log.errors.length,'aucune erreur console : '+log.errors.join(' | '));}
  // ── INVITÉ, ordinateur, à la souris, vers la gauche ───────────────
  {const{pg,log}=await page(browser,{dir:'com',origin,rpc,tables:{},session:false,viewport:{width:1280,height:800}});
@@ -114,15 +115,15 @@ try{
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
   const a=[];for(let i=0;i<4;i++){await pg.keyboard.press('Tab');a.push(await pg.evaluate(()=>document.activeElement.id));}
   ok(a.includes('gate-enter')&&!a.includes('gate-search-go'),'clavier, recto : #gate-enter seul → '+a);
-  await pg.focus('#search-corner');await pg.keyboard.press('Enter');await pg.waitForTimeout(1700);
-  ok(/is-open/.test(await srch(pg))&&await pg.evaluate(()=>document.activeElement.id)==='srch-q','clavier : Entrée sur le mot du bas → recherche, focus dans le nom');}
+  await pg.keyboard.press('ArrowLeft');await pg.waitForTimeout(1700);
+  ok(/is-open/.test(await srch(pg))&&await pg.evaluate(()=>document.activeElement.id)==='srch-q','clavier : ← sur l\'atterrissage → recherche, focus dans le nom');}
  // ── mouvement réduit ──────────────────────────────────────────────
  {const{pg}=await page(browser,{dir:'com',origin,rpc,tables,viewport:{width:390,height:844}});
   await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
   await tourner(pg,260);await pg.waitForTimeout(200);
   ok(await srch(pg)===''&&(await card(pg)).tf==='','mouvement réduit : aucun geste n\'est écouté');
-  await pg.$eval('#search-corner',e=>e.click());await pg.waitForTimeout(150);
-  ok(/is-open/.test(await srch(pg)),'mouvement réduit : le mot du bas ouvre la recherche sans animation');
+  await pg.$eval('#lcur-g',e=>e.click());await pg.waitForTimeout(150);
+  ok(/is-open/.test(await srch(pg)),'mouvement réduit : la manette ouvre la recherche sans animation');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(150);
   ok(await srch(pg)===''&&(await lsd(pg)).face===0,'mouvement réduit : fermée, le papier est de nouveau sur son recto');}
 }finally{await browser.close();}
