@@ -1,5 +1,19 @@
 # BRAND.md — TOTEHM
 
+## CURRENT UPDATE — 08/10/2026 · the cloth, full screen; on screen, an "element"
+
+- "Box" is our word. **On screen we say "element"** — an element of my TOTEHM
+  (habit, objective, repulsion, lesson, vision). higher.boutique first.
+- /streetwear is one full screen at a time: **Cloth** (swipe ↔ the cloths,
+  ↕ its views) → **[TOTEHMIZE]** → **Element** (the unfolded TOTEHM and the
+  joystick, only there) → **Name** (0. + the name, Quantico Coral, checked live)
+  → **Style** (of the moment, n left) → **Order** (size, price, secure page).
+  Minimal, visible, a game you understand without reading.
+- **Decoding 0.name opens the cloth's page**: the element first, full width, in
+  its view's colour — as deep as the searcher's rights go — then the artwork
+  **once the cloth has shipped** (it stays a surprise until it lands), the
+  cloth, its size, the style, the owner, its edition number and its stage.
+
 ## CURRENT UPDATE — 07/10/2026 · the totehm.com landing is a cross
 
 - Five landing views, driven by the same joystick and gestures as the unfolded
@@ -282,9 +296,9 @@ colors of its intentions, give the artwork its direction; the member picks a
 curated style, never a prompt — Streetwear AND Luxury: the style of the moment
 (`artistic_styles`) and the name, both chosen before ordering or asking for a
 quote. The garment carries its illustration and its identifier `0.name`
-(`0.` = year zero of the Totehm, set by the server, never typed). Searching `0.name` on
-FIGHER.CLUB does not show the picture again: it **reveals the Box behind the
-cloth**, as deep as the searcher's rights go.
+(`0.` = year zero of the Totehm, set by the server, never typed). Decoding `0.name`
+(higher.boutique) **reveals the element behind the cloth** first, as deep as the
+searcher's rights go — and, since 08/10, the artwork once the cloth has shipped.
 
 The physical object is part of the ecosystem, not the end of it.
 

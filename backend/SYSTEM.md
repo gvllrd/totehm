@@ -16,6 +16,17 @@
 ---
 
 
+## 0 · STREETWEAR PLEIN ÉCRAN, DECODE = LA PAGE DU CLOTH, « ELEMENT » — 08/10/2026
+
+| quoi | valeur mesurée |
+|---|---|
+| migration `20261008100000_streetwear_immersive.sql` | APPLIQUÉE (`streetwear_immersive`) · auto-test `FAIL={}` (annulé) · grants : `_cloth_name_free`, `_cloth_draft_put`, `_cloth_art_path` service_role seul ; `name_available`, `reveal_cloth` anon + authenticated |
+| Edge Functions | `create-checkout` v39 (sans session → 401 `signin`) · `cloth-art` v1 (nom inconnu → 404 `not_yet` ; nom invalide → 400 `name`) |
+| dépôt ↔ prod | 3 migrations du 06/10, `streetwear-assets` v1, `_shared/streetwear-auth.ts`, `compose-artwork` v34 recopiés depuis la prod ; `stripe-webhook` v42 identique au dépôt |
+| base | 1 support actif (Higher Champion Sweatshirt, 170 €, 177, S–2XL, 1 vue = `image_url`, dossier vide) · 6 styles × 7 pièces · 0 Cloth |
+| tests navigateur | `streetwear.mjs` 45/45 · `boutique_home.mjs` 22/22 · `club_luxury.mjs` 43/43 |
+| prod | voir la ligne « prod » ajoutée à la fusion |
+
 ## 0 · L'ATTERRISSAGE EN CROIX, TOTEHMSM, L'ABONNEMENT HIGHER — 07/10/2026
 
 | quoi | valeur mesurée |

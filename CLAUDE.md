@@ -71,8 +71,8 @@ club/     → www.figher.club      le branding Higher en expérience : [Get High
 space/    → www.totehm.space     DO WITH ME : UN Spot (PRIVATE / SHARED) naît d'une Habit
                                  filmée maintenant (33 s) ou annoncée pour plus tard ;
                                  I WILL BE HERE → I AM HERE → I WAS THERE
-boutique/ → www.higher.boutique  l'accueil d'avant (05/10 soir) : Streetwear + collection du moment, Luxe SUR
-                                 DEVIS (/luxury, THP, Wah pose le prix), Decode ; branding → totehm.com
+boutique/ → www.higher.boutique  l'accueil + collection du moment ; /streetwear PLEIN ÉCRAN (08/10) : cloth (↔ ↕) →
+                                 element (manette) → 0.nom → style → taille ; Luxe SUR DEVIS ; Decode = la page du Cloth
 backend/  → servi par PERSONNE — reste à la racine (sinon SQL et fonctions téléchargeables)
 oracle/   → clés, gitignoré, jamais lu ni recopié
 tests/    → tests navigateur (Playwright, Supabase simulé) et SQL (tests/sql/, auto-annulés)
@@ -188,7 +188,7 @@ My spaces (COM, SPACE) + `space-delete` ; chercher = un NOM → son TOTEHM en le
   **Le trackpad change de vue dans les QUATRE sens** (07/10), hors manette aussi :
   nouveau geste (trou de 200 ms) + 130 px ; une liste qui peut défiler garde la molette.
 - Overlays plein écran ancrés EN HAUT (le clavier mobile mange le bas).
-- L'interface est en anglais, mots courts ; termes de marque en anglais.
+- L'interface est en anglais, mots courts ; termes de marque en anglais. À l'écran « element », jamais « Box » (08/10).
 - Une règle de comportement ne va jamais dans un `@media`.
 
 ## Doctrine visuelle (état au 03/10)

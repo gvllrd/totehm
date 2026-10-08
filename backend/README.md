@@ -333,6 +333,16 @@ admin les montre ; payé, Decode trouve la pièce (`reveal_cloth`). Un devis
 retiré ou refusé rend son nom (`luxury_quotes_name_live`).
 Auto-test du nom : `tests/sql/luxury_name_selftest.sql` → `FAIL={}`.
 
+**Les vues d'un vêtement** (08/10, ↑ ↓ sur /streetwear) : déposer les photos
+dans le seau public `totehm-cloth-support`, dossier `storage_folder` du support
+(ex. `higher-champion-sweatshirt-478633385/`), nommées dans l'ordre voulu
+(`1-front.png`, `2-back.png`…). Sans photo : `image_url` (Printful). Aucun code.
+**Un nom de Cloth « pris »** : par le brouillon d'un autre, 2 h au plus
+(`cleanup-drafts`) ; par le sien, jamais (repris). **L'œuvre dans Decode** :
+visible quand la pièce est `shipped` ; la montrer plus tôt = changer la condition
+de `_cloth_art_path` et de `reveal_cloth.art` (une ligne chacune).
+Auto-test : `tests/sql/streetwear_immersive_selftest.sql` → `FAIL={}`.
+
 **Le mode test Stripe** (05/10 soir, sans « oui » : aucun argent réel) : un
 compte actif de `boutique_testers` paie avec la clé TEST (carte
 `4242 4242 4242 4242`, date future, CVC quelconque), au vrai prix.

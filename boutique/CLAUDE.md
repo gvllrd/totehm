@@ -1,5 +1,53 @@
 # boutique/CLAUDE.md — higher.boutique : le Cloth, la méthode Stoner
 
+## ⛔ BOUTIQUE · 08/10/2026 — STREETWEAR PLEIN ÉCRAN · DECODE = LA PAGE DU CLOTH · « ELEMENT »
+
+Wah : « mode plus immersif… très minimaliste, visible et agréable… full screen,
+fluidité gamifiée ». `streetwear.html` (BUILD `2026-10-08-immersive`,
+`__totehm_cloth()`) = CINQ SCÈNES plein écran, une à la fois, glissées
+(transition, jamais `@keyframes`) ; barre des étapes `#hud` (5 traits, un tap
+revient en arrière) ; Back, la barre et le geste « retour » lisent la MÊME pile
+d'historique linéaire (`HIST`, `goBackTo`).
+1. **CLOTH** : le vêtement au centre (`#viewer`, `touch-action:none`) ; ← → / glissé
+   horizontal / trackpad = les MODÈLES (supports actifs) ; ↑ ↓ / glissé vertical /
+   molette = les VUES du même vêtement = les photos de son dossier Storage
+   (`totehm-cloth-support/<storage_folder>/`, ordre des noms), sinon `image_url`.
+   Points : vues en haut à droite, modèles dessous. Un bouton : **[TOTEHMIZE]**.
+2. **ELEMENT** : le Totehm DÉPLIÉ (papier, rail, la croix en petit `#el-map`) et LA
+   MANETTE de COM (`#joy`, rayon 15 px, seuil 9 px, nomme la vue avant d'y aller,
+   molette, flèches) — **seulement ici, jamais avant**. Un tap ouvre la matière
+   (`my_box_matter`) ; le centre de la manette (anneau blanc) ou [Wear this
+   element] la porte. Glissé horizontal sur la liste = vue voisine.
+3. **NAME** : l'élément en tête ; `0.` + saisie en Quantico **Coral** ;
+   `name_available` en direct (réponse tardive jetée). Ancré en haut (clavier).
+4. **STYLE** : `artistic_styles` actifs, « n left » (`remaining_capacity`, 7 par
+   style) ; épuisé = fermé.
+5. **ORDER** : l'aperçu (place, palette, nom — PAS l'œuvre), la TAILLE (Printful ;
+   une variante non `active` est fermée), « test · card 4242… » si
+   `my_streetwear_test_mode()`, [Order · prix serveur] → Stripe (adresse +
+   paiement sur la page sécurisée).
+Connexion à [TOTEHMIZE] (PKCE, retour `/streetwear`) ; la pièce en cours vit dans
+`sessionStorage` (`totehm_cloth_flow`) : retour de connexion → ELEMENT ;
+`?cancel=1` → ORDER avec tous les choix ; `?paid=1&cloth=` → DONE, [Decode it] →
+`/?decode=0.nom`. La page envoie le nom SANS préfixe : `create-checkout` pose `0.`.
+**Le manche du 05/10 en bas de /streetwear est retiré** (la section « manette »
+ci-dessous ne vaut plus que pour /luxury).
+
+**DECODE** (`index.html`, BUILD `2026-10-08-decode`) : le résultat est LA PAGE DU
+CLOTH — le nom (Quantico Coral), la ligne (n° d'exemplaire / édition, date),
+**l'élément en tête, pleine largeur, à la couleur de sa vue**, ses intentions et
+sa palette, la matière (propriétaire/abonné), l'œuvre, le vêtement · taille ·
+style · by, l'étape (in the making · in production · shipped). Niveaux de
+`reveal_cloth` inchangés ; un invité lit la vue, le vêtement, l'étape + CONNECT
+WITH MY TOTEHM. **L'œuvre ne se montre qu'une fois la pièce EXPÉDIÉE**
+(`cloth-art`, URL signée 1 h) : la promesse « you will not see it before it
+lands » tient. L'adresse suit le Cloth (`/?decode=0.nom`, partageable) ; un nom
+tapé sans `0.` se retrouve.
+
+**« Box » est notre langage ; à l'écran on dit « element »** (Wah, 08/10) :
+streetwear, Decode et luxury (BUILD `2026-10-08-element`) sont passés.
+Tests : `streetwear.mjs` 45/45, `boutique_home.mjs` 22/22, `club_luxury.mjs` 43/43.
+
 ## BOUTIQUE · 06/10/2026 — nouveau support et photo différée
 
 Wah a remplacé le précédent Champion. Support courant : `Higher Champion
