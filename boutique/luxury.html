@@ -203,6 +203,8 @@ button.chip.is-on{background:var(--s3);color:#fff;border-color:#fff}
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -492,7 +494,7 @@ sb.auth.onAuthStateChange(ev => {
 
 
 /* ══ L'ÉTAT — une lecture, un écran ═════════════════════════════════ */
-const BUILD = '2026-10-08-element';
+const BUILD = '2026-10-08-no-palette';
 let A = null, ADM = [], PIECE = 'bag', BRAND = 'Hermès', PICK = null, SEQ = 0, BUSY = false;
 let STYLES = [], STYLE = null, STYLES_SEQ = 0, NAME_OK = false, NAME_SEQ = 0, nameTimer = null;
 window.__totehm_luxury = () => ({ build: BUILD, signed_in: !!A?.signed_in, thp: !!A?.thp, open: !!A?.open,
@@ -546,13 +548,11 @@ function paintQuotes(){
   const l = (A?.quotes || []).filter(q => q.status !== 'cancelled');
   $('quotes').classList.toggle('hide', !l.length || !A?.signed_in);
   $('quotes').innerHTML = (l.length ? '<div class="step-h">My quotes</div>' : '') + l.map(q => {
-    const pal = (q.palette || []).filter(okColor);
     return '<div class="qt" style="--skin:' + (SKINQ[q.view] || 'var(--navy)') + '">' +
       '<small>' + esc(q.brand) + ' · ' + esc(q.piece) + ' · ' + esc(String(q.created_at || '').slice(0, 10)) + '</small>' +
       (q.name ? '<div class="cloth-n">' + esc(q.name) + '</div>' : '') +
       (q.text ? '<div class="nm">' + esc(q.text) + '</div>' : '') +
       (q.style ? '<small>' + esc(q.style) + '</small>' : '') +
-      (pal.length ? '<div class="pals">' + pal.map(c => '<i style="background:' + c + '"></i>').join('') + '</div>' : '') +
       '<span class="st">' + esc(STATUS[q.status] || q.status) + '</span>' +
       (q.status === 'quoted' ? '<div class="amount">' + money(q.quote_cents, q.currency) + '</div>' +
         (q.quote_note ? '<div class="qn">' + esc(q.quote_note) + '</div>' : '') +
@@ -671,12 +671,10 @@ async function loadAdmin(){
   ADM = data?.quotes || [];
   $('admin').classList.toggle('hide', !ADM.length);
   $('admin-list').innerHTML = ADM.map(q => {
-    const pal = (q.palette || []).filter(okColor);
     return '<div class="qa"><small>' + esc(q.pseudo || 'member') + ' · ' + esc(q.email) + ' · ' + esc(String(q.created_at || '').slice(0, 10)) + (q.test ? ' · test' : '') + '</small>' +
       (q.name ? '<div class="cloth-n">' + esc(q.name) + '</div>' : '') +
       '<div class="nm">' + esc(q.brand) + ' · ' + esc(q.piece) + (q.style ? ' · ' + esc(q.style) : '') + '</div>' + (q.note ? '<div>' + esc(q.note) + '</div>' : '') +
       (q.text ? '<div class="nm" style="color:var(--mid)">' + esc(q.text) + '</div>' : '') +
-      (pal.length ? '<div class="pals">' + pal.map(c => '<i style="background:' + c + '"></i>').join('') + '</div>' : '') +
       (q.status === 'quoted' ? '<span class="mono">quoted · ' + money(q.quote_cents, q.currency) + '</span>' : '') +
       '<div class="row"><input class="field" type="number" min="0.5" step="0.01" inputmode="decimal" placeholder="price €" data-cents="' + q.id + '">' +
       '<input class="field" maxlength="280" placeholder="a word (optional)" data-word="' + q.id + '"></div>' +
@@ -712,8 +710,7 @@ function paintPicked(){
   $('pick-box').classList.toggle('hide', !!PICK);
   if(!PICK){ p.classList.add('hide'); p.innerHTML = ''; return; }
   p.classList.remove('hide'); p.style.setProperty('--skin', SKIN[PICK.view] || '#333366');
-  p.innerHTML = '<small>the element · ' + esc(NOM[PICK.view]?.[0] || '') + '</small><b>' + esc(PICK.text) + '</b><span class="pals">' +
-    (PICK.palette || []).filter(okColor).map(x => '<i style="background:' + x + '"></i>').join('') + '</span><button type="button" id="picked-x">another element</button>';
+  p.innerHTML = '<small>the element · ' + esc(NOM[PICK.view]?.[0] || '') + '</small><b>' + esc(PICK.text) + '</b><button type="button" id="picked-x">another element</button>';
   $('picked-x').onclick = pickUp;
 }
 
@@ -775,8 +772,8 @@ window.addEventListener('keydown',e=>{
 });
 $('sel-x').onclick=()=>$('sel').classList.remove('is-open');
 /* ══ LA MATIÈRE — copiée de /streetwear : ce que la Box emporte avec elle ══
-   Ce qui est relié à la Box dans les cinq vues, et la palette de ses
-   intentions — calculés en base (`my_box_matter`), jamais ici. */
+   Ce qui est relié à l'élément dans les cinq vues, calculé en base
+   (`my_box_matter`), jamais ici. 08/10 (bis) : ni palette ni rythme à l'écran. */
 const MI={habits:['',''],objectives:['o','why'],repulsions:['r','instead'],wisdom:['w','learned'],visions:['v','sees']};
 $('list').addEventListener('click',async e=>{
   if(e.target.closest('#matter'))return;
@@ -791,12 +788,13 @@ $('list').addEventListener('click',async e=>{
   const groups=Object.entries(m.matter||{}).filter(([,a])=>(a||[]).length).map(([k,a])=>
     '<div class="grp"><span class="w">'+(k==='habits'?'how':(MI[k]||['',''])[1]||k)+'</span>'+a.map(x=>'<span class="mi '+(MI[k]||[''])[0]+'">'+esc(x.text)+'</span>').join('')+'</div>').join('');
   const ex=m.extra||{};
-  const extras=[ex.place?'place · '+esc(ex.place):null,ex.mood?'mood · '+esc(ex.mood):null,ex.freq?'rhythm · '+esc(String(ex.freq).replace(/_/g,' ')):null,ex.obstacle?'obstacle · '+esc(ex.obstacle):null].filter(Boolean);
+  /* 08/10 (bis) : ni palette ni rythme à l'écran (Wah). */
+  const extras=[ex.place?'place · '+esc(ex.place):null,ex.mood?'mood · '+esc(ex.mood):null,ex.obstacle?'obstacle · '+esc(ex.obstacle):null].filter(Boolean);
   c.innerHTML=
-    '<div class="grp"><span class="w">palette</span><span class="pal">'+(m.palette||[]).map(x=>'<i style="background:'+esc(x)+'"></i>').join('')+'</span>'+((m.palette||[]).length?'':'<span class="mono">no intention yet — the curated style decides</span>')+'</div>'+
+
     groups+(extras.length?'<div class="grp"><span class="w">context</span><span class="mono" style="color:rgba(255,255,255,.75)">'+extras.join(' · ')+'</span></div>':'')+
-    '<div class="next"><button class="btn" id="mt-go" type="button">Pick up this box</button><button class="btn-back" id="mt-x" type="button" style="color:#fff">another element</button></div>';
-  $('mt-go').onclick=()=>{PICK={kind:KIND[vue],ref:String(o.ref),text:m.text,view:m.view,palette:m.palette||[]};
+    '<div class="next"><button class="btn" id="mt-go" type="button">Pick up this element</button><button class="btn-back" id="mt-x" type="button" style="color:#fff">another element</button></div>';
+  $('mt-go').onclick=()=>{PICK={kind:KIND[vue],ref:String(o.ref),text:m.text,view:m.view};
     $('sel').classList.remove('is-open');paintPicked();joyPaint();$('picked').scrollIntoView({behavior:'smooth',block:'center'});};
   $('mt-x').onclick=()=>renderSel();
   c.scrollIntoView({behavior:'smooth',block:'nearest'});

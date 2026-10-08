@@ -91,7 +91,6 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 .dc-el b{font-family:'Quantico',sans-serif;font-weight:400;font-size:clamp(19px,5.4vw,26px);line-height:1.35;word-break:break-word}
 .dc-el .ints{display:flex;flex-wrap:wrap;gap:4px 12px;justify-content:center;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:700}
 .dc-el .lock{font-family:'Space Mono',monospace;font-size:11px;line-height:1.7;color:rgba(255,255,255,.88);max-width:30ch}
-.dc-pal{display:flex;gap:4px;justify-content:center}.dc-pal i{width:14px;height:14px;display:block}
 .dc-mat{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
 .dc-mat span{font-family:'Quantico',sans-serif;font-size:11px;color:#fff;padding:2px 8px;background:var(--navy)}
 .dc-mat span.o{background:var(--blue)}.dc-mat span.r{background:var(--rep)}.dc-mat span.w{background:#5b2652}.dc-mat span.v{background:#2b3a73}
@@ -153,6 +152,8 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 #conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
 #conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
 .tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
+
+
 
 
 
@@ -472,8 +473,7 @@ function decodeHTML(d,signed){
     (signed?'':'<button class="btn-sig" type="button" data-eco-connect="1">CONNECT WITH MY TOTEHM</button>')+'</div>';
   else{
     const ints=(d.is||[]).filter(i=>DC_INT[i]).map(i=>'<span style="color:'+DC_INT[i][1]+'">'+DC_INT[i][0]+'</span><span style="color:rgba(255,255,255,.55)">'+DC_INT[i][2]+'</span>').join('');
-    const pal=(d.palette||[]).filter(c=>/^#[0-9a-f]{3,6}$/i.test(c)).map(c=>'<i style="background:'+c+'"></i>').join('');
-    el='<div class="dc-el" style="--skin:'+V[1]+'"><small>'+esc(V[0])+'</small><b>'+esc(d.text||'')+'</b>'+(ints?'<div class="ints">'+ints+'</div>':'')+(pal?'<div class="dc-pal">'+pal+'</div>':'')+'</div>';
+    el='<div class="dc-el" style="--skin:'+V[1]+'"><small>'+esc(V[0])+'</small><b>'+esc(d.text||'')+'</b>'+(ints?'<div class="ints">'+ints+'</div>':'')+'</div>';
   }
   const mat=d.matter&&typeof d.matter==='object'?Object.entries(d.matter).flatMap(([k,a])=>(Array.isArray(a)?a:[]).map(x=>'<span class="'+(DC_MI[k]||'')+'">'+esc(x?.text||'')+'</span>')):[];
   const art=d.line==='luxury'?'':'<div class="dc-art'+(d.art?'':' is-wait')+'" id="dc-art"><span>'+(d.art?'…':d.stage==='cancelled'?'cancelled':'The artwork lands with the cloth.')+'</span></div>';
@@ -578,7 +578,7 @@ document.querySelectorAll('[data-club]').forEach(a => a.addEventListener('click'
 }));
 
 /* Diagnostic — des booléens, jamais une valeur de membre. */
-const BUILD='2026-10-08-decode';
+const BUILD='2026-10-08-bis';
 window.__totehm_boutique=()=>({ build:BUILD, page:'home', luxury_link:!!document.querySelector('a[href="/luxury"]'),
   club_links:document.querySelectorAll('[data-club]').length, logos:document.querySelectorAll('.brand-logo,img[src*="champion"]').length,
   collab:/Champion 2026/.test(document.getElementById('collab')?.textContent||''), branding_com:document.getElementById('brand-btn')?.dataset.com==='/',

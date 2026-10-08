@@ -20,7 +20,7 @@ const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.hi
 await pg.goto('https://www.higher.boutique/');
 await pg.waitForFunction(() => window.__totehm_boutique && /47 pieces left/.test(document.querySelector('#sw-col-sold').textContent));
 const d = await pg.evaluate(() => window.__totehm_boutique());
-ok(d.build === '2026-10-08-decode' && !d.joystick, 'the landing page, no joystick');
+ok(d.build === '2026-10-08-bis' && !d.joystick, 'the landing page, no joystick');
 ok(d.collab && d.logos === 0 && d.luxury_link, 'Totehm x Champion 2026 under Create, written, no logo');
 ok(d.branding_com && d.club_links === 0, 'Experience our dope branding → totehm.com');
 const order = await pg.evaluate(() => { const a = document.querySelector('a[href="streetwear.html"]').getBoundingClientRect().top, c = document.querySelector('#collab').getBoundingClientRect().top, l = document.querySelector('a[href="/luxury"]').getBoundingClientRect().top; return a < c && c < l; });
@@ -41,6 +41,7 @@ for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /
     ok(/lands with the cloth/.test(txt) && !ART.length, 'not shipped: the artwork stays a surprise, cloth-art not called');
     ok(/decode=0\.Hill/.test(pg.url()), 'the address follows the decoded cloth (shareable)');
     ok(!/\bbox\b/i.test(txt), 'on screen: "element", never "box"');
+    ok(!(await pg.$('#decode-msg .dc-pal, #decode-msg [style*="#E24B4A"] i')), 'no colour palette on the cloth page (Wah, 08/10 bis)');
     await pg.screenshot({ path: OUT + '/bq_decode_member.png' });
   }
   if(lvl === 'locked'){
