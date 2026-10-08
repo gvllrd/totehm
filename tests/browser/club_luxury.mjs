@@ -71,7 +71,7 @@ for(const f of ['discover', 'discover_lisbon', 'get_higher', 'stoner', 'origins'
   await pg.goto('https://www.higher.boutique/luxury');
   await pg.waitForFunction(() => window.__totehm_luxury && window.__totehm_luxury().price_loaded);
   const d0 = await pg.evaluate(() => window.__totehm_luxury());
-  ok(d0.build === '2026-10-06-cloth-name' && d0.mode === 'quote' && d0.quoted === 1 && d0.joystick, 'luxury: quote mode, one quote ready, joystick');
+  ok(d0.build === '2026-10-08-element' && d0.mode === 'quote' && d0.quoted === 1 && d0.joystick, 'luxury: quote mode, one quote ready, joystick');
   ok(/on quote · from €500/.test(await pg.textContent('#price')), 'the floor price from the server: on quote · from €500');
   ok(/€800/.test(await pg.textContent('#quotes')) && /Ready in 3 weeks/.test(await pg.textContent('#quotes')), 'my quote: €800 and Wah\'s word');
   ok((await pg.textContent('#nav-say')) === 'Pay', 'joystick center says PAY when a quote is ready');
@@ -80,12 +80,12 @@ for(const f of ['discover', 'discover_lisbon', 'get_higher', 'stoner', 'origins'
   await pg.click('[data-piece="shoes"]'); await pg.click('[data-brand="Louis Vuitton"]');
   await pg.fill('#note', 'white sneakers');
   await pg.click('#ask');
-  ok(/pick up the box/.test(await pg.textContent('#ask-n')) && bodies.quote.length === 0, 'no box, no request');
+  ok(/pick up the element/.test(await pg.textContent('#ask-n')) && bodies.quote.length === 0, 'no element, no request (on screen: element, never box)');
   await pg.click('#pick-box');
   await pg.waitForSelector('#sel.is-open #list .bx');
   await pg.click('#list .bx'); await pg.waitForSelector('#mt-go'); await pg.click('#mt-go');
   await pg.waitForSelector('#picked:not(.hide)');
-  ok(/Run the hill/.test(await pg.textContent('#picked')), 'the box is picked from my TOTEHM (select mode)');
+  ok(/Run the hill/.test(await pg.textContent('#picked')), 'the element is picked from my TOTEHM (select mode)');
   // 06/10 (ter) : le style du moment et le nom 0.{Nom}, exigés avant la demande
   ok((await pg.$$eval('#style-track .style-item', l => l.map(e => e.textContent))).join('|') === 'Ink Realism|Neon Glitch', 'the styles of the moment, from artistic_styles');
   await pg.click('#ask');

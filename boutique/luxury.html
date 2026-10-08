@@ -25,7 +25,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <title>Luxury · HIGHER.BOUTIQUE</title>
-<meta name="description" content="Your own piece, totehmized from one Box of your TOTEHM. On quote.">
+<meta name="description" content="Your own piece, totehmized from one element of your TOTEHM. On quote.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -291,7 +291,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 <main>
   <div class="kicker">Totehm · Luxury · On quote</div>
   <h1>Totehmize<br>my cloth &amp; stuff</h1>
-  <p class="say">Your own piece — a bag, a jacket, shoes — totehmized from one Box of your TOTEHM.</p>
+  <p class="say">Your own piece — a bag, a jacket, shoes — totehmized from one element of your TOTEHM.</p>
   <span class="sub">Brands we totehmize</span>
   <div class="names">Hermès · Louis Vuitton · Gucci · any piece you own</div>
   <div class="legal">Independent. Not affiliated with these brands.</div>
@@ -329,8 +329,8 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
     </div>
     <input class="field hide" id="brand-other" maxlength="40" placeholder="the brand">
     <input class="field" id="note" maxlength="280" placeholder="your piece, in a few words">
-    <div class="step-h">3 · The box that totehmizes it</div>
-    <button class="btn" id="pick-box" type="button">Pick up the box</button>
+    <div class="step-h">3 · The element that totehmizes it</div>
+    <button class="btn" id="pick-box" type="button">Pick up the element</button>
     <div id="picked" class="hide"></div>
     <div class="step-h">4 · The style of the moment</div>
     <div class="style-track" id="style-track" role="radiogroup" aria-label="The style"></div>
@@ -351,7 +351,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 <!-- MY TOTEHM — SELECT MODE : quelle Box matérialiser ? -->
 <div id="sel" role="dialog" aria-label="My TOTEHM — select a box">
   <div id="rail"></div>
-  <div id="sel-head"><div id="sel-q">pick up the box you want to materialize</div><div id="sel-title">my habits</div><div id="sel-sub">what I repeat</div></div>
+  <div id="sel-head"><div id="sel-q">pick up the element you want to materialize</div><div id="sel-title">my habits</div><div id="sel-sub">what I repeat</div></div>
   <button id="sel-x" type="button" aria-label="Close"><svg viewBox="0 0 16 16"><path d="M3 3 L13 13 M13 3 L3 13"/></svg></button>
   <div id="list"></div>
   <div id="joy">
@@ -492,7 +492,7 @@ sb.auth.onAuthStateChange(ev => {
 
 
 /* ══ L'ÉTAT — une lecture, un écran ═════════════════════════════════ */
-const BUILD = '2026-10-06-cloth-name';
+const BUILD = '2026-10-08-element';
 let A = null, ADM = [], PIECE = 'bag', BRAND = 'Hermès', PICK = null, SEQ = 0, BUSY = false;
 let STYLES = [], STYLE = null, STYLES_SEQ = 0, NAME_OK = false, NAME_SEQ = 0, nameTimer = null;
 window.__totehm_luxury = () => ({ build: BUILD, signed_in: !!A?.signed_in, thp: !!A?.thp, open: !!A?.open,
@@ -598,7 +598,7 @@ $('ask').onclick = async () => {
   if(BUSY) return;
   const n = $('ask-n'), brand = BRAND || $('brand-other').value.trim();
   if(!brand){ n.className = 'note no'; n.textContent = 'name the brand'; $('brand-other').focus(); return; }
-  if(!PICK){ n.className = 'note no'; n.textContent = 'pick up the box first'; return; }
+  if(!PICK){ n.className = 'note no'; n.textContent = 'pick up the element first'; return; }
   if(!STYLE){ n.className = 'note no'; n.textContent = 'choose the style'; return; }
   const bare = $('name-input').value.trim();
   if(!NAME_OK){ n.className = 'note no'; n.textContent = bare.length < 2 ? 'engrave its name' : 'another name'; $('name-input').focus(); return; }
@@ -612,7 +612,7 @@ $('ask').onclick = async () => {
     $('note').value = ''; PICK = null; paintPicked(); resetCloth(); await load(); return;
   }
   n.className = 'note no';
-  n.textContent = ({ thp_required:'a TotehmPaper is needed', closed:'closed for now', choose_a_box:'pick up the box first', box_not_found:'that box changed — pick it again',
+  n.textContent = ({ thp_required:'a TotehmPaper is needed', closed:'closed for now', choose_a_box:'pick up the element first', box_not_found:'that element changed — pick it again',
     too_many:'three requests are waiting already', no_session:'sign in again', choose_a_style:'choose the style',
     name:'engrave its name', name_taken:'that name is taken' })[d.error] || 'try again';
   if(d.error === 'name_taken'){ NAME_OK = false; $('name-note').className = 'note no'; $('name-note').textContent = 'already taken'; }
@@ -712,8 +712,8 @@ function paintPicked(){
   $('pick-box').classList.toggle('hide', !!PICK);
   if(!PICK){ p.classList.add('hide'); p.innerHTML = ''; return; }
   p.classList.remove('hide'); p.style.setProperty('--skin', SKIN[PICK.view] || '#333366');
-  p.innerHTML = '<small>the box · ' + esc(NOM[PICK.view]?.[0] || '') + '</small><b>' + esc(PICK.text) + '</b><span class="pals">' +
-    (PICK.palette || []).filter(okColor).map(x => '<i style="background:' + x + '"></i>').join('') + '</span><button type="button" id="picked-x">another box</button>';
+  p.innerHTML = '<small>the element · ' + esc(NOM[PICK.view]?.[0] || '') + '</small><b>' + esc(PICK.text) + '</b><span class="pals">' +
+    (PICK.palette || []).filter(okColor).map(x => '<i style="background:' + x + '"></i>').join('') + '</span><button type="button" id="picked-x">another element</button>';
   $('picked-x').onclick = pickUp;
 }
 
@@ -787,7 +787,7 @@ $('list').addEventListener('click',async e=>{
   const c=document.createElement('div');c.id='matter';c.innerHTML='<div class="mono">reading the matter…</div>';b.after(c);
   const{data:m,error}=await sb.rpc('my_box_matter',{p_kind:KIND[vue],p_ref:String(o.ref)});
   if(error)console.error('[my_box_matter]',error.message);
-  if(error||!m){c.innerHTML='<div class="mono">'+(error?'unavailable':'this box is empty')+'</div>';return;}
+  if(error||!m){c.innerHTML='<div class="mono">'+(error?'unavailable':'this element is empty')+'</div>';return;}
   const groups=Object.entries(m.matter||{}).filter(([,a])=>(a||[]).length).map(([k,a])=>
     '<div class="grp"><span class="w">'+(k==='habits'?'how':(MI[k]||['',''])[1]||k)+'</span>'+a.map(x=>'<span class="mi '+(MI[k]||[''])[0]+'">'+esc(x.text)+'</span>').join('')+'</div>').join('');
   const ex=m.extra||{};
@@ -795,7 +795,7 @@ $('list').addEventListener('click',async e=>{
   c.innerHTML=
     '<div class="grp"><span class="w">palette</span><span class="pal">'+(m.palette||[]).map(x=>'<i style="background:'+esc(x)+'"></i>').join('')+'</span>'+((m.palette||[]).length?'':'<span class="mono">no intention yet — the curated style decides</span>')+'</div>'+
     groups+(extras.length?'<div class="grp"><span class="w">context</span><span class="mono" style="color:rgba(255,255,255,.75)">'+extras.join(' · ')+'</span></div>':'')+
-    '<div class="next"><button class="btn" id="mt-go" type="button">Pick up this box</button><button class="btn-back" id="mt-x" type="button" style="color:#fff">another box</button></div>';
+    '<div class="next"><button class="btn" id="mt-go" type="button">Pick up this box</button><button class="btn-back" id="mt-x" type="button" style="color:#fff">another element</button></div>';
   $('mt-go').onclick=()=>{PICK={kind:KIND[vue],ref:String(o.ref),text:m.text,view:m.view,palette:m.palette||[]};
     $('sel').classList.remove('is-open');paintPicked();joyPaint();$('picked').scrollIntoView({behavior:'smooth',block:'center'});};
   $('mt-x').onclick=()=>renderSel();
@@ -856,7 +856,7 @@ function navTap(){ const a = navAction(); if(a) a[1](); }
 function navAction(){
   const vis = id => !$(id).classList.contains('hide');
   if(document.querySelector('[data-pay]')) return ['Pay', () => { const b = document.querySelector('[data-pay]'); b.scrollIntoView({ behavior:'smooth', block:'center' }); b.click(); }];
-  if(vis('form')) return PICK ? ['Quote', () => $('ask').click()] : ['Box', pickUp];
+  if(vis('form')) return PICK ? ['Quote', () => $('ask').click()] : ['Element', pickUp];
   if(vis('s-out')) return ['Sign in', () => ssoLogin(false, '/luxury')];
   if(vis('s-nothp')) return ['Get Higher', () => $('get-higher').click()];
   return null;

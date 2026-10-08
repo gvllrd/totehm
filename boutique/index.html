@@ -79,6 +79,29 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 .fs-perf{position:fixed;inset:0;z-index:90;background:var(--navy);border:11px solid transparent;border-image-source:var(--tile-full);border-image-slice:11;border-image-repeat:round;display:none;flex-direction:column;align-items:center;justify-content:center;padding:60px 30px 40px}
 .fs-perf.show{display:flex}
 .fs-perf .fs-back{position:fixed;top:16px;left:16px;z-index:92}
+/* 08/10 — Wah : « la page de résultat doit afficher tous les détails du totehm
+   cloth, avec la box (l'élément) en position proéminente ». Fond noir dans le
+   cadre perforé navy ; l'élément porte la couleur de sa vue ; le nom en Coral. */
+#decode-fs{background:#000;justify-content:flex-start;overflow-y:auto;overscroll-behavior:contain;padding:max(56px,8dvh) 18px 40px}
+.dc{width:100%;max-width:520px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.dc-name{font-family:'Quantico',sans-serif;font-size:clamp(24px,7vw,34px);line-height:1.2;color:var(--coral);background:#111114;border-radius:12px;padding:8px 18px;word-break:break-word}
+.dc-meta{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#909090}
+.dc-el{width:100%;background:var(--skin,#333366);color:#fff;padding:18px 18px 16px;display:flex;flex-direction:column;align-items:center;gap:9px}
+.dc-el small{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.76)}
+.dc-el b{font-family:'Quantico',sans-serif;font-weight:400;font-size:clamp(19px,5.4vw,26px);line-height:1.35;word-break:break-word}
+.dc-el .ints{display:flex;flex-wrap:wrap;gap:4px 12px;justify-content:center;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:700}
+.dc-el .lock{font-family:'Space Mono',monospace;font-size:11px;line-height:1.7;color:rgba(255,255,255,.88);max-width:30ch}
+.dc-pal{display:flex;gap:4px;justify-content:center}.dc-pal i{width:14px;height:14px;display:block}
+.dc-mat{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
+.dc-mat span{font-family:'Quantico',sans-serif;font-size:11px;color:#fff;padding:2px 8px;background:var(--navy)}
+.dc-mat span.o{background:var(--blue)}.dc-mat span.r{background:var(--rep)}.dc-mat span.w{background:#5b2652}.dc-mat span.v{background:#2b3a73}
+.dc-art{width:min(100%,340px);aspect-ratio:3/4;background:#0a0a0c;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.dc-art.is-wait{aspect-ratio:auto;height:88px}
+.dc-art img{width:100%;height:100%;object-fit:contain;display:block}
+.dc-art span{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;padding:0 24px;line-height:1.8}
+.dc-facts{display:flex;flex-direction:column;gap:3px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#b0b0b0}
+.dc-facts .by{font-family:'Quantico',sans-serif;font-size:12px;letter-spacing:0;text-transform:none;color:var(--coral)}
+.dc-stage{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#fff;background:#1f1f24;border-radius:8px;padding:5px 10px}
 .fs-msg{font-family:'Quantico',sans-serif;font-weight:400;font-size:clamp(18px,4.4vw,26px);color:#fff;line-height:1.55;text-align:center;max-width:640px;font-style:italic;white-space:pre-wrap;overflow-y:auto;max-height:78vh}
 
 /* LUXURY : sous-titre + défilement horizontal logos */
@@ -137,6 +160,10 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 
 
 
+
+
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -147,6 +174,11 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 .btn-sig:hover,
 .btn-back:hover,
 .note.dim:hover,
+.dc-meta:hover,
+.dc-el small:hover,
+.dc-el .lock:hover,
+.dc-art span:hover,
+.dc-facts:hover,
 .brand-subtitle:hover,
 .brand-names:hover,
 .brand-legal:hover,
@@ -276,10 +308,10 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   <a class="btn-sig" id="brand-btn" href="https://www.totehm.com" data-com="/">Experience our dope branding</a>
 </section>
 
-<!-- FULL-SCREEN : résultat Decode -->
-<div class="fs-perf" id="decode-fs">
+<!-- FULL-SCREEN : le Totehm Cloth décodé — l'élément en tête (08/10) -->
+<div class="fs-perf" id="decode-fs" role="dialog" aria-label="A decoded Totehm Cloth">
   <button class="btn-back fs-back" id="decode-back">Back in Time</button>
-  <div class="fs-msg" id="decode-msg"></div>
+  <div class="dc" id="decode-msg"></div>
 </div>
 
 <button id="conn-bar" type="button" aria-label="member space"><span class="dot"></span>CONNECT WITH MY TOTEHM</button>
@@ -414,39 +446,69 @@ window.addEventListener('pageshow',e=>{
 
 function morph(btn,input,note){btn.onclick=()=>{btn.classList.add('hide');input.classList.remove('hide');if(note){note.classList.remove('hide');}setTimeout(()=>input.focus(),100);};}
 
-/* DECODE a Totehm Cloth */
+/* DECODE a Totehm Cloth — 08/10 : LA PAGE DU CLOTH, L'ÉLÉMENT EN TÊTE.
+   Wah : « c'est ce nom du totehm cloth que l'on peut accéder au design généré :
+   la page de résultat affiche tous les détails, avec la box (élément) en position
+   proéminente ». `reveal_cloth` dit ce qu'on a le droit de voir — la MÊME règle
+   que Reveal the Box : invité = la vue, le vêtement, l'étape ; FIGHER = l'élément
+   et ses intentions ; propriétaire/abonné = + la matière et la taille. L'œuvre ne
+   se montre qu'une fois la pièce EXPÉDIÉE (`cloth-art`, URL signée 1 h) : la
+   surprise tient jusqu'au déballage. À l'écran on dit « element », jamais « box ».
+   L'adresse suit le Cloth ouvert (`/?decode=0.nom`) : elle se partage. */
 let DECODE_SEQ=0,DECODED=null;
+const esc=v=>{const d=document.createElement('div');d.textContent=v==null?'':String(v);return d.innerHTML;};
+const DC_VIEW={habits:['my habits','#333366'],objectives:['my objectives','#36498c'],repulsions:['my repulsions','#743169'],wisdom:['my wisdom','#743169'],visions:['my vision','#36498c']};
+const DC_INT={fight:['Fight','#E24B4A','BODY'],flow:['Flow','#e48b31','BODY'],enrich:['Enrich','#fcbe21','MENTAL'],love:['Love','#639922','SPIRIT'],
+  express:['Express','#1D9E75','SOUL'],focus:['Focus','#378ADD','MENTAL'],celebrate:['Celebrate','#7F77DD','SOUL']};
+const DC_MI={habits:'',objectives:'o',repulsions:'r',wisdom:'w',visions:'v'};
+const DC_STAGE={making:'in the making',production:'in production',shipped:'shipped',cancelled:'cancelled'};
 morph($('decode-btn'),$('decode-input'),$('decode-note'));
-$('decode-input').addEventListener('keydown',async(e)=>{
-  if(e.key!=='Enter')return;
-  const v=$('decode-input').value.trim();const note=$('decode-note');
+function decodeHTML(d,signed){
+  const V=DC_VIEW[d.view]||['the element','#333366'];
+  const meta=['Totehm Cloth',d.line==='luxury'?'Luxury':'Streetwear',d.created_at||'',d.edition&&d.edition_of?'No. '+d.edition+' / '+d.edition_of:'',d.test?'test':''].filter(Boolean).join(' · ');
+  let el;
+  if(d.legacy)el='<div class="dc-el" style="--skin:#333366"><small>the message</small><b>'+esc('“'+(d.message||'')+'”')+'</b></div>';
+  else if(d.level==='locked')el='<div class="dc-el" style="--skin:'+V[1]+'"><small>'+esc(V[0])+'</small><div class="lock">The element behind this cloth opens to FIGHER members.</div>'+
+    (signed?'':'<button class="btn-sig" type="button" data-eco-connect="1">CONNECT WITH MY TOTEHM</button>')+'</div>';
+  else{
+    const ints=(d.is||[]).filter(i=>DC_INT[i]).map(i=>'<span style="color:'+DC_INT[i][1]+'">'+DC_INT[i][0]+'</span><span style="color:rgba(255,255,255,.55)">'+DC_INT[i][2]+'</span>').join('');
+    const pal=(d.palette||[]).filter(c=>/^#[0-9a-f]{3,6}$/i.test(c)).map(c=>'<i style="background:'+c+'"></i>').join('');
+    el='<div class="dc-el" style="--skin:'+V[1]+'"><small>'+esc(V[0])+'</small><b>'+esc(d.text||'')+'</b>'+(ints?'<div class="ints">'+ints+'</div>':'')+(pal?'<div class="dc-pal">'+pal+'</div>':'')+'</div>';
+  }
+  const mat=d.matter&&typeof d.matter==='object'?Object.entries(d.matter).flatMap(([k,a])=>(Array.isArray(a)?a:[]).map(x=>'<span class="'+(DC_MI[k]||'')+'">'+esc(x?.text||'')+'</span>')):[];
+  const art=d.line==='luxury'?'':'<div class="dc-art'+(d.art?'':' is-wait')+'" id="dc-art"><span>'+(d.art?'…':d.stage==='cancelled'?'cancelled':'The artwork lands with the cloth.')+'</span></div>';
+  const facts=[d.garment?esc(d.garment)+(d.size?' · '+esc(d.size):''):'',d.style?esc(d.style):'',d.owner?'by <span class="by">'+esc(d.owner)+'</span>':''].filter(Boolean).map(x=>'<span>'+x+'</span>').join('');
+  return '<div class="dc-name">'+esc(d.name)+'</div><div class="dc-meta">'+esc(meta)+'</div>'+el+
+    (mat.length?'<div class="dc-mat">'+mat.join('')+'</div>':'')+art+(facts?'<div class="dc-facts">'+facts+'</div>':'')+
+    (d.stage&&DC_STAGE[d.stage]?'<div class="dc-stage">'+DC_STAGE[d.stage]+'</div>':'');
+}
+async function loadArt(name,seq){
+  try{
+    const r=await fetch(SSO_FN+'cloth-art',{method:'POST',headers:{'content-type':'application/json','apikey':SB_ANON,'authorization':'Bearer '+SB_ANON},body:JSON.stringify({name})});
+    const j=await r.json().catch(()=>({}));
+    if(seq!==DECODE_SEQ)return;
+    if(!r.ok||!j.url){if(r.status!==404)console.error('[cloth-art]',r.status,j.error);const b=$('dc-art');if(b){b.classList.add('is-wait');b.innerHTML='<span>The artwork lands with the cloth.</span>';}return;}
+    const b=$('dc-art');if(b)b.innerHTML='<img src="'+esc(j.url)+'" alt="'+esc(name)+' · the artwork">';
+  }catch(e){console.error('[cloth-art]',e&&e.message||e);}
+}
+async function decode(v){
+  const note=$('decode-note');
   if(v.length<2){note.className='note dim';note.textContent='name of the cloth';return;}
   note.className='note dim';note.textContent='decoding…';
-  /* 05/10 : `reveal_cloth` — la MÊME règle que Reveal the Box (invité : la
-     vue et la date ; FIGHER : la Box ; propriétaire/abonné : + la matière ;
-     pièce d'avant les Box : son message). Lire `totehm_clothes` ne trouvait
-     rien : la table n'est lisible que par son propriétaire. */
   const seq=++DECODE_SEQ;
-  const {data,error}=await sb.rpc('reveal_cloth',{p_name:v});
+  const [{data,error},{data:{session}}]=await Promise.all([sb.rpc('reveal_cloth',{p_name:v}),sb.auth.getSession()]);
   if(seq!==DECODE_SEQ)return;
   if(error){console.error('[reveal_cloth]',error.message);note.className='note dim';note.textContent='try again';return;}
   DECODED=data||{found:false};
   if(!data?.found){note.className='note no';note.textContent='no Totehm Cloth by that name';return;}
   note.textContent='';
-  const VUE={habits:'my habits',objectives:'my objectives',repulsions:'my repulsions',wisdom:'my wisdom',visions:'my vision'};
-  const INT={fight:'Fight',flow:'Flow',enrich:'Enrich',love:'Love',express:'Express',focus:'Focus',celebrate:'Celebrate'};
-  let t;
-  if(data.legacy) t='"'+(data.message||'')+'"';
-  else if(data.level==='locked') t=data.name+'\n'+(VUE[data.view]||'a box')+' · '+(data.created_at||'')+(data.style?' · '+data.style:'')+'\n\nThe box behind this cloth opens to FIGHER members.';
-  else{
-    const ints=(data.is||[]).map(i=>INT[i]).filter(Boolean).join(' · ');
-    const mat=data.matter&&typeof data.matter==='object'?Object.values(data.matter).flat().map(x=>x?.text||'').filter(Boolean):[];
-    t=data.name+'\n'+(VUE[data.view]||'')+(data.owner?' · by '+data.owner:'')+(data.style?' · '+data.style:'')+'\n\n"'+(data.text||'')+'"'+(ints?'\n'+ints:'')+(mat.length?'\n\n'+mat.join(' · '):'');
-  }
-  $('decode-msg').textContent=t;
-  $('decode-fs').classList.add('show');
-});
-$('decode-back').onclick=()=>{$('decode-fs').classList.remove('show');};
+  $('decode-msg').innerHTML=decodeHTML(data,!!session);
+  $('decode-fs').classList.add('show');$('decode-fs').scrollTop=0;
+  history.replaceState(null,'','/?decode='+encodeURIComponent(data.name));
+  if(data.art)loadArt(data.name,seq);
+}
+$('decode-input').addEventListener('keydown',e=>{if(e.key==='Enter')decode($('decode-input').value.trim());});
+$('decode-back').onclick=()=>{$('decode-fs').classList.remove('show');if(new URLSearchParams(location.search).has('decode'))history.replaceState(null,'','/');};
 
 /* EXPERIENCE OUR BRANDING */
 document.querySelectorAll('[data-com]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();ssoVersDomaine(sb,'com','https://www.totehm.com'+a.dataset.com);}));
@@ -516,11 +578,14 @@ document.querySelectorAll('[data-club]').forEach(a => a.addEventListener('click'
 }));
 
 /* Diagnostic — des booléens, jamais une valeur de membre. */
-const BUILD='2026-10-06-decode';
+const BUILD='2026-10-08-decode';
 window.__totehm_boutique=()=>({ build:BUILD, page:'home', luxury_link:!!document.querySelector('a[href="/luxury"]'),
   club_links:document.querySelectorAll('[data-club]').length, logos:document.querySelectorAll('.brand-logo,img[src*="champion"]').length,
   collab:/Champion 2026/.test(document.getElementById('collab')?.textContent||''), branding_com:document.getElementById('brand-btn')?.dataset.com==='/',
-  joystick:!!document.getElementById('nav-box'), decode:DECODED?{found:!!DECODED.found,level:DECODED.level||null}:null });
+  joystick:!!document.getElementById('nav-box'), decode:DECODED?{found:!!DECODED.found,level:DECODED.level||null,art:!!DECODED.art,stage:DECODED.stage||null}:null });
+/* 08/10 — `/?decode=0.nom` ouvre directement la page du Cloth (lien de la fin de commande, partage). */
+{ const q=(new URLSearchParams(location.search).get('decode')||'').trim();
+  if(q){ $('decode-btn').click(); $('decode-input').value=q; decode(q); } }
 
 /* ══ MEMBER SPACE ══ */
 (()=>{
