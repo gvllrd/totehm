@@ -26,6 +26,13 @@
 // 05/10 : le paiement est traité par `stripe-webhook` (cas `cloth`) — la
 // pièce passe `paid`, la génération n8n est déclenchée. Un testeur actif
 // (`_boutique_test_mode`) paie en MODE TEST Stripe, la pièce porte `test`.
+//
+// 08/10 : le NOM est posé ici (`0.` = l'année de collection, juin → mai) ; un
+// paiement abandonné puis repris REPREND son brouillon (`_cloth_draft_put` :
+// même pièce, son ancien Checkout est fermé) au lieu de buter sur « name
+// taken » ; un style épuisé est refusé ; le Checkout expire en 31 min (le
+// ménage `cleanup-drafts` efface les brouillons de plus de 2 h : aucun ne
+// peut être payé après). Réponse : { url, name }.
 // ═══════════════════════════════════════════════════════════════════════
 import Stripe from 'npm:stripe@14';
 import { createClient } from 'npm:@supabase/supabase-js@2';
@@ -36,6 +43,12 @@ const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SE
   { auth: { persistSession: false } });
 
 const KINDS = ['habit', 'objective', 'repulsion', 'wisdom', 'vision'];
+
+// L'année de collection : 0 = juin 2026 → mai 2027 (comme compose-artwork et luxury-quote).
+function epochPrefix(): string {
+  const d = new Date(), y = d.getUTCFullYear(), ey = d.getUTCMonth() >= 5 ? y : y - 1;
+  return Math.max(ey - 2026, 0) + '.';
+}
 
 Deno.serve(async (req) => {
   const cors = corsHeaders(req.headers.get('origin'), SITE_BOUT);
@@ -51,7 +64,9 @@ Deno.serve(async (req) => {
     return Response.json({ error: 'bad request' }, { status: 400, headers: cors });
   }
   const garment_id = String(body.garment_id ?? '');
-  const name = String(body.name ?? '').trim();
+  // Le préfixe vient du SERVEUR : ce que la page envoie après « 0. » seulement.
+  const raw = String(body.name ?? '').trim().replace(/^\d+\./, '').replace(/\s+/g, ' ').trim();
+  const name = epochPrefix() + raw;
   const size = String(body.size ?? '');
   const style_id = String(body.style_id ?? '');
   const box = (body.box ?? {}) as { kind?: string; ref?: string };
@@ -59,7 +74,7 @@ Deno.serve(async (req) => {
   if (!box.kind || !KINDS.includes(box.kind) || !box.ref) {
     return Response.json({ error: 'choose a box' }, { status: 422, headers: cors });
   }
-  if (!/^\d+\..{2,40}$/.test(name)) {
+  if (raw.length < 2 || raw.length > 40) {
     return Response.json({ error: 'name' }, { status: 422, headers: cors });
   }
 
@@ -93,13 +108,11 @@ Deno.serve(async (req) => {
   }
 
   // ── Le style est CURATÉ (MASTER §53) : il doit exister et être ouvert.
-  const { data: st } = await sb.from('artistic_styles').select('id,active')
+  //    08/10 : et pas épuisé (7 pièces par style, `remaining_capacity`).
+  const { data: st } = await sb.from('artistic_styles').select('id,active,status,remaining_capacity')
     .eq('id', style_id).maybeSingle();
-  if (!st?.active) return Response.json({ error: 'style' }, { status: 422, headers: cors });
-
-  // ── Nom unique
-  const { data: free } = await sb.rpc('name_available', { candidate: name });
-  if (!free) return Response.json({ error: 'name taken' }, { status: 409, headers: cors });
+  if (!st?.active || (st.status && st.status !== 'active')) return Response.json({ error: 'style' }, { status: 422, headers: cors });
+  if (st.remaining_capacity != null && st.remaining_capacity <= 0) return Response.json({ error: 'style sold out' }, { status: 409, headers: cors });
 
   // ── Le mode test (05/10 soir) : un testeur actif paie avec la clé TEST de
   //    Stripe (carte 4242…), au vrai prix — aucun argent réel. Sans la clé
@@ -113,43 +126,57 @@ Deno.serve(async (req) => {
   if (test === true && !testKey) return Response.json({ error: 'test_unavailable' }, { status: 503, headers: cors });
   const pay = test === true ? new Stripe(testKey!) : stripe;
 
-  // ── Brouillon
-  const { data: cloth, error } = await sb.from('totehm_clothes')
-    .insert({
-      garment_id, name, size, style_id, price: g.price, status: 'draft', test: test === true,
-      user_id: user.id, email: user.email,
-      message: snap.text,
-      box_kind: box.kind, box_ref: String(box.ref),
-      box_snapshot: snap, palette: snap.palette ?? [],
-    })
-    .select('id').single();
+  // ── Brouillon : posé ou REPRIS en une transaction (verrou sur le nom). Le nom
+  //    est libre s'il n'est tenu que par MON brouillon (paiement abandonné).
+  const { data: put, error } = await sb.rpc('_cloth_draft_put', {
+    p_user: user.id, p_email: user.email ?? null, p_name: name, p_garment: garment_id, p_size: size,
+    p_style: style_id, p_price: g.price, p_test: test === true, p_kind: box.kind, p_ref: String(box.ref), p_snap: snap,
+  });
   if (error) {
-    // 23505 = nom pris entre la vérification et l'insertion
-    const taken = (error as { code?: string }).code === '23505';
-    console.error('[create-checkout] insert', error.message);
-    return Response.json({ error: taken ? 'name taken' : 'db' }, { status: taken ? 409 : 500, headers: cors });
+    console.error('[create-checkout] draft', error.message);
+    return Response.json({ error: 'try again' }, { status: 503, headers: cors });
+  }
+  if (!put?.ok) return Response.json({ error: put?.error === 'name' ? 'name' : 'name taken' }, { status: 409, headers: cors });
+  const cloth = { id: String(put.id) };
+
+  // Le Checkout précédent de CE brouillon est fermé : jamais deux sessions
+  // payables pour une seule pièce. Déjà expiré ou fermé : rien à faire.
+  if (put.old_session) {
+    const old = put.old_test ? (testKey ? new Stripe(testKey) : null) : stripe;
+    try { await old?.checkout.sessions.expire(String(put.old_session)); }
+    catch (e) { console.log('[create-checkout] old session', String((e as Error)?.message ?? e).slice(0, 120)); }
   }
 
-  const session = await pay.checkout.sessions.create({
-    mode: 'payment',
-    customer_email: user.email ?? undefined,
-    line_items: [{
-      price_data: {
-        currency: 'eur',
-        unit_amount: Math.round(Number(g.price) * 100),
-        product_data: { name: `${test ? 'TEST · ' : ''}Totehm Cloth — ${name}`, description: `${g.title} · ${size} · Limited Original Piece` },
-      },
-      quantity: 1,
-    }],
-    shipping_address_collection: { allowed_countries: ['PT','FR','ES','DE','IT','BE','NL','GB','US','CA'] },
-    // SÉCURITÉ : product:'cloth' isole ce flux dans le webhook (routage
-    // sur metadata.product — ne jamais retirer ce filtre).
-    metadata: { cloth_id: cloth.id, product: 'cloth', test: test === true ? '1' : '0' },
-    // Chemins ABSOLUS sous cleanUrls (CLAUDE.md, 16/09).
-    success_url: SITE_BOUT + '/streetwear?paid=1&cloth=' + cloth.id,
-    cancel_url: SITE_BOUT + '/streetwear?cancel=1',
-  });
+  let session: Stripe.Checkout.Session;
+  try {
+    session = await pay.checkout.sessions.create({
+      mode: 'payment',
+      // 31 min : sous les 2 h du ménage des brouillons, jamais une pièce effacée payable.
+      expires_at: Math.floor(Date.now() / 1000) + 31 * 60,
+      customer_email: user.email ?? undefined,
+      line_items: [{
+        price_data: {
+          currency: 'eur',
+          unit_amount: Math.round(Number(g.price) * 100),
+          product_data: { name: `${test ? 'TEST · ' : ''}Totehm Cloth — ${name}`, description: `${g.title} · ${size} · Limited Original Piece` },
+        },
+        quantity: 1,
+      }],
+      shipping_address_collection: { allowed_countries: ['PT','FR','ES','DE','IT','BE','NL','GB','US','CA'] },
+      // SÉCURITÉ : product:'cloth' isole ce flux dans le webhook (routage
+      // sur metadata.product — ne jamais retirer ce filtre).
+      metadata: { cloth_id: cloth.id, product: 'cloth', test: test === true ? '1' : '0' },
+      // Chemins ABSOLUS sous cleanUrls (CLAUDE.md, 16/09).
+      success_url: SITE_BOUT + '/streetwear?paid=1&cloth=' + cloth.id,
+      cancel_url: SITE_BOUT + '/streetwear?cancel=1',
+    });
+  } catch (e) {
+    console.error('[create-checkout] stripe', String((e as Error)?.message ?? e).slice(0, 200));
+    return Response.json({ error: 'stripe' }, { status: 502, headers: cors });
+  }
 
-  await sb.from('totehm_clothes').update({ stripe_session_id: session.id }).eq('id', cloth.id);
-  return Response.json({ url: session.url }, { headers: cors });
+  const { error: uErr } = await sb.from('totehm_clothes').update({ stripe_session_id: session.id })
+    .eq('id', cloth.id).eq('status', 'draft');
+  if (uErr) console.error('[create-checkout] session id', uErr.message);
+  return Response.json({ url: session.url, name }, { headers: cors });
 });
