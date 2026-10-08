@@ -1096,6 +1096,9 @@ body.v-visions{--paper:#2b3a73}
   text-transform:uppercase;color:rgba(255,255,255,.55)}
 .ms-st.is-live{color:#fff}
 .ms-w{font-family:'Quantico',sans-serif;font-size:11px;line-height:1.4}
+/* 08/10 (ter) — un Totehm Cloth dans une leçon ou une vision : même porte
+   sombre qu'un space ; son NOM (0.xxx) en Quantico Coral, comme partout. */
+.mc-n{color:var(--coral)}
 /* ══ UNE MINI-BOÎTE NE PORTE JAMAIS LA COULEUR DE SON HÔTE · 16/09/2026
    La règle du produit est « la mini porte la couleur de CE QU'ELLE EST ».
    Elle tenait tant que les familles ne se touchaient pas. Avec les liens
@@ -4098,6 +4101,9 @@ const RO=(()=>{try{const v=new URLSearchParams(location.search).get('ro');
 let roSeq=0;
 /* Les spaces de SPACE, par habitude (`habit_spaces`) : clé = norm(texte). */
 const HSPACES={seq:0, par:new Map()};
+/* Les Totehm Cloths de higher.boutique, par leçon et par vision
+   (`element_cloths`) : clé = 'w:<id>' ou 'v:<id>'. 08/10/2026 (ter). */
+const ECLOTHS={seq:0, par:new Map()};
 
 let state={habits:[],vis:'private'};
 let busy=false, fpTarget=null, fpStage='freq', pendingF=null, pendingI=null, filterF=null, filterI=null;
@@ -4257,7 +4263,7 @@ async function loadRO(){
   document.title=(data.pseudo||RO)+' · TOTEHM';
   filterF=null;filterI=null;
   renderHabits();
-  loadHabitSpaces();
+  loadHabitSpaces(); loadElementCloths();
   return true;
 }
 function roFail(msg){
@@ -4297,6 +4303,44 @@ const miniSpace=s=>'<button type="button" class="mini m-s" data-space="'+esc(Str
   +'<span class="ms-st'+(s.state==='am'?' is-live':'')+'">'+esc(ETAT_SPACE[s.state]||'space')+'</span>'
   +'<span class="ms-w">'+esc([(s.exact&&s.exact.place)||s.city||'', quandSpace(s)].filter(Boolean).join(' · '))+'</span></button>';
 const spacesDe=x=>HSPACES.par.get(norm(srv(x)))||null;
+
+/* ══ LA BOUTIQUE APPARAÎT DANS WISDOM ET VISION · 08/10/2026 (ter) ══════
+   Wah : « on a lié SPACE à COM ; on devrait faire la même chose avec
+   higher.boutique : la fonction totehmiser devrait aller se caler dans les
+   deux vues ». Un vêtement ne porte qu'une leçon ou une vision (lot du
+   08/10 bis) : c'est là que TOTEHMIZE se pose. Fermée, la boîte dit combien
+   de Cloths la portent (« 2 CLOTHS ») ; ouverte, elle les montre (le nom
+   0.xxx en Quantico Coral, l'étape) et un tap ouvre sa page Decode sur la
+   boutique par le pont ; « + totehmize » (la mienne seulement) part sur
+   /streetwear avec CET élément déjà choisi. Droits : ceux du serveur
+   (`element_cloths` : les miennes, test compris ; celles d'un autre si je
+   lis son Totehm, jamais un test). Une réponse tardive est jetée. */
+async function loadElementCloths(){
+  if(!me) return;
+  const seq=++ECLOTHS.seq, uid=me.id;
+  const {data,error}=await sb.rpc('element_cloths',{p_pseudo:RO||null});
+  if(seq!==ECLOTHS.seq||uid!==me?.id) return;
+  if(error){ console.error('[element_cloths]',error.message); return; }
+  if(!data||!data.ok) return;
+  const L={wisdom:'w',vision:'v'};
+  ECLOTHS.par=new Map((data.elements||[]).filter(x=>L[x.kind]).map(x=>[L[x.kind]+':'+String(x.ref),
+    {total:x.total|0,cloths:Array.isArray(x.cloths)?x.cloths:[]}]));
+  renderZone();
+}
+const ETAT_CLOTH={making:'in the making',production:'in production',shipped:'shipped'};
+const miniCloth=c=>'<button type="button" class="mini m-s m-c" data-cloth="'+esc(String(c.name))+'">'
+  +'<span class="ms-st">'+esc([ETAT_CLOTH[c.stage]||'cloth', c.line==='luxury'?'luxury':'', c.test?'test':''].filter(Boolean).join(' · '))+'</span>'
+  +'<span class="ms-w mc-n">'+esc(c.name)+'</span></button>';
+const clothsDe=(k,id)=>ECLOTHS.par.get(k+':'+String(id))||null;
+const nCloths=n=>n?'<span class="v-frq v-spc">'+n+(n>1?' cloths':' cloth')+'</span>':'';
+/* Le groupe « cloths » d'une boîte ouverte : ses pièces, puis « + totehmize ». */
+function groupeCloths(k,x,ouverte){
+  if(!ouverte) return '';
+  const cl=clothsDe(k,x.id), n=cl?cl.total:0;
+  const g=(cl?cl.cloths.map(miniCloth).join(''):'')
+    +((RO||!String(x.t||'').trim())?'':'<button type="button" class="dash" data-totehmize="'+(k==='w'?'wisdom':'vision')+':'+esc(String(x.id))+'">+ totehmize</button>');
+  return groupe(n>3?'cloths · 3 of '+n:'cloths',g);
+}
 
 /* ══ LES 7 INTENTIONS (source : totehm_map.html) ══ */
 const INTS=[
@@ -4810,7 +4854,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-07-croix';
+const BUILD='2026-10-08-cloths';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -5684,7 +5728,7 @@ function renderZone(){
   peintTraits();
   window.__totehm_zone={version:BUILD, vue:view, session:!!me, arbre_charge:tripsLoaded,
     habitudes:(state.habits||[]).length, objectifs:TRIPS.length, repulsions:REPS.length,
-    lecons:TEACH.length, visions:VIS.length,
+    lecons:TEACH.length, visions:VIS.length, cloths:[...ECLOTHS.par.values()].reduce((a,x)=>a+x.total,0),
     filtre:{rythme:!!filterF, intention:!!filterI},
     boite_ouverte:open?open.kind:null, choix:pk?pk.q:null,
     classement:ordering, ordre_du_membre:!!state.ord};
@@ -5897,14 +5941,15 @@ function intMots(x){ const l=intIds(x);
 function vueTeaching(w,k){
   const ouverte = !!open && open.kind==='w' && String(open.id)===String(w.id);
   const rs=repsOfTeach(w);
-  const unit = '';
+  const unit = nCloths(clothsDe('w',w.id)?.total|0);
   const pkWR = (ouverte&&pkOn('lien','wr',w.id)) ? lienPicker('wr',w.id,
       rs.map(r=>String(r.id)),
       REPS.map(r=>({id:r.id,txt:r.text})), 'a new repulsion','r') : '';
   const minis = groupe('learned from', ouverte
     ? rs.map(r=>miniDel('r',r.id,r.text,'data-unlink="wr:'+esc(String(w.id))+'|'+esc(String(r.id))+'"')).join('')
       + plus('lien','wr',w.id,'repulsion')
-    : rs.map(r=>mini('r',r.id,r.text)).join(''), pkWR);
+    : rs.map(r=>mini('r',r.id,r.text)).join(''), pkWR)
+    + groupeCloths('w',w,ouverte);
   let haut='', bas='';
   /* Une leçon hérite par ses répulsions, qui héritent de leurs
      habitudes : deux sauts, et le trait reste vrai. */
@@ -5920,14 +5965,15 @@ function vueTeaching(w,k){
 function vueVision(v,k){
   const ouverte = !!open && open.kind==='v' && String(open.id)===String(v.id);
   const ts=tripsOfVision(v);
-  const unit = '';
+  const unit = nCloths(clothsDe('v',v.id)?.total|0);
   const pkVO = (ouverte&&pkOn('lien','vo',v.id)) ? lienPicker('vo',v.id,
       ts.map(t=>String(t.id)),
       TRIPS.map(t=>({id:t.id,txt:t.text})), 'a new objective','o') : '';
   const minis = groupe('reached by', ouverte
     ? ts.map(t=>miniDel('o',t.id,t.text,'data-unlink="vo:'+esc(String(v.id))+'|'+esc(String(t.id))+'"')).join('')
       + plus('lien','vo',v.id,'objective')
-    : ts.map(t=>mini('o',t.id,t.text)).join(''), pkVO);
+    : ts.map(t=>mini('o',t.id,t.text)).join(''), pkVO)
+    + groupeCloths('v',v,ouverte);
   let haut='', bas='';
   return ligne(boiteHTML({kind:'v',id:v.id,titre:v.t,unit,minis,ouverte,haut,bas,tue:'Delete vision'}),
     ouverte?'open':'',
@@ -6279,7 +6325,7 @@ function cable(box){
        qui les traite existait et n'était jamais atteint. */
     const el=e.target.closest('[data-fint],[data-ffq],[data-fclear],[data-fx],'
       +'[data-open],[data-add],[data-x],[data-pk],[data-int],[data-mv],[data-go],'
-      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-newspace],[data-zoom],[data-copy]');
+      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-newspace],[data-cloth],[data-totehmize],[data-zoom],[data-copy]');
     if(!el)return;
     const d=el.dataset;
     if(d.copy){ e.stopPropagation(); copierBox(el,d.copy); return; }
@@ -6291,6 +6337,9 @@ function cable(box){
     /* Un space s'ouvre sur SPACE, par le pont (même en lecture). */
     if(d.space){ e.stopPropagation(); ssoVersDomaine(sb,'space','https://www.totehm.space/?spot='+encodeURIComponent(d.space)); return; }
     if(d.newspace!==undefined){ e.stopPropagation(); if(!RO) ssoVersDomaine(sb,'space','https://www.totehm.space/?v=plan'); return; }
+    /* Un Cloth s'ouvre sur sa page Decode ; « + totehmize » part avec CET élément. */
+    if(d.cloth){ e.stopPropagation(); ssoVersDomaine(sb,'boutique','https://www.higher.boutique/?decode='+encodeURIComponent(d.cloth)); return; }
+    if(d.totehmize){ e.stopPropagation(); if(!RO) ssoVersDomaine(sb,'boutique','https://www.higher.boutique/streetwear?wear='+encodeURIComponent(d.totehmize)); return; }
     if(RO&&!['open','go','x','fint','ffq','fclear','fx'].some(k=>d[k]!==undefined))return;
 
     /* ⚠️ ON PEUT OUVRIR UNE BOÎTE EN MODE CLASSEMENT · 09/09/2026.
@@ -7857,7 +7906,7 @@ $('mw-signout').onclick=async()=>{
    frame ou pour de bon, le Totehm de celui d'avant. */
 let sesSeq=0;
 function quitter(){
-  roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ZOOM.clear(); COPIES.clear();
+  roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ECLOTHS.seq++; ECLOTHS.par=new Map(); ZOOM.clear(); COPIES.clear();
   if($('myspaces').classList.contains('is-open')){MYSPACES.seq++;MYSPACES.busy=false;MYSPACES.rows=[];$('myspaces-list').replaceChildren();$('myspaces-name').textContent='';$('myspaces').classList.remove('is-open');MYSPACES.inert.forEach(([e,was])=>e.inert=was);MYSPACES.inert=[];}
   state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; mySub=null; LAND=null; if(lvQuitter) lvQuitter();
   TRIPS=[]; REPS=[]; TEACH=[]; VIS=[]; OBJ={}; tripsLoaded=false;
@@ -7886,7 +7935,7 @@ async function sessionChange(){
   }
   if(n!==sesSeq) return;
   memberPaint(); paint();
-  if(inscrit()&&!RO){loadTrips(true);loadHabitSpaces();}
+  if(inscrit()&&!RO){loadTrips(true);loadHabitSpaces();loadElementCloths();}
   garde();
   if(n===sesSeq&&lvRefresh) lvRefresh();
   if(n===sesSeq&&inscrit()&&!RO&&openRequestedSpaces){openRequestedSpaces=false;$('myspaces-open').click();}
