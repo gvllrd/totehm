@@ -1,5 +1,37 @@
 # BRAND.md — TOTEHM
 
+## CURRENT UPDATE — 08/10/2026 (ter) · totehmize lives in my wisdom and my vision
+
+- On totehm.com, a lesson or a vision says how many cloths wear it; open, it shows
+  them (0.name in Quantico Coral, their stage) and **+ totehmize** opens the boutique
+  with THAT element already chosen — like a habit shows its spaces.
+
+## CURRENT UPDATE — 08/10/2026 (bis) · a cloth wears my wisdom or my vision
+
+- **A cloth speaks to others: it wears MY WISDOM (what I pass on) or MY VISION
+  (what I imagine for the world)** — the time axis, past ← → future. Habits,
+  objectives and repulsions stay mine; they are never worn. Luxury keeps all five.
+- **Full screen is the phone.** On a computer the cloth stays and shifts, the
+  windows slide in from the side (like SPACE): wisdom from the left, vision,
+  name, style and order from the right; the artwork's place and the name show
+  on the cloth as they are chosen.
+- **No colour palette, no frequency on screen** — streetwear, Decode, Luxury.
+
+## CURRENT UPDATE — 08/10/2026 · the cloth, full screen; on screen, an "element"
+
+- "Box" is our word. **On screen we say "element"** — an element of my TOTEHM
+  (habit, objective, repulsion, lesson, vision; a cloth: lesson or vision since
+  the bis). higher.boutique first.
+- /streetwear is one full screen at a time: **Cloth** (swipe ↔ the cloths,
+  ↕ its views) → **[TOTEHMIZE]** → **Element** (the unfolded TOTEHM and the
+  joystick, only there) → **Name** (0. + the name, Quantico Coral, checked live)
+  → **Style** (of the moment, n left) → **Order** (size, price, secure page).
+  Minimal, visible, a game you understand without reading.
+- **Decoding 0.name opens the cloth's page**: the element first, full width, in
+  its view's colour — as deep as the searcher's rights go — then the artwork
+  **once the cloth has shipped** (it stays a surprise until it lands), the
+  cloth, its size, the style, the owner, its edition number and its stage.
+
 ## CURRENT UPDATE — 07/10/2026 · the totehm.com landing is a cross
 
 - Five landing views, driven by the same joystick and gestures as the unfolded
@@ -10,9 +42,9 @@
   Quantico Coral. Without a THP: « The TotehmPaper {THP} distills selected
   mental-performance techniques informed by modern neuroscience research,
   including EEG studies, into an experience designed to prepare your brain for
-  efficient action. » On figher.club the THP has four powers: neurological
-  performance · a digital artwork (one of 777,000) · tradeable · the key to
-  luxury. Its value is said by what it opens — **never "investment"**.
+  efficient action. » figher.club keeps its original Discover (restored 08/10,
+  see `club/CLAUDE.md`). The THP's value is said by what it opens — **never
+  "investment"**.
 - Down · **TotehmSM** — my **[Higher] Self** (08/10). « AI made by you · your
   beliefs · your TOTEHM » · « **Talk is cheap. Do with a why.** » A real
   conversation in round bubbles; the paper becomes its profile picture (the T
@@ -290,9 +322,9 @@ colors of its intentions, give the artwork its direction; the member picks a
 curated style, never a prompt — Streetwear AND Luxury: the style of the moment
 (`artistic_styles`) and the name, both chosen before ordering or asking for a
 quote. The garment carries its illustration and its identifier `0.name`
-(`0.` = year zero of the Totehm, set by the server, never typed). Searching `0.name` on
-FIGHER.CLUB does not show the picture again: it **reveals the Box behind the
-cloth**, as deep as the searcher's rights go.
+(`0.` = year zero of the Totehm, set by the server, never typed). Decoding `0.name`
+(higher.boutique) **reveals the element behind the cloth** first, as deep as the
+searcher's rights go — and, since 08/10, the artwork once the cloth has shipped.
 
 The physical object is part of the ecosystem, not the end of it.
 

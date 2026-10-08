@@ -12,7 +12,7 @@
 --       ne passent pas sous le plafond ensemble. Un usage resté `pending` plus
 --       de deux minutes (fonction tombée) ne compte plus.
 --       `sm_messages` et `sm_thread` ne servent plus : ménage par Claude Code
---       (`20261008100001_higher_self_menage.sql`).
+--       (`20261008200001_higher_self_menage.sql`).
 -- cost : 7 générations gratuites / 30 jours (acquisition, mesurée en §0),
 --        Higher = 30 / 24 h.
 

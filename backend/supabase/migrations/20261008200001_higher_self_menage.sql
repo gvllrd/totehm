@@ -1,5 +1,5 @@
 -- TOTEHM · ménage TotehmSM · 08/10/2026 — POUR CLAUDE CODE (terminal de Wah).
--- why : depuis TotehmSM v2 (`20261008100000_higher_self_freemium.sql`), aucune
+-- why : depuis TotehmSM v2 (`20261008200000_higher_self_freemium.sql`), aucune
 --       conversation n'est gardée (Wah, 08/10 : « pas besoin de garder un
 --       historique ») ; `sm_messages` et `sm_thread` (07/10) ne sont plus lus
 --       ni écrits par personne (la page et `higher-self` v3 les ignorent).

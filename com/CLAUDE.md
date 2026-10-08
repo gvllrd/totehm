@@ -40,6 +40,21 @@ Objective ; 7 messages en freemium ; une IA qui pousse toujours à l'action. »
 - Tests : `com_croix.mjs` 47/47 (§2 gratuit : flux, 402, offre ; §3 TOTEHM
   vide, Higher : Telegram, WhatsApp, rechargement).
 
+## COM · 08/10/2026 (ter) — la boutique dans WISDOM et VISION (comme SPACE dans les habits)
+
+BUILD `2026-10-08-cloths` (`totehm.html`). Wah : « on a lié SPACE à COM ; on devrait
+faire la même chose avec higher.boutique : la fonction totehmiser devrait aller se
+caler dans les deux vues ».
+- `element_cloths(p_pseudo)` (`ECLOTHS`, clé `w:<id>` / `v:<id>`, réponse tardive jetée,
+  vidé au changement de compte), lu avec `habit_spaces` : mon Totehm et en lecture.
+- **Fermée**, une leçon ou une vision dit « N cloths » (`.v-spc`) ; **ouverte**, un
+  groupe `cloths` (3 au plus, « cloths · 3 of N ») : mini `.m-s.m-c` = l'étape (in
+  the making · in production · shipped, + luxury / test) et le nom 0.xxx en
+  Quantico Coral (`.mc-n`). Tap → Decode (`higher.boutique/?decode=0.xxx`) par le pont.
+- **« + totehmize »** (la mienne, une boîte qui a un texte) →
+  `higher.boutique/streetwear?wear=wisdom:<id>` (ou `vision:`) par le pont SSO.
+- Diagnostic : `__totehm_zone.cloths` (le total). Test : `com_cloths.mjs` 16/16.
+
 ## COM · 07/10/2026 — l'atterrissage en croix : cinq vues, une manette
 
 BUILD `2026-10-07-croix` (`totehm.html`). Wah : « le joystick du Totehm déplié

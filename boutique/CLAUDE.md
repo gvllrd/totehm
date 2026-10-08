@@ -1,5 +1,92 @@
 # boutique/CLAUDE.md — higher.boutique : le Cloth, la méthode Stoner
 
+## BOUTIQUE · 08/10/2026 (ter) — ARRIVER DE COM : L'ÉLÉMENT DÉJÀ CHOISI
+
+`streetwear.html` BUILD `2026-10-08-wear`. Dans COM, « + totehmize » d'une leçon ou
+d'une vision ouvre `/streetwear?wear=wisdom:<id>` (ou `vision:`) par le pont SSO.
+- L'élément est RELU dans MON Totehm (`my_trips`, `applyWant`), jamais cru sur
+  l'adresse ; introuvable (effacé, autre compte) → oublié, la page suit son cours.
+  L'adresse est nettoyée ; le vœu (`F.want`, `wt` dans `totehm_cloth_flow`) traverse
+  la connexion PKCE.
+- Le vêtement se choisit toujours d'abord ; sous lui, la puce `#cl-wear` (MY WISDOM ·
+  texte, à la couleur de sa vue). **Un élément déjà choisi → TOTEHMIZE mène droit au
+  NAME** ; ELEMENT reste derrière (Back y ramène, l'élément peut changer).
+- Diagnostic : `__totehm_cloth().wanted`. Tests : `streetwear.mjs` 64/64.
+
+## ⛔ BOUTIQUE · 08/10/2026 (bis) — ORDINATEUR : LES DÉCALAGES · WISDOM ET VISION · SANS PALETTE
+
+Wah : « full-screen, c'est la version mobile ; sur ordinateur j'aime les
+décalages, comme SPACE » ; « on oublie la palette et la fréquence » ; « garder
+seulement WISDOM et VISION ». `streetwear.html` BUILD `2026-10-08-wisdom-vision`.
+- **Téléphone (< 900 px) : inchangé**, une scène plein écran à la fois.
+- **Ordinateur (≥ 900 px)** : le vêtement (`#s-cloth`) RESTE à l'écran ; chaque
+  autre scène est une fenêtre-côté (`--pw` = clamp(360 px, 34vw, 460 px)) qui glisse
+  (`translateX(±101%)` → 0, transition). ELEMENT : à GAUCHE pour WISDOM, à DROITE
+  pour VISION (l'axe du temps) ; NAME · STYLE · ORDER à droite. `body[data-side]`
+  décale le vêtement, la barre des étapes et la manette de ±`--pw`/2 (le
+  centre de la place libre). Dès ELEMENT, la place de l'œuvre (`#vw-zone`, pointillé)
+  se pose sur le vêtement ; le style la remplit, le nom s'y grave en tapant ;
+  ORDER n'a pas de second aperçu (`#od-visual` caché). Les règles de côté portent
+  `:not(#s-cloth):not(#s-done)` : une règle plus faible (`.is-left`) perd sinon.
+- **WISDOM ← → VISION seulement** : habitudes, objectifs, répulsions restent à soi
+  (un vêtement parle aux autres). `CROIX` = deux vues, `#el-map` = deux carrés,
+  la manette n'a que ← ou → ; une pièce reprise d'une autre vue est oubliée.
+  **Le serveur refuse le reste** : `create-checkout` v40 `KINDS = wisdom · vision`
+  (422 `choose an element`). Luxury garde les cinq vues.
+- **Ni palette ni fréquence à l'écran** : streetwear (matière, aperçu), Decode
+  (`index.html` BUILD `2026-10-08-bis`), luxury (BUILD `2026-10-08-no-palette` :
+  devis, admin, tuile, matière, le « rhythm » retiré). La palette reste dans
+  l'instantané serveur (`box_snapshot`), jamais affichée.
+Tests : `streetwear.mjs` 51/51, `boutique_home.mjs` 23/23, `club_luxury.mjs` 44/44.
+
+## ⛔ BOUTIQUE · 08/10/2026 — STREETWEAR PLEIN ÉCRAN · DECODE = LA PAGE DU CLOTH · « ELEMENT »
+
+Wah : « mode plus immersif… très minimaliste, visible et agréable… full screen,
+fluidité gamifiée ». `streetwear.html` (BUILD `2026-10-08-immersive`,
+`__totehm_cloth()`) = CINQ SCÈNES plein écran, une à la fois, glissées
+(transition, jamais `@keyframes`) ; barre des étapes `#hud` (5 traits, un tap
+revient en arrière) ; Back, la barre et le geste « retour » lisent la MÊME pile
+d'historique linéaire (`HIST`, `goBackTo`).
+1. **CLOTH** : le vêtement au centre (`#viewer`, `touch-action:none`) ; ← → / glissé
+   horizontal / trackpad = les MODÈLES (supports actifs) ; ↑ ↓ / glissé vertical /
+   molette = les VUES du même vêtement = les photos de son dossier Storage
+   (`totehm-cloth-support/<storage_folder>/`, ordre des noms), sinon `image_url`.
+   Points : vues en haut à droite, modèles dessous. Un bouton : **[TOTEHMIZE]**.
+2. **ELEMENT** (bis : WISDOM ← → VISION seulement) : le Totehm DÉPLIÉ (papier, rail, la croix en petit `#el-map`) et LA
+   MANETTE de COM (`#joy`, rayon 15 px, seuil 9 px, nomme la vue avant d'y aller,
+   molette, flèches) — **seulement ici, jamais avant**. Un tap ouvre la matière
+   (`my_box_matter`) ; le centre de la manette (anneau blanc) ou [Wear this
+   element] la porte. Glissé horizontal sur la liste = vue voisine.
+3. **NAME** : l'élément en tête ; `0.` + saisie en Quantico **Coral** ;
+   `name_available` en direct (réponse tardive jetée). Ancré en haut (clavier).
+4. **STYLE** : `artistic_styles` actifs, « n left » (`remaining_capacity`, 7 par
+   style) ; épuisé = fermé.
+5. **ORDER** : l'aperçu (place, style, nom — PAS l'œuvre ; bis : sans palette), la TAILLE (Printful ;
+   une variante non `active` est fermée), « test · card 4242… » si
+   `my_streetwear_test_mode()`, [Order · prix serveur] → Stripe (adresse +
+   paiement sur la page sécurisée).
+Connexion à [TOTEHMIZE] (PKCE, retour `/streetwear`) ; la pièce en cours vit dans
+`sessionStorage` (`totehm_cloth_flow`) : retour de connexion → ELEMENT ;
+`?cancel=1` → ORDER avec tous les choix ; `?paid=1&cloth=` → DONE, [Decode it] →
+`/?decode=0.nom`. La page envoie le nom SANS préfixe : `create-checkout` pose `0.`.
+**Le manche du 05/10 en bas de /streetwear est retiré** (la section « manette »
+ci-dessous ne vaut plus que pour /luxury).
+
+**DECODE** (`index.html`, BUILD `2026-10-08-decode`) : le résultat est LA PAGE DU
+CLOTH — le nom (Quantico Coral), la ligne (n° d'exemplaire / édition, date),
+**l'élément en tête, pleine largeur, à la couleur de sa vue**, ses intentions (bis :
+plus de palette), la matière (propriétaire/abonné), l'œuvre, le vêtement · taille ·
+style · by, l'étape (in the making · in production · shipped). Niveaux de
+`reveal_cloth` inchangés ; un invité lit la vue, le vêtement, l'étape + CONNECT
+WITH MY TOTEHM. **L'œuvre ne se montre qu'une fois la pièce EXPÉDIÉE**
+(`cloth-art`, URL signée 1 h) : la promesse « you will not see it before it
+lands » tient. L'adresse suit le Cloth (`/?decode=0.nom`, partageable) ; un nom
+tapé sans `0.` se retrouve.
+
+**« Box » est notre langage ; à l'écran on dit « element »** (Wah, 08/10) :
+streetwear, Decode et luxury (BUILD `2026-10-08-element`) sont passés.
+Tests : `streetwear.mjs` 45/45, `boutique_home.mjs` 22/22, `club_luxury.mjs` 43/43.
+
 ## BOUTIQUE · 06/10/2026 — nouveau support et photo différée
 
 Wah a remplacé le précédent Champion. Support courant : `Higher Champion
@@ -174,7 +261,7 @@ nom tout de suite, puis le style, puis les tailles du vêtement
 **⚠️ L'APERÇU N'EST PAS L'ŒUVRE.** L'œuvre naît après le paiement (n8n B :
 gpt-image-1 ×7, Wah choisit sur Telegram) et reste une surprise jusqu'au
 déballage. L'aperçu (`drawAura`, canvas) montre ce qui est DÉJÀ décidé : la
-place (`print_area`), la palette de la Box, le style choisi, le nom gravé —
+place (`print_area`), la palette de la Box (retirée le 08/10 bis), le style choisi, le nom gravé —
 graine = Box + nom, zéro appel. **Un aperçu IA avant achat est refusé** :
 ~0,06 $ l'image à chaque visiteur, et il trahirait la surprise.
 
@@ -301,7 +388,8 @@ compteurs, jamais une URL.
 ### ⛔ HIGHER.BOUTIQUE — N'IMPORTE QUELLE BOX — 23/09/2026
 
 **MASTER §49-57.** `boutique/streetwear.html` : la totehmisation part
-d'une Box, de n'importe laquelle des cinq vues. Plus de message libre.
+d'une Box, de n'importe laquelle des cinq vues (08/10 bis : WISDOM ou VISION
+seulement, voir en tête). Plus de message libre.
 
 **⚠️ LA MATIÈRE SE CALCULE CÔTÉ SERVEUR, UNE FOIS.** `_box_matter(user,
 kind, ref)` rend la Box, ses intentions, ce qui lui est relié dans les

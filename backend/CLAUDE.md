@@ -2,7 +2,7 @@
 
 ## COM · 08/10/2026 — TotehmSM v2 : freemium, flux, aucun historique
 
-Migration additive `20261008100000_higher_self_freemium.sql` (appliquée UNE
+Migration additive `20261008200000_higher_self_freemium.sql` (appliquée UNE
 fois, `higher_self_freemium`). `sm_uses` (RLS sans politique, aucun grant
 anon/auth) ne garde que des USAGES : kind say|telegram, status
 pending|ok|failed, modèle, ms, jetons — jamais un texte.
@@ -26,7 +26,54 @@ pending|ok|failed, modèle, ms, jetons — jamais un texte.
   fixe (quelqu'un de confiance, 112). Format : `@kind intention` / solution /
   `DO:` / `WHY:`. `telegram` : `{text}`, Higher seulement, compté.
 - `sm_messages` et `sm_thread` (07/10) ne servent plus : ménage
-  `20261008100001_higher_self_menage.sql` (drop) par Claude Code.
+  `20261008200001_higher_self_menage.sql` (drop) par Claude Code.
+
+## COM ↔ BOUTIQUE · 08/10/2026 (ter) — `element_cloths`
+
+Migration additive `20261008120000_element_cloths.sql`, appliquée UNE fois sous
+`element_cloths`. `element_cloths(p_pseudo)` (authenticated ; anon/public révoqués ;
+search_path vide) : les Cloths regroupés par élément WISDOM / VISION (`box_kind`,
+`box_ref`), total + les trois plus récents {name, line streetwear|luxury, stage
+making|production|shipped, test, paid_at}. Streetwear payé non annulé, Luxury
+`paid` nommé ; jamais un brouillon. Vide = les miens (test compris) ; un autre =
+ses pièces réelles, seulement si `_shared_with_me` (sinon `elements: []`) ;
+`why=signin|nobody`. Le pendant de `habit_spaces`. Auto-test
+`tests/sql/element_cloths_selftest.sql` (annulé) : `FAIL={}`.
+
+## BOUTIQUE · 08/10/2026 — le nom repris, Decode complet, l'œuvre une fois expédiée
+
+Migration additive `20261008100000_streetwear_immersive.sql`, appliquée UNE fois
+sous `streetwear_immersive`.
+- `_cloth_name_free(nom, user)` (service_role) : un nom tenu par MON brouillon est
+  libre pour moi. `name_available(candidate)` = `_cloth_name_free(candidate,
+  auth.uid())` (grants anon/auth inchangés). Avant : un paiement abandonné
+  bloquait son propre nom deux heures (le ménage `cleanup-drafts`).
+- `_cloth_draft_put(...)` (service_role) : le brouillon posé ou REPRIS en une
+  transaction (verrou consultatif sur le nom ; `unique_violation` → `name taken`),
+  rend `old_session` pour fermer l'ancien Checkout.
+- `reveal_cloth` rend en plus `garment`, `garment_image`, `size` (jamais à
+  l'invité), `stage` (making · production · shipped · cancelled), `edition` /
+  `edition_of` (rang parmi les pièces payées non-test du support), `test`, `art`
+  (= `shipped` + `artwork_storage_path`, jamais un test), `mine` ; un nom tapé sans
+  `0.` se retrouve. Niveaux inchangés.
+- `_cloth_art_path(nom)` (service_role) → Edge `cloth-art` v1 (verify_jwt false,
+  CORS boutique) : URL signée 1 h de `streetwear-generations/<id>/final.png`,
+  pièce expédiée seulement ; sinon 404 `not_yet`.
+- `create-checkout` v39 : préfixe `0.` posé par le SERVEUR (la page envoie le nom
+  nu), `_cloth_draft_put`, ancien Checkout expiré (`sessions.expire`), style
+  épuisé refusé (`style sold out`), `expires_at` = +31 min (sous les 2 h du
+  ménage : aucun brouillon effacé n'est payable), erreur Stripe → 502 `stripe`.
+  Réponse `{ url, name }`.
+- **08/10 bis · `create-checkout` v40** : un vêtement ne porte que WISDOM ou VISION
+  (`KINDS = wisdom · vision`, sinon 422 `choose an element`) — refusé au serveur,
+  pas seulement caché. `luxury-quote` garde les cinq vues. Aucune migration : la
+  palette reste dans `box_snapshot` / `totehm_clothes.palette`, jamais affichée.
+- Auto-test `tests/sql/streetwear_immersive_selftest.sql` (annulé) : `FAIL={}`.
+- **Rétro-copie** : les trois migrations du pipeline Streetwear appliquées le 06/10
+  depuis le terminal (`streetwear_secure_pipeline`, `streetwear_webhook_recovery`,
+  `streetwear_lock_order`), `streetwear-assets`, `_shared/streetwear-auth.ts` et
+  `compose-artwork` v34 manquaient au dépôt : recopiés TELS QUELS depuis la prod
+  (ne pas réappliquer). `stripe-webhook` v42 = le dépôt (comparé le 08/10).
 
 ## COM · 07/10/2026 — TotehmSM (Higher Self), l'abonnement Higher, l'atterrissage
 

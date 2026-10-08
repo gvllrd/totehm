@@ -3,9 +3,9 @@
 
 ## 08/10/2026 — TotehmSM v2: freemium, streaming, no history
 
-Migration `20261008100000_higher_self_freemium.sql` (applied once). Rules in one function, `_sm_rules()`: 7 free replies per 30 days for a member whose TOTEHM has at least one Habit and one Objective, then Higher (30 per 24 h). `sm_uses` stores usage only (no text). `sm_begin(uid, kind)` / `sm_end(id, status, model, ms, in, out)` are service_role only; `my_landing().sm` tells the page `{ready, habit, objective, higher, free_total, free_left, left}`. Test `tests/sql/higher_self_freemium_selftest.sql` (rolled back, `FAIL={}`).
+Migration `20261008200000_higher_self_freemium.sql` (applied once). Rules in one function, `_sm_rules()`: 7 free replies per 30 days for a member whose TOTEHM has at least one Habit and one Objective, then Higher (30 per 24 h). `sm_uses` stores usage only (no text). `sm_begin(uid, kind)` / `sm_end(id, status, model, ms, in, out)` are service_role only; `my_landing().sm` tells the page `{ready, habit, objective, higher, free_total, free_left, left}`. Test `tests/sql/higher_self_freemium_selftest.sql` (rolled back, `FAIL={}`).
 
-Edge `higher-self` v3: `{action:'say', text, turns, now}` streams `text/plain` (four lines: `@kind intention`, the solution, `DO:`, `WHY:`) with headers `X-SM-Left`, `X-SM-Higher`; errors are JSON: 409 `totehm`, 402 `higher_required`, 429 `quota`, 503 `unavailable`. `{action:'telegram', text}` (Higher only) → 409 `not_linked`, 410 `blocked`. Model order `gpt-5.1` (no reasoning) → `gpt-5` (minimal) → `gpt-4.1`; override with the `HIGHER_SELF_MODEL` secret. Cleanup for Claude Code: `20261008100001_higher_self_menage.sql` drops `sm_thread` and `sm_messages`.
+Edge `higher-self` v3: `{action:'say', text, turns, now}` streams `text/plain` (four lines: `@kind intention`, the solution, `DO:`, `WHY:`) with headers `X-SM-Left`, `X-SM-Higher`; errors are JSON: 409 `totehm`, 402 `higher_required`, 429 `quota`, 503 `unavailable`. `{action:'telegram', text}` (Higher only) → 409 `not_linked`, 410 `blocked`. Model order `gpt-5.1` (no reasoning) → `gpt-5` (minimal) → `gpt-4.1`; override with the `HIGHER_SELF_MODEL` secret. Cleanup for Claude Code: `20261008200001_higher_self_menage.sql` drops `sm_thread` and `sm_messages`.
 
 ## 07/10/2026 — TotehmSM (Higher Self) and the Higher subscription
 
@@ -338,6 +338,21 @@ préfixe posé par `luxury-quote`) et son style (`artistic_styles`) : la carte
 admin les montre ; payé, Decode trouve la pièce (`reveal_cloth`). Un devis
 retiré ou refusé rend son nom (`luxury_quotes_name_live`).
 Auto-test du nom : `tests/sql/luxury_name_selftest.sql` → `FAIL={}`.
+
+**Les vues d'un vêtement** (08/10, ↑ ↓ sur /streetwear) : déposer les photos
+dans le seau public `totehm-cloth-support`, dossier `storage_folder` du support
+(ex. `higher-champion-sweatshirt-478633385/`), nommées dans l'ordre voulu
+(`1-front.png`, `2-back.png`…). Sans photo : `image_url` (Printful). Aucun code.
+**Un nom de Cloth « pris »** : par le brouillon d'un autre, 2 h au plus
+(`cleanup-drafts`) ; par le sien, jamais (repris). **L'œuvre dans Decode** :
+visible quand la pièce est `shipped` ; la montrer plus tôt = changer la condition
+de `_cloth_art_path` et de `reveal_cloth.art` (une ligne chacune).
+**Ce qu'un vêtement porte** (08/10 bis) : WISDOM ou VISION. Rouvrir une vue =
+l'ajouter ENSEMBLE à `KINDS` (`create-checkout`, redéployer) et à `WEARABLE` +
+`CROIX` + `NOM` (`boutique/streetwear.html`) ; l'un sans l'autre = 422 ou vue morte.
+**De COM à la boutique** (08/10 ter) : « + totehmize » = `/streetwear?wear=wisdom:<id>`
+(ou `vision:`), relu par `my_trips` ; les Cloths d'un élément = `element_cloths`.
+Auto-test : `tests/sql/streetwear_immersive_selftest.sql` → `FAIL={}`.
 
 **Le mode test Stripe** (05/10 soir, sans « oui » : aucun argent réel) : un
 compte actif de `boutique_testers` paie avec la clé TEST (carte

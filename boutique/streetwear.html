@@ -5,269 +5,288 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <title>Streetwear · HIGHER.BOUTIQUE</title>
-<meta name="description" content="Pick up one Box of your TOTEHM. It becomes an original artwork on a limited cloth.">
+<meta name="description" content="Choose the cloth, then one element of your TOTEHM. It becomes an original artwork, on a limited piece.">
 <!--
-  ══ higher.boutique/streetwear — LA TOTEHMISATION · MAJ 02/10/2026 ══════
-  ⚠️ 02/10 — UNE COLONNE CENTRÉE (Wah : « centré, minimaliste mais
-  visible »). Trois étapes dites en haut : BOX → CLOTH → MATERIALIZE.
-  Les flèches ne portent plus la tuile perforée (réservée au NOM d'un
-  Totehm) : contrôles gris, `border-radius:10px`.
+  ══ higher.boutique/streetwear — LA TOTEHMISATION, PLEIN ÉCRAN · 08/10/2026 ══
+  Wah, 08/10 : « mode plus immersif… très minimaliste, tout en étant visible et
+  agréable… full screen, une fluidité gamifiée ». CINQ SCÈNES, une à la fois :
 
-  ⚠️ L'APERÇU N'EST PAS L'ŒUVRE. L'œuvre naît APRÈS le paiement (n8n :
-  gpt-image-1 ×7, Wah choisit sur Telegram) et reste une surprise jusqu'au
-  déballage. L'aperçu montre ce qui est déjà décidé : la PLACE (zone
-  d'impression de `print_area`), la PALETTE (calculée en base par
-  `my_box_matter`), le STYLE choisi et le NOM gravé. Dessiné ici, en
-  canvas, sans un appel payant : même Box + même nom = même aperçu.
+   1 CLOTH    le vêtement, toujours au centre : ← → les modèles (les supports),
+              ↑ ↓ les vues du même vêtement (les photos de son dossier Storage,
+              sinon `image_url`). Un bouton : [TOTEHMIZE].
+   2 ELEMENT  le Totehm DÉPLIÉ et LA MANETTE de COM — ici seulement, jamais
+              avant. 08/10 (bis) : deux vues seulement, l'axe du temps de la
+              croix — WISDOM (ce que je transmets) ← → VISION (ce que j'imagine
+              pour le monde). « Box » est notre langage ; à l'écran, « element ».
+   3 NAME     `0.` + le nom (Quantico Coral), disponibilité en direct
+              (`name_available`, réponse tardive jetée). C'est ce nom que Decode
+              lira.
+   4 STYLE    le style du moment (`artistic_styles` actifs, n pièces restantes).
+   5 ORDER    l'aperçu (la place en pointillé, le style, le nom), la TAILLE
+              (Printful, jamais inventée), le prix du serveur → Stripe (adresse
+              d'envoi et paiement sur la page sécurisée).
+  ORDINATEUR (≥ 900 px) : les décalages de SPACE — le vêtement reste à l'écran
+  et se décale, chaque scène est une fenêtre-côté qui glisse (CSS en fin de
+  feuille). Ni palette ni rythme à l'écran (Wah, 08/10 bis).
 
-  ⚠️ 30/09 — PICK UP THE BOX (MASTER BRIEF §33) : la BOX d'abord, le
-  vêtement ensuite. MY TOTEHM → HABIT BOXES → PICK UP A BOX → SELECT (le
-  support) → MATERIALIZE (nom · style · taille) → STREETWEAR (commande).
-  Toucher un vêtement avant d'avoir une Box : on va chercher la Box, et
-  le vêtement touché attend (il sera le support).
-
-  ⚠️ PLUS DE MESSAGE LIBRE. Le Cloth naît d'UNE BOX de son TOTEHM — de
-  N'IMPORTE LAQUELLE des cinq vues (§51), choisie dans le Totehm de
-  totehm.com ouvert ici en SELECT MODE. Le client ne choisit pas de
-  couleurs : la base les calcule (`my_box_matter`).
-
-  ⚠️ CE QUE LA PAGE ENVOIE EST UNE RÉFÉRENCE (`box: {kind, ref}`), jamais
-  un texte. `create-checkout` relit la Box dans le Totehm de la SESSION.
-
-  ⚠️ LE PASSEPORT : sans Totehm complet, pas de totehmisation. La page le
-  dit ; le serveur le refuse de toute façon.
+  ⚠️ L'APERÇU N'EST PAS L'ŒUVRE : elle naît après le paiement et reste une
+  surprise jusqu'au déballage ; Decode la montre une fois la pièce expédiée.
+  ⚠️ CE QUE LA PAGE ENVOIE EST UNE RÉFÉRENCE (`box: {kind, ref}`) et le nom SANS
+  préfixe : `create-checkout` relit l'élément dans le Totehm de la SESSION et
+  pose `0.` lui-même. Un paiement abandonné revient ici (`?cancel=1`) avec tous
+  ses choix ; le même nom reste à son auteur (son brouillon est repris).
+  ⚠️ LE PASSEPORT : sans Totehm complet, pas de totehmisation (le serveur refuse).
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
+/* POLICES — Space Mono et Quantico, rien d'autre ; un bouton hérite. */
 html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
 :root{
-  --navy:#333366;--blue:#36498c;--rep:#743169;
-  --hi:#fff;--mid:#b0b0b0;--lo:#909090;--dim:#5a5a5a;--bg:#000;
-  --c1:#1f1f24;--c2:#2a2a30;--ok:#639922;
-  --q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
+  --navy:#333366;--blue:#36498c;--rep:#743169;--coral:#fbd5ca;
+  --mid:#b0b0b0;--lo:#909090;--dim:#5a5a5a;--bg:#000;--c1:#1f1f24;--c2:#2a2a30;--c3:#34343a;--ok:#639922;
+  --q:'Quantico',sans-serif;--mono:'Space Mono',monospace;--ease:cubic-bezier(.22,.61,.36,1);
+  --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--head:calc(var(--st) + 84px);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;min-height:100dvh;background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:12px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:12px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow:hidden;overscroll-behavior:none}
 a{color:inherit;text-decoration:none}
 .hide{display:none!important}
-.mono{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.kicker{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--lo);text-align:center}
+.say{font-size:11px;line-height:1.7;color:var(--lo);text-align:center;max-width:36ch}
+.note{font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;text-align:center}
+.note.ok{color:var(--ok)}.note.no{color:#fff}.note.dim{color:var(--lo)}
 
-/* CONTRÔLES — gris, border-radius:10px, jamais de tuile perforée */
-.btn{font-family:var(--mono);font-weight:700;font-size:12px;color:#fff;background:var(--c1);border:none;border-radius:10px;padding:11px 18px;cursor:pointer;line-height:1.3;-webkit-tap-highlight-color:transparent;transition:background .15s ease,color .15s ease}
-.btn.big{font-size:13px;padding:13px 22px}
-.btn:disabled{color:var(--dim);cursor:default}
-.lnk{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:none;border:none;cursor:pointer;padding:6px 4px;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
-.btn-back{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:none;border:none;border-radius:10px;cursor:pointer;padding:6px 8px;-webkit-tap-highlight-color:transparent;transition:color .15s ease,background .15s ease}
-.sz{font-family:var(--mono);font-weight:700;font-size:11px;color:var(--mid);background:var(--c1);border:1px solid transparent;border-radius:10px;cursor:pointer;min-width:46px;padding:9px 10px;-webkit-tap-highlight-color:transparent;transition:background .15s ease,color .15s ease,border-color .15s ease}
-.sz.is-on{background:var(--c2);color:#fff;border-color:#fff}
-@media(hover:hover){.btn:not(:disabled):hover,.sz:hover{background:var(--c2);color:#fff}.btn-back:hover{background:var(--c1);color:#fff}.lnk:hover{color:#fff}}
-.btn:not(:disabled):active,.sz:active{background:var(--c2);color:#fff}
+/* CONTRÔLES — gris, border-radius:10px, jamais de tuile perforée, jamais de fond blanc */
+.btn{font-weight:700;font-size:12px;color:#fff;background:var(--c1);border:none;border-radius:10px;padding:11px 18px;cursor:pointer;line-height:1.3;-webkit-tap-highlight-color:transparent;transition:background .15s ease,color .15s ease}
+.btn.cta{font-size:15px;letter-spacing:.1em;text-transform:uppercase;background:var(--c2)}
+.btn:disabled{color:var(--dim);background:var(--c1);cursor:default}
+.lnk{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo);background:none;border:none;cursor:pointer;padding:6px 4px;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
+.btn-back{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:none;border:none;border-radius:10px;cursor:pointer;padding:6px 8px;-webkit-tap-highlight-color:transparent;transition:color .15s ease,background .15s ease}
+@media(hover:hover){.btn:not(:disabled):hover{background:var(--c3);color:#fff}.lnk:hover,.btn-back:hover{color:#fff}}
+.btn:not(:disabled):active{background:var(--c3)}
 
-/* LA BARRE — retour à gauche, membre à droite */
-#top{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;justify-content:space-between;align-items:center;padding:calc(10px + env(safe-area-inset-top,0)) 12px 10px;background:linear-gradient(#000 60%,rgba(0,0,0,0))}
-#conn-bar{display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--lo);padding:6px 8px;-webkit-tap-highlight-color:transparent;transition:color .15s ease}
-#conn-bar .dc{width:6px;height:6px;border-radius:50%;background:#383838;transition:background .3s ease}
-#conn-bar .dc.is-in{background:var(--ok)}
+/* LA BARRE — retour à gauche, membre à droite ; LES CINQ SCÈNES au centre */
+#top{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:calc(8px + var(--st)) 10px 4px;pointer-events:none}
+#top>*{pointer-events:auto}
+#conn-bar{display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-size:10px;letter-spacing:.12em;color:var(--lo);padding:6px 8px;-webkit-tap-highlight-color:transparent}
+#hud{position:fixed;z-index:50;left:50%;top:calc(var(--st) + 48px);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;transition:opacity .3s ease}
+#hud ol{list-style:none;display:flex;gap:5px}
+#hud button{display:block;width:24px;padding:6px 0;border:none;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#hud button:disabled{cursor:default}
+#hud button i{display:block;height:3px;border-radius:2px;background:#2a2a30;transition:background-color .35s ease}
+#hud button.is-done i{background:#6d6d74}
+#hud button.is-here i{background:#fff}
+#hud-say{font-size:8.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--lo);white-space:nowrap}
 
-/* UNE COLONNE CENTRÉE */
-main,.col{min-height:100dvh;display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;padding:64px 16px 150px;max-width:520px;margin:0 auto}
-.kicker{font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--lo)}
-h1{font-family:var(--mono);font-weight:700;font-size:22px;letter-spacing:.06em;text-transform:uppercase;color:#fff;line-height:1.2}
-.say{max-width:38ch;color:var(--mid)}
-/* Les trois étapes : où l'on est, toujours visible. */
-.flow{display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
-.flow i{width:14px;height:1px;background:#333;display:block}
-.flow span{transition:color .2s ease}
-.flow span.is-on{color:#fff;font-weight:700}
-.flow span.is-done{color:var(--lo)}
+/* LES SCÈNES — une à la fois, plein écran ; on glisse de l'une à l'autre */
+#stages{position:fixed;inset:0}
+.stage{position:absolute;inset:0;display:flex;flex-direction:column;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;
+  padding:var(--head) 16px calc(20px + var(--sb));opacity:0;visibility:hidden;transform:translateX(56px);
+  transition:opacity .34s var(--ease),transform .46s var(--ease),visibility 0s linear .46s,background-color .5s ease}
+.stage.is-past{transform:translateX(-56px)}
+.stage.is-here{opacity:1;visibility:visible;transform:none;transition:opacity .34s var(--ease),transform .46s var(--ease),visibility 0s,background-color .5s ease}
+.inner{margin:auto;width:100%;max-width:560px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.stage.is-top .inner{margin:8px auto auto}
 
-/* LA BOX RAMASSÉE — une boîte du Totehm : sa couleur, sans bordure */
-#picked{background:var(--skin,#333366);color:#fff;padding:10px 14px 9px;width:100%;max-width:340px;display:flex;flex-direction:column;align-items:center;gap:5px}
-#picked small{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.65)}
-#picked b{font-family:var(--q);font-weight:400;font-size:14px;line-height:1.35}
-#picked button{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.7);background:none;border:none;cursor:pointer;padding:2px 0}
+/* 1 · CLOTH — le vêtement au centre ; ← → les modèles, ↑ ↓ ses vues */
+#viewer{position:relative;width:100%;height:clamp(220px,calc(100dvh - 380px),600px);overflow:hidden;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;background:#050506}
+#viewer.is-drag{cursor:grabbing}
+#vw-track{position:absolute;inset:0;transition:transform .44s var(--ease)}
+.model{position:absolute;top:0;width:100%;height:100%;overflow:hidden}
+.angles{position:absolute;inset:0;transition:transform .44s var(--ease)}
+#viewer.is-drag #vw-track,#viewer.is-drag .angles{transition:none}
+.angles img{position:absolute;left:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;-webkit-user-drag:none}
+.model .none{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.m-arrow{position:absolute;top:50%;margin-top:-20px;z-index:3;width:40px;height:40px;border:none;border-radius:10px;background:rgba(31,31,36,.82);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:opacity .2s ease,background .15s ease}
+.m-arrow svg{width:9px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#m-prev{left:6px}#m-next{right:6px}
+.a-arrow{position:absolute;left:50%;margin-left:-22px;z-index:3;width:44px;height:28px;border:none;border-radius:10px;background:none;color:#fff;opacity:.8;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:opacity .2s ease}
+.a-arrow svg{width:15px;height:9px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#a-up{top:4px}#a-down{bottom:4px}
+.m-arrow.is-dead,.a-arrow.is-dead{opacity:0;pointer-events:none}
+#a-dots{position:absolute;right:12px;top:14px;z-index:3;display:flex;flex-direction:column;gap:6px}
+#a-dots i,#m-dots i{display:block;width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.22);transition:background-color .25s ease}
+#a-dots i.is-on,#m-dots i.is-on{background:#fff}
+#m-dots{display:flex;gap:7px;justify-content:center;min-height:5px}
+#cl-title{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#fff;text-align:center}
+#cl-facts{display:flex;flex-wrap:wrap;gap:3px 14px;justify-content:center;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
+/* 08/10 (ter) — l'élément déjà choisi (arrivé de COM, ou repris) : dit sous le vêtement, à sa couleur. */
+#cl-wear{display:flex;align-items:baseline;gap:9px;max-width:min(100%,360px);padding:6px 12px;background:var(--skin,#333366);color:#fff}
+#cl-wear small{flex:none;font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.72)}
+#cl-wear b{min-width:0;font-family:var(--q);font-weight:400;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#cl-facts .price{color:#fff;font-weight:700;letter-spacing:.04em;font-size:12px}
+#cl-hint{font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);transition:opacity .4s ease}
+#cl-hint.is-gone{opacity:0}
+#cl-detail{font-size:11px;line-height:1.65;color:var(--lo);max-width:380px;text-align:center;overflow:hidden;max-height:0;opacity:0;transition:max-height .38s ease,opacity .3s ease}
+#cl-detail.is-on{max-height:260px;opacity:1}
+.cl-links{display:flex;gap:14px;justify-content:center}
+
+/* 2 · ELEMENT — le Totehm déplié, sur son papier ; la manette n'existe qu'ici */
+#s-element{padding:var(--head) 0 0;overflow:hidden;background:var(--paper,#2b2b57);--rl:46px;--rw:18px}
+#el-rail{position:absolute;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.3);pointer-events:none}
+#el-head{position:relative;z-index:2;text-align:center;padding:0 16px 10px;flex:0 0 auto}
+#el-q{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.66)}
+#el-title{font-weight:700;font-size:clamp(21px,5.2vw,30px);letter-spacing:.04em;text-transform:uppercase;color:#fff;line-height:1.05;margin-top:6px}
+#el-sub{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.66);margin-top:4px}
+/* la croix en petit : où l'on est dans le Totehm (un tap y va) */
+#el-map{display:grid;grid-template-columns:repeat(2,10px);grid-template-rows:10px;gap:8px;width:max-content;margin:10px auto 0}
+#el-map button{width:10px;height:10px;border:none;padding:0;background:rgba(255,255,255,.24);cursor:pointer;transition:background-color .3s ease}
+#el-map button.is-here{background:#fff}
+#el-list{position:relative;z-index:1;flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding:4px 16px calc(150px + var(--sb)) 0;display:flex;flex-direction:column;gap:6px;transition:opacity .3s ease,transform .34s var(--ease)}
+.bx{position:relative;margin-left:calc(var(--rl) + var(--rw) + 4px);background:var(--skin,#333366);color:#fff;padding:8px 12px 9px 14px;cursor:pointer;flex:0 0 auto;transition:filter .15s ease,transform .3s var(--ease)}
+@media(hover:hover){.bx:hover{filter:brightness(1.16)}}
+.bx .tick{position:absolute;left:0;top:0;bottom:0;width:3px;display:flex;flex-direction:column}
+.bx .tick i{flex:1 1 0;display:block}
+.bx .nm{font-family:var(--q);font-size:14px;line-height:1.5;word-break:break-word}
+.bx .sb{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.74);margin-top:4px;display:flex;flex-wrap:wrap;gap:0 10px}
+.bx.is-on{transform:translateX(-3px) scale(1.012);filter:brightness(1.1);cursor:default}
+.v-empty{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.55);text-align:center;padding:30px 16px 0 calc(var(--rl) + var(--rw) + 4px);display:flex;flex-direction:column;align-items:center;gap:8px}
+.v-empty .lnk{color:rgba(255,255,255,.8)}
+/* LA MATIÈRE : l'élément choisi enfante ce qui lui est relié, à sa place */
+#matter{margin-left:calc(var(--rl) + var(--rw) + 4px);display:flex;flex-direction:column;gap:9px;padding:10px 0 4px}
+#matter .grp{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+#matter .w{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.62);min-width:64px}
+.mi{font-family:var(--q);font-size:11px;color:#fff;padding:2px 7px;background:var(--navy)}
+.mi.o{background:var(--blue)}.mi.r{background:var(--rep)}.mi.w{background:#5b2652}.mi.v{background:#2b3a73}
+.pal{display:flex;gap:4px}.pal i{width:18px;height:18px;display:block}
+#matter .next{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:4px}
+#matter .mono{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.66)}
+/* LA MANETTE — celle de COM (rayon 15 px, seuil 9 px), blue / navy / rep */
+#joy{position:fixed;z-index:60;left:50%;bottom:calc(16px + var(--sb));transform:translateX(-50%);display:none;
+  grid-template-columns:18px 56px 18px;grid-template-rows:18px 56px 18px;align-items:center;justify-items:center}
+body[data-stage=element] #joy{display:grid}
+#cur-h{grid-area:1/2/2/3}#cur-g{grid-area:2/1/3/2}#joy-box{grid-area:2/2/3/3}#cur-d{grid-area:2/3/3/4}#cur-b{grid-area:3/2/4/3}
+.cur{width:18px;height:18px;padding:0;background:none;border:none;color:#fff;cursor:pointer;opacity:.85;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:opacity .15s,transform .15s}
+.cur svg{width:12px;height:12px;stroke:currentColor;stroke-width:2.1;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.cur.mort{opacity:.14;pointer-events:none}
+#joy.vers-g #cur-g,#joy.vers-d #cur-d,#joy.vers-h #cur-h,#joy.vers-b #cur-b{opacity:1;transform:scale(1.3)}
+#joy-box{width:56px;height:56px;position:relative;border:0;padding:0;border-radius:50%;background:var(--joy,var(--navy));box-shadow:0 2px 7px rgba(0,0,0,.5);
+  touch-action:none;cursor:grab;-webkit-tap-highlight-color:transparent;transition:background-color .42s ease,box-shadow .3s ease}
+#joy-box.is-act{box-shadow:0 0 0 2px rgba(255,255,255,.9),0 2px 9px rgba(0,0,0,.55)}
+#joy.is-held #joy-box{box-shadow:0 5px 14px rgba(0,0,0,.65)}
+#joy-box:focus-visible{outline:1px solid var(--mid);outline-offset:4px}
+#joy-stack{position:absolute;inset:0;transform:translate(var(--mx,0px),var(--my,0px));transition:transform .26s cubic-bezier(.22,.9,.3,1);pointer-events:none}
+#joy.is-held #joy-stack{transition:none}
+#joy-stack i{--d:12px;position:absolute;left:50%;display:block;width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
+  border-radius:50%;background:var(--c);box-shadow:0 2px 5px rgba(0,0,0,.6);transition:transform .38s cubic-bezier(.22,.9,.3,1),opacity .38s ease}
+#joy-stack .o{top:23%;--c:var(--blue)}#joy-stack .h{top:50%;--c:var(--navy)}#joy-stack .r{top:77%;--c:var(--rep)}
+#joy-stack i.ici{opacity:0;transform:scale(.4)}
+#joy-say{position:fixed;z-index:60;left:50%;bottom:calc(16px + var(--sb) + 98px);transform:translateX(-50%);display:none;
+  font:700 9px/1.4 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#fff;white-space:nowrap;pointer-events:none;background:rgba(0,0,0,.6);border-radius:8px;padding:4px 9px}
+body[data-stage=element] #joy-say{display:block}
+
+/* 3 · NAME — l'élément en tête, le nom en Quantico Coral */
+.el-tile{width:100%;max-width:360px;background:var(--skin,#333366);color:#fff;padding:12px 16px 13px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.el-tile small{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.72)}
+.el-tile b{font-family:var(--q);font-weight:400;font-size:16px;line-height:1.4;word-break:break-word}
 .pals{display:flex;gap:4px;justify-content:center}.pals i{width:12px;height:12px;display:block}
+#nm-field{display:flex;align-items:baseline;background:#111114;border-radius:12px;padding:10px 16px;width:100%;max-width:360px;cursor:text}
+#nm-prefix{font-family:var(--q);font-size:26px;color:var(--coral);opacity:.55;user-select:none;flex:0 0 auto}
+#nm-input{font-family:var(--q);font-size:26px;color:var(--coral);background:none;border:none;outline:none;caret-color:var(--coral);width:100%;min-width:0;padding:2px 0}
+#nm-input::placeholder{color:rgba(251,213,202,.3)}
 
-/* LE VÊTEMENT */
-#stage{position:relative;width:100%;display:flex;justify-content:center;align-items:center}
-#card{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;opacity:1;transition:opacity .22s ease}
-#card.is-fading{opacity:0}
-.visual{position:relative;width:min(calc(100vw - 132px),320px);aspect-ratio:3/4;overflow:hidden;background:#0a0a0c;touch-action:pan-y}
-.visual img.ph{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .12s ease}
-.visual img.ph.is-fading{opacity:0}
-.visual .none{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
-.vis-dots{position:absolute;bottom:8px;left:0;right:0;display:flex;gap:5px;justify-content:center;z-index:3}
-.vis-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.25);border:none;padding:0;cursor:pointer;transition:background .2s ease}
-.vis-dot.is-on{background:rgba(255,255,255,.85)}
-.arrow{position:absolute;top:50%;margin-top:-20px;width:40px;height:40px;border:none;border-radius:10px;background:var(--c1);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;-webkit-tap-highlight-color:transparent;transition:background .15s ease,opacity .2s ease}
-.arrow svg{width:9px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.arrow.is-dead{opacity:0;pointer-events:none}
-#arr-l{left:0}#arr-r{right:0}
-@media(hover:hover){.arrow:hover{background:var(--c2)}}
-.sup-title{font-family:var(--mono);font-weight:700;font-size:14px;color:#fff;letter-spacing:.02em}
-.facts{display:flex;flex-wrap:wrap;gap:4px 14px;justify-content:center;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
-.facts .price{color:#fff;font-weight:700;letter-spacing:.04em;font-size:12px}
-.facts .out{color:var(--lo)}
-.sup-detail{font-size:11px;line-height:1.65;color:var(--dim);max-width:340px;overflow:hidden;max-height:0;opacity:0;transition:max-height .38s ease,opacity .3s ease}
-.sup-detail.is-on{max-height:220px;opacity:1}
-#dots{display:flex;gap:7px;justify-content:center;min-height:6px}
-.dot{width:6px;height:6px;border-radius:50%;background:#2c2c2c;transition:background .22s ease}
-.dot.is-on{background:#fff}
+/* 4 · STYLE — les styles du moment, au doigt */
+#st-rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;width:100%;padding:6px 4px 10px}
+#st-rail::-webkit-scrollbar{display:none}
+.st-card{flex:0 0 auto;width:120px;display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;padding:0;cursor:pointer;scroll-snap-align:center;-webkit-tap-highlight-color:transparent}
+.st-card img,.st-card .ph{width:120px;height:120px;display:block;object-fit:cover;border-radius:10px;background:var(--c1);opacity:.6;filter:grayscale(45%);outline:1px solid transparent;transition:opacity .2s ease,filter .2s ease,outline-color .2s ease}
+.st-card b{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--lo);transition:color .2s ease}
+.st-card span{font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.st-card.is-on img,.st-card.is-on .ph{opacity:1;filter:none;outline-color:#fff}
+.st-card.is-on b{color:#fff}
+.st-card:disabled{opacity:.35;cursor:default}
 
-/* L'APERÇU — la place, la palette, le style, le nom. Pas l'œuvre. */
-.pz{position:absolute;left:50%;top:var(--pz-top,24%);width:var(--pz-w,46%);aspect-ratio:var(--pz-ar,3/4);transform:translateX(-50%);overflow:hidden;opacity:.92;pointer-events:none}
-.pz canvas{width:100%;height:100%;display:block}
-.pz img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:luminosity;opacity:.38}
-.pz-name{position:absolute;left:0;right:0;top:calc(var(--pz-top,24%) + var(--pz-h,61%) + 3%);font-family:var(--q);font-size:11px;color:#fff;text-align:center;pointer-events:none}
-.pz-tag{position:absolute;top:8px;left:0;right:0;font-family:var(--mono);font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.75);pointer-events:none}
+/* 5 · ORDER — l'aperçu (la place, le style, le nom), la taille, le prix */
+#od-visual{position:relative;width:min(100%,300px);aspect-ratio:1/1;overflow:hidden;background:#050506}
+#od-visual img.ph{width:100%;height:100%;object-fit:contain;display:block}
+.pz{position:absolute;left:50%;top:var(--pz-top,24%);width:var(--pz-w,42%);aspect-ratio:var(--pz-ar,3/4);transform:translateX(-50%);overflow:hidden;pointer-events:none;border:1px dashed rgba(255,255,255,.62);background:rgba(0,0,0,.3)}
+.pz img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5;filter:grayscale(25%)}
+.pz b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:6px;font-weight:400;font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.82);text-align:center}
+/* L'instrument (ordinateur) : la place de l'œuvre posée sur le vêtement, gravée en direct. */
+#vw-zone{position:absolute;top:0;bottom:0;left:50%;aspect-ratio:1/1;max-width:100%;transform:translateX(-50%);pointer-events:none;z-index:2;opacity:0;transition:opacity .4s ease}
+.pz-name{position:absolute;left:0;right:0;top:calc(var(--pz-top,24%) + var(--pz-h,61%) + 3%);font-family:var(--q);font-size:11px;color:var(--coral);text-align:center;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.7)}
+.pz-tag{position:absolute;top:8px;left:0;right:0;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.75);text-align:center;pointer-events:none}
+.recap{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);text-align:center}
+.recap .nm{font-family:var(--q);font-size:15px;letter-spacing:0;text-transform:none;color:var(--coral)}
+.sizes{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.sz{font-weight:700;font-size:12px;color:var(--mid);background:var(--c1);border:1px solid transparent;border-radius:10px;cursor:pointer;min-width:48px;padding:10px 12px;-webkit-tap-highlight-color:transparent;transition:background .15s ease,color .15s ease,border-color .15s ease}
+.sz.is-on{background:#3a3a42;color:#fff;border-color:#fff}
+.sz:disabled{opacity:.3;cursor:default}
+@media(hover:hover){.sz:not(:disabled):hover{background:var(--c2);color:#fff}}
+#od-test{font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--c1);border-radius:8px;padding:5px 10px;white-space:nowrap}
+.blind{font-size:10px;line-height:1.75;color:var(--lo);max-width:360px;text-align:center}
+.blind a{text-decoration:underline}
 
-/* CONCEPT */
-#concept{position:fixed;inset:0;z-index:70;background:var(--bg);overflow-y:auto;display:none;flex-direction:column;gap:30px;padding:72px 22px 60px;align-items:center;text-align:center}
-#concept.is-open{display:flex}
-#concept-back{position:fixed;top:12px;left:12px;z-index:72}
-.slide{display:flex;flex-direction:column;gap:8px;max-width:380px;width:100%}
-.slide-title{font-family:var(--mono);font-weight:700;font-size:12px;color:#fff;line-height:1.5}
-.slide-cap{font-size:11px;line-height:1.7;color:var(--lo)}
+/* DONE — le nom, en grand */
+#dn-name{font-family:var(--q);font-size:28px;color:var(--coral);background:#111114;border-radius:12px;padding:10px 18px;word-break:break-word;text-align:center}
 
-/* MEMBER */
-#member{position:fixed;inset:0;z-index:75;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;padding:16px}
+/* LE MEMBRE */
+#member{position:fixed;inset:0;z-index:75;background:rgba(0,0,0,.9);display:none;align-items:flex-start;justify-content:center;padding:max(44px,8dvh) 16px 16px}
 #member.is-open{display:flex}
 .mw-sheet{background:#0b0b0b;width:100%;max-width:420px;padding:30px 22px 26px;text-align:center;position:relative;display:flex;flex-direction:column;align-items:center;gap:10px}
 .mw-close{position:absolute;top:8px;right:8px}
 .mw-body{font-size:12px;color:var(--lo);line-height:1.7}
 .mw-input{width:100%;max-width:280px;background:var(--c1);border:none;border-radius:10px;outline:none;color:#fff;font-family:var(--q);font-size:13px;padding:10px 12px;caret-color:#fff;text-align:center}
 .mw-input::placeholder{color:var(--dim)}
-.mw-list{display:flex;flex-direction:column;gap:8px;width:100%;text-align:left;max-height:170px;overflow-y:auto}
-.mw-row{display:flex;justify-content:space-between;gap:10px;font-family:var(--q);font-size:11px;color:#cfcfcf}
+.mw-list{display:flex;flex-direction:column;gap:8px;width:100%;text-align:left;max-height:190px;overflow-y:auto}
+.mw-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-family:var(--q);font-size:12px;color:var(--coral)}
 .mw-row .st{font-family:var(--mono);color:var(--lo);text-transform:uppercase;font-size:9px;letter-spacing:.12em;flex-shrink:0}
 .mw-pseudo{font-family:var(--q);font-weight:700;font-size:15px;color:#fff}
-.mw-mail{font-family:var(--mono);font-size:9px;color:var(--lo);word-break:break-all}
-.note{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:13px}
-.note.ok{color:var(--ok)}.note.no{color:#fff}.note.dim{color:var(--lo)}
+.mw-mail{font-size:9px;color:var(--lo);word-break:break-all}
+.step-h{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--lo)}
 
-/* ══ SELECT MODE — le Totehm de totehm.com, en lecture · 23/09/2026 ══
-   Copié de totehm.space (produits indépendants = fichiers indépendants).
-   Même papier, même rail, mêmes boîtes, même croix. Ici, CONTRAIREMENT à
-   l'Espace, les cinq vues se choisissent : n'importe quelle Box (§51). */
-#sel{position:fixed;inset:0;z-index:80;background:#2b2b57;display:none;--rl:46px;--rw:18px;transition:background-color .5s ease}
-#sel.is-open{display:block}
-#sel.v-wisdom{background:#5b2652}#sel.v-visions{background:#2b3a73}
-#rail{position:absolute;top:0;bottom:0;left:var(--rl);width:var(--rw);background:rgba(255,255,255,.30)}
-#sel-head{position:absolute;top:calc(22px + env(safe-area-inset-top,0));left:0;right:0;text-align:center;z-index:3;pointer-events:none}
-#sel-q{font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:8px}
-#sel-title{font-family:'Space Mono',monospace;font-size:clamp(22.4px,5.3vw,31.7px);color:#fff;line-height:1;letter-spacing:.04em;font-weight:700;text-transform:uppercase}
-#sel-sub{font-family:var(--mono);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.62)}
-#list{position:absolute;top:calc(118px + env(safe-area-inset-top,0));bottom:calc(128px + env(safe-area-inset-bottom,0));left:0;right:0;
-  overflow-y:auto;overscroll-behavior:contain;padding:0 16px 30px 0;display:flex;flex-direction:column;gap:6px}
-#list.swap{animation:swap .26s cubic-bezier(.22,.61,.36,1)}
-@keyframes swap{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.bx{position:relative;margin-left:calc(var(--rl) + var(--rw) + 4px);background:var(--skin,#333366);color:#fff;
-  padding:8px 12px 9px 14px;cursor:pointer;transition:filter .15s ease,transform .28s cubic-bezier(.22,.61,.36,1);flex:0 0 auto}
-@media(hover:hover){.bx:hover{filter:brightness(1.18)}}
-.bx .tick{position:absolute;left:0;top:0;bottom:0;width:3px;display:flex;flex-direction:column}
-.bx .tick i{flex:1 1 0;display:block}
-.bx .nm{font-family:var(--q);font-size:14px;line-height:1.5;word-break:break-word}
-.bx .sb{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-top:4px;display:flex;flex-wrap:wrap;gap:0 10px}
-.bx.open{transform:scale(1.012) translateY(-2px);filter:brightness(1.07);cursor:default}
-.v-empty{font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.5);text-align:center;padding:30px 0 0 60px}
-#sel-x{position:absolute;top:calc(12px + env(safe-area-inset-top,0));right:12px;z-index:5;width:40px;height:40px;background:none;border:none;cursor:pointer;color:#fff}
-#sel-x svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.6;fill:none}
-#joy{position:absolute;bottom:calc(18px + env(safe-area-inset-bottom,0));left:50%;transform:translateX(-50%);z-index:4;
-  display:grid;grid-template-columns:22px 52px 22px;grid-template-rows:22px 52px 22px;align-items:center;justify-items:center}
-#cur-h{grid-area:1/2/2/3}#cur-g{grid-area:2/1/3/2}#joy-box{grid-area:2/2/3/3}#cur-d{grid-area:2/3/3/4}#cur-b{grid-area:3/2/4/3}
-.cur{width:22px;height:22px;background:none;border:none;color:#fff;cursor:pointer;opacity:.85;display:flex;align-items:center;justify-content:center}
-.cur svg{width:10px;height:10px;stroke:currentColor;stroke-width:2;fill:none}
-.cur.mort{opacity:0;pointer-events:none}
-#joy-box{width:52px;height:52px;border-radius:50%;background:var(--joy,#333366);box-shadow:0 2px 7px rgba(0,0,0,.5);position:relative;touch-action:none;cursor:grab;transition:background-color .42s ease}
-#joy-box i{position:absolute;left:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--c);box-shadow:0 2px 5px rgba(0,0,0,.6);transition:transform .38s,opacity .38s}
-#joy-box .o{top:23%;--c:#36498c}#joy-box .h{top:50%;--c:#333366}#joy-box .r{top:77%;--c:#743169}
-#joy-box i.ici,#joy-box i.mort{opacity:0;transform:scale(.4)}
-/* LA MATIÈRE : la Box choisie ENFANTE ce qui lui est relié, à sa place. */
-#matter{margin-left:calc(var(--rl) + var(--rw) + 4px);display:flex;flex-direction:column;gap:9px;padding:10px 0 4px;animation:swap .3s cubic-bezier(.22,.61,.36,1)}
-#matter .grp{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
-#matter .w{font-family:var(--mono);font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.6);min-width:64px}
-.mi{font-family:var(--q);font-size:11px;color:#fff;padding:2px 7px;background:#333366}
-.mi.o{background:#36498c}.mi.r{background:#743169}.mi.w{background:#5b2652}.mi.v{background:#2b3a73}
-.pal{display:flex;gap:4px}.pal i{width:18px;height:18px;display:block}
-#matter .next{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:4px}
-/* LE PASSEPORT — une porte fermée dit pourquoi, et où aller. */
-#pass{position:fixed;inset:0;z-index:85;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px 24px;text-align:center}
+/* LE PASSEPORT — une porte fermée dit pourquoi, et où aller */
+#pass{position:fixed;inset:0;z-index:85;background:#000;display:none;flex-direction:column;align-items:center;justify-content:flex-start;gap:16px;padding:calc(var(--st) + 14dvh) 24px 40px;text-align:center}
 #pass.is-open{display:flex}
-#pass .t{font-family:var(--mono);font-size:clamp(22px,5.6vw,34px);color:#fff;line-height:1.15;font-weight:700;text-transform:uppercase}
+#pass .t{font-size:clamp(22px,5.6vw,34px);color:#fff;line-height:1.15;font-weight:700;text-transform:uppercase}
 #pass .v{display:flex;gap:5px}#pass .v i{width:14px;height:14px;display:block;border:1px dashed rgba(255,255,255,.35)}
 #pass .v i.is-on{background:#fff;border-color:transparent}
-#pass .say{font-size:11px;color:var(--lo)}
 
-/* MATERIALIZE — la même colonne, plein écran */
-#config{position:fixed;inset:0;z-index:60;background:var(--bg);overflow-y:auto;display:none}
-#config.is-open{display:block}
-#config .col{gap:14px}
-#cfg-back{position:fixed;top:12px;left:12px;z-index:62}
-#anchor{background:var(--skin,#333366);color:#fff;padding:9px 14px;width:100%;max-width:340px;display:flex;flex-direction:column;align-items:center;gap:4px}
-#anchor small{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7)}
-#anchor .nm{font-family:var(--q);font-size:14px;line-height:1.4}
-.pv-cap{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo);max-width:320px}
-.cfg-step{display:flex;flex-direction:column;align-items:center;gap:9px;width:100%;opacity:0;max-height:0;overflow:hidden;visibility:hidden;transition:opacity .3s ease,max-height .34s ease,visibility .3s}
-.cfg-step.is-on{opacity:1;max-height:420px;visibility:visible;padding-top:6px}
-.step-h{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--lo)}
-.name-box{display:flex;align-items:center;background:var(--c1);border-radius:10px;padding:0 12px;width:100%;max-width:280px}
-.name-prefix{font-family:var(--q);font-size:14px;color:#fff;opacity:.5;user-select:none}
-.name-box input{font-family:var(--q);font-size:14px;color:#fff;background:none;outline:none;border:none;caret-color:#fff;width:100%;padding:10px 2px}
-.name-box input::placeholder{color:var(--dim)}
-.style-track{display:flex;gap:10px;overflow-x:auto;padding:4px 4px 8px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;max-width:100%}
-.style-track::-webkit-scrollbar{display:none}
-.style-item{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:pointer;scroll-snap-align:center;-webkit-tap-highlight-color:transparent;padding:0}
-.style-img{width:92px;height:92px;object-fit:cover;display:block;border-radius:10px;border:1px solid transparent;filter:grayscale(55%);opacity:.6;transition:opacity .2s ease,filter .2s ease,border-color .2s ease;background:var(--c1)}
-.style-item .st-name{font-family:var(--mono);font-size:10px;color:var(--lo);max-width:104px;line-height:1.3;transition:color .2s ease}
-.style-item.is-on .style-img{filter:none;opacity:1;border-color:#fff}
-.style-item.is-on .st-name{color:#fff}
-.sizes{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.blind{font-size:11px;line-height:1.8;color:var(--lo);max-width:360px}
-.blind a{text-decoration:underline;cursor:pointer}
-#done{display:flex;flex-direction:column;align-items:center;gap:12px}
-#done .big{font-family:var(--q);font-size:16px;color:#fff}
-#done .sub{font-size:11px;color:var(--lo);line-height:1.65;max-width:340px}
+/* COMMENT ÇA MARCHE */
+#concept{position:fixed;inset:0;z-index:70;background:var(--bg);overflow-y:auto;display:none;flex-direction:column;gap:28px;padding:calc(var(--st) + 72px) 22px 60px;align-items:center;text-align:center}
+#concept.is-open{display:flex}
+#concept-back{position:fixed;top:calc(12px + var(--st));left:12px;z-index:72}
+#concept h1{font-weight:700;font-size:20px;letter-spacing:.06em;text-transform:uppercase;color:#fff}
+.slide{display:flex;flex-direction:column;gap:8px;max-width:380px;width:100%}
+.slide-title{font-weight:700;font-size:12px;color:#fff;line-height:1.5}
+.slide-cap{font-size:11px;line-height:1.7;color:var(--lo)}
 
-@media(min-width:700px){.visual{width:min(36vw,360px)}#stage{max-width:500px}}
-@media(prefers-reduced-motion:reduce){#card,.cfg-step,.sup-detail,.visual img.ph{transition:none}}
+/* ══ ORDINATEUR ≥ 900 px — LES DÉCALAGES DE SPACE (Wah, 08/10 bis) ══════
+   Le téléphone garde une scène plein écran à la fois. Sur ordinateur, le
+   vêtement reste à l'écran comme le radar de SPACE et se décale vers la place
+   libre ; chaque scène est une fenêtre-côté qui glisse : ELEMENT à gauche
+   (wisdom, le passé) ou à droite (vision, le futur), NAME · STYLE · ORDER à
+   droite. La place de l'œuvre se pose sur le vêtement et le nom s'y grave. */
+@media(min-width:900px){
+  :root{--pw:clamp(360px,34vw,460px)}
+  body[data-side=left]{--jx:calc(var(--pw) / 2)}
+  body[data-side=right]{--jx:calc(var(--pw) / -2)}
+  #hud{left:calc(50% + var(--jx,0px));transition:left .5s var(--ease),opacity .3s ease}
+  #s-cloth{opacity:1;visibility:visible;transform:none;z-index:1;overflow:hidden}
+  #s-cloth .inner{max-width:min(560px,calc(100vw - var(--pw) - 64px));transform:translateX(var(--jx,0px));transition:transform .5s var(--ease)}
+  .cl-only{transition:opacity .3s ease,visibility 0s}
+  body:not([data-stage=cloth]) .cl-only{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s ease,visibility 0s linear .2s}
+  body:not([data-stage=cloth]):not([data-stage=done]) #vw-zone{opacity:1}
+  .stage:not(#s-cloth):not(#s-done){left:auto;right:0;width:var(--pw);z-index:20;opacity:1;background:#0b0b0e;box-shadow:0 0 34px rgba(0,0,0,.5);
+    transform:translateX(101%);transition:transform .46s var(--ease),visibility 0s linear .46s,background-color .5s ease}
+  .stage.is-left:not(#s-cloth):not(#s-done){left:0;right:auto;transform:translateX(-101%)}
+  .stage.is-here:not(#s-cloth):not(#s-done){transform:none;transition:transform .46s var(--ease),visibility 0s,background-color .5s ease}
+  .stage.is-swap:not(#s-cloth){transition:none!important}
+  #s-element.stage:not(#s-done){background:var(--paper,#2b2b57)}
+  #s-done{z-index:30;background:#000}
+  #joy,#joy-say{left:calc(50% + var(--jx,0px));transition:left .5s var(--ease)}
+  #od-visual{display:none}
+}
 
+/* 03/10 — le nom du TOTEHM du membre : Quantico Coral, sans point d'état. */
+#conn-bar,#conn-bar:hover,#conn-txt,.mw-pseudo,.mw-pseudo:hover,#mw-who,#mw-who:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
+#conn-bar .dc,#conn-bar .dot{display:none!important}
 
-
-:root{--joy-d:56px;--bot:env(safe-area-inset-bottom,0px)}
-/* ══ LA MANETTE — le manche de SPACE/COM ═════════════════════════════ */
-#nav{position:fixed;z-index:70;bottom:calc(18px + var(--bot));left:50%;transform:translateX(-50%);
-  display:grid;grid-template-columns:22px var(--joy-d) 22px;grid-template-rows:22px var(--joy-d) 22px;align-items:center;justify-items:center}
-#nav-say{position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);font-size:9px;letter-spacing:.18em;white-space:nowrap;
-  color:var(--lo);pointer-events:none;text-transform:uppercase;transition:color .15s}
-#nav-say.is-preview{color:#fff}
-/* Un voile noir sous le manche : le texte qui défile dessous ne se lit pas à travers. */
-#nav::before{content:'';position:absolute;left:-90px;right:-90px;top:-34px;bottom:-30px;background:radial-gradient(closest-side,#000 62%,rgba(0,0,0,0));z-index:-1;pointer-events:none}
-#nav-h{grid-area:1/2/2/3}#nav-g{grid-area:2/1/3/2}#nav-box{grid-area:2/2/3/3}#nav-d{grid-area:2/3/3/4}#nav-b{grid-area:3/2/4/3}
-#nav-box{width:var(--joy-d);height:var(--joy-d);position:relative;border:none;padding:0;border-radius:50%;background:var(--joy-vue,var(--navy));
-  touch-action:none;cursor:grab;-webkit-tap-highlight-color:transparent;transition:background-color .3s ease}
-#nav-box:focus-visible{outline:1px solid var(--mid);outline-offset:4px}
-#nav-stack{position:absolute;inset:0;transform:translate(var(--mx,0px),var(--my,0px));transition:transform .26s cubic-bezier(.22,.9,.3,1)}
-#nav-box.is-held #nav-stack{transition:none}
-#nav-stack i{--d:12px;position:absolute;left:50%;display:block;width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
-  border-radius:50%;background:var(--c);transition:opacity .18s,transform .18s,background-color .4s ease}
-#nav-stack .o{top:23%;--c:var(--blue)}#nav-stack .h{top:50%;--c:var(--navy)}#nav-stack .r{top:77%;--c:var(--rep)}
-#nav-stack i.is-current{opacity:0;transform:scale(.4)}
-.nav-cur{background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;width:22px;height:22px;
-  opacity:.85;color:#fff;-webkit-tap-highlight-color:transparent;transition:opacity .15s,transform .15s}
-.nav-cur.is-dead{opacity:.14;pointer-events:none}
-.nav-cur.is-preview{opacity:1;transform:scale(1.3)}
-.nav-cur svg{width:14px;height:14px;display:block;stroke:currentColor;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
-
-
-
-
-/* 03/10 — the member's TOTEHM name: Quantico Coral, without status dots. */
-#conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
-#conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
-.tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
+/* Au chargement, la première scène est là : aucune glissade d'entrée. */
+body.is-boot .stage{transition:none!important}
+@media(prefers-reduced-motion:reduce){.stage,.stage.is-here,#vw-track,.angles,#el-list,.bx,#joy-stack i,#cl-detail{transition:none!important}}
 
 
 
@@ -279,43 +298,39 @@ h1{font-family:var(--mono);font-weight:700;font-size:22px;letter-spacing:.06em;t
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
 @media(hover:hover){
-.mono:hover,
-.lnk:hover,
-.btn-back:hover,
-.sz:hover,
-#conn-bar:hover,
 .kicker:hover,
 .say:hover,
-.flow:hover,
-.flow span.is-done:hover,
-#picked small:hover,
-#picked button:hover,
-.visual .none:hover,
-.facts:hover,
-.facts .out:hover,
-.sup-detail:hover,
-.pz-tag:hover,
-.slide-cap:hover,
-.mw-body:hover,
-.mw-input:hover::placeholder,
-.mw-row:hover,
-.mw-row .st:hover,
-.mw-mail:hover,
 .note.dim:hover,
-#sel-q:hover,
-#sel-sub:hover,
+.lnk:hover,
+.btn-back:hover,
+#conn-bar:hover,
+#hud-say:hover,
+.model .none:hover,
+#cl-facts:hover,
+#cl-hint:hover,
+#cl-detail:hover,
+#el-q:hover,
+#el-sub:hover,
 .bx .sb:hover,
 .v-empty:hover,
+.v-empty .lnk:hover,
 #matter .w:hover,
-#pass .say:hover,
-#anchor small:hover,
-.pv-cap:hover,
-.step-h:hover,
-.name-box input:hover::placeholder,
-.style-item .st-name:hover,
+#matter .mono:hover,
+.el-tile small:hover,
+#nm-input:hover::placeholder,
+.st-card b:hover,
+.st-card span:hover,
+.pz b:hover,
+.pz-tag:hover,
+.recap:hover,
+.sz:hover,
 .blind:hover,
-#done .sub:hover,
-#nav-say:hover{color:#fff}
+.mw-body:hover,
+.mw-input:hover::placeholder,
+.mw-row .st:hover,
+.mw-mail:hover,
+.step-h:hover,
+.slide-cap:hover{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
@@ -353,29 +368,119 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 @media(max-width:350px){.btn-sig,a.btn-sig{font-size:11.5px!important}}
 </style>
 </head>
-<body data-eco-auth="central">
+<body data-eco-auth="central" data-stage="cloth" class="is-boot">
 <header id="top">
-  <a class="btn-back" id="home" href="/">Back</a>
+  <button class="btn-back" id="back" type="button">Back</button>
   <button id="conn-bar" type="button" aria-label="member space"><span class="dc" id="conn-dot"></span><span id="conn-txt">CONNECT WITH MY TOTEHM</span></button>
 </header>
+<nav id="hud" aria-label="The five steps">
+  <ol>
+    <li><button type="button" data-i="0" aria-label="Cloth"><i></i></button></li>
+    <li><button type="button" data-i="1" aria-label="Element"><i></i></button></li>
+    <li><button type="button" data-i="2" aria-label="Name"><i></i></button></li>
+    <li><button type="button" data-i="3" aria-label="Style"><i></i></button></li>
+    <li><button type="button" data-i="4" aria-label="Order"><i></i></button></li>
+  </ol>
+  <div id="hud-say">1 / 5 · Cloth</div>
+</nav>
 
-<main id="main">
-  <div class="kicker">Totehm Cloth · Streetwear</div>
-  <h1>Pick up the box</h1>
-  <p class="say">One Box of your TOTEHM becomes an original artwork, on a limited cloth.</p>
-  <div class="flow" id="flow" aria-label="steps"><span data-f="pick">Box</span><i></i><span data-f="select">Cloth</span><i></i><span data-f="materialize">Materialize</span></div>
+<main id="stages">
+  <!-- 1 · CLOTH -->
+  <section class="stage" id="s-cloth" data-s="cloth" aria-label="Choose the cloth">
+    <div class="inner">
+      <div class="kicker">Streetwear · Totehm x Champion 2026</div>
+      <div id="viewer" role="region" aria-label="The cloth — swipe left or right for another, up or down for another view">
+        <div id="vw-track"></div>
+        <div id="vw-zone" aria-hidden="true"></div>
+        <button class="m-arrow cl-only is-dead" id="m-prev" type="button" aria-label="Previous cloth"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></button>
+        <button class="m-arrow cl-only is-dead" id="m-next" type="button" aria-label="Next cloth"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M3 2 L11 12 L3 22"/></svg></button>
+        <button class="a-arrow is-dead" id="a-up" type="button" aria-label="Previous view"><svg viewBox="0 0 24 14" aria-hidden="true"><path d="M2 11 L12 3 L22 11"/></svg></button>
+        <button class="a-arrow is-dead" id="a-down" type="button" aria-label="Next view"><svg viewBox="0 0 24 14" aria-hidden="true"><path d="M2 3 L12 11 L22 3"/></svg></button>
+        <div id="a-dots" aria-hidden="true"></div>
+      </div>
+      <div id="m-dots" class="cl-only" aria-hidden="true"></div>
+      <div id="cl-title"></div>
+      <div id="cl-facts"></div>
+      <div id="cl-wear" class="cl-only hide"></div>
+      <button class="btn cta cl-only" id="totehmize" type="button">Totehmize</button>
+      <div id="cl-hint" class="cl-only">swipe ↔ cloths · ↕ views</div>
+      <div class="cl-links cl-only"><button class="lnk" id="cl-more" type="button">details</button><button class="lnk" id="concept-btn" type="button">How it works</button></div>
+      <div id="cl-detail" class="cl-only"></div>
+    </div>
+  </section>
 
-  <button class="btn big" id="pick-btn" type="button">Pick up the box</button>
-  <div id="picked" class="hide"></div>
+  <!-- 2 · ELEMENT — le Totehm déplié -->
+  <section class="stage" id="s-element" data-s="element" aria-label="Choose an element of my TOTEHM">
+    <div id="el-rail"></div>
+    <div id="el-head">
+      <div id="el-q">pick the element you want to wear</div>
+      <div id="el-title">my wisdom</div>
+      <div id="el-sub">what I pass on</div>
+      <div id="el-map" role="group" aria-label="Wisdom or vision">
+        <button type="button" data-v="wisdom" aria-label="My wisdom"></button>
+        <button type="button" data-v="visions" aria-label="My vision"></button>
+      </div>
+    </div>
+    <div id="el-list"></div>
+  </section>
 
-  <div id="stage">
-    <button class="arrow is-dead" id="arr-l" type="button" aria-label="Previous cloth"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></button>
-    <div id="card"></div>
-    <button class="arrow is-dead" id="arr-r" type="button" aria-label="Next cloth"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M3 2 L11 12 L3 22"/></svg></button>
-  </div>
-  <div id="dots"></div>
-  <button class="lnk" id="concept-btn" type="button">How it works</button>
+  <!-- 3 · NAME -->
+  <section class="stage is-top" id="s-name" data-s="name" aria-label="Name the cloth">
+    <div class="inner">
+      <div class="el-tile" id="nm-el"></div>
+      <div class="kicker">Name your Totehm Cloth</div>
+      <label id="nm-field"><span id="nm-prefix">0.</span><input id="nm-input" maxlength="40" placeholder="name it" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="next" aria-label="The name of the cloth"></label>
+      <div class="note dim" id="nm-note"></div>
+      <div class="say">Printed on the cloth. Decode it to read the element.</div>
+      <button class="btn cta" id="nm-go" type="button" disabled>Next</button>
+    </div>
+  </section>
+
+  <!-- 4 · STYLE -->
+  <section class="stage" id="s-style" data-s="style" aria-label="Choose the style">
+    <div class="inner">
+      <div class="kicker">The style of the moment</div>
+      <div id="st-rail" class="pieces" role="listbox" aria-label="Curated styles"></div>
+      <div class="say">Curated. The artwork is born after payment and stays a surprise until it lands.</div>
+      <button class="btn cta" id="st-go" type="button" disabled>Next</button>
+    </div>
+  </section>
+
+  <!-- 5 · ORDER -->
+  <section class="stage" id="s-order" data-s="order" aria-label="Size and order">
+    <div class="inner">
+      <div id="od-visual"></div>
+      <div class="recap" id="od-recap"></div>
+      <div class="kicker">Your size</div>
+      <div class="sizes pieces" id="od-sizes" role="radiogroup" aria-label="Size"></div>
+      <div id="od-test" class="hide">test · card 4242 4242 4242 4242</div>
+      <button class="btn cta" id="od-go" type="button" disabled>Order</button>
+      <div class="note dim" id="od-note"></div>
+      <div class="blind">Shipping address and payment on the secure page. Made to order: no returns, no refunds. <a href="/terms_of_sale" target="_blank" rel="noopener">Simple terms of sale</a></div>
+    </div>
+  </section>
+
+  <!-- DONE — le retour de Stripe -->
+  <section class="stage" id="s-done" data-s="done" aria-label="In the making">
+    <div class="inner">
+      <div class="kicker">Totehm Cloth · in the making</div>
+      <div id="dn-name"></div>
+      <div class="say">Your element becomes an original artwork. You will not see it before it lands.</div>
+      <a class="btn" id="dn-decode" href="/">Decode it</a>
+      <button class="lnk" id="dn-again" type="button">Another cloth</button>
+    </div>
+  </section>
 </main>
+
+<!-- LA MANETTE — les cinq vues du Totehm déplié ; le centre porte l'élément choisi -->
+<div id="joy" role="group" aria-label="Move in my TOTEHM">
+  <button class="cur" id="cur-h" type="button" aria-label="Up"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
+  <button class="cur" id="cur-g" type="button" aria-label="Left"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
+  <button id="joy-box" type="button" aria-label="Wear the chosen element"><span id="joy-stack" aria-hidden="true"><i class="o"></i><i class="h"></i><i class="r"></i></span></button>
+  <button class="cur" id="cur-d" type="button" aria-label="Right"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
+  <button class="cur" id="cur-b" type="button" aria-label="Down"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
+</div>
+<div id="joy-say" aria-hidden="true"></div>
 
 <!-- MEMBER -->
 <div id="member">
@@ -384,7 +489,6 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
     <div id="mw-out-state">
       <div class="mw-body">One account, four doors.</div>
       <button class="btn eco-connect" id="mw-login" type="button">CONNECT WITH MY TOTEHM</button>
-      <div class="note dim" id="mw-note"></div>
     </div>
     <div id="mw-claim-state" class="hide">
       <div class="mw-body">Choose the name of your Totehm.</div>
@@ -403,98 +507,24 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   </div>
 </div>
 
-<!-- CONCEPT -->
-<div id="concept">
-  <button class="btn-back" id="concept-back" type="button">back</button>
-  <h1>How it works</h1>
-  <div class="slide">
-    <div class="slide-title">1 · Pick up one box of your TOTEHM.</div>
-    <div class="slide-cap">A habit, an objective, a repulsion, a lesson, a vision. One box — and everything it is connected to.</div>
-  </div>
-  <div class="slide">
-    <div class="slide-title">2 · It becomes an original artwork.</div>
-    <div class="slide-cap">Not customization — collaboration. A curated style, the colors of your intentions. The preview shows the place and the palette; the artwork stays a surprise until unboxing.</div>
-  </div>
-  <div class="slide">
-    <div class="slide-title">3 · Every piece carries its own name.</div>
-    <div class="slide-cap">0.name is printed with the artwork. Searched on FIGHER.CLUB, it reveals the box behind the cloth.</div>
-  </div>
-</div>
-
-<!-- MY TOTEHM — SELECT MODE : quelle Box matérialiser ? -->
-<div id="sel" role="dialog" aria-label="My TOTEHM — select a box">
-  <div id="rail"></div>
-  <div id="sel-head"><div id="sel-q">pick up the box you want to materialize</div><div id="sel-title">my habits</div><div id="sel-sub">what I repeat</div></div>
-  <button id="sel-x" type="button" aria-label="Close"><svg viewBox="0 0 16 16"><path d="M3 3 L13 13 M13 3 L3 13"/></svg></button>
-  <div id="list"></div>
-  <div id="joy">
-    <button class="cur" id="cur-h" data-d="h" aria-label="Up"><svg viewBox="0 0 10 10"><path d="M1 7 L5 3 L9 7"/></svg></button>
-    <button class="cur" id="cur-g" data-d="g" aria-label="Left"><svg viewBox="0 0 10 10"><path d="M7 1 L3 5 L7 9"/></svg></button>
-    <div id="joy-box" aria-hidden="true"><i class="o"></i><i class="h"></i><i class="r"></i></div>
-    <button class="cur" id="cur-d" data-d="d" aria-label="Right"><svg viewBox="0 0 10 10"><path d="M3 1 L7 5 L3 9"/></svg></button>
-    <button class="cur" id="cur-b" data-d="b" aria-label="Down"><svg viewBox="0 0 10 10"><path d="M1 3 L5 7 L9 3"/></svg></button>
-  </div>
-</div>
-
 <!-- LE PASSEPORT -->
 <div id="pass" role="dialog" aria-label="Your TOTEHM is the passport">
   <div class="kicker">the passport</div>
   <div class="t">Your TOTEHM<br>comes first.</div>
   <div class="v" id="pass-v"><i></i><i></i><i></i><i></i><i></i></div>
   <div class="kicker" id="pass-n"></div>
-  <p class="say">A TOTEHM Cloth is born from one box of your TOTEHM. Write one box in each of the five views, then come back.</p>
-  <button class="btn big" id="pass-go" type="button">Complete my TOTEHM</button>
+  <p class="say">A TOTEHM Cloth is born from your wisdom or your vision. Write one element in each of the five views, then come back.</p>
+  <button class="btn cta" id="pass-go" type="button">Complete my TOTEHM</button>
   <button class="btn-back" id="pass-x" type="button">back</button>
 </div>
 
-<!-- MATERIALIZE -->
-<div id="config">
-  <button class="btn-back" id="cfg-back" type="button">Back</button>
-  <div class="col">
-    <div class="kicker" id="cfg-kicker">Totehm Cloth · Streetwear</div>
-    <h1>Materialize</h1>
-    <div class="flow" aria-hidden="true"><span class="is-done">Box</span><i></i><span class="is-done">Cloth</span><i></i><span class="is-on">Materialize</span></div>
-
-    <div id="preview-wrap" style="display:flex;flex-direction:column;align-items:center;gap:8px;width:100%"></div>
-    <div class="pv-cap">Preview · the place, the palette, the style, the name.<br>The artwork stays a surprise until unboxing.</div>
-    <div id="anchor"></div>
-
-    <div class="cfg-step is-on" id="step-name">
-      <div class="step-h">1 · Engrave its name</div>
-      <div class="name-box"><span class="name-prefix" id="name-prefix">0.</span><input id="name-input" maxlength="40" placeholder="name it" autocomplete="off"></div>
-      <div class="note dim" id="name-note"></div>
-    </div>
-
-    <div class="cfg-step" id="step-style">
-      <div class="step-h">2 · Choose a curated style</div>
-      <div class="style-track" id="style-track"></div>
-    </div>
-
-    <div class="cfg-step" id="step-dim">
-      <div class="step-h">3 · Choose your size</div>
-      <div class="sizes" id="size-row"></div>
-    </div>
-
-    <div class="cfg-step" id="step-order">
-      <button class="btn big" id="order-btn" type="button">Order</button>
-      <div class="blind">By ordering, you accept the <a id="terms-link">terms of sale</a>. We control the design entirely. No returns, no refunds.</div>
-      <div class="note dim" id="order-note"></div>
-    </div>
-
-    <div id="done" class="hide">
-      <div class="big" id="done-name"></div>
-      <div class="sub">In process. You will not see the artwork before it arrives.</div>
-      <button class="btn" id="done-back" type="button">Back to the collection</button>
-    </div>
-  </div>
-</div>
-
-<div id="nav" role="group" aria-label="The boutique joystick">
-  <button class="nav-cur is-dead" id="nav-h" type="button" aria-label="Up"><svg viewBox="0 0 16 16"><path d="M3 10 L8 5 L13 10"/></svg></button>
-  <button class="nav-cur" id="nav-g" type="button" aria-label="News"><svg viewBox="0 0 16 16"><path d="M10 3 L5 8 L10 13"/></svg></button>
-  <button id="nav-box" type="button" aria-label="Act"><span id="nav-stack" aria-hidden="true"><i class="o"></i><i class="h"></i><i class="r"></i></span></button><span id="nav-say"></span>
-  <button class="nav-cur" id="nav-d" type="button" aria-label="Luxury"><svg viewBox="0 0 16 16"><path d="M6 3 L11 8 L6 13"/></svg></button>
-  <button class="nav-cur" id="nav-b" type="button" aria-label="Higher"><svg viewBox="0 0 16 16"><path d="M3 6 L8 11 L13 6"/></svg></button>
+<!-- COMMENT ÇA MARCHE -->
+<div id="concept">
+  <button class="btn-back" id="concept-back" type="button">back</button>
+  <h1>How it works</h1>
+  <div class="slide"><div class="slide-title">1 · Choose the cloth.</div><div class="slide-cap">Swipe the cloths, turn them: a limited edition, made to order.</div></div>
+  <div class="slide"><div class="slide-title">2 · Pick one element of your TOTEHM.</div><div class="slide-cap">Your wisdom — what you pass on — or your vision — what you imagine for the world. A cloth speaks to others. It becomes an original artwork, in a curated style.</div></div>
+  <div class="slide"><div class="slide-title">3 · Name it.</div><div class="slide-cap">0.name is printed with the artwork. Decoded on higher.boutique, it reveals the element behind the cloth — and the artwork, once it has landed.</div></div>
 </div>
 
 <script type="module">
@@ -615,163 +645,215 @@ sb.auth.onAuthStateChange(ev => {
     await new Promise(() => {});
   }
 }
-const SIZES=['XS','S','M','L','XL','2XL','3XL'];
-let supports=[],ci=0,styles=[],stylesLoaded=false;
-const supportImages={};
-let order={support:null,box:null,name:'',size:'',style:null};
-/* Une totehmisation commencée avant la connexion : le support attend ici. */
-let PENDING=null;
-let me=null,myProfile=null;
-/* Le diagnostic — des booléens et des compteurs, jamais le texte d'une Box.
-   Dans la console : __totehm_cloth() */
-const BUILD='2026-10-06-streetwear-photo';
-let PREVIEWS=0;
-window.__totehm_cloth=()=>({build:BUILD,signed_in:!!me,support:!!order.support,
-  box:order.box?order.box.kind:null,palette:order.box?(order.box.palette||[]).length:0,
-  style:!!order.style,named:!!order.name,size:!!order.size,pending:!!PENDING,styles:styles.length,
-  supports:supports.length,flow:flowNow(),pref:!!PREF,previews:PREVIEWS});
 
-function epochPrefix(){const d=new Date(),y=d.getFullYear(),ey=d.getMonth()>=5?y:y-1;return Math.max(ey-2026,0)+'.';}
-function avail(s){return Math.max((s.max_pieces||0)-(s.claimed||0),0);}
-function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
-function fmt(s){return Number(s.price)+' €';}
-function sizesOf(s){const vm=s?.printful_variant_map||{};return Object.keys(vm).sort((a,b)=>SIZES.indexOf(a)-SIZES.indexOf(b));}
+/* ══ L'ÉTAT — une pièce en cours, cinq scènes ═════════════════════════ */
+const BUILD='2026-10-08-wear';
+const STAGES=['cloth','element','name','style','order'];
+const LABEL={cloth:'Cloth',element:'Element',name:'Name',style:'Style',order:'Order',done:''};
+const SIZES=['XS','S','M','L','XL','2XL','3XL','4XL','5XL'];
+const FLOW_KEY='totehm_cloth_flow';
+let supports=[],ci=0,ai=0,stage='cloth';
+const IMG={},ANG={};
+let me=null,myProfile=null,TOT=null,vue='wisdom',styles=[],stylesLoaded=false,TEST=false;
+const F={support:null,el:null,want:null,nameRaw:'',nameOk:false,style:null,size:''};
+let OPEN=null,PENDING=null,ORDERING=false,GOING=false;
+/* L'historique est une pile LINÉAIRE des scènes (cloth → … → order) : le bouton
+   Back, la barre des étapes et le geste « retour » du téléphone disent la même chose. */
+let HIST=[],READY=false,SWAPPING=false;
+const desktop=()=>matchMedia('(min-width:900px)').matches;
+/* La place libre (ordinateur) : la fenêtre-côté ouverte, et le vêtement qui se décale. */
+const sideOf=s=>s==='element'?(vue==='wisdom'?'left':'right'):['name','style','order'].includes(s)?'right':'none';
+function placePanel(el,left){el.classList.add('is-swap');el.classList.toggle('is-left',left);void el.offsetWidth;el.classList.remove('is-swap');}
+
+const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;};
+const avail=s=>Math.max((s?.max_pieces||0)-(s?.claimed||0),0);
+const price=s=>Number(s?.price||0)+' €';
+const cur=()=>supports[ci]||null;
+const imgs=s=>s?(IMG[s.id]||(s.image_url?[s.image_url]:[])):[];
 const isOpen=id=>$(id).classList.contains('is-open');
-const anyOverlay=()=>['sel','pass','config','member','concept'].some(isOpen);
+function epochPrefix(){const d=new Date(),y=d.getUTCFullYear(),ey=d.getUTCMonth()>=5?y:y-1;return Math.max(ey-2026,0)+'.';}
+function sizesOf(s){const vm=s?.printful_variant_map||{};return Object.keys(vm).sort((a,b)=>(SIZES.indexOf(a)+1||99)-(SIZES.indexOf(b)+1||99));}
+function note(id,cls,txt){const n=$(id);n.className='note '+cls;n.textContent=txt||'';}
 
-/* ── LES TROIS ÉTAPES — dites en haut, toujours ── */
-function flowNow(){return order.support?'materialize':order.box?'select':'pick';}
-function paintFlow(){
-  const f=flowNow(),k=['pick','select','materialize'].indexOf(f);
-  $('flow').querySelectorAll('span').forEach((s,i)=>{s.classList.toggle('is-on',i===k);s.classList.toggle('is-done',i<k);});
+/* Le diagnostic — des booléens et des compteurs, jamais le texte d'un élément.
+   Dans la console : __totehm_cloth() */
+window.__totehm_cloth=()=>({build:BUILD,ready:READY,stage,side:document.body.dataset.side||'none',desktop:desktop(),signed_in:!!me,supports:supports.length,model:ci,angles:imgs(cur()).length,angle:ai,
+  joystick:getComputedStyle($('joy')).display!=='none',views:TOT?Object.values(TOT).filter(a=>a.length).length:0,view:vue,open:!!OPEN,
+  element:F.el?F.el.kind:null,wanted:!!F.want,named:F.nameOk,style:!!F.style,size:!!F.size,test:TEST,zone:!!$('vw-zone').firstChild});
+
+/* ── La pièce en cours survit à l'aller-retour (connexion, Stripe annulé) ── */
+function save(s){try{sessionStorage.setItem(FLOW_KEY,JSON.stringify({s:s||stage,sid:F.support?.id??null,ai,el:F.el,wt:F.want,nm:F.nameRaw,st:F.style?.id??null,sz:F.size||''}));}catch(_){}}
+function readFlow(){try{return JSON.parse(sessionStorage.getItem(FLOW_KEY)||'null');}catch(_){return null;}}
+function clearFlow(){try{sessionStorage.removeItem(FLOW_KEY);}catch(_){}}
+
+/* ══ LES SCÈNES ═══════════════════════════════════════════════════════ */
+function canShow(s){
+  if(s==='cloth'||s==='done')return true;
+  if(!F.support)return false;
+  if(s==='element')return !!TOT;
+  if(s==='name')return !!F.el;
+  if(s==='style')return !!F.el&&F.nameOk;
+  if(s==='order')return !!F.el&&F.nameOk&&!!F.style;
+  return false;
 }
-
-/* ══ L'APERÇU — DÉTERMINISTE, GRATUIT ════════════════════════════════
-   Pas l'œuvre : la place (print_area), la palette (my_box_matter), le
-   style, le nom. Une graine = la Box + le nom : même entrée, même image.
-   Aucun appel réseau, aucun modèle. */
-function seedOf(str){let h=2166136261;for(const c of String(str))h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0;}
-function rng(seed){let a=seed||1;return()=>{a=Math.imul(a^(a>>>15),a|1);a^=a+Math.imul(a^(a>>>7),a|61);return((a^(a>>>14))>>>0)/4294967296;};}
-function hexA(hex,al){const h=String(hex).replace('#','');const n=parseInt(h.length===3?h.split('').map(x=>x+x).join(''):h,16);
-  return 'rgba('+((n>>16)&255)+','+((n>>8)&255)+','+(n&255)+','+al+')';}
-function drawAura(cv,palette,seedStr){
-  const r=cv.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);
-  const w=Math.max(1,Math.round(r.width*dpr)),h=Math.max(1,Math.round(r.height*dpr));
-  cv.width=w;cv.height=h;const g=cv.getContext('2d');if(!g)return;
-  const pal=(palette&&palette.length?palette:['#333366','#36498c','#743169']).filter(c=>/^#[0-9a-f]{3,6}$/i.test(c));
-  const rnd=rng(seedOf(seedStr));
-  g.fillStyle='#0b0b0e';g.fillRect(0,0,w,h);
-  g.globalCompositeOperation='lighter';
-  const n=4+Math.floor(rnd()*4);
-  for(let i=0;i<n;i++){
-    const c=pal[i%pal.length],x=w*(.12+rnd()*.76),y=h*(.12+rnd()*.76),rad=Math.max(w,h)*(.28+rnd()*.38);
-    const gr=g.createRadialGradient(x,y,0,x,y,rad);gr.addColorStop(0,hexA(c,.85));gr.addColorStop(.55,hexA(c,.28));gr.addColorStop(1,hexA(c,0));
-    g.fillStyle=gr;g.fillRect(0,0,w,h);
-  }
-  g.globalCompositeOperation='source-over';
-  /* Le grain : l'œuvre n'est pas là, on le voit. */
-  for(let i=0;i<w*h/90;i++){g.fillStyle='rgba(0,0,0,'+(rnd()*.35)+')';g.fillRect(rnd()*w,rnd()*h,dpr,dpr);}
-  PREVIEWS++;
+function show(s,mode='push'){
+  if(!canShow(s))s='cloth';
+  const k=STAGES.indexOf(s);
+  if(s==='element')placePanel($('s-element'),vue==='wisdom');
+  document.querySelectorAll('.stage').forEach(el=>{
+    const here=el.dataset.s===s,i=STAGES.indexOf(el.dataset.s);
+    el.classList.toggle('is-here',here);el.classList.toggle('is-past',!here&&(s==='done'||(i>=0&&i<k)));
+    el.inert=!here;el.setAttribute('aria-hidden',String(!here));
+  });
+  stage=s;document.body.dataset.stage=s;document.body.dataset.side=sideOf(s);
+  paintHud();paintZones();
+  if(mode==='push'){history.pushState({s},'');HIST.push(s);}
+  else if(mode==='replace'){history.replaceState({s},'');HIST[Math.max(0,HIST.length-1)]=s;}
+  if(document.body.classList.contains('is-boot'))requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.remove('is-boot')));
+  if(s==='element')paintJoy();
+  if(s==='name')enterName();
+  if(s==='style')enterStyle();
+  if(s==='order')enterOrder();
+  if(s==='done')clearFlow();else save();
 }
-/* La zone d'impression vient du vêtement (n8n : `print_area`), 12×16 in par défaut. */
-function zoneVars(s){const pa=s?.print_area||{},wi=Number(pa.width_in)||12,hi=Number(pa.height_in)||16;
-  const w=hi>=wi?46:58;const hPct=w*(hi/wi)*(3/4);
-  return '--pz-w:'+w+'%;--pz-ar:'+wi+'/'+hi+';--pz-h:'+hPct.toFixed(1)+'%;--pz-top:'+Math.max(8,Math.min(26,(100-hPct)/2-6)).toFixed(1)+'%';}
-function zoneHTML(s,tag){
-  return '<div class="pz" style="'+zoneVars(s)+'"><canvas></canvas>'+(order.style?.image_url?'<img src="'+esc(order.style.image_url)+'" alt="">':'')+'</div>'+
-    (order.name?'<div class="pz-name" style="'+zoneVars(s)+'">'+esc(order.name)+'</div>':'')+(tag?'<div class="pz-tag">'+esc(tag)+'</div>':'');
+function paintHud(){
+  const k=STAGES.indexOf(stage);
+  $('hud').style.opacity=stage==='done'?'0':'1';
+  $('hud').querySelectorAll('button').forEach((b,i)=>{b.classList.toggle('is-here',i===k);b.classList.toggle('is-done',i<k);b.disabled=!(i<k);});
+  $('hud-say').textContent=k>=0?(k+1)+' / 5 · '+LABEL[stage]:'';
 }
-function paintZone(root){const cv=root.querySelector('.pz canvas');if(cv&&order.box)drawAura(cv,order.box.palette,order.box.kind+'|'+order.box.ref+'|'+(order.name||''));}
-
-/* Le stock : la somme des pièces restantes des supports actifs. */
-function stockLabel(){const rem=supports.reduce((t,r)=>t+avail(r),0);return supports.length?(rem>0?rem+' pieces left':'sold out'):'';}
-
-async function preloadImages(list){
-  await Promise.all(list.map(async s=>{
-    if(!s.storage_folder){supportImages[s.id]=s.image_url?[s.image_url]:[];return;}
-    try{
-      const{data:files,error}=await sb.storage.from('totehm-cloth-support').list(s.storage_folder,{sortBy:{column:'name',order:'asc'}});
-      if(error)console.error('[cloth images]',error.message);
-      const images=(files||[]).filter(f=>/\.(png|jpe?g|webp)$/i.test(f.name)).map(f=>sb.storage.from('totehm-cloth-support').getPublicUrl(`${s.storage_folder}/${f.name}`).data.publicUrl);
-      supportImages[s.id]=images.length?images:(s.image_url?[s.image_url]:[]);
-    }catch(e){console.error('[cloth images]',e&&e.message||e);supportImages[s.id]=s.image_url?[s.image_url]:[];}
-  }));
+function goBackTo(s){
+  const i=HIST.lastIndexOf(s);
+  if(i>=0&&i<HIST.length-1)history.go(i-(HIST.length-1));else show(s,'replace');
 }
+$('hud').querySelectorAll('button').forEach(b=>b.onclick=()=>{const s=STAGES[+b.dataset.i];if(STAGES.indexOf(s)<STAGES.indexOf(stage))goBackTo(s);});
+window.addEventListener('popstate',e=>{
+  const s=e.state?.s||'cloth',i=HIST.lastIndexOf(s);
+  if(i>=0)HIST.length=i+1;else HIST.push(s);
+  if(s!==stage)show(s,'none');
+});
+function back(){
+  if(stage==='cloth'||stage==='done'){location.href='/';return;}
+  goBackTo(STAGES[STAGES.indexOf(stage)-1]||'cloth');
+}
+$('back').onclick=back;
 
-async function load(){
+/* ══ 1 · CLOTH — le vêtement au centre ═══════════════════════════════ */
+async function loadSupports(){
   const{data,error}=await sb.from('totehm_cloth_support').select('*').eq('active',true).order('position');
   if(error)console.error('[totehm_cloth_support]',error.message);
   supports=data||[];
-  await preloadImages(supports);
-  renderDots();render();
+  /* Les vues d'un vêtement : les photos de son dossier (ordre des noms), sinon la photo Printful. */
+  await Promise.all(supports.map(async s=>{
+    if(!s.storage_folder)return;
+    try{
+      const{data:files,error:e}=await sb.storage.from('totehm-cloth-support').list(s.storage_folder,{sortBy:{column:'name',order:'asc'}});
+      if(e)console.error('[cloth images]',e.message);
+      const list=(Array.isArray(files)?files:[]).filter(f=>/\.(png|jpe?g|webp)$/i.test(f.name||''))
+        .map(f=>sb.storage.from('totehm-cloth-support').getPublicUrl(s.storage_folder+'/'+f.name).data.publicUrl);
+      if(list.length)IMG[s.id]=list;
+    }catch(e){console.error('[cloth images]',e&&e.message||e);}
+  }));
+  renderViewer();paintCloth();
 }
-
-function render(){
-  paintFlow();
-  const s=supports[ci];const card=$('card');
-  /* UN SEUL appel à l'action : celui du vêtement. Le bouton du haut ne
-     sert que si la collection est vide (on prépare sa Box en attendant). */
-  $('pick-btn').classList.toggle('hide',!!order.box||!!s);
-  ['arr-l','arr-r'].forEach((id,k)=>$(id).classList.toggle('is-dead',supports.length<2||(k===0?ci===0:ci>=supports.length-1)));
-  if(!s){card.innerHTML='<div class="visual"><div class="none">collection coming soon</div></div>';return;}
-  const left=avail(s),images=supportImages[s.id]||[],sz=sizesOf(s);
-  card.innerHTML=
-    '<div class="visual" id="vis">'+
-      (images.length?'<img class="ph" id="vis-img" src="'+esc(images[0])+'" alt="'+esc(s.title||'')+'">':'<div class="none">'+esc(s.title||'cloth')+'</div>')+
-      (order.box&&left>0?zoneHTML(s,'your box · here'):'')+
-      (images.length>1?'<div class="vis-dots" id="vis-dots">'+images.map((_,i)=>'<button type="button" class="vis-dot'+(i===0?' is-on':'')+'" data-i="'+i+'" aria-label="photo '+(i+1)+'"></button>').join('')+'</div>':'')+
-    '</div>'+
-    '<div class="sup-title">'+esc(s.title||'')+'</div>'+
-    '<div class="facts">'+(left>0?'<span class="price">'+fmt(s)+'</span><span>'+left+' / '+s.max_pieces+' left</span>':'<span class="out">sold out</span>')+
-      (sz.length?'<span>'+sz.join(' · ')+'</span>':'')+'</div>'+
-    (left>0?'<button class="btn big" id="totehmize" type="button">'+(order.box?'Materialize my box on it':'Pick up a box for it')+'</button>':'')+
-    (s.details?'<button class="lnk" id="sup-det-btn" type="button">details</button><div class="sup-detail" id="sup-det">'+esc(s.details)+'</div>':'')+
-    '<div class="mono">'+esc(stockLabel())+'</div>';
-  paintZone(card);
-  if(s.details)$('sup-det-btn').onclick=()=>$('sup-det').classList.toggle('is-on');
-  const tb=$('totehmize');if(tb)tb.onclick=()=>order.box?chooseSupport(s):pickUp(s);
-  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('is-on',i===ci));
-  if(images.length>1){
-    let vi=0;const imgEl=$('vis-img'),dotsEl=$('vis-dots');
-    const setVi=n=>{vi=(n+images.length)%images.length;imgEl.classList.add('is-fading');
-      setTimeout(()=>{imgEl.src=images[vi];imgEl.classList.remove('is-fading');},110);
-      dotsEl.querySelectorAll('.vis-dot').forEach((d,i)=>d.classList.toggle('is-on',i===vi));};
-    dotsEl.querySelectorAll('.vis-dot').forEach(d=>{d.onclick=e=>{e.stopPropagation();setVi(+d.dataset.i);};});
-    imgEl.onclick=()=>setVi(vi+1);
-  }
+function renderViewer(){
+  const tr=$('vw-track');
+  if(!supports.length){tr.innerHTML='<div class="model" style="left:0"><div class="none">collection coming soon</div></div>';placeViewer();return;}
+  tr.innerHTML=supports.map((s,i)=>{const L=imgs(s);
+    return '<div class="model" data-i="'+i+'" style="left:'+(i*100)+'%"><div class="angles">'+
+      L.map((u,j)=>'<img data-src="'+esc(u)+'" style="top:'+(j*100)+'%" alt="'+esc((s.title||'cloth')+(j?' · view '+(j+1):''))+'" draggable="false">').join('')+
+      '</div>'+(L.length?'':'<div class="none">'+esc(s.title||'cloth')+'</div>')+'</div>';}).join('');
+  placeViewer();
 }
-
-function renderDots(){
-  const w=$('dots');w.innerHTML='';if(supports.length<2)return;
-  supports.forEach((_,i)=>{const d=document.createElement('i');d.className='dot'+(i===ci?' is-on':'');w.appendChild(d);});
+function placeViewer(dx=0,dy=0){
+  $('vw-track').style.transform='translateX(calc('+(-ci*100)+'% + '+dx+'px))';
+  $('vw-track').querySelectorAll('.model').forEach((m,i)=>{
+    const a=m.querySelector('.angles');if(!a)return;
+    const k=i===ci?ai:(ANG[i]||0);a.style.transform='translateY(calc('+(-k*100)+'% + '+(i===ci?dy:0)+'px))';
+    /* On ne charge que ce qu'on peut voir : ce vêtement, et la vue courante des voisins. */
+    a.querySelectorAll('img').forEach((im,j)=>{if(!im.src&&(i===ci||(Math.abs(i-ci)===1&&j===k)))im.src=im.dataset.src;});
+  });
 }
-
-function go(d){
-  const n=ci+d;if(n<0||n>=supports.length)return;
-  ci=n;$('card').classList.add('is-fading');
-  setTimeout(()=>{render();$('card').classList.remove('is-fading');},220);
+function paintCloth(){
+  const s=cur(),n=supports.length,L=imgs(s).length;
+  $('m-prev').classList.toggle('is-dead',n<2||ci===0);$('m-next').classList.toggle('is-dead',n<2||ci>=n-1);
+  $('a-up').classList.toggle('is-dead',L<2||ai===0);$('a-down').classList.toggle('is-dead',L<2||ai>=L-1);
+  $('m-dots').innerHTML=n>1?supports.map((_,i)=>'<i'+(i===ci?' class="is-on"':'')+'></i>').join(''):'';
+  $('a-dots').innerHTML=L>1?Array.from({length:L},(_,j)=>'<i'+(j===ai?' class="is-on"':'')+'></i>').join(''):'';
+  const b=$('totehmize');
+  /* L'indice du geste ne dit que ce qui existe : d'autres vêtements, d'autres vues. */
+  $('cl-hint').textContent=n>1&&L>1?'swipe ↔ cloths · ↕ views':n>1?'swipe ↔ cloths':L>1?'swipe ↕ views':'';
+  if(!s){$('cl-title').textContent='';$('cl-facts').innerHTML='';b.classList.add('hide');$('cl-more').classList.add('hide');return;}
+  const left=avail(s),sz=sizesOf(s);
+  $('cl-title').textContent=s.title||'';
+  $('cl-facts').innerHTML=left>0?'<span class="price">'+esc(price(s))+'</span><span>'+left+' / '+(s.max_pieces||0)+' left</span>'+(sz.length?'<span>'+esc(sz.join(' · '))+'</span>':''):'<span>sold out</span>';
+  b.classList.remove('hide');b.disabled=left<=0;b.textContent=left>0?'Totehmize':'Sold out';
+  const cw=$('cl-wear');cw.classList.toggle('hide',!F.el);
+  if(F.el){cw.style.setProperty('--skin',SKIN[F.el.view]||'#333366');cw.innerHTML='<small>'+esc(NOM[F.el.view]?.[0]||'my element')+'</small><b>'+esc(F.el.text)+'</b>';}
+  $('cl-more').classList.toggle('hide',!s.details);$('cl-detail').textContent=s.details||'';$('cl-detail').classList.remove('is-on');
 }
-$('arr-l').onclick=()=>go(-1);$('arr-r').onclick=()=>go(1);
-let x0=0;
-document.addEventListener('touchstart',e=>{x0=e.changedTouches[0].screenX;},{passive:true});
-document.addEventListener('touchend',e=>{
-  if(anyOverlay())return;
-  const dx=e.changedTouches?.[0]?.screenX-x0;
-  if(Math.abs(dx||0)>50)go(dx<0?1:-1);
-},{passive:true});
-window.addEventListener('keydown',e=>{
-  if(anyOverlay())return;
-  if(e.key==='ArrowRight')go(1);if(e.key==='ArrowLeft')go(-1);
-});
-window.addEventListener('resize',()=>{paintZone($('card'));if(isOpen('config'))paintZone($('preview-wrap'));});
+function hintGone(){$('cl-hint').classList.add('is-gone');}
+function model(d){
+  if(stage!=='cloth')return;
+  const n=ci+d;if(n<0||n>=supports.length){placeViewer();return;}
+  ANG[ci]=ai;ci=n;ai=ANG[ci]||0;placeViewer();paintCloth();hintGone();save();
+}
+function angle(d){
+  const L=imgs(cur()).length,n=ai+d;if(n<0||n>=L){placeViewer();return;}
+  ai=n;ANG[ci]=ai;placeViewer();paintCloth();hintGone();save();
+}
+$('m-prev').onclick=()=>model(-1);$('m-next').onclick=()=>model(1);
+$('a-up').onclick=()=>angle(-1);$('a-down').onclick=()=>angle(1);
+$('cl-more').onclick=()=>$('cl-detail').classList.toggle('is-on');
+/* Le geste : un doigt, un axe. Horizontal = un autre vêtement ; vertical = une autre vue. */
+(function viewerGesture(){
+  const v=$('viewer');let g=null;
+  v.addEventListener('pointerdown',e=>{
+    if(e.button>0||g||e.target.closest('button'))return;
+    g={id:e.pointerId,x0:e.clientX,y0:e.clientY,ax:null,dx:0,dy:0,t:performance.now()};
+    try{v.setPointerCapture(e.pointerId);}catch(_){}
+  });
+  v.addEventListener('pointermove',e=>{
+    if(!g||e.pointerId!==g.id)return;
+    g.dx=e.clientX-g.x0;g.dy=e.clientY-g.y0;
+    if(!g.ax&&Math.max(Math.abs(g.dx),Math.abs(g.dy))>8){g.ax=Math.abs(g.dx)>Math.abs(g.dy)?'x':'y';v.classList.add('is-drag');}
+    if(g.ax==='x'){const edge=(g.dx>0&&ci===0)||(g.dx<0&&ci>=supports.length-1);placeViewer(edge?g.dx*.3:g.dx,0);}
+    if(g.ax==='y'){const L=imgs(cur()).length,edge=(g.dy>0&&ai===0)||(g.dy<0&&ai>=L-1);placeViewer(0,edge?g.dy*.3:g.dy);}
+  });
+  const end=(e,cancel)=>{
+    if(!g||e.pointerId!==g.id)return;
+    const{ax,dx,dy,t}=g,vel=Math.max(Math.abs(dx),Math.abs(dy))/Math.max(1,performance.now()-t);g=null;
+    v.classList.remove('is-drag');
+    if(cancel){placeViewer();return;}
+    const w=v.clientWidth,h=v.clientHeight;
+    if(ax==='x'){if(Math.abs(dx)>w*.18||vel>.55)model(dx<0?1:-1);else placeViewer();}
+    else if(ax==='y'){if(Math.abs(dy)>h*.14||vel>.55)angle(dy<0?1:-1);else placeViewer();}
+    else if(imgs(cur()).length>1)angle(ai>=imgs(cur()).length-1?-ai:1);   /* un tap : la vue suivante */
+  };
+  v.addEventListener('pointerup',e=>end(e,false));v.addEventListener('pointercancel',e=>end(e,true));
+  /* Le trackpad dans les quatre sens : un geste (trou de 200 ms), 130 px. */
+  let acc={x:0,y:0},last=0,lock=false;
+  v.addEventListener('wheel',e=>{
+    e.preventDefault();const now=performance.now();if(now-last>200){acc={x:0,y:0};lock=false;}last=now;if(lock)return;
+    const k=e.deltaMode===1?16:1;acc.x+=e.deltaX*k;acc.y+=e.deltaY*k;
+    if(Math.abs(acc.x)>=130){lock=true;model(acc.x>0?1:-1);}else if(Math.abs(acc.y)>=130){lock=true;angle(acc.y>0?1:-1);}
+  },{passive:false});
+})();
 
-$('concept-btn').onclick=()=>$('concept').classList.add('is-open');
-$('concept-back').onclick=()=>$('concept').classList.remove('is-open');
-
-function connPaint(){$('conn-txt').textContent=(myProfile?.pseudo)||(me?'Member':'CONNECT WITH MY TOTEHM');$('conn-dot').classList.toggle('is-in',!!me);}
-async function loadProfile(){if(!me){myProfile=null;connPaint();return;}
+/* ══ LE MEMBRE ════════════════════════════════════════════════════════ */
+function connPaint(){$('conn-txt').textContent=(myProfile?.pseudo)||(me?'Member':'CONNECT WITH MY TOTEHM');}
+async function loadProfile(){
+  if(!me){myProfile=null;connPaint();return;}
   const{data,error}=await sb.from('profiles').select('pseudo').eq('id',me.id).maybeSingle();
-  if(error)console.error('[profiles]',error.message);myProfile=data||null;connPaint();}
+  if(error)console.error('[profiles]',error.message);myProfile=data||null;connPaint();
+}
+async function loadTest(){
+  TEST=false;if(!me)return;
+  const{data,error}=await sb.rpc('my_streetwear_test_mode');
+  if(error)console.error('[my_streetwear_test_mode]',error.message);
+  TEST=data===true;if(stage==='order')enterOrder();
+}
+const STAGE_WORD={draft:'',paid:'in the making',generating:'in the making',curation:'in the making',approved:'in the making',error_locked:'in the making',production:'in production',shipped:'shipped',cancelled:'cancelled'};
 function memberPaint(){
   $('mw-out-state').classList.toggle('hide',!!me);
   $('mw-claim-state').classList.toggle('hide',!(me&&!myProfile));
@@ -780,358 +862,403 @@ function memberPaint(){
 }
 async function loadCloths(){
   const box=$('mw-list');box.innerHTML='<div class="note dim">…</div>';
-  const{data,error}=await sb.from('totehm_clothes').select('name,status').eq('user_id',me.id).order('created_at',{ascending:false});
+  const{data,error}=await sb.from('totehm_clothes').select('name,status,paid_at').eq('user_id',me.id).not('paid_at','is',null).order('paid_at',{ascending:false});
   if(error)console.error('[totehm_clothes]',error.message);
   if(!data?.length){box.innerHTML='<div class="note dim" style="text-align:center">none yet</div>';return;}
-  box.innerHTML='';
-  data.forEach(c=>{const d=document.createElement('div');d.className='mw-row';d.innerHTML='<span>'+esc(c.name)+'</span><span class="st">'+esc(c.status||'')+'</span>';box.appendChild(d);});
+  box.innerHTML=data.map(c=>'<a class="mw-row" href="/?decode='+encodeURIComponent(c.name)+'"><span>'+esc(c.name)+'</span><span class="st">'+esc(STAGE_WORD[c.status]||'')+'</span></a>').join('');
 }
 const openMember=()=>{$('member').classList.add('is-open');memberPaint();};
 $('conn-bar').onclick=openMember;
-$('mw-close').onclick=()=>$('member').classList.remove('is-open');
-$('member').addEventListener('click',e=>{if(e.target===$('member'))$('member').classList.remove('is-open');});
-
-/* 30/09 — la Boutique ne demande plus l'email : totehm.com est l'autorité.
-   Une totehmisation commencée avant la connexion survit à l'aller-retour :
-   le support attend dans sessionStorage. */
-const PEND_KEY='totehm_cloth_pending';
-$('mw-login').onclick=()=>{try{if(PENDING)sessionStorage.setItem(PEND_KEY,'box'+(PENDING.pref?':'+PENDING.pref.id:''));}catch(_){}ssoLogin(false);};
+$('mw-close').onclick=()=>{$('member').classList.remove('is-open');PENDING=null;};
+$('member').addEventListener('click',e=>{if(e.target===$('member')){$('member').classList.remove('is-open');PENDING=null;}});
+$('mw-login').onclick=()=>{save();ssoLogin(false,'/streetwear');};
 $('mw-pseudo').addEventListener('keydown',async e=>{
   if(e.key!=='Enter')return;
-  const v=$('mw-pseudo').value.trim(),note=$('mw-claim-note');
-  if(v.length<3||v.length>24){note.className='note no';note.textContent='3 to 24 characters';return;}
-  note.className='note dim';note.textContent='…';
+  const v=$('mw-pseudo').value.trim();
+  if(v.length<3||v.length>24){note('mw-claim-note','no','3 to 24 characters');return;}
+  note('mw-claim-note','dim','…');
   const{error}=await sb.from('profiles').insert({id:me.id,pseudo:v});
-  if(error){console.error('[profiles]',error.message);note.className='note no';note.textContent=error.code==='23505'?'already taken':'try again';return;}
-  note.textContent='';await loadProfile();memberPaint();
+  if(error){console.error('[profiles]',error.message);note('mw-claim-note','no',error.code==='23505'?'already taken':'try again');return;}
+  note('mw-claim-note','dim','');await loadProfile();memberPaint();
+  if(PENDING==='element'){PENDING=null;$('member').classList.remove('is-open');toElement();}
 });
-$('mw-signout').onclick=async()=>{await sb.auth.signOut();$('member').classList.remove('is-open');};
-sb.auth.onAuthStateChange(async()=>{const{data:{session}}=await sb.auth.getSession();me=session?.user||null;await loadProfile();memberPaint();
-  /* Une totehmisation commencée avant la connexion reprend là où elle s'est
-     arrêtée — pas de retour au carrousel. */
-  if(me&&myProfile&&PENDING){const s=PENDING;PENDING=null;$('member').classList.remove('is-open');pickUp(s.pref);}});
-(async()=>{const{data:{session}}=await sb.auth.getSession();me=session?.user||null;await loadProfile();})();
+$('mw-signout').onclick=async()=>{const{error}=await sb.auth.signOut();if(error)console.error('[signout]',error.message);$('member').classList.remove('is-open');};
+/* Le rappel d'auth reste SYNCHRONE ; la lecture du profil part ensuite (verrou Supabase, 03/10). */
+sb.auth.onAuthStateChange(()=>{setTimeout(async()=>{
+  const{data:{session}}=await sb.auth.getSession();const was=me?.id||null;me=session?.user||null;
+  if((me?.id||null)===was)return;
+  await loadProfile();TOT=null;loadTest();memberPaint();
+  if(!me&&stage!=='cloth'&&stage!=='done')show('cloth','replace');
+},0);});
 
-/* ══ PICK UP THE BOX — 1 · MY TOTEHM → HABIT BOXES (30/09) ══════════
-   Connexion d'abord (la Box est dans SON Totehm), puis le passeport,
-   puis le Totehm en SELECT MODE, ouvert sur les HABIT BOXES. `pref` : le
-   vêtement touché avant d'avoir une Box — il sera le support. */
-let PREF=null;
-async function pickUp(pref){
-  PREF=pref||null;
-  if(!me||!myProfile){PENDING={pref:PREF};openMember();return;}
+/* ══ TOTEHMIZE — la porte du Totehm : connexion, nom, passeport ══════ */
+async function totehmize(){
+  const s=cur();if(!s||avail(s)<=0||GOING)return;
+  F.support=s;save('element');
+  if(!me){ssoLogin(false,'/streetwear');return;}
+  if(!myProfile){PENDING='element';openMember();return;}
+  await toElement();
+}
+$('totehmize').onclick=totehmize;
+async function ensureTotehm(){
   const{data:pass,error}=await sb.rpc('totehm_complete');
-  if(error){console.error('[totehm_complete]',error.message);}
+  if(error){console.error('[totehm_complete]',error.message);return false;}
   if(!pass?.complete){
     const v=pass||{};
     ['wisdom','visions','habits','objectives','repulsions'].forEach((k,i)=>$('pass-v').children[i].classList.toggle('is-on',!!v[k]));
-    $('pass-n').textContent=(v.remplies||0)+' / 5 views';
-    $('pass').classList.add('is-open');return;
+    $('pass-n').textContent=(v.remplies||0)+' / 5 views';$('pass').classList.add('is-open');return false;
   }
-  await loadTotehm();
-  vue='habits';renderSel();$('sel').classList.add('is-open');
+  if(!TOT)await loadTotehm();
+  return !!TOT;
 }
-$('pick-btn').onclick=()=>pickUp(null);
-/* 2 · SELECT — la Box ramassée reste en haut ; on choisit le vêtement. */
-function paintPicked(){
-  const p=$('picked');
-  if(!order.box){p.classList.add('hide');p.innerHTML='';render();return;}
-  p.classList.remove('hide');
-  p.style.setProperty('--skin',SKIN[order.box.view]||'#333366');
-  p.innerHTML='<small>my box · now choose the cloth</small><b>'+esc(order.box.text)+'</b><span class="pals">'+(order.box.palette||[]).map(x=>'<i style="background:'+esc(x)+'"></i>').join('')+'</span>'+
-    '<button type="button" id="picked-x">another box</button>';
-  $('picked-x').onclick=()=>pickUp(null);
+async function toElement(){
+  if(GOING)return;GOING=true;const b=$('totehmize');b.disabled=true;b.textContent='opening…';
+  try{
+    if(!await ensureTotehm())return;
+    applyWant();
+    vue=F.el?.view==='visions'?'visions':'wisdom';renderEl();
+    if(F.el){history.pushState({s:'element'},'');HIST.push('element');show('name');}else show('element');
+  }finally{GOING=false;paintCloth();}
 }
-/* 3 · MATERIALIZE — le vêtement choisi, la Box dessus. */
-function chooseSupport(s){order.support=s;openConfig();}
 $('pass-x').onclick=()=>$('pass').classList.remove('is-open');
 $('pass-go').onclick=()=>ssoVersDomaine(sb,'com','https://www.totehm.com/totehm#in');
 
-/* ── Le Totehm, relu tel quel. Rien ne s'écrit ici. ── */
+/* ══ 2 · ELEMENT — le Totehm, relu tel quel. Rien ne s'écrit ici. ═════ */
 const INTS={fight:['Fight','#E24B4A','BODY'],flow:['Flow','#e48b31','BODY'],enrich:['Enrich','#fcbe21','MENTAL'],love:['Love','#639922','SPIRIT'],
   express:['Express','#1D9E75','SOUL'],focus:['Focus','#378ADD','MENTAL'],celebrate:['Celebrate','#7F77DD','SOUL']};
 const icol=i=>(INTS[i]||[])[1]||'#ffffff';
-const CROIX={wisdom:{d:'habits'},habits:{g:'wisdom',d:'visions',h:'objectives',b:'repulsions'},visions:{g:'habits'},
-  objectives:{g:'wisdom',d:'visions',b:'habits'},repulsions:{g:'wisdom',d:'visions',h:'habits'}};
-const NOM={wisdom:['my wisdom','what I learned'],habits:['my habits','what I repeat'],visions:['my vision','what I see coming'],
-  objectives:['my objectives','what pulls me up'],repulsions:['my repulsions','what makes me derail']};
-const SKIN={habits:'#333366',objectives:'#36498c',repulsions:'#743169',wisdom:'#743169',visions:'#36498c'};
-const KIND={habits:'habit',objectives:'objective',repulsions:'repulsion',wisdom:'wisdom',visions:'vision'};
-let TOT=null,vue='habits';
+/* 08/10 (bis) — Wah : « pour la totehmisation vêtement, garder seulement WISDOM
+   (ce que je veux transmettre) et VISION (ce que j'imagine pour le monde) ». Un
+   vêtement parle aux autres : l'axe du TEMPS de la croix, le passé ← → le futur.
+   Les habitudes, objectifs et répulsions restent à soi. `create-checkout` refuse
+   les autres. */
+const CROIX={wisdom:{d:'visions'},visions:{g:'wisdom'}};
+const NOM={wisdom:['my wisdom','what I pass on'],visions:['my vision','what I imagine for the world']};
+const SKIN={wisdom:'#743169',visions:'#36498c'};
+const PAPER={wisdom:'#5b2652',visions:'#2b3a73'};
+const KIND={wisdom:'wisdom',visions:'vision'};
+const WEARABLE=['wisdom','vision'];
+/* 08/10 (ter) — Wah : « on a lié SPACE à COM ; la fonction totehmiser devrait
+   aller se caler dans les deux vues ». Dans COM, « + totehmize » d'une leçon ou
+   d'une vision arrive ici en `?wear=wisdom:<id>` (ou `vision:`) : l'élément est
+   RELU dans MON Totehm (`my_trips`), jamais cru sur parole — introuvable (effacé,
+   autre compte), il est oublié et la page reprend son cours. Le vêtement se
+   choisit toujours d'abord ; TOTEHMIZE mène alors droit au NAME. */
+function parseWear(q){const m=/^(wisdom|vision):([A-Za-z0-9-]{1,64})$/.exec(String(q||''));return m?{kind:m[1],ref:m[2]}:null;}
+function applyWant(){
+  const w=F.want;if(!w||!TOT)return false;F.want=null;
+  const v=w.kind==='vision'?'visions':'wisdom',o=(TOT[v]||[]).find(x=>String(x.ref)===String(w.ref));
+  if(!o){console.info('[wear] element not found');return false;}
+  F.el={kind:w.kind,ref:String(o.ref),view:v,text:o.text,is:o.is||[]};vue=v;return true;
+}
+async function arrive(want){
+  clearFlow();F.want=want;F.el=null;
+  show('cloth','replace');
+  if(me&&myProfile){if(!TOT)await loadTotehm();applyWant();paintCloth();save();}
+}
 async function loadTotehm(){
-  const[st,tr]=await Promise.all([sb.from('totehms').select('steps').eq('user_id',me.id).maybeSingle(),sb.rpc('my_trips')]);
-  [st,tr].forEach(r=>{if(r.error)console.error('[totehm]',r.error.message);});
-  const t=tr.data||{};
+  const{data,error}=await sb.rpc('my_trips');
+  if(error){console.error('[totehm]',error.message);return;}
+  const t=data||{};
   TOT={
-    habits:(st.data?.steps||[]).filter(x=>(x.t||'').trim()).map(x=>({ref:x.t,text:x.t,f:x.f,is:(Array.isArray(x.is)&&x.is.length?x.is:[x.i].filter(Boolean)).filter(i=>INTS[i])})),
-    objectives:(t.trips||[]).filter(o=>(o.text||'').trim()).map(o=>({ref:o.id,text:o.text,is:o.is||[],days:o.days_left})),
-    repulsions:(t.reps||[]).filter(r=>(r.text||'').trim()).map(r=>({ref:String(r.id),text:r.text,is:r.is||[],hs:r.hs||[]})),
     wisdom:(t.wisdom||[]).filter(w=>(w.text||'').trim()).map(w=>({ref:w.id,text:w.text,is:w.is||[]})),
     visions:(t.visions||[]).filter(v=>(v.text||'').trim()).map(v=>({ref:v.id,text:v.text,is:v.is||[]}))};
 }
 const tick=l=>'<span class="tick">'+(l||[]).map(i=>'<i style="background:'+icol(i)+'"></i>').join('')+'</span>';
 function boxHTML(o,k){
   const i0=(o.is||[])[0];
-  const sub=(i0?'<span style="color:'+icol(i0)+';font-weight:700">'+INTS[i0][0]+'</span><span style="color:rgba(255,255,255,.5)">'+INTS[i0][2]+'</span>':'')+
-    (vue==='habits'&&o.f?'<span>'+esc(String(o.f).replace(/_/g,' '))+'</span>':'')+
-    (vue==='objectives'&&o.days!=null?'<span>'+(o.days>=0?o.days+' days left':'past deadline')+'</span>':'');
-  return '<div class="bx" style="--skin:'+SKIN[vue]+'" data-k="'+k+'">'+tick(o.is)+'<div class="nm">'+esc(o.text)+'</div>'+(sub?'<div class="sb">'+sub+'</div>':'')+'</div>';
+  const sub=i0?'<span style="color:'+icol(i0)+';font-weight:700">'+INTS[i0][0]+'</span><span style="color:rgba(255,255,255,.5)">'+INTS[i0][2]+'</span>':'';
+  return '<div class="bx" style="--skin:'+SKIN[vue]+'" data-k="'+k+'" role="button" tabindex="0">'+tick(o.is)+'<div class="nm">'+esc(o.text)+'</div>'+(sub?'<div class="sb">'+sub+'</div>':'')+'</div>';
 }
-function renderSel(dir){
-  const sel=$('sel');
-  sel.classList.toggle('v-wisdom',vue==='wisdom');sel.classList.toggle('v-visions',vue==='visions');
-  $('sel-title').textContent=NOM[vue][0];$('sel-sub').textContent=NOM[vue][1];
-  const l=TOT[vue]||[];
-  $('list').innerHTML=l.length?l.map((o,k)=>boxHTML(o,k)).join(''):'<div class="v-empty">nothing written here yet</div>';
-  if(dir){$('list').classList.remove('swap');void $('list').offsetWidth;$('list').classList.add('swap');}
-  $('list').scrollTop=0;
-  $('joy-box').style.setProperty('--joy',SKIN[vue]);
-  const couche={objectives:'o',habits:'h',repulsions:'r'}[vue]||null;
-  ['o','h','r'].forEach(k=>{const e=$('joy-box').querySelector('.'+k);e.classList.toggle('ici',k===couche);e.classList.toggle('mort',!couche);});
+function renderEl(dir){
+  OPEN=null;MT_SEQ++;
+  $('s-element').style.setProperty('--paper',PAPER[vue]);
+  $('el-title').textContent=NOM[vue][0];$('el-sub').textContent=NOM[vue][1];
+  const l=(TOT&&TOT[vue])||[],list=$('el-list');
+  list.innerHTML=l.length?l.map((o,k)=>boxHTML(o,k)).join(''):'<div class="v-empty">nothing written here yet<button class="lnk" id="el-write" type="button">write it on totehm.com</button></div>';
+  if($('el-write'))$('el-write').onclick=()=>ssoVersDomaine(sb,'com','https://www.totehm.com/totehm#in');
+  /* La vue arrive du côté où l'on va : une transition, jamais une @keyframes. */
+  if(dir){const off={g:'-28px,0',d:'28px,0',h:'0,-24px',b:'0,24px'}[dir]||'0,0';
+    list.style.transition='none';list.style.opacity='0';list.style.transform='translate('+off+')';void list.offsetWidth;
+    list.style.transition='';list.style.opacity='';list.style.transform='';}
+  list.scrollTop=0;
+  $('el-map').querySelectorAll('button').forEach(b=>b.classList.toggle('is-here',b.dataset.v===vue));
+  paintJoy();
+}
+function goVue(d){
+  const n=CROIX[vue]?.[d];if(!n||SWAPPING)return;
+  if(!(desktop()&&stage==='element')){vue=n;renderEl(d);return;}
+  /* Ordinateur : la fenêtre sort de son côté, le vêtement glisse, l'autre fenêtre entre par le sien. */
+  SWAPPING=true;const p=$('s-element');
+  vue=n;document.body.dataset.side=sideOf('element');p.classList.remove('is-here');
+  setTimeout(()=>{placePanel(p,vue==='wisdom');renderEl();p.classList.add('is-here');SWAPPING=false;},300);
+}
+$('el-map').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(b.dataset.v!==vue){vue=b.dataset.v;renderEl();}});
+function paintJoy(t){
+  const jb=$('joy-box');jb.style.setProperty('--joy',SKIN[vue]);
   ['h','g','d','b'].forEach(d=>$('cur-'+d).classList.toggle('mort',!CROIX[vue][d]));
+  jb.classList.toggle('is-act',!!OPEN);
+  $('joy-say').textContent=t?NOM[CROIX[vue][t]][0]:(OPEN?'tap · wear it':NOM[vue][0]);
 }
-function goVue(d){const n=CROIX[vue][d];if(!n)return;vue=n;renderSel(d);}
-document.querySelectorAll('.cur').forEach(b=>b.onclick=()=>goVue(b.dataset.d));
-(function joyDrag(){
-  const box=$('joy-box');let x0=0,y0=0,on=false;
-  box.addEventListener('pointerdown',e=>{on=true;x0=e.clientX;y0=e.clientY;try{box.setPointerCapture(e.pointerId);}catch(_){}});
-  box.addEventListener('pointerup',e=>{if(!on)return;on=false;const dx=e.clientX-x0,dy=e.clientY-y0;
-    if(Math.max(Math.abs(dx),Math.abs(dy))<24)return;goVue(Math.abs(dx)>Math.abs(dy)?(dx<0?'g':'d'):(dy<0?'h':'b'));});
+(function manette(){
+  const jy=$('joy'),jb=$('joy-box'),js=$('joy-stack'),R=15,SEUIL=9;let id=null,x0=0,y0=0,dx=0,dy=0,loin=0;
+  const pose=(a,b)=>{js.style.setProperty('--mx',a.toFixed(1)+'px');js.style.setProperty('--my',b.toFixed(1)+'px');};
+  const sens=()=>{if(Math.max(Math.abs(dx),Math.abs(dy))<SEUIL)return null;const d=Math.abs(dx)>Math.abs(dy)?(dx<0?'g':'d'):(dy<0?'h':'b');return CROIX[vue][d]?d:null;};
+  const vise=v=>{['g','d','h','b'].forEach(k=>jy.classList.toggle('vers-'+k,k===v));paintJoy(v);};
+  jb.addEventListener('pointerdown',e=>{if(e.button>0||id!==null)return;id=e.pointerId;x0=e.clientX;y0=e.clientY;dx=dy=loin=0;jy.classList.add('is-held');try{jb.setPointerCapture(id);}catch(_){}e.preventDefault();});
+  jb.addEventListener('pointermove',e=>{if(id!==e.pointerId)return;const a=e.clientX-x0,b=e.clientY-y0,d=Math.hypot(a,b),k=d>R?R/d:1;dx=a*k;dy=b*k;loin=Math.max(loin,d);pose(dx,dy);vise(sens());});
+  const lache=(e,annule)=>{if(id===null||e.pointerId!==id)return;const v=annule?null:sens();try{jb.releasePointerCapture(id);}catch(_){}id=null;pose(0,0);jy.classList.remove('is-held');vise(null);
+    if(annule)return;if(v)goVue(v);else if(loin<4)joyTap();};
+  jb.addEventListener('pointerup',e=>lache(e,false));jb.addEventListener('pointercancel',e=>lache(e,true));
+  jb.addEventListener('click',e=>{if(e.detail===0)joyTap();});
+  ['h','g','d','b'].forEach(d=>$('cur-'+d).onclick=()=>goVue(d));
+  let froid=0;
+  jy.addEventListener('wheel',e=>{e.preventDefault();if(Date.now()<froid||Math.max(Math.abs(e.deltaX),Math.abs(e.deltaY))<8)return;froid=Date.now()+450;
+    goVue(Math.abs(e.deltaX)>Math.abs(e.deltaY)?(e.deltaX>0?'d':'g'):(e.deltaY>0?'b':'h'));},{passive:false});
 })();
-window.addEventListener('keydown',e=>{
-  if(!isOpen('sel'))return;
-  const m={ArrowUp:'h',ArrowDown:'b',ArrowLeft:'g',ArrowRight:'d'}[e.key];
-  if(m){e.preventDefault();goVue(m);}
-  if(e.key==='Escape')$('sel').classList.remove('is-open');
-});
-$('sel-x').onclick=()=>$('sel').classList.remove('is-open');
+function joyTap(){if(OPEN)pick();else{const b=$('el-list').querySelector('.bx');if(b)b.focus({preventScroll:true});}}
+/* Le doigt glisse sur la liste : gauche/droite = la vue voisine ; le défilement vertical reste natif. */
+(function listSwipe(){
+  const l=$('el-list');let s=null;
+  l.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse')return;s={x:e.clientX,y:e.clientY};});
+  l.addEventListener('pointerup',e=>{if(!s)return;const dx=e.clientX-s.x,dy=e.clientY-s.y;s=null;if(Math.abs(dx)>60&&Math.abs(dx)>1.6*Math.abs(dy))goVue(dx<0?'d':'g');});
+  l.addEventListener('pointercancel',()=>{s=null;});
+  /* Le trackpad : horizontal = la vue voisine ; vertical = la liste, puis la vue au bout. */
+  let acc={x:0,y:0},last=0,lock=false;
+  $('s-element').addEventListener('wheel',e=>{
+    if(e.target.closest('#joy'))return;
+    const horiz=Math.abs(e.deltaX)>Math.abs(e.deltaY);
+    if(!horiz){const down=l.scrollTop+l.clientHeight<l.scrollHeight-1,up=l.scrollTop>0;if((e.deltaY>0&&down)||(e.deltaY<0&&up))return;}
+    e.preventDefault();const now=performance.now();if(now-last>200){acc={x:0,y:0};lock=false;}last=now;if(lock)return;
+    const k=e.deltaMode===1?16:1;acc.x+=e.deltaX*k;acc.y+=e.deltaY*k;
+    if(Math.abs(acc.x)>=130){lock=true;goVue(acc.x>0?'d':'g');}else if(Math.abs(acc.y)>=130){lock=true;goVue(acc.y>0?'b':'h');}
+  },{passive:false});
+})();
 
-/* ══ TOTEHMIZE — 2 · LA MATIÈRE : comment le Totehm devient de l'art ══
-   Ce qui est relié à la Box dans les cinq vues, et la palette de ses
-   intentions — calculés en base (`my_box_matter`), jamais ici. */
-const MI={habits:['',''],objectives:['o','why'],repulsions:['r','instead'],wisdom:['w','learned'],visions:['v','sees']};
-$('list').addEventListener('click',async e=>{
-  if(e.target.closest('#matter'))return;
-  const b=e.target.closest('.bx');if(!b)return;
-  const o=(TOT[vue]||[])[+b.dataset.k];if(!o)return;
-  document.querySelectorAll('#list .bx').forEach(x=>x.classList.toggle('open',x===b));
-  $('matter')?.remove();
-  const c=document.createElement('div');c.id='matter';c.innerHTML='<div class="mono">reading the matter…</div>';b.after(c);
-  const{data:m,error}=await sb.rpc('my_box_matter',{p_kind:KIND[vue],p_ref:String(o.ref)});
+/* LA MATIÈRE — ce qui est relié à l'élément dans le Totehm,
+   calculés en base (`my_box_matter`), jamais ici. */
+const MI={habits:['','how'],objectives:['o','why'],repulsions:['r','instead'],wisdom:['w','learned'],visions:['v','sees']};
+let MT_SEQ=0;
+async function openEl(b){
+  const o=((TOT&&TOT[vue])||[])[+b.dataset.k];if(!o)return;
+  if(OPEN&&OPEN.b===b)return;
+  document.querySelectorAll('#el-list .bx').forEach(x=>x.classList.toggle('is-on',x===b));
+  $('matter')?.remove();OPEN=null;paintJoy();
+  const c=document.createElement('div');c.id='matter';c.innerHTML='<div class="mono">reading the element…</div>';b.after(c);
+  const seq=++MT_SEQ,v=vue;
+  const{data:m,error}=await sb.rpc('my_box_matter',{p_kind:KIND[v],p_ref:String(o.ref)});
+  if(seq!==MT_SEQ||v!==vue)return;
   if(error)console.error('[my_box_matter]',error.message);
-  if(error||!m){c.innerHTML='<div class="mono">'+(error?'unavailable':'this box is empty')+'</div>';return;}
+  if(error||!m){c.innerHTML='<div class="mono">'+(error?'unavailable, try again':'this element is empty')+'</div>';return;}
   const groups=Object.entries(m.matter||{}).filter(([,a])=>(a||[]).length).map(([k,a])=>
-    '<div class="grp"><span class="w">'+(k==='habits'?'how':(MI[k]||['',''])[1]||k)+'</span>'+a.map(x=>'<span class="mi '+(MI[k]||[''])[0]+'">'+esc(x.text)+'</span>').join('')+'</div>').join('');
-  const ex=m.extra||{};
-  const extras=[ex.place?'place · '+esc(ex.place):null,ex.mood?'mood · '+esc(ex.mood):null,ex.freq?'rhythm · '+esc(String(ex.freq).replace(/_/g,' ')):null,ex.obstacle?'obstacle · '+esc(ex.obstacle):null].filter(Boolean);
-  c.innerHTML=
-    '<div class="grp"><span class="w">palette</span><span class="pal">'+(m.palette||[]).map(x=>'<i style="background:'+esc(x)+'"></i>').join('')+'</span>'+((m.palette||[]).length?'':'<span class="mono">no intention yet — the curated style decides</span>')+'</div>'+
-    groups+(extras.length?'<div class="grp"><span class="w">context</span><span class="mono" style="color:rgba(255,255,255,.75)">'+extras.join(' · ')+'</span></div>':'')+
-    '<div class="next"><button class="btn" id="mt-go" type="button">Pick up this box</button><button class="btn-back" id="mt-x" type="button" style="color:#fff">another box</button></div>';
-  $('mt-go').onclick=()=>{order={support:null,box:{kind:KIND[vue],ref:String(o.ref),text:m.text,view:m.view,palette:m.palette||[]},name:'',size:'',style:null};
-    $('sel').classList.remove('is-open');paintPicked();
-    if(PREF&&avail(PREF)>0){const s=PREF;PREF=null;chooseSupport(s);}else{PREF=null;render();window.scrollTo({top:0,behavior:'smooth'});}};
-  $('mt-x').onclick=()=>renderSel();
+    '<div class="grp"><span class="w">'+esc((MI[k]||['',k])[1])+'</span>'+a.map(x=>'<span class="mi '+((MI[k]||[''])[0])+'">'+esc(x.text)+'</span>').join('')+'</div>').join('');
+  /* 08/10 (bis) : ni palette ni rythme à l'écran — ce qui est relié, puis le geste. */
+  c.innerHTML=groups+'<div class="next"><button class="btn cta" id="mt-go" type="button">Wear this element</button></div>';
+  OPEN={b,o,m};paintJoy();
+  $('mt-go').onclick=pick;
   c.scrollIntoView({behavior:'smooth',block:'nearest'});
-});
-
-/* ══ 3 · MATERIALIZE — une page, trois choix visibles, l'aperçu en tête ══ */
-function paintPreview(){
-  const s=order.support,w=$('preview-wrap'),images=supportImages[s?.id]||[];
-  w.innerHTML='<div class="visual">'+(images.length?'<img class="ph" src="'+esc(images[0])+'" alt="'+esc(s?.title||'')+'">':'<div class="none">'+esc(s?.title||'')+'</div>')+
-    zoneHTML(s,(s?.print_area?.placement||'back')+' print')+'</div>';
-  paintZone(w);
 }
-function paintOrderBtn(){$('order-btn').textContent=order.support?'Order · '+fmt(order.support):'Order';}
-function openConfig(){
-  /* La Box d'ancrage reste sous les yeux pendant tout le réglage. */
-  const V={habits:'my habits',objectives:'my objectives',repulsions:'my repulsions',wisdom:'my wisdom',visions:'my vision'};
-  const a=$('anchor');a.style.setProperty('--skin',SKIN[order.box.view]||'#333366');
-  a.innerHTML='<small>the anchor box · '+(V[order.box.view]||'')+' · on '+esc(order.support?.title||'')+'</small><div class="nm">'+esc(order.box.text)+'</div>'+
-    '<div class="pals">'+(order.box.palette||[]).map(x=>'<i style="background:'+esc(x)+'"></i>').join('')+'</div>';
-  $('name-prefix').textContent=epochPrefix();
-  order.style=null;order.name='';order.size='';
-  $('step-name').classList.add('is-on');
-  ['step-style','step-dim','step-order'].forEach(id=>$(id).classList.remove('is-on'));
-  $('done').classList.add('hide');
-  $('name-input').value='';$('name-note').textContent='';$('name-note').className='note dim';
-  document.querySelectorAll('.style-item').forEach(x=>x.classList.remove('is-on'));
-  $('size-row').innerHTML='';$('order-note').textContent='';
-  paintOrderBtn();paintFlow();
-  $('config').classList.add('is-open');$('config').scrollTop=0;
-  paintPreview();
-  setTimeout(()=>$('name-input').focus({preventScroll:true}),120);
+$('el-list').addEventListener('click',e=>{if(e.target.closest('#matter'))return;const b=e.target.closest('.bx');if(b)openEl(b);});
+$('el-list').addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const b=e.target.closest('.bx');if(!b)return;e.preventDefault();OPEN&&OPEN.b===b?pick():openEl(b);});
+function pick(){
+  if(!OPEN)return;const{o,m}=OPEN;
+  /* Le nom, le style et la taille restent : seul l'élément change. */
+  F.el={kind:KIND[vue],ref:String(o.ref),view:m.view||vue,text:m.text||o.text,is:o.is||[]};
+  show('name');
 }
-$('cfg-back').onclick=()=>{$('config').classList.remove('is-open');order.support=null;render();};
-/* Chemin ABSOLU sous cleanUrls (CLAUDE.md, 16/09). */
-$('done-back').onclick=()=>{location.href='/streetwear';};
 
-/* 1 · LE NOM — vérifié en direct ; l'aperçu le grave à mesure. */
-let nameTimer=null,NAME_SEQ=0;
-$('name-input').addEventListener('input',()=>{
-  revealStyle(false);order.name='';
-  const v=$('name-input').value.trim(),note=$('name-note');
-  clearTimeout(nameTimer);
-  if(v.length<2){note.className='note dim';note.textContent='at least 2 characters';paintPreview();return;}
-  note.className='note dim';note.textContent='checking…';
-  const seq=++NAME_SEQ;
-  nameTimer=setTimeout(async()=>{
-    const full=$('name-prefix').textContent+v;
-    /* 05/10 : `name_available` (serveur). Lire `totehm_clothes` ne voyait que
-       SES pièces (RLS) : un nom pris par un autre passait pour libre. */
-    const{data,error}=await sb.rpc('name_available',{candidate:full});
-    if(seq!==NAME_SEQ)return;          // une réponse tardive n'écrase pas un nom plus frais
-    if(error){console.error('[name_available]',error.message);note.className='note dim';note.textContent='try again';return;}
-    if(data!==true){note.className='note no';note.textContent='already taken';revealStyle(false);}
-    else{note.className='note ok';note.textContent='available';order.name=full;revealStyle(true);}
-    paintPreview();
-  },420);
+/* ══ 3 · NAME — vérifié en direct par le serveur ══════════════════════ */
+let NM_SEQ=0,nmTimer=null;
+const cleanName=v=>String(v||'').replace(/^\s*\d+\.\s*/,'').replace(/\s+/g,' ').replace(/^\s+/,'').slice(0,40);
+function paintTile(el,box){
+  box.style.setProperty('--skin',SKIN[el.view]||'#333366');
+  box.innerHTML='<small>'+esc(NOM[el.view]?.[0]||'my element')+'</small><b>'+esc(el.text)+'</b>';
+}
+function enterName(){
+  paintTile(F.el,$('nm-el'));
+  $('nm-prefix').textContent=epochPrefix();
+  if($('nm-input').value!==F.nameRaw)$('nm-input').value=F.nameRaw;
+  $('nm-go').disabled=!F.nameOk;
+  if(F.nameRaw&&!F.nameOk)checkNow();
+  else if(!F.nameRaw)note('nm-note','dim','');
+  setTimeout(()=>{if(stage==='name')$('nm-input').focus({preventScroll:true});},380);
+}
+async function checkName(raw){
+  const{data,error}=await sb.rpc('name_available',{candidate:epochPrefix()+raw});
+  if(error){console.error('[name_available]',error.message);return null;}
+  return data===true;
+}
+function checkNow(){
+  const raw=F.nameRaw.trim();clearTimeout(nmTimer);F.nameOk=false;$('nm-go').disabled=true;
+  if(raw.length<2){note('nm-note','dim',raw?'at least 2 characters':'');return;}
+  note('nm-note','dim','checking…');
+  const seq=++NM_SEQ;
+  nmTimer=setTimeout(async()=>{
+    const free=await checkName(raw);
+    if(seq!==NM_SEQ)return;          /* une réponse tardive n'écrase pas un nom plus frais */
+    if(free===null){note('nm-note','dim','try again');return;}
+    F.nameOk=free;$('nm-go').disabled=!free;save();
+    note('nm-note',free?'ok':'no',free?'available':'already taken');
+  },380);
+}
+$('nm-input').addEventListener('input',()=>{
+  const v=cleanName($('nm-input').value);if(v!==$('nm-input').value)$('nm-input').value=v;
+  F.nameRaw=v.trim();checkNow();paintZones();
 });
+$('nm-input').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if(F.nameOk)show('style');}});
+$('nm-go').onclick=()=>{if(F.nameOk)show('style');};
 
-/* 2 · LE STYLE — curaté, montré tout de suite. */
-function revealStyle(show){$('step-style').classList.toggle('is-on',show);if(show)loadStyles();if(!show){$('step-dim').classList.remove('is-on');$('step-order').classList.remove('is-on');}}
-async function loadStyles(){
-  if(stylesLoaded)return;
-  const{data,error}=await sb.from('artistic_styles').select('*').eq('active',true).order('position');
+/* ══ 4 · STYLE — curaté, n pièces par style ═══════════════════════════ */
+const styleLeft=s=>s.remaining_capacity==null?1:s.remaining_capacity;
+async function loadStyles(force){
+  if(stylesLoaded&&!force)return;
+  const{data,error}=await sb.from('artistic_styles').select('id,name,image_url,position,status,remaining_capacity,total_capacity').eq('active',true).order('position');
   if(error)console.error('[artistic_styles]',error.message);
-  styles=(data||[]).filter(s=>!s.status||s.status==='active');stylesLoaded=!error;renderStyles();
+  styles=(data||[]).filter(s=>!s.status||s.status==='active');stylesLoaded=!error;
 }
-function renderStyles(){
-  const t=$('style-track');t.innerHTML='';
-  if(!styles.length){t.innerHTML='<div class="mono" style="padding:14px 6px">styles coming soon</div>';return;}
-  t.style.justifyContent=styles.length<=3?'center':'flex-start';
-  styles.forEach(s=>{
-    const b=document.createElement('button');b.type='button';b.className='style-item';
-    b.innerHTML=(s.image_url?'<img class="style-img" src="'+esc(s.image_url)+'" alt="">':'<div class="style-img"></div>')+'<div class="st-name">'+esc(s.name||'')+'</div>';
-    b.onclick=()=>{document.querySelectorAll('.style-item').forEach(x=>x.classList.remove('is-on'));b.classList.add('is-on');order.style=s;paintPreview();showSizes();};
-    t.appendChild(b);
+async function enterStyle(){
+  await loadStyles();
+  if(F.style&&!styles.some(s=>s.id===F.style.id&&styleLeft(s)>0))F.style=null;
+  const r=$('st-rail');
+  if(!styles.length){r.innerHTML='<div class="note dim" style="margin:20px auto">styles coming soon</div>';$('st-go').disabled=true;return;}
+  r.style.justifyContent=styles.length<=2?'center':'flex-start';
+  r.innerHTML=styles.map(s=>{const left=styleLeft(s);
+    return '<button type="button" class="st-card'+(F.style?.id===s.id?' is-on':'')+'" data-id="'+esc(s.id)+'" role="option" aria-selected="'+(F.style?.id===s.id)+'"'+(left>0?'':' disabled')+'>'+
+      (s.image_url?'<img src="'+esc(s.image_url)+'" alt="">':'<span class="ph"></span>')+'<b>'+esc(s.name||'')+'</b><span>'+(left>0?(s.remaining_capacity==null?'open':left+' left'):'sold out')+'</span></button>';}).join('');
+  r.querySelectorAll('.st-card').forEach(b=>b.onclick=()=>{
+    const s=styles.find(x=>String(x.id)===b.dataset.id);if(!s||styleLeft(s)<=0)return;
+    F.style=s;r.querySelectorAll('.st-card').forEach(x=>{x.classList.toggle('is-on',x===b);x.setAttribute('aria-selected',String(x===b));});
+    $('st-go').disabled=false;save();paintZones();
   });
+  $('st-go').disabled=!F.style;
+  const on=r.querySelector('.is-on');if(on)on.scrollIntoView({block:'nearest',inline:'center'});
 }
+$('st-go').onclick=()=>{if(F.style)show('order');};
 
-/* 3 · LA TAILLE — celles du vêtement (Printful), jamais une liste inventée. */
-function showSizes(){
-  const sz=sizesOf(order.support),row=$('size-row');row.innerHTML='';
-  (sz.length?sz:['S','M','L','XL']).forEach(s=>{
-    const b=document.createElement('button');b.type='button';b.className='sz'+(order.size===s?' is-on':'');b.textContent=s;
-    b.onclick=()=>{row.querySelectorAll('.sz').forEach(x=>x.classList.remove('is-on'));b.classList.add('is-on');order.size=s;
-      $('step-order').classList.add('is-on');setTimeout(()=>$('step-order').scrollIntoView({behavior:'smooth',block:'center'}),120);};
-    row.appendChild(b);
-  });
-  $('step-dim').classList.add('is-on');
-  setTimeout(()=>$('step-dim').scrollIntoView({behavior:'smooth',block:'center'}),120);
+/* ══ 5 · ORDER — l'aperçu, la taille, le prix ═════════════════════════
+   L'APERÇU N'EST PAS L'ŒUVRE : la place (`print_area`, un pointillé — la place
+   vide), le style du moment, le nom gravé. Aucun appel, aucun modèle. */
+function zoneVars(s){const pa=s?.print_area||{},wi=Number(pa.width_in)||12,hi=Number(pa.height_in)||16;
+  const w=hi>=wi?42:54,hPct=w*(hi/wi);
+  return '--pz-w:'+w+'%;--pz-ar:'+wi+'/'+hi+';--pz-h:'+hPct.toFixed(1)+'%;--pz-top:'+Math.max(8,Math.min(24,(100-hPct)/2-6)).toFixed(1)+'%';}
+function zoneHTML(tag){
+  const s=F.support;
+  return '<div class="pz" style="'+zoneVars(s)+'">'+(F.style?.image_url?'<img src="'+esc(F.style.image_url)+'" alt="">':'<b>your element · here</b>')+'</div>'+
+    '<div class="pz-name" style="'+zoneVars(s)+'">'+esc(F.nameRaw?epochPrefix()+F.nameRaw:'')+'</div>'+
+    (tag?'<div class="pz-tag">'+esc((s?.print_area?.placement||'back')+' print · a preview, not the artwork')+'</div>':'');
 }
-
-let ORDERING=false;
-$('order-btn').onclick=async()=>{
-  if(ORDERING||!order.name||!order.size||!order.box||!order.style)return;
-  if(!me){$('config').classList.remove('is-open');openMember();return;}
-  const note=$('order-note');
-  ORDERING=true;$('order-btn').disabled=true;
-  note.className='note dim';note.textContent='opening checkout…';
-  /* ⚠️ UNE RÉFÉRENCE, PAS UN TEXTE. Le serveur relit la Box dans le Totehm
-     de la session ; l'acheteur est la session, jamais un champ du corps. */
+/* L'instrument (ordinateur) porte la place dès qu'on totehmise ; ORDER la montre aussi au téléphone. */
+function paintZones(){
+  const z=$('vw-zone');if(z)z.innerHTML=F.support&&cur()===F.support&&stage!=='cloth'&&stage!=='done'?zoneHTML(false):'';
+  if(stage==='order')paintPreview();
+}
+function paintPreview(){
+  const s=F.support,w=$('od-visual'),im=imgs(s)[ANG[supports.indexOf(s)]||0]||imgs(s)[0];
+  w.innerHTML=(im?'<img class="ph" src="'+esc(im)+'" alt="'+esc(s?.title||'')+'">':'')+zoneHTML(true);
+}
+function enterOrder(){
+  const s=F.support;if(!s)return;
+  paintPreview();
+  $('od-recap').innerHTML='<span class="nm">'+esc(epochPrefix()+F.nameRaw)+'</span><span>'+esc((NOM[F.el.view]?.[0]||'my element')+' · '+(F.style?.name||''))+'</span><span>'+esc(s.title||'')+'</span>';
+  const vm=s.printful_variant_map||{},sz=sizesOf(s);
+  if(F.size&&!sz.includes(F.size))F.size='';
+  $('od-sizes').innerHTML=sz.map(x=>{const off=vm[x]&&vm[x].availability&&vm[x].availability!=='active';
+    return '<button type="button" class="sz'+(F.size===x?' is-on':'')+'" data-s="'+esc(x)+'" role="radio" aria-checked="'+(F.size===x)+'"'+(off?' disabled':'')+'>'+esc(x)+'</button>';}).join('')||'<div class="note dim">sizes coming soon</div>';
+  $('od-sizes').querySelectorAll('.sz').forEach(b=>b.onclick=()=>{F.size=b.dataset.s;$('od-sizes').querySelectorAll('.sz').forEach(x=>{x.classList.toggle('is-on',x===b);x.setAttribute('aria-checked',String(x===b));});paintOrderBtn();save();});
+  $('od-test').classList.toggle('hide',!TEST);
+  paintOrderBtn();
+}
+function paintOrderBtn(){const b=$('od-go');b.textContent='Order · '+price(F.support);b.disabled=!F.size||ORDERING;}
+$('od-go').onclick=order;
+async function order(){
+  if(ORDERING||!F.size||!F.style||!F.nameOk||!F.el||!F.support)return;
   const{data:{session}}=await sb.auth.getSession();
+  if(!session){save('order');ssoLogin(false,'/streetwear');return;}
+  ORDERING=true;paintOrderBtn();note('od-note','dim','opening the secure page…');
+  /* ⚠️ UNE RÉFÉRENCE, PAS UN TEXTE ; le nom SANS préfixe : le serveur pose « 0. ». */
   let data={},status=0;
   try{
-    const r=await fetch(FN+'create-checkout',{method:'POST',headers:{'content-type':'application/json','apikey':SB_ANON,'authorization':'Bearer '+(session?.access_token||SB_ANON)},
-      body:JSON.stringify({garment_id:order.support.id,box:{kind:order.box.kind,ref:order.box.ref},name:order.name,size:order.size,style_id:order.style.id})});
+    const r=await fetch(FN+'create-checkout',{method:'POST',headers:{'content-type':'application/json','apikey':SB_ANON,'authorization':'Bearer '+session.access_token},
+      body:JSON.stringify({garment_id:F.support.id,box:{kind:F.el.kind,ref:F.el.ref},name:F.nameRaw,size:F.size,style_id:F.style.id})});
     status=r.status;data=await r.json().catch(()=>({}));
-  }catch(e){console.error('[create-checkout]',e&&e.message||e);data={};}
-  ORDERING=false;$('order-btn').disabled=false;
-  if(!data?.url){console.error('[create-checkout]',status,data?.error);note.className='note no';note.textContent=({'sold out':'sold out','name taken':'that name was just taken',passport:'complete your TOTEHM first',
-    'box not found':'that box changed — choose it again','choose a box':'choose a box',style:'choose a style',size:'choose a size',name:'name it: 2 to 40 characters',signin:'sign in again'})[data?.error]||'error, try again';return;}
-  try{sessionStorage.setItem('tc_pending','"'+order.name+'" — '+order.size);}catch(_){}
-  window.top.location.href=data.url;
-};
-$('terms-link').onclick=e=>{e.preventDefault();alert('Each Totehm Cloth is a unique, made-to-order piece. All sales are final once the artist begins. No returns, no refunds.');};
+  }catch(e){console.error('[create-checkout]',e&&e.message||e);}
+  ORDERING=false;paintOrderBtn();
+  if(data?.url){save('order');note('od-note','dim','');window.top.location.href=data.url;return;}
+  console.error('[create-checkout]',status,data?.error);
+  const err=data?.error;
+  if(err==='signin'){save('order');ssoLogin(false,'/streetwear');return;}
+  if(err==='passport'){ensureTotehm();note('od-note','no','complete your TOTEHM first');return;}
+  if(err==='name taken'||err==='name'){F.nameOk=false;goBackTo('name');return;}
+  if(err==='style'||err==='style sold out'){F.style=null;await loadStyles(true);goBackTo('style');return;}
+  if(err==='box not found'||err==='choose a box'||err==='choose an element'){F.el=null;TOT=null;if(await ensureTotehm())renderEl();goBackTo('element');return;}
+  if(err==='sold out'){await loadSupports();goBackTo('cloth');return;}
+  note('od-note','no',({size:'choose a size',test_unavailable:'test mode is not ready yet',stripe:'payment page unavailable, try again'})[err]||'error, try again');
+}
 
-
-load().then(async()=>{
-  let id=null;try{id=sessionStorage.getItem(PEND_KEY);sessionStorage.removeItem(PEND_KEY);}catch(_){}
-  if(!id)return;
-  const{data:{session}}=await sb.auth.getSession();me=session?.user||null;await loadProfile();
-  if(!id.startsWith('box'))return;
-  const sid=id.split(':')[1];pickUp(sid?supports.find(x=>String(x.id)===sid):null);
+/* ══ LE CLAVIER — chaque scène sa grammaire ═══════════════════════════ */
+window.addEventListener('keydown',e=>{
+  if(document.body.classList.contains('eco-modal'))return;
+  if(isOpen('member')||isOpen('pass')||isOpen('concept')){if(e.key==='Escape')['member','pass','concept'].forEach(id=>$(id).classList.remove('is-open'));return;}
+  const t=e.target;if(t&&t.closest&&t.closest('input,textarea,button,a,[role=button]')&&(e.key==='Enter'||e.key===' '))return;
+  if(t&&t.closest&&t.closest('input,textarea'))return;
+  if(stage==='cloth'){
+    const m={ArrowLeft:()=>model(-1),ArrowRight:()=>model(1),ArrowUp:()=>angle(-1),ArrowDown:()=>angle(1),Enter:totehmize}[e.key];
+    if(m){e.preventDefault();m();}
+  }else if(stage==='element'){
+    const d={ArrowUp:'h',ArrowDown:'b',ArrowLeft:'g',ArrowRight:'d'}[e.key];
+    if(d){e.preventDefault();goVue(d);}else if(e.key==='Enter'&&OPEN){e.preventDefault();pick();}else if(e.key==='Escape')back();
+  }else if(e.key==='Escape')back();
 });
 
-(async()=>{
-  const p=new URLSearchParams(location.search);
-  if(!p.get('paid'))return;
-  const clothId=p.get('cloth');
-  let label='';try{label=sessionStorage.getItem('tc_pending')||'';sessionStorage.removeItem('tc_pending');}catch(_){}
-  if(clothId){const{data,error}=await sb.from('totehm_clothes').select('name,size').eq('id',clothId).maybeSingle();
-    if(error)console.error('[paid]',error.message);if(data)label=`"${data.name}" — ${data.size}`;}
-  ['step-name','step-style','step-dim','step-order'].forEach(id=>$(id).classList.remove('is-on'));
-  $('preview-wrap').innerHTML='';$('anchor').classList.add('hide');document.querySelector('.pv-cap').classList.add('hide');
-  $('done-name').textContent=label;$('done').classList.remove('hide');$('config').classList.add('is-open');
-})();
+$('concept-btn').onclick=()=>$('concept').classList.add('is-open');
+$('concept-back').onclick=()=>$('concept').classList.remove('is-open');
+$('dn-again').onclick=()=>{location.href='/streetwear';};
 
-/* ══ LA MANETTE — la porte streetwear de la boutique (05/10/2026) ═══════════
-   Le même manche que l'accueil (rayon 15 px, seuil 9 px) : pousser vers une
-   direction la nomme et la colore AVANT d'y aller ; relâcher y va. Le
-   centre AGIT : l'action principale de la page. Copié, pas importé. */
-const NAV_TO = { b:'home', d:'luxury', g:'news' };
-const NAV_COLOR = { home:'var(--navy)', streetwear:'var(--blue)', luxury:'var(--rep)', decode:'var(--navy)', news:'var(--blue)' };
-const NAV_NAME = { home:'Higher', streetwear:'Streetwear', luxury:'Luxury', decode:'Decode', news:'News' };
-const NAV_URL = { home:'/', streetwear:'/streetwear', luxury:'/luxury', decode:'/#decode', news:'/#news' };
-const NAV_DOT = { home:'h', streetwear:'o', luxury:'r', decode:'h', news:'o' };
-let NAV_MOVES = 0;
-function joyPaint(preview){
-  const t = preview && NAV_TO[preview];
-  $('nav-box').style.setProperty('--joy-vue', NAV_COLOR[t || 'streetwear']);
-  const cur = NAV_DOT[t || 'streetwear'];
-  for(const k of ['o','h','r']) $('nav-stack').querySelector('.'+k).classList.toggle('is-current', k === cur);
-  for(const d of ['h','g','d','b']){ $('nav-'+d).classList.toggle('is-dead', !NAV_TO[d]); $('nav-'+d).classList.toggle('is-preview', preview === d && !!NAV_TO[d]); }
-  const say = $('nav-say'), act = navAction();
-  say.textContent = t ? NAV_NAME[t] : (act ? act[0] : NAV_NAME['streetwear']);
-  say.classList.toggle('is-preview', !!t);
-  $('nav-box').setAttribute('aria-label', act ? act[0] : 'Act');
+/* ══ LE DÉPART ════════════════════════════════════════════════════════ */
+{ const{data:{session}}=await sb.auth.getSession();me=session?.user||null;await loadProfile();loadTest(); }
+await loadSupports();
+async function restore(fl,cancelled){
+  const i=supports.findIndex(s=>String(s.id)===String(fl.sid));
+  if(i<0){show('cloth','replace');return;}
+  ci=i;ai=Math.max(0,Math.min(Number(fl.ai)||0,imgs(supports[i]).length-1));ANG[ci]=ai;placeViewer();paintCloth();
+  F.support=supports[i];F.nameRaw=String(fl.nm||'');F.size=String(fl.sz||'');F.el=fl.el&&WEARABLE.includes(fl.el.kind)?fl.el:null;
+  F.want=fl.wt&&WEARABLE.includes(fl.wt.kind)?{kind:fl.wt.kind,ref:String(fl.wt.ref)}:null;
+  const target=cancelled?'order':(fl.s||'cloth');
+  if(target==='cloth'||target==='done'||!me){show('cloth','replace');return;}
+  if(!myProfile){show('cloth','replace');PENDING='element';openMember();return;}
+  if(!await ensureTotehm()){show('cloth','replace');return;}
+  const wanted=applyWant();
+  vue=F.el?.view==='visions'?'visions':'wisdom';renderEl();
+  /* La pile reconstruite, une scène après l'autre : Back redescend pas à pas. */
+  const pile=s=>{history.replaceState({s:'cloth'},'');HIST=['cloth'];
+    for(const st of STAGES.slice(1,STAGES.indexOf(s)+1)){history.pushState({s:st},'');HIST.push(st);}show(s,'none');};
+  if((target==='element'&&!wanted)||!F.el){pile('element');return;}
+  if(F.nameRaw){const free=await checkName(F.nameRaw);F.nameOk=free===true;}
+  if(fl.st){await loadStyles();F.style=styles.find(s=>String(s.id)===String(fl.st)&&styleLeft(s)>0)||null;}
+  let s=target==='element'?'name':target;
+  if(s==='order'&&!(F.nameOk&&F.style))s=F.nameOk?'style':'name';
+  if(s==='style'&&!F.nameOk)s='name';
+  pile(s);
+  if(cancelled&&s==='order')note('od-note','dim','payment cancelled · nothing was charged');
+  if(s==='name'&&F.nameRaw&&!F.nameOk)note('nm-note','no','already taken');
 }
-function navStep(d){ const t = NAV_TO[d]; if(!t) return; NAV_MOVES++; location.href = NAV_URL[t]; }
-function navTap(){ const a = navAction(); if(a) a[1](); }
-(function manette(){
-  const bx = $('nav-box'), st = $('nav-stack'), R = 15, threshold = 9;
-  let id = null, x0 = 0, y0 = 0, dx = 0, dy = 0, moved = 0;
-  const pose = (a, b) => { st.style.setProperty('--mx', a.toFixed(1)+'px'); st.style.setProperty('--my', b.toFixed(1)+'px'); };
-  const dirOf = () => Math.max(Math.abs(dx), Math.abs(dy)) >= threshold ? (Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 'g' : 'd') : (dy < 0 ? 'h' : 'b')) : null;
-  bx.addEventListener('pointerdown', e => {
-    if(e.button > 0 || id !== null) return;
-    id = e.pointerId; x0 = e.clientX; y0 = e.clientY; dx = dy = moved = 0; bx.classList.add('is-held');
-    try{ bx.setPointerCapture(id); }catch(_){} e.preventDefault();
-  });
-  bx.addEventListener('pointermove', e => {
-    if(id !== e.pointerId) return;
-    const a = e.clientX - x0, b = e.clientY - y0, d = Math.hypot(a, b), k = d > R ? R / d : 1;
-    dx = a * k; dy = b * k; moved = Math.max(moved, d); pose(dx, dy); joyPaint(dirOf());
-  });
-  function finish(e, cancel){
-    if(id === null || e.pointerId !== id) return;
-    id = null; bx.classList.remove('is-held'); pose(0, 0); const d = dirOf(); joyPaint();
-    if(cancel) return;
-    if(moved < 4) navTap(); else if(d) navStep(d);
-  }
-  bx.addEventListener('pointerup', e => finish(e, false));
-  bx.addEventListener('pointercancel', e => finish(e, true));
-  bx.addEventListener('click', e => { if(e.detail === 0) navTap(); });
-  for(const d of ['h','g','d','b']) $('nav-'+d).onclick = () => navStep(d);
-})();
-
-/* Le centre : commander quand tout est choisi, sinon le pas suivant. */
-function navAction(){
-  const open = id => $(id).classList.contains('is-open'), on = id => $(id).classList.contains('is-on');
-  if(open('config')){
-    if(on('step-order')) return ['Order', () => $('order-btn').click()];
-    return ['Name', () => $('name-input').focus()];
-  }
-  const t = $('totehmize');
-  if(t) return [order.box ? 'Go' : 'Box', () => t.click()];
-  return ['Box', () => pickUp(null)];
+async function showDone(id){
+  let label='';
+  if(id&&me){const{data,error}=await sb.from('totehm_clothes').select('name').eq('id',id).maybeSingle();if(error)console.error('[paid]',error.message);label=data?.name||'';}
+  $('dn-name').textContent=label||'Your Totehm Cloth';
+  $('dn-decode').href=label?'/?decode='+encodeURIComponent(label):'/';$('dn-decode').classList.toggle('hide',!label);
+  show('done','replace');
 }
-joyPaint();
-/* Le centre suit la page : on observe ce qui change l'action, jamais le manche lui-même. */
-{ const mo = new MutationObserver(() => joyPaint());
-  ['config','step-order','picked'].forEach(id => mo.observe($(id), { attributes:true, attributeFilter:['class'] }));
-  mo.observe($('card'), { childList:true }); }
+{
+  const P=new URLSearchParams(location.search);
+  if(P.get('paid'))await showDone(P.get('cloth'));
+  else{
+    const fl=readFlow(),want=parseWear(P.get('wear'));
+    if(want)await arrive(want);else if(fl)await restore(fl,P.get('cancel')==='1');else show('cloth','replace');
+    if(P.has('cancel')||P.has('wear'))history.replaceState(history.state,'','/streetwear');
+  }
+  READY=true;
+}
 </script>
 <script data-ecosystem-ui="2026-10-05">
 /* 05/10/2026 — copied into each independent page; no runtime import. */

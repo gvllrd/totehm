@@ -82,6 +82,17 @@ La boutique sait payer en MODE TEST (code déployé). Il manque les deux secrets
 6. Workflow D (n8n) : ne jamais commander chez Printful une pièce `totehm_clothes.test = true`
 7. Rapport : une ligne par étape (secrets présents oui/non, id de l'endpoint test, statut de l'événement). Aucune clé.
 
+## Tâche 3 — 08/10/2026 · F : les vues du vêtement (utile, pas urgent)
+
+/streetwear fait défiler ↑ ↓ les VUES d'un vêtement = les fichiers de son dossier
+Storage. Le Champion n'en a qu'une (`image_url`, dossier vide).
+1. Dans F, à la synchronisation d'un produit : Printful mockup generator
+   (`POST /mockup-generator/create-task/{catalog_product_id}`, placements front et
+   back, puis `GET /mockup-generator/task?task_key=…`) → déposer `1-front.png`,
+   `2-back.png`… dans `totehm-cloth-support/<storage_folder>/` (upsert), sans
+   écraser une photo posée à la main ; rejouer F pour le Champion `478633385`.
+2. Rapport : le nombre de vues par support. Aucune clé dans le rapport.
+
 ## Tâche précédente — 01/10/2026 · le ménage en base (une approbation)
 
 La session cloud ne peut pas faire approuver un `drop`. Toi, si.
@@ -260,7 +271,7 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
-### Correction 0.44 — 08/10/2026 · TotehmSM : le Higher Self en freemium (à reporter)
+### Correction 0.47 — 08/10/2026 (quater) · TotehmSM : le Higher Self en freemium (à reporter)
 
 > totehm.com, vue du bas : TotehmSM devient une conversation en bulles —
 > « [Higher] Self », « AI made by you · your beliefs · your TOTEHM », « Talk
@@ -272,9 +283,41 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > TotehmBot). Aucune conversation gardée. Migration additive
 > `higher_self_freemium` APPLIQUÉE : ne pas réappliquer.
 > **Ménage à faire (Claude Code)** : appliquer
-> `backend/supabase/migrations/20261008100001_higher_self_menage.sql`
+> `backend/supabase/migrations/20261008200001_higher_self_menage.sql`
 > (drop `sm_thread`, `sm_messages`) via MCP `apply_migration`, nom
 > `higher_self_menage`, après la requête de vérification en tête du fichier.
+
+### Correction 0.46 — 08/10/2026 (ter) · TOTEHMIZE se cale dans WISDOM et VISION (à reporter)
+
+> Comme SPACE dans les habitudes : sur totehm.com, une leçon ou une vision dit
+> combien de Totehm Cloths la portent ; ouverte, elle les montre (nom, étape → leur
+> page Decode) et « + totehmize » ouvre la boutique avec CET élément déjà choisi
+> (on choisit le vêtement, puis directement le nom). Chez un autre : ses Cloths
+> seulement si on peut lire son Totehm. Migration `20261008120000_element_cloths.sql`
+> APPLIQUÉE (`element_cloths`) : ne pas réappliquer.
+
+### Correction 0.45 — 08/10/2026 (bis) · un vêtement porte WISDOM ou VISION (à reporter)
+
+> Le plein écran de /streetwear vaut pour le TÉLÉPHONE ; sur ordinateur le
+> vêtement reste et se décale, les fenêtres glissent sur le côté (comme SPACE) :
+> WISDOM à gauche, VISION, nom, style, commande à droite. Un vêtement ne porte
+> plus que MY WISDOM (ce que je transmets) ou MY VISION (ce que j'imagine pour le
+> monde) ; habitudes, objectifs, répulsions restent à soi (Luxury garde les cinq
+> vues). Ni palette de couleurs ni fréquence à l'écran (streetwear, Decode,
+> Luxury). Aucune migration ; `create-checkout` v40 refuse les autres vues.
+
+### Correction 0.44 — 08/10/2026 · la Streetwear plein écran, Decode = la page du Cloth (à reporter)
+
+> higher.boutique/streetwear devient cinq scènes plein écran : CLOTH (le
+> vêtement au centre, ← → les modèles, ↑ ↓ ses vues) → [TOTEHMIZE] → ELEMENT (le
+> Totehm déplié et la manette, là seulement) → NAME (0. + le nom, disponibilité
+> en direct) → STYLE (n pièces par style) → ORDER (taille, prix, paiement). « Box »
+> reste notre langage ; à l'écran on dit « element ». Decode ouvre la page du
+> Cloth : l'élément en tête, le vêtement, la taille, le style, le n°
+> d'exemplaire, l'étape, et l'œuvre une fois la pièce expédiée. Un paiement
+> abandonné garde le nom de son auteur. Migration
+> `20261008100000_streetwear_immersive.sql` APPLIQUÉE (`streetwear_immersive`) :
+> ne pas réappliquer.
 
 ### Correction 0.43 — 07/10/2026 · l'atterrissage en croix, TotehmSM, l'abonnement Higher (à reporter)
 

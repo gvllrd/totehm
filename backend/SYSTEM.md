@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 7 octobre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 8 octobre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -15,6 +15,36 @@
 
 ---
 
+
+## 0 · COM ↔ BOUTIQUE : TOTEHMIZE DANS WISDOM ET VISION — 08/10/2026 (ter)
+
+| quoi | valeur mesurée |
+|---|---|
+| migration `20261008120000_element_cloths.sql` | APPLIQUÉE (`element_cloths`) · auto-test `FAIL={}` (9 contrôles, annulé, 0 reste) · security definer, search_path vide · anon refusé, authenticated autorisé |
+| base | 0 Cloth payé, 0 devis Luxury payé : les vues WISDOM / VISION n'affichent encore que « + totehmize » |
+| tests navigateur | `com_cloths.mjs` 16/16 · `streetwear.mjs` 64/64 · `com_read_copy` 20/20 · `spaces_loupe` 26/26 · `com_croix` 40/40 (test réparé : `$$eval`) · `com_member_menu` 28/28 · `com_paper` 40/40 · `com_mouth` 30/30 · `com_creator` 29/29 · `console` 18/18 |
+| écart trouvé, hors lot | `space_boxes_ecosystem` 18 puis arrêt : figher.club `/stoner` → `/get_higher` montre « Send code » (OTP local) au lieu de CONNECT WITH MY TOTEHM — déjà vrai avant ce lot |
+| prod (pg_net, fusion `9150f31`) | `/totehm` 200 `BUILD 2026-10-08-cloths` (`element_cloths`, `data-totehmize`) · `/streetwear` 200 `2026-10-08-wear` (`?wear=`) · identiques au dépôt (569 398 · 92 241 caractères) |
+
+## 0 · STREETWEAR : FENÊTRES-CÔTÉS SUR ORDINATEUR, WISDOM ET VISION, SANS PALETTE — 08/10/2026 (bis)
+
+| quoi | valeur mesurée |
+|---|---|
+| base | aucune migration (la palette reste dans `box_snapshot`, jamais affichée) |
+| Edge Function | `create-checkout` v40 ACTIVE, `KINDS = wisdom · vision` (autre vue → 422 `choose an element`) · sans session → 401 `signin`, CORS `https://www.higher.boutique` |
+| tests navigateur | `streetwear.mjs` 51/51 (téléphone + ordinateur 1280×800 : WISDOM à gauche, VISION à droite, vêtement décalé, manette qui suit) · `boutique_home.mjs` 23/23 · `club_luxury.mjs` 44/44 |
+| prod (pg_net, fusion `6007b47`, Vercel READY) | `/streetwear` 200 `BUILD 2026-10-08-wisdom-vision` (règles de côté, `WEARABLE` wisdom·vision) · `/` 200 `2026-10-08-bis` · `/luxury` 200 `2026-10-08-no-palette` · aucune palette affichée · identique au dépôt (89 990 · 51 362 · 70 875 caractères) |
+
+## 0 · STREETWEAR PLEIN ÉCRAN, DECODE = LA PAGE DU CLOTH, « ELEMENT » — 08/10/2026
+
+| quoi | valeur mesurée |
+|---|---|
+| migration `20261008100000_streetwear_immersive.sql` | APPLIQUÉE (`streetwear_immersive`) · auto-test `FAIL={}` (annulé) · grants : `_cloth_name_free`, `_cloth_draft_put`, `_cloth_art_path` service_role seul ; `name_available`, `reveal_cloth` anon + authenticated |
+| Edge Functions | `create-checkout` v39 (sans session → 401 `signin`) · `cloth-art` v1 (nom inconnu → 404 `not_yet` ; nom invalide → 400 `name`) |
+| dépôt ↔ prod | 3 migrations du 06/10, `streetwear-assets` v1, `_shared/streetwear-auth.ts`, `compose-artwork` v34 recopiés depuis la prod ; `stripe-webhook` v42 identique au dépôt |
+| base | 1 support actif (Higher Champion Sweatshirt, 170 €, 177, S–2XL, 1 vue = `image_url`, dossier vide) · 6 styles × 7 pièces · 0 Cloth |
+| tests navigateur | `streetwear.mjs` 45/45 · `boutique_home.mjs` 22/22 · `club_luxury.mjs` 43/43 |
+| prod (pg_net, fusion `735b463`) | `/streetwear` 200 `BUILD 2026-10-08-immersive` (viewer, manette, TOTEHMIZE) · `/` 200 `2026-10-08-decode` (`dc-el`, `cloth-art`) · `/luxury` 200 `2026-10-08-element` (plus de « pick up the box ») · identique au dépôt (89 341 · 51 630 · 71 625 caractères) · anon : `name_available` true sur un nom libre, `reveal_cloth` `found:false`, `_cloth_draft_put` et `_cloth_art_path` refusés |
 
 ## 0 · L'ATTERRISSAGE EN CROIX, TOTEHMSM, L'ABONNEMENT HIGHER — 07/10/2026
 

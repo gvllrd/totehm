@@ -1,6 +1,33 @@
 # club/CLAUDE.md — figher.club : la porte, l'art, le marché
 
-## 07/10/2026 — Discover : le THP en quatre pouvoirs
+## 07/10/2026 — restauration exacte des six expériences avant migration
+
+Demande de Wah : retrouver EXACTEMENT le format présent sur higher.boutique
+juste avant le déplacement vers figher.club, sans refonte.
+Référence : `80ebe9269a8f3ee772812e93e8978bfa60eef6d9`, parent de la migration
+`0473b7ff839df268427bff00e0d72cb73e6c60a1` du 02/10.
+
+Pages : `stoner.html`, `play_lisbon_street.html`, `origins.html`,
+`get_higher.html`, `discover.html`, `discover_lisbon.html`.
+CSS, balisage, SVG, textes, menus et interactions retrouvent leurs sources
+dans `boutique/`. Les ajouts visuels `ecosystem_ui` des 05–06/10 sont retirés
+de ces six pages : ne plus les y appliquer. Cette restauration remplace aussi le Discover « quatre pouvoirs » ajouté
+le 07/10 dans get_higher.html. Les règles UI communes ci-dessous
+restent valables pour les autres pages. La connexion locale d'origine de ces
+expériences est restaurée ; les ponts SSO entre domaines restent reçus.
+
+Seuls raccords techniques conservés : chemins absolus sous cleanUrls,
+retour d'achat THP `from: 'method'`, acquisition sur le marché de la même
+origine, redirection du PAY_URL inexistant vers le mur Get Higher, réception
+SSO `verifyOtp({type, token_hash})` et callback auth synchrone dans les menus
+Stoner/Get Higher. Aucune modification du serveur, des prix ni des droits.
+
+Vérification : les CSS sont identiques octet pour octet aux six sources ;
+le balisage statique est identique sauf le href des conditions migrées.
+Tous les scripts inline passent `node --check`.
+La comparaison visuelle automatisée locale est indisponible (Chromium absent).
+
+## Historique du 07/10/2026 — Discover « quatre pouvoirs » (remplacé par la restauration ci-dessus)
 
 `get_higher.html` `DSLIDES` : « One paper. Four powers. » puis A · Neurological
 performance (le texte EEG de COM) · B · A digital artwork (Wah, un des 777 000,
