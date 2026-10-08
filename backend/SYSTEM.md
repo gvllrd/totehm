@@ -16,6 +16,16 @@
 ---
 
 
+## 0 · COM ↔ BOUTIQUE : TOTEHMIZE DANS WISDOM ET VISION — 08/10/2026 (ter)
+
+| quoi | valeur mesurée |
+|---|---|
+| migration `20261008120000_element_cloths.sql` | APPLIQUÉE (`element_cloths`) · auto-test `FAIL={}` (9 contrôles, annulé, 0 reste) · security definer, search_path vide · anon refusé, authenticated autorisé |
+| base | 0 Cloth payé, 0 devis Luxury payé : les vues WISDOM / VISION n'affichent encore que « + totehmize » |
+| tests navigateur | `com_cloths.mjs` 16/16 · `streetwear.mjs` 64/64 · `com_read_copy` 20/20 · `spaces_loupe` 26/26 · `com_croix` 40/40 (test réparé : `$$eval`) · `com_member_menu` 28/28 · `com_paper` 40/40 · `com_mouth` 30/30 · `com_creator` 29/29 · `console` 18/18 |
+| écart trouvé, hors lot | `space_boxes_ecosystem` 18 puis arrêt : figher.club `/stoner` → `/get_higher` montre « Send code » (OTP local) au lieu de CONNECT WITH MY TOTEHM — déjà vrai avant ce lot |
+| prod (pg_net, fusion `9150f31`) | `/totehm` 200 `BUILD 2026-10-08-cloths` (`element_cloths`, `data-totehmize`) · `/streetwear` 200 `2026-10-08-wear` (`?wear=`) · identiques au dépôt (569 398 · 92 241 caractères) |
+
 ## 0 · STREETWEAR : FENÊTRES-CÔTÉS SUR ORDINATEUR, WISDOM ET VISION, SANS PALETTE — 08/10/2026 (bis)
 
 | quoi | valeur mesurée |
