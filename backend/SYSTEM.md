@@ -25,7 +25,7 @@
 | dépôt ↔ prod | 3 migrations du 06/10, `streetwear-assets` v1, `_shared/streetwear-auth.ts`, `compose-artwork` v34 recopiés depuis la prod ; `stripe-webhook` v42 identique au dépôt |
 | base | 1 support actif (Higher Champion Sweatshirt, 170 €, 177, S–2XL, 1 vue = `image_url`, dossier vide) · 6 styles × 7 pièces · 0 Cloth |
 | tests navigateur | `streetwear.mjs` 45/45 · `boutique_home.mjs` 22/22 · `club_luxury.mjs` 43/43 |
-| prod | voir la ligne « prod » ajoutée à la fusion |
+| prod (pg_net, fusion `735b463`) | `/streetwear` 200 `BUILD 2026-10-08-immersive` (viewer, manette, TOTEHMIZE) · `/` 200 `2026-10-08-decode` (`dc-el`, `cloth-art`) · `/luxury` 200 `2026-10-08-element` (plus de « pick up the box ») · identique au dépôt (89 341 · 51 630 · 71 625 caractères) · anon : `name_available` true sur un nom libre, `reveal_cloth` `found:false`, `_cloth_draft_put` et `_cloth_art_path` refusés |
 
 ## 0 · L'ATTERRISSAGE EN CROIX, TOTEHMSM, L'ABONNEMENT HIGHER — 07/10/2026
 
