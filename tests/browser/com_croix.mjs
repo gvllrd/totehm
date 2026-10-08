@@ -169,7 +169,7 @@ try{
  {const{pg,log}=await page(browser,{dir:'club',origin:'https://www.figher.club',tables:{},session:false,viewport:{width:390,height:844}});
   await pg.goto('https://www.figher.club/get_higher');await pg.waitForTimeout(600);
   await pg.click('#down-trigger');await pg.waitForTimeout(400);
-  const t=await pg.$eval('#disc-stage .disc-block',l=>l.map(b=>b.textContent.replace(/\s+/g,' ').trim()));
+  const t=await pg.$$eval('#disc-stage .disc-block',l=>l.map(b=>b.textContent.replace(/\s+/g,' ').trim()));
   ok(/Most people think they're just losing energy/.test(t[0])&&/They're losing years/.test(t.join(' ')),
     'discover : le récit d\'origine est restauré, de l\'énergie aux années perdues');
   ok(!t.join(' ').match(/invest/i),'jamais « investment » (MiCA) : la valeur se dit par ce que le THP ouvre');
