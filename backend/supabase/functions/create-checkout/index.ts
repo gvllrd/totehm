@@ -33,6 +33,11 @@
 // taken » ; un style épuisé est refusé ; le Checkout expire en 31 min (le
 // ménage `cleanup-drafts` efface les brouillons de plus de 2 h : aucun ne
 // peut être payé après). Réponse : { url, name }.
+//
+// 08/10 (bis) : Wah — « pour la totehmisation vêtement, garder seulement WISDOM
+// (ce que je veux transmettre) et VISION (ce que j'imagine pour le monde) ». Un
+// vêtement parle aux autres : seuls ces deux éléments se portent. Refusé ici,
+// pas seulement caché dans la page.
 // ═══════════════════════════════════════════════════════════════════════
 import Stripe from 'npm:stripe@14';
 import { createClient } from 'npm:@supabase/supabase-js@2';
@@ -42,7 +47,7 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!);
 const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
   { auth: { persistSession: false } });
 
-const KINDS = ['habit', 'objective', 'repulsion', 'wisdom', 'vision'];
+const KINDS = ['wisdom', 'vision'];
 
 // L'année de collection : 0 = juin 2026 → mai 2027 (comme compose-artwork et luxury-quote).
 function epochPrefix(): string {
@@ -72,7 +77,7 @@ Deno.serve(async (req) => {
   const box = (body.box ?? {}) as { kind?: string; ref?: string };
 
   if (!box.kind || !KINDS.includes(box.kind) || !box.ref) {
-    return Response.json({ error: 'choose a box' }, { status: 422, headers: cors });
+    return Response.json({ error: 'choose an element' }, { status: 422, headers: cors });
   }
   if (raw.length < 2 || raw.length > 40) {
     return Response.json({ error: 'name' }, { status: 422, headers: cors });
