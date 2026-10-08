@@ -14,16 +14,20 @@
    1 CLOTH    le vêtement, toujours au centre : ← → les modèles (les supports),
               ↑ ↓ les vues du même vêtement (les photos de son dossier Storage,
               sinon `image_url`). Un bouton : [TOTEHMIZE].
-   2 ELEMENT  le Totehm DÉPLIÉ (la croix des cinq vues) et LA MANETTE de COM —
-              ici seulement, jamais avant. On choisit un ÉLÉMENT : « Box » est
-              notre langage ; à l'écran on dit « element ».
+   2 ELEMENT  le Totehm DÉPLIÉ et LA MANETTE de COM — ici seulement, jamais
+              avant. 08/10 (bis) : deux vues seulement, l'axe du temps de la
+              croix — WISDOM (ce que je transmets) ← → VISION (ce que j'imagine
+              pour le monde). « Box » est notre langage ; à l'écran, « element ».
    3 NAME     `0.` + le nom (Quantico Coral), disponibilité en direct
               (`name_available`, réponse tardive jetée). C'est ce nom que Decode
               lira.
    4 STYLE    le style du moment (`artistic_styles` actifs, n pièces restantes).
-   5 ORDER    l'aperçu (la place, la palette de l'élément, le nom), la TAILLE
+   5 ORDER    l'aperçu (la place en pointillé, le style, le nom), la TAILLE
               (Printful, jamais inventée), le prix du serveur → Stripe (adresse
               d'envoi et paiement sur la page sécurisée).
+  ORDINATEUR (≥ 900 px) : les décalages de SPACE — le vêtement reste à l'écran
+  et se décale, chaque scène est une fenêtre-côté qui glisse (CSS en fin de
+  feuille). Ni palette ni rythme à l'écran (Wah, 08/10 bis).
 
   ⚠️ L'APERÇU N'EST PAS L'ŒUVRE : elle naît après le paiement et reste une
   surprise jusqu'au déballage ; Decode la montre une fois la pièce expédiée.
@@ -123,11 +127,9 @@ a{color:inherit;text-decoration:none}
 #el-title{font-weight:700;font-size:clamp(21px,5.2vw,30px);letter-spacing:.04em;text-transform:uppercase;color:#fff;line-height:1.05;margin-top:6px}
 #el-sub{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.66);margin-top:4px}
 /* la croix en petit : où l'on est dans le Totehm (un tap y va) */
-#el-map{display:grid;grid-template-columns:repeat(3,10px);grid-template-rows:repeat(3,10px);gap:3px;width:max-content;margin:10px auto 0}
+#el-map{display:grid;grid-template-columns:repeat(2,10px);grid-template-rows:10px;gap:8px;width:max-content;margin:10px auto 0}
 #el-map button{width:10px;height:10px;border:none;padding:0;background:rgba(255,255,255,.24);cursor:pointer;transition:background-color .3s ease}
 #el-map button.is-here{background:#fff}
-#el-map [data-v=objectives]{grid-area:1/2}#el-map [data-v=wisdom]{grid-area:2/1}#el-map [data-v=habits]{grid-area:2/2}
-#el-map [data-v=visions]{grid-area:2/3}#el-map [data-v=repulsions]{grid-area:3/2}
 #el-list{position:relative;z-index:1;flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding:4px 16px calc(150px + var(--sb)) 0;display:flex;flex-direction:column;gap:6px;transition:opacity .3s ease,transform .34s var(--ease)}
 .bx{position:relative;margin-left:calc(var(--rl) + var(--rw) + 4px);background:var(--skin,#333366);color:#fff;padding:8px 12px 9px 14px;cursor:pointer;flex:0 0 auto;transition:filter .15s ease,transform .3s var(--ease)}
 @media(hover:hover){.bx:hover{filter:brightness(1.16)}}
@@ -192,13 +194,15 @@ body[data-stage=element] #joy-say{display:block}
 .st-card.is-on b{color:#fff}
 .st-card:disabled{opacity:.35;cursor:default}
 
-/* 5 · ORDER — l'aperçu (la place, la palette, le nom), la taille, le prix */
+/* 5 · ORDER — l'aperçu (la place, le style, le nom), la taille, le prix */
 #od-visual{position:relative;width:min(100%,300px);aspect-ratio:1/1;overflow:hidden;background:#050506}
 #od-visual img.ph{width:100%;height:100%;object-fit:contain;display:block}
-.pz{position:absolute;left:50%;top:var(--pz-top,24%);width:var(--pz-w,46%);aspect-ratio:var(--pz-ar,3/4);transform:translateX(-50%);overflow:hidden;opacity:.92;pointer-events:none}
-.pz canvas{width:100%;height:100%;display:block}
-.pz img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:luminosity;opacity:.38}
-.pz-name{position:absolute;left:0;right:0;top:calc(var(--pz-top,24%) + var(--pz-h,61%) + 3%);font-family:var(--q);font-size:11px;color:var(--coral);text-align:center;pointer-events:none}
+.pz{position:absolute;left:50%;top:var(--pz-top,24%);width:var(--pz-w,42%);aspect-ratio:var(--pz-ar,3/4);transform:translateX(-50%);overflow:hidden;pointer-events:none;border:1px dashed rgba(255,255,255,.62);background:rgba(0,0,0,.3)}
+.pz img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5;filter:grayscale(25%)}
+.pz b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:6px;font-weight:400;font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.82);text-align:center}
+/* L'instrument (ordinateur) : la place de l'œuvre posée sur le vêtement, gravée en direct. */
+#vw-zone{position:absolute;top:0;bottom:0;left:50%;aspect-ratio:1/1;max-width:100%;transform:translateX(-50%);pointer-events:none;z-index:2;opacity:0;transition:opacity .4s ease}
+.pz-name{position:absolute;left:0;right:0;top:calc(var(--pz-top,24%) + var(--pz-h,61%) + 3%);font-family:var(--q);font-size:11px;color:var(--coral);text-align:center;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.7)}
 .pz-tag{position:absolute;top:8px;left:0;right:0;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.75);text-align:center;pointer-events:none}
 .recap{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);text-align:center}
 .recap .nm{font-family:var(--q);font-size:15px;letter-spacing:0;text-transform:none;color:var(--coral)}
@@ -245,6 +249,33 @@ body[data-stage=element] #joy-say{display:block}
 .slide-title{font-weight:700;font-size:12px;color:#fff;line-height:1.5}
 .slide-cap{font-size:11px;line-height:1.7;color:var(--lo)}
 
+/* ══ ORDINATEUR ≥ 900 px — LES DÉCALAGES DE SPACE (Wah, 08/10 bis) ══════
+   Le téléphone garde une scène plein écran à la fois. Sur ordinateur, le
+   vêtement reste à l'écran comme le radar de SPACE et se décale vers la place
+   libre ; chaque scène est une fenêtre-côté qui glisse : ELEMENT à gauche
+   (wisdom, le passé) ou à droite (vision, le futur), NAME · STYLE · ORDER à
+   droite. La place de l'œuvre se pose sur le vêtement et le nom s'y grave. */
+@media(min-width:900px){
+  :root{--pw:clamp(360px,34vw,460px)}
+  body[data-side=left]{--jx:calc(var(--pw) / 2)}
+  body[data-side=right]{--jx:calc(var(--pw) / -2)}
+  #hud{left:calc(50% + var(--jx,0px));transition:left .5s var(--ease),opacity .3s ease}
+  #s-cloth{opacity:1;visibility:visible;transform:none;z-index:1;overflow:hidden}
+  #s-cloth .inner{max-width:min(560px,calc(100vw - var(--pw) - 64px));transform:translateX(var(--jx,0px));transition:transform .5s var(--ease)}
+  .cl-only{transition:opacity .3s ease,visibility 0s}
+  body:not([data-stage=cloth]) .cl-only{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s ease,visibility 0s linear .2s}
+  body:not([data-stage=cloth]):not([data-stage=done]) #vw-zone{opacity:1}
+  .stage:not(#s-cloth):not(#s-done){left:auto;right:0;width:var(--pw);z-index:20;opacity:1;background:#0b0b0e;box-shadow:0 0 34px rgba(0,0,0,.5);
+    transform:translateX(101%);transition:transform .46s var(--ease),visibility 0s linear .46s,background-color .5s ease}
+  .stage.is-left:not(#s-cloth):not(#s-done){left:0;right:auto;transform:translateX(-101%)}
+  .stage.is-here:not(#s-cloth):not(#s-done){transform:none;transition:transform .46s var(--ease),visibility 0s,background-color .5s ease}
+  .stage.is-swap:not(#s-cloth){transition:none!important}
+  #s-element.stage:not(#s-done){background:var(--paper,#2b2b57)}
+  #s-done{z-index:30;background:#000}
+  #joy,#joy-say{left:calc(50% + var(--jx,0px));transition:left .5s var(--ease)}
+  #od-visual{display:none}
+}
+
 /* 03/10 — le nom du TOTEHM du membre : Quantico Coral, sans point d'état. */
 #conn-bar,#conn-bar:hover,#conn-txt,.mw-pseudo,.mw-pseudo:hover,#mw-who,#mw-who:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
 #conn-bar .dc,#conn-bar .dot{display:none!important}
@@ -252,6 +283,8 @@ body[data-stage=element] #joy-say{display:block}
 /* Au chargement, la première scène est là : aucune glissade d'entrée. */
 body.is-boot .stage{transition:none!important}
 @media(prefers-reduced-motion:reduce){.stage,.stage.is-here,#vw-track,.angles,#el-list,.bx,#joy-stack i,#cl-detail{transition:none!important}}
+
+
 
 
 
@@ -283,6 +316,7 @@ body.is-boot .stage{transition:none!important}
 #nm-input:hover::placeholder,
 .st-card b:hover,
 .st-card span:hover,
+.pz b:hover,
 .pz-tag:hover,
 .recap:hover,
 .sz:hover,
@@ -353,19 +387,20 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <div class="kicker">Streetwear · Totehm x Champion 2026</div>
       <div id="viewer" role="region" aria-label="The cloth — swipe left or right for another, up or down for another view">
         <div id="vw-track"></div>
-        <button class="m-arrow is-dead" id="m-prev" type="button" aria-label="Previous cloth"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></button>
-        <button class="m-arrow is-dead" id="m-next" type="button" aria-label="Next cloth"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M3 2 L11 12 L3 22"/></svg></button>
+        <div id="vw-zone" aria-hidden="true"></div>
+        <button class="m-arrow cl-only is-dead" id="m-prev" type="button" aria-label="Previous cloth"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M11 2 L3 12 L11 22"/></svg></button>
+        <button class="m-arrow cl-only is-dead" id="m-next" type="button" aria-label="Next cloth"><svg viewBox="0 0 14 24" aria-hidden="true"><path d="M3 2 L11 12 L3 22"/></svg></button>
         <button class="a-arrow is-dead" id="a-up" type="button" aria-label="Previous view"><svg viewBox="0 0 24 14" aria-hidden="true"><path d="M2 11 L12 3 L22 11"/></svg></button>
         <button class="a-arrow is-dead" id="a-down" type="button" aria-label="Next view"><svg viewBox="0 0 24 14" aria-hidden="true"><path d="M2 3 L12 11 L22 3"/></svg></button>
         <div id="a-dots" aria-hidden="true"></div>
       </div>
-      <div id="m-dots" aria-hidden="true"></div>
+      <div id="m-dots" class="cl-only" aria-hidden="true"></div>
       <div id="cl-title"></div>
       <div id="cl-facts"></div>
-      <button class="btn cta" id="totehmize" type="button">Totehmize</button>
-      <div id="cl-hint">swipe ↔ cloths · ↕ views</div>
-      <div class="cl-links"><button class="lnk" id="cl-more" type="button">details</button><button class="lnk" id="concept-btn" type="button">How it works</button></div>
-      <div id="cl-detail"></div>
+      <button class="btn cta cl-only" id="totehmize" type="button">Totehmize</button>
+      <div id="cl-hint" class="cl-only">swipe ↔ cloths · ↕ views</div>
+      <div class="cl-links cl-only"><button class="lnk" id="cl-more" type="button">details</button><button class="lnk" id="concept-btn" type="button">How it works</button></div>
+      <div id="cl-detail" class="cl-only"></div>
     </div>
   </section>
 
@@ -374,14 +409,11 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
     <div id="el-rail"></div>
     <div id="el-head">
       <div id="el-q">pick the element you want to wear</div>
-      <div id="el-title">my habits</div>
-      <div id="el-sub">what I repeat</div>
-      <div id="el-map" role="group" aria-label="The five views">
-        <button type="button" data-v="objectives" aria-label="My objectives"></button>
+      <div id="el-title">my wisdom</div>
+      <div id="el-sub">what I pass on</div>
+      <div id="el-map" role="group" aria-label="Wisdom or vision">
         <button type="button" data-v="wisdom" aria-label="My wisdom"></button>
-        <button type="button" data-v="habits" aria-label="My habits"></button>
         <button type="button" data-v="visions" aria-label="My vision"></button>
-        <button type="button" data-v="repulsions" aria-label="My repulsions"></button>
       </div>
     </div>
     <div id="el-list"></div>
@@ -439,7 +471,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 <div id="joy" role="group" aria-label="Move in my TOTEHM">
   <button class="cur" id="cur-h" type="button" aria-label="Up"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10 L8 5 L13 10"/></svg></button>
   <button class="cur" id="cur-g" type="button" aria-label="Left"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 L5 8 L10 13"/></svg></button>
-  <button id="joy-box" type="button" aria-label="Wear the chosen element"><span id="joy-stack" aria-hidden="true"><i class="o"></i><i class="h ici"></i><i class="r"></i></span></button>
+  <button id="joy-box" type="button" aria-label="Wear the chosen element"><span id="joy-stack" aria-hidden="true"><i class="o"></i><i class="h"></i><i class="r"></i></span></button>
   <button class="cur" id="cur-d" type="button" aria-label="Right"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3 L11 8 L6 13"/></svg></button>
   <button class="cur" id="cur-b" type="button" aria-label="Down"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6 L8 11 L13 6"/></svg></button>
 </div>
@@ -476,7 +508,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   <div class="t">Your TOTEHM<br>comes first.</div>
   <div class="v" id="pass-v"><i></i><i></i><i></i><i></i><i></i></div>
   <div class="kicker" id="pass-n"></div>
-  <p class="say">A TOTEHM Cloth is born from one element of your TOTEHM. Write one element in each of the five views, then come back.</p>
+  <p class="say">A TOTEHM Cloth is born from your wisdom or your vision. Write one element in each of the five views, then come back.</p>
   <button class="btn cta" id="pass-go" type="button">Complete my TOTEHM</button>
   <button class="btn-back" id="pass-x" type="button">back</button>
 </div>
@@ -486,7 +518,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   <button class="btn-back" id="concept-back" type="button">back</button>
   <h1>How it works</h1>
   <div class="slide"><div class="slide-title">1 · Choose the cloth.</div><div class="slide-cap">Swipe the cloths, turn them: a limited edition, made to order.</div></div>
-  <div class="slide"><div class="slide-title">2 · Pick one element of your TOTEHM.</div><div class="slide-cap">A habit, an objective, a repulsion, a lesson, a vision — and everything it is connected to. It becomes an original artwork, in a curated style.</div></div>
+  <div class="slide"><div class="slide-title">2 · Pick one element of your TOTEHM.</div><div class="slide-cap">Your wisdom — what you pass on — or your vision — what you imagine for the world. A cloth speaks to others. It becomes an original artwork, in a curated style.</div></div>
   <div class="slide"><div class="slide-title">3 · Name it.</div><div class="slide-cap">0.name is printed with the artwork. Decoded on higher.boutique, it reveals the element behind the cloth — and the artwork, once it has landed.</div></div>
 </div>
 
@@ -610,19 +642,23 @@ sb.auth.onAuthStateChange(ev => {
 }
 
 /* ══ L'ÉTAT — une pièce en cours, cinq scènes ═════════════════════════ */
-const BUILD='2026-10-08-immersive';
+const BUILD='2026-10-08-wisdom-vision';
 const STAGES=['cloth','element','name','style','order'];
 const LABEL={cloth:'Cloth',element:'Element',name:'Name',style:'Style',order:'Order',done:''};
 const SIZES=['XS','S','M','L','XL','2XL','3XL','4XL','5XL'];
 const FLOW_KEY='totehm_cloth_flow';
 let supports=[],ci=0,ai=0,stage='cloth';
 const IMG={},ANG={};
-let me=null,myProfile=null,TOT=null,vue='habits',styles=[],stylesLoaded=false,TEST=false;
+let me=null,myProfile=null,TOT=null,vue='wisdom',styles=[],stylesLoaded=false,TEST=false;
 const F={support:null,el:null,nameRaw:'',nameOk:false,style:null,size:''};
-let OPEN=null,PREVIEWS=0,PENDING=null,ORDERING=false,GOING=false;
+let OPEN=null,PENDING=null,ORDERING=false,GOING=false;
 /* L'historique est une pile LINÉAIRE des scènes (cloth → … → order) : le bouton
    Back, la barre des étapes et le geste « retour » du téléphone disent la même chose. */
-let HIST=[],READY=false;
+let HIST=[],READY=false,SWAPPING=false;
+const desktop=()=>matchMedia('(min-width:900px)').matches;
+/* La place libre (ordinateur) : la fenêtre-côté ouverte, et le vêtement qui se décale. */
+const sideOf=s=>s==='element'?(vue==='wisdom'?'left':'right'):['name','style','order'].includes(s)?'right':'none';
+function placePanel(el,left){el.classList.add('is-swap');el.classList.toggle('is-left',left);void el.offsetWidth;el.classList.remove('is-swap');}
 
 const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;};
 const avail=s=>Math.max((s?.max_pieces||0)-(s?.claimed||0),0);
@@ -636,9 +672,9 @@ function note(id,cls,txt){const n=$(id);n.className='note '+cls;n.textContent=tx
 
 /* Le diagnostic — des booléens et des compteurs, jamais le texte d'un élément.
    Dans la console : __totehm_cloth() */
-window.__totehm_cloth=()=>({build:BUILD,ready:READY,stage,signed_in:!!me,supports:supports.length,model:ci,angles:imgs(cur()).length,angle:ai,
-  joystick:getComputedStyle($('joy')).display!=='none',views:TOT?Object.values(TOT).filter(a=>a.length).length:0,open:!!OPEN,
-  element:F.el?F.el.kind:null,palette:F.el?(F.el.palette||[]).length:0,named:F.nameOk,style:!!F.style,size:!!F.size,test:TEST,previews:PREVIEWS});
+window.__totehm_cloth=()=>({build:BUILD,ready:READY,stage,side:document.body.dataset.side||'none',desktop:desktop(),signed_in:!!me,supports:supports.length,model:ci,angles:imgs(cur()).length,angle:ai,
+  joystick:getComputedStyle($('joy')).display!=='none',views:TOT?Object.values(TOT).filter(a=>a.length).length:0,view:vue,open:!!OPEN,
+  element:F.el?F.el.kind:null,named:F.nameOk,style:!!F.style,size:!!F.size,test:TEST,zone:!!$('vw-zone').firstChild});
 
 /* ── La pièce en cours survit à l'aller-retour (connexion, Stripe annulé) ── */
 function save(s){try{sessionStorage.setItem(FLOW_KEY,JSON.stringify({s:s||stage,sid:F.support?.id??null,ai,el:F.el,nm:F.nameRaw,st:F.style?.id??null,sz:F.size||''}));}catch(_){}}
@@ -658,13 +694,14 @@ function canShow(s){
 function show(s,mode='push'){
   if(!canShow(s))s='cloth';
   const k=STAGES.indexOf(s);
+  if(s==='element')placePanel($('s-element'),vue==='wisdom');
   document.querySelectorAll('.stage').forEach(el=>{
     const here=el.dataset.s===s,i=STAGES.indexOf(el.dataset.s);
     el.classList.toggle('is-here',here);el.classList.toggle('is-past',!here&&(s==='done'||(i>=0&&i<k)));
     el.inert=!here;el.setAttribute('aria-hidden',String(!here));
   });
-  stage=s;document.body.dataset.stage=s;
-  paintHud();
+  stage=s;document.body.dataset.stage=s;document.body.dataset.side=sideOf(s);
+  paintHud();paintZones();
   if(mode==='push'){history.pushState({s},'');HIST.push(s);}
   else if(mode==='replace'){history.replaceState({s},'');HIST[Math.max(0,HIST.length-1)]=s;}
   if(document.body.classList.contains('is-boot'))requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.remove('is-boot')));
@@ -750,6 +787,7 @@ function paintCloth(){
 }
 function hintGone(){$('cl-hint').classList.add('is-gone');}
 function model(d){
+  if(stage!=='cloth')return;
   const n=ci+d;if(n<0||n>=supports.length){placeViewer();return;}
   ANG[ci]=ai;ci=n;ai=ANG[ci]||0;placeViewer();paintCloth();hintGone();save();
 }
@@ -870,7 +908,7 @@ async function toElement(){
   if(GOING)return;GOING=true;const b=$('totehmize');b.disabled=true;b.textContent='opening…';
   try{
     if(!await ensureTotehm())return;
-    vue=F.el?.view||'habits';renderEl();show('element');
+    vue=F.el?.view==='visions'?'visions':'wisdom';renderEl();show('element');
   }finally{GOING=false;paintCloth();}
 }
 $('pass-x').onclick=()=>$('pass').classList.remove('is-open');
@@ -880,32 +918,29 @@ $('pass-go').onclick=()=>ssoVersDomaine(sb,'com','https://www.totehm.com/totehm#
 const INTS={fight:['Fight','#E24B4A','BODY'],flow:['Flow','#e48b31','BODY'],enrich:['Enrich','#fcbe21','MENTAL'],love:['Love','#639922','SPIRIT'],
   express:['Express','#1D9E75','SOUL'],focus:['Focus','#378ADD','MENTAL'],celebrate:['Celebrate','#7F77DD','SOUL']};
 const icol=i=>(INTS[i]||[])[1]||'#ffffff';
-const CROIX={wisdom:{d:'habits'},habits:{g:'wisdom',d:'visions',h:'objectives',b:'repulsions'},visions:{g:'habits'},
-  objectives:{g:'wisdom',d:'visions',b:'habits'},repulsions:{g:'wisdom',d:'visions',h:'habits'}};
-const NOM={wisdom:['my wisdom','what I learned'],habits:['my habits','what I repeat'],visions:['my vision','what I see coming'],
-  objectives:['my objectives','what pulls me up'],repulsions:['my repulsions','what makes me derail']};
-const SKIN={habits:'#333366',objectives:'#36498c',repulsions:'#743169',wisdom:'#743169',visions:'#36498c'};
-const PAPER={habits:'#2b2b57',objectives:'#2b2b57',repulsions:'#2b2b57',wisdom:'#5b2652',visions:'#2b3a73'};
-const KIND={habits:'habit',objectives:'objective',repulsions:'repulsion',wisdom:'wisdom',visions:'vision'};
-const LAYER={objectives:'o',habits:'h',repulsions:'r'};
+/* 08/10 (bis) — Wah : « pour la totehmisation vêtement, garder seulement WISDOM
+   (ce que je veux transmettre) et VISION (ce que j'imagine pour le monde) ». Un
+   vêtement parle aux autres : l'axe du TEMPS de la croix, le passé ← → le futur.
+   Les habitudes, objectifs et répulsions restent à soi. `create-checkout` refuse
+   les autres. */
+const CROIX={wisdom:{d:'visions'},visions:{g:'wisdom'}};
+const NOM={wisdom:['my wisdom','what I pass on'],visions:['my vision','what I imagine for the world']};
+const SKIN={wisdom:'#743169',visions:'#36498c'};
+const PAPER={wisdom:'#5b2652',visions:'#2b3a73'};
+const KIND={wisdom:'wisdom',visions:'vision'};
+const WEARABLE=['wisdom','vision'];
 async function loadTotehm(){
-  const[st,tr]=await Promise.all([sb.from('totehms').select('steps').eq('user_id',me.id).maybeSingle(),sb.rpc('my_trips')]);
-  [st,tr].forEach(r=>{if(r.error)console.error('[totehm]',r.error.message);});
-  if(st.error&&tr.error)return;
-  const t=tr.data||{};
+  const{data,error}=await sb.rpc('my_trips');
+  if(error){console.error('[totehm]',error.message);return;}
+  const t=data||{};
   TOT={
-    habits:(st.data?.steps||[]).filter(x=>(x.t||'').trim()).map(x=>({ref:x.t,text:x.t,f:x.f,is:(Array.isArray(x.is)&&x.is.length?x.is:[x.i].filter(Boolean)).filter(i=>INTS[i])})),
-    objectives:(t.trips||[]).filter(o=>(o.text||'').trim()).map(o=>({ref:o.id,text:o.text,is:o.is||[],days:o.days_left})),
-    repulsions:(t.reps||[]).filter(r=>(r.text||'').trim()).map(r=>({ref:String(r.id),text:r.text,is:r.is||[]})),
     wisdom:(t.wisdom||[]).filter(w=>(w.text||'').trim()).map(w=>({ref:w.id,text:w.text,is:w.is||[]})),
     visions:(t.visions||[]).filter(v=>(v.text||'').trim()).map(v=>({ref:v.id,text:v.text,is:v.is||[]}))};
 }
 const tick=l=>'<span class="tick">'+(l||[]).map(i=>'<i style="background:'+icol(i)+'"></i>').join('')+'</span>';
 function boxHTML(o,k){
   const i0=(o.is||[])[0];
-  const sub=(i0?'<span style="color:'+icol(i0)+';font-weight:700">'+INTS[i0][0]+'</span><span style="color:rgba(255,255,255,.5)">'+INTS[i0][2]+'</span>':'')+
-    (vue==='habits'&&o.f?'<span>'+esc(String(o.f).replace(/_/g,' '))+'</span>':'')+
-    (vue==='objectives'&&o.days!=null?'<span>'+(o.days>=0?o.days+' days left':'past deadline')+'</span>':'');
+  const sub=i0?'<span style="color:'+icol(i0)+';font-weight:700">'+INTS[i0][0]+'</span><span style="color:rgba(255,255,255,.5)">'+INTS[i0][2]+'</span>':'';
   return '<div class="bx" style="--skin:'+SKIN[vue]+'" data-k="'+k+'" role="button" tabindex="0">'+tick(o.is)+'<div class="nm">'+esc(o.text)+'</div>'+(sub?'<div class="sb">'+sub+'</div>':'')+'</div>';
 }
 function renderEl(dir){
@@ -923,11 +958,17 @@ function renderEl(dir){
   $('el-map').querySelectorAll('button').forEach(b=>b.classList.toggle('is-here',b.dataset.v===vue));
   paintJoy();
 }
-function goVue(d){const n=CROIX[vue][d];if(!n)return;vue=n;renderEl(d);}
+function goVue(d){
+  const n=CROIX[vue]?.[d];if(!n||SWAPPING)return;
+  if(!(desktop()&&stage==='element')){vue=n;renderEl(d);return;}
+  /* Ordinateur : la fenêtre sort de son côté, le vêtement glisse, l'autre fenêtre entre par le sien. */
+  SWAPPING=true;const p=$('s-element');
+  vue=n;document.body.dataset.side=sideOf('element');p.classList.remove('is-here');
+  setTimeout(()=>{placePanel(p,vue==='wisdom');renderEl();p.classList.add('is-here');SWAPPING=false;},300);
+}
 $('el-map').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(b.dataset.v!==vue){vue=b.dataset.v;renderEl();}});
 function paintJoy(t){
   const jb=$('joy-box');jb.style.setProperty('--joy',SKIN[vue]);
-  ['o','h','r'].forEach(k=>$('joy-stack').querySelector('.'+k).classList.toggle('ici',LAYER[vue]===k));
   ['h','g','d','b'].forEach(d=>$('cur-'+d).classList.toggle('mort',!CROIX[vue][d]));
   jb.classList.toggle('is-act',!!OPEN);
   $('joy-say').textContent=t?NOM[CROIX[vue][t]][0]:(OPEN?'tap · wear it':NOM[vue][0]);
@@ -967,7 +1008,7 @@ function joyTap(){if(OPEN)pick();else{const b=$('el-list').querySelector('.bx');
   },{passive:false});
 })();
 
-/* LA MATIÈRE — ce qui est relié à l'élément et la palette de ses intentions,
+/* LA MATIÈRE — ce qui est relié à l'élément dans le Totehm,
    calculés en base (`my_box_matter`), jamais ici. */
 const MI={habits:['','how'],objectives:['o','why'],repulsions:['r','instead'],wisdom:['w','learned'],visions:['v','sees']};
 let MT_SEQ=0;
@@ -984,11 +1025,8 @@ async function openEl(b){
   if(error||!m){c.innerHTML='<div class="mono">'+(error?'unavailable, try again':'this element is empty')+'</div>';return;}
   const groups=Object.entries(m.matter||{}).filter(([,a])=>(a||[]).length).map(([k,a])=>
     '<div class="grp"><span class="w">'+esc((MI[k]||['',k])[1])+'</span>'+a.map(x=>'<span class="mi '+((MI[k]||[''])[0])+'">'+esc(x.text)+'</span>').join('')+'</div>').join('');
-  const ex=m.extra||{};
-  const extras=[ex.place?'place · '+esc(ex.place):null,ex.mood?'mood · '+esc(ex.mood):null,ex.freq?'rhythm · '+esc(String(ex.freq).replace(/_/g,' ')):null,ex.obstacle?'obstacle · '+esc(ex.obstacle):null].filter(Boolean);
-  c.innerHTML='<div class="grp"><span class="w">palette</span>'+((m.palette||[]).length?'<span class="pal">'+m.palette.map(x=>'<i style="background:'+esc(x)+'"></i>').join('')+'</span>':'<span class="mono">no intention yet — the style decides</span>')+'</div>'+
-    groups+(extras.length?'<div class="grp"><span class="w">context</span><span class="mono" style="color:rgba(255,255,255,.78)">'+extras.join(' · ')+'</span></div>':'')+
-    '<div class="next"><button class="btn cta" id="mt-go" type="button">Wear this element</button></div>';
+  /* 08/10 (bis) : ni palette ni rythme à l'écran — ce qui est relié, puis le geste. */
+  c.innerHTML=groups+'<div class="next"><button class="btn cta" id="mt-go" type="button">Wear this element</button></div>';
   OPEN={b,o,m};paintJoy();
   $('mt-go').onclick=pick;
   c.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -998,7 +1036,7 @@ $('el-list').addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')retu
 function pick(){
   if(!OPEN)return;const{o,m}=OPEN;
   /* Le nom, le style et la taille restent : seul l'élément change. */
-  F.el={kind:KIND[vue],ref:String(o.ref),view:m.view||vue,text:m.text||o.text,palette:m.palette||[],is:o.is||[]};
+  F.el={kind:KIND[vue],ref:String(o.ref),view:m.view||vue,text:m.text||o.text,is:o.is||[]};
   show('name');
 }
 
@@ -1007,7 +1045,7 @@ let NM_SEQ=0,nmTimer=null;
 const cleanName=v=>String(v||'').replace(/^\s*\d+\.\s*/,'').replace(/\s+/g,' ').replace(/^\s+/,'').slice(0,40);
 function paintTile(el,box){
   box.style.setProperty('--skin',SKIN[el.view]||'#333366');
-  box.innerHTML='<small>'+esc(NOM[el.view]?.[0]||'my element')+'</small><b>'+esc(el.text)+'</b>'+((el.palette||[]).length?'<span class="pals">'+el.palette.map(x=>'<i style="background:'+esc(x)+'"></i>').join('')+'</span>':'');
+  box.innerHTML='<small>'+esc(NOM[el.view]?.[0]||'my element')+'</small><b>'+esc(el.text)+'</b>';
 }
 function enterName(){
   paintTile(F.el,$('nm-el'));
@@ -1038,7 +1076,7 @@ function checkNow(){
 }
 $('nm-input').addEventListener('input',()=>{
   const v=cleanName($('nm-input').value);if(v!==$('nm-input').value)$('nm-input').value=v;
-  F.nameRaw=v.trim();checkNow();
+  F.nameRaw=v.trim();checkNow();paintZones();
 });
 $('nm-input').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if(F.nameOk)show('style');}});
 $('nm-go').onclick=()=>{if(F.nameOk)show('style');};
@@ -1063,7 +1101,7 @@ async function enterStyle(){
   r.querySelectorAll('.st-card').forEach(b=>b.onclick=()=>{
     const s=styles.find(x=>String(x.id)===b.dataset.id);if(!s||styleLeft(s)<=0)return;
     F.style=s;r.querySelectorAll('.st-card').forEach(x=>{x.classList.toggle('is-on',x===b);x.setAttribute('aria-selected',String(x===b));});
-    $('st-go').disabled=false;save();
+    $('st-go').disabled=false;save();paintZones();
   });
   $('st-go').disabled=!F.style;
   const on=r.querySelector('.is-on');if(on)on.scrollIntoView({block:'nearest',inline:'center'});
@@ -1071,36 +1109,25 @@ async function enterStyle(){
 $('st-go').onclick=()=>{if(F.style)show('order');};
 
 /* ══ 5 · ORDER — l'aperçu, la taille, le prix ═════════════════════════
-   L'APERÇU N'EST PAS L'ŒUVRE : la place (`print_area`), la palette de
-   l'élément, le style, le nom. Une graine = l'élément + le nom : même
-   entrée, même image ; aucun appel réseau, aucun modèle. */
-function seedOf(str){let h=2166136261;for(const c of String(str))h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0;}
-function rng(seed){let a=seed||1;return()=>{a=Math.imul(a^(a>>>15),a|1);a^=a+Math.imul(a^(a>>>7),a|61);return((a^(a>>>14))>>>0)/4294967296;};}
-function hexA(hex,al){const h=String(hex).replace('#','');const n=parseInt(h.length===3?h.split('').map(x=>x+x).join(''):h,16);return 'rgba('+((n>>16)&255)+','+((n>>8)&255)+','+(n&255)+','+al+')';}
-function drawAura(cv,palette,seedStr){
-  const r=cv.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);
-  const w=Math.max(1,Math.round(r.width*dpr)),h=Math.max(1,Math.round(r.height*dpr));
-  cv.width=w;cv.height=h;const g=cv.getContext('2d');if(!g)return;
-  const pal=(palette&&palette.length?palette:['#333366','#36498c','#743169']).filter(c=>/^#[0-9a-f]{3,6}$/i.test(c));
-  const rnd=rng(seedOf(seedStr));
-  g.fillStyle='#0b0b0e';g.fillRect(0,0,w,h);g.globalCompositeOperation='lighter';
-  const n=4+Math.floor(rnd()*4);
-  for(let i=0;i<n;i++){const c=pal[i%pal.length],x=w*(.12+rnd()*.76),y=h*(.12+rnd()*.76),rad=Math.max(w,h)*(.28+rnd()*.38);
-    const gr=g.createRadialGradient(x,y,0,x,y,rad);gr.addColorStop(0,hexA(c,.85));gr.addColorStop(.55,hexA(c,.28));gr.addColorStop(1,hexA(c,0));g.fillStyle=gr;g.fillRect(0,0,w,h);}
-  g.globalCompositeOperation='source-over';
-  for(let i=0;i<w*h/90;i++){g.fillStyle='rgba(0,0,0,'+(rnd()*.35)+')';g.fillRect(rnd()*w,rnd()*h,dpr,dpr);}
-  PREVIEWS++;
-}
+   L'APERÇU N'EST PAS L'ŒUVRE : la place (`print_area`, un pointillé — la place
+   vide), le style du moment, le nom gravé. Aucun appel, aucun modèle. */
 function zoneVars(s){const pa=s?.print_area||{},wi=Number(pa.width_in)||12,hi=Number(pa.height_in)||16;
   const w=hi>=wi?42:54,hPct=w*(hi/wi);
   return '--pz-w:'+w+'%;--pz-ar:'+wi+'/'+hi+';--pz-h:'+hPct.toFixed(1)+'%;--pz-top:'+Math.max(8,Math.min(24,(100-hPct)/2-6)).toFixed(1)+'%';}
+function zoneHTML(tag){
+  const s=F.support;
+  return '<div class="pz" style="'+zoneVars(s)+'">'+(F.style?.image_url?'<img src="'+esc(F.style.image_url)+'" alt="">':'<b>your element · here</b>')+'</div>'+
+    '<div class="pz-name" style="'+zoneVars(s)+'">'+esc(F.nameRaw?epochPrefix()+F.nameRaw:'')+'</div>'+
+    (tag?'<div class="pz-tag">'+esc((s?.print_area?.placement||'back')+' print · a preview, not the artwork')+'</div>':'');
+}
+/* L'instrument (ordinateur) porte la place dès qu'on totehmise ; ORDER la montre aussi au téléphone. */
+function paintZones(){
+  const z=$('vw-zone');if(z)z.innerHTML=F.support&&cur()===F.support&&stage!=='cloth'&&stage!=='done'?zoneHTML(false):'';
+  if(stage==='order')paintPreview();
+}
 function paintPreview(){
   const s=F.support,w=$('od-visual'),im=imgs(s)[ANG[supports.indexOf(s)]||0]||imgs(s)[0];
-  w.innerHTML=(im?'<img class="ph" src="'+esc(im)+'" alt="'+esc(s?.title||'')+'">':'')+
-    '<div class="pz" style="'+zoneVars(s)+'"><canvas></canvas>'+(F.style?.image_url?'<img src="'+esc(F.style.image_url)+'" alt="">':'')+'</div>'+
-    '<div class="pz-name" style="'+zoneVars(s)+'">'+esc(epochPrefix()+F.nameRaw)+'</div>'+
-    '<div class="pz-tag">'+esc((s?.print_area?.placement||'back')+' print · a preview, not the artwork')+'</div>';
-  const cv=w.querySelector('.pz canvas');if(cv)drawAura(cv,F.el?.palette,F.el.kind+'|'+F.el.ref+'|'+F.nameRaw);
+  w.innerHTML=(im?'<img class="ph" src="'+esc(im)+'" alt="'+esc(s?.title||'')+'">':'')+zoneHTML(true);
 }
 function enterOrder(){
   const s=F.support;if(!s)return;
@@ -1136,7 +1163,7 @@ async function order(){
   if(err==='passport'){ensureTotehm();note('od-note','no','complete your TOTEHM first');return;}
   if(err==='name taken'||err==='name'){F.nameOk=false;goBackTo('name');return;}
   if(err==='style'||err==='style sold out'){F.style=null;await loadStyles(true);goBackTo('style');return;}
-  if(err==='box not found'||err==='choose a box'){F.el=null;TOT=null;if(await ensureTotehm())renderEl();goBackTo('element');return;}
+  if(err==='box not found'||err==='choose a box'||err==='choose an element'){F.el=null;TOT=null;if(await ensureTotehm())renderEl();goBackTo('element');return;}
   if(err==='sold out'){await loadSupports();goBackTo('cloth');return;}
   note('od-note','no',({size:'choose a size',test_unavailable:'test mode is not ready yet',stripe:'payment page unavailable, try again'})[err]||'error, try again');
 }
@@ -1167,12 +1194,12 @@ async function restore(fl,cancelled){
   const i=supports.findIndex(s=>String(s.id)===String(fl.sid));
   if(i<0){show('cloth','replace');return;}
   ci=i;ai=Math.max(0,Math.min(Number(fl.ai)||0,imgs(supports[i]).length-1));ANG[ci]=ai;placeViewer();paintCloth();
-  F.support=supports[i];F.nameRaw=String(fl.nm||'');F.size=String(fl.sz||'');F.el=fl.el&&fl.el.kind?fl.el:null;
+  F.support=supports[i];F.nameRaw=String(fl.nm||'');F.size=String(fl.sz||'');F.el=fl.el&&WEARABLE.includes(fl.el.kind)?fl.el:null;
   const target=cancelled?'order':(fl.s||'cloth');
   if(target==='cloth'||target==='done'||!me){show('cloth','replace');return;}
   if(!myProfile){show('cloth','replace');PENDING='element';openMember();return;}
   if(!await ensureTotehm()){show('cloth','replace');return;}
-  vue=F.el?.view||'habits';renderEl();
+  vue=F.el?.view==='visions'?'visions':'wisdom';renderEl();
   /* La pile reconstruite, une scène après l'autre : Back redescend pas à pas. */
   const pile=s=>{history.replaceState({s:'cloth'},'');HIST=['cloth'];
     for(const st of STAGES.slice(1,STAGES.indexOf(s)+1)){history.pushState({s:st},'');HIST.push(st);}show(s,'none');};
