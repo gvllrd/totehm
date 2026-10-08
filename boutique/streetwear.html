@@ -112,6 +112,10 @@ a{color:inherit;text-decoration:none}
 #m-dots{display:flex;gap:7px;justify-content:center;min-height:5px}
 #cl-title{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#fff;text-align:center}
 #cl-facts{display:flex;flex-wrap:wrap;gap:3px 14px;justify-content:center;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
+/* 08/10 (ter) — l'élément déjà choisi (arrivé de COM, ou repris) : dit sous le vêtement, à sa couleur. */
+#cl-wear{display:flex;align-items:baseline;gap:9px;max-width:min(100%,360px);padding:6px 12px;background:var(--skin,#333366);color:#fff}
+#cl-wear small{flex:none;font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.72)}
+#cl-wear b{min-width:0;font-family:var(--q);font-weight:400;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #cl-facts .price{color:#fff;font-weight:700;letter-spacing:.04em;font-size:12px}
 #cl-hint{font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);transition:opacity .4s ease}
 #cl-hint.is-gone{opacity:0}
@@ -397,6 +401,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <div id="m-dots" class="cl-only" aria-hidden="true"></div>
       <div id="cl-title"></div>
       <div id="cl-facts"></div>
+      <div id="cl-wear" class="cl-only hide"></div>
       <button class="btn cta cl-only" id="totehmize" type="button">Totehmize</button>
       <div id="cl-hint" class="cl-only">swipe ↔ cloths · ↕ views</div>
       <div class="cl-links cl-only"><button class="lnk" id="cl-more" type="button">details</button><button class="lnk" id="concept-btn" type="button">How it works</button></div>
@@ -642,7 +647,7 @@ sb.auth.onAuthStateChange(ev => {
 }
 
 /* ══ L'ÉTAT — une pièce en cours, cinq scènes ═════════════════════════ */
-const BUILD='2026-10-08-wisdom-vision';
+const BUILD='2026-10-08-wear';
 const STAGES=['cloth','element','name','style','order'];
 const LABEL={cloth:'Cloth',element:'Element',name:'Name',style:'Style',order:'Order',done:''};
 const SIZES=['XS','S','M','L','XL','2XL','3XL','4XL','5XL'];
@@ -650,7 +655,7 @@ const FLOW_KEY='totehm_cloth_flow';
 let supports=[],ci=0,ai=0,stage='cloth';
 const IMG={},ANG={};
 let me=null,myProfile=null,TOT=null,vue='wisdom',styles=[],stylesLoaded=false,TEST=false;
-const F={support:null,el:null,nameRaw:'',nameOk:false,style:null,size:''};
+const F={support:null,el:null,want:null,nameRaw:'',nameOk:false,style:null,size:''};
 let OPEN=null,PENDING=null,ORDERING=false,GOING=false;
 /* L'historique est une pile LINÉAIRE des scènes (cloth → … → order) : le bouton
    Back, la barre des étapes et le geste « retour » du téléphone disent la même chose. */
@@ -674,10 +679,10 @@ function note(id,cls,txt){const n=$(id);n.className='note '+cls;n.textContent=tx
    Dans la console : __totehm_cloth() */
 window.__totehm_cloth=()=>({build:BUILD,ready:READY,stage,side:document.body.dataset.side||'none',desktop:desktop(),signed_in:!!me,supports:supports.length,model:ci,angles:imgs(cur()).length,angle:ai,
   joystick:getComputedStyle($('joy')).display!=='none',views:TOT?Object.values(TOT).filter(a=>a.length).length:0,view:vue,open:!!OPEN,
-  element:F.el?F.el.kind:null,named:F.nameOk,style:!!F.style,size:!!F.size,test:TEST,zone:!!$('vw-zone').firstChild});
+  element:F.el?F.el.kind:null,wanted:!!F.want,named:F.nameOk,style:!!F.style,size:!!F.size,test:TEST,zone:!!$('vw-zone').firstChild});
 
 /* ── La pièce en cours survit à l'aller-retour (connexion, Stripe annulé) ── */
-function save(s){try{sessionStorage.setItem(FLOW_KEY,JSON.stringify({s:s||stage,sid:F.support?.id??null,ai,el:F.el,nm:F.nameRaw,st:F.style?.id??null,sz:F.size||''}));}catch(_){}}
+function save(s){try{sessionStorage.setItem(FLOW_KEY,JSON.stringify({s:s||stage,sid:F.support?.id??null,ai,el:F.el,wt:F.want,nm:F.nameRaw,st:F.style?.id??null,sz:F.size||''}));}catch(_){}}
 function readFlow(){try{return JSON.parse(sessionStorage.getItem(FLOW_KEY)||'null');}catch(_){return null;}}
 function clearFlow(){try{sessionStorage.removeItem(FLOW_KEY);}catch(_){}}
 
@@ -783,6 +788,8 @@ function paintCloth(){
   $('cl-title').textContent=s.title||'';
   $('cl-facts').innerHTML=left>0?'<span class="price">'+esc(price(s))+'</span><span>'+left+' / '+(s.max_pieces||0)+' left</span>'+(sz.length?'<span>'+esc(sz.join(' · '))+'</span>':''):'<span>sold out</span>';
   b.classList.remove('hide');b.disabled=left<=0;b.textContent=left>0?'Totehmize':'Sold out';
+  const cw=$('cl-wear');cw.classList.toggle('hide',!F.el);
+  if(F.el){cw.style.setProperty('--skin',SKIN[F.el.view]||'#333366');cw.innerHTML='<small>'+esc(NOM[F.el.view]?.[0]||'my element')+'</small><b>'+esc(F.el.text)+'</b>';}
   $('cl-more').classList.toggle('hide',!s.details);$('cl-detail').textContent=s.details||'';$('cl-detail').classList.remove('is-on');
 }
 function hintGone(){$('cl-hint').classList.add('is-gone');}
@@ -908,7 +915,9 @@ async function toElement(){
   if(GOING)return;GOING=true;const b=$('totehmize');b.disabled=true;b.textContent='opening…';
   try{
     if(!await ensureTotehm())return;
-    vue=F.el?.view==='visions'?'visions':'wisdom';renderEl();show('element');
+    applyWant();
+    vue=F.el?.view==='visions'?'visions':'wisdom';renderEl();
+    if(F.el){history.pushState({s:'element'},'');HIST.push('element');show('name');}else show('element');
   }finally{GOING=false;paintCloth();}
 }
 $('pass-x').onclick=()=>$('pass').classList.remove('is-open');
@@ -929,6 +938,24 @@ const SKIN={wisdom:'#743169',visions:'#36498c'};
 const PAPER={wisdom:'#5b2652',visions:'#2b3a73'};
 const KIND={wisdom:'wisdom',visions:'vision'};
 const WEARABLE=['wisdom','vision'];
+/* 08/10 (ter) — Wah : « on a lié SPACE à COM ; la fonction totehmiser devrait
+   aller se caler dans les deux vues ». Dans COM, « + totehmize » d'une leçon ou
+   d'une vision arrive ici en `?wear=wisdom:<id>` (ou `vision:`) : l'élément est
+   RELU dans MON Totehm (`my_trips`), jamais cru sur parole — introuvable (effacé,
+   autre compte), il est oublié et la page reprend son cours. Le vêtement se
+   choisit toujours d'abord ; TOTEHMIZE mène alors droit au NAME. */
+function parseWear(q){const m=/^(wisdom|vision):([A-Za-z0-9-]{1,64})$/.exec(String(q||''));return m?{kind:m[1],ref:m[2]}:null;}
+function applyWant(){
+  const w=F.want;if(!w||!TOT)return false;F.want=null;
+  const v=w.kind==='vision'?'visions':'wisdom',o=(TOT[v]||[]).find(x=>String(x.ref)===String(w.ref));
+  if(!o){console.info('[wear] element not found');return false;}
+  F.el={kind:w.kind,ref:String(o.ref),view:v,text:o.text,is:o.is||[]};vue=v;return true;
+}
+async function arrive(want){
+  clearFlow();F.want=want;F.el=null;
+  show('cloth','replace');
+  if(me&&myProfile){if(!TOT)await loadTotehm();applyWant();paintCloth();save();}
+}
 async function loadTotehm(){
   const{data,error}=await sb.rpc('my_trips');
   if(error){console.error('[totehm]',error.message);return;}
@@ -1195,18 +1222,20 @@ async function restore(fl,cancelled){
   if(i<0){show('cloth','replace');return;}
   ci=i;ai=Math.max(0,Math.min(Number(fl.ai)||0,imgs(supports[i]).length-1));ANG[ci]=ai;placeViewer();paintCloth();
   F.support=supports[i];F.nameRaw=String(fl.nm||'');F.size=String(fl.sz||'');F.el=fl.el&&WEARABLE.includes(fl.el.kind)?fl.el:null;
+  F.want=fl.wt&&WEARABLE.includes(fl.wt.kind)?{kind:fl.wt.kind,ref:String(fl.wt.ref)}:null;
   const target=cancelled?'order':(fl.s||'cloth');
   if(target==='cloth'||target==='done'||!me){show('cloth','replace');return;}
   if(!myProfile){show('cloth','replace');PENDING='element';openMember();return;}
   if(!await ensureTotehm()){show('cloth','replace');return;}
+  const wanted=applyWant();
   vue=F.el?.view==='visions'?'visions':'wisdom';renderEl();
   /* La pile reconstruite, une scène après l'autre : Back redescend pas à pas. */
   const pile=s=>{history.replaceState({s:'cloth'},'');HIST=['cloth'];
     for(const st of STAGES.slice(1,STAGES.indexOf(s)+1)){history.pushState({s:st},'');HIST.push(st);}show(s,'none');};
-  if(target==='element'||!F.el){pile('element');return;}
+  if((target==='element'&&!wanted)||!F.el){pile('element');return;}
   if(F.nameRaw){const free=await checkName(F.nameRaw);F.nameOk=free===true;}
   if(fl.st){await loadStyles();F.style=styles.find(s=>String(s.id)===String(fl.st)&&styleLeft(s)>0)||null;}
-  let s=target;
+  let s=target==='element'?'name':target;
   if(s==='order'&&!(F.nameOk&&F.style))s=F.nameOk?'style':'name';
   if(s==='style'&&!F.nameOk)s='name';
   pile(s);
@@ -1224,9 +1253,9 @@ async function showDone(id){
   const P=new URLSearchParams(location.search);
   if(P.get('paid'))await showDone(P.get('cloth'));
   else{
-    const fl=readFlow();
-    if(fl)await restore(fl,P.get('cancel')==='1');else show('cloth','replace');
-    if(P.has('cancel'))history.replaceState(history.state,'','/streetwear');
+    const fl=readFlow(),want=parseWear(P.get('wear'));
+    if(want)await arrive(want);else if(fl)await restore(fl,P.get('cancel')==='1');else show('cloth','replace');
+    if(P.has('cancel')||P.has('wear'))history.replaceState(history.state,'','/streetwear');
   }
   READY=true;
 }

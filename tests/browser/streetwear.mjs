@@ -1,8 +1,9 @@
 // higher.boutique/streetwear — la totehmisation (08/10/2026 bis). Zéro réseau.
 // Téléphone : une scène plein écran à la fois. Ordinateur : le vêtement reste et se décale, les fenêtres glissent.
 // CLOTH (← → modèles, ↑ ↓ vues) → ELEMENT (WISDOM ← → VISION, manette) → NAME → STYLE → ORDER.
+// 08/10 (ter) : arriver de COM (« + totehmize » d'une leçon ou d'une vision) = l'élément déjà choisi.
 // LANCER : node streetwear.mjs /tmp
-import { launch, page, ok } from './harness.mjs';
+import { launch, page, ok, USER } from './harness.mjs';
 const OUT = process.argv[2] || '.';
 const SB = 'https://abujjbkbbiumxrokozph.supabase.co';
 const supports = [
@@ -46,7 +47,7 @@ await pg.waitForTimeout(80);
 
 // ── 1 · CLOTH (téléphone)
 let d = await D();
-ok(d.build === '2026-10-08-wisdom-vision' && d.stage === 'cloth' && !d.joystick && !d.desktop, 'phone: CLOTH first, no joystick before the TOTEHM');
+ok(d.build === '2026-10-08-wear' && d.stage === 'cloth' && !d.joystick && !d.desktop, 'phone: CLOTH first, no joystick before the TOTEHM');
 ok(/Higher Champion Sweatshirt/.test(await pg.textContent('#cl-title')) && /170 €/.test(await pg.textContent('#cl-facts')) && /177 \/ 177 left/.test(await pg.textContent('#cl-facts')), 'title, server price and edition left');
 ok(/S · M · L · XL · 2XL/.test(await pg.textContent('#cl-facts')), 'Printful sizes, in order');
 const lay = await pg.evaluate(() => { const v = document.querySelector('#viewer').getBoundingClientRect(), b = document.querySelector('#totehmize').getBoundingClientRect();
@@ -216,6 +217,68 @@ ok(!log.errors.length, 'phone: no page error: ' + log.errors.join(' | '));
   const u = new URL((await req).url());
   ok(u.searchParams.get('return') === '/streetwear' && !!u.searchParams.get('challenge') && !!u.searchParams.get('state'), 'signed out: TOTEHMIZE goes through totehm.com (PKCE + state), back to /streetwear');
   ok(!log.errors.length, 'signed out: no page error ' + log.errors.join(' | '));
+}
+// ── 08/10 (ter) · ARRIVER DE COM : « + totehmize » d'une vision → l'élément déjà choisi, relu dans MON Totehm
+{
+  const { pg, ctx, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc, tables, network });
+  let sent = null;
+  await ctx.route(SB + '/functions/v1/create-checkout', r => { sent = JSON.parse(r.request().postData()); r.fulfill({ status:200, contentType:'application/json', body:'{"url":"https://checkout.stripe.test/c","name":"0.sea"}' }); });
+  await ctx.route('https://checkout.stripe.test/**', r => r.fulfill({ status:200, contentType:'text/html', body:'ok' }));
+  await pg.goto('https://www.higher.boutique/streetwear?wear=vision:v1');
+  await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready && window.__totehm_cloth().element === 'vision');
+  const d = await pg.evaluate(() => window.__totehm_cloth());
+  const chip = await pg.evaluate(() => { const c = document.getElementById('cl-wear'), t = document.getElementById('totehmize').getBoundingClientRect();
+    return { on: !c.classList.contains('hide') && c.getBoundingClientRect().height > 0, txt: c.textContent, bg: getComputedStyle(c).backgroundColor, fits: t.bottom <= innerHeight }; });
+  ok(d.stage === 'cloth' && !d.wanted && chip.on && /my vision/i.test(chip.txt) && /A studio by the sea/.test(chip.txt) && /54, 73, 140/.test(chip.bg),
+    'from COM: the cloth first, the element already chosen under it (my vision, light blue)');
+  ok(new URL(pg.url()).search === '' && chip.fits, 'the ?wear= leaves the address bar; TOTEHMIZE stays on one screen');
+  ok(log.rpc.some(x => x.name === 'my_trips'), 'the element is read again in MY TOTEHM (my_trips), never trusted from the address');
+  await pg.screenshot({ path: OUT + '/sw_from_com.png' });
+  await pg.click('#totehmize');
+  await pg.waitForFunction(() => window.__totehm_cloth().stage === 'name');
+  ok(/A studio by the sea/.test(await pg.textContent('#nm-el')) && /my vision/i.test(await pg.textContent('#nm-el')), 'TOTEHMIZE goes straight to NAME, the element on top');
+  await pg.goBack();
+  await pg.waitForFunction(() => window.__totehm_cloth().stage === 'element');
+  ok((await pg.evaluate(() => window.__totehm_cloth().view)) === 'visions', 'Back: ELEMENT, on VISION (the element can still change)');
+  await pg.goForward();
+  await pg.waitForFunction(() => window.__totehm_cloth().stage === 'name');
+  await pg.fill('#nm-input', 'sea');
+  await pg.waitForFunction(() => /available/.test(document.querySelector('#nm-note').textContent));
+  await pg.press('#nm-input', 'Enter');
+  await pg.waitForFunction(() => window.__totehm_cloth().stage === 'style' && document.querySelectorAll('.st-card').length === 2);
+  await pg.click('.st-card[data-id="st1"]'); await pg.click('#st-go');
+  await pg.waitForFunction(() => window.__totehm_cloth().stage === 'order');
+  await pg.click('#od-sizes .sz[data-s="M"]'); await pg.click('#od-go');
+  await pg.waitForURL(/checkout\.stripe\.test/);
+  ok(sent && sent.box.kind === 'vision' && sent.box.ref === 'v1' && sent.name === 'sea' && sent.size === 'M', 'the order carries the element chosen in COM (vision · v1)');
+  ok(!log.errors.length, 'from COM: no page error ' + log.errors.join(' | '));
+}
+// ── Un élément introuvable (effacé, autre compte) : oublié, la page suit son cours
+{
+  const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc, tables, network });
+  await pg.goto('https://www.higher.boutique/streetwear?wear=wisdom:gone');
+  await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready && window.__totehm_cloth().supports === 2);
+  await pg.waitForTimeout(120);
+  ok(!(await pg.evaluate(() => window.__totehm_cloth().element)) && await pg.isHidden('#cl-wear'), 'an unknown element is dropped: nothing chosen, nothing shown');
+  await pg.click('#totehmize');
+  await pg.waitForFunction(() => window.__totehm_cloth().stage === 'element');
+  ok(!log.errors.length, 'unknown element: TOTEHMIZE opens ELEMENT as usual, no page error');
+}
+// ── Sans compte, arrivé de COM : l'élément voulu attend la connexion (PKCE), puis NAME
+{
+  const { pg, ctx, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc, tables, network, session:false });
+  await pg.goto('https://www.higher.boutique/streetwear?wear=wisdom:w1');
+  await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready && window.__totehm_cloth().supports === 2);
+  ok((await pg.evaluate(() => window.__totehm_cloth().wanted)) && await pg.isHidden('#cl-wear'), 'signed out: the wish is kept, nothing shown before the TOTEHM is read');
+  // totehm.com rend la main (simulé) ; au retour, la session est là.
+  await ctx.route('https://www.totehm.com/auth**', r => r.fulfill({ status:200, contentType:'text/html', body:'<script>location.replace("https://www.higher.boutique/streetwear")</script>' }));
+  await ctx.addInitScript(([u]) => { if(location.host === 'www.higher.boutique') localStorage.setItem('sb-abujjbkbbiumxrokozph-auth-token', JSON.stringify({ access_token:'test-at', refresh_token:'test-rt', token_type:'bearer', expires_in:3600, expires_at: Math.floor(Date.now()/1000) + 3600, user:u })); }, [USER]);
+  const req = pg.waitForRequest(r => /www\.totehm\.com\/auth\?client=boutique/.test(r.url()));
+  await pg.click('#totehmize');
+  ok(new URL((await req).url()).searchParams.get('return') === '/streetwear', 'signed out: TOTEHMIZE signs in through totehm.com (PKCE), back to /streetwear');
+  await pg.waitForFunction(() => window.__totehm_cloth && window.__totehm_cloth().ready && window.__totehm_cloth().stage === 'name', null, { timeout:15000 });
+  ok(/Slow is smooth/.test(await pg.textContent('#nm-el')) && (await pg.evaluate(() => window.__totehm_cloth().element)) === 'wisdom', 'the wish travels through the sign-in: back, straight to NAME with the wisdom chosen in COM');
+  ok(!log.errors.filter(e => !/totehm\.com\/auth/.test(e)).length, 'signed out from COM: no page error');
 }
 // ── Le passeport : un Totehm incomplet ne s'ouvre pas
 {
