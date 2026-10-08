@@ -1,4 +1,4 @@
-// COM · 07/10/2026 — la croix de l'atterrissage : cinq vues, une manette, les mêmes
+// COM · 07/10/2026 (bas refait le 08/10 : TotehmSM en bulles, freemium) — la croix de l'atterrissage : cinq vues, une manette, les mêmes
 // gestes que le Totehm déplié. Centre (nom + visibilité), bas (TotehmSM), droite
 // (SPACE · boutique, [Higher] sur un vêtement), trackpad dans les QUATRE sens,
 // le doigt, le retour de Stripe ; le Totehm déplié change aussi de vue en haut
@@ -36,53 +36,85 @@ try{
   ok((await lv(pg)).visibilite==='private','Private : le bouton se retire');
   ok(!erreurs(log).length,'centre : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
- // ── 2 · EN BAS, sans abonnement Higher : le concept, le paiement ──
- {const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND()},functions:{'higher-sub':{error:'not_ready'}},viewport:{width:390,height:844},hasTouch:true});
+ // ── 2 · EN BAS (08/10) : prêt, gratuit — « Wassup ? », la photo de profil, le flux, 7 par mois ──
+ {const REP='@objective focus\nI stop negotiating with myself and ship one detail tonight.\nDO: At 22:45 I open my collection file and fix ONE element.\nWHY: Ship my first collection by 2026-12-01. Discipline is freedom.';
+  let say=0;const corps=[];
+  const net=(url,req)=>{ if(url.pathname!=='/functions/v1/higher-self') return null;
+    const b=JSON.parse(req.postData()||'{}');corps.push(b);
+    if(b.action==='say'&&++say<=2) return {status:200,contentType:'text/plain; charset=utf-8',headers:{'X-SM-Left':String(6-say),'X-SM-Higher':'0','access-control-allow-origin':'*','access-control-expose-headers':'X-SM-Left, X-SM-Higher'},body:REP};
+    return {status:402,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify({error:'higher_required',state:{ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:0,left:0}})}; };
+  const{pg,log}=await page(browser,{dir:'com',origin,tables,network:net,functions:{'higher-sub':{error:'not_ready'}},
+    rpc:{my_landing:LAND({sm:{ready:true,habit:true,objective:true,higher:false,free_total:7,free_days:30,free_left:6,left:6}})},viewport:{width:390,height:844},hasTouch:true});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(800);
-  await pg.click('#lcur-b');await pg.waitForTimeout(1400);
+  await pg.click('#lcur-b');await pg.waitForTimeout(1500);
   const b=await pg.evaluate(()=>{const cs=s=>getComputedStyle(document.querySelector(s));
-    const th=document.getElementById('gate-asteroid').getBoundingClientRect(),hd=document.getElementById('lv-thumb').getBoundingClientRect();
-    return {vue:window.__totehm_lv().vue,cls:document.getElementById('lv-slogan').className,speak:cs('#lv-slogan .lvs-speak').opacity,self:cs('#lv-slogan .lvs-self').opacity,
-      ff:[...document.querySelectorAll('#lv-thread .sm-b')].every(e=>/Quantico/.test(getComputedStyle(e).fontFamily)),dbl:cs('#lv-slogan2').opacity,social:document.querySelector('#lv-slogan2 .lvs-social').textContent,
-      say:document.getElementById('lv-say').classList.contains('hide'),pitch:!!document.querySelector('#lv-thread .sm-pitch'),
-      sub:document.querySelector('[data-sm-sub]')?.textContent,proof:document.querySelector('.sm-proof')?.textContent||'',
-      bulles:[...document.querySelectorAll('#lv-thread .sm-b')].map(e=>[e.className,getComputedStyle(e).backgroundColor]),
-      th:[th.left+th.width/2,th.top+th.height/2,th.width],hd:[hd.left+hd.width/2,hd.top+hd.height/2,hd.width],
-      joy:document.getElementById('ljoy-say').textContent};});
-  ok(b.vue==='b'&&b.cls==='is-b'&&b.speak==='1'&&b.self==='1'&&b.ff,'↓ : « Speak to your [Higher] Self » ; l\'échange en Quantico, des deux côtés');
-  ok(b.dbl==='1'&&b.social==='your social media','le Higher se dédouble : [Higher] your social media');
-  ok(Math.abs(b.th[0]-b.hd[0])<4&&Math.abs(b.th[1]-b.hd[1])<4&&b.th[2]<=b.hd[2]+2,'le papier devient la vignette du fil ('+Math.round(b.th[2])+' px)');
-  ok(b.say&&b.pitch&&/^Get Higher Self · /.test(b.sub||'')&&/Gollwitzer/.test(b.proof),'sans abonnement : pas de saisie ; le concept, la preuve, « '+b.sub+' »');
-  const coul={'k-habit':'rgb(51, 51, 102)','k-objective':'rgb(54, 73, 140)','k-repulsion':'rgb(116, 49, 105)'};
-  const sm=b.bulles.filter(x=>/k-/.test(x[0])),moi=b.bulles.filter(x=>!/k-/.test(x[0]));
-  ok(sm.length===3&&sm.every(x=>coul[x[0].split(' ').find(k=>k.startsWith('k-'))]===x[1])&&moi.length===3&&moi.every(x=>x[1]==='rgb(42, 42, 48)'),'trois couleurs de bulles (les Boxes) ; moi, en gris');
-  ok(b.joy==='TotehmSM','la manette : « TotehmSM »');
-  await pg.screenshot({path:OUT+'/croix_bas_pitch.png'});
-  await pg.click('[data-sm-sub]');await pg.waitForFunction(()=>/opening soon/.test(document.getElementById('lv-say-note').textContent));
-  ok(log.functions.some(f=>f.name==='higher-sub'&&f.body.action==='checkout'),'Get Higher Self : le checkout est demandé au serveur (prix absent → « opening soon »)');
-  ok(!erreurs(log).length,'bas sans abonnement : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
-
- // ── 3 · EN BAS, abonné Higher : le fil, l'envoi, Telegram, WhatsApp ──
- {const fil=[{id:2,role:'sm',kind:'habit',text:'I leave at 8:10.',created_at:'2026-10-07T08:00:00Z'},{id:1,role:'me',text:'I am always late.',created_at:'2026-10-07T07:59:00Z'}];
-  const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND({higher:{active:true,price_cents:700,currency:'eur'},avatar:'data:image/jpeg;base64,AAAA'}),
-      sm_thread:{ok:true,messages:fil,more:false},new_bot_link_code:'c0de'},
-    functions:{'higher-self':b=>b.action==='say'?{ok:true,me:{id:3,role:'me',text:b.text},sm:{id:4,role:'sm',kind:'objective',text:'I run 10 km on 30 November.'},left:4}:{error:'not_linked'}},
-    viewport:{width:390,height:844},hasTouch:true});
-  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(800);await ouvre(pg);
-  await pg.keyboard.press('ArrowDown');await pg.waitForFunction(()=>window.__totehm_lv().sm===2,null,{timeout:4000}).catch(()=>{});await pg.waitForTimeout(900);
-  ok(!(await pg.$eval('#lv-say',e=>e.classList.contains('hide')))&&(await lv(pg)).sm===2&&await pg.locator('#lv-thread .sm-b').count()===2,'abonné : la saisie et mon fil (sm_thread)');
-  ok(await pg.$eval('#lv-thread .sm-row.me .sm-av',e=>/data:image\/jpeg/.test(e.style.backgroundImage)),'ma vignette profil est dans la conversation');
-  await pg.fill('#lv-say-in','One day I would like to run.');await pg.keyboard.press('Enter');
-  await pg.waitForFunction(()=>window.__totehm_lv().envois===1,null,{timeout:4000}).catch(()=>{});
-  const top=await pg.$eval('#lv-thread .sm-b',e=>[e.className,e.textContent]);
-  ok(top[1]==='One day I would like to run.'&&await pg.$eval('#lv-thread .sm-b.k-objective',e=>e.textContent)==='I run 10 km on 30 November.'&&/4 left today/.test(await pg.textContent('#lv-say-note')),'Envoyer : ma phrase, puis son reflet en « Je » (bulle Objective) ; le quota se dit');
-  ok(log.functions.some(f=>f.name==='higher-self'&&f.body.action==='say'&&f.body.text==='One day I would like to run.'),'le texte part au serveur (higher-self), jamais à OpenAI depuis la page');
+    const t=document.getElementById('lv-thumb').getBoundingClientRect(),p=document.getElementById('gate-asteroid').getBoundingClientRect();
+    return {vue:window.__totehm_lv().vue,cls:document.getElementById('lv-slogan').className,self:cs('#lv-slogan .lvs-self').opacity,dbl:!!document.getElementById('lv-slogan2'),
+      tag:document.getElementById('lv-b-tag').textContent,first:document.querySelector('#sm-first .sm-b').textContent,
+      clip:cs('#ast-front').clipPath,t:[t.left+t.width/2,t.top+t.height/2,t.width],p:[p.left+p.width/2,p.top+.363*p.height,.59*p.width],
+      say:document.getElementById('lv-say').classList.contains('hide'),note:document.getElementById('lv-say-note').textContent,joy:document.getElementById('ljoy-say').textContent};});
+  ok(b.vue==='b'&&b.cls==='is-b'&&b.self==='1'&&!b.dbl&&/AI made by you · your beliefs · your TOTEHM/.test(b.tag)&&/Talk is cheap\. Do with a why\./.test(b.tag),'↓ : « [Higher] Self », AI made by you…, Talk is cheap. Do with a why. ; plus de double « social media »');
+  ok(b.first==='Wassup ?'&&/circle\(29\.5%/.test(b.clip)&&Math.abs(b.t[0]-b.p[0])<3&&Math.abs(b.t[1]-b.p[1])<3&&Math.abs(b.t[2]-b.p[2])<3,'le papier devient la photo de profil (un disque, le T) à côté de « Wassup ? » ('+b.p.map(Math.round)+' / '+b.t.map(Math.round)+')');
+  ok(!b.say&&/^6 of 7 free this month/.test(b.note)&&b.joy==='TotehmSM','prêt : la saisie ; « 6 of 7 free this month »');
+  await pg.fill('#lv-say-in','I procrastinate on my collection since 3 days');await pg.keyboard.press('Enter');
+  await pg.waitForFunction(()=>window.__totehm_lv().envois===1,null,{timeout:4000}).catch(()=>{});await pg.waitForTimeout(300);
+  const r=await pg.evaluate(()=>{const q=s=>document.querySelector(s),cs=e=>getComputedStyle(e);
+    const me=q('#lv-thread .sm-row.me .sm-b'),sm=q('#lv-thread .sm-b.k-objective');
+    return {me:me&&[me.textContent,cs(me).backgroundColor,cs(me).borderTopLeftRadius,cs(me).fontFamily],sm:sm&&[cs(sm).backgroundColor,cs(sm).borderTopLeftRadius,cs(sm).fontFamily],
+      int:q('#lv-thread .sm-int')?.textContent,intc:q('#lv-thread .sm-int')&&cs(q('#lv-thread .sm-int')).color,t:q('#lv-thread .sm-t')?.textContent,
+      do:q('#lv-thread .sm-do')?.textContent,why:q('#lv-thread .sm-why')?.textContent,acts:document.querySelectorAll('#lv-thread .sm-acts').length,
+      note:q('#lv-say-note').textContent,lv:window.__totehm_lv()};});
+  ok(r.me&&r.me[0]==='I procrastinate on my collection since 3 days'&&r.me[1]==='rgb(42, 42, 48)'&&r.me[2]==='18px'&&/Quantico/.test(r.me[3]),'ma bulle : grise, arrondie (18 px), Quantico');
+  ok(r.sm&&r.sm[0]==='rgb(54, 73, 140)'&&r.sm[1]==='18px'&&/Quantico/.test(r.sm[2])&&r.int==='focus'&&r.intc==='rgb(55, 138, 221)','sa bulle : la couleur de la Box (objective), arrondie, l\'intention dans sa couleur');
+  ok(r.t==='I stop negotiating with myself and ship one detail tonight.'&&r.do==='DOAt 22:45 I open my collection file and fix ONE element.'&&/^WHYShip my first collection/.test(r.why),'la solution, DO (le geste), WHY (son TOTEHM)');
+  ok(r.acts===0&&/^5 of 7 free/.test(r.note)&&r.lv.gratuits===5,'gratuit : pas de Telegram/WhatsApp (c\'est Higher) ; « 5 of 7 » (l\'en-tête du serveur)');
+  const c1=corps.find(x=>x.action==='say');
+  ok(c1&&c1.text==='I procrastinate on my collection since 3 days'&&Array.isArray(c1.turns)&&c1.turns.length===0&&/^\w{3} \d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(c1.now),'l\'appel : le texte, aucun tour avant, l\'heure locale ('+(c1&&c1.now)+')');
   await pg.screenshot({path:OUT+'/croix_bas_fil.png'});
-  await pg.click('[data-wa="4"]');
-  await pg.click('[data-tg="4"]');await pg.waitForFunction(()=>/press Start/.test(document.getElementById('lv-say-note').textContent),null,{timeout:4000}).catch(()=>{});
+  await pg.fill('#lv-say-in','ok and tomorrow');await pg.keyboard.press('Enter');
+  await pg.waitForFunction(()=>window.__totehm_lv().envois===2,null,{timeout:4000}).catch(()=>{});
+  const c2=corps.filter(x=>x.action==='say')[1];
+  ok(c2&&c2.turns.length===2&&c2.turns[0].role==='me'&&c2.turns[1].role==='sm'&&/^@objective/.test(c2.turns[1].text),'le tour suivant porte la conversation (2 tours), rien n\'est gardé ailleurs');
+  await pg.fill('#lv-say-in','and now ?');await pg.keyboard.press('Enter');await pg.waitForTimeout(800);
+  const f=await pg.evaluate(()=>({sm:window.__totehm_lv().sm,v:document.getElementById('lv-say-in').value,say:document.getElementById('lv-say').classList.contains('hide'),
+    offre:!!document.querySelector('#lv-thread .sm-offer [data-sm-sub]'),fin:/That is my 7 for this month/.test(document.getElementById('lv-thread').textContent),badge:document.querySelectorAll('#lv-thread .sm-offer use[href="#higher-badge"]').length}));
+  ok(f.sm===4&&f.v==='and now ?'&&f.say&&f.offre&&f.fin&&f.badge>=3,'les 7 pris (402) : la phrase revient dans la saisie, la saisie se ferme, l\'offre Higher (badge SVG, jamais du texte)');
+  await pg.screenshot({path:OUT+'/croix_bas_offre.png'});
+  await pg.click('#lv-thread [data-sm-sub]');await pg.waitForFunction(()=>/opening soon/.test(document.getElementById('lv-say-note').textContent),null,{timeout:4000}).catch(()=>{});
+  ok(log.functions.some(f=>f.name==='higher-sub'&&f.body.action==='checkout')&&/opening soon/.test(await pg.textContent('#lv-say-note')),'Get Higher : le checkout est demandé au serveur (prix absent → « opening soon »)');
+  ok(!log.rpc.some(x=>x.name==='sm_thread'),'aucun historique relu (sm_thread n\'est plus appelé)');
+  ok(!erreurs(log).length,'bas gratuit : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+
+ // ── 3 · EN BAS : TOTEHM vide, puis abonné Higher (Telegram, WhatsApp) ──
+ {const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND({sm:{ready:false,habit:true,objective:false,higher:false,free_total:7,free_left:7,left:7}})},viewport:{width:390,height:844}});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(800);
+  await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(1400);
+  const v=await pg.evaluate(()=>({t:document.getElementById('lv-thread').textContent,say:document.getElementById('lv-say').classList.contains('hide'),
+    h:document.querySelector('[data-sm-write="habits"]')?.className,o:document.querySelector('[data-sm-write="objectives"]')?.className}));
+  ok(/I do not know you/.test(v.t)&&/One Habit\. One Objective/.test(v.t)&&v.say&&/is-ok/.test(v.h)&&!/is-ok/.test(v.o),'TOTEHM sans Objective : pas de saisie ; Habit ✓, Objective à écrire');
+  await pg.click('[data-sm-write="objectives"]');
+  await pg.waitForFunction(()=>!document.body.classList.contains('gate')&&window.__totehm_zone&&window.__totehm_zone.vue==='objectives',null,{timeout:8000}).catch(()=>{});
+  ok(await pg.evaluate(()=>!document.body.classList.contains('gate')&&window.__totehm_zone.vue==='objectives'),'« + my Objective » ouvre le TOTEHM sur les objectifs');
+  ok(!erreurs(log).length,'TOTEHM vide : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+ {const REP='@habit flow\nI move before I think.\nDO: I put my shoes at the door now.\nWHY: Run the hill.';
+  const net=(url,req)=>{ if(url.pathname!=='/functions/v1/higher-self') return null; const b=JSON.parse(req.postData()||'{}');
+    if(b.action==='say') return {status:200,contentType:'text/plain; charset=utf-8',headers:{'X-SM-Left':'29','X-SM-Higher':'1','access-control-allow-origin':'*','access-control-expose-headers':'X-SM-Left, X-SM-Higher'},body:REP};
+    return {status:409,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify({error:'not_linked'})}; };
+  const{pg,log}=await page(browser,{dir:'com',origin,tables,network:net,rpc:{my_landing:LAND({higher:{active:true,price_cents:700,currency:'eur'},avatar:'data:image/jpeg;base64,AAAA',
+      sm:{ready:true,habit:true,objective:true,higher:true,free_total:7,free_left:7,left:30}}),new_bot_link_code:'c0de'},viewport:{width:390,height:844},hasTouch:true});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(800);await ouvre(pg);
+  await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(1400);
+  ok(await pg.textContent('#lv-say-note')==='','Higher : aucun compteur tant qu\'il en reste plus de 5 aujourd\'hui');
+  await pg.fill('#lv-say-in','lazy today');await pg.keyboard.press('Enter');
+  await pg.waitForFunction(()=>window.__totehm_lv().envois===1,null,{timeout:4000}).catch(()=>{});await pg.waitForTimeout(200);
+  ok(await pg.$eval('#lv-thread .sm-row.me .sm-av',e=>/data:image\/jpeg/.test(e.style.backgroundImage))&&await pg.locator('#lv-thread .sm-acts').count()===1,'Higher : ma vignette dans la conversation ; Telegram · WhatsApp sous la réponse');
+  await pg.click('#lv-thread [data-wa]');
+  await pg.click('#lv-thread [data-tg]');await pg.waitForFunction(()=>/press Start/.test(document.getElementById('lv-say-note').textContent),null,{timeout:4000}).catch(()=>{});
   const o=await pg.evaluate(()=>window.__ouvert);
-  ok(o[0]==='https://wa.me/?text='+encodeURIComponent('I run 10 km on 30 November.')&&o[1]==='https://t.me/TotehmBot?start=c0de','WhatsApp = partage wa.me ; Telegram non lié → TotehmBot avec un code ('+o.join(' · ')+')');
-  ok(!erreurs(log).length,'bas abonné : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+  ok(o[0]==='https://wa.me/?text='+encodeURIComponent('I move before I think.\nDO: I put my shoes at the door now.\nWHY: Run the hill.')&&o[1]==='https://t.me/TotehmBot?start=c0de','WhatsApp = le geste (solution, DO, WHY) en partage wa.me ; Telegram non lié → TotehmBot ('+o.length+')');
+  await pg.reload();await pg.waitForSelector('body.member');await pg.waitForTimeout(700);await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(1300);
+  ok((await lv(pg)).sm===0&&await pg.locator('#lv-thread .sm-b').count()===0,'rechargée : la conversation repart de « Wassup ? » (rien n\'est gardé)');
+  ok(!erreurs(log).length,'bas Higher : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
  // ── 4 · À DROITE : le vêtement de Supabase, [Higher] dessus ; le papier tourne en haut ──
  {const{pg,log}=await page(browser,{dir:'com',origin,tables:{...tables,totehm_cloth_support:[{title:'Box Tee',image_url:'https://cdn.test/tee.png',logo_spot:{x:.5,y:.35,w:.28}}]},
@@ -137,7 +169,8 @@ try{
   ok(!erreurs(log).length,'doigt : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
  // ── 6 · RETOUR DE STRIPE (?higher=paid) : la vue du bas, l'attente du webhook ──
- {let n=0;const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:()=>(++n>=3?LAND({higher:{active:true}}):LAND()),sm_thread:{ok:true,messages:[],more:false}},viewport:{width:390,height:844}});
+ {let n=0;const SMF={ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:0,left:0};
+  const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:()=>(++n>=3?LAND({higher:{active:true},sm:{...SMF,higher:true,left:30}}):LAND({sm:SMF}))},viewport:{width:390,height:844}});
   await pg.goto(origin+'/totehm?higher=paid');await pg.waitForSelector('body.member');
   await pg.waitForFunction(()=>window.__totehm_lv().vue==='b',null,{timeout:4000}).catch(()=>{});
   ok(pg.url()===origin+'/totehm'&&/payment received/.test(await pg.textContent('#lv-say-note')),'?higher=paid : l\'adresse est nettoyée, la vue du bas s\'ouvre');
