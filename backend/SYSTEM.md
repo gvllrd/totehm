@@ -16,6 +16,20 @@
 ---
 
 
+## 0 · TOTEHMSM : LE HIGHER SELF EN FREEMIUM, EN FLUX, EN BULLES — 08/10/2026 (quater)
+
+| quoi | valeur mesurée |
+|---|---|
+| base | migration `higher_self_freemium` (additive) : `sm_uses` RLS sans politique, aucun grant anon/auth ; `_sm_rules` (7 / 30 j, Higher 30 / 24 h), `_higher_active`, `_sm_count`, `_sm_state`, `sm_begin`/`sm_end` (service_role), `my_landing().sm` ; `tests/sql/higher_self_freemium_selftest.sql` → `FAIL={}` (annulé) |
+| fonction | `higher-self` v3 (verify_jwt) : sans jeton 401, jeton anon 401 `no_session` (pg_net) ; la sonde de mesure (v2) n'existe plus |
+| latence (sonde v2, contexte réel ≈ 850 jetons, 2 phrases EN/FR) | `gpt-5.1` none : 1er mot 1 168 / 565 ms, total 1 779 / 1 294 ms · `gpt-5` minimal : 713 / 570 ms · `gpt-4.1` : 585 / 1 103 ms · `gpt-5.1` low : 4 063 / 1 929 ms · `gpt-5.2` none et `gpt-5-mini` : réponse FRANÇAISE à une phrase anglaise → écartés |
+| choix | `gpt-5.1` (none) → `gpt-5` (minimal) → `gpt-4.1` ; sortie 57–82 jetons ; ≈ 0,2 ¢ la réponse (tarif gpt-5) → 7 offertes ≈ 1,4 ¢ / membre / mois |
+| tests navigateur | `com_croix` 47/47 · `com_cloths` 16/16 · `com_mouth` 30/30 · `com_paper` 40/40 · `com_read_copy` 20/20 · `com_member_menu` 28/28 · `com_creator` 29/29 · `console` 18/18 · `spaces_loupe` 26/26 · `boutique_home` 23/23 · `streetwear` 64/64 · `club_luxury` 44/44 |
+| connu, hors lot | `space_boxes_ecosystem` 18 puis arrêt : `figher.club/stoner` (restauré à l'ancien format par le lot Figher de `main`) n'a plus de « CONNECT WITH MY TOTEHM » visible |
+| prod (pg_net, `7fdfa68`, Vercel READY) | totehm.com/totehm 200 `2026-10-08-sm`, md5 = dépôt (`0d5ad63a…`), `#sm-first` présent, `#lv-slogan2` absent |
+| à faire (Claude Code) | `20261008200001_higher_self_menage.sql` : drop `sm_thread`, `sm_messages` |
+| non mesuré | une vraie réponse à un vrai membre (exige sa session ; Wah a l'accès offert) |
+
 ## 0 · COM ↔ BOUTIQUE : TOTEHMIZE DANS WISDOM ET VISION — 08/10/2026 (ter)
 
 | quoi | valeur mesurée |
