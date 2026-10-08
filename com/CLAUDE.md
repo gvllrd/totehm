@@ -1,5 +1,45 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## COM · 08/10/2026 — TotehmSM : une conversation, le Higher Self en freemium
+
+BUILD `2026-10-08-sm` (`totehm.html`). Wah : « Speak to your Higher Self, ça
+ne va pas : AI made by you, your beliefs, your TOTEHM. Talk is cheap. Do with
+a why. Format bulle ; plus réactif ; le papier devient la photo de profil à
+côté du premier “Wassup ?” ; pas d'historique ; au moins une Habit et un
+Objective ; 7 messages en freemium ; une IA qui pousse toujours à l'action. »
+- **En tête** : « [Higher] Self » (le badge) + `#lv-b-tag` « AI made by you ·
+  your beliefs · your TOTEHM » / « Talk is cheap. Do with a why. ». Le double
+  « [Higher] your social media » (`#lv-slogan2`) est PARTI : Telegram/WhatsApp
+  sont dans l'offre Higher.
+- **La photo de profil** : le papier glisse sur `#lv-thumb` (40 px) dans
+  `#sm-first` (« Wassup ? », hors du fil qui défile) ; `#ast-front` se découpe
+  en disque `circle(29.5% at 50% 36.3%)` (centré sur le T, il évite les
+  perforations), `circle(72%)` ailleurs dans l'atterrissage, AUCUN `clip-path`
+  pendant la déconstruction (`entered`, `folding`). `cibleProfil()` : échelle
+  = 40 / (0,59 × largeur), centre décalé de 13,7 %. Rejoué au `resize`.
+- **Bulles** (`.sm-b`, 18 px, coin 5 px côté bouche) : Quantico des deux côtés ;
+  la sienne prend la couleur de la Box (`k-habit|objective|repulsion`) +
+  l'intention dans sa couleur (`intColor`), puis la solution, **DO** (le geste,
+  avec son heure), **WHY** (son TOTEHM). La mienne : gris `#2a2a30` + ma vignette.
+  « Higher » = le badge SVG même dans une phrase (`HI`).
+- **Les états** (`my_landing().sm`, le serveur décide) : invité → le concept en
+  bulles + un exemple + Gollwitzer & Sheeran + CONNECT WITH MY TOTEHM ; TOTEHM
+  sans Habit ou sans Objective → « One Habit. One Objective. Then we talk. » +
+  `[data-sm-write]` (ouvre le TOTEHM sur la vue) ; prêt → la saisie, « N of 7
+  free this month · [Higher] = every day » ; les 7 pris → l'offre (`.sm-offer` :
+  le Higher Self chaque jour · [Higher] my social media · TotehmBot) ; Higher →
+  Telegram · WhatsApp sous chaque réponse, compteur seulement sous 5.
+- **Le flux** : `smFlux()` lit la réponse texte morceau par morceau
+  (`getReader`), `lireSM()` la découpe (`@kind intention` · solution · `DO:` ·
+  `WHY:`, tolérant à une ligne coupée), un dessin par image (`smBientot`). Trois
+  points tant que la première ligne n'est pas là. `X-SM-Left` met le compteur à
+  jour ; 402 → la phrase revient dans la saisie et l'offre s'affiche ; 409 →
+  relire `my_landing`. Envoyé : le texte, les 6 derniers tours, l'heure locale.
+- **Pas d'historique** : `SM.msgs` vit dans la page (vidé au changement de
+  compte, perdu au rechargement) ; `sm_thread` n'est plus appelé.
+- Tests : `com_croix.mjs` 47/47 (§2 gratuit : flux, 402, offre ; §3 TOTEHM
+  vide, Higher : Telegram, WhatsApp, rechargement).
+
 ## COM · 07/10/2026 — l'atterrissage en croix : cinq vues, une manette
 
 BUILD `2026-10-07-croix` (`totehm.html`). Wah : « le joystick du Totehm déplié
@@ -20,7 +60,7 @@ sur l'atterrissage, cinq vues, exactement les mêmes mouvements et clics ».
   glisse dessous, « Get » Quantico corail ; sans THP, le texte du TotehmPaper.
   [Get Higher] = `#lv-slogan` (le seul bouton) : avalé, extase, figher.club
   `/get_higher` par le pont. L'appui long ne prend plus le papier.
-- **Bas `b` · TotehmSM** : le papier devient la vignette du fil (T sur navy).
+- **Bas `b` · TotehmSM** (⚠️ REFAIT le 08/10, voir plus haut) : le papier devient la vignette du fil (T sur navy).
   « Speak to your [Higher] Self » + le double « [Higher] your social media ».
   Bulles Quantico : habit navy, objective bleu clair, repulsion rouge-violet ;
   moi gris `#2a2a30` + ma vignette. Abonné Higher : `sm_thread`, envoi →

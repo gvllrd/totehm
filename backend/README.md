@@ -1,6 +1,12 @@
 # TOTEHM · backend
 
 
+## 08/10/2026 — TotehmSM v2: freemium, streaming, no history
+
+Migration `20261008100000_higher_self_freemium.sql` (applied once). Rules in one function, `_sm_rules()`: 7 free replies per 30 days for a member whose TOTEHM has at least one Habit and one Objective, then Higher (30 per 24 h). `sm_uses` stores usage only (no text). `sm_begin(uid, kind)` / `sm_end(id, status, model, ms, in, out)` are service_role only; `my_landing().sm` tells the page `{ready, habit, objective, higher, free_total, free_left, left}`. Test `tests/sql/higher_self_freemium_selftest.sql` (rolled back, `FAIL={}`).
+
+Edge `higher-self` v3: `{action:'say', text, turns, now}` streams `text/plain` (four lines: `@kind intention`, the solution, `DO:`, `WHY:`) with headers `X-SM-Left`, `X-SM-Higher`; errors are JSON: 409 `totehm`, 402 `higher_required`, 429 `quota`, 503 `unavailable`. `{action:'telegram', text}` (Higher only) → 409 `not_linked`, 410 `blocked`. Model order `gpt-5.1` (no reasoning) → `gpt-5` (minimal) → `gpt-4.1`; override with the `HIGHER_SELF_MODEL` secret. Cleanup for Claude Code: `20261008100001_higher_self_menage.sql` drops `sm_thread` and `sm_messages`.
+
 ## 07/10/2026 — TotehmSM (Higher Self) and the Higher subscription
 
 Migrations `20261007100000_higher_self.sql` and `20261007110000_landing_cloth_spot.sql` (applied once). `my_landing()` (anon/auth) returns the whole COM landing in one read; `avatar_set(p_data)` stores a ≤140 KB JPEG data URL; `sm_thread(p_before, p_limit)` returns the member's TotehmSM thread newest first; `higher_sub_sync(...)` (service_role) is the only writer of `bot_subscriptions` for this product. Test `tests/sql/higher_self_selftest.sql` (rolled back, `FAIL={}`).

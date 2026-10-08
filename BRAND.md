@@ -13,13 +13,21 @@
   efficient action. » On figher.club the THP has four powers: neurological
   performance · a digital artwork (one of 777,000) · tradeable · the key to
   luxury. Its value is said by what it opens — **never "investment"**.
-- Down · **TotehmSM** (my SuperMirror): « Speak to your [Higher] Self » and
-  « [Higher] your social media ». Not a coach: it rewrites what I say in the
-  first person (« I … »). Its bubbles take the Box colours (habit navy,
-  objective light blue, repulsion red-violet); mine is grey; both sides
-  Quantico. Proof is cited, never claimed: implementation intentions
-  (Gollwitzer & Sheeran 2006, d = 0.65), self-talk (Kross et al. 2014). Never
-  "scientifically proven NLP". Paying **Higher** members only (7 €/month).
+- Down · **TotehmSM** — my **[Higher] Self** (08/10). « AI made by you · your
+  beliefs · your TOTEHM » · « **Talk is cheap. Do with a why.** » A real
+  conversation in round bubbles; the paper becomes its profile picture (the T
+  on navy, a disc) next to the first bubble, « Wassup ? ». It is not a coach,
+  not a therapist, not an assistant: it is me, one level higher, in the first
+  person (« I … »), underground and short, and every answer is a SOLUTION —
+  one move with its when (**DO**) and its reason taken from my own TOTEHM
+  (**WHY**), tagged with its intention. Its bubbles take the Box colours
+  (habit navy, objective light blue, repulsion red-violet); mine is grey; both
+  sides Quantico. Nothing is kept: each visit starts at « Wassup ? ». It needs
+  one Habit and one Objective (« One Habit. One Objective. Then we talk. »);
+  7 free answers a month, then **Higher** (7 €/month): my Higher Self every
+  day, « [Higher] my social media » (my moves on Telegram and WhatsApp),
+  TotehmBot. Proof is cited, never claimed (Gollwitzer & Sheeran 2006,
+  d = 0.65); never "scientifically proven NLP".
 - Left · search a TOTEHM, *Subscribe* (yearly price). Right · SPACE and HIGHER
   BOUTIQUE side by side, [Higher] placed on the garment of the moment.
 - The member space is about the member: picture, Higher subscription, my

@@ -65,7 +65,7 @@ Les `CLAUDE.md` des dossiers servis par Vercel sont exclus du déploiement (`.ve
 ```
 com/      → www.totehm.com       LA SOURCE : le Totehm (5 vues), l'identité (/auth), /search, /@nom ;
                                  l'atterrissage en croix (07/10, manette) : mon Totehm · ↑ Get Higher (la langue)
-                                 · ↓ TotehmSM (Higher Self, abonnement) · ← chercher · → SPACE et boutique ; /console
+                                 · ↓ TotehmSM (Higher Self : 7 gratuits/30 j puis Higher) · ← chercher · → SPACE et boutique ; /console
 club/     → www.figher.club      le branding Higher en expérience : [Get Higher], Lisbon,
                                  méthode Stoner ; art, marché (/market) ; /console → 308
 space/    → www.totehm.space     DO WITH ME : UN Spot (PRIVATE / SHARED) naît d'une Habit
@@ -226,7 +226,7 @@ My spaces (COM, SPACE) + `space-delete` ; chercher = un NOM → son TOTEHM en le
 appel payant : coût mensuel à 1 000 utilisateurs contre revenu. Deux régimes :
 MÉCANIQUE (SQL, embeddings, gabarits — jamais un centime ; tout le gratuit
 reste déterministe) et QUALITÉ (le meilleur modèle, pour ce que le membre
-achète : TotehmBot / Higher Self, 7 €/mois, un LLM OpenAI — lot dédié). À
+achète : TotehmBot / Higher Self, 7 €/mois, un LLM OpenAI ; 08/10 : 7 réponses offertes / 30 j = acquisition, plafonnée en base). À
 surveiller : l'egress vidéo (clip visible + UN suivant anticipé, règles dans
 space/CLAUDE.md), les tokens de ces sessions (voir plus haut).
 

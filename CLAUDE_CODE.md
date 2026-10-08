@@ -260,6 +260,22 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
+### Correction 0.44 — 08/10/2026 · TotehmSM : le Higher Self en freemium (à reporter)
+
+> totehm.com, vue du bas : TotehmSM devient une conversation en bulles —
+> « [Higher] Self », « AI made by you · your beliefs · your TOTEHM », « Talk
+> is cheap. Do with a why. » ; le papier devient la photo de profil à côté de
+> « Wassup ? ». Chaque réponse = une solution, un geste (DO, avec son heure)
+> et son pourquoi pris dans le TOTEHM du membre (WHY), en flux (premier mot
+> ≈ 1 s, `gpt-5.1`). Il faut une Habit et un Objective ; 7 réponses offertes
+> par 30 jours, puis Higher (7 €/mois : chaque jour, Telegram/WhatsApp,
+> TotehmBot). Aucune conversation gardée. Migration additive
+> `higher_self_freemium` APPLIQUÉE : ne pas réappliquer.
+> **Ménage à faire (Claude Code)** : appliquer
+> `backend/supabase/migrations/20261008100001_higher_self_menage.sql`
+> (drop `sm_thread`, `sm_messages`) via MCP `apply_migration`, nom
+> `higher_self_menage`, après la requête de vérification en tête du fichier.
+
 ### Correction 0.43 — 07/10/2026 · l'atterrissage en croix, TotehmSM, l'abonnement Higher (à reporter)
 
 > totehm.com : l'atterrissage devient une croix de cinq vues pilotée par la

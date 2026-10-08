@@ -1,5 +1,33 @@
 # backend/CLAUDE.md — la base, les fonctions, l'argent, le bot
 
+## COM · 08/10/2026 — TotehmSM v2 : freemium, flux, aucun historique
+
+Migration additive `20261008100000_higher_self_freemium.sql` (appliquée UNE
+fois, `higher_self_freemium`). `sm_uses` (RLS sans politique, aucun grant
+anon/auth) ne garde que des USAGES : kind say|telegram, status
+pending|ok|failed, modèle, ms, jetons — jamais un texte.
+- `_sm_rules()` = LA règle : 7 gratuits / 30 jours, Higher 30 / 24 h, Telegram
+  30 / 24 h. `_higher_active(uid)` = abonnement vivant OU `figher_comps` (la
+  règle de `totehmbot_access`, sans session). `_sm_count` : un `pending` de
+  plus de 2 min ne compte plus (fonction tombée). `_sm_state(uid)` : habit,
+  objective (`totehm_complete`), ready, higher, free_left, left.
+- `sm_begin(uid, kind)` (service_role) : verrou par membre, refus `totehm` ·
+  `higher_required` · `quota`, sinon une ligne `pending` ; `sm_end(id, status,
+  …)` la ferme (un échec ne compte pas). `my_landing()` rend `sm` (anon : les
+  règles seules). Auto-test `tests/sql/higher_self_freemium_selftest.sql` :
+  `FAIL={}`.
+- Edge `higher-self` v3 (JWT) : `sm_begin` et `_bot_memory` en parallèle, puis
+  OpenAI EN FLUX (`stream: true`), relayé en texte brut (`X-SM-Left`,
+  `X-SM-Higher`, exposés au CORS). Modèles mesurés le 08/10 : `gpt-5.1`
+  (`reasoning_effort: none`) puis `gpt-5` (`minimal`) puis `gpt-4.1` ;
+  `HIGHER_SELF_MODEL` force. Prompt : le Higher Self du membre, à la PREMIÈRE
+  personne, underground, interdits listés ; chaque message → UNE solution, un
+  geste (quoi + quand) et son pourquoi pris dans SON TOTEHM ; danger → réponse
+  fixe (quelqu'un de confiance, 112). Format : `@kind intention` / solution /
+  `DO:` / `WHY:`. `telegram` : `{text}`, Higher seulement, compté.
+- `sm_messages` et `sm_thread` (07/10) ne servent plus : ménage
+  `20261008100001_higher_self_menage.sql` (drop) par Claude Code.
+
 ## COM · 07/10/2026 — TotehmSM (Higher Self), l'abonnement Higher, l'atterrissage
 
 Migrations additives `20261007100000_higher_self.sql` (appliquée en quatre :
