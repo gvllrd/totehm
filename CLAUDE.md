@@ -71,8 +71,8 @@ club/     → www.figher.club      le branding Higher en expérience : [Get High
 space/    → www.totehm.space     DO WITH ME : UN Spot (PRIVATE / SHARED) naît d'une Habit
                                  filmée maintenant (33 s) ou annoncée pour plus tard ;
                                  I WILL BE HERE → I AM HERE → I WAS THERE
-boutique/ → www.higher.boutique  l'accueil + collection du moment ; /streetwear PLEIN ÉCRAN (08/10) : cloth (↔ ↕) →
-                                 element (manette) → 0.nom → style → taille ; Luxe SUR DEVIS ; Decode = la page du Cloth
+boutique/ → www.higher.boutique  l'accueil + collection du moment ; /streetwear (plein écran au téléphone, fenêtres-côtés
+                                 sur ordinateur) : cloth → element (wisdom ← → vision) → 0.nom → style → taille ; Luxe SUR DEVIS ; Decode = la page du Cloth
 backend/  → servi par PERSONNE — reste à la racine (sinon SQL et fonctions téléchargeables)
 oracle/   → clés, gitignoré, jamais lu ni recopié
 tests/    → tests navigateur (Playwright, Supabase simulé) et SQL (tests/sql/, auto-annulés)

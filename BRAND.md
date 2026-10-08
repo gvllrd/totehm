@@ -1,9 +1,21 @@
 # BRAND.md — TOTEHM
 
+## CURRENT UPDATE — 08/10/2026 (bis) · a cloth wears my wisdom or my vision
+
+- **A cloth speaks to others: it wears MY WISDOM (what I pass on) or MY VISION
+  (what I imagine for the world)** — the time axis, past ← → future. Habits,
+  objectives and repulsions stay mine; they are never worn. Luxury keeps all five.
+- **Full screen is the phone.** On a computer the cloth stays and shifts, the
+  windows slide in from the side (like SPACE): wisdom from the left, vision,
+  name, style and order from the right; the artwork's place and the name show
+  on the cloth as they are chosen.
+- **No colour palette, no frequency on screen** — streetwear, Decode, Luxury.
+
 ## CURRENT UPDATE — 08/10/2026 · the cloth, full screen; on screen, an "element"
 
 - "Box" is our word. **On screen we say "element"** — an element of my TOTEHM
-  (habit, objective, repulsion, lesson, vision). higher.boutique first.
+  (habit, objective, repulsion, lesson, vision; a cloth: lesson or vision since
+  the bis). higher.boutique first.
 - /streetwear is one full screen at a time: **Cloth** (swipe ↔ the cloths,
   ↕ its views) → **[TOTEHMIZE]** → **Element** (the unfolded TOTEHM and the
   joystick, only there) → **Name** (0. + the name, Quantico Coral, checked live)

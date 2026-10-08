@@ -341,6 +341,9 @@ dans le seau public `totehm-cloth-support`, dossier `storage_folder` du support
 (`cleanup-drafts`) ; par le sien, jamais (repris). **L'œuvre dans Decode** :
 visible quand la pièce est `shipped` ; la montrer plus tôt = changer la condition
 de `_cloth_art_path` et de `reveal_cloth.art` (une ligne chacune).
+**Ce qu'un vêtement porte** (08/10 bis) : WISDOM ou VISION. Rouvrir une vue =
+l'ajouter ENSEMBLE à `KINDS` (`create-checkout`, redéployer) et à `WEARABLE` +
+`CROIX` + `NOM` (`boutique/streetwear.html`) ; l'un sans l'autre = 422 ou vue morte.
 Auto-test : `tests/sql/streetwear_immersive_selftest.sql` → `FAIL={}`.
 
 **Le mode test Stripe** (05/10 soir, sans « oui » : aucun argent réel) : un

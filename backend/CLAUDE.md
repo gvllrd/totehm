@@ -24,6 +24,10 @@ sous `streetwear_immersive`.
   épuisé refusé (`style sold out`), `expires_at` = +31 min (sous les 2 h du
   ménage : aucun brouillon effacé n'est payable), erreur Stripe → 502 `stripe`.
   Réponse `{ url, name }`.
+- **08/10 bis · `create-checkout` v40** : un vêtement ne porte que WISDOM ou VISION
+  (`KINDS = wisdom · vision`, sinon 422 `choose an element`) — refusé au serveur,
+  pas seulement caché. `luxury-quote` garde les cinq vues. Aucune migration : la
+  palette reste dans `box_snapshot` / `totehm_clothes.palette`, jamais affichée.
 - Auto-test `tests/sql/streetwear_immersive_selftest.sql` (annulé) : `FAIL={}`.
 - **Rétro-copie** : les trois migrations du pipeline Streetwear appliquées le 06/10
   depuis le terminal (`streetwear_secure_pipeline`, `streetwear_webhook_recovery`,

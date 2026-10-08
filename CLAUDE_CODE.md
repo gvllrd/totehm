@@ -271,6 +271,16 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
+### Correction 0.45 — 08/10/2026 (bis) · un vêtement porte WISDOM ou VISION (à reporter)
+
+> Le plein écran de /streetwear vaut pour le TÉLÉPHONE ; sur ordinateur le
+> vêtement reste et se décale, les fenêtres glissent sur le côté (comme SPACE) :
+> WISDOM à gauche, VISION, nom, style, commande à droite. Un vêtement ne porte
+> plus que MY WISDOM (ce que je transmets) ou MY VISION (ce que j'imagine pour le
+> monde) ; habitudes, objectifs, répulsions restent à soi (Luxury garde les cinq
+> vues). Ni palette de couleurs ni fréquence à l'écran (streetwear, Decode,
+> Luxury). Aucune migration ; `create-checkout` v40 refuse les autres vues.
+
 ### Correction 0.44 — 08/10/2026 · la Streetwear plein écran, Decode = la page du Cloth (à reporter)
 
 > higher.boutique/streetwear devient cinq scènes plein écran : CLOTH (le
