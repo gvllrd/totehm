@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 7 octobre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 8 octobre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -15,6 +15,15 @@
 
 ---
 
+
+## 0 · STREETWEAR : FENÊTRES-CÔTÉS SUR ORDINATEUR, WISDOM ET VISION, SANS PALETTE — 08/10/2026 (bis)
+
+| quoi | valeur mesurée |
+|---|---|
+| base | aucune migration (la palette reste dans `box_snapshot`, jamais affichée) |
+| Edge Function | `create-checkout` v40 ACTIVE, `KINDS = wisdom · vision` (autre vue → 422 `choose an element`) · sans session → 401 `signin`, CORS `https://www.higher.boutique` |
+| tests navigateur | `streetwear.mjs` 51/51 (téléphone + ordinateur 1280×800 : WISDOM à gauche, VISION à droite, vêtement décalé, manette qui suit) · `boutique_home.mjs` 23/23 · `club_luxury.mjs` 44/44 |
+| prod (pg_net, fusion `6007b47`, Vercel READY) | `/streetwear` 200 `BUILD 2026-10-08-wisdom-vision` (règles de côté, `WEARABLE` wisdom·vision) · `/` 200 `2026-10-08-bis` · `/luxury` 200 `2026-10-08-no-palette` · aucune palette affichée · identique au dépôt (89 990 · 51 362 · 70 875 caractères) |
 
 ## 0 · STREETWEAR PLEIN ÉCRAN, DECODE = LA PAGE DU CLOTH, « ELEMENT » — 08/10/2026
 
