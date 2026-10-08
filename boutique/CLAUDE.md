@@ -1,5 +1,18 @@
 # boutique/CLAUDE.md — higher.boutique : le Cloth, la méthode Stoner
 
+## BOUTIQUE · 08/10/2026 (ter) — ARRIVER DE COM : L'ÉLÉMENT DÉJÀ CHOISI
+
+`streetwear.html` BUILD `2026-10-08-wear`. Dans COM, « + totehmize » d'une leçon ou
+d'une vision ouvre `/streetwear?wear=wisdom:<id>` (ou `vision:`) par le pont SSO.
+- L'élément est RELU dans MON Totehm (`my_trips`, `applyWant`), jamais cru sur
+  l'adresse ; introuvable (effacé, autre compte) → oublié, la page suit son cours.
+  L'adresse est nettoyée ; le vœu (`F.want`, `wt` dans `totehm_cloth_flow`) traverse
+  la connexion PKCE.
+- Le vêtement se choisit toujours d'abord ; sous lui, la puce `#cl-wear` (MY WISDOM ·
+  texte, à la couleur de sa vue). **Un élément déjà choisi → TOTEHMIZE mène droit au
+  NAME** ; ELEMENT reste derrière (Back y ramène, l'élément peut changer).
+- Diagnostic : `__totehm_cloth().wanted`. Tests : `streetwear.mjs` 64/64.
+
 ## ⛔ BOUTIQUE · 08/10/2026 (bis) — ORDINATEUR : LES DÉCALAGES · WISDOM ET VISION · SANS PALETTE
 
 Wah : « full-screen, c'est la version mobile ; sur ordinateur j'aime les

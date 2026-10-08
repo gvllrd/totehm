@@ -1,5 +1,11 @@
 # BRAND.md — TOTEHM
 
+## CURRENT UPDATE — 08/10/2026 (ter) · totehmize lives in my wisdom and my vision
+
+- On totehm.com, a lesson or a vision says how many cloths wear it; open, it shows
+  them (0.name in Quantico Coral, their stage) and **+ totehmize** opens the boutique
+  with THAT element already chosen — like a habit shows its spaces.
+
 ## CURRENT UPDATE — 08/10/2026 (bis) · a cloth wears my wisdom or my vision
 
 - **A cloth speaks to others: it wears MY WISDOM (what I pass on) or MY VISION

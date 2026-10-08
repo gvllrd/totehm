@@ -271,6 +271,15 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
+### Correction 0.46 — 08/10/2026 (ter) · TOTEHMIZE se cale dans WISDOM et VISION (à reporter)
+
+> Comme SPACE dans les habitudes : sur totehm.com, une leçon ou une vision dit
+> combien de Totehm Cloths la portent ; ouverte, elle les montre (nom, étape → leur
+> page Decode) et « + totehmize » ouvre la boutique avec CET élément déjà choisi
+> (on choisit le vêtement, puis directement le nom). Chez un autre : ses Cloths
+> seulement si on peut lire son Totehm. Migration `20261008120000_element_cloths.sql`
+> APPLIQUÉE (`element_cloths`) : ne pas réappliquer.
+
 ### Correction 0.45 — 08/10/2026 (bis) · un vêtement porte WISDOM ou VISION (à reporter)
 
 > Le plein écran de /streetwear vaut pour le TÉLÉPHONE ; sur ordinateur le

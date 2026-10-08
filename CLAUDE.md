@@ -71,8 +71,8 @@ club/     → www.figher.club      le branding Higher en expérience : [Get High
 space/    → www.totehm.space     DO WITH ME : UN Spot (PRIVATE / SHARED) naît d'une Habit
                                  filmée maintenant (33 s) ou annoncée pour plus tard ;
                                  I WILL BE HERE → I AM HERE → I WAS THERE
-boutique/ → www.higher.boutique  l'accueil + collection du moment ; /streetwear (plein écran au téléphone, fenêtres-côtés
-                                 sur ordinateur) : cloth → element (wisdom ← → vision) → 0.nom → style → taille ; Luxe SUR DEVIS ; Decode = la page du Cloth
+boutique/ → www.higher.boutique  accueil + collection ; /streetwear (plein écran au téléphone, fenêtres-côtés sur ordinateur) : cloth →
+                                 element (wisdom ← → vision, ou « + totehmize » depuis COM) → 0.nom → style → taille ; Luxe SUR DEVIS ; Decode = la page du Cloth
 backend/  → servi par PERSONNE — reste à la racine (sinon SQL et fonctions téléchargeables)
 oracle/   → clés, gitignoré, jamais lu ni recopié
 tests/    → tests navigateur (Playwright, Supabase simulé) et SQL (tests/sql/, auto-annulés)
@@ -173,7 +173,7 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 Cinq vues, gestes, boussole, panneaux desktop, joystick caméra (04/10). Spaces partagés : OFF = ville, ON = for my
 subscribers ; TOP toujours ON, RIGHT sans OFF. Mini-boxes OBJECTIVES/REPULSIONS séparées (droits serveur).
 Hint Habit → space, définition coin droit. Détails : `space/CLAUDE.md`, copy : `BRAND.md`.
-My spaces (COM, SPACE) + `space-delete` ; chercher = un NOM → son TOTEHM en lecture (spaces, loupe, COPY d'une Box). Espace membre COM = l'utilisateur (vignette, Higher, souscriptions), format higher.boutique.
+My spaces (COM, SPACE) + `space-delete` ; une Box WISDOM/VISION de COM montre ses Cloths (`element_cloths`) comme une Habit ses spaces ; chercher = un NOM → son TOTEHM en lecture (spaces, loupe, COPY d'une Box). Espace membre COM = l'utilisateur (vignette, Higher, souscriptions), format higher.boutique.
 
 ## Règles d'interface qui valent partout
 

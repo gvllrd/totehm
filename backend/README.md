@@ -344,6 +344,8 @@ de `_cloth_art_path` et de `reveal_cloth.art` (une ligne chacune).
 **Ce qu'un vêtement porte** (08/10 bis) : WISDOM ou VISION. Rouvrir une vue =
 l'ajouter ENSEMBLE à `KINDS` (`create-checkout`, redéployer) et à `WEARABLE` +
 `CROIX` + `NOM` (`boutique/streetwear.html`) ; l'un sans l'autre = 422 ou vue morte.
+**De COM à la boutique** (08/10 ter) : « + totehmize » = `/streetwear?wear=wisdom:<id>`
+(ou `vision:`), relu par `my_trips` ; les Cloths d'un élément = `element_cloths`.
 Auto-test : `tests/sql/streetwear_immersive_selftest.sql` → `FAIL={}`.
 
 **Le mode test Stripe** (05/10 soir, sans « oui » : aucun argent réel) : un

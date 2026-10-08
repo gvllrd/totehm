@@ -1,5 +1,17 @@
 # backend/CLAUDE.md — la base, les fonctions, l'argent, le bot
 
+## COM ↔ BOUTIQUE · 08/10/2026 (ter) — `element_cloths`
+
+Migration additive `20261008120000_element_cloths.sql`, appliquée UNE fois sous
+`element_cloths`. `element_cloths(p_pseudo)` (authenticated ; anon/public révoqués ;
+search_path vide) : les Cloths regroupés par élément WISDOM / VISION (`box_kind`,
+`box_ref`), total + les trois plus récents {name, line streetwear|luxury, stage
+making|production|shipped, test, paid_at}. Streetwear payé non annulé, Luxury
+`paid` nommé ; jamais un brouillon. Vide = les miens (test compris) ; un autre =
+ses pièces réelles, seulement si `_shared_with_me` (sinon `elements: []`) ;
+`why=signin|nobody`. Le pendant de `habit_spaces`. Auto-test
+`tests/sql/element_cloths_selftest.sql` (annulé) : `FAIL={}`.
+
 ## BOUTIQUE · 08/10/2026 — le nom repris, Decode complet, l'œuvre une fois expédiée
 
 Migration additive `20261008100000_streetwear_immersive.sql`, appliquée UNE fois
