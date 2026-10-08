@@ -3086,22 +3086,21 @@ body.lv-c #lv-c,body.lv-h #lv-h,body.lv-b #lv-b,body.lv-d #lv-d{opacity:1;visibi
 .lv-btn svg{width:48px;height:16px;flex:none}
 .lv-note{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#6d6d74;min-height:12px;text-align:center}
 /* ── LE SLOGAN : un seul [Higher] qui voyage. Ses mots changent avec la vue :
-   « [Higher] Strategy » · « Get [Higher] » · « Speak to your [Higher] Self ». */
-#lv-slogan,#lv-slogan2{position:fixed;left:0;top:0;z-index:6;width:96px;height:32px;
+   « [Higher] Strategy » · « Get [Higher] » · « [Higher] Self » (08/10). */
+#lv-slogan{position:fixed;left:0;top:0;z-index:6;width:96px;height:32px;
   transform-origin:50% 50%;transition:transform .7s var(--gate-ease),opacity .45s ease;
   background:none;border:0;padding:0;margin:0;color:#fff;pointer-events:none;-webkit-tap-highlight-color:transparent}
-#lv-slogan svg,#lv-slogan2 svg{display:block;width:96px;height:32px}
+#lv-slogan svg{display:block;width:96px;height:32px}
 .lvs-pre,.lvs-post{position:absolute;top:50%;white-space:nowrap;transform:translateY(-50%)}
 .lvs-pre{right:calc(100% + 8px)}.lvs-post{left:calc(100% + 8px)}
 .lvs-pre>span,.lvs-post>span{position:absolute;top:50%;transform:translateY(-50%);opacity:0;transition:opacity .35s ease}
 .lvs-pre>span{right:0}.lvs-post>span{left:0}
 .lvs-get{font-family:'Quantico',sans-serif;font-size:24px;color:#fbd5ca}
-.lvs-speak,.lvs-self,.lvs-strat,.lvs-social{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#fff}
-#lv-slogan.is-c .lvs-strat,#lv-slogan.is-h .lvs-get,#lv-slogan.is-b .lvs-speak,#lv-slogan.is-b .lvs-self,#lv-slogan2.is-b .lvs-social{opacity:1;transition-delay:.3s}
+.lvs-self,.lvs-strat{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#fff}
+#lv-slogan.is-c .lvs-strat,#lv-slogan.is-h .lvs-get,#lv-slogan.is-b .lvs-self{opacity:1;transition-delay:.3s}
 #lv-slogan.is-h{pointer-events:auto;cursor:pointer}
-#lv-slogan.is-g,#lv-slogan.is-x,#lv-slogan2:not(.is-b){opacity:0}
-body:not(.gate) #lv-slogan,body.entered #lv-slogan,body.is-door #lv-slogan,
-body:not(.gate) #lv-slogan2,body.entered #lv-slogan2,body.is-door #lv-slogan2{display:none}
+#lv-slogan.is-g,#lv-slogan.is-x{opacity:0}
+body:not(.gate) #lv-slogan,body.entered #lv-slogan,body.is-door #lv-slogan{display:none}
 /* ── CENTRE : mon TOTEHM, son nom, qui le voit ── */
 #lv-card{position:absolute;left:50%;top:calc(var(--lv-y) + var(--gate-size) / 2 + 64px);transform:translateX(-50%);
   display:flex;flex-direction:column;align-items:center;gap:9px;width:min(92vw,420px)}
@@ -3116,36 +3115,60 @@ body:not(.gate) #lv-slogan2,body.entered #lv-slogan2,body.is-door #lv-slogan2{di
   background:none;border:0;padding:6px 10px;font:700 9.5px/1.4 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#9a9aa2;cursor:pointer;white-space:nowrap}
 /* ── EN HAUT : Get Higher ── */
 #lv-h-say{position:absolute;left:50%;transform:translateX(-50%);top:calc(var(--lv-ht,60dvh) + 44px);width:min(88vw,440px);display:flex;flex-direction:column;align-items:center;gap:12px}
-/* ── EN BAS : TotehmSM ── */
-#lv-b-head{position:absolute;left:16px;top:58px;display:flex;align-items:center;gap:10px}
-#lv-thumb{width:44px;height:44px;flex:none}
-.lv-who{font-family:'Space Mono',monospace;font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#fff}
-.lv-who small{display:block;font-weight:400;letter-spacing:.06em;text-transform:none;color:#6d6d74;font-size:10px}
-#lv-b-body{position:absolute;left:50%;transform:translateX(-50%);top:186px;bottom:calc(max(16px,env(safe-area-inset-bottom)) + 108px);
-  width:min(94vw,560px);display:flex;flex-direction:column;gap:10px}
-#lv-social{display:flex;align-items:center;justify-content:center;gap:8px;min-height:22px}
-#lv-social-say{font-family:'Space Mono',monospace;font-size:10px;color:#6d6d74;white-space:nowrap}
-#lv-say{display:flex;gap:8px;align-items:stretch}
-#lv-say textarea{flex:1;min-height:44px;max-height:120px;resize:none;border:0;border-radius:10px;background:#16161a;color:#fff;
-  font:400 14px/1.45 'Quantico',sans-serif;padding:11px 12px;outline:none;caret-color:#fff}
-#lv-say textarea::placeholder{color:#5c5c64}
-#lv-thread{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:8px;padding:4px 2px 12px;scrollbar-width:none}
+/* ── EN BAS : TotehmSM · 08/10 — une conversation, des bulles. Le papier
+   devient la photo de profil (`#lv-thumb`) à côté du premier « Wassup ? ». ── */
+#lv-b-tag{position:absolute;left:50%;transform:translateX(-50%);top:116px;width:min(92vw,520px);text-align:center;display:flex;flex-direction:column;gap:5px}
+#lv-b-tag .t1{font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#8a8a92}
+#lv-b-tag .t2{font:700 11px/1.4 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#fff}
+#lv-b-body{position:absolute;left:50%;transform:translateX(-50%);top:170px;bottom:calc(max(16px,env(safe-area-inset-bottom)) + 112px);
+  width:min(94vw,560px);display:flex;flex-direction:column;gap:8px}
+#sm-first{display:flex;align-items:flex-end;gap:8px;flex:none}
+#lv-thumb{width:40px;height:40px;flex:none;border-radius:50%}
+#lv-thread{flex:0 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:8px;padding:0 2px 4px 48px;scrollbar-width:none}
 #lv-thread::-webkit-scrollbar{display:none}
-.sm-row{display:flex;gap:8px;align-items:flex-end}
-.sm-row.me{justify-content:flex-end}
-.sm-av{width:26px;height:26px;flex:none;border-radius:50%;background:#1f1f24 center/cover no-repeat}
-.sm-av.sm{border-radius:0;background:#333366;color:#fff;display:flex;align-items:center;justify-content:center}
-.sm-av.sm svg{width:12px;height:12px}
-.sm-b{max-width:78%;padding:10px 12px;font:400 14px/1.45 'Quantico',sans-serif;color:#fff;word-wrap:break-word}
-.sm-row.me .sm-b{background:#2a2a30;color:#e6e6ea}
+.sm-row{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.sm-row.me{align-items:flex-end;margin-right:-2px}
+.sm-row.me .sm-line{display:flex;align-items:flex-end;gap:6px}
+.sm-av{width:22px;height:22px;flex:none;border-radius:50%;background:#1f1f24 center/cover no-repeat}
+.sm-b{max-width:86%;padding:10px 14px;border-radius:18px 18px 18px 5px;font:400 14.5px/1.42 'Quantico',sans-serif;color:#fff;
+  word-wrap:break-word;display:flex;flex-direction:column;gap:6px;background:#333366}
+.sm-row.me .sm-b{border-radius:18px 18px 5px 18px;background:#2a2a30;color:#e6e6ea}
 .sm-b.k-habit{background:#333366}.sm-b.k-objective{background:#36498c}.sm-b.k-repulsion{background:#743169}
-.sm-acts{display:flex;gap:10px;margin:2px 0 0 34px}
+.sm-b .sm-int{font:700 8.5px/1 'Space Mono',monospace;letter-spacing:.18em;text-transform:uppercase}
+.sm-b .sm-do,.sm-b .sm-why{display:block}
+.sm-b .sm-do b,.sm-b .sm-why b{font:700 9px/1 'Space Mono',monospace;letter-spacing:.16em;margin-right:7px;vertical-align:1px}
+.sm-b .sm-why{color:rgba(255,255,255,.72)}
+.sm-dots{display:inline-flex;gap:4px;padding:3px 0}
+.sm-dots i{width:6px;height:6px;border-radius:50%;background:#fff;opacity:.35;animation:sm-dot 1s ease-in-out infinite}
+.sm-dots i:nth-child(2){animation-delay:.15s}.sm-dots i:nth-child(3){animation-delay:.3s}
+@keyframes sm-dot{50%{opacity:1}}
+.sm-acts{display:flex;gap:12px;padding-left:6px}
 .sm-acts button{background:none;border:0;padding:2px 0;font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#6d6d74;cursor:pointer}
-.sm-pitch{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:6px 0 10px}
-.sm-pitch p{margin:0}
-.sm-pitch .sm-big{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;letter-spacing:.06em;color:#fff;line-height:1.55}
-.sm-pitch .sm-proof{font-family:'Space Mono',monospace;font-size:10px;color:#8a8a92;line-height:1.7;max-width:440px}
-.sm-demo{display:flex;flex-direction:column;gap:6px;width:100%;opacity:.9}
+.sm-ex{font:400 9px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#5c5c64;margin:4px 0 -2px}
+.sm-proof{font:400 10px/1.7 'Space Mono',monospace;color:#8a8a92;margin:2px 0}
+.sm-cta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:2px}
+.sm-check{border:0;border-radius:10px;padding:8px 12px;background:#16161a;color:#8a8a92;font:400 10.5px/1.3 'Space Mono',monospace;cursor:pointer;white-space:nowrap}
+.sm-check.is-ok{color:#fff}
+.sm-offer{display:flex;flex-direction:column;gap:8px;background:#101014;border-radius:14px;padding:14px 16px;max-width:86%}
+.sm-offer-h{display:flex;align-items:center;gap:10px;font:700 11px/1 'Space Mono',monospace;letter-spacing:.1em;color:#fff}
+.sm-offer-h svg{width:72px;height:24px;flex:none}
+.sm-offer ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.sm-offer li{font:400 11px/1.6 'Space Mono',monospace;color:#b0b0b0}
+.sm-offer li svg{display:inline-block;width:48px;height:16px;vertical-align:-4px}
+#lv-say{display:flex;gap:8px;align-items:flex-end;flex:none;padding-left:48px}
+#lv-say textarea{flex:1;min-height:42px;max-height:110px;resize:none;border:0;border-radius:21px;background:#16161a;color:#fff;
+  font:400 14.5px/1.42 'Quantico',sans-serif;padding:10px 15px;outline:none;caret-color:#fff}
+#lv-say textarea::placeholder{color:#5c5c64}
+#lv-say .lv-btn{border-radius:21px;min-height:42px}
+#lv-say-note{flex:none;padding-left:48px;text-align:left}
+.sm-link{background:none;border:0;padding:0;font:inherit;letter-spacing:inherit;text-transform:inherit;color:#b0b0b0;cursor:pointer;vertical-align:middle}
+.sm-hi{display:inline-block;height:1.15em;width:3.45em;vertical-align:-.25em}
+.sm-link .sm-hi{height:14px;width:42px}
+/* Le papier devient une photo de profil : un disque centré sur le T (36,3 % du
+   haut), rayon 29,5 % — il évite les perforations. Jamais pendant la
+   déconstruction (les calques sortent de la face). */
+body.gate:not(.entered):not(.folding) #ast-front{clip-path:circle(72% at 50% 50%);transition:clip-path .7s var(--gate-ease)}
+body.gate.lv-b:not(.entered):not(.folding) #ast-front{clip-path:circle(29.5% at 50% 36.3%)}
 /* ── À DROITE : SPACE · le vêtement · la boutique ── */
 #lv-d-wrap{position:absolute;left:50%;transform:translateX(-50%);top:168px;width:min(94vw,860px);
   display:grid;grid-template-columns:1fr 1fr;grid-template-areas:"cloth cloth" "space shop";gap:14px 12px;align-items:start}
@@ -3189,9 +3212,9 @@ body.searching #ljoy{z-index:230}
 .mw-sub-act{background:none;border:0;padding:2px 0;font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#6d6d74;cursor:pointer}
 #srch-res .srch-open{display:flex;align-items:center;text-decoration:none;min-width:0}
 #srch-res .srch-sub{flex:none;font:400 10.5px/1.3 'Space Mono',monospace;color:#b0b0b0;background:#1f1f24;border-radius:10px;padding:7px 10px;text-decoration:none;white-space:nowrap}
-@media (prefers-reduced-motion: reduce){#lv-slogan,#lv-slogan2,.lv-pane{transition:none!important}}
+@media (prefers-reduced-motion: reduce){#lv-slogan,.lv-pane,#ast-front{transition:none!important}}
 /* Sur ordinateur, le gris passe au blanc au survol (hover.py ne lit que le premier <style>). */
-@media(hover:hover){.lv-btn:hover,.lv-vis button:hover,#lv-tap:hover,.sm-acts button:hover,#srch-res .srch-sub:hover,.mw-sub-act:hover,#mw-avatar:hover{color:#fff}}
+@media(hover:hover){.lv-btn:hover,.lv-vis button:hover,#lv-tap:hover,.sm-acts button:hover,.sm-check:hover,.sm-link:hover,#srch-res .srch-sub:hover,.mw-sub-act:hover,#mw-avatar:hover{color:#fff}}
 </style>
 </head>
 <body class="gate">
@@ -3351,16 +3374,17 @@ a Totehm</span>
       </div>
     </section>
 
-    <section class="lv-pane" id="lv-b" aria-label="TotehmSM · Speak to your Higher Self">
-      <div id="lv-b-head"><span id="lv-thumb" aria-hidden="true"></span><span class="lv-who">TotehmSM<small>my SuperMirror</small></span></div>
+    <section class="lv-pane" id="lv-b" aria-label="TotehmSM · my Higher Self">
+      <div id="lv-b-tag"><span class="t1">AI made by you · your beliefs · your TOTEHM</span><span class="t2">Talk is cheap. Do with a why.</span></div>
       <div id="lv-b-body" class="lv-act">
-        <div id="lv-social"><span id="lv-social-say">my reflections, sent to Telegram or WhatsApp</span></div>
+        <!-- Le premier contact : le papier se pose dans `#lv-thumb` (sa photo de profil). -->
+        <div id="sm-first"><span id="lv-thumb" aria-hidden="true"></span><div class="sm-b k-habit">Wassup ?</div></div>
+        <div id="lv-thread" aria-live="polite"></div>
         <form id="lv-say" class="hide" autocomplete="off">
-          <textarea id="lv-say-in" maxlength="600" rows="1" placeholder="write as you are" aria-label="Write to my Higher Self"></textarea>
+          <textarea id="lv-say-in" maxlength="600" rows="1" placeholder="say it as it is" aria-label="Talk to my Higher Self"></textarea>
           <button class="lv-btn" id="lv-say-go" type="submit">Send</button>
         </form>
         <div class="lv-note" id="lv-say-note" role="status" aria-live="polite"></div>
-        <div id="lv-thread" aria-live="polite"></div>
       </div>
     </section>
 
@@ -3382,10 +3406,8 @@ a Totehm</span>
 
     <!-- Le slogan qui voyage. Dans la vue du haut, c'est LE bouton [Get Higher]. -->
     <button id="lv-slogan" class="is-c" type="button" tabindex="-1" aria-label="Get Higher">
-      <span class="lvs-pre"><span class="lvs-get">Get</span><span class="lvs-speak">Speak to your</span></span><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg><span class="lvs-post"><span class="lvs-strat">Strategy</span><span class="lvs-self">Self</span></span>
+      <span class="lvs-pre"><span class="lvs-get">Get</span></span><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg><span class="lvs-post"><span class="lvs-strat">Strategy</span><span class="lvs-self">Self</span></span>
     </button>
-    <!-- Son double : en bas, il devient « [Higher] your social media ». -->
-    <div id="lv-slogan2" aria-hidden="true"><svg viewBox="0 0 600 200"><use href="#higher-badge"></use></svg><span class="lvs-post"><span class="lvs-social">your social media</span></span></div>
   </div>
 </div>
 
@@ -4810,7 +4832,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-07-croix';
+const BUILD='2026-10-08-sm';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -8849,40 +8871,37 @@ window.addEventListener('pageshow',e=>{
     const CROIX_L={c:{h:'h',b:'b',g:'g',d:'d'}, h:{b:'c'}, b:{h:'c'}, g:{d:'c'}, d:{g:'c'}};
     const NOMS={c:'my TOTEHM', h:'Get Higher', b:'TotehmSM', g:'search a TOTEHM', d:'SPACE · boutique'};
     const TEINTE_L={c:'--navy', h:'--blue', b:'--rep', g:'--rep', d:'--blue'};
-    const slo=$('lv-slogan'), slo2=$('lv-slogan2'), jy=$('ljoy'), jb=$('ljoy-box'), js=$('ljoy-stack');
+    const slo=$('lv-slogan'), jy=$('ljoy'), jb=$('ljoy-box'), js=$('ljoy-stack');
     const diag={allers:0, sm:0, envois:0, telegram:0, whatsapp:0};
     let vue='c', bouge=false;
     const voisin=d=>(CROIX_L[vue]||{})[d]||null;
     window.__totehm_lv=()=>({build:BUILD, vue, bouge, allers:diag.allers, papier:PAPIER.vue(),
       membre:inscrit(), higher:!!(LAND&&LAND.higher&&LAND.higher.active), thp:!!(LAND&&LAND.thp),
-      sm:SM.msgs.length, envois:diag.envois, telegram:diag.telegram, whatsapp:diag.whatsapp,
+      sm:SM.msgs.length, pret:!!etatSM().ready, gratuits:etatSM().free_left??null, envois:diag.envois, telegram:diag.telegram, whatsapp:diag.whatsapp,
       visibilite:LAND?LAND.visibility:null, vignette:!!avatarOk(LAND&&LAND.avatar), vetement:!!CLOTH.src});
     window.__lvAller=v=>aller(v);
     body.classList.add('lv-c');
 
     /* ── LE SLOGAN : un seul [Higher] qui voyage ── */
     const W=()=>innerWidth, H=()=>innerHeight;
-    const larg=sel=>{ const e=slo.querySelector(sel)||slo2.querySelector(sel); return e?e.offsetWidth:0; };
+    const larg=sel=>{ const e=slo.querySelector(sel); return e?e.offsetWidth:0; };
     function placer(el,x,y,w){
       const k=(w||96)/96;
       el.style.transform='translate('+(x-48).toFixed(1)+'px,'+(y-16).toFixed(1)+'px) scale('+k.toFixed(3)+')';
     }
     function sloganPour(v){
       const c=PAPIER.chez()||{x:W()/2,y:H()*.4,w:110};
-      slo.className='is-'+v; slo2.className='is-'+v;
+      slo.className='is-'+v;
       slo.tabIndex=v==='h'?0:-1;
       if(v==='c'||v==='g'){
-        /* Le double est posé SOUS l'original : en descendant, il s'en détache. */
-        const x=W()/2-(8+larg('.lvs-strat'))/2, y=c.y+c.w/2+30;
-        placer(slo, x, y, 96); placer(slo2, x, y, 96);
+        placer(slo, W()/2-(8+larg('.lvs-strat'))/2, c.y+c.w/2+30, 96);
       } else if(v==='h'){
         const l=PAPIER.cibleLangue(), y=l?l.bas+28:H()*.42;
         placer(slo, W()/2+(larg('.lvs-get')+8)/2, y, 96);
         $('lv-h').style.setProperty('--lv-ht', (y+4)+'px');
       } else if(v==='b'){
-        const sp=larg('.lvs-speak'), se=larg('.lvs-self');
-        placer(slo, W()/2+((sp+8)-(se+8))/2, 128, 84);
-        placer(slo2, W()/2-(8+larg('.lvs-social'))*(54/96)/2, 162, 54);
+        /* « [Higher] Self » centré, au-dessus de « AI made by you… ». */
+        placer(slo, W()/2-(8+larg('.lvs-self'))*(84/96)/2, 88, 84);
       } else if(v==='d'){
         const r=$('lv-cloth').getBoundingClientRect(), sp=CLOTH.spot;
         placer(slo, r.left+r.width*sp.x, r.top+r.height*sp.y, Math.max(40,r.width*sp.w));
@@ -8923,11 +8942,7 @@ window.addEventListener('pageshow',e=>{
         const l=PAPIER.cibleLangue();
         return PAPIER.glisser(l?{x:l.x,y:l.y,s:l.s}:{x:W()/2,y:H()*.26,s:.5},{ms:760,bouche:l?[1,1]:null,fin:fini});
       }
-      if(v==='b'){
-        const t=$('lv-thumb').getBoundingClientRect(), c=PAPIER.chez();
-        smEtat();
-        return PAPIER.glisser({x:t.left+t.width/2,y:t.top+t.height/2,s:t.width/(c.w||110)},{ms:720,fin:fini});
-      }
+      if(v==='b'){ smEtat(); return PAPIER.glisser(cibleProfil(),{ms:720,fin:fini}); }
       if(v==='d'){
         chargerVetement();
         return PAPIER.glisser({x:W()/2,y:96,s:.62},{ms:720,fin:()=>{ PAPIER.tourner(); fini(); }});
@@ -8936,6 +8951,12 @@ window.addEventListener('pageshow',e=>{
     /* La recherche s'ouvre ou se ferme par un autre chemin (le papier
        retourné à la main, la croix de la feuille, Échap) : la croix suit. */
     lvSync=v=>{ if(v===vue) return; vue=v; poser(v); };
+    /* La photo de profil : le disque du papier (centré sur le T à 36,3 % du
+       haut, rayon 29,5 %, cf. `#ast-front`) tombe sur `#lv-thumb`. */
+    function cibleProfil(){
+      const t=$('lv-thumb').getBoundingClientRect(), w=PAPIER.chez().w||110, s=t.width/(.59*w);
+      return {x:t.left+t.width/2, y:t.top+t.height/2+(.5-.363)*w*s, s};
+    }
     PAPIER.surVerso=()=>aller('g');
     /* [Get Higher] : le papier posé sur la langue est avalé, puis le Club. */
     function getHigher(){
@@ -8950,7 +8971,7 @@ window.addEventListener('pageshow',e=>{
     function reset(){ bouge=false; vue='c'; poser('c'); }
     window.addEventListener('pageshow',e=>{ if(e.persisted){ PAPIER.remettre(); reset(); } });
     slo.addEventListener('click',()=>{ if(vue==='h') getHigher(); });
-    window.addEventListener('resize',()=>{ if(!bouge) sloganPour(vue); });
+    window.addEventListener('resize',()=>{ if(bouge) return; sloganPour(vue); if(vue==='b') PAPIER.glisser(cibleProfil(),{ms:1}); });
 
     /* ── LA MANETTE : le manche (rayon 15 px, seuil 9 px), les chevrons, la molette — copiée du Totehm déplié ── */
     (function manette(){
@@ -9073,80 +9094,172 @@ window.addEventListener('pageshow',e=>{
         : 'The TotehmPaper {THP} distills selected mental-performance techniques informed by modern neuroscience research, including EEG studies, into an experience designed to prepare your brain for efficient action.';
     }
 
-    /* ── EN BAS : TOTEHMSM — le fil, la saisie, ou le concept ── */
-    const SM={seq:0, msgs:[], charge:false, busy:false, attente:null};
-    const acces=()=>!!(LAND&&LAND.higher&&LAND.higher.active);
-    const DEMO=[['me',null,'I am always late, I hate mornings.'],['sm','habit','I set my alarm 15 minutes earlier and I leave at 8:10.'],
-                ['me',null,'I want to stop scrolling at night.'],['sm','repulsion','I leave my phone outside the bedroom at 22:30.'],
-                ['me',null,'One day I would like to run a marathon.'],['sm','objective','I run my first 10 km on 30 November.']];
-    function bulle(role,kind,text,id,actions){
-      const av=avatarOk(LAND&&LAND.avatar);
-      if(role==='me') return '<div class="sm-row me"><div class="sm-b">'+esc(text)+'</div><span class="sm-av"'+(av?' style="background-image:url('+av+')"':'')+'></span></div>';
-      return '<div><div class="sm-row"><span class="sm-av sm">'+T_SVG+'</span><div class="sm-b k-'+esc(kind||'habit')+'">'+esc(text)+'</div></div>'
+    /* ── EN BAS : TOTEHMSM · 08/10 — Wah : « Talk is cheap. Do with a why. Une IA
+       ultra utile, différente, underground, qui pousse toujours à l'action ;
+       plus réactive ; pas d'historique ; au moins une Habit et un Objective ;
+       7 messages en freemium. » La conversation vit dans la page et meurt
+       avec elle. Le serveur décide de tout (`my_landing().sm`, `sm_begin`) ;
+       la réponse arrive EN FLUX : quatre lignes, `@kind intention` · la
+       solution · `DO:` · `WHY:`, peintes mot à mot. ── */
+    const SM={seq:0, msgs:[], busy:false, live:null, offre:false, raf:0, paye:false};
+    const etatSM=()=>(LAND&&LAND.sm)||{};
+    const acces=()=>!!(etatSM().higher||(LAND&&LAND.higher&&LAND.higher.active));
+    const KINDS_SM=['habit','objective','repulsion'];
+    /* Le texte du modèle → {kind, int, text, do, why}. Tolérant : un flux coupé
+       au milieu d'une ligne se lit quand même. */
+    function lireSM(txt){
+      const L=String(txt||'').replace(/\r/g,'').split('\n');
+      const m=/^@\s*([a-z]+)\s*([a-z]*)/i.exec(L[0]||'');
+      const r={kind:'habit', int:'', text:'', do:'', why:'', tete:!(L[0]||'').startsWith('@')||L.length>1};
+      let i=0;
+      if(m){ i=1; const k=m[1].toLowerCase(), n=(m[2]||'').toLowerCase();
+             if(KINDS_SM.includes(k)) r.kind=k; if(INT_BY_ID[n]) r.int=n; }
+      const dit=[];
+      for(const l of L.slice(i)){ const t=l.trim(); if(!t) continue;
+        if(/^DO\s*:/i.test(t)) r.do=t.replace(/^DO\s*:\s*/i,'');
+        else if(/^WHY\s*:/i.test(t)) r.why=t.replace(/^WHY\s*:\s*/i,'');
+        else if(!r.do&&!r.why) dit.push(t); }
+      r.text=dit.join(' ');
+      return r;
+    }
+    function bulleSM(r,id,actions){
+      const int=r.int?'<span class="sm-int" style="color:'+intColor(r.int)+'">'+esc(r.int)+'</span>':'';
+      const corps=r.tete&&(r.text||r.do||r.why)
+        ? int+(r.text?'<span class="sm-t">'+esc(r.text)+'</span>':'')
+          +(r.do?'<span class="sm-do"><b>DO</b>'+esc(r.do)+'</span>':'')+(r.why?'<span class="sm-why"><b>WHY</b>'+esc(r.why)+'</span>':'')
+        : '<span class="sm-dots" aria-label="…"><i></i><i></i><i></i></span>';
+      return '<div class="sm-row"><div class="sm-b k-'+esc(r.kind)+'">'+corps+'</div>'
         +(actions&&id?'<div class="sm-acts"><button type="button" data-tg="'+id+'">Telegram</button><button type="button" data-wa="'+id+'">WhatsApp</button></div>':'')+'</div>';
     }
-    function pitch(){
-      const h=(LAND&&LAND.higher)||{}, prix=prixMois(h);
-      return '<div class="sm-pitch">'
-        +'<p class="sm-big">I write as I am.<br>It answers as I will be — in my words, in the first person.</p>'
-        +'<p class="lv-mono">Not a coach. Not advice. A mirror that upgrades what I say into what I do.</p>'
-        +'<div class="sm-demo">'+DEMO.map(x=>bulle(x[0],x[1],x[2])).join('')+'</div>'
-        +'<p class="sm-proof">Why it works · a “when, where, what” plan raises follow-through: 94 studies, d = 0.65 (Gollwitzer &amp; Sheeran, 2006). The words I tell myself change how I perform under pressure (Kross et al., 2014).</p>'
-        +'<p class="sm-proof">Higher your social media · my reflections, sent to my Telegram or my WhatsApp.</p>'
-        +(me&&inscrit()
-          ? '<button class="lv-btn" type="button" data-sm-sub>Get Higher Self'+(prix?' · '+esc(prix):'')+'</button>'
-          : '<button class="lv-btn" type="button" data-sm-connect>CONNECT WITH MY TOTEHM</button>')
-        +'</div>';
+    const dit=(t,kind)=>'<div class="sm-row"><div class="sm-b k-'+(kind||'habit')+'"><span class="sm-t">'+t+'</span></div></div>';
+    function bulleMoi(t){
+      const av=avatarOk(LAND&&LAND.avatar);
+      return '<div class="sm-row me"><div class="sm-line"><div class="sm-b">'+esc(t)+'</div><span class="sm-av"'+(av?' style="background-image:url('+av+')"':'')+'></span></div></div>';
+    }
+    const BADGE='<svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg>';
+    /* « Higher » est TOUJOURS le badge, même au milieu d'une phrase. */
+    const HI='<svg class="sm-hi" viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg>';
+    function offre(){
+      const prix=prixMois((LAND&&LAND.higher)||{});
+      return '<div class="sm-offer"><div class="sm-offer-h">'+BADGE+'<span>'+esc(prix||'7 € / month')+'</span></div><ul>'
+        +'<li>My '+HI+' Self, every day</li>'
+        +'<li>'+BADGE+' my social media · my moves on Telegram and WhatsApp</li>'
+        +'<li>TotehmBot in my Telegram</li></ul>'
+        +'<div class="sm-cta"><button class="lv-btn" type="button" data-sm-sub>Get '+HI+'</button></div></div>';
+    }
+    /* Ce que la conversation dit selon l'état : invité · TOTEHM vide · prêt · les 7 pris. */
+    function smHTML(){
+      const st=etatSM();
+      if(!(me&&inscrit())){
+        return dit('I am your '+HI+' Self. Made by you: your beliefs, your TOTEHM.')
+          +dit('Talk is cheap. Tell me what is in the way: I answer with one move, and its why.')
+          +'<div class="sm-ex">how it talks</div>'+bulleMoi('I keep scrolling at night and I am wrecked every morning.')
+          +bulleSM({kind:'repulsion', int:'focus', tete:true, text:'Scrolling in bed steals my mornings. I cut it tonight.',
+                    do:'I charge my phone in the kitchen at 22:30.', why:'Run the hill at 7:00. Discipline is freedom.'})
+          +'<p class="sm-proof">Why it works · one move with a when and a where: 94 studies, d = 0.65 (Gollwitzer &amp; Sheeran, 2006).</p>'
+          +'<div class="sm-cta"><button class="lv-btn" type="button" data-sm-connect>CONNECT WITH MY TOTEHM</button><span class="lv-note">'+(st.free_total||7)+' free a month</span></div>';
+      }
+      if(!st.ready){
+        return dit('I am made of your TOTEHM. Right now, I do not know you.')
+          +dit('One Habit. One Objective. Then we talk.')
+          +'<div class="sm-cta"><button class="sm-check'+(st.habit?' is-ok':'')+'" type="button" data-sm-write="habits">'+(st.habit?'✓ ':'+ ')+'my Habit</button>'
+          +'<button class="sm-check'+(st.objective?' is-ok':'')+'" type="button" data-sm-write="objectives">'+(st.objective?'✓ ':'+ ')+'my Objective</button></div>';
+      }
+      let h=SM.msgs.map(m=>m.role==='me'?bulleMoi(m.text):bulleSM(lireSM(m.text),m.id,acces())).join('');
+      if(SM.live!=null) h+=bulleSM(lireSM(SM.live));
+      if(!acces()&&!SM.busy&&(st.free_left|0)<=0)
+        h+=dit('That is my '+(st.free_total||7)+' for this month. Talk is cheap: '+HI+' keeps me with you, every day.')+offre();
+      else if(SM.offre&&!acces()) h+=offre();
+      return h;
+    }
+    function smNoteEtat(){
+      const st=etatSM();
+      if(!(me&&inscrit())||!st.ready){ smNote(''); return; }
+      if(acces()){ smNote(st.left!=null&&st.left<=5?st.left+' left today':''); return; }
+      const n=st.free_left|0;
+      if(n<=0){ smNote(''); return; }
+      $('lv-say-note').innerHTML=esc(n+' of '+(st.free_total||7)+' free this month · ')+'<button class="sm-link" type="button" data-sm-offer aria-label="Higher">'+HI+'</button> = every day';
     }
     function smPeindre(){
-      const ok=me&&inscrit()&&acces();
-      $('lv-say').classList.toggle('hide',!ok);
-      if(!ok){ fil.innerHTML=pitch(); return; }
-      /* Le plus récent en haut, sous la saisie ; dans un échange, ma phrase puis son reflet. */
-      const asc=SM.msgs.slice().reverse(), ech=[];
-      for(const m of asc){ if(m.role==='me'||!ech.length) ech.push([m]); else ech[ech.length-1].push(m); }
-      let html=SM.attente?bulle('me',null,SM.attente)+'<div class="sm-row"><span class="sm-av sm">'+T_SVG+'</span><div class="sm-b k-habit">…</div></div>':'';
-      html+=ech.reverse().map(e=>e.map(m=>bulle(m.role,m.kind,m.text,m.id,m.role==='sm')).join('')).join('');
-      fil.innerHTML=html||'<p class="lv-mono">Write as you are. Your Higher Self answers.</p>';
+      const st=etatSM(), ouvert=!!(me&&inscrit()&&st.ready&&(acces()||(st.free_left|0)>0));
+      $('lv-say').classList.toggle('hide',!ouvert);
+      $('lv-say-go').disabled=SM.busy;
+      const bas=SM.msgs.length>0&&fil.scrollHeight-fil.scrollTop-fil.clientHeight<40;
+      fil.innerHTML=smHTML();
+      if(bas||SM.busy) fil.scrollTop=fil.scrollHeight; else if(!SM.msgs.length) fil.scrollTop=0;
     }
+    /* Pendant le flux : un dessin par image, pas un par morceau. */
+    const smBientot=()=>{ if(!SM.raf) SM.raf=requestAnimationFrame(()=>{ SM.raf=0; smPeindre(); }); };
     window.__lvPeindreSM=smPeindre;
-    async function smEtat(){
-      smPeindre();
-      if(!(me&&inscrit()&&acces())||SM.charge) return;
-      const seq=++SM.seq, uid=me.id;
-      const {data,error}=await sb.rpc('sm_thread',{p_before:null,p_limit:30});
-      if(seq!==SM.seq||me?.id!==uid) return;
-      if(error||!data?.ok){ if(error) console.error('[sm_thread]',error.message); $('lv-say-note').textContent='my thread could not load'; return; }
-      SM.msgs=data.messages||[]; SM.charge=true; diag.sm++; smPeindre();
-    }
+    function smEtat(){ smPeindre(); smNoteEtat(); }
     const smNote=t=>{ $('lv-say-note').textContent=t||''; };
+    const maintenant=()=>{ const d=new Date(), p=n=>String(n).padStart(2,'0');
+      return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]+' '+d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes()); };
+    /* L'appel en flux : texte brut, mot à mot. Une erreur arrive en JSON. */
+    async function smFlux(corps,surTexte){
+      const {data:{session}}=await sb.auth.getSession(); if(!session) return {status:401,d:{error:'no_session'}};
+      let r;
+      try{
+        r=await fetch('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/higher-self',{method:'POST',
+          headers:{'content-type':'application/json',apikey:SB_ANON,authorization:'Bearer '+session.access_token},body:JSON.stringify(corps)});
+      }catch(e){ console.error('[higher-self]',e?.message||e); return {status:0,d:{error:'network'}}; }
+      if(!r.ok||!/text\/plain/.test(r.headers.get('content-type')||'')){
+        const d=await r.json().catch(()=>({})); console.error('[higher-self]',r.status,d.error||''); return {status:r.status,d};
+      }
+      const reste=r.headers.get('X-SM-Left'), haut=r.headers.get('X-SM-Higher')==='1';
+      let txt='';
+      try{
+        if(r.body&&r.body.getReader){
+          const rd=r.body.getReader(), dec=new TextDecoder();
+          for(;;){ const {value,done}=await rd.read(); if(done) break; txt+=dec.decode(value,{stream:true}); surTexte(txt); }
+        } else { txt=await r.text(); surTexte(txt); }
+      }catch(e){ console.error('[higher-self] flux',e?.message||e); }
+      return {status:200,d:{ok:txt.trim().length>=12,text:txt,left:reste===''||reste==null?null:+reste,higher:haut}};
+    }
     $('lv-say').addEventListener('submit',async e=>{
       e.preventDefault(); if(SM.busy) return;
       const inp=$('lv-say-in'), t=inp.value.trim(); if(t.length<2){ smNote('a few words'); return; }
-      SM.busy=true; SM.attente=t; inp.value=''; smNote(''); smPeindre();
-      const uid=me&&me.id, {d}=await fnAppel('higher-self',{action:'say',text:t});
-      SM.busy=false; SM.attente=null;
-      if(me?.id!==uid) return;
-      if(d.ok&&d.sm){ SM.msgs=[d.sm,d.me,...SM.msgs].filter(Boolean); diag.envois++; smPeindre(); smNote(d.left<=5?d.left+' left today':''); return; }
-      inp.value=t; smPeindre();
-      smNote(({higher_required:'Higher subscription needed',quota:'30 a day · back tomorrow',empty:'a few words',no_session:'sign in again'})[d.error]||'try again');
-      if(d.error==='higher_required'&&lvRefresh) lvRefresh();
+      const uid=me&&me.id, seq=++SM.seq;
+      const tours=SM.msgs.slice(-6).map(m=>({role:m.role,text:m.text}));
+      SM.msgs.push({role:'me',text:t}); SM.busy=true; SM.live=''; inp.value=''; smNote(''); smPeindre();
+      const {status,d}=await smFlux({action:'say',text:t,turns:tours,now:maintenant()},txt=>{ if(seq===SM.seq){ SM.live=txt; smBientot(); } });
+      if(seq!==SM.seq||me?.id!==uid) return;
+      SM.busy=false; SM.live=null;
+      if(d.ok){
+        SM.msgs.push({role:'sm',text:d.text,id:'r'+seq}); diag.envois++;
+        if(LAND&&LAND.sm&&d.left!=null){ LAND.sm.left=d.left; if(!d.higher) LAND.sm.free_left=d.left; }
+        smPeindre(); smNoteEtat(); return;
+      }
+      SM.msgs.pop(); inp.value=t;
+      if(status===402&&LAND&&LAND.sm){ LAND.sm.free_left=0; }
+      if((status===402||status===409)&&d.state&&LAND) LAND.sm={...(LAND.sm||{}),...d.state};
+      smPeindre(); smNoteEtat();
+      if(status!==402&&status!==409) smNote(({quota:'30 a day · back tomorrow',empty:'a few words',no_session:'sign in again'})[d.error]||'try again');
+      if(status===409&&lvRefresh) lvRefresh();
     });
     $('lv-say-in').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); $('lv-say').requestSubmit(); } });
-    fil.addEventListener('click',async e=>{
+    /* Le geste d'une réponse, tel qu'il part ailleurs : la solution, DO, WHY. */
+    const aPartager=m=>{ const r=lireSM(m.text); return [r.text, r.do&&'DO: '+r.do, r.why&&'WHY: '+r.why].filter(Boolean).join('\n'); };
+    async function smClic(e){
       const tg=e.target.closest('[data-tg]'), wa=e.target.closest('[data-wa]');
-      if(wa){ const m=SM.msgs.find(x=>String(x.id)===wa.dataset.wa); if(!m) return; diag.whatsapp++;
-              window.open('https://wa.me/?text='+encodeURIComponent(m.text),'_blank','noopener'); return; }
-      if(tg){ smNote('…'); const {d}=await fnAppel('higher-self',{action:'telegram',id:Number(tg.dataset.tg)});
+      if(wa){ const m=SM.msgs.find(x=>x.id===wa.dataset.wa); if(!m) return; diag.whatsapp++;
+              window.open('https://wa.me/?text='+encodeURIComponent(aPartager(m)),'_blank','noopener'); return; }
+      if(tg){ const m=SM.msgs.find(x=>x.id===tg.dataset.tg); if(!m) return; smNote('…');
+              const {d}=await fnAppel('higher-self',{action:'telegram',text:aPartager(m)});
               if(d.ok){ diag.telegram++; smNote('sent to my Telegram'); return; }
               if(d.error==='not_linked'){ smNote(await lierTelegram()?'in Telegram, press Start, then send again':'try again'); return; }
-              smNote(d.error==='blocked'?'TotehmBot is blocked in Telegram':'try again'); return; }
+              smNote(d.error==='blocked'?'TotehmBot is blocked in Telegram':d.error==='higher_required'?'with the subscription only':'try again'); return; }
+      const w=e.target.closest('[data-sm-write]');
+      if(w){ const v=w.dataset.smWrite; enter(()=>setView(v)); return; }
+      if(e.target.closest('[data-sm-offer]')){ SM.offre=true; smPeindre(); fil.scrollTop=fil.scrollHeight; return; }
       if(e.target.closest('[data-sm-connect]')){ LA_PORTE.reste=()=>aller('b'); ouvrirPorte(null); return; }
       if(e.target.closest('[data-sm-sub]')){ smNote('opening checkout…'); const {d}=await fnAppel('higher-sub',{action:'checkout'});
               if(d.url){ location.href=d.url; return; }
               smNote(({not_ready:'opening soon',active:'already active',no_session:'sign in again'})[d.error]||'try again');
               if(d.error==='active'&&lvRefresh) lvRefresh(); }
-    });
+    }
+    fil.addEventListener('click',smClic);
+    $('lv-say-note').addEventListener('click',smClic);
 
     /* ── À DROITE : le vêtement du moment (`totehm_cloth_support`), [Higher] dessus ── */
     const CLOTH={src:'', spot:{x:.5,y:.3,w:.3}, charge:false};
@@ -9173,9 +9286,9 @@ window.addEventListener('pageshow',e=>{
       if(error){ console.error('[my_landing]',error.message); return; }
       LAND=data||null;
       peindreCarte(); peindreHaut(); connPaint(); paintMe();
-      if(vue==='b') smEtat(); else smPeindre();
+      smPeindre(); if(vue==='b'&&!SM.paye) smNoteEtat();
     };
-    lvQuitter=()=>{ landSeq++; SM.seq++; SM.msgs=[]; SM.charge=false; SM.attente=null; visSeq++;
+    lvQuitter=()=>{ landSeq++; SM.seq++; SM.msgs=[]; SM.busy=false; SM.live=null; SM.offre=false; visSeq++;
                     $('lv-vis-note').textContent=''; smNote(''); };
     peindreCarte(); peindreHaut(); poser('c');
     if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(!bouge) sloganPour(vue); });
@@ -9183,9 +9296,10 @@ window.addEventListener('pageshow',e=>{
     /* Retour de Stripe (`?higher=paid`) : la vue du bas, et l'attente du webhook. */
     if(new URLSearchParams(location.search).get('higher')==='paid'){
       history.replaceState(null,'',location.pathname);
+      SM.paye=true;
       setTimeout(()=>{ aller('b'); smNote('payment received · opening TotehmSM');
         let n=0; const t=setInterval(async()=>{ n++; if(lvRefresh) await lvRefresh();
-          if(acces()||n>=8){ clearInterval(t); smNote(acces()?'':'it takes a moment · reopen this view soon'); } },1500); },600);
+          if(acces()||n>=8){ clearInterval(t); SM.paye=false; if(acces()) smNoteEtat(); else smNote('it takes a moment · reopen this view soon'); } },1500); },600);
     }
     return {vue:()=>vue, aller, getHigher, poser, reset};
   })();
