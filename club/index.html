@@ -104,7 +104,8 @@ h2{font-size:clamp(22px,5.4vw,40px)}
 .say b{color:#fff;font-weight:400}
 
 /* ── LE HÉROS ─────────────────────────────────────────────────────── */
-#hero{min-height:100svh;justify-content:center;padding-top:80px}
+#hero{min-height:52svh;justify-content:flex-end;padding-top:80px}   /* 09/10 : les spots se voient dès le premier écran */
+#spots{padding-top:36px}
 #hero .say{font-size:13px}
 #price-line{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--lo)}
 #price-line b{font-family:var(--title);font-size:19.8px;letter-spacing:.04em;color:#fff;font-weight:700;
@@ -149,6 +150,21 @@ h2{font-size:clamp(22px,5.4vw,40px)}
   transition:filter .15s ease,background .25s ease}
 .door::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--lo)}   /* 28/09 : le navy = les boîtes du Totehm, pas une porte */
 .door.love::before{background:var(--love)}
+/* ── LES SPOTS · 09/10 — se retrouver : à venir, en cours, passés ── */
+.sp-tabs{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.sp-tabs button{border:0;border-radius:10px;padding:8px 12px;background:var(--g2);color:var(--lo);font:400 10.5px/1.3 var(--mono);letter-spacing:.08em;cursor:pointer;white-space:nowrap}
+.sp-tabs button.is-on{background:#3a3a42;color:#fff;box-shadow:0 0 0 1px #fff}
+#sp-list{width:100%;display:flex;flex-direction:column;gap:6px;text-align:left}
+.sp-card{display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;border:0;cursor:pointer;background:var(--g2);color:#fff;padding:14px 16px 14px 19px;position:relative}
+.sp-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--love)}
+.sp-when{font:700 9.5px/1.4 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--lo)}
+.sp-habit{font:400 17px/1.3 var(--q);color:#fff}
+.sp-meta{font:400 11px/1.5 var(--mono);color:var(--mid)}
+.sp-mode{margin-left:8px;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#fff}
+.sp-by{font:400 11px/1.5 var(--mono);color:var(--lo)}
+.sp-by b{font:400 13px/1.4 var(--q);color:var(--coral)}
+.sp-empty{padding:18px 0;text-align:center;color:var(--dim);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.sp-rule{font-size:11px;color:var(--lo)}
 .door.enrich::before{background:var(--enrich)}
 @media(hover:hover){.door:hover{background:var(--g3);transform:scale(1.025)}}
 .door{transition:transform .22s cubic-bezier(.2,.9,.25,1),background .25s ease,filter .15s ease}
@@ -222,6 +238,12 @@ footer .line{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:
 .step .m:hover,
 .step .ok:hover,
 #cta-note:hover,
+.sp-tabs button:hover,
+.sp-when:hover,
+.sp-meta:hover,
+.sp-by:hover,
+.sp-empty:hover,
+.sp-rule:hover,
 .door .d:hover,
 .door p:hover,
 .door .go:hover,
@@ -291,73 +313,40 @@ body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,b
 
 <section id="hero">
   <div class="kick">FIGHER.CLUB</div>
-  <h1>Same.<br>But opposite.</h1>
-  <p class="say">The club of the TotehmPaper. Art, collections, the market — and the streets of Lisbon.</p>
-  <!-- 02/10 : la logique Get Higher + Lisbon, venue de higher.boutique. -->
-  <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
-    <a class="btn gh" id="higher-btn" href="/discover"><span class="get">Get</span><svg viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-slogan"></use></svg></a>
-    <a class="btn gh hide" id="lisbon-btn" href="/discover_lisbon">Make the Lisbon Streets <svg viewBox="0 0 600 200" aria-label="Higher"><use href="#higher-slogan"></use></svg></a>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
-      <a class="btn" href="/market">The market</a>
-      <a class="btn" href="/origins">Origins</a>
-    </div>
-  </div>
+  <!-- 09/10 : quatre domaines, quatre fonctions (Wah). figher.club = LA RENCONTRE
+       DANS LA RÉALITÉ : des spots autour d'une Habit, passés, en cours, à venir.
+       Get Higher, Stoner, Lisbon, Origins et le marché sont repartis sur
+       higher.boutique (l'achat) — leurs anciennes adresses y redirigent (308). -->
+  <h1>Meet<br>in reality.</h1>
+  <p class="say">One strategic Habit, practised together. Where it happens, when it happens: <b>next</b>, <b>now</b>, <b>past</b>.</p>
 </section>
 
-<section id="rope">
-  <div class="kick">01 · The door</div>
-  <h2>Two keys.</h2>
-  <p class="say">The club opens to every TotehmPaper owner with one Habit in their TOTEHM.</p>
-  <div class="rope">
-    <div class="step s1" id="st1">
-      <div class="n">1</div>
-      <div class="b"><div class="t">Own the TotehmPaper {THP}</div>
-        <div class="m">Get Higher · numbered, yours for life</div></div>
-      <div class="ok" id="st1-ok">—</div>
-    </div>
-    <div class="step s2" id="st2">
-      <div class="n">2</div>
-      <div class="b"><div class="t">Write one Habit Box</div>
-        <div class="m">In your TOTEHM, on totehm.com</div></div>
-      <div class="ok" id="st2-ok">—</div>
-    </div>
+<section id="spots">
+  <div class="kick">The spots</div>
+  <div class="sp-tabs" role="tablist" aria-label="When">
+    <button type="button" role="tab" data-sp="next" aria-selected="true" class="is-on">I will be here</button>
+    <button type="button" role="tab" data-sp="now" aria-selected="false">I am here</button>
+    <button type="button" role="tab" data-sp="past" aria-selected="false">I was there</button>
   </div>
-  <button class="btn main" id="cta" type="button">CONNECT WITH MY TOTEHM</button>
-  <div id="cta-note"></div>
+  <div id="sp-list" aria-live="polite"></div>
+  <div class="note" id="sp-note"></div>
+  <p class="say sp-rule">The city is for everyone. The exact place opens to the host's subscribers.</p>
 </section>
 
-<section id="opens">
-  <div class="kick">02 · What the club opens</div>
-  <h2>Collect.<br>Reveal.<br>Totehmize.</h2>
-  <p class="say">The same TOTEHM is the source. The club is where its art is collected.</p>
+<section id="how">
+  <div class="kick">How it works</div>
+  <h2>Show up.<br>Practise.<br>Leave a trace.</h2>
   <div class="doors">
-    <div class="door"><div class="d">figher.club</div><div class="h">Collect</div>
-      <p>TotehmPaper, Quantum, Play the Lisbon Street. Buy, own, resell — every copy numbered, every owner named.</p>
-      <a class="go" href="/market">Open the market</a></div>
-    <div class="door"><div class="d">figher.club</div><div class="h">Origins</div>
-      <p>The works born in the streets of Lisbon.</p>
-      <a class="go" href="/origins">See Origins</a></div>
-    <div class="door love"><div class="d">totehm.com</div><div class="h">Reveal the box</div>
-      <p>Search a 0.name worn in the street. The club reveals the box behind the cloth.</p>
-      <button class="go" data-go="reveal">Search a cloth</button></div>
-    <div class="door"><div class="d">higher.boutique</div><div class="h">Totehmize</div>
-      <p>Any box of your TOTEHM becomes a Cloth. With a TotehmPaper, your own luxury piece too.</p>
-      <button class="go" data-go="boutique">Open the boutique</button></div>
-  </div>
-</section>
-
-<section id="faq">
-  <div class="kick">03 · Questions</div>
-  <h2>The obvious stuff.</h2>
-  <div class="faq">
-    <details><summary>Why the TotehmPaper?</summary>
-      <p>It is the physical rule of the club: a numbered object for working with your strategy. Get Higher, here.</p></details>
-    <details><summary>Why one Habit Box?</summary>
-      <p>Because the TOTEHM is the source. One written Habit is enough to open the door.</p></details>
-    <details><summary>Where is my console?</summary>
-      <p>On totehm.com: visibility, subscriptions, money. One account, the same sign-in.</p></details>
-    <details><summary>Can I resell what I collect?</summary>
-      <p>Yes, on the market, when the collection allows it. Every sale is recorded, and the market shows the share that goes to TOTEHM.</p></details>
+    <div class="door love"><div class="d">the host</div><div class="h">Opens a spot</div>
+      <p>From one Habit of their TOTEHM: a place, a time, SILENT or SOCIAL.</p></div>
+    <div class="door love"><div class="d">you</div><div class="h">Join</div>
+      <p>Subscribe to the host to see the exact place. Then come and practise.</p></div>
+    <div class="door"><div class="d">totehm.com</div><div class="h">The strategy</div>
+      <p>Every spot starts from a Habit: why it matters lives in the TOTEHM.</p>
+      <button class="go" data-go="com">Open my TOTEHM</button></div>
+    <div class="door"><div class="d">totehm.space</div><div class="h">The inspiration</div>
+      <p>Strategic Habits lived on camera, with their objectives and repulsions.</p>
+      <button class="go" data-go="space">Open SPACE</button></div>
   </div>
 </section>
 
@@ -366,13 +355,12 @@ body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,b
 <footer>
   <div class="wm">FIGHER.CLUB</div>
   <div class="links">
-    <button class="nav-l" data-go="com">totehm.com</button>
-    <button class="nav-l" data-go="space">totehm.space</button>
-    <button class="nav-l" data-go="boutique">higher.boutique</button>
-    <a class="nav-l" href="/market">Market</a>
+    <button class="nav-l" data-go="com">totehm.com · strategy</button>
+    <button class="nav-l" data-go="space">totehm.space · inspiration</button>
+    <button class="nav-l" data-go="boutique">higher.boutique · wear &amp; own</button>
     <button class="nav-l" data-go="console">Console</button>
   </div>
-  <div class="line">The TOTEHM is the source. Every product is a different way of using it.</div>
+  <div class="line">The TOTEHM is the source. Every domain is a different way of living it.</div>
 </footer>
 
 <div id="sheet" role="dialog" aria-label="Member access">
@@ -381,7 +369,7 @@ body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,b
     <div id="sh-out">
       <div class="kick" style="margin-bottom:10px">One account, four doors</div>
       <!-- 30/09 : on se connecte PAR totehm.com (l'autorité d'identité). -->
-      <button class="btn main" id="sh-go" type="button">CONNECT WITH MY TOTEHM</button>
+      <button class="btn main" id="sh-go" type="button" data-eco-connect="1">CONNECT WITH MY TOTEHM</button>
       <div class="note" id="sh-note" style="margin-top:8px"></div>
     </div>
     <div id="sh-claim" class="hide">
@@ -523,61 +511,74 @@ sb.auth.onAuthStateChange(ev => {
 const PORTES = {
   com:      ['com',      'https://www.totehm.com/totehm#in'],
   space:    ['space',    'https://www.totehm.space/'],
-  boutique: ['boutique', 'https://www.higher.boutique/streetwear'],
-  /* 30/09 : le THP est une œuvre de la collection TOTEHMPAPER — il s'achète
-     sur le marché de FIGHER, même origine, pas de pont à traverser. */
-  thp:      [null, '/market?art=totehmpaper'],
+  boutique: ['boutique', 'https://www.higher.boutique/'],
+  /* 09/10 : le THP, Get Higher et le marché vivent sur la boutique (l'achat). */
+  thp:      ['boutique', 'https://www.higher.boutique/get_higher'],
   bot:      ['com',      'https://www.totehm.com/club/totehmbot'],
   /* 01/10 : la console vit sur totehm.com — on y passe par le pont. */
   console:  ['com',      'https://www.totehm.com/console'],
-  reveal:   ['com',      'https://www.totehm.com/console#s-reveal'],
 };
 document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => {
   const p = PORTES[b.dataset.go]; if(p) p[0] ? ssoVersDomaine(sb, p[0], p[1]) : (location.href = p[1]);
 });
 
-/* ══ GET HIGHER — venu de higher.boutique le 02/10 ══════════════════
-   Un visiteur voit /discover (le mur + le pourquoi). Un acheteur (email
-   dans stoner_access, prouvé par `stoner-gate`) va droit à /stoner. Sans
-   session, on ne peut rien prouver : on reste sur /discover. */
-let GATE = null;
-async function refreshHigher(){
-  let href = '/discover';
-  try{
-    const { data:{ session } } = await sb.auth.getSession();
-    if(session){
-      const r = await fetch(FN + 'stoner-gate', { method:'POST',
-        headers:{ 'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer ' + session.access_token } });
-      if(r.ok){ const j = await r.json(); GATE = j.access === true; if(GATE) href = '/stoner'; }
-      else console.error('[stoner-gate]', r.status);
-    } else GATE = null;
-  }catch(e){ console.error('[stoner-gate]', e && e.message || e); }
-  $('higher-btn').setAttribute('href', href);
+/* ══ LES SPOTS — se retrouver dans la réalité · 09/10/2026 ═══════════
+   À venir : `spots_list` (I WILL BE HERE) ; en cours et passés :
+   `spots_feed` (I AM HERE · I WAS THERE). Les droits sont ceux de SPACE
+   (`_spot_view`) : la ville pour tous, le point exact aux abonnés de l'hôte.
+   Un tap ouvre le spot sur totehm.space (sa fiche, sa vidéo) par le pont.
+   Une réponse tardive ne gagne jamais (`SP.seq`). */
+const SP = { seq:0, onglet:'next', next:[], now:[], past:[], charge:false };
+const ETAT = { next:'I will be here', now:'I am here', past:'I was there' };
+const quand = iso => { try{ const d = new Date(iso); return d.toLocaleDateString('en-GB',{ weekday:'short', day:'numeric', month:'short' }) + ' · ' + d.toLocaleTimeString('en-GB',{ hour:'2-digit', minute:'2-digit' }); }catch(_){ return ''; } };
+const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+async function chargerSpots(){
+  const seq = ++SP.seq;
+  const [l, f] = await Promise.all([
+    sb.rpc('spots_list', { p_q:null, p_intention:null, p_before:null, p_before_id:null, p_limit:12 }),
+    sb.rpc('spots_feed', { p_lat:null, p_lng:null, p_q:null, p_intention:null, p_before:null, p_limit:24 }),
+  ]);
+  if(seq !== SP.seq) return;
+  if(l.error) console.error('[spots_list]', l.error.message);
+  if(f.error) console.error('[spots_feed]', f.error.message);
+  SP.next = (l.data?.spots || []);
+  const feed = (f.data?.spots || []);
+  SP.now = feed.filter(x => x.state === 'am');
+  SP.past = feed.filter(x => x.state === 'was').slice(0, 12);
+  SP.charge = true;
+  if(l.error && f.error) $('sp-note').textContent = 'the spots could not load · try again';
+  paintSpots();
 }
-
-/* ══ MAKE THE LISBON STREETS HIGHER — masqué par défaut ══════════════
-   /api/geo lit l'en-tête Vercel x-vercel-ip-country : PT → le bouton
-   apparaît. Fail-closed : sans réponse, il reste caché. */
-let LISBON = false;
-(async () => {
-  try{
-    const r = await fetch('/api/geo', { cache:'no-store' });
-    if(!r.ok){ console.error('[geo]', r.status); return; }
-    const j = await r.json();
-    LISBON = j.lisbon === true;
-    if(LISBON) $('lisbon-btn').classList.remove('hide');
-  }catch(e){ console.error('[geo]', e && e.message || e); }
-})();
+function paintSpots(){
+  const rows = SP[SP.onglet] || [];
+  document.querySelectorAll('[data-sp]').forEach(b => { const on = b.dataset.sp === SP.onglet;
+    b.classList.toggle('is-on', on); b.setAttribute('aria-selected', String(on)); });
+  if(!SP.charge){ $('sp-list').innerHTML = ''; return; }
+  $('sp-list').innerHTML = rows.length ? rows.map(x => {
+    const lieu = x.exact?.name || x.exact?.label || x.city || '';
+    const mode = x.mode ? '<span class="sp-mode">' + esc(x.mode) + '</span>' : '';
+    return '<button class="sp-card" type="button" data-spot="' + esc(x.id) + '">'
+      + '<span class="sp-when">' + esc(ETAT[SP.onglet]) + ' · ' + esc(quand(x.starts_at)) + '</span>'
+      + '<span class="sp-habit">' + esc(x.habit) + '</span>'
+      + '<span class="sp-meta">' + (lieu ? esc(lieu) + ' · ' : '') + (x.duration_min ? esc(x.duration_min) + ' min' : '') + mode + '</span>'
+      + (x.creator ? '<span class="sp-by">by <b>' + esc(x.creator) + '</b></span>' : '')
+      + '</button>';
+  }).join('') : '<div class="sp-empty">' + ({ next:'No spot announced yet.', now:'Nobody is practising right now.', past:'No spot yet.' })[SP.onglet] + '</div>';
+}
+document.querySelectorAll('[data-sp]').forEach(b => b.onclick = () => { SP.onglet = b.dataset.sp; paintSpots(); });
+$('sp-list').addEventListener('click', e => {
+  const c = e.target.closest('[data-spot]'); if(!c) return;
+  ssoVersDomaine(sb, 'space', 'https://www.totehm.space/?spot=' + encodeURIComponent(c.dataset.spot));
+});
 
 /* ══ L'ÉTAT — une seule lecture, un seul bouton ═════════════════════ */
 let me = null, F = null;
 /* Le diagnostic — des booléens et des compteurs, jamais une valeur de
    membre. Dans la console : __totehm_club()  · `build` dit en trois
    secondes si la page ouverte est celle qu'on a livrée (règle du 22/09). */
-const BUILD='2026-10-05-spaces-boxes';
-window.__totehm_club = () => ({ build: BUILD, page: 'door', signed_in: !!me,
-  figher: F ? { thp: !!F.thp, habit: !!F.habit, member: !!F.member } : null,
-  higher_gate: GATE, lisbon: LISBON });
+const BUILD='2026-10-09-meet';
+window.__totehm_club = () => ({ build: BUILD, page: 'meet', signed_in: !!me,
+  spots: { next: SP.next.length, now: SP.now.length, past: SP.past.length, charge: SP.charge }, onglet: SP.onglet });
 async function loadState(){
   const { data:{ session } } = await sb.auth.getSession();
   me = session?.user || null;
@@ -586,31 +587,12 @@ async function loadState(){
     if(error) console.error('[figher_access]', error.message);
     F = data || null;
   } else F = null;
-  paintMember(); paintRope(); refreshHigher();
+  paintMember(); chargerSpots();
 }
 function paintMember(){
   $('member').classList.toggle('is-in', !!me);
   $('member-txt').textContent = me ? (F?.pseudo || 'Member') : 'CONNECT WITH MY TOTEHM';
 }
-function setStep(n, done, label){
-  $('st'+n).classList.toggle('done', !!done);
-  $('st'+n+'-ok').textContent = label;
-}
-function paintRope(){
-  const cta = $('cta'), note = $('cta-note');
-  note.textContent = '';
-  if(!me){
-    setStep(1, false, '—'); setStep(2, false, '—');
-    cta.textContent = 'CONNECT WITH MY TOTEHM'; cta.onclick = openSheet; return;
-  }
-  setStep(1, F?.thp, F?.thp ? (F?.number ? '#' + String(F.number).padStart(3,'0') : 'done') : 'missing');
-  setStep(2, F?.habit, F?.habit ? 'done' : 'missing');
-  if(F?.member){ cta.textContent = 'Open the market'; cta.onclick = () => { location.href = '/market'; }; return; }
-  if(!F?.thp){ cta.textContent = 'Get my TotehmPaper'; cta.onclick = () => { location.href = '/get_higher'; }; return; }
-  cta.textContent = 'Write my first Habit';
-  cta.onclick = () => ssoVersDomaine(sb, 'com', 'https://www.totehm.com/totehm#in');
-}
-
 /* ══ LA FEUILLE MEMBRE — email, code à 6 chiffres, pseudo ═══════════ */
 function openSheet(){ $('sheet').classList.add('show'); paintSheet(); }
 function paintSheet(){
@@ -635,7 +617,7 @@ $('sh-pseudo').addEventListener('keydown', async e => {
 });
 /* `scope:'local'` : quitter le Club ne ferme pas le Totehm ouvert ailleurs. */
 $('sh-out-btn').onclick = async () => { try{ await sb.auth.signOut({ scope:'local' }); }catch(e){ console.error('[signout]', e && e.message || e); }
-  me = null; F = null; paintMember(); paintRope(); $('sheet').classList.remove('show'); };
+  me = null; F = null; paintMember(); chargerSpots(); $('sheet').classList.remove('show'); };
 $('sh-name').onclick = () => ssoVersDomaine(sb, 'com', 'https://www.totehm.com/totehm#in');
 sb.auth.onAuthStateChange(async (ev) => {
   if(ev === 'SIGNED_IN' || ev === 'SIGNED_OUT'){ await loadState(); if($('sheet').classList.contains('show')) paintSheet(); }
