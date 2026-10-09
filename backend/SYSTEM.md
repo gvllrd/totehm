@@ -31,8 +31,13 @@
 | médias / dépendances | vraie capture 1080 × 1920 + audio, TUS et HLS signés testés avec fixtures locales ; villes/capture/HLS/licence Club identiques à SPACE |
 | advisors security | ERROR 5 → 5 ; notices authenticated security-definer 127 → 129 (les deux nouvelles RPC à accès contrôlé), autres comptes inchangés |
 | domaines du lot | SPACE BUILD `2026-10-09-space-feed` · Club `2026-10-09-club-map`, ancienne porte `/meet` · COM `2026-10-09-spaces-spots` |
+| publication / production | lot publié sur `chatgpt/space-spot` puis `main` ; GitHub signale les trois déploiements réussis ; Vercel SPACE/COM READY, API Club 403 (inspection 404), CLI absente |
+| contenu servi (pg_net, HTTP 200) | md5 = dépôt : SPACE `501ff45552539b882fbbe69c8f418cf8`, Club `665a8a30226d9a9e1ca9ebcabac767e1`, `/meet` `45655bc10cf804509e094e33c1d1fd45`, COM `2ea80275e890481cec3acfc3310c35f8` ; BUILD attendus |
+| lectures en production | membre : feed/spots/my_spots `[]`, signed_in true ; anon : feed/spots `[]`, signed_in false, my_spots interdit |
+| CORS depuis Club déployé (Chromium réel, aucune écriture) | create-bunny-upload 401 signin · space-delete 401 signin · spot-video 400 bad_spot ; trois origines figher.club, zéro erreur JS/CORS, radar et cinq vues visibles |
+| correction du déploiement hérité | spot-video v10 utilisait une ancienne copie d’origins.ts sans Club ; v11 redéployée avec le fichier du dépôt, entrée identique et verify_jwt true conservé ; avant : préflight bloqué, après : trois appels passent |
 | écarts techniques autorisés par Wah | lecteur feed direct (l’ancien déléguait à spots_feed), fixtures héritées actualisées aux écrivains shared/ON, caméra Club autorisée dans Permissions-Policy |
-| hors lot | boutique/Stripe/Edge Functions inchangés ; miroir phase 4 seulement sur « go miroir » |
+| hors lot | boutique/Stripe inchangés ; source Edge Functions inchangée, seul bundle spot-video remis à jour ; miroir phase 4 seulement sur « go miroir » |
 
 ## 0 · SPACES ET SPOTS REMIS À ZÉRO — 09/10/2026 (ter)
 
