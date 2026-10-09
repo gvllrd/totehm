@@ -2214,7 +2214,7 @@ body.gate.entered .ast-back{visibility:hidden}
    veut. En approchant, la bouche s'ouvre et la langue se tire ; posé
    dessus, le papier rapetisse et « Get [Higher] » apparaît là où il
    reposait. Lâché sur la langue : elle rentre avec lui, la bouche se
-   ferme, et c'est [Get Higher] — l'achat du TotehmPaper, sur figher.club.
+   ferme, et c'est [Get Higher] — l'achat du TotehmPaper, sur higher.boutique (09/10).
    Lâché ailleurs : il rentre à sa place, la bouche se referme.
 
    Les gris de la bouche sont ceux du dessin de Wah, au code près. Elle
@@ -3178,13 +3178,13 @@ body.gate:not(.entered):not(.folding) #ast-front{clip-path:circle(72% at 50% 50%
 body.gate.lv-b:not(.entered):not(.folding) #ast-front{clip-path:circle(29.5% at 50% 36.3%)}
 /* ── À DROITE : SPACE · le vêtement · la boutique ── */
 #lv-d-wrap{position:absolute;left:50%;transform:translateX(-50%);top:168px;width:min(94vw,860px);
-  display:grid;grid-template-columns:1fr 1fr;grid-template-areas:"cloth cloth" "space shop";gap:14px 12px;align-items:start}
+  display:grid;grid-template-columns:1fr 1fr;grid-template-areas:"cloth cloth" "space shop" "club club";gap:14px 12px;align-items:start}
 #lv-cloth{grid-area:cloth;justify-self:center;position:relative;width:min(62vw,300px,calc(100dvh - 430px));aspect-ratio:1/1;background:#0b0b0e}
 #lv-cloth img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .5s ease}
 #lv-cloth img.is-on{opacity:1}
 .lv-side{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
-#lv-space{grid-area:space}#lv-shop{grid-area:shop}
-@media(min-width:760px){#lv-d-wrap{grid-template-columns:1fr auto 1fr;grid-template-areas:"space cloth shop";align-items:center;top:150px}
+#lv-space{grid-area:space}#lv-shop{grid-area:shop}#lv-go-club{grid-area:club;justify-self:center}
+@media(min-width:760px){#lv-d-wrap{grid-template-columns:1fr auto 1fr;grid-template-areas:"space cloth shop" ". club .";align-items:center;top:150px}
   #lv-cloth{width:min(34vw,340px,calc(100dvh - 300px))}}
 /* ── LA MANETTE DE L'ATTERRISSAGE : celle du Totehm déplié, copiée ── */
 #ljoy{position:fixed;z-index:230;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);
@@ -3400,14 +3400,16 @@ a Totehm</span>
         <div id="lv-cloth"><img id="lv-cloth-img" alt=""></div>
         <div class="lv-side" id="lv-space">
           <div class="lv-h2">SPACE</div>
-          <p class="lv-mono">Do with me. Film a Habit now, or announce it for later. I will be here · I am here · I was there.</p>
+          <p class="lv-mono">Inspiration. Strategic Habits lived on camera, with their why. Mine too: film it now, or announce it.</p>
           <button class="lv-btn" id="lv-go-space" type="button">Open SPACE</button>
         </div>
         <div class="lv-side" id="lv-shop">
           <div class="lv-h2">HIGHER BOUTIQUE</div>
-          <p class="lv-mono">One Box of my TOTEHM becomes a cloth. Streetwear, and luxury on quote. Each piece is named 0.Name and decodes back to its Box.</p>
+          <p class="lv-mono">Wear it, own it. A Wisdom or Vision element of my TOTEHM becomes a cloth. Get Higher, the TotehmPaper, the art market.</p>
           <button class="lv-btn" id="lv-go-shop" type="button">Open the boutique</button>
         </div>
+        <!-- 09/10 : le quatrième domaine, sa fonction en une ligne. -->
+        <button class="lv-btn" id="lv-go-club" type="button">FIGHER.CLUB · meet in reality</button>
       </div>
     </section>
 
@@ -4880,7 +4882,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-09-slogan';
+const BUILD='2026-10-09-domaines';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -8884,7 +8886,7 @@ window.addEventListener('pageshow',e=>{
   PAPIER.surVerso=ouvrirRecherche;
   /* ══ SUR LA LANGUE : [GET HIGHER] · 03/10/2026 ═══════════════════════
      Le papier avalé, on part vers l'achat du TotehmPaper, là où il vit :
-     `figher.club/get_higher` (le branding Higher est sur le Club, 02/10).
+     `higher.boutique/get_higher` (09/10 : l'achat, physique et numérique, vit sur la boutique).
      Par le PONT : un membre connecté ici y arrive connecté (un invité y
      arrive tel quel, la page demande l'email au moment de payer). Le
      paiement reste un clic sur la page d'achat : c'est là que se donne
@@ -8892,7 +8894,7 @@ window.addEventListener('pageshow',e=>{
      geste sur un autre site. Un propriétaire du THP y trouve [Get Higher]
      vers la méthode. */
   PAPIER.surLangue=()=>{
-    ssoVersDomaine(sb,'club','https://www.figher.club/get_higher');
+    ssoVersDomaine(sb,'boutique','https://www.higher.boutique/get_higher');
     /* Si la navigation n'a pas lieu (bloquée, annulée), le papier revient. */
     setTimeout(()=>{ if(document.visibilityState==='visible') PAPIER.remettre(); },12000);
   };
@@ -8922,7 +8924,7 @@ window.addEventListener('pageshow',e=>{
      molette verticale descend vers le bas (deltaY > 0 → ↓). */
   const LV=(()=>{
     const CROIX_L={c:{h:'h',b:'b',g:'g',d:'d'}, h:{b:'c'}, b:{h:'c'}, g:{d:'c'}, d:{g:'c'}};
-    const NOMS={c:'my TOTEHM', h:'Get Higher', b:'TotehmSM', g:'search a TOTEHM', d:'SPACE · boutique'};
+    const NOMS={c:'my TOTEHM', h:'Get Higher', b:'TotehmSM', g:'search a TOTEHM', d:'SPACE · club · boutique'};
     const TEINTE_L={c:'--navy', h:'--blue', b:'--rep', g:'--rep', d:'--blue'};
     const slo=$('lv-slogan'), jy=$('ljoy'), jb=$('ljoy-box'), js=$('ljoy-stack');
     const diag={allers:0, sm:0, envois:0, telegram:0, whatsapp:0};
@@ -9015,10 +9017,10 @@ window.addEventListener('pageshow',e=>{
     /* [Get Higher] : le papier posé sur la langue est avalé, puis le Club. */
     function getHigher(){
       if(vue!=='h'||bouge) return;
-      if(!PAPIER.avalerIci()) ssoVersDomaine(sb,'club','https://www.figher.club/get_higher');
+      if(!PAPIER.avalerIci()) ssoVersDomaine(sb,'boutique','https://www.higher.boutique/get_higher');
     }
     PAPIER.surLangue=()=>{
-      ssoVersDomaine(sb,'club','https://www.figher.club/get_higher');
+      ssoVersDomaine(sb,'boutique','https://www.higher.boutique/get_higher');
       /* La navigation n'a pas lieu (bloquée, annulée) : tout revient au centre. */
       setTimeout(()=>{ if(document.visibilityState==='visible'){ PAPIER.remettre(); reset(); } },12000);
     };
@@ -9330,6 +9332,7 @@ window.addEventListener('pageshow',e=>{
     }
     $('lv-go-space').onclick=()=>ssoVersDomaine(sb,'space','https://www.totehm.space/');
     $('lv-go-shop').onclick=()=>ssoVersDomaine(sb,'boutique','https://www.higher.boutique/');
+    $('lv-go-club').onclick=()=>ssoVersDomaine(sb,'club','https://www.figher.club/');
 
     /* ── LES DONNÉES : `my_landing()`, une réponse tardive ne gagne jamais ── */
     let landSeq=0;

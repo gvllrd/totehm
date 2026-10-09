@@ -35,8 +35,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-<title>TOTEHM.SPACE</title>
-<meta name="description" content="Do with me. A habit of my TOTEHM, here and now.">
+<title>TOTEHM.SPACE — strategic Habits, lived</title>
+<meta name="description" content="Inspiration: strategic Habits of a TOTEHM, lived on camera, with their why.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://abujjbkbbiumxrokozph.supabase.co" crossorigin>
@@ -503,6 +503,7 @@ body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,b
 #space-about.eco-text-btn{max-inline-size:calc(50vw - 70px)}
 .space-definition{font:400 12px/1.85 var(--mono);color:var(--mid);display:flex;flex-direction:column;gap:18px;text-align:center}
 .space-definition h2{font:700 13px var(--mono);color:#fff}
+.space-definition .space-domains{font-size:10px;letter-spacing:.08em;color:var(--lo,#9a9a9a)}
 .space-higher{width:57px;height:19px;vertical-align:-5px}
 .mini-toggle{width:fit-content;padding:6px 8px;border:0;border-radius:4px;background:var(--s2);color:var(--lo);font:700 9px var(--mono);letter-spacing:.08em;cursor:pointer}
 .mini-toggle.m-o.is-on{background:var(--plus);color:#fff}.mini-toggle.m-r.is-on{background:var(--rep);color:#fff}
@@ -553,9 +554,11 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
 <button id="space-about" type="button" data-space-about="1">What is a space?</button>
 <template id="space-definition"><div class="space-definition">
 <h2>What is a space?</h2>
+<p>TOTEHM.SPACE shows strategic Habits, lived: one Habit of a TOTEHM, filmed where it happens, with the objectives and repulsions that say why.</p>
 <p>A space is a <svg viewBox="0 0 600 200" class="space-higher" aria-label="Higher"><use href="#higher-badge"/></svg> spot: a place where you put your TOTEHM into action, in line with your habits, goals and vision.</p>
 <p>At home, in a private venue or outside. Alone or alongside like-minded people, whose shared energy can lift the group: collective effervescence.</p>
 <p>SOCIAL: we can talk. SILENT: nobody disturb me. Respect everyone's space, boundaries and chosen mode. A location is never an invitation to enter a private place.</p>
+<p class="space-domains">totehm.com builds the strategy · totehm.space shows it lived · figher.club meets in reality · higher.boutique wears and owns it.</p>
 </div></template>
 <header id="heading">
 <div id="tp-wrap">
@@ -761,7 +764,7 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
 const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query=' + Number(lat).toFixed(5) + '%2C' + Number(lng).toFixed(5);
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD='2026-10-06-spaces-loupe';
+const BUILD='2026-10-09-domaines';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'radar';
