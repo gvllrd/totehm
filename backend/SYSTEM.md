@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 9 octobre 2026, séparation space / spot** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 9 octobre 2026, lot space / spot relu et corrigé** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -15,6 +15,19 @@
 
 ---
 
+
+## 0 · LOT SPACE / SPOT RELU ET CORRIGÉ — 09/10/2026 (quinquies)
+
+| quoi | valeur mesurée |
+|---|---|
+| erreurs trouvées dans le lot ChatGPT | figher.club : ~25 textes visibles disaient « space » (indice, caméra, plan, agenda, My spots, joystick, `.ics`) · vue passés au téléphone : boussole et zoom par-dessus la liste (règles `v-feed` supprimées au lieu d'être renommées `v-past`) · dates passés en format US · SPACE : « What is a space? » décrivait un lieu de rencontre ; My spaces affichait I WILL BE HERE pour un contenu · COM : « 1 SPACES », comptes faits sur 3 éléments mélangés, un test qui figeait l'erreur |
+| migration `habit_spaces_split` (`20261009211744`, MCP) | même signature ; `spaces` / `spots` séparés, `total_spaces`, `total_spots`, `total` = somme ; anon refusé |
+| auto-tests SQL | `habit_spaces_split` FAIL={} (4 spaces dont 1 privé + 2 spots : propriétaire 4/2, lecteur 3/2, aucun point) · `space_spot_split` (adapté) FAIL={} · `habit_spaces` FAIL={} |
+| navigateur (Supabase simulé) | space 37/37 · space_top_left 20/20 · spaces_loupe 26/26 · space_boxes_ecosystem 22/22 · club_map 42/42 · club_publish 33/33 · club_ui 27/27 · club_luxury 48/48 · space_spot_links 35/35 · com_croix 51/51 · com_read_copy 20/20 · com_cloths 16/16 |
+| non exécuté ici | `space_video` : délai dépassé AUSSI sur `a093940` (avant le lot) dans cet environnement — lecture HLS du Chromium de test, pas le code |
+| Vercel `3094944` | com · space · club · boutique READY (production) |
+| md5 prod = dépôt (pg_net, 200) | totehm.space `450c0a6b…` `2026-10-09-space-only` · figher.club `ef037fac…` `2026-10-09-club-spots` (aucun « into a space », « What is a spot? » présent) · `/meet` `45655bc1…` · totehm.com/totehm `81187519…` `2026-10-09-habit-split` |
+| base | 0 space publié · 0 spot actif (vide, comme attendu) |
 
 ## 0 · SPACE / SPOT SÉPARÉS — 09/10/2026 (quater)
 
