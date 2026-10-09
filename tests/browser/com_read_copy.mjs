@@ -14,7 +14,7 @@ try{
  {const {pg,log}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
   ok(await pg.locator('.geste').count()===0&&(await pg.textContent('#lv-tap')).trim()==='Click to open it'&&await pg.isVisible('#lv-tap'),'au centre : plus de gestes, « Click to open it »');
-  ok(await pg.$eval('#lv-slogan',e=>e.className)==='is-c'&&await pg.locator('#lv-slogan use[href="#higher-badge"]').count()===1&&/Strategy/.test(await pg.textContent('#lv-slogan .lvs-strat')),'[Higher] Strategy : le badge SVG, jamais du texte');
+  ok(await pg.$eval('#lv-slogan',e=>[...e.classList].filter(k=>/^is-.$/.test(k)).join(' '))==='is-c'&&await pg.locator('#lv-slogan use[href="#higher-badge"]').count()===1&&/Strategy/.test(await pg.textContent('#lv-slogan .lvs-strat')),'[Higher] Strategy : le badge SVG, jamais du texte');
   await pg.click('#lcur-g');await pg.waitForTimeout(1600);
   const q=await pg.evaluate(()=>({v:document.getElementById('srch-q').value,ph:document.getElementById('srch-q').placeholder,rows:document.querySelectorAll('#srch-res .srch-row').length,hint:document.getElementById('srch-hint').textContent,vue:window.__totehm_lv().vue}));
   ok(q.vue==='g'&&q.v===''&&q.ph==="a member's name"&&q.rows===0&&/member's TOTEHM/.test(q.hint),'à gauche : une recherche vide, rien d\'autre ('+q.hint+')');

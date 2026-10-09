@@ -44,7 +44,7 @@ try{
   ok(Math.abs(p[0]+p[2]/2-L[0])<3&&Math.abs(p[1]+p[3]/2-L[1])<3&&p[2]<chez[2]*.5,'posé sur le bout de la langue, en buvard ('+Math.round(p[2])+' px pour '+chez[2]+')');
   ok(await langueT(pg)>-40&&(await lv(pg)).vue==='h','la langue est tirée ; la vue est Get Higher');
   const s=await pg.evaluate(()=>{const g=document.querySelector('#lv-slogan .lvs-get'),c=getComputedStyle(g);
-    return {cls:document.getElementById('lv-slogan').className,op:c.opacity,ff:c.fontFamily,col:c.color,use:document.querySelector('#lv-slogan use').getAttribute('href'),
+    return {cls:[...document.getElementById('lv-slogan').classList].filter(k=>/^is-.$/.test(k)).join(' '),op:c.opacity,ff:c.fontFamily,col:c.color,use:document.querySelector('#lv-slogan use').getAttribute('href'),
       y:document.getElementById('lv-slogan').getBoundingClientRect().top};});
   ok(s.cls==='is-h'&&s.op==='1'&&/Quantico/.test(s.ff)&&s.col==='rgb(251, 213, 202)'&&s.use==='#higher-badge','[Higher] a glissé : « Get » en Quantico corail, Higher = le badge SVG');
   ok(s.y>L[1]&&/distills selected mental-performance techniques/.test(await pg.textContent('#lv-thp-say'))&&await pg.isVisible('#lv-thp-say'),'sous la langue : Get [Higher], puis le TotehmPaper expliqué (pas de THP)');
@@ -54,7 +54,7 @@ try{
   await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(1200);
   ok(await tf(pg)===''&&JSON.stringify(await R(pg,'#gate-asteroid'))===JSON.stringify(chez)&&(await lv(pg)).vue==='c','↓ : le papier est chez lui, exactement à sa place');
   ok(await pg.$eval('#m-lips',e=>e.getAttribute('d'))===d0&&await pg.$eval('#m-tongue',e=>e.getAttribute('transform'))===t0&&await pg.$eval('#gate-mouth',e=>getComputedStyle(e).visibility)==='hidden','la bouche est refermée EXACTEMENT comme le balisage, puis se retire');
-  ok(await pg.$eval('#lv-slogan',e=>e.className)==='is-c'&&await pg.$eval('#lv-slogan .lvs-strat',e=>getComputedStyle(e).opacity)==='1','au centre : [Higher] Strategy');
+  ok(await pg.$eval('#lv-slogan',e=>[...e.classList].filter(k=>/^is-.$/.test(k)).join(' '))==='is-c'&&await pg.$eval('#lv-slogan .lvs-strat',e=>getComputedStyle(e).opacity)==='1','au centre : [Higher] Strategy');
   // ↑ puis [Get Higher] : avalé, elle jouit, la langue rentrée, puis le Club par le pont
   await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(1300);
   await pg.click('#lv-slogan');

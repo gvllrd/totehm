@@ -49,7 +49,7 @@ try{
   await pg.click('#lcur-b');await pg.waitForTimeout(1500);
   const b=await pg.evaluate(()=>{const cs=s=>getComputedStyle(document.querySelector(s));
     const t=document.getElementById('lv-thumb').getBoundingClientRect(),p=document.getElementById('gate-asteroid').getBoundingClientRect();
-    return {vue:window.__totehm_lv().vue,cls:document.getElementById('lv-slogan').className,self:cs('#lv-slogan .lvs-self').opacity,dbl:!!document.getElementById('lv-slogan2'),
+    return {vue:window.__totehm_lv().vue,cls:[...document.getElementById('lv-slogan').classList].filter(k=>/^is-.$/.test(k)).join(' '),self:cs('#lv-slogan .lvs-self').opacity,dbl:!!document.getElementById('lv-slogan2'),
       tag:document.getElementById('lv-b-tag').textContent,first:document.querySelector('#sm-first .sm-b').textContent,
       clip:cs('#ast-front').clipPath,t:[t.left+t.width/2,t.top+t.height/2,t.width],p:[p.left+p.width/2,p.top+.363*p.height,.59*p.width],
       say:document.getElementById('lv-say').classList.contains('hide'),note:document.getElementById('lv-say-note').textContent,joy:document.getElementById('ljoy-say').textContent};});
@@ -126,7 +126,7 @@ try{
   const d=await pg.evaluate(()=>{const i=document.getElementById('lv-cloth').getBoundingClientRect(),s=document.querySelector('#lv-slogan svg').getBoundingClientRect(),
     p=document.getElementById('gate-asteroid').getBoundingClientRect();
     return {vue:window.__totehm_lv().vue,vet:window.__totehm_lv().vetement,img:document.getElementById('lv-cloth-img').classList.contains('is-on'),
-      cls:document.getElementById('lv-slogan').className,spot:[i.left+i.width*.5,i.top+i.height*.35],s:[s.left+s.width/2,s.top+s.height/2],
+      cls:[...document.getElementById('lv-slogan').classList].filter(k=>/^is-.$/.test(k)).join(' '),spot:[i.left+i.width*.5,i.top+i.height*.35],s:[s.left+s.width/2,s.top+s.height/2],
       py:p.top+p.height/2,H:innerHeight,tf:document.getElementById('gate-card').style.transform,
       space:document.getElementById('lv-space').textContent,shop:document.getElementById('lv-shop').textContent};});
   ok(d.vue==='d'&&d.vet&&d.img&&log.rpc.length>=0,'→ : le vêtement du moment, lu dans totehm_cloth_support');
@@ -207,4 +207,17 @@ try{
     'discover : le récit d\'origine est restauré, de l\'énergie aux années perdues');
   ok(!t.join(' ').match(/invest/i),'jamais « investment » (MiCA) : la valeur se dit par ce que le THP ouvre');
   ok(!erreurs(log).length,'club : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+ // ── 10 · AU CHARGEMENT (09/10) : le badge [Higher] n'apparaît jamais au coin ──
+ for(const vp of [{width:390,height:844},{width:1280,height:800}]){
+  const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND()},viewport:vp,
+    network:async url=>{ if(url.host==='esm.sh') await new Promise(r=>setTimeout(r,1500)); return null; }});
+  await pg.addInitScript(()=>{window.__coin=0;window.__vu=0;const t0=performance.now();
+    const f=()=>{const e=document.getElementById('lv-slogan');
+      if(e){const r=e.querySelector('svg').getBoundingClientRect(),cs=getComputedStyle(e);
+        if(cs.visibility!=='hidden'&&cs.display!=='none'&&+cs.opacity>0){window.__vu++;if(r.left<20&&r.top<20)window.__coin++;}}
+      if(performance.now()-t0<3000)requestAnimationFrame(f);};requestAnimationFrame(f);});
+  await pg.goto(origin+'/totehm');await pg.waitForTimeout(3200);
+  const m=await pg.evaluate(()=>{const r=document.querySelector('#lv-slogan svg').getBoundingClientRect();return {coin:window.__coin,vu:window.__vu,x:r.left+r.width/2,W:innerWidth};});
+  ok(m.coin===0&&m.vu>0&&Math.abs(m.x-m.W/2)<m.W*.2,'module retardé de 1,5 s ('+vp.width+' px) : jamais au coin ('+m.coin+' images), puis au centre');
+  ok(!erreurs(log).length,'chargement lent : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 }finally{await browser.close();}
