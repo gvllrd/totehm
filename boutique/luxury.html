@@ -658,7 +658,7 @@ $('name-input').addEventListener('input', () => {
   }, 420);
 });
 $('signin').onclick = () => ssoLogin(false, '/luxury');
-$('get-higher').onclick = () => ssoVersDomaine(sb, 'club', 'https://www.figher.club/discover');
+$('get-higher').onclick = () => { location.href = '/discover'; };   /* 09/10 : Get Higher est ici, sur la boutique */
 $('member').onclick = () => { if(!ME) ssoLogin(false, '/luxury'); else location.href = '/#luxury'; };
 
 /* ── L'ADMINISTRATEUR — Wah répond par un prix (c'est son « oui ») ── */

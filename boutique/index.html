@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Higher — Totehm</title>
+<title>HIGHER.BOUTIQUE — wear it, own it</title>
 <link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 /* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
@@ -58,6 +58,9 @@ body{display:flex;flex-direction:column;align-items:center;min-height:100vh;over
 /* boutons de marque */
 .btn-sig{font-family:'Space Mono',monospace;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:#1f1f24;border-radius:10px;cursor:pointer;border:6px solid transparent;padding:0 4px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
 .higher-inline{height:1.5em;width:auto;vertical-align:-.32em;display:inline-block;margin:0 .04em}
+/* 09/10 — la fonction du domaine, dite une fois, à voix basse. */
+.fn-line{font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#7a7a82;margin:0 0 6px;text-align:center}
+.art-row{flex-direction:row!important;flex-wrap:wrap;justify-content:center;gap:8px}
 .wm-totehm{font-family:'Space Mono',monospace;font-weight:700;font-style:normal;color:#fff;letter-spacing:.16em;margin-right:-.16em;text-transform:uppercase}
 @media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}}
 .btn-sig:active{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}
@@ -165,6 +168,8 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -173,6 +178,7 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 .chev:hover,
 .tagline:hover,
 .btn-sig:hover,
+.fn-line:hover,
 .btn-back:hover,
 .note.dim:hover,
 .dc-meta:hover,
@@ -251,8 +257,14 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
 <nav>
   <div id="menu-main" style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%">
 
-    <!-- 02/10 : Get Higher et Make the Lisbon Streets Higher vivent sur
-         figher.club. La boutique = la totehmisation : Streetwear et Luxe. -->
+    <!-- 09/10 : quatre domaines, quatre fonctions (Wah). La boutique = l'ACHAT,
+         physique et numérique : Get Higher (TotehmPaper, Stoner, Lisbonne),
+         les Cloths, le marché de l'art. Retour de figher.club (02/10 → 09/10). -->
+    <div class="fn-line">physical &amp; digital · wear it · own it</div>
+    <a class="btn-sig" id="higher-btn" href="/discover">Get <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></a>
+    <a class="btn-sig hide" id="lisbon-btn" href="/discover_lisbon">Make the Lisbon Streets <svg class="higher-inline" viewBox="0 0 600 200"><use href="#higher-slogan"></use></svg></a>
+
+    <div class="menu-gap"></div>
 
     <!-- 1 : Streetwear -->
     <div class="sw-block">
@@ -276,6 +288,11 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <button class="btn-sig" id="decode-btn">Decode a Totehm Cloth</button>
       <input class="line-input hide" id="decode-input" maxlength="40" placeholder="ex: 0.Test">
       <div class="note dim hide" id="decode-note"></div>
+    </div>
+
+    <div class="menu-row art-row">
+      <a class="btn-sig" href="/market">The art market</a>
+      <a class="btn-sig" href="/origins">Origins</a>
     </div>
 
     <div class="menu-gap"></div>
@@ -549,11 +566,44 @@ $('email-input').addEventListener('keydown',async(e)=>{
   $('sw-col-sold').textContent=left>0?left+' pieces left':'sold out';
 })();
 
-/* ══ VERS FIGHER.CLUB — LE PONT · 02/10/2026 ═════════════════════════
-   Get Higher et Origins vivent sur figher.club. Un membre connecté ici y
-   arrive connecté : `sso-mint` émet un code (60 s, usage unique, cible
-   `club` — un NOM, jamais une URL). Copié de tools/sso_snippet.js. Si le
-   pont tousse, on part quand même : dégradé, pas cassé. */
+/* ══ GET HIGHER — la porte · revenu le 09/10/2026 (d'origine sur la boutique)
+   Un invité voit /discover (le pourquoi, le prix). Un propriétaire du THP
+   (`stoner-gate` lit SA session) va droit à la méthode, /stoner. Sans
+   session, rien à prouver : /discover. */
+(()=>{
+  const GATE='https://abujjbkbbiumxrokozph.supabase.co/functions/v1/stoner-gate';
+  async function refreshHigher(){
+    let href='/discover';
+    try{
+      const {data:{session}}=await sb.auth.getSession();
+      if(session){
+        const r=await fetch(GATE,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token}});
+        if(r.ok){ const j=await r.json(); if(j.access===true) href='/stoner'; }
+        else console.error('[stoner-gate]',r.status);
+      }
+    }catch(e){ console.error('[stoner-gate]',e&&e.message||e); }
+    $('higher-btn').setAttribute('href',href);
+  }
+  refreshHigher();
+  sb.auth.onAuthStateChange(()=>refreshHigher());
+})();
+
+/* ══ MAKE THE LISBON STREETS HIGHER — Lisbonne seulement
+   /api/geo lit l'en-tête Vercel x-vercel-ip-country : PT → le bouton.
+   Fermé par défaut : sans réponse, il reste caché. */
+(async()=>{
+  try{
+    const r=await fetch('/api/geo',{cache:'no-store'});
+    if(!r.ok) return;
+    const j=await r.json();
+    if(j.lisbon===true) $('lisbon-btn').classList.remove('hide');
+  }catch(_){}
+})();
+
+/* ══ LE PONT VERS UN AUTRE DOMAINE · 02/10/2026 ═════════════════════════
+   Un membre connecté ici arrive connecté ailleurs : `sso-mint` émet un code
+   (60 s, usage unique, cible = un NOM, jamais une URL). Copié de
+   tools/sso_snippet.js. Si le pont tousse, on part quand même. */
 const SSO_FN='https://abujjbkbbiumxrokozph.supabase.co/functions/v1/';
 const SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
 async function ssoVersDomaine(sb, cible, url){

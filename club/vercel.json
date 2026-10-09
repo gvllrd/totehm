@@ -37,6 +37,114 @@
       "source": "/console.html",
       "destination": "https://www.totehm.com/console",
       "permanent": true
-    }
+    },
+    {
+      "source": "/discover",
+      "destination": "https://www.higher.boutique/discover",
+      "permanent": true
+    },
+    {
+      "source": "/discover.html",
+      "destination": "https://www.higher.boutique/discover",
+      "permanent": true
+    },
+    {
+      "source": "/discover_lisbon",
+      "destination": "https://www.higher.boutique/discover_lisbon",
+      "permanent": true
+    },
+    {
+      "source": "/discover_lisbon.html",
+      "destination": "https://www.higher.boutique/discover_lisbon",
+      "permanent": true
+    },
+    {
+      "source": "/get_higher",
+      "destination": "https://www.higher.boutique/get_higher",
+      "permanent": true
+    },
+    {
+      "source": "/get_higher.html",
+      "destination": "https://www.higher.boutique/get_higher",
+      "permanent": true
+    },
+    {
+      "source": "/play_lisbon_street",
+      "destination": "https://www.higher.boutique/play_lisbon_street",
+      "permanent": true
+    },
+    {
+      "source": "/play_lisbon_street.html",
+      "destination": "https://www.higher.boutique/play_lisbon_street",
+      "permanent": true
+    },
+    {
+      "source": "/origins",
+      "destination": "https://www.higher.boutique/origins",
+      "permanent": true
+    },
+    {
+      "source": "/origins.html",
+      "destination": "https://www.higher.boutique/origins",
+      "permanent": true
+    },
+    {
+      "source": "/stoner",
+      "destination": "https://www.higher.boutique/stoner",
+      "permanent": true
+    },
+    {
+      "source": "/stoner.html",
+      "destination": "https://www.higher.boutique/stoner",
+      "permanent": true
+    },
+    {
+      "source": "/stoner_terms",
+      "destination": "https://www.higher.boutique/stoner_terms",
+      "permanent": true
+    },
+    {
+      "source": "/stoner_terms.html",
+      "destination": "https://www.higher.boutique/stoner_terms",
+      "permanent": true
+    },
+    {
+      "source": "/market",
+      "destination": "https://www.higher.boutique/market",
+      "permanent": true
+    },
+    {
+      "source": "/market.html",
+      "destination": "https://www.higher.boutique/market",
+      "permanent": true
+    },
+    {
+      "source": "/assets/signs/:file",
+      "destination": "https://www.higher.boutique/assets/signs/:file",
+      "permanent": true
+    },
+    {
+      "source": "/lisbon",
+      "destination": "https://www.higher.boutique/discover_lisbon",
+      "permanent": true
+    },
+    { "source": "/discover", "destination": "https://www.higher.boutique/discover", "permanent": true },
+    { "source": "/discover.html", "destination": "https://www.higher.boutique/discover", "permanent": true },
+    { "source": "/discover_lisbon", "destination": "https://www.higher.boutique/discover_lisbon", "permanent": true },
+    { "source": "/discover_lisbon.html", "destination": "https://www.higher.boutique/discover_lisbon", "permanent": true },
+    { "source": "/get_higher", "destination": "https://www.higher.boutique/get_higher", "permanent": true },
+    { "source": "/get_higher.html", "destination": "https://www.higher.boutique/get_higher", "permanent": true },
+    { "source": "/play_lisbon_street", "destination": "https://www.higher.boutique/play_lisbon_street", "permanent": true },
+    { "source": "/play_lisbon_street.html", "destination": "https://www.higher.boutique/play_lisbon_street", "permanent": true },
+    { "source": "/origins", "destination": "https://www.higher.boutique/origins", "permanent": true },
+    { "source": "/origins.html", "destination": "https://www.higher.boutique/origins", "permanent": true },
+    { "source": "/stoner", "destination": "https://www.higher.boutique/stoner", "permanent": true },
+    { "source": "/stoner.html", "destination": "https://www.higher.boutique/stoner", "permanent": true },
+    { "source": "/stoner_terms", "destination": "https://www.higher.boutique/stoner_terms", "permanent": true },
+    { "source": "/stoner_terms.html", "destination": "https://www.higher.boutique/stoner_terms", "permanent": true },
+    { "source": "/market", "destination": "https://www.higher.boutique/market", "permanent": true },
+    { "source": "/market.html", "destination": "https://www.higher.boutique/market", "permanent": true },
+    { "source": "/lisbon", "destination": "https://www.higher.boutique/discover_lisbon", "permanent": true },
+    { "source": "/assets/signs/:file", "destination": "https://www.higher.boutique/assets/signs/:file", "permanent": true }
   ]
 }
