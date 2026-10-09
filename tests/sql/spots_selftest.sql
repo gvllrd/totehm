@@ -34,8 +34,13 @@ begin
 
   -- ── A crée (gratuit, sans passeport) ──
   perform set_config('request.jwt.claims', json_build_object('sub', ua, 'role', 'authenticated')::text, true);
+  -- New writers reject PRIVATE; keep a historical private fixture to test all its rights.
   r := public.spot_create('Selftest sprint', 'private', 45, clip_p, lis_lat, lis_lng, 'Lisbon', 'mine only');
+  if r->>'why' is distinct from 'visibility' then fails := array_append(fails, 'new_private_refused'); end if;
+  r := public.spot_create('Selftest sprint', 'shared', 45, clip_p, lis_lat, lis_lng, 'Lisbon', 'mine only', 'silent', 'off');
   v_p := (r->>'id')::uuid;
+  update public.spot_plans set visibility='private' where spot_id=v_p and user_id=ua;
+  update public.spots set active=false where id=v_p and user_id=ua;
   out := out || 'create_private=' || coalesce(r->>'ok','null');
   r := public.spot_create('Selftest sprint', 'shared', 45, clip_off, lis_lat, lis_lng, 'Lisbon', null, 'silent', 'off');
   v_off := (r->>'id')::uuid;
@@ -45,7 +50,7 @@ begin
   out := out || ' | create_shared_on=' || coalesce(r->>'ok','null');
   r := public.spot_create('Selftest sprint', 'shared', 45, clip_on, lis_lat, lis_lng, 'Lisbon');
   if r->>'why' <> 'location' then fails := array_append(fails, 'shared_needs_location'); end if;
-  r := public.spot_create('Selftest sprint', 'private', 2, clip_p, lis_lat, lis_lng);
+  r := public.spot_create('Selftest sprint', 'shared', 2, clip_p, lis_lat, lis_lng, 'Lisbon', null, 'silent', 'on');
   if r->>'why' <> 'duration' then fails := array_append(fails, 'duration_bounds'); end if;
   r := public.spot_create('Not my habit', 'private', 45, clip_p, lis_lat, lis_lng);
   if r->>'why' <> 'habit' then fails := array_append(fails, 'habit_from_my_totehm'); end if;
@@ -118,7 +123,7 @@ begin
 
   -- ── La mémoire du bot survit à l'arrêt ──
   insert into public.bot_subscriptions(user_id, status) values (ua, 'canceled')
-    on conflict (user_id) do update set status = 'canceled';
+    on conflict (user_id) do update set status = 'canceled' where bot_subscriptions.user_id=excluded.user_id;
   r := public._bot_memory(ua);
   out := out || ' | memory_spots=' || (select count(*) from jsonb_array_elements(r->'spots') e where e->'facts'->>'habit' = 'Selftest sprint');
   if exists (select 1 from public.spot_plans where spot_id = v_p and visibility <> 'private') then fails := array_append(fails, 'private_stays_private'); end if;

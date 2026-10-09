@@ -18,7 +18,11 @@ BEGIN
   r := public.spot_create(habit,'shared',30,photo,38.72,-9.14,'Lisbon',null,null,'off'); v_s := (r->>'id')::uuid;
   IF r->>'ok' IS DISTINCT FROM 'true' THEN fails := array_append(fails,'photo_space_'||coalesce(r->>'why','null')); END IF;
   IF public.spot_create(habit,'shared',30,ua::text||'/'||gen_random_uuid()::text||'.png',38.72,-9.14,'Lisbon',null,null,'off')->>'why' IS DISTINCT FROM 'video' THEN fails := array_append(fails,'png_refused'); END IF;
-  v_p := (public.spot_schedule(habit,'private',now()+interval '1 day',30,'Lisbon',38.72,-9.14,'Lisbon')->>'id')::uuid;
+  IF public.spot_schedule(habit,'private',now()+interval '1 day',30,'Lisbon',38.72,-9.14,'Lisbon')->>'why' IS DISTINCT FROM 'visibility' THEN fails:=array_append(fails,'new_private_refused'); END IF;
+  v_p := (public.spot_schedule(habit,'shared',now()+interval '1 day',30,'Lisbon',38.72,-9.14,'Lisbon',null,'silent','on')->>'id')::uuid;
+  IF v_p IS NULL THEN fails:=array_append(fails,'legacy_private_fixture'); END IF;
+  UPDATE public.spot_plans SET visibility='private' WHERE spot_id=v_p AND user_id=ua;
+  UPDATE public.spots SET active=false WHERE id=v_p AND user_id=ua;
   IF public.spot_get(v_s)->'spot'->'why' <> 'null'::jsonb THEN fails := array_append(fails,'why_hidden_by_default'); END IF;
   IF public.spot_why_set(v_s,true)->>'ok' IS DISTINCT FROM 'true' THEN fails := array_append(fails,'owner_shows_why'); END IF;
   PERFORM public.spot_why_set(v_p,true);

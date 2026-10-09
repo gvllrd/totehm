@@ -1,5 +1,15 @@
 # backend/CLAUDE.md — la base, les fonctions, l'argent, le bot
 
+## 09/10/2026 — séparation space / spot
+
+Migration `space_spot_split` appliquée une fois (`20261009161040`). Une table `spot_plans`, `format` contraint space/spot, défaut spot.
+`space_post(habit,video,lat,lng,city,comment)` : shared/OFF/silent/5 min ; seul écrivain space. `spot_create` et `spot_schedule` inchangés.
+`space_discover('feed')` lit les spaces directement ; radar/list et `spots_list`/`spots_feed`/`spots_exact` ne lisent que les spots.
+`my_spaces` filtre space ; `my_spots(before,before_id,limit)` filtre spot (authenticated seulement). Signatures existantes inchangées.
+`habit_spaces` et `spot_get` rendent `format` via `_spot_view`. **Un space ne donne jamais le point exact, même à son auteur.**
+Grants finaux rétablis après les CREATE. Six auto-tests SQL → `FAIL={}`, fixtures annulées.
+Tests historiques adaptés aux écrivains shared et plan ON déjà présents en production ; contrôles de confidentialité conservés.
+Advisors : deux notices authenticated/security-definer attendues pour les nouvelles RPC ; compte ERROR inchangé.
 ## BOUTIQUE · 09/10/2026 — `higher-checkout` v37 : le THP revient sur la boutique
 
 Retours Stripe sur `SITE_BOUT` : `from: 'method'` (ou une origine inconnue) →

@@ -20,16 +20,16 @@ begin
   if ua is not null and r->>'ok' is distinct from 'true' then fails:=array_append(fails,'member_read'); end if;
   if exists(select 1 from jsonb_array_elements(coalesce(r->'spaces','[]')) x
     left join public.spot_plans p on p.spot_id=(x->>'id')::uuid
-    where p.user_id is distinct from ua or p.status<>'published') then fails:=array_append(fails,'only_own_published'); end if;
+    where p.user_id is distinct from ua or p.status<>'published' or p.format<>'space') then fails:=array_append(fails,'only_own_published'); end if;
   if exists(select 1 from jsonb_array_elements(coalesce(r->'spaces','[]')) x where x ? 'exact' or x ? 'video' or x ? 'context') then fails:=array_append(fails,'minimal_payload'); end if;
-  select count(*) into n from public.spot_plans where user_id=ua and status='published';
+  select count(*) into n from public.spot_plans where user_id=ua and status='published' and format='space';
   if ua is not null and jsonb_array_length(r->'spaces')<>least(n,100) then fails:=array_append(fails,'history_includes_private_and_shared'); end if;
   if ua is not null then
     first_page:=public.my_spaces(null,null,1);last_item:=first_page->'spaces'->0;
     if n>0 then
       if jsonb_array_length(first_page->'spaces')<>1 then fails:=array_append(fails,'bounded_page'); end if;
       second_page:=public.my_spaces((last_item->>'starts_at')::timestamptz,(last_item->>'id')::uuid,1);
-      select spot_id into expected_id from public.spot_plans where user_id=ua and status='published'
+      select spot_id into expected_id from public.spot_plans where user_id=ua and status='published' and format='space'
         and (starts_at,spot_id)<((last_item->>'starts_at')::timestamptz,(last_item->>'id')::uuid)
         order by starts_at desc,spot_id desc limit 1;
       if (second_page->'spaces'->0->>'id')::uuid is distinct from expected_id then fails:=array_append(fails,'cursor_order'); end if;
