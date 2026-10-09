@@ -1,5 +1,16 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## COM · 09/10/2026 — le slogan ne passe jamais par le coin
+
+BUILD `2026-10-09-slogan`. Wah : « au chargement il se cale au coin gauche avant
+d'être au milieu ». `#lv-slogan` est `position:fixed;left:0;top:0`, placé par
+`transform` QUAND le module tourne — et le module attend esm.sh et le pont SSO
+(1 à 2 s sur téléphone). Deux verrous : `.no-anim` à la première pose (pas de
+glissement, autre session) et `#lv-slogan:not(.is-pose){visibility:hidden}`,
+`is-pose` posée par `sloganPour()` (pas d'image au coin). Les classes de vue se
+basculent une à une (`classList.toggle`), jamais `className=`. Test :
+`com_croix.mjs` §10 (module retardé de 1,5 s, 0 image au coin).
+
 ## COM · 08/10/2026 — TotehmSM : une conversation, le Higher Self en freemium
 
 BUILD `2026-10-08-sm` (`totehm.html`). Wah : « Speak to your Higher Self, ça
