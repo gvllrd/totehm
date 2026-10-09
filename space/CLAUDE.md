@@ -1,5 +1,12 @@
 # space/CLAUDE.md — totehm.space : le fil des Habits stratégiques (trois vues)
 
+## 09/10/2026 (soir) — un space est un contenu, pas un rendez-vous
+
+BUILD `2026-10-09-space-only`. « What is a space? » = ce qu'est un space (une Habit vécue, filmée, son pourquoi)
++ la ligne des quatre domaines ; lieu, ensemble, SOCIAL/SILENT partent sur figher.club (« What is a spot? »).
+My spaces : « POSTED <jour> <heure> · SHARED », plus d'état I WILL BE HERE / I AM HERE. Libellés joystick et
+`VIEW_WORDS` : Spaces · Next spots · Share a space. Tests : `space_boxes_ecosystem`, `spaces_loupe` adaptés.
+
 ## 09/10/2026 — le fil, trois vues
 
 BUILD `2026-10-09-space-feed`. CENTRE feed, BAS caméra → `space_post`, GAUCHE spots → Club (3 prochains, `spots_list`, pont SSO).

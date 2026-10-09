@@ -169,10 +169,10 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 - **CORS** : `corsHeaders(origin, fallback)` de `_shared/origins.ts`, jamais `*`.
 - **Claude Code** (terminal) : une commande simple par ligne, jamais
   `cd X && …` (les permissions jugent la ligne entière).
-**SPACE · 05/10 :** un Higher spot, action stratégique chez soi, dans un lieu privé ou dehors.
-Cinq vues, gestes, boussole, panneaux desktop, joystick caméra (04/10). Spaces partagés : OFF = ville, ON = for my
-subscribers ; TOP toujours ON, RIGHT sans OFF. Mini-boxes OBJECTIVES/REPULSIONS séparées (droits serveur).
-Hint Habit → space, définition coin droit. Détails : `space/CLAUDE.md`, copy : `BRAND.md`.
+**SPACE · 09/10 :** un space = une Habit vécue (photo/vidéo + son pourquoi), jamais un point exact ; fil, caméra,
+porte des spots. **figher.club :** un spot = un lieu + une heure (Higher spot : chez soi, lieu privé ou dehors) ;
+radar, annonce (toujours ON), agenda, I AM HERE, passés ; OFF = ville, ON = le point pour mes abonnés. Mini-boxes
+OBJECTIVES/REPULSIONS séparées (droits serveur). Détails : `space/CLAUDE.md`, `club/CLAUDE.md`, copy : `BRAND.md`.
 My spaces (COM, SPACE) + `space-delete` ; une Box WISDOM/VISION de COM montre ses Cloths (`element_cloths`) comme une Habit ses spaces ; chercher = un NOM → son TOTEHM en lecture (spaces, loupe, COPY d'une Box). Espace membre COM = l'utilisateur (vignette, Higher, souscriptions), format higher.boutique.
 
 ## Règles d'interface qui valent partout

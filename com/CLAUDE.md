@@ -1,5 +1,13 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 09/10/2026 (soir) — les comptes viennent du serveur, « + a spot »
+
+BUILD `2026-10-09-habit-split`. `habit_spaces` rend `spaces` (3), `spots` (3), `total_spaces`, `total_spots` :
+la page n'additionne plus trois éléments mélangés (« 1 SPACES », un spot caché derrière trois spaces).
+Boîte fermée : « 1 SPACE » / « 4 SPACES » ; groupe « SPACES · 3 of N » au-delà de trois. Mini d'un space :
+« posted » + date ; d'un spot : son état. « + a spot » (propriétaire) → `figher.club/?v=plan` par le pont.
+Test `space_spot_links` : 1 SPACE | 1 SPOT, aucun « + a spot » en lecture.
+
 ## 09/10/2026 — SPACES et SPOTS dans les Habits
 
 BUILD `2026-10-09-spaces-spots`. `habit_spaces` reste une lecture commune (3 objets max), séparée par `format`.

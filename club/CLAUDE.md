@@ -1,5 +1,14 @@
 # club/CLAUDE.md — figher.club : la rencontre dans la réalité (09/10)
 
+## 09/10/2026 (soir) — le club parle de spots, la vue « passés » propre
+
+BUILD `2026-10-09-club-spots`. Le lot ChatGPT avait copié SPACE sans l'adapter : tous les textes visibles
+disaient « space » (indice, caméra, plan, agenda, My spots, joystick, `.ics`) → « spot ». Caméra : « I am here —
+start a spot from my TOTEHM ». « What is a spot? » porte les règles de la rencontre (lieu, ensemble, SOCIAL/SILENT),
+retirées de « What is a space? ». Vue « passés » au téléphone : boussole et zoom cachés (`body.v-past #radar-tools`,
+les règles `v-feed` avaient disparu au lieu d'être renommées). Dates des passés et de My spots : `dayOf` + `hhmm`.
+Test `club_ui` : aucun mot « space » visible, définition du spot, vue passés sans outils du radar.
+
 ## 09/10/2026 — la carte, cinq vues
 
 BUILD `2026-10-09-club-map`, SSO `club`. Copie du SPACE antérieur au transfert, puis retrait du fil et de son filtre.

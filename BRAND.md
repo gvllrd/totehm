@@ -80,6 +80,21 @@
 - The member space is about the member: picture, Higher subscription, my
   subscriptions, my spaces, TotehmBot; *Simple terms of use* last.
 
+## CURRENT UPDATE — 09/10/2026 · a space is content, a spot is a meeting
+
+- **A space** (totehm.space) = one strategic Habit, lived: a photo or a video
+  with its why (objectives, repulsions). It never shows an exact place.
+  **What is a space?** says only that. Invitation: *Tap on your TOTEHM to
+  turn a habit into a space*.
+- **A spot** (figher.club) = a Higher spot: a place and a time where the
+  TOTEHM goes into action, at home, in a private venue or outside, alone or
+  with like-minded people (collective effervescence), SOCIAL or SILENT.
+  I WILL BE HERE · I AM HERE · I WAS THERE. **What is a spot?** carries these
+  rules. Invitation: *Tap on your TOTEHM to turn a habit into a spot*.
+- In COM, each Habit shows **SPACES** and **SPOTS** (1 SPACE, 4 SPACES),
+  then *+ a space* (SPACE camera) and *+ a spot* (figher.club plan).
+- The 05/10 lines below about spaces as places now apply to **spots**.
+
 ## CURRENT UPDATE — 05/10/2026 (overrides older conflicting rules)
 
 - A space is a **Higher spot**: an action consistent with one's TOTEHM,

@@ -1,5 +1,12 @@
 # backend/CLAUDE.md — la base, les fonctions, l'argent, le bot
 
+## 09/10/2026 (soir) — `habit_spaces` sépare et compte
+
+Migration `20261009211744_habit_spaces_split.sql`, appliquée UNE fois sous `habit_spaces_split` : même signature,
+mêmes droits (`_spot_view`, authenticated seulement). Par Habit : `spaces` (3 plus récents), `spots` (en cours,
+prochain, passé), `total_spaces`, `total_spots`, `total` = la somme (compatibilité). Auto-tests
+`tests/sql/habit_spaces_split_selftest.sql` et `space_spot_split_selftest.sql` (adapté) : `FAIL={}`.
+
 ## 09/10/2026 — séparation space / spot
 
 Migration `space_spot_split` appliquée une fois (`20261009161040`). Une table `spot_plans`, `format` contraint space/spot, défaut spot.
