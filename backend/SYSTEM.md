@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 8 octobre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 9 octobre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -15,6 +15,15 @@
 
 ---
 
+
+## 0 · LE SLOGAN NE PASSE PLUS PAR LE COIN — 09/10/2026
+
+| quoi | valeur mesurée |
+|---|---|
+| avant | badge `#lv-slogan` visible en (0,0) aux premières images (46–60 ms en test, plus long au téléphone : le module attend esm.sh et le pont SSO) |
+| après | invisible tant que non posé (`is-pose`) ; module retardé de 1,5 s : 0 image au coin à 390 et 1280 px, puis centré |
+| tests | `com_croix` 51/51 · `com_mouth` 30/30 · `com_read_copy` 20/20 · `com_paper` 40/40 · `com_member_menu` 28/28 · `com_cloths` 16/16 |
+| prod (pg_net, `f1fbeee`) | totehm.com/totehm 200 `2026-10-09-slogan`, md5 = dépôt (`5dbd25f6…`), verrou CSS présent |
 
 ## 0 · TOTEHMSM : LE HIGHER SELF EN FREEMIUM, EN FLUX, EN BULLES — 08/10/2026 (quater)
 

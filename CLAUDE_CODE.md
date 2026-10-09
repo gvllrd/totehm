@@ -121,6 +121,12 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > conditions en dernier dans le menu membre. Migration
 > `20261001_un_spot_deux_reglages.sql`.
 
+### Correction 0.23 — 09/10/2026 · le slogan ne passe plus par le coin (à reporter)
+
+> totehm.com : au chargement, le badge [Higher] du slogan n'apparaît plus une
+> fraction de seconde dans le coin haut gauche avant d'aller au centre ; il
+> apparaît directement à sa place. Aucun travail Oracle/n8n.
+
 ### Correction 0.22 — même jour, demande PLUS RÉCENTE de Wah
 
 > Le futur revient dans SPACE. TOP = Spot futur détaillé dans sa Habit Box ;
