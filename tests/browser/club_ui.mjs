@@ -21,6 +21,13 @@ try{
  ok(!await pg.isVisible('#member i'),'SPACE member status dot is absent');
  const cmp=await rect(pg,'cmp'),tools=await rect(pg,'map-tools');ok(cmp.x+cmp.w/2<s.radar.cx && tools.x+tools.w/2>s.radar.cx && cmp.y<s.radar.cy+s.radar.radius && tools.y<s.radar.cy+s.radar.radius,'compass and zoom occupy opposite radar corners');
  await pg.screenshot({path:out+'/spaces_landing_mobile.png'});
+ ok(/turn a habit into a spot/i.test(await pg.textContent('#tp-hint')) && !/\bspaces?\b/i.test(await pg.evaluate(()=>document.body.innerText)),'figher.club speaks of spots, never of spaces');
+ await pg.click('#space-about');await pg.waitForSelector('.eco-sheet');{const d=await pg.textContent('.eco-sheet');
+ ok(/What is a spot\?/.test(d)&&/I WILL BE HERE/.test(d)&&/collective effervescence/.test(d)&&/SOCIAL/.test(d)&&/SILENT/.test(d),'spot definition carries the meeting rules: together, both modes');}
+ await pg.keyboard.press('Escape');await pg.waitForTimeout(300);
+ await pg.click('#cur-g');await pg.waitForFunction(()=>window.__totehm_club().view==='past');await pg.waitForTimeout(700);
+ ok(!await pg.isVisible('#radar-tools') && !await pg.isVisible('#cmp'),'phone past view hides the radar compass and zoom');
+ await pg.click('#cur-d');await pg.waitForFunction(()=>window.__totehm_club().view==='radar');await pg.waitForTimeout(700);
  await pg.click('#cur-h');await pg.waitForSelector('[data-plan-h]');await pg.click('[data-plan-h]');await pg.click('[data-pmode="social"]');
  ok(await pg.isVisible('#p-date') && (await state(pg)).view==='plan','mobile future form receives real clicks above radar');
  await pg.$eval('#v-plan',e=>e.scrollTop=e.scrollHeight);let r=await rect(pg,'v-plan');await swipe(pg,r.x+5,r.y+r.h-25,0,-100);ok((await state(pg)).view==='plan','scrolling future form at its boundary never changes view');
@@ -29,7 +36,7 @@ try{
  ok(await pg.locator('#detail .sheet-grab span').isVisible() && await pg.$eval('#joy-box',e=>e.disabled),'detail exposes a drag handle and mutes joystick');
  await pg.keyboard.press('ArrowRight');ok((await state(pg)).view==='radar','arrows do not navigate behind an open detail');
  r=await rect(pg,'detail');await swipe(pg,195,r.y+16,0,Math.min(130,820-r.y-16));ok(!(await state(pg)).detail && !await pg.$eval('#joy-box',e=>e.disabled),'downward handle swipe closes and restores joystick');
- await pg.click('#cur-b');await pg.waitForFunction(()=>window.__totehm_club().rec.step==='idle');await pg.waitForTimeout(1200);ok(!(await state(pg)).rec.camera && /Share a space from your TOTEHM/.test(await pg.textContent('#cam-body')) && await pg.locator('#cam-body [data-start]').count()===2 && await pg.locator('#cam-body [data-cancel]').count()===1,'the camera sensor stays off until VIDEO or PHOTO is pressed, with CANCEL');
+ await pg.click('#cur-b');await pg.waitForFunction(()=>window.__totehm_club().rec.step==='idle');await pg.waitForTimeout(1200);ok(!(await state(pg)).rec.camera && /start a spot from my TOTEHM/.test(await pg.textContent('#cam-body')) && await pg.locator('#cam-body [data-start]').count()===2 && await pg.locator('#cam-body [data-cancel]').count()===1,'the camera sensor stays off until VIDEO or PHOTO is pressed, with CANCEL');
  ok(await pg.$eval('#cam-body .say',e=>getComputedStyle(e).backgroundColor)==='rgba(0, 0, 0, 0.82)','camera texts sit in black boxes');
  await pg.click('[data-start="video"]');await pg.waitForFunction(()=>window.__totehm_club().rec.step==='ready');await pg.waitForTimeout(800);ok((await state(pg)).rec.camera && (await state(pg)).rec.step==='ready','VIDEO turns the sensor on, recording still waits for the red point');
  await pg.click('#joy-box');await pg.waitForFunction(()=>window.__totehm_club().rec.step==='habit');

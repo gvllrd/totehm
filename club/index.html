@@ -232,7 +232,7 @@ body.v-cam.is-rec #int-def{opacity:0}
 #map-credit a{color:inherit}
 #radar-tools{position:fixed;z-index:65;display:flex;flex-direction:column;align-items:center;gap:6px;max-width:130px}
 #cmp{font-size:8px;line-height:1.6;text-align:center;padding:5px 8px;white-space:nowrap}
-#map-tools{flex-wrap:nowrap;gap:3px}#map-tools .chip{padding:4px 8px;min-width:26px;text-align:center}body.v-list #radar-tools,body.v-cam #radar-tools{display:none}
+#map-tools{flex-wrap:nowrap;gap:3px}#map-tools .chip{padding:4px 8px;min-width:26px;text-align:center}body.v-past #radar-tools,body.v-list #radar-tools,body.v-cam #radar-tools{display:none}
 body.is-pin #radar-tools{display:flex}
 body.is-pin #v-plan{visibility:hidden!important;opacity:0;pointer-events:none}
 body.is-pin #joy,body.is-pin #radar-empty{display:none}
@@ -261,7 +261,7 @@ body.v-cam.is-form #cam-body{bottom:calc(170px + var(--bot));max-height:calc(100
   #cam-body{max-height:90%;padding:14px 18px 16px}
   body.v-cam.is-form #cam-body{bottom:64px;max-height:calc(100% - 76px);padding:12px 16px}
   #cam-sec{top:12px;right:14px}
-  #list{padding:calc(66px + var(--top)) 16px 26px 16px}body.v-list #habit-filter{visibility:hidden}body.v-list #radar-tools{display:flex}
+  #list{padding:calc(66px + var(--top)) 16px 26px 16px}body.v-past #habit-filter,body.v-list #habit-filter{visibility:hidden}body.v-past #radar-tools,body.v-list #radar-tools{display:flex}
   body.v-list #heading{right:var(--panel-w)}
   #detail{left:50%;right:auto;width:min(600px,calc(100vw - 40px));border-radius:var(--r) var(--r) 0 0;transform:translate(-50%,104%)}
   #detail.is-open{transform:translate(-50%,0)}
@@ -292,7 +292,7 @@ body.v-plan #heading,body.v-cam #heading{display:flex}
 #cmp,#map-tools{position:fixed;z-index:65}
 #map-tools{flex-direction:column;align-items:center;gap:4px}
 #cmp{transform:translateX(-50%)}
-#map-tools{transform:translateX(-50%)}body.v-list #radar-tools,body.v-cam #radar-tools{display:none}
+#map-tools{transform:translateX(-50%)}body.v-past #radar-tools,body.v-list #radar-tools,body.v-cam #radar-tools{display:none}
 body.is-pin #radar-tools{display:contents}
 #detail{max-height:84dvh;padding-top:0;overscroll-behavior:contain;touch-action:pan-y;transition:transform .32s var(--ease),visibility 0s .32s}
 #detail.is-open{transform:translateY(var(--sheet-y,0px));transition:transform .32s var(--ease),visibility 0s}
@@ -316,7 +316,7 @@ body.v-cam.is-form #joy{opacity:.18;pointer-events:none}
  #list{padding-top:calc(86px + var(--top))}
 }
 @media(max-width:480px) and (max-height:700px){:root{--tp:90px}}
-@media(min-width:900px){body.v-list #radar-tools{display:contents}
+@media(min-width:900px){body.v-past #radar-tools,body.v-list #radar-tools{display:contents}
  body.v-list #heading{right:0;left:calc(100% - var(--panel-w))}
  #detail.is-open{transform:translate(-50%,var(--sheet-y,0px))}
  #v-plan{top:calc(24px + var(--top));max-height:48dvh}
@@ -493,7 +493,14 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
 <button id="member" type="button" aria-label="Member menu"><i></i><span id="member-txt">CONNECT WITH MY TOTEHM</span></button>
 <nav id="menu" aria-label="Member menu"></nav>
 <button id="space-about" type="button" data-space-about="1">What is a spot?</button>
-<template id="space-definition"><p>A spot is a strategic Habit, lived together in reality. I WILL BE HERE · I AM HERE · I WAS THERE.</p></template>
+<template id="space-definition"><div class="space-definition">
+<h2>What is a spot?</h2>
+<p>A spot is a strategic Habit, lived together in reality. I WILL BE HERE · I AM HERE · I WAS THERE.</p>
+<p>A <svg viewBox="0 0 600 200" class="space-higher" aria-label="Higher"><use href="#higher-badge"/></svg> spot is a place where you put your TOTEHM into action, in line with your habits, goals and vision.</p>
+<p>At home, in a private venue or outside. Alone or alongside like-minded people, whose shared energy can lift the group: collective effervescence.</p>
+<p>SOCIAL: we can talk. SILENT: nobody disturb me. Respect everyone's space, boundaries and chosen mode. A location is never an invitation to enter a private place.</p>
+<p class="space-domains">totehm.com builds the strategy · totehm.space shows it lived · figher.club meets in reality · higher.boutique wears and owns it.</p>
+</div></template>
 <header id="heading">
 <div id="tp-wrap">
 <div id="totehm-paper">
@@ -504,7 +511,7 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
           <svg class="tp-layer" id="tp-gl-rail" viewBox="20.689 0.225 17.203 223.630" preserveAspectRatio="none"    aria-hidden="true"><defs><clipPath id="tpr_3a710ebbbe"><path d="M 20.652344 0.261719 L 37.839844 0.261719 L 37.839844 223.816406 L 20.652344 223.816406 Z M 20.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tpr_1b01f8474a"><path d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.816406 L 0.652344 223.816406 Z M 0.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tpr_95349ecf51"><rect x="0" width="18" y="0" height="224"/></clipPath></defs><g clip-path="url(#tpr_3a710ebbbe)"><g transform="matrix(1, 0, 0, 1, 20, -0.000000000000020428)"><g clip-path="url(#tpr_95349ecf51)"><g clip-path="url(#tpr_1b01f8474a)"><path fill="#626286" d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.808594 L 0.652344 223.808594 Z M 0.652344 0.261719 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></svg>
           <svg class="tp-layer" id="tp-gl-t"    viewBox="79.832 47.921 66.789 66.932"    preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="tpt_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tpt_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tpt_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tpt_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tpt_ffb4264ddd)"><g clip-path="url(#tpt_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tpt_0eae0d8cca)"><g clip-path="url(#tpt_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tpt_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tpt_92fddf9f0e)"><g clip-path="url(#tpt_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tpt_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tpt_7d4c700d36)"><g clip-path="url(#tpt_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></svg>
           <svg class="tp-layer" id="tp-gl-wm"   viewBox="74.997 121.602 77.584 46.683"   preserveAspectRatio="none" aria-hidden="true"><defs><g/><clipPath id="tpw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tpw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg>
-          <button id="tp-enter" type="button" aria-haspopup="dialog" aria-controls="habit-picker" aria-expanded="false" aria-label="Turn a habit into a space — select a Habit Box"></button>
+          <button id="tp-enter" type="button" aria-haspopup="dialog" aria-controls="habit-picker" aria-expanded="false" aria-label="Turn a habit into a spot — select a Habit Box"></button>
         </div><!-- /#tp-logo -->
         <div class="tp-light" aria-hidden="true"></div>
       </div>
@@ -530,7 +537,7 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
   <div id="cam-n"></div>
   <div id="cam-sec" class="hide"><i></i><span id="cam-s"></span></div>
 </section>
-<div id="cam-body" tabindex="-1" aria-label="Create my space"></div>
+<div id="cam-body" tabindex="-1" aria-label="Create my spot"></div>
 
 <aside id="detail" aria-label="Spot"></aside>
 <aside id="my-spaces" class="hide" role="dialog" aria-modal="true" aria-labelledby="msp-title" tabindex="-1">
@@ -547,8 +554,8 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
 </section>
 <div id="radar-tools" role="group" aria-label="Radar controls"><button id="cmp" class="chip" type="button" aria-label="Compass">000° N<br>turn the ring</button><div id="map-tools" class="row"><button class="chip" type="button" data-zoom="1" aria-label="Zoom in">+</button><button class="chip" type="button" data-zoom="-1" aria-label="Zoom out">−</button><button class="chip" type="button" data-here="1" aria-label="My position">◎</button></div></div>
 
-<div id="joy" role="group" aria-label="Where I am in totehm.space">
-  <button class="cur" id="cur-h" type="button" aria-label="Future space"><svg viewBox="0 0 16 16"><path d="M3 10 L8 5 L13 10"/></svg></button>
+<div id="joy" role="group" aria-label="Where I am in figher.club">
+  <button class="cur" id="cur-h" type="button" aria-label="Plan a spot"><svg viewBox="0 0 16 16"><path d="M3 10 L8 5 L13 10"/></svg></button>
   <button class="cur" id="cur-g" type="button" aria-label="Feed"><svg viewBox="0 0 16 16"><path d="M10 3 L5 8 L10 13"/></svg></button>
   <button id="joy-box" type="button" aria-label="Back to radar"><span id="joy-stack" aria-hidden="true"><i class="o"></i><i class="h"></i><i class="r"></i></span><span id="joy-record" aria-hidden="true"></span></button><span id="joy-say"></span>
   <button class="cur" id="cur-d" type="button" aria-label="List"><svg viewBox="0 0 16 16"><path d="M6 3 L11 8 L6 13"/></svg></button>
@@ -694,7 +701,7 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
 const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query=' + Number(lat).toFixed(5) + '%2C' + Number(lng).toFixed(5);
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD='2026-10-09-club-map';
+const BUILD='2026-10-09-club-spots';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'radar';
@@ -713,7 +720,7 @@ window.__totehm_club = () => ({ build: BUILD, view: VIEW, signed_in: !!me, locat
   list:LIST.list.length, future:LIST.list.filter(s => spotState(s) === 'will' && s.location === 'on').length, gestures:gestureCount, radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx),heading:Math.round(norm360(RAD.head)),pin:MAP.open,place:!!PLAN.pos}, paper:PAPER.etat(), habit_filter:!!S.habit, plan:{city:!!PLAN.cityPos,exact:!!PLAN.pos,video:!!PLAN.video,uploaded:!!PLAN.video?.ref}, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, kind: REC.kind, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
 
 /* Chaque vue dit où je suis. L'intention vient de la Habit, sans filtre parallèle. */
-const VIEW_WORDS = {radar:['RADAR','Exact places I can see'],past:['CITY FEED','I AM HERE · I WAS THERE'],list:['FUTURE SPOTS','I WILL BE HERE'],plan:['PLAN A SPOT','I WILL BE HERE'],cam:['FILM A SPOT','I AM HERE · 9:16 · up to 33 seconds']};
+const VIEW_WORDS = {radar:['RADAR','Exact places I can see'],past:['PAST SPOTS','I WAS THERE'],list:['FUTURE SPOTS','I WILL BE HERE'],plan:['PLAN A SPOT','I WILL BE HERE'],cam:['I AM HERE','Start a spot now · 9:16 · up to 33 seconds']};
 function paintInts(){
   const [title,sub] = MAP?.open ? ['MEETING POINT','Move the radar under the cross'] : VIEW_WORDS[VIEW];
   const source = VIEW === 'past' ? PAST : VIEW === 'list' ? LIST : EX;
@@ -798,7 +805,7 @@ function icsFor(s){
   const d = t => new Date(t).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
   const x = t => String(t || '').replace(/\\/g, '\\\\').replace(/[,;]/g, m => '\\' + m).replace(/\r?\n/g, '\\n');
   const end = s.ends_at || new Date(new Date(s.starts_at).getTime() + (s.duration_min || 0)*60e3).toISOString(), where = s.exact?.place || s.city || '';
-  return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//TOTEHM//SPACE//EN','BEGIN:VEVENT','UID:' + s.id + '@totehm.space','DTSTAMP:' + d(Date.now()),
+  return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//TOTEHM//FIGHER//EN','BEGIN:VEVENT','UID:' + s.id + '@figher.club','DTSTAMP:' + d(Date.now()),
     'DTSTART:' + d(s.starts_at),'DTEND:' + d(end),'SUMMARY:' + x(s.habit), where ? 'LOCATION:' + x(where) : '',
     s.exact && Number.isFinite(s.exact.lat) ? 'GEO:' + s.exact.lat + ';' + s.exact.lng : '',
     'URL:https://www.figher.club/?spot=' + encodeURIComponent(s.id),'END:VEVENT','END:VCALENDAR'].filter(Boolean).join('\r\n');
@@ -943,7 +950,7 @@ async function bunnyUpload(blob,seconds,onProgress){
 function pastCard(x){
  const lieu=x.exact?.name || x.exact?.label || x.city || '';
  const mode=x.mode ? '<span class="sp-mode">'+esc(x.mode)+'</span>' : '';
- const when=new Date(x.starts_at).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});
+ const at=new Date(x.starts_at),when=Number.isNaN(at.getTime())?'':dayOf(at)+' '+hhmm(at);
  return '<button class="sp-card" type="button" data-spot="'+esc(x.id)+'"><span class="sp-when">I WAS THERE · '+esc(when)+'</span><span class="sp-habit">'+esc(x.habit)+'</span><span class="sp-meta">'+(lieu ? esc(lieu)+' · ' : '')+(x.duration_min ? esc(x.duration_min)+' min' : '')+mode+'</span>'+(x.creator ? '<span class="sp-by">by <b>'+esc(x.creator)+'</b></span>' : '')+'</button>';
 }
 function paintPast(){
@@ -997,7 +1004,7 @@ function paintList(){
       : '<div class="empty">' + (S.q ? 'no spot for this Habit Box' : 'no future spot yet') + '</div>';
   }
   l.querySelector('[data-more]')?.remove();
-  if(upcoming.length && LIST.more) l.insertAdjacentHTML('beforeend', '<button class="btn" type="button" data-more="1">MORE SPACES</button>');
+  if(upcoming.length && LIST.more) l.insertAdjacentHTML('beforeend', '<button class="btn" type="button" data-more="1">MORE SPOTS</button>');
 }
 function listWatch(button){
   const it = button.closest('.it'), box = it?.querySelector('.it-media'), s = spotById(it?.dataset.id); if(!box || !s) return;
@@ -1017,7 +1024,7 @@ $('list').addEventListener('click', async e => {
 
 function paintRadarEmpty(){
   const el = $('radar-empty'), n = EX.list.length;
-  el.classList.toggle('hide', n > 0); el.textContent = !me ? 'sign in to see my spots' : S.q ? 'no space for this habit' : 'no space on the radar';
+  el.classList.toggle('hide', n > 0); el.textContent = !me ? 'sign in to see my spots' : S.q ? 'no spot for this habit' : 'no spot on the radar';
 }
 
 /* LE RADAR — anneaux, balayage, des points. Le centre = moi (ou mes Spots). */
@@ -1128,7 +1135,7 @@ $('canvas').addEventListener('click', e => {
 async function openDetail(s){
   if(!s) return;detailSeq++;const old=$('detail').querySelector('video');if(old) releaseClip(old);DETAIL=s;
   $('detail').style.removeProperty('--sheet-y');$('detail').classList.remove('is-dragging');
-  $('detail').innerHTML = '<button class="sheet-grab" type="button" data-close="1" aria-label="Close this space, or drag down"><span aria-hidden="true"></span></button>' + (hasMedia(s) ? mediaHTML(s) : '') + spotHTML(s) + actsHTML(s, 'detail');
+  $('detail').innerHTML = '<button class="sheet-grab" type="button" data-close="1" aria-label="Close this spot, or drag down"><span aria-hidden="true"></span></button>' + (hasMedia(s) ? mediaHTML(s) : '') + spotHTML(s) + actsHTML(s, 'detail');
   $('detail').classList.add('is-open');$('detail').scrollTop=0;joyPaint();
   loadPhoto($('detail').querySelector('img[data-photo]'));
   const v = $('detail').querySelector('video');
@@ -1328,7 +1335,7 @@ $('detail').addEventListener('click', async e => {
 
 
     const ouvert=()=>!$('habit-picker').classList.contains('hide');
-    function hint(){ $('tp-hint').textContent='Tap on your TOTEHM to turn a habit into a space'; }
+    function hint(){ $('tp-hint').textContent='Tap on your TOTEHM to turn a habit into a spot'; }
     function sync(){
       const open=ouvert(); $('tp-wrap').classList.toggle('is-open',open);
       if(document.hidden||VIEW!=='radar'||!document.body.classList.contains('v-radar')||open||RM.matches){
@@ -1496,7 +1503,7 @@ function planPaint(){
   requestAnimationFrame(radarSize);
   const b = $('plan-body'); b.classList.toggle('is-busy', PLAN.busy);
   document.body.classList.toggle('is-pick', VIEW === 'plan' && !!me && !PLAN.habit);
-  if(!me){ b.innerHTML = '<p class="say">Plan a space</p><button class="btn" type="button" data-plan-signin="1">CONNECT WITH MY TOTEHM</button>'; return; }
+  if(!me){ b.innerHTML = '<p class="say">Plan a spot</p><button class="btn" type="button" data-plan-signin="1">CONNECT WITH MY TOTEHM</button>'; return; }
   if(!PLAN.habit){
     b.innerHTML = '<div class="row pick-head"><span class="lab">Which Habit Box?</span><button class="btn" type="button" data-plan-cancel="1">CANCEL</button></div>' + (!HABITS ? '<p class="note">Reading my TOTEHM…</p>' : HABITS.length ?
       HABITS.map((h,k)=>pickHabitHTML(h,'data-plan-h="'+k+'"')).join('') :
@@ -1510,7 +1517,7 @@ function planPaint(){
       chip('data-plan-place="1"', PLAN.pos ? esc(PLAN.place || 'Exact point') : 'On the map', !!PLAN.pos, PLAN.pos ? 'Change it in the radar' : exact ? 'required for my subscribers' : 'the exact point · optional') +
       (PLAN.pos ? '<button class="lnk" type="button" data-plan-unpin="1">Remove the point</button>' : '') + '</div><div class="row" id="p-cities">' + citySuggestHTML() + '</div>' +
       durationHTML(PLAN,'p','p-dur') + '<textarea class="field" id="p-say" maxlength="400" placeholder="A word (optional)">' + esc(PLAN.say) + '</textarea>' +
-      '<span class="lab">Video or photo</span><div class="row">' + chip('data-plan-file="1"', 'From my files', false, 'vertical · video up to ' + secs + ' s') + chip('data-plan-film="video"', 'Film it', false, 'the SPACE camera') + chip('data-plan-film="photo"', 'Take a photo', false, 'the SPACE camera') + '</div>' +
+      '<span class="lab">Video or photo</span><div class="row">' + chip('data-plan-file="1"', 'From my files', false, 'vertical · video up to ' + secs + ' s') + chip('data-plan-film="video"', 'Film it', false, 'the camera') + chip('data-plan-film="photo"', 'Take a photo', false, 'the camera') + '</div>' +
       (v ? '<div class="plan-video"><div class="portrait-media">' + (v.photo ? '<img src="' + esc(v.url) + '" alt="">' : '<video src="' + esc(v.url) + '" muted loop playsinline autoplay></video>') + '</div><span class="note">' + (v.photo ? 'photo' : Math.round(v.seconds) + ' s') + ' · ' + (v.size/1e6).toFixed(1) + ' MB' + (v.ref ? ' · sent' : '') + '</span><button class="btn" type="button" data-plan-novideo="1">REMOVE</button></div>' : '');
   }
   b.innerHTML = h + '</div>' + (ready ? '<button class="btn" type="button" data-plan-send="1">I WILL BE HERE</button><p class="note" id="p-note"></p>' : '');
@@ -1649,10 +1656,10 @@ async function planSend(){
   PLAN.busy = false;
   PLAN.habit = null; PLAN.say = ''; PLAN.pos = null; PLAN.place = ''; PLAN.dur = null; PLAN.boxOptions={objectives:false,repulsions:false}; planVideoDrop();
   await Promise.all([loadExact(),loadList()]); loadPast(false); go('list');
-  // The new space appears in the agenda, with its own gestures — no second sheet.
+  // The new spot appears in the agenda, with its own gestures — no second sheet.
   const it = $('list').querySelector('.it[data-id="' + CSS.escape(data.id) + '"]');
   if(it){ it.classList.add('is-new'); it.scrollIntoView({ block:'center' });
-    if(!linked || !why){ const n = document.createElement('p'); n.className = 'note no'; n.textContent = !linked ? 'The media could not be attached to this space.' : 'These mini-boxes were kept hidden.'; it.querySelector('.it-info').append(n); } }
+    if(!linked || !why){ const n = document.createElement('p'); n.className = 'note no'; n.textContent = !linked ? 'The media could not be attached to this spot.' : 'These mini-boxes were kept hidden.'; it.querySelector('.it-info').append(n); } }
 }
 /* La carte sert uniquement à choisir MON futur lieu. Les autres Spots
    restent un radar de coordonnées autorisées, jamais une carte du feed. */
@@ -1816,10 +1823,10 @@ function missing(){
 function camPaint(){
   camState();
   const b = $('cam-body'), st = REC.step, photo = REC.kind === 'photo', cancel = '<button class="btn" type="button" data-cancel="1">CANCEL</button>';
-  const forPlan = REC.forPlan ? '<p class="note">for my future space</p>' : '';
+  const forPlan = REC.forPlan ? '<p class="note">for my future spot</p>' : '';
   let h = '';
   if(st === 'signin') h = '<p class="say">Put your TOTEHM into action. At home or anywhere else.</p><div class="cam-actions"><button class="btn" type="button" data-signin="1">CONNECT WITH MY TOTEHM</button></div>';
-  else if(st === 'idle') h = '<p class="say">Share a space from your TOTEHM</p><div class="cam-actions"><button class="btn" type="button" data-start="video">VIDEO<small>up to ' + (RULES.clip_seconds || 33) + ' s</small></button><button class="btn" type="button" data-start="photo">PHOTO<small>one image</small></button>' + cancel + '</div>';
+  else if(st === 'idle') h = '<p class="say">I am here — start a spot from my TOTEHM</p><div class="cam-actions"><button class="btn" type="button" data-start="video">VIDEO<small>up to ' + (RULES.clip_seconds || 33) + ' s</small></button><button class="btn" type="button" data-start="photo">PHOTO<small>one image</small></button>' + cancel + '</div>';
   else if(st === 'perm') h = '<p class="say">Allow the camera</p><div class="cam-actions">' + cancel + '</div>';
   else if(st === 'denied') h = '<p class="say">The camera is closed for this site. Allow it in the browser, then come back.</p><div class="cam-actions">' + cancel + '</div>';
   else if(st === 'nocam') h = '<p class="say">This browser cannot ' + (photo ? 'take the photo' : 'film') + '. Try Safari or Chrome on the phone.</p><div class="cam-actions">' + cancel + '</div>';
@@ -1923,7 +1930,7 @@ function joyPaint(preview){
   bx.setAttribute('aria-label',camera ? (REC.step === 'rec' ? 'Stop recording' : ['habit','form','heavy','retry'].includes(REC.step) ? (photo ? 'Take the photo again' : 'Record again') : REC.step === 'ready' && photo ? 'Take the photo' : 'Record video') : 'Back to radar');
   for(const [cls,v] of [['o','plan'],['h','radar'],['r','cam']]) $('joy-stack').querySelector('.'+cls).classList.toggle('is-current',VIEW === v);
   for(const d of ['g','d','h','b']){ $('cur-'+d).classList.toggle('is-dead',!voisin(d) || recordingLocked() || !!DETAIL); $('cur-'+d).classList.toggle('is-preview',preview === d && !!voisin(d)); }
-  $('joy-say').textContent = camera ? (REC.step === 'rec' ? 'STOP' : REC.step === 'idle' ? 'VIDEO' : REC.step === 'ready' ? (photo ? 'PHOTO' : 'REC') : ['habit','form','heavy','retry'].includes(REC.step) ? 'AGAIN' : '') : preview && voisin(preview) ? ({plan:'Future space',past:'City feed',radar:'Radar',list:'Future spaces',cam:'Film a space'})[voisin(preview)] : '';
+  $('joy-say').textContent = camera ? (REC.step === 'rec' ? 'STOP' : REC.step === 'idle' ? 'VIDEO' : REC.step === 'ready' ? (photo ? 'PHOTO' : 'REC') : ['habit','form','heavy','retry'].includes(REC.step) ? 'AGAIN' : '') : preview && voisin(preview) ? ({plan:'Plan a spot',past:'I was there',radar:'Radar',list:'Next spots',cam:'I am here'})[voisin(preview)] : '';
 }
 function go(v){
   if(v === VIEW || !CROIX[v] || REC.busy || PLAN.busy) return;
@@ -2084,11 +2091,11 @@ const MSP = { seq:0, rows:[], more:false, busy:false, prev:null };
 const mspState = s => { const a = Date.parse(s.starts_at), b = Date.parse(s.ends_at), n = Date.now(); return a > n ? 'I WILL BE HERE' : n < b ? 'I AM HERE' : 'I WAS THERE'; };
 function mspPaint(){
   $('msp-list').innerHTML = MSP.rows.map(x => {
-    const d = new Date(x.starts_at), when = Number.isNaN(d.getTime()) ? '' : d.toLocaleString(undefined, { dateStyle:'medium', timeStyle:'short' }), st = mspState(x), id = esc(String(x.id));
+    const d = new Date(x.starts_at), when = Number.isNaN(d.getTime()) ? '' : dayOf(d) + ' ' + hhmm(d), st = mspState(x), id = esc(String(x.id));
     return '<div class="msp-row" data-row="' + id + '"><button class="msp-open" type="button" data-open-space="' + id + '"><span class="msp-h">' + esc(x.habit) + '</span>' +
       '<span class="msp-s"><b' + (st === 'I AM HERE' ? ' class="is-live"' : '') + '>' + st + '</b> · ' + (x.visibility === 'private' ? 'PRIVATE' : 'SHARED') + '</span>' +
       '<span>' + esc([when, x.place || x.city || ''].filter(Boolean).join(' · ')) + '</span></button>' +
-      '<button class="btn msp-del" type="button" data-del="' + id + '" aria-label="Delete this space">DELETE</button></div>';
+      '<button class="btn msp-del" type="button" data-del="' + id + '" aria-label="Delete this spot">DELETE</button></div>';
   }).join('');
   $('msp-more').classList.toggle('hide', !MSP.more);
 }
@@ -2100,7 +2107,7 @@ async function mspLoad(more = false){
     if(seq !== MSP.seq || uid !== me?.id) return;
     if(error || !data?.ok){ if(error) console.error('[my_spots]', error.message); $('msp-note').textContent = 'My spots could not load. Try again.'; return; }
     MSP.rows = more ? MSP.rows.concat(data.spots || []) : (data.spots || []); MSP.more = !!data.more; mspPaint();
-    $('msp-note').textContent = MSP.rows.length ? '' : 'No space yet. Tap your TOTEHM to turn a habit into a space.';
+    $('msp-note').textContent = MSP.rows.length ? '' : 'No spot yet. Tap your TOTEHM to turn a habit into a spot.';
   }catch(e){ if(seq === MSP.seq){ console.error('[my_spaces]', e?.message || e); $('msp-note').textContent = 'My spots could not load. Try again.'; } }
   finally{ if(seq === MSP.seq){ MSP.busy = false; $('msp-more').disabled = false; } }
 }
@@ -2127,7 +2134,7 @@ async function spaceDelete(btn, id){
   if(uid !== me?.id) return 'done';
   PAST.list = PAST.list.filter(x => x.id !== id); LIST.list = LIST.list.filter(x => x.id !== id); EX.list = EX.list.filter(x => x.id !== id);
   MSP.rows = MSP.rows.filter(x => String(x.id) !== id); mspPaint();
-  if(!$('my-spaces').classList.contains('hide')) $('msp-note').textContent = MSP.rows.length ? 'Space deleted.' : 'No space yet. Tap your TOTEHM to turn a habit into a space.';
+  if(!$('my-spaces').classList.contains('hide')) $('msp-note').textContent = MSP.rows.length ? 'Spot deleted.' : 'No spot yet. Tap your TOTEHM to turn a habit into a spot.';
   if(DETAIL?.id === id) closeDetail();
   paintPast(); paintList(); reload();
   return 'done';
@@ -2142,7 +2149,7 @@ $('msp-list').addEventListener('click', async e => {
   const { data, error } = await sb.rpc('spot_get', { p_id: id });
   if(error) console.error('[spot_get]', error.message);
   if(seq !== MSP.seq) return;
-  if(!data?.ok){ $('msp-note').textContent = 'This space cannot open right now.'; return; }
+  if(!data?.ok){ $('msp-note').textContent = 'This spot cannot open right now.'; return; }
   mspClose(); openDetail(data.spot);
 });
 

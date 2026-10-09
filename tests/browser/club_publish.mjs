@@ -81,7 +81,7 @@ try{
  ok((await state(pg)).plan.exact && !await pg.$eval('[data-plan-send]',b=>b.disabled),'the map point completes SHARED·ON (city AND map)');
  // Film it: the SPACE camera, then back to TOP with the clip.
  await pg.click('[data-plan-film="video"]');await pg.waitForFunction(()=>window.__totehm_club().rec.step==='ready');
- ok(/future space/.test(await pg.textContent('#cam-body')),'Film it opens the camera for the future space');
+ ok(/future spot/.test(await pg.textContent('#cam-body')),'Film it opens the camera for the future spot');
  await pg.click('#joy-box');await pg.waitForFunction(()=>window.__totehm_club().view==='plan' && window.__totehm_club().plan.video,null,{timeout:20000});
  ok((await state(pg)).plan.exact && await pg.locator('.plan-video video').count()===1,'the clip returns to TOP and the draft is kept');
  const before=calls.length;await pg.click('[data-plan-send]');await pg.waitForFunction(()=>window.__totehm_club().view==='list');await pg.waitForTimeout(300);
