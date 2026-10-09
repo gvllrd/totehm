@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 9 octobre 2026, midi** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 9 octobre 2026, séparation space / spot** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -15,6 +15,24 @@
 
 ---
 
+
+## 0 · SPACE / SPOT SÉPARÉS — 09/10/2026 (quater)
+
+| quoi | valeur mesurée |
+|---|---|
+| migration | `space_spot_split` appliquée une fois par MCP ; `spot_plans.format` space/spot, défaut spot |
+| données avant / après les tests | 0 publiés · 0 spots actifs · 19 plans ; fixtures SQL annulées |
+| fonctions | 13 signatures existantes inchangées ; corps `spot_create` / `spot_schedule` identiques ; seul `space_post` insère format space parmi 14 écrivains audités |
+| droits | `space_post` authenticated/service, `my_spots` authenticated ; anon interdit aux deux ; `_spot_view` ne révèle jamais le point d’un space |
+| auto-tests SQL | 6/6 `FAIL={}` : space_spot_split, my_spaces, habit_spaces, spots, space_future, space_photo_why |
+| navigateur (Supabase simulé, Chromium 143) | space 37/37 · space_top_left 20/20 · space_video 19/19 · spaces_loupe 26/26 · space_boxes_ecosystem 22/22 |
+| navigateur (suite) | club_map 42/42 · club_publish 33/33 · club_ui 24/24 · space_spot_links 33/33 · com_croix 51/51 · com_read_copy 20/20 · club_luxury 48/48 |
+| identité héritée | spaces_ui 43/47 ; les 4 échecs connus get_higher/stoner persistent ; aucun nouvel échec ni pageerror dans les parcours transférés |
+| médias / dépendances | vraie capture 1080 × 1920 + audio, TUS et HLS signés testés avec fixtures locales ; villes/capture/HLS/licence Club identiques à SPACE |
+| advisors security | ERROR 5 → 5 ; notices authenticated security-definer 127 → 129 (les deux nouvelles RPC à accès contrôlé), autres comptes inchangés |
+| domaines du lot | SPACE BUILD `2026-10-09-space-feed` · Club `2026-10-09-club-map`, ancienne porte `/meet` · COM `2026-10-09-spaces-spots` |
+| écarts techniques autorisés par Wah | lecteur feed direct (l’ancien déléguait à spots_feed), fixtures héritées actualisées aux écrivains shared/ON, caméra Club autorisée dans Permissions-Policy |
+| hors lot | boutique/Stripe/Edge Functions inchangés ; miroir phase 4 seulement sur « go miroir » |
 
 ## 0 · SPACES ET SPOTS REMIS À ZÉRO — 09/10/2026 (ter)
 

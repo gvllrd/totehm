@@ -1,5 +1,12 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 09/10/2026 — SPACES et SPOTS dans les Habits
+
+BUILD `2026-10-09-spaces-spots`. `habit_spaces` reste une lecture commune (3 objets max), séparée par `format`.
+Chaque Habit montre SPACES puis SPOTS, Space Mono Bold gris ; groupe vide absent.
+Un space ouvre SPACE, un spot ouvre Club, chacun par `ssoVersDomaine`. « + a space » ouvre la caméra de SPACE.
+Source du Totehm, copie des éléments, cinq vues et TotehmSM inchangés.
+Tests : `com_croix`, `com_read_copy`, `spaces_loupe`, `space_boxes_ecosystem`, `space_spot_links` (1 space + 1 spot, deux domaines).
 ## COM · 09/10/2026 — quatre domaines, quatre fonctions
 
 BUILD `2026-10-09-domaines`. [Get Higher] (la langue, le menu, `/console`,

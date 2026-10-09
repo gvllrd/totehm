@@ -284,6 +284,10 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
+### Correction 0.51 — 09/10/2026 · spaces et spots séparés (à reporter)
+Une table : `spot_plans.format` space/spot. SPACE = fil + publication ; Club = carte + spots, ancienne porte `/meet` ; COM distingue les deux.
+Migration `space_spot_split` appliquée ; signatures et médias conservés. Ne pas réappliquer ; la purge Oracle/n8n reste une tâche séparée.
+
 ### Correction 0.50 — 09/10/2026 (ter) · spaces et spots remis à zéro (à reporter)
 
 > Les essais (5 spaces, 7 spots) sont retirés : on repart d'une base vide avant

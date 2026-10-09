@@ -5,7 +5,7 @@ import {launch,page,ok} from './harness.mjs';
 const OUT=process.argv[2]||'/tmp';const browser=await launch();const origin='https://www.totehm.com';
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
 const source={ok:true,pseudo:'studio',steps:[{t:'Deep practice',is:['focus'],f:'every_morning'},{t:'Run the hill',is:['fight']}],objs:{'Deep practice':['o1']},trips:[{id:'o1',text:'Build a practice',is:['focus']}],reps:[{id:71,text:'Put the phone away',is:['focus'],hs:['Deep practice']}],wisdom:[{id:'w1',text:'Attention is a choice',is:['focus']}],visions:[{id:'v1',text:'A focused life',is:['focus']}]};
-const hs={ok:true,mine:false,habits:[{habit:'Deep practice',total:1,spaces:[{id:'s1',state:'will',city:'Porto',starts_at:new Date(Date.now()+864e5).toISOString(),visibility:'shared'}]}]};
+const hs={ok:true,mine:false,habits:[{habit:'Deep practice',total:1,spaces:[{id:'s1',format:'space',state:'will',city:'Porto',starts_at:new Date(Date.now()+864e5).toISOString(),visibility:'shared'}]}]};
 const rpc={my_console:{signed_in:true,offer:{enabled:false}},my_landing:{signed_in:true,pseudo:'wah',visibility:'private',offer:{enabled:false},higher:{active:false,price_cents:700,currency:'eur'},thp:false,subscriptions:1,subscribers:0},totehm_of:source,habit_spaces:b=>b.p_pseudo?hs:{ok:true,mine:true,habits:[]},
   totehm_search:b=>b.p_q?[{pseudo:'studio',offer:true,price_cents:2400,currency:'eur',subscribed:true},{pseudo:'atelier',offer:true,price_cents:3600,currency:'eur',subscribed:false}]:[{pseudo:'studio',offer:true,price_cents:2400,currency:'eur',subscribed:true}],
   totehm_import_boxes:b=>({ok:true,created:b.p_selection[0].kind==='h'?1:0,reused:b.p_selection[0].kind==='h'?0:1,total:1})};
@@ -18,7 +18,7 @@ try{
   await pg.click('#lcur-g');await pg.waitForTimeout(1600);
   const q=await pg.evaluate(()=>({v:document.getElementById('srch-q').value,ph:document.getElementById('srch-q').placeholder,rows:document.querySelectorAll('#srch-res .srch-row').length,hint:document.getElementById('srch-hint').textContent,vue:window.__totehm_lv().vue}));
   ok(q.vue==='g'&&q.v===''&&q.ph==="a member's name"&&q.rows===0&&/member's TOTEHM/.test(q.hint),'à gauche : une recherche vide, rien d\'autre ('+q.hint+')');
-  await pg.keyboard.type('stu');await pg.waitForTimeout(700);
+  await pg.fill('#srch-q','stu');await pg.waitForSelector('#srch-res .srch-row');
   const rows=await pg.$$eval('#srch-res .srch-row',l=>l.map(r=>({open:r.querySelector('.srch-open')?.getAttribute('href'),sub:r.querySelector('.srch-sub')?.getAttribute('href'),subT:r.querySelector('.srch-sub')?.textContent,meta:r.querySelector('.srch-meta')?.textContent})));
   ok(rows[0].open==='/totehm?ro=studio'&&rows[0].meta==='subscribed','on tape un nom : son Totehm, en lecture ; déjà abonné → « subscribed »');
   ok(rows[1]&&rows[1].sub==='/@atelier'&&/^Subscribe · /.test(rows[1].subT),'Subscribe to a TOTEHM : la page de vente du créateur ('+(rows[1]&&rows[1].subT)+')');
