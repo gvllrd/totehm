@@ -18,7 +18,7 @@ const geo = lisbon => async url => url.pathname === '/api/geo'
            spots_feed: { spots:[SP('a1','am','Cold shower',-0.2), SP('p1','was','Meditation',-30)] } },
     functions: { 'sso-mint': b => { mint = b.target; return { code:'c'.repeat(64) }; } },
     network: url => url.host === 'www.totehm.space' ? { status:200, contentType:'text/html', body:'<p>space</p>' } : null });
-  await pg.goto('https://www.figher.club/');
+  await pg.goto('https://www.figher.club/meet');
   await pg.waitForFunction(() => window.__totehm_club && window.__totehm_club().spots.charge);
   const d = await pg.evaluate(() => window.__totehm_club());
   ok(d.build === '2026-10-09-meet' && d.page === 'meet' && d.spots.next === 2 && d.spots.now === 1 && d.spots.past === 1, 'club: next · now · past read from spots_list / spots_feed');
@@ -31,8 +31,8 @@ const geo = lisbon => async url => url.pathname === '/api/geo'
   ok(!/href="\/(discover|market|origins|get_higher|stoner)"/.test(html) && !document_has(html, 'Two keys'), 'club: no Get Higher, market or Origins left on the door');
   ok(/totehm\.com · strategy/.test(html) && /totehm\.space · inspiration/.test(html) && /higher\.boutique · wear &amp; own/.test(html), 'footer: each domain says its function');
   await pg.click('#sp-list .sp-card');
-  await pg.waitForURL(/totehm\.space/, { timeout:6000 }).catch(()=>{});
-  ok(mint === 'space' && pg.url() === 'https://www.totehm.space/?spot=p1#sso=' + 'c'.repeat(64), 'a spot opens on SPACE through the bridge (' + pg.url() + ')');
+  await pg.waitForURL('https://www.figher.club/?spot=p1');
+  ok(mint === null && pg.url() === 'https://www.figher.club/?spot=p1', 'a Meet spot opens on the same Club domain (' + pg.url() + ')');
   ok(log.errors.filter(e => e.startsWith('pageerror')).length === 0, 'club: no page error ' + log.errors.join(' | '));
 }
 function document_has(h, t){ return h.includes(t); }
@@ -41,7 +41,7 @@ function document_has(h, t){ return h.includes(t); }
 {
   const { pg, log } = await page(browser, { dir:'club', origin:'https://www.figher.club', session:false,
     rpc: { spots_list: { ok:true, spots:[], more:false }, spots_feed: { spots:[] } } });
-  await pg.goto('https://www.figher.club/');
+  await pg.goto('https://www.figher.club/meet');
   await pg.waitForFunction(() => window.__totehm_club && window.__totehm_club().spots.charge);
   ok(/No spot announced yet/.test(await pg.textContent('#sp-list')) && /CONNECT WITH MY TOTEHM/.test(await pg.textContent('#member-txt')), 'guest: an empty « next », connect with my TOTEHM');
   await pg.screenshot({ path: OUT + '/club_meet.png', fullPage:true });

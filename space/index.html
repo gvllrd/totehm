@@ -1,35 +1,7 @@
 <!DOCTYPE html>
-<!--
-  ══ TOTEHM.SPACE — DO WITH ME · 01/10/2026 ═════════════════════════════
-  Un Spot = une activité intentionnelle, tirée d'une Habit de MON Totehm,
-  filmée maintenant OU annoncée pour plus tard. Deux réglages : PRIVATE (moi
-  seul) ou SHARED (LOCATION ON/OFF, puis SILENT/SOCIAL seulement si ON). I WILL BE HERE
-  avant une date annoncée ; I AM HERE pendant la durée ; I WAS THERE
-  après. Le serveur le déduit de l'heure, même page fermée.
-
-                         TOP · annoncer un Spot futur (I WILL BE HERE)
-                                     |
-      LEFT · le fil vidéo  —————  CENTER · le radar  —————  RIGHT · les Spots futurs
-      (la ville et autour)        (les points exacts       (les Spots à venir,
-                                   que j'ai le droit       en boîtes)
-                                   de voir)
-                                     |
-                         BOTTOM · la caméra (33 s), puis le Spot
-
-  ⚠️ LE LIEU NE SORT QUE DU SERVEUR. Le radar lit
-    `spots_exact` (mes Spots + les SHARED·ON des créateurs dont je suis
-    l'abonné vivant) ; le fil lit `spots_feed` (la VILLE, jamais un point,
-    jamais une distance). Aucun Spot non autorisé n'est placé à sa vraie
-    position : la page n'en reçoit pas.
-  ⚠️ LES VIDÉOS : Bunny en diffusion protégée quand configuré, sinon seau
-    `moments` privé. Lecture signée, une vidéo suivante anticipée au maximum.
-  ⚠️ Le choix d'une Habit Box est commun aux trois vues
-    horizontales. La Habit est exacte, sinon ses intentions deviennent le repli.
-  `space_discover` applique le choix aux trois lectures. RIGHT : futurs lisibles ; ville seule
-    sans droit exact. Desktop : panneaux de côté + radar réduit, jamais
-    un radar derrière la vidéo. Joystick COM : blue / navy / rep.
-  Polices : Space Mono et Quantico, rien d'autre. Aucun fond blanc.
--->
+<!-- 09/10/2026 — SPACE: strategic Habits lived in photo/video, with their why.
+     Center feed, bottom camera (space_post), left door to three future Club spots.
+     No radar, planning, agenda or exact point. Media, Habit boxes and rights retained. -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -57,7 +29,7 @@ html,body{width:100%;height:100%;background:#000;color:var(--mid);font-family:va
 button,input,textarea,select{font:inherit;color:inherit;color-scheme:dark}
 .hide{display:none!important}
 
-/* ══ LE COIN MEMBRE ══════════════════════════════════════════════════ */
+
 #member{position:fixed;top:calc(12px + var(--top));left:12px;z-index:96;display:flex;align-items:center;gap:8px;
   background:none;border:none;cursor:pointer;font-family:var(--q);font-weight:700;font-size:12px;color:var(--lo);padding:6px 4px}
 #member i{width:9px;height:9px;border-radius:50%;background:#3a3a40;display:block;flex:none;transition:background .2s,box-shadow .2s}
@@ -70,33 +42,27 @@ button,input,textarea,select{font:inherit;color:inherit;color-scheme:dark}
 #menu .m-name{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 #menu .m-terms{background:none;color:var(--dim);font-size:10px;margin-top:10px;padding:8px 2px}
 
-/* ══ LE TITRE = L'INTENTION + HIGHER ═════════════════════════════════ */
+
 #title{position:fixed;top:calc(14px + var(--top));left:50%;transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:8px;
   pointer-events:none;white-space:nowrap}
 #title b{font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:var(--c,#fff)}
 #title svg{height:15px;width:45px;display:block}
 body.v-cam.is-rec #title{opacity:0}
 
-/* ══ LES CINQ VUES ═══════════════════════════════════════════════════ */
+
 .view{position:fixed;inset:0;z-index:10;visibility:hidden;opacity:0;transition:opacity .28s ease,visibility 0s .28s}
 .view.is-on{visibility:visible;opacity:1;transition:opacity .28s ease,visibility 0s}
 .say{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--lo);text-align:center;line-height:1.7}
 .empty{position:absolute;left:0;right:0;top:46%;text-align:center;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
-
-/* TOP — annoncer un Spot futur, à partir de ma Habit Box */
-#v-plan{padding:calc(112px + var(--top)) 16px calc(112px + var(--bot));background:var(--s1);overflow-y:auto;overscroll-behavior:contain}
-#plan-body{display:flex;flex-direction:column;gap:12px;width:min(640px,100%);margin:auto}
 .field{background:var(--s2);border:none;border-radius:var(--r);padding:9px 11px;color:#fff;outline:none;min-width:0}
 textarea.field{width:100%;min-height:58px;resize:vertical;font-family:var(--q);font-size:14px}
 input[type=number].field{width:84px}
 input[type=date].field,input[type=time].field{max-width:100%}
 .pick-habit{display:block;background:none;border:none;text-align:left;width:100%;cursor:pointer}
 .pick-habit.is-on{outline:1px solid var(--mid);outline-offset:2px}
-#plan-body fieldset{border:none;display:contents}
-#plan-body.is-busy{opacity:.65;pointer-events:none}
 
 
-/* LEFT — le fil vertical, une vidéo à la fois */
+
 #feed{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none}
 #feed::-webkit-scrollbar{display:none}
 .clip{position:relative;height:100%;width:100%;scroll-snap-align:start;scroll-snap-stop:always;background:var(--s1);overflow:hidden}
@@ -104,17 +70,10 @@ input[type=date].field,input[type=time].field{max-width:100%}
 .clip .info{position:absolute;left:12px;right:12px;bottom:calc(114px + var(--bot));z-index:2}
 .clip .noclip{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;letter-spacing:.2em;
   text-transform:uppercase;color:var(--dim)}
-
-/* CENTER — le radar */
-#v-radar canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
-
-/* RIGHT — la liste */
-#list{position:absolute;inset:0;overflow-y:auto;padding:calc(112px + var(--top)) 14px calc(110px + var(--bot)) 14px;
-  display:flex;flex-direction:column;gap:12px;overscroll-behavior:contain}
 .it{cursor:pointer}
 .dist{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo);margin-top:5px}
 
-/* BOTTOM — la caméra */
+
 #v-cam{background:#000}
 #cam-v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
 #cam-n{position:absolute;top:42%;left:0;right:0;text-align:center;font-family:var(--mono);font-weight:700;font-size:64px;color:#fff;
@@ -143,7 +102,7 @@ body.v-cam.is-rec #cam-body,body.v-cam.is-count #cam-body{background:none}
 .note{font-size:10px;letter-spacing:.08em;color:var(--lo)}
 .note.no{color:#E24B4A}
 
-/* ══ LA BOÎTE — COPIÉE de com/totehm.html (Habit Box) ════════════════ */
+
 .habit{position:relative;display:flex;align-items:center;min-height:30px}
 .habit .tick{position:absolute;left:0;top:0;bottom:0;width:1px;background:#000;z-index:3;display:flex;flex-direction:column;overflow:hidden}
 .habit .tick i{flex:1 1 0;display:block;min-height:2px}
@@ -162,20 +121,20 @@ body.v-cam.is-rec #cam-body,body.v-cam.is-count #cam-body{background:none}
 .mg{display:block;margin-top:9px}
 .mg-l{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.55);margin-bottom:4px;text-transform:uppercase}
 @media(max-width:700px){.habit .tick{width:2px}}
-/* LE NOM D'UN TOTEHM — la tuile perforée navy, et elle seule. « by » à côté, jamais dedans. */
+
 .by{display:flex;align-items:center;gap:7px;margin-top:8px;font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo)}
 .tname{display:inline-block;width:fit-content;font-family:var(--q);font-weight:400;font-size:13px;color:#fff;line-height:1.5;
   border:6px solid transparent;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;
   background:none;cursor:pointer;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent}
 
-/* ══ UN SPOT, SEUL (le radar, la liste, un lien partagé) ══════════════ */
+
 #detail{position:fixed;left:0;right:0;bottom:0;z-index:80;background:var(--s1);padding:16px 16px calc(18px + var(--bot));
   transform:translateY(104%);transition:transform .32s var(--ease);visibility:hidden;max-height:78%;overflow-y:auto}
 #detail.is-open{transform:none;visibility:visible}
 #detail .acts{display:flex;gap:8px;margin-top:12px;align-items:center}
 #detail video{width:100%;max-height:46vh;object-fit:cover;background:#000;display:block;margin-bottom:10px;border-radius:var(--r)}
 
-/* ══ LA MANETTE — couleurs et manche de com/totehm.html ═════════════ */
+
 #joy{position:fixed;z-index:70;bottom:calc(14px + var(--bot));left:50%;transform:translateX(-50%);
   display:grid;grid-template-columns:18px var(--joy-d) 18px;grid-template-rows:18px var(--joy-d) 18px;align-items:center;justify-items:center;
   transition:opacity .25s}
@@ -207,17 +166,15 @@ body.v-cam.is-rec #cam-body,body.v-cam.is-count #cam-body{background:none}
 
 
 
-/* Habit Box du radar, et définition exacte de l'intention choisie. */
+
 #heading{position:fixed;top:calc(14px + var(--top));left:0;right:0;z-index:60;display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none;transition:left .35s var(--ease),right .35s var(--ease)}
 #title{position:static;transform:none}
 #int-def{max-width:min(370px,74vw);font-size:9px;line-height:1.45;color:var(--lo);text-align:center;pointer-events:none}
 #habit-filter{pointer-events:auto;background:var(--s2);border:none;border-radius:var(--r);padding:5px 10px;max-width:min(320px,70vw);font-size:10px;color:var(--mid);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-body:not(.v-radar) #habit-filter{visibility:hidden}
 
-/* LE PAPIER — copie du papier rotatif COM du 25/09, sans gyroscope. */
+
 :root{--tp:64px}
 #tp-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none}
-body:not(.v-radar) #tp-wrap{display:none}
 #totehm-paper{position:relative;flex-shrink:0;width:var(--tp);height:var(--tp);
   perspective:calc(var(--tp) * 4.36);pointer-events:auto;cursor:pointer;touch-action:none;
   -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
@@ -247,7 +204,7 @@ body:not(.v-radar) #tp-wrap{display:none}
   text-transform:uppercase;text-align:center;pointer-events:none;white-space:nowrap}
 #tp-wrap.is-open #tp-hint{visibility:hidden}
 #member-txt{max-width:calc(50vw - var(--tp)/2 - 48px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-@media(max-width:480px){:root{--tp:56px}body.v-radar #heading{top:calc(14px + var(--top))}}
+@media(max-width:480px){:root{--tp:56px}}
 @media(max-width:480px) and (max-height:700px){:root{--tp:48px}}
 @media(prefers-reduced-motion:reduce){#tp-card{will-change:auto}.tp-light{display:none}}
 
@@ -255,64 +212,31 @@ body.v-cam.is-rec #int-def{opacity:0}
 #habit-picker{position:fixed;top:calc(100px + var(--top));left:50%;transform:translateX(-50%);z-index:85;width:min(420px,calc(100vw - 32px));max-height:64vh;overflow-y:auto;background:var(--s1);border:1px solid var(--s3);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;gap:10px}
 #habit-picker .row{justify-content:space-between}
 #joy .cur.is-preview{opacity:1;transform:scale(1.3)}
-.view:not(#v-radar){touch-action:pan-y}
-#radar-empty{top:auto;transform:translate(-50%,-50%);width:240px;right:auto;pointer-events:none}
-#place-picker{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + var(--bot));z-index:90;width:min(440px,calc(100vw - 32px));background:var(--s1)}
-#place-actions{padding:12px;display:flex;flex-direction:column;gap:8px}
-#place-actions .row{justify-content:space-between}
-#radar-map{position:absolute;overflow:hidden;border-radius:50%;touch-action:none;cursor:grab;z-index:1;background:var(--s2)}
-#map-tiles{position:absolute;inset:0;pointer-events:none}
-#map-tiles img{position:absolute;width:256px;height:256px;filter:invert(1) hue-rotate(180deg) brightness(.72) saturate(.65)}
-#map-pin{position:absolute;top:50%;left:50%;width:18px;height:18px;border:2px solid #fff;transform:translate(-50%,-50%);pointer-events:none}
-#map-pin:after{content:'';position:absolute;inset:5px;background:#fff}
-#map-credit{position:absolute;bottom:13%;left:50%;transform:translateX(-50%);font-size:7px;white-space:nowrap;background:var(--s1);padding:1px 3px;color:var(--lo)}
-#map-credit a{color:inherit}
-#radar-tools{position:fixed;z-index:65;display:flex;flex-direction:column;align-items:center;gap:6px;max-width:130px}
-#cmp{font-size:8px;line-height:1.6;text-align:center;padding:5px 8px;white-space:nowrap}
-#map-tools{flex-wrap:nowrap;gap:3px}#map-tools .chip{padding:4px 8px;min-width:26px;text-align:center}
-body.v-feed #radar-tools,body.v-list #radar-tools,body.v-cam #radar-tools{display:none}
-body.is-pin #radar-tools{display:flex}
-body.is-pin #v-plan{visibility:hidden!important;opacity:0;pointer-events:none}
-body.is-pin #joy,body.is-pin #radar-empty{display:none}
-body.is-pin #v-radar{visibility:visible;opacity:1}
 .btn,.chip{width:fit-content;max-width:100%;align-self:flex-start;flex:0 0 auto}
 .btn{padding:8px 12px}.chip{padding:6px 9px;letter-spacing:.08em}
 .chip small{max-width:23ch;line-height:1.45}
 body.v-cam.is-form #cam-body{bottom:calc(170px + var(--bot));max-height:calc(100% - 300px);padding:12px 14px;background:rgba(11,11,13,.88)}
 #cam-body .it{flex:none}
-@media(max-width:899px){
- body.v-plan #v-radar{visibility:visible;opacity:1}
- #v-plan{inset:auto 0 calc(112px + var(--bot));height:auto;max-height:44vh;padding:12px 14px;box-shadow:0 -8px 24px rgba(0,0,0,.4)}
-}
 @media(min-width:900px){
   :root{--panel-w:420px}
-  #v-radar{visibility:visible!important;opacity:1!important;z-index:10;transition:none}
-  .view:not(#v-radar){z-index:20;opacity:1;transition:transform .4s var(--ease),visibility 0s .4s;visibility:hidden;box-shadow:0 0 30px rgba(0,0,0,.4)}
-  .view.is-on:not(#v-radar){visibility:visible;transition:transform .4s var(--ease),visibility 0s}
   #v-feed{inset:0 auto 0 0;width:var(--panel-w);transform:translateX(-101%);background:var(--s1)}
-  #v-list{inset:0 0 0 auto;width:var(--panel-w);transform:translateX(101%);background:var(--s1)}
-  #v-feed.is-on,#v-list.is-on{transform:none}
-  #v-plan{inset:calc(106px + var(--top)) auto auto 50%;width:min(760px,calc(100vw - 48px));height:auto;max-height:min(42vh,410px);min-height:90px;padding:16px 22px;transform:translate(-50%,-150%);border-radius:var(--r)}
-  #v-plan.is-on{transform:translate(-50%,0)}
+  #v-feed.is-on{transform:none}
   #v-cam{inset:auto auto calc(124px + var(--bot)) 50%;width:min(760px,calc(100vw - 48px));height:min(42vh,410px);transform:translate(-50%,160%);border-radius:var(--r);overflow:hidden}
   #v-cam.is-on{transform:translate(-50%,0)}
   #cam-body{max-height:90%;padding:14px 18px 16px}
   body.v-cam.is-form #cam-body{bottom:64px;max-height:calc(100% - 76px);padding:12px 16px}
   #cam-sec{top:12px;right:14px}
-  #list{padding:calc(66px + var(--top)) 16px 26px 16px}
   .clip .info{bottom:26px}
-  body.v-feed #habit-filter,body.v-list #habit-filter{visibility:hidden}
-  body.v-feed #radar-tools,body.v-list #radar-tools{display:flex}
+  body.v-feed #habit-filter{visibility:hidden}
   body.v-feed #heading{left:var(--panel-w)}
-  body.v-list #heading{right:var(--panel-w)}
   #detail{left:50%;right:auto;width:min(600px,calc(100vw - 40px));border-radius:var(--r) var(--r) 0 0;transform:translate(-50%,104%)}
   #detail.is-open{transform:translate(-50%,0)}
 }
-@media(max-width:480px){#heading{top:calc(44px + var(--top))}#int-def{max-width:80vw;font-size:8px}#list,#v-plan{padding-top:calc(132px + var(--top))}}
+@media(max-width:480px){#heading{top:calc(44px + var(--top))}#int-def{max-width:80vw;font-size:8px}}
 @media(prefers-reduced-motion:reduce){.view,#heading,#detail,#menu,#joy-stack,#joy-record{transition:none!important}}
 
 .video-status{position:absolute;top:44%;left:12px;right:12px;text-align:center;pointer-events:none}
-/* The frame remains 9:16 in a side panel, a wide screen and a phone. */
+
 .portrait-media{position:relative;aspect-ratio:9/16;background:#000;overflow:hidden}
 .portrait-media>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
 .clip,#v-cam{container-type:size}
@@ -322,26 +246,18 @@ body.v-cam.is-form #cam-body{bottom:calc(170px + var(--bot));max-height:calc(100
 @supports not (width:1cqw){.clip>.portrait-media,#cam-frame{width:min(100%,calc(100vh * 9 / 16))}}
 @media(min-width:900px){#v-cam{height:min(56dvh,520px);width:calc(min(56dvh,520px) * 9 / 16)}}
 
-/* 03/10 — SPACE: paper + radar, deliberate filming, isolated full-screen form. */
+
 #title,#int-def{display:none!important}
 :root{--tp:110px}
-#heading,body.v-radar #heading{top:calc(18px + var(--top));gap:0}
-body.v-feed #heading,body.v-list #heading{top:calc(14px + var(--top));--tp:58px}
-body.v-feed #tp-wrap,body.v-list #tp-wrap{display:flex}
-body.v-feed #tp-hint,body.v-list #tp-hint,body.v-feed #member,body.v-list #member{display:none}
-body.v-plan #heading,body.v-cam #heading{display:flex}
+#heading{top:calc(18px + var(--top));gap:0}
+body.v-feed #heading{top:calc(14px + var(--top));--tp:58px}
+body.v-feed #tp-wrap{display:flex}
+body.v-feed #tp-hint,body.v-feed #member{display:none}body.v-cam #heading{display:flex}
 #member,#member:hover,#member-txt{font-family:var(--q);font-weight:400;color:#fbd5ca}
 #member i{display:none}
 .tname,.tname:hover{font-family:var(--q);font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
 #tp-name,#tp-name.is-name,#tp-name:hover,#tp-name.is-name:hover{color:#fbd5ca;background:#000;border-radius:7px;padding:4px 6px;max-width:82%;box-sizing:border-box}
 #tp-hint{margin-top:6px;letter-spacing:.1em;font-size:8px}
-#radar-tools{display:contents}
-#cmp,#map-tools{position:fixed;z-index:65}
-#map-tools{flex-direction:column;align-items:center;gap:4px}
-#cmp{transform:translateX(-50%)}
-#map-tools{transform:translateX(-50%)}
-body.v-feed #radar-tools,body.v-list #radar-tools,body.v-cam #radar-tools{display:none}
-body.is-pin #radar-tools{display:contents}
 #feed .info .habit{box-shadow:0 5px 22px rgba(0,0,0,.65),0 1px 4px rgba(0,0,0,.5)}
 #detail{max-height:84dvh;padding-top:0;overscroll-behavior:contain;touch-action:pan-y;transition:transform .32s var(--ease),visibility 0s .32s}
 #detail.is-open{transform:translateY(var(--sheet-y,0px));transition:transform .32s var(--ease),visibility 0s}
@@ -359,31 +275,11 @@ body.v-cam.is-form #cam-body .row{width:auto}
 body.v-cam.is-form #joy{opacity:.18;pointer-events:none}
 .cam-actions{display:flex;gap:16px;align-items:center;padding-top:12px}
 #cam-body .pick-habit{width:100%;text-align:left}
-#v-plan{overscroll-behavior:contain;z-index:20}
-@media(max-width:899px){
- #v-plan{padding:12px 14px;max-height:48dvh}
- #list{padding-top:calc(86px + var(--top))}
-}
 @media(max-width:480px) and (max-height:700px){:root{--tp:90px}}
 @media(min-width:900px){
- body.v-feed #radar-tools,body.v-list #radar-tools{display:contents}
  body.v-feed #heading{left:0;right:calc(100% - var(--panel-w))}
- body.v-list #heading{right:0;left:calc(100% - var(--panel-w))}
  #detail.is-open{transform:translate(-50%,var(--sheet-y,0px))}
- #v-plan{top:calc(24px + var(--top));max-height:48dvh}
 }
-
-/* 03/10 bis — TOP = BOTTOM : la Habit Box, puis la configuration noire et grise.
-   LEFT : la Habit Box + le bloc de données noir et gris, filtré à côté du papier. */
-#v-plan{background:rgba(0,0,0,.92)}
-#plan-body{width:min(520px,100%)}
-#plan-body .plan-habit{flex:none}
-.plan-conf{display:flex;flex-direction:column;gap:10px}
-.plan-conf>.lab{margin-top:4px}
-#p-city{font-family:var(--q);font-size:14px;width:min(220px,100%)}
-#p-cities:empty{display:none}
-.plan-video{display:flex;align-items:flex-end;gap:12px}
-.plan-video .portrait-media{width:72px;flex:none;border-radius:var(--r)}
 .sdata{background:rgba(0,0,0,.86);padding:8px 10px 9px;display:flex;flex-direction:column;gap:6px}
 .sd-row{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
 .sd-tag{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);background:var(--s2);border-radius:var(--r);
@@ -400,15 +296,12 @@ body.v-feed #sf-btn{display:block}
 #sf-panel{position:fixed;z-index:85;width:min(340px,calc(100vw - 32px));transform:translateX(-50%);background:rgba(0,0,0,.92);border-radius:var(--r);
   padding:12px;display:flex;flex-direction:column;gap:8px;max-height:70dvh;overflow-y:auto;overscroll-behavior:contain}
 #sf-panel .sf-acts{justify-content:space-between;margin-top:4px}
-#radar-tools:not(.is-placed) #cmp,#radar-tools:not(.is-placed) #map-tools{visibility:hidden}
 
 
 
 
 
-/* 03/10 ter — le contexte d'une Habit Box (où, quand, avec qui) dans une boîte
-   plus ronde, légèrement détachée ; les gestes en boutons, sans crochets ;
-   BOTTOM lisible : textes et boutons dans des boîtes noires à faible marge. */
+
 .sdata{border-radius:16px;margin-top:7px;padding:8px 11px 9px}
 .acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
 .acts-note{margin-top:6px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -417,9 +310,6 @@ body.v-feed #sf-btn{display:block}
 #feed .info .acts .btn{background:rgba(11,11,13,.86)}
 .portrait-media>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000;display:block}
 #cam-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000;z-index:1}
-#list .it{display:flex;flex-direction:column}
-#list .it-media .portrait-media{width:min(100%,calc(46dvh * 9 / 16));margin:0 auto 10px;border-radius:var(--r)}
-#list .it.is-new .habit .h-body{box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
 .pick-head{justify-content:space-between;width:100%}
 body.v-cam:not(.is-form) #cam-body .say,body.v-cam:not(.is-form) #cam-body .note{display:inline-block;width:fit-content;max-width:100%;
   background:rgba(0,0,0,.82);border-radius:var(--r);padding:3px 8px;color:#fff;margin:2px auto}
@@ -431,16 +321,13 @@ body.v-cam #joy-say{background:rgba(0,0,0,.82);border-radius:var(--r);padding:1p
 @media(max-width:899px){
  #habit-picker{inset:0;top:0!important;left:0;transform:none;width:auto;max-height:none!important;border:0;border-radius:0;
    padding:calc(18px + var(--top)) 16px calc(24px + var(--bot));background:rgba(0,0,0,.94);z-index:120}
- body.is-pick #v-plan{inset:0;height:100dvh;max-height:none;padding:calc(18px + var(--top)) 16px calc(130px + var(--bot));z-index:60;box-shadow:none}
- body.is-pick #radar-tools,body.is-pick #member{display:none}
 }
 
 
 
 
-/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
-/* Le gris en survol devient blanc. Généré depuis la feuille
-   elle-même : un nouveau bloc gris entre ici tout seul.        */
+
+
 @media(hover:hover){
 #member:hover,
 #menu .m-it:hover,
@@ -464,15 +351,31 @@ body.v-cam #joy-say{background:rgba(0,0,0,.82);border-radius:var(--r);padding:1p
 #tp-name:hover,
 #tp-name.is-name:hover,
 #tp-hint:hover,
-#map-credit:hover,
 .sd-tag:hover,
 #sf-btn:hover,
 .btn small:hover{color:#fff}
 }
-/* ══ FIN DU BLOC GÉNÉRÉ ══ */
+
+
+/* The feed is the full-screen center; the left door keeps the existing cards. */
+#v-spots{background:var(--s1);padding:calc(112px + var(--top)) 16px calc(124px + var(--bot));overflow-y:auto}
+#spots-door{display:flex;flex-direction:column;gap:6px}#find-spot{margin-top:18px}
+.sp-card{display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;border:0;cursor:pointer;background:var(--s2);color:#fff;padding:14px 16px 14px 19px;position:relative}
+.sp-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--rep)}
+.sp-when{font:700 9.5px/1.4 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--lo)}
+.sp-habit{font:400 17px/1.3 var(--q);color:#fff}
+.sp-meta{font:400 11px/1.5 var(--mono);color:var(--mid)}
+.sp-mode{margin-left:8px;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#fff}
+.sp-by{font:400 11px/1.5 var(--mono);color:var(--lo)}
+.sp-by b{font:400 13px/1.4 var(--q);color:var(--coral)}.sp-empty{padding:18px 0;text-align:center;color:var(--dim);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+#v-feed{inset:0;width:100%;transform:none;box-shadow:none;opacity:0;visibility:hidden}
+#v-feed.is-on{opacity:1;visibility:visible;transform:none}
+body.v-feed #heading{left:0;right:0;--tp:110px}body.v-feed #tp-hint{display:block}body.v-feed #member{display:block}body.v-feed #habit-filter{visibility:visible}
+.clip .info{width:min(520px,calc(100% - 24px));left:50%;right:auto;transform:translateX(-50%);bottom:calc(114px + var(--bot))}
+body.v-spots #heading{--tp:58px}body.v-spots #tp-hint{display:none}
 </style>
 <style data-ecosystem-ui="2026-10-05">
-/* 05/10/2026 — copied into the four platforms. Text buttons fit their label. */
+
 button.eco-text-btn,a.eco-text-btn{inline-size:fit-content!important;max-inline-size:100%;min-inline-size:0!important;flex:0 1 auto!important;padding:.65em .95em!important;line-height:1.45;box-sizing:border-box}
 .eco-connect,.eco-connect #member-txt,.eco-connect #conn-txt{font-family:'Space Mono',monospace!important;font-weight:700!important;font-size:10px!important;color:#b0b0b0!important;letter-spacing:.06em;text-transform:uppercase!important}
 button.eco-connect{background:#252529!important;border:0!important;border-radius:10px!important;cursor:pointer}
@@ -492,7 +395,7 @@ button.eco-connect{background:#252529!important;border:0!important;border-radius
 .eco-close{align-self:flex-end!important;border:0;border-radius:10px;background:#252529;color:#ddd;font:700 11px 'Space Mono',monospace;cursor:pointer}
 body.eco-modal #joy{pointer-events:none!important;opacity:.2!important}
 body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,body[data-eco-auth="central"] #in-email,body[data-eco-auth="central"] #in-otp,body[data-eco-auth="central"] #pt-email,body[data-eco-auth="central"] #pt-otp,body[data-eco-auth="central"] #pt-verify,body[data-eco-auth="central"] #btn-send,body[data-eco-auth="central"] #pt-send,body[data-eco-auth="central"] #btn-verify{display:none!important}
-/* Standalone interface T glyphs are forbidden. The rotating TOTEHM paper keeps its brand artwork. */
+
 #bigT>svg{visibility:hidden!important}.tv-T{display:none!important}
 @media(hover:hover){.eco-close:hover{background:#34343a;color:#fff}.eco-connect:hover{color:#fff!important}}
 
@@ -510,8 +413,8 @@ body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,b
 .mg{align-items:flex-start}.mg .minis{width:100%}
 .pick-habit[role=button]:focus-visible{outline:1px solid var(--mid);outline-offset:3px}
 #member.eco-connect{max-width:calc(50vw - var(--tp)/2 - 22px)}
-body.v-cam.is-rec #space-about,body.is-pick #space-about{display:none}
-/* MY SPACES · 06/10 — l'historique de MES spaces : ouvrir, supprimer. Plein écran, ancré en haut. */
+body.v-cam.is-rec #space-about{display:none}
+
 #my-spaces{position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.95);overflow-y:auto;overscroll-behavior:contain;padding:calc(16px + var(--top)) 16px calc(28px + var(--bot))}
 .msp-in{width:min(560px,100%);margin:0 auto;display:flex;flex-direction:column;gap:12px}
 .msp-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
@@ -525,19 +428,12 @@ body.v-cam.is-rec #space-about,body.is-pick #space-about{display:none}
 .msp-s b{font-weight:700;color:var(--mid)}.msp-s b.is-live{color:#fff}
 .msp-row>.msp-del{background:none;color:var(--lo);flex:none}
 [data-del].is-arm{color:#ff9a9a!important}
-/* LE PAPIER RESPIRE D'UNE VUE À L'AUTRE · 06/10 — Wah : « quand on change de vue, le logo
-   TOTEHM rapetisse ou s'agrandit, pour faire plus vrai et organique ». `--tp` est une
-   propriété ENREGISTRÉE : elle se transitionne (un léger rebond) au lieu de sauter.
-   Radar 110 px · fil / liste 58 px · plan / caméra : il se replie à 0 et s'efface. */
+
 @property --tp{syntax:'<length>';inherits:true;initial-value:110px}
-#heading{transition:left .35s var(--ease),right .35s var(--ease),--tp .55s cubic-bezier(.3,1.35,.55,1),opacity .35s ease,visibility 0s linear 0s}
-body:not(.v-radar) #tp-wrap{display:flex}
-body.v-plan #heading,body.v-cam #heading{--tp:0px;opacity:0;visibility:hidden;pointer-events:none;
-  transition:left .35s var(--ease),right .35s var(--ease),--tp .4s ease-in,opacity .3s ease,visibility 0s linear .4s}
-body.v-plan #tp-hint,body.v-cam #tp-hint,body.v-plan #sf-btn,body.v-cam #sf-btn{display:none}
-@media(prefers-reduced-motion:reduce){#heading,body.v-plan #heading,body.v-cam #heading{transition:none}}
-/* L'INVITATION SE LIT · 06/10 — Wah : « Tap on your TOTEHM… doit être beaucoup plus visible ».
-   Blanc, gras, sur sa boîte noire (la grammaire des textes de la caméra), et elle respire. */
+#heading{transition:left .35s var(--ease),right .35s var(--ease),--tp .55s cubic-bezier(.3,1.35,.55,1),opacity .35s ease,visibility 0s linear 0s}body.v-cam #heading{--tp:0px;opacity:0;visibility:hidden;pointer-events:none;
+  transition:left .35s var(--ease),right .35s var(--ease),--tp .4s ease-in,opacity .3s ease,visibility 0s linear .4s}body.v-cam #tp-hint,body.v-cam #sf-btn{display:none}
+@media(prefers-reduced-motion:reduce){#heading,body.v-cam #heading{transition:none}}
+
 #tp-hint{margin-top:12px;padding:7px 12px;border-radius:10px;background:rgba(0,0,0,.74);color:#fff;
   font:700 11px/1.55 var(--mono);letter-spacing:.08em;text-transform:uppercase;white-space:normal;
   max-width:min(520px,calc(100vw - 40px));animation:tp-souffle 4.2s ease-in-out infinite}
@@ -546,7 +442,7 @@ body.v-plan #tp-hint,body.v-cam #tp-hint,body.v-plan #sf-btn,body.v-cam #sf-btn{
 body.is-msp #joy{pointer-events:none;opacity:.2}
 @media(hover:hover){.msp-row:hover{background:var(--s3)}.msp-row>.msp-del:hover{color:#fff}}
 </style></head>
-<body class="v-radar">
+<body class="v-feed">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="higher-badge" viewBox="0 0 600 200"><defs><mask id="hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></symbol></svg>
 
 <button id="member" type="button" aria-label="Member menu"><i></i><span id="member-txt">CONNECT WITH MY TOTEHM</span></button>
@@ -590,11 +486,8 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
 <aside id="sf-panel" class="hide" role="dialog" aria-label="Filter the spaces"></aside>
 
 
-<section class="view" id="v-plan" aria-label="Create a future spot"><div id="plan-body"></div><input id="p-file" class="hide" type="file" accept="video/mp4,video/quicktime,video/webm,image/*" aria-label="A video or a photo from my files"></section>
-
-<section class="view" id="v-feed" aria-label="Spots around"><div id="feed"></div></section>
-<section class="view is-on" id="v-radar" aria-label="Radar"><canvas id="canvas"></canvas><div id="radar-map" class="hide"><div id="map-tiles"></div><div id="map-pin"></div><span id="map-credit">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></span></div><div class="empty hide" id="radar-empty"></div></section>
-<section class="view" id="v-list" aria-label="Future Spot Habits"><div id="list"></div></section>
+<section class="view is-on" id="v-feed" aria-label="Spots around"><div id="feed"></div></section>
+<section id="v-spots" class="view"><div id="spots-door"></div><button class="btn" type="button" id="find-spot">FIND A SPOT</button></section>
 <section class="view" id="v-cam" aria-label="Camera">
   <div id="cam-frame" class="portrait-media"><video id="cam-v" playsinline muted></video><img id="cam-photo" class="hide" alt=""></div>
   <div id="cam-n"></div>
@@ -612,15 +505,12 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
     <button class="btn hide" id="msp-more" type="button">MORE</button>
   </div>
 </aside>
-<section id="place-picker" class="hide" role="dialog" aria-label="Choose the future spot place">
-  <div id="place-actions"><p class="note">Move the radar under the cross.</p><input class="field" id="place-name" maxlength="120" placeholder="Place name (optional)" aria-label="Place name"><div class="row"><button class="lnk" id="place-cancel" type="button">Cancel</button><button class="btn" id="place-use" type="button">Use this place</button></div></div>
-</section>
-<div id="radar-tools" role="group" aria-label="Radar controls"><button id="cmp" class="chip" type="button" aria-label="Compass">000° N<br>turn the ring</button><div id="map-tools" class="row"><button class="chip" type="button" data-zoom="1" aria-label="Zoom in">+</button><button class="chip" type="button" data-zoom="-1" aria-label="Zoom out">−</button><button class="chip" type="button" data-here="1" aria-label="My position">◎</button></div></div>
+
 
 <div id="joy" role="group" aria-label="Where I am in totehm.space">
   <button class="cur" id="cur-h" type="button" aria-label="Future space"><svg viewBox="0 0 16 16"><path d="M3 10 L8 5 L13 10"/></svg></button>
   <button class="cur" id="cur-g" type="button" aria-label="Feed"><svg viewBox="0 0 16 16"><path d="M10 3 L5 8 L10 13"/></svg></button>
-  <button id="joy-box" type="button" aria-label="Back to radar"><span id="joy-stack" aria-hidden="true"><i class="o"></i><i class="h"></i><i class="r"></i></span><span id="joy-record" aria-hidden="true"></span></button><span id="joy-say"></span>
+  <button id="joy-box" type="button" aria-label="Back to feed"><span id="joy-stack" aria-hidden="true"><i class="o"></i><i class="h"></i><i class="r"></i></span><span id="joy-record" aria-hidden="true"></span></button><span id="joy-say"></span>
   <button class="cur" id="cur-d" type="button" aria-label="List"><svg viewBox="0 0 16 16"><path d="M6 3 L11 8 L6 13"/></svg></button>
   <button class="cur" id="cur-b" type="button" aria-label="Camera"><svg viewBox="0 0 16 16"><path d="M3 6 L8 11 L13 6"/></svg></button>
 </div>
@@ -684,7 +574,7 @@ async function ssoLogin(silent, retour){
   location.href = SSO_AUTH + '?client=' + SSO_CLIENT + '&challenge=' + c + '&state=' + st +
                   '&return=' + encodeURIComponent(ret) + (silent ? '&prompt=none' : '');
 }
-async function ssoVersDomaine(sb, cible, url){
+async function ssoVersDomaine(sb, cible, url, replace=false){
   try{
     const { data:{ session } } = await sb.auth.getSession();
     if(session){
@@ -695,11 +585,11 @@ async function ssoVersDomaine(sb, cible, url){
       });
       if(r.ok){
         const { code } = await r.json();
-        if(code){ location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; }
+        if(code){ if(replace) location.replace(url + (url.includes('#') ? '&' : '#') + 'sso=' + code); else location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; }
       } else console.error('[sso] mint', r.status);
     }
   }catch(e){ console.error('[sso]', e && e.message || e); }
-  location.href = url;
+  if(replace) location.replace(url); else location.href = url;
 }
 await Promise.race([ ssoArrivee(sb), new Promise(r => setTimeout(() => r(false), 2500)) ]);
 sb.auth.onAuthStateChange(ev => {
@@ -754,56 +644,42 @@ const isHere = s => spotState(s) === 'am';
 const EARTH_R = 6371e3, DEG = Math.PI/180;
 const hav = (a, b) => { const p1 = a.lat*DEG, p2 = b.lat*DEG, dp = p2 - p1, dl = (b.lng - a.lng)*DEG;
   const h = Math.sin(dp/2)**2 + Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2; return 2*EARTH_R*Math.asin(Math.min(1, Math.sqrt(h))); };
-const bearing = (a, b) => { const p1 = a.lat*DEG, p2 = b.lat*DEG, dl = (b.lng - a.lng)*DEG;
-  return (Math.atan2(Math.sin(dl)*Math.cos(p2), Math.cos(p1)*Math.sin(p2) - Math.sin(p1)*Math.cos(p2)*Math.cos(dl))/DEG + 360) % 360; };
 let UNIT = 'km';
 try{ if(/^(America\/|Pacific\/Honolulu|US\/)/.test(Intl.DateTimeFormat().resolvedOptions().timeZone || '')
         && !/America\/(Sao_Paulo|Argentina|Bogota|Lima|Santiago|Caracas|Mexico_City|Toronto|Vancouver|Montreal|Halifax)/.test(Intl.DateTimeFormat().resolvedOptions().timeZone)) UNIT = 'mi'; }catch(_){}
 const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT === 'mi' ? m/1609.344 : m/1000;
   return (v < 10 ? Math.max(.1, v).toFixed(1) : String(Math.round(v))) + ' ' + UNIT; };
-const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query=' + Number(lat).toFixed(5) + '%2C' + Number(lng).toFixed(5);
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD='2026-10-09-domaines';
+const BUILD='2026-10-09-space-feed';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
-let VIEW = 'radar';
+let VIEW = 'feed';
 const S = { int:null, q:'', habit:null };
 const FEED = { list:[], shown:[], seq:0, more:true, loading:false, match:'all', active:null };
-const EX = { list:[], seq:0, match:'all' };
-const LIST = { list:[], seq:0, more:false, loading:false, match:'all' };
-const PLAN = { seq:0, context:null, details:false, habit:null, date:'', time:'', pos:null, place:'', city:null, cityText:'', cityPos:null, video:null, fileSeq:0, dur:null, vis:'shared', mode:null, loc:'on', boxOptions:{objectives:false,repulsions:false}, say:'', busy:false };
 let habitsPending = null, gestureCount = 0, suppressClickUntil = 0;
 const REC = { seq:0, step:null, stream:null, mr:null, blob:null, url:null, mime:'', t0:0, timer:0, seconds:0, uploaded:null, habit:null, vis:'shared', boxOptions:{objectives:false,repulsions:false}, pos:null, city:null, placeAt:0, placePromise:null, placeError:false,
-  mode:null, loc:null, dur:null, busy:false, capture:null, width:0,height:0,fps:0,bitrate:0,path:null, forPlan:false, kind:null, why:false };
+  busy:false, capture:null, width:0,height:0,fps:0,bitrate:0,path:null, kind:null, why:false };
 let HABITS = null, DETAIL = null;
 const VIDEO_METRICS={firstFrameMs:0,uploadMs:0,publishMs:0,warmStarts:0,coldStarts:0,stalls:0};
 window.__totehm_space = () => ({ build: BUILD, view: VIEW, signed_in: !!me, located: !!POS, intention: S.int, search: !!S.q,
-  feed: FEED.list.length, exact: EX.list.length, playing: [...document.querySelectorAll('#feed video')].filter(v => !v.paused).length,
+  feed: FEED.list.length, playing: [...document.querySelectorAll('#feed video')].filter(v => !v.paused).length,
   video:{provider:RULES.video_provider || 'storage',buffered:[...document.querySelectorAll('#feed video')].filter(v=>v.getAttribute('src') || v._hls).length,...VIDEO_METRICS,...(()=>{const v=$('feed').querySelector('.clip[data-k="'+FEED.active+'"] video'),q=v?.getVideoPlaybackQuality?.();return {frames:q?.totalVideoFrames || 0,dropped:q?.droppedVideoFrames || 0};})()},
-  list:LIST.list.length, future:LIST.list.filter(s => spotState(s) === 'will' && s.location === 'on').length, gestures:gestureCount, radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx),heading:Math.round(norm360(RAD.head)),pin:MAP.open,place:!!PLAN.pos}, paper:PAPER.etat(), habit_filter:!!S.habit, spot_filter:sfCount(), feed_shown:FEED.shown.length, plan:{city:!!PLAN.cityPos,exact:!!PLAN.pos,video:!!PLAN.video,uploaded:!!PLAN.video?.ref}, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, kind: REC.kind, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
+  spots_door:SPOTS.list.length, gestures:gestureCount, paper:PAPER.etat(), habit_filter:!!S.habit, spot_filter:sfCount(), feed_shown:FEED.shown.length, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, kind: REC.kind, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
 
 /* Chaque vue dit où je suis. L'intention vient de la Habit, sans filtre parallèle. */
-const VIEW_WORDS = {radar:['RADAR','Exact places I can see'],feed:['CITY FEED','I AM HERE · I WAS THERE'],list:['FUTURE SPOTS','I WILL BE HERE'],plan:['PLAN A SPOT','I WILL BE HERE'],cam:['FILM A SPOT','I AM HERE · 9:16 · up to 33 seconds']};
+const SPOTS = {list:[],seq:0,match:'all'};
+const VIEW_WORDS = {feed:['CITY FEED','I AM HERE · I WAS THERE'],spots:['FUTURE SPOTS','I WILL BE HERE'],cam:['FILM A SPOT','I AM HERE · 9:16 · up to 33 seconds']};
 function paintInts(){
-  const [title,sub] = MAP?.open ? ['MEETING POINT','Move the radar under the cross'] : VIEW_WORDS[VIEW];
-  const source = VIEW === 'feed' ? FEED : VIEW === 'list' ? LIST : EX;
-  $('title-int').textContent = title; $('title').style.setProperty('--c','#fff');
-  $('int-def').textContent = sub + (S.habit && ['feed','radar','list'].includes(VIEW) ? ' · '+ (source.match === 'intention' ? 'Same intention' : S.habit.name) : '');
-  PAPER.hint();
+ const [title,sub]=VIEW_WORDS[VIEW], source=VIEW==='feed'?FEED:SPOTS;
+ $('title-int').textContent=title; $('title').style.setProperty('--c','#fff');
+ $('int-def').textContent=sub+(S.habit && VIEW!=='cam' ? ' · '+(source.match==='intention'?'Same intention':S.habit.name) : ''); PAPER.hint();
 }
 
 /* ══ LA BOÎTE D'UN SPOT — ce que CE lecteur a le droit de voir ═══════ */
 const tickHTML = l => '<span class="tick">' + (l || []).map(i => '<i style="background:' + icol(i) + '"></i>').join('') + '</span>';
 const sdTag = (t, cls) => '<span class="sd-tag' + (cls ? ' ' + cls : '') + '">' + t + '</span>';
-function placeHTML(s){
-  if(s.location === 'off') return sdTag(esc(s.city || 'City unavailable'));
-  if(s.exact && s.exact.lat != null){
-    const d = POS ? fmtDist(hav(POS, s.exact)) : '';
-    return '<a class="sd-tag v-loc" href="' + mapsURL(s.exact.lat, s.exact.lng) + '" target="_blank" rel="noopener">' + esc(s.exact.place || s.city || 'the exact place') + '</a>' + (d ? sdTag(d) : '');
-  }
-  return sdTag(esc(s.city || 'somewhere'));
-}
+
 const intHTML = l => (l || []).map(i => '<span class="v-int" style="color:'+icol(i)+'" title="'+esc(INTS[i]?.def)+'">'+esc(INTS[i]?.n || i)+'</span>').join('');
 function contextHTML(h,options,prefix){
  return ['objectives','repulsions'].map(k => {
@@ -821,15 +697,8 @@ function habitInner(h,options,prefix){
 /* La Habit Box reste la boîte de COM ; tout ce qui est « space » vit dessous,
    noir et gris, identique dans LEFT, RIGHT et le détail. */
 function spotHTML(s){
- const state=spotState(s),st=new Date(s.starts_at),end=new Date(s.ends_at || st.getTime()+(s.duration_min||0)*60e3);
- const when=state==='will' ? 'I WILL BE HERE' : state==='am' ? 'I AM HERE' : 'I WAS THERE';
- const how=s.visibility==='private' ? sdTag('private') : sdTag('shared')+sdTag('location '+esc(s.location||'off'))+(s.location==='on' && s.mode ? sdTag(s.mode==='silent' ? 'silent · nobody disturb me' : 'social · we can talk') : '');
- const why=s.why || {}; // Published box options apply to the owner's preview too.
- const box={name:s.habit,ints:s.intentions,freq:s.freq,place:s.context?.place,objectives:why.objectives,repulsions:why.repulsions};
- return '<div class="habit">'+tickHTML(s.intentions)+'<span class="h-body"><span class="v-col">'+habitInner(box)+'</span></span>'+'</div>'
-  +'<div class="sdata" aria-label="Where and when"><div class="sd-row">'+sdTag(when,'is-st')+sdTag(state==='am' ? 'until '+hhmm(end) : esc(dayOf(st))+' '+hhmm(st))+(s.duration_min ? sdTag(fmtDur(s.duration_min)) : '')+'</div>'
-  +'<div class="sd-row">'+placeHTML(s)+how+'</div>'+(s.comment ? '<p class="sd-say">'+esc(s.comment)+'</p>' : '')+'</div>'
-  +(!s.mine && s.creator ? '<div class="by"><span>by</span><button class="tname" type="button" data-com="/@'+encodeURIComponent(s.creator)+'">'+esc(s.creator)+'</button></div>' : '');
+ const why=s.why || (s.mine && s.show_why ? s.context : null), h=s.habit_box || {name:s.habit,ints:s.intentions || [],freq:s.freq,place:s.context?.place,objectives:why?.objectives || [],repulsions:why?.repulsions || []};
+ return habitHTML(h)+(s.comment?'<p class="sd-say">'+esc(s.comment)+'</p>':'')+(!s.mine && s.creator?'<div class="by"><span>by</span><button class="tname" type="button" data-com="/@'+encodeURIComponent(s.creator)+'">'+esc(s.creator)+'</button></div>':'');
 }
 /* LES GESTES D'UN SPACE — en ligne, là où il est lu : jamais une fiche qui
    répète la même boîte. GO résout les droits ACTUELS au moment du geste. */
@@ -837,51 +706,21 @@ const hasMedia = s => !!(s.clip || s.video || s.photo);
 const hasWhy = s => !!((s.why || (s.mine && s.show_why && s.context)) && [...((s.why || s.context).objectives || []),...((s.why || s.context).repulsions || [])].length);
 function actsHTML(s, where){
   const id = esc(s.id), b = [];
-  if(s.location === 'on') b.push('<button class="btn" type="button" data-go="' + id + '">GO</button>');
-  if(where === 'list' && hasMedia(s)) b.push('<button class="btn" type="button" data-watch="' + id + '">WATCH</button>');
-  if(spotState(s) === 'will') b.push('<button class="btn" type="button" data-ics="' + id + '">CALENDAR</button>');
   if(s.visibility === 'shared') b.push('<button class="btn" type="button" data-share="' + id + '">SHARE</button>');
   if(where === 'detail' && s.mine) b.push('<button class="btn" type="button" data-del="' + id + '">DELETE</button>');
   if(where === 'detail') b.push('<button class="btn" type="button" data-close="1">CLOSE</button>');
   return b.length ? '<div class="acts">' + b.join('') + '</div><p class="note acts-note" hidden></p>' : '';
 }
-const spotById = id => DETAIL?.id === id ? DETAIL : [...FEED.list, ...LIST.list, ...EX.list].find(x => x.id === id);
+const spotById = id => DETAIL?.id === id ? DETAIL : [...FEED.list, ...SPOTS.list].find(x => x.id === id);
 function actsSay(button, text, creator){
   const n = button.closest('.acts')?.nextElementSibling; if(!n) return;
   n.hidden = false; n.innerHTML = esc(text) + (creator ? ' <button class="btn" type="button" data-com="/@' + encodeURIComponent(creator) + '">SUBSCRIBE</button>' : '');
 }
-async function goSpace(button){
-  if(button.disabled) return; button.disabled = true;
-  const user = me?.id, id = button.dataset.go;
-  try{
-    const { data, error } = await sb.rpc('spot_get', { p_id:id });
-    if(user !== me?.id || !button.isConnected) return;
-    if(error || !data?.ok){ if(error) console.error('[spot_get]', error.message); return actsSay(button, 'Try again.'); }
-    const s = data.spot;
-    if(s.exact && Number.isFinite(s.exact.lat) && Number.isFinite(s.exact.lng)){
-      location.assign('https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(s.exact.lat + ',' + s.exact.lng)); return;
-    }
-    actsSay(button, 'The exact place is for ' + (s.creator ? s.creator + '’s' : 'the') + ' subscribers.', s.creator);
-  }catch(e){ console.error('[go]', e && e.message); if(button.isConnected) actsSay(button, 'Try again.'); }
-  finally{ button.disabled = false; }
-}
-function icsFor(s){
-  const d = t => new Date(t).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
-  const x = t => String(t || '').replace(/\\/g, '\\\\').replace(/[,;]/g, m => '\\' + m).replace(/\r?\n/g, '\\n');
-  const end = s.ends_at || new Date(new Date(s.starts_at).getTime() + (s.duration_min || 0)*60e3).toISOString(), where = s.exact?.place || s.city || '';
-  return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//TOTEHM//SPACE//EN','BEGIN:VEVENT','UID:' + s.id + '@totehm.space','DTSTAMP:' + d(Date.now()),
-    'DTSTART:' + d(s.starts_at),'DTEND:' + d(end),'SUMMARY:' + x(s.habit), where ? 'LOCATION:' + x(where) : '',
-    s.exact && Number.isFinite(s.exact.lat) ? 'GEO:' + s.exact.lat + ';' + s.exact.lng : '',
-    'URL:https://www.totehm.space/?spot=' + encodeURIComponent(s.id),'END:VEVENT','END:VCALENDAR'].filter(Boolean).join('\r\n');
-}
+
+
 async function actsClick(e){
   const t = e.target instanceof Element ? e.target : null; if(!t) return false;
-  const g = t.closest('[data-go]'); if(g){ goSpace(g); return true; }
   const del = t.closest('[data-del]'); if(del){ if(await spaceDelete(del, del.dataset.del) === 'failed') actsSay(del, 'Not deleted. Try again.'); return true; }
-  const c = t.closest('[data-ics]');
-  if(c){ const s = spotById(c.dataset.ics); if(!s) return true;
-    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([icsFor(s)], { type:'text/calendar' })); a.download = 'space.ics';
-    document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); return true; }
   const sh = t.closest('[data-share]');
   if(sh){ const url = 'https://www.totehm.space/?spot=' + encodeURIComponent(sh.dataset.share);
     try{ if(navigator.share) await navigator.share({ title:'TOTEHM.SPACE', url }); else { await navigator.clipboard.writeText(url); sh.textContent = 'LINK COPIED'; } }
@@ -919,7 +758,7 @@ async function clipURL(path){
  const {data,error}=await sb.storage.from('moments').createSignedUrl(path,3600);if(error){console.error('[clip]',error.message);return null;}
  if((me?.id || 'anon')===uid){SIGNED.set(key,{url:data.signedUrl,at:Date.now()});if(SIGNED.size>64)SIGNED.delete(SIGNED.keys().next().value);}return data.signedUrl;
 }
-const videoWanted=v=>v.isConnected && !document.hidden && (v.closest('#detail')?!!DETAIL:v.closest('#list')?VIEW==='list' && !!v._wanted:VIEW==='feed' && !!v._wanted);
+const videoWanted=v=>v.isConnected && !document.hidden && (v.closest('#detail')?!!DETAIL:VIEW==='feed' && !!v._wanted);
 const lookAhead=()=>!navigator.connection?.saveData && !['slow-2g','2g'].includes(navigator.connection?.effectiveType);
 const bandwidth=()=>Math.max(400000,Math.min(15000000,(navigator.connection?.downlink || 5)*800000));
 const bufferedAhead=v=>{for(let i=0;i<v.buffered.length;i++)if(v.buffered.start(i)<=v.currentTime+.1 && v.buffered.end(i)>v.currentTime)return v.buffered.end(i)-v.currentTime;return 0;};
@@ -1073,25 +912,18 @@ function paintFeed(more=false){
   if(VIEW==='feed')focusVisibleClip();
   sfMore();
 }
-/* LE FILTRE DU FIL — il parle comme le membre : que veux-je ? REJOINDRE
-   (ça se passe maintenant, le point exact existe) ou M'INSPIRER (ce que les
-   gens vivent autour, en vidéo ou en photo) ; ensemble comment ; ce que le
-   space montre, dont son WHY · TRIGGER. Dans le navigateur, aucune requête ;
-   s'il reste moins de 3 spaces, jusqu'à 5 pages suivantes par changement. */
-const SF = { want:null, mode:null, shows:null, auto:0 };
-const sfCount = () => ['want','mode','shows'].filter(k => SF[k]).length;
-const sfMatch = s => (!SF.want || (SF.want === 'join' ? spotState(s) === 'am' && s.location === 'on' : hasMedia(s)))
-  && (!SF.mode || s.mode === SF.mode)
-  && (!SF.shows || (SF.shows === 'video' ? !!(s.clip || s.video) : SF.shows === 'photo' ? !!s.photo : hasWhy(s)));
+/* Le filtre du fil : VIDEO, PHOTO, WHY · TRIGGER. Pagination locale,
+   au plus cinq pages supplémentaires par changement, sans filtre de spot. */
+const SF = { shows:null, auto:0 };
+const sfCount = () => Number(!!SF.shows);
+const sfMatch = s => !SF.shows || (SF.shows === 'video' ? !!(s.clip || s.video) : SF.shows === 'photo' ? !!s.photo : hasWhy(s));
 function sfMore(){ if(sfCount() && FEED.shown.length < 3 && FEED.more && !FEED.loading && SF.auto < 5){ SF.auto++; loadFeed(true); } }
 function sfPaint(){
   const n = sfCount(), b = $('sf-btn'), open = !$('sf-panel').classList.contains('hide');
   b.textContent = n ? 'Filter · ' + n : 'Filter'; b.classList.toggle('is-on', !!n); b.setAttribute('aria-expanded', String(open));
   if(!open) return;
   const c = (k, v, l, sub) => chip('data-sf-' + k + '="' + v + '"', l, SF[k] === v, sub);
-  $('sf-panel').innerHTML = '<span class="lab">I want to</span><div class="row">' + c('want','join','join','happening now · the exact place') + c('want','inspire','get inspired','what people live around') + '</div>' +
-    '<span class="lab">Together</span><div class="row">' + c('mode','social','we can talk','social') + c('mode','silent','nobody disturb me','silent') + '</div>' +
-    '<span class="lab">It shows</span><div class="row">' + c('shows','video','video') + c('shows','photo','photo') + c('shows','why','objectives · repulsions','its goals and what it avoids') + '</div>' +
+  $('sf-panel').innerHTML = '<span class="lab">It shows</span><div class="row">' + c('shows','video','video') + c('shows','photo','photo') + c('shows','why','objectives · repulsions','its goals and what it avoids') + '</div>' +
     '<div class="row sf-acts"><button class="btn" type="button" data-sf-all="1">ALL SPACES</button><button class="btn" type="button" data-sf-close="1">CLOSE</button></div>';
 }
 function sfOpen(open){
@@ -1102,10 +934,10 @@ function sfOpen(open){
 $('sf-btn').onclick = () => sfOpen($('sf-panel').classList.contains('hide'));
 $('sf-panel').addEventListener('click', e => {
   if(e.target.closest('[data-sf-close]')) return sfOpen(false);
-  if(e.target.closest('[data-sf-all]')){ SF.want = SF.mode = SF.shows = null; }
+  if(e.target.closest('[data-sf-all]')){ SF.shows = null; }
   else {
-    const b = e.target.closest('[data-sf-want],[data-sf-mode],[data-sf-shows]'); if(!b) return;
-    const k = 'sfWant' in b.dataset ? 'want' : 'sfMode' in b.dataset ? 'mode' : 'shows', v = b.dataset['sf' + k[0].toUpperCase() + k.slice(1)];
+    const b = e.target.closest('[data-sf-shows]'); if(!b) return;
+    const k = 'shows', v = b.dataset['sf' + k[0].toUpperCase() + k.slice(1)];
     SF[k] = SF[k] === v ? null : v;
   }
   SF.auto = 0; sfPaint(); paintFeed();
@@ -1134,168 +966,8 @@ async function loadFeed(more){
 }
 
 /* ══ CENTER — LES POINTS EXACTS AUTORISÉS ══════════════════════════ */
-async function loadExact(){
-  const seq = ++EX.seq;
-  if(!me){ EX.list = []; paintRadarEmpty(); return; }
-  const { data, error } = await sb.rpc('space_discover', {p_view:'radar',p_habit:S.q || null,p_limit:300});
-  if(seq !== EX.seq) return;
-  if(error){ console.error('[spots_exact]', error.message); return; }
-  EX.list = (data?.spots || []).filter(s => s.exact && s.exact.lat != null);
-  if(!MAP.open) RAD.range = radarRange(); EX.match=data?.match || 'all'; paintRadarEmpty(); paintInts();
-}
-/* RIGHT — seulement les Spots-Habits futurs. Sans droit exact : la ville. */
-async function loadList(more = false){
-  if(more && (!LIST.more || LIST.loading)) return;
-  const seq = ++LIST.seq; LIST.loading = true;
-  const last = more ? LIST.list.at(-1) : null;
-  const { data, error } = await sb.rpc('space_discover', {p_view:'list',p_habit:S.q || null,p_before:last?.starts_at || null,p_before_id:last?.id || null,p_limit:50});
-  if(seq !== LIST.seq) return;
-  LIST.loading = false;
-  if(error){ console.error('[spots_list]', error.message); return; }
-  LIST.list = more ? LIST.list.concat(data?.spots || []) : data?.spots || [];
-  LIST.more = !!data?.more; LIST.match=data?.match || 'all'; paintList(); paintInts();
-}
-/* RIGHT — l'agenda : chaque space porte ses gestes (GO, WATCH, CALENDAR, SHARE).
-   Un rafraîchissement aux mêmes IDs ne remplace que les informations : une
-   vidéo ouverte par WATCH continue de jouer. */
-function paintList(){
-  const l = $('list'), upcoming = LIST.list.filter(s => spotState(s) === 'will' && s.location === 'on'), items = [...l.querySelectorAll('.it[data-id]')];
-  if(upcoming.length && items.length === upcoming.length && items.every((it, k) => it.dataset.id === upcoming[k].id)){
-    items.forEach((it, k) => { const info = it.querySelector('.it-info'), html = spotHTML(upcoming[k]) + actsHTML(upcoming[k], 'list'); if(info.innerHTML !== html) info.innerHTML = html; });
-  } else {
-    l.querySelectorAll('video').forEach(releaseClip);
-    l.innerHTML = upcoming.length ? upcoming.map(s => '<div class="it" data-id="' + esc(s.id) + '" data-state="' + spotState(s) + '"><div class="it-media"></div><div class="it-info">' + spotHTML(s) + actsHTML(s, 'list') + '</div></div>').join('')
-      : '<div class="empty">' + (S.q ? 'no spot for this Habit Box' : 'no future spot yet') + '</div>';
-  }
-  l.querySelector('[data-more]')?.remove();
-  if(upcoming.length && LIST.more) l.insertAdjacentHTML('beforeend', '<button class="btn" type="button" data-more="1">MORE SPACES</button>');
-}
-function listWatch(button){
-  const it = button.closest('.it'), box = it?.querySelector('.it-media'), s = spotById(it?.dataset.id); if(!box || !s) return;
-  const open = !!box.firstChild;
-  $('list').querySelectorAll('.it-media').forEach(m => { m.querySelectorAll('video').forEach(releaseClip); m.replaceChildren(); });
-  $('list').querySelectorAll('[data-watch]').forEach(b => b.textContent = 'WATCH');
-  if(open) return;
-  box.innerHTML = mediaHTML(s); button.textContent = 'HIDE';
-  const v = box.querySelector('video'); if(v) playClip(v); else loadPhoto(box.querySelector('img'));
-}
-$('list').addEventListener('click', async e => {
-  if(Date.now() < suppressClickUntil || e.target.closest('a,[data-com]')) return;
-  if(e.target.closest('[data-more]')) return loadList(true);
-  const w = e.target.closest('[data-watch]'); if(w) return listWatch(w);
-  await actsClick(e);
-});
-
-function paintRadarEmpty(){
-  const el = $('radar-empty'), n = EX.list.length;
-  el.classList.toggle('hide', n > 0); el.textContent = !me ? 'sign in to see my spaces' : S.q ? 'no space for this habit' : 'no space on the radar';
-}
-
-/* LE RADAR — anneaux, balayage, des points. Le centre = moi (ou mes Spots). */
-const RAD = { raf:0, W:0, H:0, dpr:1, cx:0, cy:0, rpx:0, tx:0, ty:0, tr:0, range:1000, pts:[], head:0, headTo:0, turn:null, last:0, dirty:null };
-function center(){ if(MAP.open) return MAP; if(POS) return POS; const s = EX.list[0]; return s ? s.exact : null; }
-const desktop = () => matchMedia('(min-width:900px)').matches;
-function radarSize(){
-  const c = $('canvas'), dpr = Math.min(2, devicePixelRatio || 1);
-  if(RAD.W !== innerWidth || RAD.H !== innerHeight || RAD.dpr !== dpr){
-    RAD.W = innerWidth; RAD.H = innerHeight; RAD.dpr = dpr; c.width = RAD.W*dpr; c.height = RAD.H*dpr;RAD.dirty=null;
-  }
-  let left = 20, right = RAD.W - 20, top = (['radar','feed','list'].includes(VIEW) ? $('heading').getBoundingClientRect().bottom : 14) + 26, bottom = $('joy').getBoundingClientRect().top - 44;
-  if(MAP.open) bottom=$('place-picker').getBoundingClientRect().top-36;
-  else if(!desktop() && VIEW === 'plan') bottom=$('v-plan').getBoundingClientRect().top-32;
-  if(desktop() && !MAP.open){
-    if(VIEW === 'feed') left = $('v-feed').offsetWidth + 22;
-    if(VIEW === 'list') right = RAD.W - $('v-list').offsetWidth - 22;
-    if(VIEW === 'plan') top = Math.max(top, parseFloat(getComputedStyle($('v-plan')).top) + $('v-plan').offsetHeight + 16);
-    if(VIEW === 'cam') bottom = Math.min(bottom, RAD.H - parseFloat(getComputedStyle($('v-cam')).bottom) - $('v-cam').offsetHeight - 16);
-  }
-  RAD.tx = (left + right)/2; RAD.ty = (top + bottom)/2;
-  RAD.tr = Math.max(20, Math.min(right - left, Math.max(40,bottom - top))*(desktop() && ['feed','list'].includes(VIEW) ? .36 : .43));
-  if(VIEW === 'radar' && !MAP.open) RAD.ty = bottom - RAD.tr;
-  if(!RAD.rpx){ RAD.cx = RAD.tx; RAD.cy = RAD.ty; RAD.rpx = RAD.tr; }
-  const em = $('radar-empty'); em.style.left = RAD.tx + 'px'; em.style.top = RAD.ty + 'px';
-}
-
-
-function radarRange(){
-  const c = center(); if(!c) return 1000;
-  const d = EX.list.map(s => hav(c, s.exact)).sort((a, b) => a - b);
-  if(!d.length) return 1000;
-  return Math.max(300, d[Math.min(d.length - 1, Math.floor(d.length*.85))]*1.18);
-}
-function draw(t){
-  RAD.raf = 0; if(document.hidden || VIEW !== 'radar' && VIEW !== 'plan' && !MAP.open && !desktop()) return;
-  if(RAD.morph && t < RAD.morph) radarSize();
-  const moving=Math.abs(RAD.tx-RAD.cx)+Math.abs(RAD.ty-RAD.cy)+Math.abs(RAD.tr-RAD.rpx)>1 || RAD.turn || RAD.headTo!==null;
-  const fps=moving?60:VIEW==='cam'?10:VIEW==='feed'?15:30;
-  if(t-RAD.last<1000/fps-1){RAD.raf=requestAnimationFrame(draw);return;}
-  const blend=1-Math.pow(.82,Math.min(100,t-RAD.last)/(1000/60));RAD.last=t;
-  for(const [now,target] of [['cx','tx'],['cy','ty'],['rpx','tr']])RAD[now]=Math.abs(RAD[target]-RAD[now])<.04?RAD[target]:RAD[now]+(RAD[target]-RAD[now])*blend;
-  if(CMP.on){const delta=norm180(CMP.target-RAD.head);RAD.head=norm360(RAD.head+delta*.15);}
-  else if(RAD.headTo!==null){const delta=norm180(RAD.headTo-RAD.head);RAD.head=norm360(RAD.head+delta*.16);if(Math.abs(delta)<.1) RAD.headTo=null;}
-  const tools=$('radar-tools'),positions=[RAD.cx-RAD.rpx*.82,RAD.cx+RAD.rpx*.82,RAD.cy+RAD.rpx*.67,RAD.cx-RAD.rpx,RAD.cy-RAD.rpx,RAD.rpx*2].map(n=>n.toFixed(1)+'px'),layout=positions.join('|');
-  if(tools._layout!==layout){tools._layout=layout;tools.classList.add('is-placed');$('cmp').style.left=positions[0];$('cmp').style.top=positions[2];$('map-tools').style.left=positions[1];$('map-tools').style.top=positions[2];const map=$('radar-map');map.style.left=positions[3];map.style.top=positions[4];map.style.width=map.style.height=positions[5];if(MAP.open && Math.abs(RAD.tr-RAD.rpx)>.1)mapDraw();}paintCmp();
-  const x = $('canvas').getContext('2d'), { dpr, cx, cy, rpx } = RAD;
-  x.setTransform(dpr, 0, 0, dpr, 0, 0);if(RAD.dirty)x.clearRect(...RAD.dirty);
-  const margin=VIEW==='plan' && PLAN.pos?Math.max(42,x.measureText(PLAN.place || PLAN.city || 'Meeting point').width/2+32):42;
-  RAD.dirty=[cx-rpx-margin,cy-rpx-margin,(rpx+margin)*2,(rpx+margin)*2];
-  const g = x.createRadialGradient(cx, cy, 0, cx, cy, rpx); g.addColorStop(0, '#16161b'); g.addColorStop(1, '#0d0d10');
-  x.fillStyle = g; x.beginPath(); x.arc(cx, cy, rpx, 0, Math.PI*2); x.fill();
-  x.strokeStyle = 'rgba(255,255,255,.07)'; x.lineWidth = 1;
-  for(let k = 1; k <= 4; k++){ x.beginPath(); x.arc(cx, cy, rpx*k/4, 0, Math.PI*2); x.stroke(); }
-  x.font = '9px "Space Mono", monospace'; x.fillStyle = 'rgba(255,255,255,.28)'; x.textAlign = 'left';
-  if(center()) for(let k = 2; k <= 4; k += 2) x.fillText(fmtDist(RAD.range*k/4), cx + 4, cy - rpx*k/4 + 11);
-  const a = ((t || 0)/14000 % 1)*Math.PI*2 - Math.PI/2;
-  const sw = x.createConicGradient ? x.createConicGradient(a - .55, cx, cy) : null;
-  if(sw){ sw.addColorStop(0, 'rgba(255,255,255,0)'); sw.addColorStop(.0875, 'rgba(255,255,255,.07)'); sw.addColorStop(.0876, 'rgba(255,255,255,0)');
-    x.fillStyle = sw; x.beginPath(); x.arc(cx, cy, rpx, 0, Math.PI*2); x.fill(); }
-  const c = center(); RAD.pts = [];
-  if(c && !MAP.open) for(const s of EX.list){
-    const d = hav(c, s.exact), b = (bearing(c, s.exact)-RAD.head)*DEG, out = d > RAD.range;
-    const r = Math.min(1, d/RAD.range)*rpx, px = cx + Math.sin(b)*r, py = cy - Math.cos(b)*r, here = isHere(s);
-    x.globalAlpha = out ? .35 : here ? 1 : .55;
-    x.fillStyle = icol((s.intentions || [])[0]); x.beginPath(); x.arc(px, py, here ? 6 : 4.5, 0, Math.PI*2); x.fill();
-    if(here){ x.strokeStyle = icol((s.intentions || [])[0]); x.globalAlpha = .35; x.beginPath(); x.arc(px, py, 10 + 3*Math.sin((t || 0)/500), 0, Math.PI*2); x.stroke(); }
-    x.globalAlpha = 1; RAD.pts.push({ s, px, py });
-  }
-  if(POS && !MAP.open){ x.fillStyle = '#fff'; x.shadowColor = '#fff'; x.shadowBlur = 8; x.beginPath(); x.arc(cx, cy, 4, 0, Math.PI*2); x.fill(); x.shadowBlur = 0; }
-  x.globalAlpha=1;
-  for(let deg=0;deg<360;deg+=5){const a=(deg-RAD.head)*DEG,outer=rpx+12,inner=outer-(deg%45===0?10:deg%15===0?6:3);x.strokeStyle=deg%45===0?'rgba(255,255,255,.65)':'rgba(255,255,255,.25)';x.beginPath();x.moveTo(cx+Math.sin(a)*inner,cy-Math.cos(a)*inner);x.lineTo(cx+Math.sin(a)*outer,cy-Math.cos(a)*outer);x.stroke();}
-  x.textAlign='center';x.textBaseline='middle';x.font='9px "Space Mono"';x.fillStyle='rgba(255,255,255,.65)';
-  for(const [deg,label] of [[0,'N'],[90,'E'],[180,'S'],[270,'W']]){const a=(deg-RAD.head)*DEG;x.fillText(label,cx+Math.sin(a)*(rpx+24),cy-Math.cos(a)*(rpx+24));}
-  if(VIEW==='plan' && PLAN.pos && !MAP.open && c){const d=hav(c,PLAN.pos),a=(bearing(c,PLAN.pos)-RAD.head)*DEG,r=Math.min(.96,d/RAD.range)*rpx,px=cx+Math.sin(a)*r,py=cy-Math.cos(a)*r;x.strokeStyle='#fff';x.lineWidth=2;x.strokeRect(px-6,py-6,12,12);x.fillStyle='#fff';x.font='9px "Space Mono"';x.fillText(PLAN.place || PLAN.city || 'Meeting point',px,py-17);}
-  RAD.raf = requestAnimationFrame(draw);
-}
-const norm360=d=>((d%360)+360)%360, norm180=d=>((d+540)%360)-180;
-const CARD=['N','NE','E','SE','S','SW','W','NW'];
-const CMP={on:false,src:null,target:0,last:0,timer:0,available:typeof DeviceOrientationEvent!=='undefined' && matchMedia('(pointer:coarse)').matches};
-function paintCmp(){const h=Math.round(norm360(RAD.head))%360,html='<b>'+String(h).padStart(3,'0')+'° '+CARD[Math.round(h/45)%8]+'</b><br>'+(CMP.on?'compass':Math.abs(norm180(RAD.head))>.5?'north ↺':CMP.available?'align compass':'turn the ring'),el=$('cmp');if(el._heading!==html){el._heading=html;el.innerHTML=html;}}
-function compassOff(){if(CMP.src) removeEventListener(CMP.src,onOrient);CMP.on=false;CMP.src=null;clearTimeout(CMP.timer);}
-function onOrient(e){let h=typeof e.webkitCompassHeading==='number'?e.webkitCompassHeading:e.absolute && typeof e.alpha==='number'?360-e.alpha:null;if(h===null || !Number.isFinite(h)) return;CMP.target=norm360(h+(screen.orientation?.angle || window.orientation || 0));CMP.last=Date.now();CMP.on=true;RAD.headTo=null;}
-$('cmp').onclick=async()=>{
- if(CMP.on || CMP.src || Math.abs(norm180(RAD.head))>.5){compassOff();RAD.headTo=0;return;}
- if(!CMP.available) return;
- try{if(typeof DeviceOrientationEvent.requestPermission==='function' && await DeviceOrientationEvent.requestPermission()!=='granted') return;}
- catch{CMP.available=false;return;}
- CMP.last=0;CMP.src='ondeviceorientationabsolute' in window?'deviceorientationabsolute':'deviceorientation';addEventListener(CMP.src,onOrient);
- CMP.timer=setTimeout(()=>{if(!CMP.last){compassOff();CMP.available=false;paintCmp();}},3000);
-};
-const cv=$('canvas');
-cv.addEventListener('pointerdown',e=>{if(MAP.open) return;const d=Math.hypot(e.clientX-RAD.cx,e.clientY-RAD.cy);if(d<RAD.rpx-18 || d>RAD.rpx+35) return;compassOff();RAD.headTo=null;RAD.turn={id:e.pointerId,a:Math.atan2(e.clientX-RAD.cx,RAD.cy-e.clientY),h:RAD.head};cv.setPointerCapture(e.pointerId);e.stopImmediatePropagation();});
-cv.addEventListener('pointermove',e=>{if(!RAD.turn || e.pointerId!==RAD.turn.id) return;const a=Math.atan2(e.clientX-RAD.cx,RAD.cy-e.clientY);RAD.head=norm360(RAD.turn.h-(a-RAD.turn.a)/DEG);suppressClickUntil=Date.now()+500;e.preventDefault();e.stopImmediatePropagation();});
-for(const name of ['pointerup','pointercancel']) cv.addEventListener(name,e=>{if(RAD.turn?.id===e.pointerId){RAD.turn=null;suppressClickUntil=Date.now()+500;}});
-function radarOn(){ radarSize(); if(!RAD.raf) RAD.raf = requestAnimationFrame(draw); }
-addEventListener('resize', () => { radarSize(); radarOn(); if(MAP.open) mapDraw(); });
-$('canvas').addEventListener('click', e => {
-  if(MAP.open || Date.now() < suppressClickUntil || RAD.turn) return;
-  let best = null, bd = 22;
-  for(const p of RAD.pts){ const d = Math.hypot(p.px - e.clientX, p.py - e.clientY); if(d < bd){ bd = d; best = p.s; } }
-  if(best) openDetail(best);
-});
-
 /* ══ UN SPOT, SEUL ═══════════════════════════════════════════════════ */
-/* UN SPACE SEUL — seulement quand rien ne le montre déjà : un point du radar,
-   un lien partagé. Le fil et l'agenda gardent leurs gestes en ligne. */
+/* Un space partagé par lien ou ouvert depuis My spaces garde sa fiche. */
 async function openDetail(s){
   if(!s) return;detailSeq++;const old=$('detail').querySelector('video');if(old) releaseClip(old);DETAIL=s;
   $('detail').style.removeProperty('--sheet-y');$('detail').classList.remove('is-dragging');
@@ -1330,7 +1002,7 @@ $('detail').addEventListener('click', async e => {
  el.addEventListener('touchcancel',()=>{drag=null;el.classList.remove('is-dragging');el.style.removeProperty('--sheet-y');},{passive:true});
  el.addEventListener('click',e=>{if(Date.now()<ignoreUntil){e.stopImmediatePropagation();e.preventDefault();}},true);
 })();
-/* LE PAPIER — moteur original, une seule boucle sur le radar. */
+/* LE PAPIER — moteur original, une seule boucle au centre du fil. */
   const PAPER=(()=>{
     const scene=$('totehm-paper'), card=$('tp-card');
     const RM=window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -1437,13 +1109,13 @@ $('detail').addEventListener('click', async e => {
        face logo — la vitesse et la dérive montent doucement. */
     function reveiller(){
       ratio=scene.clientWidth/110; paintPaper();
-      if(RM.matches||mode!=='plat'||document.hidden||VIEW!=='radar'||ouvert()) return;
+      if(RM.matches||mode!=='plat'||document.hidden||VIEW!=='feed'||ouvert()) return;
       card.classList.remove('is-flat');
       mode='vit'; clock=0; last=0; life=0; om=0; th=0; prev=null; centre=null;
       goal.rx=goal.ry=goal.px=goal.py=0; goal.sc=1;
       diag.vivant=true; kick();
     }
-    const libre=()=>mode==='vit'&&!appui&&!document.hidden&&VIEW==='radar'&&!ouvert()&&!RM.matches;
+    const libre=()=>mode==='vit'&&!appui&&!document.hidden&&VIEW==='feed'&&!ouvert()&&!RM.matches;
     function viser(rx,ry,px,py){ goal.rx=rx; goal.ry=ry; goal.px=px; goal.py=py; }
 
     aPlat();
@@ -1502,14 +1174,14 @@ $('detail').addEventListener('click', async e => {
     function hint(){ $('tp-hint').textContent='Tap on your TOTEHM to turn a habit into a space'; }
     function sync(){
       const open=ouvert(); $('tp-wrap').classList.toggle('is-open',open);
-      if(document.hidden||VIEW!=='radar'||!document.body.classList.contains('v-radar')||open||RM.matches){
+      if(document.hidden||VIEW!=='feed'||!document.body.classList.contains('v-feed')||open||RM.matches){
         if(mode!=='plat'||raf) aPlat(); aGlisse=false; return;
       }
       if(mode==='plat') reveiller();
     }
     function etat(){return {alive:!!raf,flat:mode==='plat',open:ouvert(),name:!!(me&&PSEUDO),spins:diag.lancers};}
     window.addEventListener('resize',()=>{
-      if(!['radar','feed','list'].includes(VIEW)) return;
+      if(!['feed','spots'].includes(VIEW)) return;
       ratio=scene.clientWidth/110; paintPaper(); if(ouvert()) tpPickerPosition();
     },{passive:true});
     if(document.fonts?.ready) document.fonts.ready.then(paintPaper);
@@ -1537,7 +1209,19 @@ function paintPaper(){
   })();
 
 /* ══ LA HABIT BOX — même sélection que pour créer un Spot ═══════════ */
-function reload(){ loadFeed(false); loadExact(); loadList(); }
+function reload(){loadFeed(false);loadSpotsDoor();}
+async function loadSpotsDoor(){
+ const seq=++SPOTS.seq, uid=me?.id;
+ const {data,error}=await sb.rpc('spots_list',{p_intention:S.int,p_q:S.q || null,p_limit:3,p_before:null,p_before_id:null});
+ if(seq!==SPOTS.seq || uid!==me?.id)return;
+ if(error){console.error('[spots_list]',error.message);$('spots-door').innerHTML='<p class="note">Try again.</p>';return;}
+ SPOTS.list=(data?.spots || []).filter(s=>spotState(s)==='will').slice(0,3);paintSpotsDoor();
+}
+function paintSpotsDoor(){
+ $('spots-door').innerHTML=SPOTS.list.length?SPOTS.list.map(s=>'<button class="sp-card" type="button" data-club-spot="'+esc(s.id)+'"><span class="sp-when">I WILL BE HERE · '+esc(dayOf(new Date(s.starts_at)))+' '+hhmm(new Date(s.starts_at))+'</span><span class="sp-habit">'+esc(s.habit)+'</span><span class="sp-meta">'+esc(s.city || '')+'</span></button>').join(''):'<p class="empty">No spot announced yet.</p>';
+}
+$('spots-door').addEventListener('click',e=>{const b=e.target.closest('[data-club-spot]');if(b)ssoVersDomaine(sb,'club','https://www.figher.club/?spot='+encodeURIComponent(b.dataset.clubSpot));});
+$('find-spot').onclick=()=>ssoVersDomaine(sb,'club','https://www.figher.club/');
 async function loadHabits(){
   if(HABITS) return HABITS;
   if(!me) return [];
@@ -1593,17 +1277,7 @@ $('habit-picker').addEventListener('click', e => {
 });
 document.addEventListener('pointerdown', e => { if(!e.target.closest('#habit-picker,#habit-filter,#totehm-paper')) pickerClose(); });
 
-/* ══ TOP — I WILL BE HERE, un Spot annoncé, jamais une fausse vidéo ═ */
 const chip = (a, l, on, sub) => '<button type="button" class="chip' + (on ? ' is-on' : '') + '" ' + a + '>' + l + (sub ? '<small>' + sub + '</small>' : '') + '</button>';
-function sharingHTML(x,prefix){
- const attr=k=>'data-'+prefix+k, planned=prefix==='p';
- let html='<div class="row"><span class="lab">Location</span>'+(planned ? '<span class="chip is-on">ON<small>for my subscribers</small></span>' : chip(attr('loc')+'="on"','on',x.loc==='on','for my subscribers')+chip(attr('loc')+'="off"','off',x.loc==='off','for my audience'))+'</div>';
- if(x.loc==='on') html+='<div class="row"><span class="lab">Together</span>'+chip(attr('mode')+'="silent"','silent',x.mode==='silent','Nobody disturb me')+chip(attr('mode')+'="social"','social',x.mode==='social','We can talk')+'</div>';
- if(!planned && x.loc) html+='<div class="row"><span class="lab">WHERE</span><span class="sd-tag">'+esc(x.city || (x.placeError ? 'Allow your location to find your city' : 'Finding your city…'))+'</span>'+(x.placeError ? '<button class="btn" type="button" data-locate="1">TRY AGAIN</button>' : '')+'</div>';
- return html;
-}
-const habitWhy=h=>!!(h?.objectives?.length || h?.repulsions?.length);
-const sharingDone=x=>x.loc==='off' || x.loc==='on' && !!x.mode;
 function boxOptionsClick(t,x){
  const b=t.closest('[data-box-group]'); if(!b) return false;
  const k=b.dataset.boxGroup; if(!['objectives','repulsions'].includes(k)) return false;
@@ -1613,27 +1287,6 @@ async function publishBoxOptions(id,x){
  if(!x.boxOptions?.objectives && !x.boxOptions?.repulsions) return true;
  const r=await sb.rpc('spot_box_visibility_set',{p_spot:id,p_objectives:!!x.boxOptions.objectives,p_repulsions:!!x.boxOptions.repulsions});
  if(r.error) console.error('[spot_box_visibility_set]',r.error.message); return !r.error && !!r.data?.ok;
-}
-function durationHTML(x,prefix,id){ return '<div class="row"><span class="lab">DURATION</span>'+DURS.map(d=>chip('data-'+prefix+'dur="'+d+'"',fmtDur(d),x.dur===d)).join('')+'<input class="field" id="'+id+'" type="number" inputmode="numeric" min="'+RULES.duration_min+'" max="'+RULES.duration_max+'" aria-label="Duration in minutes" placeholder="min" value="'+(x.dur && !DURS.includes(x.dur) ? x.dur : '')+'"></div>'; }
-
-/* WHERE? — une ville (saisie, suggestions locales) ET/OU le point exact sur
-   la carte. SHARED·ON exige le point ; PRIVATE et SHARED·OFF se contentent
-   de la ville, sans aucune demande de position. */
-const planExact = () => true;
-function planMissing(){
-  const m = [];
-  if(!PLAN.habit) m.push('a Habit Box');
-  if(!PLAN.mode) m.push('silent or social');
-  const start = new Date(PLAN.date + 'T' + PLAN.time).getTime();
-  if(!Number.isFinite(start) || start <= Date.now() || start > Date.now() + (RULES.horizon_days || 90)*864e5) m.push('a future date and time');
-  if(planExact() && !PLAN.pos) m.push('the exact point on the map'); else if(!PLAN.pos && !PLAN.cityPos) m.push('a city or a point on the map');
-  if(!PLAN.dur) m.push('the duration');
-  return m;
-}
-function planValidity(){
-  const m = planMissing(), send = $('plan-body').querySelector('[data-plan-send]');
-  if(send) send.disabled = !!m.length || PLAN.busy;
-  const n = $('p-note'); if(n && !PLAN.busy){ n.className = 'note'; n.textContent = m.length ? 'missing: ' + m.join(' · ') : ''; }
 }
 let CITIES = null, CITY_KEYS = [], citiesLoading = null;
 const fold = t => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
@@ -1648,247 +1301,17 @@ async function nearestCity(p){
   return best;
 }
 const cityNear = async p => (await nearestCity(p))?.[0] || null;
-function citySuggestHTML(){
-  const q = fold(PLAN.cityText); if(!CITIES || !q) return '';
-  const hits = [];
-  CITY_KEYS.forEach((k, i) => { const at = k === q ? 0 : k.startsWith(q) ? 1 : k.includes(' ' + q) ? 2 : -1; if(at >= 0) hits.push([at, CITIES[i][3] || 0, i]); });
-  if(!hits.length) return '<span class="note">No city with this name here — use the map.</span>';
-  // One exact name already chosen: nothing to propose. Homonyms stay listed.
-  if(PLAN.city && fold(PLAN.city) === q && hits.filter(h => h[0] === 0).length < 2) return '';
-  return hits.sort((a, b) => a[0] - b[0] || a[1] - b[1]).slice(0, 6).map(([,, i]) => chip('data-pcity="' + i + '"', esc(CITIES[i][0]), PLAN.cityIdx === i, esc(CITIES[i][4] || ''))).join('');
-}
-function planCity(c){
-  PLAN.city = c ? c[0] : null; PLAN.cityPos = c ? { lat:c[1], lng:c[2] } : null; PLAN.cityIdx = c && CITIES ? CITIES.indexOf(c) : -1;
-  if(c){ PLAN.cityText = c[0]; if(PLAN.pos && hav(PLAN.pos, PLAN.cityPos) > 40e3){ PLAN.pos = null; PLAN.place = ''; } }
-}
-function planVideoDrop(){ if(PLAN.video?.url) URL.revokeObjectURL(PLAN.video.url); PLAN.video = null; PLAN.fileSeq++; }
-function planNote(t){ const n = $('p-note'); if(n){ n.className = 'note no'; n.textContent = t; } }
-function planPaint(){
-  requestAnimationFrame(radarSize);
-  const b = $('plan-body'); b.classList.toggle('is-busy', PLAN.busy);
-  document.body.classList.toggle('is-pick', VIEW === 'plan' && !!me && !PLAN.habit);
-  if(!me){ b.innerHTML = '<p class="say">Plan a space</p><button class="btn" type="button" data-plan-signin="1">CONNECT WITH MY TOTEHM</button>'; return; }
-  if(!PLAN.habit){
-    b.innerHTML = '<div class="row pick-head"><span class="lab">Which Habit Box?</span><button class="btn" type="button" data-plan-cancel="1">CANCEL</button></div>' + (!HABITS ? '<p class="note">Reading my TOTEHM…</p>' : HABITS.length ?
-      HABITS.map((h,k)=>pickHabitHTML(h,'data-plan-h="'+k+'"')).join('') :
-      '<button class="btn" type="button" data-com="/totehm#in">Write a Habit Box in my TOTEHM</button>'); return;
-  }
-  const ready = sharingDone(PLAN), exact = planExact(), secs = RULES.clip_seconds || 33, v = PLAN.video;
-  let h = '<div class="pick-habit plan-habit" role="button" tabindex="0" data-plan-reh="1" aria-label="Change the Habit Box">' + habitHTML(PLAN.habit,PLAN.boxOptions,'p') + '</div><div class="plan-conf">' + sharingHTML(PLAN,'p');
-  if(ready){
-    h += '<span class="lab">When?</span><div class="row"><input class="field" id="p-date" type="date" aria-label="Date" value="' + PLAN.date + '"><input class="field" id="p-time" type="time" aria-label="Time" value="' + PLAN.time + '"></div>' +
-      '<span class="lab">Where?</span><div class="row"><input class="field" id="p-city" type="text" autocomplete="off" maxlength="80" placeholder="City" aria-label="City" value="' + esc(PLAN.cityText) + '">' +
-      chip('data-plan-place="1"', PLAN.pos ? esc(PLAN.place || 'Exact point') : 'On the map', !!PLAN.pos, PLAN.pos ? 'Change it in the radar' : exact ? 'required for my subscribers' : 'the exact point · optional') +
-      (PLAN.pos ? '<button class="lnk" type="button" data-plan-unpin="1">Remove the point</button>' : '') + '</div><div class="row" id="p-cities">' + citySuggestHTML() + '</div>' +
-      durationHTML(PLAN,'p','p-dur') + '<textarea class="field" id="p-say" maxlength="400" placeholder="A word (optional)">' + esc(PLAN.say) + '</textarea>' +
-      '<span class="lab">Video or photo</span><div class="row">' + chip('data-plan-file="1"', 'From my files', false, 'vertical · video up to ' + secs + ' s') + chip('data-plan-film="video"', 'Film it', false, 'the SPACE camera') + chip('data-plan-film="photo"', 'Take a photo', false, 'the SPACE camera') + '</div>' +
-      (v ? '<div class="plan-video"><div class="portrait-media">' + (v.photo ? '<img src="' + esc(v.url) + '" alt="">' : '<video src="' + esc(v.url) + '" muted loop playsinline autoplay></video>') + '</div><span class="note">' + (v.photo ? 'photo' : Math.round(v.seconds) + ' s') + ' · ' + (v.size/1e6).toFixed(1) + ' MB' + (v.ref ? ' · sent' : '') + '</span><button class="btn" type="button" data-plan-novideo="1">REMOVE</button></div>' : '');
-  }
-  b.innerHTML = h + '</div>' + (ready ? '<button class="btn" type="button" data-plan-send="1">I WILL BE HERE</button><p class="note" id="p-note"></p>' : '');
-  planValidity();
-}
-async function planOpen(){
-  PLAN.vis='shared'; PLAN.loc='on';
-  if(!PLAN.date){ const d = new Date(Date.now() + 864e5); PLAN.date = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); PLAN.time = hhmm(d); }
-  planPaint();
-  loadCities().then(async () => {
-    // A position already known prefills the city; TOP never asks for one.
-    const c = !PLAN.cityText && POS ? await nearestCity(POS) : null;
-    if(c && !PLAN.cityText){ planCity(c); const i = $('p-city'); if(i && document.activeElement !== i) i.value = c[0]; }
-    if(VIEW === 'plan'){ const l = $('p-cities'); if(l) l.innerHTML = citySuggestHTML(); planValidity(); }
-  });
-  await loadHabits(); if(VIEW === 'plan') planPaint();
-}
-$('plan-body').addEventListener('input', e => {
-  if(e.target.id === 'p-date') PLAN.date = e.target.value;
-  if(e.target.id === 'p-time') PLAN.time = e.target.value;
-  if(e.target.id === 'p-say') PLAN.say = e.target.value;
-  if(e.target.id === 'p-city'){
-    PLAN.cityText = e.target.value; const q = fold(PLAN.cityText), i = CITY_KEYS.indexOf(q);
-    planCity(q && i >= 0 ? CITIES[i] : null); PLAN.cityText = e.target.value;
-    $('p-cities').innerHTML = citySuggestHTML();
-  }
-  if(e.target.id === 'p-dur'){ const n = Number(e.target.value); PLAN.dur = Number.isInteger(n) && n >= RULES.duration_min && n <= RULES.duration_max ? n : null; $('plan-body').querySelectorAll('[data-pdur]').forEach(b => b.classList.remove('is-on')); }
-  planValidity();
-});
-$('plan-body').addEventListener('click', e => {
-  if(PLAN.busy) return;
-  if(boxOptionsClick(e.target,PLAN)) return planPaint();
-  const t = e.target;
-  if(t.closest('[data-plan-signin]')) return ssoLogin(false, '/?v=plan');
-  const h=t.closest('[data-plan-h]'); if(h){ PLAN.habit=HABITS[+h.dataset.planH]; PLAN.context=PLAN.habit; PLAN.boxOptions={objectives:false,repulsions:false}; return planPaint(); }
-  if(t.closest('[data-plan-cancel]')) return go('radar');
-  if(t.closest('[data-plan-reh]')){ PLAN.seq++; PLAN.habit = null; PLAN.context = null; return planPaint(); }
-  if(t.closest('[data-plan-place]')) return mapOpen();
-  if(t.closest('[data-plan-unpin]')){ PLAN.pos = null; PLAN.place = ''; return planPaint(); }
-  const c = t.closest('[data-pcity]'); if(c){ planCity(CITIES[+c.dataset.pcity]); return planPaint(); }
-  if(t.closest('[data-plan-file]')) return $('p-file').click();
-  const film = t.closest('[data-plan-film]'); if(film){ REC.forPlan = film.dataset.planFilm; return go('cam'); }
-  if(t.closest('[data-plan-novideo]')){ planVideoDrop(); return planPaint(); }
-  for(const [a,k] of [['pmode','mode'],['pdur','dur']]){
-    const b = t.closest('[data-' + a + ']'); if(b){ PLAN[k] = k === 'dur' ? +b.dataset[a] : k === 'why' ? b.dataset[a] === '1' : b.dataset[a];  return planPaint(); }
-  }
-  if(t.closest('[data-plan-send]')) return planSend();
-});
-/* VIDEO — From my files : vertical, ≤ 33 s, ≤ 48 Mo (limites du serveur),
-   vérifiés AVANT l'envoi ; le fichier part tel quel, sans ré-encodage. */
-$('p-file').addEventListener('change', e => { const f = e.target.files?.[0]; e.target.value = ''; if(f) planFile(f); });
-async function planFile(file){
-  const seq = ++PLAN.fileSeq, max = RULES.clip_max_bytes || 48e6, secs = RULES.clip_seconds || 33;
-  if(/^image\//.test(file.type) || /\.(jpe?g|png|webp|heic|heif)$/i.test(file.name)) return planPhoto(file, seq);
-  const ext = (file.name.match(/\.(mp4|mov|webm)$/i)?.[1] || '').toLowerCase();
-  const type = /^video\/(mp4|quicktime|webm)$/.test(file.type) ? file.type : ({mp4:'video/mp4',mov:'video/quicktime',webm:'video/webm'})[ext];
-  const refuse = t => { if(seq === PLAN.fileSeq && VIEW === 'plan'){ planPaint(); planNote(t); } };
-  if(!type) return refuse('mp4, mov or webm only.');
-  if(file.size > max) return refuse('Too heavy — up to ' + Math.floor(max/1e6) + ' MB. Film it here instead.');
-  const url = URL.createObjectURL(file), probe = document.createElement('video'); probe.muted = true; probe.preload = 'metadata';
-  const meta = await new Promise(res => { const timer = setTimeout(() => res(null), 10000);
-    probe.onloadedmetadata = () => { clearTimeout(timer); res({ w:probe.videoWidth, h:probe.videoHeight, d:probe.duration }); };
-    probe.onerror = () => { clearTimeout(timer); res(null); }; probe.src = url; });
-  probe.removeAttribute('src'); probe.load();
-  const fail = t => { URL.revokeObjectURL(url); refuse(t); };
-  if(seq !== PLAN.fileSeq || VIEW !== 'plan' || PLAN.busy){ URL.revokeObjectURL(url); return; }
-  if(!meta || !meta.w || !meta.h || !Number.isFinite(meta.d) || meta.d <= 0) return fail('This video cannot be read here — film it instead.');
-  if(meta.d > secs + .5) return fail('Up to ' + secs + ' seconds — cut it, or film it here.');
-  if(meta.h <= meta.w) return fail('Vertical video only (9:16).');
-  planVideoDrop();
-  PLAN.video = { blob:file.type === type ? file : file.slice(0, file.size, type), seconds:Math.max(.5, Math.min(secs, meta.d)), size:file.size, url, ref:null };
-  planPaint();
-}
-/* Une photo de la galerie : verticale, décodée ici, ré-encodée en JPEG ≤ 1080 px
-   de large (quelques centaines de Ko). Une HEIC que le navigateur ne sait pas
-   lire est refusée avec la caméra comme issue. */
-async function planPhoto(file, seq){
-  const refuse = t => { if(seq === PLAN.fileSeq && VIEW === 'plan'){ planPaint(); planNote(t); } };
-  let blob = null;
-  try{ blob = await photoJPEG(file); }catch(e){ console.error('[plan photo]', e && e.message); }
-  if(seq !== PLAN.fileSeq || VIEW !== 'plan' || PLAN.busy) return;
-  if(!blob) return refuse('This photo cannot be read here — take it with the camera.');
-  if(blob.portrait === false) return refuse('Vertical photo only.');
-  planVideoDrop();
-  PLAN.video = { blob, photo:true, seconds:0, size:blob.size, url:URL.createObjectURL(blob), ref:null };
-  planPaint();
-}
-async function photoJPEG(source){
-  let img, w, h;
-  if(typeof createImageBitmap === 'function'){ try{ img = await createImageBitmap(source); w = img.width; h = img.height; }catch(_){ img = null; } }
-  if(!img){ const u = URL.createObjectURL(source); try{ img = await new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ko(new Error('Photo unreadable')); i.src = u; }); w = img.naturalWidth; h = img.naturalHeight; } finally{ URL.revokeObjectURL(u); } }
-  if(!w || !h) return null;
-  if(h <= w){ const r = new Blob([]); r.portrait = false; img.close?.(); return r; }
-  const W = Math.min(1080, w), H = Math.round(h * W / w), c = document.createElement('canvas'); c.width = W; c.height = H;
-  c.getContext('2d').drawImage(img, 0, 0, W, H); img.close?.();
-  return await new Promise(r => c.toBlob(r, 'image/jpeg', .88));
-}
-/* Film it / Take a photo : la caméra SPACE, puis retour au TOP avec le média vérifié. */
-function planTakeClip(){
-  planVideoDrop();
-  const photo = REC.kind === 'photo';
-  PLAN.video = { blob:REC.blob, photo, seconds:photo ? 0 : Math.max(.5, Math.min(RULES.clip_seconds || 33, REC.seconds || 1)), size:REC.blob.size, url:URL.createObjectURL(REC.blob), ref:null };
-  REC.forPlan = false; go('plan');
-}
-/* Ordre d'envoi : la vidéo (privée tant qu'elle n'est liée à rien), puis le
-   space, puis le lien. Un envoi réussi est gardé pour un nouvel essai. */
-async function videoSend(blob, seconds, onProgress){
-  if(/^image\//.test(blob.type)){
-    const path = me.id + '/' + crypto.randomUUID() + '.jpg';
-    const up = await sb.storage.from('moments').upload(path, blob, { contentType:'image/jpeg', upsert:false }); if(up.error) throw up.error;
-    return path;
-  }
-  if(RULES.video_provider === 'bunny') return bunnyUpload(blob, seconds, onProgress);
-  const t = blob.type || '', ext = t.includes('mp4') ? 'mp4' : t.includes('quicktime') ? 'mov' : 'webm', path = me.id + '/' + crypto.randomUUID() + '.' + ext;
-  const up = await sb.storage.from('moments').upload(path, blob, { contentType:t || 'video/' + ext, upsert:false }); if(up.error) throw up.error;
-  return path;
-}
-async function planSend(){
-  if(PLAN.busy || planMissing().length) return;
-  PLAN.vis='shared'; PLAN.loc='on';
-  PLAN.busy = true; planPaint(); const shared = PLAN.vis === 'shared', v = PLAN.video;
-  if(v && !v.ref){
-    planNote('sending the ' + (v.photo ? 'photo' : 'video') + '…');
-    try{ v.ref = await videoSend(v.blob, v.seconds, n => planNote('sending the video… ' + n + '%')); }
-    catch(e){ console.error('[plan media]', e && e.message); PLAN.busy = false; planPaint(); return planNote('The ' + (v.photo ? 'photo' : 'video') + ' was not sent — try again, or remove it.'); }
-  }
-  const at = PLAN.pos || PLAN.cityPos;
-  const { data, error } = await sb.rpc('spot_schedule', { p_habit:PLAN.habit.name, p_visibility:PLAN.vis,
-    p_starts_at:new Date(PLAN.date + 'T' + PLAN.time).toISOString(), p_duration_min:PLAN.dur,
-    p_place:PLAN.pos ? (PLAN.place || PLAN.city || 'the planned place') : PLAN.city, p_lat:at.lat, p_lng:at.lng,
-    p_city:PLAN.city, p_comment:PLAN.say.trim() || null, p_mode:shared && PLAN.loc === 'on' ? PLAN.mode : null, p_location:shared ? PLAN.loc : null });
-  if(error || !data?.ok){ if(error) console.error('[spot_schedule]', error.message); PLAN.busy = false; planPaint(); return planNote(({when:'Choose a future date within the next 90 days.',habit:'This Habit Box is no longer in my TOTEHM.',too_many:'Enough spots planned for now.',signin:'Sign in again.',place:'Choose a city or a point on the map.',position:'Choose a city or a point on the map.'})[data?.why] || 'Not saved — try again.'); }
-  let linked = true, why = true;
-  if(v?.ref){ const r = await sb.rpc('spot_video_attach', { p_spot:data.id, p_video:v.ref }); if(r.error) console.error('[spot_video_attach]', r.error.message); linked = !r.error && !!r.data?.ok; }
-  why=await publishBoxOptions(data.id,PLAN);
-  PLAN.busy = false;
-  PLAN.habit = null; PLAN.say = ''; PLAN.pos = null; PLAN.place = ''; PLAN.dur = null; PLAN.boxOptions={objectives:false,repulsions:false}; planVideoDrop();
-  await Promise.all([loadExact(),loadList()]); loadFeed(false); go('list');
-  // The new space appears in the agenda, with its own gestures — no second sheet.
-  const it = $('list').querySelector('.it[data-id="' + CSS.escape(data.id) + '"]');
-  if(it){ it.classList.add('is-new'); it.scrollIntoView({ block:'center' });
-    if(!linked || !why){ const n = document.createElement('p'); n.className = 'note no'; n.textContent = !linked ? 'The media could not be attached to this space.' : 'These mini-boxes were kept hidden.'; it.querySelector('.it-info').append(n); } }
-}
-/* La carte sert uniquement à choisir MON futur lieu. Les autres Spots
-   restent un radar de coordonnées autorisées, jamais une carte du feed. */
-const MAP = { open:false, lat:0, lng:0, z:16, timer:0, seq:0, drag:null, pointers:new Map(), pinch:null };
-const merc = (p,z) => { const n = 256*2**z, lat = Math.max(-85.0511,Math.min(85.0511,p.lat))*DEG; return {x:(p.lng+180)/360*n,y:(1-Math.log(Math.tan(lat)+1/Math.cos(lat))/Math.PI)/2*n}; };
-const unmerc = (p,z) => { const n = 256*2**z; return {lat:Math.atan(Math.sinh(Math.PI*(1-2*p.y/n)))/DEG,lng:((p.x/n*360)%360+360)%360-180}; };
-function mapCenter(p){ const c = unmerc(p,MAP.z); MAP.lat = Math.max(-85.0511,Math.min(85.0511,c.lat)); MAP.lng = c.lng; mapDraw(); }
-function mapDraw(){
-  if(!MAP.open) return;
-  const el = $('radar-map'), W = el.clientWidth, H = el.clientHeight, c = merc(MAP,MAP.z), tiles = $('map-tiles'), n = 2**MAP.z;
-  const x0 = Math.floor((c.x-W/2)/256), x1 = Math.floor((c.x+W/2)/256), y0 = Math.floor((c.y-H/2)/256), y1 = Math.floor((c.y+H/2)/256);
-  const wanted = new Set();
-  for(let y=Math.max(0,y0);y<=Math.min(n-1,y1);y++) for(let x=x0;x<=x1;x++){
-    const wx = ((x%n)+n)%n, key = MAP.z + '/' + wx + '/' + y, id = key + ':' + x; wanted.add(id);
-    let img = [...tiles.children].find(i => i.dataset.id === id);
-    if(!img){ img = document.createElement('img'); img.alt = ''; img.dataset.id = id; img.src = 'https://tile.openstreetmap.org/' + key + '.png'; img.referrerPolicy = 'strict-origin-when-cross-origin'; tiles.append(img); }
-    img.style.left = x*256 - c.x + W/2 + 'px'; img.style.top = y*256 - c.y + H/2 + 'px';
-  }
-  [...tiles.children].forEach(i => { if(!wanted.has(i.dataset.id)) i.remove(); });
-}
-function mapOpen(){
-  const p = PLAN.pos || PLAN.cityPos || POS || {lat:38.7223,lng:-9.1393}; Object.assign(MAP,{open:true,lat:p.lat,lng:p.lng,z:PLAN.pos || !PLAN.cityPos && POS ? 16 : PLAN.cityPos ? 13 : 12});
-  $('place-name').value = PLAN.place; $('place-picker').classList.remove('hide'); $('radar-map').classList.remove('hide'); document.body.classList.add('is-pin'); pickerClose();compassOff();RAD.headTo=0;paintInts();radarOn();mapDraw();$('place-use').focus();
-}
-function mapClose(){ MAP.open = false; MAP.seq++; MAP.pointers.clear(); MAP.drag = MAP.pinch = null; $('place-picker').classList.add('hide');$('radar-map').classList.add('hide');document.body.classList.remove('is-pin');paintInts();radarOn();$('plan-body').querySelector('[data-plan-place]')?.focus(); }
-$('place-cancel').onclick = mapClose;
-$('place-use').onclick = async () => {
-  const pos = {lat:MAP.lat,lng:MAP.lng}, place = $('place-name').value.trim(), seq = ++MAP.seq;
-  $('place-use').disabled = true;
-  const city = await nearestCity(pos); $('place-use').disabled = false;
-  if(!MAP.open || seq !== MAP.seq) return;
-  PLAN.pos = pos; PLAN.place = place; if(city) planCity(city); mapClose(); planPaint();
-};
-function mapZoom(d){ MAP.z = Math.max(2,Math.min(19,MAP.z+d)); mapDraw(); }
-$('map-tools').addEventListener('click', async e => {
-  const b = e.target.closest('[data-zoom]'); if(b){if(MAP.open) mapZoom(+b.dataset.zoom);else RAD.range=Math.max(100,Math.min(2e7,RAD.range*Math.pow(1.5,-Number(b.dataset.zoom))));return;}
-  if(e.target.closest('[data-here]')){ const seq = ++MAP.seq, p = await geo(); if(p && seq === MAP.seq){POS=p;RAD.headTo=0;if(MAP.open){MAP.lat=p.lat;MAP.lng=p.lng;MAP.z=16;mapDraw();}else RAD.range=radarRange();} }
-});
-$('radar-map').addEventListener('wheel', e => { if(e.target.closest('button,a')) return; e.preventDefault(); if(e.ctrlKey){ if(Math.abs(e.deltaY)>2) mapZoom(e.deltaY<0?1:-1); } else { const c = merc(MAP,MAP.z); mapCenter({x:c.x+e.deltaX,y:c.y+e.deltaY}); } },{passive:false});
-$('radar-map').addEventListener('pointerdown', e => {
-  if(e.target.closest('button,a') || e.button > 0) return; e.preventDefault();
-  MAP.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY}); $('radar-map').setPointerCapture(e.pointerId); $('radar-map').classList.add('is-held');
-  if(MAP.pointers.size === 1) MAP.drag = {x:e.clientX,y:e.clientY,c:merc(MAP,MAP.z)};
-  else { const a = [...MAP.pointers.values()]; MAP.pinch = {d:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y),z:MAP.z}; MAP.drag = null; }
-});
-$('radar-map').addEventListener('pointermove', e => {
-  if(!MAP.pointers.has(e.pointerId)) return; MAP.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(MAP.pinch && MAP.pointers.size >= 2){ const a=[...MAP.pointers.values()],d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y); MAP.z=Math.max(2,Math.min(19,Math.round(MAP.pinch.z+Math.log2(d/Math.max(1,MAP.pinch.d))))); mapDraw(); }
-  else if(MAP.drag) mapCenter({x:MAP.drag.c.x-(e.clientX-MAP.drag.x),y:MAP.drag.c.y-(e.clientY-MAP.drag.y)});
-});
-for(const event of ['pointerup','pointercancel']) $('radar-map').addEventListener(event,e => { MAP.pointers.delete(e.pointerId); if(MAP.pointers.size < 2) MAP.pinch=null; if(!MAP.pointers.size){ MAP.drag=null; $('radar-map').classList.remove('is-held'); } });
 
-
-/* ══ BOTTOM — LA CAMÉRA, PUIS LE SPOT ════════════════════════════════
-   Aucun formulaire avant la caméra. Décompte (annulable) → REC → arrêt
-   à la main ou à 33 s → l'Habit → PRIVATE/SHARED (le dernier choix est
-   retenu) → SHARED : LOCATION ON/OFF puis SILENT/SOCIAL si ON → la durée →
-   un mot → I AM HERE. */
+/* ══ BOTTOM — LA CAMÉRA, PUIS LE SPACE ════════════════════════════
+   Média → Habit → mini-boxes OBJECTIVES / REPULSIONS → commentaire → SHARE.
+   La ville est résolue localement et le serveur ne rend jamais un point exact. */
 import {VIDEO,cameraConstraints,cameraReady,portraitCapture,recordingMime} from '/video-capture.mjs';
 function camState(){ ['is-rec','is-count','is-form'].forEach(c => document.body.classList.remove(c));
   if(REC.step === 'rec') document.body.classList.add('is-rec');
   if(REC.step === 'count') document.body.classList.add('is-count');
   const form=['habit','form','send','retry','heavy'].includes(REC.step);
   if(form) document.body.classList.add('is-form');
-  for(const id of ['member','heading','joy','v-radar','v-plan','v-feed','v-list','v-cam']) $(id).inert=form;
+  for(const id of ['member','heading','joy','v-feed','v-spots','v-cam']) $(id).inert=form;
   $('cam-body').setAttribute('role',form?'dialog':'region');if(form)$('cam-body').setAttribute('aria-modal','true');else $('cam-body').removeAttribute('aria-modal');
   joyPaint(); }
 function camStop(){
@@ -1937,7 +1360,6 @@ async function camShot(){
   if(!blob?.size){ REC.step = 'retry'; return camPaint(); }
   REC.blob = blob; REC.seconds = 0; REC.width = W; REC.height = H; REC.url = URL.createObjectURL(blob);
   const ph = $('cam-photo'); ph.src = REC.url; ph.classList.remove('hide');
-  if(REC.forPlan) return planTakeClip();
   REC.step = 'habit'; camPaint(); loadHabits().then(() => { if(seq === REC.seq && REC.step === 'habit') camPaint(); });
 }
 function camRec(){
@@ -1960,7 +1382,6 @@ function camRec(){
     const v = $('cam-v'); v.srcObject = null; REC.url = URL.createObjectURL(REC.blob); v.src = REC.url; v.loop = true; v.muted = true;
     try{await v.play();await cameraReady(v);if(seq!==REC.seq || VIEW!=='cam') return;if(Math.abs(v.videoWidth*16-v.videoHeight*9)>2) throw new Error('Portrait video required');}
     catch(e){if(seq!==REC.seq || VIEW!=='cam') return;console.error('[recorded video]',e.message);REC.blob=null;REC.step='retry';return camPaint();}
-    if(REC.forPlan) return planTakeClip();
     REC.step = 'habit'; camPaint(); loadHabits().then(() => { if(seq === REC.seq && REC.step === 'habit') camPaint(); });
   };
   // Encoder startup must not consume the clip duration or stop an empty recording.
@@ -1975,19 +1396,10 @@ function camRec(){
 const habitHTML=(h,options,prefix)=>'<div class="habit">'+tickHTML(h.ints)+'<span class="h-body"><span class="v-col">'+habitInner(h,options,prefix)+'</span></span>'+'</div>';
 const pickHabitHTML=(h,attr,on)=>'<div class="pick-habit'+(on ? ' is-on' : '')+'" role="button" tabindex="0" '+attr+'>'+habitHTML(h)+'</div>';
 document.addEventListener('keydown',e=>{const b=e.target.closest('.pick-habit[role="button"]');if(b && e.target===b && ['Enter',' '].includes(e.key)){e.preventDefault();b.click();}});
-const DURS = [15, 30, 45, 60, 90, 120, 180];
-function missing(){
-  const m = [];
-  if(!REC.habit) m.push('a habit');
-  if(REC.vis === 'shared'){ if(!REC.loc) m.push('location on or off'); if(REC.loc === 'on' && !REC.mode) m.push('silent or social'); }
-  if(REC.loc==='off' && !REC.city) m.push('your current city');
-  if(!REC.dur) m.push('the duration');
-  return m;
-}
+function missing(){const m=[];if(!REC.habit)m.push('a habit');if(!REC.city)m.push('your current city');return m;}
 function camPaint(){
   camState();
   const b = $('cam-body'), st = REC.step, photo = REC.kind === 'photo', cancel = '<button class="btn" type="button" data-cancel="1">CANCEL</button>';
-  const forPlan = REC.forPlan ? '<p class="note">for my future space</p>' : '';
   let h = '';
   if(st === 'signin') h = '<p class="say">Put your TOTEHM into action. At home or anywhere else.</p><div class="cam-actions"><button class="btn" type="button" data-signin="1">CONNECT WITH MY TOTEHM</button></div>';
   else if(st === 'idle') h = '<p class="say">Share a space from your TOTEHM</p><div class="cam-actions"><button class="btn" type="button" data-start="video">VIDEO<small>up to ' + (RULES.clip_seconds || 33) + ' s</small></button><button class="btn" type="button" data-start="photo">PHOTO<small>one image</small></button>' + cancel + '</div>';
@@ -1996,7 +1408,7 @@ function camPaint(){
   else if(st === 'nocam') h = '<p class="say">This browser cannot ' + (photo ? 'take the photo' : 'film') + '. Try Safari or Chrome on the phone.</p><div class="cam-actions">' + cancel + '</div>';
   else if(st === 'retry') h = '<p class="say">The ' + (photo ? 'photo' : 'recording') + ' did not arrive. Take it again.</p>';
   else if(st === 'heavy') h = '<p class="say">Too heavy — film it again.</p>';
-  else if(st === 'ready' || st === 'shot') h = '<p class="say">' + (photo ? 'Tap the red point to take the photo' : 'Tap the red point to film · up to ' + (RULES.clip_seconds || 33) + ' s') + '</p>' + forPlan + '<div class="cam-actions">' + cancel + '</div>';
+  else if(st === 'ready' || st === 'shot') h = '<p class="say">' + (photo ? 'Tap the red point to take the photo' : 'Tap the red point to film · up to ' + (RULES.clip_seconds || 33) + ' s') + '</p>' + '<div class="cam-actions">' + cancel + '</div>';
   else if(st === 'rec') h = '<p class="say">Tap the red point to stop</p>';
   else if(st === 'habit'){
     h = '<div class="row pick-head"><span class="lab">Which Habit Box?</span></div>' + (!HABITS ? '<p class="note">reading my TOTEHM…</p>' : HABITS.length
@@ -2005,8 +1417,7 @@ function camPaint(){
   }
   else if(st === 'form' || st === 'send'){
     const m = missing();
-    const ready=sharingDone(REC);
-    h='<div class="it" data-reh="1">'+habitHTML(REC.habit,REC.boxOptions,'')+'</div>'+sharingHTML(REC,'')+(ready ? durationHTML(REC,'','c-dur')+'<textarea id="c-say" maxlength="400" placeholder="A word (optional)">'+esc(REC.say || '')+'</textarea><button class="btn" type="button" data-send="1"'+(m.length || st==='send' ? ' disabled' : '')+'>I AM HERE</button><p class="note" id="c-note">'+(m.length ? 'missing: '+m.join(' · ') : '')+'</p>' : '');
+    h='<div class="it" data-reh="1">'+habitHTML(REC.habit,REC.boxOptions,'')+'</div><textarea id="c-say" maxlength="400" placeholder="A word (optional)">'+esc(REC.say || '')+'</textarea><button class="btn" type="button" data-send="1"'+(m.length || st==='send' ? ' disabled' : '')+'>SHARE</button><p class="note" id="c-note">'+(m.length ? 'missing: '+m.join(' · ') : '')+'</p>'+(REC.placeError?'<button class="btn" type="button" data-locate="1">TRY AGAIN</button>':'');
   }
   if(['habit','form','retry','heavy'].includes(st)) h+='<div class="cam-actions"><button class="btn" type="button" data-again="1">' + (photo ? 'TAKE AGAIN' : 'RECORD AGAIN') + '</button>' + cancel + '</div>';
   b.innerHTML = h;
@@ -2014,25 +1425,17 @@ function camPaint(){
 }
 $('cam-body').addEventListener('input', e => {
   if(e.target.id === 'c-say') REC.say = e.target.value;
-  if(e.target.id === 'c-dur'){ const n = parseInt(e.target.value, 10);
-    REC.dur = n >= RULES.duration_min && n <= RULES.duration_max ? n : null;
-    const m = missing(), s = $('cam-body').querySelector('[data-send]'); if(s) s.disabled = !!m.length;
-    $('c-note').textContent = m.length ? 'missing: ' + m.join(' · ') : '';
-    $('cam-body').querySelectorAll('[data-dur]').forEach(c => c.classList.remove('is-on')); }
 });
 $('cam-body').addEventListener('click', e => {
   const t = e.target instanceof Element ? e.target : null; if(!t || REC.busy) return;
   if(boxOptionsClick(t,REC)) return camPaint();
   if(t.closest('[data-locate]')) return recResolvePlace(true);
   if(t.closest('[data-signin]')) return ssoLogin(false, '/?v=cam');
-  if(t.closest('[data-cancel]')){ const back = REC.forPlan ? 'plan' : 'radar'; camReset(); return go(back); }
+  if(t.closest('[data-cancel]')){ const back = 'feed'; camReset(); return go(back); }
   const start = t.closest('[data-start]'); if(start) return camOpen(start.dataset.start);
   if(t.closest('[data-again]')) return camOpen(REC.kind || 'video');
-  const hk = t.closest('[data-h]'); if(hk){ REC.habit = HABITS[+hk.dataset.h]; REC.boxOptions={objectives:false,repulsions:false}; REC.step = 'form'; return camPaint(); }
+  const hk = t.closest('[data-h]'); if(hk){ REC.habit = HABITS[+hk.dataset.h]; REC.boxOptions={objectives:false,repulsions:false}; REC.step = 'form'; camPaint(); recResolvePlace(); return; }
   if(t.closest('[data-reh]')){ REC.step = 'habit'; return camPaint(); }
-  const mo = t.closest('[data-mode]'); if(mo){ REC.mode = mo.dataset.mode; return camPaint(); }
-  const lo = t.closest('[data-loc]'); if(lo){ REC.loc = lo.dataset.loc; REC.mode=null; camPaint(); recResolvePlace(); return; }
-  const du = t.closest('[data-dur]'); if(du){ REC.dur = +du.dataset.dur; return camPaint(); }
   if(t.closest('[data-send]')) return camSend();
 });
 const geo = () => new Promise(res => { if(!navigator.geolocation) return res(null);
@@ -2048,6 +1451,17 @@ async function recResolvePlace(force=false){
  }).finally(()=>{if(seq===REC.seq && REC.placePromise===promise)REC.placePromise=null;});
  REC.placePromise=promise; return promise;
 }
+async function videoSend(blob, seconds, onProgress){
+  if(/^image\//.test(blob.type)){
+    const path = me.id + '/' + crypto.randomUUID() + '.jpg';
+    const up = await sb.storage.from('moments').upload(path, blob, { contentType:'image/jpeg', upsert:false }); if(up.error) throw up.error;
+    return path;
+  }
+  if(RULES.video_provider === 'bunny') return bunnyUpload(blob, seconds, onProgress);
+  const t = blob.type || '', ext = t.includes('mp4') ? 'mp4' : t.includes('quicktime') ? 'mov' : 'webm', path = me.id + '/' + crypto.randomUUID() + '.' + ext;
+  const up = await sb.storage.from('moments').upload(path, blob, { contentType:t || 'video/' + ext, upsert:false }); if(up.error) throw up.error;
+  return path;
+}
 async function camSend(){
   if(REC.busy || missing().length || !REC.blob || !me) return;
   REC.vis='shared';
@@ -2060,13 +1474,10 @@ async function camSend(){
   }catch(e){console.error('[upload]',e.message);REC.busy=false;REC.step='form';camPaint();return note('Not sent — try again.',true);}
   VIDEO_METRICS.uploadMs=Math.round(performance.now()-started);
   const {pos,city}=await place;
-  if(!pos || REC.loc==='off' && !city){REC.busy=false;REC.step='form';camPaint();return note('Allow your location to find your current city.',true);}
+  if(!pos || !city){REC.busy=false;REC.step='form';camPaint();return note('Allow your location to find your current city.',true);}
   POS=pos;
-  const shared = REC.vis === 'shared';
-  const { data, error } = await sb.rpc('spot_create', { p_habit: REC.habit.name, p_visibility: REC.vis, p_duration_min: REC.dur, p_video: path,
-    p_lat: pos.lat, p_lng: pos.lng, p_city: city, p_comment: (REC.say || '').trim() || null,
-    p_mode: shared && REC.loc === 'on' ? REC.mode : null, p_location: shared ? REC.loc : null });
-  if(error) console.error('[spot_create]', error.message);
+  const {data,error}=await sb.rpc('space_post',{p_habit:REC.habit.name,p_video:path,p_lat:Math.round(pos.lat*100)/100,p_lng:Math.round(pos.lng*100)/100,p_city:city,p_comment:(REC.say || '').trim() || null});
+  if(error) console.error('[space_post]', error.message);
   if(error || !data?.ok){
     // Keep the completed upload for a retry; ownership remains server-enforced.
     REC.busy = false; REC.step = 'form'; camPaint();
@@ -2074,51 +1485,44 @@ async function camSend(){
       position:'allow my position', duration:'the duration', signin:'sign in again' })[data?.why] || 'not published', true);
   }
   const boxesSaved=await publishBoxOptions(data.id,REC);
-  VIDEO_METRICS.publishMs=Math.round(performance.now()-started);REC.say = ''; camReset(); await Promise.all([loadExact(),loadList()]); loadFeed(false);
-  go('radar'); const s = EX.list.find(s => s.id === data.id); if(s) openDetail(s); else { const r = await sb.rpc('spot_get',{p_id:data.id}); if(r.error) console.error('[spot_get]',r.error.message); if(r.data?.ok) openDetail(r.data.spot); }
+  VIDEO_METRICS.publishMs=Math.round(performance.now()-started);REC.say = ''; camReset(); await loadFeed(false); loadSpotsDoor();
+  go('feed'); const s = FEED.list.find(s => s.id === data.id); if(s) openDetail(s); else { const r = await sb.rpc('spot_get',{p_id:data.id}); if(r.error) console.error('[spot_get]',r.error.message); if(r.data?.ok) openDetail(r.data.spot); }
   if(!boxesSaved && DETAIL) $('detail').insertAdjacentHTML('beforeend','<p class="note">These mini-boxes were kept hidden.</p>');
 }
 
 /* ══ LES CINQ VUES — joystick, trackpad, souris et écran tactile ═════ */
-const CROIX = { radar:{h:'plan',b:'cam',g:'feed',d:'list'}, plan:{b:'radar',g:'feed',d:'list'}, cam:{h:'radar',g:'feed',d:'list'}, feed:{d:'radar'}, list:{g:'radar'} };
-const voisin = d => VIEW === 'cam' && REC.forPlan && d === 'h' ? 'plan' : CROIX[VIEW][d] || null;
+const CROIX = { feed:{b:'cam',g:'spots'}, cam:{h:'feed'}, spots:{d:'feed'} };
+const voisin = d => CROIX[VIEW][d] || null;
 const recordingLocked = () => VIEW === 'cam' && ['perm','count','rec','shot','habit','form','send','retry','heavy'].includes(REC.step);
 function joyPaint(preview){
   const bx = $('joy-box'), camera = VIEW === 'cam';
-  bx.style.setProperty('--joy-vue', ({plan:'var(--blue)',radar:'var(--navy)',cam:'var(--navy)',feed:'var(--rep)',list:'var(--blue)'})[voisin(preview) || VIEW]);
-  bx.classList.toggle('is-side',['feed','list'].includes(VIEW));
+  bx.style.setProperty('--joy-vue', ({feed:'var(--navy)',cam:'var(--navy)',spots:'var(--rep)'})[voisin(preview) || VIEW]);
+  bx.classList.toggle('is-side',VIEW==='spots');
   bx.classList.toggle('is-camera',camera); bx.classList.toggle('is-recording',camera && REC.step === 'rec');
   const muted=!!DETAIL || camera && ['habit','form','send','retry','heavy'].includes(REC.step);
   $('joy').classList.toggle('is-muted',muted);bx.disabled=muted || camera && ['perm','signin','nocam','denied','shot'].includes(REC.step);
   const photo = REC.kind === 'photo';
-  bx.setAttribute('aria-label',camera ? (REC.step === 'rec' ? 'Stop recording' : ['habit','form','heavy','retry'].includes(REC.step) ? (photo ? 'Take the photo again' : 'Record again') : REC.step === 'ready' && photo ? 'Take the photo' : 'Record video') : 'Back to radar');
-  for(const [cls,v] of [['o','plan'],['h','radar'],['r','cam']]) $('joy-stack').querySelector('.'+cls).classList.toggle('is-current',VIEW === v);
+  bx.setAttribute('aria-label',camera ? (REC.step === 'rec' ? 'Stop recording' : ['habit','form','heavy','retry'].includes(REC.step) ? (photo ? 'Take the photo again' : 'Record again') : REC.step === 'ready' && photo ? 'Take the photo' : 'Record video') : 'Back to feed');
+  for(const [cls,v] of [['o','spots'],['h','feed'],['r','cam']]) $('joy-stack').querySelector('.'+cls).classList.toggle('is-current',VIEW === v);
   for(const d of ['g','d','h','b']){ $('cur-'+d).classList.toggle('is-dead',!voisin(d) || recordingLocked() || !!DETAIL); $('cur-'+d).classList.toggle('is-preview',preview === d && !!voisin(d)); }
-  $('joy-say').textContent = camera ? (REC.step === 'rec' ? 'STOP' : REC.step === 'idle' ? 'VIDEO' : REC.step === 'ready' ? (photo ? 'PHOTO' : 'REC') : ['habit','form','heavy','retry'].includes(REC.step) ? 'AGAIN' : '') : preview && voisin(preview) ? ({plan:'Future space',feed:'City feed',radar:'Radar',list:'Future spaces',cam:'Film a space'})[voisin(preview)] : '';
+  $('joy-say').textContent = camera ? (REC.step === 'rec' ? 'STOP' : REC.step === 'idle' ? 'VIDEO' : REC.step === 'ready' ? (photo ? 'PHOTO' : 'REC') : ['habit','form','heavy','retry'].includes(REC.step) ? 'AGAIN' : '') : preview && voisin(preview) ? ({feed:'City feed',spots:'Future spaces',cam:'Film a space'})[voisin(preview)] : '';
 }
 function go(v){
-  if(v === VIEW || !CROIX[v] || REC.busy || PLAN.busy) return;
-  const was = VIEW; VIEW = v; closeDetail(); pickerClose();
-  document.body.className = document.body.className.replace(/\bv-\w+/g,'').trim() + ' v-' + v;
-  document.querySelectorAll('.view').forEach(s => s.classList.toggle('is-on',s.id === 'v-'+v));
-  if(was === 'cam'){ camReset(); REC.forPlan = false; }
-  if(was === 'list') $('list').querySelectorAll('.it-media').forEach(m => { m.querySelectorAll('video').forEach(releaseClip); m.replaceChildren(); });
-  if(was === 'plan') document.body.classList.remove('is-pick');
-  if(was === 'feed'){ pauseFeed(); sfOpen(false); }
-  if(v === 'plan') planOpen();
-  if(v === 'cam') camOpen(REC.forPlan || null);
-  if(v === 'feed'){focusVisibleClip();document.querySelectorAll('#feed .clip[data-k]').forEach(c => {io.unobserve(c);io.observe(c);});}
-  camState(); joyPaint(); paintInts(); radarOn(); PAPER.sync();
-  RAD.morph = performance.now() + 700; clearTimeout(RAD.morphT);
-  RAD.morphT = setTimeout(() => dispatchEvent(new Event('resize')), 720);
+ if(v===VIEW || !CROIX[v] || REC.busy)return;
+ const was=VIEW;VIEW=v;closeDetail();pickerClose();
+ document.body.className=document.body.className.replace(/\bv-\w+/g,'').trim()+' v-'+v;
+ document.querySelectorAll('.view').forEach(s=>s.classList.toggle('is-on',s.id==='v-'+v));
+ if(was==='cam')camReset();if(was==='feed'){pauseFeed();sfOpen(false);}if(v==='cam')camOpen();
+ if(v==='feed'){focusVisibleClip();document.querySelectorAll('#feed .clip[data-k]').forEach(c=>{io.unobserve(c);io.observe(c);});}
+ camState();joyPaint();paintInts();PAPER.sync();
 }
 document.addEventListener('visibilitychange',()=>{
- if(document.hidden){cancelAnimationFrame(RAD.raf);RAD.raf=0;clearTimeout(feedReleaseTimer);SIGNED.clear();document.querySelectorAll('#feed video,#detail video,#list video').forEach(releaseClip);}
- else {radarOn();if(VIEW==='feed'){const f=$('feed'),height=f.querySelector('.clip')?.offsetHeight;if(height)focusClip(Math.round(f.scrollTop/height));}if(VIEW==='list')$('list').querySelectorAll('video').forEach(playClip);const v=$('detail').querySelector('video');if(DETAIL && v)playClip(v);}
+ if(document.hidden){clearTimeout(feedReleaseTimer);SIGNED.clear();document.querySelectorAll('#feed video,#detail video').forEach(releaseClip);}
+ else {if(VIEW==='feed'){const f=$('feed'),height=f.querySelector('.clip')?.offsetHeight;if(height)focusClip(Math.round(f.scrollTop/height));}const v=$('detail').querySelector('video');if(DETAIL && v)playClip(v);}
 });
-function step(d){ if(MAP.open || recordingLocked() || PLAN.busy || DETAIL) return; const v = voisin(d); if(v){ gestureCount++; go(v); } }
+function step(d){ if(recordingLocked() || DETAIL) return; const v = voisin(d); if(v){ gestureCount++; go(v); } }
 function joyTap(){
-  if(VIEW !== 'cam'){ if(VIEW !== 'radar') go('radar'); return; }
+  if(VIEW !== 'cam'){ if(VIEW !== 'feed') go('feed'); return; }
   if(REC.step === 'rec'){ clearInterval(REC.timer); if(REC.mr?.state === 'recording') REC.mr.stop(); }
   else if(REC.step === 'ready'){ if(REC.kind === 'photo') camShot(); else camRec(); }
   else if(REC.step === 'idle') camOpen('video');
@@ -2133,46 +1537,40 @@ addEventListener('keydown',e => {
     return;
   }
   if(e.key === 'Escape'){
-    if(MAP.open) mapClose(); else if(!$('habit-picker').classList.contains('hide')) pickerClose(); else if(!$('sf-panel').classList.contains('hide')) sfOpen(false); else if(DETAIL) closeDetail();
-    else if($('menu').classList.contains('is-open')) menu(false); else if(REC.step === 'rec') joyTap(); else if(VIEW !== 'radar' && !REC.busy && !PLAN.busy) go('radar');
+    if(!$('habit-picker').classList.contains('hide')) pickerClose(); else if(!$('sf-panel').classList.contains('hide')) sfOpen(false); else if(DETAIL) closeDetail();
+    else if($('menu').classList.contains('is-open')) menu(false); else if(REC.step === 'rec') joyTap(); else if(VIEW !== 'feed' && !REC.busy) go('feed');
     return;
   }
-  if(e.target.closest?.('input,textarea,select,[contenteditable]') || MAP.open) return;
+  if(e.target.closest?.('input,textarea,select,[contenteditable]')) return;
   const d = {ArrowLeft:'g',ArrowRight:'d',ArrowUp:'h',ArrowDown:'b'}[e.key];
   if(d){ e.preventDefault(); step(d); }
 });
 /* Le contenu défile d'abord. Aux bords, le même geste reprend la croix.
    Les petits deltas du trackpad s'additionnent ; son inertie ne saute pas
    une deuxième vue. Les champs, les dialogues et la prise vidéo gardent
-   leurs gestes. Le radar conserve le pincement / ctrl-wheel de zoom. */
+   leurs gestes. La navigation laisse le défilement du fil au navigateur. */
 (function gestures(){
   const pointers = new Map(); let drag = null, pinch = null, pinching = false;
-  const excluded = t => !!t.closest?.('#my-spaces,.eco-sheet,#cam-body,#v-plan,#joy,button,input,textarea,select,a,#detail,#menu,#habit-picker,#sf-panel,#totehm-paper,#place-picker,[contenteditable],#radar-map,#radar-tools');
-  const horizontal = dx => {if(['feed','list'].includes(VIEW)){gestureCount++;go('radar');}else step(dx>0?'g':'d');};
-  const scroller = t => t.closest?.('#feed,#list,#v-plan,#cam-body');
+  const excluded = t => !!t.closest?.('#my-spaces,.eco-sheet,#cam-body,#joy,button,input,textarea,select,a,#detail,#menu,#habit-picker,#sf-panel,#totehm-paper,[contenteditable]');
+  const horizontal = dx => step(dx>0?'g':'d');
+  const scroller = t => t.closest?.('#feed,#spots-door,#cam-body');
   const canScroll = (el,delta) => !!el && el.scrollHeight > el.clientHeight + 3 && (delta > 0 ? el.scrollTop < el.scrollHeight - el.clientHeight - 3 : el.scrollTop > 3);
   addEventListener('pointerdown',e => {
-    if(RAD.turn || e.button > 0 || (e.pointerType === 'touch' && e.target.id !== 'canvas') || excluded(e.target) || recordingLocked() || PLAN.busy || DETAIL) return;
+    if(e.button > 0 || excluded(e.target) || recordingLocked() || DETAIL) return;
     pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-    if(pointers.size === 1){ pinching = false; drag = {id:e.pointerId,x:e.clientX,y:e.clientY,t:Date.now(),el:scroller(e.target),canvas:e.target.id === 'canvas',view:VIEW}; }
+    if(pointers.size === 1){ pinching = false; drag = {id:e.pointerId,x:e.clientX,y:e.clientY,t:Date.now(),el:scroller(e.target),view:VIEW}; }
     else {
-      if(drag?.canvas){ const a=[...pointers.values()]; pinch = {d:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y),range:RAD.range}; pinching = true; suppressClickUntil=Date.now()+500; }
       drag = null;
     }
-    if(e.target.id === 'canvas') try{ e.target.setPointerCapture(e.pointerId); }catch(_){}
   },true);
   addEventListener('pointermove',e => {
     if(!pointers.has(e.pointerId)) return; pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-    if(pinch && pointers.size >= 2){
-      const a=[...pointers.values()], d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);
-      RAD.range=Math.max(100,Math.min(2e7,pinch.range*pinch.d/Math.max(1,d))); suppressClickUntil=Date.now()+500; e.preventDefault();
-    }
   },{capture:true,passive:false});
   addEventListener('pointerup',e => {
     pointers.delete(e.pointerId); const d=drag;
     if(pointers.size < 2) pinch=null;
     if(!pointers.size) drag=null;
-    if(RAD.turn || e.pointerType === 'touch' || pinching || !d || e.pointerId !== d.id || d.view !== VIEW || Date.now()-d.t > 1600) return;
+    if(e.pointerType === 'touch' || pinching || !d || e.pointerId !== d.id || d.view !== VIEW || Date.now()-d.t > 1600) return;
     const dx=e.clientX-d.x,dy=e.clientY-d.y;
     if(Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)*1.35){ suppressClickUntil=Date.now()+400; horizontal(dx); }
     else if(Math.abs(dy)>65 && Math.abs(dy)>Math.abs(dx)*1.35 && !canScroll(d.el,-dy)){
@@ -2181,9 +1579,9 @@ addEventListener('keydown',e => {
   },true);
   addEventListener('pointercancel',e => { pointers.delete(e.pointerId); drag=null; pinch=null; if(!pointers.size) pinching=false; },true);
   let touch=null;
-  const touchExcluded=t=>!!t.closest?.('#my-spaces,.eco-sheet,#cam-body,#v-plan,#joy,input,textarea,select,#detail,#menu,#habit-picker,#sf-panel,#sf-btn,#totehm-paper,#place-picker,#radar-tools,#radar-map,[contenteditable]');
+  const touchExcluded=t=>!!t.closest?.('#my-spaces,.eco-sheet,#cam-body,#joy,input,textarea,select,#detail,#menu,#habit-picker,#sf-panel,#sf-btn,#totehm-paper,[contenteditable]');
   addEventListener('touchstart',e=>{
-    if(e.touches.length!==1 || touchExcluded(e.target) || recordingLocked() || PLAN.busy || MAP.open || RAD.turn || DETAIL){ touch=null;return; }
+    if(e.touches.length!==1 || touchExcluded(e.target) || recordingLocked() || DETAIL){ touch=null;return; }
     const p=e.touches[0];touch={x:p.clientX,y:p.clientY,t:Date.now(),el:scroller(e.target),view:VIEW};
   },{passive:true,capture:true});
   addEventListener('touchmove',e=>{
@@ -2200,14 +1598,11 @@ addEventListener('keydown',e => {
   addEventListener('touchcancel',()=>{touch=null;},{passive:true});
   let axis='',dir='',sum=0,last=0,lockedUntil=0;
   addEventListener('wheel',e => {
-    if(MAP.open || RAD.turn || excluded(e.target) || recordingLocked() || PLAN.busy || DETAIL) return;
-    if(e.ctrlKey && e.target.id === 'canvas'){
-      e.preventDefault(); RAD.range=Math.max(100,Math.min(2e7,RAD.range*Math.exp(e.deltaY*.005))); return;
-    }
+    if(excluded(e.target) || recordingLocked() || DETAIL) return;
     const factor=e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1;
     const x=e.deltaX*factor,y=e.deltaY*factor, ax=Math.abs(x)>Math.abs(y)*1.25?'x':Math.abs(y)>Math.abs(x)*1.25?'y':null;
     if(!ax) return;
-    const delta=ax === 'x'?x:y, direction=ax === 'x'?(VIEW==='list'?'g':VIEW==='feed'?'d':delta>0?'d':'g'):(delta>0?'b':'h');
+    const delta=ax === 'x'?x:y, direction=ax === 'x'?(delta>0?'d':'g'):(delta>0?'b':'h');
     if(!voisin(direction)) return;
     if(ax === 'y' && canScroll(scroller(e.target),delta)){sum=0;last=0;return;}
     const now=Date.now();
@@ -2297,11 +1692,11 @@ async function spaceDelete(btn, id){
   try{ await videoRequest('space-delete', { spot:id }); }
   catch(e){ console.error('[space-delete]', e?.message || e); if(btn.isConnected){ btn.disabled = false; btn.classList.remove('is-arm'); btn.textContent = 'DELETE'; } return 'failed'; }
   if(uid !== me?.id) return 'done';
-  FEED.list = FEED.list.filter(x => x.id !== id); LIST.list = LIST.list.filter(x => x.id !== id); EX.list = EX.list.filter(x => x.id !== id);
+  FEED.list = FEED.list.filter(x => x.id !== id);
   MSP.rows = MSP.rows.filter(x => String(x.id) !== id); mspPaint();
   if(!$('my-spaces').classList.contains('hide')) $('msp-note').textContent = MSP.rows.length ? 'Space deleted.' : 'No space yet. Tap your TOTEHM to turn a habit into a space.';
   if(DETAIL?.id === id) closeDetail();
-  paintFeed(); paintList(); reload();
+  paintFeed(); reload();
   return 'done';
 }
 $('msp-x').onclick = mspClose;
@@ -2336,7 +1731,7 @@ $('member').onclick = () => menu(!$('menu').classList.contains('is-open'));
 $('menu').addEventListener('click', async e => {
   if(e.target.closest('[data-signin]')) return ssoLogin(false);
   if(e.target.closest('[data-myspaces]')) return mspOpen();
-  if(e.target.closest('[data-out]')){ mspClose(); await sb.auth.signOut({ scope:'local' }); me = null; PSEUDO = null; HABITS = null; S.habit = null; S.q = '';SIGNED.clear();closeDetail();FEED.list=[];EX.list=[];LIST.list=[];paintFeed();paintList();paintRadarEmpty();$('habit-filter').textContent = 'Habit Box · all'; if(VIEW === 'cam') camReset(); PLAN.seq++; PLAN.context = null; PLAN.habit = null; planVideoDrop(); planCity(null); PLAN.cityText = ''; menu(false); pickerClose(); paintMember(); if(VIEW === 'plan') planPaint(); reload(); }
+  if(e.target.closest('[data-out]')){ mspClose(); await sb.auth.signOut({ scope:'local' }); me = null; PSEUDO = null; HABITS = null; S.habit = null; S.q = '';SIGNED.clear();closeDetail();FEED.list=[];SPOTS.list=[];paintFeed();paintSpotsDoor();$('habit-filter').textContent = 'Habit Box · all'; if(VIEW === 'cam') camReset(); menu(false); pickerClose(); paintMember(); reload(); }
 });
 document.addEventListener('pointerdown', e => { if($('menu').classList.contains('is-open') && !e.target.closest('#menu,#member')) menu(false); });
 
@@ -2350,17 +1745,16 @@ async function boot(){
   if(me) videoRequest('create-bunny-upload',{action:'status'}).then(d=>{if(d?.available) RULES.video_provider='bunny';}).catch(e=>console.error('[video availability]',e.message));
   sb.rpc('spot_rules').then(({ data, error }) => { if(error) console.error('[spot_rules]', error.message); if(data) RULES = { ...RULES, ...data, video_provider:RULES.video_provider==='bunny'?'bunny':data.video_provider }; });
   const p = new URLSearchParams(location.search);
-  geo().then(pos => { if(pos){ POS = pos; reload(); radarOn(); } });
-  reload(); radarOn();
+  geo().then(pos => { if(pos){ POS = pos; reload(); } });
+  reload();
   ['g','d','h','b'].forEach(d => $('cur-' + d).classList.toggle('is-dead', !voisin(d)));
   if(p.get('spot')){
     const { data, error } = await sb.rpc('spot_get', { p_id: p.get('spot') });
     if(error) console.error('[spot_get]', error.message);
-    if(data?.ok) openDetail(data.spot);
+    if(data?.ok){if(data.spot.format==='spot')return ssoVersDomaine(sb,'club','https://www.figher.club/?spot='+encodeURIComponent(p.get('spot')),true);openDetail(data.spot);}
   }
-  if(['cam','plan'].includes(p.get('v')) && me) go(p.get('v'));
+  if(p.get('v')==='cam' && me) go(p.get('v'));
   joyPaint();
-  setInterval(() => { paintList(); planValidity(); const started = LIST.list.some(s => s.state === 'will' && spotState(s) !== 'will'); if(started) reload(); }, 30000);
 }
 boot();
 </script>

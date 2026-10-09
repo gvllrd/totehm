@@ -67,9 +67,9 @@ com/      → www.totehm.com       LA STRATÉGIE, LA SOURCE : le Totehm (5 vues)
                                  l'atterrissage en croix (07/10, manette) : mon Totehm · ↑ Get Higher (la langue)
                                  · ↓ TotehmSM (Higher Self : 7 gratuits/30 j puis Higher) · ← chercher · → SPACE et boutique ; /console
 club/     → www.figher.club      LA RENCONTRE DANS LA RÉALITÉ : les spots (à venir · en cours · passés, `spots_list`/`spots_feed`)
-                                 → la fiche sur SPACE ; ses anciennes pages redirigent (308) vers la boutique ; /console → 308
-space/    → www.totehm.space     L'INSPIRATION : une Habit stratégique vécue (photo, vidéo, son pourquoi) ; les spots y naissent
-                                 encore (filmée 33 s ou annoncée) : I WILL BE HERE → I AM HERE → I WAS THERE
+                                 radar au centre · ↑ annoncer · ↓ caméra · ← passés · → agenda ; /meet garde l’ancienne porte ; 308 boutique inchangés
+space/    → www.totehm.space     L'INSPIRATION : une Habit stratégique vécue (photo, vidéo, son pourquoi) ; fil au centre, caméra en bas
+                                 (space_post, jamais le point exact), porte des trois prochains spots à gauche → figher.club
 boutique/ → www.higher.boutique  L'ACHAT, physique et numérique (09/10) : Get Higher / THP / Stoner / Lisbon / Origins, le marché
                                  de l'art (/market) ; accueil + collection ; /streetwear (plein écran au téléphone, fenêtres-côtés sur ordinateur) : cloth →
                                  element (wisdom ← → vision, ou « + totehmize » depuis COM) → 0.nom → style → taille ; Luxe SUR DEVIS ; Decode = la page du Cloth

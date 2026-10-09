@@ -1,5 +1,14 @@
 # club/CLAUDE.md — figher.club : la rencontre dans la réalité (09/10)
 
+## 09/10/2026 — la carte, cinq vues
+
+BUILD `2026-10-09-club-map`, SSO `club`. Copie du SPACE antérieur au transfert, puis retrait du fil et de son filtre.
+CENTRE radar · HAUT annonce · DROITE agenda · BAS caméra (`spot_create`) · GAUCHE passés (`spots_feed`, `was`).
+Cartes passées reprises de Meet ; curseur sur la réponse brute, même si une page ne contient que des spots en cours.
+Ancien accueil renommé `meet.html`, How it works et footer conservés ; ses cartes ouvrent `/?spot=`.
+`?spot=` d’un space → SPACE par SSO avec remplacement ; spot → fiche. Menu personnel → `my_spots`.
+`cities.json`, capture vidéo et HLS copiés à l’identique ; caméra/micro autorisés pour le même domaine. 308 boutique inchangés.
+Tests : `club_map`, `club_publish`, `club_ui`, `space_spot_links`, `club_luxury` (§1–2 sur `/meet`).
 ## 09/10/2026 — figher.club = SE RETROUVER DANS LA RÉALITÉ
 
 Wah (avec ChatGPT) : « totehm.com c'est la stratégie, totehm.space le contenu

@@ -1,5 +1,13 @@
-# space/CLAUDE.md — totehm.space : DO WITH ME (un Spot, cinq vues)
+# space/CLAUDE.md — totehm.space : le fil des Habits stratégiques (trois vues)
 
+## 09/10/2026 — le fil, trois vues
+
+BUILD `2026-10-09-space-feed`. CENTRE feed, BAS caméra → `space_post`, GAUCHE spots → Club (3 prochains, `spots_list`, pont SSO).
+Radar, TOP, agenda, calendrier et configuration de spot retirés avec leurs références.
+Caméra : média → Habit → OBJECTIVES/REPULSIONS → commentaire → SHARE ; ville arrondie, jamais un point exact.
+Filtre : VIDEO / PHOTO / WHY · TRIGGER. My spaces et définition existante conservés.
+`?spot=` d’un spot → Club par SSO avec remplacement de l’entrée ; d’un space → fiche.
+Tests : `space`, `space_top_left`, `space_video`, `spaces_loupe`, `space_boxes_ecosystem`, `spaces_ui`, `space_spot_links`.
 ## SPACE · 09/10/2026 — sa fonction : l'inspiration
 
 BUILD `2026-10-09-domaines`. `<title>` « TOTEHM.SPACE — strategic Habits,

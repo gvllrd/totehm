@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<!--
+  ══ figher.club — LA PORTE · 02/10/2026 ════════════════════════════════
+  Wah, 02/10 : FIGHER.CLUB est l'EXPÉRIMENTATION du branding Higher —
+  [Get Higher] et Make the Lisbon Streets Higher vivent ici (avant : sur
+  higher.boutique) — plus l'art, les collections et le marché. L'économie
+  des créateurs (80/20) vit sur totehm.com et totehm.space ; la console
+  sur totehm.com/console.
+
+  DEUX CLÉS, lues en base (`figher_access()`), jamais recomposées ici :
+      01 THP POSSÉDÉ       le TotehmPaper — Get Higher, ici
+      02 UNE HABIT BOX     une boîte non vide dans la vue Habit du Totehm
+  `member` décide. L'annuel FIGHER ne fait plus partie de la règle.
+  Get Higher et Lisbon restent PUBLICS : ce sont eux qui vendent le THP.
+
+  ⚠️ QUATRE DOMAINES, QUATRE SESSIONS, UN PONT. Le bloc SSO est COPIÉ
+  (tools/sso_snippet.js), il ne s'importe pas. Toute porte vers un autre
+  domaine passe par `ssoVersDomaine` : le membre arrive connecté.
+
+  ══ 27/09/2026 — LA GRAMMAIRE DES QUATRE DOMAINES ══════════════════════
+  (01/10 : plus de Bebas Neue — Space Mono Bold en capitales = titres,
+  questions, étiquettes) · Quantico = ce que le membre TAPE, et le NOM d'un Totehm
+  · Space Mono = texte, labels, prix, navigation, boutons. Plus de
+  Montserrat nulle part. Saisies et boutons GRIS et ARRONDIS ; la tuile
+  perforée navy est réservée au nom d'un Totehm (ici : le mien, dans la
+  feuille membre). Le coin membre est un POINT BLANC. Fond noir, contenu
+  centré, aucune bordure autour d'une boîte.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>FIGHER.CLUB</title>
+<meta name="description" content="The club for people with a strategy. Your TOTEHM is the passport.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* POLICES — BASE (01/10) : Space Mono et Quantico, rien d'autre ; un bouton hérite. */
+html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family:inherit}
+:root{
+  /* ══ PALETTE FIGHER.CLUB · 24/09/2026 ═══════════════════════════════
+     Le club a son identité propre — distinct du Totehm mais dans le
+     même écosystème. Wah : « figher club c'est le love avant tout ».
+     LOVE (green) = identité du club, ENRICH (yellow) = monétisation,
+     NAVY (brand) = ancrage marque. Les 5 couleurs de vues restent
+     disponibles pour représenter les boxes du Totehm là où elles
+     apparaissent — pas pour peindre les structures du club. */
+  --bg:#000;--hi:#fff;--mid:#b0b0b0;--lo:#9a9a9a;--dim:#606060;
+  --g1:#0e0e10;--g2:#141416;--g3:#1c1c1f;--g4:#26262b;
+  --navy:#333366;--blue:#36498c;--rep:#743169;--paper:#2b2b57;
+  --wis:#5b2652;--vis:#2b3a73;
+  --fight:#E24B4A;--flow:#e48b31;--enrich:#fcbe21;--love:#639922;--on:#639922;
+  --express:#1D9E75;--focus:#378ADD;--celebrate:#7F77DD;
+  --tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000'/%3E%3C/svg%3E");
+  --coral:#fbd5ca;
+  --title:'Space Mono',monospace;--q:'Quantico',sans-serif;--mono:'Space Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+html,body{background:var(--bg);color:var(--mid);font-family:var(--mono);font-size:13px;line-height:1.7;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.hide{display:none!important}
+/* 02/10 — [Get Higher] : « Get » en coral, Higher = le SVG, jamais du texte. */
+.btn.gh{display:inline-flex;flex-direction:row;align-items:center;gap:.35em;text-transform:none;letter-spacing:0;font-size:14px;font-weight:400}
+.gh .get{color:var(--coral)}
+.gh svg{height:1.5em;width:auto;display:block}
+
+/* ── LES QUATRE COINS (BRAND.md §13-9) ────────────────────────────── */
+#member{position:fixed;top:16px;left:16px;z-index:40;display:flex;align-items:center;gap:7px;
+  background:none;border:none;cursor:pointer;font-family:var(--q);font-weight:700;font-size:13px;
+  color:#a0a0a0;padding:6px 4px;-webkit-tap-highlight-color:transparent;transition:color .15s}
+#member i{width:10px;height:10px;border-radius:50%;background:#3a3a40;display:block;transition:background .3s,box-shadow .3s}
+#member.is-in i{background:#fff;box-shadow:0 0 9px #fff}
+#sheet .sh-terms{display:block;margin-top:22px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--lo);text-decoration:none}
+
+/* ── LE BOUTON — gris et arrondi (27/09). La tuile perforée n'est plus
+   un bouton : elle est réservée au NOM d'un Totehm. ─────────────────── */
+.btn{font-family:var(--mono);font-weight:400;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);background:var(--g3);
+  border:none;border-radius:10px;cursor:pointer;padding:10px 16px;line-height:1.4;display:inline-block;
+  width:fit-content;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:color .15s ease,background .15s ease,transform .15s ease}
+.btn.main{color:#fff;font-weight:700;background:var(--g4)}
+@media(hover:hover){.btn:hover{color:#fff;background:#303036;transform:scale(1.03)}}
+.btn:active{transform:scale(.97)}
+.btn[disabled]{opacity:.35;pointer-events:none}
+.tname{display:inline-block;width:fit-content;font-family:var(--q);font-weight:400;font-size:19px;color:#fff;line-height:1.4;
+  border:7px solid transparent;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round;padding:0 10px;cursor:pointer;
+  transition:transform .15s ease,filter .15s ease}
+@media(hover:hover){.tname:hover{filter:brightness(1.25);transform:scale(1.04)}}
+.nav-l{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);
+  background:none;border:none;cursor:pointer;padding:4px 2px;transition:color .15s}
+
+/* ── LA COLONNE ───────────────────────────────────────────────────── */
+main{width:100%;max-width:620px;margin:0 auto;padding:0 20px}
+section{padding:92px 0 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px}
+.kick{font-family:var(--title);font-size:11.2px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);font-weight:700}
+h1,h2{font-family:var(--title);font-weight:700;color:#fff;letter-spacing:.04em;line-height:1.1;text-transform:uppercase}
+/* 01/10 : Space Mono Bold, capitales — l'intensité par la taille. */
+h1{font-size:clamp(34px,9vw,80px)}
+h2{font-size:clamp(22px,5.4vw,40px)}
+.say{max-width:44ch;color:var(--mid);font-size:13px}
+.say b{color:#fff;font-weight:400}
+
+/* ── LE HÉROS ─────────────────────────────────────────────────────── */
+#hero{min-height:52svh;justify-content:flex-end;padding-top:80px}   /* 09/10 : les spots se voient dès le premier écran */
+#spots{padding-top:36px}
+#hero .say{font-size:13px}
+#price-line{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--lo)}
+#price-line b{font-family:var(--title);font-size:19.8px;letter-spacing:.04em;color:#fff;font-weight:700;
+  vertical-align:-4px;margin-right:4px;text-transform:uppercase}
+
+/* ── LA PORTE — deux clés, la couleur fait le cadre (02/10) ── */
+.rope{display:flex;flex-direction:column;gap:6px;width:100%;max-width:440px;text-align:left}
+/* Trois étapes = trois surfaces GRISES identiques. Ce qui les
+   distingue ce n'est plus la couleur : c'est le NUMÉRO + l'état.
+   Cochée = filet vertical LOVE (green), l'annuel décoché porte un
+   filet ENRICH (yellow) car c'est la porte payante. */
+.step{position:relative;display:flex;gap:14px;align-items:flex-start;
+  padding:14px 16px 14px 18px;background:var(--g2);color:#fff;transition:transform .22s cubic-bezier(.2,.9,.25,1),background .2s}
+@media(hover:hover){.step:hover{transform:scale(1.02);background:var(--g3)}}
+.step::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--g4);transition:background .25s ease}
+.step.s3::before{background:var(--enrich)}
+.step.done::before{background:var(--love)}
+.step .n{font-family:var(--title);font-size:19.8px;line-height:1.1;min-width:28px;color:var(--dim);font-weight:700;text-transform:uppercase}
+.step .b{flex:1;min-width:0}
+.step .t{font-family:var(--title);font-size:14.5px;letter-spacing:.04em;line-height:1.05;font-weight:700;text-transform:uppercase}
+.step .m{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo);margin-top:5px}
+.step .ok{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);align-self:center}
+.step.done .ok{color:var(--love)}
+.step.done .n{color:#fff}
+.step.s3:not(.done) .ok{color:var(--enrich)}
+/* Les cinq vues : cinq carrés, remplis quand la vue est habitée. */
+.views{display:flex;gap:4px;margin-top:8px}
+.views i{width:12px;height:12px;display:block;background:rgba(0,0,0,.35)}
+.views i.on{background:#fff}
+#cta{margin-top:6px}
+#cta-note{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);min-height:16px}
+
+/* ── CE QUE LE CLUB OUVRE — des boîtes, une grammaire ─────────────── */
+.doors{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;text-align:left}
+/* Une porte = une boîte grise pleine. La couleur du filet gauche dit
+   le RÔLE : navy = ancrage marque (les 3 autres domaines), love =
+   natif club (Reveal, Subscribe), enrich = monétisation. Le fond
+   reste unifié — l'accent est ponctuel, lisible, pas hurlant. */
+.door{position:relative;background:var(--g2);color:#fff;padding:16px 16px 16px 20px;
+  display:flex;flex-direction:column;gap:6px;min-height:150px;
+  transition:filter .15s ease,background .25s ease}
+.door::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--lo)}   /* 28/09 : le navy = les boîtes du Totehm, pas une porte */
+.door.love::before{background:var(--love)}
+/* ── LES SPOTS · 09/10 — se retrouver : à venir, en cours, passés ── */
+.sp-tabs{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.sp-tabs button{border:0;border-radius:10px;padding:8px 12px;background:var(--g2);color:var(--lo);font:400 10.5px/1.3 var(--mono);letter-spacing:.08em;cursor:pointer;white-space:nowrap}
+.sp-tabs button.is-on{background:#3a3a42;color:#fff;box-shadow:0 0 0 1px #fff}
+#sp-list{width:100%;display:flex;flex-direction:column;gap:6px;text-align:left}
+.sp-card{display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;border:0;cursor:pointer;background:var(--g2);color:#fff;padding:14px 16px 14px 19px;position:relative}
+.sp-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--love)}
+.sp-when{font:700 9.5px/1.4 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--lo)}
+.sp-habit{font:400 17px/1.3 var(--q);color:#fff}
+.sp-meta{font:400 11px/1.5 var(--mono);color:var(--mid)}
+.sp-mode{margin-left:8px;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#fff}
+.sp-by{font:400 11px/1.5 var(--mono);color:var(--lo)}
+.sp-by b{font:400 13px/1.4 var(--q);color:var(--coral)}
+.sp-empty{padding:18px 0;text-align:center;color:var(--dim);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.sp-rule{font-size:11px;color:var(--lo)}
+.door.enrich::before{background:var(--enrich)}
+@media(hover:hover){.door:hover{background:var(--g3);transform:scale(1.025)}}
+.door{transition:transform .22s cubic-bezier(.2,.9,.25,1),background .25s ease,filter .15s ease}
+.door .d{font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--lo)}
+.door .h{font-family:var(--title);font-size:19.8px;color:#fff;line-height:1.1;font-weight:700;text-transform:uppercase}
+.door p{font-size:12px;color:var(--mid);flex:1}
+.door .go{font-family:var(--q);font-size:13px;color:var(--mid);background:none;border:none;cursor:pointer;
+  padding:0;text-align:left;transition:color .15s}
+@media(hover:hover){.door:hover .go{color:#fff}}
+@media(max-width:560px){.doors{grid-template-columns:1fr}.door{min-height:0}}
+
+/* ── L'ÉCONOMIE ───────────────────────────────────────────────────── */
+.eco{display:flex;flex-direction:column;gap:6px;width:100%;max-width:440px}
+.eco .row{display:flex;justify-content:space-between;gap:14px;padding:6px 2px;font-size:12px;text-align:left}
+.eco .row b{font-family:var(--mono);color:#fff;font-weight:400}
+.sim{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:8px}
+.sim .ctl{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+.stepper{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--lo)}
+.stepper button{font-family:var(--q);font-size:16px;color:var(--mid);background:none;border:none;cursor:pointer;
+  width:26px;height:26px;transition:color .15s}
+.stepper output{font-family:var(--q);font-size:15px;color:#fff;min-width:44px;text-align:center}
+#sim-out{font-family:var(--title);font-size:31.7px;color:var(--enrich);line-height:1;
+  text-shadow:0 0 24px rgba(252,190,33,.14);font-weight:700;text-transform:uppercase}
+#sim-sub{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+
+/* ── FAQ ──────────────────────────────────────────────────────────── */
+.faq{width:100%;max-width:520px;display:flex;flex-direction:column;gap:4px;text-align:left}
+details{padding:12px 2px}
+summary{font-family:var(--title);font-size:13.9px;letter-spacing:.04em;color:#fff;cursor:pointer;list-style:none;font-weight:700;text-transform:uppercase}
+summary::-webkit-details-marker{display:none}
+details p{margin-top:10px;font-size:12px;color:var(--mid)}
+
+footer{padding:90px 20px 60px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+footer .links{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+footer .wm{font-family:var(--q);font-size:14px;letter-spacing:.2em;color:#fff}
+footer .line{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);max-width:44ch}
+
+/* ── LA FEUILLE MEMBRE — email, code, pseudo ──────────────────────── */
+#sheet{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;padding:20px}
+#sheet.show{display:flex}
+.sh{width:100%;max-width:400px;background:var(--g1);padding:30px 22px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;position:relative}
+.sh .x{position:absolute;top:10px;right:12px}
+.in{font-family:var(--q);font-size:15px;color:#fff;background:#1c1c22;outline:none;border:none;border-radius:10px;padding:10px 13px;
+  text-align:center;caret-color:#fff;width:100%;max-width:300px;transition:background .15s ease;-webkit-appearance:none;appearance:none}
+.in:focus{background:#26262e}
+.in::placeholder{color:rgba(255,255,255,.38)}
+.note{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;min-height:14px;color:var(--lo)}
+.note.ok{color:var(--on)}.note.no{color:#ff9a9a}
+
+/* ── Le gris devient blanc au survol — BRAND §13-4, sans exception ── */
+@media(hover:hover){
+  #member:hover,#sheet .sh-terms:hover,.nav-l:hover,.door .go:hover,.stepper button:hover,footer a:hover,
+  .say:hover,.kick:hover,#price-line:hover,.eco .row:hover,details p:hover,.door p:hover,.door .d:hover{color:#fff}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+
+
+/* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
+/* Le gris en survol devient blanc. Généré depuis la feuille
+   elle-même : un nouveau bloc gris entre ici tout seul.        */
+@media(hover:hover){
+#member:hover,
+#sheet .sh-terms:hover,
+.btn:hover,
+.nav-l:hover,
+.kick:hover,
+.say:hover,
+#price-line:hover,
+.step .n:hover,
+.step .m:hover,
+.step .ok:hover,
+#cta-note:hover,
+.sp-tabs button:hover,
+.sp-when:hover,
+.sp-meta:hover,
+.sp-by:hover,
+.sp-empty:hover,
+.sp-rule:hover,
+.door .d:hover,
+.door p:hover,
+.door .go:hover,
+.stepper:hover,
+.stepper button:hover,
+#sim-sub:hover,
+details p:hover,
+footer .line:hover,
+.in:hover::placeholder,
+.note:hover{color:#fff}
+}
+/* ══ FIN DU BLOC GÉNÉRÉ ══ */
+
+/* 03/10 — the member's TOTEHM name: Quantico Coral, without status dots. */
+#conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
+#conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
+.tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
+</style>
+<style data-ecosystem-ui="2026-10-05">
+/* 05/10/2026 — copied into the four platforms. Text buttons fit their label. */
+button.eco-text-btn,a.eco-text-btn{inline-size:fit-content!important;max-inline-size:100%;min-inline-size:0!important;flex:0 1 auto!important;padding:.65em .95em!important;line-height:1.45;box-sizing:border-box}
+.eco-connect,.eco-connect #member-txt,.eco-connect #conn-txt{font-family:'Space Mono',monospace!important;font-weight:700!important;font-size:10px!important;color:#b0b0b0!important;letter-spacing:.06em;text-transform:uppercase!important}
+button.eco-connect{background:#252529!important;border:0!important;border-radius:10px!important;cursor:pointer}
+#menu .eco-text-btn,#mmenu .eco-text-btn,.mw-card .eco-text-btn{align-self:flex-start}
+#member.eco-connect,#conn-bar.eco-connect{max-width:calc(50vw - 70px);text-align:left}
+#member.eco-connect #member-txt,#conn-bar.eco-connect #conn-txt{white-space:normal;max-width:100%;overflow:visible;text-overflow:clip}
+#member>i,#conn-bar>.dot,#conn-bar>.dc{display:none!important}
+.habit:not(.add):not(.filtre),.r-habit,.bx{position:relative}
+.eco-box-zoom{position:absolute;right:4px;top:4px;z-index:3;display:flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:0;border-radius:8px;background:none;color:rgba(255,255,255,.55);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.eco-box-zoom svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.eco-box-zoom[aria-pressed=true]{color:#fff}
+.habit:has(> .eco-box-zoom) .v-name,.r-habit:has(> .eco-box-zoom) .r-text,.bx:has(> .eco-box-zoom) .nm{padding-right:22px}
+.habit.is-zoom>.h-body,.r-habit.is-zoom,.bx.is-zoom{zoom:1.25}
+@media(hover:hover){.eco-box-zoom:hover{color:#fff}}
+.eco-sheet{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.94);display:flex;justify-content:center;align-items:flex-start;padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(18px + env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;text-align:left}
+.eco-card{width:min(720px,100%);min-width:0;display:flex;flex-direction:column;gap:18px;margin:auto;touch-action:pan-y}
+.eco-close{align-self:flex-end!important;border:0;border-radius:10px;background:#252529;color:#ddd;font:700 11px 'Space Mono',monospace;cursor:pointer}
+body.eco-modal #joy{pointer-events:none!important;opacity:.2!important}
+body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,body[data-eco-auth="central"] #in-email,body[data-eco-auth="central"] #in-otp,body[data-eco-auth="central"] #pt-email,body[data-eco-auth="central"] #pt-otp,body[data-eco-auth="central"] #pt-verify,body[data-eco-auth="central"] #btn-send,body[data-eco-auth="central"] #pt-send,body[data-eco-auth="central"] #btn-verify{display:none!important}
+/* Standalone interface T glyphs are forbidden. The rotating TOTEHM paper keeps its brand artwork. */
+#bigT>svg{visibility:hidden!important}.tv-T{display:none!important}
+@media(hover:hover){.eco-close:hover{background:#34343a;color:#fff}.eco-connect:hover{color:#fff!important}}
+
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="t-glyph" viewBox="0 0 624 636">
+      <path fill="#ffffff" d="M0 0 H624 V92 H358 V592 H434 V636 H190 V592 H266 V92 H0 Z"/>
+    </symbol>
+    <symbol id="higher-slogan" viewBox="0 0 600 200">
+      <defs><mask id="hmask"><rect width="600" height="200" fill="white"/>
+        <circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/>
+        <circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/>
+        <circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/>
+      </mask></defs>
+      <rect width="600" height="200" fill="#333366" mask="url(#hmask)"/>
+      <!-- Higher : le slogan VECTORISÉ (27/09 — aucune webfont) --><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g>
+    </symbol>
+  </defs>
+</svg>
+
+<button id="member" type="button" aria-label="Member access"><i></i><span id="member-txt">CONNECT WITH MY TOTEHM</span></button>
+
+<main>
+
+<section id="hero">
+  <div class="kick">FIGHER.CLUB</div>
+  <!-- 09/10 : quatre domaines, quatre fonctions (Wah). figher.club = LA RENCONTRE
+       DANS LA RÉALITÉ : des spots autour d'une Habit, passés, en cours, à venir.
+       Get Higher, Stoner, Lisbon, Origins et le marché sont repartis sur
+       higher.boutique (l'achat) — leurs anciennes adresses y redirigent (308). -->
+  <h1>Meet<br>in reality.</h1>
+  <p class="say">One strategic Habit, practised together. Where it happens, when it happens: <b>next</b>, <b>now</b>, <b>past</b>.</p>
+</section>
+
+<section id="spots">
+  <div class="kick">The spots</div>
+  <div class="sp-tabs" role="tablist" aria-label="When">
+    <button type="button" role="tab" data-sp="next" aria-selected="true" class="is-on">I will be here</button>
+    <button type="button" role="tab" data-sp="now" aria-selected="false">I am here</button>
+    <button type="button" role="tab" data-sp="past" aria-selected="false">I was there</button>
+  </div>
+  <div id="sp-list" aria-live="polite"></div>
+  <div class="note" id="sp-note"></div>
+  <p class="say sp-rule">The city is for everyone. The exact place opens to the host's subscribers.</p>
+</section>
+
+<section id="how">
+  <div class="kick">How it works</div>
+  <h2>Show up.<br>Practise.<br>Leave a trace.</h2>
+  <div class="doors">
+    <div class="door love"><div class="d">the host</div><div class="h">Opens a spot</div>
+      <p>From one Habit of their TOTEHM: a place, a time, SILENT or SOCIAL.</p></div>
+    <div class="door love"><div class="d">you</div><div class="h">Join</div>
+      <p>Subscribe to the host to see the exact place. Then come and practise.</p></div>
+    <div class="door"><div class="d">totehm.com</div><div class="h">The strategy</div>
+      <p>Every spot starts from a Habit: why it matters lives in the TOTEHM.</p>
+      <button class="go" data-go="com">Open my TOTEHM</button></div>
+    <div class="door"><div class="d">totehm.space</div><div class="h">The inspiration</div>
+      <p>Strategic Habits lived on camera, with their objectives and repulsions.</p>
+      <button class="go" data-go="space">Open SPACE</button></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wm">FIGHER.CLUB</div>
+  <div class="links">
+    <button class="nav-l" data-go="com">totehm.com · strategy</button>
+    <button class="nav-l" data-go="space">totehm.space · inspiration</button>
+    <button class="nav-l" data-go="boutique">higher.boutique · wear &amp; own</button>
+    <button class="nav-l" data-go="console">Console</button>
+  </div>
+  <div class="line">The TOTEHM is the source. Every domain is a different way of living it.</div>
+</footer>
+
+<div id="sheet" role="dialog" aria-label="Member access">
+  <div class="sh">
+    <button class="nav-l x" id="sh-x" type="button">Close</button>
+    <div id="sh-out">
+      <div class="kick" style="margin-bottom:10px">One account, four doors</div>
+      <!-- 30/09 : on se connecte PAR totehm.com (l'autorité d'identité). -->
+      <button class="btn main" id="sh-go" type="button" data-eco-connect="1">CONNECT WITH MY TOTEHM</button>
+      <div class="note" id="sh-note" style="margin-top:8px"></div>
+    </div>
+    <div id="sh-claim" class="hide">
+      <div class="kick" style="margin-bottom:10px">Name your TOTEHM</div>
+      <input class="in" id="sh-pseudo" maxlength="24" placeholder="your name">
+      <div class="note" id="sh-claim-note" style="margin-top:8px"></div>
+    </div>
+    <div id="sh-in" class="hide" style="display:flex;flex-direction:column;align-items:center;gap:12px">
+      <button class="tname" id="sh-name" type="button" title="Open my TOTEHM"></button>
+      <div class="kick" id="sh-who" style="font-family:var(--mono);font-size:9px;letter-spacing:.2em"></div>
+      <button class="btn main" data-go="console">Open my console</button>
+      <button class="nav-l" id="sh-out-btn" type="button">Sign out</button>
+    </div>
+    <!-- 01/10 : la DERNIÈRE entrée du menu membre, dans tous les états. -->
+    <a class="nav-l sh-terms" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL = 'https://abujjbkbbiumxrokozph.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+const sb = createClient(SB_URL, SB_ANON);
+const FN = SB_URL + '/functions/v1/';
+const $ = id => document.getElementById(id);
+
+/* ══ LE PONT SSO v2 — COPIÉ de tools/sso_snippet.js (30/09/2026) ══════
+   totehm.com est l'autorité : se connecter ici = passer PAR totehm.com
+   (authorization code + PKCE). Le lien entre domaines reste le pont. */
+/* LE NOM DE CE DOMAINE — 'space' | 'club' | 'boutique'. Jamais une URL. */
+const SSO_CLIENT = 'club';
+const SSO_AUTH = 'https://www.totehm.com/auth';
+const SSO_KNOWN = 'totehm_sso_known';   // localStorage : ce navigateur s'est déjà connecté ici
+const SSO_TRIED = 'totehm_sso_tried';   // sessionStorage : l'aller-retour silencieux a eu lieu
+const SSO_PKCE  = 'totehm_sso_pkce';    // sessionStorage : { verifier, state } le temps du voyage
+
+const ssoB64 = bytes => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const ssoStore = (s, k, v) => { try{ v === null ? s.removeItem(k) : s.setItem(k, v); }catch(_){} };
+const ssoRead = (s, k) => { try{ return s.getItem(k); }catch(_){ return null; } };
+
+/* ── ARRIVÉE ────────────────────────────────────────────────────────
+   ⚠️ LE CODE SORT DE L'URL AVANT TOUT AUTRE GESTE — et SEULEMENT lui :
+   le reste du fragment (#create, #reveal…) reste à la page. Un code
+   laissé dans la barre d'adresse se retrouve dans un signet, un partage,
+   un historique. Avec un `state`, c'est une connexion centrale : il doit
+   être celui que CE navigateur a envoyé (sinon quelqu'un essaie de nous
+   connecter à SON compte) et le `verifier` part avec le code. */
+async function ssoArrivee(sb){
+  const h = new URLSearchParams(location.hash.replace(/^#/, ''));
+  const q = new URLSearchParams(location.search);
+  const code = h.get('sso') || q.get('sso'), st = h.get('state'), err = h.get('sso_error');
+  if(!code && !err) return false;
+  ['sso','state','sso_error'].forEach(k => { h.delete(k); q.delete(k); });
+  const reste = [...h.keys()].length ? '#' + h.toString().replace(/=(&|$)/g, '$1') : '';
+  history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + reste);
+  const pk = (() => { try{ return JSON.parse(ssoRead(sessionStorage, SSO_PKCE) || 'null'); }catch(_){ return null; } })();
+  ssoStore(sessionStorage, SSO_PKCE, null);
+  if(err || !/^[a-f0-9]{64}$/.test(code || '')) return false;
+  let verifier;
+  if(st){
+    if(!pk || pk.state !== st){ console.error('[sso] state'); return false; }
+    verifier = pk.verifier;
+  }
+  try{
+    const r = await fetch(FN + 'sso-redeem', {
+      method:'POST',
+      headers:{'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer '+SB_ANON},
+      body: JSON.stringify(verifier ? { code, verifier } : { code })
+    });
+    if(!r.ok){ console.error('[sso] redeem', r.status); return false; }
+    const { token_hash, email } = await r.json();
+    if(!token_hash) return false;
+    /* `verifyOtp` ouvre une session NORMALE dans ce `localStorage`. */
+    const { error } = await sb.auth.verifyOtp({ type:'email', token_hash });
+    if(error){ console.error('[sso] verify', error.message); return false; }
+    return true;
+  }catch(e){ console.error('[sso]', e && e.message || e); return false; }
+}
+
+/* ── SE CONNECTER — PAR TOTEHM.COM ──────────────────────────────────
+   `silent` : `prompt=none` — totehm.com ne montre rien, il rend un code
+   ou `login_required`. `retour` : un CHEMIN de ce domaine (jamais une
+   URL) ; totehm.com refuse tout le reste. */
+async function ssoLogin(silent, retour){
+  const v = ssoB64(crypto.getRandomValues(new Uint8Array(32)));
+  const c = ssoB64(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v))));
+  const st = ssoB64(crypto.getRandomValues(new Uint8Array(16)));
+  ssoStore(sessionStorage, SSO_PKCE, JSON.stringify({ verifier: v, state: st }));
+  const ret = retour || (location.pathname + location.search);
+  location.href = SSO_AUTH + '?client=' + SSO_CLIENT + '&challenge=' + c + '&state=' + st +
+                  '&return=' + encodeURIComponent(ret) + (silent ? '&prompt=none' : '');
+}
+
+/* ── DÉPART ─────────────────────────────────────────────────────────
+   `cible` est un NOM DE PRODUIT — 'com' | 'space' | 'boutique' | 'club'.
+   ⚠️ SI LE PONT ÉCHOUE, ON PART QUAND MÊME : dégradé, pas cassé. */
+async function ssoVersDomaine(sb, cible, url){
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(session){
+      const r = await fetch(FN + 'sso-mint', {
+        method:'POST',
+        headers:{ 'authorization':'Bearer '+session.access_token, 'apikey':SB_ANON, 'content-type':'application/json' },
+        body: JSON.stringify({ target: cible })
+      });
+      if(r.ok){
+        const { code } = await r.json();
+        if(code){ location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; }
+      } else console.error('[sso] mint', r.status);
+    }
+  }catch(e){ console.error('[sso]', e && e.message || e); }
+  location.href = url;
+}
+
+/* ── LE DÉMARRAGE — BLOQUANT, ET JAMAIS PLUS DE 2,5 S ───────────────
+   `await` au niveau du module : quand la page lit sa session, la session
+   est déjà là. Puis, sans session et si ce navigateur s'est déjà
+   connecté ici : UN aller-retour silencieux par onglet vers totehm.com.
+   La page ne se dessine pas pendant qu'elle part (promesse qui ne se
+   résout pas) : pas de clignotement de porte fermée. Le repère se pose à
+   la connexion et s'efface à la déconnexion — sortir d'ici ne vous y
+   reconnecte pas en silence. */
+await Promise.race([ ssoArrivee(sb), new Promise(r => setTimeout(() => r(false), 2500)) ]);
+sb.auth.onAuthStateChange(ev => {
+  if(ev === 'SIGNED_IN') ssoStore(localStorage, SSO_KNOWN, '1');
+  if(ev === 'SIGNED_OUT') ssoStore(localStorage, SSO_KNOWN, null);
+});
+{
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session) ssoStore(localStorage, SSO_KNOWN, '1');
+  else if(ssoRead(localStorage, SSO_KNOWN) && !ssoRead(sessionStorage, SSO_TRIED)){
+    ssoStore(sessionStorage, SSO_TRIED, '1');
+    await ssoLogin(true);
+    await new Promise(() => {});
+  }
+}
+
+/* Les portes : un NOM de produit et une URL fixe. Jamais une URL reçue. */
+const PORTES = {
+  com:      ['com',      'https://www.totehm.com/totehm#in'],
+  space:    ['space',    'https://www.totehm.space/'],
+  boutique: ['boutique', 'https://www.higher.boutique/'],
+  /* 09/10 : le THP, Get Higher et le marché vivent sur la boutique (l'achat). */
+  thp:      ['boutique', 'https://www.higher.boutique/get_higher'],
+  bot:      ['com',      'https://www.totehm.com/club/totehmbot'],
+  /* 01/10 : la console vit sur totehm.com — on y passe par le pont. */
+  console:  ['com',      'https://www.totehm.com/console'],
+};
+document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => {
+  const p = PORTES[b.dataset.go]; if(p) p[0] ? ssoVersDomaine(sb, p[0], p[1]) : (location.href = p[1]);
+});
+
+/* ══ LES SPOTS — se retrouver dans la réalité · 09/10/2026 ═══════════
+   À venir : `spots_list` (I WILL BE HERE) ; en cours et passés :
+   `spots_feed` (I AM HERE · I WAS THERE). Les droits sont ceux de SPACE
+   (`_spot_view`) : la ville pour tous, le point exact aux abonnés de l'hôte.
+   Un tap ouvre le spot sur totehm.space (sa fiche, sa vidéo) par le pont.
+   Une réponse tardive ne gagne jamais (`SP.seq`). */
+const SP = { seq:0, onglet:'next', next:[], now:[], past:[], charge:false };
+const ETAT = { next:'I will be here', now:'I am here', past:'I was there' };
+const quand = iso => { try{ const d = new Date(iso); return d.toLocaleDateString('en-GB',{ weekday:'short', day:'numeric', month:'short' }) + ' · ' + d.toLocaleTimeString('en-GB',{ hour:'2-digit', minute:'2-digit' }); }catch(_){ return ''; } };
+const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+async function chargerSpots(){
+  const seq = ++SP.seq;
+  const [l, f] = await Promise.all([
+    sb.rpc('spots_list', { p_q:null, p_intention:null, p_before:null, p_before_id:null, p_limit:12 }),
+    sb.rpc('spots_feed', { p_lat:null, p_lng:null, p_q:null, p_intention:null, p_before:null, p_limit:24 }),
+  ]);
+  if(seq !== SP.seq) return;
+  if(l.error) console.error('[spots_list]', l.error.message);
+  if(f.error) console.error('[spots_feed]', f.error.message);
+  SP.next = (l.data?.spots || []);
+  const feed = (f.data?.spots || []);
+  SP.now = feed.filter(x => x.state === 'am');
+  SP.past = feed.filter(x => x.state === 'was').slice(0, 12);
+  SP.charge = true;
+  if(l.error && f.error) $('sp-note').textContent = 'the spots could not load · try again';
+  paintSpots();
+}
+function paintSpots(){
+  const rows = SP[SP.onglet] || [];
+  document.querySelectorAll('[data-sp]').forEach(b => { const on = b.dataset.sp === SP.onglet;
+    b.classList.toggle('is-on', on); b.setAttribute('aria-selected', String(on)); });
+  if(!SP.charge){ $('sp-list').innerHTML = ''; return; }
+  $('sp-list').innerHTML = rows.length ? rows.map(x => {
+    const lieu = x.exact?.name || x.exact?.label || x.city || '';
+    const mode = x.mode ? '<span class="sp-mode">' + esc(x.mode) + '</span>' : '';
+    return '<button class="sp-card" type="button" data-spot="' + esc(x.id) + '">'
+      + '<span class="sp-when">' + esc(ETAT[SP.onglet]) + ' · ' + esc(quand(x.starts_at)) + '</span>'
+      + '<span class="sp-habit">' + esc(x.habit) + '</span>'
+      + '<span class="sp-meta">' + (lieu ? esc(lieu) + ' · ' : '') + (x.duration_min ? esc(x.duration_min) + ' min' : '') + mode + '</span>'
+      + (x.creator ? '<span class="sp-by">by <b>' + esc(x.creator) + '</b></span>' : '')
+      + '</button>';
+  }).join('') : '<div class="sp-empty">' + ({ next:'No spot announced yet.', now:'Nobody is practising right now.', past:'No spot yet.' })[SP.onglet] + '</div>';
+}
+document.querySelectorAll('[data-sp]').forEach(b => b.onclick = () => { SP.onglet = b.dataset.sp; paintSpots(); });
+$('sp-list').addEventListener('click', e => {
+  const c = e.target.closest('[data-spot]'); if(!c) return;
+  location.assign('/?spot=' + encodeURIComponent(c.dataset.spot));
+});
+
+/* ══ L'ÉTAT — une seule lecture, un seul bouton ═════════════════════ */
+let me = null, F = null;
+/* Le diagnostic — des booléens et des compteurs, jamais une valeur de
+   membre. Dans la console : __totehm_club()  · `build` dit en trois
+   secondes si la page ouverte est celle qu'on a livrée (règle du 22/09). */
+const BUILD='2026-10-09-meet';
+window.__totehm_club = () => ({ build: BUILD, page: 'meet', signed_in: !!me,
+  spots: { next: SP.next.length, now: SP.now.length, past: SP.past.length, charge: SP.charge }, onglet: SP.onglet });
+async function loadState(){
+  const { data:{ session } } = await sb.auth.getSession();
+  me = session?.user || null;
+  if(me){
+    const { data, error } = await sb.rpc('figher_access');
+    if(error) console.error('[figher_access]', error.message);
+    F = data || null;
+  } else F = null;
+  paintMember(); chargerSpots();
+}
+function paintMember(){
+  $('member').classList.toggle('is-in', !!me);
+  $('member-txt').textContent = me ? (F?.pseudo || 'Member') : 'CONNECT WITH MY TOTEHM';
+}
+/* ══ LA FEUILLE MEMBRE — email, code à 6 chiffres, pseudo ═══════════ */
+function openSheet(){ $('sheet').classList.add('show'); paintSheet(); }
+function paintSheet(){
+  const hasPseudo = !!F?.pseudo;
+  $('sh-out').classList.toggle('hide', !!me);
+  $('sh-claim').classList.toggle('hide', !(me && !hasPseudo));
+  $('sh-in').classList.toggle('hide', !(me && hasPseudo));
+  if(me && hasPseudo){ $('sh-name').textContent = F.pseudo; $('sh-who').textContent = me.email || ''; }
+}
+$('member').onclick = openSheet;
+$('sh-x').onclick = () => $('sheet').classList.remove('show');
+$('sheet').addEventListener('click', e => { if(e.target === $('sheet')) $('sheet').classList.remove('show'); });
+/* 30/09 — la connexion passe PAR totehm.com (authorization code + PKCE). */
+$('sh-go').onclick = () => ssoLogin(false);
+$('sh-pseudo').addEventListener('keydown', async e => {
+  if(e.key !== 'Enter') return;
+  const v = $('sh-pseudo').value.trim(), n = $('sh-claim-note');
+  if(v.length < 3 || v.length > 24){ n.className = 'note no'; n.textContent = '3 to 24 characters'; return; }
+  const { error } = await sb.from('profiles').insert({ id: me.id, pseudo: v });
+  if(error){ n.className = 'note no'; n.textContent = error.code === '23505' ? 'already taken' : 'try again'; return; }
+  await loadState(); paintSheet();
+});
+/* `scope:'local'` : quitter le Club ne ferme pas le Totehm ouvert ailleurs. */
+$('sh-out-btn').onclick = async () => { try{ await sb.auth.signOut({ scope:'local' }); }catch(e){ console.error('[signout]', e && e.message || e); }
+  me = null; F = null; paintMember(); chargerSpots(); $('sheet').classList.remove('show'); };
+$('sh-name').onclick = () => ssoVersDomaine(sb, 'com', 'https://www.totehm.com/totehm#in');
+sb.auth.onAuthStateChange(async (ev) => {
+  if(ev === 'SIGNED_IN' || ev === 'SIGNED_OUT'){ await loadState(); if($('sheet').classList.contains('show')) paintSheet(); }
+});
+
+await loadState();
+</script>
+<script data-ecosystem-ui="2026-10-05">
+/* 05/10/2026 — copied into each independent page; no runtime import. */
+(() => {
+  let sheet = null, previous = null, inert = [], overflow = '';
+  /* 06/10 — a small magnifier on each Box: its content grows a little, IN PLACE. Never a window. */
+  const roots = '.habit:not(.add):not(.filtre),.r-habit,.bx';
+  const glass = on => '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M7.5 10h5' + (on ? '' : 'M10 7.5v5') + '"/></svg>';
+  function close() {
+    if (!sheet) return;
+    sheet.remove(); sheet = null;
+    inert.forEach(([el, before]) => { if (el.isConnected) el.inert = before; }); inert = [];
+    document.body.style.overflow = overflow; document.body.classList.remove('eco-modal');
+    if (previous?.isConnected) previous.focus({preventScroll:true});
+  }
+  function open(content, title, source) {
+    if (sheet) close();
+    previous = source || document.activeElement; overflow = document.body.style.overflow;
+    sheet = document.createElement('div'); sheet.className = 'eco-sheet'; sheet.setAttribute('role','dialog');
+    sheet.setAttribute('aria-modal','true'); sheet.setAttribute('aria-label',title); sheet.tabIndex = -1;
+    const card = document.createElement('section'); card.className = 'eco-card';
+    const exit = document.createElement('button'); exit.type = 'button'; exit.className = 'eco-text-btn eco-close';
+    exit.textContent = 'CLOSE'; exit.addEventListener('click',close);
+    card.append(exit,content); sheet.append(card);
+    inert = Array.from(document.body.children).filter(el => !['SCRIPT','STYLE'].includes(el.tagName)).map(el => [el,el.inert]);
+    inert.forEach(([el]) => el.inert = true);
+    document.body.append(sheet); document.body.style.overflow = 'hidden'; document.body.classList.add('eco-modal');
+    sheet.addEventListener('click',e => { if (e.target === sheet) close(); }); exit.focus();
+  }
+  function enhance(scope) {
+    if (!(scope instanceof Element) || scope.closest('.eco-sheet')) return;
+    const parentBox = scope.closest(roots);
+    const boxes = [...(parentBox ? [parentBox] : []),...scope.querySelectorAll(roots)];
+    boxes.forEach(box => {
+      if (box.querySelector(':scope > .eco-box-zoom')) return;
+      const text = box.querySelector('.v-name,.h-text,.r-text,.nm')?.textContent?.trim() || box.querySelector('textarea')?.value?.trim();
+      if (!text) return;
+      const on = box.classList.contains('is-zoom'), b = document.createElement('button');
+      b.type = 'button'; b.className = 'eco-box-zoom'; b.dataset.boxZoom = '1';
+      b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? 'Smaller' : 'Bigger'); b.innerHTML = glass(on); box.append(b);
+    });
+    const buttonSelector = 'button,a.m-it,a.mw-link,a.btn-sig,a.btn,a.ro-action';
+    const parentButton = scope.closest(buttonSelector);
+    const buttons = [...(parentButton ? [parentButton] : []),...scope.querySelectorAll(buttonSelector)];
+    buttons.forEach(b => {
+      if (b.closest('#joy,#totehm-paper,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,.eco-box-zoom,.mini-toggle,.rk-a')) return;
+      const text = b.textContent.trim(); if (!text || /^[×+−\-↑↓←→↔↕✕✖?°\d\s]+$/.test(text)) return;
+      if (/^sign\s*in\b/i.test(text)) {
+        const leaf = b.querySelector('#member-txt,#conn-txt') || b;
+        leaf.textContent = 'CONNECT WITH MY TOTEHM'; b.classList.add('eco-connect');
+      } else if (text !== 'CONNECT WITH MY TOTEHM') b.classList.remove('eco-connect');
+      if (b.textContent.trim() === 'CONNECT WITH MY TOTEHM') b.classList.add('eco-connect');
+      b.classList.add('eco-text-btn');
+    });
+    if (document.body.dataset.ecoAuth === 'central') {
+      for (const input of scope.querySelectorAll('#mw-email,#in-email,#pt-email')) {
+        if (input.parentElement.querySelector('[data-eco-connect]')) continue;
+        const b = document.createElement('button'); b.type = 'button'; b.dataset.ecoConnect = '1';
+        b.className = 'eco-text-btn eco-connect'; b.textContent = 'CONNECT WITH MY TOTEHM'; input.before(b);
+      }
+    }
+  }
+  document.addEventListener('click',e => {
+    const zoomButton = e.target.closest?.('[data-box-zoom]');
+    if (zoomButton) {
+      e.preventDefault(); e.stopImmediatePropagation();
+      const box = zoomButton.closest(roots); if (!box) return;
+      const on = box.classList.toggle('is-zoom');
+      zoomButton.setAttribute('aria-pressed', String(on)); zoomButton.setAttribute('aria-label', on ? 'Smaller' : 'Bigger'); zoomButton.innerHTML = glass(on);
+      return;
+    }
+    const definition = e.target.closest?.('[data-space-about]');
+    if (definition) { e.preventDefault(); e.stopImmediatePropagation(); const content = document.querySelector('#space-definition')?.content?.cloneNode(true); if (content) open(content,'What is a space?',definition); }
+  },true);
+  document.addEventListener('keydown',e => {
+    if (!sheet) return;
+    e.stopImmediatePropagation();
+    if (e.key === 'Escape') { e.preventDefault(); close(); }
+    if (e.key === 'Tab') {
+      const list = [...sheet.querySelectorAll('button,a[href],input,textarea,select,[tabindex="0"]')].filter(el => !el.disabled && el.getClientRects().length);
+      const first = list[0], last = list.at(-1);
+      if (!first) { e.preventDefault(); sheet.focus(); }
+      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  },true);
+  for (const name of ['pointerdown','touchstart','touchmove','touchend','wheel']) document.addEventListener(name,e => { if (sheet) e.stopImmediatePropagation(); },{capture:true,passive:true});
+  const start = () => {
+    enhance(document.body);
+    new MutationObserver(records => {
+      const scopes = new Set();
+      for (const r of records) {
+        if (r.target instanceof Element && !r.target.closest('.eco-sheet')) scopes.add(r.target);
+        for (const node of r.addedNodes) if (node instanceof Element) scopes.add(node);
+      }
+      scopes.forEach(enhance);
+    }).observe(document.body,{childList:true,subtree:true});
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
+})();
+</script>
+</body>
+</html>
