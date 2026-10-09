@@ -4322,7 +4322,8 @@ async function loadHabitSpaces(){
   if(seq!==HSPACES.seq||uid!==me?.id) return;
   if(error){ console.error('[habit_spaces]',error.message); return; }
   if(!data||!data.ok) return;
-  HSPACES.par=new Map((data.habits||[]).map(h=>[norm(h.habit),{total:h.total|0,spaces:Array.isArray(h.spaces)?h.spaces:[]}]));
+  HSPACES.par=new Map((data.habits||[]).map(h=>[norm(h.habit),{total:h.total|0,nSpaces:h.total_spaces|0,nSpots:h.total_spots|0,
+    spaces:Array.isArray(h.spaces)?h.spaces:[],spots:Array.isArray(h.spots)?h.spots:[]}]));
   renderZone();
 }
 const ETAT_SPACE={will:'I will be here',am:'I am here',was:'I was there'};
@@ -4330,7 +4331,7 @@ const quandSpace=s=>{ const d=new Date(s.starts_at); if(isNaN(d)) return '';
   return d.toLocaleDateString('en',{day:'numeric',month:'short'})+' · '
         +d.toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit',hour12:false}); };
 const miniSpace=s=>'<button type="button" class="mini m-s" data-space="'+esc(String(s.id))+'" data-format="'+(s.format==='spot'?'spot':'space')+'">'
-  +'<span class="ms-st'+(s.state==='am'?' is-live':'')+'">'+esc(ETAT_SPACE[s.state]||'space')+'</span>'
+  +'<span class="ms-st'+(s.format==='spot'&&s.state==='am'?' is-live':'')+'">'+esc(s.format==='spot'?(ETAT_SPACE[s.state]||'spot'):'posted')+'</span>'
   +'<span class="ms-w">'+esc([(s.exact&&s.exact.place)||s.city||'', quandSpace(s)].filter(Boolean).join(' · '))+'</span></button>';
 const spacesDe=x=>HSPACES.par.get(norm(srv(x)))||null;
 
@@ -4884,7 +4885,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-09-spaces-spots';
+const BUILD='2026-10-09-habit-split';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -5435,7 +5436,7 @@ const miniDel=(kind,id,txt,data)=>'<span class="mini m-'+kind+' mini-w">'
    Il est maintenant le DERNIER ENFANT du groupe qui l'a ouvert :
    mini-boîtes, bouton [close], puis les options, dans la même colonne. */
 const groupe=(mot,contenu,sous)=>contenu
-  ? '<span class="mg"><span class="mg-l'+(['SPACES','SPOTS'].includes(mot)?' mg-ecosystem':'')+'">'+mot+'</span>'
+  ? '<span class="mg"><span class="mg-l'+(/^(SPACES|SPOTS)\b/.test(mot)?' mg-ecosystem':'')+'">'+mot+'</span>'
     +'<span class="minis">'+contenu+'</span>'+(sous||'')+'</span>' : '';
 
 /* ══ LA BOÎTE ════════════════════════════════════════════════════════
@@ -5822,7 +5823,9 @@ function vueHabitude(x,k){
      l'intention et le rythme — une habitude sans lieu reste une
      habitude ; une habitude sans intention n'en est pas encore une. */
   const lieu = spotDe(x);
-  const sp = spacesDe(x), spaces=(sp?.spaces||[]).filter(s=>s.format==='space'), spots=(sp?.spaces||[]).filter(s=>s.format==='spot');
+  /* 09/10 : le serveur sépare et compte (`habit_spaces_split`) ; la page n'additionne rien. */
+  const sp = spacesDe(x), spaces=sp?.spaces||[], spots=sp?.spots||[], nSp=sp?.nSpaces|0, nSt=sp?.nSpots|0;
+  const compte=(n,mot)=>n+' '+mot+(n>1?'S':'');
   const unit = ouverte&&!RO
     ? intBouton(x,'h')
       +'<button type="button" class="v-b'+(x.f?'':' vit')+'" data-pk="freq:h:'+esc(String(x.id))+'">'
@@ -5832,8 +5835,8 @@ function vueHabitude(x,k){
     : intMots(x)
       +(x.f||!RO?'<span class="v-frq'+(x.f?'':' vit')+'">'+esc(x.f?flabel(x.f):'set time frequency')+'</span>':'')
       +(lieu?'<span class="v-frq">'+esc(lieu)+'</span>':'')
-      +(spaces.length?'<span class="v-frq v-spc v-ecosystem">'+spaces.length+' SPACES</span>':'')
-      +(spots.length?'<span class="v-frq v-spc v-ecosystem">'+spots.length+' SPOTS</span>':'');
+      +(nSp?'<span class="v-frq v-spc v-ecosystem">'+compte(nSp,'SPACE')+'</span>':'')
+      +(nSt?'<span class="v-frq v-spc v-ecosystem">'+compte(nSt,'SPOT')+'</span>':'');
   /* WHY au-dessus des objectifs, PROTECTED BY au-dessus des répulsions :
      la boîte raconte, elle ne liste pas. */
   const gO = ouverte
@@ -5857,9 +5860,9 @@ function vueHabitude(x,k){
       rs.map(r=>String(r.id)), REPS.map(r=>({id:r.id,txt:r.text})), 'a new repulsion','r') : '';
   /* SPACES sous TRIGGER : ce que l'habitude a VÉCU (ou va vivre) dehors. */
   const minis = groupe('why',gO,pkO) + groupe('trigger',gR,pkR)
-    + (ouverte&&spaces.length?groupe('SPACES',spaces.map(miniSpace).join('')):'')
-    + (ouverte&&spots.length?groupe('SPOTS',spots.map(miniSpace).join('')):'')
-    + (ouverte&&!RO?'<button type="button" class="dash" data-newspace="1">+ a space</button>':'');
+    + (ouverte&&spaces.length?groupe(nSp>3?'SPACES · 3 of '+nSp:'SPACES',spaces.map(miniSpace).join('')):'')
+    + (ouverte&&spots.length?groupe(nSt>3?'SPOTS · 3 of '+nSt:'SPOTS',spots.map(miniSpace).join('')):'')
+    + (ouverte&&!RO?'<button type="button" class="dash" data-newspace="1">+ a space</button><button type="button" class="dash" data-newspot="1">+ a spot</button>':'');
   let haut='', bas='';
   if(ouverte&&pkOn('int','h',x.id))  haut=intPicker(x,'h');
   if(ouverte&&pkOn('freq','h',x.id)) haut=freqPicker(x);
@@ -6354,7 +6357,7 @@ function cable(box){
        qui les traite existait et n'était jamais atteint. */
     const el=e.target.closest('[data-fint],[data-ffq],[data-fclear],[data-fx],'
       +'[data-open],[data-add],[data-x],[data-pk],[data-int],[data-mv],[data-go],'
-      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-newspace],[data-cloth],[data-totehmize],[data-zoom],[data-copy]');
+      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-newspace],[data-newspot],[data-cloth],[data-totehmize],[data-zoom],[data-copy]');
     if(!el)return;
     const d=el.dataset;
     if(d.copy){ e.stopPropagation(); copierBox(el,d.copy); return; }
@@ -6366,6 +6369,8 @@ function cable(box){
     /* Un space s'ouvre sur SPACE, par le pont (même en lecture). */
     if(d.space){ e.stopPropagation(); const spot=d.format==='spot'; ssoVersDomaine(sb,spot?'club':'space','https://www.'+(spot?'figher.club':'totehm.space')+'/?spot='+encodeURIComponent(d.space)); return; }
     if(d.newspace!==undefined){ e.stopPropagation(); if(!RO) ssoVersDomaine(sb,'space','https://www.totehm.space/?v=cam'); return; }
+    /* Un spot s'annonce sur figher.club (la vue « plan »). */
+    if(d.newspot!==undefined){ e.stopPropagation(); if(!RO) ssoVersDomaine(sb,'club','https://www.figher.club/?v=plan'); return; }
     /* Un Cloth s'ouvre sur sa page Decode ; « + totehmize » part avec CET élément. */
     if(d.cloth){ e.stopPropagation(); ssoVersDomaine(sb,'boutique','https://www.higher.boutique/?decode='+encodeURIComponent(d.cloth)); return; }
     if(d.totehmize){ e.stopPropagation(); if(!RO) ssoVersDomaine(sb,'boutique','https://www.higher.boutique/streetwear?wear='+encodeURIComponent(d.totehmize)); return; }
