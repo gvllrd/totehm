@@ -3094,6 +3094,9 @@ body.lv-c #lv-c,body.lv-h #lv-h,body.lv-b #lv-b,body.lv-d #lv-d{opacity:1;visibi
   transform-origin:50% 50%;transition:transform .7s var(--gate-ease),opacity .45s ease;
   background:none;border:0;padding:0;margin:0;color:#fff;pointer-events:none;-webkit-tap-highlight-color:transparent}
 #lv-slogan.no-anim,#lv-slogan.no-anim *{transition:none!important;animation:none!important}
+/* 09/10 — tant que le module ne l'a pas POSÉ, le badge est en (0,0) : invisible
+   (sur téléphone, esm.sh et le pont SSO peuvent retarder le module d'1 à 2 s). */
+#lv-slogan:not(.is-pose){visibility:hidden}
 #lv-slogan svg{display:block;width:96px;height:32px}
 .lvs-pre,.lvs-post{position:absolute;top:50%;white-space:nowrap;transform:translateY(-50%)}
 .lvs-pre{right:calc(100% + 8px)}.lvs-post{left:calc(100% + 8px)}
@@ -4877,7 +4880,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-08-sm';
+const BUILD='2026-10-09-slogan';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -8942,6 +8945,7 @@ window.addEventListener('pageshow',e=>{
     function sloganPour(v){
       const c=PAPIER.chez()||{x:W()/2,y:H()*.4,w:110};
       ['c','h','b','g','d','x'].forEach(k=>slo.classList.toggle('is-'+k,k===v));
+      slo.classList.add('is-pose');
       slo.tabIndex=v==='h'?0:-1;
       if(v==='c'||v==='g'){
         placer(slo, W()/2-(8+larg('.lvs-strat'))/2, c.y+c.w/2+30, 96);
