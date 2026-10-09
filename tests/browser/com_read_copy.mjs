@@ -26,10 +26,10 @@ try{
   ok(!erreurs(log).length,'atterrissage : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();
  }
  /* ── 2 · la vue du haut fait ce qu'elle dit : [Get Higher] → figher.club ── */
- {const {pg}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]},network:url=>url.host==='www.figher.club'?{status:200,contentType:'text/html',body:'<p>club</p>'}:null});
+ {const {pg}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]},network:url=>url.host==='www.higher.boutique'?{status:200,contentType:'text/html',body:'<p>club</p>'}:null});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(500);
   await pg.click('#lcur-h');await pg.waitForTimeout(1300);
-  const nav=pg.waitForURL(/figher\.club\/get_higher/,{timeout:12000}).then(()=>true,()=>false);
+  const nav=pg.waitForURL(/higher\.boutique\/get_higher/,{timeout:12000}).then(()=>true,()=>false);
   await pg.click('#lv-slogan');
   ok(await nav,'↑ puis [Get Higher] : le papier est avalé, puis Get Higher');await pg.context().close();
  }

@@ -27,12 +27,12 @@ const rpc = {
   art_unlist: () => { listed = null; return { ok:true }; },
 };
 const browser = await launch();
-const { pg, ctx, log } = await page(browser, { dir:'club', origin:'https://www.figher.club', rpc });
+const { pg, ctx, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc });
 const fnBodies = [];
 await ctx.route('https://abujjbkbbiumxrokozph.supabase.co/functions/v1/**', r => { fnBodies.push({ fn: r.request().url().split('/v1/')[1], body: JSON.parse(r.request().postData() || '{}') });
   r.fulfill({ status:200, contentType:'application/json', body: JSON.stringify({ url:'https://checkout.stripe.test/s' }) }); });
 await ctx.route('https://checkout.stripe.test/**', r => r.fulfill({ status:200, contentType:'text/html', body:'<h1>stripe</h1>' }));
-await pg.goto('https://www.figher.club/market');
+await pg.goto('https://www.higher.boutique/market');
 await pg.waitForFunction(() => window.__totehm_market && window.__totehm_market().works > 0);
 let d = await pg.evaluate(() => window.__totehm_market());
 ok(d.build === '2026-10-05-spaces-boxes' && d.collections === 3, 'market loads 3 collections');
@@ -52,18 +52,18 @@ await pg.screenshot({ path: OUT + '/market_detail.png' });
 await pg.click('[data-resale]');
 await pg.waitForURL(/checkout\.stripe\.test/);
 ok(fnBodies[0]?.fn === 'market-checkout' && fnBodies[0].body.edition_id === listings[0].edition_id, 'resale → market-checkout with the edition');
-await pg.goto('https://www.figher.club/market?art=q-01');
+await pg.goto('https://www.higher.boutique/market?art=q-01');
 await pg.waitForSelector('[data-buy]');
 await pg.click('[data-buy]');
 ok(/tick the box/.test(await pg.textContent('#buy-n')), 'no purchase without the withdrawal waiver');
 await pg.check('#wv'); await pg.click('[data-buy]');
 await pg.waitForURL(/checkout\.stripe\.test/);
 ok(fnBodies[1]?.fn === 'artwork-checkout' && fnBodies[1].body.slug === 'q-01', 'primary art → artwork-checkout with the slug');
-await pg.goto('https://www.figher.club/market?art=totehmpaper');
+await pg.goto('https://www.higher.boutique/market?art=totehmpaper');
 await pg.waitForSelector('#sh h2');
 ok(/owned · № 1/.test(await pg.textContent('#sh')) === false || true, 'THP sheet opens');
 // My collection : revendre
-await pg.goto('https://www.figher.club/market?tab=mine');
+await pg.goto('https://www.higher.boutique/market?tab=mine');
 await pg.waitForSelector('[data-list]');
 ok(/41[.,]85/.test(await pg.textContent('#view')), 'balance read from the ledger (€41.85)');
 await pg.fill('[data-pin="e0000000-0000-4000-8000-000000000009"]', '120');
@@ -73,7 +73,7 @@ await pg.waitForSelector('[data-unlist]');
 ok(log.rpc.find(r => r.name === 'art_list')?.body.p_price_cents === 12000, 'art_list in cents');
 await pg.screenshot({ path: OUT + '/market_mine.png' });
 // retour de Stripe
-await pg.goto('https://www.figher.club/market?owned=q-01');
+await pg.goto('https://www.higher.boutique/market?owned=q-01');
 await pg.waitForFunction(() => /it is mine/i.test(document.body.innerText), null, { timeout:8000 });
 ok(await pg.evaluate(() => !location.search.includes('owned')), 'return from Stripe: ownership read from the base, URL cleaned');
 log.errors = log.errors.filter(e => !/404|ERR_|Failed to load/.test(e));

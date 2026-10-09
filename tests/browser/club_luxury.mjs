@@ -1,4 +1,4 @@
-// 02/10/2026 — figher.club (porte : Get Higher, Lisbon, deux clés) et
+// 09/10/2026 — figher.club (se retrouver : les spots) ; Get Higher, Lisbon, Origins et le marché revenus sur la boutique ;
 // higher.boutique (page /luxury sur devis, 05/10 ; l'accueil : boutique_home.mjs). Zéro réseau.
 // LANCER : node club_luxury.mjs /tmp
 import { launch, page, ok } from './harness.mjs';
@@ -7,43 +7,64 @@ const browser = await launch();
 const geo = lisbon => async url => url.pathname === '/api/geo'
   ? { status:200, contentType:'application/json', body: JSON.stringify({ country: lisbon ? 'PT' : 'FR', lisbon }) } : null;
 
-// ── 1. La porte, connecté : THP oui, Habit non, acheteur, au Portugal
+// ── 1. figher.club (09/10) = SE RETROUVER : les spots, à venir · en cours · passés
 {
-  const { pg, log } = await page(browser, { dir:'club', origin:'https://www.figher.club', network: geo(true),
-    rpc: { figher_access: { signed_in:true, thp:true, habit:false, member:false, number:7, pseudo:'wah' } },
-    functions: { 'stoner-gate': { access:true } } });
+  const SP = (id, state, habit, h) => ({ id, state, habit, city:'Lisbon', creator:'Vallerand', mode: state==='was' ? 'silent' : 'social',
+    starts_at: new Date(Date.now() + h*3600e3).toISOString(), duration_min:45, exact:null, intentions:['focus'] });
+  let mint = null;
+  const { pg, log } = await page(browser, { dir:'club', origin:'https://www.figher.club',
+    rpc: { figher_access: { signed_in:true, thp:true, habit:true, member:true, number:7, pseudo:'wah' },
+           spots_list: { ok:true, spots:[SP('n1','will','Run the hill',20), SP('n2','will','Deep practice',44)], more:false },
+           spots_feed: { spots:[SP('a1','am','Cold shower',-0.2), SP('p1','was','Meditation',-30)] } },
+    functions: { 'sso-mint': b => { mint = b.target; return { code:'c'.repeat(64) }; } },
+    network: url => url.host === 'www.totehm.space' ? { status:200, contentType:'text/html', body:'<p>space</p>' } : null });
   await pg.goto('https://www.figher.club/');
-  await pg.waitForFunction(() => window.__totehm_club && window.__totehm_club().higher_gate === true && window.__totehm_club().lisbon === true);
+  await pg.waitForFunction(() => window.__totehm_club && window.__totehm_club().spots.charge);
   const d = await pg.evaluate(() => window.__totehm_club());
-  ok(d.build === '2026-10-05-spaces-boxes' && d.figher.thp && !d.figher.habit && !d.figher.member, 'door reads two keys from figher_access');
-  ok(await pg.getAttribute('#higher-btn', 'href') === '/stoner', 'Get Higher sends a buyer straight to the method');
-  ok(await pg.isVisible('#lisbon-btn'), 'Lisbon button revealed in PT');
-  ok(/#007/.test(await pg.textContent('#st1-ok')) && /missing/.test(await pg.textContent('#st2-ok')), 'keys: THP #007 · Habit missing');
-  ok(/Write my first Habit/.test(await pg.textContent('#cta')), 'one button follows the missing key');
-  ok(!(await pg.content()).match(/annual|velvet|compatibility/i), 'no annual, no velvet rope, no compatibility');
-  ok(log.errors.length === 0, 'door: no page error ' + log.errors.join(' | '));
-  await pg.screenshot({ path: OUT + '/club_door.png', fullPage:true });
+  ok(d.build === '2026-10-09-meet' && d.page === 'meet' && d.spots.next === 2 && d.spots.now === 1 && d.spots.past === 1, 'club: next · now · past read from spots_list / spots_feed');
+  ok(/MEET\s*IN REALITY/i.test(await pg.textContent('h1')), 'club: « Meet in reality. »');
+  const c = await pg.$$eval('#sp-list .sp-card', l => l.map(x => x.textContent));
+  ok(c.length === 2 && /I will be here/.test(c[0]) && /Run the hill/.test(c[0]) && /Vallerand/.test(c[0]), 'next: two spots, the Habit, the host');
+  await pg.click('[data-sp="past"]');
+  ok(/I was there/.test(await pg.textContent('#sp-list')) && /Meditation/.test(await pg.textContent('#sp-list')), 'past: I was there');
+  const html = await pg.content();
+  ok(!/href="\/(discover|market|origins|get_higher|stoner)"/.test(html) && !document_has(html, 'Two keys'), 'club: no Get Higher, market or Origins left on the door');
+  ok(/totehm\.com · strategy/.test(html) && /totehm\.space · inspiration/.test(html) && /higher\.boutique · wear &amp; own/.test(html), 'footer: each domain says its function');
+  await pg.click('#sp-list .sp-card');
+  await pg.waitForURL(/totehm\.space/, { timeout:6000 }).catch(()=>{});
+  ok(mint === 'space' && pg.url() === 'https://www.totehm.space/?spot=p1#sso=' + 'c'.repeat(64), 'a spot opens on SPACE through the bridge (' + pg.url() + ')');
+  ok(log.errors.filter(e => e.startsWith('pageerror')).length === 0, 'club: no page error ' + log.errors.join(' | '));
 }
+function document_has(h, t){ return h.includes(t); }
 
-// ── 2. La porte, invité, hors Portugal
+// ── 2. figher.club, invité : la ville pour tous, rien à vendre
 {
-  const { pg, log } = await page(browser, { dir:'club', origin:'https://www.figher.club', network: geo(false), session:false });
+  const { pg, log } = await page(browser, { dir:'club', origin:'https://www.figher.club', session:false,
+    rpc: { spots_list: { ok:true, spots:[], more:false }, spots_feed: { spots:[] } } });
   await pg.goto('https://www.figher.club/');
-  await pg.waitForFunction(() => window.__totehm_club && window.__totehm_club().build);
-  await pg.waitForTimeout(300);
-  ok(await pg.getAttribute('#higher-btn', 'href') === '/discover', 'guest: Get Higher opens the wall');
-  ok(!(await pg.isVisible('#lisbon-btn')), 'guest outside PT: Lisbon stays hidden');
-  ok(/CONNECT WITH MY TOTEHM/.test(await pg.textContent('#cta')), 'guest: connect to check keys');
-  ok(log.errors.length === 0, 'guest door: no page error ' + log.errors.join(' | '));
+  await pg.waitForFunction(() => window.__totehm_club && window.__totehm_club().spots.charge);
+  ok(/No spot announced yet/.test(await pg.textContent('#sp-list')) && /CONNECT WITH MY TOTEHM/.test(await pg.textContent('#member-txt')), 'guest: an empty « next », connect with my TOTEHM');
+  await pg.screenshot({ path: OUT + '/club_meet.png', fullPage:true });
+  ok(log.errors.filter(e => e.startsWith('pageerror')).length === 0, 'guest club: no page error ' + log.errors.join(' | '));
 }
 
-// ── 3. Les pages déplacées se servent depuis figher.club
-for(const f of ['discover', 'discover_lisbon', 'get_higher', 'stoner', 'origins', 'play_lisbon_street', 'stoner_terms']){
-  const { pg } = await page(browser, { dir:'club', origin:'https://www.figher.club', session:false,
+// ── 3. Les pages revenues sur higher.boutique (09/10) ; l'accueil de la boutique les ouvre
+for(const f of ['discover', 'discover_lisbon', 'get_higher', 'stoner', 'origins', 'play_lisbon_street', 'stoner_terms', 'market']){
+  const { pg } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', session:false,
     functions: { 'higher-checkout': { amount:1700, currency:'usd', left:776994 } } });
-  const r = await pg.goto('https://www.figher.club/' + f);
-  ok(r.status() === 200, 'figher.club/' + f + ' served');
+  const r = await pg.goto('https://www.higher.boutique/' + f);
+  ok(r.status() === 200, 'higher.boutique/' + f + ' served');
   await pg.context().close();
+}
+{
+  const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', network: geo(true),
+    rpc: { figher_access: { signed_in:true, thp:true, habit:true, member:true, pseudo:'wah' } }, functions: { 'stoner-gate': { access:true } } });
+  await pg.goto('https://www.higher.boutique/');
+  await pg.waitForFunction(() => document.getElementById('higher-btn')?.getAttribute('href') === '/stoner', null, { timeout:5000 }).catch(()=>{});
+  ok(await pg.getAttribute('#higher-btn', 'href') === '/stoner' && await pg.isVisible('#lisbon-btn'), 'boutique: Get Higher → the method for a THP owner; Lisbon in PT');
+  ok(await pg.locator('a[href="/market"]').count() === 1 && await pg.locator('a[href="/origins"]').count() === 1, 'boutique: the art market and Origins');
+  ok(/physical & digital · wear it · own it/i.test(await pg.textContent('.fn-line')) && /HIGHER\.BOUTIQUE — wear it, own it/.test(await pg.title()), 'boutique: its function, said once');
+  ok(log.errors.filter(e => e.startsWith('pageerror')).length === 0, 'boutique home: no page error ' + log.errors.join(' | '));
 }
 
 // ── 4. Luxe SUR DEVIS (05/10) : THP → pièce, marque, Box → demande ; un devis prêt → paiement

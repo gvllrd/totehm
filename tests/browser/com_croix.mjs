@@ -132,7 +132,7 @@ try{
   ok(d.vue==='d'&&d.vet&&d.img&&log.rpc.length>=0,'→ : le vêtement du moment, lu dans totehm_cloth_support');
   ok(d.cls==='is-d'&&Math.abs(d.s[0]-d.spot[0])<8&&Math.abs(d.s[1]-d.spot[1])<8,'[Higher] se cale sur le vêtement, au point du logo ('+d.s.map(Math.round)+' / '+d.spot.map(Math.round)+')');
   ok(d.py<d.H*.25&&d.tf!==t1,'le papier est en haut, et il tourne (comme SPACE)');
-  ok(/SPACE/.test(d.space)&&/Do with me/.test(d.space)&&/HIGHER BOUTIQUE/.test(d.shop)&&/luxury on quote/.test(d.shop),'SPACE et la boutique, de part et d\'autre, expliqués');
+  ok(/SPACE/.test(d.space)&&/Inspiration/.test(d.space)&&/HIGHER BOUTIQUE/.test(d.shop)&&/Wear it, own it/.test(d.shop)&&/meet in reality/.test(await pg.textContent('#lv-go-club')),'SPACE (l\'inspiration), la boutique (porter, posséder), le club (se retrouver) : chacun dit sa fonction');
   await pg.screenshot({path:OUT+'/croix_droite.png'});
   await pg.click('#lv-go-space');await pg.waitForURL(/totehm\.space/,{timeout:6000}).catch(()=>{});
   ok(pg.url()==='https://www.totehm.space/#sso='+CODE&&log.functions.some(f=>f.name==='sso-mint'&&f.body.target==='space'),'Open SPACE : par le pont SSO → '+pg.url());
@@ -198,9 +198,9 @@ try{
   ok(v1!==v0&&v2===v0,'Totehm déplié : ↓ au trackpad change de vue, ↑ revient ('+v0+' → '+v1+' → '+v2+')');
   ok(!erreurs(log).length,'déplié : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
- // ── 9 · figher.club : le Discover historique, avant migration ──
- {const{pg,log}=await page(browser,{dir:'club',origin:'https://www.figher.club',tables:{},session:false,viewport:{width:390,height:844}});
-  await pg.goto('https://www.figher.club/get_higher');await pg.waitForTimeout(600);
+ // ── 9 · Get Higher (09/10 : revenu sur higher.boutique) : le Discover historique ──
+ {const{pg,log}=await page(browser,{dir:'boutique',origin:'https://www.higher.boutique',tables:{},session:false,viewport:{width:390,height:844}});
+  await pg.goto('https://www.higher.boutique/get_higher');await pg.waitForTimeout(600);
   await pg.click('#down-trigger');await pg.waitForTimeout(400);
   const t=await pg.$$eval('#disc-stage .disc-block',l=>l.map(b=>b.textContent.replace(/\s+/g,' ').trim()));
   ok(/Most people think they're just losing energy/.test(t[0])&&/They're losing years/.test(t.join(' ')),

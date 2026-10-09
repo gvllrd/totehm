@@ -16,7 +16,8 @@ const rpc = { reveal_cloth: b => CLOTHS[String(b.p_name).toLowerCase()] || { fou
 const tables = { totehm_cloth_support: [{ max_pieces:50, claimed:3 }], profiles: [{ pseudo:'Vallerand' }], subscribers: [] };
 const ART = [];
 const functions = { 'cloth-art': b => { ART.push(b.name); return { url:'https://abujjbkbbiumxrokozph.supabase.co/storage/v1/object/sign/streetwear-generations/x/final.png?token=t' }; } };
-const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc, tables, functions, session:false });
+const geo = url => url.pathname === '/api/geo' ? { status:200, contentType:'application/json', body:'{"country":"FR","lisbon":false}' } : null;
+const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc, tables, functions, session:false, network:geo });
 await pg.goto('https://www.higher.boutique/');
 await pg.waitForFunction(() => window.__totehm_boutique && /47 pieces left/.test(document.querySelector('#sw-col-sold').textContent));
 const d = await pg.evaluate(() => window.__totehm_boutique());
@@ -58,7 +59,7 @@ ok(!log.errors.length, 'no page error: ' + log.errors.join(' | '));
 
 // Le lien direct d'une pièce expédiée : la page s'ouvre, l'œuvre se montre.
 {
-  const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc, tables, functions, session:false });
+  const { pg, log } = await page(browser, { dir:'boutique', origin:'https://www.higher.boutique', rpc, tables, functions, session:false, network:geo });
   await pg.goto('https://www.higher.boutique/?decode=0.sea');
   await pg.waitForFunction(() => document.querySelector('#decode-fs').classList.contains('show') && document.querySelector('#dc-art img'));
   const txt = await pg.textContent('#decode-msg');

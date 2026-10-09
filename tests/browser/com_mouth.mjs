@@ -14,7 +14,7 @@ const tables={profiles:[{pseudo:'wahigher'}]};
 const CODE='a'.repeat(64);
 const functions={'sso-mint':{code:CODE}};
 const LAND=(thp=false)=>({signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false},higher:{active:false,price_cents:700,currency:'eur'},thp,subscriptions:0,subscribers:0});
-const club=(bloque=false)=>url=>url.host==='www.figher.club'
+const club=(bloque=false)=>url=>url.host==='www.higher.boutique'
   ?(bloque?{status:204,body:''}:{status:200,contentType:'text/html',body:'<!doctype html><title>club</title>'}):null;
 const browser=await launch();
 const R=(pg,sel)=>pg.$eval(sel,e=>{const r=e.getBoundingClientRect();return[r.x,r.y,r.width,r.height].map(v=>+v.toFixed(2));});
@@ -63,9 +63,9 @@ try{
      l:document.getElementById('m-tongue').getAttribute('transform'),b:window.__totehm_lsd.bouche,u:location.host})));}
    const ici=ech.filter(e=>e.u==='www.totehm.com'),formes=new Set(ici.map(e=>e.d)).size,ouv=ici.filter(e=>e.b).length;
    ok(ici.length>=12&&ici.every(e=>e.l==='translate(0,-960)')&&formes>=10&&ouv>=8,'[Get Higher] : avalé, elle jouit, la bouche seule ('+formes+' formes, '+ouv+'/'+ici.length+' ouverte)');}
-  await pg.waitForURL(/figher\.club/,{timeout:6000}).catch(()=>{});
-  ok(pg.url()==='https://www.figher.club/get_higher#sso='+CODE,'avalé → '+pg.url());
-  ok(log.functions.some(f=>f.name==='sso-mint'&&f.body.target==='club'),'le pont SSO est frappé pour figher.club');
+  await pg.waitForURL(/higher\.boutique/,{timeout:6000}).catch(()=>{});
+  ok(pg.url()==='https://www.higher.boutique/get_higher#sso='+CODE,'avalé → '+pg.url());
+  ok(log.functions.some(f=>f.name==='sso-mint'&&f.body.target==='boutique'),'le pont SSO est frappé pour higher.boutique');
   ok(!log.errors.length,'aucune erreur console : '+log.errors.join(' | '));}
  // ── la navigation n'aboutit pas : « précédent » remet tout au centre ──
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,functions,rpc:{my_landing:LAND()},network:club(true),viewport:{width:390,height:844}});
@@ -94,24 +94,24 @@ try{
   await pg.click('#lcur-h');await pg.waitForTimeout(1300);
   ok((await lv(pg)).vue==='h'&&!await pg.evaluate(()=>document.body.classList.contains('is-door')),'invité : la vue du haut s\'ouvre sans porte');
   await pg.click('#lv-slogan');
-  await pg.waitForURL(/figher\.club/,{timeout:9000}).catch(()=>{});
-  ok(pg.url()==='https://www.figher.club/get_higher','invité, avalé → '+pg.url()+' (sans pont : pas de session)');
+  await pg.waitForURL(/higher\.boutique/,{timeout:9000}).catch(()=>{});
+  ok(pg.url()==='https://www.higher.boutique/get_higher','invité, avalé → '+pg.url()+' (sans pont : pas de session)');
   ok(!log.functions.some(f=>f.name==='sso-mint')&&!log.errors.length,'invité : aucun pont, aucune erreur : '+log.errors.join(' | '));}
  // ── clavier : Tab sur [Get Higher], Entrée ──
  {const{pg}=await page(browser,{dir:'com',origin,tables,functions,rpc:{my_landing:LAND()},network:club(),viewport:{width:1280,height:800}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
   await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(1300);
   await pg.focus('#lv-slogan');await pg.keyboard.press('Enter');
-  await pg.waitForURL(/figher\.club/,{timeout:9000}).catch(()=>{});
-  ok(pg.url().startsWith('https://www.figher.club/get_higher'),'clavier : Entrée sur [Get Higher] → '+pg.url());}
+  await pg.waitForURL(/higher\.boutique/,{timeout:9000}).catch(()=>{});
+  ok(pg.url().startsWith('https://www.higher.boutique/get_higher'),'clavier : Entrée sur [Get Higher] → '+pg.url());}
  // ── mouvement réduit : tout de suite, sans animation ──
  {const{pg}=await page(browser,{dir:'com',origin,tables,functions,rpc:{my_landing:LAND()},network:club(),viewport:{width:390,height:844}});
   await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
   await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(150);
   ok((await lv(pg)).vue==='h'&&!(await lv(pg)).bouge,'mouvement réduit : la vue du haut, aussitôt');
   await pg.click('#lv-slogan');
-  await pg.waitForURL(/figher\.club/,{timeout:9000}).catch(()=>{});
-  ok(pg.url().startsWith('https://www.figher.club/get_higher'),'mouvement réduit : [Get Higher] mène tout droit → '+pg.url());}
+  await pg.waitForURL(/higher\.boutique/,{timeout:9000}).catch(()=>{});
+  ok(pg.url().startsWith('https://www.higher.boutique/get_higher'),'mouvement réduit : [Get Higher] mène tout droit → '+pg.url());}
  // ── paysage au téléphone : pas de bouche ──
  {const{pg}=await page(browser,{dir:'com',origin,tables,functions,rpc:{my_landing:LAND()},viewport:{width:844,height:390},hasTouch:true});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);

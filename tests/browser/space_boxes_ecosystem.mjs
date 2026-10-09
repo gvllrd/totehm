@@ -44,7 +44,7 @@ try{
   ok(!com.log.rpc.some(x=>/rename|_create|_set|_delete|totehm_save/.test(x.name)),'reading never edits the COM source');await com.ctx.close();
 
   // Legacy login pages now redirect through COM, never send an email themselves.
-  for(const [dir,host,url] of [['boutique','https://www.higher.boutique','/'],['club','https://www.figher.club','/stoner']]){
+  for(const [dir,host,url] of [['boutique','https://www.higher.boutique','/'],['club','https://www.figher.club','/']]){
     const sample=await page(browser,{dir,origin:host,session:false,network:(url,req,log)=>{
       if(url.pathname.startsWith('/auth/v1/'))log.network.push(req.method()+url.pathname);
       if(url.hostname==='www.totehm.com'&&url.pathname==='/auth')return{status:200,contentType:'text/html',body:'<!doctype html><p>COM login</p>'};
