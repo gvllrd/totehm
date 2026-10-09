@@ -66,9 +66,11 @@ begin
   if (select count(*) from jsonb_array_elements(r->'spots') e where e->>'id' in(v_now::text,v_future::text))<>2
      or exists(select 1 from jsonb_array_elements(r->'spots') e join public.spot_plans p on p.spot_id=(e->>'id')::uuid where p.format<>'spot') then fails:=array_append(fails,'my_spots'); end if;
   r:=public.habit_spaces(); select e into h from jsonb_array_elements(r->'habits') e where e->>'habit'=habit;
-  if h->>'total' is distinct from '4' or jsonb_array_length(h->'spaces')<>3
-     or not exists(select 1 from jsonb_array_elements(h->'spaces') e where e->>'format'='space')
-     or not exists(select 1 from jsonb_array_elements(h->'spaces') e where e->>'format'='spot') then fails:=array_append(fails,'habit_both_formats'); end if;
+  -- 09/10 (habit_spaces_split) : `spaces` ne porte que des spaces, `spots` que des spots.
+  if h->>'total' is distinct from '4' or (h->>'total_spaces')::int+(h->>'total_spots')::int<>4
+     or jsonb_array_length(h->'spaces')=0 or jsonb_array_length(h->'spots')=0
+     or exists(select 1 from jsonb_array_elements(h->'spaces') e where e->>'format'<>'space')
+     or exists(select 1 from jsonb_array_elements(h->'spots') e where e->>'format'<>'spot') then fails:=array_append(fails,'habit_split'); end if;
   r:=public.spot_get(v_space)->'spot';
   if r->>'format' is distinct from 'space' or r->'exact'<>'null'::jsonb then fails:=array_append(fails,'owner_space_no_exact'); end if;
   if public.spot_get(v_future)->'spot'->>'format' is distinct from 'spot' then fails:=array_append(fails,'spot_format'); end if;
