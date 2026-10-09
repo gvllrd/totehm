@@ -16,6 +16,20 @@
 ---
 
 
+## 0 · QUATRE DOMAINES, QUATRE FONCTIONS — 09/10/2026 (bis)
+
+| quoi | valeur mesurée |
+|---|---|
+| fichiers | 8 pages + `api/geo.js` + 22 panneaux + `lisbon_phrases_backup.md` : `club/` → `boutique/` (git mv, octet pour octet) |
+| redirections (pg_net) | figher.club `/get_higher?x=1` → higher.boutique `/get_higher?x=1` · `/stoner?checked=1` → `/stoner?checked=1` · `/market?owned=totehmpaper` → idem · totehm.space `/discover` → higher.boutique `/discover` ; requête conservée, page 200 au bout |
+| higher.boutique | `/` 200 « HIGHER.BOUTIQUE — wear it, own it » · `/get_higher`, `/stoner`, `/market` 200 · `/api/geo` 200 `{"country":"IE","lisbon":false}` |
+| figher.club | `/` 200 `2026-10-09-meet` « Meet in reality », spots `spots_list` + `spots_feed` (anon : 0 à venir, 5 passés en base) |
+| fonction | `higher-checkout` v37 (retours sur la boutique) : devis anon depuis la boutique → `{amount:1700, currency:"usd", left:776994}` |
+| md5 prod = dépôt (`4fde276`, Vercel READY com · space · boutique, club servi) | club `f299666f…` · boutique `afb70e00…` · get_higher `3d9568a2…` · market `7aa34f8e…` · totehm.com `58fa28e8…` (`2026-10-09-domaines`) · totehm.space `a55dfef8…` (`2026-10-09-domaines`) |
+| tests navigateur | `club_luxury` 48/48 · `market` 14/14 · `boutique_home` 23/23 · `streetwear` 64/64 · `com_croix` 51/51 · `com_mouth` 30/30 · `com_read_copy` 20/20 · `com_paper` 40/40 · `com_member_menu` 28/28 · `com_creator` 29/29 · `console` 18/18 · `com_cloths` 16/16 · `spaces_loupe` 26/26 · `space_boxes_ecosystem` 22/22 · `space` 40/40 |
+| connu, hors lot | `spaces_ui --identity` : 4 échecs sur get_higher et stoner (nom Coral, T centré) — mêmes 4 sur `main` avant le lot (pages restaurées à l'ancien format le 07/10) |
+| pas déplacé | les spots (filmer, annoncer, rejoindre) vivent encore dans `space/index.html` ; figher.club les liste et y renvoie |
+
 ## 0 · LE SLOGAN NE PASSE PLUS PAR LE COIN — 09/10/2026
 
 | quoi | valeur mesurée |
