@@ -271,6 +271,18 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
+### Correction 0.49 — 09/10/2026 · quatre domaines, quatre fonctions (à reporter)
+
+> totehm.com = la stratégie · totehm.space = l'inspiration (les Habits
+> stratégiques vécues) · figher.club = la rencontre dans la réalité (les spots :
+> à venir, en cours, passés) · higher.boutique = l'achat, physique et numérique.
+> Get Higher, le TotehmPaper, Stoner, Lisbon, Origins et le marché de l'art
+> reviennent sur higher.boutique ; leurs adresses figher.club redirigent (308).
+> Retours Stripe du THP sur la boutique. Aucune règle d'accès ni aucun prix
+> changé. **n8n (Claude Code, facultatif)** : les liens `figher.club/stoner`,
+> `/get_higher`, `/market` des e-mails marchent (308) ; les remplacer par
+> `higher.boutique/...` au prochain passage dans les workflows.
+
 ### Correction 0.48 — 09/10/2026 · le slogan ne passe plus par le coin (à reporter)
 
 > totehm.com : au chargement, le badge [Higher] du slogan n'apparaît plus une

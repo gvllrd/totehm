@@ -1,5 +1,14 @@
 # backend/CLAUDE.md — la base, les fonctions, l'argent, le bot
 
+## BOUTIQUE · 09/10/2026 — `higher-checkout` v37 : le THP revient sur la boutique
+
+Retours Stripe sur `SITE_BOUT` : `from: 'method'` (ou une origine inconnue) →
+`/stoner?checked=1`, annulé → `/get_higher` ; depuis le marché →
+`/market?owned=totehmpaper` / `?art=totehmpaper`. L'origine figher.club compte
+comme la boutique (onglet resté ouvert). Prix, metadata `higher`, webhook :
+inchangés. `artwork-checkout`, `market-checkout`, `subscription-checkout`
+gardent `SITE_CLUB` : figher.club redirige (308) `/market` vers la boutique.
+
 ## COM · 08/10/2026 — TotehmSM v2 : freemium, flux, aucun historique
 
 Migration additive `20261008200000_higher_self_freemium.sql` (appliquée UNE

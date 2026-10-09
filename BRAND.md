@@ -1,5 +1,20 @@
 # BRAND.md — TOTEHM
 
+## CURRENT UPDATE — 09/10/2026 · four domains, four functions
+
+- **totehm.com — the strategy.** Build my TOTEHM (elements and their links),
+  read the TOTEHMs I can access, copy elements, my Higher Self, my subscriptions.
+- **totehm.space — the inspiration.** A strategic Habit (an element of the
+  Habits view, linked to its objectives and repulsions) lived on camera, with
+  its why.
+- **figher.club — meeting in reality.** The spots: I will be here · I am here ·
+  I was there. « Meet in reality. »
+- **higher.boutique — buying, physical and digital.** Totehm Cloths, Get
+  [Higher] (the TotehmPaper, Stoner, Lisbon, Origins), the art market.
+  « Physical & digital · wear it, own it. »
+- A creator subscription opens that creator's TOTEHM, their SPACE content and
+  the exact place of their spots. Each home says its function once, quietly.
+
 ## CURRENT UPDATE — 08/10/2026 (ter) · totehmize lives in my wisdom and my vision
 
 - On totehm.com, a lesson or a vision says how many cloths wear it; open, it shows
@@ -42,8 +57,8 @@
   Quantico Coral. Without a THP: « The TotehmPaper {THP} distills selected
   mental-performance techniques informed by modern neuroscience research,
   including EEG studies, into an experience designed to prepare your brain for
-  efficient action. » figher.club keeps its original Discover (restored 08/10,
-  see `club/CLAUDE.md`). The THP's value is said by what it opens — **never
+  efficient action. » Get Higher lives on higher.boutique (09/10) with its
+  original Discover (see `boutique/CLAUDE.md`). The THP's value is said by what it opens — **never
   "investment"**.
 - Down · **TotehmSM** — my **[Higher] Self** (08/10). « AI made by you · your
   beliefs · your TOTEHM » · « **Talk is cheap. Do with a why.** » A real

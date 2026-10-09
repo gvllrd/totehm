@@ -1,4 +1,29 @@
-# club/CLAUDE.md — figher.club : la porte, l'art, le marché
+# club/CLAUDE.md — figher.club : la rencontre dans la réalité (09/10)
+
+## 09/10/2026 — figher.club = SE RETROUVER DANS LA RÉALITÉ
+
+Wah (avec ChatGPT) : « totehm.com c'est la stratégie, totehm.space le contenu
+inspirant, figher.club la rencontre dans la réalité, higher.boutique l'achat
+physique et virtuel. » BUILD `2026-10-09-meet`.
+- **Partis sur higher.boutique** (git mv, octet pour octet) : `discover`,
+  `discover_lisbon`, `get_higher`, `play_lisbon_street`, `origins`, `stoner`,
+  `stoner_terms`, `market`, `api/geo.js`, `assets/signs/`. `vercel.json` les
+  redirige (308, requête conservée) vers `https://www.higher.boutique/<page>`,
+  `/lisbon` compris : liens, favoris, e-mails et retours Stripe d'avant
+  continuent de marcher.
+- **`index.html`** : « Meet in reality. » + les spots en trois onglets — I WILL
+  BE HERE (`spots_list`) · I AM HERE · I WAS THERE (`spots_feed`), droits de
+  SPACE (`_spot_view` : la ville pour tous, le point exact aux abonnés de
+  l'hôte). Un spot s'ouvre sur SPACE (`?spot=id`, pont `space`) : la fiche, la
+  vidéo et le « join » y vivent encore. Comment ça marche + pied de page : chaque
+  domaine dit sa fonction. Plus de Get Higher, de marché, d'Origins ni de
+  « deux clés » sur la porte (le passeport FIGHER reste la règle du marché).
+- ⚠️ `tools/hover.py` replace le bloc « 03/10 — the member's TOTEHM name » AVANT
+  le bloc généré : le remettre APRÈS, sinon `#member:hover` repasse au blanc.
+- `#sh-go` porte `data-eco-connect` (test `space_boxes_ecosystem`). Diagnostic
+  `__totehm_club()` : build, page `meet`, compteurs de spots. Test :
+  `club_luxury.mjs` §1–2.
+
 
 ## 07/10/2026 — restauration exacte des six expériences avant migration
 

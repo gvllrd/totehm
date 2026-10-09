@@ -1,5 +1,16 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## COM · 09/10/2026 — quatre domaines, quatre fonctions
+
+BUILD `2026-10-09-domaines`. [Get Higher] (la langue, le menu, `/console`,
+`/@nom`, `/monetize`, `tools/com_member_menu.js`) mène à
+`higher.boutique/get_higher` par le pont `boutique`. Vue de droite : SPACE =
+« Inspiration… », HIGHER BOUTIQUE = « Wear it, own it… », et
+`#lv-go-club` « FIGHER.CLUB · meet in reality » (pont `club`, rangée `club` de
+la grille) ; la manette dit « SPACE · club · boutique ». Tests : `com_croix.mjs`
+§4/§9, `com_mouth.mjs`, `com_read_copy.mjs` §2.
+
+
 ## COM · 09/10/2026 — le slogan ne passe jamais par le coin
 
 BUILD `2026-10-09-slogan`. Wah : « au chargement il se cale au coin gauche avant

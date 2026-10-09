@@ -60,18 +60,18 @@ l'architecture et de la stabilité. Wah change de vision vite : on s'adapte.
 Un document contradictoire est corrigé dans le même lot, dans le fichier qui répond déjà.
 Les `CLAUDE.md` des dossiers servis par Vercel sont exclus du déploiement (`.vercelignore`).
 
-## L'architecture — quatre domaines, une source (01/10/2026)
+## L'architecture — quatre domaines, une source, quatre fonctions (09/10/2026)
 
 ```
-com/      → www.totehm.com       LA SOURCE : le Totehm (5 vues), l'identité (/auth), /search, /@nom ;
+com/      → www.totehm.com       LA STRATÉGIE, LA SOURCE : le Totehm (5 vues), l'identité (/auth), /search, /@nom ;
                                  l'atterrissage en croix (07/10, manette) : mon Totehm · ↑ Get Higher (la langue)
                                  · ↓ TotehmSM (Higher Self : 7 gratuits/30 j puis Higher) · ← chercher · → SPACE et boutique ; /console
-club/     → www.figher.club      le branding Higher en expérience : [Get Higher], Lisbon,
-                                 méthode Stoner ; art, marché (/market) ; /console → 308
-space/    → www.totehm.space     DO WITH ME : UN Spot (PRIVATE / SHARED) naît d'une Habit
-                                 filmée maintenant (33 s) ou annoncée pour plus tard ;
-                                 I WILL BE HERE → I AM HERE → I WAS THERE
-boutique/ → www.higher.boutique  accueil + collection ; /streetwear (plein écran au téléphone, fenêtres-côtés sur ordinateur) : cloth →
+club/     → www.figher.club      LA RENCONTRE DANS LA RÉALITÉ : les spots (à venir · en cours · passés, `spots_list`/`spots_feed`)
+                                 → la fiche sur SPACE ; ses anciennes pages redirigent (308) vers la boutique ; /console → 308
+space/    → www.totehm.space     L'INSPIRATION : une Habit stratégique vécue (photo, vidéo, son pourquoi) ; les spots y naissent
+                                 encore (filmée 33 s ou annoncée) : I WILL BE HERE → I AM HERE → I WAS THERE
+boutique/ → www.higher.boutique  L'ACHAT, physique et numérique (09/10) : Get Higher / THP / Stoner / Lisbon / Origins, le marché
+                                 de l'art (/market) ; accueil + collection ; /streetwear (plein écran au téléphone, fenêtres-côtés sur ordinateur) : cloth →
                                  element (wisdom ← → vision, ou « + totehmize » depuis COM) → 0.nom → style → taille ; Luxe SUR DEVIS ; Decode = la page du Cloth
 backend/  → servi par PERSONNE — reste à la racine (sinon SQL et fonctions téléchargeables)
 oracle/   → clés, gitignoré, jamais lu ni recopié

@@ -1,5 +1,16 @@
 # space/CLAUDE.md — totehm.space : DO WITH ME (un Spot, cinq vues)
 
+## SPACE · 09/10/2026 — sa fonction : l'inspiration
+
+BUILD `2026-10-09-domaines`. `<title>` « TOTEHM.SPACE — strategic Habits,
+lived », description et « What is a space? » : une Habit stratégique (un
+élément de la vue Habits, relié à ses objectifs et répulsions) vécue en photo ou
+vidéo, avec son pourquoi ; dernière ligne = les quatre domaines et leur fonction.
+Les spots (filmer, annoncer, rejoindre) vivent ENCORE ici ; figher.club les
+liste et y renvoie (`?spot=id`). Déplacer la carte et la rencontre vers le club =
+un lot à part (la page porte fil + radar + caméra dans un seul fichier).
+
+
 ## SPACE · 06/10/2026 — My spaces, supprimer, le papier qui respire, la loupe
 
 BUILD `2026-10-06-spaces-loupe`. Wah : « une rubrique My Spaces avec tout

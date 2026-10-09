@@ -1,4 +1,25 @@
-# boutique/CLAUDE.md — higher.boutique : le Cloth, la méthode Stoner
+# boutique/CLAUDE.md — higher.boutique : l'achat, physique et numérique (Cloths, Get Higher, Stoner, le marché)
+
+## BOUTIQUE · 09/10/2026 — L'ACHAT, PHYSIQUE ET NUMÉRIQUE : GET HIGHER EST REVENU
+
+Les pages parties sur figher.club le 02/10 reviennent (git mv) : `discover`,
+`discover_lisbon`, `get_higher`, `play_lisbon_street`, `origins`, `stoner`,
+`stoner_terms`, `market`, `api/geo.js`, `assets/signs/`. Les redirections
+`vercel.json` vers figher.club sont RETIRÉES (sinon boucle) ; figher.club
+redirige ici.
+- **Accueil** (`<title>` « HIGHER.BOUTIQUE — wear it, own it ») : `.fn-line`
+  « physical & digital · wear it · own it », puis [Get Higher] (`stoner-gate` :
+  un propriétaire du THP va droit à `/stoner`) et Make the Lisbon Streets Higher
+  (`/api/geo` : PT seulement), Streetwear, Luxury, Decode, **The art market** ·
+  **Origins**, l'e-mail. Le format d'avant le 02/10, restauré.
+- `market.html` : `SSO_CLIENT = 'boutique'`, en-tête HIGHER.BOUTIQUE.
+  `luxury.html` : [Get Higher] → `/discover`, même origine.
+- `higher-checkout` v37 : retours sur `SITE_BOUT` (méthode `/stoner?checked=1`,
+  marché `/market?owned=totehmpaper`) ; l'origine figher.club compte comme la
+  boutique. `artwork-checkout`, `market-checkout` inchangés : leurs retours
+  figher.club/market passent par la redirection 308.
+- Tests : `club_luxury.mjs` §3 (8 pages servies ici, accueil), `market.mjs`.
+
 
 ## BOUTIQUE · 08/10/2026 (ter) — ARRIVER DE COM : L'ÉLÉMENT DÉJÀ CHOISI
 
