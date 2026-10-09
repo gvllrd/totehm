@@ -3093,6 +3093,7 @@ body.lv-c #lv-c,body.lv-h #lv-h,body.lv-b #lv-b,body.lv-d #lv-d{opacity:1;visibi
 #lv-slogan{position:fixed;left:0;top:0;z-index:6;width:96px;height:32px;
   transform-origin:50% 50%;transition:transform .7s var(--gate-ease),opacity .45s ease;
   background:none;border:0;padding:0;margin:0;color:#fff;pointer-events:none;-webkit-tap-highlight-color:transparent}
+#lv-slogan.no-anim{transition:none}
 #lv-slogan svg{display:block;width:96px;height:32px}
 .lvs-pre,.lvs-post{position:absolute;top:50%;white-space:nowrap;transform:translateY(-50%)}
 .lvs-pre{right:calc(100% + 8px)}.lvs-post{left:calc(100% + 8px)}
@@ -9339,8 +9340,11 @@ window.addEventListener('pageshow',e=>{
     };
     lvQuitter=()=>{ landSeq++; SM.seq++; SM.msgs=[]; SM.busy=false; SM.live=null; SM.offre=false; visSeq++;
                     $('lv-vis-note').textContent=''; smNote(''); };
+    slo.classList.add('no-anim');
     peindreCarte(); peindreHaut(); poser('c');
-    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(!bouge) sloganPour(vue); });
+    const sloFini=()=>{ void slo.offsetWidth; slo.classList.remove('no-anim'); };
+    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(!bouge) sloganPour(vue); sloFini(); });
+    else requestAnimationFrame(sloFini);
 
     /* Retour de Stripe (`?higher=paid`) : la vue du bas, et l'attente du webhook. */
     if(new URLSearchParams(location.search).get('higher')==='paid'){
