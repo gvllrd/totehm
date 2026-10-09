@@ -16,7 +16,7 @@ try{
   ok((await pg.textContent('#tp-hint')).trim().toUpperCase()==='TAP ON YOUR TOTEHM TO TURN A HABIT INTO A SPACE','corrected Habit-to-space invitation');
   await pg.click('#space-about');await pg.waitForSelector('.eco-sheet');
   const definition=await pg.textContent('.eco-sheet');
-  ok(/At home, in a private venue or outside/.test(definition)&&/collective effervescence/.test(definition)&&/SOCIAL/.test(definition)&&/SILENT/.test(definition),'space definition covers private venues, group energy and both modes');
+  ok(/strategic Habits, lived/.test(definition)&&/objectives and repulsions/.test(definition)&&!/collective effervescence|SOCIAL|SILENT/.test(definition),'space definition says what a space is (content), the meeting rules live on figher.club');
   ok(await pg.$eval('#joy',e=>e.inert)&&await pg.$eval('#joy',e=>getComputedStyle(e).pointerEvents)==='none','joystick is muted while the definition is open');
   await pg.keyboard.press('ArrowUp');await pg.mouse.wheel(200,0);await pg.waitForTimeout(300);
   ok(await pg.evaluate(()=>window.__totehm_space().view)==='feed','definition blocks background navigation');

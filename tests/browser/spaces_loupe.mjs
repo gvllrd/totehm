@@ -69,7 +69,7 @@ try{
   await pg.keyboard.press('Escape');await pg.waitForTimeout(200);
   // My spaces
   await pg.click('#member');await pg.click('[data-myspaces]');await pg.waitForSelector('#msp-list [data-del]');
-  ok(await pg.locator('#msp-list .msp-row').count()===2&&/I WILL BE HERE/.test(await pg.textContent('#msp-list'))&&log.rpc.some(x=>x.name==='my_spaces'),'SPACE : My spaces liste MES spaces publiés');
+  ok(await pg.locator('#msp-list .msp-row').count()===2&&/POSTED/.test(await pg.textContent('#msp-list'))&&!/I WILL BE HERE/.test(await pg.textContent('#msp-list'))&&log.rpc.some(x=>x.name==='my_spaces'),'SPACE : My spaces liste MES spaces publiés (date de publication, pas d état de rendez-vous)');
   await pg.screenshot({path:OUT+'/space_my_spaces.png'});
   const d=pg.locator('#msp-list [data-del="'+ids[0]+'"]');await d.click();ok(/DELETE FOR GOOD/.test(await d.textContent()),'SPACE : un premier tap arme seulement');
   await d.click();await pg.waitForFunction(id=>!document.querySelector('#msp-list [data-row="'+id+'"]'),ids[0]);

@@ -451,9 +451,6 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
 <template id="space-definition"><div class="space-definition">
 <h2>What is a space?</h2>
 <p>TOTEHM.SPACE shows strategic Habits, lived: one Habit of a TOTEHM, filmed where it happens, with the objectives and repulsions that say why.</p>
-<p>A space is a <svg viewBox="0 0 600 200" class="space-higher" aria-label="Higher"><use href="#higher-badge"/></svg> spot: a place where you put your TOTEHM into action, in line with your habits, goals and vision.</p>
-<p>At home, in a private venue or outside. Alone or alongside like-minded people, whose shared energy can lift the group: collective effervescence.</p>
-<p>SOCIAL: we can talk. SILENT: nobody disturb me. Respect everyone's space, boundaries and chosen mode. A location is never an invitation to enter a private place.</p>
 <p class="space-domains">totehm.com builds the strategy · totehm.space shows it lived · figher.club meets in reality · higher.boutique wears and owns it.</p>
 </div></template>
 <header id="heading">
@@ -486,7 +483,7 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
 <aside id="sf-panel" class="hide" role="dialog" aria-label="Filter the spaces"></aside>
 
 
-<section class="view is-on" id="v-feed" aria-label="Spots around"><div id="feed"></div></section>
+<section class="view is-on" id="v-feed" aria-label="Spaces"><div id="feed"></div></section>
 <section id="v-spots" class="view"><div id="spots-door"></div><button class="btn" type="button" id="find-spot">FIND A SPOT</button></section>
 <section class="view" id="v-cam" aria-label="Camera">
   <div id="cam-frame" class="portrait-media"><video id="cam-v" playsinline muted></video><img id="cam-photo" class="hide" alt=""></div>
@@ -495,7 +492,7 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
 </section>
 <div id="cam-body" tabindex="-1" aria-label="Create my space"></div>
 
-<aside id="detail" aria-label="Spot"></aside>
+<aside id="detail" aria-label="Space"></aside>
 <aside id="my-spaces" class="hide" role="dialog" aria-modal="true" aria-labelledby="msp-title" tabindex="-1">
   <div class="msp-in">
     <div class="msp-head"><h2 id="msp-title">My spaces</h2><button class="btn" id="msp-x" type="button">CLOSE</button></div>
@@ -508,10 +505,10 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
 
 
 <div id="joy" role="group" aria-label="Where I am in totehm.space">
-  <button class="cur" id="cur-h" type="button" aria-label="Future space"><svg viewBox="0 0 16 16"><path d="M3 10 L8 5 L13 10"/></svg></button>
-  <button class="cur" id="cur-g" type="button" aria-label="Feed"><svg viewBox="0 0 16 16"><path d="M10 3 L5 8 L10 13"/></svg></button>
+  <button class="cur" id="cur-h" type="button" aria-label="Feed"><svg viewBox="0 0 16 16"><path d="M3 10 L8 5 L13 10"/></svg></button>
+  <button class="cur" id="cur-g" type="button" aria-label="Next spots"><svg viewBox="0 0 16 16"><path d="M10 3 L5 8 L10 13"/></svg></button>
   <button id="joy-box" type="button" aria-label="Back to feed"><span id="joy-stack" aria-hidden="true"><i class="o"></i><i class="h"></i><i class="r"></i></span><span id="joy-record" aria-hidden="true"></span></button><span id="joy-say"></span>
-  <button class="cur" id="cur-d" type="button" aria-label="List"><svg viewBox="0 0 16 16"><path d="M6 3 L11 8 L6 13"/></svg></button>
+  <button class="cur" id="cur-d" type="button" aria-label="Feed"><svg viewBox="0 0 16 16"><path d="M6 3 L11 8 L6 13"/></svg></button>
   <button class="cur" id="cur-b" type="button" aria-label="Camera"><svg viewBox="0 0 16 16"><path d="M3 6 L8 11 L13 6"/></svg></button>
 </div>
 
@@ -651,7 +648,7 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
   return (v < 10 ? Math.max(.1, v).toFixed(1) : String(Math.round(v))) + ' ' + UNIT; };
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD='2026-10-09-space-feed';
+const BUILD='2026-10-09-space-only';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'feed';
@@ -669,7 +666,7 @@ window.__totehm_space = () => ({ build: BUILD, view: VIEW, signed_in: !!me, loca
 
 /* Chaque vue dit où je suis. L'intention vient de la Habit, sans filtre parallèle. */
 const SPOTS = {list:[],seq:0,match:'all'};
-const VIEW_WORDS = {feed:['CITY FEED','I AM HERE · I WAS THERE'],spots:['FUTURE SPOTS','I WILL BE HERE'],cam:['FILM A SPOT','I AM HERE · 9:16 · up to 33 seconds']};
+const VIEW_WORDS = {feed:['SPACES','Strategic Habits, lived'],spots:['NEXT SPOTS','I WILL BE HERE · figher.club'],cam:['SHARE A SPACE','9:16 · up to 33 seconds']};
 function paintInts(){
  const [title,sub]=VIEW_WORDS[VIEW], source=VIEW==='feed'?FEED:SPOTS;
  $('title-int').textContent=title; $('title').style.setProperty('--c','#fff');
@@ -1505,7 +1502,7 @@ function joyPaint(preview){
   bx.setAttribute('aria-label',camera ? (REC.step === 'rec' ? 'Stop recording' : ['habit','form','heavy','retry'].includes(REC.step) ? (photo ? 'Take the photo again' : 'Record again') : REC.step === 'ready' && photo ? 'Take the photo' : 'Record video') : 'Back to feed');
   for(const [cls,v] of [['o','spots'],['h','feed'],['r','cam']]) $('joy-stack').querySelector('.'+cls).classList.toggle('is-current',VIEW === v);
   for(const d of ['g','d','h','b']){ $('cur-'+d).classList.toggle('is-dead',!voisin(d) || recordingLocked() || !!DETAIL); $('cur-'+d).classList.toggle('is-preview',preview === d && !!voisin(d)); }
-  $('joy-say').textContent = camera ? (REC.step === 'rec' ? 'STOP' : REC.step === 'idle' ? 'VIDEO' : REC.step === 'ready' ? (photo ? 'PHOTO' : 'REC') : ['habit','form','heavy','retry'].includes(REC.step) ? 'AGAIN' : '') : preview && voisin(preview) ? ({feed:'City feed',spots:'Future spaces',cam:'Film a space'})[voisin(preview)] : '';
+  $('joy-say').textContent = camera ? (REC.step === 'rec' ? 'STOP' : REC.step === 'idle' ? 'VIDEO' : REC.step === 'ready' ? (photo ? 'PHOTO' : 'REC') : ['habit','form','heavy','retry'].includes(REC.step) ? 'AGAIN' : '') : preview && voisin(preview) ? ({feed:'Spaces',spots:'Next spots',cam:'Share a space'})[voisin(preview)] : '';
 }
 function go(v){
  if(v===VIEW || !CROIX[v] || REC.busy)return;
@@ -1648,13 +1645,12 @@ addEventListener('keydown',e => {
    la vidéo et les fichiers ; le space disparaît partout). Réponse tardive
    jetée (`MSP.seq`), vidé à la déconnexion. */
 const MSP = { seq:0, rows:[], more:false, busy:false, prev:null };
-const mspState = s => { const a = Date.parse(s.starts_at), b = Date.parse(s.ends_at), n = Date.now(); return a > n ? 'I WILL BE HERE' : n < b ? 'I AM HERE' : 'I WAS THERE'; };
 function mspPaint(){
   $('msp-list').innerHTML = MSP.rows.map(x => {
-    const d = new Date(x.starts_at), when = Number.isNaN(d.getTime()) ? '' : d.toLocaleString(undefined, { dateStyle:'medium', timeStyle:'short' }), st = mspState(x), id = esc(String(x.id));
+    const d = new Date(x.starts_at), when = Number.isNaN(d.getTime()) ? '' : dayOf(d) + ' ' + hhmm(d), id = esc(String(x.id));
     return '<div class="msp-row" data-row="' + id + '"><button class="msp-open" type="button" data-open-space="' + id + '"><span class="msp-h">' + esc(x.habit) + '</span>' +
-      '<span class="msp-s"><b' + (st === 'I AM HERE' ? ' class="is-live"' : '') + '>' + st + '</b> · ' + (x.visibility === 'private' ? 'PRIVATE' : 'SHARED') + '</span>' +
-      '<span>' + esc([when, x.place || x.city || ''].filter(Boolean).join(' · ')) + '</span></button>' +
+      '<span class="msp-s"><b>' + esc(('posted ' + when).trim().toUpperCase()) + '</b> · ' + (x.visibility === 'private' ? 'PRIVATE' : 'SHARED') + '</span>' +
+      '<span>' + esc(x.city || '') + '</span></button>' +
       '<button class="btn msp-del" type="button" data-del="' + id + '" aria-label="Delete this space">DELETE</button></div>';
   }).join('');
   $('msp-more').classList.toggle('hide', !MSP.more);
