@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 9 octobre 2026** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 9 octobre 2026, midi** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -15,6 +15,15 @@
 
 ---
 
+
+## 0 · SPACES ET SPOTS REMIS À ZÉRO — 09/10/2026 (ter)
+
+| quoi | valeur mesurée |
+|---|---|
+| avant | `spot_plans` 19 (5 `published`, 14 `cancelled`, 1 compte) · `spots` 21 (7 actifs) · `spot_takes` 8 · `spot_applications` 0 · `videos` 0 · seau `moments` 2 fichiers |
+| migration `spaces_spots_reset` (MCP, `20261009120000`) | `published` → `cancelled` (5) · `active` → false (7) ; aucun trigger hors `updated_at` |
+| après | `spot_plans` publiés 0 · `spots` actifs 0 · `spots_list` / `spots_feed` / `my_spaces` (membre et anon) → `[]` ; figher.club « passés » 5 → 0 |
+| à faire (Claude Code) | purge définitive `20261009120001_spaces_spots_menage.sql` (`delete`) + 2 fichiers `moments` par l'API Storage |
 
 ## 0 · QUATRE DOMAINES, QUATRE FONCTIONS — 09/10/2026 (bis)
 

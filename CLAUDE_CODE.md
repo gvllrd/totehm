@@ -93,6 +93,19 @@ Storage. Le Champion n'en a qu'une (`image_url`, dossier vide).
    écraser une photo posée à la main ; rejouer F pour le Champion `478633385`.
 2. Rapport : le nombre de vues par support. Aucune clé dans le rapport.
 
+## Tâche 4 — 09/10/2026 · purger les spaces et les spots d'essai (une approbation)
+
+Tout est déjà annulé et invisible (session cloud, `spaces_spots_reset`). Reste
+la purge, destructive :
+1. `git pull` dans `~/totehm`
+2. MCP Supabase `execute_sql` : la requête 1 en tête de
+   `backend/supabase/migrations/20261009120001_spaces_spots_menage.sql` ;
+   `vivants` doit valoir 0, sinon s'arrêter.
+3. MCP Supabase `apply_migration`, nom `spaces_spots_menage`, contenu = ce fichier (approuve).
+4. Supprimer les 2 fichiers du seau `moments` (requête 2 du fichier) par l'API
+   Storage, jamais par un `delete` sur `storage.objects`.
+5. Rapport : `spot_plans`, `spots`, `spot_takes`, fichiers `moments` (attendu 0 · 0 · 0 · 0).
+
 ## Tâche précédente — 01/10/2026 · le ménage en base (une approbation)
 
 La session cloud ne peut pas faire approuver un `drop`. Toi, si.
@@ -270,6 +283,12 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > en MODE TEST Stripe, au vrai prix, sans argent réel (pièces et commandes
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
+
+### Correction 0.50 — 09/10/2026 (ter) · spaces et spots remis à zéro (à reporter)
+
+> Les essais (5 spaces, 7 spots) sont retirés : on repart d'une base vide avant
+> de séparer le space (le contenu, sur totehm.space) du spot (le rendez-vous,
+> sur figher.club). Aucune règle ni aucun prix changé.
 
 ### Correction 0.49 — 09/10/2026 · quatre domaines, quatre fonctions (à reporter)
 
