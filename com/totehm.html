@@ -3093,7 +3093,7 @@ body.lv-c #lv-c,body.lv-h #lv-h,body.lv-b #lv-b,body.lv-d #lv-d{opacity:1;visibi
 #lv-slogan{position:fixed;left:0;top:0;z-index:6;width:96px;height:32px;
   transform-origin:50% 50%;transition:transform .7s var(--gate-ease),opacity .45s ease;
   background:none;border:0;padding:0;margin:0;color:#fff;pointer-events:none;-webkit-tap-highlight-color:transparent}
-#lv-slogan.no-anim{transition:none}
+#lv-slogan.no-anim,#lv-slogan.no-anim *{transition:none!important;animation:none!important}
 #lv-slogan svg{display:block;width:96px;height:32px}
 .lvs-pre,.lvs-post{position:absolute;top:50%;white-space:nowrap;transform:translateY(-50%)}
 .lvs-pre{right:calc(100% + 8px)}.lvs-post{left:calc(100% + 8px)}
@@ -8941,7 +8941,7 @@ window.addEventListener('pageshow',e=>{
     }
     function sloganPour(v){
       const c=PAPIER.chez()||{x:W()/2,y:H()*.4,w:110};
-      slo.className='is-'+v;
+      ['c','h','b','g','d','x'].forEach(k=>slo.classList.toggle('is-'+k,k===v));
       slo.tabIndex=v==='h'?0:-1;
       if(v==='c'||v==='g'){
         placer(slo, W()/2-(8+larg('.lvs-strat'))/2, c.y+c.w/2+30, 96);
