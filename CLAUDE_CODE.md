@@ -3,8 +3,8 @@
 ## À reporter au master · 11/10/2026 — boutons boutique encore plus compacts
 
 Dans `~/totehm/TOTEHM_MASTER.md` §0 : le padding des boutons de la boutique
-est désormais `.28em .48em` (règle commune), avec des styles natifs plus courts.
-Les bordures transparentes des anciens boutons passent de 6 à 4 px ; Decode
+est désormais `.12em .24em` (règle commune), avec des styles natifs plus courts.
+Les bordures transparentes des anciens boutons passent de 4 à 2 px ; Decode
 garde la même taille au survol et au focus. Changement CSS dans `boutique/`.
 
 ## Mise à jour · 06/10/2026 — le nouveau produit récupère sa photo
