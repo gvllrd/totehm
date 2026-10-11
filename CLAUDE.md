@@ -66,10 +66,10 @@ Les `CLAUDE.md` des dossiers servis par Vercel sont exclus du déploiement (`.ve
 com/      → www.totehm.com       LA STRATÉGIE, LA SOURCE : le Totehm (5 vues), l'identité (/auth), /search, /@nom ;
                                  l'atterrissage en croix (07/10, manette) : mon Totehm · ↑ Get Higher (la langue)
                                  · ↓ TotehmSM (Higher Self : 7 gratuits/30 j puis Higher) · ← chercher · → SPACE et boutique ; /console
-club/     → www.figher.club      LA RENCONTRE DANS LA RÉALITÉ : les spots (à venir · en cours · passés, `spots_list`/`spots_feed`)
-                                 radar au centre · ↑ annoncer · ↓ caméra · ← passés · → agenda ; /meet garde l’ancienne porte ; 308 boutique inchangés
-space/    → www.totehm.space     L'INSPIRATION, le réseau social de l'Habit (11/10) : centre = le concept (papier qui tourne, Higher Social media,
-                                 pouls) · ← WATCH le fil (`space_feed`, filtre d'une Habit Box) · ↓ SHARE caméra · → MY SPACE · ↑ VIBES ; aucun spot
+club/     → www.figher.club      LA RENCONTRE DANS LA RÉALITÉ, le prolongement de SPACE : [Higher] SPOTS + radar au centre · ↑ annoncer
+                                 · ↓ caméra · ← passés · → agenda ; reçoit `?v=plan|list&habit=&city=` (SPOT d'un space) ; /meet ; 308 boutique
+space/    → www.totehm.space     L'INSPIRATION, le réseau social de l'Habit : centre = le concept · ← WATCH (la Habit Box ÉPARPILLÉE, un tap =
+                                 son horizon ; rail VIBE · SPOT · SHARE) · ↓ SHARE · → MY SPACE · ↑ VIBES ; `/s/:id` = l'aperçu partagé (`api/card.js`)
 boutique/ → www.higher.boutique  L'ACHAT, physique et numérique (09/10) : Get Higher / THP / Stoner / Lisbon / Origins, le marché
                                  de l'art (/market) ; accueil + collection ; /streetwear (plein écran au téléphone, fenêtres-côtés sur ordinateur) : cloth →
                                  element (wisdom ← → vision, ou « + totehmize » depuis COM) → 0.nom → style → taille ; Luxe SUR DEVIS ; Decode = la page du Cloth
@@ -168,7 +168,7 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 - **Claude Code** (terminal) : une commande simple par ligne, jamais
   `cd X && …` (les permissions jugent la ligne entière).
 **SPACE · 11/10 :** un space = une Habit vécue (photo/vidéo + son pourquoi), jamais un point exact ; sans selfie ni
-musique ajoutée ; vibes (`space_vibe`), profils, fil filtré par objectifs/répulsions. **figher.club :** un spot = un lieu + une heure (Higher spot : chez soi, lieu privé ou dehors) ;
+musique ajoutée ; vibes, profils ; **ce qui vient du Totehm garde le format Totehm** (boîtes navy/bleu/rouge-violet). **figher.club :** un spot = un lieu + une heure (Higher spot : chez soi, lieu privé ou dehors) ;
 radar, annonce (toujours ON), agenda, I AM HERE, passés ; OFF = ville, ON = le point pour mes abonnés. Mini-boxes
 OBJECTIVES/REPULSIONS séparées (droits serveur). Détails : `space/CLAUDE.md`, `club/CLAUDE.md`, copy : `BRAND.md`.
 My spaces (COM, SPACE) + `space-delete` ; une Box WISDOM/VISION de COM montre ses Cloths (`element_cloths`) comme une Habit ses spaces ; chercher = un NOM → son TOTEHM en lecture (spaces, loupe, COPY d'une Box). Espace membre COM = l'utilisateur (vignette, Higher, souscriptions), format higher.boutique.

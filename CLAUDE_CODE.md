@@ -295,6 +295,12 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
+### Correction 0.54 — 11/10/2026 (bis) · la boîte éparpillée, SPACE → SPOT (à reporter)
+> Sur totehm.space, la Habit Box d'un space s'éparpille en boîtes du Totehm (objectifs bleus, répulsions
+> rouge-violet) ; un tap ouvre l'horizon de l'élément. SPOT fait d'un space un spot sur figher.club (le mien :
+> le plan ; celui d'un autre : ses spots). Un lien partagé montre l'Habit et l'image. Moins de mots partout.
+> Aucune migration, aucun prix.
+
 ### Correction 0.53 — 11/10/2026 · le pourquoi, l'invité, SPACE réseau social (à reporter)
 > totehm.com rappelle son pourquoi sous [Higher] STRATEGY ; le code de vérification ne vide plus rien ; un
 > invité peut construire son TOTEHM sans email (connexion anonyme, à ouvrir : Tâche 5) puis le sauver.

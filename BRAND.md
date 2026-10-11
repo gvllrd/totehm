@@ -1,5 +1,18 @@
 # BRAND.md — TOTEHM
 
+## CURRENT UPDATE — 11/10/2026 (bis) · one verb per domain, the scattered box
+
+- **The loop.** totehm.com = BUILD my strategy · totehm.space = SHARE / WATCH it lived · figher.club = MEET
+  in reality · higher.boutique = WEAR / OWN it. Each centre: the TOTEHM, [Higher] + one word (STRATEGY ·
+  SOCIAL MEDIA · SPOTS), one line of why. figher.club: *meet in reality the people who live your habits*.
+- **What comes from the TOTEHM stays in TOTEHM format.** On a space, the Habit Box is *scattered*: the
+  Habit stays navy, each objective a blue box, each repulsion a red-violet box, drifting above it. No
+  labels: the colour says the type. Tap a box → its **horizon**: other members living the same habit,
+  objective or repulsion.
+- **SPOT** turns a space into a spot (figher.club): mine → plan it; someone else's → join theirs.
+- **Fewer words.** No « What is a space? »: the centre says it. *tap to share a space* · *film the place,
+  not yourself*. A shared space shows its habit and its image wherever it is posted.
+
 ## CURRENT UPDATE — 11/10/2026 · the why on every home, SPACE as a social network
 
 - **Every home recalls the why and the member's benefit.** totehm.com, under
