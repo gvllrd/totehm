@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 11 octobre 2026, SPACE réseau social, invité COM** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 11 octobre 2026, boutons boutique (navigateur local), SPACE réseau social, invité COM** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -15,6 +15,16 @@
 
 ---
 
+
+## 0 · BOUTIQUE : PADDING ENCORE RÉDUIT — 11/10/2026
+
+| quoi | valeur mesurée |
+|---|---|
+| styles, 12 pages boutique | `eco-text-btn` `.42em .68em` → `.28em .48em` (7 copies) ; paddings natifs plus courts ; bordures transparentes des anciens boutons 6 → 4 px |
+| navigateur, Supabase simulé | boutique_home 23/23 · market 14/14 · club_luxury 48/48 · streetwear 64/64 avec simulation SSO temporaire (le harnais original répond 204 à COM/auth et expire, défaut reproduit avant ce changement) |
+| dimensions à 390 et 1280 px de viewport | Decode 194,03 × 41,75 → 184,84 × 34,09 px ; Create Streetwear 287,94 × 41,75 → 278,75 × 34,09 px ; Totehmize 115,16 × 34,34 → 109,16 × 30,13 px ; onglet Market 63,92 × 25,16 → 59,52 × 22,09 px |
+| mise en page locale | débordement horizontal 0 px dans les 6 combinaisons page/viewport ; dimensions de Decode identiques au repos, au survol et au focus clavier |
+| périmètre du diff HTML | uniquement padding et bordures transparentes ; HTML et JavaScript identiques hors styles |
 
 ## 0 · SPACE RÉSEAU SOCIAL, LE POURQUOI ET L'INVITÉ SUR COM — 11/10/2026
 

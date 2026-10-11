@@ -1,14 +1,18 @@
 # boutique/CLAUDE.md — higher.boutique : l'achat, physique et numérique (Cloths, Get Higher, Stoner, le marché)
 
-## BOUTIQUE · 11/10/2026 — BOUTONS PLUS COMPACTS
+## BOUTIQUE · 11/10/2026 (bis) — PADDING ENCORE RÉDUIT
 
-Padding intérieur réduit sans changer les fonctions : boutons principaux Streetwear,
-Luxury, Market, onglets, tailles, retours et navigation ; `.btn-sig` plus étroit
-sur les anciennes pages ; `eco-text-btn` de la boutique passe de `.65em .95em`
-à `.42em .68em`. Les hitboxes de la manette, des zooms et les éléments du
-Totehm ne sont pas modifiés. Les règles sont CSS uniquement ; pas de changement
-aux paiements, données ou redirections. Ce réglage est local à `boutique/` :
-le gabarit partagé `tools/ecosystem_ui.css` des autres domaines reste inchangé.
+`eco-text-btn` passe de `.42em .68em` à `.28em .48em` dans les sept copies
+de la boutique ; cette règle `!important` fixe le padding visible des boutons
+de texte. Les styles natifs suivent : Streetwear `.btn` = `6px 9px`, Luxury
+`.btn` = `6px 10px`, Market `.btn` = `5px 8px` ; onglets, tailles, retours,
+navigation et choix des pièces Luxury sont également resserrés.
+Sur les anciennes pages, les bordures transparentes de `.btn-sig`, `.btn-coral`
+et `.size-btn` passent de 6 à 4 px : elles participent à l'espace intérieur.
+Decode garde ces 4 px au survol et au focus pour conserver la même taille.
+Réglage local à `boutique/` ; les manettes, zooms et éléments du Totehm gardent
+leur géométrie. Les changements portent uniquement sur le padding et ces
+bordures transparentes ; le gabarit partagé `tools/ecosystem_ui.css` reste inchangé.
 
 ## BOUTIQUE · 09/10/2026 — L'ACHAT, PHYSIQUE ET NUMÉRIQUE : GET HIGHER EST REVENU
 

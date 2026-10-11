@@ -56,7 +56,7 @@ body{display:flex;flex-direction:column;align-items:center;min-height:100vh;over
 @media(prefers-reduced-motion:reduce){.real.color{animation:none}}
 
 /* boutons de marque */
-.btn-sig{font-family:'Space Mono',monospace;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:#1f1f24;border-radius:10px;cursor:pointer;border:6px solid transparent;padding:0 2px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
+.btn-sig{font-family:'Space Mono',monospace;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:#1f1f24;border-radius:10px;cursor:pointer;border:4px solid transparent;padding:0 1px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
 .higher-inline{height:1.5em;width:auto;vertical-align:-.32em;display:inline-block;margin:0 .04em}
 /* 09/10 — la fonction du domaine, dite une fois, à voix basse. */
 .fn-line{font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#7a7a82;margin:0 0 6px;text-align:center}
@@ -65,7 +65,7 @@ body{display:flex;flex-direction:column;align-items:center;min-height:100vh;over
 @media(hover:hover){.btn-sig:hover{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}}
 .btn-sig:active{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}
 .wm-frame{background:var(--navy);padding:0 3px;margin:0 1px;color:#fff}
-.btn-coral{font-family:'Space Mono',monospace;font-weight:400;font-size:13px;letter-spacing:0;color:var(--coral);background:none;cursor:pointer;border:6px solid transparent;padding:0 2px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
+.btn-coral{font-family:'Space Mono',monospace;font-weight:400;font-size:13px;letter-spacing:0;color:var(--coral);background:none;cursor:pointer;border:4px solid transparent;padding:0 1px;line-height:1.5;text-decoration:none;display:inline-block;-webkit-tap-highlight-color:transparent;transition:color .15s ease;text-align:center}
 @media(hover:hover){.btn-coral:hover{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}}
 .btn-coral:active{color:#fff;border-image-source:none;border-image-slice:6 fill;border-image-repeat:round;background:#2e2e36}
 .btn-back{font-family:'Space Mono',monospace;font-weight:400;font-size:13px;letter-spacing:0;color:#b0b0b0;background:none;cursor:pointer;border:none;padding:0 2px;line-height:1.4;-webkit-tap-highlight-color:transparent;transition:color .15s ease,background .15s ease}
@@ -124,7 +124,7 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
    « aucun motif perforé comme fond de contrôle » : ce bouton-là et sa saisie
    seuls. La tuile navy perforée (`--tile-btn`, 6 px, remplie) : une BOÎTE,
    donc carrée. */
-#decode-btn:hover,#decode-btn:focus-visible{color:#fff;background:var(--navy);border:6px solid transparent;
+#decode-btn:hover,#decode-btn:focus-visible{color:#fff;background:var(--navy);border:4px solid transparent;
   border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;border-radius:0;outline:none}
 #decode-input{color:#fff;caret-color:#fff;background:var(--navy);border:6px solid transparent;
   border-image-source:var(--tile-btn);border-image-slice:6 fill;border-image-repeat:round;border-radius:0}
@@ -202,7 +202,7 @@ nav{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;max
 </style>
 <style data-ecosystem-ui="2026-10-05">
 /* 05/10/2026 — copied into the four platforms. Text buttons fit their label. */
-button.eco-text-btn,a.eco-text-btn{inline-size:fit-content!important;max-inline-size:100%;min-inline-size:0!important;flex:0 1 auto!important;padding:.42em .68em!important;line-height:1.45;box-sizing:border-box}
+button.eco-text-btn,a.eco-text-btn{inline-size:fit-content!important;max-inline-size:100%;min-inline-size:0!important;flex:0 1 auto!important;padding:.28em .48em!important;line-height:1.45;box-sizing:border-box}
 .eco-connect,.eco-connect #member-txt,.eco-connect #conn-txt{font-family:'Space Mono',monospace!important;font-weight:700!important;font-size:10px!important;color:#b0b0b0!important;letter-spacing:.06em;text-transform:uppercase!important}
 button.eco-connect{background:#252529!important;border:0!important;border-radius:10px!important;cursor:pointer}
 #menu .eco-text-btn,#mmenu .eco-text-btn,.mw-card .eco-text-btn{align-self:flex-start}

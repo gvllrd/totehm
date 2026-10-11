@@ -1,5 +1,12 @@
 # CLAUDE_CODE.md — la tâche de Claude Code (terminal de Wah)
 
+## À reporter au master · 11/10/2026 — boutons boutique encore plus compacts
+
+Dans `~/totehm/TOTEHM_MASTER.md` §0 : le padding des boutons de la boutique
+est désormais `.28em .48em` (règle commune), avec des styles natifs plus courts.
+Les bordures transparentes des anciens boutons passent de 6 à 4 px ; Decode
+garde la même taille au survol et au focus. Changement CSS dans `boutique/`.
+
 ## Mise à jour · 06/10/2026 — le nouveau produit récupère sa photo
 
 Le précédent Champion a été remplacé par Wah. Produit courant Printful
