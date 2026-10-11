@@ -20,6 +20,10 @@
     { "source": "/lisbon", "destination": "https://www.higher.boutique/discover_lisbon", "permanent": true },
     { "source": "/global", "destination": "https://www.higher.boutique/discover", "permanent": true }
   ],
+  "rewrites": [
+    { "source": "/s/:id/i", "destination": "/api/card?id=:id&img=1" },
+    { "source": "/s/:id", "destination": "/api/card?id=:id" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
