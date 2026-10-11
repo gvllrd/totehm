@@ -1,5 +1,18 @@
 # club/CLAUDE.md — figher.club : la rencontre dans la réalité (09/10)
 
+## 11/10/2026 (bis) — le prolongement de SPACE : un space devient un spot
+
+BUILD `2026-10-11-club-from-space`.
+- **Reçoit SPOT de SPACE** : `?v=plan&habit=&city=` → le plan s'ouvre (même sans session : CONNECT garde Habit et
+  ville dans le `return`), `PRE.habit` choisit MA Habit du même nom (`fold`, casse ignorée), `PRE.city` pose la
+  ville quand `cities.json` arrive. `?v=list&habit=` → l'agenda de cette Habit (`S.q`, `space_discover('list')`) ;
+  vide → « no spot for this Habit yet » + PLAN ONE (le plan, Habit pré-choisie si je l'ai). `?v=past` aussi.
+- **Centre au format de COM et SPACE** : `#club-title` = [Higher] SPOTS + « meet in reality the people who live your
+  habits » (radar seulement ; le radar se place dessous, `radarSize` lit le bas de `#heading`). Indice du papier :
+  « tap to pick a Habit » (il ouvre le choix de Habit, il ne planifie pas).
+- Tests : `club_from_space` 9/9 (nouveau), `club_ui` 27, `club_map` 42 (le radar latéral se mesure à côté du panneau,
+  plus « plus petit que le centre » : le centre lui a laissé la place du titre), `club_publish` 33, `club_luxury` 48.
+
 ## 09/10/2026 (soir) — le club parle de spots, la vue « passés » propre
 
 BUILD `2026-10-09-club-spots`. Le lot ChatGPT avait copié SPACE sans l'adapter : tous les textes visibles

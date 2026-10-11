@@ -288,6 +288,13 @@ body.v-plan #heading,body.v-cam #heading{display:flex}
 .tname,.tname:hover{font-family:var(--q);font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
 #tp-name,#tp-name.is-name,#tp-name:hover,#tp-name.is-name:hover{color:#fbd5ca;background:#000;border-radius:7px;padding:4px 6px;max-width:82%;box-sizing:border-box}
 #tp-hint{margin-top:6px;letter-spacing:.1em;font-size:8px}
+/* 11/10 (bis) — le centre dit ce qu'est le Club, au format de totehm.com et totehm.space. */
+#club-title{display:none;flex-direction:column;align-items:center;gap:8px;margin-top:14px;text-align:center;pointer-events:none}
+body.v-radar #club-title{display:flex}
+#club-title .ct-h{display:flex;align-items:center;gap:10px}
+#club-title svg{display:block;width:84px;height:28px}
+#club-title b{font:700 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#fff}
+#club-title p{margin:0;font:400 10px/1.5 var(--mono);letter-spacing:.04em;color:var(--mid);max-width:min(320px,calc(100vw - 32px))}
 #radar-tools{display:contents}
 #cmp,#map-tools{position:fixed;z-index:65}
 #map-tools{flex-direction:column;align-items:center;gap:4px}
@@ -524,6 +531,7 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
   </div><!-- /#totehm-paper -->
 <span id="tp-hint"></span>
 </div>
+<div id="club-title"><div class="ct-h"><svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg><b>Spots</b></div><p>meet in reality the people who live your habits</p></div>
 <div id="title" aria-live="polite"><b id="title-int"></b><svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg></div>
 <p id="int-def"></p><button id="habit-filter" class="hide" type="button" aria-haspopup="dialog" aria-expanded="false">Habit Box · all</button></header>
 <aside id="habit-picker" class="hide" role="dialog" aria-label="Select my Habit Box"></aside>
@@ -701,7 +709,7 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
 const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query=' + Number(lat).toFixed(5) + '%2C' + Number(lng).toFixed(5);
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD='2026-10-09-club-spots';
+const BUILD='2026-10-11-club-from-space';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'radar';
@@ -709,6 +717,8 @@ const S = { int:null, q:'', habit:null };
 const PAST = {list:[],seq:0,more:false,loading:false,match:'all',before:null};
 const EX = { list:[], seq:0, match:'all' };
 const LIST = { list:[], seq:0, more:false, loading:false, match:'all' };
+/* SPACE → SPOT (11/10 bis) : un space arrive avec sa Habit, et sa ville si c'est le mien. */
+const PRE = { habit:'', city:'' };
 const PLAN = { seq:0, context:null, details:false, habit:null, date:'', time:'', pos:null, place:'', city:null, cityText:'', cityPos:null, video:null, fileSeq:0, dur:null, vis:'shared', mode:null, loc:'on', boxOptions:{objectives:false,repulsions:false}, say:'', busy:false };
 let habitsPending = null, gestureCount = 0, suppressClickUntil = 0;
 const REC = { seq:0, step:null, stream:null, mr:null, blob:null, url:null, mime:'', t0:0, timer:0, seconds:0, uploaded:null, habit:null, vis:'shared', boxOptions:{objectives:false,repulsions:false}, pos:null, city:null, placeAt:0, placePromise:null, placeError:false,
@@ -1001,7 +1011,7 @@ function paintList(){
   } else {
     l.querySelectorAll('video').forEach(releaseClip);
     l.innerHTML = upcoming.length ? upcoming.map(s => '<div class="it" data-id="' + esc(s.id) + '" data-state="' + spotState(s) + '"><div class="it-media"></div><div class="it-info">' + spotHTML(s) + actsHTML(s, 'list') + '</div></div>').join('')
-      : '<div class="empty">' + (S.q ? 'no spot for this Habit Box' : 'no future spot yet') + '</div>';
+      : '<div class="empty">' + (S.q ? 'no spot for this Habit yet' : 'no future spot yet') + '</div>' + (S.q ? '<button class="btn" type="button" data-plan-one="1">PLAN ONE</button>' : '');
   }
   l.querySelector('[data-more]')?.remove();
   if(upcoming.length && LIST.more) l.insertAdjacentHTML('beforeend', '<button class="btn" type="button" data-more="1">MORE SPOTS</button>');
@@ -1018,6 +1028,7 @@ function listWatch(button){
 $('list').addEventListener('click', async e => {
   if(Date.now() < suppressClickUntil || e.target.closest('a,[data-com]')) return;
   if(e.target.closest('[data-more]')) return loadList(true);
+  if(e.target.closest('[data-plan-one]')){ PRE.habit = S.q; return go('plan'); }
   const w = e.target.closest('[data-watch]'); if(w) return listWatch(w);
   await actsClick(e);
 });
@@ -1335,7 +1346,7 @@ $('detail').addEventListener('click', async e => {
 
 
     const ouvert=()=>!$('habit-picker').classList.contains('hide');
-    function hint(){ $('tp-hint').textContent='Tap on your TOTEHM to turn a habit into a spot'; }
+    function hint(){ $('tp-hint').textContent='tap to pick a Habit'; }
     function sync(){
       const open=ouvert(); $('tp-wrap').classList.toggle('is-open',open);
       if(document.hidden||VIEW!=='radar'||!document.body.classList.contains('v-radar')||open||RM.matches){
@@ -1528,12 +1539,16 @@ async function planOpen(){
   if(!PLAN.date){ const d = new Date(Date.now() + 864e5); PLAN.date = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); PLAN.time = hhmm(d); }
   planPaint();
   loadCities().then(async () => {
+    if(PRE.city && !PLAN.cityText){ const i = CITY_KEYS.indexOf(fold(PRE.city)); if(i >= 0){ planCity(CITIES[i]); const f = $('p-city'); if(f && document.activeElement !== f) f.value = PLAN.cityText; } PRE.city = ''; }
     // A position already known prefills the city; TOP never asks for one.
     const c = !PLAN.cityText && POS ? await nearestCity(POS) : null;
     if(c && !PLAN.cityText){ planCity(c); const i = $('p-city'); if(i && document.activeElement !== i) i.value = c[0]; }
     if(VIEW === 'plan'){ const l = $('p-cities'); if(l) l.innerHTML = citySuggestHTML(); planValidity(); }
   });
-  await loadHabits(); if(VIEW === 'plan') planPaint();
+  await loadHabits();
+  if(PRE.habit && HABITS?.length && !PLAN.habit){ const k = fold(PRE.habit), h = HABITS.find(x => fold(x.name) === k);
+    if(h){ PLAN.habit = h; PLAN.context = h; PLAN.boxOptions = {objectives:false,repulsions:false}; } PRE.habit = ''; }
+  if(VIEW === 'plan') planPaint();
 }
 $('plan-body').addEventListener('input', e => {
   if(e.target.id === 'p-date') PLAN.date = e.target.value;
@@ -1551,7 +1566,7 @@ $('plan-body').addEventListener('click', e => {
   if(PLAN.busy) return;
   if(boxOptionsClick(e.target,PLAN)) return planPaint();
   const t = e.target;
-  if(t.closest('[data-plan-signin]')) return ssoLogin(false, '/?v=plan');
+  if(t.closest('[data-plan-signin]')) return ssoLogin(false, '/?' + new URLSearchParams({ v:'plan', ...(PRE.habit ? { habit:PRE.habit } : {}), ...(PRE.city ? { city:PRE.city } : {}) }));
   const h=t.closest('[data-plan-h]'); if(h){ PLAN.habit=HABITS[+h.dataset.planH]; PLAN.context=PLAN.habit; PLAN.boxOptions={objectives:false,repulsions:false}; return planPaint(); }
   if(t.closest('[data-plan-cancel]')) return go('radar');
   if(t.closest('[data-plan-reh]')){ PLAN.seq++; PLAN.habit = null; PLAN.context = null; return planPaint(); }
@@ -2185,6 +2200,9 @@ async function boot(){
   if(me) videoRequest('create-bunny-upload',{action:'status'}).then(d=>{if(d?.available) RULES.video_provider='bunny';}).catch(e=>console.error('[video availability]',e.message));
   sb.rpc('spot_rules').then(({ data, error }) => { if(error) console.error('[spot_rules]', error.message); if(data) RULES = { ...RULES, ...data, video_provider:RULES.video_provider==='bunny'?'bunny':data.video_provider }; });
   const p = new URLSearchParams(location.search);
+  const fromHabit = (p.get('habit') || '').trim().slice(0,200), fromCity = (p.get('city') || '').trim().slice(0,80);
+  if(fromHabit && p.get('v') === 'list'){ S.habit = null; S.q = fromHabit; $('habit-filter').textContent = fromHabit; }
+  if(fromHabit && p.get('v') === 'plan'){ PRE.habit = fromHabit; PRE.city = fromCity; }
   geo().then(pos => { if(pos){ POS = pos; reload(); radarOn(); } });
   reload(); radarOn();
   ['g','d','h','b'].forEach(d => $('cur-' + d).classList.toggle('is-dead', !voisin(d)));
@@ -2193,7 +2211,8 @@ async function boot(){
     if(error) console.error('[spot_get]', error.message);
     if(data?.ok){if(data.spot.format==='space')return ssoVersDomaine(sb,'space','https://www.totehm.space/?spot='+encodeURIComponent(p.get('spot')),true);openDetail(data.spot);}
   }
-  if(['cam','plan'].includes(p.get('v')) && me) go(p.get('v'));
+  if(['list','past','plan'].includes(p.get('v'))) go(p.get('v'));
+  else if(p.get('v') === 'cam' && me) go('cam');
   joyPaint();
   setInterval(() => { paintList(); planValidity(); const started = LIST.list.some(s => s.state === 'will' && spotState(s) !== 'will'); if(started) reload(); }, 30000);
 }

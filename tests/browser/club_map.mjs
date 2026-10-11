@@ -38,7 +38,7 @@ try{
  ok(await pg.locator('[data-filter-h="0"] .v-int[title]').count()===2,'exact intention definitions remain in the Box');
  await pg.click('[data-filter-h="1"]');await settle();ok((await state()).exact>0 && /Same intention/.test(await pg.textContent('#int-def')),'a missing exact Habit falls back to its intentions');
  ok(log.rpc.filter(c=>c.name==='space_discover').slice(-2).every(c=>c.body.p_habit==='Walk the river'),'same Habit choice reaches all three views');
- await drag('joy-box',-28,0);await view('past');let r=(await state()).radar,pan=await box('v-past');ok(pan.w===420 && r.cx-r.radius>420 && r.radius<initial.radar.radius,'desktop side feed keeps a reduced radar beside it');
+ await drag('joy-box',-28,0);await view('past');let r=(await state()).radar,pan=await box('v-past');ok(pan.w===420 && r.cx-r.radius>420 && r.cx>initial.radar.cx,'desktop side feed keeps the radar beside it (11/10 bis: the centre radar already makes room for [Higher] SPOTS)');
  ok(!await pg.isVisible('#member') && !await pg.isVisible('#tp-hint') && await pg.isVisible('#totehm-paper'),'city feed has only the reduced Habit filter paper');
  ok(await pg.locator('#past .sp-card').count()===1 && /I WAS THERE/.test(await pg.textContent('#past')),'LEFT renders only past spots using Meet cards');await pg.screenshot({path:OUT+'/club_past.png'});await pg.click('#joy-box');await view('radar');
  await pg.mouse.move(740,400);for(let i=0;i<10;i++) await pg.mouse.wheel(10,0);await view('list');
