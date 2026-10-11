@@ -30,9 +30,11 @@ try{
  ok(await pg.locator('#v-plan,#v-radar,#v-list').count()===0,'removed views never load');
  ok(await pg.locator('#feed .info .habit').count()===4&&await pg.locator('#feed .info .sdata').count()===0,'each space shows its Habit without technical spot data');
  ok(await pg.locator('#feed .clip[data-id="now-off"] img[data-photo]').count()===1,'photo appears in the feed');
- ok(/Beautiful skin/.test(await pg.textContent('#feed .clip[data-id="before-silent"] .habit'))&&/Alcohol/.test(await pg.textContent('#feed .clip[data-id="before-silent"] .habit')),'shown WHY and TRIGGER remain inside Habit Box');
+ ok(/Beautiful skin/.test(await pg.textContent('#feed .clip[data-id="before-silent"] .el-o'))&&/Alcohol/.test(await pg.textContent('#feed .clip[data-id="before-silent"] .el-r'))&&!/Beautiful skin|Alcohol/.test(await pg.textContent('#feed .clip[data-id="before-silent"] .habit')),'shown WHY and TRIGGER leave the Habit Box: each is its own Totehm box, scattered above it (11/10 bis)');
  ok(await pg.$$eval('#feed button',l=>l.every(b=>!/[\[\]]/.test(b.textContent)))&&await pg.locator('#feed [data-share]').count()===4&&await pg.locator('#feed [data-go],[data-ics]').count()===0,'SHARE stays inline; spot actions are absent');
- await pg.locator('#feed .clip[data-id="now-on"] .habit').evaluate(e=>e.click());await pg.waitForTimeout(200);ok(!(await state(pg)).detail,'tapping a feed box opens no duplicate sheet');
+ await pg.locator('#feed .clip[data-id="now-on"] .hz-h').evaluate(e=>e.click());await pg.waitForTimeout(300);
+ ok(!(await state(pg)).detail&&(await state(pg)).horizon&&await pg.isVisible('#hz')&&!await pg.isVisible('#sf-btn'),'tapping a feed box opens its horizon, never a duplicate sheet');
+ await pg.click('#hz-x');await pg.waitForTimeout(300);ok(!(await state(pg)).horizon&&await pg.isVisible('#sf-btn'),'✕ brings the feed back');
  const paper=await pg.$eval('#totehm-paper',e=>e.getBoundingClientRect().toJSON()),btn=await pg.$eval('#sf-btn',e=>e.getBoundingClientRect().toJSON());
  ok(await pg.isVisible('#sf-btn')&&btn.x>paper.x+paper.width&&Math.abs(btn.y+btn.height/2-paper.y-paper.height/2)<4,'filter stays beside paper');
  const reads=log.rpc.filter(x=>x.name==='space_feed').length;const settle=()=>pg.waitForTimeout(450);

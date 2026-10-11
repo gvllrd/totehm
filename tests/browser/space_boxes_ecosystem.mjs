@@ -13,15 +13,9 @@ try{
   const {pg,log}=await page(browser,{dir:'space',origin,rpc,tables:{profiles:[{pseudo:'wah'}]},hasTouch:true});
   await pg.goto(origin+'/');await pg.waitForFunction(()=>window.__totehm_space?.().view==='home');await pg.waitForTimeout(500);
   const identity=await pg.$eval('#member-txt',e=>({font:getComputedStyle(e).fontFamily,color:getComputedStyle(e).color}));ok(identity.font.includes('Quantico')&&identity.color==='rgb(251, 213, 202)','connected identity keeps Quantico Coral after the login label changes');
-  ok((await pg.textContent('#tp-hint')).trim().toUpperCase()==='TAP ON YOUR TOTEHM TO TURN A HABIT INTO A SPACE','corrected Habit-to-space invitation');
-  await pg.click('#space-about');await pg.waitForSelector('.eco-sheet');
-  const definition=await pg.textContent('.eco-sheet');
-  ok(/strategic Habits, lived/.test(definition)&&/objectives and repulsions/.test(definition)&&!/collective effervescence|SOCIAL|SILENT/.test(definition),'space definition says what a space is (content), the meeting rules live on figher.club');
-  ok(await pg.$eval('#joy',e=>e.inert)&&await pg.$eval('#joy',e=>getComputedStyle(e).pointerEvents)==='none','joystick is muted while the definition is open');
-  await pg.keyboard.press('ArrowUp');await pg.mouse.wheel(200,0);await pg.waitForTimeout(300);
-  ok(await pg.evaluate(()=>window.__totehm_space().view)==='home','definition blocks background navigation');
-  await pg.screenshot({path:OUT+'/space_definition_mobile.png'});await pg.keyboard.press('Escape');
-  ok(!await pg.locator('.eco-sheet').count()&&!await pg.$eval('#joy',e=>e.inert),'Escape restores navigation');
+  ok((await pg.textContent('#tp-hint')).trim().toUpperCase()==='TAP TO SHARE A SPACE','short invitation: tap to share a space (11/10 bis)');
+  ok(await pg.locator('#space-about,#space-definition').count()===0&&/no selfie, no music/.test(await pg.textContent('#home-what')),'no « What is a space? »: the home itself says it, in one line');
+  await pg.screenshot({path:OUT+'/space_definition_mobile.png'});
   await pg.click('#cur-g');await pg.waitForFunction(()=>window.__totehm_space().view==='feed');await pg.waitForTimeout(500);
   await pg.click('#sf-btn');await pg.click('[data-sf-pick]');await pg.waitForSelector('[data-filter-h]');
   const picker=pg.locator('[data-filter-h="0"]');

@@ -24,7 +24,7 @@ try{
  await tapPaper(pg);await pg.waitForFunction(()=>window.__totehm_space().view==='cam');ok(true,'the home paper turns a habit into a space (↓ the camera)');
  await pg.click('#cur-h');await pg.waitForFunction(()=>window.__totehm_space().view==='home');await pg.waitForTimeout(400);
  await pg.click('#cur-b');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='idle');await pg.waitForTimeout(600);
- ok(!(await state(pg)).rec.camera&&/Share a space from your TOTEHM/.test(await pg.textContent('#cam-body'))&&await pg.locator('#cam-body [data-start]').count()===2&&await pg.locator('#cam-body [data-cancel]').count()===1,'idle camera keeps VIDEO, PHOTO and CANCEL without activating sensor');
+ ok(!(await state(pg)).rec.camera&&/film the place, not yourself/.test(await pg.textContent('#cam-body'))&&await pg.locator('#cam-body [data-start]').count()===2&&await pg.locator('#cam-body [data-cancel]').count()===1,'idle camera keeps VIDEO, PHOTO and CANCEL without activating sensor');
  ok(await pg.$eval('#cam-body .say',e=>getComputedStyle(e).backgroundColor)==='rgba(0, 0, 0, 0.82)','camera instruction keeps original black box');
  await pg.click('[data-start="video"]');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='ready');await pg.waitForTimeout(500);ok((await state(pg)).rec.camera&&(await state(pg)).rec.step==='ready','VIDEO opens sensor but waits for recording');
  await pg.click('#joy-box');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='habit');

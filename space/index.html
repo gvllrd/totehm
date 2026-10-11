@@ -1,14 +1,18 @@
 <!DOCTYPE html>
-<!-- 09/10/2026 — SPACE: strategic Habits lived in photo/video, with their why.
-     Center feed, bottom camera (space_post), left door to three future Club spots.
-     No radar, planning, agenda or exact point. Media, Habit boxes and rights retained. -->
+<!-- 11/10/2026 — SPACE: the social network of the strategic Habit. Centre = the concept;
+     ← WATCH the feed (each space = its Habit Box scattered into Totehm boxes; a box opens its
+     horizon) · ↓ SHARE · → MY SPACE · ↑ VIBES. SPOT turns a space into a spot on figher.club.
+     No radar, planning, agenda or exact point. -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <title>TOTEHM.SPACE — strategic Habits, lived</title>
-<meta name="description" content="Inspiration: strategic Habits of a TOTEHM, lived on camera, with their why.">
+<meta name="description" content="Strategic habits, lived. No selfie, no music: the place and its sound.">
+<meta property="og:site_name" content="TOTEHM.SPACE"><meta property="og:title" content="TOTEHM.SPACE — strategic habits, lived">
+<meta property="og:description" content="Strategic habits, lived. No selfie, no music: the place and its sound.">
+<meta property="og:image" content="https://www.totehm.space/assets/img/totehm_logo.png"><meta name="twitter:card" content="summary">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://abujjbkbbiumxrokozph.supabase.co" crossorigin>
@@ -401,10 +405,27 @@ body.v-me #tp-hint,body.v-me #member,body.v-vibes #tp-hint,body.v-vibes #member{
 .btn.vibe{letter-spacing:.14em}
 .btn.vibe.is-on{background:var(--s4);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.5)}
 .vibes-n{font:700 9px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--mid)}
-.matched{font:700 8.5px/1.4 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--lo);margin-top:6px}
 .clip .vibe-pop{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%) scale(.6);z-index:6;pointer-events:none;opacity:0;
   font:700 22px/1 var(--mono);letter-spacing:.3em;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.8);transition:opacity .25s ease,transform .35s cubic-bezier(.2,1.4,.4,1)}
 .clip .vibe-pop.is-on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+/* 11/10 (bis) — la scène d'un space : la colonne 9:16 du média, la boîte éparpillée, le rail. */
+.clip>.stage{position:absolute;left:50%;top:0;bottom:0;transform:translateX(-50%);width:min(100cqw,calc(100cqh * 9 / 16));z-index:2;pointer-events:none}
+@supports not (width:1cqw){.clip>.stage{width:min(100%,calc(100vh * 9 / 16))}}
+.stage>*{pointer-events:auto}
+.stage .info{position:absolute;left:12px;right:96px;width:auto;transform:none;bottom:calc(114px + var(--bot))}
+.stage .scatter{display:flex;flex-direction:column;align-items:flex-start;gap:9px;margin-bottom:12px}
+.el{margin-left:var(--x,0);max-width:min(72%,calc(100% - var(--x,0%)));padding:5px 9px;font:400 12px/1.4 var(--q);color:#fff;cursor:pointer;box-shadow:0 5px 22px rgba(0,0,0,.65),0 1px 4px rgba(0,0,0,.5);word-break:break-word}
+.el-o{background:var(--blue)}.el-r{background:var(--rep)}
+.hz-h{cursor:pointer}
+.stage .rail{position:absolute;right:10px;bottom:calc(114px + var(--bot));margin:0;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.stage .rail .btn{background:rgba(11,11,13,.86);font-size:9px;padding:8px 9px}
+.stage .rail .vibes-n{background:rgba(11,11,13,.86);border-radius:var(--r);padding:8px 9px}
+#hz{position:fixed;left:50%;transform:translateX(-50%);top:calc(84px + var(--top));z-index:84;display:flex;align-items:center;gap:8px;max-width:calc(100vw - 32px);pointer-events:auto}
+#hz.hide,body:not(.v-feed) #hz{display:none}
+#hz .el{max-width:none;cursor:default}
+#hz .hz-hb{padding:5px 9px;font:400 12px/1.4 var(--q);color:#fff;background:var(--navy)}
+#hz-x{border:0;border-radius:var(--r);background:var(--s2);color:#fff;font:700 11px var(--mono);padding:6px 9px;cursor:pointer}
+body.is-hz #sf-btn{display:none}
 /* Le filtre : une Habit Box et TOUT ce qui la compose. */
 #sf-panel .sf-box{display:flex;flex-direction:column;gap:6px}
 #sf-panel .row{flex-wrap:wrap;gap:5px}
@@ -449,18 +470,12 @@ body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,b
 </style>
 <style>
 #tp-hint{max-width:min(340px,calc(100vw - 32px));white-space:normal;text-align:center;line-height:1.5}
-#space-about{position:fixed;top:calc(12px + var(--top));right:12px;z-index:96;border:0;border-radius:10px;background:var(--s2);color:var(--lo);font:700 8px var(--mono);letter-spacing:.04em;max-width:calc(50vw - 70px);cursor:pointer}
-#space-about.eco-text-btn{max-inline-size:calc(50vw - 70px)}
-.space-definition{font:400 12px/1.85 var(--mono);color:var(--mid);display:flex;flex-direction:column;gap:18px;text-align:center}
-.space-definition h2{font:700 13px var(--mono);color:#fff}
-.space-definition .space-domains{font-size:10px;letter-spacing:.08em;color:var(--lo,#9a9a9a)}
 .space-higher{width:57px;height:19px;vertical-align:-5px}
 .mini-toggle{width:fit-content;padding:6px 8px;border:0;border-radius:4px;background:var(--s2);color:var(--lo);font:700 9px var(--mono);letter-spacing:.08em;cursor:pointer}
 .mini-toggle.m-o.is-on{background:var(--plus);color:#fff}.mini-toggle.m-r.is-on{background:var(--rep);color:#fff}
 .mg{align-items:flex-start}.mg .minis{width:100%}
 .pick-habit[role=button]:focus-visible{outline:1px solid var(--mid);outline-offset:3px}
 #member.eco-connect{max-width:calc(50vw - var(--tp)/2 - 22px)}
-body.v-cam.is-rec #space-about{display:none}
 
 #my-spaces{position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.95);overflow-y:auto;overscroll-behavior:contain;padding:calc(16px + var(--top)) 16px calc(28px + var(--bot))}
 .msp-in{width:min(560px,100%);margin:0 auto;display:flex;flex-direction:column;gap:12px}
@@ -494,13 +509,6 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
 
 <button id="member" type="button" aria-label="Member menu"><i></i><span id="member-txt">CONNECT WITH MY TOTEHM</span></button>
 <nav id="menu" aria-label="Member menu"></nav>
-<button id="space-about" type="button" data-space-about="1">What is a space?</button>
-<template id="space-definition"><div class="space-definition">
-<h2>What is a space?</h2>
-<p>TOTEHM.SPACE shows strategic Habits, lived: one Habit of a TOTEHM, filmed where it happens, with the objectives and repulsions that say why.</p>
-<p>No selfie, no added music: the place, its sound, its atmosphere. Send a vibe to the spaces that move you.</p>
-<p class="space-domains">totehm.com builds the strategy · totehm.space shows it lived · figher.club meets in reality · higher.boutique wears and owns it.</p>
-</div></template>
 <header id="heading">
 <div id="tp-wrap">
 <div id="totehm-paper">
@@ -526,7 +534,7 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
 </div>
 <div id="home">
   <div id="home-title"><svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg><b>Social media</b></div>
-  <p id="home-what">strategic habits, lived. no selfie, no added music: the place, its sound, its atmosphere.</p>
+  <p id="home-what">no selfie, no music · just the place and its sound</p>
   <p id="home-pulse" aria-live="polite"></p>
   <div id="home-eco">
     <button class="btn" type="button" data-eco-door="com">totehm.com · my strategy</button>
@@ -534,6 +542,7 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
   </div>
 </div>
 <button id="sf-btn" type="button" aria-haspopup="dialog" aria-controls="sf-panel" aria-expanded="false">Filter</button>
+<div id="hz" class="hide"><span id="hz-el"></span><button id="hz-x" type="button" aria-label="Back to all the spaces">✕</button></div>
 <div id="title" aria-live="polite"><b id="title-int"></b><svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg></div>
 <p id="int-def"></p><button id="habit-filter" class="hide" type="button" aria-haspopup="dialog" aria-expanded="false">Habit Box · all</button></header>
 <aside id="habit-picker" class="hide" role="dialog" aria-label="Select my Habit Box"></aside>
@@ -709,7 +718,7 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
   return (v < 10 ? Math.max(.1, v).toFixed(1) : String(Math.round(v))) + ' ' + UNIT; };
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD='2026-10-11-space-social';
+const BUILD='2026-10-11-space-scatter';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'home';
@@ -723,7 +732,7 @@ const VIDEO_METRICS={firstFrameMs:0,uploadMs:0,publishMs:0,warmStarts:0,coldStar
 window.__totehm_space = () => ({ build: BUILD, view: VIEW, signed_in: !!me, located: !!POS, intention: null, search: !!SF.box,
   feed: FEED.list.length, playing: [...document.querySelectorAll('#feed video')].filter(v => !v.paused).length,
   video:{provider:RULES.video_provider || 'storage',buffered:[...document.querySelectorAll('#feed video')].filter(v=>v.getAttribute('src') || v._hls).length,...VIDEO_METRICS,...(()=>{const v=$('feed').querySelector('.clip[data-k="'+FEED.active+'"] video'),q=v?.getVideoPlaybackQuality?.();return {frames:q?.totalVideoFrames || 0,dropped:q?.droppedVideoFrames || 0};})()},
-  vibes_in:VIB.data?.received?.length || 0, vibes_given:VIB.data?.given?.length || 0, profile_spaces:PROF.list.length, filter:sfCount(), gestures:gestureCount, paper:PAPER.etat(), habit_filter:!!SF.box, spot_filter:sfCount(), feed_shown:FEED.shown.length, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, kind: REC.kind, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
+  vibes_in:VIB.data?.received?.length || 0, horizon:!!HZ.on, scattered:document.querySelectorAll('#feed .el').length, vibes_given:VIB.data?.given?.length || 0, profile_spaces:PROF.list.length, filter:sfCount(), gestures:gestureCount, paper:PAPER.etat(), habit_filter:!!SF.box, spot_filter:sfCount(), feed_shown:FEED.shown.length, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, kind: REC.kind, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
 
 /* Chaque vue dit où je suis (lecteurs d'écran ; SPACE n'affiche pas de titre de vue). */
 const VIEW_WORDS = {home:['SPACE','Higher social media'],feed:['WATCH','strategic habits, lived'],cam:['SHARE','9:16 · up to 33 seconds'],me:['MY SPACE','my spaces, my vibes'],vibes:['VIBES','on my spaces · the spaces I vibed']};
@@ -762,18 +771,52 @@ function spotHTML(s){
 const hasMedia = s => !!(s.clip || s.video || s.photo);
 const hasWhy = s => !!((s.why || (s.mine && s.show_why && s.context)) && [...((s.why || s.context).objectives || []),...((s.why || s.context).repulsions || [])].length);
 const vibeLabel = s => 'VIBE' + (s.vibes ? ' · ' + s.vibes : '');
+/* 11/10 (bis) — LA BOÎTE ÉPARPILLÉE. Dans le fil, la Habit Box se déconstruit au-dessus du space :
+   l'Habit reste la boîte navy, chaque objectif devient une boîte bleue, chaque répulsion une
+   boîte rouge-violet, décalées une à une (décalage stable, tiré de l'id). Aucune étiquette : la
+   couleur dit le type, comme dans COM. Un tap sur une boîte ouvre son HORIZON (plus bas). */
+const whyOf = s => s.why || (s.mine && s.show_why ? s.context : null);
+const elemsOf = s => { const w = whyOf(s) || {};
+  return [...(w.objectives || []).map((x,i) => ({k:'o',i,text:String(x.text || '').trim()})),
+          ...(w.repulsions || []).map((x,i) => ({k:'r',i,text:String(x.text || '').trim()}))].filter(x => x.text).slice(0,6); };
+const jitter = (id,n) => { let h = 2166136261; for(const c of String(id) + ':' + n) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return (h >>> 0) / 4294967296; };
+const scatterHTML = s => elemsOf(s).map((e,n) => '<div class="el el-' + e.k + '" role="button" tabindex="0" data-hz="' + e.k + '" data-hz-i="' + e.i + '" style="--x:' + Math.round((n % 2 ? 26 : 2) + jitter(s.id,n) * 18) + '%">' + esc(e.text) + '</div>').join('');
+function railHTML(s){
+  const id = esc(s.id), b = [];
+  if(s.visibility === 'shared' && !s.mine) b.push('<button class="btn vibe' + (s.vibed ? ' is-on' : '') + '" type="button" data-vibe="' + id + '" aria-pressed="' + !!s.vibed + '">' + vibeLabel(s) + '</button>');
+  else if(s.vibes) b.push('<span class="vibes-n">' + s.vibes + ' vibe' + (s.vibes > 1 ? 's' : '') + '</span>');
+  if(s.habit) b.push('<button class="btn" type="button" data-spot-it="' + id + '">SPOT</button>');
+  if(s.visibility === 'shared') b.push('<button class="btn" type="button" data-share="' + id + '">SHARE</button>');
+  return '<div class="acts rail">' + b.join('') + '</div>';
+}
+function feedStage(s){
+  const h = {name:s.habit, ints:s.intentions || [], freq:s.freq, objectives:[], repulsions:[]};
+  return '<div class="info"><div class="scatter">' + scatterHTML(s) + '</div><div class="hz-h" role="button" tabindex="0" data-hz="h">' + habitHTML(h) + '</div>' +
+    (s.comment ? '<p class="sd-say">' + esc(s.comment) + '</p>' : '') +
+    (!s.mine && s.creator ? '<div class="by"><span>by</span><button class="tname" type="button" data-profile="' + esc(s.creator) + '">' + esc(s.creator) + '</button></div>' : '') +
+    '<p class="note acts-note" hidden></p></div>' + railHTML(s);
+}
 function actsHTML(s, where){
   const id = esc(s.id), b = [];
   if(s.format !== 'spot' && s.visibility === 'shared' && !s.mine) b.push('<button class="btn vibe' + (s.vibed ? ' is-on' : '') + '" type="button" data-vibe="' + id + '" aria-pressed="' + !!s.vibed + '">' + vibeLabel(s) + '</button>');
   if(s.mine && s.vibes) b.push('<span class="vibes-n">' + s.vibes + ' vibe' + (s.vibes > 1 ? 's' : '') + '</span>');
+  if(s.format !== 'spot' && s.habit) b.push('<button class="btn" type="button" data-spot-it="' + id + '">SPOT</button>');
   if(s.visibility === 'shared') b.push('<button class="btn" type="button" data-share="' + id + '">SHARE</button>');
   if(where === 'detail' && s.mine) b.push('<button class="btn" type="button" data-del="' + id + '">DELETE</button>');
   if(where === 'detail') b.push('<button class="btn" type="button" data-close="1">CLOSE</button>');
   return b.length ? '<div class="acts">' + b.join('') + '</div><p class="note acts-note" hidden></p>' : '';
 }
+/* SPACE → SPOT (Wah, 11/10) : figher.club prolonge SPACE. Mon space → le plan d'un spot, Habit et
+   ville déjà posées ; le space d'un autre → les spots à venir de cette Habit (les rejoindre). */
+const CLUB = 'https://www.figher.club';
+function spotIt(s){
+  const q = new URLSearchParams({ v: s.mine ? 'plan' : 'list', habit: s.habit || '' });
+  if(s.mine && s.city) q.set('city', s.city);
+  ssoVersDomaine(sb, 'club', CLUB + '/?' + q.toString());
+}
 const spotById = id => DETAIL?.id === id ? DETAIL : [...FEED.list, ...PROF.list, ...(VIB.data?.given || [])].find(x => x.id === id);
 function actsSay(button, text, creator){
-  const n = button.closest('.acts')?.nextElementSibling; if(!n) return;
+  const a = button.closest('.acts'), n = a?.nextElementSibling?.matches('.acts-note') ? a.nextElementSibling : button.closest('.stage')?.querySelector('.acts-note'); if(!n) return;
   n.hidden = false; n.innerHTML = esc(text) + (creator ? ' <button class="btn" type="button" data-com="/@' + encodeURIComponent(creator) + '">SUBSCRIBE</button>' : '');
 }
 
@@ -783,8 +826,9 @@ async function actsClick(e){
   const del = t.closest('[data-del]'); if(del){ if(await spaceDelete(del, del.dataset.del) === 'failed') actsSay(del, 'Not deleted. Try again.'); return true; }
   const vb = t.closest('[data-vibe]'); if(vb){ await vibe(vb.dataset.vibe, vb); return true; }
   const pf = t.closest('[data-profile]'); if(pf){ openProfile(pf.dataset.profile); return true; }
+  const si = t.closest('[data-spot-it]'); if(si){ const s = spotById(si.dataset.spotIt); if(s) spotIt(s); return true; }
   const sh = t.closest('[data-share]');
-  if(sh){ const url = 'https://www.totehm.space/?spot=' + encodeURIComponent(sh.dataset.share);
+  if(sh){ const url = 'https://www.totehm.space/s/' + encodeURIComponent(sh.dataset.share);
     try{ if(navigator.share) await navigator.share({ title:'TOTEHM.SPACE', url }); else { await navigator.clipboard.writeText(url); sh.textContent = 'LINK COPIED'; } }
     catch(_){} return true; }
   return false;
@@ -956,13 +1000,11 @@ function focusVisibleClip(){const f=$('feed'),height=f.querySelector('.clip[data
 let feedScrollFrame=0;
 $('feed').addEventListener('scroll',()=>{if(VIEW==='feed' && !feedScrollFrame)feedScrollFrame=requestAnimationFrame(()=>{feedScrollFrame=0;focusVisibleClip();});},{passive:true});
 const io = new IntersectionObserver(()=>{if(VIEW==='feed')focusVisibleClip();}, { threshold:[0, .6, 1] });
-const MATCHED = {habit:'same habit',objective:'objective',repulsion:'repulsion',intention:'intention',rhythm:'rhythm'};
-function feedInfo(s){return spotHTML(s)+(s.matched?.length ? '<p class="matched">'+s.matched.map(m=>esc(MATCHED[m]||m)).join(' · ')+'</p>' : '')+actsHTML(s,'feed');}
 function paintFeed(more=false){
   const f = $('feed'), L = FEED.list; FEED.shown = L;
   const existing=[...f.querySelectorAll('.clip[data-k]')];
   if(!more && existing.length && existing.length===L.length && existing.every((c,k)=>{const m=c.querySelector('video,img[data-photo]'),s=L[k];return c.dataset.id===s.id && (m?.dataset.bunny || m?.dataset.clip || m?.dataset.photo || '')===(s.clip?.id || s.video || s.photo || '');})){
-    existing.forEach((c,k)=>{const info=c.querySelector('.info'),html=feedInfo(L[k]);if(info.innerHTML!==html)info.innerHTML=html;});if(VIEW==='feed')focusVisibleClip();return;
+    existing.forEach((c,k)=>{const st=c.querySelector('.stage'),html=feedStage(L[k]);if(st.innerHTML!==html)st.innerHTML=html;});if(VIEW==='feed')focusVisibleClip();return;
   }
   if(!more){io.disconnect();f.querySelectorAll('video').forEach(releaseClip);f.replaceChildren();FEED.active=null;f.scrollTop=0;}
   f.querySelectorAll('.clip:not([data-k])').forEach(n => n.remove());
@@ -970,7 +1012,7 @@ function paintFeed(more=false){
   const start=more?f.querySelectorAll('.clip[data-k]').length:0;
   f.insertAdjacentHTML('beforeend',L.slice(start).map((s, i) => '<div class="clip" data-k="' + (start+i) + '" data-id="' + esc(s.id) + '">' +
     (hasMedia(s) ? mediaHTML(s) : '<div class="noclip">no video</div>') +
-    '<span class="vibe-pop" aria-hidden="true">VIBE</span><div class="info">' + feedInfo(s) + '</div></div>').join(''));
+    '<span class="vibe-pop" aria-hidden="true">VIBE</span><div class="stage">' + feedStage(s) + '</div></div>').join(''));
   [...f.querySelectorAll('.clip[data-k]')].slice(start).forEach(c => io.observe(c));
   if(VIEW==='feed')focusVisibleClip();
 }
@@ -985,7 +1027,29 @@ const PILLARS = {BODY:['fight','flow'],MENTAL:['enrich','focus'],SOUL:['express'
 const SF = { box:null, habit:false, ints:new Set(), pillars:new Set(), freq:false, obj:new Set(), rep:new Set(), shows:null, near:false, timer:0 };
 const sfCount = () => (SF.habit?1:0) + SF.ints.size + SF.pillars.size + (SF.freq?1:0) + SF.obj.size + SF.rep.size + (SF.shows?1:0) + (SF.near?1:0);
 const boxTexts = (h,k) => (h?.[k] || []).map(x => String(x.text || '').trim()).filter(Boolean);
+/* L'HORIZON (11/10 bis) : un tap sur une boîte éparpillée remplace le fil par les spaces qui
+   partagent CET élément (même Habit, même objectif, même répulsion : `space_feed`, aucune
+   nouvelle règle). ✕ rend le fil d'avant, au même endroit. */
+const HZ = { on:null, prev:null };
+function hzOpen(s, k, i){
+  const e = k === 'h' ? {k, text:s.habit} : elemsOf(s).find(x => x.k === k && x.i === i);
+  if(!e?.text) return;
+  if(!HZ.on) HZ.prev = { list:FEED.list, more:FEED.more, top:$('feed').scrollTop };
+  HZ.on = { k, text:e.text }; hzPaint(); sfOpen(false);
+  FEED.list = []; FEED.more = false; loadFeed(false);
+}
+function hzClose(){
+  const p = HZ.prev; HZ.on = null; HZ.prev = null; hzPaint(); FEED.seq++; FEED.loading = false;
+  if(!p) return loadFeed(false);
+  FEED.list = p.list; FEED.more = p.more; paintFeed(); $('feed').scrollTop = p.top; if(VIEW === 'feed') focusVisibleClip();
+}
+function hzPaint(){
+  const z = $('hz'), on = HZ.on; z.classList.toggle('hide', !on); document.body.classList.toggle('is-hz', !!on);
+  if(on){ const b = $('hz-el'); b.className = on.k === 'h' ? 'hz-hb' : 'el el-' + on.k; b.textContent = on.text; }
+}
 function sfFilter(){
+  if(HZ.on) return { habit: HZ.on.k === 'h' ? HZ.on.text : null, ints:[], freq:null,
+    objectives: HZ.on.k === 'o' ? [HZ.on.text] : [], repulsions: HZ.on.k === 'r' ? [HZ.on.text] : [], shows:null, near:false };
   const ints = new Set(SF.ints); SF.pillars.forEach(p => (PILLARS[p] || []).forEach(i => ints.add(i)));
   return { habit: SF.habit && SF.box ? SF.box.name : null, ints:[...ints], freq: SF.freq && SF.box?.freq ? SF.box.freq : null,
            objectives:[...SF.obj], repulsions:[...SF.rep], shows:SF.shows, near:SF.near && !!POS };
@@ -995,7 +1059,7 @@ function sfBox(h){
   SF.obj = new Set(boxTexts(h,'objectives')); SF.rep = new Set(boxTexts(h,'repulsions'));
 }
 function sfReset(){ sfBox(null); SF.pillars = new Set(); SF.shows = null; SF.near = false; }
-function sfApply(){ clearTimeout(SF.timer); SF.timer = setTimeout(() => loadFeed(false), 220); sfPaint(); paintInts(); }
+function sfApply(){ if(HZ.on){ HZ.on = null; HZ.prev = null; hzPaint(); } clearTimeout(SF.timer); SF.timer = setTimeout(() => loadFeed(false), 220); sfPaint(); paintInts(); }
 function sfPaint(){
   const n = sfCount(), b = $('sf-btn'), open = !$('sf-panel').classList.contains('hide');
   b.textContent = n ? 'Filter · ' + n : 'Filter'; b.classList.toggle('is-on', !!n); b.setAttribute('aria-expanded', String(open));
@@ -1020,6 +1084,7 @@ function sfOpen(open){
   sfPaint();
 }
 $('sf-btn').onclick = () => sfOpen($('sf-panel').classList.contains('hide'));
+$('hz-x').onclick = hzClose;
 const togg = (set, v) => { set.has(v) ? set.delete(v) : set.add(v); };
 $('sf-panel').addEventListener('click', e => {
   const t = e.target.closest('button,[data-sf-pick]'); if(!t) return;
@@ -1047,12 +1112,17 @@ $('feed').addEventListener('click', async e => {
   if(await actsClick(e)) return;
   if(e.target.closest('button')) return;
   const clip = e.target.closest('.clip[data-id]'); if(!clip) return;
+  const hz = e.target.closest('[data-hz]'); if(hz){ const s = spotById(clip.dataset.id); if(s) hzOpen(s, hz.dataset.hz, Number(hz.dataset.hzI)); return; }
   const now = Date.now();
   if(now - tapLast < 300){ clearTimeout(tapTimer); tapLast = 0; const s = spotById(clip.dataset.id);
     if(s && !s.mine && s.visibility === 'shared'){ const pop = clip.querySelector('.vibe-pop'); pop?.classList.add('is-on'); setTimeout(() => pop?.classList.remove('is-on'), 650); if(!s.vibed) vibe(s.id); }
     return; }
   tapLast = now;
   tapTimer = setTimeout(() => { const v = clip.querySelector('video'); if(v){ v.muted = !v.muted; v.play().catch(() => {}); } }, 300);
+});
+$('feed').addEventListener('keydown', e => {
+  const hz = e.target.closest?.('[data-hz]'); if(!hz || (e.key !== 'Enter' && e.key !== ' ')) return;
+  e.preventDefault(); const s = spotById(hz.closest('.clip[data-id]')?.dataset.id); if(s) hzOpen(s, hz.dataset.hz, Number(hz.dataset.hzI));
 });
 async function loadFeed(more){
   if(more && (!FEED.more || FEED.loading)) return;
@@ -1276,7 +1346,7 @@ $('detail').addEventListener('click', async e => {
 
 
     const ouvert=()=>!$('habit-picker').classList.contains('hide');
-    function hint(){ $('tp-hint').textContent='Tap on your TOTEHM to turn a habit into a space'; }
+    function hint(){ $('tp-hint').textContent='tap to share a space'; }
     function sync(){
       const open=ouvert(); $('tp-wrap').classList.toggle('is-open',open);
       if(document.hidden||VIEW!=='home'||!document.body.classList.contains('v-home')||open||RM.matches){
@@ -1598,8 +1668,8 @@ function camPaint(){
   camState();
   const b = $('cam-body'), st = REC.step, photo = REC.kind === 'photo', cancel = '<button class="btn" type="button" data-cancel="1">CANCEL</button>';
   let h = '';
-  if(st === 'signin') h = '<p class="say">Put your TOTEHM into action. At home or anywhere else.</p><div class="cam-actions"><button class="btn" type="button" data-signin="1">CONNECT WITH MY TOTEHM</button></div>';
-  else if(st === 'idle') h = '<p class="say">Share a space from your TOTEHM</p><p class="note">film the place, not yourself · its own sound, no added music</p><div class="cam-actions"><button class="btn" type="button" data-start="video">VIDEO<small>up to ' + (RULES.clip_seconds || 33) + ' s</small></button><button class="btn" type="button" data-start="photo">PHOTO<small>one image</small></button>' + cancel + '</div>';
+  if(st === 'signin') h = '<p class="say">Share a space</p><div class="cam-actions"><button class="btn" type="button" data-signin="1">CONNECT WITH MY TOTEHM</button></div>';
+  else if(st === 'idle') h = '<p class="say">film the place, not yourself</p><div class="cam-actions"><button class="btn" type="button" data-start="video">VIDEO</button><button class="btn" type="button" data-start="photo">PHOTO</button>' + cancel + '</div>';
   else if(st === 'perm') h = '<p class="say">Allow the camera</p><div class="cam-actions">' + cancel + '</div>';
   else if(st === 'denied') h = '<p class="say">The camera is closed for this site. Allow it in the browser, then come back.</p><div class="cam-actions">' + cancel + '</div>';
   else if(st === 'nocam') h = '<p class="say">This browser cannot ' + (photo ? 'take the photo' : 'film') + '. Try Safari or Chrome on the phone.</p><div class="cam-actions">' + cancel + '</div>';
@@ -1737,6 +1807,7 @@ addEventListener('keydown',e => {
   }
   if(e.key === 'Escape'){
     if(!$('habit-picker').classList.contains('hide')) pickerClose(); else if(!$('sf-panel').classList.contains('hide')) sfOpen(false); else if(DETAIL) closeDetail();
+    else if(HZ.on && VIEW === 'feed') hzClose();
     else if($('menu').classList.contains('is-open')) menu(false); else if(REC.step === 'rec') joyTap(); else if(VIEW !== 'home' && !REC.busy) go('home');
     return;
   }

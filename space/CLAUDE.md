@@ -1,5 +1,32 @@
 # space/CLAUDE.md — totehm.space : le réseau social de l'Habit stratégique (croix de cinq vues)
 
+## 11/10/2026 (bis) — la boîte éparpillée, ses horizons, SPACE → SPOT, l'aperçu partagé
+
+BUILD `2026-10-11-space-scatter`. Wah : « trop de blabla », « format Totehm… une box éparpillée, déconstruite pour
+proposer de nouveaux horizons », « transformer un Space en Spot ».
+- **Carte du fil** (`feedStage`) : `.stage` = la colonne 9:16 du média. La Habit Box reste navy (intentions, rythme,
+  SANS objectifs ni répulsions) ; chaque objectif MONTRÉ devient une boîte bleue `.el-o`, chaque répulsion une
+  boîte rouge-violet `.el-r`, au-dessus, décalées (`--x` stable tiré de l'id, `jitter`), 6 au plus. Aucune
+  étiquette : la couleur dit le type. Le détail (fiche) garde la boîte de COM.
+- **Horizon** (`HZ`, `hzOpen`, `hzClose`) : un tap (ou Entrée) sur une boîte → le fil des spaces qui partagent CET
+  élément (`space_feed` : `habit`, ou `objectives:[texte]`, ou `repulsions:[texte]`). `#hz` montre la boîte dans sa
+  couleur + ✕ ; Échap ferme d'abord l'horizon ; ✕ rend le fil d'avant, au même défilement. Le filtre (`#sf-btn`)
+  s'efface pendant un horizon ; un changement de filtre ferme l'horizon.
+- **Rail** (`railHTML`, à droite) : VIBE · SPOT · SHARE ; le mien : « N vibes » · SPOT · SHARE. `.info` s'arrête à
+  96 px du bord droit (le rail ne chevauche jamais la boîte).
+- **SPOT** (`spotIt`) : mon space → `figher.club/?v=plan&habit=&city=` ; celui d'un autre → `?v=list&habit=`
+  (ses spots à venir), toujours par `ssoVersDomaine(sb,'club',…)`. Aussi dans la fiche (`actsHTML`).
+- **SHARE** → `https://www.totehm.space/s/<id>` : `vercel.json` réécrit `/s/:id` → `/api/card?id=` et `/s/:id/i` →
+  `&img=1` (fonction Node `space/api/card.js`). `spot_get` sous la clé ANON publique : seul un space PARTAGÉ a sa
+  carte (titre = l'Habit, « by nia · Lisbon », image = la photo signée 5 min ou la vignette Bunny), tout le reste
+  la carte générique ; `<meta refresh>` + `location.replace('/?spot=')`. Image : 1 h de cache CDN.
+- **Moins de mots** (mesuré au téléphone) : centre 54 → 41, fil 52 → 44, caméra 33 → 10. « What is a space? »
+  (bouton, gabarit, CSS) retiré : le centre le dit. Indice « tap to share a space » ; ligne « no selfie, no music ·
+  just the place and its sound » ; caméra « film the place, not yourself » + VIDEO · PHOTO · CANCEL ; plus de
+  « same habit · objective » (`matched` reste dans la réponse, plus affiché). Balises `og:*` génériques dans `<head>`.
+- Tests : `space_scatter` 15/15 (nouveau), `tests/node/space_card.mjs` 11/11 (nouveau), `space` 47, `space_top_left` 21,
+  `spaces_loupe` 26, `space_boxes_ecosystem` 19, `space_spot_links` 30, `spaces_ui` (4 échecs d'identité d'avant).
+
 ## 11/10/2026 — le TikTok / Instagram de l'Habit stratégique
 
 BUILD `2026-10-11-space-social`. Wah : « carte ouverte », « aucun spot sur SPACE », « sans selfie et sans musique ».

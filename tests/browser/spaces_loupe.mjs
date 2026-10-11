@@ -51,7 +51,7 @@ try{
    functions:{'space-delete':b=>{gone.add(b.spot);return {ok:true,removed:{clip:true,files:1}};},'create-bunny-upload':{available:false}}});
   await pg.goto('https://www.totehm.space/');await pg.waitForFunction(()=>window.__totehm_space?.().view==='home');await pg.waitForTimeout(700);
   const hint=await pg.$eval('#tp-hint',e=>{const s=getComputedStyle(e);return {txt:e.textContent,color:s.color,size:parseFloat(s.fontSize),weight:s.fontWeight,bg:s.backgroundColor};});
-  ok(/turn a habit into a space/i.test(hint.txt)&&hint.color==='rgb(255, 255, 255)'&&hint.size>=11&&Number(hint.weight)>=700&&hint.bg!=='rgba(0, 0, 0, 0)','l\'invitation se lit : blanche, grasse, '+hint.size+' px, sur sa boîte noire');
+  ok(/tap to share a space/i.test(hint.txt)&&hint.color==='rgb(255, 255, 255)'&&hint.size>=11&&Number(hint.weight)>=700&&hint.bg!=='rgba(0, 0, 0, 0)','l\'invitation se lit : blanche, grasse, '+hint.size+' px, sur sa boîte noire');
   await pg.screenshot({path:OUT+'/space_landing_hint.png'});
   const w0=(await pg.$eval('#totehm-paper',e=>e.getBoundingClientRect().width));
   await pg.click('#cur-g');await pg.waitForTimeout(160);
