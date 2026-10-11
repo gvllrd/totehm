@@ -1,4 +1,4 @@
-# CLAUDE.md — CTO de TOTEHM (racine · réorganisé le 30/09, mis à jour le 05/10/2026)
+# CLAUDE.md — CTO de TOTEHM (racine · réorganisé le 30/09, mis à jour le 11/10/2026)
 > **Ce fichier est chargé à CHAQUE session : il reste court (≤ 250 lignes).**
 > Détails : `CLAUDE.md` du domaine ; histoire : `docs/POSTMORTEMS.md`,
 > à lire seulement si utile. Avant copy, naming ou UI : section utile de `BRAND.md`.
@@ -68,8 +68,8 @@ com/      → www.totehm.com       LA STRATÉGIE, LA SOURCE : le Totehm (5 vues)
                                  · ↓ TotehmSM (Higher Self : 7 gratuits/30 j puis Higher) · ← chercher · → SPACE et boutique ; /console
 club/     → www.figher.club      LA RENCONTRE DANS LA RÉALITÉ : les spots (à venir · en cours · passés, `spots_list`/`spots_feed`)
                                  radar au centre · ↑ annoncer · ↓ caméra · ← passés · → agenda ; /meet garde l’ancienne porte ; 308 boutique inchangés
-space/    → www.totehm.space     L'INSPIRATION : une Habit stratégique vécue (photo, vidéo, son pourquoi) ; fil au centre, caméra en bas
-                                 (space_post, jamais le point exact), porte des trois prochains spots à gauche → figher.club
+space/    → www.totehm.space     L'INSPIRATION, le réseau social de l'Habit (11/10) : centre = le concept (papier qui tourne, Higher Social media,
+                                 pouls) · ← WATCH le fil (`space_feed`, filtre d'une Habit Box) · ↓ SHARE caméra · → MY SPACE · ↑ VIBES ; aucun spot
 boutique/ → www.higher.boutique  L'ACHAT, physique et numérique (09/10) : Get Higher / THP / Stoner / Lisbon / Origins, le marché
                                  de l'art (/market) ; accueil + collection ; /streetwear (plein écran au téléphone, fenêtres-côtés sur ordinateur) : cloth →
                                  element (wisdom ← → vision, ou « + totehmize » depuis COM) → 0.nom → style → taille ; Luxe SUR DEVIS ; Decode = la page du Cloth
@@ -89,18 +89,16 @@ des booléens et des compteurs, jamais une valeur de membre.
 
 ## Identité — quatre origines, une autorité
 
-Quatre origines = quatre `localStorage` = quatre sessions ; aucun cookie
-partagé. **totehm.com est l'autorité** : un satellite se connecte par
-`ssoLogin()` → `totehm.com/auth` (code d'autorisation + PKCE + `state`, retour
-dans le fragment) → `sso-redeem` exige le `verifier`. Silencieux une fois par
-onglet pour un navigateur déjà connu. Un lien d'un domaine connecté vers un
-autre passe par le pont `ssoVersDomaine()`. Le code : 60 s, usage unique,
-haché, un domaine cible. **Jamais un jeton de session dans une URL. Jamais
-une URL de retour reçue** : `client` est un nom (table fixe), `return` un
-chemin. Le bloc se COPIE depuis `tools/sso_snippet.js` et bloque au niveau
-du module (2,5 s max, dégradé pas cassé). `verifyOtp({ type, token_hash })`
-SEULS : avec `email`, Auth répond 400 et le pont casse (02/10).
-CTA partout : **CONNECT WITH MY TOTEHM** ; plus d’OTP local sur les satellites.
+Quatre origines = quatre `localStorage` = quatre sessions ; aucun cookie partagé. **totehm.com est l'autorité** :
+un satellite se connecte par `ssoLogin()` → `totehm.com/auth` (code d'autorisation + PKCE + `state`, retour dans
+le fragment) → `sso-redeem` exige le `verifier`. Silencieux une fois par onglet pour un navigateur déjà connu. Un
+lien d'un domaine connecté vers un autre passe par le pont `ssoVersDomaine()`. Le code : 60 s, usage unique, haché,
+un domaine cible. **Jamais un jeton de session dans une URL. Jamais une URL de retour reçue** : `client` est un nom
+(table fixe), `return` un chemin. Le bloc se COPIE depuis `tools/sso_snippet.js` et bloque au niveau du module
+(2,5 s max, dégradé pas cassé). `verifyOtp({ type, token_hash })` SEULS : avec `email`, Auth répond 400 et le pont
+casse (02/10). CTA partout : **CONNECT WITH MY TOTEHM** ; plus d’OTP local sur les satellites. **Invité** (11/10) =
+connexion anonyme Supabase, totehm.com seul, cachée tant que le projet la ferme : ni space, ni vibe, ni Higher Self
+avant « save with my email » (même compte, `updateUser` + code `email_change`).
 
 ## Les données, les droits, l'argent
 
@@ -169,8 +167,8 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 - **CORS** : `corsHeaders(origin, fallback)` de `_shared/origins.ts`, jamais `*`.
 - **Claude Code** (terminal) : une commande simple par ligne, jamais
   `cd X && …` (les permissions jugent la ligne entière).
-**SPACE · 09/10 :** un space = une Habit vécue (photo/vidéo + son pourquoi), jamais un point exact ; fil, caméra,
-porte des spots. **figher.club :** un spot = un lieu + une heure (Higher spot : chez soi, lieu privé ou dehors) ;
+**SPACE · 11/10 :** un space = une Habit vécue (photo/vidéo + son pourquoi), jamais un point exact ; sans selfie ni
+musique ajoutée ; vibes (`space_vibe`), profils, fil filtré par objectifs/répulsions. **figher.club :** un spot = un lieu + une heure (Higher spot : chez soi, lieu privé ou dehors) ;
 radar, annonce (toujours ON), agenda, I AM HERE, passés ; OFF = ville, ON = le point pour mes abonnés. Mini-boxes
 OBJECTIVES/REPULSIONS séparées (droits serveur). Détails : `space/CLAUDE.md`, `club/CLAUDE.md`, copy : `BRAND.md`.
 My spaces (COM, SPACE) + `space-delete` ; une Box WISDOM/VISION de COM montre ses Cloths (`element_cloths`) comme une Habit ses spaces ; chercher = un NOM → son TOTEHM en lecture (spaces, loupe, COPY d'une Box). Espace membre COM = l'utilisateur (vignette, Higher, souscriptions), format higher.boutique.
@@ -198,7 +196,7 @@ My spaces (COM, SPACE) + `space-delete` ; une Box WISDOM/VISION de COM montre se
   le membre TAPE et le NOM d'un Totehm. Space Mono = texte, labels, prix,
   navigation, boutons (Bold) ; un titre = Space Mono Bold en capitales.
   « Higher » est TOUJOURS le SVG, jamais du texte ; le titre d'une vue
-  d'intention = l'intention + le badge Higher (SPACE n'affiche plus de titres de vue).
+  d'intention = l'intention + le badge Higher (SPACE : seul le centre porte [Higher] Social media).
 - **Couleurs** : navy `#333366` · bleu clair `#36498c` · rouge-violet
   `#743169` = les boîtes du Totehm et elles seules (+ le papier et le badge Higher). Coral `#fbd5ca` = le NOM du Totehm (Quantico), la méthode
   Stoner et le « Get » de [Get Higher]. Filtres, accès, abonnements, soldes,

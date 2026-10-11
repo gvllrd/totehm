@@ -93,6 +93,17 @@ Storage. Le Champion n'en a qu'une (`image_url`, dossier vide).
    écraser une photo posée à la main ; rejouer F pour le Champion `478633385`.
 2. Rapport : le nombre de vues par support. Aucune clé dans le rapport.
 
+## Tâche 5 — 11/10/2026 · ouvrir la connexion sans email (une ligne, réversible)
+
+Le mode invité de totehm.com est livré mais CACHÉ : le projet refuse la connexion anonyme
+(`/auth/v1/settings` → `external.anonymous_users: false`). La session cloud n'a pas de jeton Management API.
+1. `PATCH https://api.supabase.com/v1/projects/abujjbkbbiumxrokozph/config/auth` avec
+   `{"external_anonymous_users_enabled": true}` (jeton `sbp_…` local, jamais recopié) — ou Dashboard →
+   Authentication → Sign In / Providers → « Allow anonymous sign-ins ».
+2. Vérifier : `GET https://abujjbkbbiumxrokozph.supabase.co/auth/v1/settings` → `anonymous_users: true`.
+3. Le gabarit « Change email address » doit contenir `{{ .Token }}` (l'invité tape un code, pas un lien).
+4. Rapport : les deux valeurs. Retour arrière : le même PATCH à `false` (le bouton se recache seul).
+
 ## Tâche 4 — 09/10/2026 · purger les spaces et les spots d'essai (une approbation)
 
 Tout est déjà annulé et invisible (session cloud, `spaces_spots_reset`). Reste
@@ -283,6 +294,13 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > en MODE TEST Stripe, au vrai prix, sans argent réel (pièces et commandes
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
+
+### Correction 0.53 — 11/10/2026 · le pourquoi, l'invité, SPACE réseau social (à reporter)
+> totehm.com rappelle son pourquoi sous [Higher] STRATEGY ; le code de vérification ne vide plus rien ; un
+> invité peut construire son TOTEHM sans email (connexion anonyme, à ouvrir : Tâche 5) puis le sauver.
+> totehm.space devient le réseau social de l'Habit stratégique : concept au centre, fil filtré par une Habit
+> Box (objectifs, répulsions), caméra, profil, vibes ; sans selfie ni musique ajoutée ; plus aucun spot.
+> Migration `space_social` appliquée. Aucun prix changé.
 
 ### Correction 0.52 — 09/10/2026 (soir) · le lot space/spot relu et corrigé (à reporter)
 > figher.club parle enfin de spots (il disait « space » partout) ; « What is a spot? » porte les règles de la

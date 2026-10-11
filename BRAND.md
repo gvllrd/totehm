@@ -1,5 +1,26 @@
 # BRAND.md — TOTEHM
 
+## CURRENT UPDATE — 11/10/2026 · the why on every home, SPACE as a social network
+
+- **Every home recalls the why and the member's benefit.** totehm.com, under
+  [Higher] STRATEGY, in Wah's words: *your objectives, the habits and
+  repulsions to achieve them. your vision. your wisdom.*
+- **Without email** (totehm.com only, once enabled): *Start without email* ·
+  *no email · my TOTEHM stays on this device until I save it* · *Guest TOTEHM ·
+  save it with my email*. A guest builds
+  a TOTEHM; posting a space, sending a vibe and Higher Self wait for the email.
+- **totehm.space = [Higher] Social media**: the TikTok / Instagram of the
+  strategic Habit. Centre = the concept (the TOTEHM turning, one line:
+  *strategic habits, lived. no selfie, no added music: the place, its sound,
+  its atmosphere.*). Joystick: **Watch** (left) · **Share** (down) ·
+  **My space** (right) · **Vibes** (up).
+- **A vibe** is how a space is felt and answered (button or double tap); it
+  overrides the older « no likes » line for SPACE only. Never a score, never a
+  percentage: the feed says *why* a space matches (same habit, an objective).
+- **No spot on SPACE.** Spots live on figher.club; the centre only opens its
+  door. Filter = *My Habit Box*: pick one and everything it holds (habit,
+  intentions, rhythm, objectives, repulsions) filters the feed.
+
 ## CURRENT UPDATE — 09/10/2026 · four domains, four functions
 
 - **totehm.com — the strategy.** Build my TOTEHM (elements and their links),
