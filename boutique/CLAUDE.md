@@ -1,5 +1,15 @@
 # boutique/CLAUDE.md — higher.boutique : l'achat, physique et numérique (Cloths, Get Higher, Stoner, le marché)
 
+## BOUTIQUE · 11/10/2026 — BOUTONS PLUS COMPACTS
+
+Padding intérieur réduit sans changer les fonctions : boutons principaux Streetwear,
+Luxury, Market, onglets, tailles, retours et navigation ; `.btn-sig` plus étroit
+sur les anciennes pages ; `eco-text-btn` de la boutique passe de `.65em .95em`
+à `.42em .68em`. Les hitboxes de la manette, des zooms et les éléments du
+Totehm ne sont pas modifiés. Les règles sont CSS uniquement ; pas de changement
+aux paiements, données ou redirections. Ce réglage est local à `boutique/` :
+le gabarit partagé `tools/ecosystem_ui.css` des autres domaines reste inchangé.
+
 ## BOUTIQUE · 09/10/2026 — L'ACHAT, PHYSIQUE ET NUMÉRIQUE : GET HIGHER EST REVENU
 
 Les pages parties sur figher.club le 02/10 reviennent (git mv) : `discover`,
