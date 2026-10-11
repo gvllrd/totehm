@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 9 octobre 2026, lot space / spot relu et corrigé** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 11 octobre 2026, SPACE réseau social, invité COM** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -15,6 +15,20 @@
 
 ---
 
+
+## 0 · SPACE RÉSEAU SOCIAL, LE POURQUOI ET L'INVITÉ SUR COM — 11/10/2026
+
+| quoi | valeur mesurée |
+|---|---|
+| migration `space_social` (`20261011102841`, MCP) | table `space_vibes` (RLS sans politique) · `space_feed` · `space_vibe` · `space_profile` · `my_vibes` · `space_pulse` · `_spot_view` + vibes · `space_post` et `sm_begin` refusent l'invité (`email`) |
+| auto-tests SQL (annulés) | `space_social` FAIL={} · `space_spot_split` FAIL={} (rejoué : `space_post` modifié) · `higher_self_freemium` FAIL={} (rejoué : `sm_begin` modifié) |
+| advisors sécurité | ERROR 5 (inchangé : `auth_users_exposed` 1, `security_definer_view` 4) · nouvelles notices attendues : 3 anon + 5 authenticated security-definer, `space_vibes` RLS sans politique |
+| navigateur (Supabase simulé) | com_guest 14/14 (nouveau) · com_member_menu 29/29 · com_croix 51/51 · com_read_copy 20/20 · com_cloths 16/16 · com_mouth 30/30 · com_paper 40/40 · com_creator 29/29 · console 18/18 · space 47/47 · space_top_left 20/20 · spaces_loupe 26/26 · space_boxes_ecosystem 22/22 · space_spot_links 30/30 · club_map 42/42 · club_ui 27/27 · club_publish 33/33 · club_luxury 48/48 · boutique_home 23/23 · market 14/14 |
+| échecs connus | spaces_ui : 4 échecs d'identité, déjà présents avant le lot · space_video : lecture HLS impossible dans ce Chromium (déjà le cas sur `a093940`) |
+| connexion anonyme du projet (pg_net, 200) | `/auth/v1/settings` → `anonymous_users: false`, `email: true` : bouton invité CACHÉ (Tâche 5 CLAUDE_CODE.md) |
+| base après déploiement | `space_pulse()` = 2 spaces · 1 membre · 0 vibe (semaine) ; 2 spaces publiés ; 0 ligne `space_vibes` |
+| Vercel `5cc117a` | com · space · club · boutique READY (production) |
+| md5 prod = dépôt (pg_net, 200) | totehm.com/totehm `47378f4f…` `2026-10-11-com-guest` (`lv-why`, `mw-guest` présents) · totehm.space `608763c0…` `2026-10-11-space-social` (`space_feed` présent, `spots_list` absent) · figher.club `ef037fac…` inchangé |
 
 ## 0 · LOT SPACE / SPOT RELU ET CORRIGÉ — 09/10/2026 (quinquies)
 
