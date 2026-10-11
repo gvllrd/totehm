@@ -1,5 +1,24 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 11/10/2026 — le pourquoi au centre, le code qui ne vide rien, l'invité
+
+BUILD `2026-10-11-com-guest`.
+- **Le pourquoi** : `#lv-why` sous [Higher] STRATEGY, les mots de Wah : « your objectives, the habits and repulsions
+  to achieve them. your vision. your wisdom. » (`--lv-why-h` décale `#lv-card`, 56 px sous 360 px de large).
+- **Le code de vérification** (bug : email et code vidés, page figée avant le Totehm) : un seul `verifyOtp` même si
+  `input` part deux fois (collage iOS, `mwVerifying`), chiffres seuls, champs GARDÉS et grisés, `body.is-verifying`,
+  note « opening my TOTEHM… » ; ils se vident quand le Totehm est là. `sessionChange()` / `sesWait()` : on attend
+  la DERNIÈRE `sessionLoad()` (une réponse tardive n'écrase pas la plus fraîche).
+- **Deux `mw-note`** : celui du menu s'appelle `mw-menu-note` (le menu écrivait dans la porte cachée).
+- **Invité** (`ANON_OK` lu dans `/auth/v1/settings` → `external.anonymous_users`) : « Start without email » →
+  `signInAnonymously()`, Totehm direct, sans nom. `guest()` = `me.is_anonymous` ; `cloudMode` vrai. Carte du centre :
+  `#lv-guest` SAVE IT WITH MY EMAIL ; fenêtre membre : `#mw-save` seul (pas de menu payant), « Guest », « only on this
+  device ». Sauvegarde = `updateUser({email})` → code → `verifyOtp({email, token, type:'email_change'})` →
+  `refreshSession()` → « Name your Totehm ». Sortie d'un invité en deux temps (il perd tout). TotehmSM d'un invité :
+  « save my TOTEHM with my email first » (le serveur refuse : `sm_begin` → `email`). **Au 11/10 le projet ferme la
+  connexion anonyme : le bouton reste caché** (tâche CLAUDE_CODE.md).
+- Tests : `com_guest` 14/14 (nouveau), `com_member_menu` 29/29 (lit `mw-menu-note`), `com_croix` 51/51.
+
 ## 09/10/2026 (soir) — les comptes viennent du serveur, « + a spot »
 
 BUILD `2026-10-09-habit-split`. `habit_spaces` rend `spaces` (3), `spots` (3), `total_spaces`, `total_spots` :

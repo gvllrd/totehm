@@ -30,7 +30,8 @@ try{
    const fmt=await pg.locator('#mw-menu .cm-action').evaluateAll(items=>items.every(e=>{const s=getComputedStyle(e);return s.backgroundColor==='rgb(31, 31, 36)'&&s.whiteSpace==='nowrap'&&s.fontSize==='12.5px';}));
    ok(fmt,'the higher.boutique buttons, centred, on one line');
    ok(await pg.$eval('#mw-in-state',e=>e.lastElementChild.textContent.trim().toLowerCase())==='simple terms of use','terms remain the final member entry');
-   await pg.click('#mw-higher');await pg.waitForFunction(()=>/opening soon/.test(document.getElementById('mw-note').textContent));
+   await pg.click('#mw-higher');await pg.waitForFunction(()=>/opening soon/.test(document.getElementById('mw-menu-note').textContent));
+   ok(await pg.isVisible('#mw-menu-note'),'the menu note is VISIBLE in the member window (11/10: it was written into the hidden door note)');
    ok(log.functions.some(f=>f.name==='higher-sub'&&f.body.action==='checkout'),'Get Higher Self asks the server for a checkout — no live price yet: « opening soon »');
    await pg.click('#mw-telegram');await pg.waitForFunction(()=>window.__opened.length===1);
    ok(await pg.evaluate(()=>window.__opened[0])==='https://t.me/TotehmBot?start=CODE123','Connect TotehmBot: a one-use link code, then Telegram');
@@ -52,7 +53,7 @@ try{
    await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(400);await pg.click('#conn-bar');
    await pg.waitForFunction(()=>/renews/.test(document.getElementById('mw-higher-hint').textContent));
    ok((await pg.textContent('#mw-higher'))==='My Higher subscription'&&/Stop at the end of the month/.test(await pg.textContent('#mw-higher-acts')),'Higher active: renews on a date, can stop at the end of the month');
-   await pg.click('[data-hsub="cancel"]');await pg.waitForFunction(()=>/it ends on/.test(document.getElementById('mw-note').textContent));
+   await pg.click('[data-hsub="cancel"]');await pg.waitForFunction(()=>/it ends on/.test(document.getElementById('mw-menu-note').textContent));
    ok(log.functions.some(f=>f.name==='higher-sub'&&f.body.action==='cancel')&&/Keep it/.test(await pg.textContent('#mw-higher-acts')),'stopping is at period end (higher-sub cancel), and it can be kept');
    await pg.click('#mw-higher');await pg.waitForFunction(()=>window.__totehm_lv&&window.__totehm_lv().vue==='b');
    ok(!await pg.$eval('#member-window',e=>e.classList.contains('show')),'My Higher subscription opens TotehmSM (the view below)');

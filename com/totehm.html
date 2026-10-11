@@ -2266,6 +2266,14 @@ body.is-door #gate-door{opacity:1;transform:none;visibility:visible;pointer-even
 body.gate.entered #gate-door{opacity:0;visibility:hidden}
 #gate-door #mw-out-state,#gate-door #mw-claim-state{width:100%}
 #gate-door .mw-input{margin-bottom:0}
+/* 11/10 — sans email : un compte invité Supabase (anonyme), le Totehm vit dans le nuage
+   sous CET appareil ; « save it with my email » le rattache au même compte. */
+.mw-guest-start{border:0;border-radius:10px;padding:9px 14px;background:#1c1c22;color:#cfcfd6;cursor:pointer;
+  font:700 10.5px/1.3 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase}
+.mw-guest-start:disabled{opacity:.5;cursor:default}
+.mw-input:disabled{opacity:.55}
+#mw-save{display:flex;flex-direction:column;gap:7px;margin:4px 0 12px}
+#lv-guest{border:0;border-radius:10px;padding:9px 14px;background:#1c1c22;color:#cfcfd6;cursor:pointer;font:700 10.5px/1.3 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
 /* La question est un LABEL, comme les autres questions du Totehm
    (`.hp-lbl`, `.wp-q`) — Space Mono, 28/09 : plus de Bebas Neue ici. */
 .door-q{font-family:'Space Mono',monospace;font-weight:400;font-size:13px;
@@ -3111,7 +3119,11 @@ body.lv-c #lv-c,body.lv-h #lv-h,body.lv-b #lv-b,body.lv-d #lv-d{opacity:1;visibi
 #lv-slogan.is-g,#lv-slogan.is-x{opacity:0}
 body:not(.gate) #lv-slogan,body.entered #lv-slogan,body.is-door #lv-slogan{display:none}
 /* ── CENTRE : mon TOTEHM, son nom, qui le voit ── */
-#lv-card{position:absolute;left:50%;top:calc(var(--lv-y) + var(--gate-size) / 2 + 64px);transform:translateX(-50%);
+/* 11/10 — sous [Higher] STRATEGY, ce qu'est la plateforme (Wah) : toujours là, connecté ou non. */
+#lv-why{position:absolute;left:50%;top:calc(var(--lv-y) + var(--gate-size) / 2 + 58px);transform:translateX(-50%);
+  width:min(86vw,360px);margin:0;text-align:center;font:400 10.5px/1.55 'Space Mono',monospace;letter-spacing:.04em;color:#9a9aa2;pointer-events:none}
+:root{--lv-why-h:40px}@media(max-width:360px){:root{--lv-why-h:56px}}
+#lv-card{position:absolute;left:50%;top:calc(var(--lv-y) + var(--gate-size) / 2 + 70px + var(--lv-why-h));transform:translateX(-50%);
   display:flex;flex-direction:column;align-items:center;gap:9px;width:min(92vw,420px)}
 #lv-card #ident-block{display:flex;flex-direction:column;align-items:center;gap:6px}
 #lv-card #name-btn,#lv-card #name-btn.claimed,#lv-card #set-name{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:#fbd5ca;
@@ -3296,6 +3308,8 @@ a Totehm</span>
       <input class="mw-input" id="mw-email" type="email" placeholder="your email" autocomplete="email">
       <input class="mw-input hide" id="mw-code" inputmode="numeric" maxlength="6" placeholder="6-digit code">
       <div class="mw-note dim" id="mw-note"></div>
+      <button class="mw-guest-start hide" id="mw-guest" type="button">Start without email</button>
+      <div class="mw-note dim hide" id="mw-guest-hint">no email · my TOTEHM stays on this device until I save it</div>
     </div>
     <div id="mw-claim-state" class="hide">
       <input class="mw-input" id="mw-pseudo" maxlength="24" placeholder="your Totehm">
@@ -3359,6 +3373,7 @@ a Totehm</span>
        La gauche (chercher) est la feuille `#srch`, inchangée. -->
   <div id="lv">
     <section class="lv-pane" id="lv-c" aria-label="My TOTEHM">
+      <p id="lv-why">your objectives, the habits and repulsions to achieve them. your vision. your wisdom.</p>
       <div id="lv-card" class="lv-act hide">
         <div id="ident-block">
           <button class="btn-sig gid" id="name-btn">Name of my TOTEHM</button>
@@ -3372,6 +3387,7 @@ a Totehm</span>
           <button type="button" data-lvvis="subscribers" role="radio" aria-checked="false">Visible to my subscribers</button>
         </div>
         <a class="lv-btn hide" id="lv-prog" href="/monetize">My subscription program</a>
+        <button class="hide" id="lv-guest" type="button">Guest TOTEHM · save it with my email</button>
         <div class="lv-note" id="lv-vis-note" role="status"></div>
       </div>
       <button class="lv-act" id="lv-tap" type="button">Click to open it</button>
@@ -3689,6 +3705,12 @@ a Totehm</span>
         <div class="mw-sync" id="mw-sync"></div>
         <div class="lv-note" id="mw-avatar-note" role="status"></div>
       </div>
+      <div id="mw-save" class="hide">
+        <p class="cm-hint">Guest TOTEHM · only on this device. Save it with my email: it follows me everywhere, SPACE and figher.club included.</p>
+        <input class="mw-input" id="mw-save-email" type="email" placeholder="my email" autocomplete="email">
+        <input class="mw-input hide" id="mw-save-code" inputmode="numeric" maxlength="6" placeholder="6-digit code">
+        <div class="mw-note dim" id="mw-save-note"></div>
+      </div>
       <div id="settings" class="mw-dash">
         <nav class="cm-menu" id="mw-menu" aria-label="Me">
           <div class="cm-item"><button class="cm-action" id="mw-higher" type="button">My Higher subscription</button><p class="cm-hint" id="mw-higher-hint">TotehmSM</p><div id="mw-higher-acts"></div></div>
@@ -3696,7 +3718,7 @@ a Totehm</span>
           <div class="cm-item"><button class="cm-action" id="myspaces-open" type="button">My TOTEHM spaces</button><p class="cm-hint">my history · in SPACE</p></div>
           <div class="cm-item"><button class="cm-action" id="mw-telegram" type="button">Connect TotehmBot</button><p class="cm-hint" id="mw-tg-hint">Telegram · my reflections land there</p></div>
         </nav>
-        <div class="lv-note" id="mw-note" role="status"></div>
+        <div class="lv-note" id="mw-menu-note" role="status"></div>
 
         <!-- ══ ACTIONS DESTRUCTIVES · discrètes, écartées des liens menu
              · 24/09/2026. Un geste destructeur ne se pose pas à côté d'un
@@ -4096,6 +4118,8 @@ function deduceFreq(raw){
    encore pour pré-dessiner les intentions : il y trouve `habits`.) */
 const KEY='totehm_habits_v1';
 let me=null, myProfile=null, cloudMode=false, cloudSaveTimer=null, saveTimer=null;
+/* 11/10 : la connexion invité (anonyme) est-elle ouverte côté Auth ? Lu plus bas. */
+let ANON_OK=false;
 /* 07/10 : l'atterrissage lit UN appel (`my_landing`) — ma vignette, la visibilité
    et l'offre de mon Totehm, mon abonnement Higher, mon THP, Telegram. Peint par
    la croix (`lvRefresh`), vidé au changement de compte (`lvQuitter`). */
@@ -4104,7 +4128,9 @@ let LAND=null, lvRefresh=null, lvQuitter=null;
    deconnexion s'execute avant, et une TDZ y jetterait. */
 
 /* Inscrit = un compte ET le nom de son Totehm. Rien d'autre n'ouvre. */
-const inscrit=()=>!!(me&&myProfile);
+const guest=()=>!!(me&&me.is_anonymous);
+/* 11/10 : un invité (compte anonyme, sans email) est inscrit — sans nom, privé. */
+const inscrit=()=>!!(me&&(myProfile||me.is_anonymous));
 function cacheLire(){
   try{ const c=JSON.parse(localStorage.getItem(KEY)||'null');
        if(c&&me&&c.uid!==me.id){ cacheOublier(); return null; }   /* celui d'un autre : il part */
@@ -4885,7 +4911,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-09-habit-split';
+const BUILD='2026-10-11-com-guest';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -7580,7 +7606,7 @@ async function loadProfile(){
   refreshSub();
   const {data}=await sb.from('profiles').select('pseudo').eq('id',me.id).maybeSingle();
   myProfile=data||null;
-  cloudMode=!!myProfile;
+  cloudMode=!!myProfile||guest();
   connPaint();
 }
 /* ══ L'OFFRE UNIQUE — HIGHER CLUB ═══════════════════════════════════════════
@@ -7649,8 +7675,12 @@ async function loadSubscription(){
 
 function memberPaint(){
   $('mw-out-state').classList.toggle('hide',!!me);
-  $('mw-claim-state').classList.toggle('hide',!(me&&!myProfile));
-  $('mw-in-state').classList.toggle('hide',!(me&&myProfile));
+  $('mw-claim-state').classList.toggle('hide',!(me&&!myProfile&&!guest()));
+  $('mw-in-state').classList.toggle('hide',!(me&&(myProfile||guest())));
+  $('mw-save').classList.toggle('hide',!guest());
+  $('mw-menu').classList.toggle('hide',guest());
+  if(guest()){$('mw-who').textContent='Guest';$('mw-mail').textContent='only on this device';}
+  peindreInvite();
   /* `body.member` : le coin membre n'existe que pour un inscrit. */
   document.body.classList.toggle('member',inscrit());
   if(me&&myProfile){$('mw-who').textContent=myProfile.pseudo;$('mw-mail').textContent=me.email||'';}
@@ -7675,7 +7705,8 @@ function champPorte(){
 function peindrePorte(){
   const q=$('door-q'); if(!q) return;
   q.textContent= !me ? ($('mw-code').classList.contains('hide')?'Sign up to open it':'The code from your email')
-               : !myProfile ? 'Name your Totehm' : '';
+               : !myProfile&&!guest() ? 'Name your Totehm' : '';
+  peindreInvite();
   /* ⚠️ LA QUESTION CHANGE, LE CURSEUR SUIT. Le code vérifié, son champ
      disparaît et emporte le focus : sans ça, on tapait son nom dans le
      vide (mesuré). Au clavier du téléphone, c'est aussi ce qui le garde
@@ -7753,7 +7784,9 @@ async function fnAppel(fn,body){
     return {status:r.status,d};
   }catch(e){ console.error('['+fn+']',e?.message||e); return {status:0,d:{error:'network'}}; }
 }
-const mwNote=t=>{ $('mw-note').textContent=t||''; };
+/* 11/10 : la note du MENU (Higher, Telegram) a son propre id — elle partageait
+   `mw-note` avec la porte et s'écrivait dans un nœud caché. */
+const mwNote=t=>{ $('mw-menu-note').textContent=t||''; };
 function paintMe(){
   if(!me) return;
   const L=LAND||{}, av=avatarOk(L.avatar), b=$('mw-avatar'), h=L.higher||{};
@@ -7887,15 +7920,29 @@ $('mw-email').addEventListener('keydown',async e=>{
   note.className='mw-note ok';note.textContent='code sent — check your email';
   $('mw-code').classList.remove('hide');peindrePorte();setTimeout(()=>$('mw-code').focus(),80);
 });
+/* 11/10 — LE CODE VÉRIFIÉ NE VIDE PLUS RIEN AVANT L'ARRIVÉE DU TOTEHM.
+   Avant : les deux champs se vidaient, puis plus rien ne bougeait pendant le
+   chargement (profil + Totehm) — « ça se fige ». Maintenant : un seul essai à
+   la fois (le collage iOS déclenche deux `input`), les champs restent remplis
+   et grisés, la porte dit « opening my TOTEHM… » jusqu'à ce que la DERNIÈRE
+   lecture de session soit finie (`sesWait`). */
+let mwVerifying=false;
 $('mw-code').addEventListener('input',async()=>{
-  const t=$('mw-code').value.trim(), note=$('mw-note');
-  if(t.length!==6)return;
+  const c=$('mw-code'), t=c.value.replace(/\D/g,'').slice(0,6), note=$('mw-note');
+  if(t!==c.value) c.value=t;
+  if(t.length!==6||mwVerifying)return;
+  mwVerifying=true; c.disabled=true; $('mw-email').disabled=true; document.body.classList.add('is-verifying');
   note.className='mw-note dim';note.textContent='verifying…';
   const {error}=await sb.auth.verifyOtp({email:mwEmail,token:t,type:'email'});
-  if(error){note.className='mw-note no';note.textContent='wrong code';return;}
-  note.textContent='';$('mw-code').value='';$('mw-email').value='';
-  await sessionChange();
-  $('mw-code').classList.add('hide'); peindrePorte();
+  if(error){ mwVerifying=false; c.disabled=false; $('mw-email').disabled=false; document.body.classList.remove('is-verifying');
+    note.className='mw-note no';note.textContent='wrong code'; try{ c.select(); }catch(_){} return; }
+  note.className='mw-note ok';note.textContent='opening my TOTEHM…';
+  try{ await sessionChange(); await sesWait(); }
+  finally{
+    mwVerifying=false; c.disabled=false; $('mw-email').disabled=false; document.body.classList.remove('is-verifying');
+    if(me){ c.value=''; $('mw-email').value=''; c.classList.add('hide'); note.textContent=''; }
+    peindrePorte();
+  }
 });
 /* L'inscription n'avait aucun controle : on tapait son nom, on validait, et
    on apprenait alors seulement qu'il etait pris. Meme verification que dans
@@ -7924,8 +7971,65 @@ $('mw-pseudo').addEventListener('keydown',async e=>{
   await sessionChange();
 });
 $('mw-signout').onclick=async()=>{
+  /* Un invité qui se déconnecte perd son Totehm (aucun email pour le retrouver) : deux temps. */
+  const so=$('mw-signout');
+  if(guest()&&!so.classList.contains('is-arm')){ so.classList.add('is-arm'); so.textContent='Sign out · this guest TOTEHM will be lost'; return; }
+  so.classList.remove('is-arm'); so.textContent='Sign out';
   $('member-window').classList.remove('show');
   await sb.auth.signOut(); sessionChange(); };
+
+/* ══ SANS EMAIL · 11/10/2026 ═══════════════════════════════════════════
+   Wah : « un mode local sans obligation de se connecter avec un mail ».
+   Un compte INVITÉ Supabase (connexion anonyme) : le Totehm s'écrit dans les
+   mêmes tables, sous un compte sans email, lié à CET appareil. Rien à réécrire,
+   aucune donnée à migrer : « save it with my email » rattache l'email au MÊME
+   compte (`updateUser` + code `email_change`), puis le nom du Totehm.
+   Le bouton n'existe que si le projet autorise la connexion anonyme (lue dans
+   les réglages publics d'Auth) : coupé côté serveur, il ne s'affiche pas.
+   Garde-fous serveur : TotehmSM (`sm_begin` → `email`), vibes et spaces refusés. */
+fetch('https://abujjbkbbiumxrokozph.supabase.co/auth/v1/settings',{headers:{apikey:SB_ANON}})
+  .then(r=>r.ok?r.json():null).then(d=>{ ANON_OK=!!(d&&d.external&&d.external.anonymous_users); peindreInvite(); })
+  .catch(e=>console.error('[guest] settings',e&&e.message||e));
+function peindreInvite(){
+  const on=ANON_OK&&!me&&!$('mw-email').disabled&&$('mw-code').classList.contains('hide');
+  $('mw-guest').classList.toggle('hide',!on); $('mw-guest-hint').classList.toggle('hide',!on);
+}
+$('mw-guest').onclick=async()=>{
+  if(me||mwVerifying) return;
+  const note=$('mw-note'), g=$('mw-guest');
+  mwVerifying=true; g.disabled=true; note.className='mw-note dim'; note.textContent='opening my TOTEHM…';
+  const {error}=await sb.auth.signInAnonymously();
+  if(error){ console.error('[guest]',error.message); mwVerifying=false; g.disabled=false;
+    note.className='mw-note no'; note.textContent='not available · use my email'; return; }
+  try{ await sessionChange(); await sesWait(); }
+  finally{ mwVerifying=false; g.disabled=false; if(me) note.textContent=''; peindreInvite(); peindrePorte(); }
+};
+$('lv-guest').onclick=()=>{ $('member-window').classList.add('show'); memberPaint(); setTimeout(()=>{ try{ $('mw-save-email').focus(); }catch(_){} },120); };
+let saveMail='', saveBusy=false;
+$('mw-save-email').addEventListener('keydown',async e=>{
+  if(e.key!=='Enter'||!guest()||saveBusy) return;
+  const v=$('mw-save-email').value.trim(), note=$('mw-save-note');
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){note.className='mw-note no';note.textContent='invalid email';return;}
+  note.className='mw-note dim';note.textContent='sending…';
+  const {error}=await sb.auth.updateUser({email:v});
+  if(error){ console.error('[guest save]',error.message); note.className='mw-note no';
+    note.textContent=/already|registered|exists/i.test(error.message)?'this email already has a TOTEHM · sign out, then sign in with it':'try again in a minute'; return; }
+  saveMail=v; note.className='mw-note ok'; note.textContent='code sent — check my email';
+  $('mw-save-code').classList.remove('hide'); setTimeout(()=>$('mw-save-code').focus(),80);
+});
+$('mw-save-code').addEventListener('input',async()=>{
+  const c=$('mw-save-code'), t=c.value.replace(/\D/g,'').slice(0,6), note=$('mw-save-note');
+  if(t!==c.value) c.value=t;
+  if(t.length!==6||saveBusy) return;
+  saveBusy=true; c.disabled=true; $('mw-save-email').disabled=true; note.className='mw-note dim'; note.textContent='verifying…';
+  const {error}=await sb.auth.verifyOtp({email:saveMail,token:t,type:'email_change'});
+  if(error){ saveBusy=false; c.disabled=false; $('mw-save-email').disabled=false; note.className='mw-note no'; note.textContent='wrong code'; return; }
+  note.className='mw-note ok'; note.textContent='saved · now name my TOTEHM';
+  try{ await sb.auth.refreshSession(); }catch(_){}
+  try{ await sessionChange(); await sesWait(); }
+  finally{ saveBusy=false; c.disabled=false; c.value=''; c.classList.add('hide'); $('mw-save-email').disabled=false; $('mw-save-email').value=''; }
+  $('member-window').classList.remove('show');
+});
 
 /* ══ LA SESSION — UN SEUL CHEMIN · 27/09/2026 ══════════════════════════
    L'arrivée sur la page et chaque changement de session (connexion,
@@ -7947,7 +8051,12 @@ function quitter(){
   cacheOublier();
   $('member-window').classList.remove('show');
 }
-async function sessionChange(){
+/* `sesWait` attend la DERNIÈRE lecture de session (onAuthStateChange en lance une
+   en parallèle : la première rend la main tôt, `sesSeq` l'ayant dépassée). */
+let sesRun=Promise.resolve();
+function sessionChange(){ const p=sessionLoad(); sesRun=p; return p; }
+async function sesWait(){ for(let p=sesRun;;){ await p.catch(()=>{}); if(p===sesRun) return; p=sesRun; } }
+async function sessionLoad(){
   const n=++sesSeq;
   const {data:{session}}=await sb.auth.getSession();
   if(n!==sesSeq) return;
@@ -9129,6 +9238,12 @@ window.addEventListener('pageshow',e=>{
       $('lv-card').classList.toggle('hide',!m);
       $('lv-tap').textContent=window.matchMedia('(hover:hover)').matches?'Click to open it':'Tap to open it';
       if(!m) return;
+      /* Un invité n'a ni nom ni lecteurs : une seule porte, sauver avec l'email. */
+      const g=guest();
+      ['ident-block','lv-vis-note'].forEach(id=>$(id).classList.toggle('hide',g));
+      document.querySelector('#lv-card .lv-vis').classList.toggle('hide',g);
+      $('lv-guest').classList.toggle('hide',!g);
+      if(g){ $('lv-prog').classList.add('hide'); return; }
       const v=(LAND&&LAND.visibility)||'private';
       document.querySelectorAll('[data-lvvis]').forEach(b=>{ const on=b.dataset.lvvis===v;
         b.classList.toggle('is-on',on); b.setAttribute('aria-checked',String(on)); });
@@ -9296,7 +9411,7 @@ window.addEventListener('pageshow',e=>{
       if(status===402&&LAND&&LAND.sm){ LAND.sm.free_left=0; }
       if((status===402||status===409)&&d.state&&LAND) LAND.sm={...(LAND.sm||{}),...d.state};
       smPeindre(); smNoteEtat();
-      if(status!==402&&status!==409) smNote(({quota:'30 a day · back tomorrow',empty:'a few words',no_session:'sign in again'})[d.error]||'try again');
+      if(status!==402&&status!==409) smNote(({quota:'30 a day · back tomorrow',empty:'a few words',no_session:'sign in again',email:'save my TOTEHM with my email first'})[d.error]||'try again');
       if(status===409&&lvRefresh) lvRefresh();
     });
     $('lv-say-in').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); $('lv-say').requestSubmit(); } });
