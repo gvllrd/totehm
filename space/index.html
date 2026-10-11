@@ -219,8 +219,6 @@ body.v-cam.is-form #cam-body{bottom:calc(170px + var(--bot));max-height:calc(100
 #cam-body .it{flex:none}
 @media(min-width:900px){
   :root{--panel-w:420px}
-  #v-feed{inset:0 auto 0 0;width:var(--panel-w);transform:translateX(-101%);background:var(--s1)}
-  #v-feed.is-on{transform:none}
   #v-cam{inset:auto auto calc(124px + var(--bot)) 50%;width:min(760px,calc(100vw - 48px));height:min(42vh,410px);transform:translate(-50%,160%);border-radius:var(--r);overflow:hidden}
   #v-cam.is-on{transform:translate(-50%,0)}
   #cam-body{max-height:90%;padding:14px 18px 16px}
@@ -228,7 +226,6 @@ body.v-cam.is-form #cam-body{bottom:calc(170px + var(--bot));max-height:calc(100
   #cam-sec{top:12px;right:14px}
   .clip .info{bottom:26px}
   body.v-feed #habit-filter{visibility:hidden}
-  body.v-feed #heading{left:var(--panel-w)}
   #detail{left:50%;right:auto;width:min(600px,calc(100vw - 40px));border-radius:var(--r) var(--r) 0 0;transform:translate(-50%,104%)}
   #detail.is-open{transform:translate(-50%,0)}
 }
@@ -277,7 +274,6 @@ body.v-cam.is-form #joy{opacity:.18;pointer-events:none}
 #cam-body .pick-habit{width:100%;text-align:left}
 @media(max-width:480px) and (max-height:700px){:root{--tp:90px}}
 @media(min-width:900px){
- body.v-feed #heading{left:0;right:calc(100% - var(--panel-w))}
  #detail.is-open{transform:translate(-50%,var(--sheet-y,0px))}
 }
 .sdata{background:rgba(0,0,0,.86);padding:8px 10px 9px;display:flex;flex-direction:column;gap:6px}
@@ -357,9 +353,6 @@ body.v-cam #joy-say{background:rgba(0,0,0,.82);border-radius:var(--r);padding:1p
 }
 
 
-/* The feed is the full-screen center; the left door keeps the existing cards. */
-#v-spots{background:var(--s1);padding:calc(112px + var(--top)) 16px calc(124px + var(--bot));overflow-y:auto}
-#spots-door{display:flex;flex-direction:column;gap:6px}#find-spot{margin-top:18px}
 .sp-card{display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;border:0;cursor:pointer;background:var(--s2);color:#fff;padding:14px 16px 14px 19px;position:relative}
 .sp-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--rep)}
 .sp-when{font:700 9.5px/1.4 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--lo)}
@@ -368,11 +361,65 @@ body.v-cam #joy-say{background:rgba(0,0,0,.82);border-radius:var(--r);padding:1p
 .sp-mode{margin-left:8px;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#fff}
 .sp-by{font:400 11px/1.5 var(--mono);color:var(--lo)}
 .sp-by b{font:400 13px/1.4 var(--q);color:var(--coral)}.sp-empty{padding:18px 0;text-align:center;color:var(--dim);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
-#v-feed{inset:0;width:100%;transform:none;box-shadow:none;opacity:0;visibility:hidden}
-#v-feed.is-on{opacity:1;visibility:visible;transform:none}
-body.v-feed #heading{left:0;right:0;--tp:110px}body.v-feed #tp-hint{display:block}body.v-feed #member{display:block}body.v-feed #habit-filter{visibility:visible}
 .clip .info{width:min(520px,calc(100% - 24px));left:50%;right:auto;transform:translateX(-50%);bottom:calc(114px + var(--bot))}
-body.v-spots #heading{--tp:58px}body.v-spots #tp-hint{display:none}
+/* ══ SPACE · 11/10/2026 — LE RÉSEAU SOCIAL DE L'HABIT STRATÉGIQUE ══════
+   CENTRE la page d'arrivée (le TOTEHM qui tourne, [Higher] SOCIAL MEDIA) ·
+   ← WATCH le fil + son filtre de Habit Box · ↓ SHARE la caméra ·
+   → MY SPACE le profil · ↑ VIBES l'activité. */
+#v-home{background:none}
+#home{display:none;flex-direction:column;align-items:center;gap:12px;margin-top:22px;padding:0 16px;max-width:min(440px,100vw);text-align:center;pointer-events:auto}
+body.v-home #home{display:flex}
+#home-title{display:flex;align-items:center;gap:10px}
+#home-title svg{display:block;width:96px;height:32px}
+#home-title b{font:700 13px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#fff}
+#home-what{margin:0;font:400 10.5px/1.6 var(--mono);letter-spacing:.04em;color:var(--mid)}
+#home-pulse{margin:0;font:700 9px/1.4 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--lo);min-height:12px}
+#home-eco{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:4px}
+#home-eco .btn{align-self:center;background:var(--s2);font-size:9.5px}
+body.v-me #heading,body.v-vibes #heading{top:calc(14px + var(--top));--tp:58px}
+body.v-me #tp-hint,body.v-me #member,body.v-vibes #tp-hint,body.v-vibes #member{display:none}
+#v-me,#v-vibes{background:var(--s1);overflow-y:auto;overscroll-behavior:contain;padding:calc(96px + var(--top)) 14px calc(124px + var(--bot))}
+.pf-in,.vb-in{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.pf-head{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.pf-stats{font:700 9.5px/1.4 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--mid)}
+.pf-acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.pf-acts .btn{align-self:center}
+.pf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.pf-tile{position:relative;display:block;aspect-ratio:9/16;border:0;padding:0;cursor:pointer;overflow:hidden;background:var(--s2);color:#fff;text-align:left}
+.pf-tile>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pf-tile .pf-h{position:absolute;left:6px;right:6px;bottom:22px;font:400 11px/1.3 var(--q);color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+.pf-tile .pf-v{position:absolute;left:6px;bottom:6px;font:700 8.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#fff;background:rgba(0,0,0,.6);border-radius:6px;padding:3px 5px}
+.pf-tile::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c,#fff);z-index:1}
+.pf-empty,.vb-empty{text-align:center;color:var(--dim);font:400 10px/1.6 var(--mono);letter-spacing:.12em;text-transform:uppercase;padding:18px 0}
+.vb-lab{font:700 9.5px/1.4 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--lo);margin-top:6px}
+.vb-row{display:flex;justify-content:space-between;gap:10px;align-items:center;width:100%;border:0;background:var(--s2);color:var(--mid);padding:11px 12px;cursor:pointer;text-align:left;
+  font:400 10.5px/1.5 var(--mono)}
+.vb-row b{font:400 13px/1.3 var(--q);color:var(--coral)}
+.vb-row i{font-style:normal;color:#fff}
+.vb-row time{color:var(--lo);font-size:9.5px;white-space:nowrap}
+/* LA VIBE : un geste, sur chaque space. */
+.btn.vibe{letter-spacing:.14em}
+.btn.vibe.is-on{background:var(--s4);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.5)}
+.vibes-n{font:700 9px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--mid)}
+.matched{font:700 8.5px/1.4 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--lo);margin-top:6px}
+.clip .vibe-pop{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%) scale(.6);z-index:6;pointer-events:none;opacity:0;
+  font:700 22px/1 var(--mono);letter-spacing:.3em;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.8);transition:opacity .25s ease,transform .35s cubic-bezier(.2,1.4,.4,1)}
+.clip .vibe-pop.is-on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+/* Le filtre : une Habit Box et TOUT ce qui la compose. */
+#sf-panel .sf-box{display:flex;flex-direction:column;gap:6px}
+#sf-panel .row{flex-wrap:wrap;gap:5px}
+#sf-panel .chip.is-int{border-left:3px solid var(--c,#fff)}
+/* La croix se lit sur la page d'arrivée : un mot par direction. */
+.joy-lab{display:none;position:absolute;font:700 8.5px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--lo);white-space:nowrap;pointer-events:none}
+body.v-home .joy-lab{display:block}
+#joy-box.is-held~.joy-lab,#joy:has(#joy-box.is-held) .joy-lab{opacity:0}
+#jl-g{right:calc(100% + 8px);top:50%;transform:translateY(-50%)}
+#jl-d{left:calc(100% + 8px);top:50%;transform:translateY(-50%)}
+#jl-h{left:50%;bottom:calc(100% + 4px);transform:translateX(-50%)}
+#jl-b{left:50%;top:calc(100% + 1px);transform:translateX(-50%)}
+body.v-home #joy-say:not(:empty)~.joy-lab{opacity:0}
+/* 11/10 : le fil et le profil occupent tout l'écran, centrés, sur toutes les tailles. */
+#v-feed{background:var(--s1)}
 </style>
 <style data-ecosystem-ui="2026-10-05">
 
@@ -442,7 +489,7 @@ body.v-cam.is-rec #space-about{display:none}
 body.is-msp #joy{pointer-events:none;opacity:.2}
 @media(hover:hover){.msp-row:hover{background:var(--s3)}.msp-row>.msp-del:hover{color:#fff}}
 </style></head>
-<body class="v-feed">
+<body class="v-home">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="higher-badge" viewBox="0 0 600 200"><defs><mask id="hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></symbol></svg>
 
 <button id="member" type="button" aria-label="Member menu"><i></i><span id="member-txt">CONNECT WITH MY TOTEHM</span></button>
@@ -451,6 +498,7 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
 <template id="space-definition"><div class="space-definition">
 <h2>What is a space?</h2>
 <p>TOTEHM.SPACE shows strategic Habits, lived: one Habit of a TOTEHM, filmed where it happens, with the objectives and repulsions that say why.</p>
+<p>No selfie, no added music: the place, its sound, its atmosphere. Send a vibe to the spaces that move you.</p>
 <p class="space-domains">totehm.com builds the strategy · totehm.space shows it lived · figher.club meets in reality · higher.boutique wears and owns it.</p>
 </div></template>
 <header id="heading">
@@ -476,6 +524,15 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
   </div><!-- /#totehm-paper -->
 <span id="tp-hint"></span>
 </div>
+<div id="home">
+  <div id="home-title"><svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg><b>Social media</b></div>
+  <p id="home-what">strategic habits, lived. no selfie, no added music: the place, its sound, its atmosphere.</p>
+  <p id="home-pulse" aria-live="polite"></p>
+  <div id="home-eco">
+    <button class="btn" type="button" data-eco-door="com">totehm.com · my strategy</button>
+    <button class="btn" type="button" data-eco-door="club">figher.club · meet in reality</button>
+  </div>
+</div>
 <button id="sf-btn" type="button" aria-haspopup="dialog" aria-controls="sf-panel" aria-expanded="false">Filter</button>
 <div id="title" aria-live="polite"><b id="title-int"></b><svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg></div>
 <p id="int-def"></p><button id="habit-filter" class="hide" type="button" aria-haspopup="dialog" aria-expanded="false">Habit Box · all</button></header>
@@ -483,8 +540,10 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
 <aside id="sf-panel" class="hide" role="dialog" aria-label="Filter the spaces"></aside>
 
 
-<section class="view is-on" id="v-feed" aria-label="Spaces"><div id="feed"></div></section>
-<section id="v-spots" class="view"><div id="spots-door"></div><button class="btn" type="button" id="find-spot">FIND A SPOT</button></section>
+<section class="view is-on" id="v-home" aria-label="SPACE"></section>
+<section class="view" id="v-feed" aria-label="Watch"><div id="feed"></div></section>
+<section class="view" id="v-me" aria-label="My space"><div class="pf-in" id="profile"></div></section>
+<section class="view" id="v-vibes" aria-label="Vibes"><div class="vb-in" id="vibes"></div></section>
 <section class="view" id="v-cam" aria-label="Camera">
   <div id="cam-frame" class="portrait-media"><video id="cam-v" playsinline muted></video><img id="cam-photo" class="hide" alt=""></div>
   <div id="cam-n"></div>
@@ -505,11 +564,13 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
 
 
 <div id="joy" role="group" aria-label="Where I am in totehm.space">
-  <button class="cur" id="cur-h" type="button" aria-label="Feed"><svg viewBox="0 0 16 16"><path d="M3 10 L8 5 L13 10"/></svg></button>
-  <button class="cur" id="cur-g" type="button" aria-label="Next spots"><svg viewBox="0 0 16 16"><path d="M10 3 L5 8 L10 13"/></svg></button>
+  <button class="cur" id="cur-h" type="button" aria-label="Vibes"><svg viewBox="0 0 16 16"><path d="M3 10 L8 5 L13 10"/></svg></button>
+  <button class="cur" id="cur-g" type="button" aria-label="Watch"><svg viewBox="0 0 16 16"><path d="M10 3 L5 8 L10 13"/></svg></button>
   <button id="joy-box" type="button" aria-label="Back to feed"><span id="joy-stack" aria-hidden="true"><i class="o"></i><i class="h"></i><i class="r"></i></span><span id="joy-record" aria-hidden="true"></span></button><span id="joy-say"></span>
-  <button class="cur" id="cur-d" type="button" aria-label="Feed"><svg viewBox="0 0 16 16"><path d="M6 3 L11 8 L6 13"/></svg></button>
-  <button class="cur" id="cur-b" type="button" aria-label="Camera"><svg viewBox="0 0 16 16"><path d="M3 6 L8 11 L13 6"/></svg></button>
+  <button class="cur" id="cur-d" type="button" aria-label="My space"><svg viewBox="0 0 16 16"><path d="M6 3 L11 8 L6 13"/></svg></button>
+  <button class="cur" id="cur-b" type="button" aria-label="Share"><svg viewBox="0 0 16 16"><path d="M3 6 L8 11 L13 6"/></svg></button>
+  <span class="joy-lab" id="jl-g" aria-hidden="true">Watch</span><span class="joy-lab" id="jl-d" aria-hidden="true">My space</span>
+  <span class="joy-lab" id="jl-h" aria-hidden="true">Vibes</span><span class="joy-lab" id="jl-b" aria-hidden="true">Share</span>
 </div>
 
 <script type="module">
@@ -648,10 +709,10 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
   return (v < 10 ? Math.max(.1, v).toFixed(1) : String(Math.round(v))) + ' ' + UNIT; };
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD='2026-10-09-space-only';
+const BUILD='2026-10-11-space-social';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
-let VIEW = 'feed';
+let VIEW = 'home';
 const S = { int:null, q:'', habit:null };
 const FEED = { list:[], shown:[], seq:0, more:true, loading:false, match:'all', active:null };
 let habitsPending = null, gestureCount = 0, suppressClickUntil = 0;
@@ -659,18 +720,17 @@ const REC = { seq:0, step:null, stream:null, mr:null, blob:null, url:null, mime:
   busy:false, capture:null, width:0,height:0,fps:0,bitrate:0,path:null, kind:null, why:false };
 let HABITS = null, DETAIL = null;
 const VIDEO_METRICS={firstFrameMs:0,uploadMs:0,publishMs:0,warmStarts:0,coldStarts:0,stalls:0};
-window.__totehm_space = () => ({ build: BUILD, view: VIEW, signed_in: !!me, located: !!POS, intention: S.int, search: !!S.q,
+window.__totehm_space = () => ({ build: BUILD, view: VIEW, signed_in: !!me, located: !!POS, intention: null, search: !!SF.box,
   feed: FEED.list.length, playing: [...document.querySelectorAll('#feed video')].filter(v => !v.paused).length,
   video:{provider:RULES.video_provider || 'storage',buffered:[...document.querySelectorAll('#feed video')].filter(v=>v.getAttribute('src') || v._hls).length,...VIDEO_METRICS,...(()=>{const v=$('feed').querySelector('.clip[data-k="'+FEED.active+'"] video'),q=v?.getVideoPlaybackQuality?.();return {frames:q?.totalVideoFrames || 0,dropped:q?.droppedVideoFrames || 0};})()},
-  spots_door:SPOTS.list.length, gestures:gestureCount, paper:PAPER.etat(), habit_filter:!!S.habit, spot_filter:sfCount(), feed_shown:FEED.shown.length, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, kind: REC.kind, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
+  vibes_in:VIB.data?.received?.length || 0, vibes_given:VIB.data?.given?.length || 0, profile_spaces:PROF.list.length, filter:sfCount(), gestures:gestureCount, paper:PAPER.etat(), habit_filter:!!SF.box, spot_filter:sfCount(), feed_shown:FEED.shown.length, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, kind: REC.kind, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
 
-/* Chaque vue dit où je suis. L'intention vient de la Habit, sans filtre parallèle. */
-const SPOTS = {list:[],seq:0,match:'all'};
-const VIEW_WORDS = {feed:['SPACES','Strategic Habits, lived'],spots:['NEXT SPOTS','I WILL BE HERE · figher.club'],cam:['SHARE A SPACE','9:16 · up to 33 seconds']};
+/* Chaque vue dit où je suis (lecteurs d'écran ; SPACE n'affiche pas de titre de vue). */
+const VIEW_WORDS = {home:['SPACE','Higher social media'],feed:['WATCH','strategic habits, lived'],cam:['SHARE','9:16 · up to 33 seconds'],me:['MY SPACE','my spaces, my vibes'],vibes:['VIBES','on my spaces · the spaces I vibed']};
 function paintInts(){
- const [title,sub]=VIEW_WORDS[VIEW], source=VIEW==='feed'?FEED:SPOTS;
+ const [title,sub]=VIEW_WORDS[VIEW];
  $('title-int').textContent=title; $('title').style.setProperty('--c','#fff');
- $('int-def').textContent=sub+(S.habit && VIEW!=='cam' ? ' · '+(source.match==='intention'?'Same intention':S.habit.name) : ''); PAPER.hint();
+ $('int-def').textContent=sub+(SF.box && VIEW==='feed' ? ' · '+SF.box.name : ''); PAPER.hint();
 }
 
 /* ══ LA BOÎTE D'UN SPOT — ce que CE lecteur a le droit de voir ═══════ */
@@ -695,20 +755,23 @@ function habitInner(h,options,prefix){
    noir et gris, identique dans LEFT, RIGHT et le détail. */
 function spotHTML(s){
  const why=s.why || (s.mine && s.show_why ? s.context : null), h=s.habit_box || {name:s.habit,ints:s.intentions || [],freq:s.freq,place:s.context?.place,objectives:why?.objectives || [],repulsions:why?.repulsions || []};
- return habitHTML(h)+(s.comment?'<p class="sd-say">'+esc(s.comment)+'</p>':'')+(!s.mine && s.creator?'<div class="by"><span>by</span><button class="tname" type="button" data-com="/@'+encodeURIComponent(s.creator)+'">'+esc(s.creator)+'</button></div>':'');
+ return habitHTML(h)+(s.comment?'<p class="sd-say">'+esc(s.comment)+'</p>':'')+(!s.mine && s.creator?'<div class="by"><span>by</span><button class="tname" type="button" data-profile="'+esc(s.creator)+'">'+esc(s.creator)+'</button></div>':'');
 }
 /* LES GESTES D'UN SPACE — en ligne, là où il est lu : jamais une fiche qui
    répète la même boîte. GO résout les droits ACTUELS au moment du geste. */
 const hasMedia = s => !!(s.clip || s.video || s.photo);
 const hasWhy = s => !!((s.why || (s.mine && s.show_why && s.context)) && [...((s.why || s.context).objectives || []),...((s.why || s.context).repulsions || [])].length);
+const vibeLabel = s => 'VIBE' + (s.vibes ? ' · ' + s.vibes : '');
 function actsHTML(s, where){
   const id = esc(s.id), b = [];
+  if(s.format !== 'spot' && s.visibility === 'shared' && !s.mine) b.push('<button class="btn vibe' + (s.vibed ? ' is-on' : '') + '" type="button" data-vibe="' + id + '" aria-pressed="' + !!s.vibed + '">' + vibeLabel(s) + '</button>');
+  if(s.mine && s.vibes) b.push('<span class="vibes-n">' + s.vibes + ' vibe' + (s.vibes > 1 ? 's' : '') + '</span>');
   if(s.visibility === 'shared') b.push('<button class="btn" type="button" data-share="' + id + '">SHARE</button>');
   if(where === 'detail' && s.mine) b.push('<button class="btn" type="button" data-del="' + id + '">DELETE</button>');
   if(where === 'detail') b.push('<button class="btn" type="button" data-close="1">CLOSE</button>');
   return b.length ? '<div class="acts">' + b.join('') + '</div><p class="note acts-note" hidden></p>' : '';
 }
-const spotById = id => DETAIL?.id === id ? DETAIL : [...FEED.list, ...SPOTS.list].find(x => x.id === id);
+const spotById = id => DETAIL?.id === id ? DETAIL : [...FEED.list, ...PROF.list, ...(VIB.data?.given || [])].find(x => x.id === id);
 function actsSay(button, text, creator){
   const n = button.closest('.acts')?.nextElementSibling; if(!n) return;
   n.hidden = false; n.innerHTML = esc(text) + (creator ? ' <button class="btn" type="button" data-com="/@' + encodeURIComponent(creator) + '">SUBSCRIBE</button>' : '');
@@ -718,6 +781,8 @@ function actsSay(button, text, creator){
 async function actsClick(e){
   const t = e.target instanceof Element ? e.target : null; if(!t) return false;
   const del = t.closest('[data-del]'); if(del){ if(await spaceDelete(del, del.dataset.del) === 'failed') actsSay(del, 'Not deleted. Try again.'); return true; }
+  const vb = t.closest('[data-vibe]'); if(vb){ await vibe(vb.dataset.vibe, vb); return true; }
+  const pf = t.closest('[data-profile]'); if(pf){ openProfile(pf.dataset.profile); return true; }
   const sh = t.closest('[data-share]');
   if(sh){ const url = 'https://www.totehm.space/?spot=' + encodeURIComponent(sh.dataset.share);
     try{ if(navigator.share) await navigator.share({ title:'TOTEHM.SPACE', url }); else { await navigator.clipboard.writeText(url); sh.textContent = 'LINK COPIED'; } }
@@ -891,36 +956,62 @@ function focusVisibleClip(){const f=$('feed'),height=f.querySelector('.clip[data
 let feedScrollFrame=0;
 $('feed').addEventListener('scroll',()=>{if(VIEW==='feed' && !feedScrollFrame)feedScrollFrame=requestAnimationFrame(()=>{feedScrollFrame=0;focusVisibleClip();});},{passive:true});
 const io = new IntersectionObserver(()=>{if(VIEW==='feed')focusVisibleClip();}, { threshold:[0, .6, 1] });
-function feedInfo(s){return spotHTML(s)+actsHTML(s,'feed');}
+const MATCHED = {habit:'same habit',objective:'objective',repulsion:'repulsion',intention:'intention',rhythm:'rhythm'};
+function feedInfo(s){return spotHTML(s)+(s.matched?.length ? '<p class="matched">'+s.matched.map(m=>esc(MATCHED[m]||m)).join(' · ')+'</p>' : '')+actsHTML(s,'feed');}
 function paintFeed(more=false){
-  const f = $('feed'), L = FEED.list.filter(sfMatch); FEED.shown = L;
+  const f = $('feed'), L = FEED.list; FEED.shown = L;
   const existing=[...f.querySelectorAll('.clip[data-k]')];
   if(!more && existing.length && existing.length===L.length && existing.every((c,k)=>{const m=c.querySelector('video,img[data-photo]'),s=L[k];return c.dataset.id===s.id && (m?.dataset.bunny || m?.dataset.clip || m?.dataset.photo || '')===(s.clip?.id || s.video || s.photo || '');})){
     existing.forEach((c,k)=>{const info=c.querySelector('.info'),html=feedInfo(L[k]);if(info.innerHTML!==html)info.innerHTML=html;});if(VIEW==='feed')focusVisibleClip();return;
   }
   if(!more){io.disconnect();f.querySelectorAll('video').forEach(releaseClip);f.replaceChildren();FEED.active=null;f.scrollTop=0;}
   f.querySelectorAll('.clip:not([data-k])').forEach(n => n.remove());
-  if(!L.length){ f.innerHTML = '<div class="clip"><div class="empty">' + (sfCount() ? 'no space for this filter' : S.q ? 'no space for this habit' : 'no space around yet') + '</div></div>'; sfMore(); return; }
+  if(!L.length){ f.innerHTML = '<div class="clip"><div class="empty">' + (FEED.loading ? 'reading the spaces…' : sfCount() ? 'no space for this filter' : 'no space yet · share the first one') + '</div></div>'; return; }
   const start=more?f.querySelectorAll('.clip[data-k]').length:0;
   f.insertAdjacentHTML('beforeend',L.slice(start).map((s, i) => '<div class="clip" data-k="' + (start+i) + '" data-id="' + esc(s.id) + '">' +
     (hasMedia(s) ? mediaHTML(s) : '<div class="noclip">no video</div>') +
-    '<div class="info">' + feedInfo(s) + '</div></div>').join(''));
+    '<span class="vibe-pop" aria-hidden="true">VIBE</span><div class="info">' + feedInfo(s) + '</div></div>').join(''));
   [...f.querySelectorAll('.clip[data-k]')].slice(start).forEach(c => io.observe(c));
   if(VIEW==='feed')focusVisibleClip();
-  sfMore();
 }
-/* Le filtre du fil : VIDEO, PHOTO, WHY · TRIGGER. Pagination locale,
-   au plus cinq pages supplémentaires par changement, sans filtre de spot. */
-const SF = { shows:null, auto:0 };
-const sfCount = () => Number(!!SF.shows);
-const sfMatch = s => !SF.shows || (SF.shows === 'video' ? !!(s.clip || s.video) : SF.shows === 'photo' ? !!s.photo : hasWhy(s));
-function sfMore(){ if(sfCount() && FEED.shown.length < 3 && FEED.more && !FEED.loading && SF.auto < 5){ SF.auto++; loadFeed(true); } }
+/* ══ LE FILTRE DU FIL · 11/10/2026 ═══════════════════════════════════
+   Wah : « sélectionner une Box et tous les éléments qui la composent » —
+   intentions, humeur (les quatre piliers), rythme et SURTOUT objectifs et
+   répulsions. Choisir une de MES Habit Boxes allume tous ses éléments ; chacun
+   se coupe d'un tap. Le serveur (`space_feed`) garde les spaces qui partagent
+   AU MOINS un élément, les plus proches d'abord ; il ne compare que les
+   objectifs/répulsions que l'auteur MONTRE. Monde par défaut, NEAR ME en option. */
+const PILLARS = {BODY:['fight','flow'],MENTAL:['enrich','focus'],SOUL:['express','celebrate'],SPIRIT:['love']};
+const SF = { box:null, habit:false, ints:new Set(), pillars:new Set(), freq:false, obj:new Set(), rep:new Set(), shows:null, near:false, timer:0 };
+const sfCount = () => (SF.habit?1:0) + SF.ints.size + SF.pillars.size + (SF.freq?1:0) + SF.obj.size + SF.rep.size + (SF.shows?1:0) + (SF.near?1:0);
+const boxTexts = (h,k) => (h?.[k] || []).map(x => String(x.text || '').trim()).filter(Boolean);
+function sfFilter(){
+  const ints = new Set(SF.ints); SF.pillars.forEach(p => (PILLARS[p] || []).forEach(i => ints.add(i)));
+  return { habit: SF.habit && SF.box ? SF.box.name : null, ints:[...ints], freq: SF.freq && SF.box?.freq ? SF.box.freq : null,
+           objectives:[...SF.obj], repulsions:[...SF.rep], shows:SF.shows, near:SF.near && !!POS };
+}
+function sfBox(h){
+  SF.box = h || null; SF.habit = !!h; SF.ints = new Set(h ? (h.ints || []) : []); SF.freq = !!h?.freq;
+  SF.obj = new Set(boxTexts(h,'objectives')); SF.rep = new Set(boxTexts(h,'repulsions'));
+}
+function sfReset(){ sfBox(null); SF.pillars = new Set(); SF.shows = null; SF.near = false; }
+function sfApply(){ clearTimeout(SF.timer); SF.timer = setTimeout(() => loadFeed(false), 220); sfPaint(); paintInts(); }
 function sfPaint(){
   const n = sfCount(), b = $('sf-btn'), open = !$('sf-panel').classList.contains('hide');
   b.textContent = n ? 'Filter · ' + n : 'Filter'; b.classList.toggle('is-on', !!n); b.setAttribute('aria-expanded', String(open));
   if(!open) return;
-  const c = (k, v, l, sub) => chip('data-sf-' + k + '="' + v + '"', l, SF[k] === v, sub);
-  $('sf-panel').innerHTML = '<span class="lab">It shows</span><div class="row">' + c('shows','video','video') + c('shows','photo','photo') + c('shows','why','objectives · repulsions','its goals and what it avoids') + '</div>' +
+  const c = (attr, label, on, sub) => chip(attr, esc(label), on, sub);
+  const h = SF.box, row = (lab, html) => html ? '<span class="lab">' + lab + '</span><div class="row">' + html + '</div>' : '';
+  $('sf-panel').innerHTML =
+    '<span class="lab">My Habit Box</span><div class="row">' + c('data-sf-pick="1"', h ? h.name : 'choose a Habit Box', !!h, h ? 'tap to change' : 'and all that it is made of') + (h ? '<button class="lnk" type="button" data-sf-unbox="1">all Habit Boxes</button>' : '') + '</div>' +
+    (h ? row('This Habit', c('data-sf-habit="1"', h.name, SF.habit)) : '') +
+    row('Intentions', Object.keys(INTS).map(i => '<button type="button" class="chip is-int' + (SF.ints.has(i) ? ' is-on' : '') + '" data-sf-int="' + i + '" style="--c:' + icol(i) + '">' + esc(INTS[i].n) + '</button>').join('')) +
+    row('Mood', Object.keys(PILLARS).map(p => c('data-sf-pillar="' + p + '"', p, SF.pillars.has(p))).join('')) +
+    (h?.freq ? row('Rhythm', c('data-sf-freq="1"', FREQ[h.freq] || h.freq, SF.freq)) : '') +
+    (h ? row('Objectives', boxTexts(h,'objectives').map((t,k) => c('data-sf-obj="' + k + '"', t, SF.obj.has(t))).join('')) : '') +
+    (h ? row('Repulsions', boxTexts(h,'repulsions').map((t,k) => c('data-sf-rep="' + k + '"', t, SF.rep.has(t))).join('')) : '') +
+    row('It shows', c('data-sf-shows="video"','video',SF.shows === 'video') + c('data-sf-shows="photo"','photo',SF.shows === 'photo') + c('data-sf-shows="why"','objectives · repulsions',SF.shows === 'why','its goals and what it avoids')) +
+    row('Where', c('data-sf-near="0"','the world',!SF.near) + c('data-sf-near="1"','near me',SF.near, POS ? '' : 'needs my location')) +
     '<div class="row sf-acts"><button class="btn" type="button" data-sf-all="1">ALL SPACES</button><button class="btn" type="button" data-sf-close="1">CLOSE</button></div>';
 }
 function sfOpen(open){
@@ -929,36 +1020,53 @@ function sfOpen(open){
   sfPaint();
 }
 $('sf-btn').onclick = () => sfOpen($('sf-panel').classList.contains('hide'));
+const togg = (set, v) => { set.has(v) ? set.delete(v) : set.add(v); };
 $('sf-panel').addEventListener('click', e => {
-  if(e.target.closest('[data-sf-close]')) return sfOpen(false);
-  if(e.target.closest('[data-sf-all]')){ SF.shows = null; }
-  else {
-    const b = e.target.closest('[data-sf-shows]'); if(!b) return;
-    const k = 'shows', v = b.dataset['sf' + k[0].toUpperCase() + k.slice(1)];
-    SF[k] = SF[k] === v ? null : v;
-  }
-  SF.auto = 0; sfPaint(); paintFeed();
+  const t = e.target.closest('button,[data-sf-pick]'); if(!t) return;
+  const d = t.dataset;
+  if(d.sfClose !== undefined) return sfOpen(false);
+  if(d.sfPick !== undefined){ sfOpen(false); return pickerOpen(); }
+  if(d.sfAll !== undefined) sfReset();
+  else if(d.sfUnbox !== undefined) sfBox(null);
+  else if(d.sfHabit !== undefined) SF.habit = !SF.habit;
+  else if(d.sfInt) togg(SF.ints, d.sfInt);
+  else if(d.sfPillar) togg(SF.pillars, d.sfPillar);
+  else if(d.sfFreq !== undefined) SF.freq = !SF.freq;
+  else if(d.sfObj !== undefined){ const v = boxTexts(SF.box,'objectives')[+d.sfObj]; if(v) togg(SF.obj, v); }
+  else if(d.sfRep !== undefined){ const v = boxTexts(SF.box,'repulsions')[+d.sfRep]; if(v) togg(SF.rep, v); }
+  else if(d.sfShows) SF.shows = SF.shows === d.sfShows ? null : d.sfShows;
+  else if(d.sfNear !== undefined){ SF.near = d.sfNear === '1'; if(SF.near && !POS) geo().then(pos => { if(pos){ POS = pos; sfApply(); } }); }
+  else return;
+  sfApply();
 });
-document.addEventListener('pointerdown', e => { if(!$('sf-panel').classList.contains('hide') && !e.target.closest('#sf-panel,#sf-btn')) sfOpen(false); });
+document.addEventListener('pointerdown', e => { if(!$('sf-panel').classList.contains('hide') && !e.target.closest('#sf-panel,#sf-btn,#habit-picker')) sfOpen(false); });
+/* Un tap : le son. Deux taps : une VIBE (comme on aime un Short). */
+let tapTimer = 0, tapLast = 0;
 $('feed').addEventListener('click', async e => {
   if(Date.now() < suppressClickUntil || e.target.closest('a,[data-com]')) return;
   if(await actsClick(e)) return;
   if(e.target.closest('button')) return;
-  const v = e.target.closest('.clip')?.querySelector('video'); if(v){ v.muted = !v.muted; v.play().catch(() => {}); }
+  const clip = e.target.closest('.clip[data-id]'); if(!clip) return;
+  const now = Date.now();
+  if(now - tapLast < 300){ clearTimeout(tapTimer); tapLast = 0; const s = spotById(clip.dataset.id);
+    if(s && !s.mine && s.visibility === 'shared'){ const pop = clip.querySelector('.vibe-pop'); pop?.classList.add('is-on'); setTimeout(() => pop?.classList.remove('is-on'), 650); if(!s.vibed) vibe(s.id); }
+    return; }
+  tapLast = now;
+  tapTimer = setTimeout(() => { const v = clip.querySelector('video'); if(v){ v.muted = !v.muted; v.play().catch(() => {}); } }, 300);
 });
 async function loadFeed(more){
   if(more && (!FEED.more || FEED.loading)) return;
   const seq = ++FEED.seq; FEED.loading = true;
-  const before = more && FEED.list.length ? FEED.list[FEED.list.length - 1].starts_at : null;
-  const c = POS ? { p_lat: Math.round(POS.lat*10)/10, p_lng: Math.round(POS.lng*10)/10 } : {};
-  const { data, error } = await sb.rpc('space_discover', {p_view:'feed', ...c, p_habit:S.q || null, p_before:before, p_limit:20});
+  const f = sfFilter(), c = f.near && POS ? { p_lat: Math.round(POS.lat*10)/10, p_lng: Math.round(POS.lng*10)/10 } : {};
+  if(!more && !FEED.list.length) paintFeed();
+  const { data, error } = await sb.rpc('space_feed', { p_filter:f, ...c, p_offset: more ? FEED.list.length : 0, p_limit:20 });
   if(seq !== FEED.seq) return;
   FEED.loading = false;
-  if(error){ console.error('[spots_feed]', error.message); return; }
+  if(error){ console.error('[space_feed]', error.message); paintFeed(); return; }
   const l = data?.spots || [];
-  FEED.more = l.length === 20;
+  FEED.more = !!data?.more;
   FEED.list = more ? [...new Map(FEED.list.concat(l).map(s=>[s.id,s])).values()] : l;
-  FEED.match=data?.match || 'all'; paintFeed(more); paintInts();
+  FEED.match = data?.filtered ? 'filter' : 'all'; paintFeed(more); paintInts();
   if(FEED.list.some(s=>s.clip) && !nativeHLS(document.createElement('video')))videoRuntime();
 }
 
@@ -1106,13 +1214,13 @@ $('detail').addEventListener('click', async e => {
        face logo — la vitesse et la dérive montent doucement. */
     function reveiller(){
       ratio=scene.clientWidth/110; paintPaper();
-      if(RM.matches||mode!=='plat'||document.hidden||VIEW!=='feed'||ouvert()) return;
+      if(RM.matches||mode!=='plat'||document.hidden||VIEW!=='home'||ouvert()) return;
       card.classList.remove('is-flat');
       mode='vit'; clock=0; last=0; life=0; om=0; th=0; prev=null; centre=null;
       goal.rx=goal.ry=goal.px=goal.py=0; goal.sc=1;
       diag.vivant=true; kick();
     }
-    const libre=()=>mode==='vit'&&!appui&&!document.hidden&&VIEW==='feed'&&!ouvert()&&!RM.matches;
+    const libre=()=>mode==='vit'&&!appui&&!document.hidden&&VIEW==='home'&&!ouvert()&&!RM.matches;
     function viser(rx,ry,px,py){ goal.rx=rx; goal.ry=ry; goal.px=px; goal.py=py; }
 
     aPlat();
@@ -1171,14 +1279,14 @@ $('detail').addEventListener('click', async e => {
     function hint(){ $('tp-hint').textContent='Tap on your TOTEHM to turn a habit into a space'; }
     function sync(){
       const open=ouvert(); $('tp-wrap').classList.toggle('is-open',open);
-      if(document.hidden||VIEW!=='feed'||!document.body.classList.contains('v-feed')||open||RM.matches){
+      if(document.hidden||VIEW!=='home'||!document.body.classList.contains('v-home')||open||RM.matches){
         if(mode!=='plat'||raf) aPlat(); aGlisse=false; return;
       }
       if(mode==='plat') reveiller();
     }
     function etat(){return {alive:!!raf,flat:mode==='plat',open:ouvert(),name:!!(me&&PSEUDO),spins:diag.lancers};}
     window.addEventListener('resize',()=>{
-      if(!['feed','spots'].includes(VIEW)) return;
+      if(!['home','feed','me','vibes'].includes(VIEW)) return;
       ratio=scene.clientWidth/110; paintPaper(); if(ouvert()) tpPickerPosition();
     },{passive:true});
     if(document.fonts?.ready) document.fonts.ready.then(paintPaper);
@@ -1206,19 +1314,106 @@ function paintPaper(){
   })();
 
 /* ══ LA HABIT BOX — même sélection que pour créer un Spot ═══════════ */
-function reload(){loadFeed(false);loadSpotsDoor();}
-async function loadSpotsDoor(){
- const seq=++SPOTS.seq, uid=me?.id;
- const {data,error}=await sb.rpc('spots_list',{p_intention:S.int,p_q:S.q || null,p_limit:3,p_before:null,p_before_id:null});
- if(seq!==SPOTS.seq || uid!==me?.id)return;
- if(error){console.error('[spots_list]',error.message);$('spots-door').innerHTML='<p class="note">Try again.</p>';return;}
- SPOTS.list=(data?.spots || []).filter(s=>spotState(s)==='will').slice(0,3);paintSpotsDoor();
+function reload(){loadFeed(false);loadPulse();}
+/* ══ LA PAGE D'ARRIVÉE — le pouls de la semaine, les deux autres domaines ══ */
+async function loadPulse(){
+  const { data, error } = await sb.rpc('space_pulse');
+  if(error){ console.error('[space_pulse]', error.message); return; }
+  const n = Number(data?.spaces_week) || 0, v = Number(data?.vibes_week) || 0;
+  $('home-pulse').textContent = n ? n + ' space' + (n > 1 ? 's' : '') + ' this week' + (v ? ' · ' + v + ' vibe' + (v > 1 ? 's' : '') : '') : '';
 }
-function paintSpotsDoor(){
- $('spots-door').innerHTML=SPOTS.list.length?SPOTS.list.map(s=>'<button class="sp-card" type="button" data-club-spot="'+esc(s.id)+'"><span class="sp-when">I WILL BE HERE · '+esc(dayOf(new Date(s.starts_at)))+' '+hhmm(new Date(s.starts_at))+'</span><span class="sp-habit">'+esc(s.habit)+'</span><span class="sp-meta">'+esc(s.city || '')+'</span></button>').join(''):'<p class="empty">No spot announced yet.</p>';
+$('home-eco').addEventListener('click', e => {
+  const b = e.target.closest('[data-eco-door]'); if(!b) return;
+  if(b.dataset.ecoDoor === 'club') ssoVersDomaine(sb,'club','https://www.figher.club/');
+  else ssoVersDomaine(sb,'com',COM + '/totehm#in');
+});
+/* ══ UNE VIBE — optimiste, puis la réponse du serveur fait foi ══════════ */
+function eachCopy(id, fn){ [FEED.list, PROF.list, VIB.data?.given || []].forEach(l => l.forEach(x => { if(x.id === id) fn(x); })); if(DETAIL?.id === id) fn(DETAIL); }
+function paintVibe(id){
+  const s = spotById(id); if(!s) return;
+  document.querySelectorAll('[data-vibe="' + CSS.escape(id) + '"]').forEach(b => { b.classList.toggle('is-on', !!s.vibed); b.setAttribute('aria-pressed', String(!!s.vibed)); b.textContent = vibeLabel(s); });
+  document.querySelectorAll('.pf-tile[data-open="' + CSS.escape(id) + '"] .pf-v').forEach(n => { n.textContent = (s.vibes || 0) + ' vibes'; });
 }
-$('spots-door').addEventListener('click',e=>{const b=e.target.closest('[data-club-spot]');if(b)ssoVersDomaine(sb,'club','https://www.figher.club/?spot='+encodeURIComponent(b.dataset.clubSpot));});
-$('find-spot').onclick=()=>ssoVersDomaine(sb,'club','https://www.figher.club/');
+const vibeBusy = new Set();
+async function vibe(id, button){
+  if(!me){ if(button) actsSay(button, 'Connect to send a vibe.'); return ssoLogin(false); }
+  const s = spotById(id); if(!s || s.mine || vibeBusy.has(id)) return;
+  const on = !s.vibed; vibeBusy.add(id);
+  eachCopy(id, x => { x.vibed = on; x.vibes = Math.max(0, (x.vibes || 0) + (on ? 1 : -1)); }); paintVibe(id);
+  const { data, error } = await sb.rpc('space_vibe', { p_space:id, p_on:on });
+  vibeBusy.delete(id);
+  if(error || !data?.ok){
+    if(error) console.error('[space_vibe]', error.message);
+    eachCopy(id, x => { x.vibed = !on; x.vibes = Math.max(0, (x.vibes || 0) + (on ? -1 : 1)); }); paintVibe(id);
+    if(button) actsSay(button, data?.why === 'email' ? 'Save my TOTEHM with my email to send vibes.' : 'Not sent. Try again.');
+    return;
+  }
+  eachCopy(id, x => { x.vibed = !!data.vibed; x.vibes = Number(data.vibes) || 0; }); paintVibe(id);
+}
+/* ══ → MY SPACE — un profil : le mien, ou celui d'un membre (tap sur son nom) ══ */
+const PROF = { seq:0, pseudo:null, data:null, list:[], loading:false };
+/* Une vignette n'est pas un bouton texte (le bloc commun les ajusterait au label) : role="button". */
+const tileHTML = s => '<div class="pf-tile" role="button" tabindex="0" data-open="' + esc(s.id) + '" style="--c:' + icol((s.intentions || [])[0]) + '">' +
+  (s.photo ? '<img data-photo="' + esc(s.photo) + '" alt="">' : '') + '<span class="pf-h">' + esc(s.habit) + '</span><span class="pf-v">' + (s.vibes || 0) + ' vibes</span></div>';
+function openProfile(pseudo){ PROF.pseudo = pseudo && (!PSEUDO || pseudo.toLowerCase() !== PSEUDO.toLowerCase()) ? pseudo : null; closeDetail(); if(VIEW !== 'me') go('me'); else loadProfileView(); }
+async function loadProfileView(more=false){
+  const box = $('profile');
+  if(!PROF.pseudo && !me){ box.innerHTML = '<div class="pf-head"><p class="pf-empty">My space: my spaces and the vibes they receive.</p><button class="btn" type="button" data-signin="1">CONNECT WITH MY TOTEHM</button></div>'; PROF.list = []; return; }
+  const seq = ++PROF.seq, uid = me?.id, who = PROF.pseudo;
+  if(!more){ PROF.list = []; box.innerHTML = '<p class="pf-empty">…</p>'; }
+  PROF.loading = true;
+  const { data, error } = await sb.rpc('space_profile', { p_pseudo: who, p_offset: more ? PROF.list.length : 0, p_limit: 30 });
+  if(seq !== PROF.seq || uid !== me?.id || who !== PROF.pseudo) return;
+  PROF.loading = false;
+  if(error || !data?.ok){ if(error) console.error('[space_profile]', error.message); box.innerHTML = '<p class="pf-empty">' + (data?.why === 'nobody' ? 'No member by this name.' : 'Not loaded. Try again.') + '</p>'; return; }
+  PROF.data = data; PROF.list = more ? PROF.list.concat(data.spaces || []) : (data.spaces || []);
+  const n = Number(data.spaces_total) || 0, v = Number(data.vibes_total) || 0, name = data.pseudo || (data.mine ? 'my space' : '');
+  box.innerHTML = '<div class="pf-head">' + (name ? '<span class="tname">' + esc(name) + '</span>' : '') +
+    '<span class="pf-stats">' + n + ' space' + (n === 1 ? '' : 's') + ' · ' + v + ' vibe' + (v === 1 ? '' : 's') + '</span>' +
+    '<div class="pf-acts">' + (data.mine ? '<button class="btn" type="button" data-com="/totehm#in">MY TOTEHM</button><button class="btn" type="button" data-share-me="1">SHARE MY SPACE</button>'
+      : (data.pseudo ? '<button class="btn" type="button" data-com="/@' + encodeURIComponent(data.pseudo) + '">TOTEHM</button>' : '') + (me ? '<button class="btn" type="button" data-profile-me="1">MY SPACE</button>' : '')) + '</div></div>' +
+    (PROF.list.length ? '<div class="pf-grid">' + PROF.list.map(tileHTML).join('') + '</div>' : '<p class="pf-empty">' + (data.mine ? 'No space yet · ↓ share the first one' : 'No shared space yet.') + '</p>') +
+    (data.more ? '<button class="btn" type="button" data-pf-more="1">MORE</button>' : '');
+  box.querySelectorAll('img[data-photo]').forEach(loadPhoto);
+}
+$('profile').addEventListener('click', async e => {
+  if(e.target.closest('[data-signin]')) return ssoLogin(false);
+  if(e.target.closest('[data-com]')) return;
+  if(e.target.closest('[data-profile-me]')){ PROF.pseudo = null; return loadProfileView(); }
+  if(e.target.closest('[data-pf-more]')) return loadProfileView(true);
+  const sh = e.target.closest('[data-share-me]');
+  if(sh && PSEUDO){ const url = 'https://www.totehm.space/?u=' + encodeURIComponent(PSEUDO);
+    try{ if(navigator.share) await navigator.share({ title:'TOTEHM.SPACE', url }); else { await navigator.clipboard.writeText(url); sh.textContent = 'LINK COPIED'; } }catch(_){} return; }
+  const t = e.target.closest('[data-open]'); if(t) openDetail(spotById(t.dataset.open));
+});
+for(const id of ['profile','vibes']) $(id).addEventListener('keydown', e => { if((e.key === 'Enter' || e.key === ' ') && e.target.matches?.('[role="button"]')){ e.preventDefault(); e.target.click(); } });
+/* ══ ↑ VIBES — reçues sur mes spaces (qui, quoi, quand) et données ══════ */
+const VIB = { seq:0, data:null };
+async function loadVibes(){
+  const box = $('vibes');
+  if(!me){ VIB.data = null; box.innerHTML = '<p class="vb-empty">The vibes on my spaces, and the spaces I vibed.</p><button class="btn" type="button" data-signin="1">CONNECT WITH MY TOTEHM</button>'; return; }
+  const seq = ++VIB.seq, uid = me.id; if(!VIB.data) box.innerHTML = '<p class="vb-empty">…</p>';
+  const { data, error } = await sb.rpc('my_vibes', { p_limit: 40 });
+  if(seq !== VIB.seq || uid !== me?.id) return;
+  if(error || !data?.ok){ if(error) console.error('[my_vibes]', error.message); box.innerHTML = '<p class="vb-empty">Not loaded. Try again.</p>'; return; }
+  VIB.data = data;
+  const when = t => { const d = new Date(t); return Number.isNaN(d.getTime()) ? '' : dayOf(d) + ' ' + hhmm(d); };
+  const inn = data.received || [], out = data.given || [];
+  box.innerHTML = '<span class="vb-lab">On my spaces · ' + (Number(data.received_total) || 0) + '</span>' +
+    (inn.length ? inn.map(r => '<div class="vb-row" role="button" tabindex="0" data-vb-space="' + esc(r.space) + '"><span>' + (r.by ? '<b>' + esc(r.by) + '</b>' : 'a member') + ' vibed <i>' + esc(r.habit) + '</i></span><time>' + esc(when(r.at)) + '</time></div>').join('')
+      : '<p class="vb-empty">No vibe yet · ↓ share a space</p>') +
+    '<span class="vb-lab">The spaces I vibed</span>' +
+    (out.length ? '<div class="pf-grid">' + out.map(tileHTML).join('') + '</div>' : '<p class="vb-empty">Double-tap a space to vibe it · ← watch</p>');
+  box.querySelectorAll('img[data-photo]').forEach(loadPhoto);
+}
+$('vibes').addEventListener('click', async e => {
+  if(e.target.closest('[data-signin]')) return ssoLogin(false);
+  const t = e.target.closest('[data-open]'); if(t) return openDetail(spotById(t.dataset.open));
+  const r = e.target.closest('[data-vb-space]'); if(!r) return;
+  const { data, error } = await sb.rpc('spot_get', { p_id: r.dataset.vbSpace });
+  if(error) console.error('[spot_get]', error.message);
+  if(data?.ok) openDetail(data.spot);
+});
 async function loadHabits(){
   if(HABITS) return HABITS;
   if(!me) return [];
@@ -1250,15 +1445,19 @@ async function pickerOpen(){
   if(p.classList.contains('hide')) return;
   p.innerHTML = '<div class="row"><button class="chip" type="button" data-all="1">All Habit Boxes</button><button class="lnk" type="button" data-picker-close="1">Close</button></div>' +
     (!me ? '<button class="btn" type="button" data-picker-signin="1">CONNECT WITH MY TOTEHM</button>' : HABITS?.length ?
-      HABITS.map((h,k)=>pickHabitHTML(h,'data-filter-h="'+k+'"',S.habit?.name===h.name)).join('') :
+      HABITS.map((h,k)=>pickHabitHTML(h,'data-filter-h="'+k+'"',SF.box?.name===h.name)).join('') :
       '<button class="btn" type="button" data-com="/totehm#in">Write a Habit Box in my TOTEHM</button>');
 }
 $('habit-filter').onclick = () => $('habit-picker').classList.contains('hide') ? pickerOpen() : pickerClose();
 
 /* Le bouton natif donne Entrée/Espace ; la scène donne le tap des deux faces. */
+/* Le papier : au centre il fait un space (↓ la caméra) ; dans le fil il
+   ouvre le filtre ; ailleurs il ramène au centre. */
 const tpToggle=()=>{
-  if(!$('habit-picker').classList.contains('hide')) pickerClose();
-  else PAPER.poser(()=>pickerOpen());
+  if(!$('habit-picker').classList.contains('hide')) return pickerClose();
+  if(VIEW === 'home') return PAPER.poser(()=>go('cam'));
+  if(VIEW === 'feed') return sfOpen($('sf-panel').classList.contains('hide'));
+  go('home');
 };
 $('tp-enter').onclick=e=>{e.stopPropagation();tpToggle();};
 $('totehm-paper').onclick=tpToggle;
@@ -1268,8 +1467,9 @@ $('habit-picker').addEventListener('click', e => {
   if(e.target.closest('[data-picker-signin]')) return ssoLogin(false);
   const b = e.target.closest('[data-filter-h]');
   if(b || e.target.closest('[data-all]')){
-    S.habit = b ? HABITS[+b.dataset.filterH] : null; S.q = S.habit?.name || '';
-    $('habit-filter').textContent = S.habit ? S.habit.name : 'Habit Box · all'; PAPER.hint(); pickerClose(); reload();
+    /* La Box choisie allume TOUS ses éléments dans le filtre du fil. */
+    sfBox(b ? HABITS[+b.dataset.filterH] : null); pickerClose();
+    if(VIEW !== 'feed') go('feed'); sfOpen(true); sfApply();
   }
 });
 document.addEventListener('pointerdown', e => { if(!e.target.closest('#habit-picker,#habit-filter,#totehm-paper')) pickerClose(); });
@@ -1308,7 +1508,7 @@ function camState(){ ['is-rec','is-count','is-form'].forEach(c => document.body.
   if(REC.step === 'count') document.body.classList.add('is-count');
   const form=['habit','form','send','retry','heavy'].includes(REC.step);
   if(form) document.body.classList.add('is-form');
-  for(const id of ['member','heading','joy','v-feed','v-spots','v-cam']) $(id).inert=form;
+  for(const id of ['member','heading','joy','v-home','v-feed','v-me','v-vibes','v-cam']) $(id).inert=form;
   $('cam-body').setAttribute('role',form?'dialog':'region');if(form)$('cam-body').setAttribute('aria-modal','true');else $('cam-body').removeAttribute('aria-modal');
   joyPaint(); }
 function camStop(){
@@ -1399,7 +1599,7 @@ function camPaint(){
   const b = $('cam-body'), st = REC.step, photo = REC.kind === 'photo', cancel = '<button class="btn" type="button" data-cancel="1">CANCEL</button>';
   let h = '';
   if(st === 'signin') h = '<p class="say">Put your TOTEHM into action. At home or anywhere else.</p><div class="cam-actions"><button class="btn" type="button" data-signin="1">CONNECT WITH MY TOTEHM</button></div>';
-  else if(st === 'idle') h = '<p class="say">Share a space from your TOTEHM</p><div class="cam-actions"><button class="btn" type="button" data-start="video">VIDEO<small>up to ' + (RULES.clip_seconds || 33) + ' s</small></button><button class="btn" type="button" data-start="photo">PHOTO<small>one image</small></button>' + cancel + '</div>';
+  else if(st === 'idle') h = '<p class="say">Share a space from your TOTEHM</p><p class="note">film the place, not yourself · its own sound, no added music</p><div class="cam-actions"><button class="btn" type="button" data-start="video">VIDEO<small>up to ' + (RULES.clip_seconds || 33) + ' s</small></button><button class="btn" type="button" data-start="photo">PHOTO<small>one image</small></button>' + cancel + '</div>';
   else if(st === 'perm') h = '<p class="say">Allow the camera</p><div class="cam-actions">' + cancel + '</div>';
   else if(st === 'denied') h = '<p class="say">The camera is closed for this site. Allow it in the browser, then come back.</p><div class="cam-actions">' + cancel + '</div>';
   else if(st === 'nocam') h = '<p class="say">This browser cannot ' + (photo ? 'take the photo' : 'film') + '. Try Safari or Chrome on the phone.</p><div class="cam-actions">' + cancel + '</div>';
@@ -1428,7 +1628,7 @@ $('cam-body').addEventListener('click', e => {
   if(boxOptionsClick(t,REC)) return camPaint();
   if(t.closest('[data-locate]')) return recResolvePlace(true);
   if(t.closest('[data-signin]')) return ssoLogin(false, '/?v=cam');
-  if(t.closest('[data-cancel]')){ const back = 'feed'; camReset(); return go(back); }
+  if(t.closest('[data-cancel]')){ camReset(); return go('home'); }
   const start = t.closest('[data-start]'); if(start) return camOpen(start.dataset.start);
   if(t.closest('[data-again]')) return camOpen(REC.kind || 'video');
   const hk = t.closest('[data-h]'); if(hk){ REC.habit = HABITS[+hk.dataset.h]; REC.boxOptions={objectives:false,repulsions:false}; REC.step = 'form'; camPaint(); recResolvePlace(); return; }
@@ -1482,27 +1682,28 @@ async function camSend(){
       position:'allow my position', duration:'the duration', signin:'sign in again' })[data?.why] || 'not published', true);
   }
   const boxesSaved=await publishBoxOptions(data.id,REC);
-  VIDEO_METRICS.publishMs=Math.round(performance.now()-started);REC.say = ''; camReset(); await loadFeed(false); loadSpotsDoor();
+  VIDEO_METRICS.publishMs=Math.round(performance.now()-started);REC.say = ''; camReset(); await loadFeed(false); PROF.list = [];
   go('feed'); const s = FEED.list.find(s => s.id === data.id); if(s) openDetail(s); else { const r = await sb.rpc('spot_get',{p_id:data.id}); if(r.error) console.error('[spot_get]',r.error.message); if(r.data?.ok) openDetail(r.data.spot); }
   if(!boxesSaved && DETAIL) $('detail').insertAdjacentHTML('beforeend','<p class="note">These mini-boxes were kept hidden.</p>');
 }
 
 /* ══ LES CINQ VUES — joystick, trackpad, souris et écran tactile ═════ */
-const CROIX = { feed:{b:'cam',g:'spots'}, cam:{h:'feed'}, spots:{d:'feed'} };
+const CROIX = { home:{g:'feed',b:'cam',d:'me',h:'vibes'}, feed:{d:'home'}, cam:{h:'home'}, me:{g:'home'}, vibes:{b:'home'} };
+const VIEW_NAMES = {home:'Space',feed:'Watch',cam:'Share',me:'My space',vibes:'Vibes'};
 const voisin = d => CROIX[VIEW][d] || null;
 const recordingLocked = () => VIEW === 'cam' && ['perm','count','rec','shot','habit','form','send','retry','heavy'].includes(REC.step);
 function joyPaint(preview){
   const bx = $('joy-box'), camera = VIEW === 'cam';
-  bx.style.setProperty('--joy-vue', ({feed:'var(--navy)',cam:'var(--navy)',spots:'var(--rep)'})[voisin(preview) || VIEW]);
-  bx.classList.toggle('is-side',VIEW==='spots');
+  bx.style.setProperty('--joy-vue', ({home:'var(--navy)',feed:'var(--rep)',cam:'var(--navy)',me:'var(--blue)',vibes:'var(--blue)'})[voisin(preview) || VIEW]);
+  bx.classList.toggle('is-side',['feed','me','vibes'].includes(VIEW));
   bx.classList.toggle('is-camera',camera); bx.classList.toggle('is-recording',camera && REC.step === 'rec');
   const muted=!!DETAIL || camera && ['habit','form','send','retry','heavy'].includes(REC.step);
   $('joy').classList.toggle('is-muted',muted);bx.disabled=muted || camera && ['perm','signin','nocam','denied','shot'].includes(REC.step);
   const photo = REC.kind === 'photo';
-  bx.setAttribute('aria-label',camera ? (REC.step === 'rec' ? 'Stop recording' : ['habit','form','heavy','retry'].includes(REC.step) ? (photo ? 'Take the photo again' : 'Record again') : REC.step === 'ready' && photo ? 'Take the photo' : 'Record video') : 'Back to feed');
-  for(const [cls,v] of [['o','spots'],['h','feed'],['r','cam']]) $('joy-stack').querySelector('.'+cls).classList.toggle('is-current',VIEW === v);
-  for(const d of ['g','d','h','b']){ $('cur-'+d).classList.toggle('is-dead',!voisin(d) || recordingLocked() || !!DETAIL); $('cur-'+d).classList.toggle('is-preview',preview === d && !!voisin(d)); }
-  $('joy-say').textContent = camera ? (REC.step === 'rec' ? 'STOP' : REC.step === 'idle' ? 'VIDEO' : REC.step === 'ready' ? (photo ? 'PHOTO' : 'REC') : ['habit','form','heavy','retry'].includes(REC.step) ? 'AGAIN' : '') : preview && voisin(preview) ? ({feed:'Spaces',spots:'Next spots',cam:'Share a space'})[voisin(preview)] : '';
+  bx.setAttribute('aria-label',camera ? (REC.step === 'rec' ? 'Stop recording' : ['habit','form','heavy','retry'].includes(REC.step) ? (photo ? 'Take the photo again' : 'Record again') : REC.step === 'ready' && photo ? 'Take the photo' : 'Record video') : VIEW === 'home' ? 'Watch' : 'Back to SPACE');
+  for(const [cls,v] of [['o','feed'],['h','home'],['r','cam']]) $('joy-stack').querySelector('.'+cls).classList.toggle('is-current',VIEW === v);
+  for(const d of ['g','d','h','b']){ $('cur-'+d).classList.toggle('is-dead',!voisin(d) || recordingLocked() || !!DETAIL); $('cur-'+d).classList.toggle('is-preview',preview === d && !!voisin(d)); $('cur-'+d).setAttribute('aria-label', VIEW_NAMES[voisin(d)] || ''); }
+  $('joy-say').textContent = camera ? (REC.step === 'rec' ? 'STOP' : REC.step === 'idle' ? 'VIDEO' : REC.step === 'ready' ? (photo ? 'PHOTO' : 'REC') : ['habit','form','heavy','retry'].includes(REC.step) ? 'AGAIN' : '') : preview && voisin(preview) ? VIEW_NAMES[voisin(preview)] : '';
 }
 function go(v){
  if(v===VIEW || !CROIX[v] || REC.busy)return;
@@ -1511,6 +1712,7 @@ function go(v){
  document.querySelectorAll('.view').forEach(s=>s.classList.toggle('is-on',s.id==='v-'+v));
  if(was==='cam')camReset();if(was==='feed'){pauseFeed();sfOpen(false);}if(v==='cam')camOpen();
  if(v==='feed'){focusVisibleClip();document.querySelectorAll('#feed .clip[data-k]').forEach(c=>{io.unobserve(c);io.observe(c);});}
+ if(v==='me')loadProfileView(); if(v==='vibes')loadVibes(); if(v==='home')loadPulse();
  camState();joyPaint();paintInts();PAPER.sync();
 }
 document.addEventListener('visibilitychange',()=>{
@@ -1519,7 +1721,7 @@ document.addEventListener('visibilitychange',()=>{
 });
 function step(d){ if(recordingLocked() || DETAIL) return; const v = voisin(d); if(v){ gestureCount++; go(v); } }
 function joyTap(){
-  if(VIEW !== 'cam'){ if(VIEW !== 'feed') go('feed'); return; }
+  if(VIEW !== 'cam'){ go(VIEW === 'home' ? 'feed' : 'home'); return; }
   if(REC.step === 'rec'){ clearInterval(REC.timer); if(REC.mr?.state === 'recording') REC.mr.stop(); }
   else if(REC.step === 'ready'){ if(REC.kind === 'photo') camShot(); else camRec(); }
   else if(REC.step === 'idle') camOpen('video');
@@ -1535,7 +1737,7 @@ addEventListener('keydown',e => {
   }
   if(e.key === 'Escape'){
     if(!$('habit-picker').classList.contains('hide')) pickerClose(); else if(!$('sf-panel').classList.contains('hide')) sfOpen(false); else if(DETAIL) closeDetail();
-    else if($('menu').classList.contains('is-open')) menu(false); else if(REC.step === 'rec') joyTap(); else if(VIEW !== 'feed' && !REC.busy) go('feed');
+    else if($('menu').classList.contains('is-open')) menu(false); else if(REC.step === 'rec') joyTap(); else if(VIEW !== 'home' && !REC.busy) go('home');
     return;
   }
   if(e.target.closest?.('input,textarea,select,[contenteditable]')) return;
@@ -1550,7 +1752,7 @@ addEventListener('keydown',e => {
   const pointers = new Map(); let drag = null, pinch = null, pinching = false;
   const excluded = t => !!t.closest?.('#my-spaces,.eco-sheet,#cam-body,#joy,button,input,textarea,select,a,#detail,#menu,#habit-picker,#sf-panel,#totehm-paper,[contenteditable]');
   const horizontal = dx => step(dx>0?'g':'d');
-  const scroller = t => t.closest?.('#feed,#spots-door,#cam-body');
+  const scroller = t => t.closest?.('#feed,#v-me,#v-vibes,#cam-body');
   const canScroll = (el,delta) => !!el && el.scrollHeight > el.clientHeight + 3 && (delta > 0 ? el.scrollTop < el.scrollHeight - el.clientHeight - 3 : el.scrollTop > 3);
   addEventListener('pointerdown',e => {
     if(e.button > 0 || excluded(e.target) || recordingLocked() || DETAIL) return;
@@ -1727,7 +1929,7 @@ $('member').onclick = () => menu(!$('menu').classList.contains('is-open'));
 $('menu').addEventListener('click', async e => {
   if(e.target.closest('[data-signin]')) return ssoLogin(false);
   if(e.target.closest('[data-myspaces]')) return mspOpen();
-  if(e.target.closest('[data-out]')){ mspClose(); await sb.auth.signOut({ scope:'local' }); me = null; PSEUDO = null; HABITS = null; S.habit = null; S.q = '';SIGNED.clear();closeDetail();FEED.list=[];SPOTS.list=[];paintFeed();paintSpotsDoor();$('habit-filter').textContent = 'Habit Box · all'; if(VIEW === 'cam') camReset(); menu(false); pickerClose(); paintMember(); reload(); }
+  if(e.target.closest('[data-out]')){ mspClose(); await sb.auth.signOut({ scope:'local' }); me = null; PSEUDO = null; HABITS = null; sfReset(); sfPaint(); SIGNED.clear();closeDetail();FEED.list=[];PROF.list=[];PROF.pseudo=null;VIB.data=null;paintFeed();if(VIEW==='me')loadProfileView();if(VIEW==='vibes')loadVibes(); if(VIEW === 'cam') camReset(); menu(false); pickerClose(); paintMember(); reload(); }
 });
 document.addEventListener('pointerdown', e => { if($('menu').classList.contains('is-open') && !e.target.closest('#menu,#member')) menu(false); });
 
@@ -1741,7 +1943,6 @@ async function boot(){
   if(me) videoRequest('create-bunny-upload',{action:'status'}).then(d=>{if(d?.available) RULES.video_provider='bunny';}).catch(e=>console.error('[video availability]',e.message));
   sb.rpc('spot_rules').then(({ data, error }) => { if(error) console.error('[spot_rules]', error.message); if(data) RULES = { ...RULES, ...data, video_provider:RULES.video_provider==='bunny'?'bunny':data.video_provider }; });
   const p = new URLSearchParams(location.search);
-  geo().then(pos => { if(pos){ POS = pos; reload(); } });
   reload();
   ['g','d','h','b'].forEach(d => $('cur-' + d).classList.toggle('is-dead', !voisin(d)));
   if(p.get('spot')){
@@ -1749,7 +1950,9 @@ async function boot(){
     if(error) console.error('[spot_get]', error.message);
     if(data?.ok){if(data.spot.format==='spot')return ssoVersDomaine(sb,'club','https://www.figher.club/?spot='+encodeURIComponent(p.get('spot')),true);openDetail(data.spot);}
   }
-  if(p.get('v')==='cam' && me) go(p.get('v'));
+  if(p.get('u')) openProfile(p.get('u'));
+  else if(p.get('v')==='cam' && me) go('cam');
+  else if(['feed','me','vibes'].includes(p.get('v'))) go(p.get('v'));
   joyPaint();
 }
 boot();

@@ -20,7 +20,7 @@ const network=async(url,req,log)=>{
 };
 const browser=await launch({videoFile:fixture+'/motion.y4m'});
 try{
- const {pg,ctx,log}=await page(browser,{dir:'space',origin,network,viewport:{width:1440,height:900},rpc:{spot_rules:{video_provider:'storage'},space_discover:b=>({spots:b.p_view==='feed'?(b.p_before?rows.slice(20):rows.slice(0,20)):[],more:false}),space_habits:{ok:true,habits:[]}},functions:{'create-bunny-upload':{available:false}},tables:{profiles:[{pseudo:'wah'}]}});
+ const {pg,ctx,log}=await page(browser,{dir:'space',origin,network,viewport:{width:1440,height:900},rpc:{spot_rules:{video_provider:'storage'},space_feed:b=>({ok:true,more:!b.p_offset&&rows.length>20,spots:b.p_offset?rows.slice(20):rows.slice(0,20)}),space_habits:{ok:true,habits:[]}},functions:{'create-bunny-upload':{available:false}},tables:{profiles:[{pseudo:'wah'}]}});
  await pg.addInitScript(()=>{const locate=navigator.geolocation.getCurrentPosition.bind(navigator.geolocation);navigator.geolocation.getCurrentPosition=(ok,fail,options)=>locate(pos=>{window.__geolocationComplete=()=>ok(pos);},fail,options);});
  await pg.goto(origin+'/');await pg.waitForFunction(()=>window.__totehm_space?.().signed_in);await pg.waitForTimeout(900);
  report.compassMutations=await pg.evaluate(()=>new Promise(resolve=>{let n=0;const observer=new MutationObserver(ms=>n+=ms.length);observer.observe(document.querySelector('#cmp'),{childList:true,subtree:true});setTimeout(()=>{observer.disconnect();resolve(n);},1100);}));
@@ -70,7 +70,7 @@ try{
  if(!baseline){
   await browser.close();const retryBrowser=await launch();try{
   let reads=0;const id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',guid='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
-  const pending=await page(retryBrowser,{dir:'space',origin,network,rpc:{spot_rules:{video_provider:'bunny'},space_discover:b=>({spots:b.p_view==='feed'?[{...rows[0],video:null,clip:{id,status:'processing'}}]:[]})},tables:{profiles:[{pseudo:'wah'}]},functions:{'create-bunny-upload':{available:true},'bunny-video':()=>++reads===1?{status:'processing'}:{status:'ready',url:'https://test.b-cdn.net/bcdn_token=TEST&expires=9999999999&token_path=%2F'+guid+'%2F/'+guid+'/playlist.m3u8',expires:9999999999}}});
+  const pending=await page(retryBrowser,{dir:'space',origin,network,rpc:{spot_rules:{video_provider:'bunny'},space_feed:()=>({ok:true,more:false,spots:[{...rows[0],video:null,clip:{id,status:'processing'}}]})},tables:{profiles:[{pseudo:'wah'}]},functions:{'create-bunny-upload':{available:true},'bunny-video':()=>++reads===1?{status:'processing'}:{status:'ready',url:'https://test.b-cdn.net/bcdn_token=TEST&expires=9999999999&token_path=%2F'+guid+'%2F/'+guid+'/playlist.m3u8',expires:9999999999}}});
   await pending.pg.goto(origin+'/');await pending.pg.waitForFunction(()=>window.__totehm_space?.().signed_in);await pending.pg.waitForTimeout(300);await pending.pg.click('#cur-g');const start=Date.now();
   await pending.pg.waitForFunction(()=>document.querySelector('#feed video')?.currentTime>.04,null,{timeout:3000});report.processingReadyMs=Date.now()-start;
   ok(reads===2 && report.processingReadyMs<3000,'finished encoding is picked up promptly without the old five-second wait');

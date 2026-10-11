@@ -44,12 +44,12 @@ try{
   const ids=['aaaaaaaa-1111-4111-8111-111111111111','bbbbbbbb-2222-4222-8222-222222222222'];
   let gone=new Set();
   const rpc={space_habits:{ok:true,habits},spot_rules:{clip_seconds:33,duration_min:5,duration_max:720,horizon_days:90},
-   space_discover:b=>({spots:b.p_view==='feed'?ids.filter(i=>!gone.has(i)).map(i=>mine(i)):[],more:false,match:'habit'}),
+   space_feed:()=>({ok:true,spots:ids.filter(i=>!gone.has(i)).map(i=>mine(i)),more:false}),space_pulse:{spaces_week:2,vibes_week:0},
    my_spaces:()=>({ok:true,spaces:ids.filter(i=>!gone.has(i)).map(i=>({id:i,habit:'Deep practice',visibility:'shared',starts_at:iso(60),ends_at:iso(120),city:'Lisbon'})),more:false}),
    spot_get:b=>gone.has(b.p_id)?{ok:false}:{ok:true,spot:mine(b.p_id)}};
   const {pg,log}=await page(browser,{dir:'space',origin:'https://www.totehm.space',rpc,tables:{profiles:[{pseudo:'wah'}]},hasTouch:true,
    functions:{'space-delete':b=>{gone.add(b.spot);return {ok:true,removed:{clip:true,files:1}};},'create-bunny-upload':{available:false}}});
-  await pg.goto('https://www.totehm.space/');await pg.waitForFunction(()=>window.__totehm_space?.().view==='feed');await pg.waitForTimeout(700);
+  await pg.goto('https://www.totehm.space/');await pg.waitForFunction(()=>window.__totehm_space?.().view==='home');await pg.waitForTimeout(700);
   const hint=await pg.$eval('#tp-hint',e=>{const s=getComputedStyle(e);return {txt:e.textContent,color:s.color,size:parseFloat(s.fontSize),weight:s.fontWeight,bg:s.backgroundColor};});
   ok(/turn a habit into a space/i.test(hint.txt)&&hint.color==='rgb(255, 255, 255)'&&hint.size>=11&&Number(hint.weight)>=700&&hint.bg!=='rgba(0, 0, 0, 0)','l\'invitation se lit : blanche, grasse, '+hint.size+' px, sur sa boîte noire');
   await pg.screenshot({path:OUT+'/space_landing_hint.png'});
@@ -59,14 +59,14 @@ try{
   const w1=await pg.$eval('#totehm-paper',e=>e.getBoundingClientRect().width);
   ok(w0===110&&w1===58&&wMid<w0&&wMid>w1-6&&wMid!==w1,'le papier rapetisse en glissant d\'une vue à l\'autre ('+w0+' → '+Math.round(wMid)+' → '+w1+' px)');
   await pg.click('#cur-d');await pg.waitForTimeout(900);
-  ok(await pg.$eval('#totehm-paper',e=>e.getBoundingClientRect().width)===110,'et regrandit au retour sur le radar');
-  // la loupe sur une Habit Box de SPACE
-  await pg.click('#totehm-paper');await pg.waitForSelector('[data-filter-h] .eco-box-zoom');
+  ok(await pg.$eval('#totehm-paper',e=>e.getBoundingClientRect().width)===110,'et regrandit au retour au centre');
+  // la loupe sur une Habit Box de SPACE (le choix de la Box, depuis le filtre du fil)
+  await pg.click('#cur-g');await pg.waitForTimeout(700);await pg.click('#sf-btn');await pg.click('[data-sf-pick]');await pg.waitForSelector('[data-filter-h] .eco-box-zoom');
   const box=pg.locator('[data-filter-h="0"]'),b0=await box.evaluate(e=>e.getBoundingClientRect().height);
   await box.locator('.eco-box-zoom').click();await pg.waitForTimeout(100);
   const b1=await box.evaluate(e=>({on:!!e.querySelector('.habit.is-zoom'),h:e.getBoundingClientRect().height}));
   ok(b1.on&&b1.h>b0*1.1&&await pg.locator('.eco-sheet').count()===0&&!(await pg.evaluate(()=>window.__totehm_space().habit_filter)),'SPACE : la loupe agrandit la Habit Box en place ('+Math.round(b0)+' → '+Math.round(b1.h)+' px), sans fenêtre ni choix');
-  await pg.keyboard.press('Escape');await pg.waitForTimeout(200);
+  await pg.keyboard.press('Escape');await pg.waitForTimeout(200);await pg.click('#cur-d');await pg.waitForFunction(()=>window.__totehm_space().view==='home');await pg.waitForTimeout(500);
   // My spaces
   await pg.click('#member');await pg.click('[data-myspaces]');await pg.waitForSelector('#msp-list [data-del]');
   ok(await pg.locator('#msp-list .msp-row').count()===2&&/POSTED/.test(await pg.textContent('#msp-list'))&&!/I WILL BE HERE/.test(await pg.textContent('#msp-list'))&&log.rpc.some(x=>x.name==='my_spaces'),'SPACE : My spaces liste MES spaces publiés (date de publication, pas d état de rendez-vous)');

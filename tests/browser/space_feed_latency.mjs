@@ -40,7 +40,7 @@ async function setup({storage=false,slow=false,saveData=false,signing=350,viewpo
   return b.clips?{clips:b.clips.map(one)}:one(b);
  };
  const list=storage?rows.map((s,i)=>({...s,clip:null,video:'11111111-1111-4111-8111-111111111111/'+i+'.mp4'})):rows;
- const result=await page(browser,{dir:'space',origin,network,viewport,hasTouch:true,rpc:{spot_rules:{video_provider:storage?'storage':'bunny'},space_discover:b=>({spots:b.p_view==='feed'?(b.p_before?list.slice(20):list.slice(0,20)):future && b.p_view==='list'?[{...list[0],starts_at:new Date(Date.now()+3600000).toISOString()}]:[],more:false}),space_habits:{ok:true,habits:[]}},functions:{'create-bunny-upload':{available:!storage},'bunny-video':authorize},tables:{profiles:[{pseudo:'synthetic'}]}});
+ const result=await page(browser,{dir:'space',origin,network,viewport,hasTouch:true,rpc:{spot_rules:{video_provider:storage?'storage':'bunny'},space_feed:b=>({ok:true,more:!b.p_offset,spots:(b.p_offset?list.slice(20):list.slice(0,20))}),space_discover:b=>({spots:b.p_view==='feed'?(b.p_before?list.slice(20):list.slice(0,20)):future && b.p_view==='list'?[{...list[0],starts_at:new Date(Date.now()+3600000).toISOString()}]:[],more:false}),space_habits:{ok:true,habits:[]}},functions:{'create-bunny-upload':{available:!storage},'bunny-video':authorize},tables:{profiles:[{pseudo:'synthetic'}]}});
  await result.pg.addInitScript(({slow,saveData})=>Object.defineProperty(navigator,'connection',{value:{downlink:slow?.8:12,effectiveType:slow?'3g':'4g',saveData},configurable:true}),{slow,saveData});
  // No second discovery request from a late geolocation result during timing samples.
  await result.pg.addInitScript(()=>{navigator.geolocation.getCurrentPosition=()=>{};});

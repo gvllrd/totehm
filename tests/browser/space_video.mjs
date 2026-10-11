@@ -23,7 +23,7 @@ const network=async(url,req,log)=>{
   if(!fs.existsSync(file))return {status:404,body:''};return {status:200,contentType:filename.endsWith('.m3u8')?'application/vnd.apple.mpegurl':'video/mp2t',body:fs.readFileSync(file)};
  }
 };
-const rpc={spot_rules:{clip_seconds:2,countdown:1,clip_max_bytes:48000000,duration_min:5,duration_max:720,video_provider:'storage'},space_habits:{ok:true,habits:[{name:'Run the hill',freq:'daily',ints:['fight'],objectives:[],repulsions:[]}]},space_discover:b=>({spots:b.p_view==='feed'?[publicSpot]:[],match:'all',more:false}),space_post:b=>({ok:true,id:'new'}),spot_get:{ok:true,spot:{...publicSpot,id:'new',mine:true}}};
+const rpc={spot_rules:{clip_seconds:2,countdown:1,clip_max_bytes:48000000,duration_min:5,duration_max:720,video_provider:'storage'},space_habits:{ok:true,habits:[{name:'Run the hill',freq:'daily',ints:['fight'],objectives:[],repulsions:[]}]},space_feed:()=>({ok:true,spots:[publicSpot],more:false}),space_pulse:{spaces_week:1,vibes_week:0},space_post:b=>({ok:true,id:'new'}),spot_get:{ok:true,spot:{...publicSpot,id:'new',mine:true}}};
 const browser=await launch({videoFile:path.join(fixture,sourceMode+'.y4m')});
 try{
  const {pg,log}=await page(browser,{dir:'space',origin,rpc,functions,network,tables:{profiles:[{pseudo:'wah'}]},viewport:{width:390,height:844},hasTouch:true});
@@ -31,7 +31,7 @@ try{
  if(process.argv[3]==='native') await pg.addInitScript(()=>{window.MediaSource=undefined;window.ManagedMediaSource=undefined;window.WebKitMediaSource=undefined;});
  await pg.goto(origin+'/?v=cam');await pg.waitForFunction(()=>window.__totehm_space?.().signed_in);await pg.waitForTimeout(700);
  ok(reading===0,'no Bunny playback request before the video view is visible');
- await pg.keyboard.press('Escape');await pg.waitForFunction(()=>{const v=document.querySelector('#feed video');return v?.videoWidth>0;});
+ await pg.keyboard.press('Escape');await pg.waitForFunction(()=>window.__totehm_space().view==='home');await pg.keyboard.press('ArrowLeft');await pg.waitForFunction(()=>{const v=document.querySelector('#feed video');return v?.videoWidth>0;});
  const dimensions=await pg.$eval('#feed video',v=>({w:v.videoWidth,h:v.videoHeight}));ok(['native','slow'].includes(process.argv[3])?dimensions.w>=270:dimensions.w>=720 && dimensions.h>=1280,'signed HLS adapts to the connection and preserves HD on a fast connection');
  if(process.argv[3]==='slow')ok(log.network.filter(x=>x.host==='test.b-cdn.net' && x.path.endsWith('.ts'))[0]?.path.endsWith('/low00.ts'),'slow connection does not force the 8 Mbps rendition');
  const stage=()=>pg.$eval('#feed .portrait-media',e=>{const r=e.getBoundingClientRect();return r.width/r.height;});

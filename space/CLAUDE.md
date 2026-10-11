@@ -1,4 +1,28 @@
-# space/CLAUDE.md — totehm.space : le fil des Habits stratégiques (trois vues)
+# space/CLAUDE.md — totehm.space : le réseau social de l'Habit stratégique (croix de cinq vues)
+
+## 11/10/2026 — le TikTok / Instagram de l'Habit stratégique
+
+BUILD `2026-10-11-space-social`. Wah : « carte ouverte », « aucun spot sur SPACE », « sans selfie et sans musique ».
+- **Croix** (`CROIX`, `VIEW_NAMES`) : CENTRE `home` = le concept, au format de totehm.com (papier qui tourne, badge
+  Higher + « Social media », une ligne de ce qu'est SPACE, le pouls `space_pulse` : spaces / membres / vibes de la
+  semaine, portes COM et figher.club) · ← WATCH `feed` · ↓ SHARE `cam` · → MY SPACE `me` · ↑ VIBES `vibes`.
+  Chaque vue revient au centre par le geste inverse ; Échap et le T (hors caméra) aussi. Légendes du joystick écrites.
+- **Plus aucun spot** : porte des trois spots, `spots_list` et leur câblage retirés ENSEMBLE ; figher.club reste
+  une porte du centre seulement.
+- **WATCH** = `space_feed(filtre, lat, lng, offset, limit)` (pages de 20). Filtre propre à SPACE : MY HABIT BOX
+  (choisir une Box remplit tout ce qui la compose : son Habit, ses intentions, son rythme, SES objectifs et
+  répulsions), intentions, mood (BODY · MENTAL · SOUL · SPIRIT → leurs intentions), rythme, objectifs, répulsions,
+  ce qu'il montre (video · photo · why), monde / près de moi. OU pondéré côté serveur (Habit 3, objectif 2,
+  répulsion 2, intention 1, rythme 1), `matched` dit pourquoi ; seuls les objectifs/répulsions MONTRÉS se comparent.
+  Puces d'objectifs par INDEX (`esc()` n'échappe pas les guillemets).
+- **VIBE** = le like de SPACE : bouton ou double-tap (`.vibe-pop`), `space_vibe(id, on)`, compteur `vibes` +
+  `vibed` dans chaque space. Jamais sur le sien (`own`), jamais un invité (`email`).
+- **MY SPACE** = mon profil (`space_profile(null)`, privés compris, grille `div role=button` : un `<button>` de texte
+  reçoit `eco-text-btn` et s'écrase) ; un auteur du fil ouvre SON profil (`?u=pseudo`, partagés seulement).
+- **VIBES** = `my_vibes` : reçues (qui, quel space) et données. **SHARE** : « film the place, not yourself · its own
+  sound, no added music ». Le papier ne vit qu'au centre. Ordinateur : WATCH et MY SPACE plein écran centrés.
+- Liens : `?v=feed|me|vibes|cam`, `?u=`, `?spot=` inchangé. Tests : `space` 47, `space_top_left` 20, `spaces_loupe` 26,
+  `space_boxes_ecosystem` 22, `space_spot_links` 30, `spaces_ui` (4 échecs d'identité déjà là avant).
 
 ## 09/10/2026 (soir) — un space est un contenu, pas un rendez-vous
 

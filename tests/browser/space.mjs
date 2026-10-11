@@ -1,4 +1,5 @@
-// SPACE: real touch swipes, compass/radar, progressive creation, exact COM Habit Boxes.
+// SPACE · 11/10/2026 — the social network of the strategic Habit: home in the centre, WATCH ←,
+// SHARE ↓, MY SPACE →, VIBES ↑; the feed filtered by a Habit Box and all it is made of.
 // All accounts, positions, uploads and playback responses are mocked.
 import fs from 'node:fs';
 import {launch,page,ok} from './harness.mjs';
@@ -11,11 +12,16 @@ const habits=[{name:'Run the hill',freq:'every_morning',ints:['love','fight'],pl
 
 feed=feed.map(s=>({...s,location:'off',mode:'silent',duration_min:5,format:'space',exact:null}));
 future=future.map(s=>({...s,format:'spot'}));
+let lastFeed=null;
 const rpc={spot_rules:{clip_seconds:2,clip_max_bytes:33554432,duration_min:5,duration_max:720,video_provider:'storage'},space_habits:{ok:true,habits},
- space_discover:b=>({spots:feed,match:b.p_habit==='Walk the river'?'intention':b.p_habit?'habit':'all',more:false}),
- spots_list:()=>({spots:future}),
+ space_feed:b=>{lastFeed=b;return {ok:true,signed_in:true,spots:b.p_filter?.shows==='video'?feed.filter(s=>s.video):feed,more:false,filtered:!!b.p_filter?.habit};},
+ space_pulse:{spaces_week:2,members_week:1,vibes_week:3},
+ space_vibe:b=>({ok:true,vibed:b.p_on,vibes:b.p_on?1:0}),
+ space_profile:b=>({ok:true,pseudo:b.p_pseudo||'wah',mine:!b.p_pseudo,spaces_total:feed.length,vibes_total:3,spaces:feed,more:false}),
+ my_vibes:{ok:true,received:[{space:'live',habit:'Run the hill',by:'nia',at:iso(-5)}],received_total:1,given:[]},
  space_post:b=>{const s=spot('newclip',-1,{habit:b.p_habit,mine:true,video:b.p_video,location:'off',mode:'silent',duration_min:5,comment:b.p_comment,exact:null});feed.unshift(s);return{ok:true,id:s.id};},
  spot_box_visibility_set:{ok:true},spot_get:b=>({ok:true,spot:feed.find(s=>s.id===b.p_id)})};
+
 const browser=await launch({videoFile:process.env.SPACE_CAMERA_FIXTURE});
 try{
  const {pg,log}=await page(browser,{dir:'space',origin,rpc,tables:{profiles:[{pseudo:'wah'}]},viewport:{width:1440,height:900}});
@@ -24,35 +30,55 @@ try{
  const box=id=>pg.$eval('#'+id,e=>{const r=e.getBoundingClientRect();return{x:r.x,y:r.y,w:r.width,h:r.height};});
  async function drag(id,dx,dy){const r=await box(id),x=r.x+r.w/2,y=r.y+r.h/2;await pg.mouse.move(x,y);await pg.mouse.down();await pg.mouse.move(x+dx,y+dy,{steps:8});await pg.mouse.up();}
  await pg.goto(origin+'/');await pg.waitForFunction(()=>window.__totehm_space?.().feed>0);await settle();
- ok((await state()).view==='feed','SPACE arrives in the feed');
- ok((await box('v-feed')).w===1440 && (await box('v-feed')).h===900,'desktop feed fills the viewport');
- ok(await pg.locator('.view').count()===3,'SPACE has exactly three views');
- ok(await pg.locator('#v-plan,#v-radar,#v-list,#canvas,#radar-map,#radar-tools,#list').count()===0,'planning, radar and agenda nodes are absent');
- const diagnostic=await state();ok(!['radar','plan','exact','list'].some(k=>k in diagnostic),'diagnostic contains no removed state');
+ // CENTRE : la page d'arrivée
+ ok((await state()).view==='home','SPACE arrives on its home, not in the feed');
+ ok(await pg.locator('.view').count()===5,'SPACE has five views: home, watch, share, my space, vibes');
+ ok(await pg.isVisible('#home-title')&&/social media/i.test(await pg.textContent('#home-title'))&&await pg.locator('#home-title svg use[href="#higher-badge"]').count()===1,'home reads [Higher] SOCIAL MEDIA, Higher as the SVG');
+ ok(/no selfie/.test(await pg.textContent('#home-what'))&&/2 spaces this week/i.test(await pg.textContent('#home-pulse')),'home says what SPACE is and its weekly pulse');
+ ok(await pg.locator('#home-eco [data-eco-door="com"]').count()===1&&await pg.locator('#home-eco [data-eco-door="club"]').count()===1,'home opens totehm.com and figher.club');
+ ok(await pg.locator('#v-plan,#v-radar,#v-list,#v-spots,#spots-door,#find-spot,#canvas').count()===0,'no spot, radar, agenda or spots door on SPACE');
+ ok((await state()).paper.alive===true,'the TOTEHM turns on the home');
+ ok((await pg.textContent('#jl-g'))==='Watch'&&(await pg.textContent('#jl-d'))==='My space'&&(await pg.textContent('#jl-h'))==='Vibes'&&(await pg.textContent('#jl-b'))==='Share'&&await pg.isVisible('#jl-g'),'the cross is written around the joystick on the home');
  ok(!await pg.isVisible('#title')&&!await pg.isVisible('#int-def'),'no visible view headings');
- ok(await pg.locator('#ints').count()===0,'no parallel intention selector');
- ok(await pg.isVisible('#member')&&await pg.isVisible('#totehm-paper'),'center keeps member and Habit selection');
- ok(await pg.locator('#feed [data-go],#feed [data-ics]').count()===0,'feed has no location or calendar actions');
- ok(!/5 min|location off|silent|until /i.test(await pg.textContent('#feed')),'technical space values never appear in feed');
- await pg.click('#totehm-paper');await pg.waitForSelector('[data-filter-h]');
+ ok(!log.rpc.some(x=>x.name==='space_discover'||x.name==='spots_list'),'SPACE never reads the spot readers');
+ // ← WATCH
+ await drag('joy-box',-28,0);await view('feed');
+ ok((await box('v-feed')).w===1440&&(await box('v-feed')).h===900,'desktop feed fills the viewport');
+ ok((await state()).paper.alive===false,'the TOTEHM rests outside the home');
+ ok(await pg.locator('#feed [data-go],#feed [data-ics]').count()===0&&!/5 min|location off|silent|until /i.test(await pg.textContent('#feed')),'feed has no spot actions or technical values');
+ ok(await pg.locator('#feed [data-vibe]').count()===2,'every shared space of someone else has a VIBE');
+ await pg.click('#totehm-paper');await pg.waitForSelector('#sf-panel:not(.hide)');
+ ok(await pg.locator('[data-sf-pick]').count()===1&&await pg.locator('[data-sf-int]').count()===7&&await pg.locator('[data-sf-pillar]').count()===4,'filter: my Habit Box, the seven intentions, the four moods');
+ await pg.click('[data-sf-pick]');await pg.waitForSelector('[data-filter-h]');
  const text=await pg.textContent('[data-filter-h="0"]');ok(['every morning','Hill trail','OBJECTIVES','Enjoy Lisbon together','REPULSIONS','Stay indoors'].every(x=>text.includes(x)),'Habit Box preserves all COM attributes');
  ok(await pg.locator('[data-filter-h="0"] .v-int[title]').count()===2,'exact intention definitions remain');
- await pg.click('[data-filter-h="1"]');await settle();
- ok(/Same intention/.test(await pg.textContent('#int-def')),'feed keeps intention fallback');
- ok(log.rpc.filter(x=>x.name==='space_discover').at(-1).body.p_habit==='Walk the river','Habit choice reaches feed');
- ok(log.rpc.filter(x=>x.name==='spots_list').at(-1).body.p_q==='Walk the river','same Habit reaches the spots door');
- await pg.click('#sf-btn');await pg.waitForSelector('[data-sf-shows]');
- ok(await pg.locator('[data-sf-shows]').count()===3 && await pg.locator('[data-sf-want],[data-sf-mode]').count()===0,'filter retains VIDEO, PHOTO and WHY only');
- await pg.click('[data-sf-shows="video"]');await settle();ok((await state()).feed_shown===1,'VIDEO filter shows media without spot conditions');
- await pg.click('[data-sf-all]');await pg.click('[data-sf-close]');
- await drag('joy-box',-28,0);await view('spots');
- ok((await state()).spots_door===2 && await pg.locator('#spots-door [data-club-spot]').count()===2,'LEFT shows the next spots');
- ok(await pg.isVisible('#find-spot')&&(await pg.textContent('#find-spot'))==='FIND A SPOT','LEFT opens Club');
- await pg.click('#joy-box');await view('feed');
- await pg.keyboard.press('ArrowUp');await pg.keyboard.press('ArrowRight');await settle();ok((await state()).view==='feed','removed directions do not navigate');
- await pg.mouse.move(740,400);for(let i=0;i<10;i++)await pg.mouse.wheel(-10,0);await view('spots');await pg.keyboard.press('ArrowRight');await view('feed');
+ await pg.click('[data-filter-h="0"]');await pg.waitForSelector('#sf-panel:not(.hide) [data-sf-obj]');await pg.waitForTimeout(500);
+ const f=lastFeed.p_filter;
+ ok(f.habit==='Run the hill'&&f.ints.join()==='love,fight'&&f.freq==='every_morning'&&f.objectives[0]==='Enjoy Lisbon together'&&f.repulsions[0]==='Stay indoors','a Habit Box lights ALL its elements in the filter');
+ ok((await pg.textContent('#sf-btn'))==='Filter · 6','the filter counts the box, its intentions, rhythm, objective and repulsion');
+ await pg.click('[data-sf-obj="0"]');await pg.waitForTimeout(450);ok(lastFeed.p_filter.objectives.length===0&&lastFeed.p_filter.repulsions.length===1,'each element switches off on its own');
+ await pg.click('[data-sf-pillar="MENTAL"]');await pg.waitForTimeout(450);ok(['enrich','focus'].every(i=>lastFeed.p_filter.ints.includes(i)),'a mood brings its intentions');
+ await pg.click('[data-sf-shows="video"]');await pg.waitForTimeout(450);ok(lastFeed.p_filter.shows==='video'&&(await state()).feed===1,'IT SHOWS is applied by the server');
+ ok(lastFeed.p_filter.near===false&&lastFeed.p_lat===undefined,'the feed is the world by default, no location asked');
+ await pg.click('[data-sf-all]');await pg.waitForTimeout(450);ok(lastFeed.p_filter.habit===null&&lastFeed.p_filter.ints.length===0,'ALL SPACES clears the filter');
+ await pg.click('[data-sf-close]');
+ await pg.click('#feed [data-vibe="live"]');await pg.waitForTimeout(300);
+ ok(log.rpc.some(x=>x.name==='space_vibe'&&x.body.p_space==='live'&&x.body.p_on===true)&&(await pg.textContent('#feed [data-vibe="live"]'))==='VIBE · 1'&&(await pg.getAttribute('#feed [data-vibe="live"]','aria-pressed'))==='true','VIBE is one tap, its count follows');
+ await pg.click('#feed [data-profile="nia"]');await view('me');
+ ok(log.rpc.some(x=>x.name==='space_profile'&&x.body.p_pseudo==='nia')&&/nia/.test(await pg.textContent('#profile'))&&await pg.locator('#profile [data-com="/@nia"]').count()===1,"an author's name opens their space, and their TOTEHM from there");
+ await pg.click('[data-profile-me]');await pg.waitForTimeout(400);ok(log.rpc.filter(x=>x.name==='space_profile').at(-1).body.p_pseudo===null,'MY SPACE returns to mine');
+ ok(await pg.locator('#profile .pf-tile').count()===feed.length,'my space is a grid of my spaces');
+ await pg.click('#joy-box');await view('home');
+ // ↑ VIBES
+ await pg.keyboard.press('ArrowUp');await view('vibes');
+ ok(/nia/.test(await pg.textContent('#vibes'))&&/vibed/.test(await pg.textContent('#vibes')),'VIBES lists who vibed my spaces');
+ await pg.keyboard.press('ArrowDown');await view('home');
+ await pg.keyboard.press('ArrowRight');await view('me');await pg.keyboard.press('ArrowLeft');await view('home');
+ await pg.mouse.move(740,400);for(let i=0;i<10;i++)await pg.mouse.wheel(-10,0);await view('feed');await pg.keyboard.press('ArrowRight');await view('home');
+ // ↓ SHARE : the camera, then the space
  await pg.click('#cur-b');await view('cam');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='idle');
  ok(!(await state()).rec.camera,'camera entry leaves sensor off');
+ ok(/not yourself/.test(await pg.textContent('#cam-body')),'the camera says: the place, not yourself, no added music');
  await pg.click('#joy-box');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='ready');await pg.waitForTimeout(900);
  ok((await state()).rec.step==='ready','sensor waits for explicit recording');
  const centered=()=>pg.evaluate(()=>{const b=document.querySelector('#joy-box').getBoundingClientRect(),e=document.querySelector('#joy-record'),r=e.getBoundingClientRect(),s=getComputedStyle(e);return{x:Math.abs(r.x+r.width/2-b.x-b.width/2),y:Math.abs(r.y+r.height/2-b.y-b.height/2),color:s.backgroundColor,radius:s.borderRadius,w:r.width,h:r.height};});
@@ -71,11 +97,12 @@ try{
  ok(created.body.p_comment==='Bring focus'&&created.body.p_habit==='Run the hill','publication preserves Habit and comment');
  ok(log.rpc.some(x=>x.name==='spot_box_visibility_set'&&x.body.p_objectives===true&&x.body.p_repulsions===false),'published visibility keeps independent linked boxes');
  ok(log.upload.some(x=>x.method==='POST'),'private Storage media upload still works');
- ok(!log.rpc.some(x=>x.name==='spot_create'||x.name==='spot_schedule'||x.name==='space_discover'&&x.body.p_view!=='feed'),'SPACE never calls spot writers or radar/list discovery');
+ ok(!log.rpc.some(x=>['spot_create','spot_schedule','space_discover','spots_list'].includes(x.name)),'SPACE never calls spot writers or spot readers');
  await pg.keyboard.press('Escape');await pg.setViewportSize({width:390,height:844});await settle();
  ok((await box('v-feed')).w===390&&(await box('v-feed')).h===844,'mobile feed fills viewport');
  const client=await pg.context().newCDPSession(pg);async function swipe(x,y,dx,dy){await client.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y}]});for(let k=1;k<=9;k++){await client.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x+dx*k/9,y:y+dy*k/9}]});await pg.waitForTimeout(14);}await client.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});}
- await swipe(200,450,110,8);await view('spots');ok((await state()).view==='spots','touch opens the left door');await swipe(200,450,-110,8);await view('feed');
+ if((await state()).view!=='feed'){await pg.keyboard.press('Escape');await view('home');await pg.keyboard.press('ArrowLeft');await view('feed');}
+ await swipe(200,450,-110,8);await view('home');ok((await state()).view==='home','touch swipe from the feed returns home');await swipe(200,450,110,8);await view('feed');
  await pg.$eval('#feed',e=>e.scrollTo({top:0,behavior:'instant'}));await settle();const before=await pg.$eval('#feed',e=>e.scrollTop);await swipe(200,720,0,-600);await settle();ok((await state()).view==='feed'&&await pg.$eval('#feed',e=>e.scrollTop)>before,'native vertical feed scrolling stays in feed');
  await pg.screenshot({path:OUT+'/space_feed_mobile.png'});
  ok(!log.errors.some(x=>x.startsWith('pageerror')),'SPACE has no JavaScript page errors');

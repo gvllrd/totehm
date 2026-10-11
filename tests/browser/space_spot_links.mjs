@@ -6,7 +6,7 @@ const item=(id,format)=>({id,format,habit:'Deep practice',intentions:['focus'],v
 try{
  for(const [dir,origin,format,target] of [['space','https://www.totehm.space','space',null],['space','https://www.totehm.space','spot','club'],['club','https://www.figher.club','spot',null],['club','https://www.figher.club','space','space']]){
   let minted=null;const host=target==='club'?'https://www.figher.club':'https://www.totehm.space';
-  const {pg,ctx,log}=await page(browser,{dir,origin,rpc:{spot_get:{ok:true,spot:item('link',format)},space_discover:{spots:[]},spots_list:{spots:[]},spots_feed:{spots:[]}},tables:{profiles:[{pseudo:'wah'}]},functions:{'create-bunny-upload':{available:false},'sso-mint':b=>{minted=b.target;return{code:'FORMAT-SSO'};}},network:url=>url.origin===origin&&url.pathname==='/prior'?{status:200,contentType:'text/html',body:'<!doctype html><p>Prior</p>'}:target&&url.origin===host?{status:200,contentType:'text/html',body:'<!doctype html><p>Destination</p>'}:null});
+  const {pg,ctx,log}=await page(browser,{dir,origin,rpc:{spot_get:{ok:true,spot:item('link',format)},space_feed:{ok:true,spots:[],more:false},space_pulse:{},space_discover:{spots:[]},spots_list:{spots:[]},spots_feed:{spots:[]}},tables:{profiles:[{pseudo:'wah'}]},functions:{'create-bunny-upload':{available:false},'sso-mint':b=>{minted=b.target;return{code:'FORMAT-SSO'};}},network:url=>url.origin===origin&&url.pathname==='/prior'?{status:200,contentType:'text/html',body:'<!doctype html><p>Prior</p>'}:target&&url.origin===host?{status:200,contentType:'text/html',body:'<!doctype html><p>Destination</p>'}:null});
   if(target)await pg.goto(origin+'/prior');await pg.goto(origin+'/?spot=link');
   if(target){await pg.waitForURL(host+'/?spot=link#sso=FORMAT-SSO');ok(minted===target,dir+' redirects '+format+' through the correct authenticated bridge');await pg.goBack();ok(pg.url()===origin+'/prior',dir+' format redirect replaces its history entry');}
   else{await pg.waitForSelector('#detail.is-open');ok(await pg.locator('#detail .habit').count()===1,dir+' opens its own '+format+' directly');}
@@ -20,13 +20,12 @@ try{
   ok(log.rpc.filter(x=>x.name==='spots_feed').at(-1).body.p_before===current.at(-1).starts_at&&await pg.locator('#past .sp-card').count()===1,'past pagination advances using the raw response cursor');
   ok(!log.errors.some(x=>x.startsWith('pageerror')),'past pagination has no JavaScript page errors');await ctx.close();
  }
- for(const button of ['[data-club-spot="s1"]','#find-spot']){
-  const origin='https://www.totehm.space';let minted=null;
-  const {pg,ctx,log}=await page(browser,{dir:'space',origin,rpc:{space_discover:{spots:[]},spots_list:{spots:['s1','s2','s3','s4'].map(id=>item(id,'spot'))}},tables:{profiles:[{pseudo:'wah'}]},functions:{'sso-mint':b=>{minted=b.target;return{code:'DOOR-SSO'};}},network:url=>url.origin==='https://www.figher.club'?{status:200,contentType:'text/html',body:'<!doctype html><p>Club</p>'}:null});
-  await pg.goto(origin+'/');await pg.waitForFunction(()=>window.__totehm_space?.().spots_door===3);await pg.click('#cur-g');
-  ok(await pg.locator('#spots-door [data-club-spot]').count()===3,'door limits previews to three upcoming spots');
-  const r=log.rpc.find(x=>x.name==='spots_list');ok(r.body.p_limit===3&&Object.keys(r.body).length===5,'door uses the existing spots_list signature');
-  await pg.click(button);await pg.waitForURL('https://www.figher.club/**');ok(minted==='club'&&pg.url().includes('#sso=DOOR-SSO'),button+' retains authentication in Club');
+ // 11/10 : SPACE n'a plus de porte des spots ; figher.club s'ouvre depuis la page d'arrivée.
+ {const origin='https://www.totehm.space';let minted=null;
+  const {pg,ctx,log}=await page(browser,{dir:'space',origin,rpc:{space_feed:{ok:true,spots:[],more:false},space_pulse:{spaces_week:0,vibes_week:0}},tables:{profiles:[{pseudo:'wah'}]},functions:{'sso-mint':b=>{minted=b.target;return{code:'DOOR-SSO'};}},network:url=>url.origin==='https://www.figher.club'?{status:200,contentType:'text/html',body:'<!doctype html><p>Club</p>'}:null});
+  await pg.goto(origin+'/');await pg.waitForFunction(()=>window.__totehm_space?.().view==='home');await pg.waitForTimeout(500);
+  ok(await pg.locator('#spots-door,#find-spot,#v-spots').count()===0&&!log.rpc.some(x=>x.name==='spots_list'),'SPACE carries no spot door and reads no spot');
+  await pg.click('[data-eco-door="club"]');await pg.waitForURL('https://www.figher.club/**');ok(minted==='club'&&pg.url().includes('#sso=DOOR-SSO'),'figher.club opens from the SPACE home, authenticated');
   ok(!log.errors.some(x=>x.startsWith('pageerror')),'door link has no JavaScript page errors');await ctx.close();
  }
  const source={ok:true,pseudo:'studio',steps:[{t:'Deep practice',is:['focus']}],objs:{'Deep practice':['o1']},trips:[{id:'o1',text:'Build a practice',is:['focus']}],reps:[],wisdom:[],visions:[]};

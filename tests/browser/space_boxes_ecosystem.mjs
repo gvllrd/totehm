@@ -7,11 +7,11 @@ const OUT=process.argv[2]||'/tmp/eco-boxes';fs.mkdirSync(OUT,{recursive:true});
 const origin='https://www.totehm.space',iso=m=>new Date(Date.now()+m*60000).toISOString();
 const habits=[{name:'Deep practice',freq:null,ints:['focus'],step:{id:'h1',t:'Deep practice',is:['focus']},objectives:[{text:'Build a practice'}],repulsions:[{text:'Put the phone away'}]}];
 const future=(id,location)=>({id,habit:'Deep practice',intentions:['focus'],visibility:'shared',location,mode:'silent',city:'Lisbon',starts_at:iso(60),ends_at:iso(120),duration_min:60,creator:'studio',mine:false,exact:null});
-const rpc={space_habits:{ok:true,habits},spot_rules:{clip_seconds:33,duration_min:5,duration_max:720,horizon_days:90},space_discover:{spots:[],more:false,match:'habit'},spots_list:{spots:[future('on','on')]}};
+const rpc={space_habits:{ok:true,habits},spot_rules:{clip_seconds:33,duration_min:5,duration_max:720,horizon_days:90},space_feed:{ok:true,spots:[],more:false},space_pulse:{spaces_week:0,vibes_week:0}};
 const browser=await launch();
 try{
   const {pg,log}=await page(browser,{dir:'space',origin,rpc,tables:{profiles:[{pseudo:'wah'}]},hasTouch:true});
-  await pg.goto(origin+'/');await pg.waitForFunction(()=>window.__totehm_space?.().view==='feed');await pg.waitForTimeout(500);
+  await pg.goto(origin+'/');await pg.waitForFunction(()=>window.__totehm_space?.().view==='home');await pg.waitForTimeout(500);
   const identity=await pg.$eval('#member-txt',e=>({font:getComputedStyle(e).fontFamily,color:getComputedStyle(e).color}));ok(identity.font.includes('Quantico')&&identity.color==='rgb(251, 213, 202)','connected identity keeps Quantico Coral after the login label changes');
   ok((await pg.textContent('#tp-hint')).trim().toUpperCase()==='TAP ON YOUR TOTEHM TO TURN A HABIT INTO A SPACE','corrected Habit-to-space invitation');
   await pg.click('#space-about');await pg.waitForSelector('.eco-sheet');
@@ -19,17 +19,17 @@ try{
   ok(/strategic Habits, lived/.test(definition)&&/objectives and repulsions/.test(definition)&&!/collective effervescence|SOCIAL|SILENT/.test(definition),'space definition says what a space is (content), the meeting rules live on figher.club');
   ok(await pg.$eval('#joy',e=>e.inert)&&await pg.$eval('#joy',e=>getComputedStyle(e).pointerEvents)==='none','joystick is muted while the definition is open');
   await pg.keyboard.press('ArrowUp');await pg.mouse.wheel(200,0);await pg.waitForTimeout(300);
-  ok(await pg.evaluate(()=>window.__totehm_space().view)==='feed','definition blocks background navigation');
+  ok(await pg.evaluate(()=>window.__totehm_space().view)==='home','definition blocks background navigation');
   await pg.screenshot({path:OUT+'/space_definition_mobile.png'});await pg.keyboard.press('Escape');
   ok(!await pg.locator('.eco-sheet').count()&&!await pg.$eval('#joy',e=>e.inert),'Escape restores navigation');
-  await pg.click('#totehm-paper');await pg.waitForSelector('[data-filter-h]');
+  await pg.click('#cur-g');await pg.waitForFunction(()=>window.__totehm_space().view==='feed');await pg.waitForTimeout(500);
+  await pg.click('#sf-btn');await pg.click('[data-sf-pick]');await pg.waitForSelector('[data-filter-h]');
   const picker=pg.locator('[data-filter-h="0"]');
   ok(!/set time frequency|any rhythm|place ·/i.test(await picker.textContent()),'unconfigured frequency and place never appear in the mirrored Box');
   await picker.locator('.eco-box-zoom').click();await pg.waitForTimeout(150);
   ok(await picker.locator('.habit.is-zoom').count()===1&&await pg.locator('.eco-sheet').count()===0&&!(await pg.evaluate(()=>window.__totehm_space().habit_filter)),'SPACE magnifier enlarges the Box in place: no window, Habit not chosen');
   await picker.click();await pg.waitForTimeout(500);
-  await pg.click('#cur-g');await pg.waitForFunction(()=>window.__totehm_space().view==='spots');await pg.waitForTimeout(500);
-  ok(await pg.locator('#spots-door [data-club-spot]').count()===1&&await pg.locator('#v-list').count()===0,'LEFT opens the upcoming spot on Club; SPACE has no agenda');
+  ok(await pg.locator('#sf-panel:not(.hide) [data-sf-rep]').count()===1&&await pg.locator('#v-list,#v-spots,#spots-door').count()===0,'choosing the Box lights its elements in the filter; no spot on SPACE');
   ok(!log.errors.some(e=>e.startsWith('pageerror')),'SPACE new features have no JavaScript errors');
   await pg.screenshot({path:OUT+'/space_boxes_mobile.png'});await pg.context().close();
 

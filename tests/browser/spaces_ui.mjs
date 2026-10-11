@@ -15,12 +15,14 @@ const coral=async(pg,sel)=>pg.$eval(sel,e=>{const s=getComputedStyle(e);return s
 try{
  if(!onlyIdentity){
 
- {const {pg,log}=await page(browser,{dir:'space',origin,hasTouch:true,tables:{profiles:[{pseudo:'my_higher_self'}]},rpc:{spot_rules:{clip_seconds:2,duration_min:5,duration_max:720,video_provider:'storage'},space_habits:{ok:true,habits:[habit]},space_discover:{spots:[{...off,format:'space'}],more:false},spots_list:{spots:[]}}});
+ {const {pg,log}=await page(browser,{dir:'space',origin,hasTouch:true,tables:{profiles:[{pseudo:'my_higher_self'}]},rpc:{spot_rules:{clip_seconds:2,duration_min:5,duration_max:720,video_provider:'storage'},space_habits:{ok:true,habits:[habit]},space_feed:{ok:true,spots:[{...off,format:'space'}],more:false},space_pulse:{spaces_week:1,vibes_week:0}}});
  await pg.goto(origin+'/');await pg.waitForFunction(()=>window.__totehm_space?.().signed_in);await pg.waitForTimeout(600);
  ok(await coral(pg,'#member-txt')&&await coral(pg,'#tp-name'),'SPACE identity and paper retain native font and color');
  ok(!await pg.isVisible('#member i'),'SPACE has no member status dot');
  ok(await pg.locator('#canvas,#radar-tools,#v-plan,#v-list').count()===0,'SPACE contains no location interface');
- await tapPaper(pg);await pg.waitForSelector('[data-filter-h]');ok(await pg.locator('[data-filter-h]').count()===1,'center paper opens Habit selector');await pg.click('[data-picker-close]');
+ ok(await pg.locator('#v-spots,#spots-door').count()===0,'SPACE contains no spot door');
+ await tapPaper(pg);await pg.waitForFunction(()=>window.__totehm_space().view==='cam');ok(true,'the home paper turns a habit into a space (↓ the camera)');
+ await pg.click('#cur-h');await pg.waitForFunction(()=>window.__totehm_space().view==='home');await pg.waitForTimeout(400);
  await pg.click('#cur-b');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='idle');await pg.waitForTimeout(600);
  ok(!(await state(pg)).rec.camera&&/Share a space from your TOTEHM/.test(await pg.textContent('#cam-body'))&&await pg.locator('#cam-body [data-start]').count()===2&&await pg.locator('#cam-body [data-cancel]').count()===1,'idle camera keeps VIDEO, PHOTO and CANCEL without activating sensor');
  ok(await pg.$eval('#cam-body .say',e=>getComputedStyle(e).backgroundColor)==='rgba(0, 0, 0, 0.82)','camera instruction keeps original black box');
@@ -30,8 +32,8 @@ try{
  await pg.setViewportSize({width:390,height:844});await pg.click('[data-h="0"]');await pg.waitForFunction(()=>!document.querySelector('[data-send]')?.disabled);
  ok(await pg.locator('#c-say').count()===1&&await pg.locator('#c-dur,[data-vis],[data-mode],[data-loc]').count()===0,'form retains comment and removes spot settings');
  await pg.$eval('#cam-body',e=>e.scrollTop=e.scrollHeight);await swipe(pg,375,680,0,-140);ok((await state(pg)).view==='cam'&&(await state(pg)).rec.step==='form','form boundary swipe keeps media draft');
- await pg.click('[data-cancel]');await pg.waitForFunction(()=>window.__totehm_space().view==='feed');
- ok(!(await state(pg)).rec.camera&&!(await state(pg)).rec.clip,'cancel returns to feed and releases media');
+ await pg.click('[data-cancel]');await pg.waitForFunction(()=>window.__totehm_space().view==='home');
+ ok(!(await state(pg)).rec.camera&&!(await state(pg)).rec.clip,'cancel returns home and releases media');
  ok(!log.errors.some(x=>x.startsWith('pageerror')),'SPACE media form has no JavaScript page error');await pg.context().close();
  }
  // COM history: private/live, past and planned spaces; cursor and cross-domain SSO.
