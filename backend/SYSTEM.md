@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 11 octobre 2026, boutons boutique (navigateur local), SPACE réseau social, invité COM** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 11 octobre 2026 (bis), la Habit Box éparpillée, SPACE → SPOT, l'aperçu partagé** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -15,6 +15,18 @@
 
 ---
 
+
+## 0 · LA BOÎTE ÉPARPILLÉE, SPACE → SPOT, L'APERÇU PARTAGÉ — 11/10/2026 (bis)
+
+| quoi | valeur mesurée |
+|---|---|
+| mots visibles au téléphone (390 × 844, simulé) | SPACE centre 54 → 41 · fil 52 → 44 (avec 3 boîtes éparpillées et SPOT) · caméra 33 → 10 · MY SPACE 26 → 22 · VIBES 26 → 22 ; visiteur : COM 41 (inchangé), Club 32, Boutique 62 (inchangée, restaurée à la demande de Wah le 05/10) |
+| navigateur (Supabase simulé) | space_scatter 15/15 (nouveau) · club_from_space 9/9 (nouveau) · space 47/47 · space_top_left 21/21 · spaces_loupe 26/26 · space_boxes_ecosystem 19/19 · space_spot_links 30/30 · club_ui 27/27 · club_map 42/42 · club_publish 33/33 · club_luxury 48/48 |
+| Node | tests/node/space_card.mjs 11/11 (carte d'un space partagé, échappement, privé = carte générique, image signée, vignette Bunny, id malformé) |
+| échecs connus, hors lot | spaces_ui : 4 échecs d'identité boutique (d'avant) · space_performance : la lecture vidéo n'avance pas dans ce Chromium (sa vérification de la boussole, retirée de SPACE le 09/10, est maintenant sautée) · space_video : idem |
+| base | aucune migration ; `spot_get` exécutable par anon (vérifié) ; politique `moments read readable` anon + authenticated |
+| Vercel `dd03313` | com · space · club · boutique READY (production) |
+| prod (pg_net, 200) | totehm.space `ac37d819…` `2026-10-11-space-scatter` · figher.club `9b20d43a…` `2026-10-11-club-from-space` (`club-title`, PLAN ONE) · `/s/<photo>` et `/s/<bunny>` : og:title, og:image `/s/<id>/i`, `summary_large_image`, redirection · `/s/<id>/i` : image/jpeg 123 620 o (photo) et 32 834 o (vignette Bunny) · `/s/not-an-id` : carte générique |
 
 ## 0 · BOUTIQUE : PADDING ENCORE RÉDUIT — 11/10/2026
 
