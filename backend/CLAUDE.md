@@ -1,5 +1,24 @@
 # backend/CLAUDE.md — la base, les fonctions, l'argent, le bot
 
+## 11/10/2026 — SPACE réseau social : `space_feed`, vibes, profils ; l'invité refusé
+
+Migration additive `20261011102841_space_social.sql`, appliquée UNE fois sous `space_social`.
+- `space_vibes(space_id → spot_plans cascade, user_id → auth.users cascade, active, created_at)`, PK (space, user),
+  RLS sans politique, aucun grant client. Une vibe retirée = `active=false` (pas de `delete` depuis le cloud).
+- `space_feed(p_filter jsonb, p_lat, p_lng, p_offset, p_limit)` (anon + auth) : spaces publiés, partagés (ou les miens).
+  Filtre : `habit`, `ints`, `freq`, `objectives`, `repulsions` (mots, `_space_words`), `shows` video|photo|why,
+  `near`. OU pondéré : Habit 3 · objectif 2 · répulsion 2 · intention 1 · rythme 1 ; seuls les objectifs/répulsions
+  MONTRÉS (`show_objectives` / `show_repulsions`) se comparent. Rend `spots` (+ `matched`), `more`, `filtered`.
+  `search_path = public` (earthdistance/cube y vivent).
+- `_spot_view` rend `vibes` et `vibed`. `space_vibe(space, on)` (auth) : `signin` · `email` (invité) · `nothing`
+  (privé, absent, pas un space) · `own`. `space_profile(pseudo, offset, limit)` (anon + auth) : vide = moi (privés
+  compris), sinon ses partagés. `my_vibes(limit)` (auth) : reçues + données. `space_pulse()` : spaces, membres,
+  vibes de la semaine (des compteurs, jamais un membre).
+- **Invité** (`auth.users.is_anonymous`) : `space_post` → `email`, `sm_begin` → `email` (Higher Self = coût réel).
+- Auto-test `tests/sql/space_social_selftest.sql` (annulé) : `FAIL={}` ; `space_spot_split`, `higher_self_freemium`
+  rejoués : `FAIL={}`. Advisors : notices security-definer attendues sur les 5 RPC, `space_vibes` RLS sans
+  politique (voulu) ; ERROR inchangés (5).
+
 ## 09/10/2026 (soir) — `habit_spaces` sépare et compte
 
 Migration `20261009211744_habit_spaces_split.sql`, appliquée UNE fois sous `habit_spaces_split` : même signature,

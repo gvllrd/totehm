@@ -1,5 +1,11 @@
 # TOTEHM · backend
 
+## 11/10/2026 — SPACE social network: feed, vibes, profiles
+
+Migration `20261011102841_space_social.sql` (applied once as `space_social`). `space_feed(p_filter, p_lat, p_lng, p_offset, p_limit)` returns shared spaces ranked by an OR score (habit 3, objective 2, repulsion 2, intention 1, rhythm 1; only objectives/repulsions their author chose to show), with `matched`, `more`, `filtered`. `space_vibe(space, on)` toggles a vibe (`space_vibes`, never deleted: `active=false`); refusals `signin`, `email` (anonymous account), `nothing`, `own`. `space_profile(pseudo)` (empty = me, private included), `my_vibes(limit)`, `space_pulse()` (week counters). Anonymous accounts (`is_anonymous`) cannot post a space, vibe, or start a Higher Self reply (`sm_begin` → `email`). Test `tests/sql/space_social_selftest.sql` (`FAIL={}`).
+
+Anonymous sign-in (totehm.com guest mode) is a project setting: `external_anonymous_users_enabled` on `PATCH /v1/projects/abujjbkbbiumxrokozph/config/auth` (Management API token) or Dashboard → Authentication → Sign In / Providers → Allow anonymous sign-ins. The page reads `/auth/v1/settings` and shows the guest door only when it is on.
+
 
 ## 08/10/2026 — TotehmSM v2: freemium, streaming, no history
 
