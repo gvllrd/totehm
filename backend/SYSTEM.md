@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 11 octobre 2026 (ter), boutons boutique (navigateur local), la Habit Box éparpillée, SPACE → SPOT, l'aperçu partagé** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 12 octobre 2026, la box telle quelle, un élément éteint d'un tap** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -15,6 +15,18 @@
 
 ---
 
+
+## 0 · LA BOX TELLE QUELLE, UN ÉLÉMENT ÉTEINT D'UN TAP — 12/10/2026
+
+| quoi | valeur mesurée |
+|---|---|
+| migration `space_box_elements` (`20261012090000`, MCP) | `spot_box_set(uuid, jsonb)` (authenticated) · `_spot_view` et `space_feed` respectent `snapshot.hide` · mêmes signatures, grants reposés |
+| auto-tests SQL (annulés) | `space_box_elements` FAIL={} (né caché ; un objectif + le rythme éteints : absents de `why` et de `freq`, jamais comparés ; tout éteint → `why` null ; rien d'éteint → tout ; anon refusé, autre refusé) · `space_social` rejoué FAIL={} |
+| advisors sécurité | ERROR 5 (inchangé) · 1 notice attendue : `spot_box_set` security definer (authenticated) |
+| navigateur (Supabase simulé) | space_box 13/13 (nouveau ; remplace space_scatter) · space 47/47 · space_top_left 21/21 · spaces_loupe 26/26 · space_boxes_ecosystem 19/19 · space_spot_links 30/30 · club_from_space 9/9 · club_ui 27/27 · club_map 42/42 · club_publish 33/33 · club_luxury 48/48 |
+| échecs connus, hors lot | spaces_ui : 4 échecs d'identité boutique (d'avant) · club_map « mobile future list » échoue seulement en parallèle (42/42 seul) |
+| Vercel `db3b321` | com · space · club · boutique READY (production) |
+| prod (pg_net, 200) | totehm.space `4a1b5bed…` `2026-10-12-space-box` (`spot_box_set` présent, `scatterHTML` absent) · figher.club `76c62298…` `2026-10-12-club-box` (`spot_box_set` présent, `spot_box_visibility_set` absent) · base : 2 spaces visibles, 0 `snapshot.hide` |
 
 ## 0 · LA BOÎTE ÉPARPILLÉE, SPACE → SPOT, L'APERÇU PARTAGÉ — 11/10/2026 (bis)
 
