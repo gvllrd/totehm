@@ -5015,7 +5015,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-12-com-plateforme';
+const BUILD='2026-10-12-com-joy';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -9212,7 +9212,7 @@ window.addEventListener('pageshow',e=>{
       jy.style.setProperty('--ljoy','var('+(TEINTE_L[vue]||'--navy')+')');
       ['h','g','d','b'].forEach(d=>$('lcur-'+d).classList.toggle('mort',!voisin(d)));
       const [o,h,r]=js.children;
-      jb.classList.toggle('hors',vue==='h'||vue==='d');
+      jb.classList.toggle('hors',vue==='g'||vue==='d');   /* 12/10 (ter) : l'aspect d'avant, vue par vue */
       o.classList.toggle('ici',vue!=='c'); h.classList.toggle('ici',vue==='c'); r.classList.toggle('ici',vue!=='c');
       jb.setAttribute('aria-label',vue==='c'?'My TOTEHM':'Back to my TOTEHM');
       $('ljoy-say').textContent=NOMS[vue]||'';

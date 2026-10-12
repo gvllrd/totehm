@@ -730,7 +730,7 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
   return (v < 10 ? Math.max(.1, v).toFixed(1) : String(Math.round(v))) + ' ' + UNIT; };
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD='2026-10-12-space-plateforme';
+const BUILD='2026-10-12-space-joy';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'feed';   /* 12/10 — on arrive dans le fil (Wah : « totehm.space, pur TikTok »). */
@@ -1801,14 +1801,15 @@ const voisin = d => CROIX[VIEW][d] || null;
 const recordingLocked = () => VIEW === 'cam' && ['perm','count','rec','shot','habit','form','send','retry','heavy'].includes(REC.step);
 function joyPaint(preview){
   const bx = $('joy-box'), camera = VIEW === 'cam';
-  bx.style.setProperty('--joy-vue', ({feed:'var(--navy)',home:'var(--rep)',cam:'var(--navy)',me:'var(--blue)',vibes:'var(--blue)'})[voisin(preview) || VIEW]);
-  bx.classList.toggle('is-side',['home','me','vibes'].includes(VIEW));
+  /* 12/10 (ter) — Wah : « remets-moi les couleurs du joystick d'avant » : chaque vue garde SA teinte, quelle que soit sa place. */
+  bx.style.setProperty('--joy-vue', ({home:'var(--navy)',feed:'var(--rep)',cam:'var(--navy)',me:'var(--blue)',vibes:'var(--blue)'})[voisin(preview) || VIEW]);
+  bx.classList.toggle('is-side',['feed','me','vibes'].includes(VIEW));
   bx.classList.toggle('is-camera',camera); bx.classList.toggle('is-recording',camera && REC.step === 'rec');
   const muted=!!DETAIL || camera && ['habit','form','send','retry','heavy'].includes(REC.step);
   $('joy').classList.toggle('is-muted',muted);bx.disabled=muted || camera && ['perm','signin','nocam','denied','shot'].includes(REC.step);
   const photo = REC.kind === 'photo';
   bx.setAttribute('aria-label',camera ? (REC.step === 'rec' ? 'Stop recording' : ['habit','form','heavy','retry'].includes(REC.step) ? (photo ? 'Take the photo again' : 'Record again') : REC.step === 'ready' && photo ? 'Take the photo' : 'Record video') : VIEW === 'feed' ? 'Share' : 'Back to the feed');
-  for(const [cls,v] of [['o','home'],['h','feed'],['r','cam']]) $('joy-stack').querySelector('.'+cls).classList.toggle('is-current',VIEW === v);
+  for(const [cls,v] of [['o','feed'],['h','home'],['r','cam']]) $('joy-stack').querySelector('.'+cls).classList.toggle('is-current',VIEW === v);
   for(const d of ['g','d','h','b']){ $('cur-'+d).classList.toggle('is-dead',!voisin(d) || recordingLocked() || !!DETAIL); $('cur-'+d).classList.toggle('is-preview',preview === d && !!voisin(d)); $('cur-'+d).setAttribute('aria-label', VIEW_NAMES[voisin(d)] || ''); }
   $('joy-say').textContent = camera ? (REC.step === 'rec' ? 'STOP' : REC.step === 'idle' ? 'VIDEO' : REC.step === 'ready' ? (photo ? 'PHOTO' : 'REC') : ['habit','form','heavy','retry'].includes(REC.step) ? 'AGAIN' : '') : preview && voisin(preview) ? VIEW_NAMES[voisin(preview)] : '';
 }

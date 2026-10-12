@@ -30,11 +30,12 @@ try{
      thp:!!document.getElementById('lv-thp-say'), tag:!!document.getElementById('lv-b-tag'), build:window.__totehm_lv().build }));
    ok(!c.why && !c.strat && !c.thp && !c.tag, 'COM : plus de « [Higher] STRATEGY », de phrase sous lui, de texte du THP ni de slogan TotehmSM');
    ok(c.sig === 'wahigher' && /Quantico/.test(c.sigFont) && c.sigInPaper && c.nameBtn === 'none', 'le nom est écrit SUR le papier (Quantico), plus de boîte noire sous lui');
-   ok(c.build === '2026-10-12-com-plateforme', 'BUILD 2026-10-12-com-plateforme');
+   ok(c.build === '2026-10-12-com-joy', 'BUILD 2026-10-12-com-joy');
    await pg.screenshot({ path:OUT + '/plateforme_centre.png' });
    const vue = () => pg.evaluate(() => window.__totehm_lv().vue);
    await pg.keyboard.press('ArrowLeft'); await pg.waitForFunction(() => window.__totehm_lv().vue === 'h' && !window.__totehm_lv().bouge);
    ok(true, '← mène à Get Higher (la vue d\'en haut est devenue celle de gauche)');
+   ok(!(await pg.$eval('#ljoy-box', e => e.classList.contains('hors'))) && await pg.$eval('#ljoy', e => e.style.getPropertyValue('--ljoy')) === 'var(--blue)', 'la manette de Get Higher garde son aspect d\'avant (bleu clair, ses points)');
    await pg.keyboard.press('ArrowRight'); await pg.waitForFunction(() => window.__totehm_lv().vue === 'c' && !window.__totehm_lv().bouge);
    await pg.waitForTimeout(400);
    /* Le trackpad, comme SPACE : deux doigts vers la gauche = deltaX > 0 = la vue de DROITE. */
@@ -111,6 +112,7 @@ try{
  { const { pg, log } = await page(browser, { dir:'space', origin:'https://www.totehm.space', tables, rpc });
    await pg.goto('https://www.totehm.space/'); await pg.waitForFunction(() => window.__totehm_space?.().view === 'feed');
    ok(true, 'totehm.space : on arrive dans le FIL (pur TikTok)');
+   ok(await pg.$eval('#joy-box', e => e.style.getPropertyValue('--joy-vue')) === 'var(--rep)' && await pg.$eval('#joy-box', e => e.classList.contains('is-side')), 'au fil, la manette garde ses couleurs d\'avant (rouge-violet)');
    await pg.click('#cur-g'); await pg.waitForFunction(() => window.__totehm_space().view === 'home');
    ok(!(await pg.locator('#home-what').count()) && await pg.locator('#x-back').isHidden(), 'à gauche du fil, SPACE sans phrase ; hors de COM, pas de croix');
    ok(!erreurs(log).length, 'SPACE seul : aucune erreur');
