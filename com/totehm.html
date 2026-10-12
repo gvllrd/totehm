@@ -2208,6 +2208,12 @@ body:not(.gate) #gate{display:none}
 #gate-search-go{position:absolute;inset:0;z-index:9;background:none;border:none;padding:0;
   cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent}
 body.gate.entered .ast-back{visibility:hidden}
+/* 12/10 — LE NOM EST SUR LE PAPIER (Wah : « pas de boîte noire ; directement imbriqué dans le
+   paper et le bleu navy »). La bande sous « EHM », à droite du rail, au-dessus des perforations ;
+   Quantico Coral, mesuré par `paintAsteroid()`. Il part dès que le papier se déconstruit. */
+#ast-sig{position:absolute;left:18%;right:5%;bottom:8.5%;z-index:3;text-align:center;white-space:nowrap;overflow:hidden;
+  font:400 9px/1 'Quantico',sans-serif;letter-spacing:.04em;color:#fbd5ca;pointer-events:none;transition:opacity .25s ease}
+body.entered #ast-sig,body.folding #ast-sig,body.ro #ast-sig{opacity:0;transition:none}
 
 /* ══ LA BOUCHE · 03/10/2026 ═══════════════════════════════════════════
    Wah : « une animation métaphorique du LSD paper que l'on met sur la
@@ -2896,13 +2902,24 @@ body.gate.entered #filter-badge{
 /* 03/10 — the member's TOTEHM name: Quantico Coral, without status dots. */
 #conn-bar,#conn-bar:hover,#conn-txt,#member,#member:hover,#member-txt,.mw-pseudo,.mw-pseudo:hover,.mw-who,.mw-who:hover,#mw-who,#mw-who:hover,#ro-who,#ro-who:hover,.tv-name,.tv-name:hover,#member-txt:hover,#conn-txt:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;text-transform:none}
 #conn-bar .dot,#conn-bar .dc,#member>i,#mw-dot{display:none!important;animation:none}
-.tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
+/* 12/10 — LE NOM DU TOTEHM EST SUR LE PAPIER, PAS DANS UNE BOÎTE NOIRE (Wah : « directement imbriqué
+   dans le paper et le bleu navy ») : Quantico Coral sur le navy #333366, carré comme le papier. */
+.tname,.tname:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#333366;border:0;border-image:none;border-radius:0;padding:6px 10px;filter:none}
 
-.ast-say,.ast-say.is-name,#gate-asteroid:hover .ast-say,.ast-say:hover,.ast-say.is-name:hover{color:#fbd5ca;background:#000;border-radius:7px;padding:4px 6px}
-.sr-name,.srch-name,.srch-row:hover .srch-name,.srch-name:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
-#srch-q{color:#fbd5ca;caret-color:#fbd5ca;background:#000;border-radius:10px;padding:8px 12px}
-#name-btn.claimed,#set-name{font-family:'Quantico',sans-serif;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px}
+.ast-say,.ast-say.is-name,#gate-asteroid:hover .ast-say,.ast-say:hover,.ast-say.is-name:hover{color:#fbd5ca;background:none;border-radius:0;padding:0}
+.sr-name,.srch-name,.srch-row:hover .srch-name,.srch-name:hover{font-family:'Quantico',sans-serif;font-weight:400;color:#fbd5ca;background:#333366;border:0;border-image:none;border-radius:0;padding:6px 10px;filter:none}
+#srch-q{color:#fbd5ca;caret-color:#fbd5ca;background:none;border-radius:0;padding:2px 0}
+#name-btn.claimed,#set-name{font-family:'Quantico',sans-serif;color:#fbd5ca;background:#333366;border:0;border-image:none;border-radius:0}
 
+/* 12/10 — UNE PLATEFORME : la couche où SPACE et le Club vivent dans totehm.com (`XO`).
+   Elle monte du bas ; fermée, elle garde ses cadres chargés, invisibles. */
+#xo{position:fixed;inset:0;z-index:400;background:#000;visibility:hidden;transform:translateY(100%);
+  transition:transform .32s cubic-bezier(.22,.9,.3,1),visibility 0s linear .32s}
+#xo.is-open{visibility:visible;transform:none;transition:transform .32s cubic-bezier(.22,.9,.3,1)}
+.xo-f{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#000;visibility:hidden}
+#xo.is-open .xo-f.is-on{visibility:visible}
+body.is-xo{overflow:hidden}
+@media(prefers-reduced-motion:reduce){#xo,#xo.is-open{transition:none}}
 /* Personal spaces: owner-only history, opened from the member menu. */
 #myspaces{position:fixed;inset:0;z-index:260;display:none;background:rgba(0,0,0,.94);overflow-y:auto;overscroll-behavior:contain;padding:24px 16px 40px}
 #myspaces.is-open{display:block}
@@ -3113,45 +3130,44 @@ body.lv-c #lv-c,body.lv-h #lv-h,body.lv-b #lv-b,body.lv-d #lv-d{opacity:1;visibi
 .lvs-pre>span,.lvs-post>span{position:absolute;top:50%;transform:translateY(-50%);opacity:0;transition:opacity .35s ease}
 .lvs-pre>span{right:0}.lvs-post>span{left:0}
 .lvs-get{font-family:'Quantico',sans-serif;font-size:24px;color:#fbd5ca}
-.lvs-self,.lvs-strat{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#fff}
-#lv-slogan.is-c .lvs-strat,#lv-slogan.is-h .lvs-get,#lv-slogan.is-b .lvs-self{opacity:1;transition-delay:.3s}
+/* 12/10 — plus de « Strategy » : au centre, le papier parle seul. */
+.lvs-self{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#fff}
+#lv-slogan.is-h .lvs-get,#lv-slogan.is-b .lvs-self{opacity:1;transition-delay:.3s}
 #lv-slogan.is-h{pointer-events:auto;cursor:pointer}
-#lv-slogan.is-g,#lv-slogan.is-x{opacity:0}
+#lv-slogan.is-c,#lv-slogan.is-g,#lv-slogan.is-x{opacity:0}
 body:not(.gate) #lv-slogan,body.entered #lv-slogan,body.is-door #lv-slogan{display:none}
 /* ── CENTRE : mon TOTEHM, son nom, qui le voit ── */
-/* 11/10 — sous [Higher] STRATEGY, ce qu'est la plateforme (Wah) : toujours là, connecté ou non. */
-#lv-why{position:absolute;left:50%;top:calc(var(--lv-y) + var(--gate-size) / 2 + 58px);transform:translateX(-50%);
-  width:min(86vw,360px);margin:0;text-align:center;font:400 10.5px/1.55 'Space Mono',monospace;letter-spacing:.04em;color:#9a9aa2;pointer-events:none}
-:root{--lv-why-h:40px}@media(max-width:360px){:root{--lv-why-h:56px}}
-#lv-card{position:absolute;left:50%;top:calc(var(--lv-y) + var(--gate-size) / 2 + 70px + var(--lv-why-h));transform:translateX(-50%);
+#lv-card{position:absolute;left:50%;top:calc(var(--lv-y) + var(--gate-size) / 2 + 34px);transform:translateX(-50%);
   display:flex;flex-direction:column;align-items:center;gap:9px;width:min(92vw,420px)}
 #lv-card #ident-block{display:flex;flex-direction:column;align-items:center;gap:6px}
 #lv-card #name-btn,#lv-card #name-btn.claimed,#lv-card #set-name{font-family:'Quantico',sans-serif;font-weight:400;font-size:14px;color:#fbd5ca;
-  background:#000;border:0;border-image:none;border-radius:8px;padding:6px 12px;filter:none;min-width:0;text-align:center}
-#lv-card #set-name{outline:1px solid #2a2a30;caret-color:#fbd5ca;width:200px}
+  background:#333366;border:0;border-image:none;border-radius:0;padding:6px 12px;filter:none;min-width:0;text-align:center}
+/* 12/10 — nommé, le nom est écrit SUR le papier (`#ast-sig`) : le bouton ne sert plus qu'à nommer. */
+#lv-card #name-btn.claimed{display:none}
+#lv-card #set-name{caret-color:#fbd5ca;width:200px}
 .lv-vis{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
 .lv-vis button{border:0;border-radius:10px;padding:8px 12px;background:#16161a;color:#8a8a92;font:400 10.5px/1.3 'Space Mono',monospace;cursor:pointer;white-space:nowrap}
 .lv-vis button.is-on{background:#3a3a42;color:#fff;box-shadow:0 0 0 1px #fff}
 #lv-tap{position:absolute;left:50%;bottom:calc(max(16px,env(safe-area-inset-bottom)) + 104px);transform:translateX(-50%);
   background:none;border:0;padding:6px 10px;font:700 9.5px/1.4 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#9a9aa2;cursor:pointer;white-space:nowrap}
 /* ── EN HAUT : Get Higher ── */
-#lv-h-say{position:absolute;left:50%;transform:translateX(-50%);top:calc(var(--lv-ht,60dvh) + 44px);width:min(88vw,440px);display:flex;flex-direction:column;align-items:center;gap:12px}
 /* ── EN BAS : TotehmSM · 08/10 — une conversation, des bulles. Le papier
    devient la photo de profil (`#lv-thumb`) à côté du premier « Wassup ? ». ── */
-#lv-b-tag{position:absolute;left:50%;transform:translateX(-50%);top:116px;width:min(92vw,520px);text-align:center;display:flex;flex-direction:column;gap:5px}
-#lv-b-tag .t1{font:400 9.5px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#8a8a92}
-#lv-b-tag .t2{font:700 11px/1.4 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#fff}
-#lv-b-body{position:absolute;left:50%;transform:translateX(-50%);top:170px;bottom:calc(max(16px,env(safe-area-inset-bottom)) + 112px);
+#lv-b-body{position:absolute;left:50%;transform:translateX(-50%);top:122px;bottom:calc(max(16px,env(safe-area-inset-bottom)) + 112px);
   width:min(94vw,560px);display:flex;flex-direction:column;gap:8px}
-#sm-first{display:flex;align-items:flex-end;gap:8px;flex:none}
+#sm-first{display:flex;justify-content:center;flex:none}
 #lv-thumb{width:40px;height:40px;flex:none;border-radius:50%}
-#lv-thread{flex:0 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:8px;padding:0 2px 4px 48px;scrollbar-width:none}
+/* 12/10 — UN MIROIR, PAS UNE CONVERSATION (Wah : « il ne faut pas que ça prenne la forme d'une
+   conversation »). Ce que je dis, en gris ; ce que mon TOTEHM répond : UNE boîte, à la couleur de ce
+   qu'elle est, carrée comme toute boîte. La suivante remplace la précédente. */
+#lv-thread{flex:0 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:0 2px 4px;scrollbar-width:none}
+.sm-q{margin:0;text-align:center;font:400 13px/1.4 'Quantico',sans-serif;color:#8a8a92;word-wrap:break-word}
 #lv-thread::-webkit-scrollbar{display:none}
-.sm-row{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.sm-row{display:flex;flex-direction:column;align-items:stretch;gap:4px}
 .sm-row.me{align-items:flex-end;margin-right:-2px}
 .sm-row.me .sm-line{display:flex;align-items:flex-end;gap:6px}
 .sm-av{width:22px;height:22px;flex:none;border-radius:50%;background:#1f1f24 center/cover no-repeat}
-.sm-b{max-width:86%;padding:10px 14px;border-radius:18px 18px 18px 5px;font:400 14.5px/1.42 'Quantico',sans-serif;color:#fff;
+.sm-b{max-width:100%;padding:12px 14px;border-radius:0;font:400 14.5px/1.42 'Quantico',sans-serif;color:#fff;
   word-wrap:break-word;display:flex;flex-direction:column;gap:6px;background:#333366}
 .sm-row.me .sm-b{border-radius:18px 18px 5px 18px;background:#2a2a30;color:#e6e6ea}
 .sm-b.k-habit{background:#333366}.sm-b.k-objective{background:#36498c}.sm-b.k-repulsion{background:#743169}
@@ -3176,12 +3192,12 @@ body:not(.gate) #lv-slogan,body.entered #lv-slogan,body.is-door #lv-slogan{displ
 .sm-offer ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
 .sm-offer li{font:400 11px/1.6 'Space Mono',monospace;color:#b0b0b0}
 .sm-offer li svg{display:inline-block;width:48px;height:16px;vertical-align:-4px}
-#lv-say{display:flex;gap:8px;align-items:flex-end;flex:none;padding-left:48px}
+#lv-say{display:flex;gap:8px;align-items:flex-end;flex:none}
 #lv-say textarea{flex:1;min-height:42px;max-height:110px;resize:none;border:0;border-radius:21px;background:#16161a;color:#fff;
   font:400 14.5px/1.42 'Quantico',sans-serif;padding:10px 15px;outline:none;caret-color:#fff}
 #lv-say textarea::placeholder{color:#5c5c64}
 #lv-say .lv-btn{border-radius:21px;min-height:42px}
-#lv-say-note{flex:none;padding-left:48px;text-align:left}
+#lv-say-note{flex:none;text-align:center}
 .sm-link{background:none;border:0;padding:0;font:inherit;letter-spacing:inherit;text-transform:inherit;color:#b0b0b0;cursor:pointer;vertical-align:middle}
 .sm-hi{display:inline-block;height:1.15em;width:3.45em;vertical-align:-.25em}
 .sm-link .sm-hi{height:14px;width:42px}
@@ -3270,6 +3286,9 @@ body.searching #ljoy{z-index:230}
           <svg class="glayer" id="gl-wm"   viewBox="74.997 121.602 77.584 46.683"   preserveAspectRatio="none" aria-hidden="true"><defs><g/><clipPath id="tgw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tgw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg>
           <button id="gate-enter" aria-label="Enter my Totehm"></button>
         </div><!-- /#gate-logo -->
+        <!-- 12/10 : le NOM, écrit sur le papier, dans son navy (Wah). Hors des quatre calques :
+             la déconstruction ne le mesure pas, il s'efface quand elle part. -->
+        <span id="ast-sig" aria-hidden="true"></span>
         <div class="ast-light" aria-hidden="true"></div>
       </div>
       <!-- ⚠️ LE VERSO · 02/10/2026 : le NOM du Totehm (« search a Totehm »
@@ -3373,7 +3392,6 @@ a Totehm</span>
        La gauche (chercher) est la feuille `#srch`, inchangée. -->
   <div id="lv">
     <section class="lv-pane" id="lv-c" aria-label="My TOTEHM">
-      <p id="lv-why">your objectives, the habits and repulsions to achieve them. your vision. your wisdom.</p>
       <div id="lv-card" class="lv-act hide">
         <div id="ident-block">
           <button class="btn-sig gid" id="name-btn">Name of my TOTEHM</button>
@@ -3394,19 +3412,15 @@ a Totehm</span>
     </section>
 
     <section class="lv-pane" id="lv-h" aria-label="Get Higher">
-      <div id="lv-h-say">
-        <p class="lv-mono" id="lv-thp-say">The TotehmPaper {THP} distills selected mental-performance techniques informed by modern neuroscience research, including EEG studies, into an experience designed to prepare your brain for efficient action.</p>
-      </div>
     </section>
 
     <section class="lv-pane" id="lv-b" aria-label="TotehmSM · my Higher Self">
-      <div id="lv-b-tag"><span class="t1">AI made by you · your beliefs · your TOTEHM</span><span class="t2">Talk is cheap. Do with a why.</span></div>
       <div id="lv-b-body" class="lv-act">
         <!-- Le premier contact : le papier se pose dans `#lv-thumb` (sa photo de profil). -->
-        <div id="sm-first"><span id="lv-thumb" aria-hidden="true"></span><div class="sm-b k-habit">Wassup ?</div></div>
+        <div id="sm-first"><span id="lv-thumb" aria-hidden="true"></span></div>
         <div id="lv-thread" aria-live="polite"></div>
         <form id="lv-say" class="hide" autocomplete="off">
-          <textarea id="lv-say-in" maxlength="600" rows="1" placeholder="say it as it is" aria-label="Talk to my Higher Self"></textarea>
+          <textarea id="lv-say-in" maxlength="600" rows="1" placeholder="what is in the way?" aria-label="Talk to my Higher Self"></textarea>
           <button class="lv-btn" id="lv-say-go" type="submit">Send</button>
         </form>
         <div class="lv-note" id="lv-say-note" role="status" aria-live="polite"></div>
@@ -3417,23 +3431,18 @@ a Totehm</span>
       <div id="lv-d-wrap" class="lv-act">
         <div id="lv-cloth"><img id="lv-cloth-img" alt=""></div>
         <div class="lv-side" id="lv-space">
-          <div class="lv-h2">SPACE</div>
-          <p class="lv-mono">Inspiration. Strategic Habits lived on camera, with their why. Mine too: film it now, or announce it.</p>
-          <button class="lv-btn" id="lv-go-space" type="button">Open SPACE</button>
+          <button class="lv-btn" id="lv-go-space" type="button">SPACE</button>
         </div>
         <div class="lv-side" id="lv-shop">
-          <div class="lv-h2">HIGHER BOUTIQUE</div>
-          <p class="lv-mono">Wear it, own it. A Wisdom or Vision element of my TOTEHM becomes a cloth. Get Higher, the TotehmPaper, the art market.</p>
-          <button class="lv-btn" id="lv-go-shop" type="button">Open the boutique</button>
+          <button class="lv-btn" id="lv-go-shop" type="button">HIGHER BOUTIQUE</button>
         </div>
-        <!-- 09/10 : le quatrième domaine, sa fonction en une ligne. -->
-        <button class="lv-btn" id="lv-go-club" type="button">FIGHER.CLUB · meet in reality</button>
+        <button class="lv-btn" id="lv-go-club" type="button">FIGHER.CLUB</button>
       </div>
     </section>
 
     <!-- Le slogan qui voyage. Dans la vue du haut, c'est LE bouton [Get Higher]. -->
     <button id="lv-slogan" class="is-c" type="button" tabindex="-1" aria-label="Get Higher">
-      <span class="lvs-pre"><span class="lvs-get">Get</span></span><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg><span class="lvs-post"><span class="lvs-strat">Strategy</span><span class="lvs-self">Self</span></span>
+      <span class="lvs-pre"><span class="lvs-get">Get</span></span><svg viewBox="0 0 600 200" aria-hidden="true"><use href="#higher-badge"></use></svg><span class="lvs-post"><span class="lvs-self">Self</span></span>
     </button>
   </div>
 </div>
@@ -3453,7 +3462,6 @@ a Totehm</span>
     <input id="srch-q" type="text" inputmode="search" enterkeyhint="search" maxlength="24"
            placeholder="a member's name" autocomplete="off" autocapitalize="off" spellcheck="false"
            aria-label="Search a member's TOTEHM by name">
-    <div class="srch-hint srch-after" id="srch-hint">search a member's TOTEHM · enter opens it</div>
     <div class="note dim srch-after" id="srch-note" role="status" aria-live="polite"></div>
     <div id="srch-res" class="srch-after"></div>
   </div>
@@ -4361,6 +4369,102 @@ const miniSpace=s=>'<button type="button" class="mini m-s" data-space="'+esc(Str
   +'<span class="ms-w">'+esc([(s.exact&&s.exact.place)||s.city||'', quandSpace(s)].filter(Boolean).join(' · '))+'</span></button>';
 const spacesDe=x=>HSPACES.par.get(norm(srv(x)))||null;
 
+/* ══ UNE PLATEFORME · 12/10/2026 ══════════════════════════════════════════
+   Wah : « il faut que SPACE et le Club vivent sur totehm.com ; dans mon Totehm, quand je
+   clique sur un de mes spaces ou un de mes spots je suis redirigé vers une autre page alors
+   que la fluidité est LA chose la plus importante ; pareil pour ajouter un space ou un spot à
+   mon Habitude ». totehm.com SERT SPACE et le Club (réécritures Vercel `/x/space`, `/x/club`,
+   `com/vercel.json`) : même origine, donc même session, aucun pont SSO. Ils vivent dans une
+   COUCHE (`#xo`) chargée d'avance, invisible (3 s après l'arrivée d'un membre, au repos du
+   navigateur) ; ouvrir un space, en filmer un, annoncer un spot se fait sur place, et la
+   croix, « précédent » ou Échap rendent le Totehm tel qu'il était (il relit ses spaces).
+   Contrat (`postMessage`, origine vérifiée, cadre reconnu par sa fenêtre) :
+     COM → cadre  {totehm:'x', cmd:'url', q:'spot=ID' | 'v=cam&habit=…' | 'v=plan&habit=…'} · {cmd:'sleep'}
+     cadre → COM  {totehm:'x', ev:'ready' | 'close' | 'signin' | 'stale' | 'go', cible, url}
+   ⚠️ Ce n'est PAS une vue du Totehm en iframe (cf. « Il n'y a plus d'iframe dans .space ») :
+   c'est un AUTRE produit, posé par-dessus, qui garde ses fichiers. Changer de compte jette
+   les cadres (ils ont lu l'ancienne session). */
+const XO=(()=>{
+  const SRC={space:'/x/space?embed=1', club:'/x/club?embed=1'};
+  const NOM={space:'SPACE', club:'FIGHER.CLUB'};
+  const ALLOW='camera; microphone; geolocation; autoplay; fullscreen; clipboard-write; web-share';
+  const C={}; let actif=null, hist=false, uid=null;
+  const diag={ouverts:0, arrivees:0, perdus:0, cmds:0};
+  const racine=()=>$('xo');
+  function cadre(k){
+    if(C[k]) return C[k];
+    const f=document.createElement('iframe');
+    f.className='xo-f'; f.src=SRC[k]; f.allow=ALLOW; f.title=NOM[k]; f.dataset.k=k;
+    racine().append(f);
+    return (C[k]={f, pret:false, file:null, der:null});
+  }
+  function envoyer(k,msg){
+    const c=cadre(k);
+    if(msg.cmd!=='sleep') c.der=msg;
+    if(c.pret&&c.f.contentWindow){ diag.cmds++; c.f.contentWindow.postMessage({totehm:'x',...msg},location.origin); }
+    else if(msg.cmd!=='sleep') c.file=msg;
+  }
+  function ouvrir(k,q){
+    if(!SRC[k]) return;
+    const c=cadre(k); uid=me?me.id:null;
+    Object.keys(C).forEach(j=>C[j].f.classList.toggle('is-on',j===k));
+    if(actif&&actif!==k) envoyer(actif,{cmd:'sleep'});
+    actif=k; diag.ouverts++;
+    document.body.classList.add('is-xo');
+    const r=racine(); r.classList.add('is-open'); r.setAttribute('aria-hidden','false');
+    if(!hist){ try{ history.pushState({xo:1},''); hist=true; }catch(_){} }
+    envoyer(k,{cmd:'url',q:q||''});
+    setTimeout(()=>{ try{ c.f.focus(); }catch(_){} },80);
+  }
+  /* Ferme la couche sans toucher à l'historique (appelé par « précédent »). */
+  function rendre(){
+    if(!actif) return;
+    const k=actif; actif=null; hist=false;
+    const r=racine(); r.classList.remove('is-open'); r.setAttribute('aria-hidden','true');
+    document.body.classList.remove('is-xo');
+    envoyer(k,{cmd:'sleep'});
+    if(typeof loadHabitSpaces==='function') loadHabitSpaces();
+  }
+  function fermer(){ if(!actif) return; if(hist&&history.state&&history.state.xo) history.back(); else rendre(); }
+  window.addEventListener('popstate',()=>{ if(actif) rendre(); });
+  /* Le focus resté sur COM : Échap ferme la couche, et rien d'autre ne bouge dessous. */
+  window.addEventListener('keydown',e=>{ if(actif&&e.key==='Escape'){ e.preventDefault(); e.stopImmediatePropagation(); fermer(); } },true);
+  function oublier(){ if(actif){ actif=null; hist=false; const r=racine(); r.classList.remove('is-open'); r.setAttribute('aria-hidden','true'); document.body.classList.remove('is-xo'); }
+    Object.keys(C).forEach(k=>{ C[k].f.remove(); delete C[k]; }); }
+  /* Ce que demande le cadre : SPACE ↔ Club sur place, totehm.com chez lui, le reste par le pont. */
+  function aller(cible,url){
+    let u; try{ u=new URL(url,location.origin); }catch(_){ return; }
+    if(cible==='space'||cible==='club'){ ouvrir(cible,u.search.replace(/^\?/,'')); return; }
+    if(cible==='com'){
+      if(u.pathname==='/totehm'&&!u.search){ fermer(); if(u.hash==='#in'&&typeof window.__totehmDeplie==='function') setTimeout(()=>window.__totehmDeplie(),400); return; }
+      location.href=u.pathname+u.search+u.hash; return;
+    }
+    /* Le pont n'emmène qu'au domaine qu'il nomme : un code SSO ne part jamais ailleurs. */
+    if(({boutique:'www.higher.boutique'})[cible]!==u.host) return;
+    ssoVersDomaine(sb,cible,u.href);
+  }
+  window.addEventListener('message',e=>{
+    if(e.origin!==location.origin||!e.data||e.data.totehm!=='x'||!e.data.ev) return;
+    const k=Object.keys(C).find(j=>C[j].f.contentWindow===e.source); if(!k) return;
+    const c=C[k], d=e.data;
+    if(d.ev==='ready'){ c.pret=true; diag.arrivees++; const m=c.file; c.file=null; if(m) envoyer(k,m); return; }
+    if(d.ev==='close'){ if(k===actif) fermer(); return; }
+    if(d.ev==='stale'){ diag.perdus++; const der=c.der, ici=k===actif; c.f.remove(); delete C[k];
+      if(ici&&der){ cadre(k).f.classList.add('is-on'); envoyer(k,der); } return; }
+    if(d.ev==='signin'){ fermer(); setTimeout(()=>{ if(typeof window.__totehmDeplie==='function') window.__totehmDeplie(); },400); return; }
+    if(d.ev==='go'&&typeof d.url==='string') aller(String(d.cible||''),d.url);
+  });
+  /* Un autre compte : les cadres ont lu l'ancienne session, on les jette (puis on réchauffe). */
+  sb.auth.onAuthStateChange((ev,session)=>{ const id=session?.user?.id||null;
+    if(id!==uid&&Object.keys(C).length){ oublier(); } uid=id; if(id) bientot(); });
+  function prechauffer(){ if(!me||document.body.classList.contains('is-door')) return; uid=me.id; cadre('space'); cadre('club'); }
+  let tic=0;
+  function bientot(){ clearTimeout(tic); tic=setTimeout(()=>{ (window.requestIdleCallback||(f=>setTimeout(f,0)))(prechauffer); },3000); }
+  bientot();
+  window.__totehm_xo=()=>({actif, cadres:Object.keys(C), prets:Object.keys(C).filter(k=>C[k].pret), ...diag});
+  return {ouvrir, fermer, ouvert:()=>actif};
+})();
+
 /* ══ LA BOUTIQUE APPARAÎT DANS WISDOM ET VISION · 08/10/2026 (ter) ══════
    Wah : « on a lié SPACE à COM ; on devrait faire la même chose avec
    higher.boutique : la fonction totehmiser devrait aller se caler dans les
@@ -4911,7 +5015,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-11-com-guest';
+const BUILD='2026-10-12-com-plateforme';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -5888,7 +5992,7 @@ function vueHabitude(x,k){
   const minis = groupe('why',gO,pkO) + groupe('trigger',gR,pkR)
     + (ouverte&&spaces.length?groupe(nSp>3?'SPACES · 3 of '+nSp:'SPACES',spaces.map(miniSpace).join('')):'')
     + (ouverte&&spots.length?groupe(nSt>3?'SPOTS · 3 of '+nSt:'SPOTS',spots.map(miniSpace).join('')):'')
-    + (ouverte&&!RO?'<button type="button" class="dash" data-newspace="1">+ a space</button><button type="button" class="dash" data-newspot="1">+ a spot</button>':'');
+    + (ouverte&&!RO?'<button type="button" class="dash" data-newspace="'+esc(srv(x))+'">+ a space</button><button type="button" class="dash" data-newspot="'+esc(srv(x))+'">+ a spot</button>':'');
   let haut='', bas='';
   if(ouverte&&pkOn('int','h',x.id))  haut=intPicker(x,'h');
   if(ouverte&&pkOn('freq','h',x.id)) haut=freqPicker(x);
@@ -6392,11 +6496,11 @@ function cable(box){
       const col=el.closest('.v-col'); if(col)col.classList.toggle('is-zoom',on);
       el.setAttribute('aria-pressed',String(on)); el.setAttribute('aria-label',on?'Smaller':'Bigger');
       el.querySelector('path')?.setAttribute('d','M15 15l6 6M7.5 10h5'+(on?'':'M10 7.5v5')); return; }
-    /* Un space s'ouvre sur SPACE, par le pont (même en lecture). */
-    if(d.space){ e.stopPropagation(); const spot=d.format==='spot'; ssoVersDomaine(sb,spot?'club':'space','https://www.'+(spot?'figher.club':'totehm.space')+'/?spot='+encodeURIComponent(d.space)); return; }
-    if(d.newspace!==undefined){ e.stopPropagation(); if(!RO) ssoVersDomaine(sb,'space','https://www.totehm.space/?v=cam'); return; }
-    /* Un spot s'annonce sur figher.club (la vue « plan »). */
-    if(d.newspot!==undefined){ e.stopPropagation(); if(!RO) ssoVersDomaine(sb,'club','https://www.figher.club/?v=plan'); return; }
+    /* 12/10 — un space ou un spot s'ouvre SUR PLACE, dans la couche (même en lecture) ; « + a space »
+       ouvre la caméra de SPACE sur CETTE Habit, « + a spot » le plan du Club sur CETTE Habit. */
+    if(d.space){ e.stopPropagation(); XO.ouvrir(d.format==='spot'?'club':'space','spot='+encodeURIComponent(d.space)); return; }
+    if(d.newspace!==undefined){ e.stopPropagation(); if(!RO) XO.ouvrir('space',new URLSearchParams({v:'cam',...(d.newspace?{habit:d.newspace}:{})}).toString()); return; }
+    if(d.newspot!==undefined){ e.stopPropagation(); if(!RO) XO.ouvrir('club',new URLSearchParams({v:'plan',...(d.newspot?{habit:d.newspot}:{})}).toString()); return; }
     /* Un Cloth s'ouvre sur sa page Decode ; « + totehmize » part avec CET élément. */
     if(d.cloth){ e.stopPropagation(); ssoVersDomaine(sb,'boutique','https://www.higher.boutique/?decode='+encodeURIComponent(d.cloth)); return; }
     if(d.totehmize){ e.stopPropagation(); if(!RO) ssoVersDomaine(sb,'boutique','https://www.higher.boutique/streetwear?wear='+encodeURIComponent(d.totehmize)); return; }
@@ -7105,12 +7209,17 @@ window.addEventListener('touchend',(e)=>{
       versVoisin(cible);
       return;
     }
-    if(Math.abs(e.deltaX) < Math.abs(e.deltaY)*1.6) return;
-    const now=Date.now(); if(now-t>220)acc=0; t=now;
-    acc+=e.deltaX;
-    /* 70 px partait sur un défilement un peu oblique. 130 : il faut
-       vouloir aller à côté. */
-    if(Math.abs(acc)<130)return;
+    if(Math.abs(e.deltaX) < Math.abs(e.deltaY)*1.25) return;
+    /* 12/10 — LA RÈGLE DE SPACE (Wah : « des erreurs dans le joystick de COM
+       au trackpad, réfère-toi à SPACE ») : 75 px accumulés (160 au plus par
+       événement), remis à zéro après 180 ms, puis un verrou de 350 ms que
+       l'inertie prolonge de 260 ms ; le navigateur ne recule pas d'une page. */
+    e.preventDefault();
+    const now=Date.now();
+    if(now<froid){ froid=Math.max(froid,now+260); acc=0; return; }
+    if(now-t>180||Math.sign(e.deltaX)!==Math.sign(acc))acc=0; t=now;
+    acc+=Math.sign(e.deltaX)*Math.min(160,Math.abs(e.deltaX));
+    if(Math.abs(acc)<75)return;
     /* ⚠️ LE SENS ÉTAIT INVERSÉ · 15/09/2026. Sur un trackpad, un
        `deltaX` POSITIF veut dire « je pousse le contenu vers la
        gauche », donc « montre-moi ce qui est à DROITE ». J'avais lu le
@@ -7119,10 +7228,10 @@ window.addEventListener('touchend',(e)=>{
        suite quand on l'a dans les mains.
        Le balayage tactile, lui, était déjà dans le bon sens : il lit un
        déplacement de DOIGT. Les deux gestes ne se lisent pas pareil. */
-    const d = acc>0 ? 'g' : 'd';
-    acc=0;
+    const d = acc>0 ? 'd' : 'g';
+    acc=0; froid=now+350;
     versVoisin(d);
-  },{passive:true});
+  },{passive:false});
 })();
 /* La molette VERTICALE ne pilote rien : la liste défile normalement. Le
    filtre passe par le T, le repli par la croix. */
@@ -7131,7 +7240,7 @@ window.addEventListener('touchend',(e)=>{
    Ils passent sous Book et Next (z-index) : on ouvre par eux, on referme par
    le T de la page ouverte, les flèches du clavier ou Échap. */
 function navBlocked(){
-  return busy||fpOpen()
+  return busy||fpOpen()||document.body.classList.contains('is-xo')
     ||$('member-window').classList.contains('show')
     ||false
     ||!$('habit-peek').classList.contains('hide')
@@ -7241,8 +7350,9 @@ const navRight=()=>{ if(navBlocked())return; versVoisin('d'); };
        des mouvements horizontaux quand on est DANS le joystick ». La
        verticale reste celle d'une molette de souris. Même correction dans
        space/index.html. */
+    /* 12/10 — comme SPACE : `deltaX > 0` = le contenu part à gauche = la vue de DROITE. */
     const d = Math.abs(e.deltaX)>Math.abs(e.deltaY)
-      ? (e.deltaX>0?'g':'d')
+      ? (e.deltaX>0?'d':'g')
       : (e.deltaY>0?'b':'h');
     if(!voisin(d))return;
     froid=Date.now()+520;
@@ -7583,6 +7693,9 @@ function connPaint(){
 function paintAsteroid(){
   const el=$('ast-name'); if(!el) return;
   const p=((me&&myProfile&&myProfile.pseudo)||'').trim();
+  const sig=$('ast-sig');
+  if(sig){ sig.textContent=p; sig.style.fontSize='';
+    const mx=sig.clientWidth; for(let fs=9; p&&mx&&sig.scrollWidth>mx&&fs>5.5;){ fs-=.5; sig.style.fontSize=fs+'px'; } }
   el.classList.toggle('is-name',!!p);
   el.style.fontSize='';
   el.textContent=p||'search\na Totehm';
@@ -7879,7 +7992,7 @@ $('myspaces-open').onclick=()=>{
  $('myspaces-close').focus();spacesLoad();
 };
 $('myspaces-close').onclick=spacesClose;$('myspaces-more').onclick=()=>spacesLoad(true);
-$('myspaces-open-space').onclick=()=>ssoVersDomaine(sb,'space','https://www.totehm.space/?v=cam');
+$('myspaces-open-space').onclick=()=>XO.ouvrir('space','v=cam');
 /* SUPPRIMER UN SPACE · 06/10/2026 — deux taps (Delete → Delete for good), puis
    `space-delete` : le serveur décide sous MA session, efface le média, et le
    space disparaît partout (historique, habits, SPACE). */
@@ -7902,10 +8015,17 @@ $('myspaces-list').onclick=async e=>{
   $('myspaces-note').textContent=MYSPACES.rows.length?'Space deleted.':'No spaces yet. Record your first one on SPACE.';
   loadHabitSpaces();return;
  }
- const b=e.target.closest('[data-space]');if(b)ssoVersDomaine(sb,'space','https://www.totehm.space/?spot='+encodeURIComponent(b.dataset.space));
+ const b=e.target.closest('[data-space]');if(b)XO.ouvrir('space','spot='+encodeURIComponent(b.dataset.space));
 };
 window.addEventListener('keydown',e=>{if(!$('myspaces').classList.contains('is-open'))return;e.stopImmediatePropagation();if(e.key==='Escape'){e.preventDefault();spacesClose();return;}if(e.key==='Tab'){const f=[...$('myspaces').querySelectorAll('button:not(:disabled),a[href],input')].filter(x=>x.getClientRects().length);const i=f.indexOf(document.activeElement);if(e.shiftKey && i<=0 || !e.shiftKey && (i<0 || i===f.length-1)){e.preventDefault();(e.shiftKey?f.at(-1):f[0]).focus();}}},true);
 $('mw-close').onclick=()=>{clearTimeout(mwNameTimer);$('member-window').classList.remove('show');};
+/* 12/10 — le nom vit sur le papier (`#ast-sig`) : on le change en touchant son nom ici. */
+$('mw-who').style.cursor='pointer';
+$('mw-who').addEventListener('click',()=>{
+  if(!myProfile||guest()) return;
+  closeMember(); if(window.__lvAller) window.__lvAller('c');
+  setTimeout(()=>{ const b=$('name-btn'); b.classList.remove('claimed'); b.click(); },window.__lvAller?700:0);
+});
 $('member-window').addEventListener('click',e=>{if(e.target===$('member-window'))$('member-window').classList.remove('show');});
 
 let mwEmail='';
@@ -8090,7 +8210,13 @@ function garde(){
   if(inscrit()){ porteFranchie(); return; }
   if(!document.body.classList.contains('gate')){ foldToGate(); ouvrirPorte(LA_PORTE.then); }
 }
-sb.auth.onAuthStateChange(()=>{ sessionChange(); });
+/* 12/10 — SPACE et le Club vivent dans la MÊME origine (`XO`) : leur client Supabase annonce
+   SIGNED_IN sur le canal que partagent les clients d'une origine. Même compte : rien à relire
+   (relire reconstruisait les Habits, et la boîte ouverte se refermait sous la couche). */
+sb.auth.onAuthStateChange((ev,session)=>{
+  if((ev==='SIGNED_IN'||ev==='TOKEN_REFRESHED')&&me&&session?.user?.id===me.id) return;
+  sessionChange();
+});
 sessionChange();
 window.addEventListener('pageshow',e=>{
   if(!e.persisted)return;
@@ -9038,7 +9164,9 @@ window.addEventListener('pageshow',e=>{
      horizontal suivent les DOIGTS, le doigt sur l'écran suit le CONTENU, la
      molette verticale descend vers le bas (deltaY > 0 → ↓). */
   const LV=(()=>{
-    const CROIX_L={c:{h:'h',b:'b',g:'g',d:'d'}, h:{b:'c'}, b:{h:'c'}, g:{d:'c'}, d:{g:'c'}};
+    /* 12/10 — « la vue d'en haut devient la vue de gauche » (Wah) : Get Higher (`h`) est à GAUCHE,
+       la recherche (`g`) monte EN HAUT. Les noms des vues ne changent pas, seules leurs places. */
+    const CROIX_L={c:{g:'h',h:'g',b:'b',d:'d'}, h:{d:'c'}, b:{h:'c'}, g:{b:'c'}, d:{g:'c'}};
     const NOMS={c:'my TOTEHM', h:'Get Higher', b:'TotehmSM', g:'search a TOTEHM', d:'SPACE · club · boutique'};
     const TEINTE_L={c:'--navy', h:'--blue', b:'--rep', g:'--rep', d:'--blue'};
     const slo=$('lv-slogan'), jy=$('ljoy'), jb=$('ljoy-box'), js=$('ljoy-stack');
@@ -9065,7 +9193,7 @@ window.addEventListener('pageshow',e=>{
       slo.classList.add('is-pose');
       slo.tabIndex=v==='h'?0:-1;
       if(v==='c'||v==='g'){
-        placer(slo, W()/2-(8+larg('.lvs-strat'))/2, c.y+c.w/2+30, 96);
+        placer(slo, W()/2, c.y+c.w/2+30, 96);
       } else if(v==='h'){
         const l=PAPIER.cibleLangue(), y=l?l.bas+28:H()*.42;
         placer(slo, W()/2+(larg('.lvs-get')+8)/2, y, 96);
@@ -9084,7 +9212,7 @@ window.addEventListener('pageshow',e=>{
       jy.style.setProperty('--ljoy','var('+(TEINTE_L[vue]||'--navy')+')');
       ['h','g','d','b'].forEach(d=>$('lcur-'+d).classList.toggle('mort',!voisin(d)));
       const [o,h,r]=js.children;
-      jb.classList.toggle('hors',vue==='g'||vue==='d');
+      jb.classList.toggle('hors',vue==='h'||vue==='d');
       o.classList.toggle('ici',vue!=='c'); h.classList.toggle('ici',vue==='c'); r.classList.toggle('ici',vue!=='c');
       jb.setAttribute('aria-label',vue==='c'?'My TOTEHM':'Back to my TOTEHM');
       $('ljoy-say').textContent=NOMS[vue]||'';
@@ -9166,13 +9294,13 @@ window.addEventListener('pageshow',e=>{
       [['lcur-g','g'],['lcur-d','d'],['lcur-h','h'],['lcur-b','b']].forEach(([i,d])=>{ $(i).onclick=()=>{ const v=voisin(d); if(v) aller(v); }; });
       jy.addEventListener('wheel',e=>{ e.preventDefault(); e.stopPropagation(); if(Date.now()<froid) return;
         if(Math.max(Math.abs(e.deltaX),Math.abs(e.deltaY))<4) return;
-        const d=Math.abs(e.deltaX)>Math.abs(e.deltaY)?(e.deltaX>0?'g':'d'):(e.deltaY>0?'b':'h');
+        const d=Math.abs(e.deltaX)>Math.abs(e.deltaY)?(e.deltaX>0?'d':'g'):(e.deltaY>0?'b':'h');
         const v=voisin(d); if(!v) return; froid=Date.now()+520; aller(v); },{passive:false});
     })();
 
     /* ── LES AUTRES GESTES : flèches, trackpad, doigt — sur tout l'atterrissage ── */
     const libre=()=>body.classList.contains('gate')&&!body.classList.contains('entered')&&!body.classList.contains('is-door')
-      &&!$('member-window').classList.contains('show')&&!$('myspaces').classList.contains('is-open');
+      &&!$('member-window').classList.contains('show')&&!$('myspaces').classList.contains('is-open')&&!body.classList.contains('is-xo');
     const saisie=t=>!!(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable));
     const fil=$('lv-thread');
     const filDefile=(t,dy)=>{ if(!t||!t.closest||!t.closest('#lv-thread,#srch-res')) return false;
@@ -9190,25 +9318,29 @@ window.addEventListener('pageshow',e=>{
        envoie des événements pendant une seconde) et 130 px accumulés ; puis
        une garde de 800 ms. Une liste qui peut encore défiler garde la molette. */
     (function trackpad(){
-      let acc=0, axe='', t=0, neuf=false, froid=0;
+      /* 12/10 — LA RÈGLE DE SPACE, copiée (Wah : « réfère-toi au joystick de
+         SPACE ») : le CONTENU (deltaX > 0 → la vue de droite, deltaY > 0 → le
+         bas), 75 px en X / 70 en Y accumulés (160 au plus par événement),
+         remis à zéro après 180 ms ou au changement de sens, puis un verrou de
+         350 ms que l'inertie prolonge de 260 ms. Une liste qui peut défiler
+         garde la molette. */
+      let axe='', sens='', sum=0, last=0, verrou=0;
       window.addEventListener('wheel',e=>{
-        if(!libre()||bouge) return;
+        if(!libre()) return;
         if(e.target&&e.target.closest&&e.target.closest('#ljoy')) return;
-        const now=Date.now(), trou=now-t; t=now;
-        if(now<froid){ acc=0; return; }
         const f=e.deltaMode===1?16:e.deltaMode===2?innerHeight:1, x=e.deltaX*f, y=e.deltaY*f;
-        const a=Math.abs(x)>Math.abs(y)*1.4?'x':Math.abs(y)>Math.abs(x)*1.4?'y':'';
+        const a=Math.abs(x)>Math.abs(y)*1.25?'x':Math.abs(y)>Math.abs(x)*1.25?'y':'';
         if(!a) return;
-        if(a==='y'&&filDefile(e.target,y)){ acc=0; neuf=false; return; }
-        if(trou>200||a!==axe){ acc=0; neuf=true; axe=a; }
-        if(!neuf) return;
-        acc+=a==='x'?x:y;
-        if(Math.abs(acc)<130) return;
-        const d=a==='x'?(acc>0?'g':'d'):(acc>0?'b':'h');
-        acc=0; neuf=false;
+        const delta=a==='x'?x:y, d=a==='x'?(delta>0?'d':'g'):(delta>0?'b':'h');
+        if(a==='y'&&filDefile(e.target,delta)){ sum=0; last=0; return; }
         const v=voisin(d); if(!v) return;
-        froid=now+800; aller(v);
-      },{passive:true,capture:true});
+        const now=Date.now();
+        e.preventDefault();
+        if(bouge||now<verrou){ verrou=now+260; return; }
+        if(now-last>180||a!==axe||d!==sens) sum=0;
+        axe=a; sens=d; last=now; sum+=Math.min(160,Math.abs(delta));
+        if(sum>=(a==='x'?75:70)){ sum=0; verrou=now+350; aller(v); }
+      },{passive:false,capture:true});
     })();
     /* Le doigt : celui du Totehm déplié — glisser à gauche montre ce qui est
        à droite ; glisser vers le haut descend. Pas sur le papier (il se
@@ -9264,13 +9396,6 @@ window.addEventListener('pageshow',e=>{
     });
     $('lv-tap').onclick=()=>{ if(!PAPIER.occupe()) enter(); };
 
-    /* ── EN HAUT : ce que dit Get Higher (le THP, ou la méthode) ── */
-    function peindreHaut(){
-      $('lv-thp-say').textContent=LAND&&LAND.thp
-        ? 'My TotehmPaper is mine. Get Higher: the method, whenever I want.'
-        : 'The TotehmPaper {THP} distills selected mental-performance techniques informed by modern neuroscience research, including EEG studies, into an experience designed to prepare your brain for efficient action.';
-    }
-
     /* ── EN BAS : TOTEHMSM · 08/10 — Wah : « Talk is cheap. Do with a why. Une IA
        ultra utile, différente, underground, qui pousse toujours à l'action ;
        plus réactive ; pas d'historique ; au moins une Habit et un Objective ;
@@ -9324,28 +9449,26 @@ window.addEventListener('pageshow',e=>{
         +'<li>TotehmBot in my Telegram</li></ul>'
         +'<div class="sm-cta"><button class="lv-btn" type="button" data-sm-sub>Get '+HI+'</button></div></div>';
     }
-    /* Ce que la conversation dit selon l'état : invité · TOTEHM vide · prêt · les 7 pris. */
+    /* 12/10 — Le miroir selon l'état : invité · TOTEHM vide · prêt · les 7 pris. Pas de fil :
+       ma dernière phrase, sa réponse (une boîte), rien d'autre. Les tours précédents partent
+       encore au modèle (`turns`), invisibles. */
     function smHTML(){
       const st=etatSM();
       if(!(me&&inscrit())){
-        return dit('I am your '+HI+' Self. Made by you: your beliefs, your TOTEHM.')
-          +dit('Talk is cheap. Tell me what is in the way: I answer with one move, and its why.')
-          +'<div class="sm-ex">how it talks</div>'+bulleMoi('I keep scrolling at night and I am wrecked every morning.')
+        return '<p class="sm-q">I keep scrolling at night and I am wrecked every morning.</p>'
           +bulleSM({kind:'repulsion', int:'focus', tete:true, text:'Scrolling in bed steals my mornings. I cut it tonight.',
                     do:'I charge my phone in the kitchen at 22:30.', why:'Run the hill at 7:00. Discipline is freedom.'})
-          +'<p class="sm-proof">Why it works · one move with a when and a where: 94 studies, d = 0.65 (Gollwitzer &amp; Sheeran, 2006).</p>'
           +'<div class="sm-cta"><button class="lv-btn" type="button" data-sm-connect>CONNECT WITH MY TOTEHM</button><span class="lv-note">'+(st.free_total||7)+' free a month</span></div>';
       }
       if(!st.ready){
-        return dit('I am made of your TOTEHM. Right now, I do not know you.')
-          +dit('One Habit. One Objective. Then we talk.')
-          +'<div class="sm-cta"><button class="sm-check'+(st.habit?' is-ok':'')+'" type="button" data-sm-write="habits">'+(st.habit?'✓ ':'+ ')+'my Habit</button>'
+        return '<div class="sm-cta"><button class="sm-check'+(st.habit?' is-ok':'')+'" type="button" data-sm-write="habits">'+(st.habit?'✓ ':'+ ')+'my Habit</button>'
           +'<button class="sm-check'+(st.objective?' is-ok':'')+'" type="button" data-sm-write="objectives">'+(st.objective?'✓ ':'+ ')+'my Objective</button></div>';
       }
-      let h=SM.msgs.map(m=>m.role==='me'?bulleMoi(m.text):bulleSM(lireSM(m.text),m.id,acces())).join('');
+      const moi=[...SM.msgs].reverse().find(m=>m.role==='me'), lui=[...SM.msgs].reverse().find(m=>m.role==='sm');
+      let h=moi?'<p class="sm-q">'+esc(moi.text)+'</p>':'';
       if(SM.live!=null) h+=bulleSM(lireSM(SM.live));
-      if(!acces()&&!SM.busy&&(st.free_left|0)<=0)
-        h+=dit('That is my '+(st.free_total||7)+' for this month. Talk is cheap: '+HI+' keeps me with you, every day.')+offre();
+      else if(lui&&SM.msgs.indexOf(lui)>SM.msgs.indexOf(moi)) h+=bulleSM(lireSM(lui.text),lui.id,acces());
+      if(!acces()&&!SM.busy&&(st.free_left|0)<=0) h+=offre();
       else if(SM.offre&&!acces()) h+=offre();
       return h;
     }
@@ -9361,9 +9484,8 @@ window.addEventListener('pageshow',e=>{
       const st=etatSM(), ouvert=!!(me&&inscrit()&&st.ready&&(acces()||(st.free_left|0)>0));
       $('lv-say').classList.toggle('hide',!ouvert);
       $('lv-say-go').disabled=SM.busy;
-      const bas=SM.msgs.length>0&&fil.scrollHeight-fil.scrollTop-fil.clientHeight<40;
       fil.innerHTML=smHTML();
-      if(bas||SM.busy) fil.scrollTop=fil.scrollHeight; else if(!SM.msgs.length) fil.scrollTop=0;
+      if(!SM.busy) fil.scrollTop=0;
     }
     /* Pendant le flux : un dessin par image, pas un par morceau. */
     const smBientot=()=>{ if(!SM.raf) SM.raf=requestAnimationFrame(()=>{ SM.raf=0; smPeindre(); }); };
@@ -9451,9 +9573,9 @@ window.addEventListener('pageshow',e=>{
       img.src=CLOTH.src=c.image_url;
       if(vue==='d'&&!bouge) sloganPour('d');
     }
-    $('lv-go-space').onclick=()=>ssoVersDomaine(sb,'space','https://www.totehm.space/');
+    $('lv-go-space').onclick=()=>XO.ouvrir('space','v=feed');
     $('lv-go-shop').onclick=()=>ssoVersDomaine(sb,'boutique','https://www.higher.boutique/');
-    $('lv-go-club').onclick=()=>ssoVersDomaine(sb,'club','https://www.figher.club/');
+    $('lv-go-club').onclick=()=>XO.ouvrir('club','');
 
     /* ── LES DONNÉES : `my_landing()`, une réponse tardive ne gagne jamais ── */
     let landSeq=0;
@@ -9463,13 +9585,13 @@ window.addEventListener('pageshow',e=>{
       if(seq!==landSeq||(me?me.id:null)!==uid) return;
       if(error){ console.error('[my_landing]',error.message); return; }
       LAND=data||null;
-      peindreCarte(); peindreHaut(); connPaint(); paintMe();
+      peindreCarte(); connPaint(); paintMe();
       smPeindre(); if(vue==='b'&&!SM.paye) smNoteEtat();
     };
     lvQuitter=()=>{ landSeq++; SM.seq++; SM.msgs=[]; SM.busy=false; SM.live=null; SM.offre=false; visSeq++;
                     $('lv-vis-note').textContent=''; smNote(''); };
     slo.classList.add('no-anim');
-    peindreCarte(); peindreHaut(); poser('c');
+    peindreCarte(); poser('c');
     const sloFini=()=>{ void slo.offsetWidth; slo.classList.remove('no-anim'); };
     if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(!bouge) sloganPour(vue); sloFini(); });
     else requestAnimationFrame(sloFini);
@@ -9628,5 +9750,7 @@ window.addEventListener('pageshow',e=>{
    se lit d'un coup d'œil, aucune ligne n'a besoin d'être « en avant »
    par défaut. */
 </script>
+<!-- 12/10 : SPACE et le Club, servis par totehm.com, posés par-dessus le Totehm (`XO`). -->
+<div id="xo" aria-hidden="true"></div>
 </body>
 </html>

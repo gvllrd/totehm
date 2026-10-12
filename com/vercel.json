@@ -22,7 +22,7 @@
         },
         {
           "key": "Permissions-Policy",
-          "value": "geolocation=(self), microphone=(), camera=()"
+          "value": "geolocation=(self), microphone=(self), camera=(self)"
         }
       ]
     },
@@ -78,6 +78,26 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/x/space",
+      "destination": "https://www.totehm.space/"
+    },
+    {
+      "source": "/x/club",
+      "destination": "https://www.figher.club/"
+    },
+    {
+      "source": "/vendor/:f*",
+      "destination": "https://www.totehm.space/vendor/:f*"
+    },
+    {
+      "source": "/video-capture.mjs",
+      "destination": "https://www.totehm.space/video-capture.mjs"
+    },
+    {
+      "source": "/cities.json",
+      "destination": "https://www.totehm.space/cities.json"
+    },
     {
       "source": "/@:name",
       "destination": "/creator"
