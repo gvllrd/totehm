@@ -309,6 +309,7 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > Totehm est écrit sur le papier navy (plus de boîte noire, nulle part). Croix de COM : ← Get Higher, ↑ chercher.
 > Trackpad de COM lu comme SPACE. TotehmSM = un miroir (une réponse, une boîte). Abonnement mensuel à un
 > créateur et la boutique dans la couche : en attente (voir le rapport du 12/10). Aucun prix, aucune migration.
+> (ter) Les couleurs de la manette d'avant reviennent sur COM et SPACE : chaque vue garde sa teinte.
 
 ### Correction 0.55 — 12/10/2026 · la box telle quelle (à reporter ; remplace la « boîte éparpillée » de 0.54)
 > Dans le fil de SPACE, la Habit Box reste entière (objectifs et répulsions dedans), comme dans COM. À la

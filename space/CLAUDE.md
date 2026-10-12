@@ -1,5 +1,11 @@
 # space/CLAUDE.md — totehm.space : le réseau social de l'Habit stratégique (croix de cinq vues)
 
+## 12/10/2026 (ter) — les couleurs de la manette d'avant
+
+BUILD `2026-10-12-space-joy`. Wah : « remets-moi les couleurs du joystick d'avant ». Chaque vue garde SA teinte,
+quelle que soit sa place dans la croix : le fil rouge-violet, le pouls navy, la caméra navy, my space et vibes bleu
+clair ; `is-side` = fil, my space, vibes ; points de la manette : `o` = fil, `h` = pouls, `r` = caméra.
+
 ## 12/10/2026 (bis) — pur TikTok ; dans totehm.com
 
 BUILD `2026-10-12-space-plateforme`. Wah : « totehm.space, pur TikTok qui reprend les spaces de COM ; SPACE et le

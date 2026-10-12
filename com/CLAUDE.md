@@ -1,5 +1,11 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 12/10/2026 (ter) — la manette d'avant
+
+BUILD `2026-10-12-com-joy`. Wah : « remets-moi les couleurs du joystick d'avant ». `#ljoy-box.hors` revient à
+`g` (la recherche) et `d` : chaque vue garde l'aspect qu'elle avait, quelle que soit sa nouvelle place
+(`TEINTE_L` inchangé : centre navy, Get Higher bleu clair, TotehmSM et recherche rouge-violet, droite bleu clair).
+
 ## 12/10/2026 — UNE PLATEFORME : SPACE et le Club sur place, le moins de mots possible
 
 BUILD `2026-10-12-com-plateforme`. Wah : « l'application doit être ultra-minimaliste et parler d'elle-même » ·
@@ -14,7 +20,7 @@ de mes spaces ou un de mes spots me redirige vers une autre page alors que la fl
   on renomme en touchant son nom dans l'espace membre (`#mw-who`). Partout ailleurs (`.tname`, `.srch-name`,
   `#srch-q`, `.ast-say`) : navy `#333366`, carré, jamais `#000`.
 - **La croix** : `CROIX_L={c:{g:'h',h:'g',b:'b',d:'d'}, h:{d:'c'}, g:{b:'c'}, …}` — Get Higher à GAUCHE, la
-  recherche EN HAUT (les noms des vues ne changent pas). `#ljoy-box.hors` = `h`, `d`.
+  recherche EN HAUT (les noms des vues ne changent pas). `#ljoy-box.hors` : voir 12/10 (ter).
 - **Le trackpad = SPACE**, aux trois endroits (atterrissage, `#ljoy`, Totehm déplié + `#joy`) : `deltaX > 0` → la
   vue de DROITE (le contenu), 75 px en X / 70 en Y (160 au plus par événement), remis à zéro après 180 ms, verrou
   350 ms prolongé de 260 ms par l'inertie, `preventDefault` (le navigateur ne recule pas d'une page).
