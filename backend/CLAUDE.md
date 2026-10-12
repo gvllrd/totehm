@@ -1,5 +1,19 @@
 # backend/CLAUDE.md — la base, les fonctions, l'argent, le bot
 
+## 12/10/2026 — un élément de la box s'éteint : `spot_box_set`
+
+Migration `20261012090000_space_box_elements.sql`, appliquée UNE fois sous `space_box_elements`.
+- `spot_box_set(p_spot uuid, p_hide jsonb)` (authenticated ; propriétaire, `for update`) : `p_hide = {objectives:[textes],
+  repulsions:[textes], freq:bool}`, retrouvés par TEXTE (casse ignorée) dans le snapshot figé ; écrit `snapshot.hide`
+  (indices) + `show_objectives` / `show_repulsions` / `show_why` (vrai s'il reste un élément allumé). `why` : `signin`
+  · `not_mine` · `hide` (pas un objet). Rend `hidden` (compte).
+- `_spot_view` : un objectif/une répulsion éteint ne sort jamais ; `freq` éteint = null pour TOUS (le contexte du
+  propriétaire garde tout). `space_feed` ne compare jamais un élément éteint (objectif, répulsion, rythme) : sinon
+  le filtre le révélerait. Mêmes signatures, grants reposés après les `create`.
+- Un space/spot NAÎT CACHÉ (inchangé) ; les pages appellent `spot_box_set` juste après la publication.
+  `spot_box_visibility_set` reste (anciens clients), sans effet sur `hide`.
+- Auto-test `tests/sql/space_box_elements_selftest.sql` : `FAIL={}` ; `space_social` rejoué : `FAIL={}`.
+
 ## 11/10/2026 — SPACE réseau social : `space_feed`, vibes, profils ; l'invité refusé
 
 Migration additive `20261011102841_space_social.sql`, appliquée UNE fois sous `space_social`.

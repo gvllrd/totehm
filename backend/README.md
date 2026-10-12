@@ -1,5 +1,9 @@
 # TOTEHM · backend
 
+## 12/10/2026 — switching off one element of a published box
+
+Migration `20261012090000_space_box_elements.sql` (applied once as `space_box_elements`). `spot_box_set(spot, {objectives:[texts], repulsions:[texts], freq:bool})` — owner only — stores the switched-off elements (matched by text, case-insensitive) as indices in `snapshot.hide` and recomputes `show_objectives` / `show_repulsions` / `show_why`. `_spot_view` never returns a switched-off element (a switched-off rhythm is `null` for everyone) and `space_feed` never matches one. A space or spot is born hidden; SPACE and figher.club call `spot_box_set` right after publishing. Test `tests/sql/space_box_elements_selftest.sql` (`FAIL={}`).
+
 ## 11/10/2026 — SPACE social network: feed, vibes, profiles
 
 Migration `20261011102841_space_social.sql` (applied once as `space_social`). `space_feed(p_filter, p_lat, p_lng, p_offset, p_limit)` returns shared spaces ranked by an OR score (habit 3, objective 2, repulsion 2, intention 1, rhythm 1; only objectives/repulsions their author chose to show), with `matched`, `more`, `filtered`. `space_vibe(space, on)` toggles a vibe (`space_vibes`, never deleted: `active=false`); refusals `signin`, `email` (anonymous account), `nothing`, `own`. `space_profile(pseudo)` (empty = me, private included), `my_vibes(limit)`, `space_pulse()` (week counters). Anonymous accounts (`is_anonymous`) cannot post a space, vibe, or start a Higher Self reply (`sm_begin` → `email`). Test `tests/sql/space_social_selftest.sql` (`FAIL={}`).
