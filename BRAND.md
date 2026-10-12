@@ -1,14 +1,22 @@
 # BRAND.md — TOTEHM
 
-## CURRENT UPDATE — 11/10/2026 (bis) · one verb per domain, the scattered box
+## CURRENT UPDATE — 12/10/2026 · what comes from the TOTEHM stays as it is
+
+- **The Habit Box is never taken apart.** In the feed of totehm.space and on figher.club it is the box of
+  totehm.com, objectives and repulsions inside it, labels included.
+- **Publishing a space or a spot**: the chosen Habit Box appears as it is, everything on. A tap switches a
+  mini-box (an objective, a repulsion) or the rhythm off — it stays in place, faded and struck through; a
+  tap switches it back on. What is off is never shown and never matched. The usual place never appears.
+- **Then the platform's own format**: SPACE — a word, SHARE · figher.club — location, together
+  (SILENT / SOCIAL), when, where, duration, a word, the media. Grey controls, never Totehm colours.
+
+## CURRENT UPDATE — 11/10/2026 (bis) · one verb per domain
 
 - **The loop.** totehm.com = BUILD my strategy · totehm.space = SHARE / WATCH it lived · figher.club = MEET
   in reality · higher.boutique = WEAR / OWN it. Each centre: the TOTEHM, [Higher] + one word (STRATEGY ·
   SOCIAL MEDIA · SPOTS), one line of why. figher.club: *meet in reality the people who live your habits*.
-- **What comes from the TOTEHM stays in TOTEHM format.** On a space, the Habit Box is *scattered*: the
-  Habit stays navy, each objective a blue box, each repulsion a red-violet box, drifting above it. No
-  labels: the colour says the type. Tap a box → its **horizon**: other members living the same habit,
-  objective or repulsion.
+- *(12/10: the « scattered box » is withdrawn — see the update above.)* Tap the habit, an objective or a
+  repulsion → its **horizon**: other members living the same habit, objective or repulsion.
 - **SPOT** turns a space into a spot (figher.club): mine → plan it; someone else's → join theirs.
 - **Fewer words.** No « What is a space? »: the centre says it. *tap to share a space* · *film the place,
   not yourself*. A shared space shows its habit and its image wherever it is posted.

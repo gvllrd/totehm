@@ -68,7 +68,7 @@ com/      → www.totehm.com       LA STRATÉGIE, LA SOURCE : le Totehm (5 vues)
                                  · ↓ TotehmSM (Higher Self : 7 gratuits/30 j puis Higher) · ← chercher · → SPACE et boutique ; /console
 club/     → www.figher.club      LA RENCONTRE DANS LA RÉALITÉ, le prolongement de SPACE : [Higher] SPOTS + radar au centre · ↑ annoncer
                                  · ↓ caméra · ← passés · → agenda ; reçoit `?v=plan|list&habit=&city=` (SPOT d'un space) ; /meet ; 308 boutique
-space/    → www.totehm.space     L'INSPIRATION, le réseau social de l'Habit : centre = le concept · ← WATCH (la Habit Box ÉPARPILLÉE, un tap =
+space/    → www.totehm.space     L'INSPIRATION, le réseau social de l'Habit : centre = le concept · ← WATCH (la Habit Box ENTIÈRE, un élément =
                                  son horizon ; rail VIBE · SPOT · SHARE) · ↓ SHARE · → MY SPACE · ↑ VIBES ; `/s/:id` = l'aperçu partagé (`api/card.js`)
 boutique/ → www.higher.boutique  L'ACHAT, physique et numérique (09/10) : Get Higher / THP / Stoner / Lisbon / Origins, le marché
                                  de l'art (/market) ; accueil + collection ; /streetwear (plein écran au téléphone, fenêtres-côtés sur ordinateur) : cloth →
@@ -168,7 +168,8 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 - **Claude Code** (terminal) : une commande simple par ligne, jamais
   `cd X && …` (les permissions jugent la ligne entière).
 **SPACE · 11/10 :** un space = une Habit vécue (photo/vidéo + son pourquoi), jamais un point exact ; sans selfie ni
-musique ajoutée ; vibes, profils ; **ce qui vient du Totehm garde le format Totehm** (boîtes navy/bleu/rouge-violet). **figher.club :** un spot = un lieu + une heure (Higher spot : chez soi, lieu privé ou dehors) ;
+musique ajoutée ; vibes, profils ; **ce qui vient du Totehm reste TEL QUEL** (la box de COM ; à la publication, un tap éteint/rallume une mini-box ou le
+rythme, `spot_box_set`) ; le reste (space, spot) au format de sa plateforme. **figher.club :** un spot = un lieu + une heure (Higher spot : chez soi, lieu privé ou dehors) ;
 radar, annonce (toujours ON), agenda, I AM HERE, passés ; OFF = ville, ON = le point pour mes abonnés. Mini-boxes
 OBJECTIVES/REPULSIONS séparées (droits serveur). Détails : `space/CLAUDE.md`, `club/CLAUDE.md`, copy : `BRAND.md`.
 My spaces (COM, SPACE) + `space-delete` ; une Box WISDOM/VISION de COM montre ses Cloths (`element_cloths`) comme une Habit ses spaces ; chercher = un NOM → son TOTEHM en lecture (spaces, loupe, COPY d'une Box). Espace membre COM = l'utilisateur (vignette, Higher, souscriptions), format higher.boutique.

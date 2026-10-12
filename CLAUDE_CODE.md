@@ -302,6 +302,12 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
+### Correction 0.55 — 12/10/2026 · la box telle quelle (à reporter ; remplace la « boîte éparpillée » de 0.54)
+> Dans le fil de SPACE, la Habit Box reste entière (objectifs et répulsions dedans), comme dans COM. À la
+> publication d'un space ou d'un spot, la box choisie apparaît telle quelle, tout allumé : un tap éteint une
+> mini-box ou le rythme, un tap la rallume ; ce qui est éteint ne se montre ni ne se compare jamais. Ensuite les
+> réglages propres à SPACE ou au Club. Migration `space_box_elements` appliquée. Aucun prix.
+
 ### Correction 0.54 — 11/10/2026 (bis) · la boîte éparpillée, SPACE → SPOT (à reporter)
 > Sur totehm.space, la Habit Box d'un space s'éparpille en boîtes du Totehm (objectifs bleus, répulsions
 > rouge-violet) ; un tap ouvre l'horizon de l'élément. SPOT fait d'un space un spot sur figher.club (le mien :
