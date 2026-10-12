@@ -16,6 +16,18 @@
 ---
 
 
+## 0 · UNE PLATEFORME : SPACE ET LE CLUB DANS TOTEHM.COM, LE MOINS DE MOTS — 12/10/2026 (bis)
+
+| quoi | valeur mesurée |
+|---|---|
+| base | aucune migration, aucune fonction, aucun prix |
+| navigateur (Supabase simulé) | com_plateforme 27/27 (nouveau) · com_croix 52/52 · com_mouth 30/30 · com_paper 40/40 · com_read_copy 20/20 · com_member_menu 29/29 · com_guest 14/14 · com_cloths 16/16 · com_creator 29/29 · console 18/18 · space 47/47 · space_box 13/13 · space_top_left 21/21 · spaces_loupe 26/26 · space_boxes_ecosystem 19/19 · space_spot_links 30/30 · club_from_space 9/9 · club_map 42/42 · club_publish 33/33 · club_ui 27/27 · club_luxury 48/48 · space_card 11/11 |
+| échecs connus, hors lot | spaces_ui 44/48 : les 4 échecs d'identité boutique (get_higher, stoner) d'avant |
+| Vercel `7ce8bec` | com · space · club · boutique READY (production) |
+| prod (pg_net, 200) | totehm.com `b089f1f8…` `2026-10-12-com-plateforme` (`XO`, `#ast-sig` présents ; `lv-why`, « My TotehmPaper is mine », nom sur `#000` absents) · `Permissions-Policy` camera/microphone `(self)`, `X-Frame-Options` SAMEORIGIN |
+| réécritures | `totehm.com/x/space?embed=1` = `0997c013…` (= totehm.space, `2026-10-12-space-plateforme`) · `/x/club?embed=1` = `12610e74…` (= figher.club, `2026-10-12-club-plateforme`) · `/vendor/hls-1.6.13.mjs` 200 JS · `/video-capture.mjs` `d6889330…` · `/cities.json` `3adbbfef…` (= dépôt) |
+| prod = dépôt | les trois md5 HTML identiques au dépôt |
+
 ## 0 · LA BOX TELLE QUELLE, UN ÉLÉMENT ÉTEINT D'UN TAP — 12/10/2026
 
 | quoi | valeur mesurée |
