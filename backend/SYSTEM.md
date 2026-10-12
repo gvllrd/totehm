@@ -16,6 +16,14 @@
 ---
 
 
+## 0 · LA MANETTE D'AVANT — 12/10/2026 (ter)
+
+| quoi | valeur mesurée |
+|---|---|
+| navigateur | com_plateforme 29/29 · space 47/47 · space_top_left 21/21 · spaces_loupe 26/26 · com_croix 52/52 |
+| Vercel `6617792` | com READY ; space, club, boutique en `git_info_fail` (Vercel, pas le code) → redéployés (MCP, `redeploy`) READY |
+| prod (pg_net, 200) | totehm.com `39e2631d…` `2026-10-12-com-joy` (`hors` = g, d) · totehm.space et `/x/space` `d882c13b…` `2026-10-12-space-joy` (fil rouge-violet, pouls navy) — = dépôt |
+
 ## 0 · UNE PLATEFORME : SPACE ET LE CLUB DANS TOTEHM.COM, LE MOINS DE MOTS — 12/10/2026 (bis)
 
 | quoi | valeur mesurée |
