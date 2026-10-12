@@ -1,5 +1,22 @@
 # space/CLAUDE.md — totehm.space : le réseau social de l'Habit stratégique (croix de cinq vues)
 
+## 12/10/2026 — la box TELLE QUELLE ; un tap éteint un élément (remplace la « boîte éparpillée »)
+
+BUILD `2026-10-12-space-box`. Wah : « il ne faut pas séparer les objectifs de l'habitude dans sa box dans le feed » ;
+« afficher la box tel quel avec la possibilité d'éteindre les mini-box ou option de la box, ensuite les autres
+paramètres dans le format space et spot ».
+- **Fil** : `feedStage` rend la Habit Box de COM ENTIÈRE (`habitHTML(h,'hz')` : intentions, rythme, OBJECTIVES /
+  REPULSIONS dedans, issus de `why`). Mode `'hz'` : chaque mini porte `data-hz` (o/r + indice), l'Habit `data-hz="h"`
+  → l'horizon (inchangé, `#hz` montre la mini dans sa couleur). Rail VIBE · SPOT · SHARE inchangé. `scatterHTML`,
+  `jitter`, `.el`, `.scatter` : retirés avec leur CSS.
+- **Publication** (`contextHTML`/`habitInner` avec `options = boxNew()` = `{hide:{o:[textes],r:[textes],freq}}`) : la box
+  arrive entière, tout allumé ; `[data-box-el]` (o · r · f) : un tap → `is-off` (pâli, barré), un tap → rallumé ;
+  Entrée/Espace aussi (écouteur en capture). Le lieu habituel n'y figure pas (jamais publié). Puis SPACE : un mot, SHARE.
+  `boxNew` est une DÉCLARATION de fonction (REC l'appelle avant sa ligne : un `const` aurait levé → page blanche).
+- **Serveur** : le space naît caché ; `publishBoxOptions` appelle TOUJOURS `spot_box_set(id, {objectives, repulsions,
+  freq})` (textes éteints). Échec → « These mini-boxes were kept hidden. » `spot_box_visibility_set` n'est plus appelé.
+- Tests : `space_box` 13/13 (nouveau, remplace `space_scatter`), `space` 47, `space_top_left` 21.
+
 ## 11/10/2026 (bis) — la boîte éparpillée, ses horizons, SPACE → SPOT, l'aperçu partagé
 
 BUILD `2026-10-11-space-scatter`. Wah : « trop de blabla », « format Totehm… une box éparpillée, déconstruite pour

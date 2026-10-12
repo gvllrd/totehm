@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <!-- 11/10/2026 — SPACE: the social network of the strategic Habit. Centre = the concept;
-     ← WATCH the feed (each space = its Habit Box scattered into Totehm boxes; a box opens its
-     horizon) · ↓ SHARE · → MY SPACE · ↑ VIBES. SPOT turns a space into a spot on figher.club.
+     ← WATCH the feed (each space = its Habit Box as in COM; an element opens its horizon) · ↓ SHARE · → MY SPACE · ↑ VIBES. SPOT turns a space into a spot on figher.club.
      No radar, planning, agenda or exact point. -->
 <html lang="en">
 <head>
@@ -408,21 +407,19 @@ body.v-me #tp-hint,body.v-me #member,body.v-vibes #tp-hint,body.v-vibes #member{
 .clip .vibe-pop{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%) scale(.6);z-index:6;pointer-events:none;opacity:0;
   font:700 22px/1 var(--mono);letter-spacing:.3em;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.8);transition:opacity .25s ease,transform .35s cubic-bezier(.2,1.4,.4,1)}
 .clip .vibe-pop.is-on{opacity:1;transform:translate(-50%,-50%) scale(1)}
-/* 11/10 (bis) — la scène d'un space : la colonne 9:16 du média, la boîte éparpillée, le rail. */
+/* 11/10 (bis) — la scène d'un space : la colonne 9:16 du média, la Habit Box, le rail. */
 .clip>.stage{position:absolute;left:50%;top:0;bottom:0;transform:translateX(-50%);width:min(100cqw,calc(100cqh * 9 / 16));z-index:2;pointer-events:none}
 @supports not (width:1cqw){.clip>.stage{width:min(100%,calc(100vh * 9 / 16))}}
 .stage>*{pointer-events:auto}
 .stage .info{position:absolute;left:12px;right:96px;width:auto;transform:none;bottom:calc(114px + var(--bot))}
-.stage .scatter{display:flex;flex-direction:column;align-items:flex-start;gap:9px;margin-bottom:12px}
-.el{margin-left:var(--x,0);max-width:min(72%,calc(100% - var(--x,0%)));padding:5px 9px;font:400 12px/1.4 var(--q);color:#fff;cursor:pointer;box-shadow:0 5px 22px rgba(0,0,0,.65),0 1px 4px rgba(0,0,0,.5);word-break:break-word}
-.el-o{background:var(--blue)}.el-r{background:var(--rep)}
 .hz-h{cursor:pointer}
 .stage .rail{position:absolute;right:10px;bottom:calc(114px + var(--bot));margin:0;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .stage .rail .btn{background:rgba(11,11,13,.86);font-size:9px;padding:8px 9px}
 .stage .rail .vibes-n{background:rgba(11,11,13,.86);border-radius:var(--r);padding:8px 9px}
 #hz{position:fixed;left:50%;transform:translateX(-50%);top:calc(84px + var(--top));z-index:84;display:flex;align-items:center;gap:8px;max-width:calc(100vw - 32px);pointer-events:auto}
 #hz.hide,body:not(.v-feed) #hz{display:none}
-#hz .el{max-width:none;cursor:default}
+#hz .mini{cursor:default;font-size:12px;padding:5px 9px}
+.hz-h [data-hz]{cursor:pointer}
 #hz .hz-hb{padding:5px 9px;font:400 12px/1.4 var(--q);color:#fff;background:var(--navy)}
 #hz-x{border:0;border-radius:var(--r);background:var(--s2);color:#fff;font:700 11px var(--mono);padding:6px 9px;cursor:pointer}
 body.is-hz #sf-btn{display:none}
@@ -441,6 +438,9 @@ body.v-home .joy-lab{display:block}
 body.v-home #joy-say:not(:empty)~.joy-lab{opacity:0}
 /* 11/10 : le fil et le profil occupent tout l'écran, centrés, sur toutes les tailles. */
 #v-feed{background:var(--s1)}
+/* 12/10 — un élément éteint dans la publication : il reste à sa place, pâli ; un tap le rallume. */
+[data-box-el]{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mini.is-off,.v-frq.is-off{opacity:.3;filter:grayscale(1);text-decoration:line-through}
 </style>
 <style data-ecosystem-ui="2026-10-05">
 
@@ -718,21 +718,21 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
   return (v < 10 ? Math.max(.1, v).toFixed(1) : String(Math.round(v))) + ' ' + UNIT; };
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD='2026-10-11-space-scatter';
+const BUILD='2026-10-12-space-box';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'home';
 const S = { int:null, q:'', habit:null };
 const FEED = { list:[], shown:[], seq:0, more:true, loading:false, match:'all', active:null };
 let habitsPending = null, gestureCount = 0, suppressClickUntil = 0;
-const REC = { seq:0, step:null, stream:null, mr:null, blob:null, url:null, mime:'', t0:0, timer:0, seconds:0, uploaded:null, habit:null, vis:'shared', boxOptions:{objectives:false,repulsions:false}, pos:null, city:null, placeAt:0, placePromise:null, placeError:false,
+const REC = { seq:0, step:null, stream:null, mr:null, blob:null, url:null, mime:'', t0:0, timer:0, seconds:0, uploaded:null, habit:null, vis:'shared', boxOptions:boxNew(), pos:null, city:null, placeAt:0, placePromise:null, placeError:false,
   busy:false, capture:null, width:0,height:0,fps:0,bitrate:0,path:null, kind:null, why:false };
 let HABITS = null, DETAIL = null;
 const VIDEO_METRICS={firstFrameMs:0,uploadMs:0,publishMs:0,warmStarts:0,coldStarts:0,stalls:0};
 window.__totehm_space = () => ({ build: BUILD, view: VIEW, signed_in: !!me, located: !!POS, intention: null, search: !!SF.box,
   feed: FEED.list.length, playing: [...document.querySelectorAll('#feed video')].filter(v => !v.paused).length,
   video:{provider:RULES.video_provider || 'storage',buffered:[...document.querySelectorAll('#feed video')].filter(v=>v.getAttribute('src') || v._hls).length,...VIDEO_METRICS,...(()=>{const v=$('feed').querySelector('.clip[data-k="'+FEED.active+'"] video'),q=v?.getVideoPlaybackQuality?.();return {frames:q?.totalVideoFrames || 0,dropped:q?.droppedVideoFrames || 0};})()},
-  vibes_in:VIB.data?.received?.length || 0, horizon:!!HZ.on, scattered:document.querySelectorAll('#feed .el').length, vibes_given:VIB.data?.given?.length || 0, profile_spaces:PROF.list.length, filter:sfCount(), gestures:gestureCount, paper:PAPER.etat(), habit_filter:!!SF.box, spot_filter:sfCount(), feed_shown:FEED.shown.length, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, kind: REC.kind, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
+  vibes_in:VIB.data?.received?.length || 0, horizon:!!HZ.on, vibes_given:VIB.data?.given?.length || 0, profile_spaces:PROF.list.length, filter:sfCount(), gestures:gestureCount, paper:PAPER.etat(), habit_filter:!!SF.box, spot_filter:sfCount(), feed_shown:FEED.shown.length, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, kind: REC.kind, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
 
 /* Chaque vue dit où je suis (lecteurs d'écran ; SPACE n'affiche pas de titre de vue). */
 const VIEW_WORDS = {home:['SPACE','Higher social media'],feed:['WATCH','strategic habits, lived'],cam:['SHARE','9:16 · up to 33 seconds'],me:['MY SPACE','my spaces, my vibes'],vibes:['VIBES','on my spaces · the spaces I vibed']};
@@ -747,17 +747,31 @@ const tickHTML = l => '<span class="tick">' + (l || []).map(i => '<i style="back
 const sdTag = (t, cls) => '<span class="sd-tag' + (cls ? ' ' + cls : '') + '">' + t + '</span>';
 
 const intHTML = l => (l || []).map(i => '<span class="v-int" style="color:'+icol(i)+'" title="'+esc(INTS[i]?.def)+'">'+esc(INTS[i]?.n || i)+'</span>').join('');
+/* 12/10/2026 — LA BOX TELLE QUELLE. Ce qui vient du TOTEHM garde le format du TOTEHM (Wah).
+   options = { hide:{o:[textes], r:[textes], freq} } dans la publication : la box s'affiche entière,
+   chaque mini-box et le rythme s'éteignent puis se rallument d'un tap (`is-off`) ; rien n'est
+   éteint par défaut ; le lieu habituel, jamais publié, n'y figure pas. options = 'hz' dans le fil :
+   chaque élément ouvre son horizon. Sans options : lecture. */
+function boxNew(){ return { hide:{ o:[], r:[], freq:false } }; }  // déclaration : REC et PLAN l'appellent plus haut
+const offIn = (list, t) => (list || []).some(x => x.toLowerCase() === String(t || '').trim().toLowerCase());
 function contextHTML(h,options,prefix){
+ const edit = !!(options && typeof options === 'object' && options.hide), hz = options === 'hz';
  return ['objectives','repulsions'].map(k => {
-  const list=(h?.[k] || []).filter(x => String(x.text || '').trim()); if(!list.length) return '';
-  const label=k === 'objectives' ? 'OBJECTIVES' : 'REPULSIONS', active=!!options?.[k];
-  const head=options ? '<button type="button" class="mini-toggle m-'+(k === 'objectives' ? 'o' : 'r')+(active ? ' is-on' : '')+'" data-box-group="'+k+'" data-box-scope="'+prefix+'" aria-pressed="'+active+'">'+label+'</button>' : '<span class="mg-l">'+label+'</span>';
-  return '<span class="mg">'+head+(!options || active ? '<span class="minis">'+list.map(x => '<span class="mini m-'+(k === 'objectives' ? 'o' : 'r')+'">'+esc(x.text)+'</span>').join('')+'</span>' : '')+'</span>';
+  const kk = k === 'objectives' ? 'o' : 'r';
+  const list = (h?.[k] || []).map((x,i) => ({ text:String(x.text || '').trim(), i })).filter(x => x.text); if(!list.length) return '';
+  return '<span class="mg"><span class="mg-l">' + (k === 'objectives' ? 'OBJECTIVES' : 'REPULSIONS') + '</span><span class="minis">' + list.map(x => {
+   const off = edit && offIn(options.hide[kk], x.text);
+   const attr = edit ? ' role="button" tabindex="0" data-box-el="' + kk + '" data-box-i="' + x.i + '" aria-pressed="' + !off + '"'
+              : hz ? ' role="button" tabindex="0" data-hz="' + kk + '" data-hz-i="' + x.i + '"' : '';
+   return '<span class="mini m-' + kk + (off ? ' is-off' : '') + '"' + attr + '>' + esc(x.text) + '</span>';
+  }).join('') + '</span></span>';
  }).join('');
 }
 function habitInner(h,options,prefix){
+ const edit = !!(options && typeof options === 'object' && options.hide), off = edit && !!options.hide.freq;
  const configured=h.step ? (Array.isArray(h.step.is) ? h.step.is : h.step.i ? [h.step.i] : []) : h.ints;
- const meta=intHTML(configured)+(String(h.freq || '').trim() ? '<span class="v-frq">'+esc(FREQ[h.freq] || h.freq)+'</span>' : '')+(String(h.place || '').trim() ? '<span class="v-frq">'+esc(h.place)+'</span>' : '');
+ const freq = String(h.freq || '').trim() ? '<span class="v-frq' + (off ? ' is-off' : '') + '"' + (edit ? ' role="button" tabindex="0" data-box-el="f" aria-pressed="' + !off + '"' : '') + '>' + esc(FREQ[h.freq] || h.freq) + '</span>' : '';
+ const meta=intHTML(configured)+freq+(!edit && String(h.place || '').trim() ? '<span class="v-frq">'+esc(h.place)+'</span>' : '');
  return '<span class="v-name">'+esc(h.name)+'</span>'+(meta ? '<span class="v-sub">'+meta+'</span>' : '')+contextHTML(h,options,prefix);
 }
 /* La Habit Box reste la boîte de COM ; tout ce qui est « space » vit dessous,
@@ -771,16 +785,13 @@ function spotHTML(s){
 const hasMedia = s => !!(s.clip || s.video || s.photo);
 const hasWhy = s => !!((s.why || (s.mine && s.show_why && s.context)) && [...((s.why || s.context).objectives || []),...((s.why || s.context).repulsions || [])].length);
 const vibeLabel = s => 'VIBE' + (s.vibes ? ' · ' + s.vibes : '');
-/* 11/10 (bis) — LA BOÎTE ÉPARPILLÉE. Dans le fil, la Habit Box se déconstruit au-dessus du space :
-   l'Habit reste la boîte navy, chaque objectif devient une boîte bleue, chaque répulsion une
-   boîte rouge-violet, décalées une à une (décalage stable, tiré de l'id). Aucune étiquette : la
-   couleur dit le type, comme dans COM. Un tap sur une boîte ouvre son HORIZON (plus bas). */
+/* 12/10 — LA BOX ENTIÈRE DANS LE FIL (Wah : « il ne faut pas séparer les objectifs de l'habitude »).
+   La Habit Box reste celle de COM, objectifs et répulsions DEDANS ; un tap sur l'Habit, un objectif
+   ou une répulsion ouvre son HORIZON (plus bas). Seul le serveur décide de ce qui se montre. */
 const whyOf = s => s.why || (s.mine && s.show_why ? s.context : null);
 const elemsOf = s => { const w = whyOf(s) || {};
   return [...(w.objectives || []).map((x,i) => ({k:'o',i,text:String(x.text || '').trim()})),
-          ...(w.repulsions || []).map((x,i) => ({k:'r',i,text:String(x.text || '').trim()}))].filter(x => x.text).slice(0,6); };
-const jitter = (id,n) => { let h = 2166136261; for(const c of String(id) + ':' + n) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return (h >>> 0) / 4294967296; };
-const scatterHTML = s => elemsOf(s).map((e,n) => '<div class="el el-' + e.k + '" role="button" tabindex="0" data-hz="' + e.k + '" data-hz-i="' + e.i + '" style="--x:' + Math.round((n % 2 ? 26 : 2) + jitter(s.id,n) * 18) + '%">' + esc(e.text) + '</div>').join('');
+          ...(w.repulsions || []).map((x,i) => ({k:'r',i,text:String(x.text || '').trim()}))].filter(x => x.text); };
 function railHTML(s){
   const id = esc(s.id), b = [];
   if(s.visibility === 'shared' && !s.mine) b.push('<button class="btn vibe' + (s.vibed ? ' is-on' : '') + '" type="button" data-vibe="' + id + '" aria-pressed="' + !!s.vibed + '">' + vibeLabel(s) + '</button>');
@@ -790,8 +801,8 @@ function railHTML(s){
   return '<div class="acts rail">' + b.join('') + '</div>';
 }
 function feedStage(s){
-  const h = {name:s.habit, ints:s.intentions || [], freq:s.freq, objectives:[], repulsions:[]};
-  return '<div class="info"><div class="scatter">' + scatterHTML(s) + '</div><div class="hz-h" role="button" tabindex="0" data-hz="h">' + habitHTML(h) + '</div>' +
+  const w = whyOf(s) || {}, h = {name:s.habit, ints:s.intentions || [], freq:s.freq, objectives:w.objectives || [], repulsions:w.repulsions || []};
+  return '<div class="info"><div class="hz-h" role="button" tabindex="0" data-hz="h">' + habitHTML(h,'hz') + '</div>' +
     (s.comment ? '<p class="sd-say">' + esc(s.comment) + '</p>' : '') +
     (!s.mine && s.creator ? '<div class="by"><span>by</span><button class="tname" type="button" data-profile="' + esc(s.creator) + '">' + esc(s.creator) + '</button></div>' : '') +
     '<p class="note acts-note" hidden></p></div>' + railHTML(s);
@@ -1045,7 +1056,7 @@ function hzClose(){
 }
 function hzPaint(){
   const z = $('hz'), on = HZ.on; z.classList.toggle('hide', !on); document.body.classList.toggle('is-hz', !!on);
-  if(on){ const b = $('hz-el'); b.className = on.k === 'h' ? 'hz-hb' : 'el el-' + on.k; b.textContent = on.text; }
+  if(on){ const b = $('hz-el'); b.className = on.k === 'h' ? 'hz-hb' : 'mini m-' + on.k; b.textContent = on.text; }
 }
 function sfFilter(){
   if(HZ.on) return { habit: HZ.on.k === 'h' ? HZ.on.text : null, ints:[], freq:null,
@@ -1545,15 +1556,23 @@ $('habit-picker').addEventListener('click', e => {
 document.addEventListener('pointerdown', e => { if(!e.target.closest('#habit-picker,#habit-filter,#totehm-paper')) pickerClose(); });
 
 const chip = (a, l, on, sub) => '<button type="button" class="chip' + (on ? ' is-on' : '') + '" ' + a + '>' + l + (sub ? '<small>' + sub + '</small>' : '') + '</button>';
+/* 12/10 — un élément de la box se rallume / s'éteint aussi au clavier, avant la boîte qui l'entoure. */
+document.addEventListener('keydown', e => {
+  if((e.key === 'Enter' || e.key === ' ') && e.target instanceof Element && e.target.matches('[data-box-el]')){ e.preventDefault(); e.stopPropagation(); e.target.click(); }
+}, true);
 function boxOptionsClick(t,x){
- const b=t.closest('[data-box-group]'); if(!b) return false;
- const k=b.dataset.boxGroup; if(!['objectives','repulsions'].includes(k)) return false;
- x.boxOptions ||= {objectives:false,repulsions:false}; x.boxOptions[k]=!x.boxOptions[k]; return true;
+ const b=t.closest('[data-box-el]'); if(!b || !x.habit) return false;
+ x.boxOptions ||= boxNew(); const hd = x.boxOptions.hide, k = b.dataset.boxEl;
+ if(k === 'f'){ hd.freq = !hd.freq; return true; }
+ const item = (x.habit[k === 'o' ? 'objectives' : 'repulsions'] || [])[+b.dataset.boxI], txt = String(item?.text || '').trim(); if(!txt) return false;
+ const at = hd[k].findIndex(v => v.toLowerCase() === txt.toLowerCase()); if(at >= 0) hd[k].splice(at,1); else hd[k].push(txt);
+ return true;
 }
+/* Un space ou un spot NAÎT CACHÉ (serveur) : cet appel, toujours fait, montre ce qui reste allumé. */
 async function publishBoxOptions(id,x){
- if(!x.boxOptions?.objectives && !x.boxOptions?.repulsions) return true;
- const r=await sb.rpc('spot_box_visibility_set',{p_spot:id,p_objectives:!!x.boxOptions.objectives,p_repulsions:!!x.boxOptions.repulsions});
- if(r.error) console.error('[spot_box_visibility_set]',r.error.message); return !r.error && !!r.data?.ok;
+ const hd = x.boxOptions?.hide || boxNew().hide;
+ const r=await sb.rpc('spot_box_set',{p_spot:id,p_hide:{objectives:hd.o,repulsions:hd.r,freq:!!hd.freq}});
+ if(r.error) console.error('[spot_box_set]',r.error.message); return !r.error && !!r.data?.ok;
 }
 let CITIES = null, CITY_KEYS = [], citiesLoading = null;
 const fold = t => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
@@ -1590,7 +1609,7 @@ function camStop(){
 function camReset(){
   REC.seq++; if(REC.mr){ REC.mr.onstop = null; REC.mr.ondataavailable = null; REC.mr.onstart=null;REC.mr.onerror=null; }
   camStop(); if(REC.url) URL.revokeObjectURL(REC.url);
-  Object.assign(REC, { step:null, kind:null, why:false, boxOptions:{objectives:false,repulsions:false}, pos:null,city:null,placeAt:0,placePromise:null,placeError:false, mr:null, blob:null, url:null, habit:null, mode:null, loc:null, dur:null, busy:false,seconds:0,uploaded:null,width:0,height:0,fps:0,bitrate:0,path:null });
+  Object.assign(REC, { step:null, kind:null, why:false, boxOptions:boxNew(), pos:null,city:null,placeAt:0,placePromise:null,placeError:false, mr:null, blob:null, url:null, habit:null, mode:null, loc:null, dur:null, busy:false,seconds:0,uploaded:null,width:0,height:0,fps:0,bitrate:0,path:null });
   const v = $('cam-v'); v.pause(); v.removeAttribute('src'); v.srcObject = null;
   const ph = $('cam-photo'); ph.classList.add('hide'); ph.removeAttribute('src');
   $('cam-n').textContent = ''; $('cam-sec').classList.add('hide'); camState();
@@ -1701,7 +1720,7 @@ $('cam-body').addEventListener('click', e => {
   if(t.closest('[data-cancel]')){ camReset(); return go('home'); }
   const start = t.closest('[data-start]'); if(start) return camOpen(start.dataset.start);
   if(t.closest('[data-again]')) return camOpen(REC.kind || 'video');
-  const hk = t.closest('[data-h]'); if(hk){ REC.habit = HABITS[+hk.dataset.h]; REC.boxOptions={objectives:false,repulsions:false}; REC.step = 'form'; camPaint(); recResolvePlace(); return; }
+  const hk = t.closest('[data-h]'); if(hk){ REC.habit = HABITS[+hk.dataset.h]; REC.boxOptions=boxNew(); REC.step = 'form'; camPaint(); recResolvePlace(); return; }
   if(t.closest('[data-reh]')){ REC.step = 'habit'; return camPaint(); }
   if(t.closest('[data-send]')) return camSend();
 });

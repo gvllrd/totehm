@@ -21,7 +21,7 @@ const state=pg=>pg.evaluate(()=>window.__totehm_space());
 const browser=await launch();
 try{
  const calls=[];let id=0;
- const rpc={spot_rules:{clip_seconds:2,duration_min:5,duration_max:720,video_provider:'storage'},space_habits:{ok:true,habits:[habit]},space_feed:b=>({ok:true,spots:b.p_filter?.shows==='photo'?feed.filter(s=>s.photo):b.p_filter?.shows==='why'?feed.filter(s=>s.why):b.p_filter?.shows==='video'?feed.filter(s=>s.video):feed,more:false}),space_pulse:{spaces_week:4,vibes_week:0},space_post:b=>{calls.push({name:'create',body:b});return{ok:true,id:'made-'+(++id)};},spot_box_visibility_set:b=>{calls.push({name:'boxes',body:b});return{ok:true};},spot_get:b=>({ok:true,spot:make(b.p_id,-1,{mine:true})})};
+ const rpc={spot_rules:{clip_seconds:2,duration_min:5,duration_max:720,video_provider:'storage'},space_habits:{ok:true,habits:[habit]},space_feed:b=>({ok:true,spots:b.p_filter?.shows==='photo'?feed.filter(s=>s.photo):b.p_filter?.shows==='why'?feed.filter(s=>s.why):b.p_filter?.shows==='video'?feed.filter(s=>s.video):feed,more:false}),space_pulse:{spaces_week:4,vibes_week:0},space_post:b=>{calls.push({name:'create',body:b});return{ok:true,id:'made-'+(++id)};},spot_box_set:b=>{calls.push({name:'boxes',body:b});return{ok:true};},spot_get:b=>({ok:true,spot:make(b.p_id,-1,{mine:true})})};
  const {pg,log}=await page(browser,{dir:'space',origin,rpc,tables:{profiles:[{pseudo:'wah'}]},viewport:{width:390,height:844}});
  await pg.goto(origin+'/');await pg.waitForFunction(()=>window.__totehm_space?.().feed===4);await pg.waitForTimeout(600);
  await pg.click('#cur-g');await pg.waitForFunction(()=>window.__totehm_space().view==='feed');await pg.waitForTimeout(500);
@@ -30,7 +30,7 @@ try{
  ok(await pg.locator('#v-plan,#v-radar,#v-list').count()===0,'removed views never load');
  ok(await pg.locator('#feed .info .habit').count()===4&&await pg.locator('#feed .info .sdata').count()===0,'each space shows its Habit without technical spot data');
  ok(await pg.locator('#feed .clip[data-id="now-off"] img[data-photo]').count()===1,'photo appears in the feed');
- ok(/Beautiful skin/.test(await pg.textContent('#feed .clip[data-id="before-silent"] .el-o'))&&/Alcohol/.test(await pg.textContent('#feed .clip[data-id="before-silent"] .el-r'))&&!/Beautiful skin|Alcohol/.test(await pg.textContent('#feed .clip[data-id="before-silent"] .habit')),'shown WHY and TRIGGER leave the Habit Box: each is its own Totehm box, scattered above it (11/10 bis)');
+ ok(/Beautiful skin/.test(await pg.textContent('#feed .clip[data-id="before-silent"] .habit .mini.m-o'))&&/Alcohol/.test(await pg.textContent('#feed .clip[data-id="before-silent"] .habit .mini.m-r')),'shown WHY and TRIGGER stay INSIDE the Habit Box, as in COM (12/10)');
  ok(await pg.$$eval('#feed button',l=>l.every(b=>!/[\[\]]/.test(b.textContent)))&&await pg.locator('#feed [data-share]').count()===4&&await pg.locator('#feed [data-go],[data-ics]').count()===0,'SHARE stays inline; spot actions are absent');
  await pg.locator('#feed .clip[data-id="now-on"] .hz-h').evaluate(e=>e.click());await pg.waitForTimeout(300);
  ok(!(await state(pg)).detail&&(await state(pg)).horizon&&await pg.isVisible('#hz')&&!await pg.isVisible('#sf-btn'),'tapping a feed box opens its horizon, never a duplicate sheet');
@@ -50,9 +50,9 @@ try{
  ok((await state(pg)).rec.kind==='photo'&&/take the photo/.test(await pg.textContent('#cam-body'))&&await pg.isVisible('#cam-body [data-cancel]'),'PHOTO mode preserves CANCEL');
  await pg.click('#joy-box');await pg.waitForFunction(()=>window.__totehm_space().rec.step==='habit');
  ok(await pg.isVisible('#cam-photo')&&!(await state(pg)).rec.camera,'captured still appears and camera stops');
- await pg.click('[data-h="0"]');await pg.click('[data-box-group="objectives"]');await pg.waitForFunction(()=>!document.querySelector('[data-send]')?.disabled);
+ await pg.click('[data-h="0"]');await pg.waitForFunction(()=>!document.querySelector('[data-send]')?.disabled);
  const ups=log.upload.length;await pg.click('[data-send]');await pg.waitForFunction(()=>window.__totehm_space().view==='feed');await pg.waitForTimeout(300);
- const made=calls.find(x=>x.name==='create');ok(log.upload.length===ups+1&&/\.jpg$/.test(log.upload.at(-1).path)&&/\.jpg$/.test(made.body.p_video)&&calls.find(x=>x.name==='boxes')?.body.p_objectives===true,'photo uploads as owned jpg and publishes selected WHY');
+ const made=calls.find(x=>x.name==='create');ok(log.upload.length===ups+1&&/\.jpg$/.test(log.upload.at(-1).path)&&/\.jpg$/.test(made.body.p_video)&&calls.find(x=>x.name==='boxes')?.body.p_hide?.objectives?.length===0,'photo uploads as owned jpg and publishes its box as it is (nothing switched off)');
  ok(made.body.p_city==='Lisbon'&&Object.keys(made.body).length===6,'photo uses the space_post contract');
  ok(!log.errors.some(x=>x.startsWith('pageerror')),'SPACE photo and filter have no JavaScript page errors');
 }finally{await browser.close();}
