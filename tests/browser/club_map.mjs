@@ -13,7 +13,7 @@ const rpc={spot_rules:{clip_seconds:3,clip_max_bytes:33554432,countdown:1,durati
  spots_feed:b=>({spots:feed,more:false}),
  spot_schedule:b=>{const s=spot('scheduled',1440,{habit:b.p_habit,mine:true,visibility:b.p_visibility,location:b.p_location,mode:b.p_mode,exact:{lat:b.p_lat,lng:b.p_lng,place:b.p_place},comment:b.p_comment});future.unshift(s);exact.unshift(s);return {ok:true,id:s.id};},
  spot_create:b=>{const s=spot('newclip',0,{habit:b.p_habit,mine:true,visibility:b.p_visibility,location:b.p_location,mode:b.p_mode,video:b.p_video,exact:{lat:b.p_lat,lng:b.p_lng,place:'My place'}});feed.unshift(s);exact.unshift(s);return {ok:true,id:s.id};},
- spot_box_visibility_set:b=>({ok:true}),
+ spot_box_set:b=>({ok:true}),
  spot_get:b=>({ok:true,spot:[...feed,...exact,...future].find(s=>s.id===b.p_id)})};
 const tables={profiles:[{pseudo:'wah'}]};
 const browser=await launch({videoFile:process.env.SPACE_CAMERA_FIXTURE});
@@ -48,9 +48,9 @@ try{
  await pg.click('[data-plan-h="0"]');
  ok(await pg.locator('[data-pvis]').count()===0 && await pg.locator('[data-ploc]').count()===0 && await pg.locator('#p-date').count()===0,'future editor has no PRIVATE/SHARED or OFF choice');
  ok(await pg.locator('[data-pmode]').count()===2 && /ON.*for my subscribers/s.test(await pg.textContent('#plan-body')),'future location is always ON for my subscribers');
- const mini=pg.locator('#plan-body [data-box-group="objectives"]');
- ok(await mini.getAttribute('aria-pressed')==='false','objectives default to hidden inside the selected box');
- await mini.click();ok(await pg.locator('#plan-body .mini.m-o').count()===1 && await pg.locator('#plan-body [data-box-group="repulsions"]').getAttribute('aria-pressed')==='false','objectives and repulsions are independent mini-box toggles');
+ const mini=pg.locator('#plan-body [data-box-el="o"]');
+ ok(await mini.getAttribute('aria-pressed')==='true'&&await pg.locator('#plan-body .is-off').count()===0,'the selected Habit Box arrives as it is, every element on (12/10)');
+ await pg.click('#plan-body [data-box-el="r"]');await pg.click('#plan-body [data-box-el="f"]');ok(await pg.locator('#plan-body .mini.m-r.is-off').count()===1&&await pg.locator('#plan-body .v-frq.is-off').count()===1&&await pg.locator('#plan-body .mini.m-o.is-off').count()===0&&(await state()).view==='plan'&&await pg.locator('#plan-body .plan-habit').count()===1,'a tap switches off one element (and the rhythm) without leaving the box');
  await pg.click('[data-pmode="social"]');ok(await pg.locator('#p-date').count()===1 && await pg.locator('#p-dur').count()===1,'mode reveals future time and duration');
  await pg.click('[data-plan-place]');await settle();ok((await state()).radar.pin,'place selection uses the radar');
  const map=await box('radar-map');r=(await state()).radar;ok(Math.abs(map.w-r.radius*2)<3 && Math.abs(map.x+map.w/2-r.cx)<3,'map is clipped to the radar circle');
@@ -59,7 +59,7 @@ try{
  await pg.click('[data-pdur="45"]');await pg.fill('#p-say','Bring water');await settle();
  await pg.screenshot({path:OUT+'/space_future_editor.png'});await pg.click('[data-plan-send]');await view('list');
  const scheduled=log.rpc.find(c=>c.name==='spot_schedule');ok(Math.abs(scheduled.body.p_lat-38.7223)<.1 && Math.abs(scheduled.body.p_lng+9.1393)<.1,'radar place picking preserves actual coordinates');ok(scheduled?.body.p_place==='Ribeira steps' && scheduled.body.p_mode==='social' && scheduled.body.p_location==='on','future location and progressive choices are submitted');
- const groups=log.rpc.find(c=>c.name==='spot_box_visibility_set');ok(groups?.body.p_objectives===true && groups.body.p_repulsions===false,'publication sends independent mini-box visibility to the server');
+ const groups=log.rpc.find(c=>c.name==='spot_box_set');ok(groups?.body.p_hide.repulsions.join()==='Stay indoors' && !groups.body.p_hide.objectives.length && groups.body.p_hide.freq===true,'publication sends what was switched off, by text (spot_box_set)');
  await pg.keyboard.press('Escape');await pg.click('#joy-box');await view('radar');
  await pg.click('#cur-b');await view('cam');await pg.waitForFunction(()=>window.__totehm_club().rec.step==='idle');ok(!(await state()).rec.camera,'entering the camera never turns the sensor on');await pg.click('#joy-box');await pg.waitForFunction(()=>window.__totehm_club().rec.step==='ready');await pg.waitForTimeout(1500);ok((await state()).rec.step==='ready','the red point turns the sensor on, never recording automatically');
  const joy=await box('joy-box');ok(['x','y','w','h'].every(k=>Math.abs(joy[k]-radarJoystick[k])<.1),'camera control keeps the radar joystick position and dimensions');

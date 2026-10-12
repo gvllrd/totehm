@@ -422,6 +422,9 @@ body.v-cam #joy-say{background:rgba(0,0,0,.82);border-radius:var(--r);padding:1p
 .sp-by b{font:400 13px/1.4 var(--q);color:var(--coral)}.sp-empty{padding:18px 0;text-align:center;color:var(--dim);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
 body.v-past #heading{--tp:58px;top:calc(14px + var(--top))}body.v-past #tp-hint,body.v-past #member{display:none}
 @media(min-width:900px){#v-past{inset:0 auto 0 0;width:var(--panel-w);transform:translateX(-101%)}#v-past.is-on{transform:none}body.v-past #heading{left:0;right:calc(100% - var(--panel-w))}#past{padding-top:calc(96px + var(--top));padding-bottom:26px}}
+/* 12/10 — un élément éteint dans la publication : il reste à sa place, pâli ; un tap le rallume. */
+[data-box-el]{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mini.is-off,.v-frq.is-off{opacity:.3;filter:grayscale(1);text-decoration:line-through}
 </style>
 <style data-ecosystem-ui="2026-10-05">
 
@@ -709,7 +712,7 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
 const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query=' + Number(lat).toFixed(5) + '%2C' + Number(lng).toFixed(5);
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD='2026-10-11-club-from-space';
+const BUILD='2026-10-12-club-box';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'radar';
@@ -719,9 +722,9 @@ const EX = { list:[], seq:0, match:'all' };
 const LIST = { list:[], seq:0, more:false, loading:false, match:'all' };
 /* SPACE → SPOT (11/10 bis) : un space arrive avec sa Habit, et sa ville si c'est le mien. */
 const PRE = { habit:'', city:'' };
-const PLAN = { seq:0, context:null, details:false, habit:null, date:'', time:'', pos:null, place:'', city:null, cityText:'', cityPos:null, video:null, fileSeq:0, dur:null, vis:'shared', mode:null, loc:'on', boxOptions:{objectives:false,repulsions:false}, say:'', busy:false };
+const PLAN = { seq:0, context:null, details:false, habit:null, date:'', time:'', pos:null, place:'', city:null, cityText:'', cityPos:null, video:null, fileSeq:0, dur:null, vis:'shared', mode:null, loc:'on', boxOptions:boxNew(), say:'', busy:false };
 let habitsPending = null, gestureCount = 0, suppressClickUntil = 0;
-const REC = { seq:0, step:null, stream:null, mr:null, blob:null, url:null, mime:'', t0:0, timer:0, seconds:0, uploaded:null, habit:null, vis:'shared', boxOptions:{objectives:false,repulsions:false}, pos:null, city:null, placeAt:0, placePromise:null, placeError:false,
+const REC = { seq:0, step:null, stream:null, mr:null, blob:null, url:null, mime:'', t0:0, timer:0, seconds:0, uploaded:null, habit:null, vis:'shared', boxOptions:boxNew(), pos:null, city:null, placeAt:0, placePromise:null, placeError:false,
   mode:null, loc:null, dur:null, busy:false, capture:null, width:0,height:0,fps:0,bitrate:0,path:null, forPlan:false, kind:null, why:false };
 let HABITS = null, DETAIL = null;
 const VIDEO_METRICS={firstFrameMs:0,uploadMs:0,publishMs:0,warmStarts:0,coldStarts:0,stalls:0};
@@ -751,17 +754,31 @@ function placeHTML(s){
   return sdTag(esc(s.city || 'somewhere'));
 }
 const intHTML = l => (l || []).map(i => '<span class="v-int" style="color:'+icol(i)+'" title="'+esc(INTS[i]?.def)+'">'+esc(INTS[i]?.n || i)+'</span>').join('');
+/* 12/10/2026 — LA BOX TELLE QUELLE. Ce qui vient du TOTEHM garde le format du TOTEHM (Wah).
+   options = { hide:{o:[textes], r:[textes], freq} } dans la publication : la box s'affiche entière,
+   chaque mini-box et le rythme s'éteignent puis se rallument d'un tap (`is-off`) ; rien n'est
+   éteint par défaut ; le lieu habituel, jamais publié, n'y figure pas. options = 'hz' dans le fil :
+   chaque élément ouvre son horizon. Sans options : lecture. */
+function boxNew(){ return { hide:{ o:[], r:[], freq:false } }; }  // déclaration : REC et PLAN l'appellent plus haut
+const offIn = (list, t) => (list || []).some(x => x.toLowerCase() === String(t || '').trim().toLowerCase());
 function contextHTML(h,options,prefix){
+ const edit = !!(options && typeof options === 'object' && options.hide), hz = options === 'hz';
  return ['objectives','repulsions'].map(k => {
-  const list=(h?.[k] || []).filter(x => String(x.text || '').trim()); if(!list.length) return '';
-  const label=k === 'objectives' ? 'OBJECTIVES' : 'REPULSIONS', active=!!options?.[k];
-  const head=options ? '<button type="button" class="mini-toggle m-'+(k === 'objectives' ? 'o' : 'r')+(active ? ' is-on' : '')+'" data-box-group="'+k+'" data-box-scope="'+prefix+'" aria-pressed="'+active+'">'+label+'</button>' : '<span class="mg-l">'+label+'</span>';
-  return '<span class="mg">'+head+(!options || active ? '<span class="minis">'+list.map(x => '<span class="mini m-'+(k === 'objectives' ? 'o' : 'r')+'">'+esc(x.text)+'</span>').join('')+'</span>' : '')+'</span>';
+  const kk = k === 'objectives' ? 'o' : 'r';
+  const list = (h?.[k] || []).map((x,i) => ({ text:String(x.text || '').trim(), i })).filter(x => x.text); if(!list.length) return '';
+  return '<span class="mg"><span class="mg-l">' + (k === 'objectives' ? 'OBJECTIVES' : 'REPULSIONS') + '</span><span class="minis">' + list.map(x => {
+   const off = edit && offIn(options.hide[kk], x.text);
+   const attr = edit ? ' role="button" tabindex="0" data-box-el="' + kk + '" data-box-i="' + x.i + '" aria-pressed="' + !off + '"'
+              : hz ? ' role="button" tabindex="0" data-hz="' + kk + '" data-hz-i="' + x.i + '"' : '';
+   return '<span class="mini m-' + kk + (off ? ' is-off' : '') + '"' + attr + '>' + esc(x.text) + '</span>';
+  }).join('') + '</span></span>';
  }).join('');
 }
 function habitInner(h,options,prefix){
+ const edit = !!(options && typeof options === 'object' && options.hide), off = edit && !!options.hide.freq;
  const configured=h.step ? (Array.isArray(h.step.is) ? h.step.is : h.step.i ? [h.step.i] : []) : h.ints;
- const meta=intHTML(configured)+(String(h.freq || '').trim() ? '<span class="v-frq">'+esc(FREQ[h.freq] || h.freq)+'</span>' : '')+(String(h.place || '').trim() ? '<span class="v-frq">'+esc(h.place)+'</span>' : '');
+ const freq = String(h.freq || '').trim() ? '<span class="v-frq' + (off ? ' is-off' : '') + '"' + (edit ? ' role="button" tabindex="0" data-box-el="f" aria-pressed="' + !off + '"' : '') + '>' + esc(FREQ[h.freq] || h.freq) + '</span>' : '';
+ const meta=intHTML(configured)+freq+(!edit && String(h.place || '').trim() ? '<span class="v-frq">'+esc(h.place)+'</span>' : '');
  return '<span class="v-name">'+esc(h.name)+'</span>'+(meta ? '<span class="v-sub">'+meta+'</span>' : '')+contextHTML(h,options,prefix);
 }
 /* La Habit Box reste la boîte de COM ; tout ce qui est « space » vit dessous,
@@ -1451,15 +1468,23 @@ function sharingHTML(x,prefix){
 }
 const habitWhy=h=>!!(h?.objectives?.length || h?.repulsions?.length);
 const sharingDone=x=>x.loc==='off' || x.loc==='on' && !!x.mode;
+/* 12/10 — un élément de la box se rallume / s'éteint aussi au clavier, avant la boîte qui l'entoure. */
+document.addEventListener('keydown', e => {
+  if((e.key === 'Enter' || e.key === ' ') && e.target instanceof Element && e.target.matches('[data-box-el]')){ e.preventDefault(); e.stopPropagation(); e.target.click(); }
+}, true);
 function boxOptionsClick(t,x){
- const b=t.closest('[data-box-group]'); if(!b) return false;
- const k=b.dataset.boxGroup; if(!['objectives','repulsions'].includes(k)) return false;
- x.boxOptions ||= {objectives:false,repulsions:false}; x.boxOptions[k]=!x.boxOptions[k]; return true;
+ const b=t.closest('[data-box-el]'); if(!b || !x.habit) return false;
+ x.boxOptions ||= boxNew(); const hd = x.boxOptions.hide, k = b.dataset.boxEl;
+ if(k === 'f'){ hd.freq = !hd.freq; return true; }
+ const item = (x.habit[k === 'o' ? 'objectives' : 'repulsions'] || [])[+b.dataset.boxI], txt = String(item?.text || '').trim(); if(!txt) return false;
+ const at = hd[k].findIndex(v => v.toLowerCase() === txt.toLowerCase()); if(at >= 0) hd[k].splice(at,1); else hd[k].push(txt);
+ return true;
 }
+/* Un space ou un spot NAÎT CACHÉ (serveur) : cet appel, toujours fait, montre ce qui reste allumé. */
 async function publishBoxOptions(id,x){
- if(!x.boxOptions?.objectives && !x.boxOptions?.repulsions) return true;
- const r=await sb.rpc('spot_box_visibility_set',{p_spot:id,p_objectives:!!x.boxOptions.objectives,p_repulsions:!!x.boxOptions.repulsions});
- if(r.error) console.error('[spot_box_visibility_set]',r.error.message); return !r.error && !!r.data?.ok;
+ const hd = x.boxOptions?.hide || boxNew().hide;
+ const r=await sb.rpc('spot_box_set',{p_spot:id,p_hide:{objectives:hd.o,repulsions:hd.r,freq:!!hd.freq}});
+ if(r.error) console.error('[spot_box_set]',r.error.message); return !r.error && !!r.data?.ok;
 }
 function durationHTML(x,prefix,id){ return '<div class="row"><span class="lab">DURATION</span>'+DURS.map(d=>chip('data-'+prefix+'dur="'+d+'"',fmtDur(d),x.dur===d)).join('')+'<input class="field" id="'+id+'" type="number" inputmode="numeric" min="'+RULES.duration_min+'" max="'+RULES.duration_max+'" aria-label="Duration in minutes" placeholder="min" value="'+(x.dur && !DURS.includes(x.dur) ? x.dur : '')+'"></div>'; }
 
@@ -1547,7 +1572,7 @@ async function planOpen(){
   });
   await loadHabits();
   if(PRE.habit && HABITS?.length && !PLAN.habit){ const k = fold(PRE.habit), h = HABITS.find(x => fold(x.name) === k);
-    if(h){ PLAN.habit = h; PLAN.context = h; PLAN.boxOptions = {objectives:false,repulsions:false}; } PRE.habit = ''; }
+    if(h){ PLAN.habit = h; PLAN.context = h; PLAN.boxOptions = boxNew(); } PRE.habit = ''; }
   if(VIEW === 'plan') planPaint();
 }
 $('plan-body').addEventListener('input', e => {
@@ -1567,7 +1592,7 @@ $('plan-body').addEventListener('click', e => {
   if(boxOptionsClick(e.target,PLAN)) return planPaint();
   const t = e.target;
   if(t.closest('[data-plan-signin]')) return ssoLogin(false, '/?' + new URLSearchParams({ v:'plan', ...(PRE.habit ? { habit:PRE.habit } : {}), ...(PRE.city ? { city:PRE.city } : {}) }));
-  const h=t.closest('[data-plan-h]'); if(h){ PLAN.habit=HABITS[+h.dataset.planH]; PLAN.context=PLAN.habit; PLAN.boxOptions={objectives:false,repulsions:false}; return planPaint(); }
+  const h=t.closest('[data-plan-h]'); if(h){ PLAN.habit=HABITS[+h.dataset.planH]; PLAN.context=PLAN.habit; PLAN.boxOptions=boxNew(); return planPaint(); }
   if(t.closest('[data-plan-cancel]')) return go('radar');
   if(t.closest('[data-plan-reh]')){ PLAN.seq++; PLAN.habit = null; PLAN.context = null; return planPaint(); }
   if(t.closest('[data-plan-place]')) return mapOpen();
@@ -1669,7 +1694,7 @@ async function planSend(){
   if(v?.ref){ const r = await sb.rpc('spot_video_attach', { p_spot:data.id, p_video:v.ref }); if(r.error) console.error('[spot_video_attach]', r.error.message); linked = !r.error && !!r.data?.ok; }
   why=await publishBoxOptions(data.id,PLAN);
   PLAN.busy = false;
-  PLAN.habit = null; PLAN.say = ''; PLAN.pos = null; PLAN.place = ''; PLAN.dur = null; PLAN.boxOptions={objectives:false,repulsions:false}; planVideoDrop();
+  PLAN.habit = null; PLAN.say = ''; PLAN.pos = null; PLAN.place = ''; PLAN.dur = null; PLAN.boxOptions=boxNew(); planVideoDrop();
   await Promise.all([loadExact(),loadList()]); loadPast(false); go('list');
   // The new spot appears in the agenda, with its own gestures — no second sheet.
   const it = $('list').querySelector('.it[data-id="' + CSS.escape(data.id) + '"]');
@@ -1751,7 +1776,7 @@ function camStop(){
 function camReset(){
   REC.seq++; if(REC.mr){ REC.mr.onstop = null; REC.mr.ondataavailable = null; REC.mr.onstart=null;REC.mr.onerror=null; }
   camStop(); if(REC.url) URL.revokeObjectURL(REC.url);
-  Object.assign(REC, { step:null, kind:null, why:false, boxOptions:{objectives:false,repulsions:false}, pos:null,city:null,placeAt:0,placePromise:null,placeError:false, mr:null, blob:null, url:null, habit:null, mode:null, loc:null, dur:null, busy:false,seconds:0,uploaded:null,width:0,height:0,fps:0,bitrate:0,path:null });
+  Object.assign(REC, { step:null, kind:null, why:false, boxOptions:boxNew(), pos:null,city:null,placeAt:0,placePromise:null,placeError:false, mr:null, blob:null, url:null, habit:null, mode:null, loc:null, dur:null, busy:false,seconds:0,uploaded:null,width:0,height:0,fps:0,bitrate:0,path:null });
   const v = $('cam-v'); v.pause(); v.removeAttribute('src'); v.srcObject = null;
   const ph = $('cam-photo'); ph.classList.add('hide'); ph.removeAttribute('src');
   $('cam-n').textContent = ''; $('cam-sec').classList.add('hide'); camState();
@@ -1879,7 +1904,7 @@ $('cam-body').addEventListener('click', e => {
   if(t.closest('[data-cancel]')){ const back = REC.forPlan ? 'plan' : 'radar'; camReset(); return go(back); }
   const start = t.closest('[data-start]'); if(start) return camOpen(start.dataset.start);
   if(t.closest('[data-again]')) return camOpen(REC.kind || 'video');
-  const hk = t.closest('[data-h]'); if(hk){ REC.habit = HABITS[+hk.dataset.h]; REC.boxOptions={objectives:false,repulsions:false}; REC.step = 'form'; return camPaint(); }
+  const hk = t.closest('[data-h]'); if(hk){ REC.habit = HABITS[+hk.dataset.h]; REC.boxOptions=boxNew(); REC.step = 'form'; return camPaint(); }
   if(t.closest('[data-reh]')){ REC.step = 'habit'; return camPaint(); }
   const mo = t.closest('[data-mode]'); if(mo){ REC.mode = mo.dataset.mode; return camPaint(); }
   const lo = t.closest('[data-loc]'); if(lo){ REC.loc = lo.dataset.loc; REC.mode=null; camPaint(); recResolvePlace(); return; }

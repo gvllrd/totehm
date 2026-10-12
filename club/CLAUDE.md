@@ -1,5 +1,13 @@
 # club/CLAUDE.md — figher.club : la rencontre dans la réalité (09/10)
 
+## 12/10/2026 — la box telle quelle dans le plan et la caméra
+
+BUILD `2026-10-12-club-box`. Même bloc que SPACE (copié) : `contextHTML`/`habitInner`/`boxNew`/`boxOptionsClick`/
+`publishBoxOptions`. Plan (`PLAN`) et caméra (`REC`) : la Habit Box choisie arrive entière, chaque mini-box et le
+rythme s'éteignent d'un tap sans quitter la box (le clic d'un élément passe avant `data-plan-reh`) ; puis le format
+du Club (Location, Together, When, Where, durée, un mot, média). Après `spot_schedule` / `spot_create` :
+`spot_box_set`. Tests : `club_map` 42, `club_publish` 33.
+
 ## 11/10/2026 (bis) — le prolongement de SPACE : un space devient un spot
 
 BUILD `2026-10-11-club-from-space`.

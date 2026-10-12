@@ -34,7 +34,7 @@ try{
  const rpc={spot_rules:{clip_seconds:2,clip_max_bytes:48000000,duration_min:5,duration_max:720,horizon_days:90,video_provider:'storage'},space_habits:{ok:true,habits:[habit]},
   space_discover:b=>({spots:b.p_view==='feed'?feed:b.p_view==='list'?future:[],more:false}),
   spot_create:b=>{calls.push({name:'create',body:b});return {ok:true,id:'made-'+(++id)};},
-  spot_box_visibility_set:b=>{calls.push({name:'why',body:b});return {ok:true};},
+  spot_box_set:b=>{calls.push({name:'why',body:b});return {ok:true};},
   spot_schedule:(b,log)=>{calls.push({name:'schedule',uploads:log.upload.length,body:b});const s=make('plan-'+(++id),1440,{mine:true,visibility:b.p_visibility,location:b.p_location,mode:b.p_mode,city:b.p_city,exact:{lat:b.p_lat,lng:b.p_lng,place:b.p_place}});return {ok:true,id:s.id};},
   spot_video_attach:b=>{calls.push({name:'attach',body:b});return {ok:true};},
   spot_get:b=>({ok:true,spot:make(b.p_id,1440,{mine:true})})};
@@ -76,8 +76,8 @@ try{
  await toPlan();if(await pg.locator('[data-plan-unpin]').count())await pg.click('[data-plan-unpin]');await pg.click('[data-pmode="silent"]');await pg.click('[data-pdur="30"]');
  ok(await pg.$eval('[data-plan-send]',b=>b.disabled) && /exact point/.test(await pg.textContent('#p-note')),'SHARED·ON without the exact point cannot be sent');
  ok(await pg.locator('[data-ploc]').count()===0,'future spots have no OFF toggle');
- ok(await pg.locator('[data-box-group]').count()===2,'SHARED with a WHY · TRIGGER offers to show it (hidden by default)');
- await pg.click('[data-pmode="social"]');await pg.click('[data-box-group="objectives"]:visible');await pg.click('[data-plan-place]');await pg.waitForTimeout(400);await pg.click('#place-use');await pg.waitForTimeout(400);
+ ok(await pg.locator('#plan-body [data-box-el="o"]').count()===1&&await pg.locator('#plan-body [data-box-el="r"]').count()===1&&await pg.locator('#plan-body .is-off').count()===0,'the box comes as it is: WHY and TRIGGER on, a tap switches one off (12/10)');
+ await pg.click('[data-pmode="social"]');await pg.click('#plan-body [data-box-el="r"]');await pg.click('[data-plan-place]');await pg.waitForTimeout(400);await pg.click('#place-use');await pg.waitForTimeout(400);
  ok((await state(pg)).plan.exact && !await pg.$eval('[data-plan-send]',b=>b.disabled),'the map point completes SHARED·ON (city AND map)');
  // Film it: the SPACE camera, then back to TOP with the clip.
  await pg.click('[data-plan-film="video"]');await pg.waitForFunction(()=>window.__totehm_club().rec.step==='ready');
@@ -106,7 +106,7 @@ try{
  await pg.screenshot({path:out+'/space_bottom_photo.png'});
  await pg.click('#joy-box');await pg.waitForFunction(()=>window.__totehm_club().rec.step==='habit');
  ok(await pg.isVisible('#cam-photo') && !(await state(pg)).rec.camera,'the still is shown and the sensor is off again');
- await pg.click('[data-h="0"]');await pg.click('[data-loc="on"]');await pg.click('[data-mode="social"]');await pg.click('[data-box-group="objectives"]:visible');await pg.click('[data-dur="30"]');
+ await pg.click('[data-h="0"]');await pg.click('[data-loc="on"]');await pg.click('[data-mode="social"]');await pg.click('[data-dur="30"]');
  const ups=log.upload.length;await pg.click('[data-send]');await pg.waitForFunction(()=>window.__totehm_club().view==='radar');await pg.waitForTimeout(300);
  const made=calls.filter(c=>c.name==='create').at(-1);
  ok(log.upload.length===ups+1 && /\.jpg$/.test(log.upload.at(-1).path) && /\.jpg$/.test(made.body.p_video) && calls.filter(c=>c.name==='why').at(-1)?.body.p_spot==='made-'+id,'the photo is stored as .jpg, the space published, its WHY shown');
