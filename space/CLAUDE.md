@@ -1,5 +1,24 @@
 # space/CLAUDE.md — totehm.space : le réseau social de l'Habit stratégique (croix de cinq vues)
 
+## 12/10/2026 (bis) — pur TikTok ; dans totehm.com
+
+BUILD `2026-10-12-space-plateforme`. Wah : « totehm.space, pur TikTok qui reprend les spaces de COM ; SPACE et le
+Club doivent vivre sur totehm.com ».
+- **Le fil est le centre** : `CROIX = { feed:{g:'home',b:'cam',d:'me',h:'vibes'}, home:{d:'feed'}, cam:{h:'feed'},
+  me:{g:'feed'}, vibes:{b:'feed'} }`, `VIEW` naît `feed` (balisage `v-feed`). Le centre de la manette au fil ouvre
+  la caméra ; Échap et CANCEL ramènent au fil. `home` (le pouls) passe à gauche, sans phrase (`#home-what` parti),
+  portes TOTEHM.COM · FIGHER.CLUB.
+- **Dans totehm.com** (bloc « DANS TOTEHM.COM », copié à l'identique dans `club/`) : `EMBED` = cadre de la même
+  origine + `?embed`. Pas de pont : `ssoLogin` → `signin`, `ssoVersDomaine` → `go` à COM ; pas de connexion
+  silencieuse. `boot()` s'arrête après la session et dit `ready` (ni fil, ni vidéo, ni `create-bunny-upload`) ;
+  la première commande `charger()`. `suivre(p)` = ce que demande l'adresse ou COM (`spot`, `u`, `v`, `habit`).
+  `WANT_HABIT` : à l'étape Habit de la caméra, la Habit du même nom est prise d'office (`camPaint`). `sleep` :
+  fiche, filtre, horizon refermés, retour au fil, vidéos coupées. `#x-back` (× en haut à gauche, z 130) et Échap
+  sans rien d'ouvert → `close` ; le menu de compte est caché (COM le tient). Session changée → `stale`.
+- **Noms** : `.tname` et `#tp-name` sur le navy, plus de boîte noire.
+- Tests : `com_plateforme` §2–3 ; `space`, `space_top_left`, `spaces_loupe`, `space_boxes_ecosystem`,
+  `space_spot_links` relus pour le fil au centre.
+
 ## 12/10/2026 — la box TELLE QUELLE ; un tap éteint un élément (remplace la « boîte éparpillée »)
 
 BUILD `2026-10-12-space-box`. Wah : « il ne faut pas séparer les objectifs de l'habitude dans sa box dans le feed » ;

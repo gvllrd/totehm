@@ -1,5 +1,21 @@
 # BRAND.md — TOTEHM
 
+## CURRENT UPDATE — 12/10/2026 (bis) · one platform, as few words as possible
+
+- **The design speaks, not a sentence** (Wah: « ultra-minimalist, it speaks for itself »). Withdrawn: the
+  centre's *[Higher] STRATEGY* and its why line, *My TotehmPaper is mine…* and the THP paragraph, TotehmSM's
+  taglines and *Wassup ?*, the right view's paragraphs (three doors: SPACE · HIGHER BOUTIQUE · FIGHER.CLUB),
+  SPACE's *no selfie, no music…*, figher.club's *meet in reality…*, the search hint. This replaces the
+  11/10 rule « every home recalls the why ».
+- **The TOTEHM's name lives on the paper**: Quantico Coral written on the navy of the TotehmPaper (under EHM
+  on totehm.com's centre) — never in a black box. Wherever a name is framed: navy #333366, square.
+- **totehm.com is the platform**: a space or a spot opens in place, over my TOTEHM, and closes back to it
+  (× · Escape · back). *+ a space* films for THAT Habit; *+ a spot* plans for THAT Habit.
+- **totehm.space = the feed first** (pure TikTok) · **figher.club = the radar** ([Higher] SPOTS, nothing else).
+- **TotehmSM is a mirror, not a chat**: my last words in grey, one answer = one square box in the colour of
+  what it is (habit · objective · repulsion), the next replaces it. Placeholder: *what is in the way?*
+- totehm.com's cross: **← Get Higher** (was ↑) · **↑ search a TOTEHM** (was ←).
+
 ## CURRENT UPDATE — 12/10/2026 · what comes from the TOTEHM stays as it is
 
 - **The Habit Box is never taken apart.** In the feed of totehm.space and on figher.club it is the box of

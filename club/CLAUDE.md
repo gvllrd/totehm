@@ -1,5 +1,13 @@
 # club/CLAUDE.md — figher.club : la rencontre dans la réalité (09/10)
 
+## 12/10/2026 (bis) — pur radar ; dans totehm.com
+
+BUILD `2026-10-12-club-plateforme`. Centre : [Higher] SPOTS + le radar, sans phrase. Même bloc « DANS TOTEHM.COM »
+que SPACE (copié) : en cadre, `boot()` ne demande NI la position NI les spots (`DORT`, aucune image du radar) et dit
+`ready` ; la première commande : `prendre(p)` (Habit/ville d'un plan, filtre de l'agenda) puis `charger()` (position,
+spots, radar, minuterie 30 s) puis `suivre(p)`. `sleep` : retour au radar, plan vidé (Habit, ville, vidéo), radar
+arrêté, vidéos de l'agenda coupées. Noms sur le navy. Test : `com_plateforme` §2 (spot sur place, + a spot sur la Habit).
+
 ## 12/10/2026 — la box telle quelle dans le plan et la caméra
 
 BUILD `2026-10-12-club-box`. Même bloc que SPACE (copié) : `contextHTML`/`habitInner`/`boxNew`/`boxOptionsClick`/
@@ -114,7 +122,7 @@ Prix, commandes, THP et droits existants inchangés.
 
 ## ⛔ IDENTITÉ MEMBRE · 03/10/2026
 
-Noms du Totehm en Quantico Coral #fbd5ca, y compris au survol, sans point/carré d'état. Lire le vrai pseudo depuis le profil du compte, jamais fabriquer un nom avec le préfixe de l'email. Supprimer les T statiques centrés dans les espaces membres ; conserver Higher, les œuvres et le papier de marque. Quand un nom est encadré, fond noir arrondi, sans tuile perforée. Cette règle de Wah remplace les anciennes restrictions « Coral seulement Stoner/Get » pour l'identité. Protocoles de connexion/SSO, accès THP et prix inchangés. Sur les anciens menus de Get Higher, Stoner et Boutique, le callback auth reste synchrone ; lecture profil différée avec setTimeout pour éviter le verrou Supabase (getSession/RPC dans un callback async pouvait figer le nom sur Guest).
+Noms du Totehm en Quantico Coral #fbd5ca, y compris au survol, sans point/carré d'état. Lire le vrai pseudo depuis le profil du compte, jamais fabriquer un nom avec le préfixe de l'email. Supprimer les T statiques centrés dans les espaces membres ; conserver Higher, les œuvres et le papier de marque. Quand un nom est encadré : le navy du papier #333366, carré (12/10, Wah : « pas de boîte noire pour le nom »), sans tuile perforée. Cette règle de Wah remplace les anciennes restrictions « Coral seulement Stoner/Get » pour l'identité. Protocoles de connexion/SSO, accès THP et prix inchangés. Sur les anciens menus de Get Higher, Stoner et Boutique, le callback auth reste synchrone ; lecture profil différée avec setTimeout pour éviter le verrou Supabase (getSession/RPC dans un callback async pouvait figer le nom sur Guest).
 
 > Chargé automatiquement quand on travaille dans `club/`. Les règles
 > transverses sont dans le `CLAUDE.md` de la racine ; l'histoire dans

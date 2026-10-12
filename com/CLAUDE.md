@@ -1,5 +1,37 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 12/10/2026 — UNE PLATEFORME : SPACE et le Club sur place, le moins de mots possible
+
+BUILD `2026-10-12-com-plateforme`. Wah : « l'application doit être ultra-minimaliste et parler d'elle-même » ·
+« pas de boîte noire pour le nom » · « des erreurs dans le joystick de COM au trackpad, réfère-toi à SPACE » ·
+« la vue d'en haut devient la vue de gauche » · « SPACE et le Club doivent vivre sur totehm.com ; un clic sur un
+de mes spaces ou un de mes spots me redirige vers une autre page alors que la fluidité est LA chose la plus importante ».
+- **Partis** : `#lv-why` et `--lv-why-h`, « Strategy » (`.lvs-strat` : le slogan est invisible au centre), le
+  paragraphe du THP / « My TotehmPaper is mine… » (`#lv-h-say`, `peindreHaut`), `#lv-b-tag`, « Wassup ? », les
+  paragraphes de la droite (trois boutons : SPACE · HIGHER BOUTIQUE · FIGHER.CLUB), `#srch-hint`.
+- **Le nom sur le papier** : `#ast-sig` (dans `#ast-front`, hors des quatre calques), Quantico Coral sous « EHM »,
+  mesuré par `paintAsteroid()` (9 → 5,5 px), effacé dès la déconstruction. Nommé, `#name-btn.claimed` est caché ;
+  on renomme en touchant son nom dans l'espace membre (`#mw-who`). Partout ailleurs (`.tname`, `.srch-name`,
+  `#srch-q`, `.ast-say`) : navy `#333366`, carré, jamais `#000`.
+- **La croix** : `CROIX_L={c:{g:'h',h:'g',b:'b',d:'d'}, h:{d:'c'}, g:{b:'c'}, …}` — Get Higher à GAUCHE, la
+  recherche EN HAUT (les noms des vues ne changent pas). `#ljoy-box.hors` = `h`, `d`.
+- **Le trackpad = SPACE**, aux trois endroits (atterrissage, `#ljoy`, Totehm déplié + `#joy`) : `deltaX > 0` → la
+  vue de DROITE (le contenu), 75 px en X / 70 en Y (160 au plus par événement), remis à zéro après 180 ms, verrou
+  350 ms prolongé de 260 ms par l'inertie, `preventDefault` (le navigateur ne recule pas d'une page).
+- **TotehmSM = un miroir** : ma dernière phrase en gris (`.sm-q`), SA réponse = UNE boîte carrée à la couleur de ce
+  qu'elle est ; la suivante remplace la précédente (les tours partent encore au modèle, invisibles).
+- **La couche `XO`** (`#xo`, z 400) : `com/vercel.json` réécrit `/x/space` → totehm.space, `/x/club` →
+  figher.club, `/vendor/*`, `/video-capture.mjs`, `/cities.json` → totehm.space ; `Permissions-Policy`
+  camera/microphone = `(self)`. Deux cadres `?embed=1` créés 3 s après l'arrivée d'un membre (au repos), chacun
+  dit `ready` sans rien charger. `[data-space]` → `XO.ouvrir(space|club,'spot=ID')` ; `+ a space` →
+  `v=cam&habit=<la Habit>` ; `+ a spot` → `v=plan&habit=…` ; My spaces, SPACE, FIGHER.CLUB de la droite aussi.
+  Fermer (×, Échap, « précédent » : `pushState`) → `sleep` au cadre, `loadHabitSpaces()`. `go` d'un cadre :
+  space/club sur place, `/totehm` = fermer, autre chemin COM = navigation, boutique = pont. Un autre compte jette
+  les cadres. ⚠️ **Leur client Supabase annonce SIGNED_IN sur le canal de l'origine** : COM ignore désormais
+  SIGNED_IN/TOKEN_REFRESHED du MÊME compte (sinon il relisait tout et la boîte ouverte se refermait).
+  Diagnostic `__totehm_xo()`. La boutique reste par le pont (Stripe ne s'ouvre pas dans un cadre).
+- Tests : `com_plateforme` 27/27 (nouveau).
+
 ## 11/10/2026 — le pourquoi au centre, le code qui ne vide rien, l'invité
 
 BUILD `2026-10-11-com-guest`.

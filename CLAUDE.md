@@ -63,13 +63,13 @@ Les `CLAUDE.md` des dossiers servis par Vercel sont exclus du déploiement (`.ve
 ## L'architecture — quatre domaines, une source, quatre fonctions (09/10/2026)
 
 ```
-com/      → www.totehm.com       LA STRATÉGIE, LA SOURCE : le Totehm (5 vues), l'identité (/auth), /search, /@nom ;
-                                 l'atterrissage en croix (07/10, manette) : mon Totehm · ↑ Get Higher (la langue)
-                                 · ↓ TotehmSM (Higher Self : 7 gratuits/30 j puis Higher) · ← chercher · → SPACE et boutique ; /console
+com/      → www.totehm.com       LA PLATEFORME (12/10) : le Totehm (5 vues), l'identité (/auth), /search, /@nom ; la croix : mon Totehm
+                                 · ← Get Higher · ↑ chercher · ↓ TotehmSM (un miroir, 7/30 j) · → SPACE, club, boutique ; SERT SPACE et le Club
+                                 (`/x/space`, `/x/club`, même origine) dans une couche `XO` : un space ou un spot s'ouvre SUR PLACE ; /console
 club/     → www.figher.club      LA RENCONTRE DANS LA RÉALITÉ, le prolongement de SPACE : [Higher] SPOTS + radar au centre · ↑ annoncer
                                  · ↓ caméra · ← passés · → agenda ; reçoit `?v=plan|list&habit=&city=` (SPOT d'un space) ; /meet ; 308 boutique
-space/    → www.totehm.space     L'INSPIRATION, le réseau social de l'Habit : centre = le concept · ← WATCH (la Habit Box ENTIÈRE, un élément =
-                                 son horizon ; rail VIBE · SPOT · SHARE) · ↓ SHARE · → MY SPACE · ↑ VIBES ; `/s/:id` = l'aperçu partagé (`api/card.js`)
+space/    → www.totehm.space     L'INSPIRATION, pur TikTok (12/10) : centre = le FIL (la Habit Box ENTIÈRE, un élément = son horizon ; rail
+                                 VIBE · SPOT · SHARE) · ← le pouls · ↓ SHARE · → MY SPACE · ↑ VIBES ; `?embed` = dans COM ; `/s/:id` = l'aperçu (`api/card.js`)
 boutique/ → www.higher.boutique  L'ACHAT, physique et numérique (09/10) : Get Higher / THP / Stoner / Lisbon / Origins, le marché
                                  de l'art (/market) ; accueil + collection ; /streetwear (plein écran au téléphone, fenêtres-côtés sur ordinateur) : cloth →
                                  element (wisdom ← → vision, ou « + totehmize » depuis COM) → 0.nom → style → taille ; Luxe SUR DEVIS ; Decode = la page du Cloth
@@ -187,7 +187,7 @@ My spaces (COM, SPACE) + `space-delete` ; une Box WISDOM/VISION de COM montre se
   **Le trackpad change de vue dans les QUATRE sens** (07/10), hors manette aussi :
   nouveau geste (trou de 200 ms) + 130 px ; une liste qui peut défiler garde la molette.
 - Overlays plein écran ancrés EN HAUT (le clavier mobile mange le bas).
-- L'interface est en anglais, mots courts ; termes de marque en anglais. À l'écran « element », jamais « Box » (08/10).
+- L'interface est en anglais, LE MOINS DE MOTS POSSIBLE (12/10 : le design parle, pas une phrase) ; termes de marque en anglais. À l'écran « element », jamais « Box » (08/10).
 - Une règle de comportement ne va jamais dans un `@media`.
 
 ## Doctrine visuelle (état au 03/10)
@@ -207,7 +207,7 @@ My spaces (COM, SPACE) + `space-delete` ; une Box WISDOM/VISION de COM montre se
   se détache par sa VALEUR. Exceptions : la tuile perforée (texture), les
   arêtes d'une boîte en verre 3D, le pointillé d'une place vide. Ombre autorisée sur les Habit Boxes du feed SPACE.
 - **Contrôles** sur les quatre domaines : gris, `border-radius:10px`. **Le
-  nom du Totehm en recherche et au verso = noir arrondi + Quantico Coral**,
+  nom du Totehm = Quantico Coral SUR le navy du papier** (12/10 : plus de boîte noire ; au centre de COM, écrit sur le papier),
   accès membre sans point/carré ni T statique centré. Le papier conserve son navy
   perforé ; « by » reste à côté. Aucun motif perforé comme fond de contrôle, sauf [Decode a Totehm Cloth] au survol et en saisie (tuile navy, 06/10). **Aucun fond
   blanc** sur un bouton, une option, une sélection, un panneau : tout reste

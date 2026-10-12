@@ -302,6 +302,14 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
+### Correction 0.56 — 12/10/2026 (bis) · une plateforme, le moins de mots (à reporter)
+> totehm.com sert SPACE et le Club (`/x/space`, `/x/club`, même origine) dans une couche : un space, un spot,
+> « + a space », « + a spot » s'ouvrent sur place, la Habit déjà choisie. totehm.space arrive dans le fil ;
+> figher.club = le radar. Plus de « [Higher] STRATEGY », de phrase du pourquoi, de texte du THP ; le nom du
+> Totehm est écrit sur le papier navy (plus de boîte noire, nulle part). Croix de COM : ← Get Higher, ↑ chercher.
+> Trackpad de COM lu comme SPACE. TotehmSM = un miroir (une réponse, une boîte). Abonnement mensuel à un
+> créateur et la boutique dans la couche : en attente (voir le rapport du 12/10). Aucun prix, aucune migration.
+
 ### Correction 0.55 — 12/10/2026 · la box telle quelle (à reporter ; remplace la « boîte éparpillée » de 0.54)
 > Dans le fil de SPACE, la Habit Box reste entière (objectifs et répulsions dedans), comme dans COM. À la
 > publication d'un space ou d'un spot, la box choisie apparaît telle quelle, tout allumé : un tap éteint une
