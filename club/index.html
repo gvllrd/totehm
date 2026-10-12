@@ -31,6 +31,12 @@ button,input,textarea,select{font:inherit;color:inherit;color-scheme:dark}
 .hide{display:none!important}
 
 
+/* 12/10 — dans totehm.com : la croix rend le Totehm ; mon compte, c'est COM qui le tient. */
+#x-back{display:none}
+body.is-embed #x-back{display:flex;position:fixed;top:calc(10px + var(--top));left:10px;z-index:130;width:36px;height:36px;align-items:center;justify-content:center;
+  border:0;border-radius:10px;background:rgba(22,22,26,.82);color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent}
+body.is-embed #x-back svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+body.is-embed #member,body.is-embed #menu{display:none!important}
 #member{position:fixed;top:calc(12px + var(--top));left:12px;z-index:96;display:flex;align-items:center;gap:8px;
   background:none;border:none;cursor:pointer;font-family:var(--q);font-weight:700;font-size:12px;color:var(--lo);padding:6px 4px}
 #member i{width:9px;height:9px;border-radius:50%;background:#3a3a40;display:block;flex:none;transition:background .2s,box-shadow .2s}
@@ -285,8 +291,8 @@ body.v-cam.is-form #cam-body{bottom:calc(170px + var(--bot));max-height:calc(100
 body.v-plan #heading,body.v-cam #heading{display:flex}
 #member,#member:hover,#member-txt{font-family:var(--q);font-weight:400;color:#fbd5ca}
 #member i{display:none}
-.tname,.tname:hover{font-family:var(--q);font-weight:400;color:#fbd5ca;background:#000;border:0;border-image:none;border-radius:8px;padding:6px 10px;filter:none}
-#tp-name,#tp-name.is-name,#tp-name:hover,#tp-name.is-name:hover{color:#fbd5ca;background:#000;border-radius:7px;padding:4px 6px;max-width:82%;box-sizing:border-box}
+.tname,.tname:hover{font-family:var(--q);font-weight:400;color:#fbd5ca;background:#333366;border:0;border-image:none;border-radius:0;padding:6px 10px;filter:none}
+#tp-name,#tp-name.is-name,#tp-name:hover,#tp-name.is-name:hover{color:#fbd5ca;background:none;border-radius:0;padding:0;max-width:82%;box-sizing:border-box}
 #tp-hint{margin-top:6px;letter-spacing:.1em;font-size:8px}
 /* 11/10 (bis) — le centre dit ce qu'est le Club, au format de totehm.com et totehm.space. */
 #club-title{display:none;flex-direction:column;align-items:center;gap:8px;margin-top:14px;text-align:center;pointer-events:none}
@@ -500,6 +506,7 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
 <body class="v-radar">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="higher-badge" viewBox="0 0 600 200"><defs><mask id="hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></symbol></svg>
 
+<button id="x-back" type="button" aria-label="Back to my TOTEHM"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg></button>
 <button id="member" type="button" aria-label="Member menu"><i></i><span id="member-txt">CONNECT WITH MY TOTEHM</span></button>
 <nav id="menu" aria-label="Member menu"></nav>
 <button id="space-about" type="button" data-space-about="1">What is a spot?</button>
@@ -534,7 +541,7 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
   </div><!-- /#totehm-paper -->
 <span id="tp-hint"></span>
 </div>
-<div id="club-title"><div class="ct-h"><svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg><b>Spots</b></div><p>meet in reality the people who live your habits</p></div>
+<div id="club-title"><div class="ct-h"><svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg><b>Spots</b></div></div>
 <div id="title" aria-live="polite"><b id="title-int"></b><svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg></div>
 <p id="int-def"></p><button id="habit-filter" class="hide" type="button" aria-haspopup="dialog" aria-expanded="false">Habit Box · all</button></header>
 <aside id="habit-picker" class="hide" role="dialog" aria-label="Select my Habit Box"></aside>
@@ -582,6 +589,20 @@ const FN = SB_URL + '/functions/v1/';
 const $ = id => document.getElementById(id);
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
 
+/* ══ DANS TOTEHM.COM · 12/10/2026 — COPIÉ À L'IDENTIQUE dans space/ et club/ ══════════
+   Wah : « il faut que SPACE et le Club vivent sur totehm.com ; dans mon Totehm, un clic sur un
+   space ou un spot me redirige vers une autre page alors que la fluidité est LA chose la plus
+   importante ». totehm.com sert cette page sous `/x/space` et `/x/club` (réécritures Vercel) :
+   MÊME ORIGINE, donc la même session, aucun pont. Elle vit dans une couche du Totehm (`#xo`),
+   chargée d'avance. `EMBED` n'est vrai que dans un cadre de la même origine avec `?embed`.
+   Le contrat, par `postMessage`, origine vérifiée :
+     COM → ici  {totehm:'x', cmd:'url', q:'spot=ID' | 'v=cam&habit=…' | …} · {cmd:'sleep'}
+     ici → COM  {totehm:'x', ev:'ready' | 'close' | 'signin' | 'stale' | 'go', cible, url}
+   Pas de pont SSO ici : se connecter, aller ailleurs, c'est COM qui le fait. */
+const EMBED = (() => { try{ return window.parent !== window && parent.location.origin === location.origin && new URLSearchParams(location.search).has('embed'); }catch(_){ return false; } })();
+const toCom = (ev, x) => { try{ parent.postMessage(Object.assign({ totehm:'x', ev }, x || {}), location.origin); }catch(_){} };
+let WANT_HABIT = null, CHARGE = false, DORT = false;
+
 /* ══ LE PONT SSO v2 — COPIÉ de tools/sso_snippet.js (30/09/2026) ══════
    totehm.com est l'autorité : se connecter ici = passer PAR totehm.com
    (authorization code + PKCE). Le lien entre domaines reste le pont. */
@@ -624,6 +645,7 @@ async function ssoArrivee(sb){
   }catch(e){ console.error('[sso]', e && e.message || e); return false; }
 }
 async function ssoLogin(silent, retour){
+  if(EMBED){ toCom('signin'); return; }
   const v = ssoB64(crypto.getRandomValues(new Uint8Array(32)));
   const c = ssoB64(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v))));
   const st = ssoB64(crypto.getRandomValues(new Uint8Array(16)));
@@ -633,6 +655,7 @@ async function ssoLogin(silent, retour){
                   '&return=' + encodeURIComponent(ret) + (silent ? '&prompt=none' : '');
 }
 async function ssoVersDomaine(sb, cible, url, replace=false){
+  if(EMBED){ toCom('go', { cible, url }); return; }
   try{
     const { data:{ session } } = await sb.auth.getSession();
     if(session){
@@ -657,7 +680,7 @@ sb.auth.onAuthStateChange(ev => {
 {
   const { data:{ session } } = await sb.auth.getSession();
   if(session) ssoStore(localStorage, SSO_KNOWN, '1');
-  else if(ssoRead(localStorage, SSO_KNOWN) && !ssoRead(sessionStorage, SSO_TRIED)){
+  else if(!EMBED && ssoRead(localStorage, SSO_KNOWN) && !ssoRead(sessionStorage, SSO_TRIED)){
     ssoStore(sessionStorage, SSO_TRIED, '1');
     await ssoLogin(true);
     await new Promise(() => {});
@@ -712,7 +735,7 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
 const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query=' + Number(lat).toFixed(5) + '%2C' + Number(lng).toFixed(5);
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD='2026-10-12-club-box';
+const BUILD='2026-10-12-club-plateforme';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'radar';
@@ -1088,7 +1111,7 @@ function radarRange(){
   return Math.max(300, d[Math.min(d.length - 1, Math.floor(d.length*.85))]*1.18);
 }
 function draw(t){
-  RAD.raf = 0; if(document.hidden || VIEW !== 'radar' && VIEW !== 'plan' && !MAP.open && !desktop()) return;
+  RAD.raf = 0; if(DORT || document.hidden || VIEW !== 'radar' && VIEW !== 'plan' && !MAP.open && !desktop()) return;
   if(RAD.morph && t < RAD.morph) radarSize();
   const moving=Math.abs(RAD.tx-RAD.cx)+Math.abs(RAD.ty-RAD.cy)+Math.abs(RAD.tr-RAD.rpx)>1 || RAD.turn || RAD.headTo!==null;
   const fps=moving?60:VIEW==='cam'?10:VIEW==='past'?15:30;
@@ -1148,7 +1171,7 @@ const cv=$('canvas');
 cv.addEventListener('pointerdown',e=>{if(MAP.open) return;const d=Math.hypot(e.clientX-RAD.cx,e.clientY-RAD.cy);if(d<RAD.rpx-18 || d>RAD.rpx+35) return;compassOff();RAD.headTo=null;RAD.turn={id:e.pointerId,a:Math.atan2(e.clientX-RAD.cx,RAD.cy-e.clientY),h:RAD.head};cv.setPointerCapture(e.pointerId);e.stopImmediatePropagation();});
 cv.addEventListener('pointermove',e=>{if(!RAD.turn || e.pointerId!==RAD.turn.id) return;const a=Math.atan2(e.clientX-RAD.cx,RAD.cy-e.clientY);RAD.head=norm360(RAD.turn.h-(a-RAD.turn.a)/DEG);suppressClickUntil=Date.now()+500;e.preventDefault();e.stopImmediatePropagation();});
 for(const name of ['pointerup','pointercancel']) cv.addEventListener(name,e=>{if(RAD.turn?.id===e.pointerId){RAD.turn=null;suppressClickUntil=Date.now()+500;}});
-function radarOn(){ radarSize(); if(!RAD.raf) RAD.raf = requestAnimationFrame(draw); }
+function radarOn(){ if(DORT) return; radarSize(); if(!RAD.raf) RAD.raf = requestAnimationFrame(draw); }
 addEventListener('resize', () => { radarSize(); radarOn(); if(MAP.open) mapDraw(); });
 $('canvas').addEventListener('click', e => {
   if(MAP.open || Date.now() < suppressClickUntil || RAD.turn) return;
@@ -2222,26 +2245,67 @@ async function boot(){
   if(me){ const { data, error } = await sb.from('profiles').select('pseudo').eq('id', me.id).maybeSingle();
     if(error) console.error('[profile]', error.message); PSEUDO = data?.pseudo || null; }
   paintMember(); paintInts(); PAPER.hint(); PAPER.sync();
-  if(me) videoRequest('create-bunny-upload',{action:'status'}).then(d=>{if(d?.available) RULES.video_provider='bunny';}).catch(e=>console.error('[video availability]',e.message));
   sb.rpc('spot_rules').then(({ data, error }) => { if(error) console.error('[spot_rules]', error.message); if(data) RULES = { ...RULES, ...data, video_provider:RULES.video_provider==='bunny'?'bunny':data.video_provider }; });
+  ['g','d','h','b'].forEach(d => $('cur-' + d).classList.toggle('is-dead', !voisin(d)));
+  /* Dans totehm.com : ni position, ni radar, ni spots avant qu'on l'ouvre. */
+  if(EMBED){ document.body.classList.add('is-embed'); DORT = true; joyPaint(); toCom('ready'); return; }
   const p = new URLSearchParams(location.search);
+  prendre(p); charger();
+  await suivre(p);
+  joyPaint();
+}
+/* L'adresse (ou totehm.com) pose la Habit et la ville d'un plan, ou le filtre de l'agenda. */
+function prendre(p){
   const fromHabit = (p.get('habit') || '').trim().slice(0,200), fromCity = (p.get('city') || '').trim().slice(0,80);
   if(fromHabit && p.get('v') === 'list'){ S.habit = null; S.q = fromHabit; $('habit-filter').textContent = fromHabit; }
   if(fromHabit && p.get('v') === 'plan'){ PRE.habit = fromHabit; PRE.city = fromCity; }
+  return !!(fromHabit && p.get('v') === 'list');
+}
+function charger(){
+  if(CHARGE) return; CHARGE = true;
+  if(me) videoRequest('create-bunny-upload',{action:'status'}).then(d=>{if(d?.available) RULES.video_provider='bunny';}).catch(e=>console.error('[video availability]',e.message));
   geo().then(pos => { if(pos){ POS = pos; reload(); radarOn(); } });
   reload(); radarOn();
-  ['g','d','h','b'].forEach(d => $('cur-' + d).classList.toggle('is-dead', !voisin(d)));
+  setInterval(() => { if(DORT) return; paintList(); planValidity(); const started = LIST.list.some(s => s.state === 'will' && spotState(s) !== 'will'); if(started) reload(); }, 30000);
+}
+async function suivre(p){
   if(p.get('spot')){
     const { data, error } = await sb.rpc('spot_get', { p_id: p.get('spot') });
     if(error) console.error('[spot_get]', error.message);
     if(data?.ok){if(data.spot.format==='space')return ssoVersDomaine(sb,'space','https://www.totehm.space/?spot='+encodeURIComponent(p.get('spot')),true);openDetail(data.spot);}
+    return;
   }
   if(['list','past','plan'].includes(p.get('v'))) go(p.get('v'));
   else if(p.get('v') === 'cam' && me) go('cam');
-  joyPaint();
-  setInterval(() => { paintList(); planValidity(); const started = LIST.list.some(s => s.state === 'will' && spotState(s) !== 'will'); if(started) reload(); }, 30000);
 }
 boot();
+if(EMBED){
+  addEventListener('message', async e => {
+    if(e.origin !== location.origin || e.source !== parent || !e.data || e.data.totehm !== 'x' || !e.data.cmd) return;
+    const d = e.data;
+    if(d.cmd === 'sleep'){
+      menu(false); pickerClose(); closeDetail();
+      if(!REC.busy && !PLAN.busy){ if(VIEW !== 'radar') go('radar'); PLAN.seq++; PLAN.context = null; PLAN.habit = null; planVideoDrop(); planCity(null); PLAN.cityText = ''; }
+      DORT = true; cancelAnimationFrame(RAD.raf); RAD.raf = 0;
+      document.querySelectorAll('#list video').forEach(releaseClip);
+      return;
+    }
+    const { data:{ session } } = await sb.auth.getSession();
+    if((session?.user?.id || null) !== (me?.id || null)) return toCom('stale');
+    DORT = false;
+    const q = new URLSearchParams(d.q || ''), filtre = prendre(q);
+    if(CHARGE && filtre) reload();
+    charger(); radarOn();
+    if(d.cmd === 'url') await suivre(q);
+    joyPaint();
+  });
+  $('x-back').onclick = () => toCom('close');
+  addEventListener('keydown', e => {
+    if(e.key !== 'Escape') return;
+    const rien = VIEW === 'radar' && !DETAIL && !MAP.open && $('habit-picker').classList.contains('hide') && $('my-spaces').classList.contains('hide');
+    if(rien){ e.preventDefault(); e.stopImmediatePropagation(); toCom('close'); }
+  }, true);
+}
 </script>
 <script data-ecosystem-ui="2026-10-05">
 /* 05/10/2026 — copied into each independent page; no runtime import. */
