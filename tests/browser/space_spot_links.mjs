@@ -23,7 +23,7 @@ try{
  // 11/10 : SPACE n'a plus de porte des spots ; figher.club s'ouvre depuis la page d'arrivée.
  {const origin='https://www.totehm.space';let minted=null;
   const {pg,ctx,log}=await page(browser,{dir:'space',origin,rpc:{space_feed:{ok:true,spots:[],more:false},space_pulse:{spaces_week:0,vibes_week:0}},tables:{profiles:[{pseudo:'wah'}]},functions:{'sso-mint':b=>{minted=b.target;return{code:'DOOR-SSO'};}},network:url=>url.origin==='https://www.figher.club'?{status:200,contentType:'text/html',body:'<!doctype html><p>Club</p>'}:null});
-  await pg.goto(origin+'/');await pg.waitForFunction(()=>window.__totehm_space?.().view==='home');await pg.waitForTimeout(500);
+  await pg.goto(origin+'/?v=home');await pg.waitForFunction(()=>window.__totehm_space?.().view==='home');await pg.waitForTimeout(500);
   ok(await pg.locator('#spots-door,#find-spot,#v-spots').count()===0&&!log.rpc.some(x=>x.name==='spots_list'),'SPACE carries no spot door and reads no spot');
   await pg.click('[data-eco-door="club"]');await pg.waitForURL('https://www.figher.club/**');ok(minted==='club'&&pg.url().includes('#sso=DOOR-SSO'),'figher.club opens from the SPACE home, authenticated');
   ok(!log.errors.some(x=>x.startsWith('pageerror')),'door link has no JavaScript page errors');await ctx.close();
@@ -31,14 +31,18 @@ try{
  const source={ok:true,pseudo:'studio',steps:[{t:'Deep practice',is:['focus']}],objs:{'Deep practice':['o1']},trips:[{id:'o1',text:'Build a practice',is:['focus']}],reps:[],wisdom:[],visions:[]};
  for(const format of ['space','spot']){
   const origin='https://www.totehm.com',host=format==='space'?'https://www.totehm.space':'https://www.figher.club';let minted=null;
-  const {pg,ctx,log}=await page(browser,{dir:'com',origin,tables:{profiles:[{pseudo:'wah'}]},rpc:{totehm_of:source,habit_spaces:{ok:true,mine:false,habits:[{habit:'Deep practice',total:2,total_spaces:1,total_spots:1,spaces:[item('s','space')],spots:[item('p','spot')]}]}},functions:{'sso-mint':b=>{minted=b.target;return{code:'COM-SSO'};}},network:url=>url.origin===host?{status:200,contentType:'text/html',body:'<!doctype html><p>Destination</p>'}:null});
+  const {pg,ctx,log}=await page(browser,{dir:'com',origin,tables:{profiles:[{pseudo:'wah'}]},rpc:{spot_get:b=>({ok:true,spot:item(b.p_id,b.p_id==='p'?'spot':'space')}),space_feed:{ok:true,spots:[],more:false},totehm_of:source,habit_spaces:{ok:true,mine:false,habits:[{habit:'Deep practice',total:2,total_spaces:1,total_spots:1,spaces:[item('s','space')],spots:[item('p','spot')]}]}},functions:{'sso-mint':b=>{minted=b.target;return{code:'COM-SSO'};}},network:url=>url.origin===host?{status:200,contentType:'text/html',body:'<!doctype html><p>Destination</p>'}:null});
   await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/totehm?ro=studio');await pg.waitForSelector('body.ro:not(.gate)');
   await pg.waitForSelector('#habits .v-ecosystem');const labels=await pg.locator('#habits .v-ecosystem').allTextContents();ok(labels.join('|')==='1 SPACE|1 SPOT','COM closed Habit has two separate format lines, counted by the server');
   const style=await pg.$eval('#habits .v-ecosystem',e=>{const s=getComputedStyle(e);return{font:s.fontFamily,weight:s.fontWeight,color:s.color};});ok(style.font.includes('Space Mono')&&Number(style.weight)>=700&&style.color!=='rgb(251, 213, 202)','COM format labels are bold Space Mono and grey');
   await pg.locator('#habits [data-open]').first().evaluate(e=>e.click());await pg.waitForSelector('#habits [data-space]');
   const groups=await pg.locator('#habits .mg-l').allTextContents();ok(groups.includes('SPACES')&&groups.includes('SPOTS')&&await pg.locator('#habits [data-space]').count()===2,'COM open Habit has both labelled groups');
   ok(await pg.locator('#habits [data-newspot]').count()===0,'a TOTEHM read by someone else offers no + a spot');
-  await pg.locator('#habits [data-format="'+format+'"]').click();await pg.waitForURL(host+'/**');ok(minted===(format==='space'?'space':'club')&&pg.url().includes('spot='+(format==='space'?'s':'p')+'#sso=COM-SSO'),'COM '+format+' opens its correct domain through SSO');
+  /* 12/10 — UNE PLATEFORME : le space ou le spot s'ouvre SUR PLACE, dans la couche de totehm.com (même origine, sans pont). */
+  const url0=pg.url();await pg.locator('#habits [data-format="'+format+'"]').click();
+  await pg.waitForFunction(k=>window.__totehm_xo&&window.__totehm_xo().actif===k,format==='space'?'space':'club');
+  const fr=pg.frame({url:u=>String(u).includes(format==='space'?'/x/space':'/x/club')});await fr.waitForSelector('#detail.is-open',{timeout:10000});
+  ok(pg.url()===url0&&!minted&&log.rpc.some(x=>x.name==='spot_get'&&x.body.p_id===(format==='space'?'s':'p')),'COM '+format+' opens IN PLACE (its own layer), no bridge');
   ok(!log.rpc.some(x=>/rename|_create|_set|_delete|totehm_save/.test(x.name)),'reading COM groups does not mutate its source');
   ok(!log.errors.some(x=>x.startsWith('pageerror')),'COM '+format+' link has no JavaScript page errors');await ctx.close();
  }

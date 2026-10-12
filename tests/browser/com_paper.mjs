@@ -72,7 +72,7 @@ try{
   ok(!await pg.$eval('#gate',e=>e.inert)&&JSON.stringify(await R(pg,'#gate-asteroid'))===JSON.stringify(paper),'le papier est de nouveau atteignable, exactement à sa place');
   ok(await pg.textContent('#ast-name')==='wahigher','son dos porte de nouveau MON nom');
   // 07/10 : la manette, à gauche : retourner = chercher ; Échap ferme
-  await pg.$eval('#lcur-g',e=>e.click());
+  await pg.$eval('#lcur-h',e=>e.click());
   ok(await pg.evaluate(()=>document.activeElement.id)==='srch-q','la manette, à gauche : le focus est pris dans le clic');
   await pg.waitForTimeout(1700);ok(/is-open/.test(await srch(pg)),'la manette, à gauche, retourne le papier et ouvre la recherche');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(2000);
@@ -115,14 +115,14 @@ try{
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
   const a=[];for(let i=0;i<4;i++){await pg.keyboard.press('Tab');a.push(await pg.evaluate(()=>document.activeElement.id));}
   ok(a.includes('gate-enter')&&!a.includes('gate-search-go'),'clavier, recto : #gate-enter seul → '+a);
-  await pg.keyboard.press('ArrowLeft');await pg.waitForTimeout(1700);
+  await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(1700);
   ok(/is-open/.test(await srch(pg))&&await pg.evaluate(()=>document.activeElement.id)==='srch-q','clavier : ← sur l\'atterrissage → recherche, focus dans le nom');}
  // ── mouvement réduit ──────────────────────────────────────────────
  {const{pg}=await page(browser,{dir:'com',origin,rpc,tables,viewport:{width:390,height:844}});
   await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
   await tourner(pg,260);await pg.waitForTimeout(200);
   ok(await srch(pg)===''&&(await card(pg)).tf==='','mouvement réduit : aucun geste n\'est écouté');
-  await pg.$eval('#lcur-g',e=>e.click());await pg.waitForTimeout(150);
+  await pg.$eval('#lcur-h',e=>e.click());await pg.waitForTimeout(150);
   ok(/is-open/.test(await srch(pg)),'mouvement réduit : la manette ouvre la recherche sans animation');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(150);
   ok(await srch(pg)===''&&(await lsd(pg)).face===0,'mouvement réduit : fermée, le papier est de nouveau sur son recto');}

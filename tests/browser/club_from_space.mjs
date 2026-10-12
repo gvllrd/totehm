@@ -38,7 +38,7 @@ try{
  // 4 · le centre : [Higher] SPOTS + le pourquoi
  {const {pg}=await page(browser,{dir:'club',origin,rpc,session:false});
   await pg.goto(origin+'/');await pg.waitForFunction(()=>window.__totehm_club?.().view==='radar');await pg.waitForTimeout(500);
-  ok(await pg.isVisible('#club-title')&&await pg.locator('#club-title svg use[href="#higher-badge"]').count()===1&&/spots/i.test(await pg.textContent('#club-title b'))&&/meet in reality/i.test(await pg.textContent('#club-title p')),'the centre reads [Higher] SPOTS and its why, like totehm.com and totehm.space');
+  ok(await pg.isVisible('#club-title')&&await pg.locator('#club-title svg use[href="#higher-badge"]').count()===1&&/spots/i.test(await pg.textContent('#club-title b'))&&await pg.locator('#club-title p').count()===0,'the centre reads [Higher] SPOTS, nothing else (12/10: the design speaks)');
   const r=(await state(pg)).radar,t=await pg.$eval('#club-title',e=>e.getBoundingClientRect().bottom);
   ok(r.cy-r.radius>t,'the radar sits below the title, never under it');
   await pg.screenshot({path:OUT+'/club_centre.png'});

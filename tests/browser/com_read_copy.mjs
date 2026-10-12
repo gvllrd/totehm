@@ -14,10 +14,10 @@ try{
  {const {pg,log}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
   ok(await pg.locator('.geste').count()===0&&(await pg.textContent('#lv-tap')).trim()==='Click to open it'&&await pg.isVisible('#lv-tap'),'au centre : plus de gestes, « Click to open it »');
-  ok(await pg.$eval('#lv-slogan',e=>[...e.classList].filter(k=>/^is-.$/.test(k)).join(' '))==='is-c'&&await pg.locator('#lv-slogan use[href="#higher-badge"]').count()===1&&/Strategy/.test(await pg.textContent('#lv-slogan .lvs-strat')),'[Higher] Strategy : le badge SVG, jamais du texte');
-  await pg.click('#lcur-g');await pg.waitForTimeout(1600);
-  const q=await pg.evaluate(()=>({v:document.getElementById('srch-q').value,ph:document.getElementById('srch-q').placeholder,rows:document.querySelectorAll('#srch-res .srch-row').length,hint:document.getElementById('srch-hint').textContent,vue:window.__totehm_lv().vue}));
-  ok(q.vue==='g'&&q.v===''&&q.ph==="a member's name"&&q.rows===0&&/member's TOTEHM/.test(q.hint),'à gauche : une recherche vide, rien d\'autre ('+q.hint+')');
+  ok(await pg.$eval('#lv-slogan',e=>[...e.classList].filter(k=>/^is-.$/.test(k)).join(' '))==='is-c'&&await pg.locator('#lv-slogan use[href="#higher-badge"]').count()===1&&await pg.locator('#lv-slogan .lvs-strat').count()===0,'12/10 : plus de « Strategy » ; [Higher] reste le badge SVG');
+  await pg.click('#lcur-h');await pg.waitForTimeout(1600);
+  const q=await pg.evaluate(()=>({v:document.getElementById('srch-q').value,ph:document.getElementById('srch-q').placeholder,rows:document.querySelectorAll('#srch-res .srch-row').length,hint:!!document.getElementById('srch-hint'),vue:window.__totehm_lv().vue}));
+  ok(q.vue==='g'&&q.v===''&&q.ph==="a member's name"&&q.rows===0&&!q.hint,'en haut (12/10) : une recherche vide, sans phrase, rien d\'autre');
   await pg.fill('#srch-q','stu');await pg.waitForSelector('#srch-res .srch-row');
   const rows=await pg.$$eval('#srch-res .srch-row',l=>l.map(r=>({open:r.querySelector('.srch-open')?.getAttribute('href'),sub:r.querySelector('.srch-sub')?.getAttribute('href'),subT:r.querySelector('.srch-sub')?.textContent,meta:r.querySelector('.srch-meta')?.textContent})));
   ok(rows[0].open==='/totehm?ro=studio'&&rows[0].meta==='subscribed','on tape un nom : son Totehm, en lecture ; déjà abonné → « subscribed »');
@@ -28,7 +28,7 @@ try{
  /* ── 2 · la vue du haut fait ce qu'elle dit : [Get Higher] → figher.club ── */
  {const {pg}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]},network:url=>url.host==='www.higher.boutique'?{status:200,contentType:'text/html',body:'<p>club</p>'}:null});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(500);
-  await pg.click('#lcur-h');await pg.waitForTimeout(1300);
+  await pg.click('#lcur-g');await pg.waitForTimeout(1300);
   const nav=pg.waitForURL(/higher\.boutique\/get_higher/,{timeout:12000}).then(()=>true,()=>false);
   await pg.click('#lv-slogan');
   ok(await nav,'↑ puis [Get Higher] : le papier est avalé, puis Get Higher');await pg.context().close();

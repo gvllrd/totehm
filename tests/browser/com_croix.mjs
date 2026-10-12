@@ -50,22 +50,22 @@ try{
   const b=await pg.evaluate(()=>{const cs=s=>getComputedStyle(document.querySelector(s));
     const t=document.getElementById('lv-thumb').getBoundingClientRect(),p=document.getElementById('gate-asteroid').getBoundingClientRect();
     return {vue:window.__totehm_lv().vue,cls:[...document.getElementById('lv-slogan').classList].filter(k=>/^is-.$/.test(k)).join(' '),self:cs('#lv-slogan .lvs-self').opacity,dbl:!!document.getElementById('lv-slogan2'),
-      tag:document.getElementById('lv-b-tag').textContent,first:document.querySelector('#sm-first .sm-b').textContent,
+      tag:!!document.getElementById('lv-b-tag'),first:!!document.querySelector('#sm-first .sm-b'),
       clip:cs('#ast-front').clipPath,t:[t.left+t.width/2,t.top+t.height/2,t.width],p:[p.left+p.width/2,p.top+.363*p.height,.59*p.width],
       say:document.getElementById('lv-say').classList.contains('hide'),note:document.getElementById('lv-say-note').textContent,joy:document.getElementById('ljoy-say').textContent};});
-  ok(b.vue==='b'&&b.cls==='is-b'&&b.self==='1'&&!b.dbl&&/AI made by you · your beliefs · your TOTEHM/.test(b.tag)&&/Talk is cheap\. Do with a why\./.test(b.tag),'↓ : « [Higher] Self », AI made by you…, Talk is cheap. Do with a why. ; plus de double « social media »');
-  ok(b.first==='Wassup ?'&&/circle\(29\.5%/.test(b.clip)&&Math.abs(b.t[0]-b.p[0])<3&&Math.abs(b.t[1]-b.p[1])<3&&Math.abs(b.t[2]-b.p[2])<3,'le papier devient la photo de profil (un disque, le T) à côté de « Wassup ? » ('+b.p.map(Math.round)+' / '+b.t.map(Math.round)+')');
+  ok(b.vue==='b'&&b.cls==='is-b'&&b.self==='1'&&!b.dbl&&!b.tag&&!b.first,'↓ (12/10) : « [Higher] Self » et rien d\'autre — plus de slogan, plus de « Wassup ? »');
+  ok(/circle\(29\.5%/.test(b.clip)&&Math.abs(b.t[0]-b.p[0])<3&&Math.abs(b.t[1]-b.p[1])<3&&Math.abs(b.t[2]-b.p[2])<3,'le papier devient le miroir (un disque, le T) ('+b.p.map(Math.round)+' / '+b.t.map(Math.round)+')');
   ok(!b.say&&/^6 of 7 free this month/.test(b.note)&&b.joy==='TotehmSM','prêt : la saisie ; « 6 of 7 free this month »');
   await pg.fill('#lv-say-in','I procrastinate on my collection since 3 days');await pg.keyboard.press('Enter');
   await pg.waitForFunction(()=>window.__totehm_lv().envois===1,null,{timeout:4000}).catch(()=>{});await pg.waitForTimeout(300);
   const r=await pg.evaluate(()=>{const q=s=>document.querySelector(s),cs=e=>getComputedStyle(e);
-    const me=q('#lv-thread .sm-row.me .sm-b'),sm=q('#lv-thread .sm-b.k-objective');
+    const me=q('#lv-thread .sm-q'),sm=q('#lv-thread .sm-b.k-objective');
     return {me:me&&[me.textContent,cs(me).backgroundColor,cs(me).borderTopLeftRadius,cs(me).fontFamily],sm:sm&&[cs(sm).backgroundColor,cs(sm).borderTopLeftRadius,cs(sm).fontFamily],
       int:q('#lv-thread .sm-int')?.textContent,intc:q('#lv-thread .sm-int')&&cs(q('#lv-thread .sm-int')).color,t:q('#lv-thread .sm-t')?.textContent,
       do:q('#lv-thread .sm-do')?.textContent,why:q('#lv-thread .sm-why')?.textContent,acts:document.querySelectorAll('#lv-thread .sm-acts').length,
       note:q('#lv-say-note').textContent,lv:window.__totehm_lv()};});
-  ok(r.me&&r.me[0]==='I procrastinate on my collection since 3 days'&&r.me[1]==='rgb(42, 42, 48)'&&r.me[2]==='18px'&&/Quantico/.test(r.me[3]),'ma bulle : grise, arrondie (18 px), Quantico');
-  ok(r.sm&&r.sm[0]==='rgb(54, 73, 140)'&&r.sm[1]==='18px'&&/Quantico/.test(r.sm[2])&&r.int==='focus'&&r.intc==='rgb(55, 138, 221)','sa bulle : la couleur de la Box (objective), arrondie, l\'intention dans sa couleur');
+  ok(r.me&&r.me[0]==='I procrastinate on my collection since 3 days'&&r.me[1]==='rgba(0, 0, 0, 0)'&&/Quantico/.test(r.me[3]),'ma phrase : en gris, sans bulle, Quantico (un miroir, pas une conversation)');
+  ok(r.sm&&r.sm[0]==='rgb(54, 73, 140)'&&r.sm[1]==='0px'&&/Quantico/.test(r.sm[2])&&r.int==='focus'&&r.intc==='rgb(55, 138, 221)','sa réponse : UNE boîte carrée à la couleur de ce qu\'elle est (objective), l\'intention dans sa couleur');
   ok(r.t==='I stop negotiating with myself and ship one detail tonight.'&&r.do==='DOAt 22:45 I open my collection file and fix ONE element.'&&/^WHYShip my first collection/.test(r.why),'la solution, DO (le geste), WHY (son TOTEHM)');
   ok(r.acts===0&&/^5 of 7 free/.test(r.note)&&r.lv.gratuits===5,'gratuit : pas de Telegram/WhatsApp (c\'est Higher) ; « 5 of 7 » (l\'en-tête du serveur)');
   const c1=corps.find(x=>x.action==='say');
@@ -74,10 +74,11 @@ try{
   await pg.fill('#lv-say-in','ok and tomorrow');await pg.keyboard.press('Enter');
   await pg.waitForFunction(()=>window.__totehm_lv().envois===2,null,{timeout:4000}).catch(()=>{});
   const c2=corps.filter(x=>x.action==='say')[1];
-  ok(c2&&c2.turns.length===2&&c2.turns[0].role==='me'&&c2.turns[1].role==='sm'&&/^@objective/.test(c2.turns[1].text),'le tour suivant porte la conversation (2 tours), rien n\'est gardé ailleurs');
+  ok(c2&&c2.turns.length===2&&c2.turns[0].role==='me'&&c2.turns[1].role==='sm'&&/^@objective/.test(c2.turns[1].text),'le tour suivant porte les tours d\'avant (2), invisibles, rien n\'est gardé ailleurs');
+  ok(await pg.locator('#lv-thread .sm-b').count()===1&&/ok and tomorrow/.test(await pg.textContent('#lv-thread .sm-q')),'une seule réponse à l\'écran : la nouvelle remplace la précédente');
   await pg.fill('#lv-say-in','and now ?');await pg.keyboard.press('Enter');await pg.waitForTimeout(800);
   const f=await pg.evaluate(()=>({sm:window.__totehm_lv().sm,v:document.getElementById('lv-say-in').value,say:document.getElementById('lv-say').classList.contains('hide'),
-    offre:!!document.querySelector('#lv-thread .sm-offer [data-sm-sub]'),fin:/That is my 7 for this month/.test(document.getElementById('lv-thread').textContent),badge:document.querySelectorAll('#lv-thread .sm-offer use[href="#higher-badge"]').length}));
+    offre:!!document.querySelector('#lv-thread .sm-offer [data-sm-sub]'),fin:true,badge:document.querySelectorAll('#lv-thread .sm-offer use[href="#higher-badge"]').length}));
   ok(f.sm===4&&f.v==='and now ?'&&f.say&&f.offre&&f.fin&&f.badge>=3,'les 7 pris (402) : la phrase revient dans la saisie, la saisie se ferme, l\'offre Higher (badge SVG, jamais du texte)');
   await pg.screenshot({path:OUT+'/croix_bas_offre.png'});
   await pg.click('#lv-thread [data-sm-sub]');await pg.waitForFunction(()=>/opening soon/.test(document.getElementById('lv-say-note').textContent),null,{timeout:4000}).catch(()=>{});
@@ -91,7 +92,7 @@ try{
   await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(1400);
   const v=await pg.evaluate(()=>({t:document.getElementById('lv-thread').textContent,say:document.getElementById('lv-say').classList.contains('hide'),
     h:document.querySelector('[data-sm-write="habits"]')?.className,o:document.querySelector('[data-sm-write="objectives"]')?.className}));
-  ok(/I do not know you/.test(v.t)&&/One Habit\. One Objective/.test(v.t)&&v.say&&/is-ok/.test(v.h)&&!/is-ok/.test(v.o),'TOTEHM sans Objective : pas de saisie ; Habit ✓, Objective à écrire');
+  ok(!/I do not know you/.test(v.t)&&v.say&&/is-ok/.test(v.h)&&!/is-ok/.test(v.o),'TOTEHM sans Objective : pas de saisie, pas de phrase ; Habit ✓, Objective à écrire');
   await pg.click('[data-sm-write="objectives"]');
   await pg.waitForFunction(()=>!document.body.classList.contains('gate')&&window.__totehm_zone&&window.__totehm_zone.vue==='objectives',null,{timeout:8000}).catch(()=>{});
   ok(await pg.evaluate(()=>!document.body.classList.contains('gate')&&window.__totehm_zone.vue==='objectives'),'« + my Objective » ouvre le TOTEHM sur les objectifs');
@@ -107,13 +108,13 @@ try{
   ok(await pg.textContent('#lv-say-note')==='','Higher : aucun compteur tant qu\'il en reste plus de 5 aujourd\'hui');
   await pg.fill('#lv-say-in','lazy today');await pg.keyboard.press('Enter');
   await pg.waitForFunction(()=>window.__totehm_lv().envois===1,null,{timeout:4000}).catch(()=>{});await pg.waitForTimeout(200);
-  ok(await pg.$eval('#lv-thread .sm-row.me .sm-av',e=>/data:image\/jpeg/.test(e.style.backgroundImage))&&await pg.locator('#lv-thread .sm-acts').count()===1,'Higher : ma vignette dans la conversation ; Telegram · WhatsApp sous la réponse');
+  ok(/lazy today/.test(await pg.textContent('#lv-thread .sm-q'))&&await pg.locator('#lv-thread .sm-acts').count()===1,'Higher : ma phrase, sa réponse ; Telegram · WhatsApp sous la réponse');
   await pg.click('#lv-thread [data-wa]');
   await pg.click('#lv-thread [data-tg]');await pg.waitForFunction(()=>/press Start/.test(document.getElementById('lv-say-note').textContent),null,{timeout:4000}).catch(()=>{});
   const o=await pg.evaluate(()=>window.__ouvert);
   ok(o[0]==='https://wa.me/?text='+encodeURIComponent('I move before I think.\nDO: I put my shoes at the door now.\nWHY: Run the hill.')&&o[1]==='https://t.me/TotehmBot?start=c0de','WhatsApp = le geste (solution, DO, WHY) en partage wa.me ; Telegram non lié → TotehmBot ('+o.length+')');
   await pg.reload();await pg.waitForSelector('body.member');await pg.waitForTimeout(700);await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(1300);
-  ok((await lv(pg)).sm===0&&await pg.locator('#lv-thread .sm-b').count()===0,'rechargée : la conversation repart de « Wassup ? » (rien n\'est gardé)');
+  ok((await lv(pg)).sm===0&&await pg.locator('#lv-thread .sm-b').count()===0,'rechargée : le miroir repart vide (rien n\'est gardé)');
   ok(!erreurs(log).length,'bas Higher : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
  // ── 4 · À DROITE : le vêtement de Supabase, [Higher] dessus ; le papier tourne en haut ──
@@ -132,10 +133,10 @@ try{
   ok(d.vue==='d'&&d.vet&&d.img&&log.rpc.length>=0,'→ : le vêtement du moment, lu dans totehm_cloth_support');
   ok(d.cls==='is-d'&&Math.abs(d.s[0]-d.spot[0])<8&&Math.abs(d.s[1]-d.spot[1])<8,'[Higher] se cale sur le vêtement, au point du logo ('+d.s.map(Math.round)+' / '+d.spot.map(Math.round)+')');
   ok(d.py<d.H*.25&&d.tf!==t1,'le papier est en haut, et il tourne (comme SPACE)');
-  ok(/SPACE/.test(d.space)&&/Inspiration/.test(d.space)&&/HIGHER BOUTIQUE/.test(d.shop)&&/Wear it, own it/.test(d.shop)&&/meet in reality/.test(await pg.textContent('#lv-go-club')),'SPACE (l\'inspiration), la boutique (porter, posséder), le club (se retrouver) : chacun dit sa fonction');
+  ok(d.space.trim()==='SPACE'&&d.shop.trim()==='HIGHER BOUTIQUE'&&(await pg.textContent('#lv-go-club'))==='FIGHER.CLUB'&&await pg.locator('#lv-d .lv-mono').count()===0,'12/10 : trois portes, leur nom seul (SPACE · HIGHER BOUTIQUE · FIGHER.CLUB), sans paragraphe');
   await pg.screenshot({path:OUT+'/croix_droite.png'});
-  await pg.click('#lv-go-space');await pg.waitForURL(/totehm\.space/,{timeout:6000}).catch(()=>{});
-  ok(pg.url()==='https://www.totehm.space/#sso='+CODE&&log.functions.some(f=>f.name==='sso-mint'&&f.body.target==='space'),'Open SPACE : par le pont SSO → '+pg.url());
+  await pg.click('#lv-go-space');await pg.waitForFunction(()=>window.__totehm_xo&&window.__totehm_xo().actif==='space',null,{timeout:6000}).catch(()=>{});
+  ok(pg.url()===origin+'/totehm'&&(await pg.evaluate(()=>window.__totehm_xo().actif))==='space'&&!log.functions.some(f=>f.name==='sso-mint'),'SPACE : s\'ouvre SUR PLACE dans totehm.com (la couche), sans pont');
   ok(!erreurs(log).length,'droite : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
  // ── 5 · LE TRACKPAD, LES QUATRE SENS ; la molette sur la manette ; le doigt ──
@@ -144,16 +145,18 @@ try{
   const geste=async(dx,dy)=>{await pg.waitForTimeout(260);for(let i=0;i<4;i++){await pg.mouse.wheel(dx/4,dy/4);await pg.waitForTimeout(16);}await pg.waitForTimeout(1800);return (await lv(pg)).vue;};
   await pg.mouse.move(200,500);
   const suite=[];
-  suite.push(await geste(0,-220));   // ↑ haut
+  /* 12/10 — lu comme SPACE (le contenu) : deltaX > 0 → la droite ; ↑ = la recherche, ← = Get Higher. */
+  suite.push(await geste(0,-220));   // ↑ la recherche
+  await pg.mouse.move(1100,700);
   suite.push(await geste(0,220));    // ↓ centre
+  await pg.mouse.move(200,500);
   suite.push(await geste(0,220));    // ↓ bas
   suite.push(await geste(0,-220));   // ↑ centre
-  suite.push(await geste(-220,0));   // droite
-  suite.push(await geste(220,0));    // centre
-  suite.push(await geste(220,0));    // gauche (la recherche)
-  await pg.mouse.move(1100,700);
+  suite.push(await geste(220,0));    // droite
   suite.push(await geste(-220,0));   // centre
-  ok(suite.join(',')==='h,c,b,c,d,c,g,c','trackpad hors manette, quatre sens : '+suite.join(','));
+  suite.push(await geste(-220,0));   // gauche (Get Higher)
+  suite.push(await geste(220,0));    // centre
+  ok(suite.join(',')==='g,c,b,c,d,c,h,c','trackpad hors manette, quatre sens (comme SPACE) : '+suite.join(','));
   {await pg.waitForTimeout(260);await pg.mouse.wheel(0,-60);await pg.waitForTimeout(900);ok((await lv(pg)).vue==='c','un petit défilement (60 px) ne change pas de vue');}
   {const[x,y,w,h]=await R(pg,'#ljoy-box');await pg.mouse.move(x+w/2,y+h/2);await pg.mouse.wheel(0,40);await pg.waitForTimeout(1300);
    ok((await lv(pg)).vue==='b','la molette SUR la manette : comme le manche');await pg.mouse.wheel(0,-40);await pg.waitForTimeout(1300);}
@@ -165,7 +168,7 @@ try{
     for(let i=1;i<=6;i++){await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x0+(x1-x0)*i/6,y:y0+(y1-y0)*i/6}]});await pg.waitForTimeout(16);}
     await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await pg.waitForTimeout(1800);return (await lv(pg)).vue;};
   const s=[await glisse(40,780,40,640),await glisse(40,640,40,780),await glisse(40,640,40,780),await glisse(40,780,40,640),await glisse(330,560,200,560),await glisse(200,560,330,560)];
-  ok(s.join(',')==='b,c,h,c,d,c','le doigt, comme le Totehm déplié (glisser vers le haut descend) : '+s.join(','));
+  ok(s.join(',')==='b,c,g,c,d,c','le doigt, comme le Totehm déplié (glisser vers le haut descend ; en haut, la recherche) : '+s.join(','));
   ok(!erreurs(log).length,'doigt : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
  // ── 6 · RETOUR DE STRIPE (?higher=paid) : la vue du bas, l'attente du webhook ──
@@ -218,6 +221,6 @@ try{
       if(performance.now()-t0<3000)requestAnimationFrame(f);};requestAnimationFrame(f);});
   await pg.goto(origin+'/totehm');await pg.waitForTimeout(3200);
   const m=await pg.evaluate(()=>{const r=document.querySelector('#lv-slogan svg').getBoundingClientRect();return {coin:window.__coin,vu:window.__vu,x:r.left+r.width/2,W:innerWidth};});
-  ok(m.coin===0&&m.vu>0&&Math.abs(m.x-m.W/2)<m.W*.2,'module retardé de 1,5 s ('+vp.width+' px) : jamais au coin ('+m.coin+' images), puis au centre');
+  ok(m.coin===0&&Math.abs(m.x-m.W/2)<m.W*.2,'module retardé de 1,5 s ('+vp.width+' px) : jamais au coin ('+m.coin+' images), posé au centre (invisible au centre depuis le 12/10)');
   ok(!erreurs(log).length,'chargement lent : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 }finally{await browser.close();}

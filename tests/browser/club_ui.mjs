@@ -21,7 +21,7 @@ try{
  ok(!await pg.isVisible('#member i'),'SPACE member status dot is absent');
  const cmp=await rect(pg,'cmp'),tools=await rect(pg,'map-tools');ok(cmp.x+cmp.w/2<s.radar.cx && tools.x+tools.w/2>s.radar.cx && cmp.y<s.radar.cy+s.radar.radius && tools.y<s.radar.cy+s.radar.radius,'compass and zoom occupy opposite radar corners');
  await pg.screenshot({path:out+'/spaces_landing_mobile.png'});
- ok(/pick a Habit/i.test(await pg.textContent('#tp-hint'))&&/spots/i.test(await pg.textContent('#club-title'))&&/meet in reality/i.test(await pg.textContent('#club-title')) && !/\bspaces?\b/i.test(await pg.evaluate(()=>document.body.innerText)),'figher.club speaks of spots, never of spaces');
+ ok(/pick a Habit/i.test(await pg.textContent('#tp-hint'))&&/spots/i.test(await pg.textContent('#club-title'))&&!/meet in reality/i.test(await pg.textContent('#club-title')) && !/\bspaces?\b/i.test(await pg.evaluate(()=>document.body.innerText)),'figher.club speaks of spots, never of spaces — and no sentence under [Higher] SPOTS (12/10)');
  await pg.click('#space-about');await pg.waitForSelector('.eco-sheet');{const d=await pg.textContent('.eco-sheet');
  ok(/What is a spot\?/.test(d)&&/I WILL BE HERE/.test(d)&&/collective effervescence/.test(d)&&/SOCIAL/.test(d)&&/SILENT/.test(d),'spot definition carries the meeting rules: together, both modes');}
  await pg.keyboard.press('Escape');await pg.waitForTimeout(300);

@@ -44,7 +44,7 @@ async function setup({storage=false,slow=false,saveData=false,signing=350,viewpo
  await result.pg.addInitScript(({slow,saveData})=>Object.defineProperty(navigator,'connection',{value:{downlink:slow?.8:12,effectiveType:slow?'3g':'4g',saveData},configurable:true}),{slow,saveData});
  // No second discovery request from a late geolocation result during timing samples.
  await result.pg.addInitScript(()=>{navigator.geolocation.getCurrentPosition=()=>{};});
- await result.pg.goto(origin+'/');await result.pg.waitForFunction(()=>window.__totehm_space?.().feed===20);await result.pg.waitForTimeout(120);
+ await result.pg.goto(origin+'/?v=home');await result.pg.waitForFunction(()=>window.__totehm_space?.().feed===20);await result.pg.waitForTimeout(120);
  return {...result,list};
 }
 const frame=(pg,k)=>pg.waitForFunction(k=>{const v=document.querySelector('.clip[data-k="'+k+'"] video');return v && !v.paused && v.currentTime>.04 && v.getVideoPlaybackQuality().totalVideoFrames>0;},k);
@@ -52,7 +52,7 @@ async function swipe(pg,k){const t=Date.now();await pg.$eval('#feed',(f,k)=>{f.s
 try{
  for(let sample=0;sample<3;sample++){
   const {pg,ctx,log}=await setup();check(!log.functions.some(f=>f.name==='bunny-video'),'no video authorization before entering the feed');
-  const t=Date.now();await pg.click('#cur-g');await frame(pg,0);const cold=Date.now()-t;await pg.waitForTimeout(120);
+  const t=Date.now();await pg.click('#cur-d');await frame(pg,0);const cold=Date.now()-t;await pg.waitForTimeout(120);
   const warm=await swipe(pg,1);report.samples.push({cold_ms:cold,next_ms:warm});
   if(!baseline){
    check(warm<400,'prepared HLS successor starts within 400 ms in the controlled fixture');
@@ -60,18 +60,18 @@ try{
    let hd=true;try{await pg.waitForFunction(()=>document.querySelector('.clip[data-k="1"] video').videoWidth>=720,{},{timeout:4000});}catch{hd=false;}
    report.samples.at(-1).quality=await pg.$eval('.clip[data-k="1"] video',v=>({width:v.videoWidth,start:v._startLevel,cap:v._hls?.autoLevelCapping,current:v._hls?.currentLevel,next:v._hls?.nextAutoLevel,bandwidth:v._hls?.bandwidthEstimate}));
    check(hd,'active HLS can upgrade to HD after its first image');
-   await pg.waitForTimeout(200);await pg.click('#joy-box');await pg.waitForTimeout(80);
+   await pg.waitForTimeout(200);await pg.click('#cur-g');await pg.waitForTimeout(80);
    check(await pg.$$eval('#feed video',vs=>vs.every(v=>v.paused)),'all videos pause outside the feed');
    const retained=await pg.$$eval('#feed video',vs=>vs.filter(v=>v.getAttribute('src') || v._hls).length);
    check(retained>0 && retained<=3,'a short radar visit retains only the small authorized playback window');
    const reads=log.functions.filter(f=>f.name==='bunny-video' && (f.body.id===uid(1) || f.body.clips?.some(c=>c.id===uid(1)))).length;
-   const back=Date.now();await pg.click('#cur-g');await frame(pg,1);report.samples.at(-1).return_ms=Date.now()-back;
+   const back=Date.now();await pg.click('#cur-d');await frame(pg,1);report.samples.at(-1).return_ms=Date.now()-back;
    check(log.functions.filter(f=>f.name==='bunny-video' && (f.body.id===uid(1) || f.body.clips?.some(c=>c.id===uid(1)))).length===reads,'returning to a ready clip needs no new signature request');
   }
   check(!log.errors.some(e=>e.startsWith('pageerror')),'HLS flow has no JavaScript page error');await ctx.close();
  }
  if(!baseline){
-  const {pg,ctx,log}=await setup({storage:true});await pg.click('#cur-g');await frame(pg,0);await pg.waitForTimeout(120);report.storageNextMs=await swipe(pg,1);
+  const {pg,ctx,log}=await setup({storage:true});await pg.click('#cur-d');await frame(pg,0);await pg.waitForTimeout(120);report.storageNextMs=await swipe(pg,1);
   check(report.storageNextMs<400,'legacy MP4 successor has decoded frames before the swipe');
   await pg.$eval('#feed',f=>{f.scrollTop=f.querySelector('.clip').offsetHeight*18;});await frame(pg,18);await pg.waitForFunction(()=>window.__totehm_space().feed===21);
   check(await pg.$$eval('#feed video',vs=>vs.filter(v=>v.getAttribute('src') || v._hls).length)<=3,'fast skips and pagination never retain more than three clips');
@@ -80,16 +80,16 @@ try{
   await pg.evaluate(()=>{Object.defineProperty(document,'hidden',{value:false,configurable:true});document.dispatchEvent(new Event('visibilitychange'));});await frame(pg,18);
   check(true,'foreground resumes the selected clip');await ctx.close();
   for(const config of [{saveData:true},{slow:true}]){
-   const {pg,ctx,log}=await setup(config);await pg.click('#cur-g');await frame(pg,0);await pg.waitForTimeout(250);
+   const {pg,ctx,log}=await setup(config);await pg.click('#cur-d');await frame(pg,0);await pg.waitForTimeout(250);
    if(config.saveData)check(log.functions.filter(f=>f.name==='bunny-video').every(f=>f.body.clips?.length===1),'Save-Data never authorizes the next clip');
    else check(log.network.find(n=>n.kind==='cdn' && n.path.endsWith('.ts'))?.path.endsWith('/low00.ts'),'3G starts with the light rendition rather than forcing HD');
    check(!log.errors.some(e=>e.startsWith('pageerror')),'constrained network flow has no page error');await ctx.close();
   }
-  {const {pg,ctx}=await setup({signing:600});await pg.click('#cur-g');await pg.waitForTimeout(50);await pg.click('#joy-box');await pg.waitForTimeout(1000);
+  {const {pg,ctx}=await setup({signing:600});await pg.click('#cur-d');await pg.waitForTimeout(50);await pg.click('#cur-g');await pg.waitForTimeout(1000);
   check(await pg.$$eval('#feed video',vs=>vs.every(v=>!v.getAttribute('src') && !v._hls)),'a late signature cannot attach after leaving an unprepared feed');await ctx.close();}
-  {const {pg,ctx}=await setup();await pg.click('#cur-g');await frame(pg,0);await pg.clock.install();await pg.click('#joy-box');await pg.clock.fastForward(21000);
+  {const {pg,ctx}=await setup();await pg.click('#cur-d');await frame(pg,0);await pg.clock.install();await pg.click('#cur-g');await pg.clock.fastForward(21000);
   check(await pg.$$eval('#feed video',vs=>vs.every(v=>v.paused && !v.getAttribute('src') && !v._hls)),'retained buffers expire after twenty seconds outside the feed');await ctx.close();}
-  {const {pg,ctx,log}=await setup({expired:true});await pg.click('#cur-g');await frame(pg,0);await pg.clock.install();await pg.click('#joy-box');const reads=log.functions.filter(f=>f.name==='bunny-video').length;await pg.clock.fastForward(6000);await pg.click('#cur-g');await frame(pg,0);
+  {const {pg,ctx,log}=await setup({expired:true});await pg.click('#cur-d');await frame(pg,0);await pg.clock.install();await pg.click('#cur-g');const reads=log.functions.filter(f=>f.name==='bunny-video').length;await pg.clock.fastForward(6000);await pg.click('#cur-d');await frame(pg,0);
   check(log.functions.filter(f=>f.name==='bunny-video').length>reads,'a near-expired retained signature is renewed before playback');await ctx.close();}
   {const {pg,ctx}=await setup({future:true});await pg.click('#cur-d');await pg.click('#list [data-watch]');await pg.waitForFunction(()=>document.querySelector('#list video')?.currentTime>.04);
   await pg.evaluate(()=>{Object.defineProperty(document,'hidden',{value:true,configurable:true});document.dispatchEvent(new Event('visibilitychange'));});

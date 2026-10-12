@@ -22,10 +22,10 @@ const browser=await launch({videoFile:fixture+'/motion.y4m'});
 try{
  const {pg,ctx,log}=await page(browser,{dir:'space',origin,network,viewport:{width:1440,height:900},rpc:{spot_rules:{video_provider:'storage'},space_feed:b=>({ok:true,more:!b.p_offset&&rows.length>20,spots:b.p_offset?rows.slice(20):rows.slice(0,20)}),space_habits:{ok:true,habits:[]}},functions:{'create-bunny-upload':{available:false}},tables:{profiles:[{pseudo:'wah'}]}});
  await pg.addInitScript(()=>{const locate=navigator.geolocation.getCurrentPosition.bind(navigator.geolocation);navigator.geolocation.getCurrentPosition=(ok,fail,options)=>locate(pos=>{window.__geolocationComplete=()=>ok(pos);},fail,options);});
- await pg.goto(origin+'/');await pg.waitForFunction(()=>window.__totehm_space?.().signed_in);await pg.waitForTimeout(900);
+ await pg.goto(origin+'/?v=home');await pg.waitForFunction(()=>window.__totehm_space?.().signed_in);await pg.waitForTimeout(900);
  report.compassMutations=await pg.evaluate(()=>new Promise(resolve=>{let n=0;const observer=new MutationObserver(ms=>n+=ms.length);const cmp=document.querySelector('#cmp');if(!cmp)return resolve(0);/* 09/10 : SPACE n'a plus de radar ni de boussole */observer.observe(cmp,{childList:true,subtree:true});setTimeout(()=>{observer.disconnect();resolve(n);},1100);}));
  if(!baseline)ok(report.compassMutations===0,'idle compass performs no DOM mutations');
- await pg.click('#cur-g');const cold=Date.now();await pg.waitForFunction(()=>document.querySelector('#feed video')?.currentTime>.04);report.coldFirstFrameMs=Date.now()-cold;
+ await pg.click('#cur-d');const cold=Date.now();await pg.waitForFunction(()=>document.querySelector('#feed video')?.currentTime>.04);report.coldFirstFrameMs=Date.now()-cold;
  await pg.evaluate(()=>{window.__firstVideo=document.querySelector('#feed video');window.__geolocationComplete?.();});await pg.waitForTimeout(1400);report.refreshPreservesVideo=await pg.evaluate(()=>window.__firstVideo===document.querySelector('#feed video'));
  if(!baseline)ok(report.refreshPreservesVideo,'late geolocation refresh preserves the active video');report.nextPrepared=log.network.some(x=>x.kind==='media'&&x.path.includes('/1.mp4'));
  if(!baseline)ok(report.nextPrepared,'next video is prepared before the swipe');
@@ -36,20 +36,20 @@ try{
  await pg.evaluate(()=>window.__paginationVideo=document.querySelectorAll('#feed video')[18]);await pg.$eval('#feed',e=>e.scrollTop=e.querySelector('.clip').offsetHeight*18);
  await pg.waitForFunction(()=>window.__totehm_space().feed===21);await pg.waitForTimeout(400);report.paginationPreservesVideo=await pg.evaluate(()=>window.__paginationVideo===document.querySelectorAll('#feed video')[18]);
  if(!baseline)ok(report.paginationPreservesVideo,'pagination preserves the active video and its buffer');
- await pg.click('#joy-box');await pg.waitForTimeout(300);report.outsideFeed=await pg.$$eval('#feed video',vs=>({paused:vs.every(v=>v.paused),retained:vs.filter(v=>v.getAttribute('src')||v._hls).length}));
+ await pg.click('#cur-g');await pg.waitForTimeout(300);report.outsideFeed=await pg.$$eval('#feed video',vs=>({paused:vs.every(v=>v.paused),retained:vs.filter(v=>v.getAttribute('src')||v._hls).length}));
  if(!baseline)ok(report.outsideFeed.paused&&report.outsideFeed.retained<=3,'leaving the feed pauses playback and retains at most three prepared videos');
  if(!baseline){
   await pg.$eval('#feed',e=>e.scrollTop=e.querySelector('.clip').offsetHeight*7);
-  await pg.click('#cur-g');await pg.waitForTimeout(80);await pg.click('#joy-box');await pg.waitForTimeout(850);
+  await pg.click('#cur-d');await pg.waitForTimeout(80);await pg.click('#cur-g');await pg.waitForTimeout(850);
   ok(await pg.$$eval('#feed video',vs=>vs.every(v=>!v.getAttribute('src')&&!v._hls)),'late authorization cannot attach media after leaving the feed');
   await pg.evaluate(()=>Object.defineProperty(navigator,'connection',{value:{saveData:true,effectiveType:'4g',downlink:12},configurable:true}));
-  await pg.click('#cur-g');await pg.waitForFunction(()=>[...document.querySelectorAll('#feed video')].some(v=>!v.paused&&v.currentTime>.04));await pg.waitForTimeout(500);
+  await pg.click('#cur-d');await pg.waitForFunction(()=>[...document.querySelectorAll('#feed video')].some(v=>!v.paused&&v.currentTime>.04));await pg.waitForTimeout(500);
   ok(await pg.$$eval('#feed video',vs=>vs.filter(v=>v.getAttribute('src')||v._hls).length)===1,'Save-Data keeps only the visible video loaded');
   await pg.evaluate(()=>{Object.defineProperty(document,'hidden',{value:true,configurable:true});document.dispatchEvent(new Event('visibilitychange'));});
   ok(await pg.$$eval('#feed video',vs=>vs.every(v=>v.paused&&!v.getAttribute('src')&&!v._hls)),'background visibility event releases playback');
   await pg.evaluate(()=>{Object.defineProperty(document,'hidden',{value:false,configurable:true});document.dispatchEvent(new Event('visibilitychange'));});
   await pg.waitForFunction(()=>[...document.querySelectorAll('#feed video')].some(v=>!v.paused&&v.currentTime>.04));
-  ok(true,'foreground visibility event resumes the current video');await pg.click('#joy-box');
+  ok(true,'foreground visibility event resumes the current video');await pg.click('#cur-g');
  }
  await pg.screenshot({path:out+'/radar-'+report.mode+'.png'});
  // Record actual motion with the same code the application uses, isolated from feed.
@@ -71,7 +71,7 @@ try{
   await browser.close();const retryBrowser=await launch();try{
   let reads=0;const id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',guid='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
   const pending=await page(retryBrowser,{dir:'space',origin,network,rpc:{spot_rules:{video_provider:'bunny'},space_feed:()=>({ok:true,more:false,spots:[{...rows[0],video:null,clip:{id,status:'processing'}}]})},tables:{profiles:[{pseudo:'wah'}]},functions:{'create-bunny-upload':{available:true},'bunny-video':()=>++reads===1?{status:'processing'}:{status:'ready',url:'https://test.b-cdn.net/bcdn_token=TEST&expires=9999999999&token_path=%2F'+guid+'%2F/'+guid+'/playlist.m3u8',expires:9999999999}}});
-  await pending.pg.goto(origin+'/');await pending.pg.waitForFunction(()=>window.__totehm_space?.().signed_in);await pending.pg.waitForTimeout(300);await pending.pg.click('#cur-g');const start=Date.now();
+  await pending.pg.goto(origin+'/?v=home');await pending.pg.waitForFunction(()=>window.__totehm_space?.().signed_in);await pending.pg.waitForTimeout(300);await pending.pg.click('#cur-d');const start=Date.now();
   await pending.pg.waitForFunction(()=>document.querySelector('#feed video')?.currentTime>.04,null,{timeout:3000});report.processingReadyMs=Date.now()-start;
   ok(reads===2 && report.processingReadyMs<3000,'finished encoding is picked up promptly without the old five-second wait');
   ok(pending.log.errors.filter(e=>e.startsWith('pageerror')).length===0,'processing retry has no JavaScript error');await pending.ctx.close();

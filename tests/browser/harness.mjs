@@ -25,6 +25,18 @@ export async function launch({videoFile}={}){
   }
   return chromium.launch({ executablePath:process.env.PLAYWRIGHT_CHROMIUM || undefined, args });
 }
+const HOSTS = { 'www.totehm.space':'space', 'www.figher.club':'club', 'www.higher.boutique':'boutique', 'www.totehm.com':'com' };
+function externe(dir, f){
+  let rw = []; try{ rw = JSON.parse(fs.readFileSync(path.join(ROOT, dir, 'vercel.json'), 'utf8')).rewrites || []; }catch(_){ return null; }
+  for(const r of rw){
+    if(!/^https:\/\//.test(r.destination)) continue;
+    const m = /^(.*?)(:\w+\*)?$/.exec(r.source), fixe = m[1], etoile = !!m[2];
+    if(etoile ? !f.startsWith(fixe) : f !== fixe) continue;
+    const u = new URL(r.destination.replace(/:\w+\*$/, etoile ? f.slice(fixe.length) : ''));
+    return HOSTS[u.host] ? { dir: HOSTS[u.host], path: u.pathname } : null;
+  }
+  return null;
+}
 export async function page(browser, { dir, origin, rpc = {}, tables = {}, functions = {}, network = null, session = true, viewport = { width:390, height:844 }, geo = { latitude:38.7223, longitude:-9.1393 }, hasTouch = false }){
   const ctx = await browser.newContext({ viewport, permissions:['geolocation','camera','microphone'], geolocation: geo, hasTouch });
   const log = { rpc:[], upload:[], functions:[], network:[], tiles:0, other:[], errors:[] };
@@ -66,8 +78,12 @@ export async function page(browser, { dir, origin, rpc = {}, tables = {}, functi
       return route.fulfill({ status:404, body:'' });
     }
     if(url.origin === origin){
-      let f = decodeURIComponent(url.pathname); if(f.endsWith('/')) f += 'index.html';
-      let fp = path.join(ROOT, dir, f); if(!path.extname(fp) && fs.existsSync(fp + '.html')) fp += '.html';
+      let f = decodeURIComponent(url.pathname), d = dir;
+      /* 12/10 — les réécritures EXTERNES du vercel.json du domaine (totehm.com sert SPACE et le Club
+         sous /x/…) : on sert le fichier du domaine visé, comme Vercel. */
+      const ext = externe(dir, f); if(ext){ d = ext.dir; f = ext.path; }
+      if(f.endsWith('/')) f += 'index.html';
+      let fp = path.join(ROOT, d, f); if(!path.extname(fp) && fs.existsSync(fp + '.html')) fp += '.html';
       if(!fs.existsSync(fp)) return route.fulfill({ status:404, body:'nf' });
       return route.fulfill({ status:200, contentType: TYPES[path.extname(fp)] || 'application/octet-stream', body: fs.readFileSync(fp) });
     }

@@ -11,12 +11,13 @@ const rpc={space_habits:{ok:true,habits},spot_rules:{clip_seconds:33,duration_mi
 const browser=await launch();
 try{
   const {pg,log}=await page(browser,{dir:'space',origin,rpc,tables:{profiles:[{pseudo:'wah'}]},hasTouch:true});
-  await pg.goto(origin+'/');await pg.waitForFunction(()=>window.__totehm_space?.().view==='home');await pg.waitForTimeout(500);
+  await pg.goto(origin+'/');await pg.waitForFunction(()=>window.__totehm_space?.().view==='feed');
+  await pg.click('#cur-g');await pg.waitForFunction(()=>window.__totehm_space().view==='home');await pg.waitForTimeout(500);   // 12/10 : le pouls, à gauche du fil
   const identity=await pg.$eval('#member-txt',e=>({font:getComputedStyle(e).fontFamily,color:getComputedStyle(e).color}));ok(identity.font.includes('Quantico')&&identity.color==='rgb(251, 213, 202)','connected identity keeps Quantico Coral after the login label changes');
   ok((await pg.textContent('#tp-hint')).trim().toUpperCase()==='TAP TO SHARE A SPACE','short invitation: tap to share a space (11/10 bis)');
-  ok(await pg.locator('#space-about,#space-definition').count()===0&&/no selfie, no music/.test(await pg.textContent('#home-what')),'no « What is a space? »: the home itself says it, in one line');
+  ok(await pg.locator('#space-about,#space-definition').count()===0&&await pg.locator('#home-what').count()===0,'no « What is a space? », no sentence (12/10: the design speaks)');
   await pg.screenshot({path:OUT+'/space_definition_mobile.png'});
-  await pg.click('#cur-g');await pg.waitForFunction(()=>window.__totehm_space().view==='feed');await pg.waitForTimeout(500);
+  await pg.click('#cur-d');await pg.waitForFunction(()=>window.__totehm_space().view==='feed');await pg.waitForTimeout(500);
   await pg.click('#sf-btn');await pg.click('[data-sf-pick]');await pg.waitForSelector('[data-filter-h]');
   const picker=pg.locator('[data-filter-h="0"]');
   ok(!/set time frequency|any rhythm|place ·/i.test(await picker.textContent()),'unconfigured frequency and place never appear in the mirrored Box');

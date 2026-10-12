@@ -31,7 +31,7 @@ try{
  if(process.argv[3]==='native') await pg.addInitScript(()=>{window.MediaSource=undefined;window.ManagedMediaSource=undefined;window.WebKitMediaSource=undefined;});
  await pg.goto(origin+'/?v=cam');await pg.waitForFunction(()=>window.__totehm_space?.().signed_in);await pg.waitForTimeout(700);
  ok(reading===0,'no Bunny playback request before the video view is visible');
- await pg.keyboard.press('Escape');await pg.waitForFunction(()=>window.__totehm_space().view==='home');await pg.keyboard.press('ArrowLeft');await pg.waitForFunction(()=>{const v=document.querySelector('#feed video');return v?.videoWidth>0;});
+ await pg.keyboard.press('Escape');await pg.waitForFunction(()=>window.__totehm_space().view==='feed');await pg.waitForFunction(()=>{const v=document.querySelector('#feed video');return v?.videoWidth>0;});
  const dimensions=await pg.$eval('#feed video',v=>({w:v.videoWidth,h:v.videoHeight}));ok(['native','slow'].includes(process.argv[3])?dimensions.w>=270:dimensions.w>=720 && dimensions.h>=1280,'signed HLS adapts to the connection and preserves HD on a fast connection');
  if(process.argv[3]==='slow')ok(log.network.filter(x=>x.host==='test.b-cdn.net' && x.path.endsWith('.ts'))[0]?.path.endsWith('/low00.ts'),'slow connection does not force the 8 Mbps rendition');
  const stage=()=>pg.$eval('#feed .portrait-media',e=>{const r=e.getBoundingClientRect();return r.width/r.height;});
