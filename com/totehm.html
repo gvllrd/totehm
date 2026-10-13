@@ -100,7 +100,7 @@ html{font-family:'Space Mono',monospace}button,input,select,textarea{font-family
      trois portes et le wordmark n'ayant jamais demandé plus. */
   --joy-d:52px;
   --joy-b:18px;
-  --band-b:calc(var(--joy-b) + var(--joy-d) + 36px + 10px);
+  --band-b:calc(var(--joy-b) + var(--joy-d) + 36px + 26px);   /* 13/10 : + le nom de la vue, un mot au-dessus */
   --tile-btn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   --tile-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%2336498c'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000000'/%3E%3C/svg%3E");
   /* Le carré perforé du logo (desktop) — même dessin que #gl-bg.
@@ -596,6 +596,11 @@ body.ordering #vnow{display:none}
   text-transform:uppercase;color:rgba(255,255,255,.32);white-space:nowrap}
 #vnow b,#vnow i,#vnow span{padding:0}
 body.ro #vnow{top:calc(78px + var(--ro-h))}
+/* 13/10 (lot B) — PLUS DE TITRE EN HAUT (Wah : « juste les grandes vues, dans le joystick, comme le mode recherche »).
+   Le nom de la vue = UN mot, gris, juste au-dessus de la manette ; la glose et l'époque partent. */
+#vnow,body.ro #vnow{top:auto;bottom:calc(var(--joy-b) + var(--joy-d) + 36px + 4px)}
+#vnow b{font-size:9px;font-weight:700;letter-spacing:.2em;color:#8a8a92;text-shadow:none}
+#vnow i,#vnow span{display:none}
 /* La répercussion 3D : le nom pivote dans la direction du voyage, en
    même temps que la pile glisse. */
 @keyframes face-d{from{transform:rotateY(-62deg) translateX(18px);opacity:0}to{transform:none;opacity:1}}
@@ -1378,6 +1383,16 @@ body.v-visions{--paper:#2b3a73}
 .dash:hover{border-color:#fff;color:#fff}
 .add-box{width:100%;background:none;border:none;color:#fff;cursor:pointer;
   text-align:left;padding:0;font-family:'Quantico',sans-serif;font-size:14px}
+/* 13/10 (lot B) — LE TOTEHM SANS MOTS DU SYSTÈME (Wah : « un minimalisme extrême ; moins on met d'écriture, mieux
+   c'est ; tout doit être visuellement compréhensible »). Les mots des groupes partent : la couleur de la mini-boîte
+   dit ce qu'elle est (bleu clair = objectif, rouge-violet = répulsion, navy = habitude). Créer = un « + ». */
+.mg-l{display:none!important}
+.add-box{text-align:center;font:400 22px/1 'Space Mono',monospace;color:rgba(255,255,255,.7)}
+.ic{width:13px;height:13px;display:inline-block;vertical-align:-2px}
+.dash .ic{width:12px;height:12px}
+.v-img{display:block;width:100%;max-height:220px;object-fit:cover;margin-top:8px}
+.v-dots{display:inline-flex;gap:3px;vertical-align:middle;margin-left:6px}
+.v-dots i{width:5px;height:5px;background:#fbd5ca}
 
 /* ══ LE LOOKUP — UNE RÉPULSION PROTÈGE PLUSIEURS HABITUDES ═══════════
    Comme un lookup Airtable : on voit d'un coup d'œil ce que « la
@@ -2578,9 +2593,8 @@ body.gate.entered #filter-badge{
      jetons : `--pad` est la profondeur d'une perforation, et rien ne
      se pose dessus. Au téléphone il n'y a pas de carré — l'écran EST
      le carré — donc la règle générale (22 px) reste la bonne. */
-  #vnow{top:calc(50% - var(--stage)/2 + var(--pad) + 78px);
+  #vnow,body.ro #vnow{top:auto;bottom:calc(50% - var(--stage)/2 + var(--joy-b) + var(--joy-d) + 36px + 4px);
         left:0;right:0}
-  body.ro #vnow{top:calc(50% - var(--stage)/2 + var(--pad) + 78px + var(--ro-h))}
   body.ro #joy{top:auto}
   body.ro #bigT{top:calc(22px + var(--ro-h))}
 
@@ -3553,9 +3567,8 @@ body.searching #ljoy{z-index:230}
      ouvre son Totehm en read only, simple »). Une barre : qui on lit, et
      le retour au sien. Plus de copies, plus de revue, plus d'import. -->
 <div id="ro-bar">
-  <span id="ro-tag">Reading</span>
+  <button id="ro-out" type="button" aria-label="Back to my TOTEHM">&larr;</button>
   <span id="ro-who"></span>
-  <button id="ro-out" type="button">back to mine</button>
 </div>
 
 <button id="fold-x" class="sink-el" type="button" aria-label="Close my Totehm">
@@ -4214,6 +4227,8 @@ const HSPACES={seq:0, par:new Map()};
 /* Les Totehm Cloths de higher.boutique, par leçon et par vision
    (`element_cloths`) : clé = 'w:<id>' ou 'v:<id>'. 08/10/2026 (ter). */
 const ECLOTHS={seq:0, par:new Map()};
+/* L'image libre de MES visions (`my_visions`, 13/10) : id → chemin du seau `moments`. */
+const VISIMG=new Map(); let visImgSeq=0;
 
 let state={habits:[],vis:'private'};
 let busy=false, fpTarget=null, fpStage='freq', pendingF=null, pendingI=null, filterF=null, filterI=null;
@@ -4529,23 +4544,78 @@ async function loadElementCloths(){
   if(seq!==ECLOTHS.seq||uid!==me?.id) return;
   if(error){ console.error('[element_cloths]',error.message); return; }
   if(!data||!data.ok) return;
-  const L={wisdom:'w',vision:'v'};
+  const L={wisdom:'w'};   /* 13/10 : un Cloth porte MY STORY seulement (Wah), plus une vision */
   ECLOTHS.par=new Map((data.elements||[]).filter(x=>L[x.kind]).map(x=>[L[x.kind]+':'+String(x.ref),
     {total:x.total|0,cloths:Array.isArray(x.cloths)?x.cloths:[]}]));
   renderZone();
+}
+/* 13/10 — Une vision porte une image libre (générée ailleurs ; « Generate » = lot C). Privée : le seau `moments`
+   ne l'ouvre qu'à moi. Lue par `my_visions` ; une réponse tardive est jetée. */
+async function loadVisionImages(){
+  if(!me||RO) return;
+  const seq=++visImgSeq, uid=me.id;
+  const {data,error}=await sb.rpc('my_visions');
+  if(seq!==visImgSeq||uid!==me?.id) return;
+  if(error){ console.error('[my_visions]',error.message); return; }
+  if(!data||!data.ok) return;
+  VISIMG.clear();
+  (data.visions||[]).forEach(v=>{ if(v.image) VISIMG.set(String(v.id),String(v.image)); });
+  renderZone();
+}
+/* Une image du seau `moments` (shorts, visions) : URL signée d'une heure, gardée 50 min, par compte. */
+const SIGNE=new Map();
+async function signerPhoto(img){
+  const p=img.dataset.photo, uid=me?.id||'anon', k=uid+':'+p, c=SIGNE.get(k);
+  img.onerror=()=>img.remove();
+  if(c&&c.at>Date.now()-50*60e3){ img.src=c.url; return; }
+  const {data,error}=await sb.storage.from('moments').createSignedUrl(p,3600);
+  if(error){ console.error('[moments]',error.message); img.remove(); return; }
+  if((me?.id||'anon')!==uid||!img.isConnected) return;
+  SIGNE.set(k,{url:data.signedUrl,at:Date.now()}); if(SIGNE.size>120) SIGNE.delete(SIGNE.keys().next().value);
+  img.src=data.signedUrl;
+}
+/* Poser (JPEG ≤ 1080 px, dans MON dossier) ou retirer l'image d'une vision ; l'ancien fichier s'efface. */
+let lvVisionsStale=()=>{};
+async function visionImage(id,fichier){
+  if(!me||RO) return;
+  let chemin=null;
+  if(fichier){
+    let blob=null;
+    try{
+      const img=await new Promise((ok,ko)=>{ const i=new Image(); i.onload=()=>ok(i); i.onerror=ko; i.src=URL.createObjectURL(fichier); });
+      const k=Math.min(1,1080/Math.max(img.naturalWidth,img.naturalHeight)), c=document.createElement('canvas');
+      c.width=Math.round(img.naturalWidth*k); c.height=Math.round(img.naturalHeight*k);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(img.src);
+      blob=await new Promise(ok=>c.toBlob(ok,'image/jpeg',.86));
+    }catch(_){ blob=null; }
+    if(!blob){ console.error('[vision image] not a picture'); return; }
+    chemin=me.id+'/vision-'+crypto.randomUUID()+'.jpg';
+    const {error:eu}=await sb.storage.from('moments').upload(chemin,blob,{contentType:'image/jpeg',upsert:false});
+    if(eu){ console.error('[moments upload]',eu.message); return; }
+  }
+  const {data,error}=await sb.rpc('vision_image_set',{p_id:id,p_path:chemin});
+  if(error||!data?.ok){
+    console.error('[vision_image_set]',error?error.message:data?.why);
+    if(chemin){ const {error:er}=await sb.storage.from('moments').remove([chemin]); if(er) console.error('[moments remove]',er.message); }
+    return;
+  }
+  if(data.old&&data.old!==chemin){ const {error:er}=await sb.storage.from('moments').remove([data.old]); if(er) console.error('[moments remove]',er.message); }
+  visImgSeq++;
+  if(chemin) VISIMG.set(String(id),chemin); else VISIMG.delete(String(id));
+  lvVisionsStale(); renderZone();
 }
 const ETAT_CLOTH={making:'in the making',production:'in production',shipped:'shipped'};
 const miniCloth=c=>'<button type="button" class="mini m-s m-c" data-cloth="'+esc(String(c.name))+'">'
   +'<span class="ms-st">'+esc([ETAT_CLOTH[c.stage]||'cloth', c.line==='luxury'?'luxury':'', c.test?'test':''].filter(Boolean).join(' · '))+'</span>'
   +'<span class="ms-w mc-n">'+esc(c.name)+'</span></button>';
 const clothsDe=(k,id)=>ECLOTHS.par.get(k+':'+String(id))||null;
-const nCloths=n=>n?'<span class="v-frq v-spc">'+n+(n>1?' cloths':' cloth')+'</span>':'';
+const nCloths=n=>n?'<span class="v-dots" role="img" aria-label="'+n+(n>1?' cloths':' cloth')+'">'+'<i></i>'.repeat(Math.min(3,n))+'</span>':'';
 /* Le groupe « cloths » d'une boîte ouverte : ses pièces, puis « + totehmize ». */
 function groupeCloths(k,x,ouverte){
   if(!ouverte) return '';
   const cl=clothsDe(k,x.id), n=cl?cl.total:0;
   const g=(cl?cl.cloths.map(miniCloth).join(''):'')
-    +((RO||!String(x.t||'').trim())?'':'<button type="button" class="dash" data-totehmize="'+(k==='w'?'wisdom':'vision')+':'+esc(String(x.id))+'">+ totehmize</button>');
+    +((RO||k!=='w'||!String(x.t||'').trim())?'':'<button type="button" class="dash" data-totehmize="wisdom:'+esc(String(x.id))+'">+ totehmize</button>');
   return groupe(n>3?'cloths · 3 of '+n:'cloths',g);
 }
 
@@ -5009,7 +5079,7 @@ const voisin=d=>(CROIX[view]||{})[d]||null;
    vers le haut, ce qui fait dérailler (voir « une répulsion est une
    mauvaise habitude »). */
 const NOM_VUE={
-  wisdom:    ['my wisdom',    'why I hold these repulsions',               'past experience'],
+  wisdom:    ['my story',     'why I hold these repulsions',               'past experience'],
   repulsions:['my repulsions','what triggers my habits',                   'trigger present'],
   habits:    ['my habits',    'what I execute to achieve my objectives',   'strategic present'],
   objectives:['my objectives','what I will achieve',                       'future present'],
@@ -5061,7 +5131,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-13-com-croix';
+const BUILD='2026-10-13-com-story';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -5676,7 +5746,7 @@ function boiteHTML(o){
    déjà à moi. Une habitude se désigne par son texte, les autres par leur id. */
 const COPIES=new Map();
 const copieHTML=k=>{ const fait=COPIES.get(k);
-  return '<button type="button" class="copie'+(fait?' is-done':'')+'" data-copy="'+esc(k)+'"'+(fait?' disabled':'')+'>'+esc(fait||'Copy to my TOTEHM')+'</button>'; };
+  return '<button type="button" class="copie'+(fait?' is-done':'')+'" data-copy="'+esc(k)+'"'+(fait?' disabled':'')+' aria-label="Copy to my TOTEHM" title="Copy to my TOTEHM">'+(fait?'&check;':'+')+'</button>'; };
 async function copierBox(btn,k){
   if(!RO||btn.disabled) return;
   const i=k.indexOf(':'), kind=k.slice(0,i), id=k.slice(i+1);
@@ -5907,24 +5977,24 @@ function renderZone(){
       return true;});
     NB=list.length; h=list.map((x,k)=>vueHabitude(x,k)).join('');
     if(!list.length)h+='<div class="void">'+((state.habits||[]).length
-      ?'nothing matches this filter':'no habit yet')+'</div>';
-    h+=ligne('<button type="button" class="add-box" data-add="h">+ <b>Add a Habit</b></button>','add');
+      ?'—':'')+'</div>';
+    h+=ligne('<button type="button" class="add-box" data-add="h" aria-label="Add a habit">+</button>','add');
   }else if(view==='objectives'){
     NB=TRIPS.length; h=TRIPS.map((t,k)=>vueObjectif(t,k)).join('');
-    if(!TRIPS.length)h+='<div class="void">'+(tripsLoaded?'no objective yet':'loading…')+'</div>';
-    h+=ligne('<button type="button" class="add-box" data-add="t">+ <b>Add an Objective</b></button>','add');
+    if(!TRIPS.length)h+='<div class="void">'+(tripsLoaded?'':'…')+'</div>';
+    h+=ligne('<button type="button" class="add-box" data-add="t" aria-label="Add an objective">+</button>','add');
   }else if(view==='repulsions'){
     NB=REPS.length; h=REPS.map((r,k)=>vueRepulsion(r,k)).join('');
-    if(!REPS.length)h+='<div class="void">'+(tripsLoaded?'no repulsion yet':'loading…')+'</div>';
-    h+=ligne('<button type="button" class="add-box" data-add="r">+ <b>Add a Repulsion</b></button>','add');
+    if(!REPS.length)h+='<div class="void">'+(tripsLoaded?'':'…')+'</div>';
+    h+=ligne('<button type="button" class="add-box" data-add="r" aria-label="Add a repulsion">+</button>','add');
   }else if(view==='wisdom'){
     NB=TEACH.length; h=TEACH.map((w,k)=>vueTeaching(w,k)).join('');
-    if(!TEACH.length)h+='<div class="void">'+(tripsLoaded?'no teaching yet':'loading…')+'</div>';
-    h+=ligne('<button type="button" class="add-box" data-add="w">+ <b>Add a Teaching</b></button>','add');
+    if(!TEACH.length)h+='<div class="void">'+(tripsLoaded?'':'…')+'</div>';
+    h+=ligne('<button type="button" class="add-box" data-add="w" aria-label="Add my story">+</button>','add');
   }else{
     NB=VIS.length; h=VIS.map((v,k)=>vueVision(v,k)).join('');
-    if(!VIS.length)h+='<div class="void">'+(tripsLoaded?'no vision yet':'loading…')+'</div>';
-    h+=ligne('<button type="button" class="add-box" data-add="v">+ <b>Add a Vision</b></button>','add');
+    if(!VIS.length)h+='<div class="void">'+(tripsLoaded?'':'…')+'</div>';
+    h+=ligne('<button type="button" class="add-box" data-add="v" aria-label="Add a vision">+</button>','add');
   }
 
   /* La bande « order by importance » a quitté le `innerHTML` : elle
@@ -5933,9 +6003,10 @@ function renderZone(){
   if(change){ box.classList.remove('swap'); void box.offsetWidth; box.classList.add('swap'); }
   if(keep!=null&&sc)sc.scrollTop=keep;
   peintTraits();
+  box.querySelectorAll('.v-img[data-photo]').forEach(signerPhoto);
   window.__totehm_zone={version:BUILD, vue:view, session:!!me, arbre_charge:tripsLoaded,
     habitudes:(state.habits||[]).length, objectifs:TRIPS.length, repulsions:REPS.length,
-    lecons:TEACH.length, visions:VIS.length, cloths:[...ECLOTHS.par.values()].reduce((a,x)=>a+x.total,0),
+    lecons:TEACH.length, visions:VIS.length, images:VISIMG.size, cloths:[...ECLOTHS.par.values()].reduce((a,x)=>a+x.total,0),
     filtre:{rythme:!!filterF, intention:!!filterI},
     boite_ouverte:open?open.kind:null, choix:pk?pk.q:null,
     classement:ordering, ordre_du_membre:!!state.ord};
@@ -6005,11 +6076,11 @@ function vueHabitude(x,k){
   const unit = ouverte&&!RO
     ? intBouton(x,'h')
       +'<button type="button" class="v-b'+(x.f?'':' vit')+'" data-pk="freq:h:'+esc(String(x.id))+'">'
-      +esc(x.f?flabel(x.f):'set time frequency')+' ▾</button>'
+      +(x.f?esc(flabel(x.f))+' ▾':'+ <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2"/></svg>')+'</button>'
       +'<button type="button" class="v-b" data-pk="spot:h:'+esc(String(x.id))+'">'
       +esc(lieu||'where')+'</button>'
     : intMots(x)
-      +(x.f||!RO?'<span class="v-frq'+(x.f?'':' vit')+'">'+esc(x.f?flabel(x.f):'set time frequency')+'</span>':'')
+      +(x.f?'<span class="v-frq">'+esc(flabel(x.f))+'</span>':'')
       +(lieu?'<span class="v-frq">'+esc(lieu)+'</span>':'')
       +(nSp?'<span class="v-frq v-spc v-ecosystem">'+compte(nSp,'SPACE')+'</span>':'')
       +(nSt?'<span class="v-frq v-spc v-ecosystem">'+compte(nSt,'SPOT')+'</span>':'');
@@ -6038,7 +6109,7 @@ function vueHabitude(x,k){
   const minis = groupe('why',gO,pkO) + groupe('trigger',gR,pkR)
     + (ouverte&&spaces.length?groupe(nSp>3?'SPACES · 3 of '+nSp:'SPACES',spaces.map(miniSpace).join('')):'')
     + (ouverte&&spots.length?groupe(nSt>3?'SPOTS · 3 of '+nSt:'SPOTS',spots.map(miniSpace).join('')):'')
-    + (ouverte&&!RO?'<button type="button" class="dash" data-newspace="'+esc(srv(x))+'">+ a space</button><button type="button" class="dash" data-newspot="'+esc(srv(x))+'">+ a spot</button>':'');
+    + (ouverte&&!RO?'<button type="button" class="dash" data-newspace="'+esc(srv(x))+'" aria-label="A space">+ <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></button><button type="button" class="dash" data-newspot="'+esc(srv(x))+'" aria-label="A spot">+ <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></button>':'');
   let haut='', bas='';
   if(ouverte&&pkOn('int','h',x.id))  haut=intPicker(x,'h');
   if(ouverte&&pkOn('freq','h',x.id)) haut=freqPicker(x);
@@ -6104,7 +6175,7 @@ function vueRepulsion(r,k){
      CLOSE ; CLOSE a changé de place, elle aussi — elle ouvre maintenant
      le lookup du groupe INSTEAD, juste sous le bouton qui l'a demandé. */
   const pkHR = (ouverte&&pkOn('lien','hr',r.id))
-    ? '<span class="pk-say">write a new one or pick an existing one</span>'
+    ? ''
       + lienPicker('hr',r.id, hs.map(x=>String(x.id)),
         (state.habits||[]).map(x=>({id:x.id,txt:x.t})), 'a new habit','h') : '';
   const pkRW = (ouverte&&pkOn('lien','rw',r.id))
@@ -6173,7 +6244,8 @@ function vueTeaching(w,k){
 function vueVision(v,k){
   const ouverte = !!open && open.kind==='v' && String(open.id)===String(v.id);
   const ts=tripsOfVision(v);
-  const unit = nCloths(clothsDe('v',v.id)?.total|0);
+  const img = VISIMG.get(String(v.id))||null;
+  const unit = img ? '<img class="v-img" alt="" data-photo="'+esc(img)+'">' : '';
   const pkVO = (ouverte&&pkOn('lien','vo',v.id)) ? lienPicker('vo',v.id,
       ts.map(t=>String(t.id)),
       TRIPS.map(t=>({id:t.id,txt:t.text})), 'a new objective','o') : '';
@@ -6181,7 +6253,8 @@ function vueVision(v,k){
     ? ts.map(t=>miniDel('o',t.id,t.text,'data-unlink="vo:'+esc(String(v.id))+'|'+esc(String(t.id))+'"')).join('')
       + plus('lien','vo',v.id,'objective')
     : ts.map(t=>mini('o',t.id,t.text)).join(''), pkVO)
-    + groupeCloths('v',v,ouverte);
+    + (ouverte&&!RO&&!estProvisoire(v.id)?'<button type="button" class="dash" data-vimg="'+esc(String(v.id))+'" aria-label="'+(img?'Change the image':'Add an image')+'">+ <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="currentColor"/><path d="M5 17l5-5 4 4 2-2 3 3" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>'
+        +(img?'<button type="button" class="dash" data-vimg-x="'+esc(String(v.id))+'" aria-label="Remove the image">&times; <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="10" r="2" fill="currentColor"/><path d="M5 17l5-5 4 4 2-2 3 3" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>':''):'');
   let haut='', bas='';
   return ligne(boiteHTML({kind:'v',id:v.id,titre:v.t,unit,minis,ouverte,haut,bas,tue:'Delete vision'}),
     ouverte?'open':'',
@@ -6533,9 +6606,12 @@ function cable(box){
        qui les traite existait et n'était jamais atteint. */
     const el=e.target.closest('[data-fint],[data-ffq],[data-fclear],[data-fx],'
       +'[data-open],[data-add],[data-x],[data-pk],[data-int],[data-mv],[data-go],'
-      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-newspace],[data-newspot],[data-cloth],[data-totehmize],[data-zoom],[data-copy]');
+      +'[data-fq],[data-lien],[data-unlink],[data-nodate],[data-kill],[data-space],[data-newspace],[data-newspot],[data-cloth],[data-totehmize],[data-zoom],[data-copy],[data-vimg],[data-vimg-x]');
     if(!el)return;
     const d=el.dataset;
+    if(d.vimg){ e.stopPropagation(); const id=d.vimg, f=document.createElement('input'); f.type='file'; f.accept='image/*';
+      f.onchange=()=>{ const x=f.files&&f.files[0]; if(x) visionImage(id,x); }; f.click(); return; }
+    if(d.vimgX){ e.stopPropagation(); visionImage(d.vimgX,null); return; }
     if(d.copy){ e.stopPropagation(); copierBox(el,d.copy); return; }
     /* La loupe agrandit la boîte EN PLACE, sans l'ouvrir ni la redessiner. */
     if(d.zoom){ e.stopPropagation(); const k=d.zoom, on=!ZOOM.has(k); if(on)ZOOM.add(k); else ZOOM.delete(k);
@@ -8217,7 +8293,7 @@ $('mw-save-code').addEventListener('input',async()=>{
    frame ou pour de bon, le Totehm de celui d'avant. */
 let sesSeq=0;
 function quitter(){
-  roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ECLOTHS.seq++; ECLOTHS.par=new Map(); ZOOM.clear(); COPIES.clear();
+  roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ECLOTHS.seq++; ECLOTHS.par=new Map(); visImgSeq++; VISIMG.clear(); ZOOM.clear(); COPIES.clear();
   if($('myspaces').classList.contains('is-open')){MYSPACES.seq++;MYSPACES.busy=false;MYSPACES.rows=[];$('myspaces-list').replaceChildren();$('myspaces-name').textContent='';$('myspaces').classList.remove('is-open');MYSPACES.inert.forEach(([e,was])=>e.inert=was);MYSPACES.inert=[];}
   state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; mySub=null; LAND=null; if(lvQuitter) lvQuitter();
   TRIPS=[]; REPS=[]; TEACH=[]; VIS=[]; OBJ={}; tripsLoaded=false;
@@ -8251,7 +8327,7 @@ async function sessionLoad(){
   }
   if(n!==sesSeq) return;
   memberPaint(); paint();
-  if(inscrit()&&!RO){loadTrips(true);loadHabitSpaces();loadElementCloths();}
+  if(inscrit()&&!RO){loadTrips(true);loadHabitSpaces();loadElementCloths();loadVisionImages();}
   garde();
   if(n===sesSeq&&lvRefresh) lvRefresh();
   if(n===sesSeq&&inscrit()&&!RO&&openRequestedSpaces){openRequestedSpaces=false;$('myspaces-open').click();}
@@ -9090,7 +9166,7 @@ window.addEventListener('pageshow',e=>{
       membre:inscrit(), higher:!!(LAND&&LAND.higher&&LAND.higher.active), thp:!!(LAND&&LAND.thp),
       sm:SM.msgs.length, pret:!!etatSM().ready, gratuits:etatSM().free_left??null, envois:diag.envois, telegram:diag.telegram, whatsapp:diag.whatsapp,
       visibilite:LAND?LAND.visibility:null, vignette:!!avatarOk(LAND&&LAND.avatar),
-      prises:diag.prises, monde:MONDE.etat(), visions:VIS.etat(), banc:BANC.etat(), createur:CREA.etat()});
+      prises:diag.prises, monde:MONDE.etat(), visions:MESVIS.etat(), banc:BANC.etat(), createur:CREA.etat()});
     window.__lvAller=v=>aller(v);
     body.classList.add('lv-c');
 
@@ -9128,7 +9204,7 @@ window.addEventListener('pageshow',e=>{
       const fini=()=>{ bouge=false; peindreJoy(); if(then) then(); };
       if(v==='c') return PAPIER.glisser(null,{ms:640,fin:fini});
       if(v==='g') MONDE.ouvrir();
-      if(v==='d') VIS.charger();
+      if(v==='d') MESVIS.charger(true);
       return PAPIER.glisser(enHaut(),{ms:720,fin:fini});
     }
     /* Le haut s'ouvre ou se ferme par un autre chemin (le papier retourné à la main, la croix, Échap) : la croix suit. */
@@ -9469,18 +9545,8 @@ window.addEventListener('pageshow',e=>{
     fil.addEventListener('click',smClic);
     $('lv-say-note').addEventListener('click',smClic);
 
-    /* ── LES IMAGES (shorts, visions) : URL signée d'une heure, gardée 50 min, par compte ── */
-    const SIGNE=new Map();
-    async function signer(img){
-      const p=img.dataset.photo, uid=me?.id||'anon', k=uid+':'+p, c=SIGNE.get(k);
-      img.onerror=()=>img.remove();
-      if(c&&c.at>Date.now()-50*60e3){ img.src=c.url; return; }
-      const {data,error}=await sb.storage.from('moments').createSignedUrl(p,3600);
-      if(error){ console.error('[moments]',error.message); img.remove(); return; }
-      if((me?.id||'anon')!==uid||!img.isConnected) return;
-      SIGNE.set(k,{url:data.signedUrl,at:Date.now()}); if(SIGNE.size>120) SIGNE.delete(SIGNE.keys().next().value);
-      img.src=data.signedUrl;
-    }
+    /* ── LES IMAGES (shorts, visions) : `signerPhoto` (une URL signée d'une heure, gardée 50 min, par compte) ── */
+    const signer=signerPhoto;
     const traits=l=>(l||[]).map(i=>'<i style="background:'+intColor(i)+'"></i>').join('');
 
     /* ── EN BAS : PRENDRE (13/10) — Wah : « le scroll du bas doit déclencher soit une photo, soit une vidéo,
@@ -9595,7 +9661,7 @@ window.addEventListener('pageshow',e=>{
     /* ── À DROITE : MES VISIONS (13/10) — Wah : « SEULEMENT toutes les visions générées avec les mini-box par
        dessus ». Une vision = son image (libre aujourd'hui ; « Generate » au lot C), son texte et les objectifs qui
        y mènent (mini-boxes bleu clair). Sans image : une place en pointillé et son « + ». Un tap : la vue VISION. ── */
-    const VIS=(()=>{
+    const MESVIS=(()=>{
       const el=$('lv-visions'); let liste=null, seq=0;
       async function charger(force){
         if(!(me&&inscrit())){ liste=[]; peindre(); return; }
@@ -9620,6 +9686,7 @@ window.addEventListener('pageshow',e=>{
       return {charger, vider(){ seq++; liste=null; el.replaceChildren(); },
               etat:()=>({liste:liste?liste.length:null, images:liste?liste.filter(v=>v.image).length:0})};
     })();
+    lvVisionsStale=()=>MESVIS.vider();
 
     /* ── LE BANC (13/10) — chercher un autre TOTEHM : des Totehms qui nagent en banc (UN canvas, ≤ 140 papiers,
        rAF seulement tant qu'il est ouvert), un champ, des NOMS. Un nom ouvre `/@nom` : son univers, en lecture —
@@ -9691,10 +9758,10 @@ window.addEventListener('pageshow',e=>{
       LAND=data||null;
       peindreCarte(); connPaint(); paintMe();
       smPeindre(); if(vue==='h'&&!SM.paye) smNoteEtat();
-      if(vue==='g') MONDE.charger(true); if(vue==='d') VIS.charger(true);
+      if(vue==='g') MONDE.charger(true); if(vue==='d') MESVIS.charger(true);
       CREA.charger();
     };
-    lvQuitter=()=>{ landSeq++; SM.seq++; SM.msgs=[]; SM.busy=false; SM.live=null; SM.offre=false; visSeq++; MONDE.vider(); VIS.vider(); CREA.vider();
+    lvQuitter=()=>{ landSeq++; SM.seq++; SM.msgs=[]; SM.busy=false; SM.live=null; SM.offre=false; visSeq++; MONDE.vider(); MESVIS.vider(); CREA.vider();
                     $('lv-vis-note').textContent=''; smNote(''); };
     slo.classList.add('no-anim');
     peindreCarte(); poser('c');
