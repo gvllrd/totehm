@@ -134,6 +134,36 @@ main{width:100%;max-width:520px;margin:0 auto;padding:max(84px,11dvh) 16px 96px;
 
 
 
+
+/* ══ L'UNIVERS (13/10) : ses spaces et ses spots. Lisible = net ; réservé = flouté, son niveau seul. ══ */
+#uni{width:100%;max-width:560px;margin:22px auto 0;display:flex;flex-direction:column;gap:8px}
+.u-head{display:flex;align-items:center;gap:7px;font:700 10px/1 var(--mono);letter-spacing:.14em;color:var(--lo);margin-top:10px}
+.u-head svg{width:12px;height:12px}
+.u-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.u-t{position:relative;aspect-ratio:9/16;border:none;border-radius:10px;background:var(--g2);overflow:hidden;cursor:pointer;padding:0;color:#fff;text-align:left;font:inherit}
+.u-t img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.u-t::after{content:"";position:absolute;inset:auto 0 0 0;height:55%;background:linear-gradient(transparent,rgba(0,0,0,.78));pointer-events:none}
+.u-ints{position:absolute;top:8px;left:8px;display:flex;gap:3px;z-index:1}
+.u-ints i{width:10px;height:3px;border-radius:2px}
+.u-h{position:absolute;left:8px;right:8px;bottom:22px;font:400 12px/1.2 var(--q);z-index:1;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.u-st{position:absolute;left:8px;right:8px;bottom:8px;font:700 8px/1 var(--mono);letter-spacing:.1em;color:var(--mid);z-index:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.u-t .audb{position:absolute;top:5px;right:5px;z-index:1;color:#fff}
+.u-t.is-locked{background:var(--g3)}
+.u-blur{position:absolute;inset:-20%;background:radial-gradient(circle at 30% 30%,#3a3a42,transparent 55%),radial-gradient(circle at 70% 65%,#2a2a31,transparent 60%),var(--g3);filter:blur(14px)}
+.u-t.is-locked .audb{top:50%;left:50%;right:auto;transform:translate(-50%,-50%);color:var(--mid)}
+.u-t.is-locked .audb svg{width:20px;height:20px}
+.u-t.is-locked::after{display:none}
+.u-none{font:400 11px/1.4 var(--mono);color:var(--dim)}
+.g-ic{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;margin:0 auto;color:#fff}.g-ic svg{width:14px;height:14px}
+/* ══ AUDIENCE — copié depuis tools/audience_ui.css (13/10) ══ */
+.aud{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.aud button{display:inline-flex;align-items:center;gap:6px;font:700 10px/1 'Space Mono',monospace;letter-spacing:.08em;color:#9a9aa0;background:#15151a;border:none;border-radius:10px;padding:7px 9px;cursor:pointer;width:auto}
+.aud button.is-on{background:#2e2e36;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+.aud svg,.audb svg{width:12px;height:12px;flex:0 0 auto}
+.audb{display:inline-flex;align-items:center;justify-content:center;color:#9a9aa0;min-width:20px;min-height:20px}
+@media(hover:hover){.aud button:hover,.audb:hover{color:#fff}}
+/* ══ fin AUDIENCE ══ */
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -155,7 +185,13 @@ main{width:100%;max-width:520px;margin:0 auto;padding:max(84px,11dvh) 16px 96px;
 .hint:hover,
 .ns-label:hover,
 .srch-meta:hover,
-.srch-row:hover::after{color:#fff}
+.srch-row:hover::after,
+.u-head:hover,
+.u-st:hover,
+.u-t.is-locked .audb:hover,
+.u-none:hover,
+.aud button:hover,
+.audb:hover{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style>
@@ -208,6 +244,13 @@ main{width:100%;max-width:520px;margin:0 auto;padding:max(84px,11dvh) 16px 96px;
       <button class="lnk" id="si-x" type="button">Not now</button>
     </form>
     <div class="note" id="note" aria-live="polite" style="margin-top:12px"></div>
+    <!-- 13/10 : l'univers du membre (`creator_universe`). Un tap ouvre SUR PLACE dans totehm.com. -->
+    <div id="uni" class="hide">
+      <div class="u-head" id="u-h-spaces"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.8v8.4L10 6z" fill="currentColor"/></svg>SPACES</div>
+      <div class="u-grid" id="u-spaces"></div>
+      <div class="u-head" id="u-h-spots"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.6" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r="2.2" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r=".9" fill="currentColor"/></svg>SPOTS</div>
+      <div class="u-grid" id="u-spots"></div>
+    </div>
     <div class="foot"><a class="lnk" href="/search">Search another TOTEHM</a></div>
   </section>
 </main>
@@ -288,7 +331,25 @@ async function comMemberBridge(sb, target, url, apiURL, publicKey) {
 wireComMemberMenu($('menu'),{bridge:(target,url)=>comMemberBridge(sb,target,url,SB_URL,SB_ANON)});
 
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
-const BUILD='2026-10-06-menu';
+/* ══ AUDIENCE — 13/10 : quatre niveaux, une pastille. COPIÉ tel quel depuis tools/audience_ui.js
+   (jamais importé). PRIVATE = moi · FIGHER CLUB = les membres · MY SUBSCRIBERS = mes abonnés ·
+   PUBLIC = tout le monde. Le serveur décide (`_audience_ok`) ; ceci ne fait que le dire. ══ */
+const AUD = [['private','PRIVATE'],['figher','FIGHER CLUB'],['subscribers','MY SUBSCRIBERS'],['public','PUBLIC']];
+const AUD_ICON = {
+  private:'<svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="5.5" width="7" height="5" rx="1" fill="currentColor"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
+  figher:'<svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.6" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r="2.2" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r=".9" fill="currentColor"/></svg>',
+  subscribers:'<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.2l1.4 3 3.3.4-2.4 2.3.6 3.3L6 8.6 3.1 10.2l.6-3.3L1.3 4.6l3.3-.4z" fill="currentColor"/></svg>',
+  public:'<svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.6" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M1.4 6h9.2M6 1.4c-2.6 2.6-2.6 6.6 0 9.2M6 1.4c2.6 2.6 2.6 6.6 0 9.2" fill="none" stroke="currentColor" stroke-width="1"/></svg>'
+};
+const audOf = s => s?.audience || (s?.visibility === 'shared' ? 'public' : 'private');
+const audName = a => (AUD.find(x => x[0] === a) || [])[1] || '';
+const audPick = (cur, attr) => '<div class="aud" role="radiogroup" aria-label="Who sees it">' + AUD.map(([k, l]) =>
+  '<button type="button" role="radio" aria-checked="' + (k === cur) + '"' + (k === cur ? ' class="is-on"' : '') + ' ' + attr + '="' + k + '">' + AUD_ICON[k] + '<span>' + l + '</span></button>').join('') + '</div>';
+const audBadge = a => AUD_ICON[a] ? '<span class="audb" role="img" aria-label="' + audName(a) + '" title="' + audName(a) + '">' + AUD_ICON[a] + '</span>' : '';
+const audMark = (root, attr, a) => root?.querySelectorAll('[' + attr + ']').forEach(b => { const on = b.getAttribute(attr) === a;
+  b.classList.toggle('is-on', on); b.setAttribute('aria-checked', String(on)); });
+/* ══ fin AUDIENCE ══ */
+const BUILD='2026-10-13-univers';
 
 const COLOR = { fight:'#E24B4A', flow:'#e48b31', enrich:'#fcbe21', love:'#639922', express:'#1D9E75', focus:'#378ADD', celebrate:'#7F77DD' };
 const money = (c, cur) => { try{ return new Intl.NumberFormat('en', { style:'currency', currency:(cur||'eur').toUpperCase(), maximumFractionDigits: c % 100 ? 2 : 0 }).format(c/100); }catch(_){ return (c/100) + ' ' + (cur||'eur'); } };
@@ -304,6 +365,8 @@ let me = null, C = null, WANT = null, pageSeq = 0;
 window.__totehm_creator = () => ({ build: BUILD, mode: NAME ? 'page' : 'search', signed_in: !!me, loaded: !!C,
   ok: !!C?.ok, why: C?.why || null, open: !!C?.sale?.open, subscribed: !!C?.viewer?.subscribed,
   can_read: !!C?.viewer?.can_read, me: !!C?.viewer?.me, signin_open: !$('signin').classList.contains('hide'),
+  universe: { loaded: !!U, spaces: U?.spaces?.length || 0, spots: U?.spots?.length || 0,
+              locked: [...(U?.spaces || []), ...(U?.spots || [])].filter(x => x.locked).length },
   results: $('res')?.querySelectorAll('.srch-row').length || 0 });
 
 /* ══ LA SESSION — un seul chemin ═════════════════════════════════════ */
@@ -389,7 +452,7 @@ async function loadPage(){
   if(error){ console.error('[creator_page]', error.message); say('this page is unreachable right now', 'no'); return false; }
   C = data || {};
   if(!C.ok){
-    paintName(NAME); $('ints').innerHTML = '';
+    paintName(NAME); $('ints').innerHTML = ''; uniSeq++; U = null; $('uni').classList.add('hide');
     $('offer').innerHTML = '<div class="state is-off">' + (C.why === 'nobody' ? 'No TOTEHM by that name' : 'This TOTEHM is private') + '</div>' +
       '<a class="btn" href="/search' + (C.why === 'nobody' ? '?q=' + encodeURIComponent(NAME) : '') + '">Search a TOTEHM</a>';
     document.title = 'TOTEHM';
@@ -399,6 +462,7 @@ async function loadPage(){
   paintName(C.pseudo);
   $('ints').innerHTML = (C.palette || []).map(i => '<span><i style="background:' + (COLOR[i] || '#fff') + '"></i>' + esc(i) + '</span>').join('');
   paintOffer();
+  loadUniverse();
   const v = C.viewer || {};
   if(WANT === 'subscribe' && me){
     WANT = null;
@@ -411,8 +475,10 @@ const GETS = n =>
   '<div class="gets">' +
     '<div class="get"><span class="croix" aria-hidden="true"><i class="c-t"></i><i class="c-w"></i><i class="c-h"></i><i class="c-v"></i><i class="c-r"></i></span>' +
       '<span><b>' + esc(n) + '’s whole TOTEHM</b><p>habits · objectives · repulsions · vision · wisdom — read only, as it grows</p></span></div>' +
+    '<div class="get"><span class="g-ic" aria-hidden="true">' + AUD_ICON.subscribers + '</span>' +
+      '<span><b>Every space and spot ' + esc(n) + ' shares</b><p>with subscribers · with FIGHER CLUB</p></span></div>' +
     '<div class="get"><span class="pt" aria-hidden="true"></span>' +
-      '<span><b>Where ' + esc(n) + ' is, right now</b><p>the exact place of their shared spaces in SPACE, when they turn location on</p></span></div>' +
+      '<span><b>Where ' + esc(n) + ' is</b><p>the exact point of their spots</p></span></div>' +
   '</div>';
 const PRICE = s => '<div class="price">' + esc(money(s.price_cents, s.currency)) + '<small>/ year</small></div>';
 const FINE = n => '<p class="fine">One payment a year, by Stripe. Stop anytime in your console: it runs to the end of the year. 80% goes to ' + esc(n) + '.</p>';
@@ -443,6 +509,54 @@ function paintOffer(){
   }
   $('offer').innerHTML = h;
 }
+/* ══ L'UNIVERS — ce que JE peux lire, net ; ce qui est réservé (FIGHER CLUB, ses abonnés), flouté :
+   le serveur n'en rend que le niveau, le format et l'état. Le privé n'existe pas ici. Un tap ouvre le
+   space ou le spot SUR PLACE dans totehm.com (`/totehm?open=…&id=…` : un identifiant, jamais une URL). ══ */
+let U = null, uniSeq = 0;
+const SIGNED = new Map();
+const STATE = { will:'I WILL BE HERE', am:'I AM HERE', was:'I WAS THERE' };
+async function photoURL(path){
+  const k = (me?.id || 'anon') + ':' + path, c = SIGNED.get(k); if(c && c.at > Date.now() - 50*60e3) return c.url;
+  const { data, error } = await sb.storage.from('moments').createSignedUrl(path, 3600);
+  if(error){ console.error('[photo]', error.message); return null; }
+  SIGNED.set(k, { url:data.signedUrl, at:Date.now() }); return data.signedUrl;
+}
+function tileHTML(x){
+  if(x.locked) return '<button class="u-t is-locked" type="button" data-lock="' + esc(x.audience) + '" aria-label="' + esc(audName(x.audience)) + '">' +
+    '<span class="u-blur" aria-hidden="true"></span>' + audBadge(x.audience) + (x.state ? '<span class="u-st">' + STATE[x.state] + '</span>' : '') + '</button>';
+  const ints = (x.intentions || []).map(i => '<i style="background:' + (COLOR[i] || '#fff') + '"></i>').join('');
+  return '<button class="u-t" type="button" data-open="' + esc(x.format) + '" data-id="' + esc(x.id) + '">' +
+    (x.photo ? '<img alt="" data-photo="' + esc(x.photo) + '">' : '') + '<span class="u-ints" aria-hidden="true">' + ints + '</span>' +
+    '<span class="u-h">' + esc(x.habit || '') + '</span>' +
+    (x.format === 'spot' ? '<span class="u-st">' + (STATE[x.state] || '') + (x.city ? ' · ' + esc(x.city) : '') + '</span>' : '') +
+    (audOf(x) !== 'public' ? audBadge(audOf(x)) : '') + '</button>';
+}
+async function loadUniverse(){
+  const seq = ++uniSeq, uid = me?.id || null;
+  const { data, error } = await sb.rpc('creator_universe', { p_pseudo: NAME, p_limit: 24 });
+  if(seq !== uniSeq || uid !== (me?.id || null)) return;              /* réponse tardive : jetée */
+  if(error){ console.error('[creator_universe]', error.message); return; }
+  if(!data?.ok){ U = null; $('uni').classList.add('hide'); return; }
+  U = data;
+  const sp = U.spaces || [], st = U.spots || [];
+  $('u-spaces').innerHTML = sp.map(tileHTML).join(''); $('u-spots').innerHTML = st.map(tileHTML).join('');
+  $('u-h-spaces').classList.toggle('hide', !sp.length); $('u-spaces').classList.toggle('hide', !sp.length);
+  $('u-h-spots').classList.toggle('hide', !st.length); $('u-spots').classList.toggle('hide', !st.length);
+  $('uni').classList.toggle('hide', !sp.length && !st.length);
+  $('uni').querySelectorAll('img[data-photo]').forEach(async img => { img.onerror = () => img.remove();
+    const u = await photoURL(img.dataset.photo); if(u && img.isConnected && seq === uniSeq) img.src = u; else if(!u) img.remove(); });
+}
+$('uni').addEventListener('click', e => {
+  const o = e.target.closest('[data-open]');
+  if(o){ location.href = '/totehm?' + new URLSearchParams({ open:o.dataset.open, id:o.dataset.id }); return; }
+  const l = e.target.closest('[data-lock]'); if(!l) return;
+  /* Réservé : s'abonner ouvre tout ce qui n'est pas privé (FIGHER CLUB compris). */
+  const sub = $('offer').querySelector('[data-do=subscribe]');
+  $('offer').scrollIntoView({ behavior:'smooth', block:'center' });
+  if(sub){ sub.focus({ preventScroll:true }); say(audName(l.dataset.lock) + ' · subscribe to open it'); }
+  else say(audName(l.dataset.lock));
+});
+
 function say(t, k){ $('note').className = 'note' + (k ? ' ' + k : ''); $('note').textContent = t || ''; }
 
 async function subscribe(b){
