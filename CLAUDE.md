@@ -171,7 +171,7 @@ vérifié le 30/09 : `checkout.session.completed`, `invoice.paid`,
 **SPACE · 11/10 :** un space = une Habit vécue (photo/vidéo + son pourquoi), jamais un point exact ; sans selfie ni
 musique ajoutée ; vibes, profils ; **ce qui vient du Totehm reste TEL QUEL** (la box de COM ; à la publication, un tap éteint/rallume une mini-box ou le
 rythme, `spot_box_set`) ; le reste (space, spot) au format de sa plateforme. **figher.club :** un spot = un lieu + une heure (Higher spot : chez soi, lieu privé ou dehors) ;
-radar, annonce (toujours ON), agenda, I AM HERE, passés ; OFF = ville, ON = le point pour mes abonnés. Mini-boxes
+radar, annonce (toujours ON), agenda, I AM HERE, passés ; OFF = ville, ON = le point (`_point_ok`). Mini-boxes
 OBJECTIVES/REPULSIONS séparées (droits serveur). Détails : `space/CLAUDE.md`, `club/CLAUDE.md`, copy : `BRAND.md`.
 My spaces (COM, SPACE) + `space-delete` ; une Box WISDOM/VISION de COM montre ses Cloths (`element_cloths`) comme une Habit ses spaces ; chercher = un NOM → son TOTEHM en lecture (spaces, loupe, COPY d'une Box). Espace membre COM = l'utilisateur (vignette, Higher, souscriptions), format higher.boutique.
 
