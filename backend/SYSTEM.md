@@ -16,6 +16,20 @@
 ---
 
 
+## 0 · LA CROIX DE WAH, MY STORY, LES SATELLITES RÉDUITS À CONNECT — 13/10/2026 (lot B)
+
+| quoi | valeur mesurée |
+|---|---|
+| base | migrations `vision_image`, `creator_dashboard` appliquées ; 3/3 fonctions = fichier (md5 du corps) ; `visions_image_path_check` présent ; aucun `drop`, aucun prix |
+| droits | `vision_image_set`, `my_visions`, `creator_dashboard` : authenticated + service_role seuls, security definer |
+| SQL | `vision_image_selftest` `FAIL={}` · `creator_dashboard_selftest` `FAIL={}` |
+| prod réelle (session simulée, annulée) | `creator_dashboard` ok (14 clés) · `my_visions` ok : 4 visions, 0 image |
+| Edge | `create-checkout` v41 ACTIVE (`KINDS = wisdom` ; `vision` → 422) |
+| navigateur | com_croix 57/57 (réécrit) · com_vision_image 8/8 · com_paper 33/33 · com_member_menu 34/34 · com_read_copy 18/18 · com_plateforme 23/23 · com_cloths 16/16 · com_creator 37/37 · com_guest 14/14 · console 18/18 · streetwear 62/62 · boutique_tongue 10/10 (nouveau ; com_mouth retiré) · boutique_home 23/23 · market 14/14 · space 49/49 · space_box 13/13 · space_top_left 21/21 · space_spot_links 30/30 · spaces_loupe 32/32 · space_boxes_ecosystem 19/19 · club_ui 27/27 · club_map 44/44 · club_publish 33/33 · club_luxury 48/48 · club_from_space 9/9 |
+| échecs connus, hors lot (identiques sur `620ed6d`) | spaces_ui 44/48 (identité boutique get_higher, stoner) · space_video (`videoWidth` sans tête) · space_performance, space_feed_latency (attente du fil, 30 s) |
+| Vercel `0997ede` | com · space · club · boutique READY (production) |
+| prod (pg_net, 200) = dépôt | totehm.com/totehm `0a4e72f4` `2026-10-13-com-story` · `/assets/earth.json` `e0b8a1e2` · totehm.space et `/x/space` `70b6af57` `2026-10-13-space-who` · figher.club et `/x/club` `236f9e8b` `2026-10-13-club-who` · higher.boutique `/get_higher` `60e5e749` · `/streetwear` `225ea1cf` `2026-10-13-story` |
+
 ## 0 · QUATRE NIVEAUX, UNE RÈGLE ; `/@nom` = L'UNIVERS — 13/10/2026 (lot A)
 
 | quoi | valeur mesurée |
