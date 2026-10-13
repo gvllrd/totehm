@@ -439,6 +439,14 @@ body.is-hz #sf-btn{display:none}
 /* 12/10 — un élément éteint dans la publication : il reste à sa place, pâli ; un tap le rallume. */
 [data-box-el]{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .mini.is-off,.v-frq.is-off{opacity:.3;filter:grayscale(1);text-decoration:line-through}
+/* ══ AUDIENCE — copié depuis tools/audience_ui.css (13/10) ══ */
+.aud{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.aud button{display:inline-flex;align-items:center;gap:6px;font:700 10px/1 'Space Mono',monospace;letter-spacing:.08em;color:#9a9aa0;background:#15151a;border:none;border-radius:10px;padding:7px 9px;cursor:pointer;width:auto}
+.aud button.is-on{background:#2e2e36;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+.aud svg,.audb svg{width:12px;height:12px;flex:0 0 auto}
+.audb{display:inline-flex;align-items:center;justify-content:center;color:#9a9aa0;min-width:20px;min-height:20px}
+@media(hover:hover){.aud button:hover,.audb:hover{color:#fff}}
+/* ══ fin AUDIENCE ══ */
 </style>
 <style data-ecosystem-ui="2026-10-05">
 
@@ -586,6 +594,24 @@ const sb = createClient(SB_URL, SB_ANON);
 const FN = SB_URL + '/functions/v1/';
 const $ = id => document.getElementById(id);
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
+/* ══ AUDIENCE — 13/10 : quatre niveaux, une pastille. COPIÉ tel quel depuis tools/audience_ui.js
+   (jamais importé). PRIVATE = moi · FIGHER CLUB = les membres · MY SUBSCRIBERS = mes abonnés ·
+   PUBLIC = tout le monde. Le serveur décide (`_audience_ok`) ; ceci ne fait que le dire. ══ */
+const AUD = [['private','PRIVATE'],['figher','FIGHER CLUB'],['subscribers','MY SUBSCRIBERS'],['public','PUBLIC']];
+const AUD_ICON = {
+  private:'<svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="5.5" width="7" height="5" rx="1" fill="currentColor"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
+  figher:'<svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.6" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r="2.2" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r=".9" fill="currentColor"/></svg>',
+  subscribers:'<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.2l1.4 3 3.3.4-2.4 2.3.6 3.3L6 8.6 3.1 10.2l.6-3.3L1.3 4.6l3.3-.4z" fill="currentColor"/></svg>',
+  public:'<svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.6" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M1.4 6h9.2M6 1.4c-2.6 2.6-2.6 6.6 0 9.2M6 1.4c2.6 2.6 2.6 6.6 0 9.2" fill="none" stroke="currentColor" stroke-width="1"/></svg>'
+};
+const audOf = s => s?.audience || (s?.visibility === 'shared' ? 'public' : 'private');
+const audName = a => (AUD.find(x => x[0] === a) || [])[1] || '';
+const audPick = (cur, attr) => '<div class="aud" role="radiogroup" aria-label="Who sees it">' + AUD.map(([k, l]) =>
+  '<button type="button" role="radio" aria-checked="' + (k === cur) + '"' + (k === cur ? ' class="is-on"' : '') + ' ' + attr + '="' + k + '">' + AUD_ICON[k] + '<span>' + l + '</span></button>').join('') + '</div>';
+const audBadge = a => AUD_ICON[a] ? '<span class="audb" role="img" aria-label="' + audName(a) + '" title="' + audName(a) + '">' + AUD_ICON[a] + '</span>' : '';
+const audMark = (root, attr, a) => root?.querySelectorAll('[' + attr + ']').forEach(b => { const on = b.getAttribute(attr) === a;
+  b.classList.toggle('is-on', on); b.setAttribute('aria-checked', String(on)); });
+/* ══ fin AUDIENCE ══ */
 
 /* ══ DANS TOTEHM.COM · 12/10/2026 — COPIÉ À L'IDENTIQUE dans space/ et club/ ══════════
    Wah : « il faut que SPACE et le Club vivent sur totehm.com ; dans mon Totehm, un clic sur un
@@ -730,7 +756,7 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
   return (v < 10 ? Math.max(.1, v).toFixed(1) : String(Math.round(v))) + ' ' + UNIT; };
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD='2026-10-12-space-joy';
+const BUILD='2026-10-13-space-aud';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'feed';   /* 12/10 — on arrive dans le fil (Wah : « totehm.space, pur TikTok »). */
@@ -744,7 +770,7 @@ const VIDEO_METRICS={firstFrameMs:0,uploadMs:0,publishMs:0,warmStarts:0,coldStar
 window.__totehm_space = () => ({ build: BUILD, view: VIEW, signed_in: !!me, located: !!POS, intention: null, search: !!SF.box,
   feed: FEED.list.length, playing: [...document.querySelectorAll('#feed video')].filter(v => !v.paused).length,
   video:{provider:RULES.video_provider || 'storage',buffered:[...document.querySelectorAll('#feed video')].filter(v=>v.getAttribute('src') || v._hls).length,...VIDEO_METRICS,...(()=>{const v=$('feed').querySelector('.clip[data-k="'+FEED.active+'"] video'),q=v?.getVideoPlaybackQuality?.();return {frames:q?.totalVideoFrames || 0,dropped:q?.droppedVideoFrames || 0};})()},
-  vibes_in:VIB.data?.received?.length || 0, horizon:!!HZ.on, vibes_given:VIB.data?.given?.length || 0, profile_spaces:PROF.list.length, filter:sfCount(), gestures:gestureCount, paper:PAPER.etat(), habit_filter:!!SF.box, spot_filter:sfCount(), feed_shown:FEED.shown.length, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, kind: REC.kind, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
+  vibes_in:VIB.data?.received?.length || 0, horizon:!!HZ.on, vibes_given:VIB.data?.given?.length || 0, profile_spaces:PROF.list.length, filter:sfCount(), gestures:gestureCount, paper:PAPER.etat(), habit_filter:!!SF.box, spot_filter:sfCount(), feed_shown:FEED.shown.length, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, kind: REC.kind, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, aud: REC.aud, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
 
 /* Chaque vue dit où je suis (lecteurs d'écran ; SPACE n'affiche pas de titre de vue). */
 const VIEW_WORDS = {home:['SPACE','Higher social media'],feed:['WATCH','strategic habits, lived'],cam:['SHARE','9:16 · up to 33 seconds'],me:['MY SPACE','my spaces, my vibes'],vibes:['VIBES','on my spaces · the spaces I vibed']};
@@ -809,7 +835,8 @@ function railHTML(s){
   if(s.visibility === 'shared' && !s.mine) b.push('<button class="btn vibe' + (s.vibed ? ' is-on' : '') + '" type="button" data-vibe="' + id + '" aria-pressed="' + !!s.vibed + '">' + vibeLabel(s) + '</button>');
   else if(s.vibes) b.push('<span class="vibes-n">' + s.vibes + ' vibe' + (s.vibes > 1 ? 's' : '') + '</span>');
   if(s.habit) b.push('<button class="btn" type="button" data-spot-it="' + id + '">SPOT</button>');
-  if(s.visibility === 'shared') b.push('<button class="btn" type="button" data-share="' + id + '">SHARE</button>');
+  if(audOf(s) === 'public') b.push('<button class="btn" type="button" data-share="' + id + '">SHARE</button>');
+  if(s.mine || audOf(s) !== 'public') b.push(audBadge(audOf(s)));
   return '<div class="acts rail">' + b.join('') + '</div>';
 }
 function feedStage(s){
@@ -824,10 +851,13 @@ function actsHTML(s, where){
   if(s.format !== 'spot' && s.visibility === 'shared' && !s.mine) b.push('<button class="btn vibe' + (s.vibed ? ' is-on' : '') + '" type="button" data-vibe="' + id + '" aria-pressed="' + !!s.vibed + '">' + vibeLabel(s) + '</button>');
   if(s.mine && s.vibes) b.push('<span class="vibes-n">' + s.vibes + ' vibe' + (s.vibes > 1 ? 's' : '') + '</span>');
   if(s.format !== 'spot' && s.habit) b.push('<button class="btn" type="button" data-spot-it="' + id + '">SPOT</button>');
-  if(s.visibility === 'shared') b.push('<button class="btn" type="button" data-share="' + id + '">SHARE</button>');
+  if(audOf(s) === 'public') b.push('<button class="btn" type="button" data-share="' + id + '">SHARE</button>');
   if(where === 'detail' && s.mine) b.push('<button class="btn" type="button" data-del="' + id + '">DELETE</button>');
   if(where === 'detail') b.push('<button class="btn" type="button" data-close="1">CLOSE</button>');
-  return b.length ? '<div class="acts">' + b.join('') + '</div><p class="note acts-note" hidden></p>' : '';
+  if(!(where === 'detail' && s.mine) && (s.mine || audOf(s) !== 'public')) b.push(audBadge(audOf(s)));
+  /* 13/10 : mon space dit à qui il parle, et se change d'un tap (l'auteur seul, `spot_audience_set`). */
+  const pick = where === 'detail' && s.mine ? audPick(audOf(s), 'data-aud-set') : '';
+  return b.length ? pick + '<div class="acts">' + b.join('') + '</div><p class="note acts-note" hidden></p>' : '';
 }
 /* SPACE → SPOT (Wah, 11/10) : figher.club prolonge SPACE. Mon space → le plan d'un spot, Habit et
    ville déjà posées ; le space d'un autre → les spots à venir de cette Habit (les rejoindre). */
@@ -844,9 +874,22 @@ function actsSay(button, text, creator){
 }
 
 
+/* Changer l'audience de MON space : la réponse tardive n'écrase pas un choix plus frais (séquence). */
+let audSeq = 0;
+async function audSet(btn){
+  const s = DETAIL, a = btn.dataset.audSet, row = btn.closest('.aud'); if(!s || !s.mine || audOf(s) === a) return;
+  const seq = ++audSeq, was = audOf(s); audMark(row, 'data-aud-set', a);
+  const { data, error } = await sb.rpc('spot_audience_set', { p_spot: s.id, p_audience: a });
+  if(error) console.error('[spot_audience_set]', error.message);
+  if(seq !== audSeq) return;
+  if(error || !data?.ok){ audMark(row, 'data-aud-set', was); return actsSay(btn.closest('#detail')?.querySelector('.acts button') || btn, 'Not saved. Try again.'); }
+  s.audience = a; s.visibility = a === 'private' ? 'private' : 'shared';
+  [...FEED.list, ...PROF.list].forEach(x => { if(x.id === s.id){ x.audience = s.audience; x.visibility = s.visibility; } });
+}
 async function actsClick(e){
   const t = e.target instanceof Element ? e.target : null; if(!t) return false;
   const del = t.closest('[data-del]'); if(del){ if(await spaceDelete(del, del.dataset.del) === 'failed') actsSay(del, 'Not deleted. Try again.'); return true; }
+  const as = t.closest('[data-aud-set]'); if(as){ await audSet(as); return true; }
   const vb = t.closest('[data-vibe]'); if(vb){ await vibe(vb.dataset.vibe, vb); return true; }
   const pf = t.closest('[data-profile]'); if(pf){ openProfile(pf.dataset.profile); return true; }
   const si = t.closest('[data-spot-it]'); if(si){ const s = spotById(si.dataset.spotIt); if(s) spotIt(s); return true; }
@@ -1629,7 +1672,7 @@ function camReset(){
 /* Le capteur ne s'allume QU'APRÈS un appui : VIDEO, PHOTO (ou le point rouge,
    qui vaut VIDEO). Arriver dans la vue n'ouvre jamais la caméra. */
 async function camOpen(kind){
-  camReset(); REC.vis='shared'; const seq = REC.seq;
+  camReset(); REC.vis='shared'; REC.aud='public'; const seq = REC.seq;
   if(!me){ REC.step = 'signin'; return camPaint(); }
   if(!kind){ REC.step = 'idle'; return camPaint(); }
   REC.kind = kind;
@@ -1720,7 +1763,7 @@ function camPaint(){
   }
   else if(st === 'form' || st === 'send'){
     const m = missing();
-    h='<div class="it" data-reh="1">'+habitHTML(REC.habit,REC.boxOptions,'')+'</div><textarea id="c-say" maxlength="400" placeholder="A word (optional)">'+esc(REC.say || '')+'</textarea><button class="btn" type="button" data-send="1"'+(m.length || st==='send' ? ' disabled' : '')+'>SHARE</button><p class="note" id="c-note">'+(m.length ? 'missing: '+m.join(' · ') : '')+'</p>'+(REC.placeError?'<button class="btn" type="button" data-locate="1">TRY AGAIN</button>':'');
+    h='<div class="it" data-reh="1">'+habitHTML(REC.habit,REC.boxOptions,'')+'</div><textarea id="c-say" maxlength="400" placeholder="A word (optional)">'+esc(REC.say || '')+'</textarea>'+audPick(REC.aud || 'public','data-aud')+'<button class="btn" type="button" data-send="1"'+(m.length || st==='send' ? ' disabled' : '')+'>SHARE</button><p class="note" id="c-note">'+(m.length ? 'missing: '+m.join(' · ') : '')+'</p>'+(REC.placeError?'<button class="btn" type="button" data-locate="1">TRY AGAIN</button>':'');
   }
   if(['habit','form','retry','heavy'].includes(st)) h+='<div class="cam-actions"><button class="btn" type="button" data-again="1">' + (photo ? 'TAKE AGAIN' : 'RECORD AGAIN') + '</button>' + cancel + '</div>';
   b.innerHTML = h;
@@ -1733,6 +1776,7 @@ $('cam-body').addEventListener('click', e => {
   const t = e.target instanceof Element ? e.target : null; if(!t || REC.busy) return;
   if(boxOptionsClick(t,REC)) return camPaint();
   if(t.closest('[data-locate]')) return recResolvePlace(true);
+  const au = t.closest('[data-aud]'); if(au){ REC.aud = au.dataset.aud; return audMark($('cam-body'), 'data-aud', REC.aud); }
   if(t.closest('[data-signin]')) return ssoLogin(false, '/?v=cam');
   if(t.closest('[data-cancel]')){ camReset(); return go('feed'); }
   const start = t.closest('[data-start]'); if(start) return camOpen(start.dataset.start);
@@ -1779,8 +1823,8 @@ async function camSend(){
   const {pos,city}=await place;
   if(!pos || !city){REC.busy=false;REC.step='form';camPaint();return note('Allow your location to find your current city.',true);}
   POS=pos;
-  const {data,error}=await sb.rpc('space_post',{p_habit:REC.habit.name,p_video:path,p_lat:Math.round(pos.lat*100)/100,p_lng:Math.round(pos.lng*100)/100,p_city:city,p_comment:(REC.say || '').trim() || null});
-  if(error) console.error('[space_post]', error.message);
+  const {data,error}=await sb.rpc('space_post_audience',{p_habit:REC.habit.name,p_video:path,p_lat:Math.round(pos.lat*100)/100,p_lng:Math.round(pos.lng*100)/100,p_city:city,p_comment:(REC.say || '').trim() || null,p_audience:REC.aud || 'public'});
+  if(error) console.error('[space_post_audience]', error.message);
   if(error || !data?.ok){
     // Keep the completed upload for a retry; ownership remains server-enforced.
     REC.busy = false; REC.step = 'form'; camPaint();
@@ -1960,7 +2004,7 @@ function mspPaint(){
   $('msp-list').innerHTML = MSP.rows.map(x => {
     const d = new Date(x.starts_at), when = Number.isNaN(d.getTime()) ? '' : dayOf(d) + ' ' + hhmm(d), id = esc(String(x.id));
     return '<div class="msp-row" data-row="' + id + '"><button class="msp-open" type="button" data-open-space="' + id + '"><span class="msp-h">' + esc(x.habit) + '</span>' +
-      '<span class="msp-s"><b>' + esc(('posted ' + when).trim().toUpperCase()) + '</b> · ' + (x.visibility === 'private' ? 'PRIVATE' : 'SHARED') + '</span>' +
+      '<span class="msp-s"><b>' + esc(('posted ' + when).trim().toUpperCase()) + '</b> · ' + audBadge(audOf(x)) + esc(audName(audOf(x))) + '</span>' +
       '<span>' + esc(x.city || '') + '</span></button>' +
       '<button class="btn msp-del" type="button" data-del="' + id + '" aria-label="Delete this space">DELETE</button></div>';
   }).join('');

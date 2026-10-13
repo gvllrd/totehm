@@ -9,7 +9,7 @@
                          faite : mon prix PAR AN · où me payer · l'ouvrir
                          (`monetization_set`, `creator_payout_set`). Ouvert :
                          ma page /@nom, le lien, un post prêt à publier.
-    2 · qui lit mon TOTEHM   moi seul · moi et mes abonnés (`visibility_set`)
+    2 · qui lit mon TOTEHM   PRIVATE · FIGHER CLUB · MY SUBSCRIBERS · PUBLIC (`visibility_set`, 13/10)
     3 · mes abonnés · 4 · ce que je gagne (grand livre, prochain versement)
     5 · mes abonnements (arrêter en fin d'année : `club-billing` cancel_creator)
     6 · TotehmBot (mensuel, à part) · 7 · mes paiements (portail Stripe)
@@ -113,6 +113,8 @@ h2 .st.is-on{color:#fff;background:var(--g5)}
   .btn:hover{background:var(--g5);color:#fff}.btn.is-main:hover{background:#44444b}
   #menu .m-it:hover{background:var(--g5)}
 }
+
+
 
 
 
@@ -222,8 +224,10 @@ h2 .st:hover,
     <section class="pan" id="s-vis">
       <h2>Who reads my TOTEHM</h2>
       <div class="seg" id="vis">
-        <button class="btn" type="button" data-vis="private">Only me<small>private, nobody else reads it</small></button>
-        <button class="btn" type="button" data-vis="subscribers">Me and my subscribers<small>read only, nobody else</small></button>
+        <button class="btn" type="button" data-vis="private">PRIVATE<small>only me</small></button>
+        <button class="btn" type="button" data-vis="figher">FIGHER CLUB<small>its members + my subscribers</small></button>
+        <button class="btn" type="button" data-vis="subscribers">MY SUBSCRIBERS<small>read only</small></button>
+        <button class="btn" type="button" data-vis="public">PUBLIC<small>everyone with an account</small></button>
       </div>
       <div class="note" id="vis-note"></div>
     </section>
@@ -342,7 +346,7 @@ async function comMemberBridge(sb, target, url, apiURL, publicKey) {
 wireComMemberMenu($('menu'),{bridge:(target,url)=>comMemberBridge(sb,target,url,SB_URL,SB_ANON)});
 
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
-const BUILD='2026-10-06-menu';
+const BUILD='2026-10-13-aud';
 const money = (c, cur) => { try{ return new Intl.NumberFormat('en', { style:'currency', currency:(cur||'eur').toUpperCase(), maximumFractionDigits: (c||0) % 100 ? 2 : 0 }).format((c||0)/100); }catch(_){ return ((c||0)/100) + ' ' + (cur||'eur'); } };
 const day = iso => iso ? new Date(iso).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—';
 async function fn(name, body){

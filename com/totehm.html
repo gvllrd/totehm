@@ -2951,6 +2951,8 @@ body.is-xo{overflow:hidden}
 
 
 
+
+
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Le gris en survol devient blanc. Généré depuis la feuille
    elle-même : un nouveau bloc gris entre ici tout seul.        */
@@ -2975,6 +2977,7 @@ body.is-xo{overflow:hidden}
 .mini-x:hover,
 .habit.filtre .v-name:hover,
 .mg-l:hover,
+.v-ecosystem:hover,
 #habits .in.nw:hover::placeholder,
 .pk-say:hover,
 .w-x:hover,
@@ -3045,6 +3048,8 @@ body.is-xo{overflow:hidden}
 .acct-btn:hover,
 .ast-say:hover,
 .ast-say.is-name:hover,
+.mw-guest-start:hover,
+#lv-guest:hover,
 .door-q:hover,
 #gate-turn:hover,
 #terms-corner:hover,
@@ -3146,7 +3151,8 @@ body:not(.gate) #lv-slogan,body.entered #lv-slogan,body.is-door #lv-slogan{displ
 #lv-card #name-btn.claimed{display:none}
 #lv-card #set-name{caret-color:#fbd5ca;width:200px}
 .lv-vis{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
-.lv-vis button{border:0;border-radius:10px;padding:8px 12px;background:#16161a;color:#8a8a92;font:400 10.5px/1.3 'Space Mono',monospace;cursor:pointer;white-space:nowrap}
+.lv-vis button{border:0;border-radius:10px;padding:8px 12px;background:#16161a;color:#8a8a92;font:700 10px/1.3 'Space Mono',monospace;letter-spacing:.08em;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.lv-vis svg{width:12px;height:12px;flex:0 0 auto}
 .lv-vis button.is-on{background:#3a3a42;color:#fff;box-shadow:0 0 0 1px #fff}
 #lv-tap{position:absolute;left:50%;bottom:calc(max(16px,env(safe-area-inset-bottom)) + 104px);transform:translateX(-50%);
   background:none;border:0;padding:6px 10px;font:700 9.5px/1.4 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#9a9aa2;cursor:pointer;white-space:nowrap}
@@ -3399,10 +3405,13 @@ a Totehm</span>
           <div class="note dim hide" id="name-note"></div>
         </div>
         <!-- Le nom et la visibilité de MON Totehm vivent ici (Wah, 07/10) :
-             les nœuds de l'ancien tiroir, déplacés (`#ident-block`). -->
+             les nœuds de l'ancien tiroir, déplacés (`#ident-block`).
+             13/10 : quatre niveaux (`totehms.audience`), mes abonnés lisent tout ce qui n'est pas privé. -->
         <div class="lv-vis" role="radiogroup" aria-label="Who reads my TOTEHM">
-          <button type="button" data-lvvis="private" role="radio" aria-checked="true">Private</button>
-          <button type="button" data-lvvis="subscribers" role="radio" aria-checked="false">Visible to my subscribers</button>
+          <button type="button" data-lvvis="private" role="radio" aria-checked="true"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="5.5" width="7" height="5" rx="1" fill="currentColor"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg><span>PRIVATE</span></button>
+          <button type="button" data-lvvis="figher" role="radio" aria-checked="false"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.6" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r="2.2" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r=".9" fill="currentColor"/></svg><span>FIGHER CLUB</span></button>
+          <button type="button" data-lvvis="subscribers" role="radio" aria-checked="false"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.2l1.4 3 3.3.4-2.4 2.3.6 3.3L6 8.6 3.1 10.2l.6-3.3L1.3 4.6l3.3-.4z" fill="currentColor"/></svg><span>MY SUBSCRIBERS</span></button>
+          <button type="button" data-lvvis="public" role="radio" aria-checked="false"><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.6" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M1.4 6h9.2M6 1.4c-2.6 2.6-2.6 6.6 0 9.2M6 1.4c2.6 2.6 2.6 6.6 0 9.2" fill="none" stroke="currentColor" stroke-width="1"/></svg><span>PUBLIC</span></button>
         </div>
         <a class="lv-btn hide" id="lv-prog" href="/monetize">My subscription program</a>
         <button class="hide" id="lv-guest" type="button">Guest TOTEHM · save it with my email</button>
@@ -5015,7 +5024,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-10-12-com-joy';
+const BUILD='2026-10-13-com-aud';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -9379,7 +9388,7 @@ window.addEventListener('pageshow',e=>{
       const v=(LAND&&LAND.visibility)||'private';
       document.querySelectorAll('[data-lvvis]').forEach(b=>{ const on=b.dataset.lvvis===v;
         b.classList.toggle('is-on',on); b.setAttribute('aria-checked',String(on)); });
-      $('lv-prog').classList.toggle('hide',v!=='subscribers');
+      $('lv-prog').classList.toggle('hide',v==='private');
     }
     $('lv-card').addEventListener('click',async e=>{
       const b=e.target.closest('[data-lvvis]'); if(!b||!me) return;
@@ -9391,7 +9400,7 @@ window.addEventListener('pageshow',e=>{
       if(error){ console.error('[visibility_set]',error.message); note.textContent='try again'; return; }
       if(!data?.ok){ note.textContent=data?.why==='no_totehm'?'write my TOTEHM first':'try again'; return; }
       LAND={...(LAND||{}),visibility:data.visibility};
-      note.textContent=data.visibility==='private'?'only me':'my subscribers read it';
+      note.textContent=({private:'only me',figher:'FIGHER CLUB + my subscribers',subscribers:'my subscribers',public:'everyone'})[data.visibility]||'';
       peindreCarte();
     });
     $('lv-tap').onclick=()=>{ if(!PAPIER.occupe()) enter(); };
@@ -9595,6 +9604,13 @@ window.addEventListener('pageshow',e=>{
     const sloFini=()=>{ void slo.offsetWidth; slo.classList.remove('no-anim'); };
     if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(!bouge) sloganPour(vue); sloFini(); });
     else requestAnimationFrame(sloFini);
+
+    /* 13/10 — `/@nom` ouvre un space ou un spot SUR PLACE : `?open=space|spot&id=<uuid>`
+       (un identifiant, jamais une URL reçue ; les droits restent ceux de SPACE / du Club). */
+    { const q=new URLSearchParams(location.search), k=q.get('open'), id=q.get('id')||'';
+      if((k==='space'||k==='spot')&&/^[0-9a-f-]{36}$/i.test(id)){
+        history.replaceState(null,'',location.pathname);
+        setTimeout(()=>XO.ouvrir(k==='spot'?'club':'space','spot='+encodeURIComponent(id)),0); } }
 
     /* Retour de Stripe (`?higher=paid`) : la vue du bas, et l'attente du webhook. */
     if(new URLSearchParams(location.search).get('higher')==='paid'){

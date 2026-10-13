@@ -431,6 +431,16 @@ body.v-past #heading{--tp:58px;top:calc(14px + var(--top))}body.v-past #tp-hint,
 /* 12/10 — un élément éteint dans la publication : il reste à sa place, pâli ; un tap le rallume. */
 [data-box-el]{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .mini.is-off,.v-frq.is-off{opacity:.3;filter:grayscale(1);text-decoration:line-through}
+/* ══ AUDIENCE — copié depuis tools/audience_ui.css (13/10) ══ */
+.aud{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.aud button{display:inline-flex;align-items:center;gap:6px;font:700 10px/1 'Space Mono',monospace;letter-spacing:.08em;color:#9a9aa0;background:#15151a;border:none;border-radius:10px;padding:7px 9px;cursor:pointer;width:auto}
+.aud button.is-on{background:#2e2e36;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+.aud svg,.audb svg{width:12px;height:12px;flex:0 0 auto}
+.audb{display:inline-flex;align-items:center;justify-content:center;color:#9a9aa0;min-width:20px;min-height:20px}
+@media(hover:hover){.aud button:hover,.audb:hover{color:#fff}}
+
+.sd-tag.sd-aud{display:inline-flex;align-items:center;gap:5px}.sd-aud .audb{min-width:0;min-height:0;color:inherit}
+/* ══ fin AUDIENCE ══ */
 </style>
 <style data-ecosystem-ui="2026-10-05">
 
@@ -588,6 +598,24 @@ const sb = createClient(SB_URL, SB_ANON);
 const FN = SB_URL + '/functions/v1/';
 const $ = id => document.getElementById(id);
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
+/* ══ AUDIENCE — 13/10 : quatre niveaux, une pastille. COPIÉ tel quel depuis tools/audience_ui.js
+   (jamais importé). PRIVATE = moi · FIGHER CLUB = les membres · MY SUBSCRIBERS = mes abonnés ·
+   PUBLIC = tout le monde. Le serveur décide (`_audience_ok`) ; ceci ne fait que le dire. ══ */
+const AUD = [['private','PRIVATE'],['figher','FIGHER CLUB'],['subscribers','MY SUBSCRIBERS'],['public','PUBLIC']];
+const AUD_ICON = {
+  private:'<svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="5.5" width="7" height="5" rx="1" fill="currentColor"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
+  figher:'<svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.6" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r="2.2" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r=".9" fill="currentColor"/></svg>',
+  subscribers:'<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.2l1.4 3 3.3.4-2.4 2.3.6 3.3L6 8.6 3.1 10.2l.6-3.3L1.3 4.6l3.3-.4z" fill="currentColor"/></svg>',
+  public:'<svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.6" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M1.4 6h9.2M6 1.4c-2.6 2.6-2.6 6.6 0 9.2M6 1.4c2.6 2.6 2.6 6.6 0 9.2" fill="none" stroke="currentColor" stroke-width="1"/></svg>'
+};
+const audOf = s => s?.audience || (s?.visibility === 'shared' ? 'public' : 'private');
+const audName = a => (AUD.find(x => x[0] === a) || [])[1] || '';
+const audPick = (cur, attr) => '<div class="aud" role="radiogroup" aria-label="Who sees it">' + AUD.map(([k, l]) =>
+  '<button type="button" role="radio" aria-checked="' + (k === cur) + '"' + (k === cur ? ' class="is-on"' : '') + ' ' + attr + '="' + k + '">' + AUD_ICON[k] + '<span>' + l + '</span></button>').join('') + '</div>';
+const audBadge = a => AUD_ICON[a] ? '<span class="audb" role="img" aria-label="' + audName(a) + '" title="' + audName(a) + '">' + AUD_ICON[a] + '</span>' : '';
+const audMark = (root, attr, a) => root?.querySelectorAll('[' + attr + ']').forEach(b => { const on = b.getAttribute(attr) === a;
+  b.classList.toggle('is-on', on); b.setAttribute('aria-checked', String(on)); });
+/* ══ fin AUDIENCE ══ */
 
 /* ══ DANS TOTEHM.COM · 12/10/2026 — COPIÉ À L'IDENTIQUE dans space/ et club/ ══════════
    Wah : « il faut que SPACE et le Club vivent sur totehm.com ; dans mon Totehm, un clic sur un
@@ -735,7 +763,7 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
 const mapsURL = (lat, lng) => 'https://www.google.com/maps/search/?api=1&query=' + Number(lat).toFixed(5) + '%2C' + Number(lng).toFixed(5);
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD='2026-10-12-club-plateforme';
+const BUILD='2026-10-13-club-aud';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'radar';
@@ -745,7 +773,7 @@ const EX = { list:[], seq:0, match:'all' };
 const LIST = { list:[], seq:0, more:false, loading:false, match:'all' };
 /* SPACE → SPOT (11/10 bis) : un space arrive avec sa Habit, et sa ville si c'est le mien. */
 const PRE = { habit:'', city:'' };
-const PLAN = { seq:0, context:null, details:false, habit:null, date:'', time:'', pos:null, place:'', city:null, cityText:'', cityPos:null, video:null, fileSeq:0, dur:null, vis:'shared', mode:null, loc:'on', boxOptions:boxNew(), say:'', busy:false };
+const PLAN = { seq:0, context:null, details:false, habit:null, date:'', time:'', pos:null, place:'', city:null, cityText:'', cityPos:null, video:null, fileSeq:0, dur:null, vis:'shared', aud:'figher', mode:null, loc:'on', boxOptions:boxNew(), say:'', busy:false };
 let habitsPending = null, gestureCount = 0, suppressClickUntil = 0;
 const REC = { seq:0, step:null, stream:null, mr:null, blob:null, url:null, mime:'', t0:0, timer:0, seconds:0, uploaded:null, habit:null, vis:'shared', boxOptions:boxNew(), pos:null, city:null, placeAt:0, placePromise:null, placeError:false,
   mode:null, loc:null, dur:null, busy:false, capture:null, width:0,height:0,fps:0,bitrate:0,path:null, forPlan:false, kind:null, why:false };
@@ -753,7 +781,7 @@ let HABITS = null, DETAIL = null;
 const VIDEO_METRICS={firstFrameMs:0,uploadMs:0,publishMs:0,warmStarts:0,coldStarts:0,stalls:0};
 window.__totehm_club = () => ({ build: BUILD, view: VIEW, signed_in: !!me, located: !!POS, intention: S.int, search: !!S.q,
   past:PAST.list.length, exact:EX.list.length, video:{provider:RULES.video_provider || 'storage',...VIDEO_METRICS},
-  list:LIST.list.length, future:LIST.list.filter(s => spotState(s) === 'will' && s.location === 'on').length, gestures:gestureCount, radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx),heading:Math.round(norm360(RAD.head)),pin:MAP.open,place:!!PLAN.pos}, paper:PAPER.etat(), habit_filter:!!S.habit, plan:{city:!!PLAN.cityPos,exact:!!PLAN.pos,video:!!PLAN.video,uploaded:!!PLAN.video?.ref}, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, kind: REC.kind, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
+  list:LIST.list.length, future:LIST.list.filter(s => spotState(s) === 'will' && s.location === 'on').length, gestures:gestureCount, radar:{cx:Math.round(RAD.cx),cy:Math.round(RAD.cy),radius:Math.round(RAD.rpx),heading:Math.round(norm360(RAD.head)),pin:MAP.open,place:!!PLAN.pos}, paper:PAPER.etat(), habit_filter:!!S.habit, plan:{aud:PLAN.aud,city:!!PLAN.cityPos,exact:!!PLAN.pos,video:!!PLAN.video,uploaded:!!PLAN.video?.ref}, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, kind: REC.kind, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, aud: REC.aud, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
 
 /* Chaque vue dit où je suis. L'intention vient de la Habit, sans filtre parallèle. */
 const VIEW_WORDS = {radar:['RADAR','Exact places I can see'],past:['PAST SPOTS','I WAS THERE'],list:['FUTURE SPOTS','I WILL BE HERE'],plan:['PLAN A SPOT','I WILL BE HERE'],cam:['I AM HERE','Start a spot now · 9:16 · up to 33 seconds']};
@@ -809,7 +837,7 @@ function habitInner(h,options,prefix){
 function spotHTML(s){
  const state=spotState(s),st=new Date(s.starts_at),end=new Date(s.ends_at || st.getTime()+(s.duration_min||0)*60e3);
  const when=state==='will' ? 'I WILL BE HERE' : state==='am' ? 'I AM HERE' : 'I WAS THERE';
- const how=s.visibility==='private' ? sdTag('private') : sdTag('shared')+sdTag('location '+esc(s.location||'off'))+(s.location==='on' && s.mode ? sdTag(s.mode==='silent' ? 'silent · nobody disturb me' : 'social · we can talk') : '');
+ const a=audOf(s), how=sdTag(audBadge(a)+esc(audName(a).toLowerCase()),'sd-aud')+(a==='private' ? '' : sdTag('location '+esc(s.location||'off')))+(s.location==='on' && s.mode ? sdTag(s.mode==='silent' ? 'silent · nobody disturb me' : 'social · we can talk') : '');
  const why=s.why || {}; // Published box options apply to the owner's preview too.
  const box={name:s.habit,ints:s.intentions,freq:s.freq,place:s.context?.place,objectives:why.objectives,repulsions:why.repulsions};
  return '<div class="habit">'+tickHTML(s.intentions)+'<span class="h-body"><span class="v-col">'+habitInner(box)+'</span></span>'+'</div>'
@@ -826,7 +854,7 @@ function actsHTML(s, where){
   if(s.location === 'on') b.push('<button class="btn" type="button" data-go="' + id + '">GO</button>');
   if(where === 'list' && hasMedia(s)) b.push('<button class="btn" type="button" data-watch="' + id + '">WATCH</button>');
   if(spotState(s) === 'will') b.push('<button class="btn" type="button" data-ics="' + id + '">CALENDAR</button>');
-  if(s.visibility === 'shared') b.push('<button class="btn" type="button" data-share="' + id + '">SHARE</button>');
+  if(audOf(s) === 'public') b.push('<button class="btn" type="button" data-share="' + id + '">SHARE</button>');
   if(where === 'detail' && s.mine) b.push('<button class="btn" type="button" data-del="' + id + '">DELETE</button>');
   if(where === 'detail') b.push('<button class="btn" type="button" data-close="1">CLOSE</button>');
   return b.length ? '<div class="acts">' + b.join('') + '</div><p class="note acts-note" hidden></p>' : '';
@@ -1484,7 +1512,8 @@ document.addEventListener('pointerdown', e => { if(!e.target.closest('#habit-pic
 const chip = (a, l, on, sub) => '<button type="button" class="chip' + (on ? ' is-on' : '') + '" ' + a + '>' + l + (sub ? '<small>' + sub + '</small>' : '') + '</button>';
 function sharingHTML(x,prefix){
  const attr=k=>'data-'+prefix+k, planned=prefix==='p';
- let html='<div class="row"><span class="lab">Location</span>'+(planned ? '<span class="chip is-on">ON<small>for my subscribers</small></span>' : chip(attr('loc')+'="on"','on',x.loc==='on','for my subscribers')+chip(attr('loc')+'="off"','off',x.loc==='off','for my audience'))+'</div>';
+ /* 13/10 : QUI voit (quatre niveaux, défaut FIGHER CLUB) puis QUOI (ON = le point exact, OFF = la ville). */
+ let html=audPick(x.aud || 'figher', attr('aud'))+'<div class="row"><span class="lab">Location</span>'+(planned ? '<span class="chip is-on">ON<small>the exact point</small></span>' : chip(attr('loc')+'="on"','on',x.loc==='on','the exact point')+chip(attr('loc')+'="off"','off',x.loc==='off','the city only'))+'</div>';
  if(x.loc==='on') html+='<div class="row"><span class="lab">Together</span>'+chip(attr('mode')+'="silent"','silent',x.mode==='silent','Nobody disturb me')+chip(attr('mode')+'="social"','social',x.mode==='social','We can talk')+'</div>';
  if(!planned && x.loc) html+='<div class="row"><span class="lab">WHERE</span><span class="sd-tag">'+esc(x.city || (x.placeError ? 'Allow your location to find your city' : 'Finding your city…'))+'</span>'+(x.placeError ? '<button class="btn" type="button" data-locate="1">TRY AGAIN</button>' : '')+'</div>';
  return html;
@@ -1573,7 +1602,7 @@ function planPaint(){
   if(ready){
     h += '<span class="lab">When?</span><div class="row"><input class="field" id="p-date" type="date" aria-label="Date" value="' + PLAN.date + '"><input class="field" id="p-time" type="time" aria-label="Time" value="' + PLAN.time + '"></div>' +
       '<span class="lab">Where?</span><div class="row"><input class="field" id="p-city" type="text" autocomplete="off" maxlength="80" placeholder="City" aria-label="City" value="' + esc(PLAN.cityText) + '">' +
-      chip('data-plan-place="1"', PLAN.pos ? esc(PLAN.place || 'Exact point') : 'On the map', !!PLAN.pos, PLAN.pos ? 'Change it in the radar' : exact ? 'required for my subscribers' : 'the exact point · optional') +
+      chip('data-plan-place="1"', PLAN.pos ? esc(PLAN.place || 'Exact point') : 'On the map', !!PLAN.pos, PLAN.pos ? 'Change it in the radar' : exact ? 'required' : 'the exact point · optional') +
       (PLAN.pos ? '<button class="lnk" type="button" data-plan-unpin="1">Remove the point</button>' : '') + '</div><div class="row" id="p-cities">' + citySuggestHTML() + '</div>' +
       durationHTML(PLAN,'p','p-dur') + '<textarea class="field" id="p-say" maxlength="400" placeholder="A word (optional)">' + esc(PLAN.say) + '</textarea>' +
       '<span class="lab">Video or photo</span><div class="row">' + chip('data-plan-file="1"', 'From my files', false, 'vertical · video up to ' + secs + ' s') + chip('data-plan-film="video"', 'Film it', false, 'the camera') + chip('data-plan-film="photo"', 'Take a photo', false, 'the camera') + '</div>' +
@@ -1624,6 +1653,7 @@ $('plan-body').addEventListener('click', e => {
   if(t.closest('[data-plan-file]')) return $('p-file').click();
   const film = t.closest('[data-plan-film]'); if(film){ REC.forPlan = film.dataset.planFilm; return go('cam'); }
   if(t.closest('[data-plan-novideo]')){ planVideoDrop(); return planPaint(); }
+  const pa = t.closest('[data-paud]'); if(pa){ PLAN.aud = pa.dataset.paud; return audMark($('plan-body'), 'data-paud', PLAN.aud); }
   for(const [a,k] of [['pmode','mode'],['pdur','dur']]){
     const b = t.closest('[data-' + a + ']'); if(b){ PLAN[k] = k === 'dur' ? +b.dataset[a] : k === 'why' ? b.dataset[a] === '1' : b.dataset[a];  return planPaint(); }
   }
@@ -1708,11 +1738,11 @@ async function planSend(){
     catch(e){ console.error('[plan media]', e && e.message); PLAN.busy = false; planPaint(); return planNote('The ' + (v.photo ? 'photo' : 'video') + ' was not sent — try again, or remove it.'); }
   }
   const at = PLAN.pos || PLAN.cityPos;
-  const { data, error } = await sb.rpc('spot_schedule', { p_habit:PLAN.habit.name, p_visibility:PLAN.vis,
+  const { data, error } = await sb.rpc('spot_schedule_audience', { p_habit:PLAN.habit.name, p_audience:PLAN.aud || 'figher',
     p_starts_at:new Date(PLAN.date + 'T' + PLAN.time).toISOString(), p_duration_min:PLAN.dur,
     p_place:PLAN.pos ? (PLAN.place || PLAN.city || 'the planned place') : PLAN.city, p_lat:at.lat, p_lng:at.lng,
     p_city:PLAN.city, p_comment:PLAN.say.trim() || null, p_mode:shared && PLAN.loc === 'on' ? PLAN.mode : null, p_location:shared ? PLAN.loc : null });
-  if(error || !data?.ok){ if(error) console.error('[spot_schedule]', error.message); PLAN.busy = false; planPaint(); return planNote(({when:'Choose a future date within the next 90 days.',habit:'This Habit Box is no longer in my TOTEHM.',too_many:'Enough spots planned for now.',signin:'Sign in again.',place:'Choose a city or a point on the map.',position:'Choose a city or a point on the map.'})[data?.why] || 'Not saved — try again.'); }
+  if(error || !data?.ok){ if(error) console.error('[spot_schedule_audience]', error.message); PLAN.busy = false; planPaint(); return planNote(({when:'Choose a future date within the next 90 days.',habit:'This Habit Box is no longer in my TOTEHM.',too_many:'Enough spots planned for now.',signin:'Sign in again.',place:'Choose a city or a point on the map.',position:'Choose a city or a point on the map.'})[data?.why] || 'Not saved — try again.'); }
   let linked = true, why = true;
   if(v?.ref){ const r = await sb.rpc('spot_video_attach', { p_spot:data.id, p_video:v.ref }); if(r.error) console.error('[spot_video_attach]', r.error.message); linked = !r.error && !!r.data?.ok; }
   why=await publishBoxOptions(data.id,PLAN);
@@ -1807,7 +1837,7 @@ function camReset(){
 /* Le capteur ne s'allume QU'APRÈS un appui : VIDEO, PHOTO (ou le point rouge,
    qui vaut VIDEO). Arriver dans la vue n'ouvre jamais la caméra. */
 async function camOpen(kind){
-  camReset(); REC.vis='shared'; const seq = REC.seq;
+  camReset(); REC.vis='shared'; REC.aud='figher'; const seq = REC.seq;
   if(!me){ REC.step = 'signin'; return camPaint(); }
   if(!kind){ REC.step = 'idle'; return camPaint(); }
   REC.kind = kind;
@@ -1929,6 +1959,7 @@ $('cam-body').addEventListener('click', e => {
   if(t.closest('[data-again]')) return camOpen(REC.kind || 'video');
   const hk = t.closest('[data-h]'); if(hk){ REC.habit = HABITS[+hk.dataset.h]; REC.boxOptions=boxNew(); REC.step = 'form'; return camPaint(); }
   if(t.closest('[data-reh]')){ REC.step = 'habit'; return camPaint(); }
+  const au = t.closest('[data-aud]'); if(au){ REC.aud = au.dataset.aud; return audMark($('cam-body'), 'data-aud', REC.aud); }
   const mo = t.closest('[data-mode]'); if(mo){ REC.mode = mo.dataset.mode; return camPaint(); }
   const lo = t.closest('[data-loc]'); if(lo){ REC.loc = lo.dataset.loc; REC.mode=null; camPaint(); recResolvePlace(); return; }
   const du = t.closest('[data-dur]'); if(du){ REC.dur = +du.dataset.dur; return camPaint(); }
@@ -1962,10 +1993,10 @@ async function camSend(){
   if(!pos || REC.loc==='off' && !city){REC.busy=false;REC.step='form';camPaint();return note('Allow your location to find your current city.',true);}
   POS=pos;
   const shared = REC.vis === 'shared';
-  const { data, error } = await sb.rpc('spot_create', { p_habit: REC.habit.name, p_visibility: REC.vis, p_duration_min: REC.dur, p_video: path,
+  const { data, error } = await sb.rpc('spot_create_audience', { p_habit: REC.habit.name, p_audience: REC.aud || 'figher', p_duration_min: REC.dur, p_video: path,
     p_lat: pos.lat, p_lng: pos.lng, p_city: city, p_comment: (REC.say || '').trim() || null,
     p_mode: shared && REC.loc === 'on' ? REC.mode : null, p_location: shared ? REC.loc : null });
-  if(error) console.error('[spot_create]', error.message);
+  if(error) console.error('[spot_create_audience]', error.message);
   if(error || !data?.ok){
     // Keep the completed upload for a retry; ownership remains server-enforced.
     REC.busy = false; REC.step = 'form'; camPaint();
