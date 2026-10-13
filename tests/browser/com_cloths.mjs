@@ -1,4 +1,5 @@
-// 08/10/2026 (ter) — COM ↔ higher.boutique : la boutique se cale dans WISDOM et VISION, comme SPACE dans les habits.
+// 08/10/2026 (ter) — COM ↔ higher.boutique : la boutique se cale dans WISDOM (MY STORY), comme SPACE dans les habits.
+// 13/10 : MY STORY seul (plus de VISION) ; le compte se dit en points (≤ 3), plus en mots.
 // Fermée, une leçon dit combien de Cloths la portent ; ouverte, elle les montre (nom Coral, étape) et « + totehmize »
 // part sur /streetwear avec CET élément ; un Cloth ouvre sa page Decode. Par le pont SSO. Tout est simulé.
 // LANCER : node com_cloths.mjs /tmp
@@ -34,16 +35,16 @@ try{
    await vers(pg, 'ArrowLeft', 'wisdom');
    const call = log.rpc.find(x => x.name === 'element_cloths');
    ok(call && call.body.p_pseudo === null, 'COM lit MES Cloths (element_cloths, p_pseudo null)');
-   await pg.waitForFunction(() => /4 cloths/i.test(document.querySelector('#habits').textContent));
-   const ferme = await pg.evaluate(() => [...document.querySelectorAll('#habits [data-open^="w:"]')].map(b => ({ id:b.dataset.open, n:(b.querySelector('.v-spc')?.textContent || '') })));
-   ok(ferme.find(x => x.id === 'w:w1')?.n === '4 cloths' && ferme.find(x => x.id === 'w:w2')?.n === '', 'fermée, la leçon dit « 4 cloths » ; sans Cloth, rien');
+   await pg.waitForFunction(() => !!document.querySelector('#habits .v-dots'));
+   const ferme = await pg.evaluate(() => [...document.querySelectorAll('#habits [data-open^="w:"]')].map(b => ({ id:b.dataset.open, n:b.querySelectorAll('.v-dots i').length, l:b.querySelector('.v-dots')?.getAttribute('aria-label') || '' })));
+   ok(ferme.find(x => x.id === 'w:w1')?.n === 3 && ferme.find(x => x.id === 'w:w1')?.l === '4 cloths' && ferme.find(x => x.id === 'w:w2')?.n === 0, 'fermée, la leçon montre 3 points (aria « 4 cloths ») ; sans Cloth, rien');
    ok((await pg.evaluate(() => window.__totehm_zone.cloths)) === 4, 'diagnostic : __totehm_zone.cloths = 4');
    await pg.locator('#habits [data-open="w:w1"]').evaluate(e => e.click()); await pg.waitForTimeout(400);
    const o = await pg.evaluate(() => { const c = [...document.querySelectorAll('#habits [data-cloth]')];
      return { n:c.length, noms:c.map(b => b.dataset.cloth).join(','), etats:c.map(b => b.querySelector('.ms-st').textContent).join(' | '),
        coral:getComputedStyle(c[0].querySelector('.mc-n')).color, quantico:/Quantico/.test(getComputedStyle(c[0].querySelector('.mc-n')).fontFamily),
        label:[...document.querySelectorAll('#habits .mg-l')].map(l => l.textContent).join(' | '), plus:document.querySelector('#habits [data-totehmize]')?.dataset.totehmize }; });
-   ok(o.n === 3 && o.noms === '0.Hill,0.Sea,0.Try' && /cloths · 3 of 4/.test(o.label), 'ouverte : trois Cloths au plus, « cloths · 3 of 4 »');
+   ok(o.n === 3 && o.noms === '0.Hill,0.Sea,0.Try', 'ouverte : trois Cloths au plus');
    ok(/shipped/.test(o.etats) && /in the making · luxury/.test(o.etats) && /in the making · test/.test(o.etats), 'chaque Cloth dit son étape (luxury, test marqués) : ' + o.etats);
    ok(o.coral === 'rgb(251, 213, 202)' && o.quantico, 'le nom 0.xxx en Quantico Coral');
    ok(o.plus === 'wisdom:w1', '« + totehmize » porte CET élément (wisdom:w1)');
@@ -61,8 +62,8 @@ try{
    await ouvrir(pg);
    await vers(pg, 'ArrowRight', 'visions');
    await pg.locator('#habits [data-open="v:v1"]').evaluate(e => e.click()); await pg.waitForTimeout(400);
-   ok((await pg.$eval('#habits [data-totehmize]', b => b.dataset.totehmize)) === 'vision:v1' && (await pg.locator('#habits [data-cloth]').count()) === 0,
-     'VISION : pas encore de Cloth, « + totehmize » (vision:v1)');
+   ok((await pg.locator('#habits [data-totehmize]').count()) === 0 && (await pg.locator('#habits [data-cloth]').count()) === 0,
+     'VISION : ni Cloth ni « + totehmize » (MY STORY seul)');
    await vers(pg, 'ArrowLeft', 'habits'); await vers(pg, 'ArrowLeft', 'wisdom');
    await pg.locator('#habits [data-open="w:w1"]').evaluate(e => e.click()); await pg.waitForTimeout(400);
    const nav = pg.waitForURL(/higher\.boutique/, { timeout:8000 }).then(() => pg.url(), () => '');
