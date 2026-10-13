@@ -399,9 +399,96 @@ html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;-webkit-fo
 .mw-signout:hover{color:#fff}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
+
+/* ══ LA LANGUE · 13/10/2026 (lot B3) ══ Wah : « l'animation du totehm qui se pose sur la langue, je veux la retrouver
+   dans higher.boutique plutôt que totehm.com ». À l'arrivée sur Get Higher, une fois par session : la bouche (le dessin
+   de Wah, ses gris au code près) s'ouvre, la langue se tire, le TotehmPaper s'y pose, elle l'avale — puis la page.
+   Un tap passe. Mouvement réduit, retour de Stripe : rien. Une seule ligne de temps (rAF), aucune bibliothèque. */
+#tongue{position:fixed;inset:0;z-index:60;background:#000;opacity:1;transition:opacity .5s ease;cursor:pointer}
+#tongue.is-done{opacity:0;pointer-events:none}
+#tongue.is-gone{display:none}
+#tg-mouth{position:absolute;left:50%;top:max(48px,7dvh);width:clamp(170px,34dvh,300px);aspect-ratio:1020/1260;transform:translateX(-50%)}
+#tg-mouth svg{display:block;width:100%;height:100%;overflow:visible}
+#tg-paper{position:absolute;left:0;top:0;width:var(--pw,64px);height:var(--pw,64px);will-change:transform,opacity;
+  background:#333366;display:flex;align-items:center;justify-content:center}
+#tg-paper svg{width:46%;height:46%}
 </style>
 </head>
 <body>
+
+<!-- ══ LA LANGUE · 13/10/2026 ══ (voir le style) -->
+<div id="tongue" class="is-gone" aria-hidden="true">
+  <div id="tg-mouth"><svg viewBox="30 310 1020 1260" aria-hidden="true">
+      <defs><clipPath id="tg-clip"><path id="tg-clip-p" d="M110,740C125,737.3 168.3,729 200,724C231.7,719 263.3,713.7 300,710C336.7,706.3 380,701.3 420,702C460,702.7 500,714 540,714C580,714 620,702.7 660,702C700,701.3 743.3,706.3 780,710C816.7,713.7 848.3,719 880,724C911.7,729 955,737.3 970,740L1050,1570L30,1570Z"/></clipPath></defs>
+      <path id="tg-lips" fill="#1f1f1f" stroke="#1f1f1f" stroke-width="18" stroke-linejoin="round" d="M47,740C55,728 77.8,694.7 95,668C112.2,641.3 131.7,609.7 150,580C168.3,550.3 186.3,518.3 205,490C223.7,461.7 243.2,432.5 262,410C280.8,387.5 298.7,367.7 318,355C337.3,342.3 354.3,335.5 378,334C401.7,332.5 433,341.7 460,346C487,350.3 513.3,360 540,360C566.7,360 593,350.3 620,346C647,341.7 678.3,332.5 702,334C725.7,335.5 742.7,342.3 762,355C781.3,367.7 799.2,387.5 818,410C836.8,432.5 856.3,461.7 875,490C893.7,518.3 911.7,550.3 930,580C948.3,609.7 967.8,641.3 985,668C1002.2,694.7 1025,728 1033,740L1033,740C1024.2,750 1000.5,778.7 980,800C959.5,821.3 937.5,847 910,868C882.5,889 853.3,910.3 815,926C776.7,941.7 725.8,954.3 680,962C634.2,969.7 586.7,972 540,972C493.3,972 445.8,969.7 400,962C354.2,954.3 303.3,941.7 265,926C226.7,910.3 197.5,889 170,868C142.5,847 120.5,821.3 100,800C79.5,778.7 55.8,750 47,740Z"/>
+      <path id="tg-cav" fill="#111111" stroke="#111111" stroke-width="10" stroke-linejoin="round" d="M110,740C125,737.3 168.3,729 200,724C231.7,719 263.3,713.7 300,710C336.7,706.3 380,701.3 420,702C460,702.7 500,714 540,714C580,714 620,702.7 660,702C700,701.3 743.3,706.3 780,710C816.7,713.7 848.3,719 880,724C911.7,729 955,737.3 970,740L970,740C955,737.3 911.7,729 880,724C848.3,719 816.7,713.7 780,710C743.3,706.3 700,701.3 660,702C620,702.7 580,714 540,714C500,714 460,702.7 420,702C380,701.3 336.7,706.3 300,710C263.3,713.7 231.7,719 200,724C168.3,729 125,737.3 110,740Z"/>
+      <g clip-path="url(#tg-clip)"><g id="tg-tongue" transform="translate(0,-960)">
+        <path fill="#2a2a2a" d="M540,762C505,738 460,727 410,727C300,727 207,770 207,880L207,1190C207,1390 360,1540 540,1540C720,1540 872,1390 872,1190L872,880C872,770 780,727 670,727C620,727 575,738 540,762Z"/>
+        <path fill="none" stroke="#232323" stroke-width="10" stroke-linecap="round" d="M540,792L540,1340"/>
+      </g></g>
+      <path id="tg-teeth" fill="#3c3c3c" d="M300,710C320,708.7 380,701.3 420,702C460,702.7 500,714 540,714C580,714 620,702.7 660,702C700,701.3 760,708.7 780,710L780,710C760,708.7 700,701.3 660,702C620,702.7 580,714 540,714C500,714 460,702.7 420,702C380,701.3 320,708.7 300,710Z"/>
+    </svg></div>
+  <div id="tg-paper"><svg viewBox="0 0 624 636"><use href="#t-glyph"></use></svg></div>
+</div>
+<script>
+(()=>{
+  const ov=document.getElementById('tongue'); if(!ov) return;
+  const q=new URLSearchParams(location.search);
+  let vu=false; try{ vu=sessionStorage.getItem('tg-vu')==='1'; }catch(_){}
+  if(vu||[...q.keys()].length||matchMedia('(prefers-reduced-motion: reduce)').matches){ window.__totehm_langue=()=>({joue:false}); return; }
+  try{ sessionStorage.setItem('tg-vu','1'); }catch(_){}
+  ov.classList.remove('is-gone');
+  const $=id=>document.getElementById(id);
+  const pL=$('tg-lips'), pC=$('tg-cav'), pT=$('tg-teeth'), pK=$('tg-clip-p'), gL=$('tg-tongue'), box=$('tg-mouth'), pap=$('tg-paper');
+  /* La géométrie de la bouche, copiée du moteur de totehm.com (03/10 → 06/10) : FERMÉE → OUVERTE, lissée. */
+  const TOP=[[47,740],[95,668],[150,580],[205,490],[262,410],[318,355],[378,334],[460,346],[540,360],[620,346],[702,334],[762,355],[818,410],[875,490],[930,580],[985,668],[1033,740]];
+  const U0=[[110,740],[200,724],[300,710],[420,702],[540,714],[660,702],[780,710],[880,724],[970,740]];
+  const U1=[[110,740],[195,694],[285,648],[405,590],[540,608],[675,590],[795,648],[885,694],[970,740]];
+  const D1=[[110,740],[200,786],[290,826],[400,852],[540,862],[680,852],[790,826],[880,786],[970,740]];
+  const B0=[[47,740],[100,800],[170,868],[265,926],[400,962],[540,972],[680,962],[815,926],[910,868],[980,800],[1033,740]];
+  const B1=[[47,740],[92,825],[140,915],[195,1005],[300,1080],[540,1120],[780,1080],[885,1005],[940,915],[988,825],[1033,740]];
+  const DENTS=[0,80,72,80,0], LONG=960, VX=30, VY=310, VW=1020;
+  const mix=(A,B,u)=>A.map((p,i)=>[p[0]+(B[i][0]-p[0])*u, p[1]+(B[i][1]-p[1])*u]);
+  const f=n=>Math.round(n*10)/10, rev=P=>P.slice().reverse();
+  function courbe(P,debut){ let s=(debut?'M':'L')+f(P[0][0])+','+f(P[0][1]);
+    for(let i=0;i<P.length-1;i++){ const a=P[i-1]||P[i], b=P[i], c=P[i+1], d=P[i+2]||c;
+      s+='C'+f(b[0]+(c[0]-a[0])/6)+','+f(b[1]+(c[1]-a[1])/6)+' '+f(c[0]-(d[0]-b[0])/6)+','+f(c[1]-(d[1]-b[1])/6)+' '+f(c[0])+','+f(c[1]); }
+    return s; }
+  function bouche(o,t){
+    const oo=Math.max(0,Math.min(1.08,o)), U=mix(U0,U1,oo), D=mix(U0,D1,oo), B=mix(B0,B1,oo);
+    const haut=U.slice(2,7), bas=haut.map((p,i)=>[p[0],p[1]+DENTS[i]*oo]);
+    pL.setAttribute('d',courbe(TOP,1)+courbe(rev(B),0)+'Z'); pC.setAttribute('d',courbe(U,1)+courbe(rev(D),0)+'Z');
+    pT.setAttribute('d',courbe(haut,1)+courbe(rev(bas),0)+'Z'); pK.setAttribute('d',courbe(U,1)+'L1050,1570L30,1570Z');
+    const ty=-(1-Math.min(t,oo*1.1))*LONG; gL.setAttribute('transform','translate(0,'+f(ty)+')'); return ty;
+  }
+  const ent=u=>Math.max(0,Math.min(1,u)), lisse=u=>u*u*(3-2*u);
+  /* La ligne de temps (ms) : s'ouvre et tire la langue · le papier tombe et se pose · elle l'avale · la page. */
+  let t0=0, fin=false, raf=0;
+  function pas(now){
+    if(!t0) t0=now; const ms=now-t0;
+    const r=box.getBoundingClientRect(), k=r.width/VW, X=x=>r.left+(x-VX)*k, Y=y=>r.top+(y-VY)*k;
+    const pw=Math.round(r.width*.3); pap.style.setProperty('--pw',pw+'px');
+    let o, t, py, ps=1, pa=1;
+    if(ms<1000){ const u=lisse(ent((ms-250)/700)); o=u; t=u; }
+    else if(ms<2200){ o=1; t=1; }
+    else{ const u=lisse(ent((ms-2200)/800)); t=1-u; o=1-lisse(ent((ms-2550)/550)); }
+    const ty=bouche(o,t);
+    const pose=Y(1060)+ty*k;                                     /* le papier suit la pointe de la langue */
+    if(ms<700) py=-pw*1.6;
+    else if(ms<1650){ const u=lisse(ent((ms-700)/950)); py=-pw*1.6+(pose-(-pw*1.6))*u; ps=1.5-.5*u; }
+    else py=pose;
+    if(ms>2200){ pa=1-ent((ms-2450)/350); ps=1-.35*ent((ms-2200)/600); }
+    pap.style.opacity=pa;
+    pap.style.transform='translate('+(X(540)-pw/2).toFixed(1)+'px,'+(py-pw/2).toFixed(1)+'px) scale('+ps.toFixed(3)+')';
+    if(ms>=3200&&!fin) finir();
+    if(ms<3800) raf=requestAnimationFrame(pas);
+  }
+  function finir(){ if(fin) return; fin=true; ov.classList.add('is-done'); setTimeout(()=>{ ov.classList.add('is-gone'); cancelAnimationFrame(raf); },520); }
+  ov.addEventListener('click',finir);
+  window.__totehm_langue=()=>({joue:!fin, fini:fin});
+  bouche(0,0); raf=requestAnimationFrame(pas);
+})();
+</script>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
