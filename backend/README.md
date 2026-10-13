@@ -1,5 +1,14 @@
 # TOTEHM · backend
 
+## 13/10/2026 — four audiences (`audience`) and `/@name` as a universe
+
+- Procedure: publish with `space_post_audience` / `spot_create_audience` / `spot_schedule_audience` (audience set in
+  the same transaction); change it with `spot_audience_set(spot, audience)`; the TOTEHM with `visibility_set` (4 values).
+- Read rule in one place: `_audience_ok` · `_audience_listed` (showcases) · `_point_ok` (exact point). Never re-test
+  `visibility = 'shared'` in a new reader: it means "not private", not "public".
+- `/@name` reads `creator_universe(pseudo)`: readable items in full, reserved ones as `{locked, format, audience, state}`.
+- Check: `tests/sql/audience_four_levels_selftest.sql` (rolled back, expect `FAIL={}`).
+
 ## 12/10/2026 — switching off one element of a published box
 
 Migration `20261012090000_space_box_elements.sql` (applied once as `space_box_elements`). `spot_box_set(spot, {objectives:[texts], repulsions:[texts], freq:bool})` — owner only — stores the switched-off elements (matched by text, case-insensitive) as indices in `snapshot.hide` and recomputes `show_objectives` / `show_repulsions` / `show_why`. `_spot_view` never returns a switched-off element (a switched-off rhythm is `null` for everyone) and `space_feed` never matches one. A space or spot is born hidden; SPACE and figher.club call `spot_box_set` right after publishing. Test `tests/sql/space_box_elements_selftest.sql` (`FAIL={}`).
@@ -584,7 +593,7 @@ Auto-test complet Boxes/droits : `tests/sql/space_habits_video_selftest.sql`,
 annulation volontaire, attendu FAIL={}. Les deux anciens auto-tests restent.
 
 **Le Totehm et la console (01/10)** : `totehm_search(q, limit)` (par nom :
-pseudo · offer · price_cents · subscribed), `visibility_set('private'|'subscribers')`
+pseudo · offer · price_cents · subscribed), `visibility_set('private'|'figher'|'subscribers'|'public')` (13/10)
 (écrit `_vis_shared()` : 'members' jusqu'au ménage),
 `monetization_set(enabled, price_cents)` (prix PAR AN, 3 € à 1 000 €),
 `creator_payout_set`, `my_console()` — un appel pour la console de

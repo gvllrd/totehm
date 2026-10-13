@@ -1,5 +1,13 @@
 # space/CLAUDE.md — totehm.space : le réseau social de l'Habit stratégique (croix de cinq vues)
 
+## 13/10/2026 — quatre niveaux (lot A)
+
+BUILD `2026-10-13-space-aud`. Sous la box, dans la caméra : PRIVATE · FIGHER CLUB · MY SUBSCRIBERS · PUBLIC
+(`tools/audience_ui.*`, copiés ; défaut PUBLIC, `REC.aud`), envoyé par `space_post_audience` (l'audience posée dans
+la même transaction). Le fil ne liste que public + FIGHER CLUB aux membres ; le réservé aux abonnés vit sur `/@nom`.
+SHARE = un space PUBLIC seul. Mon space : sa pastille, et dans la fiche les quatre niveaux (`spot_audience_set`,
+séquence `audSeq`). My spaces dit le niveau (`my_spaces.audience`). Diagnostic : `rec.aud`.
+
 ## 12/10/2026 (ter) — les couleurs de la manette d'avant
 
 BUILD `2026-10-12-space-joy`. Wah : « remets-moi les couleurs du joystick d'avant ». Chaque vue garde SA teinte,
@@ -157,7 +165,7 @@ hors de chez soi, PRIVATE/SHARED, WHY/TRIGGER et futurs OFF ci-dessous.
   esprit, effervescence collective ; SOCIAL/SILENT et respect des spaces.
 - Nouveaux spaces partagés : plus de choix PRIVATE/SHARED. Garder les
   anciens privés dans leur historique propriétaire, sans les rendre publics.
-- BOTTOM : média puis Habit, ON `for my subscribers` / OFF `for my audience`.
+- BOTTOM : média puis Habit, puis QUI voit (quatre niveaux, défaut PUBLIC, 13/10).
   ON demande SILENT/SOCIAL ; OFF ne montre pas de mode. WHERE OFF est la ville
   actuelle résolue depuis la géolocalisation, jamais le lieu exact dans l'UI.
   Refuser OFF sans ville ou média. Durée puis commentaire ; confirmation.
@@ -328,8 +336,8 @@ liens. Le contexte complet n'est rendu qu'au propriétaire : un Spot public
 ne révèle jamais un Totehm privé ni le lieu habituel personnel de son auteur.
 
 **Création progressive**, même règle pour présent et futur :
-1. PRIVATE / SHARED, après la vidéo et la Habit pour le présent.
-2. Si SHARED : ON « for the subscribers » / OFF « for the audience ».
+1. QUI : PRIVATE · FIGHER CLUB · MY SUBSCRIBERS · PUBLIC (13/10 ; remplace PRIVATE / SHARED).
+2. QUOI (un spot) : ON « the exact point » / OFF « the city only ».
 3. Si ON : SILENT « Nobody disturb me » / SOCIAL « We can talk ».
 4. Durée et commentaire ; pour le futur, date, heure et lieu aussi.
 PRIVATE et SHARED·OFF n'imposent PAS SILENT/SOCIAL. Changer la visibilité
@@ -362,6 +370,8 @@ de longitude. LEFT mobile reste plein écran sans radar derrière la vidéo.
 le joystick remonte, son FOND reste NAVY, le contrôle est rouge (rond puis
 carré), aucun Stop séparé. Les boutons s'ajustent au texte, pas d'étirement
 horizontal ou de padding géant pour compenser le layout.
+
+> 13/10 : ce tableau est remplacé par les quatre niveaux (`CLAUDE.md` racine, `backend/CLAUDE.md` 13/10).
 
 | lecteur | PRIVATE | SHARED·OFF | SHARED·ON |
 |---|---|---|---|

@@ -1,5 +1,31 @@
 # backend/CLAUDE.md — la base, les fonctions, l'argent, le bot
 
+## 13/10/2026 — quatre niveaux : `audience` (lot A)
+
+Migrations `20261013090000_audience_four_levels.sql` (`audience_four_levels`), `20261013091000_audience_my_lists.sql`,
+`20261013092000_audience_console.sql`, appliquées UNE fois chacune. Aucun `drop`.
+- `spot_plans.audience` et `totehms.audience` (not null, check `private|figher|subscribers|public`) = LA source.
+  Rempli : space/spot partagé → `public`, Totehm partagé → `subscribers`, privé → `private`. Triggers
+  `spot_plans_audience_sync`, `totehms_audience_sync` : un ancien écrivain (`visibility`) déduit l'audience (sans
+  changer un niveau partagé), un nouveau (`audience`) fait suivre `visibility` / `totehm_visibility` (`_vis_shared()`).
+- LA règle (service_role seul, `p_fig` calculé UNE fois par l'appelant via `_is_figher`) : `_audience_ok` (lire :
+  auteur · public · figher & membre · figher/subscribers & `_subscriber_of`), `_audience_listed` (ce que listent
+  les vitrines : auteur · public · figher & membre), `_point_ok` (le point exact, ON et non privé : auteur · membre
+  si public/figher · abonné).
+- Lecteurs réécrits, mêmes signatures et droits : `space_feed`, `space_discover`, `spots_feed`, `spots_list`,
+  `space_profile`, `space_vibe`, `space_pulse` (public seul), `habit_spaces`, `spots_exact`, `spot_get`,
+  `_clip_readable`, `_shared_with_me` (Totehm : session exigée), `visibility_set` (4 valeurs ; `members` =
+  `subscribers`), `my_landing`, `_spot_view` (+ `audience`), `creator_page` (un Totehm privé ne ferme plus `/@nom`),
+  `my_vibes` (un space que je ne peux plus lire sort de mes vibes), `my_spaces`/`my_spots` (+ `audience`),
+  `my_console` (`visibility` = l'audience).
+- Écrivains (authenticated) : `space_post_audience(…, p_audience='public')`, `spot_create_audience(…,
+  p_audience='figher')`, `spot_schedule_audience(…, p_audience='figher')` appellent l'ancien écrivain PUIS
+  `_audience_put` dans la même transaction (aucune fenêtre publique ; la projection `spots` = public seul) ;
+  `spot_audience_set(spot, audience)` (auteur seul, `for update`). Les anciens restent (pages en cache).
+- `creator_universe(pseudo, limit)` (anon) : spaces et spots ; lisible = `_spot_view` + `locked:false` ; réservé =
+  `{locked, format, audience[, state]}` SEULS ; privé absent ; `totehm.counts` si non privé.
+- Auto-test `tests/sql/audience_four_levels_selftest.sql` : `FAIL={}` ; `space_social` rejoué : `FAIL={}`.
+
 ## 12/10/2026 — un élément de la box s'éteint : `spot_box_set`
 
 Migration `20261012090000_space_box_elements.sql`, appliquée UNE fois sous `space_box_elements`.

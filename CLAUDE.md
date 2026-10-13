@@ -117,11 +117,12 @@ avant « save with my email » (même compte, `updateUser` + code `email_change`
   unique : Bob → Alice ne donne rien à Alice sur Bob. **Depuis le 01/10 :**
   COM et SPACE sont gratuits pour soi ; un abonné = un abonnement vivant à
   UN créateur, ANNUEL, prix fixé par le créateur, sans passeport FIGHER.
-  Il ouvre le Totehm de CE créateur s'il est `subscribers` (deux réglages
-  seulement : `private` · `subscribers`) et le point exact de ses Spots
-  SHARED·ON. Un Spot : PRIVATE = le propriétaire seul, partout ; SHARED·OFF
-  = la ville ; SHARED·ON = + le point pour ses abonnés. Jamais une distance
-  ni un cap à qui n'a pas le point. TotehmBot = offre séparée, mensuelle.
+  **QUATRE NIVEAUX (13/10)**, colonne `audience` (source ; `visibility` suit par trigger) sur un space,
+  un spot, le Totehm : PRIVATE · FIGHER CLUB · MY SUBSCRIBERS · PUBLIC. Défauts : Totehm PRIVATE, space
+  PUBLIC, spot FIGHER CLUB. Lire = `_audience_ok` ; les vitrines LISTENT `_audience_listed` (public + FIGHER
+  CLUB aux membres ; le réservé aux abonnés se lit sur `/@nom`) ; le point exact (ON) = `_point_ok` (l'auteur,
+  un membre FIGHER CLUB si public/figher, un abonné). Un abonné lit tout ce qui n'est pas privé. Écrire =
+  `*_audience`, `spot_audience_set`, `visibility_set`. Jamais une distance ni un cap à qui n'a pas le point. TotehmBot = offre à part.
 - **La propriété est un exemplaire** (`art_editions`), son histoire
   `art_transfers` (ajout seul). `stoner_access` = projection d'accès ; le THP
   = l'œuvre `totehmpaper` (777 000 ex.), prix = sa ligne `artworks`, numéro

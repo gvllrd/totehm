@@ -1,5 +1,17 @@
 # BRAND.md — TOTEHM
 
+## CURRENT UPDATE — 13/10/2026 · four audiences, one rule (overrides "PRIVATE or VISIBLE TO MY SUBSCRIBERS, nothing else")
+
+- Everything a member publishes says who sees it, in four words a creator gets at once: **PRIVATE** (only me) ·
+  **FIGHER CLUB** (its members) · **MY SUBSCRIBERS** · **PUBLIC**. One icon each (lock · radar · star · globe),
+  grey controls, the chosen one light grey with a white rim. Defaults: TOTEHM PRIVATE, space PUBLIC, spot FIGHER CLUB.
+- My subscribers read everything that is not PRIVATE. The showcases (`totehm.space`, `figher.club`) list PUBLIC and,
+  to members, FIGHER CLUB; what is for my subscribers lives on my page **`totehm.com/@name`**.
+- `/@name` is my universe: what you may read, sharp; what is reserved, **blurred with its level only**; then
+  **Subscribe**. A location: **ON = the exact point**, **OFF = the city only** (who gets the point = the audience).
+- Since Wah named it on the platform (13/10), **FIGHER CLUB may appear on `totehm.com` as an audience label**; the
+  "never on `.com`" rule below still holds for selling or describing the club.
+
 ## CURRENT UPDATE — 12/10/2026 (bis) · one platform, as few words as possible
 
 - **The design speaks, not a sentence** (Wah: « ultra-minimalist, it speaks for itself »). Withdrawn: the

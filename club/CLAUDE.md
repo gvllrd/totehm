@@ -1,5 +1,13 @@
 # club/CLAUDE.md — figher.club : la rencontre dans la réalité (09/10)
 
+## 13/10/2026 — quatre niveaux (lot A)
+
+BUILD `2026-10-13-club-aud`. Plan et caméra : QUI voit (PRIVATE · FIGHER CLUB · MY SUBSCRIBERS · PUBLIC, défaut
+FIGHER CLUB, `PLAN.aud` / `REC.aud`, `[data-paud]` / `[data-aud]`) puis QUOI (ON « the exact point » / OFF « the city
+only »). Écrivains : `spot_schedule_audience`, `spot_create_audience` (plus de `p_visibility`). Le radar et l'agenda
+ne listent que public + FIGHER CLUB aux membres ; le point exact : `_point_ok`. Chaque spot dit son niveau
+(`sd-aud`) ; SHARE = un spot PUBLIC seul. Les spots réservés aux FIGHER CLUB = le lot C (adhésion).
+
 ## 12/10/2026 (bis) — pur radar ; dans totehm.com
 
 BUILD `2026-10-12-club-plateforme`. Centre : [Higher] SPOTS + le radar, sans phrase. Même bloc « DANS TOTEHM.COM »

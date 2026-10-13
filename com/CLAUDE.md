@@ -1,5 +1,15 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 13/10/2026 — quatre niveaux ; `/@nom` = l'univers (lot A)
+
+BUILD `2026-10-13-com-aud` (totehm), `2026-10-13-univers` (creator), `2026-10-13-aud` (console). La carte du
+centre et la console : PRIVATE · FIGHER CLUB · MY SUBSCRIBERS · PUBLIC (`visibility_set`). `/@nom` lit
+`creator_universe` : ses spaces et ses spots en grille 9:16 — lisible net (photo signée, Habit en Quantico,
+intentions, état d'un spot), réservé flouté (le serveur n'en rend QUE le niveau, le format, l'état), privé absent.
+Un tap ouvre SUR PLACE : `/totehm?open=space|spot&id=<uuid>` → `XO.ouvrir` (un identifiant, jamais une URL).
+Un tap sur le réservé mène à Subscribe (un abonné lit tout sauf le privé). Diagnostic : `__totehm_creator().universe`.
+Test : `com_creator` §5.
+
 ## 12/10/2026 (ter) — la manette d'avant
 
 BUILD `2026-10-12-com-joy`. Wah : « remets-moi les couleurs du joystick d'avant ». `#ljoy-box.hors` revient à
@@ -162,8 +172,8 @@ sur l'atterrissage, cinq vues, exactement les mêmes mouvements et clics ».
   garde la molette), doigt (glisser vers le haut = descendre). Pas sur le papier.
 - **Centre `c`** : le Totehm sans bouche, [Higher] Strategy, « Click to open it »
   (« Tap » au toucher) ; `#lv-card` = le nom (`#ident-block`, déplacé du tiroir)
-  et la visibilité : Private par défaut · Visible to my subscribers
-  (`visibility_set`) → bouton `#lv-prog` vers `/monetize`.
+  et la visibilité : PRIVATE par défaut · FIGHER CLUB · MY SUBSCRIBERS · PUBLIC
+  (`visibility_set`, 13/10) → bouton `#lv-prog` vers `/monetize` dès que ce n'est pas privé.
 - **Haut `h` · Get Higher** : le papier monte en rapetissant sur le bout de la
   langue PENDANT que la bouche s'ouvre et que la langue se tire ; [Higher]
   glisse dessous, « Get » Quantico corail ; sans THP, le texte du TotehmPaper.
@@ -495,9 +505,9 @@ abonnement — un prix PAR AN, où me payer, ON/OFF (`monetization_set`,
 un · ce qu'on me doit · TotehmBot (mensuel, à part) · mes paiements (portail
 Stripe) · Reveal the Box. Connexion par email ICI (totehm.com est l'autorité).
 
-**⚠️ DEUX RÉGLAGES, PAS TROIS.** `private` · `subscribers` (« VISIBLE TO MY
-SUBSCRIBERS »). « Tout membre FIGHER lit » n'existe plus (en base, la valeur
-reste écrite 'members' jusqu'au ménage : voir `backend/CLAUDE.md`). Allumer
+**⚠️ QUATRE NIVEAUX (13/10, remplace « deux réglages »).** `private` · `figher` · `subscribers` · `public`
+(`totehms.audience` ; `totehm_visibility` suit par trigger, 'members' = partagé). Mes abonnés lisent tout ce
+qui n'est pas privé ; lire un Totehm demande une session. Allumer
 l'offre rend le Totehm visible à ses abonnés ; l'éteindre ne change rien à
 la visibilité. Repasser en PRIVATE ne résilie personne : la console dit
 combien d'abonnés perdent la lecture.

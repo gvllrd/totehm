@@ -302,6 +302,13 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
+### Correction 0.57 — 13/10/2026 · quatre niveaux, `/@nom` = l'univers (lot A, à reporter)
+> Tout ce qu'un membre publie dit qui le voit : PRIVATE · FIGHER CLUB · MY SUBSCRIBERS · PUBLIC (défauts : Totehm
+> PRIVATE, space PUBLIC, spot FIGHER CLUB). Un abonné lit tout sauf le privé ; les vitrines ne listent que public +
+> FIGHER CLUB aux membres ; le point exact = auteur, membre FIGHER CLUB (public/figher), abonné. `/@nom` = l'univers
+> (lisible net, réservé flouté, Subscribe). Migrations `audience_four_levels`, `audience_my_lists`,
+> `audience_console` APPLIQUÉES : ne pas réappliquer. Aucun prix. En attente : l'adhésion FIGHER CLUB (lot C, prix + « oui »).
+
 ### Correction 0.56 — 12/10/2026 (bis) · une plateforme, le moins de mots (à reporter)
 > totehm.com sert SPACE et le Club (`/x/space`, `/x/club`, même origine) dans une couche : un space, un spot,
 > « + a space », « + a spot » s'ouvrent sur place, la Habit déjà choisie. totehm.space arrive dans le fil ;
