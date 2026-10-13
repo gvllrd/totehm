@@ -30,7 +30,7 @@ try{
      thp:!!document.getElementById('lv-thp-say'), tag:!!document.getElementById('lv-b-tag'), build:window.__totehm_lv().build }));
    ok(!c.why && !c.strat && !c.thp && !c.tag, 'COM : plus de « [Higher] STRATEGY », de phrase sous lui, de texte du THP ni de slogan TotehmSM');
    ok(c.sig === 'wahigher' && /Quantico/.test(c.sigFont) && c.sigInPaper && c.nameBtn === 'none', 'le nom est écrit SUR le papier (Quantico), plus de boîte noire sous lui');
-   ok(c.build === '2026-10-12-com-joy', 'BUILD 2026-10-12-com-joy');
+   ok(c.build === '2026-10-13-com-aud', 'BUILD 2026-10-13-com-aud');
    await pg.screenshot({ path:OUT + '/plateforme_centre.png' });
    const vue = () => pg.evaluate(() => window.__totehm_lv().vue);
    await pg.keyboard.press('ArrowLeft'); await pg.waitForFunction(() => window.__totehm_lv().vue === 'h' && !window.__totehm_lv().bouge);

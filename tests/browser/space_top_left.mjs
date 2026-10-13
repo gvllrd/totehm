@@ -21,7 +21,7 @@ const state=pg=>pg.evaluate(()=>window.__totehm_space());
 const browser=await launch();
 try{
  const calls=[];let id=0;
- const rpc={spot_rules:{clip_seconds:2,duration_min:5,duration_max:720,video_provider:'storage'},space_habits:{ok:true,habits:[habit]},space_feed:b=>({ok:true,spots:b.p_filter?.shows==='photo'?feed.filter(s=>s.photo):b.p_filter?.shows==='why'?feed.filter(s=>s.why):b.p_filter?.shows==='video'?feed.filter(s=>s.video):feed,more:false}),space_pulse:{spaces_week:4,vibes_week:0},space_post:b=>{calls.push({name:'create',body:b});return{ok:true,id:'made-'+(++id)};},spot_box_set:b=>{calls.push({name:'boxes',body:b});return{ok:true};},spot_get:b=>({ok:true,spot:make(b.p_id,-1,{mine:true})})};
+ const rpc={spot_rules:{clip_seconds:2,duration_min:5,duration_max:720,video_provider:'storage'},space_habits:{ok:true,habits:[habit]},space_feed:b=>({ok:true,spots:b.p_filter?.shows==='photo'?feed.filter(s=>s.photo):b.p_filter?.shows==='why'?feed.filter(s=>s.why):b.p_filter?.shows==='video'?feed.filter(s=>s.video):feed,more:false}),space_pulse:{spaces_week:4,vibes_week:0},space_post_audience:b=>{calls.push({name:'create',body:b});return{ok:true,id:'made-'+(++id)};},spot_box_set:b=>{calls.push({name:'boxes',body:b});return{ok:true};},spot_get:b=>({ok:true,spot:make(b.p_id,-1,{mine:true})})};
  const {pg,log}=await page(browser,{dir:'space',origin,rpc,tables:{profiles:[{pseudo:'wah'}]},viewport:{width:390,height:844}});
  await pg.goto(origin+'/');await pg.waitForFunction(()=>window.__totehm_space?.().feed===4);await pg.waitForTimeout(600);
  await pg.waitForFunction(()=>window.__totehm_space().view==='feed');await pg.waitForTimeout(500);   // 12/10 : on arrive dans le fil
@@ -53,6 +53,6 @@ try{
  await pg.click('[data-h="0"]');await pg.waitForFunction(()=>!document.querySelector('[data-send]')?.disabled);
  const ups=log.upload.length;await pg.click('[data-send]');await pg.waitForFunction(()=>window.__totehm_space().view==='feed');await pg.waitForTimeout(300);
  const made=calls.find(x=>x.name==='create');ok(log.upload.length===ups+1&&/\.jpg$/.test(log.upload.at(-1).path)&&/\.jpg$/.test(made.body.p_video)&&calls.find(x=>x.name==='boxes')?.body.p_hide?.objectives?.length===0,'photo uploads as owned jpg and publishes its box as it is (nothing switched off)');
- ok(made.body.p_city==='Lisbon'&&Object.keys(made.body).length===6,'photo uses the space_post contract');
+ ok(made.body.p_city==='Lisbon'&&Object.keys(made.body).length===7&&made.body.p_audience==='public','photo uses the space_post_audience contract');
  ok(!log.errors.some(x=>x.startsWith('pageerror')),'SPACE photo and filter have no JavaScript page errors');
 }finally{await browser.close();}

@@ -23,7 +23,7 @@ const network=async(url,req,log)=>{
   if(!fs.existsSync(file))return {status:404,body:''};return {status:200,contentType:filename.endsWith('.m3u8')?'application/vnd.apple.mpegurl':'video/mp2t',body:fs.readFileSync(file)};
  }
 };
-const rpc={spot_rules:{clip_seconds:2,countdown:1,clip_max_bytes:48000000,duration_min:5,duration_max:720,video_provider:'storage'},space_habits:{ok:true,habits:[{name:'Run the hill',freq:'daily',ints:['fight'],objectives:[],repulsions:[]}]},space_feed:()=>({ok:true,spots:[publicSpot],more:false}),space_pulse:{spaces_week:1,vibes_week:0},space_post:b=>({ok:true,id:'new'}),spot_get:{ok:true,spot:{...publicSpot,id:'new',mine:true}}};
+const rpc={spot_rules:{clip_seconds:2,countdown:1,clip_max_bytes:48000000,duration_min:5,duration_max:720,video_provider:'storage'},space_habits:{ok:true,habits:[{name:'Run the hill',freq:'daily',ints:['fight'],objectives:[],repulsions:[]}]},space_feed:()=>({ok:true,spots:[publicSpot],more:false}),space_pulse:{spaces_week:1,vibes_week:0},space_post_audience:b=>({ok:true,id:'new'}),spot_get:{ok:true,spot:{...publicSpot,id:'new',mine:true}}};
 const browser=await launch({videoFile:path.join(fixture,sourceMode+'.y4m')});
 try{
  const {pg,log}=await page(browser,{dir:'space',origin,rpc,functions,network,tables:{profiles:[{pseudo:'wah'}]},viewport:{width:390,height:844},hasTouch:true});
@@ -62,7 +62,7 @@ try{
  const square=(maxX-minX+1)/(maxY-minY+1),corner=pixel(Math.floor(w*.1),Math.floor(h*.1));ok(minX<maxX && Math.abs(square-1)<.04,'portrait crop preserves the square without stretching');ok(corner[1]>150 && corner[0]<80 && corner[2]<80,'recorded frame is filled by the central camera image');
  execFileSync('ffmpeg',['-hide_banner','-loglevel','error','-y','-ss','0.2','-i',captured,'-frames:v','1',path.join(out,'recorded-'+sourceMode+'.png')]);fs.writeFileSync(path.join(out,'probe-'+sourceMode+'.json'),JSON.stringify({video,audio,capturedBytes:uploaded,requestedBitrate:filming.bitrate,squareAspect:square},null,2));
  ok(log.upload.length===0,'Bunny binary never goes through Supabase Storage');
- const create=log.rpc.find(x=>x.name==='space_post');ok(create.body.p_video==='bunny:'+clip && create.body.p_city==='Lisbon' && Object.keys(create.body).length===6,'space_post references its owned Bunny clip and city without spot controls');
+ const create=log.rpc.find(x=>x.name==='space_post_audience');ok(create.body.p_video==='bunny:'+clip && create.body.p_city==='Lisbon' && Object.keys(create.body).length===7,'space_post_audience references its owned Bunny clip and city without spot controls');
  ok(!JSON.stringify(log.network).includes('BUNNY_API_KEY'),'no library API key reaches the browser');
  ok(log.errors.filter(x=>x.startsWith('pageerror')).length===0,'Bunny contract has no JavaScript page error');
 }finally{await browser.close();}

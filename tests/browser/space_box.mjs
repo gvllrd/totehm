@@ -16,7 +16,7 @@ const habits=[{name:'Run the hill',freq:'every_morning',ints:['love','fight'],pl
 const calls=[];
 const rpc={spot_rules:{clip_seconds:2,duration_min:5,duration_max:720,video_provider:'storage'},space_habits:{ok:true,habits},space_pulse:{spaces_week:12,members_week:5,vibes_week:31},
  space_feed:b=>{calls.push(b.p_filter);const f=b.p_filter||{};return {ok:true,signed_in:true,spots:(f.objectives?.length||f.repulsions?.length||f.habit)?horizon:base,more:false,filtered:!!(f.habit||f.objectives?.length)};},
- space_post:b=>({ok:true,id:'new-space'}),spot_box_set:{ok:true,objectives:true,repulsions:false,hidden:2},spot_get:b=>({ok:true,spot:sp(b.p_id,-1,{mine:true})})};
+ space_post_audience:b=>({ok:true,id:'new-space'}),spot_box_set:{ok:true,objectives:true,repulsions:false,hidden:2},spot_get:b=>({ok:true,spot:sp(b.p_id,-1,{mine:true})})};
 const browser=await launch();
 try{
  const {pg,log}=await page(browser,{dir:'space',origin,rpc,tables:{profiles:[{pseudo:'wah'}]},viewport:{width:390,height:844},hasTouch:true});

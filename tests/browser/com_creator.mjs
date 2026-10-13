@@ -60,7 +60,7 @@ const erreurs = log => log.errors.filter(e => !/404|Failed to load resource/i.te
   await pg.waitForFunction(() => window.__totehm_creator && window.__totehm_creator().loaded, null, { timeout:15000 });
   const t = await pg.textContent('#offer');
   ok(/€24/.test(t) && /\/ year/i.test(t), 'the yearly price, from the server');
-  ok(/kai’s whole TOTEHM/.test(t) && /read only/i.test(t) && /exact place/i.test(t), 'what the subscription opens: the TOTEHM, read only, and the exact place of spaces');
+  ok(/kai’s whole TOTEHM/.test(t) && /read only/i.test(t) && /exact point/i.test(t) && /FIGHER CLUB/.test(t), 'what the subscription opens: the TOTEHM read only, what is shared with subscribers and FIGHER CLUB, the exact point of spots');
   ok(/80% goes to kai/.test(t), 'the 80/20 split, said plainly');
   ok(await pg.$eval('#who', e => getComputedStyle(e).fontFamily.includes('Quantico') && getComputedStyle(e).color === 'rgb(251, 213, 202)'), 'the name: Quantico Coral on its paper');
   ok(await pg.$$eval('#ints span', l => l.length) === 3, 'three intentions shown');
@@ -107,5 +107,30 @@ for(const [nom, data, test] of cas){
   await pg.waitForFunction(() => window.__totehm_creator && window.__totehm_creator().subscribed, null, { timeout:15000 });
   await pg.waitForTimeout(200);
   ok(/you are subscribed/i.test(await pg.textContent('#note')) && !/subscribed=/.test(pg.url()), 'back from Stripe: waits for the webhook, then says subscribed');
+}
+/* ── 5 · /@nom = l'univers (13/10) : lisible net, réservé flouté (son niveau seul), un tap ouvre sur place ── */
+{
+  const sp = (id, o) => Object.assign({ id, format:'space', habit:'Run the hill', intentions:['fight'], audience:'public', state:'was', city:'Lisbon', locked:false }, o);
+  const UNI = { ok:true, me:false, signed_in:true, figher:false, totehm:{ audience:'subscribers', can_read:false, counts:{ habits:3 } },
+    spaces:[ sp('a0000000-0000-4000-8000-000000000001', { photo:'u1/p.jpg' }), { locked:true, format:'space', audience:'subscribers' } ],
+    spots:[ sp('b0000000-0000-4000-8000-000000000002', { format:'spot', audience:'figher', state:'will', habit:'Read at dawn' }), { locked:true, format:'spot', audience:'figher', state:'am' } ] };
+  const { pg, log } = await page(browser, { dir:'com', origin:'https://www.totehm.com', rpc:{ creator_page:KAI({}), creator_universe:UNI, my_console:{ signed_in:true, offer:{ enabled:false } } },
+    tables:{ profiles:[{ pseudo:'wah' }] }, viewport:{ width:390, height:844 } });
+  await pg.goto('https://www.totehm.com/creator?n=kai');
+  await pg.waitForFunction(() => window.__totehm_creator && window.__totehm_creator().universe.loaded, null, { timeout:15000 });
+  const d = await pg.evaluate(() => window.__totehm_creator().universe);
+  ok(d.spaces === 2 && d.spots === 2 && d.locked === 2 && await pg.locator('#uni .u-t').count() === 4, 'the universe: 2 spaces, 2 spots, 2 reserved');
+  const locked = await pg.$$eval('#uni .u-t.is-locked', l => l.map(e => ({ t:e.textContent, badge:!!e.querySelector('.audb'), label:e.getAttribute('aria-label') })));
+  ok(locked.every(x => x.badge && !/Run the hill|Read at dawn|Lisbon/.test(x.t)) && locked.map(x => x.label).join(',') === 'MY SUBSCRIBERS,FIGHER CLUB', 'reserved = blurred, its level only: ' + locked.map(x => x.label).join(','));
+  ok(/I AM HERE/.test(locked[1].t), 'a reserved spot still says its state');
+  await pg.waitForFunction(() => document.querySelector('#uni img[data-photo]')?.getAttribute('src'));
+  ok(await pg.locator('#uni [data-open="spot"] .audb').count() === 1 && await pg.locator('#uni [data-open="space"] .audb').count() === 0, 'a readable item shows its level unless PUBLIC');
+  await pg.click('#uni .u-t.is-locked');
+  ok(/subscribe to open it/i.test(await pg.textContent('#note')), 'a reserved tile points to Subscribe');
+  ok(log.rpc.some(r => r.name === 'creator_universe' && r.body.p_pseudo === 'kai'), 'one read: creator_universe(kai)');
+  ok(!erreurs(log).length, 'universe: no page error ' + erreurs(log).join(' | '));
+  await pg.screenshot({ path: OUT + '/creator_universe.png', fullPage:true });
+  const [req] = await Promise.all([pg.waitForRequest(r => /\/totehm\?open=/.test(r.url())), pg.click('#uni [data-open="space"]')]);
+  ok(/\/totehm\?open=space&id=a0000000-0000-4000-8000-000000000001$/.test(req.url()), 'a readable space opens ON totehm.com (an id, never a URL)');
 }
 await browser.close();

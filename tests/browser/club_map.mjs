@@ -11,8 +11,8 @@ const habits=[{name:'Run the hill',freq:'every_morning',ints:['love','fight'],pl
 const rpc={spot_rules:{clip_seconds:3,clip_max_bytes:33554432,countdown:1,duration_min:5,duration_max:720,horizon_days:90,video_provider:'storage'},space_habits:{ok:true,habits},
  space_discover:b=>{let list=b.p_view==='radar'?exact:b.p_view==='list'?future:feed,match='all';if(b.p_habit){const h=habits.find(h=>h.name===b.p_habit),same=list.filter(s=>s.habit===b.p_habit);match=same.length?'habit':'intention';list=same.length?same:list.filter(s=>s.intentions.some(i=>h?.ints.includes(i)));}return {spots:list,match,more:false};},
  spots_feed:b=>({spots:feed,more:false}),
- spot_schedule:b=>{const s=spot('scheduled',1440,{habit:b.p_habit,mine:true,visibility:b.p_visibility,location:b.p_location,mode:b.p_mode,exact:{lat:b.p_lat,lng:b.p_lng,place:b.p_place},comment:b.p_comment});future.unshift(s);exact.unshift(s);return {ok:true,id:s.id};},
- spot_create:b=>{const s=spot('newclip',0,{habit:b.p_habit,mine:true,visibility:b.p_visibility,location:b.p_location,mode:b.p_mode,video:b.p_video,exact:{lat:b.p_lat,lng:b.p_lng,place:'My place'}});feed.unshift(s);exact.unshift(s);return {ok:true,id:s.id};},
+ spot_schedule_audience:b=>{const s=spot('scheduled',1440,{habit:b.p_habit,mine:true,visibility:b.p_audience==='private'?'private':'shared',audience:b.p_audience,location:b.p_location,mode:b.p_mode,exact:{lat:b.p_lat,lng:b.p_lng,place:b.p_place},comment:b.p_comment});future.unshift(s);exact.unshift(s);return {ok:true,id:s.id};},
+ spot_create_audience:b=>{const s=spot('newclip',0,{habit:b.p_habit,mine:true,visibility:b.p_audience==='private'?'private':'shared',audience:b.p_audience,location:b.p_location,mode:b.p_mode,video:b.p_video,exact:{lat:b.p_lat,lng:b.p_lng,place:'My place'}});feed.unshift(s);exact.unshift(s);return {ok:true,id:s.id};},
  spot_box_set:b=>({ok:true}),
  spot_get:b=>({ok:true,spot:[...feed,...exact,...future].find(s=>s.id===b.p_id)})};
 const tables={profiles:[{pseudo:'wah'}]};
@@ -47,7 +47,7 @@ try{
  await pg.click('#joy-box');await view('radar');await pg.click('#cur-h');await view('plan');
  await pg.click('[data-plan-h="0"]');
  ok(await pg.locator('[data-pvis]').count()===0 && await pg.locator('[data-ploc]').count()===0 && await pg.locator('#p-date').count()===0,'future editor has no PRIVATE/SHARED or OFF choice');
- ok(await pg.locator('[data-pmode]').count()===2 && /ON.*for my subscribers/s.test(await pg.textContent('#plan-body')),'future location is always ON for my subscribers');
+ ok(await pg.locator('[data-pmode]').count()===2 && /ON.*the exact point/s.test(await pg.textContent('#plan-body')) && await pg.locator('[data-paud]').count()===4 && await pg.getAttribute('[data-paud].is-on','data-paud')==='figher','future location is always ON (the exact point) ; four audiences, FIGHER CLUB by default');
  const mini=pg.locator('#plan-body [data-box-el="o"]');
  ok(await mini.getAttribute('aria-pressed')==='true'&&await pg.locator('#plan-body .is-off').count()===0,'the selected Habit Box arrives as it is, every element on (12/10)');
  await pg.click('#plan-body [data-box-el="r"]');await pg.click('#plan-body [data-box-el="f"]');ok(await pg.locator('#plan-body .mini.m-r.is-off').count()===1&&await pg.locator('#plan-body .v-frq.is-off').count()===1&&await pg.locator('#plan-body .mini.m-o.is-off').count()===0&&(await state()).view==='plan'&&await pg.locator('#plan-body .plan-habit').count()===1,'a tap switches off one element (and the rhythm) without leaving the box');
@@ -58,7 +58,7 @@ try{
  ok(!(await state()).radar.pin && (await state()).radar.place,'chosen meeting point stays marked in radar');
  await pg.click('[data-pdur="45"]');await pg.fill('#p-say','Bring water');await settle();
  await pg.screenshot({path:OUT+'/space_future_editor.png'});await pg.click('[data-plan-send]');await view('list');
- const scheduled=log.rpc.find(c=>c.name==='spot_schedule');ok(Math.abs(scheduled.body.p_lat-38.7223)<.1 && Math.abs(scheduled.body.p_lng+9.1393)<.1,'radar place picking preserves actual coordinates');ok(scheduled?.body.p_place==='Ribeira steps' && scheduled.body.p_mode==='social' && scheduled.body.p_location==='on','future location and progressive choices are submitted');
+ const scheduled=log.rpc.find(c=>c.name==='spot_schedule_audience');ok(scheduled?.body.p_audience==='figher' && !('p_visibility' in scheduled.body),'a planned spot is FIGHER CLUB by default, through the audience writer');ok(Math.abs(scheduled.body.p_lat-38.7223)<.1 && Math.abs(scheduled.body.p_lng+9.1393)<.1,'radar place picking preserves actual coordinates');ok(scheduled?.body.p_place==='Ribeira steps' && scheduled.body.p_mode==='social' && scheduled.body.p_location==='on','future location and progressive choices are submitted');
  const groups=log.rpc.find(c=>c.name==='spot_box_set');ok(groups?.body.p_hide.repulsions.join()==='Stay indoors' && !groups.body.p_hide.objectives.length && groups.body.p_hide.freq===true,'publication sends what was switched off, by text (spot_box_set)');
  await pg.keyboard.press('Escape');await pg.click('#joy-box');await view('radar');
  await pg.click('#cur-b');await view('cam');await pg.waitForFunction(()=>window.__totehm_club().rec.step==='idle');ok(!(await state()).rec.camera,'entering the camera never turns the sensor on');await pg.click('#joy-box');await pg.waitForFunction(()=>window.__totehm_club().rec.step==='ready');await pg.waitForTimeout(1500);ok((await state()).rec.step==='ready','the red point turns the sensor on, never recording automatically');
@@ -76,7 +76,7 @@ try{
  const btn=await pg.$eval('[data-send]',e=>({w:e.offsetWidth,p:getComputedStyle(e).padding}));ok(btn.w<200,'action button width fits its text');
  await pg.waitForFunction(()=>document.querySelector('[data-send]')?.disabled===false);ok(/WHERE.*Lisbon/s.test(await pg.textContent('#cam-body')),'live WHERE uses the current city');
  await pg.screenshot({path:OUT+'/space_camera_form.png'});await pg.click('[data-send]');await view('radar');
- const created=log.rpc.find(c=>c.name==='spot_create');ok(created.body.p_location==='on' && created.body.p_mode==='social','spot publication preserves location and social mode');
+ const created=log.rpc.find(c=>c.name==='spot_create_audience');ok(created?.body.p_audience==='figher','a filmed spot is FIGHER CLUB by default');ok(created.body.p_location==='on' && created.body.p_mode==='social','spot publication preserves location and social mode');
  ok(log.upload.some(u=>u.method==='POST'),'existing private Storage path remains available');
  await pg.keyboard.press('Escape');
  // Actual touch lifecycle on a real scrollable Habit Box, including a direction-reversing round trip.

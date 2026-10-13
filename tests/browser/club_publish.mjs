@@ -33,9 +33,9 @@ try{
  const calls=[];let id=0;
  const rpc={spot_rules:{clip_seconds:2,clip_max_bytes:48000000,duration_min:5,duration_max:720,horizon_days:90,video_provider:'storage'},space_habits:{ok:true,habits:[habit]},
   space_discover:b=>({spots:b.p_view==='feed'?feed:b.p_view==='list'?future:[],more:false}),
-  spot_create:b=>{calls.push({name:'create',body:b});return {ok:true,id:'made-'+(++id)};},
+  spot_create_audience:b=>{calls.push({name:'create',body:b});return {ok:true,id:'made-'+(++id)};},
   spot_box_set:b=>{calls.push({name:'why',body:b});return {ok:true};},
-  spot_schedule:(b,log)=>{calls.push({name:'schedule',uploads:log.upload.length,body:b});const s=make('plan-'+(++id),1440,{mine:true,visibility:b.p_visibility,location:b.p_location,mode:b.p_mode,city:b.p_city,exact:{lat:b.p_lat,lng:b.p_lng,place:b.p_place}});return {ok:true,id:s.id};},
+  spot_schedule_audience:(b,log)=>{calls.push({name:'schedule',uploads:log.upload.length,body:b});const s=make('plan-'+(++id),1440,{mine:true,visibility:b.p_audience==='private'?'private':'shared',audience:b.p_audience,location:b.p_location,mode:b.p_mode,city:b.p_city,exact:{lat:b.p_lat,lng:b.p_lng,place:b.p_place}});return {ok:true,id:s.id};},
   spot_video_attach:b=>{calls.push({name:'attach',body:b});return {ok:true};},
   spot_get:b=>({ok:true,spot:make(b.p_id,1440,{mine:true})})};
  const {pg,log}=await page(browser,{dir:'club',origin,rpc,tables:{profiles:[{pseudo:'wah'}]},viewport:{width:390,height:844}});

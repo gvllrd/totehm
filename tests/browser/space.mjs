@@ -19,7 +19,7 @@ const rpc={spot_rules:{clip_seconds:2,clip_max_bytes:33554432,duration_min:5,dur
  space_vibe:b=>({ok:true,vibed:b.p_on,vibes:b.p_on?1:0}),
  space_profile:b=>({ok:true,pseudo:b.p_pseudo||'wah',mine:!b.p_pseudo,spaces_total:feed.length,vibes_total:3,spaces:feed,more:false}),
  my_vibes:{ok:true,received:[{space:'live',habit:'Run the hill',by:'nia',at:iso(-5)}],received_total:1,given:[]},
- space_post:b=>{const s=spot('newclip',-1,{habit:b.p_habit,mine:true,video:b.p_video,location:'off',mode:'silent',duration_min:5,comment:b.p_comment,exact:null});feed.unshift(s);return{ok:true,id:s.id};},
+ space_post_audience:b=>{const s=spot('newclip',-1,{habit:b.p_habit,mine:true,audience:b.p_audience,video:b.p_video,location:'off',mode:'silent',duration_min:5,comment:b.p_comment,exact:null});feed.unshift(s);return{ok:true,id:s.id};},
  spot_box_set:{ok:true,objectives:true,repulsions:false,hidden:1},spot_get:b=>({ok:true,spot:feed.find(s=>s.id===b.p_id)})};
 
 const browser=await launch({videoFile:process.env.SPACE_CAMERA_FIXTURE});
@@ -93,12 +93,15 @@ try{
  await pg.click('#cam-body [data-box-el="r"]');
  ok(await pg.locator('#cam-body [data-box-el="r"]').getAttribute('aria-pressed')==='false'&&await pg.locator('#cam-body .mini.m-r.is-off').count()===1&&await pg.locator('#cam-body .mini.m-o.is-off').count()===0,'a tap switches off ONE element, the others stay on');
  const btn=await pg.$eval('[data-send]',e=>e.offsetWidth);ok(btn<200,'publish button fits its text');
+ ok(await pg.locator('#cam-body [data-aud]').count()===4&&await pg.getAttribute('#cam-body [data-aud].is-on','data-aud')==='public','four audiences under the box, PUBLIC by default (13/10)');
+ await pg.click('#cam-body [data-aud="subscribers"]');
+ ok(await pg.getAttribute('#cam-body [data-aud].is-on','data-aud')==='subscribers'&&await pg.evaluate(()=>window.__totehm_space().rec.aud)==='subscribers','one tap: MY SUBSCRIBERS');
  await pg.fill('#c-say','Bring focus');await pg.click('[data-send]');await view('feed');
- const created=log.rpc.find(x=>x.name==='space_post');ok(created&&Object.keys(created.body).length===6&&created.body.p_city==='Lisbon','space_post receives exactly its six arguments and city');
+ const created=log.rpc.find(x=>x.name==='space_post_audience');ok(created&&Object.keys(created.body).length===7&&created.body.p_city==='Lisbon'&&created.body.p_audience==='subscribers','space_post_audience receives its seven arguments, city, and the chosen audience');
  ok(created.body.p_comment==='Bring focus'&&created.body.p_habit==='Run the hill','publication preserves Habit and comment');
  ok(log.rpc.some(x=>x.name==='spot_box_set'&&x.body.p_hide.repulsions.join()==='Stay indoors'&&!x.body.p_hide.objectives.length&&x.body.p_hide.freq===false),'publication sends what was switched off, by text (spot_box_set)');
  ok(log.upload.some(x=>x.method==='POST'),'private Storage media upload still works');
- ok(!log.rpc.some(x=>['spot_create','spot_schedule','space_discover','spots_list'].includes(x.name)),'SPACE never calls spot writers or spot readers');
+ ok(!log.rpc.some(x=>['spot_create','spot_schedule','spot_create_audience','spot_schedule_audience','space_post','space_discover','spots_list'].includes(x.name)),'SPACE never calls spot writers or spot readers');
  await pg.keyboard.press('Escape');await pg.setViewportSize({width:390,height:844});await settle();
  ok((await box('v-feed')).w===390&&(await box('v-feed')).h===844,'mobile feed fills viewport');
  const client=await pg.context().newCDPSession(pg);async function swipe(x,y,dx,dy){await client.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y}]});for(let k=1;k<=9;k++){await client.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x+dx*k/9,y:y+dy*k/9}]});await pg.waitForTimeout(14);}await client.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});}
