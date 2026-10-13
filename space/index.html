@@ -756,7 +756,7 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
   return (v < 10 ? Math.max(.1, v).toFixed(1) : String(Math.round(v))) + ' ' + UNIT; };
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD='2026-10-13-space-aud';
+const BUILD='2026-10-13-space-take';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'feed';   /* 12/10 — on arrive dans le fil (Wah : « totehm.space, pur TikTok »). */
@@ -2116,7 +2116,9 @@ async function suivre(p){
     return;
   }
   if(p.get('u')) openProfile(p.get('u'));
-  else if(p.get('v')==='cam' && me) go('cam');
+  else if(p.get('v')==='cam' && me){ go('cam');
+    /* 13/10 — la vue « prendre » de totehm.com a déjà choisi : PHOTO ou VIDEO, le capteur s'allume tout de suite. */
+    const k = p.get('take'); if(k === 'photo' || k === 'video') camOpen(k); }
   else if(['feed','home','me','vibes'].includes(p.get('v'))) go(p.get('v'));
 }
 boot();
