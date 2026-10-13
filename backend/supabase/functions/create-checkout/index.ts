@@ -38,6 +38,9 @@
 // (ce que je veux transmettre) et VISION (ce que j'imagine pour le monde) ». Un
 // vêtement parle aux autres : seuls ces deux éléments se portent. Refusé ici,
 // pas seulement caché dans la page.
+//
+// 13/10 (v41) : Wah — un Cloth ne porte plus que MY STORY (le nom d'écran de
+// WISDOM). La VISION reste à soi : `vision` → 422 `choose an element`.
 // ═══════════════════════════════════════════════════════════════════════
 import Stripe from 'npm:stripe@14';
 import { createClient } from 'npm:@supabase/supabase-js@2';
@@ -47,7 +50,7 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!);
 const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
   { auth: { persistSession: false } });
 
-const KINDS = ['wisdom', 'vision'];
+const KINDS = ['wisdom'];
 
 // L'année de collection : 0 = juin 2026 → mai 2027 (comme compose-artwork et luxury-quote).
 function epochPrefix(): string {

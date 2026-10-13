@@ -131,7 +131,7 @@ a{color:inherit;text-decoration:none}
 #el-title{font-weight:700;font-size:clamp(21px,5.2vw,30px);letter-spacing:.04em;text-transform:uppercase;color:#fff;line-height:1.05;margin-top:6px}
 #el-sub{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.66);margin-top:4px}
 /* la croix en petit : où l'on est dans le Totehm (un tap y va) */
-#el-map{display:grid;grid-template-columns:repeat(2,10px);grid-template-rows:10px;gap:8px;width:max-content;margin:10px auto 0}
+#el-map{display:none}  /* 13/10 : une seule vue (MY STORY), plus de carte */
 #el-map button{width:10px;height:10px;border:none;padding:0;background:rgba(255,255,255,.24);cursor:pointer;transition:background-color .3s ease}
 #el-map button.is-here{background:#fff}
 #el-list{position:relative;z-index:1;flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding:4px 16px calc(150px + var(--sb)) 0;display:flex;flex-direction:column;gap:6px;transition:opacity .3s ease,transform .34s var(--ease)}
@@ -414,11 +414,10 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
     <div id="el-rail"></div>
     <div id="el-head">
       <div id="el-q">pick the element you want to wear</div>
-      <div id="el-title">my wisdom</div>
+      <div id="el-title">my story</div>
       <div id="el-sub">what I pass on</div>
-      <div id="el-map" role="group" aria-label="Wisdom or vision">
-        <button type="button" data-v="wisdom" aria-label="My wisdom"></button>
-        <button type="button" data-v="visions" aria-label="My vision"></button>
+      <div id="el-map" role="group" aria-label="My story">
+        <button type="button" data-v="wisdom" aria-label="My story"></button>
       </div>
     </div>
     <div id="el-list"></div>
@@ -513,7 +512,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   <div class="t">Your TOTEHM<br>comes first.</div>
   <div class="v" id="pass-v"><i></i><i></i><i></i><i></i><i></i></div>
   <div class="kicker" id="pass-n"></div>
-  <p class="say">A TOTEHM Cloth is born from your wisdom or your vision. Write one element in each of the five views, then come back.</p>
+  <p class="say">A TOTEHM Cloth is born from your story. Write one element in each of the five views, then come back.</p>
   <button class="btn cta" id="pass-go" type="button">Complete my TOTEHM</button>
   <button class="btn-back" id="pass-x" type="button">back</button>
 </div>
@@ -523,7 +522,7 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
   <button class="btn-back" id="concept-back" type="button">back</button>
   <h1>How it works</h1>
   <div class="slide"><div class="slide-title">1 · Choose the cloth.</div><div class="slide-cap">Swipe the cloths, turn them: a limited edition, made to order.</div></div>
-  <div class="slide"><div class="slide-title">2 · Pick one element of your TOTEHM.</div><div class="slide-cap">Your wisdom — what you pass on — or your vision — what you imagine for the world. A cloth speaks to others. It becomes an original artwork, in a curated style.</div></div>
+  <div class="slide"><div class="slide-title">2 · Pick one element of your TOTEHM.</div><div class="slide-cap">Your story — what you pass on. A cloth speaks to others. It becomes an original artwork, in a curated style.</div></div>
   <div class="slide"><div class="slide-title">3 · Name it.</div><div class="slide-cap">0.name is printed with the artwork. Decoded on higher.boutique, it reveals the element behind the cloth — and the artwork, once it has landed.</div></div>
 </div>
 
@@ -647,7 +646,7 @@ sb.auth.onAuthStateChange(ev => {
 }
 
 /* ══ L'ÉTAT — une pièce en cours, cinq scènes ═════════════════════════ */
-const BUILD='2026-10-08-wear';
+const BUILD='2026-10-13-story';
 const STAGES=['cloth','element','name','style','order'];
 const LABEL={cloth:'Cloth',element:'Element',name:'Name',style:'Style',order:'Order',done:''};
 const SIZES=['XS','S','M','L','XL','2XL','3XL','4XL','5XL'];
@@ -916,7 +915,7 @@ async function toElement(){
   try{
     if(!await ensureTotehm())return;
     applyWant();
-    vue=F.el?.view==='visions'?'visions':'wisdom';renderEl();
+    vue='wisdom';renderEl();
     if(F.el){history.pushState({s:'element'},'');HIST.push('element');show('name');}else show('element');
   }finally{GOING=false;paintCloth();}
 }
@@ -931,23 +930,25 @@ const icol=i=>(INTS[i]||[])[1]||'#ffffff';
    (ce que je veux transmettre) et VISION (ce que j'imagine pour le monde) ». Un
    vêtement parle aux autres : l'axe du TEMPS de la croix, le passé ← → le futur.
    Les habitudes, objectifs et répulsions restent à soi. `create-checkout` refuse
-   les autres. */
-const CROIX={wisdom:{d:'visions'},visions:{g:'wisdom'}};
-const NOM={wisdom:['my wisdom','what I pass on'],visions:['my vision','what I imagine for the world']};
-const SKIN={wisdom:'#743169',visions:'#36498c'};
-const PAPER={wisdom:'#5b2652',visions:'#2b3a73'};
-const KIND={wisdom:'wisdom',visions:'vision'};
-const WEARABLE=['wisdom','vision'];
+   les autres.
+   13/10 — Wah : un Cloth ne porte plus que MY STORY (le nom d'écran de WISDOM) ; la VISION reste à soi
+   (son image vit dans COM). `create-checkout` v41 refuse `vision`. */
+const CROIX={wisdom:{}};
+const NOM={wisdom:['my story','what I pass on']};
+const SKIN={wisdom:'#743169'};
+const PAPER={wisdom:'#5b2652'};
+const KIND={wisdom:'wisdom'};
+const WEARABLE=['wisdom'];
 /* 08/10 (ter) — Wah : « on a lié SPACE à COM ; la fonction totehmiser devrait
    aller se caler dans les deux vues ». Dans COM, « + totehmize » d'une leçon ou
    d'une vision arrive ici en `?wear=wisdom:<id>` (ou `vision:`) : l'élément est
    RELU dans MON Totehm (`my_trips`), jamais cru sur parole — introuvable (effacé,
    autre compte), il est oublié et la page reprend son cours. Le vêtement se
    choisit toujours d'abord ; TOTEHMIZE mène alors droit au NAME. */
-function parseWear(q){const m=/^(wisdom|vision):([A-Za-z0-9-]{1,64})$/.exec(String(q||''));return m?{kind:m[1],ref:m[2]}:null;}
+function parseWear(q){const m=/^(wisdom):([A-Za-z0-9-]{1,64})$/.exec(String(q||''));return m?{kind:m[1],ref:m[2]}:null;}
 function applyWant(){
   const w=F.want;if(!w||!TOT)return false;F.want=null;
-  const v=w.kind==='vision'?'visions':'wisdom',o=(TOT[v]||[]).find(x=>String(x.ref)===String(w.ref));
+  const v='wisdom',o=(TOT[v]||[]).find(x=>String(x.ref)===String(w.ref));
   if(!o){console.info('[wear] element not found');return false;}
   F.el={kind:w.kind,ref:String(o.ref),view:v,text:o.text,is:o.is||[]};vue=v;return true;
 }
@@ -961,8 +962,7 @@ async function loadTotehm(){
   if(error){console.error('[totehm]',error.message);return;}
   const t=data||{};
   TOT={
-    wisdom:(t.wisdom||[]).filter(w=>(w.text||'').trim()).map(w=>({ref:w.id,text:w.text,is:w.is||[]})),
-    visions:(t.visions||[]).filter(v=>(v.text||'').trim()).map(v=>({ref:v.id,text:v.text,is:v.is||[]}))};
+    wisdom:(t.wisdom||[]).filter(w=>(w.text||'').trim()).map(w=>({ref:w.id,text:w.text,is:w.is||[]}))};
 }
 const tick=l=>'<span class="tick">'+(l||[]).map(i=>'<i style="background:'+icol(i)+'"></i>').join('')+'</span>';
 function boxHTML(o,k){
@@ -1228,7 +1228,7 @@ async function restore(fl,cancelled){
   if(!myProfile){show('cloth','replace');PENDING='element';openMember();return;}
   if(!await ensureTotehm()){show('cloth','replace');return;}
   const wanted=applyWant();
-  vue=F.el?.view==='visions'?'visions':'wisdom';renderEl();
+  vue='wisdom';renderEl();
   /* La pile reconstruite, une scène après l'autre : Back redescend pas à pas. */
   const pile=s=>{history.replaceState({s:'cloth'},'');HIST=['cloth'];
     for(const st of STAGES.slice(1,STAGES.indexOf(s)+1)){history.pushState({s:st},'');HIST.push(st);}show(s,'none');};
