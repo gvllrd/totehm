@@ -1,6 +1,6 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 12 octobre 2026, la box telle quelle, un élément éteint d'un tap** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 13 octobre 2026, quatre niveaux et `/@nom` = l'univers** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -15,6 +15,20 @@
 
 ---
 
+
+## 0 · QUATRE NIVEAUX, UNE RÈGLE ; `/@nom` = L'UNIVERS — 13/10/2026 (lot A)
+
+| quoi | valeur mesurée |
+|---|---|
+| base | migrations `audience_four_levels`, `audience_my_lists`, `audience_console` appliquées ; 28/28 fonctions = fichier (md5 du corps) ; aucun `drop`, aucun prix |
+| données | `spot_plans` : space public 2 · spot public 19 · spot privé 2 ; `totehms` : subscribers 2 · private 1 ; `visibility` / `totehm_visibility` cohérents (trigger) |
+| droits | `_audience_ok`/`_audience_listed`/`_point_ok` service_role seul · écrivains `*_audience`, `spot_audience_set` authenticated · `creator_universe` anon · `my_spots` inchangé (authenticated) |
+| SQL | `audience_four_levels_selftest` `FAIL={}` (A, FIGHER, abonné, personne, anonyme ; triggers ; points ; vibes ; droits) · `space_social` rejoué `FAIL={}` |
+| prod réelle (anonyme) | `creator_universe` du membre le plus actif : 2 spaces, 2 spots, 0 réservé, 0 point exact |
+| navigateur | space 49/49 · space_box 13/13 · space_top_left 21/21 · club_map 44/44 · club_publish 33/33 · com_creator 37/37 (univers §5) · com_plateforme 29/29 · console 18/18 · com_croix 52/52 · com_read_copy 20/20 · com_member_menu 29/29 · club_ui 27/27 · club_from_space 9/9 · space_spot_links 30/30 · spaces_loupe 26/26 · space_boxes_ecosystem 19/19 |
+| échecs connus, hors lot (identiques sans le lot) | spaces_ui 44/48 (identité boutique get_higher, stoner) · space_video : `videoWidth` jamais > 0 dans Chromium sans tête |
+| Vercel `17232ab` | com · space · club · boutique READY (production) |
+| prod (pg_net, 200) = dépôt | totehm.com/totehm `500fb81b` `2026-10-13-com-aud` · `/@wah` `bd7f60f5` `2026-10-13-univers` · `/console` `1dc0a5b2` `2026-10-13-aud` · totehm.space et `/x/space` `84704a03` `2026-10-13-space-aud` · figher.club et `/x/club` `4af046ce` `2026-10-13-club-aud` |
 
 ## 0 · LA MANETTE D'AVANT — 12/10/2026 (ter)
 
