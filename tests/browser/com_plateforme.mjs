@@ -2,7 +2,7 @@
 // origine, même session, sans pont), dans une couche chargée d'avance. Un space, un spot, « + a space »,
 // « + a spot » s'ouvrent SUR PLACE ; la croix, Échap et « précédent » rendent le Totehm. Et COM parle moins :
 // plus de [Higher] STRATEGY ni de phrase, le nom écrit sur le papier navy, Get Higher à GAUCHE, la recherche
-// EN HAUT, le trackpad lu comme SPACE (deltaX > 0 → la vue de droite). Tout est simulé. LANCER : node com_plateforme.mjs /tmp
+// EN HAUT, le trackpad lu comme SPACE (deltaX > 0 → la vue de droite). 13/10 : la croix de Wah → com_croix.mjs. Tout est simulé. LANCER : node com_plateforme.mjs /tmp
 import fs from 'node:fs';
 import { launch, page, ok } from './harness.mjs';
 const OUT = process.argv[2] || '/tmp'; fs.mkdirSync(OUT, { recursive:true });
@@ -30,27 +30,9 @@ try{
      thp:!!document.getElementById('lv-thp-say'), tag:!!document.getElementById('lv-b-tag'), build:window.__totehm_lv().build }));
    ok(!c.why && !c.strat && !c.thp && !c.tag, 'COM : plus de « [Higher] STRATEGY », de phrase sous lui, de texte du THP ni de slogan TotehmSM');
    ok(c.sig === 'wahigher' && /Quantico/.test(c.sigFont) && c.sigInPaper && c.nameBtn === 'none', 'le nom est écrit SUR le papier (Quantico), plus de boîte noire sous lui');
-   ok(c.build === '2026-10-13-com-aud', 'BUILD 2026-10-13-com-aud');
+   ok(c.build === '2026-10-13-com-story', 'BUILD 2026-10-13-com-story');
    await pg.screenshot({ path:OUT + '/plateforme_centre.png' });
-   const vue = () => pg.evaluate(() => window.__totehm_lv().vue);
-   await pg.keyboard.press('ArrowLeft'); await pg.waitForFunction(() => window.__totehm_lv().vue === 'h' && !window.__totehm_lv().bouge);
-   ok(true, '← mène à Get Higher (la vue d\'en haut est devenue celle de gauche)');
-   ok(!(await pg.$eval('#ljoy-box', e => e.classList.contains('hors'))) && await pg.$eval('#ljoy', e => e.style.getPropertyValue('--ljoy')) === 'var(--blue)', 'la manette de Get Higher garde son aspect d\'avant (bleu clair, ses points)');
-   await pg.keyboard.press('ArrowRight'); await pg.waitForFunction(() => window.__totehm_lv().vue === 'c' && !window.__totehm_lv().bouge);
-   await pg.waitForTimeout(400);
-   /* Le trackpad, comme SPACE : deux doigts vers la gauche = deltaX > 0 = la vue de DROITE. */
-   await pg.mouse.move(640, 300); for(let i = 0; i < 6; i++){ await pg.mouse.wheel(30, 0); await pg.waitForTimeout(16); }
-   await pg.waitForFunction(() => window.__totehm_lv().vue === 'd' && !window.__totehm_lv().bouge, null, { timeout:4000 }).catch(() => {});
-   ok(await vue() === 'd', 'trackpad : deltaX > 0 → la vue de droite (comme SPACE)');
-   await pg.waitForTimeout(700); for(let i = 0; i < 6; i++){ await pg.mouse.wheel(-30, 0); await pg.waitForTimeout(16); }
-   await pg.waitForFunction(() => window.__totehm_lv().vue === 'c' && !window.__totehm_lv().bouge, null, { timeout:4000 }).catch(() => {});
-   ok(await vue() === 'c', 'trackpad : deltaX < 0 → retour au centre');
-   await pg.waitForTimeout(700); await pg.mouse.wheel(0, -1); for(let i = 0; i < 6; i++){ await pg.mouse.wheel(0, -30); await pg.waitForTimeout(16); }
-   await pg.waitForFunction(() => window.__totehm_lv().vue === 'g', null, { timeout:6000 }).catch(() => {});
-   ok(await vue() === 'g', 'trackpad vers le haut → la recherche, EN HAUT');
-   const q = await pg.$eval('#srch-q', e => ({ bg:getComputedStyle(e).backgroundColor, color:getComputedStyle(e).color, hint:!!document.getElementById('srch-hint') }));
-   ok(q.bg === 'rgba(0, 0, 0, 0)' && q.color === 'rgb(251, 213, 202)' && !q.hint, 'la saisie du nom est posée sur le papier navy (pas de boîte noire), sans phrase dessous');
-   await pg.screenshot({ path:OUT + '/plateforme_recherche.png' });
+   /* 13/10 (lot B) : la croix, ses gestes et sa recherche (le banc) sont dans com_croix.mjs. */
    /* La couche se réchauffe toute seule, sans rien charger dans SPACE ni le Club. */
    await pg.waitForFunction(() => window.__totehm_xo && window.__totehm_xo().prets.length === 2, null, { timeout:12000 }).catch(() => {});
    const x = await xo(pg);
@@ -74,7 +56,7 @@ try{
    const sp = cadre(pg, 'space');
    await sp.waitForSelector('#detail.is-open', { timeout:10000 });
    ok(pg.url() === url0 && !log.functions.some(f => f.name === 'sso-mint'), 'un space s\'ouvre SUR PLACE : même page, aucun pont SSO');
-   ok(await sp.evaluate(() => document.body.classList.contains('is-embed') && getComputedStyle(document.getElementById('member')).display === 'none'), 'dans la couche : SPACE sans son menu de compte (COM le tient)');
+   ok(await sp.evaluate(() => document.body.classList.contains('is-embed') && getComputedStyle(document.getElementById('who')).display === 'none'), 'dans la couche : SPACE sans son coin membre (COM le tient)');
    await pg.screenshot({ path:OUT + '/plateforme_space.png' });
    await sp.click('#x-back'); await pg.waitForFunction(() => !window.__totehm_xo().actif);
    ok(!(await pg.evaluate(() => document.body.classList.contains('gate'))) && await pg.locator('#habits [data-space]').count() === 2, 'la croix rend le Totehm tel qu\'il était (la Habit toujours ouverte)');

@@ -116,6 +116,9 @@ for(const [nom, data, test] of cas){
     spots:[ sp('b0000000-0000-4000-8000-000000000002', { format:'spot', audience:'figher', state:'will', habit:'Read at dawn' }), { locked:true, format:'spot', audience:'figher', state:'am' } ] };
   const { pg, log } = await page(browser, { dir:'com', origin:'https://www.totehm.com', rpc:{ creator_page:KAI({}), creator_universe:UNI, my_console:{ signed_in:true, offer:{ enabled:false } } },
     tables:{ profiles:[{ pseudo:'wah' }] }, viewport:{ width:390, height:844 } });
+  /* l'URL signée sert une vraie image : sinon `onerror` la retire avant qu'on la voie (course, comme en prod sur un fichier absent) */
+  const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64');
+  await pg.route(/\/storage\/v1\/object\/sign\//, r => r.request().method() === 'GET' ? r.fulfill({ status:200, contentType:'image/png', body:PNG }) : r.fallback());
   await pg.goto('https://www.totehm.com/creator?n=kai');
   await pg.waitForFunction(() => window.__totehm_creator && window.__totehm_creator().universe.loaded, null, { timeout:15000 });
   const d = await pg.evaluate(() => window.__totehm_creator().universe);

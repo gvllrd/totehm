@@ -1,15 +1,13 @@
-// COM · 07/10/2026 (bas refait le 08/10 : TotehmSM en bulles, freemium) — la croix de l'atterrissage : cinq vues, une manette, les mêmes
-// gestes que le Totehm déplié. Centre (nom + visibilité), bas (TotehmSM), droite
-// (SPACE · boutique, [Higher] sur un vêtement), trackpad dans les QUATRE sens,
-// le doigt, le retour de Stripe ; le Totehm déplié change aussi de vue en haut
-// et en bas au trackpad ; figher.club : le THP en quatre pouvoirs.
+// COM · 13/10/2026 (lot B) — la croix de Wah : cinq vues, une manette (la croix de 5 points du Club), les gestes du
+// Totehm déplié. CENTRE : le papier signé (le nom en petit, en bas à droite), « Tap to open it », My TOTEHM, Search
+// another TOTEHM (le banc). HAUT : Higher Self, le verso retourné. BAS : PHOTO · VIDEO · SPOT (la couche, sur place).
+// GAUCHE : mes spots sur la Terre et mes shorts. DROITE : mes visions, leurs mini-boxes par-dessus.
 // Tout est simulé (RPC, fonctions, réseau). LANCER : node com_croix.mjs /tmp
 import fs from 'node:fs';
 import {launch,page,ok} from './harness.mjs';
 const OUT=process.argv[2]||'/tmp';fs.mkdirSync(OUT,{recursive:true});
 const origin='https://www.totehm.com';
 const tables={profiles:[{pseudo:'wahigher'}]};
-const CODE='b'.repeat(64);
 const LAND=(o={})=>({signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false},
   higher:{active:false,price_cents:700,currency:'eur',period:'month'},thp:false,subscriptions:0,subscribers:0,...o});
 const PNG=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==','base64');
@@ -17,26 +15,49 @@ const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
 const lv=pg=>pg.evaluate(()=>window.__totehm_lv());
 const R=(pg,sel)=>pg.$eval(sel,e=>{const r=e.getBoundingClientRect();return[r.x,r.y,r.width,r.height];});
 const ouvre=async pg=>{await pg.evaluate(()=>{window.__ouvert=[];window.open=(u)=>{window.__ouvert.push(u);return null;};});};
+/* l'URL signée sert une vraie image (sinon `onerror` la retire, comme en prod) */
+const images=pg=>pg.route(/\/storage\/v1\/object\/sign\//,r=>r.request().method()==='GET'?r.fulfill({status:200,contentType:'image/png',body:PNG}):r.fallback());
+const UNI={ok:true,me:true,
+  spaces:[{id:'a1',format:'space',habit:'Run the hill',intentions:['fight'],photo:'u/p.jpg',starts_at:'2026-10-12T08:00:00Z',locked:false},
+          {id:'a2',format:'space',habit:'Read at dawn',intentions:['focus'],photo:'u/q.jpg',starts_at:'2026-10-11T08:00:00Z',locked:false}],
+  spots:[{id:'s1',format:'spot',habit:'Swim',intentions:['flow'],state:'will',exact:{lat:38.7,lng:-9.1,place:'Lisbon'},starts_at:'2026-10-14T08:00:00Z',locked:false}]};
+const VISI={ok:true,visions:[{id:'v1',text:'A quiet house by the sea',image:'u/vision-x.jpg',objectives:[{id:'o1',text:'Save for the house'}]},
+                             {id:'v2',text:'Run Lisbon marathon',image:null,objectives:[]}]};
 const browser=await launch();
 try{
- // ── 1 · LE CENTRE : le nom et la visibilité ; « subscribers » → le programme ──
- {let vis='private';
-  const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:()=>LAND({visibility:vis}),
-    visibility_set:b=>{vis=b.p_visibility;return{ok:true,visibility:vis};}},viewport:{width:1280,height:800}});
-  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
-  const c=await pg.evaluate(()=>({card:!document.getElementById('lv-card').classList.contains('hide'),
-    nom:!!document.querySelector('#lv-card #ident-block #name-btn'),on:document.querySelector('[data-lvvis].is-on')?.dataset.lvvis,
-    prog:document.getElementById('lv-prog').classList.contains('hide'),tap:document.getElementById('lv-tap').textContent}));
-  ok(c.card&&c.nom&&c.on==='private'&&c.prog&&c.tap==='Click to open it','au centre : le nom, Private par défaut, pas de programme ; « Click to open it »');
-  await pg.click('[data-lvvis="subscribers"]');await pg.waitForFunction(()=>!document.getElementById('lv-prog').classList.contains('hide'));
-  ok(log.rpc.some(x=>x.name==='visibility_set'&&x.body.p_visibility==='subscribers')&&await pg.$eval('#lv-prog',e=>e.getAttribute('href'))==='/monetize'&&/subscribers/.test(await pg.textContent('#lv-vis-note')),
-    'Visible to my subscribers : le serveur décide, puis le bouton vers la page du programme (/monetize)');
+ // ── 1 · LE CENTRE : le papier signé, « Tap to open it », My TOTEHM ; la manette = la croix de 5 points ──
+ {const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND()},viewport:{width:390,height:844},hasTouch:true});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);
+  const c=await pg.evaluate(()=>{const s=document.getElementById('ast-sig'),p=document.getElementById('gate-asteroid').getBoundingClientRect(),r=s.getBoundingClientRect(),cs=getComputedStyle(s);
+    const st=[...document.querySelectorAll('#ljoy-stack i')].map(i=>i.className.split(' ')[0]);
+    return {vue:window.__totehm_lv().vue,sig:s.textContent,quantico:/Quantico/.test(cs.fontFamily),coral:cs.color,droite:r.left>p.left+p.width/2-r.width/2&&r.bottom>p.top+p.height*.7,
+      tap:document.getElementById('lv-tap').textContent,mine:document.getElementById('lv-mine').textContent,find:document.getElementById('lv-find').textContent,
+      joy:document.getElementById('ljoy-say').textContent,stack:st.join(''),carte:!document.getElementById('lv-card').closest('#gate')};});
+  ok(c.vue==='c'&&c.sig==='wahigher'&&c.quantico&&c.coral==='rgb(251, 213, 202)'&&c.droite,'centre : le nom signe le papier, en petit, en bas à droite (Quantico Coral)');
+  ok(c.tap==='Tap to open it'&&c.mine==='My TOTEHM'&&c.find==='Search another TOTEHM','« Tap to open it » ; My TOTEHM · Search another TOTEHM');
+  ok(c.joy==='my TOTEHM'&&c.stack==='tlcrb'&&c.carte,'la manette : la croix de 5 points, « my TOTEHM » ; la visibilité vit dans l\'espace membre, plus au centre');
   await pg.screenshot({path:OUT+'/croix_centre.png'});
-  await pg.click('[data-lvvis="private"]');await pg.waitForFunction(()=>document.getElementById('lv-prog').classList.contains('hide'));
-  ok((await lv(pg)).visibilite==='private','Private : le bouton se retire');
+  await pg.click('#lv-mine');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:6000}).catch(()=>{});
+  ok(await pg.evaluate(()=>!document.body.classList.contains('gate')),'My TOTEHM ouvre le Totehm');
   ok(!erreurs(log).length,'centre : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
- // ── 2 · EN BAS (08/10) : prêt, gratuit — « Wassup ? », la photo de profil, le flux, 7 par mois ──
+ // ── 2 · LE BANC : chercher un autre TOTEHM — des Totehms qui nagent, un nom → /@nom (sur place au téléphone, onglet sur ordinateur) ──
+ for(const [vp,tel] of [[{width:390,height:844},true],[{width:1280,height:800},false]]){
+  const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:tel,
+    rpc:{my_landing:LAND(),totehm_search:b=>b.p_q?[{pseudo:'kai',offer:true,price_cents:2400,currency:'eur'}]:[]}});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(800);
+  await pg.click('#lv-find');await pg.waitForTimeout(700);
+  const o=await lv(pg);
+  ok(o.banc.ouvert&&o.banc.poissons>=48&&o.banc.poissons<=140&&await pg.evaluate(()=>document.getElementById('fish').getAttribute('aria-hidden')==='false'),
+    (tel?'téléphone':'ordinateur')+' : le banc s\'ouvre ('+o.banc.poissons+' Totehms, ≤ 140)');
+  await pg.fill('#fish-q','ka');await pg.waitForFunction(()=>document.querySelectorAll('#fish-res a').length>0,null,{timeout:5000}).catch(()=>{});
+  const a=await pg.evaluate(()=>{const x=document.querySelector('#fish-res a');return x&&{href:x.getAttribute('href'),target:x.getAttribute('target')||'',txt:x.textContent};});
+  ok(a&&a.href==='/@kai'&&/kai/.test(a.txt)&&(tel?a.target==='':a.target==='_blank'),'un nom → /@kai '+(tel?'sur place':'dans un nouvel onglet')+' '+JSON.stringify(a));
+  if(tel) await pg.screenshot({path:OUT+'/croix_banc.png'});
+  await pg.click('#fish-x');await pg.waitForTimeout(500);
+  ok(!(await lv(pg)).banc.ouvert&&!erreurs(log).length,'le banc se referme ; aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+
+ // ── 3 · EN HAUT (13/10) : Higher Self, le verso retourné — « {Nom} [Higher] Self », gratuit 7 par mois, le flux ──
  {const REP='@objective focus\nI stop negotiating with myself and ship one detail tonight.\nDO: At 22:45 I open my collection file and fix ONE element.\nWHY: Ship my first collection by 2026-12-01. Discipline is freedom.';
   let say=0;const corps=[];
   const net=(url,req)=>{ if(url.pathname!=='/functions/v1/higher-self') return null;
@@ -46,16 +67,14 @@ try{
   const{pg,log}=await page(browser,{dir:'com',origin,tables,network:net,functions:{'higher-sub':{error:'not_ready'}},
     rpc:{my_landing:LAND({sm:{ready:true,habit:true,objective:true,higher:false,free_total:7,free_days:30,free_left:6,left:6}})},viewport:{width:390,height:844},hasTouch:true});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(800);
-  await pg.click('#lcur-b');await pg.waitForTimeout(1500);
-  const b=await pg.evaluate(()=>{const cs=s=>getComputedStyle(document.querySelector(s));
-    const t=document.getElementById('lv-thumb').getBoundingClientRect(),p=document.getElementById('gate-asteroid').getBoundingClientRect();
-    return {vue:window.__totehm_lv().vue,cls:[...document.getElementById('lv-slogan').classList].filter(k=>/^is-.$/.test(k)).join(' '),self:cs('#lv-slogan .lvs-self').opacity,dbl:!!document.getElementById('lv-slogan2'),
-      tag:!!document.getElementById('lv-b-tag'),first:!!document.querySelector('#sm-first .sm-b'),
-      clip:cs('#ast-front').clipPath,t:[t.left+t.width/2,t.top+t.height/2,t.width],p:[p.left+p.width/2,p.top+.363*p.height,.59*p.width],
-      say:document.getElementById('lv-say').classList.contains('hide'),note:document.getElementById('lv-say-note').textContent,joy:document.getElementById('ljoy-say').textContent};});
-  ok(b.vue==='b'&&b.cls==='is-b'&&b.self==='1'&&!b.dbl&&!b.tag&&!b.first,'↓ (12/10) : « [Higher] Self » et rien d\'autre — plus de slogan, plus de « Wassup ? »');
-  ok(/circle\(29\.5%/.test(b.clip)&&Math.abs(b.t[0]-b.p[0])<3&&Math.abs(b.t[1]-b.p[1])<3&&Math.abs(b.t[2]-b.p[2])<3,'le papier devient le miroir (un disque, le T) ('+b.p.map(Math.round)+' / '+b.t.map(Math.round)+')');
-  ok(!b.say&&/^6 of 7 free this month/.test(b.note)&&b.joy==='TotehmSM','prêt : la saisie ; « 6 of 7 free this month »');
+  await pg.click('#lcur-h');await pg.waitForTimeout(1600);
+  const b=await pg.evaluate(()=>({vue:window.__totehm_lv().vue,srch:document.getElementById('srch').getAttribute('aria-hidden'),
+    nom:document.getElementById('ast-name').textContent,badge:!!document.querySelector('#ast-verso .ast-self use[href="#higher-badge"]'),self:document.querySelector('#ast-verso .ast-self b')?.textContent,
+    font:getComputedStyle(document.getElementById('lv-say-in')).fontFamily,say:document.getElementById('lv-say').classList.contains('hide'),
+    note:document.getElementById('lv-say-note').textContent,joy:document.getElementById('ljoy-say').textContent}));
+  ok(b.vue==='h'&&b.srch==='false'&&b.nom.replace(/\s+/g,'')==='wahigher'&&b.badge&&b.self==='Self','↑ : le papier se retourne — « wahigher [Higher] Self » (le badge SVG, jamais du texte)');
+  ok(!b.say&&/Quantico/.test(b.font)&&/^6 of 7 free this month/.test(b.note)&&b.joy==='Higher Self','prêt : la saisie en Quantico ; « 6 of 7 free this month » ; la manette dit « Higher Self »');
+  await pg.screenshot({path:OUT+'/croix_haut_self.png'});
   await pg.fill('#lv-say-in','I procrastinate on my collection since 3 days');await pg.keyboard.press('Enter');
   await pg.waitForFunction(()=>window.__totehm_lv().envois===1,null,{timeout:4000}).catch(()=>{});await pg.waitForTimeout(300);
   const r=await pg.evaluate(()=>{const q=s=>document.querySelector(s),cs=e=>getComputedStyle(e);
@@ -70,7 +89,7 @@ try{
   ok(r.acts===0&&/^5 of 7 free/.test(r.note)&&r.lv.gratuits===5,'gratuit : pas de Telegram/WhatsApp (c\'est Higher) ; « 5 of 7 » (l\'en-tête du serveur)');
   const c1=corps.find(x=>x.action==='say');
   ok(c1&&c1.text==='I procrastinate on my collection since 3 days'&&Array.isArray(c1.turns)&&c1.turns.length===0&&/^\w{3} \d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(c1.now),'l\'appel : le texte, aucun tour avant, l\'heure locale ('+(c1&&c1.now)+')');
-  await pg.screenshot({path:OUT+'/croix_bas_fil.png'});
+  await pg.screenshot({path:OUT+'/croix_haut_fil.png'});
   await pg.fill('#lv-say-in','ok and tomorrow');await pg.keyboard.press('Enter');
   await pg.waitForFunction(()=>window.__totehm_lv().envois===2,null,{timeout:4000}).catch(()=>{});
   const c2=corps.filter(x=>x.action==='say')[1];
@@ -80,16 +99,16 @@ try{
   const f=await pg.evaluate(()=>({sm:window.__totehm_lv().sm,v:document.getElementById('lv-say-in').value,say:document.getElementById('lv-say').classList.contains('hide'),
     offre:!!document.querySelector('#lv-thread .sm-offer [data-sm-sub]'),fin:true,badge:document.querySelectorAll('#lv-thread .sm-offer use[href="#higher-badge"]').length}));
   ok(f.sm===4&&f.v==='and now ?'&&f.say&&f.offre&&f.fin&&f.badge>=3,'les 7 pris (402) : la phrase revient dans la saisie, la saisie se ferme, l\'offre Higher (badge SVG, jamais du texte)');
-  await pg.screenshot({path:OUT+'/croix_bas_offre.png'});
+  await pg.screenshot({path:OUT+'/croix_haut_offre.png'});
   await pg.click('#lv-thread [data-sm-sub]');await pg.waitForFunction(()=>/opening soon/.test(document.getElementById('lv-say-note').textContent),null,{timeout:4000}).catch(()=>{});
   ok(log.functions.some(f=>f.name==='higher-sub'&&f.body.action==='checkout')&&/opening soon/.test(await pg.textContent('#lv-say-note')),'Get Higher : le checkout est demandé au serveur (prix absent → « opening soon »)');
   ok(!log.rpc.some(x=>x.name==='sm_thread'),'aucun historique relu (sm_thread n\'est plus appelé)');
-  ok(!erreurs(log).length,'bas gratuit : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+  ok(!erreurs(log).length,'haut gratuit : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
- // ── 3 · EN BAS : TOTEHM vide, puis abonné Higher (Telegram, WhatsApp) ──
+ // ── 4 · EN HAUT : TOTEHM vide, puis abonné Higher (Telegram, WhatsApp) ──
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND({sm:{ready:false,habit:true,objective:false,higher:false,free_total:7,free_left:7,left:7}})},viewport:{width:390,height:844}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(800);
-  await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(1400);
+  await pg.click('#lcur-h');await pg.waitForTimeout(1400);
   const v=await pg.evaluate(()=>({t:document.getElementById('lv-thread').textContent,say:document.getElementById('lv-say').classList.contains('hide'),
     h:document.querySelector('[data-sm-write="habits"]')?.className,o:document.querySelector('[data-sm-write="objectives"]')?.className}));
   ok(!/I do not know you/.test(v.t)&&v.say&&/is-ok/.test(v.h)&&!/is-ok/.test(v.o),'TOTEHM sans Objective : pas de saisie, pas de phrase ; Habit ✓, Objective à écrire');
@@ -104,7 +123,7 @@ try{
   const{pg,log}=await page(browser,{dir:'com',origin,tables,network:net,rpc:{my_landing:LAND({higher:{active:true,price_cents:700,currency:'eur'},avatar:'data:image/jpeg;base64,AAAA',
       sm:{ready:true,habit:true,objective:true,higher:true,free_total:7,free_left:7,left:30}}),new_bot_link_code:'c0de'},viewport:{width:390,height:844},hasTouch:true});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(800);await ouvre(pg);
-  await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(1400);
+  await pg.click('#lcur-h');await pg.waitForTimeout(1400);
   ok(await pg.textContent('#lv-say-note')==='','Higher : aucun compteur tant qu\'il en reste plus de 5 aujourd\'hui');
   await pg.fill('#lv-say-in','lazy today');await pg.keyboard.press('Enter');
   await pg.waitForFunction(()=>window.__totehm_lv().envois===1,null,{timeout:4000}).catch(()=>{});await pg.waitForTimeout(200);
@@ -113,50 +132,62 @@ try{
   await pg.click('#lv-thread [data-tg]');await pg.waitForFunction(()=>/press Start/.test(document.getElementById('lv-say-note').textContent),null,{timeout:4000}).catch(()=>{});
   const o=await pg.evaluate(()=>window.__ouvert);
   ok(o[0]==='https://wa.me/?text='+encodeURIComponent('I move before I think.\nDO: I put my shoes at the door now.\nWHY: Run the hill.')&&o[1]==='https://t.me/TotehmBot?start=c0de','WhatsApp = le geste (solution, DO, WHY) en partage wa.me ; Telegram non lié → TotehmBot ('+o.length+')');
-  await pg.reload();await pg.waitForSelector('body.member');await pg.waitForTimeout(700);await pg.keyboard.press('ArrowDown');await pg.waitForTimeout(1300);
+  await pg.reload();await pg.waitForSelector('body.member');await pg.waitForTimeout(700);await pg.click('#lcur-h');await pg.waitForTimeout(1300);
   ok((await lv(pg)).sm===0&&await pg.locator('#lv-thread .sm-b').count()===0,'rechargée : le miroir repart vide (rien n\'est gardé)');
-  ok(!erreurs(log).length,'bas Higher : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+  ok(!erreurs(log).length,'haut Higher : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
- // ── 4 · À DROITE : le vêtement de Supabase, [Higher] dessus ; le papier tourne en haut ──
- {const{pg,log}=await page(browser,{dir:'com',origin,tables:{...tables,totehm_cloth_support:[{title:'Box Tee',image_url:'https://cdn.test/tee.png',logo_spot:{x:.5,y:.35,w:.28}}]},
-    rpc:{my_landing:LAND()},functions:{'sso-mint':{code:CODE}},viewport:{width:1280,height:800},
-    network:url=>url.host==='cdn.test'?{status:200,contentType:'image/png',body:PNG}:url.host==='www.totehm.space'?{status:200,contentType:'text/html',body:'<p>space</p>'}:null});
+ // ── 5 · EN BAS : PRENDRE — PHOTO · VIDEO (la caméra de SPACE) · SPOT (le plan du Club), dans la couche, sur place ──
+ {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},hasTouch:true,
+    rpc:{my_landing:LAND(),spot_rules:{clip_seconds:33,duration_min:5,duration_max:720,horizon_days:90},space_habits:{ok:true,habits:[]},space_feed:{ok:true,spots:[],more:false},space_pulse:{spaces_week:0,vibes_week:0}}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(800);
-  await pg.click('#lcur-d');await pg.waitForTimeout(1600);
-  const t1=await pg.$eval('#gate-card',e=>e.style.transform);await pg.waitForTimeout(300);
-  const d=await pg.evaluate(()=>{const i=document.getElementById('lv-cloth').getBoundingClientRect(),s=document.querySelector('#lv-slogan svg').getBoundingClientRect(),
-    p=document.getElementById('gate-asteroid').getBoundingClientRect();
-    return {vue:window.__totehm_lv().vue,vet:window.__totehm_lv().vetement,img:document.getElementById('lv-cloth-img').classList.contains('is-on'),
-      cls:[...document.getElementById('lv-slogan').classList].filter(k=>/^is-.$/.test(k)).join(' '),spot:[i.left+i.width*.5,i.top+i.height*.35],s:[s.left+s.width/2,s.top+s.height/2],
-      py:p.top+p.height/2,H:innerHeight,tf:document.getElementById('gate-card').style.transform,
-      space:document.getElementById('lv-space').textContent,shop:document.getElementById('lv-shop').textContent};});
-  ok(d.vue==='d'&&d.vet&&d.img&&log.rpc.length>=0,'→ : le vêtement du moment, lu dans totehm_cloth_support');
-  ok(d.cls==='is-d'&&Math.abs(d.s[0]-d.spot[0])<8&&Math.abs(d.s[1]-d.spot[1])<8,'[Higher] se cale sur le vêtement, au point du logo ('+d.s.map(Math.round)+' / '+d.spot.map(Math.round)+')');
-  ok(d.py<d.H*.25&&d.tf!==t1,'le papier est en haut, et il tourne (comme SPACE)');
-  ok(d.space.trim()==='SPACE'&&d.shop.trim()==='HIGHER BOUTIQUE'&&(await pg.textContent('#lv-go-club'))==='FIGHER.CLUB'&&await pg.locator('#lv-d .lv-mono').count()===0,'12/10 : trois portes, leur nom seul (SPACE · HIGHER BOUTIQUE · FIGHER.CLUB), sans paragraphe');
-  await pg.screenshot({path:OUT+'/croix_droite.png'});
-  await pg.click('#lv-go-space');await pg.waitForFunction(()=>window.__totehm_xo&&window.__totehm_xo().actif==='space',null,{timeout:6000}).catch(()=>{});
-  ok(pg.url()===origin+'/totehm'&&(await pg.evaluate(()=>window.__totehm_xo().actif))==='space'&&!log.functions.some(f=>f.name==='sso-mint'),'SPACE : s\'ouvre SUR PLACE dans totehm.com (la couche), sans pont');
-  ok(!erreurs(log).length,'droite : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+  await pg.click('#lcur-b');await pg.waitForTimeout(1500);
+  const t=await pg.evaluate(()=>({vue:window.__totehm_lv().vue,k:[...document.querySelectorAll('#lv-take [data-take]')].map(b=>b.dataset.take+':'+b.textContent.trim()).join(' '),joy:document.getElementById('ljoy-say').textContent}));
+  ok(t.vue==='b'&&t.k==='photo:PHOTO video:VIDEO spot:SPOT','↓ : PHOTO · VIDEO · SPOT ('+t.joy+')');
+  await pg.screenshot({path:OUT+'/croix_bas_prendre.png'});
+  await pg.click('#lv-take [data-take="photo"]');
+  await pg.waitForFunction(()=>window.__totehm_xo&&window.__totehm_xo().actif==='space',null,{timeout:5000}).catch(()=>{});
+  const fr=()=>pg.frames().find(f=>/\/x\/space/.test(f.url()));
+  await pg.waitForFunction(()=>true);let vueSp=null;
+  for(let i=0;i<30&&vueSp!=='cam';i++){await pg.waitForTimeout(200);const f=fr();if(f) vueSp=await f.evaluate(()=>window.__totehm_space?.().view).catch(()=>null);}
+  ok((await pg.evaluate(()=>window.__totehm_xo().actif))==='space'&&vueSp==='cam'&&(await lv(pg)).prises===1,'PHOTO : SPACE s\'ouvre sur place, dans la couche, sur la caméra ('+vueSp+')');
+  ok(!erreurs(log).length,'prendre : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
- // ── 5 · LE TRACKPAD, LES QUATRE SENS ; la molette sur la manette ; le doigt ──
+ // ── 6 · À GAUCHE : MON MONDE — mes spots sur la Terre, mes shorts (les miens seulement) ──
+ {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},hasTouch:true,rpc:{my_landing:LAND(),creator_universe:UNI}});
+  await images(pg);
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(800);
+  await pg.click('#lcur-g');await pg.waitForFunction(()=>window.__totehm_lv().monde.terres>0&&window.__totehm_lv().monde.shorts===2,null,{timeout:6000}).catch(()=>{});
+  const m=await lv(pg);const call=(await pg.evaluate(()=>0),null);
+  ok(m.vue==='g'&&m.monde.ouvert&&m.monde.terres>50&&m.monde.spots===1&&m.monde.shorts===2,'← : la Terre ('+m.monde.terres+' terres), mon spot, mes 2 shorts');
+  await pg.screenshot({path:OUT+'/croix_gauche_monde.png'});
+  await pg.click('#lcur-d');await pg.waitForTimeout(400);await pg.click('#lcur-g').catch(()=>{});
+  ok(!erreurs(log).length,'monde : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+
+ // ── 7 · À DROITE : MES VISIONS — l'image, les objectifs qui y mènent par-dessus ; sans image, un « + » en pointillé ──
+ {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},hasTouch:true,
+    rpc:{my_landing:LAND(),my_visions:VISI,my_trips:{signed_in:true,trips:[{id:'o1',text:'Save for the house',is:['enrich']}],reps:[],wisdom:[],visions:[{id:'v1',text:'A quiet house by the sea',is:['love']},{id:'v2',text:'Run Lisbon marathon',is:['flow']}]},
+      habit_spaces:{ok:true,mine:true,habits:[]},element_cloths:{ok:true,mine:true,elements:[]}}});
+  await images(pg);
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(800);
+  await pg.click('#lcur-d');await pg.waitForFunction(()=>window.__totehm_lv().visions.liste===2,null,{timeout:6000}).catch(()=>{});
+  await pg.waitForFunction(()=>document.querySelector('#lv-visions img[src]'),null,{timeout:5000}).catch(()=>{});await pg.waitForTimeout(1200);
+  const v=await pg.evaluate(()=>({vue:window.__totehm_lv().vue,img:document.querySelectorAll('#lv-visions .lv-t:not(.is-ghost) img[src]').length,
+    mini:[...document.querySelectorAll('#lv-visions .lv-mini')].map(x=>x.textContent).join('|'),ghost:document.querySelectorAll('#lv-visions .is-ghost .lv-plus').length}));
+  ok(v.vue==='d'&&v.img===1&&v.mini==='Save for the house'&&v.ghost===1,'→ : ma vision et son image (signée), l\'objectif par-dessus ; l\'autre, un « + » en pointillé');
+  await pg.screenshot({path:OUT+'/croix_droite_visions.png'});
+  await pg.click('#lv-visions [data-vis="v1"]');
+  await pg.waitForFunction(()=>!document.body.classList.contains('gate')&&window.__totehm_zone?.vue==='visions',null,{timeout:8000}).catch(()=>{});
+  ok(await pg.evaluate(()=>!document.body.classList.contains('gate')&&window.__totehm_zone.vue==='visions'),'un tap : le Totehm s\'ouvre sur MY VISION');
+  ok(!erreurs(log).length,'visions : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+
+ // ── 8 · LE TRACKPAD, LES QUATRE SENS (comme SPACE) ; la molette sur la manette ; le doigt ──
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND()},viewport:{width:1280,height:800}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(800);
   const geste=async(dx,dy)=>{await pg.waitForTimeout(260);for(let i=0;i<4;i++){await pg.mouse.wheel(dx/4,dy/4);await pg.waitForTimeout(16);}await pg.waitForTimeout(1800);return (await lv(pg)).vue;};
   await pg.mouse.move(200,500);
   const suite=[];
-  /* 12/10 — lu comme SPACE (le contenu) : deltaX > 0 → la droite ; ↑ = la recherche, ← = Get Higher. */
-  suite.push(await geste(0,-220));   // ↑ la recherche
-  await pg.mouse.move(1100,700);
-  suite.push(await geste(0,220));    // ↓ centre
-  await pg.mouse.move(200,500);
-  suite.push(await geste(0,220));    // ↓ bas
-  suite.push(await geste(0,-220));   // ↑ centre
-  suite.push(await geste(220,0));    // droite
-  suite.push(await geste(-220,0));   // centre
-  suite.push(await geste(-220,0));   // gauche (Get Higher)
-  suite.push(await geste(220,0));    // centre
-  ok(suite.join(',')==='g,c,b,c,d,c,h,c','trackpad hors manette, quatre sens (comme SPACE) : '+suite.join(','));
+  for(const [dx,dy] of [[0,-220],[0,220],[0,220],[0,-220],[220,0],[-220,0],[-220,0],[220,0]]) suite.push(await geste(dx,dy));
+  ok(suite.join(',')==='h,c,b,c,d,c,g,c','trackpad hors manette, quatre sens : '+suite.join(','));
   {await pg.waitForTimeout(260);await pg.mouse.wheel(0,-60);await pg.waitForTimeout(900);ok((await lv(pg)).vue==='c','un petit défilement (60 px) ne change pas de vue');}
   {const[x,y,w,h]=await R(pg,'#ljoy-box');await pg.mouse.move(x+w/2,y+h/2);await pg.mouse.wheel(0,40);await pg.waitForTimeout(1300);
    ok((await lv(pg)).vue==='b','la molette SUR la manette : comme le manche');await pg.mouse.wheel(0,-40);await pg.waitForTimeout(1300);}
@@ -167,28 +198,28 @@ try{
   const glisse=async(x0,y0,x1,y1)=>{await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:x0,y:y0}]});
     for(let i=1;i<=6;i++){await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x0+(x1-x0)*i/6,y:y0+(y1-y0)*i/6}]});await pg.waitForTimeout(16);}
     await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await pg.waitForTimeout(1800);return (await lv(pg)).vue;};
-  const s=[await glisse(40,780,40,640),await glisse(40,640,40,780),await glisse(40,640,40,780),await glisse(40,780,40,640),await glisse(330,560,200,560),await glisse(200,560,330,560)];
-  ok(s.join(',')==='b,c,g,c,d,c','le doigt, comme le Totehm déplié (glisser vers le haut descend ; en haut, la recherche) : '+s.join(','));
+  const s=[await glisse(40,780,40,640),await glisse(40,640,40,780),await glisse(40,640,40,780),await glisse(40,780,40,640),await glisse(330,560,200,560),await glisse(200,560,330,560),await glisse(200,560,330,560),await glisse(330,560,200,560)];
+  ok(s.join(',')==='b,c,h,c,d,c,g,c','le doigt, comme le Totehm déplié (glisser vers le haut descend) : '+s.join(','));
   ok(!erreurs(log).length,'doigt : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
- // ── 6 · RETOUR DE STRIPE (?higher=paid) : la vue du bas, l'attente du webhook ──
+ // ── 9 · RETOUR DE STRIPE (?higher=paid) : la vue Higher Self, l'attente du webhook ──
  {let n=0;const SMF={ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:0,left:0};
   const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:()=>(++n>=3?LAND({higher:{active:true},sm:{...SMF,higher:true,left:30}}):LAND({sm:SMF}))},viewport:{width:390,height:844}});
   await pg.goto(origin+'/totehm?higher=paid');await pg.waitForSelector('body.member');
-  await pg.waitForFunction(()=>window.__totehm_lv().vue==='b',null,{timeout:4000}).catch(()=>{});
-  ok(pg.url()===origin+'/totehm'&&/payment received/.test(await pg.textContent('#lv-say-note')),'?higher=paid : l\'adresse est nettoyée, la vue du bas s\'ouvre');
+  await pg.waitForFunction(()=>window.__totehm_lv().vue==='h',null,{timeout:4000}).catch(()=>{});
+  ok(pg.url()===origin+'/totehm'&&/payment received/.test(await pg.textContent('#lv-say-note')),'?higher=paid : l\'adresse est nettoyée, Higher Self s\'ouvre');
   await pg.waitForFunction(()=>window.__totehm_lv().higher,null,{timeout:8000}).catch(()=>{});
   ok((await lv(pg)).higher&&!(await pg.$eval('#lv-say',e=>e.classList.contains('hide'))),'le webhook arrive : la saisie s\'ouvre ('+n+' lectures de my_landing)');
   ok(!erreurs(log).length,'retour Stripe : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
- // ── 7 · INVITÉ : en bas, se connecter avec son Totehm ──
+ // ── 10 · INVITÉ : Higher Self dit CONNECT WITH MY TOTEHM ──
  {const{pg,log}=await page(browser,{dir:'com',origin,tables:{},session:false,viewport:{width:390,height:844}});
   await pg.goto(origin+'/totehm');await pg.waitForTimeout(900);
-  await pg.click('#lcur-b');await pg.waitForTimeout(1400);
-  ok(await pg.locator('[data-sm-connect]').count()===1&&(await pg.textContent('[data-sm-connect]'))==='CONNECT WITH MY TOTEHM'&&await pg.locator('#lv-card:not(.hide)').count()===0,'invité : le concept, CONNECT WITH MY TOTEHM ; pas de carte au centre');
+  await pg.click('#lcur-h');await pg.waitForTimeout(1500);
+  ok(await pg.locator('[data-sm-connect]').count()===1&&(await pg.textContent('[data-sm-connect]'))==='CONNECT WITH MY TOTEHM','invité : CONNECT WITH MY TOTEHM');
   ok(!erreurs(log).length,'invité : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
- // ── 8 · LE TOTEHM DÉPLIÉ : le trackpad change de vue en haut ET en bas ──
+ // ── 11 · LE TOTEHM DÉPLIÉ : le trackpad change de vue en haut ET en bas ──
  {const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND()},viewport:{width:1280,height:800}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(800);
   await pg.click('#lv-tap');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:6000}).catch(()=>{});await pg.waitForTimeout(1500);
@@ -201,16 +232,7 @@ try{
   ok(v1!==v0&&v2===v0,'Totehm déplié : ↓ au trackpad change de vue, ↑ revient ('+v0+' → '+v1+' → '+v2+')');
   ok(!erreurs(log).length,'déplié : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 
- // ── 9 · Get Higher (09/10 : revenu sur higher.boutique) : le Discover historique ──
- {const{pg,log}=await page(browser,{dir:'boutique',origin:'https://www.higher.boutique',tables:{},session:false,viewport:{width:390,height:844}});
-  await pg.goto('https://www.higher.boutique/get_higher');await pg.waitForTimeout(600);
-  await pg.click('#down-trigger');await pg.waitForTimeout(400);
-  const t=await pg.$$eval('#disc-stage .disc-block',l=>l.map(b=>b.textContent.replace(/\s+/g,' ').trim()));
-  ok(/Most people think they're just losing energy/.test(t[0])&&/They're losing years/.test(t.join(' ')),
-    'discover : le récit d\'origine est restauré, de l\'énergie aux années perdues');
-  ok(!t.join(' ').match(/invest/i),'jamais « investment » (MiCA) : la valeur se dit par ce que le THP ouvre');
-  ok(!erreurs(log).length,'club : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
- // ── 10 · AU CHARGEMENT (09/10) : le badge [Higher] n'apparaît jamais au coin ──
+ // ── 12 · AU CHARGEMENT : le badge [Higher] n'apparaît jamais au coin ──
  for(const vp of [{width:390,height:844},{width:1280,height:800}]){
   const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND()},viewport:vp,
     network:async url=>{ if(url.host==='esm.sh') await new Promise(r=>setTimeout(r,1500)); return null; }});
@@ -221,6 +243,6 @@ try{
       if(performance.now()-t0<3000)requestAnimationFrame(f);};requestAnimationFrame(f);});
   await pg.goto(origin+'/totehm');await pg.waitForTimeout(3200);
   const m=await pg.evaluate(()=>{const r=document.querySelector('#lv-slogan svg').getBoundingClientRect();return {coin:window.__coin,vu:window.__vu,x:r.left+r.width/2,W:innerWidth};});
-  ok(m.coin===0&&Math.abs(m.x-m.W/2)<m.W*.2,'module retardé de 1,5 s ('+vp.width+' px) : jamais au coin ('+m.coin+' images), posé au centre (invisible au centre depuis le 12/10)');
+  ok(m.coin===0,'module retardé de 1,5 s ('+vp.width+' px) : le badge [Higher] jamais au coin ('+m.coin+' images)');
   ok(!erreurs(log).length,'chargement lent : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
 }finally{await browser.close();}

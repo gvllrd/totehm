@@ -9,7 +9,7 @@ const base={signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled
 const iso=n=>new Date(Date.now()+n*60000).toISOString();
 const history=[{id:'old-private',habit:'Deep practice',visibility:'private',starts_at:iso(-60),ends_at:iso(-30),city:'Lisbon'}];
 const network=url=>url.pathname==='/search'?{status:200,contentType:'text/html',body:fs.readFileSync(new URL('../../com/creator.html',import.meta.url))}:url.hostname==='www.figher.club'||url.hostname==='www.higher.boutique'?{status:200,contentType:'text/html',body:'<!doctype html><p>Satellite fixture</p>'}:null;
-const rpc={my_console:base,my_spaces:{ok:true,spaces:history,more:false},totehm_discover:{items:[],total:0,more:false}};
+const rpc={creator_dashboard:{ok:true,subscribers:12,month_cents:19200,pending_cents:19200,currency:'eur',next_payout:'2026-11-01',threshold_cents:2500,part:80,period:'year',price_cents:2400,min_cents:300,max_cents:100000,enabled:true,open:true},monetization_set:{ok:true},visibility_set:b=>({ok:true,visibility:b.p_visibility}),my_console:base,my_spaces:{ok:true,spaces:history,more:false},totehm_discover:{items:[],total:0,more:false}};
 const ready=async(browser,options={})=>{const sample=await page(browser,{dir:'com',origin,rpc,tables,network,functions:{'sso-mint':{code:'b'.repeat(64)}},...options});await sample.pg.emulateMedia({reducedMotion:'reduce'});return sample;};
 const browser=await launch();
 try{
@@ -25,7 +25,18 @@ try{
    await pg.waitForFunction(()=>/2 TOTEHMs I follow/.test(document.getElementById('mw-subs-hint').textContent));
    const acts=await pg.$$eval('#mw-menu .cm-action',l=>l.map(e=>e.textContent));
    ok(JSON.stringify(acts)==='["Get Higher Self","My subscriptions","My TOTEHM spaces","Connect TotehmBot"]','the member space is the member: Higher, subscriptions, spaces, TotehmBot → '+acts.join(' | '));
-   ok(!await pg.locator('#member-window #ident-block, #member-window [data-lvvis], #totehm-menu').count()&&await pg.locator('#lv-card #ident-block').count()===1,'the TOTEHM name and visibility left the window for the centre of the landing');
+   ok(await pg.locator('#member-window #lv-card #ident-block').count()===1&&await pg.locator('#member-window [data-lvvis]').count()===4&&await pg.isVisible('#lv-card')&&!await pg.locator('#totehm-menu').count(),'13/10 : the TOTEHM name and its four levels live in the member window (no longer on the landing)');
+   const dash=await pg.evaluate(()=>({subs:document.getElementById('mwc-subs').textContent,month:document.getElementById('mwc-month').textContent,next:document.getElementById('mwc-next').textContent,
+     on:!document.getElementById('mw-creator').classList.contains('hide'),say:document.getElementById('mwc-say').textContent}));
+   ok(dash.on&&dash.subs==='12'&&dash.month==='€192'&&dash.next==='1 Nov'&&/€24 \/ year · 100 subscribers = €1,920 for me/.test(dash.say),'the creator in three numbers (creator_dashboard) and the price on a slider → '+JSON.stringify(dash));
+   await pg.$eval('#mwc-price',e=>{e.value='3600';e.dispatchEvent(new Event('input',{bubbles:true}));});
+   ok(await pg.isVisible('#mwc-save'),'moving the slider shows Save');
+   await pg.click('#mwc-save');await pg.waitForFunction(()=>document.getElementById('mwc-note').textContent==='saved');
+   ok(log.rpc.some(x=>x.name==='monetization_set'&&x.body.p_price_cents===3600&&x.body.p_enabled===null),'Save : monetization_set(price 3600), the server decides');
+   await pg.click('#member-window [data-lvvis="subscribers"]');await pg.waitForFunction(()=>!document.getElementById('lv-prog').classList.contains('hide'));
+   ok(log.rpc.some(x=>x.name==='visibility_set'&&x.body.p_visibility==='subscribers')&&await pg.$eval('#lv-prog',e=>e.getAttribute('href'))==='/monetize','MY SUBSCRIBERS : visibility_set decides, then the program button (/monetize)');
+   await pg.click('#member-window [data-lvvis="figher"]');await pg.waitForFunction(()=>document.querySelector('#member-window [data-lvvis="figher"]').getAttribute('aria-checked')==='true');
+   ok(log.rpc.some(x=>x.name==='visibility_set'&&x.body.p_visibility==='figher'),'FIGHER CLUB : the fourth level is one tap away');
    ok(/€7 \/ month/.test(await pg.textContent('#mw-higher-hint'))&&/1 subscriber/.test(await pg.textContent('#mw-subs-hint')),'Higher price and my counts come from the server (my_landing)');
    const fmt=await pg.locator('#mw-menu .cm-action').evaluateAll(items=>items.every(e=>{const s=getComputedStyle(e);return s.backgroundColor==='rgb(31, 31, 36)'&&s.whiteSpace==='nowrap'&&s.fontSize==='12.5px';}));
    ok(fmt,'the higher.boutique buttons, centred, on one line');
@@ -55,8 +66,8 @@ try{
    ok((await pg.textContent('#mw-higher'))==='My Higher subscription'&&/Stop at the end of the month/.test(await pg.textContent('#mw-higher-acts')),'Higher active: renews on a date, can stop at the end of the month');
    await pg.click('[data-hsub="cancel"]');await pg.waitForFunction(()=>/it ends on/.test(document.getElementById('mw-menu-note').textContent));
    ok(log.functions.some(f=>f.name==='higher-sub'&&f.body.action==='cancel')&&/Keep it/.test(await pg.textContent('#mw-higher-acts')),'stopping is at period end (higher-sub cancel), and it can be kept');
-   await pg.click('#mw-higher');await pg.waitForFunction(()=>window.__totehm_lv&&window.__totehm_lv().vue==='b');
-   ok(!await pg.$eval('#member-window',e=>e.classList.contains('show')),'My Higher subscription opens TotehmSM (the view below)');
+   await pg.click('#mw-higher');await pg.waitForFunction(()=>window.__totehm_lv&&window.__totehm_lv().vue==='h');
+   ok(!await pg.$eval('#member-window',e=>e.classList.contains('show')),'My Higher subscription opens Higher Self (the view above, 13/10)');
    ok(!log.errors.some(e=>e.startsWith('pageerror')),'Higher active: no runtime errors');await ctx.close();
   }
   {const{pg,ctx}=await ready(browser,{rpc:{...rpc,my_landing:LAND}});await pg.goto(origin+'/totehm?spaces=1');await pg.waitForSelector('[data-space="old-private"]');

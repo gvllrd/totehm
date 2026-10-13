@@ -1,7 +1,7 @@
 // COM : le papier a deux faces. Au repos il est POSÉ, recto (le logo) : un tap
 // le déploie en Totehm (inchangé). L'utilisateur le RETOURNE (au doigt, à la
-// souris, ou par le mot du bas) : la recherche s'ouvre d'elle-même — on zoome
-// dans le dos du papier, l'écran devient navy, le NOM devient la saisie.
+// souris, ou par la manette) : 13/10 (lot B) — le verso est HIGHER SELF (« {Nom} [Higher] Self ») ;
+// on zoome dans le dos du papier, l'écran devient navy, on tape en Quantico. Chercher un autre Totehm = le banc (com_croix).
 // Comptes, réseau et RPC sont simulés. LANCER : node com_paper.mjs /tmp
 import fs from 'node:fs';
 import {launch,page,ok} from './harness.mjs';
@@ -17,6 +17,9 @@ const tables={profiles:[{pseudo:'wahigher'}]};
 const browser=await launch();
 const R=(pg,sel)=>pg.$eval(sel,e=>{const r=e.getBoundingClientRect();return[r.x,r.y,r.width,r.height].map(v=>+v.toFixed(2));});
 const centre=async pg=>{const r=await R(pg,'#gate-asteroid');return[r[0]+r[2]/2,r[1]+r[3]/2];};
+const SM={ready:true,habit:true,objective:true,higher:false,free_total:7,free_days:30,free_left:6,left:6};
+const LAND={signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false},higher:{active:false,price_cents:700,currency:'eur',period:'month'},thp:false,subscriptions:0,subscribers:0,sm:SM};
+rpc.my_landing=LAND;
 const lsd=pg=>pg.evaluate(()=>({...window.__totehm_lsd}));
 const card=pg=>pg.$eval('#gate-card',e=>({cls:e.className.split(' ').filter(Boolean).sort().join(' '),tf:e.style.transform}));
 const srch=pg=>pg.$eval('#srch',e=>e.className);
@@ -31,7 +34,7 @@ try{
   const paper=await R(pg,'#gate-asteroid'),v0=await vars(pg);
   let c=await card(pg);
   ok(c.cls==='is-flat'&&c.tf===''&&(await lsd(pg)).face===0,'départ : recto, posé, aucune transformation');
-  ok(await pg.textContent('#ast-name')==='wahigher','le dos porte le nom du Totehm du membre');
+  ok((await pg.textContent('#ast-name')).replace(/\s+/g,'')==='wahigher'&&await pg.locator('#ast-verso .ast-self use[href="#higher-badge"]').count()===1,'le dos porte « wahigher [Higher] Self »');
   ok(await pg.$eval('#ast-back',e=>e.inert)&&!await pg.$eval('#ast-front',e=>e.inert),'seul le recto est atteignable (inert sur le verso)');
   await pg.waitForTimeout(1500);
   ok((await card(pg)).tf==='','il ne tourne JAMAIS tout seul (1,5 s : transform toujours vide)');
@@ -42,39 +45,31 @@ try{
   ok((await lsd(pg)).face===0&&await srch(pg)===''&&(await card(pg)).cls==='is-flat','petit glissé (50 px, lent) : il revient sur son recto, rien ne s\'ouvre');
   // on le retourne : la recherche s'ouvre d'elle-même, le focus est pris DANS le geste
   await tourner(pg,260);
-  ok(await pg.evaluate(()=>document.activeElement.id)==='srch-q','retourné à la main : la saisie a le focus dès le relâché (clavier du téléphone)');
+  ok(await pg.evaluate(()=>document.activeElement.id)==='lv-say-in','retourné à la main : la saisie de Higher Self a le focus dès le relâché (clavier du téléphone)');
   await pg.waitForTimeout(1500);
-  const z=await pg.evaluate(()=>{const q=document.getElementById('srch-q');return{srch:document.getElementById('srch').className,v:q.value,ph:q.placeholder,sel:[q.selectionStart,q.selectionEnd],
-    ff:getComputedStyle(q).fontFamily,tq:getComputedStyle(q).transform,tb:getComputedStyle(document.getElementById('srch-bg')).transform,
+  const z=await pg.evaluate(()=>{const q=document.getElementById('lv-say-in');return{srch:document.getElementById('srch').className,v:q.value,ph:q.placeholder,vue:window.__totehm_lv().vue,
+    ff:getComputedStyle(q).fontFamily,tb:getComputedStyle(document.getElementById('srch-bg')).transform,
     bg:getComputedStyle(document.getElementById('srch-bg')).backgroundImage.includes('333366')};});
-  ok(/is-open/.test(z.srch),'la recherche est dépliée');
-  ok(z.v===''&&z.ph==="a member's name",'06/10 : le champ est vide, on tape le nom d\'un membre');
-  ok(/Quantico/.test(z.ff)&&z.tq==='matrix(1, 0, 0, 1, 0, 0)'&&z.tb==='matrix(1, 0, 0, 1, 0, 0)'&&z.bg,'zoom fini : le fond est le papier navy, le nom en Quantico à sa taille');
+  ok(/is-open/.test(z.srch)&&z.vue==='h','le verso est déplié : Higher Self (la vue du haut)');
+  ok(z.v===''&&z.ph==='what is in the way?','le champ est vide : « what is in the way? »');
+  ok(/Quantico/.test(z.ff)&&z.tb==='matrix(1, 0, 0, 1, 0, 0)'&&z.bg,'zoom fini : le fond est le papier navy, on tape en Quantico');
   c=await card(pg);ok((await lsd(pg)).face===1&&c.cls==='is-back is-flat'&&c.tf==='','dessous, le papier est posé sur son verso, sans transformation');
   ok(await pg.$eval('#gate',e=>e.inert&&getComputedStyle(e).visibility==='visible'),'#gate est inert mais reste peint (le Totehm dessous ne se révèle jamais)');
-  ok((await pg.$$eval('.srch-name',e=>e.length))===0,'06/10 : sans frappe, rien (une recherche, pas une liste)');
-  await pg.keyboard.type('wa',{delay:30});await pg.waitForTimeout(260);await pg.keyboard.type('h',{delay:30});await pg.waitForTimeout(1500);
-  const names=await pg.$$eval('.srch-name',e=>e.map(x=>x.textContent));
-  ok(JSON.stringify(names)==='["wah"]','course réseau : « wa » (lent) ne recouvre pas « wah » → '+names);
-  ok(await pg.$eval('.srch-row .srch-open',e=>e.getAttribute('href'))==='/totehm?ro=wah','un résultat = un NOM qui ouvre son Totehm en lecture seule (/totehm?ro=nom)');
-  ok(await pg.$eval('.srch-row .srch-sub',e=>e.getAttribute('href')+' '+e.textContent)==='/@wah Subscribe · €12 / year','07/10 : une offre → « Subscribe · €12 / year » vers /@nom (la vente)');
   // focus piégé dans la feuille
-  const tab=async k=>{await pg.keyboard.press(k);return pg.evaluate(()=>{const e=document.activeElement;return e.closest('#srch')?(e.id||e.getAttribute('href')||e.tagName):'HORS:'+e.tagName;});};
-  await pg.focus('#srch-q');const ring=[];for(let i=0;i<4;i++)ring.push(await tab('Tab'));
-  ok(JSON.stringify(ring)==='["/totehm?ro=wah","/@wah","srch-x","srch-q"]','Tab tourne dans la feuille → '+ring);
-  await pg.fill('#srch-q','w');await pg.waitForTimeout(400);
-  ok(/two letters/.test(await pg.textContent('#srch-note')),'une lettre : « two letters, minimum »');
-  await pg.screenshot({path:OUT+'/com_search.png'});
+  const tab=async k=>{await pg.keyboard.press(k);return pg.evaluate(()=>{const e=document.activeElement;return e.closest('#srch')?(e.id||e.tagName):'HORS:'+e.tagName;});};
+  await pg.focus('#lv-say-in');const ring=[];for(let i=0;i<4;i++)ring.push(await tab('Tab'));
+  ok(ring.every(x=>!/^HORS/.test(x))&&ring.includes('srch-x'),'Tab tourne dans la feuille → '+ring);
+  await pg.screenshot({path:OUT+'/com_self.png'});
   // fermer : dézoom sur le dos, puis il se remet sur son recto
   await pg.click('#srch-x');await pg.waitForTimeout(2000);
   c=await card(pg);
   ok(await srch(pg)===''&&(await lsd(pg)).face===0&&c.cls==='is-flat'&&c.tf==='','la croix : dézoom, puis le papier se remet sur son recto');
   ok(!await pg.$eval('#gate',e=>e.inert)&&JSON.stringify(await R(pg,'#gate-asteroid'))===JSON.stringify(paper),'le papier est de nouveau atteignable, exactement à sa place');
-  ok(await pg.textContent('#ast-name')==='wahigher','son dos porte de nouveau MON nom');
-  // 07/10 : la manette, à gauche : retourner = chercher ; Échap ferme
+  ok((await pg.textContent('#ast-name')).replace(/\s+/g,'')==='wahigher','son dos porte de nouveau MON nom');
+  // 13/10 : la manette, en haut : retourner = Higher Self ; Échap ferme
   await pg.$eval('#lcur-h',e=>e.click());
-  ok(await pg.evaluate(()=>document.activeElement.id)==='srch-q','la manette, à gauche : le focus est pris dans le clic');
-  await pg.waitForTimeout(1700);ok(/is-open/.test(await srch(pg)),'la manette, à gauche, retourne le papier et ouvre la recherche');
+  ok(await pg.evaluate(()=>document.activeElement.id)==='lv-say-in','la manette, en haut : le focus est pris dans le clic');
+  await pg.waitForTimeout(1700);ok(/is-open/.test(await srch(pg)),'la manette, en haut, retourne le papier et ouvre Higher Self');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(2000);
   ok(await srch(pg)===''&&(await lsd(pg)).face===0,'Échap : dézoom et retour au recto');
   // recto : le Totehm se déploie comme avant
@@ -83,20 +78,17 @@ try{
   ok(await pg.evaluate(()=>!document.body.classList.contains('gate')&&/\bv-habits\b/.test(document.body.className)),'tap sur le recto : le Totehm se déploie');
   await pg.click('#fold-x');await pg.waitForTimeout(1500);
   ok(JSON.stringify(await R(pg,'#gate-asteroid'))===JSON.stringify(paper)&&(await card(pg)).tf==='','repli : le papier revient posé, recto, à sa place');
-  // déployer le Totehm pendant que la recherche est ouverte (#in, ?ro=, porte [My Higher Self])
+  // déployer le Totehm pendant que Higher Self est ouvert (#in, ?ro=)
   await tourner(pg,260);await pg.waitForTimeout(1500);
   await pg.evaluate(()=>window.__totehmDeplie());await pg.waitForTimeout(5000);
-  ok(await pg.evaluate(()=>!document.body.classList.contains('gate')&&/\bv-habits\b/.test(document.body.className))&&await srch(pg)==='','enter() pendant la recherche : dézoom, recto, puis déploiement');
+  ok(await pg.evaluate(()=>!document.body.classList.contains('gate')&&/\bv-habits\b/.test(document.body.className))&&await srch(pg)==='','enter() pendant Higher Self : dézoom, recto, puis déploiement');
   ok(!log.errors.length,'aucune erreur console : '+log.errors.join(' | '));}
  // ── INVITÉ, ordinateur, à la souris, vers la gauche ───────────────
  {const{pg,log}=await page(browser,{dir:'com',origin,rpc,tables:{},session:false,viewport:{width:1280,height:800}});
   await pg.goto(origin+'/totehm');await pg.waitForTimeout(900);
-  ok(await pg.textContent('#ast-name')==='search\na Totehm','invité : le dos dit « search a Totehm »');
   await tourner(pg,-300);await pg.waitForTimeout(1600);
-  ok(/is-open/.test(await srch(pg))&&await pg.inputValue('#srch-q')===''&&!await pg.evaluate(()=>document.body.classList.contains('is-door')),'invité : retourné vers la gauche → recherche, champ vide, sans compte');
-  await pg.keyboard.type('wan',{delay:30});await pg.waitForTimeout(700);
-  ok(await pg.$$eval('.srch-name',e=>e.map(x=>x.textContent).join())==='wanda_flow','invité : résultat de « wan »');
-  await pg.screenshot({path:OUT+'/com_search_desktop.png'});
+  ok(/is-open/.test(await srch(pg))&&await pg.locator('[data-sm-connect]').count()===1&&!await pg.evaluate(()=>document.body.classList.contains('is-door')),'invité : retourné vers la gauche → Higher Self dit CONNECT WITH MY TOTEHM, sans porte');
+  await pg.screenshot({path:OUT+'/com_self_guest.png'});
   await pg.keyboard.press('Escape');await pg.waitForTimeout(2000);
   await pg.mouse.click(...await centre(pg));await pg.waitForTimeout(500);
   ok(await pg.evaluate(()=>document.body.classList.contains('is-door')),'invité : le recto ouvre toujours la porte d\'inscription');
@@ -106,7 +98,7 @@ try{
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
   {const[x,y]=await centre(pg);await pg.mouse.move(x,y);await pg.mouse.down();await pg.mouse.move(x+70,y,{steps:4});await pg.mouse.up();}
   await pg.waitForTimeout(1500);
-  ok(/is-open/.test(await srch(pg)),'pichenette (70 px d\'un coup) : il se retourne et cherche');
+  ok(/is-open/.test(await srch(pg)),'pichenette (70 px d\'un coup) : il se retourne, Higher Self');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(2000);
   await tourner(pg,470,20);await pg.waitForTimeout(1200);
   ok(await srch(pg)===''&&(await lsd(pg)).face===0,'presque un tour entier : il revient sur son recto, rien ne s\'ouvre');}
@@ -116,14 +108,14 @@ try{
   const a=[];for(let i=0;i<4;i++){await pg.keyboard.press('Tab');a.push(await pg.evaluate(()=>document.activeElement.id));}
   ok(a.includes('gate-enter')&&!a.includes('gate-search-go'),'clavier, recto : #gate-enter seul → '+a);
   await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(1700);
-  ok(/is-open/.test(await srch(pg))&&await pg.evaluate(()=>document.activeElement.id)==='srch-q','clavier : ← sur l\'atterrissage → recherche, focus dans le nom');}
+  ok(/is-open/.test(await srch(pg))&&await pg.evaluate(()=>document.activeElement.id)==='lv-say-in','clavier : ↑ sur l\'atterrissage → Higher Self, focus dans la saisie');}
  // ── mouvement réduit ──────────────────────────────────────────────
  {const{pg}=await page(browser,{dir:'com',origin,rpc,tables,viewport:{width:390,height:844}});
   await pg.emulateMedia({reducedMotion:'reduce'});await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
   await tourner(pg,260);await pg.waitForTimeout(200);
   ok(await srch(pg)===''&&(await card(pg)).tf==='','mouvement réduit : aucun geste n\'est écouté');
   await pg.$eval('#lcur-h',e=>e.click());await pg.waitForTimeout(150);
-  ok(/is-open/.test(await srch(pg)),'mouvement réduit : la manette ouvre la recherche sans animation');
+  ok(/is-open/.test(await srch(pg)),'mouvement réduit : la manette ouvre Higher Self sans animation');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(150);
   ok(await srch(pg)===''&&(await lsd(pg)).face===0,'mouvement réduit : fermée, le papier est de nouveau sur son recto');}
 }finally{await browser.close();}
