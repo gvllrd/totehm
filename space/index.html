@@ -38,18 +38,13 @@ button,input,textarea,select{font:inherit;color:inherit;color-scheme:dark}
 body.is-embed #x-back{display:flex;position:fixed;top:calc(10px + var(--top));left:10px;z-index:130;width:36px;height:36px;align-items:center;justify-content:center;
   border:0;border-radius:10px;background:rgba(22,22,26,.82);color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent}
 body.is-embed #x-back svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
-body.is-embed #member,body.is-embed #menu{display:none!important}
-#member{position:fixed;top:calc(12px + var(--top));left:12px;z-index:96;display:flex;align-items:center;gap:8px;
+body.is-embed #who{display:none!important}
+#who{position:fixed;top:calc(12px + var(--top));left:12px;z-index:96;display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+#terms{font:400 8px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);text-decoration:none;padding:2px 4px}
+#member{position:relative;display:flex;align-items:center;gap:8px;
   background:none;border:none;cursor:pointer;font-family:var(--q);font-weight:700;font-size:12px;color:var(--lo);padding:6px 4px}
 #member i{width:9px;height:9px;border-radius:50%;background:#3a3a40;display:block;flex:none;transition:background .2s,box-shadow .2s}
 #member.is-in i{background:#fff;box-shadow:0 0 8px #fff}
-#menu{position:fixed;top:0;left:0;z-index:95;width:min(320px,86vw);background:var(--s1);padding:calc(54px + var(--top)) 18px 22px;
-  display:flex;flex-direction:column;gap:6px;transform:translateY(-104%);transition:transform .35s var(--ease);visibility:hidden}
-#menu.is-open{transform:none;visibility:visible}
-#menu .m-it{display:block;width:100%;text-align:left;background:var(--s2);border:none;border-radius:var(--r);padding:11px 13px;
-  cursor:pointer;color:var(--mid);text-decoration:none;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
-#menu .m-name{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-#menu .m-terms{background:none;color:var(--dim);font-size:10px;margin-top:10px;padding:8px 2px}
 
 
 #title{position:fixed;top:calc(14px + var(--top));left:50%;transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:8px;
@@ -239,7 +234,7 @@ body.v-cam.is-form #cam-body{bottom:calc(170px + var(--bot));max-height:calc(100
   #detail.is-open{transform:translate(-50%,0)}
 }
 @media(max-width:480px){#heading{top:calc(44px + var(--top))}#int-def{max-width:80vw;font-size:8px}}
-@media(prefers-reduced-motion:reduce){.view,#heading,#detail,#menu,#joy-stack,#joy-record{transition:none!important}}
+@media(prefers-reduced-motion:reduce){.view,#heading,#detail,#joy-stack,#joy-record{transition:none!important}}
 
 .video-status{position:absolute;top:44%;left:12px;right:12px;text-align:center;pointer-events:none}
 
@@ -258,7 +253,7 @@ body.v-cam.is-form #cam-body{bottom:calc(170px + var(--bot));max-height:calc(100
 #heading{top:calc(18px + var(--top));gap:0}
 body.v-feed #heading{top:calc(14px + var(--top));--tp:58px}
 body.v-feed #tp-wrap{display:flex}
-body.v-feed #tp-hint,body.v-feed #member{display:none}body.v-cam #heading{display:flex}
+body.v-feed #tp-hint,body.v-feed #who{display:none}body.v-cam #heading{display:flex}
 #member,#member:hover,#member-txt{font-family:var(--q);font-weight:400;color:#fbd5ca}
 #member i{display:none}
 .tname,.tname:hover{font-family:var(--q);font-weight:400;color:#fbd5ca;background:#333366;border:0;border-image:none;border-radius:0;padding:6px 10px;filter:none}
@@ -335,8 +330,7 @@ body.v-cam #joy-say{background:rgba(0,0,0,.82);border-radius:var(--r);padding:1p
 
 @media(hover:hover){
 #member:hover,
-#menu .m-it:hover,
-#menu .m-terms:hover,
+#terms:hover,
 .say:hover,
 .empty:hover,
 .clip .noclip:hover,
@@ -386,7 +380,7 @@ body.v-home #home{display:flex}
 #home-eco{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:4px}
 #home-eco .btn{align-self:center;background:var(--s2);font-size:9.5px}
 body.v-me #heading,body.v-vibes #heading{top:calc(14px + var(--top));--tp:58px}
-body.v-me #tp-hint,body.v-me #member,body.v-vibes #tp-hint,body.v-vibes #member{display:none}
+body.v-me #tp-hint,body.v-me #who,body.v-vibes #tp-hint,body.v-vibes #who{display:none}
 #v-me,#v-vibes{background:var(--s1);overflow-y:auto;overscroll-behavior:contain;padding:calc(96px + var(--top)) 14px calc(124px + var(--bot))}
 .pf-in,.vb-in{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
 .pf-head{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
@@ -453,7 +447,7 @@ body.is-hz #sf-btn{display:none}
 button.eco-text-btn,a.eco-text-btn{inline-size:fit-content!important;max-inline-size:100%;min-inline-size:0!important;flex:0 1 auto!important;padding:.65em .95em!important;line-height:1.45;box-sizing:border-box}
 .eco-connect,.eco-connect #member-txt,.eco-connect #conn-txt{font-family:'Space Mono',monospace!important;font-weight:700!important;font-size:10px!important;color:#b0b0b0!important;letter-spacing:.06em;text-transform:uppercase!important}
 button.eco-connect{background:#252529!important;border:0!important;border-radius:10px!important;cursor:pointer}
-#menu .eco-text-btn,#mmenu .eco-text-btn,.mw-card .eco-text-btn{align-self:flex-start}
+#mmenu .eco-text-btn,.mw-card .eco-text-btn{align-self:flex-start}
 #member.eco-connect,#conn-bar.eco-connect{max-width:calc(50vw - 70px);text-align:left}
 #member.eco-connect #member-txt,#conn-bar.eco-connect #conn-txt{white-space:normal;max-width:100%;overflow:visible;text-overflow:clip}
 #member>i,#conn-bar>.dot,#conn-bar>.dc{display:none!important}
@@ -483,18 +477,6 @@ body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,b
 .pick-habit[role=button]:focus-visible{outline:1px solid var(--mid);outline-offset:3px}
 #member.eco-connect{max-width:calc(50vw - var(--tp)/2 - 22px)}
 
-#my-spaces{position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.95);overflow-y:auto;overscroll-behavior:contain;padding:calc(16px + var(--top)) 16px calc(28px + var(--bot))}
-.msp-in{width:min(560px,100%);margin:0 auto;display:flex;flex-direction:column;gap:12px}
-.msp-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
-#msp-title{font:700 12px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:#fff}
-#msp-name{width:fit-content;font-size:15px}
-#msp-list{display:flex;flex-direction:column;gap:6px}
-.msp-row{display:flex;align-items:center;gap:6px;background:var(--s2);border-radius:var(--r);padding-right:6px}
-.msp-open{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;background:none;border:0;border-radius:var(--r);padding:12px 13px;cursor:pointer;color:var(--mid);font:400 10px/1.5 var(--mono)}
-.msp-h{font:400 15px/1.35 var(--q);color:#fff;overflow-wrap:anywhere}
-.msp-s{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo)}
-.msp-s b{font-weight:700;color:var(--mid)}.msp-s b.is-live{color:#fff}
-.msp-row>.msp-del{background:none;color:var(--lo);flex:none}
 [data-del].is-arm{color:#ff9a9a!important}
 
 @property --tp{syntax:'<length>';inherits:true;initial-value:110px}
@@ -507,15 +489,12 @@ body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,b
   max-width:min(520px,calc(100vw - 40px));animation:tp-souffle 4.2s ease-in-out infinite}
 @keyframes tp-souffle{0%,100%{opacity:1}50%{opacity:.62}}
 @media(prefers-reduced-motion:reduce){#tp-hint{animation:none}}
-body.is-msp #joy{pointer-events:none;opacity:.2}
-@media(hover:hover){.msp-row:hover{background:var(--s3)}.msp-row>.msp-del:hover{color:#fff}}
 </style></head>
 <body class="v-feed">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="higher-badge" viewBox="0 0 600 200"><defs><mask id="hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></symbol></svg>
 
 <button id="x-back" type="button" aria-label="Back to my TOTEHM"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg></button>
-<button id="member" type="button" aria-label="Member menu"><i></i><span id="member-txt">CONNECT WITH MY TOTEHM</span></button>
-<nav id="menu" aria-label="Member menu"></nav>
+<div id="who"><button id="member" type="button" aria-label="Connect with my TOTEHM"><i></i><span id="member-txt">CONNECT WITH MY TOTEHM</span></button><a id="terms" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a></div>
 <header id="heading">
 <div id="tp-wrap">
 <div id="totehm-paper">
@@ -567,15 +546,6 @@ body.is-msp #joy{pointer-events:none;opacity:.2}
 <div id="cam-body" tabindex="-1" aria-label="Create my space"></div>
 
 <aside id="detail" aria-label="Space"></aside>
-<aside id="my-spaces" class="hide" role="dialog" aria-modal="true" aria-labelledby="msp-title" tabindex="-1">
-  <div class="msp-in">
-    <div class="msp-head"><h2 id="msp-title">My spaces</h2><button class="btn" id="msp-x" type="button">CLOSE</button></div>
-    <span class="tname hide" id="msp-name"></span>
-    <div id="msp-list" aria-label="My spaces, newest first"></div>
-    <p class="note" id="msp-note" role="status"></p>
-    <button class="btn hide" id="msp-more" type="button">MORE</button>
-  </div>
-</aside>
 
 
 <div id="joy" role="group" aria-label="Where I am in totehm.space">
@@ -756,7 +726,7 @@ const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT =
   return (v < 10 ? Math.max(.1, v).toFixed(1) : String(Math.round(v))) + ' ' + UNIT; };
 
 /* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
-const BUILD='2026-10-13-space-take';
+const BUILD='2026-10-13-space-who';
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
 let VIEW = 'feed';   /* 12/10 — on arrive dans le fil (Wah : « totehm.space, pur TikTok »). */
@@ -1881,16 +1851,10 @@ function joyTap(){
 }
 addEventListener('keydown',e => {
   if(e.key==='Tab' && VIEW==='cam' && document.body.classList.contains('is-form')){const f=[...$('cam-body').querySelectorAll('button:not(:disabled),input,textarea,a[href]')].filter(x=>x.getClientRects().length);if(f.length){const i=f.indexOf(document.activeElement);if(e.shiftKey && i<=0 || !e.shiftKey && (i<0 || i===f.length-1)){e.preventDefault();(e.shiftKey?f.at(-1):f[0]).focus();}}return;}
-  if(!$('my-spaces').classList.contains('hide')){
-    if(e.key === 'Escape'){ e.preventDefault(); mspClose(); }
-    else if(e.key === 'Tab'){ const f=[...$('my-spaces').querySelectorAll('button:not(:disabled)')].filter(x=>x.getClientRects().length), i=f.indexOf(document.activeElement);
-      if(f.length && (e.shiftKey ? i<=0 : i<0 || i===f.length-1)){ e.preventDefault(); (e.shiftKey ? f.at(-1) : f[0]).focus(); } }
-    return;
-  }
   if(e.key === 'Escape'){
     if(!$('habit-picker').classList.contains('hide')) pickerClose(); else if(!$('sf-panel').classList.contains('hide')) sfOpen(false); else if(DETAIL) closeDetail();
     else if(HZ.on && VIEW === 'feed') hzClose();
-    else if($('menu').classList.contains('is-open')) menu(false); else if(REC.step === 'rec') joyTap(); else if(VIEW !== 'feed' && !REC.busy) go('feed');
+    else if(REC.step === 'rec') joyTap(); else if(VIEW !== 'feed' && !REC.busy) go('feed');
     return;
   }
   if(e.target.closest?.('input,textarea,select,[contenteditable]')) return;
@@ -1903,7 +1867,7 @@ addEventListener('keydown',e => {
    leurs gestes. La navigation laisse le défilement du fil au navigateur. */
 (function gestures(){
   const pointers = new Map(); let drag = null, pinch = null, pinching = false;
-  const excluded = t => !!t.closest?.('#my-spaces,.eco-sheet,#cam-body,#joy,button,input,textarea,select,a,#detail,#menu,#habit-picker,#sf-panel,#totehm-paper,[contenteditable]');
+  const excluded = t => !!t.closest?.('.eco-sheet,#cam-body,#joy,button,input,textarea,select,a,#detail,#habit-picker,#sf-panel,#totehm-paper,[contenteditable]');
   const horizontal = dx => step(dx>0?'g':'d');
   const scroller = t => t.closest?.('#feed,#v-me,#v-vibes,#cam-body');
   const canScroll = (el,delta) => !!el && el.scrollHeight > el.clientHeight + 3 && (delta > 0 ? el.scrollTop < el.scrollHeight - el.clientHeight - 3 : el.scrollTop > 3);
@@ -1931,7 +1895,7 @@ addEventListener('keydown',e => {
   },true);
   addEventListener('pointercancel',e => { pointers.delete(e.pointerId); drag=null; pinch=null; if(!pointers.size) pinching=false; },true);
   let touch=null;
-  const touchExcluded=t=>!!t.closest?.('#my-spaces,.eco-sheet,#cam-body,#joy,input,textarea,select,#detail,#menu,#habit-picker,#sf-panel,#sf-btn,#totehm-paper,[contenteditable]');
+  const touchExcluded=t=>!!t.closest?.('.eco-sheet,#cam-body,#joy,input,textarea,select,#detail,#habit-picker,#sf-panel,#sf-btn,#totehm-paper,[contenteditable]');
   addEventListener('touchstart',e=>{
     if(e.touches.length!==1 || touchExcluded(e.target) || recordingLocked() || DETAIL){ touch=null;return; }
     const p=e.touches[0];touch={x:p.clientX,y:p.clientY,t:Date.now(),el:scroller(e.target),view:VIEW};
@@ -1991,49 +1955,7 @@ addEventListener('keydown',e => {
 })();
 
 
-/* ══ MY SPACES · 06/10/2026 ════════════════════════════════════════════
-   Wah : « une rubrique My Spaces avec tout l'historique des spaces publiés
-   sur SPACE ; et on doit pouvoir supprimer des spaces ». `my_spaces` (MES
-   spaces publiés, privés et partagés, du plus récent au plus ancien, 30 par
-   page) ; un tap ouvre la fiche (`spot_get`, droits de SPACE) ; DELETE puis
-   DELETE FOR GOOD → `space-delete` (le serveur décide sous MA session, efface
-   la vidéo et les fichiers ; le space disparaît partout). Réponse tardive
-   jetée (`MSP.seq`), vidé à la déconnexion. */
-const MSP = { seq:0, rows:[], more:false, busy:false, prev:null };
-function mspPaint(){
-  $('msp-list').innerHTML = MSP.rows.map(x => {
-    const d = new Date(x.starts_at), when = Number.isNaN(d.getTime()) ? '' : dayOf(d) + ' ' + hhmm(d), id = esc(String(x.id));
-    return '<div class="msp-row" data-row="' + id + '"><button class="msp-open" type="button" data-open-space="' + id + '"><span class="msp-h">' + esc(x.habit) + '</span>' +
-      '<span class="msp-s"><b>' + esc(('posted ' + when).trim().toUpperCase()) + '</b> · ' + audBadge(audOf(x)) + esc(audName(audOf(x))) + '</span>' +
-      '<span>' + esc(x.city || '') + '</span></button>' +
-      '<button class="btn msp-del" type="button" data-del="' + id + '" aria-label="Delete this space">DELETE</button></div>';
-  }).join('');
-  $('msp-more').classList.toggle('hide', !MSP.more);
-}
-async function mspLoad(more = false){
-  if(!me || MSP.busy) return; MSP.busy = true; const seq = ++MSP.seq, uid = me.id, last = more ? MSP.rows.at(-1) : null;
-  $('msp-note').textContent = 'reading my spaces…'; $('msp-more').disabled = true;
-  try{
-    const { data, error } = await sb.rpc('my_spaces', { p_before: last?.starts_at || null, p_before_id: last?.id || null, p_limit: 30 });
-    if(seq !== MSP.seq || uid !== me?.id) return;
-    if(error || !data?.ok){ if(error) console.error('[my_spaces]', error.message); $('msp-note').textContent = 'My spaces could not load. Try again.'; return; }
-    MSP.rows = more ? MSP.rows.concat(data.spaces || []) : (data.spaces || []); MSP.more = !!data.more; mspPaint();
-    $('msp-note').textContent = MSP.rows.length ? '' : 'No space yet. Tap your TOTEHM to turn a habit into a space.';
-  }catch(e){ if(seq === MSP.seq){ console.error('[my_spaces]', e?.message || e); $('msp-note').textContent = 'My spaces could not load. Try again.'; } }
-  finally{ if(seq === MSP.seq){ MSP.busy = false; $('msp-more').disabled = false; } }
-}
-function mspOpen(){
-  if(!me) return; menu(false); closeDetail(); pickerClose(); MSP.prev = document.activeElement;
-  MSP.rows = []; MSP.more = false; $('msp-list').replaceChildren(); $('msp-more').classList.add('hide');
-  $('msp-name').textContent = PSEUDO || ''; $('msp-name').classList.toggle('hide', !PSEUDO);
-  $('my-spaces').classList.remove('hide'); document.body.classList.add('is-msp'); joyPaint(); $('msp-x').focus(); mspLoad();
-}
-function mspClose(){
-  if($('my-spaces').classList.contains('hide')) return;
-  MSP.seq++; MSP.busy = false; $('my-spaces').classList.add('hide'); document.body.classList.remove('is-msp'); joyPaint();
-  if(MSP.prev?.isConnected) MSP.prev.focus({ preventScroll:true });
-}
-/* DELETE → DELETE FOR GOOD → supprimé, partout, tout de suite. */
+/* DELETE → DELETE FOR GOOD → supprimé, partout, tout de suite (depuis la fiche d'un de mes spaces). */
 async function spaceDelete(btn, id){
   if(!btn.classList.contains('is-arm')){
     document.querySelectorAll('[data-del].is-arm').forEach(x => { x.classList.remove('is-arm'); x.textContent = 'DELETE'; });
@@ -2044,47 +1966,21 @@ async function spaceDelete(btn, id){
   catch(e){ console.error('[space-delete]', e?.message || e); if(btn.isConnected){ btn.disabled = false; btn.classList.remove('is-arm'); btn.textContent = 'DELETE'; } return 'failed'; }
   if(uid !== me?.id) return 'done';
   FEED.list = FEED.list.filter(x => x.id !== id);
-  MSP.rows = MSP.rows.filter(x => String(x.id) !== id); mspPaint();
-  if(!$('my-spaces').classList.contains('hide')) $('msp-note').textContent = MSP.rows.length ? 'Space deleted.' : 'No space yet. Tap your TOTEHM to turn a habit into a space.';
   if(DETAIL?.id === id) closeDetail();
   paintFeed(); reload();
   return 'done';
 }
-$('msp-x').onclick = mspClose;
-$('msp-more').onclick = () => mspLoad(true);
-$('msp-list').addEventListener('click', async e => {
-  const del = e.target.closest('[data-del]');
-  if(del){ if(await spaceDelete(del, del.dataset.del) === 'failed') $('msp-note').textContent = 'Not deleted. Try again.'; return; }
-  const o = e.target.closest('[data-open-space]'); if(!o) return;
-  const id = o.dataset.openSpace, seq = MSP.seq;
-  const { data, error } = await sb.rpc('spot_get', { p_id: id });
-  if(error) console.error('[spot_get]', error.message);
-  if(seq !== MSP.seq) return;
-  if(!data?.ok){ $('msp-note').textContent = 'This space cannot open right now.'; return; }
-  mspClose(); openDetail(data.spot);
-});
-
-/* ══ LE COIN MEMBRE — SIMPLE TERMS OF USE, TOUJOURS EN DERNIER ═══════ */
-function menu(open){ $('menu').classList.toggle('is-open', open); }
+/* ══ LE COIN MEMBRE (13/10, lot B) — Wah : sur un satellite, CONNECT WITH MY TOTEHM seul ; connecté, le NOM seul,
+   qui ramène à totehm.com (le pont). Tout l'espace membre (mes spaces, mes spots, la console, la déconnexion
+   partout) vit dans COM. « Simple terms of use » en tout petit sous CONNECT. ═══════════════════════ */
 function paintMember(){
   $('member').classList.toggle('is-in', !!me);
-  $('member-txt').textContent = me ? (PSEUDO || 'Member') : 'CONNECT WITH MY TOTEHM';
+  $('member-txt').textContent = me ? (PSEUDO || 'MY TOTEHM') : 'CONNECT WITH MY TOTEHM';
+  $('member').setAttribute('aria-label', me ? 'My TOTEHM' : 'Connect with my TOTEHM');
+  $('terms').classList.toggle('hide', !!me);
   PAPER.nommer();
-  $('menu').innerHTML = (me
-    ? (PSEUDO ? '<div class="m-name"><button class="tname" type="button" data-com="/totehm#in">' + esc(PSEUDO) + '</button></div>' : '') +
-      '<button class="m-it" type="button" data-myspaces="1">My spaces</button>' +
-      '<button class="m-it" type="button" data-com="/console">Console</button>' +
-      '<button class="m-it" type="button" data-out="1">Sign out</button>'
-    : '<button class="m-it" type="button" data-signin="1">CONNECT WITH MY TOTEHM</button>') +
-    '<a class="m-it m-terms" href="' + COM + '/terms" target="_blank" rel="noopener">Simple terms of use</a>';
 }
-$('member').onclick = () => menu(!$('menu').classList.contains('is-open'));
-$('menu').addEventListener('click', async e => {
-  if(e.target.closest('[data-signin]')) return ssoLogin(false);
-  if(e.target.closest('[data-myspaces]')) return mspOpen();
-  if(e.target.closest('[data-out]')){ mspClose(); await sb.auth.signOut({ scope:'local' }); me = null; PSEUDO = null; HABITS = null; sfReset(); sfPaint(); SIGNED.clear();closeDetail();FEED.list=[];PROF.list=[];PROF.pseudo=null;VIB.data=null;paintFeed();if(VIEW==='me')loadProfileView();if(VIEW==='vibes')loadVibes(); if(VIEW === 'cam') camReset(); menu(false); pickerClose(); paintMember(); reload(); }
-});
-document.addEventListener('pointerdown', e => { if($('menu').classList.contains('is-open') && !e.target.closest('#menu,#member')) menu(false); });
+$('member').onclick = () => me ? ssoVersDomaine(sb, 'com', COM + '/totehm#in') : ssoLogin(false);
 
 /* ══ LE DÉMARRAGE ════════════════════════════════════════════════════ */
 async function boot(){
@@ -2126,7 +2022,7 @@ if(EMBED){
   addEventListener('message', async e => {
     if(e.origin !== location.origin || e.source !== parent || !e.data || e.data.totehm !== 'x' || !e.data.cmd) return;
     const d = e.data;
-    if(d.cmd === 'sleep'){ menu(false); pickerClose(); sfOpen(false); closeDetail(); if(HZ.on) hzClose(); if(!REC.busy && VIEW !== 'feed') go('feed'); pauseFeed(); return; }
+    if(d.cmd === 'sleep'){ pickerClose(); sfOpen(false); closeDetail(); if(HZ.on) hzClose(); if(!REC.busy && VIEW !== 'feed') go('feed'); pauseFeed(); return; }
     const { data:{ session } } = await sb.auth.getSession();
     if((session?.user?.id || null) !== (me?.id || null)) return toCom('stale');
     charger();
@@ -2138,8 +2034,7 @@ if(EMBED){
   /* Échap, quand il n'y a plus rien à refermer ici, rend le Totehm. */
   addEventListener('keydown', e => {
     if(e.key !== 'Escape') return;
-    const rien = VIEW === 'feed' && !DETAIL && !HZ.on && $('habit-picker').classList.contains('hide') && $('sf-panel').classList.contains('hide')
-      && $('my-spaces').classList.contains('hide');
+    const rien = VIEW === 'feed' && !DETAIL && !HZ.on && $('habit-picker').classList.contains('hide') && $('sf-panel').classList.contains('hide');
     if(rien){ e.preventDefault(); e.stopImmediatePropagation(); toCom('close'); }
   }, true);
 }
