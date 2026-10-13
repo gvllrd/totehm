@@ -1,5 +1,20 @@
 # BRAND.md — TOTEHM
 
+## CURRENT UPDATE — 13/10/2026 (bis) · Wah's cross, my story, the design speaks (overrides 08/10 bis-ter on cloths and vision)
+
+- **totehm.com is a cross of five places.** Centre: my paper, signed with my name small at the bottom right;
+  *Tap to open it*; **My TOTEHM** · **Search another TOTEHM** (a school of TOTEHMs swims; a name opens its universe,
+  /@name). Up: **{Name} [Higher] Self** — the paper turns over and I type. Down: **PHOTO · VIDEO · SPOT**. Left: my
+  spots on the Earth and my shorts. Right: my visions, their images, the objectives on top. The joystick is the
+  figher.club cross of five dots; its legend names the place — no title on screen.
+- **Extreme minimal TOTEHM**: no group titles, no subtitles, no labels; **+** and a dotted ghost box; colours speak.
+- **WISDOM is called MY STORY on screen.** A cloth wears **my story** only — never a vision: a vision stays mine
+  and carries an image I bring (*Generate* comes later).
+- **SPACE and figher.club say only CONNECT WITH MY TOTEHM** (with *Simple terms of use* tiny below). Connected:
+  my name only, back to totehm.com — the member space lives there (name, four audiences, my numbers as a creator:
+  subscribers · this month · next payout, and my yearly price on a slider).
+- **Get [Higher] = the tongue**, on higher.boutique: the mouth opens, the TotehmPaper lands on the tongue, swallowed.
+
 ## CURRENT UPDATE — 13/10/2026 · four audiences, one rule (overrides "PRIVATE or VISIBLE TO MY SUBSCRIBERS, nothing else")
 
 - Everything a member publishes says who sees it, in four words a creator gets at once: **PRIVATE** (only me) ·

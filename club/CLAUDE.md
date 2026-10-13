@@ -1,5 +1,11 @@
 # club/CLAUDE.md — figher.club : la rencontre dans la réalité (09/10)
 
+## 13/10/2026 — le coin membre = CONNECT WITH MY TOTEHM seul (lot B)
+
+BUILD `2026-10-13-club-who`. Même coin que SPACE : `#who` = CONNECT WITH MY TOTEHM (+ « Simple terms of use » en tout petit
+dessous) ; connecté, le nom seul → totehm.com. Menu et feuille My spots retirés (balisage et câblage) ; DELETE reste dans
+la fiche d'un de mes spots ; mes spots vivent aussi dans COM (← MON MONDE). Tests : `spaces_loupe` §4, `club_ui`.
+
 ## 13/10/2026 — quatre niveaux (lot A)
 
 BUILD `2026-10-13-club-aud`. Plan et caméra : QUI voit (PRIVATE · FIGHER CLUB · MY SUBSCRIBERS · PUBLIC, défaut

@@ -366,11 +366,17 @@ dans le seau public `totehm-cloth-support`, dossier `storage_folder` du support
 (`cleanup-drafts`) ; par le sien, jamais (repris). **L'œuvre dans Decode** :
 visible quand la pièce est `shipped` ; la montrer plus tôt = changer la condition
 de `_cloth_art_path` et de `reveal_cloth.art` (une ligne chacune).
-**Ce qu'un vêtement porte** (08/10 bis) : WISDOM ou VISION. Rouvrir une vue =
+**Ce qu'un vêtement porte** (13/10, lot B) : MY STORY (WISDOM) seul. Rouvrir une vue =
 l'ajouter ENSEMBLE à `KINDS` (`create-checkout`, redéployer) et à `WEARABLE` +
-`CROIX` + `NOM` (`boutique/streetwear.html`) ; l'un sans l'autre = 422 ou vue morte.
-**De COM à la boutique** (08/10 ter) : « + totehmize » = `/streetwear?wear=wisdom:<id>`
-(ou `vision:`), relu par `my_trips` ; les Cloths d'un élément = `element_cloths`.
+`CROIX` + `NOM` + `parseWear` (`boutique/streetwear.html`) + `L` de `loadElementCloths`
+(`com/totehm.html`) ; l'un sans l'autre = 422 ou vue morte.
+**De COM à la boutique** (08/10 ter) : « + totehmize » = `/streetwear?wear=wisdom:<id>`,
+relu par `my_trips` ; les Cloths d'un élément = `element_cloths`.
+**L'image d'une VISION** (13/10) : JPEG ≤ 1080 px posé par la page dans `moments/<uid>/vision-<uuid>.jpg`,
+puis `vision_image_set(id, chemin)` ; l'ancien fichier (`old`) est effacé par la page (politique `moments delete own`).
+Retirer = `vision_image_set(id, null)`. Un fichier orphelin (page fermée entre l'envoi et l'appel) reste dans MON
+dossier, privé : ménage possible plus tard (lister `vision-*` absents de `visions.image`).
+**Le tableau du créateur** (13/10) : `creator_dashboard()` lit, `monetization_set(null, prix)` écrit le prix.
 Auto-test : `tests/sql/streetwear_immersive_selftest.sql` → `FAIL={}`.
 
 **Le mode test Stripe** (05/10 soir, sans « oui » : aucun argent réel) : un

@@ -1,5 +1,25 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 13/10/2026 — la croix de Wah (lot B)
+
+BUILD `2026-10-13-com-story`. Module `LV` : `CROIX_L`, `NOMS`, `TEINTE_L`. **Centre** : le papier SANS nom au recto, le
+nom en petit en bas à droite (`#ast-sig`, Quantico Coral), « Tap to open it », [My TOTEHM] · [Search another TOTEHM] →
+`BANC` : un canvas, ≤ 140 papiers en banc, rAF seulement ouvert ; `NameSearch({href:'/@'+nom, nouvel})` → l'univers
+(nouvel onglet à la souris, sur place au doigt). **↑ Higher Self** : le verso retourné (`#srch`), « {Nom} [Higher] Self »,
+on tape en Quantico (`#lv-say-in`) ; `?higher=paid` y mène. **↓ PRENDRE** : PHOTO · VIDEO → `XO.ouvrir('space','v=cam&take=…')`
+(SPACE allume le capteur), SPOT → le plan du Club. **← MON MONDE** (`MONDE`) : la Terre (projection orthographique, UN
+canvas, `/assets/earth.json` Natural Earth 110 m, rAF seulement ouvert) + mes spots, mes shorts (`creator_universe` de
+moi). **→ MES VISIONS** (`MESVIS`, `my_visions`) : l'image, les objectifs en mini-boxes par-dessus ; sans image, un « + »
+en pointillé ; un tap → MY VISION. Manette : la croix de 5 points (navy, bleu, rouge-violet). La bouche est partie
+(`BOUCHE` = API inerte) : la langue vit sur `boutique/get_higher.html`. **Espace membre** : nom, quatre niveaux, invité ;
+`CREA` = `creator_dashboard` (abonnés · ce mois-ci · prochain versement) + prix au curseur (`monetization_set`, prix seul).
+**Totehm minimal** : plus de titres de groupe (`.mg-l` caché), « + » et place en pointillé, icônes, WISDOM = « my story »,
+les Cloths en points (≤ 3, `aria-label` = le compte), COPY = « + » puis ✓. Un Cloth ne porte que MY STORY. Une VISION
+porte une image libre : `visionImage` → JPEG ≤ 1080 px dans `moments/<uid>/vision-<uuid>.jpg` → `vision_image_set` →
+l'ancien fichier effacé ; « × » la retire. `signerPhoto` (global, 50 min de cache) signe shorts et visions.
+Diagnostics : `__totehm_lv()` (+ `prises`, `monde`, `visions`, `banc`, `createur`), `__totehm_zone().images`.
+Tests : `com_croix` (57), `com_vision_image`, `com_paper`, `com_member_menu`, `com_read_copy`, `com_cloths`.
+
 ## 13/10/2026 — quatre niveaux ; `/@nom` = l'univers (lot A)
 
 BUILD `2026-10-13-com-aud` (totehm), `2026-10-13-univers` (creator), `2026-10-13-aud` (console). La carte du

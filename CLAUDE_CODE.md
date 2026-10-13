@@ -302,6 +302,15 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
+### Correction 0.58 — 13/10/2026 (bis) · la croix de Wah, MY STORY, les satellites réduits (lot B, à reporter)
+> totehm.com = une croix : centre = le papier signé (nom en petit, en bas à droite), My TOTEHM · Search another
+> TOTEHM (le banc → /@nom) ; ↑ Higher Self (le verso) ; ↓ PHOTO · VIDEO · SPOT ; ← ma Terre + mes shorts ; → mes visions.
+> Totehm minimal (sans titres, « + », place en pointillé) ; WISDOM = MY STORY ; un Cloth = MY STORY seul
+> (`create-checkout` v41) ; une VISION porte une image libre. SPACE et figher.club : CONNECT WITH MY TOTEHM seul,
+> connecté = le nom → COM. Get Higher = la langue sur higher.boutique. Migrations `vision_image`,
+> `creator_dashboard` APPLIQUÉES : ne pas réappliquer. Aucun prix. En attente (lot C, prix + « oui ») : l'adhésion
+> FIGHER CLUB, Generate (images payantes), la mémoire IA / Stoner, l'abonnement créateur mensuel.
+
 ### Correction 0.57 — 13/10/2026 · quatre niveaux, `/@nom` = l'univers (lot A, à reporter)
 > Tout ce qu'un membre publie dit qui le voit : PRIVATE · FIGHER CLUB · MY SUBSCRIBERS · PUBLIC (défauts : Totehm
 > PRIVATE, space PUBLIC, spot FIGHER CLUB). Un abonné lit tout sauf le privé ; les vitrines ne listent que public +

@@ -1,5 +1,19 @@
 # backend/CLAUDE.md — la base, les fonctions, l'argent, le bot
 
+## 13/10/2026 — lot B : l'image d'une VISION, le tableau du créateur, un Cloth = MY STORY
+
+Migrations `20261013100000_vision_image.sql` (`vision_image`) et `20261013101000_creator_dashboard.sql`
+(`creator_dashboard`), appliquées UNE fois chacune, additives (aucun `drop`).
+- `visions.image` (check `<uid>/vision-<uuid>.(jpg|png|webp)`, seau `moments` : `_clip_readable` ne l'ouvre qu'à moi).
+  `vision_image_set(id, path|null)` (authenticated ; propriétaire, `for update`) : `why` `signin` · `path` (pas MON
+  dossier) · `not_mine` ; rend `old` (la page efface l'ancien fichier). `my_visions()` (authenticated) : mes visions,
+  leur image, les objectifs qui y mènent (`objective_visions`), la plus importante d'abord.
+- `creator_dashboard()` (authenticated) : `subscribers` (vivants), `month_cents` (`member_ledger.kind='earning'` du mois,
+  dans MA devise), `pending_cents`, `next_payout`, `threshold_cents`, `part`, `price_cents`, bornes 300–100 000 ; le prix
+  s'écrit toujours par `monetization_set`.
+- `create-checkout` v41 : `KINDS = wisdom` (MY STORY) ; `vision` → 422 `choose an element`. `luxury-quote` inchangé.
+- Auto-tests `tests/sql/vision_image_selftest.sql`, `tests/sql/creator_dashboard_selftest.sql` : `FAIL={}`.
+
 ## 13/10/2026 — quatre niveaux : `audience` (lot A)
 
 Migrations `20261013090000_audience_four_levels.sql` (`audience_four_levels`), `20261013091000_audience_my_lists.sql`,

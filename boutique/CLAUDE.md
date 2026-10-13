@@ -1,5 +1,13 @@
 # boutique/CLAUDE.md — higher.boutique : l'achat, physique et numérique (Cloths, Get Higher, Stoner, le marché)
 
+## BOUTIQUE · 13/10/2026 — LA LANGUE ; UN CLOTH = MY STORY (lot B)
+
+`get_higher.html` : à l'arrivée, `#tongue` — la bouche s'ouvre, le TotehmPaper se pose sur la langue, elle l'avale
+(≈ 3,2 s, UNE fois par session `tg-vu`, un tap passe ; jamais avec des paramètres ni en mouvement réduit).
+Diagnostic : `__totehm_langue()`. `/streetwear` (BUILD `2026-10-13-story`) : l'élément = MY STORY seul (WISDOM),
+plus de VISION ni de petite carte ; `?wear=vision:` est ignoré ; `create-checkout` v41 refuse `vision` (422).
+Tests : `boutique_tongue`, `streetwear`. Remplace « WISDOM ET VISION » du 08/10 (bis).
+
 ## BOUTIQUE · 11/10/2026 (ter) — BOUTONS AU PLUS PRÈS DU TEXTE
 
 `eco-text-btn` passe de `.28em .48em` à `.12em .24em` dans les sept copies

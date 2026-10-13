@@ -1,5 +1,13 @@
 # space/CLAUDE.md — totehm.space : le réseau social de l'Habit stratégique (croix de cinq vues)
 
+## 13/10/2026 — le coin membre = CONNECT WITH MY TOTEHM seul (lot B)
+
+BUILD `2026-10-13-space-who`. `#who` = `#member` (CONNECT WITH MY TOTEHM → `ssoLogin`) + `#terms` (« Simple terms of use »,
+8 px, seulement sans session). Connecté : le NOM seul, qui ramène à totehm.com (`ssoVersDomaine`). Le menu (`#menu`) et la
+feuille My spaces (`#my-spaces`, `MSP`) sont retirés, balisage ET câblage : l'espace membre vit dans COM ; DELETE reste
+dans la fiche d'un de mes spaces (`spaceDelete`). Les règles qui cachaient `#member` cachent `#who`. `?v=cam&take=photo|video`
+(depuis la vue PRENDRE de COM) allume le capteur tout de suite. Tests : `spaces_loupe` §3-4, `space_boxes_ecosystem`.
+
 ## 13/10/2026 — quatre niveaux (lot A)
 
 BUILD `2026-10-13-space-aud`. Sous la box, dans la caméra : PRIVATE · FIGHER CLUB · MY SUBSCRIBERS · PUBLIC
