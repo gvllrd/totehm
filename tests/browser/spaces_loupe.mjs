@@ -68,19 +68,32 @@ try{
   const b1=await box.evaluate(e=>({on:!!e.querySelector('.habit.is-zoom'),h:e.getBoundingClientRect().height}));
   ok(b1.on&&b1.h>b0*1.1&&await pg.locator('.eco-sheet').count()===0&&!(await pg.evaluate(()=>window.__totehm_space().habit_filter)),'SPACE : la loupe agrandit la Habit Box en place ('+Math.round(b0)+' → '+Math.round(b1.h)+' px), sans fenêtre ni choix');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(200);await pg.click('#cur-g');await pg.waitForFunction(()=>window.__totehm_space().view==='home');await pg.waitForTimeout(500);
-  // My spaces
-  await pg.click('#member');await pg.click('[data-myspaces]');await pg.waitForSelector('#msp-list [data-del]');
-  ok(await pg.locator('#msp-list .msp-row').count()===2&&/POSTED/.test(await pg.textContent('#msp-list'))&&!/I WILL BE HERE/.test(await pg.textContent('#msp-list'))&&log.rpc.some(x=>x.name==='my_spaces'),'SPACE : My spaces liste MES spaces publiés (date de publication, pas d état de rendez-vous)');
-  await pg.screenshot({path:OUT+'/space_my_spaces.png'});
-  const d=pg.locator('#msp-list [data-del="'+ids[0]+'"]');await d.click();ok(/DELETE FOR GOOD/.test(await d.textContent()),'SPACE : un premier tap arme seulement');
-  await d.click();await pg.waitForFunction(id=>!document.querySelector('#msp-list [data-row="'+id+'"]'),ids[0]);
-  ok(log.functions.some(f=>f.name==='space-delete'&&f.body.spot===ids[0])&&/deleted/i.test(await pg.textContent('#msp-note')),'SPACE : supprimé par space-delete, retiré de My spaces');
-  await pg.click('#msp-list [data-open-space="'+ids[1]+'"]');await pg.waitForFunction(()=>window.__totehm_space().detail);
-  ok(await pg.isHidden('#my-spaces')&&await pg.locator('#detail [data-del]').count()===1,'SPACE : ouvrir un de mes spaces → sa fiche, avec DELETE');
-  await pg.click('#detail [data-del]');await pg.click('#detail [data-del]');await pg.waitForFunction(()=>!window.__totehm_space().detail);
-  ok(log.functions.filter(f=>f.name==='space-delete').length===2,'SPACE : DELETE depuis la fiche, la fiche se ferme');
-  await pg.click('#member');await pg.click('[data-myspaces]');await pg.waitForFunction(()=>/No space yet/.test(document.querySelector('#msp-note').textContent));
-  ok(true,'SPACE : My spaces vide après les deux suppressions');await pg.keyboard.press('Escape');
-  ok(await pg.isHidden('#my-spaces')&&!erreurs(log).length,'SPACE : Échap ferme, aucune erreur '+erreurs(log).join(' | '));await pg.context().close();
+  // 13/10 (lot B) — le coin membre : connecté, le NOM seul (→ totehm.com) ; plus de menu ni de feuille My spaces
+  const coin=await pg.evaluate(()=>({txt:document.getElementById('member-txt').textContent,terms:getComputedStyle(document.getElementById('terms')).display,menu:!!document.getElementById('menu'),sheet:!!document.getElementById('my-spaces')}));
+  ok(coin.txt==='wah'&&coin.terms==='none'&&!coin.menu&&!coin.sheet,'SPACE connecté : le nom seul, ni menu, ni conditions, ni feuille My spaces '+JSON.stringify(coin));
+  await pg.screenshot({path:OUT+'/space_who_in.png'});
+  // DELETE depuis la fiche d'un de mes spaces (?spot=)
+  for(const id of ids){
+   await pg.goto('https://www.totehm.space/?spot='+id);await pg.waitForFunction(()=>window.__totehm_space?.().detail);
+   ok(await pg.locator('#detail [data-del]').count()===1,'SPACE : la fiche d\'un de mes spaces porte DELETE');
+   await pg.click('#detail [data-del]');ok(/DELETE FOR GOOD/.test(await pg.textContent('#detail [data-del]')),'SPACE : un premier tap arme seulement');
+   await pg.click('#detail [data-del]');await pg.waitForFunction(()=>!window.__totehm_space().detail);
+  }
+  ok(log.functions.filter(f=>f.name==='space-delete').length===2&&ids.every(i=>log.functions.some(f=>f.name==='space-delete'&&f.body.spot===i)),'SPACE : DELETE FOR GOOD → space-delete, la fiche se ferme');
+  ok(!erreurs(log).length,'SPACE : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();
+ }
+ /* ── 4 · SPACE et figher.club sans session : CONNECT WITH MY TOTEHM seul, les conditions en tout petit dessous ── */
+ for(const [dir,host,vue] of [['space','https://www.totehm.space','home'],['club','https://www.figher.club','radar']]){
+  const {pg,log}=await page(browser,{dir,origin:host,session:false,rpc:{spot_rules:{clip_seconds:33,duration_min:5,duration_max:720,horizon_days:90},space_feed:{ok:true,spots:[],more:false},space_pulse:{spaces_week:0,vibes_week:0}}});
+  await pg.goto(host+'/');await pg.waitForTimeout(900);
+  if(dir==='space'){await pg.click('#cur-g');await pg.waitForFunction(()=>window.__totehm_space().view==='home');await pg.waitForTimeout(600);}
+  const c=await pg.evaluate(()=>{const m=document.getElementById('member').getBoundingClientRect(),t=document.getElementById('terms');const r=t.getBoundingClientRect();
+    return {txt:document.getElementById('member-txt').textContent,href:t.getAttribute('href'),size:parseFloat(getComputedStyle(t).fontSize),under:r.top>=m.bottom-1&&r.height>0,menu:!!document.getElementById('menu')};});
+  ok(c.txt==='CONNECT WITH MY TOTEHM'&&c.href==='https://www.totehm.com/terms'&&c.size<=9&&c.under&&!c.menu,dir+' sans session : CONNECT seul, « Simple terms of use » en tout petit dessous '+JSON.stringify(c));
+  await pg.screenshot({path:OUT+'/'+dir+'_who_out.png'});
+  const nav=pg.waitForRequest(r=>/www\.totehm\.com\/auth\?/.test(r.url()),{timeout:8000}).then(r=>r.url(),()=> '');
+  await pg.click('#member');const u=await nav;
+  ok(/^https:\/\/www\.totehm\.com\/auth\?/.test(u)&&/client=/.test(u)&&/challenge=/.test(u),dir+' : CONNECT → totehm.com/auth (PKCE) → '+u.slice(0,60));
+  ok(!erreurs(log).filter(e=>!/totehm\.com\/auth/.test(e)).length,dir+' sans session : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();
  }
 }finally{await browser.close();}

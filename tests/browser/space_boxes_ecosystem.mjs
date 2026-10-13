@@ -46,9 +46,13 @@ try{
       return null;
     }});
     await sample.pg.goto(host+url);await sample.pg.waitForTimeout(800);
-    const trigger=sample.pg.locator('[data-eco-connect]:visible').first();
-    if(!(await trigger.count())){const member=sample.pg.locator('#member,#conn-bar,#conn').first();await member.click();}
-    const connect=sample.pg.locator('[data-eco-connect]:visible,[data-signin]:visible,#mw-login:visible,#btn-send:visible,#pt-send:visible').first();await connect.waitFor();
+    // 13/10 (lot B) : sur figher.club, le coin membre EST le bouton CONNECT (plus de menu).
+    let connect=sample.pg.locator('[data-eco-connect]:visible').first();
+    if(!(await connect.count())){
+      if(await sample.pg.locator('#member:visible').count()) connect=sample.pg.locator('#member');
+      else{await sample.pg.locator('#conn-bar,#conn').first().click();connect=sample.pg.locator('[data-eco-connect]:visible,[data-signin]:visible,#mw-login:visible,#btn-send:visible,#pt-send:visible').first();}
+    }
+    await connect.waitFor();
     ok((await connect.textContent()).trim()==='CONNECT WITH MY TOTEHM',dir+' login uses the canonical label');
     const size=await connect.evaluate(e=>{const s=getComputedStyle(e),r=document.createRange();r.selectNodeContents(e);return{w:e.getBoundingClientRect().width,text:r.getBoundingClientRect().width,pad:parseFloat(s.paddingLeft)+parseFloat(s.paddingRight)};});ok(size.w<=size.text+size.pad+3&&size.pad<30,dir+' login background fits the text');
     await connect.click();await sample.pg.waitForURL(/www\.totehm\.com\/auth/);
