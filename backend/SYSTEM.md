@@ -4,7 +4,7 @@
 > Quatre projets READY et huit alias vérifiés (`395c7ca`) ; 25 contrôles HTTP et 40 anciennes adresses réussis ; détail : `../docs/GALLERY_CLUB_20261015.md`.
 > Les mesures historiques du lot C publiées dans `13abd34` sont conservées avec leur date propre.
 
-**Dernier relevé : 15 octobre 2026, galerie/Club (base, fonctions Edge et SPACE), avec le processeur COM conservé** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 15 octobre 2026, visite immersive SPACE publiée, avec galerie/Club et processeur COM conservés** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -19,6 +19,20 @@
 
 ---
 
+
+## 0 · SPACE — VISITE DE GALERIE 3D PUBLIÉE — 15/10/2026
+
+| Mesure | Résultat |
+| --- | --- |
+| Code | `5372e71413058b09cae2d573b158cc64bea0ef4c` sur main ; seul l'accueil SPACE change |
+| Vercel | Quatre projets READY à ce commit, huit alias exacts ; SPACE `dpl_7r88tzsHZXV2bdfnWULDNzbCWvkS` |
+| HTTP réel | 20/20 : accueil, JS, moteur local, CSS, aperçus, expériences, marché, social, COM, Club, Boutique et ponts ; sources exactes et types MIME corrects |
+| Navigateur local | 34/34 : vrai WebGL à 1440 et 390 px, stations, sol, clavier, toucher du joystick, vidéo, mouvement réduit et absence WebGL |
+| Régressions | Marché 41/41 ; 68 invariants d'intégrité/migration artistique ; expériences originales intactes |
+| Services | Aucun changement SQL/Edge ni paiement pour cette évolution ; processeur COM conservé |
+| Limite | Navigateur réel sur domaines toujours bloqué par le certificat proxy ; tests WebGL locaux avec services interceptés |
+
+Détails : `../docs/SPACE_IMMERSIVE_20261015.md`. Preuves locales : `immersive-ready.json`, `immersive-live.json`, `immersive-final.log` sous `/tmp/totehm-production/`.
 
 ## 0 · GALERIE / CLUB — PUBLIÉS ET VÉRIFIÉS — 15/10/2026
 

@@ -36,29 +36,7 @@ const rpc={
 };
 const browser=await launch();
 try{
- // A real decoded local video proves off-screen playback handling, without production requests.
- for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
-  const {pg,ctx,log}=await page(browser,{dir:'space',origin,rpc,viewport,network:mediaNetwork});
-  await pg.goto(origin+'/');await pg.waitForFunction(()=>window.__totehm_gallery?.().rooms===4);
-  ok(await pg.locator('.room').count()===4,'gallery contains the four existing art experiences at '+viewport.width+'px');
-  ok(await pg.locator('.artwork svg path').count()>0&&await pg.locator('.signs img').count()===9,'gallery displays preserved artwork paths and real Lisbon signs');
-  ok(!log.network.length,'no art video loaded before its room is visible');
-  ok(await pg.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'gallery fits '+viewport.width+'px without horizontal overflow');
-  ok(await pg.locator('a[href="/get_higher"]').count()===2&&await pg.locator('a[href="/origins"]').count()===2,'gallery enters the original migrated experiences');
-  await pg.screenshot({path:OUT+'/gallery-'+viewport.width+'.png'});
-  await pg.click('.room-nav a[href="#quantum"]');
-  await pg.waitForFunction(()=>window.__totehm_gallery().room===3);
-  await pg.waitForFunction(()=>document.querySelector('#quantum video').videoWidth===160&&!document.querySelector('#quantum video').paused);
-  ok(log.network.length>=1,'Quantum preview loads and plays only in its visible room');
-  await pg.click('.room-nav a[href="#lisbon"]');await pg.waitForFunction(()=>window.__totehm_gallery().room===2);await pg.waitForFunction(()=>[...document.querySelectorAll('.signs img')].every(i=>i.complete&&i.naturalWidth>0));ok(true,'all Lisbon previews load their original local assets');
-  await pg.click('.room-nav a[href="#stoner"]');await pg.waitForFunction(()=>window.__totehm_gallery().room===1);
-  ok(await pg.$eval('#quantum video',v=>v.paused),'gallery stops the off-screen Quantum preview');
-  ok(await pg.locator('.room-nav a[aria-current="true"]').getAttribute('href')==='#stoner','room navigation tracks the visible artwork');
-  await pg.emulateMedia({reducedMotion:'reduce'});await pg.click('.room-nav a[href="#quantum"]');await pg.waitForFunction(()=>window.__totehm_gallery().room===3);
-  ok(await pg.$eval('#quantum video',v=>v.paused),'reduced motion suppresses automatic artwork playback');
-  ok(!log.errors.length,'gallery has no browser errors at '+viewport.width+'px: '+log.errors.join(' | '));
-  await ctx.close();
- }
+ // Immersive landing navigation/rendering is verified by gallery_immersive.mjs.
  // Keep historical direct access alive with all parameters and fragments intact.
  {
   const {pg,ctx}=await page(browser,{dir:'space',origin,rpc});await pg.goto(origin+'/?embed&v=feed&habit=Run%20the%20hill#keep');

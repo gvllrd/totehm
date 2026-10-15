@@ -1,5 +1,17 @@
 # space/CLAUDE.md — totehm.space : galerie d’art digital
 
+## 15/10/2026 — visite immersive de la galerie
+
+L'accueil est une salle 3D : déplacement WASD/flèches, regard au glisser, clic au sol et joystick tactile.
+Les quatre boutons d'œuvres guident la caméra ; l'information ouvre les expériences et le marché existants.
+`gallery-ui.mjs` garde une vue HTML des œuvres, y compris sans WebGL ; `gallery-3d.mjs` gère la salle.
+Three.js 0.180.0 est servi localement sous `vendor/`, licence MIT jointe ; aucun moteur chargé depuis un CDN.
+Les aperçus viennent des SVG, panneaux et média Quantum existants. Les pages des expériences restent intactes.
+La vidéo se charge à la sélection de Quantum et s'arrête hors de sa visite, en arrière-plan ou en mouvement réduit.
+Le rendu est suspendu au repos et hors écran. Retour bfcache et perte du contexte graphique sont traités.
+Tests : `gallery_immersive.mjs` (34 vérifications, vrai WebGL local et toucher), `gallery.mjs` (marché),
+`art_migration.mjs` (intégrité des expériences). Détails : `../docs/SPACE_IMMERSIVE_20261015.md`.
+
 ## 15/10/2026 — galerie et continuité des anciens contenus (publiées en production)
 
 L'entrée `/` est une galerie : TotehmPaper/Get Higher, Stoner, Play the Lisbon Street, Origins/Quantum.
