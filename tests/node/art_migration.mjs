@@ -30,14 +30,27 @@ checks++;
 const space = JSON.parse(read('space/vercel.json'));
 const boutique = JSON.parse(read('boutique/vercel.json'));
 const art = [...pages, 'market'];
+const excluded = read('boutique/.vercelignore').split(/\r?\n/);
 for(const name of art){
+  assert(excluded.includes('/' + name + '.html'), name + ' baseline is excluded from production so filesystem precedence cannot bypass the bridge');
   for(const suffix of ['', '.html']){
     const source = '/' + name + suffix;
     assert(!space.redirects.some(r => r.source === source), 'SPACE serves ' + source + ' directly');
-    assert.equal(boutique.rewrites.find(r => r.source === source)?.destination, '/art-bridge.html', source + ' consumes boutique-bound SSO before departure');
-    assert(!boutique.redirects?.some(r => r.source === source), 'no reverse cached redirect loop for ' + source);
+    if(suffix){
+      const canonical = boutique.redirects.find(r => r.source === source);
+      assert.equal(canonical?.destination, '/' + name, source + ' keeps its origin and slug before the SSO bridge');
+      assert.equal(canonical?.permanent, false);
+    }else{
+      assert.equal(boutique.rewrites.find(r => r.source === source)?.destination, '/art-bridge', source + ' uses an extensionless destination with cleanUrls');
+      assert(!boutique.redirects?.some(r => r.source === source), 'no reverse cached redirect loop for ' + source);
+    }
     checks++;
   }
+}
+const club = JSON.parse(read('club/vercel.json'));
+for(const config of [boutique, club]){
+  assert(config.cleanUrls);
+  assert(config.rewrites.every(r => !r.source.endsWith('.html') && r.destination === '/art-bridge'));
 }
 for(const key of ['spot', 'v', 'habit', 'u', 'embed']){
   for(const source of ['/', '/index.html']){

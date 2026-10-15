@@ -1,1 +1,12 @@
 CLAUDE.md
+
+# Artwork baselines stay in Git for comparisons; SPACE serves these pages.
+# Exclude them so filesystem routing does not bypass the same-origin SSO bridge.
+/get_higher.html
+/stoner.html
+/stoner_terms.html
+/play_lisbon_street.html
+/discover.html
+/discover_lisbon.html
+/origins.html
+/market.html
