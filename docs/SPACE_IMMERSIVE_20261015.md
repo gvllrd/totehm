@@ -1,5 +1,13 @@
 # Visite de la galerie SPACE — 15 octobre 2026
 
+Version marbre noir et ficus publiée : `4e1774d960d1f1716be3a6fcbe4c4052ae5ba49c`, build
+`2026-10-15-space-estrela-marble`, production SPACE `dpl_3XLsijPW2zXaBPNHKBJdAAXFBWbM` READY.
+Quatre projets et huit alias vérifiés. Les 19 contrôles HTTPS réels correspondent exactement au dépôt, avec les
+bons types MIME ; les deux domaines COM servent toujours le travail de Claude `67941b5` sans modification.
+Validation de ce lot : 44 contrôles du ficus/marbre, 34 de visite, 25 du ciel, 35 de cheminement et 68 invariants
+des expériences originales réussis. Preuves : `/tmp/totehm-production/estrela-ready.json`, `estrela-live.json`,
+`estrela/results.json`, `estrela-sky/results.json` et captures `estrela-immersive-final/`.
+
 Évolution marbre et ficus : `gallery-marble.mjs` produit localement une dalle de marbre noir avec rubans de calcite,
 nuages graphite et fini poli. La projection en coordonnées monde garde l'échelle des veines sur le sol et les tranches.
 Les murs passent à 90 cm d'épaisseur vers l'extérieur, sans déplacer leurs faces d'exposition.

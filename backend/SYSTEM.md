@@ -4,7 +4,7 @@
 > Quatre projets READY et huit alias vérifiés (`395c7ca`) ; 25 contrôles HTTP et 40 anciennes adresses réussis ; détail : `../docs/GALLERY_CLUB_20261015.md`.
 > Les mesures historiques du lot C publiées dans `13abd34` sont conservées avec leur date propre.
 
-**Dernier relevé : 15 octobre 2026, SPACE noir profond et ciel onirique publiés ; réseau neuronal COM de Claude conservé** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 15 octobre 2026, SPACE marbre noir et ficus monumental publiés ; réseau neuronal COM de Claude conservé** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -19,6 +19,22 @@
 
 ---
 
+
+## 0 · SPACE — MARBRE NOIR ET FICUS MONUMENTAL PUBLIÉS — 15/10/2026
+
+| Mesure | Résultat |
+| --- | --- |
+| Code | `4e1774d960d1f1716be3a6fcbe4c4052ae5ba49c`, build `2026-10-15-space-estrela-marble` |
+| Vercel | Quatre projets READY, huit alias exacts ; SPACE `dpl_3XLsijPW2zXaBPNHKBJdAAXFBWbM` |
+| HTTPS réel | 19/19 : deux accueils, six modules/styles sur www/apex, marché et COM ; sources et MIME exacts, TLS vérifié |
+| WebGL local | Ficus/marbre 44/44 ; visite 34/34 ; ciel 25/25, à 1440/390 px ; aucun problème JavaScript/shader |
+| Cheminement et œuvres | 35/35 trajets/collisions, dont les 25 paires de stations ; 68/68 invariants des expériences originales |
+| Architecture | Sol et murs de 90 cm en marbre noir veiné ; ficus central, 146 branches/racines et 17 712 feuilles (12 096 mobile) ; ciel animé conservé |
+| Déplacements | Les visites guidées et clics au sol contournent racines/banc ; marche bloquée aux racines ; bois opaque à la sélection |
+| Performance | Bois fusionné, feuillage instancié Lambert ; ombres statiques et résolution 3D adaptative ; pauses liste/arrière-plan et mouvement réduit vérifiés |
+| Coordination COM | Pages COM www/apex identiques à Claude `67941b5` ; aucun changement SQL/Edge ou paiement dans ce lot |
+
+Preuves : `/tmp/totehm-production/estrela-ready.json`, `estrela-live.json`, `estrela/results.json`, `estrela-sky/results.json`, captures `estrela-immersive-final/`. Les tests WebGL sont locaux avec services interceptés ; les lectures HTTPS des domaines sont réelles. La limite de certificat du navigateur de production reste celle documentée dans `../docs/SPACE_IMMERSIVE_20261015.md`.
 
 ## 0 · SPACE — NOIR PROFOND ET CIEL ONIRIQUE PUBLIÉS — 15/10/2026
 
