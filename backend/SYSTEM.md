@@ -26,7 +26,7 @@
 | --- | --- |
 | Code | `4e1774d960d1f1716be3a6fcbe4c4052ae5ba49c`, build `2026-10-15-space-estrela-marble` |
 | Vercel | Quatre projets READY, huit alias exacts ; SPACE `dpl_3XLsijPW2zXaBPNHKBJdAAXFBWbM` |
-| HTTPS réel | 19/19 : deux accueils, six modules/styles sur www/apex, marché et COM ; sources et MIME exacts, TLS vérifié |
+| HTTPS réel | 19/19 : deux accueils, six modules et CSS sur www/apex, marché et COM ; sources et MIME exacts, TLS vérifié |
 | WebGL local | Ficus/marbre 44/44 ; visite 34/34 ; ciel 25/25, à 1440/390 px ; aucun problème JavaScript/shader |
 | Cheminement et œuvres | 35/35 trajets/collisions, dont les 25 paires de stations ; 68/68 invariants des expériences originales |
 | Architecture | Sol et murs de 90 cm en marbre noir veiné ; ficus central, 146 branches/racines et 17 712 feuilles (12 096 mobile) ; ciel animé conservé |
