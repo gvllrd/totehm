@@ -1,5 +1,11 @@
 # Visite de la galerie SPACE — 15 octobre 2026
 
+Ciel étoilé animé publié : `22ec60ca5d41f186f3bfc3c7c433e0e1fee9c611`, production SPACE
+`dpl_9GrA67UEuUNuAFYufiWkWYK9kpgA` READY avec ses deux alias. Les quatre projets et leurs huit alias sont
+vérifiés à ce commit. Douze contrôles HTTPS réels réussis : les fichiers du ciel, de la galerie et les deux
+racines correspondent au dépôt ; les deux adresses COM servent toujours exactement le travail de Claude
+`67941b5`. Vérification locale : 34 contrôles de visite et 25 contrôles du ciel réussis.
+
 Première publication sur `https://www.totehm.space/` : code `5372e71413058b09cae2d573b158cc64bea0ef4c`,
 production Vercel `dpl_7r88tzsHZXV2bdfnWULDNzbCWvkS` READY, deux alias associés. Les quatre projets
 et leurs huit alias sont vérifiés à ce commit. Vingt contrôles HTTPS de contenu réussis : accueil,

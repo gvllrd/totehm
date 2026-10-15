@@ -4,7 +4,7 @@
 > Quatre projets READY et huit alias vérifiés (`395c7ca`) ; 25 contrôles HTTP et 40 anciennes adresses réussis ; détail : `../docs/GALLERY_CLUB_20261015.md`.
 > Les mesures historiques du lot C publiées dans `13abd34` sont conservées avec leur date propre.
 
-**Dernier relevé : 15 octobre 2026 (bis), le réseau neuronal COM — page, base, Vercel ; visite immersive SPACE, galerie/Club et processeur conservés** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 15 octobre 2026, ciel étoilé animé SPACE publié ; réseau neuronal COM de Claude conservé** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -19,6 +19,19 @@
 
 ---
 
+
+## 0 · SPACE — CIEL ÉTOILÉ ANIMÉ PUBLIÉ — 15/10/2026
+
+| Mesure | Résultat |
+| --- | --- |
+| Code | `22ec60ca5d41f186f3bfc3c7c433e0e1fee9c611` ; main de Claude `67941b5` conservé intégralement |
+| Vercel | Quatre projets READY, huit alias exacts ; SPACE `dpl_9GrA67UEuUNuAFYufiWkWYK9kpgA` |
+| HTTP réel | 12/12 : deux racines SPACE, modules/styles et build du ciel exacts ; COM www/apex identique à Claude, bons MIME et TLS vérifié |
+| WebGL local | 34 contrôles de visite + 25 du ciel réussis à 1440/390 px ; étoiles filantes capturées, pauses/réduction des mouvements et reprise vérifiées |
+| Rendu | Voûte ouverte, Voie lactée, scintillement, 3 800 étoiles (2 400 mobile), ciel à 30/25 images/s maximum et ombres statiques |
+| Services | Aucun changement SQL/Edge ou paiement dans ce lot |
+
+Preuves : `/tmp/totehm-production/starry-ready.json`, `starry-live.json`, `starry-gallery-final.log`, `starry-sky-final/results.json`. Limite du navigateur en production inchangée : les tests WebGL sont locaux, les lectures HTTPS des domaines sont réelles.
 
 ## 0 · LE RÉSEAU NEURONAL : RAMIFICATIONS PLEIN ÉCRAN, ACQUISITION, GALAXIE NUE, TELEGRAM CADENCÉ — 15/10/2026 (lot D)
 
