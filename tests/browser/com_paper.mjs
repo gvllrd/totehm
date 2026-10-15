@@ -70,9 +70,11 @@ try{
   ok(await srch(pg)===''&&(await lsd(pg)).face===0&&c.cls==='is-flat'&&c.tf==='','la croix : dézoom, puis le papier se remet sur son recto');
   ok(!await pg.$eval('#gate',e=>e.inert)&&JSON.stringify(await R(pg,'#gate-asteroid'))===JSON.stringify(paper),'le papier est de nouveau atteignable, exactement à sa place');
   ok((await pg.evaluate(()=>[...document.querySelectorAll('#ast-panel i')].filter(i=>i.classList.contains('is-on')).map(i=>i.dataset.l).join()))==='subscribers','son dos dit le niveau choisi (MY SUBSCRIBERS)');
-  // l'espace membre : toucher mon nom ouvre mes réglages
-  await pg.click('#conn-bar');await pg.waitForSelector('#member-window.show');await pg.click('#mw-who');await pg.waitForTimeout(1800);
-  ok(/is-open/.test(await srch(pg))&&!await pg.evaluate(()=>document.getElementById('member-window').classList.contains('show')),'espace membre → mon nom → mes réglages (le verso)');
+  // 15/10 bis : l'espace membre N'EST PLUS une fenêtre — il vit DANS le verso, à la suite de mes réglages
+  await pg.click('#conn-bar');await pg.waitForTimeout(2200);
+  ok(/is-open/.test(await srch(pg))&&await pg.evaluate(()=>{const m=document.getElementById('member-window');
+      return !!document.querySelector('#srch #member-window')&&m.classList.contains('show')&&getComputedStyle(m).position==='static';}),
+    'l\'espace membre s\'ouvre DANS le verso (mes réglages, puis mon compte) — plus de fenêtre par-dessus');
   await pg.keyboard.press('Escape');await pg.waitForTimeout(2000);
   ok(await srch(pg)===''&&(await lsd(pg)).face===0,'Échap : dézoom et retour au recto');
   // recto : le Totehm se déploie comme avant

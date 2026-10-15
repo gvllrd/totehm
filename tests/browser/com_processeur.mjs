@@ -33,18 +33,21 @@ try{
     const sk=q('#lv-socket').getBoundingClientRect(),pa=q('#gate-asteroid').getBoundingClientRect(),d=window.__totehm_lv();
     const flou=[...document.querySelectorAll('#lv-proc,#lv-proc *,#gx-c')].some(e=>{const cs=getComputedStyle(e);return /blur/.test(cs.filter+' '+(cs.backdropFilter||''));});
     return {vue:d.vue,mode:d.mode,dans:Math.abs((sk.x+sk.width/2)-(pa.x+pa.width/2))<1.5&&Math.abs((sk.y+sk.height/2)-(pa.y+pa.height/2))<1.5&&sk.width>pa.width*1.2,
-      pistes:[...document.querySelectorAll('#lv-ram path')].map(p=>p.getAttribute('stroke')),noeuds:document.querySelectorAll('#lv-ram rect').length,
+      pistes:[...document.querySelectorAll('#lv-ram path:not(.puls):not(.sk)')].map(p=>p.getAttribute('stroke')),noeuds:document.querySelectorAll('#lv-ram rect').length,
       pales:document.querySelectorAll('#lv-ram g.r-0').length,ramOp:getComputedStyle(q('#lv-ram')).opacity,flou,
+      plein:(()=>{const r=q('#lv-ram').getBoundingClientRect();return Math.round(r.width)===innerWidth&&Math.round(r.height)>=innerHeight-2;})(),
+      puls:[...document.querySelectorAll('#lv-ram .puls')].map(e=>getComputedStyle(e).animationName+'/'+getComputedStyle(e).animationDuration),
       partis:['ljoy','ljoy-say','lv-g','lv-d','lv-take','fish','lv-earth','lv-visions','lv-mine','lv-find'].filter(i=>document.getElementById(i)),
       up:q('#lvn-up').getAttribute('aria-label'),dn:q('#lvn-dn').getAttribute('aria-label'),
       mine:q('#lv-m-mine').getAttribute('aria-checked'),others:q('#lv-m-others').getAttribute('aria-checked'),
       sig:q('#ast-sig').textContent,tap:q('#lv-tap').textContent,bouche:getComputedStyle(q('#gate-mouth')).opacity};});
   ok(c.vue==='c'&&c.mode==='mine'&&c.dans,(tel?'téléphone':'ordinateur')+' · centre, Mine : le papier posé DANS son socle');
-  ok(JSON.stringify(c.pistes)===JSON.stringify(COULEURS)&&c.noeuds===7&&c.pales===4&&c.ramOp==='1','sept ramifications aux 7 couleurs exactes ; les nœuds = MES Habits (fight 2, flow 1, focus 1 → 7) ; sans Habit, pâle');
+  ok(JSON.stringify(c.pistes)===JSON.stringify(COULEURS)&&c.noeuds>=7&&c.pales===4&&c.ramOp==='1'&&c.plein,'le réseau PLEIN ÉCRAN : sept pistes aux 7 couleurs exactes, les nœuds = MES Habits, les quatre intentions vides en creux');
+  ok(c.puls.length===3&&c.puls.every(x=>/^ram-puls\//.test(x))&&new Set(c.puls.map(x=>x.split('/')[1])).size>=1,'ça VIT : une impulsion par intention habitée, à la période réelle de son Habit ('+c.puls.join(' · ')+')');
   ok(!c.flou,'aucun flou (socle, ramifications, galaxie)');
   ok(!c.partis.length,'plus de manette ni de vues gauche/droite (balisage retiré) '+c.partis.join(','));
   ok(c.up==='Get Higher'&&c.dn==='My Reflection'&&c.mine==='true'&&c.others==='false','deux chevrons discrets (↑ Get Higher, ↓ My Reflection) ; [Mine] coché');
-  ok(c.sig==='wahigher'&&/to open it$/.test(c.tap)&&c.bouche==='0','le papier signé ; « '+c.tap+' » ; la bouche invisible au centre');
+  ok(c.sig==='wahigher'&&/to open it · (Turn|Swipe) to configure it$/.test(c.tap)&&c.bouche==='0','le papier signé ; « '+c.tap+' » ; la bouche invisible au centre');
   await pg.screenshot({path:OUT+'/proc_centre_'+(tel?'tel':'ordi')+'.png'});
   await pg.click('#lv-tap');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:8000}).catch(()=>{});
   ok(await pg.evaluate(()=>!document.body.classList.contains('gate')),'« '+c.tap+' » ouvre mon TOTEHM (la déconstruction)');
@@ -112,7 +115,7 @@ try{
       cv:getComputedStyle(q('#gx-c')).opacity,ui:getComputedStyle(q('#gx-ui')).visibility,checked:q('#lv-m-others').getAttribute('aria-checked'),ram:getComputedStyle(q('#lv-ram')).opacity,
       up:getComputedStyle(q('#lvn-up')).opacity};});
   ok(o.mode==='others'&&o.checked==='true'&&o.dans,(tel?'téléphone':'ordinateur')+' · Others : le papier rentre DANS [Mine] (la continuité), [Others] coché');
-  ok(o.g.etoiles===12&&o.g.sprite&&o.g.poussiere>=240&&o.g.anime&&o.cv==='1'&&o.ui==='visible'&&o.ram==='0','la galaxie : 12 TOTEHMs réels en logo assemblé, la poussière n\'est que du décor ; les ramifications se retirent');
+  ok(o.g.etoiles===12&&o.g.sprite&&o.g.poussiere===undefined&&o.g.anime&&o.cv==='1'&&o.ui==='visible'&&o.ram==='0','la galaxie : 12 TOTEHMs réels, le DOS du papier et rien d\'autre (plus une seule poussière) ; les ramifications se retirent');
   ok(log.rpc.filter(x=>x.name==='totehm_galaxy').length===1,'une seule lecture de totehm_galaxy');
   if(tel) await pg.screenshot({path:OUT+'/proc_galaxie.png'});
   // le nom au survol (souris) / au premier tap (doigt)

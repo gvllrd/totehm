@@ -21,14 +21,15 @@ try{
   {const{pg,ctx,log}=await ready(browser,{rpc:{...rpc,my_landing:LAND,avatar_set:b=>({ok:/^data:image\/jpeg;base64,/.test(b.p_data)}),new_bot_link_code:'CODE123'},
      functions:{'sso-mint':{code:'b'.repeat(64)},'higher-sub':{error:'not_ready'}}});
    await pg.addInitScript(()=>{window.__opened=[];window.open=(u)=>{window.__opened.push(u);return null;};});
-   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(400);await pg.click('#conn-bar');
-   await pg.waitForFunction(()=>/2 TOTEHMs I follow/.test(document.getElementById('mw-subs-hint').textContent));
+   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);await pg.click('#conn-bar');
+   await pg.waitForFunction(()=>/2 TOTEHMs I follow/.test(document.getElementById('mw-subs-hint').textContent),null,{timeout:8000});
    const acts=await pg.$$eval('#mw-menu .cm-action',l=>l.map(e=>e.textContent));
    ok(JSON.stringify(acts)==='["Get Higher Self","My subscriptions","My TOTEHM spaces","Connect TotehmBot"]','the member space is the member: Higher, subscriptions, spaces, TotehmBot → '+acts.join(' | '));
    ok(!await pg.locator('#member-window #lv-card').count()&&await pg.locator('#srch #lv-card #ident-block').count()===1&&!await pg.locator('#totehm-menu').count(),'15/10 : the TOTEHM name, its four levels and the program moved to MY SETTINGS (the back of the paper) — the member window keeps the account');
-   /* mon nom, dans l'espace membre, ouvre mes réglages (le verso déplié) */
-   await pg.click('#mw-who');await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-open'),null,{timeout:6000});
-   ok(!await pg.$eval('#member-window',e=>e.classList.contains('show'))&&await pg.locator('#srch [data-lvvis]').count()===4,'my name in the member window → my settings, four levels');
+   /* 15/10 bis : l'espace membre EST le verso — mes réglages au-dessus, mon compte en dessous, une seule page */
+   await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-open'),null,{timeout:8000});
+   ok(await pg.locator('#srch #member-window.show').count()===1&&await pg.locator('#srch [data-lvvis]').count()===4
+      &&await pg.$eval('#member-window',e=>getComputedStyle(e).position==='static'),'the account opens inside the back of the paper, under my settings (four levels)');
    await pg.waitForFunction(()=>!document.getElementById('mw-creator').classList.contains('hide'));
    const dash=await pg.evaluate(()=>({subs:document.getElementById('mwc-subs').textContent,month:document.getElementById('mwc-month').textContent,next:document.getElementById('mwc-next').textContent,
      on:!document.getElementById('mw-creator').classList.contains('hide'),say:document.getElementById('mwc-say').textContent}));
@@ -61,7 +62,7 @@ try{
    await pg.screenshot({path:OUT+'/com_member_mobile.png'});
    await pg.click('#myspaces-open');await pg.waitForSelector('[data-space="old-private"]');
    ok(/PRIVATE/.test(await pg.textContent('#myspaces-list'))&&await pg.$eval('#gate',e=>e.inert),'My TOTEHM spaces preserves owner-only history in a modal');
-   await pg.keyboard.press('Escape');ok(await pg.$eval('#member-window',e=>e.classList.contains('show'))&&!await pg.$eval('#gate',e=>e.inert),'closing history restores the member window and background');
+   await pg.keyboard.press('Escape');ok(await pg.$eval('#member-window',e=>e.classList.contains('show'))&&await pg.$eval('#srch',e=>/is-open/.test(e.className)),'closing history restores the back of the paper and my account');
    ok(!log.errors.some(e=>e.startsWith('pageerror')),'member window: no runtime errors');await ctx.close();
   }
   {const until=new Date(Date.now()+20*864e5).toISOString();

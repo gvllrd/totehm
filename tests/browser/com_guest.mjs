@@ -61,7 +61,9 @@ try{
   ok(!await pg.evaluate(()=>document.body.classList.contains('is-door')),'the guest enters the TOTEHM directly: no name asked');
   const card=await pg.evaluate(()=>({guest:!document.querySelector('#lv-guest').classList.contains('hide'),ident:document.querySelector('#ident-block').classList.contains('hide')}));
   ok(card.guest&&card.ident,'the centre card offers SAVE IT WITH MY EMAIL instead of a name and readers');
-  await pg.$eval('#lv-guest',e=>e.click());await pg.waitForSelector('#member-window.show');
+  /* 15/10 bis : l'espace membre vit DANS le verso — « save it with my email » replie le Totehm, retourne le
+     papier, et déplie le compte dessous : on ne quitte jamais la page. */
+  await pg.$eval('#lv-guest',e=>e.click());await pg.waitForSelector('#member-window.show',{state:'visible',timeout:12000});
   ok(await pg.isVisible('#mw-save')&&await pg.isHidden('#mw-menu')&&(await pg.textContent('#mw-who'))==='Guest','the member window is the guest one: save with my email, no paid menu');
   await pg.fill('#mw-save-email','wah@example.test');await pg.press('#mw-save-email','Enter');await pg.waitForSelector('#mw-save-code:not(.hide)');
   ok(A.update?.email==='wah@example.test','the email is attached to the SAME account (updateUser)');

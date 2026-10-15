@@ -27,10 +27,12 @@ try{
    const c = await pg.evaluate(() => ({ why:!!document.getElementById('lv-why'), strat:/strategy/i.test(document.getElementById('lv-slogan').textContent),
      sig:document.getElementById('ast-sig')?.textContent, sigFont:getComputedStyle(document.getElementById('ast-sig')).fontFamily,
      sigInPaper:!!document.querySelector('#ast-front #ast-sig'), nameBtn:getComputedStyle(document.getElementById('name-btn')).display,
-     thp:!!document.getElementById('lv-thp-say'), tag:!!document.getElementById('lv-b-tag'), build:window.__totehm_lv().build }));
+     thp:!!document.getElementById('lv-thp-say'), tag:!!document.getElementById('lv-b-tag'), build:window.__totehm_lv().build,
+     pitch:document.getElementById('lv-pitch').classList.contains('hide'), tap:document.getElementById('lv-tap').textContent }));
    ok(!c.why && !c.strat && !c.thp && !c.tag, 'COM : plus de « [Higher] STRATEGY », de phrase sous lui, de texte du THP ni de slogan TotehmSM');
+   ok(c.pitch && /to open it · (Turn|Swipe) to configure it/.test(c.tap), '15/10 bis : un MEMBRE ne lit pas l\'argumentaire — le geste seul');
    ok(c.sig === 'wahigher' && /Quantico/.test(c.sigFont) && c.sigInPaper && c.nameBtn === 'none', 'le nom est écrit SUR le papier (Quantico), plus de boîte noire sous lui');
-   ok(c.build === '2026-10-15-com-processeur', 'BUILD 2026-10-15-com-processeur');
+   ok(c.build === '2026-10-15-com-neural', 'BUILD 2026-10-15-com-neural');
    await pg.screenshot({ path:OUT + '/plateforme_centre.png' });
    /* 15/10 : les trois vues, leurs gestes, la galaxie et la Reflection sont dans com_processeur.mjs. */
    /* La couche se réchauffe toute seule, sans rien charger dans SPACE ni le Club. */
