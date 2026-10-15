@@ -1,6 +1,31 @@
 # BRAND.md — TOTEHM
 
-## CURRENT UPDATE — 13/10/2026 (bis) · Wah's cross, my story, the design speaks (overrides 08/10 bis-ter on cloths and vision)
+## CURRENT UPDATE — 15/10/2026 · the TOTEHM is my personal processor (overrides the cross of 13/10 bis)
+
+- **totehm.com has three places, stacked vertically.** Up: **Get [Higher]** — the mouth of 12/10 is back: the paper
+  lands on the tongue while it opens, *Get [Higher]* under it swallows it, then higher.boutique. Centre: **my TOTEHM, a
+  processor** — the paper sits in a glass socket (the TotehmPaper premium box, flat: a reflection, a bright edge, a
+  dark well; no blur, no circuitry show), fine ramifications above it, one per intention, in the **7 exact colours**,
+  their nodes = my Habits. Down: **my Reflection**. No joystick, no left or right: the finger, the trackpad, the
+  wheel, the arrows and two discreet chevrons.
+- **Mine · Others**: two quiet buttons, the chosen one obvious. *Others* is a galaxy of real TOTEHMs, each drawn as its
+  assembled logo; a name search lights them; a star (hover, or a first tap) says its name; choosing it dives in and
+  opens its universe (/@name) — the way back comes out of the star, the search kept. Seeing another TOTEHM never
+  replaces mine, nor my Reflection's context.
+- **The back of the paper = my settings**: my name, who reads my TOTEHM (four audiences), my subscription program. No
+  AI there. It is the control panel of the same object; the member space keeps the account.
+- **My Reflection** — everything in my TOTEHM comes alive through it. Going down, the processor **condenses**: the
+  ramifications retract, the socket becomes a ring (the 7 colours), the paper becomes a compact profile around the T
+  — only the perforated navy square spins; the T, the rail and the wordmark never turn. No face, no avatar: my
+  TOTEHM in AI mode. Then **three linked tiers, colour = meaning**: light blue = the direction (my objectives, my
+  vision) · red-violet = what is in the way, and **Teaching from the story** · navy = the next step-Habit. It never
+  presents anything as mine unless it is written in my TOTEHM (quoted and checked); a step that is not one of my
+  Habits is a **proposal** (dotted, *+ my Habit*). A mirror, short; only the last Reflection is shown.
+- **Inside the TOTEHM**: the list stays; **shorts** = one Habit per screen, its picture or video in front, the same box;
+  without media, its paper and intentions. **Photo · video · import** live in the element, never on the landing;
+  importing is not publishing (a space is still published from SPACE, with its audience).
+
+## 13/10/2026 (bis) — ⚠️ the cross is REPLACED on 15/10 (three vertical places, see above) · Wah's cross, my story, the design speaks (overrides 08/10 bis-ter on cloths and vision)
 
 - **totehm.com is a cross of five places.** Centre: my paper, signed with my name small at the bottom right;
   *Tap to open it*; **My TOTEHM** · **Search another TOTEHM** (a school of TOTEHMs swims; a name opens its universe,

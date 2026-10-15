@@ -1,6 +1,6 @@
 # Galerie SPACE et Club temporel — 15 octobre 2026
 
-Cette livraison implémente la nouvelle direction dans le dépôt. Les vérifications locales ne constituent pas un déploiement Supabase ou Vercel. Le dernier relevé de production dans `backend/SYSTEM.md` conserve sa date propre.
+Cette livraison implémente la nouvelle direction dans le dépôt, fusionnée avec le processeur COM de Claude (`13abd34`). La migration `club_gallery` a été appliquée transactionnellement en production le 15 octobre 2026 ; les fonctions Edge et les sites sont en cours de publication. Les mesures ci-dessous distinguent les vérifications locales et celles de production.
 
 ## Répartition et continuité
 
@@ -21,7 +21,7 @@ Les contenus sociaux ne sont ni supprimés ni convertis en œuvres. `space/socia
 
 ## Coordination COM
 
-`com/totehm.html` est laissé intact pour le travail COM parallèle. Les raccordements sont limités à :
+La livraison initiale ne modifiait pas `com/totehm.html`. La fusion de `main` conserve ensuite intégralement le nouveau processeur COM de Claude ; les 14 suites navigateur d'intégration passent, y compris `com_processeur` et `com_shorts`. Les raccordements sont limités à :
 
 - `/x/space` → `https://www.totehm.space/social` ;
 - `/x/club` → `https://www.figher.club/create` ;
@@ -82,11 +82,13 @@ Résultats sur l'instance cloud préparée :
 | Suites SQL locales | 2 réussies ; migration réappliquée et dérive commerciale refusée transactionnellement |
 | Démarrage statique après arrêt/redémarrage | 12 réponses HTTP avec contenu attendu |
 | Source COM principale | `com/totehm.html` inchangé |
-| Production et restauration dans une nouvelle tâche | Non vérifiées |
+| Production Supabase | Migration appliquée, trois lecteurs HTTP 200, droits et adhésion vérifiés |
+| Fonctions Edge et domaines | Publication en cours |
+| Restauration dans une nouvelle tâche | Non vérifiée |
 
 ## Mise en service restante
 
-1. Vérifier l'état Supabase réellement déployé et appliquer la migration transactionnellement une seule fois. Aucun accès de production n'a été fourni à cette session.
+1. Vérifier l'état Supabase réellement déployé et appliquer la migration transactionnellement une seule fois. Cette étape est effectuée : version `20261015120000`, source MD5 `644541bdeedf29476b3d07eafdd29159`, trois lecteurs anonymes HTTP 200, aucune position exacte exposée et zéro divergence d'adhésion.
 2. Déployer depuis `backend/` les fonctions `higher-checkout`, `artwork-checkout`, `market-checkout`, `stoner-gate`, `stripe-webhook`, avec `_shared/origins.ts` et les modes de vérification JWT existants. Ne modifier ni secret, prix, endpoint ni abonnement Stripe.
 3. Déployer SPACE, Club, Boutique et les raccordements COM ensemble après vérification de compatibilité avec le travail COM parallèle. Les ponts et anciennes routes assurent la transition.
 4. En environnement de test autorisé, vérifier les vraies connexions entre domaines, les retours Stripe, les droits et les médias signés. Aucun paiement réel n'est requis pour la validation locale.

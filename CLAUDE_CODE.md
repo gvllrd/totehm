@@ -302,6 +302,18 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
+### Correction 0.59 — 15/10/2026 · le processeur (lot C, à reporter ; remplace la croix de 0.58)
+> totehm.com = TROIS vues verticales, sans manette ni gauche/droite : ↑ Get Higher (la bouche du 12/10 restaurée,
+> la langue → higher.boutique `?from=com`) · centre = le processeur (le papier dans son emboîtement de verre, des
+> ramifications aux 7 couleurs exactes ; Mine · Others = la galaxie des TOTEHM présentables, recherche par nom →
+> /@nom, retour avec la recherche) · ↓ ma Reflection (seul `#gl-bg` tourne, le papier se condense en profil IA ;
+> trois étages : direction bleu clair · obstacle + Teaching from the story rouge-violet · prochaine step-Habit navy,
+> refs vérifiées contre le Totehm, une proposition ≠ une Habit). Verso du papier = mes réglages (nom, 4 niveaux,
+> programme d'abonnés), sortis de l'espace membre (qui garde le compte). Dans le Totehm : liste + SHORTS (une
+> Habit par écran, son média devant) ; photo · vidéo · fichier depuis l'élément, privés (importer ≠ publier).
+> Migration `processor_media_galaxy` APPLIQUÉE : ne pas réappliquer. `higher-self` v4 (`fmt:'r3'`). Aucun prix.
+> Ménage plus tard (une approbation, rien d'urgent) : purger les lignes `element_media` où `removed_at` est posé.
+
 ### Correction 0.58 — 13/10/2026 (bis) · la croix de Wah, MY STORY, les satellites réduits (lot B, à reporter)
 > totehm.com = une croix : centre = le papier signé (nom en petit, en bas à droite), My TOTEHM · Search another
 > TOTEHM (le banc → /@nom) ; ↑ Higher Self (le verso) ; ↓ PHOTO · VIDEO · SPOT ; ← ma Terre + mes shorts ; → mes visions.

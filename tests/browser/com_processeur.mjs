@@ -1,0 +1,306 @@
+// COM · 15/10/2026 — LE PROCESSEUR : trois vues VERTICALES (↑ Get Higher · My TOTEHM · ↓ My Reflection) ; plus de
+// manette, plus de gauche ni de droite. CENTRE : le papier dans son socle, les ramifications de mes intentions (les 7
+// couleurs) ; Mine · Others (la galaxie des TOTEHMs, la recherche, l'univers /@nom, le retour). HAUT : la bouche du
+// 12/10, le papier sur la langue, « Get [Higher] » l'avale → higher.boutique/get_higher?from=com. BAS : la condensation
+// (seul #gl-bg tourne), le profil, la Reflection en trois étages (citations vérifiées, proposition ≠ Habit).
+// Le verso = mes réglages : com_paper.mjs. Les shorts et la capture : com_shorts.mjs. Tout est simulé.
+// LANCER : node com_processeur.mjs /tmp
+import fs from 'node:fs';
+import {launch,page,ok} from './harness.mjs';
+const OUT=process.argv[2]||'/tmp';fs.mkdirSync(OUT,{recursive:true});
+const origin='https://www.totehm.com';
+const UID='11111111-1111-4111-8111-111111111111';
+const STEPS=[{t:'Run the hill',t0:'Run the hill',is:['fight']},{t:'Read at dawn',t0:'Read at dawn',is:['focus']},{t:'Sprint',t0:'Sprint',is:['fight','flow']}];
+const tables={profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,steps:STEPS,vis:'private'}]};
+const LAND=(o={})=>({signed_in:true,pseudo:'wahigher',visibility:'private',offer:{enabled:false,open:false},
+  higher:{active:false,price_cents:700,currency:'eur',period:'month'},thp:false,subscriptions:0,subscribers:0,
+  sm:{ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:6,left:6},...o});
+const GAL={ok:true,totehms:Array.from({length:12},(_,i)=>({pseudo:'kai'+i,offer:i%2===0,price_cents:2400,currency:'eur',subscribed:false}))};
+const COULEURS=['#E24B4A','#e48b31','#fcbe21','#639922','#1D9E75','#378ADD','#7F77DD'];
+const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
+const lv=pg=>pg.evaluate(()=>window.__totehm_lv());
+const R=(pg,sel)=>pg.$eval(sel,e=>{const r=e.getBoundingClientRect();return{x:r.x,y:r.y,w:r.width,h:r.height,cx:r.x+r.width/2,cy:r.y+r.height/2};});
+const ouvre=async pg=>{await pg.evaluate(()=>{window.__ouvert=[];window.open=(u)=>{window.__ouvert.push(u);return null;};});};
+const vers=(pg,v)=>pg.waitForFunction(v=>{const d=window.__totehm_lv();return d.vue===v&&!d.bouge;},v,{timeout:6000}).catch(()=>{});
+const calme=pg=>pg.waitForFunction(()=>!window.__totehm_lv().bouge,null,{timeout:6000}).catch(()=>{});
+const browser=await launch();
+try{
+ // ── 1 · LE CENTRE : le processeur dans son socle, sept ramifications, Mine · Others ; ni manette, ni côtés ──
+ for(const [vp,tel] of [[{width:390,height:844},true],[{width:1280,height:800},false]]){
+  const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:tel,rpc:{my_landing:LAND()}});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1400);
+  const c=await pg.evaluate(()=>{const q=s=>document.querySelector(s);
+    const sk=q('#lv-socket').getBoundingClientRect(),pa=q('#gate-asteroid').getBoundingClientRect(),d=window.__totehm_lv();
+    const flou=[...document.querySelectorAll('#lv-proc,#lv-proc *,#gx-c')].some(e=>{const cs=getComputedStyle(e);return /blur/.test(cs.filter+' '+(cs.backdropFilter||''));});
+    return {vue:d.vue,mode:d.mode,dans:Math.abs((sk.x+sk.width/2)-(pa.x+pa.width/2))<1.5&&Math.abs((sk.y+sk.height/2)-(pa.y+pa.height/2))<1.5&&sk.width>pa.width*1.2,
+      pistes:[...document.querySelectorAll('#lv-ram path')].map(p=>p.getAttribute('stroke')),noeuds:document.querySelectorAll('#lv-ram rect').length,
+      pales:document.querySelectorAll('#lv-ram g.r-0').length,ramOp:getComputedStyle(q('#lv-ram')).opacity,flou,
+      partis:['ljoy','ljoy-say','lv-g','lv-d','lv-take','fish','lv-earth','lv-visions','lv-mine','lv-find'].filter(i=>document.getElementById(i)),
+      up:q('#lvn-up').getAttribute('aria-label'),dn:q('#lvn-dn').getAttribute('aria-label'),
+      mine:q('#lv-m-mine').getAttribute('aria-checked'),others:q('#lv-m-others').getAttribute('aria-checked'),
+      sig:q('#ast-sig').textContent,tap:q('#lv-tap').textContent,bouche:getComputedStyle(q('#gate-mouth')).opacity};});
+  ok(c.vue==='c'&&c.mode==='mine'&&c.dans,(tel?'téléphone':'ordinateur')+' · centre, Mine : le papier posé DANS son socle');
+  ok(JSON.stringify(c.pistes)===JSON.stringify(COULEURS)&&c.noeuds===7&&c.pales===4&&c.ramOp==='1','sept ramifications aux 7 couleurs exactes ; les nœuds = MES Habits (fight 2, flow 1, focus 1 → 7) ; sans Habit, pâle');
+  ok(!c.flou,'aucun flou (socle, ramifications, galaxie)');
+  ok(!c.partis.length,'plus de manette ni de vues gauche/droite (balisage retiré) '+c.partis.join(','));
+  ok(c.up==='Get Higher'&&c.dn==='My Reflection'&&c.mine==='true'&&c.others==='false','deux chevrons discrets (↑ Get Higher, ↓ My Reflection) ; [Mine] coché');
+  ok(c.sig==='wahigher'&&/to open it$/.test(c.tap)&&c.bouche==='0','le papier signé ; « '+c.tap+' » ; la bouche invisible au centre');
+  await pg.screenshot({path:OUT+'/proc_centre_'+(tel?'tel':'ordi')+'.png'});
+  await pg.click('#lv-tap');await pg.waitForFunction(()=>!document.body.classList.contains('gate'),null,{timeout:8000}).catch(()=>{});
+  ok(await pg.evaluate(()=>!document.body.classList.contains('gate')),'« '+c.tap+' » ouvre mon TOTEHM (la déconstruction)');
+  ok(!erreurs(log).length,'centre : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+
+ // ── 2 · LES GESTES : ↑ ↓ Échap, ← → sans effet, une transition à la fois ; trackpad ; doigt ; chevrons ──
+ {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:1280,height:800},rpc:{my_landing:LAND()}});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
+  await pg.keyboard.press('ArrowLeft');await pg.keyboard.press('ArrowRight');await pg.waitForTimeout(400);
+  ok((await lv(pg)).vue==='c'&&(await lv(pg)).allers===0,'← → : rien (plus de gauche ni de droite)');
+  await pg.keyboard.press('ArrowDown');await pg.keyboard.press('ArrowUp');await vers(pg,'b');await pg.waitForTimeout(200);
+  let d=await lv(pg);ok(d.vue==='b'&&d.allers===1,'↓ puis ↑ aussitôt : UNE navigation (la seconde attend, jamais deux)');
+  await pg.keyboard.press('Escape');await vers(pg,'c');
+  await pg.keyboard.press('ArrowUp');await vers(pg,'h');
+  await pg.keyboard.press('ArrowUp');await pg.waitForTimeout(500);
+  ok((await lv(pg)).vue==='h','↑ : Get Higher ; ↑ encore : rien au-dessus');
+  await pg.keyboard.press('ArrowDown');await vers(pg,'c');ok((await lv(pg)).vue==='c','↓ depuis Get Higher : le centre');
+  const geste=async dy=>{await pg.waitForTimeout(300);for(let i=0;i<4;i++){await pg.mouse.wheel(0,dy/4);await pg.waitForTimeout(16);}await calme(pg);await pg.waitForTimeout(400);return (await lv(pg)).vue;};
+  await pg.mouse.move(640,600);
+  const t=[await geste(220),await geste(-220),await geste(-220),await geste(220)];
+  ok(t.join(',')==='b,c,h,c','le trackpad, vertical : '+t.join(','));
+  {await pg.waitForTimeout(300);await pg.mouse.wheel(0,60);await pg.waitForTimeout(900);ok((await lv(pg)).vue==='c','un petit défilement (60 px) ne change pas de vue');}
+  await pg.click('#lvn-dn');await vers(pg,'b');const dn=await pg.$eval('#lvn-dn',e=>getComputedStyle(e).opacity);
+  await pg.click('#lvn-up');await vers(pg,'c');
+  ok((await lv(pg)).vue==='c'&&dn==='0','les chevrons : ↓ la Reflection (en bas, plus de chevron ↓), ↑ le centre');
+  ok(!erreurs(log).length,'gestes : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+ {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},hasTouch:true,rpc:{my_landing:LAND()}});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
+  const cdp=await pg.context().newCDPSession(pg);
+  const glisse=async(x0,y0,x1,y1)=>{await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:x0,y:y0}]});
+    for(let i=1;i<=6;i++){await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x0+(x1-x0)*i/6,y:y0+(y1-y0)*i/6}]});await pg.waitForTimeout(16);}
+    await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await calme(pg);await pg.waitForTimeout(500);return (await lv(pg)).vue;};
+  const s=[await glisse(40,780,40,640),await glisse(40,640,40,780),await glisse(40,640,40,780),await glisse(40,780,40,640),await glisse(330,560,200,560),await glisse(200,560,330,560)];
+  ok(s.join(',')==='b,c,h,c,c,c','le doigt : vers le haut → la Reflection, vers le bas → Get Higher ; à l\'horizontale, rien : '+s.join(','));
+  ok(!erreurs(log).length,'doigt : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+
+ // ── 3 · EN HAUT : GET HIGHER, la bouche du 12/10 — le papier sur la langue, « Get [Higher] » l'avale → la boutique ──
+ for(const reduit of [false,true]){
+  const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},hasTouch:true,rpc:{my_landing:LAND()}});
+  if(reduit) await pg.emulateMedia({reducedMotion:'reduce'});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
+  await pg.click('#lvn-up');await vers(pg,'h');await pg.waitForTimeout(500);
+  const h=await pg.evaluate(()=>{const q=s=>document.querySelector(s),m=q('#gate-mouth').getBoundingClientRect(),p=q('#gate-asteroid').getBoundingClientRect(),g=q('#lv-slogan').getBoundingClientRect();
+    return {op:getComputedStyle(q('#gate-mouth')).opacity,ouverte:window.__totehm_lsd.bouche,haut:m.top<120,
+      papier:p.top>m.top&&p.bottom<m.bottom+30&&p.width<60,get:q('#lv-slogan .lvs-get').textContent,getOp:getComputedStyle(q('#lv-slogan .lvs-get')).opacity,
+      dessous:g.top>p.bottom,badge:!!q('#lv-slogan use[href="#higher-badge"]'),socle:getComputedStyle(q('#lv-socket')).opacity,tab:q('#lv-slogan').tabIndex};});
+  ok(h.op==='1'&&h.ouverte&&h.haut&&h.papier,(reduit?'mouvement réduit · ':'')+'↑ Get Higher : la bouche EN HAUT, ouverte, le papier rapetissé sur la langue');
+  ok(h.get==='Get'&&h.getOp==='1'&&h.badge&&h.dessous&&h.tab===0&&h.socle==='0','« Get [Higher] » sous la langue (le badge SVG), LE bouton ; le socle s\'efface '+JSON.stringify(h));
+  if(!reduit) await pg.screenshot({path:OUT+'/proc_get_higher.png'});
+  const req=pg.waitForRequest(r=>r.url().startsWith('https://www.higher.boutique/get_higher'),{timeout:9000}).catch(()=>null);
+  await pg.click('#lv-slogan');
+  if(!reduit){await pg.waitForTimeout(900);ok((await pg.evaluate(()=>window.__totehm_lsd.langue||window.__totehm_lsd.extase)),'clic : le papier est avalé (la langue rentre avec lui)');}
+  const r=await req;
+  ok(!!r&&/\/get_higher\?from=com/.test(r.url()),'puis higher.boutique/get_higher?from=com, par le pont ('+(r&&r.url())+')');
+  ok(!erreurs(log).length,'Get Higher : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+
+ // ── 4 · OTHERS : la galaxie — le papier rentre dans [Mine], des TOTEHMs en logo, la recherche, l'étoile, l'univers ──
+ for(const [vp,tel] of [[{width:390,height:844},true],[{width:1280,height:800},false]]){
+  const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:vp,hasTouch:tel,
+    rpc:{my_landing:LAND(),totehm_galaxy:GAL,totehm_search:b=>b.p_q?[{pseudo:'kai3',offer:true,price_cents:2400,currency:'eur'}]:[]}});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);await ouvre(pg);
+  await pg.click('#lv-m-others');await calme(pg);await pg.waitForTimeout(900);
+  const o=await pg.evaluate(()=>{const q=s=>document.querySelector(s),d=window.__totehm_lv(),p=q('#gate-asteroid').getBoundingClientRect(),m=q('#lv-m-mine').getBoundingClientRect();
+    return {mode:d.mode,g:d.galaxie,pc:p.x+p.width/2,pyc:p.y+p.height/2,dans:p.x+p.width/2>m.x&&p.x+p.width/2<m.x+m.width&&p.y+p.height/2>m.y&&p.y+p.height/2<m.y+m.height&&p.width<30,
+      cv:getComputedStyle(q('#gx-c')).opacity,ui:getComputedStyle(q('#gx-ui')).visibility,checked:q('#lv-m-others').getAttribute('aria-checked'),ram:getComputedStyle(q('#lv-ram')).opacity,
+      up:getComputedStyle(q('#lvn-up')).opacity};});
+  ok(o.mode==='others'&&o.checked==='true'&&o.dans,(tel?'téléphone':'ordinateur')+' · Others : le papier rentre DANS [Mine] (la continuité), [Others] coché');
+  ok(o.g.etoiles===12&&o.g.sprite&&o.g.poussiere>=240&&o.g.anime&&o.cv==='1'&&o.ui==='visible'&&o.ram==='0','la galaxie : 12 TOTEHMs réels en logo assemblé, la poussière n\'est que du décor ; les ramifications se retirent');
+  ok(log.rpc.filter(x=>x.name==='totehm_galaxy').length===1,'une seule lecture de totehm_galaxy');
+  if(tel) await pg.screenshot({path:OUT+'/proc_galaxie.png'});
+  // le nom au survol (souris) / au premier tap (doigt)
+  const pos=await pg.evaluate(()=>window.__totehm_gx());
+  const vis=pos.find(([x,y])=>x>40&&x<vp.width-40&&y>140&&y<vp.height*.6)||pos[0];
+  if(tel){ await pg.touchscreen.tap(vis[0],vis[1]); } else { await pg.mouse.move(vis[0],vis[1]); }
+  await pg.waitForTimeout(400);
+  const tip=await pg.evaluate(()=>({on:document.getElementById('gx-tip').classList.contains('is-on'),t:document.querySelector('#gx-tip .srch-name').textContent}));
+  ok(tip.on&&/^kai\d+$/.test(tip.t),(tel?'premier tap':'survol')+' : son nom, lisible ('+tip.t+')');
+  // la recherche allume les étoiles trouvées ; choisir un nom plonge dans son étoile → /@kai3
+  await pg.fill('#gx-q','kai');await pg.waitForFunction(()=>document.querySelectorAll('#gx-res .srch-row').length===1,null,{timeout:5000}).catch(()=>{});
+  ok((await lv(pg)).galaxie.filtre===1,'la recherche (NameSearch) allume l\'étoile trouvée');
+  if(tel){
+    const nav=pg.waitForURL(/\/@kai3$/,{timeout:6000}).then(()=>true).catch(()=>false);
+    await pg.click('#gx-res .srch-open');
+    ok(await nav,'téléphone : on plonge dans l\'étoile, puis son univers SUR PLACE (/@kai3)');
+    const ctx=await pg.evaluate(()=>JSON.parse(sessionStorage.getItem('totehm_gx')||'null'));
+    ok(ctx&&ctx.p==='kai3'&&ctx.q==='kai','le contexte de recherche est gardé pour le retour');
+    await pg.goBack();await pg.waitForSelector('body.member');await pg.waitForTimeout(1600);
+    const b=await lv(pg);
+    ok(b.mode==='others'&&await pg.inputValue('#gx-q')==='kai'&&b.galaxie.retours===1,'retour : Others, la recherche intacte, on ressort de l\'étoile (animé)');
+  } else {
+    await pg.click('#gx-res .srch-open');await pg.waitForTimeout(1500);
+    const w=await pg.evaluate(()=>window.__ouvert);
+    const g=(await lv(pg)).galaxie;
+    ok(w.length===1&&w[0]==='/@kai3'&&g.ouvertures===1,'ordinateur : on plonge dans l\'étoile, son univers dans un nouvel onglet (/@kai3)');
+    ok(g.retours===1&&(await lv(pg)).mode==='others'&&await pg.inputValue('#gx-q')==='kai','puis on ressort de l\'étoile, la recherche intacte');
+    await pg.click('#lv-m-mine');await calme(pg);await pg.waitForTimeout(800);
+    const m=await pg.evaluate(()=>({d:window.__totehm_lv(),cv:getComputedStyle(document.getElementById('gx-c')).opacity}));
+    ok(m.d.mode==='mine'&&!m.d.galaxie.anime&&m.cv==='0','retour à Mine : la galaxie se referme, plus aucune image calculée (rAF arrêté)');
+  }
+  ok(!erreurs(log).length,'galaxie : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+ // la galaxie s'arrête dès qu'elle n'est plus vue : une autre vue
+ {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:1280,height:800},rpc:{my_landing:LAND(),totehm_galaxy:GAL}});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);
+  await pg.click('#lv-m-others');await calme(pg);await pg.waitForTimeout(600);
+  await pg.keyboard.press('ArrowDown');await vers(pg,'b');await pg.waitForTimeout(400);
+  const b=await lv(pg);
+  ok(b.vue==='b'&&b.mode==='others'&&!b.galaxie.anime,'de la galaxie vers la Reflection : la Reflection est la MIENNE, la galaxie s\'arrête');
+  const p=await pg.evaluate(()=>{const p=document.getElementById('gate-asteroid').getBoundingClientRect(),m=document.getElementById('rf-me').getBoundingClientRect();return Math.abs(p.x+p.width/2-(m.x+m.width/2))<4;});
+  ok(p,'mon papier devient le profil, même venu de la galaxie');
+  await pg.keyboard.press('ArrowUp');await vers(pg,'c');await pg.waitForTimeout(500);
+  const c=await lv(pg);ok(c.mode==='others'&&c.galaxie.anime,'retour : la galaxie reprend, telle quelle');
+  ok(!erreurs(log).length,'galaxie / Reflection : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+
+ // ── 5 · EN BAS : LA CONDENSATION — seul #gl-bg tourne ; le socle devient un anneau (7 couleurs) ; le profil ──
+ {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},hasTouch:true,rpc:{my_landing:LAND()}});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
+  await pg.click('#lvn-dn');await pg.waitForTimeout(260);
+  /* les ROTATIONS seules (les fondus du rail et du wordmark sont des transitions d'opacité) */
+  const mi=await pg.evaluate(()=>['gl-bg','gl-rail','gl-t','gl-wm'].map(i=>document.getElementById(i).getAnimations()
+    .filter(a=>a.effect&&a.effect.getKeyframes().some(k=>/rotate/.test(k.transform||''))).length));
+  ok(mi[0]===1&&mi[1]===0&&mi[2]===0&&mi[3]===0,'pendant la condensation, SEUL #gl-bg tourne (animations : '+mi.join(',')+')');
+  await vers(pg,'b');await pg.waitForTimeout(900);
+  const b=await pg.evaluate(()=>{const q=s=>document.querySelector(s),sk=q('#lv-socket'),cs=getComputedStyle(sk),me=q('#rf-me').getBoundingClientRect(),sr=sk.getBoundingClientRect();
+    return {tours:window.__totehm_lv().tours,rayon:cs.borderTopLeftRadius,anneau:getComputedStyle(q('#lv-socket .sk-ring')).opacity,
+      points:[...document.querySelectorAll('#lv-socket .sk-ring b')].map(b=>getComputedStyle(b).backgroundColor),
+      centre:Math.abs(sr.x+sr.width/2-(me.x+me.width/2))<3&&Math.abs(sr.y+sr.height/2-(me.y+me.height/2))<3,
+      clip:getComputedStyle(q('#ast-front')).clipPath,rail:getComputedStyle(q('#gl-rail')).opacity,wm:getComputedStyle(q('#gl-wm')).opacity,
+      t:getComputedStyle(q('#gl-t')).opacity,ram:getComputedStyle(q('#lv-ram')).opacity,self:getComputedStyle(q('#lv-slogan .lvs-self')).opacity,
+      tourne:q('#gl-bg').getAnimations().filter(a=>a.effect&&a.effect.getKeyframes().some(k=>/rotate/.test(k.transform||''))).length};});
+  ok(b.tours===1&&b.tourne===0,'il a tourné une fois, puis s\'est posé d\'aplomb');
+  ok(b.rayon==='50%'&&b.anneau==='1'&&b.centre&&b.points.length===7,'le socle s\'est condensé en ANNEAU autour du profil, sept points aux couleurs des intentions');
+  ok(/circle\(29\.5%/.test(b.clip)&&b.rail==='0'&&b.wm==='0'&&b.t==='1'&&b.ram==='0','le papier : un profil autour du T (le même objet), le rail et le wordmark éteints sans tourner ; les ramifications résorbées');
+  ok(b.self==='1','« [Higher] Self » sous le profil');
+  await pg.screenshot({path:OUT+'/proc_reflection_vide.png'});
+  await pg.click('#lvn-up');await pg.waitForTimeout(240);
+  const ret=await pg.evaluate(()=>document.getElementById('gl-bg').getAnimations().filter(a=>a.effect&&a.effect.getKeyframes().some(k=>/rotate/.test(k.transform||''))).length);
+  await vers(pg,'c');await pg.waitForTimeout(900);
+  const c=await pg.evaluate(()=>({clip:getComputedStyle(document.getElementById('ast-front')).clipPath,r:getComputedStyle(document.getElementById('lv-socket')).borderTopLeftRadius,ram:getComputedStyle(document.getElementById('lv-ram')).opacity}));
+  ok(ret===1&&c.r==='0px'&&c.ram==='1'&&!/29\.5/.test(c.clip),'le retour aussi est animé (#gl-bg tourne à l\'envers) : le socle carré, les ramifications');
+  ok(!erreurs(log).length,'condensation : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+
+ // ── 6 · LA REFLECTION : trois étages ; seules les citations VRAIES (`@ok`) s'affichent comme miennes ; une
+ //    step qui n'est pas une Habit est une PROPOSITION (pointillé, « + my Habit ») ──
+ {const REP='@dir objective "Ship my first collection"\nI ship before December, one detail a night.\n@obs\nI keep scrolling instead of drawing.\n'
+   +'@teach wisdom "Discipline is freedom"\nEvery night I give the screen is a night I steal from my collection.\n@step new\nI draw one sleeve at 22:00 tonight.\n'
+   +'@ok {"dir":true,"teach":false,"step":null}';
+  const corps=[];let say=0;
+  const net=(url,req)=>{ if(url.pathname!=='/functions/v1/higher-self') return null;
+    const b=JSON.parse(req.postData()||'{}');corps.push(b);
+    if(b.action==='say'&&++say<=2) return {status:200,contentType:'text/plain; charset=utf-8',headers:{'X-SM-Left':String(6-say),'X-SM-Higher':'0','access-control-allow-origin':'*','access-control-expose-headers':'X-SM-Left, X-SM-Higher'},body:REP};
+    return {status:402,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify({error:'higher_required',state:{ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:0,left:0}})}; };
+  const{pg,log}=await page(browser,{dir:'com',origin,tables,network:net,functions:{'higher-sub':{error:'not_ready'}},viewport:{width:390,height:844},hasTouch:true,rpc:{my_landing:LAND()}});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
+  await pg.click('#lvn-dn');await vers(pg,'b');await pg.waitForTimeout(400);
+  const v=await pg.evaluate(()=>({say:!document.getElementById('lv-say').classList.contains('hide'),font:getComputedStyle(document.getElementById('lv-say-in')).fontFamily,
+    note:document.getElementById('lv-say-note').textContent,etages:[...document.querySelectorAll('#lv-thread .rf-t')].map(e=>e.className)}));
+  ok(v.say&&/Quantico/.test(v.font)&&/^6 of 7 free this month/.test(v.note),'prêt : la saisie (Quantico), « 6 of 7 free this month »');
+  ok(v.etages.length===3&&v.etages.every(c=>/is-wait/.test(c)),'avant la première Reflection : les trois étages, vides (la structure, rien d\'inventé)');
+  await pg.fill('#lv-say-in','I procrastinate on my collection');await pg.keyboard.press('Enter');
+  await pg.waitForFunction(()=>window.__totehm_lv().reflection.envois===1,null,{timeout:5000}).catch(()=>{});await pg.waitForTimeout(300);
+  const r=await pg.evaluate(()=>{const q=s=>document.querySelector(s),cs=e=>e&&getComputedStyle(e).backgroundColor;
+    const t=[...document.querySelectorAll('#lv-thread .rf-t')];
+    return {q:q('#lv-thread .rf-q')?.textContent,fonds:t.map(cs),refs:[...document.querySelectorAll('#lv-thread .rf-ref')].map(e=>e.textContent),
+      dir:t[0]?.querySelector('p')?.textContent,obs:t[1]?.querySelector('p')?.textContent,teachK:t[1]?.querySelector('.rf-k')?.textContent,
+      teach:t[1]?.querySelector('.rf-teach p')?.textContent,step:t[2]?.querySelector('p')?.textContent,prop:t[2]?.classList.contains('is-prop'),
+      add:!!t[2]?.querySelector('[data-rf-add]'),acts:document.querySelectorAll('#lv-thread .sm-acts').length,pense:window.__totehm_lv().reflection.pense};});
+  ok(r.q==='I procrastinate on my collection'&&JSON.stringify(r.fonds)===JSON.stringify(['rgb(54, 73, 140)','rgb(116, 49, 105)','rgb(51, 51, 102)']),'trois étages, la couleur EST le sens : bleu clair (direction) · rouge-violet (obstacle) · navy (step)');
+  ok(r.dir==='I ship before December, one detail a night.'&&r.obs==='I keep scrolling instead of drawing.'&&r.teachK==='Teaching from the story'&&/screen/.test(r.teach),'direction · ce qui fait obstacle · « Teaching from the story »');
+  ok(JSON.stringify(r.refs)===JSON.stringify(['Ship my first collection']),'seule la citation VÉRIFIÉE s\'affiche comme mienne (l\'objectif) ; la croyance non vérifiée n\'est jamais présentée comme mienne');
+  ok(r.prop&&r.add&&r.step==='I draw one sleeve at 22:00 tonight.','la step nouvelle = une PROPOSITION (pointillé) + « + my Habit »');
+  ok(r.acts===0&&!r.pense,'gratuit : pas de partage ; l\'anneau ne tourne plus une fois la réponse arrivée');
+  const c1=corps.find(x=>x.action==='say');
+  ok(c1&&c1.fmt==='r3'&&Array.isArray(c1.turns)&&c1.turns.length===0,'l\'appel demande le format r3 (trois étages vérifiés)');
+  await pg.screenshot({path:OUT+'/proc_reflection.png'});
+  await pg.click('#lv-thread [data-rf-add]');await pg.waitForTimeout(1400);
+  const a=await pg.evaluate(()=>({h:(window.__totehm_zone||{}).habitudes,ref:[...document.querySelectorAll('#lv-thread .t-step .rf-ref')].map(e=>e.textContent),prop:document.querySelector('#lv-thread .t-step').classList.contains('is-prop'),aj:window.__totehm_lv().reflection.ajouts}));
+  ok(a.aj===1&&JSON.stringify(a.ref)===JSON.stringify(['Draw one sleeve at 22:00 tonight'])&&!a.prop,'« + my Habit » : la proposition devient une Habit de mon TOTEHM (« Draw one sleeve at 22:00 tonight »)');
+  await pg.fill('#lv-say-in','and tomorrow');await pg.keyboard.press('Enter');
+  await pg.waitForFunction(()=>window.__totehm_lv().reflection.envois===2,null,{timeout:5000}).catch(()=>{});
+  const c2=corps.filter(x=>x.action==='say')[1];
+  ok(c2&&c2.turns.length===2&&c2.turns[1].role==='sm'&&!/@ok/.test(c2.turns[1].text),'le tour suivant porte les tours d\'avant, sans la ligne de vérification ; aucun historique à l\'écran');
+  ok(await pg.locator('#lv-thread .rf-q').count()===1&&/and tomorrow/.test(await pg.textContent('#lv-thread .rf-q')),'la dernière Reflection seule');
+  await pg.fill('#lv-say-in','and now');await pg.keyboard.press('Enter');await pg.waitForTimeout(900);
+  const f=await pg.evaluate(()=>({v:document.getElementById('lv-say-in').value,ferme:document.getElementById('lv-say').classList.contains('hide'),offre:!!document.querySelector('#lv-thread .sm-offer [data-sm-sub]')}));
+  ok(f.v==='and now'&&f.ferme&&f.offre,'les 7 pris (402) : la phrase revient, la saisie se ferme, l\'offre Higher');
+  ok(!erreurs(log).length,'Reflection : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+ // les états : sans compte (un exemple, CONNECT), TOTEHM pas prêt, abonné Higher (partage), ?higher=paid
+ {const{pg,log}=await page(browser,{dir:'com',origin,tables:{},session:false,viewport:{width:390,height:844}});
+  await pg.goto(origin+'/totehm');await pg.waitForTimeout(1000);
+  await pg.keyboard.press('ArrowDown');await vers(pg,'b');await pg.waitForTimeout(300);
+  const s=await pg.evaluate(()=>({ex:document.querySelector('#lv-thread .rf-ex')?.textContent,n:document.querySelectorAll('#lv-thread .rf-t').length,
+    btn:document.querySelector('[data-sm-connect]')?.textContent,say:document.getElementById('lv-say').classList.contains('hide'),add:document.querySelectorAll('[data-rf-add]').length}));
+  ok(s.ex==='example'&&s.n===3&&s.btn==='CONNECT WITH MY TOTEHM'&&s.say&&!s.add,'sans compte : un EXEMPLE (dit comme tel), CONNECT WITH MY TOTEHM, pas de saisie');
+  await pg.click('[data-sm-connect]');await pg.waitForTimeout(1200);
+  ok(await pg.evaluate(()=>document.body.classList.contains('is-door')&&window.__totehm_lv().vue==='c'),'CONNECT : retour au centre, la porte s\'ouvre');
+  ok(!erreurs(log).length,'sans compte : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+ {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},rpc:{my_landing:LAND({sm:{ready:false,habit:true,objective:false,higher:false,free_total:7,free_left:7,left:7}})}});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);
+  await pg.keyboard.press('ArrowDown');await vers(pg,'b');
+  const v=await pg.evaluate(()=>({say:document.getElementById('lv-say').classList.contains('hide'),h:document.querySelector('[data-sm-write="habits"]')?.className,o:document.querySelector('[data-sm-write="objectives"]')?.className}));
+  ok(v.say&&/is-ok/.test(v.h)&&!/is-ok/.test(v.o),'TOTEHM pas prêt : pas de saisie ; Habit ✓, Objective à écrire');
+  await pg.click('[data-sm-write="objectives"]');
+  await pg.waitForFunction(()=>!document.body.classList.contains('gate')&&window.__totehm_zone&&window.__totehm_zone.vue==='objectives',null,{timeout:9000}).catch(()=>{});
+  ok(await pg.evaluate(()=>!document.body.classList.contains('gate')&&window.__totehm_zone.vue==='objectives'),'« + my Objective » ouvre mon TOTEHM sur les objectifs (depuis le bas : retour au centre, puis la déconstruction)');
+  ok(!erreurs(log).length,'pas prêt : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+ {const REP='@dir vision "A quiet house by the sea"\nI build the house one brick a day.\n@obs\nI wait for the mood.\n@teach story\nI already know waiting never built anything.\n@step habit "Run the hill"\nI run the hill at 7:00 tomorrow.\n@ok {"dir":true,"teach":null,"step":true}';
+  const net=(url,req)=>{ if(url.pathname!=='/functions/v1/higher-self') return null; const b=JSON.parse(req.postData()||'{}');
+    if(b.action==='say') return {status:200,contentType:'text/plain; charset=utf-8',headers:{'X-SM-Left':'29','X-SM-Higher':'1','access-control-allow-origin':'*','access-control-expose-headers':'X-SM-Left, X-SM-Higher'},body:REP};
+    return {status:409,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify({error:'not_linked'})}; };
+  const{pg,log}=await page(browser,{dir:'com',origin,tables,network:net,viewport:{width:390,height:844},hasTouch:true,
+    rpc:{my_landing:LAND({higher:{active:true,price_cents:700,currency:'eur'},sm:{ready:true,habit:true,objective:true,higher:true,free_total:7,free_left:7,left:30}}),new_bot_link_code:'c0de'}});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);await ouvre(pg);
+  await pg.keyboard.press('ArrowDown');await vers(pg,'b');
+  await pg.fill('#lv-say-in','lazy today');await pg.keyboard.press('Enter');
+  await pg.waitForFunction(()=>window.__totehm_lv().reflection.envois===1,null,{timeout:5000}).catch(()=>{});await pg.waitForTimeout(200);
+  const h=await pg.evaluate(()=>({refs:[...document.querySelectorAll('#lv-thread .rf-ref')].map(e=>e.textContent),prop:document.querySelector('#lv-thread .t-step').classList.contains('is-prop'),
+    add:document.querySelectorAll('[data-rf-add]').length,acts:document.querySelectorAll('#lv-thread .sm-acts button').length}));
+  ok(JSON.stringify(h.refs)===JSON.stringify(['A quiet house by the sea','Run the hill'])&&!h.prop&&!h.add,'une step qui EST une de mes Habits (vérifiée) : sa mini-boîte, sans pointillé ni « + my Habit »');
+  ok(h.acts===2,'Higher : Telegram · WhatsApp sous la Reflection');
+  await pg.click('#lv-thread [data-wa]');
+  const o=await pg.evaluate(()=>window.__ouvert);
+  ok(o[0]==='https://wa.me/?text='+encodeURIComponent('I build the house one brick a day.\nI wait for the mood.\nI already know waiting never built anything.\n→ I run the hill at 7:00 tomorrow.'),'WhatsApp : les trois étages en clair');
+  ok(!erreurs(log).length,'Higher : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+ {let n=0;const SMF={ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:0,left:0};
+  const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},rpc:{my_landing:()=>(++n>=3?LAND({higher:{active:true},sm:{...SMF,higher:true,left:30}}):LAND({sm:SMF}))}});
+  await pg.goto(origin+'/totehm?higher=paid');await pg.waitForSelector('body.member');
+  await vers(pg,'b');
+  ok(pg.url()===origin+'/totehm'&&/payment received/.test(await pg.textContent('#lv-say-note')),'?higher=paid : l\'adresse est nettoyée, la Reflection s\'ouvre');
+  await pg.waitForFunction(()=>window.__totehm_lv().higher,null,{timeout:9000}).catch(()=>{});
+  ok((await lv(pg)).higher&&!(await pg.$eval('#lv-say',e=>e.classList.contains('hide'))),'le webhook arrive : la saisie s\'ouvre ('+n+' lectures de my_landing)');
+  ok(!erreurs(log).length,'retour Stripe : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+
+ // ── 7 · MOUVEMENT RÉDUIT : tout marche, rien ne tourne ni ne glisse ──
+ {const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},rpc:{my_landing:LAND(),totehm_galaxy:GAL}});
+  await pg.emulateMedia({reducedMotion:'reduce'});
+  await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);
+  const tr=await pg.evaluate(()=>['lv-socket','lv-b','gx-c'].map(i=>getComputedStyle(document.getElementById(i)).transitionDuration));
+  await pg.keyboard.press('ArrowDown');await vers(pg,'b');
+  const b=await pg.evaluate(()=>({tours:window.__totehm_lv().tours,anim:document.getElementById('gl-bg').getAnimations().filter(a=>a.effect&&a.effect.getKeyframes().some(k=>/rotate/.test(k.transform||''))).length}));
+  await pg.keyboard.press('ArrowUp');await vers(pg,'c');
+  await pg.click('#lv-m-others');await calme(pg);await pg.waitForTimeout(600);
+  const g=(await lv(pg)).galaxie;
+  ok(tr.every(t=>/^0s/.test(t))&&b.tours===0&&b.anim===0,'mouvement réduit : aucune transition, #gl-bg ne tourne pas ('+tr.join(' ')+')');
+  ok((await lv(pg)).mode==='others'&&g.etoiles===12&&!g.anime,'la galaxie, immobile (dessinée une fois)');
+  ok(!erreurs(log).length,'mouvement réduit : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+
+ // ── 8 · AU CHARGEMENT : le badge [Higher] n'apparaît jamais au coin ──
+ for(const vp of [{width:390,height:844},{width:1280,height:800}]){
+  const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{my_landing:LAND()},viewport:vp,
+    network:async url=>{ if(url.host==='esm.sh') await new Promise(r=>setTimeout(r,1500)); return null; }});
+  await pg.addInitScript(()=>{window.__coin=0;const t0=performance.now();
+    const f=()=>{const e=document.getElementById('lv-slogan');
+      if(e){const r=e.querySelector('svg').getBoundingClientRect(),cs=getComputedStyle(e);
+        if(cs.visibility!=='hidden'&&cs.display!=='none'&&+cs.opacity>0&&r.left<20&&r.top<20)window.__coin++;}
+      if(performance.now()-t0<3000)requestAnimationFrame(f);};requestAnimationFrame(f);});
+  await pg.goto(origin+'/totehm');await pg.waitForTimeout(3200);
+  ok(await pg.evaluate(()=>window.__coin)===0,'module retardé de 1,5 s ('+vp.width+' px) : le badge [Higher] jamais au coin');
+  ok(!erreurs(log).length,'chargement lent : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
+}finally{await browser.close();}

@@ -2,7 +2,7 @@
 
 ## 15/10/2026 — raccordements galerie / Club (sans changer le moteur COM)
 
-`com/totehm.html` reste intact pour le travail COM en parallèle. `/x/space` sert désormais SPACE `/social`,
+`com/totehm.html` conserve intégralement le processeur de Claude intégré depuis `13abd34`. `/x/space` sert désormais SPACE `/social`,
 `/x/club` sert Club `/create` : les commandes XO et la création depuis une Habit restent opérationnelles.
 `/spot?v=plan|cam&habit=…&city=…` fournit une entrée COM pour les anciens liens de création Club ; le cadre
 utilise la session de la même origine et valide origine + fenêtre émettrice. Sans session, le parcours COM
@@ -10,6 +10,60 @@ existant `/totehm#in` s'ouvre dans le cadre, puis le compositeur reprend à la c
 Les menus console/creator/monetize et le snippet ciblent ensemble `space` + `https://www.totehm.space/get_higher`.
 Pour les prochains changements COM : garder le contrat XO et ces deux destinations tant que les lecteurs intégrés
 n'ont pas été remplacés. Détails, tests et limites : `../docs/GALLERY_CLUB_20261015.md`.
+
+## 15/10/2026 — LE PROCESSEUR (lot C) : trois vues verticales, la galaxie, mes réglages au verso, la Reflection
+
+BUILD `2026-10-15-com-processeur`. Wah : « le TOTEHM est mon processeur personnel ; il prend vie à travers une IA
+réflexive ». Module `LV` : `VOISINS={c:{h,b}, h:{b:'c'}, b:{h:'c'}}`, UNE fonction `aller()` (doigt, trackpad/molette
+— la règle de SPACE en vertical seul —, ↑ ↓ Échap, deux chevrons `#lvn-up`/`#lvn-dn`), `bouge` = une transition à la
+fois. **Partis, balisage ET câblage** : `#ljoy`, `#ljoy-say`, les vues `g`/`d`/prendre (`MONDE`, `MESVIS`, `#lv-take`),
+`BANC`/`#fish`, `/assets/earth.json`, `[My TOTEHM]`/`[Search another TOTEHM]`.
+- **↑ h · GET HIGHER** = la bouche du 12/10 (lot A `daa48d9`), moteur `BOUCHE` et balisage `#gate-mouth` copiés tels
+  quels, EN HAUT : le papier monte sur la langue pendant qu'elle s'ouvre (`PAPIER.glisser(cibleLangue, bouche [1,1])`),
+  `#lv-slogan` « Get [Higher] » sous la langue (LE bouton) → `avalerIci()` → elle jouit → `surLangue` →
+  `ssoVersDomaine(boutique, /get_higher?from=com)` ; le pont artistique boutique relaie vers SPACE en conservant `from=com` (la langue ne rejoue pas) ; retour 12 s si rien.
+- **c · MY TOTEHM** : `#lv-proc` (dans `#gate-top-row`, derrière le papier) = `#lv-socket` (le verre de la boîte Premium,
+  `--sk` = 1,3 × le papier, aucun flou) qui porte `#lv-ram` (`RAM` : 7 pistes aux couleurs exactes, `pathLength=1`, un
+  nœud par Habit de l'intention, 5 au plus ; sans Habit, pâle). `--skx/--sky/--sks` (`socle()`) : il suit le papier.
+  **Mine · Others** (`#lv-mode`, radios) : Others = le papier rentre dans `.lvm-slot` de [Mine] (z 6, sans clic), `GX`
+  (`#gx-c`, UN canvas) : `totehm_galaxy` (≤ 160), chaque étoile = le logo assemblé (les 4 calques rendus une fois),
+  spirale inclinée, poussière = décor ; survol / 1er tap = le nom (`#gx-tip`), clic / 2e tap = plongée ×7 puis `/@nom`
+  (onglet sur ordinateur, sur place au doigt) ; `sessionStorage totehm_gx` (15 min) → au retour, Others, la recherche,
+  on ressort de l'étoile. `NameSearch` reçoit `onRows` (allumer) et `choisir` (plonger). rAF : seulement Others visible.
+- **Le verso = MES RÉGLAGES** (`ouvrirVerso`/`fermerVerso`, l'ancien zoom du 02/10) : `#ast-verso` = le nom + `#ast-panel`
+  (4 niveaux, celui de `LAND.visibility` allumé ; le curseur = `offer.open`) ; déplié, `#self-name` (renommer) puis
+  `#lv-card` DÉPLACÉ de l'espace membre (nom, `.lv-vis`, `#lv-prog`, `CREA`, `#lv-guest`). Sans compte : la porte.
+  `libre()` exige `!sOpen` : aucun contrôle ne change de vue ni ne retourne le papier. Clavier : ← → sur `#gate-enter`.
+  Ouverte, la feuille PREND le focus (`#srch` `tabindex=-1`) : sinon Échap partait d'un nœud caché et `swallow` l'avalait ;
+  fermée, il revient à `#gate-enter`.
+  L'espace membre garde le compte ; `#mw-who` (bouton) → `lvReglages.ouvrir()`.
+- **↓ b · MA REFLECTION** : condensation — `body.lv-b` : les ramifications se résorbent (dashoffset puis fondu), le socle
+  → anneau (rayon 50 %, 7 points), `#ast-front` → `circle(29.5% at 50% 36.3%)`, rail + wordmark éteints (opacité),
+  SEUL `#gl-bg` tourne (WAAPI 3 tours, ralenti ; à l'envers au retour ; `LV.calme()` avant toute mesure). `#rf` : le
+  profil `#rf-me`, « [Higher] Self » dessous, la saisie (au-dessus du clavier, pas de focus d'office), trois étages
+  `.rf-t` (bleu clair direction · rouge-violet obstacle + « Teaching from the story » · navy step). `higher-self` v4,
+  `fmt:'r3'` ; `lireR3()` ; une citation ne s'affiche QUE si `@ok` la dit vraie ; step `new`/non vérifiée = proposition
+  (`.is-prop`, pointillé, « + my Habit » → `state.habits.unshift` + `save()`). États : sans compte (« example »,
+  CONNECT), invité (save), pas prêt (+ Habit / + Objective), prêt, offre (402), Higher (Telegram · WhatsApp).
+  L'anneau tourne pendant le flux. `?higher=paid` → b.
+- **Dans le Totehm** : `SH` — la bascule `#vmode` (Habits, mon Totehm) liste ↔ shorts (`localStorage totehm_shorts`) ;
+  `.sh` = hauteur de `#fv-inner` (`--sh-h`), `scroll-snap`, `vueHabitude()` telle quelle, son média devant (le plus
+  récent de `element_media`, sinon la photo d'un de ses spaces), sinon `.sh-none` ; `IntersectionObserver` : la vidéo
+  visible joue, la suivante se prépare (l'image d'avant aussi, pas la vidéo) ; le short courant naît `is-ici` (un redessin
+  ne rejoue pas son entrée) ; une boîte ouverte fait grandir son short (`.is-open`) et `ouvrir()` cale le cadre sur le
+  short, pas sur la boîte (l'aimant sautait au suivant) ; ↑ ↓ d'une Habit à l'autre. Changer de vue interne : la pile
+  entre du côté du voyage (`#habits.swap.sw-d|g|b|h`, `dernierSens` lu avant `paintZone`), le nom pivote avec elle. `CAP` (`#cap`) : PHOTO · VIDEO · IMPORT depuis
+  l'élément (`data-cap`) ; doigt = `capture`, ordinateur = getUserMedia (vidéo ≤ 60 s ; onglet caché = caméra éteinte, sauf en
+  enregistrement) ; image → JPEG ≤ 1 600 px ;
+  `element-media/<uid>/m-<uuid>.<ext>` puis `element_media_add` (sinon le fichier s'efface) ; les fichiers d'une boîte
+  ouverte (`fichiersHTML`, `data-emo` ouvrir, `data-emx` retirer) ; renommer → `element_media_rekey` ; supprimer →
+  `emPurger`. En lecture : rien de tout ça.
+- Diagnostics : `__totehm_lv()` (+ `mode`, `galaxie`, `ramifications`, `reflection`, `tours`, `reglages`),
+  `__totehm_gx()` (positions), `__totehm_sh()`. Tests : `com_processeur` (remplace `com_croix`), `com_shorts`,
+  `com_paper` (le verso = réglages), `com_member_menu`, `com_read_copy` (la galaxie), `boutique_tongue` (`?from=com`).
+
+> ⚠️ **Le 13/10 (lot B) ci-dessous est REMPLACÉ** pour l'atterrissage : la croix, la manette, le banc, Higher Self au
+> verso, PRENDRE, MON MONDE, MES VISIONS. Restent vrais : le Totehm minimal, MY STORY, l'image d'une VISION, `CREA`.
 
 ## 13/10/2026 — la croix de Wah (lot B)
 

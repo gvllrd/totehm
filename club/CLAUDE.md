@@ -147,7 +147,7 @@ performance (le texte EEG de COM) · B · A digital artwork (Wah, un des 777 000
 son numéro = le numéro FIGHER) · C · Tradeable (marché FIGHER, historique) ·
 D · The key to luxury (« What it opens is what it is worth. »), puis la marque.
 **Jamais « investment »** (MiCA) : la valeur se dit par ce que le THP ouvre.
-COM y mène depuis la vue du haut ([Get Higher]). Test : `com_croix.mjs` §9.
+COM y mène depuis la vue du haut ([Get Higher], la langue, `?from=com`). Test : `com_processeur.mjs` §3.
 
 ## 05/10/2026 — connexion COM et UI commune
 

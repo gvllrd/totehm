@@ -1,10 +1,10 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-> Livraison locale du 15/10/2026 : galerie SPACE, Club temporel, séparation des droits payants.
+> Livraison galerie/Club du 15/10/2026 préparée localement : galerie SPACE, Club temporel, séparation des droits payants.
 > Vérifications locales et mise en service restante : `../docs/GALLERY_CLUB_20261015.md`.
-> Aucun nouveau relevé de production ; les valeurs et dates de production ci-dessous sont conservées.
+> Cette livraison n'a pas encore de relevé de production ; les mesures du lot C publiées dans `13abd34` sont conservées ci-dessous.
 
-**Dernier relevé : 13 octobre 2026, quatre niveaux et `/@nom` = l'univers** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 15 octobre 2026, le processeur (trois vues verticales, la galaxie, mes réglages au verso, la Reflection en trois étages)** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -19,6 +19,31 @@
 
 ---
 
+
+## 0 · GALERIE / CLUB — BASE APPLIQUÉE, PUBLICATION EN COURS — 15/10/2026
+
+| Mesure | Résultat |
+| --- | --- |
+| Migration | `club_gallery`, `20261015120000`, transaction + historique enregistrés |
+| Source appliquée | MD5 `644541bdeedf29476b3d07eafdd29159`, identique au dépôt |
+| Lecture HTTP anon | `club_spots` past/now/future : 200 ; point exact jamais exposé |
+| Adhésion | zéro divergence `_figher.member` / complétude sur les comptes existants |
+| Commerce | cinq gardes exactes avant migration ; quatre lecteurs/réservations détachés de `_is_figher` |
+| Fusion COM | `13abd34` conservé ; 14 suites navigateur fusionnées réussies |
+| Edge / Vercel | publication en cours, statuts finaux à mesurer |
+
+## 0 · LE PROCESSEUR : TROIS VUES VERTICALES, LA GALAXIE, MES RÉGLAGES AU VERSO, LA REFLECTION EN TROIS ÉTAGES — 15/10/2026 (lot C)
+
+| quoi | valeur mesurée |
+|---|---|
+| base | migration `processor_media_galaxy` appliquée (`20261015113826`) ; 6/6 fonctions = fichier (md5 du corps) ; `element_media` : RLS, 0 politique ; seau `element-media` privé, 50 Mo, 12 types ; politique `element-media own folder` (authenticated, son dossier) ; aucun `drop`, aucun prix |
+| droits | `element_media_add/list/remove/rekey` : authenticated + service_role · `_element_ok` : service_role · `totehm_galaxy` : anon + authenticated + service_role (règle de `totehm_search` : non privés, nommés, sans moi) · tous security definer |
+| SQL | `processor_media_galaxy_selftest` `FAIL={}` (à l'application ; corps inchangés depuis, md5 = fichier) |
+| Edge | `higher-self` v4 ACTIVE, verify_jwt (`fmt:'r3'`, ligne `@ok` vérifiée contre le Totehm ; ancien format intact) |
+| navigateur (code final) | com_processeur 97/97 (nouveau, remplace com_croix) · com_shorts 57/57 (nouveau) · com_paper 34/34 (réécrit : verso = réglages) · com_member_menu 35/35 · com_read_copy 18/18 · com_plateforme 23/23 · boutique_tongue 11/11 · com_cloths 16/16 · com_creator 37/37 · com_guest 14/14 · com_vision_image 8/8 · console 18/18 · space_boxes_ecosystem 19/19 · space_spot_links 30/30 · spaces_loupe 32/32 |
+| échecs connus, hors lot (identiques au 13/10) | spaces_ui 44/48 (identité boutique get_higher, stoner) |
+| Vercel `cfde86b` | com · space · boutique READY (production) |
+| prod (pg_net) = dépôt | totehm.com/totehm 200 `334a7458` `2026-10-15-com-processeur` · `/assets/earth.json` 404 (retiré avec la Terre) · higher.boutique `/get_higher?from=com` 200 `60e5e749` · galaxie réelle (anon) : 3 TOTEHM |
 
 ## 0 · LA CROIX DE WAH, MY STORY, LES SATELLITES RÉDUITS À CONNECT — 13/10/2026 (lot B)
 

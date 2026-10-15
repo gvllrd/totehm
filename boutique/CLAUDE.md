@@ -13,6 +13,12 @@ ne donne pas accès aux œuvres payantes. Le numéro THP reste attaché à l'exe
 Validation et déploiement : `../docs/GALLERY_CLUB_20261015.md`. Les sections ci-dessous décrivent l'historique ;
 la règle « pas de gamification » est remplacée par l'exploration minimale de la galerie, sans points ni récompenses.
 
+## BOUTIQUE · 15/10/2026 — `?from=com` : la langue a déjà eu lieu sur totehm.com
+
+La bouche du 12/10 est revenue sur totehm.com (la vue du haut) : le papier y est avalé, puis le pont mène à
+`/get_higher?from=com`. Une adresse à paramètres ne rejoue jamais `#tongue` (règle du 13/10, inchangée) : on arrive
+sur la page d'achat. Test : `boutique_tongue` (§3 `?from=com`, §4 la bouche de COM, fermée au centre).
+
 ## BOUTIQUE · 13/10/2026 — LA LANGUE ; UN CLOTH = MY STORY (lot B)
 
 `get_higher.html` : à l'arrivée, `#tongue` — la bouche s'ouvre, le TotehmPaper se pose sur la langue, elle l'avale
