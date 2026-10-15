@@ -5,12 +5,17 @@
 L'accueil est une salle 3D : déplacement WASD/flèches, regard au glisser, clic au sol et joystick tactile.
 Les quatre boutons d'œuvres guident la caméra ; l'information ouvre les expériences et le marché existants.
 `gallery-ui.mjs` garde une vue HTML des œuvres, y compris sans WebGL ; `gallery-3d.mjs` gère la salle.
+Le toit ouvert expose `gallery-sky.mjs` : Voie lactée, 3 800 étoiles (2 400 au téléphone),
+scintillement, rotation lente et étoiles filantes. LOOK UP regarde le ciel ; l'entrée retrouve la galerie.
 Three.js 0.180.0 est servi localement sous `vendor/`, licence MIT jointe ; aucun moteur chargé depuis un CDN.
 Les aperçus viennent des SVG, panneaux et média Quantum existants. Les pages des expériences restent intactes.
 La vidéo se charge à la sélection de Quantum et s'arrête hors de sa visite, en arrière-plan ou en mouvement réduit.
-Le rendu est suspendu au repos et hors écran. Retour bfcache et perte du contexte graphique sont traités.
+Le ciel anime la boucle existante à 30 images/s maximum (25 au téléphone), avec ombres statiques calculées une fois.
+La liste et l'arrière-plan suspendent l'animation ; le mouvement réduit garde un ciel fixe et le rendu à la demande.
+Retour bfcache et perte du contexte graphique sont traités.
 Tests : `gallery_immersive.mjs` (34 vérifications, vrai WebGL local et toucher), `gallery.mjs` (marché),
 `art_migration.mjs` (intégrité des expériences). Détails : `../docs/SPACE_IMMERSIVE_20261015.md`.
+`gallery_sky.mjs` vérifie aussi le ciel animé et ses pauses à 1440/390 px.
 
 ## 15/10/2026 — galerie et continuité des anciens contenus (publiées en production)
 
