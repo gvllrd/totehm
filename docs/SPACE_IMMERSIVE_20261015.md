@@ -1,5 +1,11 @@
 # Visite de la galerie SPACE — 15 octobre 2026
 
+Publiée sur `https://www.totehm.space/` : code `5372e71413058b09cae2d573b158cc64bea0ef4c`,
+production Vercel `dpl_7r88tzsHZXV2bdfnWULDNzbCWvkS` READY, deux alias associés. Les quatre projets
+et leurs huit alias sont vérifiés à ce commit. Vingt contrôles HTTPS de contenu réussis : accueil,
+moteur, modules, styles, aperçus, expériences, marché, social et raccordements entre domaines.
+Les réponses correspondent exactement aux fichiers du dépôt, avec leurs types MIME attendus.
+
 L'accueil de SPACE devient une salle d'exposition 3D visitable, avec murs, cadres, socle, banc et lumière naturelle.
 Quatre œuvres existantes y donnent accès à TotehmPaper/Get Higher, Stoner, Play the Lisbon Street et Origins/Quantum.
 Le marché et la collection restent accessibles dans l'en-tête et depuis les œuvres.

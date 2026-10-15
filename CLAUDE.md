@@ -66,7 +66,7 @@ Les `CLAUDE.md` des dossiers servis par Vercel sont exclus du déploiement (`.ve
 com/      → www.totehm.com       Le processeur (15/10) : le Totehm (5 vues, liste + shorts, capture dans l'élément), /auth, /@nom, /console.
                                  Trois vues verticales : ↑ Get Higher (la bouche) · Mine / Others (la galaxie, verso = mes réglages) · ↓ ma Reflection.
                                  /spot = création avec Habit sélectionnée ; XO sert /x/space → SPACE/social et /x/club → Club/create sur place.
-space/    → www.totehm.space     Galerie d'art digital : TotehmPaper, Get Higher, Stoner, Lisbon, Origins/Quantum,
+space/    → www.totehm.space     Galerie 3D visitable d'art digital : TotehmPaper, Get Higher, Stoner, Lisbon, Origins/Quantum,
                                  /market et collection. Expériences déplacées sans refonte. /social et /s/:id préservent les contenus existants.
 club/     → www.figher.club      Consultation : passé / maintenant / futur × RADAR / SHORTS, mêmes filtres et résultats autorisés.
                                  Création → COM /spot ; /create reste le moteur intégré à COM, pas une vue publique autonome.
