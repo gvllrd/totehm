@@ -22,7 +22,13 @@
 //       telegram — Higher seulement : un geste part dans SON Telegram, par
 //                  TotehmBot (`profiles.telegram_id`) ; non lié → `not_linked`.
 //       WhatsApp n'a pas d'API ici : la page ouvre `wa.me/?text=`.
-// cost : ≈ 1,5 k jetons d'entrée + 120 de sortie par réponse ; mesuré en §0.
+// 15/10 (v4) : `fmt: 'r3'` — UNE Reflection en trois étages liés (Wah : « direction → obstacle et enseignement →
+//       prochaine action ») : @dir (objectifs, vision) · @obs + @teach (ce qui se repousse, « Teaching from the
+//       story ») · @step (la prochaine step-Habit). Chaque étage qui s'appuie sur le Totehm CITE l'élément exact ;
+//       à la fin du flux, une ligne `@ok {dir,teach,step}` dit si chaque citation existe VRAIMENT dans SON Totehm
+//       (`_bot_memory`) — la page n'affiche que les citations vérifiées, et une step non trouvée est une PROPOSITION.
+//       Sans `fmt`, l'ancien format (quatre lignes) : les pages déjà ouvertes continuent de marcher.
+// cost : ≈ 1,5 k jetons d'entrée + 120 de sortie par réponse (r3 : ≈ 1,9 k + 200) ; mesuré en §0.
 // what : flux texte (en-têtes X-SM-Left, X-SM-Higher) · { ok } · { error }
 
 import { createClient } from "npm:@supabase/supabase-js@2";
@@ -80,6 +86,50 @@ WHY: <110 characters at most, from the TOTEHM>
 <intention> is one of: fight, flow, enrich, love, express, focus, celebrate.
 The first line and the words DO: and WHY: always stay in English.`;
 
+// 15/10 — la Reflection en trois étages. Mêmes interdits de voix ; la VÉRITÉ d'abord : rien n'est à moi s'il n'est
+// pas écrit dans MON TOTEHM, et ce qui en vient est cité mot pour mot (la fonction le vérifie à la fin du flux).
+const SYSTEM_R3 = `You are TotehmSM: the member's Higher Self, built from THEIR TOTEHM — their habits, objectives, repulsions, visions and wisdom (their story, their beliefs). Not an assistant, not a coach, not a therapist, not a guru. You are the member, one level higher: what they already know, said straight.
+
+Creed: Talk is cheap. Do with a why. Every message gets ONE reflection in three linked levels: the direction, then what is in the way and the teaching from my story, then the next step-Habit.
+
+Voice, non-negotiable:
+- First person singular, as the member: "I…" (in French "Je…"). Never "you", never "we".
+- Underground, raw, minimal. Short sentences. Street-level and precise. Never corporate, never therapy-speak.
+- Banned: emojis, hashtags, exclamation marks, questions, lists, the words journey, self-care, mindset, manifest, vibes; "you've got this", "remember", "it's okay"; any compliment or empathy formula; any mention of AI, models, prompts, data or "entries".
+- Write in the language of the member's last message.
+
+Truth, non-negotiable:
+- MY TOTEHM below is the only source about me. Never invent an objective, a vision, a belief, a repulsion, a habit, a memory or a past event, and never present something as mine if it is not written below.
+- When a level relies on an item of MY TOTEHM, copy that item EXACTLY, character for character, between double quotes, on its marker line. When nothing fits, use the fallback kind (none, story, new) and no quote.
+- A step that is not already one of my habits is a proposal: its kind is new.
+
+The three levels:
+1. Direction (my objectives and my vision): where what I just said must take me — the objective or vision it serves, said as a decision for today.
+2. In the way (what I repel or overcome): the thought, reflex or behaviour that blocks me right now. Then the teaching from my story: the lesson my own story already holds — a belief from my wisdom, a repulsion I wrote, or what I said in this conversation.
+3. The next step-Habit: one concrete, physical move — what + when (now, or a clock time today or tomorrow) + where when useful. It starts in under two minutes or it is scheduled to the minute. Coherent with the direction and the obstacle. The smallest move that breaks the inertia.
+
+Small talk or an empty message: take the objective that matters most today and move on it. Off-topic (facts, trivia, homework, code): do not answer it; turn it into a move. Health, law, money: no claims; the step is to book the professional, with a time.
+Danger to self or others (suicide, self-harm, violence, abuse): output exactly this, in the member's language, markers kept:
+@dir none
+My life comes first.
+@obs
+I stay alone with this.
+@teach story
+I don't carry this alone.
+@step new
+I call or text someone I trust, or the emergency number (112 in Europe), now.
+
+Output: exactly eight lines of plain text, nothing before, nothing after.
+@dir <objective|vision|none> "<the exact objective or vision>"
+<the direction: one sentence, 140 characters at most, first person>
+@obs
+<what is in the way: one sentence, 140 characters at most, first person>
+@teach <wisdom|repulsion|story> "<the exact belief or repulsion>"
+<the teaching from my story: one sentence, 160 characters at most, first person>
+@step <habit|new> "<the exact habit>"
+<the next step: 110 characters at most, first person, with its when>
+Omit the quote when the kind is none, story or new. The marker lines (@dir, @obs, @teach, @step and the kinds) always stay in English.`;
+
 type Item = { text?: string; is?: string[]; freq?: string; target_at?: string; status?: string };
 type Spot = { facts?: { habit?: string; city?: string; state?: string; started_at?: string } };
 type Memory = { totehm?: Record<string, Item[]>; spots?: Spot[] };
@@ -106,13 +156,31 @@ function contexte(m: Memory | null, now: string): string {
     spots.length ? "My latest spaces: " + spots.join(" | ") : ""].filter(Boolean).join("\n").slice(0, 3800);
 }
 
+// 15/10 — les citations de la Reflection, vérifiées contre SON Totehm (mot pour mot, casse et blancs ignorés).
+const norm = (v: unknown) => String(v ?? "").toLowerCase().replace(/[“”«»"]/g, "").replace(/\s+/g, " ")
+  .replace(/^[\s.,;:!?-]+|[\s.,;:!?-]+$/g, "").trim();
+function verifier(txt: string, m: Memory | null): Record<string, boolean | null> {
+  const t = m?.totehm ?? {};
+  const liste = (k: string) => (t[k] ?? []).map((x) => norm(x?.text)).filter(Boolean);
+  const L: Record<string, string[]> = { objective: liste("objectives"), vision: liste("visions"), wisdom: liste("wisdom"),
+                                        repulsion: liste("repulsions"), habit: liste("habits") };
+  const out: Record<string, boolean | null> = { dir: null, teach: null, step: null };
+  for (const l of txt.split("\n")) {
+    const x = /^\s*@(dir|teach|step)\b\s*([a-z]*)\s*(?:"([^"]+)"|“([^”]+)”)?/i.exec(l);
+    if (!x) continue;
+    const ref = (x[3] ?? x[4] ?? "").trim();
+    out[x[1].toLowerCase()] = ref ? (L[(x[2] || "").toLowerCase()] ?? []).includes(norm(ref)) : null;
+  }
+  return out;
+}
+
 type Usage = { prompt_tokens?: number; completion_tokens?: number };
 // Ouvre le flux OpenAI du premier modèle qui accepte. null = rien n'a pris.
-async function ouvrir(key: string, messages: unknown[], signal: AbortSignal, liste: Choice[] = MODELS) {
+async function ouvrir(key: string, messages: unknown[], signal: AbortSignal, long = false, liste: Choice[] = MODELS) {
   for (const c of liste) {
     const body: Record<string, unknown> = { model: c.model, messages, stream: true, stream_options: { include_usage: true } };
     if (c.effort) { body.reasoning_effort = c.effort; body.max_completion_tokens = 1200; }
-    else { body.temperature = 0.8; body.max_tokens = 260; }
+    else { body.temperature = 0.8; body.max_tokens = long ? 420 : 260; }
     let r: Response;
     try {
       r = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -177,6 +245,7 @@ Deno.serve(async (req) => {
       .map((x: { role?: string; text?: string }) => ({ role: x?.role === "sm" ? "assistant" : "user", content: clean(x?.text, 500) }))
       .filter((x) => x.content);
     const now = clean(body.now, 40);
+    const r3 = body.fmt === "r3";
 
     const t0 = Date.now();
     const [{ data: b, error: bErr }, { data: mem, error: mErr }] = await Promise.all([
@@ -195,18 +264,21 @@ Deno.serve(async (req) => {
         .then(({ error }) => { if (error) console.error("[higher-self] sm_end", error.message); });
 
     const ac = new AbortController(); const tm = setTimeout(() => ac.abort(), TIMEOUT_MS);
-    const messages = [{ role: "system", content: SYSTEM + "\n\n" + contexte(mem as Memory, now) }, ...turns, { role: "user", content: text }];
-    const o = await ouvrir(key, messages, ac.signal);
+    const messages = [{ role: "system", content: (r3 ? SYSTEM_R3 : SYSTEM) + "\n\n" + contexte(mem as Memory, now) }, ...turns, { role: "user", content: text }];
+    const o = await ouvrir(key, messages, ac.signal, r3);
     if (!o) { clearTimeout(tm); await fin("failed"); return json({ error: "unavailable" }, 503); }
 
     const enc = new TextEncoder();
     const stream = new ReadableStream<Uint8Array>({
       async start(ctrl) {
-        let n = 0, first = 0;
+        let n = 0, first = 0, tout = "";
         try {
-          const u = await lire(o.body, (s) => { if (!first) first = Date.now() - t0; n += s.length; ctrl.enqueue(enc.encode(s)); });
-          console.log(JSON.stringify({ evt: "sm", model: o.choice.model, first_ms: first, ms: Date.now() - t0,
-                                       in: u.prompt_tokens, out: u.completion_tokens }));
+          const u = await lire(o.body, (s) => { if (!first) first = Date.now() - t0; n += s.length; tout += s; ctrl.enqueue(enc.encode(s)); });
+          // La ligne de fin : chaque citation existe-t-elle dans SON Totehm ? (la page n'affiche que les vraies)
+          const ok = r3 ? verifier(tout, mem as Memory) : null;
+          if (ok) ctrl.enqueue(enc.encode("\n@ok " + JSON.stringify(ok)));
+          console.log(JSON.stringify({ evt: "sm", fmt: r3 ? "r3" : "v2", model: o.choice.model, first_ms: first, ms: Date.now() - t0,
+                                       in: u.prompt_tokens, out: u.completion_tokens, refs: ok }));
           await fin(n >= 12 ? "ok" : "failed", o.choice.model, u);
         } catch (e) {
           console.error("[higher-self] stream", String(e));
