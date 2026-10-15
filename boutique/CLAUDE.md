@@ -1,6 +1,6 @@
 # boutique/CLAUDE.md — higher.boutique : vêtements, totehmisation physique et production
 
-## 15/10/2026 — le numérique est dans la galerie SPACE (code local)
+## 15/10/2026 — le numérique est dans la galerie SPACE (publié en production)
 
 La boutique conserve Streetwear, Luxury, Decode, commandes et production. Son accueil reste physique, avec un
 lien de traversée SSO vers SPACE. Get Higher, Stoner, Lisbon, Discover, Origins/Quantum et le marché sont servis

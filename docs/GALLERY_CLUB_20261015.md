@@ -1,6 +1,6 @@
 # Galerie SPACE et Club temporel — 15 octobre 2026
 
-Cette livraison implémente la nouvelle direction dans le dépôt, fusionnée avec le processeur COM de Claude (`13abd34`). La migration `club_gallery` a été appliquée transactionnellement en production le 15 octobre 2026 ; les fonctions Edge et les sites sont en cours de publication. Les mesures ci-dessous distinguent les vérifications locales et celles de production.
+Cette livraison implémente la nouvelle direction dans le dépôt, fusionnée avec le processeur COM de Claude (`13abd34`). La migration `club_gallery` a été appliquée transactionnellement en production le 15 octobre 2026 ; les cinq fonctions Edge sont actives et leur source déployée a été vérifiée. Les quatre projets Vercel ont publié le commit fusionné `2bf4724`. Le correctif de routage `395c7ca` est en cours de publication et de vérification sur les anciennes adresses artistiques. Les mesures ci-dessous distinguent les vérifications locales et celles de production.
 
 ## Répartition et continuité
 
@@ -81,15 +81,34 @@ Résultats sur l'instance cloud préparée :
 | Comparaisons artistiques téléphone/ordinateur | 14 comparaisons réussies, incluses dans les tests navigateur |
 | Suites SQL locales | 2 réussies ; migration réappliquée et dérive commerciale refusée transactionnellement |
 | Démarrage statique après arrêt/redémarrage | 12 réponses HTTP avec contenu attendu |
-| Source COM principale | `com/totehm.html` inchangé |
+| Source COM principale | Processeur Claude de `13abd34` conservé intégralement après fusion |
 | Production Supabase | Migration appliquée, trois lecteurs HTTP 200, droits et adhésion vérifiés |
-| Fonctions Edge et domaines | Publication en cours |
+| Fonctions Edge | Cinq ACTIVE ; versions 38 / 17 / 4 / 33 / 43, sources exactes et modes JWT vérifiés ; 19/19 contrôles HTTP sans paiement |
+| Domaine SPACE | Déploiement `395c7ca` READY ; domaine principal et alias associés ; routes publiques vérifiées |
+| Projets Vercel | Quatre projets READY sur `395c7ca`, huit alias exacts, 25 contrôles HTTP et 40 anciennes adresses réussis |
 | Restauration dans une nouvelle tâche | Non vérifiée |
 
-## Mise en service restante
+## État de mise en service
 
 1. Vérifier l'état Supabase réellement déployé et appliquer la migration transactionnellement une seule fois. Cette étape est effectuée : version `20261015120000`, source MD5 `644541bdeedf29476b3d07eafdd29159`, trois lecteurs anonymes HTTP 200, aucune position exacte exposée et zéro divergence d'adhésion.
-2. Déployer depuis `backend/` les fonctions `higher-checkout`, `artwork-checkout`, `market-checkout`, `stoner-gate`, `stripe-webhook`, avec `_shared/origins.ts` et les modes de vérification JWT existants. Ne modifier ni secret, prix, endpoint ni abonnement Stripe.
-3. Déployer SPACE, Club, Boutique et les raccordements COM ensemble après vérification de compatibilité avec le travail COM parallèle. Les ponts et anciennes routes assurent la transition.
+2. Fonctions Edge déployées et vérifiées : `higher-checkout` v38 et `stripe-webhook` v43 sans vérification JWT de la passerelle ; `artwork-checkout` v17, `market-checkout` v4 et `stoner-gate` v33 avec vérification JWT. Les cinq sont ACTIVE et les fichiers sources extraits des bundles correspondent exactement aux sources revues. Les identifiants des fonctions et leurs modes JWT ont été conservés.
+3. Fusion de production : `2bf472430bc07392b695e197aded6928d79cb087`, comprenant tout le COM de Claude (`13abd34`). SPACE est READY et son contenu public correspond à ce commit. Les quatre projets sont READY à `395c7ca` en production, avec leurs huit alias et les anciennes routes vérifiés. Les ponts et anciennes routes assurent la transition.
 4. En environnement de test autorisé, vérifier les vraies connexions entre domaines, les retours Stripe, les droits et les médias signés. Aucun paiement réel n'est requis pour la validation locale.
-5. Dans les paramètres cloud, relire et enregistrer les instructions réutilisables, puis publier l'environnement. La sauvegarde du brouillon ne publie pas la configuration et ne maintient pas les processus en vie.
+5. La configuration cloud a été publiée avec les instructions réutilisables et les accès enregistrés. La sauvegarde du brouillon ne publie pas la configuration et ne maintient pas les processus en vie.
+
+## Déploiements Vercel mesurés
+
+Les quatre déploiements de production suivants sont READY, avec leurs huit alias vérifiés, pour le commit `395c7ca88d3a50e04d1b05353575c3c3dee87d07` :
+
+| Projet | Déploiement |
+| --- | --- |
+| space | `dpl_9XYiELRDgqmWvtJbcv3DzbSiroCw` |
+| club | `dpl_G6Y1sXhceJuNkuTXEAYTw1qWFL3i` |
+| com | `dpl_HwGVTt9jhiD6Mo5DqyEd1ttkrpS6` |
+| boutique | `dpl_2CvWKEihWog9xPbSCNxj3YCCMWt3` |
+
+Les contrôles HTTPS du contenu publié et les trois lectures Club sont réels. Les 14 suites navigateur d'intégration passent avec des services simulés. Le navigateur réel de cette instance est bloqué par la chaîne de certificats du proxy ; la modification persistante du magasin de confiance a été refusée par la revue automatique d'approbation. Aucune désactivation de vérification TLS ni contournement n'a été utilisé. Les parcours SSO authentifiés, retours Stripe et paiements restent simulés ; aucun achat réel n'a été exécuté.
+
+## Correctif des anciennes adresses artistiques
+
+Le contrôle de production a révélé que les fichiers HTML historiques de la Boutique étaient prioritaires sur les réécritures Vercel. Avec `cleanUrls`, la destination du pont doit aussi être `/art-bridge`, sans suffixe `.html`. Le correctif `395c7ca88d3a50e04d1b05353575c3c3dee87d07` exclut uniquement du déploiement Boutique les huit anciens fichiers artistiques (ils restent dans le dépôt pour les comparaisons), adapte les destinations des ponts Boutique et Club et conserve les adresses `.html` par canonicalisation sur la même origine (308 mesuré avec `cleanUrls`). Vérifications locales du correctif : 68 invariants Node et 24 contrôles navigateur du pont réussis. Les 40 anciennes adresses servent exactement le pont attendu, avec origine, chemin et paramètres préservés (HTTP 200).

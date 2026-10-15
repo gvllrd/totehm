@@ -1,6 +1,6 @@
 # space/CLAUDE.md — totehm.space : galerie d’art digital
 
-## 15/10/2026 — galerie et continuité des anciens contenus (code local)
+## 15/10/2026 — galerie et continuité des anciens contenus (publiées en production)
 
 L'entrée `/` est une galerie : TotehmPaper/Get Higher, Stoner, Play the Lisbon Street, Origins/Quantum.
 `/market` garde les RPC de prix, réservations, achat, revente, collection et provenance. Navigation entre œuvres,

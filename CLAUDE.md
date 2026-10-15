@@ -60,7 +60,7 @@ l'architecture et de la stabilité. Wah change de vision vite : on s'adapte.
 Un document contradictoire est corrigé dans le même lot, dans le fichier qui répond déjà.
 Les `CLAUDE.md` des dossiers servis par Vercel sont exclus du déploiement (`.vercelignore`).
 
-## L'architecture — direction du 15/10/2026 (code local ; déploiement à vérifier)
+## L'architecture — direction du 15/10/2026 (publiée en production)
 
 ```
 com/      → www.totehm.com       Le processeur (15/10) : le Totehm (5 vues, liste + shorts, capture dans l'élément), /auth, /@nom, /console.

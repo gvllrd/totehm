@@ -2,8 +2,8 @@
 
 ## 15/10/2026 — Club gratuit, découverte temporelle ; migration appliquée en production le 15/10/2026
 
-`20261015120000_club_gallery.sql` doit être appliquée **dans une transaction** après vérification des
-corps courants (les gardes interrompent la migration en cas de divergence), avant de publier le nouveau Club.
+`20261015120000_club_gallery.sql` a été appliquée **dans une transaction** après vérification des
+corps courants (les gardes interrompent la migration en cas de divergence), avant la publication du nouveau Club.
 Ne pas utiliser `supabase db push` : l'historique contient des migrations distantes sans corps.
 
 - `_figher().member` = `totehm_complete().complete`, exclusivement : une Box non vide dans chacune

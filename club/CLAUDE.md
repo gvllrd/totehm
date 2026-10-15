@@ -1,6 +1,6 @@
 # club/CLAUDE.md — figher.club : consultation des spots dans trois périodes
 
-## 15/10/2026 — passé / maintenant / futur × RADAR / SHORTS (code local)
+## 15/10/2026 — passé / maintenant / futur × RADAR / SHORTS (publiés en production)
 
 Trois périodes horizontales : `past` rouge-violet #743169, `now` navy #333366, `future` bleu clair #36498c.
 Le mode (`radar` ou `shorts`) est indépendant du temps. SHORTS reprend le lecteur **central** de l'ancien SPACE
