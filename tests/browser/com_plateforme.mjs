@@ -30,9 +30,9 @@ try{
      thp:!!document.getElementById('lv-thp-say'), tag:!!document.getElementById('lv-b-tag'), build:window.__totehm_lv().build }));
    ok(!c.why && !c.strat && !c.thp && !c.tag, 'COM : plus de « [Higher] STRATEGY », de phrase sous lui, de texte du THP ni de slogan TotehmSM');
    ok(c.sig === 'wahigher' && /Quantico/.test(c.sigFont) && c.sigInPaper && c.nameBtn === 'none', 'le nom est écrit SUR le papier (Quantico), plus de boîte noire sous lui');
-   ok(c.build === '2026-10-13-com-story', 'BUILD 2026-10-13-com-story');
+   ok(c.build === '2026-10-15-com-processeur', 'BUILD 2026-10-15-com-processeur');
    await pg.screenshot({ path:OUT + '/plateforme_centre.png' });
-   /* 13/10 (lot B) : la croix, ses gestes et sa recherche (le banc) sont dans com_croix.mjs. */
+   /* 15/10 : les trois vues, leurs gestes, la galaxie et la Reflection sont dans com_processeur.mjs. */
    /* La couche se réchauffe toute seule, sans rien charger dans SPACE ni le Club. */
    await pg.waitForFunction(() => window.__totehm_xo && window.__totehm_xo().prets.length === 2, null, { timeout:12000 }).catch(() => {});
    const x = await xo(pg);

@@ -1,4 +1,4 @@
-// 07/10/2026 — chercher un membre (13/10 : le banc, un nom → /@nom) + Subscribe, le Totehm lu (joystick en bas, une Box s'ouvre en place, COPY, spaces, loupe), le menu
+// 07/10/2026 — chercher un membre (15/10 : la galaxie, Others ; un nom → /@nom) + Subscribe, le Totehm lu (joystick en bas, une Box s'ouvre en place, COPY, spaces, loupe), le menu
 // membre plein écran au format de higher.boutique. Tout est simulé : aucune écriture réelle.
 import {launch,page,ok} from './harness.mjs';
 const OUT=process.argv[2]||'/tmp';const browser=await launch();const origin='https://www.totehm.com';
@@ -9,19 +9,19 @@ const rpc={my_console:{signed_in:true,offer:{enabled:false}},my_landing:{signed_
   totehm_search:b=>b.p_q?[{pseudo:'studio',offer:true,price_cents:2400,currency:'eur',subscribed:true},{pseudo:'atelier',offer:true,price_cents:3600,currency:'eur',subscribed:false}]:[{pseudo:'studio',offer:true,price_cents:2400,currency:'eur',subscribed:true}],
   totehm_import_boxes:b=>({ok:true,created:b.p_selection[0].kind==='h'?1:0,reused:b.p_selection[0].kind==='h'?0:1,total:1})};
 try{
- /* ── 1 · 13/10 (lot B) : chercher un autre TOTEHM = le banc ; un nom → /@nom (son univers), déjà abonné → « subscribed » ── */
+ /* ── 1 · 15/10 : chercher un autre TOTEHM = Others (la galaxie) ; un nom → /@nom (son univers), déjà abonné → « subscribed » ── */
  {const {pg,log}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(700);
   ok(/^(Tap|Click) to open it$/.test((await pg.textContent('#lv-tap')).trim())&&await pg.isVisible('#lv-tap'),'au centre : « Tap to open it » (« Click » à la souris)');
-  await pg.click('#lv-find');await pg.waitForTimeout(600);
-  const q=await pg.evaluate(()=>({v:document.getElementById('fish-q').value,ph:document.getElementById('fish-q').placeholder,rows:document.querySelectorAll('#fish-res .srch-row').length}));
-  ok(q.v===''&&q.ph==='a name'&&q.rows<=1,'le banc : une recherche vide, « a name » (mes abonnements, au plus)');
-  await pg.fill('#fish-q','stu');await pg.waitForFunction(()=>document.querySelectorAll('#fish-res .srch-row').length===2);
-  const rows=await pg.$$eval('#fish-res .srch-row',l=>l.map(r=>({open:r.querySelector('.srch-open')?.getAttribute('href'),sub:r.querySelector('.srch-sub')?.getAttribute('href'),subT:r.querySelector('.srch-sub')?.textContent,meta:r.querySelector('.srch-meta')?.textContent})));
+  await pg.click('#lv-m-others');await pg.waitForTimeout(1200);
+  const q=await pg.evaluate(()=>({v:document.getElementById('gx-q').value,ph:document.getElementById('gx-q').placeholder,rows:document.querySelectorAll('#gx-res .srch-row').length}));
+  ok(q.v===''&&q.ph==='a name'&&q.rows<=1,'Others : la galaxie et sa recherche vide, « a name » (mes abonnements, au plus)');
+  await pg.fill('#gx-q','stu');await pg.waitForFunction(()=>document.querySelectorAll('#gx-res .srch-row').length===2);
+  const rows=await pg.$$eval('#gx-res .srch-row',l=>l.map(r=>({open:r.querySelector('.srch-open')?.getAttribute('href'),sub:r.querySelector('.srch-sub')?.getAttribute('href'),subT:r.querySelector('.srch-sub')?.textContent,meta:r.querySelector('.srch-meta')?.textContent})));
   ok(rows[0].open==='/@studio'&&rows[0].meta==='subscribed','on tape un nom : son univers (/@studio) ; déjà abonné → « subscribed »');
   ok(rows[1]&&rows[1].open==='/@atelier'&&/\/ year/.test(rows[1].meta||''),'un créateur : son univers porte la vente, le prix par an à côté ('+(rows[1]&&rows[1].meta)+')');
-  await pg.screenshot({path:OUT+'/banc_search.png'});
-  ok(!erreurs(log).length,'banc : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();
+  await pg.screenshot({path:OUT+'/galaxie_search.png'});
+  ok(!erreurs(log).length,'galaxie : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();
  }
  /* ── 3 · le Totehm d'un membre : joystick en bas, une Box s'ouvre en place, COPY, spaces, loupe ── */
  {const {pg,log}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]}});
@@ -48,10 +48,10 @@ try{
  {const {pg,log}=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]}});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.click('#conn-bar');await pg.waitForTimeout(500);
   const m=await pg.evaluate(()=>{const w=document.getElementById('member-window').getBoundingClientRect(),a=[...document.querySelectorAll('#member-window .cm-action')].map(e=>{const r=e.getBoundingClientRect(),cs=getComputedStyle(e);return {t:e.textContent.trim(),c:r.left+r.width/2,h:r.height,fs:cs.fontSize,ws:cs.whiteSpace,bg:cs.backgroundColor};});
-    const outs=[...document.querySelectorAll('#mw-in-state > .mw-out')].map(e=>e.textContent.trim());return {w:w.width,h:w.height,W:innerWidth,H:innerHeight,bg:getComputedStyle(document.getElementById('member-window')).backgroundColor,a,outs,nom:!!document.querySelector('#member-window #name-btn')};});
+    const outs=[...document.querySelectorAll('#mw-in-state > .mw-out')].map(e=>e.textContent.trim());return {w:w.width,h:w.height,W:innerWidth,H:innerHeight,bg:getComputedStyle(document.getElementById('member-window')).backgroundColor,a,outs,nom:!!document.querySelector('#member-window #name-btn'),verso:!!document.querySelector('#srch #name-btn')};});
   ok(m.w===m.W&&m.h===m.H&&m.bg==='rgb(0, 0, 0)','plein écran, noir');
   ok(m.a.length===4&&m.a.every(x=>Math.abs(x.c-m.W/2)<2&&x.h<48&&x.ws==='nowrap'&&x.fs==='12.5px'&&x.bg==='rgb(31, 31, 36)'),'quatre boutons centrés, sur une ligne, le bouton de la boutique : '+m.a.map(x=>x.t).join(' | '));
-  ok(m.outs[m.outs.length-1]==='Simple terms of use'&&m.nom,'Simple terms of use en dernier ; le nom du Totehm y est revenu (13/10)');
+  ok(m.outs[m.outs.length-1]==='Simple terms of use'&&!m.nom&&m.verso,'Simple terms of use en dernier ; le nom du Totehm vit au verso (mes réglages, 15/10), plus dans le compte');
   await pg.screenshot({path:OUT+'/member_menu.png',fullPage:true});
   ok(!erreurs(log).length,'menu membre : aucune erreur');await pg.context().close();
   const p2=await page(browser,{dir:'com',origin,rpc,tables:{profiles:[{pseudo:'wah'}]}});
