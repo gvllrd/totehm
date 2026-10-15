@@ -1,5 +1,20 @@
 # Visite de la galerie SPACE — 15 octobre 2026
 
+Évolution marbre et ficus : `gallery-marble.mjs` produit localement une dalle de marbre noir avec rubans de calcite,
+nuages graphite et fini poli. La projection en coordonnées monde garde l'échelle des veines sur le sol et les tranches.
+Les murs passent à 90 cm d'épaisseur vers l'extérieur, sans déplacer leurs faces d'exposition.
+
+Au centre, `gallery-tree.mjs` remplace le socle par un ficus monumental inspiré du Jardim da Estrela de Lisbonne.
+Tronc sculptural, 146 branches/racines dans un seul maillage, 17 712 feuilles individuelles sur ordinateur
+(12 096 au téléphone), couronne étagée et ouverture de terre presque noire. Deux éclairages doux révèlent le bois et
+le dessous des feuilles ; des poches de ciel restent ouvertes entre les branches. Aucune ressource distante ajoutée.
+
+La marche bloque aux racines et au banc. `gallery-path.mjs` calcule un chemin dégagé pour les visites guidées et les
+clics au sol ; la caméra suit ce trajet sans traverser le tronc. Le bois intercepte aussi les clics : un tableau
+caché par le tronc ne se sélectionne pas au travers. Le mouvement réduit conserve les visites immédiates.
+Si le GPU dépasse 90 ms par image de façon persistante, seule la résolution du rendu 3D diminue, jusqu'à un ratio
+de 0,65 au minimum ; les textes et commandes HTML restent à leur résolution native. La vidéo et le ciel gardent leurs pauses.
+
 Version « deep night » publiée : `4f6a61fb4d49fa6516659cce411efe005273c968`, production SPACE
 `dpl_ECVgSn5ajvZGoQmun23PGVa6BGGq` READY avec ses deux alias. Quatre projets et huit alias vérifiés.
 Huit contrôles HTTPS réels réussis : racines SPACE, styles, modules du ciel et de la galerie, marché et COM
@@ -18,7 +33,8 @@ et leurs huit alias sont vérifiés à ce commit. Vingt contrôles HTTPS de cont
 moteur, modules, styles, aperçus, expériences, marché, social et raccordements entre domaines.
 Les réponses correspondent exactement aux fichiers du dépôt, avec leurs types MIME attendus.
 
-L'accueil de SPACE devient une salle d'exposition 3D visitable, avec murs, cadres, socle, banc et éclairage d'exposition.
+L'accueil de SPACE est une salle d'exposition 3D visitable, avec murs et sol en marbre noir, cadres, ficus central,
+banc et éclairage d'exposition.
 Quatre œuvres existantes y donnent accès à TotehmPaper/Get Higher, Stoner, Play the Lisbon Street et Origins/Quantum.
 Le marché et la collection restent accessibles dans l'en-tête et depuis les œuvres.
 
@@ -45,16 +61,20 @@ Le moteur Three.js 0.180.0 est versionné localement avec sa licence MIT ; archi
 
 | Vérification | Résultat |
 | --- | --- |
+| `tests/browser/gallery_estrela.mjs` | 44 réussites à 1440/390 px : arbre, marbre, quatre stations, caméra contournant les racines et le banc, marche bloquée au tronc, retour entrée, pauses du ciel et absence d'erreur de shader |
+| `tests/node/gallery_path.mjs` | 35 réussites : 25 paires de stations, détours, destinations bloquées et départs aux bords des racines et du banc |
 | `tests/browser/gallery_immersive.mjs` | 34 réussites : rendu WebGL réel à 1440/390 px, stations, clic au sol, clavier, vrai toucher du joystick, vidéo, mouvement réduit, repli sans WebGL |
 | `tests/browser/gallery_sky.mjs` | 25 réussites : ciel réellement animé à 1440/390 px, étoile filante, vue vers le ciel, absence de chevauchement mobile, pause avec mouvement réduit et liste, reprise en 3D |
 | `tests/browser/gallery_dark.mjs` | 47 contrôles réussis : thème sombre, fonds noirs, contrastes, navigation, menu, œuvre, liste et repli ; 12 vérifications ciblées après placement final du titre |
 | `tests/browser/gallery.mjs` | 41 contrôles réussis : marché, propriété, revente, paiement simulé, collection et ancienne adresse sociale |
-| Expériences originales | Préservées ; seul l'accueil change |
+| Expériences originales | 68 invariants réussis (`tests/node/art_migration.mjs`) ; seul l'accueil change |
 | Navigateur en production | Non exécuté : certificat proxy Chromium non reconnu ; refus automatique de modification de confiance conservé |
 
 Les tests navigateur utilisent les vrais fichiers du moteur et un rendu local, avec services et média interceptés.
 Ils ne créent aucun compte et ne réalisent aucun paiement. Les captures sont sous
-`/tmp/totehm-production/immersive-final`. La publication se vérifie sur `https://www.totehm.space/` par état Vercel,
+`/tmp/totehm-production/estrela`, `estrela-immersive-final` et `estrela-sky` pour cette évolution.
+Les 47 contrôles du thème sombre et les 41 du marché datent de la livraison précédente ; ces interfaces sont inchangées.
+La publication se vérifie sur `https://www.totehm.space/` par état Vercel,
 association des alias et comparaison des fichiers servis.
 
 La direction « deep night » rend les murs, le sol, les socles et les cartels noirs. Les lumières restent ciblées

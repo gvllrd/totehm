@@ -6,6 +6,9 @@ SPACE stays dark in every interface state: deep black gallery walls, floor, plin
 and the classic artwork view, including the fallback without 3D. Light text; the artworks keep their own colours.
 Above the open gallery: a rich, dreamy animated sky, luminous blue/violet/rose nebulae, dense stars, warm glints
 and slow movement. The sky is present on arrival. Reduced motion freezes it. No light theme from system preferences.
+The floor and thick walls are polished black marble with natural silver calcite veins. At the centre, a monumental
+fig tree inspired by Lisbon's Jardim da Estrela: broad buttress roots, a sculptural trunk and a spreading evergreen
+crown, open enough to see the stars. The living tree is part of the architecture, with no invented artwork or collectible.
 
 ## CURRENT UPDATE — 15/10/2026 (bis) · the network is alive, and the first screen SELLS (overrides parts of the processor update above)
 

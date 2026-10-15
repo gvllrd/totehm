@@ -4,6 +4,10 @@
 
 L'accueil est une salle 3D : déplacement WASD/flèches, regard au glisser, clic au sol et joystick tactile.
 Noir profond permanent : murs, sol, socles et interface, y compris menus, fiches, liste et repli sans WebGL.
+Le sol et les murs de 90 cm sont en marbre noir veiné, texture locale projetée en mètres (`gallery-marble.mjs`).
+Un ficus monumental inspiré du Jardim da Estrela occupe le centre (`gallery-tree.mjs`) : bois fusionné,
+feuilles individuelles instanciées et racines plantées dans une ouverture de terre sombre. Le socle central est retiré.
+`gallery-path.mjs` fait contourner les racines et le banc aux visites guidées et aux clics au sol ; la marche respecte ces collisions.
 Le navigateur utilise `color-scheme: dark` sur la galerie et le marché. Les œuvres gardent leurs couleurs.
 Les quatre boutons d'œuvres guident la caméra ; l'information ouvre les expériences et le marché existants.
 `gallery-ui.mjs` garde une vue HTML des œuvres, y compris sans WebGL ; `gallery-3d.mjs` gère la salle.
@@ -14,12 +18,14 @@ Three.js 0.180.0 est servi localement sous `vendor/`, licence MIT jointe ; aucun
 Les aperçus viennent des SVG, panneaux et média Quantum existants. Les pages des expériences restent intactes.
 La vidéo se charge à la sélection de Quantum et s'arrête hors de sa visite, en arrière-plan ou en mouvement réduit.
 Le ciel anime la boucle existante à 30 images/s maximum (25 au téléphone), avec ombres statiques calculées une fois.
+La résolution 3D baisse automatiquement si le GPU dépasse durablement 90 ms par image ; les commandes HTML restent nettes.
 La liste et l'arrière-plan suspendent l'animation ; le mouvement réduit garde un ciel fixe et le rendu à la demande.
 Retour bfcache et perte du contexte graphique sont traités.
 Tests : `gallery_immersive.mjs` (34 vérifications, vrai WebGL local et toucher), `gallery.mjs` (marché),
 `art_migration.mjs` (intégrité des expériences). Détails : `../docs/SPACE_IMMERSIVE_20261015.md`.
 `gallery_sky.mjs` vérifie aussi le ciel animé et ses pauses à 1440/390 px.
 `gallery_dark.mjs` vérifie les surfaces sombres, les contrastes, les liens et le repli sans WebGL.
+`gallery_estrela.mjs` vérifie le ficus, le marbre, les parcours autour des racines et le ciel ; `tests/node/gallery_path.mjs` couvre tous les trajets entre stations.
 
 ## 15/10/2026 — galerie et continuité des anciens contenus (publiées en production)
 

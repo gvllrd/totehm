@@ -1,5 +1,8 @@
 import * as T from './vendor/three-0.180.0.mjs';
 import { createSky } from './gallery-sky.mjs';
+import { createMarble } from './gallery-marble.mjs';
+import { createTree } from './gallery-tree.mjs';
+import { createWalkway } from './gallery-path.mjs';
 
 const WORKS = [
   {at:[-6.78,2.5,-2],rotation:Math.PI/2,w:4.5,h:2.7,view:[-2.7,1.65,-2],title:'TOTEHMPAPER',type:'WAH / DIGITAL ART',image:'higher'},
@@ -24,25 +27,25 @@ export async function createGallery({select,interact,fallback,reduced}) {
   let dragged=false, down=null, joystick={x:0,y:0}, lastTime=0, video=null, videoTexture=null;
   let motionReduced=reduced.matches;
   const keys=new Set(), surfaces=[], art=[];
-  const wall=new T.MeshStandardMaterial({color:0x020203,roughness:.95});
-  const floor=new T.MeshStandardMaterial({color:0x030304,roughness:.42,metalness:.12});
-  const trim=new T.MeshStandardMaterial({color:0x111117,roughness:.68});
+  const marble=createMarble(renderer),{wall,floor,trim}=marble;
   const dark=new T.MeshStandardMaterial({color:0x07070b,roughness:.6,metalness:.12});
   function box(w,h,d,x,y,z,material=wall,shadow=true) {
     const mesh=new T.Mesh(new T.BoxGeometry(w,h,d),material); mesh.position.set(x,y,z);
     mesh.castShadow=shadow; mesh.receiveShadow=true;scene.add(mesh);return mesh;
   }
   const ground=box(30,.16,38,0,-.08,-2,floor,false); surfaces.push(ground);
-  box(.3,5.6,23,-7,2.8,-1.5);box(.3,5.6,23,7,2.8,-1.5);
+  // Thick stone grows outwards; the exhibition surfaces keep their positions.
+  box(.9,5.6,23,-7.3,2.8,-1.5);box(.9,5.6,23,7.3,2.8,-1.5);
   // An open roof leaves the entire celestial canopy visible above the lit gallery.
-  box(6.1,5.6,.3,-4,2.8,-13);box(6.1,5.6,.3,4,2.8,-13);box(1.8,1.4,.3,0,4.9,-13);
-  box(.22,.18,23,-6.94,5.66,-1.5);box(.22,.18,23,6.94,5.66,-1.5);
+  box(6.1,5.6,.9,-4,2.8,-13.3);box(6.1,5.6,.9,4,2.8,-13.3);box(1.8,1.4,.9,0,4.9,-13.3);
+  box(.94,.14,23,-7.3,5.67,-1.5);box(.94,.14,23,7.3,5.67,-1.5);
   box(14,.06,.08,0,.03,-12.83,trim,false);
   box(.08,.06,23,-6.82,.03,-1.5,trim,false);box(.08,.06,23,6.82,.03,-1.5,trim,false);
-  for(let z=-11;z<10;z+=2.4)box(13.6,.006,.012,0,.004,z,new T.MeshStandardMaterial({color:0x0c0c12,roughness:1}),false);
-  // A low sculpture plinth: the same Higher artwork, with no new collectible or invented work.
-  box(1.12,.8,1.12,0,.4,-3.1);const plinth=box(.76,.76,.76,0,1.18,-3.1,dark);
-  box(2.8,.17,.85,-3,.52,3.3,new T.MeshStandardMaterial({color:0x08080c,roughness:.85}));
+  const joint=new T.MeshStandardMaterial({color:0x050507,roughness:.8});
+  for(let z=-11;z<10;z+=3.4)box(13.6,.003,.012,0,.002,z,joint,false);
+  for(const x of [-3.4,0,3.4])box(.012,.003,23,x,.002,-1.5,joint,false);
+  const tree=createTree(scene,renderer),walkway=createWalkway(tree.collision);
+  box(2.8,.17,.85,-3,.52,3.3,floor);
   box(.16,.45,.6,-4,.25,3.3,trim);box(.16,.45,.6,-2,.25,3.3,trim);
   scene.add(new T.HemisphereLight(0xc2c5ef,0x08080e,.75));
   const sun=new T.DirectionalLight(0xbbc8ff,.8);sun.position.set(-8,14,3);sun.castShadow=true;
@@ -72,7 +75,7 @@ export async function createGallery({select,interact,fallback,reduced}) {
     const material=new T.MeshBasicMaterial({color:work.image==='quantum'?0x151522:0xf6f3eb});
     const painting=new T.Mesh(new T.PlaneGeometry(work.w,work.h),material);painting.position.z=.051;painting.userData.work=index;group.add(painting);art.push(painting);
     const plaque=new T.Mesh(new T.PlaneGeometry(2.05,.3),new T.MeshBasicMaterial({map:label(work.title,work.type)}));plaque.position.set(-work.w/2+1.025,-work.h/2-.38,.01);group.add(plaque);
-    preview(work.image,work.w/work.h).then(t=>{material.map=t;material.color.set(0xffffff);material.needsUpdate=true;dirty=true;if(index===0){plinth.material=new T.MeshStandardMaterial({map:t,roughness:.6});}}).catch(()=>{});
+    preview(work.image,work.w/work.h).then(t=>{material.map=t;material.color.set(0xffffff);material.needsUpdate=true;dirty=true;}).catch(()=>{});
     const light=new T.PointLight(0xe7e4ff,9,8,2);light.position.copy(group.position).add(new T.Vector3(0,2,0));scene.add(light);
   }
   function cameraAngles(){const delta=gaze.clone().sub(eye).normalize();yaw=Math.atan2(-delta.x,-delta.z);pitch=Math.asin(delta.y);}
@@ -87,8 +90,13 @@ export async function createGallery({select,interact,fallback,reduced}) {
   }
   function travel(position,target){
     keys.clear();joystick={x:0,y:0};
+    const route=walkway.route(eye,position);if(!route)return;
     if(reduced.matches){eye.copy(position);gaze.copy(target);cameraAngles();tween=null;dirty=true;}
-    else tween={from:eye.clone(),to:position,lookFrom:gaze.clone(),lookTo:target,start:performance.now(),duration:1450};
+    else {
+      const path=route.map(p=>new T.Vector3(p.x,1.65,p.z)),lengths=[0];
+      for(let i=1;i<path.length;i++)lengths.push(lengths[i-1]+path[i-1].distanceTo(path[i]));
+      tween={path,lengths,to:position,lookFrom:gaze.clone(),lookTo:target,start:performance.now(),duration:Math.min(3200,Math.max(1450,lengths.at(-1)*160))};
+    }
   }
   function visit(index){active=index;travel(new T.Vector3(...WORKS[index].view),new T.Vector3(...WORKS[index].at));media();}
   function overview(){active=-1;travel(new T.Vector3(.5,1.65,8),new T.Vector3(-.5,2.8,-6));media();}
@@ -96,12 +104,11 @@ export async function createGallery({select,interact,fallback,reduced}) {
   function freeLook(){if(active!==-1){active=-1;media();}interact();}
   const ray=new T.Raycaster(),mouse=new T.Vector2();
   function hits(event,objects){const r=host.getBoundingClientRect();mouse.set((event.clientX-r.left)/r.width*2-1,-(event.clientY-r.top)/r.height*2+1);ray.setFromCamera(mouse,camera);return ray.intersectObjects(objects,false)[0];}
-  function allowed(x,z){return x>-6.2&&x<6.2&&z>-11.8&&z<8.8&&!(Math.abs(x)<.94&&z>-4.05&&z<-2.15);}
-  function clearPath(a,b){const steps=Math.max(1,Math.ceil(a.distanceTo(b)/.2));for(let i=1;i<=steps;i++){const t=i/steps;if(!allowed(T.MathUtils.lerp(a.x,b.x,t),T.MathUtils.lerp(a.z,b.z,t)))return false;}return true;}
+  const {allowed}=walkway;
   function move(dx,dz){const x=eye.x+dx,z=eye.z+dz;if(allowed(x,eye.z))eye.x=x;if(allowed(eye.x,z))eye.z=z;look();dirty=true;}
   host.addEventListener('pointerdown',e=>{if(e.button!==0)return;host.setPointerCapture(e.pointerId);down={x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY};dragged=false;});
   host.addEventListener('pointermove',e=>{
-    if(!down){host.style.cursor=hits(e,art)?'pointer':'grab';return;}
+    if(!down){const hit=hits(e,art),wood=hit&&hits(e,tree.pickables);host.style.cursor=hit&&(!wood||hit.distance<wood.distance)?'pointer':'grab';return;}
     const dx=e.clientX-down.lastX,dy=e.clientY-down.lastY;
     if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>6)dragged=true;
     if(dragged){tween=null;freeLook();yaw-=dx*.004;pitch=T.MathUtils.clamp(pitch+dy*.003,-.85,1.45);look();dirty=true;}
@@ -109,8 +116,10 @@ export async function createGallery({select,interact,fallback,reduced}) {
   });
   host.addEventListener('pointerup',e=>{
     if(!down)return;down=null;if(dragged)return;
-    const hit=hits(e,art);if(hit){select(hit.object.userData.work);return;}
-    const floorHit=hits(e,surfaces);if(floorHit&&allowed(floorHit.point.x,floorHit.point.z)&&clearPath(eye,new T.Vector3(floorHit.point.x,1.65,floorHit.point.z))){
+    const hit=hits(e,art),woodHit=hits(e,tree.pickables);
+    if(woodHit&&(!hit||woodHit.distance<hit.distance))return;
+    if(hit){select(hit.object.userData.work);return;}
+    const floorHit=hits(e,surfaces);if(floorHit&&allowed(floorHit.point.x,floorHit.point.z)){
       interact();active=-1;media();const destination=new T.Vector3(floorHit.point.x,1.65,floorHit.point.z);const direction=gaze.clone().sub(eye);travel(destination,destination.clone().add(direction));
     }
   });
@@ -131,13 +140,25 @@ export async function createGallery({select,interact,fallback,reduced}) {
   renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();stop();renderer.setAnimationLoop(null);fallback();});
   addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=innerWidth<650?76:62;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);dirty=true;});
   document.getElementById('help').addEventListener('click',()=>{document.querySelector('.guide').style.opacity='1';});
-  let lastRender=0;
+  let lastRender=0, slowFrames=0;
   function animate(time){
-    const dt=Math.min((time-lastTime)/1000,.05);lastTime=time;
+    const elapsed=lastTime?(time-lastTime)/1000:0,dt=Math.min(elapsed,.05);lastTime=time;
     // Some engines update matches before delivering the media-query event.
     if(reduced.matches!==motionReduced)motionChanged();
-    if(hidden||list)return;
-    if(tween){const p=Math.min(1,(time-tween.start)/tween.duration),ease=p*p*(3-2*p);eye.lerpVectors(tween.from,tween.to,ease);gaze.lerpVectors(tween.lookFrom,tween.lookTo,ease);dirty=true;if(p===1){tween=null;cameraAngles();}}
+    if(hidden||list){slowFrames=0;return;}
+    // Keep the living scene usable on a slower GPU without reducing UI clarity.
+    // The HTML controls stay at native resolution; only the 3D buffer adapts.
+    if(frames>2&&(!motionReduced||tween)){
+      slowFrames=elapsed>.09?slowFrames+1:0;
+      if(slowFrames>=3&&renderer.getPixelRatio()>.65){renderer.setPixelRatio(Math.max(.65,renderer.getPixelRatio()*.6));slowFrames=0;dirty=true;}
+    }
+    if(tween){
+      const p=Math.min(1,(time-tween.start)/tween.duration),ease=p*p*(3-2*p),distance=tween.lengths.at(-1)*ease;
+      let segment=1;while(segment<tween.path.length-1&&tween.lengths[segment]<distance)segment++;
+      const start=tween.lengths[segment-1],length=tween.lengths[segment]-start;
+      eye.lerpVectors(tween.path[segment-1],tween.path[segment],length?(distance-start)/length:1);
+      gaze.lerpVectors(tween.lookFrom,tween.lookTo,ease);dirty=true;if(p===1){tween=null;cameraAngles();}
+    }
     const forward=(keys.has('w')||keys.has('arrowup')?1:0)-(keys.has('s')||keys.has('arrowdown')?1:0)-joystick.y;
     const side=(keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0)+joystick.x;
     if(forward||side){const length=Math.max(1,Math.hypot(forward,side)),speed=dt*2.6/length;move((-Math.sin(yaw)*forward+Math.cos(yaw)*side)*speed,(-Math.cos(yaw)*forward-Math.sin(yaw)*side)*speed);}
@@ -147,5 +168,5 @@ export async function createGallery({select,interact,fallback,reduced}) {
   }
   renderer.setAnimationLoop(animate);
   addEventListener('pageshow',e=>{if(e.persisted){hidden=document.hidden;dirty=true;lastTime=0;media();renderer.setAnimationLoop(animate);}});
-  return {visit,overview,setList(value){list=value;keys.clear();stopStick();dirty=true;media();},diagnostics:()=>({webgl:true,frames,moving:!!tween||!!keys.size||!!joystick.x||!!joystick.y,position:[+eye.x.toFixed(2),+eye.z.toFixed(2)],playing:video&&!video.paused?1:0,visible:!hidden&&!list,sky:{...sky.diagnostics(),animated:!hidden&&!list&&!reduced.matches}})};
+  return {visit,overview,setList(value){list=value;keys.clear();stopStick();dirty=true;media();},diagnostics:()=>({webgl:true,frames,moving:!!tween||!!keys.size||!!joystick.x||!!joystick.y,position:[+eye.x.toFixed(2),+eye.z.toFixed(2)],playing:video&&!video.paused?1:0,visible:!hidden&&!list,render:{pixelRatio:renderer.getPixelRatio(),calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},tree:tree.diagnostics(),stone:{...marble.diagnostics(),wallThickness:.9},sky:{...sky.diagnostics(),animated:!hidden&&!list&&!reduced.matches}})};
 }
