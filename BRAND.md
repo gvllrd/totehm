@@ -1,6 +1,39 @@
 # BRAND.md — TOTEHM
 
-## CURRENT UPDATE — 15/10/2026 · the TOTEHM is my personal processor (overrides the cross of 13/10 bis)
+## CURRENT UPDATE — 15/10/2026 (bis) · the network is alive, and the first screen SELLS (overrides parts of the processor update above)
+
+**The ramifications take the WHOLE screen.** They are the published intention trait, at screen scale: 2 px, flat,
+the seven exact colours. They reconfigure per view — the circuit around the Totehm (centre), **a brain seen from
+above** (top: the fissure and the brainstem in grey, seven gyri, one per intention), and they retract into the
+paper (bottom). **Signed in, a pulse travels each track at the real rhythm of that Habit's Time frequency.**
+Signed out, it is dimmed and still. No blur, ever.
+
+**The first screen is the pitch, and the pitch is TRUE.** Signed out only:
+
+> **[Higher] your brain** — Your whole strategy in one object, and a Reflection that turns it into your next move.
+> *Why it works* · A "when, where, what" plan raises follow-through: 94 studies, d = 0.65 (Gollwitzer & Sheeran,
+> 2006). The words you tell yourself change how you perform under pressure (Kross et al., 2014).
+> **CONNECT WITH MY TOTEHM** · free · no card
+
+**The top view sells the THP:** "Neuroscience, not motivation." + the TotehmPaper sentence, unchanged.
+
+**Never a number we did not measure, never false scarcity, and never "Harvard"** — the famous Harvard written-goals
+study does not exist. Our own citations are stronger because they are real. A member sees none of this: they get
+**Tap to open it · Turn to configure it**.
+
+**The galaxy is the BACK of the paper, nothing else** — navy perforated squares, no stars, no dust. A name appears
+only on hover, tap or dive, in Quantico Coral, growing with its square. Typing a name does not open a list: the
+galaxy itself answers.
+
+**The Reflection at rest is a profile and a blinking cursor.** Then three linked tiers: direction (light blue) ·
+**the Habit, raised, in the MIDDLE** (navy, with the intention trait the model chose) · obstacle + Teaching from the
+story (red-violet). Talk is cheap: the action is the centre of gravity.
+
+**The back of the paper holds everything** — my settings, then my account, then the console in place. One page.
+
+**Telegram only** (15/10): no WhatsApp, no Meta. "[Higher] my Telegram · my next move, at the rhythm of each Habit."
+
+## 15/10/2026 — the TOTEHM is my personal processor (parts REPLACED by 15/10 bis above)
 
 - **totehm.com has three places, stacked vertically.** Up: **Get [Higher]** — the mouth of 12/10 is back: the paper
   lands on the tongue while it opens, *Get [Higher]* under it swallows it, then higher.boutique. Centre: **my TOTEHM, a
@@ -182,7 +215,7 @@
   sides Quantico. Nothing is kept: each visit starts at « Wassup ? ». It needs
   one Habit and one Objective (« One Habit. One Objective. Then we talk. »);
   7 free answers a month, then **Higher** (7 €/month): my Higher Self every
-  day, « [Higher] my social media » (my moves on Telegram and WhatsApp),
+  day, « [Higher] my Telegram » (my moves, at the rhythm of each Habit — WhatsApp dropped on 15/10),
   TotehmBot. Proof is cited, never claimed (Gollwitzer & Sheeran 2006,
   d = 0.65); never "scientifically proven NLP".
 - Left · search a TOTEHM, *Subscribe* (yearly price). Right · SPACE and HIGHER

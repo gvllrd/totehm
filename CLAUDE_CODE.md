@@ -302,6 +302,20 @@ Ajoute, telle quelle, l'entrée **0.21 — 01/10/2026 · Pour soi, ou pour soi e
 > `test`, sans génération ni Printful). Migration `20261005b_stripe_test_mode.sql`
 > APPLIQUÉE (`stripe_test_mode`) : ne pas réappliquer.
 
+### Correction 0.60 — 15/10/2026 (bis) · le réseau neuronal (lot D, à reporter ; précise 0.59)
+> Les ramifications prennent TOUT l'écran : la ligne du trait d'intention publié (2 px, les 7 couleurs exactes),
+> qui se reconfigure par vue — le circuit autour du Totehm au centre, un CERVEAU vu de dessus en haut (scissure et
+> tronc gris, sept circonvolutions, une par intention), résorbé en bas. Connecté, une impulsion circule sur chaque
+> piste à la période RÉELLE de son Habit ; déconnecté, c'est atténué et immobile. Le premier écran revend (sans
+> compte) : « [Higher] your brain », la preuve au clic (Gollwitzer & Sheeran 2006, Kross 2014 — jamais « Harvard »,
+> l'étude est un mythe), CONNECT, « free · no card » ; en haut, « Neuroscience, not motivation » + la phrase THP.
+> Un membre lit « Tap to open it · Turn to configure it ». La galaxie = le DOS du papier SEUL (plus une poussière),
+> le nom en Quantico Coral qui grandit avec son carré, plus de liste de résultats. La Reflection au repos = le profil
+> et un curseur ; puis direction · LA HABIT sur-élevée AU MILIEU (avec son trait d'intention choisi par le modèle) ·
+> obstacle + Teaching. TOUT l'espace membre est passé au verso du papier, la console s'ouvre dedans (couche XO).
+> **Telegram SEUL, pas de Meta** : les relances suivent la Time frequency de chaque Habit (migration
+> `push_par_frequence` APPLIQUÉE : ne pas réappliquer). Aucun prix touché.
+
 ### Correction 0.59 — 15/10/2026 · le processeur (lot C, à reporter ; remplace la croix de 0.58)
 > totehm.com = TROIS vues verticales, sans manette ni gauche/droite : ↑ Get Higher (la bouche du 12/10 restaurée,
 > la langue → higher.boutique `?from=com`) · centre = le processeur (le papier dans son emboîtement de verre, des

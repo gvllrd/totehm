@@ -63,8 +63,9 @@ Les `CLAUDE.md` des dossiers servis par Vercel sont exclus du déploiement (`.ve
 ## L'architecture — quatre domaines, une source, quatre fonctions (09/10/2026)
 
 ```
-com/      → www.totehm.com       LA PLATEFORME (15/10, processeur) : le Totehm (5 vues, liste + shorts, capture dans l'élément), /auth, /@nom ; TROIS vues
-                                 verticales : ↑ Get Higher (la bouche) · le processeur (socle, ramifications ; Mine · Others = la galaxie ; verso = mes réglages) · ↓ ma Reflection ; SERT SPACE et le Club
+com/      → www.totehm.com       LA PLATEFORME (15/10 bis, le réseau) : le Totehm (5 vues, liste + shorts, capture dans l'élément), /auth, /@nom ; TROIS vues verticales : ↑ Get Higher (la bouche,
+                                 le cerveau aux 7 couleurs) · le processeur (le réseau des 7 intentions PLEIN ÉCRAN, qui pulse au rythme réel de mes Habits ; Mine · Others = la galaxie des dos de
+                                 papier) · ↓ ma Reflection ; le verso = TOUT l'espace membre (réglages, compte, console en couche) ; SERT SPACE et le Club
                                  (`/x/space`, `/x/club`, même origine) dans une couche `XO` : un space ou un spot s'ouvre SUR PLACE ; /console
 club/     → www.figher.club      LA RENCONTRE DANS LA RÉALITÉ, le prolongement de SPACE : [Higher] SPOTS + radar au centre · ↑ annoncer
                                  · ↓ caméra · ← passés · → agenda ; reçoit `?v=plan|list&habit=&city=` (SPOT d'un space) ; /meet ; 308 boutique
@@ -173,7 +174,7 @@ musique ajoutée ; vibes, profils ; **ce qui vient du Totehm reste TEL QUEL** (l
 rythme, `spot_box_set`) ; le reste (space, spot) au format de sa plateforme. **figher.club :** un spot = un lieu + une heure (Higher spot : chez soi, lieu privé ou dehors) ;
 radar, annonce (toujours ON), agenda, I AM HERE, passés ; OFF = ville, ON = le point (`_point_ok`). Mini-boxes
 OBJECTIVES/REPULSIONS séparées (droits serveur). Détails : `space/CLAUDE.md`, `club/CLAUDE.md`, copy : `BRAND.md`.
-My spaces (COM ; DELETE aussi dans la fiche) + `space-delete` ; une Box MY STORY (WISDOM) de COM montre ses Cloths (`element_cloths`) comme une Habit ses spaces ; une VISION porte une image libre (`vision_image_set`) ; chercher = un NOM → son univers /@nom (la galaxie). Mes réglages (nom, 4 niveaux, créateur en 3 chiffres + prix au curseur) = le verso du papier ; l'espace membre = le compte (vignette, Higher, souscriptions), format higher.boutique.
+My spaces (COM ; DELETE aussi dans la fiche) + `space-delete` ; une Box MY STORY (WISDOM) de COM montre ses Cloths (`element_cloths`) comme une Habit ses spaces ; une VISION porte une image libre (`vision_image_set`) ; chercher = un NOM → son univers /@nom (la galaxie : rien que le dos du papier, le nom en Coral au zoom). **Le verso du papier porte TOUT** (15/10 bis) : mes réglages (nom, 4 niveaux, créateur en 3 chiffres + prix au curseur) PUIS mon compte (vignette, Higher, souscriptions, conditions) ; la console s'ouvre dans la couche `XO`, on ne quitte pas la page.
 
 ## Règles d'interface qui valent partout
 
@@ -226,7 +227,8 @@ My spaces (COM ; DELETE aussi dans la fiche) + `space-delete` ; une Box MY STORY
 appel payant : coût mensuel à 1 000 utilisateurs contre revenu. Deux régimes :
 MÉCANIQUE (SQL, embeddings, gabarits — jamais un centime ; tout le gratuit
 reste déterministe) et QUALITÉ (le meilleur modèle, pour ce que le membre
-achète : TotehmBot / Higher Self, 7 €/mois, un LLM OpenAI ; 08/10 : 7 réponses offertes / 30 j = acquisition, plafonnée en base). À
+achète : TotehmBot / Higher Self, 7 €/mois, un LLM OpenAI ; 08/10 : 7 réponses offertes / 30 j = acquisition, plafonnée en base).
+Les relances Telegram restent MÉCANIQUES (`push_decision` : l'Habit due selon SA Time frequency, les mots du membre, zéro appel payant) ; WhatsApp refusé (API Meta : vérification, gabarits, coût par conversation). À
 surveiller : l'egress vidéo (clip visible + UN suivant anticipé, règles dans
 space/CLAUDE.md), les tokens de ces sessions (voir plus haut).
 

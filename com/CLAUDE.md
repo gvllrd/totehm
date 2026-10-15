@@ -1,6 +1,56 @@
 # com/CLAUDE.md — totehm.com : le Totehm, la carte, HigherSelf
 
+## 15/10/2026 (bis) — LE RÉSEAU NEURONAL (lot D) : plein écran, le cerveau, l'espace membre au verso
+
+BUILD `2026-10-15-com-neural`. Wah : « les ramifications doivent prendre tout l'écran et reprendre les traits
+d'intention ; qu'on comprenne qu'on est dans le délire Neuralink ; une vraie activité quand l'utilisateur est
+connecté ». Ce lot REMPLACE, sur ces points, le lot C du même jour (le reste tient).
+- **`RAM` — un seul réseau, PLEIN ÉCRAN** (`#lv-ram`, sorti du socle, `position:absolute;inset:0;z-index:0`, derrière
+  le papier). La ligne est celle du `.tick` publié : **2 px, plate, les 7 couleurs exactes**. Il se reconfigure
+  par vue — **centre** = le circuit (7 pistes sortent du papier, coude, puis bord HAUT *et* bord BAS ; les deux
+  extérieures touchent les côtés ; un carré au coude, un carré par Habit) · **haut** = le CERVEAU vu de dessus
+  (scissure et tronc gris — l'anatomie n'est pas une intention —, sept circonvolutions, une par intention,
+  symétriques, leur largeur dessine la silhouette, leurs nœuds = mes Habits) · **bas** = tout se résorbe.
+  `peindre(vue)` ne redessine que si la vue, la taille ou mes Habits ont changé ; repeint au `resize`, après la
+  mesure du papier et `document.fonts.ready` (sinon le réseau part d'un papier pas encore placé).
+- **L'ACTIVITÉ EST RÉELLE** : un second tracé `.puls` (`stroke-dasharray:.05 .95`, `stroke-dashoffset` 1 → 0) par
+  intention QUI A des Habits, de période `--p` = la **Time frequency** de sa plus fréquente (log : chaque minute
+  ≈ 1,1 s, quotidienne ≈ 3,4 s, mensuelle ≈ 4,6 s). **CSS seul, aucun rAF.** Réservé au membre
+  (`body.member`), coupé dès que le Totehm s'ouvre (`:not(.entered)`) et en mouvement réduit. Sans compte, le
+  réseau est **atténué et immobile** (`.r-0` à .5 — chez un membre une intention vide est un vrai trou : .22).
+- **Le premier contact** (`#lv-pitch`, sans compte seulement) : `[Higher] your brain`, une ligne de promesse,
+  « Why it works » qui DÉROULE les vraies références (Gollwitzer & Sheeran 2006, 94 études, d = 0.65 ; Kross 2014),
+  CONNECT WITH MY TOTEHM, « free · no card ». **Aucun chiffre inventé, aucune fausse rareté, pas de « Harvard »**
+  (l'étude Harvard sur les objectifs écrits est un mythe : la citer, c'est la ligne qu'on nous retourne).
+  Un membre ne lit rien : il a `#lv-tap` — « Tap/Click to open it · Turn/Swipe to configure it ».
+- **La vue du haut vend** (`#lv-sell`) : « Neuroscience, not motivation. » + la phrase THP de `BRAND.md`, telle
+  quelle, au-dessus du cerveau. Voile noir derrière les deux blocs de texte (`rgba(0,0,0,.78)`) : **jamais un flou**.
+- **Le badge Higher se transforme** au lieu de s'éteindre : grand près de la langue (haut), **petit au coin du
+  socle** (centre, opacité .45), minuscule tout en bas sous le profil (`[Higher] Self`, k = .42).
+- **La galaxie ne montre que le DOS du papier** : le sprite est `#gl-bg` SEUL (navy perforé), **plus une seule
+  étoile ni poussière** — chaque carré est un vrai Totehm. Le nom n'apparaît qu'au survol/tap et pendant la
+  plongée, en **Quantico Coral**, et il GRANDIT avec son carré (`--sc`, `is-dedans` : il vient se caler au milieu).
+  **Plus de liste de résultats** (`#gx-res` masqué) : taper un nom éteint les autres et agrandit le trouvé ;
+  Entrée plonge dedans. Carrés portés à `base = max(26, min(44, R·.13))` : visables au doigt.
+- **La Reflection** : au repos, **le profil et un curseur qui clignote**, rien d'autre (plus de trois boîtes vides,
+  plus de placeholder) ; `#lv-say.is-vide` = ligne nue + `.rf-cur` qui bat. Les trois étages se déroulent ensuite,
+  dans l'ordre **direction (bleu clair) · LA HABIT (navy, au MILIEU, sur-élevée) · obstacle + Teaching (rouge-violet)** :
+  l'action est le centre de gravité, « talk is cheap ». La step porte **son trait d'intention**, choisi par le
+  modèle (`@step new|habit "ref" <intention>`, liste FERMÉE côté page : `INT_BY_ID` décide, pas le modèle).
+  Autour du profil, des **traits** d'intention (2 × 13 px), plus des points.
+- **TOUT l'espace membre est passé au verso** (`#member-window` déplacé DANS `#srch-ui`, `position:static`,
+  `.show` = « la partie compte est dépliée ») : mes réglages d'abord, un filet, puis le compte. Plus de fenêtre
+  par-dessus l'application, plus de fond cliquable, une seule sortie (la croix du verso). `ouvrirCompte(apres)` /
+  `closeMember()` remplacent les `classList.add/remove('show')` dispersés. Le verso défile d'un seul bloc.
+  **La console entre dans la couche `XO`** (`console:'/console?embed=1'`) : même origine, même session, on ne
+  quitte jamais la page.
+- **Telegram SEUL** (Wah, 15/10 : « on garde seulement Telegram au lieu de Meta ») : le bouton WhatsApp, son
+  câblage et la promesse dans l'offre sont partis ENSEMBLE. L'offre dit « [Higher] my Telegram · my next move, at
+  the rhythm of each Habit ».
+- Tests : `com_processeur`, `com_shorts`, `com_paper`, `com_member_menu`, `com_read_copy`.
+
 ## 15/10/2026 — LE PROCESSEUR (lot C) : trois vues verticales, la galaxie, mes réglages au verso, la Reflection
+> Le réseau, la galaxie, la Reflection et l'espace membre de cette section ont été REPRIS par le lot D ci-dessus.
 
 BUILD `2026-10-15-com-processeur`. Wah : « le TOTEHM est mon processeur personnel ; il prend vie à travers une IA
 réflexive ». Module `LV` : `VOISINS={c:{h,b}, h:{b:'c'}, b:{h:'c'}}`, UNE fonction `aller()` (doigt, trackpad/molette
@@ -33,7 +83,7 @@ fois. **Partis, balisage ET câblage** : `#ljoy`, `#ljoy-say`, les vues `g`/`d`/
   `.rf-t` (bleu clair direction · rouge-violet obstacle + « Teaching from the story » · navy step). `higher-self` v4,
   `fmt:'r3'` ; `lireR3()` ; une citation ne s'affiche QUE si `@ok` la dit vraie ; step `new`/non vérifiée = proposition
   (`.is-prop`, pointillé, « + my Habit » → `state.habits.unshift` + `save()`). États : sans compte (« example »,
-  CONNECT), invité (save), pas prêt (+ Habit / + Objective), prêt, offre (402), Higher (Telegram · WhatsApp).
+  CONNECT), invité (save), pas prêt (+ Habit / + Objective), prêt, offre (402), Higher (Telegram seul depuis le 15/10 bis).
   L'anneau tourne pendant le flux. `?higher=paid` → b.
 - **Dans le Totehm** : `SH` — la bascule `#vmode` (Habits, mon Totehm) liste ↔ shorts (`localStorage totehm_shorts`) ;
   `.sh` = hauteur de `#fv-inner` (`--sh-h`), `scroll-snap`, `vueHabitude()` telle quelle, son média devant (le plus

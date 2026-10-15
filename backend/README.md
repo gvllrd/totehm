@@ -1,5 +1,33 @@
 # TOTEHM · backend
 
+## 15/10/2026 (bis) — Telegram nudges follow each Habit's Time frequency
+
+**What changed.** `push_decision(user)` no longer ranks habits by a frozen list. A Habit is only due once
+**its own** Time frequency has elapsed since the last question (`habit_outcomes.asked_at`); among the due ones,
+the most **overdue** (lateness ÷ period) goes first. The minimum gap between two messages follows the shortest
+period a member has set (`min / 2`, clamped 20 min – 4 h) instead of a flat 4 h.
+
+**Reading what a member would get, right now** (service_role, no write):
+
+```sql
+select public.push_decision('<user-uuid>');
+-- {"send":true,"habit":"Run the hill","freq":"hourly","intention":"fight","every_minutes":60,"body":"…"}
+-- {"send":false,"why":"nothing_due"}   -- nothing has reached its period
+-- {"send":false,"why":"min_gap"}       -- too soon after the last message
+-- {"send":false,"why":"quiet_hours" | "max_daily" | "bot_off" | "decay_silence"}
+```
+
+**Hard limits that still apply** (unchanged, and they bound the cost): the member's timezone and quiet hours,
+`totehms.max_daily` — **capped at 6 by a check constraint**, so an "every minute" Habit still gets at most six
+messages a day — and silence after three unanswered questions in a row.
+
+**Adding a frequency.** `_freq_minutes` repeats, in minutes, the `FREQS` table of `com/totehm.html`. Add it in
+**both** places or the server will treat the new id as "no rhythm" and never send. `randomly` and `sometimes`
+return null on purpose: they are not a rhythm.
+
+**Telegram only.** WhatsApp is not offered anywhere. Meta's Business API needs business verification, approved
+templates and charges per conversation — price it before building it, not after.
+
 ## 15/10/2026 — the files of an element, the galaxy, the three-tier Reflection
 
 - **Attach a file to an element** (photo, video, PDF, audio, text — private): upload to `element-media` at

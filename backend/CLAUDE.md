@@ -1,5 +1,22 @@
 # backend/CLAUDE.md — la base, les fonctions, l'argent, le bot
 
+## 15/10/2026 (bis) — lot D : les relances suivent la Time frequency de CHAQUE Habit
+
+Migration `20261015160000_push_par_frequence.sql`, appliquée UNE fois sous `push_par_frequence`. Additive : deux
+`create or replace`, aucun `drop`, aucun prix. Auto-test `tests/sql/push_par_frequence_selftest.sql` : `FAIL={}`.
+- **`_freq_minutes(freq)`** (service_role) : le tableau `FREQS` de `com/totehm.html`, en MINUTES. ⚠️ **Les deux
+  doivent rester identiques** — la page écrit l'id, le serveur lit la durée. `randomly` / `sometimes` / rien de
+  posé → `null` = jamais de rythme, donc jamais de relance.
+- **`push_decision(user)`** (service_role, même contrat) ne trie plus sur un ordre FIGÉ : une Habit n'est due que
+  si SA période est écoulée depuis la dernière demande (`habit_outcomes.asked_at`), et parmi les dues c'est la plus
+  **en retard** (retard / période) qui part ; à égalité, la plus courte période. L'écart minimum entre deux messages
+  suit la plus courte période posée (`min / 2`, borné 20 min – 4 h) au lieu de 4 h pour tout le monde. Rend en plus
+  `freq`, `intention`, `every_minutes`. Inchangés : fuseau, heures calmes, plafond quotidien (**contrainte : 6 au
+  plus par jour**), silence après trois questions ignorées, et le CORPS du message (les mots du membre — le bot n'a
+  toujours pas de voix, et toujours zéro appel payant).
+- **Telegram seul** (Wah, 15/10) : WhatsApp n'est plus promis nulle part. L'API Business de Meta demande une
+  vérification d'entreprise, des gabarits approuvés et un coût par conversation — à chiffrer avant, pas après.
+
 ## 15/10/2026 — lot processeur : les fichiers d'un élément, la galaxie, la Reflection en trois étages
 
 Migration `20261015090000_processor_media_galaxy.sql`, appliquée UNE fois sous `processor_media_galaxy`, additive (une
