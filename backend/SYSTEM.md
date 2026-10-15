@@ -1,6 +1,10 @@
 # SYSTEM.md — état réel du système TOTEHM
 
-**Dernier relevé : 15 octobre 2026, le processeur (trois vues verticales, la galaxie, mes réglages au verso, la Reflection en trois étages)** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+> Livraison galerie/Club du 15/10/2026 : migration de production appliquée, cinq fonctions Edge vérifiées, SPACE publié.
+> Quatre projets READY et huit alias vérifiés (`395c7ca`) ; 25 contrôles HTTP et 40 anciennes adresses réussis ; détail : `../docs/GALLERY_CLUB_20261015.md`.
+> Les mesures historiques du lot C publiées dans `13abd34` sont conservées avec leur date propre.
+
+**Dernier relevé : 15 octobre 2026, galerie/Club (base, fonctions Edge et SPACE), avec le processeur COM conservé** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -15,6 +19,22 @@
 
 ---
 
+
+## 0 · GALERIE / CLUB — PUBLIÉS ET VÉRIFIÉS — 15/10/2026
+
+| Mesure | Résultat |
+| --- | --- |
+| Migration | `club_gallery`, `20261015120000`, transaction + historique enregistrés |
+| Source appliquée | MD5 `644541bdeedf29476b3d07eafdd29159`, identique au dépôt |
+| Lecture HTTP anon | `club_spots` past/now/future : 200 ; point exact jamais exposé |
+| Adhésion | zéro divergence `_figher.member` / complétude sur les comptes existants |
+| Commerce | cinq gardes exactes avant migration ; quatre lecteurs/réservations détachés de `_is_figher` |
+| Fusion COM | `13abd34` conservé ; 14 suites navigateur fusionnées réussies |
+| Edge | `higher-checkout` v38 · `artwork-checkout` v17 · `market-checkout` v4 · `stoner-gate` v33 · `stripe-webhook` v43 : ACTIVE, sources extraites identiques aux sources revues, identifiants et modes JWT conservés |
+| Vercel SPACE | `395c7ca88d3a50e04d1b05353575c3c3dee87d07` READY, domaine principal et alias associés ; contenu des routes contrôlées identique au dépôt |
+| Vercel quatre projets | SPACE, Club, COM, Boutique : READY sur `395c7ca`, cibles de production et huit alias exacts ; 25 contrôles HTTP et 40 anciennes adresses réussis |
+| Contrôles Edge HTTP | 19/19 réussis sans paiement : CORS, refus de session absente/anonyme/invalide et signature webhook invalide |
+| Limite navigateur réel | Chaîne TLS du proxy non reconnue ; modification persistante du magasin de confiance refusée par auto-review, aucune vérification TLS désactivée ; 14 suites navigateur simulées réussies |
 
 ## 0 · LE PROCESSEUR : TROIS VUES VERTICALES, LA GALAXIE, MES RÉGLAGES AU VERSO, LA REFLECTION EN TROIS ÉTAGES — 15/10/2026 (lot C)
 

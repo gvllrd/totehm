@@ -28,6 +28,17 @@ return null on purpose: they are not a rhythm.
 **Telegram only.** WhatsApp is not offered anywhere. Meta's Business API needs business verification, approved
 templates and charges per conversation — price it before building it, not after.
 
+## 15/10/2026 — galerie SPACE et Club par complétude (publiés en production)
+
+La migration `20261015120000_club_gallery.sql` détache `_art_passport` de l'adhésion gratuite `_figher` et ajoute
+`club_spots` : mêmes résultats autorisés pour trois périodes et deux modes, critères détaillés avant pagination,
+subscribers reconnus indépendamment du Club, projection des seuls attributs lisibles. L'ancienne règle artistique
+est préservée ; prix, propriété, THP, Stoner, règlement et créateurs ne changent pas.
+
+Les checkouts digitaux retournent désormais sur SPACE ; les retours physiques restent boutique.
+Procédure, tests locaux, contrat COM et ordre de déploiement : `../docs/GALLERY_CLUB_20261015.md`.
+Cette livraison galerie/Club est publiée avec le lot processeur de `13abd34` conservé : migration et cinq fonctions Edge vérifiées, quatre sites Vercel READY à `395c7ca`, huit alias et anciennes adresses vérifiés. Mesures : `SYSTEM.md` §0.
+
 ## 15/10/2026 — the files of an element, the galaxy, the three-tier Reflection
 
 - **Attach a file to an element** (photo, video, PDF, audio, text — private): upload to `element-media` at

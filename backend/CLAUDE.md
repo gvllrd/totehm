@@ -17,9 +17,37 @@ Migration `20261015160000_push_par_frequence.sql`, appliquée UNE fois sous `pus
 - **Telegram seul** (Wah, 15/10) : WhatsApp n'est plus promis nulle part. L'API Business de Meta demande une
   vérification d'entreprise, des gabarits approuvés et un coût par conversation — à chiffrer avant, pas après.
 
+## 15/10/2026 — Club gratuit, découverte temporelle ; migration appliquée en production le 15/10/2026
+
+`20261015120000_club_gallery.sql` a été appliquée **dans une transaction** après vérification des
+corps courants (les gardes interrompent la migration en cas de divergence), avant la publication du nouveau Club.
+Ne pas utiliser `supabase db push` : l'historique contient des migrations distantes sans corps.
+
+- `_figher().member` = `totehm_complete().complete`, exclusivement : une Box non vide dans chacune
+  des cinq vues. THP, annuel et `figher_comps` ne sont plus des conditions/exceptions Club. Les anciennes
+  clés restent informatives ; `number` reste le numéro du THP réellement possédé, ou `null`.
+- `_art_passport(uuid)` (service_role seul) conserve exactement la porte commerciale du 02/10 :
+  `figher_comps` vivant OU (THP + Habit non vide). Réservations primaire/revente, `market_view`,
+  `reveal_cloth` et les anciens indicateurs de `my_entitlements` l'utilisent ; `figher` dans ce dernier
+  expose la nouvelle adhésion Club. Propriété, expériences achetées, règlements, prix, bot payant et
+  abonnements créateurs gardent leurs règles indépendantes. `market_art` historique reste THP seul.
+- `club_spots(period, filters, lat, lng, limit, offset, as_of)` (anon/authenticated) sert **les mêmes
+  résultats** aux modes radar/shorts : `past` = fin ≤ ancre, `now` = début ≤ ancre < fin, `future` = début > ancre.
+  Réponse : `items`/`spots`, `total`, `has_more`/`more`, `next_offset`, `as_of`. Réutiliser l'ancre entre
+  pages ; les publications postérieures à l'ancre sont exclues ; une révocation d'accès s'applique immédiatement.
+  Filtres serveur avant pagination : Habit, intentions, piliers, rythmes, mots des objectifs/répulsions
+  visibles, `type` (`all|photo|video|none|why`), ville, `scope` (`world|near`) et rayon (1–500 km).
+- Audience via `_audience_ok` : un abonné vivant retrouve ses spots `subscribers`/`figher` sans être membre
+  Club ; privé = auteur seul. `_spot_view` et `_clip_readable` conservent la protection des détails/médias.
+  `_club_spot_view` ajoute la Habit Box avec ses mini-boxes visibles et leurs attributs, sans snapshot brut.
+  Le point exact suit `_point_ok` ; près de moi compare des centres arrondis à 0,1°, sans distance ni cap rendu.
+- Validation locale PostgreSQL 17 : `python3 tests/sql/club_gallery_local.py` (Docker, base jetable isolée,
+  sans connexion externe). Corps réels extraits des migrations, schéma minimal explicite ; ce test ne prouve
+  pas l'état de la production. `club_gallery_selftest.sql` et `club_paid_access_selftest.sql` s'auto-annulent.
+
 ## 15/10/2026 — lot processeur : les fichiers d'un élément, la galaxie, la Reflection en trois étages
 
-Migration `20261015090000_processor_media_galaxy.sql`, appliquée UNE fois sous `processor_media_galaxy`, additive (une
+Migration `20261015090000_processor_media_galaxy.sql`, déjà appliquée UNE fois sous `processor_media_galaxy` (journal `20261015113826`, relevé `13abd34`), additive (une
 première version portait des `delete` : refusée par l'approbation du cloud, rien n'était passé — le retrait est un
 MARQUAGE). Auto-test `tests/sql/processor_media_galaxy_selftest.sql` : `FAIL={}`.
 - Seau **`element-media`** : privé, 50 Mo, images · vidéos · PDF · audio · texte ; UNE politique `for all to authenticated`

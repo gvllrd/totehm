@@ -26,5 +26,99 @@
         }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/get_higher",
+      "destination": "/art-bridge"
+    },
+    {
+      "source": "/stoner",
+      "destination": "/art-bridge"
+    },
+    {
+      "source": "/stoner_terms",
+      "destination": "/art-bridge"
+    },
+    {
+      "source": "/play_lisbon_street",
+      "destination": "/art-bridge"
+    },
+    {
+      "source": "/discover",
+      "destination": "/art-bridge"
+    },
+    {
+      "source": "/discover_lisbon",
+      "destination": "/art-bridge"
+    },
+    {
+      "source": "/origins",
+      "destination": "/art-bridge"
+    },
+    {
+      "source": "/market",
+      "destination": "/art-bridge"
+    },
+    {
+      "source": "/lisbon",
+      "destination": "/art-bridge"
+    },
+    {
+      "source": "/global",
+      "destination": "/art-bridge"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/get_higher.html",
+      "destination": "/get_higher",
+      "permanent": false
+    },
+    {
+      "source": "/stoner.html",
+      "destination": "/stoner",
+      "permanent": false
+    },
+    {
+      "source": "/stoner_terms.html",
+      "destination": "/stoner_terms",
+      "permanent": false
+    },
+    {
+      "source": "/play_lisbon_street.html",
+      "destination": "/play_lisbon_street",
+      "permanent": false
+    },
+    {
+      "source": "/discover.html",
+      "destination": "/discover",
+      "permanent": false
+    },
+    {
+      "source": "/discover_lisbon.html",
+      "destination": "/discover_lisbon",
+      "permanent": false
+    },
+    {
+      "source": "/origins.html",
+      "destination": "/origins",
+      "permanent": false
+    },
+    {
+      "source": "/market.html",
+      "destination": "/market",
+      "permanent": false
+    },
+    {
+      "source": "/lisbon.html",
+      "destination": "/lisbon",
+      "permanent": false
+    },
+    {
+      "source": "/global.html",
+      "destination": "/global",
+      "permanent": false
+    }
   ]
 }

@@ -47,9 +47,8 @@ const admin = createClient(
 );
 
 const FROM   = "TOTEHM <no-reply@higher.boutique>";
-// La méthode vit sur figher.club depuis le 02/10/2026 (avant : la boutique,
-// et encore avant totehm.space — les deux redirigent).
-const METHOD = "https://www.figher.club/stoner";
+// La méthode reste attachée aux droits acquis ; seule son adresse change.
+const METHOD = "https://www.totehm.space/stoner";
 const LOGO   = "https://www.higher.boutique/assets/img/totehm_logo.png";
 
 function welcomeHtml(num: number, amount: string) {
@@ -66,14 +65,14 @@ function welcomeHtml(num: number, amount: string) {
     </td></tr>
 
     <tr><td align="center" style="font-family:Arial,sans-serif;font-size:11px;
-        letter-spacing:3px;color:#8f8fae;padding-bottom:18px;">FIGHER CLUB</td></tr>
+        letter-spacing:3px;color:#8f8fae;padding-bottom:18px;">TOTEHMPAPER</td></tr>
 
     <tr><td align="center" style="font-family:'Courier New',monospace;font-size:38px;
         letter-spacing:2px;color:#fbd5ca;padding-bottom:6px;">#${n}</td></tr>
 
     <tr><td align="center" style="font-family:Arial,sans-serif;font-size:11px;
         letter-spacing:2px;color:#606060;padding-bottom:30px;">
-      YOUR PLACE &middot; YOURS FOR LIFE</td></tr>
+      YOUR EDITION &middot; YOURS FOR LIFE</td></tr>
 
     <tr><td align="center" style="font-family:Arial,sans-serif;font-size:15px;
         line-height:1.8;color:#fbd5ca;padding-bottom:30px;">

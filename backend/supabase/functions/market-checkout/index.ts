@@ -17,7 +17,7 @@
 
 import Stripe from "npm:stripe@14";
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { corsHeaders, SITE_CLUB } from "../_shared/origins.ts";
+import { corsHeaders, SITE_SPACE } from "../_shared/origins.ts";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!);
 
@@ -31,7 +31,7 @@ const SESSION_MIN = 30;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 Deno.serve(async (req) => {
-  const headers = corsHeaders(req.headers.get("origin"), SITE_CLUB);
+  const headers = corsHeaders(req.headers.get("origin"), SITE_SPACE);
   const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers });
 
   if (req.method === "OPTIONS") return new Response("ok", { headers });
@@ -70,14 +70,14 @@ Deno.serve(async (req) => {
           unit_amount: r.price_cents,
           product_data: {
             name: r.title,
-            description: `Edition ${r.edition}/${r.edition_total} · resale · owned on FIGHER.CLUB`,
+            description: `Edition ${r.edition}/${r.edition_total} · resale · owned on TOTEHM.SPACE`,
           },
         },
       }],
       metadata: meta,
       payment_intent_data: { metadata: meta },
-      success_url: `${SITE_CLUB}/market?owned=${encodeURIComponent(String(r.slug))}`,
-      cancel_url: `${SITE_CLUB}/market?art=${encodeURIComponent(String(r.slug))}`,
+      success_url: `${SITE_SPACE}/market?owned=${encodeURIComponent(String(r.slug))}`,
+      cancel_url: `${SITE_SPACE}/market?art=${encodeURIComponent(String(r.slug))}`,
     });
     await admin.rpc("art_reservation_session", { p_reservation: r.reservation, p_session: session.id });
     return json({ url: session.url, amount: r.price_cents, currency: r.currency });

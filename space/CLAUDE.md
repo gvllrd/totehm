@@ -1,4 +1,20 @@
-# space/CLAUDE.md — totehm.space : le réseau social de l'Habit stratégique (croix de cinq vues)
+# space/CLAUDE.md — totehm.space : galerie d’art digital
+
+## 15/10/2026 — galerie et continuité des anciens contenus (publiées en production)
+
+L'entrée `/` est une galerie : TotehmPaper/Get Higher, Stoner, Play the Lisbon Street, Origins/Quantum.
+`/market` garde les RPC de prix, réservations, achat, revente, collection et provenance. Navigation entre œuvres,
+transitions, réduction des animations et pause hors écran améliorent l'exploration ; aucun point/récompense ajouté.
+Les sept expériences sont copiées depuis boutique, avec seules adaptations techniques SSO nécessaires ; leurs SVG,
+textes, médias et interactions sont conservés. Les assets signs et `/api/geo` suivent les pages.
+
+L'ancien lecteur est `/social` : données intactes, même code, `/s/:id` conservé. Les anciens paramètres sociaux
+(`spot`, `v`, `u`, `habit`, `embed`) continuent vers `/social` ; COM `/x/space` sert directement ce lecteur.
+Les anciens liens boutique/Club consomment leur code SSO sur leur origine avant d'émettre un code ciblé SPACE.
+La propriété et les accès payants restent serveur : Stoner = `stoner_access`, art = portes historiques, Club = complétude.
+
+Validation et déploiement : `../docs/GALLERY_CLUB_20261015.md`. Les sections suivantes sont historiques ;
+leur ancienne répartition des plateformes ne remplace pas cette direction.
 
 ## 13/10/2026 — le coin membre = CONNECT WITH MY TOTEHM seul (lot B)
 

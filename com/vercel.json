@@ -80,11 +80,11 @@
   "rewrites": [
     {
       "source": "/x/space",
-      "destination": "https://www.totehm.space/"
+      "destination": "https://www.totehm.space/social"
     },
     {
       "source": "/x/club",
-      "destination": "https://www.figher.club/"
+      "destination": "https://www.figher.club/create"
     },
     {
       "source": "/vendor/:f*",

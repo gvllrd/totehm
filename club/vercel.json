@@ -39,112 +39,101 @@
       "permanent": true
     },
     {
-      "source": "/discover",
-      "destination": "https://www.higher.boutique/discover",
+      "source": "/assets/signs/:file",
+      "destination": "https://www.totehm.space/assets/signs/:file",
       "permanent": true
     },
     {
       "source": "/discover.html",
-      "destination": "https://www.higher.boutique/discover",
-      "permanent": true
-    },
-    {
-      "source": "/discover_lisbon",
-      "destination": "https://www.higher.boutique/discover_lisbon",
-      "permanent": true
+      "destination": "/discover",
+      "permanent": false
     },
     {
       "source": "/discover_lisbon.html",
-      "destination": "https://www.higher.boutique/discover_lisbon",
-      "permanent": true
-    },
-    {
-      "source": "/get_higher",
-      "destination": "https://www.higher.boutique/get_higher",
-      "permanent": true
+      "destination": "/discover_lisbon",
+      "permanent": false
     },
     {
       "source": "/get_higher.html",
-      "destination": "https://www.higher.boutique/get_higher",
-      "permanent": true
+      "destination": "/get_higher",
+      "permanent": false
     },
     {
-      "source": "/play_lisbon_street",
-      "destination": "https://www.higher.boutique/play_lisbon_street",
-      "permanent": true
+      "source": "/global.html",
+      "destination": "/global",
+      "permanent": false
     },
     {
-      "source": "/play_lisbon_street.html",
-      "destination": "https://www.higher.boutique/play_lisbon_street",
-      "permanent": true
-    },
-    {
-      "source": "/origins",
-      "destination": "https://www.higher.boutique/origins",
-      "permanent": true
-    },
-    {
-      "source": "/origins.html",
-      "destination": "https://www.higher.boutique/origins",
-      "permanent": true
-    },
-    {
-      "source": "/stoner",
-      "destination": "https://www.higher.boutique/stoner",
-      "permanent": true
-    },
-    {
-      "source": "/stoner.html",
-      "destination": "https://www.higher.boutique/stoner",
-      "permanent": true
-    },
-    {
-      "source": "/stoner_terms",
-      "destination": "https://www.higher.boutique/stoner_terms",
-      "permanent": true
-    },
-    {
-      "source": "/stoner_terms.html",
-      "destination": "https://www.higher.boutique/stoner_terms",
-      "permanent": true
-    },
-    {
-      "source": "/market",
-      "destination": "https://www.higher.boutique/market",
-      "permanent": true
+      "source": "/lisbon.html",
+      "destination": "/lisbon",
+      "permanent": false
     },
     {
       "source": "/market.html",
-      "destination": "https://www.higher.boutique/market",
-      "permanent": true
+      "destination": "/market",
+      "permanent": false
     },
     {
-      "source": "/assets/signs/:file",
-      "destination": "https://www.higher.boutique/assets/signs/:file",
-      "permanent": true
+      "source": "/origins.html",
+      "destination": "/origins",
+      "permanent": false
+    },
+    {
+      "source": "/play_lisbon_street.html",
+      "destination": "/play_lisbon_street",
+      "permanent": false
+    },
+    {
+      "source": "/stoner.html",
+      "destination": "/stoner",
+      "permanent": false
+    },
+    {
+      "source": "/stoner_terms.html",
+      "destination": "/stoner_terms",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/discover",
+      "destination": "/art-bridge"
+    },
+    {
+      "source": "/discover_lisbon",
+      "destination": "/art-bridge"
+    },
+    {
+      "source": "/get_higher",
+      "destination": "/art-bridge"
+    },
+    {
+      "source": "/global",
+      "destination": "/art-bridge"
     },
     {
       "source": "/lisbon",
-      "destination": "https://www.higher.boutique/discover_lisbon",
-      "permanent": true
+      "destination": "/art-bridge"
     },
-    { "source": "/discover", "destination": "https://www.higher.boutique/discover", "permanent": true },
-    { "source": "/discover.html", "destination": "https://www.higher.boutique/discover", "permanent": true },
-    { "source": "/discover_lisbon", "destination": "https://www.higher.boutique/discover_lisbon", "permanent": true },
-    { "source": "/discover_lisbon.html", "destination": "https://www.higher.boutique/discover_lisbon", "permanent": true },
-    { "source": "/get_higher", "destination": "https://www.higher.boutique/get_higher", "permanent": true },
-    { "source": "/get_higher.html", "destination": "https://www.higher.boutique/get_higher", "permanent": true },
-    { "source": "/play_lisbon_street", "destination": "https://www.higher.boutique/play_lisbon_street", "permanent": true },
-    { "source": "/play_lisbon_street.html", "destination": "https://www.higher.boutique/play_lisbon_street", "permanent": true },
-    { "source": "/origins", "destination": "https://www.higher.boutique/origins", "permanent": true },
-    { "source": "/origins.html", "destination": "https://www.higher.boutique/origins", "permanent": true },
-    { "source": "/stoner", "destination": "https://www.higher.boutique/stoner", "permanent": true },
-    { "source": "/stoner.html", "destination": "https://www.higher.boutique/stoner", "permanent": true },
-    { "source": "/stoner_terms", "destination": "https://www.higher.boutique/stoner_terms", "permanent": true },
-    { "source": "/stoner_terms.html", "destination": "https://www.higher.boutique/stoner_terms", "permanent": true },
-    { "source": "/market", "destination": "https://www.higher.boutique/market", "permanent": true },
-    { "source": "/market.html", "destination": "https://www.higher.boutique/market", "permanent": true },
-    { "source": "/lisbon", "destination": "https://www.higher.boutique/discover_lisbon", "permanent": true },
-    { "source": "/assets/signs/:file", "destination": "https://www.higher.boutique/assets/signs/:file", "permanent": true }
+    {
+      "source": "/market",
+      "destination": "/art-bridge"
+    },
+    {
+      "source": "/origins",
+      "destination": "/art-bridge"
+    },
+    {
+      "source": "/play_lisbon_street",
+      "destination": "/art-bridge"
+    },
+    {
+      "source": "/stoner",
+      "destination": "/art-bridge"
+    },
+    {
+      "source": "/stoner_terms",
+      "destination": "/art-bridge"
+    }
   ]
 }

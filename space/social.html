@@ -1,0 +1,2143 @@
+<!DOCTYPE html>
+<!-- 11/10/2026 — SPACE: the social network of the strategic Habit. Centre = the concept;
+     ← WATCH the feed (each space = its Habit Box as in COM; an element opens its horizon) · ↓ SHARE · → MY SPACE · ↑ VIBES. SPOT turns a space into a spot on figher.club.
+     No radar, planning, agenda or exact point. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>TOTEHM.SPACE — strategic Habits, lived</title>
+<meta name="description" content="Strategic habits, lived. No selfie, no music: the place and its sound.">
+<meta property="og:site_name" content="TOTEHM.SPACE"><meta property="og:title" content="TOTEHM.SPACE — strategic habits, lived">
+<meta property="og:description" content="Strategic habits, lived. No selfie, no music: the place and its sound.">
+<meta property="og:image" content="https://www.totehm.space/assets/img/totehm_logo.png"><meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://abujjbkbbiumxrokozph.supabase.co" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --s1:#0b0b0d;--s2:#15151a;--s3:#212127;--s4:#2e2e36;--r:10px;
+  --mid:#b4b4b9;--lo:#9a9aa0;--dim:#707077;
+  --navy:#333366;--blue:#36498c;--rep:#743169;
+  --tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333366'/%3E%3Ccircle cx='12' cy='0' r='3' fill='%23000'/%3E%3Ccircle cx='12' cy='24' r='3' fill='%23000'/%3E%3Ccircle cx='0' cy='12' r='3' fill='%23000'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23000'/%3E%3C/svg%3E");
+  --q:'Quantico',sans-serif;--mono:'Space Mono',monospace;
+  --top:calc(env(safe-area-inset-top,0px));--bot:calc(env(safe-area-inset-bottom,0px));
+  --joy-d:56px;--ease:cubic-bezier(.2,.9,.25,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#000;color:var(--mid);font-family:var(--mono);font-size:13px;
+  line-height:1.6;overflow:hidden;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font:inherit;color:inherit;color-scheme:dark}
+.hide{display:none!important}
+
+
+/* 12/10 — dans totehm.com : la croix rend le Totehm ; mon compte, c'est COM qui le tient. */
+#x-back{display:none}
+body.is-embed #x-back{display:flex;position:fixed;top:calc(10px + var(--top));left:10px;z-index:130;width:36px;height:36px;align-items:center;justify-content:center;
+  border:0;border-radius:10px;background:rgba(22,22,26,.82);color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent}
+body.is-embed #x-back svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+body.is-embed #who{display:none!important}
+#who{position:fixed;top:calc(12px + var(--top));left:12px;z-index:96;display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+#terms{font:400 8px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);text-decoration:none;padding:2px 4px}
+#member{position:relative;display:flex;align-items:center;gap:8px;
+  background:none;border:none;cursor:pointer;font-family:var(--q);font-weight:700;font-size:12px;color:var(--lo);padding:6px 4px}
+#member i{width:9px;height:9px;border-radius:50%;background:#3a3a40;display:block;flex:none;transition:background .2s,box-shadow .2s}
+#member.is-in i{background:#fff;box-shadow:0 0 8px #fff}
+
+
+#title{position:fixed;top:calc(14px + var(--top));left:50%;transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:8px;
+  pointer-events:none;white-space:nowrap}
+#title b{font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:var(--c,#fff)}
+#title svg{height:15px;width:45px;display:block}
+body.v-cam.is-rec #title{opacity:0}
+
+
+.view{position:fixed;inset:0;z-index:10;visibility:hidden;opacity:0;transition:opacity .28s ease,visibility 0s .28s}
+.view.is-on{visibility:visible;opacity:1;transition:opacity .28s ease,visibility 0s}
+.say{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--lo);text-align:center;line-height:1.7}
+.empty{position:absolute;left:0;right:0;top:46%;text-align:center;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+.field{background:var(--s2);border:none;border-radius:var(--r);padding:9px 11px;color:#fff;outline:none;min-width:0}
+textarea.field{width:100%;min-height:58px;resize:vertical;font-family:var(--q);font-size:14px}
+input[type=number].field{width:84px}
+input[type=date].field,input[type=time].field{max-width:100%}
+.pick-habit{display:block;background:none;border:none;text-align:left;width:100%;cursor:pointer}
+.pick-habit.is-on{outline:1px solid var(--mid);outline-offset:2px}
+
+
+
+#feed{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none}
+#feed::-webkit-scrollbar{display:none}
+.clip{position:relative;height:100%;width:100%;scroll-snap-align:start;scroll-snap-stop:always;background:var(--s1);overflow:hidden}
+.clip video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.clip .info{position:absolute;left:12px;right:12px;bottom:calc(114px + var(--bot));z-index:2}
+.clip .noclip{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--dim)}
+.it{cursor:pointer}
+.dist{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo);margin-top:5px}
+
+
+#v-cam{background:#000}
+#cam-v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+#cam-n{position:absolute;top:42%;left:0;right:0;text-align:center;font-family:var(--mono);font-weight:700;font-size:64px;color:#fff;
+  pointer-events:none;text-shadow:0 2px 14px rgba(0,0,0,.7)}
+#cam-sec{position:absolute;top:calc(16px + var(--top));right:16px;font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:#fff;
+  display:flex;align-items:center;gap:7px}
+#cam-sec i{width:9px;height:9px;border-radius:50%;background:#E24B4A;display:block}
+#cam-body{position:absolute;left:0;right:0;bottom:0;max-height:72%;overflow-y:auto;padding:16px 16px calc(140px + var(--bot));
+  background:linear-gradient(to top,rgba(0,0,0,.92) 70%,rgba(0,0,0,0));display:flex;flex-direction:column;gap:12px}
+body.v-cam.is-rec #cam-body,body.v-cam.is-count #cam-body{background:none}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.lab{font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--lo);width:100%}
+.chip{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:var(--s2);border:none;
+  border-radius:var(--r);padding:8px 11px;cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:left}
+.chip small{display:block;font-size:9px;letter-spacing:.04em;text-transform:none;color:var(--dim);margin-top:2px}
+.chip.is-on{background:var(--s4);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+.chip.is-on small{color:var(--mid)}
+.btn{font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#fff;background:var(--s3);
+  border:none;border-radius:var(--r);padding:12px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.btn:disabled{opacity:.35;cursor:default}
+.btn.rec{background:#5a1f1f}
+.lnk{background:none;border:none;color:var(--lo);cursor:pointer;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:4px 0}
+#c-dur{width:84px;background:var(--s2);border:none;border-radius:var(--r);padding:8px 10px;color:#fff;font-family:var(--mono);font-size:12px;outline:none}
+#c-say{width:100%;min-height:58px;background:var(--s2);border:none;border-radius:var(--r);padding:10px 12px;color:#fff;font-family:var(--q);
+  font-size:14px;outline:none;resize:vertical}
+.note{font-size:10px;letter-spacing:.08em;color:var(--lo)}
+.note.no{color:#E24B4A}
+
+
+.habit{position:relative;display:flex;align-items:center;min-height:30px}
+.habit .tick{position:absolute;left:0;top:0;bottom:0;width:1px;background:#000;z-index:3;display:flex;flex-direction:column;overflow:hidden}
+.habit .tick i{flex:1 1 0;display:block;min-height:2px}
+.habit .h-body{margin-left:0;flex:1;position:relative;display:flex;align-items:center;gap:9px;padding:7px 11px;background:var(--navy);border:none}
+.v-col{display:flex;flex-direction:column;width:100%;min-width:0}
+.v-name{font-family:var(--q);font-weight:400;font-size:15px;line-height:1.5;color:#fff;word-break:break-word}
+.v-sub{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.72);
+  margin-top:6px;font-variant-numeric:tabular-nums;display:flex;flex-wrap:wrap;align-items:center;gap:0 10px;line-height:1.5}
+.v-int{font-weight:700;letter-spacing:.2em}
+.v-st{color:#fff;font-weight:700}
+.v-loc{color:#fff;text-decoration:underline;text-decoration-color:rgba(255,255,255,.45);text-underline-offset:3px}
+.v-say{font-family:var(--q);font-size:13px;color:#fff;margin-top:8px;line-height:1.45}
+.minis{display:flex;flex-wrap:wrap;align-items:center;gap:5px}
+.mini{display:inline-flex;align-items:center;padding:3px 7px;font-family:var(--q);font-size:11px;line-height:1.4;color:#fff}
+.m-o{background:var(--blue)}.m-r{background:var(--rep)}
+.mg{display:block;margin-top:9px}
+.mg-l{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.55);margin-bottom:4px;text-transform:uppercase}
+@media(max-width:700px){.habit .tick{width:2px}}
+
+.by{display:flex;align-items:center;gap:7px;margin-top:8px;font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--lo)}
+.tname{display:inline-block;width:fit-content;font-family:var(--q);font-weight:400;font-size:13px;color:#fff;line-height:1.5;
+  border:6px solid transparent;border-image-source:var(--tile);border-image-slice:6 fill;border-image-repeat:round;padding:0 6px;
+  background:none;cursor:pointer;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+
+
+#detail{position:fixed;left:0;right:0;bottom:0;z-index:80;background:var(--s1);padding:16px 16px calc(18px + var(--bot));
+  transform:translateY(104%);transition:transform .32s var(--ease);visibility:hidden;max-height:78%;overflow-y:auto}
+#detail.is-open{transform:none;visibility:visible}
+#detail .acts{display:flex;gap:8px;margin-top:12px;align-items:center}
+#detail video{width:100%;max-height:46vh;object-fit:cover;background:#000;display:block;margin-bottom:10px;border-radius:var(--r)}
+
+
+#joy{position:fixed;z-index:70;bottom:calc(14px + var(--bot));left:50%;transform:translateX(-50%);
+  display:grid;grid-template-columns:18px var(--joy-d) 18px;grid-template-rows:18px var(--joy-d) 18px;align-items:center;justify-items:center;
+  transition:opacity .25s}
+#joy-say{position:absolute;left:50%;bottom:calc(100% + 4px);transform:translateX(-50%);font-size:9px;letter-spacing:.1em;white-space:nowrap;color:var(--lo);pointer-events:none}
+#joy-box{border:none;padding:0;-webkit-tap-highlight-color:transparent}
+#joy-box:focus-visible{outline:1px solid var(--mid);outline-offset:4px}
+#joy-box.is-camera{background:var(--navy);cursor:pointer}
+#joy-box.is-camera #joy-stack{display:none}
+#joy-record{display:none;position:absolute;left:50%;top:50%;width:22px;height:22px;transform:translate(-50%,-50%);background:var(--rep);border-radius:50%;transition:border-radius .15s,width .15s,height .15s}
+#joy-box.is-camera #joy-record{display:block}
+#joy-box.is-recording #joy-record{border-radius:3px;width:19px;height:19px}
+#joy-box.is-camera:disabled{opacity:.45;cursor:default}
+#joy-stack i{transition:opacity .18s,transform .18s}
+#joy-stack i.is-current{opacity:0;transform:scale(.4)}
+#joy-box.is-side #joy-stack{opacity:0}
+#cur-h{grid-area:1/2/2/3}#cur-g{grid-area:2/1/3/2}#joy-box{grid-area:2/2/3/3}#cur-d{grid-area:2/3/3/4}#cur-b{grid-area:3/2/4/3}
+#joy-box{width:var(--joy-d);height:var(--joy-d);position:relative;border-radius:50%;background:var(--joy-vue,var(--navy));box-shadow:0 2px 7px rgba(0,0,0,.5);
+  touch-action:none;cursor:grab}
+#joy-stack{position:absolute;inset:0;transform:translate(var(--mx,0px),var(--my,0px));transition:transform .26s cubic-bezier(.22,.9,.3,1)}
+#joy-box.is-held #joy-stack{transition:none}
+#joy-stack i{--d:12px;position:absolute;left:50%;display:block;width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
+  border-radius:50%;background:var(--c)}
+#joy-stack .o{top:23%;--c:var(--blue)}#joy-stack .h{top:50%;--c:var(--navy)}#joy-stack .r{top:77%;--c:var(--rep)}
+.cur{background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;width:20px;height:20px;
+  opacity:.85;color:#fff;-webkit-tap-highlight-color:transparent}
+.cur.is-dead{opacity:.14;pointer-events:none}
+.cur svg{width:14px;height:14px;display:block;stroke:currentColor;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+@media(hover:hover){.cur:not(.is-dead):hover{opacity:1}}
+
+
+
+
+#heading{position:fixed;top:calc(14px + var(--top));left:0;right:0;z-index:60;display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none;transition:left .35s var(--ease),right .35s var(--ease)}
+#title{position:static;transform:none}
+#int-def{max-width:min(370px,74vw);font-size:9px;line-height:1.45;color:var(--lo);text-align:center;pointer-events:none}
+#habit-filter{pointer-events:auto;background:var(--s2);border:none;border-radius:var(--r);padding:5px 10px;max-width:min(320px,70vw);font-size:10px;color:var(--mid);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+
+:root{--tp:64px}
+#tp-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none}
+#totehm-paper{position:relative;flex-shrink:0;width:var(--tp);height:var(--tp);
+  perspective:calc(var(--tp) * 4.36);pointer-events:auto;cursor:pointer;touch-action:none;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#tp-card{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform}
+.tp-face{position:absolute;inset:0}
+.tp-face,.tp-face *{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.tp-front{transform:translateZ(.5px)}
+.tp-back{transform:rotateY(180deg) translateZ(.5px);display:flex;align-items:center;justify-content:center}
+#tp-card.is-flat .tp-front{transform:none}
+#tp-card.is-flat .tp-back{transform:rotateY(180deg)}
+.tp-tile{position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224.88 224.08' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cmask id='tpb_tile'%3E%3Crect x='-40' y='-40' width='310' height='310' fill='%23fff'/%3E%3Ccircle cx='56.421' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='56.421' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='112.440' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='0' r='13.86' fill='%23000'/%3E%3Ccircle cx='168.459' cy='224.078' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='56.020' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='112.039' r='13.86' fill='%23000'/%3E%3Ccircle cx='0.402' cy='168.059' r='13.86' fill='%23000'/%3E%3Ccircle cx='224.478' cy='168.059' r='13.86' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0.402' y='0' width='224.076' height='224.078' fill='%23333366' mask='url(%23tpb_tile)'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat}
+.tp-light{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0}
+#tp-card.is-flat .tp-light{display:none}
+#tp-name{position:relative;z-index:2;white-space:pre;text-align:center;font-family:var(--q);
+  font-weight:400;font-size:10px;line-height:1.3;letter-spacing:.04em;color:#b0b0b0}
+#tp-name.is-name{color:rgba(255,255,255,.88)}
+#tp-logo{position:relative;flex-shrink:0;width:var(--tp);height:var(--tp)}
+#tp-logo .tp-layer{position:absolute;display:block;overflow:visible;transform-origin:50% 50%}
+#tp-gl-bg{left:0;top:0;width:100%;height:100%;z-index:1}
+#tp-gl-rail{left:9.200%;top:.100%;width:7.650%;height:99.799%;z-index:2}
+#tp-gl-t{left:35.501%;top:21.386%;width:29.700%;height:29.870%;z-index:3}
+#tp-gl-wm{left:33.349%;top:54.268%;width:34.500%;height:20.834%;z-index:3}
+#tp-enter{position:absolute;inset:0;z-index:9;background:none;border:none;padding:0;cursor:pointer;
+  outline:none;-webkit-tap-highlight-color:transparent}
+#tp-enter:focus-visible{outline:1px solid rgba(255,255,255,.35);outline-offset:6px}
+#tp-hint{font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--dim);
+  text-transform:uppercase;text-align:center;pointer-events:none;white-space:nowrap}
+#tp-wrap.is-open #tp-hint{visibility:hidden}
+#member-txt{max-width:calc(50vw - var(--tp)/2 - 48px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:480px){:root{--tp:56px}}
+@media(max-width:480px) and (max-height:700px){:root{--tp:48px}}
+@media(prefers-reduced-motion:reduce){#tp-card{will-change:auto}.tp-light{display:none}}
+
+body.v-cam.is-rec #int-def{opacity:0}
+#habit-picker{position:fixed;top:calc(100px + var(--top));left:50%;transform:translateX(-50%);z-index:85;width:min(420px,calc(100vw - 32px));max-height:64vh;overflow-y:auto;background:var(--s1);border:1px solid var(--s3);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;gap:10px}
+#habit-picker .row{justify-content:space-between}
+#joy .cur.is-preview{opacity:1;transform:scale(1.3)}
+.btn,.chip{width:fit-content;max-width:100%;align-self:flex-start;flex:0 0 auto}
+.btn{padding:8px 12px}.chip{padding:6px 9px;letter-spacing:.08em}
+.chip small{max-width:23ch;line-height:1.45}
+body.v-cam.is-form #cam-body{bottom:calc(170px + var(--bot));max-height:calc(100% - 300px);padding:12px 14px;background:rgba(11,11,13,.88)}
+#cam-body .it{flex:none}
+@media(min-width:900px){
+  :root{--panel-w:420px}
+  #v-cam{inset:auto auto calc(124px + var(--bot)) 50%;width:min(760px,calc(100vw - 48px));height:min(42vh,410px);transform:translate(-50%,160%);border-radius:var(--r);overflow:hidden}
+  #v-cam.is-on{transform:translate(-50%,0)}
+  #cam-body{max-height:90%;padding:14px 18px 16px}
+  body.v-cam.is-form #cam-body{bottom:64px;max-height:calc(100% - 76px);padding:12px 16px}
+  #cam-sec{top:12px;right:14px}
+  .clip .info{bottom:26px}
+  body.v-feed #habit-filter{visibility:hidden}
+  #detail{left:50%;right:auto;width:min(600px,calc(100vw - 40px));border-radius:var(--r) var(--r) 0 0;transform:translate(-50%,104%)}
+  #detail.is-open{transform:translate(-50%,0)}
+}
+@media(max-width:480px){#heading{top:calc(44px + var(--top))}#int-def{max-width:80vw;font-size:8px}}
+@media(prefers-reduced-motion:reduce){.view,#heading,#detail,#joy-stack,#joy-record{transition:none!important}}
+
+.video-status{position:absolute;top:44%;left:12px;right:12px;text-align:center;pointer-events:none}
+
+.portrait-media{position:relative;aspect-ratio:9/16;background:#000;overflow:hidden}
+.portrait-media>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.clip,#v-cam{container-type:size}
+.clip>.portrait-media,#cam-frame{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100cqw,calc(100cqh * 9 / 16));height:auto}
+#detail .portrait-media{width:min(100%,calc(46dvh * 9 / 16));margin:0 auto 10px}
+#detail .portrait-media>video{max-height:none;margin:0}
+@supports not (width:1cqw){.clip>.portrait-media,#cam-frame{width:min(100%,calc(100vh * 9 / 16))}}
+@media(min-width:900px){#v-cam{height:min(56dvh,520px);width:calc(min(56dvh,520px) * 9 / 16)}}
+
+
+#title,#int-def{display:none!important}
+:root{--tp:110px}
+#heading{top:calc(18px + var(--top));gap:0}
+body.v-feed #heading{top:calc(14px + var(--top));--tp:58px}
+body.v-feed #tp-wrap{display:flex}
+body.v-feed #tp-hint,body.v-feed #who{display:none}body.v-cam #heading{display:flex}
+#member,#member:hover,#member-txt{font-family:var(--q);font-weight:400;color:#fbd5ca}
+#member i{display:none}
+.tname,.tname:hover{font-family:var(--q);font-weight:400;color:#fbd5ca;background:#333366;border:0;border-image:none;border-radius:0;padding:6px 10px;filter:none}
+#tp-name,#tp-name.is-name,#tp-name:hover,#tp-name.is-name:hover{color:#fbd5ca;background:none;border-radius:0;padding:0;max-width:82%;box-sizing:border-box}
+#tp-hint{margin-top:6px;letter-spacing:.1em;font-size:8px}
+#feed .info .habit{box-shadow:0 5px 22px rgba(0,0,0,.65),0 1px 4px rgba(0,0,0,.5)}
+#detail{max-height:84dvh;padding-top:0;overscroll-behavior:contain;touch-action:pan-y;transition:transform .32s var(--ease),visibility 0s .32s}
+#detail.is-open{transform:translateY(var(--sheet-y,0px));transition:transform .32s var(--ease),visibility 0s}
+#detail.is-dragging{transition:none}
+.sheet-grab{position:sticky;top:0;z-index:2;display:flex;justify-content:center;align-items:center;width:100%;height:32px;padding:0;background:var(--s1);border:0;cursor:grab;touch-action:none}
+.sheet-grab span{display:block;width:38px;height:4px;border-radius:3px;background:#777}
+.sheet-grab:focus-visible{outline:1px solid #777;outline-offset:-4px}
+#joy.is-muted{opacity:.18;pointer-events:none}
+#cam-body{position:fixed;left:0;right:0;bottom:calc(190px + var(--bot));z-index:72;max-height:40dvh;padding:12px 20px;overflow-y:auto;overscroll-behavior:contain;background:none;display:none}
+body.v-cam #cam-body{display:block;text-align:center}
+body.v-cam.is-form #cam-body{inset:0;bottom:0;max-height:none;height:100dvh;padding:calc(20px + var(--top)) 16px calc(24px + var(--bot));background:rgba(0,0,0,.86);z-index:120;display:flex;flex-direction:column;gap:12px;text-align:left;touch-action:pan-y}
+body.v-cam.is-form #cam-body>*{width:100%;max-width:520px;margin-left:auto;margin-right:auto;flex-shrink:0}
+body.v-cam.is-form #cam-body>.btn{width:fit-content;margin-left:max(0px,calc((100% - 520px)/2))}
+body.v-cam.is-form #cam-body .row{width:auto}
+body.v-cam.is-form #joy{opacity:.18;pointer-events:none}
+.cam-actions{display:flex;gap:16px;align-items:center;padding-top:12px}
+#cam-body .pick-habit{width:100%;text-align:left}
+@media(max-width:480px) and (max-height:700px){:root{--tp:90px}}
+@media(min-width:900px){
+ #detail.is-open{transform:translate(-50%,var(--sheet-y,0px))}
+}
+.sdata{background:rgba(0,0,0,.86);padding:8px 10px 9px;display:flex;flex-direction:column;gap:6px}
+.sd-row{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.sd-tag{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);background:var(--s2);border-radius:var(--r);
+  padding:3px 8px;line-height:1.5;font-variant-numeric:tabular-nums;text-decoration:none}
+.sd-tag.is-st{background:var(--s4);color:#fff;font-weight:700}
+a.sd-tag{color:#fff;text-decoration:underline;text-decoration-color:rgba(255,255,255,.45);text-underline-offset:3px}
+.sd-say{font-family:var(--q);font-size:13px;color:#fff;line-height:1.45}
+#feed .info .sdata{box-shadow:0 5px 22px rgba(0,0,0,.65),0 1px 4px rgba(0,0,0,.5)}
+#sf-btn{display:none;position:absolute;top:calc(var(--tp) / 2);left:calc(50% + var(--tp) / 2 + 12px);transform:translateY(-50%);pointer-events:auto;
+  font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--lo);background:var(--s2);border:none;
+  border-radius:var(--r);padding:6px 9px;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+body.v-feed #sf-btn{display:block}
+#sf-btn.is-on{color:#fff;background:var(--s4);box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+#sf-panel{position:fixed;z-index:85;width:min(340px,calc(100vw - 32px));transform:translateX(-50%);background:rgba(0,0,0,.92);border-radius:var(--r);
+  padding:12px;display:flex;flex-direction:column;gap:8px;max-height:70dvh;overflow-y:auto;overscroll-behavior:contain}
+#sf-panel .sf-acts{justify-content:space-between;margin-top:4px}
+
+
+
+
+
+
+.sdata{border-radius:16px;margin-top:7px;padding:8px 11px 9px}
+.acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+.acts-note{margin-top:6px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.acts-note[hidden]{display:none}
+.btn small{display:block;font-weight:400;font-size:9px;letter-spacing:.04em;text-transform:none;color:var(--mid);margin-top:2px}
+#feed .info .acts .btn{background:rgba(11,11,13,.86)}
+.portrait-media>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000;display:block}
+#cam-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000;z-index:1}
+.pick-head{justify-content:space-between;width:100%}
+body.v-cam:not(.is-form) #cam-body .say,body.v-cam:not(.is-form) #cam-body .note{display:inline-block;width:fit-content;max-width:100%;
+  background:rgba(0,0,0,.82);border-radius:var(--r);padding:3px 8px;color:#fff;margin:2px auto}
+body.v-cam:not(.is-form) #cam-body .btn{background:rgba(0,0,0,.82);padding:5px 10px}
+body.v-cam #cam-body .cam-actions{justify-content:center;flex-wrap:wrap;gap:8px;padding-top:8px}
+body.v-cam.is-form #cam-body .cam-actions{justify-content:flex-start}
+#cam-sec{background:rgba(0,0,0,.82);border-radius:var(--r);padding:3px 8px}
+body.v-cam #joy-say{background:rgba(0,0,0,.82);border-radius:var(--r);padding:1px 6px;color:#fff}
+@media(max-width:899px){
+ #habit-picker{inset:0;top:0!important;left:0;transform:none;width:auto;max-height:none!important;border:0;border-radius:0;
+   padding:calc(18px + var(--top)) 16px calc(24px + var(--bot));background:rgba(0,0,0,.94);z-index:120}
+}
+
+
+
+
+
+
+@media(hover:hover){
+#member:hover,
+#terms:hover,
+.say:hover,
+.empty:hover,
+.clip .noclip:hover,
+.dist:hover,
+.lab:hover,
+.chip:hover,
+.chip small:hover,
+.chip.is-on small:hover,
+.lnk:hover,
+.note:hover,
+.v-sub:hover,
+.mg-l:hover,
+.by:hover,
+#joy-say:hover,
+#int-def:hover,
+#habit-filter:hover,
+#tp-name:hover,
+#tp-name.is-name:hover,
+#tp-hint:hover,
+.sd-tag:hover,
+#sf-btn:hover,
+.btn small:hover{color:#fff}
+}
+
+
+.sp-card{display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;border:0;cursor:pointer;background:var(--s2);color:#fff;padding:14px 16px 14px 19px;position:relative}
+.sp-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--rep)}
+.sp-when{font:700 9.5px/1.4 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--lo)}
+.sp-habit{font:400 17px/1.3 var(--q);color:#fff}
+.sp-meta{font:400 11px/1.5 var(--mono);color:var(--mid)}
+.sp-mode{margin-left:8px;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#fff}
+.sp-by{font:400 11px/1.5 var(--mono);color:var(--lo)}
+.sp-by b{font:400 13px/1.4 var(--q);color:var(--coral)}.sp-empty{padding:18px 0;text-align:center;color:var(--dim);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.clip .info{width:min(520px,calc(100% - 24px));left:50%;right:auto;transform:translateX(-50%);bottom:calc(114px + var(--bot))}
+/* ══ SPACE · 11/10/2026 — LE RÉSEAU SOCIAL DE L'HABIT STRATÉGIQUE ══════
+   CENTRE la page d'arrivée (le TOTEHM qui tourne, [Higher] SOCIAL MEDIA) ·
+   ← WATCH le fil + son filtre de Habit Box · ↓ SHARE la caméra ·
+   → MY SPACE le profil · ↑ VIBES l'activité. */
+#v-home{background:none}
+#home{display:none;flex-direction:column;align-items:center;gap:12px;margin-top:22px;padding:0 16px;max-width:min(440px,100vw);text-align:center;pointer-events:auto}
+body.v-home #home{display:flex}
+#home-title{display:flex;align-items:center;gap:10px}
+#home-title svg{display:block;width:96px;height:32px}
+#home-title b{font:700 13px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#fff}
+#home-what{margin:0;font:400 10.5px/1.6 var(--mono);letter-spacing:.04em;color:var(--mid)}
+#home-pulse{margin:0;font:700 9px/1.4 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--lo);min-height:12px}
+#home-eco{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:4px}
+#home-eco .btn{align-self:center;background:var(--s2);font-size:9.5px}
+body.v-me #heading,body.v-vibes #heading{top:calc(14px + var(--top));--tp:58px}
+body.v-me #tp-hint,body.v-me #who,body.v-vibes #tp-hint,body.v-vibes #who{display:none}
+#v-me,#v-vibes{background:var(--s1);overflow-y:auto;overscroll-behavior:contain;padding:calc(96px + var(--top)) 14px calc(124px + var(--bot))}
+.pf-in,.vb-in{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.pf-head{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.pf-stats{font:700 9.5px/1.4 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--mid)}
+.pf-acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.pf-acts .btn{align-self:center}
+.pf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.pf-tile{position:relative;display:block;aspect-ratio:9/16;border:0;padding:0;cursor:pointer;overflow:hidden;background:var(--s2);color:#fff;text-align:left}
+.pf-tile>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pf-tile .pf-h{position:absolute;left:6px;right:6px;bottom:22px;font:400 11px/1.3 var(--q);color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+.pf-tile .pf-v{position:absolute;left:6px;bottom:6px;font:700 8.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#fff;background:rgba(0,0,0,.6);border-radius:6px;padding:3px 5px}
+.pf-tile::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c,#fff);z-index:1}
+.pf-empty,.vb-empty{text-align:center;color:var(--dim);font:400 10px/1.6 var(--mono);letter-spacing:.12em;text-transform:uppercase;padding:18px 0}
+.vb-lab{font:700 9.5px/1.4 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--lo);margin-top:6px}
+.vb-row{display:flex;justify-content:space-between;gap:10px;align-items:center;width:100%;border:0;background:var(--s2);color:var(--mid);padding:11px 12px;cursor:pointer;text-align:left;
+  font:400 10.5px/1.5 var(--mono)}
+.vb-row b{font:400 13px/1.3 var(--q);color:var(--coral)}
+.vb-row i{font-style:normal;color:#fff}
+.vb-row time{color:var(--lo);font-size:9.5px;white-space:nowrap}
+/* LA VIBE : un geste, sur chaque space. */
+.btn.vibe{letter-spacing:.14em}
+.btn.vibe.is-on{background:var(--s4);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.5)}
+.vibes-n{font:700 9px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--mid)}
+.clip .vibe-pop{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%) scale(.6);z-index:6;pointer-events:none;opacity:0;
+  font:700 22px/1 var(--mono);letter-spacing:.3em;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.8);transition:opacity .25s ease,transform .35s cubic-bezier(.2,1.4,.4,1)}
+.clip .vibe-pop.is-on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+/* 11/10 (bis) — la scène d'un space : la colonne 9:16 du média, la Habit Box, le rail. */
+.clip>.stage{position:absolute;left:50%;top:0;bottom:0;transform:translateX(-50%);width:min(100cqw,calc(100cqh * 9 / 16));z-index:2;pointer-events:none}
+@supports not (width:1cqw){.clip>.stage{width:min(100%,calc(100vh * 9 / 16))}}
+.stage>*{pointer-events:auto}
+.stage .info{position:absolute;left:12px;right:96px;width:auto;transform:none;bottom:calc(114px + var(--bot))}
+.hz-h{cursor:pointer}
+.stage .rail{position:absolute;right:10px;bottom:calc(114px + var(--bot));margin:0;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.stage .rail .btn{background:rgba(11,11,13,.86);font-size:9px;padding:8px 9px}
+.stage .rail .vibes-n{background:rgba(11,11,13,.86);border-radius:var(--r);padding:8px 9px}
+#hz{position:fixed;left:50%;transform:translateX(-50%);top:calc(84px + var(--top));z-index:84;display:flex;align-items:center;gap:8px;max-width:calc(100vw - 32px);pointer-events:auto}
+#hz.hide,body:not(.v-feed) #hz{display:none}
+#hz .mini{cursor:default;font-size:12px;padding:5px 9px}
+.hz-h [data-hz]{cursor:pointer}
+#hz .hz-hb{padding:5px 9px;font:400 12px/1.4 var(--q);color:#fff;background:var(--navy)}
+#hz-x{border:0;border-radius:var(--r);background:var(--s2);color:#fff;font:700 11px var(--mono);padding:6px 9px;cursor:pointer}
+body.is-hz #sf-btn{display:none}
+/* Le filtre : une Habit Box et TOUT ce qui la compose. */
+#sf-panel .sf-box{display:flex;flex-direction:column;gap:6px}
+#sf-panel .row{flex-wrap:wrap;gap:5px}
+#sf-panel .chip.is-int{border-left:3px solid var(--c,#fff)}
+/* La croix se lit sur la page d'arrivée : un mot par direction. */
+/* 11/10 : le fil et le profil occupent tout l'écran, centrés, sur toutes les tailles. */
+#v-feed{background:var(--s1)}
+/* 12/10 — un élément éteint dans la publication : il reste à sa place, pâli ; un tap le rallume. */
+[data-box-el]{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mini.is-off,.v-frq.is-off{opacity:.3;filter:grayscale(1);text-decoration:line-through}
+/* ══ AUDIENCE — copié depuis tools/audience_ui.css (13/10) ══ */
+.aud{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.aud button{display:inline-flex;align-items:center;gap:6px;font:700 10px/1 'Space Mono',monospace;letter-spacing:.08em;color:#9a9aa0;background:#15151a;border:none;border-radius:10px;padding:7px 9px;cursor:pointer;width:auto}
+.aud button.is-on{background:#2e2e36;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+.aud svg,.audb svg{width:12px;height:12px;flex:0 0 auto}
+.audb{display:inline-flex;align-items:center;justify-content:center;color:#9a9aa0;min-width:20px;min-height:20px}
+@media(hover:hover){.aud button:hover,.audb:hover{color:#fff}}
+/* ══ fin AUDIENCE ══ */
+</style>
+<style data-ecosystem-ui="2026-10-05">
+
+button.eco-text-btn,a.eco-text-btn{inline-size:fit-content!important;max-inline-size:100%;min-inline-size:0!important;flex:0 1 auto!important;padding:.65em .95em!important;line-height:1.45;box-sizing:border-box}
+.eco-connect,.eco-connect #member-txt,.eco-connect #conn-txt{font-family:'Space Mono',monospace!important;font-weight:700!important;font-size:10px!important;color:#b0b0b0!important;letter-spacing:.06em;text-transform:uppercase!important}
+button.eco-connect{background:#252529!important;border:0!important;border-radius:10px!important;cursor:pointer}
+#mmenu .eco-text-btn,.mw-card .eco-text-btn{align-self:flex-start}
+#member.eco-connect,#conn-bar.eco-connect{max-width:calc(50vw - 70px);text-align:left}
+#member.eco-connect #member-txt,#conn-bar.eco-connect #conn-txt{white-space:normal;max-width:100%;overflow:visible;text-overflow:clip}
+#member>i,#conn-bar>.dot,#conn-bar>.dc{display:none!important}
+.habit:not(.add):not(.filtre),.r-habit,.bx{position:relative}
+.eco-box-zoom{position:absolute;right:4px;top:4px;z-index:3;display:flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:0;border-radius:8px;background:none;color:rgba(255,255,255,.55);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.eco-box-zoom svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.eco-box-zoom[aria-pressed=true]{color:#fff}
+.habit:has(> .eco-box-zoom) .v-name,.r-habit:has(> .eco-box-zoom) .r-text,.bx:has(> .eco-box-zoom) .nm{padding-right:22px}
+.habit.is-zoom>.h-body,.r-habit.is-zoom,.bx.is-zoom{zoom:1.25}
+@media(hover:hover){.eco-box-zoom:hover{color:#fff}}
+.eco-sheet{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.94);display:flex;justify-content:center;align-items:flex-start;padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(18px + env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;text-align:left}
+.eco-card{width:min(720px,100%);min-width:0;display:flex;flex-direction:column;gap:18px;margin:auto;touch-action:pan-y}
+.eco-close{align-self:flex-end!important;border:0;border-radius:10px;background:#252529;color:#ddd;font:700 11px 'Space Mono',monospace;cursor:pointer}
+body.eco-modal #joy{pointer-events:none!important;opacity:.2!important}
+body[data-eco-auth="central"] #mw-email,body[data-eco-auth="central"] #mw-code,body[data-eco-auth="central"] #in-email,body[data-eco-auth="central"] #in-otp,body[data-eco-auth="central"] #pt-email,body[data-eco-auth="central"] #pt-otp,body[data-eco-auth="central"] #pt-verify,body[data-eco-auth="central"] #btn-send,body[data-eco-auth="central"] #pt-send,body[data-eco-auth="central"] #btn-verify{display:none!important}
+
+#bigT>svg{visibility:hidden!important}.tv-T{display:none!important}
+@media(hover:hover){.eco-close:hover{background:#34343a;color:#fff}.eco-connect:hover{color:#fff!important}}
+
+</style>
+<style>
+#tp-hint{max-width:min(340px,calc(100vw - 32px));white-space:normal;text-align:center;line-height:1.5}
+.space-higher{width:57px;height:19px;vertical-align:-5px}
+.mini-toggle{width:fit-content;padding:6px 8px;border:0;border-radius:4px;background:var(--s2);color:var(--lo);font:700 9px var(--mono);letter-spacing:.08em;cursor:pointer}
+.mini-toggle.m-o.is-on{background:var(--plus);color:#fff}.mini-toggle.m-r.is-on{background:var(--rep);color:#fff}
+.mg{align-items:flex-start}.mg .minis{width:100%}
+.pick-habit[role=button]:focus-visible{outline:1px solid var(--mid);outline-offset:3px}
+#member.eco-connect{max-width:calc(50vw - var(--tp)/2 - 22px)}
+
+[data-del].is-arm{color:#ff9a9a!important}
+
+@property --tp{syntax:'<length>';inherits:true;initial-value:110px}
+#heading{transition:left .35s var(--ease),right .35s var(--ease),--tp .55s cubic-bezier(.3,1.35,.55,1),opacity .35s ease,visibility 0s linear 0s}body.v-cam #heading{--tp:0px;opacity:0;visibility:hidden;pointer-events:none;
+  transition:left .35s var(--ease),right .35s var(--ease),--tp .4s ease-in,opacity .3s ease,visibility 0s linear .4s}body.v-cam #tp-hint,body.v-cam #sf-btn{display:none}
+@media(prefers-reduced-motion:reduce){#heading,body.v-cam #heading{transition:none}}
+
+#tp-hint{margin-top:12px;padding:7px 12px;border-radius:10px;background:rgba(0,0,0,.74);color:#fff;
+  font:700 11px/1.55 var(--mono);letter-spacing:.08em;text-transform:uppercase;white-space:normal;
+  max-width:min(520px,calc(100vw - 40px));animation:tp-souffle 4.2s ease-in-out infinite}
+@keyframes tp-souffle{0%,100%{opacity:1}50%{opacity:.62}}
+@media(prefers-reduced-motion:reduce){#tp-hint{animation:none}}
+</style></head>
+<body class="v-feed">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="higher-badge" viewBox="0 0 600 200"><defs><mask id="hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></symbol></svg>
+
+<button id="x-back" type="button" aria-label="Back to my TOTEHM"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg></button>
+<div id="who"><button id="member" type="button" aria-label="Connect with my TOTEHM"><i></i><span id="member-txt">CONNECT WITH MY TOTEHM</span></button><a id="terms" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a></div>
+<header id="heading">
+<div id="tp-wrap">
+<div id="totehm-paper">
+    <div id="tp-card">
+      <div class="tp-face tp-front">
+        <div id="tp-logo">
+          <svg class="tp-layer" id="tp-gl-bg"   viewBox="0 0 224.88 224.08" preserveAspectRatio="none"    aria-hidden="true"><defs><mask id="tpb_m" maskUnits="userSpaceOnUse" x="-40" y="-40" width="310" height="310"><rect x="-40" y="-40" width="310" height="310" fill="#fff"/><circle cx="56.421" cy="0.000" r="13.86" fill="#000"/><circle cx="56.421" cy="224.078" r="13.86" fill="#000"/><circle cx="112.440" cy="0.000" r="13.86" fill="#000"/><circle cx="112.440" cy="224.078" r="13.86" fill="#000"/><circle cx="168.459" cy="0.000" r="13.86" fill="#000"/><circle cx="168.459" cy="224.078" r="13.86" fill="#000"/><circle cx="0.402" cy="56.020" r="13.86" fill="#000"/><circle cx="224.478" cy="56.020" r="13.86" fill="#000"/><circle cx="0.402" cy="112.039" r="13.86" fill="#000"/><circle cx="224.478" cy="112.039" r="13.86" fill="#000"/><circle cx="0.402" cy="168.059" r="13.86" fill="#000"/><circle cx="224.478" cy="168.059" r="13.86" fill="#000"/></mask></defs><rect x="0.402" y="0.000" width="224.076" height="224.078" fill="#333366" mask="url(#tpb_m)"/></svg>
+          <svg class="tp-layer" id="tp-gl-rail" viewBox="20.689 0.225 17.203 223.630" preserveAspectRatio="none"    aria-hidden="true"><defs><clipPath id="tpr_3a710ebbbe"><path d="M 20.652344 0.261719 L 37.839844 0.261719 L 37.839844 223.816406 L 20.652344 223.816406 Z M 20.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tpr_1b01f8474a"><path d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.816406 L 0.652344 223.816406 Z M 0.652344 0.261719 " clip-rule="nonzero"/></clipPath><clipPath id="tpr_95349ecf51"><rect x="0" width="18" y="0" height="224"/></clipPath></defs><g clip-path="url(#tpr_3a710ebbbe)"><g transform="matrix(1, 0, 0, 1, 20, -0.000000000000020428)"><g clip-path="url(#tpr_95349ecf51)"><g clip-path="url(#tpr_1b01f8474a)"><path fill="#626286" d="M 0.652344 0.261719 L 17.839844 0.261719 L 17.839844 223.808594 L 0.652344 223.808594 Z M 0.652344 0.261719 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></svg>
+          <svg class="tp-layer" id="tp-gl-t"    viewBox="79.832 47.921 66.789 66.932"    preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="tpt_ad60c268aa"><path d="M 0.871094 1.027344 L 67.59375 1.027344 L 67.59375 10.664062 L 0.871094 10.664062 Z M 0.871094 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_f37d153e97"><path d="M 0.871094 0.0273438 L 67.59375 0.0273438 L 67.59375 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_0eae0d8cca"><rect x="0" width="68" y="0" height="10"/></clipPath><clipPath id="tpt_d380122ed3"><path d="M 29.410156 1.027344 L 39.050781 1.027344 L 39.050781 67.75 L 29.410156 67.75 Z M 29.410156 1.027344 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_75ca9fbfbb"><path d="M 0.410156 0.0273438 L 10.050781 0.0273438 L 10.050781 66.75 L 0.410156 66.75 Z M 0.410156 0.0273438 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_92fddf9f0e"><rect x="0" width="11" y="0" height="67"/></clipPath><clipPath id="tpt_1e85f52e0e"><path d="M 21.183594 63.386719 L 47.28125 63.386719 L 47.28125 67.75 L 21.183594 67.75 Z M 21.183594 63.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_6c7bfd0f9f"><path d="M 0.183594 0.386719 L 26.28125 0.386719 L 26.28125 4.75 L 0.183594 4.75 Z M 0.183594 0.386719 " clip-rule="nonzero"/></clipPath><clipPath id="tpt_7d4c700d36"><rect x="0" width="27" y="0" height="5"/></clipPath><clipPath id="tpt_ffb4264ddd"><rect x="0" width="68" y="0" height="68"/></clipPath></defs><g transform="matrix(1, 0, 0, 1, 79, 47)"><g clip-path="url(#tpt_ffb4264ddd)"><g clip-path="url(#tpt_ad60c268aa)"><g transform="matrix(1, 0, 0, 1, 0.000000000000014211, 1)"><g clip-path="url(#tpt_0eae0d8cca)"><g clip-path="url(#tpt_f37d153e97)"><path fill="#ffffff" d="M 0.871094 0.0273438 L 67.582031 0.0273438 L 67.582031 9.664062 L 0.871094 9.664062 Z M 0.871094 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tpt_d380122ed3)"><g transform="matrix(1, 0, 0, 1, 29, 1)"><g clip-path="url(#tpt_92fddf9f0e)"><g clip-path="url(#tpt_75ca9fbfbb)"><path fill="#ffffff" d="M 10.050781 0.0273438 L 10.050781 66.738281 L 0.410156 66.738281 L 0.410156 0.0273438 Z M 10.050781 0.0273438 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g><g clip-path="url(#tpt_1e85f52e0e)"><g transform="matrix(1, 0, 0, 1, 21, 63)"><g clip-path="url(#tpt_7d4c700d36)"><g clip-path="url(#tpt_6c7bfd0f9f)"><path fill="#ffffff" d="M 26.28125 4.75 L 0.183594 4.75 L 0.183594 0.386719 L 26.28125 0.386719 Z M 26.28125 4.75 " fill-opacity="1" fill-rule="nonzero"/></g></g></g></g></g></g></svg>
+          <svg class="tp-layer" id="tp-gl-wm"   viewBox="74.997 121.602 77.584 46.683"   preserveAspectRatio="none" aria-hidden="true"><defs><g/><clipPath id="tpw_98fd27636e"><rect x="0" width="84" y="0" height="39"/></clipPath></defs><g fill="#ffffff" fill-opacity="1"><g transform="translate(87.377054, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(99.483952, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(104.6725, 137.358137)"><g><path d="M 9.3125 0.140625 C 7.769531 0.140625 6.375 -0.203125 5.125 -0.890625 C 3.882812 -1.578125 2.910156 -2.519531 2.203125 -3.71875 C 1.503906 -4.914062 1.15625 -6.265625 1.15625 -7.765625 C 1.15625 -9.253906 1.503906 -10.597656 2.203125 -11.796875 C 2.910156 -12.992188 3.882812 -13.9375 5.125 -14.625 C 6.375 -15.3125 7.769531 -15.65625 9.3125 -15.65625 C 10.851562 -15.65625 12.238281 -15.3125 13.46875 -14.625 C 14.707031 -13.945312 15.679688 -13.003906 16.390625 -11.796875 C 17.097656 -10.597656 17.453125 -9.253906 17.453125 -7.765625 C 17.453125 -6.265625 17.097656 -4.910156 16.390625 -3.703125 C 15.679688 -2.503906 14.707031 -1.5625 13.46875 -0.875 C 12.238281 -0.195312 10.851562 0.140625 9.3125 0.140625 Z M 9.3125 -1.328125 C 10.539062 -1.328125 11.648438 -1.601562 12.640625 -2.15625 C 13.628906 -2.71875 14.40625 -3.488281 14.96875 -4.46875 C 15.53125 -5.445312 15.8125 -6.546875 15.8125 -7.765625 C 15.8125 -8.972656 15.53125 -10.066406 14.96875 -11.046875 C 14.40625 -12.035156 13.628906 -12.804688 12.640625 -13.359375 C 11.648438 -13.910156 10.539062 -14.1875 9.3125 -14.1875 C 8.082031 -14.1875 6.96875 -13.910156 5.96875 -13.359375 C 4.976562 -12.804688 4.195312 -12.035156 3.625 -11.046875 C 3.050781 -10.066406 2.765625 -8.972656 2.765625 -7.765625 C 2.765625 -6.546875 3.050781 -5.445312 3.625 -4.46875 C 4.195312 -3.488281 4.976562 -2.71875 5.96875 -2.15625 C 6.96875 -1.601562 8.082031 -1.328125 9.3125 -1.328125 Z M 9.3125 -1.328125 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(122.655559, 137.358137)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(127.844108, 137.358137)"><g><path d="M 5.546875 -14.09375 L 0.09375 -14.09375 L 0.09375 -15.515625 L 12.640625 -15.515625 L 12.640625 -14.09375 L 7.1875 -14.09375 L 7.1875 0 L 5.546875 0 Z M 5.546875 -14.09375 "/></g></g></g><g transform="matrix(1, 0, 0, 1, 71, 138)"><g clip-path="url(#tpw_98fd27636e)"><g fill="#ffffff" fill-opacity="1"><g transform="translate(0.838799, 30.275545)"><g><path d="M 18.59375 -2.640625 L 18.59375 0 L 3.1875 0 L 3.1875 -21.234375 L 18.171875 -21.234375 L 18.171875 -18.59375 L 6.21875 -18.59375 L 6.21875 -12.078125 L 16.875 -12.078125 L 16.875 -9.5 L 6.21875 -9.5 L 6.21875 -2.640625 Z M 18.59375 -2.640625 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(19.582399, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(26.163451, 30.275545)"><g><path d="M 21.453125 -21.234375 L 21.453125 0 L 18.421875 0 L 18.421875 -9.46875 L 6.21875 -9.46875 L 6.21875 0 L 3.1875 0 L 3.1875 -21.234375 L 6.21875 -21.234375 L 6.21875 -12.109375 L 18.421875 -12.109375 L 18.421875 -21.234375 Z M 21.453125 -21.234375 "/></g></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(49.213997, 30.275545)"><g/></g></g><g fill="#ffffff" fill-opacity="1"><g transform="translate(55.79505, 30.275545)"><g><path d="M 22.875 0 L 22.84375 -15.46875 L 15.171875 -2.578125 L 13.78125 -2.578125 L 6.09375 -15.390625 L 6.09375 0 L 3.1875 0 L 3.1875 -21.234375 L 5.671875 -21.234375 L 14.53125 -6.3125 L 23.28125 -21.234375 L 25.765625 -21.234375 L 25.796875 0 Z M 22.875 0 "/></g></g></g></g></g></svg>
+          <button id="tp-enter" type="button" aria-haspopup="dialog" aria-controls="habit-picker" aria-expanded="false" aria-label="Turn a habit into a space — select a Habit Box"></button>
+        </div><!-- /#tp-logo -->
+        <div class="tp-light" aria-hidden="true"></div>
+      </div>
+      <div class="tp-face tp-back" aria-hidden="true">
+        <div class="tp-tile"></div>
+        <span class="tp-say" id="tp-name">Tap to open it</span>
+        <div class="tp-light"></div>
+      </div>
+    </div><!-- /#tp-card -->
+  </div><!-- /#totehm-paper -->
+<span id="tp-hint"></span>
+</div>
+<div id="home">
+  <div id="home-title"><svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg><b>Social media</b></div>
+  <p id="home-pulse" aria-live="polite"></p>
+  <div id="home-eco">
+    <button class="btn" type="button" data-eco-door="com">TOTEHM.COM</button>
+    <button class="btn" type="button" data-eco-door="club">FIGHER.CLUB</button>
+  </div>
+</div>
+<button id="sf-btn" type="button" aria-haspopup="dialog" aria-controls="sf-panel" aria-expanded="false">Filter</button>
+<div id="hz" class="hide"><span id="hz-el"></span><button id="hz-x" type="button" aria-label="Back to all the spaces">✕</button></div>
+<div id="title" aria-live="polite"><b id="title-int"></b><svg viewBox="0 0 600 200" role="img" aria-label="Higher"><use href="#higher-badge"></use></svg></div>
+<p id="int-def"></p><button id="habit-filter" class="hide" type="button" aria-haspopup="dialog" aria-expanded="false">Habit Box · all</button></header>
+<aside id="habit-picker" class="hide" role="dialog" aria-label="Select my Habit Box"></aside>
+<aside id="sf-panel" class="hide" role="dialog" aria-label="Filter the spaces"></aside>
+
+
+<section class="view" id="v-home" aria-label="SPACE"></section>
+<section class="view is-on" id="v-feed" aria-label="Watch"><div id="feed"></div></section>
+<section class="view" id="v-me" aria-label="My space"><div class="pf-in" id="profile"></div></section>
+<section class="view" id="v-vibes" aria-label="Vibes"><div class="vb-in" id="vibes"></div></section>
+<section class="view" id="v-cam" aria-label="Camera">
+  <div id="cam-frame" class="portrait-media"><video id="cam-v" playsinline muted></video><img id="cam-photo" class="hide" alt=""></div>
+  <div id="cam-n"></div>
+  <div id="cam-sec" class="hide"><i></i><span id="cam-s"></span></div>
+</section>
+<div id="cam-body" tabindex="-1" aria-label="Create my space"></div>
+
+<aside id="detail" aria-label="Space"></aside>
+
+
+<div id="joy" role="group" aria-label="Where I am in totehm.space">
+  <button class="cur" id="cur-h" type="button" aria-label="Vibes"><svg viewBox="0 0 16 16"><path d="M3 10 L8 5 L13 10"/></svg></button>
+  <button class="cur" id="cur-g" type="button" aria-label="Watch"><svg viewBox="0 0 16 16"><path d="M10 3 L5 8 L10 13"/></svg></button>
+  <button id="joy-box" type="button" aria-label="Back to feed"><span id="joy-stack" aria-hidden="true"><i class="o"></i><i class="h"></i><i class="r"></i></span><span id="joy-record" aria-hidden="true"></span></button><span id="joy-say"></span>
+  <button class="cur" id="cur-d" type="button" aria-label="My space"><svg viewBox="0 0 16 16"><path d="M6 3 L11 8 L6 13"/></svg></button>
+  <button class="cur" id="cur-b" type="button" aria-label="Share"><svg viewBox="0 0 16 16"><path d="M3 6 L8 11 L13 6"/></svg></button>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL = 'https://abujjbkbbiumxrokozph.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidWpqYmtiYml1bXhyb2tvenBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTUyODIsImV4cCI6MjA5MDUzMTI4Mn0.1baPwPzAeT91Re9xj6afBrNso-Ri46fvIIwvATZL2us';
+const sb = createClient(SB_URL, SB_ANON);
+const FN = SB_URL + '/functions/v1/';
+const $ = id => document.getElementById(id);
+const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
+/* ══ AUDIENCE — 13/10 : quatre niveaux, une pastille. COPIÉ tel quel depuis tools/audience_ui.js
+   (jamais importé). PRIVATE = moi · FIGHER CLUB = les membres · MY SUBSCRIBERS = mes abonnés ·
+   PUBLIC = tout le monde. Le serveur décide (`_audience_ok`) ; ceci ne fait que le dire. ══ */
+const AUD = [['private','PRIVATE'],['figher','FIGHER CLUB'],['subscribers','MY SUBSCRIBERS'],['public','PUBLIC']];
+const AUD_ICON = {
+  private:'<svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="5.5" width="7" height="5" rx="1" fill="currentColor"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
+  figher:'<svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.6" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r="2.2" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r=".9" fill="currentColor"/></svg>',
+  subscribers:'<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.2l1.4 3 3.3.4-2.4 2.3.6 3.3L6 8.6 3.1 10.2l.6-3.3L1.3 4.6l3.3-.4z" fill="currentColor"/></svg>',
+  public:'<svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.6" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M1.4 6h9.2M6 1.4c-2.6 2.6-2.6 6.6 0 9.2M6 1.4c2.6 2.6 2.6 6.6 0 9.2" fill="none" stroke="currentColor" stroke-width="1"/></svg>'
+};
+const audOf = s => s?.audience || (s?.visibility === 'shared' ? 'public' : 'private');
+const audName = a => (AUD.find(x => x[0] === a) || [])[1] || '';
+const audPick = (cur, attr) => '<div class="aud" role="radiogroup" aria-label="Who sees it">' + AUD.map(([k, l]) =>
+  '<button type="button" role="radio" aria-checked="' + (k === cur) + '"' + (k === cur ? ' class="is-on"' : '') + ' ' + attr + '="' + k + '">' + AUD_ICON[k] + '<span>' + l + '</span></button>').join('') + '</div>';
+const audBadge = a => AUD_ICON[a] ? '<span class="audb" role="img" aria-label="' + audName(a) + '" title="' + audName(a) + '">' + AUD_ICON[a] + '</span>' : '';
+const audMark = (root, attr, a) => root?.querySelectorAll('[' + attr + ']').forEach(b => { const on = b.getAttribute(attr) === a;
+  b.classList.toggle('is-on', on); b.setAttribute('aria-checked', String(on)); });
+/* ══ fin AUDIENCE ══ */
+
+/* ══ DANS TOTEHM.COM · 12/10/2026 — COPIÉ À L'IDENTIQUE dans space/ et club/ ══════════
+   Wah : « il faut que SPACE et le Club vivent sur totehm.com ; dans mon Totehm, un clic sur un
+   space ou un spot me redirige vers une autre page alors que la fluidité est LA chose la plus
+   importante ». totehm.com sert cette page sous `/x/space` et `/x/club` (réécritures Vercel) :
+   MÊME ORIGINE, donc la même session, aucun pont. Elle vit dans une couche du Totehm (`#xo`),
+   chargée d'avance. `EMBED` n'est vrai que dans un cadre de la même origine avec `?embed`.
+   Le contrat, par `postMessage`, origine vérifiée :
+     COM → ici  {totehm:'x', cmd:'url', q:'spot=ID' | 'v=cam&habit=…' | …} · {cmd:'sleep'}
+     ici → COM  {totehm:'x', ev:'ready' | 'close' | 'signin' | 'stale' | 'go', cible, url}
+   Pas de pont SSO ici : se connecter, aller ailleurs, c'est COM qui le fait. */
+const EMBED = (() => { try{ return window.parent !== window && parent.location.origin === location.origin && new URLSearchParams(location.search).has('embed'); }catch(_){ return false; } })();
+const toCom = (ev, x) => { try{ parent.postMessage(Object.assign({ totehm:'x', ev }, x || {}), location.origin); }catch(_){} };
+let WANT_HABIT = null, CHARGE = false, DORT = false;
+
+/* ══ LE PONT SSO v2 — COPIÉ de tools/sso_snippet.js (30/09/2026) ══════
+   totehm.com est l'autorité : se connecter ici = passer PAR totehm.com
+   (authorization code + PKCE). Le lien entre domaines reste le pont. */
+const SSO_CLIENT = 'space';
+const SSO_AUTH = 'https://www.totehm.com/auth';
+const SSO_KNOWN = 'totehm_sso_known';
+const SSO_TRIED = 'totehm_sso_tried';
+const SSO_PKCE  = 'totehm_sso_pkce';
+const ssoB64 = bytes => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const ssoStore = (s, k, v) => { try{ v === null ? s.removeItem(k) : s.setItem(k, v); }catch(_){} };
+const ssoRead = (s, k) => { try{ return s.getItem(k); }catch(_){ return null; } };
+async function ssoArrivee(sb){
+  const h = new URLSearchParams(location.hash.replace(/^#/, ''));
+  const q = new URLSearchParams(location.search);
+  const code = h.get('sso') || q.get('sso'), st = h.get('state'), err = h.get('sso_error');
+  if(!code && !err) return false;
+  ['sso','state','sso_error'].forEach(k => { h.delete(k); q.delete(k); });
+  const reste = [...h.keys()].length ? '#' + h.toString().replace(/=(&|$)/g, '$1') : '';
+  history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + reste);
+  const pk = (() => { try{ return JSON.parse(ssoRead(sessionStorage, SSO_PKCE) || 'null'); }catch(_){ return null; } })();
+  ssoStore(sessionStorage, SSO_PKCE, null);
+  if(err || !/^[a-f0-9]{64}$/.test(code || '')) return false;
+  let verifier;
+  if(st){
+    if(!pk || pk.state !== st){ console.error('[sso] state'); return false; }
+    verifier = pk.verifier;
+  }
+  try{
+    const r = await fetch(FN + 'sso-redeem', {
+      method:'POST',
+      headers:{'content-type':'application/json', 'apikey':SB_ANON, 'authorization':'Bearer '+SB_ANON},
+      body: JSON.stringify(verifier ? { code, verifier } : { code })
+    });
+    if(!r.ok){ console.error('[sso] redeem', r.status); return false; }
+    const { token_hash, email } = await r.json();
+    if(!token_hash) return false;
+    const { error } = await sb.auth.verifyOtp({ type:'email', token_hash });
+    if(error){ console.error('[sso] verify', error.message); return false; }
+    return true;
+  }catch(e){ console.error('[sso]', e && e.message || e); return false; }
+}
+async function ssoLogin(silent, retour){
+  if(EMBED){ toCom('signin'); return; }
+  const v = ssoB64(crypto.getRandomValues(new Uint8Array(32)));
+  const c = ssoB64(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v))));
+  const st = ssoB64(crypto.getRandomValues(new Uint8Array(16)));
+  ssoStore(sessionStorage, SSO_PKCE, JSON.stringify({ verifier: v, state: st }));
+  const ret = retour || (location.pathname + location.search);
+  location.href = SSO_AUTH + '?client=' + SSO_CLIENT + '&challenge=' + c + '&state=' + st +
+                  '&return=' + encodeURIComponent(ret) + (silent ? '&prompt=none' : '');
+}
+async function ssoVersDomaine(sb, cible, url, replace=false){
+  if(EMBED){ toCom('go', { cible, url }); return; }
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(session){
+      const r = await fetch(FN + 'sso-mint', {
+        method:'POST',
+        headers:{ 'authorization':'Bearer '+session.access_token, 'apikey':SB_ANON, 'content-type':'application/json' },
+        body: JSON.stringify({ target: cible })
+      });
+      if(r.ok){
+        const { code } = await r.json();
+        if(code){ if(replace) location.replace(url + (url.includes('#') ? '&' : '#') + 'sso=' + code); else location.href = url + (url.includes('#') ? '&' : '#') + 'sso=' + code; return; }
+      } else console.error('[sso] mint', r.status);
+    }
+  }catch(e){ console.error('[sso]', e && e.message || e); }
+  if(replace) location.replace(url); else location.href = url;
+}
+await Promise.race([ ssoArrivee(sb), new Promise(r => setTimeout(() => r(false), 2500)) ]);
+sb.auth.onAuthStateChange(ev => {
+  if(ev === 'SIGNED_IN') ssoStore(localStorage, SSO_KNOWN, '1');
+  if(ev === 'SIGNED_OUT') ssoStore(localStorage, SSO_KNOWN, null);
+});
+{
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session) ssoStore(localStorage, SSO_KNOWN, '1');
+  else if(!EMBED && ssoRead(localStorage, SSO_KNOWN) && !ssoRead(sessionStorage, SSO_TRIED)){
+    ssoStore(sessionStorage, SSO_TRIED, '1');
+    await ssoLogin(true);
+    await new Promise(() => {});
+  }
+}
+/* Les portes vers totehm.com passent TOUTES par le pont. */
+const COM = 'https://www.totehm.com';
+document.addEventListener('click', e => {
+  const t = e.target instanceof Element ? e.target : null; if(!t) return;
+  const g = t.closest('[data-com]');
+  if(g){ e.preventDefault(); e.stopPropagation(); ssoVersDomaine(sb, 'com', COM + g.dataset.com); }
+}, true);
+
+/* ══ LES SEPT INTENTIONS — ordre des chakras : violet en haut, rouge en bas ══ */
+const INTS = {
+  fight:{n:'Fight',c:'#E24B4A',def:'Conquer yourself through harder effort.',pillar:'BODY'},
+  flow:{n:'Flow',c:'#e48b31',def:'Liberate energy through movement.',pillar:'BODY'},
+  enrich:{n:'Enrich',c:'#fcbe21',def:'Master your wealth through capital & network.',pillar:'MENTAL'},
+  love:{n:'Love',c:'#639922',def:'Contemplate life through connection & beauty.',pillar:'SPIRIT'},
+  express:{n:'Express',c:'#1D9E75',def:'Give form to emotion through creation.',pillar:'SOUL'},
+  focus:{n:'Focus',c:'#378ADD',def:'Master your mind through deep mental focus.',pillar:'MENTAL'},
+  celebrate:{n:'Celebrate',c:'#7F77DD',def:'Elevate energy through collective effervescence.',pillar:'SOUL'} };
+
+const CHAKRA = ['celebrate','focus','express','love','enrich','flow','fight'];
+const icol = i => (INTS[i] || {}).c || '#ffffff';
+const FREQ = {"every_minute": "every minute", "hourly": "every hour", "several_daily": "several times a day", "every_morning": "every morning", "every_afternoon": "every afternoon", "daily": "daily", "every_evening": "every evening", "every_weekday": "every weekday", "every_night": "every night", "every_other_day": "every other day", "twice_week": "twice a week", "every_weekend": "every weekend", "weekly": "weekly", "every_monday": "every monday", "every_tuesday": "every tuesday", "every_wednesday": "every wednesday", "every_thursday": "every thursday", "every_friday": "every friday", "every_saturday": "every saturday", "every_sunday": "every sunday", "biweekly": "every two weeks", "twice_month": "twice a month", "monthly": "monthly", "every_1st_month": "every 1st of the month", "every_15th_month": "every 15th of the month", "seasonal": "every season change", "quarterly": "every quarter", "semiannual": "every six months", "yearly": "yearly", "every_birthday": "every birthday", "every_newyear": "every new year", "randomly": "randomly", "sometimes": "sometimes"};
+
+/* ══ LE TEMPS — à l'heure de l'APPAREIL, à la première personne ══════ */
+const pad = n => String(n).padStart(2, '0');
+const hhmm = d => pad(d.getHours()) + ':' + pad(d.getMinutes());
+const dayOf = d => { const n = new Date(), y = new Date(n); y.setDate(n.getDate() - 1);
+  if(d.toDateString() === n.toDateString()) return 'today';
+  if(d.toDateString() === y.toDateString()) return 'yesterday';
+  return d.toLocaleDateString('en-GB', { day:'numeric', month:'short' }); };
+const fmtDur = m => !m ? '' : m < 60 ? m + ' min' : Math.floor(m/60) + ' h' + (m % 60 ? ' ' + pad(m % 60) : '');
+/* L'état se RECALCULE à chaque dessin depuis `ends_at` : un Spot passe à
+   I WAS THERE sous les yeux, sans attendre une requête. */
+const spotState = s => s.starts_at && new Date(s.starts_at).getTime() > Date.now() ? 'will' : s.ends_at ? (Date.now() < new Date(s.ends_at).getTime() ? 'am' : 'was') : s.state;
+const isHere = s => spotState(s) === 'am';
+
+/* ══ LA SPHÈRE — seulement pour les points que j'ai le droit de voir ═ */
+const EARTH_R = 6371e3, DEG = Math.PI/180;
+const hav = (a, b) => { const p1 = a.lat*DEG, p2 = b.lat*DEG, dp = p2 - p1, dl = (b.lng - a.lng)*DEG;
+  const h = Math.sin(dp/2)**2 + Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2; return 2*EARTH_R*Math.asin(Math.min(1, Math.sqrt(h))); };
+let UNIT = 'km';
+try{ if(/^(America\/|Pacific\/Honolulu|US\/)/.test(Intl.DateTimeFormat().resolvedOptions().timeZone || '')
+        && !/America\/(Sao_Paulo|Argentina|Bogota|Lima|Santiago|Caracas|Mexico_City|Toronto|Vancouver|Montreal|Halifax)/.test(Intl.DateTimeFormat().resolvedOptions().timeZone)) UNIT = 'mi'; }catch(_){}
+const fmtDist = m => { if(m == null || !isFinite(m)) return ''; const v = UNIT === 'mi' ? m/1609.344 : m/1000;
+  return (v < 10 ? Math.max(.1, v).toFixed(1) : String(Math.round(v))) + ' ' + UNIT; };
+
+/* ══ L'ÉTAT ══════════════════════════════════════════════════════════ */
+const BUILD='2026-10-13-space-who';
+const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
+let me = null, PSEUDO = null, POS = null, RULES = { clip_seconds:33, clip_max_bytes:48000000, countdown:3, duration_min:5, duration_max:720 };
+let VIEW = 'feed';   /* 12/10 — on arrive dans le fil (Wah : « totehm.space, pur TikTok »). */
+const S = { int:null, q:'', habit:null };
+const FEED = { list:[], shown:[], seq:0, more:true, loading:false, match:'all', active:null };
+let habitsPending = null, gestureCount = 0, suppressClickUntil = 0;
+const REC = { seq:0, step:null, stream:null, mr:null, blob:null, url:null, mime:'', t0:0, timer:0, seconds:0, uploaded:null, habit:null, vis:'shared', boxOptions:boxNew(), pos:null, city:null, placeAt:0, placePromise:null, placeError:false,
+  busy:false, capture:null, width:0,height:0,fps:0,bitrate:0,path:null, kind:null, why:false };
+let HABITS = null, DETAIL = null;
+const VIDEO_METRICS={firstFrameMs:0,uploadMs:0,publishMs:0,warmStarts:0,coldStarts:0,stalls:0};
+window.__totehm_space = () => ({ build: BUILD, view: VIEW, signed_in: !!me, located: !!POS, intention: null, search: !!SF.box,
+  feed: FEED.list.length, playing: [...document.querySelectorAll('#feed video')].filter(v => !v.paused).length,
+  video:{provider:RULES.video_provider || 'storage',buffered:[...document.querySelectorAll('#feed video')].filter(v=>v.getAttribute('src') || v._hls).length,...VIDEO_METRICS,...(()=>{const v=$('feed').querySelector('.clip[data-k="'+FEED.active+'"] video'),q=v?.getVideoPlaybackQuality?.();return {frames:q?.totalVideoFrames || 0,dropped:q?.droppedVideoFrames || 0};})()},
+  vibes_in:VIB.data?.received?.length || 0, horizon:!!HZ.on, vibes_given:VIB.data?.given?.length || 0, profile_spaces:PROF.list.length, filter:sfCount(), gestures:gestureCount, paper:PAPER.etat(), habit_filter:!!SF.box, spot_filter:sfCount(), feed_shown:FEED.shown.length, joystick_camera:VIEW === 'cam', detail: !!DETAIL, rec: { step: REC.step, kind: REC.kind, clip: !!REC.blob, camera: !!REC.stream, vis: REC.vis, aud: REC.aud, width:REC.width,height:REC.height,fps:REC.fps,bitrate:REC.bitrate,path:REC.path } });
+
+/* Chaque vue dit où je suis (lecteurs d'écran ; SPACE n'affiche pas de titre de vue). */
+const VIEW_WORDS = {home:['SPACE','Higher social media'],feed:['WATCH','strategic habits, lived'],cam:['SHARE','9:16 · up to 33 seconds'],me:['MY SPACE','my spaces, my vibes'],vibes:['VIBES','on my spaces · the spaces I vibed']};
+function paintInts(){
+ const [title,sub]=VIEW_WORDS[VIEW];
+ $('title-int').textContent=title; $('title').style.setProperty('--c','#fff');
+ $('int-def').textContent=sub+(SF.box && VIEW==='feed' ? ' · '+SF.box.name : ''); PAPER.hint();
+}
+
+/* ══ LA BOÎTE D'UN SPOT — ce que CE lecteur a le droit de voir ═══════ */
+const tickHTML = l => '<span class="tick">' + (l || []).map(i => '<i style="background:' + icol(i) + '"></i>').join('') + '</span>';
+const sdTag = (t, cls) => '<span class="sd-tag' + (cls ? ' ' + cls : '') + '">' + t + '</span>';
+
+const intHTML = l => (l || []).map(i => '<span class="v-int" style="color:'+icol(i)+'" title="'+esc(INTS[i]?.def)+'">'+esc(INTS[i]?.n || i)+'</span>').join('');
+/* 12/10/2026 — LA BOX TELLE QUELLE. Ce qui vient du TOTEHM garde le format du TOTEHM (Wah).
+   options = { hide:{o:[textes], r:[textes], freq} } dans la publication : la box s'affiche entière,
+   chaque mini-box et le rythme s'éteignent puis se rallument d'un tap (`is-off`) ; rien n'est
+   éteint par défaut ; le lieu habituel, jamais publié, n'y figure pas. options = 'hz' dans le fil :
+   chaque élément ouvre son horizon. Sans options : lecture. */
+function boxNew(){ return { hide:{ o:[], r:[], freq:false } }; }  // déclaration : REC et PLAN l'appellent plus haut
+const offIn = (list, t) => (list || []).some(x => x.toLowerCase() === String(t || '').trim().toLowerCase());
+function contextHTML(h,options,prefix){
+ const edit = !!(options && typeof options === 'object' && options.hide), hz = options === 'hz';
+ return ['objectives','repulsions'].map(k => {
+  const kk = k === 'objectives' ? 'o' : 'r';
+  const list = (h?.[k] || []).map((x,i) => ({ text:String(x.text || '').trim(), i })).filter(x => x.text); if(!list.length) return '';
+  return '<span class="mg"><span class="mg-l">' + (k === 'objectives' ? 'OBJECTIVES' : 'REPULSIONS') + '</span><span class="minis">' + list.map(x => {
+   const off = edit && offIn(options.hide[kk], x.text);
+   const attr = edit ? ' role="button" tabindex="0" data-box-el="' + kk + '" data-box-i="' + x.i + '" aria-pressed="' + !off + '"'
+              : hz ? ' role="button" tabindex="0" data-hz="' + kk + '" data-hz-i="' + x.i + '"' : '';
+   return '<span class="mini m-' + kk + (off ? ' is-off' : '') + '"' + attr + '>' + esc(x.text) + '</span>';
+  }).join('') + '</span></span>';
+ }).join('');
+}
+function habitInner(h,options,prefix){
+ const edit = !!(options && typeof options === 'object' && options.hide), off = edit && !!options.hide.freq;
+ const configured=h.step ? (Array.isArray(h.step.is) ? h.step.is : h.step.i ? [h.step.i] : []) : h.ints;
+ const freq = String(h.freq || '').trim() ? '<span class="v-frq' + (off ? ' is-off' : '') + '"' + (edit ? ' role="button" tabindex="0" data-box-el="f" aria-pressed="' + !off + '"' : '') + '>' + esc(FREQ[h.freq] || h.freq) + '</span>' : '';
+ const meta=intHTML(configured)+freq+(!edit && String(h.place || '').trim() ? '<span class="v-frq">'+esc(h.place)+'</span>' : '');
+ return '<span class="v-name">'+esc(h.name)+'</span>'+(meta ? '<span class="v-sub">'+meta+'</span>' : '')+contextHTML(h,options,prefix);
+}
+/* La Habit Box reste la boîte de COM ; tout ce qui est « space » vit dessous,
+   noir et gris, identique dans LEFT, RIGHT et le détail. */
+function spotHTML(s){
+ const why=s.why || (s.mine && s.show_why ? s.context : null), h=s.habit_box || {name:s.habit,ints:s.intentions || [],freq:s.freq,place:s.context?.place,objectives:why?.objectives || [],repulsions:why?.repulsions || []};
+ return habitHTML(h)+(s.comment?'<p class="sd-say">'+esc(s.comment)+'</p>':'')+(!s.mine && s.creator?'<div class="by"><span>by</span><button class="tname" type="button" data-profile="'+esc(s.creator)+'">'+esc(s.creator)+'</button></div>':'');
+}
+/* LES GESTES D'UN SPACE — en ligne, là où il est lu : jamais une fiche qui
+   répète la même boîte. GO résout les droits ACTUELS au moment du geste. */
+const hasMedia = s => !!(s.clip || s.video || s.photo);
+const hasWhy = s => !!((s.why || (s.mine && s.show_why && s.context)) && [...((s.why || s.context).objectives || []),...((s.why || s.context).repulsions || [])].length);
+const vibeLabel = s => 'VIBE' + (s.vibes ? ' · ' + s.vibes : '');
+/* 12/10 — LA BOX ENTIÈRE DANS LE FIL (Wah : « il ne faut pas séparer les objectifs de l'habitude »).
+   La Habit Box reste celle de COM, objectifs et répulsions DEDANS ; un tap sur l'Habit, un objectif
+   ou une répulsion ouvre son HORIZON (plus bas). Seul le serveur décide de ce qui se montre. */
+const whyOf = s => s.why || (s.mine && s.show_why ? s.context : null);
+const elemsOf = s => { const w = whyOf(s) || {};
+  return [...(w.objectives || []).map((x,i) => ({k:'o',i,text:String(x.text || '').trim()})),
+          ...(w.repulsions || []).map((x,i) => ({k:'r',i,text:String(x.text || '').trim()}))].filter(x => x.text); };
+function railHTML(s){
+  const id = esc(s.id), b = [];
+  if(s.visibility === 'shared' && !s.mine) b.push('<button class="btn vibe' + (s.vibed ? ' is-on' : '') + '" type="button" data-vibe="' + id + '" aria-pressed="' + !!s.vibed + '">' + vibeLabel(s) + '</button>');
+  else if(s.vibes) b.push('<span class="vibes-n">' + s.vibes + ' vibe' + (s.vibes > 1 ? 's' : '') + '</span>');
+  if(s.habit) b.push('<button class="btn" type="button" data-spot-it="' + id + '">SPOT</button>');
+  if(audOf(s) === 'public') b.push('<button class="btn" type="button" data-share="' + id + '">SHARE</button>');
+  if(s.mine || audOf(s) !== 'public') b.push(audBadge(audOf(s)));
+  return '<div class="acts rail">' + b.join('') + '</div>';
+}
+function feedStage(s){
+  const w = whyOf(s) || {}, h = {name:s.habit, ints:s.intentions || [], freq:s.freq, objectives:w.objectives || [], repulsions:w.repulsions || []};
+  return '<div class="info"><div class="hz-h" role="button" tabindex="0" data-hz="h">' + habitHTML(h,'hz') + '</div>' +
+    (s.comment ? '<p class="sd-say">' + esc(s.comment) + '</p>' : '') +
+    (!s.mine && s.creator ? '<div class="by"><span>by</span><button class="tname" type="button" data-profile="' + esc(s.creator) + '">' + esc(s.creator) + '</button></div>' : '') +
+    '<p class="note acts-note" hidden></p></div>' + railHTML(s);
+}
+function actsHTML(s, where){
+  const id = esc(s.id), b = [];
+  if(s.format !== 'spot' && s.visibility === 'shared' && !s.mine) b.push('<button class="btn vibe' + (s.vibed ? ' is-on' : '') + '" type="button" data-vibe="' + id + '" aria-pressed="' + !!s.vibed + '">' + vibeLabel(s) + '</button>');
+  if(s.mine && s.vibes) b.push('<span class="vibes-n">' + s.vibes + ' vibe' + (s.vibes > 1 ? 's' : '') + '</span>');
+  if(s.format !== 'spot' && s.habit) b.push('<button class="btn" type="button" data-spot-it="' + id + '">SPOT</button>');
+  if(audOf(s) === 'public') b.push('<button class="btn" type="button" data-share="' + id + '">SHARE</button>');
+  if(where === 'detail' && s.mine) b.push('<button class="btn" type="button" data-del="' + id + '">DELETE</button>');
+  if(where === 'detail') b.push('<button class="btn" type="button" data-close="1">CLOSE</button>');
+  if(!(where === 'detail' && s.mine) && (s.mine || audOf(s) !== 'public')) b.push(audBadge(audOf(s)));
+  /* 13/10 : mon space dit à qui il parle, et se change d'un tap (l'auteur seul, `spot_audience_set`). */
+  const pick = where === 'detail' && s.mine ? audPick(audOf(s), 'data-aud-set') : '';
+  return b.length ? pick + '<div class="acts">' + b.join('') + '</div><p class="note acts-note" hidden></p>' : '';
+}
+/* SPACE → SPOT (Wah, 11/10) : figher.club prolonge SPACE. Mon space → le plan d'un spot, Habit et
+   ville déjà posées ; le space d'un autre → les spots à venir de cette Habit (les rejoindre). */
+const CLUB = 'https://www.figher.club';
+function spotIt(s){
+  const q = new URLSearchParams({ v: s.mine ? 'plan' : 'list', habit: s.habit || '' });
+  if(s.mine && s.city) q.set('city', s.city);
+  ssoVersDomaine(sb, 'club', CLUB + '/?' + q.toString());
+}
+const spotById = id => DETAIL?.id === id ? DETAIL : [...FEED.list, ...PROF.list, ...(VIB.data?.given || [])].find(x => x.id === id);
+function actsSay(button, text, creator){
+  const a = button.closest('.acts'), n = a?.nextElementSibling?.matches('.acts-note') ? a.nextElementSibling : button.closest('.stage')?.querySelector('.acts-note'); if(!n) return;
+  n.hidden = false; n.innerHTML = esc(text) + (creator ? ' <button class="btn" type="button" data-com="/@' + encodeURIComponent(creator) + '">SUBSCRIBE</button>' : '');
+}
+
+
+/* Changer l'audience de MON space : la réponse tardive n'écrase pas un choix plus frais (séquence). */
+let audSeq = 0;
+async function audSet(btn){
+  const s = DETAIL, a = btn.dataset.audSet, row = btn.closest('.aud'); if(!s || !s.mine || audOf(s) === a) return;
+  const seq = ++audSeq, was = audOf(s); audMark(row, 'data-aud-set', a);
+  const { data, error } = await sb.rpc('spot_audience_set', { p_spot: s.id, p_audience: a });
+  if(error) console.error('[spot_audience_set]', error.message);
+  if(seq !== audSeq) return;
+  if(error || !data?.ok){ audMark(row, 'data-aud-set', was); return actsSay(btn.closest('#detail')?.querySelector('.acts button') || btn, 'Not saved. Try again.'); }
+  s.audience = a; s.visibility = a === 'private' ? 'private' : 'shared';
+  [...FEED.list, ...PROF.list].forEach(x => { if(x.id === s.id){ x.audience = s.audience; x.visibility = s.visibility; } });
+}
+async function actsClick(e){
+  const t = e.target instanceof Element ? e.target : null; if(!t) return false;
+  const del = t.closest('[data-del]'); if(del){ if(await spaceDelete(del, del.dataset.del) === 'failed') actsSay(del, 'Not deleted. Try again.'); return true; }
+  const as = t.closest('[data-aud-set]'); if(as){ await audSet(as); return true; }
+  const vb = t.closest('[data-vibe]'); if(vb){ await vibe(vb.dataset.vibe, vb); return true; }
+  const pf = t.closest('[data-profile]'); if(pf){ openProfile(pf.dataset.profile); return true; }
+  const si = t.closest('[data-spot-it]'); if(si){ const s = spotById(si.dataset.spotIt); if(s) spotIt(s); return true; }
+  const sh = t.closest('[data-share]');
+  if(sh){ const url = 'https://www.totehm.space/s/' + encodeURIComponent(sh.dataset.share);
+    try{ if(navigator.share) await navigator.share({ title:'TOTEHM.SPACE', url }); else { await navigator.clipboard.writeText(url); sh.textContent = 'LINK COPIED'; } }
+    catch(_){} return true; }
+  return false;
+}
+
+/* ══ LES VIDÉOS — lecture autorisée, fenêtre précédente/active/suivante ══ */
+const SIGNED=new Map(),VIDEO_AUTH=new Map();let hlsModule=null,feedReleaseTimer=0,videoAuthQueue=[],videoAuthScheduled=false;
+async function videoRequest(name,body){const {data,error}=await sb.functions.invoke(name,{body});if(error) throw error;return data;}
+function authorizeClip(v){
+ const id=v.dataset.bunny,spot=v.dataset.spot,key=(me?.id || 'anon')+':'+spot+':'+id;
+ if(VIDEO_AUTH.has(key))return VIDEO_AUTH.get(key);
+ const promise=new Promise((resolve,reject)=>videoAuthQueue.push({key,id,spot,resolve,reject}));VIDEO_AUTH.set(key,promise);
+ if(!videoAuthScheduled){videoAuthScheduled=true;queueMicrotask(async()=>{
+  videoAuthScheduled=false;const queue=videoAuthQueue;videoAuthQueue=[];
+  await Promise.all(Array.from({length:Math.ceil(queue.length/2)},async(_,i)=>{
+   const jobs=queue.slice(i*2,i*2+2);
+   try{
+    let data;
+    try{data=await videoRequest('bunny-video',{clips:jobs.map(({id,spot})=>({id,spot}))});}
+    catch(e){if(e.context?.status!==400)throw e;}
+    if(!Array.isArray(data?.clips)){
+     // Compatibilité pendant un déploiement ou avec l'ancien contrat.
+     await Promise.all(jobs.map(async j=>{try{j.resolve(await videoRequest('bunny-video',{id:j.id,spot:j.spot}));}catch(e){j.reject(e);}}));
+    }else for(const j of jobs){const r=data.clips.find(r=>r.id===j.id && r.spot===j.spot);if(!r || r.error)j.reject(new Error('Video unavailable'));else j.resolve(r);}
+   }catch(e){jobs.forEach(j=>j.reject(e));}
+   finally{jobs.forEach(j=>VIDEO_AUTH.delete(j.key));}
+  }));
+ });}
+ return promise;
+}
+async function clipURL(path){
+ const uid=me?.id || 'anon',key=uid+':'+path,c=SIGNED.get(key);if(c && c.at>Date.now()-50*60e3) return c.url;
+ const {data,error}=await sb.storage.from('moments').createSignedUrl(path,3600);if(error){console.error('[clip]',error.message);return null;}
+ if((me?.id || 'anon')===uid){SIGNED.set(key,{url:data.signedUrl,at:Date.now()});if(SIGNED.size>64)SIGNED.delete(SIGNED.keys().next().value);}return data.signedUrl;
+}
+const videoWanted=v=>v.isConnected && !document.hidden && (v.closest('#detail')?!!DETAIL:VIEW==='feed' && !!v._wanted);
+const lookAhead=()=>!navigator.connection?.saveData && !['slow-2g','2g'].includes(navigator.connection?.effectiveType);
+const bandwidth=()=>Math.max(400000,Math.min(15000000,(navigator.connection?.downlink || 5)*800000));
+const bufferedAhead=v=>{for(let i=0;i<v.buffered.length;i++)if(v.buffered.start(i)<=v.currentTime+.1 && v.buffered.end(i)>v.currentTime)return v.buffered.end(i)-v.currentTime;return 0;};
+function videoRuntime(){return hlsModule ||= import('/vendor/hls-1.6.13.mjs').catch(()=>{hlsModule=null;return null;});}
+const nativeHLS=v=>!!v.canPlayType('application/vnd.apple.mpegurl') && (navigator.vendor==='Apple Computer, Inc.' || !window.MediaSource && !window.ManagedMediaSource);
+function connectVideo(url){
+ const origin=new URL(url).origin;
+ if(!document.head.querySelector('link[data-video-connect="'+origin+'"]')){const l=document.createElement('link');l.rel='preconnect';l.href=origin;l.crossOrigin='anonymous';l.dataset.videoConnect=origin;document.head.append(l);}
+}
+function videoBuffer(v){if(v._hls){v._hls.config.maxBufferLength=v._active?10:1.5;v._hls.config.maxMaxBufferLength=v._active?14:3;v._hls.autoLevelCapping=v._active?-1:v._startLevel;}}
+async function prepareClip(v){
+ if(!videoWanted(v)) return;
+ if((v.getAttribute('src') || v._hls) && (!v._expires || v._expires>Date.now()+30000)) return;
+ if(v._expires && v._expires<=Date.now()+30000){const active=v._active;releaseClip(v);v._wanted=true;v._active=active;}
+ if(v._load) return v._load;
+ const epoch=v._epoch || 0,fresh=()=>videoWanted(v) && (v._epoch || 0)===epoch;
+ v._load=(async()=>{try{
+  if(v.dataset.bunny){
+   const native=nativeHLS(v),loading=native?null:videoRuntime();
+   const data=await authorizeClip(v);
+   if(!fresh()) return;
+   if(data.status!=='ready'){
+    const label=v.parentElement.querySelector('.video-status');if(label) label.textContent=data.status==='failed'?'Video unavailable':'Preparing the video…';
+    if(data.status!=='failed' && v._active){const delay=Math.min(5000,1000*2**(v._processing || 0));v._processing=Math.min(3,(v._processing || 0)+1);clearTimeout(v._retry);v._retry=setTimeout(()=>{if(fresh()) playClip(v);},delay);}return;
+   }
+   v._processing=0;const label=v.parentElement.querySelector('.video-status');if(label) label.remove();
+   v._expires=Number(data.expires)*1000;
+   connectVideo(data.url);
+   const Hls=(await loading)?.default;
+   if(!fresh()) return;
+   if(native){v.preload='auto';v.src=data.url;}
+   else if(Hls?.isSupported()){
+    v.disableRemotePlayback=true;
+    const hls=new Hls({capLevelToPlayerSize:false,autoStartLoad:false,startFragPrefetch:true,testBandwidth:false,abrEwmaDefaultEstimate:bandwidth()*.7,maxBufferLength:v._active?10:1.5,maxMaxBufferLength:v._active?14:3,maxBufferSize:4000000,backBufferLength:0});v._hls=hls;
+    hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+     if(!fresh()){releaseClip(v);return;}
+     const target=bandwidth()*(v._active ? .55 : .3);let best=0;
+     hls.levels.forEach((l,i)=>{if(l.bitrate<hls.levels[best].bitrate)best=i;});
+     hls.levels.forEach((l,i)=>{if(l.bitrate<=target && l.bitrate>=hls.levels[best].bitrate)best=i;});
+     v._startLevel=best;hls.startLevel=best;videoBuffer(v);hls.startLoad();
+    });
+    hls.on(Hls.Events.FRAG_BUFFERED,()=>{if(!v._active && bufferedAhead(v)>=1){v._primed=true;hls.stopLoad();}});
+    hls.on(Hls.Events.ERROR,(_,e)=>{if(e.fatal){console.error('[hls]',e.type);releaseClip(v);}});
+    hls.attachMedia(v);hls.loadSource(data.url);
+   }else if(v.canPlayType('application/vnd.apple.mpegurl')){v.preload='auto';v.src=data.url;}
+   else throw new Error('Video playback unsupported');
+  }else {const u=await clipURL(v.dataset.clip);if(!u || !fresh()) return;v.preload='auto';v.src=u;v._expires=Date.now()+50*60e3;}
+ }catch(e){console.error('[video]',e.message);}
+ })();const pending=v._load;try{await pending;}finally{if(v._load===pending)v._load=null;}
+}
+async function playClip(v){
+ v._wanted=true;v._active=true;await prepareClip(v);if(!videoWanted(v) || !v._active)return;
+ if(v._hls){videoBuffer(v);if(v._hls.levels.length && !v._hls.loadingEnabled)v._hls.startLoad(-1);}
+ v.preload='auto';v.play().catch(()=>{});
+}
+function releaseClip(v){v._epoch=(v._epoch || 0)+1;v._wanted=false;v._active=false;v._load=null;v._expires=0;v._processing=0;v._primed=false;v.pause();clearTimeout(v._retry);v._hls?.destroy();v._hls=null;v.removeAttribute('src');v.preload='none';v.load();}
+function pauseFeed(){
+ clearTimeout(feedReleaseTimer);
+ for(const v of $('feed').querySelectorAll('video')){
+  v._wanted=false;v._active=false;v.pause();v.preload='metadata';clearTimeout(v._retry);v._hls?.stopLoad();
+  if(!lookAhead() || v.readyState<2)releaseClip(v);
+ }
+ feedReleaseTimer=setTimeout(()=>{if(VIEW!=='feed')$('feed').querySelectorAll('video').forEach(releaseClip);},20000);
+}
+const videoHTML=s=>s.clip || s.video ? '<div class="portrait-media"><video '+(s.clip?'data-bunny="'+esc(s.clip.id)+'" data-spot="'+esc(s.id)+'"':'data-clip="'+esc(s.video)+'"')+' playsinline muted loop preload="none"></video>'+(s.clip?.status!=='ready' && s.clip?'<span class="video-status note">Preparing the video…</span>':'')+'</div>' : '';
+/* Une PHOTO porte aussi un space (« boire de l'eau » se photographie mieux qu'il ne se filme) :
+   même cadre 9:16, même lecture signée, quelques centaines de Ko au lieu d'une vidéo. */
+const mediaHTML=s=>s.photo ? '<div class="portrait-media"><img data-photo="'+esc(s.photo)+'" alt="" decoding="async"></div>' : videoHTML(s);
+async function loadPhoto(img){if(!img || img.getAttribute('src') || img._loading) return;img._loading=true;try{const u=await clipURL(img.dataset.photo);if(u && img.isConnected) img.src=u;}finally{img._loading=false;}}
+
+async function bunnyUpload(blob,seconds,onProgress){
+ const c=await videoRequest('create-bunny-upload',{bytes:blob.size,seconds});
+ const headers={...c.headers,'Tus-Resumable':'1.0.0'};
+ const meta='filetype '+btoa(blob.type)+',title '+btoa('Spot '+c.id);
+ const start=await fetch(c.endpoint,{method:'POST',headers:{...headers,'Upload-Length':String(blob.size),'Upload-Metadata':meta}});
+ if(!start.ok) throw new Error('Upload could not start');
+ const url=new URL(start.headers.get('Location'),c.endpoint);
+ if(url.origin!=='https://video.bunnycdn.com') throw new Error('Upload address invalid');
+ let offset=0,retries=0;
+ while(offset<blob.size){
+  try{
+   const r=await fetch(url,{method:'PATCH',headers:{...headers,'Upload-Offset':String(offset),'Content-Type':'application/offset+octet-stream'},body:blob.slice(offset,offset+6*1024*1024)});
+   if(!r.ok) throw new Error('Upload interrupted');
+   const next=Number(r.headers.get('Upload-Offset'));if(!Number.isFinite(next) || next<=offset || next>blob.size) throw new Error('Upload offset invalid');
+   offset=next;retries=0;onProgress(Math.round(offset/blob.size*100));
+  }catch(e){
+   if(++retries>3) throw e;
+   await new Promise(r=>setTimeout(r,Math.min(4000,retries*1000)));
+   const head=await fetch(url,{method:'HEAD',headers});
+   if(!head.ok) continue;const n=Number(head.headers.get('Upload-Offset'));if(Number.isInteger(n) && n>=0 && n<=blob.size) offset=n;
+  }
+ }
+ const data=await videoRequest('bunny-video',{id:c.id,action:'complete'});
+ if(!['processing','ready'].includes(data.status)) throw new Error('Video could not be processed');
+ return 'bunny:'+c.id;
+}
+
+/* ══ LEFT — LE FIL ═══════════════════════════════════════════════════ */
+function focusClip(k){
+ if(VIEW!=='feed' || document.hidden || k<0 || k>=FEED.shown.length)return;
+ clearTimeout(feedReleaseTimer);
+ const videos=[...$('feed').querySelectorAll('video')],active=$('feed').querySelector('.clip[data-k="'+k+'"] video');
+ const changed=FEED.active!==k || active && !active._active;FEED.active=k;
+ for(const v of videos){const i=Number(v.closest('.clip').dataset.k);v._active=i===k;
+  if(i===k){v._wanted=true;continue;}
+  v.pause();clearTimeout(v._retry);
+  if(!lookAhead() || i<k-1 || i>k+1){if(v._wanted || v._load || v.getAttribute('src') || v._hls)releaseClip(v);}
+  else {v._wanted=true;if(i<k || v._primed)v._hls?.stopLoad();}
+ }
+ const next=()=>{if(VIEW!=='feed' || FEED.active!==k || document.hidden || !lookAhead())return;const v=$('feed').querySelector('.clip[data-k="'+(k+1)+'"] video');if(v){v._wanted=true;prepareClip(v);}};
+ if(active){
+  if(changed){
+   const started=performance.now(),epoch=active._epoch || 0;
+   const warm=active.readyState>=2 && bufferedAhead(active)>.1;
+   VIDEO_METRICS[warm?'warmStarts':'coldStarts']++;
+   if(active._playing)active.removeEventListener('playing',active._playing);
+   active._playing=()=>{
+    const measure=()=>{if(VIEW==='feed' && FEED.active===k && active._active && (active._epoch || 0)===epoch)VIDEO_METRICS.firstFrameMs=Math.round(performance.now()-started);};
+    if(active.requestVideoFrameCallback)active.requestVideoFrameCallback(measure);else measure();next();
+   };
+   active.addEventListener('playing',active._playing,{once:true});
+   if(!active._stall){active._stall=()=>{if(VIEW==='feed' && active._active && active.currentTime>.1)VIDEO_METRICS.stalls++;};active.addEventListener('waiting',active._stall);}
+  }
+  playClip(active);
+ }
+ // La signature et le premier segment du suivant arrivent pendant le clip actif.
+ // Sur 3G, priorité à sa première image ; Save-Data/2G n'anticipent rien.
+ if(!active || active.readyState>=2 || (navigator.connection?.effectiveType!=='3g' && (navigator.connection?.downlink || 5)>=2))next();
+ for(const c of $('feed').querySelectorAll('.clip[data-k] img[data-photo]')){const i=Number(c.closest('.clip').dataset.k);if(i>=k-1 && i<=k+1)loadPhoto(c);}
+ if(k>=FEED.shown.length-2)loadFeed(true);
+}
+function focusVisibleClip(){const f=$('feed'),height=f.querySelector('.clip[data-k]')?.offsetHeight;if(height)focusClip(Math.min(FEED.shown.length-1,Math.max(0,Math.round(f.scrollTop/height))));}
+let feedScrollFrame=0;
+$('feed').addEventListener('scroll',()=>{if(VIEW==='feed' && !feedScrollFrame)feedScrollFrame=requestAnimationFrame(()=>{feedScrollFrame=0;focusVisibleClip();});},{passive:true});
+const io = new IntersectionObserver(()=>{if(VIEW==='feed')focusVisibleClip();}, { threshold:[0, .6, 1] });
+function paintFeed(more=false){
+  const f = $('feed'), L = FEED.list; FEED.shown = L;
+  const existing=[...f.querySelectorAll('.clip[data-k]')];
+  if(!more && existing.length && existing.length===L.length && existing.every((c,k)=>{const m=c.querySelector('video,img[data-photo]'),s=L[k];return c.dataset.id===s.id && (m?.dataset.bunny || m?.dataset.clip || m?.dataset.photo || '')===(s.clip?.id || s.video || s.photo || '');})){
+    existing.forEach((c,k)=>{const st=c.querySelector('.stage'),html=feedStage(L[k]);if(st.innerHTML!==html)st.innerHTML=html;});if(VIEW==='feed')focusVisibleClip();return;
+  }
+  if(!more){io.disconnect();f.querySelectorAll('video').forEach(releaseClip);f.replaceChildren();FEED.active=null;f.scrollTop=0;}
+  f.querySelectorAll('.clip:not([data-k])').forEach(n => n.remove());
+  if(!L.length){ f.innerHTML = '<div class="clip"><div class="empty">' + (FEED.loading ? 'reading the spaces…' : sfCount() ? 'no space for this filter' : 'no space yet · share the first one') + '</div></div>'; return; }
+  const start=more?f.querySelectorAll('.clip[data-k]').length:0;
+  f.insertAdjacentHTML('beforeend',L.slice(start).map((s, i) => '<div class="clip" data-k="' + (start+i) + '" data-id="' + esc(s.id) + '">' +
+    (hasMedia(s) ? mediaHTML(s) : '<div class="noclip">no video</div>') +
+    '<span class="vibe-pop" aria-hidden="true">VIBE</span><div class="stage">' + feedStage(s) + '</div></div>').join(''));
+  [...f.querySelectorAll('.clip[data-k]')].slice(start).forEach(c => io.observe(c));
+  if(VIEW==='feed')focusVisibleClip();
+}
+/* ══ LE FILTRE DU FIL · 11/10/2026 ═══════════════════════════════════
+   Wah : « sélectionner une Box et tous les éléments qui la composent » —
+   intentions, humeur (les quatre piliers), rythme et SURTOUT objectifs et
+   répulsions. Choisir une de MES Habit Boxes allume tous ses éléments ; chacun
+   se coupe d'un tap. Le serveur (`space_feed`) garde les spaces qui partagent
+   AU MOINS un élément, les plus proches d'abord ; il ne compare que les
+   objectifs/répulsions que l'auteur MONTRE. Monde par défaut, NEAR ME en option. */
+const PILLARS = {BODY:['fight','flow'],MENTAL:['enrich','focus'],SOUL:['express','celebrate'],SPIRIT:['love']};
+const SF = { box:null, habit:false, ints:new Set(), pillars:new Set(), freq:false, obj:new Set(), rep:new Set(), shows:null, near:false, timer:0 };
+const sfCount = () => (SF.habit?1:0) + SF.ints.size + SF.pillars.size + (SF.freq?1:0) + SF.obj.size + SF.rep.size + (SF.shows?1:0) + (SF.near?1:0);
+const boxTexts = (h,k) => (h?.[k] || []).map(x => String(x.text || '').trim()).filter(Boolean);
+/* L'HORIZON (11/10 bis) : un tap sur une boîte éparpillée remplace le fil par les spaces qui
+   partagent CET élément (même Habit, même objectif, même répulsion : `space_feed`, aucune
+   nouvelle règle). ✕ rend le fil d'avant, au même endroit. */
+const HZ = { on:null, prev:null };
+function hzOpen(s, k, i){
+  const e = k === 'h' ? {k, text:s.habit} : elemsOf(s).find(x => x.k === k && x.i === i);
+  if(!e?.text) return;
+  if(!HZ.on) HZ.prev = { list:FEED.list, more:FEED.more, top:$('feed').scrollTop };
+  HZ.on = { k, text:e.text }; hzPaint(); sfOpen(false);
+  FEED.list = []; FEED.more = false; loadFeed(false);
+}
+function hzClose(){
+  const p = HZ.prev; HZ.on = null; HZ.prev = null; hzPaint(); FEED.seq++; FEED.loading = false;
+  if(!p) return loadFeed(false);
+  FEED.list = p.list; FEED.more = p.more; paintFeed(); $('feed').scrollTop = p.top; if(VIEW === 'feed') focusVisibleClip();
+}
+function hzPaint(){
+  const z = $('hz'), on = HZ.on; z.classList.toggle('hide', !on); document.body.classList.toggle('is-hz', !!on);
+  if(on){ const b = $('hz-el'); b.className = on.k === 'h' ? 'hz-hb' : 'mini m-' + on.k; b.textContent = on.text; }
+}
+function sfFilter(){
+  if(HZ.on) return { habit: HZ.on.k === 'h' ? HZ.on.text : null, ints:[], freq:null,
+    objectives: HZ.on.k === 'o' ? [HZ.on.text] : [], repulsions: HZ.on.k === 'r' ? [HZ.on.text] : [], shows:null, near:false };
+  const ints = new Set(SF.ints); SF.pillars.forEach(p => (PILLARS[p] || []).forEach(i => ints.add(i)));
+  return { habit: SF.habit && SF.box ? SF.box.name : null, ints:[...ints], freq: SF.freq && SF.box?.freq ? SF.box.freq : null,
+           objectives:[...SF.obj], repulsions:[...SF.rep], shows:SF.shows, near:SF.near && !!POS };
+}
+function sfBox(h){
+  SF.box = h || null; SF.habit = !!h; SF.ints = new Set(h ? (h.ints || []) : []); SF.freq = !!h?.freq;
+  SF.obj = new Set(boxTexts(h,'objectives')); SF.rep = new Set(boxTexts(h,'repulsions'));
+}
+function sfReset(){ sfBox(null); SF.pillars = new Set(); SF.shows = null; SF.near = false; }
+function sfApply(){ if(HZ.on){ HZ.on = null; HZ.prev = null; hzPaint(); } clearTimeout(SF.timer); SF.timer = setTimeout(() => loadFeed(false), 220); sfPaint(); paintInts(); }
+function sfPaint(){
+  const n = sfCount(), b = $('sf-btn'), open = !$('sf-panel').classList.contains('hide');
+  b.textContent = n ? 'Filter · ' + n : 'Filter'; b.classList.toggle('is-on', !!n); b.setAttribute('aria-expanded', String(open));
+  if(!open) return;
+  const c = (attr, label, on, sub) => chip(attr, esc(label), on, sub);
+  const h = SF.box, row = (lab, html) => html ? '<span class="lab">' + lab + '</span><div class="row">' + html + '</div>' : '';
+  $('sf-panel').innerHTML =
+    '<span class="lab">My Habit Box</span><div class="row">' + c('data-sf-pick="1"', h ? h.name : 'choose a Habit Box', !!h, h ? 'tap to change' : 'and all that it is made of') + (h ? '<button class="lnk" type="button" data-sf-unbox="1">all Habit Boxes</button>' : '') + '</div>' +
+    (h ? row('This Habit', c('data-sf-habit="1"', h.name, SF.habit)) : '') +
+    row('Intentions', Object.keys(INTS).map(i => '<button type="button" class="chip is-int' + (SF.ints.has(i) ? ' is-on' : '') + '" data-sf-int="' + i + '" style="--c:' + icol(i) + '">' + esc(INTS[i].n) + '</button>').join('')) +
+    row('Mood', Object.keys(PILLARS).map(p => c('data-sf-pillar="' + p + '"', p, SF.pillars.has(p))).join('')) +
+    (h?.freq ? row('Rhythm', c('data-sf-freq="1"', FREQ[h.freq] || h.freq, SF.freq)) : '') +
+    (h ? row('Objectives', boxTexts(h,'objectives').map((t,k) => c('data-sf-obj="' + k + '"', t, SF.obj.has(t))).join('')) : '') +
+    (h ? row('Repulsions', boxTexts(h,'repulsions').map((t,k) => c('data-sf-rep="' + k + '"', t, SF.rep.has(t))).join('')) : '') +
+    row('It shows', c('data-sf-shows="video"','video',SF.shows === 'video') + c('data-sf-shows="photo"','photo',SF.shows === 'photo') + c('data-sf-shows="why"','objectives · repulsions',SF.shows === 'why','its goals and what it avoids')) +
+    row('Where', c('data-sf-near="0"','the world',!SF.near) + c('data-sf-near="1"','near me',SF.near, POS ? '' : 'needs my location')) +
+    '<div class="row sf-acts"><button class="btn" type="button" data-sf-all="1">ALL SPACES</button><button class="btn" type="button" data-sf-close="1">CLOSE</button></div>';
+}
+function sfOpen(open){
+  const p = $('sf-panel'); p.classList.toggle('hide', !open);
+  if(open){ pickerClose(); const h = $('heading').getBoundingClientRect(), t = $('totehm-paper').getBoundingClientRect(); p.style.top = Math.round(t.bottom + 10) + 'px'; p.style.left = Math.round(h.left + h.width/2) + 'px'; }
+  sfPaint();
+}
+$('sf-btn').onclick = () => sfOpen($('sf-panel').classList.contains('hide'));
+$('hz-x').onclick = hzClose;
+const togg = (set, v) => { set.has(v) ? set.delete(v) : set.add(v); };
+$('sf-panel').addEventListener('click', e => {
+  const t = e.target.closest('button,[data-sf-pick]'); if(!t) return;
+  const d = t.dataset;
+  if(d.sfClose !== undefined) return sfOpen(false);
+  if(d.sfPick !== undefined){ sfOpen(false); return pickerOpen(); }
+  if(d.sfAll !== undefined) sfReset();
+  else if(d.sfUnbox !== undefined) sfBox(null);
+  else if(d.sfHabit !== undefined) SF.habit = !SF.habit;
+  else if(d.sfInt) togg(SF.ints, d.sfInt);
+  else if(d.sfPillar) togg(SF.pillars, d.sfPillar);
+  else if(d.sfFreq !== undefined) SF.freq = !SF.freq;
+  else if(d.sfObj !== undefined){ const v = boxTexts(SF.box,'objectives')[+d.sfObj]; if(v) togg(SF.obj, v); }
+  else if(d.sfRep !== undefined){ const v = boxTexts(SF.box,'repulsions')[+d.sfRep]; if(v) togg(SF.rep, v); }
+  else if(d.sfShows) SF.shows = SF.shows === d.sfShows ? null : d.sfShows;
+  else if(d.sfNear !== undefined){ SF.near = d.sfNear === '1'; if(SF.near && !POS) geo().then(pos => { if(pos){ POS = pos; sfApply(); } }); }
+  else return;
+  sfApply();
+});
+document.addEventListener('pointerdown', e => { if(!$('sf-panel').classList.contains('hide') && !e.target.closest('#sf-panel,#sf-btn,#habit-picker')) sfOpen(false); });
+/* Un tap : le son. Deux taps : une VIBE (comme on aime un Short). */
+let tapTimer = 0, tapLast = 0;
+$('feed').addEventListener('click', async e => {
+  if(Date.now() < suppressClickUntil || e.target.closest('a,[data-com]')) return;
+  if(await actsClick(e)) return;
+  if(e.target.closest('button')) return;
+  const clip = e.target.closest('.clip[data-id]'); if(!clip) return;
+  const hz = e.target.closest('[data-hz]'); if(hz){ const s = spotById(clip.dataset.id); if(s) hzOpen(s, hz.dataset.hz, Number(hz.dataset.hzI)); return; }
+  const now = Date.now();
+  if(now - tapLast < 300){ clearTimeout(tapTimer); tapLast = 0; const s = spotById(clip.dataset.id);
+    if(s && !s.mine && s.visibility === 'shared'){ const pop = clip.querySelector('.vibe-pop'); pop?.classList.add('is-on'); setTimeout(() => pop?.classList.remove('is-on'), 650); if(!s.vibed) vibe(s.id); }
+    return; }
+  tapLast = now;
+  tapTimer = setTimeout(() => { const v = clip.querySelector('video'); if(v){ v.muted = !v.muted; v.play().catch(() => {}); } }, 300);
+});
+$('feed').addEventListener('keydown', e => {
+  const hz = e.target.closest?.('[data-hz]'); if(!hz || (e.key !== 'Enter' && e.key !== ' ')) return;
+  e.preventDefault(); const s = spotById(hz.closest('.clip[data-id]')?.dataset.id); if(s) hzOpen(s, hz.dataset.hz, Number(hz.dataset.hzI));
+});
+async function loadFeed(more){
+  if(more && (!FEED.more || FEED.loading)) return;
+  const seq = ++FEED.seq; FEED.loading = true;
+  const f = sfFilter(), c = f.near && POS ? { p_lat: Math.round(POS.lat*10)/10, p_lng: Math.round(POS.lng*10)/10 } : {};
+  if(!more && !FEED.list.length) paintFeed();
+  const { data, error } = await sb.rpc('space_feed', { p_filter:f, ...c, p_offset: more ? FEED.list.length : 0, p_limit:20 });
+  if(seq !== FEED.seq) return;
+  FEED.loading = false;
+  if(error){ console.error('[space_feed]', error.message); paintFeed(); return; }
+  const l = data?.spots || [];
+  FEED.more = !!data?.more;
+  FEED.list = more ? [...new Map(FEED.list.concat(l).map(s=>[s.id,s])).values()] : l;
+  FEED.match = data?.filtered ? 'filter' : 'all'; paintFeed(more); paintInts();
+  if(FEED.list.some(s=>s.clip) && !nativeHLS(document.createElement('video')))videoRuntime();
+}
+
+/* ══ CENTER — LES POINTS EXACTS AUTORISÉS ══════════════════════════ */
+/* ══ UN SPOT, SEUL ═══════════════════════════════════════════════════ */
+/* Un space partagé par lien ou ouvert depuis My spaces garde sa fiche. */
+async function openDetail(s){
+  if(!s) return;detailSeq++;const old=$('detail').querySelector('video');if(old) releaseClip(old);DETAIL=s;
+  $('detail').style.removeProperty('--sheet-y');$('detail').classList.remove('is-dragging');
+  $('detail').innerHTML = '<button class="sheet-grab" type="button" data-close="1" aria-label="Close this space, or drag down"><span aria-hidden="true"></span></button>' + (hasMedia(s) ? mediaHTML(s) : '') + spotHTML(s) + actsHTML(s, 'detail');
+  $('detail').classList.add('is-open');$('detail').scrollTop=0;joyPaint();
+  loadPhoto($('detail').querySelector('img[data-photo]'));
+  const v = $('detail').querySelector('video');
+  if(v) await playClip(v);
+}
+let detailSeq = 0;
+function closeDetail(){ DETAIL = null; const seq = ++detailSeq; $('detail').classList.remove('is-open','is-dragging');$('detail').style.removeProperty('--sheet-y'); const v=$('detail').querySelector('video');if(v) releaseClip(v);joyPaint();
+  // Once the sheet has slid away, its gestures leave the page (no hidden duplicate GO).
+  setTimeout(() => { if(!DETAIL && seq === detailSeq) $('detail').replaceChildren(); }, 400); }
+$('detail').addEventListener('click', async e => {
+  if(e.target.closest('[data-close]')) return closeDetail();
+  await actsClick(e);
+});
+
+/* Drag the handle, or pull the sheet down when its own scroll is at the top. */
+(function sheetGesture(){
+ const el=$('detail');let drag=null,ignoreUntil=0;
+ const begin=(x,y,id)=>{drag={x,y,id,t:performance.now(),dy:0};};
+ const move=(x,y)=>{if(!drag)return;const dy=y-drag.y;if(dy>8 && Math.abs(x-drag.x)<dy){drag.dy=dy;el.classList.add('is-dragging');el.style.setProperty('--sheet-y',dy+'px');}};
+ const end=()=>{if(!drag)return;const d=drag;drag=null;el.classList.remove('is-dragging');el.style.removeProperty('--sheet-y');if(d.dy>85 || d.dy>36 && performance.now()-d.t<280){ignoreUntil=Date.now()+350;closeDetail();}};
+ el.addEventListener('pointerdown',e=>{if(e.button>0 || !e.target.closest('.sheet-grab'))return;begin(e.clientX,e.clientY,e.pointerId);e.target.closest('.sheet-grab').setPointerCapture(e.pointerId);});
+ el.addEventListener('pointermove',e=>{if(drag?.id===e.pointerId){move(e.clientX,e.clientY);e.preventDefault();}});
+ el.addEventListener('pointerup',e=>{if(drag?.id===e.pointerId)end();});
+ el.addEventListener('pointercancel',()=>{drag=null;el.classList.remove('is-dragging');el.style.removeProperty('--sheet-y');});
+ el.addEventListener('touchstart',e=>{if(e.touches.length!==1 || el.scrollTop>1 || e.target.closest('button,a,input,textarea'))return;const p=e.touches[0];begin(p.clientX,p.clientY,'touch');},{passive:true});
+ el.addEventListener('touchmove',e=>{if(drag?.id!=='touch' || e.touches.length!==1)return;const p=e.touches[0];move(p.clientX,p.clientY);if(drag.dy>8)e.preventDefault();},{passive:false});
+ el.addEventListener('touchend',()=>{if(drag?.id==='touch')end();},{passive:true});
+ el.addEventListener('touchcancel',()=>{drag=null;el.classList.remove('is-dragging');el.style.removeProperty('--sheet-y');},{passive:true});
+ el.addEventListener('click',e=>{if(Date.now()<ignoreUntil){e.stopImmediatePropagation();e.preventDefault();}},true);
+})();
+/* LE PAPIER — moteur original, une seule boucle au centre du fil. */
+  const PAPER=(()=>{
+    const scene=$('totehm-paper'), card=$('tp-card');
+    const RM=window.matchMedia('(prefers-reduced-motion: reduce)');
+    /* Le diagnostic : des booléens et des compteurs, jamais une valeur. */
+    const diag={vivant:false, souris:false, lancers:0};
+    const lights=[...card.querySelectorAll('.tp-light')];   /* [face, dos] */
+    const R=Math.PI/180, W0=34;
+    const LUM=(()=>{ const x=-.35,y=-.55,z=1,n=Math.hypot(x,y,z); return [x/n,y/n,z/n]; })();
+    const borne=(v,a,b)=>Math.max(a,Math.min(b,v||0));
+    const res=x=>({x,v:0});
+    const SPR={rx:res(0), ry:res(0), px:res(0), py:res(0), sc:res(1)};
+    const goal={rx:0, ry:0, px:0, py:0, sc:1};
+    const K={rx:[34,.62], ry:[34,.62], px:[34,.62], py:[34,.62], sc:[170,.5]};
+    const PLAT={th:0, rx:0, ry:0, rz:0, px:0, py:0, sc:1};
+    let mode='plat', raf=0, last=0, clock=0, th=0, om=0, life=0;
+    let cur={...PLAT}, prev=null, vel={...PLAT, sc:0};
+    let appui=null, aGlisse=false, pose=null, centre=null;
+    let ratio=scene.clientWidth/110;
+
+    function ressort(s,g,k,z,dt){
+      const a=k*(g-s.x)-2*z*Math.sqrt(k)*s.v; s.v+=a*dt; s.x+=s.v*dt; }
+    function kick(){ if(!raf&&mode!=='plat') raf=requestAnimationFrame(frame); }
+    function frame(now){
+      raf=0;
+      const dt=Math.min(.05,Math.max(0,(now-(last||now))/1000)); last=now;
+      if(mode==='vit') vivre(dt); else if(mode==='pose') poserPas(now);
+      if(mode==='plat') return;
+      peindre();
+      if(!document.hidden) raf=requestAnimationFrame(frame);
+    }
+    function vivre(dt){
+      clock+=dt;
+      life+=(1-life)*(1-Math.exp(-dt/1.4));
+      if(appui&&appui.on){ /* le doigt conduit : `th` bouge dans pointermove */ }
+      else if(appui){ om*=Math.exp(-dt/.15); th+=om*dt; }      /* tenu */
+      else{
+        const s=Math.sin(th*R), nat=W0*(.34+.66*s*s);
+        om+=(nat-om)*(1-Math.exp(-dt/(Math.abs(om)>W0*1.3?1.1:1.6)));
+        th+=om*dt;
+      }
+      if(th>3600||th<-3600) th%=360;
+      for(const k in SPR) ressort(SPR[k],goal[k],K[k][0],K[k][1],dt);
+      const f=clock*2*Math.PI;
+      const nx={th, sc:SPR.sc.x, ry:SPR.ry.x, px:SPR.px.x,
+        rx:SPR.rx.x+life*2.4*Math.sin(f/7.3),
+        rz:life*1.1*Math.sin(f/8.9+1.3),
+        py:SPR.py.x+life*ratio*(2.6*Math.sin(f/6.4)+1.1*Math.sin(f/10.3+.7))};
+      if(prev&&dt>0) for(const k in nx) vel[k]=(nx[k]-prev[k])/dt;
+      vel.th=om; prev=cur=nx;
+    }
+    function peindre(){
+      const c=cur;
+      card.style.transform='translate3d('+c.px.toFixed(2)+'px,'+c.py.toFixed(2)+'px,0)'
+        +' rotateX('+c.rx.toFixed(2)+'deg) rotateY('+c.ry.toFixed(2)+'deg)'
+        +' rotateZ('+c.rz.toFixed(2)+'deg) rotateY('+c.th.toFixed(2)+'deg)'
+        +' scale('+c.sc.toFixed(4)+')';
+      /* La normale de la face : (0,0,1) passée par les mêmes rotations,
+         de la plus intérieure à la plus extérieure. */
+      let x=Math.sin(c.th*R), y=0, z=Math.cos(c.th*R), co, si, t;
+      co=Math.cos(c.rz*R); si=Math.sin(c.rz*R); t=x*co-y*si; y=x*si+y*co; x=t;
+      co=Math.cos(c.ry*R); si=Math.sin(c.ry*R); t=x*co+z*si; z=-x*si+z*co; x=t;
+      co=Math.cos(c.rx*R); si=Math.sin(c.rx*R); t=y*co-z*si; z=y*si+z*co; y=t;
+      const d=(x*LUM[0]+y*LUM[1]+z*LUM[2])/LUM[2];
+      eclairer(lights[0],d); eclairer(lights[1],-d);
+    }
+    function eclairer(el,f){
+      if(!el||f<=0) return;                 /* face détournée : cachée */
+      if(f<1){ el.style.background='#000'; el.style.opacity=Math.min(.5,(1-f)*.6).toFixed(3); }
+      else   { el.style.background='#fff'; el.style.opacity=Math.min(.06,(f-1)*.3).toFixed(3); }
+    }
+    function aPlat(){
+      if(raf){ cancelAnimationFrame(raf); raf=0; }
+      mode='plat'; th=0; om=0; life=0; appui=null; pose=null; prev=null;
+      for(const k in SPR){ SPR[k].x=k==='sc'?1:0; SPR[k].v=0; }
+      cur={...PLAT};
+      card.style.transform='';
+      lights.forEach(l=>{ l.style.background=''; l.style.opacity=''; });
+      card.classList.add('is-flat');
+      diag.vivant=false;
+    }
+    /* L'ATTERRISSAGE : position et vitesse du moment → face logo, à plat,
+       vitesse nulle. La durée suit le chemin à faire. */
+    function poser(cb){
+      if(mode!=='vit'){ aPlat(); if(cb) cb(); return; }
+      const thT=360*Math.round((cur.th+om*.3)/360);
+      const D=Math.min(.78,.3+Math.abs(thT-cur.th)/360*.62);
+      const to={...PLAT, th:thT}, v={};
+      for(const k in to){
+        const span=Math.abs(to[k]-cur[k])*1.5+(k==='sc'?.02:2);
+        v[k]=borne(vel[k]||0,-span/D,span/D);
+      }
+      pose={t0:performance.now(), D, from:{...cur}, to, v, cb};
+      appui=null; mode='pose'; kick();
+    }
+    function poserPas(now){
+      const u=Math.min(1,(now-pose.t0)/1000/pose.D);
+      const h00=2*u*u*u-3*u*u+1, h10=u*u*u-2*u*u+u, h01=-2*u*u*u+3*u*u;
+      const nx={};
+      for(const k in pose.to) nx[k]=h00*pose.from[k]+h10*pose.D*pose.v[k]+h01*pose.to[k];
+      cur=nx;
+      if(u>=1){ const cb=pose.cb; aPlat(); if(cb) cb(); }
+    }
+    /* LE RÉVEIL : après un repli, ou au chargement. Il repart de l'arrêt,
+       face logo — la vitesse et la dérive montent doucement. */
+    function reveiller(){
+      ratio=scene.clientWidth/110; paintPaper();
+      if(RM.matches||mode!=='plat'||document.hidden||VIEW!=='home'||ouvert()) return;
+      card.classList.remove('is-flat');
+      mode='vit'; clock=0; last=0; life=0; om=0; th=0; prev=null; centre=null;
+      goal.rx=goal.ry=goal.px=goal.py=0; goal.sc=1;
+      diag.vivant=true; kick();
+    }
+    const libre=()=>mode==='vit'&&!appui&&!document.hidden&&VIEW==='home'&&!ouvert()&&!RM.matches;
+    function viser(rx,ry,px,py){ goal.rx=rx; goal.ry=ry; goal.px=px; goal.py=py; }
+
+    aPlat();
+
+    document.addEventListener('visibilitychange',()=>{ last=0; sync(); });
+    if(RM.addEventListener) RM.addEventListener('change',sync); else RM.addListener(sync);
+
+    /* La souris : le papier regarde le curseur et glisse d'un rien vers lui. */
+    if(window.matchMedia('(hover:hover)').matches){
+      window.addEventListener('resize',()=>{ centre=null; });
+      document.addEventListener('mousemove',e=>{
+        if(!libre()) return;
+        if(!centre){ const r=scene.getBoundingClientRect();
+                     centre=[r.left+r.width/2, r.top+r.height/2]; }
+        const dx=borne((e.clientX-centre[0])/(innerWidth/2),-1,1),
+              dy=borne((e.clientY-centre[1])/(innerHeight/2),-1,1);
+        viser(-dy*15, dx*20, dx*7*ratio, dy*5*ratio); diag.souris=true;
+      },{passive:true});
+      document.documentElement.addEventListener('mouseleave',()=>{ if(libre()) viser(0,0,0,0); });
+    }
+
+    /* Le doigt (ou la souris) : appuyer tient le papier, glisser le fait
+       tourner, lâcher lui laisse l'élan. `touch-action:none` sur la scène :
+       le geste porte une fonction, on le conduit en Pointer Events. */
+    scene.addEventListener('pointerdown',e=>{
+      if(mode!=='vit'||(e.pointerType==='mouse'&&e.button!==0)) return;
+      appui={id:e.pointerId, x0:e.clientX, y0:e.clientY, x:e.clientX, t:performance.now(), on:false};
+      aGlisse=false; goal.sc=.965;
+      try{ scene.setPointerCapture(e.pointerId); }catch(_){}
+    });
+    scene.addEventListener('pointermove',e=>{
+      if(!appui||e.pointerId!==appui.id) return;
+      const dx=e.clientX-appui.x0, dy=e.clientY-appui.y0;
+      if(!appui.on){ if(Math.hypot(dx,dy)<7) return; appui.on=true; aGlisse=true; goal.sc=1.03; }
+      const now=performance.now(), dts=Math.max(.008,(now-appui.t)/1000);
+      const d=(e.clientX-appui.x)*.62;
+      th+=d; om=om*.6+(d/dts)*.4;
+      goal.rx=borne(-dy*.18,-18,18);
+      appui.x=e.clientX; appui.t=now;
+    });
+    const lacher=e=>{
+      if(!appui||e.pointerId!==appui.id) return;
+      const glisse=appui.on; appui=null;
+      viser(0,0,0,0); goal.sc=1;
+      if(glisse){ om=borne(om,-720,720); diag.lancers++; }
+    };
+    scene.addEventListener('pointerup',lacher);
+    scene.addEventListener('pointercancel',lacher);
+    /* Un glissé n'est pas un tap : le clic qui le suit ne doit rien ouvrir. */
+    scene.addEventListener('click',e=>{
+      if(aGlisse){ aGlisse=false; e.stopPropagation(); e.preventDefault(); }
+    },true);
+
+
+    const ouvert=()=>!$('habit-picker').classList.contains('hide');
+    function hint(){ $('tp-hint').textContent='tap to share a space'; }
+    function sync(){
+      const open=ouvert(); $('tp-wrap').classList.toggle('is-open',open);
+      if(document.hidden||VIEW!=='home'||!document.body.classList.contains('v-home')||open||RM.matches){
+        if(mode!=='plat'||raf) aPlat(); aGlisse=false; return;
+      }
+      if(mode==='plat') reveiller();
+    }
+    function etat(){return {alive:!!raf,flat:mode==='plat',open:ouvert(),name:!!(me&&PSEUDO),spins:diag.lancers};}
+    window.addEventListener('resize',()=>{
+      if(!['home','feed','me','vibes'].includes(VIEW)) return;
+      ratio=scene.clientWidth/110; paintPaper(); if(ouvert()) tpPickerPosition();
+    },{passive:true});
+    if(document.fonts?.ready) document.fonts.ready.then(paintPaper);
+
+function paintPaper(){
+  const el=$('tp-name'); if(!el) return;
+  const p=((me&&PSEUDO)||'').trim();
+  el.classList.toggle('is-name',!!p);
+  el.style.fontSize='';
+  el.textContent=p||'Tap to open it';
+  if(!p||!el.offsetWidth) return;
+  const max=(el.parentElement.clientWidth||110)*.76;
+  if(el.offsetWidth>max&&p.length>3){
+    const mi=p.length/2; let cut=Math.ceil(mi);
+    for(let d=0;d<=p.length;d++){
+      const a=Math.floor(mi)-d, b=Math.ceil(mi)+d;
+      if(/[_\-. ]/.test(p[a]||'')){ cut=a+1; break; }
+      if(/[_\-. ]/.test(p[b-1]||'')){ cut=b; break; }
+    }
+    el.textContent=p.slice(0,cut).trim()+'\n'+p.slice(cut).trim();
+  }
+  for(let fs=10; el.offsetWidth>max&&fs>7.5;){ fs-=.5; el.style.fontSize=fs+'px'; }
+}
+    return {poser, sync, nommer:paintPaper, hint, etat};
+  })();
+
+/* ══ LA HABIT BOX — même sélection que pour créer un Spot ═══════════ */
+function reload(){loadFeed(false);loadPulse();}
+/* ══ LA PAGE D'ARRIVÉE — le pouls de la semaine, les deux autres domaines ══ */
+async function loadPulse(){
+  const { data, error } = await sb.rpc('space_pulse');
+  if(error){ console.error('[space_pulse]', error.message); return; }
+  const n = Number(data?.spaces_week) || 0, v = Number(data?.vibes_week) || 0;
+  $('home-pulse').textContent = n ? n + ' space' + (n > 1 ? 's' : '') + ' this week' + (v ? ' · ' + v + ' vibe' + (v > 1 ? 's' : '') : '') : '';
+}
+$('home-eco').addEventListener('click', e => {
+  const b = e.target.closest('[data-eco-door]'); if(!b) return;
+  if(b.dataset.ecoDoor === 'club') ssoVersDomaine(sb,'club','https://www.figher.club/');
+  else ssoVersDomaine(sb,'com',COM + '/totehm#in');
+});
+/* ══ UNE VIBE — optimiste, puis la réponse du serveur fait foi ══════════ */
+function eachCopy(id, fn){ [FEED.list, PROF.list, VIB.data?.given || []].forEach(l => l.forEach(x => { if(x.id === id) fn(x); })); if(DETAIL?.id === id) fn(DETAIL); }
+function paintVibe(id){
+  const s = spotById(id); if(!s) return;
+  document.querySelectorAll('[data-vibe="' + CSS.escape(id) + '"]').forEach(b => { b.classList.toggle('is-on', !!s.vibed); b.setAttribute('aria-pressed', String(!!s.vibed)); b.textContent = vibeLabel(s); });
+  document.querySelectorAll('.pf-tile[data-open="' + CSS.escape(id) + '"] .pf-v').forEach(n => { n.textContent = (s.vibes || 0) + ' vibes'; });
+}
+const vibeBusy = new Set();
+async function vibe(id, button){
+  if(!me){ if(button) actsSay(button, 'Connect to send a vibe.'); return ssoLogin(false); }
+  const s = spotById(id); if(!s || s.mine || vibeBusy.has(id)) return;
+  const on = !s.vibed; vibeBusy.add(id);
+  eachCopy(id, x => { x.vibed = on; x.vibes = Math.max(0, (x.vibes || 0) + (on ? 1 : -1)); }); paintVibe(id);
+  const { data, error } = await sb.rpc('space_vibe', { p_space:id, p_on:on });
+  vibeBusy.delete(id);
+  if(error || !data?.ok){
+    if(error) console.error('[space_vibe]', error.message);
+    eachCopy(id, x => { x.vibed = !on; x.vibes = Math.max(0, (x.vibes || 0) + (on ? -1 : 1)); }); paintVibe(id);
+    if(button) actsSay(button, data?.why === 'email' ? 'Save my TOTEHM with my email to send vibes.' : 'Not sent. Try again.');
+    return;
+  }
+  eachCopy(id, x => { x.vibed = !!data.vibed; x.vibes = Number(data.vibes) || 0; }); paintVibe(id);
+}
+/* ══ → MY SPACE — un profil : le mien, ou celui d'un membre (tap sur son nom) ══ */
+const PROF = { seq:0, pseudo:null, data:null, list:[], loading:false };
+/* Une vignette n'est pas un bouton texte (le bloc commun les ajusterait au label) : role="button". */
+const tileHTML = s => '<div class="pf-tile" role="button" tabindex="0" data-open="' + esc(s.id) + '" style="--c:' + icol((s.intentions || [])[0]) + '">' +
+  (s.photo ? '<img data-photo="' + esc(s.photo) + '" alt="">' : '') + '<span class="pf-h">' + esc(s.habit) + '</span><span class="pf-v">' + (s.vibes || 0) + ' vibes</span></div>';
+function openProfile(pseudo){ PROF.pseudo = pseudo && (!PSEUDO || pseudo.toLowerCase() !== PSEUDO.toLowerCase()) ? pseudo : null; closeDetail(); if(VIEW !== 'me') go('me'); else loadProfileView(); }
+async function loadProfileView(more=false){
+  const box = $('profile');
+  if(!PROF.pseudo && !me){ box.innerHTML = '<div class="pf-head"><p class="pf-empty">My space: my spaces and the vibes they receive.</p><button class="btn" type="button" data-signin="1">CONNECT WITH MY TOTEHM</button></div>'; PROF.list = []; return; }
+  const seq = ++PROF.seq, uid = me?.id, who = PROF.pseudo;
+  if(!more){ PROF.list = []; box.innerHTML = '<p class="pf-empty">…</p>'; }
+  PROF.loading = true;
+  const { data, error } = await sb.rpc('space_profile', { p_pseudo: who, p_offset: more ? PROF.list.length : 0, p_limit: 30 });
+  if(seq !== PROF.seq || uid !== me?.id || who !== PROF.pseudo) return;
+  PROF.loading = false;
+  if(error || !data?.ok){ if(error) console.error('[space_profile]', error.message); box.innerHTML = '<p class="pf-empty">' + (data?.why === 'nobody' ? 'No member by this name.' : 'Not loaded. Try again.') + '</p>'; return; }
+  PROF.data = data; PROF.list = more ? PROF.list.concat(data.spaces || []) : (data.spaces || []);
+  const n = Number(data.spaces_total) || 0, v = Number(data.vibes_total) || 0, name = data.pseudo || (data.mine ? 'my space' : '');
+  box.innerHTML = '<div class="pf-head">' + (name ? '<span class="tname">' + esc(name) + '</span>' : '') +
+    '<span class="pf-stats">' + n + ' space' + (n === 1 ? '' : 's') + ' · ' + v + ' vibe' + (v === 1 ? '' : 's') + '</span>' +
+    '<div class="pf-acts">' + (data.mine ? '<button class="btn" type="button" data-com="/totehm#in">MY TOTEHM</button><button class="btn" type="button" data-share-me="1">SHARE MY SPACE</button>'
+      : (data.pseudo ? '<button class="btn" type="button" data-com="/@' + encodeURIComponent(data.pseudo) + '">TOTEHM</button>' : '') + (me ? '<button class="btn" type="button" data-profile-me="1">MY SPACE</button>' : '')) + '</div></div>' +
+    (PROF.list.length ? '<div class="pf-grid">' + PROF.list.map(tileHTML).join('') + '</div>' : '<p class="pf-empty">' + (data.mine ? 'No space yet · ↓ share the first one' : 'No shared space yet.') + '</p>') +
+    (data.more ? '<button class="btn" type="button" data-pf-more="1">MORE</button>' : '');
+  box.querySelectorAll('img[data-photo]').forEach(loadPhoto);
+}
+$('profile').addEventListener('click', async e => {
+  if(e.target.closest('[data-signin]')) return ssoLogin(false);
+  if(e.target.closest('[data-com]')) return;
+  if(e.target.closest('[data-profile-me]')){ PROF.pseudo = null; return loadProfileView(); }
+  if(e.target.closest('[data-pf-more]')) return loadProfileView(true);
+  const sh = e.target.closest('[data-share-me]');
+  if(sh && PSEUDO){ const url = 'https://www.totehm.space/?u=' + encodeURIComponent(PSEUDO);
+    try{ if(navigator.share) await navigator.share({ title:'TOTEHM.SPACE', url }); else { await navigator.clipboard.writeText(url); sh.textContent = 'LINK COPIED'; } }catch(_){} return; }
+  const t = e.target.closest('[data-open]'); if(t) openDetail(spotById(t.dataset.open));
+});
+for(const id of ['profile','vibes']) $(id).addEventListener('keydown', e => { if((e.key === 'Enter' || e.key === ' ') && e.target.matches?.('[role="button"]')){ e.preventDefault(); e.target.click(); } });
+/* ══ ↑ VIBES — reçues sur mes spaces (qui, quoi, quand) et données ══════ */
+const VIB = { seq:0, data:null };
+async function loadVibes(){
+  const box = $('vibes');
+  if(!me){ VIB.data = null; box.innerHTML = '<p class="vb-empty">The vibes on my spaces, and the spaces I vibed.</p><button class="btn" type="button" data-signin="1">CONNECT WITH MY TOTEHM</button>'; return; }
+  const seq = ++VIB.seq, uid = me.id; if(!VIB.data) box.innerHTML = '<p class="vb-empty">…</p>';
+  const { data, error } = await sb.rpc('my_vibes', { p_limit: 40 });
+  if(seq !== VIB.seq || uid !== me?.id) return;
+  if(error || !data?.ok){ if(error) console.error('[my_vibes]', error.message); box.innerHTML = '<p class="vb-empty">Not loaded. Try again.</p>'; return; }
+  VIB.data = data;
+  const when = t => { const d = new Date(t); return Number.isNaN(d.getTime()) ? '' : dayOf(d) + ' ' + hhmm(d); };
+  const inn = data.received || [], out = data.given || [];
+  box.innerHTML = '<span class="vb-lab">On my spaces · ' + (Number(data.received_total) || 0) + '</span>' +
+    (inn.length ? inn.map(r => '<div class="vb-row" role="button" tabindex="0" data-vb-space="' + esc(r.space) + '"><span>' + (r.by ? '<b>' + esc(r.by) + '</b>' : 'a member') + ' vibed <i>' + esc(r.habit) + '</i></span><time>' + esc(when(r.at)) + '</time></div>').join('')
+      : '<p class="vb-empty">No vibe yet · ↓ share a space</p>') +
+    '<span class="vb-lab">The spaces I vibed</span>' +
+    (out.length ? '<div class="pf-grid">' + out.map(tileHTML).join('') + '</div>' : '<p class="vb-empty">Double-tap a space to vibe it · ← watch</p>');
+  box.querySelectorAll('img[data-photo]').forEach(loadPhoto);
+}
+$('vibes').addEventListener('click', async e => {
+  if(e.target.closest('[data-signin]')) return ssoLogin(false);
+  const t = e.target.closest('[data-open]'); if(t) return openDetail(spotById(t.dataset.open));
+  const r = e.target.closest('[data-vb-space]'); if(!r) return;
+  const { data, error } = await sb.rpc('spot_get', { p_id: r.dataset.vbSpace });
+  if(error) console.error('[spot_get]', error.message);
+  if(data?.ok) openDetail(data.spot);
+});
+async function loadHabits(){
+  if(HABITS) return HABITS;
+  if(!me) return [];
+  if(habitsPending) return habitsPending;
+  const uid = me.id;
+  habitsPending = (async () => {
+    const { data, error } = await sb.rpc('space_habits');
+    if(error){ console.error('[space_habits]', error.message); return []; }
+    const habits = (data?.habits || []).map(s => ({...s,name:s.name,ints:(s.ints || []).filter(i => INTS[i])}));
+    if(me?.id === uid) HABITS = habits;
+    return habits;
+  })();
+  try{ return await habitsPending; }finally{ habitsPending = null; }
+}
+function tpPickerPosition(){
+  const p=$('habit-picker'), top=$('heading').getBoundingClientRect().bottom+8;
+  p.style.top=top+'px'; p.style.maxHeight=Math.max(0,innerHeight-top-16)+'px';
+}
+function pickerClose(){
+  $('habit-picker').classList.add('hide'); $('habit-filter').setAttribute('aria-expanded', 'false');
+  $('tp-enter').setAttribute('aria-expanded','false'); PAPER.sync();
+}
+async function pickerOpen(){
+  PAPER.poser();
+  const p = $('habit-picker'); p.classList.remove('hide'); $('habit-filter').setAttribute('aria-expanded', 'true');
+  $('tp-enter').setAttribute('aria-expanded','true'); PAPER.sync(); tpPickerPosition();
+  p.innerHTML = '<p class="note">Reading my TOTEHM…</p>';
+  await loadHabits();
+  if(p.classList.contains('hide')) return;
+  p.innerHTML = '<div class="row"><button class="chip" type="button" data-all="1">All Habit Boxes</button><button class="lnk" type="button" data-picker-close="1">Close</button></div>' +
+    (!me ? '<button class="btn" type="button" data-picker-signin="1">CONNECT WITH MY TOTEHM</button>' : HABITS?.length ?
+      HABITS.map((h,k)=>pickHabitHTML(h,'data-filter-h="'+k+'"',SF.box?.name===h.name)).join('') :
+      '<button class="btn" type="button" data-com="/totehm#in">Write a Habit Box in my TOTEHM</button>');
+}
+$('habit-filter').onclick = () => $('habit-picker').classList.contains('hide') ? pickerOpen() : pickerClose();
+
+/* Le bouton natif donne Entrée/Espace ; la scène donne le tap des deux faces. */
+/* Le papier : au centre il fait un space (↓ la caméra) ; dans le fil il
+   ouvre le filtre ; ailleurs il ramène au centre. */
+const tpToggle=()=>{
+  if(!$('habit-picker').classList.contains('hide')) return pickerClose();
+  if(VIEW === 'home') return PAPER.poser(()=>go('cam'));
+  if(VIEW === 'feed') return sfOpen($('sf-panel').classList.contains('hide'));
+  go('feed');
+};
+$('tp-enter').onclick=e=>{e.stopPropagation();tpToggle();};
+$('totehm-paper').onclick=tpToggle;
+
+$('habit-picker').addEventListener('click', e => {
+  if(e.target.closest('[data-picker-close]')) return pickerClose();
+  if(e.target.closest('[data-picker-signin]')) return ssoLogin(false);
+  const b = e.target.closest('[data-filter-h]');
+  if(b || e.target.closest('[data-all]')){
+    /* La Box choisie allume TOUS ses éléments dans le filtre du fil. */
+    sfBox(b ? HABITS[+b.dataset.filterH] : null); pickerClose();
+    if(VIEW !== 'feed') go('feed'); sfOpen(true); sfApply();
+  }
+});
+document.addEventListener('pointerdown', e => { if(!e.target.closest('#habit-picker,#habit-filter,#totehm-paper')) pickerClose(); });
+
+const chip = (a, l, on, sub) => '<button type="button" class="chip' + (on ? ' is-on' : '') + '" ' + a + '>' + l + (sub ? '<small>' + sub + '</small>' : '') + '</button>';
+/* 12/10 — un élément de la box se rallume / s'éteint aussi au clavier, avant la boîte qui l'entoure. */
+document.addEventListener('keydown', e => {
+  if((e.key === 'Enter' || e.key === ' ') && e.target instanceof Element && e.target.matches('[data-box-el]')){ e.preventDefault(); e.stopPropagation(); e.target.click(); }
+}, true);
+function boxOptionsClick(t,x){
+ const b=t.closest('[data-box-el]'); if(!b || !x.habit) return false;
+ x.boxOptions ||= boxNew(); const hd = x.boxOptions.hide, k = b.dataset.boxEl;
+ if(k === 'f'){ hd.freq = !hd.freq; return true; }
+ const item = (x.habit[k === 'o' ? 'objectives' : 'repulsions'] || [])[+b.dataset.boxI], txt = String(item?.text || '').trim(); if(!txt) return false;
+ const at = hd[k].findIndex(v => v.toLowerCase() === txt.toLowerCase()); if(at >= 0) hd[k].splice(at,1); else hd[k].push(txt);
+ return true;
+}
+/* Un space ou un spot NAÎT CACHÉ (serveur) : cet appel, toujours fait, montre ce qui reste allumé. */
+async function publishBoxOptions(id,x){
+ const hd = x.boxOptions?.hide || boxNew().hide;
+ const r=await sb.rpc('spot_box_set',{p_spot:id,p_hide:{objectives:hd.o,repulsions:hd.r,freq:!!hd.freq}});
+ if(r.error) console.error('[spot_box_set]',r.error.message); return !r.error && !!r.data?.ok;
+}
+let CITIES = null, CITY_KEYS = [], citiesLoading = null;
+const fold = t => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+function loadCities(){
+  if(CITIES) return Promise.resolve(CITIES);
+  return citiesLoading ||= fetch('/cities.json').then(r => r.ok ? r.json() : {cities:[]}).then(d => d.cities || []).catch(() => [])
+    .then(l => { CITIES = l; CITY_KEYS = l.map(c => fold(c[0])); return l; });
+}
+async function nearestCity(p){
+  await loadCities(); let best = null, bd = 40e3;
+  for(const k of CITIES){ const d = hav(p, { lat:k[1], lng:k[2] }); if(d < bd){ bd = d; best = k; } }
+  return best;
+}
+const cityNear = async p => (await nearestCity(p))?.[0] || null;
+
+/* ══ BOTTOM — LA CAMÉRA, PUIS LE SPACE ════════════════════════════
+   Média → Habit → mini-boxes OBJECTIVES / REPULSIONS → commentaire → SHARE.
+   La ville est résolue localement et le serveur ne rend jamais un point exact. */
+import {VIDEO,cameraConstraints,cameraReady,portraitCapture,recordingMime} from '/video-capture.mjs';
+function camState(){ ['is-rec','is-count','is-form'].forEach(c => document.body.classList.remove(c));
+  if(REC.step === 'rec') document.body.classList.add('is-rec');
+  if(REC.step === 'count') document.body.classList.add('is-count');
+  const form=['habit','form','send','retry','heavy'].includes(REC.step);
+  if(form) document.body.classList.add('is-form');
+  for(const id of ['member','heading','joy','v-home','v-feed','v-me','v-vibes','v-cam']) $(id).inert=form;
+  $('cam-body').setAttribute('role',form?'dialog':'region');if(form)$('cam-body').setAttribute('aria-modal','true');else $('cam-body').removeAttribute('aria-modal');
+  joyPaint(); }
+function camStop(){
+  REC.capture?.stop();REC.capture=null;
+  REC.stream?.getTracks().forEach(t => t.stop()); REC.stream = null;
+  try{ if(REC.mr && REC.mr.state !== 'inactive') REC.mr.stop(); }catch(_){}
+  clearInterval(REC.timer);
+}
+function camReset(){
+  REC.seq++; if(REC.mr){ REC.mr.onstop = null; REC.mr.ondataavailable = null; REC.mr.onstart=null;REC.mr.onerror=null; }
+  camStop(); if(REC.url) URL.revokeObjectURL(REC.url);
+  Object.assign(REC, { step:null, kind:null, why:false, boxOptions:boxNew(), pos:null,city:null,placeAt:0,placePromise:null,placeError:false, mr:null, blob:null, url:null, habit:null, mode:null, loc:null, dur:null, busy:false,seconds:0,uploaded:null,width:0,height:0,fps:0,bitrate:0,path:null });
+  const v = $('cam-v'); v.pause(); v.removeAttribute('src'); v.srcObject = null;
+  const ph = $('cam-photo'); ph.classList.add('hide'); ph.removeAttribute('src');
+  $('cam-n').textContent = ''; $('cam-sec').classList.add('hide'); camState();
+}
+/* Le capteur ne s'allume QU'APRÈS un appui : VIDEO, PHOTO (ou le point rouge,
+   qui vaut VIDEO). Arriver dans la vue n'ouvre jamais la caméra. */
+async function camOpen(kind){
+  camReset(); REC.vis='shared'; REC.aud='public'; const seq = REC.seq;
+  if(!me){ REC.step = 'signin'; return camPaint(); }
+  if(!kind){ REC.step = 'idle'; return camPaint(); }
+  REC.kind = kind;
+  if(!navigator.mediaDevices?.getUserMedia || kind === 'video' && typeof MediaRecorder === 'undefined'){ REC.step = 'nocam'; return camPaint(); }
+  REC.step = 'perm'; camPaint();
+  const constraints = cameraConstraints(); if(kind === 'photo') constraints.audio = false;
+  let stream;
+  try{ stream = await navigator.mediaDevices.getUserMedia(constraints); }
+  catch(e){ if(seq !== REC.seq || VIEW !== 'cam') return; console.error('[cam]', e && e.name); REC.step = 'denied'; return camPaint(); }
+  if(seq !== REC.seq || VIEW !== 'cam'){ stream.getTracks().forEach(t => t.stop()); return; }
+  REC.stream = stream;
+  const v = $('cam-v'); v.srcObject = REC.stream; v.muted = true;
+  try{await v.play();await cameraReady(v);if(seq!==REC.seq || VIEW!=='cam') return;
+    if(kind === 'video'){const capture=await portraitCapture(v,stream);if(seq!==REC.seq || VIEW!=='cam'){capture.stop();return;}REC.capture=capture;REC.mime=await recordingMime(capture);if(!REC.mime)throw new Error('Video recording unsupported');if(seq!==REC.seq || VIEW!=='cam')return;Object.assign(REC,{width:capture.width,height:capture.height,fps:capture.fps,path:capture.path});}}
+  catch(e){if(seq!==REC.seq || VIEW!=='cam') return;console.error('[portrait capture]',e.message);camStop();REC.step='nocam';return camPaint();}
+  REC.step = 'ready'; camPaint();
+}
+/* La photo : l'image de la caméra recadrée au centre en 9:16, ≤ 1080 × 1920, JPEG. */
+async function camShot(){
+  const v = $('cam-v'), w = v.videoWidth, h = v.videoHeight, seq = REC.seq; if(REC.step !== 'ready' || !w || !h) return;
+  const cw = Math.min(w, h*9/16), ch = cw*16/9, W = Math.max(2, Math.round(Math.min(1080, cw)/2)*2), H = Math.round(W*16/9/2)*2;
+  const c = document.createElement('canvas'); c.width = W; c.height = H; c.getContext('2d').drawImage(v, (w-cw)/2, (h-ch)/2, cw, ch, 0, 0, W, H);
+  REC.step = 'shot'; joyPaint(); const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', .88));
+  if(seq !== REC.seq || VIEW !== 'cam') return;
+  camStop(); v.srcObject = null;
+  if(!blob?.size){ REC.step = 'retry'; return camPaint(); }
+  REC.blob = blob; REC.seconds = 0; REC.width = W; REC.height = H; REC.url = URL.createObjectURL(blob);
+  const ph = $('cam-photo'); ph.src = REC.url; ph.classList.remove('hide');
+  REC.step = 'habit'; camPaint(); loadHabits().then(() => { if(seq === REC.seq && REC.step === 'habit') camPaint(); });
+}
+function camRec(){
+  if(!REC.stream || !REC.capture || REC.step !== 'ready') return;
+  clearInterval(REC.timer); $('cam-n').textContent = '';
+  const chunks = [], seq = REC.seq;
+  try{ REC.mr = new MediaRecorder(REC.capture.stream, { mimeType: REC.mime, videoBitsPerSecond: VIDEO.bitrate, audioBitsPerSecond: VIDEO.audioBitrate }); }
+  catch(e){ console.error('[cam]', e && e.message); REC.step = 'nocam'; return camPaint(); }
+  REC.bitrate=REC.mr.videoBitsPerSecond;REC.mime=REC.mr.mimeType || REC.mime;let bytes=0,failed=false;
+  REC.mr.onstart=()=>{if(seq===REC.seq && VIEW==='cam' && REC.mr.state==='recording') REC.t0=Date.now();};
+  REC.mr.onerror=e=>{failed=true;console.error('[cam recording]',e.error?.name || 'failed');};
+  REC.mr.ondataavailable = e => {if(e.data?.size){chunks.push(e.data);bytes+=e.data.size;if(bytes>(RULES.clip_max_bytes || VIDEO.maxBytes)*.96 && REC.mr.state==='recording') REC.mr.stop();}};
+  REC.mr.onstop = async () => {
+    if(seq !== REC.seq || VIEW !== 'cam') return;
+    const type = REC.mime.split(';')[0] || 'video/webm';
+    REC.seconds=REC.t0?Math.min(33,(Date.now()-REC.t0)/1000):0;REC.blob = new Blob(chunks, { type }); camStop(); $('cam-sec').classList.add('hide');
+    if(VIEW !== 'cam') return;
+    if(failed || !REC.blob.size){REC.blob=null;REC.step='retry';return camPaint();}
+    if(REC.blob.size > (RULES.clip_max_bytes || VIDEO.maxBytes)){ REC.blob = null; REC.step = 'heavy'; return camPaint(); }
+    const v = $('cam-v'); v.srcObject = null; REC.url = URL.createObjectURL(REC.blob); v.src = REC.url; v.loop = true; v.muted = true;
+    try{await v.play();await cameraReady(v);if(seq!==REC.seq || VIEW!=='cam') return;if(Math.abs(v.videoWidth*16-v.videoHeight*9)>2) throw new Error('Portrait video required');}
+    catch(e){if(seq!==REC.seq || VIEW!=='cam') return;console.error('[recorded video]',e.message);REC.blob=null;REC.step='retry';return camPaint();}
+    REC.step = 'habit'; camPaint(); loadHabits().then(() => { if(seq === REC.seq && REC.step === 'habit') camPaint(); });
+  };
+  // Encoder startup must not consume the clip duration or stop an empty recording.
+  REC.t0=0;REC.mr.start(250); REC.step = 'rec'; camPaint();
+  const max = (RULES.clip_seconds || 33)*1000;
+  $('cam-sec').classList.remove('hide');
+  $('cam-s').textContent='0 / '+(max/1000)+' s';
+  const tick = () => { if(!REC.t0) return; const el = Date.now() - REC.t0; $('cam-s').textContent = Math.min(33, Math.floor(el/1000)) + ' / ' + (max/1000) + ' s';
+    if(el >= max){ clearInterval(REC.timer); try{ REC.mr?.stop(); }catch(_){} } };
+  tick(); REC.timer = setInterval(tick, 200);
+}
+const habitHTML=(h,options,prefix)=>'<div class="habit">'+tickHTML(h.ints)+'<span class="h-body"><span class="v-col">'+habitInner(h,options,prefix)+'</span></span>'+'</div>';
+const pickHabitHTML=(h,attr,on)=>'<div class="pick-habit'+(on ? ' is-on' : '')+'" role="button" tabindex="0" '+attr+'>'+habitHTML(h)+'</div>';
+document.addEventListener('keydown',e=>{const b=e.target.closest('.pick-habit[role="button"]');if(b && e.target===b && ['Enter',' '].includes(e.key)){e.preventDefault();b.click();}});
+function missing(){const m=[];if(!REC.habit)m.push('a habit');if(!REC.city)m.push('your current city');return m;}
+function camPaint(){
+  /* 12/10 — « + a space » depuis une Habit de mon Totehm : la caméra sait laquelle. */
+  if(REC.step === 'habit' && WANT_HABIT && HABITS){
+    const k = HABITS.findIndex(x => String(x.name || '').toLowerCase() === WANT_HABIT.toLowerCase()); WANT_HABIT = null;
+    if(k >= 0){ REC.habit = HABITS[k]; REC.boxOptions = boxNew(); REC.step = 'form'; setTimeout(() => recResolvePlace()); }
+  }
+  camState();
+  const b = $('cam-body'), st = REC.step, photo = REC.kind === 'photo', cancel = '<button class="btn" type="button" data-cancel="1">CANCEL</button>';
+  let h = '';
+  if(st === 'signin') h = '<p class="say">Share a space</p><div class="cam-actions"><button class="btn" type="button" data-signin="1">CONNECT WITH MY TOTEHM</button></div>';
+  else if(st === 'idle') h = '<p class="say">film the place, not yourself</p><div class="cam-actions"><button class="btn" type="button" data-start="video">VIDEO</button><button class="btn" type="button" data-start="photo">PHOTO</button>' + cancel + '</div>';
+  else if(st === 'perm') h = '<p class="say">Allow the camera</p><div class="cam-actions">' + cancel + '</div>';
+  else if(st === 'denied') h = '<p class="say">The camera is closed for this site. Allow it in the browser, then come back.</p><div class="cam-actions">' + cancel + '</div>';
+  else if(st === 'nocam') h = '<p class="say">This browser cannot ' + (photo ? 'take the photo' : 'film') + '. Try Safari or Chrome on the phone.</p><div class="cam-actions">' + cancel + '</div>';
+  else if(st === 'retry') h = '<p class="say">The ' + (photo ? 'photo' : 'recording') + ' did not arrive. Take it again.</p>';
+  else if(st === 'heavy') h = '<p class="say">Too heavy — film it again.</p>';
+  else if(st === 'ready' || st === 'shot') h = '<p class="say">' + (photo ? 'Tap the red point to take the photo' : 'Tap the red point to film · up to ' + (RULES.clip_seconds || 33) + ' s') + '</p>' + '<div class="cam-actions">' + cancel + '</div>';
+  else if(st === 'rec') h = '<p class="say">Tap the red point to stop</p>';
+  else if(st === 'habit'){
+    h = '<div class="row pick-head"><span class="lab">Which Habit Box?</span></div>' + (!HABITS ? '<p class="note">reading my TOTEHM…</p>' : HABITS.length
+      ? HABITS.map((x,k)=>pickHabitHTML(x,'data-h="'+k+'"')).join('')
+      : '<p class="say">No habit in my TOTEHM yet.</p><button class="btn" type="button" data-com="/totehm#in">Write one in my TOTEHM</button>') ;
+  }
+  else if(st === 'form' || st === 'send'){
+    const m = missing();
+    h='<div class="it" data-reh="1">'+habitHTML(REC.habit,REC.boxOptions,'')+'</div><textarea id="c-say" maxlength="400" placeholder="A word (optional)">'+esc(REC.say || '')+'</textarea>'+audPick(REC.aud || 'public','data-aud')+'<button class="btn" type="button" data-send="1"'+(m.length || st==='send' ? ' disabled' : '')+'>SHARE</button><p class="note" id="c-note">'+(m.length ? 'missing: '+m.join(' · ') : '')+'</p>'+(REC.placeError?'<button class="btn" type="button" data-locate="1">TRY AGAIN</button>':'');
+  }
+  if(['habit','form','retry','heavy'].includes(st)) h+='<div class="cam-actions"><button class="btn" type="button" data-again="1">' + (photo ? 'TAKE AGAIN' : 'RECORD AGAIN') + '</button>' + cancel + '</div>';
+  b.innerHTML = h;
+  if(document.body.classList.contains('is-form') && !b.contains(document.activeElement)) b.focus({preventScroll:true});
+}
+$('cam-body').addEventListener('input', e => {
+  if(e.target.id === 'c-say') REC.say = e.target.value;
+});
+$('cam-body').addEventListener('click', e => {
+  const t = e.target instanceof Element ? e.target : null; if(!t || REC.busy) return;
+  if(boxOptionsClick(t,REC)) return camPaint();
+  if(t.closest('[data-locate]')) return recResolvePlace(true);
+  const au = t.closest('[data-aud]'); if(au){ REC.aud = au.dataset.aud; return audMark($('cam-body'), 'data-aud', REC.aud); }
+  if(t.closest('[data-signin]')) return ssoLogin(false, '/?v=cam');
+  if(t.closest('[data-cancel]')){ camReset(); return go('feed'); }
+  const start = t.closest('[data-start]'); if(start) return camOpen(start.dataset.start);
+  if(t.closest('[data-again]')) return camOpen(REC.kind || 'video');
+  const hk = t.closest('[data-h]'); if(hk){ REC.habit = HABITS[+hk.dataset.h]; REC.boxOptions=boxNew(); REC.step = 'form'; camPaint(); recResolvePlace(); return; }
+  if(t.closest('[data-reh]')){ REC.step = 'habit'; return camPaint(); }
+  if(t.closest('[data-send]')) return camSend();
+});
+const geo = () => new Promise(res => { if(!navigator.geolocation) return res(null);
+  navigator.geolocation.getCurrentPosition(p => res({ lat:p.coords.latitude, lng:p.coords.longitude }), () => res(null), { enableHighAccuracy:true, timeout:9000, maximumAge:60000 }); });
+const note = (t, no) => { const n = $('c-note'); if(n){ n.textContent = t || ''; n.className = 'note' + (no ? ' no' : ''); } };
+async function recResolvePlace(force=false){
+ if(REC.placePromise) return REC.placePromise;
+ if(!force && REC.pos && REC.city && Date.now()-REC.placeAt<60000) return {pos:REC.pos,city:REC.city};
+ const seq=REC.seq; REC.placeError=false;
+ const promise=geo().then(async pos=>({pos,city:pos ? await cityNear(pos) : null})).then(r=>{
+  if(seq===REC.seq){REC.pos=r.pos;REC.city=r.city;REC.placeAt=Date.now();REC.placeError=!r.pos || !r.city;if(['form','send'].includes(REC.step))camPaint();}
+  return r;
+ }).finally(()=>{if(seq===REC.seq && REC.placePromise===promise)REC.placePromise=null;});
+ REC.placePromise=promise; return promise;
+}
+async function videoSend(blob, seconds, onProgress){
+  if(/^image\//.test(blob.type)){
+    const path = me.id + '/' + crypto.randomUUID() + '.jpg';
+    const up = await sb.storage.from('moments').upload(path, blob, { contentType:'image/jpeg', upsert:false }); if(up.error) throw up.error;
+    return path;
+  }
+  if(RULES.video_provider === 'bunny') return bunnyUpload(blob, seconds, onProgress);
+  const t = blob.type || '', ext = t.includes('mp4') ? 'mp4' : t.includes('quicktime') ? 'mov' : 'webm', path = me.id + '/' + crypto.randomUUID() + '.' + ext;
+  const up = await sb.storage.from('moments').upload(path, blob, { contentType:t || 'video/' + ext, upsert:false }); if(up.error) throw up.error;
+  return path;
+}
+async function camSend(){
+  if(REC.busy || missing().length || !REC.blob || !me) return;
+  REC.vis='shared';
+  const started=performance.now();REC.busy = true; REC.step = 'send'; camPaint();$('cam-v').pause();note('sending…');
+  // Position/city and binary transfer are independent; publication waits for both.
+  const place=recResolvePlace();
+  let path=REC.uploaded;
+  try{
+   if(!path){path=await videoSend(REC.blob,REC.seconds,p=>note('sending… '+p+'%'));REC.uploaded=path;}
+  }catch(e){console.error('[upload]',e.message);REC.busy=false;REC.step='form';camPaint();return note('Not sent — try again.',true);}
+  VIDEO_METRICS.uploadMs=Math.round(performance.now()-started);
+  const {pos,city}=await place;
+  if(!pos || !city){REC.busy=false;REC.step='form';camPaint();return note('Allow your location to find your current city.',true);}
+  POS=pos;
+  const {data,error}=await sb.rpc('space_post_audience',{p_habit:REC.habit.name,p_video:path,p_lat:Math.round(pos.lat*100)/100,p_lng:Math.round(pos.lng*100)/100,p_city:city,p_comment:(REC.say || '').trim() || null,p_audience:REC.aud || 'public'});
+  if(error) console.error('[space_post_audience]', error.message);
+  if(error || !data?.ok){
+    // Keep the completed upload for a retry; ownership remains server-enforced.
+    REC.busy = false; REC.step = 'form'; camPaint();
+    return note(({ habit:'that habit is no longer in my TOTEHM', too_many:'enough spots for today', video:'the media did not arrive — take it again',
+      position:'allow my position', duration:'the duration', signin:'sign in again' })[data?.why] || 'not published', true);
+  }
+  const boxesSaved=await publishBoxOptions(data.id,REC);
+  VIDEO_METRICS.publishMs=Math.round(performance.now()-started);REC.say = ''; camReset(); await loadFeed(false); PROF.list = [];
+  go('feed'); const s = FEED.list.find(s => s.id === data.id); if(s) openDetail(s); else { const r = await sb.rpc('spot_get',{p_id:data.id}); if(r.error) console.error('[spot_get]',r.error.message); if(r.data?.ok) openDetail(r.data.spot); }
+  if(!boxesSaved && DETAIL) $('detail').insertAdjacentHTML('beforeend','<p class="note">These mini-boxes were kept hidden.</p>');
+}
+
+/* ══ LES CINQ VUES — joystick, trackpad, souris et écran tactile ═════ */
+/* 12/10 — LE FIL EST LE CENTRE : ↓ filmer, → mon space, ↑ vibes, ← SPACE (le pouls). */
+const CROIX = { feed:{g:'home',b:'cam',d:'me',h:'vibes'}, home:{d:'feed'}, cam:{h:'feed'}, me:{g:'feed'}, vibes:{b:'feed'} };
+const VIEW_NAMES = {home:'Space',feed:'Watch',cam:'Share',me:'My space',vibes:'Vibes'};
+const voisin = d => CROIX[VIEW][d] || null;
+const recordingLocked = () => VIEW === 'cam' && ['perm','count','rec','shot','habit','form','send','retry','heavy'].includes(REC.step);
+function joyPaint(preview){
+  const bx = $('joy-box'), camera = VIEW === 'cam';
+  /* 12/10 (ter) — Wah : « remets-moi les couleurs du joystick d'avant » : chaque vue garde SA teinte, quelle que soit sa place. */
+  bx.style.setProperty('--joy-vue', ({home:'var(--navy)',feed:'var(--rep)',cam:'var(--navy)',me:'var(--blue)',vibes:'var(--blue)'})[voisin(preview) || VIEW]);
+  bx.classList.toggle('is-side',['feed','me','vibes'].includes(VIEW));
+  bx.classList.toggle('is-camera',camera); bx.classList.toggle('is-recording',camera && REC.step === 'rec');
+  const muted=!!DETAIL || camera && ['habit','form','send','retry','heavy'].includes(REC.step);
+  $('joy').classList.toggle('is-muted',muted);bx.disabled=muted || camera && ['perm','signin','nocam','denied','shot'].includes(REC.step);
+  const photo = REC.kind === 'photo';
+  bx.setAttribute('aria-label',camera ? (REC.step === 'rec' ? 'Stop recording' : ['habit','form','heavy','retry'].includes(REC.step) ? (photo ? 'Take the photo again' : 'Record again') : REC.step === 'ready' && photo ? 'Take the photo' : 'Record video') : VIEW === 'feed' ? 'Share' : 'Back to the feed');
+  for(const [cls,v] of [['o','feed'],['h','home'],['r','cam']]) $('joy-stack').querySelector('.'+cls).classList.toggle('is-current',VIEW === v);
+  for(const d of ['g','d','h','b']){ $('cur-'+d).classList.toggle('is-dead',!voisin(d) || recordingLocked() || !!DETAIL); $('cur-'+d).classList.toggle('is-preview',preview === d && !!voisin(d)); $('cur-'+d).setAttribute('aria-label', VIEW_NAMES[voisin(d)] || ''); }
+  $('joy-say').textContent = camera ? (REC.step === 'rec' ? 'STOP' : REC.step === 'idle' ? 'VIDEO' : REC.step === 'ready' ? (photo ? 'PHOTO' : 'REC') : ['habit','form','heavy','retry'].includes(REC.step) ? 'AGAIN' : '') : preview && voisin(preview) ? VIEW_NAMES[voisin(preview)] : '';
+}
+function go(v){
+ if(v===VIEW || !CROIX[v] || REC.busy)return;
+ const was=VIEW;VIEW=v;closeDetail();pickerClose();
+ document.body.className=document.body.className.replace(/\bv-\w+/g,'').trim()+' v-'+v;
+ document.querySelectorAll('.view').forEach(s=>s.classList.toggle('is-on',s.id==='v-'+v));
+ if(was==='cam')camReset();if(was==='feed'){pauseFeed();sfOpen(false);}if(v==='cam')camOpen();
+ if(v==='feed'){focusVisibleClip();document.querySelectorAll('#feed .clip[data-k]').forEach(c=>{io.unobserve(c);io.observe(c);});}
+ if(v==='me')loadProfileView(); if(v==='vibes')loadVibes(); if(v==='home')loadPulse();
+ camState();joyPaint();paintInts();PAPER.sync();
+}
+document.addEventListener('visibilitychange',()=>{
+ if(document.hidden){clearTimeout(feedReleaseTimer);SIGNED.clear();document.querySelectorAll('#feed video,#detail video').forEach(releaseClip);}
+ else {if(VIEW==='feed'){const f=$('feed'),height=f.querySelector('.clip')?.offsetHeight;if(height)focusClip(Math.round(f.scrollTop/height));}const v=$('detail').querySelector('video');if(DETAIL && v)playClip(v);}
+});
+function step(d){ if(recordingLocked() || DETAIL) return; const v = voisin(d); if(v){ gestureCount++; go(v); } }
+function joyTap(){
+  if(VIEW !== 'cam'){ go(VIEW === 'feed' ? 'cam' : 'feed'); return; }
+  if(REC.step === 'rec'){ clearInterval(REC.timer); if(REC.mr?.state === 'recording') REC.mr.stop(); }
+  else if(REC.step === 'ready'){ if(REC.kind === 'photo') camShot(); else camRec(); }
+  else if(REC.step === 'idle') camOpen('video');
+  else if(['habit','form','heavy','retry'].includes(REC.step)) camOpen(REC.kind || 'video');
+}
+addEventListener('keydown',e => {
+  if(e.key==='Tab' && VIEW==='cam' && document.body.classList.contains('is-form')){const f=[...$('cam-body').querySelectorAll('button:not(:disabled),input,textarea,a[href]')].filter(x=>x.getClientRects().length);if(f.length){const i=f.indexOf(document.activeElement);if(e.shiftKey && i<=0 || !e.shiftKey && (i<0 || i===f.length-1)){e.preventDefault();(e.shiftKey?f.at(-1):f[0]).focus();}}return;}
+  if(e.key === 'Escape'){
+    if(!$('habit-picker').classList.contains('hide')) pickerClose(); else if(!$('sf-panel').classList.contains('hide')) sfOpen(false); else if(DETAIL) closeDetail();
+    else if(HZ.on && VIEW === 'feed') hzClose();
+    else if(REC.step === 'rec') joyTap(); else if(VIEW !== 'feed' && !REC.busy) go('feed');
+    return;
+  }
+  if(e.target.closest?.('input,textarea,select,[contenteditable]')) return;
+  const d = {ArrowLeft:'g',ArrowRight:'d',ArrowUp:'h',ArrowDown:'b'}[e.key];
+  if(d){ e.preventDefault(); step(d); }
+});
+/* Le contenu défile d'abord. Aux bords, le même geste reprend la croix.
+   Les petits deltas du trackpad s'additionnent ; son inertie ne saute pas
+   une deuxième vue. Les champs, les dialogues et la prise vidéo gardent
+   leurs gestes. La navigation laisse le défilement du fil au navigateur. */
+(function gestures(){
+  const pointers = new Map(); let drag = null, pinch = null, pinching = false;
+  const excluded = t => !!t.closest?.('.eco-sheet,#cam-body,#joy,button,input,textarea,select,a,#detail,#habit-picker,#sf-panel,#totehm-paper,[contenteditable]');
+  const horizontal = dx => step(dx>0?'g':'d');
+  const scroller = t => t.closest?.('#feed,#v-me,#v-vibes,#cam-body');
+  const canScroll = (el,delta) => !!el && el.scrollHeight > el.clientHeight + 3 && (delta > 0 ? el.scrollTop < el.scrollHeight - el.clientHeight - 3 : el.scrollTop > 3);
+  addEventListener('pointerdown',e => {
+    if(e.button > 0 || excluded(e.target) || recordingLocked() || DETAIL) return;
+    pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pointers.size === 1){ pinching = false; drag = {id:e.pointerId,x:e.clientX,y:e.clientY,t:Date.now(),el:scroller(e.target),view:VIEW}; }
+    else {
+      drag = null;
+    }
+  },true);
+  addEventListener('pointermove',e => {
+    if(!pointers.has(e.pointerId)) return; pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  },{capture:true,passive:false});
+  addEventListener('pointerup',e => {
+    pointers.delete(e.pointerId); const d=drag;
+    if(pointers.size < 2) pinch=null;
+    if(!pointers.size) drag=null;
+    if(e.pointerType === 'touch' || pinching || !d || e.pointerId !== d.id || d.view !== VIEW || Date.now()-d.t > 1600) return;
+    const dx=e.clientX-d.x,dy=e.clientY-d.y;
+    if(Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)*1.35){ suppressClickUntil=Date.now()+400; horizontal(dx); }
+    else if(Math.abs(dy)>65 && Math.abs(dy)>Math.abs(dx)*1.35 && !canScroll(d.el,-dy)){
+      suppressClickUntil=Date.now()+400; step(dy>0?'h':'b');
+    }
+  },true);
+  addEventListener('pointercancel',e => { pointers.delete(e.pointerId); drag=null; pinch=null; if(!pointers.size) pinching=false; },true);
+  let touch=null;
+  const touchExcluded=t=>!!t.closest?.('.eco-sheet,#cam-body,#joy,input,textarea,select,#detail,#habit-picker,#sf-panel,#sf-btn,#totehm-paper,[contenteditable]');
+  addEventListener('touchstart',e=>{
+    if(e.touches.length!==1 || touchExcluded(e.target) || recordingLocked() || DETAIL){ touch=null;return; }
+    const p=e.touches[0];touch={x:p.clientX,y:p.clientY,t:Date.now(),el:scroller(e.target),view:VIEW};
+  },{passive:true,capture:true});
+  addEventListener('touchmove',e=>{
+    if(!touch || e.touches.length!==1) return;
+    const p=e.touches[0],dx=p.clientX-touch.x,dy=p.clientY-touch.y;
+    if(Math.abs(dx)>12 && Math.abs(dx)>Math.abs(dy)*1.25) e.preventDefault();
+  },{passive:false,capture:true});
+  addEventListener('touchend',e=>{
+    const d=touch;touch=null;if(!d || d.view!==VIEW || Date.now()-d.t>1800 || !e.changedTouches.length || pinching) return;
+    const p=e.changedTouches[0],dx=p.clientX-d.x,dy=p.clientY-d.y;
+    if(Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)*1.3){ suppressClickUntil=Date.now()+500;horizontal(dx); }
+    else if(Math.abs(dy)>70 && Math.abs(dy)>Math.abs(dx)*1.35 && !canScroll(d.el,-dy)){suppressClickUntil=Date.now()+500;step(dy>0?'h':'b');}
+  },{passive:true,capture:true});
+  addEventListener('touchcancel',()=>{touch=null;},{passive:true});
+  let axis='',dir='',sum=0,last=0,lockedUntil=0;
+  addEventListener('wheel',e => {
+    if(excluded(e.target) || recordingLocked() || DETAIL) return;
+    const factor=e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1;
+    const x=e.deltaX*factor,y=e.deltaY*factor, ax=Math.abs(x)>Math.abs(y)*1.25?'x':Math.abs(y)>Math.abs(x)*1.25?'y':null;
+    if(!ax) return;
+    const delta=ax === 'x'?x:y, direction=ax === 'x'?(delta>0?'d':'g'):(delta>0?'b':'h');
+    if(!voisin(direction)) return;
+    if(ax === 'y' && canScroll(scroller(e.target),delta)){sum=0;last=0;return;}
+    const now=Date.now();
+    if(now < lockedUntil){ e.preventDefault(); lockedUntil=now+260; return; }
+    e.preventDefault();
+    if(now-last>180 || ax !== axis || direction !== dir) sum=0;
+    axis=ax;dir=direction;last=now;sum+=Math.min(160,Math.abs(delta));
+    if(sum >= (ax === 'x'?75:70)){ sum=0;lockedUntil=now+350;step(direction); }
+  },{passive:false});
+})();
+/* Le manche est celui de COM : rayon 15px, seuil 9px, sans clic fantôme. */
+(function manette(){
+  const bx=$('joy-box'),st=$('joy-stack'),R=15,threshold=9;
+  let id=null,x0=0,y0=0,dx=0,dy=0,moved=0;
+  const pose=(a,b) => { st.style.setProperty('--mx',a.toFixed(1)+'px');st.style.setProperty('--my',b.toFixed(1)+'px'); };
+  bx.addEventListener('pointerdown',e => {
+    if(e.button>0 || bx.disabled || id!==null) return;
+    id=e.pointerId;x0=e.clientX;y0=e.clientY;dx=dy=moved=0;bx.classList.add('is-held');try{bx.setPointerCapture(id);}catch(_){} e.preventDefault();
+  });
+  bx.addEventListener('pointermove',e => {
+    if(id!==e.pointerId) return;
+    const a=e.clientX-x0,b=e.clientY-y0,d=Math.hypot(a,b),k=d>R?R/d:1;dx=a*k;dy=b*k;moved=Math.max(moved,d);pose(dx,dy);
+    joyPaint(Math.max(Math.abs(dx),Math.abs(dy))>=threshold?(Math.abs(dx)>Math.abs(dy)?(dx<0?'g':'d'):(dy<0?'h':'b')):null);
+  });
+  function finish(e,cancel){
+    if(id===null || e.pointerId!==id) return;id=null;bx.classList.remove('is-held');pose(0,0);joyPaint();
+    if(cancel) return;
+    if(moved<4) joyTap(); else if(Math.max(Math.abs(dx),Math.abs(dy))>=threshold) step(Math.abs(dx)>Math.abs(dy)?(dx<0?'g':'d'):(dy<0?'h':'b'));
+  }
+  bx.addEventListener('pointerup',e => finish(e,false));bx.addEventListener('pointercancel',e => finish(e,true));
+  bx.addEventListener('click',e => {if(e.detail===0) joyTap();});
+  for(const [c,d] of [['cur-g','g'],['cur-d','d'],['cur-h','h'],['cur-b','b']]) $(c).onclick=()=>step(d);
+  bx.addEventListener('wheel',e => { e.preventDefault();e.stopPropagation(); if(Math.max(Math.abs(e.deltaX),Math.abs(e.deltaY))<4) return;step(Math.abs(e.deltaX)>Math.abs(e.deltaY)?(e.deltaX>0?'d':'g'):(e.deltaY>0?'b':'h')); },{passive:false});
+})();
+
+
+/* DELETE → DELETE FOR GOOD → supprimé, partout, tout de suite (depuis la fiche d'un de mes spaces). */
+async function spaceDelete(btn, id){
+  if(!btn.classList.contains('is-arm')){
+    document.querySelectorAll('[data-del].is-arm').forEach(x => { x.classList.remove('is-arm'); x.textContent = 'DELETE'; });
+    btn.classList.add('is-arm'); btn.textContent = 'DELETE FOR GOOD'; return 'armed';
+  }
+  btn.disabled = true; btn.textContent = 'DELETING…'; const uid = me?.id;
+  try{ await videoRequest('space-delete', { spot:id }); }
+  catch(e){ console.error('[space-delete]', e?.message || e); if(btn.isConnected){ btn.disabled = false; btn.classList.remove('is-arm'); btn.textContent = 'DELETE'; } return 'failed'; }
+  if(uid !== me?.id) return 'done';
+  FEED.list = FEED.list.filter(x => x.id !== id);
+  if(DETAIL?.id === id) closeDetail();
+  paintFeed(); reload();
+  return 'done';
+}
+/* ══ LE COIN MEMBRE (13/10, lot B) — Wah : sur un satellite, CONNECT WITH MY TOTEHM seul ; connecté, le NOM seul,
+   qui ramène à totehm.com (le pont). Tout l'espace membre (mes spaces, mes spots, la console, la déconnexion
+   partout) vit dans COM. « Simple terms of use » en tout petit sous CONNECT. ═══════════════════════ */
+function paintMember(){
+  $('member').classList.toggle('is-in', !!me);
+  $('member-txt').textContent = me ? (PSEUDO || 'MY TOTEHM') : 'CONNECT WITH MY TOTEHM';
+  $('member').setAttribute('aria-label', me ? 'My TOTEHM' : 'Connect with my TOTEHM');
+  $('terms').classList.toggle('hide', !!me);
+  PAPER.nommer();
+}
+$('member').onclick = () => me ? ssoVersDomaine(sb, 'com', COM + '/totehm#in') : ssoLogin(false);
+
+/* ══ LE DÉMARRAGE ════════════════════════════════════════════════════ */
+async function boot(){
+  const { data:{ session } } = await sb.auth.getSession();
+  me = session?.user || null;
+  if(me){ const { data, error } = await sb.from('profiles').select('pseudo').eq('id', me.id).maybeSingle();
+    if(error) console.error('[profile]', error.message); PSEUDO = data?.pseudo || null; }
+  paintMember(); paintInts(); PAPER.hint(); PAPER.sync();
+  sb.rpc('spot_rules').then(({ data, error }) => { if(error) console.error('[spot_rules]', error.message); if(data) RULES = { ...RULES, ...data, video_provider:RULES.video_provider==='bunny'?'bunny':data.video_provider }; });
+  ['g','d','h','b'].forEach(d => $('cur-' + d).classList.toggle('is-dead', !voisin(d)));
+  /* Dans totehm.com : rien ne se charge avant qu'on l'ouvre (ni le fil, ni les vidéos). */
+  if(EMBED){ document.body.classList.add('is-embed'); joyPaint(); toCom('ready'); return; }
+  charger();
+  await suivre(new URLSearchParams(location.search));
+  joyPaint();
+}
+function charger(){
+  if(CHARGE) return; CHARGE = true;
+  if(me) videoRequest('create-bunny-upload',{action:'status'}).then(d=>{if(d?.available) RULES.video_provider='bunny';}).catch(e=>console.error('[video availability]',e.message));
+  reload();
+}
+/* Ce que demande l'adresse (ou totehm.com) : un space, une caméra (et sa Habit), un profil, une vue. */
+async function suivre(p){
+  WANT_HABIT = (p.get('habit') || '').trim().slice(0,200) || null;
+  if(p.get('spot')){
+    const { data, error } = await sb.rpc('spot_get', { p_id: p.get('spot') });
+    if(error) console.error('[spot_get]', error.message);
+    if(data?.ok){if(data.spot.format==='spot')return ssoVersDomaine(sb,'club','https://www.figher.club/?spot='+encodeURIComponent(p.get('spot')),true);openDetail(data.spot);}
+    return;
+  }
+  if(p.get('u')) openProfile(p.get('u'));
+  else if(p.get('v')==='cam' && me){ go('cam');
+    /* 13/10 — la vue « prendre » de totehm.com a déjà choisi : PHOTO ou VIDEO, le capteur s'allume tout de suite. */
+    const k = p.get('take'); if(k === 'photo' || k === 'video') camOpen(k); }
+  else if(['feed','home','me','vibes'].includes(p.get('v'))) go(p.get('v'));
+}
+boot();
+if(EMBED){
+  addEventListener('message', async e => {
+    if(e.origin !== location.origin || e.source !== parent || !e.data || e.data.totehm !== 'x' || !e.data.cmd) return;
+    const d = e.data;
+    if(d.cmd === 'sleep'){ pickerClose(); sfOpen(false); closeDetail(); if(HZ.on) hzClose(); if(!REC.busy && VIEW !== 'feed') go('feed'); pauseFeed(); return; }
+    const { data:{ session } } = await sb.auth.getSession();
+    if((session?.user?.id || null) !== (me?.id || null)) return toCom('stale');
+    charger();
+    if(d.cmd === 'url') await suivre(new URLSearchParams(d.q || ''));
+    if(VIEW === 'feed' && !DETAIL) focusVisibleClip();
+    joyPaint();
+  });
+  $('x-back').onclick = () => toCom('close');
+  /* Échap, quand il n'y a plus rien à refermer ici, rend le Totehm. */
+  addEventListener('keydown', e => {
+    if(e.key !== 'Escape') return;
+    const rien = VIEW === 'feed' && !DETAIL && !HZ.on && $('habit-picker').classList.contains('hide') && $('sf-panel').classList.contains('hide');
+    if(rien){ e.preventDefault(); e.stopImmediatePropagation(); toCom('close'); }
+  }, true);
+}
+</script>
+<script data-ecosystem-ui="2026-10-05">
+/* 05/10/2026 — copied into each independent page; no runtime import. */
+(() => {
+  let sheet = null, previous = null, inert = [], overflow = '';
+  /* 06/10 — a small magnifier on each Box: its content grows a little, IN PLACE. Never a window. */
+  const roots = '.habit:not(.add):not(.filtre),.r-habit,.bx';
+  const glass = on => '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M7.5 10h5' + (on ? '' : 'M10 7.5v5') + '"/></svg>';
+  function close() {
+    if (!sheet) return;
+    sheet.remove(); sheet = null;
+    inert.forEach(([el, before]) => { if (el.isConnected) el.inert = before; }); inert = [];
+    document.body.style.overflow = overflow; document.body.classList.remove('eco-modal');
+    if (previous?.isConnected) previous.focus({preventScroll:true});
+  }
+  function open(content, title, source) {
+    if (sheet) close();
+    previous = source || document.activeElement; overflow = document.body.style.overflow;
+    sheet = document.createElement('div'); sheet.className = 'eco-sheet'; sheet.setAttribute('role','dialog');
+    sheet.setAttribute('aria-modal','true'); sheet.setAttribute('aria-label',title); sheet.tabIndex = -1;
+    const card = document.createElement('section'); card.className = 'eco-card';
+    const exit = document.createElement('button'); exit.type = 'button'; exit.className = 'eco-text-btn eco-close';
+    exit.textContent = 'CLOSE'; exit.addEventListener('click',close);
+    card.append(exit,content); sheet.append(card);
+    inert = Array.from(document.body.children).filter(el => !['SCRIPT','STYLE'].includes(el.tagName)).map(el => [el,el.inert]);
+    inert.forEach(([el]) => el.inert = true);
+    document.body.append(sheet); document.body.style.overflow = 'hidden'; document.body.classList.add('eco-modal');
+    sheet.addEventListener('click',e => { if (e.target === sheet) close(); }); exit.focus();
+  }
+  function enhance(scope) {
+    if (!(scope instanceof Element) || scope.closest('.eco-sheet')) return;
+    const parentBox = scope.closest(roots);
+    const boxes = [...(parentBox ? [parentBox] : []),...scope.querySelectorAll(roots)];
+    boxes.forEach(box => {
+      if (box.querySelector(':scope > .eco-box-zoom')) return;
+      const text = box.querySelector('.v-name,.h-text,.r-text,.nm')?.textContent?.trim() || box.querySelector('textarea')?.value?.trim();
+      if (!text) return;
+      const on = box.classList.contains('is-zoom'), b = document.createElement('button');
+      b.type = 'button'; b.className = 'eco-box-zoom'; b.dataset.boxZoom = '1';
+      b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? 'Smaller' : 'Bigger'); b.innerHTML = glass(on); box.append(b);
+    });
+    const buttonSelector = 'button,a.m-it,a.mw-link,a.btn-sig,a.btn,a.ro-action';
+    const parentButton = scope.closest(buttonSelector);
+    const buttons = [...(parentButton ? [parentButton] : []),...scope.querySelectorAll(buttonSelector)];
+    buttons.forEach(b => {
+      if (b.closest('#joy,#totehm-paper,.eco-sheet') || b.matches('.pick-habit,.h-T,.h-Ti,.h-x,.w-x,.cur,.eco-box-zoom,.mini-toggle,.rk-a')) return;
+      const text = b.textContent.trim(); if (!text || /^[×+−\-↑↓←→↔↕✕✖?°\d\s]+$/.test(text)) return;
+      if (/^sign\s*in\b/i.test(text)) {
+        const leaf = b.querySelector('#member-txt,#conn-txt') || b;
+        leaf.textContent = 'CONNECT WITH MY TOTEHM'; b.classList.add('eco-connect');
+      } else if (text !== 'CONNECT WITH MY TOTEHM') b.classList.remove('eco-connect');
+      if (b.textContent.trim() === 'CONNECT WITH MY TOTEHM') b.classList.add('eco-connect');
+      b.classList.add('eco-text-btn');
+    });
+    if (document.body.dataset.ecoAuth === 'central') {
+      for (const input of scope.querySelectorAll('#mw-email,#in-email,#pt-email')) {
+        if (input.parentElement.querySelector('[data-eco-connect]')) continue;
+        const b = document.createElement('button'); b.type = 'button'; b.dataset.ecoConnect = '1';
+        b.className = 'eco-text-btn eco-connect'; b.textContent = 'CONNECT WITH MY TOTEHM'; input.before(b);
+      }
+    }
+  }
+  document.addEventListener('click',e => {
+    const zoomButton = e.target.closest?.('[data-box-zoom]');
+    if (zoomButton) {
+      e.preventDefault(); e.stopImmediatePropagation();
+      const box = zoomButton.closest(roots); if (!box) return;
+      const on = box.classList.toggle('is-zoom');
+      zoomButton.setAttribute('aria-pressed', String(on)); zoomButton.setAttribute('aria-label', on ? 'Smaller' : 'Bigger'); zoomButton.innerHTML = glass(on);
+      return;
+    }
+    const definition = e.target.closest?.('[data-space-about]');
+    if (definition) { e.preventDefault(); e.stopImmediatePropagation(); const content = document.querySelector('#space-definition')?.content?.cloneNode(true); if (content) open(content,'What is a space?',definition); }
+  },true);
+  document.addEventListener('keydown',e => {
+    if (!sheet) return;
+    e.stopImmediatePropagation();
+    if (e.key === 'Escape') { e.preventDefault(); close(); }
+    if (e.key === 'Tab') {
+      const list = [...sheet.querySelectorAll('button,a[href],input,textarea,select,[tabindex="0"]')].filter(el => !el.disabled && el.getClientRects().length);
+      const first = list[0], last = list.at(-1);
+      if (!first) { e.preventDefault(); sheet.focus(); }
+      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  },true);
+  for (const name of ['pointerdown','touchstart','touchmove','touchend','wheel']) document.addEventListener(name,e => { if (sheet) e.stopImmediatePropagation(); },{capture:true,passive:true});
+  const start = () => {
+    enhance(document.body);
+    new MutationObserver(records => {
+      const scopes = new Set();
+      for (const r of records) {
+        if (r.target instanceof Element && !r.target.closest('.eco-sheet')) scopes.add(r.target);
+        for (const node of r.addedNodes) if (node instanceof Element) scopes.add(node);
+      }
+      scopes.forEach(enhance);
+    }).observe(document.body,{childList:true,subtree:true});
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
+})();
+</script>
+</body>
+</html>

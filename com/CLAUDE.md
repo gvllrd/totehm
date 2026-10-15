@@ -49,6 +49,17 @@ connecté ». Ce lot REMPLACE, sur ces points, le lot C du même jour (le reste 
   the rhythm of each Habit ».
 - Tests : `com_processeur`, `com_shorts`, `com_paper`, `com_member_menu`, `com_read_copy`.
 
+## 15/10/2026 — raccordements galerie / Club (sans changer le moteur COM)
+
+`com/totehm.html` conserve intégralement le processeur de Claude intégré depuis `13abd34`. `/x/space` sert désormais SPACE `/social`,
+`/x/club` sert Club `/create` : les commandes XO et la création depuis une Habit restent opérationnelles.
+`/spot?v=plan|cam&habit=…&city=…` fournit une entrée COM pour les anciens liens de création Club ; le cadre
+utilise la session de la même origine et valide origine + fenêtre émettrice. Sans session, le parcours COM
+existant `/totehm#in` s'ouvre dans le cadre, puis le compositeur reprend à la connexion.
+Les menus console/creator/monetize et le snippet ciblent ensemble `space` + `https://www.totehm.space/get_higher`.
+Pour les prochains changements COM : garder le contrat XO et ces deux destinations tant que les lecteurs intégrés
+n'ont pas été remplacés. Détails, tests et limites : `../docs/GALLERY_CLUB_20261015.md`.
+
 ## 15/10/2026 — LE PROCESSEUR (lot C) : trois vues verticales, la galaxie, mes réglages au verso, la Reflection
 > Le réseau, la galaxie, la Reflection et l'espace membre de cette section ont été REPRIS par le lot D ci-dessus.
 
@@ -60,7 +71,7 @@ fois. **Partis, balisage ET câblage** : `#ljoy`, `#ljoy-say`, les vues `g`/`d`/
 - **↑ h · GET HIGHER** = la bouche du 12/10 (lot A `daa48d9`), moteur `BOUCHE` et balisage `#gate-mouth` copiés tels
   quels, EN HAUT : le papier monte sur la langue pendant qu'elle s'ouvre (`PAPIER.glisser(cibleLangue, bouche [1,1])`),
   `#lv-slogan` « Get [Higher] » sous la langue (LE bouton) → `avalerIci()` → elle jouit → `surLangue` →
-  `ssoVersDomaine(boutique, /get_higher?from=com)` (la boutique ne rejoue pas sa langue) ; retour 12 s si rien.
+  `ssoVersDomaine(boutique, /get_higher?from=com)` ; le pont artistique boutique relaie vers SPACE en conservant `from=com` (la langue ne rejoue pas) ; retour 12 s si rien.
 - **c · MY TOTEHM** : `#lv-proc` (dans `#gate-top-row`, derrière le papier) = `#lv-socket` (le verre de la boîte Premium,
   `--sk` = 1,3 × le papier, aucun flou) qui porte `#lv-ram` (`RAM` : 7 pistes aux couleurs exactes, `pathLength=1`, un
   nœud par Habit de l'intention, 5 au plus ; sans Habit, pâle). `--skx/--sky/--sks` (`socle()`) : il suit le papier.
