@@ -4,7 +4,7 @@
 > Quatre projets READY et huit alias vérifiés (`395c7ca`) ; 25 contrôles HTTP et 40 anciennes adresses réussis ; détail : `../docs/GALLERY_CLUB_20261015.md`.
 > Les mesures historiques du lot C publiées dans `13abd34` sont conservées avec leur date propre.
 
-**Dernier relevé : 15 octobre 2026, visite immersive SPACE publiée, avec galerie/Club et processeur COM conservés** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 15 octobre 2026 (bis), le réseau neuronal COM — page, base, Vercel ; visite immersive SPACE, galerie/Club et processeur conservés** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -19,6 +19,22 @@
 
 ---
 
+
+## 0 · LE RÉSEAU NEURONAL : RAMIFICATIONS PLEIN ÉCRAN, ACQUISITION, GALAXIE NUE, TELEGRAM CADENCÉ — 15/10/2026 (lot D)
+
+| Mesure | Résultat |
+| --- | --- |
+| Commit fusionné | `ee495f4` (fusion de `15561cc`, SPACE galerie 3D, dans le lot) |
+| `com/totehm.html` dépôt | MD5 `0d88db29`, 686 069 octets, `BUILD='2026-10-15-com-neural'` |
+| Prod `www.totehm.com/totehm` et `/` | 200 · MD5 `0d88db29` · 686 069 octets · même `BUILD` : prod = dépôt, octet pour octet |
+| Marqueurs lus en prod | `#lv-pitch` présent · « Tap to open it » présent · `ram-puls` présent · citation `Gollwitzer` présente · `wa.me` ABSENT |
+| Migration | `push_par_frequence`, journal `20261015174301` (après `processor_media_galaxy` et `club_gallery`) |
+| Fonctions en base | `_freq_minutes` `prosrc` MD5 `845f8940` (1 241 c.) · `push_decision` `212e485e` (3 595 c.) : identiques aux corps du fichier de migration |
+| Droits de ces deux fonctions | `anon` non · `authenticated` non · `service_role` OUI (le client n'appelle jamais une décision d'envoi) |
+| Selftest SQL `push_par_frequence` | 7 contrôles, `FAIL={}`, fixtures annulées ; plafond réel `max_daily ≤ 6` (contrainte `check`) |
+| Suites navigateur du lot | 408 contrôles, 0 échec : com_processeur 102 · com_shorts 57 · com_creator 37 · com_member_menu 35 · com_paper 34 · com_plateforme 25 · boutique_home 24 · com_read_copy 18 · console 18 · com_cloths 16 · com_guest 14 · boutique_tongue 11 · com_spot 8 · com_vision_image 8 · club_temporal 1 |
+| Vercel sur `ee495f4` | COM `dpl_Bt2aVmL2Bh9TYnm4ubBGvAgxciTL` · SPACE `dpl_Db2hYEGXnYhyVEJGmhrSgPdEfsaa` · Boutique `dpl_9Swj8QWZneSZ3efjg9dns3oM4EQA` : READY en production |
+| ⚠️ Dette constatée, hors de ce lot | 4 suites visant `www.totehm.space` expirent sur `main` depuis la refonte SPACE (`gallery` s'arrête après 5 · `space_boxes_ecosystem` 0 · `space_spot_links` 7 · `spaces_loupe` 15). Le lot D ne touche AUCUN fichier sous `space/` (diff : `com/`, `backend/`, `tests/browser/com_*`, docs) : à reprendre dans le lot SPACE |
 
 ## 0 · SPACE — VISITE DE GALERIE 3D PUBLIÉE — 15/10/2026
 

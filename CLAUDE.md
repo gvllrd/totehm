@@ -76,17 +76,13 @@ oracle/   → clés, gitignoré, jamais lu ni recopié
 tests/    → navigateur Playwright/Supabase simulé, contrats Edge, SQL transactionnel en base de développement
 ```
 
-La direction du 15/10 remplace les répartitions historiques ci-dessous et dans les documents de domaine.
-État de livraison et ordre de déploiement : `docs/GALLERY_CLUB_20261015.md` ; aucune mesure locale ne prouve la production.
+La direction du 15/10 remplace les répartitions historiques ci-dessous et dans les documents de domaine ; livraison et
+ordre de déploiement : `docs/GALLERY_CLUB_20261015.md`, `docs/SPACE_IMMERSIVE_20261015.md`. Aucune mesure locale ne prouve la production.
 
-TotehmBot est transversal (Telegram). Une seule base Supabase
-(`abujjbkbbiumxrokozph`, eu-west-1), un seul webhook Stripe.
-**Produits indépendants = fichiers indépendants** : un contenu commun est
-COPIÉ (ex. `tools/sso_snippet.js`), jamais importé. Un nom de dossier n'est
-pas une source de vérité : ce tableau l'est.
-
-**Chaque page porte `BUILD` et un diagnostic console `__totehm_*()`** —
-des booléens et des compteurs, jamais une valeur de membre.
+TotehmBot est transversal (Telegram). Une seule base Supabase (`abujjbkbbiumxrokozph`, eu-west-1), un seul webhook Stripe.
+**Produits indépendants = fichiers indépendants** : un contenu commun est COPIÉ (ex. `tools/sso_snippet.js`), jamais
+importé. Un nom de dossier n'est pas une source de vérité : ce tableau l'est. **Chaque page porte `BUILD` et un
+diagnostic console `__totehm_*()`** — des booléens et des compteurs, jamais une valeur de membre.
 
 ## Identité — quatre origines, une autorité
 
