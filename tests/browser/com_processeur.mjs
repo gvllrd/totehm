@@ -125,12 +125,18 @@ try{
   await pg.waitForTimeout(400);
   const tip=await pg.evaluate(()=>({on:document.getElementById('gx-tip').classList.contains('is-on'),t:document.querySelector('#gx-tip .srch-name').textContent}));
   ok(tip.on&&/^kai\d+$/.test(tip.t),(tel?'premier tap':'survol')+' : son nom, lisible ('+tip.t+')');
-  // la recherche allume les étoiles trouvées ; choisir un nom plonge dans son étoile → /@kai3
-  await pg.fill('#gx-q','kai');await pg.waitForFunction(()=>document.querySelectorAll('#gx-res .srch-row').length===1,null,{timeout:5000}).catch(()=>{});
-  ok((await lv(pg)).galaxie.filtre===1,'la recherche (NameSearch) allume l\'étoile trouvée');
+  // 15/10 bis : PAS de liste — la galaxie EST le résultat. Un nom tapé éteint les autres, agrandit le trouvé
+  // et pose son nom en Coral dessus ; Entrée plonge dedans.
+  await pg.fill('#gx-q','kai');await pg.waitForFunction(()=>window.__totehm_lv().galaxie.filtre===1,null,{timeout:6000}).catch(()=>{});
+  const tr=await pg.evaluate(()=>{const t=document.getElementById('gx-tip'),n=t.querySelector('.srch-name');
+    return {liste:getComputedStyle(document.getElementById('gx-res')).display,nom:n.textContent,
+      couleur:getComputedStyle(n).color,police:getComputedStyle(n).fontFamily,sc:parseFloat(t.style.getPropertyValue('--sc')||'1')};});
+  ok((await lv(pg)).galaxie.filtre===1&&tr.liste==='none','la recherche allume le Totehm trouvé — et AUCUNE liste ne s\'ouvre');
+  ok(/^kai\d+$/.test(tr.nom)&&tr.couleur==='rgb(251, 213, 202)'&&/Quantico/.test(tr.police)&&tr.sc>1.4,
+    'son nom se pose SUR son carré, Quantico Coral, agrandi avec lui (×'+tr.sc+')');
   if(tel){
     const nav=pg.waitForURL(/\/@kai3$/,{timeout:6000}).then(()=>true).catch(()=>false);
-    await pg.click('#gx-res .srch-open');
+    await pg.focus('#gx-q');await pg.keyboard.press('Enter');
     ok(await nav,'téléphone : on plonge dans l\'étoile, puis son univers SUR PLACE (/@kai3)');
     const ctx=await pg.evaluate(()=>JSON.parse(sessionStorage.getItem('totehm_gx')||'null'));
     ok(ctx&&ctx.p==='kai3'&&ctx.q==='kai','le contexte de recherche est gardé pour le retour');
@@ -138,7 +144,7 @@ try{
     const b=await lv(pg);
     ok(b.mode==='others'&&await pg.inputValue('#gx-q')==='kai'&&b.galaxie.retours===1,'retour : Others, la recherche intacte, on ressort de l\'étoile (animé)');
   } else {
-    await pg.click('#gx-res .srch-open');await pg.waitForTimeout(1500);
+    await pg.focus('#gx-q');await pg.keyboard.press('Enter');await pg.waitForTimeout(1500);
     const w=await pg.evaluate(()=>window.__ouvert);
     const g=(await lv(pg)).galaxie;
     ok(w.length===1&&w[0]==='/@kai3'&&g.ouvertures===1,'ordinateur : on plonge dans l\'étoile, son univers dans un nouvel onglet (/@kai3)');
@@ -203,18 +209,24 @@ try{
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1000);
   await pg.click('#lvn-dn');await vers(pg,'b');await pg.waitForTimeout(400);
   const v=await pg.evaluate(()=>({say:!document.getElementById('lv-say').classList.contains('hide'),font:getComputedStyle(document.getElementById('lv-say-in')).fontFamily,
-    note:document.getElementById('lv-say-note').textContent,etages:[...document.querySelectorAll('#lv-thread .rf-t')].map(e=>e.className)}));
+    note:document.getElementById('lv-say-note').textContent,etages:[...document.querySelectorAll('#lv-thread .rf-t')].map(e=>e.className),
+    vide:document.getElementById('lv-say').classList.contains('is-vide'),cur:!!document.querySelector('#lv-say .rf-cur'),
+    slo:(()=>{const r=document.getElementById('lv-slogan').getBoundingClientRect();return r.top>innerHeight*.8;})()}));
   ok(v.say&&/Quantico/.test(v.font)&&/^6 of 7 free this month/.test(v.note),'prêt : la saisie (Quantico), « 6 of 7 free this month »');
-  ok(v.etages.length===3&&v.etages.every(c=>/is-wait/.test(c)),'avant la première Reflection : les trois étages, vides (la structure, rien d\'inventé)');
+  ok(v.etages.length===0&&v.vide&&v.cur,'15/10 bis · avant d\'avoir parlé : le profil et un CURSEUR qui clignote, rien d\'autre (plus de boîtes vides)');
   await pg.fill('#lv-say-in','I procrastinate on my collection');await pg.keyboard.press('Enter');
   await pg.waitForFunction(()=>window.__totehm_lv().reflection.envois===1,null,{timeout:5000}).catch(()=>{});await pg.waitForTimeout(300);
   const r=await pg.evaluate(()=>{const q=s=>document.querySelector(s),cs=e=>e&&getComputedStyle(e).backgroundColor;
     const t=[...document.querySelectorAll('#lv-thread .rf-t')];
     return {q:q('#lv-thread .rf-q')?.textContent,fonds:t.map(cs),refs:[...document.querySelectorAll('#lv-thread .rf-ref')].map(e=>e.textContent),
-      dir:t[0]?.querySelector('p')?.textContent,obs:t[1]?.querySelector('p')?.textContent,teachK:t[1]?.querySelector('.rf-k')?.textContent,
-      teach:t[1]?.querySelector('.rf-teach p')?.textContent,step:t[2]?.querySelector('p')?.textContent,prop:t[2]?.classList.contains('is-prop'),
-      add:!!t[2]?.querySelector('[data-rf-add]'),acts:document.querySelectorAll('#lv-thread .sm-acts').length,pense:window.__totehm_lv().reflection.pense};});
-  ok(r.q==='I procrastinate on my collection'&&JSON.stringify(r.fonds)===JSON.stringify(['rgb(54, 73, 140)','rgb(116, 49, 105)','rgb(51, 51, 102)']),'trois étages, la couleur EST le sens : bleu clair (direction) · rouge-violet (obstacle) · navy (step)');
+      dir:t[0]?.querySelector('p')?.textContent,obs:t[2]?.querySelector('p')?.textContent,teachK:t[2]?.querySelector('.rf-k')?.textContent,
+      teach:t[2]?.querySelector('.rf-teach p')?.textContent,step:t[1]?.querySelector('p')?.textContent,prop:t[1]?.classList.contains('is-prop'),
+      add:!!t[1]?.querySelector('[data-rf-add]'),acts:document.querySelectorAll('#lv-thread .sm-acts').length,pense:window.__totehm_lv().reflection.pense,
+      classes:t.map(e=>e.className.match(/t-\w+/)[0]),
+      haute:t[1]&&t[0]?t[1].getBoundingClientRect().width>t[0].getBoundingClientRect().width&&/matrix\(1, 0, 0, 1, 0, -\d/.test(getComputedStyle(t[1]).transform):false};});
+  ok(r.q==='I procrastinate on my collection'&&JSON.stringify(r.fonds)===JSON.stringify(['rgb(54, 73, 140)','rgb(51, 51, 102)','rgb(116, 49, 105)'])
+     &&JSON.stringify(r.classes)===JSON.stringify(['t-dir','t-step','t-obs']),'15/10 bis · direction (bleu clair) · LA HABIT (navy, AU MILIEU) · obstacle + Teaching (rouge-violet) : l\'action est le centre de gravité');
+  ok(r.haute,'la Habit est sur-élevée : plus large que les deux autres, et elle monte');
   ok(r.dir==='I ship before December, one detail a night.'&&r.obs==='I keep scrolling instead of drawing.'&&r.teachK==='Teaching from the story'&&/screen/.test(r.teach),'direction · ce qui fait obstacle · « Teaching from the story »');
   ok(JSON.stringify(r.refs)===JSON.stringify(['Ship my first collection']),'seule la citation VÉRIFIÉE s\'affiche comme mienne (l\'objectif) ; la croyance non vérifiée n\'est jamais présentée comme mienne');
   ok(r.prop&&r.add&&r.step==='I draw one sleeve at 22:00 tonight.','la step nouvelle = une PROPOSITION (pointillé) + « + my Habit »');
@@ -264,12 +276,14 @@ try{
   await pg.fill('#lv-say-in','lazy today');await pg.keyboard.press('Enter');
   await pg.waitForFunction(()=>window.__totehm_lv().reflection.envois===1,null,{timeout:5000}).catch(()=>{});await pg.waitForTimeout(200);
   const h=await pg.evaluate(()=>({refs:[...document.querySelectorAll('#lv-thread .rf-ref')].map(e=>e.textContent),prop:document.querySelector('#lv-thread .t-step').classList.contains('is-prop'),
-    add:document.querySelectorAll('[data-rf-add]').length,acts:document.querySelectorAll('#lv-thread .sm-acts button').length}));
+    add:document.querySelectorAll('[data-rf-add]').length,acts:document.querySelectorAll('#lv-thread .sm-acts button').length,
+    tg:!!document.querySelector('#lv-thread [data-tg]'),wa:!!document.querySelector('#lv-thread [data-wa]')}));
   ok(JSON.stringify(h.refs)===JSON.stringify(['A quiet house by the sea','Run the hill'])&&!h.prop&&!h.add,'une step qui EST une de mes Habits (vérifiée) : sa mini-boîte, sans pointillé ni « + my Habit »');
-  ok(h.acts===2,'Higher : Telegram · WhatsApp sous la Reflection');
-  await pg.click('#lv-thread [data-wa]');
+  ok(h.acts===1&&h.tg&&!h.wa,'15/10 bis · Higher : « [Higher] my Telegram » SEUL sous la Reflection (pas de Meta)');
+  /* Telegram : la Reflection part par le serveur (`higher-self` action telegram), jamais par une URL publique. */
+  await pg.click('#lv-thread [data-tg]');await pg.waitForTimeout(600);
   const o=await pg.evaluate(()=>window.__ouvert);
-  ok(o[0]==='https://wa.me/?text='+encodeURIComponent('I build the house one brick a day.\nI wait for the mood.\nI already know waiting never built anything.\n→ I run the hill at 7:00 tomorrow.'),'WhatsApp : les trois étages en clair');
+  ok(!o.some(u=>/wa\.me|whatsapp/i.test(String(u))),'Telegram : l\'envoi passe par le serveur — plus aucune URL WhatsApp publique');
   ok(!erreurs(log).length,'Higher : aucune erreur '+erreurs(log).join(' | '));await pg.context().close();}
  {let n=0;const SMF={ready:true,habit:true,objective:true,higher:false,free_total:7,free_left:0,left:0};
   const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:390,height:844},rpc:{my_landing:()=>(++n>=3?LAND({higher:{active:true},sm:{...SMF,higher:true,left:30}}):LAND({sm:SMF}))}});
