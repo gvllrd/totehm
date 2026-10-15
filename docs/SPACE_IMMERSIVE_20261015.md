@@ -1,5 +1,11 @@
 # Visite de la galerie SPACE — 15 octobre 2026
 
+Version « deep night » publiée : `4f6a61fb4d49fa6516659cce411efe005273c968`, production SPACE
+`dpl_ECVgSn5ajvZGoQmun23PGVa6BGGq` READY avec ses deux alias. Quatre projets et huit alias vérifiés.
+Huit contrôles HTTPS réels réussis : racines SPACE, styles, modules du ciel et de la galerie, marché et COM
+correspondent exactement au dépôt ; le code COM de Claude `67941b5` est conservé. Captures finales d'arrivée :
+`/tmp/totehm-production/dark-gallery-final` ; ciel final : `/tmp/totehm-production/dream-sky-centered`.
+
 Ciel étoilé animé publié : `22ec60ca5d41f186f3bfc3c7c433e0e1fee9c611`, production SPACE
 `dpl_9GrA67UEuUNuAFYufiWkWYK9kpgA` READY avec ses deux alias. Les quatre projets et leurs huit alias sont
 vérifiés à ce commit. Douze contrôles HTTPS réels réussis : les fichiers du ciel, de la galerie et les deux

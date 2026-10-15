@@ -4,7 +4,7 @@
 > Quatre projets READY et huit alias vérifiés (`395c7ca`) ; 25 contrôles HTTP et 40 anciennes adresses réussis ; détail : `../docs/GALLERY_CLUB_20261015.md`.
 > Les mesures historiques du lot C publiées dans `13abd34` sont conservées avec leur date propre.
 
-**Dernier relevé : 15 octobre 2026, ciel étoilé animé SPACE publié ; réseau neuronal COM de Claude conservé** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
+**Dernier relevé : 15 octobre 2026, SPACE noir profond et ciel onirique publiés ; réseau neuronal COM de Claude conservé** (§0) — le reste du fichier garde la date de son propre relevé. Chaque chiffre vient d'une requête, pas d'une supposition.
 
 > **À quoi sert ce fichier.** Les masters disent *ce qu'on veut*. `CLAUDE.md` dit
 > *comment on construit*. **Celui-ci dit ce qui existe vraiment.**
@@ -19,6 +19,19 @@
 
 ---
 
+
+## 0 · SPACE — NOIR PROFOND ET CIEL ONIRIQUE PUBLIÉS — 15/10/2026
+
+| Mesure | Résultat |
+| --- | --- |
+| Code | `4f6a61fb4d49fa6516659cce411efe005273c968`, build `2026-10-15-space-deep-night` |
+| Vercel | Quatre projets READY, huit alias exacts ; SPACE `dpl_ECVgSn5ajvZGoQmun23PGVa6BGGq` |
+| HTTP réel | 8/8 : accueil www/apex, CSS, trois modules, marché et COM ; sources/MIME exacts, mode sombre et matériaux noirs présents |
+| WebGL local | Visite 34/34 ; ciel 25/25 ; thème sombre, contraste et repli 47/47 ; placement final de l'entrée 12/12 |
+| Direction visuelle | Murs, sol et socles noirs ; UI sombre permanente ; nébuleuses 3D bleues/violettes/roses centrées à l'arrivée, 6 800 étoiles (4 300 mobile) |
+| Coordination COM | Page COM identique au code de Claude `67941b5` ; aucun SQL/Edge ou paiement dans ce lot |
+
+Preuves locales : `/tmp/totehm-production/deep-night-ready.json`, `deep-night-live.json`, `deep-night-regression.log`, `dark-gallery/results.json`, `dark-gallery-final/`, `dream-sky-centered/results.json`. Tests WebGL locaux avec services interceptés ; les contrôles HTTPS lisent les vrais domaines.
 
 ## 0 · SPACE — CIEL ÉTOILÉ ANIMÉ PUBLIÉ — 15/10/2026
 
